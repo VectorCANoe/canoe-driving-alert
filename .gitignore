@@ -7,37 +7,114 @@
 *.blf
 *.asc
 *.txt~
+*.cfg.bak
+Logging/
+*.logging
+
+# CANoe generated files
+*.canalyzer
+*.canoe
+*.candb++
+*.dbc~
 
 # Temporary files
 *.tmp
 *.bak
 *~
+*.swp
+*.swo
 
 # OS specific
 .DS_Store
 Thumbs.db
+desktop.ini
 
 # IDE
 .vscode/
 .idea/
-*.swp
-*.swo
+*.iml
+*.sublime-project
+*.sublime-workspace
 
 # Build artifacts
 build/
 dist/
 *.o
 *.exe
+*.dll
+*.so
+*.dylib
 
 # Documentation build
 docs/_build/
 *.pdf~
+*.docx~
 
 # Test results
 test-results/
 *.result
+*.xml
+coverage/
 
 # Vector CANoe
 *.cfg.bak
 Logging/
 *.logging
+*.blf
+*.asc
+
+# Simulation outputs
+simulation/Logging/
+simulation/*.blf
+simulation/*.asc
+simulation/test-results/
+
+# OTA packages (binary files)
+*.bin
+*.hex
+*.elf
+src/Diagnostics/OTA/update-packages/*.bin
+
+# Safety and requirements (keep templates, ignore filled)
+**/FMEA_filled.xlsx
+**/HARA_filled.xlsx
+**/requirements_filled.xlsx
+
+# Sensitive data
+*.key
+*.pem
+*.p12
+certificates/
+secrets/
+
+# Large data files
+*.csv
+*.dat
+*.raw
+
+# Python (if using Python tools)
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+ENV/
+
+# Node.js (if using Node tools)
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Compiled documentation
+*.aux
+*.out
+*.toc
+
+# Backup files
+*.backup
+*.old
+
+# Configuration management
+**/baseline-records/*.lock
+**/change-requests/*.pending
