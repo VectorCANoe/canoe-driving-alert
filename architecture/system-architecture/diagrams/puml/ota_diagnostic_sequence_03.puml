@@ -1,0 +1,88 @@
+@startuml
+!theme silver
+
+title REQ_IVI_015: OTA Failure Auto-Recovery (ASIL-C)
+
+participant "OTA Server" as Server
+participant "CAN Bus" as CAN
+box "vECU (Target)" #f9f9f9
+    participant "OTA_Update_Agent" as OTA
+    participant "Flash Memory" as FLASH
+    participant "Bootloader" as BL
+    participant "DEM" as DEM
+end box
+
+== OTA Update in Progress ==
+
+Server -> CAN : 0x36 0A [256 bytes]\n(Block 10/16)
+CAN -> OTA : Transfer Data Block 10
+activate OTA
+OTA -> FLASH : Write to Flash
+activate FLASH
+
+== Power Failure Occurs ==
+
+note over FLASH #Red
+    **POWER CUT**
+    Simulated by CANoe
+    Fault Injection
+end note
+
+FLASH --> OTA : Write Interrupted
+deactivate FLASH
+OTA -> OTA : Detect Incomplete Transfer
+deactivate OTA
+
+== System Reboot ==
+
+note over BL: **Bootloader Startup**\nPower Restored
+
+BL -> BL : Check Application Integrity
+BL -> FLASH : Read Application CRC
+activate FLASH
+FLASH --> BL : CRC Mismatch\n(Corrupted Application)
+deactivate FLASH
+
+BL -> BL : **Recovery Decision**\nApplication Invalid
+
+== Automatic Rollback ==
+
+BL -> FLASH : Load Backup Image\n(Previous Valid Version)
+activate FLASH
+note right: REQ_IVI_015\nRecovery: 100%
+
+FLASH -> FLASH : Copy Backup to Active\n(Address: 0x90000 → 0x80000)
+FLASH --> BL : Rollback Complete
+deactivate FLASH
+
+BL -> BL : Verify Backup Integrity
+BL -> FLASH : Read Backup CRC
+activate FLASH
+FLASH --> BL : CRC Valid
+deactivate FLASH
+
+== Application Restart ==
+
+BL -> OTA : Start Application\n(Previous Version)
+activate OTA
+
+OTA -> OTA : Initialize System
+OTA -> DEM : Log Recovery Event\n(DTC: 0xC00500)
+activate DEM
+DEM --> OTA : Event Logged
+deactivate DEM
+
+OTA --> CAN : System Ready\n(Fallback Version Active)
+CAN --> Server : Recovery Complete
+
+note over OTA
+    **REQ_IVI_015 Verified**
+    • Auto Rollback: 100%
+    • Previous Version Restored
+    • System Functional
+    • DTC Logged for Analysis
+end note
+
+deactivate OTA
+
+@enduml

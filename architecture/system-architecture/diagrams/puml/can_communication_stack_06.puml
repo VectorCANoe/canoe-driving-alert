@@ -1,0 +1,45 @@
+@startuml
+!theme silver
+
+package "CAN Error Handling" {
+
+    component "Error Detection" as ED {
+        [CRC Check]
+        [DLC Validation]
+        [ID Filtering]
+        [Timeout Monitoring]
+    }
+
+    component "Error Recovery" as ER {
+        [Automatic Retransmission]
+        [Buffer Management]
+        [Error Counter]
+        [Bus-Off Recovery]
+    }
+
+    component "Error Notification" as EN {
+        [DEM Integration]
+        [DTC Generation]
+        [Application Callback]
+    }
+
+    ED --> ER : Error Detected
+    ER --> EN : Recovery Failed
+}
+
+note right of ED
+    **ISO 11898 CAN**:
+    • Bit Monitoring
+    • Stuff Bit Check
+    • Frame Check
+    • ACK Check
+end note
+
+note right of ER
+    **AUTOSAR Mechanisms**:
+    • Tx Retry (3 attempts)
+    • Rx Buffer Overflow
+    • Bus-Off State Machine
+end note
+
+@enduml

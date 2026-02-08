@@ -1,0 +1,74 @@
+@startuml
+!theme materia-outline
+
+title CAN Message Reception Flow (Rx Path)
+
+participant "CAN Bus" as BUS
+participant "CanDrv" as CANDRV
+participant "CanIf" as CANIF
+participant "PduR" as PDUR
+participant "COM" as COM
+participant "Application\n(Safety_Manager)" as APP
+
+== CAN Frame Reception ==
+
+BUS -> CANDRV : CAN Frame Received\n(ID: 0x103, DLC: 8,\nData: [02 01 00 00 00 00 00 00])
+activate CANDRV
+
+CANDRV -> CANDRV : **Interrupt Handler**\nRead CAN Controller
+
+CANDRV -> CANIF : CanIf_RxIndication(\nHrh: 0,\nCanId: 0x103,\nCanDlc: 8,\nCanSduPtr)
+activate CANIF
+
+CANIF -> CANIF : Validate CAN ID\nCheck DLC
+
+alt Valid Message
+    CANIF -> PDUR : PduR_CanIfRxIndication(\nRxPduId: 0x103,\nPduInfoPtr)
+    activate PDUR
+
+    PDUR -> PDUR : Route to COM\n(Gear_Position Message)
+
+    PDUR -> COM : Com_RxIndication(\nRxPduId: 0x103,\nPduInfoPtr)
+    activate COM
+
+    COM -> COM : Unpack Signals\nGear_State = 0x02 (Reverse)\nGear_Valid = 0x01 (Valid)
+
+    COM -> COM : Update Signal Buffers
+
+    COM -> APP : Com_CbkRxTOut_Notification(\nGear_Position)
+    activate APP
+
+    APP -> APP : Process Gear Change\nD → R Transition
+
+    APP -> APP : Trigger Reverse\nSafety Logic
+
+    note right: **REQ_IVI_002**\nResponse: <300ms
+
+    APP --> COM : Processing Complete
+    deactivate APP
+
+    COM --> PDUR : E_OK
+    deactivate COM
+
+    PDUR --> CANIF : E_OK
+    deactivate PDUR
+
+    CANIF --> CANDRV : E_OK
+    deactivate CANIF
+
+else Invalid Message
+    CANIF -> CANIF : Discard Message\nLog Error
+
+    CANIF --> CANDRV : E_NOT_OK
+    deactivate CANIF
+end
+
+deactivate CANDRV
+
+note over COM
+    **REQ_IVI_025**
+    • Message Loss Rate: ≤0.1%
+    • Rx Processing: <50ms
+end note
+
+@enduml
