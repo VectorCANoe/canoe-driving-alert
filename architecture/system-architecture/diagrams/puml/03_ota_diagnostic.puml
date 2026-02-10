@@ -1,7 +1,3 @@
-' ============================================
-' 1. UDS 0x14: Clear DTC Sequence
-' ============================================
-
 @startuml
 !theme materia-outline
 
@@ -94,14 +90,6 @@ note over Tester
 end note
 
 @enduml
-
-
-@newpage
-
-' ============================================
-' 2. UDS 0x34: OTA Download Sequence
-' ============================================
-
 @startuml
 !theme materia-outline
 
@@ -257,14 +245,6 @@ note over OTA
 end note
 
 @enduml
-
-
-@newpage
-
-' ============================================
-' 3. OTA Failure Recovery Sequence
-' ============================================
-
 @startuml
 !theme silver
 
@@ -353,14 +333,6 @@ end note
 deactivate OTA
 
 @enduml
-
-
-@newpage
-
-' ============================================
-' 4. Post-OTA Function Verification
-' ============================================
-
 @startuml
 !theme silver
 
@@ -441,5 +413,3 @@ note over OTA
 end note
 
 @enduml
-
-

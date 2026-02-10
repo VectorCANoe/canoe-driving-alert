@@ -1,7 +1,3 @@
-' ============================================
-' 1. Component Architecture (PlantUML)
-' ============================================
-
 @startuml
 !theme silver
 skinparam componentStyle uml2
@@ -120,14 +116,6 @@ package "Lighting Control Subsystem" {
 
 caption Lighting Control Architecture - AUTOSAR ASW Components
 @enduml
-
-
-@newpage
-
-' ============================================
-' 2. Speed-Linked Ambient Lighting State Machine
-' ============================================
-
 @startuml
 !theme materia-outline
 
@@ -178,14 +166,6 @@ note right of Sport
 end note
 
 @enduml
-
-
-@newpage
-
-' ============================================
-' 3. Door-Linked Lighting Sequence
-' ============================================
-
 @startuml
 !theme materia-outline
 
@@ -258,14 +238,6 @@ note over DLC
 end note
 
 @enduml
-
-
-@newpage
-
-' ============================================
-' 4. IVI Color Synchronization Flow
-' ============================================
-
 @startuml
 !theme silver
 
@@ -317,5 +289,3 @@ note over ISM
 end note
 
 @enduml
-
-

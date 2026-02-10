@@ -1,9 +1,3 @@
-' ============================================
-' 1. System Context
-
-This architecture defines the virtual ECU (vECU) implementation for an In-Vehicle Infotainment (IVI) system, integrating lighting control, safety management, diagnostics, and OTA capabilities within a CANoe simulation environment.
-' ============================================
-
 @startuml
 !theme silver
 skinparam componentStyle rectangle
@@ -61,16 +55,6 @@ end note
 
 caption System Context - IVI vECU Development Environment
 @enduml
-
-
-@newpage
-
-' ============================================
-' 2. AUTOSAR Layered Architecture
-
-The vBDC_ECU follows AUTOSAR Classic architecture with clear separation between application software (ASW), runtime environment (RTE), and basic software (BSW).
-' ============================================
-
 @startuml
 !theme silver
 skinparam componentStyle uml2
@@ -166,5 +150,3 @@ package "vBDC_ECU - AUTOSAR Architecture" {
 
 caption AUTOSAR Layered Architecture for vBDC_ECU (ISO 26262 Compliant)
 @enduml
-
-

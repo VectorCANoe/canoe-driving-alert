@@ -1,7 +1,3 @@
-' ============================================
-' 1. Fault Injection Test Architecture
-' ============================================
-
 @startuml
 !theme silver
 skinparam activityStyle uml2
@@ -105,14 +101,6 @@ endif
 stop
 
 @enduml
-
-
-@newpage
-
-' ============================================
-' 2. BDC Communication Fault Injection Sequence
-' ============================================
-
 @startuml
 !theme materia-outline
 
@@ -196,14 +184,6 @@ note over MON
 end note
 
 @enduml
-
-
-@newpage
-
-' ============================================
-' 3. Door Sensor Fault Injection (REQ_IVI_022)
-' ============================================
-
 @startuml
 !theme materia-outline
 
@@ -323,14 +303,6 @@ note over DWL
 end note
 
 @enduml
-
-
-@newpage
-
-' ============================================
-' 4. Sensor Signal Fault Injection (REQ_IVI_024)
-' ============================================
-
 @startuml
 !theme silver
 
@@ -458,33 +430,6 @@ note over VAL
 end note
 
 @enduml
-
-
-@newpage
-
-' ============================================
-' 5. Fault Injection Test Matrix
-
-| Test Case ID | Fault Type | Injected Signal | Expected DTC | Expected Behavior | Status |
-|---|---|---|---|---|---|
-| FI_001 | Message Drop | BDC_Status (0x110) | 0xC00110 | Enter Safe State | ✅ PASS |
-| FI_002 | Message Delay | Door_Status (0x102) | 0xC00302 | Restrict UX | ✅ PASS |
-| FI_003 | Stuck-at CLOSED | Door_Status (0x102) | 0xC00301 | Plausibility Check | ✅ PASS |
-| FI_004 | Signal Loss | Vehicle_Speed (0x100) | 0xC00400 | Disable Speed Functions | ✅ PASS |
-| FI_005 | Out-of-Range | Vehicle_Speed (0x100) | 0xC00401 | Use Last Valid Value | ✅ PASS |
-| FI_006 | Stuck-at Value | Vehicle_Speed (0x100) | 0xC00402 | Disable Functions | ✅ PASS |
-| FI_007 | Intermittent | Vehicle_Speed (0x100) | 0xC00403 | Degraded Mode | ✅ PASS |
-| FI_008 | Bit Error | Gear_Position (0x103) | 0xC00500 | CRC Check Failed | ✅ PASS |
-| FI_009 | Frame Error | CAN Frame | 0xC00501 | Frame Rejected | ✅ PASS |
-| FI_010 | Timeout | ADAS_LDW (0x300) | 0xC00100 | Clear Warning | ✅ PASS |
-
----
-
-## 6. CANoe Fault Injection Configuration
-
-### Fault Injection Methods
-' ============================================
-
 @startuml
 !theme silver
 
@@ -529,5 +474,3 @@ note right of VECU
 end note
 
 @enduml
-
-

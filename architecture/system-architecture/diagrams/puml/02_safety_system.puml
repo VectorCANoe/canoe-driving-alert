@@ -1,7 +1,3 @@
-' ============================================
-' 1. Safety System Component Architecture
-' ============================================
-
 @startuml
 !theme silver
 skinparam componentStyle uml2
@@ -150,14 +146,6 @@ package "Safety Management Subsystem" #FFCCCC {
 
 caption Safety System Architecture - ISO 26262 ASIL-D Compliant
 @enduml
-
-
-@newpage
-
-' ============================================
-' 2. Reverse Safety State Machine (ASIL-C)
-' ============================================
-
 @startuml
 !theme materia-outline
 
@@ -219,14 +207,6 @@ note right of Reverse_Active
 end note
 
 @enduml
-
-
-@newpage
-
-' ============================================
-' 3. ADAS Safety Integration Sequence
-' ============================================
-
 @startuml
 !theme materia-outline
 
@@ -321,14 +301,6 @@ note over ASC
 end note
 
 @enduml
-
-
-@newpage
-
-' ============================================
-' 4. Door Open Hazard Detection (ASIL-D)
-' ============================================
-
 @startuml
 !theme silver
 
@@ -419,5 +391,3 @@ note over DWL
 end note
 
 @enduml
-
-

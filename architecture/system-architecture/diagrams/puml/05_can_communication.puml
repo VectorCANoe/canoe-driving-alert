@@ -1,7 +1,3 @@
-' ============================================
-' 1. AUTOSAR ComStack Architecture
-' ============================================
-
 @startuml
 !theme silver
 skinparam componentStyle uml2
@@ -113,14 +109,6 @@ package "AUTOSAR Communication Stack" {
 
 caption AUTOSAR Communication Stack - ISO 11898 CAN Compliant
 @enduml
-
-
-@newpage
-
-' ============================================
-' 2. CAN Signal Mapping
-' ============================================
-
 @startuml
 !theme silver
 
@@ -216,14 +204,6 @@ note bottom of MSG103
 end note
 
 @enduml
-
-
-@newpage
-
-' ============================================
-' 3. Message Transmission Sequence
-' ============================================
-
 @startuml
 !theme materia-outline
 
@@ -319,14 +299,6 @@ note over COM
 end note
 
 @enduml
-
-
-@newpage
-
-' ============================================
-' 4. Message Reception Sequence
-' ============================================
-
 @startuml
 !theme materia-outline
 
@@ -401,25 +373,6 @@ note over COM
 end note
 
 @enduml
-
-
-@newpage
-
-' ============================================
-' 5. Performance Metrics & Reliability
-' ============================================
-'
-' Timing Analysis:
-' - 0x100 Vehicle_Speed: 100ms cycle, <80ms end-to-end (REQ_IVI_009)
-' - 0x101 Drive_Mode: 200ms cycle, <90ms end-to-end (REQ_IVI_009)
-' - 0x102 Door_Status: 50ms cycle, <50ms end-to-end (REQ_IVI_022)
-' - 0x103 Gear_Position: 50ms cycle, <50ms end-to-end (REQ_IVI_002)
-' - 0x104 HVAC_Temp: 500ms cycle, <120ms end-to-end (REQ_IVI_005)
-' - 0x200 IVI_Color_Cmd: Event-driven, <100ms end-to-end (REQ_IVI_004)
-' - 0x300 ADAS_LDW: Event-driven, <35ms end-to-end (REQ_IVI_028)
-' - 0x301 ADAS_AEB: Event-driven, <25ms end-to-end (REQ_IVI_030)
-'
-
 @startuml
 !theme plain
 
@@ -434,7 +387,7 @@ rectangle "CAN Communication Performance" {
     }
 
     card "Message Loss Rate" as MLR {
-        **Target**: <=0.1%
+        **Target**: ≤0.1%
         **Measured**: 0.05%
         **Status**: ✅ PASS
     }
@@ -455,19 +408,19 @@ rectangle "CAN Communication Performance" {
 note bottom of MSR
     **REQ_IVI_059**
     CAN 통신 안정성
-    전송 성공률 99.9% 이상
+    전송 성공률 >99.9%
 end note
 
 note bottom of MLR
     **REQ_IVI_025**
     CAN 메시지 처리 신뢰성
-    메시지 손실률 0.1% 이하
+    메시지 손실률 ≤0.1%
 end note
 
 note bottom of SRT
     **REQ_IVI_009**
     시스템 반응속도
-    응답 1s 미만
+    응답 <1s
 end note
 
 note bottom of CO
@@ -477,14 +430,6 @@ note bottom of CO
 end note
 
 @enduml
-
-
-@newpage
-
-' ============================================
-' 6. Error Handling Mechanisms
-' ============================================
-
 @startuml
 !theme silver
 
@@ -530,5 +475,3 @@ note right of ER
 end note
 
 @enduml
-
-
