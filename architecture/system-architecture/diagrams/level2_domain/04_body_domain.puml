@@ -1,0 +1,171 @@
+@startuml level2_body
+!theme plain
+
+title Level 2: Body Domain Architecture\nComfort and Convenience Systems
+
+skinparam component {
+    BackgroundColor LightPink
+    BorderColor DarkRed
+    ArrowColor DarkBlue
+}
+
+package "Body Domain" {
+
+    component "BCM\n(Body Control Module)" as BCM {
+        portin p_door_sensors
+        portin p_light_switch
+        portin p_ambient_cmd
+        portout p_door_status
+        portout p_light_control
+        portout p_ambient_feedback
+
+        [Door Lock Control]
+        [Light Control]
+        [Wiper Control]
+        [Ambient Light Controller]
+    }
+
+    component "DATC\n(Dual Auto Temperature Control)" as DATC {
+        portin p_temp_sensors
+        portin p_user_setting
+        portout p_climate_control
+
+        [Temperature Control]
+        [Fan Speed Control]
+        [Air Distribution]
+    }
+
+    component "FATC\n(Full Auto Temperature Control)" as FATC {
+        portin p_temp_sensors
+        portin p_user_setting
+        portout p_climate_control
+
+        [Auto Climate Control]
+        [Zone Control (4 zones)]
+        [Air Quality Monitor]
+    }
+
+    component "AFLS\n(Adaptive Front Lighting)" as AFLS {
+        portin p_steering_angle
+        portin p_vehicle_speed
+        portout p_light_angle
+
+        [Dynamic Beam Control]
+        [Cornering Light]
+    }
+
+    component "AHLS\n(Adaptive High-beam Light)" as AHLS {
+        portin p_camera_data
+        portout p_highbeam_control
+
+        [Auto High Beam]
+        [Glare-Free Control]
+    }
+
+    component "PSB\n(Pre-Safe Belt)" as PSB {
+        portin p_collision_warning
+        portout p_belt_tension
+
+        [Belt Pretensioner]
+        [Collision Detection]
+    }
+
+    component "TPMS\n(Tire Pressure Monitoring)" as TPMS {
+        portin p_tire_sensors
+        portout p_pressure_warning
+
+        [Pressure Monitoring]
+        [Temperature Monitoring]
+    }
+
+    component "SMK\n(Smart Key)" as SMK {
+        portin p_key_signal
+        portout p_auth_status
+
+        [Keyless Entry]
+        [Immobilizer]
+        [Push Button Start]
+    }
+}
+
+cloud "CAN-LS\n125 kbps" as CAN3
+
+' BCM Messages
+BCM --> CAN3 : **BCM_LightControl (0x520)**\n• Headlight_Status\n• Ambient_Light_Active\n• Ambient_R/G/B_Actual\nCycle: 100ms, QM
+
+CAN3 --> BCM : **IVI_AmbientLight (0x400)**\n• Ambient_Light_RGB\n• Brightness, Theme\n(via Gateway from CAN-HS #2)
+
+BCM --> CAN3 : **BCM_DoorStatus**\n• Door_FL/FR/RL/RR_Open\n• Trunk_Open\nCycle: 100ms
+
+' DATC Messages
+DATC --> CAN3 : **DATC11**\n• Target_Temp_Driver/Passenger\n• Fan_Speed\n• Air_Distribution\nCycle: 500ms
+
+' FATC Messages
+FATC --> CAN3 : **FATC11**\n• Zone1/2/3/4_Temp\n• Auto_Mode_Active\n• Air_Quality_Index\nCycle: 500ms
+
+' AFLS Messages
+AFLS --> CAN3 : **AFLS11**\n• Light_Angle_Left/Right\n• Cornering_Active\nCycle: 100ms
+
+CAN3 --> AFLS : **MDPS12**\n• Steering_Angle\n(via Gateway)
+
+' AHLS Messages
+AHLS --> CAN3 : **AHLS11**\n• High_Beam_Active\n• Glare_Free_Mode\nCycle: 100ms
+
+' PSB Messages
+PSB --> CAN3 : **PSB11**\n• Belt_Tension_Status\n• Pretensioner_Active\nCycle: 100ms, ASIL-B
+
+CAN3 --> PSB : **ACU_CollisionWarning**\n(via Gateway)
+
+' TPMS Messages
+TPMS --> CAN3 : **TPMS11**\n• Tire_Pressure_FL/FR/RL/RR\n• Tire_Temp_FL/FR/RL/RR\n• Warning_Active\nCycle: 1000ms
+
+' SMK Messages
+SMK --> CAN3 : **SMK11**\n• Key_Status\n• Auth_Result\n• Immobilizer_Active\nCycle: 100ms
+
+component "CGW\n(Central Gateway)" as CGW
+CAN3 --> CGW : Route to CAN-HS #1, #2
+CGW --> CAN3 : Vehicle Data, Steering Angle
+
+note right of BCM
+  **BCM Key Functions**
+  • Door lock/unlock control
+  • Exterior/interior lighting
+  • Ambient lighting control
+  • Wiper control
+  • Power window control
+
+  **Safety Level**: QM
+  **Cycle Time**: 100ms
+  **Feature**: Ambient lighting
+end note
+
+note right of TPMS
+  **TPMS Key Functions**
+  • Tire pressure monitoring
+  • Temperature monitoring
+  • Low pressure warning
+  • Tire position detection
+
+  **Safety Level**: QM
+  **Cycle Time**: 1000ms
+  **Sensors**: 4 tire sensors
+end note
+
+note bottom of CAN3
+  **Body CAN Messages**
+
+  Control Messages (100-500ms):
+  • BCM_LightControl: Ambient feedback
+  • DATC/FATC: Climate control
+  • AFLS/AHLS: Lighting control
+
+  Status Messages (1000ms):
+  • TPMS: Tire pressure
+  • SMK: Key status
+
+  **Total Messages**: ~15 messages
+  **ASIL Level**: QM-B
+  **Network**: Low-speed (comfort features)
+end note
+
+@enduml

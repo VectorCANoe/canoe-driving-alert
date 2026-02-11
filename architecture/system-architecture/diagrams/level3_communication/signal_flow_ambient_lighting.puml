@@ -1,0 +1,193 @@
+@startuml signal_flow_ambient_lighting
+!theme plain
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+
+title Level 3: Ambient Lighting Signal Flow\n(IVI → Gateway → BCM → Gateway → IVI/CLU)
+
+participant "User" as User #FFE6E6
+participant "IVI\n(CAN-HS #2)" as IVI #6699FF
+participant "Gateway\n(CGW)" as GW #FFCC66
+participant "BCM\n(CAN-LS)" as BCM #99FF99
+participant "LED Drivers" as LED #CCCCCC
+participant "CLU\n(CAN-HS #2)" as CLU #6699FF
+
+== User Selects Theme ==
+
+User -> IVI : Select "SPORT" theme\n(Red, 80% brightness)
+activate IVI
+
+IVI -> IVI : Prepare IVI_AmbientLight (0x400)
+note right of IVI
+    **Message**: IVI_AmbientLight (0x400)
+    **Signals**:
+    • Ambient_Light_R = 255 (Red)
+    • Ambient_Light_G = 0
+    • Ambient_Light_B = 0
+    • Brightness = 80 (80%)
+    • Theme_Package = 0 (SPORT)
+    • AliveCounter = N
+    • Checksum = CRC
+    **Cycle**: 100ms
+    **Network**: CAN-HS #2
+end note
+
+IVI -> GW : IVI_AmbientLight (0x400)\n[CAN-HS #2, 100ms]
+deactivate IVI
+
+== Gateway Routing (Rule R011) ==
+
+activate GW
+GW -> GW : Validate CRC & AliveCounter
+note right of GW
+    **Routing Rule R011**:
+    • Source: CAN-HS #2
+    • Dest: CAN-LS
+    • Priority: Low
+    • Latency: <5ms
+    • Filter: CRC check
+end note
+
+GW -> GW : Route to CAN-LS
+GW -> BCM : IVI_AmbientLight (0x400)\n[CAN-LS, routed]
+deactivate GW
+
+== BCM Processing ==
+
+activate BCM
+BCM -> BCM : Parse RGB, Brightness, Theme
+BCM -> BCM : Apply theme profile\n(SPORT = Red)
+
+BCM -> LED : Set RGB(255, 0, 0)\nBrightness 80%
+activate LED
+LED -> LED : PWM control\n(Red LEDs at 80%)
+LED --> BCM : Actual RGB output
+deactivate LED
+
+BCM -> BCM : Prepare BCM_LightControl (0x520)
+note right of BCM
+    **Message**: BCM_LightControl (0x520)
+    **Signals**:
+    • Headlight_Status = 2 (LOW_BEAM)
+    • Ambient_Light_Active = 1 (ACTIVE)
+    • Ambient_R_Actual = 255
+    • Ambient_G_Actual = 0
+    • Ambient_B_Actual = 0
+    **Cycle**: 100ms
+    **Network**: CAN-LS
+end note
+
+BCM -> GW : BCM_LightControl (0x520)\n[CAN-LS, 100ms]
+deactivate BCM
+
+== Gateway Routing (Rule R021) ==
+
+activate GW
+GW -> GW : Route to CAN-HS #2
+note right of GW
+    **Routing Rule R021**:
+    • Source: CAN-LS
+    • Dest: CAN-HS #2
+    • Targets: IVI, CLU
+    • Priority: Low
+    • Latency: <5ms
+end note
+
+GW -> IVI : BCM_LightControl (0x520)\n[CAN-HS #2, routed]
+GW -> CLU : BCM_LightControl (0x520)\n[CAN-HS #2, routed]
+deactivate GW
+
+== Display Feedback ==
+
+activate IVI
+IVI -> IVI : Parse Ambient_RGB_Actual
+IVI -> User : Display "Ambient Light:\nSPORT (Red, 80%)\n✓ Active"
+deactivate IVI
+
+activate CLU
+CLU -> CLU : Parse Ambient_Light_Active
+CLU -> User : Show ambient light icon\n(Active indicator)
+deactivate CLU
+
+== Timing Diagram ==
+
+note over User, CLU
+    **Total Latency**: ~10-15ms
+    • IVI processing: 1-2ms
+    • Gateway routing (R011): 3-5ms
+    • BCM processing: 2-3ms
+    • LED control: 1-2ms
+    • Gateway routing (R021): 3-5ms
+    • Display update: 1-2ms
+end note
+
+== Continuous Monitoring (100ms cycle) ==
+
+loop Every 100ms
+    IVI -> GW : IVI_AmbientLight (0x400)\n[AliveCounter++]
+    GW -> BCM : Route to CAN-LS
+    BCM -> LED : Maintain RGB(255, 0, 0)
+    BCM -> GW : BCM_LightControl (0x520)
+    GW -> IVI : Route to CAN-HS #2
+    GW -> CLU : Route to CAN-HS #2
+end
+
+== User Changes Theme ==
+
+User -> IVI : Select "COMFORT" theme\n(Blue, 60% brightness)
+activate IVI
+
+IVI -> IVI : Update IVI_AmbientLight (0x400)
+note right of IVI
+    **Updated Signals**:
+    • Ambient_Light_R = 0
+    • Ambient_Light_G = 100
+    • Ambient_Light_B = 255 (Blue)
+    • Brightness = 60 (60%)
+    • Theme_Package = 1 (COMFORT)
+end note
+
+IVI -> GW : IVI_AmbientLight (0x400)\n[Updated]
+deactivate IVI
+
+activate GW
+GW -> BCM : Route to CAN-LS
+deactivate GW
+
+activate BCM
+BCM -> LED : Set RGB(0, 100, 255)\nBrightness 60%
+activate LED
+LED -> LED : PWM control\n(Blue LEDs at 60%)
+LED --> BCM : Actual RGB output
+deactivate LED
+
+BCM -> GW : BCM_LightControl (0x520)\n[Updated]
+deactivate BCM
+
+activate GW
+GW -> IVI : Route to CAN-HS #2
+GW -> CLU : Route to CAN-HS #2
+deactivate GW
+
+activate IVI
+IVI -> User : Display "Ambient Light:\nCOMFORT (Blue, 60%)\n✓ Active"
+deactivate IVI
+
+== Error Handling ==
+
+User -> IVI : Select invalid theme (99)
+activate IVI
+IVI -> IVI : Validate theme range (0-10)
+IVI -> User : Error: "Invalid theme\nPlease select 0-10"
+deactivate IVI
+
+note over IVI, BCM
+    **Error Scenarios**:
+    1. CRC error → Gateway discards message
+    2. AliveCounter timeout → BCM uses last valid value
+    3. LED driver fault → BCM reports error in BCM_LightControl
+    4. Gateway routing failure → Timeout detection (3x cycle time)
+end note
+
+@enduml

@@ -1,0 +1,139 @@
+@startuml network_message_flow
+!theme plain
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+
+title Level 3: Network Message Flow Architecture\n(CAN-HS #1, CAN-HS #2, CAN-LS with Gateway Routing)
+
+' Define networks as packages
+package "CAN-HS #1\n(500 kbps)" as CANHS1 #FFE6E6 {
+    component "EMS" as EMS #FF9999
+    component "ESP" as ESP #FF9999
+    component "ABS" as ABS #FF9999
+    component "MDPS" as MDPS #FF9999
+    component "ACU" as ACU #FF6666
+    component "ODS" as ODS #FF6666
+
+    note right of EMS
+        **Key Messages**:
+        • EMS16 (0x260)
+          - Vehicle_Speed
+          - Engine_RPM
+          - Torque
+        **ASIL-D, 10ms**
+    end note
+
+    note right of ESP
+        **Key Messages**:
+        • ESP12 (0x200)
+          - Stability_Status
+          - TCS_Active
+        **ASIL-D, 20ms**
+    end note
+}
+
+package "CAN-HS #2\n(500 kbps)" as CANHS2 #E6F3FF {
+    component "LDWS_LKAS" as LDWS #99CCFF
+    component "SCC" as SCC #99CCFF
+    component "LCA" as LCA #99CCFF
+    component "IVI" as IVI #6699FF
+    component "CLU" as CLU #6699FF
+    component "HUD" as HUD #6699FF
+
+    note right of IVI
+        **Project Messages** ⭐:
+        • IVI_AmbientLight (0x400)
+          - RGB, Brightness, Theme
+        • IVI_Profile (0x410)
+          - Profile_ID, Scenario_ID
+        **QM, 100ms / 1000ms**
+    end note
+
+    note right of LDWS
+        **Key Messages**:
+        • LDWS_LKAS11 (0x420)
+          - LDW_Status
+          - LKA_Event
+        **ASIL-B, 100ms**
+    end note
+}
+
+package "CAN-LS\n(125 kbps)" as CANLS #E6FFE6 {
+    component "BCM" as BCM #99FF99
+    component "DATC" as DATC #99FF99
+    component "TPMS" as TPMS #99FF99
+
+    note right of BCM
+        **Project Message** ⭐:
+        • BCM_LightControl (0x520)
+          - Ambient_RGB_Actual
+          - Headlight_Status
+        **QM, 100ms**
+    end note
+}
+
+' Central Gateway
+component "Central Gateway\n(CGW)" as CGW #FFCC66 {
+    [Routing Engine] as RE
+    [CRC Validator] as CRC
+    [Priority Arbiter] as PA
+    [Message Filter] as MF
+}
+
+' Network connections to Gateway
+CANHS1 -down-> CGW : "CAN-HS #1\nInterface"
+CANHS2 -down-> CGW : "CAN-HS #2\nInterface"
+CANLS -down-> CGW : "CAN-LS\nInterface"
+
+' Message flows with routing rules
+EMS -[#FF0000,bold]-> CGW : "**R001**: EMS16\n→ CLU, HUD\n<1ms"
+ESP -[#FF0000,bold]-> CGW : "**R002**: ESP12\n→ IVI, CLU\n<1ms"
+ABS -[#FF6666]-> CGW : "**R003**: ABS11\n→ CLU\n<2ms"
+MDPS -[#FF6666]-> CGW : "**R004**: MDPS11\n→ IVI\n<2ms"
+ACU -[#FF0000,bold]-> CGW : "**R005**: ACU11\n→ CLU (Warning)\n<1ms"
+
+CGW -[#FF0000,bold]-> CLU : "Safety Data\n(High Priority)"
+CGW -[#FF0000,bold]-> HUD : "Speed, RPM\n(High Priority)"
+CGW -[#FF6666]-> IVI : "Chassis Status\n(Medium Priority)"
+
+IVI -[#0066CC,dashed]-> CGW : "**R011**: IVI_AmbientLight ⭐\n→ BCM\n<5ms"
+IVI -[#0066CC,dashed]-> CGW : "**R012**: IVI_Profile ⭐\n→ BCM\n<10ms"
+
+CGW -[#0066CC,dashed]-> BCM : "Ambient Control\n(Low Priority)"
+
+BCM -[#00CC66,dashed]-> CGW : "**R021**: BCM_LightControl ⭐\n→ IVI, CLU\n<5ms"
+
+CGW -[#00CC66,dashed]-> IVI : "Ambient Feedback\n(Low Priority)"
+CGW -[#00CC66,dashed]-> CLU : "Light Status\n(Low Priority)"
+
+LDWS -[#3399FF]-> IVI : "ADAS Warnings\n(CAN-HS #2 Internal)"
+SCC -[#3399FF]-> CLU : "Cruise Status\n(CAN-HS #2 Internal)"
+LCA -[#3399FF]-> IVI : "Blind Spot\n(CAN-HS #2 Internal)"
+
+' Legend
+legend right
+    **Message Flow Priority**
+    <color:#FF0000>━━━</color> High Priority (ASIL-D, <1ms)
+    <color:#FF6666>━━━</color> Medium Priority (ASIL-C, <2ms)
+    <color:#0066CC>- - -</color> Low Priority (QM, <5ms)
+    <color:#00CC66>- - -</color> Feedback (QM, <5ms)
+    <color:#3399FF>━━━</color> Internal (ASIL-B/QM, <2ms)
+
+    **Gateway Routing Rules**
+    R001-R010: CAN-HS #1 → CAN-HS #2
+    R011-R020: CAN-HS #2 → CAN-LS
+    R021-R030: CAN-LS → CAN-HS #2
+
+    ⭐ Project-specific messages
+end legend
+
+note bottom of CGW
+    **Gateway Performance**
+    • Routing latency: 0.5-3.5ms
+    • Message loss: <0.001%
+    • CRC error: <0.0001%
+    • Bus load: 30-55%
+end note
+
+@enduml

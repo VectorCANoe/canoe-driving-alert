@@ -1,0 +1,147 @@
+@startuml level2_chassis
+!theme plain
+
+title Level 2: Chassis Domain Architecture\nVehicle Stability and Steering Control Systems
+
+skinparam component {
+    BackgroundColor LightGreen
+    BorderColor DarkGreen
+    ArrowColor DarkBlue
+}
+
+package "Chassis Domain" {
+
+    component "ESP\n(Electronic Stability Program)" as ESP {
+        portin p_wheel_speed
+        portin p_yaw_rate
+        portin p_steering_angle
+        portout p_brake_request
+        portout p_stability_status
+
+        [Yaw Control]
+        [Traction Control]
+        [Brake Force Distribution]
+        [Stability Diagnostics]
+    }
+
+    component "ABS\n(Anti-lock Braking System)" as ABS {
+        portin p_brake_pedal
+        portin p_wheel_speed_sensors
+        portout p_brake_pressure
+        portout p_abs_status
+
+        [Wheel Speed Monitor]
+        [Brake Pressure Control]
+        [ABS Algorithm]
+    }
+
+    component "MDPS\n(Motor Driven Power Steering)" as MDPS {
+        portin p_steering_wheel
+        portin p_vehicle_speed
+        portin p_assist_request
+        portout p_steering_torque
+        portout p_steering_angle_out
+
+        [Steering Assist Control]
+        [Torque Calculation]
+        [LKAS Integration]
+    }
+
+    component "SAS\n(Steering Angle Sensor)" as SAS {
+        portout p_angle_data
+        portout p_angular_velocity
+
+        [Angle Measurement]
+        [Calibration]
+    }
+
+    component "EPB\n(Electronic Parking Brake)" as EPB {
+        portin p_epb_request
+        portout p_brake_status
+
+        [Parking Brake Control]
+        [Auto Hold Function]
+    }
+
+    component "ECS\n(Electronic Control Suspension)" as ECS {
+        portin p_road_condition
+        portin p_driving_mode
+        portout p_damper_control
+
+        [Damper Control]
+        [Ride Height Adjustment]
+    }
+}
+
+cloud "CAN-HS #1\n500 kbps" as CAN1
+
+' ESP Messages (OpenDBC)
+ESP --> CAN1 : **ESP12 (0x200)**\n• Stability_Status\n• Traction_Control\n• Brake_Request\nCycle: 20ms, ASIL-D
+
+ESP --> CAN1 : **ESP_AllState**\n• ESP_Active\n• TCS_Active\n• ABS_Active\nCycle: 100ms
+
+' ABS Messages
+ABS --> CAN1 : **ABS11**\n• Wheel_Speed_FL/FR/RL/RR\n• Brake_Pressure\nCycle: 10ms, ASIL-D
+
+CAN1 --> ESP : **ABS11**\n• Wheel_Speed\n(for stability control)
+
+' MDPS Messages
+MDPS --> CAN1 : **MDPS12 (0x340)**\n• Steering_Angle\n• Steering_Torque\n• LKAS_Active\nCycle: 10ms, ASIL-C
+
+CAN1 --> MDPS : **ESP12**\n• Vehicle_Speed\n(for speed-sensitive steering)
+
+' SAS Messages
+SAS --> CAN1 : **SAS11**\n• Steering_Angle\n• Angular_Velocity\nCycle: 10ms, ASIL-C
+
+CAN1 --> MDPS : **SAS11**\n• Angle_Data
+
+' EPB Messages
+EPB --> CAN1 : **EPB11**\n• Parking_Brake_Status\n• Auto_Hold_Active\nCycle: 100ms, ASIL-C
+
+' ECS Messages
+ECS --> CAN1 : **ECS12**\n• Damper_Mode\n• Ride_Height\nCycle: 100ms
+
+component "CGW\n(Central Gateway)" as CGW
+CAN1 --> CGW : Route to other networks
+
+note right of ESP
+  **ESP Key Functions**
+  • Yaw rate control
+  • Traction control (TCS)
+  • Electronic brake distribution
+  • Hill-start assist
+
+  **Safety Level**: ASIL-D
+  **Cycle Time**: 20ms
+  **Sensors**: Yaw rate, lateral acceleration
+end note
+
+note right of MDPS
+  **MDPS Key Functions**
+  • Speed-sensitive steering assist
+  • LKAS integration (Lane Keep Assist)
+  • Steering torque control
+  • Fail-safe mode
+
+  **Safety Level**: ASIL-C
+  **Cycle Time**: 10ms
+end note
+
+note bottom of CAN1
+  **Chassis CAN Messages**
+
+  Critical Messages (10-20ms):
+  • ABS11: Wheel Speed (4 wheels)
+  • MDPS12: Steering Angle, Torque
+  • ESP12: Stability Status
+
+  Status Messages (100ms):
+  • EPB Status, ECS Status
+  • ESP All State
+
+  **Total Messages**: ~12 messages
+  **ASIL Level**: C-D
+  **Priority**: Highest (Safety-Critical)
+end note
+
+@enduml

@@ -1,0 +1,179 @@
+@startuml vehicle_system_level1
+!theme silver
+
+title Level 1: Vehicle E/E System Architecture\n(Domain-Based Architecture with Central Gateway)
+
+skinparam componentStyle uml2
+skinparam linetype ortho
+
+' ============================================
+' EXTERNAL SYSTEMS
+' ============================================
+
+cloud "External Systems" as EXT #F0F0F0 {
+    component "OTA Server" as OTA_SRV #LightGreen
+    component "Diagnostic Tester" as DIAG_TST #LightBlue
+}
+
+' ============================================
+' CENTRAL GATEWAY
+' ============================================
+
+package "Central Computing" as CENTRAL #FAFAFA {
+    component "Central Gateway ECU" as CGW #Gold {
+        portin "CAN_HS_1_In" as CGW_CAN_HS1_IN
+        portin "CAN_HS_2_In" as CGW_CAN_HS2_IN
+        portin "CAN_LS_In" as CGW_CAN_LS_IN
+        portin "Ethernet_In" as CGW_ETH_IN
+        portin "Telematics_In" as CGW_TEL_IN
+
+        portout "CAN_HS_1_Out" as CGW_CAN_HS1_OUT
+        portout "CAN_HS_2_Out" as CGW_CAN_HS2_OUT
+        portout "CAN_LS_Out" as CGW_CAN_LS_OUT
+        portout "Ethernet_Out" as CGW_ETH_OUT
+    }
+}
+
+' ============================================
+' POWERTRAIN DOMAIN
+' ============================================
+
+package "Powertrain Domain" as POWERTRAIN #E6F3FF {
+    component "Engine Control Unit" as ECU_EMS #LightBlue {
+        portout "Engine_Data_Out" as EMS_OUT
+    }
+
+    component "Transmission Control Unit" as ECU_TCU #LightBlue {
+        portout "Trans_Data_Out" as TCU_OUT
+    }
+}
+
+' ============================================
+' CHASSIS DOMAIN
+' ============================================
+
+package "Chassis Domain" as CHASSIS #FFE6E6 {
+    component "ESP ECU" as ECU_ESP #LightCoral {
+        portout "ESP_Data_Out" as ESP_OUT
+    }
+
+    component "MDPS ECU" as ECU_MDPS #LightCoral {
+        portout "Steering_Data_Out" as MDPS_OUT
+    }
+}
+
+' ============================================
+' BODY DOMAIN
+' ============================================
+
+package "Body Domain" as BODY #E6FFE6 {
+    component "Body Control Module" as ECU_BCM #LightGreen {
+        portin "Light_Cmd_In" as BCM_LIGHT_IN
+        portout "Body_Status_Out" as BCM_OUT
+    }
+}
+
+' ============================================
+' INFOTAINMENT AND ADAS DOMAIN
+' ============================================
+
+package "Infotainment and ADAS Domain" as INFOTAINMENT #FFF9E6 {
+
+    component "IVI Head Unit" as ECU_IVI #Gold {
+        portin "Vehicle_Data_In" as IVI_VEH_IN
+        portin "ADAS_Event_In" as IVI_ADAS_IN
+        portout "IVI_Command_Out" as IVI_CMD_OUT
+    }
+
+    component "Instrument Cluster" as ECU_CLU #LightYellow {
+        portin "Vehicle_Data_In" as CLU_VEH_IN
+        portin "ADAS_Event_In" as CLU_ADAS_IN
+    }
+
+    component "Front Camera ECU" as ECU_CAM #Orange {
+        portout "ADAS_Event_Out" as CAM_OUT
+    }
+
+    component "Radar ECU" as ECU_RADAR #Orange {
+        portout "BSD_Event_Out" as RADAR_OUT
+    }
+
+    component "Smart Cruise Control" as ECU_SCC #Orange {
+        portin "Speed_Target_In" as SCC_IN
+        portout "Cruise_Status_Out" as SCC_OUT
+    }
+}
+
+' ============================================
+' NETWORK CONNECTIONS
+' ============================================
+
+EMS_OUT -down-> CGW_CAN_HS1_IN : CAN-HS1\n500 kbps
+TCU_OUT -down-> CGW_CAN_HS1_IN
+ESP_OUT -down-> CGW_CAN_HS1_IN
+MDPS_OUT -down-> CGW_CAN_HS1_IN
+
+CAM_OUT -down-> CGW_CAN_HS2_IN : CAN-HS2\n500 kbps
+RADAR_OUT -down-> CGW_CAN_HS2_IN
+SCC_OUT -down-> CGW_CAN_HS2_IN
+IVI_CMD_OUT -down-> CGW_CAN_HS2_IN
+
+BCM_OUT -down-> CGW_CAN_LS_IN : CAN-LS\n125 kbps
+
+CGW_CAN_HS1_OUT -up-> IVI_VEH_IN : Routed:\nSpeed, RPM,\nGear
+CGW_CAN_HS1_OUT -up-> CLU_VEH_IN
+
+CGW_CAN_HS2_OUT -up-> IVI_ADAS_IN : Routed:\nADAS Events
+CGW_CAN_HS2_OUT -up-> CLU_ADAS_IN
+
+CGW_CAN_LS_OUT -up-> BCM_LIGHT_IN : Routed:\nIVI Light Cmd
+
+OTA_SRV -down-> CGW_TEL_IN : Telematics
+DIAG_TST -down-> CGW_ETH_IN : Ethernet
+
+' ============================================
+' LEGEND
+' ============================================
+
+legend right
+    **E/E Architecture Type**: Domain-Based with Central Gateway
+
+    **Network Topology**:
+    • CAN High-Speed 1: Powertrain + Chassis (500 kbps)
+    • CAN High-Speed 2: ADAS + Infotainment (500 kbps)
+    • CAN Low-Speed: Body and Comfort (125 kbps)
+    • Ethernet: Diagnostics and OTA (100 Mbps)
+
+    **Total ECU Count**: 11
+    • Powertrain: 2 (EMS, TCU)
+    • Chassis: 2 (ESP, MDPS)
+    • Body: 1 (BCM)
+    • Infotainment: 2 (IVI, Cluster)
+    • ADAS: 3 (Camera, Radar, SCC)
+    • Gateway: 1 (CGW)
+
+    **CAN ID Allocation Strategy**:
+    • 0x100-0x1FF: Powertrain
+    • 0x200-0x2FF: Chassis
+    • 0x300-0x3FF: ADAS
+    • 0x400-0x4FF: Infotainment
+    • 0x500-0x5FF: Body
+    • 0x600-0x6FF: Comfort (Reserved)
+    • 0x700-0x7FF: Diagnostic
+
+    **Design Principles**:
+    1. Domain separation for fault isolation
+    2. Gateway-based routing for security
+    3. Dual CAN-HS for bandwidth and redundancy
+    4. ASIL-compliant signal routing
+    5. OTA-ready architecture
+
+    **Standards Compliance**:
+    • AUTOSAR Classic Platform (ECUs)
+    • AUTOSAR Adaptive Platform (Gateway)
+    • ISO 26262 (Functional Safety)
+    • ISO 14229 (UDS Diagnostics)
+    • ISO 13400 (DoIP)
+endlegend
+
+@enduml
