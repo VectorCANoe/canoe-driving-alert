@@ -1,0 +1,51 @@
+@startuml Level2_Domain_Architecture
+!theme plain
+
+title Level 2: 도메인별 구성\n(도메인 간 데이터 교환만 표현 - 통신 방법 제외)
+
+package "Infotainment Domain" {
+  component "vECU\n(IVI vECU)" as vECU
+  component "Cluster ECU" as Cluster
+  component "IVI Control ECU" as IVI
+}
+
+package "Body Domain" {
+  component "Lighting\nControl ECU" as Lighting
+  component "BDC" as BDC
+}
+
+package "ADAS Domain" {
+  component "ADAS\nControl ECU" as ADAS
+}
+
+package "Powertrain Domain" {
+  component "Transmission\nControl ECU" as Trans
+  component "Vehicle Speed\nSensor" as Speed
+}
+
+package "Chassis Domain" {
+  component "HVAC\nControl ECU" as HVAC
+  component "Wiper\nControl ECU" as Wiper
+}
+
+' 데이터 교환 (통신 방법은 명시하지 않음)
+vECU --> Lighting : "조명 색상·밝기\n제어 데이터"
+vECU --> Cluster : "경고 UI\n표시 데이터"
+vECU --> BDC : "시트 위치\n제어 데이터"
+
+ADAS --> vECU : "LDW/AEB 이벤트\n데이터"
+Trans --> vECU : "기어 상태\n데이터"
+Speed --> vECU : "차량 속도\n데이터"
+HVAC --> vECU : "실내 온도\n데이터"
+BDC --> vECU : "도어 개방 상태\n데이터"
+
+IVI --> vECU : "사용자 입력\n(모드, 색상 등)"
+vECU --> Cluster : "ADAS 상태 아이콘"
+
+note bottom of vECU
+  vECU는 모든 도메인의
+  데이터를 수신하여
+  조명·경고·UI 제어
+end note
+
+@enduml

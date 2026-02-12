@@ -1,0 +1,59 @@
+@startuml System_Workflow_Simple
+!theme plain
+
+skinparam activity {
+  BackgroundColor #E3F2FD
+  BorderColor #1976D2
+  FontSize 12
+  ArrowColor #1976D2
+}
+
+title 시스템 동작 흐름 (System Workflow)\nvECU 중심 처리 과정
+
+start
+
+:센서 데이터 수집;
+note right
+  - 차량 속도
+  - ADAS 이벤트
+  - 도어 상태
+  - 온도 정보
+end note
+
+:Gateway를 통해\nvECU로 전달;
+
+:vECU에서 데이터 처리;
+note right
+  **핵심 처리 로직**
+  - 상황 판단
+  - 모드 결정
+  - 제어 값 계산
+end note
+
+if (긴급 상황?) then (Yes)
+  :경고 우선 처리;
+  :Cluster 경고등 점등;
+else (No)
+  :일반 모드 처리;
+endif
+
+:제어 명령 생성;
+
+fork
+  :조명 제어;
+  note right: Ambient LED 색상/밝기
+fork again
+  :화면 표시;
+  note right: IVI/Cluster UI 업데이트
+fork again
+  :기타 제어;
+  note right: 시트, 와이퍼 등
+end fork
+
+:Gateway를 통해\n각 ECU로 전송;
+
+:제어 실행;
+
+stop
+
+@enduml

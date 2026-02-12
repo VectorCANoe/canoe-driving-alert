@@ -1,0 +1,75 @@
+@startuml Level1_Vehicle_System_Architecture
+!define RECTANGLE class
+
+skinparam componentStyle rectangle
+skinparam backgroundColor #FFFFFF
+skinparam component {
+  BackgroundColor<<gateway>> #FFD700
+  BackgroundColor<<infotainment>> #87CEEB
+  BackgroundColor<<body>> #90EE90
+  BackgroundColor<<adas>> #FFB6C1
+  BackgroundColor<<powertrain>> #FFA07A
+  BackgroundColor<<chassis>> #DDA0DD
+}
+
+title Level 1: 차량 전체 시스템 아키텍처\n(CAN 버스 구조 - 계층적 표현)
+
+package "Infotainment CAN (500 kbps)" {
+  [IVI Control ECU] <<infotainment>>
+  [vECU\n(IVI vECU)] <<infotainment>>
+  [Cluster ECU] <<infotainment>>
+}
+
+[Central Gateway] <<gateway>>
+
+package "Body CAN (500 kbps)" {
+  [Lighting Control ECU] <<body>>
+  [BDC] <<body>>
+  [Door Sensors] <<body>>
+}
+
+package "ADAS CAN (500 kbps)" {
+  [ADAS Control ECU] <<adas>>
+  [LDW Sensor] <<adas>>
+  [Rear Obstacle Sensor] <<adas>>
+  [AEB Sensor] <<adas>>
+}
+
+package "Powertrain CAN (500 kbps)" {
+  [Transmission Control ECU] <<powertrain>>
+  [Vehicle Speed Sensor] <<powertrain>>
+}
+
+package "Chassis CAN (500 kbps)" {
+  [HVAC Control ECU] <<chassis>>
+  [Wiper Control ECU] <<chassis>>
+}
+
+' CAN Bus 연결 (한 줄로)
+[IVI Control ECU] -down- [vECU\n(IVI vECU)]
+[vECU\n(IVI vECU)] -down- [Cluster ECU]
+[Cluster ECU] -down- [Central Gateway]
+
+[Central Gateway] -down- [Lighting Control ECU]
+[Lighting Control ECU] -right- [BDC]
+[BDC] -right- [Door Sensors]
+
+[Central Gateway] -down- [ADAS Control ECU]
+[ADAS Control ECU] -right- [LDW Sensor]
+[LDW Sensor] -right- [Rear Obstacle Sensor]
+[Rear Obstacle Sensor] -right- [AEB Sensor]
+
+[Central Gateway] -down- [Transmission Control ECU]
+[Transmission Control ECU] -right- [Vehicle Speed Sensor]
+
+[Central Gateway] -down- [HVAC Control ECU]
+[HVAC Control ECU] -right- [Wiper Control ECU]
+
+note right of [Central Gateway]
+  중앙 게이트웨이
+  - 모든 도메인 간 메시지 라우팅
+  - 메시지 필터링
+  - 버스 간 중계
+end note
+
+@enduml
