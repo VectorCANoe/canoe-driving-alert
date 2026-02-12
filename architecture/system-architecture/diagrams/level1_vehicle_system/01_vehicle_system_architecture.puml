@@ -74,6 +74,16 @@ package "Body Domain" as BODY #E6FFE6 {
 }
 
 ' ============================================
+' CLIMATE DOMAIN
+' ============================================
+
+package "Climate Domain" as CLIMATE #FFE6F0 {
+    component "HVAC Control Unit" as ECU_HVAC #LightPink {
+        portout "Climate_Data_Out" as HVAC_OUT
+    }
+}
+
+' ============================================
 ' INFOTAINMENT AND ADAS DOMAIN
 ' ============================================
 
@@ -102,6 +112,10 @@ package "Infotainment and ADAS Domain" as INFOTAINMENT #FFF9E6 {
         portin "Speed_Target_In" as SCC_IN
         portout "Cruise_Status_Out" as SCC_OUT
     }
+
+    component "Rear Camera ECU" as ECU_RCAM #Orange {
+        portout "Rear_Object_Out" as RCAM_OUT
+    }
 }
 
 ' ============================================
@@ -116,6 +130,8 @@ MDPS_OUT -down-> CGW_CAN_HS1_IN
 CAM_OUT -down-> CGW_CAN_HS2_IN : CAN-HS2\n500 kbps
 RADAR_OUT -down-> CGW_CAN_HS2_IN
 SCC_OUT -down-> CGW_CAN_HS2_IN
+RCAM_OUT -down-> CGW_CAN_HS2_IN
+HVAC_OUT -down-> CGW_CAN_HS2_IN
 IVI_CMD_OUT -down-> CGW_CAN_HS2_IN
 
 BCM_OUT -down-> CGW_CAN_LS_IN : CAN-LS\n125 kbps
@@ -144,12 +160,13 @@ legend right
     • CAN Low-Speed: Body and Comfort (125 kbps)
     • Ethernet: Diagnostics and OTA (100 Mbps)
 
-    **Total ECU Count**: 11
+    **Total ECU Count**: 13
     • Powertrain: 2 (EMS, TCU)
     • Chassis: 2 (ESP, MDPS)
     • Body: 1 (BCM)
+    • Climate: 1 (HVAC)
     • Infotainment: 2 (IVI, Cluster)
-    • ADAS: 3 (Camera, Radar, SCC)
+    • ADAS: 4 (Front Camera, Rear Camera, Radar, SCC)
     • Gateway: 1 (CGW)
 
     **CAN ID Allocation Strategy**:

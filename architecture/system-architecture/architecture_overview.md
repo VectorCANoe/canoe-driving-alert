@@ -41,9 +41,19 @@ package "vECU (Virtual Body Domain Controller)" #LightGreen {
         **AUTOSAR Classic**
         • Lighting Control
         • Safety Manager
+        • Climate Interface [NEW]
+        • ADAS Warning Mgr [NEW]
         • OTA Manager
         • Diagnostic Stack
     end note
+}
+
+package "Climate System" #LightYellow {
+    [HVAC_ECU] as HVAC
+}
+
+package "ADAS Sensors" #LightYellow {
+    [Rear_Camera_ECU] as RCAM
 }
 
 ' CAN Network
@@ -53,17 +63,19 @@ cloud "CAN Bus Network" as CAN {
 
 ' Connections
 CANoe --> CAN : Test Signals\nFault Injection
-IVI_HMI --> CAN : User Commands\n(Speed, Mode, Color)
-vBDC --> CAN : Actuator Control\n(Lighting, Warnings)
+IVI_HMI --> CAN : User Commands
+vBDC --> CAN : Actuator Control
+HVAC --> CAN : Cabin Temp,\nStatus
+RCAM --> CAN : Rear Objects
 CAN --> CAN_IF
 
 ' Annotations
 note bottom of CAN
     **Key CAN Signals**:
-    • Vehicle Speed (0x100)
-    • Gear Position (0x101)
-    • Door Status (0x102)
-    • Lighting Commands (0x200-0x20F)
+    • Vehicle Speed (0x100), Gear (0x384)
+    • Lighting Commands (0x410)
+    • Environment (0x520), HVAC (0x260)
+    • Rear ADAS (0x786)
 end note
 
 caption System Context - IVI vECU Development Environment
@@ -218,8 +230,13 @@ caption AUTOSAR Layered Architecture for vBDC_ECU (ISO 26262 Compliant)
 | Requirement ID | Category | ASIL | Component | Diagram Reference |
 |---|---|---|---|---|
 | REQ_IVI_001 | Functional | ASIL-B | Ambient_Light_Controller | [Lighting Control](diagrams/lighting_control_architecture.md) |
+| REQ_IVI_005 | Functional | QM | Ambient_Light_Controller | [Lighting Control](diagrams/lighting_control_architecture.md) |
 | REQ_IVI_002 | Safety | ASIL-C | Safety_Alert_Manager | [Safety System](diagrams/safety_system_architecture.md) |
+| REQ_IVI_029 | Safety | ASIL-B | Safety_Alert_Manager | [Safety System](diagrams/safety_system_architecture.md) |
 | REQ_IVI_003 | Functional | ASIL-A | Dashboard_Lighting | [Lighting Control](diagrams/lighting_control_architecture.md) |
+| REQ_IVI_051 | Functional | QM | IVI_HMI | [UI Architecture](diagrams/docs/lighting_control_architecture.md) |
+| REQ_IVI_053 | Functional | QM | IVI_HMI | [UI Architecture](diagrams/docs/lighting_control_architecture.md) |
+| REQ_IVI_054 | Functional | QM | IVI_HMI | [UI Architecture](diagrams/docs/lighting_control_architecture.md) |
 | REQ_IVI_004 | Functional | QM | IVI_Sync_Manager | [Lighting Control](diagrams/lighting_control_architecture.md) |
 | REQ_IVI_007 | Safety | ASIL-D | Door_Warning_Logic | [Safety System](diagrams/safety_system_architecture.md) |
 | REQ_IVI_008 | Safety | ASIL-C | Auto_Recovery_Manager | [Safety System](diagrams/safety_system_architecture.md) |

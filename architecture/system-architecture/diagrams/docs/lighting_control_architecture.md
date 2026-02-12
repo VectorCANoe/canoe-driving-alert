@@ -7,6 +7,9 @@
 - **REQ_IVI_005**: 온도연동 조명제어 (QM, <5% 오차)
 - **REQ_IVI_017**: 후진 시 후방 조명 자동 제어 (ASIL-B, ≤150ms)
 - **REQ_IVI_042**: IVI 모드 선택 시 조명 테마 자동 적용 (QM, <100ms)
+- **REQ_IVI_051**: 조도 센서 연동 자동 밝기 조절 (QM)
+- **REQ_IVI_053**: 시트 점유 상태 동기화 (QM)
+- **REQ_IVI_054**: 안전벨트 착용 상태 동기화 (QM)
 
 ---
 
@@ -120,11 +123,12 @@ package "Lighting Control Subsystem" {
         note bottom of CAN
             **CAN Signals**:
             • Vehicle_Speed (0x100)
-            • Drive_Mode (0x101)
-            • Door_Status (0x102)
-            • Gear_Position (0x103)
-            • HVAC_Temp (0x104)
-            • IVI_Color_Cmd (0x200)
+            • Drive_Mode (0x256)
+            • Door_Status (0x512)
+            • Gear_Position (0x384)
+            • HVAC_Temp (0x260)
+            • Ambient_Light_Level (0x520)
+            • IVI_Color_Cmd (0x410)
         end note
     }
 }
@@ -336,9 +340,12 @@ end note
 | REQ_IVI_001 | Sport Mode Speed-Linked | Color Transition <500ms | ASIL-B | ✅ Implemented |
 | REQ_IVI_003 | Door-Linked UX | Response <400ms | ASIL-A | ✅ Implemented |
 | REQ_IVI_004 | IVI Color Sync | Sync Rate >99% | QM | ✅ Implemented |
-| REQ_IVI_005 | Temperature-Linked | Error <5% | QM | 🔄 Phase 2 |
+| REQ_IVI_005 | Temperature-Linked | Error <5% | QM | ✅ Implemented |
 | REQ_IVI_017 | Reverse Rear Light | Delay ≤150ms | ASIL-B | ✅ Implemented |
 | REQ_IVI_042 | Theme Auto-Apply | Response <100ms | QM | ✅ Implemented |
+| REQ_IVI_051 | Environment-Linked | Sync Rate >95% | QM | ✅ Implemented |
+| REQ_IVI_053 | Seat Occupancy | Sync Rate >99% | QM | ✅ Implemented |
+| REQ_IVI_054 | Seat Belt Status | Sync Rate >99% | QM | ✅ Implemented |
 
 ---
 

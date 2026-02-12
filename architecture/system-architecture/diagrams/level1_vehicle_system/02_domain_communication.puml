@@ -29,6 +29,7 @@ package "Chassis Domain" as CH #LightGreen {
 
 package "ADAS Domain" as AD #LightCyan {
     [F_CAMERA] as CAM
+    [R_CAMERA] as RCAM
     [BSD_RADAR] as BSD
     [SCC] as SCC
     [SPAS] as SPAS
@@ -41,6 +42,10 @@ package "Body Domain" as BD #LightPink {
     [FATC] as FATC
     [TPMS] as TPMS
     [SMK] as SMK
+}
+
+package "Climate Domain" as CL #LightGoldenRodYellow {
+    [HVAC] as HVAC
 }
 
 package "Infotainment Domain" as IT #LightSalmon {
@@ -73,8 +78,10 @@ CAN1 --> CGW : Route to\nother networks
 cloud "CAN-HS #2\n500 kbps" as CAN2 #LightGray
 
 CAM --> CAN2 : LDW Warning\nLKA Status\nLane Detection
+RCAM --> CAN2 : Rear Objects ⭐\nCollision Risk
 BSD --> CAN2 : Blind Spot\nWarning
 SCC --> CAN2 : Cruise Control\nSpeed Target
+HVAC --> CAN2 : Cabin Temp ⭐\nHVAC Status
 IVI --> CAN2 : Media Info\nAmbient Light ⭐
 CLU --> CAN2 : Display Data\nWarning Lights
 HUD --> CAN2 : Speed Display\nNavigation
@@ -106,6 +113,10 @@ note right of CGW
   CAN-HS #2 → CAN-LS:
   • Ambient Light (IVI → BCM) ⭐
   • User Settings (IVI → BCM)
+
+  CAN-HS #2 → IVI:
+  • Cabin Temp (HVAC → IVI) ⭐
+  • Rear Objects (RCAM → IVI) ⭐
 
   CAN-HS #1 → CAN-LS:
   • ESP Status (ESP → BCM)

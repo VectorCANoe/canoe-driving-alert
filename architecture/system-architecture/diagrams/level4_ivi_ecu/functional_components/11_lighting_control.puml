@@ -64,6 +64,34 @@ package "Lighting Control Subsystem" {
                 • QM
             end note
         }
+
+        component "Auto_Brightness_Controller" as ABC #LightCyan {
+            portin "Ambient_Light_In" as ABC_LIGHT
+            portout "Brightness_Adjust_Out" as ABC_BRIGHT
+
+            note right of ABC
+                **REQ_IVI_051** ⭐
+                Ambient Light Sensor
+                • Auto brightness (0-100%)
+                • Sync Rate: >95%
+                • Response: <500ms
+                • QM
+            end note
+        }
+
+        component "Temp_Color_Controller" as TCC #LightPink {
+            portin "Cabin_Temp_In" as TCC_TEMP
+            portout "Color_Adjust_Out" as TCC_COLOR
+
+            note right of TCC
+                **REQ_IVI_005** ⭐
+                Temperature-Linked Lighting
+                • Warm → Cool colors (blue)
+                • Cold → Warm colors (red)
+                • Error: <5%
+                • QM
+            end note
+        }
     }
 
     ' RTE Layer
@@ -75,6 +103,8 @@ package "Lighting Control Subsystem" {
         DLC_LED --> PWM
         ISM_OUT --> CSP
         TM_PKG --> CSP
+        ABC_BRIGHT --> CSP
+        TCC_COLOR --> CSP
 
         CSP --> ALC_SPEED
         CSP --> ALC_MODE
@@ -83,6 +113,8 @@ package "Lighting Control Subsystem" {
         CSP --> DLC_GEAR
         CSP --> ISM_CMD
         CSP --> TM_MODE
+        CSP --> ABC_LIGHT
+        CSP --> TCC_TEMP
     }
 
     ' BSW Layer
@@ -105,11 +137,12 @@ package "Lighting Control Subsystem" {
         note bottom of CAN
             **CAN Signals**:
             • Vehicle_Speed (0x100)
-            • Drive_Mode (0x101)
-            • Door_Status (0x102)
-            • Gear_Position (0x103)
-            • HVAC_Temp (0x104)
-            • IVI_Color_Cmd (0x200)
+            • Drive_Mode (0x256)
+            • Door_Status (0x512)
+            • Gear_Position (0x384)
+            • HVAC_Status (0x260) ⭐
+            • BCM_SensorStatus (0x520) ⭐
+            • IVI_Color_Cmd (0x410)
         end note
     }
 }
@@ -178,7 +211,7 @@ participant "LED_Actuator" as LED
 
 == Door Open Scenario (REQ_IVI_003) ==
 
-Driver -> CAN : Door Open Signal (0x102)
+Driver -> CAN : Door Open Signal (0x512)
 activate CAN
 CAN -> DLC : Door_Status = OPEN
 activate DLC
@@ -203,7 +236,7 @@ end note
 
 == Reverse Gear Scenario (REQ_IVI_017) ==
 
-Driver -> CAN : Gear Position = R (0x103)
+Driver -> CAN : Gear Position = R (0x384)
 activate CAN
 CAN -> DLC : Gear_Position = REVERSE
 activate DLC

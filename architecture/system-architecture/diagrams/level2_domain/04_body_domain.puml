@@ -15,14 +15,21 @@ package "Body Domain" {
         portin p_door_sensors
         portin p_light_switch
         portin p_ambient_cmd
+        portin p_ambient_sensor
+        portin p_rain_sensor
+        portin p_seat_sensors
         portout p_door_status
         portout p_light_control
         portout p_ambient_feedback
+        portout p_sensor_status
+        portout p_seat_status
 
         [Door Lock Control]
         [Light Control]
         [Wiper Control]
         [Ambient Light Controller]
+        [Environment Sensor Manager]
+        [Seat Occupancy Detector]
     }
 
     component "DATC\n(Dual Auto Temperature Control)" as DATC {
@@ -93,9 +100,13 @@ cloud "CAN-LS\n125 kbps" as CAN3
 ' BCM Messages
 BCM --> CAN3 : **BCM_LightControl (0x520)**\n• Headlight_Status\n• Ambient_Light_Active\n• Ambient_R/G/B_Actual\nCycle: 100ms, QM
 
+BCM --> CAN3 : **BCM_SensorStatus (0x520)** ⭐\n• Ambient_Light_Level (0-100%)\n• Rain_Sensor_Level (0-100%)\n• Wiper_Status (enum 0-7)\n• Headlight_Auto_Status\nCycle: 200ms, QM
+
+BCM --> CAN3 : **BCM_SeatStatus (0x522)** ⭐\n• Front_Left_Occupied (bool)\n• Rear_Seat_Occupancy (enum 0-7)\nCycle: 500ms, QM
+
 CAN3 --> BCM : **IVI_AmbientLight (0x400)**\n• Ambient_Light_RGB\n• Brightness, Theme\n(via Gateway from CAN-HS #2)
 
-BCM --> CAN3 : **BCM_DoorStatus**\n• Door_FL/FR/RL/RR_Open\n• Trunk_Open\nCycle: 100ms
+BCM --> CAN3 : **BCM_DoorStatus (0x512)**\n• Door_FL/FR/RL/RR_Open\n• Trunk_Open\nCycle: 100ms
 
 ' DATC Messages
 DATC --> CAN3 : **DATC11**\n• Target_Temp_Driver/Passenger\n• Fan_Speed\n• Air_Distribution\nCycle: 500ms
@@ -133,10 +144,15 @@ note right of BCM
   • Ambient lighting control
   • Wiper control
   • Power window control
+  • Environment sensing ⭐
+  • Seat occupancy detection ⭐
 
   **Safety Level**: QM
-  **Cycle Time**: 100ms
-  **Feature**: Ambient lighting
+  **Cycle Time**: 100-500ms
+  **New Features**:
+  • Ambient light sensor
+  • Rain sensor
+  • Seat occupancy
 end note
 
 note right of TPMS

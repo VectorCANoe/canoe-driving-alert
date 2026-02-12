@@ -3,9 +3,9 @@
 ## 📋 Overview
 
 **Document Purpose**: Detailed specification of all ECUs in the vehicle system architecture
-**Total ECU Count**: 11
+**Total ECU Count**: 13
 **Architecture Type**: Domain-Based with Central Gateway
-**Date**: 2026-02-11
+**Date**: 2026-02-12
 
 ---
 
@@ -128,8 +128,14 @@
 | Door_Status_FR | 0x501 | 2 bit | enum | 0-3 | 100ms |
 | Door_Status_RL | 0x502 | 2 bit | enum | 0-3 | 100ms |
 | Door_Status_RR | 0x503 | 2 bit | enum | 0-3 | 100ms |
-| Window_Position_FL | 0x520 | 8 bit | % | 0-100 | 200ms |
+| Ambient_Light_Level | 0x520 | 8 bit | % | 0-100 | 200ms |
+| Rain_Sensor_Level | 0x520 | 8 bit | % | 0-100 | 200ms |
+| Wiper_Status | 0x520 | 3 bit | enum | 0-7 | 200ms |
+| Headlight_Auto_Status | 0x520 | 1 bit | bool | 0/1 | 200ms |
 | Central_Lock_Status | 0x521 | 1 bit | bool | 0/1 | 100ms |
+| Front_Left_Occupied | 0x522 | 1 bit | bool | 0/1 | 500ms |
+| Rear_Seat_Occupancy | 0x522 | 3 bit | enum | 0-7 | 500ms |
+
 
 **Key Signals (Rx)**:
 | Signal Name | CAN ID | Source | Function |
@@ -143,10 +149,34 @@
 - Door lock/unlock
 - Window control
 - Wiper control
+- **Environment Sensing** (Ambient light, Rain sensor)
+- **Passenger Detection** (Seat occupancy, Seat belt)
 
 ---
 
-### 4. Infotainment & ADAS Domain (5 ECUs)
+### 4. Climate Domain (1 ECU) [NEW]
+
+#### 4.1 HVAC Control Unit (HVAC)
+- **CAN ID Range**: 0x260-0x26F
+- **Network**: CAN High-Speed 2 (500 kbps)
+- **ASIL Level**: QM
+- **Cycle Time**: 200ms
+
+**Key Signals (Tx)**:
+| Signal Name | CAN ID | Length | Unit | Range | Cycle |
+|------------|--------|--------|------|-------|-------|
+| Cabin_Temperature | 0x260 | 8 bit | °C | -40 to 80 | 200ms |
+| Target_Temperature | 0x260 | 8 bit | °C | -40 to 80 | 200ms |
+| HVAC_Mode | 0x260 | 4 bit | enum | 0-7 | 200ms |
+| Fan_Speed | 0x260 | 4 bit | enum | 0-7 | 200ms |
+
+**Functions**:
+- Climate control
+- Cabin temperature management
+
+---
+
+### 5. Infotainment & ADAS Domain (6 ECUs)
 
 #### 4.1 IVI Head Unit ⭐ (Project Focus)
 - **Full Name**: In-Vehicle Infotainment
@@ -276,6 +306,28 @@
 **Functions**:
 - Adaptive Cruise Control (ACC)
 - Speed limit assist
+
+---
+
+#### 4.6 Rear Camera ECU (Parking Assist) [NEW]
+- **Full Name**: Rear-Facing Camera (ADAS/Parking)
+- **CAN ID Range**: 0x780-0x78F
+- **Network**: CAN High-Speed 2 (500 kbps)
+- **ASIL Level**: ASIL-B
+- **Cycle Time**: 50ms
+
+**Key Signals (Tx)**:
+| Signal Name | CAN ID | Length | Unit | Range | Cycle |
+|------------|--------|--------|------|-------|-------|
+| Rear_Object_Distance | 0x786 | 16 bit | m | 0-200 | 50ms |
+| Rear_Object_Velocity | 0x786 | 16 bit | km/h | -100 to 100 | 50ms |
+| Rear_Object_Type | 0x786 | 4 bit | enum | 0-7 | 50ms |
+| Rear_Collision_Risk | 0x786 | 8 bit | % | 0-100 | 50ms |
+
+**Functions**:
+- Rear object detection
+- Parking assistance
+- Rear collision warning
 
 ---
 

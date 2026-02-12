@@ -8,8 +8,10 @@ title Level 3: Ambient Lighting Signal Flow\n(IVI → Gateway → BCM → Gatewa
 
 participant "User" as User #FFE6E6
 participant "IVI\n(CAN-HS #2)" as IVI #6699FF
+participant "HVAC\n(CAN-HS #2)" as HVAC #FFCCFF
 participant "Gateway\n(CGW)" as GW #FFCC66
 participant "BCM\n(CAN-LS)" as BCM #99FF99
+participant "Ambient Sensor" as SENSOR #FFFFCC
 participant "LED Drivers" as LED #CCCCCC
 participant "CLU\n(CAN-HS #2)" as CLU #6699FF
 
@@ -188,6 +190,125 @@ note over IVI, BCM
     2. AliveCounter timeout → BCM uses last valid value
     3. LED driver fault → BCM reports error in BCM_LightControl
     4. Gateway routing failure → Timeout detection (3x cycle time)
+end note
+
+== ⭐ Auto Brightness Control (Ambient Light Sensor) ==
+
+SENSOR -> BCM : Ambient light level\n(Analog voltage)
+activate BCM
+BCM -> BCM : Convert to percentage\n(0-100%)
+
+BCM -> BCM : Prepare BCM_SensorStatus (0x520)
+note right of BCM
+    **Message**: BCM_SensorStatus (0x520)
+    **Signals**:
+    • Ambient_Light_Level = 30 (30% - Dark)
+    • Rain_Sensor_Level = 0
+    • Wiper_Status = 0 (OFF)
+    • Headlight_Auto_Status = 1 (ON)
+    **Cycle**: 200ms
+    **Network**: CAN-LS
+end note
+
+BCM -> GW : BCM_SensorStatus (0x520)\n[CAN-LS, 200ms]
+deactivate BCM
+
+activate GW
+GW -> GW : Route to CAN-HS #2
+GW -> IVI : BCM_SensorStatus (0x520)\n[CAN-HS #2, routed]
+deactivate GW
+
+activate IVI
+IVI -> IVI : Ambient_Light_Level = 30%\n(Dark environment)
+IVI -> IVI : Auto-increase brightness\n60% → 90%
+
+IVI -> IVI : Update IVI_AmbientLight (0x400)
+note right of IVI
+    **Auto-Adjusted**:
+    • Brightness = 90 (auto-increased)
+    • Auto_Mode = 1 (ENABLED)
+end note
+
+IVI -> GW : IVI_AmbientLight (0x400)\n[Updated brightness]
+deactivate IVI
+
+activate GW
+GW -> BCM : Route to CAN-LS
+deactivate GW
+
+activate BCM
+BCM -> LED : Set brightness 90%\n(Auto-adjusted)
+activate LED
+LED -> LED : PWM control at 90%
+deactivate LED
+BCM -> User : Brighter ambient light\n(Dark environment)
+deactivate BCM
+
+== ⭐ Temperature-Linked Lighting (HVAC Integration) ==
+
+HVAC -> HVAC : Read cabin temperature
+activate HVAC
+HVAC -> HVAC : Prepare HVAC_Status (0x260)
+note right of HVAC
+    **Message**: HVAC_Status (0x260)
+    **Signals**:
+    • Cabin_Temperature = 28 (28°C - Warm)
+    • Target_Temperature = 22
+    • HVAC_Mode = 2 (COOLING)
+    • Fan_Speed = 5
+    **Cycle**: 200ms
+    **Network**: CAN-HS #2
+end note
+
+HVAC -> GW : HVAC_Status (0x260)\n[CAN-HS #2, 200ms]
+deactivate HVAC
+
+activate GW
+GW -> IVI : HVAC_Status (0x260)\n[Routed]
+deactivate GW
+
+activate IVI
+IVI -> IVI : Cabin_Temp = 28°C (Warm)\n→ Shift color to COOL tone
+
+IVI -> IVI : Update IVI_AmbientLight (0x400)
+note right of IVI
+    **Temp-Linked Color**:
+    • Ambient_Light_R = 0
+    • Ambient_Light_G = 150
+    • Ambient_Light_B = 255 (Cool Blue)
+    • Temp_Linked_Mode = 1 (ENABLED)
+end note
+
+IVI -> GW : IVI_AmbientLight (0x400)\n[Temp-adjusted color]
+deactivate IVI
+
+activate GW
+GW -> BCM : Route to CAN-LS
+deactivate GW
+
+activate BCM
+BCM -> LED : Set RGB(0, 150, 255)\n(Cool blue for warm cabin)
+activate LED
+LED -> User : Cool blue ambient light\n(Visual cooling effect)
+deactivate LED
+deactivate BCM
+
+note over User, CLU
+    **Auto Lighting Features (REQ_005, REQ_051)**:
+
+    1. Ambient Light Sensor (REQ_051):
+       • BCM senses environment (0-100%)
+       • IVI auto-adjusts brightness
+       • Dark → Brighter, Bright → Dimmer
+
+    2. Temperature Linking (REQ_005):
+       • HVAC reports cabin temp
+       • IVI adjusts color tone
+       • Warm cabin → Cool colors (blue)
+       • Cold cabin → Warm colors (red/orange)
+
+    **Accuracy**: <5% error
+    **Response Time**: <500ms
 end note
 
 @enduml

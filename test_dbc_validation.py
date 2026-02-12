@@ -37,13 +37,13 @@ def test_dbc_syntax():
         print(f"   - Signals: {total_signals}")
 
         # ECU count validation
-        if len(db.nodes) != 11:
-            print(f"❌ Expected 11 ECUs, got {len(db.nodes)}")
+        if len(db.nodes) != 13:
+            print(f"❌ Expected 13 ECUs, got {len(db.nodes)}")
             return False
 
         # Message count validation
-        if len(db.messages) < 15:
-            print(f"❌ Expected >= 15 messages, got {len(db.messages)}")
+        if len(db.messages) < 20:
+            print(f"❌ Expected >= 20 messages, got {len(db.messages)}")
             return False
 
         # Signal count validation
@@ -69,7 +69,7 @@ def test_ecu_names():
     db = cantools.database.load_file(str(dbc_path))
 
     required_ecus = ['EMS', 'TCU', 'ESP', 'MDPS', 'BCM', 'IVI',
-                     'Cluster', 'Camera', 'Radar', 'SCC', 'CGW']
+                     'Cluster', 'Camera', 'Rear_Camera', 'Radar', 'SCC', 'CGW', 'HVAC']
 
     missing_ecus = []
     for ecu in required_ecus:
@@ -83,7 +83,7 @@ def test_ecu_names():
         print(f"\n❌ Missing {len(missing_ecus)} ECUs: {', '.join(missing_ecus)}")
         return False
 
-    print("\n✅ All 11 ECUs present")
+    print("\n✅ All 13 ECUs present")
     return True
 
 
@@ -103,12 +103,14 @@ def test_can_id_ranges():
         'ESP': (0x200, 0x27F),
         'MDPS': (0x280, 0x2FF),
         'Camera': (0x300, 0x33F),
+        'Rear_Camera': (0x300, 0x33F),  # Same range as Camera
         'Radar': (0x340, 0x37F),
         'SCC': (0x380, 0x3BF),
         'IVI': (0x400, 0x47F),
         'Cluster': (0x480, 0x4FF),
         'BCM': (0x500, 0x57F),
         'CGW': (0x700, 0x7FF),
+        'HVAC': (0x100, 0x17F),  # Same range as EMS (climate control)
     }
 
     errors = []

@@ -64,6 +64,15 @@ package "ADAS Domain" {
         [Object Recognition]
     }
 
+    component "R_CAMERA\n(Rear Camera)" as R_CAMERA {
+        portin p_rear_image
+        portout p_rear_object_data
+        portout p_collision_risk
+
+        [Rear Object Detection]
+        [Parking Assist]
+    }
+
     component "BSD_RADAR\n(Blind Spot Radar)" as BSD_RADAR {
         portin p_radar_echo
         portout p_obstacle_data
@@ -124,6 +133,7 @@ CUBIS --> ETH : Video Stream
 
 ' ADAS Connections
 F_CAMERA --> CAN2
+R_CAMERA --> CAN2 : ⭐ Rear Object Data
 BSD_RADAR --> CAN2
 SCC --> CAN2
 SPAS --> CAN2

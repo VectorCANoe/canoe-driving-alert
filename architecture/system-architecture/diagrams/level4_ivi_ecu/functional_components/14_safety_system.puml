@@ -9,15 +9,17 @@ package "Safety Management Subsystem" #FFCCCC {
         component "Reverse_Safety_Manager" as RSM #Red {
             portin "Gear_Position_In" as RSM_GEAR
             portin "Vehicle_Speed_In" as RSM_SPEED
+            portin "Rear_Object_In" as RSM_ROBJ
             portout "Safety_UI_Cmd" as RSM_UI
             portout "Seat_Light_Cmd" as RSM_LIGHT
             portout "Audio_Warning_Cmd" as RSM_AUDIO
 
             note right of RSM
-                **REQ_IVI_002 (ASIL-C)**
+                **REQ_IVI_002, 029 (ASIL-B/C)**
                 Reverse Safety Alert
                 • Detect: D → R transition
-                • Response: <300ms
+                • Rear object detection ⭐
+                • Response: <300ms (UI), <100ms (Rear warning)
                 • UI + Seat Light ON
                 • Duration: ≥3 seconds
                 • Fallback: Audio warning
@@ -90,6 +92,7 @@ package "Safety Management Subsystem" #FFCCCC {
 
         SSP --> RSM_GEAR
         SSP --> RSM_SPEED
+        SSP --> RSM_ROBJ
         SSP --> DWL_DOOR
         SSP --> DWL_REV
         SSP --> ARM_COND
@@ -136,9 +139,10 @@ package "Safety Management Subsystem" #FFCCCC {
 
         note bottom of CAN_SAFE
             **Safety CAN Signals**:
-            • Gear_Position (0x103) - ASIL-D
-            • Door_Status (0x102) - ASIL-D
+            • Gear_Position (0x384) - ASIL-D
+            • Door_Status (0x512) - ASIL-D
             • Vehicle_Speed (0x100) - ASIL-B
+            • Rear_Objects (0x786) - ASIL-B ⭐
             • ADAS_Events (0x300-0x30F) - ASIL-C/D
         end note
     }
@@ -319,7 +323,7 @@ note over DWL: Reverse State: ACTIVE\nDoor Status: CLOSED
 
 == Door Open Hazard Detected ==
 
-DOOR -> CAN : Door_Status = OPEN (0x102)
+DOOR -> CAN : Door_Status = OPEN (0x512)
 activate CAN
 note right: **ASIL-D Critical Signal**\nDetection Rate: >99%
 

@@ -10,6 +10,7 @@ package "ADAS Integration Subsystem" #FFEEEE {
             portin "LDW_Event_In" as ASC_LDW
             portin "AEB_Event_In" as ASC_AEB
             portin "BSD_Event_In" as ASC_BSD
+            portin "Rear_Event_In" as ASC_REAR
             portout "Priority_Event_Out" as ASC_PRIORITY
 
             note right of ASC
@@ -51,7 +52,7 @@ package "ADAS Integration Subsystem" #FFEEEE {
 
         component "BSD_Handler" as BSD #Orange {
             portin "BSD_Object_In\\n[CAN 0x304]" as BSD_IN
-            portin "Door_Status_In\\n[CAN 0x102]" as BSD_DOOR
+            portin "Door_Status_In\\n[CAN 0x512]" as BSD_DOOR
             portout "Blind_Spot_Warning_Out" as BSD_OUT
 
             note right of BSD
@@ -60,6 +61,20 @@ package "ADAS Integration Subsystem" #FFEEEE {
                 • Response: <70ms
                 • Door Open Integration
                 • Side Mirror Warning
+            end note
+        }
+
+        component "Rear_Camera_Handler" as RCH #Orange {
+            portin "Rear_Object_In\\n[CAN 0x786]" as RCH_IN
+            portin "Gear_Position_In\\n[CAN 0x384]" as RCH_GEAR
+            portout "Rear_Warning_Out" as RCH_OUT
+
+            note right of RCH
+                **REQ_IVI_029 (ASIL-B)** ⭐
+                Rear Object Warning
+                • Response: <100ms
+                • Reverse Gear Integration
+                • Collision Risk Alert
             end note
         }
 
@@ -111,6 +126,7 @@ package "ADAS Integration Subsystem" #FFEEEE {
         LDW_OUT --> ASC_LDW
         AEB_OUT --> ASC_AEB
         BSD_OUT --> ASC_BSD
+        RCH_OUT --> ASC_REAR
         ASC_PRIORITY --> PA_IN
         PA_PRIMARY --> UFM_EVENT
     }
@@ -127,6 +143,8 @@ package "ADAS Integration Subsystem" #FFEEEE {
         ADAS_SP --> RISK_IN
         ADAS_SP --> BSD_IN
         ADAS_SP --> BSD_DOOR
+        ADAS_SP --> RCH_IN
+        ADAS_SP --> RCH_GEAR
 
         PA_PRIMARY --> WARN_OP
         PA_SECONDARY --> WARN_OP
@@ -168,11 +186,12 @@ package "ADAS Integration Subsystem" #FFEEEE {
             • 0x303: Collision_Risk [uint8, 10ms]
             • 0x304: BSD_Object_Left [uint8, 50ms]
             • 0x305: BSD_Object_Right [uint8, 50ms]
+            • 0x786: Rear_Camera_Objects [struct, 50ms] ⭐
 
             **ASIL Levels**:
             • AEB: ASIL-D
             • LDW: ASIL-C
-            • BSD: ASIL-B
+            • BSD, Rear Camera: ASIL-B
         end note
     }
 }

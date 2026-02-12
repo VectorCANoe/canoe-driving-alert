@@ -8,6 +8,7 @@
 - **REQ_IVI_020**: 후진 경고음 제어 (ASIL-B, <100ms)
 - **REQ_IVI_022**: 도어 오픈 시 후진 UX 제한 (ASIL-B, <100ms)
 - **REQ_IVI_028-031**: ADAS 연계 시각적 경고 (ASIL-C/D, <80ms)
+- **REQ_IVI_029**: 후진 시 후방 장애물 감지 및 경고 (ASIL-B, <100ms)
 - **REQ_IVI_051**: 야간 승하차 안전 조명 시스템 (ASIL-B, <80ms)
 - **REQ_IVI_054**: 어린이 보호 모드 통합 UX (ASIL-B, <200ms)
 
@@ -154,9 +155,10 @@ package "Safety Management Subsystem" #FFCCCC {
 
         note bottom of CAN_SAFE
             **Safety CAN Signals**:
-            • Gear_Position (0x103) - ASIL-D
-            • Door_Status (0x102) - ASIL-D
+            • Gear_Position (0x384) - ASIL-D
+            • Door_Status (0x512) - ASIL-D
             • Vehicle_Speed (0x100) - ASIL-B
+            • Rear_Objects (0x786) - ASIL-B
             • ADAS_Events (0x300-0x30F) - ASIL-C/D
         end note
     }
@@ -445,6 +447,7 @@ end note
 | REQ_IVI_020 | Reverse Warning Sound | <100ms | ASIL-B | Integration Test |
 | REQ_IVI_022 | Door UX Restriction | <100ms | ASIL-B | FI Test |
 | REQ_IVI_028 | Lane Departure Warning | <80ms | ASIL-C | SIL + FI |
+| REQ_IVI_029 | Rear Object Warning | <100ms | ASIL-B | SIL + FI |
 | REQ_IVI_030 | Emergency Braking | <50ms | **ASIL-D** | HIL + FI |
 | REQ_IVI_051 | Night Safety Lighting | <80ms | ASIL-B | HIL + FI |
 | REQ_IVI_054 | Child Protection Mode | <200ms | ASIL-B | HIL |
