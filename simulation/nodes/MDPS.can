@@ -1,0 +1,47 @@
+/*@@=================================================================
+ * CANoe CAPL Node: MDPS (Motor Driven Power Steering)
+ *==================================================================@@*/
+
+includes {}
+
+variables
+{
+  float gSteeringAngle = 0.0;      // -720 to +720 degrees
+  float gSteeringTorque = 0.0;
+  float gSteeringRate = 0.0;
+  int gMDPS_Status = 0;
+
+  byte gAliveCounter = 0;
+  msTimer tSteering;
+}
+
+on start
+{
+  write("MDPS (Motor Driven Power Steering) Started");
+  setTimer(tSteering, 20);  // 20ms
+}
+
+on timer tSteering
+{
+  message MDPS_SteeringStatus msg;
+
+  msg.Steering_Angle = gSteeringAngle;
+  msg.Steering_Torque = gSteeringTorque;
+  msg.Steering_Rate = gSteeringRate;
+  msg.MDPS_Status = gMDPS_Status;
+  msg.AliveCounter = gAliveCounter;
+  msg.Checksum = 0;
+
+  gAliveCounter = (gAliveCounter + 1) & 0x0F;
+
+  output(msg);
+  setTimer(tSteering, 20);
+}
+
+on key '<' { gSteeringAngle -= 45; write("Steering: %.1f°", gSteeringAngle); }
+on key '>' { gSteeringAngle += 45; write("Steering: %.1f°", gSteeringAngle); }
+
+on stopMeasurement
+{
+  cancelTimer(tSteering);
+}

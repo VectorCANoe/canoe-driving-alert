@@ -1,0 +1,50 @@
+/*@@=================================================================
+ * CANoe CAPL Node: Radar (Blind Spot Detection)
+ *==================================================================@@*/
+
+includes {}
+
+variables
+{
+  int gBSD_Left = 0;
+  int gBSD_Right = 0;
+  float gObjectDistance_L = 50.0;
+  float gObjectDistance_R = 50.0;
+
+  byte gAliveCounter = 0;
+  msTimer tRadar;
+}
+
+on start
+{
+  write("Radar (Blind Spot Detection) Started");
+  setTimer(tRadar, 50);  // 50ms
+}
+
+on timer tRadar
+{
+  message Radar_BSD msg;
+
+  msg.BSD_Object_Left = gBSD_Left;
+  msg.BSD_Object_Right = gBSD_Right;
+  msg.Object_Distance_L = gObjectDistance_L;
+  msg.Object_Distance_R = gObjectDistance_R;
+  msg.Object_Velocity_L = 0.0;
+  msg.Object_Velocity_R = 0.0;
+  msg.AliveCounter = gAliveCounter;
+  msg.Checksum = 0;
+
+  gAliveCounter = (gAliveCounter + 1) & 0x0F;
+
+  output(msg);
+
+  setEnvironmentVariable("ADAS_BSD_Left", gBSD_Left);
+  setEnvironmentVariable("ADAS_BSD_Right", gBSD_Right);
+
+  setTimer(tRadar, 50);
+}
+
+on stopMeasurement
+{
+  cancelTimer(tRadar);
+}

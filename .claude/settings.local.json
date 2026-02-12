@@ -27,7 +27,16 @@
       "Bash( grep -r \"Door.*0x\\\\|0x.*Door\" /Users/juns/code/work/mobis/PBL/architecture/system-architecture/diagrams/level4_ivi_ecu/functional_components/*.puml)",
       "Bash( grep -r \"Gear.*0x\\\\|0x.*Gear\" /Users/juns/code/work/mobis/PBL/architecture/system-architecture/diagrams/level4_ivi_ecu/functional_components/*.puml)",
       "Bash( grep -r \"HVAC.*0x\\\\|0x260\" /Users/juns/code/work/mobis/PBL/architecture/system-architecture/diagrams/level4_ivi_ecu/functional_components/*.puml)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(else echo \"Folder not found\")",
+      "Bash(fi)",
+      "mcp__canoe-advanced__open_configuration",
+      "mcp__canoe-advanced__compile_capl_nodes",
+      "mcp__canoe-advanced__get_signal_value",
+      "mcp__canoe-advanced__get_measurement_status",
+      "mcp__canoe-advanced__stop_measurement",
+      "mcp__canoe-advanced__start_measurement",
+      "mcp__canoe-advanced__get_can_bus_statistics"
     ]
   },
   "enableAllProjectMcpServers": true,
