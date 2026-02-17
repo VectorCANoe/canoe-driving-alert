@@ -48,7 +48,7 @@
   - 유효성 검사 (CRC, Alive Counter)
 - **Timing**: 수신 처리 시간 ≤ 1ms
 - **Safety Mechanism**: CRC Check, Timeout Detection (30ms)
-- **Verification**: SWE.5 (Unit Test), SWE.6 (Integration Test)
+- **Verification**: SWE.4 (Unit Test), SWE.5 (Integration Test)
 
 ---
 
@@ -251,14 +251,14 @@
 
 ## 7. ASPICE SWE.1 Compliance
 
-**Base Practices**:
-- ✅ BP1: Software requirements specified
-- ✅ BP2: System requirements allocated to software
-- ✅ BP3: Software requirements analyzed for correctness and testability
-- ✅ BP4: Consistency ensured (System ↔ Software)
-- ✅ BP5: Communication agreed with stakeholders
-- ✅ BP6: Traceability established
-- ✅ BP7: Requirements baselined
+**Base Practices** (ASPICE PAM 3.1 SWE.1 — 7개 전체):
+- ✅ BP1: Specify software requirements (소프트웨어 요구사항 명세)
+- ✅ BP2: Structure software requirements (계층적 구조화)
+- ✅ BP3: Analyze software requirements for correctness and testability (정확성/시험가능성 분석)
+- ✅ BP4: Analyze the impact on the operating environment (운영 환경 영향 분석)
+- ✅ BP5: Develop criteria for software design and verification (설계/검증 기준 개발)
+- ✅ BP6: Establish bidirectional traceability (양방향 추적성 — SYS Req ↔ SW Req ↔ Test)
+- ✅ BP7: Ensure consistency (SYS Requirements ↔ SW Requirements 일관성 확인)
 
 ---
 

@@ -3,9 +3,9 @@
 **Document ID**: PART3-00-ITEM
 **ISO 26262 Reference**: Part 3, Clause 5
 **ASPICE Reference**: N/A
-**Version**: 1.0
-**Date**: 2026-02-14
-**Status**: Released
+**Version**: 2.0
+**Date**: 2026-02-17
+**Status**: Released (v2.0 — ASIL pre-assignment removed; mandatory sections added)
 
 ---
 
@@ -55,22 +55,27 @@
 
 ### 3.1 주요 기능 목록
 
-| Function ID | Function Name | Description | ASIL |
-|-------------|---------------|-------------|------|
-| **F-01** | Ambient Lighting Control | 주행 모드/속도 기반 조명 색상 자동 제어 | ASIL-B |
-| **F-02** | Safety Warning Display | 후진, 도어 개방 등 안전 경고 UI 표시 | ASIL-C |
-| **F-03** | ADAS UI Integration | LDW, AEB, BSD 이벤트 시각적 경고 | ASIL-D |
-| **F-04** | User Profile Management | 운전자별 조명/경고 설정 저장 | QM |
-| **F-05** | Diagnostic Services | UDS 0x14, 0x19 진단 서비스 | ASIL-B |
-| **F-06** | OTA Update | UDS 0x34/0x36/0x37 OTA 업데이트 | ASIL-C |
-| **F-07** | Fault Detection & Handling | CAN 통신 오류, 센서 고장 감지 | ASIL-B |
+| Function ID | Function Name | Description |
+|-------------|---------------|-------------|
+| **F-01** | Ambient Lighting Control | 주행 모드/속도 기반 조명 색상 자동 제어 |
+| **F-02** | Safety Warning Display | 후진, 도어 개방 등 안전 경고 UI 표시 |
+| **F-03** | ADAS UI Integration | LDW, AEB, BSD 이벤트 시각적 경고 |
+| **F-04** | User Profile Management | 운전자별 조명/경고 설정 저장 |
+| **F-05** | Diagnostic Services | UDS 0x14, 0x19 진단 서비스 |
+| **F-06** | OTA Update | UDS 0x34/0x36/0x37 OTA 업데이트 |
+| **F-07** | Fault Detection & Handling | CAN 통신 오류, 센서 고장 감지 |
+
+> **Note v2.0**: ASIL은 Item Definition 단계에서 사전 할당할 수 없습니다 (ISO 26262-3:2018, Clause 7).
+> ASIL은 HARA 결과로 결정되며, HARA 완료 후 도출된 ASIL 할당 결과는 HARA 문서를 참조하십시오.
+> - F-01: ASIL-A (SG-05 기반) | F-02: ASIL-B (SG-03, SG-04 기반) | F-03: ASIL-D (SG-01, SG-02 기반)
+> - F-04: QM | F-05: ASIL-B (진단 CAN 경로) | F-06: QM (HARA H-06 QM) | F-07: ASIL-B (SG-06 기반)
 
 ### 3.2 기능 우선순위
 
 **안전 기능 우선순위** (높음 → 낮음):
 1. **F-03** (ADAS UI) - ASIL-D - 충돌 경고 최우선
 2. **F-02** (Safety Warning) - ASIL-C - 안전 경고
-3. **F-06** (OTA Update) - ASIL-C - 시스템 복구
+3. **F-06** (OTA Update) - QM - 시스템 복구 (HARA: QM)
 4. **F-01** (Lighting Control) - ASIL-B - 편의 기능
 5. **F-05** (Diagnostic) - ASIL-B - 유지보수
 6. **F-07** (Fault Handling) - ASIL-B - 안전 전환
@@ -161,6 +166,52 @@
 
 ---
 
+## 5-1. 법적/규제 요구사항 (Legal and Regulatory Requirements)
+
+> **ISO 26262-3:2018 Clause 5.4.2**: Item Definition은 관련 법적 및 규제 요구사항을 포함해야 합니다.
+
+| 규제 ID | 규제/표준 | 적용 항목 | 요구사항 |
+|---------|----------|---------|---------|
+| **LEG-01** | UNECE Regulation No. 79 (조향 시스템) | MDPS Haptic 경고 | 운전자 입력 없이 조향 개입 제한 |
+| **LEG-02** | UNECE Regulation No. 157 (ALKS) | ADAS UI | 자율주행 중 운전자 모니터링 인터페이스 |
+| **LEG-03** | ISO 15765-4 (CAN 진단) | UDS 진단 서비스 | OBD-II CAN 프레임 규격 준수 |
+| **LEG-04** | ISO 14229-1:2020 (UDS) | OTA, 진단 | UDS 서비스 구현 (0x14, 0x19, 0x34 등) |
+| **LEG-05** | GDPR / 개인정보보호법 | User Profile | 운전자 프로파일 데이터 암호화 및 삭제 기능 |
+| **LEG-06** | ISO 26262:2018 (Functional Safety) | 전체 안전 기능 | ASIL-D까지 지원 |
+| **LEG-07** | ASPICE PAM 3.1 | 개발 프로세스 | SYS.2~5, SWE.1~6 프로세스 준수 |
+
+---
+
+## 5-2. 운영 모드 (Operating Modes)
+
+> **ISO 26262-3:2018 Clause 5.4.3**: Item의 운영 모드를 명시해야 합니다.
+
+| 모드 ID | 모드 이름 | 설명 | 가용 기능 | ASIL 최대 |
+|---------|---------|------|---------|---------|
+| **OM-01** | Normal Operation | 정상 주행 | 전체 기능 | ASIL-D |
+| **OM-02** | Degraded Operation | 부분 고장 (CAN 오류 등) | Fail-Safe 기능만 | ASIL-B |
+| **OM-03** | Fail-Safe State | 심각 고장 | 최소 안전 출력만 | ASIL-B |
+| **OM-04** | Diagnostic Mode | 정차 + 진단기 연결 | UDS 서비스, OTA | ASIL-B |
+| **OM-05** | OTA Update Mode | 정차 중 소프트웨어 업데이트 | OTA만 (안전 기능 비활성) | QM |
+| **OM-06** | Power Off / Sleep | 시동 OFF | 없음 (WakeUp 감지만) | N/A |
+
+---
+
+## 5-3. 선행 지식 기반 알려진 위험 (Known Hazardous Situations)
+
+> **ISO 26262-3:2018 Clause 5.4.3**: 선행 개발 경험 및 관련 시스템에서 알려진 위험 상황을 포함해야 합니다.
+
+| KH ID | 알려진 위험 | 출처 | 관련 안전 조치 |
+|-------|-----------|------|------------|
+| **KH-01** | CAN 버퍼 오버플로로 인한 안전 메시지 손실 | 유사 IVI 프로젝트 Field Report | E2E 보호, 메시지 우선순위 |
+| **KH-02** | ADAS 이벤트 동시 발생 시 UI 혼란 (정보 과부하) | 운전 행동 연구 (NHTSA 보고서) | 우선순위 기반 단일 경고 표시 |
+| **KH-03** | OTA 중 전원 차단으로 인한 Brick (벽돌화) | OEM Field Return Data | Rollback 메커니즘, A/B 파티션 |
+| **KH-04** | 소프트웨어 무한루프로 인한 경고 미표시 | ISO 26262-6 사례 연구 | Watchdog Timer |
+| **KH-05** | 조명 PWM 오류로 야간 눈부심 | 조명 ECU 리콜 사례 | 하드웨어 PWM 리미터 |
+| **KH-06** | CAN 메시지 재생 공격 (Replay Attack) | 차량 사이버보안 연구 | Alive Counter 검증 |
+
+---
+
 ## 6. 사용 시나리오 (Use Cases)
 
 ### 6.1 정상 운영 시나리오 (Normal Use Cases)
@@ -220,7 +271,7 @@
 
 1. **개발 기간**: 4주 (2026-02-05 ~ 2026-03-05)
 2. **개발 도구**: CANoe 16.0만 사용 (실차 테스트 불가)
-3. **요구사항 개수**: 56개 (고정)
+3. **요구사항 개수**: 55개 (SRS 기준; Item Definition 원안 56개에서 중복 1개 제거)
 4. **DBC 파일**: Hyundai-Kia Generic DBC 기반
 5. **ASIL 적용**: ASIL-D까지 지원 (ISO 26262-6 준수)
 6. **메모리**: vECU 메모리 제한 없음 (시뮬레이션)
@@ -286,6 +337,7 @@
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
 | 1.0 | 2026-02-14 | AI Assistant | Initial release - ISO 26262-3 준수 |
+| 2.0 | 2026-02-17 | Technical Review | ASIL 사전할당 제거; 법적요구사항/운영모드/선행위험 섹션 추가; F-06 QM 수정; 요구사항 수 통일 |
 
 ---
 

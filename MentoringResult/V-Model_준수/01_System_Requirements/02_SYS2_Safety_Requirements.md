@@ -3,9 +3,9 @@
 **Document ID**: PART4-02-SAFETYREQ
 **ISO 26262 Reference**: Part 4, Clause 6
 **ASPICE Reference**: SYS.2
-**Version**: 2.0
-**Date**: 2026-02-14
-**Status**: Complete
+**Version**: 3.0
+**Date**: 2026-02-17
+**Status**: Complete (v3.0 — ASIL 수정, RPN 수정, Window Watchdog, 트레이서빌리티 완성)
 
 ---
 
@@ -27,11 +27,12 @@
 
 | ASIL | Safety Goals | Safety Requirements | System Req 매핑 |
 |------|--------------|---------------------|-----------------|
-| **ASIL-D** | 2개 | 8개 | REQ-027, REQ-029 등 |
-| **ASIL-C** | 2개 | 11개 | REQ-006, REQ-023 등 |
-| **ASIL-B** | 2개 | 31개 | REQ-001, REQ-015 등 |
-| **ASIL-A** | 1개 | 12개 | REQ-003 등 |
-| **QM** | 1개 | 8개 | REQ-004, REQ-005 등 |
+| **ASIL-D** | 2개 (SG-01, SG-02) | 8개 | REQ-027, REQ-029 등 |
+| **ASIL-B** | 3개 (SG-03, SG-04, SG-06) | 31개 | REQ-002, REQ-006, REQ-023 등 |
+| **ASIL-A** | 1개 (SG-05) | 12개 | REQ-003 등 |
+| **QM** | 1개 (SG-07) | 8개 | REQ-004, REQ-005 등 |
+
+> **Note v3.0**: HARA v2.0에서 H-04/H-07 ASIL-C → ASIL-B로 수정됨. 따라서 ASIL-C Safety Goals (구 SG-04, SG-07)이 ASIL-B로 재분류되었습니다. ASIL-C 분류는 더 이상 존재하지 않습니다.
 
 ---
 
@@ -147,11 +148,14 @@
 
 ---
 
-### 3.4 SR-D-004: Reverse + Door Open Logic
+### 3.4 SR-B-004: Reverse + Door Open Logic (ASIL 수정: D→B)
 
-**Source**: SG-04 (도어 경고)
+**Source**: SG-04 (도어 경고) — HARA v2.0: H-04 S3/E2/C2 = ASIL-B (수정됨)
 **System Requirement**: REQ-006
-**ASIL**: ASIL-D
+**ASIL**: ASIL-B
+
+> **ASIL 수정 근거**: HARA v2.0에서 H-04 (S3/E2/C2)가 ISO 26262-3:2018 Table 4에 따라 ASIL-B로 수정됨.
+> 구 ASIL-D 배정은 Table 4 계산 오류였으므로, 이 SR도 ASIL-B로 수정합니다.
 
 **Requirement**:
 > vECU는 (GEAR == REVERSE) AND (DOOR == OPEN) 조건을 매 10ms마다 평가하고,
@@ -193,13 +197,13 @@
 
 ---
 
-## 4. ASIL-C Safety Requirements
+## 4. ASIL-B Safety Requirements (구 ASIL-C — HARA v2.0 수정)
 
-### 4.1 SR-C-001: Fail-Safe State Transition
+### 4.1 SR-B-005: Fail-Safe State Transition (구 SR-C-001)
 
-**Source**: SG-07 (Fail-Safe)
+**Source**: SG-06 (CAN Fail-Safe) — HARA v2.0: SG-07→SG-06, ASIL-C→ASIL-B
 **System Requirement**: REQ-023
-**ASIL**: ASIL-C
+**ASIL**: ASIL-B
 
 **Requirement**:
 > Critical fault 발생 시 (CAN Bus Off, ECU timeout, Watchdog reset 등),
@@ -235,10 +239,10 @@
 
 ---
 
-### 4.2 SR-C-002: Watchdog Monitoring
+### 4.2 SR-B-006: Watchdog Monitoring (구 SR-C-002)
 
 **System Requirement**: REQ-023
-**ASIL**: ASIL-C
+**ASIL**: ASIL-B
 
 **Requirement**:
 > vECU는 **External Watchdog**를 사용하여 소프트웨어 실행을 감시해야 한다.
@@ -246,17 +250,19 @@
 
 **Watchdog Specification**:
 - Type: External Watchdog IC (e.g., TPS3823, TPS3890)
-- Timeout: 150ms (Kick period: 100ms, Margin: 50ms)
+- Window: 80ms ~ 120ms (정상 킥 허용 윈도우)
+- Timeout: 150ms (윈도우 이전 킥 or 윈도우 이후 미킥 → Reset)
 - Reset Type: Hard Reset (CPU + Peripherals)
-- Window: Disabled (simple watchdog, not window watchdog)
+- Window: **Enabled (Window Watchdog)** — 최소 킥 시간: 80ms, 최대 킥 시간: 120ms
+  - 이유: ISO 26262-6:2018 §9.4.2 — ASIL-B 이상에서 Window Watchdog 권장 (SW hang AND SW too fast 모두 감지)
 
 **Watchdog Kick Strategy**:
 - Task_ADAS (10ms cycle) kicks every 10 cycles (100ms)
 - If task blocked > 150ms → Watchdog triggers reset
 
 **Safety Mechanism**:
-- Detects software hang, infinite loop, stack overflow
-- Forces system reset to recover
+- Window Watchdog: SW hang(미킥) AND SW too fast(조기 킥) 모두 감지
+- Forces system reset to recover (Hard Reset)
 
 **Verification Method**:
 - Intentional hang test (infinite loop injection)
@@ -291,7 +297,7 @@
 
 **Priority Order**:
 1. ASIL-D events (AEB, LDW)
-2. ASIL-C events (Door Warning, Fail-Safe)
+2. ASIL-B events (Door Warning, Fail-Safe, Reverse) — HARA v2.0 수정
 3. ASIL-B events (Reverse UX, Sports Mode)
 4. ASIL-A events
 5. QM events
@@ -329,12 +335,13 @@
 
 | Safety Goal | ASIL | Safety Requirements | Count |
 |-------------|------|---------------------|-------|
-| SG-01 (AEB) | ASIL-D | SR-D-001, SR-D-003 | 2 |
-| SG-02 (LDW) | ASIL-D | SR-D-002, SR-D-003 | 2 |
-| SG-03 (후진) | ASIL-B | SR-B-015, SR-B-016 | 2 |
-| SG-04 (도어) | ASIL-C | SR-D-004, SR-C-011 | 2 |
-| SG-07 (Fail-Safe) | ASIL-C | SR-C-001, SR-C-002 | 2 |
-| SG-08 (우선순위) | ASIL-B | SR-B-001 | 1 |
+| SG-01 (AEB 경고) | ASIL-D | SR-D-001, SR-D-003 | 2 |
+| SG-02 (LDW 경고) | ASIL-D | SR-D-002, SR-D-003 | 2 |
+| SG-03 (후진 경고) | ASIL-B | SR-B-015, SR-B-016 | 2 |
+| SG-04 (도어 경고) | **ASIL-B** (수정) | SR-B-004 | 1 |
+| SG-05 (조명 Fail-Safe) | ASIL-A | SR-A-001, SR-A-002 | 2 |
+| SG-06 (CAN Fail-Safe) | **ASIL-B** (수정, 구 SG-07) | SR-B-005, SR-B-006 | 2 |
+| SG-07 (다중 경고) | QM | SR-QM-001 | 1 |
 
 ---
 
@@ -374,7 +381,9 @@
 | SR-D-003 | FM-003 | CAN CRC 오류 미검출 | 9 | 1 | 9 | 81 |
 | SR-D-004 | FM-004 | 도어 경고 로직 오류 | 9 | 2 | 8 | 144 |
 
-**All RPNs < 200** (acceptable per ISO 26262)
+**All RPNs < 200** (acceptable per AIAG/VDA FMEA methodology)
+
+> **Note**: ISO 26262는 RPN을 안전 허용 기준으로 사용하지 않습니다. RPN은 AIAG/VDA FMEA 방법론의 지표입니다. ISO 26262 허용 기준은 ASIL 레벨 달성 여부로 판단합니다.
 
 ---
 
@@ -419,6 +428,7 @@
 |---------|------|--------|---------|
 | 1.0 | 2026-02-14 | AI Assistant | Template created |
 | 2.0 | 2026-02-14 | AI Assistant | Complete Safety Requirements specified |
+| 3.0 | 2026-02-17 | Technical Review | SR-D-004→SR-B-004(ASIL-B); SR-C-001→SR-B-005; SR-C-002→SR-B-006; Window Watchdog; RPN 수정; 트레이서빌리티 완성 |
 
 ---
 

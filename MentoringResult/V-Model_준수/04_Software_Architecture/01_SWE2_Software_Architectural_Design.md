@@ -232,7 +232,8 @@
 - ✅ BP3: Software interfaces defined
 - ✅ BP4: Dynamic behavior described
 - ✅ BP5: Consistency ensured (Req ↔ Arch)
-- ✅ BP6: Traceability established
+- ✅ BP6: Establish bidirectional traceability (SW Req ↔ SW Architecture)
+- ✅ BP7: Ensure consistency (SW Requirements ↔ SW Architecture 일관성 확인)
 
 ---
 

@@ -141,11 +141,13 @@ void Task_ADAS_Runnable(void)
 
 ## 6. ASPICE SWE.4 Compliance
 
-**Base Practices**:
-- ✅ BP1: Software units implemented
-- ✅ BP2: Coding standards applied (MISRA C)
-- ✅ BP3: Traceability established (SU Design → Code)
-- ✅ BP4: Consistency ensured
+**Base Practices** (ASPICE PAM 3.1 SWE.4 — 6개 전체):
+- ✅ BP1: Develop software units (SW Unit 구현)
+- ✅ BP2: Apply coding guidelines (MISRA C:2012 적용)
+- ✅ BP3: Conduct code reviews (코드 리뷰 수행 — Peer Review 기록 포함)
+- ✅ BP4: Establish bidirectional traceability (SW Unit Design ↔ Code)
+- ✅ BP5: Ensure consistency (SU 설계 ↔ 구현 일관성)
+- ✅ BP6: Communicate results (코드 리뷰 결과 및 정적분석 결과 배포)
 
 ---
 

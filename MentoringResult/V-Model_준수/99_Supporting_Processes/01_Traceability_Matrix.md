@@ -3,9 +3,9 @@
 **Document ID**: PART8-01-TRACE
 **ISO 26262 Reference**: Part 8, Clause 9
 **ASPICE Reference**: SUP.10
-**Version**: 1.0
-**Date**: 2026-02-14
-**Status**: Auto-Generated
+**Version**: 2.0
+**Date**: 2026-02-17
+**Status**: Released (v2.0 — TC-SYS-XXX 통일, REQ-021~055 추가, ASIL 수정)
 
 ---
 
@@ -40,9 +40,9 @@ Test Cases
 | SG-01: AEB 경고 | ASIL-D | REQ-029 | ✅ |
 | SG-02: LDW 경고 | ASIL-D | REQ-027 | ✅ |
 | SG-03: 후진 경고 | ASIL-B | REQ-002, REQ-015, REQ-016 | ✅ |
-| SG-04: 도어 경고 | ASIL-C | REQ-006 | ✅ |
-| SG-07: Fail-Safe | ASIL-C | REQ-023, REQ-053 | ✅ |
-| SG-08: 우선순위 | ASIL-B | REQ-037 | ✅ |
+| SG-04: 도어 경고 | ASIL-B (수정) | REQ-006 | ✅ |
+| SG-06: Fail-Safe | ASIL-B (수정, 구 SG-07) | REQ-023, REQ-053 | ✅ |
+| SG-07: 다중 경고 우선순위 | QM (수정) | REQ-037 | ✅ |
 
 ---
 
@@ -53,7 +53,7 @@ Test Cases
 
 - **ASIL**: ASIL-B
 - **Verification**: SIL (Software-in-the-Loop)
-- **Test Case**: TC-SYS4-001
+- **Test Case**: TC-SYS-001
 - **Status**: ⬜ Pending
 
 ---
@@ -61,9 +61,9 @@ Test Cases
 
 ### REQ-002: 후진 안전경고 UI 및 시트조명
 
-- **ASIL**: ASIL-C
+- **ASIL**: ASIL-B (수정: HARA H-03 S2/E4/C2 = ASIL-B)
 - **Verification**: SIL (Software-in-the-Loop)
-- **Test Case**: TC-SYS4-002
+- **Test Case**: TC-SYS-002
 - **Status**: ⬜ Pending
 
 ---
@@ -73,7 +73,7 @@ Test Cases
 
 - **ASIL**: ASIL-A
 - **Verification**: SIL (Software-in-the-Loop)
-- **Test Case**: TC-SYS4-003
+- **Test Case**: TC-SYS-003
 - **Status**: ⬜ Pending
 
 ---
@@ -83,7 +83,7 @@ Test Cases
 
 - **ASIL**: QM (Quality Management / Not Safety-Critical)
 - **Verification**: SIL (Software-in-the-Loop)
-- **Test Case**: TC-SYS4-004
+- **Test Case**: TC-SYS-004
 - **Status**: ⬜ Pending
 
 ---
@@ -93,7 +93,7 @@ Test Cases
 
 - **ASIL**: QM (Quality Management / Not Safety-Critical)
 - **Verification**: SIL (Software-in-the-Loop)
-- **Test Case**: TC-SYS4-005
+- **Test Case**: TC-SYS-005
 - **Status**: ⬜ Pending
 
 ---
@@ -101,9 +101,9 @@ Test Cases
 
 ### REQ-006: 후진중 도어개방 경고제어
 
-- **ASIL**: ASIL-D
+- **ASIL**: ASIL-B (수정: HARA H-04 S3/E2/C2 = ASIL-B)
 - **Verification**: HIL (Hardware-in-the-Loop)
-- **Test Case**: TC-SYS4-006
+- **Test Case**: TC-SYS-006
 - **Status**: ⬜ Pending
 
 ---
@@ -113,7 +113,7 @@ Test Cases
 
 - **ASIL**: ASIL-C
 - **Verification**: SIL (Software-in-the-Loop)
-- **Test Case**: TC-SYS4-007
+- **Test Case**: TC-SYS-007
 - **Status**: ⬜ Pending
 
 ---
@@ -123,7 +123,7 @@ Test Cases
 
 - **ASIL**: QM (Quality Management / Not Safety-Critical)
 - **Verification**: SIL (Software-in-the-Loop)
-- **Test Case**: TC-SYS4-008
+- **Test Case**: TC-SYS-008
 - **Status**: ⬜ Pending
 
 ---
@@ -133,7 +133,7 @@ Test Cases
 
 - **ASIL**: QM (Quality Management / Not Safety-Critical)
 - **Verification**: SIL (Software-in-the-Loop)
-- **Test Case**: TC-SYS4-009
+- **Test Case**: TC-SYS-009
 - **Status**: ⬜ Pending
 
 ---
@@ -143,7 +143,7 @@ Test Cases
 
 - **ASIL**: ASIL-B
 - **Verification**: Fault Injection Test
-- **Test Case**: TC-SYS4-010
+- **Test Case**: TC-SYS-010
 - **Status**: ⬜ Pending
 
 ---
@@ -153,7 +153,7 @@ Test Cases
 
 - **ASIL**: ASIL-B
 - **Verification**: SIL (Software-in-the-Loop)
-- **Test Case**: TC-SYS4-011
+- **Test Case**: TC-SYS-011
 - **Status**: ⬜ Pending
 
 ---
@@ -163,7 +163,7 @@ Test Cases
 
 - **ASIL**: ASIL-B
 - **Verification**: SIL (Software-in-the-Loop)
-- **Test Case**: TC-SYS4-012
+- **Test Case**: TC-SYS-012
 - **Status**: ⬜ Pending
 
 ---
@@ -173,7 +173,7 @@ Test Cases
 
 - **ASIL**: ASIL-B
 - **Verification**: SIL (Software-in-the-Loop)
-- **Test Case**: TC-SYS4-013
+- **Test Case**: TC-SYS-013
 - **Status**: ⬜ Pending
 
 ---
@@ -181,9 +181,9 @@ Test Cases
 
 ### REQ-014: OTA실패 자동복구
 
-- **ASIL**: ASIL-C
+- **ASIL**: QM (수정: HARA H-06 QM)
 - **Verification**: HIL (Hardware-in-the-Loop)
-- **Test Case**: TC-SYS4-014
+- **Test Case**: TC-SYS-014
 - **Status**: ⬜ Pending
 
 ---
@@ -193,7 +193,7 @@ Test Cases
 
 - **ASIL**: ASIL-B
 - **Verification**: SIL (Software-in-the-Loop)
-- **Test Case**: TC-SYS4-015
+- **Test Case**: TC-SYS-015
 - **Status**: ⬜ Pending
 
 ---
@@ -203,7 +203,7 @@ Test Cases
 
 - **ASIL**: ASIL-B
 - **Verification**: Integration Test, System Test
-- **Test Case**: TC-SYS4-016
+- **Test Case**: TC-SYS-016
 - **Status**: ⬜ Pending
 
 ---
@@ -213,7 +213,7 @@ Test Cases
 
 - **ASIL**: QM (Quality Management / Not Safety-Critical)
 - **Verification**: Integration Test, System Test
-- **Test Case**: TC-SYS4-017
+- **Test Case**: TC-SYS-017
 - **Status**: ⬜ Pending
 
 ---
@@ -223,7 +223,7 @@ Test Cases
 
 - **ASIL**: QM (Quality Management / Not Safety-Critical)
 - **Verification**: Integration Test, System Test
-- **Test Case**: TC-SYS4-018
+- **Test Case**: TC-SYS-018
 - **Status**: ⬜ Pending
 
 ---
@@ -233,7 +233,7 @@ Test Cases
 
 - **ASIL**: ASIL-B
 - **Verification**: Integration Test
-- **Test Case**: TC-SYS4-019
+- **Test Case**: TC-SYS-019
 - **Status**: ⬜ Pending
 
 ---
@@ -243,20 +243,370 @@ Test Cases
 
 - **ASIL**: ASIL-B
 - **Verification**: Integration Test, System Test
-- **Test Case**: TC-SYS4-020
+- **Test Case**: TC-SYS-020
 - **Status**: ⬜ Pending
 
 ---
 
 
 
-## 4. Coverage Statistics
 
-- **Safety Goals**: 8개
-- **System Requirements**: 55개
-- **Traceability**: 55개 (100%)
+### REQ-021: 승하차 시 외부 조명 제어
+
+- **ASIL**: ASIL-A
+- **Verification**: SIL
+- **Test Case**: TC-SYS-021
+- **Status**: ⬜ Pending
 
 ---
 
-**Auto-generated from**: /Users/juns/code/work/mobis/PBL/REQ_IVI_vECU_Requirements.xlsx
-**Generation Date**: 2026-02-14 14:22:46
+
+### REQ-022: 주차 보조 조명 제어
+
+- **ASIL**: ASIL-A
+- **Verification**: Integration Test
+- **Test Case**: TC-SYS-022
+- **Status**: ⬜ Pending
+
+---
+
+
+### REQ-023: CAN 오류 시 Fail-Safe 전환
+
+- **ASIL**: ASIL-B
+- **Verification**: Fault Injection Test
+- **Test Case**: TC-SYS-023
+- **Status**: ⬜ Pending
+
+---
+
+
+### REQ-024: Watchdog 타이머 기능
+
+- **ASIL**: ASIL-B
+- **Verification**: Fault Injection Test
+- **Test Case**: TC-SYS-024
+- **Status**: ⬜ Pending
+
+---
+
+
+### REQ-025: 메모리 파티션 보호 (MPU)
+
+- **ASIL**: ASIL-D
+- **Verification**: Fault Injection Test
+- **Test Case**: TC-SYS-025
+- **Status**: ⬜ Pending
+
+---
+
+
+### REQ-026: 태스크 실행 시간 모니터링
+
+- **ASIL**: ASIL-D
+- **Verification**: HIL
+- **Test Case**: TC-SYS-026
+- **Status**: ⬜ Pending
+
+---
+
+
+### REQ-027: LDW 차선 이탈 경고 표시
+
+- **ASIL**: ASIL-D
+- **Verification**: HIL
+- **Test Case**: TC-SYS-027
+- **Status**: ⬜ Pending
+
+---
+
+
+### REQ-028: BSD 사각지대 경고 표시
+
+- **ASIL**: ASIL-B
+- **Verification**: SIL
+- **Test Case**: TC-SYS-028
+- **Status**: ⬜ Pending
+
+---
+
+
+### REQ-029: AEB 긴급 제동 경고 표시
+
+- **ASIL**: ASIL-D
+- **Verification**: HIL
+- **Test Case**: TC-SYS-029
+- **Status**: ⬜ Pending
+
+---
+
+
+### REQ-030: 후방 카메라 영상 표시
+
+- **ASIL**: ASIL-B
+- **Verification**: Integration Test
+- **Test Case**: TC-SYS-030
+- **Status**: ⬜ Pending
+
+---
+
+
+### REQ-031: 클러스터 경고 아이콘 제어
+
+- **ASIL**: ASIL-D
+- **Verification**: SIL
+- **Test Case**: TC-SYS-031
+- **Status**: ⬜ Pending
+
+---
+
+
+### REQ-032: 카메라 LDW 데이터 수신
+
+- **ASIL**: ASIL-D
+- **Verification**: CANoe SIL
+- **Test Case**: TC-SYS-032
+- **Status**: ⬜ Pending
+
+---
+
+
+### REQ-033: LDW 이벤트 파싱
+
+- **ASIL**: ASIL-D
+- **Verification**: Unit Test
+- **Test Case**: TC-SYS-033
+- **Status**: ⬜ Pending
+
+---
+
+
+### REQ-034: AEB 이벤트 검증 (CRC+Counter)
+
+- **ASIL**: ASIL-D
+- **Verification**: Unit Test
+- **Test Case**: TC-SYS-034
+- **Status**: ⬜ Pending
+
+---
+
+
+### REQ-035: AEB 이벤트 우선순위 처리
+
+- **ASIL**: ASIL-D
+- **Verification**: Unit Test
+- **Test Case**: TC-SYS-035
+- **Status**: ⬜ Pending
+
+---
+
+
+### REQ-036: 경고 지속 시간 제어
+
+- **ASIL**: ASIL-B
+- **Verification**: SIL
+- **Test Case**: TC-SYS-036
+- **Status**: ⬜ Pending
+
+---
+
+
+### REQ-037: 다중 경고 우선순위 처리
+
+- **ASIL**: QM
+- **Verification**: SIL
+- **Test Case**: TC-SYS-037
+- **Status**: ⬜ Pending
+
+---
+
+
+### REQ-038: 경고 취소 로직
+
+- **ASIL**: ASIL-B
+- **Verification**: Unit Test
+- **Test Case**: TC-SYS-038
+- **Status**: ⬜ Pending
+
+---
+
+
+### REQ-039: IVI 터치스크린 입력 처리
+
+- **ASIL**: QM
+- **Verification**: SIL
+- **Test Case**: TC-SYS-039
+- **Status**: ⬜ Pending
+
+---
+
+
+### REQ-040: 사용자 모드 설정 저장
+
+- **ASIL**: QM
+- **Verification**: SIL
+- **Test Case**: TC-SYS-040
+- **Status**: ⬜ Pending
+
+---
+
+
+### REQ-041: 속도 데이터 수신 (CAN)
+
+- **ASIL**: ASIL-B
+- **Verification**: SIL
+- **Test Case**: TC-SYS-041
+- **Status**: ⬜ Pending
+
+---
+
+
+### REQ-042: 속도 기반 조명 색상 매핑
+
+- **ASIL**: ASIL-A
+- **Verification**: Unit Test
+- **Test Case**: TC-SYS-042
+- **Status**: ⬜ Pending
+
+---
+
+
+### REQ-043: 조명 PWM 출력 제어
+
+- **ASIL**: ASIL-A
+- **Verification**: HIL
+- **Test Case**: TC-SYS-043
+- **Status**: ⬜ Pending
+
+---
+
+
+### REQ-044: 조명 밝기 제한 (Fail-Safe)
+
+- **ASIL**: ASIL-A
+- **Verification**: Fault Injection Test
+- **Test Case**: TC-SYS-044
+- **Status**: ⬜ Pending
+
+---
+
+
+### REQ-045: 온도 데이터 수신
+
+- **ASIL**: QM
+- **Verification**: SIL
+- **Test Case**: TC-SYS-045
+- **Status**: ⬜ Pending
+
+---
+
+
+### REQ-046: 온도 기반 조명 조정
+
+- **ASIL**: QM
+- **Verification**: SIL
+- **Test Case**: TC-SYS-046
+- **Status**: ⬜ Pending
+
+---
+
+
+### REQ-047: UDS 0x19 DTC 조회
+
+- **ASIL**: ASIL-B
+- **Verification**: SIL
+- **Test Case**: TC-SYS-047
+- **Status**: ⬜ Pending
+
+---
+
+
+### REQ-048: UDS 세션 관리
+
+- **ASIL**: ASIL-B
+- **Verification**: SIL
+- **Test Case**: TC-SYS-048
+- **Status**: ⬜ Pending
+
+---
+
+
+### REQ-049: OTA 다운로드 검증 (Checksum)
+
+- **ASIL**: QM
+- **Verification**: SIL
+- **Test Case**: TC-SYS-049
+- **Status**: ⬜ Pending
+
+---
+
+
+### REQ-050: OTA 설치 및 파티션 전환
+
+- **ASIL**: QM
+- **Verification**: SIL
+- **Test Case**: TC-SYS-050
+- **Status**: ⬜ Pending
+
+---
+
+
+### REQ-051: ECU Sleep/WakeUp 제어
+
+- **ASIL**: ASIL-B
+- **Verification**: HIL
+- **Test Case**: TC-SYS-051
+- **Status**: ⬜ Pending
+
+---
+
+
+### REQ-052: 전원 관리 (Low Power Mode)
+
+- **ASIL**: ASIL-B
+- **Verification**: HIL
+- **Test Case**: TC-SYS-052
+- **Status**: ⬜ Pending
+
+---
+
+
+### REQ-053: 조명 HW 오류 감지 (Open/Short)
+
+- **ASIL**: ASIL-A
+- **Verification**: Fault Injection Test
+- **Test Case**: TC-SYS-053
+- **Status**: ⬜ Pending
+
+---
+
+
+### REQ-054: 조명 출력 모니터링
+
+- **ASIL**: ASIL-A
+- **Verification**: Unit Test
+- **Test Case**: TC-SYS-054
+- **Status**: ⬜ Pending
+
+---
+
+
+### REQ-055: 시스템 자가 진단 (Self-Test)
+
+- **ASIL**: ASIL-B
+- **Verification**: Fault Injection Test
+- **Test Case**: TC-SYS-055
+- **Status**: ⬜ Pending
+
+---
+
+## 4. Coverage Statistics
+
+- **Safety Goals**: 8개
+- **System Requirements**: 55개 (REQ-001 ~ REQ-055)
+- **Traceability**: 55개 (100%)
+- **Test Case Naming**: TC-SYS-001 ~ TC-SYS-055 (통일 완료)
+
+---
+
+**Document Version**: 2.0 | **Last Updated**: 2026-02-17
