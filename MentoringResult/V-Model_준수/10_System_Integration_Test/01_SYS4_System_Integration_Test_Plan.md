@@ -102,6 +102,52 @@
 
 ---
 
+
+---
+
+### INT-006: E2E Master Scenario — Fault → Diagnostics → OTA Complete Chain
+
+- **Requirement**: REQ-010, REQ-056, REQ-057, REQ-058, REQ-059, REQ-012~014
+- **ASIL**: ASIL-B (전체 경로)
+- **Test Environment**: CANoe SIL (3-Bus + Ethernet + CAPL Tester + OTA Server)
+- **Test Duration**: < 120초 (자동화 실행 기준)
+
+#### Phase 1: Fault Injection (T=0~10s)
+1. CANoe Interaction Layer: `BCM_Window_Current = 50` (50A 주입)
+2. BCM_Sim: Overcurrent 감지 → DTC B1234 저장 (내부 메모리)
+3. BCM_FaultStatus CAN 메시지 전송 시작 (CAN-LS 0x500, 100ms)
+4. **검증**: BCM DTC 저장 타임스탬프 < 200ms
+
+#### Phase 2: Gateway Routing & Cluster Warning (T=10~20s)
+5. CGW: CAN-LS 수신 → CAN-HS2 라우팅 (≤5ms)
+6. vECU: BCM_FaultStatus 수신 → Cluster 경고등 활성화
+7. CGW: Ethernet DoIP 연결 → OTA_Server_Sim 수신 확인
+8. **검증**: Cluster 경고등 T=15s 이전 활성화
+
+#### Phase 3: UDS Diagnostics (T=20~60s)
+9. CAPL Tester: UDS 0x10 0x03 (Extended Session) → BCM
+10. CAPL Tester: UDS 0x19 0x02 (Read DTC) → DTC B1234 수신 확인
+11. CAPL Tester: UDS 0x19 0x06 (Extended Data) → 발생 횟수 확인
+12. TCP/IP: DTC 데이터 → OTA_Server_Sim 전송
+13. **검증**: DTC B1234 정확 수신, TCP 전송 성공
+
+#### Phase 4: OTA Programming (T=60~120s)
+14. OTA_Server_Sim: UDS 0x10 0x02 (Programming Session)
+15. OTA_Server_Sim: UDS 0x34 (Request Download, 64KB)
+16. OTA_Server_Sim: UDS 0x36 × 16 (Transfer Data)
+17. OTA_Server_Sim: UDS 0x37 (Transfer Exit)
+18. BCM 재시작 (UDS 0x11)
+19. CAPL Tester: UDS 0x19 0x02 재조회 → DTC B1234 없음 확인
+20. **검증**: 펌웨어 버전 변경 확인 (0x22 0xF101)
+
+- **Pass Criteria**:
+  - ✅ 전 4개 Phase 연속 성공
+  - ✅ 총 소요 시간 < 120초
+  - ✅ DTC B1234: 생성 → 수집 → OTA 후 소거 전 과정 확인
+  - ✅ 메시지 손실 0개 (CANoe Trace 검증)
+  - ✅ 자동화 스크립트로 반복 실행 가능 (3회 연속 성공)
+
+
 ## 3. Test Coverage
 
 | ASIL Level | Requirements | Test Cases | Coverage |

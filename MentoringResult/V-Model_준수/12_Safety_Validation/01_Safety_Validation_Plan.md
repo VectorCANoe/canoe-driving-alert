@@ -319,3 +319,44 @@
 ---
 
 **Auto-generated**: 2026-02-15 03:20:40
+
+---
+
+## OTA/Diagnostics 안전 검증 (v2.1 추가)
+
+### SV-08: OTA 업데이트 안전성 검증 (SG-08, ASIL-A)
+
+| 검증 항목 | 시나리오 | 기준 | 검증 방법 |
+|---------|---------|------|---------|
+| **OTA 중단 Rollback** | OTA 0x36 3번째 블록 전송 중 강제 차단 | 10/10 Rollback 성공 | HIL Fault Injection |
+| **악성 패키지 거부** | CRC 불일치 펌웨어 전송 | 100% 거부, DTC 저장 | CANoe SIL |
+| **전원 차단 복구** | Programming Session 중 배터리 차단 | 이전 버전 자동 복구 | HIL (배터리 시뮬레이터) |
+| **OTA 완료 기능 회귀** | OTA 성공 후 전체 기능 자동 테스트 | 모든 55 REQ 통과 | CANoe Automation |
+
+### SV-09: Gateway 진단 가용성 검증 (SG-09, QM)
+
+| 검증 항목 | 시나리오 | 기준 | 검증 방법 |
+|---------|---------|------|---------|
+| **Gateway Routing 연속성** | CAN-LS Bus Off 주입 중 진단 시도 | Graceful Abort + DTC | CANoe CAN Error Frame |
+| **DoIP 연결 복구** | Ethernet 케이블 단락 후 재연결 | 30초 이내 재연결 | HIL Network Fault |
+| **Gateway 라우팅 지연** | 고부하 (90% Bus Load) 상황 | ≤ 5ms 유지 | CANoe Bus Load Test |
+
+### E2E 안전 검증 시나리오 (SV-E2E-001)
+
+```
+검증 목적: 핵심 시나리오 전체 흐름의 안전성 확인
+
+시나리오:
+  Step 1. BCM 고장 발생 (Window Motor DTC B1234)
+  Step 2. Cluster 경고등 < 50ms 활성화 검증
+  Step 3. UDS 진단으로 DTC 수집 (0x19 0x02)
+  Step 4. OTA 업데이트 완료
+  Step 5. 모든 안전 기능 정상 복귀 확인
+
+합격 기준:
+  ✅ Cluster 경고등 FTTI < 1000ms (SG-06 FSR-B03)
+  ✅ OTA 성공률 100% (10회/10회)
+  ✅ OTA 후 Safety 기능 회귀 없음
+  ✅ Rollback 성공률 100% (실패 시나리오 10회)
+```
+

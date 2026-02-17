@@ -146,6 +146,35 @@ HARA에서 도출된 Safety Goals를 기반으로 **Functional Safety Requiremen
 
 ---
 
+
+
+---
+
+### 3.5 추가 FSR — 진단/OTA 시나리오 (v2.1)
+
+#### FSR-B04: Central Gateway 가용성 (SG-09 → QM / 강화 적용)
+
+- **Safety Goal**: SG-09 — Gateway 라우팅 오류 감지 및 진단 가용성 보장
+- **System Requirement**: REQ-058 (Gateway OTA Path)
+- **ASIL**: QM (강화: 시스템 신뢰성을 위해 ASPICE 레벨 관리)
+- **Description**: Central Gateway는 CAN-LS (BCM Domain), CAN-HS2 (Infotainment Domain),
+  Ethernet (OTA Server) 간 메시지 라우팅 연속성을 보장해야 한다.
+  라우팅 오류 감지 시 Fail-Safe 진단 채널로 전환해야 한다.
+- **Safe State**: 직접 CAN 연결(Gateway Bypass) 또는 DTC 저장 후 대기
+- **Verification**: Gateway Fault Injection (CAN Bus Off 시나리오), CANoe 시뮬레이션
+
+#### FSR-QM02: OTA 통신 무결성 (SG-08 → ASIL-A)
+
+- **Safety Goal**: SG-08 — OTA 업데이트 중단 시 자동 Rollback
+- **System Requirement**: REQ-014 (OTA 실패 자동복구), REQ-059 (E2E 시나리오)
+- **ASIL**: ASIL-A
+- **FTTI**: N/A (OTA는 OM-05 정차 모드에서만 동작)
+- **Description**: UDS 프로그래밍 세션(0x10 0x02) 시작 후 0x37 Transfer Exit 완료 전
+  전원 차단, 타임아웃, CRC 오류 발생 시 시스템은 자동으로 이전 정상 펌웨어로 Rollback해야 한다.
+- **Safe State**: 이전 펌웨어 복구 완료 + DTC 기록
+- **Verification**: OTA 중단 시나리오 테스트 (10회 반복, 100% Rollback 성공)
+
+
 ## 4. 예비 아키텍처 가정 (Preliminary Architectural Assumptions)
 
 > **ISO 26262-3:2018 Clause 8.4.4**: FSC는 시스템 아키텍처에 대한 예비 가정을 포함해야 합니다.

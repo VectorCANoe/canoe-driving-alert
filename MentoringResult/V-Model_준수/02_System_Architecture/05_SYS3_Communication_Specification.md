@@ -96,3 +96,53 @@ Extended Safety Features:
 ---
 
 **Auto-generated**: 2026-02-14 14:59:03
+
+---
+
+## 5. UDS 서비스 사양 (ISO 14229-1 기반)
+
+> **핵심 시나리오** Fault Injection → Diagnostics → OTA에서 사용하는 UDS 서비스 정의
+
+| SID | 서비스 이름 | 서브함수 | 방향 | 시나리오 단계 | CANoe 구현 |
+|-----|-----------|---------|------|------------|-----------|
+| **0x10** | Session Control | 0x01 Default / 0x02 Programming / 0x03 Extended | Tester→ECU | Phase 3,4 | CAPL `diagRequest` |
+| **0x14** | Clear DTC | 0xFFFFFF (All DTCs) | Tester→ECU | Phase 3 | CAPL `diagRequest` |
+| **0x19** | Read DTC Info | 0x02 By Status / 0x06 Extended Data / 0x09 Snapshot | Tester→ECU | Phase 3 | CAPL `diagRequest` |
+| **0x22** | Read Data by ID | 0xF101 SW Version / 0xF189 App Fingerprint | Tester→ECU | Phase 3 | CAPL `diagRequest` |
+| **0x34** | Request Download | compressionMethod, memoryAddress | OTA→ECU | Phase 4 | CAPL + .NET |
+| **0x36** | Transfer Data | blockSequenceCounter, transferRequestParameter | OTA→ECU | Phase 4 | CAPL + .NET |
+| **0x37** | Transfer Exit | — | OTA→ECU | Phase 4 | CAPL + .NET |
+| **0x7F** | Negative Response | NRC: 0x22 conditionsNotCorrect / 0x78 requestCorrectlyReceived | ECU→Tester | 전체 | 자동 처리 |
+
+### UDS 타이밍 파라미터 (ISO 14229-1 Table C.1)
+
+| 파라미터 | 값 | 설명 |
+|---------|-----|------|
+| P2 | 50ms | ECU 응답 대기 (Default) |
+| P2* | 5000ms | ECU 응답 대기 (Extended, suppressPositiveResponse 이후) |
+| P3 | 5000ms | 다음 요청 전 최대 대기 (세션 타임아웃) |
+
+---
+
+## 6. DoIP 메시지 사양 (ISO 13400-2 기반)
+
+> Central Gateway ↔ OTA Server 간 Ethernet 통신 사양
+
+| PayloadType | 이름 | 방향 | 용도 |
+|-------------|------|------|------|
+| **0xE001** | Routing Activation Request | OTA Server → CGW | DoIP 세션 초기화 |
+| **0xE002** | Routing Activation Response | CGW → OTA Server | 연결 확인 (0x10=OK) |
+| **0xE004** | Diagnostic Message | OTA Server ↔ ECU (via CGW) | UDS 메시지 캡슐화 |
+| **0xE005** | Diagnostic Message Positive ACK | ECU → OTA Server | UDS 응답 정상 수신 |
+| **0xE006** | Diagnostic Message Negative ACK | ECU → OTA Server | UDS 응답 오류 |
+
+### CANoe DoIP 설정
+
+```
+CANoe Network: Ethernet (100BASE-TX)
+Server IP: 192.168.1.100 (OTA Server 가상 노드)
+ECU IP: 192.168.1.10 (Central Gateway)
+Port: 13400 (DoIP 표준)
+Logical Address BCM: 0x0010
+```
+

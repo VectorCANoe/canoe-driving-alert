@@ -114,6 +114,55 @@
 
 ---
 
+
+---
+
+### 3.5 TC-SYS-010: UDS Diagnostic Session — System Level (REQ-056)
+
+**Test Objective**: 전체 시스템에서 UDS 세션 전환 검증 (모든 ECU)
+**Test Setup**: HIL (23 ECU 시뮬레이터 + Real CGW)
+**Test Steps**:
+1. Diagnostic Tester: 0x10 0x03 → BCM, vECU, Cluster 각각 전송
+2. 모든 ECU 응답 확인 (0x50 0x03)
+3. 세션 중 차량 시동 OFF → 모든 ECU Default Session 복귀 확인
+**Pass Criteria**: 모든 ECU 응답, 시동 OFF 복귀 100%
+
+---
+
+### 3.6 TC-SYS-011: E2E DTC Propagation — BCM → GW → vECU → Cluster (REQ-057, REQ-058)
+
+**Test Objective**: DTC 발생부터 Cluster 경고등까지 전체 경로 검증
+**Test Setup**: HIL + CANoe (CAN-LS, CAN-HS2, Ethernet 통합)
+**Test Steps**:
+1. BCM Fault Injection: Window Motor Overcurrent
+2. DTC 저장 → CAN-LS 전송 → CGW 라우팅 → CAN-HS2 → vECU → Cluster
+3. 각 경로 지연 측정 (CANoe Trace)
+4. OTA Server 수신 확인 (Ethernet/DoIP)
+**Pass Criteria**: 전체 경로 지연 < 50ms, 경고등 활성화 확인, OTA Server 수신
+
+---
+
+### 3.7 TC-SYS-012: OTA Programming Session — System Level (REQ-012~014, REQ-059)
+
+**Test Objective**: 실차 수준 OTA 업데이트 전 과정 시스템 검증
+**Test Setup**: HIL + CANoe OTA Server (DoIP)
+**Test Steps**:
+1. OTA Server: DoIP 연결 → UDS 0x10 0x02 → 0x34 → 0x36×16 → 0x37
+2. BCM 재시작 → 기능 정상 확인
+3. 조명/경고/ADAS UI 기능 All Pass 확인 (All 55 requirements regression)
+4. OTA 실패 시나리오: Phase 4 중단 → Rollback 확인
+**Pass Criteria**: OTA 성공 100%, 기능 회귀 0, Rollback 성공
+
+---
+
+### 3.8 TC-SYS-013: Fault → Diag → OTA Regression Suite (REQ-059)
+
+**Test Objective**: E2E Master Scenario 자동화 회귀 테스트
+**Test Setup**: HIL 완전 자동화 (CANoe Test Module)
+**Test Steps**: INT-006 시나리오 3회 연속 자동 실행
+**Pass Criteria**: 3/3 성공, 평균 소요 시간 < 120초, Pass/Fail 자동 리포트 생성
+
+
 ## 4. Safety Validation Tests
 
 ### 4.1 TC-SYS-101: Fail-Safe Mode (REQ-023)

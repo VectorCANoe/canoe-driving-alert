@@ -41,13 +41,14 @@
 4. **경고 제어 로직** - 안전 경고 우선순위 관리
 5. **ADAS UI 연동** - LDW, AEB, BSD 이벤트 처리
 6. **진단/OTA 기능** - UDS 프로토콜 구현
+7. **Central Gateway (CGW)** - 차량 네트워크 라우팅 허브 (**검증 핵심 인프라**: CAN-LS/HS1/HS2 간 메시지 라우팅, Ethernet/DoIP OTA 경로 제공)
 
 #### 제외 (Out of Scope):
 1. **IVI Hardware** - 디스플레이 하드웨어 (별도 Tier-1)
 2. **Lighting Hardware** - Ambient LED 하드웨어 (BCM 담당)
 3. **ADAS Sensor** - Camera, Radar 하드웨어 (ADAS Domain)
-4. **CAN Gateway** - 물리적 Gateway ECU (별도 공급사)
-5. **Powertrain ECU** - EMS, TCU (기존 시스템)
+4. **Powertrain ECU** - EMS, TCU (기존 시스템, 입력 신호만 수신)
+5. **실제 OTA 클라우드 서버** - 물리적 클라우드 서버 (CANoe CAPL 소켓으로 모사)
 
 ---
 
@@ -61,8 +62,8 @@
 | **F-02** | Safety Warning Display | 후진, 도어 개방 등 안전 경고 UI 표시 |
 | **F-03** | ADAS UI Integration | LDW, AEB, BSD 이벤트 시각적 경고 |
 | **F-04** | User Profile Management | 운전자별 조명/경고 설정 저장 |
-| **F-05** | Diagnostic Services | UDS 0x14, 0x19 진단 서비스 |
-| **F-06** | OTA Update | UDS 0x34/0x36/0x37 OTA 업데이트 |
+| **F-05** | Diagnostic Services | UDS **0x10** (Session Control), **0x14** (Clear DTC), **0x19** (Read DTC) 진단 서비스 |
+| **F-06** | OTA Update | UDS **0x10 0x02** (Programming Session), **0x34** (Download), **0x36** (Transfer), **0x37** (Exit) |
 | **F-07** | Fault Detection & Handling | CAN 통신 오류, 센서 고장 감지 |
 
 > **Note v2.0**: ASIL은 Item Definition 단계에서 사전 할당할 수 없습니다 (ISO 26262-3:2018, Clause 7).
@@ -113,6 +114,50 @@
 │  └──────────────────────────────────────────────────────┘   │
 └─────────────────────────────────────────────────────────────┘
 ```
+
+
+---
+
+## 🔴 핵심 검증 시나리오 — Master E2E Scenario (Red Thread)
+
+> 본 프로젝트의 모든 문서는 아래 시나리오를 중심 실(Red Thread)로 연결됩니다.
+> ASPICE SYS.2는 "시나리오 기반 요구사항 도출"을 명시합니다.
+
+```
+[Phase 1] Fault Injection (고장 주입)
+  BCM (Body Domain, CAN-LS)
+    └─ Window Motor Overcurrent 감지 (50A > 정상 5A)
+    └─ DTC B1234 저장 (ISO 14229 DTC Format)
+    └─ BCM_FaultStatus CAN 메시지 전송 (CAN-LS, 0x500)
+
+[Phase 2] Gateway Routing & Cluster Warning (중앙 게이트웨이 라우팅)
+  Central Gateway (CGW)
+    └─ CAN-LS 수신 (BCM_FaultStatus 0x500)
+    └─ CAN-HS2 라우팅 → vECU (0x500 → CAN-HS2 broadcast)
+    └─ Ethernet/DoIP 경로 제공 → OTA 서버 연결 (ISO 13400)
+  vECU (CAN-HS2)
+    └─ Cluster 경고등 활성화 (Warning Priority: P0)
+    └─ DTC 이력 내부 기록
+
+[Phase 3] UDS Diagnostics (진단 통신)
+  CANoe Tester (CAPL 기반 진단 노드)
+    └─ UDS 0x10 0x03 (Extended Diagnostic Session) → BCM
+    └─ UDS 0x19 0x02 (Read DTC by Status Mask) → DTC B1234 수집
+    └─ TCP/IP → 가상 OTA 서버 전송 (DTC 데이터 패킷)
+
+[Phase 4] OTA Update (무선 업데이트)
+  OTA Server (CANoe 가상 노드, Ethernet)
+    └─ SW 버전 분석 → 업데이트 결정
+    └─ UDS 0x10 0x02 (Programming Session) → BCM
+    └─ UDS 0x34 (Request Download, 64KB)
+    └─ UDS 0x36 × N (Transfer Data, 4KB/block)
+    └─ UDS 0x37 (Transfer Exit)
+    └─ BCM 재시작 → DTC 소거 → 정상 복귀 검증
+```
+
+**적용 표준**: ISO 14229-1 UDS, ISO 13400-2 DoIP, ISO 26262-4 (Safety), ASPICE PAM 3.1
+
+---
 
 ### 4.2 외부 인터페이스 (External Interfaces)
 
@@ -331,6 +376,21 @@
 | **Project Manager** | | | |
 
 ---
+
+
+---
+
+## 12. 산업 아키텍처 맥락 (Industry Architecture Context)
+
+| 단계 | 아키텍처 | 특징 | 상태 |
+|------|---------|------|------|
+| 과거 | 분산 Domain ECU | 도메인별 독립 CAN 버스 | Legacy |
+| **현재 (본 프로젝트)** | **Central Gateway 중심** | **CGW가 모든 도메인 중재, OTA/Diagnostics 허브** | **✅ 적용** |
+| 미래 | Zonal Controller 기반 | 차량을 물리적 Zone으로 나눠 Zonal ECU가 국소 제어 | SDV 방향 |
+
+> **본 프로젝트는 Central Gateway 중심 아키텍처**를 채택합니다.
+> Gateway가 CAN-LS (BCM), CAN-HS2 (vECU), Ethernet (OTA Server) 를 연결하는
+> 통합 진단/OTA 허브 역할을 수행하며, 이는 Zonal 전환 준비 단계에서도 동일하게 활용됩니다.
 
 ## 11. 개정 이력 (Revision History)
 

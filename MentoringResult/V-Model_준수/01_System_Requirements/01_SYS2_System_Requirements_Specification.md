@@ -9,13 +9,60 @@
 
 ---
 
+
+---
+
+## 🔴 핵심 검증 시나리오 — Master E2E Scenario (Red Thread)
+
+> 본 프로젝트의 모든 문서는 아래 시나리오를 중심 실(Red Thread)로 연결됩니다.
+> ASPICE SYS.2는 "시나리오 기반 요구사항 도출"을 명시합니다.
+
+```
+[Phase 1] Fault Injection (고장 주입)
+  BCM (Body Domain, CAN-LS)
+    └─ Window Motor Overcurrent 감지 (50A > 정상 5A)
+    └─ DTC B1234 저장 (ISO 14229 DTC Format)
+    └─ BCM_FaultStatus CAN 메시지 전송 (CAN-LS, 0x500)
+
+[Phase 2] Gateway Routing & Cluster Warning (중앙 게이트웨이 라우팅)
+  Central Gateway (CGW)
+    └─ CAN-LS 수신 (BCM_FaultStatus 0x500)
+    └─ CAN-HS2 라우팅 → vECU (0x500 → CAN-HS2 broadcast)
+    └─ Ethernet/DoIP 경로 제공 → OTA 서버 연결 (ISO 13400)
+  vECU (CAN-HS2)
+    └─ Cluster 경고등 활성화 (Warning Priority: P0)
+    └─ DTC 이력 내부 기록
+
+[Phase 3] UDS Diagnostics (진단 통신)
+  CANoe Tester (CAPL 기반 진단 노드)
+    └─ UDS 0x10 0x03 (Extended Diagnostic Session) → BCM
+    └─ UDS 0x19 0x02 (Read DTC by Status Mask) → DTC B1234 수집
+    └─ TCP/IP → 가상 OTA 서버 전송 (DTC 데이터 패킷)
+
+[Phase 4] OTA Update (무선 업데이트)
+  OTA Server (CANoe 가상 노드, Ethernet)
+    └─ SW 버전 분석 → 업데이트 결정
+    └─ UDS 0x10 0x02 (Programming Session) → BCM
+    └─ UDS 0x34 (Request Download, 64KB)
+    └─ UDS 0x36 × N (Transfer Data, 4KB/block)
+    └─ UDS 0x37 (Transfer Exit)
+    └─ BCM 재시작 → DTC 소거 → 정상 복귀 검증
+```
+
+**적용 표준**: ISO 14229-1 UDS, ISO 13400-2 DoIP, ISO 26262-4 (Safety), ASPICE PAM 3.1
+
+---
+
+---
+
 ## 1. 요구사항 개요
 
-**총 요구사항**: 55개
+**총 요구사항**: 59개 (REQ-001~055 기존 + REQ-056~059 시나리오 보강)
 
 | Category | Count | ASIL Distribution |
 |----------|-------|-------------------|
 | 기능 요구사항 (Functional) | 36 | D: 2, C: 4, B: 23, A: 1 |
+| **시나리오 요구사항 (Scenario/E2E)** | **4** | **B: 2, A: 1, QM: 1** |
 | 안전 요구사항 (Safety) | 11 | - |
 | 비기능 요구사항 (Non-Functional) | 11 | - |
 
@@ -133,12 +180,12 @@
 ---
 
 
-### REQ-010: BDC FaultInjection DTC생성
+### REQ-010: BCM FaultInjection DTC생성
 
 - **Category**: 진단/OTA 요구사항 (Diagnostic/OTA)
 - **Priority**: Critical (P0) - Phase 1
 - **ASIL**: ASIL-B
-- **Description**: BDC ECU 통신 오류 또는 센서 이상 상황을 인위적으로 주입했을 때 해당 오류를 정상적으로 감지하여 표준 DTC 코드로 저장해야 한다...
+- **Description**: BCM (Body Control Module) ECU 통신 오류 또는 센서 이상 상황을 인위적으로 주입했을 때 해당 오류를 정상적으로 감지하여 표준 DTC 코드로 저장해야 한다...
 - **Verification Method**: Fault Injection Test
 - **Related Systems**: Diagnostics (진단)
 
@@ -784,6 +831,70 @@ vECU는 사전에 정의된 위험도 기준에 따라
 - ✅ Traceability to Stakeholder Requirements
 - ✅ ASIL Classification
 - ✅ Verification Methods Defined
+
+---
+
+
+---
+
+### REQ-056: UDS Session Control — Diagnostic/Programming Session 전환
+
+- **Category**: 시나리오 요구사항 (Scenario — Diagnostics)
+- **Priority**: Critical (P0) - Phase 1
+- **ASIL**: ASIL-B
+- **Description**: 진단 Tester는 UDS 0x10 서비스를 통해 ECU의 진단 세션을 전환해야 한다.
+  Default Session(0x01) → Extended Session(0x03) → Programming Session(0x02) 전환이 가능해야 하며,
+  각 세션 전환은 Positive Response(0x50) 또는 Negative Response(0x7F + NRC)로 응답해야 한다.
+  세션 타임아웃(P3=5000ms) 초과 시 Default Session으로 자동 복귀해야 한다.
+- **Verification Method**: SIL (CANoe CAPL Tester), Unit Test
+- **Related Systems**: Diagnostics (진단), Central Gateway
+- **Traceability**: FSR-B03, SG-06 → TC-SWQUAL-301
+
+---
+
+### REQ-057: UDS Read DTC Information — DTC 수집 및 전송
+
+- **Category**: 시나리오 요구사항 (Scenario — Diagnostics)
+- **Priority**: Critical (P0) - Phase 1
+- **ASIL**: ASIL-B
+- **Description**: 진단 Tester는 UDS 0x19 서비스를 통해 BCM에 저장된 DTC 정보를 수집해야 한다.
+  서브함수: 0x02 (Read DTC by Status Mask), 0x06 (Read DTC Extended Data),
+  0x09 (Read DTC with Snapshot). 수집된 DTC는 TCP/IP를 통해 가상 OTA 서버로 전송되어야 한다.
+  BCM에 DTC B1234 (Window Motor Overcurrent) 주입 시 0x19 0x02 응답에 포함되어야 한다.
+- **Verification Method**: SIL (CANoe CAPL Tester), Fault Injection Test
+- **Related Systems**: Diagnostics (진단), Central Gateway
+- **Traceability**: FSR-B03, SG-06 → TC-SWQUAL-302
+
+---
+
+### REQ-058: Central Gateway OTA Path — DoIP 연결을 통한 OTA 서버 통신
+
+- **Category**: 시나리오 요구사항 (Scenario — Gateway/OTA)
+- **Priority**: Critical (P0) - Phase 1
+- **ASIL**: QM (Gateway routing은 OTA 품질 관리 범위)
+- **Description**: Central Gateway는 CAN-LS (BCM Domain) 메시지를 수신하여
+  CAN-HS2 (vECU)로 라우팅하고, 동시에 Ethernet/DoIP (ISO 13400-2)를 통해
+  가상 OTA 서버와 연결되는 경로를 제공해야 한다.
+  CANoe 환경에서는 CAPL TCP/IP 소켓으로 OTA 서버를 모사(Mocking)한다.
+  Gateway 라우팅 지연: CAN-LS → CAN-HS2 ≤ 5ms, CAN → DoIP 변환 ≤ 10ms.
+- **Verification Method**: SIL (CANoe 3-Bus Simulation), Integration Test
+- **Related Systems**: Central Gateway, OTA Update, CAN Communication
+- **Traceability**: FSR-B04, SG-09 → TC-SYS-011
+
+---
+
+### REQ-059: E2E Scenario Regression Coverage — 전 시나리오 자동화 검증
+
+- **Category**: 시나리오 요구사항 (Scenario — E2E)
+- **Priority**: High (P1) - Phase 1-2
+- **ASIL**: QM
+- **Description**: CANoe 환경에서 Fault Injection → Diagnostics → OTA Update의 전체 시나리오를
+  단일 자동화 테스트 스크립트로 반복 실행할 수 있어야 한다.
+  시나리오 총 소요 시간: < 120초. 회귀 테스트(Regression) 목적으로 반복 실행 가능해야 하며,
+  Pass/Fail 결과를 자동으로 로깅해야 한다. (CI/CD 연계 가능)
+- **Verification Method**: SIL Automation (CANoe Test Module)
+- **Related Systems**: All (E2E)
+- **Traceability**: SG-08, QR-01 → TC-SYS-013
 
 ---
 

@@ -172,3 +172,33 @@
 ---
 
 **Document End**
+
+---
+
+## TSR-B04: Central Gateway Protocol Translation 안전 요구사항
+
+- **Source FSR**: FSR-B04
+- **ASIL**: QM (ASPICE 레벨 관리)
+- **Allocation**: Central Gateway ECU
+
+### 기술 안전 요구사항
+
+| TSR ID | 요구사항 | 검증 기준 |
+|--------|---------|---------|
+| **TSR-B04-01** | CAN-LS ↔ CAN-HS2 메시지 변환 지연 ≤ 5ms | CANoe Trace 타임스탬프 측정 |
+| **TSR-B04-02** | CAN → DoIP 변환 지연 ≤ 10ms | TCP/IP 패킷 타임스탬프 |
+| **TSR-B04-03** | 메시지 손실률 < 0.001% (1,000,000 메시지 중 < 10개) | 장시간 부하 테스트 |
+| **TSR-B04-04** | DoIP 연결 실패 시 Graceful Abort (OTA 세션 정상 종료) | Fault Injection: TCP 연결 차단 |
+| **TSR-B04-05** | Gateway CAN Bus Off 시 Fail-Safe: DTC 저장 후 대기 | CAN Bus Off 주입 테스트 |
+
+### CANoe 검증 환경
+
+```
+[CANoe Simulation]
+  Node: BCM_Sim (CAPL) → CAN-LS 0x500 BCM_FaultStatus
+  Node: CGW_Sim (CAPL) → CAN-LS 수신 → CAN-HS2 라우팅
+                        → TCP/IP 소켓 → OTA_Server_Sim
+  Node: vECU_Sim (CAPL) → CAN-HS2 수신 → Cluster 경고
+  Node: OTA_Server_Sim (CAPL/.NET) → DoIP 수신 → UDS OTA
+```
+

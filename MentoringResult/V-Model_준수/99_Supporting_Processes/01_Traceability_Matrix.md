@@ -610,3 +610,16 @@ Test Cases
 ---
 
 **Document Version**: 2.0 | **Last Updated**: 2026-02-17
+
+---
+
+## E2E Master Scenario 추적성
+
+| 시나리오 단계 | 관련 REQ | 관련 FSR | 테스트 케이스 | 문서 |
+|------------|---------|---------|------------|------|
+| Phase 1: Fault Injection | REQ-010 | FSR-B03 | INT-006 Ph.1, TC-SWQUAL-302 | 00_HARA, 01_SRS |
+| Phase 2: Gateway Routing | REQ-058 | FSR-B04 | INT-006 Ph.2, TC-SWQUAL-306 | 02_Architecture |
+| Phase 3: UDS Diagnostics | REQ-056, REQ-057 | FSR-B03 | INT-006 Ph.3, TC-SWQUAL-301~302 | 02_CommSpec |
+| Phase 4: OTA Update | REQ-012~014, REQ-059 | FSR-QM02 | INT-006 Ph.4, TC-SWQUAL-303~305 | 01_SRS |
+| E2E Regression | REQ-059 | — | TC-SYS-013, SV-E2E-001 | 12_SafetyVal |
+

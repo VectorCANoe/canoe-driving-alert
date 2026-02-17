@@ -44,6 +44,54 @@
 
 ---
 
+
+
+---
+
+## 2.1 Central Gateway 아키텍처 역할 (핵심)
+
+> Central Gateway는 단순 메시지 라우터가 아닌 **통합 진단/OTA 허브**입니다.
+
+| 역할 | 설명 | 관련 시나리오 |
+|------|------|------------|
+| **Multi-Bus Routing** | CAN-LS (BCM) ↔ CAN-HS2 (vECU) ↔ CAN-HS1 (Powertrain) | 모든 CAN 메시지 중재 |
+| **Diagnostics Bridge** | CAN-based UDS ↔ DoIP (ISO 13400-2) 프로토콜 변환 | Phase 3: UDS Diagnostics |
+| **OTA Path Provider** | Ethernet/DoIP를 통한 OTA 서버 ↔ BCM 경로 제공 | Phase 4: OTA Update |
+| **Firewall** | 허가되지 않은 도메인 간 메시지 차단 (보안) | 사이버보안 요구사항 |
+| **Network Monitor** | 버스 부하 모니터링, Bus Off 감지 | FSR-B03, FSR-B04 |
+
+### 외부 시스템 연결 (검증 범위)
+
+```
+[Internal — In Scope]
+  CAN-LS:   BCM, BDC, HVAC, Door Controllers
+  CAN-HS1:  EMS, TCU, ESP, MDPS
+  CAN-HS2:  vECU, IVI, Cluster, Camera, Radar, SCC
+
+  Central Gateway (CGW) — 검증 허브
+      │
+      ├─[CAN-LS/HS1/HS2] 내부 도메인 라우팅
+      │
+      └─[Ethernet/DoIP] OTA Server (CANoe 가상 노드)
+
+[External — CANoe 가상화]
+  OTA Server: CAPL TCP/IP 소켓으로 모사
+  Diagnostic Tester: CANoe CAPL Tester Node
+```
+
+### Zonal Architecture 전환 맥락
+
+```
+현재 (본 프로젝트): Central Gateway 중심
+  → CGW = 단일 라우팅 허브, Domain ECU 간 중재
+
+미래 (SDV / Zonal):
+  → Zonal Controller가 물리적 Zone 내 ECU를 직접 관리
+  → Central에서 Zonal로 권한 위임 구조
+  → 본 프로젝트의 OTA/Diagnostics 흐름은 Zonal에서도 동일하게 적용
+```
+
+
 ## 3. Safety Architecture
 
 ### ASIL Decomposition

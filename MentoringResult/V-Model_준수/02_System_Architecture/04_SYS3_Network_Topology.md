@@ -18,6 +18,7 @@
 | **CAN-HS1** | High-Speed 1 | 500 kbps | Powertrain, Chassis | 7 | ~40% |
 | **CAN-HS2** | High-Speed 2 | 500 kbps | Infotainment, ADAS | 10 | ~35% |
 | **CAN-LS** | Low-Speed | 125 kbps | Body | 6 | ~15% |
+| **Ethernet** | DoIP (ISO 13400) | 100 Mbps | OTA Server (외부) | 1 | ~5% |
 
 ---
 
@@ -68,3 +69,32 @@ CAN-LS (125 kbps):
 ---
 
 **Auto-generated**: 2026-02-14 14:59:03
+
+---
+
+## 5. OTA 통신 경로 상세 (E2E Message Flow)
+
+```
+Fault Injection → DTC 전파 → 진단 → OTA 업데이트 메시지 흐름
+
+BCM (CAN-LS)
+  │ BCM_FaultStatus (0x500, 100ms cycle)
+  ▼
+Central Gateway (CGW)
+  │ [CAN-LS → CAN-HS2] BCM_FaultStatus 라우팅 (≤5ms)
+  │ [CAN-LS → Ethernet] DoIP Routing Activation (0xE001)
+  ▼
+vECU (CAN-HS2)              OTA Server (Ethernet/DoIP)
+  │ Cluster 경고등 활성화    │ DoIP Diagnostic Message (0xE004)
+  │                         │ UDS 0x10 0x03 (Extended Session)
+  │                         │ UDS 0x19 0x02 (Read DTC)
+  │                         │   → DTC B1234 수신 확인
+  │                         │ UDS 0x10 0x02 (Programming Session)
+  │                         │ UDS 0x34 (Request Download, 64KB)
+  │                         │ UDS 0x36 × 16 (Transfer Data, 4KB/block)
+  │                         │ UDS 0x37 (Transfer Exit)
+  │                         │ BCM 재시작 → DTC 소거 확인
+```
+
+**CANoe 구현**: CAPL TCP/IP 소켓 + OTA Server Node + CAPL Tester Node
+
