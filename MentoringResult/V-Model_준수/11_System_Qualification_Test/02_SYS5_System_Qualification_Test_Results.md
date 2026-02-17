@@ -26,7 +26,7 @@
 
 ## 2. Detailed Test Results
 
-### 2.1 TC-SYS-001: AEB Emergency Braking UI
+### 2.1 TC-A02: AEB Emergency Braking UI
 
 **Execution Date**: 2026-03-15 (Expected)
 **Tester**: John Kim
@@ -72,7 +72,7 @@ Time | CAN ID | Data (Hex) | Description
 
 ---
 
-### 2.2 TC-SYS-002: LDW Dual-Channel Warning
+### 2.2 TC-F01: LDW Dual-Channel Warning
 
 **Execution Date**: 2026-03-15 (Expected)
 **Tester**: John Kim
@@ -121,7 +121,7 @@ Result:
 
 ---
 
-### 2.3 TC-SYS-003: Reverse + Door Open Warning (Truth Table)
+### 2.3 TC-A03: Reverse + Door Open Warning (Truth Table)
 
 **Execution Date**: 2026-03-16 (Expected)
 **Tester**: Sarah Lee
@@ -152,7 +152,7 @@ Result:
 
 ---
 
-### 2.4 TC-SYS-004: Sports Mode Ambient Lighting
+### 2.4 TC-A01: Sports Mode Ambient Lighting
 
 **Execution Date**: 2026-03-18 (Expected)
 **Tester**: Mike Park
@@ -183,7 +183,7 @@ Result:
 
 ### 2.5 ~ 2.55: Additional Functional Test Results
 
-(Expected results for REQ-005 through REQ-055, all PASS)
+(Expected results for REQ-N01 through REQ-N05, all PASS)
 
 **Functional Tests Summary**: **55/55 PASS (100%)**
 

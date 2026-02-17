@@ -28,9 +28,9 @@
 | ASIL | Safety Goals | Safety Requirements | System Req 매핑 |
 |------|--------------|---------------------|-----------------|
 | **ASIL-D** | 2개 (SG-01, SG-02) | 8개 | REQ-A01, REQ-A02 등 |
-| **ASIL-B** | 3개 (SG-03, SG-04, SG-06) | 31개 | REQ-002, REQ-006, REQ-G04 등 |
-| **ASIL-A** | 1개 (SG-05) | 12개 | REQ-003 등 |
-| **QM** | 1개 (SG-07) | 8개 | REQ-004, REQ-005 등 |
+| **ASIL-B** | 3개 (SG-03, SG-04, SG-06) | 31개 | REQ-F01, REQ-A03, REQ-G04 등 |
+| **ASIL-A** | 1개 (SG-05) | 12개 | REQ-F01 등 |
+| **QM** | 1개 (SG-07) | 8개 | REQ-D08, REQ-N01 등 |
 
 > **Note v3.0**: HARA v2.0에서 H-04/H-07 ASIL-C → ASIL-B로 수정됨. 따라서 ASIL-C Safety Goals (구 SG-04, SG-07)이 ASIL-B로 재분류되었습니다. ASIL-C 분류는 더 이상 존재하지 않습니다.
 
@@ -151,7 +151,7 @@
 ### 3.4 SR-B-004: Reverse + Door Open Logic (ASIL 수정: D→B)
 
 **Source**: SG-04 (도어 경고) — HARA v2.0: H-04 S3/E2/C2 = ASIL-B (수정됨)
-**System Requirement**: REQ-006
+**System Requirement**: REQ-A03
 **ASIL**: ASIL-B
 
 > **ASIL 수정 근거**: HARA v2.0에서 H-04 (S3/E2/C2)가 ISO 26262-3:2018 Table 4에 따라 ASIL-B로 수정됨.
@@ -352,7 +352,7 @@
 | SR-D-001 | REQ-A02 | TC-A02, TC-A02 |
 | SR-D-002 | REQ-A01 | TC-F01 |
 | SR-D-003 | REQ-G04 | TC-N03, TC-G04 |
-| SR-D-004 | REQ-006 | TC-SYS-003 |
+| SR-D-004 | REQ-A03 | TC-A03 |
 
 **100% Traceability** (모든 Safety Requirements가 System Req와 Test Case로 연결됨)
 

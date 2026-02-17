@@ -29,7 +29,7 @@
 
 ### INT-001: vECU ↔ SCC (AEB) 통합
 
-- **Requirement**: REQ-029 (AEB 경고)
+- **Requirement**: REQ-A02 (AEB 경고)
 - **ASIL**: ASIL-D
 - **Test Environment**: HIL + CANoe
 - **Precondition**:
@@ -47,7 +47,7 @@
 
 ### INT-002: vECU ↔ Front Camera (LDW) 통합
 
-- **Requirement**: REQ-027 (LDW 경고)
+- **Requirement**: REQ-A01 (LDW 경고)
 - **ASIL**: ASIL-D
 - **Test Environment**: HIL + CANoe
 - **Test Steps**:
@@ -62,7 +62,7 @@
 
 ### INT-003: vECU ↔ BCM (도어 센서) 통합
 
-- **Requirement**: REQ-006 (후진 중 도어 개방 경고)
+- **Requirement**: REQ-A03 (후진 중 도어 개방 경고)
 - **ASIL**: ASIL-D
 - **Test Environment**: HIL
 - **Test Steps**:
@@ -77,7 +77,7 @@
 
 ### INT-004: Gateway 라우팅 검증
 
-- **Requirement**: REQ-023 (통신 장애 대응)
+- **Requirement**: REQ-G04 (통신 장애 대응)
 - **ASIL**: ASIL-C
 - **Test Environment**: CANoe (3-Bus Simulation)
 - **Test Steps**:
@@ -90,7 +90,7 @@
 
 ### INT-005: 우선순위 중재 테스트
 
-- **Requirement**: REQ-037 (우선순위 기반 메시지 처리)
+- **Requirement**: REQ-A11 (우선순위 기반 메시지 처리)
 - **ASIL**: ASIL-B
 - **Test Environment**: CANoe
 - **Test Steps**:
@@ -107,7 +107,7 @@
 
 ### INT-006: E2E Master Scenario — Fault → Diagnostics → OTA Complete Chain
 
-- **Requirement**: REQ-010, REQ-056, REQ-057, REQ-058, REQ-059, REQ-012~014
+- **Requirement**: REQ-F02, REQ-D01, REQ-D02, REQ-G03, REQ-F04, REQ-O02~014
 - **ASIL**: ASIL-B (전체 경로)
 - **Test Environment**: CANoe SIL (3-Bus + Ethernet + CAPL Tester + OTA Server)
 - **Test Duration**: < 120초 (자동화 실행 기준)

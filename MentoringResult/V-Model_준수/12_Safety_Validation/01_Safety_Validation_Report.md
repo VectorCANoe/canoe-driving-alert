@@ -33,7 +33,7 @@
 **FTTI**: ≤ 100ms
 
 **Validation Evidence**:
-- ✅ TC-SYS-001: HIL Test (Response: 85ms)
+- ✅ TC-A02: HIL Test (Response: 85ms)
 - ✅ Field Test: 10,000 km, 238 AEB events, 100% warning activation
 - ✅ FTTI Compliance: Max response 95ms (< 100ms target)
 
@@ -48,7 +48,7 @@
 **FTTI**: ≤ 200ms
 
 **Validation Evidence**:
-- ✅ TC-SYS-002: HIL Test (Dual-channel verified)
+- ✅ TC-F01: HIL Test (Dual-channel verified)
 - ✅ Field Test: 152 LDW events, 100% dual-channel activation
 - ✅ Independence verified (Fault injection: one channel fail → other works)
 - ✅ FTTI Compliance: Max response 195ms
@@ -62,7 +62,7 @@
 **Safety Goal**: 후진 시 후방 장애물 감지 시 경고를 제공한다.
 
 **Validation Evidence**:
-- ✅ TC-SYS-015, TC-SYS-016: HIL Test
+- ✅ TC-F01, TC-A04: HIL Test
 - ✅ Field Test: Parking scenarios, 100% warning activation
 
 **Achievement**: ✅ **PASS** (ASIL-B)
@@ -74,7 +74,7 @@
 **Safety Goal**: 후진 중 도어 개방 시 즉시 위험 경고를 제공한다.
 
 **Validation Evidence**:
-- ✅ TC-SYS-003: Logic table test (16/16 combinations)
+- ✅ TC-A03: Logic table test (16/16 combinations)
 - ✅ Field Test: No false alarms, 100% detection
 
 **Achievement**: ✅ **PASS** (ASIL-C)

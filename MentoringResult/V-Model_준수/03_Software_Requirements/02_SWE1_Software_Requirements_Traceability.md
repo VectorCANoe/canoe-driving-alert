@@ -27,7 +27,7 @@ Software Unit Tests
 
 ## 2. System Req → Software Req Mapping
 
-### REQ-029: AEB 긴급 제동 경고
+### REQ-A02: AEB 긴급 제동 경고
 
 | Software Req | Description | ASIL |
 |--------------|-------------|------|
@@ -37,7 +37,7 @@ Software Unit Tests
 
 ---
 
-### REQ-027: LDW 차선 이탈 경고
+### REQ-A01: LDW 차선 이탈 경고
 
 | Software Req | Description | ASIL |
 |--------------|-------------|------|
@@ -47,7 +47,7 @@ Software Unit Tests
 
 ---
 
-### REQ-006: 후진 중 도어 개방 경고
+### REQ-A03: 후진 중 도어 개방 경고
 
 | Software Req | Description | ASIL |
 |--------------|-------------|------|
@@ -57,7 +57,7 @@ Software Unit Tests
 
 ---
 
-### REQ-001: Sports Mode Ambient Lighting
+### REQ-A01: Sports Mode Ambient Lighting
 
 | Software Req | Description | ASIL |
 |--------------|-------------|------|

@@ -29,10 +29,10 @@
 
 | Test Case | Result | Details |
 |-----------|--------|---------|
-| TC-SYS-001 (AEB Warning) | ✅ PASS | Response: 92ms |
-| TC-SYS-002 (LDW Warning) | ✅ PASS | Dual-channel OK |
-| TC-SYS-003 (Reverse + Door) | ✅ PASS | Logic 100% correct |
-| TC-SYS-004 (Sports Mode Lighting) | ✅ PASS | All color transitions OK |
+| TC-A02 (AEB Warning) | ✅ PASS | Response: 92ms |
+| TC-F01 (LDW Warning) | ✅ PASS | Dual-channel OK |
+| TC-A03 (Reverse + Door) | ✅ PASS | Logic 100% correct |
+| TC-A01 (Sports Mode Lighting) | ✅ PASS | All color transitions OK |
 | ... (51 more) | ... | ... |
 
 **Pass Rate**: 100% (55/55) ✅
@@ -114,10 +114,10 @@
 
 | Safety Goal | ASIL | Achievement | Evidence |
 |-------------|------|-------------|----------|
-| SG-01 (AEB 경고) | ASIL-D | ✅ | TC-SYS-001, Field Test |
-| SG-02 (LDW 경고) | ASIL-D | ✅ | TC-SYS-002, Field Test |
-| SG-03 (후진 경고) | ASIL-B | ✅ | TC-SYS-003 |
-| SG-04 (도어 경고) | ASIL-C | ✅ | TC-SYS-003 |
+| SG-01 (AEB 경고) | ASIL-D | ✅ | TC-A02, Field Test |
+| SG-02 (LDW 경고) | ASIL-D | ✅ | TC-F01, Field Test |
+| SG-03 (후진 경고) | ASIL-B | ✅ | TC-A03 |
+| SG-04 (도어 경고) | ASIL-C | ✅ | TC-A03 |
 | ... (4 more) | ... | ... | ... |
 
 **All 8 Safety Goals achieved** ✅

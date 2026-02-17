@@ -42,11 +42,11 @@
 
 ---
 
-## 3. Functional Test Cases (REQ-001 ~ REQ-055)
+## 3. Functional Test Cases (REQ-A01 ~ REQ-N05)
 
-### 3.1 TC-SYS-001: AEB Emergency Braking UI
+### 3.1 TC-A02: AEB Emergency Braking UI
 
-**Requirement**: REQ-029 (긴급 제동 발생 시 ADAS 연계 대시보드 시각적 경고 제공)
+**Requirement**: REQ-A02 (긴급 제동 발생 시 ADAS 연계 대시보드 시각적 경고 제공)
 **ASIL**: ASIL-D
 **Test Type**: Functional + Safety
 **Test Environment**: HIL + CANoe
@@ -95,9 +95,9 @@ Time | CAN ID | Data (Hex) | Description
 
 ---
 
-### 3.2 TC-SYS-002: LDW Lane Departure Warning (Dual-Channel)
+### 3.2 TC-F01: LDW Lane Departure Warning (Dual-Channel)
 
-**Requirement**: REQ-027 (차선 이탈 발생 시 ADAS 연계 경고 제공)
+**Requirement**: REQ-A01 (차선 이탈 발생 시 ADAS 연계 경고 제공)
 **ASIL**: ASIL-D
 **Test Type**: Functional + Safety (ASIL Decomposition)
 **Test Environment**: HIL + CANoe
@@ -147,9 +147,9 @@ Time   | CAN ID | Data | Destination
 
 ---
 
-### 3.3 TC-SYS-003: Reverse + Door Open Warning
+### 3.3 TC-A03: Reverse + Door Open Warning
 
-**Requirement**: REQ-006 (후진중 도어개방 경고제어)
+**Requirement**: REQ-A03 (후진중 도어개방 경고제어)
 **ASIL**: ASIL-D
 **Test Type**: Functional (Logic Test)
 **Test Environment**: HIL
@@ -194,9 +194,9 @@ CAN ID 0x220: LIGHTING_COLOR = 0xFF0000 (RED)
 
 ---
 
-### 3.4 TC-SYS-004: Sports Mode Ambient Lighting
+### 3.4 TC-A01: Sports Mode Ambient Lighting
 
-**Requirement**: REQ-001 (스포츠모드 속도연동 엠비언트조명)
+**Requirement**: REQ-A01 (스포츠모드 속도연동 엠비언트조명)
 **ASIL**: ASIL-B
 **Test Type**: Functional
 **Test Environment**: VIL (Vehicle-in-the-Loop)
@@ -233,7 +233,7 @@ CAN ID 0x220: LIGHTING_COLOR = 0xFF0000 (RED)
 
 ### 3.5 ~ 3.55: Additional Test Cases
 
-(Similar detailed specifications for REQ-002 through REQ-055)
+(Similar detailed specifications for REQ-F01 through REQ-N05)
 
 **Total Functional Test Cases**: 55개 (각 System Requirement당 1개 이상)
 
@@ -243,7 +243,7 @@ CAN ID 0x220: LIGHTING_COLOR = 0xFF0000 (RED)
 
 ### 4.1 TC-SYS-101: CAN Bus Off Recovery
 
-**Requirement**: REQ-023 (통신 장애 시 Fail-Safe 대응)
+**Requirement**: REQ-G04 (통신 장애 시 Fail-Safe 대응)
 **ASIL**: ASIL-C
 **Test Type**: Fault Injection
 **Test Environment**: HIL
@@ -283,7 +283,7 @@ Time | Event | vECU State
 
 ### 4.2 TC-SYS-102: Power Supply Variations
 
-**Requirement**: REQ-023 (전원 전압 변동 대응)
+**Requirement**: REQ-G04 (전원 전압 변동 대응)
 **ASIL**: ASIL-C
 **Test Type**: Environmental
 **Test Environment**: HIL + Power Supply Simulator
@@ -310,7 +310,7 @@ Time | Event | vECU State
 
 ### 4.3 TC-SYS-103: Message Timeout Detection
 
-**Requirement**: REQ-023 (신호 Timeout 검출)
+**Requirement**: REQ-G04 (신호 Timeout 검출)
 **ASIL**: ASIL-D
 **Test Type**: Fault Injection
 **Test Environment**: CANoe
@@ -346,7 +346,7 @@ Time | Event
 
 ### 5.1 TC-SYS-201: End-to-End Latency (AEB)
 
-**Requirement**: REQ-008 (시스템 반응속도)
+**Requirement**: REQ-N01 (시스템 반응속도)
 **Test Type**: Timing
 **Test Environment**: HIL + Logic Analyzer
 
@@ -378,7 +378,7 @@ Total: 65ms (< 100ms target)
 
 ### 5.2 TC-SYS-202: CPU Load Test
 
-**Requirement**: REQ-009 (장시간 동작 안정성)
+**Requirement**: REQ-N02 (장시간 동작 안정성)
 **Test Type**: Endurance
 **Test Environment**: HIL
 
@@ -478,7 +478,7 @@ Door Open (Reverse) | 10-20 | 100%
 
 | Week | Test Phase | Test Cases | Environment |
 |------|------------|------------|-------------|
-| 1-2 | Functional Tests | TC-SYS-001 ~ 055 | HIL |
+| 1-2 | Functional Tests | TC-A02 ~ 055 | HIL |
 | 3 | Safety Tests | TC-SYS-101 ~ 120 | HIL + Fault Injection |
 | 4 | Performance Tests | TC-SYS-201 ~ 210 | HIL + Logic Analyzer |
 | 5-9 | Endurance Test | TC-SYS-202 (100h) | HIL (automated) |

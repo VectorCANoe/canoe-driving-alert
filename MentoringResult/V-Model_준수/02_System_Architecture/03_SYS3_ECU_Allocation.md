@@ -15,13 +15,13 @@
 
 | ECU | Allocated Requirements | ASIL | DBC Source |
 |-----|------------------------|------|------------|
-| **vECU (IVI vECU)** | REQ-001, 004, 008~014, 027~047 | ASIL-D (최고) / ASIL-B (도메인 평균) | 본 프로젝트 신규 |
-| **Cluster ECU** | REQ-002, 006, 018, 027, 029, 031 | ASIL-D | hyundai_kia_generic.dbc |
-| **BCM** | REQ-003, 006, 021, 030, 051 | ASIL-C | vehicle_system.dbc |
-| **TCU** | REQ-002, 006, 015, 016, 020 | ASIL-C | vehicle_system.dbc |
-| **Front Camera** | REQ-027, 032, 033, 037 | ASIL-D | vehicle_system.dbc |
-| **Rear Camera** | REQ-028, 030 | ASIL-D | vehicle_system.dbc |
-| **SCC (AEB)** | REQ-029, 034, 035 | ASIL-D | vehicle_system.dbc |
+| **vECU (IVI vECU)** | REQ-A01, 004, 008~014, 027~047 | ASIL-D (최고) / ASIL-B (도메인 평균) | 본 프로젝트 신규 |
+| **Cluster ECU** | REQ-F01, 006, 018, 027, 029, 031 | ASIL-D | hyundai_kia_generic.dbc |
+| **BCM** | REQ-F01, 006, 021, 030, 051 | ASIL-C | vehicle_system.dbc |
+| **TCU** | REQ-F01, 006, 015, 016, 020 | ASIL-C | vehicle_system.dbc |
+| **Front Camera** | REQ-A01, 032, 033, 037 | ASIL-D | vehicle_system.dbc |
+| **Rear Camera** | REQ-A03, 030 | ASIL-D | vehicle_system.dbc |
+| **SCC (AEB)** | REQ-A02, 034, 035 | ASIL-D | vehicle_system.dbc |
 
 ---
 

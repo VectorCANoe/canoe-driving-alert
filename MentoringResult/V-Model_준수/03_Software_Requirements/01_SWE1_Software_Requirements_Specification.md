@@ -25,9 +25,9 @@
 
 | System Req | Software Requirements | Rationale |
 |------------|-----------------------|-----------|
-| REQ-029 (AEB 경고) | SWR-001, SWR-002, SWR-003 | CAN 수신 + 이벤트 처리 + UI 출력 |
-| REQ-027 (LDW 경고) | SWR-004, SWR-005, SWR-006 | 동일 패턴 |
-| REQ-006 (도어 경고) | SWR-007, SWR-008, SWR-009 | 논리 연산 추가 |
+| REQ-A02 (AEB 경고) | SWR-001, SWR-002, SWR-003 | CAN 수신 + 이벤트 처리 + UI 출력 |
+| REQ-A01 (LDW 경고) | SWR-004, SWR-005, SWR-006 | 동일 패턴 |
+| REQ-A03 (도어 경고) | SWR-007, SWR-008, SWR-009 | 논리 연산 추가 |
 
 ---
 
@@ -35,7 +35,7 @@
 
 ### SWR-001: CAN Message Reception (AEB)
 
-- **System Req**: REQ-029
+- **System Req**: REQ-A02
 - **ASIL**: ASIL-D
 - **Description**:
   vECU는 CAN-HS2 버스에서 SCC ECU의 AEB 메시지(CAN ID 0x380)를 수신해야 한다.
@@ -54,7 +54,7 @@
 
 ### SWR-002: AEB Event Processing
 
-- **System Req**: REQ-029
+- **System Req**: REQ-A02
 - **ASIL**: ASIL-D
 - **Description**:
   vECU는 AEB_EVENT_DETECTED 내부 이벤트를 수신하면,
@@ -74,7 +74,7 @@
 
 ### SWR-003: Cluster Warning UI Request
 
-- **System Req**: REQ-029
+- **System Req**: REQ-A02
 - **ASIL**: ASIL-D
 - **Description**:
   vECU는 Cluster ECU로 경고 UI 요청 메시지를 전송해야 한다.
@@ -93,7 +93,7 @@
 
 ### SWR-004: LDW CAN Message Reception
 
-- **System Req**: REQ-027
+- **System Req**: REQ-A01
 - **ASIL**: ASIL-D
 - **Description**: Front Camera의 LDW 메시지 수신 (CAN ID 0x350)
 - **Input**: CAN Message (ID 0x350, Signal: LDW_Active, LDW_Direction)
@@ -105,7 +105,7 @@
 
 ### SWR-005: LDW Dual-Channel Warning
 
-- **System Req**: REQ-027
+- **System Req**: REQ-A01
 - **ASIL**: ASIL-D (Decomposed to ASIL-C + ASIL-C)
 - **Description**:
   LDW 이벤트 발생 시 시각 경고(Cluster) + 촉각 경고(MDPS)를 동시 전송해야 한다.
@@ -122,7 +122,7 @@
 
 ### SWR-006: LDW Timing Guarantee
 
-- **System Req**: REQ-027
+- **System Req**: REQ-A01
 - **ASIL**: ASIL-D
 - **Description**: LDW 이벤트 발생부터 경고 활성화까지 FTTI ≤ 200ms 보장
 - **Timing Breakdown**:
@@ -137,7 +137,7 @@
 
 ### SWR-007: Door Open Signal Reception
 
-- **System Req**: REQ-006
+- **System Req**: REQ-A03
 - **ASIL**: ASIL-D
 - **Description**: BCM의 Door Open 신호 수신 (CAN ID 0x500)
 - **Input**: CAN Message (ID 0x500, Signal: FL_Door, FR_Door, RL_Door, RR_Door)
@@ -148,7 +148,7 @@
 
 ### SWR-008: Reverse Gear Signal Reception
 
-- **System Req**: REQ-006
+- **System Req**: REQ-A03
 - **ASIL**: ASIL-D
 - **Description**: TCU의 Gear Position 신호 수신 (CAN ID 0x180)
 - **Input**: CAN Message (ID 0x180, Signal: GEAR_POSITION)
@@ -159,7 +159,7 @@
 
 ### SWR-009: Door Open + Reverse Logic
 
-- **System Req**: REQ-006
+- **System Req**: REQ-A03
 - **ASIL**: ASIL-D
 - **Description**:
   vECU는 (DOOR_STATUS == OPEN) AND (GEAR_STATUS == REVERSE) 조건을 매 10ms마다 평가해야 한다.
@@ -174,7 +174,7 @@
 
 ### SWR-010: Ambient Lighting Control (Sports Mode)
 
-- **System Req**: REQ-001
+- **System Req**: REQ-A01
 - **ASIL**: ASIL-B
 - **Description**:
   vECU는 차량 속도와 Sports Mode 상태에 따라 Ambient 조명 색상을 제어해야 한다.
@@ -240,10 +240,10 @@
 
 | System Req | Software Requirements | Count |
 |------------|----------------------|-------|
-| REQ-029 | SWR-001, SWR-002, SWR-003 | 3 |
-| REQ-027 | SWR-004, SWR-005, SWR-006 | 3 |
-| REQ-006 | SWR-007, SWR-008, SWR-009 | 3 |
-| REQ-001 | SWR-010 | 1 |
+| REQ-A02 | SWR-001, SWR-002, SWR-003 | 3 |
+| REQ-A01 | SWR-004, SWR-005, SWR-006 | 3 |
+| REQ-A03 | SWR-007, SWR-008, SWR-009 | 3 |
+| REQ-A01 | SWR-010 | 1 |
 
 **Total**: 55 System Req → 120 Software Req (평균 분해율: 2.2)
 

@@ -21,7 +21,7 @@
 
 ### DECOMP-001: LDW Dual-Channel Warning
 
-- **Original Requirement**: REQ-027 (LDW 차선 이탈 경고)
+- **Original Requirement**: REQ-A01 (LDW 차선 이탈 경고)
 - **Original ASIL**: ASIL-D
 - **Safety Goal**: SG-02 (차선 이탈 시 경고 제공)
 
@@ -47,7 +47,7 @@
 
 ### DECOMP-002: AEB Dual-Output Warning
 
-- **Original Requirement**: REQ-029 (AEB 긴급 제동 경고)
+- **Original Requirement**: REQ-A02 (AEB 긴급 제동 경고)
 - **Original ASIL**: ASIL-D
 
 **Decomposition**:

@@ -226,11 +226,11 @@
 
 ## 4. UDS/OTA 소프트웨어 자격 테스트 (E2E 시나리오 기반)
 
-> **추가 배경**: REQ-056~059 (시나리오 요구사항) 검증을 위한 SW 레벨 테스트
+> **추가 배경**: REQ-D01~059 (시나리오 요구사항) 검증을 위한 SW 레벨 테스트
 
 ### TC-SWQUAL-301: UDS 0x10 Session Control 검증
 
-- **Requirement**: REQ-056 (UDS Session Control)
+- **Requirement**: REQ-D01 (UDS Session Control)
 - **ASIL**: ASIL-B
 - **Test Environment**: CANoe SIL (CAPL Tester Node)
 - **Test Steps**:
@@ -246,7 +246,7 @@
 
 ### TC-SWQUAL-302: UDS 0x19 Read DTC Information 검증
 
-- **Requirement**: REQ-057 (UDS Read DTC)
+- **Requirement**: REQ-D02 (UDS Read DTC)
 - **ASIL**: ASIL-B
 - **Test Environment**: CANoe SIL (Fault Injection + CAPL Tester)
 - **Test Steps**:
@@ -262,7 +262,7 @@
 
 ### TC-SWQUAL-303: OTA Programming Session 전체 시퀀스
 
-- **Requirement**: REQ-012~014, REQ-059 (OTA E2E)
+- **Requirement**: REQ-O02~014, REQ-F04 (OTA E2E)
 - **ASIL**: ASIL-B (OTA 경로 무결성)
 - **Test Environment**: CANoe SIL (OTA Server 가상 노드)
 - **Test Steps**:
@@ -278,7 +278,7 @@
 
 ### TC-SWQUAL-304: UDS Timing Validation
 
-- **Requirement**: REQ-056, REQ-059
+- **Requirement**: REQ-D01, REQ-F04
 - **Test Environment**: CANoe SIL (Timestamp Measurement)
 - **Test Steps**:
   1. 0x10 0x03 전송 → 응답 시간 측정 (P2 = 50ms 이내 확인)
@@ -290,7 +290,7 @@
 
 ### TC-SWQUAL-305: OTA 중단 시나리오 (Rollback 검증)
 
-- **Requirement**: REQ-014 (OTA 실패 자동복구), FSR-QM02
+- **Requirement**: REQ-O06 (OTA 실패 자동복구), FSR-QM02
 - **ASIL**: ASIL-A (Rollback 안전성)
 - **Test Environment**: CANoe SIL (Fault Injection: 전원 차단 시뮬레이션)
 - **Test Steps**:
@@ -306,7 +306,7 @@
 
 ### TC-SWQUAL-306: Gateway Protocol Translation 검증
 
-- **Requirement**: REQ-058 (Gateway OTA Path)
+- **Requirement**: REQ-G03 (Gateway OTA Path)
 - **Test Environment**: CANoe SIL (3-Bus: CAN-LS, CAN-HS2, Ethernet)
 - **Test Steps**:
   1. BCM_FaultStatus (CAN-LS 0x500) 전송

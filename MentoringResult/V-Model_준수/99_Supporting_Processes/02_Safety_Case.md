@@ -51,10 +51,10 @@ Safety Claim (안전 주장)
 | EV-01-01 | HARA (SG-01 ASIL-D 결정) | 00_Concept_Phase/01_HARA.md | ✅ 완료 |
 | EV-01-02 | Functional Safety Concept (FSR-D01) | 00_Concept_Phase/02_FSC.md | ✅ 완료 |
 | EV-01-03 | Technical Safety Concept (TSR-D01) | 01_System_Requirements/03_TSC.md | ✅ 완료 |
-| EV-01-04 | System Requirements (REQ-029, ASIL-D) | 01_System_Requirements/01_SRS.md | ✅ 완료 |
+| EV-01-04 | System Requirements (REQ-A02, ASIL-D) | 01_System_Requirements/01_SRS.md | ✅ 완료 |
 | EV-01-05 | ASIL Decomposition (D → C+C) | 04_SW_Architecture/03_ASIL_Decomp.md | ✅ 완료 |
 | EV-01-06 | Software Unit Test (AEB 경고 로직) | 07_Unit_Test/02_Test_Report.md | ⏳ 구현 후 업데이트 |
-| EV-01-07 | System Qualification Test (TC-SYS-029) | 11_System_Qual_Test/ | ⏳ 구현 후 업데이트 |
+| EV-01-07 | System Qualification Test (TC-A02) | 11_System_Qual_Test/ | ⏳ 구현 후 업데이트 |
 | EV-01-08 | FTTI 측정 결과 (≤ 100ms) | 12_Safety_Validation/ | ⏳ 구현 후 업데이트 |
 
 ---
@@ -82,7 +82,7 @@ Safety Claim (안전 주장)
 |-------------|-------------|------|------|
 | EV-03-01 | HARA (SG-03 ASIL-B) | 00_Concept_Phase/01_HARA.md | ✅ 완료 |
 | EV-03-02 | FSR-B01 | 00_Concept_Phase/02_FSC.md | ✅ 완료 |
-| EV-03-03 | System Requirements (REQ-002, 015, 016) | 01_System_Requirements/01_SRS.md | ✅ 완료 |
+| EV-03-03 | System Requirements (REQ-F01, 015, 016) | 01_System_Requirements/01_SRS.md | ✅ 완료 |
 | EV-03-04 | Reverse Warning Unit Test | 07_Unit_Test/02_Test_Report.md | ⏳ |
 
 ---
@@ -96,7 +96,7 @@ Safety Claim (안전 주장)
 | EV-04-01 | HARA (SG-04 ASIL-B, v2.0 수정) | 00_Concept_Phase/01_HARA.md | ✅ 완료 |
 | EV-04-02 | FSR-B02 | 00_Concept_Phase/02_FSC.md | ✅ 완료 |
 | EV-04-03 | TSR-B02 (CRC-8, 0x500 CAN ID) | 01_System_Requirements/03_TSC.md | ✅ 완료 |
-| EV-04-04 | System Requirements (REQ-006, ASIL-B) | 01_System_Requirements/01_SRS.md | ✅ 완료 |
+| EV-04-04 | System Requirements (REQ-A03, ASIL-B) | 01_System_Requirements/01_SRS.md | ✅ 완료 |
 | EV-04-05 | Door Warning Unit Test | 07_Unit_Test/02_Test_Report.md | ⏳ |
 
 ---

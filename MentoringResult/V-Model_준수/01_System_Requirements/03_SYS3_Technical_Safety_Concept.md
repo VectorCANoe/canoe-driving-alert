@@ -30,7 +30,7 @@
 | 항목 | HARA ASIL | 시스템요구사항 ASIL | 근거 |
 |------|----------|------------------|------|
 | H-04 도어경고 (REQ-A03) | ASIL-B | ASIL-B | v2.0 수정으로 일치됨 (구 ASIL-C는 HARA 오류) |
-| H-03 후진경고 (REQ-002) | ASIL-B | ASIL-B | 일치 |
+| H-03 후진경고 (REQ-F01) | ASIL-B | ASIL-B | 일치 |
 | vECU CAN Driver | (하위 FSR-D) | ASIL-D | 근거: ASIL-D 컴포넌트 데이터 전달 경로이므로 동일 ASIL 적용 (ISO 26262-6 §7.4.2) |
 
 ---

@@ -30,7 +30,7 @@
 
 ### INT-101: CAN Message Transmission
 
-- **Requirement**: REQ-023 (CAN 통신 정상 동작)
+- **Requirement**: REQ-G04 (CAN 통신 정상 동작)
 - **ASIL**: ASIL-D
 - **Test Type**: Communication
 - **Test Steps**:
@@ -43,7 +43,7 @@
 
 ### INT-102: CAN Bus Off Recovery
 
-- **Requirement**: REQ-023 (통신 장애 복구)
+- **Requirement**: REQ-G04 (통신 장애 복구)
 - **ASIL**: ASIL-C
 - **Test Type**: Fault Recovery
 - **Test Steps**:
@@ -57,7 +57,7 @@
 
 ### INT-103: CAN Message Priority
 
-- **Requirement**: REQ-037 (우선순위 처리)
+- **Requirement**: REQ-A11 (우선순위 처리)
 - **ASIL**: ASIL-B
 - **Test Type**: Arbitration
 - **Test Steps**:
@@ -72,7 +72,7 @@
 
 ### INT-201: AEB Emergency Braking UI
 
-- **Requirement**: REQ-029
+- **Requirement**: REQ-A02
 - **ASIL**: ASIL-D
 - **Test Environment**: HIL + CANoe
 - **Test Scenario**:
@@ -94,7 +94,7 @@
 
 ### INT-202: LDW Lane Departure Warning
 
-- **Requirement**: REQ-027
+- **Requirement**: REQ-A01
 - **ASIL**: ASIL-D
 - **Test Steps**:
   1. Front Camera: Lane Departure Left (신호 전송)
@@ -109,7 +109,7 @@
 
 ### INT-301: Door Open Warning (Reverse)
 
-- **Requirement**: REQ-006
+- **Requirement**: REQ-A03
 - **ASIL**: ASIL-D
 - **Test Matrix**:
 
@@ -126,7 +126,7 @@
 
 ### INT-302: Ambient Lighting Control
 
-- **Requirement**: REQ-001 (Sports Mode)
+- **Requirement**: REQ-A01 (Sports Mode)
 - **ASIL**: ASIL-B
 - **Test Steps**:
   1. 차량 속도 0 km/h → 60 km/h 증가
@@ -141,7 +141,7 @@
 ### INT-401: End-to-End Latency
 
 - **Test ID**: INT-401
-- **Requirement**: REQ-008 (시스템 반응 속도)
+- **Requirement**: REQ-N01 (시스템 반응 속도)
 - **Measurement Points**:
   - T1: ADAS ECU에서 이벤트 발생
   - T2: vECU 수신
@@ -156,7 +156,7 @@
 
 ### INT-501: Signal Timeout Detection
 
-- **Requirement**: REQ-023 (Fail-Safe)
+- **Requirement**: REQ-G04 (Fail-Safe)
 - **ASIL**: ASIL-C
 - **Test Steps**:
   1. 정상 통신 상태에서 시작
@@ -170,7 +170,7 @@
 
 ### INT-502: Corrupted Message Handling
 
-- **Requirement**: REQ-023
+- **Requirement**: REQ-G04
 - **ASIL**: ASIL-C
 - **Test Steps**:
   1. CANoe에서 잘못된 CRC 메시지 전송
@@ -228,14 +228,14 @@ on message SCC_Status
 
 | Test Case | System Requirement | Test Type | ASIL |
 |-----------|-------------------|-----------|------|
-| INT-001 | REQ-029 | ADAS Integration | ASIL-D |
-| INT-002 | REQ-027 | ADAS Integration | ASIL-D |
-| INT-003 | REQ-006 | Body Integration | ASIL-D |
-| INT-101 | REQ-023 | Communication | ASIL-D |
-| INT-201 | REQ-029 | ADAS Timing | ASIL-D |
-| INT-301 | REQ-006 | Body Logic | ASIL-D |
-| INT-401 | REQ-008 | End-to-End | QM |
-| INT-501 | REQ-023 | Fault Injection | ASIL-C |
+| INT-001 | REQ-A02 | ADAS Integration | ASIL-D |
+| INT-002 | REQ-A01 | ADAS Integration | ASIL-D |
+| INT-003 | REQ-A03 | Body Integration | ASIL-D |
+| INT-101 | REQ-G04 | Communication | ASIL-D |
+| INT-201 | REQ-A02 | ADAS Timing | ASIL-D |
+| INT-301 | REQ-A03 | Body Logic | ASIL-D |
+| INT-401 | REQ-N01 | End-to-End | QM |
+| INT-501 | REQ-G04 | Fault Injection | ASIL-C |
 
 ---
 

@@ -40,7 +40,7 @@
 
 ## 3. System Test Cases
 
-### 3.1 TC-SYS-001: AEB Emergency Braking UI (REQ-029)
+### 3.1 TC-A02: AEB Emergency Braking UI (REQ-A02)
 
 **Test Objective**: 긴급 제동 시 대시보드 경고 UI 검증
 
@@ -59,7 +59,7 @@
 
 ---
 
-### 3.2 TC-SYS-002: LDW Lane Departure Warning (REQ-027)
+### 3.2 TC-A01: LDW Lane Departure Warning (REQ-A01)
 
 **Test Setup**: VIL (Test Track with lane markings)
 **Test Scenario**:
@@ -77,7 +77,7 @@
 
 ---
 
-### 3.3 TC-SYS-003: Reverse + Door Open Warning (REQ-006)
+### 3.3 TC-A03: Door/BSD Warning (REQ-A03)
 
 **Test Setup**: VIL (Parking lot)
 **Test Scenario**:
@@ -94,7 +94,7 @@
 
 ---
 
-### 3.4 TC-SYS-004: Sports Mode Ambient Lighting (REQ-001)
+### 3.4 TC-A01: ADAS Safety Lighting (REQ-A01)
 
 **Test Setup**: VIL
 **Test Scenario**:
@@ -117,7 +117,7 @@
 
 ---
 
-### 3.5 TC-SYS-010: UDS Diagnostic Session — System Level (REQ-056)
+### 3.5 TC-D01: UDS Diagnostic Session — System Level (REQ-D01)
 
 **Test Objective**: 전체 시스템에서 UDS 세션 전환 검증 (모든 ECU)
 **Test Setup**: HIL (23 ECU 시뮬레이터 + Real CGW)
@@ -129,7 +129,7 @@
 
 ---
 
-### 3.6 TC-SYS-011: E2E DTC Propagation — BCM → GW → vECU → Cluster (REQ-057, REQ-058)
+### 3.6 TC-D02: E2E DTC Propagation — BCM → GW → vECU → Cluster (REQ-D02, REQ-G03)
 
 **Test Objective**: DTC 발생부터 Cluster 경고등까지 전체 경로 검증
 **Test Setup**: HIL + CANoe (CAN-LS, CAN-HS2, Ethernet 통합)
@@ -142,7 +142,7 @@
 
 ---
 
-### 3.7 TC-SYS-012: OTA Programming Session — System Level (REQ-012~014, REQ-059)
+### 3.7 TC-O01: OTA Programming Session — System Level (REQ-O01~O06)
 
 **Test Objective**: 실차 수준 OTA 업데이트 전 과정 시스템 검증
 **Test Setup**: HIL + CANoe OTA Server (DoIP)
@@ -155,7 +155,7 @@
 
 ---
 
-### 3.8 TC-SYS-013: Fault → Diag → OTA Regression Suite (REQ-059)
+### 3.8 TC-E2E-001: Fault → Diag → OTA Regression Suite (REQ-F01~O06)
 
 **Test Objective**: E2E Master Scenario 자동화 회귀 테스트
 **Test Setup**: HIL 완전 자동화 (CANoe Test Module)
@@ -165,7 +165,7 @@
 
 ## 4. Safety Validation Tests
 
-### 4.1 TC-SYS-101: Fail-Safe Mode (REQ-023)
+### 4.1 TC-G04: Fail-Safe Mode (REQ-G04)
 
 **Test Objective**: 통신 장애 시 Fail-Safe 동작 검증
 
@@ -185,7 +185,7 @@
 
 ---
 
-### 4.2 TC-SYS-102: Power Supply Variations
+### 4.2 TC-N01: Power Supply Variations
 
 **Test Objective**: 전압 변동 시 시스템 안정성 검증
 
