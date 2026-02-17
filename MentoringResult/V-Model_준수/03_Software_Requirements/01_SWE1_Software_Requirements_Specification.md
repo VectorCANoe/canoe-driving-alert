@@ -38,9 +38,9 @@
 - **System Req**: REQ-029
 - **ASIL**: ASIL-D
 - **Description**:
-  vECU는 CAN-HS2 버스에서 SCC ECU의 AEB 메시지(CAN ID 0x340)를 수신해야 한다.
+  vECU는 CAN-HS2 버스에서 SCC ECU의 AEB 메시지(CAN ID 0x380)를 수신해야 한다.
   메시지 수신 주기는 10ms이며, 3회 연속 수신 실패 시 Timeout으로 판단한다.
-- **Input**: CAN Message (ID 0x340, DLC 8, Signal: AEB_Active, AEB_Level)
+- **Input**: CAN Message (ID 0x380, DLC 8, Signal: AEB_Active, AEB_Level)
 - **Output**: Internal Event (AEB_EVENT_DETECTED)
 - **Processing**:
   - CAN Rx Interrupt Handler에서 메시지 수신
@@ -115,7 +115,7 @@
   - CAN Message to Cluster (ID 0x200, WARNING_TYPE=0x02)
   - CAN Message to MDPS (ID 0x210, HAPTIC_FEEDBACK=0x01)
 - **Processing**: Dual-channel transmission with independence verification
-- **Safety Mechanism**: ASIL Decomposition (C+C → D), FFI 확보
+- **Safety Mechanism**: ASIL Decomposition (D → C+C), FFI 확보
 - **Verification**: Fault Injection Test (한쪽 채널 차단 시험)
 
 ---
@@ -139,8 +139,8 @@
 
 - **System Req**: REQ-006
 - **ASIL**: ASIL-D
-- **Description**: BCM의 Door Open 신호 수신 (CAN ID 0x400)
-- **Input**: CAN Message (ID 0x400, Signal: FL_Door, FR_Door, RL_Door, RR_Door)
+- **Description**: BCM의 Door Open 신호 수신 (CAN ID 0x500)
+- **Input**: CAN Message (ID 0x500, Signal: FL_Door, FR_Door, RL_Door, RR_Door)
 - **Output**: Internal Signal (DOOR_STATUS)
 - **Processing**: 4개 도어 상태를 Bit Mask로 관리
 
@@ -150,8 +150,8 @@
 
 - **System Req**: REQ-006
 - **ASIL**: ASIL-D
-- **Description**: TCU의 Gear Position 신호 수신 (CAN ID 0x410)
-- **Input**: CAN Message (ID 0x410, Signal: GEAR_POSITION)
+- **Description**: TCU의 Gear Position 신호 수신 (CAN ID 0x180)
+- **Input**: CAN Message (ID 0x180, Signal: GEAR_POSITION)
 - **Output**: Internal Signal (GEAR_STATUS)
 - **Processing**: GEAR_POSITION == 'R' 시 Reverse Flag 설정
 

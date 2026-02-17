@@ -2,7 +2,7 @@
 
 **Document ID**: PART6-16-SQTP
 **ISO 26262 Reference**: Part 6, Clause 12
-**ASPICE Reference**: SYS.4 (SW Qualification)
+**ASPICE Reference**: SWE.6 (SW Qualification)
 **Version**: 2.0
 **Date**: 2026-02-14
 **Status**: Complete
@@ -59,12 +59,12 @@
 **Test Objective**: AEB 이벤트 발생 시 Cluster 경고 UI 활성화 검증
 
 **Test Setup**:
-- CANoe simulation: SCC sends AEB event (ID 0x340)
+- CANoe simulation: SCC sends AEB event (ID 0x380)
 - vECU receives and processes event
 - vECU sends warning request to Cluster (ID 0x200)
 
 **Test Steps**:
-1. CANoe: Send AEB_Active=1, AEB_Level=2 (CAN ID 0x340)
+1. CANoe: Send AEB_Active=1, AEB_Level=2 (CAN ID 0x380)
 2. Wait 100ms (FTTI)
 3. Verify vECU sent WARNING_TYPE=0x01 (AEB) to Cluster (ID 0x200)
 
@@ -211,7 +211,7 @@
 
 ## 7. ASPICE Compliance
 
-**SYS.4 (Software Qualification)**:
+**SWE.6 (Software Qualification)**:
 - ✅ BP1: Qualification test strategy defined
 - ✅ BP2: Test cases derived from requirements
 - ✅ BP3: Test environment ready (HIL + CANoe)

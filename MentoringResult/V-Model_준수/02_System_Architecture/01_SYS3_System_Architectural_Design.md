@@ -67,12 +67,22 @@
 
 ## 5. ASPICE SYS.3 Compliance
 
-**Base Practices**:
+**Base Practices** (ASPICE PAM 3.1 SYS.3 — 전체):
 - ✅ BP1: System architectural design developed
-- ✅ BP2: System requirements allocated
+- ✅ BP2: System requirements allocated to architecture elements
 - ✅ BP3: System interfaces defined
-- ✅ BP6: Traceability established
+- ✅ BP4: Dynamic behavior described (Task scheduling, CAN timing)
+- ✅ BP5: Alternative architectures evaluated (Domain-based vs Centralized ECU)
+- ✅ BP6: Bidirectional traceability established
+- ✅ BP7: Consistency ensured between architecture and requirements
+
+**Alternative Architecture Evaluation (BP5)**:
+| Architecture | 장점 | 단점 | 결정 |
+|---|---|---|---|
+| Domain-based (5 ECU) | ASIL 격리 용이, 기존 OEM 표준 | 복잡한 CAN 토폴로지 | ✅ 선택 |
+| Centralized High-Performance ECU | 단순 토폴로지 | ASIL 분리 어려움, 비용 | ❌ |
+| Federated (기존 분산) | 기존 부품 재사용 | 통합 어려움, 지연 | ❌ |
 
 ---
 
-**Auto-generated**: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+**Document Version**: 2.0 | **Last Updated**: 2026-02-17

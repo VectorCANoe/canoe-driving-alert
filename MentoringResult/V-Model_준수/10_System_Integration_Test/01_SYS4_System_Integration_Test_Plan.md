@@ -33,7 +33,7 @@
 - **ASIL**: ASIL-D
 - **Test Environment**: HIL + CANoe
 - **Precondition**:
-  - SCC가 AEB 이벤트 전송 (CAN ID 0x340)
+  - SCC가 AEB 이벤트 전송 (CAN ID 0x380)
   - vECU가 CAN-HS2에 연결
 - **Test Steps**:
   1. CANoe에서 AEB 이벤트 신호 전송 (SCC → vECU)

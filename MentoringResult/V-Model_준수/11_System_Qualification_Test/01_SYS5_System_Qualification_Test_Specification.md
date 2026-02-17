@@ -58,7 +58,7 @@
 - Cluster ECU ready
 
 **Test Steps**:
-1. CANoe: Send SCC AEB message (CAN ID 0x340)
+1. CANoe: Send SCC AEB message (CAN ID 0x380)
    - Data[0] = 0x03 (AEB_Active=1, AEB_Level=3)
    - Data[6] = Alive Counter (0-15 cycle)
    - Data[7] = CRC-8
@@ -72,8 +72,8 @@
 ```
 Time | CAN ID | Data (Hex)
 -----|--------|---------------------------
-0ms  | 0x340  | 03 00 00 00 00 00 05 A7
-100ms| 0x340  | 00 00 00 00 00 00 06 B2
+0ms  | 0x380  | 03 00 00 00 00 00 05 A7
+100ms| 0x380  | 00 00 00 00 00 00 06 B2
 ```
 
 **Expected Output**:
@@ -173,8 +173,8 @@ Time   | CAN ID | Data | Destination
 
 **Input Data** (Example: Case #3):
 ```
-CAN ID 0x410: GEAR_POSITION = 0x01 (Reverse)
-CAN ID 0x400: DOOR_STATUS = 0x01 (FL Door Open)
+CAN ID 0x180: GEAR_POSITION = 0x01 (Reverse)
+CAN ID 0x500: DOOR_STATUS = 0x01 (FL Door Open)
 ```
 
 **Expected Output**:
@@ -553,7 +553,7 @@ Door Open (Reverse) | 10-20 | 100%
 ### A.1 CAN Message Format
 
 ```
-AEB Message (ID 0x340):
+AEB Message (ID 0x380):
 Byte 0: AEB_Active (bit 0), AEB_Level (bit 1-3)
 Byte 1-5: Reserved
 Byte 6: Alive Counter (0-15)

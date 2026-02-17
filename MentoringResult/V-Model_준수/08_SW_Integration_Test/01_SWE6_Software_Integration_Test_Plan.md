@@ -2,7 +2,7 @@
 
 **Document ID**: PART6-14-SITP
 **ISO 26262 Reference**: Part 6, Clause 12
-**ASPICE Reference**: SWE.6 (BP1-BP8)
+**ASPICE Reference**: SWE.5 (BP1-BP8)
 **Version**: 2.0
 **Date**: 2026-02-14
 **Status**: Complete
@@ -38,7 +38,7 @@
 **Test Objective**: AEB 이벤트 End-to-End 데이터 흐름 검증
 
 **Test Sequence**:
-1. CAN_Comm_Manager가 AEB CAN 메시지 수신 (ID 0x340)
+1. CAN_Comm_Manager가 AEB CAN 메시지 수신 (ID 0x380)
 2. RTE를 통해 ADAS_UI_Manager에 AEB 이벤트 전달
 3. ADAS_UI_Manager가 이벤트 처리
 4. RTE를 통해 CAN_Comm_Manager로 Warning 요청 전송
@@ -188,7 +188,7 @@ TEST(RTE_Integration, Write_Warning_Request) {
 
 ---
 
-## 8. ASPICE SWE.6 Compliance
+## 8. ASPICE SWE.5 Compliance
 
 **Base Practices**:
 - ✅ BP1: Integration strategy defined

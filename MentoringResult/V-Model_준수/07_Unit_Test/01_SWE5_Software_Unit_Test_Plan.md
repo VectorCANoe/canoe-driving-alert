@@ -2,7 +2,7 @@
 
 **Document ID**: PART6-12-SUTP
 **ISO 26262 Reference**: Part 6, Clause 11
-**ASPICE Reference**: SWE.5 (BP1-BP7)
+**ASPICE Reference**: SWE.4 (BP1-BP7)
 **Version**: 2.0
 **Date**: 2026-02-14
 **Status**: Complete
@@ -44,7 +44,7 @@
 - **Test Input**:
   ```c
   CAN_Message msg = {
-    .id = 0x340,
+    .id = 0x380,
     .dlc = 8,
     .data = {0x01, 0x02, 0x00, 0x00, 0x00, 0x00, 0x05, 0xA3}
     // data[0]: AEB_Active=1, AEB_Level=1
@@ -179,7 +179,7 @@ protected:
 
 // UT-D-001: Normal Message
 TEST_F(AEB_UT, NormalMessage) {
-  CAN_Message msg = {0x340, 8, {0x01, 0x02, 0, 0, 0, 0, 0x05, 0xA3}};
+  CAN_Message msg = {0x380, 8, {0x01, 0x02, 0, 0, 0, 0, 0x05, 0xA3}};
   AEB_Data out_data;
 
   bool result = CAN_Receive_AEB(&msg, &out_data);
@@ -200,7 +200,7 @@ TEST_F(AEB_UT, NullPointer) {
 
 // UT-D-003: CRC Error
 TEST_F(AEB_UT, CrcError) {
-  CAN_Message msg = {0x340, 8, {0x01, 0x02, 0, 0, 0, 0, 0x05, 0x00}};
+  CAN_Message msg = {0x380, 8, {0x01, 0x02, 0, 0, 0, 0, 0x05, 0x00}};
   AEB_Data out_data;
 
   bool result = CAN_Receive_AEB(&msg, &out_data);
@@ -324,7 +324,7 @@ genhtml coverage.info --output-directory coverage_report
 
 ---
 
-## 10. ASPICE SWE.5 Compliance
+## 10. ASPICE SWE.4 Compliance
 
 **Base Practices**:
 - ✅ BP1: Unit test strategy defined

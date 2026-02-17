@@ -2,7 +2,7 @@
 
 **Document ID**: PART6-15-SITR
 **ISO 26262 Reference**: Part 6, Clause 12
-**ASPICE Reference**: SWE.6 (BP5)
+**ASPICE Reference**: SWE.5 (BP5)
 **Version**: 2.0
 **Date**: 2026-02-14
 **Status**: Expected Results (Reference Example - To be updated after actual testing)
