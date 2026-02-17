@@ -29,7 +29,7 @@
 
 | 항목 | HARA ASIL | 시스템요구사항 ASIL | 근거 |
 |------|----------|------------------|------|
-| H-04 도어경고 (REQ-006) | ASIL-B | ASIL-B | v2.0 수정으로 일치됨 (구 ASIL-C는 HARA 오류) |
+| H-04 도어경고 (REQ-A03) | ASIL-B | ASIL-B | v2.0 수정으로 일치됨 (구 ASIL-C는 HARA 오류) |
 | H-03 후진경고 (REQ-002) | ASIL-B | ASIL-B | 일치 |
 | vECU CAN Driver | (하위 FSR-D) | ASIL-D | 근거: ASIL-D 컴포넌트 데이터 전달 경로이므로 동일 ASIL 적용 (ISO 26262-6 §7.4.2) |
 
@@ -42,7 +42,7 @@
 #### TSR-D01: AEB 경고 CAN 수신 및 처리 (FSR-D01 → 구현 명세)
 
 - **Derives From**: FSR-D01 (AEB 충돌 경고)
-- **System Requirement**: REQ-029
+- **System Requirement**: REQ-A02
 - **ASIL**: ASIL-D
 - **Technical Requirement**:
   1. vECU는 CAN-HS2 버스에서 SCC의 AEB_Event 메시지 (CAN ID: **0x380**, 50ms 주기)를 수신해야 한다.
@@ -58,7 +58,7 @@
 #### TSR-D02: LDW 경고 듀얼채널 출력 (FSR-D02 → 구현 명세)
 
 - **Derives From**: FSR-D02 (LDW 차선 이탈 경고)
-- **System Requirement**: REQ-027
+- **System Requirement**: REQ-A01
 - **ASIL**: ASIL-D
 - **Technical Requirement**:
   1. vECU는 Camera_LDW 메시지 (CAN ID: **0x300**, 20ms 주기)를 수신해야 한다.
@@ -76,7 +76,7 @@
 #### TSR-B01: 후진 경고 타이밍 (FSR-B01 → 구현 명세)
 
 - **Derives From**: FSR-B01 (후진 경고)
-- **System Requirement**: REQ-002, REQ-015, REQ-016
+- **System Requirement**: REQ-F01, REQ-F02, REQ-F03
 - **ASIL**: ASIL-B
 - **Technical Requirement**:
   1. TCU_GearStatus 메시지 (CAN ID: **0x180**, 100ms 주기) 수신 후 Gear=R 파싱
@@ -87,7 +87,7 @@
 #### TSR-B02: 도어 개방 경고 타이밍 (FSR-B02 → 구현 명세)
 
 - **Derives From**: FSR-B02 (도어 개방 경고)
-- **System Requirement**: REQ-006
+- **System Requirement**: REQ-A03
 - **ASIL**: ASIL-B (수정: 구 ASIL-D는 HARA v2.0에서 ASIL-B로 정정됨)
 - **Technical Requirement**:
   1. BCM_DoorStatus 메시지 (CAN ID: **0x500**, 100ms 주기) 수신
@@ -99,7 +99,7 @@
 #### TSR-B03: CAN Fail-Safe 전환 메커니즘 (FSR-B03 → 구현 명세)
 
 - **Derives From**: FSR-B03 (CAN Fail-Safe)
-- **System Requirement**: REQ-023
+- **System Requirement**: REQ-G04
 - **ASIL**: ASIL-B
 - **Technical Requirement**:
   1. CAN Bus Error Counter > 127 (Error Passive) → 즉시 DTC + Fail-Safe 플래그 설정
@@ -114,7 +114,7 @@
 #### TSR-A01: 조명 출력 모니터링 메커니즘 (FSR-A01 → 구현 명세)
 
 - **Derives From**: FSR-A01 (조명 Fail-Safe)
-- **System Requirement**: REQ-053
+- **System Requirement**: REQ-N03
 - **ASIL**: ASIL-A
 - **Technical Requirement**:
   1. Lighting_Control_Manager는 10ms마다 조명 출력 PWM 값을 읽어 임계값과 비교
@@ -142,12 +142,12 @@
 
 | FSR | TSR | System Req | SW Req | ASIL |
 |-----|-----|------------|--------|------|
-| FSR-D01 | TSR-D01 | REQ-029 | SWR-001 | ASIL-D |
-| FSR-D02 | TSR-D02 | REQ-027 | SWR-002 | ASIL-D |
-| FSR-B01 | TSR-B01 | REQ-002, 015, 016 | SWR-003 | ASIL-B |
-| FSR-B02 | TSR-B02 | REQ-006 | SWR-007 | ASIL-B |
-| FSR-B03 | TSR-B03 | REQ-023 | SWR-009 | ASIL-B |
-| FSR-A01 | TSR-A01 | REQ-053 | SWR-010 | ASIL-A |
+| FSR-D01 | TSR-D01 | REQ-A02 | SWR-001 | ASIL-D |
+| FSR-D02 | TSR-D02 | REQ-A01 | SWR-002 | ASIL-D |
+| FSR-B01 | TSR-B01 | REQ-F01, REQ-F02, REQ-F03 | SWR-003 | ASIL-B |
+| FSR-B02 | TSR-B02 | REQ-A03 | SWR-007 | ASIL-B |
+| FSR-B03 | TSR-B03 | REQ-G04 | SWR-009 | ASIL-B |
+| FSR-A01 | TSR-A01 | REQ-N03 | SWR-010 | ASIL-A |
 
 ---
 

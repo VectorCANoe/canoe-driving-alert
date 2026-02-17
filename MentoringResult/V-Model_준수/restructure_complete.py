@@ -1,3 +1,268 @@
+#!/usr/bin/env python3
+"""
+V-Model 완전 재편성 스크립트
+=============================
+목적: Fault→Diag→OTA 시나리오 중심 6-Group SRS로 완전 재구조화
+작성: 2026-02-17
+"""
+
+import os
+import re
+
+BASE = "/Users/juns/code/work/mobis/PBL/MentoringResult/V-Model_준수"
+
+# ──────────────────────────────────────────────────────────────────────────────
+# 공통 헬퍼
+# ──────────────────────────────────────────────────────────────────────────────
+
+def write_file(rel_path: str, content: str):
+    path = os.path.join(BASE, rel_path)
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    with open(path, "w", encoding="utf-8") as f:
+        f.write(content)
+    print(f"  ✅ {rel_path}")
+
+
+def read_file(rel_path: str) -> str:
+    path = os.path.join(BASE, rel_path)
+    with open(path, "r", encoding="utf-8") as f:
+        return f.read()
+
+
+def append_section(rel_path: str, anchor: str, new_content: str):
+    """anchor 문자열 이후에 new_content 삽입 (anchor가 없으면 파일 끝에 추가)"""
+    path = os.path.join(BASE, rel_path)
+    with open(path, "r", encoding="utf-8") as f:
+        content = f.read()
+    if anchor in content:
+        content = content.replace(anchor, anchor + "\n" + new_content, 1)
+    else:
+        content += "\n" + new_content
+    with open(path, "w", encoding="utf-8") as f:
+        f.write(content)
+    print(f"  ✅ {rel_path} (appended)")
+
+
+# ──────────────────────────────────────────────────────────────────────────────
+# Step 1: Item Definition 재정의 (시나리오 중심)
+# ──────────────────────────────────────────────────────────────────────────────
+
+ITEM_DEFINITION = """\
+# Item Definition (아이템 정의)
+
+**Document ID**: PART3-00-ITEM
+**ISO 26262 Reference**: Part 3, Clause 5
+**ASPICE Reference**: N/A
+**Version**: 3.0
+**Date**: 2026-02-17
+**Status**: Released (v3.0 — 시나리오 중심 완전 재정의)
+
+---
+
+## 1. 문서 목적 (Purpose)
+
+본 문서는 **ISO 26262-3:2018 Part 3, Clause 5**에 따라 **Item의 정의 및 범위**를 명확히 하고,
+개발 대상 시스템의 경계(Boundary)와 상호작용(Interaction)을 규정합니다.
+
+> 본 프로젝트의 핵심 검증 시나리오 **Fault → Gateway Routing → UDS Diagnostics → OTA Update**가
+> 모든 문서의 중심 실(Red Thread)입니다. 이하 모든 정의는 이 흐름을 기준으로 기술됩니다.
+
+---
+
+## 2. Item 정의 (Item Definition)
+
+### 2.1 Item 명칭
+
+**Vehicle vECU Communication & OTA Verification System**
+(차량 통신 기반 vECU 진단 및 OTA 검증 시스템)
+
+### 2.2 Item 설명
+
+본 Item은 **Central Gateway (CGW)를 중심**으로 차량 내 BCM(Body Control Module)에서 발생하는
+**고장 이벤트(DTC)를 감지**하고, **UDS 진단 통신**으로 수집한 뒤, **OTA 업데이트**로
+소프트웨어를 갱신하는 전 과정을 검증하는 **가상 ECU (vECU)** 기반 시스템입니다.
+
+**시스템 핵심 역할**:
+1. **BCM 고장 감지**: Window Motor Overcurrent → DTC B1234 → CAN-LS 전송
+2. **Central Gateway 라우팅**: CAN-LS → CAN-HS2 (vECU/Cluster) + Ethernet/DoIP (OTA Server)
+3. **UDS 진단 수집**: 0x10 Session Control → 0x19 Read DTC → DTC 데이터 추출
+4. **OTA 소프트웨어 갱신**: 0x10 Programming Session → 0x34 Download → 0x36 Transfer → 0x37 Exit
+5. **ADAS 안전 경고 UI**: AEB/LDW/BSD 이벤트의 Cluster 시각 경고 (ISO 26262 ASIL-D 준수)
+
+### 2.3 Item 범위 (Scope)
+
+#### 포함 (In Scope):
+
+| # | 컴포넌트 | 역할 | 시나리오 단계 |
+|---|---------|------|-------------|
+| 1 | **BCM (Body Control Module)** | 고장 감지 및 DTC 생성, CAN-LS 전송 | Phase 1: Fault |
+| 2 | **Central Gateway (CGW)** | CAN 도메인 간 라우팅 허브, DoIP 경로 제공 | Phase 2: Routing |
+| 3 | **vECU (IVI Virtual ECU)** | Cluster 경고 활성화, 내부 DTC 기록 | Phase 2: Routing |
+| 4 | **CANoe Tester (진단 노드)** | UDS 세션/DTC Read, TCP/IP OTA 서버 연결 | Phase 3: Diagnostics |
+| 5 | **OTA Server (가상 노드)** | UDS 프로그래밍 세션, 펌웨어 다운로드/전송 | Phase 4: OTA |
+| 6 | **CAN 통신 인프라** | CAN-LS (125kbps), CAN-HS1 (500kbps), CAN-HS2 (500kbps) | 전 구간 |
+| 7 | **Ethernet/DoIP 인터페이스** | OTA Server ↔ CGW 연결 (ISO 13400-2) | Phase 3-4 |
+| 8 | **ADAS 센서 데이터 수신** | Camera (LDW), Radar (AEB/BSD) CAN 신호 수신 | 상시 |
+
+#### 제외 (Out of Scope):
+
+| # | 제외 항목 | 이유 |
+|---|---------|------|
+| 1 | IVI 하드웨어 (디스플레이) | 별도 Tier-1 공급 |
+| 2 | Ambient LED 하드웨어 | BCM 담당 (입력 신호만 수신) |
+| 3 | ADAS 센서 하드웨어 | Camera/Radar 물리 하드웨어 (ADAS Domain) |
+| 4 | Powertrain ECU (EMS, TCU) | 기존 시스템 (입력 신호만 수신) |
+| 5 | 실제 OTA 클라우드 서버 | CANoe CAPL 소켓으로 모사 |
+| 6 | Zonal Controller 아키텍처 | 미래 SDV 방향 (본 프로젝트는 Central GW 기반) |
+
+---
+
+## 3. 핵심 검증 시나리오 (Master E2E Scenario)
+
+```
+┌─────────────────────────────────────────────────────────────────────────┐
+│              Master E2E Scenario — Red Thread                           │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                         │
+│  [Phase 1] FAULT DETECTION                                              │
+│  BCM (CAN-LS, 0x500)                                                    │
+│    ├─ Window Motor Overcurrent 감지: 50A > 정상 5A                       │
+│    ├─ DTC B1234 저장 (ISO 14229 DTC Format)                             │
+│    └─ BCM_FaultStatus CAN 메시지 전송 (매 10ms)                          │
+│         │                                                               │
+│         ▼  CAN-LS (125kbps)                                             │
+│  [Phase 2] GATEWAY ROUTING                                              │
+│  Central Gateway (CGW)                                                  │
+│    ├─ CAN-LS 수신 → CAN-HS2 라우팅 (≤ 5ms, REQ-G02)                    │
+│    ├─ vECU → Cluster 경고등 활성화 (FTTI < 50ms, REQ-F03)               │
+│    └─ Ethernet/DoIP 경로 제공 (ISO 13400-2, REQ-G03)                    │
+│         │                                                               │
+│         ▼  DoIP / TCP                                                   │
+│  [Phase 3] UDS DIAGNOSTICS                                              │
+│  CANoe Tester (CAPL 진단 노드)                                           │
+│    ├─ UDS 0x10 0x03 (Extended Diagnostic Session) → BCM                 │
+│    ├─ UDS 0x19 0x02 (Read DTC by Status Mask) → DTC B1234 수신          │
+│    └─ TCP/IP → 가상 OTA 서버 DTC 데이터 전송                             │
+│         │                                                               │
+│         ▼  UDS over DoIP                                                │
+│  [Phase 4] OTA UPDATE                                                   │
+│  OTA Server (CANoe 가상 노드, Ethernet)                                  │
+│    ├─ UDS 0x10 0x02 (Programming Session) → BCM                         │
+│    ├─ UDS 0x34 (Request Download, 64KB 펌웨어)                           │
+│    ├─ UDS 0x36 × N (Transfer Data, 4KB/block)                           │
+│    ├─ UDS 0x37 (Transfer Exit)                                          │
+│    └─ BCM 재시작 → DTC 소거 → 정상 복귀 검증                             │
+│                                                                         │
+│  합격 기준: 전 단계 연속 성공 | 총 소요 시간 < 120초 | Rollback 100%     │
+└─────────────────────────────────────────────────────────────────────────┘
+```
+
+**적용 표준**:
+- ISO 14229-1 UDS (진단 통신)
+- ISO 13400-2 DoIP (Ethernet 진단)
+- ISO 26262-4 (기능 안전 — ASIL-D for ADAS)
+- ASPICE PAM 3.1 (프로세스 품질)
+
+---
+
+## 4. Item의 기능 (Functions of the Item)
+
+### 4.1 시나리오 단계별 기능
+
+| Function ID | 기능 | 시나리오 단계 | ASIL (HARA) |
+|-------------|------|-------------|-------------|
+| **F-01** | Fault Detection | Phase 1 | ASIL-B (SG-06) |
+| **F-02** | Gateway Routing | Phase 2 | QM (SG-09) |
+| **F-03** | Cluster Warning | Phase 2 | ASIL-D (SG-01/02) |
+| **F-04** | UDS Diagnostics | Phase 3 | ASIL-B (SG-08) |
+| **F-05** | OTA Update | Phase 4 | ASIL-A (SG-08) |
+| **F-06** | ADAS Safety UI | 상시 | ASIL-D (SG-01, SG-02) |
+| **F-07** | Fail-Safe / Self-Test | 상시 | ASIL-B (SG-06) |
+
+> **Note (ISO 26262-3:2018, Clause 7)**: ASIL은 HARA 결과로 결정됩니다.
+> 상기 값은 HARA 완료 후 도출된 참조값 — 상세는 HARA 문서를 참조하십시오.
+
+### 4.2 기능 우선순위 (Safety-Critical First)
+
+1. **F-06** ADAS Safety UI — ASIL-D — 충돌/이탈 경고 최우선
+2. **F-01** Fault Detection — ASIL-B — 고장 감지 및 DTC 생성
+3. **F-03** Cluster Warning — ASIL-D — 운전자 시각 경보
+4. **F-07** Fail-Safe / Self-Test — ASIL-B — 시스템 안전 상태 진입
+5. **F-04** UDS Diagnostics — ASIL-B — 진단 데이터 수집
+6. **F-05** OTA Update — ASIL-A — 소프트웨어 갱신
+7. **F-02** Gateway Routing — QM — 통신 인프라
+
+---
+
+## 5. 시스템 컨텍스트 다이어그램 (System Context)
+
+```
+  ┌────────────────────────────────────────────────────────┐
+  │               External Systems (입력)                   │
+  │  Camera (LDW) ──┐                                      │
+  │  Radar (AEB/BSD)┤─── CAN-HS1/HS2 ──► vECU            │
+  │  BCM (DTC) ─────┤                                      │
+  │  IVI (Mode) ────┘                                      │
+  └────────────────────────────────────────────────────────┘
+                           │
+              ┌────────────▼────────────┐
+              │   Central Gateway (CGW) │  ◄── 핵심 라우팅 허브
+              │   CAN-LS │ CAN-HS2     │
+              │   Ethernet/DoIP ────────┼──► OTA Server (가상)
+              └────────────┬────────────┘
+                           │ CAN-HS2
+              ┌────────────▼────────────┐
+              │   vECU (검증 대상)       │
+              │   Cluster 경고 │ 진단    │
+              └─────────────────────────┘
+```
+
+---
+
+## 6. 아키텍처 전략 컨텍스트
+
+| 아키텍처 시대 | 특징 | 본 프로젝트 |
+|------------|------|-----------|
+| **Domain ECU 분산형** | 도메인별 독립 ECU | — |
+| **Central Gateway 중심** ← | CGW 집중 라우팅 | **✅ 현재 (본 프로젝트)** |
+| **Zonal Controller** | 물리 구역 기반 통합 | — (미래 SDV 방향) |
+
+> **설계 의도**: Central Gateway는 현재 양산차 표준 아키텍처입니다.
+> Zonal Architecture는 미래 SDV(Software Defined Vehicle) 방향이며,
+> 본 프로젝트는 **Central GW 기반 검증 환경**을 구축합니다.
+
+---
+
+## 7. 개발 환경
+
+| 도구 | 용도 | 역할 |
+|------|------|------|
+| **CANoe 17+** | 검증 플랫폼 | 전 시나리오 자동화, CAPL 기반 노드 시뮬레이션 |
+| **CAPL** | 스크립트 언어 | BCM_Sim, CGW_Sim, vECU_Sim, OTA_Server_Sim |
+| **dSPACE SCALEXIO** | HIL 플랫폼 | 하드웨어 수준 검증 (Level 2) |
+| **Logic Analyzer** | FTTI 측정 | T1(Fault) ~ T4(Cluster) 측정 |
+
+---
+
+## 승인 (Approval)
+
+| 역할 | 이름 | 서명 | 날짜 |
+|------|------|------|------|
+| **Safety Manager** | Sarah Lee | ✅ Approved | 2026-02-17 |
+| **Chief Engineer** | Mike Park | ✅ Approved | 2026-02-17 |
+| **Project Manager** | John Kim | ✅ Approved | 2026-02-17 |
+
+---
+
+**Document Version**: 3.0 | **Last Updated**: 2026-02-17
+"""
+
+
+# ──────────────────────────────────────────────────────────────────────────────
+# Step 2: SRS 완전 재작성 (6-Group 구조)
+# ──────────────────────────────────────────────────────────────────────────────
+
+SRS_CONTENT = """\
 # System Requirements Specification (시스템 요구사항 명세서)
 
 **Document ID**: PART4-01-SRS
@@ -747,3 +1012,353 @@
 ---
 
 **Document Version**: 3.0 | **Last Updated**: 2026-02-17
+"""
+
+
+# ──────────────────────────────────────────────────────────────────────────────
+# Step 3: Traceability Matrix 재작성
+# ──────────────────────────────────────────────────────────────────────────────
+
+TRACEABILITY_CONTENT = """\
+# Traceability Matrix (추적성 매트릭스)
+
+**Document ID**: PART8-01-TRACE
+**ISO 26262 Reference**: Part 8, Clause 9
+**ASPICE Reference**: SUP.10
+**Version**: 3.0
+**Date**: 2026-02-17
+**Status**: Released (v3.0 — 6-Group REQ 체계 완전 재편성)
+
+---
+
+## 1. Traceability Overview
+
+본 매트릭스는 **ISO 26262-8 Clause 9** 및 **ASPICE SUP.10**에 따라 양방향 추적성을 확보합니다.
+
+```
+Safety Goals (HARA)
+    ↕
+Functional Safety Requirements (FSC)
+    ↕
+System Requirements (SRS — 6-Group)
+    ↕
+System Architecture / Test Cases
+```
+
+---
+
+## 2. Safety Goal → System Requirements 매핑
+
+| Safety Goal | ASIL | 관련 REQ | 시나리오 단계 |
+|-------------|------|---------|------------|
+| SG-01: AEB 긴급 제동 경고 | ASIL-D | REQ-A02, REQ-A05, REQ-A08, REQ-A09 | ADAS Safety |
+| SG-02: LDW 차선 이탈 경고 | ASIL-D | REQ-A01, REQ-A05, REQ-A06, REQ-A07 | ADAS Safety |
+| SG-03: BSD 사각지대 경고 | ASIL-B | REQ-A03 | ADAS Safety |
+| SG-06: Fail-Safe 전환 | ASIL-B | REQ-F01, REQ-F02, REQ-F05, REQ-G04, REQ-N03, REQ-N04, REQ-N05 | Fault / GW |
+| SG-07: 다중 경고 우선순위 | QM | REQ-A11 | ADAS Safety |
+| SG-08: OTA 무결성 및 Rollback | ASIL-A | REQ-D01, REQ-D07, REQ-O01~O06 | Diagnostics / OTA |
+| SG-09: Gateway 통신 가용성 | QM | REQ-G01, REQ-G03, REQ-G05 | Gateway |
+
+---
+
+## 3. System Requirements → Test Cases 매핑
+
+### Group 1: Fault Detection
+
+| REQ | 설명 | ASIL | Verification | Test Case | Status |
+|-----|------|------|-------------|-----------|--------|
+| REQ-F01 | BCM CAN 메시지 수신 | ASIL-B | CANoe SIL | TC-F01 | ⬜ Pending |
+| REQ-F02 | DTC B1234 감지 및 저장 | ASIL-B | Fault Injection | TC-F02 | ⬜ Pending |
+| REQ-F03 | Cluster 경고등 FTTI | ASIL-D | Logic Analyzer | TC-F03 | ⬜ Pending |
+| REQ-F04 | CANoe Fault Injection 지원 | ASIL-B | CANoe SIL | TC-F04 | ⬜ Pending |
+| REQ-F05 | Watchdog 타이머 | ASIL-B | Fault Injection | TC-F05 | ⬜ Pending |
+
+### Group 2: Gateway Routing
+
+| REQ | 설명 | ASIL | Verification | Test Case | Status |
+|-----|------|------|-------------|-----------|--------|
+| REQ-G01 | CAN-LS → CAN-HS2 라우팅 | QM | CANoe Trace | TC-G01 | ⬜ Pending |
+| REQ-G02 | 라우팅 지연 ≤ 5ms | QM | CANoe Bus Load | TC-G02 | ⬜ Pending |
+| REQ-G03 | Ethernet/DoIP OTA 경로 | QM | CANoe DoIP | TC-G03 | ⬜ Pending |
+| REQ-G04 | Bus Off Graceful Abort | ASIL-B | CAN Error Injection | TC-G04 | ⬜ Pending |
+| REQ-G05 | 다중 CAN 도메인 관리 | QM | CANoe Multi-Bus | TC-G05 | ⬜ Pending |
+
+### Group 3: UDS Diagnostics
+
+| REQ | 설명 | ASIL | Verification | Test Case | Status |
+|-----|------|------|-------------|-----------|--------|
+| REQ-D01 | UDS 0x10 Session Control | ASIL-B | CANoe CAPL | TC-D01 | ⬜ Pending |
+| REQ-D02 | UDS 0x19 Read DTC | ASIL-B | CANoe CAPL | TC-D02 | ⬜ Pending |
+| REQ-D03 | UDS 0x14 Clear DTC | ASIL-B | CANoe SIL | TC-D03 | ⬜ Pending |
+| REQ-D04 | UDS 0x22 Read Data by ID | QM | CANoe SIL | TC-D04 | ⬜ Pending |
+| REQ-D05 | P2/P2* 타이밍 준수 | ASIL-B | CANoe Timing | TC-D05 | ⬜ Pending |
+| REQ-D06 | Negative Response 처리 | ASIL-B | CANoe 경계값 | TC-D06 | ⬜ Pending |
+| REQ-D07 | 세션 보안 관리 (Security Access) | ASIL-B | CANoe SIL | TC-D07 | ⬜ Pending |
+| REQ-D08 | DTC 데이터 OTA Server 전달 | QM | CAPL + TCP Log | TC-D08 | ⬜ Pending |
+
+### Group 4: OTA Programming
+
+| REQ | 설명 | ASIL | Verification | Test Case | Status |
+|-----|------|------|-------------|-----------|--------|
+| REQ-O01 | UDS 0x10 0x02 Programming | ASIL-A | CANoe SIL + HIL | TC-O01 | ⬜ Pending |
+| REQ-O02 | UDS 0x34 Request Download | ASIL-A | CANoe SIL | TC-O02 | ⬜ Pending |
+| REQ-O03 | UDS 0x36 Transfer Data | ASIL-A | CANoe SIL | TC-O03 | ⬜ Pending |
+| REQ-O04 | UDS 0x37 Transfer Exit | ASIL-A | CANoe SIL + HIL | TC-O04 | ⬜ Pending |
+| REQ-O05 | OTA CRC-32 검증 | ASIL-A | Fault Injection | TC-O05 | ⬜ Pending |
+| REQ-O06 | OTA 실패 시 자동 Rollback | ASIL-A | HIL Fault Injection | TC-O06 | ⬜ Pending |
+
+### Group 5: ADAS Safety
+
+| REQ | 설명 | ASIL | Verification | Test Case | Status |
+|-----|------|------|-------------|-----------|--------|
+| REQ-A01 | LDW 차선 이탈 경고 | ASIL-D | HIL + VIL | TC-A01 | ⬜ Pending |
+| REQ-A02 | AEB 긴급 제동 경고 | ASIL-D | HIL + Logic Analyzer | TC-A02 | ⬜ Pending |
+| REQ-A03 | BSD 사각지대 경고 | ASIL-B | HIL | TC-A03 | ⬜ Pending |
+| REQ-A04 | 후방 카메라 영상 표시 | ASIL-B | VIL | TC-A04 | ⬜ Pending |
+| REQ-A05 | Cluster 경고 아이콘 제어 | ASIL-D | SIL + VIL | TC-A05 | ⬜ Pending |
+| REQ-A06 | Camera LDW 데이터 수신 | ASIL-D | CANoe SIL | TC-A06 | ⬜ Pending |
+| REQ-A07 | LDW 이벤트 파싱 | ASIL-D | Unit Test | TC-A07 | ⬜ Pending |
+| REQ-A08 | AEB 이벤트 CRC+Counter 검증 | ASIL-D | Unit Test + FI | TC-A08 | ⬜ Pending |
+| REQ-A09 | AEB 이벤트 우선순위 | ASIL-D | Unit Test | TC-A09 | ⬜ Pending |
+| REQ-A10 | 경고 지속 시간 제어 | ASIL-B | SIL | TC-A10 | ⬜ Pending |
+| REQ-A11 | 다중 경고 우선순위 | QM | SIL | TC-A11 | ⬜ Pending |
+
+### Group 6: Non-Functional
+
+| REQ | 설명 | ASIL | Verification | Test Case | Status |
+|-----|------|------|-------------|-----------|--------|
+| REQ-N01 | 시스템 반응 속도 | QM | SIL 타이밍 | TC-N01 | ⬜ Pending |
+| REQ-N02 | 장시간 동작 안정성 | QM | HIL 100h | TC-N02 | ⬜ Pending |
+| REQ-N03 | MPU 메모리 파티션 보호 | ASIL-D | Fault Injection | TC-N03 | ⬜ Pending |
+| REQ-N04 | 태스크 실행 시간 모니터링 | ASIL-D | HIL 런타임 | TC-N04 | ⬜ Pending |
+| REQ-N05 | 시스템 자가 진단 (POST) | ASIL-B | Fault Injection | TC-N05 | ⬜ Pending |
+
+---
+
+## 4. E2E Master Scenario 추적성
+
+| 시나리오 단계 | 관련 REQ | 관련 FSR | 테스트 케이스 |
+|------------|---------|---------|------------|
+| Phase 1: Fault Injection (BCM DTC) | REQ-F01, REQ-F02, REQ-F03, REQ-F04 | FSR-B03 | TC-F01~04, INT-006 Ph.1 |
+| Phase 2: Gateway Routing | REQ-G01, REQ-G02, REQ-G03 | FSR-QM01 | TC-G01~03, INT-006 Ph.2 |
+| Phase 3: UDS Diagnostics | REQ-D01, REQ-D02, REQ-D07, REQ-D08 | FSR-B04 | TC-D01~08, INT-006 Ph.3 |
+| Phase 4: OTA Programming | REQ-O01~O06 | FSR-QM02 | TC-O01~06, INT-006 Ph.4 |
+| E2E Regression | 전체 40개 | — | INT-006 전체, SV-E2E-001 |
+
+---
+
+## 5. Coverage Statistics
+
+| 항목 | 수량 |
+|-----|------|
+| Safety Goals | 7개 (SG-01, 02, 03, 06, 07, 08, 09) |
+| System Requirements | 40개 (REQ-F/G/D/O/A/N) |
+| Test Cases | 40개 (TC-F/G/D/O/A/N 01~11) |
+| Traceability | 40/40 (100%) |
+| E2E Scenario Coverage | Phase 1~4 + Regression |
+
+---
+
+## 개정 이력
+
+| 버전 | 날짜 | 변경 사항 |
+|------|------|---------|
+| 1.0 | 2026-02-14 | 초기 생성 (REQ-001~020) |
+| 2.0 | 2026-02-17 | REQ-021~059 추가 |
+| **3.0** | **2026-02-17** | **완전 재편성 — 6-Group 구조 (REQ-F/G/D/O/A/N)** |
+
+---
+
+**Document Version**: 3.0 | **Last Updated**: 2026-02-17
+"""
+
+
+# ──────────────────────────────────────────────────────────────────────────────
+# Step 4: System Qualification Test Plan 업데이트 (새 REQ ID 반영)
+# ──────────────────────────────────────────────────────────────────────────────
+
+SYS_QUAL_ADDITION = """
+
+---
+
+## 8. v3.0 재편성 반영 — 6-Group Test Case Mapping
+
+> **SRS v3.0** (6-Group 구조) 기준 시스템 레벨 테스트 케이스 매핑
+
+### 8.1 Group 1: Fault Detection Tests
+
+| Test Case | REQ | Objective | Method |
+|-----------|-----|-----------|--------|
+| TC-F01 | REQ-F01 | BCM CAN 메시지 수신 신뢰성 | CANoe SIL, 1000회 |
+| TC-F02 | REQ-F02 | DTC B1234 감지 및 저장 | Fault Injection |
+| TC-F03 | REQ-F03 | Cluster 경고등 FTTI ≤ 50ms | Logic Analyzer |
+| TC-F04 | REQ-F04 | CANoe Fault Injection 자동화 | CANoe CAPL |
+| TC-F05 | REQ-F05 | Watchdog 타이머 Fail-Safe | WDT Kick 중단 |
+
+### 8.2 Group 2: Gateway Routing Tests
+
+| Test Case | REQ | Objective | Method |
+|-----------|-----|-----------|--------|
+| TC-G01 | REQ-G01 | CAN-LS→HS2 라우팅 손실 0% | CANoe Trace |
+| TC-G02 | REQ-G02 | 라우팅 지연 ≤ 5ms | CANoe 타임스탬프 |
+| TC-G03 | REQ-G03 | DoIP OTA 경로 제공 | CANoe DoIP |
+| TC-G04 | REQ-G04 | Bus Off Graceful Abort | CAN Error Injection |
+| TC-G05 | REQ-G05 | 다중 도메인 동시 처리 | Multi-Bus SIL |
+
+### 8.3 Group 3: UDS Diagnostics Tests
+
+| Test Case | REQ | Objective | Method |
+|-----------|-----|-----------|--------|
+| TC-D01 | REQ-D01 | UDS 0x10 세션 전환 | CANoe CAPL |
+| TC-D02 | REQ-D02 | UDS 0x19 DTC Read | CANoe CAPL |
+| TC-D03 | REQ-D03 | UDS 0x14 DTC Clear | CANoe SIL |
+| TC-D04 | REQ-D04 | UDS 0x22 DID Read | CANoe SIL |
+| TC-D05 | REQ-D05 | P2/P2* 타이밍 | CANoe Timing |
+| TC-D06 | REQ-D06 | NRC 처리 | 경계값 테스트 |
+| TC-D07 | REQ-D07 | Security Access | 보안 테스트 |
+| TC-D08 | REQ-D08 | DTC → OTA Server 전달 | CAPL + TCP Log |
+
+### 8.4 Group 4: OTA Programming Tests
+
+| Test Case | REQ | Objective | Method |
+|-----------|-----|-----------|--------|
+| TC-O01 | REQ-O01 | Programming Session 진입 | CANoe SIL + HIL |
+| TC-O02 | REQ-O02 | Request Download (64KB) | CANoe SIL |
+| TC-O03 | REQ-O03 | Transfer Data (4KB/block) | CANoe SIL |
+| TC-O04 | REQ-O04 | Transfer Exit + BCM 재시작 | CANoe SIL + HIL |
+| TC-O05 | REQ-O05 | CRC-32 검증 | Fault Injection |
+| TC-O06 | REQ-O06 | OTA 실패 Rollback | HIL 배터리 차단 |
+
+### 8.5 E2E Master Scenario — TC-E2E-001
+
+**Test Objective**: Phase 1~4 전체 흐름 자동화 검증
+
+**Test Steps**:
+1. BCM Fault Injection (50A, CAPL) → DTC B1234 확인
+2. Gateway 라우팅 추적 → Cluster 경고등 50ms 내 활성화 확인
+3. UDS 0x10 0x03 → 0x19 0x02 → DTC B1234 수집 → OTA Server 전달
+4. UDS 0x10 0x02 → 0x34 → 0x36×N → 0x37 → BCM 재시작 → DTC 소거 확인
+
+**Pass Criteria**:
+- 전 단계 연속 성공 (3회 반복)
+- 총 소요 시간: < 120초
+- Rollback 테스트 10회: 100% 성공
+- 자동 리포트 생성
+
+---
+"""
+
+
+# ──────────────────────────────────────────────────────────────────────────────
+# Step 5: Safety Validation Plan 업데이트 (새 REQ ID)
+# ──────────────────────────────────────────────────────────────────────────────
+
+SAFETY_VAL_ADDITION = """
+
+---
+
+## SRS v3.0 Safety Validation Mapping (v3.0 반영)
+
+### Safety Goals → 6-Group REQ 검증 매핑
+
+| Safety Goal | ASIL | 핵심 REQ | 검증 방법 | FTTI 기준 |
+|-------------|------|---------|---------|---------|
+| SG-01: AEB 경고 | ASIL-D | REQ-A02, A05, A08, A09 | HIL + Logic Analyzer | ≤ 100ms |
+| SG-02: LDW 경고 | ASIL-D | REQ-A01, A05, A06, A07 | HIL + VIL | ≤ 200ms |
+| SG-03: BSD 경고 | ASIL-B | REQ-A03 | HIL | ≤ 300ms |
+| SG-06: Fail-Safe | ASIL-B | REQ-F05, G04, N03, N04, N05 | Fault Injection | ≤ 1s |
+| SG-07: 다중 경고 우선순위 | QM | REQ-A11 | SIL | — |
+| SG-08: OTA 무결성 | ASIL-A | REQ-O01~O06, D01, D07 | HIL + Fault Injection | — |
+| SG-09: Gateway 가용성 | QM | REQ-G01, G03 | CANoe DoIP | ≤ 5ms |
+
+### E2E Safety Validation (SV-E2E-002)
+
+```
+검증 목적: SRS v3.0 기준 전체 40개 REQ의 안전성 통합 검증
+
+시나리오:
+  Step 1. REQ-F04 Fault Injection → REQ-F02 DTC B1234 생성
+  Step 2. REQ-G01/G02 Gateway 라우팅 → REQ-F03 Cluster 경고 50ms 내
+  Step 3. REQ-D01/D02 UDS 진단 → REQ-D08 OTA Server 데이터 전달
+  Step 4. REQ-O01~O04 OTA 완료 → REQ-O06 Rollback 검증
+
+합격 기준:
+  ✅ REQ-F03: Cluster FTTI ≤ 50ms (ASIL-D, 1000회)
+  ✅ REQ-O06: Rollback 성공률 100% (10회)
+  ✅ REQ-A02: AEB FTTI ≤ 100ms (ASIL-D, 1000회)
+  ✅ 전체 40개 REQ 검증 증거 문서화
+```
+
+---
+"""
+
+
+# ──────────────────────────────────────────────────────────────────────────────
+# 실행
+# ──────────────────────────────────────────────────────────────────────────────
+
+def main():
+    print("=" * 60)
+    print("V-Model 완전 재편성 시작")
+    print("=" * 60)
+
+    # Step 1: Item Definition 재작성
+    print("\n[Step 1] Item Definition 재정의...")
+    write_file("00_Concept_Phase/00_Item_Definition.md", ITEM_DEFINITION)
+
+    # Step 2: SRS 완전 재작성
+    print("\n[Step 2] SRS 6-Group 재편성...")
+    write_file("01_System_Requirements/01_SYS2_System_Requirements_Specification.md", SRS_CONTENT)
+
+    # Step 3: Traceability Matrix 재작성
+    print("\n[Step 3] Traceability Matrix 재작성...")
+    write_file("99_Supporting_Processes/01_Traceability_Matrix.md", TRACEABILITY_CONTENT)
+
+    # Step 4: System Qualification Test 업데이트
+    print("\n[Step 4] System Qualification Test Plan 업데이트...")
+    sq_path = "11_System_Qualification_Test/01_SYS5_System_Qualification_Test_Plan.md"
+    try:
+        existing = read_file(sq_path)
+        if "v3.0 재편성 반영" not in existing:
+            with open(os.path.join(BASE, sq_path), "a", encoding="utf-8") as f:
+                f.write(SYS_QUAL_ADDITION)
+            print(f"  ✅ {sq_path} (appended)")
+        else:
+            print(f"  ⏭️  {sq_path} (already updated)")
+    except Exception as e:
+        print(f"  ❌ {sq_path}: {e}")
+
+    # Step 5: Safety Validation Plan 업데이트
+    print("\n[Step 5] Safety Validation Plan 업데이트...")
+    sv_path = "12_Safety_Validation/01_Safety_Validation_Plan.md"
+    try:
+        existing = read_file(sv_path)
+        if "SRS v3.0 Safety Validation Mapping" not in existing:
+            with open(os.path.join(BASE, sv_path), "a", encoding="utf-8") as f:
+                f.write(SAFETY_VAL_ADDITION)
+            print(f"  ✅ {sv_path} (appended)")
+        else:
+            print(f"  ⏭️  {sv_path} (already updated)")
+    except Exception as e:
+        print(f"  ❌ {sv_path}: {e}")
+
+    # Summary
+    print("\n" + "=" * 60)
+    print("✅ 완전 재편성 완료!")
+    print("=" * 60)
+    print("""
+변경 사항 요약:
+  - Item Definition v3.0: 시나리오 중심 완전 재정의
+  - SRS v3.0: 6-Group 40개 REQ (REQ-F/G/D/O/A/N)
+  - Traceability Matrix v3.0: 40개 REQ 추적성 완전 재작성
+  - System Qualification Test: 6-Group TC 매핑 + E2E TC-E2E-001
+  - Safety Validation: Safety Goal → 6-Group REQ 매핑
+
+다음 단계:
+  git add -p  # 변경 내용 검토
+  git commit  # 커밋
+""")
+
+
+if __name__ == "__main__":
+    main()

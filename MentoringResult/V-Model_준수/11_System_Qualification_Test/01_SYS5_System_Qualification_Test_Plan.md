@@ -266,3 +266,72 @@
 ---
 
 **Auto-generated**: 2026-02-15 00:57:02
+
+
+---
+
+## 8. v3.0 재편성 반영 — 6-Group Test Case Mapping
+
+> **SRS v3.0** (6-Group 구조) 기준 시스템 레벨 테스트 케이스 매핑
+
+### 8.1 Group 1: Fault Detection Tests
+
+| Test Case | REQ | Objective | Method |
+|-----------|-----|-----------|--------|
+| TC-F01 | REQ-F01 | BCM CAN 메시지 수신 신뢰성 | CANoe SIL, 1000회 |
+| TC-F02 | REQ-F02 | DTC B1234 감지 및 저장 | Fault Injection |
+| TC-F03 | REQ-F03 | Cluster 경고등 FTTI ≤ 50ms | Logic Analyzer |
+| TC-F04 | REQ-F04 | CANoe Fault Injection 자동화 | CANoe CAPL |
+| TC-F05 | REQ-F05 | Watchdog 타이머 Fail-Safe | WDT Kick 중단 |
+
+### 8.2 Group 2: Gateway Routing Tests
+
+| Test Case | REQ | Objective | Method |
+|-----------|-----|-----------|--------|
+| TC-G01 | REQ-G01 | CAN-LS→HS2 라우팅 손실 0% | CANoe Trace |
+| TC-G02 | REQ-G02 | 라우팅 지연 ≤ 5ms | CANoe 타임스탬프 |
+| TC-G03 | REQ-G03 | DoIP OTA 경로 제공 | CANoe DoIP |
+| TC-G04 | REQ-G04 | Bus Off Graceful Abort | CAN Error Injection |
+| TC-G05 | REQ-G05 | 다중 도메인 동시 처리 | Multi-Bus SIL |
+
+### 8.3 Group 3: UDS Diagnostics Tests
+
+| Test Case | REQ | Objective | Method |
+|-----------|-----|-----------|--------|
+| TC-D01 | REQ-D01 | UDS 0x10 세션 전환 | CANoe CAPL |
+| TC-D02 | REQ-D02 | UDS 0x19 DTC Read | CANoe CAPL |
+| TC-D03 | REQ-D03 | UDS 0x14 DTC Clear | CANoe SIL |
+| TC-D04 | REQ-D04 | UDS 0x22 DID Read | CANoe SIL |
+| TC-D05 | REQ-D05 | P2/P2* 타이밍 | CANoe Timing |
+| TC-D06 | REQ-D06 | NRC 처리 | 경계값 테스트 |
+| TC-D07 | REQ-D07 | Security Access | 보안 테스트 |
+| TC-D08 | REQ-D08 | DTC → OTA Server 전달 | CAPL + TCP Log |
+
+### 8.4 Group 4: OTA Programming Tests
+
+| Test Case | REQ | Objective | Method |
+|-----------|-----|-----------|--------|
+| TC-O01 | REQ-O01 | Programming Session 진입 | CANoe SIL + HIL |
+| TC-O02 | REQ-O02 | Request Download (64KB) | CANoe SIL |
+| TC-O03 | REQ-O03 | Transfer Data (4KB/block) | CANoe SIL |
+| TC-O04 | REQ-O04 | Transfer Exit + BCM 재시작 | CANoe SIL + HIL |
+| TC-O05 | REQ-O05 | CRC-32 검증 | Fault Injection |
+| TC-O06 | REQ-O06 | OTA 실패 Rollback | HIL 배터리 차단 |
+
+### 8.5 E2E Master Scenario — TC-E2E-001
+
+**Test Objective**: Phase 1~4 전체 흐름 자동화 검증
+
+**Test Steps**:
+1. BCM Fault Injection (50A, CAPL) → DTC B1234 확인
+2. Gateway 라우팅 추적 → Cluster 경고등 50ms 내 활성화 확인
+3. UDS 0x10 0x03 → 0x19 0x02 → DTC B1234 수집 → OTA Server 전달
+4. UDS 0x10 0x02 → 0x34 → 0x36×N → 0x37 → BCM 재시작 → DTC 소거 확인
+
+**Pass Criteria**:
+- 전 단계 연속 성공 (3회 반복)
+- 총 소요 시간: < 120초
+- Rollback 테스트 10회: 100% 성공
+- 자동 리포트 생성
+
+---

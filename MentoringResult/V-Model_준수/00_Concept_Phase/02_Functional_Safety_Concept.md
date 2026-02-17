@@ -31,9 +31,9 @@ HARA에서 도출된 Safety Goals를 기반으로 **Functional Safety Requiremen
 | ASIL Level | Safety Goals | FSR 수 |
 |------------|--------------|--------|
 | **ASIL-D** | SG-01 (AEB), SG-02 (LDW) | 4개 |
-| **ASIL-B** | SG-03 (Reverse), SG-04 (Door), SG-06 (Fail-Safe) | 6개 |
-| **ASIL-A** | SG-05 (Lighting) | 2개 |
-| **QM** | SG-07 (Multi-Warning) | 1개 |
+| **ASIL-B** | SG-03 (BSD), SG-06 (Fail-Safe) | 4개 |
+| **ASIL-A** | SG-08 (OTA Rollback) | 2개 |
+| **QM** | SG-07 (Multi-Warning), SG-09 (Gateway) | 2개 |
 
 ---
 
@@ -49,7 +49,7 @@ HARA에서 도출된 Safety Goals를 기반으로 **Functional Safety Requiremen
 #### FSR-D01: AEB 충돌 경고 기능 요구사항 (SG-01 → ASIL-D)
 
 - **Safety Goal**: SG-01 — AEB 이벤트 시 충돌 임박 경고 제공
-- **System Requirement**: REQ-029
+- **System Requirement**: REQ-A02
 - **ASIL**: ASIL-D
 - **FTTI**: 100ms
 - **Description**: 차량은 AEB 시스템이 긴급 제동 이벤트를 감지한 경우, 운전자가 위험 상황을 인지할 수 있도록 경고를 제공해야 한다. 경고는 FTTI (100ms) 내에 운전자에게 전달되어야 한다.
@@ -61,7 +61,7 @@ HARA에서 도출된 Safety Goals를 기반으로 **Functional Safety Requiremen
 #### FSR-D02: LDW 차선 이탈 경고 기능 요구사항 (SG-02 → ASIL-D)
 
 - **Safety Goal**: SG-02 — LDW 이벤트 시 차선 이탈 경고 제공
-- **System Requirement**: REQ-027
+- **System Requirement**: REQ-A01
 - **ASIL**: ASIL-D
 - **FTTI**: 200ms
 - **Description**: 차량은 차선 이탈 감지 이벤트 시 운전자에게 차선 이탈 경고를 제공해야 한다. 경고는 FTTI (200ms) 내에 운전자에게 전달되어야 한다.
@@ -77,7 +77,7 @@ HARA에서 도출된 Safety Goals를 기반으로 **Functional Safety Requiremen
 #### FSR-B01: 후진 경고 기능 요구사항 (SG-03 → ASIL-B)
 
 - **Safety Goal**: SG-03 — 후진 진입 시 후방 안전 경고 제공
-- **System Requirement**: REQ-002, REQ-015, REQ-016
+- **System Requirement**: REQ-F01, REQ-F02, REQ-F03
 - **ASIL**: ASIL-B
 - **FTTI**: 3,000ms
 - **Description**: 차량이 후진 기어를 선택한 경우, 운전자에게 후방 안전 경고를 제공해야 한다. 경고는 FTTI (3s) 내에 활성화되어야 한다.
@@ -88,7 +88,7 @@ HARA에서 도출된 Safety Goals를 기반으로 **Functional Safety Requiremen
 #### FSR-B02: 도어 개방 경고 기능 요구사항 (SG-04 → ASIL-B)
 
 - **Safety Goal**: SG-04 — 주행 중 도어 개방 경고 제공
-- **System Requirement**: REQ-006
+- **System Requirement**: REQ-A03
 - **ASIL**: ASIL-B
 - **FTTI**: 1,000ms
 - **Description**: 차량이 주행 중 도어가 개방된 경우, 운전자에게 도어 개방 경고를 제공해야 한다. 경고는 FTTI (1s) 내에 활성화되어야 한다.
@@ -96,12 +96,12 @@ HARA에서 도출된 Safety Goals를 기반으로 **Functional Safety Requiremen
 - **Emergency Operation Interval**: 도어 닫힘 감지 시까지 유지
 - **Verification**: BCM CAN 신호 Fault Injection
 
-> **ASIL 수정 이력**: HARA v2.0에서 H-04 ASIL-C → ASIL-B로 수정됨. REQ-006은 ASIL-B로 유지.
+> **ASIL 수정 이력**: HARA v2.0에서 H-04 ASIL-C → ASIL-B로 수정됨. REQ-A03은 ASIL-B로 유지.
 
 #### FSR-B03: Fail-Safe 전환 기능 요구사항 (SG-06 → ASIL-B)
 
 - **Safety Goal**: SG-06 — CAN 오류 시 안전 기능 유지
-- **System Requirement**: REQ-023
+- **System Requirement**: REQ-G04
 - **ASIL**: ASIL-B
 - **FTTI**: 3,000ms
 - **Description**: 차량은 CAN 통신 오류를 감지한 경우, FTTI (3s) 내에 Fail-Safe 상태로 전환하여 안전 기능을 유지해야 한다.
@@ -116,7 +116,7 @@ HARA에서 도출된 Safety Goals를 기반으로 **Functional Safety Requiremen
 #### FSR-A01: 조명 Fail-Safe 기능 요구사항 (SG-05 → ASIL-A)
 
 - **Safety Goal**: SG-05 — 조명 실패 시 눈부심 방지 상태 유지
-- **System Requirement**: REQ-053
+- **System Requirement**: REQ-N03
 - **ASIL**: ASIL-A
 - **FTTI**: 1,000ms
 - **Description**: 차량은 조명 제어 기능 실패 시 전방 차량 눈부심을 유발하지 않는 안전 조명 상태로 FTTI (1s) 내에 전환해야 한다.
@@ -127,7 +127,7 @@ HARA에서 도출된 Safety Goals를 기반으로 **Functional Safety Requiremen
 #### FSR-A02: 조명 출력 모니터링 요구사항 (SG-05 보조 → ASIL-A)
 
 - **Safety Goal**: SG-05 (보조)
-- **System Requirement**: REQ-054
+- **System Requirement**: REQ-N04
 - **ASIL**: ASIL-A
 - **Description**: 차량은 조명 출력 값을 주기적으로 모니터링하여 설정값 초과 시 즉시 감소 명령을 내려야 한다.
 - **Verification**: 조명 출력 모니터링 로직 테스트
@@ -139,7 +139,7 @@ HARA에서 도출된 Safety Goals를 기반으로 **Functional Safety Requiremen
 #### FSR-QM01: 다중 경고 우선순위 요구사항 (SG-07 → QM)
 
 - **Safety Goal**: SG-07 (QM)
-- **System Requirement**: REQ-037
+- **System Requirement**: REQ-A11
 - **ASIL**: QM
 - **Description**: 복수의 ADAS 이벤트가 동시 발생하는 경우, 차량은 우선순위 기반 알고리즘에 따라 경고를 표시해야 한다 (AEB > LDW > 도어 > 기타).
 - **Verification**: 다중 이벤트 시나리오 테스트
@@ -155,7 +155,7 @@ HARA에서 도출된 Safety Goals를 기반으로 **Functional Safety Requiremen
 #### FSR-B04: Central Gateway 가용성 (SG-09 → QM / 강화 적용)
 
 - **Safety Goal**: SG-09 — Gateway 라우팅 오류 감지 및 진단 가용성 보장
-- **System Requirement**: REQ-058 (Gateway OTA Path)
+- **System Requirement**: REQ-G03 (Gateway OTA Path)
 - **ASIL**: QM (강화: 시스템 신뢰성을 위해 ASPICE 레벨 관리)
 - **Description**: Central Gateway는 CAN-LS (BCM Domain), CAN-HS2 (Infotainment Domain),
   Ethernet (OTA Server) 간 메시지 라우팅 연속성을 보장해야 한다.
@@ -166,7 +166,7 @@ HARA에서 도출된 Safety Goals를 기반으로 **Functional Safety Requiremen
 #### FSR-QM02: OTA 통신 무결성 (SG-08 → ASIL-A)
 
 - **Safety Goal**: SG-08 — OTA 업데이트 중단 시 자동 Rollback
-- **System Requirement**: REQ-014 (OTA 실패 자동복구), REQ-059 (E2E 시나리오)
+- **System Requirement**: REQ-O06 (OTA 실패 자동복구), REQ-F04 (E2E 시나리오)
 - **ASIL**: ASIL-A
 - **FTTI**: N/A (OTA는 OM-05 정차 모드에서만 동작)
 - **Description**: UDS 프로그래밍 세션(0x10 0x02) 시작 후 0x37 Transfer Exit 완료 전
@@ -208,14 +208,13 @@ HARA에서 도출된 Safety Goals를 기반으로 **Functional Safety Requiremen
 
 | Safety Goal | ASIL | FSR | System Req | Test Case |
 |-------------|------|-----|------------|-----------|
-| SG-01 (AEB 경고) | ASIL-D | FSR-D01 | REQ-029 | TC-SYS-029 |
-| SG-02 (LDW 경고) | ASIL-D | FSR-D02 | REQ-027 | TC-SYS-027 |
-| SG-03 (후진 경고) | ASIL-B | FSR-B01 | REQ-002, 015, 016 | TC-SYS-002 |
-| SG-04 (도어 경고) | ASIL-B | FSR-B02 | REQ-006 | TC-SYS-006 |
-| SG-05 (조명 Fail-Safe) | ASIL-A | FSR-A01, FSR-A02 | REQ-053, 054 | TC-SYS-053 |
-| SG-06 (CAN Fail-Safe) | ASIL-B | FSR-B03 | REQ-023 | TC-SYS-023 |
-| SG-07 (다중 경고) | QM | FSR-QM01 | REQ-037 | TC-SYS-037 |
-| QR-01 (OTA) | QM | — | REQ-014 | TC-SYS-014 |
+| SG-01 (AEB 경고) | ASIL-D | FSR-D01 | REQ-A02, REQ-A05, REQ-A08 | TC-A02 |
+| SG-02 (LDW 경고) | ASIL-D | FSR-D02 | REQ-A01, REQ-A06, REQ-A07 | TC-A01 |
+| SG-03 (BSD 경고) | ASIL-B | FSR-B02 | REQ-A03 | TC-A03 |
+| SG-06 (CAN Fail-Safe) | ASIL-B | FSR-B03 | REQ-G04, REQ-F05, REQ-N05 | TC-G04 |
+| SG-07 (다중 경고) | QM | FSR-QM01 | REQ-A11 | TC-A11 |
+| SG-08 (OTA Rollback) | ASIL-A | FSR-QM02 | REQ-O01~O06, REQ-D01, REQ-D07 | TC-O01~O06 |
+| SG-09 (Gateway 가용성) | QM | FSR-QM01 | REQ-G01, REQ-G03 | TC-G01, TC-G03 |
 
 ---
 

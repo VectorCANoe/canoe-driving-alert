@@ -281,14 +281,14 @@ Safety Goals Definition (Vehicle-level, Implementation-independent)
 
 | Hazard | Safety Goal | ASIL | System Requirement |
 |--------|-------------|------|--------------------|
-| H-01 | SG-01 | ASIL-D | SYS-REQ-029 (AEB 경고 UI) |
-| H-02 | SG-02 | ASIL-D | SYS-REQ-027 (LDW 경고 UI) |
+| H-01 | SG-01 | ASIL-D | REQ-A02 (AEB 경고 UI) |
+| H-02 | SG-02 | ASIL-D | REQ-A01 (LDW 경고 UI) |
 | H-03 | SG-03 | ASIL-B | SYS-REQ-002, 015, 016 (후진 경고) |
 | H-04 | SG-04 | ASIL-B | SYS-REQ-006 (도어 경고) |
-| H-05 | SG-05 | ASIL-A | SYS-REQ-053 (Fail-Safe 조명) |
+| H-05 | SG-05 | ASIL-A | REQ-N03 (Fail-Safe 조명) |
 | H-06 | QR-01 | QM | SYS-REQ-014 (OTA Rollback) |
-| H-07 | SG-06 | ASIL-B | SYS-REQ-023 (Fail-Safe 전환) |
-| H-08 | SG-07 | QM | SYS-REQ-037 (다중 경고 우선순위) |
+| H-07 | SG-06 | ASIL-B | REQ-G04 (Fail-Safe 전환) |
+| H-08 | SG-07 | QM | REQ-A11 (다중 경고 우선순위) |
 
 ---
 

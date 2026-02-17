@@ -360,3 +360,40 @@
   ✅ Rollback 성공률 100% (실패 시나리오 10회)
 ```
 
+
+
+---
+
+## SRS v3.0 Safety Validation Mapping (v3.0 반영)
+
+### Safety Goals → 6-Group REQ 검증 매핑
+
+| Safety Goal | ASIL | 핵심 REQ | 검증 방법 | FTTI 기준 |
+|-------------|------|---------|---------|---------|
+| SG-01: AEB 경고 | ASIL-D | REQ-A02, A05, A08, A09 | HIL + Logic Analyzer | ≤ 100ms |
+| SG-02: LDW 경고 | ASIL-D | REQ-A01, A05, A06, A07 | HIL + VIL | ≤ 200ms |
+| SG-03: BSD 경고 | ASIL-B | REQ-A03 | HIL | ≤ 300ms |
+| SG-06: Fail-Safe | ASIL-B | REQ-F05, G04, N03, N04, N05 | Fault Injection | ≤ 1s |
+| SG-07: 다중 경고 우선순위 | QM | REQ-A11 | SIL | — |
+| SG-08: OTA 무결성 | ASIL-A | REQ-O01~O06, D01, D07 | HIL + Fault Injection | — |
+| SG-09: Gateway 가용성 | QM | REQ-G01, G03 | CANoe DoIP | ≤ 5ms |
+
+### E2E Safety Validation (SV-E2E-002)
+
+```
+검증 목적: SRS v3.0 기준 전체 40개 REQ의 안전성 통합 검증
+
+시나리오:
+  Step 1. REQ-F04 Fault Injection → REQ-F02 DTC B1234 생성
+  Step 2. REQ-G01/G02 Gateway 라우팅 → REQ-F03 Cluster 경고 50ms 내
+  Step 3. REQ-D01/D02 UDS 진단 → REQ-D08 OTA Server 데이터 전달
+  Step 4. REQ-O01~O04 OTA 완료 → REQ-O06 Rollback 검증
+
+합격 기준:
+  ✅ REQ-F03: Cluster FTTI ≤ 50ms (ASIL-D, 1000회)
+  ✅ REQ-O06: Rollback 성공률 100% (10회)
+  ✅ REQ-A02: AEB FTTI ≤ 100ms (ASIL-D, 1000회)
+  ✅ 전체 40개 REQ 검증 증거 문서화
+```
+
+---

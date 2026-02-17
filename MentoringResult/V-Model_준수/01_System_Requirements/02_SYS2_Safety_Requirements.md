@@ -27,8 +27,8 @@
 
 | ASIL | Safety Goals | Safety Requirements | System Req 매핑 |
 |------|--------------|---------------------|-----------------|
-| **ASIL-D** | 2개 (SG-01, SG-02) | 8개 | REQ-027, REQ-029 등 |
-| **ASIL-B** | 3개 (SG-03, SG-04, SG-06) | 31개 | REQ-002, REQ-006, REQ-023 등 |
+| **ASIL-D** | 2개 (SG-01, SG-02) | 8개 | REQ-A01, REQ-A02 등 |
+| **ASIL-B** | 3개 (SG-03, SG-04, SG-06) | 31개 | REQ-002, REQ-006, REQ-G04 등 |
 | **ASIL-A** | 1개 (SG-05) | 12개 | REQ-003 등 |
 | **QM** | 1개 (SG-07) | 8개 | REQ-004, REQ-005 등 |
 
@@ -41,7 +41,7 @@
 ### 3.1 SR-D-001: AEB Warning Response Time
 
 **Source**: SG-01 (AEB 경고), FSR-D-02
-**System Requirement**: REQ-029
+**System Requirement**: REQ-A02
 **ASIL**: ASIL-D
 
 **Requirement**:
@@ -74,7 +74,7 @@
 ### 3.2 SR-D-002: LDW Dual-Channel Independence
 
 **Source**: SG-02 (LDW 경고), FSR-D-01
-**System Requirement**: REQ-027
+**System Requirement**: REQ-A01
 **ASIL**: ASIL-D (Decomposed to C+C)
 
 **Requirement**:
@@ -112,7 +112,7 @@
 ### 3.3 SR-D-003: CAN Communication Integrity
 
 **Source**: All ASIL-D functions
-**System Requirement**: REQ-023
+**System Requirement**: REQ-G04
 **ASIL**: ASIL-D
 
 **Requirement**:
@@ -202,7 +202,7 @@
 ### 4.1 SR-B-005: Fail-Safe State Transition (구 SR-C-001)
 
 **Source**: SG-06 (CAN Fail-Safe) — HARA v2.0: SG-07→SG-06, ASIL-C→ASIL-B
-**System Requirement**: REQ-023
+**System Requirement**: REQ-G04
 **ASIL**: ASIL-B
 
 **Requirement**:
@@ -241,7 +241,7 @@
 
 ### 4.2 SR-B-006: Watchdog Monitoring (구 SR-C-002)
 
-**System Requirement**: REQ-023
+**System Requirement**: REQ-G04
 **ASIL**: ASIL-B
 
 **Requirement**:
@@ -289,7 +289,7 @@
 ### 5.1 SR-B-001: Message Priority Management
 
 **Source**: SG-08 (우선순위)
-**System Requirement**: REQ-037
+**System Requirement**: REQ-A11
 **ASIL**: ASIL-B
 
 **Requirement**:
@@ -349,9 +349,9 @@
 
 | Safety Req | System Requirements | Test Cases |
 |------------|---------------------|------------|
-| SR-D-001 | REQ-029 | TC-SYS-001, TC-SYS-201 |
-| SR-D-002 | REQ-027 | TC-SYS-002 |
-| SR-D-003 | REQ-023 | TC-SYS-101, TC-SYS-103 |
+| SR-D-001 | REQ-A02 | TC-A02, TC-A02 |
+| SR-D-002 | REQ-A01 | TC-F01 |
+| SR-D-003 | REQ-G04 | TC-N03, TC-G04 |
 | SR-D-004 | REQ-006 | TC-SYS-003 |
 
 **100% Traceability** (모든 Safety Requirements가 System Req와 Test Case로 연결됨)
