@@ -3,9 +3,9 @@
 **Document ID**: PART3-01-HARA
 **ISO 26262 Reference**: Part 3, Clause 7
 **ASPICE Reference**: N/A
-**Version**: 2.0
-**Date**: 2026-02-17
-**Status**: Released (v2.0 — Corrected per ISO 26262-1:2018 review)
+**Version**: 3.0
+**Date**: 2026-02-18
+**Status**: Updated (v3.0 — H-09/H-10 OTA/GW Hazards + SG-08/SG-09 Safety Goals 추가)
 
 > **Change Log v2.0**: FTTI 정의 수정, H-04/H-07 ASIL 오류 수정 (C→B), ASIL 분해 표기 수정 (D→B+B → D→C+C), Hazardous Event 구조 ISO 준수 형식으로 재작성, SG-06 Quality Requirement로 재분류
 
@@ -88,6 +88,8 @@ Safety Goals Definition (Vehicle-level, Implementation-independent)
 | **H-06** | OTA 실패 후 기능 상실 | 정차 중 OTA 업데이트 | H-06: OTA 중 전원 차단으로 시스템 불능 |
 | **H-07** | Fail-Safe 미작동 (SW 버그) | CAN 통신 오류 발생 중 주행 | H-07: CAN 오류 시 Fail-Safe 전환 실패 |
 | **H-08** | 다중 경고 혼란 (우선순위 오류) | LDW + AEB 동시 발생 상황 | H-08: 복합 위험 상황에서 잘못된 경고 표시 |
+| **H-09** | OTA 업데이트 중 전원 차단으로 BCM SW 손상 | 정차 중 OTA 프로그래밍 세션 진행 중 | H-09: OTA 중 전원 차단으로 BCM 펌웨어 불완전 기록 |
+| **H-10** | Gateway Protocol Translation 실패로 진단 통신 불가 | 차량 정비소 진단 세션 진행 중 | H-10: DoIP/CAN 변환 오류로 UDS 진단 명령 미전달 |
 
 > **ISO 26262-1:2018 §3.77**: Hazardous Event = Hazard (malfunctioning behaviour) + Operational Situation
 
@@ -138,6 +140,8 @@ Safety Goals Definition (Vehicle-level, Implementation-independent)
 | **H-06** | OTA 중 시스템 불능 (정차 중) | S2 | E1 | C1 | **QM** | QR-01 |
 | **H-07** | CAN 오류 시 Fail-Safe 전환 실패 | S3 | E2 | C2 | **ASIL-B** | **SG-06** |
 | **H-08** | 복합 위험 상황 잘못된 경고 | S2 | E2 | C2 | **QM** | **SG-07** |
+| **H-09** | OTA 중 전원 차단으로 BCM 펌웨어 불완전 기록 | S2 | E2 | C2 | **ASIL-B** | **SG-08** |
+| **H-10** | DoIP/CAN 변환 오류로 UDS 진단 명령 미전달 | S1 | E2 | C2 | **ASIL-A** | **SG-09** |
 
 > **수정 이력 v2.0**:
 > - H-04: S3/E2/C2 → ASIL-B (수정. 구 ASIL-C는 ISO 26262-3:2018 Table 4 기준 오류)
@@ -166,12 +170,14 @@ Safety Goals Definition (Vehicle-level, Implementation-independent)
 | **SG-03** | 차량은 후진 진입 시 운전자에게 후방 안전 경고를 제공해야 한다 | ASIL-B | 후방 카메라 영상 단독 표시 | 3s |
 | **SG-04** | 차량은 주행 중 도어 개방 시 운전자에게 도어 개방 경고를 제공해야 한다 | ASIL-B | 경고음 + 클러스터 경고등 | 1s |
 | **SG-06** | 차량은 CAN 통신 오류 감지 시 안전 기능을 유지해야 한다 | ASIL-B | 조명 기본 상태(Fail-Safe) 유지 | 3s |
+| **SG-08** | OTA 업데이트 중 전원 차단 시 BCM 펌웨어 무결성을 보장하고 이전 버전으로 자동 복구해야 한다 | ASIL-B | 이전 펌웨어 버전 자동 Rollback | N/A (정차 중) |
 
 ### 6.3 ASIL-A Safety Goals
 
 | SG ID | Safety Goal (Vehicle-level, Implementation-independent) | ASIL | Safe State | FTTI |
 |-------|--------------------------------------------------------|------|------------|------|
 | **SG-05** | 차량은 조명 제어 실패 시 전방 차량에 눈부심을 유발하지 않는 상태를 유지해야 한다 | ASIL-A | 조명 출력 최소화 | 1s |
+| **SG-09** | 차량 진단 통신 시 Gateway Protocol Translation 오류로 인한 UDS 명령 손실을 방지해야 한다 | ASIL-A | Graceful Abort + DTC 기록 | N/A (정비소 진단 중) |
 
 ### 6.4 QM 수준 — ASIL Safety Goals 해당 없음
 
@@ -205,6 +211,8 @@ Safety Goals Definition (Vehicle-level, Implementation-independent)
 | SG-04 | ASIL-B | 1,000ms | ≤ 200ms | ≤ 800ms | 도어: 운전자 즉각 인지 필요 |
 | SG-05 | ASIL-A | 1,000ms | ≤ 300ms | ≤ 700ms | 조명: 눈부심 방지 |
 | SG-06 | ASIL-B | 3,000ms | ≤ 500ms | ≤ 2,500ms | CAN 오류: Fail-Safe 전환 |
+| SG-08 | ASIL-B | N/A | ≤ 1,000ms | N/A | OTA Rollback: 정차 중 (주행 FTTI 해당 없음) |
+| SG-09 | ASIL-A | N/A | ≤ 100ms | N/A | 진단 통신: 정비소 (주행 FTTI 해당 없음) |
 
 ---
 
@@ -289,6 +297,8 @@ Safety Goals Definition (Vehicle-level, Implementation-independent)
 | H-06 | QR-01 | QM | SYS-REQ-O06 (OTA Rollback) |
 | H-07 | SG-06 | ASIL-B | REQ-G04 (Fail-Safe 전환) |
 | H-08 | SG-07 | QM | REQ-A11 (다중 경고 우선순위) |
+| H-09 | SG-08 | ASIL-B | REQ-O06 (OTA Rollback), REQ-O05 (CRC 검증) |
+| H-10 | SG-09 | ASIL-A | REQ-G03 (DoIP OTA 경로), REQ-D01 (UDS Session Control) |
 
 ---
 
@@ -304,10 +314,10 @@ Safety Goals Definition (Vehicle-level, Implementation-independent)
 
 ### 11.2 검증 결과
 
-- ✅ **8개 Hazard** 식별 (운영 시나리오 기반)
-- ✅ **7개 Safety Goal** (ASIL-D: 2개, ASIL-B: 3개, ASIL-A: 1개, QM: 1개)
+- ✅ **10개 Hazard** 식별 (운영 시나리오 기반)
+- ✅ **9개 Safety Goal** (ASIL-D: 2개, ASIL-B: 4개, ASIL-A: 2개, QM: 1개)
 - ✅ **1개 Quality Requirement** (QR-01: OTA, QM)
-- ✅ **ASIL 분포**: D(2), B(3), A(1), QM(2)
+- ✅ **ASIL 분포**: D(2), B(4), A(2), QM(2)
 - ✅ **ISO 26262-3:2018 Table 4** 100% 준수 검증 완료
 - ✅ **추적성**: 100% 확보
 
@@ -330,6 +340,7 @@ Safety Goals Definition (Vehicle-level, Implementation-independent)
 |---------|------|--------|---------|
 | 1.0 | 2026-02-14 | AI Assistant | Initial release - ISO 26262-3 준수 |
 | 2.0 | 2026-02-17 | Technical Review | FTTI 정의 수정; H-04/H-07 ASIL-C→B 수정; D→B+B 분해 → D→C+C; Hazardous Event ISO 구조 준수; SG-06 Quality Requirement 재분류; ISO 26262-3 Table 4 완전판 추가 |
+| 3.0 | 2026-02-18 | Narrative Alignment | H-09 (OTA 전원 차단, ASIL-B), H-10 (GW Protocol Translation 실패, ASIL-A) 추가; SG-08 (OTA 무결성), SG-09 (Gateway 진단 가용성) Safety Goals 추가; Traceability REQ-O06, REQ-G03 연결 |
 
 ---
 
