@@ -63,11 +63,11 @@ Logging/
 *.blf
 *.asc
 
-# Simulation outputs
-simulation/Logging/
-simulation/*.blf
-simulation/*.asc
-simulation/test-results/
+# CANoe outputs (canoe/ 구조로 이전)
+canoe/logging/*.blf
+canoe/logging/*.asc
+canoe/logging/*.mf4
+canoe/logging/test-results/
 
 # OTA packages (binary files)
 *.bin
