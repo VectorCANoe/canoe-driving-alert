@@ -30,7 +30,7 @@ NS_ :
 
 BS_:
 
-BU_: EMS TCU ESP MDPS BCM IVI Cluster Camera Rear_Camera Radar SCC CGW HVAC
+BU_: EMS TCU ESP MDPS BCM IVI Cluster Camera Rear_Camera Radar SCC CGW HVAC vECU
 
 VAL_TABLE_ GearPosition 0 "P" 1 "R" 2 "N" 3 "D" 4 "S" 5 "L" 6 "M" 7 "ERROR" ;
 VAL_TABLE_ ShiftStatus 0 "IDLE" 1 "SHIFTING" 2 "COMPLETE" 3 "FAULT" ;
@@ -154,12 +154,27 @@ BO_ 1152 Cluster_Display: 8 Cluster
  SG_ AliveCounter : 56|4@1+ (1,0) [0|15] "" CGW
  SG_ Checksum : 60|4@1+ (1,0) [0|15] "" CGW
 
-BO_ 1280 BCM_DoorStatus: 4 BCM
+BO_ 1280 BCM_FaultStatus: 4 BCM
+ SG_ WindowMotorOvercurrent : 0|1@1+ (1,0) [0|1] "" CGW,vECU
+ SG_ DTC_Code : 1|16@1+ (1,0) [0|65535] "" CGW,vECU
+ SG_ FaultSeverity : 17|2@1+ (1,0) [0|3] "" CGW,vECU
+ SG_ AliveCounter : 24|4@1+ (1,0) [0|15] "" CGW
+ SG_ Checksum : 28|4@1+ (1,0) [0|15] "" CGW
+
+BO_ 1281 BCM_DoorStatus: 4 BCM
  SG_ Door_Status_FL : 0|2@1+ (1,0) [0|3] "" Cluster,IVI
  SG_ Door_Status_FR : 2|2@1+ (1,0) [0|3] "" Cluster,IVI
  SG_ Door_Status_RL : 4|2@1+ (1,0) [0|3] "" Cluster,IVI
  SG_ Door_Status_RR : 6|2@1+ (1,0) [0|3] "" Cluster,IVI
  SG_ Central_Lock_Status : 8|1@1+ (1,0) [0|1] "" Cluster,IVI
+
+BO_ 1056 vECU_WarningUI: 4 vECU
+ SG_ Warning_Type : 0|4@1+ (1,0) [0|15] "" Cluster
+ SG_ Warning_Priority : 4|2@1+ (1,0) [0|3] "" Cluster
+ SG_ Icon_ID : 6|8@1+ (1,0) [0|255] "" Cluster
+ SG_ Warning_Active : 14|1@1+ (1,0) [0|1] "" Cluster
+ SG_ AliveCounter : 24|4@1+ (1,0) [0|15] "" Cluster
+ SG_ Checksum : 28|4@1+ (1,0) [0|15] "" Cluster
 
 BO_ 1296 BCM_LightControl: 8 BCM
  SG_ Headlight_Status : 0|2@1+ (1,0) [0|3] "" Cluster
@@ -244,7 +259,9 @@ CM_ SG_ 786 AliveCounter "Message alive counter (0-15, increments by 1 each cycl
 CM_ SG_ 786 Checksum "CRC-4 checksum calculated as XOR of data bytes 0-6";
 CM_ BO_ 1040 "IVI user profile and scenario parameters";
 CM_ BO_ 1152 "Cluster display data (speed, RPM, gear, warnings)";
-CM_ BO_ 1280 "Body Control Module door status";
+CM_ BO_ 1280 "BCM Fault Status — Window Motor Overcurrent DTC (REQ-F01, ASIL-B)";
+CM_ BO_ 1281 "Body Control Module door status";
+CM_ BO_ 1056 "vECU Warning UI — Cluster warning display control (REQ-F03, ASIL-D)";
 CM_ BO_ 1296 "Body Control Module light control and ambient lighting feedback";
 CM_ BO_ 1312 "Environment sensor data (ambient light, wiper, rain sensor)";
 CM_ BO_ 1314 "Seat occupancy and seat belt status";
@@ -273,7 +290,9 @@ BA_ "GenMsgCycleTime" BO_ 896 50;
 BA_ "GenMsgCycleTime" BO_ 1024 100;
 BA_ "GenMsgCycleTime" BO_ 1040 500;
 BA_ "GenMsgCycleTime" BO_ 1152 50;
-BA_ "GenMsgCycleTime" BO_ 1280 100;
+BA_ "GenMsgCycleTime" BO_ 1280 10;
+BA_ "GenMsgCycleTime" BO_ 1281 100;
+BA_ "GenMsgCycleTime" BO_ 1056 50;
 BA_ "GenMsgCycleTime" BO_ 1296 100;
 BA_ "GenMsgCycleTime" BO_ 1312 200;
 BA_ "GenMsgCycleTime" BO_ 1314 500;
@@ -295,6 +314,8 @@ BA_ "ASIL_Level" BO_ 1024 "QM";
 BA_ "ASIL_Level" BO_ 1040 "QM";
 BA_ "ASIL_Level" BO_ 1152 "ASIL-B";
 BA_ "ASIL_Level" BO_ 1280 "ASIL-B";
+BA_ "ASIL_Level" BO_ 1281 "ASIL-B";
+BA_ "ASIL_Level" BO_ 1056 "ASIL-D";
 BA_ "ASIL_Level" BO_ 1296 "ASIL-B";
 BA_ "ASIL_Level" BO_ 1312 "QM";
 BA_ "ASIL_Level" BO_ 1314 "ASIL-B";
@@ -310,10 +331,14 @@ VAL_ 786 Rear_Object_Type 0 "NONE" 1 "CAR" 2 "TRUCK" 3 "MOTORCYCLE" 4 "PEDESTRIA
 VAL_ 896 SCC_Mode 0 "OFF" 1 "STANDBY" 2 "ACTIVE" 3 "FAULT" ;
 VAL_ 1024 Theme_Package 0 "SPORT" 1 "COMFORT" 2 "ECO" 3 "CUSTOM1" 4 "CUSTOM2" 5 "CUSTOM3" ;
 VAL_ 1040 Profile_ID 0 "DRIVER1" 1 "DRIVER2" 2 "DRIVER3" 3 "GUEST" 4 "VALET" ;
-VAL_ 1280 Door_Status_FL 0 "CLOSED" 1 "OPEN" 2 "AJAR" 3 "ERROR" ;
-VAL_ 1280 Door_Status_FR 0 "CLOSED" 1 "OPEN" 2 "AJAR" 3 "ERROR" ;
-VAL_ 1280 Door_Status_RL 0 "CLOSED" 1 "OPEN" 2 "AJAR" 3 "ERROR" ;
-VAL_ 1280 Door_Status_RR 0 "CLOSED" 1 "OPEN" 2 "AJAR" 3 "ERROR" ;
+VAL_ 1280 WindowMotorOvercurrent 0 "NORMAL" 1 "OVERCURRENT" ;
+VAL_ 1280 FaultSeverity 0 "NONE" 1 "LOW" 2 "MEDIUM" 3 "HIGH" ;
+VAL_ 1281 Door_Status_FL 0 "CLOSED" 1 "OPEN" 2 "AJAR" 3 "ERROR" ;
+VAL_ 1281 Door_Status_FR 0 "CLOSED" 1 "OPEN" 2 "AJAR" 3 "ERROR" ;
+VAL_ 1281 Door_Status_RL 0 "CLOSED" 1 "OPEN" 2 "AJAR" 3 "ERROR" ;
+VAL_ 1281 Door_Status_RR 0 "CLOSED" 1 "OPEN" 2 "AJAR" 3 "ERROR" ;
+VAL_ 1056 Warning_Type 0 "NONE" 1 "DTC_FAULT" 2 "AEB" 3 "LDW" 4 "BSD" 5 "OTA_FAIL" ;
+VAL_ 1056 Warning_Priority 0 "LOW" 1 "MEDIUM" 2 "HIGH" 3 "CRITICAL" ;
 VAL_ 1296 Headlight_Status 0 "OFF" 1 "PARKING" 2 "LOW_BEAM" 3 "HIGH_BEAM" ;
 VAL_ 1312 Wiper_Status 0 "OFF" 1 "INTERMITTENT" 2 "LOW" 3 "HIGH" 4 "AUTO" 5 "MIST" 6 "WASH" 7 "ERROR" ;
 VAL_ 1312 Headlight_Auto_Status 0 "MANUAL" 1 "AUTO_ACTIVE" ;

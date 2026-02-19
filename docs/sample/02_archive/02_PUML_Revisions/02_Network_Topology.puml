@@ -1,0 +1,65 @@
+@startuml
+title 2. Network Architecture (How) - Bus Topology
+top to bottom direction
+skinparam componentStyle rectangle
+skinparam shadowing false
+skinparam roundcorner 5
+
+' --- Colors & Style ---
+skinparam rectangle {
+    BackgroundColor White
+    BorderColor Black
+    FontSize 14
+    FontStyle bold
+}
+skinparam component {
+    BackgroundColor White
+    BorderColor Black
+    FontSize 12
+    FontStyle bold
+}
+
+' --- Bus Lines (As Interfaces for better visual) ---
+interface "Ethernet (DoIP)\n<color:Blue>100 Mbps</color>" as ETH_BUS #Blue
+interface "CAN-HS\n<color:Red>500 kbps</color>" as HS_BUS #Red
+interface "CAN-LS\n<color:Green>125 kbps</color>" as LS_BUS #Green
+
+' --- Nodes (ECUs) ---
+package "Connectivity Domain" {
+    component "OTA Server" as OTA #LightBlue
+}
+
+package "Gateway & Backbone" {
+    component "Central Gateway\n(CGW)" as GW #LightGray
+}
+
+package "Body Domain" {
+    component "Body Control\n(BCM)" as BCM #LightGreen
+    component "Window Motor" as MOTOR #White
+}
+
+package "Infotainment Domain" {
+    component "Cluster\n(CLU)" as CLU #pink
+}
+
+package "Diagnostics" {
+    component "Tester\n(Equipment)" as TESTER #LightYellow
+}
+
+' --- Connections ---
+OTA -down-> ETH_BUS : "TCP/IP"
+ETH_BUS -down-> GW
+
+GW -left-> HS_BUS
+GW -right-> LS_BUS
+
+HS_BUS -down-> CLU : "Rx Warning"
+
+LS_BUS -down-> BCM : "Tx Fault\nRx Diag"
+LS_BUS -down-> TESTER : "Tx Request"
+
+' Detail Connection (Non-Network)
+BCM .right.> MOTOR : "Hardwire"
+
+
+@enduml

@@ -1,0 +1,142 @@
+VERSION ""
+
+NS_ :
+	NS_DESC_
+	CM_
+	BA_DEF_
+	BA_
+	VAL_
+	CAT_DEF_
+	CAT_
+	FILTER
+	BA_DEF_DEF_
+	EV_DATA_
+	ENVVAR_DATA_
+	SGTYPE_
+	SGTYPE_VAL_
+	BA_DEF_SGTYPE_
+	BA_SGTYPE_
+	SIG_TYPE_REF_
+	VAL_TABLE_
+	SIG_GROUP_
+	SIG_VALTYPE_
+	SIGTYPE_VALTYPE_
+	BO_TX_BU_
+	BA_DEF_REL_
+	BA_REL_
+	BA_SGTYPE_REL_
+	SG_MUL_VAL_
+
+BS_:
+
+BU_: BCM CGW Cluster Tester OTA_Server
+
+/* ============================================================
+ * sample_project.dbc
+ * 프로젝트: CANoe IVI OTA — Fault Detection → Gateway → UDS → OTA
+ * 포함 ECU: BCM, CGW(Gateway), Cluster, Tester, OTA_Server
+ * 제외 ECU: EMS, TCU, ESP, MDPS, IVI, Camera, Radar, SCC, HVAC, vECU
+ * 기준 파일: vehicle_system.dbc (전체 차량 시스템 DBC)
+ * 생성일: 2026-02-19
+ * ============================================================ */
+
+/* ----------------------------------------------------------
+ * CAN-LS 채널 메시지 (125kbps)
+ * ---------------------------------------------------------- */
+
+/* BCM → Gateway, Cluster: 고장 상태 전송 (10ms 주기) */
+BO_ 1280 BCM_FaultStatus: 4 BCM
+ SG_ WindowMotorOvercurrent : 0|1@1+ (1,0) [0|1] "" CGW,Cluster
+ SG_ DTC_Code : 1|16@1+ (1,0) [0|65535] "" CGW,Cluster
+ SG_ FaultSeverity : 17|2@1+ (1,0) [0|3] "" CGW,Cluster
+ SG_ AliveCounter : 24|4@1+ (1,0) [0|15] "" CGW
+ SG_ Checksum : 28|4@1+ (1,0) [0|15] "" CGW
+
+/* Tester/OTA_Server → BCM (via Gateway): UDS 서비스 요청 */
+BO_ 2015 UDS_Request: 8 Tester
+ SG_ ServiceID : 0|8@1+ (1,0) [0|255] "" BCM,CGW
+ SG_ SubFunction : 8|8@1+ (1,0) [0|255] "" BCM,CGW
+ SG_ DataRecord_0 : 16|8@1+ (1,0) [0|255] "" BCM,CGW
+ SG_ DataRecord_1 : 24|8@1+ (1,0) [0|255] "" BCM,CGW
+ SG_ DataRecord_2 : 32|8@1+ (1,0) [0|255] "" BCM,CGW
+ SG_ DataRecord_3 : 40|8@1+ (1,0) [0|255] "" BCM,CGW
+ SG_ DataRecord_4 : 48|8@1+ (1,0) [0|255] "" BCM,CGW
+ SG_ DataRecord_5 : 56|8@1+ (1,0) [0|255] "" BCM,CGW
+
+/* BCM → Tester/OTA_Server (via Gateway): UDS 서비스 응답 */
+BO_ 2024 UDS_Response: 8 BCM
+ SG_ ResponseCode : 0|8@1+ (1,0) [0|255] "" Tester,OTA_Server,CGW
+ SG_ DTCStatus : 8|8@1+ (1,0) [0|255] "" Tester,CGW
+ SG_ DTCCode_High : 16|8@1+ (1,0) [0|255] "" Tester,CGW
+ SG_ DTCCode_Low : 24|8@1+ (1,0) [0|255] "" Tester,CGW
+ SG_ MaxBlockLength : 32|8@1+ (1,0) [0|255] "" OTA_Server,CGW
+ SG_ Reserved_0 : 40|8@1+ (1,0) [0|255] "" CGW
+ SG_ Reserved_1 : 48|8@1+ (1,0) [0|255] "" CGW
+ SG_ Reserved_2 : 56|8@1+ (1,0) [0|255] "" CGW
+
+/* ----------------------------------------------------------
+ * CAN-HS 채널 메시지 (500kbps)
+ * ---------------------------------------------------------- */
+
+/* Cluster → (수신 전용): 경고등 상태 */
+BO_ 1296 Cluster_WarnStatus: 1 Cluster
+ SG_ WarnLampRed : 0|1@1+ (1,0) [0|1] "" CGW
+
+/* CGW → 전체: Gateway 상태 (100ms 주기) */
+BO_ 1792 CGW_Status: 8 CGW
+ SG_ Gateway_Status : 0|8@1+ (1,0) [0|255] "" BCM,Cluster,Tester,OTA_Server
+ SG_ Network_Load_LS : 24|8@1+ (0.4,0) [0|100] "%" BCM,Cluster,Tester,OTA_Server
+ SG_ Diagnostic_Active : 32|1@1+ (1,0) [0|1] "" BCM,Cluster,Tester,OTA_Server
+ SG_ OTA_Active : 33|1@1+ (1,0) [0|1] "" BCM,Cluster,Tester,OTA_Server
+
+/* ----------------------------------------------------------
+ * DoIP 메시지 (Ethernet — 논리적 표현)
+ * ---------------------------------------------------------- */
+
+/* OTA_Server → CGW: DoIP 경로 활성화 요청 */
+BO_ 57345 DoIP_RoutingActivation: 2 OTA_Server
+ SG_ RoutingActivationType : 0|8@1+ (1,0) [0|255] "" CGW
+ SG_ Reserved : 8|8@1+ (1,0) [0|255] "" CGW
+
+/* ----------------------------------------------------------
+ * 노드 설명 (Comments)
+ * ---------------------------------------------------------- */
+
+CM_ BU_ BCM "Body Control Module — Window Motor 과전류 감지, DTC B1234 생성, FaultStatus 전송 (CAN-LS 10ms)";
+CM_ BU_ CGW "Central Gateway — CAN-LS↔CAN-HS 라우팅, DoIP 경로 제공, UDS 포워딩";
+CM_ BU_ Cluster "Instrument Cluster — BCM_FaultStatus 수신 → RED 경고등 활성화/소등";
+CM_ BU_ Tester "CANoe UDS Tester — UDS 0x10/0x19/0x14 서비스 요청 및 응답 처리";
+CM_ BU_ OTA_Server "OTA Update Server — DoIP+UDS 0x34/0x36/0x37 펌웨어 전송, CRC-32 검증, Rollback";
+
+CM_ BO_ 1280 "BCM 고장 상태 메시지. WindowMotorOvercurrent=1 시 DTC B1234(0xB234) 활성화. 10ms 주기 전송.";
+CM_ BO_ 2015 "UDS 서비스 요청 메시지. ServiceID: 0x10(세션)/0x14(DTC클리어)/0x19(DTC조회)/0x34(다운로드)/0x36(전송)/0x37(완료).";
+CM_ BO_ 2024 "UDS 서비스 응답 메시지. ResponseCode: 0x50(세션OK)/0x54(클리어OK)/0x59(DTC조회OK)/0x74(다운로드OK)/0x76(전송OK)/0x77(완료OK)/0x7F(에러).";
+CM_ BO_ 1296 "Cluster 경고등 상태. WarnLampRed=1: RED 경고등 점등.";
+CM_ BO_ 1792 "Gateway 상태 메시지. Diagnostic_Active=1: UDS 세션 진행 중. OTA_Active=1: OTA 진행 중.";
+CM_ BO_ 57345 "DoIP Routing Activation. OTA Server → Gateway 경로 요청.";
+
+CM_ SG_ 1280 WindowMotorOvercurrent "Window Motor 과전류 감지 여부. 0: 정상, 1: 과전류 감지";
+CM_ SG_ 1280 DTC_Code "DTC 코드. B1234 = 0xB234 = 45620";
+CM_ SG_ 1280 FaultSeverity "고장 심각도. 0: 없음, 1: 경고, 2: 고장, 3: 위험";
+CM_ SG_ 2015 ServiceID "UDS 서비스 식별자. 0x10/0x14/0x19/0x34/0x36/0x37";
+CM_ SG_ 2024 ResponseCode "UDS 응답 코드. 0x50/0x54/0x59/0x74/0x76/0x77/0x7F";
+
+/* ----------------------------------------------------------
+ * 속성 정의 (Attributes)
+ * ---------------------------------------------------------- */
+
+BA_DEF_ BO_ "GenMsgCycleTime" INT 0 10000;
+BA_DEF_ BO_ "GenMsgSendType" STRING;
+BA_DEF_ SG_ "SystemSignalLongSymbol" STRING;
+
+BA_DEF_DEF_ "GenMsgCycleTime" 0;
+BA_DEF_DEF_ "GenMsgSendType" "NoMsgSendType";
+BA_DEF_DEF_ "SystemSignalLongSymbol" "";
+
+BA_ "GenMsgCycleTime" BO_ 1280 10;
+BA_ "GenMsgCycleTime" BO_ 1792 100;
+BA_ "GenMsgSendType" BO_ 1280 "Cyclic";
+BA_ "GenMsgSendType" BO_ 1792 "Cyclic";
+BA_ "GenMsgSendType" BO_ 2015 "Event";
+BA_ "GenMsgSendType" BO_ 2024 "Event";
+BA_ "GenMsgSendType" BO_ 57345 "Event";

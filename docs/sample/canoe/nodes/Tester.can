@@ -1,0 +1,205 @@
+/*
+ * Tester.can — CANoe UDS Tester (진단 클라이언트)
+ *
+ * 역할: UDS 0x10/0x19/0x14 서비스 요청 및 응답 처리
+ * 채널: CAN-LS (UDS over CAN, ISO 14229-1)
+ * DBC: vehicle_system.dbc — UDS_Request(0x7DF), UDS_Response(0x7E8)
+ *
+ * V-Model: SWE.3/SWE.6 (구현) → SWE.4 (05_Unit_Test.md 단위 테스트로 검증)
+ * ISO 26262: Part 6, Clause 8
+ */
+
+includes
+{
+}
+
+variables
+{
+  msTimer tResponseTimeout;      // UDS 응답 타임아웃 (5000ms)
+
+  int gCurrentSession   = 1;     // 현재 세션 (1: Default, 2: Programming, 3: Extended)
+  int gLastServiceID    = 0;     // 마지막 요청 서비스 ID
+  int gLastResponseCode = 0;     // 마지막 응답 코드
+  int gDtcCleared       = 0;     // DTC 클리어 완료 여부
+  int gWaitingResponse  = 0;     // 응답 대기 중 여부
+
+  /* UDS 서비스 ID 상수 */
+  const byte SID_SESSION_CTRL = 0x10;
+  const byte SID_CLEAR_DTC    = 0x14;
+  const byte SID_READ_DTC     = 0x19;
+
+  /* 세션 타입 */
+  const byte SESSION_DEFAULT   = 0x01;
+  const byte SESSION_PROGRAM   = 0x02;
+  const byte SESSION_EXTENDED  = 0x03;
+}
+
+/*============================================================
+ * 초기화
+ *============================================================*/
+on start
+{
+  write("[Tester] 노드 시작 — Default Session (0x01)");
+  @UDS::currentSession = 1;
+}
+
+/*============================================================
+ * UDS 0x10 — 세션 전환 요청
+ *============================================================*/
+void sendUDS_10(byte sessionType)
+{
+  message UDS_Request req;
+
+  req.byte(0) = SID_SESSION_CTRL;
+  req.byte(1) = sessionType;
+  req.dlc     = 2;
+
+  gLastServiceID   = SID_SESSION_CTRL;
+  gWaitingResponse = 1;
+  @UDS::lastServiceID = SID_SESSION_CTRL;
+
+  output(req);
+  setTimer(tResponseTimeout, 5000);
+
+  write("[Tester] UDS 0x10 세션 전환 요청: 0x%02X", sessionType);
+}
+
+/*============================================================
+ * UDS 0x19 — DTC 조회 요청 (subFunction 0x02: reportDTCByStatusMask)
+ *============================================================*/
+void sendUDS_19()
+{
+  message UDS_Request req;
+
+  req.byte(0) = SID_READ_DTC;
+  req.byte(1) = 0x02;     /* reportDTCByStatusMask */
+  req.byte(2) = 0xFF;     /* statusMask: 모든 DTC */
+  req.dlc     = 3;
+
+  gLastServiceID   = SID_READ_DTC;
+  gWaitingResponse = 1;
+  @UDS::lastServiceID = SID_READ_DTC;
+
+  output(req);
+  setTimer(tResponseTimeout, 5000);
+
+  write("[Tester] UDS 0x19 DTC 조회 요청");
+}
+
+/*============================================================
+ * UDS 0x14 — DTC 클리어 요청 (groupOfDTC: 0xFFFFFF = 전체)
+ *============================================================*/
+void sendUDS_14()
+{
+  message UDS_Request req;
+
+  req.byte(0) = SID_CLEAR_DTC;
+  req.byte(1) = 0xFF;
+  req.byte(2) = 0xFF;
+  req.byte(3) = 0xFF;
+  req.dlc     = 4;
+
+  gLastServiceID   = SID_CLEAR_DTC;
+  gWaitingResponse = 1;
+  @UDS::lastServiceID = SID_CLEAR_DTC;
+
+  output(req);
+  setTimer(tResponseTimeout, 5000);
+
+  write("[Tester] UDS 0x14 DTC 클리어 요청");
+}
+
+/*============================================================
+ * UDS_Response 수신 처리 (0x7E8)
+ *============================================================*/
+on message UDS_Response
+{
+  byte responseCode;
+  byte dtcHighByte, dtcLowByte;
+
+  cancelTimer(tResponseTimeout);
+  gWaitingResponse = 0;
+
+  responseCode = this.byte(0);
+  gLastResponseCode = responseCode;
+  @UDS::lastResponseCode = responseCode;
+
+  switch (responseCode)
+  {
+    case 0x50:   /* PositiveResponse: SessionControl */
+      gCurrentSession = this.byte(1);
+      @UDS::currentSession = gCurrentSession;
+      write("[Tester] ✅ 세션 전환 완료: 0x%02X", gCurrentSession);
+      break;
+
+    case 0x59:   /* PositiveResponse: ReadDTCInformation */
+      dtcHighByte = this.byte(2);
+      dtcLowByte  = this.byte(3);
+      write("[Tester] ✅ DTC 조회 응답: DTC=0x%02X%02X, Status=0x%02X",
+            dtcHighByte, dtcLowByte, this.byte(1));
+      parseDTCResponse(this.byte(1), dtcHighByte, dtcLowByte);
+      break;
+
+    case 0x54:   /* PositiveResponse: ClearDTC */
+      gDtcCleared = 1;
+      @UDS::dtcCleared = 1;
+      write("[Tester] ✅ DTC 클리어 완료");
+      break;
+
+    case 0x7F:   /* NegativeResponse */
+      write("[Tester] ❌ NegativeResponse: ServiceID=0x%02X, NRC=0x%02X",
+            this.byte(1), this.byte(2));
+      break;
+
+    default:
+      write("[Tester] 응답 수신: 0x%02X", responseCode);
+      break;
+  }
+}
+
+/*============================================================
+ * DTC 응답 파싱
+ *============================================================*/
+void parseDTCResponse(byte statusByte, byte dtcHigh, byte dtcLow)
+{
+  int dtcCode;
+  dtcCode = (dtcHigh << 8) | dtcLow;
+
+  write("[Tester] DTC 파싱: Code=0x%04X, StatusByte=0x%02X", dtcCode, statusByte);
+
+  if (statusByte & 0x01)
+    write("[Tester]   → testFailed: DTC 현재 활성 상태");
+  if (statusByte & 0x08)
+    write("[Tester]   → confirmedDTC: 확정된 DTC");
+}
+
+/*============================================================
+ * System Variable: UDS 서비스 선택 트리거 (Panel 연동)
+ *============================================================*/
+on sysvar UDS::lastServiceID
+{
+  int svcID;
+  svcID = @UDS::lastServiceID;
+
+  switch (svcID)
+  {
+    case 0x10:
+      sendUDS_10(SESSION_EXTENDED);
+      break;
+    case 0x19:
+      sendUDS_19();
+      break;
+    case 0x14:
+      sendUDS_14();
+      break;
+  }
+}
+
+/*============================================================
+ * 응답 타임아웃
+ *============================================================*/
+on timer tResponseTimeout
+{
+  gWaitingResponse = 0;
+  write("[Tester] ⏱ UDS 응답 타임아웃 (5000ms) — ServiceID=0x%02X", gLastServiceID);
+}

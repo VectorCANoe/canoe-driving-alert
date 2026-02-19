@@ -1,0 +1,134 @@
+/*
+ * BCM.can — Body Control Module
+ * 
+ * 역할: Window Motor 과전류 감지 → DTC B1234 생성 → BCM_FaultStatus(0x500) 전송
+ * 채널: CAN-LS (125kbps)
+ * DBC: vehicle_system.dbc — BCM_FaultStatus (ID: 0x500)
+ *
+ * V-Model: SWE.3/SWE.6 (구현) → SWE.4 (05_Unit_Test.md 단위 테스트로 검증)
+ * ISO 26262: Part 6, Clause 8
+ */
+
+includes
+{
+}
+
+variables
+{
+  /* 타이머 */
+  msTimer tFaultCheck;       // 10ms 주기 과전류 감지 타이머
+  msTimer tFaultTx;          // 10ms 주기 FaultStatus 전송 타이머
+
+  /* 상태 변수 */
+  int    gOvercurrentDetected = 0;   // 과전류 감지 여부 (0: 정상, 1: 감지)
+  int    gFaultActive         = 0;   // DTC B1234 활성화 여부
+  int    gDTC_Code            = 0;   // DTC 코드 (B1234 = 0xB234 = 45620)
+  int    gFaultSeverity       = 0;   // 고장 심각도 (0: 없음, 1: 경고, 2: 고장, 3: 위험)
+  int    gAliveCounter        = 0;   // 생존 카운터 (0~15 순환)
+
+  /* DTC 상수 */
+  const int DTC_B1234         = 0xB234;   // Window Motor Overcurrent DTC
+  const int OVERCURRENT_THRESHOLD = 50;   // 과전류 임계값 (A) — 시뮬레이션용
+}
+
+/*============================================================
+ * 초기화
+ *============================================================*/
+on start
+{
+  write("[BCM] 노드 시작 — Window Motor 과전류 감지 모드");
+  setTimer(tFaultCheck, 10);
+  setTimer(tFaultTx, 10);
+}
+
+/*============================================================
+ * 과전류 감지 타이머 (10ms 주기)
+ *============================================================*/
+on timer tFaultCheck
+{
+  detectOvercurrent();
+  setTimer(tFaultCheck, 10);
+}
+
+/*============================================================
+ * FaultStatus 전송 타이머 (10ms 주기)
+ *============================================================*/
+on timer tFaultTx
+{
+  sendFaultStatus();
+  setTimer(tFaultTx, 10);
+}
+
+/*============================================================
+ * 과전류 감지 함수
+ * - System Variable BCM::overcurrentDetected 값으로 Fault Injection 지원
+ *============================================================*/
+void detectOvercurrent()
+{
+  int injected;
+  injected = @BCM::overcurrentDetected;
+
+  if (injected == 1 && gFaultActive == 0)
+  {
+    gOvercurrentDetected = 1;
+    gFaultActive         = 1;
+    gDTC_Code            = DTC_B1234;
+    gFaultSeverity       = 2;   // 고장 수준
+    write("[BCM] ⚠ 과전류 감지! DTC B1234 생성 (0x%X)", gDTC_Code);
+  }
+  else if (injected == 0 && gFaultActive == 1)
+  {
+    /* DTC 클리어는 UDS 0x14 명령으로만 수행 — 자동 해제 없음 */
+  }
+}
+
+/*============================================================
+ * BCM_FaultStatus 전송 함수
+ * - CAN-LS 채널, 0x500, 4 bytes, 10ms 주기
+ *============================================================*/
+void sendFaultStatus()
+{
+  message BCM_FaultStatus msg;
+
+  msg.WindowMotorOvercurrent = gOvercurrentDetected;
+  msg.DTC_Code               = gDTC_Code;
+  msg.FaultSeverity          = gFaultSeverity;
+  msg.AliveCounter           = gAliveCounter;
+  msg.Checksum               = (gAliveCounter + gFaultSeverity) & 0x0F;
+
+  output(msg);
+
+  /* AliveCounter 순환 (0~15) */
+  gAliveCounter = (gAliveCounter + 1) & 0x0F;
+}
+
+/*============================================================
+ * System Variable: Fault Injection 트리거
+ *============================================================*/
+on sysvar BCM::overcurrentDetected
+{
+  if (@BCM::overcurrentDetected == 1)
+  {
+    write("[BCM] Fault Injection 수신 — 과전류 강제 주입");
+    detectOvercurrent();
+  }
+}
+
+/*============================================================
+ * UDS DTC 클리어 수신 처리 (0x54: PositiveResponse to 0x14)
+ *============================================================*/
+on message UDS_Response
+{
+  byte responseCode;
+  responseCode = this.byte(0);
+
+  if (responseCode == 0x54)   // PositiveResponse for ClearDTC (0x14)
+  {
+    gOvercurrentDetected = 0;
+    gFaultActive         = 0;
+    gDTC_Code            = 0;
+    gFaultSeverity       = 0;
+    @BCM::faultActive    = 0;
+    write("[BCM] ✅ DTC B1234 클리어 완료");
+  }
+}

@@ -1,0 +1,158 @@
+<mxfile host="65bd71144e">
+    <diagram id="D9H8m_9I7A8Q5X4Z2V3" name="1. System Architecture">
+        <mxGraphModel dx="979" dy="832" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="100" value="Input Layer" style="swimlane;whiteSpace=wrap;html=1;startSize=23;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="40" y="40" width="200" height="340" as="geometry"/>
+                </mxCell>
+                <mxCell id="101" value="Tester (Diag)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" parent="100" vertex="1">
+                    <mxGeometry x="20" y="40" width="160" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="102" value="Current Sensor" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" parent="100" vertex="1">
+                    <mxGeometry x="20" y="140" width="160" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="103" value="OTA Cloud" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" parent="100" vertex="1">
+                    <mxGeometry x="20" y="240" width="160" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="200" value="Control Layer" style="swimlane;whiteSpace=wrap;html=1;startSize=23;fillColor=#fff2cc;strokeColor=#d6b656;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="300" y="40" width="240" height="340" as="geometry"/>
+                </mxCell>
+                <mxCell id="299" value="Internal Logical Bus" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;dashed=1;" parent="200" vertex="1">
+                    <mxGeometry x="85" y="40" width="70" height="260" as="geometry"/>
+                </mxCell>
+                <mxCell id="201" value="Gateway (CGW)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontStyle=1" parent="200" vertex="1">
+                    <mxGeometry x="20" y="60" width="200" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="202" value="Body Control (BCM)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" parent="200" vertex="1">
+                    <mxGeometry x="20" y="150" width="200" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="203" value="OTA Master" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" parent="200" vertex="1">
+                    <mxGeometry x="20" y="240" width="200" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="300" value="Output Layer" style="swimlane;whiteSpace=wrap;html=1;startSize=23;fillColor=#f8cecc;strokeColor=#b85450;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="600" y="40" width="200" height="340" as="geometry"/>
+                </mxCell>
+                <mxCell id="301" value="Cluster HMI" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" parent="300" vertex="1">
+                    <mxGeometry x="20" y="60" width="160" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="302" value="Window Motor" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" parent="300" vertex="1">
+                    <mxGeometry x="20" y="150" width="160" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="c1" value="CAN (UDS)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;labelBackgroundColor=#ffffff;" parent="1" source="101" target="201" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="c2" value="Analog" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;labelBackgroundColor=#ffffff;" parent="1" source="102" target="202" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="c3" value="Ethernet (DoIP)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;labelBackgroundColor=#ffffff;" parent="1" source="103" target="203" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="c4" value="CAN-HS" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;labelBackgroundColor=#ffffff;" parent="1" source="201" target="301" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="c5" value="Hardwire" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;labelBackgroundColor=#ffffff;" parent="1" source="202" target="302" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+    <diagram id="network_topo" name="2. Network Topology">
+        <mxGraphModel dx="979" dy="832" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+            <root>
+                <mxCell id="root_topo_0"/>
+                <mxCell id="root_topo_1" parent="root_topo_0"/>
+                <mxCell id="ota_server" value="OTA Server" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1" parent="root_topo_1" vertex="1">
+                    <mxGeometry x="340" y="40" width="160" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="eth_line" value="Ethernet (DoIP)" style="endArrow=none;html=1;strokeWidth=4;strokeColor=#6c8ebf;labelBackgroundColor=#ffffff;" parent="root_topo_1" source="ota_server" target="gw" edge="1">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="gw" value="Central Gateway (CGW)&#10;[Routing Hub]" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontStyle=1" parent="root_topo_1" vertex="1">
+                    <mxGeometry x="340" y="160" width="160" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="ls_bus" value="CAN-LS (125kbps)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;align=left;spacingLeft=10;" parent="root_topo_1" vertex="1">
+                    <mxGeometry x="80" y="300" width="300" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="hs_bus" value="CAN-HS (500kbps)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;align=right;spacingRight=10;" parent="root_topo_1" vertex="1">
+                    <mxGeometry x="460" y="300" width="280" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="c_gw_ls" value="" style="endArrow=none;html=1;entryX=0.9;entryY=0;entryDx=0;entryDy=0;exitX=0.25;exitY=1;exitDx=0;exitDy=0;" parent="root_topo_1" source="gw" target="ls_bus" edge="1">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="c_gw_hs" value="" style="endArrow=none;html=1;entryX=0.1;entryY=0;entryDx=0;entryDy=0;exitX=0.75;exitY=1;exitDx=0;exitDy=0;" parent="root_topo_1" source="gw" target="hs_bus" edge="1">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="bcm" value="Body Control (BCM)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" parent="root_topo_1" vertex="1">
+                    <mxGeometry x="100" y="380" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="tester" value="Tester (Ext)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" parent="root_topo_1" vertex="1">
+                    <mxGeometry x="240" y="380" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="cluster" value="Cluster HMI" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" parent="root_topo_1" vertex="1">
+                    <mxGeometry x="540" y="380" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="c_bcm" value="" style="endArrow=none;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.2;entryY=1;entryDx=0;entryDy=0;" parent="root_topo_1" source="bcm" target="ls_bus" edge="1">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="c_tester" value="" style="endArrow=none;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.8;entryY=1;entryDx=0;entryDy=0;" parent="root_topo_1" source="tester" target="ls_bus" edge="1">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="c_cluster" value="" style="endArrow=none;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" parent="root_topo_1" source="cluster" target="hs_bus" edge="1">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+    <diagram id="proc_seq" name="3. Process Flow">
+        <mxGraphModel dx="979" dy="832" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+            <root>
+                <mxCell id="root_seq_0"/>
+                <mxCell id="root_seq_1" parent="root_seq_0"/>
+                <mxCell id="step1" value="Step 1: Fault Detection" style="swimlane;whiteSpace=wrap;html=1;startSize=23;fillColor=#f8cecc;strokeColor=#b85450;fontStyle=1" parent="root_seq_1" vertex="1">
+                    <mxGeometry x="40" y="40" width="220" height="180" as="geometry"/>
+                </mxCell>
+                <mxCell id="ev1" value="Current &gt; 50A" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;" parent="step1" vertex="1">
+                    <mxGeometry x="30" y="40" width="160" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="act1" value="BCM: Set Service DTC&#10;Transmit Warning" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;" parent="step1" vertex="1">
+                    <mxGeometry x="30" y="110" width="160" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="arr1" value="" style="endArrow=classic;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="step1" source="ev1" target="act1" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="step2" value="Step 2: Diagnostics" style="swimlane;whiteSpace=wrap;html=1;startSize=23;fillColor=#fff2cc;strokeColor=#d6b656;fontStyle=1" parent="root_seq_1" vertex="1">
+                    <mxGeometry x="300" y="40" width="220" height="180" as="geometry"/>
+                </mxCell>
+                <mxCell id="ev2" value="Tester: Clear DTC&#10;(UDS 0x14)" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;" parent="step2" vertex="1">
+                    <mxGeometry x="30" y="40" width="160" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="act2" value="Gateway: Clear Status&#10;Warning OFF" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;" parent="step2" vertex="1">
+                    <mxGeometry x="30" y="110" width="160" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="arr2" value="" style="endArrow=classic;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="step2" source="ev2" target="act2" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="step3" value="Step 3: OTA Update" style="swimlane;whiteSpace=wrap;html=1;startSize=23;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1" parent="root_seq_1" vertex="1">
+                    <mxGeometry x="560" y="40" width="220" height="180" as="geometry"/>
+                </mxCell>
+                <mxCell id="ev3" value="OTA Server:&#10;Send Firmware (DoIP)" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;" parent="step3" vertex="1">
+                    <mxGeometry x="30" y="40" width="160" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="act3" value="GW -&gt; OTA Master&#10;Flash &amp; Reboot" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;" parent="step3" vertex="1">
+                    <mxGeometry x="30" y="110" width="160" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="arr3" value="" style="endArrow=classic;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="step3" source="ev3" target="act3" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="main_arr1" value="" style="endArrow=classic;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeWidth=3;" parent="root_seq_1" source="step1" target="step2" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="main_arr2" value="" style="endArrow=classic;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeWidth=3;" parent="root_seq_1" source="step2" target="step3" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>

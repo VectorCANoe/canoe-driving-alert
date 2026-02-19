@@ -45,6 +45,20 @@ This project focuses on **vECU simulation-based vehicle convenience features and
 
 ---
 
+## 🚀 V-Model Sample Artifacts (New!)
+
+A complete **V-Model reference implementation** has been added to `docs/sample/`. This serves as a gold standard for project documentation and CANoe implementation.
+
+- **Documentation**: 13 files covering the full V-Model lifecycle (Requirements → Architecture → Implementation → Test).
+- **CANoe Project**: Fully functional simulation in `docs/sample/canoe/` including:
+  - **5 Simulated ECUs**: BCM, Gateway, Cluster, Tester, OTA Server (CAPL implemented).
+  - **E2E Scenario**: Fault Injection → Diagnostics (UDS) → DoIP/OTA Update.
+  - **Automated Testing**: `Master_Scenario.can` for one-click verification.
+
+👉 **[See Sample Project Guide](docs/sample/canoe/README.md)**
+
+---
+
 ## 🛠️ Core Technologies & Skills
 
 ### Primary Skills
