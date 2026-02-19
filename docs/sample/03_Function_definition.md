@@ -1,5 +1,12 @@
 # 가상노드 Simulator (입출력 기능) — Function Definition
 
+**Document ID**: SAMPLE-03-FD
+**ISO 26262 Reference**: Part 4, Cl.7
+**ASPICE Reference**: SYS.3 (BP1: 시스템 아키텍처 설계, BP2: 인터페이스 정의, BP3: 기능 할당)
+**Version**: 1.0
+**Date**: 2026-02-19
+**Status**: Released
+
 > **V-Model 위치**: 좌측 중단 — 시스템 아키텍처 설계 단계
 > **대응 문서**: `06_Integration_Test.md` (SWE.5 통합 테스트로 검증)
 > **ISO 26262**: Part 4, Clause 7 — 시스템 설계 (기능 분해 및 ECU 할당)
@@ -28,3 +35,20 @@
 | | Tester ECU | UDS 0x10/0x19/0x14 서비스 요청 및 응답 처리 | CAPL UDS 세션 및 DTC 조회 로직 추가 | In_Test_05, In_Test_06, In_Test_07, Scene.7~9 |
 | | OTA Server ECU | UDS 0x34/0x36/0x37 시퀀스로 펌웨어 전송, CRC-32 검증 | CAPL OTA 전송 및 검증 로직 추가 | In_Test_08, In_Test_09, In_Test_10, Scene.11~17 |
 | | Cluster ECU | BCM_FaultStatus 수신 → 경고등 활성화/소등 제어 | CAPL 경고등 제어 로직 추가 | In_Test_02, In_Test_07, Scene.5, Scene.9 |
+
+---
+
+## 개정 이력
+
+| 버전 | 날짜 | 변경 사항 |
+|------|------|---------|
+| 1.0 | 2026-02-19 | 초기 생성 |
+
+---
+
+## 승인 (Approval)
+
+| 역할 | 이름 | 서명 | 날짜 |
+|------|------|------|------|
+| Project Manager | — | — | 2026-02-19 |
+| Lead Engineer | — | — | 2026-02-19 |

@@ -1,5 +1,12 @@
 # SW 구현 명세 (Software Implementation Specification)
 
+**Document ID**: SAMPLE-04-SI
+**ISO 26262 Reference**: Part 6, Cl.8
+**ASPICE Reference**: SWE.3 (BP1: 상세 설계), SWE.6 (BP1: 구현)
+**Version**: 1.1
+**Date**: 2026-02-19
+**Status**: Released
+
 > **V-Model 위치**: 좌측 하단 — 소프트웨어 상세 설계 및 구현 단계 (SWE.3 / SWE.6)
 > **대응 문서**: `05_Unit_Test.md` (SWE.4 단위 테스트로 검증)
 > **ISO 26262**: Part 6, Clause 8 — 소프트웨어 단위 설계 및 구현
@@ -49,9 +56,9 @@
 | 함수/이벤트 | 설명 | 관련 신호 (DBC/LIN) | 검증 |
 |-----------|------|----------------|------|
 | `on linFrame 0x21` | LIN Slave(WindowMotorECU)로부터 Motor_Current 수신. >50A 시 DTC B1234 생성 트리거. | LIN Frame 0x21, `LIN::motorCurrent` | In_Test_13, In_Test_01 |
-| `void detectOvercurrent()` | Motor_Current > 50A 판단 → DTC B1234 생성. LIN 통신 이상(>50ms 미수신) 시 DTC U0100 생성. | `BCM::overcurrentDetected`, `LIN::linCommFault` | In_Test_01, In_Test_13 |
+| `void detectOvercurrent()` | Motor_Current > 50A 판단 → DTC B1234 생성. LIN 통신 이상(>50ms 미수신) 시 DTC U0100 생성. | `BCM::overcurrentDetected`, `LIN::linCommFault` | In_Test_01, In_Test_13, **In_Test_15** |
 | `on linFrame 0x22~0x25` | LIN Slave(DoorModule)로부터 Door_Position/Lock_Status 수신. 내부 상태 갱신. | `LIN::doorPositionFL/FR/RL/RR` | In_Test_14 |
-| `on timer tFaultTx` | 10ms 주기 BCM_FaultStatus(0x500) CAN-LS 전송 | `FaultSeverity`, `AliveCounter`, `Checksum` | In_Test_01 |
+| `on timer tFaultTx` | 10ms 주기 BCM_FaultStatus(0x500) CAN-LS 전송 | `FaultSeverity`, `AliveCounter`, `Checksum` | In_Test_01[^1] |
 | `void sendFaultStatus()` | BCM_FaultStatus(0x500) CAN-LS 전송. Motor_Current 기반 Fault 상태 반영. | `WindowMotorOvercurrent`, `DTC_Code` (0x500) | In_Test_01 |
 | `on sysvar LIN::motorCurrent` | Panel에서 직접 전류값 주입 시 (Fault Injection 대체) LIN 수신과 동일하게 처리 | `BCM::currentAmps` | In_Test_12 |
 
@@ -114,3 +121,23 @@
 | `TC_D_UDS_Diagnostics/` | UDS 세션/DTC 조회/클리어 테스트 | In_Test_05, 06, 07 |
 | `TC_O_OTA_Programming/` | OTA 전송/CRC/Rollback 테스트 | In_Test_08, 09, 10, 11 |
 | `TC_E2E_Master_Scenario/` | 전체 E2E 시나리오 순차 실행 (LIN→CAN→UDS→OTA) | Scene.1~18 |
+
+[^1]: **ASIL B E2E Protection Note**: 본 프로젝트는 CANoe SIL 환경 시뮬레이션을 위해 AliveCounter(4bit)와 Checksum(2bit)을 간이 구현하였습니다. 실제 양산용 ASIL B 타겟 시스템에서는 ISO 26262 Part 6 및 ISO 11898 표준을 준수하는 E2E Profile 1 또는 2 기반의 전체 CRC/Counter 보호 메커니즘을 적용해야 합니다.
+
+---
+
+## 개정 이력
+
+| 버전 | 날짜 | 변경 사항 |
+|------|------|---------|
+| 1.0 | 2026-02-19 | 초기 생성 — 구현 명세, CAPL 주요 로직 정의 |
+| 1.1 | 2026-02-19 | E2E 보호 수준 근거(ASIL B) 각주 추가, In_Test_15(LIN Fault) 추적성 반영 |
+
+---
+
+## 승인 (Approval)
+
+| 역할 | 이름 | 서명 | 날짜 |
+|------|------|------|------|
+| Project Manager | — | — | 2026-02-19 |
+| Lead Engineer | — | — | 2026-02-19 |

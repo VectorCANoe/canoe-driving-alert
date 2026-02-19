@@ -1,5 +1,12 @@
 # V-Model 문서 매핑표 (V-Model Document Mapping)
 
+**Document ID**: SAMPLE-00-VMM
+**ISO 26262 Reference**: Part 4, Cl.6 / Part 6, Cl.7 / Part 4, Cl.10
+**ASPICE Reference**: SYS.2 / SYS.3 / SWE.2 / SWE.4 / SWE.5 / SYS.5 / SUP.10
+**Version**: 1.1
+**Date**: 2026-02-19
+**Status**: Released
+
 > **프로젝트**: CANoe IVI OTA — Fault Detection → Gateway Routing → UDS Diagnostics → OTA Update
 > **기준 표준**: ISO 26262:2018 / Automotive SPICE PAM 3.1
 > **검증 환경**: CANoe SIL (Software-in-the-Loop)
@@ -72,6 +79,7 @@ SWE.2  0303_Communication_Spec.md  ◄──────►  05_Unit_Test.md    
 | HARA 항목 | 위험 설명 | 안전목표 | 대응 요구사항 | 검증 Scene |
 |----------|---------|--------|------------|-----------|
 | H-01 | LIN 통신 오류로 Motor 과전류 미감지 → 운전자 부상 | SG-01: LIN Motor_Current 수신 이상 시 BCM 안전 상태 전환. 과전류 즉시 감지 및 경고. | Req_001, Req_002, Req_003, **Req_016** | Scene.2b, Scene.3~5 |
+| H-02 | OTA 중 통신 두절로 ECU Bricking | N/A — **QM** 등급. Rollback(Req_014)으로 완화. 안전목표 없음. | Req_014 (완화 수단) | Scene.15, Scene.17 |
 | H-09 | OTA 실패 → ECU 불능 상태 | SG-08: OTA 실패 시 안전 복구 | Req_014, Req_015 | Scene.15~17 |
 
 ---
@@ -97,3 +105,21 @@ SWE.2  0303_Communication_Spec.md  ◄──────►  05_Unit_Test.md    
 | Req_015 | Gateway ECU | — | — | Gateway-Bus Off | In_Test_11 | Scene.16 |
 | Req_016 | WindowMotorECU / BCM | LIN 0x21 | LIN_MotorStatus | BCM-LIN Motor Current 수신 | In_Test_13 | Scene.2b, Scene.3 |
 | Req_017 | DoorModule / BCM | LIN 0x22~0x25 | LIN_DoorStatus | BCM-LIN Door Status 수신 | In_Test_14 | Scene.2b |
+
+---
+
+## 개정 이력
+
+| 버전 | 날짜 | 변경 사항 |
+|------|------|---------|
+| 1.0 | 2026-02-19 | 초기 생성 — V-Model 매핑, ASPICE/ISO-26262 참조, HARA 추적성 매트릭스 |
+| 1.1 | 2026-02-19 | H-02(QM) HARA 표 추가, SUP.10 개정 이력 신설 (교차검증 반영) |
+
+---
+
+## 승인 (Approval)
+
+| 역할 | 이름 | 서명 | 날짜 |
+|------|------|------|------|
+| Project Manager | — | — | 2026-02-19 |
+| Lead Engineer | — | — | 2026-02-19 |

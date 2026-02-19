@@ -1,5 +1,12 @@
 # 네트워크 플로우 정의 (Network Flow Definition)
 
+**Document ID**: SAMPLE-0302-NFD
+**ISO 26262 Reference**: Part 4, Cl.7
+**ASPICE Reference**: SYS.3 (BP2: 인터페이스 정의, BP4: 일관성 및 추적성 확보)
+**Version**: 1.0
+**Date**: 2026-02-19
+**Status**: Released
+
 > **V-Model 위치**: 좌측 중단 — 시스템 아키텍처 설계 단계 (SYS.3)
 > **대응 문서**: `06_Integration_Test.md` (SWE.5 통합 테스트로 검증)
 > **ISO 26262**: Part 4, Clause 7 — 시스템 설계 (인터페이스 및 통신 정의)
@@ -69,3 +76,20 @@
 | | | | | | 6 | | | | | | | |
 | | | | | | 7 | | | | | | | |
 | DoIP | 0xE001 | DoIP_RoutingActivation | - | DoIP 경로 활성화 | - | RoutingActivationType | | Rx | | Tx | | OTA Server → Gateway 경로 요청 |
+
+---
+
+## 개정 이력
+
+| 버전 | 날짜 | 변경 사항 |
+|------|------|---------|
+| 1.0 | 2026-02-19 | 초기 생성 |
+
+---
+
+## 승인 (Approval)
+
+| 역할 | 이름 | 서명 | 날짜 |
+|------|------|------|------|
+| Project Manager | — | — | 2026-02-19 |
+| Lead Engineer | — | — | 2026-02-19 |

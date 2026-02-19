@@ -1,5 +1,12 @@
 # 시스템 테스트 (System Test)
 
+**Document ID**: SAMPLE-07-ST
+**ISO 26262 Reference**: Part 4, Cl.10
+**ASPICE Reference**: SYS.5 (BP1: 시스템 테스트 명세, BP2: 시스템 테스트 수행, BP3: 결과 평가)
+**Version**: 1.0
+**Date**: 2026-02-19
+**Status**: Released
+
 > **V-Model 위치**: 우측 상단 — 시스템 적격성 테스트 단계 (SYS.5)
 > **대응 문서**: `01_Requirements.md` (SYS.2 요구사항 전체 검증)
 > **ISO 26262**: Part 4, Clause 10 — 시스템 적격성 테스트
@@ -31,3 +38,20 @@
 | Scene. 16 | OTA 중 Bus Off 주입 → 세션 안전 중단 및 DTC 저장 확인 | | | |
 | Scene. 17 | Rollback 완료 후 이전 펌웨어 버전으로 BCM 정상 동작 확인 | | | |
 | Scene. 18 | Fault Injection 재실행 → 전체 시나리오(LIN Motor Current→BCM Fault→CAN-LS 0x500→Gateway→CAN-HS→UDS→OTA) 2회 연속 정상 동작 확인 | | | |
+
+---
+
+## 개정 이력
+
+| 버전 | 날짜 | 변경 사항 |
+|------|------|---------|
+| 1.0 | 2026-02-19 | 초기 생성 |
+
+---
+
+## 승인 (Approval)
+
+| 역할 | 이름 | 서명 | 날짜 |
+|------|------|------|------|
+| Project Manager | — | — | 2026-02-19 |
+| Lead Engineer | — | — | 2026-02-19 |

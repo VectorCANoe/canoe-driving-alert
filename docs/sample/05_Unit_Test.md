@@ -1,5 +1,12 @@
 # 단위 테스트 (Unit Test)
 
+**Document ID**: SAMPLE-05-UT
+**ISO 26262 Reference**: Part 6, Cl.9
+**ASPICE Reference**: SWE.4 (BP1: 단위 테스트 명세, BP2: 단위 테스트 수행, BP3: 결과 평가)
+**Version**: 1.0
+**Date**: 2026-02-19
+**Status**: Released
+
 > **V-Model 위치**: 우측 하단 — 소프트웨어 단위 테스트 단계 (SWE.4)
 > **대응 문서**: `03_Function_definition.md` + `0304_System_Variables.md` (SWE.2/SWE.3 설계 검증)
 > **ISO 26262**: Part 6, Clause 9 — 소프트웨어 단위 테스트
@@ -38,3 +45,20 @@
 | 가상 노드 (Simulator) | 출력 | DTC 상태 표시 | DTC B1234 생성/클리어 상태 Panel 출력 | | | |
 | 가상 노드 (Simulator) | 출력 | 경고등 상태 표시 | RED 경고등 활성화 여부 Panel 출력 | | | |
 | 가상 노드 (Simulator) | 출력 | OTA 진행률 표시 | 블록 전송 진행 상태 Panel 출력 | | | |
+
+---
+
+## 개정 이력
+
+| 버전 | 날짜 | 변경 사항 |
+|------|------|---------|
+| 1.0 | 2026-02-19 | 초기 생성 |
+
+---
+
+## 승인 (Approval)
+
+| 역할 | 이름 | 서명 | 날짜 |
+|------|------|------|------|
+| Project Manager | — | — | 2026-02-19 |
+| Lead Engineer | — | — | 2026-02-19 |

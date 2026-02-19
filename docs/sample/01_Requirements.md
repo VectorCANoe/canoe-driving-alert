@@ -1,5 +1,12 @@
 # 요구사항 명세서 (System Requirements Specification)
 
+**Document ID**: SAMPLE-01-SRS
+**ISO 26262 Reference**: Part 4, Cl.6
+**ASPICE Reference**: SYS.2 (BP1: 요구사항 도출, BP2: 요구사항 분석, BP4: 추적성 확보)
+**Version**: 1.0
+**Date**: 2026-02-19
+**Status**: Released
+
 > **V-Model 위치**: 좌측 상단 — 시스템 요구사항 정의 단계
 > **대응 문서**: `07_System_Test.md` (SYS.5 시스템 테스트로 검증)
 > **ISO 26262**: Part 4, Clause 6 — 시스템 요구사항 명세
@@ -28,3 +35,20 @@
 | Req_015 | Bus Off 시 안전 중단 | CAN Bus Off 감지 시 진행 중인 UDS/OTA 세션을 안전하게 중단하고 DTC를 저장한다. | **참조**: ISO 11898-1 Bus Off 복구 표준 | 상/중 | SG-08 → Scene.16 |
 | Req_016 | LIN Motor Current 수신 | BCM(LIN Master)은 WindowMotorECU(LIN Slave, ID: 0x21)로부터 Motor_Current 값을 10ms 주기로 수신한다. Motor_Current > 50A 조건이 감지되면 BCM은 DTC B1234를 생성한다. | **근거**: 실차 Body 도메인 구조 — Window Motor ECU가 LIN Slave로 전류값 직접 보고. LIN 2.2A (ISO 17987), 19.2 kbps. | 상/상 | HARA-H01 → Req_001 → Scene.3 |
 | Req_017 | LIN Door Module 상태 수신 | BCM(LIN Master)은 DoorModule FL/FR/RL/RR(LIN Slave, ID: 0x22~0x25)로부터 Door_Position 및 Lock_Status를 50ms 주기로 수신하고 BCM 내부 상태를 갱신한다. | **근거**: 도어 개폐 제어는 실차에서 LIN Bus를 통해 BCM이 관리하는 표준 구조. | 중/중 | Scene.2b |
+
+---
+
+## 개정 이력
+
+| 버전 | 날짜 | 변경 사항 |
+|------|------|---------|
+| 1.0 | 2026-02-19 | 초기 생성 |
+
+---
+
+## 승인 (Approval)
+
+| 역할 | 이름 | 서명 | 날짜 |
+|------|------|------|------|
+| Project Manager | — | — | 2026-02-19 |
+| Lead Engineer | — | — | 2026-02-19 |

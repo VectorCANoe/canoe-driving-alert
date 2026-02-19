@@ -1,5 +1,12 @@
 # 컨셉 디자인 (Concept Design)
 
+**Document ID**: SAMPLE-02-CD
+**ISO 26262 Reference**: Part 3, Cl.7 (HARA)
+**ASPICE Reference**: SYS.2 (System Context)
+**Version**: 1.0
+**Date**: 2026-02-19
+**Status**: Released
+
 > **V-Model 위치**: 좌측 상단 — 개념 설계 단계
 > **대응 문서**: `01_Requirements.md` (요구사항) → 본 문서 → `03_Function_definition.md` (기능 명세)
 > **ISO 26262**: Part 3, Clause 7 — Hazard Analysis and Risk Assessment (HARA) 연계
@@ -74,3 +81,20 @@
 *   **Language**: CAPL (Communication Access Programming Language)
 *   **Network**: Virtual CAN / Virtual Ethernet (Local Loopback)
 *   **Panel**: 가상 스위치/LED를 통한 사용자 인터랙션 및 Fault Injection
+
+---
+
+## 개정 이력
+
+| 버전 | 날짜 | 변경 사항 |
+|------|------|---------|
+| 1.0 | 2026-02-19 | 초기 생성 |
+
+---
+
+## 승인 (Approval)
+
+| 역할 | 이름 | 서명 | 날짜 |
+|------|------|------|------|
+| Project Manager | — | — | 2026-02-19 |
+| Lead Engineer | — | — | 2026-02-19 |

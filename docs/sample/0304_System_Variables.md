@@ -1,5 +1,12 @@
 # 시스템 변수 정의 (System Variables)
 
+**Document ID**: SAMPLE-0304-SV
+**ISO 26262 Reference**: Part 6, Cl.7
+**ASPICE Reference**: SWE.2 (BP3: 소프트웨어 인터페이스 정의, SWE.3 BP1: 상세 설계)
+**Version**: 1.0
+**Date**: 2026-02-19
+**Status**: Released
+
 > **V-Model 위치**: 좌측 하단 — 소프트웨어 아키텍처 설계 단계 (SWE.2)
 > **대응 문서**: `05_Unit_Test.md` (SWE.4 단위 테스트로 검증)
 > **ISO 26262**: Part 6, Clause 7 — 소프트웨어 아키텍처 설계 (데이터 인터페이스 정의)
@@ -35,3 +42,20 @@
 | 22 | LIN | doorPositionRL | uint32 | 0 | 3 | 0 | Door RL 위치 (LIN 0x24 수신). 동일 인코딩. |
 | 23 | LIN | doorPositionRR | uint32 | 0 | 3 | 0 | Door RR 위치 (LIN 0x25 수신). 동일 인코딩. |
 | 24 | LIN | linCommFault | uint32 | 0 | 1 | 0 | LIN 통신 이상 감지 여부. LIN Slave 프레임 미수신 >50ms 시 1로 설정 → BCM DTC U0100 생성 트리거. |
+
+---
+
+## 개정 이력
+
+| 버전 | 날짜 | 변경 사항 |
+|------|------|---------|
+| 1.0 | 2026-02-19 | 초기 생성 |
+
+---
+
+## 승인 (Approval)
+
+| 역할 | 이름 | 서명 | 날짜 |
+|------|------|------|------|
+| Project Manager | — | — | 2026-02-19 |
+| Lead Engineer | — | — | 2026-02-19 |

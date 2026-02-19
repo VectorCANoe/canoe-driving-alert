@@ -1,5 +1,12 @@
 # 통신 명세서 (Communication Specification)
 
+**Document ID**: SAMPLE-0303-CS
+**ISO 26262 Reference**: Part 6, Cl.7
+**ASPICE Reference**: SWE.2 (BP3: 소프트웨어 인터페이스 정의, BP4: 일관성 확보)
+**Version**: 1.0
+**Date**: 2026-02-19
+**Status**: Released
+
 > **V-Model 위치**: 좌측 하단 — 소프트웨어 아키텍처 설계 단계 (SWE.2)
 > **대응 문서**: `05_Unit_Test.md` (SWE.4 단위 테스트로 검증)
 > **ISO 26262**: Part 6, Clause 7 — 소프트웨어 아키텍처 설계 (인터페이스 명세)
@@ -34,3 +41,20 @@
 | | | | DTCCode_High | 16~23 | DTC 코드 상위 바이트 | 0x00~0xFF | DTC 식별자 (0x19 응답 시) |
 | | | | DTCCode_Low | 24~31 | DTC 코드 하위 바이트 | 0x00~0xFF | DTC 식별자 (0x19 응답 시) |
 | | | | MaxBlockLength | 32~47 | 최대 블록 길이 | 0~65535 | 0x34 요청 응답 시 전달 |
+
+---
+
+## 개정 이력
+
+| 버전 | 날짜 | 변경 사항 |
+|------|------|---------|
+| 1.0 | 2026-02-19 | 초기 생성 |
+
+---
+
+## 승인 (Approval)
+
+| 역할 | 이름 | 서명 | 날짜 |
+|------|------|------|------|
+| Project Manager | — | — | 2026-02-19 |
+| Lead Engineer | — | — | 2026-02-19 |

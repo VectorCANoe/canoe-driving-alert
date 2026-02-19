@@ -1,233 +1,188 @@
 <mxfile host="65bd71144e">
-    <diagram id="p1_structure" name="1. System Architecture">
+    <diagram id="D9H8m_9I7A8Q5X4Z2V3" name="1. System Architecture">
         <mxGraphModel dx="979" dy="832" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
             <root>
                 <mxCell id="0"/>
                 <mxCell id="1" parent="0"/>
-                <mxCell id="t0" value="1. System Architecture — ECU &amp; Domain Structure" style="text;html=1;strokeColor=none;fillColor=#1e3a5f;fontColor=#ffffff;align=center;fontStyle=1;fontSize=13;rounded=1;" parent="1" vertex="1">
-                    <mxGeometry x="30" y="20" width="760" height="32" as="geometry"/>
+                <mxCell id="304" value="CAN Bus" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;dashed=1;fontStyle=1;fontSize=13;shadow=0;" parent="1" vertex="1">
+                    <mxGeometry x="395" y="80" width="70" height="280" as="geometry"/>
                 </mxCell>
-                <mxCell id="body" value="Body Domain" style="swimlane;html=1;startSize=24;fillColor=#eff6ff;strokeColor=#2563eb;fontStyle=1;fontSize=11;fontColor=#1d4ed8;" parent="1" vertex="1">
-                    <mxGeometry x="30" y="70" width="240" height="380" as="geometry"/>
+                <mxCell id="100" value="Input Layer" style="swimlane;whiteSpace=wrap;html=1;startSize=23;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="40" y="40" width="200" height="340" as="geometry"/>
                 </mxCell>
-                <mxCell id="bcm" value="BCM&#10;(Body Control Module)&#10;LIN Master" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dbeafe;strokeColor=#2563eb;fontStyle=1;fontSize=11;" parent="body" vertex="1">
-                    <mxGeometry x="20" y="35" width="200" height="65" as="geometry"/>
+                <mxCell id="101" value="Tester (Diag)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" parent="100" vertex="1">
+                    <mxGeometry x="20" y="40" width="160" height="60" as="geometry"/>
                 </mxCell>
-                <mxCell id="lin_group" value="LIN Slaves" style="swimlane;html=1;startSize=20;fillColor=#fefce8;strokeColor=#ca8a04;fontStyle=1;fontSize=10;fontColor=#92400e;" parent="body" vertex="1">
-                    <mxGeometry x="20" y="120" width="200" height="240" as="geometry"/>
+                <mxCell id="102" value="WindowMotorECU&#10;(LIN Slave 0x21)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" parent="100" vertex="1">
+                    <mxGeometry x="20" y="140" width="160" height="60" as="geometry"/>
                 </mxCell>
-                <mxCell id="wm_ecu" value="Window Motor ECU&#10;LIN Slave 0x21&#10;Cycle: 10 ms" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fef9c3;strokeColor=#ca8a04;fontSize=10;" parent="lin_group" vertex="1">
-                    <mxGeometry x="15" y="30" width="170" height="55" as="geometry"/>
+                <mxCell id="103" value="OTA Cloud" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" parent="100" vertex="1">
+                    <mxGeometry x="20" y="240" width="160" height="60" as="geometry"/>
                 </mxCell>
-                <mxCell id="door_fl_fr" value="Door Module FL / FR&#10;LIN Slave 0x22 ~ 0x23&#10;Cycle: 50 ms" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fef9c3;strokeColor=#ca8a04;fontSize=10;" parent="lin_group" vertex="1">
-                    <mxGeometry x="15" y="100" width="170" height="55" as="geometry"/>
+                <mxCell id="200" value="Control Layer" style="swimlane;whiteSpace=wrap;html=1;startSize=23;fillColor=#fff2cc;strokeColor=#d6b656;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="300" y="40" width="240" height="340" as="geometry"/>
                 </mxCell>
-                <mxCell id="door_rl_rr" value="Door Module RL / RR&#10;LIN Slave 0x24 ~ 0x25&#10;Cycle: 50 ms" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fef9c3;strokeColor=#ca8a04;fontSize=10;" parent="lin_group" vertex="1">
-                    <mxGeometry x="15" y="170" width="170" height="55" as="geometry"/>
+                <mxCell id="201" value="Gateway (CGW)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontStyle=1" parent="200" vertex="1">
+                    <mxGeometry x="20" y="60" width="200" height="60" as="geometry"/>
                 </mxCell>
-                <mxCell id="gw_box" value="Gateway &amp; Backbone" style="swimlane;html=1;startSize=24;fillColor=#f9fafb;strokeColor=#6b7280;fontStyle=1;fontSize=11;fontColor=#374151;" parent="1" vertex="1">
-                    <mxGeometry x="310" y="190" width="210" height="120" as="geometry"/>
+                <mxCell id="202" value="Body Control (BCM)&#10;[LIN Master]" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" parent="200" vertex="1">
+                    <mxGeometry x="20" y="150" width="200" height="60" as="geometry"/>
                 </mxCell>
-                <mxCell id="cgw" value="Central Gateway&#10;(CGW)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e5e7eb;strokeColor=#6b7280;fontStyle=1;fontSize=11;" parent="gw_box" vertex="1">
-                    <mxGeometry x="20" y="35" width="170" height="60" as="geometry"/>
+                <mxCell id="203" value="OTA Master" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" parent="200" vertex="1">
+                    <mxGeometry x="20" y="240" width="200" height="60" as="geometry"/>
                 </mxCell>
-                <mxCell id="conn_box" value="Connectivity Domain" style="swimlane;html=1;startSize=24;fillColor=#f0fdf4;strokeColor=#16a34a;fontStyle=1;fontSize=11;fontColor=#166534;" parent="1" vertex="1">
-                    <mxGeometry x="310" y="70" width="210" height="100" as="geometry"/>
+                <mxCell id="305" value="&lt;b&gt;CANbus&lt;/b&gt;" style="text;strokeColor=none;align=center;fillColor=none;html=1;verticalAlign=middle;whiteSpace=wrap;rounded=0;shadow=1;" parent="200" vertex="1">
+                    <mxGeometry x="100" y="120" width="60" height="30" as="geometry"/>
                 </mxCell>
-                <mxCell id="ota_srv" value="OTA Server" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#bbf7d0;strokeColor=#16a34a;fontStyle=1;fontSize=11;" parent="conn_box" vertex="1">
-                    <mxGeometry x="20" y="32" width="170" height="45" as="geometry"/>
+                <mxCell id="300" value="Output Layer" style="swimlane;whiteSpace=wrap;html=1;startSize=23;fillColor=#f8cecc;strokeColor=#b85450;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="600" y="40" width="200" height="340" as="geometry"/>
                 </mxCell>
-                <mxCell id="diag_box" value="Diagnostics" style="swimlane;html=1;startSize=24;fillColor=#f0f9ff;strokeColor=#0284c7;fontStyle=1;fontSize=11;fontColor=#075985;" parent="1" vertex="1">
-                    <mxGeometry x="310" y="340" width="210" height="110" as="geometry"/>
+                <mxCell id="301" value="Cluster HMI" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" parent="300" vertex="1">
+                    <mxGeometry x="20" y="60" width="160" height="60" as="geometry"/>
                 </mxCell>
-                <mxCell id="tester" value="Tester&#10;(CANoe Equipment)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#bae6fd;strokeColor=#0284c7;fontStyle=1;fontSize=11;" parent="diag_box" vertex="1">
-                    <mxGeometry x="20" y="32" width="170" height="55" as="geometry"/>
+                <mxCell id="302" value="Window Motor" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" parent="300" vertex="1">
+                    <mxGeometry x="20" y="150" width="160" height="60" as="geometry"/>
                 </mxCell>
-                <mxCell id="ivi_box" value="Infotainment Domain" style="swimlane;html=1;startSize=24;fillColor=#fff1f2;strokeColor=#e11d48;fontStyle=1;fontSize=11;fontColor=#9f1239;" parent="1" vertex="1">
-                    <mxGeometry x="560" y="190" width="210" height="120" as="geometry"/>
-                </mxCell>
-                <mxCell id="cluster" value="Cluster HMI" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fecdd3;strokeColor=#e11d48;fontStyle=1;fontSize=11;" parent="ivi_box" vertex="1">
-                    <mxGeometry x="20" y="35" width="170" height="60" as="geometry"/>
-                </mxCell>
-                <mxCell id="arr_body_gw" value="" style="endArrow=open;endFill=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;strokeColor=#6b7280;strokeWidth=2;" parent="1" source="body" target="gw_box" edge="1">
+                <mxCell id="c1" value="CAN (UDS)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;labelBackgroundColor=#ffffff;" parent="1" source="101" target="201" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="arr_conn_gw" value="" style="endArrow=open;endFill=0;html=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;strokeColor=#6b7280;strokeWidth=2;" parent="1" source="conn_box" target="gw_box" edge="1">
+                <mxCell id="c2" value="LIN 0x21&#10;Motor_Current" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;labelBackgroundColor=#ffffff;strokeColor=#d79b00;fontColor=#d79b00;" parent="1" source="102" target="202" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="arr_gw_diag" value="" style="endArrow=open;endFill=0;html=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;strokeColor=#6b7280;strokeWidth=2;" parent="1" source="gw_box" target="diag_box" edge="1">
+                <mxCell id="c3" value="Ethernet (DoIP)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;labelBackgroundColor=#ffffff;" parent="1" source="103" target="203" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="arr_gw_ivi" value="" style="endArrow=open;endFill=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;strokeColor=#6b7280;strokeWidth=2;" parent="1" source="gw_box" target="ivi_box" edge="1">
+                <mxCell id="c4" value="CAN-HS" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;labelBackgroundColor=#ffffff;" parent="1" source="201" target="301" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="c5" value="LIN Control" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;labelBackgroundColor=#ffffff;strokeColor=#d79b00;fontColor=#d79b00;" parent="1" source="202" target="302" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="desc1" value="Key Scenario — Window Motor Fault Detection" style="text;html=1;strokeColor=none;fillColor=none;align=left;fontStyle=1;fontSize=11;" parent="1" vertex="1">
+                    <mxGeometry x="40" y="410" width="760" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="desc2" value="① WindowMotorECU (LIN Slave 0x21): Motor 동작 중 10ms 주기로 Motor_Current 값을 BCM에 보고&#10;② BCM (LIN Master): Motor_Current &gt; 50A 감지 → DTC B1234 생성 → BCM_FaultStatus(0x500) CAN-LS 전송 + Motor_Stop 명령 (LIN Control)&#10;③ CGW 라우팅: CAN-LS 0x500 → CAN-HS → Cluster RED 경고등 점등 (FTTI &lt; 50ms)&#10;④ Tester: UDS 0x10 0x03 (Extended Session) → 0x19 0x02 (Read DTC) → 0x14 (Clear DTC) → OTA 0x34/0x36×N/0x37" style="text;html=1;strokeColor=#cccccc;fillColor=#f9f9f9;align=left;verticalAlign=top;spacingLeft=8;spacingTop=6;fontSize=10;rounded=1;" parent="1" vertex="1">
+                    <mxGeometry x="40" y="432" width="760" height="68" as="geometry"/>
                 </mxCell>
             </root>
         </mxGraphModel>
     </diagram>
-    <diagram id="p2_topology" name="2. Network Topology">
+    <diagram id="network_topo" name="2. Network Topology">
         <mxGraphModel dx="979" dy="832" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
             <root>
-                <mxCell id="0"/>
-                <mxCell id="1" parent="0"/>
-                <mxCell id="t0" value="2. Network Topology — Bus Architecture &amp; Message IDs" style="text;html=1;strokeColor=none;fillColor=#1e3a5f;fontColor=#ffffff;align=center;fontStyle=1;fontSize=13;rounded=1;" parent="1" vertex="1">
-                    <mxGeometry x="30" y="20" width="760" height="32" as="geometry"/>
+                <mxCell id="root_topo_0"/>
+                <mxCell id="root_topo_1" parent="root_topo_0"/>
+                <mxCell id="ota_server" value="OTA Server" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1" parent="root_topo_1" vertex="1">
+                    <mxGeometry x="340" y="40" width="160" height="60" as="geometry"/>
                 </mxCell>
-                <mxCell id="ota" value="OTA Server&#10;192.168.1.100" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#bbf7d0;strokeColor=#16a34a;fontStyle=1;fontSize=11;" parent="1" vertex="1">
-                    <mxGeometry x="330" y="70" width="160" height="55" as="geometry"/>
+                <mxCell id="eth_line" value="Ethernet (DoIP)" style="endArrow=none;html=1;strokeWidth=4;strokeColor=#6c8ebf;labelBackgroundColor=#ffffff;" parent="root_topo_1" source="ota_server" target="gw" edge="1">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="eth_bar" value="Ethernet / DoIP  (ISO 13400-2)  ·  100 Mbps" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dbeafe;strokeColor=#2563eb;fontStyle=1;fontSize=11;" parent="1" vertex="1">
-                    <mxGeometry x="130" y="165" width="560" height="22" as="geometry"/>
+                <mxCell id="gw" value="Central Gateway (CGW)&#10;[Routing Hub]" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontStyle=1" parent="root_topo_1" vertex="1">
+                    <mxGeometry x="340" y="160" width="160" height="80" as="geometry"/>
                 </mxCell>
-                <mxCell id="e_ota_eth" value="" style="endArrow=none;html=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;strokeColor=#2563eb;strokeWidth=2;" parent="1" source="ota" target="eth_bar" edge="1">
-                    <mxGeometry relative="1" as="geometry"/>
+                <mxCell id="ls_bus" value="CAN-LS (125kbps)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;align=left;spacingLeft=10;" parent="root_topo_1" vertex="1">
+                    <mxGeometry x="80" y="300" width="300" height="20" as="geometry"/>
                 </mxCell>
-                <mxCell id="cgw" value="Central Gateway (CGW)&#10;192.168.1.10" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e5e7eb;strokeColor=#6b7280;fontStyle=1;fontSize=11;" parent="1" vertex="1">
-                    <mxGeometry x="330" y="225" width="160" height="55" as="geometry"/>
+                <mxCell id="hs_bus" value="CAN-HS (500kbps)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;align=right;spacingRight=10;" parent="root_topo_1" vertex="1">
+                    <mxGeometry x="460" y="300" width="280" height="20" as="geometry"/>
                 </mxCell>
-                <mxCell id="e_eth_cgw" value="" style="endArrow=none;html=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;strokeColor=#2563eb;strokeWidth=2;" parent="1" source="eth_bar" target="cgw" edge="1">
-                    <mxGeometry relative="1" as="geometry"/>
+                <mxCell id="c_gw_ls" value="" style="endArrow=none;html=1;entryX=0.9;entryY=0;entryDx=0;entryDy=0;exitX=0.25;exitY=1;exitDx=0;exitDy=0;" parent="root_topo_1" source="gw" target="ls_bus" edge="1">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="ls_bar" value="CAN-LS  ·  125 kbps" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d1fae5;strokeColor=#059669;fontStyle=1;fontSize=11;" parent="1" vertex="1">
-                    <mxGeometry x="60" y="330" width="300" height="22" as="geometry"/>
+                <mxCell id="c_gw_hs" value="" style="endArrow=none;html=1;entryX=0.1;entryY=0;entryDx=0;entryDy=0;exitX=0.75;exitY=1;exitDx=0;exitDy=0;" parent="root_topo_1" source="gw" target="hs_bus" edge="1">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="hs_bar" value="CAN-HS  ·  500 kbps" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fecaca;strokeColor=#dc2626;fontStyle=1;fontSize=11;" parent="1" vertex="1">
-                    <mxGeometry x="460" y="330" width="300" height="22" as="geometry"/>
+                <mxCell id="bcm" value="BCM (LIN Master)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" parent="root_topo_1" vertex="1">
+                    <mxGeometry x="100" y="380" width="130" height="60" as="geometry"/>
                 </mxCell>
-                <mxCell id="e_cgw_ls" value="" style="endArrow=none;html=1;exitX=0.25;exitY=1;entryX=0.8;entryY=0;strokeColor=#059669;strokeWidth=2;" parent="1" source="cgw" target="ls_bar" edge="1">
-                    <mxGeometry relative="1" as="geometry"/>
+                <mxCell id="tester" value="Tester (Ext)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" parent="root_topo_1" vertex="1">
+                    <mxGeometry x="250" y="380" width="110" height="60" as="geometry"/>
                 </mxCell>
-                <mxCell id="e_cgw_hs" value="" style="endArrow=none;html=1;exitX=0.75;exitY=1;entryX=0.2;entryY=0;strokeColor=#dc2626;strokeWidth=2;" parent="1" source="cgw" target="hs_bar" edge="1">
-                    <mxGeometry relative="1" as="geometry"/>
+                <mxCell id="cluster" value="Cluster HMI" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" parent="root_topo_1" vertex="1">
+                    <mxGeometry x="540" y="380" width="120" height="60" as="geometry"/>
                 </mxCell>
-                <mxCell id="bcm" value="BCM (LIN Master)&#10;Tx: 0x500, 0x501, 0x7E8&#10;Rx: 0x7DF" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dbeafe;strokeColor=#2563eb;fontStyle=1;fontSize=10;" parent="1" vertex="1">
-                    <mxGeometry x="60" y="400" width="160" height="65" as="geometry"/>
+                <mxCell id="c_bcm" value="Tx 0x500 / 0x7E8&#10;Rx 0x7DF" style="endArrow=none;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.2;entryY=1;entryDx=0;entryDy=0;labelBackgroundColor=#ffffff;fontSize=10;" parent="root_topo_1" source="bcm" target="ls_bus" edge="1">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="tester" value="Tester (CANoe)&#10;Tx: 0x7DF&#10;Rx: 0x7E8" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#bae6fd;strokeColor=#0284c7;fontStyle=1;fontSize=10;" parent="1" vertex="1">
-                    <mxGeometry x="240" y="400" width="120" height="65" as="geometry"/>
+                <mxCell id="c_tester" value="Tx 0x7DF&#10;Rx 0x7E8" style="endArrow=none;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.8;entryY=1;entryDx=0;entryDy=0;labelBackgroundColor=#ffffff;fontSize=10;" parent="root_topo_1" source="tester" target="ls_bus" edge="1">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="cluster" value="Cluster HMI&#10;Rx: 0x500 (Routed)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fecdd3;strokeColor=#e11d48;fontStyle=1;fontSize=10;" parent="1" vertex="1">
-                    <mxGeometry x="530" y="400" width="160" height="65" as="geometry"/>
+                <mxCell id="c_cluster" value="Rx 0x500 (Routed)" style="endArrow=none;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;labelBackgroundColor=#ffffff;fontSize=10;" parent="root_topo_1" source="cluster" target="hs_bus" edge="1">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="e_bcm_ls" value="" style="endArrow=none;html=1;exitX=0.5;exitY=0;entryX=0.2;entryY=1;strokeColor=#059669;strokeWidth=2;" parent="1" source="bcm" target="ls_bar" edge="1">
-                    <mxGeometry relative="1" as="geometry"/>
+                <mxCell id="lin_bus" value="LIN Bus (19.2kbps)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;align=left;spacingLeft=10;fontStyle=1" parent="root_topo_1" vertex="1">
+                    <mxGeometry x="40" y="500" width="270" height="20" as="geometry"/>
                 </mxCell>
-                <mxCell id="e_tester_ls" value="" style="endArrow=none;html=1;exitX=0.5;exitY=0;entryX=0.9;entryY=1;strokeColor=#059669;strokeWidth=2;" parent="1" source="tester" target="ls_bar" edge="1">
-                    <mxGeometry relative="1" as="geometry"/>
+                <mxCell id="c_bcm_lin" value="" style="endArrow=none;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;strokeColor=#d79b00;" parent="root_topo_1" source="bcm" target="lin_bus" edge="1">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="e_cluster_hs" value="" style="endArrow=none;html=1;exitX=0.5;exitY=0;entryX=0.5;entryY=1;strokeColor=#dc2626;strokeWidth=2;" parent="1" source="cluster" target="hs_bar" edge="1">
-                    <mxGeometry relative="1" as="geometry"/>
+                <mxCell id="win_motor" value="WindowMotorECU&#10;(LIN Slave 0x21)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" parent="root_topo_1" vertex="1">
+                    <mxGeometry x="40" y="580" width="120" height="60" as="geometry"/>
                 </mxCell>
-                <mxCell id="lin_bar" value="LIN 2.2A  ·  19.2 kbps  (BCM = Master)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fef9c3;strokeColor=#ca8a04;fontStyle=1;fontSize=11;" parent="1" vertex="1">
-                    <mxGeometry x="30" y="520" width="340" height="22" as="geometry"/>
+                <mxCell id="door_fl_fr" value="DoorModule FL/FR&#10;(LIN Slave 0x22~0x23)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" parent="root_topo_1" vertex="1">
+                    <mxGeometry x="175" y="580" width="130" height="60" as="geometry"/>
                 </mxCell>
-                <mxCell id="e_bcm_lin" value="" style="endArrow=none;html=1;exitX=0.5;exitY=1;entryX=0.4;entryY=0;strokeColor=#ca8a04;strokeWidth=2;" parent="1" source="bcm" target="lin_bar" edge="1">
-                    <mxGeometry relative="1" as="geometry"/>
+                <mxCell id="door_rl_rr" value="DoorModule RL/RR&#10;(LIN Slave 0x24~0x25)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" parent="root_topo_1" vertex="1">
+                    <mxGeometry x="320" y="580" width="130" height="60" as="geometry"/>
                 </mxCell>
-                <mxCell id="wm" value="Window Motor ECU&#10;ID: 0x21  ·  10 ms&#10;Motor_Current [0–100 A]" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fef9c3;strokeColor=#ca8a04;fontSize=10;" parent="1" vertex="1">
-                    <mxGeometry x="30" y="595" width="155" height="65" as="geometry"/>
+                <mxCell id="c_win_lin" value="Motor_Current" style="endArrow=none;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.2;entryY=1;entryDx=0;entryDy=0;strokeColor=#d79b00;fontColor=#d79b00;fontSize=10;" parent="root_topo_1" source="win_motor" target="lin_bus" edge="1">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="d_fl_fr" value="Door FL / FR&#10;ID: 0x22~0x23  ·  50 ms&#10;Door_Position, Lock_Status" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fef9c3;strokeColor=#ca8a04;fontSize=10;" parent="1" vertex="1">
-                    <mxGeometry x="200" y="595" width="155" height="65" as="geometry"/>
+                <mxCell id="c_door_f_lin" value="Door_Position" style="endArrow=none;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.7;entryY=1;entryDx=0;entryDy=0;strokeColor=#d79b00;fontColor=#d79b00;fontSize=10;" parent="root_topo_1" source="door_fl_fr" target="lin_bus" edge="1">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="d_rl_rr" value="Door RL / RR&#10;ID: 0x24~0x25  ·  50 ms&#10;Door_Position, Lock_Status" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fef9c3;strokeColor=#ca8a04;fontSize=10;" parent="1" vertex="1">
-                    <mxGeometry x="370" y="595" width="155" height="65" as="geometry"/>
-                </mxCell>
-                <mxCell id="e_wm_lin" value="" style="endArrow=none;html=1;exitX=0.5;exitY=0;entryX=0.1;entryY=1;strokeColor=#ca8a04;strokeWidth=2;" parent="1" source="wm" target="lin_bar" edge="1">
-                    <mxGeometry relative="1" as="geometry"/>
-                </mxCell>
-                <mxCell id="e_dfl_lin" value="" style="endArrow=none;html=1;exitX=0.5;exitY=0;entryX=0.6;entryY=1;strokeColor=#ca8a04;strokeWidth=2;" parent="1" source="d_fl_fr" target="lin_bar" edge="1">
-                    <mxGeometry relative="1" as="geometry"/>
-                </mxCell>
-                <mxCell id="e_drl_lin" value="" style="endArrow=none;html=1;exitX=0.3;exitY=0;entryX=0.9;entryY=1;strokeColor=#ca8a04;strokeWidth=2;" parent="1" source="d_rl_rr" target="lin_bar" edge="1">
-                    <mxGeometry relative="1" as="geometry"/>
+                <mxCell id="c_door_r_lin" value="Door_Position" style="endArrow=none;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.9;entryY=1;entryDx=0;entryDy=0;strokeColor=#d79b00;fontColor=#d79b00;fontSize=10;" parent="root_topo_1" source="door_rl_rr" target="lin_bus" edge="1">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry"/>
                 </mxCell>
             </root>
         </mxGraphModel>
     </diagram>
-    <diagram id="p3_service" name="3. Service Flow">
+    <diagram id="proc_seq" name="3. Process Flow">
         <mxGraphModel dx="979" dy="832" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
             <root>
-                <mxCell id="0"/>
-                <mxCell id="1" parent="0"/>
-                <mxCell id="t0" value="3. Service Flow — Fault Detection · UDS Diagnostics · OTA Update" style="text;html=1;strokeColor=none;fillColor=#1e3a5f;fontColor=#ffffff;align=center;fontStyle=1;fontSize=13;rounded=1;" parent="1" vertex="1">
-                    <mxGeometry x="30" y="20" width="760" height="32" as="geometry"/>
+                <mxCell id="root_seq_0"/>
+                <mxCell id="root_seq_1" parent="root_seq_0"/>
+                <mxCell id="step1" value="Step 1: Fault Detection" style="swimlane;whiteSpace=wrap;html=1;startSize=23;fillColor=#f8cecc;strokeColor=#b85450;fontStyle=1" parent="root_seq_1" vertex="1">
+                    <mxGeometry x="40" y="40" width="220" height="200" as="geometry"/>
                 </mxCell>
-                <mxCell id="col1" value="Fault Detection" style="swimlane;html=1;startSize=28;fillColor=#fff1f2;strokeColor=#e11d48;fontStyle=1;fontSize=12;fontColor=#9f1239;" parent="1" vertex="1">
-                    <mxGeometry x="30" y="70" width="230" height="440" as="geometry"/>
+                <mxCell id="ev1" value="LIN Motor Current &gt; 50A&#10;(WindowMotorECU 0x21)" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" parent="step1" vertex="1">
+                    <mxGeometry x="20" y="40" width="180" height="55" as="geometry"/>
                 </mxCell>
-                <mxCell id="f_actor" value="Actor&#10;Window Motor ECU (LIN Slave)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fecdd3;strokeColor=#e11d48;fontStyle=1;fontSize=10;" parent="col1" vertex="1">
-                    <mxGeometry x="15" y="38" width="200" height="50" as="geometry"/>
+                <mxCell id="act1" value="BCM: DTC B1234 생성&#10;BCM_FaultStatus(0x500) 전송" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;" parent="step1" vertex="1">
+                    <mxGeometry x="20" y="120" width="180" height="55" as="geometry"/>
                 </mxCell>
-                <mxCell id="f_trigger" value="Trigger&#10;Motor_Current 보고 (10 ms 주기)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#e11d48;fontSize=10;" parent="col1" vertex="1">
-                    <mxGeometry x="15" y="113" width="200" height="50" as="geometry"/>
-                </mxCell>
-                <mxCell id="f_logic" value="Logic (BCM)&#10;① 전류값 수신 (LIN Master)&#10;② 과전류 임계값 비교 (50 A)&#10;③ 초과 시 DTC B1234 생성&#10;④ Motor Stop 명령 송신" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff5f5;strokeColor=#e11d48;fontSize=10;align=left;spacingLeft=8;" parent="col1" vertex="1">
-                    <mxGeometry x="15" y="188" width="200" height="100" as="geometry"/>
-                </mxCell>
-                <mxCell id="f_output" value="Output&#10;경고등 점등 (Cluster RED)&#10;Motor 정지 (Fail-Safe)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fecdd3;strokeColor=#e11d48;fontStyle=1;fontSize=10;" parent="col1" vertex="1">
-                    <mxGeometry x="15" y="318" width="200" height="60" as="geometry"/>
-                </mxCell>
-                <mxCell id="f_a1" value="" style="endArrow=open;endFill=1;html=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;strokeColor=#e11d48;" parent="col1" source="f_actor" target="f_trigger" edge="1">
+                <mxCell id="arr1" value="" style="endArrow=classic;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="step1" source="ev1" target="act1" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="f_a2" value="" style="endArrow=open;endFill=1;html=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;strokeColor=#e11d48;" parent="col1" source="f_trigger" target="f_logic" edge="1">
+                <mxCell id="step2" value="Step 2: Diagnostics" style="swimlane;whiteSpace=wrap;html=1;startSize=23;fillColor=#fff2cc;strokeColor=#d6b656;fontStyle=1" parent="root_seq_1" vertex="1">
+                    <mxGeometry x="300" y="40" width="220" height="240" as="geometry"/>
+                </mxCell>
+                <mxCell id="ev2" value="Tester: UDS Diagnostics&#10;① 0x10 0x03 (Ext. Session)&#10;② 0x19 0x02 (Read DTC)&#10;③ 0x14 (Clear DTC)" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;fontSize=11;" parent="step2" vertex="1">
+                    <mxGeometry x="20" y="35" width="180" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="act2" value="DTC B1234 클리어&#10;Cluster 경고등 소등" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;" parent="step2" vertex="1">
+                    <mxGeometry x="20" y="155" width="180" height="55" as="geometry"/>
+                </mxCell>
+                <mxCell id="arr2" value="" style="endArrow=classic;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="step2" source="ev2" target="act2" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="f_a3" value="" style="endArrow=open;endFill=1;html=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;strokeColor=#e11d48;" parent="col1" source="f_logic" target="f_output" edge="1">
+                <mxCell id="step3" value="Step 3: OTA Update" style="swimlane;whiteSpace=wrap;html=1;startSize=23;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1" parent="root_seq_1" vertex="1">
+                    <mxGeometry x="560" y="40" width="220" height="240" as="geometry"/>
+                </mxCell>
+                <mxCell id="ev3" value="OTA Server: DoIP&#10;① Routing Act. (0xE001)&#10;② 0x10 0x02 (Prog. Session)&#10;③ 0x34/0x36×N/0x37" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;fontSize=11;" parent="step3" vertex="1">
+                    <mxGeometry x="20" y="35" width="180" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="act3" value="CRC-32 검증 통과&#10;BCM Flash &amp; Reboot" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;" parent="step3" vertex="1">
+                    <mxGeometry x="20" y="155" width="180" height="55" as="geometry"/>
+                </mxCell>
+                <mxCell id="arr3" value="" style="endArrow=classic;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="step3" source="ev3" target="act3" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="col2" value="UDS Diagnostics" style="swimlane;html=1;startSize=28;fillColor=#fffbeb;strokeColor=#ca8a04;fontStyle=1;fontSize=12;fontColor=#92400e;" parent="1" vertex="1">
-                    <mxGeometry x="295" y="70" width="230" height="440" as="geometry"/>
-                </mxCell>
-                <mxCell id="d_actor" value="Actor&#10;Tester (CANoe Equipment)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fef3c7;strokeColor=#ca8a04;fontStyle=1;fontSize=10;" parent="col2" vertex="1">
-                    <mxGeometry x="15" y="38" width="200" height="50" as="geometry"/>
-                </mxCell>
-                <mxCell id="d_trigger" value="Trigger&#10;Fault 발생 후 진단 세션 요청" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#ca8a04;fontSize=10;" parent="col2" vertex="1">
-                    <mxGeometry x="15" y="113" width="200" height="50" as="geometry"/>
-                </mxCell>
-                <mxCell id="d_logic" value="Logic (BCM via CGW)&#10;① Extended Session 전환&#10;② DTC B1234 상태 조회&#10;③ DTC 소거 및 세션 복귀" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fffdf0;strokeColor=#ca8a04;fontSize=10;align=left;spacingLeft=8;" parent="col2" vertex="1">
-                    <mxGeometry x="15" y="188" width="200" height="100" as="geometry"/>
-                </mxCell>
-                <mxCell id="d_output" value="Output&#10;DTC B1234 소거&#10;경고등 소등 (Cluster)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fef3c7;strokeColor=#ca8a04;fontStyle=1;fontSize=10;" parent="col2" vertex="1">
-                    <mxGeometry x="15" y="318" width="200" height="60" as="geometry"/>
-                </mxCell>
-                <mxCell id="d_a1" value="" style="endArrow=open;endFill=1;html=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;strokeColor=#ca8a04;" parent="col2" source="d_actor" target="d_trigger" edge="1">
+                <mxCell id="main_arr1" value="" style="endArrow=classic;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeWidth=3;" parent="root_seq_1" source="step1" target="step2" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="d_a2" value="" style="endArrow=open;endFill=1;html=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;strokeColor=#ca8a04;" parent="col2" source="d_trigger" target="d_logic" edge="1">
-                    <mxGeometry relative="1" as="geometry"/>
-                </mxCell>
-                <mxCell id="d_a3" value="" style="endArrow=open;endFill=1;html=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;strokeColor=#ca8a04;" parent="col2" source="d_logic" target="d_output" edge="1">
-                    <mxGeometry relative="1" as="geometry"/>
-                </mxCell>
-                <mxCell id="col3" value="OTA Update" style="swimlane;html=1;startSize=28;fillColor=#f0fdf4;strokeColor=#16a34a;fontStyle=1;fontSize=12;fontColor=#166534;" parent="1" vertex="1">
-                    <mxGeometry x="560" y="70" width="230" height="440" as="geometry"/>
-                </mxCell>
-                <mxCell id="o_actor" value="Actor&#10;OTA Server (Cloud)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#bbf7d0;strokeColor=#16a34a;fontStyle=1;fontSize=10;" parent="col3" vertex="1">
-                    <mxGeometry x="15" y="38" width="200" height="50" as="geometry"/>
-                </mxCell>
-                <mxCell id="o_trigger" value="Trigger&#10;Firmware 업데이트 패키지 준비&#10;DoIP 세션 수립 요청" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#16a34a;fontSize=10;" parent="col3" vertex="1">
-                    <mxGeometry x="15" y="113" width="200" height="50" as="geometry"/>
-                </mxCell>
-                <mxCell id="o_logic" value="Logic (BCM via CGW)&#10;① DoIP Routing Activation&#10;② Programming Session 전환&#10;③ Firmware Download 요청&#10;④ 데이터 블록 전송 (×N)&#10;⑤ CRC-32 검증 → Flash" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f0fdf4;strokeColor=#16a34a;fontSize=10;align=left;spacingLeft=8;" parent="col3" vertex="1">
-                    <mxGeometry x="15" y="188" width="200" height="110" as="geometry"/>
-                </mxCell>
-                <mxCell id="o_output" value="Output&#10;BCM SW 업데이트 완료&#10;BCM 재시작 → DTC 소거 확인" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#bbf7d0;strokeColor=#16a34a;fontStyle=1;fontSize=10;" parent="col3" vertex="1">
-                    <mxGeometry x="15" y="325" width="200" height="60" as="geometry"/>
-                </mxCell>
-                <mxCell id="o_a1" value="" style="endArrow=open;endFill=1;html=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;strokeColor=#16a34a;" parent="col3" source="o_actor" target="o_trigger" edge="1">
-                    <mxGeometry relative="1" as="geometry"/>
-                </mxCell>
-                <mxCell id="o_a2" value="" style="endArrow=open;endFill=1;html=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;strokeColor=#16a34a;" parent="col3" source="o_trigger" target="o_logic" edge="1">
-                    <mxGeometry relative="1" as="geometry"/>
-                </mxCell>
-                <mxCell id="o_a3" value="" style="endArrow=open;endFill=1;html=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;strokeColor=#16a34a;" parent="col3" source="o_logic" target="o_output" edge="1">
-                    <mxGeometry relative="1" as="geometry"/>
-                </mxCell>
-                <mxCell id="flow1" value="Fault 발생" style="endArrow=open;endFill=1;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;strokeColor=#6b7280;strokeWidth=2;fontSize=10;" parent="1" source="col1" target="col2" edge="1">
-                    <mxGeometry relative="1" as="geometry"/>
-                </mxCell>
-                <mxCell id="flow2" value="DTC 소거 후" style="endArrow=open;endFill=1;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;strokeColor=#6b7280;strokeWidth=2;fontSize=10;" parent="1" source="col2" target="col3" edge="1">
+                <mxCell id="main_arr2" value="" style="endArrow=classic;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeWidth=3;" parent="root_seq_1" source="step2" target="step3" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
             </root>

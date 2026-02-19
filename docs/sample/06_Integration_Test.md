@@ -1,5 +1,12 @@
 # 통합 테스트 (Integration Test)
 
+**Document ID**: SAMPLE-06-IT
+**ISO 26262 Reference**: Part 6, Cl.10 / Part 4, Cl.9
+**ASPICE Reference**: SWE.5 (BP1-BP3)
+**Version**: 1.1
+**Date**: 2026-02-19
+**Status**: Released
+
 > **V-Model 위치**: 우측 중단 — 소프트웨어 통합 테스트 단계 (SWE.5)
 > **대응 문서**: `03_Function_definition.md` + `0301_SysFuncAnalysis.md` (SYS.3 설계 검증)
 > **ISO 26262**: Part 6, Clause 10 — 소프트웨어 통합 테스트 / Part 4, Clause 9 — 시스템 통합 테스트
@@ -26,3 +33,22 @@
 | In_Test_12 | Req_004 | 연속 Fault Injection 10회 반복 확인 | LIN::motorCurrent = 55A 10회 연속 주입 시 매회 DTC B1234 생성 | | | |
 | In_Test_13 | Req_016 | LIN Motor Current → BCM 과전류 감지 E2E 흐름 확인 | WindowMotorECU LIN 0x21 전송(Motor_Current = 55A) → BCM LIN 수신 → overcurrentDetected = 1 → DTC B1234 생성 → BCM_FaultStatus(0x500) 전송 전 과정 확인 | | | |
 | In_Test_14 | Req_017 | LIN Door Status → BCM 수신 확인 | DoorModule_FL LIN 0x22 Door_Position = OPEN(1) 전송 → BCM::doorPositionFL = 1 갱신 확인. 4개 Slave 동일 검증. | | | |
+| In_Test_15 | — (구현 파생) | LIN 통신 이상 → DTC U0100 생성 확인 | LIN Slave(WindowMotorECU 0x21) 프레임 50ms 이상 미수신 시뮬레이션 → `LIN::linCommFault = 1` → BCM DTC **U0100** 생성 확인. `BCM::detectOvercurrent()` 함수 경로 검증. | | | |
+
+---
+
+## 개정 이력
+
+| 버전 | 날짜 | 변경 사항 |
+|------|------|---------|
+| 1.0 | 2026-02-19 | 초기 생성 — In_Test_01~14 통합 테스트 명세 |
+| 1.1 | 2026-02-19 | In_Test_15 추가 — LIN 통신 이상(U0100) 통합 테스트 보완 (교차검증 반영) |
+
+---
+
+## 승인 (Approval)
+
+| 역할 | 이름 | 서명 | 날짜 |
+|------|------|------|------|
+| Project Manager | — | — | 2026-02-19 |
+| Lead Engineer | — | — | 2026-02-19 |
