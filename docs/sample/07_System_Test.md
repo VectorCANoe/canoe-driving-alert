@@ -12,9 +12,10 @@
 
 | Scene. ID | 설명 | Pass/Fail | 담당자 | 일자 |
 |-----------|------|----------|--------|------|
-| Scene. 1 | CANoe 프로젝트 실행 후 모든 ECU 노드(BCM, Gateway, Tester, OTA Server, Cluster) 초기화 확인 | | | |
-| Scene. 2 | 초기 상태에서 DTC 없음, 경고등 소등, 세션 Default 상태 확인 | | | |
-| Scene. 3 | Fault Injection 버튼 ON → BCM_FaultStatus(0x500) 전송 확인 | | | |
+| Scene. 1 | CANoe 프로젝트 실행 후 모든 ECU 노드(WindowMotorECU, DoorModule×4, BCM, Gateway, Tester, OTA Server, Cluster) 초기화 확인 | | | |
+| Scene. 2 | 초기 상태에서 DTC 없음, 경고등 소등, 세션 Default 상태 확인. LIN::motorCurrent = 10A (정상 구동), Door_Position = CLOSED 확인. | | | |
+| Scene. 2b | LIN 버스 정상 동작 확인 — WindowMotorECU(0x21) 10ms 주기 LIN 프레임 수신, DoorModule FL~RR(0x22~0x25) 50ms 주기 LIN 프레임 수신 확인 | | | |
+| Scene. 3 | LIN::motorCurrent = 55A 주입 → WindowMotorECU LIN 0x21 전송 → BCM LIN 수신 → DTC B1234 생성 → BCM_FaultStatus(0x500) CAN-LS 전송 확인 | | | |
 | Scene. 4 | BCM_FaultStatus 전송 후 DTC B1234 생성 및 저장 확인 | | | |
 | Scene. 5 | DTC 생성 후 50ms 이내 Cluster RED 경고등 활성화 확인 | | | |
 | Scene. 6 | Gateway가 CAN-LS(0x500)를 CAN-HS로 5ms 이내 라우팅하는 모습 확인 | | | |
@@ -29,4 +30,4 @@
 | Scene. 15 | OTA 중 CRC 불일치 주입 → NegativeResponse(0x7F 0x37 0x70) 및 Rollback 확인 | | | |
 | Scene. 16 | OTA 중 Bus Off 주입 → 세션 안전 중단 및 DTC 저장 확인 | | | |
 | Scene. 17 | Rollback 완료 후 이전 펌웨어 버전으로 BCM 정상 동작 확인 | | | |
-| Scene. 18 | Fault Injection 재실행 → 전체 시나리오(Fault→Gateway→UDS→OTA) 2회 연속 정상 동작 확인 | | | |
+| Scene. 18 | Fault Injection 재실행 → 전체 시나리오(LIN Motor Current→BCM Fault→CAN-LS 0x500→Gateway→CAN-HS→UDS→OTA) 2회 연속 정상 동작 확인 | | | |

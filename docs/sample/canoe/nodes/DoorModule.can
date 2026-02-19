@@ -1,0 +1,118 @@
+/*
+ * DoorModule.can — Door Module ECU (LIN Slave 0x22~0x25)
+ *
+ * 역할: Door FL/FR/RL/RR의 위치(Door_Position) / 잠금(Lock_Status) / 창문 위치(Window_Position)를
+ *       LIN ID 0x22~0x25로 BCM(LIN Master)에 50ms 주기 보고.
+ *
+ * LIN: 2.2A (ISO 17987), 19.2 kbps
+ * Slave ID: 0x22 (FL) / 0x23 (FR) / 0x24 (RL) / 0x25 (RR)
+ *
+ * 프레임 구조 (2 bytes):
+ *   Byte0 [bit 1:0] : Door_Position    (2bit: CLOSED=0/OPEN=1/AJAR=2/ERROR=3)
+ *   Byte0 [bit 2]   : Lock_Status      (1bit: LOCKED=0/UNLOCKED=1)
+ *   Byte0 [bit 7:3] : (Reserved)
+ *   Byte1 [bit 7:0] : Window_Position  (8bit: 0~100%)
+ *
+ * ※ 동일 구조의 4개 Slave를 하나의 CAPL 파일로 구현.
+ *    gDoorID 변수를 0x22~0x25로 설정하여 각 인스턴스를 구분.
+ *    CANoe에서 4개 노드 인스턴스로 로드 시 각각 다른 gDoorID 초기값을 설정.
+ *
+ * V-Model: SWE.3/SWE.6 → SWE.4 (05_Unit_Test.md)
+ * 추적성: Req_017 → In_Test_14 → Scene.2b
+ */
+
+includes
+{
+}
+
+variables
+{
+  msTimer tLIN_Door;           // 50ms 주기 LIN 프레임 전송 타이머
+
+  /* 노드 ID — 인스턴스별 설정 (0x22:FL / 0x23:FR / 0x24:RL / 0x25:RR) */
+  int gDoorID         = 0x22;  // 기본값: FL. 인스턴스 생성 시 변경.
+
+  /* Door 상태 */
+  int gDoorPosition   = 0;     // 0:CLOSED / 1:OPEN / 2:AJAR / 3:ERROR
+  int gLockStatus     = 0;     // 0:LOCKED / 1:UNLOCKED
+  int gWindowPosition = 0;     // 창문 위치 (0~100%)
+}
+
+/*============================================================
+ * 초기화
+ *============================================================*/
+on start
+{
+  write("[DoorModule] LIN Slave 0x%02X 시작 — Door Status 50ms 주기 보고", gDoorID);
+  setTimer(tLIN_Door, 50);
+}
+
+/*============================================================
+ * LIN Frame 전송 타이머 (50ms 주기)
+ *============================================================*/
+on timer tLIN_Door
+{
+  sendLIN_DoorStatus();
+  setTimer(tLIN_Door, 50);
+}
+
+/*============================================================
+ * LIN_DoorStatus 프레임 조립 및 전송
+ *============================================================*/
+void sendLIN_DoorStatus()
+{
+  linFrame frame;
+
+  frame.id      = gDoorID;
+  frame.dlc     = 2;
+  frame.byte(0) = (gDoorPosition & 0x03)         // Door_Position [bit1:0]
+                | ((gLockStatus  & 0x01) << 2);  // Lock_Status   [bit2]
+  frame.byte(1) = gWindowPosition & 0xFF;         // Window_Position [bit7:0]
+
+  output(frame);
+}
+
+/*============================================================
+ * Panel — Door_Position 변경
+ * System Variable: LIN::doorPositionFL / FR / RL / RR
+ * (각 인스턴스에서 gDoorID에 맞는 SysVar를 읽도록 단순화)
+ *============================================================*/
+on sysvar LIN::doorPositionFL
+{
+  if (gDoorID == 0x22)
+  {
+    gDoorPosition = @LIN::doorPositionFL;
+    write("[DoorModule FL] Door_Position: %d (%s)",
+          gDoorPosition,
+          (gDoorPosition == 0) ? "CLOSED" :
+          (gDoorPosition == 1) ? "OPEN" :
+          (gDoorPosition == 2) ? "AJAR" : "ERROR");
+  }
+}
+
+on sysvar LIN::doorPositionFR
+{
+  if (gDoorID == 0x23)
+  {
+    gDoorPosition = @LIN::doorPositionFR;
+    write("[DoorModule FR] Door_Position: %d", gDoorPosition);
+  }
+}
+
+on sysvar LIN::doorPositionRL
+{
+  if (gDoorID == 0x24)
+  {
+    gDoorPosition = @LIN::doorPositionRL;
+    write("[DoorModule RL] Door_Position: %d", gDoorPosition);
+  }
+}
+
+on sysvar LIN::doorPositionRR
+{
+  if (gDoorID == 0x25)
+  {
+    gDoorPosition = @LIN::doorPositionRR;
+    write("[DoorModule RR] Door_Position: %d", gDoorPosition);
+  }
+}

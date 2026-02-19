@@ -18,7 +18,9 @@
 ### 1.2 주요 도메인 및 역할
 | 도메인 | ECU | 역할 (Role) |
 |--------|-----|-------------|
-| **Body** | **BCM** | Window Motor 과전류 감지, 고장 상태(DTC B1234) 생성 및 전파 |
+| **Body** | **BCM** (LIN Master) | LIN Slave로부터 Motor_Current 수신 → Window Motor 과전류(>50A) 감지 → DTC B1234 생성 및 CAN-LS 전파 |
+| **Body** | **WindowMotorECU** (LIN Slave 0x21) | Motor_Current / Motor_Status / Motor_Direction을 10ms 주기로 BCM에 LIN 보고 |
+| **Body** | **DoorModule FL/FR/RL/RR** (LIN Slave 0x22~0x25) | Door_Position / Lock_Status / Window_Position을 50ms 주기로 BCM에 LIN 보고 |
 | **Gateway** | **CGW** | 이기종 네트워크(CAN-LS ↔ CAN-HS ↔ Ethernet) 간 메시지 라우팅 |
 | **Infotainment** | **Cluster** | 사용자에게 고장 경고(RED Lamp) 및 상태 정보 표시 |
 | **Diagnosis** | **Tester** | 외부 진단 장비 시뮬레이션 (UDS 서비스 요청: 0x10, 0x19, 0x14) |
@@ -35,9 +37,10 @@
 ### 2.2 통신 프로토콜 매핑
 | 채널 | 프로토콜 | 속도 | 연결 ECU | 용도 |
 |------|----------|------|----------|------|
-| **Ethernet** | DoIP (ISO 13400) | 100Mbps | OTA Server ↔ Gateway | 대용량 펌웨어 고속 전송 |
-| **CAN-HS** | CAN 2.0B | 500kbps | Gateway ↔ Cluster | 실시간 주행 정보 및 경고등 제어 |
-| **CAN-LS** | CAN 2.0B | 125kbps | Gateway ↔ BCM ↔ Tester | 편의 기능 제어 및 진단 통신 |
+| **LIN** | LIN 2.2A (ISO 17987) | 19.2 kbps | BCM(Master) ↔ WindowMotorECU / DoorModule ×4(Slave) | Fault Detection 출발점 — Motor 전류 및 Door 상태 수집 |
+| **CAN-LS** | CAN 2.0B | 125kbps | BCM ↔ Gateway ↔ Tester | BCM Fault 전파, UDS 진단 통신 |
+| **CAN-HS** | CAN 2.0B | 500kbps | Gateway ↔ Cluster | 경고등 제어 (Fault 메시지 라우팅) |
+| **Ethernet** | DoIP (ISO 13400-2) | 100Mbps | OTA Server ↔ Gateway | 대용량 펌웨어 고속 전송 |
 
 ---
 
@@ -48,9 +51,9 @@
 ![Process Sequence](02_Process_Sequence.puml)
 
 ### 3.2 시나리오 단계별 상세
-1.  **Fault Detection**: BCM이 과전류를 감지하고 DTC를 생성하면, Gateway를 통해 Cluster에 경고등을 점등합니다.
-2.  **Diagnostics**: Tester가 UDS 진단 서비스를 통해 DTC를 확인하고 소거(Clear)하면 경고등이 소등됩니다.
-3.  **OTA Update**: OTA Server가 최신 펌웨어를 DoIP로 전송하고, BCM이 이를 수신하여 업데이트 및 재부팅합니다.
+1. **Fault Detection**: WindowMotorECU(LIN Slave 0x21)가 Motor_Current > 50A를 LIN으로 BCM에 보고 → BCM(LIN Master)이 DTC B1234 생성 → BCM_FaultStatus(0x500) CAN-LS 전송 → Gateway가 CAN-HS로 라우팅(≤5ms) → Cluster RED 경고등 활성화(≤50ms).
+2. **Diagnostics**: Tester가 UDS 진단 서비스(0x10→0x19→0x14)를 통해 DTC를 확인하고 소거(Clear)하면 경고등이 소등됩니다.
+3. **OTA Update**: OTA Server가 DoIP Routing Activation 후 UDS Programming Session(0x10 0x02)을 열고 0x34→0x36×N→0x37 순서로 펌웨어를 전송합니다. CRC-32 검증 통과 시 BCM을 재시작합니다.
 
 ---
 
@@ -59,8 +62,8 @@
 
 | ID | Hazard | Operational Situation | Severity | Exposure | Controllability | ASIL | Safety Goal |
 |----|--------|-----------------------|----------|----------|-----------------|------|-------------|
-| H-01 | 윈도우 모터 과열/화재 | 주행/정차 중 윈도우 조작 시 | S2 | E3 | C2 | **B** | SG-01 |
-| H-02 | OTA 중 통신 두절로 벽돌(Bricking) | 펌웨어 업데이트 중 | S1 | E2 | C3 | **QM** | N/A |
+| H-01 | LIN 통신 오류로 Motor 과전류 미감지 → 윈도우 모터 과열/화재 | 주행/정차 중 윈도우 조작 시 | S2 | E3 | C2 | **B** | SG-01: LIN Motor_Current 수신 이상 시 BCM이 안전 상태로 전환 |
+| H-02 | OTA 중 통신 두절로 벽돌(Bricking) | 펌웨어 업데이트 중 | S1 | E2 | C3 | **QM** | N/A — Rollback으로 완화 |
 
 ---
 

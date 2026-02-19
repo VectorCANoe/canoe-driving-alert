@@ -14,7 +14,9 @@
 
 | 노드 파일 | 담당 ECU | 위치 |
 |----------|---------|------|
-| `BCM.can` | BCM — 과전류 감지, DTC 생성, FaultStatus 전송 | `canoe/nodes/BCM.can` |
+| `WindowMotorECU.can` | WindowMotorECU — LIN Slave 0x21, Motor_Current/Status/Direction 보고 | `canoe/nodes/WindowMotorECU.can` |
+| `DoorModule.can` | DoorModule FL/FR/RL/RR — LIN Slave 0x22~0x25, Door_Position/Lock_Status/Window_Position 보고 | `canoe/nodes/DoorModule.can` |
+| `BCM.can` | BCM — LIN Master, Motor_Current 수신 → 과전류 판단, DTC 생성, FaultStatus CAN-LS 전송 | `canoe/nodes/BCM.can` |
 | `Gateway.can` | Central Gateway — CAN 라우팅, DoIP 처리 | `canoe/nodes/Gateway.can` |
 | `Tester.can` | CANoe Tester — UDS 세션/DTC 조회/클리어 | `canoe/nodes/Tester.can` |
 | `OTA_Server.can` | OTA Server — 펌웨어 전송, CRC 검증 | `canoe/nodes/OTA_Server.can` |
@@ -22,18 +24,40 @@
 
 ---
 
-## 2. BCM.can — 주요 함수/이벤트
+## 2. WindowMotorECU.can — 주요 함수/이벤트
 
-| 함수/이벤트 | 설명 | 관련 신호 (DBC) | 검증 |
-|-----------|------|--------------|------|
-| `on timer tFaultCheck` | 10ms 주기로 과전류 조건 확인 | `WindowMotorOvercurrent` (0x500, bit0) | In_Test_01 |
-| `void detectOvercurrent()` | currentAmps > 50A 시 DTC B1234 생성 | `DTC_Code` (0x500, bit1~16) | In_Test_01 |
-| `void sendFaultStatus()` | BCM_FaultStatus(0x500) CAN-LS 전송 | `FaultSeverity`, `AliveCounter`, `Checksum` | In_Test_01 |
-| `on sysvar BCM::overcurrentDetected` | Fault Injection 신호 수신 시 즉시 DTC 생성 | System Variable | In_Test_12 |
+| 함수/이벤트 | 설명 | 관련 신호 | 검증 |
+|-----------|------|---------|------|
+| `on timer tLIN_Motor` | 10ms 주기 LIN ID 0x21 프레임 전송 | `LIN::motorCurrent`, `LIN::motorStatus`, `LIN::motorDirection` | In_Test_13 |
+| `void sendLIN_MotorStatus()` | Motor_Current/Status/Direction 값을 LIN 프레임으로 조립하여 전송 | LIN Frame 0x21 (2 bytes) | In_Test_13 |
+| `on sysvar LIN::motorCurrent` | Panel TrackBar 값 변경 시 즉시 LIN 프레임에 반영. 55A로 설정 시 Fault Injection 효과. | `LIN::motorCurrent` | In_Test_01, In_Test_13 |
 
 ---
 
-## 3. Gateway.can — 주요 함수/이벤트
+## 3. DoorModule.can — 주요 함수/이벤트
+
+| 함수/이벤트 | 설명 | 관련 신호 | 검증 |
+|-----------|------|---------|------|
+| `on timer tLIN_Door` | 50ms 주기 LIN ID 0x22~0x25 프레임 전송 (파라미터 gLIN_ID로 구분) | `LIN::doorPositionFL/FR/RL/RR` | In_Test_14 |
+| `void sendLIN_DoorStatus()` | Door_Position/Lock_Status/Window_Position 값을 LIN 프레임으로 조립하여 전송 | LIN Frame 0x22~0x25 (2 bytes) | In_Test_14 |
+| `on sysvar LIN::doorPositionFL` | Door FL 위치 변경 시 즉시 LIN 프레임에 반영 | `LIN::doorPositionFL` | In_Test_14 |
+
+---
+
+## 4. BCM.can — 주요 함수/이벤트
+
+| 함수/이벤트 | 설명 | 관련 신호 (DBC/LIN) | 검증 |
+|-----------|------|----------------|------|
+| `on linFrame 0x21` | LIN Slave(WindowMotorECU)로부터 Motor_Current 수신. >50A 시 DTC B1234 생성 트리거. | LIN Frame 0x21, `LIN::motorCurrent` | In_Test_13, In_Test_01 |
+| `void detectOvercurrent()` | Motor_Current > 50A 판단 → DTC B1234 생성. LIN 통신 이상(>50ms 미수신) 시 DTC U0100 생성. | `BCM::overcurrentDetected`, `LIN::linCommFault` | In_Test_01, In_Test_13 |
+| `on linFrame 0x22~0x25` | LIN Slave(DoorModule)로부터 Door_Position/Lock_Status 수신. 내부 상태 갱신. | `LIN::doorPositionFL/FR/RL/RR` | In_Test_14 |
+| `on timer tFaultTx` | 10ms 주기 BCM_FaultStatus(0x500) CAN-LS 전송 | `FaultSeverity`, `AliveCounter`, `Checksum` | In_Test_01 |
+| `void sendFaultStatus()` | BCM_FaultStatus(0x500) CAN-LS 전송. Motor_Current 기반 Fault 상태 반영. | `WindowMotorOvercurrent`, `DTC_Code` (0x500) | In_Test_01 |
+| `on sysvar LIN::motorCurrent` | Panel에서 직접 전류값 주입 시 (Fault Injection 대체) LIN 수신과 동일하게 처리 | `BCM::currentAmps` | In_Test_12 |
+
+---
+
+## 5. Gateway.can — 주요 함수/이벤트
 
 | 함수/이벤트 | 설명 | 관련 신호 (DBC) | 검증 |
 |-----------|------|--------------|------|
@@ -45,7 +69,7 @@
 
 ---
 
-## 4. Tester.can — 주요 함수/이벤트
+## 6. Tester.can — 주요 함수/이벤트
 
 | 함수/이벤트 | 설명 | 관련 신호 (DBC) | 검증 |
 |-----------|------|--------------|------|
@@ -57,7 +81,7 @@
 
 ---
 
-## 5. OTA_Server.can — 주요 함수/이벤트
+## 7. OTA_Server.can — 주요 함수/이벤트
 
 | 함수/이벤트 | 설명 | 관련 신호 (DBC) | 검증 |
 |-----------|------|--------------|------|
@@ -70,7 +94,7 @@
 
 ---
 
-## 6. Cluster.can — 주요 함수/이벤트
+## 8. Cluster.can — 주요 함수/이벤트
 
 | 함수/이벤트 | 설명 | 관련 신호 (DBC) | 검증 |
 |-----------|------|--------------|------|
@@ -80,12 +104,13 @@
 
 ---
 
-## 7. 테스트 모듈 구성
+## 9. 테스트 모듈 구성
 
 | 테스트 모듈 폴더 | 내용 | 대응 테스트 |
 |--------------|------|-----------|
-| `TC_F_Fault_Detection/` | Fault Injection 자동화 테스트 | In_Test_01, 02, 12 |
+| `TC_L_LIN_Interface/` | LIN Motor Current 수신, Door Status 수신 테스트 | In_Test_13, 14 |
+| `TC_F_Fault_Detection/` | LIN 기반 Fault Injection → DTC 생성 자동화 테스트 | In_Test_01, 02, 12 |
 | `TC_G_Gateway_Routing/` | 라우팅 지연 측정 테스트 | In_Test_03, 04 |
 | `TC_D_UDS_Diagnostics/` | UDS 세션/DTC 조회/클리어 테스트 | In_Test_05, 06, 07 |
 | `TC_O_OTA_Programming/` | OTA 전송/CRC/Rollback 테스트 | In_Test_08, 09, 10, 11 |
-| `TC_E2E_Master_Scenario/` | 전체 E2E 시나리오 순차 실행 | Scene.1~18 |
+| `TC_E2E_Master_Scenario/` | 전체 E2E 시나리오 순차 실행 (LIN→CAN→UDS→OTA) | Scene.1~18 |
