@@ -1,18 +1,17 @@
 # 시스템 변수 정의 (System Variables)
 
 **Document ID**: SAMPLE-0304-SV
-**ISO 26262 Reference**: Part 6, Cl.7
+**ISO 26262 Reference**: Part 6, Cl.7 — 소프트웨어 아키텍처 설계 (데이터 인터페이스 정의)
 **ASPICE Reference**: SWE.2 (BP3: 소프트웨어 인터페이스 정의, SWE.3 BP1: 상세 설계)
 **Version**: 1.0
 **Date**: 2026-02-19
 **Status**: Released
 
-> **V-Model 위치**: 좌측 하단 — 소프트웨어 아키텍처 설계 단계 (SWE.2)
-> **대응 문서**: `05_Unit_Test.md` (SWE.4 단위 테스트로 검증)
-> **ISO 26262**: Part 6, Clause 7 — 소프트웨어 아키텍처 설계 (데이터 인터페이스 정의)
-> **ASPICE**: SWE.2 (BP3: 소프트웨어 인터페이스 정의, SWE.3 BP1: 상세 설계)
-> **상위 연결**: `0303_Communication_Specification.md` → 본 문서 → `05_Unit_Test.md`(단위 테스트)
-> **CANoe 연관**: 본 문서의 변수는 CANoe System Variables로 직접 구현되며 CAPL에서 참조
+| V-Model 위치 | 대응 문서 | 상위 연결 | 하위 연결 |
+|-------------|---------|---------|---------|
+| 좌측 하단 — SWE.2 시스템 변수 | `05_Unit_Test.md` (SWE.4) | `0303_Communication_Specification.md` | `04_SW_Implementation.md` |
+
+**CANoe 연관**: 본 문서의 변수는 CANoe System Variables로 직접 구현되며 CAPL에서 참조.
 
 ---
 

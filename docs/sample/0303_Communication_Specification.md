@@ -1,18 +1,17 @@
 # 통신 명세서 (Communication Specification)
 
 **Document ID**: SAMPLE-0303-CS
-**ISO 26262 Reference**: Part 6, Cl.7
+**ISO 26262 Reference**: Part 6, Cl.7 — 소프트웨어 아키텍처 설계 (인터페이스 명세)
 **ASPICE Reference**: SWE.2 (BP3: 소프트웨어 인터페이스 정의, BP4: 일관성 확보)
 **Version**: 1.0
 **Date**: 2026-02-19
 **Status**: Released
 
-> **V-Model 위치**: 좌측 하단 — 소프트웨어 아키텍처 설계 단계 (SWE.2)
-> **대응 문서**: `05_Unit_Test.md` (SWE.4 단위 테스트로 검증)
-> **ISO 26262**: Part 6, Clause 7 — 소프트웨어 아키텍처 설계 (인터페이스 명세)
-> **ASPICE**: SWE.2 (BP3: 소프트웨어 인터페이스 정의, BP4: 일관성 확보)
-> **상위 연결**: `0302_NWflowDef.md` → 본 문서 → `0304_System_Variables.md`(변수 정의)
-> **DBC 연관**: CAN 메시지의 Identifier/DLC/Signal은 `sample_project.dbc`의 메시지 정의와 직접 대응. LIN 메시지(0x21~0x25)는 LIN 2.2A (ISO 17987) 프레임 구조를 따르며 CAPL `on linFrame` 이벤트로 처리.
+| V-Model 위치 | 대응 문서 | 상위 연결 | 하위 연결 |
+|-------------|---------|---------|---------|
+| 좌측 하단 — SWE.2 통신 명세 | `05_Unit_Test.md` (SWE.4) | `0302_NWflowDef.md` | `0304_System_Variables.md` |
+
+**DBC 연관**: CAN 메시지 Identifier/DLC/Signal은 `sample_project.dbc`와 직접 대응. LIN(0x21~0x25)은 LIN 2.2A (ISO 17987), CAPL `on linFrame` 이벤트로 처리.
 
 ---
 

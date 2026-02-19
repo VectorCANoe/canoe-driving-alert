@@ -1,19 +1,15 @@
 # 시스템 테스트 (System Test)
 
 **Document ID**: SAMPLE-07-ST
-**ISO 26262 Reference**: Part 4, Cl.10
+**ISO 26262 Reference**: Part 4, Cl.10 — 시스템 적격성 테스트
 **ASPICE Reference**: SYS.5 (BP1: 시스템 테스트 명세, BP2: 시스템 테스트 수행, BP3: 결과 평가)
-**Version**: 1.0
+**Version**: 1.1
 **Date**: 2026-02-19
 **Status**: Released
 
-> **V-Model 위치**: 우측 상단 — 시스템 적격성 테스트 단계 (SYS.5)
-> **대응 문서**: `01_Requirements.md` (SYS.2 요구사항 전체 검증)
-> **ISO 26262**: Part 4, Clause 10 — 시스템 적격성 테스트
-> **ASPICE**: SYS.5 (BP1: 시스템 테스트 명세, BP2: 시스템 테스트 수행, BP3: 결과 평가)
-> **상위 연결**: `06_Integration_Test.md`(통합 테스트) → 본 문서 → 릴리즈/검수
-> **HARA 연관**: Scene.15(CRC 불일치 Rollback), Scene.16(Bus Off 중단)은 HARA SG-01, SG-08 안전목표 달성 여부를 최종 검증
-> **검증 환경**: CANoe SIL — 전체 E2E 시나리오 (Fault → Gateway → UDS → OTA) 순차 실행
+| V-Model 위치 | 대응 문서 | 상위 연결 | 하위 연결 |
+|-------------|---------|---------|---------|
+| 우측 상단 — SYS.5 시스템 테스트 | `01_Requirements.md` (SYS.2) | `06_Integration_Test.md` | 릴리즈/검수 |
 
 ---
 
@@ -22,6 +18,7 @@
 | Scene. 1 | CANoe 프로젝트 실행 후 모든 ECU 노드(WindowMotorECU, DoorModule×4, BCM, Gateway, Tester, OTA Server, Cluster) 초기화 확인 | | | |
 | Scene. 2 | 초기 상태에서 DTC 없음, 경고등 소등, 세션 Default 상태 확인. LIN::motorCurrent = 10A (정상 구동), Door_Position = CLOSED 확인. | | | |
 | Scene. 2b | LIN 버스 정상 동작 확인 — WindowMotorECU(0x21) 10ms 주기 LIN 프레임 수신, DoorModule FL~RR(0x22~0x25) 50ms 주기 LIN 프레임 수신 확인 | | | |
+| Scene. 2c | LIN 통신 이상 감지 확인 — WindowMotorECU(0x21) LIN 프레임 전송 중단 시뮬레이션 (50ms 이상 미수신) → LIN::linCommFault = 1 → BCM DTC U0100 생성 확인. LIN 복구 후 linCommFault = 0 및 정상 통신 재개 확인. (Req_018) | | | |
 | Scene. 3 | LIN::motorCurrent = 55A 주입 → WindowMotorECU LIN 0x21 전송 → BCM LIN 수신 → DTC B1234 생성 → BCM_FaultStatus(0x500) CAN-LS 전송 확인 | | | |
 | Scene. 4 | BCM_FaultStatus 전송 후 DTC B1234 생성 및 저장 확인 | | | |
 | Scene. 5 | DTC 생성 후 50ms 이내 Cluster RED 경고등 활성화 확인 | | | |
@@ -46,6 +43,7 @@
 | 버전 | 날짜 | 변경 사항 |
 |------|------|---------|
 | 1.0 | 2026-02-19 | 초기 생성 |
+| 1.1 | 2026-02-19 | Scene.2c 추가 — LIN 통신 이상 감지(Req_018 / DTC U0100) 시스템 테스트 추적성 완결 |
 
 ---
 

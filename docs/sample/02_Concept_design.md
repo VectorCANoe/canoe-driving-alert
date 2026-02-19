@@ -1,16 +1,15 @@
 # 컨셉 디자인 (Concept Design)
 
 **Document ID**: SAMPLE-02-CD
-**ISO 26262 Reference**: Part 3, Cl.7 (HARA)
+**ISO 26262 Reference**: Part 3, Cl.7 — Hazard Analysis and Risk Assessment (HARA) 연계
 **ASPICE Reference**: SYS.2 (System Context)
-**Version**: 1.0
+**Version**: 1.2
 **Date**: 2026-02-19
 **Status**: Released
 
-> **V-Model 위치**: 좌측 상단 — 개념 설계 단계
-> **대응 문서**: `01_Requirements.md` (요구사항) → 본 문서 → `03_Function_definition.md` (기능 명세)
-> **ISO 26262**: Part 3, Clause 7 — Hazard Analysis and Risk Assessment (HARA) 연계
-> **ASPICE**: SYS.2 System Requirements Analysis (System Context)
+| V-Model 위치 | 대응 문서 | 상위 연결 | 하위 연결 |
+|-------------|---------|---------|---------|
+| 좌측 상단 — 개념 설계 단계 | — | — | `01_Requirements.md` |
 
 본 문서는 프로젝트의 전체적인 **기능(Concept)**, **연결(Network)**, **흐름(Flow)**을 정의합니다.
 
@@ -58,19 +57,21 @@
 ![Process Sequence](02_Process_Sequence.puml)
 
 ### 3.2 시나리오 단계별 상세
-1. **Fault Detection**: WindowMotorECU(LIN Slave 0x21)가 Motor_Current > 50A를 LIN으로 BCM에 보고 → BCM(LIN Master)이 DTC B1234 생성 → BCM_FaultStatus(0x500) CAN-LS 전송 → Gateway가 CAN-HS로 라우팅(≤5ms) → Cluster RED 경고등 활성화(≤50ms).
-2. **Diagnostics**: Tester가 UDS 진단 서비스(0x10→0x19→0x14)를 통해 DTC를 확인하고 소거(Clear)하면 경고등이 소등됩니다.
-3. **OTA Update**: OTA Server가 DoIP Routing Activation 후 UDS Programming Session(0x10 0x02)을 열고 0x34→0x36×N→0x37 순서로 펌웨어를 전송합니다. CRC-32 검증 통과 시 BCM을 재시작합니다.
+0. **LIN 초기화 및 통신 이상 감지** (Scene.1~2c): 모든 ECU 초기화 후 WindowMotorECU(0x21) 10ms 주기 LIN 정상 수신 확인. 이후 LIN 프레임 50ms 이상 미수신 시뮬레이션 → BCM이 DTC U0100 생성 (H-01 / Req_018). LIN 복구 후 정상 통신 재개 확인.
+1. **Fault Detection** (Scene.3~5): WindowMotorECU(LIN Slave 0x21)가 Motor_Current > 50A를 LIN으로 BCM에 보고 → BCM(LIN Master)이 DTC B1234 생성 → BCM_FaultStatus(0x500) CAN-LS 전송 → Gateway가 CAN-HS로 라우팅(≤5ms) → Cluster RED 경고등 활성화(≤50ms).
+2. **Diagnostics** (Scene.7~9): Tester가 UDS 진단 서비스(0x10→0x19→0x14)를 통해 DTC를 확인하고 소거(Clear)하면 경고등이 소등됩니다.
+3. **OTA Update** (Scene.10~17): OTA Server가 DoIP Routing Activation 후 UDS Programming Session(0x10 0x02)을 열고 0x34→0x36×N→0x37 순서로 펌웨어를 전송합니다. CRC-32 검증 통과 시 BCM을 재시작합니다. 실패 시 Rollback / Bus Off 시 세션 안전 중단.
 
 ---
 
 ## 4. HARA (Hazard Analysis and Risk Assessment) 요약
-> **Safety Goal**: SG-01 "Window Motor 과전류 시 화재 방지를 위해 전원을 차단해야 한다." (ASIL B)
+> **Safety Goals**: SG-01 (ASIL-B) — Motor 과전류 즉시 감지 및 안전 상태 전환 / SG-02 (ASIL-B) — OTA 실패 시 이전 펌웨어 자동 복구
 
 | ID | Hazard | Operational Situation | Severity | Exposure | Controllability | ASIL | Safety Goal |
 |----|--------|-----------------------|----------|----------|-----------------|------|-------------|
-| H-01 | LIN 통신 오류로 Motor 과전류 미감지 → 윈도우 모터 과열/화재 | 주행/정차 중 윈도우 조작 시 | S2 | E3 | C2 | **B** | SG-01: LIN Motor_Current 수신 이상 시 BCM이 안전 상태로 전환 |
-| H-02 | OTA 중 통신 두절로 벽돌(Bricking) | 펌웨어 업데이트 중 | S1 | E2 | C3 | **QM** | N/A — Rollback으로 완화 |
+| H-01 | LIN 통신 오류로 Motor 과전류 미감지 → 윈도우 모터 과열/화재 → 운전자 부상 | 주행/정차 중 윈도우 조작 시 | S2 | E3 | C2 | **B** | SG-01: LIN Motor_Current 수신 이상 시 BCM이 즉시 과전류를 감지하고 안전 상태로 전환한다 (FTTI ≤50ms) |
+| H-02 | OTA 중 통신 두절로 ECU Bricking | 펌웨어 업데이트 중 | S1 | E2 | C3 | **QM** | N/A — Rollback(Req_014)으로 완화. 안전목표 없음. |
+| H-03 | OTA 업데이트 실패로 BCM 불능 → 차량 Body 기능 상실 | OTA 펌웨어 전송 중 (전원 차단 / CRC 오류) | S2 | E3 | C2 | **B** | SG-02: OTA 실패 시 이전 펌웨어로 자동 복구하고 진행 중인 세션을 안전하게 종료한다 |
 
 ---
 
@@ -89,6 +90,8 @@
 | 버전 | 날짜 | 변경 사항 |
 |------|------|---------|
 | 1.0 | 2026-02-19 | 초기 생성 |
+| 1.1 | 2026-02-19 | HARA 정합성 — H-03 추가 (OTA 실패 ASIL-B), H-01/H-02 위험 설명 표준화, SG-01/SG-02 텍스트 통일 |
+| 1.2 | 2026-02-19 | 섹션 3.2 시나리오 단계 0 추가 — LIN 초기화 및 통신 이상 감지 (Scene.1~2c, Req_018 / H-01) 추적성 반영 |
 
 ---
 

@@ -161,8 +161,8 @@
                 <mxCell id="f_trigger" value="Trigger&#10;Motor_Current 보고 (10 ms 주기)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#e11d48;fontSize=10;" parent="col1" vertex="1">
                     <mxGeometry x="15" y="113" width="200" height="50" as="geometry"/>
                 </mxCell>
-                <mxCell id="f_logic" value="Logic (BCM)&#10;① 전류값 수신 (LIN Master)&#10;② 과전류 임계값 비교 (50 A)&#10;③ 초과 시 DTC B1234 생성&#10;④ Motor Stop 명령 송신" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff5f5;strokeColor=#e11d48;fontSize=10;align=left;spacingLeft=8;" parent="col1" vertex="1">
-                    <mxGeometry x="15" y="188" width="200" height="100" as="geometry"/>
+                <mxCell id="f_logic" value="Logic (BCM)&#10;① 전류값 수신 (LIN Master)&#10;② 과전류 임계값 비교 (50 A)&#10;③ 초과 시 DTC B1234 생성&#10;④ Motor Stop 명령 송신&#10;⑤ LIN 두절 &gt;50ms → DTC U0100" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff5f5;strokeColor=#e11d48;fontSize=10;align=left;spacingLeft=8;" parent="col1" vertex="1">
+                    <mxGeometry x="15" y="188" width="200" height="118" as="geometry"/>
                 </mxCell>
                 <mxCell id="f_output" value="Output&#10;경고등 점등 (Cluster RED)&#10;Motor 정지 (Fail-Safe)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fecdd3;strokeColor=#e11d48;fontStyle=1;fontSize=10;" parent="col1" vertex="1">
                     <mxGeometry x="15" y="318" width="200" height="60" as="geometry"/>

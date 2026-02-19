@@ -1,19 +1,17 @@
 # SW 구현 명세 (Software Implementation Specification)
 
 **Document ID**: SAMPLE-04-SI
-**ISO 26262 Reference**: Part 6, Cl.8
+**ISO 26262 Reference**: Part 6, Cl.8 — 소프트웨어 단위 설계 및 구현
 **ASPICE Reference**: SWE.3 (BP1: 상세 설계), SWE.6 (BP1: 구현)
-**Version**: 1.1
+**Version**: 1.2
 **Date**: 2026-02-19
 **Status**: Released
 
-> **V-Model 위치**: 좌측 하단 — 소프트웨어 상세 설계 및 구현 단계 (SWE.3 / SWE.6)
-> **대응 문서**: `05_Unit_Test.md` (SWE.4 단위 테스트로 검증)
-> **ISO 26262**: Part 6, Clause 8 — 소프트웨어 단위 설계 및 구현
-> **ASPICE**: SWE.3 (BP1: 소프트웨어 상세 설계), SWE.6 (BP1: 소프트웨어 구현)
-> **상위 연결**: `0304_System_Variables.md` → 본 문서 → `05_Unit_Test.md`
-> **구현 파일 위치**: `canoe/nodes/` (CAPL), `canoe/test_modules/` (Test CAPL)
-> **DBC 참조**: `canoe/databases/vehicle_system.dbc`
+| V-Model 위치 | 대응 문서 | 상위 연결 | 하위 연결 |
+|-------------|---------|---------|---------|
+| 좌측 하단 — SWE.3/6 SW 구현 | `05_Unit_Test.md` (SWE.4) | `0304_System_Variables.md` | `05_Unit_Test.md` |
+
+**구현 파일**: `canoe/nodes/` (CAPL), `canoe/test_modules/` (Test CAPL) · **DBC**: `canoe/databases/vehicle_system.dbc`
 
 ---
 
@@ -115,7 +113,7 @@
 
 | 테스트 모듈 폴더 | 내용 | 대응 테스트 |
 |--------------|------|-----------|
-| `TC_L_LIN_Interface/` | LIN Motor Current 수신, Door Status 수신 테스트 | In_Test_13, 14 |
+| `TC_L_LIN_Interface/` | LIN Motor Current 수신, Door Status 수신, LIN 통신 이상 감지 테스트 | In_Test_13, 14, 15 |
 | `TC_F_Fault_Detection/` | LIN 기반 Fault Injection → DTC 생성 자동화 테스트 | In_Test_01, 02, 12 |
 | `TC_G_Gateway_Routing/` | 라우팅 지연 측정 테스트 | In_Test_03, 04 |
 | `TC_D_UDS_Diagnostics/` | UDS 세션/DTC 조회/클리어 테스트 | In_Test_05, 06, 07 |
@@ -132,6 +130,7 @@
 |------|------|---------|
 | 1.0 | 2026-02-19 | 초기 생성 — 구현 명세, CAPL 주요 로직 정의 |
 | 1.1 | 2026-02-19 | E2E 보호 수준 근거(ASIL B) 각주 추가, In_Test_15(LIN Fault) 추적성 반영 |
+| 1.2 | 2026-02-19 | TC_L_LIN_Interface 테스트 모듈에 In_Test_15 추가 — LIN 통신 이상 감지 누락 보완 |
 
 ---
 

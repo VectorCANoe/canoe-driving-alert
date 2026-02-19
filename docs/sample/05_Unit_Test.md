@@ -1,18 +1,15 @@
 # 단위 테스트 (Unit Test)
 
 **Document ID**: SAMPLE-05-UT
-**ISO 26262 Reference**: Part 6, Cl.9
+**ISO 26262 Reference**: Part 6, Cl.9 — 소프트웨어 단위 테스트
 **ASPICE Reference**: SWE.4 (BP1: 단위 테스트 명세, BP2: 단위 테스트 수행, BP3: 결과 평가)
-**Version**: 1.0
+**Version**: 1.1
 **Date**: 2026-02-19
 **Status**: Released
 
-> **V-Model 위치**: 우측 하단 — 소프트웨어 단위 테스트 단계 (SWE.4)
-> **대응 문서**: `03_Function_definition.md` + `0304_System_Variables.md` (SWE.2/SWE.3 설계 검증)
-> **ISO 26262**: Part 6, Clause 9 — 소프트웨어 단위 테스트
-> **ASPICE**: SWE.4 (BP1: 단위 테스트 명세, BP2: 단위 테스트 수행, BP3: 결과 평가)
-> **상위 연결**: `03_Function_definition.md`(기능 정의) → 본 문서 → `06_Integration_Test.md`(통합 테스트)
-> **검증 환경**: CANoe SIL (Software-in-the-Loop) — 각 CAPL 노드를 독립적으로 실행하여 검증
+| V-Model 위치 | 대응 문서 | 상위 연결 | 하위 연결 |
+|-------------|---------|---------|---------|
+| 우측 하단 — SWE.4 단위 테스트 | `04_SW_Implementation.md` (SWE.3/6) | `03_Function_definition.md` | `06_Integration_Test.md` |
 
 ---
 
@@ -53,6 +50,7 @@
 | 버전 | 날짜 | 변경 사항 |
 |------|------|---------|
 | 1.0 | 2026-02-19 | 초기 생성 |
+| 1.1 | 2026-02-19 | BCM LIN 통신 이상 감지 단위 테스트 Req_018 공식 추적성 확보 (기존 테스트 행 유지) |
 
 ---
 

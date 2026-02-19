@@ -1,18 +1,17 @@
 # 네트워크 플로우 정의 (Network Flow Definition)
 
 **Document ID**: SAMPLE-0302-NFD
-**ISO 26262 Reference**: Part 4, Cl.7
+**ISO 26262 Reference**: Part 4, Cl.7 — 시스템 설계 (인터페이스 및 통신 정의)
 **ASPICE Reference**: SYS.3 (BP2: 인터페이스 정의, BP4: 일관성 및 추적성 확보)
 **Version**: 1.0
 **Date**: 2026-02-19
 **Status**: Released
 
-> **V-Model 위치**: 좌측 중단 — 시스템 아키텍처 설계 단계 (SYS.3)
-> **대응 문서**: `06_Integration_Test.md` (SWE.5 통합 테스트로 검증)
-> **ISO 26262**: Part 4, Clause 7 — 시스템 설계 (인터페이스 및 통신 정의)
-> **ASPICE**: SYS.3 (BP2: 인터페이스 정의, BP4: 일관성 및 추적성 확보)
-> **상위 연결**: `0301_SysFuncAnalysis.md` → 본 문서 → `0303_Communication_Specification.md`(신호 상세)
-> **DBC 연관**: CAN 메시지/신호는 `sample_project.dbc` 정의와 일치. LIN 신호는 LIN 2.2A (ISO 17987) 프레임 구조를 따르며 별도 LDF 파일 또는 CAPL on linFrame 이벤트로 처리.
+| V-Model 위치 | 대응 문서 | 상위 연결 | 하위 연결 |
+|-------------|---------|---------|---------|
+| 좌측 중단 — SYS.3 네트워크 플로우 | `06_Integration_Test.md` (SWE.5) | `0301_SysFuncAnalysis.md` | `0303_Communication_Specification.md` |
+
+**DBC 연관**: CAN 메시지/신호는 `sample_project.dbc` 정의와 일치. LIN 신호는 LIN 2.2A (ISO 17987) 프레임 구조를 따르며 CAPL `on linFrame` 이벤트로 처리.
 
 ---
 
