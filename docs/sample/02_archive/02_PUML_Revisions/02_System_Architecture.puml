@@ -30,20 +30,20 @@ skinparam note {
 ' --- Elements ---
 package "Input Layer (Trigger)\n<color:RoyalBlue>Who Starts?</color>" as INPUT {
     component "<color:Green>Tester (Diag)</color>" as TESTER
-    component "<color:Green>Current Sensor</color>" as SENSOR
+    component "<color:Orange>WindowMotorECU</color>\n(LIN Slave 0x21)" as WM_ECU
     component "<color:Green>OTA Cloud</color>" as CLOUD
 
     note bottom of TESTER : UDS Req (0x10, 0x19)\n(Simulated)
-    note bottom of SENSOR : Exceed Limit (>50A)\n(Fault Inj.)
+    note bottom of WM_ECU : Motor_Current > 50A\n(LIN 0x21 Report)
     note bottom of CLOUD : Firmware Bin\n(DoIP TCP)
 }
 
 package "Control Layer (Processing)\n<color:RoyalBlue>Who Decides?</color>" as CONTROL {
-    component "<color:DarkBlue>Body Control (BCM)</color>" as BCM
+    component "<color:DarkBlue>Body Control (BCM)</color>\n[LIN Master]" as BCM
     component "<color:DarkBlue>Gateway (CGW)</color>" as GW
     component "<color:DarkBlue>OTA Master</color>" as OTA
 
-    note top of BCM : Logic: Overcurrent Check\nLogic: DTC Management
+    note top of BCM : Logic: LIN Motor_Current Rx\nLogic: Overcurrent Check (>50A)\nLogic: DTC B1234 Mgmt
     note top of GW : Logic: Routing (LS↔HS)\nLogic: DoIP Session
     note top of OTA : Logic: Flash Sequence\nLogic: Rollback
 }
@@ -52,14 +52,13 @@ package "Output Layer (Action)\n<color:RoyalBlue>What Happens?</color>" as OUTPU
     component "<color:FireBrick>Window Motor</color>" as MOTOR
     component "<color:FireBrick>Cluster HMI</color>" as CLUSTER
 
-    note bottom of MOTOR : Action: Stop / Reverse
+    note bottom of MOTOR : Action: Stop / Reverse\n(via LIN Control)
     note bottom of CLUSTER : Action: Red Lamp ON
 }
 
 ' --- Connections (Hidden Lines for Layout) ---
-' Adjust vertical alignment within packages
-TESTER -[hidden]- SENSOR
-SENSOR -[hidden]- CLOUD
+TESTER -[hidden]- WM_ECU
+WM_ECU -[hidden]- CLOUD
 
 BCM -[hidden]- GW
 GW -[hidden]- OTA
@@ -68,14 +67,14 @@ MOTOR -[hidden]- CLUSTER
 
 ' --- Real Connections ---
 TESTER --> GW : "Diag Request"
-SENSOR --> BCM : "Current > 50A"
+WM_ECU -right-> BCM : "LIN 0x21\nMotor_Current"
 CLOUD --> OTA : "Firmware Data"
 
 GW --> BCM : "UDS Forward"
 OTA --> GW : "Update Request"
 
 BCM --> GW : "Fault Status\n(0x500)"
-BCM --> MOTOR : "Protective Control"
+BCM -right-> MOTOR : "LIN Control"
 
 GW --> CLUSTER : "Warning Cmd\n(0x500 Routed)"
 
