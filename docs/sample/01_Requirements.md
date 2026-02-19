@@ -4,14 +4,14 @@
 > **대응 문서**: `07_System_Test.md` (SYS.5 시스템 테스트로 검증)
 > **ISO 26262**: Part 4, Clause 6 — 시스템 요구사항 명세
 > **ASPICE**: SYS.2 (BP1: 요구사항 도출, BP2: 요구사항 분석, BP4: 추적성 확보)
-> **HARA 연관**: Req_001~003(DTC/경고등)은 HARA에서 식별된 위험 H-01(Window Motor 과전류)에서 도출. Req_014(Rollback), Req_015(Bus Off 중단)은 안전목표 SG-01에 대응.
+> **HARA 연관**: Req_001~003(DTC/경고등)은 HARA에서 식별된 위험 H-01(Window Motor 과전류)에서 도출. Req_014(Rollback), Req_015(Bus Off 중단)은 안전목표 SG-01에 대응. Req_016~017(LIN 통신)은 H-01의 Fault Detection 출발점인 LIN 인터페이스 요구사항.
 > **상위 연결**: Concept Design → 본 문서 → `03_Function_definition.md`(기능 분해)
 
 ---
 
 | Req. ID | 요약 | 설명 | 비고 (Rationale) | 중요도/긴급도 | 추적성 (Traceability) |
 |---------|------|------|------------------|--------------|-----------------------|
-| Req_001 | BCM 고장 메시지 수신 | BCM은 Window Motor 과전류(50A 초과) 발생 시 `BCM_FaultStatus` 메시지(0x500, CAN-LS)를 10ms 주기로 전송한다. | **근거**: 정상 구동 3A, Stall 시 30-50A (Motor Spec) | 상/상 | HARA-H01 → Scene.3 |
+| Req_001 | BCM 고장 메시지 전송 | BCM은 LIN Slave(WindowMotorECU)로부터 수신한 Motor_Current가 50A를 초과할 경우 `BCM_FaultStatus` 메시지(0x500, CAN-LS)를 10ms 주기로 전송한다. | **근거**: 정상 구동 3A, Stall 시 30-50A (Motor Spec). LIN(ISO 17987) 기반 실제 차량 구조 반영. | 상/상 | HARA-H01 → Req_016 → Scene.3 |
 | Req_002 | DTC 생성 및 저장 | 과전류 조건 감지 시 DTC B1234를 생성하고 내부 메모리에 저장한다. | ISO 14229-1, **DTC Status Byte: 0x47 (Test Failed+Confirmed)** | 상/상 | HARA-H01 → Scene.4 |
 | Req_003 | Cluster 경고등 활성화 | DTC 발생 후 Cluster 경고등(RED)이 50ms 이내에 활성화된다. DTC 클리어 전까지 유지된다. | 운전자 인지 시간 고려 (HARA SG-01) | 상/상 | SG-01 → Scene.5 |
 | Req_004 | Fault Injection 지원 | CANoe CAPL을 통해 BCM_FaultStatus 신호를 소프트웨어적으로 주입할 수 있다. | **검증**: CAPL onSysVar 이벤트 활용 | 상/중 | Scene.3 |
@@ -26,3 +26,5 @@
 | Req_013 | 전송 완료 및 CRC 검증 | 전송 완료 후 UDS 0x37을 전송하고, CRC-32 검증 통과 시 BCM을 재시작한다. | 데이터 무결성 보장 (Integrity) | 상/상 | Scene.14 |
 | Req_014 | OTA 실패 시 Rollback | OTA 중 전원 차단, 통신 단절, CRC 오류 발생 시 이전 펌웨어로 자동 복구한다. | **구현**: Dual Bank 또는 Checksum 기반 복구 권장 | 상/상 | SG-08 → Scene.15, 17 |
 | Req_015 | Bus Off 시 안전 중단 | CAN Bus Off 감지 시 진행 중인 UDS/OTA 세션을 안전하게 중단하고 DTC를 저장한다. | **참조**: ISO 11898-1 Bus Off 복구 표준 | 상/중 | SG-08 → Scene.16 |
+| Req_016 | LIN Motor Current 수신 | BCM(LIN Master)은 WindowMotorECU(LIN Slave, ID: 0x21)로부터 Motor_Current 값을 10ms 주기로 수신한다. Motor_Current > 50A 조건이 감지되면 BCM은 DTC B1234를 생성한다. | **근거**: 실차 Body 도메인 구조 — Window Motor ECU가 LIN Slave로 전류값 직접 보고. LIN 2.2A (ISO 17987), 19.2 kbps. | 상/상 | HARA-H01 → Req_001 → Scene.3 |
+| Req_017 | LIN Door Module 상태 수신 | BCM(LIN Master)은 DoorModule FL/FR/RL/RR(LIN Slave, ID: 0x22~0x25)로부터 Door_Position 및 Lock_Status를 50ms 주기로 수신하고 BCM 내부 상태를 갱신한다. | **근거**: 도어 개폐 제어는 실차에서 LIN Bus를 통해 BCM이 관리하는 표준 구조. | 중/중 | Scene.2b |

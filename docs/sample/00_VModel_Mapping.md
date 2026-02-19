@@ -71,7 +71,7 @@ SWE.2  0303_Communication_Spec.md  ◄──────►  05_Unit_Test.md    
 
 | HARA 항목 | 위험 설명 | 안전목표 | 대응 요구사항 | 검증 Scene |
 |----------|---------|--------|------------|-----------|
-| H-01 | Window Motor 과전류 → 운전자 부상 | SG-01: 과전류 즉시 감지 및 경고 | Req_001, Req_002, Req_003 | Scene.3~5 |
+| H-01 | LIN 통신 오류로 Motor 과전류 미감지 → 운전자 부상 | SG-01: LIN Motor_Current 수신 이상 시 BCM 안전 상태 전환. 과전류 즉시 감지 및 경고. | Req_001, Req_002, Req_003, **Req_016** | Scene.2b, Scene.3~5 |
 | H-09 | OTA 실패 → ECU 불능 상태 | SG-08: OTA 실패 시 안전 복구 | Req_014, Req_015 | Scene.15~17 |
 
 ---
@@ -95,3 +95,5 @@ SWE.2  0303_Communication_Spec.md  ◄──────►  05_Unit_Test.md    
 | Req_013 | OTA Server ECU | CAN-LS 0x7E8 | UDS_Response | OTA-전송 완료 | In_Test_09 | Scene.14 |
 | Req_014 | OTA Server ECU | — | — | OTA-Rollback | In_Test_10 | Scene.15~17 |
 | Req_015 | Gateway ECU | — | — | Gateway-Bus Off | In_Test_11 | Scene.16 |
+| Req_016 | WindowMotorECU / BCM | LIN 0x21 | LIN_MotorStatus | BCM-LIN Motor Current 수신 | In_Test_13 | Scene.2b, Scene.3 |
+| Req_017 | DoorModule / BCM | LIN 0x22~0x25 | LIN_DoorStatus | BCM-LIN Door Status 수신 | In_Test_14 | Scene.2b |

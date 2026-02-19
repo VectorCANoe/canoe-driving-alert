@@ -29,14 +29,22 @@ NS_ :
 
 BS_:
 
-BU_: BCM CGW Cluster Tester OTA_Server
+BU_: BCM CGW Cluster Tester OTA_Server WindowMotorECU DoorModule_FL DoorModule_FR DoorModule_RL DoorModule_RR
 
 /* ============================================================
  * sample_project.dbc
- * 프로젝트: CANoe IVI OTA — Fault Detection → Gateway → UDS → OTA
- * 포함 ECU: BCM, CGW(Gateway), Cluster, Tester, OTA_Server
- * 제외 ECU: EMS, TCU, ESP, MDPS, IVI, Camera, Radar, SCC, HVAC, vECU
- * 기준 파일: vehicle_system.dbc (전체 차량 시스템 DBC)
+ * 프로젝트: CANoe IVI OTA — LIN Fault Detection → CAN Gateway → UDS → OTA
+ * 통신: LIN 2.2A (19.2kbps) + CAN-LS (125kbps) + CAN-HS (500kbps) + Ethernet/DoIP
+ *
+ * CAN ECU: BCM(LIN Master), CGW(Gateway), Cluster, Tester, OTA_Server
+ * LIN ECU: WindowMotorECU(Slave 0x21), DoorModule_FL(0x22), FR(0x23), RL(0x24), RR(0x25)
+ *
+ * ※ LIN 메시지(ID 0x21~0x25)는 LIN 2.2A 프레임으로 처리되며 DBC가 아닌
+ *    CAPL on linFrame 이벤트 또는 LDF 파일로 정의됩니다.
+ *    BCM CAN ECU는 LIN Master로서 수신한 Motor_Current > 50A 시 DTC B1234 생성 후
+ *    BCM_FaultStatus(0x500)를 CAN-LS로 전송합니다.
+ *
+ * 추적성: Req_001, Req_016(LIN Motor), Req_017(LIN Door)
  * 생성일: 2026-02-19
  * ============================================================ */
 

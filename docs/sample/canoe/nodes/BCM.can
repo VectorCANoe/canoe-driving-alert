@@ -1,12 +1,16 @@
 /*
- * BCM.can — Body Control Module
- * 
- * 역할: Window Motor 과전류 감지 → DTC B1234 생성 → BCM_FaultStatus(0x500) 전송
- * 채널: CAN-LS (125kbps)
- * DBC: vehicle_system.dbc — BCM_FaultStatus (ID: 0x500)
+ * BCM.can — Body Control Module (LIN Master)
+ *
+ * 역할: LIN Master로서 WindowMotorECU(LIN 0x21)로부터 Motor_Current 수신
+ *       → 과전류(>50A) 감지 → DTC B1234 생성 → BCM_FaultStatus(0x500) CAN-LS 전송
+ *       → DoorModule FL/FR/RL/RR(LIN 0x22~0x25)로부터 Door 상태 수신
+ *
+ * 채널: LIN Bus (19.2 kbps, LIN Master) + CAN-LS (125kbps)
+ * DBC: sample_project.dbc — BCM_FaultStatus (ID: 0x500)
  *
  * V-Model: SWE.3/SWE.6 (구현) → SWE.4 (05_Unit_Test.md 단위 테스트로 검증)
  * ISO 26262: Part 6, Clause 8
+ * 추적성: Req_001, Req_002, Req_016, Req_017
  */
 
 includes
@@ -16,19 +20,32 @@ includes
 variables
 {
   /* 타이머 */
-  msTimer tFaultCheck;       // 10ms 주기 과전류 감지 타이머
   msTimer tFaultTx;          // 10ms 주기 FaultStatus 전송 타이머
+  msTimer tLIN_Watchdog;     // 50ms LIN 통신 감시 타이머 (Req_016: 미수신 감지)
 
-  /* 상태 변수 */
+  /* LIN 수신 상태 */
+  double gMotorCurrent      = 0.0;   // WindowMotorECU LIN 0x21 수신값 (A)
+  int    gMotorStatus       = 0;     // 0:IDLE / 1:RUNNING / 2:STALL / 3:ERROR
+  int    gMotorDirection    = 0;     // 0:UP / 1:DOWN
+  int    gLIN_MotorReceived = 0;     // LIN 0x21 프레임 수신 여부 (Watchdog용)
+
+  int    gDoorPositionFL    = 0;     // Door FL 위치 (0:CLOSED/1:OPEN/2:AJAR/3:ERROR)
+  int    gDoorPositionFR    = 0;     // Door FR 위치
+  int    gDoorPositionRL    = 0;     // Door RL 위치
+  int    gDoorPositionRR    = 0;     // Door RR 위치
+
+  /* Fault 상태 */
   int    gOvercurrentDetected = 0;   // 과전류 감지 여부 (0: 정상, 1: 감지)
   int    gFaultActive         = 0;   // DTC B1234 활성화 여부
   int    gDTC_Code            = 0;   // DTC 코드 (B1234 = 0xB234 = 45620)
-  int    gFaultSeverity       = 0;   // 고장 심각도 (0: 없음, 1: 경고, 2: 고장, 3: 위험)
+  int    gFaultSeverity       = 0;   // 고장 심각도 (0:없음/1:경고/2:고장/3:위험)
   int    gAliveCounter        = 0;   // 생존 카운터 (0~15 순환)
+  int    gLIN_CommFault       = 0;   // LIN 통신 이상 여부 (DTC U0100)
 
   /* DTC 상수 */
-  const int DTC_B1234         = 0xB234;   // Window Motor Overcurrent DTC
-  const int OVERCURRENT_THRESHOLD = 50;   // 과전류 임계값 (A) — 시뮬레이션용
+  const int DTC_B1234              = 0xB234;   // Window Motor Overcurrent DTC
+  const int DTC_U0100              = 0x0100;   // LIN Communication Lost DTC
+  const double OVERCURRENT_THRESHOLD = 50.0;   // 과전류 임계값 (A)
 }
 
 /*============================================================
@@ -36,18 +53,102 @@ variables
  *============================================================*/
 on start
 {
-  write("[BCM] 노드 시작 — Window Motor 과전류 감지 모드");
-  setTimer(tFaultCheck, 10);
+  write("[BCM] 노드 시작 — LIN Master 모드 (Window Motor / Door Module 수신)");
   setTimer(tFaultTx, 10);
+  setTimer(tLIN_Watchdog, 50);
 }
 
 /*============================================================
- * 과전류 감지 타이머 (10ms 주기)
+ * LIN Frame 수신 — WindowMotorECU (LIN ID 0x21, 10ms 주기)
+ * Req_016: BCM은 LIN Slave로부터 Motor_Current 수신
  *============================================================*/
-on timer tFaultCheck
+on linFrame 0x21
 {
+  /* LIN 프레임 2 bytes 파싱 */
+  /* Byte 0 [bit 0~7] + Byte 1 [bit 0~1]: Motor_Current (10bit, 0~100A) */
+  /* Byte 1 [bit 2~3]: Motor_Status (2bit) */
+  /* Byte 1 [bit 4]:   Motor_Direction (1bit) */
+
+  word rawCurrent;
+  rawCurrent = (this.byte(1) & 0x03) << 8 | this.byte(0);   // 10bit 추출
+  gMotorCurrent   = rawCurrent * 0.1;                        // 0.1A 분해능 → 실제 전류값
+  gMotorStatus    = (this.byte(1) >> 2) & 0x03;
+  gMotorDirection = (this.byte(1) >> 4) & 0x01;
+
+  /* System Variable 동기화 */
+  @LIN::motorCurrent   = gMotorCurrent;
+  @LIN::motorStatus    = gMotorStatus;
+  @LIN::motorDirection = gMotorDirection;
+  @BCM::currentAmps    = gMotorCurrent;
+
+  /* Watchdog 갱신 */
+  gLIN_MotorReceived = 1;
+  cancelTimer(tLIN_Watchdog);
+  setTimer(tLIN_Watchdog, 50);
+
+  /* LIN 통신 복구 시 Comm Fault 해제 */
+  if (gLIN_CommFault == 1)
+  {
+    gLIN_CommFault        = 0;
+    @LIN::linCommFault    = 0;
+    write("[BCM] LIN 통신 복구 — Motor 프레임 재수신");
+  }
+
+  /* 과전류 판단 (Req_016, Req_001) */
   detectOvercurrent();
-  setTimer(tFaultCheck, 10);
+}
+
+/*============================================================
+ * LIN Frame 수신 — DoorModule FL (LIN ID 0x22, 50ms 주기)
+ * Req_017
+ *============================================================*/
+on linFrame 0x22
+{
+  gDoorPositionFL       = this.byte(0) & 0x03;
+  @LIN::doorPositionFL  = gDoorPositionFL;
+}
+
+/*============================================================
+ * LIN Frame 수신 — DoorModule FR (LIN ID 0x23)
+ *============================================================*/
+on linFrame 0x23
+{
+  gDoorPositionFR       = this.byte(0) & 0x03;
+  @LIN::doorPositionFR  = gDoorPositionFR;
+}
+
+/*============================================================
+ * LIN Frame 수신 — DoorModule RL (LIN ID 0x24)
+ *============================================================*/
+on linFrame 0x24
+{
+  gDoorPositionRL       = this.byte(0) & 0x03;
+  @LIN::doorPositionRL  = gDoorPositionRL;
+}
+
+/*============================================================
+ * LIN Frame 수신 — DoorModule RR (LIN ID 0x25)
+ *============================================================*/
+on linFrame 0x25
+{
+  gDoorPositionRR       = this.byte(0) & 0x03;
+  @LIN::doorPositionRR  = gDoorPositionRR;
+}
+
+/*============================================================
+ * LIN Watchdog 타이머 (50ms)
+ * - LIN 0x21 프레임 미수신 시 DTC U0100 생성
+ *============================================================*/
+on timer tLIN_Watchdog
+{
+  if (gLIN_MotorReceived == 0 && gLIN_CommFault == 0)
+  {
+    gLIN_CommFault     = 1;
+    @LIN::linCommFault = 1;
+    write("[BCM] ⚠ LIN 통신 이상 — WindowMotorECU 프레임 50ms 미수신 (DTC U0100)");
+  }
+  gLIN_MotorReceived = 0;
+  setTimer(tLIN_Watchdog, 50);
 }
 
 /*============================================================
@@ -60,25 +161,21 @@ on timer tFaultTx
 }
 
 /*============================================================
- * 과전류 감지 함수
- * - System Variable BCM::overcurrentDetected 값으로 Fault Injection 지원
+ * 과전류 판단 함수 (LIN Motor_Current 기반)
+ * - Req_016: Motor_Current > 50A → DTC B1234 생성
  *============================================================*/
 void detectOvercurrent()
 {
-  int injected;
-  injected = @BCM::overcurrentDetected;
-
-  if (injected == 1 && gFaultActive == 0)
+  if (gMotorCurrent > OVERCURRENT_THRESHOLD && gFaultActive == 0)
   {
-    gOvercurrentDetected = 1;
-    gFaultActive         = 1;
-    gDTC_Code            = DTC_B1234;
-    gFaultSeverity       = 2;   // 고장 수준
-    write("[BCM] ⚠ 과전류 감지! DTC B1234 생성 (0x%X)", gDTC_Code);
-  }
-  else if (injected == 0 && gFaultActive == 1)
-  {
-    /* DTC 클리어는 UDS 0x14 명령으로만 수행 — 자동 해제 없음 */
+    gOvercurrentDetected       = 1;
+    gFaultActive               = 1;
+    gDTC_Code                  = DTC_B1234;
+    gFaultSeverity             = 2;
+    @BCM::overcurrentDetected  = 1;
+    @BCM::faultActive          = 1;
+    write("[BCM] ⚠ 과전류 감지! Motor_Current=%.1fA > 50A → DTC B1234 생성 (0x%X)",
+          gMotorCurrent, gDTC_Code);
   }
 }
 
@@ -98,20 +195,18 @@ void sendFaultStatus()
 
   output(msg);
 
-  /* AliveCounter 순환 (0~15) */
   gAliveCounter = (gAliveCounter + 1) & 0x0F;
 }
 
 /*============================================================
- * System Variable: Fault Injection 트리거
+ * Fault Injection 지원 — Panel에서 LIN::motorCurrent 직접 조절 시
+ * (LIN Slave 없이 Panel TrackBar로 전류값 강제 주입)
  *============================================================*/
-on sysvar BCM::overcurrentDetected
+on sysvar LIN::motorCurrent
 {
-  if (@BCM::overcurrentDetected == 1)
-  {
-    write("[BCM] Fault Injection 수신 — 과전류 강제 주입");
-    detectOvercurrent();
-  }
+  gMotorCurrent = @LIN::motorCurrent;
+  @BCM::currentAmps = gMotorCurrent;
+  detectOvercurrent();
 }
 
 /*============================================================
@@ -122,13 +217,14 @@ on message UDS_Response
   byte responseCode;
   responseCode = this.byte(0);
 
-  if (responseCode == 0x54)   // PositiveResponse for ClearDTC (0x14)
+  if (responseCode == 0x54)
   {
-    gOvercurrentDetected = 0;
-    gFaultActive         = 0;
-    gDTC_Code            = 0;
-    gFaultSeverity       = 0;
-    @BCM::faultActive    = 0;
-    write("[BCM] ✅ DTC B1234 클리어 완료");
+    gOvercurrentDetected       = 0;
+    gFaultActive               = 0;
+    gDTC_Code                  = 0;
+    gFaultSeverity             = 0;
+    @BCM::overcurrentDetected  = 0;
+    @BCM::faultActive          = 0;
+    write("[BCM] DTC B1234 클리어 완료");
   }
 }
