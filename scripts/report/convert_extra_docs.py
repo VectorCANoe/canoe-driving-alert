@@ -1,41 +1,26 @@
 #!/usr/bin/env python3
 """
-Markdown to Excel Converter
-Converts Markdown files to Excel format, preserving tables and structure
+Markdown to Excel Converter for Extra Documents
+Converts specific Markdown files (00_VModel_Mapping.md, 일정표.md) to Excel format
 """
 
 import re
-import sys
 from pathlib import Path
 from openpyxl import Workbook
 from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
 from openpyxl.utils import get_column_letter
 
-def parse_markdown_table(lines):
-    """Parse markdown table into list of rows"""
-    table_lines = []
-    in_table = False
-
-    for line in lines:
-        line = line.strip()
-        if line.startswith('|') and line.endswith('|'):
-            # Skip separator lines (e.g., |---|---|)
-            if not re.match(r'\|[\s\-:]+\|', line):
-                # Remove leading/trailing pipes and split
-                cells = [cell.strip() for cell in line[1:-1].split('|')]
-                table_lines.append(cells)
-                in_table = True
-        elif in_table:
-            break
-
-    return table_lines
-
+# Reusing the parsing logic from md_to_excel.py
 def convert_md_to_excel(md_file, excel_file):
     """Convert Markdown file to Excel"""
     print(f"Converting: {md_file.name} -> {excel_file.name}")
 
-    with open(md_file, 'r', encoding='utf-8') as f:
-        content = f.read()
+    try:
+        with open(md_file, 'r', encoding='utf-8') as f:
+            content = f.read()
+    except FileNotFoundError:
+        print(f"✗ File not found: {md_file}")
+        return
 
     lines = content.split('\n')
 
@@ -56,7 +41,6 @@ def convert_md_to_excel(md_file, excel_file):
 
     current_row = 1
     in_table = False
-    table_start = 0
 
     i = 0
     while i < len(lines):
@@ -160,23 +144,21 @@ def main():
     output_dir = source_dir / "excel"
     output_dir.mkdir(exist_ok=True)
 
-    # Find all MD files starting with 01-07
-    md_files = sorted(source_dir.glob("0[1-7]*.md"))
+    # Specific files to convert
+    target_files = ["00_VModel_Mapping.md", "일정표.md"]
 
-    print(f"\nFound {len(md_files)} files to convert:")
-    for md_file in md_files:
-        print(f"  - {md_file.name}")
+    print(f"\nProcessing specific files: {', '.join(target_files)}\n")
 
-    print("\nConverting...\n")
-
-    for md_file in md_files:
+    for filename in target_files:
+        md_file = source_dir / filename
         excel_file = output_dir / f"{md_file.stem}.xlsx"
+
         try:
             convert_md_to_excel(md_file, excel_file)
         except Exception as e:
             print(f"✗ Error converting {md_file.name}: {e}")
 
-    print(f"\n✅ Conversion complete! Files saved to: {output_dir}")
+    print(f"\n✅ Specific conversion complete! Files saved to: {output_dir}")
 
 if __name__ == "__main__":
     main()
