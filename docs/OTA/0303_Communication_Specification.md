@@ -19,7 +19,7 @@
 | | | | (Reserved) | 8~15 | — | — | — |
 | LDW_Status | 0x120 (CAN-LS) | 1 | gLaneDeparture | 0 (1bit) | 차선이탈 감지 | 0:정상/1:이탈 | WDM_ECU B그룹 플래그. (→ Req_B07) |
 | | | | (Reserved) | 1~7 | — | — | — |
-| WDM_Warning | 0x200 (CAN-HS) | 1 | gWarningLevel | 0~1 (2bit) | 경고 단계 | 0:없음/1:1단계/2:2단계/3:3단계 | 출력 ECU 전체 수신. FTTI ≤ 50ms. (→ Req_B09~B13) |
+| WDM_Warning | 0x200 (CAN-HS) | 1 | gWarningLevel | 0~1 (2bit) | 경고 단계 | 0:없음/1:1단계/2:2단계/3:3단계 | Cluster_ECU Rx. 경고 단계별 경고등 제어. FTTI ≤ 50ms. (→ Req_B09~B10) |
 | | | | gRoadZone | 2~3 (2bit) | 도로 구간 | 0:일반/1:스쿨존/2:고속도로/3:IC출구 | Ambient_ECU 구간별 패턴 연동. (→ Req_Z01) |
 | | | | gWarningType | 4~6 (3bit) | 경고 원인 비트마스크 | bit0:A그룹/bit1:B그룹 | 원인 추적용. |
 | | | | (Reserved) | 7 | — | — | — |
@@ -33,8 +33,9 @@
 | | | | (Reserved) | 2~7 | — | — | — |
 | IVI_Status | 0x240 (CAN-HS) | 1 | WarningDisplay | 0~1 (2bit) | 경고 표시 | 0:정상/1:주의/2:경고/3:긴급 | WDM_ECU Tx → IVI_ECU Rx. (→ Req_B13) |
 | | | | gRoadZone | 2~3 (2bit) | 구간 정보 | 0:일반/1:스쿨존/2:고속도로/3:IC출구 | IVI 구간 표시용. |
-| | | | (Reserved) | 4~7 | — | — | — |
-| CAN_OTA_Applied | 0x600 (CAN-HS) | 1 | PackageID | 0~1 (2bit) | 적용된 패키지 | 0:없음/1:DriveCoach/2:SeasonalTheme | OTA_ECU Tx → IVI_ECU Rx. (→ Req_O01, O03) |
+| | | | gWarningType | 4~6 (3bit) | 경고 원인 비트마스크 | bit0:A그룹/bit1:B그룹 | IVI 경고 원인 표시용. (→ Req_B09) |
+| | | | (Reserved) | 7 | — | — | — |
+| CAN_OTA_Applied | 0x600 (CAN-HS) | 1 | PackageID | 0~1 (2bit) | 적용된 패키지 | 0:없음/1:DriveCoach/2:SeasonalTheme | OTA_ECU Tx → IVI_ECU Rx + WDM_ECU Rx. (→ Req_O01, O03) |
 | | | | ApplySuccess | 2 (1bit) | 적용 성공 여부 | 0:실패/1:성공 | CRC8 검증 결과. |
 | | | | (Reserved) | 3~7 | — | — | — |
 

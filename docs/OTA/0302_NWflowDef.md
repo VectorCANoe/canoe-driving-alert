@@ -16,8 +16,8 @@
 | | | | 1 | | 0~7 | (Reserved) | | | | | | | | | | | | |
 | CAN-LS | 0x120 | LDW_Status | 0 | 차선이탈 감지 | 0 | gLaneDeparture (1bit) | | | Tx | Rx | Rx | | | | | | | 0:정상 / 1:이탈. 100ms 주기. |
 | | | | | | 1~7 | (Reserved) | | | | | | | | | | | | |
-| CAN-HS | 0x200 | WDM_Warning | 0 | 경고 레벨 / 구간 정보 | 0~1 | gWarningLevel (2bit) | | | | Tx | | Rx | Rx | Rx | Rx | | | WDM_ECU Tx. FTTI ≤ 50ms. |
-| | | | | | 2~3 | gRoadZone (2bit) | | | | Tx | | Rx | Rx | | Rx | | | 0:일반/1:스쿨존/2:고속도로/3:IC출구. |
+| CAN-HS | 0x200 | WDM_Warning | 0 | 경고 레벨 / 구간 정보 | 0~1 | gWarningLevel (2bit) | | | | Tx | | Rx | | | Rx | | | WDM_ECU Tx. Cluster 경고등 제어. FTTI ≤ 50ms. |
+| | | | | | 2~3 | gRoadZone (2bit) | | | | Tx | | Rx | | | Rx | | | 0:일반/1:스쿨존/2:고속도로/3:IC출구. |
 | | | | | | 4~6 | gWarningType (3bit) | | | | Tx | | | | | | | | bit0:A그룹/bit1:B그룹. |
 | | | | | | 7 | (Reserved) | | | | | | | | | | | | |
 | CAN-HS | 0x210 | Cluster_Warning | 0 | 경고등 상태 | 0~1 | WarnLampLevel (2bit) | | | | | | Tx | | | | | | 0:소등/1:황색/2:적색. |
@@ -30,9 +30,10 @@
 | | | | | | 2~7 | (Reserved) | | | | | | | | | | | | |
 | CAN-HS | 0x240 | IVI_Status | 0 | IVI 경고/OTA 표시 | 0~1 | WarningDisplay (2bit) | | | | Tx | | | | | Rx | | | 0:정상/1:주의/2:경고/3:긴급. |
 | | | | | | 2~3 | gRoadZone (2bit) | | | | Tx | | | | | Rx | | | 구간 정보 표시용. |
-| | | | | | 4~7 | (Reserved) | | | | | | | | | | | | |
-| CAN-HS | 0x600 | CAN_OTA_Applied | 0 | OTA 파라미터 적용 결과 | 0~1 | PackageID (2bit) | | | | | | | | | Rx | | Tx | 0:없음/1:DriveCoach/2:SeasonalTheme. |
-| | | | | | 2 | ApplySuccess (1bit) | | | | | | | | | Rx | | Tx | 0:실패/1:성공. |
+| | | | | | 4~6 | gWarningType (3bit) | | | | Tx | | | | | Rx | | | bit0:A그룹/bit1:B그룹. IVI 경고 원인 표시용. |
+| | | | | | 7 | (Reserved) | | | | | | | | | | | | |
+| CAN-HS | 0x600 | CAN_OTA_Applied | 0 | OTA 파라미터 적용 결과 | 0~1 | PackageID (2bit) | | | | Rx | | | | | Rx | | Tx | 0:없음/1:DriveCoach/2:SeasonalTheme. |
+| | | | | | 2 | ApplySuccess (1bit) | | | | Rx | | | | | Rx | | Tx | 0:실패/1:성공. |
 | | | | | | 3~7 | (Reserved) | | | | | | | | | | | | |
 | Ethernet | Port 6000 | ETH_OTA_Param | 0 | SOTA 파라미터 패킷 | Byte 0 | PackageID (0x01=DriveCoach/0x02=SeasonalTheme) | | | | | | | | | | Tx | Rx | UDP 브로드캐스트. P 기어 조건 후 전송. |
 | | | | | | Byte 1 | NoviceMode (0:비활성/1:활성) | | | | | | | | | | Tx | Rx | Drive Coach 초보 모드 플래그. |
