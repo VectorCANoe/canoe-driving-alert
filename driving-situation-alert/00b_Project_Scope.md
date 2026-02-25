@@ -61,7 +61,7 @@ EMS_ALERT_RX (수신 차량)
 
 ## 4. 검증 환경
 
-- Tool: Vector CANoe 17+
+- Tool: Vector CANoe 19 SP4
 - Network: Ethernet UDP (V2V), CAN-HS (차량 내부 HMI 제어)
 - 주요 노드: `EMS_POLICE_TX`, `EMS_AMB_TX`, `EMS_ALERT_RX_A/B/C`, `NAV_CONTEXT_MGR`, `BCM_AMBIENT_CTRL`, `CLU_HMI_CTRL`
 - Panel 입력: `gRoadZone`, `gNavDirection`, 긴급차량 ON/OFF, ETA, 우선순위 테스트 토글
