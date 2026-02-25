@@ -1,71 +1,94 @@
 # 통신 명세서 (Communication Specification)
 
 **Document ID**: PROJ-0303-CS
-**ISO 26262 Reference**: Part 6, Cl.7 — 소프트웨어 아키텍처 설계 (인터페이스 명세)
-**ASPICE Reference**: SWE.2 (BP3: 소프트웨어 인터페이스 정의, BP4: 일관성 확보)
-**Version**: 1.0
-**Date**: 2026-02-23
-**Status**: Released
+**ISO 26262 Reference**: Part 6, Cl.7 (Software Architectural Design)
+**ASPICE Reference**: SWE.2 (Software Architectural Design)
+**Version**: 2.1
+**Date**: 2026-02-25
+**Status**: Draft
+**Project Title**: 주행상황 연동 실시간 경고 시스템
+**Subtitle**: (구간 인식, 긴급차량 경고시스템)
 
-| V-Model 위치 | 대응 문서 | 상위 연결 | 하위 연결 |
-|-------------|---------|---------|---------|
-| 좌측 하단 — SWE.2 통신 명세 | `05_Unit_Test.md` (SWE.4) | `0302_NWflowDef.md` | `0304_System_Variables.md` |
-
-**DBC 연관**: CAN 메시지 Identifier/DLC/Signal은 `project.dbc`와 직접 대응. sysvar 신호는 CANoe System Variables(`project.sysvars`)로 구현.
+| V-Model 위치 | 현재 문서 | 상위 연결 | 하위 연결 |
+|---|---|---|---|
+| 좌측 하단 (SWE.2) | `0303_Communication_Specification.md` | `0302_NWflowDef.md` | `0304_System_Variables.md` |
 
 ---
 
-| Message | Identifier | DLC | Signal | Signal Bit Position | Data 설명 | Data 범위 | Data 사용 |
-|---------|-----------|-----|--------|-------------------|---------|---------|---------|
-| Vehicle_Speed | 0x100 (CAN-LS) | 4 | gVehicleSpeed | 0~7 (8bit) | 차량 속도 | 0~200 km/h | WDM_ECU 과속 판단. gRoadZone별 기준: 일반 80 / 스쿨존 30 / 고속도로 110 km/h. (→ Req_001) |
-| | | | gAccelValue | 8~15 (8bit signed) | 가속도 | -10~10 m/s² | WDM_ECU 급가속 판단. > 3.5 m/s² 시 gAccelCount++. (→ Req_002) |
-| | | | gBrakeValue | 16~23 (8bit) | 제동 감속도 | 0~10 m/s² | WDM_ECU 급제동 판단. > 4.0 m/s² 시 이벤트 발생. (→ Req_003) |
-| | | | OverspeedFlag | 24 (1bit) | 과속 플래그 | 0~1 | WDM_ECU 과속 이벤트 직접 수신. |
-| | | | (Reserved) | 25~31 | — | — | — |
-| Steering_Status | 0x110 (CAN-LS) | 2 | SteeringInput | 0 (1bit) | 조향 입력 여부 | 0:미입력 / 1:입력 | WDM_ECU 경고 해제 판단. (→ Req_010) |
-| | | | gLaneChangeAlert | 1 (1bit) | 급차선변경 감지 | 0:정상 / 1:감지 | WDM_ECU B그룹 감지. (→ Req_005) |
-| | | | SteeringAngleRate | 2~7 (6bit) | 조향각 속도 | 0~63 °/s | 50°/s 초과 시 gLaneChangeAlert = 1 |
-| | | | (Reserved) | 8~15 | — | — | — |
-| LDW_Status | 0x120 (CAN-LS) | 1 | gLaneDeparture | 0 (1bit) | 차선이탈 감지 | 0:정상 / 1:이탈 | WDM_ECU B그룹 감지. (→ Req_004) |
-| | | | (Reserved) | 1~7 | — | — | — |
-| WDM_Warning | 0x200 (CAN-HS) | 2 | gWarningLevel | 0~1 (2bit) | 경고 단계 | 0:없음 / 1:1단계 / 2:2단계 / 3:3단계 | 출력 ECU 전체 수신. FTTI ≤50ms. (→ Req_006~008) |
-| | | | gRoadZone | 2~3 (2bit) | 도로 구간 | 0:일반 / 1:스쿨존 / 2:고속도로 / 3:IC출구 | Ambient_ECU 구간별 동작 연동. (→ Req_011) |
-| | | | gWarningType | 4~6 (3bit) | 경고 원인 비트마스크 | bit0:A그룹 / bit1:B그룹 / bit2:OTA조건 | 원인 추적용. |
-| | | | (Reserved) | 7~15 | — | — | — |
-| Cluster_Warning | 0x210 (CAN-HS) | 1 | WarnLampLevel | 0~1 (2bit) | 경고등 레벨 | 0:소등 / 1:황색 / 2:적색 | Cluster_ECU Tx. (→ Req_006~007) |
-| | | | (Reserved) | 2~7 | — | — | — |
-| Ambient_Control | 0x220 (CAN-HS) | 2 | AmbientMode | 0~2 (3bit) | 앰비언트 동작 모드 | 0:OFF / 1:경고RED / 2:ORANGE파동 / 3:방향안내 / 4:IC흐름 | WDM_ECU Tx → Ambient_ECU Rx. (→ Req_012~014) |
-| | | | AmbientColor | 3~5 (3bit) | 앰비언트 색상 | 0:OFF / 1:RED / 2:ORANGE / 3:BLUE / 4:WHITE | 색상 코드. |
-| | | | AmbientPattern | 6~7 (2bit) | 점등 패턴 | 0:고정 / 1:점멸 / 2:파동 / 3:흐름 | 패턴 유형. |
-| | | | AmbientSpeed | 8~15 (8bit) | 주기 속도 | 1~255 (×10ms) | 점멸/파동 주기. 20=200ms(빠름). |
-| Sound_Control | 0x230 (CAN-HS) | 1 | SoundAlert | 0~1 (2bit) | 경고음 레벨 | 0:OFF / 1:1단계 / 2:2단계 / 3:긴급 | WDM_ECU Tx → Sound_ECU Rx. |
-| | | | (Reserved) | 2~7 | — | — | — |
-| IVI_Status | 0x240 (CAN-HS) | 1 | OTA_PopupTrigger | 0~1 (2bit) | OTA 팝업 트리거 | 0:없음 / 1:Level1제안 / 2:Level2제안 | WDM_ECU Tx → IVI_ECU Rx. (→ Req_008, Req_015~016) |
-| | | | OTA_SubscriptionLevel | 2~3 (2bit) | 현재 구독 레벨 | 0:기본 / 1:Level1 / 2:Level2 | 구독 상태 표시. |
-| | | | OTA_Progress | 4~7 (4bit) | OTA 진행률 | 0~15 (×6.25%) | 전송 블록 진행 상태. |
-| Door_Control | 0x250 (CAN-HS) | 1 | DoorLockCmd | 0 (1bit) | 도어 잠금 명령 | 0:정상 / 1:3초 잠금 | WDM_ECU Tx → Door_ECU Rx. 3단계 물리 개입. |
-| | | | MirrorLED | 1 (1bit) | 미러 LED | 0:OFF / 1:점멸 | 경고 시각화. |
-| | | | (Reserved) | 2~7 | — | — | — |
-| UDS_Request | 0x7DF (CAN-LS) | 8 | ServiceID | 0~7 | UDS 서비스 식별자 | 0x10/0x27/0x34/0x36/0x37 | OTA_Server → WDM_ECU 요청 |
-| | | | SubFunction | 8~15 | 서비스 서브 기능 | 0x01/0x02/0x03/0x01/0x11 | 세션 유형 / Security Level / Block Sequence |
-| | | | DataRecord | 16~63 | 데이터 레코드 (6 bytes) | 가변 | 서비스별 파라미터 |
-| UDS_Response | 0x7E8 (CAN-LS) | 8 | ResponseCode | 0~7 | 응답 코드 | 0x50/0x67/0x74/0x76/0x77/0x7F | WDM_ECU → OTA_Server 응답 |
-| | | | MaxBlockLength | 8~23 | 최대 블록 길이 | 0~65535 | 0x34 요청 응답 시 전달 |
-| | | | ResponseData | 24~63 | 응답 데이터 (5 bytes) | 가변 | 서비스별 응답 데이터 |
+## 작성 원칙
+
+- 상단 표는 공식 샘플(`0303.md`)과 동일하게 `Message/Identifier/DLC/Signal/signal bit position/Data 설명/Data 범위/Data 사용` 열만 사용한다.
+- `Identifier`는 순수 ID 값만 기재한다(예: `0x100`, `0xE100`).
+- `DLC`는 순수 숫자만 기재한다.
+- 본 설계는 Ethernet 백본(`ETH_SWITCH`) + 도메인 게이트웨이(`CHASSIS_GW`, `INFOTAINMENT_GW`, `BODY_GW`, `IVI_GW`) + 도메인 CAN 분배 구조를 사용한다.
+- 하단 추적표는 `Comm ID -> Flow ID -> Func ID -> Req ID`를 유지한다.
+- 검증 범위는 CANoe SIL, CAN + Ethernet(UDP)로 고정한다.
+
+---
+
+## 통신 명세 표 (공식 표준 양식)
+
+| Message | Identifier | DLC | Signal | signal bit position | Data 설명 | Data 범위 | Data 사용 |
+|---|---|---|---|---|---|---|---|
+| frmVehicleStateCanMsg | 0x100 | 2 | gVehicleSpeed | 0~7 | 차량 속도 입력 | 0~255 km/h | Chassis CAN에서 CHASSIS_GW가 수신 후 Ethernet으로 변환 전달 |
+|  |  |  | gDriveState | 8~9 | 주행 상태 입력(P/R/N/D) | 0~3 | ADAS_WARN_CTRL 주행/비주행 활성 판단 입력 |
+| ethVehicleStateMsg | 0x510 | 2 | gVehicleSpeed | 0~7 | 게이트웨이 변환 차량 속도 | 0~255 km/h | CHASSIS_GW -> ETH_SWITCH -> ADAS_WARN_CTRL |
+|  |  |  | gDriveState | 8~9 | 게이트웨이 변환 주행 상태 | 0~3 | 경고 엔진 조건 판정 입력 |
+| frmSteeringCanMsg | 0x101 | 1 | SteeringInput | 0 | 조향 입력 여부 | 0:미입력 / 1:입력 | Chassis CAN에서 CHASSIS_GW가 수신 |
+| ethSteeringMsg | 0x511 | 1 | SteeringInput | 0 | 게이트웨이 변환 조향 입력 | 0:미입력 / 1:입력 | CHASSIS_GW -> ETH_SWITCH -> ADAS_WARN_CTRL |
+| frmNavContextCanMsg | 0x110 | 2 | gRoadZone | 0~1 | 구간 타입 | 0:일반 / 1:스쿨존 / 2:고속 / 3:유도 | Infotainment CAN에서 INFOTAINMENT_GW가 수신 |
+|  |  |  | gNavDirection | 2~3 | 유도 방향 | 0:없음 / 1:좌 / 2:우 | 방향 안내 정책 입력 |
+|  |  |  | gZoneDistance | 8~15 | 구간까지 남은 거리 | 0~255 m | 구간 전환 타이밍 판단 입력 |
+| ethNavContextMsg | 0x512 | 2 | gRoadZone | 0~1 | 게이트웨이 변환 구간 타입 | 0~3 | INFOTAINMENT_GW -> ETH_SWITCH -> NAV_CONTEXT_MGR/WARN_ARB_MGR |
+|  |  |  | gNavDirection | 2~3 | 게이트웨이 변환 유도 방향 | 0~3 | 구간 안내 분기 입력 |
+|  |  |  | gZoneDistance | 8~15 | 게이트웨이 변환 구간 거리 | 0~255 m | 구간 컨텍스트 갱신 입력 |
+| ETH_EmergencyAlert | 0xE100 | 4 | EmergencyType | 0~1 | 긴급차량 종류 | 0:None / 1:Police / 2:Ambulance | EMS_POLICE_TX/EMS_AMB_TX -> ETH_SWITCH -> EMS_ALERT_RX |
+|  |  |  | EmergencyDirection | 2~3 | 접근 방향 | 0:앞 / 1:좌 / 2:우 / 3:후 | CLU_HMI_CTRL 방향 표시 입력 |
+|  |  |  | ETA | 8~15 | 도달 예상 시간 | 0~255 s | WARN_ARB_MGR 우선순위 판단 |
+|  |  |  | SourceID | 16~23 | 송신 주체 ID | 0~255 | ETA 동률 시 2차 우선순위 판단 |
+|  |  |  | AlertState | 24 | 경고 상태 | 0:Clear / 1:Active | Clear/타임아웃 처리 기준 |
+| ethSelectedAlertMsg | 0xE200 | 2 | AlertLevel | 0~2 | 최종 경고 레벨 | 0~7 | WARN_ARB_MGR -> ETH_SWITCH -> BODY_GW/IVI_GW |
+|  |  |  | AlertType | 3~5 | 최종 경고 타입 | 0~7 | 도메인별 출력 분기 |
+|  |  |  | TimeoutClear | 8 | 타임아웃 해제 플래그 | 0/1 | 출력 복귀 조건 신호 |
+| frmAmbientControlMsg | 0x210 | 1 | AmbientMode | 0~2 | 앰비언트 동작 모드 | 0~7 | BODY_GW -> BCM_AMBIENT_CTRL(CAN) |
+|  |  |  | AmbientColor | 3~5 | 앰비언트 색상 코드 | 0~7 | 긴급/구간 정책 색상 출력 |
+|  |  |  | AmbientPattern | 6~7 | 점등 패턴 코드 | 0~3 | 고정/점멸/파동 패턴 제어 |
+| frmClusterWarningMsg | 0x220 | 1 | WarningTextCode | 0~7 | 클러스터 경고 코드 | 0~255 | IVI_GW -> CLU_HMI_CTRL(CAN) |
+| frmTestResultMsg | 0x230 | 1 | ScenarioResult | 0~1 | 테스트 판정 결과 | 0:Fail / 1:Pass | SIL_TEST_CTRL 결과 기록 및 로그 연동 |
+
+---
+
+## 통신 상세 추적 표 (Comm/Flow/Func/Req)
+
+| Comm ID | Flow ID | Func ID | Req ID | Message(ID) | Tx Node | Rx Node | Protocol | Period | Clear/비고 |
+|---|---|---|---|---|---|---|---|---|---|
+| Comm_001 | Flow_001 | Func_001, Func_002, Func_003, Func_004, Func_006, Func_010 | Req_001, Req_002, Req_003, Req_004, Req_006, Req_010 | frmVehicleStateCanMsg(0x100), ethVehicleStateMsg(0x510) | SIL_TEST_CTRL, CHASSIS_GW | CHASSIS_GW, ADAS_WARN_CTRL | CAN + Ethernet(UDP) | 100ms | 속도/주행상태 입력 갱신 |
+| Comm_002 | Flow_002 | Func_011, Func_012 | Req_011, Req_012 | frmSteeringCanMsg(0x101), ethSteeringMsg(0x511) | SIL_TEST_CTRL, CHASSIS_GW | CHASSIS_GW, ADAS_WARN_CTRL | CAN + Ethernet(UDP) | 100ms | 조향 입력 갱신 |
+| Comm_003 | Flow_003 | Func_007 | Req_007 | frmNavContextCanMsg(0x110), ethNavContextMsg(0x512) | SIL_TEST_CTRL, INFOTAINMENT_GW | INFOTAINMENT_GW, NAV_CONTEXT_MGR, WARN_ARB_MGR | CAN + Ethernet(UDP) | 100ms | 구간/방향/거리 입력 갱신 |
+| Comm_004 | Flow_004 | Func_017 | Req_017 | ETH_EmergencyAlert(0xE100) | EMS_POLICE_TX | EMS_ALERT_RX | Ethernet(UDP) | 100ms | AlertState=Clear 또는 송신 중지 |
+| Comm_005 | Flow_005 | Func_018 | Req_018 | ETH_EmergencyAlert(0xE100) | EMS_AMB_TX | EMS_ALERT_RX | Ethernet(UDP) | 100ms | AlertState=Clear 또는 송신 중지 |
+| Comm_006 | Flow_006 | Func_022, Func_023, Func_024, Func_025, Func_027, Func_028, Func_029, Func_030, Func_031, Func_032 | Req_022, Req_023, Req_024, Req_025, Req_027, Req_028, Req_029, Req_030, Req_031, Req_032 | ETH_EmergencyAlert(0xE100), ethSelectedAlertMsg(0xE200) | EMS_ALERT_RX, WARN_ARB_MGR | WARN_ARB_MGR, BODY_GW, IVI_GW | Ethernet(UDP) | Event + 50ms | 1000ms 무갱신 시 TimeoutClear=1 |
+| Comm_007 | Flow_007 | Func_008, Func_009, Func_013, Func_014, Func_015, Func_016, Func_033, Func_034, Func_035, Func_036, Func_037, Func_038, Func_039 | Req_008, Req_009, Req_013, Req_014, Req_015, Req_016, Req_033, Req_034, Req_035, Req_036, Req_037, Req_038, Req_039 | ethSelectedAlertMsg(0xE200), frmAmbientControlMsg(0x210) | WARN_ARB_MGR, BODY_GW | BODY_GW, BCM_AMBIENT_CTRL | Ethernet(UDP) + CAN | 50ms | SelectedAlertContext 수신 |
+| Comm_008 | Flow_008 | Func_005, Func_019, Func_020, Func_021, Func_026, Func_040 | Req_005, Req_019, Req_020, Req_021, Req_026, Req_040 | ethSelectedAlertMsg(0xE200), frmClusterWarningMsg(0x220) | WARN_ARB_MGR, IVI_GW | IVI_GW, CLU_HMI_CTRL | Ethernet(UDP) + CAN | 50ms | SelectedAlertContext 수신 |
+| Comm_009 | Flow_009 | Func_041, Func_042, Func_043 | Req_041, Req_042, Req_043 | frmTestResultMsg(0x230) | SIL_TEST_CTRL | SIL_TEST_CTRL(Log/Panel) | CAN | Event | 판정 결과 기록 완료 시 종료 |
+
+---
+
+## 0302/0304 연계 체크포인트
+
+- `Comm ID`는 `0302_NWflowDef.md`의 `Flow ID`와 1:1 연결한다.
+- 모든 Comm 항목은 `0304_System_Variables.md`에서 Signal 단위 변수(`Var ID`)로 연결한다.
+- 필수 검증 항목:
+- `EmergencyAlert` Active/Clear 신호가 1000ms 타임아웃 규칙과 일치해야 한다.
+- `SelectedAlertContext` 기반 Ambient/Cluster 출력 Comm이 모두 존재해야 한다.
+- `ETH_SWITCH` 경유 Ethernet 신호가 각 도메인 게이트웨이에서 CAN 메시지로 정상 변환되어야 한다.
 
 ---
 
 ## 개정 이력
 
 | 버전 | 날짜 | 변경 사항 |
-|------|------|---------|
+|---|---|---|
 | 1.0 | 2026-02-23 | 초기 생성 |
-
----
-
-## 승인 (Approval)
-
-| 역할 | 이름 | 서명 | 날짜 |
-|------|------|------|------|
-| Project Manager | — | — | 2026-02-23 |
-| Lead Engineer | — | — | 2026-02-23 |
+| 2.0 | 2026-02-25 | 최신 프로젝트 스코프 반영 전면 재작성. Comm_001~Comm_009 및 Flow/Func/Req 1:1 추적 구조 반영, OTA/UDS/DoIP 제거 |
+| 2.1 | 2026-02-25 | 공식 샘플 표기 스타일(Identifier/DLC 순수값)로 상단 표 정렬, Ethernet 백본+도메인 게이트웨이+CAN 분배 구조 반영 |
