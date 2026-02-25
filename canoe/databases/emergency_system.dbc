@@ -31,25 +31,6 @@ BS_:
 
 BU_: Context_Manager Police_Node Ambulance_Node Civ_Node Ambient_ECU Cluster_ECU
 
-/*
- * ============================================================
- * CAN HS (500 kbps) — 내부 차량 버스
- * ============================================================
- *
- * 0x100  Vehicle_Context   : Context_Manager → 전체 (10ms)
- * 0x220  Ambient_Control   : Civ_Node → Ambient_ECU (이벤트)
- * 0x221  Cluster_Warning   : Civ_Node → Cluster_ECU (이벤트)
- *
- * Ethernet (V2V) 시뮬레이션:
- *   Police_Node / Ambulance_Node → sysvar V2V::* 경유 → Civ_Node
- *   실제 배포 시 UDP 브로드캐스트로 대체. 인터페이스(sysvar명) 동일 유지.
- * ============================================================
- */
-
-/* ----------------------------------------------------------
- * 0x100  Vehicle_Context  (8 bytes, 10ms, Context_Manager 송신)
- * 구간 상태 + 차속 + 경고 레벨 브로드캐스트
- * ---------------------------------------------------------- */
 BO_ 256 Vehicle_Context: 8 Context_Manager
  SG_ Vehicle_Speed   : 0|16@1+ (0.1,0) [0|300]   "km/h" Civ_Node,Ambient_ECU,Cluster_ECU
  SG_ RoadZone        : 16|4@1+ (1,0)   [0|3]     ""     Civ_Node,Ambient_ECU,Cluster_ECU
@@ -60,10 +41,6 @@ BO_ 256 Vehicle_Context: 8 Context_Manager
  SG_ AliveCounter    : 56|4@1+ (1,0)   [0|15]    ""     Civ_Node
  SG_ Checksum        : 60|4@1+ (1,0)   [0|15]    ""     Civ_Node
 
-/* ----------------------------------------------------------
- * 0x220  Ambient_Control  (4 bytes, 이벤트, Civ_Node 송신)
- * Alert Arbiter 결과를 Ambient_ECU에 전달
- * ---------------------------------------------------------- */
 BO_ 544 Ambient_Control: 4 Civ_Node
  SG_ AmbientPattern  : 0|4@1+  (1,0)  [0|8]   ""  Ambient_ECU
  SG_ AmbientActive   : 4|1@1+  (1,0)  [0|1]   ""  Ambient_ECU
@@ -71,10 +48,6 @@ BO_ 544 Ambient_Control: 4 Civ_Node
  SG_ ArbiterMode     : 12|4@1+ (1,0)  [0|3]   ""  Ambient_ECU
  SG_ AliveCounter    : 28|4@1+ (1,0)  [0|15]  ""  Ambient_ECU
 
-/* ----------------------------------------------------------
- * 0x221  Cluster_Warning  (4 bytes, 이벤트, Civ_Node 송신)
- * 경고 종류·긴급차량 정보를 Cluster_ECU에 전달
- * ---------------------------------------------------------- */
 BO_ 545 Cluster_Warning: 4 Civ_Node
  SG_ WarningType       : 0|4@1+  (1,0)  [0|8]   ""  Cluster_ECU
  SG_ WarningActive     : 4|1@1+  (1,0)  [0|1]   ""  Cluster_ECU
@@ -82,9 +55,6 @@ BO_ 545 Cluster_Warning: 4 Civ_Node
  SG_ Direction         : 10|2@1+ (1,0)  [0|3]   ""  Cluster_ECU
  SG_ AliveCounter      : 28|4@1+ (1,0)  [0|15]  ""  Cluster_ECU
 
-/* ==========================================================
- * Comments
- * ========================================================== */
 CM_ BU_ Context_Manager  "Navigation zone context + speed/steering evaluation. Sends Vehicle_Context 10ms.";
 CM_ BU_ Police_Node       "V2V Police ECU. Simulates ETH UDP broadcast via sysvar V2V::Police_*.";
 CM_ BU_ Ambulance_Node    "V2V Ambulance ECU. Simulates ETH UDP broadcast via sysvar V2V::Ambulance_*.";
@@ -96,22 +66,17 @@ CM_ BO_ 256  "Navigation context broadcast: speed, zone, warning level, steering
 CM_ BO_ 544  "Ambient pattern command: pattern ID, active flag, animation step, arbiter mode.";
 CM_ BO_ 545  "Cluster warning command: warning type, emergency vehicle type, approach direction.";
 
-CM_ SG_ 256 Vehicle_Speed   "Current vehicle speed. Factor=0.1 → raw=speed*10.";
+CM_ SG_ 256 Vehicle_Speed   "Current vehicle speed. Factor=0.1 -> raw=speed*10.";
 CM_ SG_ 256 RoadZone        "0=Normal(80) 1=SchoolZone(30) 2=Highway(110) 3=IC_Guide.";
 CM_ SG_ 256 WarningLevel    "0=None 1=SpeedExceed/SteerAlert 2=Reserved.";
 CM_ SG_ 256 SteeringActive  "0=NoInput(hands-off) 1=SteeringDetected.";
 CM_ SG_ 256 NavDirection    "0=LeftExit 1=RightExit (valid when RoadZone=3).";
-
 CM_ SG_ 544 AmbientPattern  "0=Idle 1=Normal 2=SchoolZone_Amb 3=SchoolZone_Warn 4=Highway_Alert 5=IC_Left 6=IC_Right 7=Police 8=Ambulance.";
 CM_ SG_ 544 ArbiterMode     "0=Base 1=ZoneWarn 2=Police 3=Ambulance.";
-
 CM_ SG_ 545 WarningType     "0=None 1=SchoolZone 2=Highway 3=IC_Guide 4=Police 5=Ambulance.";
 CM_ SG_ 545 EmergencyVehicle "0=None 1=Police 2=Ambulance.";
 CM_ SG_ 545 Direction       "0=Front 1=Left 2=Right 3=Rear.";
 
-/* ==========================================================
- * Value Tables
- * ========================================================== */
 BA_DEF_ BO_ "GenMsgCycleTime" INT 0 10000;
 BA_DEF_DEF_ "GenMsgCycleTime" 0;
 
