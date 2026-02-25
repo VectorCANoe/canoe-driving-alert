@@ -39,11 +39,11 @@
 Navigation Context (gRoadZone, gNavDirection, gZoneDistance)
   -> Context Manager (구간 컨텍스트 활성)
 
-Police_Node / Ambulance_Node
+EMS_POLICE_TX / EMS_AMB_TX
   -> ETH_EmergencyAlert 브로드캐스트 (차종, 방향, ETA, 긴급레벨)
 
-Civ_Node (수신 차량)
-  -> Alert Arbiter 실행
+EMS_ALERT_RX (수신 차량)
+  -> Alert WARN_ARB_MGR 실행
   -> 우선순위 규칙에 따라 Ambient/Cluster/HMI 패턴 단일 결정
   -> 해제 조건 충족 시 정상 컨텍스트 복귀
 ```
@@ -63,7 +63,7 @@ Civ_Node (수신 차량)
 
 - Tool: Vector CANoe 17+
 - Network: Ethernet UDP (V2V), CAN-HS (차량 내부 HMI 제어)
-- 주요 노드: `Police_Node`, `Ambulance_Node`, `Civ_Node_A/B/C`, `Context_Manager`, `Ambient_ECU`, `Cluster_ECU`
+- 주요 노드: `EMS_POLICE_TX`, `EMS_AMB_TX`, `EMS_ALERT_RX_A/B/C`, `NAV_CONTEXT_MGR`, `BCM_AMBIENT_CTRL`, `CLU_HMI_CTRL`
 - Panel 입력: `gRoadZone`, `gNavDirection`, 긴급차량 ON/OFF, ETA, 우선순위 테스트 토글
 
 ### 검증 제약 (필수)
@@ -78,3 +78,4 @@ Civ_Node (수신 차량)
 ## 개정 이력
 
 - 2.0 (2026-02-25): 범위 재정의. 구간 인식 컨텍스트 + 경찰/구급차 V2V 긴급알림/앰비언트 중재만 유지.
+

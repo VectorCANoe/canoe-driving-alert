@@ -24,17 +24,17 @@
         -> Context Manager
 
 [V2V Emergency Layer]
-  Police_Node / Ambulance_Node
+  EMS_POLICE_TX / EMS_AMB_TX
         -> ETH_EmergencyAlert (UDP Broadcast)
 
 [Arbitration Layer]
-  Arbiter Engine
+  WARN_ARB_MGR Engine
     rule-1 Emergency > Context
     rule-2 Ambulance > Police
     rule-3 Same Type: ETA asc -> SourceID asc
 
 [HMI Actuation Layer]
-  Ambient_ECU + Cluster_ECU
+  BCM_AMBIENT_CTRL + CLU_HMI_CTRL
 ```
 
 ---
@@ -66,3 +66,4 @@
 - 물류차 OTA 임무전환
 - OTA 구독 패키지 및 UDS 절차
 - 위험운전 레벨 기반 경고 시스템
+

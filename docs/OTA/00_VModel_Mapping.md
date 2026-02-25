@@ -57,14 +57,14 @@
 - 기능적 요구(무엇을 해야 하는지)
 - 비기능 요구(지연, 주기, 가시성, 안전 제약)
 
-예: "Civ_Node는 긴급 알림 수신 시 100ms 이내 경고를 표시해야 한다"
+예: "EMS_ALERT_RX는 긴급 알림 수신 시 100ms 이내 경고를 표시해야 한다"
 
 ### 4.2 기능명세 문서(03/0301)에 써야 하는 것
 
 - 어떤 노드가 어떤 입력을 받아 어떤 로직으로 어떤 출력을 내는지
 - 상태 전이, 분기 로직, 타이머, 우선순위 알고리즘
 
-예: "Arbiter는 EmergencyType/ETA/SourceID를 비교해 ActiveMode를 결정한다"
+예: "WARN_ARB_MGR는 EmergencyType/ETA/SourceID를 비교해 ActiveMode를 결정한다"
 
 ### 4.3 금지
 

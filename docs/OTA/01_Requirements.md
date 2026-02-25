@@ -3,7 +3,7 @@
 **Document ID**: PROJ-01-SRS
 **ISO 26262 Reference**: Part 4, Cl.6 (System Requirements Specification)
 **ASPICE Reference**: SYS.2 (System Requirements Analysis)
-**Version**: 5.3
+**Version**: 5.4
 **Date**: 2026-02-25
 **Status**: Draft
 **Project Title**: 주행상황 연동 실시간 경고 시스템
