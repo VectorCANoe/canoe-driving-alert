@@ -1,55 +1,71 @@
 # 시스템 기능 분석 (System Function Analysis)
 
-**Document ID**: PROJ-0301-SFA
-**ISO 26262 Reference**: Part 4, Cl.7 — 시스템 설계 (기능 분해 및 ECU 할당)
-**ASPICE Reference**: SYS.3 (BP1: 시스템 아키텍처 개발, BP2: 인터페이스 정의, BP3: 기능 할당)
-**Version**: 1.0
-**Date**: 2026-02-23
-**Status**: Released
+**Document ID**: PROJ-0301-SFA  
+**ISO 26262 Reference**: Part 4, Cl.7 (System Design)  
+**ASPICE Reference**: SYS.3 (System Architectural Design)  
+**Version**: 2.0  
+**Date**: 2026-02-25  
+**Status**: Draft  
+**Project Title**: 주행상황 연동 실시간 경고 시스템  
+**Subtitle**: (구간 인식, 긴급차량 경고시스템)
 
-| V-Model 위치 | 대응 문서 | 상위 연결 | 하위 연결 |
-|-------------|---------|---------|---------|
-| 좌측 중단 — SYS.3 시스템 아키텍처 | `06_Integration_Test.md` (SWE.5) | `01_Requirements.md` | `0302_NWflowDef.md` |
+| V-Model 위치 | 현재 문서 | 상위 연결 | 하위 연결 |
+|---|---|---|---|
+| 좌측 중단 (SYS.3) | `0301_SysFuncAnalysis.md` | `03_Function_definition.md` | `0302_NWflowDef.md` |
 
 ---
 
-| 노드 | 기능 상세 | 비고 |
-|------|---------|------|
-| | | **입력층 A — CAN-LS (125 kbps)** |
-| Vehicle_ECU | gVehicleSpeed(0~200 km/h, 8bit) / gAccelValue(-10~10 m/s², 8bit signed) / gBrakeValue(0~10 m/s², 8bit)를 CAN-LS 0x100으로 100ms 주기 WDM_ECU에 보고. 과속 기준은 gRoadZone에 따라 다름. | 입력층 A 핵심 노드. Req_001~003 대응. |
-| MDPS_ECU | SteeringInput(1bit: 0/1) / gLaneChangeAlert(1bit: 0/1) / SteeringAngleRate(8bit, °/s)를 CAN-LS 0x110으로 100ms 주기 보고. 조향각속도 > 50°/s 시 gLaneChangeAlert = 1. | 입력층 B + 해제층(핸들 입력). Req_005, Req_010 대응. |
-| LDW_ECU | gLaneDeparture(1bit: 0/1)를 CAN-LS 0x120으로 100ms 주기 보고. 차선이탈 감지 시 1 설정. | 입력층 B. Req_004 대응. |
-| | | **판단층 — CAN-HS (500 kbps)** |
-| WDM_ECU | CAN-LS 입력 신호 수신 → Rule-Based 판단 → gWarningLevel(0~3) 설정 → 출력 ECU 제어 명령 CAN-HS 전송. A 단독 OR B 단독 → 1단계. A AND B → 2단계. A+B+OTA조건 → 3단계. gRoadZone별 임계값 적용. gAccelCount 타이머(10분) 관리. | 판단층 핵심. Req_006~008, Req_011~013 대응. |
-| | | **Gateway Domain** |
-| CGW | CAN-LS(입력층 신호) → CAN-HS(WDM_ECU) 라우팅 (지연 ≤5ms). DoIP Routing Activation(0xE001) 처리. UDS 메시지 포워딩. Bus Off 감지 → 세션 중단 + DTC U0300 저장. | Req_018 대응 (Bus Off). |
-| | | **출력층 — CAN-HS (500 kbps)** |
-| Cluster_ECU | WDM_Warning(0x200) 수신 → gWarningLevel에 따라 경고등 제어. 1단계: 황색(WarnLampLevel=1). 2단계: 적색(WarnLampLevel=2). 0단계: 소등. 50ms 이내 활성화. | Req_006, Req_007 대응. |
-| Ambient_ECU | Ambient_Control(0x220) 수신 → AmbientMode별 패턴 출력. 스쿨존: RED 빠른 점멸(200ms). 고속도로: ORANGE 파동(1초). IC출구: 좌→우 흐름 애니메이션. | 준영 담당. Req_012~014 대응. |
-| Sound_ECU | Sound_Control(0x230) 수신 → 단계별 경고음 출력. 1단계: 단발음. 2단계: 연속음. 3단계: 긴급음. | Req_006, Req_007 대응. |
-| IVI_ECU | IVI_Status(0x240) 수신 → OTA 구독 팝업 표시. [지금 무료 체험] / [나중에] 선택. 진행률 바 표시. | 성현 담당. Req_008, Req_015, Req_016 대응. |
-| Door_ECU | Door_Control(0x250) 수신 → 3초 도어 잠금 + Mirror LED 점멸. 3단계 물리 개입. | 현준2 담당. Req_008 부속 출력. |
-| | | **OTA Domain** |
-| OTA_Server | DoIP Routing Activation → UDS 0x10 0x02(Programming Session) → 0x27(Security Access) → 0x34(Download Request) → 0x36 4KB 블록 전송 → 0x37(Transfer Exit) → CRC-32 검증 → ECU 재시작. 실패 시 Rollback. | 성현 담당. Req_015~017 대응. |
-| | | **해제층** |
-| 응시 복귀 (sysvar) | sysvar::Driver::GazeActive = 0 → 1 전환 시 WDM_ECU가 gWarningLevel = 0으로 초기화. CANoe Panel Button으로 주입. | 라엘 담당. Req_009 대응. |
-| 핸들 입력 (MDPS_ECU) | SteeringInput = 1 수신 시 WDM_ECU가 gWarningLevel = 0으로 초기화. | 현준 담당. Req_010 대응. |
-| | | **CANoe Panel** |
-| CANoe Panel | gRoadZone 버튼(4개) / 속도·가속도 TrackBar / 차선이탈·급차선변경 Switch / GazeActive·SteeringInput Button / OTA 트리거 Button / 상태 Indicator | SIL 환경 사용자 인터페이스 전체. |
+## 1. 목적
+
+- 본 문서는 `03_Function_definition.md`의 `Func_001~Func_043`을 노드 내부 동작 관점으로 분해한다.
+- 각 노드의 입력-처리-출력을 명확히 정의해 `0302`의 Tx/Rx 흐름 설계로 연결한다.
+- 요구사항(What) 문장을 반복하지 않고, 시스템 동작 로직(How)만 기술한다.
+
+---
+
+## 2. 노드별 기능 분해
+
+| 노드 | 입력 (Input) | 처리 (Processing) | 출력 (Output) | 연결 Func ID | 연결 Req ID | 비고 |
+|---|---|---|---|---|---|---|
+| NAV_CONTEXT_MGR | `gRoadZone`, `gNavDirection`, `gZoneDistance` | 구간 상태(일반/스쿨존/고속/유도구간) 판별, 구간 전환 시 현재 컨텍스트 갱신 | BaseZoneContext | Func_007, Func_013, Func_014, Func_015, Func_016 | Req_007, Req_013~Req_016 | 내비게이션 구간 인식의 기준 노드 |
+| ADAS_WARN_CTRL | 차량 속도/조향 입력, BaseZoneContext | 스쿨존 과속/고속 무조향 경고 조건 판정, 경고 시작/해제 트리거 생성, 반복 경고 디바운스 처리 | WarningState, ZoneWarningEvent | Func_001~Func_004, Func_006, Func_010~Func_012 | Req_001~Req_004, Req_006, Req_010~Req_012 | Zone 기반 경고 엔진 |
+| EMS_POLICE_TX | `Police_Active`, `Police_ETA`, `Police_Direction` | 경찰 긴급 알림 패킷 생성, 활성/해제 상태 관리, 주기 송신 이벤트 발생 | EmergencyAlert(Police) | Func_017 | Req_017 | Ethernet(UDP) 시뮬레이션 송신 |
+| EMS_AMB_TX | `Ambulance_Active`, `Ambulance_ETA`, `Ambulance_Direction` | 구급 긴급 알림 패킷 생성, 활성/해제 상태 관리, 주기 송신 이벤트 발생 | EmergencyAlert(Ambulance) | Func_018 | Req_018 | Ethernet(UDP) 시뮬레이션 송신 |
+| EMS_ALERT_RX | EmergencyAlert(Police/Ambulance) | 긴급 알림 수신/해제 상태 관리, 무갱신 타임아웃(1000ms) 처리 | EmergencyContextState | Func_023, Func_024 | Req_023, Req_024 | 수신 측 긴급 상태 저장소 |
+| WARN_ARB_MGR | EmergencyContextState, WarningState, BaseZoneContext | 우선순위 중재 수행: Emergency > Zone, Ambulance > Police, 동률 시 ETA 우선, ETA 동률 시 SourceID 오름차순 | SelectedAlertContext | Func_022, Func_025~Func_032 | Req_022, Req_025~Req_032 | 핵심 충돌해결 노드 |
+| BCM_AMBIENT_CTRL | SelectedAlertContext | 경고 등급별 색상/패턴 적용, 중재 전환 시 깜빡임 완화, 긴급 종료 후 직전 구간 상태 복원 | Ambient_Control | Func_008, Func_009, Func_033~Func_039 | Req_008, Req_009, Req_033~Req_039 | 시각 출력(앰비언트) |
+| CLU_HMI_CTRL | SelectedAlertContext | 경고 원인 문구, 긴급차량 종류/방향, 양보 메시지 표시, 중복 팝업 억제, 문구 형식 고정 | Cluster_WarningText | Func_005, Func_019~Func_021, Func_026, Func_040 | Req_005, Req_019~Req_021, Req_026, Req_040 | 클러스터/HMI 출력 |
+| SIL_TEST_CTRL | 테스트 시나리오 입력, 판정 기준 | CANoe SIL 환경에서 시나리오 실행, CAN+Ethernet 동시 검증, Pass/Fail 판정 기록 | TestResult, TraceRecord | Func_041~Func_043 | Req_041~Req_043 | 검증 자동화 제어 |
+
+---
+
+## 3. 핵심 시나리오 동작 체인
+
+| 시나리오 | 노드 동작 체인 | 연결 Func ID |
+|---|---|---|
+| 스쿨존 과속 | NAV_CONTEXT_MGR -> ADAS_WARN_CTRL -> WARN_ARB_MGR -> BCM_AMBIENT_CTRL + CLU_HMI_CTRL | Func_007, Func_010, Func_027, Func_037, Func_040 |
+| 고속도로 무조향 | NAV_CONTEXT_MGR -> ADAS_WARN_CTRL -> WARN_ARB_MGR -> BCM_AMBIENT_CTRL + CLU_HMI_CTRL | Func_011, Func_012, Func_027, Func_038, Func_040 |
+| 유도구간 방향 안내 | NAV_CONTEXT_MGR -> WARN_ARB_MGR -> BCM_AMBIENT_CTRL + CLU_HMI_CTRL | Func_013, Func_014, Func_039, Func_040 |
+| 경찰 긴급차량 접근 | EMS_POLICE_TX -> EMS_ALERT_RX -> WARN_ARB_MGR -> BCM_AMBIENT_CTRL + CLU_HMI_CTRL | Func_017, Func_023, Func_022, Func_035, Func_019 |
+| 구급 긴급차량 접근 | EMS_AMB_TX -> EMS_ALERT_RX -> WARN_ARB_MGR -> BCM_AMBIENT_CTRL + CLU_HMI_CTRL | Func_018, Func_023, Func_022, Func_035, Func_019 |
+| 경찰+구급 동시 충돌 | EMS_POLICE_TX + EMS_AMB_TX -> EMS_ALERT_RX -> WARN_ARB_MGR(우선순위/동률처리) -> 출력 노드 | Func_025~Func_031 |
+| 긴급 해제 후 복귀 | EMS_ALERT_RX(해제/타임아웃) -> WARN_ARB_MGR -> BCM_AMBIENT_CTRL/CLU_HMI_CTRL | Func_024, Func_033, Func_034 |
+
+---
+
+## 4. 0302 연계 체크포인트
+
+- 각 노드의 출력은 `0302_NWflowDef.md`에서 반드시 Flow ID로 정의한다.
+- 최소 연계 규칙:
+  - `SelectedAlertContext` -> `Ambient_Control` 송신 Flow 존재
+  - `SelectedAlertContext` -> `Cluster_Warning` 송신 Flow 존재
+  - `EmergencyAlert` 송신/수신/해제 Flow 존재
+  - 타임아웃(1000ms) 해제 Flow 존재
 
 ---
 
 ## 개정 이력
 
 | 버전 | 날짜 | 변경 사항 |
-|------|------|---------|
-| 1.0 | 2026-02-23 | 초기 생성 |
-
----
-
-## 승인 (Approval)
-
-| 역할 | 이름 | 서명 | 날짜 |
-|------|------|------|------|
-| Project Manager | — | — | 2026-02-23 |
-| Lead Engineer | — | — | 2026-02-23 |
+|---|---|---|
+| 2.0 | 2026-02-25 | 프로젝트 최신 스코프 기준 전면 재작성. 노드별 Input-Processing-Output 구조, Func/Req 연결, 핵심 시나리오 체인, 0302 연계 체크포인트 추가 |

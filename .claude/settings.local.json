@@ -54,7 +54,8 @@
       "mcp__canoe-advanced__attach_canoe",
       "mcp__canoe-advanced__get_bus_nodes_info",
       "mcp__canoe-advanced__get_bus_databases_info",
-      "mcp__canoe-advanced__get_system_variable"
+      "mcp__canoe-advanced__get_system_variable",
+      "Bash(cd \"/c/Users/이준영/CANoe-IVI-OTA\" && \"C:/Users/이준영/AppData/Local/Programs/Python/Python311/python.exe\" -c \"\nimport sys, os, time\nsys.stdout.reconfigure\\(encoding='utf-8'\\)\nimport win32com.client\n\nDBC      = r'C:\\\\Users\\\\이준영\\\\CANoe-IVI-OTA\\\\canoe\\\\databases\\\\emergency_system.dbc'\nSYSVARS  = r'C:\\\\Users\\\\이준영\\\\CANoe-IVI-OTA\\\\canoe\\\\cfg\\\\project.sysvars'\nNODES_DIR= r'C:\\\\Users\\\\이준영\\\\CANoe-IVI-OTA\\\\canoe\\\\nodes'\nNODES    = ['Context_Manager','Police_Node','Ambulance_Node','Civ_Node','Ambient_ECU','Cluster_ECU']\n\napp = win32com.client.Dispatch\\('CANoe.Application'\\)\nprint\\('[OK] 연결:', app.Name\\)\n\ncfg = app.Configuration\nsim = cfg.SimulationSetup\n\n# 버스 구조 파악\nbusses = sim.Busses\nprint\\(f'버스 수: {busses.Count}'\\)\nfor i in range\\(1, busses.Count+1\\):\n    b = busses.Item\\(i\\)\n    print\\(f'  버스[{i}] Name={b.Name}  DB={b.Databases.Count}  Nodes={b.Nodes.Count}'\\)\n\" 2>&1)"
     ]
   },
   "enableAllProjectMcpServers": true,
