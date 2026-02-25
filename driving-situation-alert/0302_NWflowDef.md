@@ -3,7 +3,7 @@
 **Document ID**: PROJ-0302-NFD
 **ISO 26262 Reference**: Part 4, Cl.7 (System Design)
 **ASPICE Reference**: SYS.3 (System Architectural Design)
-**Version**: 2.3
+**Version**: 2.4
 **Date**: 2026-02-25
 **Status**: Draft
 **Project Title**: 주행상황 연동 실시간 경고 시스템
@@ -29,33 +29,100 @@
 
 | Channel | ID hex | Symbolic Name(message name) | Byte no. | Function | Bit no. | signal name | SIL_TEST_CTRL | CHASSIS_GW | INFOTAINMENT_GW | ETH_SWITCH | ADAS_WARN_CTRL | NAV_CONTEXT_MGR | EMS_POLICE_TX | EMS_AMB_TX | EMS_ALERT_RX | WARN_ARB_MGR | BODY_GW | IVI_GW | BCM_AMBIENT_CTRL | CLU_HMI_CTRL | [비고] |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| Chassis CAN | 0x100 | frmVehicleStateCanMsg | 0 | Vehicle State Check | 0~7 | gVehicleSpeed | Tx | Rx |  |  |  |  |  |  |  |  |  |  |  |  | CAN 입력, 100ms |
-|  |  |  | 1 |  | 0~1 | gDriveState | Tx | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| Chassis CAN | 0x100 | frmVehicleStateCanMsg | 0 | Vehicle State Check | 0 | gVehicleSpeed | Tx | Rx |  |  |  |  |  |  |  |  |  |  |  |  | CAN 입력, 100ms |
+|  |  |  |  |  | 1 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+|  |  |  |  |  | 2 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+|  |  |  |  |  | 3 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+|  |  |  |  |  | 4 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+|  |  |  |  |  | 5 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+|  |  |  |  |  | 6 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+|  |  |  |  |  | 7 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+|  |  |  | 1 |  | 0 | gDriveState | Tx | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |
+|  |  |  |  |  | 1 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 | Chassis CAN | 0x101 | frmSteeringCanMsg | 0 | Steering Input Check | 0 | SteeringInput | Tx | Rx |  |  |  |  |  |  |  |  |  |  |  |  | CAN 입력, 100ms |
-| Infotainment CAN | 0x110 | frmNavContextCanMsg | 0 | Zone Context Check | 0~1 | gRoadZone | Tx |  | Rx |  |  |  |  |  |  |  |  |  |  |  | CAN 입력, 100ms |
-|  |  |  | 0 |  | 2~3 | gNavDirection | Tx |  | Rx |  |  |  |  |  |  |  |  |  |  |  |  |
-|  |  |  | 1 |  | 0~7 | gZoneDistance | Tx |  | Rx |  |  |  |  |  |  |  |  |  |  |  |  |
-| Ethernet | 0x510 | ethVehicleStateMsg | 0 | Gateway Normalized Vehicle State | 0~7 | gVehicleSpeed |  | Tx |  | Rx | Rx |  |  |  |  |  |  |  |  |  | UDP, 100ms |
-|  |  |  | 1 |  | 0~1 | gDriveState |  | Tx |  | Rx | Rx |  |  |  |  |  |  |  |  |  |  |
+| Infotainment CAN | 0x110 | frmNavContextCanMsg | 0 | Zone Context Check | 0 | gRoadZone | Tx |  | Rx |  |  |  |  |  |  |  |  |  |  |  | CAN 입력, 100ms |
+|  |  |  |  |  | 1 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+|  |  |  | 0 |  | 2 | gNavDirection | Tx |  | Rx |  |  |  |  |  |  |  |  |  |  |  |  |
+|  |  |  |  |  | 3 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+|  |  |  | 1 |  | 0 | gZoneDistance | Tx |  | Rx |  |  |  |  |  |  |  |  |  |  |  |  |
+|  |  |  |  |  | 1 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+|  |  |  |  |  | 2 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+|  |  |  |  |  | 3 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+|  |  |  |  |  | 4 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+|  |  |  |  |  | 5 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+|  |  |  |  |  | 6 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+|  |  |  |  |  | 7 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| Ethernet | 0x510 | ethVehicleStateMsg | 0 | Gateway Normalized Vehicle State | 0 | gVehicleSpeed |  | Tx |  | Rx | Rx |  |  |  |  |  |  |  |  |  | UDP, 100ms |
+|  |  |  |  |  | 1 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+|  |  |  |  |  | 2 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+|  |  |  |  |  | 3 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+|  |  |  |  |  | 4 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+|  |  |  |  |  | 5 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+|  |  |  |  |  | 6 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+|  |  |  |  |  | 7 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+|  |  |  | 1 |  | 0 | gDriveState |  | Tx |  | Rx | Rx |  |  |  |  |  |  |  |  |  |  |
+|  |  |  |  |  | 1 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 | Ethernet | 0x511 | ethSteeringMsg | 0 | Gateway Normalized Steering | 0 | SteeringInput |  | Tx |  | Rx | Rx |  |  |  |  |  |  |  |  |  | UDP, 100ms |
-| Ethernet | 0x512 | ethNavContextMsg | 0 | Gateway Normalized Nav Context | 0~1 | gRoadZone |  |  | Tx | Rx |  | Rx |  |  |  | Rx |  |  |  |  | UDP, 100ms |
-|  |  |  | 0 |  | 2~3 | gNavDirection |  |  | Tx | Rx |  | Rx |  |  |  | Rx |  |  |  |  |  |
-|  |  |  | 1 |  | 0~7 | gZoneDistance |  |  | Tx | Rx |  | Rx |  |  |  | Rx |  |  |  |  |  |
-| Ethernet | 0xE100 | ETH_EmergencyAlert | 0 | Emergency Alert Tx/Rx | 0~1 | EmergencyType |  |  |  | Rx |  |  | Tx | Tx | Rx |  |  |  |  |  | UDP, 100ms |
-|  |  |  | 0 |  | 2~3 | EmergencyDirection |  |  |  | Rx |  |  | Tx | Tx | Rx |  |  |  |  |  |  |
-|  |  |  | 1 |  | 0~7 | ETA |  |  |  | Rx |  |  | Tx | Tx | Rx |  |  |  |  |  |  |
-|  |  |  | 2 |  | 0~7 | SourceID |  |  |  | Rx |  |  | Tx | Tx | Rx |  |  |  |  |  |  |
+| Ethernet | 0x512 | ethNavContextMsg | 0 | Gateway Normalized Nav Context | 0 | gRoadZone |  |  | Tx | Rx |  | Rx |  |  |  | Rx |  |  |  |  | UDP, 100ms |
+|  |  |  |  |  | 1 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+|  |  |  | 0 |  | 2 | gNavDirection |  |  | Tx | Rx |  | Rx |  |  |  | Rx |  |  |  |  |  |
+|  |  |  |  |  | 3 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+|  |  |  | 1 |  | 0 | gZoneDistance |  |  | Tx | Rx |  | Rx |  |  |  | Rx |  |  |  |  |  |
+|  |  |  |  |  | 1 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+|  |  |  |  |  | 2 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+|  |  |  |  |  | 3 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+|  |  |  |  |  | 4 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+|  |  |  |  |  | 5 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+|  |  |  |  |  | 6 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+|  |  |  |  |  | 7 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| Ethernet | 0xE100 | ETH_EmergencyAlert | 0 | Emergency Alert Tx/Rx | 0 | EmergencyType |  |  |  | Rx |  |  | Tx | Tx | Rx |  |  |  |  |  | UDP, 100ms |
+|  |  |  |  |  | 1 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+|  |  |  | 0 |  | 2 | EmergencyDirection |  |  |  | Rx |  |  | Tx | Tx | Rx |  |  |  |  |  |  |
+|  |  |  |  |  | 3 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+|  |  |  | 1 |  | 0 | ETA |  |  |  | Rx |  |  | Tx | Tx | Rx |  |  |  |  |  |  |
+|  |  |  |  |  | 1 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+|  |  |  |  |  | 2 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+|  |  |  |  |  | 3 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+|  |  |  |  |  | 4 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+|  |  |  |  |  | 5 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+|  |  |  |  |  | 6 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+|  |  |  |  |  | 7 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+|  |  |  | 2 |  | 0 | SourceID |  |  |  | Rx |  |  | Tx | Tx | Rx |  |  |  |  |  |  |
+|  |  |  |  |  | 1 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+|  |  |  |  |  | 2 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+|  |  |  |  |  | 3 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+|  |  |  |  |  | 4 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+|  |  |  |  |  | 5 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+|  |  |  |  |  | 6 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+|  |  |  |  |  | 7 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 |  |  |  | 3 |  | 0 | AlertState(Active/Clear) |  |  |  | Rx |  |  | Tx | Tx | Rx |  |  |  |  |  |  |
-| Ethernet | 0xE200 | ethSelectedAlertMsg | 0 | Arbitration Result Distribution | 0~2 | AlertLevel |  |  |  | Rx |  |  |  |  |  | Tx | Rx | Rx |  |  | UDP, 50ms |
-|  |  |  | 0 |  | 3~5 | AlertType |  |  |  | Rx |  |  |  |  |  | Tx | Rx | Rx |  |  |  |
+| Ethernet | 0xE200 | ethSelectedAlertMsg | 0 | Arbitration Result Distribution | 0 | AlertLevel |  |  |  | Rx |  |  |  |  |  | Tx | Rx | Rx |  |  | UDP, 50ms |
+|  |  |  |  |  | 1 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+|  |  |  |  |  | 2 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+|  |  |  | 0 |  | 3 | AlertType |  |  |  | Rx |  |  |  |  |  | Tx | Rx | Rx |  |  |  |
+|  |  |  |  |  | 4 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+|  |  |  |  |  | 5 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 |  |  |  | 1 |  | 0 | TimeoutClear |  |  |  | Rx |  |  |  |  |  | Tx | Rx | Rx |  |  |  |
-| Body CAN | 0x210 | frmAmbientControlMsg | 0 | Ambient Pattern Control | 0~2 | AmbientMode |  |  |  |  |  |  |  |  |  |  | Tx |  | Rx |  | CAN 출력, 50ms |
-|  |  |  | 0 |  | 3~5 | AmbientColor |  |  |  |  |  |  |  |  |  |  | Tx |  | Rx |  |  |
-|  |  |  | 0 |  | 6~7 | AmbientPattern |  |  |  |  |  |  |  |  |  |  | Tx |  | Rx |  |  |
-| Body CAN | 0x220 | frmClusterWarningMsg | 0 | Cluster Warning Display | 0~7 | WarningTextCode |  |  |  |  |  |  |  |  |  |  |  | Tx |  | Rx | CAN 출력, 50ms |
-| Test CAN | 0x230 | frmTestResultMsg | 0 | Scenario Result Report | 0~1 | ScenarioResult | Tx |  |  |  |  |  |  |  |  |  |  |  |  |  | Event |
+| Body CAN | 0x210 | frmAmbientControlMsg | 0 | Ambient Pattern Control | 0 | AmbientMode |  |  |  |  |  |  |  |  |  |  | Tx |  | Rx |  | CAN 출력, 50ms |
+|  |  |  |  |  | 1 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+|  |  |  |  |  | 2 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+|  |  |  | 0 |  | 3 | AmbientColor |  |  |  |  |  |  |  |  |  |  | Tx |  | Rx |  |  |
+|  |  |  |  |  | 4 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+|  |  |  |  |  | 5 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+|  |  |  | 0 |  | 6 | AmbientPattern |  |  |  |  |  |  |  |  |  |  | Tx |  | Rx |  |  |
+|  |  |  |  |  | 7 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| Body CAN | 0x220 | frmClusterWarningMsg | 0 | Cluster Warning Display | 0 | WarningTextCode |  |  |  |  |  |  |  |  |  |  |  | Tx |  | Rx | CAN 출력, 50ms |
+|  |  |  |  |  | 1 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+|  |  |  |  |  | 2 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+|  |  |  |  |  | 3 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+|  |  |  |  |  | 4 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+|  |  |  |  |  | 5 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+|  |  |  |  |  | 6 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+|  |  |  |  |  | 7 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| Test CAN | 0x230 | frmTestResultMsg | 0 | Scenario Result Report | 0 | ScenarioResult | Tx |  |  |  |  |  |  |  |  |  |  |  |  |  | Event |
+|  |  |  |  |  | 1 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 
-> 참고(실문서 이관 시): 공식 결과물 제출본에서는 샘플 표준(`reference/standards/Project Result_Sample/0302.md`)과 동일하게 Bit no.를 `0/1/2/...` 개별 행으로 풀어 작성하고, 현재 문서의 `0~7` 범위 표기는 세부 행으로 분해해 반영한다.
+> 참고: 본 문서는 샘플 표준(`reference/standards/Project Result_Sample/0302.md`) 형식에 맞춰 Bit no.를 `0/1/2/...` 개별 행으로 전개했다. 실문서 이관 시에도 동일 형식을 유지한다.
 
 ---
 
@@ -87,6 +154,18 @@
 
 ---
 
+## 예외/장애 처리 규칙
+
+| 장애 시나리오 | 감지 지점 | 처리 규칙 | 추적 링크 |
+|---|---|---|---|
+| CHASSIS_GW CAN->ETH 변환 실패 | CHASSIS_GW Tx watchdog | 마지막 정상값 1주기 유지 후 `WarningState` 강등, Fault 이벤트 기록 | Flow_001, Flow_002 / Comm_001, Comm_002 / Req_001, Req_011 |
+| INFOTAINMENT_GW CAN->ETH 변환 실패 | INFOTAINMENT_GW Tx watchdog | `BaseZoneContext`를 일반구간으로 복귀하고 유도 경고 해제 | Flow_003 / Comm_003 / Req_007, Req_016 |
+| EmergencyAlert 유실(1000ms 초과) | EMS_ALERT_RX timeout monitor | `TimeoutClear=1` 생성 후 중재 결과 해제 전파 | Flow_006 / Comm_006 / Req_024 |
+| BODY_GW CAN 송신 실패 | BODY_GW CAN Tx ack monitor | Ambient 출력을 안전 기본패턴으로 강등하고 재시도 3회 수행 | Flow_007 / Comm_007 / Req_033, Req_034 |
+| IVI_GW CAN 송신 실패 | IVI_GW CAN Tx ack monitor | Cluster 경고코드를 최소 메시지(양보 안내)로 축소해 1회 재송신 | Flow_008 / Comm_008 / Req_040 |
+
+---
+
 ## 개정 이력
 
 | 버전 | 날짜 | 변경 사항 |
@@ -96,3 +175,4 @@
 | 2.1 | 2026-02-25 | 공식 0302 표준 샘플 구조에 맞춰 상단 표를 재정렬하고, 하단 추적 표에 Comm 연계/메시지 ID/활성·해제 조건을 보강 |
 | 2.2 | 2026-02-25 | 실문서 이관 시 Bit no. 행 단위(0/1/2...)로 확장 작성해야 함을 상단 공식표 하단 주석으로 추가 |
 | 2.3 | 2026-02-25 | 옵션1 아키텍처(ETH_SWITCH + 도메인 GW + 도메인 CAN)로 네트워크 플로우 전면 통일 |
+| 2.4 | 2026-02-25 | 상단 공식표 Bit no.를 개별 비트 행(0/1/2/...)으로 전개하고, GW/ETH/CAN 장애 처리 규칙 섹션 추가 |

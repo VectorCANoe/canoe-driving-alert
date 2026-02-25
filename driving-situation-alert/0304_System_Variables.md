@@ -3,7 +3,7 @@
 **Document ID**: PROJ-0304-SV
 **ISO 26262 Reference**: Part 6, Cl.7 (Software Architectural Design)
 **ASPICE Reference**: SWE.2 / SWE.3
-**Version**: 2.1
+**Version**: 2.2
 **Date**: 2026-02-25
 **Status**: Draft
 **Project Title**: 주행상황 연동 실시간 경고 시스템
@@ -60,6 +60,42 @@
 
 ---
 
+## 변수 구현 속성 보강 표 (Unit/Scale/Endian/Invalid)
+
+| Name | Unit | Scale | Endian | Invalid Value | 비고 |
+|---|---|---|---|---|---|
+| vehicleSpeed_CAN_IN | km/h | 1 | Little | 255 | 센서 단절 시 최대값 예약 |
+| driveState_CAN_IN | enum | 1 | Little | 255 | 0:P,1:R,2:N,3:D |
+| steeringInput_CAN_IN | bool | 1 | Little | 255 | 0/1 외 값은 invalid |
+| roadZone_CAN_IN | enum | 1 | Little | 255 | 0:일반,1:스쿨존,2:고속,3:유도 |
+| navDirection_CAN_IN | enum | 1 | Little | 255 | 0:없음,1:좌,2:우,3:기타 |
+| zoneDistance_CAN_IN | m | 1 | Little | 65535 | 거리 미수신 시 invalid |
+| emergencyType_ETH_IN | enum | 1 | Little | 255 | 0:none,1:police,2:ambulance |
+| emergencyDirection_ETH_IN | enum | 1 | Little | 255 | 0:front,1:left,2:right,3:rear |
+| eta_ETH_IN | s | 1 | Little | 65535 | ETA 미산출 시 invalid |
+| sourceId_ETH_IN | id | 1 | Little | 65535 | 송신원 미식별 값 |
+| alertState_ETH_IN | bool | 1 | Little | 255 | 0:clear,1:active |
+| vehicleSpeed_ETH_CORE | km/h | 1 | Little | 255 | GW 정규화 후 값 |
+| driveState_ETH_CORE | enum | 1 | Little | 255 | GW 정규화 후 값 |
+| steeringInput_ETH_CORE | bool | 1 | Little | 255 | GW 정규화 후 값 |
+| baseZoneContext_ETH_CORE | context_id | 1 | Little | 65535 | 컨텍스트 계산 실패 값 |
+| warningState_ETH_CORE | state_id | 1 | Little | 65535 | 경고 판정 실패 값 |
+| emergencyContext_ETH_CORE | state_id | 1 | Little | 65535 | 긴급 컨텍스트 미유효 값 |
+| selectedAlertLevel_ETH_CORE | level | 1 | Little | 255 | 0~7 이외 invalid |
+| selectedAlertType_ETH_CORE | type | 1 | Little | 255 | 0~7 이외 invalid |
+| timeoutClear_ETH_CORE | bool | 1 | Little | 255 | 0/1 외 값 invalid |
+| ambientMode_CAN_OUT | mode | 1 | Little | 255 | 안전 기본값은 0 |
+| ambientColor_CAN_OUT | color_id | 1 | Little | 255 | palette 외 값 invalid |
+| ambientPattern_CAN_OUT | pattern_id | 1 | Little | 255 | 패턴 코드 외 invalid |
+| warningTextCode_CAN_OUT | text_id | 1 | Little | 65535 | 메시지 테이블 미매칭 값 |
+| testScenario_INPUT | scenario_id | 1 | Little | 65535 | 미등록 시나리오 값 |
+| scenarioResult_OUTPUT | bool | 1 | Little | 255 | 0:fail,1:pass |
+| lastEmergencyRxMs | ms | 1 | Little | 4294967295 | 타임스탬프 미기록 값 |
+| duplicatePopupGuard | ms | 1 | Little | 4294967295 | 타이머 비활성 예약값 |
+| arbitrationSnapshotId | seq | 1 | Little | 4294967295 | 스냅샷 미생성 값 |
+
+---
+
 ## 변수 추적 상세 표 (Var/Comm/Flow/Func/Req)
 
 | Var ID | 변수명 | 계층 | Owner Node | Comm ID | Flow ID | Func ID | Req ID | 갱신 규칙 |
@@ -112,3 +148,4 @@
 | 1.0 | 2026-02-23 | 초기 생성 |
 | 2.0 | 2026-02-25 | 옵션1 아키텍처 기준으로 전면 재작성. 변수 계층(CAN_IN/ETH_CORE/CAN_OUT) 분리, Var-Comm-Flow-Func-Req 추적 표 추가 |
 | 2.1 | 2026-02-25 | 상단 29개 변수와 하단 추적표를 1:1 대응하도록 누락 변수(emergency*_ETH_IN, driveState_ETH_CORE, warningState_ETH_CORE, lastEmergencyRxMs) 직접 매핑 추가 |
+| 2.2 | 2026-02-25 | 변수 구현 속성 보강 표(Unit/Scale/Endian/Invalid) 추가로 04 구현 시 해석 오차 방지 기준 명시 |

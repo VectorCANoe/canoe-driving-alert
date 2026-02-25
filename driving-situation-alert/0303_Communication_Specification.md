@@ -3,7 +3,7 @@
 **Document ID**: PROJ-0303-CS
 **ISO 26262 Reference**: Part 6, Cl.7 (Software Architectural Design)
 **ASPICE Reference**: SWE.2 (Software Architectural Design)
-**Version**: 2.1
+**Version**: 2.2
 **Date**: 2026-02-25
 **Status**: Draft
 **Project Title**: 주행상황 연동 실시간 경고 시스템
@@ -30,31 +30,98 @@
 
 | Message | Identifier | DLC | Signal | signal bit position | Data 설명 | Data 범위 | Data 사용 |
 |---|---|---|---|---|---|---|---|
-| frmVehicleStateCanMsg | 0x100 | 2 | gVehicleSpeed | 0~7 | 차량 속도 입력 | 0~255 km/h | Chassis CAN에서 CHASSIS_GW가 수신 후 Ethernet으로 변환 전달 |
-|  |  |  | gDriveState | 8~9 | 주행 상태 입력(P/R/N/D) | 0~3 | ADAS_WARN_CTRL 주행/비주행 활성 판단 입력 |
-| ethVehicleStateMsg | 0x510 | 2 | gVehicleSpeed | 0~7 | 게이트웨이 변환 차량 속도 | 0~255 km/h | CHASSIS_GW -> ETH_SWITCH -> ADAS_WARN_CTRL |
-|  |  |  | gDriveState | 8~9 | 게이트웨이 변환 주행 상태 | 0~3 | 경고 엔진 조건 판정 입력 |
+| frmVehicleStateCanMsg | 0x100 | 2 | gVehicleSpeed | 0 | 차량 속도 입력 | 0~255 km/h | Chassis CAN에서 CHASSIS_GW가 수신 후 Ethernet으로 변환 전달 |
+|  |  |  |  | 1 |  |  |  |
+|  |  |  |  | 2 |  |  |  |
+|  |  |  |  | 3 |  |  |  |
+|  |  |  |  | 4 |  |  |  |
+|  |  |  |  | 5 |  |  |  |
+|  |  |  |  | 6 |  |  |  |
+|  |  |  |  | 7 |  |  |  |
+|  |  |  | gDriveState | 8 | 주행 상태 입력(P/R/N/D) | 0~3 | ADAS_WARN_CTRL 주행/비주행 활성 판단 입력 |
+|  |  |  |  | 9 |  |  |  |
+| ethVehicleStateMsg | 0x510 | 2 | gVehicleSpeed | 0 | 게이트웨이 변환 차량 속도 | 0~255 km/h | CHASSIS_GW -> ETH_SWITCH -> ADAS_WARN_CTRL |
+|  |  |  |  | 1 |  |  |  |
+|  |  |  |  | 2 |  |  |  |
+|  |  |  |  | 3 |  |  |  |
+|  |  |  |  | 4 |  |  |  |
+|  |  |  |  | 5 |  |  |  |
+|  |  |  |  | 6 |  |  |  |
+|  |  |  |  | 7 |  |  |  |
+|  |  |  | gDriveState | 8 | 게이트웨이 변환 주행 상태 | 0~3 | 경고 엔진 조건 판정 입력 |
+|  |  |  |  | 9 |  |  |  |
 | frmSteeringCanMsg | 0x101 | 1 | SteeringInput | 0 | 조향 입력 여부 | 0:미입력 / 1:입력 | Chassis CAN에서 CHASSIS_GW가 수신 |
 | ethSteeringMsg | 0x511 | 1 | SteeringInput | 0 | 게이트웨이 변환 조향 입력 | 0:미입력 / 1:입력 | CHASSIS_GW -> ETH_SWITCH -> ADAS_WARN_CTRL |
-| frmNavContextCanMsg | 0x110 | 2 | gRoadZone | 0~1 | 구간 타입 | 0:일반 / 1:스쿨존 / 2:고속 / 3:유도 | Infotainment CAN에서 INFOTAINMENT_GW가 수신 |
-|  |  |  | gNavDirection | 2~3 | 유도 방향 | 0:없음 / 1:좌 / 2:우 | 방향 안내 정책 입력 |
-|  |  |  | gZoneDistance | 8~15 | 구간까지 남은 거리 | 0~255 m | 구간 전환 타이밍 판단 입력 |
-| ethNavContextMsg | 0x512 | 2 | gRoadZone | 0~1 | 게이트웨이 변환 구간 타입 | 0~3 | INFOTAINMENT_GW -> ETH_SWITCH -> NAV_CONTEXT_MGR/WARN_ARB_MGR |
-|  |  |  | gNavDirection | 2~3 | 게이트웨이 변환 유도 방향 | 0~3 | 구간 안내 분기 입력 |
-|  |  |  | gZoneDistance | 8~15 | 게이트웨이 변환 구간 거리 | 0~255 m | 구간 컨텍스트 갱신 입력 |
-| ETH_EmergencyAlert | 0xE100 | 4 | EmergencyType | 0~1 | 긴급차량 종류 | 0:None / 1:Police / 2:Ambulance | EMS_POLICE_TX/EMS_AMB_TX -> ETH_SWITCH -> EMS_ALERT_RX |
-|  |  |  | EmergencyDirection | 2~3 | 접근 방향 | 0:앞 / 1:좌 / 2:우 / 3:후 | CLU_HMI_CTRL 방향 표시 입력 |
-|  |  |  | ETA | 8~15 | 도달 예상 시간 | 0~255 s | WARN_ARB_MGR 우선순위 판단 |
-|  |  |  | SourceID | 16~23 | 송신 주체 ID | 0~255 | ETA 동률 시 2차 우선순위 판단 |
+| frmNavContextCanMsg | 0x110 | 2 | gRoadZone | 0 | 구간 타입 | 0:일반 / 1:스쿨존 / 2:고속 / 3:유도 | Infotainment CAN에서 INFOTAINMENT_GW가 수신 |
+|  |  |  |  | 1 |  |  |  |
+|  |  |  | gNavDirection | 2 | 유도 방향 | 0:없음 / 1:좌 / 2:우 | 방향 안내 정책 입력 |
+|  |  |  |  | 3 |  |  |  |
+|  |  |  | gZoneDistance | 8 | 구간까지 남은 거리 | 0~255 m | 구간 전환 타이밍 판단 입력 |
+|  |  |  |  | 9 |  |  |  |
+|  |  |  |  | 10 |  |  |  |
+|  |  |  |  | 11 |  |  |  |
+|  |  |  |  | 12 |  |  |  |
+|  |  |  |  | 13 |  |  |  |
+|  |  |  |  | 14 |  |  |  |
+|  |  |  |  | 15 |  |  |  |
+| ethNavContextMsg | 0x512 | 2 | gRoadZone | 0 | 게이트웨이 변환 구간 타입 | 0~3 | INFOTAINMENT_GW -> ETH_SWITCH -> NAV_CONTEXT_MGR/WARN_ARB_MGR |
+|  |  |  |  | 1 |  |  |  |
+|  |  |  | gNavDirection | 2 | 게이트웨이 변환 유도 방향 | 0~3 | 구간 안내 분기 입력 |
+|  |  |  |  | 3 |  |  |  |
+|  |  |  | gZoneDistance | 8 | 게이트웨이 변환 구간 거리 | 0~255 m | 구간 컨텍스트 갱신 입력 |
+|  |  |  |  | 9 |  |  |  |
+|  |  |  |  | 10 |  |  |  |
+|  |  |  |  | 11 |  |  |  |
+|  |  |  |  | 12 |  |  |  |
+|  |  |  |  | 13 |  |  |  |
+|  |  |  |  | 14 |  |  |  |
+|  |  |  |  | 15 |  |  |  |
+| ETH_EmergencyAlert | 0xE100 | 4 | EmergencyType | 0 | 긴급차량 종류 | 0:None / 1:Police / 2:Ambulance | EMS_POLICE_TX/EMS_AMB_TX -> ETH_SWITCH -> EMS_ALERT_RX |
+|  |  |  |  | 1 |  |  |  |
+|  |  |  | EmergencyDirection | 2 | 접근 방향 | 0:앞 / 1:좌 / 2:우 / 3:후 | CLU_HMI_CTRL 방향 표시 입력 |
+|  |  |  |  | 3 |  |  |  |
+|  |  |  | ETA | 8 | 도달 예상 시간 | 0~255 s | WARN_ARB_MGR 우선순위 판단 |
+|  |  |  |  | 9 |  |  |  |
+|  |  |  |  | 10 |  |  |  |
+|  |  |  |  | 11 |  |  |  |
+|  |  |  |  | 12 |  |  |  |
+|  |  |  |  | 13 |  |  |  |
+|  |  |  |  | 14 |  |  |  |
+|  |  |  |  | 15 |  |  |  |
+|  |  |  | SourceID | 16 | 송신 주체 ID | 0~255 | ETA 동률 시 2차 우선순위 판단 |
+|  |  |  |  | 17 |  |  |  |
+|  |  |  |  | 18 |  |  |  |
+|  |  |  |  | 19 |  |  |  |
+|  |  |  |  | 20 |  |  |  |
+|  |  |  |  | 21 |  |  |  |
+|  |  |  |  | 22 |  |  |  |
+|  |  |  |  | 23 |  |  |  |
 |  |  |  | AlertState | 24 | 경고 상태 | 0:Clear / 1:Active | Clear/타임아웃 처리 기준 |
-| ethSelectedAlertMsg | 0xE200 | 2 | AlertLevel | 0~2 | 최종 경고 레벨 | 0~7 | WARN_ARB_MGR -> ETH_SWITCH -> BODY_GW/IVI_GW |
-|  |  |  | AlertType | 3~5 | 최종 경고 타입 | 0~7 | 도메인별 출력 분기 |
+| ethSelectedAlertMsg | 0xE200 | 2 | AlertLevel | 0 | 최종 경고 레벨 | 0~7 | WARN_ARB_MGR -> ETH_SWITCH -> BODY_GW/IVI_GW |
+|  |  |  |  | 1 |  |  |  |
+|  |  |  |  | 2 |  |  |  |
+|  |  |  | AlertType | 3 | 최종 경고 타입 | 0~7 | 도메인별 출력 분기 |
+|  |  |  |  | 4 |  |  |  |
+|  |  |  |  | 5 |  |  |  |
 |  |  |  | TimeoutClear | 8 | 타임아웃 해제 플래그 | 0/1 | 출력 복귀 조건 신호 |
-| frmAmbientControlMsg | 0x210 | 1 | AmbientMode | 0~2 | 앰비언트 동작 모드 | 0~7 | BODY_GW -> BCM_AMBIENT_CTRL(CAN) |
-|  |  |  | AmbientColor | 3~5 | 앰비언트 색상 코드 | 0~7 | 긴급/구간 정책 색상 출력 |
-|  |  |  | AmbientPattern | 6~7 | 점등 패턴 코드 | 0~3 | 고정/점멸/파동 패턴 제어 |
-| frmClusterWarningMsg | 0x220 | 1 | WarningTextCode | 0~7 | 클러스터 경고 코드 | 0~255 | IVI_GW -> CLU_HMI_CTRL(CAN) |
-| frmTestResultMsg | 0x230 | 1 | ScenarioResult | 0~1 | 테스트 판정 결과 | 0:Fail / 1:Pass | SIL_TEST_CTRL 결과 기록 및 로그 연동 |
+| frmAmbientControlMsg | 0x210 | 1 | AmbientMode | 0 | 앰비언트 동작 모드 | 0~7 | BODY_GW -> BCM_AMBIENT_CTRL(CAN) |
+|  |  |  |  | 1 |  |  |  |
+|  |  |  |  | 2 |  |  |  |
+|  |  |  | AmbientColor | 3 | 앰비언트 색상 코드 | 0~7 | 긴급/구간 정책 색상 출력 |
+|  |  |  |  | 4 |  |  |  |
+|  |  |  |  | 5 |  |  |  |
+|  |  |  | AmbientPattern | 6 | 점등 패턴 코드 | 0~3 | 고정/점멸/파동 패턴 제어 |
+|  |  |  |  | 7 |  |  |  |
+| frmClusterWarningMsg | 0x220 | 1 | WarningTextCode | 0 | 클러스터 경고 코드 | 0~255 | IVI_GW -> CLU_HMI_CTRL(CAN) |
+|  |  |  |  | 1 |  |  |  |
+|  |  |  |  | 2 |  |  |  |
+|  |  |  |  | 3 |  |  |  |
+|  |  |  |  | 4 |  |  |  |
+|  |  |  |  | 5 |  |  |  |
+|  |  |  |  | 6 |  |  |  |
+|  |  |  |  | 7 |  |  |  |
+| frmTestResultMsg | 0x230 | 1 | ScenarioResult | 0 | 테스트 판정 결과 | 0:Fail / 1:Pass | SIL_TEST_CTRL 결과 기록 및 로그 연동 |
+|  |  |  |  | 1 |  |  |  |
 
 ---
 
@@ -85,6 +152,18 @@
 
 ---
 
+## 통신 예외 처리 규칙
+
+| Comm Group | 예외 조건 | Fail-safe 동작 | 검증 포인트 |
+|---|---|---|---|
+| Group_A(Comm_001,002) | CHASSIS_GW 변환 프레임 누락(연속 2주기) | ADAS_WARN_CTRL 입력 품질 플래그 저하, 경고 강등 모드 진입 | CAN 입력 정상 + ETH 변환 누락 시 동작 확인 |
+| Group_B(Comm_003) | INFOTAINMENT_GW 변환 프레임 누락(연속 2주기) | NAV_CONTEXT_MGR를 일반구간 기본 컨텍스트로 복귀 | 유도구간 상태에서 변환 누락 주입 |
+| Group_C(Comm_004~006) | EmergencyAlert 1000ms 무갱신 | `TimeoutClear=1`, EmergencyContext clear, 출력 복귀 | Req_024 타임아웃 검증 |
+| Group_D(Comm_007) | BODY_GW CAN 송신 ACK 실패 | AmbientMode를 안전 기본값(0)으로 전환 후 재전송 | CAN Tx fail 주입 테스트 |
+| Group_E(Comm_008) | IVI_GW CAN 송신 ACK 실패 | WarningTextCode를 최소 안내 코드로 축소 후 재전송 | Cluster 경고 축소 출력 확인 |
+
+---
+
 ## 개정 이력
 
 | 버전 | 날짜 | 변경 사항 |
@@ -92,3 +171,4 @@
 | 1.0 | 2026-02-23 | 초기 생성 |
 | 2.0 | 2026-02-25 | 최신 프로젝트 스코프 반영 전면 재작성. Comm_001~Comm_009 및 Flow/Func/Req 1:1 추적 구조 반영, OTA/UDS/DoIP 제거 |
 | 2.1 | 2026-02-25 | 공식 샘플 표기 스타일(Identifier/DLC 순수값)로 상단 표 정렬, Ethernet 백본+도메인 게이트웨이+CAN 분배 구조 반영 |
+| 2.2 | 2026-02-25 | 상단 공식표 signal bit position을 개별 비트 행으로 전개하고 Comm별 통신 예외 처리 규칙 추가 |
