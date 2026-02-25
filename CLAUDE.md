@@ -223,8 +223,8 @@ on message EmergencyVehicleMsg:
 
 | 우선순위 | 조건 | 앰비언트 패턴 |
 |---------|------|-------------|
-| 1 (최고) | gEmergencyType = POLICE (1) | RED / BLUE 교차 점멸 |
-| 2 | gEmergencyType = AMBULANCE (2) | RED / WHITE 교차 점멸 |
+| 1 (최고) | gEmergencyType = AMBULANCE (2) | RED / WHITE 교차 점멸 |
+| 2 | gEmergencyType = POLICE (1) | RED / BLUE 교차 점멸 |
 | 3 | gWarningLevel > 0 | AMBER / RED (기존 경고) |
 | 4 (최저) | gRoadZone 기본값 | 구간별 색상 (준영 파트) |
 
@@ -247,12 +247,12 @@ on message EmergencyVehicleMsg:
     → Ambient → gRoadZone 기본 패턴으로 자동 복귀
 
 [Scene 3 — 구급차와 경찰차 동시 접근]
-  두 메시지 동시 수신 시 → 우선순위 1 (POLICE) 적용
-  경찰차 해제 → 우선순위 2 (AMBULANCE) 자동 승격
+  두 메시지 동시 수신 시 → 우선순위 1 (AMBULANCE) 적용
+  구급차 해제 → 우선순위 2 (POLICE) 자동 승격
 
 [Scene 4 — 긴급차량 접근 중 스쿨존 과속]
   gEmergencyType = POLICE + gWarningLevel > 0 동시 발생
-  → 우선순위 1 (POLICE 패턴) 유지 — 경고보다 긴급차량이 항상 우선
+  → 우선순위 2 (POLICE 패턴) 유지 — 경고보다 긴급차량이 항상 우선
 ```
 
 ---
