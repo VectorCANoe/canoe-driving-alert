@@ -156,16 +156,30 @@ def convert_md_to_excel(md_file, excel_file):
     print(f"✓ Created: {excel_file}")
 
 def main():
-    source_dir = Path("/Users/juns/code/work/mobis/PBL/docs/sample")
-    output_dir = source_dir / "excel"
-    output_dir.mkdir(exist_ok=True)
+    import sys
 
-    # Find all MD files starting with 01-07
-    md_files = sorted(source_dir.glob("0[1-7]*.md"))
+    if len(sys.argv) > 1:
+        source_dir = Path(sys.argv[1])
+    else:
+        source_dir = Path("/Users/juns/code/work/mobis/PBL/docs/sample")
 
-    print(f"\nFound {len(md_files)} files to convert:")
+    if len(sys.argv) > 2:
+        output_dir = Path(sys.argv[2])
+    else:
+        output_dir = source_dir / "excel"
+
+    output_dir.mkdir(parents=True, exist_ok=True)
+
+    # Find all MD files
+    md_files = sorted(source_dir.glob("*.md"))
+
+    print(f"\nFound {len(md_files)} files to convert in {source_dir}:")
     for md_file in md_files:
         print(f"  - {md_file.name}")
+
+    if not md_files:
+        print("No markdown files found!")
+        return
 
     print("\nConverting...\n")
 

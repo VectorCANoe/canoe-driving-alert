@@ -10,25 +10,22 @@
 - **개발 환경**: CANoe 17+, CAPL, dSPACE SCALEXIO HIL
 - **참조용 sample 프로젝트**: `docs/sample/` — BCM 과전류 → DTC → OTA (완료된 예제)
 - **새 프로젝트 문서**: `docs/project/` — sample 구조 그대로 미러링
+- **성현 프로젝트 문서**: `docs/OTA/` — 전면 재작성 중 (OTA 제거, 경찰차·구급차+네비 앰비언트로 교체)
+- **원본 백업**: `docs/OTA_original/` — 기존 OTA 문서 백업 (수정 금지)
 
 ---
 
 ## 프로젝트 정체성
 
-> **"SDV 기반 차량 경험(Experience) 플랫폼 (3종 HMI/FoD 세트)"**
+> **"SDV 기반 차량 경험(Experience) 플랫폼"**
 
 ```
-1. Safety (구간 인식) : 스쿨존/고속도로 상황에 맞는 즉각적인 앰비언트/진동 경고
-2. FoD (초보자 코치) : 위험 운전 지속 시 'Drive Coach' 패키지 제안 및 OTA 다운로드
-3. Personalization   : 크리스마스 등 특정 테마 OTA 다운로드 및 차량 HMI 일괄 동기화
+1. Safety (구간 인식) : 스쿨존/고속도로 상황에 맞는 즉각적인 앰비언트/진동 경고  [준영]
+2. V2V 알림 (긴급차량 감지) : 경찰차·구급차 Ethernet 수신 → 앰비언트 즉시 오버라이드  [성현]
 ```
 
-비즈니스 모델 근거: 기아 EV9 라이팅 패턴 판매, BMW FOD(Feature on Demand) 등
-양산차에서 가장 수익성이 좋고 현실적인 'UI/UX 및 테마 업데이트' 기반.
-
-OTA 현실성 원칙:
-- **불가**: 조향/제동 등 차량 제어권 강제 개입 (기능안전 ISO 26262 리스크), 차량이 자율적으로 OTA결정 (UNECE WP.29, ISO 26262 위반)
-- **가능**: HMI(앰비언트, 음성, 클러스터 UI) 경험을 OTA로 다운로드하여 즉각적인 차량 분위기 전환
+> **OTA 완전 제거**: Drive Coach Package, Seasonal Theme Package — 개발 범위에서 제외.
+> 이유: 구현 깊이 대비 포트폴리오 가치 낮음 + 벡터 담당자 피드백 반영.
 
 ---
 
@@ -46,7 +43,7 @@ OTA 현실성 원칙:
 │  판단층 (WDM_ECU — Rule-Based)           │
 │  A단독/B단독 → 1단계                     │
 │  A+B         → 2단계                    │
-│  + OTA 조건  → 3단계 (성현 D 발동)       │
+│  Emergency 수신 → 앰비언트 오버라이드     │
 └──────────┬──────────────┬───────────────┘
            │              │
 ┌──────────▼───┐  ┌───────▼───────────────┐
@@ -61,10 +58,12 @@ OTA 현실성 원칙:
 │  [준영] 1. Safety (구간 인식 컨텍스트)     │
 │  gRoadZone → 경고 조건 + 앰비언트 연동   │
 │                                         │
-│  [성현] 2. FoD / 3. Personalization     │
-│  위험 누적 → Drive Coach 패키지 제안      │
-│  이벤트 기간 → 시즌 테마 패키지 제안        │
-│  운전자 선택 → UDS 세션 → HMI 패키지 적용 │
+│  [성현] 2. V2V 긴급차량 알림 + 앰비언트 중재 │
+│  Police/Ambulance_ECU                   │
+│    → Ethernet 브로드캐스트               │
+│    → Civ_ECU 수신                       │
+│    → EmergencyType → 앰비언트 우선순위 중재│
+│  (준영 gRoadZone 앰비언트와 우선순위 통합) │
 └─────────────────────────────────────────┘
 ```
 
@@ -79,7 +78,7 @@ OTA 현실성 원칙:
 | **라엘** | 해제층 | 응시 복귀 감지 | `sysvar::Driver::GazeActive` 0→1 → Level 3 해제 |
 | **현준** | 해제층 | 핸들 입력 감지 | MDPS_ECU 조향 입력 0/1 → Level 3 해제 |
 | **현준2** | 특화층 D | Smart Claim Python/Flask | Python COM API → Flask 보험사 서버 HTTP POST |
-| **성현** | 특화층 D | OTA FoD/테마 구독 서비스 | UDS 0x10→0x27→0x34→0x36×N→0x37 (Drive Coach + Seasonal Theme) |
+| **성현** | 특화층 D | V2V 긴급차량 알림 + 앰비언트 중재 | Ethernet 브로드캐스트 수신 → EmergencyType → 앰비언트 우선순위 오버라이드 |
 
 **WDM_ECU (판단층)**: 팀 전체 공동 구현 또는 준영(팀장) 담당 — 미확정
 
@@ -178,52 +177,107 @@ zone_map = {
 
 ---
 
-## 성현 상세 시나리오 (OTA 구독 서비스)
+## 성현 상세 시나리오 (V2V 긴급차량 알림 + 앰비언트 중재)
 
-### 제품명 확정
+> **OTA 완전 제거. docs/OTA/ 문서 전면 교체.**
 
-> **1. Drive Coach Package** (초보자 맞춤 운전 코치)
-> **2. Seasonal Theme Package** (시즌별 차량 테마 - 예: 크리스마스 테마)
+### 프로젝트 한 줄 정의
 
-### 비즈니스 모델 (개발 관점)
+> 경찰차·구급차가 Ethernet으로 주변 차량에 긴급 상태를 브로드캐스트하면,
+> 수신 차량의 앰비언트 라이트가 즉시 해당 긴급 패턴으로 오버라이드된다.
+> 긴급 해제 시 gRoadZone 기반 앰비언트로 자동 복귀.
 
-> "제어권을 뺏는 위험한 OTA"가 아닌, 소비자가 원할 때 즉각적인 만족감을 주는 "HMI 경험 구독(FoD)" 모델.
-> 기아 EV9 라이팅 패턴 판매, 벤츠 빛과 소리 테마 플랫폼 등 실제 양산차 비즈니스 흐름 완벽 반영.
+---
 
-```
-[FoD 1: Drive Coach Package — 초보자 주행 보조 (Tesla/BMW Valet Mode 대응)]
-  P 기어 정차 중 IVI 구독 메뉴 → [Drive Coach 설치] 선택 → 동의 → OTA 다운로드
-  적용 후 (안전 파라미터 활성화):
-    · LDW 경고 민감도 상향 (차선이탈 더 빠르게 감지·경고)
-    · 급가속 토크 제한 (최대 토크 70%)
-    · 최고 속도 리미터 (100 km/h)
-    · 후진 속도 제한 (10 km/h)
+### Core 구현 (필수 — 이것만 완성해도 됨)
 
-[FoD 2: Seasonal Theme Package — 개인화 및 감성 만족]
-  P 기어 정차 중 IVI 알림 (OTA 서버 패키지 가용) → 동의 → OTA 다운로드
-  적용 후 (차량 분위기 전환):
-    · 앰비언트 라이트가 시즌 테마(봄/여름/가을/겨울)로 색상 동기화
-    · 시동 사운드 및 IVI 배경 테마 변경
-```
+#### 노드 구성
 
-### OTA 공통 조건
+| 노드 | 역할 | 통신 |
+|------|------|------|
+| `Police_ECU` | 경찰차. 긴급 출동 버튼 → Ethernet 브로드캐스트 | Ethernet 송신 |
+| `Ambulance_ECU` | 구급차. 출동 버튼 → Ethernet 브로드캐스트 | Ethernet 송신 |
+| `Civ_ECU` | 일반 수신차. Ethernet 수신 → CAN으로 Ambient_ECU 제어 | Ethernet 수신 → CAN |
+
+#### 통신 메시지 정의
 
 ```
-P 기어(gGearP = 1) 상태에서만 UDS 세션 허용
-→ 주행 중 OTA 불가 (UNECE WP.29 준수)
-→ 기어 변경 감지 시 세션 즉시 중단
+EmergencyVehicleMsg (Ethernet, 브로드캐스트):
+  byte VehicleType  // 1 = POLICE, 2 = AMBULANCE
+  byte Status       // 0 = CLEAR, 1 = ACTIVE
 ```
 
-### OTA UDS 세션 흐름
+#### Civ_ECU 수신 로직
 
 ```
-UDS 0x10 (Programming Session)
-  → 0x27 (Security Access)
-  → 0x34 (Request Download)
-  → 0x36 × N (Transfer Data)
-  → 0x37 (Transfer Exit)
-  → ECU Restart → 새 파라미터 적용
+on message EmergencyVehicleMsg:
+  if Status == ACTIVE:
+    gEmergencyType = VehicleType
+    → Ambient_ECU: 우선순위 중재 즉시 실행
+  if Status == CLEAR:
+    gEmergencyType = 0
+    → Ambient_ECU: gRoadZone 앰비언트 복귀
 ```
+
+#### 앰비언트 우선순위 중재 테이블
+
+| 우선순위 | 조건 | 앰비언트 패턴 |
+|---------|------|-------------|
+| 1 (최고) | gEmergencyType = POLICE (1) | RED / BLUE 교차 점멸 |
+| 2 | gEmergencyType = AMBULANCE (2) | RED / WHITE 교차 점멸 |
+| 3 | gWarningLevel > 0 | AMBER / RED (기존 경고) |
+| 4 (최저) | gRoadZone 기본값 | 구간별 색상 (준영 파트) |
+
+**규칙**: 높은 우선순위 조건이 사라지면 → 즉시 다음 우선순위로 자동 강등.
+긴급차량 해제 → gWarningLevel 있으면 경고 앰비언트, 없으면 gRoadZone 앰비언트.
+
+#### 시나리오 흐름
+
+```
+[Scene 1 — 경찰차 긴급 출동]
+  Police_ECU Panel [긴급 출동] 버튼 누름
+    → EmergencyVehicleMsg { POLICE, ACTIVE } 브로드캐스트
+    → Civ_ECU 수신 → Ambient RED/BLUE 교차 점멸
+    → Cluster: "긴급 차량 접근 — 우측 양보" 팝업
+
+[Scene 2 — 긴급 해제]
+  Police_ECU Panel [해제] 버튼 누름
+    → EmergencyVehicleMsg { POLICE, CLEAR } 브로드캐스트
+    → Civ_ECU: gEmergencyType = 0
+    → Ambient → gRoadZone 기본 패턴으로 자동 복귀
+
+[Scene 3 — 구급차와 경찰차 동시 접근]
+  두 메시지 동시 수신 시 → 우선순위 1 (POLICE) 적용
+  경찰차 해제 → 우선순위 2 (AMBULANCE) 자동 승격
+
+[Scene 4 — 긴급차량 접근 중 스쿨존 과속]
+  gEmergencyType = POLICE + gWarningLevel > 0 동시 발생
+  → 우선순위 1 (POLICE 패턴) 유지 — 경고보다 긴급차량이 항상 우선
+```
+
+---
+
+### V2V ACK 양방향 확장 — CLAUDE.md에만 정의, 문서화 금지
+
+> **⚠️ 이 섹션은 CLAUDE.md에만 존재한다. docs/OTA/ 문서에 절대 먼저 작성하지 않는다.**
+> Core 구현(경찰차·구급차 단방향 + 앰비언트 중재) 완전 완료 후에만 시도한다.
+> 구현 성공 시 → docs/OTA/ 해당 섹션에 추가.
+> 구현 실패 또는 시간 부족 시 → 이 섹션 그대로 유지, docs에는 없는 것으로 처리.
+
+```
+[확장 메시지]
+AckMsg (Ethernet, Civ_ECU → Police/Ambulance_ECU):
+  byte VehicleID    // 수신차 ID
+  byte Status       // 1 = 수신 확인, 2 = 실행 완료
+
+[Lead 노드 추가 로직]
+  ackReceived[N] 배열로 수신차 확인 추적
+  타임아웃 500ms → 미수신 노드에 재전송 (최대 3회)
+  Panel: "차량 A ✓ / 차량 B ✓ / 차량 C ⏳" 표시
+```
+
+ACK 구현 완료 시 포트폴리오 표현:
+> "요청-응답 프로토콜 직접 설계 — 타임아웃/재전송 로직 포함"
 
 ---
 
@@ -232,11 +286,13 @@ UDS 0x10 (Programming Session)
 | 후보 | 탈락/확정 이유 |
 |------|-------------|
 | 준영 단독 | 구간단속 경고만으로는 기존 양산 기능과 동일 → 앰비언트 방향 안내로 차별화 후 확정 |
-| **준영 + 성현** | **구간 인식(컨텍스트) + OTA 구독(비즈니스) = 현재 양산차에 없는 조합. 확정** |
-| 택천 | 급가속 감지(A그룹 플래그)만 담당. 누적 카운팅 제거. 플랫폼 기여 역할. |
+| **준영 + 성현** | **구간 인식(내부 컨텍스트) + V2V 긴급 알림(외부 컨텍스트) = 두 입력이 하나의 앰비언트에서 중재. 확정** |
+| 택천 | 급가속 감지(A그룹 플래그)만 담당. 플랫폼 기여 역할. |
 | 라엘 | 해제층. D 아님 |
 | 현준 | 해제층 + 기존 LKA. D 아님 |
 | 현준2 | 기존 BSD 기능 재구현. 출력층으로 전환 |
+
+> **OTA 탈락 이유**: 구현 깊이가 얕으면 포트폴리오 가치 낮음. 깊게 하면 UDS 전체 프로토콜 학습 필요. 벡터 담당자 "수면 밑 기반 내용이 너무 많다" 피드백 수용.
 
 ---
 
@@ -251,18 +307,19 @@ UDS 0x10 (Programming Session)
 
 **공통 변수**:
 ```
-gVehicleSpeed  = 60 km/h  (정상 주행)
-gRoadZone      = 0         (일반도로 80km/h)
-gRainMode      = 0         (맑음)
-gWarningLevel  = 0         (경고 없음)
-gCrashEvent    = 0         (충돌 이벤트 — Level 3 트리거, Panel 버튼)
+gVehicleSpeed    = 60 km/h  (정상 주행)
+gRoadZone        = 0         (일반도로 80km/h)
+gRainMode        = 0         (맑음)
+gWarningLevel    = 0         (경고 없음)
+gCrashEvent      = 0         (충돌 이벤트 — Level 3 트리거, Panel 버튼)
+gEmergencyType   = 0         (긴급차량 없음 / 1=경찰 / 2=구급)
 ```
 
 **CAN 버스**:
 ```
 CAN-HS 500kbps: WDM_ECU ↔ Cluster / IVI / Ambient / Sound / Door
 CAN-LS 125kbps: Accel_ECU / Vehicle_ECU / MDPS_ECU → CGW → WDM_ECU
-Ethernet DoIP : OTA_Server ↔ WDM_ECU (성현 OTA 세션)
+Ethernet       : Police_ECU / Ambulance_ECU → Civ_ECU (성현 V2V 긴급차량 알림)
 ```
 
 ---
@@ -275,28 +332,57 @@ Ethernet DoIP : OTA_Server ↔ WDM_ECU (성현 OTA 세션)
 | 2 | WDM_ECU 담당자 | ⬜ 준영 단독 vs 공동 |
 | 3 | 빗길 임계값 하향 수치 | ⬜ 60% vs 80% (Req_B04 하위 예정) |
 | 4 | Smart Claim Flask 서버 구현 범위 | ⬜ 현준2 담당 — 로컬 Flask vs 외부 서버 |
+| 5 | V2V ACK 양방향 구현 여부 | ⬜ Core 완성 후 시간 여유 시 도전 — 완성 시 문서 추가, 미완성 시 제거 |
+
+---
+
+## docs/OTA 전면 재작성 지시
+
+> **현재 상태**: docs/OTA/ 안의 모든 문서는 OTA(Drive Coach / Seasonal Theme) 기준으로 작성되어 있다.
+> **목표**: 경찰차·구급차 V2V 긴급 알림 + 네비게이션 앰비언트 라이팅 시나리오로 전부 교체한다.
+> **백업**: docs/OTA_original/ — 절대 수정 금지. 참조 전용.
+
+### 재작성 원칙
+
+1. **파일명·구조 유지**: docs/OTA/ 파일명과 폴더 구조를 그대로 쓴다. 새 파일을 만들지 않는다.
+2. **표 형식 유지**: docs/OTA_original/의 테이블 형식(비트 포지션, 메시지 ID 등)을 그대로 가져와 내용만 교체한다.
+3. **내용 참조**: 시나리오 개념은 docs/v2x/ 참조. 막히면 docs/V-Model/ 따라 진행.
+4. **V2V ACK 문서화 금지**: ACK 양방향은 CLAUDE.md에만 있다. Core 완성 전까지 docs에 쓰지 않는다.
+
+### 재작성 순서 (이 순서 준수)
+
+```
+Step 1.  01_Requirements.md     ← 요구사항 재설계 (OTA 요구사항 전부 삭제, 새 시나리오로)
+Step 2.  02_Concept_design.md   ← 개념 설계 (아키텍처: 경찰차·구급차 → Civ_ECU → Ambient)
+Step 3.  0301_SysFuncAnalysis.md
+Step 4.  0302_NWflowDef.md      ← Ethernet 브로드캐스트 + CAN 내부 흐름
+Step 5.  0303_Communication_Specification.md  ← EmergencyVehicleMsg 메시지 정의
+Step 6.  0304_System_Variables.md             ← gEmergencyType 등 신규 변수
+Step 7.  04_SW_Implementation.md              ← CAPL 구현 (Police/Ambulance/Civ ECU)
+Step 8.  05_Unit_Test.md
+Step 9.  06_Integration_Test.md
+Step 10. 07_System_Test.md
+```
+
+### 각 Step에서 OTA → 신규 매핑
+
+| OTA 원본 내용 | 교체할 내용 |
+|-------------|-----------|
+| OTA_ECU, PackageID, UDS 세션 | Police_ECU, Ambulance_ECU, EmergencyType |
+| ETH_OTA_Param (Port 6000) | ETH_Emergency_Cmd (신규 포트) |
+| CAN_OTA_Applied (0x600) | 삭제 — 기존 Ambient_Control (0x220) 재활용 |
+| gGearP 조건 | 삭제 |
+| CRC8 검증 | 삭제 |
 
 ---
 
 ## 문서 작업 가이드
 
-**새 프로젝트 문서 위치**: `docs/project/`
-**템플릿 참조**: `docs/sample/` 파일 구조·표 형식 그대로 복사
-**문서 순서**:
-```
-01_Requirements.md          ← 요구사항 (내일 시작)
-02_Concept_design.md        ← 개념 설계
-02_Make_Diagrams.drawio     ← 아키텍처 다이어그램
-0301_SysFuncAnalysis.md     ← 기능 분석
-0302_NWflowDef.md           ← 네트워크 흐름
-0303_Communication_Specification.md
-0304_System_Variables.md
-05_Unit_Test.md
-06_Integration_Test.md
-07_System_Test.md
-```
+**준영 프로젝트 문서**: `docs/project/`
+**성현 프로젝트 문서**: `docs/OTA/` — 위 재작성 지시에 따라 순서대로 진행
+**원본 백업**: `docs/OTA_original/` — 표 형식·구조 참조용, 수정 금지
+**추가 참조**: `docs/v2x/` — V2V 시나리오 개념 텍스트 참조
 
 **재사용 가능 패턴 (docs/sample/canoe/nodes/)**:
 - `BCM.can` → variables{}, on start{}, on timer{}, on message{} 구조
 - `Gateway.can` → CAN 라우팅 패턴
-- `OTA_Server.can` → UDS 세션 흐름 전체
