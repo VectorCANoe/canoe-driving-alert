@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  project.sysvars — 주행상황 연동 실시간 경고 시스템
+  CANoe 17+ System Variables 정의
+
+  Panel 입력 (사용자 직접 제어):
+    Navigation::* — 구간/속도/조향 주입
+    V2V::*        — 긴급차량 신호 주입 (Ethernet UDP 시뮬레이션)
+
+  내부 상태 (CAPL 노드 기록):
+    Arbiter::*    — Alert Arbiter 결과
+    Ambient::*    — 앰비언트 현재 R/G/B 상태 (Panel 표시용)
+-->
+<SystemVariables version="4" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+  <!-- ======================================================
+       Navigation — 구간 인식 컨텍스트 입력 (Panel 제어)
+       기록 주체: Panel 버튼 / TrackBar
+       읽는 노드: Context_Manager → Vehicle_Context CAN 경유 → Civ_Node
+  ====================================================== -->
+  <Namespace name="Navigation" comment="Navigation context inputs - Panel controlled">
+
+    <Variable name="gRoadZone" type="int" value="0"
+              minValue="0" maxValue="3" unit=""
+              comment="0=Normal(80) 1=SchoolZone(30) 2=Highway(110) 3=IC_Guide"/>
+
+    <Variable name="gNavDirection" type="int" value="0"
+              minValue="0" maxValue="1" unit=""
+              comment="0=LeftExit 1=RightExit (valid when gRoadZone=3)"/>
+
+    <Variable name="gZoneDistance" type="int" value="0"
+              minValue="0" maxValue="999" unit="m"
+              comment="Distance to next zone boundary (IC exit approach)"/>
+
+    <Variable name="gVehicleSpeed" type="float" value="60.0"
+              minValue="0.0" maxValue="300.0" unit="km/h"
+              comment="Simulated vehicle speed"/>
+
+    <Variable name="gSteeringInput" type="int" value="1"
+              minValue="0" maxValue="1" unit=""
+              comment="0=NoInput(hands-off) 1=SteeringActive"/>
+
+  </Namespace>
+
+  <!-- ======================================================
+       V2V — 긴급차량 신호 (Ethernet UDP 브로드캐스트 시뮬레이션)
+       기록 주체: Panel 버튼 → Police_Node / Ambulance_Node CAPL 경유
+       읽는 노드: Civ_Node (on sysvar 이벤트)
+
+       실제 배포 시:
+         Police_Node → UdpSocket::SendTo("255.255.255.255", 5000, data, 4)
+         Civ_Node    → UdpSocket::Receive(socket, ...)
+         메시지 구조: [VehicleType:1][Status:1][Direction:1][ETA:1]
+       CANoe SIL에서는 sysvar로 동일 인터페이스 시뮬레이션.
+  ====================================================== -->
+  <Namespace name="V2V" comment="V2V Emergency broadcast - simulates Ethernet UDP">
+
+    <Variable name="Police_Active" type="int" value="0"
+              minValue="0" maxValue="1" unit=""
+              comment="0=Inactive 1=Emergency_Active (ETH Status=ACTIVE)"/>
+
+    <Variable name="Police_Direction" type="int" value="0"
+              minValue="0" maxValue="3" unit=""
+              comment="0=Front 1=Left 2=Right 3=Rear"/>
+
+    <Variable name="Police_ETA" type="int" value="999"
+              minValue="0" maxValue="999" unit="s"
+              comment="Estimated time to arrival in seconds (999=unknown)"/>
+
+    <Variable name="Ambulance_Active" type="int" value="0"
+              minValue="0" maxValue="1" unit=""
+              comment="0=Inactive 1=Emergency_Active (ETH Status=ACTIVE)"/>
+
+    <Variable name="Ambulance_Direction" type="int" value="0"
+              minValue="0" maxValue="3" unit=""
+              comment="0=Front 1=Left 2=Right 3=Rear"/>
+
+    <Variable name="Ambulance_ETA" type="int" value="999"
+              minValue="0" maxValue="999" unit="s"
+              comment="Estimated time to arrival in seconds (999=unknown)"/>
+
+  </Namespace>
+
+  <!-- ======================================================
+       Arbiter — Alert Arbiter 중재 결과 (CAPL 기록, Panel 표시용)
+       기록 주체: Civ_Node (runArbiter 함수)
+       읽는 노드: Panel (상태 표시 전용)
+  ====================================================== -->
+  <Namespace name="Arbiter" comment="Alert Arbiter output state">
+
+    <Variable name="gEmergencyType" type="int" value="0"
+              minValue="0" maxValue="2" unit=""
+              comment="0=None 1=Police 2=Ambulance (current active emergency)"/>
+
+    <Variable name="gAmbientPattern" type="int" value="0"
+              minValue="0" maxValue="8" unit=""
+              comment="0=Idle 1=Normal 2=School_Amb 3=School_Warn 4=Hwy_Alert 5=IC_Left 6=IC_Right 7=Police 8=Ambulance"/>
+
+    <Variable name="gArbiterMode" type="int" value="0"
+              minValue="0" maxValue="3" unit=""
+              comment="0=Base 1=ZoneWarning 2=Police 3=Ambulance (priority tier in effect)"/>
+
+    <Variable name="gWarningLevel" type="int" value="0"
+              minValue="0" maxValue="2" unit=""
+              comment="0=None 1=SpeedExceed/SteerAlert 2=Reserved (set by Context_Manager)"/>
+
+  </Namespace>
+
+  <!-- ======================================================
+       Ambient — 앰비언트 ECU 현재 출력 (CAPL 기록, Panel LED 표시용)
+       기록 주체: Ambient_ECU (패턴 실행 중 실시간 업데이트)
+       읽는 노드: Panel (RGB 인디케이터 색상 표시)
+  ====================================================== -->
+  <Namespace name="Ambient" comment="Ambient ECU current output - Panel display">
+
+    <Variable name="R_Value" type="int" value="20"
+              minValue="0" maxValue="255" unit=""
+              comment="Current Red channel (0-255)"/>
+
+    <Variable name="G_Value" type="int" value="20"
+              minValue="0" maxValue="255" unit=""
+              comment="Current Green channel (0-255)"/>
+
+    <Variable name="B_Value" type="int" value="20"
+              minValue="0" maxValue="255" unit=""
+              comment="Current Blue channel (0-255)"/>
+
+    <Variable name="BlinkState" type="int" value="0"
+              minValue="0" maxValue="1" unit=""
+              comment="Current blink phase 0/1 (for blink-type patterns)"/>
+
+    <Variable name="AnimStep" type="int" value="0"
+              minValue="0" maxValue="7" unit=""
+              comment="IC guide animation step 0-5 (direction flow)"/>
+
+  </Namespace>
+
+</SystemVariables>

@@ -1,0 +1,359 @@
+/*
+ * Civ_Node.can — Civilian Vehicle (수신 차량)
+ *
+ * 역할:
+ *   - Vehicle_Context CAN 수신 → 구간/경고 레벨 업데이트
+ *   - V2V::Police_Active / V2V::Ambulance_Active sysvar 수신 (ETH 시뮬)
+ *   - Alert Arbiter 실행 → 단일 앰비언트 패턴 결정
+ *   - Ambient_Control (0x220) + Cluster_Warning (0x221) CAN 송신
+ *
+ * Alert Arbiter 우선순위 (Req_027~Req_034):
+ *   1순위 (최고): Ambulance_Active == 1  → PATTERN_AMBULANCE (Req_029)
+ *   2순위:        Police_Active == 1     → PATTERN_POLICE
+ *   3순위:        WarningLevel > 0       → PATTERN_SCHOOL_WARN 또는 PATTERN_HWY_ALERT
+ *   4순위 (최저): gRoadZone 기반         → 구간별 기본 앰비언트
+ *
+ * 다중 긴급차량 동일 우선순위 충돌 시: ETA 짧은 쪽 우선 (Req_030)
+ *   - 현재 구성: Police 1대 + Ambulance 1대 → 타입이 달라 ETA 비교 불필요
+ *   - ETA 비교는 동일 타입 2대 이상일 때 적용 (확장 시 사용)
+ *
+ * V-Model: SWE.3 (핵심 구현)
+ * Req 추적: Req_025~Req_034 (중재 전체), Req_003/004 (경고 시작/해제)
+ */
+
+includes
+{
+}
+
+variables
+{
+  /* 앰비언트 패턴 상수 */
+  const int PATTERN_IDLE        = 0; /* 초기/비활성 */
+  const int PATTERN_NORMAL      = 1; /* 일반 도로 (흰색) */
+  const int PATTERN_SCHOOL_AMB  = 2; /* 스쿨존 진입 (주황 저조도) */
+  const int PATTERN_SCHOOL_WARN = 3; /* 스쿨존 속도 초과 (빨강 빠른 점멸) */
+  const int PATTERN_HWY_ALERT   = 4; /* 고속도로 조향 없음 (주황 파동) */
+  const int PATTERN_IC_LEFT     = 5; /* IC 좌측 출구 방향 유도 */
+  const int PATTERN_IC_RIGHT    = 6; /* IC 우측 출구 방향 유도 */
+  const int PATTERN_POLICE      = 7; /* 경찰차 긴급 (빨강/파랑 교차) */
+  const int PATTERN_AMBULANCE   = 8; /* 구급차 긴급 (빨강/흰색 교차) */
+
+  /* Arbiter 모드 상수 */
+  const int ARBITER_BASE     = 0; /* 구간 기본 */
+  const int ARBITER_ZONE     = 1; /* 구간 경고 */
+  const int ARBITER_POLICE   = 2; /* 경찰차 */
+  const int ARBITER_AMBULANCE = 3; /* 구급차 (최고 우선) */
+
+  /* 현재 차량 상태 (Vehicle_Context CAN 수신값) */
+  double gSpeed       = 60.0;
+  int    gZone        = 0;
+  int    gWarnLevel   = 0;
+  int    gSteering    = 1;
+  int    gNavDir      = 0;
+
+  /* V2V 수신 상태 (sysvar on 이벤트로 업데이트) */
+  int    gPoliceActive    = 0;
+  int    gPoliceDir       = 0;
+  int    gPoliceETA       = 999;
+  int    gAmbulanceActive = 0;
+  int    gAmbulanceDir    = 0;
+  int    gAmbulanceETA    = 999;
+
+  /* 현재 Arbiter 결과
+   * -1로 초기화 → on start의 첫 runArbiter() 호출 시 반드시 CAN 송신 실행 */
+  int    gCurrentPattern  = -1;
+  int    gCurrentMode     = -1;
+
+  /* CAN 송신용 alive counter */
+  int    gAliveCounter    = 0;
+}
+
+/*============================================================
+ * 초기화
+ *============================================================*/
+on start
+{
+  write("[Civ_Node] 노드 시작 — Alert Arbiter 준비");
+  runArbiter();
+}
+
+/*============================================================
+ * Vehicle_Context CAN 수신 (0x100, 10ms 주기)
+ * Context_Manager → 전체 노드 브로드캐스트
+ * Req_007: 구간 정보 변경 시 경고 규칙 반영
+ *============================================================*/
+on message Vehicle_Context
+{
+  double prevSpeed  = gSpeed;
+  int    prevZone   = gZone;
+  int    prevWarn   = gWarnLevel;
+
+  /* Vehicle_Speed: raw → physical (factor=0.1) */
+  gSpeed    = this.Vehicle_Speed * 0.1;
+  gZone     = this.RoadZone;
+  gWarnLevel = this.WarningLevel;
+  gSteering  = this.SteeringActive;
+  gNavDir    = this.NavDirection;
+
+  /* 상태 변경이 있을 때만 Arbiter 재실행
+   * 속도는 0.5 km/h 이상 변화 시 반영 (int 캐스트 정밀도 손실 방지) */
+  if (prevZone  != gZone    ||
+      prevWarn  != gWarnLevel ||
+      (gSpeed - prevSpeed > 0.5) || (prevSpeed - gSpeed > 0.5))
+  {
+    runArbiter();
+  }
+}
+
+/*============================================================
+ * V2V 경찰차 신호 수신 (ETH 브로드캐스트 시뮬)
+ * Req_017: 경찰차 긴급 접근 시 즉시 경고
+ *============================================================*/
+on sysvar V2V::Police_Active
+{
+  gPoliceActive = @V2V::Police_Active;
+  gPoliceDir    = @V2V::Police_Direction;
+  gPoliceETA    = @V2V::Police_ETA;
+
+  if (gPoliceActive == 1)
+  {
+    write("[Civ_Node] ▲ ETH 수신: 경찰차 긴급 접근 (Dir=%d, ETA=%ds)",
+          gPoliceDir, gPoliceETA);
+  }
+  else
+  {
+    write("[Civ_Node] ▽ ETH 수신: 경찰차 긴급 해제");
+  }
+  runArbiter();
+}
+
+/*============================================================
+ * V2V 구급차 신호 수신 (ETH 브로드캐스트 시뮬)
+ * Req_018: 구급차 긴급 접근 시 즉시 경고
+ * Req_029: Ambulance > Police 우선순위
+ *============================================================*/
+on sysvar V2V::Ambulance_Active
+{
+  gAmbulanceActive = @V2V::Ambulance_Active;
+  gAmbulanceDir    = @V2V::Ambulance_Direction;
+  gAmbulanceETA    = @V2V::Ambulance_ETA;
+
+  if (gAmbulanceActive == 1)
+  {
+    write("[Civ_Node] ▲ ETH 수신: 구급차 긴급 접근 (Dir=%d, ETA=%ds)",
+          gAmbulanceDir, gAmbulanceETA);
+    write("[Civ_Node]   ※ 구급차 우선순위 1위 (Ambulance > Police)");
+  }
+  else
+  {
+    write("[Civ_Node] ▽ ETH 수신: 구급차 긴급 해제");
+  }
+  runArbiter();
+}
+
+/*============================================================
+ * ETA 변경 수신 (활성 중 ETA 업데이트 → Arbiter 재실행)
+ * Req_030: 동급 긴급 경고 충돌 시 ETA 짧은 쪽 우선
+ *============================================================*/
+on sysvar V2V::Police_ETA
+{
+  if (gPoliceActive == 1)
+  {
+    gPoliceETA = @V2V::Police_ETA;
+    runArbiter();
+  }
+}
+
+on sysvar V2V::Ambulance_ETA
+{
+  if (gAmbulanceActive == 1)
+  {
+    gAmbulanceETA = @V2V::Ambulance_ETA;
+    runArbiter();
+  }
+}
+
+/*============================================================
+ * Alert Arbiter 핵심 함수
+ *
+ * 우선순위 규칙 (00b_Project_Scope.md 중재 원칙):
+ *   원칙 1: Emergency > Navigation Context
+ *   원칙 2: Ambulance > Police (Req_029)
+ *   원칙 3: 동급 충돌 시 ETA 짧은 쪽 우선 (Req_030)
+ *   원칙 4: 긴급 해제 후 마지막 유효 구간 컨텍스트 복귀 (Req_033)
+ *============================================================*/
+void runArbiter()
+{
+  int newPattern = PATTERN_IDLE;
+  int newMode    = ARBITER_BASE;
+  int newWarning = 0;            /* Cluster_Warning WarningType */
+  int newEmgVeh  = 0;            /* Cluster_Warning EmergencyVehicle */
+  int newDir     = 0;            /* Cluster_Warning Direction */
+
+  /* -------------------------------------------------------
+   * 우선순위 1 (최고): 구급차 긴급 (Req_029)
+   * ------------------------------------------------------- */
+  if (gAmbulanceActive == 1)
+  {
+    newPattern = PATTERN_AMBULANCE;
+    newMode    = ARBITER_AMBULANCE;
+    newWarning = 5; /* Ambulance */
+    newEmgVeh  = 2;
+    newDir     = gAmbulanceDir;
+
+    @Arbiter::gEmergencyType = 2;
+
+    /* 경찰차도 동시 활성인 경우 → 구급차 유지, 로그만 기록 */
+    if (gPoliceActive == 1)
+    {
+      write("[Civ_Node][Arbiter] 충돌: Ambulance + Police 동시 활성");
+      write("[Civ_Node][Arbiter] → 구급차 우선 적용 (Ambulance > Police, Req_029)");
+    }
+  }
+
+  /* -------------------------------------------------------
+   * 우선순위 2: 경찰차 긴급
+   * ------------------------------------------------------- */
+  else if (gPoliceActive == 1)
+  {
+    newPattern = PATTERN_POLICE;
+    newMode    = ARBITER_POLICE;
+    newWarning = 4; /* Police */
+    newEmgVeh  = 1;
+    newDir     = gPoliceDir;
+
+    @Arbiter::gEmergencyType = 1;
+  }
+
+  /* -------------------------------------------------------
+   * 우선순위 3: 구간 경고 (WarningLevel > 0)
+   * ------------------------------------------------------- */
+  else if (gWarnLevel > 0)
+  {
+    @Arbiter::gEmergencyType = 0;
+    newMode    = ARBITER_ZONE;
+    newEmgVeh  = 0;
+
+    if (gZone == 1)
+    {
+      /* 스쿨존 속도 초과 */
+      newPattern = PATTERN_SCHOOL_WARN;
+      newWarning = 1; /* SchoolZone */
+      newDir     = 0;
+    }
+    else if (gZone == 2)
+    {
+      /* 고속도로 조향 없음 */
+      newPattern = PATTERN_HWY_ALERT;
+      newWarning = 2; /* Highway */
+      newDir     = 0;
+    }
+    else
+    {
+      /* 일반 도로 속도 초과 (Zone 0) */
+      newPattern = PATTERN_SCHOOL_WARN; /* 동일 경고 색상 재사용 */
+      newWarning = 1;
+      newDir     = 0;
+    }
+  }
+
+  /* -------------------------------------------------------
+   * 우선순위 4 (최저): 구간 기본 앰비언트
+   * ------------------------------------------------------- */
+  else
+  {
+    @Arbiter::gEmergencyType = 0;
+    newMode    = ARBITER_BASE;
+    newEmgVeh  = 0;
+
+    switch (gZone)
+    {
+      case 0:
+        newPattern = PATTERN_NORMAL;
+        newWarning = 0;
+        break;
+
+      case 1:
+        /* 스쿨존 진입 (속도 초과 없음) → 주황 저조도 */
+        newPattern = PATTERN_SCHOOL_AMB;
+        newWarning = 1;
+        break;
+
+      case 2:
+        /* 고속도로 (경고 없음) → 일반 흰색 */
+        newPattern = PATTERN_NORMAL;
+        newWarning = 0;
+        break;
+
+      case 3:
+        /* IC 출구 근접 → 방향 유도 앰비언트 */
+        if (gNavDir == 0)
+          newPattern = PATTERN_IC_LEFT;
+        else
+          newPattern = PATTERN_IC_RIGHT;
+        newWarning = 3; /* IC_Guide */
+        newDir     = gNavDir;
+        break;
+
+      default:
+        newPattern = PATTERN_NORMAL;
+        newWarning = 0;
+        break;
+    }
+  }
+
+  /* -------------------------------------------------------
+   * 패턴 변경 시 CAN 송신 + sysvar 업데이트
+   * Req_032: 동일 입력 조건에서 중재 결과 항상 동일
+   * ------------------------------------------------------- */
+  if (newPattern != gCurrentPattern || newMode != gCurrentMode)
+  {
+    /* 로그: 업데이트 전에 이전 패턴 기록 */
+    write("[Civ_Node][Arbiter] 패턴 전환: %d -> %d  (Mode=%d  Zone=%d  WarnLvl=%d)",
+          gCurrentPattern, newPattern, newMode, gZone, gWarnLevel);
+
+    gCurrentPattern = newPattern;
+    gCurrentMode    = newMode;
+
+    @Arbiter::gAmbientPattern = newPattern;
+    @Arbiter::gArbiterMode    = newMode;
+
+    sendAmbientControl(newPattern, newMode);
+    sendClusterWarning(newWarning, 1, newEmgVeh, newDir);
+  }
+}
+
+/*============================================================
+ * Ambient_Control CAN 송신 (0x220)
+ * 수신: Ambient_ECU
+ *============================================================*/
+void sendAmbientControl(int pattern, int mode)
+{
+  message Ambient_Control txMsg;
+
+  txMsg.AmbientPattern = pattern;
+  txMsg.AmbientActive  = (pattern != PATTERN_IDLE) ? 1 : 0;
+  txMsg.AnimStep       = 0;       /* Ambient_ECU가 내부 타이머로 관리 */
+  txMsg.ArbiterMode    = mode;
+  txMsg.AliveCounter   = gAliveCounter;
+
+  output(txMsg);
+  gAliveCounter = (gAliveCounter + 1) & 0x0F;
+}
+
+/*============================================================
+ * Cluster_Warning CAN 송신 (0x221)
+ * 수신: Cluster_ECU
+ *============================================================*/
+void sendClusterWarning(int warnType, int active, int emgVeh, int dir)
+{
+  message Cluster_Warning txMsg;
+
+  txMsg.WarningType      = warnType;
+  txMsg.WarningActive    = active;
+  txMsg.EmergencyVehicle = emgVeh;
+  txMsg.Direction        = dir;
+  txMsg.AliveCounter     = gAliveCounter;
+
+  output(txMsg);
+}
