@@ -1,0 +1,28 @@
+includes
+{
+}
+
+variables
+{
+}
+
+on start
+{
+  write("[CLU_HMI_CTRL] start");
+}
+
+on message frmClusterWarningMsg
+{
+  int code;
+  code = this.WarningTextCode;
+  @Cluster::warningTextCode = code;
+
+  if (code == 0)
+  {
+    write("[CLU] clear");
+  }
+  else
+  {
+    write("[CLU] warning code=%d", code);
+  }
+}

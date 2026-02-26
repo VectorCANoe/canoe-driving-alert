@@ -1,36 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
 <systemvariables version="4">
-
-  <namespace name="Navigation" comment="" interface="">
-    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="gRoadZone" comment="0=Normal(80) 1=SchoolZone(30) 2=Highway(110) 3=IC_Guide" bitcount="32" isSigned="true" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="3" maxValuePhys="3"/>
-    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="gNavDirection" comment="0=LeftExit 1=RightExit" bitcount="32" isSigned="true" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1"/>
-    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="m" name="gZoneDistance" comment="Distance to next zone boundary" bitcount="32" isSigned="true" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="999" maxValuePhys="999"/>
-    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="km/h" name="gVehicleSpeed" comment="Simulated vehicle speed" bitcount="64" isSigned="true" encoding="65001" type="float" minValue="0" maxValue="300"/>
-    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="gSteeringInput" comment="0=NoInput 1=SteeringActive" bitcount="32" isSigned="true" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1"/>
+  <namespace name="Chassis" comment="" interface="">
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="km/h" name="vehicleSpeed" comment="Panel input speed" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="255" maxValuePhys="255"/>
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="driveState" comment="0=P 1=R 2=N 3=D" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="3" maxValuePhys="3"/>
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="steeringInput" comment="0=NoInput 1=Input" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1"/>
   </namespace>
 
-  <namespace name="V2V" comment="" interface="">
-    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="Police_Active" comment="0=Inactive 1=Emergency_Active" bitcount="32" isSigned="true" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1"/>
-    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="Police_Direction" comment="0=Front 1=Left 2=Right 3=Rear" bitcount="32" isSigned="true" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="3" maxValuePhys="3"/>
-    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="s" name="Police_ETA" comment="Estimated time to arrival (999=unknown)" bitcount="32" isSigned="true" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="999" maxValuePhys="999"/>
-    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="Ambulance_Active" comment="0=Inactive 1=Emergency_Active" bitcount="32" isSigned="true" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1"/>
-    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="Ambulance_Direction" comment="0=Front 1=Left 2=Right 3=Rear" bitcount="32" isSigned="true" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="3" maxValuePhys="3"/>
-    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="s" name="Ambulance_ETA" comment="Estimated time to arrival (999=unknown)" bitcount="32" isSigned="true" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="999" maxValuePhys="999"/>
+  <namespace name="Infotainment" comment="" interface="">
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="roadZone" comment="0=Normal 1=School 2=Highway 3=Guide" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="3" maxValuePhys="3"/>
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="navDirection" comment="0=None 1=Left 2=Right 3=Other" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="3" maxValuePhys="3"/>
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="m" name="zoneDistance" comment="Distance to zone boundary" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="255" maxValuePhys="255"/>
   </namespace>
 
-  <namespace name="Arbiter" comment="" interface="">
-    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="gEmergencyType" comment="0=None 1=Police 2=Ambulance" bitcount="32" isSigned="true" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="2" maxValuePhys="2"/>
-    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="gAmbientPattern" comment="0=Idle 1=Normal 2=School_Amb 3=School_Warn 4=Hwy_Alert 5=IC_Left 6=IC_Right 7=Police 8=Ambulance" bitcount="32" isSigned="true" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="8" maxValuePhys="8"/>
-    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="gArbiterMode" comment="0=Base 1=ZoneWarning 2=Police 3=Ambulance" bitcount="32" isSigned="true" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="3" maxValuePhys="3"/>
-    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="gWarningLevel" comment="0=None 1=SpeedExceed/SteerAlert 2=Reserved" bitcount="32" isSigned="true" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="2" maxValuePhys="2"/>
+  <namespace name="V2X" comment="" interface="">
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="emergencyType" comment="0=None 1=Police 2=Ambulance" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="2" maxValuePhys="2"/>
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="emergencyDirection" comment="0=Front 1=Left 2=Right 3=Rear" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="3" maxValuePhys="3"/>
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="s" name="eta" comment="ETA seconds" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="255" maxValuePhys="255"/>
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="sourceId" comment="Emergency source id" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="255" maxValuePhys="255"/>
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="alertState" comment="0=Clear 1=Active" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1"/>
   </namespace>
 
-  <namespace name="Ambient" comment="" interface="">
-    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="R_Value" comment="Current Red channel (0-255)" bitcount="32" isSigned="true" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="255" maxValuePhys="255"/>
-    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="G_Value" comment="Current Green channel (0-255)" bitcount="32" isSigned="true" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="255" maxValuePhys="255"/>
-    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="B_Value" comment="Current Blue channel (0-255)" bitcount="32" isSigned="true" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="255" maxValuePhys="255"/>
-    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="BlinkState" comment="Current blink phase 0/1" bitcount="32" isSigned="true" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1"/>
-    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="AnimStep" comment="IC guide animation step 0-5" bitcount="32" isSigned="true" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="7" maxValuePhys="7"/>
+  <namespace name="Core" comment="" interface="">
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="km/h" name="vehicleSpeedNorm" comment="Normalized speed from CHASSIS_GW" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="255" maxValuePhys="255"/>
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="driveStateNorm" comment="Normalized drive state from CHASSIS_GW" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="3" maxValuePhys="3"/>
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="steeringInputNorm" comment="Normalized steering from CHASSIS_GW" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1"/>
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="baseZoneContext" comment="Computed zone context from NAV_CONTEXT_MGR" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="255" maxValuePhys="255"/>
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="warningState" comment="ADAS warning state" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="255" maxValuePhys="255"/>
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="emergencyContext" comment="Emergency context from EMS_ALERT_RX" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="255" maxValuePhys="255"/>
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="selectedAlertLevel" comment="Arbiter selected alert level" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="7" maxValuePhys="7"/>
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="selectedAlertType" comment="Arbiter selected alert type" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="7" maxValuePhys="7"/>
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="timeoutClear" comment="Timeout clear flag" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1"/>
   </namespace>
 
+  <namespace name="Body" comment="" interface="">
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="ambientMode" comment="Ambient mode output" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="7" maxValuePhys="7"/>
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="ambientColor" comment="Ambient color output" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="7" maxValuePhys="7"/>
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="ambientPattern" comment="Ambient pattern output" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="3" maxValuePhys="3"/>
+  </namespace>
+
+  <namespace name="Cluster" comment="" interface="">
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="warningTextCode" comment="Cluster warning text code output" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="255" maxValuePhys="255"/>
+  </namespace>
+
+  <namespace name="Test" comment="" interface="">
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="testScenario" comment="SIL test scenario id" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="255" maxValuePhys="255"/>
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="scenarioResult" comment="SIL scenario result 0/1" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1"/>
+  </namespace>
+
+  <namespace name="CoreState" comment="" interface="">
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="ms" name="lastEmergencyRxMs" comment="Last E100 receive timestamp" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="60000" maxValuePhys="60000"/>
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="ms" name="duplicatePopupGuard" comment="Duplicate popup suppression timer" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="5000" maxValuePhys="5000"/>
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="arbitrationSnapshotId" comment="Arbitration snapshot sequence" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="65535" maxValuePhys="65535"/>
+  </namespace>
 </systemvariables>

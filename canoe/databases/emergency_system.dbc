@@ -1,141 +1,103 @@
 VERSION ""
 
 NS_ :
-	NS_DESC_
-	CM_
-	BA_DEF_
-	BA_
-	VAL_
-	CAT_DEF_
-	CAT_
-	FILTER
-	BA_DEF_DEF_
-	EV_DATA_
-	ENVVAR_DATA_
-	SGTYPE_
-	SGTYPE_VAL_
-	BA_DEF_SGTYPE_
-	BA_SGTYPE_
-	SIG_TYPE_REF_
-	VAL_TABLE_
-	SIG_GROUP_
-	SIG_VALTYPE_
-	SIGTYPE_VALTYPE_
-	BO_TX_BU_
-	BA_DEF_REL_
-	BA_REL_
-	BA_SGTYPE_REL_
-	SG_MUL_VAL_
+  NS_DESC_
+  CM_
+  BA_DEF_
+  BA_
+  VAL_
+  CAT_DEF_
+  CAT_
+  FILTER
+  BA_DEF_DEF_
+  EV_DATA_
+  ENVVAR_DATA_
+  SGTYPE_
+  SGTYPE_VAL_
+  BA_DEF_SGTYPE_
+  BA_SGTYPE_
+  SIG_TYPE_REF_
+  VAL_TABLE_
+  SIG_GROUP_
+  SIG_VALTYPE_
+  SIGTYPE_VALTYPE_
+  BO_TX_BU_
+  BA_DEF_REL_
+  BA_REL_
+  BA_SGTYPE_REL_
+  SG_MUL_VAL_
 
 BS_:
 
-BU_: Context_Manager Police_Node Ambulance_Node Civ_Node Ambient_ECU Cluster_ECU
+BU_: SIL_TEST_CTRL CHASSIS_GW INFOTAINMENT_GW BODY_GW IVI_GW BCM_AMBIENT_CTRL CLU_HMI_CTRL Vector__XXX
 
-BO_ 256 Vehicle_Context: 8 Context_Manager
- SG_ Vehicle_Speed   : 0|16@1+ (0.1,0) [0|300]   "km/h" Civ_Node,Ambient_ECU,Cluster_ECU
- SG_ RoadZone        : 16|4@1+ (1,0)   [0|3]     ""     Civ_Node,Ambient_ECU,Cluster_ECU
- SG_ WarningLevel    : 20|4@1+ (1,0)   [0|3]     ""     Civ_Node,Ambient_ECU
- SG_ SteeringActive  : 24|1@1+ (1,0)   [0|1]     ""     Civ_Node
- SG_ NavDirection    : 25|1@1+ (1,0)   [0|1]     ""     Civ_Node,Ambient_ECU
- SG_ Reserved        : 26|30@1+ (1,0)  [0|0]     ""     Vector__XXX
- SG_ AliveCounter    : 56|4@1+ (1,0)   [0|15]    ""     Civ_Node
- SG_ Checksum        : 60|4@1+ (1,0)   [0|15]    ""     Civ_Node
+BO_ 256 frmVehicleStateCanMsg: 2 SIL_TEST_CTRL
+ SG_ gVehicleSpeed : 0|8@1+ (1,0) [0|255] "km/h" CHASSIS_GW
+ SG_ gDriveState   : 8|2@1+ (1,0) [0|3]   ""     CHASSIS_GW
+ SG_ Reserved0     : 10|6@1+ (1,0) [0|0]  ""     Vector__XXX
 
-BO_ 544 Ambient_Control: 4 Civ_Node
- SG_ AmbientPattern  : 0|4@1+  (1,0)  [0|8]   ""  Ambient_ECU
- SG_ AmbientActive   : 4|1@1+  (1,0)  [0|1]   ""  Ambient_ECU
- SG_ AnimStep        : 8|4@1+  (1,0)  [0|7]   ""  Ambient_ECU
- SG_ ArbiterMode     : 12|4@1+ (1,0)  [0|3]   ""  Ambient_ECU
- SG_ AliveCounter    : 28|4@1+ (1,0)  [0|15]  ""  Ambient_ECU
+BO_ 257 frmSteeringCanMsg: 1 SIL_TEST_CTRL
+ SG_ SteeringInput : 0|1@1+ (1,0) [0|1] "" CHASSIS_GW
+ SG_ Reserved0     : 1|7@1+ (1,0) [0|0] "" Vector__XXX
 
-BO_ 545 Cluster_Warning: 4 Civ_Node
- SG_ WarningType       : 0|4@1+  (1,0)  [0|8]   ""  Cluster_ECU
- SG_ WarningActive     : 4|1@1+  (1,0)  [0|1]   ""  Cluster_ECU
- SG_ EmergencyVehicle  : 8|2@1+  (1,0)  [0|2]   ""  Cluster_ECU
- SG_ Direction         : 10|2@1+ (1,0)  [0|3]   ""  Cluster_ECU
- SG_ AliveCounter      : 28|4@1+ (1,0)  [0|15]  ""  Cluster_ECU
+BO_ 272 frmNavContextCanMsg: 2 SIL_TEST_CTRL
+ SG_ gRoadZone     : 0|2@1+ (1,0) [0|3]   ""  INFOTAINMENT_GW
+ SG_ gNavDirection : 2|2@1+ (1,0) [0|3]   ""  INFOTAINMENT_GW
+ SG_ Reserved0     : 4|4@1+ (1,0) [0|0]   ""  Vector__XXX
+ SG_ gZoneDistance : 8|8@1+ (1,0) [0|255] "m" INFOTAINMENT_GW
 
-CM_ BU_ Context_Manager  "Navigation zone context + speed/steering evaluation. Sends Vehicle_Context 10ms.";
-CM_ BU_ Police_Node       "V2V Police ECU. Simulates ETH UDP broadcast via sysvar V2V::Police_*.";
-CM_ BU_ Ambulance_Node    "V2V Ambulance ECU. Simulates ETH UDP broadcast via sysvar V2V::Ambulance_*.";
-CM_ BU_ Civ_Node          "Civilian receive vehicle. Alert Arbiter core. Outputs Ambient_Control + Cluster_Warning.";
-CM_ BU_ Ambient_ECU       "Ambient light pattern executor. Drives R/G/B blink/animation timers.";
-CM_ BU_ Cluster_ECU       "Instrument cluster warning display. Shows text message per WarningType.";
+BO_ 528 frmAmbientControlMsg: 1 BODY_GW
+ SG_ AmbientMode    : 0|3@1+ (1,0) [0|7] "" BCM_AMBIENT_CTRL
+ SG_ AmbientColor   : 3|3@1+ (1,0) [0|7] "" BCM_AMBIENT_CTRL
+ SG_ AmbientPattern : 6|2@1+ (1,0) [0|3] "" BCM_AMBIENT_CTRL
 
-CM_ BO_ 256  "Navigation context broadcast: speed, zone, warning level, steering, nav direction.";
-CM_ BO_ 544  "Ambient pattern command: pattern ID, active flag, animation step, arbiter mode.";
-CM_ BO_ 545  "Cluster warning command: warning type, emergency vehicle type, approach direction.";
+BO_ 544 frmClusterWarningMsg: 1 IVI_GW
+ SG_ WarningTextCode : 0|8@1+ (1,0) [0|255] "" CLU_HMI_CTRL
 
-CM_ SG_ 256 Vehicle_Speed   "Current vehicle speed. Factor=0.1 -> raw=speed*10.";
-CM_ SG_ 256 RoadZone        "0=Normal(80) 1=SchoolZone(30) 2=Highway(110) 3=IC_Guide.";
-CM_ SG_ 256 WarningLevel    "0=None 1=SpeedExceed/SteerAlert 2=Reserved.";
-CM_ SG_ 256 SteeringActive  "0=NoInput(hands-off) 1=SteeringDetected.";
-CM_ SG_ 256 NavDirection    "0=LeftExit 1=RightExit (valid when RoadZone=3).";
-CM_ SG_ 544 AmbientPattern  "0=Idle 1=Normal 2=SchoolZone_Amb 3=SchoolZone_Warn 4=Highway_Alert 5=IC_Left 6=IC_Right 7=Police 8=Ambulance.";
-CM_ SG_ 544 ArbiterMode     "0=Base 1=ZoneWarn 2=Police 3=Ambulance.";
-CM_ SG_ 545 WarningType     "0=None 1=SchoolZone 2=Highway 3=IC_Guide 4=Police 5=Ambulance.";
-CM_ SG_ 545 EmergencyVehicle "0=None 1=Police 2=Ambulance.";
-CM_ SG_ 545 Direction       "0=Front 1=Left 2=Right 3=Rear.";
+BO_ 560 frmTestResultMsg: 1 SIL_TEST_CTRL
+ SG_ ScenarioResult : 0|1@1+ (1,0) [0|1] "" SIL_TEST_CTRL
+ SG_ Reserved0      : 1|7@1+ (1,0) [0|0] "" Vector__XXX
+
+CM_ BU_ SIL_TEST_CTRL       "SIL test controller (CAN injection + result logging).";
+CM_ BU_ CHASSIS_GW          "Chassis CAN to Ethernet UDP gateway.";
+CM_ BU_ INFOTAINMENT_GW     "Infotainment CAN to Ethernet UDP gateway.";
+CM_ BU_ BODY_GW             "Ethernet UDP (E200) to CAN (Ambient) gateway.";
+CM_ BU_ IVI_GW              "Ethernet UDP (E200) to CAN (Cluster) gateway.";
+CM_ BU_ BCM_AMBIENT_CTRL    "Ambient controller ECU (reads 0x210).";
+CM_ BU_ CLU_HMI_CTRL        "Cluster HMI controller ECU (reads 0x220).";
+
+CM_ BO_ 256 "Chassis CAN input: vehicle speed + drive state (P/R/N/D).";
+CM_ BO_ 257 "Chassis CAN input: steering input (0/1).";
+CM_ BO_ 272 "Infotainment CAN input: road zone, nav direction, zone distance.";
+CM_ BO_ 528 "Body CAN output: ambient control (mode/color/pattern).";
+CM_ BO_ 544 "Body CAN output: cluster warning text code.";
+CM_ BO_ 560 "SIL test result (0/1).";
 
 BA_DEF_ BO_ "GenMsgCycleTime" INT 0 10000;
 BA_DEF_DEF_ "GenMsgCycleTime" 0;
 
-BA_ "GenMsgCycleTime" BO_ 256  10;
-BA_ "GenMsgCycleTime" BO_ 544  0;
-BA_ "GenMsgCycleTime" BO_ 545  0;
+BA_ "GenMsgCycleTime" BO_ 256 100;
+BA_ "GenMsgCycleTime" BO_ 257 100;
+BA_ "GenMsgCycleTime" BO_ 272 100;
+BA_ "GenMsgCycleTime" BO_ 528 50;
+BA_ "GenMsgCycleTime" BO_ 544 50;
+BA_ "GenMsgCycleTime" BO_ 560 0;
 
-VAL_ 256 RoadZone
+VAL_ 256 gDriveState
+  0 "P"
+  1 "R"
+  2 "N"
+  3 "D" ;
+
+VAL_ 272 gRoadZone
   0 "Normal"
   1 "SchoolZone"
   2 "Highway"
-  3 "IC_Guide" ;
+  3 "Guide" ;
 
-VAL_ 256 WarningLevel
+VAL_ 272 gNavDirection
   0 "None"
-  1 "Warning"
-  2 "Critical" ;
-
-VAL_ 256 SteeringActive
-  0 "NoInput"
-  1 "Active" ;
-
-VAL_ 256 NavDirection
-  0 "LeftExit"
-  1 "RightExit" ;
-
-VAL_ 544 AmbientPattern
-  0 "Idle"
-  1 "Normal"
-  2 "SchoolZone_Ambient"
-  3 "SchoolZone_Warning"
-  4 "Highway_Alert"
-  5 "IC_Left"
-  6 "IC_Right"
-  7 "Police"
-  8 "Ambulance" ;
-
-VAL_ 544 ArbiterMode
-  0 "Base"
-  1 "ZoneWarning"
-  2 "Police"
-  3 "Ambulance" ;
-
-VAL_ 545 WarningType
-  0 "None"
-  1 "SchoolZone"
-  2 "Highway"
-  3 "IC_Guide"
-  4 "Police"
-  5 "Ambulance" ;
-
-VAL_ 545 EmergencyVehicle
-  0 "None"
-  1 "Police"
-  2 "Ambulance" ;
-
-VAL_ 545 Direction
-  0 "Front"
   1 "Left"
   2 "Right"
-  3 "Rear" ;
+  3 "Other" ;
 

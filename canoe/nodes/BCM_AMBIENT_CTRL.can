@@ -1,0 +1,22 @@
+includes
+{
+}
+
+variables
+{
+}
+
+on start
+{
+  write("[BCM_AMBIENT_CTRL] start");
+}
+
+on message frmAmbientControlMsg
+{
+  @Body::ambientMode = this.AmbientMode;
+  @Body::ambientColor = this.AmbientColor;
+  @Body::ambientPattern = this.AmbientPattern;
+
+  write("[BCM] Mode=%d Color=%d Pattern=%d",
+        this.AmbientMode, this.AmbientColor, this.AmbientPattern);
+}
