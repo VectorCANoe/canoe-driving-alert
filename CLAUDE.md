@@ -6,12 +6,130 @@
 
 ## 프로젝트 기본 정보
 
-- **저장소**: `/Users/juns/code/work/mobis/PBL` (git: `main` 브랜치)
-- **개발 환경**: CANoe 17+, CAPL, dSPACE SCALEXIO HIL
+- **저장소**: `C:\Users\이준영\CANoe-IVI-OTA` (git: `main` 브랜치)
+- **개발 환경**: CANoe 19.4, CAPL, Windows 11
 - **참조용 sample 프로젝트**: `docs/sample/` — BCM 과전류 → DTC → OTA (완료된 예제)
 - **새 프로젝트 문서**: `docs/project/` — sample 구조 그대로 미러링
 - **성현 프로젝트 문서**: `docs/OTA/` — 전면 재작성 중 (OTA 제거, 경찰차·구급차+네비 앰비언트로 교체)
 - **원본 백업**: `docs/OTA_original/` — 기존 OTA 문서 백업 (수정 금지)
+
+---
+
+## CANoe 파일 작성 레퍼런스 (반드시 참조)
+
+> **규칙**: CANoe 관련 파일(.sysvars, .dbc, .can, .cfg) 작성 전 반드시 아래 레퍼런스를 먼저 읽고 동일한 형식으로 작성한다.
+
+### 핵심 레퍼런스 위치
+
+| 파일 | 경로 | 용도 |
+|------|------|------|
+| **sysvars** | `docs/LIN-Door/canoe/cfg/sample_project.sysvars` | System Variables 표준 형식 |
+| **dbc** | `docs/LIN-Door/canoe/databases/sample_project.dbc` | DBC 표준 형식 |
+| **CAPL 노드** | `docs/LIN-Door/canoe/nodes/*.can` | CAPL 노드 구조 (BCM, Gateway, Tester 등 7개) |
+| **CAPL 레거시** | `reference/legacy/capl_nodes/*.can` | 추가 CAPL 예제 (EMS, ESP, IVI 등 13개) |
+| **cfg** | `docs/LIN-Door/canoe/cfg/sample_project.cfg` | CANoe cfg 형식 |
+
+### sysvars 필수 형식 규칙
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<SystemVariables version="4.0">            <!-- version="4.0" 필수 -->
+  <Namespace name="MyNS" comment="...">
+    <Variable name="myVar"
+              type="uint32"               <!-- int → uint32 -->
+              initValue="0"              <!-- value= 아님, initValue= -->
+              minValue="0"
+              maxValue="1"
+              unit=""
+              comment="설명"/>
+    <Variable name="myFloat"
+              type="float64"              <!-- float → float64 -->
+              initValue="0.0"
+              minValue="0.0"
+              maxValue="100.0"
+              unit="km/h"
+              comment="설명"/>
+  </Namespace>
+</SystemVariables>
+```
+
+### DBC 필수 형식 규칙
+
+- 블록 주석 `/* */` **절대 금지** → 파싱 에러
+- 화살표 `→` 유니코드 **금지** → `->` 사용
+- 주석은 `CM_` 섹션에만 작성
+- 참조: `canoe/databases/emergency_system_explained.md`
+
+---
+
+## CANoe 19 로컬 설치 레퍼런스 경로
+
+> Vector CANoe 19 설치 시 포함된 공식 파일들. 신규 파일 작성 전 반드시 확인.
+
+### Templates (공식 빈 템플릿)
+
+```
+C:/Users/Public/Documents/Vector/CANoe/19 (x64)/Templates/
+  Database/
+    CANTemplate.dbc          ← DBC 공식 빈 템플릿 (NS_ 섹션 전체 포함)
+    EmptyTemplate.dbc        ← 최소 DBC 템플릿
+    CANoeTemplate.dbc        ← CANoe 전용 속성 포함 DBC 템플릿
+    CAN_FD Template.dbc      ← CAN FD 템플릿
+  CANoe/
+    CAN_500kBaud_1ch.tcn/.tcx   ← 우리 프로젝트와 동일한 cfg 원본 템플릿
+    CAN_500kBaud_2ch.tcn/.tcx
+```
+
+### Reusable CAPL Includes (공식 재사용 라이브러리)
+
+```
+C:/Users/Public/Documents/Vector/CANoe/19 (x64)/Reusable/
+  CAPL_Includes/
+    Diagnostics/CCI_CanTP.cin    ← CAN Transport Protocol 라이브러리
+    Diagnostics/CCI_DoIP.cin     ← DoIP 라이브러리
+    Diagnostics/CCI_LINTP.cin    ← LIN TP 라이브러리
+  LINCaplLibs/
+    J2602_Slave_Conformance_Test_Lib.can
+```
+
+### CANoe Sample Configurations (별도 설치 필요)
+
+```
+C:/Users/Public/Documents/Vector/AddOn Packages/Vector AddOn/CANoe Sample Configurations/CAN/
+```
+> **현재 비어있음** — Vector 공식 샘플은 메인 설치에 포함되지 않음.
+> CANoe 19 이전 버전부터 **별도 설치 패키지**로 분리됨.
+> 다운로드: [vector.com](https://www.vector.com) 로그인 → Downloads → CANoe Sample Configurations
+
+### OpenDBC — GitHub 오픈소스 실차 DBC (commaai/opendbc)
+
+```
+reference/dbc/level3_communication/reference/
+  hyundai_kia_base.dbc      ← 핵심 ⭐ 현대/기아 실차 DBC (ECU 47개, 신호 1325개)
+  hyundai_2015_ccan.dbc     ← 2015 C-CAN (113메시지, 1154신호)
+  hyundai_2015_mcan.dbc     ← 2015 M-CAN (171메시지, 1184신호)
+  hyundai_i30_2014.dbc      ← 2014 i30
+  hyundai_santafe_2007.dbc  ← 2007 Santa Fe
+  tesla_reference.dbc       ← Tesla 참조
+  README.md                 ← 파일별 상세 설명
+```
+
+> 출처: [github.com/commaai/opendbc](https://github.com/commaai/opendbc)
+> 용도: 실차 신호 네이밍, Value Table, Alive Counter, Checksum 패턴 참조
+> **DBC 작성 시 신호 정의·단위·스케일 Best Practice는 이 파일들을 먼저 확인한다.**
+
+---
+
+### 결론: 우리 프로젝트 최우선 레퍼런스 (우선순위 순)
+
+| 용도 | 참조 파일 |
+|------|-----------|
+| sysvars 형식 | `docs/LIN-Door/canoe/cfg/sample_project.sysvars` |
+| DBC 구조·문법 | `docs/LIN-Door/canoe/databases/sample_project.dbc` |
+| DBC 신호 Best Practice | `reference/dbc/level3_communication/reference/hyundai_kia_base.dbc` |
+| CAPL 노드 구조 | `docs/LIN-Door/canoe/nodes/*.can` |
+| CAPL 추가 예제 | `reference/legacy/capl_nodes/*.can` (13개: EMS/ESP/IVI/MDPS 등) |
+| DBC 빈 템플릿 | `C:/Users/Public/Documents/Vector/CANoe/19 (x64)/Templates/Database/CANTemplate.dbc` |
 
 ---
 

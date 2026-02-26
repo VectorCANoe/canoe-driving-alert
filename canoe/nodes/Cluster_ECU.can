@@ -46,10 +46,10 @@ variables
  *============================================================*/
 on start
 {
-  write("[Cluster_ECU] 노드 시작 — 정상 주행");
-  write("[Cluster_ECU] ───────────────────────────────");
-  write("[Cluster_ECU] 상태: 정상 주행 중");
-  write("[Cluster_ECU] ───────────────────────────────");
+  write("[Cluster_ECU] node start -- normal driving");
+  write("[Cluster_ECU] -----------------------------------");
+  write("[Cluster_ECU] Status: normal driving");
+  write("[Cluster_ECU] -----------------------------------");
 }
 
 /*============================================================
@@ -59,45 +59,50 @@ on start
  *============================================================*/
 on message Cluster_Warning
 {
-  int warnType  = this.WarningType;
-  int active    = this.WarningActive;
-  int emgVeh    = this.EmergencyVehicle;
-  int direction = this.Direction;
+  int warnType;
+  int active;
+  int emgVeh;
+  int direction;
+
+  warnType  = this.WarningType;
+  active    = this.WarningActive;
+  emgVeh    = this.EmergencyVehicle;
+  direction = this.Direction;
 
   if (warnType == gCurrentWarning && active == 1)
-    return; /* 동일 경고 반복 수신 → 무시 (Req_006: 반복 억제) */
+    return; /* 동일 경고 반복 수신 -> 무시 (Req_006: 반복 억제) */
 
   gCurrentWarning = (active == 1) ? warnType : WARN_NONE;
 
-  write("[Cluster_ECU] ═══════════════════════════════");
+  write("[Cluster_ECU] ===================================");
 
   switch (warnType)
   {
     case WARN_NONE:
-      write("[Cluster_ECU] 상태: 정상 주행 중");
+      write("[Cluster_ECU] Status: normal driving");
       break;
 
     case WARN_SCHOOLZONE:
       if (active == 1)
       {
-        write("[Cluster_ECU] ⚠  스쿨존 과속 경고  ⚠");
-        write("[Cluster_ECU] 제한속도: 30 km/h  속도를 줄이세요");
+        write("[Cluster_ECU] [!] SCHOOL ZONE SPEED WARNING [!]");
+        write("[Cluster_ECU] SpeedLimit: 30 km/h  Reduce speed");
       }
       else
       {
-        write("[Cluster_ECU] 스쿨존 경고 해제");
+        write("[Cluster_ECU] school zone warning cleared");
       }
       break;
 
     case WARN_HIGHWAY:
       if (active == 1)
       {
-        write("[Cluster_ECU] ⚠  고속도로 주의 저하 감지  ⚠");
-        write("[Cluster_ECU] 조향을 확인하세요");
+        write("[Cluster_ECU] [!] HIGHWAY ATTENTION WARNING [!]");
+        write("[Cluster_ECU] Check steering input");
       }
       else
       {
-        write("[Cluster_ECU] 고속도로 경고 해제");
+        write("[Cluster_ECU] highway warning cleared");
       }
       break;
 
@@ -105,51 +110,51 @@ on message Cluster_Warning
       if (active == 1)
       {
         if (direction == 0) /* LeftExit */
-          write("[Cluster_ECU] ← IC 출구 안내: 좌측 진출");
+          write("[Cluster_ECU] <- IC EXIT: LEFT");
         else
-          write("[Cluster_ECU] → IC 출구 안내: 우측 진출");
-        write("[Cluster_ECU] 앰비언트 방향 유도를 확인하세요");
+          write("[Cluster_ECU] -> IC EXIT: RIGHT");
+        write("[Cluster_ECU] Check ambient direction guide");
       }
       else
       {
-        write("[Cluster_ECU] IC 안내 해제");
+        write("[Cluster_ECU] IC guide cleared");
       }
       break;
 
     case WARN_POLICE:
       if (active == 1)
       {
-        write("[Cluster_ECU] ★★  경찰차 긴급 접근  ★★");
+        write("[Cluster_ECU] ** POLICE EMERGENCY **");
         writeDirectionMsg(direction);
-        write("[Cluster_ECU] ▶ 우측 차선으로 양보하세요");
+        write("[Cluster_ECU] > Move right -- yield to emergency vehicle");
       }
       else
       {
-        write("[Cluster_ECU] 경찰차 긴급 상황 해제");
-        write("[Cluster_ECU] 정상 주행으로 복귀합니다");
+        write("[Cluster_ECU] POLICE emergency cleared");
+        write("[Cluster_ECU] Resuming normal driving");
       }
       break;
 
     case WARN_AMBULANCE:
       if (active == 1)
       {
-        write("[Cluster_ECU] ★★  구급차 긴급 접근  ★★");
+        write("[Cluster_ECU] ** AMBULANCE EMERGENCY **");
         writeDirectionMsg(direction);
-        write("[Cluster_ECU] ▶ 즉시 우측 양보 — 생명을 살릴 수 있습니다");
+        write("[Cluster_ECU] > Yield NOW -- save a life");
       }
       else
       {
-        write("[Cluster_ECU] 구급차 긴급 상황 해제");
-        write("[Cluster_ECU] 정상 주행으로 복귀합니다");
+        write("[Cluster_ECU] AMBULANCE emergency cleared");
+        write("[Cluster_ECU] Resuming normal driving");
       }
       break;
 
     default:
-      write("[Cluster_ECU] 알 수 없는 경고 유형 (%d)", warnType);
+      write("[Cluster_ECU] Unknown warning type (%d)", warnType);
       break;
   }
 
-  write("[Cluster_ECU] ═══════════════════════════════");
+  write("[Cluster_ECU] ===================================");
 }
 
 /*============================================================
@@ -160,10 +165,10 @@ void writeDirectionMsg(int dir)
 {
   switch (dir)
   {
-    case DIR_FRONT: write("[Cluster_ECU] 접근 방향: 전방"); break;
-    case DIR_LEFT:  write("[Cluster_ECU] 접근 방향: 좌측"); break;
-    case DIR_RIGHT: write("[Cluster_ECU] 접근 방향: 우측"); break;
-    case DIR_REAR:  write("[Cluster_ECU] 접근 방향: 후방"); break;
-    default:        write("[Cluster_ECU] 접근 방향: 확인 중"); break;
+    case DIR_FRONT: write("[Cluster_ECU] approach: FRONT"); break;
+    case DIR_LEFT:  write("[Cluster_ECU] approach: LEFT");  break;
+    case DIR_RIGHT: write("[Cluster_ECU] approach: RIGHT"); break;
+    case DIR_REAR:  write("[Cluster_ECU] approach: REAR");  break;
+    default:        write("[Cluster_ECU] approach: UNKNOWN"); break;
   }
 }

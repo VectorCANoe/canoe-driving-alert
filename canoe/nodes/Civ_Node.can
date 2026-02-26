@@ -73,7 +73,7 @@ variables
  *============================================================*/
 on start
 {
-  write("[Civ_Node] 노드 시작 — Alert Arbiter 준비");
+  write("[Civ_Node] start -- Alert Arbiter ready");
   runArbiter();
 }
 
@@ -84,9 +84,12 @@ on start
  *============================================================*/
 on message Vehicle_Context
 {
-  double prevSpeed  = gSpeed;
-  int    prevZone   = gZone;
-  int    prevWarn   = gWarnLevel;
+  double prevSpeed;
+  int    prevZone;
+  int    prevWarn;
+  prevSpeed = gSpeed;
+  prevZone  = gZone;
+  prevWarn  = gWarnLevel;
 
   /* Vehicle_Speed: raw → physical (factor=0.1) */
   gSpeed    = this.Vehicle_Speed * 0.1;
@@ -117,12 +120,12 @@ on sysvar V2V::Police_Active
 
   if (gPoliceActive == 1)
   {
-    write("[Civ_Node] ▲ ETH 수신: 경찰차 긴급 접근 (Dir=%d, ETA=%ds)",
+    write("[Civ_Node] ^ ETH recv: POLICE active (Dir=%d, ETA=%ds)",
           gPoliceDir, gPoliceETA);
   }
   else
   {
-    write("[Civ_Node] ▽ ETH 수신: 경찰차 긴급 해제");
+    write("[Civ_Node] v ETH recv: POLICE cleared");
   }
   runArbiter();
 }
@@ -140,13 +143,13 @@ on sysvar V2V::Ambulance_Active
 
   if (gAmbulanceActive == 1)
   {
-    write("[Civ_Node] ▲ ETH 수신: 구급차 긴급 접근 (Dir=%d, ETA=%ds)",
+    write("[Civ_Node] ^ ETH recv: AMBULANCE active (Dir=%d, ETA=%ds)",
           gAmbulanceDir, gAmbulanceETA);
-    write("[Civ_Node]   ※ 구급차 우선순위 1위 (Ambulance > Police)");
+    write("[Civ_Node]   * AMBULANCE priority 1 (Ambulance > Police)");
   }
   else
   {
-    write("[Civ_Node] ▽ ETH 수신: 구급차 긴급 해제");
+    write("[Civ_Node] v ETH recv: AMBULANCE cleared");
   }
   runArbiter();
 }
@@ -206,8 +209,8 @@ void runArbiter()
     /* 경찰차도 동시 활성인 경우 → 구급차 유지, 로그만 기록 */
     if (gPoliceActive == 1)
     {
-      write("[Civ_Node][Arbiter] 충돌: Ambulance + Police 동시 활성");
-      write("[Civ_Node][Arbiter] → 구급차 우선 적용 (Ambulance > Police, Req_029)");
+      write("[Civ_Node][Arbiter] conflict: Ambulance + Police both active");
+      write("[Civ_Node][Arbiter] -> AMBULANCE priority applied (Req_029)");
     }
   }
 
@@ -309,7 +312,7 @@ void runArbiter()
   if (newPattern != gCurrentPattern || newMode != gCurrentMode)
   {
     /* 로그: 업데이트 전에 이전 패턴 기록 */
-    write("[Civ_Node][Arbiter] 패턴 전환: %d -> %d  (Mode=%d  Zone=%d  WarnLvl=%d)",
+    write("[Civ_Node][Arbiter] pattern: %d -> %d  (Mode=%d  Zone=%d  WarnLvl=%d)",
           gCurrentPattern, newPattern, newMode, gZone, gWarnLevel);
 
     gCurrentPattern = newPattern;

@@ -46,7 +46,7 @@ variables
  *============================================================*/
 on start
 {
-  write("[Context_Manager] 노드 시작 — 구간 인식 + 경고 레벨 관리");
+  write("[Context_Manager] start -- zone detection + warning level mgmt");
 
   /* Panel sysvar 초기값 동기화 */
   gSpeed    = @Navigation::gVehicleSpeed;
@@ -75,13 +75,13 @@ on sysvar Navigation::gRoadZone
     gWarningLvl              = 0;
     @Arbiter::gWarningLevel  = 0;
 
-    write("[Context_Manager] 구간 전환: Zone %d → Zone %d", prevZone, gZone);
+    write("[Context_Manager] zone change: Zone %d -> Zone %d", prevZone, gZone);
 
     /* 고속도로 진입 + 이미 조향 없음 → 타이머 즉시 시작 */
     if (gZone == 2 && gSteering == 0)
     {
       setTimer(tHighwaySteer, STEER_TIMEOUT_MS);
-      write("[Context_Manager] 고속도로 진입, 조향 없음 → 10초 감시 시작");
+      write("[Context_Manager] highway entry, no steering -> 10s watch start");
     }
   }
 
@@ -121,7 +121,7 @@ on sysvar Navigation::gSteeringInput
     {
       /* 조향 없음 → 10초 카운트다운 시작 */
       setTimer(tHighwaySteer, STEER_TIMEOUT_MS);
-      write("[Context_Manager] 고속도로 조향 감시 시작 (10초 카운트다운)");
+      write("[Context_Manager] highway steering watch start (10s countdown)");
     }
     else
     {
@@ -131,7 +131,7 @@ on sysvar Navigation::gSteeringInput
       {
         gWarningLvl             = 0;
         @Arbiter::gWarningLevel = 0;
-        write("[Context_Manager] 고속도로 조향 복귀 → 경고 해제");
+        write("[Context_Manager] highway steering restored -> warning cleared");
       }
     }
   }
@@ -147,7 +147,7 @@ on timer tHighwaySteer
   {
     gWarningLvl             = 1;
     @Arbiter::gWarningLevel = gWarningLvl;
-    write("[Context_Manager] ⚠ 고속도로 10초 조향 없음 → WarningLevel=1");
+    write("[Context_Manager] [!] highway 10s no steering -> WarningLevel=1");
   }
 }
 
@@ -175,7 +175,7 @@ void evaluateWarning()
   if (gZone != 3 && limit > 0.0 && gSpeed > limit)
   {
     newLevel = 1;
-    write("[Context_Manager] 속도 초과: %.1f > %.1f km/h (Zone=%d)",
+    write("[Context_Manager] speed over: %.1f > %.1f km/h (Zone=%d)",
           gSpeed, limit, gZone);
   }
 
