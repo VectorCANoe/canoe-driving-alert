@@ -1,0 +1,58 @@
+includes
+{
+}
+
+variables
+{
+  dword gUdpSocket;
+  msTimer tIviCycle;
+  byte gRxBuf[16];
+  long gRxLen;
+}
+
+on start
+{
+  gUdpSocket = UdpSocket::Open(5000);
+  setTimer(tIviCycle, 10);
+  write("[IVI_GW] start");
+}
+
+on stopMeasurement
+{
+  UdpSocket::Close(gUdpSocket);
+}
+
+on timer tIviCycle
+{
+  int alertLevel;
+  int alertType;
+  int timeoutClear;
+  int warningTextCode;
+  message frmClusterWarningMsg mCluster;
+
+  gRxLen = UdpSocket::ReceiveFrom(gUdpSocket, gRxBuf, elcount(gRxBuf));
+  if (gRxLen == 2)
+  {
+    alertLevel = (int)(gRxBuf[0] & 0x07);
+    alertType = (int)((gRxBuf[0] >> 3) & 0x07);
+    timeoutClear = (int)(gRxBuf[1] & 0x01);
+
+    if ((int)gRxBuf[1] <= 1)
+    {
+      if (timeoutClear == 1 || alertLevel == 0)
+      {
+        warningTextCode = 0;
+      }
+      else
+      {
+        warningTextCode = (alertType * 10) + alertLevel;
+      }
+
+      @Cluster::warningTextCode = warningTextCode;
+      mCluster.WarningTextCode = warningTextCode;
+      output(mCluster);
+    }
+  }
+
+  setTimer(tIviCycle, 10);
+}
