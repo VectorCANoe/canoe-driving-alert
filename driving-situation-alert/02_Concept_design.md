@@ -1,8 +1,8 @@
 ﻿# 컨셉 디자인 (Concept Design)
 
 **Document ID**: PROJ-02-CD
-**Version**: 2.0
-**Date**: 2026-02-25
+**Version**: 2.1
+**Date**: 2026-02-26
 **Status**: Released
 **Project Title**: 주행상황 연동 실시간 경고 시스템
 **Subtitle**: (구간 인식, 긴급차량 경고시스템)
@@ -53,6 +53,17 @@
 - Ethernet UDP: V2V 긴급 알림 전파
 - CAN-HS: 수신 차량 내부 HMI 제어 (Ambient/Cluster)
 
+## 3.1 아키텍처 대안 검토 결론
+
+| 대안 | 특징 | 판단 |
+|---|---|---|
+| Option 1 (채택) | ETH_SWITCH + Domain GW + Domain CAN + 중앙 경고코어 | 현재 스코프(CANoe SIL, 문서 추적성, 05~07 검증)에서 최적 |
+| Option 1A (조건부) | Option 1 + 이중 ETH 백본/이중화 GW | HIL/실차 이전 장애 허용성 강화 단계에서 도입 검토 |
+| Option 2 | 도메인 CAN 직접 연계 중심 | 확장성과 중재 가시성 저하로 미채택 |
+| Option 3 | 단일 CAN 백본 | 도메인 분리 약화/병목 위험으로 미채택 |
+
+- 결론: 본 프로젝트는 Option 1을 기준 아키텍처로 고정하고, Option 1A는 차기 고도화 단계 후보로 유지한다.
+
 ## 4. 검증 전제 (CANoe SIL Only)
 
 - 구현/검증은 CANoe 내부에서만 수행한다. (Hardware-in-the-loop 미사용)
@@ -67,3 +78,11 @@
 - OTA 구독 패키지 및 UDS 절차
 - 위험운전 레벨 기반 경고 시스템
 
+---
+
+## 개정 이력
+
+| 버전 | 날짜 | 변경 사항 |
+|---|---|---|
+| 2.0 | 2026-02-25 | 주행상황 연동 실시간 경고 시스템 기준으로 컨셉 재정의 |
+| 2.1 | 2026-02-26 | 아키텍처 대안(Option 1/1A/2/3) 비교 및 채택 결론 추가 |
