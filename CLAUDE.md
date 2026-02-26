@@ -8,10 +8,33 @@
 
 - **저장소**: `C:\Users\이준영\CANoe-IVI-OTA` (git: `main` 브랜치)
 - **개발 환경**: CANoe 19.4, CAPL, Windows 11
-- **참조용 sample 프로젝트**: `docs/sample/` — BCM 과전류 → DTC → OTA (완료된 예제)
-- **새 프로젝트 문서**: `docs/project/` — sample 구조 그대로 미러링
-- **성현 프로젝트 문서**: `docs/OTA/` — 전면 재작성 중 (OTA 제거, 경찰차·구급차+네비 앰비언트로 교체)
-- **원본 백업**: `docs/OTA_original/` — 기존 OTA 문서 백업 (수정 금지)
+
+> **⚠️ 단일 활성 프로젝트 — 아래 경로만 읽고 수정한다:**
+
+### 활성 문서 (유일한 현행 기준)
+- **프로젝트 문서 전체**: `driving-situation-alert/` — 01~07 전 문서 현행 기준
+  - `driving-situation-alert/01_Requirements.md` — Req_001~Req_043 확정
+  - `driving-situation-alert/02_Concept_design.md`
+  - `driving-situation-alert/03_Function_definition.md` + `0301~0304`
+  - `driving-situation-alert/04_SW_Implementation.md`
+  - `driving-situation-alert/05_Unit_Test.md` — UT_*_001 체계
+  - `driving-situation-alert/06_Integration_Test.md` — IT_*_001 체계
+  - `driving-situation-alert/07_System_Test.md` — ST_*_001 체계
+  - `driving-situation-alert/tmp/` — 임시 작업 파일 (완료 후 삭제)
+  - `driving-situation-alert/compact/` — 요약본
+
+- **CAPL 노드**: `canoe/nodes/*.can` — 현행 구현 소스
+- **DBC**: `canoe/databases/emergency_system.dbc`
+- **CANoe 설정**: `canoe/cfg/CAN_500kBaud_1ch.cfg`
+
+### 레거시 (읽기 전용 — 절대 수정 금지, 참조만)
+- `docs/LIN-Door/` — BCM/Door 샘플 프로젝트 (구조·형식 참조용)
+- `docs/OTA_original/` — 구 OTA 문서 백업
+- `docs/v2x/`, `docs/v2x_original/` — 구 V2X 문서
+- `docs/OTA/`, `docs/architecture/`, `docs/V-Model/`, `docs/mentoring/` — 전부 레거시
+- `reference/` — 참조 DBC/CAPL 예제 (구조 참조용)
+
+**규칙: `driving-situation-alert/` 외의 문서를 현행 기준으로 혼동하지 않는다.**
 
 ---
 
