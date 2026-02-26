@@ -1,82 +1,75 @@
 # 통합 테스트 (Integration Test)
 
 **Document ID**: PROJ-06-IT
-**ISO 26262 Reference**: Part 6, Cl.10 — 소프트웨어 통합 테스트 / Part 4, Cl.9 — 시스템 통합 테스트
-**ASPICE Reference**: SWE.5 (BP1-BP3)
-**Version**: 3.0
-**Date**: 2026-02-24
-**Status**: Released
+**ISO 26262 Reference**: Part 6, Cl.10 (Software Integration and Integration Test)
+**ASPICE Reference**: SWE.5 (Software Integration and Integration Test)
+**Version**: 4.0
+**Date**: 2026-02-26
+**Status**: Draft
+**Project Title**: 주행상황 연동 실시간 경고 시스템
+**Subtitle**: (구간 인식, 긴급차량 경고시스템)
 
-| V-Model 위치 | 대응 문서 | 상위 연결 | 하위 연결 |
-|-------------|---------|---------|---------|
-| 우측 중단 — SWE.5 통합 테스트 | `03_Function_definition.md` + `0301_SysFuncAnalysis.md` (SYS.3) | `05_Unit_Test.md` | `07_System_Test.md` |
-
-> **실행 원칙**: Base(In_Test_01~06) 전체 Pass 후 TS-준영(In_Test_07~09), TS-성현(In_Test_10~13)을 순서대로 실행한다.
-
----
-
-## Part 1. Base 통합 테스트 — 입력층 + 판단층 + 출력층
-
-| 테스트 ID | 요구사항 ID | 테스트 목적 | 예상 결과 | 테스트 수행 결과 | 담당자 | 일자 |
-|----------|-----------|-----------|---------|--------------|--------|------|
-| In_Test_01 | Req_B04, Req_B09, Req_B10 | 과속 감지 → 1단계 경고 발령 확인 | Vehicle::vehicleSpeed > 80km/h 주입 → WDM_ECU gWarningLevel = 1 → Cluster 황색 경고등 점등 (50ms 이내) | | | |
-| In_Test_02 | Req_B05, Req_B06, Req_B09 | 급가속/급제동 감지 → 1단계 경고 발령 확인 | accelValue > 3.5 m/s² 주입 → gWarningLevel = 1 → 경고 발령. brakeValue > 4.0 m/s² 동일 검증. | | | |
-| In_Test_03 | Req_B07, Req_B08, Req_B09 | 차선이탈/급차선변경 감지 → 1단계 경고 발령 확인 | LDW::laneDeparture = 1 또는 LDW::laneChangeAlert = 1 주입 → gWarningLevel = 1 → Cluster 황색 점등 | | | |
-| In_Test_04 | Req_B09, Req_B12 | A+B 복합 → 2단계 경고 발령 확인 + gCrashEvent → 3단계 확인 | A그룹(과속) AND B그룹(차선이탈) 동시 주입 → gWarningLevel = 2 → Cluster 적색 + Sound 2단계 + Ambient AMBER 파동. gCrashEvent = 1 주입 → gWarningLevel = 3 → Cluster 적색 점멸 + Sound 긴급음 + Ambient RED 점멸 | | | |
-| In_Test_05 | Req_B15 | 응시 복귀 → 경고 해제 확인 | gWarningLevel > 0 상태에서 Driver::gazeActive 0→1 전환 → gWarningLevel = 0 → Cluster 소등 | | | |
-| In_Test_06 | Req_B16 | 핸들 입력 → 경고 해제 확인 | gWarningLevel > 0 상태에서 MDPS::steeringInput = 1 주입 → gWarningLevel = 0 → Cluster 소등 | | | |
+| V-Model 위치 | 현재 문서 | 상위 연결 | 하위 연결 |
+|---|---|---|---|
+| 우측 중단 (SWE.5) | `06_Integration_Test.md` | `05_Unit_Test.md` | `07_System_Test.md` |
 
 ---
 
-## Part 2. TS-준영 통합 테스트 — 구간 인식 + Ambient 연동
+## 작성 원칙
 
-> **전제조건**: In_Test_01~06 전체 Pass.
-
-| 테스트 ID | 요구사항 ID | 테스트 목적 | 예상 결과 | 테스트 수행 결과 | 담당자 | 일자 |
-|----------|-----------|-----------|---------|--------------|--------|------|
-| In_Test_07 | Req_Z01, Req_Z02 | gRoadZone=1 스쿨존 앰비언트 RED 점멸 확인 | Panel 버튼으로 gRoadZone = 1 설정 → vehicleSpeed > 30km/h 과속 주입 → Ambient_ECU AmbientMode = 1 RED 200ms 점멸 활성화 확인 | | | |
-| In_Test_08 | Req_Z03 | gRoadZone=2 고속도로 핸들 미입력 10초 진동 경고 확인 | gRoadZone = 2 + SteeringInput = 0 유지 → 10초 후 WDM_ECU tSteerTimer 만료 → Ambient ORANGE 파동 + Door_ECU 진동 활성화 확인 | | | |
-| In_Test_09 | Req_Z04 | gRoadZone=3 IC출구 앰비언트 방향 안내 확인 | gRoadZone = 3 + gNavDirection = 1(우측) 설정 → Ambient_ECU 실도로 IC 유도선 색상(초록/분홍/빨강) + 우측 방향 흐름 애니메이션 즉시 활성화 확인. gWarningLevel = 1 주입 → 경고 앰비언트로 즉시 오버라이드 확인. 경고 해제 → IC 패턴 자동 복귀 확인. gRoadZone 변경 → 앰비언트 즉시 해제 확인. | | | |
+- 본 문서는 모듈 간 인터페이스/흐름(Flow, Comm) 연동 검증을 수행한다.
+- 상단 표는 샘플 형식(`테스트 ID/요구사항 ID/테스트 목적/예상 결과/...`)을 유지한다.
+- 상세 추적은 하단 IT-Flow/Comm 연계 표로 분리한다.
+- 범위는 CANoe SIL, CAN+Ethernet으로 고정한다.
 
 ---
 
-## Part 3. TS-성현 통합 테스트 — Drive Coach + Smart Claim + Seasonal Theme
-
-> **전제조건**: In_Test_01~06 전체 Pass.
+## 통합 테스트 표 (공식 표준 양식)
 
 | 테스트 ID | 요구사항 ID | 테스트 목적 | 예상 결과 | 테스트 수행 결과 | 담당자 | 일자 |
-|----------|-----------|-----------|---------|--------------|--------|------|
-| In_Test_10 | Req_O01 | P 기어 상태에서 Drive Coach OTA UDS 세션 확인 | gGearP = 1 설정 → IVI 구독 메뉴 진입 → [Drive Coach 설치] 선택 → 운전자 동의 → OTA_Server: DoIP → 0x10 0x02 → 0x27 → 0x34 → 0x36×N → 0x37 정상 동작. CRC-32 일치 → PositiveResponse(0x77) → ECU 재시작 → LDW 민감도 상향 + 토크 제한(70%) + 속도 리미터(100km/h) + 후진 제한(10km/h) 적용 확인. | | | |
-| In_Test_11 | Req_O02 | Smart Claim Telematics 활성화 → 충돌 데이터 전송 확인 | Drive Coach 설치 완료 상태에서 gCrashEvent = 1 재주입 → Python COM API HTTP POST 실행 → Flask 서버 수신 확인 → IVI "사고 데이터 전송 완료" 표시 확인. | | | |
-| In_Test_12 | Req_O03 | Seasonal Theme OTA UDS 세션 확인 | OTA_Server Seasonal Theme 패키지 가용 감지 → IVI 알림 → 운전자 동의 → 동일 UDS 세션(DoIP→0x10→0x27→0x34→0x36×N→0x37) 실행 → 설치 완료 → 앰비언트 색상·IVI 배경 즉시 적용 확인. | | | |
-| In_Test_13 | Req_O04 | OTA 실패 시 Rollback 확인 | OTA 전송 중 CRC 불일치 주입 → NegativeResponse(0x7F) → 자동 Rollback → 이전 펌웨어 유지 + OTA::rollbackTriggered = 1 확인 | | | |
-| In_Test_14 | Req_O05 | Bus Off 발생 시 OTA 세션 안전 중단 확인 | OTA 진행 중 CGW::busOffDetected = 1 주입 → OTA 세션 즉시 중단 + DTC U0300 저장 + OTA::otaInProgress = 0 확인 | | | |
+|---|---|---|---|---|---|---|
+| IT_FLOW_001 | Req_001,Req_002,Req_003,Req_004,Req_006,Req_010 | Chassis 입력 -> CHASSIS_GW -> ADAS_WARN_CTRL 연동 검증 | 0x100/0x101 입력이 0x510/0x511로 변환되어 경고 상태 계산에 반영 |  |  |  |
+| IT_FLOW_002 | Req_007 | Nav 입력 -> INFOTAINMENT_GW -> NAV_CONTEXT_MGR/WARN_ARB_MGR 연동 검증 | 0x110 입력이 0x512로 변환되어 baseZoneContext 갱신 |  |  |  |
+| IT_EMS_TX_001 | Req_017 | 경찰 긴급 송신 연동 검증 | EMS_POLICE_TX 송신이 EMS_ALERT_RX 수신으로 연결되고 중재 입력 반영 |  |  |  |
+| IT_EMS_TX_002 | Req_018 | 구급 긴급 송신 연동 검증 | EMS_AMB_TX 송신이 EMS_ALERT_RX 수신으로 연결되고 중재 입력 반영 |  |  |  |
+| IT_ARB_001 | Req_022,Req_025,Req_027~Req_032 | 긴급/구간 충돌 중재 연동 검증 | 우선순위 규칙에 따라 단일 selectedAlert 결과 생성 |  |  |  |
+| IT_AMB_001 | Req_008,Req_009,Req_013~Req_016,Req_033~Req_039 | WARN_ARB_MGR -> BODY_GW -> BCM_AMBIENT_CTRL 연동 검증 | 0xE200 수신 후 0x210 출력이 정책과 일치 |  |  |  |
+| IT_CLU_001 | Req_005,Req_019~Req_021,Req_026,Req_040 | WARN_ARB_MGR -> IVI_GW -> CLU_HMI_CTRL 연동 검증 | 0xE200 수신 후 0x220 출력이 정책과 일치 |  |  |  |
+| IT_TIMEOUT_001 | Req_024 | EmergencyAlert 1000ms 무갱신 타임아웃 연동 검증 | timeoutClear=1 생성, 출력이 안전 상태로 복귀 |  |  |  |
+| IT_RECOVERY_001 | Req_033,Req_034 | 긴급 해제 후 이전 구간 상태 복귀 검증 | 중재 종료 후 Zone 컨텍스트 복귀 및 전환 완화 동작 |  |  |  |
+| IT_SIL_001 | Req_041,Req_042,Req_043 | SIL 시나리오 실행/판정 연동 검증 | CAN+ETH 동시 조건에서 시나리오 판정 결과 기록 |  |  |  |
 
 ---
 
-## 추가 테스트 — 빗길 임계값 (미확정)
+## 통합 테스트 추적 상세 표
 
-> **상태**: 빗길 모드 임계값 수치 미확정 (CLAUDE.md 미확정 사항 #3). 수치 확정 후 Req_B04 하위 요구사항으로 신설 예정.
+| IT ID | 관련 Flow | 관련 Comm | 관련 Func | 관련 Req | 선행 UT | 합격 기준 |
+|---|---|---|---|---|---|---|
+| IT_FLOW_001 | Flow_001, Flow_002 | Comm_001, Comm_002 | Func_001~Func_004,Func_006,Func_010~Func_012 | Req_001,Req_002,Req_003,Req_004,Req_006,Req_010,Req_011,Req_012 | UT_ADAS_001, UT_GW_001 | 입력 프레임 -> 변환 프레임 -> 경고상태 반영 지연 100ms 이내 |
+| IT_FLOW_002 | Flow_003 | Comm_003 | Func_007 | Req_007 | UT_NAV_001, UT_GW_001 | 구간 입력 변경 후 컨텍스트 즉시 반영 |
+| IT_EMS_TX_001 | Flow_004 | Comm_004 | Func_017,Func_023 | Req_017,Req_023 | UT_EMS_POL_001, UT_EMS_RX_001 | Police Active/Clear 송수신 일치 |
+| IT_EMS_TX_002 | Flow_005 | Comm_005 | Func_018,Func_023 | Req_018,Req_023 | UT_EMS_AMB_001, UT_EMS_RX_001 | Ambulance Active/Clear 송수신 일치 |
+| IT_ARB_001 | Flow_006 | Comm_006 | Func_022,Func_025,Func_027~Func_032 | Req_022,Req_025,Req_027~Req_032 | UT_ARB_001 | 우선순위/동률 규칙 결과가 기대표와 일치 |
+| IT_AMB_001 | Flow_007 | Comm_007 | Func_008,Func_009,Func_013~Func_016,Func_033~Func_039 | Req_008,Req_009,Req_013~Req_016,Req_033~Req_039 | UT_BCM_001, UT_OUT_GW_001 | AmbientMode/Color/Pattern 출력이 정책표와 일치 |
+| IT_CLU_001 | Flow_008 | Comm_008 | Func_005,Func_019~Func_021,Func_026,Func_040 | Req_005,Req_019~Req_021,Req_026,Req_040 | UT_CLU_001, UT_OUT_GW_001 | WarningTextCode 출력 및 중복 억제 동작 일치 |
+| IT_TIMEOUT_001 | Flow_006, Flow_007, Flow_008 | Comm_006, Comm_007, Comm_008 | Func_024,Func_033,Func_034,Func_040 | Req_024,Req_033,Req_034,Req_040 | UT_EMS_RX_001, UT_BCM_001, UT_CLU_001 | 1000ms 무갱신 후 안전 복귀 완료 |
+| IT_RECOVERY_001 | Flow_006, Flow_007, Flow_008 | Comm_006, Comm_007, Comm_008 | Func_033,Func_034 | Req_033,Req_034 | UT_BCM_001 | 긴급 종료 후 직전 Zone 상태 정상 복원 |
+| IT_SIL_001 | Flow_009 | Comm_009 | Func_041,Func_042,Func_043 | Req_041,Req_042,Req_043 | UT_ADAS_001~UT_CLU_001 | 시나리오 실행/결과 기록/로그 연동 완료 |
 
-| 테스트 ID | 요구사항 ID | 테스트 목적 | 예상 결과 | 테스트 수행 결과 | 담당자 | 일자 |
-|----------|-----------|-----------|---------|--------------|--------|------|
-| In_Test_14 | Req_B04 (하위 예정) | 빗길 모드에서 임계값 하향 적용 확인 | Rain::rainMode = 1 설정 → 과속 기준 자동 하향(일반 80→64km/h) → 동일 속도에서 경고 더 빨리 발령 확인 | | | |
+---
+
+## 07 연계 체크포인트
+
+- `IT_*`의 E2E 결과는 `07_System_Test.md`의 `ST_*` 수용 판단 근거로 사용한다.
+- `IT_AMB_001`, `IT_CLU_001`, `IT_EMS_TX_001`, `IT_EMS_TX_002`는 03 문서 검증 컬럼 참조 ID와 일치해야 한다.
 
 ---
 
 ## 개정 이력
 
 | 버전 | 날짜 | 변경 사항 |
-|------|------|---------|
-| 1.0 | 2026-02-23 | 초기 생성 — In_Test_01~14 통합 테스트 명세 (Req_001~018) |
-| 2.0 | 2026-02-23 | 요구사항 ID 전면 갱신 — Base(Req_B01~B16) / TS-준영(Req_Z01~Z04) / TS-성현(Req_O01~O05) 구조 반영. Part별 섹션 분리. In_Test_04 3단계 통합. 빗길 테스트 미확정 섹션 분리. |
-| 3.0 | 2026-02-24 | gAccelCount 제거 — In_Test_02 단순화. Level 3 트리거 변경 — gCrashEvent = 1. In_Test_04 3단계 조건 갱신. Part 3 TS-성현 전면 재작성 — In_Test_10(Drive Coach) / In_Test_11(Smart Claim) / In_Test_12(Seasonal Theme) / In_Test_13(Rollback) / In_Test_14(Bus Off). |
-
----
-
-## 승인 (Approval)
-
-| 역할 | 이름 | 서명 | 날짜 |
-|------|------|------|------|
-| Project Manager | — | — | 2026-02-23 |
-| Lead Engineer | — | — | 2026-02-23 |
+|---|---|---|
+| 1.0 | 2026-02-23 | 초기 생성(구 스코프 기반) |
+| 2.0 | 2026-02-23 | 구버전 요구 ID 구조 반영 |
+| 3.0 | 2026-02-24 | 구버전 TS 시나리오 확장 |
+| 4.0 | 2026-02-26 | 옵션1 아키텍처 기준 전면 재작성. OTA/UDS/DoIP 제거, IT ID 체계 및 Flow/Comm 중심 통합 검증 구조 반영 |
