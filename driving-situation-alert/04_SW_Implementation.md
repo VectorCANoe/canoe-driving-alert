@@ -3,7 +3,7 @@
 **Document ID**: PROJ-04-SI
 **ISO 26262 Reference**: Part 6, Cl.8 (Software Unit Design and Implementation)
 **ASPICE Reference**: SWE.3 (Software Detailed Design and Unit Construction)
-**Version**: 2.4
+**Version**: 2.5
 **Date**: 2026-02-26
 **Status**: Draft
 **Project Title**: 주행상황 연동 실시간 경고 시스템
@@ -11,7 +11,7 @@
 
 | V-Model 위치 | 현재 문서 | 상위 연결 | 하위 연결 |
 |---|---|---|---|
-| 하단 (SWE.3) | `04_SW_Implementation.md` | `0304_System_Variables.md` | `05_Unit_Test.md`, `06_Integration_Test.md`, `07_System_Test.md` (재작성 예정) |
+| 하단 (SWE.3) | `04_SW_Implementation.md` | `0304_System_Variables.md` | `05_Unit_Test.md`, `06_Integration_Test.md`, `07_System_Test.md` |
 
 ---
 
@@ -22,7 +22,6 @@
 - 추적 체인은 `Req -> Func -> Flow -> Comm -> Var -> Code -> UT/IT/ST`를 유지한다.
 - 네트워크는 옵션1 아키텍처를 고정한다: `ETH_SWITCH + CHASSIS_GW/INFOTAINMENT_GW/BODY_GW/IVI_GW + 도메인 CAN`.
 - 범위 외 항목(OTA/UDS/DoIP)은 구현 대상에서 제외한다.
-- 현재 `05/06/07`은 레거시 문서로 간주하며, 본 문서의 `검증 링크`는 차기 재작성 시 매핑할 Planned ID로 관리한다.
 - ASPICE SWE.3 BP1~BP8 관점에서 `상세 설계/인터페이스/동적행위/대안평가/추적성/합의/구현규칙`을 명시한다.
 - SIL 단계에서는 Panel/sysvar 경유 자극을 허용하며, 통신 계약(0302/0303/0304)은 유지한 채 ETH `UdpSocket` 기반 입력으로 점진 전환한다.
 
@@ -52,6 +51,18 @@ Emergency Source
 | Option 1 | ETH_SWITCH + Domain GW + Domain CAN + 중앙 경고코어 | 도메인 확장성, Flow/Comm/Var 추적성 명확, SIL 검증 용이 | GW 구현 포인트 증가 | 채택 |
 | Option 2 | 도메인 CAN 직접 연계 중심 (ETH 최소화) | 초기 구현 단순 | 긴급/구간 통합 중재 경로 가시성 저하, 향후 확장 제약 | 미채택 |
 | Option 3 | 중앙집중 단일 CAN 백본 | 구성 단순 | 도메인 분리 약화, 병목/확장성/유지보수 리스크 | 미채택 |
+
+## 1.2 고도화 아키텍처 적합성 점검
+
+| 점검 항목 | Option 1(현재 채택) | Option 1A(고도화 대안: 이중 ETH 백본 + 이중화 GW) | 판단 |
+|---|---|---|---|
+| 요구사항(Req_001~043) 충족성 | 충족 | 충족 가능 | 현 단계는 Option 1 충분 |
+| SIL 구현 난이도(CANoe) | 중간 | 높음 (이중화 제어/복구 시나리오 추가) | Option 1 유리 |
+| 추적성 유지(Req->...->ST) | 높음 | 높음 | 동등 |
+| 장애 허용성(단일 장애) | 중간 | 높음 | 장기적으로 1A 우수 |
+| 현재 프로젝트 범위 적합성 | 높음 | 과설계 위험 | Option 1 유지 |
+
+- 결론: 현재 스코프(멘토링/포트폴리오/SIL 검증)에서는 **Option 1이 최적안**이며, 장애 허용성 강화가 필요해지는 시점(예: HIL/실차 이전)에만 Option 1A를 도입한다.
 
 ---
 
@@ -102,7 +113,7 @@ Emergency Source
 
 ---
 
-## 4. 기능-구현 추적 상세 표 (검증 링크: Planned ID)
+## 4. 기능-구현 추적 상세 표
 
 | Func ID | Req ID | 구현 모듈 | 입력 (Flow/Comm/Var) | 출력 (Flow/Comm/Var) | Code Ref | 검증 링크 |
 |---|---|---|---|---|---|---|
@@ -249,13 +260,13 @@ Emergency Source
 
 | 항목 | 기준 | 상태 |
 |---|---|---|
-| 스코프 정합 | CANoe SIL, CAN+Ethernet만 사용 | Planned |
-| 아키텍처 정합 | 옵션1(ETH_SWITCH+Domain GW+CAN) 고정 | Planned |
-| Func 구현 커버리지 | Func_001~Func_043 모두 Code Ref 존재 | Planned |
-| Flow/Comm 정합 | 0302/0303과 ID/주기/조건 일치 | Planned |
-| Var 정합 | 0304 표준 Name + Internal Name 매핑 반영 | Planned |
-| 예외 처리 구현 | 5개 장애 규칙 구현 및 로그화 | Planned |
-| 테스트 역추적 | UT/IT/ST에서 Code Ref 역추적 가능 | Planned |
+| 스코프 정합 | CANoe SIL, CAN+Ethernet만 사용 | Defined |
+| 아키텍처 정합 | 옵션1(ETH_SWITCH+Domain GW+CAN) 고정 | Defined |
+| Func 구현 커버리지 | Func_001~Func_043 모두 Code Ref 존재 | Defined |
+| Flow/Comm 정합 | 0302/0303과 ID/주기/조건 일치 | Defined |
+| Var 정합 | 0304 표준 Name + Internal Name 매핑 반영 | Defined |
+| 예외 처리 구현 | 5개 장애 규칙 구현 및 로그화 | Defined |
+| 테스트 역추적 | UT/IT/ST에서 Code Ref 역추적 가능 | Defined |
 
 ---
 
@@ -278,7 +289,7 @@ Emergency Source
 | 주기/타임아웃 | CAN 입력 100ms, 출력 50ms, Emergency timeout 1000ms 고정 | `0302_NWflowDef.md`, `01_Requirements.md` |
 | 예외 처리 | invalid 값 수신 시 fail-safe 기본값 적용 후 로그 기록 | `0304_System_Variables.md`, 본 문서 8장 |
 | 범위 통제 | OTA/UDS/DoIP 로직/문구는 구현 범위에서 제외 | `00b_Project_Scope.md` |
-| 추적성 유지 | 변경 시 `Req->Func->Flow->Comm->Var->Code`와 Planned Test ID 동시 갱신 | `00_VModel_Mapping.md` |
+| 추적성 유지 | 변경 시 `Req->Func->Flow->Comm->Var->Code->UT/IT/ST` 동시 갱신 | `00_VModel_Mapping.md`, `05_Unit_Test.md`, `06_Integration_Test.md`, `07_System_Test.md` |
 
 ---
 
@@ -292,3 +303,4 @@ Emergency Source
 | 2.2 | 2026-02-26 | 05/06/07 레거시 상태를 반영하여 검증 링크를 Planned ID로 명시, 하위 문서 재작성 전제 정합화 |
 | 2.3 | 2026-02-26 | BP4 대안평가 요약, Var ID 연결 보강표, BP8 구현 규칙 기준 섹션 추가로 00~03 대비 04 추적성 강화 |
 | 2.4 | 2026-02-26 | SIL 입력 경로(sysvar)와 목표 ETH(UdpSocket) 전환 전략을 작성 원칙에 명시 |
+| 2.5 | 2026-02-26 | 05~07 최신 상태 반영(레거시/Planned 문구 제거), 고도화 아키텍처 적합성 점검(Option 1 vs 1A) 추가 |
