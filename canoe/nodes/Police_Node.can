@@ -47,7 +47,7 @@ variables
  *============================================================*/
 on start
 {
-  write("[Police_Node] 노드 시작 — 대기 중 (긴급 출동 대기)");
+  write("[Police_Node] start -- waiting for dispatch cmd");
 }
 
 /*============================================================
@@ -62,11 +62,11 @@ on sysvar V2V::Police_Active
     gPoliceActive = 1;
     gPoliceDispatchCount++;
 
-    write("[Police_Node] ★ 긴급 출동 #%d 브로드캐스트 시작",
+    write("[Police_Node] ** DISPATCH #%d broadcast start **",
           gPoliceDispatchCount);
     write("[Police_Node]   VehicleType=POLICE  Status=ACTIVE  Direction=%d  ETA=%ds",
           @V2V::Police_Direction, @V2V::Police_ETA);
-    write("[Police_Node]   [ETH UDP] → 255.255.255.255:5000 브로드캐스트 (SIL: sysvar 경유)");
+    write("[Police_Node]   [ETH UDP] -> 255.255.255.255:5000 broadcast (SIL: via sysvar)");
 
     /* keepAlive 시작 */
     setTimer(tPoliceAlive, KEEPALIVE_PERIOD_MS);
@@ -76,7 +76,7 @@ on sysvar V2V::Police_Active
     gPoliceActive = 0;
     cancelTimer(tPoliceAlive);
 
-    write("[Police_Node] 긴급 해제 브로드캐스트");
+    write("[Police_Node] CLEAR broadcast");
     write("[Police_Node]   VehicleType=POLICE  Status=CLEAR");
   }
 }
@@ -88,7 +88,7 @@ on sysvar V2V::Police_ETA
 {
   if (gPoliceActive == 1)
   {
-    write("[Police_Node] ETA 업데이트 → %ds (긴급 활성 중)", @V2V::Police_ETA);
+    write("[Police_Node] ETA update -> %ds (dispatch active)", @V2V::Police_ETA);
   }
 }
 
@@ -96,7 +96,7 @@ on sysvar V2V::Police_Direction
 {
   if (gPoliceActive == 1)
   {
-    write("[Police_Node] 방향 업데이트 → %d (긴급 활성 중)", @V2V::Police_Direction);
+    write("[Police_Node] direction update -> %d (dispatch active)", @V2V::Police_Direction);
   }
 }
 
