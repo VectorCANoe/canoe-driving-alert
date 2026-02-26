@@ -3,7 +3,7 @@
 **Document ID**: PROJ-0303-CS
 **ISO 26262 Reference**: Part 6, Cl.7 (Software Architectural Design)
 **ASPICE Reference**: SWE.2 (Software Architectural Design)
-**Version**: 2.2
+**Version**: 2.3
 **Date**: 2026-02-25
 **Status**: Draft
 **Project Title**: 주행상황 연동 실시간 경고 시스템
@@ -54,7 +54,7 @@
 | ethSteeringMsg | 0x511 | 1 | SteeringInput | 0 | 게이트웨이 변환 조향 입력 | 0:미입력 / 1:입력 | CHASSIS_GW -> ETH_SWITCH -> ADAS_WARN_CTRL |
 | frmNavContextCanMsg | 0x110 | 2 | gRoadZone | 0 | 구간 타입 | 0:일반 / 1:스쿨존 / 2:고속 / 3:유도 | Infotainment CAN에서 INFOTAINMENT_GW가 수신 |
 |  |  |  |  | 1 |  |  |  |
-|  |  |  | gNavDirection | 2 | 유도 방향 | 0:없음 / 1:좌 / 2:우 | 방향 안내 정책 입력 |
+|  |  |  | gNavDirection | 2 | 유도 방향 | 0:없음 / 1:좌 / 2:우 / 3:기타 | 방향 안내 정책 입력 |
 |  |  |  |  | 3 |  |  |  |
 |  |  |  | gZoneDistance | 8 | 구간까지 남은 거리 | 0~255 m | 구간 전환 타이밍 판단 입력 |
 |  |  |  |  | 9 |  |  |  |
@@ -66,7 +66,7 @@
 |  |  |  |  | 15 |  |  |  |
 | ethNavContextMsg | 0x512 | 2 | gRoadZone | 0 | 게이트웨이 변환 구간 타입 | 0~3 | INFOTAINMENT_GW -> ETH_SWITCH -> NAV_CONTEXT_MGR/WARN_ARB_MGR |
 |  |  |  |  | 1 |  |  |  |
-|  |  |  | gNavDirection | 2 | 게이트웨이 변환 유도 방향 | 0~3 | 구간 안내 분기 입력 |
+|  |  |  | gNavDirection | 2 | 게이트웨이 변환 유도 방향 | 0:없음 / 1:좌 / 2:우 / 3:기타 | 구간 안내 분기 입력 |
 |  |  |  |  | 3 |  |  |  |
 |  |  |  | gZoneDistance | 8 | 게이트웨이 변환 구간 거리 | 0~255 m | 구간 컨텍스트 갱신 입력 |
 |  |  |  |  | 9 |  |  |  |
@@ -121,7 +121,6 @@
 |  |  |  |  | 6 |  |  |  |
 |  |  |  |  | 7 |  |  |  |
 | frmTestResultMsg | 0x230 | 1 | ScenarioResult | 0 | 테스트 판정 결과 | 0:Fail / 1:Pass | SIL_TEST_CTRL 결과 기록 및 로그 연동 |
-|  |  |  |  | 1 |  |  |  |
 
 ---
 
@@ -172,3 +171,4 @@
 | 2.0 | 2026-02-25 | 최신 프로젝트 스코프 반영 전면 재작성. Comm_001~Comm_009 및 Flow/Func/Req 1:1 추적 구조 반영, OTA/UDS/DoIP 제거 |
 | 2.1 | 2026-02-25 | 공식 샘플 표기 스타일(Identifier/DLC 순수값)로 상단 표 정렬, Ethernet 백본+도메인 게이트웨이+CAN 분배 구조 반영 |
 | 2.2 | 2026-02-25 | 상단 공식표 signal bit position을 개별 비트 행으로 전개하고 Comm별 통신 예외 처리 규칙 추가 |
+| 2.3 | 2026-02-25 | gNavDirection 범위를 0304 변수 정의(0~3)와 정합되게 통일하고 ScenarioResult bit 행(0 단일 bit) 표기를 일치화 |
