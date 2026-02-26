@@ -3,7 +3,7 @@
 **Document ID**: PROJ-04-SI
 **ISO 26262 Reference**: Part 6, Cl.8 (Software Unit Design and Implementation)
 **ASPICE Reference**: SWE.3 (Software Detailed Design and Unit Construction)
-**Version**: 2.3
+**Version**: 2.4
 **Date**: 2026-02-26
 **Status**: Draft
 **Project Title**: 주행상황 연동 실시간 경고 시스템
@@ -24,6 +24,7 @@
 - 범위 외 항목(OTA/UDS/DoIP)은 구현 대상에서 제외한다.
 - 현재 `05/06/07`은 레거시 문서로 간주하며, 본 문서의 `검증 링크`는 차기 재작성 시 매핑할 Planned ID로 관리한다.
 - ASPICE SWE.3 BP1~BP8 관점에서 `상세 설계/인터페이스/동적행위/대안평가/추적성/합의/구현규칙`을 명시한다.
+- SIL 단계에서는 Panel/sysvar 경유 자극을 허용하며, 통신 계약(0302/0303/0304)은 유지한 채 ETH `UdpSocket` 기반 입력으로 점진 전환한다.
 
 ---
 
@@ -290,3 +291,4 @@ Emergency Source
 | 2.1 | 2026-02-26 | SWE.3 BP2/BP3 대응 인터페이스/상태전이 표와 SWE.3 BP4/BP7 증적 섹션 추가, Func_006 입력 추적 정합화 |
 | 2.2 | 2026-02-26 | 05/06/07 레거시 상태를 반영하여 검증 링크를 Planned ID로 명시, 하위 문서 재작성 전제 정합화 |
 | 2.3 | 2026-02-26 | BP4 대안평가 요약, Var ID 연결 보강표, BP8 구현 규칙 기준 섹션 추가로 00~03 대비 04 추적성 강화 |
+| 2.4 | 2026-02-26 | SIL 입력 경로(sysvar)와 목표 ETH(UdpSocket) 전환 전략을 작성 원칙에 명시 |
