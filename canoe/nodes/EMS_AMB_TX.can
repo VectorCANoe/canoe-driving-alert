@@ -1,0 +1,43 @@
+includes
+{
+}
+
+variables
+{
+  dword gUdpSocket;
+  msTimer tE100Ambulance;
+  byte gTxBuf[8];
+}
+
+on start
+{
+  gUdpSocket = UdpSocket::Open(5000);
+  setTimer(tE100Ambulance, 100);
+  write("[EMS_AMB_TX] start");
+}
+
+on stopMeasurement
+{
+  UdpSocket::Close(gUdpSocket);
+}
+
+on timer tE100Ambulance
+{
+  int emergencyType;
+  int emergencyDirection;
+  int eta;
+  int alertState;
+
+  emergencyType = 2;
+  emergencyDirection = (int)@V2X::emergencyDirection;
+  eta = (int)@V2X::eta;
+  alertState = (int)@V2X::alertState;
+
+  gTxBuf[0] = (byte)((emergencyType & 0x03) | ((emergencyDirection & 0x03) << 2));
+  gTxBuf[1] = (byte)(eta & 0xFF);
+  gTxBuf[2] = (byte)2;
+  gTxBuf[3] = (byte)(alertState & 0x01);
+
+  UdpSocket::SendTo(gUdpSocket, "127.0.0.1", 5000, gTxBuf, 4);
+  setTimer(tE100Ambulance, 100);
+}
