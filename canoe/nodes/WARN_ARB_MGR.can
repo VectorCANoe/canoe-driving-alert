@@ -1,0 +1,87 @@
+includes
+{
+}
+
+variables
+{
+  dword gUdpSocket;
+  msTimer tArbiter50;
+  byte gTxBuf[8];
+}
+
+void runArbiter()
+{
+  int emergencyContext;
+  int warningState;
+  int baseZoneContext;
+  int selectedAlertLevel;
+  int selectedAlertType;
+
+  emergencyContext = (int)@Core::emergencyContext;
+  warningState = (int)@Core::warningState;
+  baseZoneContext = (int)@Core::baseZoneContext;
+  selectedAlertLevel = 0;
+  selectedAlertType = 0;
+
+  if (emergencyContext == 2)
+  {
+    selectedAlertLevel = 7;
+    selectedAlertType = 2;
+  }
+  else if (emergencyContext == 1)
+  {
+    selectedAlertLevel = 6;
+    selectedAlertType = 1;
+  }
+  else if (warningState > 0)
+  {
+    if (baseZoneContext == 1)
+    {
+      selectedAlertLevel = 3;
+      selectedAlertType = 3;
+    }
+    else if (baseZoneContext == 2)
+    {
+      selectedAlertLevel = 2;
+      selectedAlertType = 4;
+    }
+    else if (baseZoneContext == 3 || baseZoneContext == 4)
+    {
+      selectedAlertLevel = 2;
+      selectedAlertType = 5;
+    }
+    else
+    {
+      selectedAlertLevel = 1;
+      selectedAlertType = 6;
+    }
+  }
+
+  @Core::selectedAlertLevel = selectedAlertLevel;
+  @Core::selectedAlertType = selectedAlertType;
+  @CoreState::arbitrationSnapshotId = ((int)@CoreState::arbitrationSnapshotId + 1) & 0xFFFF;
+}
+
+on start
+{
+  gUdpSocket = UdpSocket::Open(5000);
+  setTimer(tArbiter50, 50);
+  write("[WARN_ARB_MGR] start");
+}
+
+on stopMeasurement
+{
+  UdpSocket::Close(gUdpSocket);
+}
+
+on timer tArbiter50
+{
+  runArbiter();
+
+  gTxBuf[0] = (byte)(((int)@Core::selectedAlertLevel & 0x07) |
+                     (((int)@Core::selectedAlertType & 0x07) << 3));
+  gTxBuf[1] = (byte)((int)@Core::timeoutClear & 0x01);
+
+  UdpSocket::SendTo(gUdpSocket, "127.0.0.1", 5000, gTxBuf, 2);
+  setTimer(tArbiter50, 50);
+}

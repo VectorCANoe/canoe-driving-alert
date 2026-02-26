@@ -1,0 +1,78 @@
+includes
+{
+}
+
+variables
+{
+  dword gUdpSocket;
+  msTimer tRxCycle;
+  msTimer tWatchdog;
+  byte gRxBuf[16];
+  long gRxLen;
+}
+
+on start
+{
+  gUdpSocket = UdpSocket::Open(5000);
+  @Core::emergencyContext = 0;
+  @Core::timeoutClear = 0;
+  setTimer(tRxCycle, 10);
+  setTimer(tWatchdog, 1000);
+  write("[EMS_ALERT_RX] start");
+}
+
+on stopMeasurement
+{
+  UdpSocket::Close(gUdpSocket);
+}
+
+on timer tRxCycle
+{
+  int emergencyType;
+  int emergencyDirection;
+  int eta;
+  int sourceId;
+  int alertState;
+
+  gRxLen = UdpSocket::ReceiveFrom(gUdpSocket, gRxBuf, elcount(gRxBuf));
+  if (gRxLen == 4)
+  {
+    emergencyType = (int)(gRxBuf[0] & 0x03);
+    emergencyDirection = (int)((gRxBuf[0] >> 2) & 0x03);
+    eta = (int)gRxBuf[1];
+    sourceId = (int)gRxBuf[2];
+    alertState = (int)(gRxBuf[3] & 0x01);
+
+    @V2X::emergencyType = emergencyType;
+    @V2X::emergencyDirection = emergencyDirection;
+    @V2X::eta = eta;
+    @V2X::sourceId = sourceId;
+    @V2X::alertState = alertState;
+
+    if (alertState == 1)
+    {
+      @Core::emergencyContext = emergencyType;
+      @Core::timeoutClear = 0;
+      @CoreState::lastEmergencyRxMs = (int)timeNow();
+      setTimer(tWatchdog, 1000);
+    }
+    else
+    {
+      @Core::emergencyContext = 0;
+      @Core::timeoutClear = 0;
+    }
+  }
+
+  setTimer(tRxCycle, 10);
+}
+
+on timer tWatchdog
+{
+  if ((int)@Core::emergencyContext != 0)
+  {
+    @Core::emergencyContext = 0;
+    @Core::timeoutClear = 1;
+    write("[EMS_ALERT_RX] watchdog clear");
+  }
+  setTimer(tWatchdog, 1000);
+}

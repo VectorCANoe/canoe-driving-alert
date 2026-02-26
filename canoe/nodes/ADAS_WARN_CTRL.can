@@ -1,0 +1,70 @@
+includes
+{
+}
+
+variables
+{
+  dword gUdpSocket;
+  msTimer tAdasCycle;
+  byte gRxBuf[16];
+  long gRxLen;
+}
+
+void updateWarningState()
+{
+  int speed;
+  int driveState;
+  int steeringInput;
+  int baseZoneContext;
+  int warningState;
+
+  speed = (int)@Core::vehicleSpeedNorm;
+  driveState = (int)@Core::driveStateNorm;
+  steeringInput = (int)@Core::steeringInputNorm;
+  baseZoneContext = (int)@Core::baseZoneContext;
+  warningState = 0;
+
+  if (driveState == 3)
+  {
+    if (baseZoneContext == 1 && speed > 30)
+    {
+      warningState = 1;
+    }
+    else if (baseZoneContext == 2 && steeringInput == 0)
+    {
+      warningState = 2;
+    }
+  }
+
+  @Core::warningState = warningState;
+}
+
+on start
+{
+  gUdpSocket = UdpSocket::Open(5000);
+  setTimer(tAdasCycle, 10);
+  write("[ADAS_WARN_CTRL] start");
+}
+
+on stopMeasurement
+{
+  UdpSocket::Close(gUdpSocket);
+}
+
+on timer tAdasCycle
+{
+  gRxLen = UdpSocket::ReceiveFrom(gUdpSocket, gRxBuf, elcount(gRxBuf));
+
+  if (gRxLen == 2)
+  {
+    @Core::vehicleSpeedNorm = (int)gRxBuf[0];
+    @Core::driveStateNorm = (int)(gRxBuf[1] - 2);
+  }
+  else if (gRxLen == 1)
+  {
+    @Core::steeringInputNorm = (int)(gRxBuf[0] & 0x01);
+  }
+
+  updateWarningState();
+  setTimer(tAdasCycle, 10);
+}
