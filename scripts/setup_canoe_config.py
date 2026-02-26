@@ -22,13 +22,30 @@ DBC     = os.path.join(BASE, r"databases\emergency_system.dbc")
 SYSVARS = os.path.join(BASE, r"cfg\project.sysvars")
 NODES_DIR = os.path.join(BASE, "nodes")
 
-NODES = [
+OPTION1_NODES = [
+    "SIL_TEST_CTRL",
+    "CHASSIS_GW",
+    "INFOTAINMENT_GW",
+    "ADAS_WARN_CTRL",
+    "NAV_CONTEXT_MGR",
+    "EMS_POLICE_TX",
+    "EMS_AMB_TX",
+    "EMS_ALERT_RX",
+    "WARN_ARB_MGR",
+    "BODY_GW",
+    "IVI_GW",
+    "BCM_AMBIENT_CTRL",
+    "CLU_HMI_CTRL",
+]
+
+LEGACY_NODES = [
     "Context_Manager",
     "Police_Node",
     "Ambulance_Node",
     "Civ_Node",
     "Ambient_ECU",
     "Cluster_ECU",
+    "Test_Node",
 ]
 
 def wait(sec, msg=""):
@@ -105,8 +122,8 @@ def main():
 
     wait(1)
 
-    # ── 6. 노드 추가 ────────────────────────────────────
-    print("▶ 노드 추가 중...")
+    # ── 6. 노드 교체 (Legacy 제거 후 Option1 추가) ─────────────────────────
+    print("▶ 노드 교체 중 (Legacy -> Option1)...")
     try:
         busses = sim.Busses
         target_bus = None
@@ -120,7 +137,27 @@ def main():
             print("  ❌ CAN 버스를 찾을 수 없음")
         else:
             nodes_obj = target_bus.Nodes
-            for node_name in NODES:
+
+            # 6-1) Legacy 노드 제거
+            remove_targets = set(LEGACY_NODES)
+            to_remove = []
+            for j in range(1, nodes_obj.Count + 1):
+                try:
+                    existing_name = nodes_obj.Item(j).Name
+                    if existing_name in remove_targets:
+                        to_remove.append(existing_name)
+                except Exception:
+                    pass
+
+            for node_name in to_remove:
+                try:
+                    nodes_obj.Remove(node_name)
+                    print(f"  - legacy removed: {node_name}")
+                except Exception as e:
+                    print(f"  ! legacy remove failed ({node_name}): {e}")
+
+            # 6-2) Option1 노드 추가
+            for node_name in OPTION1_NODES:
                 capl_path = os.path.join(NODES_DIR, f"{node_name}.can")
                 try:
                     # 기존 노드 중복 체크
@@ -136,7 +173,7 @@ def main():
                         node.Name = node_name
                         # CAPL 파일 연결
                         node.Modules.Add(capl_path)
-                        print(f"  ✅ 노드 추가: {node_name}")
+                        print(f"  + option1 added: {node_name}")
                 except Exception as e:
                     print(f"  ❌ 노드 추가 실패 ({node_name}): {e}")
 
