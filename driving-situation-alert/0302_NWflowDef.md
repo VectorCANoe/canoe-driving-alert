@@ -3,8 +3,8 @@
 **Document ID**: PROJ-0302-NFD
 **ISO 26262 Reference**: Part 4, Cl.7 (System Design)
 **ASPICE Reference**: SYS.3 (System Architectural Design)
-**Version**: 2.4
-**Date**: 2026-02-25
+**Version**: 2.5
+**Date**: 2026-02-26
 **Status**: Draft
 **Project Title**: 주행상황 연동 실시간 경고 시스템
 **Subtitle**: (구간 인식, 긴급차량 경고시스템)
@@ -111,7 +111,7 @@
 |  |  |  |  |  | 5 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 |  |  |  | 0 |  | 6 | AmbientPattern |  |  |  |  |  |  |  |  |  |  | Tx |  | Rx |  |  |
 |  |  |  |  |  | 7 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| Body CAN | 0x220 | frmClusterWarningMsg | 0 | Cluster Warning Display | 0 | WarningTextCode |  |  |  |  |  |  |  |  |  |  |  | Tx |  | Rx | CAN 출력, 50ms |
+| Infotainment CAN | 0x220 | frmClusterWarningMsg | 0 | Cluster Warning Display | 0 | WarningTextCode |  |  |  |  |  |  |  |  |  |  |  | Tx |  | Rx | CAN 출력, 50ms |
 |  |  |  |  |  | 1 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 |  |  |  |  |  | 2 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 |  |  |  |  |  | 3 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
@@ -176,3 +176,4 @@
 | 2.2 | 2026-02-25 | 실문서 이관 시 Bit no. 행 단위(0/1/2...)로 확장 작성해야 함을 상단 공식표 하단 주석으로 추가 |
 | 2.3 | 2026-02-25 | 옵션1 아키텍처(ETH_SWITCH + 도메인 GW + 도메인 CAN)로 네트워크 플로우 전면 통일 |
 | 2.4 | 2026-02-25 | 상단 공식표 Bit no.를 개별 비트 행(0/1/2/...)으로 전개하고, GW/ETH/CAN 장애 처리 규칙 섹션 추가 |
+| 2.5 | 2026-02-26 | Cluster 경고 메시지(0x220) 채널을 Infotainment CAN으로 정합화(IVI_GW -> CLU_HMI_CTRL 경로 기준) |

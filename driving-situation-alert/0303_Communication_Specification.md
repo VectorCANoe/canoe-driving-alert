@@ -3,8 +3,8 @@
 **Document ID**: PROJ-0303-CS
 **ISO 26262 Reference**: Part 6, Cl.7 (Software Architectural Design)
 **ASPICE Reference**: SWE.2 (Software Architectural Design)
-**Version**: 2.3
-**Date**: 2026-02-25
+**Version**: 2.4
+**Date**: 2026-02-26
 **Status**: Draft
 **Project Title**: 주행상황 연동 실시간 경고 시스템
 **Subtitle**: (구간 인식, 긴급차량 경고시스템)
@@ -112,7 +112,7 @@
 |  |  |  |  | 5 |  |  |  |
 |  |  |  | AmbientPattern | 6 | 점등 패턴 코드 | 0~3 | 고정/점멸/파동 패턴 제어 |
 |  |  |  |  | 7 |  |  |  |
-| frmClusterWarningMsg | 0x220 | 1 | WarningTextCode | 0 | 클러스터 경고 코드 | 0~255 | IVI_GW -> CLU_HMI_CTRL(CAN) |
+| frmClusterWarningMsg | 0x220 | 1 | WarningTextCode | 0 | 클러스터 경고 코드 | 0~255 | IVI_GW -> CLU_HMI_CTRL(Infotainment CAN) |
 |  |  |  |  | 1 |  |  |  |
 |  |  |  |  | 2 |  |  |  |
 |  |  |  |  | 3 |  |  |  |
@@ -172,3 +172,4 @@
 | 2.1 | 2026-02-25 | 공식 샘플 표기 스타일(Identifier/DLC 순수값)로 상단 표 정렬, Ethernet 백본+도메인 게이트웨이+CAN 분배 구조 반영 |
 | 2.2 | 2026-02-25 | 상단 공식표 signal bit position을 개별 비트 행으로 전개하고 Comm별 통신 예외 처리 규칙 추가 |
 | 2.3 | 2026-02-25 | gNavDirection 범위를 0304 변수 정의(0~3)와 정합되게 통일하고 ScenarioResult bit 행(0 단일 bit) 표기를 일치화 |
+| 2.4 | 2026-02-26 | Cluster 경고 경로를 Infotainment CAN 기준으로 명확화(IVI_GW -> CLU_HMI_CTRL) |
