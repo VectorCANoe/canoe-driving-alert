@@ -3,7 +3,7 @@
 **Document ID**: PROJ-0303-CS
 **ISO 26262 Reference**: Part 6, Cl.7 (Software Architectural Design)
 **ASPICE Reference**: SWE.2 (Software Architectural Design)
-**Version**: 2.4
+**Version**: 2.5
 **Date**: 2026-02-26
 **Status**: Draft
 **Project Title**: 주행상황 연동 실시간 경고 시스템
@@ -140,6 +140,17 @@
 
 ---
 
+## Comm_006 메시지 단계 분해 (감사용 명확화)
+
+| 단계 | 상위 Comm ID | Message(ID) | Tx Node | Rx Node | 주기/조건 |
+|---|---|---|---|---|---|
+| Ingress | Comm_006 | ETH_EmergencyAlert(0xE100) | EMS_POLICE_TX, EMS_AMB_TX | EMS_ALERT_RX | 100ms, Active/Clear |
+| Egress | Comm_006 | ethSelectedAlertMsg(0xE200) | WARN_ARB_MGR | BODY_GW, IVI_GW | Event + 50ms |
+
+- 주의: `Comm_006`은 입력(E100)과 출력(E200) 단계를 묶은 논리 Comm이며, 감사 시에는 위 단계 표를 기준으로 `Rx/Tx`를 분리 해석한다.
+
+---
+
 ## 0302/0304 연계 체크포인트
 
 - `Comm ID`는 `0302_NWflowDef.md`의 `Flow ID`와 1:1 연결한다.
@@ -173,3 +184,4 @@
 | 2.2 | 2026-02-25 | 상단 공식표 signal bit position을 개별 비트 행으로 전개하고 Comm별 통신 예외 처리 규칙 추가 |
 | 2.3 | 2026-02-25 | gNavDirection 범위를 0304 변수 정의(0~3)와 정합되게 통일하고 ScenarioResult bit 행(0 단일 bit) 표기를 일치화 |
 | 2.4 | 2026-02-26 | Cluster 경고 경로를 Infotainment CAN 기준으로 명확화(IVI_GW -> CLU_HMI_CTRL) |
+| 2.5 | 2026-02-26 | Comm_006 단계 분해 표(E100 Ingress / E200 Egress) 추가로 감사 해석 모호성 제거 |

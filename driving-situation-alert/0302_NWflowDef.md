@@ -3,7 +3,7 @@
 **Document ID**: PROJ-0302-NFD
 **ISO 26262 Reference**: Part 4, Cl.7 (System Design)
 **ASPICE Reference**: SYS.3 (System Architectural Design)
-**Version**: 2.5
+**Version**: 2.6
 **Date**: 2026-02-26
 **Status**: Draft
 **Project Title**: 주행상황 연동 실시간 경고 시스템
@@ -142,6 +142,17 @@
 
 ---
 
+## Flow_006 메시지 단계 분해 (감사용 명확화)
+
+| 단계 | 상위 Flow ID | Message(ID) | Tx Node | Rx Node | 목적 |
+|---|---|---|---|---|---|
+| Ingress | Flow_006 | ETH_EmergencyAlert(0xE100) | EMS_POLICE_TX, EMS_AMB_TX | EMS_ALERT_RX, WARN_ARB_MGR | 긴급 이벤트 수신/정규화 |
+| Egress | Flow_006 | ethSelectedAlertMsg(0xE200) | WARN_ARB_MGR | BODY_GW, IVI_GW | 중재 결과 배포 |
+
+- 주의: `Flow_006`은 긴급 수신(E100)과 중재 결과 배포(E200)를 하나의 논리 플로우로 묶은 항목이며, 감사 시에는 위 단계 표를 기준으로 해석한다.
+
+---
+
 ## 0303 연계 체크포인트
 
 - 각 `Flow ID`는 `0303_Communication_Specification.md`의 `Comm ID`와 1:1로 연결한다.
@@ -177,3 +188,4 @@
 | 2.3 | 2026-02-25 | 옵션1 아키텍처(ETH_SWITCH + 도메인 GW + 도메인 CAN)로 네트워크 플로우 전면 통일 |
 | 2.4 | 2026-02-25 | 상단 공식표 Bit no.를 개별 비트 행(0/1/2/...)으로 전개하고, GW/ETH/CAN 장애 처리 규칙 섹션 추가 |
 | 2.5 | 2026-02-26 | Cluster 경고 메시지(0x220) 채널을 Infotainment CAN으로 정합화(IVI_GW -> CLU_HMI_CTRL 경로 기준) |
+| 2.6 | 2026-02-26 | Flow_006 단계 분해 표(E100 Ingress / E200 Egress) 추가로 감사 해석 모호성 제거 |
