@@ -3,7 +3,7 @@
 **Document ID**: PROJ-0303-CS
 **ISO 26262 Reference**: Part 6, Cl.7 (Software Architectural Design)
 **ASPICE Reference**: SWE.2 (Software Architectural Design)
-**Version**: 2.5
+**Version**: 2.6
 **Date**: 2026-02-26
 **Status**: Draft
 **Project Title**: 주행상황 연동 실시간 경고 시스템
@@ -124,6 +124,13 @@
 
 ---
 
+## 하단 보강표 (감사/추적 전용)
+
+- 상단 공식 표준 양식은 변경하지 않고 유지한다.
+- 아래 표들은 추적성/감사 해석 명확화를 위한 하단 보강 정보다.
+
+---
+
 ## 통신 상세 추적 표 (Comm/Flow/Func/Req)
 
 | Comm ID | Flow ID | Func ID | Req ID | Message(ID) | Tx Node | Rx Node | Protocol | Period | Clear/비고 |
@@ -185,3 +192,4 @@
 | 2.3 | 2026-02-25 | gNavDirection 범위를 0304 변수 정의(0~3)와 정합되게 통일하고 ScenarioResult bit 행(0 단일 bit) 표기를 일치화 |
 | 2.4 | 2026-02-26 | Cluster 경고 경로를 Infotainment CAN 기준으로 명확화(IVI_GW -> CLU_HMI_CTRL) |
 | 2.5 | 2026-02-26 | Comm_006 단계 분해 표(E100 Ingress / E200 Egress) 추가로 감사 해석 모호성 제거 |
+| 2.6 | 2026-02-26 | 상단 공식표 비변경 원칙을 명시하고 하단 보강표 구역(감사/추적 전용)으로 분리 |

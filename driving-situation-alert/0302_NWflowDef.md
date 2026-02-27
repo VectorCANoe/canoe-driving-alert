@@ -3,7 +3,7 @@
 **Document ID**: PROJ-0302-NFD
 **ISO 26262 Reference**: Part 4, Cl.7 (System Design)
 **ASPICE Reference**: SYS.3 (System Architectural Design)
-**Version**: 2.6
+**Version**: 2.7
 **Date**: 2026-02-26
 **Status**: Draft
 **Project Title**: 주행상황 연동 실시간 경고 시스템
@@ -126,6 +126,13 @@
 
 ---
 
+## 하단 보강표 (감사/추적 전용)
+
+- 상단 공식 표준 양식은 변경하지 않고 유지한다.
+- 아래 표들은 추적성/감사 해석 명확화를 위한 하단 보강 정보다.
+
+---
+
 ## 플로우 상세 추적 표 (Flow/Func/Req)
 
 | Flow ID | Comm ID(0303 연계) | Func ID | Req ID | 관련 메시지(ID) | Tx Node | Rx Node | Channel | Period | Active Condition | Clear Condition |
@@ -189,3 +196,4 @@
 | 2.4 | 2026-02-25 | 상단 공식표 Bit no.를 개별 비트 행(0/1/2/...)으로 전개하고, GW/ETH/CAN 장애 처리 규칙 섹션 추가 |
 | 2.5 | 2026-02-26 | Cluster 경고 메시지(0x220) 채널을 Infotainment CAN으로 정합화(IVI_GW -> CLU_HMI_CTRL 경로 기준) |
 | 2.6 | 2026-02-26 | Flow_006 단계 분해 표(E100 Ingress / E200 Egress) 추가로 감사 해석 모호성 제거 |
+| 2.7 | 2026-02-26 | 상단 공식표 비변경 원칙을 명시하고 하단 보강표 구역(감사/추적 전용)으로 분리 |
