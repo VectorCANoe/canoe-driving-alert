@@ -3,8 +3,8 @@
 **Document ID**: PROJ-0301-SFA
 **ISO 26262 Reference**: Part 4, Cl.7 (System Design)
 **ASPICE Reference**: SYS.3 (System Architectural Design)
-**Version**: 3.4
-**Date**: 2026-02-25
+**Version**: 3.5
+**Date**: 2026-02-26
 **Status**: Draft
 **Project Title**: 주행상황 연동 실시간 경고 시스템
 **Subtitle**: (구간 인식, 긴급차량 경고시스템)
@@ -142,7 +142,7 @@
 | Nav 구간 입력 | SIL_TEST_CTRL -> Infotainment CAN -> INFOTAINMENT_GW -> ETH_SWITCH -> NAV_CONTEXT_MGR/WARN_ARB_MGR |
 | 긴급 신호 처리 | EMS_POLICE_TX/EMS_AMB_TX -> ETH_SWITCH -> EMS_ALERT_RX -> WARN_ARB_MGR |
 | Ambient 출력 | WARN_ARB_MGR -> ETH_SWITCH -> BODY_GW -> Body CAN -> BCM_AMBIENT_CTRL |
-| Cluster 출력 | WARN_ARB_MGR -> ETH_SWITCH -> IVI_GW -> Body CAN -> CLU_HMI_CTRL |
+| Cluster 출력 | WARN_ARB_MGR -> ETH_SWITCH -> IVI_GW -> Infotainment CAN -> CLU_HMI_CTRL |
 
 ---
 
@@ -167,3 +167,4 @@
 | 3.2 | 2026-02-25 | 상단 헤더를 표준(기능 상세)로 정렬, Actual Device를 실제 장치 기준으로 수정, Func_013~016 추적 보완 |
 | 3.3 | 2026-02-25 | 옵션1 아키텍처 기준으로 Network Infra 노드(ETH_SWITCH/도메인 GW)와 네트워크 전달 체인 섹션 추가 |
 | 3.4 | 2026-02-25 | Req_001~Req_043 / Func_001~Func_043 1:1 감사용 매핑 표(개별 행) 추가 |
+| 3.5 | 2026-02-26 | Cluster 출력 전달체인을 Infotainment CAN 경로로 정합화(IVI_GW -> CLU_HMI_CTRL) |

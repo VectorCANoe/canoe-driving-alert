@@ -1,7 +1,7 @@
 ﻿# 컨셉 디자인 (Concept Design)
 
 **Document ID**: PROJ-02-CD
-**Version**: 2.1
+**Version**: 2.2
 **Date**: 2026-02-26
 **Status**: Released
 **Project Title**: 주행상황 연동 실시간 경고 시스템
@@ -19,9 +19,11 @@
   - 긴급차량 이벤트 수신 시 긴급 경고 시나리오 활성
 
 ```text
+[Input Gateway Layer]
+  CHASSIS_GW / INFOTAINMENT_GW (CAN -> Ethernet 정규화)
+
 [Navigation Context Layer]
-  gRoadZone / gNavDirection / gZoneDistance
-        -> Context Manager
+  gRoadZone / gNavDirection / gZoneDistance -> NAV_CONTEXT_MGR
 
 [V2V Emergency Layer]
   EMS_POLICE_TX / EMS_AMB_TX
@@ -34,7 +36,7 @@
     rule-3 Same Type: ETA asc -> SourceID asc
 
 [HMI Actuation Layer]
-  BCM_AMBIENT_CTRL + CLU_HMI_CTRL
+  ETH_SWITCH -> BODY_GW/IVI_GW -> BCM_AMBIENT_CTRL + CLU_HMI_CTRL
 ```
 
 ---
@@ -52,6 +54,7 @@
 
 - Ethernet UDP: V2V 긴급 알림 전파
 - CAN-HS: 수신 차량 내부 HMI 제어 (Ambient/Cluster)
+- Domain Gateway 고정: `CHASSIS_GW`, `INFOTAINMENT_GW`, `BODY_GW`, `IVI_GW`
 
 ## 3.1 아키텍처 대안 검토 결론
 
@@ -86,3 +89,4 @@
 |---|---|---|
 | 2.0 | 2026-02-25 | 주행상황 연동 실시간 경고 시스템 기준으로 컨셉 재정의 |
 | 2.1 | 2026-02-26 | 아키텍처 대안(Option 1/1A/2/3) 비교 및 채택 결론 추가 |
+| 2.2 | 2026-02-26 | 컨셉 블록도/네트워크 섹션에 도메인 GW 실명(`CHASSIS_GW/INFOTAINMENT_GW/BODY_GW/IVI_GW`) 반영 |
