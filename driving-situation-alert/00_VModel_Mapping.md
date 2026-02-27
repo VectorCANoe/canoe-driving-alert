@@ -1,8 +1,8 @@
 ﻿# V-Model 문서 매핑표 (V-Model Document Mapping)
 
 **Document ID**: PROJ-00-VMM
-**Version**: 4.1
-**Date**: 2026-02-25
+**Version**: 4.2
+**Date**: 2026-02-26
 **Status**: Released
 **Project Title**: 주행상황 연동 실시간 경고 시스템
 **Subtitle**: (구간 인식, 긴급차량 경고시스템)
@@ -25,6 +25,7 @@
 - 포함: 내비게이션 구간 인식 컨텍스트 + 경찰/구급차 V2V 긴급알림 + 앰비언트 중재
 - 환경: CANoe SIL only (하드웨어 미사용)
 - 네트워크: CAN + Ethernet(UDP) only
+- 도메인 CAN 분리: Ambient=`Body CAN(0x210)`, Cluster=`Infotainment CAN(0x220)`
 - 아키텍처 고정: `ETH_SWITCH + CHASSIS_GW/INFOTAINMENT_GW/BODY_GW/IVI_GW + 중앙 경고코어`
 - 제외: 군집 위협 대응, 물류 OTA 임무전환, UDS OTA 구독, 위험운전 레벨 경고
 
@@ -100,8 +101,8 @@
 | 문서 | 확인 질문 | 합격 기준 |
 |------|-----------|----------|
 | 0301 SysFuncAnalysis | 노드별 기능이 빠짐없이 분해되었는가? | 각 노드의 입력/처리/출력이 문장으로 연결됨 |
-| 0302 NWflowDef | 메시지 흐름(Tx/Rx, 방향, 조건)이 명확한가? | 송신자/수신자/주기/활성조건/해제조건 + GW 경유 경로 명시 |
-| 0303 Communication Spec | 테스트 가능한 신호 명세인가? | ID/DLC/비트위치/범위/의미 + CAN<->ETH 변환 지점이 모호성 없이 정의됨 |
+| 0302 NWflowDef | 메시지 흐름(Tx/Rx, 방향, 조건)이 명확한가? | 송신자/수신자/주기/활성조건/해제조건 + GW 경유 경로 명시 + `Flow_006(E100 ingress / E200 egress)` 단계 분해 존재 |
+| 0303 Communication Spec | 테스트 가능한 신호 명세인가? | ID/DLC/비트위치/범위/의미 + CAN<->ETH 변환 지점이 모호성 없이 정의됨 + `Comm_006(E100 ingress / E200 egress)` 단계 분해 존재 |
 | 0304 System Variables | 구현/테스트에서 상태 추적 가능한가? | Namespace/Type/초기값/변경 주체/참조 문서 연결됨 |
 
 주의:
@@ -140,5 +141,6 @@
 
 | 버전 | 날짜 | 변경 사항 |
 |------|------|---------|
+| 4.2 | 2026-02-26 | 도메인 CAN 분리 규칙(Body 0x210 / Infotainment 0x220) 명시, 0302/0303 감사 포인트에 Flow_006·Comm_006 단계 분해 기준 추가 |
 | 4.1 | 2026-02-25 | 옵션1 아키텍처 고정 문구 추가 및 0302/0303 점검기준에 게이트웨이 경유/변환 검증 항목 반영 |
 | 4.0 | 2026-02-25 | 멘토링 피드백 반영: 1:1 추적성 규칙, Req/Func 구분 기준, 03xx 점검표, V-Model 양방향 운용 절차 추가 |
