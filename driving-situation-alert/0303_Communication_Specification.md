@@ -3,7 +3,7 @@
 **Document ID**: PROJ-0303-CS
 **ISO 26262 Reference**: Part 6, Cl.7 (Software Architectural Design)
 **ASPICE Reference**: SWE.2 (Software Architectural Design)
-**Version**: 2.6
+**Version**: 2.7
 **Date**: 2026-02-26
 **Status**: Draft
 **Project Title**: 주행상황 연동 실시간 경고 시스템
@@ -20,6 +20,7 @@
 - 상단 표는 공식 샘플(`0303.md`)과 동일하게 `Message/Identifier/DLC/Signal/signal bit position/Data 설명/Data 범위/Data 사용` 열만 사용한다.
 - `Identifier`는 순수 ID 값만 기재한다(예: `0x100`, `0xE100`).
 - `DLC`는 순수 숫자만 기재한다.
+- 상단 표의 `Signal`은 0304 표준 변수명(`vehicleSpeed` 등) 기준으로 작성하고, 코드/런타임 별칭(`g*`)은 하단 보강표에서만 관리한다.
 - 본 설계는 Ethernet 백본(`ETH_SWITCH`) + 도메인 게이트웨이(`CHASSIS_GW`, `INFOTAINMENT_GW`, `BODY_GW`, `IVI_GW`) + 도메인 CAN 분배 구조를 사용한다.
 - 하단 추적표는 `Comm ID -> Flow ID -> Func ID -> Req ID`를 유지한다.
 - 검증 범위는 CANoe SIL, CAN + Ethernet(UDP)로 고정한다.
@@ -30,7 +31,7 @@
 
 | Message | Identifier | DLC | Signal | signal bit position | Data 설명 | Data 범위 | Data 사용 |
 |---|---|---|---|---|---|---|---|
-| frmVehicleStateCanMsg | 0x100 | 2 | gVehicleSpeed | 0 | 차량 속도 입력 | 0~255 km/h | Chassis CAN에서 CHASSIS_GW가 수신 후 Ethernet으로 변환 전달 |
+| frmVehicleStateCanMsg | 0x100 | 2 | vehicleSpeed | 0 | 차량 속도 입력 | 0~255 km/h | Chassis CAN에서 CHASSIS_GW가 수신 후 Ethernet으로 변환 전달 |
 |  |  |  |  | 1 |  |  |  |
 |  |  |  |  | 2 |  |  |  |
 |  |  |  |  | 3 |  |  |  |
@@ -38,9 +39,9 @@
 |  |  |  |  | 5 |  |  |  |
 |  |  |  |  | 6 |  |  |  |
 |  |  |  |  | 7 |  |  |  |
-|  |  |  | gDriveState | 8 | 주행 상태 입력(P/R/N/D) | 0~3 | ADAS_WARN_CTRL 주행/비주행 활성 판단 입력 |
+|  |  |  | driveState | 8 | 주행 상태 입력(P/R/N/D) | 0~3 | ADAS_WARN_CTRL 주행/비주행 활성 판단 입력 |
 |  |  |  |  | 9 |  |  |  |
-| ethVehicleStateMsg | 0x510 | 2 | gVehicleSpeed | 0 | 게이트웨이 변환 차량 속도 | 0~255 km/h | CHASSIS_GW -> ETH_SWITCH -> ADAS_WARN_CTRL |
+| ethVehicleStateMsg | 0x510 | 2 | vehicleSpeed | 0 | 게이트웨이 변환 차량 속도 | 0~255 km/h | CHASSIS_GW -> ETH_SWITCH -> ADAS_WARN_CTRL |
 |  |  |  |  | 1 |  |  |  |
 |  |  |  |  | 2 |  |  |  |
 |  |  |  |  | 3 |  |  |  |
@@ -48,15 +49,15 @@
 |  |  |  |  | 5 |  |  |  |
 |  |  |  |  | 6 |  |  |  |
 |  |  |  |  | 7 |  |  |  |
-|  |  |  | gDriveState | 8 | 게이트웨이 변환 주행 상태 | 0~3 | 경고 엔진 조건 판정 입력 |
+|  |  |  | driveState | 8 | 게이트웨이 변환 주행 상태 | 0~3 | 경고 엔진 조건 판정 입력 |
 |  |  |  |  | 9 |  |  |  |
 | frmSteeringCanMsg | 0x101 | 1 | SteeringInput | 0 | 조향 입력 여부 | 0:미입력 / 1:입력 | Chassis CAN에서 CHASSIS_GW가 수신 |
 | ethSteeringMsg | 0x511 | 1 | SteeringInput | 0 | 게이트웨이 변환 조향 입력 | 0:미입력 / 1:입력 | CHASSIS_GW -> ETH_SWITCH -> ADAS_WARN_CTRL |
-| frmNavContextCanMsg | 0x110 | 2 | gRoadZone | 0 | 구간 타입 | 0:일반 / 1:스쿨존 / 2:고속 / 3:유도 | Infotainment CAN에서 INFOTAINMENT_GW가 수신 |
+| frmNavContextCanMsg | 0x110 | 2 | roadZone | 0 | 구간 타입 | 0:일반 / 1:스쿨존 / 2:고속 / 3:유도 | Infotainment CAN에서 INFOTAINMENT_GW가 수신 |
 |  |  |  |  | 1 |  |  |  |
-|  |  |  | gNavDirection | 2 | 유도 방향 | 0:없음 / 1:좌 / 2:우 / 3:기타 | 방향 안내 정책 입력 |
+|  |  |  | navDirection | 2 | 유도 방향 | 0:없음 / 1:좌 / 2:우 / 3:기타 | 방향 안내 정책 입력 |
 |  |  |  |  | 3 |  |  |  |
-|  |  |  | gZoneDistance | 8 | 구간까지 남은 거리 | 0~255 m | 구간 전환 타이밍 판단 입력 |
+|  |  |  | zoneDistance | 8 | 구간까지 남은 거리 | 0~255 m | 구간 전환 타이밍 판단 입력 |
 |  |  |  |  | 9 |  |  |  |
 |  |  |  |  | 10 |  |  |  |
 |  |  |  |  | 11 |  |  |  |
@@ -64,11 +65,11 @@
 |  |  |  |  | 13 |  |  |  |
 |  |  |  |  | 14 |  |  |  |
 |  |  |  |  | 15 |  |  |  |
-| ethNavContextMsg | 0x512 | 2 | gRoadZone | 0 | 게이트웨이 변환 구간 타입 | 0~3 | INFOTAINMENT_GW -> ETH_SWITCH -> NAV_CONTEXT_MGR/WARN_ARB_MGR |
+| ethNavContextMsg | 0x512 | 2 | roadZone | 0 | 게이트웨이 변환 구간 타입 | 0~3 | INFOTAINMENT_GW -> ETH_SWITCH -> NAV_CONTEXT_MGR/WARN_ARB_MGR |
 |  |  |  |  | 1 |  |  |  |
-|  |  |  | gNavDirection | 2 | 게이트웨이 변환 유도 방향 | 0:없음 / 1:좌 / 2:우 / 3:기타 | 구간 안내 분기 입력 |
+|  |  |  | navDirection | 2 | 게이트웨이 변환 유도 방향 | 0:없음 / 1:좌 / 2:우 / 3:기타 | 구간 안내 분기 입력 |
 |  |  |  |  | 3 |  |  |  |
-|  |  |  | gZoneDistance | 8 | 게이트웨이 변환 구간 거리 | 0~255 m | 구간 컨텍스트 갱신 입력 |
+|  |  |  | zoneDistance | 8 | 게이트웨이 변환 구간 거리 | 0~255 m | 구간 컨텍스트 갱신 입력 |
 |  |  |  |  | 9 |  |  |  |
 |  |  |  |  | 10 |  |  |  |
 |  |  |  |  | 11 |  |  |  |
@@ -156,6 +157,16 @@
 
 - 주의: `Comm_006`은 입력(E100)과 출력(E200) 단계를 묶은 논리 Comm이며, 감사 시에는 위 단계 표를 기준으로 `Rx/Tx`를 분리 해석한다.
 
+### 표준 Signal-별칭(g*) 매핑 (문서/코드 정합용)
+
+| 표준 Signal(0303/0304) | 코드/런타임 별칭 |
+|---|---|
+| vehicleSpeed | gVehicleSpeed |
+| driveState | gDriveState |
+| roadZone | gRoadZone |
+| navDirection | gNavDirection |
+| zoneDistance | gZoneDistance |
+
 ---
 
 ## 0302/0304 연계 체크포인트
@@ -189,7 +200,8 @@
 | 2.0 | 2026-02-25 | 최신 프로젝트 스코프 반영 전면 재작성. Comm_001~Comm_009 및 Flow/Func/Req 1:1 추적 구조 반영, OTA/UDS/DoIP 제거 |
 | 2.1 | 2026-02-25 | 공식 샘플 표기 스타일(Identifier/DLC 순수값)로 상단 표 정렬, Ethernet 백본+도메인 게이트웨이+CAN 분배 구조 반영 |
 | 2.2 | 2026-02-25 | 상단 공식표 signal bit position을 개별 비트 행으로 전개하고 Comm별 통신 예외 처리 규칙 추가 |
-| 2.3 | 2026-02-25 | gNavDirection 범위를 0304 변수 정의(0~3)와 정합되게 통일하고 ScenarioResult bit 행(0 단일 bit) 표기를 일치화 |
+| 2.3 | 2026-02-25 | navDirection 범위를 0304 변수 정의(0~3)와 정합되게 통일하고 ScenarioResult bit 행(0 단일 bit) 표기를 일치화 |
 | 2.4 | 2026-02-26 | Cluster 경고 경로를 Infotainment CAN 기준으로 명확화(IVI_GW -> CLU_HMI_CTRL) |
 | 2.5 | 2026-02-26 | Comm_006 단계 분해 표(E100 Ingress / E200 Egress) 추가로 감사 해석 모호성 제거 |
 | 2.6 | 2026-02-26 | 상단 공식표 비변경 원칙을 명시하고 하단 보강표 구역(감사/추적 전용)으로 분리 |
+| 2.7 | 2026-02-26 | 상단 Signal 명칭을 0304 표준명(vehicleSpeed 등)으로 통일하고, g* 별칭은 하단 매핑표로 분리 |

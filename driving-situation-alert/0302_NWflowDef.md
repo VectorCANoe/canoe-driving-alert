@@ -3,7 +3,7 @@
 **Document ID**: PROJ-0302-NFD
 **ISO 26262 Reference**: Part 4, Cl.7 (System Design)
 **ASPICE Reference**: SYS.3 (System Architectural Design)
-**Version**: 2.7
+**Version**: 2.8
 **Date**: 2026-02-26
 **Status**: Draft
 **Project Title**: 주행상황 연동 실시간 경고 시스템
@@ -18,6 +18,7 @@
 ## 작성 원칙
 
 - 상단 표는 공식 표준 양식(`Channel/ID hex/Symbolic Name/Byte/Function/Bit/signal/노드 TxRx`) 구조를 유지한다.
+- 상단 표의 `signal name`은 0304 표준 변수명(`vehicleSpeed` 등) 기준으로 작성하고, 코드/런타임 별칭(`g*`)은 하단 보강표에서만 관리한다.
 - 옵션1 아키텍처를 고정한다: `중앙 경고코어 + Ethernet 백본(ETH_SWITCH) + 도메인 게이트웨이 + 도메인 CAN`.
 - 상세 추적 정보(`Flow/Func/Req/주기/활성/해제`)는 하단 표에 분리한다.
 - 검증 범위는 CANoe SIL, CAN + Ethernet(UDP)만 사용한다.
@@ -29,7 +30,7 @@
 
 | Channel | ID hex | Symbolic Name(message name) | Byte no. | Function | Bit no. | signal name | SIL_TEST_CTRL | CHASSIS_GW | INFOTAINMENT_GW | ETH_SWITCH | ADAS_WARN_CTRL | NAV_CONTEXT_MGR | EMS_POLICE_TX | EMS_AMB_TX | EMS_ALERT_RX | WARN_ARB_MGR | BODY_GW | IVI_GW | BCM_AMBIENT_CTRL | CLU_HMI_CTRL | [비고] |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| Chassis CAN | 0x100 | frmVehicleStateCanMsg | 0 | Vehicle State Check | 0 | gVehicleSpeed | Tx | Rx |  |  |  |  |  |  |  |  |  |  |  |  | CAN 입력, 100ms |
+| Chassis CAN | 0x100 | frmVehicleStateCanMsg | 0 | Vehicle State Check | 0 | vehicleSpeed | Tx | Rx |  |  |  |  |  |  |  |  |  |  |  |  | CAN 입력, 100ms |
 |  |  |  |  |  | 1 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 |  |  |  |  |  | 2 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 |  |  |  |  |  | 3 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
@@ -37,22 +38,14 @@
 |  |  |  |  |  | 5 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 |  |  |  |  |  | 6 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 |  |  |  |  |  | 7 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-|  |  |  | 1 |  | 0 | gDriveState | Tx | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |
+|  |  |  | 1 |  | 0 | driveState | Tx | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |
 |  |  |  |  |  | 1 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 | Chassis CAN | 0x101 | frmSteeringCanMsg | 0 | Steering Input Check | 0 | SteeringInput | Tx | Rx |  |  |  |  |  |  |  |  |  |  |  |  | CAN 입력, 100ms |
-| Infotainment CAN | 0x110 | frmNavContextCanMsg | 0 | Zone Context Check | 0 | gRoadZone | Tx |  | Rx |  |  |  |  |  |  |  |  |  |  |  | CAN 입력, 100ms |
+| Infotainment CAN | 0x110 | frmNavContextCanMsg | 0 | Zone Context Check | 0 | roadZone | Tx |  | Rx |  |  |  |  |  |  |  |  |  |  |  | CAN 입력, 100ms |
 |  |  |  |  |  | 1 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-|  |  |  | 0 |  | 2 | gNavDirection | Tx |  | Rx |  |  |  |  |  |  |  |  |  |  |  |  |
+|  |  |  | 0 |  | 2 | navDirection | Tx |  | Rx |  |  |  |  |  |  |  |  |  |  |  |  |
 |  |  |  |  |  | 3 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-|  |  |  | 1 |  | 0 | gZoneDistance | Tx |  | Rx |  |  |  |  |  |  |  |  |  |  |  |  |
-|  |  |  |  |  | 1 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-|  |  |  |  |  | 2 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-|  |  |  |  |  | 3 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-|  |  |  |  |  | 4 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-|  |  |  |  |  | 5 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-|  |  |  |  |  | 6 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-|  |  |  |  |  | 7 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| Ethernet | 0x510 | ethVehicleStateMsg | 0 | Gateway Normalized Vehicle State | 0 | gVehicleSpeed |  | Tx |  | Rx | Rx |  |  |  |  |  |  |  |  |  | UDP, 100ms |
+|  |  |  | 1 |  | 0 | zoneDistance | Tx |  | Rx |  |  |  |  |  |  |  |  |  |  |  |  |
 |  |  |  |  |  | 1 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 |  |  |  |  |  | 2 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 |  |  |  |  |  | 3 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
@@ -60,14 +53,22 @@
 |  |  |  |  |  | 5 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 |  |  |  |  |  | 6 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 |  |  |  |  |  | 7 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-|  |  |  | 1 |  | 0 | gDriveState |  | Tx |  | Rx | Rx |  |  |  |  |  |  |  |  |  |  |
+| Ethernet | 0x510 | ethVehicleStateMsg | 0 | Gateway Normalized Vehicle State | 0 | vehicleSpeed |  | Tx |  | Rx | Rx |  |  |  |  |  |  |  |  |  | UDP, 100ms |
+|  |  |  |  |  | 1 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+|  |  |  |  |  | 2 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+|  |  |  |  |  | 3 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+|  |  |  |  |  | 4 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+|  |  |  |  |  | 5 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+|  |  |  |  |  | 6 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+|  |  |  |  |  | 7 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+|  |  |  | 1 |  | 0 | driveState |  | Tx |  | Rx | Rx |  |  |  |  |  |  |  |  |  |  |
 |  |  |  |  |  | 1 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 | Ethernet | 0x511 | ethSteeringMsg | 0 | Gateway Normalized Steering | 0 | SteeringInput |  | Tx |  | Rx | Rx |  |  |  |  |  |  |  |  |  | UDP, 100ms |
-| Ethernet | 0x512 | ethNavContextMsg | 0 | Gateway Normalized Nav Context | 0 | gRoadZone |  |  | Tx | Rx |  | Rx |  |  |  | Rx |  |  |  |  | UDP, 100ms |
+| Ethernet | 0x512 | ethNavContextMsg | 0 | Gateway Normalized Nav Context | 0 | roadZone |  |  | Tx | Rx |  | Rx |  |  |  | Rx |  |  |  |  | UDP, 100ms |
 |  |  |  |  |  | 1 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-|  |  |  | 0 |  | 2 | gNavDirection |  |  | Tx | Rx |  | Rx |  |  |  | Rx |  |  |  |  |  |
+|  |  |  | 0 |  | 2 | navDirection |  |  | Tx | Rx |  | Rx |  |  |  | Rx |  |  |  |  |  |
 |  |  |  |  |  | 3 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-|  |  |  | 1 |  | 0 | gZoneDistance |  |  | Tx | Rx |  | Rx |  |  |  | Rx |  |  |  |  |  |
+|  |  |  | 1 |  | 0 | zoneDistance |  |  | Tx | Rx |  | Rx |  |  |  | Rx |  |  |  |  |  |
 |  |  |  |  |  | 1 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 |  |  |  |  |  | 2 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 |  |  |  |  |  | 3 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
@@ -158,6 +159,16 @@
 
 - 주의: `Flow_006`은 긴급 수신(E100)과 중재 결과 배포(E200)를 하나의 논리 플로우로 묶은 항목이며, 감사 시에는 위 단계 표를 기준으로 해석한다.
 
+### 표준명-별칭(g*) 매핑 (문서/코드 정합용)
+
+| 표준 signal name(0302/0304) | 코드/런타임 별칭 |
+|---|---|
+| vehicleSpeed | gVehicleSpeed |
+| driveState | gDriveState |
+| roadZone | gRoadZone |
+| navDirection | gNavDirection |
+| zoneDistance | gZoneDistance |
+
 ---
 
 ## 0303 연계 체크포인트
@@ -197,3 +208,4 @@
 | 2.5 | 2026-02-26 | Cluster 경고 메시지(0x220) 채널을 Infotainment CAN으로 정합화(IVI_GW -> CLU_HMI_CTRL 경로 기준) |
 | 2.6 | 2026-02-26 | Flow_006 단계 분해 표(E100 Ingress / E200 Egress) 추가로 감사 해석 모호성 제거 |
 | 2.7 | 2026-02-26 | 상단 공식표 비변경 원칙을 명시하고 하단 보강표 구역(감사/추적 전용)으로 분리 |
+| 2.8 | 2026-02-26 | 상단 signal name을 0304 표준명(vehicleSpeed 등)으로 통일하고, g* 별칭은 하단 매핑표로 분리 |

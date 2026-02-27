@@ -3,7 +3,7 @@
 **Document ID**: PROJ-0301-SFA
 **ISO 26262 Reference**: Part 4, Cl.7 (System Design)
 **ASPICE Reference**: SYS.3 (System Architectural Design)
-**Version**: 3.5
+**Version**: 3.6
 **Date**: 2026-02-26
 **Status**: Draft
 **Project Title**: 주행상황 연동 실시간 경고 시스템
@@ -23,6 +23,7 @@
 - 상단 표는 공식 표준 양식의 열 구성(노드/기능 상세/비고)을 유지한다.
 - 상세 추적 정보(Func/Req/실제 입출력)는 하단 표에 분리한다.
 - 옵션1 아키텍처를 고정한다: 중앙 경고코어 + Ethernet 백본(ETH_SWITCH) + 도메인 게이트웨이 + 도메인 CAN.
+- 변수명은 0304 표준 Name(`vehicleSpeed`, `roadZone`) 기준으로 작성하고, 코드 별칭(`g*`)은 구현 문서에서만 사용한다.
 
 ---
 
@@ -59,9 +60,9 @@
 ## 기능 정의 상세 표 (추적성/입출력 정의)
 | Func ID | Req ID | 실제 노드명 | 입력 (Input) | 처리 (Processing) | 출력 (Output) | 실제값 정의 |
 |---|---|---|---|---|---|---|
-| Func_007 | Req_007 | NAV_CONTEXT_MGR | gRoadZone, gNavDirection, gZoneDistance | 구간 상태 판별 및 전환 컨텍스트 갱신 | BaseZoneContext | 입력: gRoadZone, gNavDirection, gZoneDistance |
-| Func_001~004,006,010~012 | Req_001~004,006,010~012 | ADAS_WARN_CTRL | gVehicleSpeed, SteeringInput, BaseZoneContext | 스쿨존 과속/고속 무조향 조건 판정, 경고 트리거 생성, 디바운스 | WarningState, ZoneWarningEvent | 입력: gVehicleSpeed, SteeringInput, BaseZoneContext |
-| Func_013, Func_014, Func_015, Func_016 | Req_013, Req_014, Req_015, Req_016 | BCM_AMBIENT_CTRL | gNavDirection, gRoadZone, SelectedAlertContext | 유도구간 전환/방향 분기/구간 전환 완화/종료 복귀 처리 | Ambient_Control | 입력: gNavDirection, gRoadZone, SelectedAlertContext |
+| Func_007 | Req_007 | NAV_CONTEXT_MGR | roadZone, navDirection, zoneDistance | 구간 상태 판별 및 전환 컨텍스트 갱신 | baseZoneContext | 입력: roadZone, navDirection, zoneDistance |
+| Func_001~004,006,010~012 | Req_001~004,006,010~012 | ADAS_WARN_CTRL | vehicleSpeed, steeringInput, baseZoneContext | 스쿨존 과속/고속 무조향 조건 판정, 경고 트리거 생성, 디바운스 | warningState, zoneWarningEvent | 입력: vehicleSpeed, steeringInput, baseZoneContext |
+| Func_013, Func_014, Func_015, Func_016 | Req_013, Req_014, Req_015, Req_016 | BCM_AMBIENT_CTRL | navDirection, roadZone, selectedAlertContext | 유도구간 전환/방향 분기/구간 전환 완화/종료 복귀 처리 | ambientControl | 입력: navDirection, roadZone, selectedAlertContext |
 | Func_017 | Req_017 | EMS_POLICE_TX | Police_Active, Police_ETA, Police_Direction | 경찰 긴급 알림 패킷 생성 및 송신 관리 | EmergencyAlert(Police) | 출력: ETH_EmergencyAlert(UDP) |
 | Func_018 | Req_018 | EMS_AMB_TX | Ambulance_Active, Ambulance_ETA, Ambulance_Direction | 구급 긴급 알림 패킷 생성 및 송신 관리 | EmergencyAlert(Ambulance) | 출력: ETH_EmergencyAlert(UDP) |
 | Func_023,024 | Req_023,024 | EMS_ALERT_RX | EmergencyAlert(Police/Ambulance) | 수신/해제 상태 관리, 1000ms 타임아웃 처리 | EmergencyContextState | 입력: ETH_EmergencyAlert(UDP) |
@@ -168,3 +169,4 @@
 | 3.3 | 2026-02-25 | 옵션1 아키텍처 기준으로 Network Infra 노드(ETH_SWITCH/도메인 GW)와 네트워크 전달 체인 섹션 추가 |
 | 3.4 | 2026-02-25 | Req_001~Req_043 / Func_001~Func_043 1:1 감사용 매핑 표(개별 행) 추가 |
 | 3.5 | 2026-02-26 | Cluster 출력 전달체인을 Infotainment CAN 경로로 정합화(IVI_GW -> CLU_HMI_CTRL) |
+| 3.6 | 2026-02-26 | 0304 표준 변수명 기준으로 상세 표기 통일(`g*` 별칭 제거) |
