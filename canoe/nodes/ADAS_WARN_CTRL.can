@@ -55,14 +55,14 @@ on timer tAdasCycle
 {
   gRxLen = UdpSocket::ReceiveFrom(gUdpSocket, gRxBuf, elcount(gRxBuf));
 
-  if (gRxLen == 2)
+  if (gRxLen == 3 && gRxBuf[0] == 0x51)
   {
-    @Core::vehicleSpeedNorm = (int)gRxBuf[0];
-    @Core::driveStateNorm = (int)(gRxBuf[1] - 2);
+    @Core::vehicleSpeedNorm = (int)gRxBuf[1];
+    @Core::driveStateNorm = (int)gRxBuf[2];
   }
-  else if (gRxLen == 1)
+  else if (gRxLen == 2 && gRxBuf[0] == 0x52)
   {
-    @Core::steeringInputNorm = (int)(gRxBuf[0] & 0x01);
+    @Core::steeringInputNorm = (int)(gRxBuf[1] & 0x01);
   }
 
   updateWarningState();
