@@ -65,5 +65,13 @@ write("[WARN_ARB_MGR] selected level=%d type=%d", level, alertType);
 - CAPL 컴파일 에러 0건
 - FZ_001~007 모두 pass
 
+## 8) MCP 자동화 충돌 방지 규칙 (필수)
+- CANoe MCP 호출은 **순차 1개씩**만 실행 (병렬 호출 금지)
+- 측정 시작 시퀀스 고정:
+  - `open_configuration -> wait(2~3s) -> compile_capl_nodes -> wait(2~3s) -> start_measurement`
+- `User interface is busy` 발생 시 즉시 중단 후 아래 순서만 수행:
+  - `wait(2~3s) -> get_connection_status -> (running이면 stop_measurement 1회) -> open_configuration 1회 재시도`
+- busy 재시도는 최대 2회까지만 허용하고, 실패 시 상태를 즉시 보고
+
 ---
-최종 업데이트: 2026-02-26
+최종 업데이트: 2026-02-27
