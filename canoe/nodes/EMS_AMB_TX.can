@@ -33,11 +33,12 @@ on timer tE100Ambulance
   eta = (int)@V2X::eta;
   alertState = (int)@V2X::alertState;
 
-  gTxBuf[0] = (byte)((emergencyType & 0x03) | ((emergencyDirection & 0x03) << 2));
-  gTxBuf[1] = (byte)(eta & 0xFF);
-  gTxBuf[2] = (byte)2;
-  gTxBuf[3] = (byte)(alertState & 0x01);
+  gTxBuf[0] = 0xE1;
+  gTxBuf[1] = (byte)((emergencyType & 0x03) | ((emergencyDirection & 0x03) << 2));
+  gTxBuf[2] = (byte)(eta & 0xFF);
+  gTxBuf[3] = (byte)2;
+  gTxBuf[4] = (byte)(alertState & 0x01);
 
-  UdpSocket::SendTo(gUdpSocket, "255.255.255.255", 5000, gTxBuf, 4);
+  UdpSocket::SendTo(gUdpSocket, "255.255.255.255", 5000, gTxBuf, 5);
   setTimer(tE100Ambulance, 100);
 }

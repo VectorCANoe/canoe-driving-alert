@@ -76,12 +76,20 @@ on stopMeasurement
 
 on timer tArbiter50
 {
+  int timeoutClear;
+
   runArbiter();
 
-  gTxBuf[0] = (byte)(((int)@Core::selectedAlertLevel & 0x07) |
+  timeoutClear = (int)@Core::timeoutClear;
+  gTxBuf[0] = 0xE2;
+  gTxBuf[1] = (byte)(((int)@Core::selectedAlertLevel & 0x07) |
                      (((int)@Core::selectedAlertType & 0x07) << 3));
-  gTxBuf[1] = (byte)((int)@Core::timeoutClear & 0x01);
+  gTxBuf[2] = (byte)(timeoutClear & 0x01);
 
-  UdpSocket::SendTo(gUdpSocket, "255.255.255.255", 5000, gTxBuf, 2);
+  UdpSocket::SendTo(gUdpSocket, "255.255.255.255", 5000, gTxBuf, 3);
+  if (timeoutClear == 1)
+  {
+    @Core::timeoutClear = 0;
+  }
   setTimer(tArbiter50, 50);
 }

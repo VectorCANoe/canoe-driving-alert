@@ -30,11 +30,11 @@ on timer tNavCycle
   int baseZoneContext;
 
   gRxLen = UdpSocket::ReceiveFrom(gUdpSocket, gRxBuf, elcount(gRxBuf));
-  if (gRxLen == 2)
+  if (gRxLen == 3 && gRxBuf[0] == 0x53)
   {
-    roadZone = (int)(gRxBuf[0] & 0x03);
-    navDirection = (int)((gRxBuf[0] >> 2) & 0x03);
-    zoneDistance = (int)(gRxBuf[1] - 2);
+    roadZone = (int)(gRxBuf[1] & 0x03);
+    navDirection = (int)((gRxBuf[1] >> 2) & 0x03);
+    zoneDistance = (int)gRxBuf[2];
 
     @Infotainment::roadZone = roadZone;
     @Infotainment::navDirection = navDirection;
