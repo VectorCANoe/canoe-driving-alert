@@ -2,6 +2,7 @@
 
 이 문서는 CANoe GUI 패널을 통해 경고 시나리오를 바로 확인하기 위한 실사용 가이드입니다.
 범위: CANoe SIL, CAN + Ethernet(UDP), `feature/fz00-07-development`.
+상세 화면 설계/바인딩 기준은 `canoe/PANEL_DEVELOPMENT_SPEC.md`를 따른다.
 
 ## 1) 핵심 개념
 - Panel = CANoe의 시각 UI 화면입니다.
