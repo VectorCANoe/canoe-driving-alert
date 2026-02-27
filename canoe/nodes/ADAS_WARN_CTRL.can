@@ -4,10 +4,7 @@ includes
 
 variables
 {
-  dword gUdpSocket;
   msTimer tAdasCycle;
-  byte gRxBuf[16];
-  long gRxLen;
 }
 
 void updateWarningState()
@@ -41,30 +38,12 @@ void updateWarningState()
 
 on start
 {
-  gUdpSocket = UdpSocket::Open(5000);
   setTimer(tAdasCycle, 10);
   write("[ADAS_WARN_CTRL] start");
 }
 
-on stopMeasurement
-{
-  UdpSocket::Close(gUdpSocket);
-}
-
 on timer tAdasCycle
 {
-  gRxLen = UdpSocket::ReceiveFrom(gUdpSocket, gRxBuf, elcount(gRxBuf));
-
-  if (gRxLen == 3 && gRxBuf[0] == 0x51)
-  {
-    @Core::vehicleSpeedNorm = (int)gRxBuf[1];
-    @Core::driveStateNorm = (int)gRxBuf[2];
-  }
-  else if (gRxLen == 2 && gRxBuf[0] == 0x52)
-  {
-    @Core::steeringInputNorm = (int)(gRxBuf[1] & 0x01);
-  }
-
   updateWarningState();
   setTimer(tAdasCycle, 10);
 }

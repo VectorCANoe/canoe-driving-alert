@@ -4,22 +4,13 @@ includes
 
 variables
 {
-  dword gUdpSocket;
   msTimer tNavCycle;
-  byte gRxBuf[16];
-  long gRxLen;
 }
 
 on start
 {
-  gUdpSocket = UdpSocket::Open(5000);
   setTimer(tNavCycle, 10);
   write("[NAV_CONTEXT_MGR] start");
-}
-
-on stopMeasurement
-{
-  UdpSocket::Close(gUdpSocket);
 }
 
 on timer tNavCycle
@@ -29,48 +20,40 @@ on timer tNavCycle
   int zoneDistance;
   int baseZoneContext;
 
-  gRxLen = UdpSocket::ReceiveFrom(gUdpSocket, gRxBuf, elcount(gRxBuf));
-  if (gRxLen == 3 && gRxBuf[0] == 0x53)
+  roadZone = (int)@Infotainment::roadZone;
+  navDirection = (int)@Infotainment::navDirection;
+  zoneDistance = (int)@Infotainment::zoneDistance;
+
+  baseZoneContext = 0;
+  if (roadZone == 1)
   {
-    roadZone = (int)(gRxBuf[1] & 0x03);
-    navDirection = (int)((gRxBuf[1] >> 2) & 0x03);
-    zoneDistance = (int)gRxBuf[2];
-
-    @Infotainment::roadZone = roadZone;
-    @Infotainment::navDirection = navDirection;
-    @Infotainment::zoneDistance = zoneDistance;
-
-    baseZoneContext = 0;
-    if (roadZone == 1)
+    baseZoneContext = 1;
+  }
+  else if (roadZone == 2)
+  {
+    baseZoneContext = 2;
+  }
+  else if (roadZone == 3)
+  {
+    if (navDirection == 1)
     {
-      baseZoneContext = 1;
+      baseZoneContext = 3;
     }
-    else if (roadZone == 2)
+    else if (navDirection == 2)
     {
-      baseZoneContext = 2;
-    }
-    else if (roadZone == 3)
-    {
-      if (navDirection == 1)
-      {
-        baseZoneContext = 3;
-      }
-      else if (navDirection == 2)
-      {
-        baseZoneContext = 4;
-      }
-      else
-      {
-        baseZoneContext = 3;
-      }
+      baseZoneContext = 4;
     }
     else
     {
-      baseZoneContext = 0;
+      baseZoneContext = 3;
     }
-
-    @Core::baseZoneContext = baseZoneContext;
   }
+  else
+  {
+    baseZoneContext = 0;
+  }
+
+  @Core::baseZoneContext = baseZoneContext;
 
   setTimer(tNavCycle, 10);
 }

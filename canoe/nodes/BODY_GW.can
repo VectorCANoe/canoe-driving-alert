@@ -4,22 +4,13 @@ includes
 
 variables
 {
-  dword gUdpSocket;
   msTimer tBodyCycle;
-  byte gRxBuf[16];
-  long gRxLen;
 }
 
 on start
 {
-  gUdpSocket = UdpSocket::Open(5000);
   setTimer(tBodyCycle, 10);
   write("[BODY_GW] start");
-}
-
-on stopMeasurement
-{
-  UdpSocket::Close(gUdpSocket);
 }
 
 on timer tBodyCycle
@@ -32,37 +23,35 @@ on timer tBodyCycle
   int ambientPattern;
   message frmAmbientControlMsg mAmbient;
 
-  gRxLen = UdpSocket::ReceiveFrom(gUdpSocket, gRxBuf, elcount(gRxBuf));
-  if (gRxLen == 3 && gRxBuf[0] == 0xE2)
+  alertLevel = (int)@Core::selectedAlertLevel;
+  alertType = (int)@Core::selectedAlertType;
+  timeoutClear = (int)@Core::timeoutClear;
+
+  if (timeoutClear == 1)
   {
-    alertLevel = (int)(gRxBuf[1] & 0x07);
-    alertType = (int)((gRxBuf[1] >> 3) & 0x07);
-    timeoutClear = (int)(gRxBuf[2] & 0x01);
+    ambientMode = 0;
+    ambientColor = 0;
+    ambientPattern = 0;
+  }
+  else
+  {
+    ambientMode = alertLevel;
+    ambientColor = alertType;
+    ambientPattern = (alertLevel > 0) ? 1 : 0;
+  }
 
-    if ((int)gRxBuf[2] <= 1)
-    {
-      if (timeoutClear == 1)
-      {
-        ambientMode = 0;
-        ambientColor = 0;
-        ambientPattern = 0;
-      }
-      else
-      {
-        ambientMode = alertLevel;
-        ambientColor = alertType;
-        ambientPattern = (alertLevel > 0) ? 1 : 0;
-      }
+  @Body::ambientMode = ambientMode;
+  @Body::ambientColor = ambientColor;
+  @Body::ambientPattern = ambientPattern;
 
-      @Body::ambientMode = ambientMode;
-      @Body::ambientColor = ambientColor;
-      @Body::ambientPattern = ambientPattern;
+  mAmbient.AmbientMode = ambientMode;
+  mAmbient.AmbientColor = ambientColor;
+  mAmbient.AmbientPattern = ambientPattern;
+  output(mAmbient);
 
-      mAmbient.AmbientMode = ambientMode;
-      mAmbient.AmbientColor = ambientColor;
-      mAmbient.AmbientPattern = ambientPattern;
-      output(mAmbient);
-    }
+  if (timeoutClear == 1)
+  {
+    @Core::timeoutClear = 0;
   }
 
   setTimer(tBodyCycle, 10);

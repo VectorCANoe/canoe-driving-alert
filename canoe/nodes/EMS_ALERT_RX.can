@@ -4,11 +4,8 @@ includes
 
 variables
 {
-  dword gUdpSocket;
   msTimer tRxCycle;
   msTimer tWatchdog;
-  byte gRxBuf[16];
-  long gRxLen;
   int gPoliceActive;
   int gAmbulanceActive;
   dword gPoliceLastRxMs;
@@ -33,7 +30,6 @@ void updateEmergencyContext()
 
 on start
 {
-  gUdpSocket = UdpSocket::Open(5000);
   gPoliceActive = 0;
   gAmbulanceActive = 0;
   gPoliceLastRxMs = 0;
@@ -47,63 +43,43 @@ on start
 
 on stopMeasurement
 {
-  UdpSocket::Close(gUdpSocket);
 }
 
 on timer tRxCycle
 {
   int emergencyType;
-  int emergencyDirection;
-  int eta;
-  int sourceId;
   int alertState;
+  dword nowMs;
 
-  gRxLen = UdpSocket::ReceiveFrom(gUdpSocket, gRxBuf, elcount(gRxBuf));
-  if (gRxLen == 5 && gRxBuf[0] == 0xE1)
+  emergencyType = (int)@V2X::emergencyType;
+  alertState = (int)@V2X::alertState;
+  nowMs = timeNow();
+
+  if (alertState == 1)
   {
-    emergencyType = (int)(gRxBuf[1] & 0x03);
-    emergencyDirection = (int)((gRxBuf[1] >> 2) & 0x03);
-    eta = (int)gRxBuf[2];
-    sourceId = (int)gRxBuf[3];
-    alertState = (int)(gRxBuf[4] & 0x01);
-
-    @V2X::emergencyType = emergencyType;
-    @V2X::emergencyDirection = emergencyDirection;
-    @V2X::eta = eta;
-    @V2X::sourceId = sourceId;
-    @V2X::alertState = alertState;
     @Core::timeoutClear = 0;
-
-    if (alertState == 1)
+    @CoreState::lastEmergencyRxMs = (int)nowMs;
+    if (emergencyType == 2)
     {
-      @CoreState::lastEmergencyRxMs = (int)timeNow();
-      if (emergencyType == 2 || sourceId == 2)
-      {
-        gAmbulanceActive = 1;
-        gAmbulanceLastRxMs = timeNow();
-      }
-      else if (emergencyType == 1 || sourceId == 1)
-      {
-        gPoliceActive = 1;
-        gPoliceLastRxMs = timeNow();
-      }
-      updateEmergencyContext();
-      setTimer(tWatchdog, 1000);
+      gAmbulanceActive = 1;
+      gAmbulanceLastRxMs = nowMs;
+      gPoliceActive = 0;
     }
-    else
+    else if (emergencyType == 1)
     {
-      if (emergencyType == 2 || sourceId == 2)
-      {
-        gAmbulanceActive = 0;
-      }
-      else if (emergencyType == 1 || sourceId == 1)
-      {
-        gPoliceActive = 0;
-      }
-      updateEmergencyContext();
+      gPoliceActive = 1;
+      gPoliceLastRxMs = nowMs;
+      gAmbulanceActive = 0;
     }
+    setTimer(tWatchdog, 1000);
+  }
+  else
+  {
+    gPoliceActive = 0;
+    gAmbulanceActive = 0;
   }
 
+  updateEmergencyContext();
   setTimer(tRxCycle, 10);
 }
 

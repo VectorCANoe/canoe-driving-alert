@@ -4,19 +4,11 @@ includes
 
 variables
 {
-  dword gUdpSocket;
-  byte gTxBuf[8];
 }
 
 on start
 {
-  gUdpSocket = UdpSocket::Open(5000);
   write("[INFOTAINMENT_GW] start");
-}
-
-on stopMeasurement
-{
-  UdpSocket::Close(gUdpSocket);
 }
 
 on message frmNavContextCanMsg
@@ -28,9 +20,7 @@ on message frmNavContextCanMsg
   roadZone = this.gRoadZone;
   navDirection = this.gNavDirection;
   zoneDistance = this.gZoneDistance;
-
-  gTxBuf[0] = 0x53;
-  gTxBuf[1] = (byte)((roadZone & 0x03) | ((navDirection & 0x03) << 2));
-  gTxBuf[2] = (byte)(zoneDistance & 0xFF);
-  UdpSocket::SendTo(gUdpSocket, "255.255.255.255", 5000, gTxBuf, 3);
+  @Infotainment::roadZone = roadZone;
+  @Infotainment::navDirection = navDirection;
+  @Infotainment::zoneDistance = zoneDistance;
 }

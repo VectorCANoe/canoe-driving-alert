@@ -4,43 +4,16 @@ includes
 
 variables
 {
-  dword gUdpSocket;
   msTimer tE100Police;
-  byte gTxBuf[8];
 }
 
 on start
 {
-  gUdpSocket = UdpSocket::Open(5000);
   setTimer(tE100Police, 100);
   write("[EMS_POLICE_TX] start");
 }
 
-on stopMeasurement
-{
-  UdpSocket::Close(gUdpSocket);
-}
-
 on timer tE100Police
 {
-  int emergencyType;
-  int emergencyDirection;
-  int eta;
-  int alertState;
-  int selectedType;
-
-  emergencyType = 1;
-  emergencyDirection = (int)@V2X::emergencyDirection;
-  eta = (int)@V2X::eta;
-  selectedType = (int)@V2X::emergencyType;
-  alertState = (((int)@V2X::alertState == 1) && (selectedType == 1)) ? 1 : 0;
-
-  gTxBuf[0] = 0xE1;
-  gTxBuf[1] = (byte)((emergencyType & 0x03) | ((emergencyDirection & 0x03) << 2));
-  gTxBuf[2] = (byte)(eta & 0xFF);
-  gTxBuf[3] = (byte)1;
-  gTxBuf[4] = (byte)(alertState & 0x01);
-
-  UdpSocket::SendTo(gUdpSocket, "255.255.255.255", 5000, gTxBuf, 5);
   setTimer(tE100Police, 100);
 }
