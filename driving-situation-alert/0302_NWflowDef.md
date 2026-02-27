@@ -3,7 +3,7 @@
 **Document ID**: PROJ-0302-NFD
 **ISO 26262 Reference**: Part 4, Cl.7 (System Design)
 **ASPICE Reference**: SYS.3 (System Architectural Design)
-**Version**: 2.5
+**Version**: 2.7
 **Date**: 2026-02-26
 **Status**: Draft
 **Project Title**: 주행상황 연동 실시간 경고 시스템
@@ -126,6 +126,13 @@
 
 ---
 
+## 하단 보강표 (감사/추적 전용)
+
+- 상단 공식 표준 양식은 변경하지 않고 유지한다.
+- 아래 표들은 추적성/감사 해석 명확화를 위한 하단 보강 정보다.
+
+---
+
 ## 플로우 상세 추적 표 (Flow/Func/Req)
 
 | Flow ID | Comm ID(0303 연계) | Func ID | Req ID | 관련 메시지(ID) | Tx Node | Rx Node | Channel | Period | Active Condition | Clear Condition |
@@ -139,6 +146,17 @@
 | Flow_007 | Comm_007 | Func_008, Func_009, Func_013, Func_014, Func_015, Func_016, Func_033, Func_034, Func_035, Func_036, Func_037, Func_038, Func_039 | Req_008, Req_009, Req_013, Req_014, Req_015, Req_016, Req_033, Req_034, Req_035, Req_036, Req_037, Req_038, Req_039 | ethSelectedAlertMsg(0xE200), frmAmbientControlMsg(0x210) | WARN_ARB_MGR, BODY_GW | BODY_GW, BCM_AMBIENT_CTRL | Ethernet(UDP) + CAN | 50ms | SelectedAlertContext 수신 | TimeoutClear=1 또는 기본 상태 복귀 |
 | Flow_008 | Comm_008 | Func_005, Func_019, Func_020, Func_021, Func_026, Func_040 | Req_005, Req_019, Req_020, Req_021, Req_026, Req_040 | ethSelectedAlertMsg(0xE200), frmClusterWarningMsg(0x220) | WARN_ARB_MGR, IVI_GW | IVI_GW, CLU_HMI_CTRL | Ethernet(UDP) + CAN | 50ms | SelectedAlertContext 수신 | Alert 해제 또는 문구 만료 |
 | Flow_009 | Comm_009 | Func_041, Func_042, Func_043 | Req_041, Req_042, Req_043 | frmTestResultMsg(0x230) | SIL_TEST_CTRL | SIL_TEST_CTRL(Log/Panel) | CAN | Event | 시나리오 실행 시작 | 판정 결과 기록 완료 |
+
+---
+
+## Flow_006 메시지 단계 분해 (감사용 명확화)
+
+| 단계 | 상위 Flow ID | Message(ID) | Tx Node | Rx Node | 목적 |
+|---|---|---|---|---|---|
+| Ingress | Flow_006 | ETH_EmergencyAlert(0xE100) | EMS_POLICE_TX, EMS_AMB_TX | EMS_ALERT_RX, WARN_ARB_MGR | 긴급 이벤트 수신/정규화 |
+| Egress | Flow_006 | ethSelectedAlertMsg(0xE200) | WARN_ARB_MGR | BODY_GW, IVI_GW | 중재 결과 배포 |
+
+- 주의: `Flow_006`은 긴급 수신(E100)과 중재 결과 배포(E200)를 하나의 논리 플로우로 묶은 항목이며, 감사 시에는 위 단계 표를 기준으로 해석한다.
 
 ---
 
@@ -177,3 +195,5 @@
 | 2.3 | 2026-02-25 | 옵션1 아키텍처(ETH_SWITCH + 도메인 GW + 도메인 CAN)로 네트워크 플로우 전면 통일 |
 | 2.4 | 2026-02-25 | 상단 공식표 Bit no.를 개별 비트 행(0/1/2/...)으로 전개하고, GW/ETH/CAN 장애 처리 규칙 섹션 추가 |
 | 2.5 | 2026-02-26 | Cluster 경고 메시지(0x220) 채널을 Infotainment CAN으로 정합화(IVI_GW -> CLU_HMI_CTRL 경로 기준) |
+| 2.6 | 2026-02-26 | Flow_006 단계 분해 표(E100 Ingress / E200 Egress) 추가로 감사 해석 모호성 제거 |
+| 2.7 | 2026-02-26 | 상단 공식표 비변경 원칙을 명시하고 하단 보강표 구역(감사/추적 전용)으로 분리 |

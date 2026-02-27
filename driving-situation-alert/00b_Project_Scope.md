@@ -1,8 +1,8 @@
 ﻿# 프로젝트 범위 및 검증 전략 (Project Scope and Verification Strategy)
 
 **Document ID**: PROJ-00b-PS
-**Version**: 2.1
-**Date**: 2026-02-25
+**Version**: 2.2
+**Date**: 2026-02-26
 **Status**: Released
 **Project Title**: 주행상황 연동 실시간 경고 시스템
 **Subtitle**: (구간 인식, 긴급차량 경고시스템)
@@ -55,8 +55,8 @@ EMS_POLICE_TX / EMS_AMB_TX
 
 SelectedAlertContext
   -> ETH_SWITCH
-  -> BODY_GW -> BCM_AMBIENT_CTRL (CAN 출력)
-  -> IVI_GW -> CLU_HMI_CTRL (CAN 출력)
+  -> BODY_GW -> BCM_AMBIENT_CTRL (Body CAN 출력, 0x210)
+  -> IVI_GW -> CLU_HMI_CTRL (Infotainment CAN 출력, 0x220)
 
 WARN_ARB_MGR
   -> 우선순위 규칙에 따라 Ambient/Cluster/HMI 패턴 단일 결정
@@ -78,6 +78,7 @@ WARN_ARB_MGR
 
 - Tool: Vector CANoe 19 SP4
 - Network: Ethernet UDP 백본 + Domain CAN-HS
+- Domain CAN 역할 분리: Body CAN(앰비언트, 0x210), Infotainment CAN(클러스터, 0x220)
 - 아키텍처 고정: `ETH_SWITCH + CHASSIS_GW/INFOTAINMENT_GW/BODY_GW/IVI_GW + 중앙 경고코어(ADAS_WARN_CTRL/NAV_CONTEXT_MGR/EMS_ALERT_RX/WARN_ARB_MGR)`
 - 주요 노드: `SIL_TEST_CTRL`, `CHASSIS_GW`, `INFOTAINMENT_GW`, `ETH_SWITCH`, `ADAS_WARN_CTRL`, `NAV_CONTEXT_MGR`, `EMS_POLICE_TX`, `EMS_AMB_TX`, `EMS_ALERT_RX`, `WARN_ARB_MGR`, `BODY_GW`, `IVI_GW`, `BCM_AMBIENT_CTRL`, `CLU_HMI_CTRL`
 - Panel 입력: `gRoadZone`, `gNavDirection`, 긴급차량 ON/OFF, ETA, 우선순위 테스트 토글
@@ -93,5 +94,6 @@ WARN_ARB_MGR
 
 ## 개정 이력
 
+- 2.2 (2026-02-26): SelectedAlertContext 출력 경로의 도메인 CAN 역할(Body 0x210 / Infotainment 0x220)을 명시해 0302/0303/04와 정합화.
 - 2.1 (2026-02-25): 옵션1 아키텍처(ETH_SWITCH + 도메인 GW + 도메인 CAN) 기준으로 Red Thread와 검증 노드 구성 업데이트.
 - 2.0 (2026-02-25): 범위 재정의. 구간 인식 컨텍스트 + 경찰/구급차 V2V 긴급알림/앰비언트 중재만 유지.
