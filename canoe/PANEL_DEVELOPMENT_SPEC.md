@@ -15,6 +15,7 @@
 - 07_System_Test
 
 본 스펙은 위 문서의 최신 정합(Option1, Comm_006 단계 분해, Cluster=Infotainment CAN)을 반영한다.
+Panel Editor 실제 클릭 절차는 `canoe/PANEL_EDITOR_STEP_BY_STEP.md`를 따른다.
 
 ## 2) 아키텍처 고정점 (Panel 관점)
 - Option1 고정: `ETH_SWITCH + CHASSIS_GW/INFOTAINMENT_GW/BODY_GW/IVI_GW + 중앙 경고코어`
