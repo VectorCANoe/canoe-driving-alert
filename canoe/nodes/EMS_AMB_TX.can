@@ -27,11 +27,13 @@ on timer tE100Ambulance
   int emergencyDirection;
   int eta;
   int alertState;
+  int selectedType;
 
   emergencyType = 2;
   emergencyDirection = (int)@V2X::emergencyDirection;
   eta = (int)@V2X::eta;
-  alertState = (int)@V2X::alertState;
+  selectedType = (int)@V2X::emergencyType;
+  alertState = (((int)@V2X::alertState == 1) && (selectedType == 2)) ? 1 : 0;
 
   gTxBuf[0] = 0xE1;
   gTxBuf[1] = (byte)((emergencyType & 0x03) | ((emergencyDirection & 0x03) << 2));

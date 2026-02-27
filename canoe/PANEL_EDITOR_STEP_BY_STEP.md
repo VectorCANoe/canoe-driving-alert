@@ -86,6 +86,25 @@
 1. `Slider` 추가, Binding: `V2X::eta`
 2. Min=0, Max=255
 
+### C-5. emergencyType
+1. `ComboBox` 추가, Binding: `V2X::emergencyType`
+2. Items:
+   - `0:None`
+   - `1:Police`
+   - `2:Ambulance`
+
+### C-6. testScenario
+1. `ComboBox` 또는 `Numeric Input` 추가, Binding: `Test::testScenario`
+2. 권장 항목:
+   - `0:Manual`
+   - `1:Normal`
+   - `2:School`
+   - `3:Highway`
+   - `4:Police`
+   - `5:Ambulance`
+   - `6:Timeout Prep`
+   - `100:Auto Demo`
+
 ## 5) Page D (Output Monitor) 구성
 ### D-1. 그룹 박스
 1. `Group Box` 추가, 제목 `Output Monitor`
@@ -121,6 +140,7 @@
 3. 고속도로: `roadZone=2`, `steeringInput=0`
 4. 긴급: `alertState=1`
 5. 복귀: `alertState=0`
+6. 자동 데모: `testScenario=100` 시작, `testScenario=0` 중지
 
 ## 8) 흔한 실수 체크
 - g* 변수(`gRoadZone`)에 직접 바인딩하지 않기

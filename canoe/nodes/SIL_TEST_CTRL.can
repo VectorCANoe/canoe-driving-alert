@@ -5,10 +5,83 @@ includes
 variables
 {
   msTimer tInput100;
+  msTimer tDemoStep;
+  int gDemoStepIndex;
+  int gDemoRunning;
+}
+
+void applyScenarioPreset(int scenarioId)
+{
+  @Chassis::driveState = 3;
+  @Chassis::vehicleSpeed = 20;
+  @Chassis::steeringInput = 1;
+  @Infotainment::roadZone = 0;
+  @Infotainment::navDirection = 0;
+  @Infotainment::zoneDistance = 50;
+  @V2X::alertState = 0;
+  @V2X::emergencyType = 0;
+  @V2X::emergencyDirection = 1;
+  @V2X::eta = 10;
+
+  if (scenarioId == 1)
+  {
+    /* Normal idle */
+  }
+  else if (scenarioId == 2)
+  {
+    /* School zone overspeed */
+    @Infotainment::roadZone = 1;
+    @Chassis::vehicleSpeed = 45;
+  }
+  else if (scenarioId == 3)
+  {
+    /* Highway no steering */
+    @Infotainment::roadZone = 2;
+    @Chassis::steeringInput = 0;
+    @Chassis::vehicleSpeed = 80;
+  }
+  else if (scenarioId == 4)
+  {
+    /* Police emergency */
+    @V2X::alertState = 1;
+    @V2X::emergencyType = 1;
+    @V2X::eta = 12;
+    @V2X::emergencyDirection = 1;
+  }
+  else if (scenarioId == 5)
+  {
+    /* Ambulance emergency */
+    @V2X::alertState = 1;
+    @V2X::emergencyType = 2;
+    @V2X::eta = 8;
+    @V2X::emergencyDirection = 2;
+  }
+  else if (scenarioId == 6)
+  {
+    /* Timeout test preparation: emergency active then stop update externally */
+    @V2X::alertState = 1;
+    @V2X::emergencyType = 2;
+    @V2X::eta = 5;
+  }
+}
+
+void runDemoStep()
+{
+  gDemoStepIndex = gDemoStepIndex + 1;
+  if (gDemoStepIndex > 6)
+  {
+    gDemoStepIndex = 1;
+  }
+
+  applyScenarioPreset(gDemoStepIndex);
+  @Test::scenarioResult = 1;
+  setTimer(tDemoStep, 4000);
 }
 
 on start
 {
+  gDemoStepIndex = 0;
+  gDemoRunning = 0;
   setTimer(tInput100, 100);
   write("[SIL_TEST_CTRL] start");
 }
@@ -39,4 +112,39 @@ on sysvar Test::scenarioResult
   message frmTestResultMsg mRes;
   mRes.ScenarioResult = (int)@Test::scenarioResult;
   output(mRes);
+}
+
+on sysvar Test::testScenario
+{
+  int scenarioId;
+  scenarioId = (int)@Test::testScenario;
+
+  if (scenarioId == 100)
+  {
+    gDemoRunning = 1;
+    gDemoStepIndex = 0;
+    runDemoStep();
+    write("[SIL_TEST_CTRL] auto demo start");
+  }
+  else if (scenarioId == 0)
+  {
+    gDemoRunning = 0;
+    cancelTimer(tDemoStep);
+    write("[SIL_TEST_CTRL] auto demo stop");
+  }
+  else if (scenarioId >= 1 && scenarioId <= 6)
+  {
+    gDemoRunning = 0;
+    cancelTimer(tDemoStep);
+    applyScenarioPreset(scenarioId);
+    write("[SIL_TEST_CTRL] apply scenario=%d", scenarioId);
+  }
+}
+
+on timer tDemoStep
+{
+  if (gDemoRunning == 1)
+  {
+    runDemoStep();
+  }
 }

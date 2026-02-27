@@ -21,8 +21,13 @@
 - `Infotainment::navDirection` (Combo: 0=None,1=Left,2=Right,3=Other)
 - `Infotainment::zoneDistance` (Slider, 0~255)
 - `V2X::alertState` (Toggle: 0=Clear,1=Active)
+- `V2X::emergencyType` (Combo: 0=None,1=Police,2=Ambulance)
 - `V2X::emergencyDirection` (Combo: 0=Front,1=Left,2=Right,3=Rear)
 - `V2X::eta` (Slider, 0~255)
+- `Test::testScenario` (Combo/숫자 입력)
+  - `0`: Manual mode
+  - `1~6`: 단일 프리셋 즉시 적용
+  - `100`: 자동 데모 루프 시작
 
 ## 3) 출력 바인딩 (System Variable -> Panel)
 - `Body::ambientMode` (Numeric/State)
@@ -56,16 +61,16 @@
 - 기대: Highway 경고 출력
 
 ### S3. 경찰 경고
-- `alertState=1`, (경찰 노드 활성 상태)
+- `alertState=1`, `emergencyType=1`
 - 기대: Emergency 경고가 Zone보다 우선
 
 ### S4. 구급 경고
-- `alertState=1`, (구급 노드 활성 상태)
+- `alertState=1`, `emergencyType=2`
 - 기대: Emergency 경고 우선 + 구급 타입 반영
 
 경찰/구급을 개별 확인하려면:
-- S3(경찰 단독): `EMS_AMB_TX` 노드를 비활성화하고 측정
-- S4(구급 단독): `EMS_POLICE_TX` 노드를 비활성화하고 측정
+- S3(경찰 단독): `V2X::emergencyType=1`
+- S4(구급 단독): `V2X::emergencyType=2`
 
 ### S5. 우선순위 확인
 - 경찰/구급 경고가 동시에 들어오는 조건
@@ -89,3 +94,7 @@
 ## 7) 중요 주의
 - SIL 결과는 "시뮬레이션 표시"입니다. 실제 차량 하드웨어 점등/표시는 아닙니다.
 - `00~07` 문서는 구현 참조용이며, 구현/운영 변경은 `canoe/`에서만 수행합니다.
+
+## 8) 자동 데모 모드
+- `Test::testScenario=100`으로 설정하면 SIL_TEST_CTRL이 4초 간격으로 시나리오 1~6을 순환합니다.
+- 자동 데모 중지: `Test::testScenario=0`
