@@ -3,7 +3,7 @@
 **Document ID**: PROJ-03-FD
 **ISO 26262 Reference**: Part 4, Cl.7 (System Design)
 **ASPICE Reference**: SYS.3 (System Architectural Design)
-**Version**: 4.9
+**Version**: 4.10
 **Date**: 2026-02-28
 **Status**: Draft
 **Project Title**: 주행 상황 실시간 경고 시스템
@@ -20,6 +20,7 @@
 - 차량 기본 기능 확장 요구(`Req_101~Req_112`)는 `Func_101~Func_112`로 별도 관리한다.
 - 제출 전 현대/기아 및 OEM 기준 명칭으로 일괄 대체하되, 기능 ID/추적 ID는 유지한다.
 - 네트워크 구현은 옵션1 아키텍처를 고정 적용한다: `ETH_SWITCH + CHASSIS_GW/INFOTAINMENT_GW/BODY_GW/IVI_GW + 도메인 CAN`.
+- `WARN_ARB_MGR`의 중재는 서비스(QoS) 우선순위 중재이며, CAN 비트 레벨 arbitration과 구분해 해석한다.
 
 ---
 
@@ -40,10 +41,10 @@
 | 입력 | 구급 ETA | 구급 도달예상시간 입력 | TrackBar로 값 조절 | Req_030 / Flow_006 / Comm_006 / ST_ARB_ETA_002 |
 | 입력 | 구급 방향 | 구급 접근 방향 입력 | Switch/Indicator로 방향 선택 | Req_020 / Flow_006 / Comm_006 / ST_HMI_DIR_002 |
 | 입력 | 시나리오 선택 | 테스트 시나리오 선택 입력 | 테스트 패널 선택 | Req_041 / Flow_009 / Comm_009 / ST_SIL_001 |
-| 출력 | 앰비언트 제어 | 구간/긴급 상태에 따른 앰비언트 출력 | ETH 백본 -> BODY_GW -> CAN 출력 | Req_008~Req_009,Req_013~Req_016,Req_033~Req_039 / Flow_007 / Comm_007 / IT_AMB_001 |
-| 출력 | 클러스터 경고 | 경고 문구 및 상태 출력 | ETH 백본 -> IVI_GW -> CAN 출력 | Req_005,Req_019~Req_021,Req_026,Req_040 / Flow_008 / Comm_008 / IT_CLU_001 |
-| 출력 | 경찰 알림 송신 | 경찰 긴급 알림 송신 | Ethernet UDP 송신 | Req_017 / Flow_004 / Comm_004 / IT_EMS_TX_001 |
-| 출력 | 구급 알림 송신 | 구급 긴급 알림 송신 | Ethernet UDP 송신 | Req_018 / Flow_005 / Comm_005 / IT_EMS_TX_002 |
+| 출력 | 앰비언트 제어 | 구간/긴급 상태에 따른 앰비언트 출력 | ETH 백본 -> BODY_GW -> CAN 출력 | Req_008~Req_009,Req_013~Req_016,Req_033~Req_039 / Flow_007 / Comm_007 / IT_OUT_001 |
+| 출력 | 클러스터 경고 | 경고 문구 및 상태 출력 | ETH 백본 -> IVI_GW -> CAN 출력 | Req_005,Req_019~Req_021,Req_026,Req_040 / Flow_008 / Comm_008 / IT_OUT_001 |
+| 출력 | 경찰 알림 송신 | 경찰 긴급 알림 송신 | Ethernet UDP 송신 | Req_017 / Flow_004 / Comm_004 / IT_EMS_001 |
+| 출력 | 구급 알림 송신 | 구급 긴급 알림 송신 | Ethernet UDP 송신 | Req_018 / Flow_005 / Comm_005 / IT_EMS_001 |
 | 출력 | 판정 결과 | 시나리오 판정 결과 출력 | 로그/패널 출력 | Req_043 / Flow_009 / Comm_009 / ST_RESULT_001 |
 | ECU 동작 | 구간 컨텍스트 관리 | 구간/제한속도 입력을 바탕으로 컨텍스트 갱신 | 상태 업데이트 | Req_007,Req_010 / Flow_003 / Comm_003 / UT_NAV_001 |
 | ECU 동작 | 경고 조건 판정 | 속도/조향/제한속도 기반 경고 조건 판정 | 경고 트리거 생성 | Req_001~Req_004,Req_006,Req_010~Req_012 / Flow_001,Flow_002,Flow_003 / Comm_001,Comm_002,Comm_003 / UT_ADAS_001 |
@@ -169,3 +170,4 @@
 | 4.7 | 2026-02-28 | 스쿨존 과속 정합 강화를 위해 `speedLimit/speedLimitNorm` 입력을 Func_007/Func_010과 상단 입력 표에 반영. |
 | 4.8 | 2026-02-28 | 차량 기본 기능 확장 대응으로 `Func_101~Func_112`(시동/기어/페달/창문/비상등/도메인경계 등) 상세 표를 추가. |
 | 4.9 | 2026-02-28 | 상단 공식표에 Vehicle Baseline ECU 동작 행을 추가하고, 03 기준 차량 ECU 인벤토리 요약 표를 신설. |
+| 4.10 | 2026-02-28 | 06/07 Lean IT 체계와 정합화: 상단 `검증`의 구 IT ID를 `IT_OUT_001`, `IT_EMS_001`로 갱신하고 서비스 중재/CAN 중재 경계 문구를 작성 원칙에 추가. |
