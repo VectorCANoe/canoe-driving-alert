@@ -3,7 +3,7 @@
 **Document ID**: PROJ-0303-CS
 **ISO 26262 Reference**: Part 6, Cl.7 (Software Architectural Design)
 **ASPICE Reference**: SWE.2 (Software Architectural Design)
-**Version**: 3.4
+**Version**: 3.5
 **Date**: 2026-02-28
 **Status**: Draft
 **Project Title**: 주행 상황 실시간 경고 시스템
@@ -27,7 +27,7 @@
 - 하단 추적표는 `Comm ID -> Flow ID -> Func ID -> Req ID`를 유지한다.
 - 제출 전 현대/기아 및 OEM 기준으로 설명/별칭은 정리하되, Message ID/DLC/Bit Position/Signal 식별자는 SoT 기준으로 고정 유지한다.
 - 검증 범위는 CANoe SIL, CAN + Ethernet(UDP)로 고정한다.
-- Vehicle Baseline(Req_101~Req_112) 통신(`Comm_101~Comm_106`)은 본 문서에서 확정 정의하고, 도메인 DBC는 이 정의를 구현 대상으로 사용한다.
+- Vehicle Baseline(Req_101~Req_112) 통신(`Comm_101~Comm_106`, `Comm_201~Comm_205`)은 본 문서에서 확정 정의하고, 도메인 DBC는 이 정의를 구현 대상으로 사용한다.
 
 ---
 
@@ -166,6 +166,117 @@
 | ethSelectedAlertMsg | 0xE200 | 2 | selectedAlertLevel | 0~2 | 최종 경고 레벨 | 0~7 | WARN_ARB_MGR -> BODY_GW, IVI_GW 전달 (UDP) |
 |  |  |  | selectedAlertType | 3~5 | 최종 경고 타입 | 0~7 | WARN_ARB_MGR -> BODY_GW, IVI_GW 전달 (UDP) |
 |  |  |  | timeoutClear | 8 | 타임아웃 해제 플래그 | 0~1 | WARN_ARB_MGR -> BODY_GW, IVI_GW 전달 (UDP) |
+| frmEpsStateMsg | 0x10A | 2 | EpsAssistState | 0~2 | EPS 보조 상태 | 0~7 | CHASSIS_GW -> STEERING_CTRL, DOMAIN_GW_ROUTER 전달 |
+|  |  |  | EpsFault | 3 | EPS 고장 상태 | 0~1 | CHASSIS_GW -> STEERING_CTRL, DOMAIN_GW_ROUTER 전달 |
+|  |  |  | EpsTorqueReq | 8~15 | EPS 토크 요청 | 0~255 0.1Nm | CHASSIS_GW -> STEERING_CTRL, DOMAIN_GW_ROUTER 전달 |
+| frmAbsStateMsg | 0x10B | 2 | AbsCtrlState | 0~2 | ABS 제어 상태 | 0~7 | CHASSIS_GW -> BRAKE_CTRL, DOMAIN_GW_ROUTER 전달 |
+|  |  |  | AbsSlipLevel | 8~15 | ABS 슬립 레벨 | 0~255 | CHASSIS_GW -> BRAKE_CTRL, DOMAIN_GW_ROUTER 전달 |
+| frmEscStateMsg | 0x10C | 2 | EscCtrlState | 0~2 | ESC 제어 상태 | 0~7 | CHASSIS_GW -> BRAKE_CTRL, STEERING_CTRL, DOMAIN_GW_ROUTER 전달 |
+|  |  |  | YawCtrlReq | 8~15 | 요 모멘트 제어 요구 | 0~255 | CHASSIS_GW -> BRAKE_CTRL, STEERING_CTRL, DOMAIN_GW_ROUTER 전달 |
+| frmTcsStateMsg | 0x10D | 2 | TcsActive | 0 | TCS 활성 상태 | 0~1 | CHASSIS_GW -> ACCEL_CTRL, BRAKE_CTRL, DOMAIN_GW_ROUTER 전달 |
+|  |  |  | TcsSlipRatio | 8~15 | TCS 슬립 비율 | 0~255 | CHASSIS_GW -> ACCEL_CTRL, BRAKE_CTRL, DOMAIN_GW_ROUTER 전달 |
+| frmBrakeTempMsg | 0x10E | 4 | BrakeTempFL | 0~7 | 브레이크 전륜좌 온도 | 0~255 degC | CHASSIS_GW -> BRAKE_CTRL, DOMAIN_GW_ROUTER 전달 |
+|  |  |  | BrakeTempFR | 8~15 | 브레이크 전륜우 온도 | 0~255 degC | CHASSIS_GW -> BRAKE_CTRL, DOMAIN_GW_ROUTER 전달 |
+|  |  |  | BrakeTempRL | 16~23 | 브레이크 후륜좌 온도 | 0~255 degC | CHASSIS_GW -> BRAKE_CTRL, DOMAIN_GW_ROUTER 전달 |
+|  |  |  | BrakeTempRR | 24~31 | 브레이크 후륜우 온도 | 0~255 degC | CHASSIS_GW -> BRAKE_CTRL, DOMAIN_GW_ROUTER 전달 |
+| frmSteeringAngleMsg | 0x10F | 4 | SteeringAngle | 0~15 | 조향각 | -720~720 deg | CHASSIS_GW -> STEERING_CTRL, ADAS_WARN_CTRL 전달 |
+|  |  |  | SteeringAngleRate | 16~31 | 조향각속도 | -1024~1023 deg/s | CHASSIS_GW -> STEERING_CTRL, ADAS_WARN_CTRL 전달 |
+| frmWheelPulseMsg | 0x11A | 4 | WheelPulseFL | 0~15 | 전륜좌 휠 펄스 | 0~65535 cnt | CHASSIS_GW -> ACCEL_CTRL, BRAKE_CTRL, STEERING_CTRL 전달 |
+|  |  |  | WheelPulseFR | 16~31 | 전륜우 휠 펄스 | 0~65535 cnt | CHASSIS_GW -> ACCEL_CTRL, BRAKE_CTRL, STEERING_CTRL 전달 |
+| frmSuspensionStateMsg | 0x11B | 2 | DamperMode | 0~2 | 댐퍼 모드 | 0~7 | CHASSIS_GW -> DOMAIN_GW_ROUTER 전달 |
+|  |  |  | RideHeight | 8~15 | 차고 높이 | 0~255 mm | CHASSIS_GW -> DOMAIN_GW_ROUTER 전달 |
+| frmTirePressureMsg | 0x11C | 4 | TirePressFL | 0~7 | 전륜좌 타이어 압력 | 0~255 kPa | CHASSIS_GW -> DOMAIN_GW_ROUTER 전달 |
+|  |  |  | TirePressFR | 8~15 | 전륜우 타이어 압력 | 0~255 kPa | CHASSIS_GW -> DOMAIN_GW_ROUTER 전달 |
+|  |  |  | TirePressRL | 16~23 | 후륜좌 타이어 압력 | 0~255 kPa | CHASSIS_GW -> DOMAIN_GW_ROUTER 전달 |
+|  |  |  | TirePressRR | 24~31 | 후륜우 타이어 압력 | 0~255 kPa | CHASSIS_GW -> DOMAIN_GW_ROUTER 전달 |
+| frmChassisDiagReqMsg | 0x11D | 2 | ChassisDiagReqId | 0~7 | Chassis 진단 요청 ID | 0~255 | SIL_TEST_CTRL -> CHASSIS_GW 전달 |
+|  |  |  | ChassisDiagReqAct | 8 | Chassis 진단 요청 활성 | 0~1 | SIL_TEST_CTRL -> CHASSIS_GW 전달 |
+| frmChassisDiagResMsg | 0x11E | 2 | ChassisDiagResId | 0~7 | Chassis 진단 응답 ID | 0~255 | CHASSIS_GW -> SIL_TEST_CTRL 전달 |
+|  |  |  | ChassisDiagStatus | 8~11 | Chassis 진단 결과 | 0~15 | CHASSIS_GW -> SIL_TEST_CTRL 전달 |
+| frmAdasChassisStatusMsg | 0x11F | 2 | LateralCtrlAvail | 0 | 횡방향 제어 가능 상태 | 0~1 | CHASSIS_GW -> ADAS_WARN_CTRL, DOMAIN_GW_ROUTER 전달 |
+|  |  |  | LongitudinalCtrlAvail | 1 | 종방향 제어 가능 상태 | 0~1 | CHASSIS_GW -> ADAS_WARN_CTRL, DOMAIN_GW_ROUTER 전달 |
+|  |  |  | ChassisCtrlMode | 8~11 | 차량 제어 모드 | 0~15 | CHASSIS_GW -> ADAS_WARN_CTRL, DOMAIN_GW_ROUTER 전달 |
+| frmBrakeWearMsg | 0x120 | 2 | BrakePadWearFL | 0~7 | 브레이크 패드 마모(전륜좌) | 0~100 % | CHASSIS_GW -> BRAKE_CTRL, DOMAIN_GW_ROUTER 전달 |
+|  |  |  | BrakePadWearFR | 8~15 | 브레이크 패드 마모(전륜우) | 0~100 % | CHASSIS_GW -> BRAKE_CTRL, DOMAIN_GW_ROUTER 전달 |
+| frmRoadFrictionMsg | 0x121 | 2 | RoadFrictionEst | 0~7 | 노면 마찰 추정치 | 0~255 | CHASSIS_GW -> ADAS_WARN_CTRL, DOMAIN_GW_ROUTER 전달 |
+|  |  |  | SurfaceType | 8~11 | 노면 타입 | 0~15 | CHASSIS_GW -> ADAS_WARN_CTRL, DOMAIN_GW_ROUTER 전달 |
+| frmHvacStateMsg | 0x240 | 2 | CabinSetTemp | 0~7 | 실내 설정 온도 | 0~63 degC | BODY_GW -> BCM_AMBIENT_CTRL, DRIVER_STATE_CTRL 전달 |
+|  |  |  | BlowerLevel | 8~11 | 블로워 레벨 | 0~15 | BODY_GW -> BCM_AMBIENT_CTRL, DRIVER_STATE_CTRL 전달 |
+| frmHvacActuatorMsg | 0x241 | 2 | VentMode | 0~2 | 공조 벤트 모드 | 0~7 | BODY_GW -> BCM_AMBIENT_CTRL 전달 |
+|  |  |  | AcCompressorReq | 3 | A/C 컴프레서 요청 | 0~1 | BODY_GW -> BCM_AMBIENT_CTRL 전달 |
+| frmMirrorStateMsg | 0x242 | 2 | MirrorFoldState | 0 | 미러 폴딩 상태 | 0~1 | BODY_GW -> WINDOW_CTRL 전달 |
+|  |  |  | MirrorHeatState | 1 | 미러 열선 상태 | 0~1 | BODY_GW -> WINDOW_CTRL 전달 |
+|  |  |  | MirrorAdjAxis | 8~9 | 미러 조정 축 | 0~3 | BODY_GW -> WINDOW_CTRL 전달 |
+| frmSeatStateMsg | 0x243 | 2 | DriverSeatPos | 0~7 | 운전석 시트 위치 | 0~255 | BODY_GW -> DRIVER_STATE_CTRL 전달 |
+|  |  |  | PassengerSeatPos | 8~15 | 동승석 시트 위치 | 0~255 | BODY_GW -> DRIVER_STATE_CTRL 전달 |
+| frmSeatControlMsg | 0x244 | 2 | SeatHeatLevel | 0~2 | 시트 히터 레벨 | 0~7 | BODY_GW -> DRIVER_STATE_CTRL 전달 |
+|  |  |  | SeatVentLevel | 3~5 | 시트 통풍 레벨 | 0~7 | BODY_GW -> DRIVER_STATE_CTRL 전달 |
+| frmDoorControlMsg | 0x245 | 2 | DoorUnlockCmd | 0~1 | 도어 언락 명령 | 0~3 | BODY_GW -> WINDOW_CTRL 전달 |
+|  |  |  | TrunkOpenCmd | 2 | 트렁크 오픈 명령 | 0~1 | BODY_GW -> WINDOW_CTRL 전달 |
+| frmInteriorLightMsg | 0x246 | 2 | InteriorLampMode | 0~2 | 실내등 모드 | 0~7 | BODY_GW -> BCM_AMBIENT_CTRL 전달 |
+|  |  |  | InteriorLampLevel | 8~15 | 실내등 밝기 | 0~255 | BODY_GW -> BCM_AMBIENT_CTRL 전달 |
+| frmRainLightAutoMsg | 0x247 | 2 | RainSensorLevel | 0~7 | 우적 센서 레벨 | 0~255 | BODY_GW -> BCM_AMBIENT_CTRL, WINDOW_CTRL 전달 |
+|  |  |  | AutoHeadlampReq | 8 | 오토 헤드램프 요청 | 0~1 | BODY_GW -> BCM_AMBIENT_CTRL, WINDOW_CTRL 전달 |
+| frmBcmDiagReqMsg | 0x248 | 2 | BcmDiagReqId | 0~7 | BCM 진단 요청 ID | 0~255 | SIL_TEST_CTRL -> BODY_GW 전달 |
+|  |  |  | BcmDiagReqAct | 8 | BCM 진단 요청 활성 | 0~1 | SIL_TEST_CTRL -> BODY_GW 전달 |
+| frmBcmDiagResMsg | 0x249 | 2 | BcmDiagResId | 0~7 | BCM 진단 응답 ID | 0~255 | BODY_GW -> SIL_TEST_CTRL 전달 |
+|  |  |  | BcmDiagStatus | 8~11 | BCM 진단 결과 | 0~15 | BODY_GW -> SIL_TEST_CTRL 전달 |
+| frmImmobilizerStateMsg | 0x24A | 2 | ImmoState | 0~1 | 이모빌라이저 상태 | 0~3 | BODY_GW -> DOMAIN_GW_ROUTER, ENGINE_CTRL 전달 |
+|  |  |  | KeyAuthState | 2~3 | 키 인증 상태 | 0~3 | BODY_GW -> DOMAIN_GW_ROUTER, ENGINE_CTRL 전달 |
+| frmAlarmStateMsg | 0x24B | 2 | AlarmArmed | 0 | 알람 경계 상태 | 0~1 | BODY_GW -> DRIVER_STATE_CTRL, CLU_HMI_CTRL 전달 |
+|  |  |  | AlarmTrigger | 1 | 알람 트리거 상태 | 0~1 | BODY_GW -> DRIVER_STATE_CTRL, CLU_HMI_CTRL 전달 |
+|  |  |  | AlarmZone | 8~11 | 알람 존 정보 | 0~15 | BODY_GW -> DRIVER_STATE_CTRL, CLU_HMI_CTRL 전달 |
+| frmBodyGatewayStateMsg | 0x24C | 2 | BodyGatewayLoad | 0~7 | Body GW 부하율 | 0~100 % | BODY_GW -> DOMAIN_GW_ROUTER 전달 |
+|  |  |  | BodyGatewayRoute | 8~15 | Body GW 라우팅 상태 | 0~255 | BODY_GW -> DOMAIN_GW_ROUTER 전달 |
+| frmBodyComfortStateMsg | 0x24D | 2 | ComfortMode | 0~2 | 컴포트 모드 | 0~7 | BODY_GW -> BCM_AMBIENT_CTRL, DRIVER_STATE_CTRL 전달 |
+|  |  |  | ChildSafetyState | 3 | 아동 안전 상태 | 0~1 | BODY_GW -> BCM_AMBIENT_CTRL, DRIVER_STATE_CTRL 전달 |
+| frmAudioFocusMsg | 0x260 | 2 | AudioFocusOwner | 0~2 | 오디오 포커스 소유자 | 0~7 | IVI_GW -> CLU_HMI_CTRL, CLUSTER_BASE_CTRL 전달 |
+|  |  |  | AudioDuckLevel | 8~15 | 오디오 덕킹 레벨 | 0~255 | IVI_GW -> CLU_HMI_CTRL, CLUSTER_BASE_CTRL 전달 |
+| frmVoiceAssistStateMsg | 0x261 | 2 | VoiceAssistState | 0~2 | 음성비서 상태 | 0~7 | IVI_GW -> CLU_HMI_CTRL 전달 |
+|  |  |  | VoiceWakeSource | 8~11 | 음성 깨우기 소스 | 0~15 | IVI_GW -> CLU_HMI_CTRL 전달 |
+| frmMapRenderStateMsg | 0x262 | 2 | MapZoomLevel | 0~7 | 지도 줌 레벨 | 0~255 | INFOTAINMENT_GW -> NAV_CONTEXT_MGR 전달 |
+|  |  |  | MapTheme | 8~11 | 지도 테마 | 0~15 | INFOTAINMENT_GW -> NAV_CONTEXT_MGR 전달 |
+| frmRouteAlertMsg | 0x263 | 2 | NextTurnType | 0~3 | 다음 회전 유형 | 0~15 | INFOTAINMENT_GW -> NAV_CONTEXT_MGR, CLU_HMI_CTRL 전달 |
+|  |  |  | NextTurnDist | 8~15 | 다음 회전 잔여 거리 | 0~255 m | INFOTAINMENT_GW -> NAV_CONTEXT_MGR, CLU_HMI_CTRL 전달 |
+| frmTrafficEventMsg | 0x264 | 2 | TrafficEventType | 0~3 | 교통 이벤트 유형 | 0~15 | INFOTAINMENT_GW -> NAV_CONTEXT_MGR, ADAS_WARN_CTRL 전달 |
+|  |  |  | TrafficSeverity | 4~6 | 교통 이벤트 심각도 | 0~7 | INFOTAINMENT_GW -> NAV_CONTEXT_MGR, ADAS_WARN_CTRL 전달 |
+|  |  |  | TrafficDist | 8~15 | 이벤트 잔여 거리 | 0~255 m | INFOTAINMENT_GW -> NAV_CONTEXT_MGR, ADAS_WARN_CTRL 전달 |
+| frmPhoneProjectionMsg | 0x265 | 2 | ProjectionType | 0~2 | 프로젝션 유형 | 0~7 | IVI_GW -> CLU_HMI_CTRL 전달 |
+|  |  |  | ProjectionState | 3~4 | 프로젝션 상태 | 0~3 | IVI_GW -> CLU_HMI_CTRL 전달 |
+| frmClusterNotifMsg | 0x266 | 2 | ClusterNotifType | 0~3 | 클러스터 알림 유형 | 0~15 | IVI_GW -> CLU_HMI_CTRL, CLUSTER_BASE_CTRL 전달 |
+|  |  |  | ClusterNotifPrio | 4~6 | 클러스터 알림 우선순위 | 0~7 | IVI_GW -> CLU_HMI_CTRL, CLUSTER_BASE_CTRL 전달 |
+| frmIviDiagReqMsg | 0x267 | 2 | IviDiagReqId | 0~7 | IVI 진단 요청 ID | 0~255 | SIL_TEST_CTRL -> INFOTAINMENT_GW 전달 |
+|  |  |  | IviDiagReqAct | 8 | IVI 진단 요청 활성 | 0~1 | SIL_TEST_CTRL -> INFOTAINMENT_GW 전달 |
+| frmIviDiagResMsg | 0x268 | 2 | IviDiagResId | 0~7 | IVI 진단 응답 ID | 0~255 | INFOTAINMENT_GW -> SIL_TEST_CTRL 전달 |
+|  |  |  | IviDiagStatus | 8~11 | IVI 진단 결과 | 0~15 | INFOTAINMENT_GW -> SIL_TEST_CTRL 전달 |
+| frmMediaMetaMsg | 0x269 | 2 | MediaGenre | 0~3 | 미디어 장르 | 0~15 | IVI_GW -> CLU_HMI_CTRL 전달 |
+|  |  |  | TrackProgress | 8~15 | 트랙 진행률 | 0~100 % | IVI_GW -> CLU_HMI_CTRL 전달 |
+| frmSpeechTtsStateMsg | 0x26A | 2 | TtsState | 0~2 | TTS 상태 | 0~7 | IVI_GW -> CLU_HMI_CTRL 전달 |
+|  |  |  | TtsLangId | 8~15 | TTS 언어 ID | 0~255 | IVI_GW -> CLU_HMI_CTRL 전달 |
+| frmConnectivityStateMsg | 0x26B | 2 | LteState | 0~2 | LTE 연결 상태 | 0~7 | INFOTAINMENT_GW -> NAV_CONTEXT_MGR, CLU_HMI_CTRL 전달 |
+|  |  |  | WifiState | 3 | Wi-Fi 연결 상태 | 0~1 | INFOTAINMENT_GW -> NAV_CONTEXT_MGR, CLU_HMI_CTRL 전달 |
+|  |  |  | BtState | 4 | Bluetooth 연결 상태 | 0~1 | INFOTAINMENT_GW -> NAV_CONTEXT_MGR, CLU_HMI_CTRL 전달 |
+| frmIviHealthDetailMsg | 0x26C | 2 | CpuLoad | 0~7 | IVI CPU 부하율 | 0~100 % | INFOTAINMENT_GW -> SIL_TEST_CTRL 전달 |
+|  |  |  | MemLoad | 8~15 | IVI 메모리 부하율 | 0~100 % | INFOTAINMENT_GW -> SIL_TEST_CTRL 전달 |
+| frmClusterSyncStateMsg | 0x26D | 2 | ClusterSyncState | 0~2 | 클러스터 동기화 상태 | 0~7 | IVI_GW -> CLUSTER_BASE_CTRL 전달 |
+|  |  |  | ClusterSyncSeq | 8~15 | 클러스터 동기화 시퀀스 | 0~255 | IVI_GW -> CLUSTER_BASE_CTRL 전달 |
+| frmEngineTorqueMsg | 0x30B | 4 | EngineTorqueAct | 0~15 | 엔진 실제 토크 | 0~65535 0.1Nm | ENGINE_CTRL -> TRANSMISSION_CTRL, DOMAIN_GW_ROUTER 전달 |
+|  |  |  | EngineTorqueReq | 16~31 | 엔진 요구 토크 | 0~65535 0.1Nm | ENGINE_CTRL -> TRANSMISSION_CTRL, DOMAIN_GW_ROUTER 전달 |
+| frmEngineLoadMsg | 0x30C | 2 | EngineLoad | 0~7 | 엔진 부하율 | 0~100 % | ENGINE_CTRL -> DOMAIN_GW_ROUTER 전달 |
+|  |  |  | ManifoldPressure | 8~15 | 흡기 매니폴드 압력 | 0~255 kPa | ENGINE_CTRL -> DOMAIN_GW_ROUTER 전달 |
+| frmTransShiftStateMsg | 0x30D | 2 | ShiftState | 0~2 | 변속 상태 | 0~7 | TRANSMISSION_CTRL -> ENGINE_CTRL, DOMAIN_GW_ROUTER 전달 |
+|  |  |  | ShiftInProgress | 3 | 변속 진행 상태 | 0~1 | TRANSMISSION_CTRL -> ENGINE_CTRL, DOMAIN_GW_ROUTER 전달 |
+|  |  |  | ShiftTargetGear | 8~10 | 목표 기어 | 0~7 | TRANSMISSION_CTRL -> ENGINE_CTRL, DOMAIN_GW_ROUTER 전달 |
+| frmPtDiagReqMsg | 0x30E | 2 | PtDiagReqId | 0~7 | Powertrain 진단 요청 ID | 0~255 | SIL_TEST_CTRL -> DOMAIN_GW_ROUTER 전달 |
+|  |  |  | PtDiagReqAct | 8 | Powertrain 진단 요청 활성 | 0~1 | SIL_TEST_CTRL -> DOMAIN_GW_ROUTER 전달 |
+| frmPtDiagResMsg | 0x30F | 2 | PtDiagResId | 0~7 | Powertrain 진단 응답 ID | 0~255 | DOMAIN_GW_ROUTER -> SIL_TEST_CTRL 전달 |
+|  |  |  | PtDiagStatus | 8~11 | Powertrain 진단 결과 | 0~15 | DOMAIN_GW_ROUTER -> SIL_TEST_CTRL 전달 |
+| frmThermalMgmtStateMsg | 0x310 | 2 | ThermalMode | 0~2 | 열관리 모드 | 0~7 | DOMAIN_GW_ROUTER -> ENGINE_CTRL, TRANSMISSION_CTRL 전달 |
+|  |  |  | FanSpeedCmd | 8~15 | 팬 속도 명령 | 0~255 | DOMAIN_GW_ROUTER -> ENGINE_CTRL, TRANSMISSION_CTRL 전달 |
+| frmEnergyFlowStateMsg | 0x311 | 2 | RegenLevel | 0~3 | 회생 제동 레벨 | 0~15 | DOMAIN_GW_ROUTER -> ENGINE_CTRL, TRANSMISSION_CTRL 전달 |
+|  |  |  | EnergyFlowDir | 4~5 | 에너지 흐름 방향 | 0~3 | DOMAIN_GW_ROUTER -> ENGINE_CTRL, TRANSMISSION_CTRL 전달 |
+| frmPowertrainCtrlAuthMsg | 0x312 | 2 | PtCtrlAuthState | 0~1 | 파워트레인 제어 권한 상태 | 0~3 | DOMAIN_GW_ROUTER -> ENGINE_CTRL, TRANSMISSION_CTRL 전달 |
+|  |  |  | PtCtrlSource | 8~11 | 파워트레인 제어 출처 | 0~15 | DOMAIN_GW_ROUTER -> ENGINE_CTRL, TRANSMISSION_CTRL 전달 |
 ---
 
 ## 하단 보강표 (감사/추적 전용)
@@ -180,7 +291,7 @@
 | 구분 | 범위 | 원본 파일 | 비고 |
 |---|---|---|---|
 | Core CAN Profile | Comm_001, Comm_002, Comm_003, Comm_007, Comm_008, Comm_009 | `canoe/network/dbc/emergency_system.dbc` | 경고 코어 체인 단일 원본 |
-| Domain CAN Profile | Comm_101~Comm_106 | `canoe/network/dbc/emergency_system_chassis.dbc` + `canoe/network/dbc/emergency_system_powertrain.dbc` + `canoe/network/dbc/emergency_system_body.dbc` + `canoe/network/dbc/emergency_system_infotainment.dbc` | 차량 기본 기능/도메인 분리 원본 |
+| Domain CAN Profile | Comm_101~Comm_106, Comm_201~Comm_205 | `canoe/network/dbc/emergency_system_chassis.dbc` + `canoe/network/dbc/emergency_system_powertrain.dbc` + `canoe/network/dbc/emergency_system_body.dbc` + `canoe/network/dbc/emergency_system_infotainment.dbc` | 차량 기본 기능/도메인 분리 원본 |
 | Ethernet Profile | Comm_004, Comm_005, Comm_006 (및 Comm_001~003/007~008의 ETH 구간) | `canoe/docs/operations/ETH_INTERFACE_CONTRACT.md` | DBC 비대상, UDP 계약 단일 원본 |
 
 ---
@@ -229,10 +340,10 @@
 | Domain | 원본 파일(정의) | Comm 범위 | 핵심 Message |
 |---|---|---|---|
 | Core Integration CAN | `canoe/network/dbc/emergency_system.dbc` | Comm_001, Comm_002, Comm_003, Comm_007, Comm_008, Comm_009 | frmVehicleStateCanMsg, frmSteeringCanMsg, frmNavContextCanMsg, frmAmbientControlMsg, frmClusterWarningMsg, frmTestResultMsg |
-| Chassis CAN | `canoe/network/dbc/emergency_system_chassis.dbc` | Comm_001, Comm_002, Comm_102, Comm_106, Comm_105(헬스) | frmVehicleStateCanMsg, frmSteeringCanMsg, frmPedalInputCanMsg, frmBrakeStatusMsg, frmAccelStatusMsg, frmSteeringTorqueMsg, frmBaseTestResultMsg, frmEmergencyMonitorMsg |
-| Powertrain CAN | `canoe/network/dbc/emergency_system_powertrain.dbc` | Comm_101, Comm_105 | frmIgnitionEngineMsg, frmGearStateMsg, frmPowertrainGatewayMsg, frmEngineSpeedTempMsg, frmPowerLimitMsg, frmCruiseStateMsg |
-| Body CAN | `canoe/network/dbc/emergency_system_body.dbc` | Comm_007, Comm_103, Comm_105 | frmAmbientControlMsg, frmHazardControlMsg, frmWindowControlMsg, frmDriverStateMsg, frmBodyHealthMsg |
-| Infotainment CAN | `canoe/network/dbc/emergency_system_infotainment.dbc` | Comm_003, Comm_008, Comm_104, Comm_105 | frmNavContextCanMsg, frmClusterWarningMsg, frmClusterBaseStateMsg, frmClusterThemeMsg, frmHmiPopupStateMsg, frmInfotainmentHealthMsg |
+| Chassis CAN | `canoe/network/dbc/emergency_system_chassis.dbc` | Comm_001, Comm_002, Comm_102, Comm_106, Comm_105(헬스), Comm_201 | frmVehicleStateCanMsg, frmSteeringCanMsg, frmPedalInputCanMsg, frmBrakeStatusMsg, frmAccelStatusMsg, frmSteeringTorqueMsg, frmBaseTestResultMsg, frmEmergencyMonitorMsg, frmEpsStateMsg, frmAbsStateMsg |
+| Powertrain CAN | `canoe/network/dbc/emergency_system_powertrain.dbc` | Comm_101, Comm_105, Comm_204 | frmIgnitionEngineMsg, frmGearStateMsg, frmPowertrainGatewayMsg, frmEngineSpeedTempMsg, frmPowerLimitMsg, frmCruiseStateMsg, frmEngineTorqueMsg, frmEngineLoadMsg |
+| Body CAN | `canoe/network/dbc/emergency_system_body.dbc` | Comm_007, Comm_103, Comm_105, Comm_202 | frmAmbientControlMsg, frmHazardControlMsg, frmWindowControlMsg, frmDriverStateMsg, frmBodyHealthMsg, frmHvacStateMsg, frmMirrorStateMsg |
+| Infotainment CAN | `canoe/network/dbc/emergency_system_infotainment.dbc` | Comm_003, Comm_008, Comm_104, Comm_105, Comm_203, Comm_205 | frmNavContextCanMsg, frmClusterWarningMsg, frmClusterBaseStateMsg, frmClusterThemeMsg, frmHmiPopupStateMsg, frmInfotainmentHealthMsg, frmAudioFocusMsg, frmMapRenderStateMsg |
 | Ethernet UDP | `canoe/docs/operations/ETH_INTERFACE_CONTRACT.md` | Comm_004, Comm_005, Comm_006 | ethVehicleStateMsg, ethSteeringMsg, ethNavContextMsg, ETH_EmergencyAlert, ethSelectedAlertMsg |
 
 ---
@@ -250,32 +361,44 @@
 
 - 주의: `Comm_101~Comm_106`은 현재 도메인 분리 DBC에서 정의된 실제 메시지 ID를 기준으로 고정하며, 도메인 간 이더넷 라우팅 구현은 04/코드 단계에서 추가 상세화한다.
 
+## Vehicle Baseline Phase-B Comm 확장 정의 (Comm_201~Comm_205)
+
+| Comm ID | Flow ID(0302 연계) | Func ID | Req ID | Message(ID) | Protocol | 주기 |
+|---|---|---|---|---|---|---|
+| Comm_201 | Flow_201 | Func_103, Func_104, Func_110 | Req_103, Req_104, Req_110 | frmEpsStateMsg(0x10A), frmAbsStateMsg(0x10B), frmEscStateMsg(0x10C), frmTcsStateMsg(0x10D), frmBrakeTempMsg(0x10E), frmSteeringAngleMsg(0x10F), frmWheelPulseMsg(0x11A), frmSuspensionStateMsg(0x11B), frmTirePressureMsg(0x11C), frmChassisDiagReqMsg(0x11D), frmChassisDiagResMsg(0x11E), frmAdasChassisStatusMsg(0x11F), frmBrakeWearMsg(0x120), frmRoadFrictionMsg(0x121) | CAN(Chassis) | 100ms + Event |
+| Comm_202 | Flow_202 | Func_106, Func_107, Func_108, Func_111 | Req_106, Req_107, Req_108, Req_111 | frmHvacStateMsg(0x240), frmHvacActuatorMsg(0x241), frmMirrorStateMsg(0x242), frmSeatStateMsg(0x243), frmSeatControlMsg(0x244), frmDoorControlMsg(0x245), frmInteriorLightMsg(0x246), frmRainLightAutoMsg(0x247), frmBcmDiagReqMsg(0x248), frmBcmDiagResMsg(0x249), frmImmobilizerStateMsg(0x24A), frmAlarmStateMsg(0x24B), frmBodyGatewayStateMsg(0x24C), frmBodyComfortStateMsg(0x24D) | CAN(Body) | 100ms + Event |
+| Comm_203 | Flow_203 | Func_109, Func_111 | Req_109, Req_111 | frmAudioFocusMsg(0x260), frmVoiceAssistStateMsg(0x261), frmMapRenderStateMsg(0x262), frmRouteAlertMsg(0x263), frmTrafficEventMsg(0x264), frmPhoneProjectionMsg(0x265), frmClusterNotifMsg(0x266), frmMediaMetaMsg(0x269), frmSpeechTtsStateMsg(0x26A), frmConnectivityStateMsg(0x26B), frmClusterSyncStateMsg(0x26D) | CAN(Infotainment) | 50/100ms |
+| Comm_204 | Flow_204 | Func_101, Func_102, Func_110 | Req_101, Req_102, Req_110 | frmEngineTorqueMsg(0x30B), frmEngineLoadMsg(0x30C), frmTransShiftStateMsg(0x30D), frmThermalMgmtStateMsg(0x310), frmEnergyFlowStateMsg(0x311), frmPowertrainCtrlAuthMsg(0x312) | CAN(Powertrain) | 100ms |
+| Comm_205 | Flow_205 | Func_112 | Req_112 | frmIviDiagReqMsg(0x267), frmIviDiagResMsg(0x268), frmIviHealthDetailMsg(0x26C), frmPtDiagReqMsg(0x30E), frmPtDiagResMsg(0x30F) | CAN(Test/Diag) | Event + 100ms |
+
+- 주의: `Comm_201~Comm_205`는 문서 기준 설계 고정 항목이며, 대응 DBC 반영은 도메인별 DBC 병렬 작업에서 구현 완료 후 SoT로 동기화한다.
+
 ---
 
 ## 메시지 규모 기준 (현업 BP 타깃)
 
 | Domain/Profile | 현재 정의 메시지 수 | 현재 사용 ID 범위 | 확장 목표(Phase-B) |
 |---|---|---|---|
-| Core Integration CAN | 6 | 0x100/0x101/0x110/0x210/0x220/0x230 | 코어 유지(변경 최소화) |
-| Chassis CAN | 13 | 0x100~0x109, 0x230~0x232 | 20~30 |
-| Powertrain CAN | 11 | 0x300~0x30A | 15~25 |
-| Body CAN | 10 | 0x210~0x219 | 15~25 |
-| Infotainment CAN | 10 | 0x110, 0x220~0x228 | 20~30 |
-| Ethernet UDP | 5 타입 | 0x510/0x511/0x512/0xE100/0xE200 | 8~12 타입 |
+| Chassis CAN | 24 | 0x100~0x121, 0x230~0x232 | 24~30 |
+| Body CAN | 24 | 0x210~0x219, 0x240~0x24D | 24~30 |
+| Infotainment CAN | 24 | 0x110, 0x220~0x228, 0x260~0x26D | 24~30 |
+| Powertrain CAN | 19 | 0x300~0x312 | 19~25 |
+| Test CAN | 3 | 0x230~0x232 | 3~6 |
+| Ethernet UDP | 5 타입 | 0x510/0x511/0x512/0xE100/0xE200 | 5~12 타입 |
 
-- 통합 목표: CAN 메시지 `80~120`, Ethernet 메시지 타입 `8~12`, 전체 통신 항목 `100+`.
+- 통합 목표: CAN 메시지 `90~130`, Ethernet 메시지 타입 `5~12`, 전체 통신 항목 `100+`.
 
 ---
 
 ## 0302/0304 연계 체크포인트
 
 - `Comm ID`는 `0302_NWflowDef.md`의 `Flow ID`와 1:1 연결한다.
-- `Comm_001~Comm_009`는 `0304_System_Variables.md`의 기존 Var 표와 즉시 연결되어야 하며, `Comm_101~Comm_106`는 0304 확장 개정 시 동일 규칙으로 추가 연결한다.
+- `Comm_001~Comm_009`는 `0304_System_Variables.md`의 기존 Var 표와 즉시 연결되어야 하며, `Comm_101~Comm_106`, `Comm_201~Comm_205`는 0304 확장 개정 시 동일 규칙으로 추가 연결한다.
 - `EmergencyAlert` Active/Clear 신호가 1000ms 타임아웃 규칙과 일치해야 한다.
 - `selectedAlertLevel/selectedAlertType` 기반 Ambient/Cluster 출력 Comm이 모두 존재해야 한다.
 - `ETH_SWITCH` 경유 Ethernet 신호가 각 도메인 게이트웨이에서 CAN 메시지로 정상 변환되어야 한다.
 - `speedLimit` 신호는 Comm_003에서 NAV_CONTEXT_MGR와 ADAS_WARN_CTRL까지 연계되어야 한다.
-- `Req_101~Req_112`는 Comm_101~Comm_106에서 누락 없이 연결되어야 한다.
+- `Req_101~Req_112`는 Comm_101~Comm_106, Comm_201~Comm_205에서 누락 없이 연결되어야 한다.
 
 ---
 
@@ -311,3 +434,4 @@
 | 3.2 | 2026-02-28 | Comm_101~106을 확정 정의로 전환하고 도메인별 메시지 규모 기준(총 CAN 80~120, 전체 100+)을 명시. |
 | 3.3 | 2026-02-28 | 도메인 분리 DBC(`emergency_system_*`) 실 메시지(0x300~0x30A, 0x102~0x109, 0x211~0x228, 0x231~0x232)를 Comm_101~106에 반영하고 SoT 계층 매핑을 보강. |
 | 3.4 | 2026-02-28 | 상단 공식표를 실메시지 기준(49 Message / 131 Signal)으로 확장하고 signal bit position을 범위 표기(`0~7`, `8~15`)로 정규화. |
+| 3.5 | 2026-02-28 | 상단 공식표를 Phase-B 확장 포함(99 Message / 242 Signal)으로 보강하고 Comm_201~205/Flow_201~205 연결 기준을 추가해 현업형 메시지 규모(100+)를 반영. |
