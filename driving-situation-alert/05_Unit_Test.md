@@ -3,7 +3,7 @@
 **Document ID**: PROJ-05-UT
 **ISO 26262 Reference**: Part 6, Cl.9 (Software Unit Verification)
 **ASPICE Reference**: SWE.4 (Software Unit Verification)
-**Version**: 2.5
+**Version**: 2.7
 **Date**: 2026-02-28
 **Status**: Draft
 **Project Title**: 주행 상황 실시간 경고 시스템
@@ -42,24 +42,25 @@
 
 | 노드 | 분류 | 기능명 | 기능 설명 | Pass/Fail | 담당자 | 일자 |
 |---|---|---|---|---|---|---|
-| 제어기 | 제어 | CHASSIS_GW | 차량 상태/조향 CAN 입력(0x100/0x101)을 Ethernet 정규화 메시지(0x510/0x511)로 변환 |  |  |  |
-|  |  | INFOTAINMENT_GW | 내비 구간 CAN 입력(0x110)을 Ethernet 정규화 메시지(0x512)로 변환 |  |  |  |
-|  |  | ADAS_WARN_CTRL | 주행/비주행, 스쿨존 과속, 고속 무조향 조건 기반 경고 상태 판단 |  |  |  |
-|  |  | NAV_CONTEXT_MGR | 구간/방향/거리 기반 컨텍스트 계산 및 갱신 |  |  |  |
-|  |  | EMS_POLICE_TX | 경찰 긴급 알림(E100) 송신(Active/Clear, ETA/Direction/SourceID) |  |  |  |
-|  |  | EMS_AMB_TX | 구급 긴급 알림(E100) 송신(Active/Clear, ETA/Direction/SourceID) |  |  |  |
-|  |  | EMS_ALERT_RX | 긴급 알림 수신 상태 관리 및 1000ms 타임아웃 해제 처리 |  |  |  |
-|  |  | WARN_ARB_MGR | Emergency 우선/종류 우선/ETA-SourceID 우선 중재 후 단일 결과 생성 |  |  |  |
-|  |  | BODY_GW | 중재 결과(E200)를 Ambient CAN(0x210)으로 변환 송신 |  |  |  |
-|  |  | IVI_GW | 중재 결과(E200)를 Cluster CAN(0x220)으로 변환 송신 |  |  |  |
-|  |  | BCM_AMBIENT_CTRL | 경고 레벨/타입 기반 Ambient 모드/색상/패턴 출력 |  |  |  |
-|  |  | CLU_HMI_CTRL | 경고 문구/방향 코드 출력 및 중복 팝업 억제 |  |  |  |
-|  |  | SIL_TEST_CTRL | 테스트 시나리오 실행 및 결과(0x230) 기록 |  |  |  |
+| 제어기 | 제어 | CHASSIS_GW | CAN(0x100/0x101) 수신값을 ETH(0x510/0x511)로 100ms 주기 변환 송신 |  |  |  |
+|  |  | INFOTAINMENT_GW | CAN(0x110) 구간/방향/거리/제한속도 입력을 ETH(0x512)로 100ms 주기 변환 송신 |  |  |  |
+|  |  | ADAS_WARN_CTRL | 주행/비주행, 과속(vehicleSpeed>speedLimit), 무조향 조건을 판정해 150ms 이내 경고 상태 반영 |  |  |  |
+|  |  | NAV_CONTEXT_MGR | roadZone/navDirection/zoneDistance/speedLimit 입력으로 컨텍스트 계산 및 speedLimitNorm 갱신 |  |  |  |
+|  |  | EMS_POLICE_TX | 경찰 긴급 이벤트를 E100으로 100ms 주기 송신하고 Clear 전환 반영 |  |  |  |
+|  |  | EMS_AMB_TX | 구급 긴급 이벤트를 E100으로 100ms 주기 송신하고 Clear 전환 반영 |  |  |  |
+|  |  | EMS_ALERT_RX | E100 수신 상태를 관리하고 1000ms 무갱신 시 timeoutClear=1 처리 |  |  |  |
+|  |  | WARN_ARB_MGR | Emergency>Zone, Ambulance>Police, ETA, SourceID 규칙으로 단일 경고 결과 결정 |  |  |  |
+|  |  | BODY_GW | 중재 결과(E200)를 Ambient CAN(0x210)으로 50ms 주기 변환 송신 |  |  |  |
+|  |  | IVI_GW | 중재 결과(E200)를 Cluster CAN(0x220)으로 50ms 주기 변환 송신 |  |  |  |
+|  |  | BCM_AMBIENT_CTRL | selectedAlert 결과에 따라 ambientMode/color/pattern 정책 출력(전환 안정화 포함) |  |  |  |
+|  |  | CLU_HMI_CTRL | warningTextCode/방향 표시/중복팝업 억제 정책 적용 |  |  |  |
+|  |  | SIL_TEST_CTRL | testScenario 실행, CAN+ETH 조건 검증, scenarioResult 기록 |  |  |  |
+|  |  | VEHICLE_BASE_TEST_CTRL | 차량 기본 기능(시동/기어/입력/표시) 단위 검증 및 결과 반영 |  |  |  |
 | 가상 노드 (Simulator) | 입력 | Vehicle/Steering Input | `gVehicleSpeed`, `gDriveState`, `SteeringInput` 입력 생성 |  |  |  |
 |  |  | Nav Context Input | `gRoadZone`, `gNavDirection`, `gZoneDistance`, `gSpeedLimit` 입력 생성 |  |  |  |
 |  |  | Emergency Input | Police/Ambulance Active/Clear, ETA, Direction, SourceID 입력 생성 |  |  |  |
-|  | 출력 | Ambient Output | `AmbientMode`, `AmbientColor`, `AmbientPattern` 출력 확인 |  |  |  |
-|  |  | Cluster Output | `WarningTextCode` 출력 확인 |  |  |  |
+|  | 출력 | Ambient Output | `AmbientMode`, `AmbientColor`, `AmbientPattern` 출력 확인(50ms 주기) |  |  |  |
+|  |  | Cluster Output | `WarningTextCode` 출력 확인(50ms 주기) |  |  |  |
 |  |  | Scenario Result | `ScenarioResult` 및 로그 결과 확인 |  |  |  |
 
 ---
@@ -79,7 +80,13 @@
 | UT_GW_001 | CHASSIS_GW, INFOTAINMENT_GW | 게이트웨이 변환 검증 | Req_007,Req_010,Req_011,Req_012 | VC_007,VC_010,VC_011,VC_012 | Func_007,Func_010,Func_011,Func_012 | Flow_001,Flow_002,Flow_003 / Comm_001,Comm_002,Comm_003 | Var_001~Var_006,Var_012~Var_015,Var_030,Var_031 | CAN 입력 대비 ETH 변환값 일치, 송신 주기 `100ms` 유지 |
 | UT_OUT_GW_001 | BODY_GW, IVI_GW | ETH->CAN 출력 변환 검증 | Req_033,Req_034,Req_040 | VC_033,VC_034,VC_040 | Func_033,Func_034,Func_040 | Flow_007,Flow_008 / Comm_007,Comm_008 | Var_021~Var_024 | ETH 결과를 CAN 프레임으로 정확히 변환, CAN 출력 주기 `50ms` 유지 |
 | UT_SIL_001 | SIL_TEST_CTRL | SIL 실행/판정 유닛 검증 | Req_041,Req_042,Req_043 | VC_041,VC_042,VC_043 | Func_041,Func_042,Func_043 | Flow_009 / Comm_009 | Var_025,Var_026 | 시나리오 실행/통신 조건 검증/결과 기록 로직 정상 |
-| UT_BASE_001 | ENGINE_CTRL,TRANSMISSION_CTRL,ACCEL_CTRL,BRAKE_CTRL,STEERING_CTRL,HAZARD_CTRL,WINDOW_CTRL,DRIVER_STATE_CTRL,CLUSTER_BASE_CTRL,DOMAIN_GW_ROUTER,DOMAIN_BOUNDARY_MGR,VEHICLE_BASE_TEST_CTRL | 차량 기본 기능(시동/기어/입력/표시/도메인경계/SIL판정) 유닛 커버리지 검증 | Req_101~Req_112 | VC_101~VC_112 | Func_101~Func_112 | Flow_101~Flow_106,Flow_201~Flow_205 / Comm_101~Comm_106,Comm_201~Comm_205 | Var_101~Var_314 | 기본 기능 입력/표시/도메인경계/판정 동작이 요구 규칙과 일치 |
+| UT_BASE_001 | ENGINE_CTRL,TRANSMISSION_CTRL,ACCEL_CTRL,BRAKE_CTRL,STEERING_CTRL,HAZARD_CTRL,WINDOW_CTRL,DRIVER_STATE_CTRL,CLUSTER_BASE_CTRL,DOMAIN_GW_ROUTER,DOMAIN_BOUNDARY_MGR,VEHICLE_BASE_TEST_CTRL | 차량 기본 기능(시동/기어/입력/표시/도메인경계/SIL판정) 유닛 커버리지 총괄 검증 | Req_101~Req_112 | VC_101~VC_112 | Func_101~Func_112 | Flow_101~Flow_106,Flow_201~Flow_205 / Comm_101~Comm_106,Comm_201~Comm_205 | Var_101~Var_314 | 기본 기능 입력/표시/도메인경계/판정 동작이 요구 규칙과 일치 |
+| UT_BASE_PT_001 | ENGINE_CTRL, TRANSMISSION_CTRL | 시동/기어/엔진/변속 기본 동작 검증 | Req_101,Req_102 | VC_101,VC_102 | Func_101,Func_102 | Flow_101,Flow_204 / Comm_101,Comm_204 | Var_175~Var_178,Var_181~Var_182,Var_189~Var_190,Var_298~Var_304,Var_309~Var_314 | 입력 반영 후 `150ms` 이내 상태/표시 일치, 주기 `100ms` 유지 |
+| UT_BASE_CH_001 | ACCEL_CTRL, BRAKE_CTRL, STEERING_CTRL, CHASSIS_GW | 가감속/조향 입력 및 Chassis 상태 확장 동작 검증 | Req_103,Req_104,Req_105,Req_110 | VC_103,VC_104,VC_105,VC_110 | Func_103,Func_104,Func_105,Func_110 | Flow_102,Flow_201 / Comm_102,Comm_201 | Var_101~Var_120,Var_204~Var_237 | 입력 반영 후 `150ms` 이내 상태값 일치, 주기 `100ms` 유지 |
+| UT_BASE_BODY_001 | HAZARD_CTRL, WINDOW_CTRL, DRIVER_STATE_CTRL, BODY_GW | 차체 입력/출력(비상등/창문/운전자상태) 및 Body 확장 동작 검증 | Req_106,Req_107,Req_108,Req_111 | VC_106,VC_107,VC_108,VC_111 | Func_106,Func_107,Func_108,Func_111 | Flow_103,Flow_202 / Comm_103,Comm_202 | Var_121~Var_146,Var_238~Var_267 | 상태 전이 규칙과 출력이 기대값 일치, 주기 `100ms` 유지 |
+| UT_BASE_IVI_001 | CLUSTER_BASE_CTRL, INFOTAINMENT_GW, IVI_GW | 클러스터 기본 표시 및 IVI 확장 동작 검증 | Req_109,Req_111 | VC_109,VC_111 | Func_109,Func_111 | Flow_104,Flow_203 / Comm_104,Comm_203 | Var_147~Var_171,Var_268~Var_297 | 표시 항목 누락 없음, `50/100ms` 주기 규칙 충족 |
+| UT_BASE_GW_001 | DOMAIN_GW_ROUTER, DOMAIN_BOUNDARY_MGR | 도메인 경계/라우팅 정책 적용 및 Health/Diag 경로 검증 | Req_110,Req_111 | VC_110,VC_111 | Func_110,Func_111 | Flow_105,Flow_205 / Comm_105,Comm_205 | Var_118~Var_120,Var_144~Var_146,Var_169~Var_171,Var_179~Var_180,Var_201~Var_203,Var_283~Var_286,Var_305~Var_308 | 도메인 경계 위반 없이 라우팅/진단 프레임이 규칙대로 전달 |
+| UT_BASE_TEST_001 | VEHICLE_BASE_TEST_CTRL, SIL_TEST_CTRL | 차량 기본 기능 시나리오 실행/판정 기록 검증 | Req_112 | VC_112 | Func_112 | Flow_106 / Comm_106 | Var_172~Var_174,Var_025,Var_026 | 시나리오 실행 가능, 결과 판정/로그 일관성 유지 |
 
 ---
 
@@ -114,3 +121,5 @@
 | 2.3 | 2026-02-28 | ASPICE SWE.4 기준 최소 케이스 설계 규칙(Positive/Negative/Boundary, 추적성)과 Req_024/Req_006 경계값 보강 케이스를 추가 |
 | 2.4 | 2026-02-28 | 스쿨존 과속 정합을 위해 Nav 입력/UT 추적에 `speedLimit/speedLimitNorm`(Var_030/Var_031) 연계를 추가. |
 | 2.5 | 2026-02-28 | 차량 기본 기능 확장 추적을 위해 `UT_BASE_001`(Req_101~112 / Func_101~112 / Comm_101~106,201~205)을 추가. |
+| 2.6 | 2026-02-28 | 상단 공식 표를 기능/판정 기준 중심으로 구체화(100ms/50ms/150ms/1000ms)하고 차량 기본 기능 검증 항목을 반영. |
+| 2.7 | 2026-02-28 | 단위 테스트 상세표에 차량 기본 기능 도메인 분해 케이스(`UT_BASE_PT/CH/BODY/IVI/GW/TEST`)를 추가해 ECU 기능 단위 검증을 강화. |
