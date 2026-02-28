@@ -6,6 +6,7 @@
 - CANoe 실행 cfg: `project/cfg/CAN_500kBaud_1ch.cfg`
 - 시스템 변수: `project/sysvars/project.sysvars`
 - CAN DB: `network/dbc/emergency_system.dbc`
+- 빠른 파일 찾기: `FILE_INDEX.md`
 
 ## 소스 구조 (BP)
 ```text
