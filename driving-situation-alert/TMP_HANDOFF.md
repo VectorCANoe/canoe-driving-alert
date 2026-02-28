@@ -1,8 +1,8 @@
 # TMP Handoff (Next Codex Session)
 
 ## 1) Project Direction (Fixed)
-- Title: Driving Situation Linked Real-Time Warning System
-- Subtitle: Zone Recognition + Emergency Vehicle Warning
+- Title: 주행 상황 실시간 경고 시스템
+- Subtitle: 구간 정보 및 긴급차량 접근 기반 앰비언트·클러스터 경보
 - Scope In:
   - Navigation zone recognition (school zone, highway, guide lane)
   - V2V emergency alerts (police, ambulance)

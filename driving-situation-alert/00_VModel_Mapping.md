@@ -4,8 +4,8 @@
 **Version**: 4.2
 **Date**: 2026-02-26
 **Status**: Released
-**Project Title**: 주행상황 연동 실시간 경고 시스템
-**Subtitle**: (구간 인식, 긴급차량 경고시스템)
+**Project Title**: 주행 상황 실시간 경고 시스템
+**Subtitle**: 구간 정보 및 긴급차량 접근 기반 앰비언트·클러스터 경보
 
 ---
 
