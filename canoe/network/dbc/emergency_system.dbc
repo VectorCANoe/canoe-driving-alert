@@ -1,4 +1,5 @@
-VERSION ""
+VERSION "Emergency_System_CAN_v1.1"
+
 
 NS_ :
   NS_DESC_
@@ -29,7 +30,7 @@ NS_ :
 
 BS_:
 
-BU_: SIL_TEST_CTRL CHASSIS_GW INFOTAINMENT_GW BODY_GW IVI_GW BCM_AMBIENT_CTRL CLU_HMI_CTRL Vector__XXX
+BU_: SIL_TEST_CTRL CHASSIS_GW INFOTAINMENT_GW EMS_POLICE_TX EMS_AMB_TX EMS_ALERT_RX WARN_ARB_MGR BODY_GW IVI_GW BCM_AMBIENT_CTRL CLU_HMI_CTRL Vector__XXX
 
 BO_ 256 frmVehicleStateCanMsg: 2 SIL_TEST_CTRL
  SG_ gVehicleSpeed : 0|8@1+ (1,0) [0|255] "km/h" CHASSIS_GW
@@ -55,23 +56,29 @@ BO_ 544 frmClusterWarningMsg: 1 IVI_GW
  SG_ WarningTextCode : 0|8@1+ (1,0) [0|255] "" CLU_HMI_CTRL
 
 BO_ 560 frmTestResultMsg: 1 SIL_TEST_CTRL
- SG_ ScenarioResult : 0|1@1+ (1,0) [0|1] "" SIL_TEST_CTRL
+ SG_ ScenarioResult : 0|1@1+ (1,0) [0|1] "" Vector__XXX
  SG_ Reserved0      : 1|7@1+ (1,0) [0|0] "" Vector__XXX
 
-CM_ BU_ SIL_TEST_CTRL       "SIL test controller (CAN injection + result logging).";
-CM_ BU_ CHASSIS_GW          "Chassis CAN to Ethernet UDP gateway.";
-CM_ BU_ INFOTAINMENT_GW     "Infotainment CAN to Ethernet UDP gateway.";
-CM_ BU_ BODY_GW             "Ethernet UDP (E200) to CAN (Ambient) gateway.";
-CM_ BU_ IVI_GW              "Ethernet UDP (E200) to CAN (Cluster) gateway.";
-CM_ BU_ BCM_AMBIENT_CTRL    "Ambient controller ECU (reads 0x210).";
-CM_ BU_ CLU_HMI_CTRL        "Cluster HMI controller ECU (reads 0x220).";
+CM_ BU_ SIL_TEST_CTRL       "SIL test controller for CAN input injection and scenario result logging.";
+CM_ BU_ CHASSIS_GW          "Gateway: Chassis CAN input normalization to core variables.";
+CM_ BU_ INFOTAINMENT_GW     "Gateway: Infotainment CAN input normalization to core variables.";
+CM_ BU_ EMS_POLICE_TX       "Emergency producer node (Police) on Ethernet domain contract.";
+CM_ BU_ EMS_AMB_TX          "Emergency producer node (Ambulance) on Ethernet domain contract.";
+CM_ BU_ EMS_ALERT_RX        "Emergency receiver/timeout monitor for arbitration.";
+CM_ BU_ WARN_ARB_MGR        "Central arbitration manager (Emergency vs Navigation context).";
+CM_ BU_ BODY_GW             "Gateway: selected alert to Body CAN (0x210).";
+CM_ BU_ IVI_GW              "Gateway: selected alert to Infotainment CAN (0x220).";
+CM_ BU_ BCM_AMBIENT_CTRL    "Ambient controller ECU (consumer of 0x210).";
+CM_ BU_ CLU_HMI_CTRL        "Cluster HMI ECU (consumer of 0x220).";
 
-CM_ BO_ 256 "Chassis CAN input: vehicle speed + drive state (P/R/N/D).";
-CM_ BO_ 257 "Chassis CAN input: steering input (0/1).";
-CM_ BO_ 272 "Infotainment CAN input: road zone, nav direction, zone distance.";
-CM_ BO_ 528 "Body CAN output: ambient control (mode/color/pattern).";
-CM_ BO_ 544 "Body CAN output: cluster warning text code.";
-CM_ BO_ 560 "SIL test result (0/1).";
+CM_ BO_ 256 "Chassis CAN input: vehicle speed and drive state.";
+CM_ BO_ 257 "Chassis CAN input: steering input state.";
+CM_ BO_ 272 "Infotainment CAN input: road zone, direction, and distance.";
+CM_ BO_ 528 "Body CAN output: ambient mode/color/pattern.";
+CM_ BO_ 544 "Infotainment CAN output: cluster warning text code.";
+CM_ BO_ 560 "Scenario pass/fail result for SIL traceability.";
+
+CM_ "Scope: This DBC defines CAN-domain frames only. Ethernet contracts (E100/E200, 0x510/0x511/0x512) are maintained in CAPL/sysvar interface specifications.";
 
 BA_DEF_ BO_ "GenMsgCycleTime" INT 0 10000;
 BA_DEF_DEF_ "GenMsgCycleTime" 0;
@@ -89,6 +96,10 @@ VAL_ 256 gDriveState
   2 "N"
   3 "D" ;
 
+VAL_ 257 SteeringInput
+  0 "NoInput"
+  1 "Input" ;
+
 VAL_ 272 gRoadZone
   0 "Normal"
   1 "SchoolZone"
@@ -101,3 +112,22 @@ VAL_ 272 gNavDirection
   2 "Right"
   3 "Other" ;
 
+VAL_ 528 AmbientMode
+  0 "Off"
+  1 "Basic"
+  2 "Caution"
+  3 "SchoolZone"
+  4 "Reserved"
+  5 "GuideLeft"
+  6 "GuideRight"
+  7 "Emergency" ;
+
+VAL_ 528 AmbientPattern
+  0 "None"
+  1 "DefaultBlink"
+  2 "GuideLeftPattern"
+  3 "GuideRightPattern" ;
+
+VAL_ 560 ScenarioResult
+  0 "Fail"
+  1 "Pass" ;
