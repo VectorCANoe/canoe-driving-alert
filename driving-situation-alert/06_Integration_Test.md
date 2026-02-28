@@ -3,7 +3,7 @@
 **Document ID**: PROJ-06-IT
 **ISO 26262 Reference**: Part 6, Cl.10 (Software Integration and Integration Test)
 **ASPICE Reference**: SWE.5 (Software Integration and Integration Test)
-**Version**: 4.4
+**Version**: 4.5
 **Date**: 2026-02-28
 **Status**: Draft
 **Project Title**: 주행 상황 실시간 경고 시스템
@@ -40,6 +40,7 @@
 | IT_TIMEOUT_001 | Req_024 | VC_024 | EmergencyAlert 1000ms 무갱신 타임아웃 연동 검증 | `1000ms` 무갱신 시 timeoutClear=1 생성, 이후 `150ms` 이내 안전 상태 복귀 |  |  |  |
 | IT_RECOVERY_001 | Req_033,Req_034 | VC_033,VC_034 | 긴급 해제 후 이전 구간 상태 복귀 검증 | 중재 종료 후 Zone 컨텍스트 복귀 및 전환 완화 동작 |  |  |  |
 | IT_SIL_001 | Req_041,Req_042,Req_043 | VC_041,VC_042,VC_043 | SIL 시나리오 실행/판정 연동 검증 | CAN+ETH 동시 조건에서 시나리오 판정 결과 기록 |  |  |  |
+| IT_BASE_001 | Req_101~Req_112 | VC_101~VC_112 | 차량 기본 기능(시동/기어/입력/표시/도메인경계) 통합 연동 검증 | Flow_101~Flow_106,Flow_201~Flow_205 경로에서 입력/상태/표시/헬스/판정 체인이 일관되게 동작 |  |  |  |
 
 ---
 
@@ -57,6 +58,7 @@
 | IT_TIMEOUT_001 | Flow_006, Flow_007, Flow_008 | Comm_006, Comm_007, Comm_008 | Func_024,Func_033,Func_034,Func_040 | Req_024,Req_033,Req_034,Req_040 | VC_024,VC_033,VC_034,VC_040 | UT_EMS_RX_001, UT_BCM_001, UT_CLU_001 | `1000ms` 무갱신 후 timeoutClear=1, `150ms` 이내 안전 복귀 완료 |
 | IT_RECOVERY_001 | Flow_006, Flow_007, Flow_008 | Comm_006, Comm_007, Comm_008 | Func_033,Func_034 | Req_033,Req_034 | VC_033,VC_034 | UT_BCM_001 | 긴급 종료 후 직전 Zone 상태 정상 복원 |
 | IT_SIL_001 | Flow_009 | Comm_009 | Func_041,Func_042,Func_043 | Req_041,Req_042,Req_043 | VC_041,VC_042,VC_043 | UT_ADAS_001~UT_CLU_001 | 시나리오 실행/결과 기록/로그 연동 완료 |
+| IT_BASE_001 | Flow_101~Flow_106, Flow_201~Flow_205 | Comm_101~Comm_106, Comm_201~Comm_205 | Func_101~Func_112 | Req_101~Req_112 | VC_101~VC_112 | UT_BASE_001 | 차량 기본 기능 입력/상태/표시/도메인 경계/SIL 판정 연동이 일관되게 유지 |
 
 ---
 
@@ -91,3 +93,4 @@
 | 4.2 | 2026-02-26 | VC 추적 강화를 위해 상단/상세 표에 VC ID 컬럼을 추가하고 Req-VC-IT 연결을 명시 |
 | 4.3 | 2026-02-28 | 팀 제안 중 현업 BP에 부합하는 핵심만 선별 반영: 타임아웃 경계값(999/1000/>1000), ETA/SourceID 우선순위, 방향 분기 보강 케이스 추가 |
 | 4.4 | 2026-02-28 | Flow_003(Comm_003)에 `speedLimit` 연계를 추가하여 Req_010(스쿨존 과속) 통합 검증 경로를 보강. |
+| 4.5 | 2026-02-28 | 차량 기본 기능 통합 검증을 위해 `IT_BASE_001`(Req/VC/Func 101~112, Flow/Comm 101~106 및 201~205)을 추가. |

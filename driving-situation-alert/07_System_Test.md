@@ -3,7 +3,7 @@
 **Document ID**: PROJ-07-ST
 **ISO 26262 Reference**: Part 4, Cl.10 (System Integration and System Qualification Test)
 **ASPICE Reference**: SYS.5 (System Qualification Test)
-**Version**: 5.3
+**Version**: 5.4
 **Date**: 2026-02-28
 **Status**: Draft
 **Project Title**: 주행 상황 실시간 경고 시스템
@@ -45,6 +45,7 @@
 | ST_SIL_001 | 물리 하드웨어 없이 CANoe SIL에서 핵심 시나리오 수행이 가능한지 확인한다. |  |  |  |
 | ST_SIL_002 | CAN+Ethernet 동시 통신 조건에서 E2E 경고 체인이 유지되는지 확인한다. |  |  |  |
 | ST_RESULT_001 | 시나리오별 합격/불합격 결과가 일관되게 기록·추적되는지 확인한다. |  |  |  |
+| ST_BASE_001 | 차량 기본 기능(시동/기어/가감속/조향/비상등/창문/기본표시/도메인경계)이 시스템 수준에서 일관되게 동작하는지 확인한다. |  |  |  |
 
 ---
 
@@ -68,6 +69,7 @@
 | ST_SIL_001 | Req_041 | VC_041 | Func_041 | Flow_009 / Comm_009 | Var_025 | IT_SIL_001 | CANoe SIL 단독 환경에서 시나리오 실행 가능 |
 | ST_SIL_002 | Req_042 | VC_042 | Func_042 | Flow_001~Flow_009 / Comm_001~Comm_009 | Var_001~Var_031 | IT_SIL_001 | CAN+Ethernet 동시 조건에서 통신/기능 체인 유지 |
 | ST_RESULT_001 | Req_043 | VC_043 | Func_043 | Flow_009 / Comm_009 | Var_026 | IT_SIL_001 | 결과 판정 로그와 요약 상태가 일치 |
+| ST_BASE_001 | Req_101~Req_112 | VC_101~VC_112 | Func_101~Func_112 | Flow_101~Flow_106,Flow_201~Flow_205 / Comm_101~Comm_106,Comm_201~Comm_205 | Var_101~Var_314 | IT_BASE_001 | 차량 기본 기능 E2E 시나리오에서 입력/상태/표시/경계/판정 체인이 일관되게 유지 |
 
 ---
 
@@ -83,3 +85,4 @@
 | 5.1 | 2026-02-26 | 합격 기준을 150ms/1000ms 및 주기 기준으로 수치화하고, FZ 사전 점검 결과 반영 전 Draft 경계 문구 추가 |
 | 5.2 | 2026-02-26 | VC 추적 강화를 위해 ST 상세 표에 VC ID 컬럼을 추가하고 Req-VC-ST 연결을 명시 |
 | 5.3 | 2026-02-28 | ST_SPEED_001에 `speedLimit` 기반 과속 조건과 Flow_003/Comm_003/Var_031 연계를 반영. |
+| 5.4 | 2026-02-28 | 차량 기본 기능 시스템 검증을 위해 `ST_BASE_001`(Req/VC/Func 101~112, Flow/Comm 101~106 및 201~205)을 추가. |

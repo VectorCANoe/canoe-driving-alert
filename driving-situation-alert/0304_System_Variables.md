@@ -3,7 +3,7 @@
 **Document ID**: PROJ-0304-SV
 **ISO 26262 Reference**: Part 6, Cl.7 (Software Architectural Design)
 **ASPICE Reference**: SWE.2 / SWE.3
-**Version**: 2.8
+**Version**: 2.9
 **Date**: 2026-02-28
 **Status**: Draft
 **Project Title**: 주행 상황 실시간 경고 시스템
@@ -404,7 +404,111 @@
 | Var_027 | lastEmergencyRxMs | lastEmergencyRxMs | CORE_STATE | EMS_ALERT_RX | Comm_004, Comm_005, Comm_006 | Flow_004, Flow_005, Flow_006 | Func_023, Func_024 | Req_023, Req_024 | E100 수신 시각(ms) 기록, 1000ms 타임아웃 기준 |
 | Var_028 | duplicatePopupGuard | duplicatePopupGuard | CORE_STATE | CLU_HMI_CTRL | Comm_008 | Flow_008 | Func_026 | Req_026 | 동일 Alert 반복 시 타이머 갱신 |
 | Var_029 | arbitrationSnapshotId | arbitrationSnapshotId | CORE_STATE | WARN_ARB_MGR | Comm_006 | Flow_006 | Func_032 | Req_032 | 중재 수행 시 스냅샷 ID 증가 |
-| Var_200 | --- Phase-B Comm_201~Comm_205 추적 확장 --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Var_BASE_A | --- Baseline Comm_101~Comm_106 추적 확장 --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Var_101 | AccelPedal | accelPedal_CAN_BASE | CAN_BASE | CHASSIS_GW | Comm_102 | Flow_102 | Func_103, Func_104, Func_105 | Req_103, Req_104, Req_105 | 100ms 주기 수신 시 갱신 |
+| Var_102 | BrakePedal | brakePedal_CAN_BASE | CAN_BASE | CHASSIS_GW | Comm_102 | Flow_102 | Func_103, Func_104, Func_105 | Req_103, Req_104, Req_105 | 100ms 주기 수신 시 갱신 |
+| Var_103 | SteeringState | steeringState_CAN_BASE | CAN_BASE | CHASSIS_GW | Comm_102 | Flow_102 | Func_103, Func_104, Func_105 | Req_103, Req_104, Req_105 | 100ms 주기 수신 시 갱신 |
+| Var_104 | WheelSpdFL | wheelSpdFL_CAN_BASE | CAN_BASE | CHASSIS_GW | Comm_102 | Flow_102 | Func_103, Func_104, Func_105 | Req_103, Req_104, Req_105 | 100ms 주기 수신 시 갱신 |
+| Var_105 | WheelSpdFR | wheelSpdFR_CAN_BASE | CAN_BASE | CHASSIS_GW | Comm_102 | Flow_102 | Func_103, Func_104, Func_105 | Req_103, Req_104, Req_105 | 100ms 주기 수신 시 갱신 |
+| Var_106 | WheelSpdRL | wheelSpdRL_CAN_BASE | CAN_BASE | CHASSIS_GW | Comm_102 | Flow_102 | Func_103, Func_104, Func_105 | Req_103, Req_104, Req_105 | 100ms 주기 수신 시 갱신 |
+| Var_107 | WheelSpdRR | wheelSpdRR_CAN_BASE | CAN_BASE | CHASSIS_GW | Comm_102 | Flow_102 | Func_103, Func_104, Func_105 | Req_103, Req_104, Req_105 | 100ms 주기 수신 시 갱신 |
+| Var_108 | YawRate | yawRate_CAN_BASE | CAN_BASE | CHASSIS_GW | Comm_102 | Flow_102 | Func_103, Func_104, Func_105 | Req_103, Req_104, Req_105 | 100ms 주기 수신 시 갱신 |
+| Var_109 | LatAccel | latAccel_CAN_BASE | CAN_BASE | CHASSIS_GW | Comm_102 | Flow_102 | Func_103, Func_104, Func_105 | Req_103, Req_104, Req_105 | 100ms 주기 수신 시 갱신 |
+| Var_110 | BrakePressure | brakePressure_CAN_BASE | CAN_BASE | CHASSIS_GW | Comm_102 | Flow_102 | Func_103, Func_104, Func_105 | Req_103, Req_104, Req_105 | 100ms 주기 수신 시 갱신 |
+| Var_111 | BrakeMode | brakeMode_CAN_BASE | CAN_BASE | CHASSIS_GW | Comm_102 | Flow_102 | Func_103, Func_104, Func_105 | Req_103, Req_104, Req_105 | 100ms 주기 수신 시 갱신 |
+| Var_112 | AbsActive | absActive_CAN_BASE | CAN_BASE | CHASSIS_GW | Comm_102 | Flow_102 | Func_103, Func_104, Func_105 | Req_103, Req_104, Req_105 | 100ms 주기 수신 시 갱신 |
+| Var_113 | EspActive | espActive_CAN_BASE | CAN_BASE | CHASSIS_GW | Comm_102 | Flow_102 | Func_103, Func_104, Func_105 | Req_103, Req_104, Req_105 | 100ms 주기 수신 시 갱신 |
+| Var_114 | AccelRequest | accelRequest_CAN_BASE | CAN_BASE | CHASSIS_GW | Comm_102 | Flow_102 | Func_103, Func_104, Func_105 | Req_103, Req_104, Req_105 | 100ms 주기 수신 시 갱신 |
+| Var_115 | TorqueRequest | torqueRequest_CAN_BASE | CAN_BASE | CHASSIS_GW | Comm_102 | Flow_102 | Func_103, Func_104, Func_105 | Req_103, Req_104, Req_105 | 100ms 주기 수신 시 갱신 |
+| Var_116 | SteeringTorque | steeringTorque_CAN_BASE | CAN_BASE | CHASSIS_GW | Comm_102 | Flow_102 | Func_103, Func_104, Func_105 | Req_103, Req_104, Req_105 | 100ms 주기 수신 시 갱신 |
+| Var_117 | SteeringAssistLv | steeringAssistLv_CAN_BASE | CAN_BASE | CHASSIS_GW | Comm_102 | Flow_102 | Func_103, Func_104, Func_105 | Req_103, Req_104, Req_105 | 100ms 주기 수신 시 갱신 |
+| Var_118 | ChassisAliveCnt | chassisAliveCnt_CAN_BASE | CAN_BASE | DOMAIN_GW_ROUTER | Comm_105 | Flow_105 | Func_110, Func_111 | Req_110, Req_111 | 100ms 주기 수신 시 갱신 |
+| Var_119 | ChassisDiagState | chassisDiagState_CAN_BASE | CAN_BASE | DOMAIN_GW_ROUTER | Comm_105 | Flow_105 | Func_110, Func_111 | Req_110, Req_111 | 100ms 주기 수신 시 갱신 |
+| Var_120 | ChassisFailCode | chassisFailCode_CAN_BASE | CAN_BASE | DOMAIN_GW_ROUTER | Comm_105 | Flow_105 | Func_110, Func_111 | Req_110, Req_111 | 100ms 주기 수신 시 갱신 |
+| Var_121 | HazardSwitch | hazardSwitch_CAN_BASE | CAN_BASE | BODY_GW | Comm_103 | Flow_103 | Func_106, Func_107, Func_108 | Req_106, Req_107, Req_108 | 100ms 주기 수신 시 갱신 |
+| Var_122 | HazardState | hazardState_CAN_BASE | CAN_BASE | BODY_GW | Comm_103 | Flow_103 | Func_106, Func_107, Func_108 | Req_106, Req_107, Req_108 | 100ms 주기 수신 시 갱신 |
+| Var_123 | WindowCommand | windowCommand_CAN_BASE | CAN_BASE | BODY_GW | Comm_103 | Flow_103 | Func_106, Func_107, Func_108 | Req_106, Req_107, Req_108 | 100ms 주기 수신 시 갱신 |
+| Var_124 | WindowState | windowState_CAN_BASE | CAN_BASE | BODY_GW | Comm_103 | Flow_103 | Func_106, Func_107, Func_108 | Req_106, Req_107, Req_108 | 100ms 주기 수신 시 갱신 |
+| Var_125 | DriverStateLevel | driverStateLevel_CAN_BASE | CAN_BASE | BODY_GW | Comm_103 | Flow_103 | Func_106, Func_107, Func_108 | Req_106, Req_107, Req_108 | 100ms 주기 수신 시 갱신 |
+| Var_126 | DriverStateInfo | driverStateInfo_CAN_BASE | CAN_BASE | BODY_GW | Comm_103 | Flow_103 | Func_106, Func_107, Func_108 | Req_106, Req_107, Req_108 | 100ms 주기 수신 시 갱신 |
+| Var_127 | DoorStateMask | doorStateMask_CAN_BASE | CAN_BASE | BODY_GW | Comm_103 | Flow_103 | Func_106, Func_107, Func_108 | Req_106, Req_107, Req_108 | 100ms 주기 수신 시 갱신 |
+| Var_128 | DoorLockState | doorLockState_CAN_BASE | CAN_BASE | BODY_GW | Comm_103 | Flow_103 | Func_106, Func_107, Func_108 | Req_106, Req_107, Req_108 | 100ms 주기 수신 시 갱신 |
+| Var_129 | ChildLockState | childLockState_CAN_BASE | CAN_BASE | BODY_GW | Comm_103 | Flow_103 | Func_106, Func_107, Func_108 | Req_106, Req_107, Req_108 | 100ms 주기 수신 시 갱신 |
+| Var_130 | DoorOpenWarn | doorOpenWarn_CAN_BASE | CAN_BASE | BODY_GW | Comm_103 | Flow_103 | Func_106, Func_107, Func_108 | Req_106, Req_107, Req_108 | 100ms 주기 수신 시 갱신 |
+| Var_131 | HeadLampState | headLampState_CAN_BASE | CAN_BASE | BODY_GW | Comm_103 | Flow_103 | Func_106, Func_107, Func_108 | Req_106, Req_107, Req_108 | 100ms 주기 수신 시 갱신 |
+| Var_132 | TailLampState | tailLampState_CAN_BASE | CAN_BASE | BODY_GW | Comm_103 | Flow_103 | Func_106, Func_107, Func_108 | Req_106, Req_107, Req_108 | 100ms 주기 수신 시 갱신 |
+| Var_133 | TurnLampState | turnLampState_CAN_BASE | CAN_BASE | BODY_GW | Comm_103 | Flow_103 | Func_106, Func_107, Func_108 | Req_106, Req_107, Req_108 | 100ms 주기 수신 시 갱신 |
+| Var_134 | HazardLampReq | hazardLampReq_CAN_BASE | CAN_BASE | BODY_GW | Comm_103 | Flow_103 | Func_106, Func_107, Func_108 | Req_106, Req_107, Req_108 | 100ms 주기 수신 시 갱신 |
+| Var_135 | FrontWiperState | frontWiperState_CAN_BASE | CAN_BASE | BODY_GW | Comm_103 | Flow_103 | Func_106, Func_107, Func_108 | Req_106, Req_107, Req_108 | 100ms 주기 수신 시 갱신 |
+| Var_136 | RearWiperState | rearWiperState_CAN_BASE | CAN_BASE | BODY_GW | Comm_103 | Flow_103 | Func_106, Func_107, Func_108 | Req_106, Req_107, Req_108 | 100ms 주기 수신 시 갱신 |
+| Var_137 | WiperInterval | wiperInterval_CAN_BASE | CAN_BASE | BODY_GW | Comm_103 | Flow_103 | Func_106, Func_107, Func_108 | Req_106, Req_107, Req_108 | 100ms 주기 수신 시 갱신 |
+| Var_138 | DriverSeatBelt | driverSeatBelt_CAN_BASE | CAN_BASE | BODY_GW | Comm_103 | Flow_103 | Func_106, Func_107, Func_108 | Req_106, Req_107, Req_108 | 100ms 주기 수신 시 갱신 |
+| Var_139 | PassengerSeatBelt | passengerSeatBelt_CAN_BASE | CAN_BASE | BODY_GW | Comm_103 | Flow_103 | Func_106, Func_107, Func_108 | Req_106, Req_107, Req_108 | 100ms 주기 수신 시 갱신 |
+| Var_140 | RearSeatBelt | rearSeatBelt_CAN_BASE | CAN_BASE | BODY_GW | Comm_103 | Flow_103 | Func_106, Func_107, Func_108 | Req_106, Req_107, Req_108 | 100ms 주기 수신 시 갱신 |
+| Var_141 | SeatBeltWarnLvl | seatBeltWarnLvl_CAN_BASE | CAN_BASE | BODY_GW | Comm_103 | Flow_103 | Func_106, Func_107, Func_108 | Req_106, Req_107, Req_108 | 100ms 주기 수신 시 갱신 |
+| Var_142 | CabinTemp | cabinTemp_CAN_BASE | CAN_BASE | BODY_GW | Comm_103 | Flow_103 | Func_106, Func_107, Func_108 | Req_106, Req_107, Req_108 | 100ms 주기 수신 시 갱신 |
+| Var_143 | AirQualityIndex | airQualityIndex_CAN_BASE | CAN_BASE | BODY_GW | Comm_103 | Flow_103 | Func_106, Func_107, Func_108 | Req_106, Req_107, Req_108 | 100ms 주기 수신 시 갱신 |
+| Var_144 | BodyAliveCnt | bodyAliveCnt_CAN_BASE | CAN_BASE | DOMAIN_GW_ROUTER | Comm_105 | Flow_105 | Func_110, Func_111 | Req_110, Req_111 | 100ms 주기 수신 시 갱신 |
+| Var_145 | BodyDiagState | bodyDiagState_CAN_BASE | CAN_BASE | DOMAIN_GW_ROUTER | Comm_105 | Flow_105 | Func_110, Func_111 | Req_110, Req_111 | 100ms 주기 수신 시 갱신 |
+| Var_146 | BodyFailCode | bodyFailCode_CAN_BASE | CAN_BASE | DOMAIN_GW_ROUTER | Comm_105 | Flow_105 | Func_110, Func_111 | Req_110, Req_111 | 100ms 주기 수신 시 갱신 |
+| Var_147 | ClusterSpeed | clusterSpeed_CAN_BASE | CAN_BASE | INFOTAINMENT_GW/IVI_GW | Comm_104 | Flow_104 | Func_109 | Req_109 | 50ms 주기 수신 시 갱신 |
+| Var_148 | ClusterGear | clusterGear_CAN_BASE | CAN_BASE | INFOTAINMENT_GW/IVI_GW | Comm_104 | Flow_104 | Func_109 | Req_109 | 50ms 주기 수신 시 갱신 |
+| Var_149 | ClusterStatus | clusterStatus_CAN_BASE | CAN_BASE | INFOTAINMENT_GW/IVI_GW | Comm_104 | Flow_104 | Func_109 | Req_109 | 50ms 주기 수신 시 갱신 |
+| Var_150 | GuideLaneState | guideLaneState_CAN_BASE | CAN_BASE | INFOTAINMENT_GW/IVI_GW | Comm_104 | Flow_104 | Func_109 | Req_109 | 50ms 주기 수신 시 갱신 |
+| Var_151 | GuideConfidence | guideConfidence_CAN_BASE | CAN_BASE | INFOTAINMENT_GW/IVI_GW | Comm_104 | Flow_104 | Func_109 | Req_109 | 50ms 주기 수신 시 갱신 |
+| Var_152 | MediaSource | mediaSource_CAN_BASE | CAN_BASE | INFOTAINMENT_GW/IVI_GW | Comm_104 | Flow_104 | Func_109 | Req_109 | 50ms 주기 수신 시 갱신 |
+| Var_153 | MediaState | mediaState_CAN_BASE | CAN_BASE | INFOTAINMENT_GW/IVI_GW | Comm_104 | Flow_104 | Func_109 | Req_109 | 50ms 주기 수신 시 갱신 |
+| Var_154 | MuteState | muteState_CAN_BASE | CAN_BASE | INFOTAINMENT_GW/IVI_GW | Comm_104 | Flow_104 | Func_109 | Req_109 | 50ms 주기 수신 시 갱신 |
+| Var_155 | VolumeLevel | volumeLevel_CAN_BASE | CAN_BASE | INFOTAINMENT_GW/IVI_GW | Comm_104 | Flow_104 | Func_109 | Req_109 | 50ms 주기 수신 시 갱신 |
+| Var_156 | CallState | callState_CAN_BASE | CAN_BASE | INFOTAINMENT_GW/IVI_GW | Comm_104 | Flow_104 | Func_109 | Req_109 | 50ms 주기 수신 시 갱신 |
+| Var_157 | MicMute | micMute_CAN_BASE | CAN_BASE | INFOTAINMENT_GW/IVI_GW | Comm_104 | Flow_104 | Func_109 | Req_109 | 50ms 주기 수신 시 갱신 |
+| Var_158 | SignalQuality | signalQuality_CAN_BASE | CAN_BASE | INFOTAINMENT_GW/IVI_GW | Comm_104 | Flow_104 | Func_109 | Req_109 | 50ms 주기 수신 시 갱신 |
+| Var_159 | BtDeviceCount | btDeviceCount_CAN_BASE | CAN_BASE | INFOTAINMENT_GW/IVI_GW | Comm_104 | Flow_104 | Func_109 | Req_109 | 50ms 주기 수신 시 갱신 |
+| Var_160 | RouteClass | routeClass_CAN_BASE | CAN_BASE | INFOTAINMENT_GW/IVI_GW | Comm_104 | Flow_104 | Func_109 | Req_109 | 50ms 주기 수신 시 갱신 |
+| Var_161 | GuideType | guideType_CAN_BASE | CAN_BASE | INFOTAINMENT_GW/IVI_GW | Comm_104 | Flow_104 | Func_109 | Req_109 | 50ms 주기 수신 시 갱신 |
+| Var_162 | RouteProgress | routeProgress_CAN_BASE | CAN_BASE | INFOTAINMENT_GW/IVI_GW | Comm_104 | Flow_104 | Func_109 | Req_109 | 50ms 주기 수신 시 갱신 |
+| Var_163 | EtaMinutes | etaMinutes_CAN_BASE | CAN_BASE | INFOTAINMENT_GW/IVI_GW | Comm_104 | Flow_104 | Func_109 | Req_109 | 50ms 주기 수신 시 갱신 |
+| Var_164 | ThemeMode | themeMode_CAN_BASE | CAN_BASE | INFOTAINMENT_GW/IVI_GW | Comm_104 | Flow_104 | Func_109 | Req_109 | 50ms 주기 수신 시 갱신 |
+| Var_165 | ClusterBrightness | clusterBrightness_CAN_BASE | CAN_BASE | INFOTAINMENT_GW/IVI_GW | Comm_104 | Flow_104 | Func_109 | Req_109 | 50ms 주기 수신 시 갱신 |
+| Var_166 | PopupType | popupType_CAN_BASE | CAN_BASE | INFOTAINMENT_GW/IVI_GW | Comm_104 | Flow_104 | Func_109 | Req_109 | 50ms 주기 수신 시 갱신 |
+| Var_167 | PopupPriority | popupPriority_CAN_BASE | CAN_BASE | INFOTAINMENT_GW/IVI_GW | Comm_104 | Flow_104 | Func_109 | Req_109 | 50ms 주기 수신 시 갱신 |
+| Var_168 | PopupActive | popupActive_CAN_BASE | CAN_BASE | INFOTAINMENT_GW/IVI_GW | Comm_104 | Flow_104 | Func_109 | Req_109 | 50ms 주기 수신 시 갱신 |
+| Var_169 | InfoAliveCnt | infoAliveCnt_CAN_BASE | CAN_BASE | DOMAIN_GW_ROUTER | Comm_105 | Flow_105 | Func_110, Func_111 | Req_110, Req_111 | 100ms 주기 수신 시 갱신 |
+| Var_170 | InfoDiagState | infoDiagState_CAN_BASE | CAN_BASE | DOMAIN_GW_ROUTER | Comm_105 | Flow_105 | Func_110, Func_111 | Req_110, Req_111 | 100ms 주기 수신 시 갱신 |
+| Var_171 | InfoFailCode | infoFailCode_CAN_BASE | CAN_BASE | DOMAIN_GW_ROUTER | Comm_105 | Flow_105 | Func_110, Func_111 | Req_110, Req_111 | 100ms 주기 수신 시 갱신 |
+| Var_172 | BaseScenarioId | baseScenarioId_CAN_BASE | CAN_BASE | SIL_TEST_CTRL | Comm_106 | Flow_106 | Func_112 | Req_112 | Event 발생 시 갱신 |
+| Var_173 | BaseScnResult | baseScnResult_CAN_BASE | CAN_BASE | SIL_TEST_CTRL | Comm_106 | Flow_106 | Func_112 | Req_112 | Event 발생 시 갱신 |
+| Var_174 | TimeoutClearMon | timeoutClearMon_CAN_BASE | CAN_BASE | SIL_TEST_CTRL | Comm_106 | Flow_106 | Func_112 | Req_112 | Event 발생 시 갱신 |
+| Var_175 | IgnitionState | ignitionState_CAN_BASE | CAN_BASE | ENGINE_CTRL/TRANSMISSION_CTRL | Comm_101 | Flow_101 | Func_101, Func_102 | Req_101, Req_102 | 100ms 주기 수신 시 갱신 |
+| Var_176 | EngineState | engineState_CAN_BASE | CAN_BASE | ENGINE_CTRL/TRANSMISSION_CTRL | Comm_101 | Flow_101 | Func_101, Func_102 | Req_101, Req_102 | 100ms 주기 수신 시 갱신 |
+| Var_177 | GearInput | gearInput_CAN_BASE | CAN_BASE | ENGINE_CTRL/TRANSMISSION_CTRL | Comm_101 | Flow_101 | Func_101, Func_102 | Req_101, Req_102 | 100ms 주기 수신 시 갱신 |
+| Var_178 | GearState | gearState_CAN_BASE | CAN_BASE | ENGINE_CTRL/TRANSMISSION_CTRL | Comm_101 | Flow_101 | Func_101, Func_102 | Req_101, Req_102 | 100ms 주기 수신 시 갱신 |
+| Var_179 | RoutingPolicy | routingPolicy_CAN_BASE | CAN_BASE | DOMAIN_GW_ROUTER | Comm_105 | Flow_105 | Func_110, Func_111 | Req_110, Req_111 | 100ms 주기 수신 시 갱신 |
+| Var_180 | BoundaryStatus | boundaryStatus_CAN_BASE | CAN_BASE | DOMAIN_GW_ROUTER | Comm_105 | Flow_105 | Func_110, Func_111 | Req_110, Req_111 | 100ms 주기 수신 시 갱신 |
+| Var_181 | EngineRpm | engineRpm_CAN_BASE | CAN_BASE | ENGINE_CTRL | Comm_101 | Flow_101 | Func_101, Func_102 | Req_101, Req_102 | 100ms 주기 수신 시 갱신 |
+| Var_182 | CoolantTemp | coolantTemp_CAN_BASE | CAN_BASE | ENGINE_CTRL | Comm_101 | Flow_101 | Func_101, Func_102 | Req_101, Req_102 | 100ms 주기 수신 시 갱신 |
+| Var_183 | OilTemp | oilTemp_CAN_BASE | CAN_BASE | DOMAIN_GW_ROUTER | Comm_105 | Flow_105 | Func_110, Func_111 | Req_110, Req_111 | 100ms 주기 수신 시 갱신 |
+| Var_184 | FuelLevel | fuelLevel_CAN_BASE | CAN_BASE | DOMAIN_GW_ROUTER | Comm_105 | Flow_105 | Func_110, Func_111 | Req_110, Req_111 | 100ms 주기 수신 시 갱신 |
+| Var_185 | BatterySoc | batterySoc_CAN_BASE | CAN_BASE | DOMAIN_GW_ROUTER | Comm_105 | Flow_105 | Func_110, Func_111 | Req_110, Req_111 | 100ms 주기 수신 시 갱신 |
+| Var_186 | ChargingState | chargingState_CAN_BASE | CAN_BASE | DOMAIN_GW_ROUTER | Comm_105 | Flow_105 | Func_110, Func_111 | Req_110, Req_111 | 100ms 주기 수신 시 갱신 |
+| Var_187 | ThrottlePos | throttlePos_CAN_BASE | CAN_BASE | DOMAIN_GW_ROUTER | Comm_105 | Flow_105 | Func_110, Func_111 | Req_110, Req_111 | 100ms 주기 수신 시 갱신 |
+| Var_188 | ThrottleReq | throttleReq_CAN_BASE | CAN_BASE | DOMAIN_GW_ROUTER | Comm_105 | Flow_105 | Func_110, Func_111 | Req_110, Req_111 | 100ms 주기 수신 시 갱신 |
+| Var_189 | TransOilTemp | transOilTemp_CAN_BASE | CAN_BASE | TRANSMISSION_CTRL | Comm_101 | Flow_101 | Func_101, Func_102 | Req_101, Req_102 | 100ms 주기 수신 시 갱신 |
+| Var_190 | ClutchTemp | clutchTemp_CAN_BASE | CAN_BASE | TRANSMISSION_CTRL | Comm_101 | Flow_101 | Func_101, Func_102 | Req_101, Req_102 | 100ms 주기 수신 시 갱신 |
+| Var_191 | DriveMode | driveMode_CAN_BASE | CAN_BASE | DOMAIN_GW_ROUTER | Comm_105 | Flow_105 | Func_110, Func_111 | Req_110, Req_111 | 100ms 주기 수신 시 갱신 |
+| Var_192 | EcoMode | ecoMode_CAN_BASE | CAN_BASE | DOMAIN_GW_ROUTER | Comm_105 | Flow_105 | Func_110, Func_111 | Req_110, Req_111 | 100ms 주기 수신 시 갱신 |
+| Var_193 | SportMode | sportMode_CAN_BASE | CAN_BASE | DOMAIN_GW_ROUTER | Comm_105 | Flow_105 | Func_110, Func_111 | Req_110, Req_111 | 100ms 주기 수신 시 갱신 |
+| Var_194 | SnowMode | snowMode_CAN_BASE | CAN_BASE | DOMAIN_GW_ROUTER | Comm_105 | Flow_105 | Func_110, Func_111 | Req_110, Req_111 | 100ms 주기 수신 시 갱신 |
+| Var_195 | PowertrainState | powertrainState_CAN_BASE | CAN_BASE | DOMAIN_GW_ROUTER | Comm_105 | Flow_105 | Func_110, Func_111 | Req_110, Req_111 | 100ms 주기 수신 시 갱신 |
+| Var_196 | TorqueLimit | torqueLimit_CAN_BASE | CAN_BASE | DOMAIN_GW_ROUTER | Comm_105 | Flow_105 | Func_110, Func_111 | Req_110, Req_111 | 100ms 주기 수신 시 갱신 |
+| Var_197 | SpeedLimit | speedLimit_CAN_BASE | CAN_BASE | DOMAIN_GW_ROUTER | Comm_105 | Flow_105 | Func_110, Func_111 | Req_110, Req_111 | 100ms 주기 수신 시 갱신 |
+| Var_198 | CruiseState | cruiseState_CAN_BASE | CAN_BASE | DOMAIN_GW_ROUTER | Comm_105 | Flow_105 | Func_110, Func_111 | Req_110, Req_111 | 100ms 주기 수신 시 갱신 |
+| Var_199 | GapLevel | gapLevel_CAN_BASE | CAN_BASE | DOMAIN_GW_ROUTER | Comm_105 | Flow_105 | Func_110, Func_111 | Req_110, Req_111 | 100ms 주기 수신 시 갱신 |
+| Var_200 | CruiseSetSpeed | cruiseSetSpeed_CAN_BASE | CAN_BASE | DOMAIN_GW_ROUTER | Comm_105 | Flow_105 | Func_110, Func_111 | Req_110, Req_111 | 100ms 주기 수신 시 갱신 |
+| Var_201 | PtAliveCnt | ptAliveCnt_CAN_BASE | CAN_BASE | DOMAIN_GW_ROUTER | Comm_105 | Flow_105 | Func_110, Func_111 | Req_110, Req_111 | 100ms 주기 수신 시 갱신 |
+| Var_202 | PtDiagState | ptDiagState_CAN_BASE | CAN_BASE | DOMAIN_GW_ROUTER | Comm_105 | Flow_105 | Func_110, Func_111 | Req_110, Req_111 | 100ms 주기 수신 시 갱신 |
+| Var_203 | PtFailCode | ptFailCode_CAN_BASE | CAN_BASE | DOMAIN_GW_ROUTER | Comm_105 | Flow_105 | Func_110, Func_111 | Req_110, Req_111 | 100ms 주기 수신 시 갱신 |
+| Var_BASE_B | --- Phase-B Comm_201~Comm_205 추적 확장 --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | Var_204 | EpsAssistState | epsAssistState_CAN_EXT | CAN_EXT | CHASSIS_GW | Comm_201 | Flow_201 | Func_103, Func_104, Func_110 | Req_103, Req_104, Req_110 | 100ms 주기 수신 + Event 발생 시 갱신 |
 | Var_205 | EpsFault | epsFault_CAN_EXT | CAN_EXT | CHASSIS_GW | Comm_201 | Flow_201 | Func_103, Func_104, Func_110 | Req_103, Req_104, Req_110 | 100ms 주기 수신 + Event 발생 시 갱신 |
 | Var_206 | EpsTorqueReq | epsTorqueReq_CAN_EXT | CAN_EXT | CHASSIS_GW | Comm_201 | Flow_201 | Func_103, Func_104, Func_110 | Req_103, Req_104, Req_110 | 100ms 주기 수신 + Event 발생 시 갱신 |
@@ -521,7 +625,7 @@
 
 ## 0303/코드 연계 체크포인트
 
-- `0303`의 모든 Signal은 본 문서 변수와 1개 이상 매핑되어야 하며, `Comm_201~Comm_205` 확장 신호도 Var 추적표에 동기화되어야 한다.
+- `0303`의 모든 Signal은 본 문서 변수와 1개 이상 매핑되어야 하며, `Comm_101~Comm_106`, `Comm_201~Comm_205` 확장 신호도 Var 추적표에 동기화되어야 한다.
 - `timeoutClear`(내부 구현: `timeoutClear_ETH_CORE`)는 `Req_024(1000ms)` 검증 로직과 직접 연결되어야 한다.
 - `selectedAlertLevel`, `selectedAlertType`(내부 구현: `selectedAlertLevel_ETH_CORE`, `selectedAlertType_ETH_CORE`)는 `WARN_ARB_MGR` 출력의 단일 소스로 유지한다.
 - `speedLimit`/`speedLimitNorm`은 Req_010 과속 판정 비교 입력으로 0303 Comm_003과 정합되어야 한다.
@@ -543,3 +647,4 @@
 | 2.6 | 2026-02-28 | DBC OEM 신호명(`g*`)과 문서 표준 Name 간 Alias 매핑 표를 추가해 변수 명칭 혼선을 제거. |
 | 2.7 | 2026-02-28 | 0303 상단 통신 신호 기준으로 시스템 변수 상단표를 확장(99 Message 연계), OEM 일괄 대체를 고려한 Namespace/Name 체계를 보강. |
 | 2.8 | 2026-02-28 | 하단 변수 추적 상세표를 Comm_201~Comm_205(Flow_201~Flow_205, Func_101~Func_112, Req_101~Req_112)까지 동기화하고 Phase-B 확장 변수 추적 행을 추가. |
+| 2.9 | 2026-02-28 | 하단 변수 추적 상세표를 Comm_101~Comm_106(Flow_101~Flow_106, Func_101~Func_112, Req_101~Req_112)까지 추가 동기화해 차량 기본 기능 체인을 폐쇄. |

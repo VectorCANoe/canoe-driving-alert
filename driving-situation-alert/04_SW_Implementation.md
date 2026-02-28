@@ -3,7 +3,7 @@
 **Document ID**: PROJ-04-SI
 **ISO 26262 Reference**: Part 6, Cl.8 (Software Unit Design and Implementation)
 **ASPICE Reference**: SWE.3 (Software Detailed Design and Unit Construction)
-**Version**: 2.7
+**Version**: 2.8
 **Date**: 2026-02-28
 **Status**: Draft
 **Project Title**: 주행 상황 실시간 경고 시스템
@@ -21,7 +21,7 @@
 - 구현 상세는 코드 문법이 아니라 `입력/처리/출력/타이밍/예외` 계약으로 기록한다.
 - 추적 체인은 `Req -> Func -> Flow -> Comm -> Var -> Code -> UT/IT/ST`를 유지한다.
 - 네트워크는 옵션1 아키텍처를 고정한다: `ETH_SWITCH + CHASSIS_GW/INFOTAINMENT_GW/BODY_GW/IVI_GW + 도메인 CAN`.
-- 통신 원본은 분리 관리한다: CAN=`canoe/network/dbc/emergency_system.dbc`, Ethernet=`canoe/docs/operations/ETH_INTERFACE_CONTRACT.md`.
+- 통신 원본은 분리 관리한다: CAN=`canoe/network/dbc/chassis_can.dbc` + `canoe/network/dbc/powertrain_can.dbc` + `canoe/network/dbc/body_can.dbc` + `canoe/network/dbc/infotainment_can.dbc` + `canoe/network/dbc/test_can.dbc`, Ethernet=`canoe/docs/operations/ETH_INTERFACE_CONTRACT.md`.
 - 범위 외 항목(OTA/UDS/DoIP)은 구현 대상에서 제외한다.
 - ASPICE SWE.3 BP1~BP8 관점에서 `상세 설계/인터페이스/동적행위/대안평가/추적성/합의/구현규칙`을 명시한다.
 - SIL 단계에서는 Panel/sysvar 경유 자극을 허용하며, 통신 계약(0302/0303/0304)은 유지한 채 ETH `UdpSocket` 기반 입력으로 점진 전환한다.
@@ -309,3 +309,4 @@ Emergency Source
 | 2.5 | 2026-02-26 | 05~07 최신 상태 반영(레거시/Planned 문구 제거), 고도화 아키텍처 적합성 점검(Option 1 vs 1A) 추가 |
 | 2.6 | 2026-02-28 | Req_010 정합을 위해 `speedLimit/speedLimitNorm`을 Func_007/Func_010, IF_003, TASK_004, Var 연결표에 반영. |
 | 2.7 | 2026-02-28 | 통신 원본 분리 원칙(CAN DBC / Ethernet Interface Contract)을 작성 원칙에 반영. |
+| 2.8 | 2026-02-28 | CAN SoT를 도메인 분리 DBC(`*_can.dbc`) 세트 기준으로 정합화. |

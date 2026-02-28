@@ -3,7 +3,7 @@
 **Document ID**: PROJ-05-UT
 **ISO 26262 Reference**: Part 6, Cl.9 (Software Unit Verification)
 **ASPICE Reference**: SWE.4 (Software Unit Verification)
-**Version**: 2.4
+**Version**: 2.5
 **Date**: 2026-02-28
 **Status**: Draft
 **Project Title**: 주행 상황 실시간 경고 시스템
@@ -79,6 +79,7 @@
 | UT_GW_001 | CHASSIS_GW, INFOTAINMENT_GW | 게이트웨이 변환 검증 | Req_007,Req_010,Req_011,Req_012 | VC_007,VC_010,VC_011,VC_012 | Func_007,Func_010,Func_011,Func_012 | Flow_001,Flow_002,Flow_003 / Comm_001,Comm_002,Comm_003 | Var_001~Var_006,Var_012~Var_015,Var_030,Var_031 | CAN 입력 대비 ETH 변환값 일치, 송신 주기 `100ms` 유지 |
 | UT_OUT_GW_001 | BODY_GW, IVI_GW | ETH->CAN 출력 변환 검증 | Req_033,Req_034,Req_040 | VC_033,VC_034,VC_040 | Func_033,Func_034,Func_040 | Flow_007,Flow_008 / Comm_007,Comm_008 | Var_021~Var_024 | ETH 결과를 CAN 프레임으로 정확히 변환, CAN 출력 주기 `50ms` 유지 |
 | UT_SIL_001 | SIL_TEST_CTRL | SIL 실행/판정 유닛 검증 | Req_041,Req_042,Req_043 | VC_041,VC_042,VC_043 | Func_041,Func_042,Func_043 | Flow_009 / Comm_009 | Var_025,Var_026 | 시나리오 실행/통신 조건 검증/결과 기록 로직 정상 |
+| UT_BASE_001 | ENGINE_CTRL,TRANSMISSION_CTRL,ACCEL_CTRL,BRAKE_CTRL,STEERING_CTRL,HAZARD_CTRL,WINDOW_CTRL,DRIVER_STATE_CTRL,CLUSTER_BASE_CTRL,DOMAIN_GW_ROUTER,DOMAIN_BOUNDARY_MGR,VEHICLE_BASE_TEST_CTRL | 차량 기본 기능(시동/기어/입력/표시/도메인경계/SIL판정) 유닛 커버리지 검증 | Req_101~Req_112 | VC_101~VC_112 | Func_101~Func_112 | Flow_101~Flow_106,Flow_201~Flow_205 / Comm_101~Comm_106,Comm_201~Comm_205 | Var_101~Var_314 | 기본 기능 입력/표시/도메인경계/판정 동작이 요구 규칙과 일치 |
 
 ---
 
@@ -112,3 +113,4 @@
 | 2.2 | 2026-02-26 | VC(Verification Criteria) 추적을 위해 UT 상세 표에 VC ID 컬럼을 추가하고 Req-VC-UT 연결을 명시 |
 | 2.3 | 2026-02-28 | ASPICE SWE.4 기준 최소 케이스 설계 규칙(Positive/Negative/Boundary, 추적성)과 Req_024/Req_006 경계값 보강 케이스를 추가 |
 | 2.4 | 2026-02-28 | 스쿨존 과속 정합을 위해 Nav 입력/UT 추적에 `speedLimit/speedLimitNorm`(Var_030/Var_031) 연계를 추가. |
+| 2.5 | 2026-02-28 | 차량 기본 기능 확장 추적을 위해 `UT_BASE_001`(Req_101~112 / Func_101~112 / Comm_101~106,201~205)을 추가. |

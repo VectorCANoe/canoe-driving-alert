@@ -3,7 +3,7 @@
 **Document ID**: PROJ-0303-CS
 **ISO 26262 Reference**: Part 6, Cl.7 (Software Architectural Design)
 **ASPICE Reference**: SWE.2 (Software Architectural Design)
-**Version**: 3.5
+**Version**: 3.7
 **Date**: 2026-02-28
 **Status**: Draft
 **Project Title**: 주행 상황 실시간 경고 시스템
@@ -393,7 +393,7 @@
 ## 0302/0304 연계 체크포인트
 
 - `Comm ID`는 `0302_NWflowDef.md`의 `Flow ID`와 1:1 연결한다.
-- `Comm_001~Comm_009`는 `0304_System_Variables.md`의 기존 Var 표와 즉시 연결되어야 하며, `Comm_101~Comm_106`, `Comm_201~Comm_205`는 0304 확장 개정 시 동일 규칙으로 추가 연결한다.
+- `Comm_001~Comm_009`, `Comm_101~Comm_106`, `Comm_201~Comm_205`는 `0304_System_Variables.md` Var 추적표와 동기화되어야 한다.
 - `EmergencyAlert` Active/Clear 신호가 1000ms 타임아웃 규칙과 일치해야 한다.
 - `selectedAlertLevel/selectedAlertType` 기반 Ambient/Cluster 출력 Comm이 모두 존재해야 한다.
 - `ETH_SWITCH` 경유 Ethernet 신호가 각 도메인 게이트웨이에서 CAN 메시지로 정상 변환되어야 한다.
@@ -436,3 +436,4 @@
 | 3.4 | 2026-02-28 | 상단 공식표를 실메시지 기준(49 Message / 131 Signal)으로 확장하고 signal bit position을 범위 표기(`0~7`, `8~15`)로 정규화. |
 | 3.5 | 2026-02-28 | 상단 공식표를 Phase-B 확장 포함(99 Message / 242 Signal)으로 보강하고 Comm_201~205/Flow_201~205 연결 기준을 추가해 현업형 메시지 규모(100+)를 반영. |
 | 3.6 | 2026-02-28 | SoT 경로를 실제 분리 DBC 파일명(`*_can.dbc`)으로 정합화하고, Core/Domain 통신 원본 매핑 표기 충돌을 해소. |
+| 3.7 | 2026-02-28 | 0304 동기화 상태를 반영해 `Comm_101~106/201~205` 연계 체크포인트를 확정 문구로 갱신. |
