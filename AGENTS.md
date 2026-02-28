@@ -2,9 +2,9 @@
 
 ## Session Start Priority
 At the start of every Codex session, read this file first, then read:
-- `docs/OTA/TMP_HANDOFF.md`
+- `driving-situation-alert/TMP_HANDOFF.md`
 
-Use `TMP_HANDOFF.md` as the current project intent/source of truth for:
+Use `driving-situation-alert/TMP_HANDOFF.md` as the current project intent/source of truth for:
 - what the team is building now
 - fixed scope and exclusions
 - immediate next steps
@@ -30,5 +30,5 @@ Use those references to align:
 - Verification scope is fixed to CANoe SIL, CAN + Ethernet only.
 
 ## Notes
-- `TMP_HANDOFF.md` is temporary and can be replaced as project state changes.
-- If this file and `TMP_HANDOFF.md` conflict, follow `TMP_HANDOFF.md` first for current execution, then update this file if needed.
+- `driving-situation-alert/TMP_HANDOFF.md` is temporary and can be replaced as project state changes.
+- If this file and `driving-situation-alert/TMP_HANDOFF.md` conflict, follow the handoff first for current execution, then update this file if needed.

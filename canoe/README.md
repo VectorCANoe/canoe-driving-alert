@@ -42,4 +42,4 @@ canoe/
 ## 운영 원칙
 - `00~07` 문서는 참고/검증 기준이며 구현 수정은 `canoe/`에서만 수행
 - 검증 범위는 CANoe SIL, CAN + Ethernet
-- busy 충돌 대응 절차는 `AGENTS.md` 준수
+- busy 충돌 대응 절차는 `canoe/AGENTS.md` 준수

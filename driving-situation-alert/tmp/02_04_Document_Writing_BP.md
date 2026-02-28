@@ -101,4 +101,4 @@
 
 - 본 가이드는 작성 기준 문서이며, 공식 제출본(02/04)에는 요약 원칙만 반영한다.
 - 작성 중 애매하면 `Project Result_Sample` 표 구조를 우선 적용한다.
-- 스코프 충돌 시 `TMP_HANDOFF.md` 기준을 우선한다.
+- 스코프 충돌 시 `driving-situation-alert/TMP_HANDOFF.md` 기준을 우선한다.
