@@ -1,0 +1,71 @@
+VERSION "Chassis_CAN_v1.0"
+
+NS_ :
+  NS_DESC_
+  CM_
+  BA_DEF_
+  BA_
+  VAL_
+  CAT_DEF_
+  CAT_
+  FILTER
+  BA_DEF_DEF_
+  EV_DATA_
+  ENVVAR_DATA_
+  SGTYPE_
+  SGTYPE_VAL_
+  BA_DEF_SGTYPE_
+  BA_SGTYPE_
+  SIG_TYPE_REF_
+  VAL_TABLE_
+  SIG_GROUP_
+  SIG_VALTYPE_
+  SIGTYPE_VALTYPE_
+  BO_TX_BU_
+  BA_DEF_REL_
+  BA_REL_
+  BA_SGTYPE_REL_
+  SG_MUL_VAL_
+
+BS_:
+
+BU_: SIL_TEST_CTRL CHASSIS_GW ACCEL_CTRL BRAKE_CTRL STEERING_CTRL ADAS_WARN_CTRL Vector__XXX
+
+BO_ 256 frmVehicleStateCanMsg: 2 SIL_TEST_CTRL
+ SG_ gVehicleSpeed : 0|8@1+ (1,0) [0|255] "km/h" CHASSIS_GW,ADAS_WARN_CTRL
+ SG_ gDriveState   : 8|2@1+ (1,0) [0|3]   ""     CHASSIS_GW,ADAS_WARN_CTRL
+ SG_ Reserved0     : 10|6@1+ (1,0) [0|0]  ""     Vector__XXX
+
+BO_ 257 frmSteeringCanMsg: 1 SIL_TEST_CTRL
+ SG_ SteeringInput : 0|1@1+ (1,0) [0|1] "" CHASSIS_GW,STEERING_CTRL
+ SG_ Reserved0     : 1|7@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 769 frmChassisBaseMsg: 8 CHASSIS_GW
+ SG_ AccelPedal      : 0|8@1+ (1,0) [0|100] "%" ACCEL_CTRL,ADAS_WARN_CTRL
+ SG_ BrakePedal      : 8|8@1+ (1,0) [0|100] "%" BRAKE_CTRL,ADAS_WARN_CTRL
+ SG_ SteeringState   : 16|2@1+ (1,0) [0|3]  "" STEERING_CTRL,ADAS_WARN_CTRL
+ SG_ WheelSpeedAvg   : 24|8@1+ (1,0) [0|255] "km/h" ADAS_WARN_CTRL
+ SG_ YawRate         : 32|16@1+ (1,0) [0|65535] "deg/s" ADAS_WARN_CTRL
+ SG_ ChassisHealth   : 48|8@1+ (1,0) [0|255] "" ADAS_WARN_CTRL
+ SG_ Reserved1       : 56|8@1+ (1,0) [0|0] "" Vector__XXX
+
+CM_ BO_ 256 "Flow_001 core vehicle state input.";
+CM_ BO_ 257 "Flow_002 steering input.";
+CM_ BO_ 769 "Comm_102 baseline chassis aggregate message (Req_103~Req_105).";
+
+BA_DEF_ BO_ "GenMsgCycleTime" INT 0 10000;
+BA_DEF_DEF_ "GenMsgCycleTime" 0;
+BA_ "GenMsgCycleTime" BO_ 256 100;
+BA_ "GenMsgCycleTime" BO_ 257 100;
+BA_ "GenMsgCycleTime" BO_ 769 100;
+
+VAL_ 256 gDriveState
+  0 "P"
+  1 "R"
+  2 "N"
+  3 "D" ;
+
+VAL_ 257 SteeringInput
+  0 "NoInput"
+  1 "Input" ;
+

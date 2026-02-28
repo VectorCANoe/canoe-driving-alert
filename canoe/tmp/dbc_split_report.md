@@ -14,6 +14,11 @@
 - `canoe/network/dbc/emergency_system_powertrain.dbc`
 - `canoe/network/dbc/emergency_system_body.dbc`
 - `canoe/network/dbc/emergency_system_infotainment.dbc`
+- `canoe/network/dbc/chassis_can.dbc`
+- `canoe/network/dbc/powertrain_can.dbc`
+- `canoe/network/dbc/body_can.dbc`
+- `canoe/network/dbc/infotainment_can.dbc`
+- `canoe/network/dbc/test_can.dbc`
 
 ## 3) Frame Allocation Result (Expanded)
 | Domain DBC | Frame IDs | Message Count | Note |
@@ -32,6 +37,12 @@
 - 도메인 분리: 완료 (`chassis/body/infotainment/powertrain` 개별 DBC)
 - 누락 ECU 점검(기준 세트): 누락 없음
 - 메시지 볼륨: split 합계 `44` (멘토 권고 최소 `40` 충족)
+- 0303 확정 Comm 반영: `Comm_101~Comm_106` 핵심 ID(`0x300~0x304`)를 canonical `*_can.dbc` 세트에 반영
+
+## 8) 0303 canonical 파일명 정합
+- 문서 확정 파일명(`chassis_can.dbc`, `powertrain_can.dbc`, `body_can.dbc`, `infotainment_can.dbc`, `test_can.dbc`)을 신규 생성.
+- `project.cfg`의 `<Databases>`는 위 canonical 파일명 기준으로 부분 수정 완료.
+- 실행 기준 `CAN_500kBaud_1ch.cfg`는 CANoe 직렬화 포맷 특성상 수동(UI/API) 반영 권장.
 
 ## 5) Consistency Notes
 - Ethernet contract remains out of DBC scope (meeting guidance reflected).
