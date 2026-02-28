@@ -22,7 +22,7 @@
 - `DLC`는 순수 숫자만 기재한다.
 - 상단 표의 `Signal`은 0304 표준 변수명(`vehicleSpeed` 등) 기준으로 작성하고, 코드/런타임 별칭(`g*`)은 하단 보강표에서만 관리한다.
 - 0304에 아직 등재되지 않은 Vehicle Baseline 확장 신호는 DBC 원본 신호명(`AccelPedal`, `DriveMode` 등)으로 표기한다.
-- CAN 통신 원본은 계층 분리로 관리한다: 코어 프로파일은 `canoe/network/dbc/emergency_system.dbc`, 도메인 확장 프로파일은 `canoe/network/dbc/emergency_system_*.dbc`, Ethernet 프로파일은 `canoe/docs/operations/ETH_INTERFACE_CONTRACT.md`를 사용한다.
+- CAN 통신 원본은 계층 분리로 관리한다: 도메인 프로파일은 `canoe/network/dbc/chassis_can.dbc`, `canoe/network/dbc/powertrain_can.dbc`, `canoe/network/dbc/body_can.dbc`, `canoe/network/dbc/infotainment_can.dbc`, `canoe/network/dbc/test_can.dbc`를 사용하고, Ethernet 프로파일은 `canoe/docs/operations/ETH_INTERFACE_CONTRACT.md`를 사용한다.
 - 본 설계는 Ethernet 백본(`ETH_SWITCH`) + 도메인 게이트웨이(`CHASSIS_GW`, `INFOTAINMENT_GW`, `BODY_GW`, `IVI_GW`) + 도메인 CAN 분배 구조를 사용한다.
 - 하단 추적표는 `Comm ID -> Flow ID -> Func ID -> Req ID`를 유지한다.
 - 제출 전 현대/기아 및 OEM 기준으로 설명/별칭은 정리하되, Message ID/DLC/Bit Position/Signal 식별자는 SoT 기준으로 고정 유지한다.
@@ -290,8 +290,8 @@
 
 | 구분 | 범위 | 원본 파일 | 비고 |
 |---|---|---|---|
-| Core CAN Profile | Comm_001, Comm_002, Comm_003, Comm_007, Comm_008, Comm_009 | `canoe/network/dbc/emergency_system.dbc` | 경고 코어 체인 단일 원본 |
-| Domain CAN Profile | Comm_101~Comm_106, Comm_201~Comm_205 | `canoe/network/dbc/emergency_system_chassis.dbc` + `canoe/network/dbc/emergency_system_powertrain.dbc` + `canoe/network/dbc/emergency_system_body.dbc` + `canoe/network/dbc/emergency_system_infotainment.dbc` | 차량 기본 기능/도메인 분리 원본 |
+| Core CAN Profile | Comm_001, Comm_002, Comm_003, Comm_007, Comm_008, Comm_009 | `canoe/network/dbc/chassis_can.dbc` + `canoe/network/dbc/infotainment_can.dbc` + `canoe/network/dbc/body_can.dbc` + `canoe/network/dbc/test_can.dbc` | 경고 코어 체인 단일 원본 |
+| Domain CAN Profile | Comm_101~Comm_106, Comm_201~Comm_205 | `canoe/network/dbc/chassis_can.dbc` + `canoe/network/dbc/powertrain_can.dbc` + `canoe/network/dbc/body_can.dbc` + `canoe/network/dbc/infotainment_can.dbc` + `canoe/network/dbc/test_can.dbc` | 차량 기본 기능/도메인 분리 원본 |
 | Ethernet Profile | Comm_004, Comm_005, Comm_006 (및 Comm_001~003/007~008의 ETH 구간) | `canoe/docs/operations/ETH_INTERFACE_CONTRACT.md` | DBC 비대상, UDP 계약 단일 원본 |
 
 ---
@@ -339,11 +339,11 @@
 
 | Domain | 원본 파일(정의) | Comm 범위 | 핵심 Message |
 |---|---|---|---|
-| Core Integration CAN | `canoe/network/dbc/emergency_system.dbc` | Comm_001, Comm_002, Comm_003, Comm_007, Comm_008, Comm_009 | frmVehicleStateCanMsg, frmSteeringCanMsg, frmNavContextCanMsg, frmAmbientControlMsg, frmClusterWarningMsg, frmTestResultMsg |
-| Chassis CAN | `canoe/network/dbc/emergency_system_chassis.dbc` | Comm_001, Comm_002, Comm_102, Comm_106, Comm_105(헬스), Comm_201 | frmVehicleStateCanMsg, frmSteeringCanMsg, frmPedalInputCanMsg, frmBrakeStatusMsg, frmAccelStatusMsg, frmSteeringTorqueMsg, frmBaseTestResultMsg, frmEmergencyMonitorMsg, frmEpsStateMsg, frmAbsStateMsg |
-| Powertrain CAN | `canoe/network/dbc/emergency_system_powertrain.dbc` | Comm_101, Comm_105, Comm_204 | frmIgnitionEngineMsg, frmGearStateMsg, frmPowertrainGatewayMsg, frmEngineSpeedTempMsg, frmPowerLimitMsg, frmCruiseStateMsg, frmEngineTorqueMsg, frmEngineLoadMsg |
-| Body CAN | `canoe/network/dbc/emergency_system_body.dbc` | Comm_007, Comm_103, Comm_105, Comm_202 | frmAmbientControlMsg, frmHazardControlMsg, frmWindowControlMsg, frmDriverStateMsg, frmBodyHealthMsg, frmHvacStateMsg, frmMirrorStateMsg |
-| Infotainment CAN | `canoe/network/dbc/emergency_system_infotainment.dbc` | Comm_003, Comm_008, Comm_104, Comm_105, Comm_203, Comm_205 | frmNavContextCanMsg, frmClusterWarningMsg, frmClusterBaseStateMsg, frmClusterThemeMsg, frmHmiPopupStateMsg, frmInfotainmentHealthMsg, frmAudioFocusMsg, frmMapRenderStateMsg |
+| Core Integration CAN | `canoe/network/dbc/chassis_can.dbc` + `canoe/network/dbc/infotainment_can.dbc` + `canoe/network/dbc/body_can.dbc` + `canoe/network/dbc/test_can.dbc` | Comm_001, Comm_002, Comm_003, Comm_007, Comm_008, Comm_009 | frmVehicleStateCanMsg, frmSteeringCanMsg, frmNavContextCanMsg, frmAmbientControlMsg, frmClusterWarningMsg, frmTestResultMsg |
+| Chassis CAN | `canoe/network/dbc/chassis_can.dbc` | Comm_001, Comm_002, Comm_102, Comm_106, Comm_105(헬스), Comm_201 | frmVehicleStateCanMsg, frmSteeringCanMsg, frmPedalInputCanMsg, frmBrakeStatusMsg, frmAccelStatusMsg, frmSteeringTorqueMsg, frmBaseTestResultMsg, frmEmergencyMonitorMsg, frmEpsStateMsg, frmAbsStateMsg |
+| Powertrain CAN | `canoe/network/dbc/powertrain_can.dbc` | Comm_101, Comm_105, Comm_204 | frmIgnitionEngineMsg, frmGearStateMsg, frmPowertrainGatewayMsg, frmEngineSpeedTempMsg, frmPowerLimitMsg, frmCruiseStateMsg, frmEngineTorqueMsg, frmEngineLoadMsg |
+| Body CAN | `canoe/network/dbc/body_can.dbc` | Comm_007, Comm_103, Comm_105, Comm_202 | frmAmbientControlMsg, frmHazardControlMsg, frmWindowControlMsg, frmDriverStateMsg, frmBodyHealthMsg, frmHvacStateMsg, frmMirrorStateMsg |
+| Infotainment CAN | `canoe/network/dbc/infotainment_can.dbc` | Comm_003, Comm_008, Comm_104, Comm_105, Comm_203, Comm_205 | frmNavContextCanMsg, frmClusterWarningMsg, frmClusterBaseStateMsg, frmClusterThemeMsg, frmHmiPopupStateMsg, frmInfotainmentHealthMsg, frmAudioFocusMsg, frmMapRenderStateMsg |
 | Ethernet UDP | `canoe/docs/operations/ETH_INTERFACE_CONTRACT.md` | Comm_004, Comm_005, Comm_006 | ethVehicleStateMsg, ethSteeringMsg, ethNavContextMsg, ETH_EmergencyAlert, ethSelectedAlertMsg |
 
 ---
@@ -435,3 +435,4 @@
 | 3.3 | 2026-02-28 | 도메인 분리 DBC(`emergency_system_*`) 실 메시지(0x300~0x30A, 0x102~0x109, 0x211~0x228, 0x231~0x232)를 Comm_101~106에 반영하고 SoT 계층 매핑을 보강. |
 | 3.4 | 2026-02-28 | 상단 공식표를 실메시지 기준(49 Message / 131 Signal)으로 확장하고 signal bit position을 범위 표기(`0~7`, `8~15`)로 정규화. |
 | 3.5 | 2026-02-28 | 상단 공식표를 Phase-B 확장 포함(99 Message / 242 Signal)으로 보강하고 Comm_201~205/Flow_201~205 연결 기준을 추가해 현업형 메시지 규모(100+)를 반영. |
+| 3.6 | 2026-02-28 | SoT 경로를 실제 분리 DBC 파일명(`*_can.dbc`)으로 정합화하고, Core/Domain 통신 원본 매핑 표기 충돌을 해소. |
