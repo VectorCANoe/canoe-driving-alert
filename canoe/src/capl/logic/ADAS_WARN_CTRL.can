@@ -5,6 +5,7 @@ includes
 variables
 {
   msTimer tAdasCycle;
+  int gLastWarningState;
 }
 
 void updateWarningState()
@@ -19,6 +20,22 @@ void updateWarningState()
   driveState = (int)@Core::driveStateNorm;
   steeringInput = (int)@Core::steeringInputNorm;
   baseZoneContext = (int)@Core::baseZoneContext;
+  if (speed < 0)
+  {
+    speed = 0;
+  }
+  if (speed > 255)
+  {
+    speed = 255;
+  }
+  if (driveState < 0 || driveState > 3)
+  {
+    driveState = 0;
+  }
+  if (steeringInput < 0 || steeringInput > 1)
+  {
+    steeringInput = 0;
+  }
   warningState = 0;
 
   if (driveState == 3)
@@ -33,11 +50,16 @@ void updateWarningState()
     }
   }
 
-  @Core::warningState = warningState;
+  if (warningState != gLastWarningState)
+  {
+    @Core::warningState = warningState;
+    gLastWarningState = warningState;
+  }
 }
 
 on start
 {
+  gLastWarningState = -1;
   setTimer(tAdasCycle, 10);
   write("[ADAS_WARN_CTRL] start");
 }

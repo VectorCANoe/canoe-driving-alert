@@ -1,0 +1,45 @@
+includes
+{
+}
+
+variables
+{
+}
+
+int clampRange(int value, int minValue, int maxValue)
+{
+  if (value < minValue)
+  {
+    return minValue;
+  }
+  if (value > maxValue)
+  {
+    return maxValue;
+  }
+  return value;
+}
+
+on start
+{
+  write("[CHASSIS_GW] start");
+}
+
+on message frmVehicleStateCanMsg
+{
+  int speed;
+  int driveState;
+
+  speed = clampRange(this.gVehicleSpeed, 0, 255);
+  driveState = clampRange(this.gDriveState, 0, 3);
+
+  @Core::vehicleSpeedNorm = speed;
+  @Core::driveStateNorm = driveState;
+}
+
+on message frmSteeringCanMsg
+{
+  int steering;
+
+  steering = clampRange(this.SteeringInput, 0, 1);
+  @Core::steeringInputNorm = steering;
+}

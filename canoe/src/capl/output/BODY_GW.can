@@ -1,0 +1,77 @@
+includes
+{
+}
+
+variables
+{
+  msTimer tBodyCycle;
+  int gLastAmbientMode;
+  int gLastAmbientColor;
+  int gLastAmbientPattern;
+}
+
+on start
+{
+  gLastAmbientMode = -1;
+  gLastAmbientColor = -1;
+  gLastAmbientPattern = -1;
+  setTimer(tBodyCycle, 10);
+  write("[BODY_GW] start");
+}
+
+on timer tBodyCycle
+{
+  int alertLevel;
+  int alertType;
+  int timeoutClear;
+  int ambientMode;
+  int ambientColor;
+  int ambientPattern;
+  message frmAmbientControlMsg mAmbient;
+
+  alertLevel = (int)@Core::selectedAlertLevel;
+  alertType = (int)@Core::selectedAlertType;
+  timeoutClear = (int)@Core::timeoutClear;
+  if (alertLevel < 0 || alertLevel > 7)
+  {
+    alertLevel = 0;
+  }
+  if (alertType < 0 || alertType > 7)
+  {
+    alertType = 0;
+  }
+  timeoutClear = (timeoutClear == 1) ? 1 : 0;
+
+  if (timeoutClear == 1)
+  {
+    ambientMode = 0;
+    ambientColor = 0;
+    ambientPattern = 0;
+  }
+  else
+  {
+    ambientMode = alertLevel;
+    ambientColor = alertType;
+    ambientPattern = (alertLevel > 0) ? 1 : 0;
+  }
+
+  if (ambientMode != gLastAmbientMode ||
+      ambientColor != gLastAmbientColor ||
+      ambientPattern != gLastAmbientPattern)
+  {
+    @Body::ambientMode = ambientMode;
+    @Body::ambientColor = ambientColor;
+    @Body::ambientPattern = ambientPattern;
+
+    mAmbient.AmbientMode = ambientMode;
+    mAmbient.AmbientColor = ambientColor;
+    mAmbient.AmbientPattern = ambientPattern;
+    output(mAmbient);
+
+    gLastAmbientMode = ambientMode;
+    gLastAmbientColor = ambientColor;
+    gLastAmbientPattern = ambientPattern;
+  }
+
+  setTimer(tBodyCycle, 10);
+}

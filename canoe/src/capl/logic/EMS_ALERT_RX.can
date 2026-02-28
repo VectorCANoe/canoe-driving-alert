@@ -10,21 +10,37 @@ variables
   int gAmbulanceActive;
   dword gPoliceLastRxMs;
   dword gAmbulanceLastRxMs;
+  int gLastEmergencyContext;
+  int gLastTimeoutClear;
 }
 
 void updateEmergencyContext()
 {
+  int contextValue;
+
+  contextValue = 0;
   if (gAmbulanceActive == 1)
   {
-    @Core::emergencyContext = 2;
+    contextValue = 2;
   }
   else if (gPoliceActive == 1)
   {
-    @Core::emergencyContext = 1;
+    contextValue = 1;
   }
-  else
+
+  if (contextValue != gLastEmergencyContext)
   {
-    @Core::emergencyContext = 0;
+    @Core::emergencyContext = contextValue;
+    gLastEmergencyContext = contextValue;
+  }
+}
+
+void setTimeoutClear(int value)
+{
+  if (value != gLastTimeoutClear)
+  {
+    @Core::timeoutClear = value;
+    gLastTimeoutClear = value;
   }
 }
 
@@ -34,15 +50,13 @@ on start
   gAmbulanceActive = 0;
   gPoliceLastRxMs = 0;
   gAmbulanceLastRxMs = 0;
-  @Core::emergencyContext = 0;
-  @Core::timeoutClear = 0;
+  gLastEmergencyContext = -1;
+  gLastTimeoutClear = -1;
+  updateEmergencyContext();
+  setTimeoutClear(0);
   setTimer(tRxCycle, 10);
   setTimer(tWatchdog, 1000);
   write("[EMS_ALERT_RX] start");
-}
-
-on stopMeasurement
-{
 }
 
 on timer tRxCycle
@@ -55,9 +69,9 @@ on timer tRxCycle
   alertState = (int)@V2X::alertState;
   nowMs = timeNow();
 
-  if (alertState == 1)
+  if (alertState == 1 && (emergencyType == 1 || emergencyType == 2))
   {
-    @Core::timeoutClear = 0;
+    setTimeoutClear(0);
     @CoreState::lastEmergencyRxMs = (int)nowMs;
     if (emergencyType == 2)
     {
@@ -106,7 +120,7 @@ on timer tWatchdog
   if (hadEmergency == 1 && ((gPoliceActive == 0) && (gAmbulanceActive == 0))
   )
   {
-    @Core::timeoutClear = 1;
+    setTimeoutClear(1);
     write("[EMS_ALERT_RX] watchdog clear");
   }
   setTimer(tWatchdog, 1000);

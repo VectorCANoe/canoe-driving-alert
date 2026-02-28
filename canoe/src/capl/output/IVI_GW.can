@@ -5,10 +5,12 @@ includes
 variables
 {
   msTimer tIviCycle;
+  int gLastWarningTextCode;
 }
 
 on start
 {
+  gLastWarningTextCode = -1;
   setTimer(tIviCycle, 10);
   write("[IVI_GW] start");
 }
@@ -24,6 +26,15 @@ on timer tIviCycle
   alertLevel = (int)@Core::selectedAlertLevel;
   alertType = (int)@Core::selectedAlertType;
   timeoutClear = (int)@Core::timeoutClear;
+  if (alertLevel < 0 || alertLevel > 7)
+  {
+    alertLevel = 0;
+  }
+  if (alertType < 0 || alertType > 7)
+  {
+    alertType = 0;
+  }
+  timeoutClear = (timeoutClear == 1) ? 1 : 0;
 
   if (timeoutClear == 1 || alertLevel == 0)
   {
@@ -34,13 +45,12 @@ on timer tIviCycle
     warningTextCode = (alertType * 10) + alertLevel;
   }
 
-  @Cluster::warningTextCode = warningTextCode;
-  mCluster.WarningTextCode = warningTextCode;
-  output(mCluster);
-
-  if (timeoutClear == 1)
+  if (warningTextCode != gLastWarningTextCode)
   {
-    @Core::timeoutClear = 0;
+    @Cluster::warningTextCode = warningTextCode;
+    mCluster.WarningTextCode = warningTextCode;
+    output(mCluster);
+    gLastWarningTextCode = warningTextCode;
   }
   setTimer(tIviCycle, 10);
 }

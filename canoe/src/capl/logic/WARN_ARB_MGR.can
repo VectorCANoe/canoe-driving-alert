@@ -5,6 +5,8 @@ includes
 variables
 {
   msTimer tArbiter50;
+  int gLastAlertLevel;
+  int gLastAlertType;
 }
 
 void runArbiter()
@@ -18,6 +20,18 @@ void runArbiter()
   emergencyContext = (int)@Core::emergencyContext;
   warningState = (int)@Core::warningState;
   baseZoneContext = (int)@Core::baseZoneContext;
+  if (emergencyContext < 0 || emergencyContext > 2)
+  {
+    emergencyContext = 0;
+  }
+  if (warningState < 0 || warningState > 2)
+  {
+    warningState = 0;
+  }
+  if (baseZoneContext < 0 || baseZoneContext > 4)
+  {
+    baseZoneContext = 0;
+  }
   selectedAlertLevel = 0;
   selectedAlertType = 0;
 
@@ -57,25 +71,24 @@ void runArbiter()
 
   @Core::selectedAlertLevel = selectedAlertLevel;
   @Core::selectedAlertType = selectedAlertType;
-  @CoreState::arbitrationSnapshotId = ((int)@CoreState::arbitrationSnapshotId + 1) & 0xFFFF;
+  if (gLastAlertLevel != selectedAlertLevel || gLastAlertType != selectedAlertType)
+  {
+    @CoreState::arbitrationSnapshotId = ((int)@CoreState::arbitrationSnapshotId + 1) & 0xFFFF;
+    gLastAlertLevel = selectedAlertLevel;
+    gLastAlertType = selectedAlertType;
+  }
 }
 
 on start
 {
+  gLastAlertLevel = -1;
+  gLastAlertType = -1;
   setTimer(tArbiter50, 50);
   write("[WARN_ARB_MGR] start");
 }
 
 on timer tArbiter50
 {
-  int timeoutClear;
-
   runArbiter();
-
-  timeoutClear = (int)@Core::timeoutClear;
-  if (timeoutClear == 1)
-  {
-    @Core::timeoutClear = 0;
-  }
   setTimer(tArbiter50, 50);
 }

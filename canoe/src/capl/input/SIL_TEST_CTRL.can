@@ -10,6 +10,19 @@ variables
   int gDemoRunning;
 }
 
+int clampRange(int value, int minValue, int maxValue)
+{
+  if (value < minValue)
+  {
+    return minValue;
+  }
+  if (value > maxValue)
+  {
+    return maxValue;
+  }
+  return value;
+}
+
 void applyScenarioPreset(int scenarioId)
 {
   @Chassis::driveState = 3;
@@ -91,17 +104,30 @@ on timer tInput100
   message frmVehicleStateCanMsg mVeh;
   message frmSteeringCanMsg mStr;
   message frmNavContextCanMsg mNav;
+  int speed;
+  int driveState;
+  int steeringInput;
+  int roadZone;
+  int navDirection;
+  int zoneDistance;
 
-  mVeh.gVehicleSpeed = (int)@Chassis::vehicleSpeed;
-  mVeh.gDriveState = (int)@Chassis::driveState;
+  speed = clampRange((int)@Chassis::vehicleSpeed, 0, 255);
+  driveState = clampRange((int)@Chassis::driveState, 0, 3);
+  steeringInput = clampRange((int)@Chassis::steeringInput, 0, 1);
+  roadZone = clampRange((int)@Infotainment::roadZone, 0, 3);
+  navDirection = clampRange((int)@Infotainment::navDirection, 0, 3);
+  zoneDistance = clampRange((int)@Infotainment::zoneDistance, 0, 255);
+
+  mVeh.gVehicleSpeed = speed;
+  mVeh.gDriveState = driveState;
   output(mVeh);
 
-  mStr.SteeringInput = (int)@Chassis::steeringInput;
+  mStr.SteeringInput = steeringInput;
   output(mStr);
 
-  mNav.gRoadZone = (int)@Infotainment::roadZone;
-  mNav.gNavDirection = (int)@Infotainment::navDirection;
-  mNav.gZoneDistance = (int)@Infotainment::zoneDistance;
+  mNav.gRoadZone = roadZone;
+  mNav.gNavDirection = navDirection;
+  mNav.gZoneDistance = zoneDistance;
   output(mNav);
 
   setTimer(tInput100, 100);
@@ -138,6 +164,10 @@ on sysvar Test::testScenario
     cancelTimer(tDemoStep);
     applyScenarioPreset(scenarioId);
     write("[SIL_TEST_CTRL] apply scenario=%d", scenarioId);
+  }
+  else
+  {
+    write("[SIL_TEST_CTRL] ignore invalid scenario=%d", scenarioId);
   }
 }
 

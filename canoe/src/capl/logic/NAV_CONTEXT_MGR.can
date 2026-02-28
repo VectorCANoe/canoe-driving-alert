@@ -17,12 +17,10 @@ on timer tNavCycle
 {
   int roadZone;
   int navDirection;
-  int zoneDistance;
   int baseZoneContext;
 
   roadZone = (int)@Infotainment::roadZone;
   navDirection = (int)@Infotainment::navDirection;
-  zoneDistance = (int)@Infotainment::zoneDistance;
 
   baseZoneContext = 0;
   if (roadZone == 1)
