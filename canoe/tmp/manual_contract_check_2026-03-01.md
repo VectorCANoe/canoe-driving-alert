@@ -1,4 +1,4 @@
-# Manual Contract Check (2026-03-01)
+﻿# Manual Contract Check (2026-03-01)
 
 ## Scope
 - CAN DBC: `chassis_can.dbc`, `powertrain_can.dbc`, `body_can.dbc`, `infotainment_can.dbc`, `test_can.dbc`
@@ -59,7 +59,7 @@
 ## Immediate Action Recommendation
 
 1. Keep runtime profile strict:
-- Use split canonical DBC runtime profile (`project.cfg`) as default.
+- Use split canonical DBC runtime profile (`CAN_500kBaud_1ch_split.cfg`) as default.
 - Keep `CAN_500kBaud_1ch.cfg` + `emergency_system.dbc` as legacy backup profile only.
 
 2. Resolve one-source ID map:
@@ -68,3 +68,4 @@
 3. Re-run startup gate:
 - If running legacy cfg, either disable IL profile for unsupported Tx ownership or switch to split runtime profile.
 - Then proceed to scenario validation.
+
