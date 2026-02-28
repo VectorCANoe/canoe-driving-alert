@@ -87,6 +87,43 @@ BO_ 778 frmPowertrainHealthMsg: 2 DOMAIN_GW_ROUTER
  SG_ PtDiagState     : 8|4@1+ (1,0) [0|15] "" SIL_TEST_CTRL
  SG_ PtFailCode      : 12|4@1+ (1,0) [0|15] "" SIL_TEST_CTRL
 
+BO_ 779 frmEngineTorqueMsg: 2 ENGINE_CTRL
+ SG_ EngineTorqueAct : 0|16@1+ (1,0) [0|65535] "Nm" DOMAIN_GW_ROUTER
+
+BO_ 780 frmEngineLoadMsg: 1 ENGINE_CTRL
+ SG_ EngineLoad      : 0|8@1+ (1,0) [0|100] "%" DOMAIN_GW_ROUTER
+
+BO_ 781 frmTransShiftStateMsg: 2 TRANSMISSION_CTRL
+ SG_ ShiftState      : 0|3@1+ (1,0) [0|7] "" DOMAIN_GW_ROUTER
+ SG_ ShiftTargetGear : 3|3@1+ (1,0) [0|7] "" DOMAIN_GW_ROUTER
+ SG_ Reserved0       : 6|2@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ ShiftSlip       : 8|8@1+ (1,0) [0|255] "" DOMAIN_GW_ROUTER
+
+BO_ 782 frmPtDiagReqMsg: 3 SIL_TEST_CTRL
+ SG_ PtDiagServiceId : 0|8@1+ (1,0) [0|255] "" DOMAIN_GW_ROUTER
+ SG_ PtDiagDidHigh   : 8|8@1+ (1,0) [0|255] "" DOMAIN_GW_ROUTER
+ SG_ PtDiagDidLow    : 16|8@1+ (1,0) [0|255] "" DOMAIN_GW_ROUTER
+
+BO_ 783 frmPtDiagResMsg: 3 DOMAIN_GW_ROUTER
+ SG_ PtDiagRespCode  : 0|8@1+ (1,0) [0|255] "" SIL_TEST_CTRL
+ SG_ PtDiagData0     : 8|8@1+ (1,0) [0|255] "" SIL_TEST_CTRL
+ SG_ PtDiagData1     : 16|8@1+ (1,0) [0|255] "" SIL_TEST_CTRL
+
+BO_ 784 frmThermalMgmtStateMsg: 2 ENGINE_CTRL
+ SG_ ThermalMode     : 0|3@1+ (1,0) [0|7] "" DOMAIN_GW_ROUTER
+ SG_ FanDuty         : 3|5@1+ (1,0) [0|31] "" DOMAIN_GW_ROUTER
+ SG_ CoolantTarget   : 8|8@1+ (1,0) [0|255] "degC" DOMAIN_GW_ROUTER
+
+BO_ 785 frmEnergyFlowStateMsg: 2 DOMAIN_GW_ROUTER
+ SG_ EnergyFlowMode  : 0|3@1+ (1,0) [0|7] "" ENGINE_CTRL,TRANSMISSION_CTRL
+ SG_ RegenLevel      : 3|5@1+ (1,0) [0|31] "" ENGINE_CTRL,TRANSMISSION_CTRL
+ SG_ PowerBalance    : 8|8@1+ (1,0) [0|255] "" ENGINE_CTRL,TRANSMISSION_CTRL
+
+BO_ 786 frmPowertrainCtrlAuthMsg: 1 DOMAIN_GW_ROUTER
+ SG_ CtrlAuthLevel   : 0|3@1+ (1,0) [0|7] "" ENGINE_CTRL,TRANSMISSION_CTRL
+ SG_ CtrlAuthSource  : 3|3@1+ (1,0) [0|7] "" ENGINE_CTRL,TRANSMISSION_CTRL
+ SG_ Reserved0       : 6|2@1+ (1,0) [0|0] "" Vector__XXX
+
 CM_ BO_ 768 "Powertrain baseline: ignition state and engine state.";
 CM_ BO_ 769 "Powertrain baseline: gear input and gear state.";
 CM_ BO_ 770 "Powertrain baseline: domain routing policy and boundary status.";
@@ -98,6 +135,14 @@ CM_ BO_ 775 "Powertrain baseline: drive mode and powertrain state.";
 CM_ BO_ 776 "Powertrain baseline: torque and speed limits.";
 CM_ BO_ 777 "Powertrain baseline: cruise state, gap, and set speed.";
 CM_ BO_ 778 "Powertrain health/diagnostic state.";
+CM_ BO_ 779 "Comm_204: engine torque extension.";
+CM_ BO_ 780 "Comm_204: engine load extension.";
+CM_ BO_ 781 "Comm_204: transmission shift state extension.";
+CM_ BO_ 782 "Comm_205: powertrain diagnostic request.";
+CM_ BO_ 783 "Comm_205: powertrain diagnostic response.";
+CM_ BO_ 784 "Comm_204: thermal management state extension.";
+CM_ BO_ 785 "Comm_204: energy flow state extension.";
+CM_ BO_ 786 "Comm_204: powertrain control authorization extension.";
 
 BA_DEF_ BO_ "GenMsgCycleTime" INT 0 10000;
 BA_DEF_DEF_ "GenMsgCycleTime" 0;
@@ -112,6 +157,14 @@ BA_ "GenMsgCycleTime" BO_ 775 100;
 BA_ "GenMsgCycleTime" BO_ 776 100;
 BA_ "GenMsgCycleTime" BO_ 777 100;
 BA_ "GenMsgCycleTime" BO_ 778 100;
+BA_ "GenMsgCycleTime" BO_ 779 100;
+BA_ "GenMsgCycleTime" BO_ 780 100;
+BA_ "GenMsgCycleTime" BO_ 781 100;
+BA_ "GenMsgCycleTime" BO_ 782 0;
+BA_ "GenMsgCycleTime" BO_ 783 0;
+BA_ "GenMsgCycleTime" BO_ 784 100;
+BA_ "GenMsgCycleTime" BO_ 785 100;
+BA_ "GenMsgCycleTime" BO_ 786 100;
 
 VAL_ 768 IgnitionState
   0 "Off"

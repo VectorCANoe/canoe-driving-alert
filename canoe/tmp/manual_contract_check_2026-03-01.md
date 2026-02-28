@@ -38,11 +38,20 @@
   - `frmEngineSpeedTempMsg` = `0x303`
   - `frmBaseTestResultMsg` = `0x231`
 - Manual duplicate audit:
-  - Active messages: `44`
+  - Active messages: `94`
   - Duplicate IDs: `0`
   - Duplicate names: `0`
 
-5. Ethernet contract SoT statement
+5. Document vs DBC full synchronization (0302 + 0303 frm(ID) references)
+- Result: PASS
+- Auto-assisted manual check summary:
+  - `0302/0303` unique `frm(ID)` references: `81`
+  - Missing in split DBC set: `0`
+  - ID mismatch vs split DBC set: `0`
+- Note:
+  - Split DBC set contains additional defined frames (`13`) not explicitly enumerated in current 0302/0303 `frm(ID)` list (design-reserved/extended internal frames).
+
+6. Ethernet contract SoT statement
 - Result: FIXED
 - `ETH_INTERFACE_CONTRACT.md` is present and used as Ethernet SoT.
 - CAN SoT is split to `chassis/body/infotainment/powertrain/test` DBC set.

@@ -1,13 +1,13 @@
 # Mentor Priority Gate Report
 
-- Generated: 2026-03-01 04:24:35
+- Generated: 2026-03-01 04:37:57
 - Scope: `canoe/network/dbc` active split set validation
 - Backup DBC (`emergency_system.dbc`) present: YES
 
 ## Gate Summary
 
 - Result: PASS
-- Active message count: 44
+- Active message count: 94
 
 | Check | Result |
 |---|---|
