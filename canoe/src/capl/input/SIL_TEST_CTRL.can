@@ -82,6 +82,20 @@ void applyScenarioPreset(int scenarioId)
     @V2X::eta = 5;
     @V2X::sourceId = 33;
   }
+  else if (scenarioId == 7)
+  {
+    /* Guide zone left */
+    @Infotainment::roadZone = 3;
+    @Infotainment::navDirection = 1;
+    @Chassis::vehicleSpeed = 35;
+  }
+  else if (scenarioId == 8)
+  {
+    /* Guide zone right */
+    @Infotainment::roadZone = 3;
+    @Infotainment::navDirection = 2;
+    @Chassis::vehicleSpeed = 35;
+  }
 }
 
 void scheduleScenarioEvaluation(int scenarioId)
@@ -97,6 +111,10 @@ void scheduleScenarioEvaluation(int scenarioId)
   {
     evalDelayMs = 1300;
   }
+  else if (scenarioId == 7 || scenarioId == 8)
+  {
+    evalDelayMs = 700;
+  }
   setTimer(tScenarioEval, evalDelayMs);
 }
 
@@ -107,12 +125,16 @@ void evaluateScenarioResult()
   int type;
   int code;
   int timeoutClear;
+  int ambientPattern;
+  int duplicatePopupGuard;
 
   result = 0;
   level = (int)@Core::selectedAlertLevel;
   type = (int)@Core::selectedAlertType;
   code = (int)@Cluster::warningTextCode;
   timeoutClear = ((int)@Core::timeoutClear == 1) ? 1 : 0;
+  ambientPattern = (int)@Body::ambientPattern;
+  duplicatePopupGuard = (int)@CoreState::duplicatePopupGuard;
 
   if (gCurrentScenarioId == 1)
   {
@@ -128,15 +150,23 @@ void evaluateScenarioResult()
   }
   else if (gCurrentScenarioId == 4)
   {
-    result = (level == 6 && type == 1 && code >= 100 && code < 200) ? 1 : 0;
+    result = (level == 6 && type == 1 && code == 101 && duplicatePopupGuard > 0) ? 1 : 0;
   }
   else if (gCurrentScenarioId == 5)
   {
-    result = (level == 7 && type == 2 && code >= 200 && code < 300) ? 1 : 0;
+    result = (level == 7 && type == 2 && code == 202 && duplicatePopupGuard > 0) ? 1 : 0;
   }
   else if (gCurrentScenarioId == 6)
   {
-    result = (timeoutClear == 1 || level == 0) ? 1 : 0;
+    result = (timeoutClear == 1 && level == 0 && code == 0) ? 1 : 0;
+  }
+  else if (gCurrentScenarioId == 7)
+  {
+    result = (level == 2 && type == 5 && ambientPattern == 2 && code == 31) ? 1 : 0;
+  }
+  else if (gCurrentScenarioId == 8)
+  {
+    result = (level == 2 && type == 6 && ambientPattern == 3 && code == 32) ? 1 : 0;
   }
   else
   {
@@ -149,7 +179,7 @@ void evaluateScenarioResult()
 void runDemoStep()
 {
   gDemoStepIndex = gDemoStepIndex + 1;
-  if (gDemoStepIndex > 6)
+  if (gDemoStepIndex > 8)
   {
     gDemoStepIndex = 1;
   }
@@ -229,7 +259,7 @@ on sysvar Test::testScenario
     cancelTimer(tDemoStep);
     write("[SIL_TEST_CTRL] auto demo stop");
   }
-  else if (scenarioId >= 1 && scenarioId <= 6)
+  else if (scenarioId >= 1 && scenarioId <= 8)
   {
     gDemoRunning = 0;
     cancelTimer(tDemoStep);
