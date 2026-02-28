@@ -3,9 +3,9 @@
 본 폴더는 문서(`driving-situation-alert`)와 분리된 구현 전용 영역입니다.
 
 ## 실행 기준
-- CANoe 실행 cfg: `project/cfg/CAN_500kBaud_1ch.cfg`
+- CANoe 실행 cfg: `cfg/CAN_500kBaud_1ch.cfg`
 - 시스템 변수: `project/sysvars/project.sysvars`
-- CAN DB: `network/dbc/emergency_system.dbc`
+- CAN DB: `databases/emergency_system.dbc`
 - 빠른 파일 찾기: `FILE_INDEX.md`
 
 ## 소스 구조 (BP)

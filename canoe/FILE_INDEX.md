@@ -4,8 +4,8 @@ Quick index for the `canoe` folder.
 
 ## 1) Most important files
 
-- CAN DBC: `C:\Users\이준영\CANoe-IVI-OTA\canoe\network\dbc\emergency_system.dbc`
-- CANoe runtime config: `C:\Users\이준영\CANoe-IVI-OTA\canoe\project\cfg\CAN_500kBaud_1ch.cfg`
+- CAN DBC: `C:\Users\이준영\CANoe-IVI-OTA\canoe\databases\emergency_system.dbc`
+- CANoe runtime config: `C:\Users\이준영\CANoe-IVI-OTA\canoe\cfg\CAN_500kBaud_1ch.cfg`
 - System variables: `C:\Users\이준영\CANoe-IVI-OTA\canoe\project\sysvars\project.sysvars`
 
 ## 2) CAPL source

@@ -9,7 +9,7 @@ Utility scripts for CANoe project maintenance.
 
 ## `generate_dbc_from_docs.py`
 - Purpose: generate baseline/split DBC drafts from latest 0303/0304 docs.
-- Output path: `canoe/network/dbc/`
+- Output path: `canoe/databases/`
 - Limitation: parser assumes stable Markdown headings/table formats.
 - Required practice: always compare generated DBC with current document intent and CAPL/runtime usage.
 

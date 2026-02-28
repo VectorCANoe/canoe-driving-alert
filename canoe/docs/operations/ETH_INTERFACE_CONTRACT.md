@@ -11,7 +11,7 @@
 ## 1. 紐⑹쟻
 
 - 蹂?臾몄꽌??`E100/E200, 0x510/0x511/0x512` Ethernet 硫붿떆吏???⑥씪 ?먮낯(Single Source of Truth)?대떎.
-- CAN ?꾨젅???먮낯? `canoe/network/dbc/{chassis_can.dbc, body_can.dbc, infotainment_can.dbc, powertrain_can.dbc, test_can.dbc}`媛 ?대떦?섎ŉ, Ethernet ?꾨젅?꾩? 蹂?臾몄꽌媛 ?대떦?쒕떎.
+- CAN ?꾨젅???먮낯? `canoe/databases/{chassis_can.dbc, body_can.dbc, infotainment_can.dbc, powertrain_can.dbc, test_can.dbc}`媛 ?대떦?섎ŉ, Ethernet ?꾨젅?꾩? 蹂?臾몄꽌媛 ?대떦?쒕떎.
 
 ---
 
@@ -51,5 +51,4 @@
 | 踰꾩쟾 | ?좎쭨 | 蹂寃??ы빆 |
 |---|---|---|
 | 1.0 | 2026-02-28 | Ethernet 怨꾩빟 ?먮낯 臾몄꽌 ?좉퇋 ?앹꽦(0x510/0x511/0x512/0xE100/0xE200) |
-
 

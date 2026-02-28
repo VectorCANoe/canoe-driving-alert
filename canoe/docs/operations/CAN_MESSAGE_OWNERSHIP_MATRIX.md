@@ -1,6 +1,6 @@
 # CAN Message Ownership Matrix
 
-- Generated: 2026-03-01 04:40:35
+- Generated: 2026-03-01 05:30:15
 - Scope: Active split CAN DBC set only
 - Rule: Each message must have one clear sender in active runtime profile.
 

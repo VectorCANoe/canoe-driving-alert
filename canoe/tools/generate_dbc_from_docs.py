@@ -6,7 +6,7 @@ Scope:
 - Reads read-only source docs:
   - driving-situation-alert/0303_Communication_Specification.md
   - driving-situation-alert/0304_System_Variables.md
-- Writes generated DBC files under canoe/network/dbc only.
+- Writes generated DBC files under canoe/databases only.
 
 IMPORTANT FOR AI AGENTS AND AUTOMATION:
 - This script is a helper, NOT an official source of truth.
@@ -29,7 +29,7 @@ from typing import Dict, Iterable, List
 
 DOC_0303 = "driving-situation-alert/0303_Communication_Specification.md"
 DOC_0304 = "driving-situation-alert/0304_System_Variables.md"
-DEFAULT_OUT_DIR = "canoe/network/dbc"
+DEFAULT_OUT_DIR = "canoe/databases"
 
 COMM_TABLE_HEADING = "## 통신 명세 표 (공식 표준 양식)"
 ALIAS_TABLE_HEADING = "## DBC Signal Alias 매핑 (OEM 관례 대응)"

@@ -2,16 +2,16 @@
 
 ## Scope
 - Checked files:
-  - `canoe/network/dbc/emergency_system.dbc`
-  - `canoe/network/dbc/emergency_system_chassis.dbc`
-  - `canoe/network/dbc/emergency_system_body.dbc`
-  - `canoe/network/dbc/emergency_system_infotainment.dbc`
-  - `canoe/network/dbc/emergency_system_powertrain.dbc`
-  - `canoe/network/dbc/chassis_can.dbc`
-  - `canoe/network/dbc/body_can.dbc`
-  - `canoe/network/dbc/infotainment_can.dbc`
-  - `canoe/network/dbc/powertrain_can.dbc`
-  - `canoe/network/dbc/test_can.dbc`
+  - `canoe/databases/emergency_system.dbc`
+  - `canoe/databases/emergency_system_chassis.dbc`
+  - `canoe/databases/emergency_system_body.dbc`
+  - `canoe/databases/emergency_system_infotainment.dbc`
+  - `canoe/databases/emergency_system_powertrain.dbc`
+  - `canoe/databases/chassis_can.dbc`
+  - `canoe/databases/body_can.dbc`
+  - `canoe/databases/infotainment_can.dbc`
+  - `canoe/databases/powertrain_can.dbc`
+  - `canoe/databases/test_can.dbc`
 - Reference-only docs:
   - `driving-situation-alert/tmp/Mentoring_08_Action_Plan.md`
   - `docs/meeting-notes/MET_30_2026.02.28.txt`

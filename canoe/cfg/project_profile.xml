@@ -18,27 +18,27 @@
 
   <Databases>
     <Database>
-      <Path>..\..\network\dbc\chassis_can.dbc</Path>
+      <Path>..\databases\chassis_can.dbc</Path>
       <Type>CAN</Type>
       <Enabled>1</Enabled>
     </Database>
     <Database>
-      <Path>..\..\network\dbc\body_can.dbc</Path>
+      <Path>..\databases\body_can.dbc</Path>
       <Type>CAN</Type>
       <Enabled>1</Enabled>
     </Database>
     <Database>
-      <Path>..\..\network\dbc\infotainment_can.dbc</Path>
+      <Path>..\databases\infotainment_can.dbc</Path>
       <Type>CAN</Type>
       <Enabled>1</Enabled>
     </Database>
     <Database>
-      <Path>..\..\network\dbc\powertrain_can.dbc</Path>
+      <Path>..\databases\powertrain_can.dbc</Path>
       <Type>CAN</Type>
       <Enabled>1</Enabled>
     </Database>
     <Database>
-      <Path>..\..\network\dbc\test_can.dbc</Path>
+      <Path>..\databases\test_can.dbc</Path>
       <Type>CAN</Type>
       <Enabled>1</Enabled>
     </Database>
@@ -66,97 +66,97 @@
         <Name>SIL_TEST_CTRL</Name>
         <Network>CAN1</Network>
         <Type>Simulated</Type>
-        <CAPLFile>..\..\src\capl\input\SIL_TEST_CTRL.can</CAPLFile>
+        <CAPLFile>..\src\capl\input\SIL_TEST_CTRL.can</CAPLFile>
         <Description>SIL test stimulus and test result publisher</Description>
       </Node>
       <Node>
         <Name>CHASSIS_GW</Name>
         <Network>CAN1</Network>
         <Type>Simulated</Type>
-        <CAPLFile>..\..\src\capl\input\CHASSIS_GW.can</CAPLFile>
+        <CAPLFile>..\src\capl\input\CHASSIS_GW.can</CAPLFile>
         <Description>CAN 0x100/0x101 to UDP gateway</Description>
       </Node>
       <Node>
         <Name>INFOTAINMENT_GW</Name>
         <Network>CAN1</Network>
         <Type>Simulated</Type>
-        <CAPLFile>..\..\src\capl\input\INFOTAINMENT_GW.can</CAPLFile>
+        <CAPLFile>..\src\capl\input\INFOTAINMENT_GW.can</CAPLFile>
         <Description>CAN 0x110 to UDP gateway</Description>
       </Node>
       <Node>
         <Name>ADAS_WARN_CTRL</Name>
         <Network>CAN1</Network>
         <Type>Simulated</Type>
-        <CAPLFile>..\..\src\capl\logic\ADAS_WARN_CTRL.can</CAPLFile>
+        <CAPLFile>..\src\capl\logic\ADAS_WARN_CTRL.can</CAPLFile>
         <Description>ADAS warning-state evaluator</Description>
       </Node>
       <Node>
         <Name>NAV_CONTEXT_MGR</Name>
         <Network>CAN1</Network>
         <Type>Simulated</Type>
-        <CAPLFile>..\..\src\capl\logic\NAV_CONTEXT_MGR.can</CAPLFile>
+        <CAPLFile>..\src\capl\logic\NAV_CONTEXT_MGR.can</CAPLFile>
         <Description>Navigation context manager</Description>
       </Node>
       <Node>
         <Name>EMS_POLICE_TX</Name>
         <Network>CAN1</Network>
         <Type>Simulated</Type>
-        <CAPLFile>..\..\src\capl\ems\EMS_POLICE_TX.can</CAPLFile>
+        <CAPLFile>..\src\capl\ems\EMS_POLICE_TX.can</CAPLFile>
         <Description>Police emergency UDP transmitter</Description>
       </Node>
       <Node>
         <Name>EMS_AMB_TX</Name>
         <Network>CAN1</Network>
         <Type>Simulated</Type>
-        <CAPLFile>..\..\src\capl\ems\EMS_AMB_TX.can</CAPLFile>
+        <CAPLFile>..\src\capl\ems\EMS_AMB_TX.can</CAPLFile>
         <Description>Ambulance emergency UDP transmitter</Description>
       </Node>
       <Node>
         <Name>EMS_ALERT_RX</Name>
         <Network>CAN1</Network>
         <Type>Simulated</Type>
-        <CAPLFile>..\..\src\capl\logic\EMS_ALERT_RX.can</CAPLFile>
+        <CAPLFile>..\src\capl\logic\EMS_ALERT_RX.can</CAPLFile>
         <Description>Emergency receiver with 1000ms watchdog</Description>
       </Node>
       <Node>
         <Name>WARN_ARB_MGR</Name>
         <Network>CAN1</Network>
         <Type>Simulated</Type>
-        <CAPLFile>..\..\src\capl\logic\WARN_ARB_MGR.can</CAPLFile>
+        <CAPLFile>..\src\capl\logic\WARN_ARB_MGR.can</CAPLFile>
         <Description>Arbitration manager and E200 publisher</Description>
       </Node>
       <Node>
         <Name>BODY_GW</Name>
         <Network>CAN1</Network>
         <Type>Simulated</Type>
-        <CAPLFile>..\..\src\capl\output\BODY_GW.can</CAPLFile>
+        <CAPLFile>..\src\capl\output\BODY_GW.can</CAPLFile>
         <Description>E200 UDP to CAN 0x210 gateway</Description>
       </Node>
       <Node>
         <Name>IVI_GW</Name>
         <Network>CAN1</Network>
         <Type>Simulated</Type>
-        <CAPLFile>..\..\src\capl\output\IVI_GW.can</CAPLFile>
+        <CAPLFile>..\src\capl\output\IVI_GW.can</CAPLFile>
         <Description>E200 UDP to CAN 0x220 gateway</Description>
       </Node>
       <Node>
         <Name>BCM_AMBIENT_CTRL</Name>
         <Network>CAN1</Network>
         <Type>Simulated</Type>
-        <CAPLFile>..\..\src\capl\output\BCM_AMBIENT_CTRL.can</CAPLFile>
+        <CAPLFile>..\src\capl\output\BCM_AMBIENT_CTRL.can</CAPLFile>
         <Description>Ambient output consumer (CAN 0x210)</Description>
       </Node>
       <Node>
         <Name>CLU_HMI_CTRL</Name>
         <Network>CAN1</Network>
         <Type>Simulated</Type>
-        <CAPLFile>..\..\src\capl\output\CLU_HMI_CTRL.can</CAPLFile>
+        <CAPLFile>..\src\capl\output\CLU_HMI_CTRL.can</CAPLFile>
         <Description>Cluster output consumer (CAN 0x220)</Description>
       </Node>
     </Nodes>
   </Simulation>
 
   <SystemVariablesFile>
-    <Path>..\sysvars\project.sysvars</Path>
+    <Path>..\project\sysvars\project.sysvars</Path>
   </SystemVariablesFile>
 </CANoeConfiguration>

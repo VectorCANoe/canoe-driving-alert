@@ -185,7 +185,7 @@ def build_gate_report(
     lines.append("# Mentor Priority Gate Report")
     lines.append("")
     lines.append(f"- Generated: {dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-    lines.append("- Scope: `canoe/network/dbc` active split set validation")
+    lines.append("- Scope: `canoe/databases` active split set validation")
     lines.append(
         f"- Backup DBC (`{DBC_BACKUP_FILE}`) present: {'YES' if has_backup_dbc else 'NO'}"
     )
@@ -264,7 +264,7 @@ def main() -> int:
     args = parser.parse_args()
 
     root = Path(args.repo_root).resolve()
-    dbc_dir = root / "canoe/network/dbc"
+    dbc_dir = root / "canoe/databases"
     missing_dbc = [f for f in DBC_ACTIVE_FILES if not (dbc_dir / f).exists()]
 
     all_messages: List[Dict[str, object]] = []

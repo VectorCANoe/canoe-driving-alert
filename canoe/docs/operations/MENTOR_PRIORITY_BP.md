@@ -22,17 +22,17 @@ This baseline applies mentor feedback first and keeps implementation decisions p
 ## 2. Non-Negotiable Rules
 
 1. CAN SoT is split DBC only:
-- `canoe/network/dbc/chassis_can.dbc`
-- `canoe/network/dbc/powertrain_can.dbc`
-- `canoe/network/dbc/body_can.dbc`
-- `canoe/network/dbc/infotainment_can.dbc`
-- `canoe/network/dbc/test_can.dbc`
+- `canoe/databases/chassis_can.dbc`
+- `canoe/databases/powertrain_can.dbc`
+- `canoe/databases/body_can.dbc`
+- `canoe/databases/infotainment_can.dbc`
+- `canoe/databases/test_can.dbc`
 
 2. Ethernet SoT is contract document only:
 - `canoe/docs/operations/ETH_INTERFACE_CONTRACT.md`
 
 3. Backup policy:
-- `canoe/network/dbc/emergency_system.dbc` is backup compatibility artifact.
+- `canoe/databases/emergency_system.dbc` is backup compatibility artifact.
 - It must not replace split DBC SoT in design documents.
 
 4. Ownership policy:
@@ -94,5 +94,4 @@ The following gates are mandatory before calling a build "mentor-priority compli
 - Gate report:
   - `canoe/tmp/mentor_priority_gate_report.md`
 - Optional compatibility backup:
-  - `canoe/network/dbc/emergency_system.dbc`
-
+  - `canoe/databases/emergency_system.dbc`

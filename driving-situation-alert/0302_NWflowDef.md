@@ -23,7 +23,7 @@
 - 0304에 아직 등재되지 않은 Vehicle Baseline 확장 신호는 DBC 원본 신호명(`AccelPedal`, `DriveMode` 등)으로 표기한다.
 - 옵션1 아키텍처를 고정한다: `중앙 경고코어 + Ethernet 백본(ETH_SWITCH) + 도메인 게이트웨이 + 도메인 CAN`.
 - 상세 추적 정보(`Flow/Func/Req/주기/활성/해제`)는 하단 표에 분리한다.
-- CAN 신호 원본은 계층 분리로 관리한다: 도메인 프로파일은 `canoe/network/dbc/chassis_can.dbc`, `canoe/network/dbc/powertrain_can.dbc`, `canoe/network/dbc/body_can.dbc`, `canoe/network/dbc/infotainment_can.dbc`, `canoe/network/dbc/test_can.dbc`를 사용하고, Ethernet 프로파일은 `canoe/docs/operations/ETH_INTERFACE_CONTRACT.md`를 사용한다.
+- CAN 신호 원본은 계층 분리로 관리한다: 도메인 프로파일은 `canoe/databases/chassis_can.dbc`, `canoe/databases/powertrain_can.dbc`, `canoe/databases/body_can.dbc`, `canoe/databases/infotainment_can.dbc`, `canoe/databases/test_can.dbc`를 사용하고, Ethernet 프로파일은 `canoe/docs/operations/ETH_INTERFACE_CONTRACT.md`를 사용한다.
 - 검증 범위는 CANoe SIL, CAN + Ethernet(UDP)만 사용한다.
 - OTA/UDS/DoIP 관련 플로우는 본 문서 범위에서 제외한다.
 - 제출 전 현대/기아 및 OEM 기준으로 설명/별칭은 정리하되, Flow/Comm/ID/signal 식별자는 SoT 기준으로 고정 유지한다.
@@ -290,12 +290,12 @@
 
 | 계층 | 적용 Flow ID | 원본 파일(SoT) | 유지 규칙 |
 |---|---|---|---|
-| Core CAN Profile | Flow_001, Flow_002, Flow_003(CAN), Flow_007(CAN 0x210), Flow_008(CAN 0x220), Flow_009(CAN 0x230) | `canoe/network/dbc/chassis_can.dbc` + `canoe/network/dbc/infotainment_can.dbc` + `canoe/network/dbc/body_can.dbc` + `canoe/network/dbc/test_can.dbc` | 상단 공식표와 동일 ID/Signal 유지 |
+| Core CAN Profile | Flow_001, Flow_002, Flow_003(CAN), Flow_007(CAN 0x210), Flow_008(CAN 0x220), Flow_009(CAN 0x230) | `canoe/databases/chassis_can.dbc` + `canoe/databases/infotainment_can.dbc` + `canoe/databases/body_can.dbc` + `canoe/databases/test_can.dbc` | 상단 공식표와 동일 ID/Signal 유지 |
 | Core Ethernet Profile | Flow_001~Flow_008(Ethernet 구간) | `canoe/docs/operations/ETH_INTERFACE_CONTRACT.md` | E100/E200, 0x510/0x511/0x512 계약 우선 |
-| Chassis Domain Profile | Flow_102, Flow_106(일부), Flow_105(헬스 연계), Flow_201 | `canoe/network/dbc/chassis_can.dbc` | 0x100~0x121, 0x230~0x232 범위 준수 |
-| Powertrain Domain Profile | Flow_101, Flow_105, Flow_204 | `canoe/network/dbc/powertrain_can.dbc` | 0x300~0x312 범위 준수 |
-| Body Domain Profile | Flow_103, Flow_105, Flow_202 | `canoe/network/dbc/body_can.dbc` | 0x210~0x219, 0x240~0x24D 범위 준수 |
-| Infotainment Domain Profile | Flow_104, Flow_105, Flow_203, Flow_205 | `canoe/network/dbc/infotainment_can.dbc` | 0x110, 0x220~0x228, 0x260~0x26D 범위 준수 |
+| Chassis Domain Profile | Flow_102, Flow_106(일부), Flow_105(헬스 연계), Flow_201 | `canoe/databases/chassis_can.dbc` | 0x100~0x121, 0x230~0x232 범위 준수 |
+| Powertrain Domain Profile | Flow_101, Flow_105, Flow_204 | `canoe/databases/powertrain_can.dbc` | 0x300~0x312 범위 준수 |
+| Body Domain Profile | Flow_103, Flow_105, Flow_202 | `canoe/databases/body_can.dbc` | 0x210~0x219, 0x240~0x24D 범위 준수 |
+| Infotainment Domain Profile | Flow_104, Flow_105, Flow_203, Flow_205 | `canoe/databases/infotainment_can.dbc` | 0x110, 0x220~0x228, 0x260~0x26D 범위 준수 |
 
 ---
 
@@ -342,11 +342,11 @@
 
 | Domain Network | Gateway(경계 노드) | 대상 ECU/노드 | DBC 파일(정의) | ID 범위 | 연계 Flow |
 |---|---|---|---|---|---|
-| Core Integration CAN | CHASSIS_GW, INFOTAINMENT_GW, BODY_GW, IVI_GW | 경고 코어 체인 연계 노드 집합 | `canoe/network/dbc/chassis_can.dbc` + `canoe/network/dbc/infotainment_can.dbc` + `canoe/network/dbc/body_can.dbc` + `canoe/network/dbc/test_can.dbc` | 0x100/0x101/0x110/0x210/0x220/0x230 | Flow_001~Flow_009 |
-| Chassis CAN | CHASSIS_GW | ACCEL_CTRL, BRAKE_CTRL, STEERING_CTRL, ADAS_WARN_CTRL 입력 경로 | `canoe/network/dbc/chassis_can.dbc` | 0x100~0x121, 0x230~0x232 | Flow_001, Flow_002, Flow_102, Flow_106, Flow_201 |
-| Powertrain CAN | DOMAIN_GW_ROUTER | ENGINE_CTRL, TRANSMISSION_CTRL | `canoe/network/dbc/powertrain_can.dbc` | 0x300~0x312 | Flow_101, Flow_105, Flow_204 |
-| Body CAN | BODY_GW | BCM_AMBIENT_CTRL, HAZARD_CTRL, WINDOW_CTRL, DRIVER_STATE_CTRL | `canoe/network/dbc/body_can.dbc` | 0x210~0x219, 0x240~0x24D | Flow_007, Flow_103, Flow_105, Flow_202 |
-| Infotainment CAN | INFOTAINMENT_GW, IVI_GW | NAV_CONTEXT_MGR, CLU_HMI_CTRL, CLUSTER_BASE_CTRL | `canoe/network/dbc/infotainment_can.dbc` | 0x110, 0x220~0x228, 0x260~0x26D | Flow_003, Flow_008, Flow_104, Flow_105, Flow_203, Flow_205 |
+| Core Integration CAN | CHASSIS_GW, INFOTAINMENT_GW, BODY_GW, IVI_GW | 경고 코어 체인 연계 노드 집합 | `canoe/databases/chassis_can.dbc` + `canoe/databases/infotainment_can.dbc` + `canoe/databases/body_can.dbc` + `canoe/databases/test_can.dbc` | 0x100/0x101/0x110/0x210/0x220/0x230 | Flow_001~Flow_009 |
+| Chassis CAN | CHASSIS_GW | ACCEL_CTRL, BRAKE_CTRL, STEERING_CTRL, ADAS_WARN_CTRL 입력 경로 | `canoe/databases/chassis_can.dbc` | 0x100~0x121, 0x230~0x232 | Flow_001, Flow_002, Flow_102, Flow_106, Flow_201 |
+| Powertrain CAN | DOMAIN_GW_ROUTER | ENGINE_CTRL, TRANSMISSION_CTRL | `canoe/databases/powertrain_can.dbc` | 0x300~0x312 | Flow_101, Flow_105, Flow_204 |
+| Body CAN | BODY_GW | BCM_AMBIENT_CTRL, HAZARD_CTRL, WINDOW_CTRL, DRIVER_STATE_CTRL | `canoe/databases/body_can.dbc` | 0x210~0x219, 0x240~0x24D | Flow_007, Flow_103, Flow_105, Flow_202 |
+| Infotainment CAN | INFOTAINMENT_GW, IVI_GW | NAV_CONTEXT_MGR, CLU_HMI_CTRL, CLUSTER_BASE_CTRL | `canoe/databases/infotainment_can.dbc` | 0x110, 0x220~0x228, 0x260~0x26D | Flow_003, Flow_008, Flow_104, Flow_105, Flow_203, Flow_205 |
 | Ethernet UDP | ETH_SWITCH | EMS_POLICE_TX, EMS_AMB_TX, EMS_ALERT_RX, WARN_ARB_MGR, GW 집합 | `canoe/docs/operations/ETH_INTERFACE_CONTRACT.md` | 0x510/0x511/0x512/0xE100/0xE200 | Flow_004, Flow_005, Flow_006 |
 
 ---

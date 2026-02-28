@@ -1,7 +1,7 @@
 ﻿# DBC Split Report
 
 ## 1) Scope and Boundary
-- Source baseline: `canoe/network/dbc/emergency_system.dbc`
+- Source baseline: `canoe/databases/emergency_system.dbc`
 - References used (read-only):
   - `docs/meeting-notes/MET_30_2026.02.28.txt`
   - `driving-situation-alert/00~07` (no modification)
@@ -10,15 +10,15 @@
   - Report is written to `canoe/tmp/dbc_split_report.md`
 
 ## 2) Output Files (Domain Split)
-- `canoe/network/dbc/emergency_system_chassis.dbc`
-- `canoe/network/dbc/emergency_system_powertrain.dbc`
-- `canoe/network/dbc/emergency_system_body.dbc`
-- `canoe/network/dbc/emergency_system_infotainment.dbc`
-- `canoe/network/dbc/chassis_can.dbc`
-- `canoe/network/dbc/powertrain_can.dbc`
-- `canoe/network/dbc/body_can.dbc`
-- `canoe/network/dbc/infotainment_can.dbc`
-- `canoe/network/dbc/test_can.dbc`
+- `canoe/databases/emergency_system_chassis.dbc`
+- `canoe/databases/emergency_system_powertrain.dbc`
+- `canoe/databases/emergency_system_body.dbc`
+- `canoe/databases/emergency_system_infotainment.dbc`
+- `canoe/databases/chassis_can.dbc`
+- `canoe/databases/powertrain_can.dbc`
+- `canoe/databases/body_can.dbc`
+- `canoe/databases/infotainment_can.dbc`
+- `canoe/databases/test_can.dbc`
 
 ## 3) Frame Allocation Result (Expanded)
 | Domain DBC | Frame IDs | Message Count | Note |
@@ -64,4 +64,3 @@
 - ?듯빀 DBC(`emergency_system.dbc`)???숈씪?섍쾶 Vehicle Baseline ?몃뱶 ?몃깽?좊━瑜?`BU_`/`CM_ BU_`??諛섏쁺
 - ?꾩냽 ?뺥빀 二쇱쓽:
   - ?대쾲 ?뺤옣 ?꾨젅??0x102/0x103/0x211~0x213/0x221~0x222/0x300~0x302/0x231)? `0302/0303/0304` 臾몄꽌???ㅼ쓬 媛쒖젙?먯꽌 ?숈씪 ID/DLC/bit濡??숆린???꾩슂.
-

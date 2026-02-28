@@ -1,6 +1,6 @@
 ﻿# emergency_system.dbc 설명
 
-- 위치: `canoe/network/dbc/emergency_system.dbc`
+- 위치: `canoe/databases/emergency_system.dbc`
 - 역할: CAN 메시지/시그널 정의
 - 적용 범위: A안 SIL 시나리오(FZ_001~007)
 
