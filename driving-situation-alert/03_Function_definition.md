@@ -18,7 +18,7 @@
 - Panel은 테스트 자극/관측 인터페이스이며 기능 주체 ECU로 보지 않는다.
 - 기능 ID는 `Func_001~Func_043`으로 요구사항 ID와 1:1 대응한다.
 - 차량 기본 기능 확장 요구(`Req_101~Req_112`)는 `Func_101~Func_112`로 별도 관리한다.
-- DBC 단계에서 OEM 네이밍으로 변경 가능하며, 기능 ID/추적 ID는 유지한다.
+- 제출 전 현대/기아 및 OEM 기준 명칭으로 일괄 대체하되, 기능 ID/추적 ID는 유지한다.
 - 네트워크 구현은 옵션1 아키텍처를 고정 적용한다: `ETH_SWITCH + CHASSIS_GW/INFOTAINMENT_GW/BODY_GW/IVI_GW + 도메인 CAN`.
 
 ---

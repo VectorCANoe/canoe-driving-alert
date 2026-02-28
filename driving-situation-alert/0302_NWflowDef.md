@@ -24,6 +24,7 @@
 - CAN 신호 원본은 `canoe/network/dbc/emergency_system.dbc`, Ethernet 신호 원본은 `canoe/docs/operations/ETH_INTERFACE_CONTRACT.md`를 사용한다.
 - 검증 범위는 CANoe SIL, CAN + Ethernet(UDP)만 사용한다.
 - OTA/UDS/DoIP 관련 플로우는 본 문서 범위에서 제외한다.
+- 제출 전 현대/기아 및 OEM 기준으로 설명/별칭은 정리하되, Flow/Comm/ID/signal 식별자는 SoT 기준으로 고정 유지한다.
 
 ---
 

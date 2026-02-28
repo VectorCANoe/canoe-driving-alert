@@ -22,6 +22,7 @@
 - 통신 계층/버스 경로/구현 식별자(`*_CAN_IN`, `*_ETH_CORE`, `*_CAN_OUT`)는 하단 매핑 표와 추적표에서 관리한다.
 - 하단 추적표에서 `Var -> Comm -> Flow -> Func -> Req` 1:1 연결을 명시한다.
 - DBC 신호명이 OEM 관례(`gVehicleSpeed`, `gRoadZone`)를 사용하더라도, 상단 표준 Name은 기능 중심 이름(`vehicleSpeed`, `roadZone`)으로 유지한다.
+- 제출 전 현대/기아 및 OEM 기준 명칭으로 일괄 대체하되, Var ID/추적 ID 체계는 유지한다.
 
 ---
 

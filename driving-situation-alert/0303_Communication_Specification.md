@@ -24,6 +24,7 @@
 - CAN 통신 원본은 `canoe/network/dbc/emergency_system.dbc`, Ethernet 통신 원본은 `canoe/docs/operations/ETH_INTERFACE_CONTRACT.md`로 분리 관리한다.
 - 본 설계는 Ethernet 백본(`ETH_SWITCH`) + 도메인 게이트웨이(`CHASSIS_GW`, `INFOTAINMENT_GW`, `BODY_GW`, `IVI_GW`) + 도메인 CAN 분배 구조를 사용한다.
 - 하단 추적표는 `Comm ID -> Flow ID -> Func ID -> Req ID`를 유지한다.
+- 제출 전 현대/기아 및 OEM 기준으로 설명/별칭은 정리하되, Message ID/DLC/Bit Position/Signal 식별자는 SoT 기준으로 고정 유지한다.
 - 검증 범위는 CANoe SIL, CAN + Ethernet(UDP)로 고정한다.
 
 ---
