@@ -3,7 +3,7 @@
 **Document ID**: PROJ-0301-SFA
 **ISO 26262 Reference**: Part 4, Cl.7 (System Design)
 **ASPICE Reference**: SYS.3 (System Architectural Design)
-**Version**: 3.8
+**Version**: 3.9
 **Date**: 2026-02-28
 **Status**: Draft
 **Project Title**: 주행 상황 실시간 경고 시스템
@@ -24,6 +24,7 @@
 - 상세 추적 정보(Func/Req/실제 입출력)는 하단 표에 분리한다.
 - 옵션1 아키텍처를 고정한다: 중앙 경고코어 + Ethernet 백본(ETH_SWITCH) + 도메인 게이트웨이 + 도메인 CAN.
 - 변수명은 0304 표준 Name(`vehicleSpeed`, `roadZone`, `speedLimit`) 기준으로 작성하고, 코드 별칭(`g*`)은 구현 문서에서만 사용한다.
+- ECU 노드명은 ISO 기능 분리 원칙(센싱/판단/중재/출력/게이트웨이)을 따르고, OEM 레퍼런스는 `reference/dbc/level3_communication/reference/*.dbc`를 참고한다.
 
 ---
 
@@ -158,6 +159,20 @@
 
 ---
 
+## 5. ECU 명명 기준 (ISO/OEM 정합)
+
+| 분류 | 명명 규칙 | 현재 적용 예시 |
+|---|---|---|
+| Gateway | `*_GW` (도메인 경계 변환 역할) | CHASSIS_GW, INFOTAINMENT_GW, BODY_GW, IVI_GW |
+| Controller | `*_CTRL` (기능 판단/제어 역할) | ADAS_WARN_CTRL, BCM_AMBIENT_CTRL, CLU_HMI_CTRL |
+| Manager | `*_MGR` (중재/상태 관리 역할) | NAV_CONTEXT_MGR, WARN_ARB_MGR |
+| Emergency Tx/Rx | `EMS_*_TX`, `EMS_*_RX` (긴급 송수신 역할) | EMS_POLICE_TX, EMS_AMB_TX, EMS_ALERT_RX |
+| Test/SIL | `SIL_*` (검증 제어 역할) | SIL_TEST_CTRL |
+
+- 적용 원칙: 문서/코드/DBC에서 노드명은 동일 식별자를 유지하고, 역할 구분은 접미사(`GW/CTRL/MGR/TX/RX`)로 고정한다.
+
+---
+
 ## 개정 이력
 
 | 버전 | 날짜 | 변경 사항 |
@@ -172,3 +187,4 @@
 | 3.6 | 2026-02-26 | 0304 표준 변수명 기준으로 상세 표기 통일(`g*` 별칭 제거) |
 | 3.7 | 2026-02-28 | 03/0304 정합 기준으로 하단 상세표 입출력 변수를 재정렬(비정의 변수 제거, Core/State 변수명 통일) |
 | 3.8 | 2026-02-28 | 스쿨존 과속 판정 정합을 위해 NAV/ADAS 입력에 `speedLimit/speedLimitNorm`을 반영하고 Navigation Panel 입력 항목을 확장. |
+| 3.9 | 2026-02-28 | ISO/OEM 정합을 위한 ECU 명명 기준 섹션을 추가하고 노드 접미사 규칙(GW/CTRL/MGR/TX/RX)을 명문화. |

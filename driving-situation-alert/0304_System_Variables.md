@@ -3,7 +3,7 @@
 **Document ID**: PROJ-0304-SV
 **ISO 26262 Reference**: Part 6, Cl.7 (Software Architectural Design)
 **ASPICE Reference**: SWE.2 / SWE.3
-**Version**: 2.5
+**Version**: 2.6
 **Date**: 2026-02-28
 **Status**: Draft
 **Project Title**: 주행 상황 실시간 경고 시스템
@@ -21,6 +21,7 @@
 - 상단 표의 `Namespace`는 도메인명(`Chassis/Infotainment/V2X/Core/Body/Cluster/Test`)을 사용하고, `Name`은 순수 기능 변수명으로 유지한다.
 - 통신 계층/버스 경로/구현 식별자(`*_CAN_IN`, `*_ETH_CORE`, `*_CAN_OUT`)는 하단 매핑 표와 추적표에서 관리한다.
 - 하단 추적표에서 `Var -> Comm -> Flow -> Func -> Req` 1:1 연결을 명시한다.
+- DBC 신호명이 OEM 관례(`gVehicleSpeed`, `gRoadZone`)를 사용하더라도, 상단 표준 Name은 기능 중심 이름(`vehicleSpeed`, `roadZone`)으로 유지한다.
 
 ---
 
@@ -97,6 +98,22 @@
 | 27 | CoreState | lastEmergencyRxMs | lastEmergencyRxMs | CORE_STATE | EMS_ALERT_RX 내부 상태 |
 | 28 | CoreState | duplicatePopupGuard | duplicatePopupGuard | CORE_STATE | CLU_HMI_CTRL 내부 상태 |
 | 29 | CoreState | arbitrationSnapshotId | arbitrationSnapshotId | CORE_STATE | WARN_ARB_MGR 내부 상태 |
+
+---
+
+## DBC Signal Alias 매핑 (OEM 관례 대응)
+
+| 표준 Name(문서) | DBC Signal Name | 비고 |
+|---|---|---|
+| vehicleSpeed | gVehicleSpeed | CAN 입력 신호(0x100) |
+| driveState | gDriveState | CAN 입력 신호(0x100) |
+| roadZone | gRoadZone | CAN 입력 신호(0x110) |
+| navDirection | gNavDirection | CAN 입력 신호(0x110) |
+| zoneDistance | gZoneDistance | CAN 입력 신호(0x110) |
+| speedLimit | gSpeedLimit | CAN 입력 신호(0x110) |
+| steeringInput | SteeringInput | CAN 입력 신호(0x101) |
+
+- 기준: 문서 추적은 표준 Name으로 고정하고, DBC/코드 구현은 Alias 병기로 연결한다.
 
 ---
 
@@ -197,3 +214,4 @@
 | 2.3 | 2026-02-25 | 상단 공식표를 도메인 Namespace + 순수 Name 구조로 정리하고, 통신/구현 식별자는 하단 매핑/추적 표로 분리 |
 | 2.4 | 2026-02-28 | `timeoutClear` 생성 주체를 EMS_ALERT_RX로 명확화, `selectedAlertLevel/Type` Func/Req 범위표기를 명시 나열로 전환, `eta` 유효범위/invalid sentinel 규칙을 분리 명시 |
 | 2.5 | 2026-02-28 | Nav 제한속도 변수 `speedLimit`/`speedLimitNorm` 및 Var_030/Var_031 추적 항목을 추가해 Req_010 과속 판정 체인을 보강. |
+| 2.6 | 2026-02-28 | DBC OEM 신호명(`g*`)과 문서 표준 Name 간 Alias 매핑 표를 추가해 변수 명칭 혼선을 제거. |

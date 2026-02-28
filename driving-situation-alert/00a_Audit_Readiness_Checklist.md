@@ -1,7 +1,7 @@
 # 감사 준비 체크리스트 (Audit Readiness Checklist)
 
 **Document ID**: PROJ-00A-ARC  
-**Version**: 1.0  
+**Version**: 1.1  
 **Date**: 2026-02-28  
 **Status**: Draft  
 **Project Title**: 주행 상황 실시간 경고 시스템
@@ -47,6 +47,7 @@
 |---|---|---|
 | 검증 환경 | CANoe SIL only | OK |
 | 통신 범위 | CAN + Ethernet(UDP) only | OK |
+| 통신 원본 분리 | CAN=`emergency_system.dbc`, ETH=`ETH_INTERFACE_CONTRACT.md` | OK |
 | 제외 항목 | OTA/UDS/DoIP | OK |
 | 문서 분리 | 01=What, 03+=How, 05~07=Verification | OK |
 
@@ -63,3 +64,12 @@
 ## 메모
 - 상단 공식 표는 간결하게 유지하고, 추적성/수치/경계값은 하단 상세표에서 관리한다.
 - UT 개수와 Func 개수의 단순 비교는 기준이 아니다. 핵심 기준은 Req/VC 커버리지와 체인 무결성이다.
+
+---
+
+## 개정 이력
+
+| 버전 | 날짜 | 변경 사항 |
+|---|---|---|
+| 1.0 | 2026-02-28 | 초기 작성 |
+| 1.1 | 2026-02-28 | 통신 원본 분리 점검 항목(CAN DBC / ETH 인터페이스 계약) 추가 |

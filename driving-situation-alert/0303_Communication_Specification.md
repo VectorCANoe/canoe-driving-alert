@@ -3,7 +3,7 @@
 **Document ID**: PROJ-0303-CS
 **ISO 26262 Reference**: Part 6, Cl.7 (Software Architectural Design)
 **ASPICE Reference**: SWE.2 (Software Architectural Design)
-**Version**: 2.9
+**Version**: 3.0
 **Date**: 2026-02-28
 **Status**: Draft
 **Project Title**: 주행 상황 실시간 경고 시스템
@@ -21,6 +21,7 @@
 - `Identifier`는 순수 ID 값만 기재한다(예: `0x100`, `0xE100`).
 - `DLC`는 순수 숫자만 기재한다.
 - 상단 표의 `Signal`은 0304 표준 변수명(`vehicleSpeed` 등) 기준으로 작성하고, 코드/런타임 별칭(`g*`)은 하단 보강표에서만 관리한다.
+- CAN 통신 원본은 `canoe/network/dbc/emergency_system.dbc`, Ethernet 통신 원본은 `canoe/docs/operations/ETH_INTERFACE_CONTRACT.md`로 분리 관리한다.
 - 본 설계는 Ethernet 백본(`ETH_SWITCH`) + 도메인 게이트웨이(`CHASSIS_GW`, `INFOTAINMENT_GW`, `BODY_GW`, `IVI_GW`) + 도메인 CAN 분배 구조를 사용한다.
 - 하단 추적표는 `Comm ID -> Flow ID -> Func ID -> Req ID`를 유지한다.
 - 검증 범위는 CANoe SIL, CAN + Ethernet(UDP)로 고정한다.
@@ -136,6 +137,15 @@
 
 ---
 
+## 통신 원본(Source of Truth) 매핑
+
+| 구분 | 범위 | 원본 파일 | 비고 |
+|---|---|---|---|
+| CAN | 0x100, 0x101, 0x110, 0x210, 0x220, 0x230 | `canoe/network/dbc/emergency_system.dbc` | DBC가 CAN 계약 단일 원본 |
+| Ethernet | 0x510, 0x511, 0x512, 0xE100, 0xE200 | `canoe/docs/operations/ETH_INTERFACE_CONTRACT.md` | DBC 비대상, 별도 인터페이스 계약 |
+
+---
+
 ## 통신 상세 추적 표 (Comm/Flow/Func/Req)
 
 | Comm ID | Flow ID | Func ID | Req ID | Message(ID) | Tx Node | Rx Node | Protocol | Period | Clear/비고 |
@@ -167,6 +177,7 @@
 |---|---|
 | vehicleSpeed | gVehicleSpeed |
 | driveState | gDriveState |
+| steeringInput | SteeringInput |
 | roadZone | gRoadZone |
 | navDirection | gNavDirection |
 | zoneDistance | gZoneDistance |
@@ -213,3 +224,4 @@
 | 2.7 | 2026-02-26 | 상단 Signal 명칭을 0304 표준명(vehicleSpeed 등)으로 통일하고, g* 별칭은 하단 매핑표로 분리 |
 | 2.8 | 2026-02-28 | signal 케이스/명칭을 0304 표준명(`steeringInput/emergencyType/eta/sourceId` 등)으로 정합하고 `SelectedAlertContext` 잔여 표현 제거 |
 | 2.9 | 2026-02-28 | Nav 컨텍스트 메시지(0x110/0x512)에 `speedLimit`(bit16, DLC=3)를 추가하고 Comm_003을 Req_010/Func_010까지 확장 정합. |
+| 3.0 | 2026-02-28 | CAN/Ethernet 통신 원본 파일 분리 원칙을 명시하고 SoT 매핑 표를 추가(`emergency_system.dbc` / `ETH_INTERFACE_CONTRACT.md`). |

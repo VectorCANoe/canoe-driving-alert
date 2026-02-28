@@ -3,7 +3,7 @@
 **Document ID**: PROJ-0302-NFD
 **ISO 26262 Reference**: Part 4, Cl.7 (System Design)
 **ASPICE Reference**: SYS.3 (System Architectural Design)
-**Version**: 3.0
+**Version**: 3.1
 **Date**: 2026-02-28
 **Status**: Draft
 **Project Title**: 주행 상황 실시간 경고 시스템
@@ -21,6 +21,7 @@
 - 상단 표의 `signal name`은 0304 표준 변수명(`vehicleSpeed` 등) 기준으로 작성하고, 코드/런타임 별칭(`g*`)은 하단 보강표에서만 관리한다.
 - 옵션1 아키텍처를 고정한다: `중앙 경고코어 + Ethernet 백본(ETH_SWITCH) + 도메인 게이트웨이 + 도메인 CAN`.
 - 상세 추적 정보(`Flow/Func/Req/주기/활성/해제`)는 하단 표에 분리한다.
+- CAN 신호 원본은 `canoe/network/dbc/emergency_system.dbc`, Ethernet 신호 원본은 `canoe/docs/operations/ETH_INTERFACE_CONTRACT.md`를 사용한다.
 - 검증 범위는 CANoe SIL, CAN + Ethernet(UDP)만 사용한다.
 - OTA/UDS/DoIP 관련 플로우는 본 문서 범위에서 제외한다.
 
@@ -150,6 +151,15 @@
 
 ---
 
+## Flow 원본(Source of Truth) 매핑
+
+| Flow ID | 원본 계약 | 원본 파일 |
+|---|---|---|
+| Flow_001, Flow_002, Flow_003(CAN 구간), Flow_007(CAN 0x210), Flow_008(CAN 0x220), Flow_009 | CAN DBC 계약 | `canoe/network/dbc/emergency_system.dbc` |
+| Flow_001~Flow_008(Ethernet 구간) | Ethernet Interface 계약 | `canoe/docs/operations/ETH_INTERFACE_CONTRACT.md` |
+
+---
+
 ## 플로우 상세 추적 표 (Flow/Func/Req)
 
 | Flow ID | Comm ID(0303 연계) | Func ID | Req ID | 관련 메시지(ID) | Tx Node | Rx Node | Channel | Period | Active Condition | Clear Condition |
@@ -181,6 +191,7 @@
 |---|---|
 | vehicleSpeed | gVehicleSpeed |
 | driveState | gDriveState |
+| steeringInput | SteeringInput |
 | roadZone | gRoadZone |
 | navDirection | gNavDirection |
 | zoneDistance | gZoneDistance |
@@ -229,3 +240,4 @@
 | 2.8 | 2026-02-26 | 상단 signal name을 0304 표준명(vehicleSpeed 등)으로 통일하고, g* 별칭은 하단 매핑표로 분리 |
 | 2.9 | 2026-02-28 | signal 표기 케이스를 0304 표준명(`steeringInput/emergencyType/selectedAlertLevel` 등)으로 추가 정합, `SelectedAlertContext` 잔여 문구 제거 |
 | 3.0 | 2026-02-28 | 스쿨존 과속 정밀 판정을 위해 `speedLimit` 신호를 0x110/0x512 상단 공식표와 Flow_003 하단 추적표에 반영. |
+| 3.1 | 2026-02-28 | CAN/Ethernet 원본 파일 분리 원칙을 명시하고 Flow Source-of-Truth 매핑 표를 추가. |
