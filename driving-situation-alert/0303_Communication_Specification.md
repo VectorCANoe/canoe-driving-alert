@@ -118,7 +118,7 @@
 |  |  |  | InfoDiagState | 8~11 | Infotainment 진단 상태 | 0~15 | INFOTAINMENT_GW -> SIL_TEST_CTRL 전달 |
 |  |  |  | InfoFailCode | 12~15 | Infotainment 오류 코드 | 0~15 | INFOTAINMENT_GW -> SIL_TEST_CTRL 전달 |
 | frmTestResultMsg | 0x230 | 1 | scenarioResult | 0 | 시나리오 판정 결과 | 0~1 | SIL_TEST_CTRL -> - 전달 |
-| frmBaseTestResultMsg | 0x231 | 2 | BaseScenarioId | 0~7 | 기본 시나리오 ID | 0~255 | VEHICLE_BASE_TEST_CTRL -> SIL_TEST_CTRL 전달 |
+| frmBaseTestResultMsg | 0x231 | 8 | BaseScenarioId | 0~7 | 기본 시나리오 ID | 0~255 | VEHICLE_BASE_TEST_CTRL -> SIL_TEST_CTRL 전달 |
 |  |  |  | BaseScnResult | 8 | 기본 시나리오 판정 | 0~1 | VEHICLE_BASE_TEST_CTRL -> SIL_TEST_CTRL 전달 |
 | frmEmergencyMonitorMsg | 0x232 | 2 | emergencyContext | 0~7 | 긴급 컨텍스트 상태 | 0~255 | EMS_ALERT_RX -> SIL_TEST_CTRL, CHASSIS_GW 전달 |
 |  |  |  | TimeoutClearMon | 8 | 타임아웃 모니터 플래그 | 0~1 | EMS_ALERT_RX -> SIL_TEST_CTRL, CHASSIS_GW 전달 |
@@ -175,13 +175,13 @@
 |  |  |  | YawCtrlReq | 8~15 | 요 모멘트 제어 요구 | 0~255 | CHASSIS_GW -> BRAKE_CTRL, STEERING_CTRL, DOMAIN_GW_ROUTER 전달 |
 | frmTcsStateMsg | 0x10D | 2 | TcsActive | 0 | TCS 활성 상태 | 0~1 | CHASSIS_GW -> ACCEL_CTRL, BRAKE_CTRL, DOMAIN_GW_ROUTER 전달 |
 |  |  |  | TcsSlipRatio | 8~15 | TCS 슬립 비율 | 0~255 | CHASSIS_GW -> ACCEL_CTRL, BRAKE_CTRL, DOMAIN_GW_ROUTER 전달 |
-| frmBrakeTempMsg | 0x10E | 4 | BrakeTempFL | 0~7 | 브레이크 전륜좌 온도 | 0~255 degC | CHASSIS_GW -> BRAKE_CTRL, DOMAIN_GW_ROUTER 전달 |
+| frmBrakeTempMsg | 0x10E | 2 | BrakeTempFL | 0~7 | 브레이크 전륜좌 온도 | 0~255 degC | CHASSIS_GW -> BRAKE_CTRL, DOMAIN_GW_ROUTER 전달 |
 |  |  |  | BrakeTempFR | 8~15 | 브레이크 전륜우 온도 | 0~255 degC | CHASSIS_GW -> BRAKE_CTRL, DOMAIN_GW_ROUTER 전달 |
 |  |  |  | BrakeTempRL | 16~23 | 브레이크 후륜좌 온도 | 0~255 degC | CHASSIS_GW -> BRAKE_CTRL, DOMAIN_GW_ROUTER 전달 |
 |  |  |  | BrakeTempRR | 24~31 | 브레이크 후륜우 온도 | 0~255 degC | CHASSIS_GW -> BRAKE_CTRL, DOMAIN_GW_ROUTER 전달 |
-| frmSteeringAngleMsg | 0x10F | 4 | SteeringAngle | 0~15 | 조향각 | -720~720 deg | CHASSIS_GW -> STEERING_CTRL, ADAS_WARN_CTRL 전달 |
+| frmSteeringAngleMsg | 0x10F | 2 | SteeringAngle | 0~15 | 조향각 | -720~720 deg | CHASSIS_GW -> STEERING_CTRL, ADAS_WARN_CTRL 전달 |
 |  |  |  | SteeringAngleRate | 16~31 | 조향각속도 | -1024~1023 deg/s | CHASSIS_GW -> STEERING_CTRL, ADAS_WARN_CTRL 전달 |
-| frmWheelPulseMsg | 0x11A | 4 | WheelPulseFL | 0~15 | 전륜좌 휠 펄스 | 0~65535 cnt | CHASSIS_GW -> ACCEL_CTRL, BRAKE_CTRL, STEERING_CTRL 전달 |
+| frmWheelPulseMsg | 0x11A | 2 | WheelPulseFL | 0~15 | 전륜좌 휠 펄스 | 0~65535 cnt | CHASSIS_GW -> ACCEL_CTRL, BRAKE_CTRL, STEERING_CTRL 전달 |
 |  |  |  | WheelPulseFR | 16~31 | 전륜우 휠 펄스 | 0~65535 cnt | CHASSIS_GW -> ACCEL_CTRL, BRAKE_CTRL, STEERING_CTRL 전달 |
 | frmSuspensionStateMsg | 0x11B | 2 | DamperMode | 0~2 | 댐퍼 모드 | 0~7 | CHASSIS_GW -> DOMAIN_GW_ROUTER 전달 |
 |  |  |  | RideHeight | 8~15 | 차고 높이 | 0~255 mm | CHASSIS_GW -> DOMAIN_GW_ROUTER 전달 |
@@ -189,65 +189,65 @@
 |  |  |  | TirePressFR | 8~15 | 전륜우 타이어 압력 | 0~255 kPa | CHASSIS_GW -> DOMAIN_GW_ROUTER 전달 |
 |  |  |  | TirePressRL | 16~23 | 후륜좌 타이어 압력 | 0~255 kPa | CHASSIS_GW -> DOMAIN_GW_ROUTER 전달 |
 |  |  |  | TirePressRR | 24~31 | 후륜우 타이어 압력 | 0~255 kPa | CHASSIS_GW -> DOMAIN_GW_ROUTER 전달 |
-| frmChassisDiagReqMsg | 0x11D | 2 | ChassisDiagReqId | 0~7 | Chassis 진단 요청 ID | 0~255 | SIL_TEST_CTRL -> CHASSIS_GW 전달 |
+| frmChassisDiagReqMsg | 0x11D | 3 | ChassisDiagReqId | 0~7 | Chassis 진단 요청 ID | 0~255 | SIL_TEST_CTRL -> CHASSIS_GW 전달 |
 |  |  |  | ChassisDiagReqAct | 8 | Chassis 진단 요청 활성 | 0~1 | SIL_TEST_CTRL -> CHASSIS_GW 전달 |
-| frmChassisDiagResMsg | 0x11E | 2 | ChassisDiagResId | 0~7 | Chassis 진단 응답 ID | 0~255 | CHASSIS_GW -> SIL_TEST_CTRL 전달 |
+| frmChassisDiagResMsg | 0x11E | 3 | ChassisDiagResId | 0~7 | Chassis 진단 응답 ID | 0~255 | CHASSIS_GW -> SIL_TEST_CTRL 전달 |
 |  |  |  | ChassisDiagStatus | 8~11 | Chassis 진단 결과 | 0~15 | CHASSIS_GW -> SIL_TEST_CTRL 전달 |
 | frmAdasChassisStatusMsg | 0x11F | 2 | LateralCtrlAvail | 0 | 횡방향 제어 가능 상태 | 0~1 | CHASSIS_GW -> ADAS_WARN_CTRL, DOMAIN_GW_ROUTER 전달 |
 |  |  |  | LongitudinalCtrlAvail | 1 | 종방향 제어 가능 상태 | 0~1 | CHASSIS_GW -> ADAS_WARN_CTRL, DOMAIN_GW_ROUTER 전달 |
 |  |  |  | ChassisCtrlMode | 8~11 | 차량 제어 모드 | 0~15 | CHASSIS_GW -> ADAS_WARN_CTRL, DOMAIN_GW_ROUTER 전달 |
-| frmBrakeWearMsg | 0x120 | 2 | BrakePadWearFL | 0~7 | 브레이크 패드 마모(전륜좌) | 0~100 % | CHASSIS_GW -> BRAKE_CTRL, DOMAIN_GW_ROUTER 전달 |
+| frmBrakeWearMsg | 0x120 | 1 | BrakePadWearFL | 0~7 | 브레이크 패드 마모(전륜좌) | 0~100 % | CHASSIS_GW -> BRAKE_CTRL, DOMAIN_GW_ROUTER 전달 |
 |  |  |  | BrakePadWearFR | 8~15 | 브레이크 패드 마모(전륜우) | 0~100 % | CHASSIS_GW -> BRAKE_CTRL, DOMAIN_GW_ROUTER 전달 |
-| frmRoadFrictionMsg | 0x121 | 2 | RoadFrictionEst | 0~7 | 노면 마찰 추정치 | 0~255 | CHASSIS_GW -> ADAS_WARN_CTRL, DOMAIN_GW_ROUTER 전달 |
+| frmRoadFrictionMsg | 0x121 | 1 | RoadFrictionEst | 0~7 | 노면 마찰 추정치 | 0~255 | CHASSIS_GW -> ADAS_WARN_CTRL, DOMAIN_GW_ROUTER 전달 |
 |  |  |  | SurfaceType | 8~11 | 노면 타입 | 0~15 | CHASSIS_GW -> ADAS_WARN_CTRL, DOMAIN_GW_ROUTER 전달 |
 | frmHvacStateMsg | 0x240 | 2 | CabinSetTemp | 0~7 | 실내 설정 온도 | 0~63 degC | BODY_GW -> BCM_AMBIENT_CTRL, DRIVER_STATE_CTRL 전달 |
 |  |  |  | BlowerLevel | 8~11 | 블로워 레벨 | 0~15 | BODY_GW -> BCM_AMBIENT_CTRL, DRIVER_STATE_CTRL 전달 |
 | frmHvacActuatorMsg | 0x241 | 2 | VentMode | 0~2 | 공조 벤트 모드 | 0~7 | BODY_GW -> BCM_AMBIENT_CTRL 전달 |
 |  |  |  | AcCompressorReq | 3 | A/C 컴프레서 요청 | 0~1 | BODY_GW -> BCM_AMBIENT_CTRL 전달 |
-| frmMirrorStateMsg | 0x242 | 2 | MirrorFoldState | 0 | 미러 폴딩 상태 | 0~1 | BODY_GW -> WINDOW_CTRL 전달 |
+| frmMirrorStateMsg | 0x242 | 1 | MirrorFoldState | 0 | 미러 폴딩 상태 | 0~1 | BODY_GW -> WINDOW_CTRL 전달 |
 |  |  |  | MirrorHeatState | 1 | 미러 열선 상태 | 0~1 | BODY_GW -> WINDOW_CTRL 전달 |
 |  |  |  | MirrorAdjAxis | 8~9 | 미러 조정 축 | 0~3 | BODY_GW -> WINDOW_CTRL 전달 |
 | frmSeatStateMsg | 0x243 | 2 | DriverSeatPos | 0~7 | 운전석 시트 위치 | 0~255 | BODY_GW -> DRIVER_STATE_CTRL 전달 |
 |  |  |  | PassengerSeatPos | 8~15 | 동승석 시트 위치 | 0~255 | BODY_GW -> DRIVER_STATE_CTRL 전달 |
 | frmSeatControlMsg | 0x244 | 2 | SeatHeatLevel | 0~2 | 시트 히터 레벨 | 0~7 | BODY_GW -> DRIVER_STATE_CTRL 전달 |
 |  |  |  | SeatVentLevel | 3~5 | 시트 통풍 레벨 | 0~7 | BODY_GW -> DRIVER_STATE_CTRL 전달 |
-| frmDoorControlMsg | 0x245 | 2 | DoorUnlockCmd | 0~1 | 도어 언락 명령 | 0~3 | BODY_GW -> WINDOW_CTRL 전달 |
+| frmDoorControlMsg | 0x245 | 1 | DoorUnlockCmd | 0~1 | 도어 언락 명령 | 0~3 | BODY_GW -> WINDOW_CTRL 전달 |
 |  |  |  | TrunkOpenCmd | 2 | 트렁크 오픈 명령 | 0~1 | BODY_GW -> WINDOW_CTRL 전달 |
-| frmInteriorLightMsg | 0x246 | 2 | InteriorLampMode | 0~2 | 실내등 모드 | 0~7 | BODY_GW -> BCM_AMBIENT_CTRL 전달 |
+| frmInteriorLightMsg | 0x246 | 1 | InteriorLampMode | 0~2 | 실내등 모드 | 0~7 | BODY_GW -> BCM_AMBIENT_CTRL 전달 |
 |  |  |  | InteriorLampLevel | 8~15 | 실내등 밝기 | 0~255 | BODY_GW -> BCM_AMBIENT_CTRL 전달 |
-| frmRainLightAutoMsg | 0x247 | 2 | RainSensorLevel | 0~7 | 우적 센서 레벨 | 0~255 | BODY_GW -> BCM_AMBIENT_CTRL, WINDOW_CTRL 전달 |
+| frmRainLightAutoMsg | 0x247 | 1 | RainSensorLevel | 0~7 | 우적 센서 레벨 | 0~255 | BODY_GW -> BCM_AMBIENT_CTRL, WINDOW_CTRL 전달 |
 |  |  |  | AutoHeadlampReq | 8 | 오토 헤드램프 요청 | 0~1 | BODY_GW -> BCM_AMBIENT_CTRL, WINDOW_CTRL 전달 |
-| frmBcmDiagReqMsg | 0x248 | 2 | BcmDiagReqId | 0~7 | BCM 진단 요청 ID | 0~255 | SIL_TEST_CTRL -> BODY_GW 전달 |
+| frmBcmDiagReqMsg | 0x248 | 3 | BcmDiagReqId | 0~7 | BCM 진단 요청 ID | 0~255 | SIL_TEST_CTRL -> BODY_GW 전달 |
 |  |  |  | BcmDiagReqAct | 8 | BCM 진단 요청 활성 | 0~1 | SIL_TEST_CTRL -> BODY_GW 전달 |
-| frmBcmDiagResMsg | 0x249 | 2 | BcmDiagResId | 0~7 | BCM 진단 응답 ID | 0~255 | BODY_GW -> SIL_TEST_CTRL 전달 |
+| frmBcmDiagResMsg | 0x249 | 3 | BcmDiagResId | 0~7 | BCM 진단 응답 ID | 0~255 | BODY_GW -> SIL_TEST_CTRL 전달 |
 |  |  |  | BcmDiagStatus | 8~11 | BCM 진단 결과 | 0~15 | BODY_GW -> SIL_TEST_CTRL 전달 |
-| frmImmobilizerStateMsg | 0x24A | 2 | ImmoState | 0~1 | 이모빌라이저 상태 | 0~3 | BODY_GW -> DOMAIN_GW_ROUTER, ENGINE_CTRL 전달 |
+| frmImmobilizerStateMsg | 0x24A | 1 | ImmoState | 0~1 | 이모빌라이저 상태 | 0~3 | BODY_GW -> DOMAIN_GW_ROUTER, ENGINE_CTRL 전달 |
 |  |  |  | KeyAuthState | 2~3 | 키 인증 상태 | 0~3 | BODY_GW -> DOMAIN_GW_ROUTER, ENGINE_CTRL 전달 |
-| frmAlarmStateMsg | 0x24B | 2 | AlarmArmed | 0 | 알람 경계 상태 | 0~1 | BODY_GW -> DRIVER_STATE_CTRL, CLU_HMI_CTRL 전달 |
+| frmAlarmStateMsg | 0x24B | 1 | AlarmArmed | 0 | 알람 경계 상태 | 0~1 | BODY_GW -> DRIVER_STATE_CTRL, CLU_HMI_CTRL 전달 |
 |  |  |  | AlarmTrigger | 1 | 알람 트리거 상태 | 0~1 | BODY_GW -> DRIVER_STATE_CTRL, CLU_HMI_CTRL 전달 |
 |  |  |  | AlarmZone | 8~11 | 알람 존 정보 | 0~15 | BODY_GW -> DRIVER_STATE_CTRL, CLU_HMI_CTRL 전달 |
 | frmBodyGatewayStateMsg | 0x24C | 2 | BodyGatewayLoad | 0~7 | Body GW 부하율 | 0~100 % | BODY_GW -> DOMAIN_GW_ROUTER 전달 |
 |  |  |  | BodyGatewayRoute | 8~15 | Body GW 라우팅 상태 | 0~255 | BODY_GW -> DOMAIN_GW_ROUTER 전달 |
 | frmBodyComfortStateMsg | 0x24D | 2 | ComfortMode | 0~2 | 컴포트 모드 | 0~7 | BODY_GW -> BCM_AMBIENT_CTRL, DRIVER_STATE_CTRL 전달 |
 |  |  |  | ChildSafetyState | 3 | 아동 안전 상태 | 0~1 | BODY_GW -> BCM_AMBIENT_CTRL, DRIVER_STATE_CTRL 전달 |
-| frmAudioFocusMsg | 0x260 | 2 | AudioFocusOwner | 0~2 | 오디오 포커스 소유자 | 0~7 | IVI_GW -> CLU_HMI_CTRL, CLUSTER_BASE_CTRL 전달 |
+| frmAudioFocusMsg | 0x260 | 1 | AudioFocusOwner | 0~2 | 오디오 포커스 소유자 | 0~7 | IVI_GW -> CLU_HMI_CTRL, CLUSTER_BASE_CTRL 전달 |
 |  |  |  | AudioDuckLevel | 8~15 | 오디오 덕킹 레벨 | 0~255 | IVI_GW -> CLU_HMI_CTRL, CLUSTER_BASE_CTRL 전달 |
-| frmVoiceAssistStateMsg | 0x261 | 2 | VoiceAssistState | 0~2 | 음성비서 상태 | 0~7 | IVI_GW -> CLU_HMI_CTRL 전달 |
+| frmVoiceAssistStateMsg | 0x261 | 1 | VoiceAssistState | 0~2 | 음성비서 상태 | 0~7 | IVI_GW -> CLU_HMI_CTRL 전달 |
 |  |  |  | VoiceWakeSource | 8~11 | 음성 깨우기 소스 | 0~15 | IVI_GW -> CLU_HMI_CTRL 전달 |
 | frmMapRenderStateMsg | 0x262 | 2 | MapZoomLevel | 0~7 | 지도 줌 레벨 | 0~255 | INFOTAINMENT_GW -> NAV_CONTEXT_MGR 전달 |
 |  |  |  | MapTheme | 8~11 | 지도 테마 | 0~15 | INFOTAINMENT_GW -> NAV_CONTEXT_MGR 전달 |
 | frmRouteAlertMsg | 0x263 | 2 | NextTurnType | 0~3 | 다음 회전 유형 | 0~15 | INFOTAINMENT_GW -> NAV_CONTEXT_MGR, CLU_HMI_CTRL 전달 |
 |  |  |  | NextTurnDist | 8~15 | 다음 회전 잔여 거리 | 0~255 m | INFOTAINMENT_GW -> NAV_CONTEXT_MGR, CLU_HMI_CTRL 전달 |
-| frmTrafficEventMsg | 0x264 | 2 | TrafficEventType | 0~3 | 교통 이벤트 유형 | 0~15 | INFOTAINMENT_GW -> NAV_CONTEXT_MGR, ADAS_WARN_CTRL 전달 |
+| frmTrafficEventMsg | 0x264 | 3 | TrafficEventType | 0~3 | 교통 이벤트 유형 | 0~15 | INFOTAINMENT_GW -> NAV_CONTEXT_MGR, ADAS_WARN_CTRL 전달 |
 |  |  |  | TrafficSeverity | 4~6 | 교통 이벤트 심각도 | 0~7 | INFOTAINMENT_GW -> NAV_CONTEXT_MGR, ADAS_WARN_CTRL 전달 |
 |  |  |  | TrafficDist | 8~15 | 이벤트 잔여 거리 | 0~255 m | INFOTAINMENT_GW -> NAV_CONTEXT_MGR, ADAS_WARN_CTRL 전달 |
-| frmPhoneProjectionMsg | 0x265 | 2 | ProjectionType | 0~2 | 프로젝션 유형 | 0~7 | IVI_GW -> CLU_HMI_CTRL 전달 |
+| frmPhoneProjectionMsg | 0x265 | 1 | ProjectionType | 0~2 | 프로젝션 유형 | 0~7 | IVI_GW -> CLU_HMI_CTRL 전달 |
 |  |  |  | ProjectionState | 3~4 | 프로젝션 상태 | 0~3 | IVI_GW -> CLU_HMI_CTRL 전달 |
 | frmClusterNotifMsg | 0x266 | 2 | ClusterNotifType | 0~3 | 클러스터 알림 유형 | 0~15 | IVI_GW -> CLU_HMI_CTRL, CLUSTER_BASE_CTRL 전달 |
 |  |  |  | ClusterNotifPrio | 4~6 | 클러스터 알림 우선순위 | 0~7 | IVI_GW -> CLU_HMI_CTRL, CLUSTER_BASE_CTRL 전달 |
-| frmIviDiagReqMsg | 0x267 | 2 | IviDiagReqId | 0~7 | IVI 진단 요청 ID | 0~255 | SIL_TEST_CTRL -> INFOTAINMENT_GW 전달 |
+| frmIviDiagReqMsg | 0x267 | 3 | IviDiagReqId | 0~7 | IVI 진단 요청 ID | 0~255 | SIL_TEST_CTRL -> INFOTAINMENT_GW 전달 |
 |  |  |  | IviDiagReqAct | 8 | IVI 진단 요청 활성 | 0~1 | SIL_TEST_CTRL -> INFOTAINMENT_GW 전달 |
-| frmIviDiagResMsg | 0x268 | 2 | IviDiagResId | 0~7 | IVI 진단 응답 ID | 0~255 | INFOTAINMENT_GW -> SIL_TEST_CTRL 전달 |
+| frmIviDiagResMsg | 0x268 | 3 | IviDiagResId | 0~7 | IVI 진단 응답 ID | 0~255 | INFOTAINMENT_GW -> SIL_TEST_CTRL 전달 |
 |  |  |  | IviDiagStatus | 8~11 | IVI 진단 결과 | 0~15 | INFOTAINMENT_GW -> SIL_TEST_CTRL 전달 |
 | frmMediaMetaMsg | 0x269 | 2 | MediaGenre | 0~3 | 미디어 장르 | 0~15 | IVI_GW -> CLU_HMI_CTRL 전달 |
 |  |  |  | TrackProgress | 8~15 | 트랙 진행률 | 0~100 % | IVI_GW -> CLU_HMI_CTRL 전달 |
@@ -260,22 +260,22 @@
 |  |  |  | MemLoad | 8~15 | IVI 메모리 부하율 | 0~100 % | INFOTAINMENT_GW -> SIL_TEST_CTRL 전달 |
 | frmClusterSyncStateMsg | 0x26D | 2 | ClusterSyncState | 0~2 | 클러스터 동기화 상태 | 0~7 | IVI_GW -> CLUSTER_BASE_CTRL 전달 |
 |  |  |  | ClusterSyncSeq | 8~15 | 클러스터 동기화 시퀀스 | 0~255 | IVI_GW -> CLUSTER_BASE_CTRL 전달 |
-| frmEngineTorqueMsg | 0x30B | 4 | EngineTorqueAct | 0~15 | 엔진 실제 토크 | 0~65535 0.1Nm | ENGINE_CTRL -> TRANSMISSION_CTRL, DOMAIN_GW_ROUTER 전달 |
+| frmEngineTorqueMsg | 0x30B | 2 | EngineTorqueAct | 0~15 | 엔진 실제 토크 | 0~65535 0.1Nm | ENGINE_CTRL -> TRANSMISSION_CTRL, DOMAIN_GW_ROUTER 전달 |
 |  |  |  | EngineTorqueReq | 16~31 | 엔진 요구 토크 | 0~65535 0.1Nm | ENGINE_CTRL -> TRANSMISSION_CTRL, DOMAIN_GW_ROUTER 전달 |
-| frmEngineLoadMsg | 0x30C | 2 | EngineLoad | 0~7 | 엔진 부하율 | 0~100 % | ENGINE_CTRL -> DOMAIN_GW_ROUTER 전달 |
+| frmEngineLoadMsg | 0x30C | 1 | EngineLoad | 0~7 | 엔진 부하율 | 0~100 % | ENGINE_CTRL -> DOMAIN_GW_ROUTER 전달 |
 |  |  |  | ManifoldPressure | 8~15 | 흡기 매니폴드 압력 | 0~255 kPa | ENGINE_CTRL -> DOMAIN_GW_ROUTER 전달 |
 | frmTransShiftStateMsg | 0x30D | 2 | ShiftState | 0~2 | 변속 상태 | 0~7 | TRANSMISSION_CTRL -> ENGINE_CTRL, DOMAIN_GW_ROUTER 전달 |
 |  |  |  | ShiftInProgress | 3 | 변속 진행 상태 | 0~1 | TRANSMISSION_CTRL -> ENGINE_CTRL, DOMAIN_GW_ROUTER 전달 |
 |  |  |  | ShiftTargetGear | 8~10 | 목표 기어 | 0~7 | TRANSMISSION_CTRL -> ENGINE_CTRL, DOMAIN_GW_ROUTER 전달 |
-| frmPtDiagReqMsg | 0x30E | 2 | PtDiagReqId | 0~7 | Powertrain 진단 요청 ID | 0~255 | SIL_TEST_CTRL -> DOMAIN_GW_ROUTER 전달 |
+| frmPtDiagReqMsg | 0x30E | 3 | PtDiagReqId | 0~7 | Powertrain 진단 요청 ID | 0~255 | SIL_TEST_CTRL -> DOMAIN_GW_ROUTER 전달 |
 |  |  |  | PtDiagReqAct | 8 | Powertrain 진단 요청 활성 | 0~1 | SIL_TEST_CTRL -> DOMAIN_GW_ROUTER 전달 |
-| frmPtDiagResMsg | 0x30F | 2 | PtDiagResId | 0~7 | Powertrain 진단 응답 ID | 0~255 | DOMAIN_GW_ROUTER -> SIL_TEST_CTRL 전달 |
+| frmPtDiagResMsg | 0x30F | 3 | PtDiagResId | 0~7 | Powertrain 진단 응답 ID | 0~255 | DOMAIN_GW_ROUTER -> SIL_TEST_CTRL 전달 |
 |  |  |  | PtDiagStatus | 8~11 | Powertrain 진단 결과 | 0~15 | DOMAIN_GW_ROUTER -> SIL_TEST_CTRL 전달 |
 | frmThermalMgmtStateMsg | 0x310 | 2 | ThermalMode | 0~2 | 열관리 모드 | 0~7 | DOMAIN_GW_ROUTER -> ENGINE_CTRL, TRANSMISSION_CTRL 전달 |
 |  |  |  | FanSpeedCmd | 8~15 | 팬 속도 명령 | 0~255 | DOMAIN_GW_ROUTER -> ENGINE_CTRL, TRANSMISSION_CTRL 전달 |
 | frmEnergyFlowStateMsg | 0x311 | 2 | RegenLevel | 0~3 | 회생 제동 레벨 | 0~15 | DOMAIN_GW_ROUTER -> ENGINE_CTRL, TRANSMISSION_CTRL 전달 |
 |  |  |  | EnergyFlowDir | 4~5 | 에너지 흐름 방향 | 0~3 | DOMAIN_GW_ROUTER -> ENGINE_CTRL, TRANSMISSION_CTRL 전달 |
-| frmPowertrainCtrlAuthMsg | 0x312 | 2 | PtCtrlAuthState | 0~1 | 파워트레인 제어 권한 상태 | 0~3 | DOMAIN_GW_ROUTER -> ENGINE_CTRL, TRANSMISSION_CTRL 전달 |
+| frmPowertrainCtrlAuthMsg | 0x312 | 1 | PtCtrlAuthState | 0~1 | 파워트레인 제어 권한 상태 | 0~3 | DOMAIN_GW_ROUTER -> ENGINE_CTRL, TRANSMISSION_CTRL 전달 |
 |  |  |  | PtCtrlSource | 8~11 | 파워트레인 제어 출처 | 0~15 | DOMAIN_GW_ROUTER -> ENGINE_CTRL, TRANSMISSION_CTRL 전달 |
 ---
 
