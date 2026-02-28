@@ -3,7 +3,7 @@
 **Document ID**: PROJ-0301-SFA
 **ISO 26262 Reference**: Part 4, Cl.7 (System Design)
 **ASPICE Reference**: SYS.3 (System Architectural Design)
-**Version**: 3.9
+**Version**: 3.10
 **Date**: 2026-02-28
 **Status**: Draft
 **Project Title**: 주행 상황 실시간 경고 시스템
@@ -34,7 +34,12 @@
 |---|---|---|
 |  |  | Powertrain |
 | ADAS_WARN_CTRL | 차량 주행 상태 기반 경고 조건 판정 및 제어 상태 생성 | 경고 시작/해제 제어 |
+| ENGINE_CTRL | 시동 상태 입력을 엔진 동작 상태로 반영 | 차량 기본 동작 |
+| TRANSMISSION_CTRL | 기어 입력(P/R/N/D) 상태 유지 및 전달 | 차량 기본 동작 |
 |  |  | Chassis |
+| ACCEL_CTRL | 가속 페달 입력 상태 처리 | 차량 기본 동작 |
+| BRAKE_CTRL | 브레이크 페달 입력 상태 처리 | 차량 기본 동작 |
+| STEERING_CTRL | 조향 입력 상태 처리 | 차량 기본 동작 |
 | EMS_ALERT_RX | 긴급 알림 수신 상태 및 해제 상태 관리 | 수신/타임아웃 해제 처리 |
 | WARN_ARB_MGR | 긴급 경고와 구간 경고 충돌 시 우선순위 중재 수행 | Emergency > Zone, Ambulance > Police |
 | EMS_POLICE_TX | 경찰 긴급차량 알림 생성 및 송신 제어 | EmergencyAlert 송신 제어 |
@@ -48,9 +53,13 @@
 | IVI_GW | 중재 결과 Ethernet 수신 후 Cluster CAN 출력 메시지 생성 | ETH->CAN 변환 |
 |  |  | Body |
 | BCM_AMBIENT_CTRL | 중재 결과 기반 앰비언트 경고 패턴 적용 | 색상/패턴 반영 |
+| HAZARD_CTRL | 비상등 On/Off 상태 처리 | 차량 기본 동작 |
+| WINDOW_CTRL | 창문 개폐 상태 처리 | 차량 기본 동작 |
+| DRIVER_STATE_CTRL | 운전자 상태 입력 전달 | 차량 기본 동작 |
 |  |  | Infotainment |
 | NAV_CONTEXT_MGR | 내비게이션 구간/방향/거리/제한속도 기반 컨텍스트 갱신 | 구간 상태 전환 |
 | CLU_HMI_CTRL | 운전자 경고 문구 및 안내 정보 표시 | 원인/방향/유형 표시 |
+| CLUSTER_BASE_CTRL | 속도/기어/기본 상태 표시 | 차량 기본 동작 |
 |  |  | Actual Device |
 | Ambient Lights | 실제 앰비언트 장치가 제어 신호를 수신해 점등/패턴 동작 수행 | frmAmbientControlMsg(0x210) 반영 |
 | Cluster Display | 실제 클러스터 장치가 경고 문구/상태를 표시 | frmClusterWarningMsg(0x220) 반영 |
@@ -71,6 +80,18 @@
 | Func_008,009,033~039 | Req_008,009,033~039 | BCM_AMBIENT_CTRL | selectedAlertLevel, selectedAlertType, navDirection, baseZoneContext, timeoutClear | 경고 등급별 색상/패턴 적용, 전환 완화, 복원 | ambientMode, ambientColor, ambientPattern | 출력: ambientMode, ambientColor, ambientPattern |
 | Func_005,019~021,026,040 | Req_005,019~021,026,040 | CLU_HMI_CTRL | selectedAlertType, emergencyDirection, duplicatePopupGuard, warningTextCode | 경고 문구/종류/방향/양보 메시지 표시 | warningTextCode | 출력: warningTextCode |
 | Func_041, Func_042, Func_043 | Req_041, Req_042, Req_043 | SIL_TEST_CTRL | testScenario | 시나리오 실행, CAN+ETH 검증, 판정 기록 | scenarioResult | 출력: scenarioResult |
+| Func_101 | Req_101 | ENGINE_CTRL | ignitionState | 시동 상태 반영 | engineState | 입력: ignitionState / 출력: engineState |
+| Func_102 | Req_102 | TRANSMISSION_CTRL | gearInput | 기어 상태 반영 | gearState | 입력: gearInput / 출력: gearState |
+| Func_103 | Req_103 | ACCEL_CTRL | accelPedal | 가속 입력 반영 | accelRequest | 입력: accelPedal / 출력: accelRequest |
+| Func_104 | Req_104 | BRAKE_CTRL | brakePedal | 제동 입력 반영 | brakeRequest | 입력: brakePedal / 출력: brakeRequest |
+| Func_105 | Req_105 | STEERING_CTRL | steeringInput | 조향 입력 반영 | steeringState | 입력: steeringInput / 출력: steeringState |
+| Func_106 | Req_106 | HAZARD_CTRL | hazardSwitch | 비상등 기본 제어 | hazardState | 입력: hazardSwitch / 출력: hazardState |
+| Func_107 | Req_107 | WINDOW_CTRL | windowCommand | 창문 기본 제어 | windowState | 입력: windowCommand / 출력: windowState |
+| Func_108 | Req_108 | DRIVER_STATE_CTRL | driverStateLevel | 운전자 상태 전달 | driverStateInfo | 입력: driverStateLevel / 출력: driverStateInfo |
+| Func_109 | Req_109 | CLUSTER_BASE_CTRL | vehicleSpeed, gearState, warningTextCode | 클러스터 기본 표시 | clusterBaseDisplay | 입력: vehicleSpeed, gearState / 출력: clusterBaseDisplay |
+| Func_110 | Req_110 | DOMAIN_GW_ROUTER | domainInputFrames | 도메인 게이트웨이 전달 | domainOutputFrames | 입력: domainInputFrames / 출력: domainOutputFrames |
+| Func_111 | Req_111 | DOMAIN_BOUNDARY_MGR | routingPolicy | 도메인 경계 유지 | boundaryStatus | 입력: routingPolicy / 출력: boundaryStatus |
+| Func_112 | Req_112 | VEHICLE_BASE_TEST_CTRL | baseTestScenario | 차량 기본 기능 SIL 검증 | baseScenarioResult | 입력: baseTestScenario / 출력: baseScenarioResult |
 
 ## 2-1. Req-Func 1:1 감사 매핑 표
 
@@ -119,6 +140,18 @@
 | Req_041 | Func_041 | SIL_TEST_CTRL | SIL 시나리오 실행 |
 | Req_042 | Func_042 | SIL_TEST_CTRL | CAN+ETH 동시 검증 |
 | Req_043 | Func_043 | SIL_TEST_CTRL | 판정 결과 산출 |
+| Req_101 | Func_101 | ENGINE_CTRL | 시동 상태 반영 |
+| Req_102 | Func_102 | TRANSMISSION_CTRL | 기어 상태 반영 |
+| Req_103 | Func_103 | ACCEL_CTRL | 가속 입력 반영 |
+| Req_104 | Func_104 | BRAKE_CTRL | 제동 입력 반영 |
+| Req_105 | Func_105 | STEERING_CTRL | 조향 입력 반영 |
+| Req_106 | Func_106 | HAZARD_CTRL | 비상등 기본 제어 |
+| Req_107 | Func_107 | WINDOW_CTRL | 창문 기본 제어 |
+| Req_108 | Func_108 | DRIVER_STATE_CTRL | 운전자 상태 전달 |
+| Req_109 | Func_109 | CLUSTER_BASE_CTRL | 클러스터 기본 표시 |
+| Req_110 | Func_110 | DOMAIN_GW_ROUTER | 도메인 게이트웨이 전달 |
+| Req_111 | Func_111 | DOMAIN_BOUNDARY_MGR | 도메인 경계 유지 |
+| Req_112 | Func_112 | VEHICLE_BASE_TEST_CTRL | 차량 기본 기능 SIL 검증 |
 
 ---
 
@@ -188,3 +221,4 @@
 | 3.7 | 2026-02-28 | 03/0304 정합 기준으로 하단 상세표 입출력 변수를 재정렬(비정의 변수 제거, Core/State 변수명 통일) |
 | 3.8 | 2026-02-28 | 스쿨존 과속 판정 정합을 위해 NAV/ADAS 입력에 `speedLimit/speedLimitNorm`을 반영하고 Navigation Panel 입력 항목을 확장. |
 | 3.9 | 2026-02-28 | ISO/OEM 정합을 위한 ECU 명명 기준 섹션을 추가하고 노드 접미사 규칙(GW/CTRL/MGR/TX/RX)을 명문화. |
+| 3.10 | 2026-02-28 | 차량 기본 기능 확장 대응으로 기본 차량 ECU 노드와 Req_101~Req_112 / Func_101~Func_112 매핑을 추가. |

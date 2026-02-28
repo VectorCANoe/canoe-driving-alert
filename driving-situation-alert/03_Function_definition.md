@@ -3,7 +3,7 @@
 **Document ID**: PROJ-03-FD
 **ISO 26262 Reference**: Part 4, Cl.7 (System Design)
 **ASPICE Reference**: SYS.3 (System Architectural Design)
-**Version**: 4.7
+**Version**: 4.8
 **Date**: 2026-02-28
 **Status**: Draft
 **Project Title**: 주행 상황 실시간 경고 시스템
@@ -17,6 +17,7 @@
 - 상단 표는 표준 양식 구조만 유지하고, 상세 추적 정보는 하단 표에 분리한다.
 - Panel은 테스트 자극/관측 인터페이스이며 기능 주체 ECU로 보지 않는다.
 - 기능 ID는 `Func_001~Func_043`으로 요구사항 ID와 1:1 대응한다.
+- 차량 기본 기능 확장 요구(`Req_101~Req_112`)는 `Func_101~Func_112`로 별도 관리한다.
 - DBC 단계에서 OEM 네이밍으로 변경 가능하며, 기능 ID/추적 ID는 유지한다.
 - 네트워크 구현은 옵션1 아키텍처를 고정 적용한다: `ETH_SWITCH + CHASSIS_GW/INFOTAINMENT_GW/BODY_GW/IVI_GW + 도메인 CAN`.
 
@@ -105,12 +106,32 @@
 
 ---
 
+## 차량 기본 기능 확장 상세 표 (Phase-1)
+
+| Func ID | Req ID | 실제 노드명 | 기능명 | 기능 설명 | 실제값 정의(입력/출력) |
+|---|---|---|---|---|---|
+| Func_101 | Req_101 | ENGINE_CTRL | 시동 상태 반영 | 시동 On/Off 입력을 차량 기본 동작 상태로 반영 | 입력: ignitionState / 출력: engineState |
+| Func_102 | Req_102 | TRANSMISSION_CTRL | 기어 상태 반영 | P/R/N/D 기어 입력을 상태값으로 유지/전달 | 입력: gearInput / 출력: gearState |
+| Func_103 | Req_103 | ACCEL_CTRL | 가속 입력 반영 | 가속 페달 입력을 종방향 제어 입력으로 전달 | 입력: accelPedal / 출력: accelRequest |
+| Func_104 | Req_104 | BRAKE_CTRL | 제동 입력 반영 | 브레이크 페달 입력을 감속 제어 입력으로 전달 | 입력: brakePedal / 출력: brakeRequest |
+| Func_105 | Req_105 | STEERING_CTRL | 조향 입력 반영 | 조향 입력을 차량 상태/주의 판단 입력으로 전달 | 입력: steeringInput / 출력: steeringState |
+| Func_106 | Req_106 | HAZARD_CTRL | 비상등 기본 제어 | 비상등 On/Off 입력을 상태 출력으로 반영 | 입력: hazardSwitch / 출력: hazardState |
+| Func_107 | Req_107 | WINDOW_CTRL | 창문 기본 제어 | 창문 개폐 입력을 창문 상태로 반영 | 입력: windowCommand / 출력: windowState |
+| Func_108 | Req_108 | DRIVER_STATE_CTRL | 운전자 상태 반영 | 운전자 상태 입력(예: 졸음 단계)을 관련 도메인으로 전달 | 입력: driverStateLevel / 출력: driverStateInfo |
+| Func_109 | Req_109 | CLUSTER_BASE_CTRL | 클러스터 기본 표시 | 속도/기어/경고 기본 상태를 클러스터에 표시 | 입력: vehicleSpeed, gearState, warningTextCode / 출력: clusterBaseDisplay |
+| Func_110 | Req_110 | DOMAIN_GW_ROUTER | 도메인 게이트웨이 전달 | 도메인 간 입력/출력 메시지 라우팅 수행 | 입력: domainInputFrames / 출력: domainOutputFrames |
+| Func_111 | Req_111 | DOMAIN_BOUNDARY_MGR | 도메인 경계 유지 | 도메인별 통신 경계/역할 분리를 유지 | 입력: routingPolicy / 출력: boundaryStatus |
+| Func_112 | Req_112 | VEHICLE_BASE_TEST_CTRL | 차량 기본 기능 SIL 검증 | 기본 차량 기능 시나리오 실행 및 판정 | 입력: baseTestScenario / 출력: baseScenarioResult |
+
+---
+
 ## 상세 설명 및 추가 사항
 
 - 상단 표는 공식 표준 양식의 열 구성(분류/기능명/기능설명/비고/검증)을 유지한다.
 - 하단 표는 `Func/Req/노드/입출력` 기준으로 추적성을 보강한다.
 - 추적 체인: `Func -> Flow -> Comm -> Var -> Code -> UT/IT/ST`.
 - 옵션1 네트워크 전달 경로 고정: `입력 CAN -> 도메인 GW 정규화 -> ETH_SWITCH -> 중앙 경고코어 -> 도메인 GW -> 출력 CAN`.
+- `Func_101~Func_112`는 차량 기본 기능 확장 체인으로, 0302/0303/0304 도메인 DBC 분리 반영 단계에서 Flow/Comm/Var를 확장 연결한다.
 
 ---
 
@@ -124,3 +145,4 @@
 | 4.5 | 2026-02-28 | 기능 정의 상세 표의 입출력 변수를 0304 표준 변수명으로 정규화하고 비정의 변수(WarningCond/LastAlertId 등) 제거 |
 | 4.6 | 2026-02-28 | Func_014 설명에서 비정의 객체명(`selectedAlertContext`)을 제거하고 0304 표준 변수(`navDirection`) 기준으로 정합화 |
 | 4.7 | 2026-02-28 | 스쿨존 과속 정합 강화를 위해 `speedLimit/speedLimitNorm` 입력을 Func_007/Func_010과 상단 입력 표에 반영. |
+| 4.8 | 2026-02-28 | 차량 기본 기능 확장 대응으로 `Func_101~Func_112`(시동/기어/페달/창문/비상등/도메인경계 등) 상세 표를 추가. |
