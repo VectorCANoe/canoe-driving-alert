@@ -3,7 +3,7 @@
 **Document ID**: PROJ-0304-SV
 **ISO 26262 Reference**: Part 6, Cl.7 (Software Architectural Design)
 **ASPICE Reference**: SWE.2 / SWE.3
-**Version**: 2.4
+**Version**: 2.5
 **Date**: 2026-02-28
 **Status**: Draft
 **Project Title**: 주행 상황 실시간 경고 시스템
@@ -34,6 +34,7 @@
 | 4 | Infotainment | roadZone | uint32 | 0 | 3 | 0 | 구간 타입 입력값 |
 | 5 | Infotainment | navDirection | uint32 | 0 | 3 | 0 | 내비게이션 방향 정보 |
 | 6 | Infotainment | zoneDistance | uint32 | 0 | 255 | 0 | 구간 잔여 거리 |
+| 30 | Infotainment | speedLimit | uint32 | 0 | 255 | 30 | 구간 제한속도(km/h) |
 | 7 | V2X | emergencyType | uint32 | 0 | 3 | 0 | 긴급차량 종류 |
 | 8 | V2X | emergencyDirection | uint32 | 0 | 3 | 0 | 긴급차량 접근 방향 |
 | 9 | V2X | eta | uint32 | 0 | 255 | 0 | 긴급차량 ETA(유효값 0~255, 내부 invalid sentinel 65535) |
@@ -42,6 +43,7 @@
 | 12 | Core | vehicleSpeedNorm | uint32 | 0 | 255 | 0 | 게이트웨이 정규화 후 차량 속도 |
 | 13 | Core | driveStateNorm | uint32 | 0 | 3 | 0 | 게이트웨이 정규화 후 주행 상태 |
 | 14 | Core | steeringInputNorm | uint32 | 0 | 1 | 0 | 게이트웨이 정규화 후 조향 입력 |
+| 31 | Core | speedLimitNorm | uint32 | 0 | 255 | 30 | 게이트웨이 정규화 후 구간 제한속도 |
 | 15 | Core | baseZoneContext | uint32 | 0 | 255 | 0 | 구간 컨텍스트 계산 결과 |
 | 16 | Core | warningState | uint32 | 0 | 255 | 0 | 경고 조건 판정 상태 |
 | 17 | Core | emergencyContext | uint32 | 0 | 255 | 0 | 긴급 수신 컨텍스트 상태 |
@@ -70,6 +72,7 @@
 | 4 | Infotainment | roadZone | roadZone_CAN_IN | CAN_IN | Infotainment CAN -> INFOTAINMENT_GW |
 | 5 | Infotainment | navDirection | navDirection_CAN_IN | CAN_IN | Infotainment CAN -> INFOTAINMENT_GW |
 | 6 | Infotainment | zoneDistance | zoneDistance_CAN_IN | CAN_IN | Infotainment CAN -> INFOTAINMENT_GW |
+| 30 | Infotainment | speedLimit | speedLimit_CAN_IN | CAN_IN | Infotainment CAN -> INFOTAINMENT_GW |
 | 7 | V2X | emergencyType | emergencyType_ETH_IN | ETH_IN | Ethernet UDP -> EMS_ALERT_RX |
 | 8 | V2X | emergencyDirection | emergencyDirection_ETH_IN | ETH_IN | Ethernet UDP -> EMS_ALERT_RX |
 | 9 | V2X | eta | eta_ETH_IN | ETH_IN | Ethernet UDP -> EMS_ALERT_RX |
@@ -78,6 +81,7 @@
 | 12 | Core | vehicleSpeedNorm | vehicleSpeed_ETH_CORE | ETH_CORE | CHASSIS_GW -> ETH_SWITCH -> ADAS_WARN_CTRL |
 | 13 | Core | driveStateNorm | driveState_ETH_CORE | ETH_CORE | CHASSIS_GW -> ETH_SWITCH -> ADAS_WARN_CTRL |
 | 14 | Core | steeringInputNorm | steeringInput_ETH_CORE | ETH_CORE | CHASSIS_GW -> ETH_SWITCH -> ADAS_WARN_CTRL |
+| 31 | Core | speedLimitNorm | speedLimit_ETH_CORE | ETH_CORE | INFOTAINMENT_GW -> ETH_SWITCH -> NAV_CONTEXT_MGR/ADAS_WARN_CTRL |
 | 15 | Core | baseZoneContext | baseZoneContext_ETH_CORE | ETH_CORE | INFOTAINMENT_GW -> ETH_SWITCH -> NAV_CONTEXT_MGR |
 | 16 | Core | warningState | warningState_ETH_CORE | ETH_CORE | ADAS_WARN_CTRL 내부 계산 |
 | 17 | Core | emergencyContext | emergencyContext_ETH_CORE | ETH_CORE | EMS_ALERT_RX 내부 계산 |
@@ -106,6 +110,7 @@
 | roadZone | roadZone_CAN_IN | enum | 1 | Little | 255 | 0:일반,1:스쿨존,2:고속,3:유도 |
 | navDirection | navDirection_CAN_IN | enum | 1 | Little | 255 | 0:없음,1:좌,2:우,3:기타 |
 | zoneDistance | zoneDistance_CAN_IN | m | 1 | Little | 65535 | 거리 미수신 시 invalid |
+| speedLimit | speedLimit_CAN_IN | km/h | 1 | Little | 255 | 구간 제한속도 미수신 시 기본값 30 적용 |
 | emergencyType | emergencyType_ETH_IN | enum | 1 | Little | 255 | 0:none,1:police,2:ambulance |
 | emergencyDirection | emergencyDirection_ETH_IN | enum | 1 | Little | 255 | 0:front,1:left,2:right,3:rear |
 | eta | eta_ETH_IN | s | 1 | Little | 65535 | 유효범위 0~255, 내부 처리에서 65535를 invalid sentinel로 사용 |
@@ -114,6 +119,7 @@
 | vehicleSpeedNorm | vehicleSpeed_ETH_CORE | km/h | 1 | Little | 255 | GW 정규화 후 값 |
 | driveStateNorm | driveState_ETH_CORE | enum | 1 | Little | 255 | GW 정규화 후 값 |
 | steeringInputNorm | steeringInput_ETH_CORE | bool | 1 | Little | 255 | GW 정규화 후 값 |
+| speedLimitNorm | speedLimit_ETH_CORE | km/h | 1 | Little | 255 | 과속 판정 비교용 정규화 제한속도 |
 | baseZoneContext | baseZoneContext_ETH_CORE | context_id | 1 | Little | 65535 | 컨텍스트 계산 실패 값 |
 | warningState | warningState_ETH_CORE | state_id | 1 | Little | 65535 | 경고 판정 실패 값 |
 | emergencyContext | emergencyContext_ETH_CORE | state_id | 1 | Little | 65535 | 긴급 컨텍스트 미유효 값 |
@@ -142,6 +148,7 @@
 | Var_004 | roadZone | roadZone_CAN_IN | CAN_IN | INFOTAINMENT_GW | Comm_003 | Flow_003 | Func_007 | Req_007 | 100ms CAN 수신 시 갱신 |
 | Var_005 | navDirection | navDirection_CAN_IN | CAN_IN | INFOTAINMENT_GW | Comm_003 | Flow_003 | Func_007 | Req_007 | 100ms CAN 수신 시 갱신 |
 | Var_006 | zoneDistance | zoneDistance_CAN_IN | CAN_IN | INFOTAINMENT_GW | Comm_003 | Flow_003 | Func_007 | Req_007 | 100ms CAN 수신 시 갱신 |
+| Var_030 | speedLimit | speedLimit_CAN_IN | CAN_IN | INFOTAINMENT_GW | Comm_003 | Flow_003 | Func_007, Func_010 | Req_007, Req_010 | 100ms CAN 수신 시 갱신(미수신 시 기본값 30) |
 | Var_007 | emergencyType | emergencyType_ETH_IN | ETH_IN | EMS_ALERT_RX | Comm_004, Comm_005, Comm_006 | Flow_004, Flow_005, Flow_006 | Func_017, Func_018, Func_023, Func_025, Func_029 | Req_017, Req_018, Req_023, Req_025, Req_029 | E100 수신 시 즉시 갱신 |
 | Var_008 | emergencyDirection | emergencyDirection_ETH_IN | ETH_IN | EMS_ALERT_RX | Comm_004, Comm_005, Comm_006 | Flow_004, Flow_005, Flow_006 | Func_017, Func_018, Func_020, Func_023 | Req_017, Req_018, Req_020, Req_023 | E100 수신 시 즉시 갱신 |
 | Var_009 | eta | eta_ETH_IN | ETH_IN | EMS_ALERT_RX | Comm_004, Comm_005, Comm_006 | Flow_004, Flow_005, Flow_006 | Func_017, Func_018, Func_023, Func_030 | Req_017, Req_018, Req_023, Req_030 | E100 수신 시 즉시 갱신 |
@@ -150,6 +157,7 @@
 | Var_012 | vehicleSpeedNorm | vehicleSpeed_ETH_CORE | ETH_CORE | ADAS_WARN_CTRL | Comm_001 | Flow_001 | Func_001, Func_003, Func_004, Func_006, Func_010 | Req_001, Req_003, Req_004, Req_006, Req_010 | CHASSIS_GW 변환 메시지 수신 시 갱신 |
 | Var_013 | driveStateNorm | driveState_ETH_CORE | ETH_CORE | ADAS_WARN_CTRL | Comm_001 | Flow_001 | Func_001, Func_002 | Req_001, Req_002 | CHASSIS_GW 변환 메시지 수신 시 갱신 |
 | Var_014 | steeringInputNorm | steeringInput_ETH_CORE | ETH_CORE | ADAS_WARN_CTRL | Comm_002 | Flow_002 | Func_011, Func_012 | Req_011, Req_012 | CHASSIS_GW 변환 메시지 수신 시 갱신 |
+| Var_031 | speedLimitNorm | speedLimit_ETH_CORE | ETH_CORE | NAV_CONTEXT_MGR | Comm_003 | Flow_003 | Func_007, Func_010 | Req_007, Req_010 | NAV 입력 수신 시 정규화 갱신(기본값 30) |
 | Var_015 | baseZoneContext | baseZoneContext_ETH_CORE | ETH_CORE | NAV_CONTEXT_MGR | Comm_003 | Flow_003 | Func_007 | Req_007 | NAV 컨텍스트 계산 후 갱신 |
 | Var_016 | warningState | warningState_ETH_CORE | ETH_CORE | ADAS_WARN_CTRL | Comm_001, Comm_002, Comm_006 | Flow_001, Flow_002, Flow_006 | Func_003, Func_004, Func_006, Func_010, Func_011, Func_012, Func_027 | Req_003, Req_004, Req_006, Req_010, Req_011, Req_012, Req_027 | 경고 조건 계산 시 갱신 |
 | Var_017 | emergencyContext | emergencyContext_ETH_CORE | ETH_CORE | EMS_ALERT_RX | Comm_004, Comm_005, Comm_006 | Flow_004, Flow_005, Flow_006 | Func_017, Func_018, Func_023, Func_024 | Req_017, Req_018, Req_023, Req_024 | E100 수신/해제/타임아웃 시 갱신 |
@@ -173,6 +181,7 @@
 - `0303`의 모든 Signal은 본 문서 변수와 1개 이상 매핑되어야 한다.
 - `timeoutClear`(내부 구현: `timeoutClear_ETH_CORE`)는 `Req_024(1000ms)` 검증 로직과 직접 연결되어야 한다.
 - `selectedAlertLevel`, `selectedAlertType`(내부 구현: `selectedAlertLevel_ETH_CORE`, `selectedAlertType_ETH_CORE`)는 `WARN_ARB_MGR` 출력의 단일 소스로 유지한다.
+- `speedLimit`/`speedLimitNorm`은 Req_010 과속 판정 비교 입력으로 0303 Comm_003과 정합되어야 한다.
 - 구현 단계에서 코드 레벨 변수 키는 `Internal Name`을 기준으로 통일하고, 문서 간 추적은 `표준 Name`과 함께 병기한다.
 
 ---
@@ -187,3 +196,4 @@
 | 2.2 | 2026-02-25 | 변수 구현 속성 보강 표(Unit/Scale/Endian/Invalid) 추가로 04 구현 시 해석 오차 방지 기준 명시 |
 | 2.3 | 2026-02-25 | 상단 공식표를 도메인 Namespace + 순수 Name 구조로 정리하고, 통신/구현 식별자는 하단 매핑/추적 표로 분리 |
 | 2.4 | 2026-02-28 | `timeoutClear` 생성 주체를 EMS_ALERT_RX로 명확화, `selectedAlertLevel/Type` Func/Req 범위표기를 명시 나열로 전환, `eta` 유효범위/invalid sentinel 규칙을 분리 명시 |
+| 2.5 | 2026-02-28 | Nav 제한속도 변수 `speedLimit`/`speedLimitNorm` 및 Var_030/Var_031 추적 항목을 추가해 Req_010 과속 판정 체인을 보강. |

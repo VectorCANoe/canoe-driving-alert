@@ -3,7 +3,7 @@
 **Document ID**: PROJ-06-IT
 **ISO 26262 Reference**: Part 6, Cl.10 (Software Integration and Integration Test)
 **ASPICE Reference**: SWE.5 (Software Integration and Integration Test)
-**Version**: 4.3
+**Version**: 4.4
 **Date**: 2026-02-28
 **Status**: Draft
 **Project Title**: 주행 상황 실시간 경고 시스템
@@ -31,7 +31,7 @@
 | 테스트 ID | 요구사항 ID | VC ID | 테스트 목적 | 예상 결과 | 테스트 수행 결과 | 담당자 | 일자 |
 |---|---|---|---|---|---|---|---|
 | IT_FLOW_001 | Req_001,Req_002,Req_003,Req_004,Req_006,Req_010 | VC_001,VC_002,VC_003,VC_004,VC_006,VC_010 | Chassis 입력 -> CHASSIS_GW -> ADAS_WARN_CTRL 연동 검증 | 0x100/0x101 입력이 0x510/0x511로 변환되고 `150ms` 이내 경고 상태 계산 반영 |  |  |  |
-| IT_FLOW_002 | Req_007 | VC_007 | Nav 입력 -> INFOTAINMENT_GW -> NAV_CONTEXT_MGR/WARN_ARB_MGR 연동 검증 | 0x110 입력이 0x512로 변환되고 `150ms` 이내 baseZoneContext 갱신 |  |  |  |
+| IT_FLOW_002 | Req_007,Req_010 | VC_007,VC_010 | Nav 입력 -> INFOTAINMENT_GW -> NAV_CONTEXT_MGR/ADAS_WARN_CTRL/WARN_ARB_MGR 연동 검증 | 0x110 입력(roadZone/navDirection/zoneDistance/speedLimit)이 0x512로 변환되고 `150ms` 이내 baseZoneContext/speedLimitNorm 갱신 |  |  |  |
 | IT_EMS_TX_001 | Req_017 | VC_017 | 경찰 긴급 송신 연동 검증 | EMS_POLICE_TX `100ms` 송신이 EMS_ALERT_RX 수신으로 연결되고 `150ms` 이내 중재 입력 반영 |  |  |  |
 | IT_EMS_TX_002 | Req_018 | VC_018 | 구급 긴급 송신 연동 검증 | EMS_AMB_TX `100ms` 송신이 EMS_ALERT_RX 수신으로 연결되고 `150ms` 이내 중재 입력 반영 |  |  |  |
 | IT_ARB_001 | Req_022,Req_025,Req_027~Req_032 | VC_022,VC_025,VC_027~VC_032 | 긴급/구간 충돌 중재 연동 검증 | 우선순위 규칙에 따라 단일 selectedAlert 결과 생성 |  |  |  |
@@ -48,7 +48,7 @@
 | IT ID | 관련 Flow | 관련 Comm | 관련 Func | 관련 Req | 관련 VC | 선행 UT | 합격 기준 |
 |---|---|---|---|---|---|---|---|
 | IT_FLOW_001 | Flow_001, Flow_002 | Comm_001, Comm_002 | Func_001~Func_004,Func_006,Func_010~Func_012 | Req_001,Req_002,Req_003,Req_004,Req_006,Req_010,Req_011,Req_012 | VC_001,VC_002,VC_003,VC_004,VC_006,VC_010,VC_011,VC_012 | UT_ADAS_001, UT_GW_001 | 입력 `100ms` + 출력 `50ms` 기준 `150ms` 이내 반영 |
-| IT_FLOW_002 | Flow_003 | Comm_003 | Func_007 | Req_007 | VC_007 | UT_NAV_001, UT_GW_001 | 구간 입력 변경 후 `150ms` 이내 컨텍스트 반영 |
+| IT_FLOW_002 | Flow_003 | Comm_003 | Func_007,Func_010 | Req_007,Req_010 | VC_007,VC_010 | UT_NAV_001, UT_GW_001 | 구간/제한속도 입력 변경 후 `150ms` 이내 컨텍스트/과속기준 반영 |
 | IT_EMS_TX_001 | Flow_004 | Comm_004 | Func_017,Func_023 | Req_017,Req_023 | VC_017,VC_023 | UT_EMS_POL_001, UT_EMS_RX_001 | Police Active/Clear 송수신 일치, 송신주기 `100ms` 유지 |
 | IT_EMS_TX_002 | Flow_005 | Comm_005 | Func_018,Func_023 | Req_018,Req_023 | VC_018,VC_023 | UT_EMS_AMB_001, UT_EMS_RX_001 | Ambulance Active/Clear 송수신 일치, 송신주기 `100ms` 유지 |
 | IT_ARB_001 | Flow_006 | Comm_006 | Func_022,Func_025,Func_027~Func_032 | Req_022,Req_025,Req_027~Req_032 | VC_022,VC_025,VC_027~VC_032 | UT_ARB_001 | 우선순위/동률 규칙 결과가 기대표와 일치 |
@@ -90,3 +90,4 @@
 | 4.1 | 2026-02-26 | 합격 기준에 50ms/100ms/150ms/1000ms 수치 기준을 반영하고, FZ 사전 점검 결과 반영 전 Draft 경계 문구 추가 |
 | 4.2 | 2026-02-26 | VC 추적 강화를 위해 상단/상세 표에 VC ID 컬럼을 추가하고 Req-VC-IT 연결을 명시 |
 | 4.3 | 2026-02-28 | 팀 제안 중 현업 BP에 부합하는 핵심만 선별 반영: 타임아웃 경계값(999/1000/>1000), ETA/SourceID 우선순위, 방향 분기 보강 케이스 추가 |
+| 4.4 | 2026-02-28 | Flow_003(Comm_003)에 `speedLimit` 연계를 추가하여 Req_010(스쿨존 과속) 통합 검증 경로를 보강. |

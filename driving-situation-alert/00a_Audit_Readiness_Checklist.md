@@ -27,19 +27,19 @@
 
 | 문서 | Version | Date | 비고 |
 |---|---|---|---|
-| `00_VModel_Mapping.md` | 4.2 | 2026-02-26 | V-model 매핑 |
-| `00b_Project_Scope.md` | 2.2 | 2026-02-26 | 범위/제외 |
-| `01_Requirements.md` | 5.6 | 2026-02-26 | Req+VC 기준 |
-| `02_Concept_design.md` | 2.3 | 2026-02-27 | 컨셉/네트워크 그림 중심 |
-| `03_Function_definition.md` | 4.6 | 2026-02-28 | 기능 정의 |
-| `0301_SysFuncAnalysis.md` | 3.7 | 2026-02-28 | 노드 기능 분석 |
-| `0302_NWflowDef.md` | 2.9 | 2026-02-28 | 네트워크 흐름 |
-| `0303_Communication_Specification.md` | 2.8 | 2026-02-28 | 통신 명세 |
-| `0304_System_Variables.md` | 2.4 | 2026-02-28 | 변수/추적 |
-| `04_SW_Implementation.md` | 2.5 | 2026-02-26 | 구현 연결 |
-| `05_Unit_Test.md` | 2.3 | 2026-02-28 | UT |
-| `06_Integration_Test.md` | 4.3 | 2026-02-28 | IT |
-| `07_System_Test.md` | 5.2 | 2026-02-26 | ST |
+| `00_VModel_Mapping.md` | 4.3 | 2026-02-28 | V-model 매핑 |
+| `00b_Project_Scope.md` | 2.3 | 2026-02-28 | 범위/제외 |
+| `01_Requirements.md` | 5.8 | 2026-02-28 | Req+VC 기준 |
+| `02_Concept_design.md` | 2.4 | 2026-02-28 | 컨셉/네트워크 그림 중심 |
+| `03_Function_definition.md` | 4.7 | 2026-02-28 | 기능 정의 |
+| `0301_SysFuncAnalysis.md` | 3.8 | 2026-02-28 | 노드 기능 분석 |
+| `0302_NWflowDef.md` | 3.0 | 2026-02-28 | 네트워크 흐름 |
+| `0303_Communication_Specification.md` | 2.9 | 2026-02-28 | 통신 명세 |
+| `0304_System_Variables.md` | 2.5 | 2026-02-28 | 변수/추적 |
+| `04_SW_Implementation.md` | 2.6 | 2026-02-28 | 구현 연결 |
+| `05_Unit_Test.md` | 2.4 | 2026-02-28 | UT |
+| `06_Integration_Test.md` | 4.4 | 2026-02-28 | IT |
+| `07_System_Test.md` | 5.3 | 2026-02-28 | ST |
 
 ## C. 범위 경계(고정)
 

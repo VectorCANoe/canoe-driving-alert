@@ -1,8 +1,8 @@
 # 컨셉 디자인 (Concept Design)
 
 **Document ID**: PROJ-02-CD  
-**Version**: 2.3  
-**Date**: 2026-02-27  
+**Version**: 2.4  
+**Date**: 2026-02-28  
 **Status**: In Progress (Figure Build)  
 **Project Title**: 주행 상황 실시간 경고 시스템  
 **Subtitle**: 구간 정보 및 긴급차량 접근 기반 앰비언트·클러스터 경보
@@ -51,7 +51,7 @@
 
 ### Figure 02-02. 도메인 네트워크 분리
 - Chassis CAN: 차량 상태/조향 입력
-- Infotainment CAN: 내비 문맥/클러스터 경고
+- Infotainment CAN: 내비 문맥(roadZone/navDirection/zoneDistance/speedLimit)/클러스터 경고
 - Ethernet UDP: 긴급 알림(E100), 중재 결과(E200)
 
 ### Figure 02-03. 핵심 시나리오 체인
@@ -85,4 +85,5 @@
 | 2.0 | 2026-02-25 | 주행상황 연동 실시간 경고 시스템 기준으로 컨셉 재정의 |
 | 2.1 | 2026-02-26 | 아키텍처 대안(Option 1/1A/2/3) 비교 및 채택 결론 추가 |
 | 2.2 | 2026-02-26 | 컨셉 블록도/네트워크 섹션에 도메인 GW 실명 반영 |
+| 2.4 | 2026-02-28 | 네트워크 분리 캡션에 `speedLimit` 입력을 반영해 0302/0303/0304과 정합화. |
 | 2.3 | 2026-02-27 | 02 문서를 그림 중심 구조로 전환하기 위한 시각화 계획/캡션/변환 규칙 추가 |

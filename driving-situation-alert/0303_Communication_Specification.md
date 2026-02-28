@@ -3,7 +3,7 @@
 **Document ID**: PROJ-0303-CS
 **ISO 26262 Reference**: Part 6, Cl.7 (Software Architectural Design)
 **ASPICE Reference**: SWE.2 (Software Architectural Design)
-**Version**: 2.8
+**Version**: 2.9
 **Date**: 2026-02-28
 **Status**: Draft
 **Project Title**: 주행 상황 실시간 경고 시스템
@@ -53,7 +53,7 @@
 |  |  |  |  | 9 |  |  |  |
 | frmSteeringCanMsg | 0x101 | 1 | steeringInput | 0 | 조향 입력 여부 | 0:미입력 / 1:입력 | Chassis CAN에서 CHASSIS_GW가 수신 |
 | ethSteeringMsg | 0x511 | 1 | steeringInput | 0 | 게이트웨이 변환 조향 입력 | 0:미입력 / 1:입력 | CHASSIS_GW -> ETH_SWITCH -> ADAS_WARN_CTRL |
-| frmNavContextCanMsg | 0x110 | 2 | roadZone | 0 | 구간 타입 | 0:일반 / 1:스쿨존 / 2:고속 / 3:유도 | Infotainment CAN에서 INFOTAINMENT_GW가 수신 |
+| frmNavContextCanMsg | 0x110 | 3 | roadZone | 0 | 구간 타입 | 0:일반 / 1:스쿨존 / 2:고속 / 3:유도 | Infotainment CAN에서 INFOTAINMENT_GW가 수신 |
 |  |  |  |  | 1 |  |  |  |
 |  |  |  | navDirection | 2 | 유도 방향 | 0:없음 / 1:좌 / 2:우 / 3:기타 | 방향 안내 정책 입력 |
 |  |  |  |  | 3 |  |  |  |
@@ -65,7 +65,9 @@
 |  |  |  |  | 13 |  |  |  |
 |  |  |  |  | 14 |  |  |  |
 |  |  |  |  | 15 |  |  |  |
-| ethNavContextMsg | 0x512 | 2 | roadZone | 0 | 게이트웨이 변환 구간 타입 | 0~3 | INFOTAINMENT_GW -> ETH_SWITCH -> NAV_CONTEXT_MGR/WARN_ARB_MGR |
+|  |  |  | speedLimit | 16 | 현재 구간 제한속도 | 0~255 km/h | 스쿨존 과속 기준값 입력(Req_010) |
+|  |  |  |  | 17 |  |  |  |
+| ethNavContextMsg | 0x512 | 3 | roadZone | 0 | 게이트웨이 변환 구간 타입 | 0~3 | INFOTAINMENT_GW -> ETH_SWITCH -> NAV_CONTEXT_MGR/WARN_ARB_MGR |
 |  |  |  |  | 1 |  |  |  |
 |  |  |  | navDirection | 2 | 게이트웨이 변환 유도 방향 | 0:없음 / 1:좌 / 2:우 / 3:기타 | 구간 안내 분기 입력 |
 |  |  |  |  | 3 |  |  |  |
@@ -77,6 +79,8 @@
 |  |  |  |  | 13 |  |  |  |
 |  |  |  |  | 14 |  |  |  |
 |  |  |  |  | 15 |  |  |  |
+|  |  |  | speedLimit | 16 | 게이트웨이 변환 제한속도 | 0~255 km/h | NAV 컨텍스트 + 과속 경고 기준 전달 |
+|  |  |  |  | 17 |  |  |  |
 | ETH_EmergencyAlert | 0xE100 | 4 | emergencyType | 0 | 긴급차량 종류 | 0:None / 1:Police / 2:Ambulance | EMS_POLICE_TX/EMS_AMB_TX -> ETH_SWITCH -> EMS_ALERT_RX |
 |  |  |  |  | 1 |  |  |  |
 |  |  |  | emergencyDirection | 2 | 접근 방향 | 0:앞 / 1:좌 / 2:우 / 3:후 | CLU_HMI_CTRL 방향 표시 입력 |
@@ -138,7 +142,7 @@
 |---|---|---|---|---|---|---|---|---|---|
 | Comm_001 | Flow_001 | Func_001, Func_002, Func_003, Func_004, Func_006, Func_010 | Req_001, Req_002, Req_003, Req_004, Req_006, Req_010 | frmVehicleStateCanMsg(0x100), ethVehicleStateMsg(0x510) | SIL_TEST_CTRL, CHASSIS_GW | CHASSIS_GW, ADAS_WARN_CTRL | CAN + Ethernet(UDP) | 100ms | 속도/주행상태 입력 갱신 |
 | Comm_002 | Flow_002 | Func_011, Func_012 | Req_011, Req_012 | frmSteeringCanMsg(0x101), ethSteeringMsg(0x511) | SIL_TEST_CTRL, CHASSIS_GW | CHASSIS_GW, ADAS_WARN_CTRL | CAN + Ethernet(UDP) | 100ms | 조향 입력 갱신 |
-| Comm_003 | Flow_003 | Func_007 | Req_007 | frmNavContextCanMsg(0x110), ethNavContextMsg(0x512) | SIL_TEST_CTRL, INFOTAINMENT_GW | INFOTAINMENT_GW, NAV_CONTEXT_MGR, WARN_ARB_MGR | CAN + Ethernet(UDP) | 100ms | 구간/방향/거리 입력 갱신 |
+| Comm_003 | Flow_003 | Func_007, Func_010 | Req_007, Req_010 | frmNavContextCanMsg(0x110), ethNavContextMsg(0x512) | SIL_TEST_CTRL, INFOTAINMENT_GW | INFOTAINMENT_GW, NAV_CONTEXT_MGR, ADAS_WARN_CTRL, WARN_ARB_MGR | CAN + Ethernet(UDP) | 100ms | 구간/방향/거리/제한속도 입력 갱신 |
 | Comm_004 | Flow_004 | Func_017 | Req_017 | ETH_EmergencyAlert(0xE100) | EMS_POLICE_TX | EMS_ALERT_RX | Ethernet(UDP) | 100ms | alertState=Clear 또는 송신 중지 |
 | Comm_005 | Flow_005 | Func_018 | Req_018 | ETH_EmergencyAlert(0xE100) | EMS_AMB_TX | EMS_ALERT_RX | Ethernet(UDP) | 100ms | alertState=Clear 또는 송신 중지 |
 | Comm_006 | Flow_006 | Func_022, Func_023, Func_024, Func_025, Func_027, Func_028, Func_029, Func_030, Func_031, Func_032 | Req_022, Req_023, Req_024, Req_025, Req_027, Req_028, Req_029, Req_030, Req_031, Req_032 | ETH_EmergencyAlert(0xE100), ethSelectedAlertMsg(0xE200) | EMS_ALERT_RX, WARN_ARB_MGR | WARN_ARB_MGR, BODY_GW, IVI_GW | Ethernet(UDP) | Event + 50ms | 1000ms 무갱신 시 timeoutClear=1 |
@@ -166,6 +170,7 @@
 | roadZone | gRoadZone |
 | navDirection | gNavDirection |
 | zoneDistance | gZoneDistance |
+| speedLimit | gSpeedLimit |
 
 ---
 
@@ -177,6 +182,7 @@
 - `EmergencyAlert` Active/Clear 신호가 1000ms 타임아웃 규칙과 일치해야 한다.
 - `selectedAlertLevel/selectedAlertType` 기반 Ambient/Cluster 출력 Comm이 모두 존재해야 한다.
 - `ETH_SWITCH` 경유 Ethernet 신호가 각 도메인 게이트웨이에서 CAN 메시지로 정상 변환되어야 한다.
+- `speedLimit` 신호는 Comm_003에서 NAV_CONTEXT_MGR와 ADAS_WARN_CTRL까지 연계되어야 한다.
 
 ---
 
@@ -206,3 +212,4 @@
 | 2.6 | 2026-02-26 | 상단 공식표 비변경 원칙을 명시하고 하단 보강표 구역(감사/추적 전용)으로 분리 |
 | 2.7 | 2026-02-26 | 상단 Signal 명칭을 0304 표준명(vehicleSpeed 등)으로 통일하고, g* 별칭은 하단 매핑표로 분리 |
 | 2.8 | 2026-02-28 | signal 케이스/명칭을 0304 표준명(`steeringInput/emergencyType/eta/sourceId` 등)으로 정합하고 `SelectedAlertContext` 잔여 표현 제거 |
+| 2.9 | 2026-02-28 | Nav 컨텍스트 메시지(0x110/0x512)에 `speedLimit`(bit16, DLC=3)를 추가하고 Comm_003을 Req_010/Func_010까지 확장 정합. |

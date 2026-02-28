@@ -3,7 +3,7 @@
 **Document ID**: PROJ-0302-NFD
 **ISO 26262 Reference**: Part 4, Cl.7 (System Design)
 **ASPICE Reference**: SYS.3 (System Architectural Design)
-**Version**: 2.9
+**Version**: 3.0
 **Date**: 2026-02-28
 **Status**: Draft
 **Project Title**: 주행 상황 실시간 경고 시스템
@@ -53,6 +53,14 @@
 |  |  |  |  |  | 5 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 |  |  |  |  |  | 6 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 |  |  |  |  |  | 7 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+|  |  |  | 2 |  | 0 | speedLimit | Tx |  | Rx |  |  |  |  |  |  |  |  |  |  |  |  |
+|  |  |  |  |  | 1 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+|  |  |  |  |  | 2 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+|  |  |  |  |  | 3 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+|  |  |  |  |  | 4 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+|  |  |  |  |  | 5 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+|  |  |  |  |  | 6 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+|  |  |  |  |  | 7 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 | Ethernet | 0x510 | ethVehicleStateMsg | 0 | Gateway Normalized Vehicle State | 0 | vehicleSpeed |  | Tx |  | Rx | Rx |  |  |  |  |  |  |  |  |  | UDP, 100ms |
 |  |  |  |  |  | 1 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 |  |  |  |  |  | 2 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
@@ -69,6 +77,14 @@
 |  |  |  | 0 |  | 2 | navDirection |  |  | Tx | Rx |  | Rx |  |  |  | Rx |  |  |  |  |  |
 |  |  |  |  |  | 3 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 |  |  |  | 1 |  | 0 | zoneDistance |  |  | Tx | Rx |  | Rx |  |  |  | Rx |  |  |  |  |  |
+|  |  |  |  |  | 1 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+|  |  |  |  |  | 2 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+|  |  |  |  |  | 3 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+|  |  |  |  |  | 4 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+|  |  |  |  |  | 5 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+|  |  |  |  |  | 6 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+|  |  |  |  |  | 7 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+|  |  |  | 2 |  | 0 | speedLimit |  |  | Tx | Rx |  | Rx |  |  |  | Rx |  |  |  |  |  |
 |  |  |  |  |  | 1 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 |  |  |  |  |  | 2 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 |  |  |  |  |  | 3 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
@@ -140,7 +156,7 @@
 |---|---|---|---|---|---|---|---|---|---|---|
 | Flow_001 | Comm_001 | Func_001, Func_002, Func_003, Func_004, Func_006, Func_010 | Req_001, Req_002, Req_003, Req_004, Req_006, Req_010 | frmVehicleStateCanMsg(0x100), ethVehicleStateMsg(0x510) | SIL_TEST_CTRL, CHASSIS_GW | CHASSIS_GW, ADAS_WARN_CTRL | CAN + Ethernet(UDP) | 100ms | 속도/주행상태 입력 갱신 | 경고 조건 해제 또는 입력 무효 |
 | Flow_002 | Comm_002 | Func_011, Func_012 | Req_011, Req_012 | frmSteeringCanMsg(0x101), ethSteeringMsg(0x511) | SIL_TEST_CTRL, CHASSIS_GW | CHASSIS_GW, ADAS_WARN_CTRL | CAN + Ethernet(UDP) | 100ms | 조향 입력 갱신 | 조향 복귀 또는 경고 해제 |
-| Flow_003 | Comm_003 | Func_007 | Req_007 | frmNavContextCanMsg(0x110), ethNavContextMsg(0x512) | SIL_TEST_CTRL, INFOTAINMENT_GW | INFOTAINMENT_GW, NAV_CONTEXT_MGR, WARN_ARB_MGR | CAN + Ethernet(UDP) | 100ms | 구간/방향/거리 입력 갱신 | 다음 컨텍스트 수신 시 갱신 |
+| Flow_003 | Comm_003 | Func_007, Func_010 | Req_007, Req_010 | frmNavContextCanMsg(0x110), ethNavContextMsg(0x512) | SIL_TEST_CTRL, INFOTAINMENT_GW | INFOTAINMENT_GW, NAV_CONTEXT_MGR, ADAS_WARN_CTRL, WARN_ARB_MGR | CAN + Ethernet(UDP) | 100ms | 구간/방향/거리/제한속도 입력 갱신 | 다음 컨텍스트 수신 시 갱신 |
 | Flow_004 | Comm_004 | Func_017 | Req_017 | ETH_EmergencyAlert(0xE100) | EMS_POLICE_TX | EMS_ALERT_RX | Ethernet(UDP) | 100ms | Police_Active=1 | alertState=Clear 또는 송신 중지 |
 | Flow_005 | Comm_005 | Func_018 | Req_018 | ETH_EmergencyAlert(0xE100) | EMS_AMB_TX | EMS_ALERT_RX | Ethernet(UDP) | 100ms | Ambulance_Active=1 | alertState=Clear 또는 송신 중지 |
 | Flow_006 | Comm_006 | Func_022, Func_023, Func_024, Func_025, Func_027, Func_028, Func_029, Func_030, Func_031, Func_032 | Req_022, Req_023, Req_024, Req_025, Req_027, Req_028, Req_029, Req_030, Req_031, Req_032 | ETH_EmergencyAlert(0xE100), ethSelectedAlertMsg(0xE200) | EMS_ALERT_RX, WARN_ARB_MGR | WARN_ARB_MGR, BODY_GW, IVI_GW | Ethernet(UDP) | Event + 50ms | EmergencyAlert 수신 또는 Zone 충돌 발생 | Clear 수신 또는 1000ms 무갱신 |
@@ -168,6 +184,7 @@
 | roadZone | gRoadZone |
 | navDirection | gNavDirection |
 | zoneDistance | gZoneDistance |
+| speedLimit | gSpeedLimit |
 
 ---
 
@@ -180,6 +197,7 @@
 - `EmergencyAlert` 송신/수신/해제 Flow 존재
 - 타임아웃(1000ms) 해제 Flow 존재
 - `ETH_SWITCH` 경유 신호가 `BODY_GW/IVI_GW`에서 CAN으로 분배되는 Flow 존재
+- `speedLimit` 신호가 `Flow_003/Comm_003`에서 NAV_CONTEXT_MGR와 ADAS_WARN_CTRL로 전달되는 Flow 존재
 
 ---
 
@@ -210,3 +228,4 @@
 | 2.7 | 2026-02-26 | 상단 공식표 비변경 원칙을 명시하고 하단 보강표 구역(감사/추적 전용)으로 분리 |
 | 2.8 | 2026-02-26 | 상단 signal name을 0304 표준명(vehicleSpeed 등)으로 통일하고, g* 별칭은 하단 매핑표로 분리 |
 | 2.9 | 2026-02-28 | signal 표기 케이스를 0304 표준명(`steeringInput/emergencyType/selectedAlertLevel` 등)으로 추가 정합, `SelectedAlertContext` 잔여 문구 제거 |
+| 3.0 | 2026-02-28 | 스쿨존 과속 정밀 판정을 위해 `speedLimit` 신호를 0x110/0x512 상단 공식표와 Flow_003 하단 추적표에 반영. |

@@ -3,7 +3,7 @@
 **Document ID**: PROJ-03-FD
 **ISO 26262 Reference**: Part 4, Cl.7 (System Design)
 **ASPICE Reference**: SYS.3 (System Architectural Design)
-**Version**: 4.6
+**Version**: 4.7
 **Date**: 2026-02-28
 **Status**: Draft
 **Project Title**: 주행 상황 실시간 경고 시스템
@@ -29,6 +29,7 @@
 | 입력 | 구간 정보 | 구간 상태 입력(일반/스쿨존/고속/유도) | Panel/Indicator로 값 입력 | Req_007 / Flow_003 / Comm_003 / ST_ZONE_001 |
 | 입력 | 유도 방향 | 유도 구간 방향 입력(좌/우) | Panel/Indicator로 값 입력 | Req_014 / Flow_003 / Comm_003 / ST_GUIDE_001 |
 | 입력 | 구간 거리 | 구간 거리 입력 | TrackBar로 값 조절 | Req_013 / Flow_003 / Comm_003 / ST_GUIDE_002 |
+| 입력 | 제한 속도 | 현재 구간 제한속도 입력 | CAN 또는 Panel 입력 | Req_007,Req_010 / Flow_003 / Comm_003 / ST_SPEED_001 |
 | 입력 | 차량 속도 | 차량 속도 입력 | CAN 또는 Panel 입력 | Req_001,Req_010 / Flow_001 / Comm_001 / ST_SPEED_001 |
 | 입력 | 조향 입력 | 조향 입력 여부 입력 | CAN 또는 Panel 입력 | Req_011,Req_012 / Flow_002 / Comm_002 / ST_STEER_001 |
 | 입력 | 경찰 긴급 활성 | 경찰 긴급 활성 상태 입력 | Switch/Indicator ON/OFF | Req_017 / Flow_004 / Comm_004 / ST_EMS_001 |
@@ -43,8 +44,8 @@
 | 출력 | 경찰 알림 송신 | 경찰 긴급 알림 송신 | Ethernet UDP 송신 | Req_017 / Flow_004 / Comm_004 / IT_EMS_TX_001 |
 | 출력 | 구급 알림 송신 | 구급 긴급 알림 송신 | Ethernet UDP 송신 | Req_018 / Flow_005 / Comm_005 / IT_EMS_TX_002 |
 | 출력 | 판정 결과 | 시나리오 판정 결과 출력 | 로그/패널 출력 | Req_043 / Flow_009 / Comm_009 / ST_RESULT_001 |
-| ECU 동작 | 구간 컨텍스트 관리 | 구간 입력을 바탕으로 컨텍스트 갱신 | 상태 업데이트 | Req_007 / Flow_003 / Comm_003 / UT_NAV_001 |
-| ECU 동작 | 경고 조건 판정 | 속도/조향 기반 경고 조건 판정 | 경고 트리거 생성 | Req_001~Req_004,Req_006,Req_010~Req_012 / Flow_001,Flow_002 / Comm_001,Comm_002 / UT_ADAS_001 |
+| ECU 동작 | 구간 컨텍스트 관리 | 구간/제한속도 입력을 바탕으로 컨텍스트 갱신 | 상태 업데이트 | Req_007,Req_010 / Flow_003 / Comm_003 / UT_NAV_001 |
+| ECU 동작 | 경고 조건 판정 | 속도/조향/제한속도 기반 경고 조건 판정 | 경고 트리거 생성 | Req_001~Req_004,Req_006,Req_010~Req_012 / Flow_001,Flow_002,Flow_003 / Comm_001,Comm_002,Comm_003 / UT_ADAS_001 |
 | ECU 동작 | 경찰 알림 송신 제어 | 경찰 알림 송신 주기 관리 | 송신 상태 관리 | Req_017 / Flow_004 / Comm_004 / UT_EMS_POL_001 |
 | ECU 동작 | 구급 알림 송신 제어 | 구급 알림 송신 주기 관리 | 송신 상태 관리 | Req_018 / Flow_005 / Comm_005 / UT_EMS_AMB_001 |
 | ECU 동작 | 긴급 알림 수신 처리 | 긴급 알림 수신/해제 처리 | 타임아웃 처리 | Req_023,Req_024 / Flow_006 / Comm_006 / UT_EMS_RX_001 |
@@ -64,10 +65,10 @@
 | Func_004 | Req_004 | ADAS_WARN_CTRL | 경고 종료 트리거 | 해제 조건 성립 시 출력층 종료 | 입력: warningState / 출력: warningState |
 | Func_005 | Req_005 | CLU_HMI_CTRL | 경고 원인 전달 | 경고 원인 텍스트 표시 | 입력: selectedAlertType / 출력: warningTextCode |
 | Func_006 | Req_006 | ADAS_WARN_CTRL | 반복 경고 디바운스 | 동일 경고 재출력 간격 제어 | 입력: warningState / 출력: warningState |
-| Func_007 | Req_007 | NAV_CONTEXT_MGR | 구간값 변경 반영 | roadZone 변경 시 구간 상태 갱신 | 입력: roadZone, navDirection, zoneDistance / 출력: baseZoneContext |
+| Func_007 | Req_007 | NAV_CONTEXT_MGR | 구간값 변경 반영 | roadZone/speedLimit 변경 시 구간 상태 갱신 | 입력: roadZone, navDirection, zoneDistance, speedLimit / 출력: baseZoneContext, speedLimitNorm |
 | Func_008 | Req_008 | BCM_AMBIENT_CTRL | 일반구간 정책 적용 | 일반 구간 기본 패턴 적용 | 입력: selectedAlertLevel / 출력: ambientMode |
 | Func_009 | Req_009 | BCM_AMBIENT_CTRL | 스쿨존 강화 경고 | 스쿨존 전용 강화 패턴 적용 | 입력: selectedAlertLevel / 출력: ambientMode |
-| Func_010 | Req_010 | ADAS_WARN_CTRL | 스쿨존 과속 경고 | 스쿨존 속도 초과 이벤트 판정 | 입력: vehicleSpeedNorm, baseZoneContext / 출력: warningState |
+| Func_010 | Req_010 | ADAS_WARN_CTRL | 스쿨존 과속 경고 | 스쿨존 속도 초과 이벤트 판정 | 입력: vehicleSpeedNorm, speedLimitNorm, baseZoneContext / 출력: warningState |
 | Func_011 | Req_011 | ADAS_WARN_CTRL | 고속 장시간 무조향 감지 | 고속 구간 무조향 타이머 경고 | 입력: steeringInputNorm, baseZoneContext / 출력: warningState |
 | Func_012 | Req_012 | ADAS_WARN_CTRL | 무조향 경고 해제 | 조향 입력 복귀 시 경고 해제 | 입력: steeringInputNorm / 출력: warningState |
 | Func_013 | Req_013 | BCM_AMBIENT_CTRL | 유도구간 진입 전환 | 유도구간 진입 시 방향안내 모드 전환 | 입력: selectedAlertType, navDirection / 출력: ambientMode |
@@ -122,3 +123,4 @@
 | 4.4 | 2026-02-25 | 상단 공식표 `검증` 열의 TBD 제거. Req/Flow/Comm/Test ID를 행별로 명시해 감사 추적성을 강화 |
 | 4.5 | 2026-02-28 | 기능 정의 상세 표의 입출력 변수를 0304 표준 변수명으로 정규화하고 비정의 변수(WarningCond/LastAlertId 등) 제거 |
 | 4.6 | 2026-02-28 | Func_014 설명에서 비정의 객체명(`selectedAlertContext`)을 제거하고 0304 표준 변수(`navDirection`) 기준으로 정합화 |
+| 4.7 | 2026-02-28 | 스쿨존 과속 정합 강화를 위해 `speedLimit/speedLimitNorm` 입력을 Func_007/Func_010과 상단 입력 표에 반영. |

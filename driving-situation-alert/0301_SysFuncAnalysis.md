@@ -3,7 +3,7 @@
 **Document ID**: PROJ-0301-SFA
 **ISO 26262 Reference**: Part 4, Cl.7 (System Design)
 **ASPICE Reference**: SYS.3 (System Architectural Design)
-**Version**: 3.7
+**Version**: 3.8
 **Date**: 2026-02-28
 **Status**: Draft
 **Project Title**: 주행 상황 실시간 경고 시스템
@@ -23,7 +23,7 @@
 - 상단 표는 공식 표준 양식의 열 구성(노드/기능 상세/비고)을 유지한다.
 - 상세 추적 정보(Func/Req/실제 입출력)는 하단 표에 분리한다.
 - 옵션1 아키텍처를 고정한다: 중앙 경고코어 + Ethernet 백본(ETH_SWITCH) + 도메인 게이트웨이 + 도메인 CAN.
-- 변수명은 0304 표준 Name(`vehicleSpeed`, `roadZone`) 기준으로 작성하고, 코드 별칭(`g*`)은 구현 문서에서만 사용한다.
+- 변수명은 0304 표준 Name(`vehicleSpeed`, `roadZone`, `speedLimit`) 기준으로 작성하고, 코드 별칭(`g*`)은 구현 문서에서만 사용한다.
 
 ---
 
@@ -48,20 +48,20 @@
 |  |  | Body |
 | BCM_AMBIENT_CTRL | 중재 결과 기반 앰비언트 경고 패턴 적용 | 색상/패턴 반영 |
 |  |  | Infotainment |
-| NAV_CONTEXT_MGR | 내비게이션 구간/방향/거리 기반 컨텍스트 갱신 | 구간 상태 전환 |
+| NAV_CONTEXT_MGR | 내비게이션 구간/방향/거리/제한속도 기반 컨텍스트 갱신 | 구간 상태 전환 |
 | CLU_HMI_CTRL | 운전자 경고 문구 및 안내 정보 표시 | 원인/방향/유형 표시 |
 |  |  | Actual Device |
 | Ambient Lights | 실제 앰비언트 장치가 제어 신호를 수신해 점등/패턴 동작 수행 | frmAmbientControlMsg(0x210) 반영 |
 | Cluster Display | 실제 클러스터 장치가 경고 문구/상태를 표시 | frmClusterWarningMsg(0x220) 반영 |
-| Navigation Panel | 사용자 입력(구간/방향/거리) 제공 및 시각화 | Panel UI 입력 소스 |
+| Navigation Panel | 사용자 입력(구간/방향/거리/제한속도) 제공 및 시각화 | Panel UI 입력 소스 |
 
 ---
 
 ## 기능 정의 상세 표 (추적성/입출력 정의)
 | Func ID | Req ID | 실제 노드명 | 입력 (Input) | 처리 (Processing) | 출력 (Output) | 실제값 정의 |
 |---|---|---|---|---|---|---|
-| Func_007 | Req_007 | NAV_CONTEXT_MGR | roadZone, navDirection, zoneDistance | 구간 상태 판별 및 전환 컨텍스트 갱신 | baseZoneContext | 입력: roadZone, navDirection, zoneDistance |
-| Func_001~004,006,010~012 | Req_001~004,006,010~012 | ADAS_WARN_CTRL | vehicleSpeedNorm, driveStateNorm, steeringInputNorm, baseZoneContext | 스쿨존 과속/고속 무조향 조건 판정, 경고 트리거 생성, 디바운스 | warningState | 입력: vehicleSpeedNorm, driveStateNorm, steeringInputNorm, baseZoneContext |
+| Func_007 | Req_007 | NAV_CONTEXT_MGR | roadZone, navDirection, zoneDistance, speedLimit | 구간 상태 판별 및 전환 컨텍스트 갱신 | baseZoneContext, speedLimitNorm | 입력: roadZone, navDirection, zoneDistance, speedLimit |
+| Func_001~004,006,010~012 | Req_001~004,006,010~012 | ADAS_WARN_CTRL | vehicleSpeedNorm, speedLimitNorm, driveStateNorm, steeringInputNorm, baseZoneContext | 스쿨존 과속/고속 무조향 조건 판정, 경고 트리거 생성, 디바운스 | warningState | 입력: vehicleSpeedNorm, speedLimitNorm, driveStateNorm, steeringInputNorm, baseZoneContext |
 | Func_013~016 | Req_013~Req_016 | BCM_AMBIENT_CTRL | selectedAlertType, selectedAlertLevel, navDirection, timeoutClear | 유도구간 진입 전환/방향 분기/전환 완화/종료 복귀 처리 | ambientMode, ambientPattern | 입력: selectedAlertType, selectedAlertLevel, navDirection, timeoutClear |
 | Func_017 | Req_017 | EMS_POLICE_TX | testScenario | 경찰 긴급 알림 패킷 생성 및 송신 관리 | emergencyType, emergencyDirection, eta, sourceId, alertState, ETH_EmergencyAlert | 출력: ETH_EmergencyAlert(UDP) |
 | Func_018 | Req_018 | EMS_AMB_TX | testScenario | 구급 긴급 알림 패킷 생성 및 송신 관리 | emergencyType, emergencyDirection, eta, sourceId, alertState, ETH_EmergencyAlert | 출력: ETH_EmergencyAlert(UDP) |
@@ -140,7 +140,7 @@
 | 시나리오 | 네트워크 전달 체인 |
 |---|---|
 | Chassis 상태 입력 | SIL_TEST_CTRL -> Chassis CAN -> CHASSIS_GW -> ETH_SWITCH -> ADAS_WARN_CTRL |
-| Nav 구간 입력 | SIL_TEST_CTRL -> Infotainment CAN -> INFOTAINMENT_GW -> ETH_SWITCH -> NAV_CONTEXT_MGR/WARN_ARB_MGR |
+| Nav 구간 입력 | SIL_TEST_CTRL -> Infotainment CAN(roadZone/navDirection/zoneDistance/speedLimit) -> INFOTAINMENT_GW -> ETH_SWITCH -> NAV_CONTEXT_MGR/WARN_ARB_MGR |
 | 긴급 신호 처리 | EMS_POLICE_TX/EMS_AMB_TX -> ETH_SWITCH -> EMS_ALERT_RX -> WARN_ARB_MGR |
 | Ambient 출력 | WARN_ARB_MGR -> ETH_SWITCH -> BODY_GW -> Body CAN -> BCM_AMBIENT_CTRL |
 | Cluster 출력 | WARN_ARB_MGR -> ETH_SWITCH -> IVI_GW -> Infotainment CAN -> CLU_HMI_CTRL |
@@ -171,3 +171,4 @@
 | 3.5 | 2026-02-26 | Cluster 출력 전달체인을 Infotainment CAN 경로로 정합화(IVI_GW -> CLU_HMI_CTRL) |
 | 3.6 | 2026-02-26 | 0304 표준 변수명 기준으로 상세 표기 통일(`g*` 별칭 제거) |
 | 3.7 | 2026-02-28 | 03/0304 정합 기준으로 하단 상세표 입출력 변수를 재정렬(비정의 변수 제거, Core/State 변수명 통일) |
+| 3.8 | 2026-02-28 | 스쿨존 과속 판정 정합을 위해 NAV/ADAS 입력에 `speedLimit/speedLimitNorm`을 반영하고 Navigation Panel 입력 항목을 확장. |

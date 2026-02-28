@@ -3,8 +3,8 @@
 **Document ID**: PROJ-04-SI
 **ISO 26262 Reference**: Part 6, Cl.8 (Software Unit Design and Implementation)
 **ASPICE Reference**: SWE.3 (Software Detailed Design and Unit Construction)
-**Version**: 2.5
-**Date**: 2026-02-26
+**Version**: 2.6
+**Date**: 2026-02-28
 **Status**: Draft
 **Project Title**: 주행 상황 실시간 경고 시스템
 **Subtitle**: 구간 정보 및 긴급차량 접근 기반 앰비언트·클러스터 경보
@@ -80,7 +80,7 @@ Emergency Source
 | EMS_AMB_TX | 구급 긴급 알림 송신 제어 | Func_018 |
 |  |  | Gateway/Network |
 | CHASSIS_GW | Chassis CAN 입력 정규화 및 ETH 송신 | Flow_001,002 |
-| INFOTAINMENT_GW | Infotainment CAN 입력 정규화 및 ETH 송신 | Flow_003 |
+| INFOTAINMENT_GW | Infotainment CAN 입력(구간/방향/거리/제한속도) 정규화 및 ETH 송신 | Flow_003 |
 | ETH_SWITCH | Ethernet 프레임 분배 및 도메인 전달 | Flow_001~008 |
 | BODY_GW | 중재 결과 ETH 수신 후 Ambient CAN 송신 | Flow_007 |
 | IVI_GW | 중재 결과 ETH 수신 후 Cluster CAN 송신 | Flow_008 |
@@ -123,10 +123,10 @@ Emergency Source
 | Func_004 | Req_004 | ADAS_WARN_CTRL | Flow_001 / Comm_001 / warningState | Flow_006 / warningState | `MOD_01.F004` | UT_ADAS_001 |
 | Func_005 | Req_005 | CLU_HMI_CTRL | Flow_008 / Comm_008 / selectedAlertType | Flow_008 / warningTextCode | `MOD_12.F005` | UT_CLU_001 |
 | Func_006 | Req_006 | ADAS_WARN_CTRL | Flow_001 / Comm_001 / warningState | Flow_006 / warningState | `MOD_01.F006` | UT_ADAS_001 |
-| Func_007 | Req_007 | NAV_CONTEXT_MGR | Flow_003 / Comm_003 / roadZone, navDirection, zoneDistance | Flow_003 / baseZoneContext | `MOD_02.F007` | UT_NAV_001 |
+| Func_007 | Req_007 | NAV_CONTEXT_MGR | Flow_003 / Comm_003 / roadZone, navDirection, zoneDistance, speedLimit | Flow_003 / baseZoneContext, speedLimitNorm | `MOD_02.F007` | UT_NAV_001 |
 | Func_008 | Req_008 | BCM_AMBIENT_CTRL | Flow_007 / Comm_007 / selectedAlertLevel | Flow_007 / ambientMode | `MOD_11.F008` | UT_BCM_001 |
 | Func_009 | Req_009 | BCM_AMBIENT_CTRL | Flow_007 / Comm_007 / selectedAlertLevel | Flow_007 / ambientMode | `MOD_11.F009` | UT_BCM_001 |
-| Func_010 | Req_010 | ADAS_WARN_CTRL | Flow_001 / Comm_001 / vehicleSpeedNorm, baseZoneContext | Flow_006 / warningState | `MOD_01.F010` | UT_ADAS_001 |
+| Func_010 | Req_010 | ADAS_WARN_CTRL | Flow_001,Flow_003 / Comm_001,Comm_003 / vehicleSpeedNorm, speedLimitNorm, baseZoneContext | Flow_006 / warningState | `MOD_01.F010` | UT_ADAS_001 |
 | Func_011 | Req_011 | ADAS_WARN_CTRL | Flow_002 / Comm_002 / steeringInputNorm, baseZoneContext | Flow_006 / warningState | `MOD_01.F011` | UT_ADAS_001 |
 | Func_012 | Req_012 | ADAS_WARN_CTRL | Flow_002 / Comm_002 / steeringInputNorm | Flow_006 / warningState | `MOD_01.F012` | UT_ADAS_001 |
 | Func_013 | Req_013 | BCM_AMBIENT_CTRL | Flow_007 / Comm_007 / selectedAlertType, navDirection | Flow_007 / ambientMode | `MOD_11.F013` | UT_BCM_001 |
@@ -173,6 +173,7 @@ Emergency Source
 | Var_004 | roadZone | INFOTAINMENT_GW, NAV_CONTEXT_MGR | Flow_003 / Comm_003 |
 | Var_005 | navDirection | INFOTAINMENT_GW, NAV_CONTEXT_MGR, CLU_HMI_CTRL | Flow_003,008 / Comm_003,008 |
 | Var_006 | zoneDistance | INFOTAINMENT_GW, NAV_CONTEXT_MGR | Flow_003 / Comm_003 |
+| Var_030 | speedLimit | INFOTAINMENT_GW, NAV_CONTEXT_MGR, ADAS_WARN_CTRL | Flow_003 / Comm_003 |
 | Var_007 | emergencyType | EMS_POLICE_TX, EMS_AMB_TX, EMS_ALERT_RX, WARN_ARB_MGR | Flow_004~006 / Comm_004~006 |
 | Var_008 | emergencyDirection | EMS_POLICE_TX, EMS_AMB_TX, EMS_ALERT_RX, CLU_HMI_CTRL | Flow_004~006,008 / Comm_004~006,008 |
 | Var_009 | eta | EMS_POLICE_TX, EMS_AMB_TX, EMS_ALERT_RX, WARN_ARB_MGR | Flow_004~006 / Comm_004~006 |
@@ -181,6 +182,7 @@ Emergency Source
 | Var_012 | vehicleSpeedNorm | ADAS_WARN_CTRL | Flow_001 / Comm_001 |
 | Var_013 | driveStateNorm | ADAS_WARN_CTRL | Flow_001 / Comm_001 |
 | Var_014 | steeringInputNorm | ADAS_WARN_CTRL | Flow_002 / Comm_002 |
+| Var_031 | speedLimitNorm | NAV_CONTEXT_MGR, ADAS_WARN_CTRL | Flow_003 / Comm_003 |
 | Var_015 | baseZoneContext | NAV_CONTEXT_MGR, ADAS_WARN_CTRL, WARN_ARB_MGR, BCM_AMBIENT_CTRL | Flow_003,006,007 / Comm_003,006,007 |
 | Var_016 | warningState | ADAS_WARN_CTRL, WARN_ARB_MGR | Flow_006 / Comm_006 |
 | Var_017 | emergencyContext | EMS_ALERT_RX, WARN_ARB_MGR | Flow_006 / Comm_006 |
@@ -206,7 +208,7 @@ Emergency Source
 | TASK_001 | CHASSIS_GW | 100ms 주기 | frmVehicleStateCanMsg, frmSteeringCanMsg | ethVehicleStateMsg, ethSteeringMsg | 연속 2주기 누락 시 Fault |
 | TASK_002 | INFOTAINMENT_GW | 100ms 주기 | frmNavContextCanMsg | ethNavContextMsg | 연속 2주기 누락 시 일반구간 복귀 |
 | TASK_003 | ADAS_WARN_CTRL | Event + 10ms 내부 평가 | vehicleSpeedNorm, driveStateNorm, steeringInputNorm | warningState | 비주행 상태 시 경고 억제 |
-| TASK_004 | NAV_CONTEXT_MGR | Event(입력 변경) | roadZone, navDirection, zoneDistance | baseZoneContext | 입력 invalid 시 기본 컨텍스트 |
+| TASK_004 | NAV_CONTEXT_MGR | Event(입력 변경) | roadZone, navDirection, zoneDistance, speedLimit | baseZoneContext, speedLimitNorm | 입력 invalid 시 기본 컨텍스트/기본제한속도(30) |
 | TASK_005 | EMS_POLICE_TX | 100ms 주기 | Police Active/ETA/Direction | ETH_EmergencyAlert | Active=0이면 Clear 송신 |
 | TASK_006 | EMS_AMB_TX | 100ms 주기 | Ambulance Active/ETA/Direction | ETH_EmergencyAlert | Active=0이면 Clear 송신 |
 | TASK_007 | EMS_ALERT_RX | Event 수신 + 10ms watchdog | ETH_EmergencyAlert | emergencyContext, timeoutClear | 1000ms 무갱신 시 timeoutClear=1 |
@@ -222,7 +224,7 @@ Emergency Source
 |---|---|---|---|---|---|
 | IF_001 | CHASSIS_GW | ADAS_WARN_CTRL | vehicleSpeedNorm, driveStateNorm | Flow_001 / Comm_001 | 100ms 주기, 값 invalid 시 기본값 처리 |
 | IF_002 | CHASSIS_GW | ADAS_WARN_CTRL | steeringInputNorm | Flow_002 / Comm_002 | 100ms 주기 |
-| IF_003 | INFOTAINMENT_GW | NAV_CONTEXT_MGR, WARN_ARB_MGR | roadZone, navDirection, zoneDistance | Flow_003 / Comm_003 | 100ms 주기 |
+| IF_003 | INFOTAINMENT_GW | NAV_CONTEXT_MGR, ADAS_WARN_CTRL, WARN_ARB_MGR | roadZone, navDirection, zoneDistance, speedLimit | Flow_003 / Comm_003 | 100ms 주기 |
 | IF_004 | EMS_POLICE_TX, EMS_AMB_TX | EMS_ALERT_RX | EmergencyType, EmergencyDirection, ETA, SourceID, AlertState | Flow_004~006 / Comm_004~006 | 100ms 송신, 1000ms 타임아웃 감시 |
 | IF_005 | WARN_ARB_MGR | BODY_GW, IVI_GW | selectedAlertLevel, selectedAlertType, timeoutClear | Flow_006~008 / Comm_006~008 | 50ms 출력 |
 | IF_006 | BODY_GW | BCM_AMBIENT_CTRL | ambientMode, ambientColor, ambientPattern | Flow_007 / Comm_007 | CAN ACK 실패 시 Fail-safe 적용 |
@@ -304,3 +306,4 @@ Emergency Source
 | 2.3 | 2026-02-26 | BP4 대안평가 요약, Var ID 연결 보강표, BP8 구현 규칙 기준 섹션 추가로 00~03 대비 04 추적성 강화 |
 | 2.4 | 2026-02-26 | SIL 입력 경로(sysvar)와 목표 ETH(UdpSocket) 전환 전략을 작성 원칙에 명시 |
 | 2.5 | 2026-02-26 | 05~07 최신 상태 반영(레거시/Planned 문구 제거), 고도화 아키텍처 적합성 점검(Option 1 vs 1A) 추가 |
+| 2.6 | 2026-02-28 | Req_010 정합을 위해 `speedLimit/speedLimitNorm`을 Func_007/Func_010, IF_003, TASK_004, Var 연결표에 반영. |
