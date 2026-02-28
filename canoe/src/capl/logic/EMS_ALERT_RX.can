@@ -6,33 +6,45 @@ variables
 {
   msTimer tRxCycle;
   msTimer tWatchdog;
-  int gPoliceActive;
-  int gAmbulanceActive;
-  dword gPoliceLastRxMs;
-  dword gAmbulanceLastRxMs;
+  msTimer tTimeoutClearPulse;
+  int gActiveEmergencyType;
+  int gActiveEmergencyDirection;
+  int gActiveEta;
+  int gActiveSourceId;
+  dword gActiveLastRxMs;
   int gLastEmergencyContext;
   int gLastTimeoutClear;
 }
 
-void updateEmergencyContext()
+int clampRange(int value, int minValue, int maxValue)
 {
-  int contextValue;
+  if (value < minValue)
+  {
+    return minValue;
+  }
+  if (value > maxValue)
+  {
+    return maxValue;
+  }
+  return value;
+}
 
-  contextValue = 0;
-  if (gAmbulanceActive == 1)
+int isHigherPriority(int newType, int newEta, int newSourceId,
+                     int activeType, int activeEta, int activeSourceId)
+{
+  if (activeType == 0)
   {
-    contextValue = 2;
+    return 1;
   }
-  else if (gPoliceActive == 1)
+  if (newType != activeType)
   {
-    contextValue = 1;
+    return (newType > activeType);
   }
-
-  if (contextValue != gLastEmergencyContext)
+  if (newEta != activeEta)
   {
-    @Core::emergencyContext = contextValue;
-    gLastEmergencyContext = contextValue;
+    return (newEta < activeEta);
   }
+  return (newSourceId < activeSourceId);
 }
 
 void setTimeoutClear(int value)
@@ -44,12 +56,43 @@ void setTimeoutClear(int value)
   }
 }
 
+void updateEmergencyContext()
+{
+  int contextValue;
+
+  contextValue = gActiveEmergencyType;
+  if (contextValue < 0 || contextValue > 2)
+  {
+    contextValue = 0;
+  }
+
+  if (contextValue != gLastEmergencyContext)
+  {
+    @Core::emergencyContext = contextValue;
+    gLastEmergencyContext = contextValue;
+  }
+}
+
+void clearEmergencyState()
+{
+  gActiveEmergencyType = 0;
+  gActiveEmergencyDirection = 0;
+  gActiveEta = 255;
+  gActiveSourceId = 255;
+}
+
+void publishActiveEmergencyToV2X()
+{
+  @V2X::emergencyType = gActiveEmergencyType;
+  @V2X::emergencyDirection = gActiveEmergencyDirection;
+  @V2X::eta = gActiveEta;
+  @V2X::sourceId = gActiveSourceId;
+}
+
 on start
 {
-  gPoliceActive = 0;
-  gAmbulanceActive = 0;
-  gPoliceLastRxMs = 0;
-  gAmbulanceLastRxMs = 0;
+  clearEmergencyState();
+  gActiveLastRxMs = 0;
   gLastEmergencyContext = -1;
   gLastTimeoutClear = -1;
   updateEmergencyContext();
@@ -62,35 +105,57 @@ on start
 on timer tRxCycle
 {
   int emergencyType;
+  int emergencyDirection;
+  int eta;
+  int sourceId;
   int alertState;
   dword nowMs;
+  int accepted;
 
-  emergencyType = (int)@V2X::emergencyType;
-  alertState = (int)@V2X::alertState;
+  emergencyType = clampRange((int)@V2X::emergencyType, 0, 2);
+  emergencyDirection = clampRange((int)@V2X::emergencyDirection, 0, 3);
+  eta = clampRange((int)@V2X::eta, 0, 255);
+  sourceId = clampRange((int)@V2X::sourceId, 0, 255);
+  alertState = (((int)@V2X::alertState) == 1) ? 1 : 0;
   nowMs = timeNow();
+  accepted = 0;
 
   if (alertState == 1 && (emergencyType == 1 || emergencyType == 2))
   {
-    setTimeoutClear(0);
-    @CoreState::lastEmergencyRxMs = (int)nowMs;
-    if (emergencyType == 2)
+    if (isHigherPriority(emergencyType, eta, sourceId,
+                         gActiveEmergencyType, gActiveEta, gActiveSourceId))
     {
-      gAmbulanceActive = 1;
-      gAmbulanceLastRxMs = nowMs;
-      gPoliceActive = 0;
+      gActiveEmergencyType = emergencyType;
+      gActiveEmergencyDirection = emergencyDirection;
+      gActiveEta = eta;
+      gActiveSourceId = sourceId;
+      accepted = 1;
     }
-    else if (emergencyType == 1)
+    else if (emergencyType == gActiveEmergencyType &&
+             sourceId == gActiveSourceId)
     {
-      gPoliceActive = 1;
-      gPoliceLastRxMs = nowMs;
-      gAmbulanceActive = 0;
+      gActiveEmergencyDirection = emergencyDirection;
+      gActiveEta = eta;
+      accepted = 1;
     }
-    setTimer(tWatchdog, 1000);
+
+    if (accepted == 1)
+    {
+      gActiveLastRxMs = nowMs;
+      @CoreState::lastEmergencyRxMs = (int)nowMs;
+      publishActiveEmergencyToV2X();
+      setTimeoutClear(0);
+      setTimer(tWatchdog, 1000);
+    }
   }
   else
   {
-    gPoliceActive = 0;
-    gAmbulanceActive = 0;
+    if (gActiveEmergencyType != 0)
+    {
+      clearEmergencyState();
+      publishActiveEmergencyToV2X();
+      updateEmergencyContext();
+    }
   }
 
   updateEmergencyContext();
@@ -100,28 +165,21 @@ on timer tRxCycle
 on timer tWatchdog
 {
   dword nowMs;
-  int hadEmergency;
 
   nowMs = timeNow();
-  hadEmergency = ((gPoliceActive == 1) || (gAmbulanceActive == 1));
-
-  if (gPoliceActive == 1 && (nowMs - gPoliceLastRxMs) >= 1000)
+  if (gActiveEmergencyType != 0 && (nowMs - gActiveLastRxMs) >= 1000)
   {
-    gPoliceActive = 0;
-  }
-
-  if (gAmbulanceActive == 1 && (nowMs - gAmbulanceLastRxMs) >= 1000)
-  {
-    gAmbulanceActive = 0;
-  }
-
-  updateEmergencyContext();
-
-  if (hadEmergency == 1 && ((gPoliceActive == 0) && (gAmbulanceActive == 0))
-  )
-  {
+    clearEmergencyState();
+    publishActiveEmergencyToV2X();
+    updateEmergencyContext();
     setTimeoutClear(1);
+    setTimer(tTimeoutClearPulse, 200);
     write("[EMS_ALERT_RX] watchdog clear");
   }
   setTimer(tWatchdog, 1000);
+}
+
+on timer tTimeoutClearPulse
+{
+  setTimeoutClear(0);
 }

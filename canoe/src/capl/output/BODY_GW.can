@@ -52,7 +52,18 @@ on timer tBodyCycle
   {
     ambientMode = alertLevel;
     ambientColor = alertType;
-    ambientPattern = (alertLevel > 0) ? 1 : 0;
+    if (alertType == 5)
+    {
+      ambientPattern = 2;
+    }
+    else if (alertType == 6)
+    {
+      ambientPattern = 3;
+    }
+    else
+    {
+      ambientPattern = (alertLevel > 0) ? 1 : 0;
+    }
   }
 
   if (ambientMode != gLastAmbientMode ||

@@ -57,15 +57,20 @@ void runArbiter()
       selectedAlertLevel = 2;
       selectedAlertType = 4;
     }
-    else if (baseZoneContext == 3 || baseZoneContext == 4)
+    else if (baseZoneContext == 3)
     {
       selectedAlertLevel = 2;
       selectedAlertType = 5;
     }
+    else if (baseZoneContext == 4)
+    {
+      selectedAlertLevel = 2;
+      selectedAlertType = 6;
+    }
     else
     {
       selectedAlertLevel = 1;
-      selectedAlertType = 6;
+      selectedAlertType = 1;
     }
   }
 

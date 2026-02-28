@@ -20,12 +20,16 @@ on timer tIviCycle
   int alertLevel;
   int alertType;
   int timeoutClear;
+  int emergencyType;
+  int emergencyDirection;
   int warningTextCode;
   message frmClusterWarningMsg mCluster;
 
   alertLevel = (int)@Core::selectedAlertLevel;
   alertType = (int)@Core::selectedAlertType;
   timeoutClear = (int)@Core::timeoutClear;
+  emergencyType = (int)@V2X::emergencyType;
+  emergencyDirection = (int)@V2X::emergencyDirection;
   if (alertLevel < 0 || alertLevel > 7)
   {
     alertLevel = 0;
@@ -34,11 +38,38 @@ on timer tIviCycle
   {
     alertType = 0;
   }
+  if (emergencyType < 0 || emergencyType > 2)
+  {
+    emergencyType = 0;
+  }
+  if (emergencyDirection < 0 || emergencyDirection > 3)
+  {
+    emergencyDirection = 0;
+  }
   timeoutClear = (timeoutClear == 1) ? 1 : 0;
 
   if (timeoutClear == 1 || alertLevel == 0)
   {
     warningTextCode = 0;
+  }
+  else if (alertLevel >= 6)
+  {
+    if (emergencyType == 2)
+    {
+      warningTextCode = 200 + emergencyDirection;
+    }
+    else
+    {
+      warningTextCode = 100 + emergencyDirection;
+    }
+  }
+  else if (alertType == 5)
+  {
+    warningTextCode = 31;
+  }
+  else if (alertType == 6)
+  {
+    warningTextCode = 32;
   }
   else
   {

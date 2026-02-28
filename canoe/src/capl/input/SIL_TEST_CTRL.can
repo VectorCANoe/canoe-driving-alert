@@ -6,8 +6,10 @@ variables
 {
   msTimer tInput100;
   msTimer tDemoStep;
+  msTimer tScenarioEval;
   int gDemoStepIndex;
   int gDemoRunning;
+  int gCurrentScenarioId;
 }
 
 int clampRange(int value, int minValue, int maxValue)
@@ -35,6 +37,7 @@ void applyScenarioPreset(int scenarioId)
   @V2X::emergencyType = 0;
   @V2X::emergencyDirection = 1;
   @V2X::eta = 10;
+  @V2X::sourceId = 1;
 
   if (scenarioId == 1)
   {
@@ -60,6 +63,7 @@ void applyScenarioPreset(int scenarioId)
     @V2X::emergencyType = 1;
     @V2X::eta = 12;
     @V2X::emergencyDirection = 1;
+    @V2X::sourceId = 11;
   }
   else if (scenarioId == 5)
   {
@@ -68,6 +72,7 @@ void applyScenarioPreset(int scenarioId)
     @V2X::emergencyType = 2;
     @V2X::eta = 8;
     @V2X::emergencyDirection = 2;
+    @V2X::sourceId = 22;
   }
   else if (scenarioId == 6)
   {
@@ -75,7 +80,70 @@ void applyScenarioPreset(int scenarioId)
     @V2X::alertState = 1;
     @V2X::emergencyType = 2;
     @V2X::eta = 5;
+    @V2X::sourceId = 33;
   }
+}
+
+void scheduleScenarioEvaluation(int scenarioId)
+{
+  int evalDelayMs;
+
+  evalDelayMs = 700;
+  if (scenarioId == 3)
+  {
+    evalDelayMs = 11000;
+  }
+  else if (scenarioId == 6)
+  {
+    evalDelayMs = 1300;
+  }
+  setTimer(tScenarioEval, evalDelayMs);
+}
+
+void evaluateScenarioResult()
+{
+  int result;
+  int level;
+  int type;
+  int code;
+  int timeoutClear;
+
+  result = 0;
+  level = (int)@Core::selectedAlertLevel;
+  type = (int)@Core::selectedAlertType;
+  code = (int)@Cluster::warningTextCode;
+  timeoutClear = ((int)@Core::timeoutClear == 1) ? 1 : 0;
+
+  if (gCurrentScenarioId == 1)
+  {
+    result = (level == 0 && code == 0) ? 1 : 0;
+  }
+  else if (gCurrentScenarioId == 2)
+  {
+    result = (level == 3 && type == 3) ? 1 : 0;
+  }
+  else if (gCurrentScenarioId == 3)
+  {
+    result = (level == 2 && type == 4) ? 1 : 0;
+  }
+  else if (gCurrentScenarioId == 4)
+  {
+    result = (level == 6 && type == 1 && code >= 100 && code < 200) ? 1 : 0;
+  }
+  else if (gCurrentScenarioId == 5)
+  {
+    result = (level == 7 && type == 2 && code >= 200 && code < 300) ? 1 : 0;
+  }
+  else if (gCurrentScenarioId == 6)
+  {
+    result = (timeoutClear == 1 || level == 0) ? 1 : 0;
+  }
+  else
+  {
+    result = ((int)@Test::scenarioResult == 1) ? 1 : 0;
+  }
+
+  @Test::scenarioResult = result;
 }
 
 void runDemoStep()
@@ -87,7 +155,8 @@ void runDemoStep()
   }
 
   applyScenarioPreset(gDemoStepIndex);
-  @Test::scenarioResult = 1;
+  gCurrentScenarioId = gDemoStepIndex;
+  scheduleScenarioEvaluation(gDemoStepIndex);
   setTimer(tDemoStep, 4000);
 }
 
@@ -95,6 +164,8 @@ on start
 {
   gDemoStepIndex = 0;
   gDemoRunning = 0;
+  gCurrentScenarioId = 0;
+  @Test::scenarioResult = 0;
   setTimer(tInput100, 100);
   write("[SIL_TEST_CTRL] start");
 }
@@ -163,6 +234,8 @@ on sysvar Test::testScenario
     gDemoRunning = 0;
     cancelTimer(tDemoStep);
     applyScenarioPreset(scenarioId);
+    gCurrentScenarioId = scenarioId;
+    scheduleScenarioEvaluation(scenarioId);
     write("[SIL_TEST_CTRL] apply scenario=%d", scenarioId);
   }
   else
@@ -177,4 +250,9 @@ on timer tDemoStep
   {
     runDemoStep();
   }
+}
+
+on timer tScenarioEval
+{
+  evaluateScenarioResult();
 }
