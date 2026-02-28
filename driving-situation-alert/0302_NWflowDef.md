@@ -3,7 +3,7 @@
 **Document ID**: PROJ-0302-NFD
 **ISO 26262 Reference**: Part 4, Cl.7 (System Design)
 **ASPICE Reference**: SYS.3 (System Architectural Design)
-**Version**: 3.1
+**Version**: 3.3
 **Date**: 2026-02-28
 **Status**: Draft
 **Project Title**: 주행 상황 실시간 경고 시스템
@@ -25,6 +25,7 @@
 - 검증 범위는 CANoe SIL, CAN + Ethernet(UDP)만 사용한다.
 - OTA/UDS/DoIP 관련 플로우는 본 문서 범위에서 제외한다.
 - 제출 전 현대/기아 및 OEM 기준으로 설명/별칭은 정리하되, Flow/Comm/ID/signal 식별자는 SoT 기준으로 고정 유지한다.
+- Vehicle Baseline(Req_101~Req_112) 플로우(`Flow_101~Flow_106`)는 본 문서에서 확정 정의하고, DBC는 이 정의를 구현 대상으로 사용한다.
 
 ---
 
@@ -200,6 +201,43 @@
 
 ---
 
+## 도메인 네트워크 분리 기준 (확정)
+
+| Domain Network | Gateway(경계 노드) | 대상 ECU/노드 | DBC 파일(정의) | 연계 Flow |
+|---|---|---|---|---|
+| Chassis CAN | CHASSIS_GW | ACCEL_CTRL, BRAKE_CTRL, STEERING_CTRL, ADAS_WARN_CTRL 입력 경로 | `canoe/network/dbc/chassis_can.dbc` | Flow_001, Flow_002, Flow_102 |
+| Powertrain CAN | CHASSIS_GW 또는 전용 PT_GW(확정 시) | ENGINE_CTRL, TRANSMISSION_CTRL | `canoe/network/dbc/powertrain_can.dbc` | Flow_101 |
+| Body CAN | BODY_GW | BCM_AMBIENT_CTRL, HAZARD_CTRL, WINDOW_CTRL, DRIVER_STATE_CTRL | `canoe/network/dbc/body_can.dbc` | Flow_007, Flow_103 |
+| Infotainment CAN | INFOTAINMENT_GW, IVI_GW | NAV_CONTEXT_MGR, CLU_HMI_CTRL, CLUSTER_BASE_CTRL | `canoe/network/dbc/infotainment_can.dbc` | Flow_003, Flow_008, Flow_104 |
+| Test CAN | SIL_TEST_CTRL | SIL_TEST_CTRL, VEHICLE_BASE_TEST_CTRL | `canoe/network/dbc/test_can.dbc` | Flow_009, Flow_106 |
+| Ethernet UDP | ETH_SWITCH | EMS_POLICE_TX, EMS_AMB_TX, EMS_ALERT_RX, WARN_ARB_MGR, GW 집합 | `canoe/docs/operations/ETH_INTERFACE_CONTRACT.md` | Flow_004, Flow_005, Flow_006, Flow_105 |
+
+---
+
+## Vehicle Baseline 확장 Flow (확정)
+
+| Flow ID | Comm ID(0303 연계) | Func ID | Req ID | 주 경로 | 상태 |
+|---|---|---|---|---|---|
+| Flow_101 | Comm_101 | Func_101, Func_102 | Req_101, Req_102 | Powertrain CAN -> CHASSIS_GW -> ETH_SWITCH -> Core | Defined |
+| Flow_102 | Comm_102 | Func_103, Func_104, Func_105 | Req_103, Req_104, Req_105 | Chassis CAN -> CHASSIS_GW -> ETH_SWITCH -> Core | Defined |
+| Flow_103 | Comm_103 | Func_106, Func_107, Func_108 | Req_106, Req_107, Req_108 | Body CAN <-> BODY_GW <-> ETH_SWITCH | Defined |
+| Flow_104 | Comm_104 | Func_109 | Req_109 | Core -> IVI_GW -> Infotainment CAN(Cluster Base) | Defined |
+| Flow_105 | Comm_105 | Func_110, Func_111 | Req_110, Req_111 | ETH_SWITCH <-> Domain GW 라우팅/경계 유지 | Defined |
+| Flow_106 | Comm_106 | Func_112 | Req_112 | SIL_TEST_CTRL 시나리오 -> Test CAN 결과 기록 | Defined |
+
+---
+
+## 메시지/플로우 규모 목표 (현업 BP 기준)
+
+| 항목 | 현재 코어 정의 | 확장 목표(Phase-B) | 비고 |
+|---|---|---|---|
+| CAN Message | 6 | 80~120 | 도메인별 DBC 분리 후 단계적 확장 |
+| Ethernet Message Type | 5 (0x510/511/512/E100/E200) | 8~12 | 라우팅/헬스/상태 이벤트 포함 |
+| Flow ID | 9 | 15+ | Vehicle Baseline Flow_101~106 포함 |
+| ECU/노드 | 20+ | 20~28 유지 | 노드 추가보다 메시지 정교화 우선 |
+
+---
+
 ## 0303 연계 체크포인트
 
 - 각 `Flow ID`는 `0303_Communication_Specification.md`의 `Comm ID`와 1:1로 연결한다.
@@ -242,3 +280,5 @@
 | 2.9 | 2026-02-28 | signal 표기 케이스를 0304 표준명(`steeringInput/emergencyType/selectedAlertLevel` 등)으로 추가 정합, `SelectedAlertContext` 잔여 문구 제거 |
 | 3.0 | 2026-02-28 | 스쿨존 과속 정밀 판정을 위해 `speedLimit` 신호를 0x110/0x512 상단 공식표와 Flow_003 하단 추적표에 반영. |
 | 3.1 | 2026-02-28 | CAN/Ethernet 원본 파일 분리 원칙을 명시하고 Flow Source-of-Truth 매핑 표를 추가. |
+| 3.2 | 2026-02-28 | DBC 병렬 작업용 도메인 네트워크 분리 설계표와 Vehicle Baseline 확장 Flow 계획(Flow_101~106)을 추가. |
+| 3.3 | 2026-02-28 | Flow_101~106을 확정 상태(Defined)로 전환하고, 현업 기준 메시지/플로우 규모 목표(80~120 CAN 메시지)를 명시. |

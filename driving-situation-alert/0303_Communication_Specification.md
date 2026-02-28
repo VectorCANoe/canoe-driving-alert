@@ -3,7 +3,7 @@
 **Document ID**: PROJ-0303-CS
 **ISO 26262 Reference**: Part 6, Cl.7 (Software Architectural Design)
 **ASPICE Reference**: SWE.2 (Software Architectural Design)
-**Version**: 3.0
+**Version**: 3.2
 **Date**: 2026-02-28
 **Status**: Draft
 **Project Title**: 주행 상황 실시간 경고 시스템
@@ -26,6 +26,7 @@
 - 하단 추적표는 `Comm ID -> Flow ID -> Func ID -> Req ID`를 유지한다.
 - 제출 전 현대/기아 및 OEM 기준으로 설명/별칭은 정리하되, Message ID/DLC/Bit Position/Signal 식별자는 SoT 기준으로 고정 유지한다.
 - 검증 범위는 CANoe SIL, CAN + Ethernet(UDP)로 고정한다.
+- Vehicle Baseline(Req_101~Req_112) 통신(`Comm_101~Comm_106`)은 본 문서에서 확정 정의하고, 도메인 DBC는 이 정의를 구현 대상으로 사용한다.
 
 ---
 
@@ -186,6 +187,49 @@
 
 ---
 
+## 도메인별 통신 원본 확장 정의 (DBC 병렬 작업 기준)
+
+| Domain | 원본 파일(정의) | Comm 범위 | 핵심 Message |
+|---|---|---|---|
+| Chassis CAN | `canoe/network/dbc/chassis_can.dbc` | Comm_001, Comm_002, Comm_102 | frmVehicleStateCanMsg, frmSteeringCanMsg, frmChassisBaseMsg |
+| Powertrain CAN | `canoe/network/dbc/powertrain_can.dbc` | Comm_101 | frmPowertrainBaseMsg |
+| Body CAN | `canoe/network/dbc/body_can.dbc` | Comm_007, Comm_103 | frmAmbientControlMsg, frmBodyBaseMsg |
+| Infotainment CAN | `canoe/network/dbc/infotainment_can.dbc` | Comm_003, Comm_008, Comm_104 | frmNavContextCanMsg, frmClusterWarningMsg, frmClusterBaseMsg |
+| Test CAN | `canoe/network/dbc/test_can.dbc` | Comm_009, Comm_106 | frmTestResultMsg, frmBaseTestResultMsg |
+| Ethernet UDP | `canoe/docs/operations/ETH_INTERFACE_CONTRACT.md` | Comm_004, Comm_005, Comm_006, Comm_105 | ETH_EmergencyAlert, ethSelectedAlertMsg, ethGatewayRouteStatus |
+
+---
+
+## Vehicle Baseline 확장 Comm 정의 (Comm_101~Comm_106)
+
+| Comm ID | Flow ID(0302 연계) | Func ID | Req ID | Message(ID) | Protocol | 주기 |
+|---|---|---|---|---|---|---|
+| Comm_101 | Flow_101 | Func_101, Func_102 | Req_101, Req_102 | frmPowertrainBaseMsg(0x300) | CAN + Ethernet(UDP) | 100ms |
+| Comm_102 | Flow_102 | Func_103, Func_104, Func_105 | Req_103, Req_104, Req_105 | frmChassisBaseMsg(0x301) | CAN + Ethernet(UDP) | 100ms |
+| Comm_103 | Flow_103 | Func_106, Func_107, Func_108 | Req_106, Req_107, Req_108 | frmBodyBaseMsg(0x302) | CAN + Ethernet(UDP) | 100ms |
+| Comm_104 | Flow_104 | Func_109 | Req_109 | frmClusterBaseMsg(0x303) | CAN | 50ms |
+| Comm_105 | Flow_105 | Func_110, Func_111 | Req_110, Req_111 | ethGatewayRouteStatus(0xE300) | Ethernet(UDP) | Event + 100ms |
+| Comm_106 | Flow_106 | Func_112 | Req_112 | frmBaseTestResultMsg(0x304) | CAN | Event |
+
+- 주의: 위 ID(`0x300~0x304`, `0xE300`)는 문서 기준 통신 식별자이며, 도메인 DBC는 이 ID를 구현 기준으로 사용한다.
+
+---
+
+## 메시지 규모 기준 (현업 BP 타깃)
+
+| Domain | Core Message | Extended Message Target | 권장 ID 블록 |
+|---|---|---|---|
+| Chassis CAN | 0x100, 0x101 | 20~30 | 0x100~0x17F |
+| Powertrain CAN | (신규) 0x300 | 15~20 | 0x300~0x34F |
+| Body CAN | 0x210 + (신규) 0x302 | 20~25 | 0x200~0x27F |
+| Infotainment CAN | 0x110, 0x220 + (신규) 0x303 | 20~30 | 0x110~0x1FF, 0x220~0x23F |
+| Test CAN | 0x230 + (신규) 0x304 | 5~10 | 0x230~0x23F, 0x304~0x30F |
+| Ethernet UDP | 0x510/0x511/0x512/0xE100/0xE200/0xE300 | 8~12 타입 | 계약 파일 기준 |
+
+- 통합 목표: CAN 메시지 `80~120`, Ethernet 메시지 타입 `8~12`, 전체 통신 항목 `100+`.
+
+---
+
 ## 0302/0304 연계 체크포인트
 
 - `Comm ID`는 `0302_NWflowDef.md`의 `Flow ID`와 1:1 연결한다.
@@ -226,3 +270,5 @@
 | 2.8 | 2026-02-28 | signal 케이스/명칭을 0304 표준명(`steeringInput/emergencyType/eta/sourceId` 등)으로 정합하고 `SelectedAlertContext` 잔여 표현 제거 |
 | 2.9 | 2026-02-28 | Nav 컨텍스트 메시지(0x110/0x512)에 `speedLimit`(bit16, DLC=3)를 추가하고 Comm_003을 Req_010/Func_010까지 확장 정합. |
 | 3.0 | 2026-02-28 | CAN/Ethernet 통신 원본 파일 분리 원칙을 명시하고 SoT 매핑 표를 추가(`emergency_system.dbc` / `ETH_INTERFACE_CONTRACT.md`). |
+| 3.1 | 2026-02-28 | DBC 병렬 작업용 도메인 통신 원본 확장 계획과 Vehicle Baseline Comm 계획(Comm_101~106, 예약 ID)을 추가. |
+| 3.2 | 2026-02-28 | Comm_101~106을 확정 정의로 전환하고 도메인별 메시지 규모 기준(총 CAN 80~120, 전체 100+)을 명시. |
