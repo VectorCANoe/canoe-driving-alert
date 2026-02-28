@@ -41,16 +41,6 @@ BO_ 272 frmNavContextCanMsg: 3 SIL_TEST_CTRL
 BO_ 544 frmClusterWarningMsg: 1 IVI_GW
  SG_ WarningTextCode : 0|8@1+ (1,0) [0|255] "" CLU_HMI_CTRL
 
-BO_ 771 frmClusterBaseMsg: 8 IVI_GW
- SG_ ClusterSpeed      : 0|8@1+ (1,0) [0|255] "km/h" CLUSTER_BASE_CTRL
- SG_ ClusterGear       : 8|3@1+ (1,0) [0|7]   "" CLUSTER_BASE_CTRL
- SG_ ClusterStatus     : 11|5@1+ (1,0) [0|31] "" CLUSTER_BASE_CTRL
- SG_ PopupType         : 16|4@1+ (1,0) [0|15] "" CLU_HMI_CTRL
- SG_ PopupPriority     : 20|3@1+ (1,0) [0|7]  "" CLU_HMI_CTRL
- SG_ PopupActive       : 23|1@1+ (1,0) [0|1]  "" CLU_HMI_CTRL
- SG_ ClusterBrightness : 24|5@1+ (1,0) [0|31] "" CLUSTER_BASE_CTRL
- SG_ Reserved1         : 29|35@1+ (1,0) [0|0] "" Vector__XXX
-
 BO_ 545 frmClusterBaseStateMsg: 2 IVI_GW
  SG_ ClusterSpeed     : 0|8@1+ (1,0) [0|255] "km/h" CLUSTER_BASE_CTRL
  SG_ ClusterGear      : 8|3@1+ (1,0) [0|7] "" CLUSTER_BASE_CTRL
@@ -97,8 +87,6 @@ BO_ 552 frmInfotainmentHealthMsg: 2 INFOTAINMENT_GW
 
 CM_ BO_ 272 "Flow_003 navigation context input.";
 CM_ BO_ 544 "Flow_008 cluster warning output.";
-CM_ BO_ 771 "Comm_104 baseline cluster aggregate message (Req_109).";
-
 CM_ BO_ 545 "Infotainment baseline: cluster base display payload (speed/gear/status).";
 CM_ BO_ 546 "Infotainment baseline: lane guidance state and confidence.";
 CM_ BO_ 547 "Infotainment baseline: media source/state/mute/volume.";
@@ -112,8 +100,6 @@ BA_DEF_ BO_ "GenMsgCycleTime" INT 0 10000;
 BA_DEF_DEF_ "GenMsgCycleTime" 0;
 BA_ "GenMsgCycleTime" BO_ 272 100;
 BA_ "GenMsgCycleTime" BO_ 544 50;
-BA_ "GenMsgCycleTime" BO_ 771 50;
-
 BA_ "GenMsgCycleTime" BO_ 545 50;
 BA_ "GenMsgCycleTime" BO_ 546 100;
 BA_ "GenMsgCycleTime" BO_ 547 100;

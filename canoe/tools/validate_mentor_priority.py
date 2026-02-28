@@ -27,19 +27,54 @@ DBC_ACTIVE_FILES = [
 DBC_BACKUP_FILE = "emergency_system.dbc"
 ETH_CONTRACT_REL = "canoe/docs/operations/ETH_INTERFACE_CONTRACT.md"
 
-MANDATORY_MESSAGES = {
-    "frmVehicleStateCanMsg",
-    "frmSteeringCanMsg",
-    "frmNavContextCanMsg",
-    "frmAmbientControlMsg",
-    "frmClusterWarningMsg",
-    "frmTestResultMsg",
-    "frmPowertrainBaseMsg",
-    "frmChassisBaseMsg",
-    "frmBodyBaseMsg",
-    "frmClusterBaseMsg",
-    "frmBaseTestResultMsg",
+MANDATORY_MESSAGE_IDS: Dict[str, int] = {
+    "frmVehicleStateCanMsg": 0x100,
+    "frmSteeringCanMsg": 0x101,
+    "frmPedalInputCanMsg": 0x102,
+    "frmSteeringStateCanMsg": 0x103,
+    "frmWheelSpeedMsg": 0x104,
+    "frmYawAccelMsg": 0x105,
+    "frmBrakeStatusMsg": 0x106,
+    "frmAccelStatusMsg": 0x107,
+    "frmSteeringTorqueMsg": 0x108,
+    "frmChassisHealthMsg": 0x109,
+    "frmNavContextCanMsg": 0x110,
+    "frmAmbientControlMsg": 0x210,
+    "frmHazardControlMsg": 0x211,
+    "frmWindowControlMsg": 0x212,
+    "frmDriverStateMsg": 0x213,
+    "frmDoorStateMsg": 0x214,
+    "frmLampControlMsg": 0x215,
+    "frmWiperStateMsg": 0x216,
+    "frmSeatBeltStateMsg": 0x217,
+    "frmCabinAirStateMsg": 0x218,
+    "frmBodyHealthMsg": 0x219,
+    "frmClusterWarningMsg": 0x220,
+    "frmClusterBaseStateMsg": 0x221,
+    "frmNaviGuideStateMsg": 0x222,
+    "frmMediaStateMsg": 0x223,
+    "frmCallStateMsg": 0x224,
+    "frmNavigationRouteMsg": 0x225,
+    "frmClusterThemeMsg": 0x226,
+    "frmHmiPopupStateMsg": 0x227,
+    "frmInfotainmentHealthMsg": 0x228,
+    "frmTestResultMsg": 0x230,
+    "frmBaseTestResultMsg": 0x231,
+    "frmEmergencyMonitorMsg": 0x232,
+    "frmIgnitionEngineMsg": 0x300,
+    "frmGearStateMsg": 0x301,
+    "frmPowertrainGatewayMsg": 0x302,
+    "frmEngineSpeedTempMsg": 0x303,
+    "frmFuelBatteryStateMsg": 0x304,
+    "frmThrottleStateMsg": 0x305,
+    "frmTransmissionTempMsg": 0x306,
+    "frmVehicleModeMsg": 0x307,
+    "frmPowerLimitMsg": 0x308,
+    "frmCruiseStateMsg": 0x309,
+    "frmPowertrainHealthMsg": 0x30A,
 }
+
+MANDATORY_MESSAGES = set(MANDATORY_MESSAGE_IDS.keys())
 
 MIN_MESSAGE_COUNT = 40
 
@@ -124,12 +159,20 @@ def build_gate_report(
     dup_names = {k: v for k, v in by_name.items() if len(v) > 1}
     msg_names = {str(m["name"]) for m in messages}
     missing_mandatory = sorted(MANDATORY_MESSAGES - msg_names)
+    id_mismatches: List[Tuple[str, int, List[int]]] = []
+    for name, expected_id in sorted(MANDATORY_MESSAGE_IDS.items()):
+        if name not in by_name:
+            continue
+        actual_ids = sorted({int(e["id"]) for e in by_name[name]})
+        if actual_ids != [expected_id]:
+            id_mismatches.append((name, expected_id, actual_ids))
 
     gate_checks = [
         ("Split CAN DBC files present", len(missing_dbc) == 0),
         ("Ethernet SoT document present", has_eth_contract),
         ("No duplicate message IDs across active DBCs", len(dup_ids) == 0),
         ("No duplicate message names across active DBCs", len(dup_names) == 0),
+        ("Mandatory message IDs match contract", len(id_mismatches) == 0),
         (
             f"Active CAN message volume >= {MIN_MESSAGE_COUNT}",
             len(messages) >= MIN_MESSAGE_COUNT,
@@ -188,6 +231,16 @@ def build_gate_report(
             lines.append(f"- {name}")
         lines.append("")
 
+    if id_mismatches:
+        lines.append("## Mandatory Message ID Mismatches")
+        lines.append("")
+        for name, expected_id, actual_ids in id_mismatches:
+            actual_hex = ", ".join(f"0x{mid:03X}" for mid in actual_ids)
+            lines.append(
+                f"- {name}: expected 0x{expected_id:03X}, actual [{actual_hex}]"
+            )
+        lines.append("")
+
     return "\n".join(lines), gate_pass
 
 
@@ -242,4 +295,3 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-

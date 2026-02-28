@@ -35,7 +35,7 @@ BO_ 560 frmTestResultMsg: 1 SIL_TEST_CTRL
  SG_ ScenarioResult : 0|1@1+ (1,0) [0|1] "" VEHICLE_BASE_TEST_CTRL
  SG_ Reserved0      : 1|7@1+ (1,0) [0|0] "" Vector__XXX
 
-BO_ 772 frmBaseTestResultMsg: 8 VEHICLE_BASE_TEST_CTRL
+BO_ 561 frmBaseTestResultMsg: 8 VEHICLE_BASE_TEST_CTRL
  SG_ BaseScenarioId    : 0|8@1+ (1,0) [0|255] "" SIL_TEST_CTRL
  SG_ BaseScenarioResult: 8|1@1+ (1,0) [0|1]   "" SIL_TEST_CTRL
  SG_ FlowCoverageMask  : 9|15@1+ (1,0) [0|32767] "" SIL_TEST_CTRL
@@ -44,18 +44,17 @@ BO_ 772 frmBaseTestResultMsg: 8 VEHICLE_BASE_TEST_CTRL
  SG_ Reserved1         : 48|16@1+ (1,0) [0|0] "" Vector__XXX
 
 CM_ BO_ 560 "Comm_009 scenario result frame.";
-CM_ BO_ 772 "Comm_106 baseline test aggregate result frame (Req_112).";
+CM_ BO_ 561 "Comm_106 baseline test aggregate result frame (Req_112).";
 
 BA_DEF_ BO_ "GenMsgCycleTime" INT 0 10000;
 BA_DEF_DEF_ "GenMsgCycleTime" 0;
 BA_ "GenMsgCycleTime" BO_ 560 0;
-BA_ "GenMsgCycleTime" BO_ 772 0;
+BA_ "GenMsgCycleTime" BO_ 561 0;
 
 VAL_ 560 ScenarioResult
   0 "Fail"
   1 "Pass" ;
 
-VAL_ 772 BaseScenarioResult
+VAL_ 561 BaseScenarioResult
   0 "Fail"
   1 "Pass" ;
-

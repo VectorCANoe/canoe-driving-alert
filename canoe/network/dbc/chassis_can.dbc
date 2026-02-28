@@ -40,15 +40,6 @@ BO_ 257 frmSteeringCanMsg: 1 SIL_TEST_CTRL
  SG_ SteeringInput : 0|1@1+ (1,0) [0|1] "" CHASSIS_GW,STEERING_CTRL
  SG_ Reserved0     : 1|7@1+ (1,0) [0|0] "" Vector__XXX
 
-BO_ 769 frmChassisBaseMsg: 8 CHASSIS_GW
- SG_ AccelPedal      : 0|8@1+ (1,0) [0|100] "%" ACCEL_CTRL,ADAS_WARN_CTRL
- SG_ BrakePedal      : 8|8@1+ (1,0) [0|100] "%" BRAKE_CTRL,ADAS_WARN_CTRL
- SG_ SteeringState   : 16|2@1+ (1,0) [0|3]  "" STEERING_CTRL,ADAS_WARN_CTRL
- SG_ WheelSpeedAvg   : 24|8@1+ (1,0) [0|255] "km/h" ADAS_WARN_CTRL
- SG_ YawRate         : 32|16@1+ (1,0) [0|65535] "deg/s" ADAS_WARN_CTRL
- SG_ ChassisHealth   : 48|8@1+ (1,0) [0|255] "" ADAS_WARN_CTRL
- SG_ Reserved1       : 56|8@1+ (1,0) [0|0] "" Vector__XXX
-
 BO_ 258 frmPedalInputCanMsg: 2 SIL_TEST_CTRL
  SG_ AccelPedal       : 0|8@1+ (1,0) [0|100] "%" ACCEL_CTRL
  SG_ BrakePedal       : 8|8@1+ (1,0) [0|100] "%" BRAKE_CTRL
@@ -94,8 +85,6 @@ BO_ 562 frmEmergencyMonitorMsg: 2 EMS_ALERT_RX
 
 CM_ BO_ 256 "Flow_001 core vehicle state input.";
 CM_ BO_ 257 "Flow_002 steering input.";
-CM_ BO_ 769 "Comm_102 baseline chassis aggregate message (Req_103~Req_105).";
-
 CM_ BO_ 258 "Chassis baseline: acceleration pedal and brake pedal input.";
 CM_ BO_ 259 "Chassis baseline: steering state produced from normalized steering input.";
 CM_ BO_ 260 "Chassis baseline: per-wheel speed distribution.";
@@ -110,8 +99,6 @@ BA_DEF_ BO_ "GenMsgCycleTime" INT 0 10000;
 BA_DEF_DEF_ "GenMsgCycleTime" 0;
 BA_ "GenMsgCycleTime" BO_ 256 100;
 BA_ "GenMsgCycleTime" BO_ 257 100;
-BA_ "GenMsgCycleTime" BO_ 769 100;
-
 BA_ "GenMsgCycleTime" BO_ 258 100;
 BA_ "GenMsgCycleTime" BO_ 259 100;
 BA_ "GenMsgCycleTime" BO_ 260 100;

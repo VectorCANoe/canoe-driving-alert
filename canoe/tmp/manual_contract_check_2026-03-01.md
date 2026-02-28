@@ -24,38 +24,38 @@
   - `frmTestResultMsg` (SIL_TEST_CTRL -> `output(mRes)`)
 
 3. Expanded frame runtime ownership readiness
-- Result: FAIL (not runtime-ready)
-- Messages such as `frmSteeringStateCanMsg`, `frmWheelSpeedMsg`, `frmYawAccelMsg`, `frmChassisHealthMsg`, `frmChassisBaseMsg` are defined in DBC.
-- Current CAPL does not publish these frames.
-- If CANoeIL runtime tries to own/register them without valid owner setup, `TxFrameUpdateRequest` resource error occurs.
+- Result: PARTIAL (design-ready, runtime profile split needed)
+- `*_can.dbc` canonical set now uses split-domain contract IDs and does not include legacy aggregate base frames.
+- Core runtime CAPL chain remains clean (`frmVehicleStateCanMsg`, `frmSteeringCanMsg`, `frmNavContextCanMsg`, `frmAmbientControlMsg`, `frmClusterWarningMsg`, `frmTestResultMsg`).
+- `CANoeIL ... TxFrameUpdateRequest` errors are tied to legacy `CAN_500kBaud_1ch.cfg` + `emergency_system.dbc` IL profile, not to the split canonical DBC set.
 
 4. Document vs DBC ID consistency (Comm_101/105/106 subset)
-- Result: FAIL (traceability mismatch)
-- In `0303`, several IDs are still written with older mapping (example: `frmIgnitionEngineMsg(0x300)`, `frmBaseTestResultMsg(0x231)`).
-- In current DBC:
-  - `frmIgnitionEngineMsg` = `0x305`
-  - `frmGearStateMsg` = `0x306`
-  - `frmPowertrainGatewayMsg` = `0x307`
-  - `frmEngineSpeedTempMsg` = `0x308`
-  - `frmBaseTestResultMsg` = `0x304`
-- Manual conclusion: before final freeze, docs and DBC IDs must be re-synced to one authoritative map.
+- Result: PASS
+- Manual cross-check (split canonical set):
+  - `frmIgnitionEngineMsg` = `0x300`
+  - `frmGearStateMsg` = `0x301`
+  - `frmPowertrainGatewayMsg` = `0x302`
+  - `frmEngineSpeedTempMsg` = `0x303`
+  - `frmBaseTestResultMsg` = `0x231`
+- Manual duplicate audit:
+  - Active messages: `44`
+  - Duplicate IDs: `0`
+  - Duplicate names: `0`
 
 5. Ethernet contract SoT statement
 - Result: FIXED
-- `ETH_INTERFACE_CONTRACT.md` previously referenced single DBC path.
-- Updated to reference split DBC set as CAN SoT.
+- `ETH_INTERFACE_CONTRACT.md` is present and used as Ethernet SoT.
+- CAN SoT is split to `chassis/body/infotainment/powertrain/test` DBC set.
 
 ## Immediate Action Recommendation
 
 1. Keep runtime profile strict:
-- Activate only Runtime-Core frames in IL/CAPL ownership.
-- Keep extended frames as design-defined but runtime-disabled until owner implementation is ready.
+- Use split canonical DBC runtime profile (`project.cfg`) as default.
+- Keep `CAN_500kBaud_1ch.cfg` + `emergency_system.dbc` as legacy backup profile only.
 
 2. Resolve one-source ID map:
-- Decide authoritative ID map (current DBC vs 0303 table).
-- Update the non-authoritative side immediately.
+- Keep `0303` and split `*_can.dbc` IDs synchronized as single source of truth.
 
 3. Re-run startup gate:
-- No `CANoeIL ... TxFrameUpdateRequest` errors.
+- If running legacy cfg, either disable IL profile for unsupported Tx ownership or switch to split runtime profile.
 - Then proceed to scenario validation.
-

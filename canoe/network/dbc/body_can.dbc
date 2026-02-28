@@ -36,15 +36,6 @@ BO_ 528 frmAmbientControlMsg: 1 BODY_GW
  SG_ AmbientColor   : 3|3@1+ (1,0) [0|7] "" BCM_AMBIENT_CTRL
  SG_ AmbientPattern : 6|2@1+ (1,0) [0|3] "" BCM_AMBIENT_CTRL
 
-BO_ 770 frmBodyBaseMsg: 8 BODY_GW
- SG_ HazardState      : 0|1@1+ (1,0) [0|1] "" HAZARD_CTRL
- SG_ WindowState      : 1|2@1+ (1,0) [0|3] "" WINDOW_CTRL
- SG_ DriverStateLevel : 3|3@1+ (1,0) [0|7] "" DRIVER_STATE_CTRL
- SG_ DoorLockState    : 8|2@1+ (1,0) [0|3] "" WINDOW_CTRL
- SG_ SeatBeltWarnLvl  : 10|2@1+ (1,0) [0|3] "" DRIVER_STATE_CTRL
- SG_ BodyHealth       : 16|8@1+ (1,0) [0|255] "" WARN_ARB_MGR
- SG_ Reserved0        : 24|40@1+ (1,0) [0|0] "" Vector__XXX
-
 BO_ 529 frmHazardControlMsg: 1 BODY_GW
  SG_ HazardSwitch     : 0|1@1+ (1,0) [0|1] "" HAZARD_CTRL
  SG_ HazardState      : 1|1@1+ (1,0) [0|1] "" HAZARD_CTRL
@@ -96,8 +87,6 @@ BO_ 537 frmBodyHealthMsg: 2 BODY_GW
  SG_ BodyFailCode     : 12|4@1+ (1,0) [0|15] "" SIL_TEST_CTRL
 
 CM_ BO_ 528 "Flow_007 ambient output.";
-CM_ BO_ 770 "Comm_103 baseline body aggregate message (Req_106~Req_108).";
-
 CM_ BO_ 529 "Body baseline: hazard switch and hazard state.";
 CM_ BO_ 530 "Body baseline: window command and window state.";
 CM_ BO_ 531 "Body baseline: driver state level and state info.";
@@ -111,8 +100,6 @@ CM_ BO_ 537 "Body health/diagnostic state.";
 BA_DEF_ BO_ "GenMsgCycleTime" INT 0 10000;
 BA_DEF_DEF_ "GenMsgCycleTime" 0;
 BA_ "GenMsgCycleTime" BO_ 528 50;
-BA_ "GenMsgCycleTime" BO_ 770 100;
-
 BA_ "GenMsgCycleTime" BO_ 529 100;
 BA_ "GenMsgCycleTime" BO_ 530 100;
 BA_ "GenMsgCycleTime" BO_ 531 100;

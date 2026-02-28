@@ -1,13 +1,13 @@
 # Mentor Priority Gate Report
 
-- Generated: 2026-03-01 04:07:02
+- Generated: 2026-03-01 04:24:35
 - Scope: `canoe/network/dbc` active split set validation
 - Backup DBC (`emergency_system.dbc`) present: YES
 
 ## Gate Summary
 
 - Result: PASS
-- Active message count: 48
+- Active message count: 44
 
 | Check | Result |
 |---|---|
@@ -15,5 +15,6 @@
 | Ethernet SoT document present | PASS |
 | No duplicate message IDs across active DBCs | PASS |
 | No duplicate message names across active DBCs | PASS |
+| Mandatory message IDs match contract | PASS |
 | Active CAN message volume >= 40 | PASS |
 | Mandatory core/baseline message set present | PASS |

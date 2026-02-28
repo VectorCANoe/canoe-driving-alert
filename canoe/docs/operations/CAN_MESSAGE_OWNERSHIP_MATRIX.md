@@ -1,6 +1,6 @@
 # CAN Message Ownership Matrix
 
-- Generated: 2026-03-01 04:07:02
+- Generated: 2026-03-01 04:24:35
 - Scope: Active split CAN DBC set only
 - Rule: Each message must have one clear sender in active runtime profile.
 
@@ -37,20 +37,16 @@
 | frmHmiPopupStateMsg | 0x227 | 1 | IVI_GW | infotainment_can.dbc | 3 |
 | frmInfotainmentHealthMsg | 0x228 | 2 | INFOTAINMENT_GW | infotainment_can.dbc | 3 |
 | frmTestResultMsg | 0x230 | 1 | SIL_TEST_CTRL | test_can.dbc | 2 |
+| frmBaseTestResultMsg | 0x231 | 8 | VEHICLE_BASE_TEST_CTRL | test_can.dbc | 6 |
 | frmEmergencyMonitorMsg | 0x232 | 2 | EMS_ALERT_RX | chassis_can.dbc | 3 |
-| frmPowertrainBaseMsg | 0x300 | 8 | ENGINE_CTRL | powertrain_can.dbc | 9 |
-| frmChassisBaseMsg | 0x301 | 8 | CHASSIS_GW | chassis_can.dbc | 7 |
-| frmBodyBaseMsg | 0x302 | 8 | BODY_GW | body_can.dbc | 7 |
-| frmClusterBaseMsg | 0x303 | 8 | IVI_GW | infotainment_can.dbc | 8 |
-| frmBaseTestResultMsg | 0x304 | 8 | VEHICLE_BASE_TEST_CTRL | test_can.dbc | 6 |
-| frmIgnitionEngineMsg | 0x305 | 1 | SIL_TEST_CTRL | powertrain_can.dbc | 3 |
-| frmGearStateMsg | 0x306 | 1 | SIL_TEST_CTRL | powertrain_can.dbc | 3 |
-| frmPowertrainGatewayMsg | 0x307 | 2 | DOMAIN_GW_ROUTER | powertrain_can.dbc | 2 |
-| frmEngineSpeedTempMsg | 0x308 | 4 | ENGINE_CTRL | powertrain_can.dbc | 3 |
-| frmFuelBatteryStateMsg | 0x309 | 3 | ENGINE_CTRL | powertrain_can.dbc | 4 |
-| frmThrottleStateMsg | 0x30A | 2 | ENGINE_CTRL | powertrain_can.dbc | 2 |
-| frmTransmissionTempMsg | 0x30B | 2 | TRANSMISSION_CTRL | powertrain_can.dbc | 2 |
-| frmVehicleModeMsg | 0x30C | 2 | DOMAIN_GW_ROUTER | powertrain_can.dbc | 6 |
-| frmPowerLimitMsg | 0x30D | 2 | DOMAIN_GW_ROUTER | powertrain_can.dbc | 2 |
-| frmCruiseStateMsg | 0x30E | 2 | DOMAIN_GW_ROUTER | powertrain_can.dbc | 4 |
-| frmPowertrainHealthMsg | 0x30F | 2 | DOMAIN_GW_ROUTER | powertrain_can.dbc | 3 |
+| frmIgnitionEngineMsg | 0x300 | 1 | SIL_TEST_CTRL | powertrain_can.dbc | 3 |
+| frmGearStateMsg | 0x301 | 1 | SIL_TEST_CTRL | powertrain_can.dbc | 3 |
+| frmPowertrainGatewayMsg | 0x302 | 2 | DOMAIN_GW_ROUTER | powertrain_can.dbc | 2 |
+| frmEngineSpeedTempMsg | 0x303 | 4 | ENGINE_CTRL | powertrain_can.dbc | 3 |
+| frmFuelBatteryStateMsg | 0x304 | 3 | ENGINE_CTRL | powertrain_can.dbc | 4 |
+| frmThrottleStateMsg | 0x305 | 2 | ENGINE_CTRL | powertrain_can.dbc | 2 |
+| frmTransmissionTempMsg | 0x306 | 2 | TRANSMISSION_CTRL | powertrain_can.dbc | 2 |
+| frmVehicleModeMsg | 0x307 | 2 | DOMAIN_GW_ROUTER | powertrain_can.dbc | 6 |
+| frmPowerLimitMsg | 0x308 | 2 | DOMAIN_GW_ROUTER | powertrain_can.dbc | 2 |
+| frmCruiseStateMsg | 0x309 | 2 | DOMAIN_GW_ROUTER | powertrain_can.dbc | 4 |
+| frmPowertrainHealthMsg | 0x30A | 2 | DOMAIN_GW_ROUTER | powertrain_can.dbc | 3 |
