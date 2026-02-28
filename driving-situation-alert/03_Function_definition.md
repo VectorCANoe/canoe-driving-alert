@@ -3,7 +3,7 @@
 **Document ID**: PROJ-03-FD
 **ISO 26262 Reference**: Part 4, Cl.7 (System Design)
 **ASPICE Reference**: SYS.3 (System Architectural Design)
-**Version**: 4.8
+**Version**: 4.9
 **Date**: 2026-02-28
 **Status**: Draft
 **Project Title**: 주행 상황 실시간 경고 시스템
@@ -54,6 +54,18 @@
 | ECU 동작 | 앰비언트 제어 | 경고 패턴/색상 적용 | 패턴 결정 | Req_008,Req_009,Req_013~Req_016,Req_033~Req_039 / Flow_007 / Comm_007 / UT_BCM_001 |
 | ECU 동작 | 클러스터 표시 | 경고 문구/유형 표시 | 문구 결정 | Req_005,Req_019~Req_021,Req_026,Req_040 / Flow_008 / Comm_008 / UT_CLU_001 |
 | ECU 동작 | 테스트 실행/판정 | 테스트 시나리오 실행 및 판정 | Pass/Fail 기록 | Req_041~Req_043 / Flow_009 / Comm_009 / ST_SIL_002 |
+| ECU 동작 | 엔진 기본 제어 | 시동 입력 기반 엔진 상태 반영 | Vehicle Baseline | Req_101 / Func_101 / ST_BASE_001 |
+| ECU 동작 | 변속 기본 제어 | 기어 입력(P/R/N/D) 상태 반영 | Vehicle Baseline | Req_102 / Func_102 / ST_BASE_001 |
+| ECU 동작 | 가속 기본 제어 | 가속 입력 상태 반영 | Vehicle Baseline | Req_103 / Func_103 / ST_BASE_001 |
+| ECU 동작 | 제동 기본 제어 | 브레이크 입력 상태 반영 | Vehicle Baseline | Req_104 / Func_104 / ST_BASE_001 |
+| ECU 동작 | 조향 기본 제어 | 조향 입력 상태 반영 | Vehicle Baseline | Req_105 / Func_105 / ST_BASE_001 |
+| ECU 동작 | 비상등 기본 제어 | 비상등 On/Off 상태 반영 | Vehicle Baseline | Req_106 / Func_106 / ST_BASE_001 |
+| ECU 동작 | 창문 기본 제어 | 창문 개폐 상태 반영 | Vehicle Baseline | Req_107 / Func_107 / ST_BASE_001 |
+| ECU 동작 | 운전자 상태 입력 처리 | 운전자 상태 입력 전달 | Vehicle Baseline | Req_108 / Func_108 / ST_BASE_001 |
+| ECU 동작 | 클러스터 기본 표시 | 속도/기어/경고 기본 표시 반영 | Vehicle Baseline | Req_109 / Func_109 / ST_BASE_001 |
+| ECU 동작 | 도메인 게이트웨이 전달 | 도메인 경계 기반 메시지 전달 | Vehicle Baseline | Req_110 / Func_110 / IT_BASE_001 |
+| ECU 동작 | 도메인 경계 유지 | 도메인 통신 경계/정책 유지 | Vehicle Baseline | Req_111 / Func_111 / IT_BASE_001 |
+| ECU 동작 | 차량 기본 기능 SIL 검증 | 기본 기능 시나리오 실행/판정 | Vehicle Baseline | Req_112 / Func_112 / ST_BASE_001 |
 
 ---
 
@@ -133,6 +145,16 @@
 - 옵션1 네트워크 전달 경로 고정: `입력 CAN -> 도메인 GW 정규화 -> ETH_SWITCH -> 중앙 경고코어 -> 도메인 GW -> 출력 CAN`.
 - `Func_101~Func_112`는 차량 기본 기능 확장 체인으로, 0302/0303/0304 도메인 DBC 분리 반영 단계에서 Flow/Comm/Var를 확장 연결한다.
 
+## 차량 ECU 인벤토리 (03 기준 요약)
+
+| 도메인 | ECU |
+|---|---|
+| Powertrain | ENGINE_CTRL, TRANSMISSION_CTRL |
+| Chassis | ACCEL_CTRL, BRAKE_CTRL, STEERING_CTRL, EMS_POLICE_TX, EMS_AMB_TX, EMS_ALERT_RX, WARN_ARB_MGR, SIL_TEST_CTRL |
+| Body | BCM_AMBIENT_CTRL, HAZARD_CTRL, WINDOW_CTRL, DRIVER_STATE_CTRL |
+| Infotainment | NAV_CONTEXT_MGR, CLU_HMI_CTRL, CLUSTER_BASE_CTRL |
+| Gateway/Infra | CHASSIS_GW, INFOTAINMENT_GW, BODY_GW, IVI_GW, ETH_SWITCH, DOMAIN_GW_ROUTER, DOMAIN_BOUNDARY_MGR |
+
 ---
 
 ## 개정 이력
@@ -146,3 +168,4 @@
 | 4.6 | 2026-02-28 | Func_014 설명에서 비정의 객체명(`selectedAlertContext`)을 제거하고 0304 표준 변수(`navDirection`) 기준으로 정합화 |
 | 4.7 | 2026-02-28 | 스쿨존 과속 정합 강화를 위해 `speedLimit/speedLimitNorm` 입력을 Func_007/Func_010과 상단 입력 표에 반영. |
 | 4.8 | 2026-02-28 | 차량 기본 기능 확장 대응으로 `Func_101~Func_112`(시동/기어/페달/창문/비상등/도메인경계 등) 상세 표를 추가. |
+| 4.9 | 2026-02-28 | 상단 공식표에 Vehicle Baseline ECU 동작 행을 추가하고, 03 기준 차량 ECU 인벤토리 요약 표를 신설. |

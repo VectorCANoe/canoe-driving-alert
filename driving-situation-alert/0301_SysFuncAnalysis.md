@@ -3,7 +3,7 @@
 **Document ID**: PROJ-0301-SFA
 **ISO 26262 Reference**: Part 4, Cl.7 (System Design)
 **ASPICE Reference**: SYS.3 (System Architectural Design)
-**Version**: 3.10
+**Version**: 3.11
 **Date**: 2026-02-28
 **Status**: Draft
 **Project Title**: 주행 상황 실시간 경고 시스템
@@ -45,12 +45,15 @@
 | EMS_POLICE_TX | 경찰 긴급차량 알림 생성 및 송신 제어 | EmergencyAlert 송신 제어 |
 | EMS_AMB_TX | 구급 긴급차량 알림 생성 및 송신 제어 | EmergencyAlert 송신 제어 |
 | SIL_TEST_CTRL | SIL 시나리오 실행 및 판정 결과 기록 | 검증 제어 가상노드 |
+| VEHICLE_BASE_TEST_CTRL | 차량 기본 기능 시나리오 실행 및 판정 결과 기록 | 검증 제어 가상노드 |
 |  |  | Network Infra |
 | ETH_SWITCH | Ethernet 백본 스위칭 및 도메인 게이트웨이 전달 허브 | Ethernet 프레임 분배 |
 | CHASSIS_GW | Chassis CAN 입력을 Ethernet 정규 메시지로 변환 | CAN->ETH 변환 |
 | INFOTAINMENT_GW | Infotainment CAN 입력을 Ethernet 정규 메시지로 변환 | CAN->ETH 변환 |
 | BODY_GW | 중재 결과 Ethernet 수신 후 Body CAN 출력 메시지 생성 | ETH->CAN 변환 |
 | IVI_GW | 중재 결과 Ethernet 수신 후 Cluster CAN 출력 메시지 생성 | ETH->CAN 변환 |
+| DOMAIN_GW_ROUTER | 도메인 간 입력/출력 프레임 전달 경로 관리 | Gateway Routing |
+| DOMAIN_BOUNDARY_MGR | 도메인 통신 경계 정책 유지 및 충돌 차단 | Boundary Control |
 |  |  | Body |
 | BCM_AMBIENT_CTRL | 중재 결과 기반 앰비언트 경고 패턴 적용 | 색상/패턴 반영 |
 | HAZARD_CTRL | 비상등 On/Off 상태 처리 | 차량 기본 동작 |
@@ -222,3 +225,4 @@
 | 3.8 | 2026-02-28 | 스쿨존 과속 판정 정합을 위해 NAV/ADAS 입력에 `speedLimit/speedLimitNorm`을 반영하고 Navigation Panel 입력 항목을 확장. |
 | 3.9 | 2026-02-28 | ISO/OEM 정합을 위한 ECU 명명 기준 섹션을 추가하고 노드 접미사 규칙(GW/CTRL/MGR/TX/RX)을 명문화. |
 | 3.10 | 2026-02-28 | 차량 기본 기능 확장 대응으로 기본 차량 ECU 노드와 Req_101~Req_112 / Func_101~Func_112 매핑을 추가. |
+| 3.11 | 2026-02-28 | 03 문서와의 노드 정합을 위해 `VEHICLE_BASE_TEST_CTRL`, `DOMAIN_GW_ROUTER`, `DOMAIN_BOUNDARY_MGR`를 상단 공식 노드 표에 추가. |
