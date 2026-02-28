@@ -106,7 +106,7 @@
 ## 06 연계 체크포인트
 
 - `UT_*` 결과는 `06_Integration_Test.md`의 `IT_*` 시나리오 선행 조건으로 사용한다.
-- `UT_EMS_RX_001`의 1000ms 타임아웃 결과는 `IT_ARB_001`, `IT_RECOVERY_001`의 전제 조건이다.
+- `UT_EMS_RX_001`의 1000ms 타임아웃 결과는 `IT_TIMEOUT_001` 및 `IT_OUT_001`의 전제 조건이다.
 
 ---
 
