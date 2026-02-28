@@ -1,6 +1,6 @@
 # Mentor Priority Gate Report
 
-- Generated: 2026-03-01 04:37:57
+- Generated: 2026-03-01 04:40:35
 - Scope: `canoe/network/dbc` active split set validation
 - Backup DBC (`emergency_system.dbc`) present: YES
 
