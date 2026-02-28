@@ -3,8 +3,8 @@
 **Document ID**: PROJ-0301-SFA
 **ISO 26262 Reference**: Part 4, Cl.7 (System Design)
 **ASPICE Reference**: SYS.3 (System Architectural Design)
-**Version**: 3.6
-**Date**: 2026-02-26
+**Version**: 3.7
+**Date**: 2026-02-28
 **Status**: Draft
 **Project Title**: 주행상황 연동 실시간 경고 시스템
 **Subtitle**: (구간 인식, 긴급차량 경고시스템)
@@ -51,8 +51,8 @@
 | NAV_CONTEXT_MGR | 내비게이션 구간/방향/거리 기반 컨텍스트 갱신 | 구간 상태 전환 |
 | CLU_HMI_CTRL | 운전자 경고 문구 및 안내 정보 표시 | 원인/방향/유형 표시 |
 |  |  | Actual Device |
-| Ambient Lights | 실제 앰비언트 장치가 제어 신호를 수신해 점등/패턴 동작 수행 | Ambient_Control 반영 |
-| Cluster Display | 실제 클러스터 장치가 경고 문구/상태를 표시 | Cluster_WarningText 반영 |
+| Ambient Lights | 실제 앰비언트 장치가 제어 신호를 수신해 점등/패턴 동작 수행 | frmAmbientControlMsg(0x210) 반영 |
+| Cluster Display | 실제 클러스터 장치가 경고 문구/상태를 표시 | frmClusterWarningMsg(0x220) 반영 |
 | Navigation Panel | 사용자 입력(구간/방향/거리) 제공 및 시각화 | Panel UI 입력 소스 |
 
 ---
@@ -61,15 +61,15 @@
 | Func ID | Req ID | 실제 노드명 | 입력 (Input) | 처리 (Processing) | 출력 (Output) | 실제값 정의 |
 |---|---|---|---|---|---|---|
 | Func_007 | Req_007 | NAV_CONTEXT_MGR | roadZone, navDirection, zoneDistance | 구간 상태 판별 및 전환 컨텍스트 갱신 | baseZoneContext | 입력: roadZone, navDirection, zoneDistance |
-| Func_001~004,006,010~012 | Req_001~004,006,010~012 | ADAS_WARN_CTRL | vehicleSpeed, steeringInput, baseZoneContext | 스쿨존 과속/고속 무조향 조건 판정, 경고 트리거 생성, 디바운스 | warningState, zoneWarningEvent | 입력: vehicleSpeed, steeringInput, baseZoneContext |
-| Func_013, Func_014, Func_015, Func_016 | Req_013, Req_014, Req_015, Req_016 | BCM_AMBIENT_CTRL | navDirection, roadZone, selectedAlertContext | 유도구간 전환/방향 분기/구간 전환 완화/종료 복귀 처리 | ambientControl | 입력: navDirection, roadZone, selectedAlertContext |
-| Func_017 | Req_017 | EMS_POLICE_TX | Police_Active, Police_ETA, Police_Direction | 경찰 긴급 알림 패킷 생성 및 송신 관리 | EmergencyAlert(Police) | 출력: ETH_EmergencyAlert(UDP) |
-| Func_018 | Req_018 | EMS_AMB_TX | Ambulance_Active, Ambulance_ETA, Ambulance_Direction | 구급 긴급 알림 패킷 생성 및 송신 관리 | EmergencyAlert(Ambulance) | 출력: ETH_EmergencyAlert(UDP) |
-| Func_023,024 | Req_023,024 | EMS_ALERT_RX | EmergencyAlert(Police/Ambulance) | 수신/해제 상태 관리, 1000ms 타임아웃 처리 | EmergencyContextState | 입력: ETH_EmergencyAlert(UDP) |
-| Func_022,025~032 | Req_022,025~032 | WARN_ARB_MGR | EmergencyContextState, WarningState, BaseZoneContext | 우선순위 중재 수행 | SelectedAlertContext | 입력: EmergencyContextState, WarningState, BaseZoneContext |
-| Func_008,009,033~039 | Req_008,009,033~039 | BCM_AMBIENT_CTRL | SelectedAlertContext | 경고 등급별 색상/패턴 적용, 전환 완화, 복원 | Ambient_Control | 출력: Ambient_Control |
-| Func_005,019~021,026,040 | Req_005,019~021,026,040 | CLU_HMI_CTRL | SelectedAlertContext | 경고 문구/종류/방향/양보 메시지 표시 | Cluster_WarningText | 출력: Cluster_WarningText |
-| Func_041, Func_042, Func_043 | Req_041, Req_042, Req_043 | SIL_TEST_CTRL | TestScenario | 시나리오 실행, CAN+ETH 검증, 판정 기록 | TestResult, TraceRecord | 출력: TestResult |
+| Func_001~004,006,010~012 | Req_001~004,006,010~012 | ADAS_WARN_CTRL | vehicleSpeedNorm, driveStateNorm, steeringInputNorm, baseZoneContext | 스쿨존 과속/고속 무조향 조건 판정, 경고 트리거 생성, 디바운스 | warningState | 입력: vehicleSpeedNorm, driveStateNorm, steeringInputNorm, baseZoneContext |
+| Func_013~016 | Req_013~Req_016 | BCM_AMBIENT_CTRL | selectedAlertType, selectedAlertLevel, navDirection, timeoutClear | 유도구간 진입 전환/방향 분기/전환 완화/종료 복귀 처리 | ambientMode, ambientPattern | 입력: selectedAlertType, selectedAlertLevel, navDirection, timeoutClear |
+| Func_017 | Req_017 | EMS_POLICE_TX | testScenario | 경찰 긴급 알림 패킷 생성 및 송신 관리 | emergencyType, emergencyDirection, eta, sourceId, alertState, ETH_EmergencyAlert | 출력: ETH_EmergencyAlert(UDP) |
+| Func_018 | Req_018 | EMS_AMB_TX | testScenario | 구급 긴급 알림 패킷 생성 및 송신 관리 | emergencyType, emergencyDirection, eta, sourceId, alertState, ETH_EmergencyAlert | 출력: ETH_EmergencyAlert(UDP) |
+| Func_023,024 | Req_023,024 | EMS_ALERT_RX | alertState, emergencyType, lastEmergencyRxMs | 수신/해제 상태 관리, 1000ms 타임아웃 처리 | emergencyContext, timeoutClear | 입력: alertState, emergencyType, lastEmergencyRxMs |
+| Func_022,025~032 | Req_022,025~032 | WARN_ARB_MGR | emergencyContext, warningState, baseZoneContext, emergencyType, eta, sourceId, arbitrationSnapshotId | 우선순위 중재 수행 | selectedAlertLevel, selectedAlertType | 입력: emergencyContext, warningState, baseZoneContext, emergencyType, eta, sourceId, arbitrationSnapshotId |
+| Func_008,009,033~039 | Req_008,009,033~039 | BCM_AMBIENT_CTRL | selectedAlertLevel, selectedAlertType, navDirection, baseZoneContext, timeoutClear | 경고 등급별 색상/패턴 적용, 전환 완화, 복원 | ambientMode, ambientColor, ambientPattern | 출력: ambientMode, ambientColor, ambientPattern |
+| Func_005,019~021,026,040 | Req_005,019~021,026,040 | CLU_HMI_CTRL | selectedAlertType, emergencyDirection, duplicatePopupGuard, warningTextCode | 경고 문구/종류/방향/양보 메시지 표시 | warningTextCode | 출력: warningTextCode |
+| Func_041, Func_042, Func_043 | Req_041, Req_042, Req_043 | SIL_TEST_CTRL | testScenario | 시나리오 실행, CAN+ETH 검증, 판정 기록 | scenarioResult | 출력: scenarioResult |
 
 ## 2-1. Req-Func 1:1 감사 매핑 표
 
@@ -151,9 +151,9 @@
 
 - 각 노드의 출력은 `0302_NWflowDef.md`에서 반드시 Flow ID로 정의한다.
 - 최소 연계 규칙:
-- `SelectedAlertContext` -> `Ambient_Control` 송신 Flow 존재
-- `SelectedAlertContext` -> `Cluster_Warning` 송신 Flow 존재
-- `EmergencyAlert` 송신/수신/해제 Flow 존재
+- `selectedAlertLevel/selectedAlertType` -> `frmAmbientControlMsg(0x210)` 송신 Flow 존재
+- `selectedAlertLevel/selectedAlertType` -> `frmClusterWarningMsg(0x220)` 송신 Flow 존재
+- `ETH_EmergencyAlert(0xE100)` 송신/수신/해제 Flow 존재
 - 타임아웃(1000ms) 해제 Flow 존재
 
 ---
@@ -170,3 +170,4 @@
 | 3.4 | 2026-02-25 | Req_001~Req_043 / Func_001~Func_043 1:1 감사용 매핑 표(개별 행) 추가 |
 | 3.5 | 2026-02-26 | Cluster 출력 전달체인을 Infotainment CAN 경로로 정합화(IVI_GW -> CLU_HMI_CTRL) |
 | 3.6 | 2026-02-26 | 0304 표준 변수명 기준으로 상세 표기 통일(`g*` 별칭 제거) |
+| 3.7 | 2026-02-28 | 03/0304 정합 기준으로 하단 상세표 입출력 변수를 재정렬(비정의 변수 제거, Core/State 변수명 통일) |

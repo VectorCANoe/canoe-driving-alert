@@ -3,8 +3,8 @@
 **Document ID**: PROJ-05-UT
 **ISO 26262 Reference**: Part 6, Cl.9 (Software Unit Verification)
 **ASPICE Reference**: SWE.4 (Software Unit Verification)
-**Version**: 2.2
-**Date**: 2026-02-26
+**Version**: 2.3
+**Date**: 2026-02-28
 **Status**: Draft
 **Project Title**: 주행상황 연동 실시간 경고 시스템
 **Subtitle**: (구간 인식, 긴급차량 경고시스템)
@@ -28,6 +28,13 @@
 - `즉시` 요구는 기본적으로 `100ms 입력 주기 + 50ms 출력 주기`를 합산한 `150ms 이내` 반영으로 판정한다.
 - 타임아웃 요구는 `Req_024`에 따라 `1000ms`를 절대 기준으로 판정한다.
 - 주기 정합은 입력 `100ms`, 출력 `50ms`를 기준으로 판정한다.
+
+### 현업 기준 최소 설계 규칙 (ASPICE SWE.4 반영)
+
+- UT는 `Positive / Negative / Boundary` 3분류를 최소 유지한다.
+- `UT 개수 >= Func 개수`는 필수 조건이 아니다. 필수 조건은 `Req/VC 추적 커버리지 100%`다.
+- UT 사양에는 최소 `입력 조건`, `예상 결과`, `판정 기준(수치/조건)`을 포함한다.
+- 추적성은 `소프트웨어 상세설계(03) -> UT 사양(05) -> UT 결과(실행 로그)` 양방향으로 유지한다.
 
 ---
 
@@ -75,6 +82,19 @@
 
 ---
 
+## 경계값 보강 케이스 (핵심)
+
+| UT ID | 대상 | Req/VC | 케이스 유형 | 입력 조건 | 합격 기준 |
+|---|---|---|---|---|---|
+| UT_BND_024_A | EMS_ALERT_RX | Req_024 / VC_024 | Boundary- | 마지막 긴급 수신 후 `999ms` 경과 | `timeoutClear=0` 유지 |
+| UT_BND_024_B | EMS_ALERT_RX | Req_024 / VC_024 | Boundary | 마지막 긴급 수신 후 `1000ms` 경과 | `timeoutClear=1` 단회 전환 |
+| UT_BND_024_C | EMS_ALERT_RX | Req_024 / VC_024 | Boundary+ | 마지막 긴급 수신 후 `>1000ms` 유지 | 해제 상태 유지, 중복 토글 없음 |
+| UT_BND_006_A | ADAS_WARN_CTRL | Req_006 / VC_006 | Boundary- | 동일 경고 재입력 간격 `<1000ms` | 재출력 억제 |
+| UT_BND_006_B | ADAS_WARN_CTRL | Req_006 / VC_006 | Boundary | 동일 경고 재입력 간격 `=1000ms` | 재출력 1회 허용 |
+| UT_BND_006_C | ADAS_WARN_CTRL | Req_006 / VC_006 | Boundary+ | 동일 경고 재입력 간격 `>1000ms` | 재출력 허용 |
+
+---
+
 ## 06 연계 체크포인트
 
 - `UT_*` 결과는 `06_Integration_Test.md`의 `IT_*` 시나리오 선행 조건으로 사용한다.
@@ -90,3 +110,4 @@
 | 2.0 | 2026-02-26 | 옵션1 아키텍처 기준으로 전면 재작성. OTA/UDS/DoIP 항목 제거, UT ID 체계(UT_ADAS_001 등) 및 Req/Func/Flow/Comm/Var 추적 표 추가 |
 | 2.1 | 2026-02-26 | 상단 표를 샘플의 블록형(제어기/가상노드 입력·출력) 구조로 재정렬하고, 합격 기준에 50ms/100ms/150ms/1000ms 수치 기준과 Draft 경계 문구를 반영 |
 | 2.2 | 2026-02-26 | VC(Verification Criteria) 추적을 위해 UT 상세 표에 VC ID 컬럼을 추가하고 Req-VC-UT 연결을 명시 |
+| 2.3 | 2026-02-28 | ASPICE SWE.4 기준 최소 케이스 설계 규칙(Positive/Negative/Boundary, 추적성)과 Req_024/Req_006 경계값 보강 케이스를 추가 |

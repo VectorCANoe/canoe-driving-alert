@@ -3,8 +3,8 @@
 **Document ID**: PROJ-0304-SV
 **ISO 26262 Reference**: Part 6, Cl.7 (Software Architectural Design)
 **ASPICE Reference**: SWE.2 / SWE.3
-**Version**: 2.3
-**Date**: 2026-02-25
+**Version**: 2.4
+**Date**: 2026-02-28
 **Status**: Draft
 **Project Title**: 주행상황 연동 실시간 경고 시스템
 **Subtitle**: (구간 인식, 긴급차량 경고시스템)
@@ -36,7 +36,7 @@
 | 6 | Infotainment | zoneDistance | uint32 | 0 | 255 | 0 | 구간 잔여 거리 |
 | 7 | V2X | emergencyType | uint32 | 0 | 3 | 0 | 긴급차량 종류 |
 | 8 | V2X | emergencyDirection | uint32 | 0 | 3 | 0 | 긴급차량 접근 방향 |
-| 9 | V2X | eta | uint32 | 0 | 255 | 0 | 긴급차량 ETA |
+| 9 | V2X | eta | uint32 | 0 | 255 | 0 | 긴급차량 ETA(유효값 0~255, 내부 invalid sentinel 65535) |
 | 10 | V2X | sourceId | uint32 | 0 | 255 | 0 | 긴급 메시지 Source ID |
 | 11 | V2X | alertState | uint32 | 0 | 1 | 0 | 긴급 메시지 Active/Clear 상태 |
 | 12 | Core | vehicleSpeedNorm | uint32 | 0 | 255 | 0 | 게이트웨이 정규화 후 차량 속도 |
@@ -83,7 +83,7 @@
 | 17 | Core | emergencyContext | emergencyContext_ETH_CORE | ETH_CORE | EMS_ALERT_RX 내부 계산 |
 | 18 | Core | selectedAlertLevel | selectedAlertLevel_ETH_CORE | ETH_CORE | WARN_ARB_MGR 내부 계산 |
 | 19 | Core | selectedAlertType | selectedAlertType_ETH_CORE | ETH_CORE | WARN_ARB_MGR 내부 계산 |
-| 20 | Core | timeoutClear | timeoutClear_ETH_CORE | ETH_CORE | EMS_ALERT_RX/WARN_ARB_MGR 타임아웃 처리 |
+| 20 | Core | timeoutClear | timeoutClear_ETH_CORE | ETH_CORE | EMS_ALERT_RX 생성 -> WARN_ARB_MGR 소비(타임아웃 해제) |
 | 21 | Body | ambientMode | ambientMode_CAN_OUT | CAN_OUT | WARN_ARB_MGR -> ETH_SWITCH -> BODY_GW -> BCM_AMBIENT_CTRL |
 | 22 | Body | ambientColor | ambientColor_CAN_OUT | CAN_OUT | WARN_ARB_MGR -> ETH_SWITCH -> BODY_GW -> BCM_AMBIENT_CTRL |
 | 23 | Body | ambientPattern | ambientPattern_CAN_OUT | CAN_OUT | WARN_ARB_MGR -> ETH_SWITCH -> BODY_GW -> BCM_AMBIENT_CTRL |
@@ -108,7 +108,7 @@
 | zoneDistance | zoneDistance_CAN_IN | m | 1 | Little | 65535 | 거리 미수신 시 invalid |
 | emergencyType | emergencyType_ETH_IN | enum | 1 | Little | 255 | 0:none,1:police,2:ambulance |
 | emergencyDirection | emergencyDirection_ETH_IN | enum | 1 | Little | 255 | 0:front,1:left,2:right,3:rear |
-| eta | eta_ETH_IN | s | 1 | Little | 65535 | ETA 미산출 시 invalid |
+| eta | eta_ETH_IN | s | 1 | Little | 65535 | 유효범위 0~255, 내부 처리에서 65535를 invalid sentinel로 사용 |
 | sourceId | sourceId_ETH_IN | id | 1 | Little | 65535 | 송신원 미식별 값 |
 | alertState | alertState_ETH_IN | bool | 1 | Little | 255 | 0:clear,1:active |
 | vehicleSpeedNorm | vehicleSpeed_ETH_CORE | km/h | 1 | Little | 255 | GW 정규화 후 값 |
@@ -153,9 +153,9 @@
 | Var_015 | baseZoneContext | baseZoneContext_ETH_CORE | ETH_CORE | NAV_CONTEXT_MGR | Comm_003 | Flow_003 | Func_007 | Req_007 | NAV 컨텍스트 계산 후 갱신 |
 | Var_016 | warningState | warningState_ETH_CORE | ETH_CORE | ADAS_WARN_CTRL | Comm_001, Comm_002, Comm_006 | Flow_001, Flow_002, Flow_006 | Func_003, Func_004, Func_006, Func_010, Func_011, Func_012, Func_027 | Req_003, Req_004, Req_006, Req_010, Req_011, Req_012, Req_027 | 경고 조건 계산 시 갱신 |
 | Var_017 | emergencyContext | emergencyContext_ETH_CORE | ETH_CORE | EMS_ALERT_RX | Comm_004, Comm_005, Comm_006 | Flow_004, Flow_005, Flow_006 | Func_017, Func_018, Func_023, Func_024 | Req_017, Req_018, Req_023, Req_024 | E100 수신/해제/타임아웃 시 갱신 |
-| Var_018 | selectedAlertLevel | selectedAlertLevel_ETH_CORE | ETH_CORE | WARN_ARB_MGR | Comm_006 | Flow_006 | Func_022, Func_025~Func_032 | Req_022, Req_025~Req_032 | 중재 결과 생성 시 갱신 |
-| Var_019 | selectedAlertType | selectedAlertType_ETH_CORE | ETH_CORE | WARN_ARB_MGR | Comm_006 | Flow_006 | Func_022, Func_025~Func_032 | Req_022, Req_025~Req_032 | 중재 결과 생성 시 갱신 |
-| Var_020 | timeoutClear | timeoutClear_ETH_CORE | ETH_CORE | WARN_ARB_MGR | Comm_006 | Flow_006 | Func_024, Func_033, Func_034 | Req_024, Req_033, Req_034 | 1000ms 무갱신 시 1로 전환 |
+| Var_018 | selectedAlertLevel | selectedAlertLevel_ETH_CORE | ETH_CORE | WARN_ARB_MGR | Comm_006 | Flow_006 | Func_022, Func_025, Func_026, Func_027, Func_028, Func_029, Func_030, Func_031, Func_032 | Req_022, Req_025, Req_026, Req_027, Req_028, Req_029, Req_030, Req_031, Req_032 | 중재 결과 생성 시 갱신 |
+| Var_019 | selectedAlertType | selectedAlertType_ETH_CORE | ETH_CORE | WARN_ARB_MGR | Comm_006 | Flow_006 | Func_022, Func_025, Func_026, Func_027, Func_028, Func_029, Func_030, Func_031, Func_032 | Req_022, Req_025, Req_026, Req_027, Req_028, Req_029, Req_030, Req_031, Req_032 | 중재 결과 생성 시 갱신 |
+| Var_020 | timeoutClear | timeoutClear_ETH_CORE | ETH_CORE | EMS_ALERT_RX | Comm_006 | Flow_006 | Func_024, Func_033, Func_034 | Req_024, Req_033, Req_034 | 1000ms 무갱신 시 1로 전환(WARN_ARB_MGR 전달) |
 | Var_021 | ambientMode | ambientMode_CAN_OUT | CAN_OUT | BODY_GW/BCM_AMBIENT_CTRL | Comm_007 | Flow_007 | Func_008, Func_009, Func_013~Func_016, Func_033~Func_039 | Req_008, Req_009, Req_013~Req_016, Req_033~Req_039 | 50ms 출력 주기 갱신 |
 | Var_022 | ambientColor | ambientColor_CAN_OUT | CAN_OUT | BODY_GW/BCM_AMBIENT_CTRL | Comm_007 | Flow_007 | Func_035, Func_037, Func_038, Func_039 | Req_035, Req_037, Req_038, Req_039 | 50ms 출력 주기 갱신 |
 | Var_023 | ambientPattern | ambientPattern_CAN_OUT | CAN_OUT | BODY_GW/BCM_AMBIENT_CTRL | Comm_007 | Flow_007 | Func_015, Func_036, Func_037, Func_038, Func_039 | Req_015, Req_036, Req_037, Req_038, Req_039 | 50ms 출력 주기 갱신 |
@@ -186,3 +186,4 @@
 | 2.1 | 2026-02-25 | 상단 29개 변수와 하단 추적표를 1:1 대응하도록 누락 변수(emergency*_ETH_IN, driveState_ETH_CORE, warningState_ETH_CORE, lastEmergencyRxMs) 직접 매핑 추가 |
 | 2.2 | 2026-02-25 | 변수 구현 속성 보강 표(Unit/Scale/Endian/Invalid) 추가로 04 구현 시 해석 오차 방지 기준 명시 |
 | 2.3 | 2026-02-25 | 상단 공식표를 도메인 Namespace + 순수 Name 구조로 정리하고, 통신/구현 식별자는 하단 매핑/추적 표로 분리 |
+| 2.4 | 2026-02-28 | `timeoutClear` 생성 주체를 EMS_ALERT_RX로 명확화, `selectedAlertLevel/Type` Func/Req 범위표기를 명시 나열로 전환, `eta` 유효범위/invalid sentinel 규칙을 분리 명시 |

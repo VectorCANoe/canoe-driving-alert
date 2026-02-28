@@ -3,8 +3,8 @@
 **Document ID**: PROJ-06-IT
 **ISO 26262 Reference**: Part 6, Cl.10 (Software Integration and Integration Test)
 **ASPICE Reference**: SWE.5 (Software Integration and Integration Test)
-**Version**: 4.2
-**Date**: 2026-02-26
+**Version**: 4.3
+**Date**: 2026-02-28
 **Status**: Draft
 **Project Title**: 주행상황 연동 실시간 경고 시스템
 **Subtitle**: (구간 인식, 긴급차량 경고시스템)
@@ -22,6 +22,7 @@
 - 상세 추적은 하단 IT-Flow/Comm 연계 표로 분리하며 Req-VC-IT 추적을 유지한다.
 - 범위는 CANoe SIL, CAN+Ethernet으로 고정한다.
 - 본 문서는 `FZ_001~FZ_012` 결과 반영 전 Baseline Draft이며, 측정값 확정 시 수행결과를 기입한다.
+- IT는 인터페이스/흐름 중심으로 유지하고, 세부 시나리오 분해는 핵심 경계값/우선순위 항목만 보강 케이스로 관리한다.
 
 ---
 
@@ -59,6 +60,18 @@
 
 ---
 
+## 핵심 보강 케이스 (선별 수용)
+
+| IT 보강 ID | 기준 IT | Req/VC | 목적 | 입력/조건 | 합격 기준 | 선행 UT |
+|---|---|---|---|---|---|---|
+| IT_BND_024_A | IT_TIMEOUT_001 | Req_024 / VC_024 | 타임아웃 경계값 미만 확인 | 마지막 긴급 수신 후 `999ms` | `timeoutClear=0` 유지 | UT_BND_024_A |
+| IT_BND_024_B | IT_TIMEOUT_001 | Req_024 / VC_024 | 타임아웃 경계값 확인 | 마지막 긴급 수신 후 `1000ms` | `timeoutClear=1` 단회 전환 | UT_BND_024_B |
+| IT_BND_024_C | IT_TIMEOUT_001 | Req_024 / VC_024 | 타임아웃 경계값 초과 확인 | 마지막 긴급 수신 후 `>1000ms` | 해제 상태 유지, 중복 토글 없음 | UT_BND_024_C |
+| IT_ARB_030_031_A | IT_ARB_001 | Req_030,Req_031 / VC_030,VC_031 | ETA/SourceID 동률 규칙 확인 | 동급 긴급 2건(ETA 동률 포함) | ETA 우선, 동률 시 sourceId 오름차순 선택 | UT_ARB_001 |
+| IT_HMI_020_A | IT_CLU_001 | Req_020 / VC_020 | 방향 표시 분기 확인 | emergencyDirection = LEFT/RIGHT/NONE | 방향 코드가 규칙표와 일치 | UT_CLU_001 |
+
+---
+
 ## 07 연계 체크포인트
 
 - `IT_*`의 E2E 결과는 `07_System_Test.md`의 `ST_*` 수용 판단 근거로 사용한다.
@@ -76,3 +89,4 @@
 | 4.0 | 2026-02-26 | 옵션1 아키텍처 기준 전면 재작성. OTA/UDS/DoIP 제거, IT ID 체계 및 Flow/Comm 중심 통합 검증 구조 반영 |
 | 4.1 | 2026-02-26 | 합격 기준에 50ms/100ms/150ms/1000ms 수치 기준을 반영하고, FZ 사전 점검 결과 반영 전 Draft 경계 문구 추가 |
 | 4.2 | 2026-02-26 | VC 추적 강화를 위해 상단/상세 표에 VC ID 컬럼을 추가하고 Req-VC-IT 연결을 명시 |
+| 4.3 | 2026-02-28 | 팀 제안 중 현업 BP에 부합하는 핵심만 선별 반영: 타임아웃 경계값(999/1000/>1000), ETA/SourceID 우선순위, 방향 분기 보강 케이스 추가 |
