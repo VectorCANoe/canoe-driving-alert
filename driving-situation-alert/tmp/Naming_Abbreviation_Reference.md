@@ -76,6 +76,28 @@
 | `ADAS` | 운전자 보조 시스템 영역 | 경고 판단/중재 상위 문맥 |
 | `Domain Controller(DCU)` | 도메인 단위 통합 제어기 | 현재 SIL에서는 CAPL 노드로 모델링 |
 
+### 5-1) 프로젝트 ECU ↔ OEM 스타일 매핑 (권장 운영안)
+
+- 원칙(BP): `03/0301`의 프로젝트 표준 노드명은 유지하고, OEM 스타일은 매핑표로 관리한다.
+- 이유: 추적성 ID 체인(Req/Func/Flow/Comm/Var/Test) 안정성을 유지하면서, 대외 설명 시 OEM 용어 호환이 가능하다.
+
+| 프로젝트 노드명 | OEM 스타일 기능군/용어 | 비고 |
+|---|---|---|
+| ADAS_WARN_CTRL | ADAS Domain Logic | FCA/LDW/LKA/SCC와 같은 기능군의 상위 경고 판단 레이어 |
+| NAV_CONTEXT_MGR | IVI/Navi Context | IVI 또는 Navigation ECU 문맥 처리 레이어 |
+| WARN_ARB_MGR | ADAS/VCU Arbitration | 다중 ADAS/경고 이벤트 우선순위 중재 |
+| CLU_HMI_CTRL | Cluster HMI ECU | OEM의 Cluster ECU/HU 경고 표시 경로와 대응 |
+| BCM_AMBIENT_CTRL | BCM (Body Control Module) | 바디 램프/앰비언트 출력 제어 |
+| EMS_ALERT_RX | EMS/V2X Alert Handler | 긴급차량 메시지 수신·해제·타임아웃 처리 |
+| EMS_POLICE_TX, EMS_AMB_TX | V2X Tx (Emergency Source) | 경찰/구급 이벤트 송신 역할 분리 |
+| CHASSIS_GW | Chassis Gateway/CGW | Chassis CAN 경계 게이트웨이 |
+| INFOTAINMENT_GW | Infotainment Gateway/CGW | IVI CAN 경계 게이트웨이 |
+| BODY_GW | Body Gateway/CGW | Body CAN 경계 게이트웨이 |
+| IVI_GW | IVI Gateway/CGW | Cluster/IVI 출력 경계 게이트웨이 |
+| ENGINE_CTRL | EMS/ECM(개념 대응) | 엔진 상태 반영 기능(프로젝트 모델) |
+| TRANSMISSION_CTRL | TCU(개념 대응) | 기어 상태 반영 기능(프로젝트 모델) |
+| ACCEL_CTRL / BRAKE_CTRL / STEERING_CTRL | Chassis ECU 기능군 | EPS/ESC/Brake ECU 기능군에 대응되는 입력 처리 모델 |
+
 ## 6) ISO 26262 용어 (참고)
 | 용어 | 풀네임 | 핵심 의미 |
 |---|---|---|
@@ -109,3 +131,4 @@
 | 버전 | 날짜 | 변경 사항 |
 |---|---|---|
 | `1.0` | `2026-02-26` | 프로젝트 전용 네이밍/약어/표준 용어 참조표 초안 작성 |
+| `1.1` | `2026-02-28` | 프로젝트 노드명 유지 + OEM 스타일 매핑표(5-1) 추가 |
