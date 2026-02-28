@@ -62,3 +62,70 @@
 - 문서: 00~07 추적 체인 유지 + 과도한 번호 강박 없이 설명 가능
 - 구현: 차량 기본 기능 + 주제 시나리오가 CANoe에서 실제 동작
 - 발표: 아키텍처/통신/시나리오를 5분 내 일관되게 설명 가능
+
+---
+
+## 확정안 (상이 항목 정리)
+아래 항목을 최신 실행 기준으로 사용한다. 기존 내용과 충돌 시 본 섹션을 우선 적용한다.
+
+# Mentoring 08 Action Plan (Document -> DBC -> Reverse Trace)
+
+## 목표
+- 누락 없는 추적성 체인을 유지하면서 개발 속도를 확보한다.
+- 기준 흐름을 `01 -> 03 -> DBC -> 0302/0303`로 고정한다.
+
+## 확정 실행 순서
+1. `01_Requirements.md`에 차량 기본 기능 요구를 먼저 정의한다. (What)
+2. `03_Function_definition.md`에 ECU/기능 배치를 추가한다. (How)
+3. 도메인(네트워크) 분할 기준을 확정한다.
+4. CAN 통신은 도메인별 DBC를 먼저 작성한다.
+5. `0302_NWflowDef.md`, `0303_Communication_Specification.md`는 CAN 영역을 DBC에서 역추출해 작성한다.
+6. Ethernet 영역은 DBC가 아닌 별도 인터페이스 명세를 기준으로 작성한다.
+7. `0304_System_Variables.md` 및 테스트 문서(05/06/07) 추적 체인을 최종 점검한다.
+
+## 작성 원칙
+- `01`은 What만 유지한다.
+- `03+`는 How만 유지한다.
+- ECU를 RX/TX 역할로 쪼개지 않고 단일 ECU로 정의한다.
+- DBC는 CAN 계약만 관리한다.
+- Ethernet(E100/E200, 0x510/0x511/0x512)은 인터페이스 명세에서 관리한다.
+
+## 중간 산출물 체크포인트
+- C1: `01`에 차량 기본 기능 요구 반영 완료
+- C2: `03`에 ECU 확장 및 기능 매핑 완료
+- C3: 도메인별 CAN DBC 초안 완료
+- C4: `0302/0303` CAN 영역 역추출 반영 완료
+- C5: Req -> Func -> Flow -> Comm -> Var 체인 샘플 감사 통과
+
+## Done Definition
+- 문서: 01/03/0302/0303/0304의 체인 누락 없음
+- 통신: CAN 계약은 DBC와 1:1 일치
+- 경계: Ethernet 계약은 별도 명세와 1:1 일치
+- 검증: 랜덤 ID 추적 시 체인 단절 없음
+
+## Domain-DBC Policy (Confirmed)
+- DBC is NOT one canvas/file for the whole system.
+- Create ONE DBC per CAN network(domain).
+- Typical split:
+  1) Powertrain CAN DBC
+  2) Chassis CAN DBC
+  3) Body CAN DBC
+  4) Infotainment CAN DBC
+  5) Additional CAN domains/backbone DBC as needed
+- Gateway nodes can appear in multiple DBCs because they connect networks.
+- Ethernet contracts are NOT modeled in DBC.
+  - Manage Ethernet(E100/E200, 0x510/0x511/0x512) in a separate interface specification.
+
+## Update Rule for 0302/0303
+- 0302/0303 CAN sections: reverse-extract from domain DBCs.
+- 0302/0303 Ethernet sections: write from Ethernet interface spec.
+- Keep traceability source explicit per row:
+  - Source=DBC (CAN)
+  - Source=ETH_SPEC (Ethernet)
+
+## Review Checklist (Before next mentoring)
+- [ ] Domain list fixed (how many CAN networks)
+- [ ] One DBC file created per domain
+- [ ] Gateway participation mapped per domain DBC
+- [ ] Ethernet spec file prepared separately
+- [ ] 0302/0303 rows annotated with Source (DBC or ETH_SPEC)
