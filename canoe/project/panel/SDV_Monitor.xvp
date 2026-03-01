@@ -127,7 +127,7 @@
       <!-- baseZoneContext -->
       <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="LblBaseZone" ControlName="Lbl BaseZone">
         <Property Name="Name">LblBaseZone</Property>
-        <Property Name="Size">350, 14</Property>
+        <Property Name="Size">185, 14</Property>
         <Property Name="Location">8, 112</Property>
         <Property Name="ForeColor">255, 160, 160, 160</Property>
         <Property Name="Text">baseZoneContext  (0=Normal 1=School 2=Hwy 3=ICLeft 4=ICRight)</Property>
@@ -156,7 +156,7 @@
       <!-- warningState — amber alarm when > 0 -->
       <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="LblWarnState" ControlName="Lbl WarnState">
         <Property Name="Name">LblWarnState</Property>
-        <Property Name="Size">350, 14</Property>
+        <Property Name="Size">185, 14</Property>
         <Property Name="Location">8, 134</Property>
         <Property Name="ForeColor">255, 160, 160, 160</Property>
         <Property Name="Text">warningState  (0=None 1=SchoolOverspeed 2=HwyNoSteer)</Property>
@@ -188,7 +188,7 @@
       <!-- emergencyContext — red alarm when > 0 -->
       <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="LblEmgCtx" ControlName="Lbl EmgCtx">
         <Property Name="Name">LblEmgCtx</Property>
-        <Property Name="Size">350, 14</Property>
+        <Property Name="Size">185, 14</Property>
         <Property Name="Location">8, 156</Property>
         <Property Name="ForeColor">255, 160, 160, 160</Property>
         <Property Name="Text">emergencyContext  (0=None 1=Police 2=Ambulance)</Property>
@@ -220,7 +220,7 @@
       <!-- selectedAlertLevel — tiered alarm: amber >=3, red >=6 -->
       <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="LblAlertLvl" ControlName="Lbl AlertLvl">
         <Property Name="Name">LblAlertLvl</Property>
-        <Property Name="Size">350, 14</Property>
+        <Property Name="Size">185, 14</Property>
         <Property Name="Location">8, 182</Property>
         <Property Name="ForeColor">255, 220, 220, 100</Property>
         <Property Name="Text">selectedAlertLevel  (0=idle .. 6=Police 7=Ambulance)</Property>
@@ -252,7 +252,7 @@
       <!-- selectedAlertType -->
       <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="LblAlertType" ControlName="Lbl AlertType">
         <Property Name="Name">LblAlertType</Property>
-        <Property Name="Size">350, 14</Property>
+        <Property Name="Size">185, 14</Property>
         <Property Name="Location">8, 206</Property>
         <Property Name="ForeColor">255, 160, 160, 160</Property>
         <Property Name="Text">selectedAlertType  (1=Police 2=Ambulance 3=School 4=Hwy 5=ICL 6=ICR)</Property>
@@ -361,7 +361,7 @@
       <!-- ambientColor -->
       <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="LblAmbColor" ControlName="Lbl AmbColor">
         <Property Name="Name">LblAmbColor</Property>
-        <Property Name="Size">350, 14</Property>
+        <Property Name="Size">185, 14</Property>
         <Property Name="Location">8, 46</Property>
         <Property Name="ForeColor">255, 160, 160, 160</Property>
         <Property Name="Text">ambientColor  (1=Police 2=Ambulance 3=School 4=Hwy 5=ICLeft 6=ICRight)</Property>
@@ -390,7 +390,7 @@
       <!-- ambientPattern -->
       <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="LblAmbPattern" ControlName="Lbl AmbPattern">
         <Property Name="Name">LblAmbPattern</Property>
-        <Property Name="Size">350, 14</Property>
+        <Property Name="Size">185, 14</Property>
         <Property Name="Location">8, 68</Property>
         <Property Name="ForeColor">255, 160, 160, 160</Property>
         <Property Name="Text">ambientPattern  (0=Off 1=Pulse 2=IC-Left-Flow 3=IC-Right-Flow)</Property>
@@ -422,10 +422,10 @@
       <!-- warningTextCode — large highlighted display, amber alarm -->
       <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="LblWarnCode" ControlName="Lbl WarnCode">
         <Property Name="Name">LblWarnCode</Property>
-        <Property Name="Size">350, 14</Property>
+        <Property Name="Size">185, 14</Property>
         <Property Name="Location">8, 98</Property>
         <Property Name="ForeColor">255, 220, 220, 100</Property>
-        <Property Name="Text">warningTextCode  (0=OK | 1xx=Police | 2xx=Ambulance | 31=ICL | 32=ICR | XY=type*10+level)</Property>
+        <Property Name="Text">warningTextCode  (XY=type*10+level)</Property>
       </Object>
       <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="TxtWarnCode" ControlName="Txt WarnCode">
         <Property Name="Name">TxtWarnCode</Property>
