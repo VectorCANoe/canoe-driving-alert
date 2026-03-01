@@ -127,7 +127,7 @@
 | Req_024 | Func_024 | EMS_ALERT | 타임아웃 보호해제 |
 | Req_025 | Func_025 | WARN_ARB_MGR | 다중긴급 단일선택 |
 | Req_026 | Func_026 | CLU_HMI_CTRL | 중복 팝업 억제 |
-| Req_027 | Func_027 | WARN_ARB_MGR | 충돌중재 개시 |
+| Req_027 | Func_027 | WARN_ARB_MGR | 충돌중재 적용 |
 | Req_028 | Func_028 | WARN_ARB_MGR | 긴급>구간 우선 적용 |
 | Req_029 | Func_029 | WARN_ARB_MGR | 구급>경찰 우선 적용 |
 | Req_030 | Func_030 | WARN_ARB_MGR | ETA 우선 적용 |
