@@ -52,6 +52,25 @@ int calcBaselineIgnitionState(int speed, int driveState)
   return 0;
 }
 
+void sendBaselineDiagRequest(int scenarioId)
+{
+  message frmIviDiagReqMsg mIvi;
+  message frmPtDiagReqMsg mPt;
+  int didLow;
+
+  didLow = clampRange(scenarioId, 0, 255);
+
+  mIvi.IviDiagServiceId = 0x22;
+  mIvi.IviDiagDidHigh = 0xF1;
+  mIvi.IviDiagDidLow = didLow;
+  output(mIvi);
+
+  mPt.PtDiagServiceId = 0x22;
+  mPt.PtDiagDidHigh = 0xF1;
+  mPt.PtDiagDidLow = didLow;
+  output(mPt);
+}
+
 void applyScenarioPreset(int scenarioId)
 {
   @Chassis::driveState = 3;
@@ -328,6 +347,14 @@ on sysvar Test::testScenario
     gCurrentScenarioId = scenarioId;
     scheduleScenarioEvaluation(scenarioId);
     write("[SIL_TEST_CTRL] apply scenario=%d", scenarioId);
+  }
+  else if (scenarioId >= 200 && scenarioId <= 255)
+  {
+    gDemoRunning = 0;
+    cancelTimer(tDemoStep);
+    gCurrentScenarioId = scenarioId;
+    sendBaselineDiagRequest(scenarioId);
+    write("[SIL_TEST_CTRL] send baseline diag request scenario=%d", scenarioId);
   }
   else
   {
