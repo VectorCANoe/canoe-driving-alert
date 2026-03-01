@@ -3,7 +3,7 @@
 **Document ID**: PROJ-03-FD
 **ISO 26262 Reference**: Part 4, Cl.7 (System Design)
 **ASPICE Reference**: SYS.3 (System Architectural Design)
-**Version**: 4.11
+**Version**: 4.12
 **Date**: 2026-03-01
 **Status**: Draft
 **Project Title**: 주행 상황 실시간 경고 시스템
@@ -74,18 +74,18 @@
 ## 기능 정의 상세 표 (추적성/노드/입출력 정의)
 | Func ID | Req ID | 실제 노드명 | 기능명 | 기능 설명 | 실제값 정의(입력/출력) |
 |---|---|---|---|---|---|
-| Func_001 | Req_001 | ADAS_WARN_CTRL | 주행시 경고엔진 활성 | 주행 상태에서 경고 판단 엔진 활성화 | 입력: vehicleSpeedNorm, driveStateNorm / 출력: warningState |
+| Func_001 | Req_001 | ADAS_WARN_CTRL | 주행 시 경고 시스템 활성 | 주행 상태에서 경고 시스템 활성화 | 입력: vehicleSpeedNorm, driveStateNorm / 출력: warningState |
 | Func_002 | Req_002 | ADAS_WARN_CTRL | 비주행 경고 억제 | 정차/비주행 상태에서 경고 출력 억제 | 입력: driveStateNorm / 출력: warningState |
-| Func_003 | Req_003 | ADAS_WARN_CTRL | 경고 시작 트리거 | 경고 조건 성립 시 출력층 활성 시작 | 입력: baseZoneContext, warningState / 출력: warningState |
-| Func_004 | Req_004 | ADAS_WARN_CTRL | 경고 종료 트리거 | 해제 조건 성립 시 출력층 종료 | 입력: warningState / 출력: warningState |
+| Func_003 | Req_003 | ADAS_WARN_CTRL | 경고 시작 트리거 | 경고 조건 성립 시 시스템 출력 시작 | 입력: baseZoneContext, warningState / 출력: warningState |
+| Func_004 | Req_004 | ADAS_WARN_CTRL | 경고 종료 트리거 | 해제 조건 성립 시 시스템 출력 종료 | 입력: warningState / 출력: warningState |
 | Func_005 | Req_005 | CLU_HMI_CTRL | 경고 원인 전달 | 경고 원인 텍스트 표시 | 입력: selectedAlertType / 출력: warningTextCode |
-| Func_006 | Req_006 | ADAS_WARN_CTRL | 반복 경고 디바운스 | 동일 경고 재출력 간격 제어 | 입력: warningState / 출력: warningState |
+| Func_006 | Req_006 | ADAS_WARN_CTRL | 반복 경고 디바운스 | 동일 조건 경고의 재출력 간격을 관리해 중복 표시를 억제 | 입력: warningState / 출력: warningState |
 | Func_007 | Req_007 | NAV_CONTEXT_MGR | 구간값 변경 반영 | roadZone/speedLimit 변경 시 구간 상태 갱신 | 입력: roadZone, navDirection, zoneDistance, speedLimit / 출력: baseZoneContext, speedLimitNorm |
 | Func_008 | Req_008 | BCM_AMBIENT_CTRL | 일반구간 정책 적용 | 일반 구간 기본 패턴 적용 | 입력: selectedAlertLevel / 출력: ambientMode |
 | Func_009 | Req_009 | BCM_AMBIENT_CTRL | 스쿨존 강화 경고 | 스쿨존 전용 강화 패턴 적용 | 입력: selectedAlertLevel / 출력: ambientMode |
 | Func_010 | Req_010 | ADAS_WARN_CTRL | 스쿨존 과속 경고 | 스쿨존 속도 초과 이벤트 판정 | 입력: vehicleSpeedNorm, speedLimitNorm, baseZoneContext / 출력: warningState |
 | Func_011 | Req_011 | ADAS_WARN_CTRL | 고속 장시간 무조향 감지 | 고속 구간 무조향 타이머 경고 | 입력: steeringInputNorm, baseZoneContext / 출력: warningState |
-| Func_012 | Req_012 | ADAS_WARN_CTRL | 무조향 경고 해제 | 조향 입력 복귀 시 경고 해제 | 입력: steeringInputNorm / 출력: warningState |
+| Func_012 | Req_012 | ADAS_WARN_CTRL | 무조향 경고 해제 | 고속도로 주의 경고 활성 상태에서 조향 입력 검출 시 경고 해제 | 입력: steeringInputNorm / 출력: warningState |
 | Func_013 | Req_013 | BCM_AMBIENT_CTRL | 유도구간 진입 전환 | 유도구간 진입 시 방향안내 모드 전환 | 입력: selectedAlertType, navDirection / 출력: ambientMode |
 | Func_014 | Req_014 | BCM_AMBIENT_CTRL | 좌우 방향 구분 표시 | navDirection 기준 좌/우 패턴 분기 | 입력: navDirection / 출력: ambientPattern |
 | Func_015 | Req_015 | BCM_AMBIENT_CTRL | 구간 전환 완화 | 전환 중 점멸 튐 현상 완화 | 입력: selectedAlertLevel / 출력: ambientPattern |
@@ -95,19 +95,19 @@
 | Func_019 | Req_019 | CLU_HMI_CTRL | 긴급차량 종류 표시 | 경찰/구급 타입 구분 표시 | 입력: selectedAlertType / 출력: warningTextCode |
 | Func_020 | Req_020 | CLU_HMI_CTRL | 긴급차량 방향 표시 | 접근 방향 정보 표시 | 입력: emergencyDirection / 출력: warningTextCode |
 | Func_021 | Req_021 | CLU_HMI_CTRL | 양보 유도 메시지 | 양보 요청 고정 메시지 표시 | 입력: selectedAlertType / 출력: warningTextCode |
-| Func_022 | Req_022 | WARN_ARB_MGR | 긴급경고 우선 출력 | 일반 안내보다 긴급경고 우선 적용 | 입력: emergencyContext, warningState, baseZoneContext / 출력: selectedAlertLevel, selectedAlertType |
+| Func_022 | Req_022 | WARN_ARB_MGR | 긴급경고 우선 출력 | 비긴급 경고(구간/안내형)보다 긴급 경고 우선 적용 | 입력: emergencyContext, warningState, baseZoneContext / 출력: selectedAlertLevel, selectedAlertType |
 | Func_023 | Req_023 | EMS_ALERT | 종료 신호 처리 | CLEAR 수신 시 긴급경고 종료 | 입력: alertState, emergencyType / 출력: emergencyContext |
-| Func_024 | Req_024 | EMS_ALERT | 타임아웃 보호해제 | 1000ms 무갱신 시 안전 해제 | 입력: lastEmergencyRxMs / 출력: timeoutClear |
-| Func_025 | Req_025 | WARN_ARB_MGR | 다중긴급 단일선택 | 동시 긴급 신호 중 1개 선택 | 입력: emergencyContext / 출력: selectedAlertType |
+| Func_024 | Req_024 | EMS_ALERT | 타임아웃 보호해제 | 긴급 신호가 1000ms 이상 미갱신되면 안전 해제 | 입력: lastEmergencyRxMs / 출력: timeoutClear |
+| Func_025 | Req_025 | WARN_ARB_MGR | 다중긴급 단일선택 | 동시 긴급 신호 중 1개만 선택해 표시 | 입력: emergencyContext / 출력: selectedAlertType |
 | Func_026 | Req_026 | CLU_HMI_CTRL | 중복 팝업 억제 | 동일 긴급 이벤트 중복 팝업 억제 | 입력: selectedAlertType, duplicatePopupGuard / 출력: warningTextCode |
-| Func_027 | Req_027 | WARN_ARB_MGR | 충돌중재 개시 | 구간/긴급 동시 발생 시 중재 시작 | 입력: emergencyContext, warningState / 출력: selectedAlertLevel |
+| Func_027 | Req_027 | WARN_ARB_MGR | 충돌중재 적용 | 구간 경고/긴급 경고 동시 유효 시 중재 규칙 적용 | 입력: emergencyContext, warningState / 출력: selectedAlertLevel |
 | Func_028 | Req_028 | WARN_ARB_MGR | 긴급>구간 우선 적용 | 긴급 시 구간 패턴 오버라이드 | 입력: emergencyContext / 출력: selectedAlertLevel |
 | Func_029 | Req_029 | WARN_ARB_MGR | 구급>경찰 우선 적용 | emergencyType 우선순위 적용 | 입력: emergencyType / 출력: selectedAlertType |
 | Func_030 | Req_030 | WARN_ARB_MGR | ETA 우선 적용 | 동급 알림이면 ETA 최소값 선택 | 입력: eta / 출력: selectedAlertType |
 | Func_031 | Req_031 | WARN_ARB_MGR | SourceID 동률판정 | ETA 동률 시 sourceId 오름차순 | 입력: sourceId / 출력: selectedAlertType |
 | Func_032 | Req_032 | WARN_ARB_MGR | 중재결과 결정론 보장 | 동일 입력이면 동일 결과 출력 | 입력: arbitrationSnapshotId / 출력: selectedAlertLevel, selectedAlertType |
 | Func_033 | Req_033 | BCM_AMBIENT_CTRL | 종료후 이전상태 복원 | 긴급 종료 후 직전 구간 상태 복원 | 입력: timeoutClear, baseZoneContext / 출력: ambientMode |
-| Func_034 | Req_034 | BCM_AMBIENT_CTRL | 전환 깜빡임 완화 | 중재 전환 시 패턴 안정화 | 입력: selectedAlertLevel / 출력: ambientPattern |
+| Func_034 | Req_034 | BCM_AMBIENT_CTRL | 전환 깜빡임 완화 | 구간 경고에서 긴급 경고 전환 시 표시 안정화(점멸/소실 방지) 제어 | 입력: selectedAlertLevel / 출력: ambientPattern |
 | Func_035 | Req_035 | BCM_AMBIENT_CTRL | 긴급 색상 정책 | 긴급 색상 팔레트 고정 적용 | 입력: selectedAlertType / 출력: ambientColor |
 | Func_036 | Req_036 | BCM_AMBIENT_CTRL | 긴급 패턴 정책 | 긴급 점등 패턴 고정 적용 | 입력: selectedAlertLevel / 출력: ambientPattern |
 | Func_037 | Req_037 | BCM_AMBIENT_CTRL | 스쿨존 패턴 정책 | 스쿨존 패턴 고정 적용 | 입력: baseZoneContext / 출력: ambientColor, ambientPattern |
@@ -171,6 +171,7 @@
 
 | 버전 | 날짜 | 변경 사항 |
 |---|---|---|
+| 4.12 | 2026-03-01 | 표현 명확화 반영: Func_001/003/004/006/012/022/024/025/027/034 문구를 고객 관점 요구(Req_012/022/024/025/027/034)와 정합되도록 보정. |
 | 4.2 | 2026-02-25 | 상단 공식 표준 양식 단순화, 하단 상세 추적 표 분리 |
 | 4.3 | 2026-02-25 | 옵션1 아키텍처 기준 반영. 출력 경로를 ETH 백본+도메인 GW 구조로 정합화하고 Func_013~016 입출력 정의를 실제 전달체계 기준으로 보정 |
 | 4.4 | 2026-02-25 | 상단 공식표 `검증` 열의 TBD 제거. Req/Flow/Comm/Test ID를 행별로 명시해 감사 추적성을 강화 |
