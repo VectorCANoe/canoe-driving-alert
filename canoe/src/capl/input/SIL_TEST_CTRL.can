@@ -225,6 +225,7 @@ void evaluateScenarioResult()
   int code;
   int timeoutClear;
   int ambientPattern;
+  int ambientColor;
   int duplicatePopupGuard;
   int snapshotDelta;
 
@@ -234,6 +235,7 @@ void evaluateScenarioResult()
   code = (int)@Cluster::warningTextCode;
   timeoutClear = ((int)@Core::timeoutClear == 1) ? 1 : 0;
   ambientPattern = (int)@Body::ambientPattern;
+  ambientColor = (int)@Body::ambientColor;
   duplicatePopupGuard = (int)@CoreState::duplicatePopupGuard;
 
   if (gCurrentScenarioId == 1)
@@ -242,19 +244,25 @@ void evaluateScenarioResult()
   }
   else if (gCurrentScenarioId == 2)
   {
-    result = (level == 3 && type == 3) ? 1 : 0;
+    /* Req_010 + Req_037: school zone overspeed, fixed red fast-flash pattern */
+    result = (level == 3 && type == 3 && ambientColor == 3 && ambientPattern == 5) ? 1 : 0;
   }
   else if (gCurrentScenarioId == 3)
   {
-    result = (level == 2 && type == 4) ? 1 : 0;
+    /* Req_011 + Req_038: highway no-steer, fixed orange pulse pattern */
+    result = (level == 2 && type == 4 && ambientColor == 4 && ambientPattern == 4) ? 1 : 0;
   }
   else if (gCurrentScenarioId == 4)
   {
-    result = (level == 6 && type == 1 && code == 101 && duplicatePopupGuard > 0) ? 1 : 0;
+    /* Req_017 + Req_035 + Req_036: police emergency, distinct red-blue color+pattern */
+    result = (level == 6 && type == 1 && code == 101 && duplicatePopupGuard > 0 &&
+              ambientColor == 6 && ambientPattern == 6) ? 1 : 0;
   }
   else if (gCurrentScenarioId == 5)
   {
-    result = (level == 7 && type == 2 && code == 202 && duplicatePopupGuard > 0) ? 1 : 0;
+    /* Req_018 + Req_035 + Req_036: ambulance emergency, distinct red-white color+pattern */
+    result = (level == 7 && type == 2 && code == 202 && duplicatePopupGuard > 0 &&
+              ambientColor == 7 && ambientPattern == 7) ? 1 : 0;
   }
   else if (gCurrentScenarioId == 6)
   {
@@ -262,11 +270,13 @@ void evaluateScenarioResult()
   }
   else if (gCurrentScenarioId == 7)
   {
-    result = (level == 2 && type == 5 && ambientPattern == 2 && code == 31) ? 1 : 0;
+    /* Req_013 + Req_039: guide left, cyan flow-left pattern */
+    result = (level == 2 && type == 5 && ambientColor == 5 && ambientPattern == 2 && code == 31) ? 1 : 0;
   }
   else if (gCurrentScenarioId == 8)
   {
-    result = (level == 2 && type == 6 && ambientPattern == 3 && code == 32) ? 1 : 0;
+    /* Req_014 + Req_039: guide right, cyan flow-right pattern */
+    result = (level == 2 && type == 6 && ambientColor == 5 && ambientPattern == 3 && code == 32) ? 1 : 0;
   }
   else if (gCurrentScenarioId == 9)
   {

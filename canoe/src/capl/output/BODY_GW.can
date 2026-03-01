@@ -55,18 +55,40 @@ on timer tBodyCycle
   else
   {
     ambientMode = alertLevel;
-    ambientColor = alertType;
-    if (alertType == 5)
+    ambientColor = 0;
+    ambientPattern = 0;
+    if (alertLevel >= 6)
     {
-      ambientPattern = 2;
+      /* Req_035: emergency color distinct from zone colors
+         Req_036: emergency pattern distinct from zone patterns
+         6=RED/BLUE(police)  7=RED/WHITE(ambulance) */
+      ambientColor   = (alertType == 2) ? 7 : 6;
+      ambientPattern = (alertType == 2) ? 7 : 6;
+    }
+    else if (alertType == 3)
+    {
+      ambientColor   = 3; /* red   - Req_037 school zone fixed color */
+      ambientPattern = 5; /* fast flash - Req_037 school zone fixed pattern */
+    }
+    else if (alertType == 4)
+    {
+      ambientColor   = 4; /* orange - Req_038 highway fixed color */
+      ambientPattern = 4; /* pulse  - Req_038 highway fixed pattern */
+    }
+    else if (alertType == 5)
+    {
+      ambientColor   = 5; /* cyan      - Req_039 guide left */
+      ambientPattern = 2; /* flow-left - Req_039 guide left fixed pattern */
     }
     else if (alertType == 6)
     {
-      ambientPattern = 3;
+      ambientColor   = 5; /* cyan       - Req_039 guide right */
+      ambientPattern = 3; /* flow-right - Req_039 guide right fixed pattern */
     }
-    else
+    else if (alertLevel > 0)
     {
-      ambientPattern = (alertLevel > 0) ? 1 : 0;
+      ambientColor   = 1; /* green - general fallback */
+      ambientPattern = 1; /* solid */
     }
   }
 
