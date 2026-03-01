@@ -26,7 +26,7 @@ def scan_text(path: Path) -> tuple[list[str], list[str]]:
 
     for i, line in enumerate(lines, start=1):
         if re.search(r"[A-Za-z]:\\", line):
-            # Vector install paths (C:\Users\Public\ or C:\Public\) are machine-fixed and must stay absolute
+            # Vector install template paths can appear as machine hints from CANoe GUI.
             if r"C:\Users\Public" in line or r"C:\Public" in line:
                 continue
             abs_hits.append(f"{path}:{i}: {line.strip()}")

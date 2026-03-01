@@ -51,9 +51,9 @@ Vehicle State (gVehicleSpeed, gDriveState, SteeringInput)
   -> ADAS_WARN_CTRL
   -> WARN_ARB_MGR
 
-EMS_POLICE_TX / EMS_AMB_TX
+EMS_ALERT (internal: EMS_POLICE_TX / EMS_AMB_TX)
   -> ETH_SWITCH (ETH_EmergencyAlert 브로드캐스트)
-  -> EMS_ALERT_RX (수신 차량)
+  -> EMS_ALERT (internal: EMS_ALERT_RX, 수신 차량)
   -> WARN_ARB_MGR
 
 SelectedAlertContext
@@ -82,8 +82,9 @@ WARN_ARB_MGR
 - Tool: Vector CANoe 19 SP4
 - Network: Ethernet UDP 백본 + Domain CAN-HS
 - Domain CAN 역할 분리: Body CAN(앰비언트, 0x210), Infotainment CAN(클러스터, 0x220)
-- 아키텍처 고정: `ETH_SWITCH + CHASSIS_GW/INFOTAINMENT_GW/BODY_GW/IVI_GW + 중앙 경고코어(ADAS_WARN_CTRL/NAV_CONTEXT_MGR/EMS_ALERT_RX/WARN_ARB_MGR)`
-- 주요 노드: `SIL_TEST_CTRL`, `CHASSIS_GW`, `INFOTAINMENT_GW`, `ETH_SWITCH`, `ADAS_WARN_CTRL`, `NAV_CONTEXT_MGR`, `EMS_POLICE_TX`, `EMS_AMB_TX`, `EMS_ALERT_RX`, `WARN_ARB_MGR`, `BODY_GW`, `IVI_GW`, `BCM_AMBIENT_CTRL`, `CLU_HMI_CTRL`
+- 아키텍처 고정: `ETH_SWITCH + CHASSIS_GW/INFOTAINMENT_GW/BODY_GW/IVI_GW + 중앙 경고코어(ADAS_WARN_CTRL/NAV_CONTEXT_MGR/EMS_ALERT/WARN_ARB_MGR)`
+- 주요 노드: `SIL_TEST_CTRL`, `CHASSIS_GW`, `INFOTAINMENT_GW`, `ETH_SWITCH`, `ADAS_WARN_CTRL`, `NAV_CONTEXT_MGR`, `EMS_ALERT`, `WARN_ARB_MGR`, `BODY_GW`, `IVI_GW`, `BCM_AMBIENT_CTRL`, `CLU_HMI_CTRL`
+- EMS 내부 구현 모듈(`EMS_POLICE_TX`, `EMS_AMB_TX`, `EMS_ALERT_RX`)은 03/0301/0302/0303/0304 하단 보강표에서 분리 관리한다.
 - Panel 입력: `gRoadZone`, `gNavDirection`, `gZoneDistance`, `gSpeedLimit`, 긴급차량 ON/OFF, ETA, 우선순위 테스트 토글
 
 ### 검증 제약 (필수)
@@ -97,6 +98,7 @@ WARN_ARB_MGR
 
 ## 개정 이력
 
+- 2.5 (2026-03-01): 상위 범위 문서 표기를 `EMS_ALERT` 논리 단말 기준으로 통일하고 내부 TX/RX 모듈은 03계열 하단 보강표 분리 원칙으로 정리.
 - 2.4 (2026-02-28): 멘토링 피드백 반영으로 Vehicle Baseline 기능군(시동/기어/입력/표시)을 프로젝트 범위에 추가.
 - 2.3 (2026-02-28): Navigation Context 입력에 `gSpeedLimit`을 추가해 Req_010 과속 판정 기준(`vehicleSpeed > speedLimit`)과 0302/0303/0304 체인을 정합화.
 - 2.2 (2026-02-26): SelectedAlertContext 출력 경로의 도메인 CAN 역할(Body 0x210 / Infotainment 0x220)을 명시해 0302/0303/04와 정합화.

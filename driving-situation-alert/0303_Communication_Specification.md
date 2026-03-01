@@ -3,8 +3,8 @@
 **Document ID**: PROJ-0303-CS
 **ISO 26262 Reference**: Part 6, Cl.7 (Software Architectural Design)
 **ASPICE Reference**: SWE.2 (Software Architectural Design)
-**Version**: 3.7
-**Date**: 2026-02-28
+**Version**: 3.8
+**Date**: 2026-03-01
 **Status**: Draft
 **Project Title**: 주행 상황 실시간 경고 시스템
 **Subtitle**: 구간 정보 및 긴급차량 접근 기반 앰비언트·클러스터 경보
@@ -29,6 +29,7 @@
 - 검증 범위는 CANoe SIL, CAN + Ethernet(UDP)로 고정한다.
 - `Comm_009`, `Comm_106`, `Comm_205`는 Validation Harness 통신(검증 전용)이며 양산 통신과 구분한다.
 - Vehicle Baseline(Req_101~Req_112) 통신(`Comm_101~Comm_106`, `Comm_201~Comm_205`)은 본 문서에서 확정 정의하고, 도메인 DBC는 이 정의를 구현 대상으로 사용한다.
+- EMS는 상위 문서 레벨에서 논리 단말 `EMS_ALERT`로 표기하고, 내부 구현 모듈(`EMS_POLICE_TX`, `EMS_AMB_TX`, `EMS_ALERT_RX`)은 하단 보강표에서만 분리 관리한다.
 
 ---
 
@@ -121,8 +122,8 @@
 | frmTestResultMsg | 0x230 | 1 | scenarioResult | 0 | 시나리오 판정 결과 | 0~1 | SIL_TEST_CTRL -> - 전달 (Validation-only) |
 | frmBaseTestResultMsg | 0x231 | 8 | BaseScenarioId | 0~7 | 기본 시나리오 ID | 0~255 | VEHICLE_BASE_TEST_CTRL -> SIL_TEST_CTRL 전달 (Validation-only) |
 |  |  |  | BaseScnResult | 8 | 기본 시나리오 판정 | 0~1 | VEHICLE_BASE_TEST_CTRL -> SIL_TEST_CTRL 전달 |
-| frmEmergencyMonitorMsg | 0x232 | 2 | emergencyContext | 0~7 | 긴급 컨텍스트 상태 | 0~255 | EMS_ALERT_RX -> SIL_TEST_CTRL, CHASSIS_GW 전달 |
-|  |  |  | TimeoutClearMon | 8 | 타임아웃 모니터 플래그 | 0~1 | EMS_ALERT_RX -> SIL_TEST_CTRL, CHASSIS_GW 전달 |
+| frmEmergencyMonitorMsg | 0x232 | 2 | emergencyContext | 0~7 | 긴급 컨텍스트 상태 | 0~255 | EMS_ALERT(Rx) -> SIL_TEST_CTRL, CHASSIS_GW 전달 |
+|  |  |  | TimeoutClearMon | 8 | 타임아웃 모니터 플래그 | 0~1 | EMS_ALERT(Rx) -> SIL_TEST_CTRL, CHASSIS_GW 전달 |
 | frmIgnitionEngineMsg | 0x300 | 1 | IgnitionState | 0 | 시동 입력 상태 | 0~1 | SIL_TEST_CTRL -> ENGINE_CTRL 전달 |
 |  |  |  | EngineState | 1~2 | 엔진 동작 상태 | 0~3 | SIL_TEST_CTRL -> ENGINE_CTRL 전달 |
 | frmGearStateMsg | 0x301 | 1 | GearInput | 0~2 | 기어 입력값 | 0~7 | SIL_TEST_CTRL -> TRANSMISSION_CTRL 전달 |
@@ -159,11 +160,11 @@
 |  |  |  | navDirection | 2~3 | 유도 방향 | 0~3 | INFOTAINMENT_GW -> NAV_CONTEXT_MGR, ADAS_WARN_CTRL, WARN_ARB_MGR 전달 (UDP) |
 |  |  |  | zoneDistance | 8~15 | 구간 잔여 거리 | 0~255 m | INFOTAINMENT_GW -> NAV_CONTEXT_MGR, ADAS_WARN_CTRL, WARN_ARB_MGR 전달 (UDP) |
 |  |  |  | speedLimit | 16~23 | 구간 제한속도 | 0~255 km/h | INFOTAINMENT_GW -> NAV_CONTEXT_MGR, ADAS_WARN_CTRL, WARN_ARB_MGR 전달 (UDP) |
-| ETH_EmergencyAlert | 0xE100 | 4 | emergencyType | 0~1 | 긴급차량 종류 | 0~3 | EMS_POLICE_TX + EMS_AMB_TX -> EMS_ALERT_RX 전달 (UDP) |
-|  |  |  | emergencyDirection | 2~3 | 긴급차량 접근 방향 | 0~3 | EMS_POLICE_TX + EMS_AMB_TX -> EMS_ALERT_RX 전달 (UDP) |
-|  |  |  | eta | 8~15 | 도달 예상시간 | 0~255 s | EMS_POLICE_TX + EMS_AMB_TX -> EMS_ALERT_RX 전달 (UDP) |
-|  |  |  | sourceId | 16~23 | 송신 주체 ID | 0~255 | EMS_POLICE_TX + EMS_AMB_TX -> EMS_ALERT_RX 전달 (UDP) |
-|  |  |  | alertState | 24 | 긴급 상태 | 0~1 | EMS_POLICE_TX + EMS_AMB_TX -> EMS_ALERT_RX 전달 (UDP) |
+| ETH_EmergencyAlert | 0xE100 | 4 | emergencyType | 0~1 | 긴급차량 종류 | 0~3 | EMS_ALERT(Tx:Police/Ambulance) -> EMS_ALERT(Rx) 전달 (UDP) |
+|  |  |  | emergencyDirection | 2~3 | 긴급차량 접근 방향 | 0~3 | EMS_ALERT(Tx:Police/Ambulance) -> EMS_ALERT(Rx) 전달 (UDP) |
+|  |  |  | eta | 8~15 | 도달 예상시간 | 0~255 s | EMS_ALERT(Tx:Police/Ambulance) -> EMS_ALERT(Rx) 전달 (UDP) |
+|  |  |  | sourceId | 16~23 | 송신 주체 ID | 0~255 | EMS_ALERT(Tx:Police/Ambulance) -> EMS_ALERT(Rx) 전달 (UDP) |
+|  |  |  | alertState | 24 | 긴급 상태 | 0~1 | EMS_ALERT(Tx:Police/Ambulance) -> EMS_ALERT(Rx) 전달 (UDP) |
 | ethSelectedAlertMsg | 0xE200 | 2 | selectedAlertLevel | 0~2 | 최종 경고 레벨 | 0~7 | WARN_ARB_MGR -> BODY_GW, IVI_GW 전달 (UDP) |
 |  |  |  | selectedAlertType | 3~5 | 최종 경고 타입 | 0~7 | WARN_ARB_MGR -> BODY_GW, IVI_GW 전달 (UDP) |
 |  |  |  | timeoutClear | 8 | 타임아웃 해제 플래그 | 0~1 | WARN_ARB_MGR -> BODY_GW, IVI_GW 전달 (UDP) |
@@ -304,9 +305,9 @@
 | Comm_001 | Flow_001 | Func_001, Func_002, Func_003, Func_004, Func_006, Func_010 | Req_001, Req_002, Req_003, Req_004, Req_006, Req_010 | frmVehicleStateCanMsg(0x100), ethVehicleStateMsg(0x510) | SIL_TEST_CTRL, CHASSIS_GW | CHASSIS_GW, ADAS_WARN_CTRL | CAN + Ethernet(UDP) | 100ms | 속도/주행상태 입력 갱신 |
 | Comm_002 | Flow_002 | Func_011, Func_012 | Req_011, Req_012 | frmSteeringCanMsg(0x101), ethSteeringMsg(0x511) | SIL_TEST_CTRL, CHASSIS_GW | CHASSIS_GW, ADAS_WARN_CTRL | CAN + Ethernet(UDP) | 100ms | 조향 입력 갱신 |
 | Comm_003 | Flow_003 | Func_007, Func_010 | Req_007, Req_010 | frmNavContextCanMsg(0x110), ethNavContextMsg(0x512) | SIL_TEST_CTRL, INFOTAINMENT_GW | INFOTAINMENT_GW, NAV_CONTEXT_MGR, ADAS_WARN_CTRL, WARN_ARB_MGR | CAN + Ethernet(UDP) | 100ms | 구간/방향/거리/제한속도 입력 갱신 |
-| Comm_004 | Flow_004 | Func_017 | Req_017 | ETH_EmergencyAlert(0xE100) | EMS_POLICE_TX | EMS_ALERT_RX | Ethernet(UDP) | 100ms | alertState=Clear 또는 송신 중지 |
-| Comm_005 | Flow_005 | Func_018 | Req_018 | ETH_EmergencyAlert(0xE100) | EMS_AMB_TX | EMS_ALERT_RX | Ethernet(UDP) | 100ms | alertState=Clear 또는 송신 중지 |
-| Comm_006 | Flow_006 | Func_022, Func_023, Func_024, Func_025, Func_027, Func_028, Func_029, Func_030, Func_031, Func_032 | Req_022, Req_023, Req_024, Req_025, Req_027, Req_028, Req_029, Req_030, Req_031, Req_032 | ETH_EmergencyAlert(0xE100), ethSelectedAlertMsg(0xE200) | EMS_ALERT_RX, WARN_ARB_MGR | WARN_ARB_MGR, BODY_GW, IVI_GW | Ethernet(UDP) | Event + 50ms | 1000ms 무갱신 시 timeoutClear=1 |
+| Comm_004 | Flow_004 | Func_017 | Req_017 | ETH_EmergencyAlert(0xE100) | EMS_ALERT(Tx:Police) | EMS_ALERT(Rx) | Ethernet(UDP) | 100ms | alertState=Clear 또는 송신 중지 |
+| Comm_005 | Flow_005 | Func_018 | Req_018 | ETH_EmergencyAlert(0xE100) | EMS_ALERT(Tx:Ambulance) | EMS_ALERT(Rx) | Ethernet(UDP) | 100ms | alertState=Clear 또는 송신 중지 |
+| Comm_006 | Flow_006 | Func_022, Func_023, Func_024, Func_025, Func_027, Func_028, Func_029, Func_030, Func_031, Func_032 | Req_022, Req_023, Req_024, Req_025, Req_027, Req_028, Req_029, Req_030, Req_031, Req_032 | ETH_EmergencyAlert(0xE100), ethSelectedAlertMsg(0xE200) | EMS_ALERT(Rx), WARN_ARB_MGR | WARN_ARB_MGR, BODY_GW, IVI_GW | Ethernet(UDP) | Event + 50ms | 1000ms 무갱신 시 timeoutClear=1 |
 | Comm_007 | Flow_007 | Func_008, Func_009, Func_013, Func_014, Func_015, Func_016, Func_033, Func_034, Func_035, Func_036, Func_037, Func_038, Func_039 | Req_008, Req_009, Req_013, Req_014, Req_015, Req_016, Req_033, Req_034, Req_035, Req_036, Req_037, Req_038, Req_039 | ethSelectedAlertMsg(0xE200), frmAmbientControlMsg(0x210) | WARN_ARB_MGR, BODY_GW | BODY_GW, BCM_AMBIENT_CTRL | Ethernet(UDP) + CAN | 50ms | selectedAlertLevel/selectedAlertType 수신 |
 | Comm_008 | Flow_008 | Func_005, Func_019, Func_020, Func_021, Func_026, Func_040 | Req_005, Req_019, Req_020, Req_021, Req_026, Req_040 | ethSelectedAlertMsg(0xE200), frmClusterWarningMsg(0x220) | WARN_ARB_MGR, IVI_GW | IVI_GW, CLU_HMI_CTRL | Ethernet(UDP) + CAN | 50ms | selectedAlertLevel/selectedAlertType 수신 |
 | Comm_009 | Flow_009 | Func_041, Func_042, Func_043 | Req_041, Req_042, Req_043 | frmTestResultMsg(0x230) | SIL_TEST_CTRL | SIL_TEST_CTRL(Log/Panel) | CAN | Event | 판정 결과 기록 완료 시 종료 |
@@ -317,10 +318,18 @@
 
 | 단계 | 상위 Comm ID | Message(ID) | Tx Node | Rx Node | 주기/조건 |
 |---|---|---|---|---|---|
-| Ingress | Comm_006 | ETH_EmergencyAlert(0xE100) | EMS_POLICE_TX, EMS_AMB_TX | EMS_ALERT_RX | 100ms, Active/Clear |
+| Ingress | Comm_006 | ETH_EmergencyAlert(0xE100) | EMS_ALERT(Tx:Police/Ambulance) | EMS_ALERT(Rx) | 100ms, Active/Clear |
 | Egress | Comm_006 | ethSelectedAlertMsg(0xE200) | WARN_ARB_MGR | BODY_GW, IVI_GW | Event + 50ms |
 
 - 주의: `Comm_006`은 입력(E100)과 출력(E200) 단계를 묶은 논리 Comm이며, 감사 시에는 위 단계 표를 기준으로 `Rx/Tx`를 분리 해석한다.
+
+### EMS 논리 단말-내부 모듈 매핑 (감사 보강)
+
+| 논리 단말 | 내부 모듈 | 역할 |
+|---|---|---|
+| EMS_ALERT | EMS_POLICE_TX | 경찰 긴급 이벤트 송신 |
+| EMS_ALERT | EMS_AMB_TX | 구급 긴급 이벤트 송신 |
+| EMS_ALERT | EMS_ALERT_RX | 긴급 이벤트 수신/해제/타임아웃 |
 
 ### 표준 Signal-별칭(g*) 매핑 (문서/코드 정합용)
 
@@ -438,3 +447,4 @@
 | 3.5 | 2026-02-28 | 상단 공식표를 Phase-B 확장 포함(99 Message / 242 Signal)으로 보강하고 Comm_201~205/Flow_201~205 연결 기준을 추가해 현업형 메시지 규모(100+)를 반영. |
 | 3.6 | 2026-02-28 | SoT 경로를 실제 분리 DBC 파일명(`*_can.dbc`)으로 정합화하고, Core/Domain 통신 원본 매핑 표기 충돌을 해소. |
 | 3.7 | 2026-02-28 | 0304 동기화 상태를 반영해 `Comm_101~106/201~205` 연계 체크포인트를 확정 문구로 갱신. |
+| 3.8 | 2026-03-01 | 멘토 피드백 반영: EMS를 논리 단말(`EMS_ALERT`) 기준으로 Comm 표기 통합, 내부 TX/RX 모듈은 하단 보강 매핑으로 분리. |

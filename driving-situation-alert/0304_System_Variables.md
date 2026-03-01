@@ -3,8 +3,8 @@
 **Document ID**: PROJ-0304-SV
 **ISO 26262 Reference**: Part 6, Cl.7 (Software Architectural Design)
 **ASPICE Reference**: SWE.2 / SWE.3
-**Version**: 2.9
-**Date**: 2026-02-28
+**Version**: 2.10
+**Date**: 2026-03-01
 **Status**: Draft
 **Project Title**: 주행 상황 실시간 경고 시스템
 **Subtitle**: 구간 정보 및 긴급차량 접근 기반 앰비언트·클러스터 경보
@@ -24,6 +24,7 @@
 - DBC 신호명이 OEM 관례(`gVehicleSpeed`, `gRoadZone`)를 사용하더라도, 상단 표준 Name은 기능 중심 이름(`vehicleSpeed`, `roadZone`)으로 유지한다.
 - 제출 전 현대/기아 및 OEM 기준 명칭으로 일괄 대체하되, Var ID/추적 ID 체계는 유지한다.
 - `Namespace=Test` 변수는 Validation Harness 전용(Non-Production)으로 관리하며, 사용자 기능/양산 기능 변수와 구분한다.
+- EMS 관련 변수는 상위 문서 계층에서 논리 단말 `EMS_ALERT` 기준으로 관리하고, 내부 TX/RX 모듈 분해는 하단 보강 매핑에서만 관리한다.
 
 ---
 
@@ -289,28 +290,28 @@
 | 5 | Infotainment | navDirection | navDirection_CAN_IN | CAN_IN | Infotainment CAN -> INFOTAINMENT_GW |
 | 6 | Infotainment | zoneDistance | zoneDistance_CAN_IN | CAN_IN | Infotainment CAN -> INFOTAINMENT_GW |
 | 30 | Infotainment | speedLimit | speedLimit_CAN_IN | CAN_IN | Infotainment CAN -> INFOTAINMENT_GW |
-| 7 | V2X | emergencyType | emergencyType_ETH_IN | ETH_IN | Ethernet UDP -> EMS_ALERT_RX |
-| 8 | V2X | emergencyDirection | emergencyDirection_ETH_IN | ETH_IN | Ethernet UDP -> EMS_ALERT_RX |
-| 9 | V2X | eta | eta_ETH_IN | ETH_IN | Ethernet UDP -> EMS_ALERT_RX |
-| 10 | V2X | sourceId | sourceId_ETH_IN | ETH_IN | Ethernet UDP -> EMS_ALERT_RX |
-| 11 | V2X | alertState | alertState_ETH_IN | ETH_IN | Ethernet UDP -> EMS_ALERT_RX |
+| 7 | V2X | emergencyType | emergencyType_ETH_IN | ETH_IN | Ethernet UDP -> EMS_ALERT(Rx) |
+| 8 | V2X | emergencyDirection | emergencyDirection_ETH_IN | ETH_IN | Ethernet UDP -> EMS_ALERT(Rx) |
+| 9 | V2X | eta | eta_ETH_IN | ETH_IN | Ethernet UDP -> EMS_ALERT(Rx) |
+| 10 | V2X | sourceId | sourceId_ETH_IN | ETH_IN | Ethernet UDP -> EMS_ALERT(Rx) |
+| 11 | V2X | alertState | alertState_ETH_IN | ETH_IN | Ethernet UDP -> EMS_ALERT(Rx) |
 | 12 | Core | vehicleSpeedNorm | vehicleSpeed_ETH_CORE | ETH_CORE | CHASSIS_GW -> ETH_SWITCH -> ADAS_WARN_CTRL |
 | 13 | Core | driveStateNorm | driveState_ETH_CORE | ETH_CORE | CHASSIS_GW -> ETH_SWITCH -> ADAS_WARN_CTRL |
 | 14 | Core | steeringInputNorm | steeringInput_ETH_CORE | ETH_CORE | CHASSIS_GW -> ETH_SWITCH -> ADAS_WARN_CTRL |
 | 31 | Core | speedLimitNorm | speedLimit_ETH_CORE | ETH_CORE | INFOTAINMENT_GW -> ETH_SWITCH -> NAV_CONTEXT_MGR/ADAS_WARN_CTRL |
 | 15 | Core | baseZoneContext | baseZoneContext_ETH_CORE | ETH_CORE | INFOTAINMENT_GW -> ETH_SWITCH -> NAV_CONTEXT_MGR |
 | 16 | Core | warningState | warningState_ETH_CORE | ETH_CORE | ADAS_WARN_CTRL 내부 계산 |
-| 17 | Core | emergencyContext | emergencyContext_ETH_CORE | ETH_CORE | EMS_ALERT_RX 내부 계산 |
+| 17 | Core | emergencyContext | emergencyContext_ETH_CORE | ETH_CORE | EMS_ALERT 내부 계산 |
 | 18 | Core | selectedAlertLevel | selectedAlertLevel_ETH_CORE | ETH_CORE | WARN_ARB_MGR 내부 계산 |
 | 19 | Core | selectedAlertType | selectedAlertType_ETH_CORE | ETH_CORE | WARN_ARB_MGR 내부 계산 |
-| 20 | Core | timeoutClear | timeoutClear_ETH_CORE | ETH_CORE | EMS_ALERT_RX 생성 -> WARN_ARB_MGR 소비(타임아웃 해제) |
+| 20 | Core | timeoutClear | timeoutClear_ETH_CORE | ETH_CORE | EMS_ALERT 생성 -> WARN_ARB_MGR 소비(타임아웃 해제) |
 | 21 | Body | ambientMode | ambientMode_CAN_OUT | CAN_OUT | WARN_ARB_MGR -> ETH_SWITCH -> BODY_GW -> BCM_AMBIENT_CTRL |
 | 22 | Body | ambientColor | ambientColor_CAN_OUT | CAN_OUT | WARN_ARB_MGR -> ETH_SWITCH -> BODY_GW -> BCM_AMBIENT_CTRL |
 | 23 | Body | ambientPattern | ambientPattern_CAN_OUT | CAN_OUT | WARN_ARB_MGR -> ETH_SWITCH -> BODY_GW -> BCM_AMBIENT_CTRL |
 | 24 | Cluster | warningTextCode | warningTextCode_CAN_OUT | CAN_OUT | WARN_ARB_MGR -> ETH_SWITCH -> IVI_GW -> CLU_HMI_CTRL |
 | 25 | Test | testScenario | testScenario_INPUT | TEST | SIL_TEST_CTRL Panel Input (Validation-only) |
 | 26 | Test | scenarioResult | scenarioResult_OUTPUT | TEST | SIL_TEST_CTRL Test Result Output (Validation-only) |
-| 27 | CoreState | lastEmergencyRxMs | lastEmergencyRxMs | CORE_STATE | EMS_ALERT_RX 내부 상태 |
+| 27 | CoreState | lastEmergencyRxMs | lastEmergencyRxMs | CORE_STATE | EMS_ALERT 내부 상태 |
 | 28 | CoreState | duplicatePopupGuard | duplicatePopupGuard | CORE_STATE | CLU_HMI_CTRL 내부 상태 |
 | 29 | CoreState | arbitrationSnapshotId | arbitrationSnapshotId | CORE_STATE | WARN_ARB_MGR 내부 상태 |
 
@@ -329,6 +330,14 @@
 | steeringInput | SteeringInput | CAN 입력 신호(0x101) |
 
 - 기준: 문서 추적은 표준 Name으로 고정하고, DBC/코드 구현은 Alias 병기로 연결한다.
+
+### EMS 논리 단말-내부 모듈 매핑 (감사 보강)
+
+| 논리 단말(Owner 표기) | 내부 구현 모듈 | 변수 처리 역할 |
+|---|---|---|
+| EMS_ALERT | EMS_POLICE_TX | 경찰 긴급 이벤트 송신 payload 생성 |
+| EMS_ALERT | EMS_AMB_TX | 구급 긴급 이벤트 송신 payload 생성 |
+| EMS_ALERT | EMS_ALERT_RX | 긴급 이벤트 수신/해제/타임아웃 상태 관리 |
 
 ---
 
@@ -381,28 +390,28 @@
 | Var_005 | navDirection | navDirection_CAN_IN | CAN_IN | INFOTAINMENT_GW | Comm_003 | Flow_003 | Func_007 | Req_007 | 100ms CAN 수신 시 갱신 |
 | Var_006 | zoneDistance | zoneDistance_CAN_IN | CAN_IN | INFOTAINMENT_GW | Comm_003 | Flow_003 | Func_007 | Req_007 | 100ms CAN 수신 시 갱신 |
 | Var_030 | speedLimit | speedLimit_CAN_IN | CAN_IN | INFOTAINMENT_GW | Comm_003 | Flow_003 | Func_007, Func_010 | Req_007, Req_010 | 100ms CAN 수신 시 갱신(미수신 시 기본값 30) |
-| Var_007 | emergencyType | emergencyType_ETH_IN | ETH_IN | EMS_ALERT_RX | Comm_004, Comm_005, Comm_006 | Flow_004, Flow_005, Flow_006 | Func_017, Func_018, Func_023, Func_025, Func_029 | Req_017, Req_018, Req_023, Req_025, Req_029 | E100 수신 시 즉시 갱신 |
-| Var_008 | emergencyDirection | emergencyDirection_ETH_IN | ETH_IN | EMS_ALERT_RX | Comm_004, Comm_005, Comm_006 | Flow_004, Flow_005, Flow_006 | Func_017, Func_018, Func_020, Func_023 | Req_017, Req_018, Req_020, Req_023 | E100 수신 시 즉시 갱신 |
-| Var_009 | eta | eta_ETH_IN | ETH_IN | EMS_ALERT_RX | Comm_004, Comm_005, Comm_006 | Flow_004, Flow_005, Flow_006 | Func_017, Func_018, Func_023, Func_030 | Req_017, Req_018, Req_023, Req_030 | E100 수신 시 즉시 갱신 |
-| Var_010 | sourceId | sourceId_ETH_IN | ETH_IN | EMS_ALERT_RX | Comm_004, Comm_005, Comm_006 | Flow_004, Flow_005, Flow_006 | Func_017, Func_018, Func_023, Func_031 | Req_017, Req_018, Req_023, Req_031 | E100 수신 시 즉시 갱신 |
-| Var_011 | alertState | alertState_ETH_IN | ETH_IN | EMS_ALERT_RX | Comm_004, Comm_005, Comm_006 | Flow_004, Flow_005, Flow_006 | Func_017, Func_018, Func_023, Func_024 | Req_017, Req_018, Req_023, Req_024 | Active/Clear 변화 시 갱신 |
+| Var_007 | emergencyType | emergencyType_ETH_IN | ETH_IN | EMS_ALERT | Comm_004, Comm_005, Comm_006 | Flow_004, Flow_005, Flow_006 | Func_017, Func_018, Func_023, Func_025, Func_029 | Req_017, Req_018, Req_023, Req_025, Req_029 | E100 수신 시 즉시 갱신 |
+| Var_008 | emergencyDirection | emergencyDirection_ETH_IN | ETH_IN | EMS_ALERT | Comm_004, Comm_005, Comm_006 | Flow_004, Flow_005, Flow_006 | Func_017, Func_018, Func_020, Func_023 | Req_017, Req_018, Req_020, Req_023 | E100 수신 시 즉시 갱신 |
+| Var_009 | eta | eta_ETH_IN | ETH_IN | EMS_ALERT | Comm_004, Comm_005, Comm_006 | Flow_004, Flow_005, Flow_006 | Func_017, Func_018, Func_023, Func_030 | Req_017, Req_018, Req_023, Req_030 | E100 수신 시 즉시 갱신 |
+| Var_010 | sourceId | sourceId_ETH_IN | ETH_IN | EMS_ALERT | Comm_004, Comm_005, Comm_006 | Flow_004, Flow_005, Flow_006 | Func_017, Func_018, Func_023, Func_031 | Req_017, Req_018, Req_023, Req_031 | E100 수신 시 즉시 갱신 |
+| Var_011 | alertState | alertState_ETH_IN | ETH_IN | EMS_ALERT | Comm_004, Comm_005, Comm_006 | Flow_004, Flow_005, Flow_006 | Func_017, Func_018, Func_023, Func_024 | Req_017, Req_018, Req_023, Req_024 | Active/Clear 변화 시 갱신 |
 | Var_012 | vehicleSpeedNorm | vehicleSpeed_ETH_CORE | ETH_CORE | ADAS_WARN_CTRL | Comm_001 | Flow_001 | Func_001, Func_003, Func_004, Func_006, Func_010 | Req_001, Req_003, Req_004, Req_006, Req_010 | CHASSIS_GW 변환 메시지 수신 시 갱신 |
 | Var_013 | driveStateNorm | driveState_ETH_CORE | ETH_CORE | ADAS_WARN_CTRL | Comm_001 | Flow_001 | Func_001, Func_002 | Req_001, Req_002 | CHASSIS_GW 변환 메시지 수신 시 갱신 |
 | Var_014 | steeringInputNorm | steeringInput_ETH_CORE | ETH_CORE | ADAS_WARN_CTRL | Comm_002 | Flow_002 | Func_011, Func_012 | Req_011, Req_012 | CHASSIS_GW 변환 메시지 수신 시 갱신 |
 | Var_031 | speedLimitNorm | speedLimit_ETH_CORE | ETH_CORE | NAV_CONTEXT_MGR | Comm_003 | Flow_003 | Func_007, Func_010 | Req_007, Req_010 | NAV 입력 수신 시 정규화 갱신(기본값 30) |
 | Var_015 | baseZoneContext | baseZoneContext_ETH_CORE | ETH_CORE | NAV_CONTEXT_MGR | Comm_003 | Flow_003 | Func_007 | Req_007 | NAV 컨텍스트 계산 후 갱신 |
 | Var_016 | warningState | warningState_ETH_CORE | ETH_CORE | ADAS_WARN_CTRL | Comm_001, Comm_002, Comm_006 | Flow_001, Flow_002, Flow_006 | Func_003, Func_004, Func_006, Func_010, Func_011, Func_012, Func_027 | Req_003, Req_004, Req_006, Req_010, Req_011, Req_012, Req_027 | 경고 조건 계산 시 갱신 |
-| Var_017 | emergencyContext | emergencyContext_ETH_CORE | ETH_CORE | EMS_ALERT_RX | Comm_004, Comm_005, Comm_006 | Flow_004, Flow_005, Flow_006 | Func_017, Func_018, Func_023, Func_024 | Req_017, Req_018, Req_023, Req_024 | E100 수신/해제/타임아웃 시 갱신 |
+| Var_017 | emergencyContext | emergencyContext_ETH_CORE | ETH_CORE | EMS_ALERT | Comm_004, Comm_005, Comm_006 | Flow_004, Flow_005, Flow_006 | Func_017, Func_018, Func_023, Func_024 | Req_017, Req_018, Req_023, Req_024 | E100 수신/해제/타임아웃 시 갱신 |
 | Var_018 | selectedAlertLevel | selectedAlertLevel_ETH_CORE | ETH_CORE | WARN_ARB_MGR | Comm_006 | Flow_006 | Func_022, Func_025, Func_026, Func_027, Func_028, Func_029, Func_030, Func_031, Func_032 | Req_022, Req_025, Req_026, Req_027, Req_028, Req_029, Req_030, Req_031, Req_032 | 중재 결과 생성 시 갱신 |
 | Var_019 | selectedAlertType | selectedAlertType_ETH_CORE | ETH_CORE | WARN_ARB_MGR | Comm_006 | Flow_006 | Func_022, Func_025, Func_026, Func_027, Func_028, Func_029, Func_030, Func_031, Func_032 | Req_022, Req_025, Req_026, Req_027, Req_028, Req_029, Req_030, Req_031, Req_032 | 중재 결과 생성 시 갱신 |
-| Var_020 | timeoutClear | timeoutClear_ETH_CORE | ETH_CORE | EMS_ALERT_RX | Comm_006 | Flow_006 | Func_024, Func_033, Func_034 | Req_024, Req_033, Req_034 | 1000ms 무갱신 시 1로 전환(WARN_ARB_MGR 전달) |
+| Var_020 | timeoutClear | timeoutClear_ETH_CORE | ETH_CORE | EMS_ALERT | Comm_006 | Flow_006 | Func_024, Func_033, Func_034 | Req_024, Req_033, Req_034 | 1000ms 무갱신 시 1로 전환(WARN_ARB_MGR 전달) |
 | Var_021 | ambientMode | ambientMode_CAN_OUT | CAN_OUT | BODY_GW/BCM_AMBIENT_CTRL | Comm_007 | Flow_007 | Func_008, Func_009, Func_013, Func_014, Func_015, Func_016, Func_033, Func_034, Func_035, Func_036, Func_037, Func_038, Func_039 | Req_008, Req_009, Req_013, Req_014, Req_015, Req_016, Req_033, Req_034, Req_035, Req_036, Req_037, Req_038, Req_039 | 50ms 출력 주기 갱신 |
 | Var_022 | ambientColor | ambientColor_CAN_OUT | CAN_OUT | BODY_GW/BCM_AMBIENT_CTRL | Comm_007 | Flow_007 | Func_014, Func_035, Func_037, Func_038, Func_039 | Req_014, Req_035, Req_037, Req_038, Req_039 | 50ms 출력 주기 갱신 |
 | Var_023 | ambientPattern | ambientPattern_CAN_OUT | CAN_OUT | BODY_GW/BCM_AMBIENT_CTRL | Comm_007 | Flow_007 | Func_014, Func_015, Func_036, Func_037, Func_038, Func_039 | Req_014, Req_015, Req_036, Req_037, Req_038, Req_039 | 50ms 출력 주기 갱신 |
 | Var_024 | warningTextCode | warningTextCode_CAN_OUT | CAN_OUT | IVI_GW/CLU_HMI_CTRL | Comm_008 | Flow_008 | Func_005, Func_019~Func_021, Func_026, Func_040 | Req_005, Req_019~Req_021, Req_026, Req_040 | 50ms 출력 주기 갱신 |
 | Var_025 | testScenario | testScenario_INPUT | TEST | SIL_TEST_CTRL | Comm_009 | Flow_009 | Func_041, Func_042 | Req_041, Req_042 | 시나리오 시작 시 설정 |
 | Var_026 | scenarioResult | scenarioResult_OUTPUT | TEST | SIL_TEST_CTRL | Comm_009 | Flow_009 | Func_043 | Req_043 | 시나리오 종료 시 판정 기록 |
-| Var_027 | lastEmergencyRxMs | lastEmergencyRxMs | CORE_STATE | EMS_ALERT_RX | Comm_004, Comm_005, Comm_006 | Flow_004, Flow_005, Flow_006 | Func_023, Func_024 | Req_023, Req_024 | E100 수신 시각(ms) 기록, 1000ms 타임아웃 기준 |
+| Var_027 | lastEmergencyRxMs | lastEmergencyRxMs | CORE_STATE | EMS_ALERT | Comm_004, Comm_005, Comm_006 | Flow_004, Flow_005, Flow_006 | Func_023, Func_024 | Req_023, Req_024 | E100 수신 시각(ms) 기록, 1000ms 타임아웃 기준 |
 | Var_028 | duplicatePopupGuard | duplicatePopupGuard | CORE_STATE | CLU_HMI_CTRL | Comm_008 | Flow_008 | Func_026 | Req_026 | 동일 Alert 반복 시 타이머 갱신 |
 | Var_029 | arbitrationSnapshotId | arbitrationSnapshotId | CORE_STATE | WARN_ARB_MGR | Comm_006 | Flow_006 | Func_032 | Req_032 | 중재 수행 시 스냅샷 ID 증가 |
 | Var_BASE_A | --- Baseline Comm_101~Comm_106 추적 확장 --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -649,3 +658,4 @@
 | 2.7 | 2026-02-28 | 0303 상단 통신 신호 기준으로 시스템 변수 상단표를 확장(99 Message 연계), OEM 일괄 대체를 고려한 Namespace/Name 체계를 보강. |
 | 2.8 | 2026-02-28 | 하단 변수 추적 상세표를 Comm_201~Comm_205(Flow_201~Flow_205, Func_101~Func_112, Req_101~Req_112)까지 동기화하고 Phase-B 확장 변수 추적 행을 추가. |
 | 2.9 | 2026-02-28 | 하단 변수 추적 상세표를 Comm_101~Comm_106(Flow_101~Flow_106, Func_101~Func_112, Req_101~Req_112)까지 추가 동기화해 차량 기본 기능 체인을 폐쇄. |
+| 2.10 | 2026-03-01 | 멘토 피드백 반영: EMS 변수 Owner/Bus Path를 논리 단말(`EMS_ALERT`) 기준으로 통합 표기하고, 내부 TX/RX 모듈은 별도 매핑 표로 분리. |
