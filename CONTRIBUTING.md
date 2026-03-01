@@ -1,6 +1,6 @@
-# Contributing to CANoe-IVI-OTA
+# Contributing to canoe-driving-alert
 
-Thank you for your interest in contributing to the CANoe-IVI-OTA project! This document provides guidelines for contributing to this Hyundai Mobis Bootcamp project in collaboration with Vector Korea.
+Thank you for your interest in contributing to the canoe-driving-alert project! This document provides guidelines for contributing to this Hyundai Mobis Bootcamp project in collaboration with Vector Korea.
 
 ## Table of Contents
 
@@ -42,8 +42,8 @@ This project adheres to professional automotive industry standards. All contribu
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/VectorCANoe/CANoe-IVI-OTA.git
-   cd CANoe-IVI-OTA
+   git clone https://github.com/VectorCANoe/canoe-driving-alert.git
+   cd canoe-driving-alert
    ```
 
 2. Open the CANoe configuration:

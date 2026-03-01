@@ -1,14 +1,19 @@
-# CANoe-IVI-OTA
+# canoe-driving-alert
 
 **CAN Communication Project in Hyundai Mobis Bootcamp with Vector Korea**
 
 ## 🚗 Project Overview
 
-This project focuses on **vECU simulation-based vehicle convenience features and UX-oriented control logic design** using **Vector CANoe**. The project encompasses comprehensive automotive software development including IVI (In-Vehicle Infotainment) system integration, HVAC/window/seat control simulation, UX lighting with ADAS event coordination, and virtual diagnostics with OTA (Over-The-Air) reprogramming capabilities.
+This project focuses on a **real-time driving situation warning system** implemented with **Vector CANoe SIL simulation**.  
+The current scope is centered on:
+- navigation-context warnings (school zone, highway, guide section),
+- emergency vehicle approach alerts (police/ambulance),
+- stable warning arbitration and transition control,
+- synchronized outputs to ambient lighting and cluster HMI.
 
 ### Organization
 - **Organization Name**: VectorCANoe
-- **Repository**: CANoe-IVI-OTA
+- **Repository**: canoe-driving-alert
 - **Partner**: Vector Korea Co., Ltd.
 - **Program**: Hyundai Mobis Bootcamp
 
@@ -16,106 +21,113 @@ This project focuses on **vECU simulation-based vehicle convenience features and
 
 ## 🎯 Project Objectives
 
-### Phase 1: IVI-Based Control System Simulation
-1. **HVAC/Window/Seat CAPL Simulation**
-   - Implement CAPL-based control logic for HVAC systems
-   - Develop window control algorithms
-   - Create seat adjustment simulation models
+### Phase 1: Driving Situation Warning Design
+1. **Navigation Context Recognition**
+   - Detect road-zone context and driving-state conditions
+   - Reflect context transitions in warning policy
+   - Handle direction guidance scenarios for driver awareness
 
-2. **UX Lighting & ADAS Event Integration**
-   - Design UX lighting control logic
-   - Integrate ADAS (Advanced Driver Assistance Systems) event triggers
-   - Coordinate lighting responses with vehicle events
+2. **Emergency Alert Integration**
+   - Receive and process emergency approach events (Police/Ambulance)
+   - Distinguish vehicle type/direction and expose unified alert context
+   - Guarantee safe clear behavior with timeout handling
 
-3. **Reverse Parking & Lighting Control Algorithm**
-   - Implement reverse parking detection logic
-   - Develop automated lighting control for parking scenarios
-   - Create safety-oriented illumination patterns
+3. **Warning Arbitration Policy**
+   - Resolve concurrent warning conflicts by fixed priority rules
+   - Ensure deterministic selection results for identical inputs
+   - Minimize transition flicker and maintain driver readability
 
-### Phase 2: Virtual Diagnostics & Reprogramming
-1. **Fault Injection & UDS-based Diagnostics**
-   - Inject faults into BDC (Body Domain Controller) logic
-   - Verify proper DTC (Diagnostic Trouble Code) generation using UDS protocol
-   - Validate diagnostic communication flows
+### Phase 2: SIL Validation and Evidence
+1. **CAN + Ethernet Domain Integration in CANoe SIL**
+   - Simulate domain gateways and ECU interactions
+   - Route context and warning data across CAN and Ethernet boundaries
+   - Verify end-to-end warning chain behavior
 
-2. **Virtual OTA Process via vVIRTUALtarget**
-   - Implement virtual software update procedures
-   - Test OTA reprogramming workflows
-   - Validate firmware update mechanisms in simulation environment
+2. **V-Model Traceability and Test Closure**
+   - Maintain full chain: `Req -> Func -> Flow -> Comm -> Var -> Code -> UT/IT/ST`
+   - Execute unit/integration/system tests in SIL scope
+   - Record pass/fail evidence and trace logs
 
 ---
 
-## 🚀 V-Model Sample Artifacts (New!)
+## 🚀 V-Model Reference Artifacts
 
-A complete **V-Model reference implementation** has been added to `docs/sample/`. This serves as a gold standard for project documentation and CANoe implementation.
+A complete V-Model documentation set is maintained under `driving-situation-alert/` and supporting standards under `reference/standards/`.
 
-- **Documentation**: 13 files covering the full V-Model lifecycle (Requirements → Architecture → Implementation → Test).
-- **CANoe Project**: Fully functional simulation in `docs/sample/canoe/` including:
-  - **5 Simulated ECUs**: BCM, Gateway, Cluster, Tester, OTA Server (CAPL implemented).
-  - **E2E Scenario**: Fault Injection → Diagnostics (UDS) → DoIP/OTA Update.
-  - **Automated Testing**: `Master_Scenario.can` for one-click verification.
+- **Documentation**: 00~07 lifecycle documents (requirements, architecture, communication, implementation, and tests)
+- **CANoe Project**: Simulation assets under `canoe/` (CFG, CAPL, DBC, SysVars, test modules)
+- **Traceability**: Audit-ready mapping across requirements, communication design, variables, and verification artifacts
 
-👉 **[See Sample Project Guide](docs/sample/canoe/README.md)**
+👉 **Primary working set**: `driving-situation-alert/` and `canoe/`
 
 ---
 
 ## 🛠️ Core Technologies & Skills
 
 ### Primary Skills
-1. **IVI (In-Vehicle Infotainment) Systems**
-   - Infotainment system architecture
-   - User interface integration
-   - Multi-domain communication
+1. **Driving Situation Warning Architecture**
+   - Context-aware warning design
+   - Priority arbitration policy
+   - Multi-domain warning output coordination
 
 2. **Vector CANoe**
    - CAPL scripting
    - Network simulation
-   - vECU configuration
-   - vVIRTUALtarget integration
+   - SIL-based ECU behavior validation
+   - Measurement/trace analysis
 
-3. **CAN Communication**
-   - CAN protocol implementation
-   - Message database (DBC) management
-   - Network diagnostics
-   - UDS (Unified Diagnostic Services)
+3. **CAN + Ethernet Communication**
+   - CAN message/database (DBC) design
+   - Ethernet alert contract handling (UDP in SIL scope)
+   - Gateway-based routing between domains
 
 ### Technical Stack
 - **Simulation Platform**: Vector CANoe
 - **Programming**: CAPL (CAN Access Programming Language)
-- **Protocols**: CAN, UDS, OTA
-- **Diagnostics**: DTC management, Fault injection
-- **Virtual ECU**: vVIRTUALtarget
+- **Protocols**: CAN, Ethernet (UDP)
+- **Verification Scope**: CANoe SIL
+- **Quality Basis**: ASPICE/ISO 26262-aligned documentation discipline
 
 ---
 
 ## 📁 Project Structure
 
 ```
-CANoe-IVI-OTA/
+canoe-driving-alert/
 ├── README.md
+├── AGENTS.md
+├── canoe/
+│   ├── cfg/                  # CANoe configuration files
+│   ├── src/capl/             # CAPL node implementations
+│   ├── databases/            # Domain CAN DBC files
+│   ├── project/sysvars/      # System variable definitions
+│   ├── test_modules/         # CANoe test modules
+│   └── docs/                 # CANoe operation/architecture notes
+├── driving-situation-alert/
+│   ├── 00_VModel_Mapping.md
+│   ├── 01_Requirements.md
+│   ├── 02_Concept_design.md
+│   ├── 03_Function_definition.md
+│   ├── 0301_SysFuncAnalysis.md
+│   ├── 0302_NWflowDef.md
+│   ├── 0303_Communication_Specification.md
+│   ├── 0304_System_Variables.md
+│   ├── 04_SW_Implementation.md
+│   ├── 05_Unit_Test.md
+│   ├── 06_Integration_Test.md
+│   ├── 07_System_Test.md
+│   └── tmp/                  # Working notes/reports/templates
 ├── docs/
-│   ├── meeting-notes/          # Project meeting records
-│   ├── specifications/         # Technical specifications
-│   └── diagrams/              # Architecture and flow diagrams
-├── src/
-│   ├── IVI/                   # IVI system implementations
-│   │   ├── HVAC/             # HVAC control logic
-│   │   ├── Window/           # Window control algorithms
-│   │   └── Seat/             # Seat adjustment logic
-│   ├── UX-Lighting/          # UX lighting control
-│   │   ├── ADAS-Integration/ # ADAS event coordination
-│   │   └── Parking/          # Parking lighting control
-│   └── Diagnostics/          # Diagnostic and OTA modules
-│       ├── BDC/              # Body Domain Controller logic
-│       ├── UDS/              # UDS protocol implementation
-│       └── OTA/              # OTA reprogramming logic
-├── simulation/
-│   ├── configurations/        # CANoe configuration files
-│   ├── databases/            # CAN database files (DBC)
-│   └── test-cases/           # Simulation test scenarios
-└── tests/
-    ├── unit/                 # Unit tests
-    └── integration/          # Integration tests
+│   ├── meeting-notes/        # Meeting records
+│   └── mentoring/            # Mentoring feedback logs
+├── reference/
+│   ├── standards/            # ASPICE / ISO26262 / sample standards
+│   └── dbc/                  # Reference DBC collections
+└── scripts/
+    ├── quality/              # CI gates and validation scripts
+    ├── canoe/                # CANoe utility scripts
+    ├── docs/                 # Document support scripts
+    └── report/               # Report conversion utilities
 ```
 
 ---
@@ -123,70 +135,72 @@ CANoe-IVI-OTA/
 ## 🚀 Getting Started
 
 ### Prerequisites
-- Vector CANoe (with vVIRTUALtarget support)
-- Basic understanding of CAN protocol
-- Familiarity with automotive ECU systems
+- Vector CANoe (SIL environment)
+- Basic understanding of CAN/Ethernet communication
+- Familiarity with automotive ECU interaction
 - CAPL programming knowledge
 
 ### Installation
 1. Clone the repository:
    ```bash
-   git clone https://github.com/VectorCANoe/CANoe-IVI-OTA.git
-   cd CANoe-IVI-OTA
+   git clone https://github.com/VectorCANoe/canoe-driving-alert.git
+   cd canoe-driving-alert
    ```
 
-2. Open CANoe and load the project configuration files from `simulation/configurations/`
+2. Open CANoe and load configuration files from `canoe/cfg/`
 
-3. Import CAN database files from `simulation/databases/`
+3. Import CAN databases from `canoe/databases/`
 
 ### Running Simulations
-1. Open the desired simulation configuration in CANoe
-2. Load the appropriate CAPL scripts from `src/`
-3. Start the simulation and monitor the trace window
-4. Verify control logic behavior and communication flows
+1. Open the target `.cfg` in CANoe
+2. Confirm CAPL node bindings from `canoe/src/capl/`
+3. Start measurement and monitor trace/result panels
+4. Validate message flow and warning output behavior
 
 ---
 
 ## 📊 Key Features
 
 ### ✅ Implemented Features
-- IVI-based HVAC control simulation
-- Window and seat control algorithms
-- UX lighting with ADAS event coordination
-- Reverse parking detection and lighting control
-- BDC fault injection mechanisms
-- UDS-based DTC generation and verification
-- Virtual OTA software update process
+- Navigation-zone context handling (school zone / highway / guide section)
+- Emergency approach alert handling (police / ambulance)
+- Deterministic warning arbitration:
+  - `Emergency > Navigation`
+  - `Ambulance > Police`
+  - `ETA tie -> SourceID ascending`
+- Timeout-based clear policy (`1000ms`) and transition stabilization
+- Ambient + Cluster synchronized warning output
+- V-model traceability document chain (00~07)
 
 ### 🔄 Development Workflow
-1. **Design**: Define control logic and communication requirements
-2. **Implementation**: Develop CAPL scripts and vECU configurations
-3. **Simulation**: Test in CANoe environment
-4. **Validation**: Verify functionality and diagnose issues
-5. **Documentation**: Record results and update specifications
+1. **Design**: Define requirements and warning policy
+2. **Implementation**: Develop CAPL logic and communication mapping
+3. **Simulation**: Verify behavior in CANoe SIL
+4. **Validation**: Execute UT/IT/ST and check traceability closure
+5. **Documentation**: Update evidence and maintain audit-ready chain
 
 ---
 
 ## 🧪 Testing & Validation
 
 ### Simulation Testing
-- CAPL-based unit tests for individual control modules
-- Integration tests for multi-ECU communication
-- Fault injection scenarios for diagnostic validation
+- Unit tests for node-level functional behavior (`05`)
+- Integration tests for inter-node/domain behavior (`06`)
+- System scenario tests for end-to-end warning chain (`07`)
 
-### Diagnostic Verification
-- DTC generation validation using UDS protocol
-- Fault recovery mechanism testing
-- OTA update process verification in vVIRTUALtarget
+### Traceability Verification
+- Document chain validation from requirements to test evidence
+- Communication consistency checks across `0302/0303/0304` and CANoe assets
+- CI quality gates for path hygiene and doc/code sync
 
 ---
 
 ## 📝 Documentation
 
-All project documentation is maintained in the `docs/` directory:
-- **Meeting Notes**: Regular project meeting records
-- **Specifications**: Technical requirements and design documents
-- **Diagrams**: System architecture and communication flow diagrams
+All project documentation is maintained under:
+- `driving-situation-alert/` for V-model documents (00~07)
+- `docs/` for meeting/mentoring records
+- `canoe/docs/` for implementation/operation guidance
 
 ---
 
@@ -205,11 +219,10 @@ This project is part of the Hyundai Mobis Bootcamp educational program.
 ## 🔗 Resources
 
 - [Vector CANoe Documentation](https://www.vector.com/int/en/products/products-a-z/software/canoe/)
-- [CAN Protocol Specification](https://www.can-cia.org/)
-- [UDS Protocol (ISO 14229)](https://www.iso.org/standard/72439.html)
+- [CAN in Automation (CiA)](https://www.can-cia.org/)
 - [Hyundai Mobis](https://www.mobis.co.kr/)
 - [Vector Korea](https://www.vector.com/kr/ko/)
 
 ---
 
-**Last Updated**: February 2026
+**Last Updated**: March 2026

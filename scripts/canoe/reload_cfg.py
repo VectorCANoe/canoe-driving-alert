@@ -6,7 +6,7 @@ import win32com.client
 import sys
 import time
 
-CFG_PATH = r"C:\Users\이준영\CANoe-IVI-OTA\canoe\cfg\CAN_500kBaud_1ch_split.cfg"
+CFG_PATH = r"C:\Users\이준영\canoe-driving-alert\canoe\cfg\CAN_500kBaud_1ch_split.cfg"
 
 try:
     app = win32com.client.Dispatch("CANoe.Application")

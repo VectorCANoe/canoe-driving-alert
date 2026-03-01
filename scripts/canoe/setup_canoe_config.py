@@ -16,7 +16,7 @@ import os
 import sys
 
 # ── 경로 설정 ──────────────────────────────────────────
-BASE    = r"C:\Users\이준영\CANoe-IVI-OTA\canoe"
+BASE    = r"C:\Users\이준영\canoe-driving-alert\canoe"
 CFG     = os.path.join(BASE, r"cfg\CAN_500kBaud_1ch_split.cfg")
 DBC     = os.path.join(BASE, r"databases\chassis_can.dbc")
 SYSVARS = os.path.join(BASE, r"project\sysvars\project.sysvars")

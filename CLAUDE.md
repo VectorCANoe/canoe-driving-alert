@@ -6,7 +6,7 @@
 
 ## 프로젝트 기본 정보
 
-- **저장소**: `C:\Users\이준영\CANoe-IVI-OTA` (git: `main` 브랜치)
+- **저장소**: `C:\Users\이준영\canoe-driving-alert` (git: `main` 브랜치)
 - **개발 환경**: CANoe 19.4, CAPL, Windows 11
 
 > **⚠️ 단일 활성 프로젝트 — 아래 경로만 읽고 수정한다:**

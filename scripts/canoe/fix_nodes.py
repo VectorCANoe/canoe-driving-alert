@@ -7,7 +7,7 @@ import sys
 import os
 import time
 
-NODES_DIR = r"C:\Users\이준영\CANoe-IVI-OTA\canoe\nodes"
+NODES_DIR = r"C:\Users\이준영\canoe-driving-alert\canoe\nodes"
 
 # Order matters: Context_Manager first, then consumers
 CAPL_FILES = [

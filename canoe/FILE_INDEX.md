@@ -5,22 +5,22 @@ Quick index for the `canoe` folder.
 ## 1) Runtime Profiles
 
 - Active runtime config:
-  - `C:\Users\이준영\CANoe-IVI-OTA\canoe\cfg\CAN_500kBaud_1ch_split.cfg`
+  - `C:\Users\이준영\canoe-driving-alert\canoe\cfg\CAN_500kBaud_1ch_split.cfg`
 - Legacy backup config:
-  - `C:\Users\이준영\CANoe-IVI-OTA\canoe\cfg\legacy\LEGACY_CAN_500kBaud_1ch.cfg`
+  - `C:\Users\이준영\canoe-driving-alert\canoe\cfg\legacy\LEGACY_CAN_500kBaud_1ch.cfg`
 - System variables:
-  - `C:\Users\이준영\CANoe-IVI-OTA\canoe\project\sysvars\project.sysvars`
+  - `C:\Users\이준영\canoe-driving-alert\canoe\project\sysvars\project.sysvars`
 
 ## 2) CAN Databases
 
 - Active split DBC set:
-  - `C:\Users\이준영\CANoe-IVI-OTA\canoe\databases\chassis_can.dbc`
-  - `C:\Users\이준영\CANoe-IVI-OTA\canoe\databases\powertrain_can.dbc`
-  - `C:\Users\이준영\CANoe-IVI-OTA\canoe\databases\body_can.dbc`
-  - `C:\Users\이준영\CANoe-IVI-OTA\canoe\databases\infotainment_can.dbc`
-  - `C:\Users\이준영\CANoe-IVI-OTA\canoe\databases\test_can.dbc`
+  - `C:\Users\이준영\canoe-driving-alert\canoe\databases\chassis_can.dbc`
+  - `C:\Users\이준영\canoe-driving-alert\canoe\databases\powertrain_can.dbc`
+  - `C:\Users\이준영\canoe-driving-alert\canoe\databases\body_can.dbc`
+  - `C:\Users\이준영\canoe-driving-alert\canoe\databases\infotainment_can.dbc`
+  - `C:\Users\이준영\canoe-driving-alert\canoe\databases\test_can.dbc`
 - Legacy backup DBC:
-  - `C:\Users\이준영\CANoe-IVI-OTA\canoe\databases\legacy\LEGACY_emergency_system.dbc`
+  - `C:\Users\이준영\canoe-driving-alert\canoe\databases\legacy\LEGACY_emergency_system.dbc`
 
 ## 3) CAPL Source
 

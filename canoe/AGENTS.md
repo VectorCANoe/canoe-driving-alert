@@ -29,6 +29,6 @@
 - `driving-situation-alert/00~07` 문서는 참고용이며 자동 수정 금지.
 
 ## Repository Boundary (Non-Negotiable)
-- DO NOT modify any file under `C:\Users\이준영\CANoe-IVI-OTA\driving-situation-alert`.
+- DO NOT modify any file under `C:\Users\이준영\canoe-driving-alert\driving-situation-alert`.
 - That folder is source-of-truth documentation and is read-only for implementation tasks.
-- Only `C:\Users\이준영\CANoe-IVI-OTA\canoe` can be changed during development.
+- Only `C:\Users\이준영\canoe-driving-alert\canoe` can be changed during development.
