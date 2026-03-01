@@ -35,15 +35,15 @@
 Input CAN
   -> CHASSIS_GW / INFOTAINMENT_GW (CAN->ETH 정규화)
   -> ETH_SWITCH
-  -> 중앙 경고코어 (ADAS_WARN_CTRL, NAV_CONTEXT_MGR, EMS_ALERT_RX, WARN_ARB_MGR)
+  -> 중앙 경고코어 (ADAS_WARN_CTRL, NAV_CONTEXT_MGR, EMS_ALERT, WARN_ARB_MGR)
   -> ETH_SWITCH
   -> BODY_GW / IVI_GW (ETH->CAN 변환)
   -> BCM_AMBIENT_CTRL / CLU_HMI_CTRL
 
-Emergency Source
-  -> EMS_POLICE_TX / EMS_AMB_TX
+Emergency Source (logical terminal)
+  -> EMS_ALERT (internal: EMS_POLICE_TX / EMS_AMB_TX)
   -> ETH_SWITCH
-  -> EMS_ALERT_RX
+  -> EMS_ALERT (internal: EMS_ALERT_RX)
 ```
 
 ## 1.1 아키텍처 대안 평가 요약 (SWE.3 BP4)
@@ -75,11 +75,8 @@ Emergency Source
 |  |  | Core |
 | ADAS_WARN_CTRL | 차량 상태 입력 기반 경고 조건 판정 및 경고 시작/종료 제어 | Func_001~004,006,010~012 |
 | NAV_CONTEXT_MGR | 구간/방향/거리 입력을 컨텍스트로 변환 | Func_007 |
-| EMS_ALERT_RX | 긴급알림 수신 상태 관리, Clear/Timeout 처리 | Func_023,024 |
+| EMS_ALERT | 긴급알림 송신(Tx) 및 수신/해제/타임아웃(Rx) 통합 관리 | Func_017,018,023,024 |
 | WARN_ARB_MGR | 긴급/구간 충돌 중재 및 최종 경고 컨텍스트 생성 | Func_022,025,027~032 |
-|  |  | Emergency Source |
-| EMS_POLICE_TX | 경찰 긴급 알림 송신 제어 | Func_017 |
-| EMS_AMB_TX | 구급 긴급 알림 송신 제어 | Func_018 |
 |  |  | Gateway/Network |
 | CHASSIS_GW | Chassis CAN 입력 정규화 및 ETH 송신 | Flow_001,002 |
 | INFOTAINMENT_GW | Infotainment CAN 입력(구간/방향/거리/제한속도) 정규화 및 ETH 송신 | Flow_003 |
@@ -91,6 +88,9 @@ Emergency Source
 | CLU_HMI_CTRL | 경고 문구/방향/유형 표시 및 중복 억제 | Func_005,019~021,026,040 |
 |  |  | SIL Verification |
 | SIL_TEST_CTRL | 시나리오 실행, CAN+ETH 동시 검증, 결과 기록 | Func_041~043 |
+
+- 상단 공식표는 감사 일관성을 위해 `EMS_ALERT` 논리 단말 기준으로 표기한다.
+- 내부 구현 모듈(`EMS_POLICE_TX`, `EMS_AMB_TX`, `EMS_ALERT_RX`) 분해는 본문 상세 추적표(3장, 4장)에서 관리한다.
 
 ---
 
@@ -301,6 +301,7 @@ Emergency Source
 
 | 버전 | 날짜 | 변경 사항 |
 |---|---|---|
+| 2.9 | 2026-03-01 | 상단 공식 표와 아키텍처 요약의 EMS 표기를 `EMS_ALERT` 논리 단말 기준으로 통일하고, 내부 TX/RX 모듈은 상세 추적표에서만 분리 관리. |
 | 1.0 | 2026-02-23 | 초기 생성(구 스코프 기반) |
 | 2.0 | 2026-02-26 | 옵션1 아키텍처 기준으로 전면 재작성. 구버전 OTA/UDS/DoIP 구현 항목 제거, Func_001~043 구현 추적 표 및 타이밍/예외 처리 규칙 정립 |
 | 2.1 | 2026-02-26 | SWE.3 BP2/BP3 대응 인터페이스/상태전이 표와 SWE.3 BP4/BP7 증적 섹션 추가, Func_006 입력 추적 정합화 |

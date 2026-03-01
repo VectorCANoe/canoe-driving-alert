@@ -19,6 +19,7 @@
 
 - 본 문서는 모듈 단위 검증(유닛 단위) 결과를 정의한다.
 - 공식 상단 표는 샘플 형식(`노드/분류/기능명/기능 설명/Pass/담당자/일자`)을 유지한다.
+- 상단 공식 표는 감사 일관성을 위해 `EMS_ALERT` 논리 단말 기준으로 표기한다.
 - 상세 추적(UT ID, Req/VC/Func/Flow/Comm/Var)은 하단 표로 분리한다.
 - 범위 외 항목(OTA/UDS/DoIP)은 포함하지 않는다.
 - 본 문서는 `FZ_001~FZ_012` 결과 반영 전 Baseline Draft이며, 측정값 확정 시 Pass/Fail를 기입한다.
@@ -47,9 +48,7 @@
 |  |  | INFOTAINMENT_GW | CAN(0x110) 구간/방향/거리/제한속도 입력을 ETH(0x512)로 100ms 주기 변환 송신 |  |  |  |
 |  |  | ADAS_WARN_CTRL | 주행/비주행, 과속(vehicleSpeed>speedLimit), 무조향 조건을 판정해 150ms 이내 경고 상태 반영 |  |  |  |
 |  |  | NAV_CONTEXT_MGR | roadZone/navDirection/zoneDistance/speedLimit 입력으로 컨텍스트 계산 및 speedLimitNorm 갱신 |  |  |  |
-|  |  | EMS_POLICE_TX | 경찰 긴급 이벤트를 E100으로 100ms 주기 송신하고 Clear 전환 반영 |  |  |  |
-|  |  | EMS_AMB_TX | 구급 긴급 이벤트를 E100으로 100ms 주기 송신하고 Clear 전환 반영 |  |  |  |
-|  |  | EMS_ALERT_RX | E100 수신 상태를 관리하고 1000ms 무갱신 시 timeoutClear=1 처리 |  |  |  |
+|  |  | EMS_ALERT | 경찰/구급 긴급 이벤트 E100 100ms 주기 송신과 수신/해제/타임아웃(1000ms) 처리를 통합 검증 |  |  |  |
 |  |  | WARN_ARB_MGR | Emergency>Zone, Ambulance>Police, ETA, SourceID 규칙으로 단일 경고 결과 결정 |  |  |  |
 |  |  | BODY_GW | 중재 결과(E200)를 Ambient CAN(0x210)으로 50ms 주기 변환 송신 |  |  |  |
 |  |  | IVI_GW | 중재 결과(E200)를 Cluster CAN(0x220)으로 50ms 주기 변환 송신 |  |  |  |
@@ -115,6 +114,7 @@
 
 | 버전 | 날짜 | 변경 사항 |
 |---|---|---|
+| 2.8 | 2026-03-01 | 상단 공식 표의 EMS 표기를 `EMS_ALERT` 논리 단말 기준으로 통일(내부 TX/RX 분해는 하단 UT 추적표 유지). |
 | 1.0 | 2026-02-23 | 초기 생성(구 스코프 기반) |
 | 2.0 | 2026-02-26 | 옵션1 아키텍처 기준으로 전면 재작성. OTA/UDS/DoIP 항목 제거, UT ID 체계(UT_ADAS_001 등) 및 Req/Func/Flow/Comm/Var 추적 표 추가 |
 | 2.1 | 2026-02-26 | 상단 표를 샘플의 블록형(제어기/가상노드 입력·출력) 구조로 재정렬하고, 합격 기준에 50ms/100ms/150ms/1000ms 수치 기준과 Draft 경계 문구를 반영 |

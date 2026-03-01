@@ -46,7 +46,7 @@
 ### Figure 02-01. Option 1 시스템 아키텍처
 - 입력: `SIL_TEST_CTRL`
 - 게이트웨이: `CHASSIS_GW`, `INFOTAINMENT_GW`
-- 중앙 코어: `ADAS_WARN_CTRL`, `NAV_CONTEXT_MGR`, `EMS_ALERT_RX`, `WARN_ARB_MGR`
+- 중앙 코어: `ADAS_WARN_CTRL`, `NAV_CONTEXT_MGR`, `EMS_ALERT`, `WARN_ARB_MGR`
 - 출력: `BODY_GW -> BCM_AMBIENT_CTRL`, `IVI_GW -> CLU_HMI_CTRL`
 
 ### Figure 02-02. 도메인 네트워크 분리
@@ -82,6 +82,7 @@
 
 | 버전 | 날짜 | 변경 사항 |
 |---|---|---|
+| 2.5 | 2026-03-01 | 상위 컨셉 캡션의 EMS 표기를 논리 단말(`EMS_ALERT`) 기준으로 통일. 내부 TX/RX 모듈은 03계열 하단 보강표에서 분리 관리. |
 | 2.0 | 2026-02-25 | 주행상황 연동 실시간 경고 시스템 기준으로 컨셉 재정의 |
 | 2.1 | 2026-02-26 | 아키텍처 대안(Option 1/1A/2/3) 비교 및 채택 결론 추가 |
 | 2.2 | 2026-02-26 | 컨셉 블록도/네트워크 섹션에 도메인 GW 실명 반영 |
