@@ -7,10 +7,13 @@ variables
   msTimer tInput100;
   msTimer tDemoStep;
   msTimer tScenarioEval;
+  msTimer tScenarioPhase2;
   int gDemoStepIndex;
   int gDemoRunning;
   int gCurrentScenarioId;
   int gBaseTraceSnapshotId;
+  int gScenarioPhase;
+  int gArbitrationSnapshotBaseline;
 }
 
 int clampRange(int value, int minValue, int maxValue)
@@ -151,6 +154,39 @@ void applyScenarioPreset(int scenarioId)
     @Infotainment::navDirection = 2;
     @Chassis::vehicleSpeed = 35;
   }
+  else if (scenarioId == 9)
+  {
+    /* Req_030: ETA priority - Phase 1: Police ETA=20 sourceId=5 */
+    @V2X::alertState = 1;
+    @V2X::emergencyType = 1;
+    @V2X::eta = 20;
+    @V2X::sourceId = 5;
+    @V2X::emergencyDirection = 1;
+    gScenarioPhase = 1;
+    setTimer(tScenarioPhase2, 300);
+  }
+  else if (scenarioId == 10)
+  {
+    /* Req_031: SourceID tiebreaker - Phase 1: Police ETA=10 sourceId=20 */
+    @V2X::alertState = 1;
+    @V2X::emergencyType = 1;
+    @V2X::eta = 10;
+    @V2X::sourceId = 20;
+    @V2X::emergencyDirection = 1;
+    gScenarioPhase = 1;
+    setTimer(tScenarioPhase2, 300);
+  }
+  else if (scenarioId == 11)
+  {
+    /* Req_034: nav->emergency transition - Phase 1: guide zone stable */
+    @Infotainment::roadZone = 3;
+    @Infotainment::navDirection = 1;
+    @Chassis::vehicleSpeed = 35;
+    @V2X::alertState = 0;
+    @V2X::emergencyType = 0;
+    gScenarioPhase = 1;
+    setTimer(tScenarioPhase2, 400);
+  }
 }
 
 void scheduleScenarioEvaluation(int scenarioId)
@@ -170,6 +206,14 @@ void scheduleScenarioEvaluation(int scenarioId)
   {
     evalDelayMs = 700;
   }
+  else if (scenarioId == 9 || scenarioId == 10)
+  {
+    evalDelayMs = 700;
+  }
+  else if (scenarioId == 11)
+  {
+    evalDelayMs = 800;
+  }
   setTimer(tScenarioEval, evalDelayMs);
 }
 
@@ -182,6 +226,7 @@ void evaluateScenarioResult()
   int timeoutClear;
   int ambientPattern;
   int duplicatePopupGuard;
+  int snapshotDelta;
 
   result = 0;
   level = (int)@Core::selectedAlertLevel;
@@ -223,6 +268,22 @@ void evaluateScenarioResult()
   {
     result = (level == 2 && type == 6 && ambientPattern == 3 && code == 32) ? 1 : 0;
   }
+  else if (gCurrentScenarioId == 9)
+  {
+    /* Req_030: lower ETA competitor (sourceId=99, eta=10) should be active */
+    result = ((int)@V2X::eta == 10 && (int)@V2X::sourceId == 99 && level == 6) ? 1 : 0;
+  }
+  else if (gCurrentScenarioId == 10)
+  {
+    /* Req_031: lower sourceId (5) wins despite same ETA as prior active (sourceId=20) */
+    result = ((int)@V2X::sourceId == 5 && (int)@V2X::eta == 10 && level == 6) ? 1 : 0;
+  }
+  else if (gCurrentScenarioId == 11)
+  {
+    /* Req_034: emergency took over AND arbitration delta <= 3 (no repeated flips) */
+    snapshotDelta = ((int)@CoreState::arbitrationSnapshotId - gArbitrationSnapshotBaseline) & 0xFFFF;
+    result = (level == 6 && type == 1 && snapshotDelta <= 3) ? 1 : 0;
+  }
   else
   {
     result = ((int)@Test::scenarioResult == 1) ? 1 : 0;
@@ -245,12 +306,51 @@ void runDemoStep()
   setTimer(tDemoStep, 4000);
 }
 
+on timer tScenarioPhase2
+{
+  if (gCurrentScenarioId == 9)
+  {
+    /* Req_030: Phase 2 - inject lower ETA competitor (different sourceId) */
+    @V2X::emergencyType = 1;
+    @V2X::eta = 10;
+    @V2X::sourceId = 99;
+    @V2X::emergencyDirection = 2;
+    gScenarioPhase = 2;
+    write("[SIL_TEST_CTRL] Req_030 phase2: inject eta=10 sourceId=99");
+  }
+  else if (gCurrentScenarioId == 10)
+  {
+    /* Req_031: Phase 2 - inject same ETA, lower SourceID competitor */
+    @V2X::emergencyType = 1;
+    @V2X::eta = 10;
+    @V2X::sourceId = 5;
+    @V2X::emergencyDirection = 2;
+    gScenarioPhase = 2;
+    write("[SIL_TEST_CTRL] Req_031 phase2: inject eta=10 sourceId=5");
+  }
+  else if (gCurrentScenarioId == 11)
+  {
+    /* Req_034: Phase 2 - snapshot arbitration baseline then inject emergency */
+    gArbitrationSnapshotBaseline = (int)@CoreState::arbitrationSnapshotId;
+    @V2X::alertState = 1;
+    @V2X::emergencyType = 1;
+    @V2X::eta = 15;
+    @V2X::sourceId = 10;
+    @V2X::emergencyDirection = 1;
+    gScenarioPhase = 2;
+    write("[SIL_TEST_CTRL] Req_034 phase2: inject police, baseline snapshotId=%d",
+          gArbitrationSnapshotBaseline);
+  }
+}
+
 on start
 {
   gDemoStepIndex = 0;
   gDemoRunning = 0;
   gCurrentScenarioId = 0;
   gBaseTraceSnapshotId = 0;
+  gScenarioPhase = 0;
+  gArbitrationSnapshotBaseline = 0;
   @Test::scenarioResult = 0;
   setTimer(tInput100, 100);
   write("[SIL_TEST_CTRL] start");
@@ -394,7 +494,7 @@ on sysvar Test::testScenario
     cancelTimer(tDemoStep);
     write("[SIL_TEST_CTRL] auto demo stop");
   }
-  else if (scenarioId >= 1 && scenarioId <= 8)
+  else if (scenarioId >= 1 && scenarioId <= 11)
   {
     gDemoRunning = 0;
     cancelTimer(tDemoStep);
