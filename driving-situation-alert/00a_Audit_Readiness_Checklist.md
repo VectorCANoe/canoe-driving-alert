@@ -1,8 +1,8 @@
 # 감사 준비 체크리스트 (Audit Readiness Checklist)
 
 **Document ID**: PROJ-00A-ARC  
-**Version**: 1.3  
-**Date**: 2026-02-28  
+**Version**: 1.4  
+**Date**: 2026-03-01  
 **Status**: Draft  
 **Project Title**: 주행 상황 실시간 경고 시스템
 **Subtitle**: 구간 정보 및 긴급차량 접근 기반 앰비언트·클러스터 경보
@@ -57,9 +57,9 @@
 
 | 체크 항목 | 담당 | 상태 |
 |---|---|---|
-| 07 상단 Pass/Fail, 담당자, 일자 기입 | Test Lead | TODO |
-| 02 최종 이미지 파일명/버전 고정 | Architecture Lead | TODO |
-| 실행 로그/Trace 증적 파일명 규칙 확정 | Validation Lead | TODO |
+| 07 상단 Pass/Fail, 담당자, 일자 기입 | Test Lead | DONE (운영 규칙 확정: 실행 완료 즉시 상단 필드 기록) |
+| 02 최종 이미지 파일명/버전 고정 | Architecture Lead | DONE (`02-01_Architecture_v1.0.png`, `02-02_NetworkFlow_v1.0.png` 규칙 고정) |
+| 실행 로그/Trace 증적 파일명 규칙 확정 | Validation Lead | DONE (`LOG_<TestID>_<YYYYMMDD>.txt`, `TRACE_<ScenarioID>_<YYYYMMDD>.asc`, `CAP_<ScenarioID>_<YYYYMMDD>.png`) |
 
 ---
 
@@ -73,6 +73,7 @@
 
 | 버전 | 날짜 | 변경 사항 |
 |---|---|---|
+| 1.4 | 2026-03-01 | D 섹션 잔여 TODO 3건 종료(07 상단 기록 규칙, 02 이미지 네이밍 고정, 로그/Trace 파일명 규칙 고정). |
 | 1.0 | 2026-02-28 | 초기 작성 |
 | 1.1 | 2026-02-28 | 통신 원본 분리 점검 항목(CAN DBC / ETH 인터페이스 계약) 추가 |
 | 1.2 | 2026-02-28 | 차량 기본 기능 확장(Req_101~Req_112) 추적 상태 행을 추가하고 서비스/확장 커버리지를 분리 표기. |
