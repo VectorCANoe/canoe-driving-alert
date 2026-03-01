@@ -115,14 +115,40 @@ C:/Users/Public/Documents/Vector/CANoe/19 (x64)/Reusable/
     J2602_Slave_Conformance_Test_Lib.can
 ```
 
-### CANoe Sample Configurations (별도 설치 필요)
+### CANoe Sample Configurations (레포 내 완비)
 
 ```
-C:/Users/Public/Documents/Vector/AddOn Packages/Vector AddOn/CANoe Sample Configurations/CAN/
+canoe/reference/vector_samples_19_4_10/   ← Vector CANoe 19.4.10 공식 샘플 전체 복사본
+  CAN/          CAN 기본·시스템·진단 샘플
+  Ethernet/     Ethernet·DoIP·진단 샘플
+  LIN/          LIN 샘플
+  SIL/          SIL Kit 샘플
+  Python/       Python COM API 샘플
+  ADAS/         ADAS 시나리오 샘플
+  (총 7,883 파일 — .can 738개, .dbc 115개, .xvp 977개, .vsysvar 202개, .cfg 298개)
 ```
-> **현재 비어있음** — Vector 공식 샘플은 메인 설치에 포함되지 않음.
-> CANoe 19 이전 버전부터 **별도 설치 패키지**로 분리됨.
-> 다운로드: [vector.com](https://www.vector.com) 로그인 → Downloads → CANoe Sample Configurations
+> **✅ 완비** — `canoe/reference/vector_samples_19_4_10/` 에 원본과 동일하게 전부 복사됨.
+
+### Vector 샘플 핵심 참조 경로 (용도별)
+
+> CANoe 파일 작성 전, 아래 경로의 실제 파일을 Read로 먼저 열어 패턴을 확인한다.
+
+| 용도 | 참조 경로 | 설명 |
+|------|-----------|------|
+| **vsysvar 포맷** | `canoe/reference/vector_samples_19_4_10/CAN/CANSystem/CANoe/SysVar/SystemDefSysVar.vsysvar` | Namespace·Variable 포맷 실사례 |
+| **CAN Gateway 패턴** | `canoe/reference/vector_samples_19_4_10/CAN/CANSystem/CANoe/Nodes/Gateway.can` | 2-클러스터 CAN 라우팅 |
+| **CAN ECU 노드** | `canoe/reference/vector_samples_19_4_10/CAN/CANSystem/CANoe/Nodes/Engine.can` | ECU 노드 기본 구조 |
+| **Ethernet Gateway** | `canoe/reference/vector_samples_19_4_10/Ethernet/EthernetSystem/CAPL/VGW.can` | Ethernet↔CAN 변환 게이트웨이 |
+| **Ethernet ECU 노드** | `canoe/reference/vector_samples_19_4_10/Ethernet/EthernetSystem/CAPL/ADAS.can` | Ethernet 송수신 노드 패턴 |
+| **Ethernet HU 노드** | `canoe/reference/vector_samples_19_4_10/Ethernet/EthernetSystem/CAPL/HU.can` | Head Unit (복합 Ethernet 노드) |
+| **Panel 복잡 예제** | `canoe/reference/vector_samples_19_4_10/Ethernet/EthernetSystem/Panel/ConceptCar.xvp` | 가장 복잡한 다중 위젯 Panel |
+| **Panel 기본 예제** | `canoe/reference/vector_samples_19_4_10/CAN/CANBasic/Panels/Control.xvp` | SwitchControl·TrackBar 기본 |
+| **SIL Kit** | `canoe/reference/vector_samples_19_4_10/SIL/SilKitCAN/` | SIL 시뮬레이션 구성 |
+| **Python COM API** | `canoe/reference/vector_samples_19_4_10/Python/` | CANoe COM API Python 예제 |
+| **DoIP / UDS 진단** | `canoe/reference/vector_samples_19_4_10/Ethernet/Diagnostics/DoIPSystem/Nodes/DoIP_ECU.can` | Ethernet 진단 노드 |
+| **CAN 기본 구성** | `canoe/reference/vector_samples_19_4_10/CAN/CANBasic/` | CANBasic 전체 (cfg+dbc+panel+nodes) |
+
+---
 
 ### OpenDBC — GitHub 오픈소스 실차 DBC (commaai/opendbc)
 
@@ -147,12 +173,18 @@ reference/dbc/level3_communication/reference/
 
 | 용도 | 참조 파일 |
 |------|-----------|
-| sysvars 형식 | `docs/LIN-Door/canoe/cfg/sample_project.sysvars` |
-| DBC 구조·문법 | `docs/LIN-Door/canoe/databases/sample_project.dbc` |
-| DBC 신호 Best Practice | `reference/dbc/level3_communication/reference/hyundai_kia_base.dbc` |
-| CAPL 노드 구조 | `docs/LIN-Door/canoe/nodes/*.can` |
-| CAPL 추가 예제 | `reference/legacy/capl_nodes/*.can` (13개: EMS/ESP/IVI/MDPS 등) |
-| DBC 빈 템플릿 | `C:/Users/Public/Documents/Vector/CANoe/19 (x64)/Templates/Database/CANTemplate.dbc` |
+| **sysvars 형식** | `docs/LIN-Door/canoe/cfg/sample_project.sysvars` |
+| **vsysvar 실사례** | `canoe/reference/vector_samples_19_4_10/CAN/CANSystem/CANoe/SysVar/SystemDefSysVar.vsysvar` |
+| **DBC 구조·문법** | `docs/LIN-Door/canoe/databases/sample_project.dbc` |
+| **DBC 신호 Best Practice** | `canoe/reference/vector_samples_19_4_10/CAN/CANSystem/` 내 .dbc 파일 또는 hyundai_kia_base.dbc |
+| **CAPL 노드 구조** | `docs/LIN-Door/canoe/nodes/*.can` (BCM/Gateway/Tester 등 7개) |
+| **CAPL CAN Gateway** | `canoe/reference/vector_samples_19_4_10/CAN/CANSystem/CANoe/Nodes/Gateway.can` |
+| **CAPL Ethernet Gateway** | `canoe/reference/vector_samples_19_4_10/Ethernet/EthernetSystem/CAPL/VGW.can` |
+| **CAPL Ethernet ECU** | `canoe/reference/vector_samples_19_4_10/Ethernet/EthernetSystem/CAPL/ADAS.can` |
+| **Panel 기본** | `canoe/reference/vector_samples_19_4_10/CAN/CANBasic/Panels/Control.xvp` |
+| **Panel 고급** | `canoe/reference/vector_samples_19_4_10/Ethernet/EthernetSystem/Panel/ConceptCar.xvp` |
+| **DBC 빈 템플릿** | `C:/Users/Public/Documents/Vector/CANoe/19 (x64)/Templates/Database/CANTemplate.dbc` |
+| **Python COM 예제** | `canoe/reference/vector_samples_19_4_10/Python/` |
 
 ---
 
