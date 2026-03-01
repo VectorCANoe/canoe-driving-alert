@@ -27,6 +27,7 @@
 - 하단 추적표는 `Comm ID -> Flow ID -> Func ID -> Req ID`를 유지한다.
 - 제출 전 현대/기아 및 OEM 기준으로 설명/별칭은 정리하되, Message ID/DLC/Bit Position/Signal 식별자는 SoT 기준으로 고정 유지한다.
 - 검증 범위는 CANoe SIL, CAN + Ethernet(UDP)로 고정한다.
+- `Comm_009`, `Comm_106`, `Comm_205`는 Validation Harness 통신(검증 전용)이며 양산 통신과 구분한다.
 - Vehicle Baseline(Req_101~Req_112) 통신(`Comm_101~Comm_106`, `Comm_201~Comm_205`)은 본 문서에서 확정 정의하고, 도메인 DBC는 이 정의를 구현 대상으로 사용한다.
 
 ---
@@ -117,8 +118,8 @@
 | frmInfotainmentHealthMsg | 0x228 | 2 | InfoAliveCnt | 0~7 | Infotainment Alive Counter | 0~255 | INFOTAINMENT_GW -> SIL_TEST_CTRL 전달 |
 |  |  |  | InfoDiagState | 8~11 | Infotainment 진단 상태 | 0~15 | INFOTAINMENT_GW -> SIL_TEST_CTRL 전달 |
 |  |  |  | InfoFailCode | 12~15 | Infotainment 오류 코드 | 0~15 | INFOTAINMENT_GW -> SIL_TEST_CTRL 전달 |
-| frmTestResultMsg | 0x230 | 1 | scenarioResult | 0 | 시나리오 판정 결과 | 0~1 | SIL_TEST_CTRL -> - 전달 |
-| frmBaseTestResultMsg | 0x231 | 8 | BaseScenarioId | 0~7 | 기본 시나리오 ID | 0~255 | VEHICLE_BASE_TEST_CTRL -> SIL_TEST_CTRL 전달 |
+| frmTestResultMsg | 0x230 | 1 | scenarioResult | 0 | 시나리오 판정 결과 | 0~1 | SIL_TEST_CTRL -> - 전달 (Validation-only) |
+| frmBaseTestResultMsg | 0x231 | 8 | BaseScenarioId | 0~7 | 기본 시나리오 ID | 0~255 | VEHICLE_BASE_TEST_CTRL -> SIL_TEST_CTRL 전달 (Validation-only) |
 |  |  |  | BaseScnResult | 8 | 기본 시나리오 판정 | 0~1 | VEHICLE_BASE_TEST_CTRL -> SIL_TEST_CTRL 전달 |
 | frmEmergencyMonitorMsg | 0x232 | 2 | emergencyContext | 0~7 | 긴급 컨텍스트 상태 | 0~255 | EMS_ALERT_RX -> SIL_TEST_CTRL, CHASSIS_GW 전달 |
 |  |  |  | TimeoutClearMon | 8 | 타임아웃 모니터 플래그 | 0~1 | EMS_ALERT_RX -> SIL_TEST_CTRL, CHASSIS_GW 전달 |
@@ -245,7 +246,7 @@
 |  |  |  | ProjectionState | 3~4 | 프로젝션 상태 | 0~3 | IVI_GW -> CLU_HMI_CTRL 전달 |
 | frmClusterNotifMsg | 0x266 | 2 | ClusterNotifType | 0~3 | 클러스터 알림 유형 | 0~15 | IVI_GW -> CLU_HMI_CTRL, CLUSTER_BASE_CTRL 전달 |
 |  |  |  | ClusterNotifPrio | 4~6 | 클러스터 알림 우선순위 | 0~7 | IVI_GW -> CLU_HMI_CTRL, CLUSTER_BASE_CTRL 전달 |
-| frmIviDiagReqMsg | 0x267 | 3 | IviDiagReqId | 0~7 | IVI 진단 요청 ID | 0~255 | SIL_TEST_CTRL -> INFOTAINMENT_GW 전달 |
+| frmIviDiagReqMsg | 0x267 | 3 | IviDiagReqId | 0~7 | IVI 진단 요청 ID | 0~255 | SIL_TEST_CTRL -> INFOTAINMENT_GW 전달 (Validation-only) |
 |  |  |  | IviDiagReqAct | 8 | IVI 진단 요청 활성 | 0~1 | SIL_TEST_CTRL -> INFOTAINMENT_GW 전달 |
 | frmIviDiagResMsg | 0x268 | 3 | IviDiagResId | 0~7 | IVI 진단 응답 ID | 0~255 | INFOTAINMENT_GW -> SIL_TEST_CTRL 전달 |
 |  |  |  | IviDiagStatus | 8~11 | IVI 진단 결과 | 0~15 | INFOTAINMENT_GW -> SIL_TEST_CTRL 전달 |
@@ -267,7 +268,7 @@
 | frmTransShiftStateMsg | 0x30D | 2 | ShiftState | 0~2 | 변속 상태 | 0~7 | TRANSMISSION_CTRL -> ENGINE_CTRL, DOMAIN_GW_ROUTER 전달 |
 |  |  |  | ShiftInProgress | 3 | 변속 진행 상태 | 0~1 | TRANSMISSION_CTRL -> ENGINE_CTRL, DOMAIN_GW_ROUTER 전달 |
 |  |  |  | ShiftTargetGear | 8~10 | 목표 기어 | 0~7 | TRANSMISSION_CTRL -> ENGINE_CTRL, DOMAIN_GW_ROUTER 전달 |
-| frmPtDiagReqMsg | 0x30E | 3 | PtDiagReqId | 0~7 | Powertrain 진단 요청 ID | 0~255 | SIL_TEST_CTRL -> DOMAIN_GW_ROUTER 전달 |
+| frmPtDiagReqMsg | 0x30E | 3 | PtDiagReqId | 0~7 | Powertrain 진단 요청 ID | 0~255 | SIL_TEST_CTRL -> DOMAIN_GW_ROUTER 전달 (Validation-only) |
 |  |  |  | PtDiagReqAct | 8 | Powertrain 진단 요청 활성 | 0~1 | SIL_TEST_CTRL -> DOMAIN_GW_ROUTER 전달 |
 | frmPtDiagResMsg | 0x30F | 3 | PtDiagResId | 0~7 | Powertrain 진단 응답 ID | 0~255 | DOMAIN_GW_ROUTER -> SIL_TEST_CTRL 전달 |
 |  |  |  | PtDiagStatus | 8~11 | Powertrain 진단 결과 | 0~15 | DOMAIN_GW_ROUTER -> SIL_TEST_CTRL 전달 |

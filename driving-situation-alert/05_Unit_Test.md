@@ -22,6 +22,7 @@
 - 상세 추적(UT ID, Req/VC/Func/Flow/Comm/Var)은 하단 표로 분리한다.
 - 범위 외 항목(OTA/UDS/DoIP)은 포함하지 않는다.
 - 본 문서는 `FZ_001~FZ_012` 결과 반영 전 Baseline Draft이며, 측정값 확정 시 Pass/Fail를 기입한다.
+- `SIL_TEST_CTRL`/`VEHICLE_BASE_TEST_CTRL` 관련 항목은 Validation Harness(검증 전용)이며 양산 사용자 기능으로 해석하지 않는다.
 
 ### 수치화 기준 (Req/Flow 파생)
 

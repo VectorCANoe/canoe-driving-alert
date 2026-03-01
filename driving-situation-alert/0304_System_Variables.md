@@ -23,6 +23,7 @@
 - 하단 추적표에서 `Var -> Comm -> Flow -> Func -> Req` 1:1 연결을 명시한다.
 - DBC 신호명이 OEM 관례(`gVehicleSpeed`, `gRoadZone`)를 사용하더라도, 상단 표준 Name은 기능 중심 이름(`vehicleSpeed`, `roadZone`)으로 유지한다.
 - 제출 전 현대/기아 및 OEM 기준 명칭으로 일괄 대체하되, Var ID/추적 ID 체계는 유지한다.
+- `Namespace=Test` 변수는 Validation Harness 전용(Non-Production)으로 관리하며, 사용자 기능/양산 기능 변수와 구분한다.
 
 ---
 
@@ -56,8 +57,8 @@
 | 22 | Body | ambientColor | uint32 | 0 | 7 | 0 | 앰비언트 색상 코드 |
 | 23 | Body | ambientPattern | uint32 | 0 | 3 | 0 | 앰비언트 패턴 코드 |
 | 24 | Cluster | warningTextCode | uint32 | 0 | 255 | 0 | 클러스터 경고 코드 |
-| 25 | Test | testScenario | uint32 | 0 | 255 | 0 | SIL 테스트 시나리오 선택값 |
-| 26 | Test | scenarioResult | uint32 | 0 | 1 | 0 | SIL 시나리오 Pass/Fail 결과 |
+| 25 | Test | testScenario | uint32 | 0 | 255 | 0 | SIL 테스트 시나리오 선택값(Validation-only) |
+| 26 | Test | scenarioResult | uint32 | 0 | 1 | 0 | SIL 시나리오 Pass/Fail 결과(Validation-only) |
 | 27 | CoreState | lastEmergencyRxMs | uint32 | 0 | 60000 | 0 | 마지막 긴급 신호 수신 시각(ms) |
 | 28 | CoreState | duplicatePopupGuard | uint32 | 0 | 5000 | 0 | 중복 팝업 억제 타이머(ms) |
 | 29 | CoreState | arbitrationSnapshotId | uint32 | 0 | 65535 | 0 | 중재 스냅샷 식별자 |
@@ -307,8 +308,8 @@
 | 22 | Body | ambientColor | ambientColor_CAN_OUT | CAN_OUT | WARN_ARB_MGR -> ETH_SWITCH -> BODY_GW -> BCM_AMBIENT_CTRL |
 | 23 | Body | ambientPattern | ambientPattern_CAN_OUT | CAN_OUT | WARN_ARB_MGR -> ETH_SWITCH -> BODY_GW -> BCM_AMBIENT_CTRL |
 | 24 | Cluster | warningTextCode | warningTextCode_CAN_OUT | CAN_OUT | WARN_ARB_MGR -> ETH_SWITCH -> IVI_GW -> CLU_HMI_CTRL |
-| 25 | Test | testScenario | testScenario_INPUT | TEST | SIL_TEST_CTRL Panel Input |
-| 26 | Test | scenarioResult | scenarioResult_OUTPUT | TEST | SIL_TEST_CTRL Test Result Output |
+| 25 | Test | testScenario | testScenario_INPUT | TEST | SIL_TEST_CTRL Panel Input (Validation-only) |
+| 26 | Test | scenarioResult | scenarioResult_OUTPUT | TEST | SIL_TEST_CTRL Test Result Output (Validation-only) |
 | 27 | CoreState | lastEmergencyRxMs | lastEmergencyRxMs | CORE_STATE | EMS_ALERT_RX 내부 상태 |
 | 28 | CoreState | duplicatePopupGuard | duplicatePopupGuard | CORE_STATE | CLU_HMI_CTRL 내부 상태 |
 | 29 | CoreState | arbitrationSnapshotId | arbitrationSnapshotId | CORE_STATE | WARN_ARB_MGR 내부 상태 |

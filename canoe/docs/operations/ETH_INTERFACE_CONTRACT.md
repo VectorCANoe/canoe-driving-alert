@@ -11,7 +11,7 @@
 ## 1. 목적
 
 - 본 문서는 `E100/E200, 0x510/0x511/0x512` Ethernet 메시지의 단일 원본(Single Source of Truth)이다.
-- CAN 프레임 원본은 `canoe/network/dbc/emergency_system.dbc`가 담당하며, Ethernet 프레임은 본 문서가 담당한다.
+- CAN 프레임 원본은 `canoe/databases/chassis_can.dbc`, `canoe/databases/powertrain_can.dbc`, `canoe/databases/body_can.dbc`, `canoe/databases/infotainment_can.dbc`, `canoe/databases/test_can.dbc`가 담당하며, Ethernet 프레임은 본 문서가 담당한다.
 
 ---
 
