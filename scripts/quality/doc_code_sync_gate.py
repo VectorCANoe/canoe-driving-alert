@@ -125,7 +125,8 @@ def main() -> int:
     }
 
     capl_nodes = {p.stem for p in (ROOT / "canoe" / "src" / "capl").glob("**/*.can")}
-    cfg_text = read_text(ROOT / "canoe" / "cfg" / "CAN_500kBaud_1ch_split.cfg")
+    cfg_path = ROOT / "canoe" / "cfg" / "CAN_500kBaud_1ch_split.cfg"
+    cfg_text = read_text(cfg_path)
     cfg_nodes = {
         Path(x.replace("..\\src\\capl\\", "").replace("\\", "/")).stem
         for x in re.findall(r"\.\.\\src\\capl\\[^\s\"<>]+\.can", cfg_text)
@@ -142,6 +143,17 @@ def main() -> int:
 
     missing_capl = sorted(expected_nodes - capl_nodes)
     missing_cfg = sorted(expected_nodes - cfg_nodes)
+    cfg_lines = cfg_text.splitlines()
+    cfg_abs_path_hits = []
+    for i, line in enumerate(cfg_lines, start=1):
+        # Windows absolute path in CFG is environment-specific and should not be committed.
+        if re.search(r"[A-Za-z]:\\", line):
+            cfg_abs_path_hits.append((i, line.strip()))
+    # Common mojibake artifacts often seen when Windows user profile path is encoded badly.
+    cfg_mojibake_hits = []
+    for i, line in enumerate(cfg_lines, start=1):
+        if "���" in line or "????" in line:
+            cfg_mojibake_hits.append((i, line.strip()))
 
     if missing_capl:
         fail = True
@@ -152,6 +164,17 @@ def main() -> int:
     if missing_dbc_files:
         fail = True
         fail_issues.append(f"Missing DBC files: {', '.join(missing_dbc_files)}")
+    if cfg_abs_path_hits:
+        fail = True
+        sample = ", ".join([f"L{ln}" for ln, _ in cfg_abs_path_hits[:5]])
+        fail_issues.append(
+            f"CFG contains Windows absolute paths (forbidden): {len(cfg_abs_path_hits)} lines ({sample}) in {cfg_path.name}"
+        )
+    if cfg_mojibake_hits:
+        warn_sample = ", ".join([f"L{ln}" for ln, _ in cfg_mojibake_hits[:5]])
+        warn_issues.append(
+            f"CFG possible mojibake text detected: {len(cfg_mojibake_hits)} lines ({warn_sample}) in {cfg_path.name}"
+        )
 
     # boundary manager policy advisory
     dbcs = [p for p in (ROOT / "canoe" / "databases").glob("*_can.dbc")]
@@ -167,6 +190,7 @@ def main() -> int:
         ["CAPL node files", f"{len(expected_nodes)-len(missing_capl)}/{len(expected_nodes)}", "PASS" if not missing_capl else "FAIL"],
         ["CFG node links", f"{len(expected_nodes)-len(missing_cfg)}/{len(expected_nodes)}", "PASS" if not missing_cfg else "FAIL"],
         ["Split DBC files", f"{len(dbc_paths)-len(missing_dbc_files)}/{len(dbc_paths)}", "PASS" if not missing_dbc_files else "FAIL"],
+        ["CFG absolute path hygiene", "0 forbidden path", "PASS" if not cfg_abs_path_hits else "FAIL"],
     ]
     impl_summary = markdown_table(["Item", "Coverage", "Status"], impl_rows)
 
