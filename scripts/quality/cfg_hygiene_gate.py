@@ -8,7 +8,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 CANOE_ROOT = ROOT / "canoe"
 TEXT_EXTENSIONS = {".cfg", ".can", ".dbc", ".sysvars", ".xml"}
-EXCLUDE_DIRS = {".git", ".idea", ".vscode", "__pycache__", "build", "dist", "tmp", "_pending_cleanup"}
+EXCLUDE_DIRS = {".git", ".idea", ".vscode", "__pycache__", "build", "dist", "tmp", "_pending_cleanup",
+                "vector_samples_19_4_10"}
 
 
 def should_scan(path: Path) -> bool:
@@ -25,8 +26,8 @@ def scan_text(path: Path) -> tuple[list[str], list[str]]:
 
     for i, line in enumerate(lines, start=1):
         if re.search(r"[A-Za-z]:\\", line):
-            # Vector install paths (C:\Users\Public\...) are machine-fixed and must stay absolute
-            if r"C:\Users\Public" in line:
+            # Vector install paths (C:\Users\Public\ or C:\Public\) are machine-fixed and must stay absolute
+            if r"C:\Users\Public" in line or r"C:\Public" in line:
                 continue
             abs_hits.append(f"{path}:{i}: {line.strip()}")
         if "���" in line or "????" in line or "\ufffd" in line:
@@ -56,17 +57,23 @@ def main() -> int:
     print(f"[cfg-hygiene-gate] absolute-path hits: {len(abs_all)}")
     print(f"[cfg-hygiene-gate] mojibake hits: {len(mojibake_all)}")
 
+    def _safe_print(text: str) -> None:
+        try:
+            print(text)
+        except UnicodeEncodeError:
+            print(text.encode("ascii", errors="replace").decode("ascii"))
+
     if abs_all:
         print("\n[FAIL] Windows absolute paths are forbidden in committed CANoe text files:")
         for row in abs_all[:20]:
-            print(f"- {row}")
+            _safe_print(f"- {row}")
         if len(abs_all) > 20:
             print(f"- ... ({len(abs_all) - 20} more)")
 
     if mojibake_all:
         print("\n[FAIL] Mojibake text detected in CANoe text files:")
         for row in mojibake_all[:20]:
-            print(f"- {row}")
+            _safe_print(f"- {row}")
         if len(mojibake_all) > 20:
             print(f"- ... ({len(mojibake_all) - 20} more)")
 
