@@ -10,6 +10,7 @@
     <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="roadZone" comment="0=Normal 1=School 2=Highway 3=Guide" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="3" maxValuePhys="3"/>
     <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="navDirection" comment="0=None 1=Left 2=Right 3=Other" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="3" maxValuePhys="3"/>
     <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="m" name="zoneDistance" comment="Distance to zone boundary" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="255" maxValuePhys="255"/>
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="km/h" name="speedLimit" comment="Zone speed limit from CAN input" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="255" maxValuePhys="255"/>
   </namespace>
 
   <namespace name="V2X" comment="" interface="">
@@ -24,6 +25,7 @@
     <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="km/h" name="vehicleSpeedNorm" comment="Normalized speed from CHASSIS_GW" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="255" maxValuePhys="255"/>
     <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="driveStateNorm" comment="Normalized drive state from CHASSIS_GW" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="3" maxValuePhys="3"/>
     <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="steeringInputNorm" comment="Normalized steering from CHASSIS_GW" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1"/>
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="km/h" name="speedLimitNorm" comment="Normalized speed limit from NAV_CONTEXT_MGR" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="255" maxValuePhys="255"/>
     <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="baseZoneContext" comment="Computed zone context from NAV_CONTEXT_MGR" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="255" maxValuePhys="255"/>
     <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="warningState" comment="ADAS warning state" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="255" maxValuePhys="255"/>
     <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="emergencyContext" comment="Emergency context from EMS_ALERT_RX" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="255" maxValuePhys="255"/>

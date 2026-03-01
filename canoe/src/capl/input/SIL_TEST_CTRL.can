@@ -10,6 +10,7 @@ variables
   int gDemoStepIndex;
   int gDemoRunning;
   int gCurrentScenarioId;
+  int gCurrentSpeedLimit;
 }
 
 int clampRange(int value, int minValue, int maxValue)
@@ -25,19 +26,49 @@ int clampRange(int value, int minValue, int maxValue)
   return value;
 }
 
+void SetManualInput(long driveState,
+                    long vehicleSpeed,
+                    long steeringInput,
+                    long roadZone,
+                    long navDirection,
+                    long zoneDistance,
+                    long speedLimit)
+{
+  @Chassis::driveState = clampRange((int)driveState, 0, 3);
+  @Chassis::vehicleSpeed = clampRange((int)vehicleSpeed, 0, 255);
+  @Chassis::steeringInput = clampRange((int)steeringInput, 0, 1);
+  @Infotainment::roadZone = clampRange((int)roadZone, 0, 3);
+  @Infotainment::navDirection = clampRange((int)navDirection, 0, 3);
+  @Infotainment::zoneDistance = clampRange((int)zoneDistance, 0, 255);
+  gCurrentSpeedLimit = clampRange((int)speedLimit, 0, 255);
+  if (gCurrentSpeedLimit == 0)
+  {
+    gCurrentSpeedLimit = 30;
+  }
+}
+
+void SetEmergencyInput(long alertState,
+                       long emergencyType,
+                       long emergencyDirection,
+                       long eta,
+                       long sourceId)
+{
+  @V2X::alertState = clampRange((int)alertState, 0, 1);
+  @V2X::emergencyType = clampRange((int)emergencyType, 0, 2);
+  @V2X::emergencyDirection = clampRange((int)emergencyDirection, 0, 3);
+  @V2X::eta = clampRange((int)eta, 0, 255);
+  @V2X::sourceId = clampRange((int)sourceId, 0, 255);
+}
+
+void ResetManualInput()
+{
+  SetManualInput(3, 20, 1, 0, 0, 50, 30);
+  SetEmergencyInput(0, 0, 1, 10, 1);
+}
+
 void applyScenarioPreset(int scenarioId)
 {
-  @Chassis::driveState = 3;
-  @Chassis::vehicleSpeed = 20;
-  @Chassis::steeringInput = 1;
-  @Infotainment::roadZone = 0;
-  @Infotainment::navDirection = 0;
-  @Infotainment::zoneDistance = 50;
-  @V2X::alertState = 0;
-  @V2X::emergencyType = 0;
-  @V2X::emergencyDirection = 1;
-  @V2X::eta = 10;
-  @V2X::sourceId = 1;
+  ResetManualInput();
 
   if (scenarioId == 1)
   {
@@ -46,55 +77,37 @@ void applyScenarioPreset(int scenarioId)
   else if (scenarioId == 2)
   {
     /* School zone overspeed */
-    @Infotainment::roadZone = 1;
-    @Chassis::vehicleSpeed = 45;
+    SetManualInput(3, 45, 1, 1, 0, 50, 30);
   }
   else if (scenarioId == 3)
   {
     /* Highway no steering */
-    @Infotainment::roadZone = 2;
-    @Chassis::steeringInput = 0;
-    @Chassis::vehicleSpeed = 80;
+    SetManualInput(3, 80, 0, 2, 0, 50, 100);
   }
   else if (scenarioId == 4)
   {
     /* Police emergency */
-    @V2X::alertState = 1;
-    @V2X::emergencyType = 1;
-    @V2X::eta = 12;
-    @V2X::emergencyDirection = 1;
-    @V2X::sourceId = 11;
+    SetEmergencyInput(1, 1, 1, 12, 11);
   }
   else if (scenarioId == 5)
   {
     /* Ambulance emergency */
-    @V2X::alertState = 1;
-    @V2X::emergencyType = 2;
-    @V2X::eta = 8;
-    @V2X::emergencyDirection = 2;
-    @V2X::sourceId = 22;
+    SetEmergencyInput(1, 2, 2, 8, 22);
   }
   else if (scenarioId == 6)
   {
     /* Timeout test preparation: emergency active then stop update externally */
-    @V2X::alertState = 1;
-    @V2X::emergencyType = 2;
-    @V2X::eta = 5;
-    @V2X::sourceId = 33;
+    SetEmergencyInput(1, 2, 2, 5, 33);
   }
   else if (scenarioId == 7)
   {
     /* Guide zone left */
-    @Infotainment::roadZone = 3;
-    @Infotainment::navDirection = 1;
-    @Chassis::vehicleSpeed = 35;
+    SetManualInput(3, 35, 1, 3, 1, 50, 30);
   }
   else if (scenarioId == 8)
   {
     /* Guide zone right */
-    @Infotainment::roadZone = 3;
-    @Infotainment::navDirection = 2;
-    @Chassis::vehicleSpeed = 35;
+    SetManualInput(3, 35, 1, 3, 2, 50, 30);
   }
 }
 
@@ -211,6 +224,7 @@ on timer tInput100
   int roadZone;
   int navDirection;
   int zoneDistance;
+  int speedLimit;
 
   speed = clampRange((int)@Chassis::vehicleSpeed, 0, 255);
   driveState = clampRange((int)@Chassis::driveState, 0, 3);
@@ -218,6 +232,7 @@ on timer tInput100
   roadZone = clampRange((int)@Infotainment::roadZone, 0, 3);
   navDirection = clampRange((int)@Infotainment::navDirection, 0, 3);
   zoneDistance = clampRange((int)@Infotainment::zoneDistance, 0, 255);
+  speedLimit = clampRange(gCurrentSpeedLimit, 0, 255);
 
   mVeh.gVehicleSpeed = speed;
   mVeh.gDriveState = driveState;
@@ -229,6 +244,7 @@ on timer tInput100
   mNav.gRoadZone = roadZone;
   mNav.gNavDirection = navDirection;
   mNav.gZoneDistance = zoneDistance;
+  mNav.gSpeedLimit = speedLimit;
   output(mNav);
 
   setTimer(tInput100, 100);

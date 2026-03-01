@@ -6,6 +6,7 @@ variables
 {
   msTimer tAdasCycle;
   int gLastWarningState;
+  int gSpeedLimitNorm;
   dword gHighwayNoSteerStartMs;
 }
 
@@ -14,6 +15,7 @@ void updateWarningState()
   int speed;
   int driveState;
   int steeringInput;
+  int speedLimit;
   int baseZoneContext;
   int warningState;
   dword nowMs;
@@ -21,6 +23,7 @@ void updateWarningState()
   speed = (int)@Core::vehicleSpeedNorm;
   driveState = (int)@Core::driveStateNorm;
   steeringInput = (int)@Core::steeringInputNorm;
+  speedLimit = gSpeedLimitNorm;
   baseZoneContext = (int)@Core::baseZoneContext;
   if (speed < 0)
   {
@@ -38,6 +41,10 @@ void updateWarningState()
   {
     steeringInput = 0;
   }
+  if (speedLimit <= 0 || speedLimit > 255)
+  {
+    speedLimit = 30;
+  }
   if (baseZoneContext < 0 || baseZoneContext > 4)
   {
     baseZoneContext = 0;
@@ -47,7 +54,7 @@ void updateWarningState()
 
   if (driveState == 3)
   {
-    if (baseZoneContext == 1 && speed > 30)
+    if (baseZoneContext == 1 && speed > speedLimit)
     {
       warningState = 1;
     }
@@ -82,6 +89,7 @@ void updateWarningState()
 on start
 {
   gLastWarningState = -1;
+  gSpeedLimitNorm = 30;
   gHighwayNoSteerStartMs = 0;
   setTimer(tAdasCycle, 10);
   write("[ADAS_WARN_CTRL] start");
@@ -91,4 +99,16 @@ on timer tAdasCycle
 {
   updateWarningState();
   setTimer(tAdasCycle, 10);
+}
+
+on message frmNavContextCanMsg
+{
+  int speedLimit;
+
+  speedLimit = this.gSpeedLimit;
+  if (speedLimit <= 0 || speedLimit > 255)
+  {
+    speedLimit = 30;
+  }
+  gSpeedLimitNorm = speedLimit;
 }
