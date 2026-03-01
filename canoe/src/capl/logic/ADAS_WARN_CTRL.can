@@ -80,7 +80,12 @@ void updateWarningState()
 
   if (warningState != gLastWarningState)
   {
+    message frmAdasChassisStatusMsg mAdas;
+
     @Core::warningState = warningState;
+    mAdas.AdasChassisState = warningState;
+    mAdas.AdasHealthLevel = (warningState > 0) ? 1 : 0;
+    output(mAdas);
     gLastWarningState = warningState;
   }
 }

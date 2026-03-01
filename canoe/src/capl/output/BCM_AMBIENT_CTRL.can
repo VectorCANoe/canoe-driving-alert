@@ -4,10 +4,18 @@ includes
 
 variables
 {
+  msTimer tBcmExt100;
+  int gLastBcmDiagReqSid;
+  int gLastBcmDiagReqDidHigh;
+  int gLastBcmDiagReqDidLow;
 }
 
 on start
 {
+  gLastBcmDiagReqSid = 0x22;
+  gLastBcmDiagReqDidHigh = 0xF1;
+  gLastBcmDiagReqDidLow = 0x90;
+  setTimer(tBcmExt100, 100);
   write("[BCM_AMBIENT_CTRL] start");
 }
 
@@ -19,4 +27,46 @@ on message frmAmbientControlMsg
 
   write("[BCM] Mode=%d Color=%d Pattern=%d",
         this.AmbientMode, this.AmbientColor, this.AmbientPattern);
+}
+
+on message frmBcmDiagReqMsg
+{
+  gLastBcmDiagReqSid = this.BcmDiagServiceId;
+  gLastBcmDiagReqDidHigh = this.BcmDiagDidHigh;
+  gLastBcmDiagReqDidLow = this.BcmDiagDidLow;
+}
+
+on timer tBcmExt100
+{
+  message frmInteriorLightMsg mLight;
+  message frmRainLightAutoMsg mRain;
+  message frmBcmDiagResMsg mDiagRes;
+  int ambientMode;
+  int ambientPattern;
+
+  ambientMode = (int)@Body::ambientMode;
+  ambientPattern = (int)@Body::ambientPattern;
+  if (ambientMode < 0)
+  {
+    ambientMode = 0;
+  }
+  if (ambientPattern < 0)
+  {
+    ambientPattern = 0;
+  }
+
+  mLight.CabinLightMode = ambientMode & 0x7;
+  mLight.DomeLightLevel = (ambientMode > 0) ? 20 : 4;
+  output(mLight);
+
+  mRain.RainSenseLevel = ambientPattern & 0xF;
+  mRain.AutoLightState = (ambientMode > 0) ? 1 : 0;
+  output(mRain);
+
+  mDiagRes.BcmDiagRespCode = 0x62;
+  mDiagRes.BcmDiagData0 = gLastBcmDiagReqDidHigh & 0xFF;
+  mDiagRes.BcmDiagData1 = gLastBcmDiagReqDidLow & 0xFF;
+  output(mDiagRes);
+
+  setTimer(tBcmExt100, 100);
 }

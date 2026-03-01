@@ -110,6 +110,13 @@ on timer tIviBase50
   message frmClusterBaseStateMsg mBase;
   message frmClusterThemeMsg mTheme;
   message frmHmiPopupStateMsg mPopup;
+  message frmAudioFocusMsg mAudio;
+  message frmVoiceAssistStateMsg mVoice;
+  message frmPhoneProjectionMsg mProjection;
+  message frmClusterNotifMsg mNotif;
+  message frmMediaMetaMsg mMedia;
+  message frmSpeechTtsStateMsg mTts;
+  message frmClusterSyncStateMsg mSync;
   message frmInfotainmentHealthMsg mHealth;
   int speed;
   int driveState;
@@ -134,6 +141,38 @@ on timer tIviBase50
   mPopup.PopupPriority = clampRange(alertLevel, 0, 7);
   mPopup.PopupActive = (alertLevel > 0) ? 1 : 0;
   output(mPopup);
+
+  mAudio.AudioFocusOwner = (alertLevel > 0) ? 1 : 0;
+  mAudio.AudioDuckingLvl = (alertLevel > 0) ? 4 : 1;
+  output(mAudio);
+
+  mVoice.VoiceAssistState = 1;
+  mVoice.WakeWordState = 1;
+  output(mVoice);
+
+  mProjection.ProjectionType = 1;
+  mProjection.ProjectionState = 1;
+  output(mProjection);
+
+  mNotif.ClusterNotifType = alertType;
+  mNotif.ClusterNotifArg = alertLevel;
+  output(mNotif);
+
+  mMedia.MediaTrackType = 1;
+  mMedia.MediaRepeatMode = 0;
+  mMedia.MediaShuffleMode = 0;
+  mMedia.MediaRemainTime = 120;
+  output(mMedia);
+
+  mTts.TtsState = 0;
+  mTts.TtsPriority = 0;
+  mTts.TtsQueueDepth = 0;
+  output(mTts);
+
+  mSync.ClusterSyncState = 1;
+  mSync.ClusterSyncError = 0;
+  mSync.ClusterSyncAge = 10;
+  output(mSync);
 
   gIviBaseTick = gIviBaseTick + 1;
   if ((gIviBaseTick % 2) == 0)
