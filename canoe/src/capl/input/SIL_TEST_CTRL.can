@@ -11,7 +11,6 @@ variables
   int gDemoRunning;
   int gCurrentScenarioId;
   int gBaseTraceSnapshotId;
-  int gPowertrainAliveCnt;
 }
 
 int clampRange(int value, int minValue, int maxValue)
@@ -252,7 +251,6 @@ on start
   gDemoRunning = 0;
   gCurrentScenarioId = 0;
   gBaseTraceSnapshotId = 0;
-  gPowertrainAliveCnt = 0;
   @Test::scenarioResult = 0;
   setTimer(tInput100, 100);
   write("[SIL_TEST_CTRL] start");
@@ -266,22 +264,14 @@ on timer tInput100
   message frmIgnitionEngineMsg mIgn;
   message frmGearStateMsg mGear;
   message frmPedalInputCanMsg mPedal;
-  message frmPowertrainGatewayMsg mPtGw;
   message frmEngineSpeedTempMsg mEngTemp;
   message frmFuelBatteryStateMsg mFuelBat;
   message frmThrottleStateMsg mThrottle;
   message frmTransmissionTempMsg mTransTemp;
-  message frmVehicleModeMsg mVehMode;
-  message frmPowerLimitMsg mPowerLimit;
-  message frmCruiseStateMsg mCruise;
-  message frmPowertrainHealthMsg mPtHealth;
   message frmEngineTorqueMsg mEngineTorque;
   message frmEngineLoadMsg mEngineLoad;
   message frmTransShiftStateMsg mShift;
   message frmThermalMgmtStateMsg mThermal;
-  message frmEnergyFlowStateMsg mEnergy;
-  message frmPowertrainCtrlAuthMsg mCtrlAuth;
-  message frmPtDiagResMsg mPtDiagRes;
   int speed;
   int driveState;
   int steeringInput;
@@ -337,32 +327,8 @@ on timer tInput100
   mPedal.BrakePedal = brakePedal;
   output(mPedal);
 
-  /* Comm_105 baseline gateway/boundary path */
-  mPtGw.RoutingPolicy = 1;
-  mPtGw.BoundaryStatus = 1;
-  output(mPtGw);
-
-  mVehMode.DriveMode = clampRange(driveMode, 0, 7);
-  mVehMode.EcoMode = (driveMode == 3) ? 1 : 0;
-  mVehMode.SportMode = (speed > 80) ? 1 : 0;
-  mVehMode.SnowMode = 0;
-  mVehMode.PowertrainState = engineState;
-  output(mVehMode);
-
-  mPowerLimit.TorqueLimit = clampRange((speed * 2), 0, 255);
-  mPowerLimit.SpeedLimit = speedLimit;
-  output(mPowerLimit);
-
-  mCruise.CruiseState = (driveState == 3) ? 1 : 0;
-  mCruise.GapLevel = 2;
-  mCruise.CruiseSetSpeed = speedLimit;
-  output(mCruise);
-
-  mPtHealth.PtAliveCnt = gPowertrainAliveCnt & 0xFF;
-  mPtHealth.PtDiagState = 0;
-  mPtHealth.PtFailCode = 0;
-  output(mPtHealth);
-  gPowertrainAliveCnt = (gPowertrainAliveCnt + 1) & 0xFF;
+  /* Comm_105 baseline gateway/boundary path
+     DOMAIN_GW_ROUTER now owns gateway-state output frames. */
 
   /* Comm_101 baseline powertrain detail path */
   mEngTemp.EngineRpm = clampRange(speed * 40, 0, 65535);
@@ -399,20 +365,6 @@ on timer tInput100
   mThermal.FanDuty = 12;
   mThermal.CoolantTarget = 88;
   output(mThermal);
-
-  mEnergy.EnergyFlowMode = (engineState > 0) ? 1 : 0;
-  mEnergy.RegenLevel = (brakePedal > 0) ? 10 : 0;
-  mEnergy.PowerBalance = 50;
-  output(mEnergy);
-
-  mCtrlAuth.CtrlAuthLevel = 3;
-  mCtrlAuth.CtrlAuthSource = 1;
-  output(mCtrlAuth);
-
-  mPtDiagRes.PtDiagRespCode = 0x62;
-  mPtDiagRes.PtDiagData0 = 0xF1;
-  mPtDiagRes.PtDiagData1 = 0x90;
-  output(mPtDiagRes);
 
   setTimer(tInput100, 100);
 }
