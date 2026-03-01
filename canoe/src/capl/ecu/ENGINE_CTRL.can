@@ -1,0 +1,23 @@
+includes
+{
+}
+
+variables
+{
+  int gIgnitionState;
+  int gEngineState;
+}
+
+on start
+{
+  gIgnitionState = 0;
+  gEngineState = 0;
+  write("[ENGINE_CTRL] start");
+}
+
+on message frmIgnitionEngineMsg
+{
+  gIgnitionState = this.IgnitionState;
+  gEngineState = this.EngineState;
+}
+

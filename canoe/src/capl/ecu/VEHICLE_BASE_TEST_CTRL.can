@@ -1,0 +1,28 @@
+includes
+{
+}
+
+variables
+{
+  int gLastBaseScenarioId;
+  int gLastBaseScenarioResult;
+}
+
+on start
+{
+  gLastBaseScenarioId = 0;
+  gLastBaseScenarioResult = 0;
+  write("[VEHICLE_BASE_TEST_CTRL] start");
+}
+
+on message frmBaseTestResultMsg
+{
+  gLastBaseScenarioId = this.BaseScenarioId;
+  gLastBaseScenarioResult = this.BaseScenarioResult;
+}
+
+on message frmTestResultMsg
+{
+  /* reserved for system-test aggregation */
+}
+

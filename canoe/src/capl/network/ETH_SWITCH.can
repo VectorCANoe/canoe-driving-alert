@@ -1,0 +1,23 @@
+includes
+{
+}
+
+variables
+{
+  msTimer tEthMonitor100;
+  int gEthHeartbeat;
+}
+
+on start
+{
+  gEthHeartbeat = 0;
+  setTimer(tEthMonitor100, 100);
+  write("[ETH_SWITCH] start");
+}
+
+on timer tEthMonitor100
+{
+  gEthHeartbeat = (gEthHeartbeat + 1) & 0xFF;
+  setTimer(tEthMonitor100, 100);
+}
+

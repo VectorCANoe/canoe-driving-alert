@@ -1,0 +1,28 @@
+includes
+{
+}
+
+variables
+{
+  int gRoutingPolicy;
+  int gBoundaryStatus;
+}
+
+on start
+{
+  gRoutingPolicy = 0;
+  gBoundaryStatus = 0;
+  write("[DOMAIN_GW_ROUTER] start");
+}
+
+on message frmPowertrainGatewayMsg
+{
+  gRoutingPolicy = this.RoutingPolicy;
+  gBoundaryStatus = this.BoundaryStatus;
+}
+
+on message frmVehicleModeMsg
+{
+  /* reserved for domain mode routing logic */
+}
+

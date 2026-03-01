@@ -1,0 +1,20 @@
+includes
+{
+}
+
+variables
+{
+  int gAccelPedal;
+}
+
+on start
+{
+  gAccelPedal = 0;
+  write("[ACCEL_CTRL] start");
+}
+
+on message frmPedalInputCanMsg
+{
+  gAccelPedal = this.AccelPedal;
+}
+

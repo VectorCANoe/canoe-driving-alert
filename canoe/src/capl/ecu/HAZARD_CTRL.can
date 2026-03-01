@@ -1,0 +1,20 @@
+includes
+{
+}
+
+variables
+{
+  int gHazardState;
+}
+
+on start
+{
+  gHazardState = 0;
+  write("[HAZARD_CTRL] start");
+}
+
+on message frmHazardControlMsg
+{
+  gHazardState = this.HazardState;
+}
+

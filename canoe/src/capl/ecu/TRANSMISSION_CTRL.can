@@ -1,0 +1,23 @@
+includes
+{
+}
+
+variables
+{
+  int gGearInput;
+  int gGearState;
+}
+
+on start
+{
+  gGearInput = 0;
+  gGearState = 0;
+  write("[TRANSMISSION_CTRL] start");
+}
+
+on message frmGearStateMsg
+{
+  gGearInput = this.GearInput;
+  gGearState = this.GearState;
+}
+

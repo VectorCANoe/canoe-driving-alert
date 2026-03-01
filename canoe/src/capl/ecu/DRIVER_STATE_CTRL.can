@@ -1,0 +1,23 @@
+includes
+{
+}
+
+variables
+{
+  int gDriverStateLevel;
+  int gDriverStateInfo;
+}
+
+on start
+{
+  gDriverStateLevel = 0;
+  gDriverStateInfo = 0;
+  write("[DRIVER_STATE_CTRL] start");
+}
+
+on message frmDriverStateMsg
+{
+  gDriverStateLevel = this.DriverStateLevel;
+  gDriverStateInfo = this.DriverStateInfo;
+}
+

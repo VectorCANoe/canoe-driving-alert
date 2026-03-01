@@ -1,0 +1,34 @@
+includes
+{
+}
+
+variables
+{
+  int gChassisAlive;
+  int gBodyAlive;
+  int gInfoAlive;
+}
+
+on start
+{
+  gChassisAlive = 0;
+  gBodyAlive = 0;
+  gInfoAlive = 0;
+  write("[DOMAIN_BOUNDARY_MGR] start");
+}
+
+on message frmChassisHealthMsg
+{
+  gChassisAlive = this.ChassisAliveCnt;
+}
+
+on message frmBodyHealthMsg
+{
+  gBodyAlive = this.BodyAliveCnt;
+}
+
+on message frmInfotainmentHealthMsg
+{
+  gInfoAlive = this.InfoAliveCnt;
+}
+

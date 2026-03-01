@@ -1,0 +1,20 @@
+includes
+{
+}
+
+variables
+{
+  int gWindowState;
+}
+
+on start
+{
+  gWindowState = 0;
+  write("[WINDOW_CTRL] start");
+}
+
+on message frmWindowControlMsg
+{
+  gWindowState = this.WindowState;
+}
+

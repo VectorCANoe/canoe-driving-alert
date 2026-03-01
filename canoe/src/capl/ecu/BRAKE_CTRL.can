@@ -1,0 +1,20 @@
+includes
+{
+}
+
+variables
+{
+  int gBrakePedal;
+}
+
+on start
+{
+  gBrakePedal = 0;
+  write("[BRAKE_CTRL] start");
+}
+
+on message frmPedalInputCanMsg
+{
+  gBrakePedal = this.BrakePedal;
+}
+

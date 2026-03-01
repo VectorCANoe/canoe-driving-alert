@@ -1,0 +1,26 @@
+includes
+{
+}
+
+variables
+{
+  int gClusterSpeed;
+  int gClusterGear;
+  int gClusterStatus;
+}
+
+on start
+{
+  gClusterSpeed = 0;
+  gClusterGear = 0;
+  gClusterStatus = 0;
+  write("[CLUSTER_BASE_CTRL] start");
+}
+
+on message frmClusterBaseStateMsg
+{
+  gClusterSpeed = this.ClusterSpeed;
+  gClusterGear = this.ClusterGear;
+  gClusterStatus = this.ClusterStatus;
+}
+

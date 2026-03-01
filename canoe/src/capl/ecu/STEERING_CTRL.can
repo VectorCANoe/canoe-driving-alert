@@ -1,0 +1,20 @@
+includes
+{
+}
+
+variables
+{
+  int gSteeringState;
+}
+
+on start
+{
+  gSteeringState = 0;
+  write("[STEERING_CTRL] start");
+}
+
+on message frmSteeringStateCanMsg
+{
+  gSteeringState = this.SteeringState;
+}
+
