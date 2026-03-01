@@ -5,12 +5,10 @@ includes
 variables
 {
   msTimer tNavCycle;
-  int gSpeedLimitNorm;
 }
 
 on start
 {
-  gSpeedLimitNorm = 30;
   setTimer(tNavCycle, 10);
   write("[NAV_CONTEXT_MGR] start");
 }
@@ -19,10 +17,21 @@ on timer tNavCycle
 {
   int roadZone;
   int navDirection;
+  int speedLimit;
   int baseZoneContext;
 
   roadZone = (int)@Infotainment::roadZone;
   navDirection = (int)@Infotainment::navDirection;
+  speedLimit = (int)@Infotainment::speedLimit;
+
+  if (speedLimit < 0 || speedLimit > 255)
+  {
+    speedLimit = 30;
+  }
+  if (speedLimit == 0)
+  {
+    speedLimit = 30;
+  }
 
   baseZoneContext = 0;
   if (roadZone == 1)
@@ -54,18 +63,7 @@ on timer tNavCycle
   }
 
   @Core::baseZoneContext = baseZoneContext;
+  @Core::speedLimitNorm = speedLimit;
 
   setTimer(tNavCycle, 10);
-}
-
-on message frmNavContextCanMsg
-{
-  int speedLimit;
-
-  speedLimit = this.gSpeedLimit;
-  if (speedLimit <= 0 || speedLimit > 255)
-  {
-    speedLimit = 30;
-  }
-  gSpeedLimitNorm = speedLimit;
 }
