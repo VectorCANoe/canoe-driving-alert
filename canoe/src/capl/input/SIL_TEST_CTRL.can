@@ -8,6 +8,7 @@ variables
   msTimer tDemoStep;
   msTimer tScenarioEval;
   msTimer tScenarioPhase2;
+  msTimer tScenarioPhase3;
   int gDemoStepIndex;
   int gDemoRunning;
   int gCurrentScenarioId;
@@ -187,6 +188,39 @@ void applyScenarioPreset(int scenarioId)
     gScenarioPhase = 1;
     setTimer(tScenarioPhase2, 400);
   }
+  else if (scenarioId == 12)
+  {
+    /* Req_006 + Req_026: duplicate guard - Phase 1: school zone overspeed active */
+    @Infotainment::roadZone = 1;
+    @Chassis::vehicleSpeed = 45;
+    @Infotainment::speedLimit = 30;
+    @V2X::alertState = 0;
+    @V2X::emergencyType = 0;
+    gScenarioPhase = 1;
+    setTimer(tScenarioPhase2, 300);
+  }
+  else if (scenarioId == 13)
+  {
+    /* Req_015: zone transition stability - Phase 1: school zone warning stable */
+    @Infotainment::roadZone = 1;
+    @Chassis::vehicleSpeed = 45;
+    @Infotainment::speedLimit = 30;
+    @Chassis::steeringInput = 1;
+    @V2X::alertState = 0;
+    @V2X::emergencyType = 0;
+    gScenarioPhase = 1;
+    setTimer(tScenarioPhase2, 300);
+  }
+  else if (scenarioId == 14)
+  {
+    /* Req_110 + Req_111 + Req_112: domain boundary health - normal driving D gear */
+    @Chassis::driveState = 3;
+    @Chassis::vehicleSpeed = 60;
+    @Infotainment::roadZone = 0;
+    @V2X::alertState = 0;
+    @V2X::emergencyType = 0;
+    gScenarioPhase = 1;
+  }
 }
 
 void scheduleScenarioEvaluation(int scenarioId)
@@ -213,6 +247,18 @@ void scheduleScenarioEvaluation(int scenarioId)
   else if (scenarioId == 11)
   {
     evalDelayMs = 800;
+  }
+  else if (scenarioId == 12)
+  {
+    evalDelayMs = 900;
+  }
+  else if (scenarioId == 13)
+  {
+    evalDelayMs = 1000;
+  }
+  else if (scenarioId == 14)
+  {
+    evalDelayMs = 700;
   }
   setTimer(tScenarioEval, evalDelayMs);
 }
@@ -294,6 +340,24 @@ void evaluateScenarioResult()
     snapshotDelta = ((int)@CoreState::arbitrationSnapshotId - gArbitrationSnapshotBaseline) & 0xFFFF;
     result = (level == 6 && type == 1 && snapshotDelta <= 3) ? 1 : 0;
   }
+  else if (gCurrentScenarioId == 12)
+  {
+    /* Req_006 + Req_026: re-triggered school zone warning still within guard window */
+    result = (level == 3 && type == 3 && duplicatePopupGuard > 0) ? 1 : 0;
+  }
+  else if (gCurrentScenarioId == 13)
+  {
+    /* Req_015: after zone flip (school->highway->school), settle correctly, <=3 arb changes */
+    snapshotDelta = ((int)@CoreState::arbitrationSnapshotId - gArbitrationSnapshotBaseline) & 0xFFFF;
+    result = (level == 3 && type == 3 && snapshotDelta <= 3) ? 1 : 0;
+  }
+  else if (gCurrentScenarioId == 14)
+  {
+    /* Req_110 + Req_111 + Req_112: all domain boundaries healthy, routing normal */
+    result = ((int)@CoreState::domainBoundaryStatus == 1 &&
+              (int)@CoreState::routingPolicy == 1 &&
+              level == 0) ? 1 : 0;
+  }
   else
   {
     result = ((int)@Test::scenarioResult == 1) ? 1 : 0;
@@ -350,6 +414,48 @@ on timer tScenarioPhase2
     gScenarioPhase = 2;
     write("[SIL_TEST_CTRL] Req_034 phase2: inject police, baseline snapshotId=%d",
           gArbitrationSnapshotBaseline);
+  }
+  else if (gCurrentScenarioId == 12)
+  {
+    /* Req_006 + Req_026: Phase 2 - clear school zone warning (speed drops below limit) */
+    @Chassis::vehicleSpeed = 20;
+    gScenarioPhase = 2;
+    setTimer(tScenarioPhase3, 100);
+    write("[SIL_TEST_CTRL] Req_006 phase2: speed=20 clear warning");
+  }
+  else if (gCurrentScenarioId == 13)
+  {
+    /* Req_015: Phase 2 - snapshot baseline + switch to highway zone (steerInput=1: no warn) */
+    gArbitrationSnapshotBaseline = (int)@CoreState::arbitrationSnapshotId;
+    @Infotainment::roadZone = 2;
+    @Chassis::vehicleSpeed = 80;
+    @Infotainment::speedLimit = 100;
+    @Chassis::steeringInput = 1;
+    gScenarioPhase = 2;
+    setTimer(tScenarioPhase3, 200);
+    write("[SIL_TEST_CTRL] Req_015 phase2: roadZone=2 baseline snapshotId=%d",
+          gArbitrationSnapshotBaseline);
+  }
+}
+
+on timer tScenarioPhase3
+{
+  if (gCurrentScenarioId == 12)
+  {
+    /* Req_006 + Req_026: Phase 3 - re-trigger school zone warning */
+    @Chassis::vehicleSpeed = 45;
+    gScenarioPhase = 3;
+    write("[SIL_TEST_CTRL] Req_006 phase3: speed=45 re-trigger warning");
+  }
+  else if (gCurrentScenarioId == 13)
+  {
+    /* Req_015: Phase 3 - return to school zone (must re-settle without flip-flop) */
+    @Infotainment::roadZone = 1;
+    @Chassis::vehicleSpeed = 45;
+    @Infotainment::speedLimit = 30;
+    @Chassis::steeringInput = 1;
+    gScenarioPhase = 3;
+    write("[SIL_TEST_CTRL] Req_015 phase3: roadZone=1 back to school zone");
   }
 }
 
@@ -504,7 +610,7 @@ on sysvar Test::testScenario
     cancelTimer(tDemoStep);
     write("[SIL_TEST_CTRL] auto demo stop");
   }
-  else if (scenarioId >= 1 && scenarioId <= 11)
+  else if (scenarioId >= 1 && scenarioId <= 14)
   {
     gDemoRunning = 0;
     cancelTimer(tDemoStep);

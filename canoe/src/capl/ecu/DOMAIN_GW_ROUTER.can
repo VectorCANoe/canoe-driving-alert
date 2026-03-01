@@ -138,6 +138,10 @@ on timer tRoute100
     gRoutingPolicy = 1;
   }
 
+  /* Req_110/111: expose domain boundary and routing state for SIL verification */
+  @CoreState::domainBoundaryStatus = gBoundaryStatus;
+  @CoreState::routingPolicy = gRoutingPolicy;
+
   mPtGw.RoutingPolicy = gRoutingPolicy;
   mPtGw.BoundaryStatus = gBoundaryStatus;
   output(mPtGw);

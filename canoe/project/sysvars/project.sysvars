@@ -53,5 +53,7 @@
     <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="ms" name="lastEmergencyRxMs" comment="Last E100 receive timestamp" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="60000" maxValuePhys="60000"/>
     <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="ms" name="duplicatePopupGuard" comment="Duplicate popup suppression timer" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="5000" maxValuePhys="5000"/>
     <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="arbitrationSnapshotId" comment="Arbitration snapshot sequence" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="65535" maxValuePhys="65535"/>
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="domainBoundaryStatus" comment="Domain boundary health: 1=all Chassis/Body/Info domains alive within 300ms" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1"/>
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="routingPolicy" comment="GW routing policy: 0=timeout 1=normal 2=emergency" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="2" maxValuePhys="2"/>
   </namespace>
 </systemvariables>
