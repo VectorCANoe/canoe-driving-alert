@@ -112,6 +112,8 @@ on timer tIviBase50
   message frmHmiPopupStateMsg mPopup;
   message frmAudioFocusMsg mAudio;
   message frmVoiceAssistStateMsg mVoice;
+  message frmMediaStateMsg mMediaState;
+  message frmCallStateMsg mCallState;
   message frmPhoneProjectionMsg mProjection;
   message frmClusterNotifMsg mNotif;
   message frmMediaMetaMsg mMedia;
@@ -149,6 +151,18 @@ on timer tIviBase50
   mVoice.VoiceAssistState = 1;
   mVoice.WakeWordState = 1;
   output(mVoice);
+
+  mMediaState.MediaSource = 1;
+  mMediaState.MediaState = 1;
+  mMediaState.MuteState = 0;
+  mMediaState.VolumeLevel = 30;
+  output(mMediaState);
+
+  mCallState.CallState = 0;
+  mCallState.MicMute = 0;
+  mCallState.SignalQuality = 10;
+  mCallState.BtDeviceCount = 1;
+  output(mCallState);
 
   mProjection.ProjectionType = 1;
   mProjection.ProjectionState = 1;

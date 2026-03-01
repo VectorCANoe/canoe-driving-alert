@@ -96,6 +96,9 @@ on timer tBodyBase100
   message frmHazardControlMsg mHazard;
   message frmWindowControlMsg mWindow;
   message frmDriverStateMsg mDriver;
+  message frmDoorStateMsg mDoorState;
+  message frmLampControlMsg mLamp;
+  message frmWiperStateMsg mWiper;
   message frmSeatBeltStateMsg mSeatBelt;
   message frmCabinAirStateMsg mCabinAir;
   message frmBodyHealthMsg mHealth;
@@ -138,6 +141,23 @@ on timer tBodyBase100
   mDriver.DriverStateLevel = driverStateLevel;
   mDriver.DriverStateInfo = driverStateLevel;
   output(mDriver);
+
+  mDoorState.DoorStateMask = 0;
+  mDoorState.DoorLockState = 1;
+  mDoorState.ChildLockState = 0;
+  mDoorState.DoorOpenWarn = 0;
+  output(mDoorState);
+
+  mLamp.HeadLampState = (hazardActive == 1) ? 2 : 1;
+  mLamp.TailLampState = 1;
+  mLamp.TurnLampState = 0;
+  mLamp.HazardLampReq = hazardActive;
+  output(mLamp);
+
+  mWiper.FrontWiperState = 0;
+  mWiper.RearWiperState = 0;
+  mWiper.WiperInterval = 0;
+  output(mWiper);
 
   mSeatBelt.DriverSeatBelt = 1;
   mSeatBelt.PassengerSeatBelt = 1;

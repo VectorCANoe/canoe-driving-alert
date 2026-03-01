@@ -56,6 +56,8 @@ on message frmSteeringCanMsg
 
 on timer tChassisBase100
 {
+  message frmWheelSpeedMsg mWheelSpd;
+  message frmYawAccelMsg mYawAccel;
   message frmBrakeStatusMsg mBrakeStatus;
   message frmAccelStatusMsg mAccelStatus;
   message frmSteeringTorqueMsg mSteerTorque;
@@ -71,16 +73,31 @@ on timer tChassisBase100
   message frmSuspensionStateMsg mSuspension;
   message frmTirePressureMsg mTire;
   message frmChassisDiagResMsg mDiagRes;
+  message frmBrakeWearMsg mBrakeWear;
   message frmRoadFrictionMsg mFriction;
   int speedNorm;
   int steeringNorm;
   int brakePressure;
   int accelRequest;
+  int yawRate;
+  int latAccel;
 
   speedNorm = clampRange((int)@Core::vehicleSpeedNorm, 0, 255);
   steeringNorm = clampRange((int)@Core::steeringInputNorm, 0, 1);
   brakePressure = (speedNorm < 5) ? 20 : 5;
   accelRequest = clampRange(speedNorm / 2, 0, 100);
+  yawRate = steeringNorm * 15;
+  latAccel = speedNorm;
+
+  mWheelSpd.WheelSpdFL = speedNorm;
+  mWheelSpd.WheelSpdFR = speedNorm;
+  mWheelSpd.WheelSpdRL = speedNorm;
+  mWheelSpd.WheelSpdRR = speedNorm;
+  output(mWheelSpd);
+
+  mYawAccel.YawRate = yawRate;
+  mYawAccel.LatAccel = latAccel;
+  output(mYawAccel);
 
   mBrakeStatus.BrakePressure = brakePressure;
   mBrakeStatus.BrakeMode = (brakePressure > 10) ? 1 : 0;
@@ -151,8 +168,12 @@ on timer tChassisBase100
   mDiagRes.ChsDiagData1 = gLastDiagDidLow;
   output(mDiagRes);
 
+  mBrakeWear.BrakePadWearLvl = 12;
+
   mFriction.RoadFrictionCoef = 80;
   output(mFriction);
+
+  output(mBrakeWear);
 
   gChassisAliveCnt = (gChassisAliveCnt + 1) & 0xFF;
 

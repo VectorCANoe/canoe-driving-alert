@@ -58,6 +58,8 @@ on message frmIviDiagReqMsg
 
 on timer tInfoExt100
 {
+  message frmNaviGuideStateMsg mGuide;
+  message frmNavigationRouteMsg mRouteBase;
   message frmMapRenderStateMsg mMap;
   message frmRouteAlertMsg mRoute;
   message frmTrafficEventMsg mTraffic;
@@ -78,6 +80,16 @@ on timer tInfoExt100
   mMap.ZoomLevel = (roadZone == 2) ? 12 : 16;
   mMap.TileLoadPercent = 95;
   output(mMap);
+
+  mGuide.GuideLaneState = (roadZone == 3) ? navDirection : 0;
+  mGuide.GuideConfidence = (roadZone == 3) ? 50 : 10;
+  output(mGuide);
+
+  mRouteBase.RouteClass = roadZone;
+  mRouteBase.GuideType = navDirection;
+  mRouteBase.RouteProgress = (zoneDistance > 100) ? 20 : 80;
+  mRouteBase.EtaMinutes = clampRange(zoneDistance / 10, 0, 255);
+  output(mRouteBase);
 
   mRoute.RouteAlertType = roadZone;
   mRoute.RouteAlertPrio = (roadZone == 1) ? 5 : 2;
