@@ -32,7 +32,7 @@ This baseline applies mentor feedback first and keeps implementation decisions p
 - `canoe/docs/operations/ETH_INTERFACE_CONTRACT.md`
 
 3. Backup policy:
-- `canoe/databases/emergency_system.dbc` is backup compatibility artifact.
+- `canoe/databases/legacy/LEGACY_emergency_system.dbc` is backup compatibility artifact.
 - It must not replace split DBC SoT in design documents.
 
 4. Ownership policy:
@@ -94,4 +94,4 @@ The following gates are mandatory before calling a build "mentor-priority compli
 - Gate report:
   - `canoe/tmp/mentor_priority_gate_report.md`
 - Optional compatibility backup:
-  - `canoe/databases/emergency_system.dbc`
+  - `canoe/databases/legacy/LEGACY_emergency_system.dbc`

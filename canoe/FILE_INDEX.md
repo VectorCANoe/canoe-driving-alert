@@ -2,32 +2,43 @@
 
 Quick index for the `canoe` folder.
 
-## 1) Most important files
+## 1) Runtime Profiles
 
-- CAN DBC: `C:\Users\이준영\CANoe-IVI-OTA\canoe\databases\emergency_system.dbc`
-- CANoe runtime config: `C:\Users\이준영\CANoe-IVI-OTA\canoe\cfg\CAN_500kBaud_1ch.cfg`
-- System variables: `C:\Users\이준영\CANoe-IVI-OTA\canoe\project\sysvars\project.sysvars`
+- Active runtime config:
+  - `C:\Users\이준영\CANoe-IVI-OTA\canoe\cfg\CAN_500kBaud_1ch_split.cfg`
+- Legacy backup config:
+  - `C:\Users\이준영\CANoe-IVI-OTA\canoe\cfg\legacy\LEGACY_CAN_500kBaud_1ch.cfg`
+- System variables:
+  - `C:\Users\이준영\CANoe-IVI-OTA\canoe\project\sysvars\project.sysvars`
 
-## 2) CAPL source
+## 2) CAN Databases
+
+- Active split DBC set:
+  - `C:\Users\이준영\CANoe-IVI-OTA\canoe\databases\chassis_can.dbc`
+  - `C:\Users\이준영\CANoe-IVI-OTA\canoe\databases\powertrain_can.dbc`
+  - `C:\Users\이준영\CANoe-IVI-OTA\canoe\databases\body_can.dbc`
+  - `C:\Users\이준영\CANoe-IVI-OTA\canoe\databases\infotainment_can.dbc`
+  - `C:\Users\이준영\CANoe-IVI-OTA\canoe\databases\test_can.dbc`
+- Legacy backup DBC:
+  - `C:\Users\이준영\CANoe-IVI-OTA\canoe\databases\legacy\LEGACY_emergency_system.dbc`
+
+## 3) CAPL Source
 
 - Input nodes: `canoe\src\capl\input\`
 - Logic nodes: `canoe\src\capl\logic\`
 - Output nodes: `canoe\src\capl\output\`
 - EMS nodes: `canoe\src\capl\ems\`
+- ECU nodes: `canoe\src\capl\ecu\`
+- Network nodes: `canoe\src\capl\network\`
 
-## 3) Documents
+## 4) Documents
 
 - Operations: `canoe\docs\operations\`
 - Architecture: `canoe\docs\architecture\`
 
-## 4) Reference and legacy
+## 5) Reference and Legacy
 
-- Legacy CAPL: `canoe\legacy\nodes\`
-- CBF nodes: `canoe\nodes\`
+- Project-local references: `canoe\reference\`
+- Repo legacy references: `reference\legacy\`
+- Legacy runtime profiles: `canoe\cfg\legacy\`, `canoe\databases\legacy\`
 
-## 5) Empty folder purpose
-
-- `canoe\project\panel\`: Panel files
-- `canoe\tests\scenarios\`: Scenario assets
-- `canoe\tests\modules\`: Test modules and scripts
-- `canoe\tools\`: Utility scripts

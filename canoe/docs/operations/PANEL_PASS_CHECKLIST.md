@@ -3,7 +3,7 @@
 이 문서는 CANoe GUI 캡처만으로 FZ_001~FZ_007 판정을 빠르게 남기기 위한 1페이지 체크리스트입니다.
 
 ## 0) 공통 준비
-- Configuration: `canoe/cfg/CAN_500kBaud_1ch.cfg`
+- Configuration: `canoe/cfg/CAN_500kBaud_1ch_split.cfg`
 - Measurement: Start
 - Active Nodes: 13개 (`SIL_TEST_CTRL` 포함)
 - Trace 창에 아래 메시지 표시:

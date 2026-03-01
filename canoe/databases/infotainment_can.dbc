@@ -29,7 +29,7 @@ NS_ :
 
 BS_:
 
-BU_: SIL_TEST_CTRL INFOTAINMENT_GW IVI_GW NAV_CONTEXT_MGR CLU_HMI_CTRL CLUSTER_BASE_CTRL Vector__XXX
+BU_: SIL_TEST_CTRL INFOTAINMENT_GW IVI_GW NAV_CONTEXT_MGR CLU_HMI_CTRL CLUSTER_BASE_CTRL DOMAIN_BOUNDARY_MGR Vector__XXX
 
 BO_ 272 frmNavContextCanMsg: 3 SIL_TEST_CTRL
  SG_ gRoadZone     : 0|2@1+ (1,0) [0|3]    "" INFOTAINMENT_GW,NAV_CONTEXT_MGR
@@ -81,9 +81,9 @@ BO_ 551 frmHmiPopupStateMsg: 1 IVI_GW
  SG_ PopupActive      : 7|1@1+ (1,0) [0|1] "" CLU_HMI_CTRL
 
 BO_ 552 frmInfotainmentHealthMsg: 2 INFOTAINMENT_GW
- SG_ InfoAliveCnt     : 0|8@1+ (1,0) [0|255] "" SIL_TEST_CTRL
- SG_ InfoDiagState    : 8|4@1+ (1,0) [0|15] "" SIL_TEST_CTRL
- SG_ InfoFailCode     : 12|4@1+ (1,0) [0|15] "" SIL_TEST_CTRL
+ SG_ InfoAliveCnt     : 0|8@1+ (1,0) [0|255] "" SIL_TEST_CTRL,DOMAIN_BOUNDARY_MGR
+ SG_ InfoDiagState    : 8|4@1+ (1,0) [0|15] "" SIL_TEST_CTRL,DOMAIN_BOUNDARY_MGR
+ SG_ InfoFailCode     : 12|4@1+ (1,0) [0|15] "" SIL_TEST_CTRL,DOMAIN_BOUNDARY_MGR
 
 BO_ 608 frmAudioFocusMsg: 1 IVI_GW
  SG_ AudioFocusOwner  : 0|3@1+ (1,0) [0|7] "" CLU_HMI_CTRL

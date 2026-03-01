@@ -5,7 +5,7 @@
 
 ## 0) 시작 전
 1. CANoe 실행
-2. `File -> Open Configuration` 에서 `canoe/cfg/CAN_500kBaud_1ch.cfg` 열기
+2. `File -> Open Configuration` 에서 `canoe/cfg/CAN_500kBaud_1ch_split.cfg` 열기
 3. 측정은 정지 상태 유지 (`F9` Off)
 
 ## 1) Panel 생성

@@ -29,7 +29,7 @@ NS_ :
 
 BS_:
 
-BU_: BODY_GW BCM_AMBIENT_CTRL HAZARD_CTRL WINDOW_CTRL DRIVER_STATE_CTRL WARN_ARB_MGR Vector__XXX
+BU_: BODY_GW BCM_AMBIENT_CTRL HAZARD_CTRL WINDOW_CTRL DRIVER_STATE_CTRL WARN_ARB_MGR DOMAIN_BOUNDARY_MGR Vector__XXX
 
 BO_ 528 frmAmbientControlMsg: 1 BODY_GW
  SG_ AmbientMode    : 0|3@1+ (1,0) [0|7] "" BCM_AMBIENT_CTRL
@@ -82,9 +82,9 @@ BO_ 536 frmCabinAirStateMsg: 2 DRIVER_STATE_CTRL
  SG_ AirQualityIndex  : 8|8@1+ (1,0) [0|255] "" BODY_GW
 
 BO_ 537 frmBodyHealthMsg: 2 BODY_GW
- SG_ BodyAliveCnt     : 0|8@1+ (1,0) [0|255] "" SIL_TEST_CTRL
- SG_ BodyDiagState    : 8|4@1+ (1,0) [0|15] "" SIL_TEST_CTRL
- SG_ BodyFailCode     : 12|4@1+ (1,0) [0|15] "" SIL_TEST_CTRL
+ SG_ BodyAliveCnt     : 0|8@1+ (1,0) [0|255] "" SIL_TEST_CTRL,DOMAIN_BOUNDARY_MGR
+ SG_ BodyDiagState    : 8|4@1+ (1,0) [0|15] "" SIL_TEST_CTRL,DOMAIN_BOUNDARY_MGR
+ SG_ BodyFailCode     : 12|4@1+ (1,0) [0|15] "" SIL_TEST_CTRL,DOMAIN_BOUNDARY_MGR
 
 BO_ 576 frmHvacStateMsg: 2 BODY_GW
  SG_ CabinSetTemp     : 0|8@1+ (1,0) [0|100] "degC" DRIVER_STATE_CTRL

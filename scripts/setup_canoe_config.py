@@ -17,9 +17,9 @@ import sys
 
 # ── 경로 설정 ──────────────────────────────────────────
 BASE    = r"C:\Users\이준영\CANoe-IVI-OTA\canoe"
-CFG     = os.path.join(BASE, r"cfg\CAN_500kBaud_1ch.cfg")
-DBC     = os.path.join(BASE, r"databases\emergency_system.dbc")
-SYSVARS = os.path.join(BASE, r"cfg\project.sysvars")
+CFG     = os.path.join(BASE, r"cfg\CAN_500kBaud_1ch_split.cfg")
+DBC     = os.path.join(BASE, r"databases\chassis_can.dbc")
+SYSVARS = os.path.join(BASE, r"project\sysvars\project.sysvars")
 NODES_DIR = os.path.join(BASE, "nodes")
 
 NODES = [

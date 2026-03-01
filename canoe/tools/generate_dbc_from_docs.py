@@ -646,7 +646,9 @@ def main() -> int:
             "(E100/E200, 0x510/0x511/0x512) are maintained in CAPL/sysvar interface specifications."
         ),
     )
-    write_text(out_dir / "emergency_system.dbc", baseline_text)
+    legacy_out_dir = out_dir / "legacy"
+    legacy_out_dir.mkdir(parents=True, exist_ok=True)
+    write_text(legacy_out_dir / "LEGACY_emergency_system.dbc", baseline_text)
 
     split_plan = {
         "emergency_system_chassis.dbc": {
@@ -695,7 +697,7 @@ def main() -> int:
     print(f"[DBC] Alias : {DOC_0304}")
     print(f"[DBC] Output: {out_dir}")
     print("[DBC] Generated files:")
-    print("  - emergency_system.dbc")
+    print("  - legacy/LEGACY_emergency_system.dbc")
     print("  - emergency_system_chassis.dbc")
     print("  - emergency_system_powertrain.dbc")
     print("  - emergency_system_body.dbc")

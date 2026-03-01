@@ -24,7 +24,7 @@ DBC_ACTIVE_FILES = [
     "infotainment_can.dbc",
     "test_can.dbc",
 ]
-DBC_BACKUP_FILE = "emergency_system.dbc"
+DBC_BACKUP_FILE = "legacy/LEGACY_emergency_system.dbc"
 ETH_CONTRACT_REL = "canoe/docs/operations/ETH_INTERFACE_CONTRACT.md"
 
 MANDATORY_MESSAGE_IDS: Dict[str, int] = {
