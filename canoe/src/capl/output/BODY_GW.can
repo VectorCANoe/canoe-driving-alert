@@ -5,9 +5,11 @@ includes
 variables
 {
   msTimer tBodyCycle;
+  msTimer tBodyBase100;
   int gLastAmbientMode;
   int gLastAmbientColor;
   int gLastAmbientPattern;
+  int gBodyAliveCnt;
 }
 
 on start
@@ -15,7 +17,9 @@ on start
   gLastAmbientMode = -1;
   gLastAmbientColor = -1;
   gLastAmbientPattern = -1;
+  gBodyAliveCnt = 0;
   setTimer(tBodyCycle, 10);
+  setTimer(tBodyBase100, 100);
   write("[BODY_GW] start");
 }
 
@@ -85,4 +89,48 @@ on timer tBodyCycle
   }
 
   setTimer(tBodyCycle, 10);
+}
+
+on timer tBodyBase100
+{
+  message frmHazardControlMsg mHazard;
+  message frmWindowControlMsg mWindow;
+  message frmDriverStateMsg mDriver;
+  message frmBodyHealthMsg mHealth;
+  int warningState;
+  int hazardActive;
+  int driverStateLevel;
+
+  warningState = (int)@Core::warningState;
+  hazardActive = ((int)@Core::selectedAlertLevel >= 6) ? 1 : 0;
+
+  if (warningState < 0)
+  {
+    warningState = 0;
+  }
+  if (warningState > 2)
+  {
+    warningState = 2;
+  }
+  driverStateLevel = warningState;
+
+  mHazard.HazardSwitch = hazardActive;
+  mHazard.HazardState = hazardActive;
+  output(mHazard);
+
+  mWindow.WindowCommand = 0;
+  mWindow.WindowState = 0;
+  output(mWindow);
+
+  mDriver.DriverStateLevel = driverStateLevel;
+  mDriver.DriverStateInfo = driverStateLevel;
+  output(mDriver);
+
+  mHealth.BodyAliveCnt = gBodyAliveCnt & 0xFF;
+  mHealth.BodyDiagState = 0;
+  mHealth.BodyFailCode = 0;
+  output(mHealth);
+  gBodyAliveCnt = (gBodyAliveCnt + 1) & 0xFF;
+
+  setTimer(tBodyBase100, 100);
 }

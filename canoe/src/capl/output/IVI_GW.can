@@ -5,13 +5,32 @@ includes
 variables
 {
   msTimer tIviCycle;
+  msTimer tIviBase50;
   int gLastWarningTextCode;
+  int gInfoAliveCnt;
+  int gIviBaseTick;
+}
+
+int clampRange(int value, int minValue, int maxValue)
+{
+  if (value < minValue)
+  {
+    return minValue;
+  }
+  if (value > maxValue)
+  {
+    return maxValue;
+  }
+  return value;
 }
 
 on start
 {
   gLastWarningTextCode = -1;
+  gInfoAliveCnt = 0;
+  gIviBaseTick = 0;
   setTimer(tIviCycle, 10);
+  setTimer(tIviBase50, 50);
   write("[IVI_GW] start");
 }
 
@@ -84,4 +103,47 @@ on timer tIviCycle
     gLastWarningTextCode = warningTextCode;
   }
   setTimer(tIviCycle, 10);
+}
+
+on timer tIviBase50
+{
+  message frmClusterBaseStateMsg mBase;
+  message frmClusterThemeMsg mTheme;
+  message frmHmiPopupStateMsg mPopup;
+  message frmInfotainmentHealthMsg mHealth;
+  int speed;
+  int driveState;
+  int alertLevel;
+  int alertType;
+
+  speed = clampRange((int)@Core::vehicleSpeedNorm, 0, 255);
+  driveState = clampRange((int)@Core::driveStateNorm, 0, 3);
+  alertLevel = clampRange((int)@Core::selectedAlertLevel, 0, 7);
+  alertType = clampRange((int)@Core::selectedAlertType, 0, 15);
+
+  mBase.ClusterSpeed = speed;
+  mBase.ClusterGear = driveState;
+  mBase.ClusterStatus = alertLevel;
+  output(mBase);
+
+  mTheme.ThemeMode = (alertLevel > 0) ? 1 : 0;
+  mTheme.ClusterBrightness = (alertLevel > 0) ? 28 : 20;
+  output(mTheme);
+
+  mPopup.PopupType = alertType;
+  mPopup.PopupPriority = clampRange(alertLevel, 0, 7);
+  mPopup.PopupActive = (alertLevel > 0) ? 1 : 0;
+  output(mPopup);
+
+  gIviBaseTick = gIviBaseTick + 1;
+  if ((gIviBaseTick % 2) == 0)
+  {
+    mHealth.InfoAliveCnt = gInfoAliveCnt & 0xFF;
+    mHealth.InfoDiagState = 0;
+    mHealth.InfoFailCode = 0;
+    output(mHealth);
+    gInfoAliveCnt = (gInfoAliveCnt + 1) & 0xFF;
+  }
+
+  setTimer(tIviBase50, 50);
 }

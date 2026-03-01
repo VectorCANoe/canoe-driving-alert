@@ -4,6 +4,8 @@ includes
 
 variables
 {
+  msTimer tChassisBase100;
+  int gChassisAliveCnt;
 }
 
 int clampRange(int value, int minValue, int maxValue)
@@ -21,6 +23,8 @@ int clampRange(int value, int minValue, int maxValue)
 
 on start
 {
+  gChassisAliveCnt = 0;
+  setTimer(tChassisBase100, 100);
   write("[CHASSIS_GW] start");
 }
 
@@ -42,4 +46,23 @@ on message frmSteeringCanMsg
 
   steering = clampRange(this.SteeringInput, 0, 1);
   @Core::steeringInputNorm = steering;
+}
+
+on timer tChassisBase100
+{
+  message frmSteeringStateCanMsg mSteerState;
+  message frmChassisHealthMsg mHealth;
+  int steeringNorm;
+
+  steeringNorm = clampRange((int)@Core::steeringInputNorm, 0, 1);
+  mSteerState.SteeringState = steeringNorm;
+  output(mSteerState);
+
+  mHealth.ChassisAliveCnt = gChassisAliveCnt & 0xFF;
+  mHealth.ChassisDiagState = 0;
+  mHealth.ChassisFailCode = 0;
+  output(mHealth);
+  gChassisAliveCnt = (gChassisAliveCnt + 1) & 0xFF;
+
+  setTimer(tChassisBase100, 100);
 }
