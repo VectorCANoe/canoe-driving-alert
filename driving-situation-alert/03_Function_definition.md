@@ -3,8 +3,8 @@
 **Document ID**: PROJ-03-FD
 **ISO 26262 Reference**: Part 4, Cl.7 (System Design)
 **ASPICE Reference**: SYS.3 (System Architectural Design)
-**Version**: 4.10
-**Date**: 2026-02-28
+**Version**: 4.11
+**Date**: 2026-03-01
 **Status**: Draft
 **Project Title**: 주행 상황 실시간 경고 시스템
 **Subtitle**: 구간 정보 및 긴급차량 접근 기반 앰비언트·클러스터 경보
@@ -21,6 +21,7 @@
 - 제출 전 현대/기아 및 OEM 기준 명칭으로 일괄 대체하되, 기능 ID/추적 ID는 유지한다.
 - 네트워크 구현은 옵션1 아키텍처를 고정 적용한다: `ETH_SWITCH + CHASSIS_GW/INFOTAINMENT_GW/BODY_GW/IVI_GW + 도메인 CAN`.
 - `WARN_ARB_MGR`의 중재는 서비스(QoS) 우선순위 중재이며, CAN 비트 레벨 arbitration과 구분해 해석한다.
+- EMS는 문서 상위 계층에서 단일 논리 단말 `EMS_ALERT`로 정의하고, 내부 구현 모듈(`EMS_POLICE_TX`, `EMS_AMB_TX`, `EMS_ALERT_RX`)은 하단 매핑표에서만 분리 관리한다.
 
 ---
 
@@ -89,14 +90,14 @@
 | Func_014 | Req_014 | BCM_AMBIENT_CTRL | 좌우 방향 구분 표시 | navDirection 기준 좌/우 패턴 분기 | 입력: navDirection / 출력: ambientPattern |
 | Func_015 | Req_015 | BCM_AMBIENT_CTRL | 구간 전환 완화 | 전환 중 점멸 튐 현상 완화 | 입력: selectedAlertLevel / 출력: ambientPattern |
 | Func_016 | Req_016 | BCM_AMBIENT_CTRL | 구간경고 종료 복귀 | 조건 해제 시 기본 구간 패턴 복귀 | 입력: timeoutClear / 출력: ambientMode |
-| Func_017 | Req_017 | EMS_POLICE_TX | 경찰 접근 경고 송신 | 경찰 긴급 ACTIVE 알림 송신 | 출력: emergencyType, emergencyDirection, eta, sourceId, alertState / ETH_EmergencyAlert |
-| Func_018 | Req_018 | EMS_AMB_TX | 구급 접근 경고 송신 | 구급 긴급 ACTIVE 알림 송신 | 출력: emergencyType, emergencyDirection, eta, sourceId, alertState / ETH_EmergencyAlert |
+| Func_017 | Req_017 | EMS_ALERT | 경찰 접근 경고 송신 | 경찰 긴급 ACTIVE 알림 송신 | 출력: emergencyType, emergencyDirection, eta, sourceId, alertState / ETH_EmergencyAlert |
+| Func_018 | Req_018 | EMS_ALERT | 구급 접근 경고 송신 | 구급 긴급 ACTIVE 알림 송신 | 출력: emergencyType, emergencyDirection, eta, sourceId, alertState / ETH_EmergencyAlert |
 | Func_019 | Req_019 | CLU_HMI_CTRL | 긴급차량 종류 표시 | 경찰/구급 타입 구분 표시 | 입력: selectedAlertType / 출력: warningTextCode |
 | Func_020 | Req_020 | CLU_HMI_CTRL | 긴급차량 방향 표시 | 접근 방향 정보 표시 | 입력: emergencyDirection / 출력: warningTextCode |
 | Func_021 | Req_021 | CLU_HMI_CTRL | 양보 유도 메시지 | 양보 요청 고정 메시지 표시 | 입력: selectedAlertType / 출력: warningTextCode |
 | Func_022 | Req_022 | WARN_ARB_MGR | 긴급경고 우선 출력 | 일반 안내보다 긴급경고 우선 적용 | 입력: emergencyContext, warningState, baseZoneContext / 출력: selectedAlertLevel, selectedAlertType |
-| Func_023 | Req_023 | EMS_ALERT_RX | 종료 신호 처리 | CLEAR 수신 시 긴급경고 종료 | 입력: alertState, emergencyType / 출력: emergencyContext |
-| Func_024 | Req_024 | EMS_ALERT_RX | 타임아웃 보호해제 | 1000ms 무갱신 시 안전 해제 | 입력: lastEmergencyRxMs / 출력: timeoutClear |
+| Func_023 | Req_023 | EMS_ALERT | 종료 신호 처리 | CLEAR 수신 시 긴급경고 종료 | 입력: alertState, emergencyType / 출력: emergencyContext |
+| Func_024 | Req_024 | EMS_ALERT | 타임아웃 보호해제 | 1000ms 무갱신 시 안전 해제 | 입력: lastEmergencyRxMs / 출력: timeoutClear |
 | Func_025 | Req_025 | WARN_ARB_MGR | 다중긴급 단일선택 | 동시 긴급 신호 중 1개 선택 | 입력: emergencyContext / 출력: selectedAlertType |
 | Func_026 | Req_026 | CLU_HMI_CTRL | 중복 팝업 억제 | 동일 긴급 이벤트 중복 팝업 억제 | 입력: selectedAlertType, duplicatePopupGuard / 출력: warningTextCode |
 | Func_027 | Req_027 | WARN_ARB_MGR | 충돌중재 개시 | 구간/긴급 동시 발생 시 중재 시작 | 입력: emergencyContext, warningState / 출력: selectedAlertLevel |
@@ -146,12 +147,20 @@
 - 옵션1 네트워크 전달 경로 고정: `입력 CAN -> 도메인 GW 정규화 -> ETH_SWITCH -> 중앙 경고코어 -> 도메인 GW -> 출력 CAN`.
 - `Func_101~Func_112`는 차량 기본 기능 확장 체인으로, 0302/0303/0304 도메인 DBC 분리 반영 단계에서 Flow/Comm/Var를 확장 연결한다.
 
+## EMS 논리 단말-내부 모듈 매핑
+
+| 논리 단말(문서 표준) | 내부 구현 모듈(코드/통신) | 역할 |
+|---|---|---|
+| EMS_ALERT | EMS_POLICE_TX | 경찰 긴급 알림 송신 |
+| EMS_ALERT | EMS_AMB_TX | 구급 긴급 알림 송신 |
+| EMS_ALERT | EMS_ALERT_RX | 긴급 알림 수신/해제/타임아웃 처리 |
+
 ## 차량 ECU 인벤토리 (03 기준 요약)
 
 | 도메인 | ECU |
 |---|---|
 | Powertrain | ENGINE_CTRL, TRANSMISSION_CTRL |
-| Chassis | ACCEL_CTRL, BRAKE_CTRL, STEERING_CTRL, EMS_POLICE_TX, EMS_AMB_TX, EMS_ALERT_RX, WARN_ARB_MGR, SIL_TEST_CTRL |
+| Chassis | ACCEL_CTRL, BRAKE_CTRL, STEERING_CTRL, EMS_ALERT, WARN_ARB_MGR, SIL_TEST_CTRL |
 | Body | BCM_AMBIENT_CTRL, HAZARD_CTRL, WINDOW_CTRL, DRIVER_STATE_CTRL |
 | Infotainment | NAV_CONTEXT_MGR, CLU_HMI_CTRL, CLUSTER_BASE_CTRL |
 | Gateway/Infra | CHASSIS_GW, INFOTAINMENT_GW, BODY_GW, IVI_GW, ETH_SWITCH, DOMAIN_GW_ROUTER, DOMAIN_BOUNDARY_MGR |
@@ -171,3 +180,4 @@
 | 4.8 | 2026-02-28 | 차량 기본 기능 확장 대응으로 `Func_101~Func_112`(시동/기어/페달/창문/비상등/도메인경계 등) 상세 표를 추가. |
 | 4.9 | 2026-02-28 | 상단 공식표에 Vehicle Baseline ECU 동작 행을 추가하고, 03 기준 차량 ECU 인벤토리 요약 표를 신설. |
 | 4.10 | 2026-02-28 | 06/07 Lean IT 체계와 정합화: 상단 `검증`의 구 IT ID를 `IT_OUT_001`, `IT_EMS_001`로 갱신하고 서비스 중재/CAN 중재 경계 문구를 작성 원칙에 추가. |
+| 4.11 | 2026-03-01 | 멘토 피드백 반영: EMS를 상위 문서에서 단일 논리 단말(`EMS_ALERT`)로 통합 표기하고, 내부 TX/RX 모듈 분리는 하단 매핑표로 분리. |

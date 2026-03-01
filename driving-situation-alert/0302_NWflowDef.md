@@ -3,8 +3,8 @@
 **Document ID**: PROJ-0302-NFD
 **ISO 26262 Reference**: Part 4, Cl.7 (System Design)
 **ASPICE Reference**: SYS.3 (System Architectural Design)
-**Version**: 3.7
-**Date**: 2026-02-28
+**Version**: 3.8
+**Date**: 2026-03-01
 **Status**: Draft
 **Project Title**: 주행 상황 실시간 경고 시스템
 **Subtitle**: 구간 정보 및 긴급차량 접근 기반 앰비언트·클러스터 경보
@@ -29,6 +29,7 @@
 - `Flow_009`, `Flow_106`, `Flow_205`는 Validation Harness 경로(검증 전용)이며 양산 서비스 플로우와 구분한다.
 - 제출 전 현대/기아 및 OEM 기준으로 설명/별칭은 정리하되, Flow/Comm/ID/signal 식별자는 SoT 기준으로 고정 유지한다.
 - Vehicle Baseline(Req_101~Req_112) 플로우(`Flow_101~Flow_106`, `Flow_201~Flow_205`)는 본 문서에서 확정 정의하고, DBC는 이 정의를 구현 대상으로 사용한다.
+- EMS는 상위 문서 레벨에서 논리 단말 `EMS_ALERT`로 표기하고, 상단 표의 `EMS_POLICE_TX/EMS_AMB_TX/EMS_ALERT_RX` 열은 내부 구현 모듈 분해 관점으로만 해석한다.
 
 ---
 
@@ -307,9 +308,9 @@
 | Flow_001 | Comm_001 | Func_001, Func_002, Func_003, Func_004, Func_006, Func_010 | Req_001, Req_002, Req_003, Req_004, Req_006, Req_010 | frmVehicleStateCanMsg(0x100), ethVehicleStateMsg(0x510) | SIL_TEST_CTRL, CHASSIS_GW | CHASSIS_GW, ADAS_WARN_CTRL | CAN + Ethernet(UDP) | 100ms | 속도/주행상태 입력 갱신 | 경고 조건 해제 또는 입력 무효 |
 | Flow_002 | Comm_002 | Func_011, Func_012 | Req_011, Req_012 | frmSteeringCanMsg(0x101), ethSteeringMsg(0x511) | SIL_TEST_CTRL, CHASSIS_GW | CHASSIS_GW, ADAS_WARN_CTRL | CAN + Ethernet(UDP) | 100ms | 조향 입력 갱신 | 조향 복귀 또는 경고 해제 |
 | Flow_003 | Comm_003 | Func_007, Func_010 | Req_007, Req_010 | frmNavContextCanMsg(0x110), ethNavContextMsg(0x512) | SIL_TEST_CTRL, INFOTAINMENT_GW | INFOTAINMENT_GW, NAV_CONTEXT_MGR, ADAS_WARN_CTRL, WARN_ARB_MGR | CAN + Ethernet(UDP) | 100ms | 구간/방향/거리/제한속도 입력 갱신 | 다음 컨텍스트 수신 시 갱신 |
-| Flow_004 | Comm_004 | Func_017 | Req_017 | ETH_EmergencyAlert(0xE100) | EMS_POLICE_TX | EMS_ALERT_RX | Ethernet(UDP) | 100ms | Police_Active=1 | alertState=Clear 또는 송신 중지 |
-| Flow_005 | Comm_005 | Func_018 | Req_018 | ETH_EmergencyAlert(0xE100) | EMS_AMB_TX | EMS_ALERT_RX | Ethernet(UDP) | 100ms | Ambulance_Active=1 | alertState=Clear 또는 송신 중지 |
-| Flow_006 | Comm_006 | Func_022, Func_023, Func_024, Func_025, Func_027, Func_028, Func_029, Func_030, Func_031, Func_032 | Req_022, Req_023, Req_024, Req_025, Req_027, Req_028, Req_029, Req_030, Req_031, Req_032 | ETH_EmergencyAlert(0xE100), ethSelectedAlertMsg(0xE200) | EMS_ALERT_RX, WARN_ARB_MGR | WARN_ARB_MGR, BODY_GW, IVI_GW | Ethernet(UDP) | Event + 50ms | EmergencyAlert 수신 또는 Zone 충돌 발생 | Clear 수신 또는 1000ms 무갱신 |
+| Flow_004 | Comm_004 | Func_017 | Req_017 | ETH_EmergencyAlert(0xE100) | EMS_ALERT(Tx:Police) | EMS_ALERT(Rx) | Ethernet(UDP) | 100ms | Police_Active=1 | alertState=Clear 또는 송신 중지 |
+| Flow_005 | Comm_005 | Func_018 | Req_018 | ETH_EmergencyAlert(0xE100) | EMS_ALERT(Tx:Ambulance) | EMS_ALERT(Rx) | Ethernet(UDP) | 100ms | Ambulance_Active=1 | alertState=Clear 또는 송신 중지 |
+| Flow_006 | Comm_006 | Func_022, Func_023, Func_024, Func_025, Func_027, Func_028, Func_029, Func_030, Func_031, Func_032 | Req_022, Req_023, Req_024, Req_025, Req_027, Req_028, Req_029, Req_030, Req_031, Req_032 | ETH_EmergencyAlert(0xE100), ethSelectedAlertMsg(0xE200) | EMS_ALERT(Rx), WARN_ARB_MGR | WARN_ARB_MGR, BODY_GW, IVI_GW | Ethernet(UDP) | Event + 50ms | EmergencyAlert 수신 또는 Zone 충돌 발생 | Clear 수신 또는 1000ms 무갱신 |
 | Flow_007 | Comm_007 | Func_008, Func_009, Func_013, Func_014, Func_015, Func_016, Func_033, Func_034, Func_035, Func_036, Func_037, Func_038, Func_039 | Req_008, Req_009, Req_013, Req_014, Req_015, Req_016, Req_033, Req_034, Req_035, Req_036, Req_037, Req_038, Req_039 | ethSelectedAlertMsg(0xE200), frmAmbientControlMsg(0x210) | WARN_ARB_MGR, BODY_GW | BODY_GW, BCM_AMBIENT_CTRL | Ethernet(UDP) + CAN | 50ms | selectedAlertLevel/selectedAlertType 수신 | timeoutClear=1 또는 기본 상태 복귀 |
 | Flow_008 | Comm_008 | Func_005, Func_019, Func_020, Func_021, Func_026, Func_040 | Req_005, Req_019, Req_020, Req_021, Req_026, Req_040 | ethSelectedAlertMsg(0xE200), frmClusterWarningMsg(0x220) | WARN_ARB_MGR, IVI_GW | IVI_GW, CLU_HMI_CTRL | Ethernet(UDP) + CAN | 50ms | selectedAlertLevel/selectedAlertType 수신 | alertState 해제 또는 문구 만료 |
 | Flow_009 | Comm_009 | Func_041, Func_042, Func_043 | Req_041, Req_042, Req_043 | frmTestResultMsg(0x230) | SIL_TEST_CTRL | SIL_TEST_CTRL(Log/Panel) | CAN | Event | 시나리오 실행 시작 | 판정 결과 기록 완료 (Validation-only) |
@@ -320,10 +321,18 @@
 
 | 단계 | 상위 Flow ID | Message(ID) | Tx Node | Rx Node | 목적 |
 |---|---|---|---|---|---|
-| Ingress | Flow_006 | ETH_EmergencyAlert(0xE100) | EMS_POLICE_TX, EMS_AMB_TX | EMS_ALERT_RX, WARN_ARB_MGR | 긴급 이벤트 수신/정규화 |
+| Ingress | Flow_006 | ETH_EmergencyAlert(0xE100) | EMS_ALERT(Tx:Police/Ambulance) | EMS_ALERT(Rx), WARN_ARB_MGR | 긴급 이벤트 수신/정규화 |
 | Egress | Flow_006 | ethSelectedAlertMsg(0xE200) | WARN_ARB_MGR | BODY_GW, IVI_GW | 중재 결과 배포 |
 
 - 주의: `Flow_006`은 긴급 수신(E100)과 중재 결과 배포(E200)를 하나의 논리 플로우로 묶은 항목이며, 감사 시에는 위 단계 표를 기준으로 해석한다.
+
+### EMS 논리 단말-내부 모듈 매핑 (감사 보강)
+
+| 논리 단말 | 내부 모듈 | 역할 |
+|---|---|---|
+| EMS_ALERT | EMS_POLICE_TX | 경찰 긴급 이벤트 송신 |
+| EMS_ALERT | EMS_AMB_TX | 구급 긴급 이벤트 송신 |
+| EMS_ALERT | EMS_ALERT_RX | 긴급 이벤트 수신/해제/타임아웃 |
 
 ### 표준명-별칭(g*) 매핑 (문서/코드 정합용)
 
@@ -348,7 +357,7 @@
 | Powertrain CAN | DOMAIN_GW_ROUTER | ENGINE_CTRL, TRANSMISSION_CTRL | `canoe/databases/powertrain_can.dbc` | 0x300~0x312 | Flow_101, Flow_105, Flow_204 |
 | Body CAN | BODY_GW | BCM_AMBIENT_CTRL, HAZARD_CTRL, WINDOW_CTRL, DRIVER_STATE_CTRL | `canoe/databases/body_can.dbc` | 0x210~0x219, 0x240~0x24D | Flow_007, Flow_103, Flow_105, Flow_202 |
 | Infotainment CAN | INFOTAINMENT_GW, IVI_GW | NAV_CONTEXT_MGR, CLU_HMI_CTRL, CLUSTER_BASE_CTRL | `canoe/databases/infotainment_can.dbc` | 0x110, 0x220~0x228, 0x260~0x26D | Flow_003, Flow_008, Flow_104, Flow_105, Flow_203, Flow_205 |
-| Ethernet UDP | ETH_SWITCH | EMS_POLICE_TX, EMS_AMB_TX, EMS_ALERT_RX, WARN_ARB_MGR, GW 집합 | `canoe/docs/operations/ETH_INTERFACE_CONTRACT.md` | 0x510/0x511/0x512/0xE100/0xE200 | Flow_004, Flow_005, Flow_006 |
+| Ethernet UDP | ETH_SWITCH | EMS_ALERT(내부: EMS_POLICE_TX/EMS_AMB_TX/EMS_ALERT_RX), WARN_ARB_MGR, GW 집합 | `canoe/docs/operations/ETH_INTERFACE_CONTRACT.md` | 0x510/0x511/0x512/0xE100/0xE200 | Flow_004, Flow_005, Flow_006 |
 
 ---
 
@@ -418,7 +427,7 @@
 |---|---|---|---|
 | CHASSIS_GW CAN->ETH 변환 실패 | CHASSIS_GW Tx watchdog | 마지막 정상값 1주기 유지 후 `WarningState` 강등, Fault 이벤트 기록 | Flow_001, Flow_002 / Comm_001, Comm_002 / Req_001, Req_011 |
 | INFOTAINMENT_GW CAN->ETH 변환 실패 | INFOTAINMENT_GW Tx watchdog | `BaseZoneContext`를 일반구간으로 복귀하고 유도 경고 해제 | Flow_003 / Comm_003 / Req_007, Req_016 |
-| EmergencyAlert 유실(1000ms 초과) | EMS_ALERT_RX timeout monitor | `timeoutClear=1` 생성 후 중재 결과 해제 전파 | Flow_006 / Comm_006 / Req_024 |
+| EmergencyAlert 유실(1000ms 초과) | EMS_ALERT(Rx) timeout monitor | `timeoutClear=1` 생성 후 중재 결과 해제 전파 | Flow_006 / Comm_006 / Req_024 |
 | BODY_GW CAN 송신 실패 | BODY_GW CAN Tx ack monitor | Ambient 출력을 안전 기본패턴으로 강등하고 재시도 3회 수행 | Flow_007 / Comm_007 / Req_033, Req_034 |
 | IVI_GW CAN 송신 실패 | IVI_GW CAN Tx ack monitor | Cluster 경고코드를 최소 메시지(양보 안내)로 축소해 1회 재송신 | Flow_008 / Comm_008 / Req_040 |
 
@@ -447,3 +456,4 @@
 | 3.5 | 2026-02-28 | 상단 공식표를 실메시지 기준(49 Message / 131 Signal)으로 확장하고, Bit no.를 범위 표기(`0~7`)로 정렬해 도메인별 통신 상세를 반영. |
 | 3.6 | 2026-02-28 | 상단 공식표를 Phase-B 확장 포함(99 Message / 242 Signal)으로 보강하고 Flow_201~205/Comm_201~205를 추가해 현업형 메시지 규모(100+) 기준에 맞춤. |
 | 3.7 | 2026-02-28 | SoT 경로를 실제 분리 DBC 파일명(`*_can.dbc`)으로 정합화하고, 도메인별 ID 범위 표기를 Phase-B 확장 범위와 일치하도록 통일. |
+| 3.8 | 2026-03-01 | 멘토 피드백 반영: EMS를 논리 단말(`EMS_ALERT`) 기준으로 Flow/도메인표에 통합 표기하고, 내부 TX/RX 모듈은 하단 보강 매핑으로 분리. |

@@ -3,8 +3,8 @@
 **Document ID**: PROJ-0301-SFA
 **ISO 26262 Reference**: Part 4, Cl.7 (System Design)
 **ASPICE Reference**: SYS.3 (System Architectural Design)
-**Version**: 3.11
-**Date**: 2026-02-28
+**Version**: 3.12
+**Date**: 2026-03-01
 **Status**: Draft
 **Project Title**: 주행 상황 실시간 경고 시스템
 **Subtitle**: 구간 정보 및 긴급차량 접근 기반 앰비언트·클러스터 경보
@@ -27,6 +27,7 @@
 - 변수명은 0304 표준 Name(`vehicleSpeed`, `roadZone`, `speedLimit`) 기준으로 작성하고, 코드 별칭(`g*`)은 구현 문서에서만 사용한다.
 - ECU 노드명은 ISO 기능 분리 원칙(센싱/판단/중재/출력/게이트웨이)을 따르고, OEM 레퍼런스는 `reference/dbc/level3_communication/reference/*.dbc`를 참고한다.
 - 제출 전 현대/기아 및 OEM 기준 명칭으로 일괄 대체하되, 추적 ID 체계는 유지한다.
+- EMS는 상위 문서 계층에서 단일 논리 단말 `EMS_ALERT`로 관리하고, 내부 구현 모듈(TX/RX)은 하단 보강표에서만 분리한다.
 
 ---
 
@@ -42,10 +43,8 @@
 | ACCEL_CTRL | 가속 페달 입력 상태 처리 | 차량 기본 동작 |
 | BRAKE_CTRL | 브레이크 페달 입력 상태 처리 | 차량 기본 동작 |
 | STEERING_CTRL | 조향 입력 상태 처리 | 차량 기본 동작 |
-| EMS_ALERT_RX | 긴급 알림 수신 상태 및 해제 상태 관리 | 수신/타임아웃 해제 처리 |
+| EMS_ALERT | 긴급 알림 송수신 상태 및 해제 상태 관리 | 송신/수신/타임아웃 통합 단말 |
 | WARN_ARB_MGR | 긴급 경고와 구간 경고 충돌 시 우선순위 중재 수행 | Emergency > Zone, Ambulance > Police |
-| EMS_POLICE_TX | 경찰 긴급차량 알림 생성 및 송신 제어 | EmergencyAlert 송신 제어 |
-| EMS_AMB_TX | 구급 긴급차량 알림 생성 및 송신 제어 | EmergencyAlert 송신 제어 |
 | SIL_TEST_CTRL | SIL 시나리오 실행 및 판정 결과 기록 | 검증 제어 가상노드(Validation-only) |
 | VEHICLE_BASE_TEST_CTRL | 차량 기본 기능 시나리오 실행 및 판정 결과 기록 | 검증 제어 가상노드(Validation-only) |
 |  |  | Network Infra |
@@ -78,9 +77,9 @@
 | Func_007 | Req_007 | NAV_CONTEXT_MGR | roadZone, navDirection, zoneDistance, speedLimit | 구간 상태 판별 및 전환 컨텍스트 갱신 | baseZoneContext, speedLimitNorm | 입력: roadZone, navDirection, zoneDistance, speedLimit |
 | Func_001~004,006,010~012 | Req_001~004,006,010~012 | ADAS_WARN_CTRL | vehicleSpeedNorm, speedLimitNorm, driveStateNorm, steeringInputNorm, baseZoneContext | 스쿨존 과속/고속 무조향 조건 판정, 경고 트리거 생성, 디바운스 | warningState | 입력: vehicleSpeedNorm, speedLimitNorm, driveStateNorm, steeringInputNorm, baseZoneContext |
 | Func_013~016 | Req_013~Req_016 | BCM_AMBIENT_CTRL | selectedAlertType, selectedAlertLevel, navDirection, timeoutClear | 유도구간 진입 전환/방향 분기/전환 완화/종료 복귀 처리 | ambientMode, ambientPattern | 입력: selectedAlertType, selectedAlertLevel, navDirection, timeoutClear |
-| Func_017 | Req_017 | EMS_POLICE_TX | testScenario | 경찰 긴급 알림 패킷 생성 및 송신 관리 | emergencyType, emergencyDirection, eta, sourceId, alertState, ETH_EmergencyAlert | 출력: ETH_EmergencyAlert(UDP) |
-| Func_018 | Req_018 | EMS_AMB_TX | testScenario | 구급 긴급 알림 패킷 생성 및 송신 관리 | emergencyType, emergencyDirection, eta, sourceId, alertState, ETH_EmergencyAlert | 출력: ETH_EmergencyAlert(UDP) |
-| Func_023,024 | Req_023,024 | EMS_ALERT_RX | alertState, emergencyType, lastEmergencyRxMs | 수신/해제 상태 관리, 1000ms 타임아웃 처리 | emergencyContext, timeoutClear | 입력: alertState, emergencyType, lastEmergencyRxMs |
+| Func_017 | Req_017 | EMS_ALERT | testScenario | 경찰 긴급 알림 패킷 생성 및 송신 관리(내부 Tx 모듈) | emergencyType, emergencyDirection, eta, sourceId, alertState, ETH_EmergencyAlert | 출력: ETH_EmergencyAlert(UDP) |
+| Func_018 | Req_018 | EMS_ALERT | testScenario | 구급 긴급 알림 패킷 생성 및 송신 관리(내부 Tx 모듈) | emergencyType, emergencyDirection, eta, sourceId, alertState, ETH_EmergencyAlert | 출력: ETH_EmergencyAlert(UDP) |
+| Func_023,024 | Req_023,024 | EMS_ALERT | alertState, emergencyType, lastEmergencyRxMs | 수신/해제 상태 관리, 1000ms 타임아웃 처리(내부 Rx 모듈) | emergencyContext, timeoutClear | 입력: alertState, emergencyType, lastEmergencyRxMs |
 | Func_022,025~032 | Req_022,025~032 | WARN_ARB_MGR | emergencyContext, warningState, baseZoneContext, emergencyType, eta, sourceId, arbitrationSnapshotId | 우선순위 중재 수행 | selectedAlertLevel, selectedAlertType | 입력: emergencyContext, warningState, baseZoneContext, emergencyType, eta, sourceId, arbitrationSnapshotId |
 | Func_008,009,033~039 | Req_008,009,033~039 | BCM_AMBIENT_CTRL | selectedAlertLevel, selectedAlertType, navDirection, baseZoneContext, timeoutClear | 경고 등급별 색상/패턴 적용, 전환 완화, 복원 | ambientMode, ambientColor, ambientPattern | 출력: ambientMode, ambientColor, ambientPattern |
 | Func_005,019~021,026,040 | Req_005,019~021,026,040 | CLU_HMI_CTRL | selectedAlertType, emergencyDirection, duplicatePopupGuard, warningTextCode | 경고 문구/종류/방향/양보 메시지 표시 | warningTextCode | 출력: warningTextCode |
@@ -118,14 +117,14 @@
 | Req_014 | Func_014 | BCM_AMBIENT_CTRL | 좌우 방향 구분 표시 |
 | Req_015 | Func_015 | BCM_AMBIENT_CTRL | 구간 전환 완화 |
 | Req_016 | Func_016 | BCM_AMBIENT_CTRL | 구간경고 종료 복귀 |
-| Req_017 | Func_017 | EMS_POLICE_TX | 경찰 접근 경고 송신 |
-| Req_018 | Func_018 | EMS_AMB_TX | 구급 접근 경고 송신 |
+| Req_017 | Func_017 | EMS_ALERT | 경찰 접근 경고 송신 |
+| Req_018 | Func_018 | EMS_ALERT | 구급 접근 경고 송신 |
 | Req_019 | Func_019 | CLU_HMI_CTRL | 긴급차량 종류 표시 |
 | Req_020 | Func_020 | CLU_HMI_CTRL | 긴급차량 방향 표시 |
 | Req_021 | Func_021 | CLU_HMI_CTRL | 양보 유도 메시지 |
 | Req_022 | Func_022 | WARN_ARB_MGR | 긴급경고 우선 출력 |
-| Req_023 | Func_023 | EMS_ALERT_RX | 종료 신호 처리 |
-| Req_024 | Func_024 | EMS_ALERT_RX | 타임아웃 보호해제 |
+| Req_023 | Func_023 | EMS_ALERT | 종료 신호 처리 |
+| Req_024 | Func_024 | EMS_ALERT | 타임아웃 보호해제 |
 | Req_025 | Func_025 | WARN_ARB_MGR | 다중긴급 단일선택 |
 | Req_026 | Func_026 | CLU_HMI_CTRL | 중복 팝업 억제 |
 | Req_027 | Func_027 | WARN_ARB_MGR | 충돌중재 개시 |
@@ -167,10 +166,10 @@
 | 스쿨존 과속 | NAV_CONTEXT_MGR -> ADAS_WARN_CTRL -> WARN_ARB_MGR -> BCM_AMBIENT_CTRL + CLU_HMI_CTRL | Func_007, Func_010, Func_027, Func_037, Func_040 |
 | 고속도로 무조향 | NAV_CONTEXT_MGR -> ADAS_WARN_CTRL -> WARN_ARB_MGR -> BCM_AMBIENT_CTRL + CLU_HMI_CTRL | Func_011, Func_012, Func_027, Func_038, Func_040 |
 | 유도구간 방향 안내 | NAV_CONTEXT_MGR -> WARN_ARB_MGR -> BCM_AMBIENT_CTRL + CLU_HMI_CTRL | Func_013, Func_014, Func_039, Func_040 |
-| 경찰 긴급차량 접근 | EMS_POLICE_TX -> EMS_ALERT_RX -> WARN_ARB_MGR -> BCM_AMBIENT_CTRL + CLU_HMI_CTRL | Func_017, Func_023, Func_022, Func_035, Func_019 |
-| 구급 긴급차량 접근 | EMS_AMB_TX -> EMS_ALERT_RX -> WARN_ARB_MGR -> BCM_AMBIENT_CTRL + CLU_HMI_CTRL | Func_018, Func_023, Func_022, Func_035, Func_019 |
-| 경찰+구급 동시 충돌 | EMS_POLICE_TX + EMS_AMB_TX -> EMS_ALERT_RX -> WARN_ARB_MGR(우선순위/동률처리) -> 출력 노드 | Func_025~Func_031 |
-| 긴급 해제 후 복귀 | EMS_ALERT_RX(해제/타임아웃) -> WARN_ARB_MGR -> BCM_AMBIENT_CTRL/CLU_HMI_CTRL | Func_024, Func_033, Func_034 |
+| 경찰 긴급차량 접근 | EMS_ALERT(Police Tx) -> EMS_ALERT(Rx) -> WARN_ARB_MGR -> BCM_AMBIENT_CTRL + CLU_HMI_CTRL | Func_017, Func_023, Func_022, Func_035, Func_019 |
+| 구급 긴급차량 접근 | EMS_ALERT(Amb Tx) -> EMS_ALERT(Rx) -> WARN_ARB_MGR -> BCM_AMBIENT_CTRL + CLU_HMI_CTRL | Func_018, Func_023, Func_022, Func_035, Func_019 |
+| 경찰+구급 동시 충돌 | EMS_ALERT(Police Tx + Amb Tx) -> EMS_ALERT(Rx) -> WARN_ARB_MGR(우선순위/동률처리) -> 출력 노드 | Func_025~Func_031 |
+| 긴급 해제 후 복귀 | EMS_ALERT(Rx 해제/타임아웃) -> WARN_ARB_MGR -> BCM_AMBIENT_CTRL/CLU_HMI_CTRL | Func_024, Func_033, Func_034 |
 
 ---
 
@@ -180,7 +179,7 @@
 |---|---|
 | Chassis 상태 입력 | SIL_TEST_CTRL -> Chassis CAN -> CHASSIS_GW -> ETH_SWITCH -> ADAS_WARN_CTRL |
 | Nav 구간 입력 | SIL_TEST_CTRL -> Infotainment CAN(roadZone/navDirection/zoneDistance/speedLimit) -> INFOTAINMENT_GW -> ETH_SWITCH -> NAV_CONTEXT_MGR/WARN_ARB_MGR |
-| 긴급 신호 처리 | EMS_POLICE_TX/EMS_AMB_TX -> ETH_SWITCH -> EMS_ALERT_RX -> WARN_ARB_MGR |
+| 긴급 신호 처리 | EMS_ALERT(Tx) -> ETH_SWITCH -> EMS_ALERT(Rx) -> WARN_ARB_MGR |
 | Ambient 출력 | WARN_ARB_MGR -> ETH_SWITCH -> BODY_GW -> Body CAN -> BCM_AMBIENT_CTRL |
 | Cluster 출력 | WARN_ARB_MGR -> ETH_SWITCH -> IVI_GW -> Infotainment CAN -> CLU_HMI_CTRL |
 
@@ -204,10 +203,18 @@
 | Gateway | `*_GW` (도메인 경계 변환 역할) | CHASSIS_GW, INFOTAINMENT_GW, BODY_GW, IVI_GW |
 | Controller | `*_CTRL` (기능 판단/제어 역할) | ADAS_WARN_CTRL, BCM_AMBIENT_CTRL, CLU_HMI_CTRL |
 | Manager | `*_MGR` (중재/상태 관리 역할) | NAV_CONTEXT_MGR, WARN_ARB_MGR |
-| Emergency Tx/Rx | `EMS_*_TX`, `EMS_*_RX` (긴급 송수신 역할) | EMS_POLICE_TX, EMS_AMB_TX, EMS_ALERT_RX |
+| Emergency Terminal | `EMS_ALERT` (논리 단말), 내부 모듈은 `EMS_*_TX/RX`로 분리 | EMS_ALERT (internal: EMS_POLICE_TX, EMS_AMB_TX, EMS_ALERT_RX) |
 | Test/SIL | `SIL_*` (검증 제어 역할) | SIL_TEST_CTRL |
 
-- 적용 원칙: 문서/코드/DBC에서 노드명은 동일 식별자를 유지하고, 역할 구분은 접미사(`GW/CTRL/MGR/TX/RX`)로 고정한다.
+- 적용 원칙: 상위 문서(03/0301/0302/0303/0304)는 `EMS_ALERT` 논리 식별자를 기본으로 사용하고, 코드/DBC 구현 모듈 표기는 하단 보강표에서만 `EMS_*_TX/RX`로 표기한다.
+
+### EMS 내부 모듈 매핑(감사 보강)
+
+| 논리 노드 | 내부 모듈 | 역할 |
+|---|---|---|
+| EMS_ALERT | EMS_POLICE_TX | 경찰 긴급 이벤트 송신 |
+| EMS_ALERT | EMS_AMB_TX | 구급 긴급 이벤트 송신 |
+| EMS_ALERT | EMS_ALERT_RX | 긴급 이벤트 수신/해제/타임아웃 처리 |
 
 ---
 
@@ -228,3 +235,4 @@
 | 3.9 | 2026-02-28 | ISO/OEM 정합을 위한 ECU 명명 기준 섹션을 추가하고 노드 접미사 규칙(GW/CTRL/MGR/TX/RX)을 명문화. |
 | 3.10 | 2026-02-28 | 차량 기본 기능 확장 대응으로 기본 차량 ECU 노드와 Req_101~Req_112 / Func_101~Func_112 매핑을 추가. |
 | 3.11 | 2026-02-28 | 03 문서와의 노드 정합을 위해 `VEHICLE_BASE_TEST_CTRL`, `DOMAIN_GW_ROUTER`, `DOMAIN_BOUNDARY_MGR`를 상단 공식 노드 표에 추가. |
+| 3.12 | 2026-03-01 | 멘토 피드백 반영: EMS 노드를 단일 논리 단말(`EMS_ALERT`)로 통합 표기하고, 내부 TX/RX 모듈은 하단 감사 보강표로 분리. |
