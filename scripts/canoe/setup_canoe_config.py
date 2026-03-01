@@ -7,7 +7,7 @@ CANoe Simulation Setup 자동 구성 스크립트
   - 측정(Measurement)이 중지된 상태여야 함
 
 실행:
-  python scripts/setup_canoe_config.py
+  python scripts/canoe/setup_canoe_config.py
 """
 
 import win32com.client
