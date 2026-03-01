@@ -15,7 +15,15 @@ TEMPLATE_PATH = TMP_ROOT / "templates" / "Doc_Code_Sync_Report_Template.md"
 
 
 def read_text(path: Path) -> str:
-    return path.read_text(encoding="utf-8")
+    # Some CANoe text artifacts (.cfg/.dbc) can be saved with legacy Windows encodings.
+    # Gate parsing uses mostly ASCII tokens, so decode robustly instead of hard-failing.
+    raw = path.read_bytes()
+    for enc in ("utf-8", "utf-8-sig", "cp949", "cp1252", "latin-1"):
+        try:
+            return raw.decode(enc)
+        except UnicodeDecodeError:
+            continue
+    return raw.decode("utf-8", errors="ignore")
 
 
 def ids(text: str, prefix: str) -> set[str]:
@@ -148,6 +156,9 @@ def main() -> int:
     for i, line in enumerate(cfg_lines, start=1):
         # Windows absolute path in CFG is environment-specific and should not be committed.
         if re.search(r"[A-Za-z]:\\", line):
+            # CANoe GUI may keep template hint path from Vector installation.
+            if r"C:\Users\Public" in line or r"C:\Public" in line:
+                continue
             cfg_abs_path_hits.append((i, line.strip()))
     # Common mojibake artifacts often seen when Windows user profile path is encoded badly.
     cfg_mojibake_hits = []
