@@ -16,6 +16,7 @@ void updateWarningState()
   int steeringInput;
   int speedLimit;
   int baseZoneContext;
+  int emergencyContext;
   int warningState;
   dword nowMs;
 
@@ -24,6 +25,11 @@ void updateWarningState()
   steeringInput = (int)@Core::steeringInputNorm;
   speedLimit = (int)@Core::speedLimitNorm;
   baseZoneContext = (int)@Core::baseZoneContext;
+  emergencyContext = (int)@Core::emergencyContext;
+  if (emergencyContext < 0 || emergencyContext > 2)
+  {
+    emergencyContext = 0;
+  }
   if (speed < 0)
   {
     speed = 0;
@@ -70,12 +76,20 @@ void updateWarningState()
     }
     else
     {
-      gHighwayNoSteerStartMs = 0;
+      /* QoS timer freeze: do not reset highway timer during active emergency (Req_033).
+         Prevents steeringInput glitches during emergency from invalidating the 10s count. */
+      if (emergencyContext == 0)
+      {
+        gHighwayNoSteerStartMs = 0;
+      }
     }
   }
   else
   {
-    gHighwayNoSteerStartMs = 0;
+    if (emergencyContext == 0)
+    {
+      gHighwayNoSteerStartMs = 0;
+    }
   }
 
   if (warningState != gLastWarningState)

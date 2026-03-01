@@ -7,6 +7,10 @@ variables
   msTimer tArbiter50;
   int gLastAlertLevel;
   int gLastAlertType;
+  int gPrevEmergencyContext;
+  int gPreEmergencyAlertLevel;
+  int gPreEmergencyAlertType;
+  int gPreEmergencySnapshotValid;
 }
 
 void runArbiter()
@@ -14,6 +18,8 @@ void runArbiter()
   int emergencyContext;
   int warningState;
   int baseZoneContext;
+  int baseAlertLevel;
+  int baseAlertType;
   int selectedAlertLevel;
   int selectedAlertType;
 
@@ -32,56 +38,89 @@ void runArbiter()
   {
     baseZoneContext = 0;
   }
+  baseAlertLevel = 0;
+  baseAlertType = 0;
   selectedAlertLevel = 0;
   selectedAlertType = 0;
 
-  if (emergencyContext == 2)
+  if (baseZoneContext == 3)
   {
-    selectedAlertLevel = 7;
-    selectedAlertType = 2;
-  }
-  else if (emergencyContext == 1)
-  {
-    selectedAlertLevel = 6;
-    selectedAlertType = 1;
-  }
-  else if (baseZoneContext == 3)
-  {
-    selectedAlertLevel = 2;
-    selectedAlertType = 5;
+    baseAlertLevel = 2;
+    baseAlertType = 5;
   }
   else if (baseZoneContext == 4)
   {
-    selectedAlertLevel = 2;
-    selectedAlertType = 6;
+    baseAlertLevel = 2;
+    baseAlertType = 6;
   }
   else if (warningState > 0)
   {
     if (baseZoneContext == 1)
     {
-      selectedAlertLevel = 3;
-      selectedAlertType = 3;
+      baseAlertLevel = 3;
+      baseAlertType = 3;
     }
     else if (baseZoneContext == 2)
     {
-      selectedAlertLevel = 2;
-      selectedAlertType = 4;
+      baseAlertLevel = 2;
+      baseAlertType = 4;
     }
     else if (baseZoneContext == 3)
     {
-      selectedAlertLevel = 2;
-      selectedAlertType = 5;
+      baseAlertLevel = 2;
+      baseAlertType = 5;
     }
     else if (baseZoneContext == 4)
     {
-      selectedAlertLevel = 2;
-      selectedAlertType = 6;
+      baseAlertLevel = 2;
+      baseAlertType = 6;
     }
     else
     {
-      selectedAlertLevel = 1;
-      selectedAlertType = 1;
+      baseAlertLevel = 1;
+      baseAlertType = 1;
     }
+  }
+
+  /* QoS preemption entry: snapshot zone state at moment emergency takes over (Req_033) */
+  if (emergencyContext > 0 && gPrevEmergencyContext == 0)
+  {
+    gPreEmergencyAlertLevel = baseAlertLevel;
+    gPreEmergencyAlertType = baseAlertType;
+    gPreEmergencySnapshotValid = 1;
+    write("[WARN_ARB_MGR] QoS preempt: zone lvl=%d type=%d -> emergency=%d",
+          gPreEmergencyAlertLevel, gPreEmergencyAlertType, emergencyContext);
+  }
+
+  if (emergencyContext == 2)
+  {
+    /* QoS 4: Ambulance (highest) */
+    selectedAlertLevel = 7;
+    selectedAlertType = 2;
+  }
+  else if (emergencyContext == 1)
+  {
+    /* QoS 3: Police */
+    selectedAlertLevel = 6;
+    selectedAlertType = 1;
+  }
+  else if (gPrevEmergencyContext > 0)
+  {
+    /* QoS recovery: emergency just ended.
+       Use current baseAlertLevel (fresh re-evaluation) to ensure safety conditions
+       are up-to-date, not stale. Snapshot is kept for audit log only (Req_033). */
+    selectedAlertLevel = baseAlertLevel;
+    selectedAlertType = baseAlertType;
+    write("[WARN_ARB_MGR] QoS recover: zone lvl=%d type=%d (snapshot was lvl=%d type=%d)",
+          selectedAlertLevel, selectedAlertType,
+          gPreEmergencyAlertLevel, gPreEmergencyAlertType);
+    gPreEmergencySnapshotValid = 0;
+  }
+  else
+  {
+    /* QoS 2/1: normal zone or idle */
+    selectedAlertLevel = baseAlertLevel;
+    selectedAlertType = baseAlertType;
   }
 
   @Core::selectedAlertLevel = selectedAlertLevel;
@@ -92,12 +131,17 @@ void runArbiter()
     gLastAlertLevel = selectedAlertLevel;
     gLastAlertType = selectedAlertType;
   }
+  gPrevEmergencyContext = emergencyContext;
 }
 
 on start
 {
   gLastAlertLevel = -1;
   gLastAlertType = -1;
+  gPrevEmergencyContext = 0;
+  gPreEmergencyAlertLevel = 0;
+  gPreEmergencyAlertType = 0;
+  gPreEmergencySnapshotValid = 0;
   setTimer(tArbiter50, 50);
   write("[WARN_ARB_MGR] start");
 }
