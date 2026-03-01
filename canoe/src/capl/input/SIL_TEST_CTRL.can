@@ -234,7 +234,7 @@ void scheduleScenarioEvaluation(int scenarioId)
   }
   else if (scenarioId == 6)
   {
-    evalDelayMs = 1300;
+    evalDelayMs = 1500; /* Req_024: ensure 200ms timeoutClear pulse has fully expired before eval */
   }
   else if (scenarioId == 7 || scenarioId == 8)
   {
