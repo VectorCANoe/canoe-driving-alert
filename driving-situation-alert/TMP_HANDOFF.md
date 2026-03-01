@@ -48,19 +48,28 @@
 - Timeout clear: 1000 ms
 
 ## 6) Current Status
-- 00_VModel_Mapping.md: active and updated
-- 00b_Project_Scope.md: active and updated
-- 01_Requirements.md: active, Version 5.4
-- 02_Concept_design.md: active
-- 03_Function_definition.md: active
-- 0301~0304: next refinement target
+- 00_VModel_Mapping.md: Version 4.3 (Released)
+- 00a_Audit_Readiness_Checklist.md: Version 1.3 (Draft)
+- 00b_Project_Scope.md: Version 2.4 (Released)
+- 01_Requirements.md: Version 5.11 (Draft)
+- 02_Concept_design.md: Version 2.4 (In Progress, figure build)
+- 03_Function_definition.md: Version 4.10 (Draft)
+- 0301_SysFuncAnalysis.md: Version 3.11 (Draft)
+- 0302_NWflowDef.md: Version 3.6 (Draft)
+- 0303_Communication_Specification.md: Version 3.7 (Draft, DLC synced to SoT)
+- 0304_System_Variables.md: Version 2.9 (Draft)
+- 04_SW_Implementation.md: Version 2.8 (Draft)
+- 05_Unit_Test.md: Version 2.7 (Draft)
+- 06_Integration_Test.md: Version 4.8 (Draft)
+- 07_System_Test.md: Version 5.8 (Draft)
+- Traceability audit status: `Req -> Func -> Flow -> Comm -> Var -> UT/IT/ST` coverage aligned for active Req set (`Req_001~043`, `Req_101~112`)
 
 ## 7) Immediate Next Steps
-1. Refine 0301 with Vector table style and current node names.
-2. Refine 0302 with Flow ID, Tx/Rx, period, active/clear conditions.
-3. Refine 0303 with Comm ID and testable signal specs.
-4. Refine 0304 with Var ID, type, init, owner, and trace links.
-5. Finalize 07 with strict Req 1:1 system-test mapping.
+1. Finalize `02_Concept_design.md` with fixed final figures (architecture + network flow).
+2. Populate execution evidence in `05/06/07` (`Pass/Fail`, owner, date, trace/log refs).
+3. Keep SoT sync rule active: domain CAN DBC (`*_can.dbc`) + Ethernet contract (`ETH_INTERFACE_CONTRACT.md`) -> `0302/0303/0304`.
+4. Continue CANoe implementation/evidence loop on 04 and link UT/IT/ST real logs.
+5. Remove this temporary handoff after stabilization and switch to permanent project index.
 
 ## 8) Do Not Do
 - Do not change file encoding away from UTF-8.
