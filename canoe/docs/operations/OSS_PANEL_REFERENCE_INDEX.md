@@ -26,16 +26,23 @@
 - `qdashboard_ref` <- `https://github.com/IndeemaSoftware/QDashBoard.git`
 - `car_hmi_dashboard_ui_ref` <- `https://github.com/cppqtdev/Car-HMI-Dashboard-UI.git`
 - `car_speedometer_ref` <- `https://github.com/cppqtdev/Car-Speedometer.git`
+- `coupled_sim_unity_ref` <- `https://github.com/bazilinskyy/coupled-sim.git`
+- `unity_speedometer_ref` <- `https://github.com/TheDeveloper10/Unity-Speedometer.git`
+- `js_vehicle_physics_ref` <- `https://github.com/Jermesa-Studio/JS_Vehicle_Physics_Controller.git`
 
 ## Quick Facts
 - `*.xvp` count in `oss_panels`: `0`
-- Image assets (`png/bmp/jpg/svg/gif`) in `oss_panels`: `760`
+- Image assets (`png/bmp/jpg/svg/gif`) in `oss_panels`: `2314`
 
 ## Recommended Priority
 - High-fidelity macro scene reference:
   - `headunit_desktop_ref` (largest QML/UI set)
   - `genivi_vehicle_sim_ref` (vehicle/world simulator assets)
   - `qdashboard_ref` (balanced dashboard architecture)
+- Unity-ready external renderer reference:
+  - `coupled_sim_unity_ref` (Unity project, scenes + scripts)
+  - `js_vehicle_physics_ref` (Unity vehicle stack, large script set)
+  - `unity_speedometer_ref` (small gauge-focused sample)
 - Clean core cluster/gauge reference:
   - `car_speedometer_ref`
   - `car_hmi_dashboard_ui_ref`

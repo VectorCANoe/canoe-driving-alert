@@ -1,0 +1,131 @@
+using System;
+using System.Net;
+using System.Net.Sockets;
+using System.Text;
+using UnityEngine;
+
+[Serializable]
+public class UiRenderState
+{
+    public int renderMode;
+    public int renderColor;
+    public int renderPattern;
+    public int renderTextCode;
+    public int renderDirection;
+    public int roadZoneColorCode;
+    public int roadFlowDirection;
+    public int vehicleObjectPos;
+    public int emsBlinkPhase;
+    public int ambientPulsePhase;
+    public int icFlowPhase;
+    public int activeAlertType;
+}
+
+[Serializable]
+public class UiRenderPacket
+{
+    public string schema;
+    public int seq;
+    public long tsMs;
+    public UiRenderState uiRender;
+}
+
+public class UdpUiRenderReceiver : MonoBehaviour
+{
+    [Header("UDP")]
+    public int listenPort = 7400;
+    public bool logPackets = false;
+
+    [Header("Latest Value (Read-Only in Inspector)")]
+    public int lastSeq = -1;
+    public long lastTsMs = 0;
+    public UiRenderState current = new UiRenderState();
+    public bool hasValidPacket = false;
+
+    public event Action<UiRenderPacket> PacketUpdated;
+
+    private UdpClient _client;
+    private IPEndPoint _anyEndpoint;
+    private readonly object _lockObj = new object();
+    private string _pendingJson;
+
+    private void Start()
+    {
+        _client = new UdpClient(listenPort);
+        _anyEndpoint = new IPEndPoint(IPAddress.Any, 0);
+        _client.BeginReceive(OnReceive, null);
+        Debug.Log($"[UdpUiRenderReceiver] listening on {listenPort}");
+    }
+
+    private void OnReceive(IAsyncResult ar)
+    {
+        try
+        {
+            byte[] bytes = _client.EndReceive(ar, ref _anyEndpoint);
+            string json = Encoding.UTF8.GetString(bytes);
+            lock (_lockObj)
+            {
+                _pendingJson = json;
+            }
+        }
+        catch (Exception ex)
+        {
+            Debug.LogWarning($"[UdpUiRenderReceiver] receive error: {ex.Message}");
+        }
+        finally
+        {
+            if (_client != null)
+            {
+                _client.BeginReceive(OnReceive, null);
+            }
+        }
+    }
+
+    private void Update()
+    {
+        string json = null;
+        lock (_lockObj)
+        {
+            if (!string.IsNullOrEmpty(_pendingJson))
+            {
+                json = _pendingJson;
+                _pendingJson = null;
+            }
+        }
+
+        if (string.IsNullOrEmpty(json))
+        {
+            return;
+        }
+
+        UiRenderPacket packet = JsonUtility.FromJson<UiRenderPacket>(json);
+        if (packet == null || packet.uiRender == null)
+        {
+            return;
+        }
+
+        lastSeq = packet.seq;
+        lastTsMs = packet.tsMs;
+        current = packet.uiRender;
+        hasValidPacket = true;
+
+        if (logPackets)
+        {
+            Debug.Log(
+                $"[UdpUiRenderReceiver] seq={lastSeq} mode={current.renderMode} " +
+                $"color={current.renderColor} zone={current.roadZoneColorCode} pos={current.vehicleObjectPos}"
+            );
+        }
+
+        PacketUpdated?.Invoke(packet);
+    }
+
+    private void OnDestroy()
+    {
+        if (_client != null)
+        {
+            _client.Close();
+            _client = null;
+        }
+    }
+}

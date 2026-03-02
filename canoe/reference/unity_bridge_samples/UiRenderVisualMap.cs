@@ -1,0 +1,57 @@
+using UnityEngine;
+
+public static class UiRenderVisualMap
+{
+    public static Color ZoneColor(int roadZoneColorCode)
+    {
+        switch (roadZoneColorCode)
+        {
+            case 1: return new Color(0.95f, 0.78f, 0.16f, 1f); // School
+            case 2: return new Color(0.20f, 0.62f, 0.95f, 1f); // Highway
+            case 3: return new Color(0.22f, 0.86f, 0.68f, 1f); // IC/Guide
+            default: return new Color(0.65f, 0.67f, 0.70f, 1f); // Normal
+        }
+    }
+
+    public static Color AmbientColor(int renderColor, int ambientPulsePhase)
+    {
+        Color baseColor;
+        switch (renderColor)
+        {
+            case 1: baseColor = new Color(0.20f, 0.43f, 0.94f, 1f); break; // Police blue
+            case 2: baseColor = new Color(0.93f, 0.16f, 0.12f, 1f); break; // Emergency red
+            case 3: baseColor = new Color(0.98f, 0.46f, 0.08f, 1f); break; // Orange pulse
+            default: baseColor = new Color(0.20f, 0.82f, 0.72f, 1f); break; // Default cyan-green
+        }
+
+        float pulse = 0.55f + 0.15f * Mathf.Clamp(ambientPulsePhase, 0, 3);
+        return new Color(baseColor.r * pulse, baseColor.g * pulse, baseColor.b * pulse, 1f);
+    }
+
+    public static void EmergencyBlink(
+        int activeAlertType,
+        int emsBlinkPhase,
+        out Color leftColor,
+        out Color rightColor)
+    {
+        bool phaseOn = emsBlinkPhase != 0;
+
+        // 1=Police (RED/BLUE), 2=Ambulance (RED/WHITE)
+        if (activeAlertType == 1)
+        {
+            leftColor = phaseOn ? Color.red : Color.blue;
+            rightColor = phaseOn ? Color.blue : Color.red;
+            return;
+        }
+
+        if (activeAlertType == 2)
+        {
+            leftColor = phaseOn ? Color.red : Color.white;
+            rightColor = phaseOn ? Color.white : Color.red;
+            return;
+        }
+
+        leftColor = new Color(0.12f, 0.12f, 0.12f, 1f);
+        rightColor = new Color(0.12f, 0.12f, 0.12f, 1f);
+    }
+}
