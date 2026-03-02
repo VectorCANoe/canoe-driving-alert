@@ -11,9 +11,6 @@ variables
   int gDriveMode;
   int gSpeedNorm;
   int gSpeedLimitNorm;
-  int gChassisRxAgeMs;
-  int gBodyRxAgeMs;
-  int gInfoRxAgeMs;
   int gPtAliveCnt;
   int gDiagPending;
   int gLastDiagSid;
@@ -42,9 +39,6 @@ on start
   gDriveMode = 0;
   gSpeedNorm = 0;
   gSpeedLimitNorm = 30;
-  gChassisRxAgeMs = 10000;
-  gBodyRxAgeMs = 10000;
-  gInfoRxAgeMs = 10000;
   gPtAliveCnt = 0;
   gDiagPending = 0;
   gLastDiagSid = 0;
@@ -78,21 +72,6 @@ on message frmGearStateMsg
   gDriveMode = clampRange(this.GearState, 0, 7);
 }
 
-on message frmChassisHealthMsg
-{
-  gChassisRxAgeMs = 0;
-}
-
-on message frmBodyHealthMsg
-{
-  gBodyRxAgeMs = 0;
-}
-
-on message frmInfotainmentHealthMsg
-{
-  gInfoRxAgeMs = 0;
-}
-
 on message frmPtDiagReqMsg
 {
   gLastDiagSid = clampRange(this.PtDiagServiceId, 0, 255);
@@ -120,10 +99,8 @@ on timer tRoute100
   selectedAlertLevel = clampRange((int)@Core::selectedAlertLevel, 0, 7);
   timeoutClear = clampRange((int)@Core::timeoutClear, 0, 1);
 
-  gChassisRxAgeMs = clampRange(gChassisRxAgeMs + 100, 0, 60000);
-  gBodyRxAgeMs = clampRange(gBodyRxAgeMs + 100, 0, 60000);
-  gInfoRxAgeMs = clampRange(gInfoRxAgeMs + 100, 0, 60000);
-  gBoundaryStatus = ((gChassisRxAgeMs <= 300) && (gBodyRxAgeMs <= 300) && (gInfoRxAgeMs <= 300)) ? 1 : 0;
+  /* DOMAIN_BOUNDARY_MGR monitors cross-domain health and writes domainBoundaryStatus */
+  gBoundaryStatus = clampRange((int)@CoreState::domainBoundaryStatus, 0, 1);
 
   if (timeoutClear == 1)
   {
