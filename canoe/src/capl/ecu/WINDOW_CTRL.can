@@ -4,17 +4,62 @@ includes
 
 variables
 {
+  msTimer tWindowCycle;
+  int gWindowCommand;
   int gWindowState;
+  int gDoorLockState;
+  int gChildLockState;
+  int gLastWindowState;
 }
 
 on start
 {
-  gWindowState = 0;
+  gWindowCommand  = 0;
+  gWindowState    = 0;
+  gDoorLockState  = 0;
+  gChildLockState = 0;
+  gLastWindowState = -1;
+  setTimer(tWindowCycle, 100);
   write("[WINDOW_CTRL] start");
 }
 
 on message frmWindowControlMsg
 {
-  gWindowState = this.WindowState;
+  gWindowCommand = this.WindowCommand;
+  gWindowState   = this.WindowState;
 }
 
+on message frmDoorStateMsg
+{
+  gDoorLockState  = this.DoorLockState;
+  gChildLockState = this.ChildLockState;
+}
+
+on timer tWindowCycle
+{
+  message frmDoorControlMsg mDoor;
+  int doorCmd;
+  int childLockCmd;
+
+  /* DoorControlCmd: 0=None 1=LockAll 2=UnlockAll 3=UnlockDriver
+     Mirror vehicle lock state from received door lock state */
+  if (gDoorLockState == 1)       doorCmd = 1;
+  else if (gDoorLockState == 2)  doorCmd = 2;
+  else                           doorCmd = 0;
+
+  /* Child lock follows received ChildLockState */
+  childLockCmd = gChildLockState & 0x1;
+
+  mDoor.DoorControlCmd = doorCmd & 0x7;
+  mDoor.ChildLockCmd   = childLockCmd;
+  output(mDoor);
+
+  if (gWindowState != gLastWindowState)
+  {
+    write("[WINDOW_CTRL] window_cmd=%d state=%d lock=%d",
+          gWindowCommand, gWindowState, gDoorLockState);
+    gLastWindowState = gWindowState;
+  }
+
+  setTimer(tWindowCycle, 100);
+}

@@ -3,7 +3,7 @@
 **Document ID**: PROJ-05-UT
 **ISO 26262 Reference**: Part 6, Cl.9 (Software Unit Verification)
 **ASPICE Reference**: SWE.4 (Software Unit Verification)
-**Version**: 2.10
+**Version**: 2.13
 **Date**: 2026-03-02
 **Status**: Draft
 **Project Title**: 주행 상황 실시간 경고 시스템
@@ -26,6 +26,7 @@
 - 임시 주석(실행 제약): 현재 CANoe.CAN 라이선스 환경에서는 SIL 실행 시 Ethernet 구간을 CAN 대체 백본으로 검증하며, Ethernet 라이선스 확보 후 동일 케이스로 재검증한다.
 - `SIL_TEST_CTRL`/`VEHICLE_BASE_TEST_CTRL` 관련 항목은 Validation Harness(검증 전용)이며 양산 사용자 기능으로 해석하지 않는다.
 - UT 증적(로그/캡처/리포트)은 `canoe/logging/evidence/UT/` 경로 규칙으로 관리한다.
+- V2 확장 요구(`Req_120~Req_124`)는 Pre-Activation 상태로 UT 항목을 분리 관리하며, DBC/코드 동시 반영 전까지 `Planned`로 유지한다.
 
 ### 수치화 기준 (Req/Flow 파생)
 
@@ -49,6 +50,7 @@
 | 제어기 | 제어 | CHASSIS_GW | CAN(0x100/0x101) 수신값을 ETH(0x510/0x511)로 100ms 주기 변환 송신 |  |  |  |
 |  |  | INFOTAINMENT_GW | CAN(0x110) 구간/방향/거리/제한속도 입력을 ETH(0x512)로 100ms 주기 변환 송신 |  |  |  |
 |  |  | ADAS_WARN_CTRL | 주행/비주행, 과속(vehicleSpeed>speedLimit), 무조향 조건을 판정해 150ms 이내 경고 상태 반영 |  |  |  |
+|  |  | ADAS_WARN_CTRL + DECEL_ASSIST_CTRL (V2 확장) | 긴급차량 방향/ETA/자차속도 기반 위험도 산정 및 감속 보조 요청 생성/해제 | Planned |  |  |
 |  |  | NAV_CONTEXT_MGR | roadZone/navDirection/zoneDistance/speedLimit 입력으로 컨텍스트 계산 및 speedLimitNorm 갱신 |  |  |  |
 |  |  | EMS_ALERT | 경찰/구급 긴급 이벤트의 송신/수신/해제/타임아웃(1000ms) 모듈 로직을 유닛 단위로 검증 |  |  |  |
 |  |  | WARN_ARB_MGR | Emergency>Zone, Ambulance>Police, ETA, SourceID 규칙으로 단일 경고 결과 결정 |  |  |  |
@@ -91,6 +93,9 @@
 | UT_BASE_EXT_IVI_001 | CLU_HMI_CTRL, INFOTAINMENT_GW, IVI_GW | IVI 확장 기능(Audio Focus/Voice/TTS 상태) 유닛 검증 | Req_119 | VC_119 | Func_119 | Flow_203 / Comm_203 | Var_268~Var_271,Var_289~Var_290 | 오디오/음성 상태 수신 후 `150ms` 이내 HMI 정책 매핑 반영 |
 | UT_BASE_GW_001 | DOMAIN_GW_ROUTER, DOMAIN_BOUNDARY_MGR | 도메인 경계/라우팅 정책 적용 및 Health/Diag 경로 검증 | Req_110,Req_111 | VC_110,VC_111 | Func_110,Func_111 | Flow_105,Flow_205 / Comm_105,Comm_205 | Var_118~Var_120,Var_144~Var_146,Var_169~Var_171,Var_179~Var_180,Var_201~Var_203,Var_283~Var_286,Var_305~Var_308 | 도메인 경계 위반 없이 라우팅/진단 프레임이 규칙대로 전달 |
 | UT_BASE_TEST_001 | VEHICLE_BASE_TEST_CTRL, SIL_TEST_CTRL | 차량 기본 기능 시나리오 실행/판정 기록 검증 | Req_112 | VC_112 | Func_112 | Flow_106 / Comm_106 | Var_172~Var_174,Var_025,Var_026 | 시나리오 실행 가능, 결과 판정/로그 일관성 유지 |
+| UT_V2_RISK_001 | ADAS_WARN_CTRL, DECEL_ASSIST_CTRL | 긴급차량 근접 위험도 산정 및 감속 보조 요청 생성 검증 (Pre-Activation) | Req_120,Req_121 | VC_120,VC_121 | Func_120,Func_121 | Flow_120,Flow_121 / Comm_120,Comm_121 | Var_320,Var_321 | 위험도 입력 갱신 후 `100ms` 주기 산정, 임계 초과 시 `150ms` 이내 감속 보조 요청 생성 |
+| UT_V2_RELEASE_001 | DECEL_ASSIST_CTRL | 운전자 개입(제동/조향) 시 감속 보조 요청 해제 검증 (Pre-Activation) | Req_123 | VC_123 | Func_123 | Flow_123 / Comm_123 | Var_321,Var_324,Var_325 | 제동/조향 회피 입력 검출 후 `150ms` 이내 decelAssistReq=0 |
+| UT_V2_FAILSAFE_001 | DOMAIN_BOUNDARY_MGR | 도메인 경로 단절 시 자동 감속 보조 금지/강등 모드 전환 검증 (Pre-Activation) | Req_124 | VC_124 | Func_124 | Flow_124 / Comm_124 | Var_326,Var_327,Var_328,Var_329 | 경로 단절 감지 후 `150ms` 이내 failSafeMode 전환, decelAssistReq=0 강제 유지 |
 
 ---
 
@@ -118,6 +123,8 @@
 
 | 버전 | 날짜 | 변경 사항 |
 |---|---|---|
+| 2.13 | 2026-03-02 | V2 확장 제어 책임 분리 반영: V2 상단 항목을 `ADAS_WARN_CTRL + DECEL_ASSIST_CTRL`로 조정하고 `UT_V2_RISK_001/UT_V2_RELEASE_001` 대상 모듈을 정합화. |
+| 2.12 | 2026-03-02 | V2 확장(Pre-Activation) UT 반영: `UT_V2_RISK_001`, `UT_V2_RELEASE_001`, `UT_V2_FAILSAFE_001` 추가 및 `Req_120~124` 추적 연계 반영. |
 | 2.11 | 2026-03-02 | 작성 원칙에 CANoe.CAN 실행 제약(대체 백본 검증 후 Ethernet 재검증) 임시 주석을 추가하고, 상단 공식 표의 `EMS_ALERT`/`SIL_TEST_CTRL` 설명을 유닛 검증 관점으로 정리. |
 | 2.10 | 2026-03-02 | 차량 기본 기능 확장 추적 보강: `Req/VC/Func_113~119`를 `UT_BASE_001` 범위에 반영하고 `UT_BASE_EXT_BODY_001`, `UT_BASE_EXT_IVI_001`를 추가. |
 | 2.9 | 2026-03-02 | 증적 경로 규칙 고정: UT 실행 증적 저장 경로를 `canoe/logging/evidence/UT/`로 명시. |

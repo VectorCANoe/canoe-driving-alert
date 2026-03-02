@@ -3,7 +3,7 @@
 **Document ID**: PROJ-03-FD
 **ISO 26262 Reference**: Part 4, Cl.7 (System Design)
 **ASPICE Reference**: SYS.3 (System Architectural Design)
-**Version**: 4.17
+**Version**: 4.20
 **Date**: 2026-03-02
 **Status**: Draft
 **Project Title**: 주행 상황 실시간 경고 시스템
@@ -16,13 +16,15 @@
 - 본 문서는 요구사항(01)의 What을 노드 기능(How)으로 분해한다.
 - 상단 표는 표준 양식 구조만 유지하고, 상세 추적 정보는 하단 표에 분리한다.
 - Panel은 테스트 자극/관측 인터페이스이며 기능 주체 ECU로 보지 않는다.
-- 기능 ID는 `Func_001~Func_043`으로 요구사항 ID와 1:1 대응한다.
+- 통합 기본요구사항 구간은 기능 ID `Func_001~Func_043`으로 요구사항 ID(`Req_001~Req_043`)와 1:1 대응한다.
 - 차량 기본 기능 확장 요구(`Req_101~Req_119`)는 `Func_101~Func_119`로 별도 관리한다.
+- V2 확장 요구(`Req_120~Req_124`)는 `Func_120~Func_124`로 별도 관리하며, 본 문서에서는 Pre-Activation 상태로 유지한다.
 - 제출 전 현대/기아 및 OEM 기준 명칭으로 일괄 대체하되, 기능 ID/추적 ID는 유지한다.
 - 네트워크 구현은 옵션1 아키텍처를 고정 적용한다: `ETH_SWITCH + CHASSIS_GW/INFOTAINMENT_GW/BODY_GW/IVI_GW + 도메인 CAN`.
+- 목표 설계는 옵션1(ETH 백본) 고정이며, CANoe.CAN 라이선스 제약 구간의 SIL 검증은 임시로 CAN 대체 백본을 사용하고 Ethernet 라이선스 확보 후 동일 케이스로 재검증한다.
 - `WARN_ARB_MGR`의 중재는 서비스(QoS) 우선순위 중재이며, CAN 비트 레벨 arbitration과 구분해 해석한다.
 - EMS는 문서 상위 계층에서 단일 논리 단말 `EMS_ALERT`로 정의하고, 내부 구현 모듈(`EMS_POLICE_TX`, `EMS_AMB_TX`, `EMS_ALERT_RX`)은 하단 매핑표에서만 분리 관리한다.
-- 본 사이클의 기능-요구 추적 범위는 `Req_001~043`, `Req_101~119`만 대상으로 고정한다.
+- 본 사이클의 기능-요구 추적 범위는 `Req_001~043`, `Req_101~119`를 활성 범위로 유지하고, `Req_120~Req_124`는 Pre-Activation 확장 범위로 관리한다.
 
 ---
 
@@ -76,6 +78,11 @@
 | ECU 동작 | 와이퍼/우적 연동 반영 | 와이퍼/우적/오토라이트 상태 반영 | Vehicle Baseline | Req_117 / Func_117 / IT_BASE_EXT_BODY_001 |
 | ECU 동작 | 보안 상태 반영 | 이모빌라이저/경보 상태 반영 | Vehicle Baseline | Req_118 / Func_118 / IT_BASE_EXT_BODY_001 |
 | ECU 동작 | 오디오 상태 반영 | Audio Focus/Voice/TTS 상태 반영 | Vehicle Baseline | Req_119 / Func_119 / IT_BASE_EXT_IVI_001 |
+| ECU 동작 | 긴급차량 근접 위험 판단 | 긴급차량 방향/ETA/자차속도 결합 기반 위험도 산정 | V2 확장(Pre-Activation) | Req_120 / Flow_120 / Comm_120 / ST_V2_RISK_001(Planned) |
+| ECU 동작 | 위험도 기반 감속 보조 요청 | 위험도 임계 초과 시 감속 보조 요청 생성 | V2 확장(Pre-Activation) | Req_121 / Flow_121 / Comm_121 / ST_V2_RISK_001(Planned) |
+| ECU 동작 | 감속 보조-경고 동기화 | 감속 보조 활성 시 긴급 경고 최우선 + Ambient/Cluster 동기화 | V2 확장(Pre-Activation) | Req_122 / Flow_122 / Comm_122 / ST_V2_RISK_001(Planned) |
+| ECU 동작 | 운전자 개입 우선 해제 | 제동/조향 회피 입력 시 감속 보조 요청 즉시 해제 | V2 확장(Pre-Activation) | Req_123 / Flow_123 / Comm_123 / ST_V2_RISK_001(Planned) |
+| ECU 동작 | 도메인 경로 단절 강등(Fail-safe) | 도메인 경로 단절 시 자동 감속 보조 금지 + 최소 경고 채널 유지 | V2 확장(Pre-Activation) | Req_124 / Flow_124 / Comm_124 / ST_V2_FAILSAFE_001(Planned) |
 
 ---
 
@@ -154,6 +161,18 @@
 
 ---
 
+## V2 확장 기능 상세 표 (Pre-Activation, Phase-2)
+
+| Func ID | Req ID | 실제 노드명 | 기능명 | 기능 설명 | 실제값 정의(입력/출력) |
+|---|---|---|---|---|---|
+| Func_120 | Req_120 | ADAS_WARN_CTRL | 긴급차량 근접 위험 판단 | 긴급차량 방향/ETA/자차속도 결합 기반 근접 위험도 산정 | 입력: emergencyDirection, eta, vehicleSpeedNorm / 출력: proximityRiskLevel |
+| Func_121 | Req_121 | DECEL_ASSIST_CTRL | 위험도 기반 감속 보조 요청 | 위험도 임계 초과 시 감속 보조 요청 생성 | 입력: proximityRiskLevel / 출력: decelAssistReq |
+| Func_122 | Req_122 | WARN_ARB_MGR | 감속 보조-경고 동기화 | 감속 보조 요청 활성 시 긴급 경고 최우선 유지 및 Ambient/Cluster 출력 동기화 | 입력: decelAssistReq, selectedAlertType, selectedAlertLevel / 출력: selectedAlertType, selectedAlertLevel |
+| Func_123 | Req_123 | DECEL_ASSIST_CTRL | 운전자 개입 우선 해제 | 운전자 제동/조향 회피 입력 검출 시 감속 보조 요청 해제 | 입력: steeringInputNorm, BrakePedal / 출력: decelAssistReq |
+| Func_124 | Req_124 | DOMAIN_BOUNDARY_MGR | 도메인 경로 단절 강등(Fail-safe) | 도메인 경로 단절 감지 시 자동 감속 보조 금지 + 최소 경고 채널 유지 | 입력: domainPathStatus, e2eHealthState / 출력: decelAssistReq, failSafeMode |
+
+---
+
 ## 상세 설명 및 추가 사항
 
 - 상단 표는 공식 표준 양식의 열 구성(분류/기능명/기능설명/비고/검증)을 유지한다.
@@ -161,6 +180,7 @@
 - 추적 체인: `Func -> Flow -> Comm -> Var -> Code -> UT/IT/ST`.
 - 옵션1 네트워크 전달 경로 고정: `입력 CAN -> 도메인 GW 정규화 -> ETH_SWITCH -> 중앙 경고코어 -> 도메인 GW -> 출력 CAN`.
 - `Func_101~Func_119`는 차량 기본 기능 확장 체인으로, 0302/0303/0304의 Flow/Comm/Var와 최신 도메인 DBC 기준으로 동기화되어야 한다.
+- `Func_120~Func_124`는 V2 확장(Pre-Activation) 체인으로 관리하며, 0302/0303/0304/05/06/07 동시 반영 전까지 활성 범위로 전환하지 않는다.
 
 ## EMS 논리 단말-내부 모듈 매핑
 
@@ -175,7 +195,7 @@
 | 도메인 | ECU |
 |---|---|
 | Powertrain | ENGINE_CTRL, TRANSMISSION_CTRL |
-| Chassis | ACCEL_CTRL, BRAKE_CTRL, STEERING_CTRL, EMS_ALERT, WARN_ARB_MGR, SIL_TEST_CTRL |
+| Chassis | ACCEL_CTRL, BRAKE_CTRL, STEERING_CTRL, DECEL_ASSIST_CTRL, EMS_ALERT, WARN_ARB_MGR, SIL_TEST_CTRL |
 | Body | BCM_AMBIENT_CTRL, HAZARD_CTRL, WINDOW_CTRL, DRIVER_STATE_CTRL |
 | Infotainment | NAV_CONTEXT_MGR, CLU_HMI_CTRL, CLUSTER_BASE_CTRL |
 | Gateway/Infra | CHASSIS_GW, INFOTAINMENT_GW, BODY_GW, IVI_GW, ETH_SWITCH, DOMAIN_GW_ROUTER, DOMAIN_BOUNDARY_MGR |
@@ -186,6 +206,9 @@
 
 | 버전 | 날짜 | 변경 사항 |
 |---|---|---|
+| 4.20 | 2026-03-02 | 감사 정합 보강: 통합구간 1:1 문구 명확화, 옵션1 설계 vs SIL 임시 CAN 대체 백본 검증 경계 문구 추가, V2 확장 행 검증 컬럼을 ST/Flow/Comm ID 기준으로 구체화. |
+| 4.19 | 2026-03-02 | V2 확장 제어 책임 분리: `Func_121/Func_123` 실제 노드를 `DECEL_ASSIST_CTRL`로 조정하고 Chassis ECU 인벤토리에 반영. |
+| 4.18 | 2026-03-02 | V2 확장 요구 반영: `Func_120~Func_124`(근접위험/감속보조/동기화/운전자개입해제/도메인단절강등) 추가, 작성 원칙의 활성/Pre-Activation 범위 분리, 상단 공식표 확장 항목 반영. |
 | 4.17 | 2026-03-02 | 03-하위문서 최종 동기화 준비 반영: `Func_101~Func_119` 설명을 병렬 반영 문구에서 최신 DBC 동기화 운영 문구로 정리. |
 | 4.16 | 2026-03-02 | Vehicle Baseline 상단 `검증` 참조 ID 정합화: `Req_113~Req_118`는 `IT_BASE_EXT_BODY_001`, `Req_119`는 `IT_BASE_EXT_IVI_001`로 연결 보정. |
 | 4.15 | 2026-03-02 | 본 사이클 추적 범위 고정(`Req_001~043`,`Req_101~119`) 원칙을 작성 원칙에 명시. |
