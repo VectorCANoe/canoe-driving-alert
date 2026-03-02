@@ -76,6 +76,8 @@
 - Do not place implementation details in 01.
 - Do not write customer-level statements only in 03.
 - Do not remove existing template columns.
+- Do not patch `canoe/cfg/*.cfg`, `*.cfg.ini`, `*.stcfg` directly via agent scripts for normal development.
+- Do GUI-only for CANoe config/panel/sysvar registration tasks (see `canoe/cfg/GUI_ONLY_OPERATIONS.md`).
 
 ## 9) Temporary Note
 - This is a temporary handoff note and should be deleted after stabilization.
