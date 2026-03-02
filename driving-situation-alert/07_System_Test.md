@@ -3,7 +3,7 @@
 **Document ID**: PROJ-07-ST
 **ISO 26262 Reference**: Part 4, Cl.10 (System Integration and System Qualification Test)
 **ASPICE Reference**: SYS.5 (System Qualification Test)
-**Version**: 5.8
+**Version**: 5.9
 **Date**: 2026-02-28
 **Status**: Draft
 **Project Title**: 주행 상황 실시간 경고 시스템
@@ -25,6 +25,7 @@
 - 검증 환경은 CANoe SIL, CAN+Ethernet으로 고정한다.
 - 본 문서는 `FZ_001~FZ_012` 결과 반영 전 Baseline Draft이며, 측정값 확정 시 Pass/Fail를 기입한다.
 - `ST_SIL_001`, `ST_SIL_002`, `ST_RESULT_001`, `ST_BASE_DIAG_001`은 Validation Harness 기반 검증 시나리오(검증 전용)다.
+- ST 증적(로그/캡처/리포트)은 `canoe/logging/evidence/ST/` 경로 규칙으로 관리한다.
 
 ---
 
@@ -90,6 +91,7 @@
 
 | 버전 | 날짜 | 변경 사항 |
 |---|---|---|
+| 5.9 | 2026-03-02 | 증적 경로 규칙 고정: ST 실행 증적 저장 경로를 `canoe/logging/evidence/ST/`로 명시. |
 | 1.0 | 2026-02-23 | 초기 생성(구 스코프 기반) |
 | 2.0 | 2026-02-23 | 구버전 Scene 구조 반영 |
 | 3.0 | 2026-02-23 | 운전자 행동 중심 서술 전환 |

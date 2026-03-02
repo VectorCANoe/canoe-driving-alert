@@ -3,7 +3,7 @@
 **Document ID**: PROJ-06-IT
 **ISO 26262 Reference**: Part 6, Cl.10 (Software Integration and Integration Test)
 **ASPICE Reference**: SWE.5 (Software Integration and Integration Test)
-**Version**: 4.8
+**Version**: 4.9
 **Date**: 2026-02-28
 **Status**: Draft
 **Project Title**: 주행 상황 실시간 경고 시스템
@@ -25,6 +25,7 @@
 - IT는 인터페이스/흐름 중심의 핵심 체인만 유지한다(Lean IT).
 - 세부 경계값/미세 분기는 UT(05)와 ST(07)에서 검증하고, IT는 모듈 연동 성립 여부를 우선 확인한다.
 - `IT_SIL_001`, `IT_BASE_DIAG_001`은 Validation Harness 경로 검증(검증 전용) 항목이다.
+- IT 증적(로그/캡처/리포트)은 `canoe/logging/evidence/IT/` 경로 규칙으로 관리한다.
 
 ---
 
@@ -88,6 +89,7 @@
 
 | 버전 | 날짜 | 변경 사항 |
 |---|---|---|
+| 4.9 | 2026-03-02 | 증적 경로 규칙 고정: IT 실행 증적 저장 경로를 `canoe/logging/evidence/IT/`로 명시. |
 | 1.0 | 2026-02-23 | 초기 생성(구 스코프 기반) |
 | 2.0 | 2026-02-23 | 구버전 요구 ID 구조 반영 |
 | 3.0 | 2026-02-24 | 구버전 TS 시나리오 확장 |

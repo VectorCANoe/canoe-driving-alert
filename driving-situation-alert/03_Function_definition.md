@@ -3,7 +3,7 @@
 **Document ID**: PROJ-03-FD
 **ISO 26262 Reference**: Part 4, Cl.7 (System Design)
 **ASPICE Reference**: SYS.3 (System Architectural Design)
-**Version**: 4.14
+**Version**: 4.15
 **Date**: 2026-03-02
 **Status**: Draft
 **Project Title**: 주행 상황 실시간 경고 시스템
@@ -22,6 +22,7 @@
 - 네트워크 구현은 옵션1 아키텍처를 고정 적용한다: `ETH_SWITCH + CHASSIS_GW/INFOTAINMENT_GW/BODY_GW/IVI_GW + 도메인 CAN`.
 - `WARN_ARB_MGR`의 중재는 서비스(QoS) 우선순위 중재이며, CAN 비트 레벨 arbitration과 구분해 해석한다.
 - EMS는 문서 상위 계층에서 단일 논리 단말 `EMS_ALERT`로 정의하고, 내부 구현 모듈(`EMS_POLICE_TX`, `EMS_AMB_TX`, `EMS_ALERT_RX`)은 하단 매핑표에서만 분리 관리한다.
+- 본 사이클의 기능-요구 추적 범위는 `Req_001~043`, `Req_101~119`만 대상으로 고정한다.
 
 ---
 
@@ -185,6 +186,7 @@
 
 | 버전 | 날짜 | 변경 사항 |
 |---|---|---|
+| 4.15 | 2026-03-02 | 본 사이클 추적 범위 고정(`Req_001~043`,`Req_101~119`) 원칙을 작성 원칙에 명시. |
 | 4.14 | 2026-03-02 | 0304 변수 계약명 정합화: `Func_101~Func_119` 입력/출력명을 0304 표준 Name 기준으로 보정(`AcCompressorReq`, `DoorUnlockCmd`, `ImmoState`, `TtsLangId` 등)하고 Domain/Test 변수명 불일치(`domainInputFrames`, `baseTestScenario`)를 제거. |
 | 4.13 | 2026-03-02 | V2 추적 밀도 보강 1차: 차량 기본 기능 확장 `Func_113~Func_119`(HVAC/Seat/Mirror/Door/Wiper-Rain/Security/Audio) 추가 및 `Req_113~Req_119` 1:1 매핑 반영. |
 | 4.12 | 2026-03-01 | 표현 명확화 반영: Func_001/003/004/006/012/022/024/025/027/034 문구를 고객 관점 요구(Req_012/022/024/025/027/034)와 정합되도록 보정. |

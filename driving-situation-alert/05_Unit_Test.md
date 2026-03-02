@@ -3,7 +3,7 @@
 **Document ID**: PROJ-05-UT
 **ISO 26262 Reference**: Part 6, Cl.9 (Software Unit Verification)
 **ASPICE Reference**: SWE.4 (Software Unit Verification)
-**Version**: 2.7
+**Version**: 2.9
 **Date**: 2026-02-28
 **Status**: Draft
 **Project Title**: 주행 상황 실시간 경고 시스템
@@ -24,6 +24,7 @@
 - 범위 외 항목(OTA/UDS/DoIP)은 포함하지 않는다.
 - 본 문서는 `FZ_001~FZ_012` 결과 반영 전 Baseline Draft이며, 측정값 확정 시 Pass/Fail를 기입한다.
 - `SIL_TEST_CTRL`/`VEHICLE_BASE_TEST_CTRL` 관련 항목은 Validation Harness(검증 전용)이며 양산 사용자 기능으로 해석하지 않는다.
+- UT 증적(로그/캡처/리포트)은 `canoe/logging/evidence/UT/` 경로 규칙으로 관리한다.
 
 ### 수치화 기준 (Req/Flow 파생)
 
@@ -114,6 +115,7 @@
 
 | 버전 | 날짜 | 변경 사항 |
 |---|---|---|
+| 2.9 | 2026-03-02 | 증적 경로 규칙 고정: UT 실행 증적 저장 경로를 `canoe/logging/evidence/UT/`로 명시. |
 | 2.8 | 2026-03-01 | 상단 공식 표의 EMS 표기를 `EMS_ALERT` 논리 단말 기준으로 통일(내부 TX/RX 분해는 하단 UT 추적표 유지). |
 | 1.0 | 2026-02-23 | 초기 생성(구 스코프 기반) |
 | 2.0 | 2026-02-26 | 옵션1 아키텍처 기준으로 전면 재작성. OTA/UDS/DoIP 항목 제거, UT ID 체계(UT_ADAS_001 등) 및 Req/Func/Flow/Comm/Var 추적 표 추가 |

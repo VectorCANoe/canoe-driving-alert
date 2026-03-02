@@ -3,7 +3,7 @@
 **Document ID**: PROJ-01-SRS
 **ISO 26262 Reference**: Part 4, Cl.6 (System Requirements Specification)
 **ASPICE Reference**: SYS.2 (System Requirements Analysis)
-**Version**: 5.14
+**Version**: 5.15
 **Date**: 2026-03-02
 **Status**: Draft
 **Project Title**: 주행 상황 실시간 경고 시스템
@@ -19,6 +19,8 @@
 - Part별 요구사항은 통합 기본요구사항을 재분류한 구조다.
 - `Req_041~Req_043`은 고객 요구를 검증 가능한 인수 조건으로 구체화한 항목이며, 검증 증적은 05/06/07 문서 체계로 연결 관리한다.
 - ASPICE SYS.2.BP5 기준으로 각 Req에 대해 VC(Verification Criteria)를 정의하고, 05/06/07에서 VC ID로 검증 증적을 연결한다.
+- 본 사이클의 활성 요구사항 범위는 `Req_001~043`, `Req_101~119`로 잠금한다.
+- 요구 분류/안전 프로파일 기준은 `00c_Req_Classification_and_Safety_Profile.md`, HARA 근거는 `00d_HARA_Worksheet.md`를 따른다.
 
 ---
 
@@ -227,6 +229,7 @@
 
 | 버전 | 날짜 | 변경 사항 |
 |---|---|---|
+| 5.15 | 2026-03-02 | 본 사이클 활성 Req 범위 잠금(`Req_001~043`,`Req_101~119`)과 00c/00d 연계 기준(분류/안전/HARA 근거) 명시. |
 | 5.14 | 2026-03-02 | V2 추적 밀도 보강 1차: 차량 기본 기능 확장 요구 `Req_113~Req_119` 및 대응 검증기준 `VC_113~VC_119` 추가. Part 0 범위를 `Req_101~Req_119`로 확장. |
 | 5.13 | 2026-03-01 | 용어/의미 보정: Req_022를 비긴급 경고 대비 우선으로 정리, Req_027을 절차가 아닌 규칙 적용/결정 중심으로 수정, Req_031 문구를 SourceID 작은 값 선택으로 명확화. |
 | 5.12 | 2026-03-01 | 요구 문구 명확화 반영: Req_012/022/025/027/029/030/031/033/034를 고객 관점 기준으로 정제하고 VC_022/034 용어를 일치화. |
