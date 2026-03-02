@@ -38,6 +38,25 @@
 
 ---
 
+## CANoe 설정 직접 편집 금지 (필수 — 매 세션 확인)
+
+> **⚠️ 이 규칙을 어기면 .cfg 파일이 깨집니다. 반드시 지킬 것.**
+
+| 파일/작업 | 허용 주체 | 비고 |
+|-----------|----------|------|
+| `canoe/cfg/*.cfg` | **GUI 전용** | 에이전트 직접 편집·패치 절대 금지 |
+| `*.cfg.ini`, `*.stcfg` | **GUI 자동생성** | 커밋 금지, 에이전트 생성 금지 |
+| Panel (`.xvp`) | **GUI 전용** | 레이아웃·바인딩은 CANoe Panel Editor에서만 |
+| `project.sysvars` | 텍스트 편집 가능 | 단, 편집 후 반드시 CANoe GUI에서 로드·동기화·저장 필요 |
+| `canoe/src/capl/**/*.can` | 에이전트 편집 가능 | CAPL 소스는 자유롭게 수정 가능 |
+| `canoe/databases/*.dbc` | 에이전트 편집 가능 | DBC 소스는 자유롭게 수정 가능 |
+
+**cfg 복구 순서**: 측정 중지 → CANoe 완전 종료 → GUI에서 .cfg 재오픈 → sysvar/패널 변경사항 GUI에서 적용 → Save → 커밋
+
+상세 규칙: `canoe/cfg/GUI_ONLY_OPERATIONS.md`
+
+---
+
 ## CANoe 파일 작성 레퍼런스 (반드시 참조)
 
 > **규칙**: CANoe 관련 파일(.sysvars, .dbc, .can, .cfg) 작성 전 반드시 아래 레퍼런스를 먼저 읽고 동일한 형식으로 작성한다.
