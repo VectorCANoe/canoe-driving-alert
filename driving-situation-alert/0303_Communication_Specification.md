@@ -3,7 +3,7 @@
 **Document ID**: PROJ-0303-CS
 **ISO 26262 Reference**: Part 6, Cl.7 (Software Architectural Design)
 **ASPICE Reference**: SWE.2 (Software Architectural Design)
-**Version**: 3.9
+**Version**: 3.10
 **Date**: 2026-03-02
 **Status**: Draft
 **Project Title**: 주행 상황 실시간 경고 시스템
@@ -345,7 +345,7 @@
 
 ---
 
-## 도메인별 통신 원본 확장 정의 (DBC 병렬 작업 기준)
+## 도메인별 통신 원본 확장 정의 (DBC 동기화 기준)
 
 | Domain | 원본 파일(정의) | Comm 범위 | 핵심 Message |
 |---|---|---|---|
@@ -369,7 +369,7 @@
 | Comm_105 | Flow_105 | Func_110, Func_111 | Req_110, Req_111 | frmPowertrainGatewayMsg(0x302), frmVehicleModeMsg(0x307), frmPowerLimitMsg(0x308), frmCruiseStateMsg(0x309), frmChassisHealthMsg(0x109), frmBodyHealthMsg(0x219), frmInfotainmentHealthMsg(0x228) | CAN(도메인 경계/라우팅) | 100ms |
 | Comm_106 | Flow_106 | Func_112 | Req_112 | frmBaseTestResultMsg(0x231), frmTestResultMsg(0x230) | CAN(Test) | Event |
 
-- 주의: `Comm_101~Comm_106`은 현재 도메인 분리 DBC에서 정의된 실제 메시지 ID를 기준으로 고정하며, 도메인 간 이더넷 라우팅 구현은 04/코드 단계에서 추가 상세화한다.
+- 주의: `Comm_101~Comm_106`은 도메인 분리 DBC(`*_can.dbc`)와 동기화된 확정 Comm 세트다. 라우팅 동작 변경 시 0302/0304와 함께 갱신한다.
 
 ## Vehicle Baseline Phase-B Comm 확장 정의 (Comm_201~Comm_205)
 
@@ -381,7 +381,7 @@
 | Comm_204 | Flow_204 | Func_101, Func_102, Func_110 | Req_101, Req_102, Req_110 | frmEngineTorqueMsg(0x30B), frmEngineLoadMsg(0x30C), frmTransShiftStateMsg(0x30D), frmThermalMgmtStateMsg(0x310), frmEnergyFlowStateMsg(0x311), frmPowertrainCtrlAuthMsg(0x312) | CAN(Powertrain) | 100ms |
 | Comm_205 | Flow_205 | Func_112 | Req_112 | frmIviDiagReqMsg(0x267), frmIviDiagResMsg(0x268), frmIviHealthDetailMsg(0x26C), frmPtDiagReqMsg(0x30E), frmPtDiagResMsg(0x30F) | CAN(Test/Diag) | Event + 100ms |
 
-- 주의: `Comm_201~Comm_205`는 문서 기준 설계 고정 항목이며, 대응 DBC 반영은 도메인별 DBC 병렬 작업에서 구현 완료 후 SoT로 동기화한다.
+- 주의: `Comm_201~Comm_205`는 도메인 분리 DBC(`*_can.dbc`)와 동기화된 확정 Comm 세트이며, 변경 시 0302/0304를 동일 커밋에서 함께 갱신한다.
 
 ---
 
@@ -428,6 +428,7 @@
 
 | 버전 | 날짜 | 변경 사항 |
 |---|---|---|
+| 3.10 | 2026-03-02 | 0302/0303 최종 동기화 준비 반영: 도메인 통신 섹션 제목과 `Comm_101~106/201~205` 주의 문구를 병렬 작업 기준에서 DBC 동기화 운영 규칙으로 갱신. |
 | 1.0 | 2026-02-23 | 초기 생성 |
 | 2.0 | 2026-02-25 | 최신 프로젝트 스코프 반영 전면 재작성. Comm_001~Comm_009 및 Flow/Func/Req 1:1 추적 구조 반영, OTA/UDS/DoIP 제거 |
 | 2.1 | 2026-02-25 | 공식 샘플 표기 스타일(Identifier/DLC 순수값)로 상단 표 정렬, Ethernet 백본+도메인 게이트웨이+CAN 분배 구조 반영 |
