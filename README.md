@@ -223,6 +223,32 @@ This project is part of the Hyundai Mobis Bootcamp educational program.
 - [Hyundai Mobis](https://www.mobis.co.kr/)
 - [Vector Korea](https://www.vector.com/kr/ko/)
 
+### OSS Reference Sources
+
+CAN Protocol / Utilities
+- [can-utils](https://github.com/linux-can/can-utils) — Linux CAN utilities (candump, cansend, etc.)
+- [can-isotp](https://github.com/hartkopp/can-isotp) — ISO 15765-2 (CAN TP) Linux kernel module
+- [ICSim](https://github.com/zombieCraig/ICSim) — Instrument Cluster CAN simulator (vcan-based)
+
+DBC / Signal Parsing
+- [cantools](https://github.com/eerimoq/cantools) — DBC parser + signal encode/decode (Python)
+- [canmatrix](https://github.com/ebroecker/canmatrix) — DBC / ARXML / KCD / SYM format converter
+- [opendbc](https://github.com/commaai/opendbc) — Real-world DBC collection (Hyundai/Kia/Toyota, etc.)
+- [CANpy](https://github.com/stefanhoelzl/CANpy) — Python CAN node simulator
+- [atkv](https://github.com/atkv/atkv) — Lightweight CAN frame parser
+
+Python CAN / Diagnostics
+- [python-can](https://github.com/hardbyte/python-can) — Python CAN bus interface library
+- [python-can-isotp](https://github.com/pylessard/python-can-isotp) — ISO-TP layer over python-can
+- [python-udsoncan](https://github.com/pylessard/python-udsoncan) — UDS (ISO 14229) Python implementation
+- [python-uds](https://github.com/StephanHCB/python-uds) — Lightweight UDS Python (ECU simulator pattern)
+- [iso14229](https://github.com/driftregion/iso14229) — UDS ISO 14229 implementation in C (embedded ECU)
+
+Vehicle Network Middleware
+- [sil-kit](https://github.com/vectorgrp/sil-kit) — Vector SIL Kit source (CANoe SIL integration)
+- [sil-kit-docs](https://github.com/vectorgrp/sil-kit-docs) — SIL Kit official documentation
+- [vsomeip](https://github.com/COVESA/vsomeip) — AUTOSAR SOME/IP implementation (Ethernet ECU)
+
 ---
 
 **Last Updated**: March 2026
