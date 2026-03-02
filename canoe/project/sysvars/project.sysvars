@@ -19,6 +19,12 @@
     <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="s" name="eta" comment="ETA seconds" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="255" maxValuePhys="255"/>
     <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="sourceId" comment="Emergency source id" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="255" maxValuePhys="255"/>
     <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="alertState" comment="0=Clear 1=Active" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1"/>
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="policeDispatch" comment="Panel button: 0=Clear 1=Police dispatch active" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1"/>
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="ambulanceDispatch" comment="Panel button: 0=Clear 1=Ambulance dispatch active" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1"/>
+  </namespace>
+
+  <namespace name="Driver" comment="" interface="">
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="gazeActive" comment="0=GazeLost 1=GazeRestored. Rising edge triggers Level3 release." bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1"/>
   </namespace>
 
   <namespace name="Core" comment="" interface="">
@@ -55,5 +61,19 @@
     <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="arbitrationSnapshotId" comment="Arbitration snapshot sequence" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="65535" maxValuePhys="65535"/>
     <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="domainBoundaryStatus" comment="Domain boundary health: 1=all Chassis/Body/Info domains alive within 300ms" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1"/>
     <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="routingPolicy" comment="GW routing policy: 0=timeout 1=normal 2=emergency" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="2" maxValuePhys="2"/>
+  </namespace>
+
+  <namespace name="UiRender" comment="" interface="">
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="renderMode" comment="Derived render mode from ambient output" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="7" maxValuePhys="7"/>
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="renderColor" comment="Derived render color from ambient output" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="15" maxValuePhys="15"/>
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="renderPattern" comment="Derived render pattern from ambient output" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="15" maxValuePhys="15"/>
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="renderTextCode" comment="Derived warning text code for panel rendering" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="65535" maxValuePhys="65535"/>
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="renderDirection" comment="Derived direction: 0=None 1=Left 2=Right 3=Rear" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="3" maxValuePhys="3"/>
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="roadZoneColorCode" comment="Render zone color: 0=Normal 1=School 2=Highway 3=IC" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="3" maxValuePhys="3"/>
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="roadFlowDirection" comment="Render flow dir: 0=None 1=LeftToRight 2=RightToLeft" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="2" maxValuePhys="2"/>
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="emsBlinkPhase" comment="Emergency blink phase 0/1 for RED-BLUE or RED-WHITE alternate rendering" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1"/>
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="ambientPulsePhase" comment="Ambient pulse phase 0..3 for ORANGE pulse effect" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="3" maxValuePhys="3"/>
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="icFlowPhase" comment="IC flow phase 0..7 for lane flow animation" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="7" maxValuePhys="7"/>
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="activeAlertType" comment="Mirrored selected alert type for renderer" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="7" maxValuePhys="7"/>
   </namespace>
 </systemvariables>

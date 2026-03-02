@@ -4,9 +4,45 @@ includes
 
 variables
 {
+  msTimer tPoliceCycle;
+  int gPrevDispatch;
 }
 
 on start
 {
+  gPrevDispatch = 0;
+  setTimer(tPoliceCycle, 100);
   write("[EMS_POLICE_TX] start");
+}
+
+on timer tPoliceCycle
+{
+  int dispatch;
+
+  dispatch = (int)@V2X::policeDispatch;
+  if (dispatch < 0) dispatch = 0;
+  if (dispatch > 1) dispatch = 1;
+
+  if (dispatch == 1 && gPrevDispatch == 0)
+  {
+    /* Panel: police dispatch activated */
+    @V2X::emergencyType      = 1;
+    @V2X::alertState         = 1;
+    @V2X::sourceId           = 1;
+    @V2X::eta                = 30;
+    @V2X::emergencyDirection = 0;
+    write("[EMS_POLICE_TX] ACTIVE  type=1 src=1 eta=30");
+  }
+  else if (dispatch == 0 && gPrevDispatch == 1)
+  {
+    /* clear only if police still owns the channel */
+    if ((int)@V2X::sourceId == 1)
+    {
+      @V2X::alertState = 0;
+      write("[EMS_POLICE_TX] CLEAR");
+    }
+  }
+  gPrevDispatch = dispatch;
+
+  setTimer(tPoliceCycle, 100);
 }
