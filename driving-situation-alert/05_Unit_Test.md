@@ -23,6 +23,7 @@
 - 상세 추적(UT ID, Req/VC/Func/Flow/Comm/Var)은 하단 표로 분리한다.
 - 범위 외 항목(OTA/UDS/DoIP)은 포함하지 않는다.
 - 본 문서는 `FZ_001~FZ_012` 결과 반영 전 Baseline Draft이며, 측정값 확정 시 Pass/Fail를 기입한다.
+- 임시 주석(실행 제약): 현재 CANoe.CAN 라이선스 환경에서는 SIL 실행 시 Ethernet 구간을 CAN 대체 백본으로 검증하며, Ethernet 라이선스 확보 후 동일 케이스로 재검증한다.
 - `SIL_TEST_CTRL`/`VEHICLE_BASE_TEST_CTRL` 관련 항목은 Validation Harness(검증 전용)이며 양산 사용자 기능으로 해석하지 않는다.
 - UT 증적(로그/캡처/리포트)은 `canoe/logging/evidence/UT/` 경로 규칙으로 관리한다.
 
@@ -49,13 +50,13 @@
 |  |  | INFOTAINMENT_GW | CAN(0x110) 구간/방향/거리/제한속도 입력을 ETH(0x512)로 100ms 주기 변환 송신 |  |  |  |
 |  |  | ADAS_WARN_CTRL | 주행/비주행, 과속(vehicleSpeed>speedLimit), 무조향 조건을 판정해 150ms 이내 경고 상태 반영 |  |  |  |
 |  |  | NAV_CONTEXT_MGR | roadZone/navDirection/zoneDistance/speedLimit 입력으로 컨텍스트 계산 및 speedLimitNorm 갱신 |  |  |  |
-|  |  | EMS_ALERT | 경찰/구급 긴급 이벤트 E100 100ms 주기 송신과 수신/해제/타임아웃(1000ms) 처리를 통합 검증 |  |  |  |
+|  |  | EMS_ALERT | 경찰/구급 긴급 이벤트의 송신/수신/해제/타임아웃(1000ms) 모듈 로직을 유닛 단위로 검증 |  |  |  |
 |  |  | WARN_ARB_MGR | Emergency>Zone, Ambulance>Police, ETA, SourceID 규칙으로 단일 경고 결과 결정 |  |  |  |
 |  |  | BODY_GW | 중재 결과(E200)를 Ambient CAN(0x210)으로 50ms 주기 변환 송신 |  |  |  |
 |  |  | IVI_GW | 중재 결과(E200)를 Cluster CAN(0x220)으로 50ms 주기 변환 송신 |  |  |  |
 |  |  | BCM_AMBIENT_CTRL | selectedAlert 결과에 따라 ambientMode/color/pattern 정책 출력(전환 안정화 포함) |  |  |  |
 |  |  | CLU_HMI_CTRL | warningTextCode/방향 표시/중복팝업 억제 정책 적용 |  |  |  |
-|  |  | SIL_TEST_CTRL | testScenario 실행, CAN+ETH 조건 검증, scenarioResult 기록 |  |  |  |
+|  |  | SIL_TEST_CTRL | testScenario 실행, 통신 조건(CAN+Ethernet 또는 대체 백본) 판정, scenarioResult 기록 |  |  |  |
 |  |  | VEHICLE_BASE_TEST_CTRL | 차량 기본 기능(시동/기어/입력/표시) 단위 검증 및 결과 반영 |  |  |  |
 | 가상 노드 (Simulator) | 입력 | Vehicle/Steering Input | `gVehicleSpeed`, `gDriveState`, `SteeringInput` 입력 생성 |  |  |  |
 |  |  | Nav Context Input | `gRoadZone`, `gNavDirection`, `gZoneDistance`, `gSpeedLimit` 입력 생성 |  |  |  |
@@ -117,6 +118,7 @@
 
 | 버전 | 날짜 | 변경 사항 |
 |---|---|---|
+| 2.11 | 2026-03-02 | 작성 원칙에 CANoe.CAN 실행 제약(대체 백본 검증 후 Ethernet 재검증) 임시 주석을 추가하고, 상단 공식 표의 `EMS_ALERT`/`SIL_TEST_CTRL` 설명을 유닛 검증 관점으로 정리. |
 | 2.10 | 2026-03-02 | 차량 기본 기능 확장 추적 보강: `Req/VC/Func_113~119`를 `UT_BASE_001` 범위에 반영하고 `UT_BASE_EXT_BODY_001`, `UT_BASE_EXT_IVI_001`를 추가. |
 | 2.9 | 2026-03-02 | 증적 경로 규칙 고정: UT 실행 증적 저장 경로를 `canoe/logging/evidence/UT/`로 명시. |
 | 2.8 | 2026-03-01 | 상단 공식 표의 EMS 표기를 `EMS_ALERT` 논리 단말 기준으로 통일(내부 TX/RX 분해는 하단 UT 추적표 유지). |
