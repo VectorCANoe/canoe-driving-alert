@@ -15,16 +15,6 @@
       <Property Name="ImageFile">Bitmaps\DashboardCircleBlack.png</Property>
     </Object>
 
-    <Object Type="Vector.CANalyzer.Panels.Design.MeterControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="MeterPattern" ControlName="PatternGauge">
-      <Property Name="Name">MeterPattern</Property>
-      <Property Name="Size">158, 154</Property>
-      <Property Name="Location">98, 136</Property>
-      <Property Name="ScaleMax">15</Property>
-      <Property Name="PivotDistance">45</Property>
-      <Property Name="NeedleShape">TriangleSlimFilled</Property>
-      <Property Name="SymbolConfiguration">8;16;UiRender;;;renderPattern;2;;;-1;;;Value;;;0</Property>
-    </Object>
-
     <Object Type="Vector.CANalyzer.Panels.Design.MeterControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="MeterVehiclePos" ControlName="VehiclePosGauge">
       <Property Name="Name">MeterVehiclePos</Property>
       <Property Name="Size">158, 154</Property>
@@ -104,7 +94,7 @@
       <Property Name="Name">PicAlert</Property>
       <Property Name="Size">20, 20</Property>
       <Property Name="Location">323, 136</Property>
-      <Property Name="ImageFile">Bitmaps\alert3.bmp</Property>
+      <Property Name="ImageFile">Bitmaps\reference_pack_v1\EXT_EmsBlink2.png</Property>
       <Property Name="TransparentColor">Black</Property>
     </Object>
 
@@ -130,26 +120,10 @@
       <Property Name="SwitchValues">1;8;0;1;2;3;4;5;6;7</Property>
       <Property Name="SwitchValuesRx">1;8;0;1;2;3;4;5;6;7</Property>
       <Property Name="SwitchValuesVT">1;8;0/Lower/0;1/Lower/1;2/Lower/2;3/Lower/3;4/Lower/4;5/Lower/5;6/Lower/6;7/Lower/7</Property>
-      <Property Name="ImageFile">Bitmaps\VehicleClassStrip8.png</Property>
+      <Property Name="ImageFile">Bitmaps\reference_pack_v1\EXT_VehicleClass8.png</Property>
       <Property Name="TransparentColor">Black</Property>
       <Property Name="IsProportional">False</Property>
       <Property Name="SymbolConfiguration">8;16;UiRender;;;activeAlertType;2;;;-1;;;Value;;;0</Property>
-    </Object>
-
-    <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="TxtModeColor" ControlName="ModeColor">
-      <Property Name="Name">TxtModeColor</Property>
-      <Property Name="Size">130, 16</Property>
-      <Property Name="Location">269, 252</Property>
-      <Property Name="BoxBackColor">Black</Property>
-      <Property Name="BoxForeColor">255, 160, 160, 160</Property>
-      <Property Name="TextBackColor">Black</Property>
-      <Property Name="TextForeColor">255, 160, 160, 160</Property>
-      <Property Name="BoxBorderStyle">None</Property>
-      <Property Name="DisplayLabel">Hide</Property>
-      <Property Name="BoxTextAlign">Center</Property>
-      <Property Name="ValueDisplay">Double</Property>
-      <Property Name="ValueDecimalPlaces">0</Property>
-      <Property Name="SymbolConfiguration">8;16;UiRender;;;renderMode;2;;;-1;;;Value;;;0</Property>
     </Object>
 
     <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="TxtAlertType" ControlName="AlertType">
