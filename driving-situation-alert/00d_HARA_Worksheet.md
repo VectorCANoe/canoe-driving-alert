@@ -3,7 +3,7 @@
 **Document ID**: PROJ-00D-HARA  
 **ISO 26262 Reference**: Part 3 (Concept Phase, Hazard Analysis and Risk Assessment)  
 **ASPICE Reference**: SYS.2 (요구 근거), SUP.10 (추적성)  
-**Version**: 1.0  
+**Version**: 1.1  
 **Date**: 2026-03-02  
 **Status**: Draft  
 **Project Title**: 주행 상황 실시간 경고 시스템  
@@ -56,10 +56,20 @@
 | Safety Goal 정의 | 완료 (SG-01~SG-05) | 04 구현 정책과 양방향 링크 검증 |
 | 검증 링크(VC/UT/IT/ST) | 완료 | 실제 Pass/Fail 증적 파일 경로 채우기 |
 
+## 6. HARA 승인 게이트 (01~07 착수 전)
+
+| 항목 | 담당 | 기준 | 상태 | 승인일 |
+|---|---|---|---|---|
+| S/E/C 값 검토 | Safety Lead | HC-01~HC-05의 S/E/C 근거 문장 확인 | TODO |  |
+| ASIL Candidate 검토 | Safety Lead | ASIL Candidate(B/C) 타당성 확인 | TODO |  |
+| Safety Goal 잠금 | System Lead | SG-01~SG-05 문구/범위 확정 | TODO |  |
+| 검증 링크 검토 | Validation Lead | SG별 VC/UT/IT/ST 링크 유효성 확인 | TODO |  |
+
 ---
 
 ## 개정 이력
 
 | 버전 | 날짜 | 변경 사항 |
 |---|---|---|
+| 1.1 | 2026-03-02 | 01~07 착수 전 HARA 승인 게이트(담당/기준/상태/승인일) 표 추가. |
 | 1.0 | 2026-03-02 | 신규 작성: HC-01~HC-05 S/E/C, ASIL Candidate, Safety Goal, VC/UT/IT/ST 검증 링크 정의. |

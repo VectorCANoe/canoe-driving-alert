@@ -1,7 +1,7 @@
 # 감사 준비 체크리스트 (Audit Readiness Checklist)
 
 **Document ID**: PROJ-00A-ARC  
-**Version**: 1.7  
+**Version**: 1.8  
 **Date**: 2026-03-02  
 **Status**: Draft  
 **Project Title**: 주행 상황 실시간 경고 시스템
@@ -48,7 +48,7 @@
 | `00_VModel_Mapping.md` | 4.3 | 2026-02-28 | V-model 매핑 |
 | `00b_Project_Scope.md` | 2.6 | 2026-03-02 | 범위/제외 + 분류 운영 기준 |
 | `00c_Req_Classification_and_Safety_Profile.md` | 1.2 | 2026-03-02 | ISO26262/ASPICE 분류 기준 |
-| `00d_HARA_Worksheet.md` | 1.0 | 2026-03-02 | HC-01~HC-05 S/E/C + Safety Goal + 검증 링크 |
+| `00d_HARA_Worksheet.md` | 1.1 | 2026-03-02 | HC-01~HC-05 S/E/C + Safety Goal + 검증 링크 |
 | `01_Requirements.md` | 5.14 | 2026-03-02 | Req+VC 기준 |
 | `03_Function_definition.md` | 4.14 | 2026-03-02 | 기능 정의 |
 | `0301_SysFuncAnalysis.md` | 3.14 | 2026-03-02 | 노드 기능 분석 |
@@ -81,6 +81,14 @@
 | Req Safety Class 확정(QM/ASIL) 및 HARA 근거 문서화 | Safety Lead | TODO |
 | 05/06/07 상단 Pass/Fail, 담당자, 일자 기입 | Validation Lead | TODO |
 
+## F. 01~07 착수 전 고정값 (이번 사이클)
+
+| 항목 | 고정 내용 | 상태 |
+|---|---|---|
+| HARA 승인 게이트 | `00d_HARA_Worksheet.md` 6절(담당/기준/상태/승인일) 채운 뒤 01~07 본편 반영 시작 | TODO |
+| 검증 증적 경로 규칙 | UT/IT/ST 증적 경로를 `canoe/logging/evidence/{UT\\|IT\\|ST}/...`로 고정 | Locked |
+| 활성 Req 범위 고정 | 이번 사이클 활성 범위는 `Req_001~043`, `Req_101~119`로 잠금 | Locked |
+
 ---
 
 ## 메모
@@ -93,6 +101,7 @@
 
 | 버전 | 날짜 | 변경 사항 |
 |---|---|---|
+| 1.8 | 2026-03-02 | 01~07 착수 전 고정값(F섹션) 추가: HARA 승인 게이트/증적 경로 규칙/활성 Req 범위 잠금 명시. |
 | 1.7 | 2026-03-02 | 00d HARA 워크시트(v1.0) 연계 반영, 00c 버전 정합(1.2), HARA TODO를 \"작성\"에서 \"리뷰/승인\" 단계로 갱신. |
 | 1.6 | 2026-03-02 | 적용 수준/주장 경계(B-1) 추가, 00c v1.1 정합 반영, HARA 후보 S/E/C 평가 TODO 명시. |
 | 1.5 | 2026-03-02 | ISO26262/ASPICE 관점 보강: 00c 연계 항목 추가, 활성 Req 62개 기준 추적성/테스트 커버리지 재점검, 제출 전 잔여 항목 재정의. |
