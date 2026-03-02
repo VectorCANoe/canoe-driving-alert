@@ -3,7 +3,7 @@
 **Document ID**: PROJ-00C-RCSP  
 **ISO 26262 Reference**: Part 3 (Concept), Part 4 (System), Part 8 (Supporting Process)  
 **ASPICE Reference**: SYS.2, SYS.3, SWE.3, SUP.1, SUP.10  
-**Version**: 1.1  
+**Version**: 1.2  
 **Date**: 2026-03-02  
 **Status**: Draft  
 **Project Title**: 주행 상황 실시간 경고 시스템  
@@ -115,7 +115,7 @@
 
 | 작업 | 산출물 | 목표일 |
 |---|---|---|
-| HARA 상세 시트 작성 | `00d_HARA_Worksheet.md` | 2026-03-08 |
+| HARA 상세 시트 작성 | `00d_HARA_Worksheet.md` | 완료(2026-03-02, v1.0) |
 | Req별 분류 메타(Primary/Secondary) 잠금 | `01_Requirements.md` 부록 표 | 2026-03-09 |
 | Safety Class 확정 반영 | 00a/00b/00c/01 동기화 | 2026-03-10 |
 | VC-테스트 증적 100% 연결 | 05/06/07 상단 Pass/Fail 포함 | 2026-03-12 |
@@ -126,5 +126,6 @@
 
 | 버전 | 날짜 | 변경 사항 |
 |---|---|---|
+| 1.2 | 2026-03-02 | 00d HARA 워크시트 생성 반영: 후속 작업 상태를 생성 완료로 갱신하고 운영 연계 기준 보강. |
 | 1.1 | 2026-03-02 | 프로젝트 실무 운영 기준으로 전면 보강: 적용 수준 선언, 분류 판정 규칙, Safety Profile 게이트, ASPICE 운영 매핑, 감사 게이트, 후속 일정 추가. |
 | 1.0 | 2026-03-02 | 신규 작성: Req Type/Safety Class/HARA Status 운영 기준 및 Req 그룹별 안전 프로파일 초안 정의. |

@@ -1,7 +1,7 @@
 # 감사 준비 체크리스트 (Audit Readiness Checklist)
 
 **Document ID**: PROJ-00A-ARC  
-**Version**: 1.6  
+**Version**: 1.7  
 **Date**: 2026-03-02  
 **Status**: Draft  
 **Project Title**: 주행 상황 실시간 경고 시스템
@@ -46,8 +46,9 @@
 | 문서 | Version | Date | 비고 |
 |---|---|---|---|
 | `00_VModel_Mapping.md` | 4.3 | 2026-02-28 | V-model 매핑 |
-| `00b_Project_Scope.md` | 2.5 | 2026-03-02 | 범위/제외 + 분류 운영 기준 |
-| `00c_Req_Classification_and_Safety_Profile.md` | 1.1 | 2026-03-02 | ISO26262/ASPICE 분류 기준 |
+| `00b_Project_Scope.md` | 2.6 | 2026-03-02 | 범위/제외 + 분류 운영 기준 |
+| `00c_Req_Classification_and_Safety_Profile.md` | 1.2 | 2026-03-02 | ISO26262/ASPICE 분류 기준 |
+| `00d_HARA_Worksheet.md` | 1.0 | 2026-03-02 | HC-01~HC-05 S/E/C + Safety Goal + 검증 링크 |
 | `01_Requirements.md` | 5.14 | 2026-03-02 | Req+VC 기준 |
 | `03_Function_definition.md` | 4.14 | 2026-03-02 | 기능 정의 |
 | `0301_SysFuncAnalysis.md` | 3.14 | 2026-03-02 | 노드 기능 분석 |
@@ -76,7 +77,7 @@
 |---|---|---|
 | 05/07의 `Req_113~118` 누락 체인 보강 | Test Lead | TODO |
 | 06의 Lean IT 범위와 활성 Req 커버리지 정책 확정(필수/권장 분리) | QA Lead | TODO |
-| HARA 후보(HC-01~HC-05) S/E/C 평가표 작성 및 Safety Goal 초안 확정 | Safety Lead | TODO |
+| HARA 후보(HC-01~HC-05) S/E/C 평가표 리뷰 및 ASIL Candidate 승인 | Safety Lead | TODO |
 | Req Safety Class 확정(QM/ASIL) 및 HARA 근거 문서화 | Safety Lead | TODO |
 | 05/06/07 상단 Pass/Fail, 담당자, 일자 기입 | Validation Lead | TODO |
 
@@ -92,6 +93,7 @@
 
 | 버전 | 날짜 | 변경 사항 |
 |---|---|---|
+| 1.7 | 2026-03-02 | 00d HARA 워크시트(v1.0) 연계 반영, 00c 버전 정합(1.2), HARA TODO를 \"작성\"에서 \"리뷰/승인\" 단계로 갱신. |
 | 1.6 | 2026-03-02 | 적용 수준/주장 경계(B-1) 추가, 00c v1.1 정합 반영, HARA 후보 S/E/C 평가 TODO 명시. |
 | 1.5 | 2026-03-02 | ISO26262/ASPICE 관점 보강: 00c 연계 항목 추가, 활성 Req 62개 기준 추적성/테스트 커버리지 재점검, 제출 전 잔여 항목 재정의. |
 | 1.4 | 2026-03-01 | D 섹션 잔여 TODO 3건 종료(07 상단 기록 규칙, 02 이미지 네이밍 고정, 로그/Trace 파일명 규칙 고정). |
