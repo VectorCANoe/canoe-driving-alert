@@ -3,7 +3,7 @@
 **Document ID**: PROJ-00C-RCSP  
 **ISO 26262 Reference**: Part 3 (Concept), Part 4 (System), Part 8 (Supporting Process)  
 **ASPICE Reference**: SYS.2, SYS.3, SWE.3, SUP.1, SUP.10  
-**Version**: 1.3  
+**Version**: 1.4  
 **Date**: 2026-03-02  
 **Status**: Draft  
 **Project Title**: 주행 상황 실시간 경고 시스템  
@@ -120,7 +120,7 @@
 | 작업 | 산출물 | 목표일 |
 |---|---|---|
 | HARA 상세 시트 작성 | `00d_HARA_Worksheet.md` | 완료(2026-03-02, v1.0) |
-| Req별 분류 메타(Primary/Secondary) 잠금 | `01_Requirements.md` 부록 표 | 2026-03-09 |
+| Req별 분류 메타(Primary/Secondary) 잠금 | `01_Requirements.md` 부록 표 | 중간감사 이후 반영 (Planned) |
 | Safety Class 확정 반영 | 00a/00b/00c/01 동기화 | 2026-03-10 |
 | VC-테스트 증적 100% 연결 | 05/06/07 상단 Pass/Fail 포함 | 2026-03-12 |
 
@@ -130,6 +130,7 @@
 
 | 버전 | 날짜 | 변경 사항 |
 |---|---|---|
+| 1.4 | 2026-03-02 | 중간감사 운영 반영: 후속 작업 항목 `Req별 분류 메타 잠금` 상태를 `중간감사 이후 반영 (Planned)`으로 명확화. |
 | 1.3 | 2026-03-02 | ISO26262/ASPICE 운영 경계 보강: `Verification-Harness` 분류를 추가하고, SIL 전용 변수(`UiRender/*`, `Driver/gazeActive`, `V2X/policeDispatch`)를 제품 Req 체인과 분리 관리하는 규칙(CR-05)을 명시. |
 | 1.2 | 2026-03-02 | 00d HARA 워크시트 생성 반영: 후속 작업 상태를 생성 완료로 갱신하고 운영 연계 기준 보강. |
 | 1.1 | 2026-03-02 | 프로젝트 실무 운영 기준으로 전면 보강: 적용 수준 선언, 분류 판정 규칙, Safety Profile 게이트, ASPICE 운영 매핑, 감사 게이트, 후속 일정 추가. |
