@@ -414,6 +414,17 @@
 | Var_027 | lastEmergencyRxMs | lastEmergencyRxMs | CORE_STATE | EMS_ALERT | Comm_004, Comm_005, Comm_006 | Flow_004, Flow_005, Flow_006 | Func_023, Func_024 | Req_023, Req_024 | E100 수신 시각(ms) 기록, 1000ms 타임아웃 기준 |
 | Var_028 | duplicatePopupGuard | duplicatePopupGuard | CORE_STATE | CLU_HMI_CTRL | Comm_008 | Flow_008 | Func_026 | Req_026 | 동일 Alert 반복 시 타이머 갱신 |
 | Var_029 | arbitrationSnapshotId | arbitrationSnapshotId | CORE_STATE | WARN_ARB_MGR | Comm_006 | Flow_006 | Func_032 | Req_032 | 중재 수행 시 스냅샷 ID 증가 |
+| Var_032 | uiRenderMode | uiRenderMode_DERIVED | UI_DERIVED | IVI_GW | Comm_007, Comm_008 | Flow_007, Flow_008 | Func_035, Func_036, Func_040 | Req_035, Req_036, Req_040 | CAN 출력(`ambientMode`) 파생, 50ms 주기 갱신 |
+| Var_033 | uiRenderColor | uiRenderColor_DERIVED | UI_DERIVED | IVI_GW | Comm_007 | Flow_007 | Func_035, Func_037, Func_038, Func_039 | Req_035, Req_037, Req_038, Req_039 | CAN 출력(`ambientColor`) 파생, 50ms 주기 갱신 |
+| Var_034 | uiRenderPattern | uiRenderPattern_DERIVED | UI_DERIVED | IVI_GW | Comm_007 | Flow_007 | Func_036, Func_037, Func_038, Func_039 | Req_036, Req_037, Req_038, Req_039 | CAN 출력(`ambientPattern`) 파생, 50ms 주기 갱신 |
+| Var_035 | uiRenderTextCode | uiRenderTextCode_DERIVED | UI_DERIVED | IVI_GW | Comm_008 | Flow_008 | Func_019, Func_020, Func_021, Func_040 | Req_019, Req_020, Req_021, Req_040 | CAN 출력(`warningTextCode`) 파생, 50ms 주기 갱신 |
+| Var_036 | uiRenderDirection | uiRenderDirection_DERIVED | UI_DERIVED | IVI_GW | Comm_003, Comm_008 | Flow_003, Flow_008 | Func_014, Func_020, Func_039 | Req_014, Req_020, Req_039 | 방향형 경고 파생(좌/우/후), 50ms 주기 갱신 |
+| Var_037 | uiRenderRoadZoneColor | uiRenderRoadZoneColor_DERIVED | UI_DERIVED | IVI_GW | Comm_003 | Flow_003 | Func_007, Func_037, Func_038, Func_039 | Req_007, Req_037, Req_038, Req_039 | `baseZoneContext` 기반 파생, 50ms 주기 갱신 |
+| Var_038 | uiRenderRoadFlowDirection | uiRenderRoadFlowDirection_DERIVED | UI_DERIVED | IVI_GW | Comm_003 | Flow_003 | Func_014, Func_039 | Req_014, Req_039 | 유도구간 흐름 방향 파생, 50ms 주기 갱신 |
+| Var_039 | uiRenderEmsBlinkPhase | uiRenderEmsBlinkPhase_DERIVED | UI_DERIVED | IVI_GW | Comm_007, Comm_008 | Flow_007, Flow_008 | Func_035, Func_036 | Req_035, Req_036 | 긴급 경고 점멸 위상 파생, 50ms 주기 갱신 |
+| Var_040 | uiRenderAmbientPulsePhase | uiRenderAmbientPulsePhase_DERIVED | UI_DERIVED | IVI_GW | Comm_007 | Flow_007 | Func_038 | Req_038 | 고속도로 ORANGE 펄스 위상 파생, 50ms 주기 갱신 |
+| Var_041 | uiRenderIcFlowPhase | uiRenderIcFlowPhase_DERIVED | UI_DERIVED | IVI_GW | Comm_007 | Flow_007 | Func_039 | Req_039 | IC 좌/우 흐름 위상 파생, 50ms 주기 갱신 |
+| Var_042 | uiRenderActiveAlertType | uiRenderActiveAlertType_DERIVED | UI_DERIVED | IVI_GW | Comm_006 | Flow_006 | Func_022, Func_027, Func_028, Func_032 | Req_022, Req_027, Req_028, Req_032 | 중재 결과 alert type 파생, 50ms 주기 갱신 |
 | Var_BASE_A | --- Baseline Comm_101~Comm_106 추적 확장 --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | Var_101 | AccelPedal | accelPedal_CAN_BASE | CAN_BASE | CHASSIS_GW | Comm_102 | Flow_102 | Func_103, Func_104, Func_105 | Req_103, Req_104, Req_105 | 100ms 주기 수신 시 갱신 |
 | Var_102 | BrakePedal | brakePedal_CAN_BASE | CAN_BASE | CHASSIS_GW | Comm_102 | Flow_102 | Func_103, Func_104, Func_105 | Req_103, Req_104, Req_105 | 100ms 주기 수신 시 갱신 |
@@ -639,6 +650,7 @@
 - `timeoutClear`(내부 구현: `timeoutClear_ETH_CORE`)는 `Req_024(1000ms)` 검증 로직과 직접 연결되어야 한다.
 - `selectedAlertLevel`, `selectedAlertType`(내부 구현: `selectedAlertLevel_ETH_CORE`, `selectedAlertType_ETH_CORE`)는 `WARN_ARB_MGR` 출력의 단일 소스로 유지한다.
 - `speedLimit`/`speedLimitNorm`은 Req_010 과속 판정 비교 입력으로 0303 Comm_003과 정합되어야 한다.
+- `UiRender_*`는 `ambient*/warningTextCode/baseZoneContext/selectedAlertType`에서만 파생 생성하며, `vehicleSpeed/eta/sourceId` 원시 입력을 직접 바인딩하지 않는다.
 - 구현 단계에서 코드 레벨 변수 키는 `Internal Name`을 기준으로 통일하고, 문서 간 추적은 `표준 Name`과 함께 병기한다.
 
 ---
@@ -659,3 +671,4 @@
 | 2.8 | 2026-02-28 | 하단 변수 추적 상세표를 Comm_201~Comm_205(Flow_201~Flow_205, Func_101~Func_112, Req_101~Req_112)까지 동기화하고 Phase-B 확장 변수 추적 행을 추가. |
 | 2.9 | 2026-02-28 | 하단 변수 추적 상세표를 Comm_101~Comm_106(Flow_101~Flow_106, Func_101~Func_112, Req_101~Req_112)까지 추가 동기화해 차량 기본 기능 체인을 폐쇄. |
 | 2.10 | 2026-03-01 | 멘토 피드백 반영: EMS 변수 Owner/Bus Path를 논리 단말(`EMS_ALERT`) 기준으로 통합 표기하고, 내부 TX/RX 모듈은 별도 매핑 표로 분리. |
+| 2.11 | 2026-03-02 | `UiRender_*` 파생 출력 변수를 추가하고, `Req->Func->Flow->Comm->Var` 추적행을 보강. 렌더 계층 원시 입력 직결 금지 규칙(파생 출력 전용)을 체크포인트에 명시. |
