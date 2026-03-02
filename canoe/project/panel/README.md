@@ -6,6 +6,8 @@ CANoe panel artifacts for this project.
 - `SDV_Control.xvp`: scenario/input control panel
 - `SDV_Monitor.xvp`: pipeline/output monitor panel
 - `SDV_Render_Debug.xvp`: UiRender adapter debug panel
+- `SDV_External_Road_View.xvp`: macro external environment view (road + moving vehicles + zone flow)
+- `SDV_Cabin_Panorama_View.xvp`: macro in-cabin panoramic view (front/rear ambient interaction)
 - `SDV_Cluster_View.xvp`: cluster-focused visualization panel (warning/direction/zone)
 - `SDV_Ambient_View.xvp`: ambient-focused visualization panel (mode/color/pattern/pulse)
 - `SDV_Navigation_View.xvp`: navigation-focused visualization panel (zone/flow/vehicle movement)
@@ -25,6 +27,8 @@ CANoe panel artifacts for this project.
 - `Bitmaps/AmbientColorRail8.png`
 - `Bitmaps/AmbientPatternRail8.png`
 - `Bitmaps/AmbientPulseGlow4.png`
+- `Bitmaps/ExternalRoadScene.png`
+- `Bitmaps/CabinPanoramaScene.png`
 - Source reference:
 - `reference/samples/vector_samples_19_4_10/ADAS/ADASSystem/Panels/Bitmaps`
 - `reference/samples/vector_samples_19_4_10/SOA/SOASystem/Panels/BMP`
@@ -32,10 +36,15 @@ CANoe panel artifacts for this project.
 
 ## Panel Split
 - Validation panels: `SDV_Control.xvp`, `SDV_Monitor.xvp`, `SDV_Render_Debug.xvp`
-- Visualization panels (recommended):
+- Macro views (recommended first open):
+- `SDV_External_Road_View.xvp`
+- `SDV_Cabin_Panorama_View.xvp`
+- Detail views:
 - `SDV_Cluster_View.xvp`
 - `SDV_Ambient_View.xvp`
 - `SDV_Navigation_View.xvp`
+- Legacy combined view:
+- `SDV_Demo_Stage.xvp`
 
 ## BP (Renderer Only)
 - XVP panels are display/input surfaces only.
