@@ -1,0 +1,57 @@
+VERSION "ETH_Backbone_CAN_STUB_v2.0"
+
+
+NS_ :
+  NS_DESC_
+  CM_
+  BA_DEF_
+  BA_
+  VAL_
+  CAT_DEF_
+  CAT_
+  FILTER
+  BA_DEF_DEF_
+  EV_DATA_
+  ENVVAR_DATA_
+  SGTYPE_
+  SGTYPE_VAL_
+  BA_DEF_SGTYPE_
+  BA_SGTYPE_
+  SIG_TYPE_REF_
+  VAL_TABLE_
+  SIG_GROUP_
+  SIG_VALTYPE_
+  SIGTYPE_VALTYPE_
+  BO_TX_BU_
+  BA_DEF_REL_
+  BA_REL_
+  BA_SGTYPE_REL_
+  SG_MUL_VAL_
+
+BS_:
+
+BU_: EMS_POLICE_TX EMS_AMB_TX EMS_ALERT_RX ETH_SWITCH WARN_ARB_MGR ADAS_WARN_CTRL NAV_CONTEXT_MGR Vector__XXX
+
+BO_ 100 frmEmergencyBroadcastMsg: 4 Vector__XXX
+ SG_ VehicleType  : 0|4@1+  (1,0) [0|15]  ""    EMS_ALERT_RX
+ SG_ Status       : 4|2@1+  (1,0) [0|3]   ""    EMS_ALERT_RX
+ SG_ Reserved0    : 6|2@1+  (1,0) [0|0]   ""    Vector__XXX
+ SG_ SourceId     : 8|8@1+  (1,0) [0|255] ""    EMS_ALERT_RX
+ SG_ EtaSeconds   : 16|8@1+ (1,0) [0|255] "s"   EMS_ALERT_RX
+ SG_ Direction    : 24|4@1+ (1,0) [0|15]  ""    EMS_ALERT_RX
+ SG_ Reserved1    : 28|4@1+ (1,0) [0|0]   ""    Vector__XXX
+
+CM_ BO_ 100 "E100: Emergency vehicle broadcast. Sent by EMS_POLICE_TX (type=1) or EMS_AMB_TX (type=2) on ETH backbone (ch5). Received by EMS_ALERT_RX for priority arbitration. STUB: This file substitutes CANoe.Ethernet backbone using CAN ch5. Delete this file and replace with Ethernet network when CANoe.Ethernet license is available. Interface spec: 0303_Communication_Specification.md E100.";
+CM_ SG_ 100 VehicleType  "1=POLICE 2=AMBULANCE";
+CM_ SG_ 100 Status       "0=CLEAR 1=ACTIVE";
+CM_ SG_ 100 SourceId     "Unique vehicle source ID for tiebreaker.";
+CM_ SG_ 100 EtaSeconds   "Estimated time of arrival in seconds. Lower = higher priority.";
+CM_ SG_ 100 Direction    "0=UNKNOWN 1=FRONT 2=REAR 3=SIDE";
+
+BA_DEF_ BO_ "GenMsgCycleTime" INT 0 10000;
+BA_DEF_DEF_ "GenMsgCycleTime" 0;
+BA_ "GenMsgCycleTime" BO_ 100 0;
+
+VAL_ 100 VehicleType 0 "NONE" 1 "POLICE" 2 "AMBULANCE";
+VAL_ 100 Status 0 "CLEAR" 1 "ACTIVE";
+VAL_ 100 Direction 0 "UNKNOWN" 1 "FRONT" 2 "REAR" 3 "SIDE";

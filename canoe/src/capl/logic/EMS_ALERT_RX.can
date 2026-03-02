@@ -102,6 +102,67 @@ on start
   write("[EMS_ALERT_RX] start");
 }
 
+/* v2: primary path — receive broadcast frame from ETH backbone ch5 */
+on message frmEmergencyBroadcastMsg
+{
+  message frmEmergencyMonitorMsg mMon;
+  int vType;
+  int status;
+  int srcId;
+  int etaSec;
+  int direction;
+  int accepted;
+
+  vType     = clampRange((int)this.VehicleType, 0, 2);
+  status    = ((int)this.Status == 1) ? 1 : 0;
+  srcId     = clampRange((int)this.SourceId, 0, 255);
+  etaSec    = clampRange((int)this.EtaSeconds, 0, 255);
+  direction = clampRange((int)this.Direction, 0, 3);
+  accepted  = 0;
+
+  if (status == 1 && (vType == 1 || vType == 2))
+  {
+    if (isHigherPriority(vType, etaSec, srcId,
+                         gActiveEmergencyType, gActiveEta, gActiveSourceId))
+    {
+      gActiveEmergencyType      = vType;
+      gActiveEmergencyDirection = direction;
+      gActiveEta                = etaSec;
+      gActiveSourceId           = srcId;
+      accepted = 1;
+    }
+    else if (vType == gActiveEmergencyType && srcId == gActiveSourceId)
+    {
+      gActiveEmergencyDirection = direction;
+      gActiveEta                = etaSec;
+      accepted = 1;
+    }
+
+    if (accepted == 1)
+    {
+      gActiveLastRxMs = timeNow();
+      @CoreState::lastEmergencyRxMs = (int)gActiveLastRxMs;
+      publishActiveEmergencyToV2X();
+      setTimeoutClear(0);
+      setTimer(tWatchdog, 1000);
+    }
+  }
+  else if (status == 0 && vType == gActiveEmergencyType &&
+           srcId == gActiveSourceId)
+  {
+    clearEmergencyState();
+    publishActiveEmergencyToV2X();
+    updateEmergencyContext();
+  }
+
+  updateEmergencyContext();
+
+  mMon.EmergencyContext = clampRange((int)@Core::emergencyContext, 0, 255);
+  mMon.TimeoutClearMon  = (((int)@Core::timeoutClear) == 1) ? 1 : 0;
+  output(mMon);
+}
+
+/* v1 fallback: sysvar polling (panel/legacy compat — kept for backward compat) */
 on timer tRxCycle
 {
   message frmEmergencyMonitorMsg mMon;
@@ -113,30 +174,30 @@ on timer tRxCycle
   dword nowMs;
   int accepted;
 
-  emergencyType = clampRange((int)@V2X::emergencyType, 0, 2);
+  emergencyType      = clampRange((int)@V2X::emergencyType, 0, 2);
   emergencyDirection = clampRange((int)@V2X::emergencyDirection, 0, 3);
-  eta = clampRange((int)@V2X::eta, 0, 255);
-  sourceId = clampRange((int)@V2X::sourceId, 0, 255);
-  alertState = (((int)@V2X::alertState) == 1) ? 1 : 0;
-  nowMs = timeNow();
-  accepted = 0;
+  eta                = clampRange((int)@V2X::eta, 0, 255);
+  sourceId           = clampRange((int)@V2X::sourceId, 0, 255);
+  alertState         = (((int)@V2X::alertState) == 1) ? 1 : 0;
+  nowMs              = timeNow();
+  accepted           = 0;
 
   if (alertState == 1 && (emergencyType == 1 || emergencyType == 2))
   {
     if (isHigherPriority(emergencyType, eta, sourceId,
                          gActiveEmergencyType, gActiveEta, gActiveSourceId))
     {
-      gActiveEmergencyType = emergencyType;
+      gActiveEmergencyType      = emergencyType;
       gActiveEmergencyDirection = emergencyDirection;
-      gActiveEta = eta;
-      gActiveSourceId = sourceId;
+      gActiveEta                = eta;
+      gActiveSourceId           = sourceId;
       accepted = 1;
     }
     else if (emergencyType == gActiveEmergencyType &&
              sourceId == gActiveSourceId)
     {
       gActiveEmergencyDirection = emergencyDirection;
-      gActiveEta = eta;
+      gActiveEta                = eta;
       accepted = 1;
     }
 
@@ -162,7 +223,7 @@ on timer tRxCycle
   updateEmergencyContext();
 
   mMon.EmergencyContext = clampRange((int)@Core::emergencyContext, 0, 255);
-  mMon.TimeoutClearMon = (((int)@Core::timeoutClear) == 1) ? 1 : 0;
+  mMon.TimeoutClearMon  = (((int)@Core::timeoutClear) == 1) ? 1 : 0;
   output(mMon);
   setTimer(tRxCycle, 10);
 }
