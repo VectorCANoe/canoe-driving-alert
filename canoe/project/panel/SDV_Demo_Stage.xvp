@@ -1,0 +1,200 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Panel Type="Vector.CANalyzer.Panels.PanelSerializer, Vector.CANalyzer.Panels.Serializer, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null">
+  <Object Type="Vector.CANalyzer.Panels.Runtime.Panel, Vector.CANalyzer.Panels.Common, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Panel" ControlName="SDV Demo Stage">
+    <Object Type="Vector.CANalyzer.Panels.Design.GroupBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="GrpRoadStage" ControlName="GrpRoadStage">
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="LblRoadHdr" ControlName="Lbl RoadHdr">
+        <Property Name="Name">LblRoadHdr</Property>
+        <Property Name="Size">700, 16</Property>
+        <Property Name="Location">8, 20</Property>
+        <Property Name="ForeColor">255, 180, 180, 180</Property>
+        <Property Name="Text">Demo-stage renderer (derived outputs only): road zone, flow direction, moving vehicle object</Property>
+      </Object>
+
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="LblRoadZone" ControlName="Lbl RoadZone">
+        <Property Name="Name">LblRoadZone</Property>
+        <Property Name="Size">160, 14</Property>
+        <Property Name="Location">8, 48</Property>
+        <Property Name="ForeColor">255, 160, 160, 160</Property>
+        <Property Name="Text">roadZoneColorCode</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="TxtRoadZone" ControlName="Txt RoadZone">
+        <Property Name="Name">TxtRoadZone</Property>
+        <Property Name="Size">70, 20</Property>
+        <Property Name="Location">175, 46</Property>
+        <Property Name="BoxBackColor">255, 28, 31, 46</Property>
+        <Property Name="BoxForeColor">255, 100, 220, 180</Property>
+        <Property Name="TextBackColor">255, 28, 31, 46</Property>
+        <Property Name="TextForeColor">255, 100, 220, 180</Property>
+        <Property Name="DisplayLabel">Hide</Property>
+        <Property Name="BoxTextAlign">Center</Property>
+        <Property Name="ReadOnlyControl">True</Property>
+        <Property Name="ValueDisplay">Double</Property>
+        <Property Name="ValueDecimalPlaces">0</Property>
+        <Property Name="SymbolConfiguration">8;16;UiRender;;;roadZoneColorCode;2;;;-1;;;Value;;;0</Property>
+      </Object>
+
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="LblFlowDir" ControlName="Lbl FlowDir">
+        <Property Name="Name">LblFlowDir</Property>
+        <Property Name="Size">160, 14</Property>
+        <Property Name="Location">270, 48</Property>
+        <Property Name="ForeColor">255, 160, 160, 160</Property>
+        <Property Name="Text">roadFlowDirection</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="TxtFlowDir" ControlName="Txt FlowDir">
+        <Property Name="Name">TxtFlowDir</Property>
+        <Property Name="Size">70, 20</Property>
+        <Property Name="Location">435, 46</Property>
+        <Property Name="BoxBackColor">255, 28, 31, 46</Property>
+        <Property Name="BoxForeColor">255, 130, 180, 255</Property>
+        <Property Name="TextBackColor">255, 28, 31, 46</Property>
+        <Property Name="TextForeColor">255, 130, 180, 255</Property>
+        <Property Name="DisplayLabel">Hide</Property>
+        <Property Name="BoxTextAlign">Center</Property>
+        <Property Name="ReadOnlyControl">True</Property>
+        <Property Name="ValueDisplay">Double</Property>
+        <Property Name="ValueDecimalPlaces">0</Property>
+        <Property Name="SymbolConfiguration">8;16;UiRender;;;roadFlowDirection;2;;;-1;;;Value;;;0</Property>
+      </Object>
+
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="LblVehiclePos" ControlName="Lbl VehiclePos">
+        <Property Name="Name">LblVehiclePos</Property>
+        <Property Name="Size">160, 14</Property>
+        <Property Name="Location">8, 86</Property>
+        <Property Name="ForeColor">255, 220, 190, 120</Property>
+        <Property Name="Text">vehicleObjectPos (0..100)</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="TxtVehiclePos" ControlName="Txt VehiclePos">
+        <Property Name="Name">TxtVehiclePos</Property>
+        <Property Name="Size">70, 20</Property>
+        <Property Name="Location">175, 84</Property>
+        <Property Name="BoxBackColor">255, 28, 31, 46</Property>
+        <Property Name="BoxForeColor">255, 255, 220, 80</Property>
+        <Property Name="TextBackColor">255, 28, 31, 46</Property>
+        <Property Name="TextForeColor">255, 255, 220, 80</Property>
+        <Property Name="DisplayLabel">Hide</Property>
+        <Property Name="BoxTextAlign">Center</Property>
+        <Property Name="ReadOnlyControl">True</Property>
+        <Property Name="ValueDisplay">Double</Property>
+        <Property Name="ValueDecimalPlaces">0</Property>
+        <Property Name="SymbolConfiguration">8;16;UiRender;;;vehicleObjectPos;2;;;-1;;;Value;;;0</Property>
+      </Object>
+
+      <Object Type="Vector.CANalyzer.Panels.Design.TrackBarControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="TrkVehiclePos" ControlName="Trk VehiclePos">
+        <Property Name="Name">TrkVehiclePos</Property>
+        <Property Name="Size">700, 40</Property>
+        <Property Name="Location">8, 118</Property>
+        <Property Name="BackColor">255, 52, 56, 74</Property>
+        <Property Name="DisplayMinMax">True</Property>
+        <Property Name="MaximumDouble">100</Property>
+        <Property Name="SmallChangeDouble">1</Property>
+        <Property Name="LargeChangeDouble">5</Property>
+        <Property Name="TickFrequencyDouble">10</Property>
+        <Property Name="Maximum">100</Property>
+        <Property Name="SmallChange">1</Property>
+        <Property Name="LargeChange">5</Property>
+        <Property Name="TickFrequency">10</Property>
+        <Property Name="SymbolConfiguration">8;16;UiRender;;;vehicleObjectPos;2;;;-1;;;Value;;;0</Property>
+      </Object>
+
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="LblLegend" ControlName="Lbl Legend">
+        <Property Name="Name">LblLegend</Property>
+        <Property Name="Size">700, 14</Property>
+        <Property Name="Location">8, 164</Property>
+        <Property Name="ForeColor">255, 130, 130, 130</Property>
+        <Property Name="Text">Zone color code: 0=Normal 1=School 2=Highway 3=IC, Flow: 0=None 1=L->R 2=R->L</Property>
+      </Object>
+
+      <Property Name="Name">GrpRoadStage</Property>
+      <Property Name="Size">720, 190</Property>
+      <Property Name="Location">8, 8</Property>
+      <Property Name="BackColor">255, 38, 42, 58</Property>
+      <Property Name="ForeColor">255, 160, 200, 255</Property>
+      <Property Name="Text">DEMO STAGE</Property>
+      <Property Name="UseWindowsStyle">False</Property>
+    </Object>
+
+    <Object Type="Vector.CANalyzer.Panels.Design.GroupBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="GrpPulseState" ControlName="GrpPulseState">
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="LblEmsPhase" ControlName="Lbl EmsPhase">
+        <Property Name="Name">LblEmsPhase</Property>
+        <Property Name="Size">120, 14</Property>
+        <Property Name="Location">8, 28</Property>
+        <Property Name="ForeColor">255, 160, 160, 160</Property>
+        <Property Name="Text">emsBlinkPhase</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="TxtEmsPhase" ControlName="Txt EmsPhase">
+        <Property Name="Name">TxtEmsPhase</Property>
+        <Property Name="Size">70, 20</Property>
+        <Property Name="Location">132, 26</Property>
+        <Property Name="BoxBackColor">255, 28, 31, 46</Property>
+        <Property Name="BoxForeColor">255, 255, 200, 80</Property>
+        <Property Name="TextBackColor">255, 28, 31, 46</Property>
+        <Property Name="TextForeColor">255, 255, 200, 80</Property>
+        <Property Name="DisplayLabel">Hide</Property>
+        <Property Name="BoxTextAlign">Center</Property>
+        <Property Name="ReadOnlyControl">True</Property>
+        <Property Name="ValueDisplay">Double</Property>
+        <Property Name="ValueDecimalPlaces">0</Property>
+        <Property Name="SymbolConfiguration">8;16;UiRender;;;emsBlinkPhase;2;;;-1;;;Value;;;0</Property>
+      </Object>
+
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="LblPulsePhase" ControlName="Lbl PulsePhase">
+        <Property Name="Name">LblPulsePhase</Property>
+        <Property Name="Size">130, 14</Property>
+        <Property Name="Location">230, 28</Property>
+        <Property Name="ForeColor">255, 160, 160, 160</Property>
+        <Property Name="Text">ambientPulsePhase</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="TxtPulsePhase" ControlName="Txt PulsePhase">
+        <Property Name="Name">TxtPulsePhase</Property>
+        <Property Name="Size">70, 20</Property>
+        <Property Name="Location">365, 26</Property>
+        <Property Name="BoxBackColor">255, 28, 31, 46</Property>
+        <Property Name="BoxForeColor">255, 255, 200, 80</Property>
+        <Property Name="TextBackColor">255, 28, 31, 46</Property>
+        <Property Name="TextForeColor">255, 255, 200, 80</Property>
+        <Property Name="DisplayLabel">Hide</Property>
+        <Property Name="BoxTextAlign">Center</Property>
+        <Property Name="ReadOnlyControl">True</Property>
+        <Property Name="ValueDisplay">Double</Property>
+        <Property Name="ValueDecimalPlaces">0</Property>
+        <Property Name="SymbolConfiguration">8;16;UiRender;;;ambientPulsePhase;2;;;-1;;;Value;;;0</Property>
+      </Object>
+
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="LblIcPhase" ControlName="Lbl IcPhase">
+        <Property Name="Name">LblIcPhase</Property>
+        <Property Name="Size">110, 14</Property>
+        <Property Name="Location">460, 28</Property>
+        <Property Name="ForeColor">255, 160, 160, 160</Property>
+        <Property Name="Text">icFlowPhase</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="TxtIcPhase" ControlName="Txt IcPhase">
+        <Property Name="Name">TxtIcPhase</Property>
+        <Property Name="Size">70, 20</Property>
+        <Property Name="Location">575, 26</Property>
+        <Property Name="BoxBackColor">255, 28, 31, 46</Property>
+        <Property Name="BoxForeColor">255, 255, 200, 80</Property>
+        <Property Name="TextBackColor">255, 28, 31, 46</Property>
+        <Property Name="TextForeColor">255, 255, 200, 80</Property>
+        <Property Name="DisplayLabel">Hide</Property>
+        <Property Name="BoxTextAlign">Center</Property>
+        <Property Name="ReadOnlyControl">True</Property>
+        <Property Name="ValueDisplay">Double</Property>
+        <Property Name="ValueDecimalPlaces">0</Property>
+        <Property Name="SymbolConfiguration">8;16;UiRender;;;icFlowPhase;2;;;-1;;;Value;;;0</Property>
+      </Object>
+
+      <Property Name="Name">GrpPulseState</Property>
+      <Property Name="Size">720, 84</Property>
+      <Property Name="Location">8, 206</Property>
+      <Property Name="BackColor">255, 38, 42, 58</Property>
+      <Property Name="ForeColor">255, 210, 180, 120</Property>
+      <Property Name="Text">ANIMATION PHASE STATE</Property>
+      <Property Name="UseWindowsStyle">False</Property>
+    </Object>
+
+    <Property Name="Name">Panel</Property>
+    <Property Name="Size">738, 300</Property>
+    <Property Name="Location">0, 0</Property>
+    <Property Name="BackColor">255, 32, 35, 48</Property>
+  </Object>
+</Panel>

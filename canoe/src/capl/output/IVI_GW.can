@@ -12,6 +12,7 @@ variables
   int gEmsBlinkPhase;
   int gAmbientPulsePhase;
   int gIcFlowPhase;
+  int gVehicleObjectPos;
 }
 
 int clampRange(int value, int minValue, int maxValue)
@@ -35,6 +36,7 @@ on start
   gEmsBlinkPhase = 0;
   gAmbientPulsePhase = 0;
   gIcFlowPhase = 0;
+  gVehicleObjectPos = 0;
   setTimer(tIviCycle, 10);
   setTimer(tIviBase50, 50);
   write("[IVI_GW] start");
@@ -138,6 +140,7 @@ on timer tIviBase50
   int renderPattern;
   int renderTextCode;
   int renderDirection;
+  int vehicleMotionStep;
 
   speed = clampRange((int)@Core::vehicleSpeedNorm, 0, 255);
   driveState = clampRange((int)@Core::driveStateNorm, 0, 3);
@@ -247,6 +250,37 @@ on timer tIviBase50
     roadFlowDirection = 0;
   }
 
+  vehicleMotionStep = 2;
+  if (roadZoneColorCode == 1)
+  {
+    vehicleMotionStep = 1;
+  }
+  else if (roadZoneColorCode == 2)
+  {
+    vehicleMotionStep = 4;
+  }
+  else if (roadZoneColorCode == 3)
+  {
+    vehicleMotionStep = 6;
+  }
+
+  if (roadFlowDirection == 2)
+  {
+    gVehicleObjectPos = gVehicleObjectPos - vehicleMotionStep;
+    if (gVehicleObjectPos < 0)
+    {
+      gVehicleObjectPos = gVehicleObjectPos + 101;
+    }
+  }
+  else
+  {
+    gVehicleObjectPos = gVehicleObjectPos + vehicleMotionStep;
+    if (gVehicleObjectPos > 100)
+    {
+      gVehicleObjectPos = gVehicleObjectPos - 101;
+    }
+  }
+
   if (alertLevel >= 6)
   {
     gEmsBlinkPhase = 1 - gEmsBlinkPhase;
@@ -299,6 +333,7 @@ on timer tIviBase50
   @UiRender::renderDirection = renderDirection;
   @UiRender::roadZoneColorCode = roadZoneColorCode;
   @UiRender::roadFlowDirection = roadFlowDirection;
+  @UiRender::vehicleObjectPos = clampRange(gVehicleObjectPos, 0, 100);
   @UiRender::emsBlinkPhase = gEmsBlinkPhase;
   @UiRender::ambientPulsePhase = gAmbientPulsePhase;
   @UiRender::icFlowPhase = gIcFlowPhase;

@@ -8,6 +8,12 @@
 ## 스크립트
 - `canoe/scripts/navigation_simulator.py`
 
+## 권장 패널
+- `canoe/project/panel/SDV_Render_Debug.xvp`
+- `canoe/project/panel/SDV_Demo_Stage.xvp`
+- `canoe/project/panel/SDV_Cluster_View.xvp`
+- 렌더 파생값(`UiRender::*`)이 50ms 주기로 갱신되는지 확인한다.
+
 ## 사전 조건
 1. CANoe 실행 상태
 2. `canoe/cfg/CAN_500kBaud_1ch_split.cfg` 로드

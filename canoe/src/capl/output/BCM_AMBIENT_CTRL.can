@@ -114,9 +114,6 @@ on timer tBcmExt100
   @Body::ambientColor   = ambientColor;
   @Body::ambientPattern = ambientPattern;
 
-  @UiRender::activeAlertType = alertType;
-  @UiRender::emsBlinkPhase   = gFlashToggle;
-
   mLight.CabinLightMode = ambientMode & 0x7;
   mLight.DomeLightLevel = (ambientMode > 0) ? 20 : 4;
   output(mLight);

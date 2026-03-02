@@ -3,8 +3,8 @@
 **Document ID**: PROJ-0304-SV
 **ISO 26262 Reference**: Part 6, Cl.7 (Software Architectural Design)
 **ASPICE Reference**: SWE.2 / SWE.3
-**Version**: 2.10
-**Date**: 2026-03-01
+**Version**: 2.12
+**Date**: 2026-03-02
 **Status**: Draft
 **Project Title**: 주행 상황 실시간 경고 시스템
 **Subtitle**: 구간 정보 및 긴급차량 접근 기반 앰비언트·클러스터 경보
@@ -425,6 +425,7 @@
 | Var_040 | uiRenderAmbientPulsePhase | uiRenderAmbientPulsePhase_DERIVED | UI_DERIVED | IVI_GW | Comm_007 | Flow_007 | Func_038 | Req_038 | 고속도로 ORANGE 펄스 위상 파생, 50ms 주기 갱신 |
 | Var_041 | uiRenderIcFlowPhase | uiRenderIcFlowPhase_DERIVED | UI_DERIVED | IVI_GW | Comm_007 | Flow_007 | Func_039 | Req_039 | IC 좌/우 흐름 위상 파생, 50ms 주기 갱신 |
 | Var_042 | uiRenderActiveAlertType | uiRenderActiveAlertType_DERIVED | UI_DERIVED | IVI_GW | Comm_006 | Flow_006 | Func_022, Func_027, Func_028, Func_032 | Req_022, Req_027, Req_028, Req_032 | 중재 결과 alert type 파생, 50ms 주기 갱신 |
+| Var_043 | uiRenderVehicleObjectPos | uiRenderVehicleObjectPos_DERIVED | UI_DERIVED | IVI_GW | Comm_003, Comm_007 | Flow_003, Flow_007 | Func_014, Func_035, Func_037, Func_038, Func_039 | Req_014, Req_035, Req_037, Req_038, Req_039 | Demo-stage vehicle object position (0..100) derived from zone context + flow direction, 50ms cycle update |
 | Var_BASE_A | --- Baseline Comm_101~Comm_106 추적 확장 --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | Var_101 | AccelPedal | accelPedal_CAN_BASE | CAN_BASE | CHASSIS_GW | Comm_102 | Flow_102 | Func_103, Func_104, Func_105 | Req_103, Req_104, Req_105 | 100ms 주기 수신 시 갱신 |
 | Var_102 | BrakePedal | brakePedal_CAN_BASE | CAN_BASE | CHASSIS_GW | Comm_102 | Flow_102 | Func_103, Func_104, Func_105 | Req_103, Req_104, Req_105 | 100ms 주기 수신 시 갱신 |
@@ -672,3 +673,4 @@
 | 2.9 | 2026-02-28 | 하단 변수 추적 상세표를 Comm_101~Comm_106(Flow_101~Flow_106, Func_101~Func_112, Req_101~Req_112)까지 추가 동기화해 차량 기본 기능 체인을 폐쇄. |
 | 2.10 | 2026-03-01 | 멘토 피드백 반영: EMS 변수 Owner/Bus Path를 논리 단말(`EMS_ALERT`) 기준으로 통합 표기하고, 내부 TX/RX 모듈은 별도 매핑 표로 분리. |
 | 2.11 | 2026-03-02 | `UiRender_*` 파생 출력 변수를 추가하고, `Req->Func->Flow->Comm->Var` 추적행을 보강. 렌더 계층 원시 입력 직결 금지 규칙(파생 출력 전용)을 체크포인트에 명시. |
+| 2.12 | 2026-03-02 | Added Var_043(uiRenderVehicleObjectPos) for demo-stage moving object rendering and synchronized IVI_GW 50ms derived-output publishing rule. |
