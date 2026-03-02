@@ -3,7 +3,7 @@
 **Document ID**: PROJ-0301-SFA
 **ISO 26262 Reference**: Part 4, Cl.7 (System Design)
 **ASPICE Reference**: SYS.3 (System Architectural Design)
-**Version**: 3.13
+**Version**: 3.14
 **Date**: 2026-03-02
 **Status**: Draft
 **Project Title**: 주행 상황 실시간 경고 시스템
@@ -84,25 +84,25 @@
 | Func_008,009,033~039 | Req_008,009,033~039 | BCM_AMBIENT_CTRL | selectedAlertLevel, selectedAlertType, navDirection, baseZoneContext, timeoutClear | 경고 등급별 색상/패턴 적용, 전환 완화, 복원 | ambientMode, ambientColor, ambientPattern | 출력: ambientMode, ambientColor, ambientPattern |
 | Func_005,019~021,026,040 | Req_005,019~021,026,040 | CLU_HMI_CTRL | selectedAlertType, emergencyDirection, duplicatePopupGuard, warningTextCode | 경고 문구/종류/방향/양보 메시지 표시 | warningTextCode | 출력: warningTextCode |
 | Func_041, Func_042, Func_043 | Req_041, Req_042, Req_043 | SIL_TEST_CTRL | testScenario | 시나리오 실행, CAN+ETH 검증, 판정 기록 | scenarioResult | 출력: scenarioResult |
-| Func_101 | Req_101 | ENGINE_CTRL | ignitionState | 시동 상태 반영 | engineState | 입력: ignitionState / 출력: engineState |
-| Func_102 | Req_102 | TRANSMISSION_CTRL | gearInput | 기어 상태 반영 | gearState | 입력: gearInput / 출력: gearState |
-| Func_103 | Req_103 | ACCEL_CTRL | accelPedal | 가속 입력 반영 | accelRequest | 입력: accelPedal / 출력: accelRequest |
-| Func_104 | Req_104 | BRAKE_CTRL | brakePedal | 제동 입력 반영 | brakeRequest | 입력: brakePedal / 출력: brakeRequest |
-| Func_105 | Req_105 | STEERING_CTRL | steeringInput | 조향 입력 반영 | steeringState | 입력: steeringInput / 출력: steeringState |
-| Func_106 | Req_106 | HAZARD_CTRL | hazardSwitch | 비상등 기본 제어 | hazardState | 입력: hazardSwitch / 출력: hazardState |
-| Func_107 | Req_107 | WINDOW_CTRL | windowCommand | 창문 기본 제어 | windowState | 입력: windowCommand / 출력: windowState |
-| Func_108 | Req_108 | DRIVER_STATE_CTRL | driverStateLevel | 운전자 상태 전달 | driverStateInfo | 입력: driverStateLevel / 출력: driverStateInfo |
-| Func_109 | Req_109 | CLUSTER_BASE_CTRL | vehicleSpeed, gearState, warningTextCode | 클러스터 기본 표시 | clusterBaseDisplay | 입력: vehicleSpeed, gearState / 출력: clusterBaseDisplay |
-| Func_110 | Req_110 | DOMAIN_GW_ROUTER | domainInputFrames | 도메인 게이트웨이 전달 | domainOutputFrames | 입력: domainInputFrames / 출력: domainOutputFrames |
-| Func_111 | Req_111 | DOMAIN_BOUNDARY_MGR | routingPolicy | 도메인 경계 유지 | boundaryStatus | 입력: routingPolicy / 출력: boundaryStatus |
-| Func_112 | Req_112 | VEHICLE_BASE_TEST_CTRL | baseTestScenario | 차량 기본 기능 SIL 검증 | baseScenarioResult | 입력: baseTestScenario / 출력: baseScenarioResult |
-| Func_113 | Req_113 | BODY_GW | cabinSetTemp, blowerLevel, acCompressorOn, ventMode | HVAC 상태/제어 프레임 반영 | hvacState | 입력: cabinSetTemp, blowerLevel, acCompressorOn, ventMode / 출력: hvacState |
-| Func_114 | Req_114 | DRIVER_STATE_CTRL | driverSeatPos, passengerSeatPos, seatHeatLevel, seatVentLevel | 시트 상태/제어 프레임 반영 | seatState | 입력: driverSeatPos, passengerSeatPos, seatHeatLevel, seatVentLevel / 출력: seatState |
-| Func_115 | Req_115 | WINDOW_CTRL | mirrorFoldState, mirrorHeatState, mirrorAdjustAxis | 미러 상태 프레임 반영 | mirrorState | 입력: mirrorFoldState, mirrorHeatState, mirrorAdjustAxis / 출력: mirrorState |
-| Func_116 | Req_116 | WINDOW_CTRL | doorControlCmd, doorLockState, doorOpenWarn | 도어 제어/잠금/열림 상태 반영 | doorStateMask | 입력: doorControlCmd, doorLockState, doorOpenWarn / 출력: doorStateMask |
-| Func_117 | Req_117 | BCM_AMBIENT_CTRL | frontWiperState, rearWiperState, rainSenseLevel, autoHeadlampReq | 와이퍼/우적 연동 상태 반영 | wiperInterval | 입력: frontWiperState, rearWiperState, rainSenseLevel, autoHeadlampReq / 출력: wiperInterval |
-| Func_118 | Req_118 | DRIVER_STATE_CTRL | immobilizerState, alarmArmState, intrusionDetect | 이모빌라이저/경보 상태 반영 | securityState | 입력: immobilizerState, alarmArmState, intrusionDetect / 출력: securityState |
-| Func_119 | Req_119 | CLU_HMI_CTRL | audioFocusOwner, voiceAssistState, ttsState, ttsPriority | 오디오 포커스/음성비서/TTS 상태 반영 | warningTextCode | 입력: audioFocusOwner, voiceAssistState, ttsState, ttsPriority / 출력: warningTextCode |
+| Func_101 | Req_101 | ENGINE_CTRL | IgnitionState | 시동 상태 반영 | EngineState | 입력: IgnitionState / 출력: EngineState |
+| Func_102 | Req_102 | TRANSMISSION_CTRL | GearInput | 기어 상태 반영 | GearState | 입력: GearInput / 출력: GearState |
+| Func_103 | Req_103 | ACCEL_CTRL | AccelPedal | 가속 입력 반영 | AccelRequest | 입력: AccelPedal / 출력: AccelRequest |
+| Func_104 | Req_104 | BRAKE_CTRL | BrakePedal | 제동 입력 반영 | BrakePressure | 입력: BrakePedal / 출력: BrakePressure |
+| Func_105 | Req_105 | STEERING_CTRL | steeringInput | 조향 입력 반영 | SteeringState | 입력: steeringInput / 출력: SteeringState |
+| Func_106 | Req_106 | HAZARD_CTRL | HazardSwitch | 비상등 기본 제어 | HazardState | 입력: HazardSwitch / 출력: HazardState |
+| Func_107 | Req_107 | WINDOW_CTRL | WindowCommand | 창문 기본 제어 | WindowState | 입력: WindowCommand / 출력: WindowState |
+| Func_108 | Req_108 | DRIVER_STATE_CTRL | DriverStateLevel | 운전자 상태 전달 | DriverStateInfo | 입력: DriverStateLevel / 출력: DriverStateInfo |
+| Func_109 | Req_109 | CLUSTER_BASE_CTRL | ClusterSpeed, ClusterGear, warningTextCode | 클러스터 기본 표시 | ClusterStatus | 입력: ClusterSpeed, ClusterGear, warningTextCode / 출력: ClusterStatus |
+| Func_110 | Req_110 | DOMAIN_GW_ROUTER | RoutingPolicy | 도메인 게이트웨이 전달 | BodyGatewayRoute | 입력: RoutingPolicy / 출력: BodyGatewayRoute |
+| Func_111 | Req_111 | DOMAIN_BOUNDARY_MGR | RoutingPolicy | 도메인 경계 유지 | BoundaryStatus | 입력: RoutingPolicy / 출력: BoundaryStatus |
+| Func_112 | Req_112 | VEHICLE_BASE_TEST_CTRL | BaseScenarioId | 차량 기본 기능 SIL 검증 | BaseScnResult | 입력: BaseScenarioId / 출력: BaseScnResult |
+| Func_113 | Req_113 | BODY_GW | CabinSetTemp, BlowerLevel, AcCompressorReq, VentMode | HVAC 상태/제어 프레임 반영 | CabinTemp | 입력: CabinSetTemp, BlowerLevel, AcCompressorReq, VentMode / 출력: CabinTemp |
+| Func_114 | Req_114 | DRIVER_STATE_CTRL | DriverSeatPos, PassengerSeatPos, SeatHeatLevel, SeatVentLevel | 시트 상태/제어 프레임 반영 | DriverStateInfo | 입력: DriverSeatPos, PassengerSeatPos, SeatHeatLevel, SeatVentLevel / 출력: DriverStateInfo |
+| Func_115 | Req_115 | WINDOW_CTRL | MirrorFoldState, MirrorHeatState, MirrorAdjAxis | 미러 상태 프레임 반영 | WindowState | 입력: MirrorFoldState, MirrorHeatState, MirrorAdjAxis / 출력: WindowState |
+| Func_116 | Req_116 | WINDOW_CTRL | DoorUnlockCmd, DoorLockState, DoorOpenWarn | 도어 제어/잠금/열림 상태 반영 | DoorStateMask | 입력: DoorUnlockCmd, DoorLockState, DoorOpenWarn / 출력: DoorStateMask |
+| Func_117 | Req_117 | BCM_AMBIENT_CTRL | FrontWiperState, RearWiperState, RainSensorLevel, AutoHeadlampReq | 와이퍼/우적 연동 상태 반영 | WiperInterval | 입력: FrontWiperState, RearWiperState, RainSensorLevel, AutoHeadlampReq / 출력: WiperInterval |
+| Func_118 | Req_118 | DRIVER_STATE_CTRL | ImmoState, AlarmArmed, AlarmTrigger, AlarmZone | 이모빌라이저/경보 상태 반영 | DriverStateInfo | 입력: ImmoState, AlarmArmed, AlarmTrigger, AlarmZone / 출력: DriverStateInfo |
+| Func_119 | Req_119 | CLU_HMI_CTRL | AudioFocusOwner, VoiceAssistState, TtsState, TtsLangId | 오디오 포커스/음성비서/TTS 상태 반영 | warningTextCode | 입력: AudioFocusOwner, VoiceAssistState, TtsState, TtsLangId / 출력: warningTextCode |
 
 ## 2-1. Req-Func 1:1 감사 매핑 표
 
@@ -236,6 +236,7 @@
 
 | 버전 | 날짜 | 변경 사항 |
 |---|---|---|
+| 3.14 | 2026-03-02 | `Func_101~Func_119` 상세표의 입출력 변수를 0304 표준 Name으로 정합화(`BaseScenarioId/BaseScnResult`, `AcCompressorReq`, `DoorUnlockCmd`, `ImmoState`, `TtsLangId` 등)하고 누락 변수명을 제거. |
 | 3.13 | 2026-03-02 | V2 추적 밀도 보강 1차: `Req_113~Req_119`에 대응하는 `Func_113~Func_119`(HVAC/Seat/Mirror/Door/Wiper-Rain/Security/Audio)를 하단 상세표 및 1:1 감사 매핑에 추가. 상단 노드 설명도 기본 기능 확장 범위로 정합화. |
 | 2.0 | 2026-02-25 | 프로젝트 최신 스코프 기준 전면 재작성. 노드별 Input-Processing-Output 구조, Func/Req 연결, 핵심 시나리오 체인, 0302 연계 체크포인트 추가 |
 | 3.0 | 2026-02-25 | 상단 공식 표준 양식 반영, 하단 상세 추적 표 분리 |

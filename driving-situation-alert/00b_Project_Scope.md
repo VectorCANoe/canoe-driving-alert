@@ -1,8 +1,8 @@
-﻿# 프로젝트 범위 및 검증 전략 (Project Scope and Verification Strategy)
+# 프로젝트 범위 및 검증 전략 (Project Scope and Verification Strategy)
 
 **Document ID**: PROJ-00b-PS
-**Version**: 2.4
-**Date**: 2026-02-28
+**Version**: 2.5
+**Date**: 2026-03-02
 **Status**: Released
 **Project Title**: 주행 상황 실시간 경고 시스템
 **Subtitle**: 구간 정보 및 긴급차량 접근 기반 앰비언트·클러스터 경보
@@ -96,9 +96,18 @@ WARN_ARB_MGR
 
 ---
 
+## 5. 요구 분류/안전 프로파일 운영 기준
+
+- 본 프로젝트의 요구사항 분류는 `Functional`, `Non-Functional`, `Interface`, `Verification-Acceptance`로 운영한다.
+- `Req_041~Req_043`은 제품 기능 추가 요구가 아니라 고객 요구 검증을 위한 인수 조건으로 관리한다.
+- 안전등급(QM/ASIL)은 HARA 근거 기반으로 확정하며, HARA 완료 전에는 `Provisional-QM`으로 관리한다.
+- 분류/안전 프로파일의 단일 기준 문서는 `00c_Req_Classification_and_Safety_Profile.md`를 사용한다.
+
+---
+
 ## 개정 이력
 
-- 2.5 (2026-03-01): 상위 범위 문서 표기를 `EMS_ALERT` 논리 단말 기준으로 통일하고 내부 TX/RX 모듈은 03계열 하단 보강표 분리 원칙으로 정리.
+- 2.5 (2026-03-02): 상위 범위 문서 표기를 `EMS_ALERT` 논리 단말 기준으로 통일하고 내부 TX/RX 모듈은 03계열 하단 보강표 분리 원칙으로 정리. 요구 분류/안전 프로파일 운영 기준(Req Type, Req_041~043 성격, HARA 전 Provisional 정책, 00c 참조)을 추가.
 - 2.4 (2026-02-28): 멘토링 피드백 반영으로 Vehicle Baseline 기능군(시동/기어/입력/표시)을 프로젝트 범위에 추가.
 - 2.3 (2026-02-28): Navigation Context 입력에 `gSpeedLimit`을 추가해 Req_010 과속 판정 기준(`vehicleSpeed > speedLimit`)과 0302/0303/0304 체인을 정합화.
 - 2.2 (2026-02-26): SelectedAlertContext 출력 경로의 도메인 CAN 역할(Body 0x210 / Infotainment 0x220)을 명시해 0302/0303/04와 정합화.
