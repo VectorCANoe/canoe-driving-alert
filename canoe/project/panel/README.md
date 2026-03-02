@@ -1,4 +1,4 @@
-# project/panel
+﻿# project/panel
 
 CANoe panel artifacts for this project.
 
@@ -8,6 +8,22 @@ CANoe panel artifacts for this project.
 - `SDV_Render_Debug.xvp`: UiRender adapter debug panel
 - `SDV_Demo_Stage.xvp`: demo-stage visualization panel (road + moving vehicle object)
 - `SDV_Cluster_View.xvp`: cluster-focused visualization panel (warning/direction/pattern)
+
+## Skin Assets
+- `Bitmaps/DashboardCombi.png`
+- `Bitmaps/DashboardCircleBlack.png`
+- `Bitmaps/warnLevelFront.png`
+- `Bitmaps/warnLevelRear.png`
+- `Bitmaps/alert3.bmp`
+- `Bitmaps/StageDashboard.png`
+- `Bitmaps/VehicleStrip11.png`
+- `Bitmaps/ZoneBadge4.png`
+- `Bitmaps/FlowBadge3.png`
+- `Bitmaps/VehicleClassStrip8.png`
+- Source reference:
+- `reference/samples/vector_samples_19_4_10/ADAS/ADASSystem/Panels/Bitmaps`
+- `reference/samples/vector_samples_19_4_10/SOA/SOASystem/Panels/BMP`
+- `reference/samples/vector_samples_19_4_10/CAN/CANBasic/Panels/Bitmaps`
 
 ## Panel Split
 - Validation panels: `SDV_Control.xvp`, `SDV_Monitor.xvp`, `SDV_Render_Debug.xvp`
