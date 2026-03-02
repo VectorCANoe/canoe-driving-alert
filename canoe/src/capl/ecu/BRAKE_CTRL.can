@@ -4,17 +4,81 @@ includes
 
 variables
 {
+  msTimer tBrakeCycle;
   int gBrakePedal;
+  int gWheelSpdFL;
+  int gLastBrakePedal;
 }
 
 on start
 {
-  gBrakePedal = 0;
+  gBrakePedal    = 0;
+  gWheelSpdFL    = 0;
+  gLastBrakePedal = -1;
+  setTimer(tBrakeCycle, 100);
   write("[BRAKE_CTRL] start");
 }
 
 on message frmPedalInputCanMsg
 {
   gBrakePedal = this.BrakePedal;
+  if (gBrakePedal < 0)   gBrakePedal = 0;
+  if (gBrakePedal > 100) gBrakePedal = 100;
 }
 
+on message frmWheelSpeedMsg
+{
+  gWheelSpdFL = this.WheelSpdFL;
+}
+
+on timer tBrakeCycle
+{
+  message frmBrakeStatusMsg mStatus;
+  message frmAbsStateMsg    mAbs;
+  message frmEscStateMsg    mEsc;
+  message frmBrakeTempMsg   mTemp;
+  message frmBrakeWearMsg   mWear;
+  int brakePressure;
+  int absActive;
+  int espActive;
+  int absSlip;
+
+  brakePressure = gBrakePedal * 2;
+  if (brakePressure > 255) brakePressure = 255;
+
+  absActive = ((gBrakePedal > 80) && (gWheelSpdFL > 10)) ? 1 : 0;
+  absSlip   = absActive ? ((gBrakePedal - 80) & 0x3F) : 0;
+  espActive = ((gBrakePedal > 40) && ((int)@Core::steeringInputNorm == 1)) ? 1 : 0;
+
+  mStatus.BrakePressure = brakePressure;
+  mStatus.BrakeMode     = (gBrakePedal > 80) ? 2 : ((gBrakePedal > 0) ? 1 : 0);
+  mStatus.AbsActive     = absActive;
+  mStatus.EspActive     = espActive;
+  output(mStatus);
+
+  mAbs.AbsCtrlState   = absActive ? 2 : 0;
+  mAbs.AbsSlipLevel   = absSlip;
+  mAbs.AbsPressureCmd = absActive ? brakePressure : 0;
+  output(mAbs);
+
+  mEsc.EscCtrlState    = espActive ? 2 : 0;
+  mEsc.EscIntervention = espActive ? ((gBrakePedal - 40) & 0x3F) : 0;
+  mEsc.EscYawTarget    = 128;
+  output(mEsc);
+
+  mTemp.BrakeTempFL = 30 + (gBrakePedal / 5);
+  mTemp.BrakeTempFR = 30 + (gBrakePedal / 5);
+  output(mTemp);
+
+  mWear.BrakePadWearLvl = 10;
+  output(mWear);
+
+  if (gBrakePedal != gLastBrakePedal)
+  {
+    write("[BRAKE_CTRL] pedal=%d pressure=%d abs=%d esp=%d",
+          gBrakePedal, brakePressure, absActive, espActive);
+    gLastBrakePedal = gBrakePedal;
+  }
+
+  setTimer(tBrakeCycle, 100);
+}
