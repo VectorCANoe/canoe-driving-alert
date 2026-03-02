@@ -20,6 +20,9 @@ CANoe panel artifacts for this project.
 - `Bitmaps/ZoneBadge4.png`
 - `Bitmaps/FlowBadge3.png`
 - `Bitmaps/VehicleClassStrip8.png`
+- `Bitmaps/AmbientColorRail8.png`
+- `Bitmaps/AmbientPatternRail8.png`
+- `Bitmaps/AmbientPulseGlow4.png`
 - Source reference:
 - `reference/samples/vector_samples_19_4_10/ADAS/ADASSystem/Panels/Bitmaps`
 - `reference/samples/vector_samples_19_4_10/SOA/SOASystem/Panels/BMP`
