@@ -3,8 +3,8 @@
 **Document ID**: PROJ-0301-SFA
 **ISO 26262 Reference**: Part 4, Cl.7 (System Design)
 **ASPICE Reference**: SYS.3 (System Architectural Design)
-**Version**: 3.12
-**Date**: 2026-03-01
+**Version**: 3.13
+**Date**: 2026-03-02
 **Status**: Draft
 **Project Title**: 주행 상황 실시간 경고 시스템
 **Subtitle**: 구간 정보 및 긴급차량 접근 기반 앰비언트·클러스터 경보
@@ -17,7 +17,7 @@
 
 ## 작성 원칙
 
-- 본 문서는 03_Function_definition.md의 Func_001~Func_043을 노드 내부 동작 관점으로 분해한다.
+- 본 문서는 03_Function_definition.md의 Func_001~Func_119를 노드 내부 동작 관점으로 분해한다.
 - 각 노드의 입력-처리-출력을 명확히 정의해 0302의 Tx/Rx 흐름 설계로 연결한다.
 - 요구사항(What) 문장을 반복하지 않고, 시스템 동작 로직(How)만 기술한다.
 - 상단 표는 공식 표준 양식의 열 구성(노드/기능 상세/비고)을 유지한다.
@@ -51,18 +51,18 @@
 | ETH_SWITCH | Ethernet 백본 스위칭 및 도메인 게이트웨이 전달 허브 | Ethernet 프레임 분배 |
 | CHASSIS_GW | Chassis CAN 입력을 Ethernet 정규 메시지로 변환 | CAN->ETH 변환 |
 | INFOTAINMENT_GW | Infotainment CAN 입력을 Ethernet 정규 메시지로 변환 | CAN->ETH 변환 |
-| BODY_GW | 중재 결과 Ethernet 수신 후 Body CAN 출력 메시지 생성 | ETH->CAN 변환 |
+| BODY_GW | 중재 결과 Ethernet 수신 후 Body CAN 출력 메시지 생성(HVAC/Seat/Mirror/Door/Wiper/Security 포함) | ETH->CAN 변환 |
 | IVI_GW | 중재 결과 Ethernet 수신 후 Cluster CAN 출력 메시지 생성 | ETH->CAN 변환 |
 | DOMAIN_GW_ROUTER | 도메인 간 입력/출력 프레임 전달 경로 관리 | Gateway Routing |
 | DOMAIN_BOUNDARY_MGR | 도메인 통신 경계 정책 유지 및 충돌 차단 | Boundary Control |
 |  |  | Body |
 | BCM_AMBIENT_CTRL | 중재 결과 기반 앰비언트 경고 패턴 적용 | 색상/패턴 반영 |
 | HAZARD_CTRL | 비상등 On/Off 상태 처리 | 차량 기본 동작 |
-| WINDOW_CTRL | 창문 개폐 상태 처리 | 차량 기본 동작 |
-| DRIVER_STATE_CTRL | 운전자 상태 입력 전달 | 차량 기본 동작 |
+| WINDOW_CTRL | 창문/도어/미러 상태 처리 | 차량 기본 동작 |
+| DRIVER_STATE_CTRL | 운전자/시트/보안 상태 입력 전달 | 차량 기본 동작 |
 |  |  | Infotainment |
 | NAV_CONTEXT_MGR | 내비게이션 구간/방향/거리/제한속도 기반 컨텍스트 갱신 | 구간 상태 전환 |
-| CLU_HMI_CTRL | 운전자 경고 문구 및 안내 정보 표시 | 원인/방향/유형 표시 |
+| CLU_HMI_CTRL | 운전자 경고 문구/안내 및 오디오 상태 정보 표시 | 원인/방향/유형/오디오 상태 표시 |
 | CLUSTER_BASE_CTRL | 속도/기어/기본 상태 표시 | 차량 기본 동작 |
 |  |  | Actual Device |
 | Ambient Lights | 실제 앰비언트 장치가 제어 신호를 수신해 점등/패턴 동작 수행 | frmAmbientControlMsg(0x210) 반영 |
@@ -96,6 +96,13 @@
 | Func_110 | Req_110 | DOMAIN_GW_ROUTER | domainInputFrames | 도메인 게이트웨이 전달 | domainOutputFrames | 입력: domainInputFrames / 출력: domainOutputFrames |
 | Func_111 | Req_111 | DOMAIN_BOUNDARY_MGR | routingPolicy | 도메인 경계 유지 | boundaryStatus | 입력: routingPolicy / 출력: boundaryStatus |
 | Func_112 | Req_112 | VEHICLE_BASE_TEST_CTRL | baseTestScenario | 차량 기본 기능 SIL 검증 | baseScenarioResult | 입력: baseTestScenario / 출력: baseScenarioResult |
+| Func_113 | Req_113 | BODY_GW | cabinSetTemp, blowerLevel, acCompressorOn, ventMode | HVAC 상태/제어 프레임 반영 | hvacState | 입력: cabinSetTemp, blowerLevel, acCompressorOn, ventMode / 출력: hvacState |
+| Func_114 | Req_114 | DRIVER_STATE_CTRL | driverSeatPos, passengerSeatPos, seatHeatLevel, seatVentLevel | 시트 상태/제어 프레임 반영 | seatState | 입력: driverSeatPos, passengerSeatPos, seatHeatLevel, seatVentLevel / 출력: seatState |
+| Func_115 | Req_115 | WINDOW_CTRL | mirrorFoldState, mirrorHeatState, mirrorAdjustAxis | 미러 상태 프레임 반영 | mirrorState | 입력: mirrorFoldState, mirrorHeatState, mirrorAdjustAxis / 출력: mirrorState |
+| Func_116 | Req_116 | WINDOW_CTRL | doorControlCmd, doorLockState, doorOpenWarn | 도어 제어/잠금/열림 상태 반영 | doorStateMask | 입력: doorControlCmd, doorLockState, doorOpenWarn / 출력: doorStateMask |
+| Func_117 | Req_117 | BCM_AMBIENT_CTRL | frontWiperState, rearWiperState, rainSenseLevel, autoHeadlampReq | 와이퍼/우적 연동 상태 반영 | wiperInterval | 입력: frontWiperState, rearWiperState, rainSenseLevel, autoHeadlampReq / 출력: wiperInterval |
+| Func_118 | Req_118 | DRIVER_STATE_CTRL | immobilizerState, alarmArmState, intrusionDetect | 이모빌라이저/경보 상태 반영 | securityState | 입력: immobilizerState, alarmArmState, intrusionDetect / 출력: securityState |
+| Func_119 | Req_119 | CLU_HMI_CTRL | audioFocusOwner, voiceAssistState, ttsState, ttsPriority | 오디오 포커스/음성비서/TTS 상태 반영 | warningTextCode | 입력: audioFocusOwner, voiceAssistState, ttsState, ttsPriority / 출력: warningTextCode |
 
 ## 2-1. Req-Func 1:1 감사 매핑 표
 
@@ -156,6 +163,13 @@
 | Req_110 | Func_110 | DOMAIN_GW_ROUTER | 도메인 게이트웨이 전달 |
 | Req_111 | Func_111 | DOMAIN_BOUNDARY_MGR | 도메인 경계 유지 |
 | Req_112 | Func_112 | VEHICLE_BASE_TEST_CTRL | 차량 기본 기능 SIL 검증 |
+| Req_113 | Func_113 | BODY_GW | 공조 상태 반영 |
+| Req_114 | Func_114 | DRIVER_STATE_CTRL | 시트 상태 반영 |
+| Req_115 | Func_115 | WINDOW_CTRL | 미러 상태 반영 |
+| Req_116 | Func_116 | WINDOW_CTRL | 도어 제어 상태 반영 |
+| Req_117 | Func_117 | BCM_AMBIENT_CTRL | 와이퍼/우적 연동 반영 |
+| Req_118 | Func_118 | DRIVER_STATE_CTRL | 보안 상태 반영 |
+| Req_119 | Func_119 | CLU_HMI_CTRL | 오디오 상태 반영 |
 
 ---
 
@@ -222,6 +236,7 @@
 
 | 버전 | 날짜 | 변경 사항 |
 |---|---|---|
+| 3.13 | 2026-03-02 | V2 추적 밀도 보강 1차: `Req_113~Req_119`에 대응하는 `Func_113~Func_119`(HVAC/Seat/Mirror/Door/Wiper-Rain/Security/Audio)를 하단 상세표 및 1:1 감사 매핑에 추가. 상단 노드 설명도 기본 기능 확장 범위로 정합화. |
 | 2.0 | 2026-02-25 | 프로젝트 최신 스코프 기준 전면 재작성. 노드별 Input-Processing-Output 구조, Func/Req 연결, 핵심 시나리오 체인, 0302 연계 체크포인트 추가 |
 | 3.0 | 2026-02-25 | 상단 공식 표준 양식 반영, 하단 상세 추적 표 분리 |
 | 3.1 | 2026-02-25 | 상단 표를 이미지 표준 구조로 재정렬, 도메인 묶음(Powertrain/Chassis/Body/Infotainment/Actual Device) 반영 |
