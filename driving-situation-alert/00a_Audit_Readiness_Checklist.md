@@ -1,7 +1,7 @@
 # 감사 준비 체크리스트 (Audit Readiness Checklist)
 
 **Document ID**: PROJ-00A-ARC  
-**Version**: 1.10  
+**Version**: 1.11  
 **Date**: 2026-03-02  
 **Status**: Draft  
 **Project Title**: 주행 상황 실시간 경고 시스템
@@ -47,15 +47,15 @@
 |---|---|---|---|
 | `00_VModel_Mapping.md` | 4.3 | 2026-02-28 | V-model 매핑 |
 | `00b_Project_Scope.md` | 2.6 | 2026-03-02 | 범위/제외 + 분류 운영 기준 |
-| `00c_Req_Classification_and_Safety_Profile.md` | 1.2 | 2026-03-02 | ISO26262/ASPICE 분류 기준 |
+| `00c_Req_Classification_and_Safety_Profile.md` | 1.3 | 2026-03-02 | ISO26262/ASPICE 분류 기준 |
 | `00d_HARA_Worksheet.md` | 1.1 | 2026-03-02 | HC-01~HC-05 S/E/C + Safety Goal + 검증 링크 |
 | `01_Requirements.md` | 5.15 | 2026-03-02 | Req+VC 기준 |
 | `03_Function_definition.md` | 4.16 | 2026-03-02 | 기능 정의 |
 | `0301_SysFuncAnalysis.md` | 3.14 | 2026-03-02 | 노드 기능 분석 |
 | `0302_NWflowDef.md` | 3.9 | 2026-03-02 | 네트워크 흐름 |
 | `0303_Communication_Specification.md` | 3.9 | 2026-03-02 | 통신 명세 |
-| `0304_System_Variables.md` | 2.11 | 2026-03-02 | 변수/추적 |
-| `04_SW_Implementation.md` | 2.8 | 2026-02-28 | 구현 연결 |
+| `0304_System_Variables.md` | 2.12 | 2026-03-02 | 변수/추적 |
+| `04_SW_Implementation.md` | 2.10 | 2026-03-02 | 구현 연결 |
 | `05_Unit_Test.md` | 2.10 | 2026-03-02 | UT |
 | `06_Integration_Test.md` | 4.10 | 2026-03-02 | IT |
 | `07_System_Test.md` | 5.10 | 2026-03-02 | ST |
@@ -101,6 +101,7 @@
 
 | 버전 | 날짜 | 변경 사항 |
 |---|---|---|
+| 1.11 | 2026-03-02 | ISO26262/ASPICE 우선 정합 반영: 00c(1.3), 0304(2.12), 04(2.10) 버전 매트릭스 동기화. |
 | 1.10 | 2026-03-02 | 05/06/07 `Req_113~Req_119` 보강 반영: 테스트 Req 커버리지 수치를 `62/62`로 갱신하고 확장 요구 커버리지 점검 항목을 DONE 처리. 문서 버전 매트릭스(03/05/06/07) 최신화. |
 | 1.9 | 2026-03-02 | 01/03/05/06/07 버전 업데이트(활성 Req 범위 잠금 및 UT/IT/ST 증적 경로 규칙 반영) 정합화. |
 | 1.8 | 2026-03-02 | 01~07 착수 전 고정값(F섹션) 추가: HARA 승인 게이트/증적 경로 규칙/활성 Req 범위 잠금 명시. |

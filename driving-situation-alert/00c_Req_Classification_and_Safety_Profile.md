@@ -3,7 +3,7 @@
 **Document ID**: PROJ-00C-RCSP  
 **ISO 26262 Reference**: Part 3 (Concept), Part 4 (System), Part 8 (Supporting Process)  
 **ASPICE Reference**: SYS.2, SYS.3, SWE.3, SUP.1, SUP.10  
-**Version**: 1.2  
+**Version**: 1.3  
 **Date**: 2026-03-02  
 **Status**: Draft  
 **Project Title**: 주행 상황 실시간 경고 시스템  
@@ -29,6 +29,7 @@
 | Req Type | Non-Functional | 시간/안정성/반복억제/결정론 등 품질 속성 | Req_006, Req_024, Req_032, Req_034 |
 | Req Type | Interface | 도메인 경계, 메시지 전달, 상태 반영 인터페이스 요구 | Req_007, Req_110, Req_111, Req_113~119 |
 | Req Type | Verification-Acceptance | 고객 요구 검증을 수행/판정/기록하기 위한 인수 조건 | Req_041~043 |
+| Req Type | Verification-Harness | SIL 검증 편의를 위한 자극/렌더/진단 보조 항목(제품 기능 요구와 분리) | `project.sysvars`의 `Test/*`, `UiRender/*`, `Driver/gazeActive`, `V2X/policeDispatch` |
 | Safety Class | QM | 위해도 분석상 안전 무결성 등급이 필요하지 않은 항목 | 일부 표시 품질/운영 요구 |
 | Safety Class | Provisional-QM | HARA 완료 전 임시 분류 | 현재 기본 운영값 |
 | Safety Class | ASIL-A/B/C/D | HARA(S/E/C)로 확정된 안전 무결성 등급 | HARA 완료 후 확정 |
@@ -41,12 +42,14 @@
 | CR-01 | 요구가 시스템 동작 결과를 직접 바꾸는가? | Functional 우선 분류 | CR-02로 이동 |
 | CR-02 | 요구의 핵심이 시간/안정성/반복억제 기준인가? | Non-Functional 분류 | CR-03으로 이동 |
 | CR-03 | 요구의 핵심이 메시지/경계/도메인 전달인가? | Interface 분류 | CR-04로 이동 |
-| CR-04 | 요구의 핵심이 검증 수행성/판정/기록인가? | Verification-Acceptance 분류 | Review 필요 |
+| CR-04 | 요구의 핵심이 검증 수행성/판정/기록인가? | Verification-Acceptance 분류 | CR-05로 이동 |
+| CR-05 | 항목이 SIL 전용 자극/렌더/보조 변수인가? | Verification-Harness로 분류하고 제품 Req 체인과 분리 | Review 필요 |
 
 운영 규칙:
 - 하나의 Req는 복합 성격을 가질 수 있다. 이 경우 `Primary/Secondary`로 관리한다.
 - 01 본문은 고객 관점(What)으로 유지하고, 분류 근거는 본 문서에서 관리한다.
 - 분류 근거 없는 Req는 리뷰 게이트에서 Reject한다.
+- Verification-Harness 항목은 01의 고객 요구 본문에 직접 추가하지 않고, 04/0304의 구현 보강 섹션에서 관리한다.
 
 ## 5. Safety Profile 운영 규칙
 
@@ -90,6 +93,7 @@
 | Req_041~043 | Verification-Acceptance | Interface | QM | N/A | 01, 05, 06, 07 |
 | Req_101~112 | Functional | Interface | Provisional-QM | In Progress | 01, 03, 0302 |
 | Req_113~119 | Interface | Functional | Provisional-QM | In Progress | 01, 03, 0303, 0304 |
+| N/A (Harness Vars) | Verification-Harness | Interface | QM | N/A | 04, 0304, `canoe/project/sysvars/project.sysvars` |
 
 ## 8. 문서 반영 규칙 (01~07)
 
@@ -98,7 +102,7 @@
 | 01 | 고객 관점 What + VC + Req ID | 구현 코드/내부 변수 상세 |
 | 03/0301 | Func/노드 책임 + Req 연결 | 제품 요구 재서술만 반복 |
 | 0302/0303/0304 | Flow/Comm/Var 계약 + 추적 매핑 | 근거 없는 메시지/변수 추가 |
-| 04 | 구현 책임/타이밍/예외 처리 계약 | 디버그 절차 나열 |
+| 04 | 구현 책임/타이밍/예외 처리 계약 + Verification-Harness 경계 명시 | 디버그 절차 나열 |
 | 05/06/07 | VC 기준 테스트/판정/증적 | Req 미연결 테스트 케이스 |
 
 ## 9. 감사 게이트 (이 문서 기준)
@@ -126,6 +130,7 @@
 
 | 버전 | 날짜 | 변경 사항 |
 |---|---|---|
+| 1.3 | 2026-03-02 | ISO26262/ASPICE 운영 경계 보강: `Verification-Harness` 분류를 추가하고, SIL 전용 변수(`UiRender/*`, `Driver/gazeActive`, `V2X/policeDispatch`)를 제품 Req 체인과 분리 관리하는 규칙(CR-05)을 명시. |
 | 1.2 | 2026-03-02 | 00d HARA 워크시트 생성 반영: 후속 작업 상태를 생성 완료로 갱신하고 운영 연계 기준 보강. |
 | 1.1 | 2026-03-02 | 프로젝트 실무 운영 기준으로 전면 보강: 적용 수준 선언, 분류 판정 규칙, Safety Profile 게이트, ASPICE 운영 매핑, 감사 게이트, 후속 일정 추가. |
 | 1.0 | 2026-03-02 | 신규 작성: Req Type/Safety Class/HARA Status 운영 기준 및 Req 그룹별 안전 프로파일 초안 정의. |

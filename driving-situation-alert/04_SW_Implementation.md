@@ -3,8 +3,8 @@
 **Document ID**: PROJ-04-SI
 **ISO 26262 Reference**: Part 6, Cl.8 (Software Unit Design and Implementation)
 **ASPICE Reference**: SWE.3 (Software Detailed Design and Unit Construction)
-**Version**: 2.8
-**Date**: 2026-02-28
+**Version**: 2.10
+**Date**: 2026-03-02
 **Status**: Draft
 **Project Title**: 주행 상황 실시간 경고 시스템
 **Subtitle**: 구간 정보 및 긴급차량 접근 기반 앰비언트·클러스터 경보
@@ -26,6 +26,7 @@
 - ASPICE SWE.3 BP1~BP8 관점에서 `상세 설계/인터페이스/동적행위/대안평가/추적성/합의/구현규칙`을 명시한다.
 - SIL 단계에서는 Panel/sysvar 경유 자극을 허용하며, 통신 계약(0302/0303/0304)은 유지한 채 ETH `UdpSocket` 기반 입력으로 점진 전환한다.
 - `SIL_TEST_CTRL`/`VEHICLE_BASE_TEST_CTRL`는 Validation Harness이며, `ETH_SWITCH`/도메인 게이트웨이의 통신 변환 역할과 분리한다.
+- `project.sysvars`의 `UiRender/*`, `Driver/gazeActive`, `V2X/policeDispatch`, `V2X/ambulanceDispatch`는 Verification-Harness 입력/렌더 변수로 관리하며 제품 Req 체인(01/03/05~07)과 분리한다.
 
 ---
 
@@ -203,6 +204,18 @@ Emergency Source (logical terminal)
 
 ---
 
+## 4.2 Verification-Harness 변수 (SIL 전용)
+
+| 항목 | Namespace/Name | 용도 | 구현 모듈 | 제품 Req 체인 연결 |
+|---|---|---|---|---|
+| EMS 수동 디스패치 입력 | `V2X/policeDispatch`, `V2X/ambulanceDispatch` | Panel 버튼 기반 긴급 이벤트 주입(송신 트리거) | `EMS_POLICE_TX.can`, `EMS_AMB_TX.can` | 없음(검증 자극 전용) |
+| 운전자 시선 복귀 자극 | `Driver/gazeActive` | SIL 데모에서 경고 해제 경계 동작 자극 | `DRIVER_STATE_CTRL.can` | 없음(검증 자극 전용) |
+| 렌더 출력 버스 | `UiRender/*` (`renderMode`, `renderColor`, `renderPattern`, `renderTextCode`, `renderDirection`, `roadZoneColorCode`, `roadFlowDirection`, `vehicleObjectPos`, `emsBlinkPhase`, `ambientPulsePhase`, `icFlowPhase`, `activeAlertType`) | 패널 시각화 전용 파생 값 | `IVI_GW.can` | 없음(렌더 전용) |
+
+- 본 표 항목은 `00c`의 `Verification-Harness` 분류를 따르며, 감사 시 제품 기능 요구 미연결 항목으로 해석하지 않는다.
+
+---
+
 ## 5. 실행/타이밍 설계
 
 | Task ID | 모듈 | 주기/트리거 | 입력 | 출력 | 타임아웃/조건 |
@@ -301,6 +314,7 @@ Emergency Source (logical terminal)
 
 | 버전 | 날짜 | 변경 사항 |
 |---|---|---|
+| 2.10 | 2026-03-02 | ISO26262/ASPICE 운영 경계 반영: SIL 전용 `Verification-Harness` 변수(`V2X/policeDispatch`, `V2X/ambulanceDispatch`, `Driver/gazeActive`, `UiRender/*`)의 비제품 체인 분류를 작성 원칙/4.2 표로 명시. |
 | 2.9 | 2026-03-01 | 상단 공식 표와 아키텍처 요약의 EMS 표기를 `EMS_ALERT` 논리 단말 기준으로 통일하고, 내부 TX/RX 모듈은 상세 추적표에서만 분리 관리. |
 | 1.0 | 2026-02-23 | 초기 생성(구 스코프 기반) |
 | 2.0 | 2026-02-26 | 옵션1 아키텍처 기준으로 전면 재작성. 구버전 OTA/UDS/DoIP 구현 항목 제거, Func_001~043 구현 추적 표 및 타이밍/예외 처리 규칙 정립 |
