@@ -1,4 +1,4 @@
-VERSION "ETH_Backbone_CAN_STUB_v2.0"
+VERSION "ETH_Backbone_CAN_STUB_v2.1"
 
 
 NS_ :
@@ -30,7 +30,7 @@ NS_ :
 
 BS_:
 
-BU_: EMS_POLICE_TX EMS_AMB_TX EMS_ALERT_RX ETH_SWITCH WARN_ARB_MGR ADAS_WARN_CTRL NAV_CONTEXT_MGR Vector__XXX
+BU_: EMS_POLICE_TX EMS_AMB_TX EMS_ALERT_RX ETH_SWITCH WARN_ARB_MGR ADAS_WARN_CTRL NAV_CONTEXT_MGR CHASSIS_GW SIL_TEST_CTRL Vector__XXX
 
 BO_ 100 frmEmergencyBroadcastMsg: 4 Vector__XXX
  SG_ VehicleType  : 0|4@1+  (1,0) [0|15]  ""    EMS_ALERT_RX
@@ -41,17 +41,35 @@ BO_ 100 frmEmergencyBroadcastMsg: 4 Vector__XXX
  SG_ Direction    : 24|4@1+ (1,0) [0|15]  ""    EMS_ALERT_RX
  SG_ Reserved1    : 28|4@1+ (1,0) [0|0]   ""    Vector__XXX
 
+BO_ 287 frmAdasChassisStatusMsg: 2 ADAS_WARN_CTRL
+ SG_ AdasChassisState : 0|8@1+ (1,0) [0|255] "" CHASSIS_GW
+ SG_ AdasHealthLevel  : 8|8@1+ (1,0) [0|255] "" CHASSIS_GW
+
+BO_ 562 frmEmergencyMonitorMsg: 2 EMS_ALERT_RX
+ SG_ EmergencyContext : 0|8@1+ (1,0) [0|255] "" SIL_TEST_CTRL,CHASSIS_GW
+ SG_ TimeoutClearMon  : 8|1@1+ (1,0) [0|1]   "" SIL_TEST_CTRL,CHASSIS_GW
+ SG_ Reserved0        : 9|7@1+ (1,0) [0|0]   "" Vector__XXX
+
 CM_ BO_ 100 "E100: Emergency vehicle broadcast. Sent by EMS_POLICE_TX (type=1) or EMS_AMB_TX (type=2) on ETH backbone (ch5). Received by EMS_ALERT_RX for priority arbitration. STUB: This file substitutes CANoe.Ethernet backbone using CAN ch5. Delete this file and replace with Ethernet network when CANoe.Ethernet license is available. Interface spec: 0303_Communication_Specification.md E100.";
 CM_ SG_ 100 VehicleType  "1=POLICE 2=AMBULANCE";
 CM_ SG_ 100 Status       "0=CLEAR 1=ACTIVE";
 CM_ SG_ 100 SourceId     "Unique vehicle source ID for tiebreaker.";
 CM_ SG_ 100 EtaSeconds   "Estimated time of arrival in seconds. Lower = higher priority.";
 CM_ SG_ 100 Direction    "0=UNKNOWN 1=FRONT 2=REAR 3=SIDE";
+CM_ BO_ 287 "E287: ADAS chassis status output. Produced by ADAS_WARN_CTRL on ETH backbone. Moved from chassis_can v2 architecture refactor.";
+CM_ SG_ 287 AdasChassisState "Computed ADAS warning level (0=none).";
+CM_ SG_ 287 AdasHealthLevel  "ADAS node health (0=fault 1=ok).";
+CM_ BO_ 562 "E562: Emergency monitor shadow. Produced by EMS_ALERT_RX on ETH backbone. Moved from chassis_can v2 architecture refactor.";
+CM_ SG_ 562 EmergencyContext "Active emergency type mirrored from Core sysvar.";
+CM_ SG_ 562 TimeoutClearMon  "1=timeout clear pulse active.";
 
 BA_DEF_ BO_ "GenMsgCycleTime" INT 0 10000;
 BA_DEF_DEF_ "GenMsgCycleTime" 0;
 BA_ "GenMsgCycleTime" BO_ 100 0;
+BA_ "GenMsgCycleTime" BO_ 287 100;
+BA_ "GenMsgCycleTime" BO_ 562 100;
 
 VAL_ 100 VehicleType 0 "NONE" 1 "POLICE" 2 "AMBULANCE";
 VAL_ 100 Status 0 "CLEAR" 1 "ACTIVE";
 VAL_ 100 Direction 0 "UNKNOWN" 1 "FRONT" 2 "REAR" 3 "SIDE";
+VAL_ 562 TimeoutClearMon 0 "NoClear" 1 "Clear";

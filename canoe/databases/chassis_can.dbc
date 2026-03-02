@@ -29,7 +29,7 @@ NS_ :
 
 BS_:
 
-BU_: SIL_TEST_CTRL CHASSIS_GW ACCEL_CTRL BRAKE_CTRL STEERING_CTRL ADAS_WARN_CTRL DOMAIN_BOUNDARY_MGR Vector__XXX VEHICLE_BASE_TEST_CTRL EMS_POLICE_TX EMS_AMB_TX EMS_ALERT_RX
+BU_: SIL_TEST_CTRL CHASSIS_GW ACCEL_CTRL BRAKE_CTRL STEERING_CTRL ADAS_WARN_CTRL DOMAIN_BOUNDARY_MGR Vector__XXX VEHICLE_BASE_TEST_CTRL
 
 BO_ 256 frmVehicleStateCanMsg: 2 SIL_TEST_CTRL
  SG_ gVehicleSpeed : 0|8@1+ (1,0) [0|255] "km/h" CHASSIS_GW,ADAS_WARN_CTRL
@@ -131,20 +131,11 @@ BO_ 286 frmChassisDiagResMsg: 3 CHASSIS_GW
  SG_ ChsDiagData0     : 8|8@1+ (1,0) [0|255] "" SIL_TEST_CTRL
  SG_ ChsDiagData1     : 16|8@1+ (1,0) [0|255] "" SIL_TEST_CTRL
 
-BO_ 287 frmAdasChassisStatusMsg: 2 ADAS_WARN_CTRL
- SG_ AdasChassisState : 0|8@1+ (1,0) [0|255] "" CHASSIS_GW
- SG_ AdasHealthLevel  : 8|8@1+ (1,0) [0|255] "" CHASSIS_GW
-
 BO_ 288 frmBrakeWearMsg: 1 BRAKE_CTRL
  SG_ BrakePadWearLvl  : 0|8@1+ (1,0) [0|255] "%" CHASSIS_GW
 
 BO_ 289 frmRoadFrictionMsg: 1 CHASSIS_GW
  SG_ RoadFrictionCoef : 0|8@1+ (1,0) [0|255] "0.01" ADAS_WARN_CTRL
-
-BO_ 562 frmEmergencyMonitorMsg: 2 EMS_ALERT_RX
- SG_ EmergencyContext : 0|8@1+ (1,0) [0|255] "" SIL_TEST_CTRL,CHASSIS_GW
- SG_ TimeoutClearMon  : 8|1@1+ (1,0) [0|1] "" SIL_TEST_CTRL,CHASSIS_GW
- SG_ Reserved0        : 9|7@1+ (1,0) [0|0] "" Vector__XXX
 
 CM_ BO_ 256 "Flow_001 core vehicle state input.";
 CM_ BO_ 257 "Flow_002 steering input.";
@@ -167,10 +158,8 @@ CM_ BO_ 283 "Comm_201: suspension state extension.";
 CM_ BO_ 284 "Comm_201: tire pressure extension.";
 CM_ BO_ 285 "Comm_201: chassis diagnostic request.";
 CM_ BO_ 286 "Comm_201: chassis diagnostic response.";
-CM_ BO_ 287 "Comm_201: ADAS chassis status.";
 CM_ BO_ 288 "Comm_201: brake wear extension.";
 CM_ BO_ 289 "Comm_201: road friction extension.";
-CM_ BO_ 562 "Emergency context monitor shadow frame for SIL CAN tracing.";
 
 BA_DEF_ BO_ "GenMsgCycleTime" INT 0 10000;
 BA_DEF_DEF_ "GenMsgCycleTime" 0;
@@ -195,10 +184,8 @@ BA_ "GenMsgCycleTime" BO_ 283 100;
 BA_ "GenMsgCycleTime" BO_ 284 100;
 BA_ "GenMsgCycleTime" BO_ 285 0;
 BA_ "GenMsgCycleTime" BO_ 286 0;
-BA_ "GenMsgCycleTime" BO_ 287 100;
 BA_ "GenMsgCycleTime" BO_ 288 100;
 BA_ "GenMsgCycleTime" BO_ 289 100;
-BA_ "GenMsgCycleTime" BO_ 562 100;
 
 VAL_ 256 gDriveState
   0 "P"
@@ -231,6 +218,3 @@ VAL_ 262 EspActive
   0 "Inactive"
   1 "Active" ;
 
-VAL_ 562 TimeoutClearMon
-  0 "NoClear"
-  1 "Clear" ;
