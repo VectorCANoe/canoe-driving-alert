@@ -1,7 +1,7 @@
 # 감사 준비 체크리스트 (Audit Readiness Checklist)
 
 **Document ID**: PROJ-00A-ARC  
-**Version**: 1.9  
+**Version**: 1.10  
 **Date**: 2026-03-02  
 **Status**: Draft  
 **Project Title**: 주행 상황 실시간 경고 시스템
@@ -19,9 +19,9 @@
 |---|---|---|---|
 | Req 커버리지(03/0301/0302/0303/0304) | 활성 Req(`Req_001~043`, `Req_101~119`) 모두 참조 | 62/62 | OK |
 | Func 커버리지(0301/0302/0303/0304) | 활성 Func(`Func_001~043`, `Func_101~119`) 모두 참조 | 62/62 | OK |
-| Req 커버리지(05) | 활성 Req 62개 모두 참조 | 55/62 | 보완 필요 |
-| Req 커버리지(06) | 활성 Req 62개 모두 참조 | 40/62 | 보완 필요 |
-| Req 커버리지(07) | 활성 Req 62개 모두 참조 | 55/62 | 보완 필요 |
+| Req 커버리지(05) | 활성 Req 62개 모두 참조 | 62/62 | OK |
+| Req 커버리지(06) | 활성 Req 62개 모두 참조 | 62/62 | OK |
+| Req 커버리지(07) | 활성 Req 62개 모두 참조 | 62/62 | OK |
 | 체인 무결성 | `Req -> Func -> Flow -> Comm -> Var -> UT/IT/ST` | 01~04 체인 정합 확인 | OK |
 
 ## B. 요구사항 분류/안전 프로파일 준비도 (ISO 26262 + ASPICE)
@@ -50,15 +50,15 @@
 | `00c_Req_Classification_and_Safety_Profile.md` | 1.2 | 2026-03-02 | ISO26262/ASPICE 분류 기준 |
 | `00d_HARA_Worksheet.md` | 1.1 | 2026-03-02 | HC-01~HC-05 S/E/C + Safety Goal + 검증 링크 |
 | `01_Requirements.md` | 5.15 | 2026-03-02 | Req+VC 기준 |
-| `03_Function_definition.md` | 4.15 | 2026-03-02 | 기능 정의 |
+| `03_Function_definition.md` | 4.16 | 2026-03-02 | 기능 정의 |
 | `0301_SysFuncAnalysis.md` | 3.14 | 2026-03-02 | 노드 기능 분석 |
 | `0302_NWflowDef.md` | 3.9 | 2026-03-02 | 네트워크 흐름 |
 | `0303_Communication_Specification.md` | 3.9 | 2026-03-02 | 통신 명세 |
 | `0304_System_Variables.md` | 2.11 | 2026-03-02 | 변수/추적 |
 | `04_SW_Implementation.md` | 2.8 | 2026-02-28 | 구현 연결 |
-| `05_Unit_Test.md` | 2.9 | 2026-03-02 | UT |
-| `06_Integration_Test.md` | 4.9 | 2026-03-02 | IT |
-| `07_System_Test.md` | 5.9 | 2026-03-02 | ST |
+| `05_Unit_Test.md` | 2.10 | 2026-03-02 | UT |
+| `06_Integration_Test.md` | 4.10 | 2026-03-02 | IT |
+| `07_System_Test.md` | 5.10 | 2026-03-02 | ST |
 
 ## D. 범위 경계(고정)
 
@@ -75,7 +75,7 @@
 
 | 체크 항목 | 담당 | 상태 |
 |---|---|---|
-| 05/07의 `Req_113~118` 누락 체인 보강 | Test Lead | TODO |
+| 05/06/07 확장 요구(`Req_113~119`) 커버리지 유지 점검 | Test Lead | DONE |
 | 06의 Lean IT 범위와 활성 Req 커버리지 정책 확정(필수/권장 분리) | QA Lead | TODO |
 | HARA 후보(HC-01~HC-05) S/E/C 평가표 리뷰 및 ASIL Candidate 승인 | Safety Lead | TODO |
 | Req Safety Class 확정(QM/ASIL) 및 HARA 근거 문서화 | Safety Lead | TODO |
@@ -101,6 +101,7 @@
 
 | 버전 | 날짜 | 변경 사항 |
 |---|---|---|
+| 1.10 | 2026-03-02 | 05/06/07 `Req_113~Req_119` 보강 반영: 테스트 Req 커버리지 수치를 `62/62`로 갱신하고 확장 요구 커버리지 점검 항목을 DONE 처리. 문서 버전 매트릭스(03/05/06/07) 최신화. |
 | 1.9 | 2026-03-02 | 01/03/05/06/07 버전 업데이트(활성 Req 범위 잠금 및 UT/IT/ST 증적 경로 규칙 반영) 정합화. |
 | 1.8 | 2026-03-02 | 01~07 착수 전 고정값(F섹션) 추가: HARA 승인 게이트/증적 경로 규칙/활성 Req 범위 잠금 명시. |
 | 1.7 | 2026-03-02 | 00d HARA 워크시트(v1.0) 연계 반영, 00c 버전 정합(1.2), HARA TODO를 \"작성\"에서 \"리뷰/승인\" 단계로 갱신. |
