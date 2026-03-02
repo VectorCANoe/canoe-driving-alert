@@ -1,7 +1,7 @@
 # 감사 준비 체크리스트 (Audit Readiness Checklist)
 
 **Document ID**: PROJ-00A-ARC  
-**Version**: 1.5  
+**Version**: 1.6  
 **Date**: 2026-03-02  
 **Status**: Draft  
 **Project Title**: 주행 상황 실시간 경고 시스템
@@ -33,13 +33,21 @@
 | VC 정합 | Req별 VC와 05/06/07 연결 | 01 내 VC 정의 완료, 테스트 증적 일부 미기입 | 보완 필요 |
 | ASPICE SYS.2/SYS.3 정합 | 요구(What)와 설계(How) 분리 | 01=What, 03+=How 원칙 유지 | OK |
 
+### B-1. 적용 수준/주장 경계 (Audit Claim Boundary)
+
+| 항목 | 현재 선언 | 판정 |
+|---|---|---|
+| ISO 26262/ASPICE 인증 주장 | 하지 않음 (SIL 실무형 운영 기준만 적용) | OK |
+| Safety Class 확정 상태 | Provisional 단계 (HARA 완료 후 QM/ASIL 확정) | 보완 필요 |
+| 감사 대응 목표 | 체인 무결성 + 분류/근거 일관성 | OK |
+
 ## C. 문서 버전/날짜 정합
 
 | 문서 | Version | Date | 비고 |
 |---|---|---|---|
 | `00_VModel_Mapping.md` | 4.3 | 2026-02-28 | V-model 매핑 |
 | `00b_Project_Scope.md` | 2.5 | 2026-03-02 | 범위/제외 + 분류 운영 기준 |
-| `00c_Req_Classification_and_Safety_Profile.md` | 1.0 | 2026-03-02 | ISO26262/ASPICE 분류 기준 |
+| `00c_Req_Classification_and_Safety_Profile.md` | 1.1 | 2026-03-02 | ISO26262/ASPICE 분류 기준 |
 | `01_Requirements.md` | 5.14 | 2026-03-02 | Req+VC 기준 |
 | `03_Function_definition.md` | 4.14 | 2026-03-02 | 기능 정의 |
 | `0301_SysFuncAnalysis.md` | 3.14 | 2026-03-02 | 노드 기능 분석 |
@@ -68,6 +76,7 @@
 |---|---|---|
 | 05/07의 `Req_113~118` 누락 체인 보강 | Test Lead | TODO |
 | 06의 Lean IT 범위와 활성 Req 커버리지 정책 확정(필수/권장 분리) | QA Lead | TODO |
+| HARA 후보(HC-01~HC-05) S/E/C 평가표 작성 및 Safety Goal 초안 확정 | Safety Lead | TODO |
 | Req Safety Class 확정(QM/ASIL) 및 HARA 근거 문서화 | Safety Lead | TODO |
 | 05/06/07 상단 Pass/Fail, 담당자, 일자 기입 | Validation Lead | TODO |
 
@@ -83,6 +92,7 @@
 
 | 버전 | 날짜 | 변경 사항 |
 |---|---|---|
+| 1.6 | 2026-03-02 | 적용 수준/주장 경계(B-1) 추가, 00c v1.1 정합 반영, HARA 후보 S/E/C 평가 TODO 명시. |
 | 1.5 | 2026-03-02 | ISO26262/ASPICE 관점 보강: 00c 연계 항목 추가, 활성 Req 62개 기준 추적성/테스트 커버리지 재점검, 제출 전 잔여 항목 재정의. |
 | 1.4 | 2026-03-01 | D 섹션 잔여 TODO 3건 종료(07 상단 기록 규칙, 02 이미지 네이밍 고정, 로그/Trace 파일명 규칙 고정). |
 | 1.0 | 2026-02-28 | 초기 작성 |

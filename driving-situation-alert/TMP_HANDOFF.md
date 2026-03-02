@@ -49,9 +49,9 @@
 
 ## 6) Current Status
 - 00_VModel_Mapping.md: Version 4.3 (Released)
-- 00a_Audit_Readiness_Checklist.md: Version 1.5 (Draft)
+- 00a_Audit_Readiness_Checklist.md: Version 1.6 (Draft)
 - 00b_Project_Scope.md: Version 2.5 (Released)
-- 00c_Req_Classification_and_Safety_Profile.md: Version 1.0 (Draft)
+- 00c_Req_Classification_and_Safety_Profile.md: Version 1.1 (Draft)
 - 01_Requirements.md: Version 5.14 (Draft)
 - 02_Concept_design.md: Version 2.4 (In Progress, figure build)
 - 03_Function_definition.md: Version 4.14 (Draft)
