@@ -73,5 +73,96 @@ write("[WARN_ARB_MGR] selected level=%d type=%d", level, alertType);
   - `wait(2~3s) -> get_connection_status -> (running이면 stop_measurement 1회) -> open_configuration 1회 재시도`
 - busy 재시도는 최대 2회까지만 허용하고, 실패 시 상태를 즉시 보고
 
+## 9) 신호 접근 패턴 (Signal Access BP)
+
+> **근거**: Vector CANoe 19.4 공식 샘플 직접 분석
+> - `canoe/reference/vector_samples_19_4_10/CAN/CANBasic/Nodes/engine.can`
+> - `canoe/reference/vector_samples_19_4_10/CAN/CANSystem/CANoe/Nodes/Gateway.can`
+> - `canoe/reference/vector_samples_19_4_10/CAN/CANBasic/Nodes/display.can`
+
+### 두 가지 패턴 비교
+
+| 항목 | `$` 시그널 접근 | `message` + `output()` |
+|------|----------------|------------------------|
+| 레이어 | IL (Interaction Layer) 경유 | Raw CAN 직접 송신 |
+| TX 방식 | `$MsgName::SignalName = value;` | `message M m; m.Signal = v; output(m);` |
+| 주기 관리 | IL이 자동으로 사이클 관리 | 노드가 타이머로 직접 관리 |
+| Vector 권장 용도 | 패널 제어 스크립트, 테스트 시퀀스 | ECU 시뮬레이션 노드 (자체 사이클) |
+| IL 설정 필요 | **필요** (CFG에 IL 구성 필요) | 불필요 |
+
+### Vector 공식 샘플 실사례
+
+```c
+/* CANBasic/engine.can — $ 패턴 (TX, panel-driven) */
+on sysvar sysvar::Engine::EngineStateSwitch
+{
+  $EngineState::OnOff = @this;                              // 신호 직접 대입
+  $EngineState::EngineSpeed = @sysvar::Engine::EngineSpeedEntry;
+}
+
+/* CANBasic/display.can — this 패턴 (RX, on message 내부) */
+on message EngineState
+{
+  if (this.dir == RX)
+    @sysvar::Engine::EngineSpeedDspMeter = this.EngineSpeed / 1000.0;
+}
+
+/* CANSystem/Gateway.can — 완전 한정 $ 패턴 (크로스 버스 게이트웨이) */
+on pdu msgchannel1.EngineData
+{
+  $Comfort::Gateway::Gateway_2::CarSpeed =
+      0.621371 * $PowerTrain::Engine::ABSdata::CarSpeed;   // 버스 간 신호 라우팅
+  $EngineRunning = $IdleRunning;
+}
+```
+
+### 우리 프로젝트 적용 기준
+
+**ECU 시뮬레이션 노드** (`*_CTRL`, `*_GW`, `*_MGR`) → **`message` + `output()` 유지**
+- IL 없이 단일 채널 SIL 환경에서 자체 타이머로 사이클을 직접 관리함
+- `$` 는 IL이 설정된 CFG에서만 실제 CAN 버스에 출력됨
+- 현재 구현이 더 안전하고 동작 보장됨
+
+```c
+/* 우리 프로젝트 표준 — ECU 시뮬 노드 TX */
+on timer tBrakeCycle
+{
+  message frmBrakeStatusMsg mStatus;
+  mStatus.BrakePressure = brakePressure;
+  output(mStatus);               // 직접 송신 — IL 불필요
+  setTimer(tBrakeCycle, 100);
+}
+```
+
+**패널 연동 / 테스트 스크립트** → **`$` 패턴 권장**
+- sysvar 변경에 반응해서 CAN 신호 하나를 즉시 바꿀 때
+- 테스트 시퀀스에서 자극값을 주입할 때
+
+```c
+/* 패널/테스트 스크립트에서 신호 하나 주입할 때 */
+on sysvar sysvar::Chassis::vehicleSpeed
+{
+  $frmVehicleStateCanMsg::gVehicleSpeed = (int)@this;
+}
+```
+
+**RX 신호 읽기** → 항상 **`this.SignalName`** (`on message` 내부)
+
+```c
+on message frmPedalInputCanMsg
+{
+  gAccelPedal = this.AccelPedal;    // on message 내부에서 this 사용
+}
+```
+
+### 요약
+
+| 상황 | 권장 패턴 |
+|------|----------|
+| ECU 시뮬 노드 TX (주기 타이머) | `message` + `output()` ✅ |
+| 패널/sysvar 변화 → 신호 즉시 반영 | `$SignalName = value;` ✅ |
+| 크로스 버스 게이트웨이 라우팅 | `$Cluster::Node::Msg::Signal` ✅ |
+| on message 내 수신 신호 읽기 | `this.SignalName` ✅ |
+
 ---
-최종 업데이트: 2026-02-27
+최종 업데이트: 2026-03-02
