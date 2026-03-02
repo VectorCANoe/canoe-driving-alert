@@ -3,17 +3,17 @@
 This project has recurring configuration corruption when `.cfg` state is edited outside CANoe GUI.
 Follow this file as a strict operational boundary.
 
-## 1) GUI-Only (Do in CANoe GUI)
+## 1) GUI-First (Do in CANoe GUI by default)
 - Open / Save / Save As of configuration (`*.cfg`)
 - Auto-generated side files (`*.cfg.ini`, `*.stcfg`) lifecycle
 - System Variables editor changes and config-side registration
-- Panel editor changes (`*.xvp` layout, control properties, symbol binding)
 - CANoeIL / network channel / bus resource mapping changes
 - Measurement setup state and environment persistence
 
 ## 2) Agent-Allowed (Text/File Safe Zone)
 - CAPL source (`canoe/src/capl/**/*.can`)
 - `project.sysvars` source template (`canoe/project/sysvars/project.sysvars`)
+- Panel source (`canoe/project/panel/*.xvp`) when explicitly requested
 - Panel image assets (`canoe/project/panel/Bitmaps/*`)
 - Documentation (`driving-situation-alert/*.md`, `canoe/project/panel/README.md`)
 - Scripts and test artifacts under `canoe/scripts`, `canoe/docs` (text-based only)

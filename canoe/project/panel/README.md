@@ -1,4 +1,4 @@
-﻿# project/panel
+# project/panel
 
 CANoe panel artifacts for this project.
 
@@ -6,14 +6,14 @@ CANoe panel artifacts for this project.
 - `SDV_Control.xvp`: scenario/input control panel
 - `SDV_Monitor.xvp`: pipeline/output monitor panel
 - `SDV_Render_Debug.xvp`: UiRender adapter debug panel
-- `SDV_External_Road_View.xvp`: macro external environment view (road + moving vehicles + zone flow)
-- `SDV_Cabin_Panorama_View.xvp`: macro in-cabin panoramic view (front/rear ambient interaction)
-- `SDV_Cluster_View.xvp`: cluster-focused visualization panel (warning/direction/zone)
-- `SDV_Ambient_View.xvp`: ambient-focused visualization panel (mode/color/pattern/pulse)
-- `SDV_Navigation_View.xvp`: navigation-focused visualization panel (zone/flow/vehicle movement)
-- `SDV_Demo_Stage.xvp`: legacy combined demo panel (kept for backward comparison)
+- `SDV_External_Road_View.xvp`: external environment macro view
+- `SDV_Cabin_Panorama_View.xvp`: in-cabin panoramic macro view
+- `SDV_Cluster_View.xvp`: cluster detail view
+- `SDV_Ambient_View.xvp`: ambient detail view
+- `SDV_Navigation_View.xvp`: navigation detail view
+- `SDV_Demo_Stage.xvp`: legacy combined panel (retirement target)
 
-## Skin Assets
+## Skin Assets (Project)
 - `Bitmaps/DashboardCombi.png`
 - `Bitmaps/DashboardCircleBlack.png`
 - `Bitmaps/warnLevelFront.png`
@@ -29,27 +29,33 @@ CANoe panel artifacts for this project.
 - `Bitmaps/AmbientPulseGlow4.png`
 - `Bitmaps/ExternalRoadScene.png`
 - `Bitmaps/CabinPanoramaScene.png`
-- Source reference:
-- `reference/samples/vector_samples_19_4_10/ADAS/ADASSystem/Panels/Bitmaps`
-- `reference/samples/vector_samples_19_4_10/SOA/SOASystem/Panels/BMP`
-- `reference/samples/vector_samples_19_4_10/CAN/CANBasic/Panels/Bitmaps`
+- `Bitmaps/reference_pack_v1/*`: curated Vector sample pack for external/cabin upgrade
 
-## Panel Split
+## Reference Source Matrix (Adopted)
+- External vehicle/light base: `reference/vector_samples_19_4_10/CAN/CANSystem/CANoe/Panels`
+- External top-view/road line icons: `reference/vector_samples_19_4_10/Ethernet/EthernetSystem/Panel`
+- V2X traffic icon set: `reference/vector_samples_19_4_10/Car2x/Car2x_EU/Car2xSystem/Panels`
+- Cabin panorama/window animation strips: `reference/vector_samples_19_4_10/LIN/LINSystem/Panels`
+- Additional control idioms: `reference/vector_code_sample`
+
+## Panel Split (Target)
 - Validation panels: `SDV_Control.xvp`, `SDV_Monitor.xvp`, `SDV_Render_Debug.xvp`
-- Macro views (recommended first open):
-- `SDV_External_Road_View.xvp`
-- `SDV_Cabin_Panorama_View.xvp`
-- Detail views:
-- `SDV_Cluster_View.xvp`
-- `SDV_Ambient_View.xvp`
-- `SDV_Navigation_View.xvp`
-- Legacy combined view:
-- `SDV_Demo_Stage.xvp`
+- Macro panels: `SDV_External_Road_View.xvp`, `SDV_Cabin_Panorama_View.xvp`
+- Detail panels (v2 skin aligned): `SDV_Cluster_View.xvp`, `SDV_Ambient_View.xvp`, `SDV_Navigation_View.xvp`
+- Legacy panel: `SDV_Demo_Stage.xvp` (freeze new features)
 
-## BP (Renderer Only)
-- XVP panels are display/input surfaces only.
-- Warning/arbitration logic stays in CAPL nodes (`WARN_ARB_MGR`, `BODY_GW`, `IVI_GW`).
-- For high-fidelity rendering, bind XVP controls to `UiRender::*` system variables.
+## BP (Renderer-Only Contract)
+- Decision/arbitration logic stays in `WARN_ARB_MGR` and `ADAS_WARN_CTRL`
+- `IVI_GW` and XVP panels are display-only
+- No priority/timeout logic in renderer layer
+- Renderer binds derived outputs only (`UiRender::*`)
+- Do not bind raw inputs (`vehicleSpeed`, `eta`) directly to skin controls
+- Add/modify `UiRender_*` only with SoT update in `0304`
+
+## GUI-Only Scope
+- `.xvp` layout/property/binding changes must be done in CANoe GUI Panel Editor
+- `.cfg`, `.cfg.ini`, `.stcfg` save/generation must be done in CANoe GUI
+- Agent may edit text docs, CAPL logic, and bitmap assets only
 
 ## Render Variables
 Use these derived sysvars for animation-ready visualization:
