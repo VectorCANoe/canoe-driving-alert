@@ -4,7 +4,7 @@
 **ISO 26262 Reference**: Part 4, Cl.7 (System Design)
 **ASPICE Reference**: SYS.3 (System Architectural Design)
 **Version**: 3.18
-**Date**: 2026-03-03
+**Date**: 2026-03-02
 **Status**: Draft
 **Project Title**: 주행 상황 실시간 경고 시스템
 **Subtitle**: 구간 정보 및 긴급차량 접근 기반 앰비언트·클러스터 경보
@@ -18,7 +18,7 @@
 ## 작성 원칙
 
 - 본 문서는 03_Function_definition.md의 Func_001~Func_124를 노드 내부 동작 관점으로 분해한다.
-- V2 확장 요구(`Req_120~Req_124`)는 `Func_120~Func_124`로 구현 활성 상태에서 관리한다.
+- V2 확장 요구(`Req_120~Req_124`)는 `Func_120~Func_124`로 Pre-Activation 상태에서 별도 관리한다.
 - 각 노드의 입력-처리-출력을 명확히 정의해 0302의 Tx/Rx 흐름 설계로 연결한다.
 - 요구사항(What) 문장을 반복하지 않고, 시스템 동작 로직(How)만 기술한다.
 - 상단 표는 공식 표준 양식의 열 구성(노드/기능 상세/비고)을 유지한다.
@@ -45,12 +45,13 @@
 | ACCEL_CTRL | 가속 페달 입력 상태 처리 | 차량 기본 동작 |
 | BRAKE_CTRL | 브레이크 페달 입력 상태 처리 | 차량 기본 동작 |
 | STEERING_CTRL | 조향 입력 상태 처리 | 차량 기본 동작 |
+| DECEL_ASSIST_CTRL | 위험도 기반 감속 보조 요청 생성/해제 제어 | V2 감속 보조 제어 |
 | EMS_ALERT | 긴급 알림 송수신 상태 및 해제 상태 관리 | 송신/수신/타임아웃 통합 단말 |
-| WARN_ARB_MGR | 긴급 경고와 구간 경고 충돌 시 우선순위 중재 및 감속 보조 요청/해제 수행 | Emergency > Zone, Ambulance > Police |
+| WARN_ARB_MGR | 긴급 경고와 구간 경고 충돌 시 우선순위 중재 수행 | Emergency > Zone, Ambulance > Police |
 | SIL_TEST_CTRL | SIL 시나리오 실행 및 판정 결과 기록 | 검증 제어 가상노드(Validation-only) |
 | VEHICLE_BASE_TEST_CTRL | 차량 기본 기능 시나리오 실행 및 판정 결과 기록 | 검증 제어 가상노드(Validation-only) |
 |  |  | Network Infra |
-| ETH_SWITCH | Ethernet 백본 스위칭 및 도메인 게이트웨이 전달 허브 | Ethernet 프레임 분배 |
+| ETH_SWITCH | Ethernet 백본 전달 인프라(시스템 관점) | 도메인 간 프레임 전달 경로 |
 | CHASSIS_GW | Chassis CAN 입력을 Ethernet 정규 메시지로 변환 | CAN->ETH 변환 |
 | INFOTAINMENT_GW | Infotainment CAN 입력을 Ethernet 정규 메시지로 변환 | CAN->ETH 변환 |
 | BODY_GW | 중재 결과 Ethernet 수신 후 Body CAN 출력 메시지 생성(HVAC/Seat/Mirror/Door/Wiper/Security 포함) | ETH->CAN 변환 |
@@ -70,6 +71,9 @@
 | Ambient Lights | 실제 앰비언트 장치가 제어 신호를 수신해 점등/패턴 동작 수행 | frmAmbientControlMsg(0x210) 반영 |
 | Cluster Display | 실제 클러스터 장치가 경고 문구/상태를 표시 | frmClusterWarningMsg(0x220) 반영 |
 | Navigation Panel | 사용자 입력(구간/방향/거리/제한속도) 제공 및 시각화 | Panel UI 입력 소스 |
+
+- 시스템 아키텍처 관점에서 ETH_SWITCH는 백본 전달 인프라로 정의한다.
+- 구현 관점에서의 ETH_SWITCH CAPL 역할(경로 헬스 모니터링)은 `04_SW_Implementation.md`에서 관리한다.
 
 ---
 
@@ -106,9 +110,9 @@
 | Func_118 | Req_118 | DRIVER_STATE_CTRL | ImmoState, AlarmArmed, AlarmTrigger, AlarmZone | 이모빌라이저/경보 상태 반영 | DriverStateInfo | 입력: ImmoState, AlarmArmed, AlarmTrigger, AlarmZone / 출력: DriverStateInfo |
 | Func_119 | Req_119 | CLU_HMI_CTRL | AudioFocusOwner, VoiceAssistState, TtsState, TtsLangId | 오디오 포커스/음성비서/TTS 상태 반영 | warningTextCode | 입력: AudioFocusOwner, VoiceAssistState, TtsState, TtsLangId / 출력: warningTextCode |
 | Func_120 | Req_120 | ADAS_WARN_CTRL | emergencyDirection, eta, vehicleSpeedNorm | 긴급차량 방향/ETA/자차속도 결합 기반 근접 위험도 산정 | proximityRiskLevel | 입력: emergencyDirection, eta, vehicleSpeedNorm / 출력: proximityRiskLevel |
-| Func_121 | Req_121 | WARN_ARB_MGR | proximityRiskLevel, failSafeMode, driveStateNorm | 위험도 임계 초과 시 감속 보조 요청 생성 | decelAssistReq | 입력: proximityRiskLevel, failSafeMode, driveStateNorm / 출력: decelAssistReq |
+| Func_121 | Req_121 | DECEL_ASSIST_CTRL | proximityRiskLevel | 위험도 임계 초과 시 감속 보조 요청 생성 | decelAssistReq | 입력: proximityRiskLevel / 출력: decelAssistReq |
 | Func_122 | Req_122 | WARN_ARB_MGR | decelAssistReq, selectedAlertType, selectedAlertLevel | 감속 보조 활성 시 긴급 경고 우선 및 Ambient/Cluster 동기화 유지 | selectedAlertLevel, selectedAlertType | 입력: decelAssistReq, selectedAlertType, selectedAlertLevel / 출력: selectedAlertLevel, selectedAlertType |
-| Func_123 | Req_123 | WARN_ARB_MGR | steeringInputNorm, brakePedalNorm | 운전자 제동/조향 회피 입력 시 감속 보조 요청 해제 | decelAssistReq | 입력: steeringInputNorm, brakePedalNorm / 출력: decelAssistReq |
+| Func_123 | Req_123 | DECEL_ASSIST_CTRL | steeringInputNorm, BrakePedal | 운전자 제동/조향 회피 입력 시 감속 보조 요청 해제 | decelAssistReq | 입력: steeringInputNorm, BrakePedal / 출력: decelAssistReq |
 | Func_124 | Req_124 | DOMAIN_BOUNDARY_MGR | domainPathStatus, e2eHealthState | 도메인 경로 단절 감지 시 자동 감속 보조 금지 + 최소 경고 채널 유지 | failSafeMode, decelAssistReq | 입력: domainPathStatus, e2eHealthState / 출력: failSafeMode, decelAssistReq |
 
 ## 2-1. Req-Func 1:1 감사 매핑 표
@@ -178,9 +182,9 @@
 | Req_118 | Func_118 | DRIVER_STATE_CTRL | 보안 상태 반영 |
 | Req_119 | Func_119 | CLU_HMI_CTRL | 오디오 상태 반영 |
 | Req_120 | Func_120 | ADAS_WARN_CTRL | 긴급차량 근접 위험 판단 |
-| Req_121 | Func_121 | WARN_ARB_MGR | 위험도 기반 감속 보조 요청 |
+| Req_121 | Func_121 | DECEL_ASSIST_CTRL | 위험도 기반 감속 보조 요청 |
 | Req_122 | Func_122 | WARN_ARB_MGR | 감속 보조-경고 동기화 |
-| Req_123 | Func_123 | WARN_ARB_MGR | 운전자 개입 우선 해제 |
+| Req_123 | Func_123 | DECEL_ASSIST_CTRL | 운전자 개입 우선 해제 |
 | Req_124 | Func_124 | DOMAIN_BOUNDARY_MGR | 도메인 경로 단절 강등(Fail-safe) |
 
 ---
@@ -196,7 +200,7 @@
 | 구급 긴급차량 접근 | EMS_ALERT(Amb Tx) -> EMS_ALERT(Rx) -> WARN_ARB_MGR -> BCM_AMBIENT_CTRL + CLU_HMI_CTRL | Func_018, Func_023, Func_022, Func_035, Func_019 |
 | 경찰+구급 동시 충돌 | EMS_ALERT(Police Tx + Amb Tx) -> EMS_ALERT(Rx) -> WARN_ARB_MGR(우선순위/동률처리) -> 출력 노드 | Func_025~Func_031 |
 | 긴급 해제 후 복귀 | EMS_ALERT(Rx 해제/타임아웃) -> WARN_ARB_MGR -> BCM_AMBIENT_CTRL/CLU_HMI_CTRL | Func_024, Func_033, Func_034 |
-| 교차로/합류구간 근접위험 감속 보조 | EMS_ALERT(Rx) + ADAS_WARN_CTRL(위험도 산정) + WARN_ARB_MGR(보조요청/해제+경고 동기화) -> BRAKE_CTRL + BCM_AMBIENT_CTRL + CLU_HMI_CTRL | Func_120, Func_121, Func_122, Func_123 |
+| 교차로/합류구간 근접위험 감속 보조 | EMS_ALERT(Rx) + ADAS_WARN_CTRL(위험도 산정) + DECEL_ASSIST_CTRL(보조요청/해제) -> WARN_ARB_MGR(경고 동기화) -> BRAKE_CTRL + BCM_AMBIENT_CTRL + CLU_HMI_CTRL | Func_120, Func_121, Func_122, Func_123 |
 | 도메인 경로 단절 강등 | DOMAIN_BOUNDARY_MGR(경로 단절 감지) -> DOMAIN_GW_ROUTER -> WARN_ARB_MGR/출력노드 | Func_124 |
 
 ---
@@ -250,7 +254,7 @@
 
 | 버전 | 날짜 | 변경 사항 |
 |---|---|---|
-| 3.18 | 2026-03-03 | V2 확장 `Func_121/Func_123` 노드 소유를 `WARN_ARB_MGR`로 정정하고, 노드 표/Req-Func/시나리오 체인을 코드 구현 기준으로 동기화. |
+| 3.18 | 2026-03-03 | ETH_SWITCH 역할을 문서 레벨별로 분리 정리: 0301은 시스템 관점(백본 전달 인프라), 구현 관점(헬스 모니터링)은 04 문서 참조로 명시. |
 | 3.17 | 2026-03-02 | 감사 정합 보강: 문서 범위를 `Func_001~Func_124`로 명확화하고 옵션1 설계 vs SIL 임시 CAN 대체 백본 검증 경계 문구를 추가. |
 | 3.16 | 2026-03-02 | V2 확장 제어 책임 분리: `DECEL_ASSIST_CTRL` 노드를 Chassis에 추가하고 `Func_121/Func_123` 실제 노드/시나리오 체인을 갱신. |
 | 3.15 | 2026-03-02 | V2 확장(Pre-Activation) 반영: `Func_120~Func_124`(근접위험/감속보조/동기화/운전자개입해제/도메인단절강등) 상세표, Req-Func 매핑, 시나리오 체인 추가. |
