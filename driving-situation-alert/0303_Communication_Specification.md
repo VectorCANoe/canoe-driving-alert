@@ -125,7 +125,7 @@
 |  |  |  | InfoFailCode | 12~15 | Infotainment 오류 코드 | 0~15 | INFOTAINMENT_GW -> SIL_TEST_CTRL 전달 |
 | frmTestResultMsg | 0x230 | 1 | scenarioResult | 0 | 시나리오 판정 결과 | 0~1 | SIL_TEST_CTRL -> - 전달 (Validation-only) |
 | frmBaseTestResultMsg | 0x231 | 8 | BaseScenarioId | 0~7 | 기본 시나리오 ID | 0~255 | VEHICLE_BASE_TEST_CTRL -> SIL_TEST_CTRL 전달 (Validation-only) |
-|  |  |  | BaseScnResult | 8 | 기본 시나리오 판정 | 0~1 | VEHICLE_BASE_TEST_CTRL -> SIL_TEST_CTRL 전달 |
+|  |  |  | BaseScenarioResult | 8 | 기본 시나리오 판정 | 0~1 | VEHICLE_BASE_TEST_CTRL -> SIL_TEST_CTRL 전달 |
 | frmEmergencyMonitorMsg | 0x232 | 2 | emergencyContext | 0~7 | 긴급 컨텍스트 상태 | 0~255 | EMS_ALERT(Rx) -> SIL_TEST_CTRL, CHASSIS_GW 전달 |
 |  |  |  | TimeoutClearMon | 8 | 타임아웃 모니터 플래그 | 0~1 | EMS_ALERT(Rx) -> SIL_TEST_CTRL, CHASSIS_GW 전달 |
 | frmIgnitionEngineMsg | 0x300 | 1 | IgnitionState | 0 | 시동 입력 상태 | 0~1 | SIL_TEST_CTRL -> ENGINE_CTRL 전달 |

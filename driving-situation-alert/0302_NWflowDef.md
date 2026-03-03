@@ -125,7 +125,7 @@
 |  |  |  | 1 | Infotainment Health Check | 12~15 | InfoFailCode | Rx |  | Tx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 | Test CAN | 0x230 | frmTestResultMsg | 0 | Scenario Result Report | 0 | scenarioResult | Tx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | Event |
 | Test CAN | 0x231 | frmBaseTestResultMsg | 0 | Base Result Report | 0~7 | BaseScenarioId | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | Tx | Event |
-|  |  |  | 1 | Base Result Report | 8 | BaseScnResult | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | Tx |  |
+|  |  |  | 1 | Base Result Report | 8 | BaseScenarioResult | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | Tx |  |
 | Test CAN | 0x232 | frmEmergencyMonitorMsg | 0 | Emergency Monitor | 0~7 | emergencyContext | Rx | Rx |  |  |  |  |  |  |  | Tx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | CAN, 100ms |
 |  |  |  | 1 | Emergency Monitor | 8 | TimeoutClearMon | Rx | Rx |  |  |  |  |  |  |  | Tx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 | Powertrain CAN | 0x300 | frmIgnitionEngineMsg | 0 | Ignition/Engine Check | 0 | IgnitionState | Tx |  |  |  |  |  |  |  |  |  |  |  |  |  |  | Rx |  |  |  |  |  |  |  |  |  | CAN, 100ms |

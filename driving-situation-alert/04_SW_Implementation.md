@@ -176,7 +176,7 @@ Emergency Source (logical terminal)
 | Func_109 | Req_109 | CLUSTER_BASE_CTRL | Flow_104 / Comm_104 / ClusterSpeed, ClusterGear, warningTextCode | Flow_104 / ClusterStatus | `CLUSTER_BASE_CTRL.F109` | UT_BASE_IVI_001 / IT_BASE_IVI_001 |
 | Func_110 | Req_110 | DOMAIN_GW_ROUTER | Flow_105 / Comm_105 / RoutingPolicy, ChassisAliveCnt, BodyAliveCnt, InfoAliveCnt | Flow_105 / BodyGatewayRoute | `DOMAIN_GW_ROUTER.F110` | UT_BASE_GW_001 / IT_BASE_GW_001 |
 | Func_111 | Req_111 | DOMAIN_BOUNDARY_MGR | Flow_105 / Comm_105 / RoutingPolicy, BoundaryStatus | Flow_105 / BoundaryStatus | `MOD_15.F111` | UT_BASE_GW_001 / IT_BASE_GW_001 |
-| Func_112 | Req_112 | VEHICLE_BASE_TEST_CTRL | Flow_106 / Comm_106 / BaseScenarioId | Flow_106 / BaseScnResult | `VEHICLE_BASE_TEST_CTRL.F112` | UT_BASE_TEST_001 / IT_BASE_DIAG_001 |
+| Func_112 | Req_112 | VEHICLE_BASE_TEST_CTRL | Flow_106 / Comm_106 / BaseScenarioId | Flow_106 / BaseScenarioResult | `VEHICLE_BASE_TEST_CTRL.F112` | UT_BASE_TEST_001 / IT_BASE_DIAG_001 |
 | Func_113 | Req_113 | BODY_GW | Flow_202 / Comm_202 / CabinSetTemp, BlowerLevel, AcCompressorReq, VentMode | Flow_202 / CabinTemp | `MOD_09.F113` | UT_BASE_EXT_BODY_001 / IT_BASE_EXT_BODY_001 |
 | Func_114 | Req_114 | DRIVER_STATE_CTRL | Flow_202 / Comm_202 / DriverSeatPos, PassengerSeatPos, SeatHeatLevel, SeatVentLevel | Flow_202 / DriverStateInfo | `DRIVER_STATE_CTRL.F114` | UT_BASE_EXT_BODY_001 / IT_BASE_EXT_BODY_001 |
 | Func_115 | Req_115 | WINDOW_CTRL | Flow_202 / Comm_202 / MirrorFoldState, MirrorHeatState, MirrorAdjAxis | Flow_202 / WindowState | `WINDOW_CTRL.F115` | UT_BASE_EXT_BODY_001 / IT_BASE_EXT_BODY_001 |

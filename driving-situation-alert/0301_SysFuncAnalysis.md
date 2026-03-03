@@ -100,7 +100,7 @@
 | Func_109 | Req_109 | CLUSTER_BASE_CTRL | ClusterSpeed, ClusterGear, warningTextCode | 클러스터 기본 표시 | ClusterStatus | 입력: ClusterSpeed, ClusterGear, warningTextCode / 출력: ClusterStatus |
 | Func_110 | Req_110 | DOMAIN_GW_ROUTER | RoutingPolicy | 도메인 게이트웨이 전달 | BodyGatewayRoute | 입력: RoutingPolicy / 출력: BodyGatewayRoute |
 | Func_111 | Req_111 | DOMAIN_BOUNDARY_MGR | RoutingPolicy | 도메인 경계 유지 | BoundaryStatus | 입력: RoutingPolicy / 출력: BoundaryStatus |
-| Func_112 | Req_112 | VEHICLE_BASE_TEST_CTRL | BaseScenarioId | 차량 기본 기능 SIL 검증 | BaseScnResult | 입력: BaseScenarioId / 출력: BaseScnResult |
+| Func_112 | Req_112 | VEHICLE_BASE_TEST_CTRL | BaseScenarioId | 차량 기본 기능 SIL 검증 | BaseScenarioResult | 입력: BaseScenarioId / 출력: BaseScenarioResult |
 | Func_113 | Req_113 | BODY_GW | CabinSetTemp, BlowerLevel, AcCompressorReq, VentMode | HVAC 상태/제어 프레임 반영 | CabinTemp | 입력: CabinSetTemp, BlowerLevel, AcCompressorReq, VentMode / 출력: CabinTemp |
 | Func_114 | Req_114 | DRIVER_STATE_CTRL | DriverSeatPos, PassengerSeatPos, SeatHeatLevel, SeatVentLevel | 시트 상태/제어 프레임 반영 | DriverStateInfo | 입력: DriverSeatPos, PassengerSeatPos, SeatHeatLevel, SeatVentLevel / 출력: DriverStateInfo |
 | Func_115 | Req_115 | WINDOW_CTRL | MirrorFoldState, MirrorHeatState, MirrorAdjAxis | 미러 상태 프레임 반영 | WindowState | 입력: MirrorFoldState, MirrorHeatState, MirrorAdjAxis / 출력: WindowState |
@@ -258,7 +258,7 @@
 | 3.17 | 2026-03-02 | 감사 정합 보강: 문서 범위를 `Func_001~Func_124`로 명확화하고 옵션1 설계 vs SIL 임시 CAN 대체 백본 검증 경계 문구를 추가. |
 | 3.16 | 2026-03-02 | V2 확장 제어 책임 분리: `DECEL_ASSIST_CTRL` 노드를 Chassis에 추가하고 `Func_121/Func_123` 실제 노드/시나리오 체인을 갱신. |
 | 3.15 | 2026-03-02 | V2 확장(Pre-Activation) 반영: `Func_120~Func_124`(근접위험/감속보조/동기화/운전자개입해제/도메인단절강등) 상세표, Req-Func 매핑, 시나리오 체인 추가. |
-| 3.14 | 2026-03-02 | `Func_101~Func_119` 상세표의 입출력 변수를 0304 표준 Name으로 정합화(`BaseScenarioId/BaseScnResult`, `AcCompressorReq`, `DoorUnlockCmd`, `ImmoState`, `TtsLangId` 등)하고 누락 변수명을 제거. |
+| 3.14 | 2026-03-02 | `Func_101~Func_119` 상세표의 입출력 변수를 0304 표준 Name으로 정합화(`BaseScenarioId/BaseScenarioResult`, `AcCompressorReq`, `DoorUnlockCmd`, `ImmoState`, `TtsLangId` 등)하고 누락 변수명을 제거. |
 | 3.13 | 2026-03-02 | V2 추적 밀도 보강 1차: `Req_113~Req_119`에 대응하는 `Func_113~Func_119`(HVAC/Seat/Mirror/Door/Wiper-Rain/Security/Audio)를 하단 상세표 및 1:1 감사 매핑에 추가. 상단 노드 설명도 기본 기능 확장 범위로 정합화. |
 | 2.0 | 2026-02-25 | 프로젝트 최신 스코프 기준 전면 재작성. 노드별 Input-Processing-Output 구조, Func/Req 연결, 핵심 시나리오 체인, 0302 연계 체크포인트 추가 |
 | 3.0 | 2026-02-25 | 상단 공식 표준 양식 반영, 하단 상세 추적 표 분리 |

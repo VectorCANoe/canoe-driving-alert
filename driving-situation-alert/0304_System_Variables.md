@@ -144,7 +144,7 @@
 | 170 | Infotainment | InfoDiagState | uint32 | 0 | 15 | 0 | Infotainment 진단 상태 |
 | 171 | Infotainment | InfoFailCode | uint32 | 0 | 15 | 0 | Infotainment 오류 코드 |
 | 172 | Test | BaseScenarioId | uint32 | 0 | 255 | 0 | 기본 시나리오 ID |
-| 173 | Test | BaseScnResult | uint32 | 0 | 1 | 0 | 기본 시나리오 판정 |
+| 173 | Test | BaseScenarioResult | uint32 | 0 | 1 | 0 | 기본 시나리오 판정 |
 | 174 | Test | TimeoutClearMon | uint32 | 0 | 1 | 0 | 타임아웃 모니터 플래그 |
 | 175 | Powertrain | IgnitionState | uint32 | 0 | 1 | 0 | 시동 입력 상태 |
 | 176 | Powertrain | EngineState | uint32 | 0 | 3 | 0 | 엔진 동작 상태 |
@@ -495,7 +495,7 @@
 | Var_170 | InfoDiagState | infoDiagState_CAN_BASE | CAN_BASE | DOMAIN_GW_ROUTER | Comm_105 | Flow_105 | Func_110, Func_111 | Req_110, Req_111 | 100ms 주기 수신 시 갱신 |
 | Var_171 | InfoFailCode | infoFailCode_CAN_BASE | CAN_BASE | DOMAIN_GW_ROUTER | Comm_105 | Flow_105 | Func_110, Func_111 | Req_110, Req_111 | 100ms 주기 수신 시 갱신 |
 | Var_172 | BaseScenarioId | baseScenarioId_CAN_BASE | CAN_BASE | SIL_TEST_CTRL | Comm_106 | Flow_106 | Func_112 | Req_112 | Event 발생 시 갱신 |
-| Var_173 | BaseScnResult | baseScnResult_CAN_BASE | CAN_BASE | SIL_TEST_CTRL | Comm_106 | Flow_106 | Func_112 | Req_112 | Event 발생 시 갱신 |
+| Var_173 | BaseScenarioResult | baseScenarioResult_CAN_BASE | CAN_BASE | SIL_TEST_CTRL | Comm_106 | Flow_106 | Func_112 | Req_112 | Event 발생 시 갱신 |
 | Var_174 | TimeoutClearMon | timeoutClearMon_CAN_BASE | CAN_BASE | SIL_TEST_CTRL | Comm_106 | Flow_106 | Func_112 | Req_112 | Event 발생 시 갱신 |
 | Var_175 | IgnitionState | ignitionState_CAN_BASE | CAN_BASE | ENGINE_CTRL/TRANSMISSION_CTRL | Comm_101 | Flow_101 | Func_101, Func_102 | Req_101, Req_102 | 100ms 주기 수신 시 갱신 |
 | Var_176 | EngineState | engineState_CAN_BASE | CAN_BASE | ENGINE_CTRL/TRANSMISSION_CTRL | Comm_101 | Flow_101 | Func_101, Func_102 | Req_101, Req_102 | 100ms 주기 수신 시 갱신 |
