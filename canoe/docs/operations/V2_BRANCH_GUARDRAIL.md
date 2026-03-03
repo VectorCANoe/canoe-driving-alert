@@ -1,33 +1,59 @@
-# v1/v2 Branch Guardrail
+﻿# V2 Branch Guardrail
 
-## 목적
-- 운영 안정성(v1) 유지 상태에서 아키텍처 변경(v2)을 병렬 개발한다.
+## Purpose
+Keep one stable integration baseline for v2 (`integration/v2-all-in`) and stop recurring merge conflicts caused by mixed sync methods.
 
-## 브랜치 규칙
-1. `main` 또는 운영 브랜치 = v1 (운영 안정판)
-2. `feature/v2-render-adapter-*` = v2 (아키텍처 변경판)
-3. v2는 v1 동작을 깨뜨리지 않는 범위로만 머지한다.
+## Why conflicts keep happening
+1. Two branches edit the same docs in parallel (`integration/v2-all-in` and `v2-post-mid-report`).
+2. Mixed sync methods are used together (folder overwrite + cherry-pick + manual conflict edits).
+3. Force-push after manual conflict resolution rewrites branch history and invalidates teammate merge base.
 
-## 머지 전 필수 게이트
-1. cfg hygiene
+## Fixed policy (mandatory)
+1. `integration/v2-all-in` is the only integration baseline for v2.
+2. `v2-post-mid-report` is docs source only (never merge it as full branch).
+3. Sync docs by explicit file list only.
+4. Do not cherry-pick doc commits into `integration/v2-all-in`.
+5. Do not force-push `integration/v2-all-in` except emergency recovery approved by team lead.
+
+## Daily start rule (mandatory)
+1. Start work only after updating local branch from `origin/integration/v2-all-in`.
+2. Team members must read and edit the same baseline commit before any document/code change.
+3. If local branch is behind, stop editing and run fast-forward pull first.
+
+```powershell
+git switch integration/v2-all-in
+git fetch origin --prune
+git pull --ff-only origin integration/v2-all-in
+```
+
+## Allowed sync method (single method)
+Use file-level checkout from source branch:
+
+```powershell
+git fetch origin --prune
+git switch integration/v2-all-in
+git pull --ff-only origin integration/v2-all-in
+git checkout origin/v2-post-mid-report -- `
+  canoe/docs/operations/ETH_INTERFACE_CONTRACT.md `
+  driving-situation-alert/0301_SysFuncAnalysis.md `
+  driving-situation-alert/04_SW_Implementation.md
+git commit -m "docs(v2): sync selected files from v2-post-mid-report"
+git push origin integration/v2-all-in
+```
+
+## Pre-merge gates (always)
 ```powershell
 python scripts/quality/cfg_hygiene_gate.py
-```
-2. doc-code sync
-```powershell
 python scripts/quality/doc_code_sync_gate.py
 ```
-3. 시나리오 재실행
-- `FZ_001` ~ `FZ_007` 순차 재실행
-- 증적: Trace + Panel 캡처 2종
 
-## PASS 기준 고정
-- 입력 주기: `100ms`
-- 출력 주기: `50ms`
-- 즉시 반영: `150ms` 이내
-- 타임아웃 해제: `1000ms`
+## Runtime/SIL pass criteria
+1. Input cycle: `100ms`
+2. Output cycle: `50ms`
+3. End-to-end reaction: `<= 150ms`
+4. Timeout clear: `1000ms`
 
-## 문서 연계
-- Unit: `driving-situation-alert/05_Unit_Test.md`
-- Integration: `driving-situation-alert/06_Integration_Test.md`
-- System: `driving-situation-alert/07_System_Test.md`
+## Evidence links
+1. Unit test: `driving-situation-alert/05_Unit_Test.md`
+2. Integration test: `driving-situation-alert/06_Integration_Test.md`
+3. System test: `driving-situation-alert/07_System_Test.md`
