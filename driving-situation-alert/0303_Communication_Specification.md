@@ -3,8 +3,8 @@
 **Document ID**: PROJ-0303-CS
 **ISO 26262 Reference**: Part 6, Cl.7 (Software Architectural Design)
 **ASPICE Reference**: SWE.2 (Software Architectural Design)
-**Version**: 3.10
-**Date**: 2026-03-02
+**Version**: 3.11
+**Date**: 2026-03-03
 **Status**: Draft
 **Project Title**: 주행 상황 실시간 경고 시스템
 **Subtitle**: 구간 정보 및 긴급차량 접근 기반 앰비언트·클러스터 경보
@@ -389,11 +389,11 @@
 
 | Domain/Profile | 현재 정의 메시지 수 | 현재 사용 ID 범위 | 확장 목표(Phase-B) |
 |---|---|---|---|
-| Chassis CAN | 24 | 0x100~0x121, 0x230~0x232 | 24~30 |
+| Chassis CAN | 25 | 0x100~0x121, 0x230~0x232 | 24~30 |
 | Body CAN | 24 | 0x210~0x219, 0x240~0x24D | 24~30 |
 | Infotainment CAN | 24 | 0x110, 0x220~0x228, 0x260~0x26D | 24~30 |
 | Powertrain CAN | 19 | 0x300~0x312 | 19~25 |
-| Test CAN | 3 | 0x230~0x232 | 3~6 |
+| Test CAN | 2 | 0x230~0x231 | 3~6 |
 | Ethernet UDP | 5 타입 | 0x510/0x511/0x512/0xE100/0xE200 | 5~12 타입 |
 
 - 통합 목표: CAN 메시지 `90~130`, Ethernet 메시지 타입 `5~12`, 전체 통신 항목 `100+`.
@@ -428,6 +428,7 @@
 
 | 버전 | 날짜 | 변경 사항 |
 |---|---|---|
+| 3.11 | 2026-03-03 | DBC 실측 정합 반영: 통신 규모 표에서 `Chassis CAN=25`, `Test CAN=2(0x230~0x231)`로 수정하고 `0x232(frmEmergencyMonitorMsg)`는 Chassis CAN 소유로 명확화. |
 | 3.10 | 2026-03-02 | 0302/0303 최종 동기화 준비 반영: 도메인 통신 섹션 제목과 `Comm_101~106/201~205` 주의 문구를 병렬 작업 기준에서 DBC 동기화 운영 규칙으로 갱신. |
 | 1.0 | 2026-02-23 | 초기 생성 |
 | 2.0 | 2026-02-25 | 최신 프로젝트 스코프 반영 전면 재작성. Comm_001~Comm_009 및 Flow/Func/Req 1:1 추적 구조 반영, OTA/UDS/DoIP 제거 |
