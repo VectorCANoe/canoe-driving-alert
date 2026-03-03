@@ -59,18 +59,18 @@
 | ECU 동작 | 앰비언트 제어 | 경고 패턴/색상 적용 | 패턴 결정 | Req_008,Req_009,Req_013~Req_016,Req_033~Req_039 / Flow_007 / Comm_007 / UT_BCM_001 |
 | ECU 동작 | 클러스터 표시 | 경고 문구/유형 표시 | 문구 결정 | Req_005,Req_019~Req_021,Req_026,Req_040 / Flow_008 / Comm_008 / UT_CLU_001 |
 | ECU 동작 | 테스트 실행/판정 | 테스트 시나리오 실행 및 판정 | Pass/Fail 기록 | Req_041~Req_043 / Flow_009 / Comm_009 / ST_SIL_002 |
-| ECU 동작 | 엔진 기본 제어 | 시동 입력 기반 엔진 상태 반영 | Vehicle Baseline | Req_101 / Func_101 / ST_BASE_001 |
-| ECU 동작 | 변속 기본 제어 | 기어 입력(P/R/N/D) 상태 반영 | Vehicle Baseline | Req_102 / Func_102 / ST_BASE_001 |
-| ECU 동작 | 가속 기본 제어 | 가속 입력 상태 반영 | Vehicle Baseline | Req_103 / Func_103 / ST_BASE_001 |
-| ECU 동작 | 제동 기본 제어 | 브레이크 입력 상태 반영 | Vehicle Baseline | Req_104 / Func_104 / ST_BASE_001 |
-| ECU 동작 | 조향 기본 제어 | 조향 입력 상태 반영 | Vehicle Baseline | Req_105 / Func_105 / ST_BASE_001 |
-| ECU 동작 | 비상등 기본 제어 | 비상등 On/Off 상태 반영 | Vehicle Baseline | Req_106 / Func_106 / ST_BASE_001 |
-| ECU 동작 | 창문 기본 제어 | 창문 개폐 상태 반영 | Vehicle Baseline | Req_107 / Func_107 / ST_BASE_001 |
-| ECU 동작 | 운전자 상태 입력 처리 | 운전자 상태 입력 전달 | Vehicle Baseline | Req_108 / Func_108 / ST_BASE_001 |
-| ECU 동작 | 클러스터 기본 표시 | 속도/기어/경고 기본 표시 반영 | Vehicle Baseline | Req_109 / Func_109 / ST_BASE_001 |
-| ECU 동작 | 도메인 게이트웨이 전달 | 도메인 경계 기반 메시지 전달 | Vehicle Baseline | Req_110 / Func_110 / IT_BASE_001 |
-| ECU 동작 | 도메인 경계 유지 | 도메인 통신 경계/정책 유지 | Vehicle Baseline | Req_111 / Func_111 / IT_BASE_001 |
-| ECU 동작 | 차량 기본 기능 SIL 검증 | 기본 기능 시나리오 실행/판정 | Vehicle Baseline | Req_112 / Func_112 / ST_BASE_001 |
+| ECU 동작 | 엔진 기본 제어 | 시동 입력 기반 엔진 상태 반영 | Vehicle Baseline | Req_101 / Func_101 / ST_BASE_PT_001 |
+| ECU 동작 | 변속 기본 제어 | 기어 입력(P/R/N/D) 상태 반영 | Vehicle Baseline | Req_102 / Func_102 / ST_BASE_PT_001 |
+| ECU 동작 | 가속 기본 제어 | 가속 입력 상태 반영 | Vehicle Baseline | Req_103 / Func_103 / ST_BASE_CH_001 |
+| ECU 동작 | 제동 기본 제어 | 브레이크 입력 상태 반영 | Vehicle Baseline | Req_104 / Func_104 / ST_BASE_CH_001 |
+| ECU 동작 | 조향 기본 제어 | 조향 입력 상태 반영 | Vehicle Baseline | Req_105 / Func_105 / ST_BASE_CH_001 |
+| ECU 동작 | 비상등 기본 제어 | 비상등 On/Off 상태 반영 | Vehicle Baseline | Req_106 / Func_106 / ST_BASE_BODY_001 |
+| ECU 동작 | 창문 기본 제어 | 창문 개폐 상태 반영 | Vehicle Baseline | Req_107 / Func_107 / ST_BASE_BODY_001 |
+| ECU 동작 | 운전자 상태 입력 처리 | 운전자 상태 입력 전달 | Vehicle Baseline | Req_108 / Func_108 / ST_BASE_BODY_001 |
+| ECU 동작 | 클러스터 기본 표시 | 속도/기어/경고 기본 표시 반영 | Vehicle Baseline | Req_109 / Func_109 / ST_BASE_IVI_001 |
+| ECU 동작 | 도메인 게이트웨이 전달 | 도메인 경계 기반 메시지 전달 | Vehicle Baseline | Req_110 / Func_110 / IT_BASE_GW_001 |
+| ECU 동작 | 도메인 경계 유지 | 도메인 통신 경계/정책 유지 | Vehicle Baseline | Req_111 / Func_111 / IT_BASE_GW_001 |
+| ECU 동작 | 차량 기본 기능 SIL 검증 | 기본 기능 시나리오 실행/판정 | Vehicle Baseline | Req_112 / Func_112 / ST_BASE_DIAG_001 |
 | ECU 동작 | 공조 상태 반영 | HVAC 상태/제어 신호 반영 | Vehicle Baseline | Req_113 / Func_113 / IT_BASE_EXT_BODY_001 |
 | ECU 동작 | 시트 상태 반영 | 시트 상태/제어 신호 반영 | Vehicle Baseline | Req_114 / Func_114 / IT_BASE_EXT_BODY_001 |
 | ECU 동작 | 미러 상태 반영 | 미러 상태 신호 반영 | Vehicle Baseline | Req_115 / Func_115 / IT_BASE_EXT_BODY_001 |
@@ -177,7 +177,7 @@
 
 - 상단 표는 공식 표준 양식의 열 구성(분류/기능명/기능설명/비고/검증)을 유지한다.
 - 하단 표는 `Func/Req/노드/입출력` 기준으로 추적성을 보강한다.
-- 추적 체인: `Func -> Flow -> Comm -> Var -> Code -> UT/IT/ST`.
+- 추적 체인: `Req -> Func -> Flow -> Comm -> Var -> Code -> UT/IT/ST`.
 - 옵션1 네트워크 전달 경로 고정: `입력 CAN -> 도메인 GW 정규화 -> ETH_SWITCH -> 중앙 경고코어 -> 도메인 GW -> 출력 CAN`.
 - `Func_101~Func_119`는 차량 기본 기능 확장 체인으로, 0302/0303/0304의 Flow/Comm/Var와 최신 도메인 DBC 기준으로 동기화되어야 한다.
 - `Func_120~Func_124`는 V2 확장 활성 체인으로 관리하며, 코드/DBC/05/06/07 변경을 동일 커밋 단위로 동기화한다.
@@ -206,6 +206,7 @@
 
 | 버전 | 날짜 | 변경 사항 |
 |---|---|---|
+| 4.22 | 2026-03-03 | 중간감사 대응 보강: 추적 체인을 `Req -> Func -> Flow -> Comm -> Var -> Code -> UT/IT/ST`로 통일하고, Vehicle Baseline `Req_101~Req_112` 검증 ID를 도메인 단위(`ST_BASE_PT/CH/BODY/IVI`, `IT_BASE_GW`, `ST_BASE_DIAG`)로 세분화. |
 | 4.21 | 2026-03-03 | `Func_121/Func_123` 소유 노드를 `WARN_ARB_MGR`로 정정하고 V2 확장(`Func_120~124`) 상태를 Implemented로 전환. Chassis 인벤토리에서 미구현 `DECEL_ASSIST_CTRL` 제거. |
 | 4.20 | 2026-03-02 | 감사 정합 보강: 통합구간 1:1 문구 명확화, 옵션1 설계 vs SIL 임시 CAN 대체 백본 검증 경계 문구 추가, V2 확장 행 검증 컬럼을 ST/Flow/Comm ID 기준으로 구체화. |
 | 4.19 | 2026-03-02 | V2 확장 제어 책임 분리: `Func_121/Func_123` 실제 노드를 `DECEL_ASSIST_CTRL`로 조정하고 Chassis ECU 인벤토리에 반영. |
