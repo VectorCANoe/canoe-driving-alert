@@ -3,7 +3,7 @@
 **Document ID**: PROJ-0301-SFA
 **ISO 26262 Reference**: Part 4, Cl.7 (System Design)
 **ASPICE Reference**: SYS.3 (System Architectural Design)
-**Version**: 3.18
+**Version**: 3.19
 **Date**: 2026-03-03
 **Status**: Draft
 **Project Title**: 주행 상황 실시간 경고 시스템
@@ -50,7 +50,7 @@
 | SIL_TEST_CTRL | SIL 시나리오 실행 및 판정 결과 기록 | 검증 제어 가상노드(Validation-only) |
 | VEHICLE_BASE_TEST_CTRL | 차량 기본 기능 시나리오 실행 및 판정 결과 기록 | 검증 제어 가상노드(Validation-only) |
 |  |  | Network Infra |
-| ETH_SWITCH | Ethernet 백본 스위칭 및 도메인 게이트웨이 전달 허브 | Ethernet 프레임 분배 |
+| ETH_SWITCH | Ethernet 백본 전달 인프라(시스템 관점) | 도메인 간 프레임 전달 경로 |
 | CHASSIS_GW | Chassis CAN 입력을 Ethernet 정규 메시지로 변환 | CAN->ETH 변환 |
 | INFOTAINMENT_GW | Infotainment CAN 입력을 Ethernet 정규 메시지로 변환 | CAN->ETH 변환 |
 | BODY_GW | 중재 결과 Ethernet 수신 후 Body CAN 출력 메시지 생성(HVAC/Seat/Mirror/Door/Wiper/Security 포함) | ETH->CAN 변환 |
@@ -70,6 +70,9 @@
 | Ambient Lights | 실제 앰비언트 장치가 제어 신호를 수신해 점등/패턴 동작 수행 | frmAmbientControlMsg(0x210) 반영 |
 | Cluster Display | 실제 클러스터 장치가 경고 문구/상태를 표시 | frmClusterWarningMsg(0x220) 반영 |
 | Navigation Panel | 사용자 입력(구간/방향/거리/제한속도) 제공 및 시각화 | Panel UI 입력 소스 |
+
+- 시스템 아키텍처 관점에서 ETH_SWITCH는 백본 전달 인프라로 정의한다.
+- 구현 관점의 ETH_SWITCH CAPL 역할(경로 헬스 모니터링)은 `04_SW_Implementation.md`에서 분리 관리한다.
 
 ---
 
@@ -250,6 +253,7 @@
 
 | 버전 | 날짜 | 변경 사항 |
 |---|---|---|
+| 3.19 | 2026-03-03 | ETH_SWITCH 역할을 시스템 관점으로 명확화하고, 구현 관점(헬스 모니터링)은 04 문서에서 분리 관리하도록 정합화. |
 | 3.18 | 2026-03-03 | V2 확장 `Func_121/Func_123` 노드 소유를 `WARN_ARB_MGR`로 정정하고, 노드 표/Req-Func/시나리오 체인을 코드 구현 기준으로 동기화. |
 | 3.17 | 2026-03-02 | 감사 정합 보강: 문서 범위를 `Func_001~Func_124`로 명확화하고 옵션1 설계 vs SIL 임시 CAN 대체 백본 검증 경계 문구를 추가. |
 | 3.16 | 2026-03-02 | V2 확장 제어 책임 분리: `DECEL_ASSIST_CTRL` 노드를 Chassis에 추가하고 `Func_121/Func_123` 실제 노드/시나리오 체인을 갱신. |

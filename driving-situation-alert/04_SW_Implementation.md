@@ -3,7 +3,7 @@
 **Document ID**: PROJ-04-SI
 **ISO 26262 Reference**: Part 6, Cl.8 (Software Unit Design and Implementation)
 **ASPICE Reference**: SWE.3 (Software Detailed Design and Unit Construction)
-**Version**: 2.11
+**Version**: 2.12
 **Date**: 2026-03-03
 **Status**: Draft
 **Project Title**: 주행 상황 실시간 경고 시스템
@@ -81,7 +81,7 @@ Emergency Source (logical terminal)
 |  |  | Gateway/Network |
 | CHASSIS_GW | Chassis CAN 입력 정규화 및 ETH 송신 | Flow_001,002 |
 | INFOTAINMENT_GW | Infotainment CAN 입력(구간/방향/거리/제한속도) 정규화 및 ETH 송신 | Flow_003 |
-| ETH_SWITCH | Ethernet 프레임 분배 및 도메인 전달 | Flow_001~008 |
+| ETH_SWITCH | ETH 경로 헬스 모니터링(메시지 age 기반 path health 판정) | Flow_001~008 |
 | BODY_GW | 중재 결과 ETH 수신 후 Ambient CAN 송신 | Flow_007 |
 | IVI_GW | 중재 결과 ETH 수신 후 Cluster CAN 송신 | Flow_008 |
 |  |  | Output |
@@ -92,6 +92,7 @@ Emergency Source (logical terminal)
 
 - 상단 공식표는 감사 일관성을 위해 `EMS_ALERT` 논리 단말 기준으로 표기한다.
 - 내부 구현 모듈(`EMS_POLICE_TX`, `EMS_AMB_TX`, `EMS_ALERT_RX`) 분해는 본문 상세 추적표(3장, 4장)에서 관리한다.
+- 프레임 포워딩은 Ethernet 스위칭 인프라(실차 스위치 또는 SIL 네트워크 스택)가 담당하고, `ETH_SWITCH` CAPL은 경로 상태 모니터링/진단 로직을 담당한다.
 
 ---
 
@@ -99,21 +100,21 @@ Emergency Source (logical terminal)
 
 | Module ID | Node | 구현 파일(계획) | 역할 |
 |---|---|---|---|
-| MOD_01 | ADAS_WARN_CTRL | `canoe/nodes/ADAS_WARN_CTRL.can` | 조건 판정/디바운스/트리거 |
-| MOD_02 | NAV_CONTEXT_MGR | `canoe/nodes/NAV_CONTEXT_MGR.can` | 구간 컨텍스트 계산 |
-| MOD_03 | EMS_POLICE_TX | `canoe/nodes/EMS_POLICE_TX.can` | 경찰 긴급 송신 |
-| MOD_04 | EMS_AMB_TX | `canoe/nodes/EMS_AMB_TX.can` | 구급 긴급 송신 |
-| MOD_05 | EMS_ALERT_RX | `canoe/nodes/EMS_ALERT_RX.can` | 긴급 수신/해제/타임아웃 |
-| MOD_06 | WARN_ARB_MGR | `canoe/nodes/WARN_ARB_MGR.can` | 우선순위 중재 |
-| MOD_07 | CHASSIS_GW | `canoe/nodes/CHASSIS_GW.can` | CAN->ETH 변환 |
-| MOD_08 | INFOTAINMENT_GW | `canoe/nodes/INFOTAINMENT_GW.can` | CAN->ETH 변환 |
-| MOD_09 | BODY_GW | `canoe/nodes/BODY_GW.can` | ETH->CAN 변환(Ambient) |
-| MOD_10 | IVI_GW | `canoe/nodes/IVI_GW.can` | ETH->CAN 변환(Cluster) |
-| MOD_11 | BCM_AMBIENT_CTRL | `canoe/nodes/BCM_AMBIENT_CTRL.can` | Ambient 출력 제어 |
-| MOD_12 | CLU_HMI_CTRL | `canoe/nodes/CLU_HMI_CTRL.can` | Cluster 경고 출력 |
-| MOD_13 | SIL_TEST_CTRL | `canoe/nodes/SIL_TEST_CTRL.can` | 테스트 실행/판정 |
-| MOD_14 | ETH_SWITCH | CANoe Ethernet Backbone 설정 | 이더넷 분배 인프라 |
-| MOD_15 | DOMAIN_BOUNDARY_MGR | `canoe/nodes/DOMAIN_BOUNDARY_MGR.can` | 도메인 경로 헬스/Fail-safe 게이트 |
+| MOD_01 | ADAS_WARN_CTRL | `canoe/src/capl/logic/ADAS_WARN_CTRL.can` | 조건 판정/디바운스/트리거 |
+| MOD_02 | NAV_CONTEXT_MGR | `canoe/src/capl/logic/NAV_CONTEXT_MGR.can` | 구간 컨텍스트 계산 |
+| MOD_03 | EMS_POLICE_TX | `canoe/src/capl/ems/EMS_POLICE_TX.can` | 경찰 긴급 송신 |
+| MOD_04 | EMS_AMB_TX | `canoe/src/capl/ems/EMS_AMB_TX.can` | 구급 긴급 송신 |
+| MOD_05 | EMS_ALERT_RX | `canoe/src/capl/logic/EMS_ALERT_RX.can` | 긴급 수신/해제/타임아웃 |
+| MOD_06 | WARN_ARB_MGR | `canoe/src/capl/logic/WARN_ARB_MGR.can` | 우선순위 중재 |
+| MOD_07 | CHASSIS_GW | `canoe/src/capl/input/CHASSIS_GW.can` | CAN->ETH 변환 |
+| MOD_08 | INFOTAINMENT_GW | `canoe/src/capl/input/INFOTAINMENT_GW.can` | CAN->ETH 변환 |
+| MOD_09 | BODY_GW | `canoe/src/capl/output/BODY_GW.can` | ETH->CAN 변환(Ambient) |
+| MOD_10 | IVI_GW | `canoe/src/capl/output/IVI_GW.can` | ETH->CAN 변환(Cluster) |
+| MOD_11 | BCM_AMBIENT_CTRL | `canoe/src/capl/output/BCM_AMBIENT_CTRL.can` | Ambient 출력 제어 |
+| MOD_12 | CLU_HMI_CTRL | `canoe/src/capl/output/CLU_HMI_CTRL.can` | Cluster 경고 출력 |
+| MOD_13 | SIL_TEST_CTRL | `canoe/src/capl/input/SIL_TEST_CTRL.can` | 테스트 실행/판정 |
+| MOD_14 | ETH_SWITCH | `canoe/src/capl/network/ETH_SWITCH.can` | ETH 경로 상태 모니터(Validation/Fail-safe 지원) |
+| MOD_15 | DOMAIN_BOUNDARY_MGR | `canoe/src/capl/ecu/DOMAIN_BOUNDARY_MGR.can` | 도메인 경로 헬스/Fail-safe 게이트 |
 
 ---
 
@@ -330,6 +331,7 @@ Emergency Source (logical terminal)
 
 | 버전 | 날짜 | 변경 사항 |
 |---|---|---|
+| 2.12 | 2026-03-03 | ETH_SWITCH 역할을 구현 기준(경로 상태 모니터링)으로 명확화하고, 코드 아티팩트 경로를 `canoe/src/capl/*` 실제 경로로 정합화. |
 | 2.11 | 2026-03-03 | Req_120~124 추적/타이밍 정합 반영: `Func_120~124` 및 `Var_320~329` 추적 항목 추가, `TASK_003`를 100ms 주기로 정합화, `DOMAIN_BOUNDARY_MGR`를 `MOD_15`로 반영. |
 | 2.10 | 2026-03-02 | ISO26262/ASPICE 운영 경계 반영: SIL 전용 `Verification-Harness` 변수(`V2X/policeDispatch`, `V2X/ambulanceDispatch`, `Driver/gazeActive`, `UiRender/*`)의 비제품 체인 분류를 작성 원칙/4.2 표로 명시. |
 | 2.9 | 2026-03-01 | 상단 공식 표와 아키텍처 요약의 EMS 표기를 `EMS_ALERT` 논리 단말 기준으로 통일하고, 내부 TX/RX 모듈은 상세 추적표에서만 분리 관리. |
