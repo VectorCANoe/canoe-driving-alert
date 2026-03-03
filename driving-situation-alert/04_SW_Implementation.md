@@ -3,7 +3,7 @@
 **Document ID**: PROJ-04-SI
 **ISO 26262 Reference**: Part 6, Cl.8 (Software Unit Design and Implementation)
 **ASPICE Reference**: SWE.3 (Software Detailed Design and Unit Construction)
-**Version**: 2.11
+**Version**: 2.12
 **Date**: 2026-03-02
 **Status**: Draft
 **Project Title**: 주행 상황 실시간 경고 시스템
@@ -114,6 +114,7 @@ Emergency Source (logical terminal)
 | MOD_12 | CLU_HMI_CTRL | `canoe/nodes/CLU_HMI_CTRL.can` | Cluster 경고 출력 |
 | MOD_13 | SIL_TEST_CTRL | `canoe/nodes/SIL_TEST_CTRL.can` | 테스트 실행/판정 |
 | MOD_14 | ETH_SWITCH | `canoe/src/capl/network/ETH_SWITCH.can` | ETH 경로 상태 모니터(Validation/Fail-safe 지원) |
+| MOD_15 | DOMAIN_BOUNDARY_MGR | `canoe/src/capl/ecu/DOMAIN_BOUNDARY_MGR.can` | 도메인 경계/경로 단절 감지 및 Fail-safe 상태 출력 |
 
 ---
 
@@ -164,6 +165,11 @@ Emergency Source (logical terminal)
 | Func_041 | Req_041 | SIL_TEST_CTRL | Flow_009 / Comm_009 / testScenario | Flow_009 / scenarioResult | `MOD_13.F041` | ST_SIL_001 |
 | Func_042 | Req_042 | SIL_TEST_CTRL | Flow_009 / Comm_009 / testScenario | Flow_009 / scenarioResult | `MOD_13.F042` | ST_SIL_002 |
 | Func_043 | Req_043 | SIL_TEST_CTRL | Flow_009 / Comm_009 / scenarioResult | Flow_009 / scenarioResult | `MOD_13.F043` | ST_RESULT_001 |
+| Func_120 | Req_120 | ADAS_WARN_CTRL | Flow_120 / Comm_120 / emergencyDirection, eta, vehicleSpeedNorm | Flow_120 / proximityRiskLevel | `MOD_01.F120` | UT_V2_RISK_001 |
+| Func_121 | Req_121 | WARN_ARB_MGR | Flow_120,121 / Comm_120,121 / proximityRiskLevel, failSafeMode, driveStateNorm | Flow_121 / decelAssistReq | `MOD_06.F121` | UT_V2_DECEL_001 |
+| Func_122 | Req_122 | WARN_ARB_MGR | Flow_121,122 / Comm_121,122 / decelAssistReq, selectedAlertType, selectedAlertLevel | Flow_122 / selectedAlertType, selectedAlertLevel | `MOD_06.F122` | IT_V2_SYNC_001 |
+| Func_123 | Req_123 | WARN_ARB_MGR | Flow_123 / Comm_123 / steeringInputNorm, brakePedalNorm | Flow_121 / decelAssistReq | `MOD_06.F123` | UT_V2_DECEL_RELEASE_001 |
+| Func_124 | Req_124 | DOMAIN_BOUNDARY_MGR | Flow_124 / Comm_124 / domainPathStatus, e2eHealthState, forceFailSafe | Flow_124 / failSafeMode, decelAssistReq | `MOD_15.F124` | ST_V2_FAILSAFE_001 |
 
 ---
 
@@ -202,6 +208,16 @@ Emergency Source (logical terminal)
 | Var_027 | lastEmergencyRxMs | EMS_ALERT_RX | Flow_006 / Comm_006 |
 | Var_028 | duplicatePopupGuard | CLU_HMI_CTRL | Flow_008 / Comm_008 |
 | Var_029 | arbitrationSnapshotId | WARN_ARB_MGR | Flow_006 / Comm_006 |
+| Var_320 | proximityRiskLevel | ADAS_WARN_CTRL, WARN_ARB_MGR | Flow_120 / Comm_120 |
+| Var_321 | decelAssistReq | WARN_ARB_MGR, BRAKE_CTRL | Flow_121,123 / Comm_121,123 |
+| Var_322 | failSafeMode | DOMAIN_BOUNDARY_MGR, WARN_ARB_MGR | Flow_124,121 / Comm_124,121 |
+| Var_323 | domainPathStatus | DOMAIN_BOUNDARY_MGR | Flow_124 / Comm_124 |
+| Var_324 | e2eHealthState | DOMAIN_BOUNDARY_MGR | Flow_124 / Comm_124 |
+| Var_325 | brakePedalNorm | CHASSIS_GW, WARN_ARB_MGR | Flow_123 / Comm_123 |
+| Var_326 | driverReleaseReason | WARN_ARB_MGR | Flow_121 / Comm_121 |
+| Var_327 | emergencyContext | EMS_ALERT_RX, WARN_ARB_MGR | Flow_006,121 / Comm_006,121 |
+| Var_328 | failSafeMode | DOMAIN_BOUNDARY_MGR | Flow_124 / Comm_124 |
+| Var_329 | decelAssistReq | DOMAIN_BOUNDARY_MGR, WARN_ARB_MGR | Flow_124,121 / Comm_124,121 |
 
 ---
 
@@ -280,7 +296,7 @@ Emergency Source (logical terminal)
 |---|---|---|
 | 스코프 정합 | CANoe SIL, CAN+Ethernet만 사용 | Defined |
 | 아키텍처 정합 | 옵션1(ETH_SWITCH+Domain GW+CAN) 고정 | Defined |
-| Func 구현 커버리지 | Func_001~Func_043 모두 Code Ref 존재 | Defined |
+| Func 구현 커버리지 | Func_001~Func_043, Func_120~Func_124 Code Ref 존재 | Defined |
 | Flow/Comm 정합 | 0302/0303과 ID/주기/조건 일치 | Defined |
 | Var 정합 | 0304 표준 Name + Internal Name 매핑 반영 | Defined |
 | 예외 처리 구현 | 5개 장애 규칙 구현 및 로그화 | Defined |
@@ -315,6 +331,7 @@ Emergency Source (logical terminal)
 
 | 버전 | 날짜 | 변경 사항 |
 |---|---|---|
+| 2.12 | 2026-03-03 | V2 확장 구현 추적 복원: `Func_120~Func_124`와 `Var_320~Var_329`를 04 본문에 반영하고 `MOD_15(DOMAIN_BOUNDARY_MGR)`를 추가해 Req_120~124 구현 체인을 명시. |
 | 2.11 | 2026-03-03 | ETH_SWITCH 구현 책임을 코드 기준으로 정합화: 프레임 포워딩은 Ethernet 스위칭 인프라(실차/검증 공통), CAPL은 age 기반 경로 헬스 모니터링/진단 담당으로 구분. |
 | 2.10 | 2026-03-02 | ISO26262/ASPICE 운영 경계 반영: SIL 전용 `Verification-Harness` 변수(`V2X/policeDispatch`, `V2X/ambulanceDispatch`, `Driver/gazeActive`, `UiRender/*`)의 비제품 체인 분류를 작성 원칙/4.2 표로 명시. |
 | 2.9 | 2026-03-01 | 상단 공식 표와 아키텍처 요약의 EMS 표기를 `EMS_ALERT` 논리 단말 기준으로 통일하고, 내부 TX/RX 모듈은 상세 추적표에서만 분리 관리. |
