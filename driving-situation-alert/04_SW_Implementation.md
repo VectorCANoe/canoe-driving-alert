@@ -3,7 +3,7 @@
 **Document ID**: PROJ-04-SI
 **ISO 26262 Reference**: Part 6, Cl.8 (Software Unit Design and Implementation)
 **ASPICE Reference**: SWE.3 (Software Detailed Design and Unit Construction)
-**Version**: 2.10
+**Version**: 2.11
 **Date**: 2026-03-02
 **Status**: Draft
 **Project Title**: 주행 상황 실시간 경고 시스템
@@ -81,7 +81,7 @@ Emergency Source (logical terminal)
 |  |  | Gateway/Network |
 | CHASSIS_GW | Chassis CAN 입력 정규화 및 ETH 송신 | Flow_001,002 |
 | INFOTAINMENT_GW | Infotainment CAN 입력(구간/방향/거리/제한속도) 정규화 및 ETH 송신 | Flow_003 |
-| ETH_SWITCH | Ethernet 프레임 분배 및 도메인 전달 | Flow_001~008 |
+| ETH_SWITCH | ETH 경로 헬스 모니터링(메시지 age 기반 path health 판정) | Flow_001~008 |
 | BODY_GW | 중재 결과 ETH 수신 후 Ambient CAN 송신 | Flow_007 |
 | IVI_GW | 중재 결과 ETH 수신 후 Cluster CAN 송신 | Flow_008 |
 |  |  | Output |
@@ -92,6 +92,7 @@ Emergency Source (logical terminal)
 
 - 상단 공식표는 감사 일관성을 위해 `EMS_ALERT` 논리 단말 기준으로 표기한다.
 - 내부 구현 모듈(`EMS_POLICE_TX`, `EMS_AMB_TX`, `EMS_ALERT_RX`) 분해는 본문 상세 추적표(3장, 4장)에서 관리한다.
+- 프레임 포워딩은 Ethernet 스위칭 인프라(실차 스위치 또는 SIL 네트워크 스택)가 담당하며, `ETH_SWITCH` CAPL은 경로 헬스 모니터링/진단 로직만 수행한다.
 
 ---
 
@@ -112,7 +113,7 @@ Emergency Source (logical terminal)
 | MOD_11 | BCM_AMBIENT_CTRL | `canoe/nodes/BCM_AMBIENT_CTRL.can` | Ambient 출력 제어 |
 | MOD_12 | CLU_HMI_CTRL | `canoe/nodes/CLU_HMI_CTRL.can` | Cluster 경고 출력 |
 | MOD_13 | SIL_TEST_CTRL | `canoe/nodes/SIL_TEST_CTRL.can` | 테스트 실행/판정 |
-| MOD_14 | ETH_SWITCH | CANoe Ethernet Backbone 설정 | 이더넷 분배 인프라 |
+| MOD_14 | ETH_SWITCH | `canoe/src/capl/network/ETH_SWITCH.can` | ETH 경로 상태 모니터(Validation/Fail-safe 지원) |
 
 ---
 
@@ -314,6 +315,7 @@ Emergency Source (logical terminal)
 
 | 버전 | 날짜 | 변경 사항 |
 |---|---|---|
+| 2.11 | 2026-03-03 | ETH_SWITCH 구현 책임을 코드 기준으로 정합화: 프레임 포워딩은 Ethernet 스위칭 인프라(실차/검증 공통), CAPL은 age 기반 경로 헬스 모니터링/진단 담당으로 구분. |
 | 2.10 | 2026-03-02 | ISO26262/ASPICE 운영 경계 반영: SIL 전용 `Verification-Harness` 변수(`V2X/policeDispatch`, `V2X/ambulanceDispatch`, `Driver/gazeActive`, `UiRender/*`)의 비제품 체인 분류를 작성 원칙/4.2 표로 명시. |
 | 2.9 | 2026-03-01 | 상단 공식 표와 아키텍처 요약의 EMS 표기를 `EMS_ALERT` 논리 단말 기준으로 통일하고, 내부 TX/RX 모듈은 상세 추적표에서만 분리 관리. |
 | 1.0 | 2026-02-23 | 초기 생성(구 스코프 기반) |

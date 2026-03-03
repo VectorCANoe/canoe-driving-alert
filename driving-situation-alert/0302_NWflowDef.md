@@ -3,7 +3,7 @@
 **Document ID**: PROJ-0302-NFD
 **ISO 26262 Reference**: Part 4, Cl.7 (System Design)
 **ASPICE Reference**: SYS.3 (System Architectural Design)
-**Version**: 3.13
+**Version**: 3.14
 **Date**: 2026-03-02
 **Status**: Draft
 **Project Title**: 주행 상황 실시간 경고 시스템
@@ -320,7 +320,7 @@
 | Flow_121 | Comm_121 | Func_121 | Req_121 | ethDecelAssistReqMsg(0xE211) | DECEL_ASSIST_CTRL | DOMAIN_GW_ROUTER, BRAKE_CTRL | Ethernet(UDP) + CAN | Event + 50ms | proximityRiskLevel 임계 초과 | 임계 미만 또는 failSafeMode=1 |
 | Flow_122 | Comm_122 | Func_122 | Req_122 | ethSelectedAlertMsg(0xE200), frmAmbientControlMsg(0x210), frmClusterWarningMsg(0x220) | WARN_ARB_MGR | BODY_GW, IVI_GW, BCM_AMBIENT_CTRL, CLU_HMI_CTRL | Ethernet(UDP) + CAN | 50ms | decelAssistReq=1 | decelAssistReq=0 또는 긴급 해제 |
 | Flow_123 | Comm_123 | Func_123 | Req_123 | frmPedalInputCanMsg(0x102), frmSteeringCanMsg(0x101), ethDecelAssistReqMsg(0xE211) | DECEL_ASSIST_CTRL | WARN_ARB_MGR, DOMAIN_GW_ROUTER | CAN + Ethernet(UDP) | Event + 100ms | 운전자 제동/조향 회피 입력 검출 | decelAssistReq=0 전환 완료 |
-| Flow_124 | Comm_124 | Func_124 | Req_124 | frmDomainPathStateMsg(0x232), ethFailSafeStateMsg(0xE212) | DOMAIN_BOUNDARY_MGR | DOMAIN_GW_ROUTER, WARN_ARB_MGR, BODY_GW, IVI_GW | CAN + Ethernet(UDP) | 100ms + Event | domainPathStatus=DEGRADED/FAILED | 경로 복구 + Health 정상화 |
+| Flow_124 | Comm_124 | Func_124 | Req_124 | frmChassisHealthMsg(0x109), frmBodyHealthMsg(0x219), frmInfotainmentHealthMsg(0x228), ethFailSafeStateMsg(0xE212) | CHASSIS_GW, BODY_GW, INFOTAINMENT_GW, DOMAIN_BOUNDARY_MGR | DOMAIN_BOUNDARY_MGR, DOMAIN_GW_ROUTER, WARN_ARB_MGR, BODY_GW, IVI_GW | CAN + Ethernet(UDP) | 100ms + Event | domainPathStatus=DEGRADED/FAILED | 경로 복구 + Health 정상화 |
 
 ---
 
@@ -364,7 +364,7 @@
 | Powertrain CAN | DOMAIN_GW_ROUTER | ENGINE_CTRL, TRANSMISSION_CTRL | `canoe/databases/powertrain_can.dbc` | 0x300~0x312 | Flow_101, Flow_105, Flow_204 |
 | Body CAN | BODY_GW | BCM_AMBIENT_CTRL, HAZARD_CTRL, WINDOW_CTRL, DRIVER_STATE_CTRL | `canoe/databases/body_can.dbc` | 0x210~0x219, 0x240~0x24D | Flow_007, Flow_103, Flow_105, Flow_202 |
 | Infotainment CAN | INFOTAINMENT_GW, IVI_GW | NAV_CONTEXT_MGR, CLU_HMI_CTRL, CLUSTER_BASE_CTRL | `canoe/databases/infotainment_can.dbc` | 0x110, 0x220~0x228, 0x260~0x26D | Flow_003, Flow_008, Flow_104, Flow_105, Flow_203, Flow_205 |
-| Ethernet UDP | ETH_SWITCH | EMS_ALERT(내부: EMS_POLICE_TX/EMS_AMB_TX/EMS_ALERT_RX), WARN_ARB_MGR, GW 집합 | `canoe/docs/operations/ETH_INTERFACE_CONTRACT.md` | 0x510/0x511/0x512/0xE100/0xE200 | Flow_004, Flow_005, Flow_006 |
+| Ethernet UDP | ETH_SWITCH | EMS_ALERT(내부: EMS_POLICE_TX/EMS_AMB_TX/EMS_ALERT_RX), WARN_ARB_MGR, GW 집합 | `canoe/docs/operations/ETH_INTERFACE_CONTRACT.md` | 0x510/0x511/0x512/0xE100/0xE200 (+ Pre-Activation: 0xE210/0xE211/0xE212) | Flow_004, Flow_005, Flow_006 |
 
 ---
 
@@ -401,7 +401,7 @@
 | Flow_121 | Comm_121 | Func_121 | Req_121 | ethDecelAssistReqMsg(0xE211) | DECEL_ASSIST_CTRL -> DOMAIN_GW_ROUTER -> BRAKE_CTRL | Event + 50ms | Planned (Pre-Activation) |
 | Flow_122 | Comm_122 | Func_122 | Req_122 | ethSelectedAlertMsg(0xE200), frmAmbientControlMsg(0x210), frmClusterWarningMsg(0x220) | WARN_ARB_MGR -> BODY_GW/IVI_GW -> BCM_AMBIENT_CTRL/CLU_HMI_CTRL | 50ms | Planned (Pre-Activation) |
 | Flow_123 | Comm_123 | Func_123 | Req_123 | frmPedalInputCanMsg(0x102), frmSteeringCanMsg(0x101), ethDecelAssistReqMsg(0xE211) | BRAKE_CTRL/STEERING_CTRL -> DECEL_ASSIST_CTRL -> DOMAIN_GW_ROUTER | Event + 100ms | Planned (Pre-Activation) |
-| Flow_124 | Comm_124 | Func_124 | Req_124 | frmDomainPathStateMsg(0x232), ethFailSafeStateMsg(0xE212) | DOMAIN_BOUNDARY_MGR -> DOMAIN_GW_ROUTER -> WARN_ARB_MGR/BODY_GW/IVI_GW | 100ms + Event | Planned (Pre-Activation) |
+| Flow_124 | Comm_124 | Func_124 | Req_124 | frmChassisHealthMsg(0x109), frmBodyHealthMsg(0x219), frmInfotainmentHealthMsg(0x228), ethFailSafeStateMsg(0xE212) | DOMAIN_BOUNDARY_MGR -> DOMAIN_GW_ROUTER -> WARN_ARB_MGR/BODY_GW/IVI_GW | 100ms + Event | Planned (Pre-Activation) |
 
 - 주의: `Flow_120~Flow_124`는 V2 확장 설계용 Pre-Activation 플로우다. 현재 중간 산출물에서는 요구/기능/통신/변수 설계 근거만 유지하고, 코드/DBC/테스트 동시 반영 시점에 활성화한다.
 
@@ -416,7 +416,7 @@
 | Body Domain CAN | `body_can.dbc` | 24 | 0x210~0x219, 0x240~0x24D |
 | Infotainment Domain CAN | `infotainment_can.dbc` | 24 | 0x110, 0x220~0x228, 0x260~0x26D |
 | Test CAN | `test_can.dbc` | 3 | 0x230~0x232 |
-| Ethernet Contract | `ETH_INTERFACE_CONTRACT.md` | 5 타입 | 0x510/0x511/0x512/0xE100/0xE200 |
+| Ethernet Contract | `ETH_INTERFACE_CONTRACT.md` | 8 타입(Pre-Activation 포함) | 0x510/0x511/0x512/0xE100/0xE200/0xE210/0xE211/0xE212 |
 
 | 항목 | 현재 정의(문서/원본) | 확장 목표(Phase-B) | 비고 |
 |---|---|---|---|
@@ -457,6 +457,7 @@
 
 | 버전 | 날짜 | 변경 사항 |
 |---|---|---|
+| 3.14 | 2026-03-03 | Comm_124/Flow_124의 CAN 입력을 DBC 실존 Health 메시지(`0x109/0x219/0x228`)로 정정하고, Ethernet 프로파일 ID 표기에 V2 확장 Pre-Activation(`0xE210/0xE211/0xE212`)을 명시. |
 | 3.13 | 2026-03-02 | 감사 정합 보강: 옵션1 설계 vs SIL 임시 CAN 대체 백본 검증 경계 문구를 작성 원칙에 추가. |
 | 3.12 | 2026-03-02 | V2 확장 제어 책임 분리 반영: `Flow_121/Flow_123`의 송신 노드를 `DECEL_ASSIST_CTRL`로 조정하고 Chassis CAN 경로 설명을 동기화. |
 | 3.11 | 2026-03-02 | V2 확장(Pre-Activation) 반영: `Flow_120~Flow_124`(근접위험/감속보조/경고동기화/운전자개입해제/도메인단절강등) 추가 및 연계 체크포인트 보강. |
