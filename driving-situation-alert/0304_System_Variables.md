@@ -202,9 +202,8 @@
 | 228 | Chassis | ChassisDiagReqAct | uint32 | 0 | 1 | 0 | Chassis 진단 요청 활성 |
 | 229 | Chassis | ChassisDiagResId | uint32 | 0 | 255 | 0 | Chassis 진단 응답 ID |
 | 230 | Chassis | ChassisDiagStatus | uint32 | 0 | 15 | 0 | Chassis 진단 결과 |
-| 231 | Chassis | LateralCtrlAvail | uint32 | 0 | 1 | 0 | 횡방향 제어 가능 상태 |
-| 232 | Chassis | LongitudinalCtrlAvail | uint32 | 0 | 1 | 0 | 종방향 제어 가능 상태 |
-| 233 | Chassis | ChassisCtrlMode | uint32 | 0 | 15 | 0 | 차량 제어 모드 |
+| 231 | Chassis | AdasChassisState | uint32 | 0 | 255 | 0 | ADAS 섀시 상태 코드 |
+| 232 | Chassis | AdasHealthLevel | uint32 | 0 | 255 | 0 | ADAS 헬스 상태 코드 |
 | 234 | Chassis | BrakePadWearFL | uint32 | 0 | 100 | 0 | 브레이크 패드 마모(전륜좌) |
 | 235 | Chassis | BrakePadWearFR | uint32 | 0 | 100 | 0 | 브레이크 패드 마모(전륜우) |
 | 236 | Chassis | RoadFrictionEst | uint32 | 0 | 255 | 0 | 노면 마찰 추정치 |
@@ -555,9 +554,8 @@
 | Var_228 | ChassisDiagReqAct | chassisDiagReqAct_CAN_EXT | CAN_EXT | CHASSIS_GW | Comm_201 | Flow_201 | Func_103, Func_104, Func_110 | Req_103, Req_104, Req_110 | 100ms 주기 수신 + Event 발생 시 갱신 |
 | Var_229 | ChassisDiagResId | chassisDiagResId_CAN_EXT | CAN_EXT | CHASSIS_GW | Comm_201 | Flow_201 | Func_103, Func_104, Func_110 | Req_103, Req_104, Req_110 | 100ms 주기 수신 + Event 발생 시 갱신 |
 | Var_230 | ChassisDiagStatus | chassisDiagStatus_CAN_EXT | CAN_EXT | CHASSIS_GW | Comm_201 | Flow_201 | Func_103, Func_104, Func_110 | Req_103, Req_104, Req_110 | 100ms 주기 수신 + Event 발생 시 갱신 |
-| Var_231 | LateralCtrlAvail | lateralCtrlAvail_CAN_EXT | CAN_EXT | CHASSIS_GW | Comm_201 | Flow_201 | Func_103, Func_104, Func_110 | Req_103, Req_104, Req_110 | 100ms 주기 수신 + Event 발생 시 갱신 |
-| Var_232 | LongitudinalCtrlAvail | longitudinalCtrlAvail_CAN_EXT | CAN_EXT | CHASSIS_GW | Comm_201 | Flow_201 | Func_103, Func_104, Func_110 | Req_103, Req_104, Req_110 | 100ms 주기 수신 + Event 발생 시 갱신 |
-| Var_233 | ChassisCtrlMode | chassisCtrlMode_CAN_EXT | CAN_EXT | CHASSIS_GW | Comm_201 | Flow_201 | Func_103, Func_104, Func_110 | Req_103, Req_104, Req_110 | 100ms 주기 수신 + Event 발생 시 갱신 |
+| Var_231 | AdasChassisState | adasChassisState_CAN_EXT | CAN_EXT | CHASSIS_GW | Comm_201 | Flow_201 | Func_103, Func_104, Func_110 | Req_103, Req_104, Req_110 | 100ms 주기 수신 + Event 발생 시 갱신 |
+| Var_232 | AdasHealthLevel | adasHealthLevel_CAN_EXT | CAN_EXT | CHASSIS_GW | Comm_201 | Flow_201 | Func_103, Func_104, Func_110 | Req_103, Req_104, Req_110 | 100ms 주기 수신 + Event 발생 시 갱신 |
 | Var_234 | BrakePadWearFL | brakePadWearFL_CAN_EXT | CAN_EXT | CHASSIS_GW | Comm_201 | Flow_201 | Func_103, Func_104, Func_110 | Req_103, Req_104, Req_110 | 100ms 주기 수신 + Event 발생 시 갱신 |
 | Var_235 | BrakePadWearFR | brakePadWearFR_CAN_EXT | CAN_EXT | CHASSIS_GW | Comm_201 | Flow_201 | Func_103, Func_104, Func_110 | Req_103, Req_104, Req_110 | 100ms 주기 수신 + Event 발생 시 갱신 |
 | Var_236 | RoadFrictionEst | roadFrictionEst_CAN_EXT | CAN_EXT | CHASSIS_GW | Comm_201 | Flow_201 | Func_103, Func_104, Func_110 | Req_103, Req_104, Req_110 | 100ms 주기 수신 + Event 발생 시 갱신 |

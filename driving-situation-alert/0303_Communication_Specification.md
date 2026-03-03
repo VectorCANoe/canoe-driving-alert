@@ -199,9 +199,8 @@
 |  |  |  | ChassisDiagReqAct | 8 | Chassis 진단 요청 활성 | 0~1 | SIL_TEST_CTRL -> CHASSIS_GW 전달 |
 | frmChassisDiagResMsg | 0x11E | 3 | ChassisDiagResId | 0~7 | Chassis 진단 응답 ID | 0~255 | CHASSIS_GW -> SIL_TEST_CTRL 전달 |
 |  |  |  | ChassisDiagStatus | 8~11 | Chassis 진단 결과 | 0~15 | CHASSIS_GW -> SIL_TEST_CTRL 전달 |
-| frmAdasChassisStatusMsg | 0x11F | 2 | LateralCtrlAvail | 0 | 횡방향 제어 가능 상태 | 0~1 | CHASSIS_GW -> ADAS_WARN_CTRL, DOMAIN_GW_ROUTER 전달 |
-|  |  |  | LongitudinalCtrlAvail | 1 | 종방향 제어 가능 상태 | 0~1 | CHASSIS_GW -> ADAS_WARN_CTRL, DOMAIN_GW_ROUTER 전달 |
-|  |  |  | ChassisCtrlMode | 8~11 | 차량 제어 모드 | 0~15 | CHASSIS_GW -> ADAS_WARN_CTRL, DOMAIN_GW_ROUTER 전달 |
+| frmAdasChassisStatusMsg | 0x11F | 2 | AdasChassisState | 0~7 | ADAS 섀시 상태 코드 | 0~255 | ADAS_WARN_CTRL -> CHASSIS_GW 전달 |
+|  |  |  | AdasHealthLevel | 8~15 | ADAS 헬스 상태 코드 | 0~255 | ADAS_WARN_CTRL -> CHASSIS_GW 전달 |
 | frmBrakeWearMsg | 0x120 | 1 | BrakePadWearFL | 0~7 | 브레이크 패드 마모(전륜좌) | 0~100 % | CHASSIS_GW -> BRAKE_CTRL, DOMAIN_GW_ROUTER 전달 |
 |  |  |  | BrakePadWearFR | 8~15 | 브레이크 패드 마모(전륜우) | 0~100 % | CHASSIS_GW -> BRAKE_CTRL, DOMAIN_GW_ROUTER 전달 |
 | frmRoadFrictionMsg | 0x121 | 1 | RoadFrictionEst | 0~7 | 노면 마찰 추정치 | 0~255 | CHASSIS_GW -> ADAS_WARN_CTRL, DOMAIN_GW_ROUTER 전달 |

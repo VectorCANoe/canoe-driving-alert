@@ -199,9 +199,8 @@
 |  |  |  | 1 | Chassis Diag Request | 8 | ChassisDiagReqAct | Tx | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 | Chassis CAN | 0x11E | frmChassisDiagResMsg | 0 | Chassis Diag Response | 0~7 | ChassisDiagResId | Rx | Tx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | CAN, Event |
 |  |  |  | 1 | Chassis Diag Response | 8~11 | ChassisDiagStatus | Rx | Tx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| Chassis CAN | 0x11F | frmAdasChassisStatusMsg | 0 | ADAS Chassis Interface | 0 | LateralCtrlAvail |  | Tx |  | Rx |  | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | CAN, 100ms |
-|  |  |  | 0 | ADAS Chassis Interface | 1 | LongitudinalCtrlAvail |  | Tx |  | Rx |  | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-|  |  |  | 1 | ADAS Chassis Interface | 8~11 | ChassisCtrlMode |  | Tx |  | Rx |  | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| Chassis CAN | 0x11F | frmAdasChassisStatusMsg | 0 | ADAS Chassis Interface | 0~7 | AdasChassisState |  | Tx |  | Rx |  | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | CAN, 100ms |
+|  |  |  | 1 | ADAS Chassis Interface | 8~15 | AdasHealthLevel |  | Tx |  | Rx |  | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 | Chassis CAN | 0x120 | frmBrakeWearMsg | 0 | Brake Wear Check | 0~7 | BrakePadWearFL |  | Tx |  | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |  | Rx |  |  |  |  |  |  | CAN, 100ms |
 |  |  |  | 1 | Brake Wear Check | 8~15 | BrakePadWearFR |  | Tx |  | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |  | Rx |  |  |  |  |  |  |  |
 | Chassis CAN | 0x121 | frmRoadFrictionMsg | 0 | Road Friction Check | 0~7 | RoadFrictionEst |  | Tx |  | Rx |  | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | CAN, 100ms |
