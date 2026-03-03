@@ -3,9 +3,9 @@
 **Document ID**: PROJ-00C-RCSP  
 **ISO 26262 Reference**: Part 3 (Concept), Part 4 (System), Part 8 (Supporting Process)  
 **ASPICE Reference**: SYS.2, SYS.3, SWE.3, SUP.1, SUP.10  
-**Version**: 1.4  
-**Date**: 2026-03-02  
-**Status**: Draft  
+**Version**: 1.5  
+**Date**: 2026-03-04  
+**Status**: Draft (Internal Baseline Locked)  
 **Project Title**: 주행 상황 실시간 경고 시스템  
 **Subtitle**: 구간 정보 및 긴급차량 접근 기반 앰비언트·클러스터 경보
 
@@ -33,7 +33,7 @@
 | Safety Class | QM | 위해도 분석상 안전 무결성 등급이 필요하지 않은 항목 | 일부 표시 품질/운영 요구 |
 | Safety Class | Provisional-QM | HARA 완료 전 임시 분류 | 현재 기본 운영값 |
 | Safety Class | ASIL-A/B/C/D | HARA(S/E/C)로 확정된 안전 무결성 등급 | HARA 완료 후 확정 |
-| HARA Status | Not Started / In Progress / Completed | HARA 진행 상태 | 현재 In Progress |
+| HARA Status | Not Started / In Progress / Completed | HARA 진행 상태 | 현재 Completed (Internal Baseline) |
 
 ## 4. 분류 판정 규칙 (실행 규칙)
 
@@ -65,11 +65,11 @@
 
 | HARA 후보 ID | 대상 Req | 위험 시나리오(요약) | 현재 분류 | 다음 조치 |
 |---|---|---|---|---|
-| HC-01 | Req_010 | 스쿨존 과속 경고 누락/지연 | Provisional-QM | HARA 워크시트 S/E/C 평가 |
-| HC-02 | Req_011, Req_012 | 무조향 경고 오동작 또는 해제 실패 | Provisional-QM | HARA 워크시트 S/E/C 평가 |
-| HC-03 | Req_022, Req_027~031 | 중재 규칙 오류로 잘못된 우선 경고 출력 | Provisional-QM | HARA 워크시트 S/E/C 평가 |
-| HC-04 | Req_024, Req_033, Req_034 | 타임아웃/복귀/전환 불안정으로 운전자 혼란 유발 | Provisional-QM | HARA 워크시트 S/E/C 평가 |
-| HC-05 | Req_110, Req_111 | 도메인 경계/전달 오류로 경고 체인 단절 | Provisional-QM | 인터페이스 FMEA + HARA 연계 |
+| HC-01 | Req_010 | 스쿨존 과속 경고 누락/지연 | ASIL Candidate-B (Locked) | HARA 워크시트 승인 완료(00d) |
+| HC-02 | Req_011, Req_012 | 무조향 경고 오동작 또는 해제 실패 | ASIL Candidate-C (Locked) | HARA 워크시트 승인 완료(00d) |
+| HC-03 | Req_022, Req_027~031 | 중재 규칙 오류로 잘못된 우선 경고 출력 | ASIL Candidate-C (Locked) | HARA 워크시트 승인 완료(00d) |
+| HC-04 | Req_024, Req_033, Req_034 | 타임아웃/복귀/전환 불안정으로 운전자 혼란 유발 | ASIL Candidate-B (Locked) | HARA 워크시트 승인 완료(00d) |
+| HC-05 | Req_110, Req_111, Req_124 | 도메인 경계/전달 오류로 경고 체인 단절 | ASIL Candidate-C (Locked) | 인터페이스 FMEA + HARA 승인 완료(00d) |
 
 ## 6. ASPICE 운영 매핑 (프로세스 근거)
 
@@ -85,14 +85,14 @@
 
 | Req 범위 | Primary Type | Secondary Type | Safety Class | HARA Status | 근거 문서 |
 |---|---|---|---|---|---|
-| Req_001~006 | Functional | Non-Functional | Provisional-QM | In Progress | 01, 03, 05 |
-| Req_007~016 | Functional | Interface | Provisional-QM | In Progress | 01, 03, 0302 |
-| Req_017~026 | Functional | Interface | Provisional-QM | In Progress | 01, 0302, 0303 |
-| Req_027~034 | Functional | Non-Functional | Provisional-QM | In Progress | 01, 03, 0301 |
-| Req_035~040 | Functional | Non-Functional | Provisional-QM | In Progress | 01, 03, 07 |
-| Req_041~043 | Verification-Acceptance | Interface | QM | N/A | 01, 05, 06, 07 |
-| Req_101~112 | Functional | Interface | Provisional-QM | In Progress | 01, 03, 0302 |
-| Req_113~119 | Interface | Functional | Provisional-QM | In Progress | 01, 03, 0303, 0304 |
+| Req_001~009, Req_013~021, Req_026, Req_035~043 | Functional / Interface / Verification-Acceptance | Non-Functional | QM (Locked) | Completed (Internal) | 01, 03, 05~07 |
+| Req_010 | Functional | Non-Functional | ASIL Candidate-B (Locked) | Completed (Internal) | 00d(HC-01), 01, 03, 07 |
+| Req_011~012 | Functional | Non-Functional | ASIL Candidate-C (Locked) | Completed (Internal) | 00d(HC-02), 01, 03, 07 |
+| Req_022, Req_027~031 | Functional | Non-Functional | ASIL Candidate-C (Locked) | Completed (Internal) | 00d(HC-03), 01, 03, 06, 07 |
+| Req_024, Req_033, Req_034 | Non-Functional | Functional | ASIL Candidate-B (Locked) | Completed (Internal) | 00d(HC-04), 01, 03, 06, 07 |
+| Req_101~109, Req_112~118, Req_120~123 | Functional / Interface | Non-Functional | QM (Locked) | Completed (Internal) | 01, 03, 0302~0304 |
+| Req_110~111, Req_124 | Interface | Functional / Non-Functional | ASIL Candidate-C (Locked) | Completed (Internal) | 00d(HC-05), 01, 03, 0302~0304, 06, 07 |
+| Req_119 | Interface | Functional | QM (Locked) | Completed (Internal) | 01, 03, 0303, 0304, 06, 07 |
 | N/A (Harness Vars) | Verification-Harness | Interface | QM | N/A | 04, 0304, `canoe/project/sysvars/project.sysvars` |
 
 ## 8. 문서 반영 규칙 (01~07)
@@ -111,7 +111,7 @@
 |---|---|---|
 | G-01 | Req 분류 누락 | 0건 |
 | G-02 | Safety Class 누락 | 0건 |
-| G-03 | Provisional->ASIL 변경 근거 | HARA 근거 100% 첨부 |
+| G-03 | Safety Class 변경 근거 | HARA 근거 100% 첨부 |
 | G-04 | Req-VC-UT/IT/ST 연결 누락 | 0건 |
 | G-05 | 01(What)/03+(How) 혼합 | 혼합 위반 0건 |
 
@@ -119,9 +119,9 @@
 
 | 작업 | 산출물 | 목표일 |
 |---|---|---|
-| HARA 상세 시트 작성 | `00d_HARA_Worksheet.md` | 완료(2026-03-02, v1.0) |
+| HARA 상세 시트 작성 | `00d_HARA_Worksheet.md` | 완료(2026-03-04, v1.3) |
 | Req별 분류 메타(Primary/Secondary) 잠금 | `01_Requirements.md` 부록 표 | 중간감사 이후 반영 (Planned) |
-| Safety Class 확정 반영 | 00a/00b/00c/01 동기화 | 2026-03-10 |
+| Safety Class 확정 반영 | 00a/00b/00c/01 동기화 | 완료(2026-03-04, 내부 Baseline) |
 | VC-테스트 증적 100% 연결 | 05/06/07 상단 Pass/Fail 포함 | 2026-03-12 |
 
 ---
@@ -130,6 +130,7 @@
 
 | 버전 | 날짜 | 변경 사항 |
 |---|---|---|
+| 1.5 | 2026-03-04 | Safety Class 내부 Baseline 잠금 반영: Req 그룹을 QM/ASIL Candidate로 확정하고 HARA 상태를 `Completed (Internal)`로 갱신. 활성 범위를 `Req_001~043`, `Req_101~124`로 동기화. |
 | 1.4 | 2026-03-02 | 중간감사 운영 반영: 후속 작업 항목 `Req별 분류 메타 잠금` 상태를 `중간감사 이후 반영 (Planned)`으로 명확화. |
 | 1.3 | 2026-03-02 | ISO26262/ASPICE 운영 경계 보강: `Verification-Harness` 분류를 추가하고, SIL 전용 변수(`UiRender/*`, `Driver/gazeActive`, `V2X/policeDispatch`)를 제품 Req 체인과 분리 관리하는 규칙(CR-05)을 명시. |
 | 1.2 | 2026-03-02 | 00d HARA 워크시트 생성 반영: 후속 작업 상태를 생성 완료로 갱신하고 운영 연계 기준 보강. |

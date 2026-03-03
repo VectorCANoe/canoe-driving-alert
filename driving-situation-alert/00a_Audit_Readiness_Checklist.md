@@ -1,8 +1,8 @@
 # 감사 준비 체크리스트 (Audit Readiness Checklist)
 
 **Document ID**: PROJ-00A-ARC  
-**Version**: 1.11  
-**Date**: 2026-03-02  
+**Version**: 1.12  
+**Date**: 2026-03-04  
 **Status**: Draft  
 **Project Title**: 주행 상황 실시간 경고 시스템
 **Subtitle**: 구간 정보 및 긴급차량 접근 기반 앰비언트·클러스터 경보
@@ -17,11 +17,11 @@
 
 | 항목 | 기준 | 현재 상태 | 판정 |
 |---|---|---|---|
-| Req 커버리지(03/0301/0302/0303/0304) | 활성 Req(`Req_001~043`, `Req_101~119`) 모두 참조 | 62/62 | OK |
-| Func 커버리지(0301/0302/0303/0304) | 활성 Func(`Func_001~043`, `Func_101~119`) 모두 참조 | 62/62 | OK |
-| Req 커버리지(05) | 활성 Req 62개 모두 참조 | 62/62 | OK |
-| Req 커버리지(06) | 활성 Req 62개 모두 참조 | 62/62 | OK |
-| Req 커버리지(07) | 활성 Req 62개 모두 참조 | 62/62 | OK |
+| Req 커버리지(03/0301/0302/0303/0304) | 활성 Req(`Req_001~043`, `Req_101~124`) 모두 참조 | 67/67 | OK |
+| Func 커버리지(0301/0302/0303/0304) | 활성 Func(`Func_001~043`, `Func_101~124`) 모두 참조 | 67/67 | OK |
+| Req 커버리지(05) | 활성 Req 67개 모두 참조 | 67/67 | OK |
+| Req 커버리지(06) | 활성 Req 67개 모두 참조 | 67/67 | OK |
+| Req 커버리지(07) | 활성 Req 67개 모두 참조 | 67/67 | OK |
 | 체인 무결성 | `Req -> Func -> Flow -> Comm -> Var -> UT/IT/ST` | 01~04 체인 정합 확인 | OK |
 
 ## B. 요구사항 분류/안전 프로파일 준비도 (ISO 26262 + ASPICE)
@@ -29,7 +29,7 @@
 | 항목 | 기준 | 상태 | 판정 |
 |---|---|---|---|
 | 요구 분류 체계 | Req Type/ Safety Class/ HARA Status 운영 | `00c_Req_Classification_and_Safety_Profile.md` 신설 | OK |
-| 안전등급 확정 근거 | QM/ASIL은 HARA 근거 기반으로 확정 | 현재 `Provisional` 단계, 확정 HARA 미완료 | 보완 필요 |
+| 안전등급 확정 근거 | QM/ASIL은 HARA 근거 기반으로 확정 | `00d` 내부 승인본 기준으로 Safety Class 잠금 완료(QM + ASIL Candidate) | OK |
 | VC 정합 | Req별 VC와 05/06/07 연결 | 01 내 VC 정의 완료, 테스트 증적 일부 미기입 | 보완 필요 |
 | ASPICE SYS.2/SYS.3 정합 | 요구(What)와 설계(How) 분리 | 01=What, 03+=How 원칙 유지 | OK |
 
@@ -38,7 +38,7 @@
 | 항목 | 현재 선언 | 판정 |
 |---|---|---|
 | ISO 26262/ASPICE 인증 주장 | 하지 않음 (SIL 실무형 운영 기준만 적용) | OK |
-| Safety Class 확정 상태 | Provisional 단계 (HARA 완료 후 QM/ASIL 확정) | 보완 필요 |
+| Safety Class 확정 상태 | 내부 Baseline 잠금 완료(QM + ASIL Candidate), 외부 인증 확정은 범위 외 | OK |
 | 감사 대응 목표 | 체인 무결성 + 분류/근거 일관성 | OK |
 
 ## C. 문서 버전/날짜 정합
@@ -46,19 +46,19 @@
 | 문서 | Version | Date | 비고 |
 |---|---|---|---|
 | `00_VModel_Mapping.md` | 4.3 | 2026-02-28 | V-model 매핑 |
-| `00b_Project_Scope.md` | 2.6 | 2026-03-02 | 범위/제외 + 분류 운영 기준 |
-| `00c_Req_Classification_and_Safety_Profile.md` | 1.3 | 2026-03-02 | ISO26262/ASPICE 분류 기준 |
-| `00d_HARA_Worksheet.md` | 1.1 | 2026-03-02 | HC-01~HC-05 S/E/C + Safety Goal + 검증 링크 |
+| `00b_Project_Scope.md` | 2.7 | 2026-03-04 | 범위/제외 + 분류 운영 기준 |
+| `00c_Req_Classification_and_Safety_Profile.md` | 1.5 | 2026-03-04 | ISO26262/ASPICE 분류 기준(안전등급 잠금) |
+| `00d_HARA_Worksheet.md` | 1.3 | 2026-03-04 | HC-01~HC-05 S/E/C + Safety Goal + 승인 게이트 |
 | `01_Requirements.md` | 5.15 | 2026-03-02 | Req+VC 기준 |
-| `03_Function_definition.md` | 4.16 | 2026-03-02 | 기능 정의 |
-| `0301_SysFuncAnalysis.md` | 3.14 | 2026-03-02 | 노드 기능 분석 |
-| `0302_NWflowDef.md` | 3.9 | 2026-03-02 | 네트워크 흐름 |
-| `0303_Communication_Specification.md` | 3.9 | 2026-03-02 | 통신 명세 |
-| `0304_System_Variables.md` | 2.12 | 2026-03-02 | 변수/추적 |
-| `04_SW_Implementation.md` | 2.10 | 2026-03-02 | 구현 연결 |
-| `05_Unit_Test.md` | 2.10 | 2026-03-02 | UT |
-| `06_Integration_Test.md` | 4.10 | 2026-03-02 | IT |
-| `07_System_Test.md` | 5.10 | 2026-03-02 | ST |
+| `03_Function_definition.md` | 4.21 | 2026-03-03 | 기능 정의 |
+| `0301_SysFuncAnalysis.md` | 3.19 | 2026-03-03 | 노드 기능 분석 |
+| `0302_NWflowDef.md` | 3.16 | 2026-03-04 | 네트워크 흐름 |
+| `0303_Communication_Specification.md` | 3.16 | 2026-03-04 | 통신 명세 |
+| `0304_System_Variables.md` | 2.17 | 2026-03-04 | 변수/추적 |
+| `04_SW_Implementation.md` | 2.14 | 2026-03-04 | 구현 연결 |
+| `05_Unit_Test.md` | 2.15 | 2026-03-03 | UT |
+| `06_Integration_Test.md` | 4.14 | 2026-03-03 | IT |
+| `07_System_Test.md` | 5.13 | 2026-03-03 | ST |
 
 ## D. 범위 경계(고정)
 
@@ -76,18 +76,18 @@
 | 체크 항목 | 담당 | 상태 |
 |---|---|---|
 | 05/06/07 확장 요구(`Req_113~119`) 커버리지 유지 점검 | Test Lead | DONE |
-| 06의 Lean IT 범위와 활성 Req 커버리지 정책 확정(필수/권장 분리) | QA Lead | TODO |
-| HARA 후보(HC-01~HC-05) S/E/C 평가표 리뷰 및 ASIL Candidate 승인 | Safety Lead | TODO |
-| Req Safety Class 확정(QM/ASIL) 및 HARA 근거 문서화 | Safety Lead | TODO |
+| 06의 Lean IT 범위와 활성 Req 커버리지 정책 확정(필수/권장 분리) | QA Lead | DONE (Req_001~043,Req_101~124 기준 고정) |
+| HARA 후보(HC-01~HC-05) S/E/C 평가표 리뷰 및 ASIL Candidate 승인 | Safety Lead | DONE (내부 Baseline 승인) |
+| Req Safety Class 확정(QM/ASIL) 및 HARA 근거 문서화 | Safety Lead | DONE (00c/00d 반영 완료) |
 | 05/06/07 상단 Pass/Fail, 담당자, 일자 기입 | Validation Lead | TODO |
 
 ## F. 01~07 착수 전 고정값 (이번 사이클)
 
 | 항목 | 고정 내용 | 상태 |
 |---|---|---|
-| HARA 승인 게이트 | `00d_HARA_Worksheet.md` 6절(담당/기준/상태/승인일) 채운 뒤 01~07 본편 반영 시작 | TODO |
+| HARA 승인 게이트 | `00d_HARA_Worksheet.md` 6절(담당/기준/상태/승인일) 내부 승인 완료 후 01~07 본편 반영 | DONE |
 | 검증 증적 경로 규칙 | UT/IT/ST 증적 경로를 `canoe/logging/evidence/{UT\\|IT\\|ST}/...`로 고정 | Locked |
-| 활성 Req 범위 고정 | 이번 사이클 활성 범위는 `Req_001~043`, `Req_101~119`로 잠금 | Locked |
+| 활성 Req 범위 고정 | 이번 사이클 활성 범위는 `Req_001~043`, `Req_101~124`로 잠금 | Locked |
 
 ---
 
@@ -101,6 +101,7 @@
 
 | 버전 | 날짜 | 변경 사항 |
 |---|---|---|
+| 1.12 | 2026-03-04 | Lean IT 범위(활성 Req 67개) 고정, HARA/ASIL 내부 승인 완료 상태 반영, 문서 버전 매트릭스 최신화(0302/0303/0304/04 포함). |
 | 1.11 | 2026-03-02 | ISO26262/ASPICE 우선 정합 반영: 00c(1.3), 0304(2.12), 04(2.10) 버전 매트릭스 동기화. |
 | 1.10 | 2026-03-02 | 05/06/07 `Req_113~Req_119` 보강 반영: 테스트 Req 커버리지 수치를 `62/62`로 갱신하고 확장 요구 커버리지 점검 항목을 DONE 처리. 문서 버전 매트릭스(03/05/06/07) 최신화. |
 | 1.9 | 2026-03-02 | 01/03/05/06/07 버전 업데이트(활성 Req 범위 잠금 및 UT/IT/ST 증적 경로 규칙 반영) 정합화. |
