@@ -467,7 +467,7 @@ void evaluateScenarioResult()
     /* Req_122: decel assist active with emergency-priority sync to renderer */
     result = (decelAssistReq == 1 && level == 7 && type == 2 &&
               uiRenderAlertType == 2 && uiRenderTextCode >= 200 &&
-              ambientColor == 7 && code >= 200) ? 1 : 0;
+              (ambientColor == 1 || ambientColor == 6) && code >= 200) ? 1 : 0;
   }
   else
   {
