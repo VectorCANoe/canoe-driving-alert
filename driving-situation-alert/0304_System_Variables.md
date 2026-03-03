@@ -3,8 +3,8 @@
 **Document ID**: PROJ-0304-SV
 **ISO 26262 Reference**: Part 6, Cl.7 (Software Architectural Design)
 **ASPICE Reference**: SWE.2 / SWE.3
-**Version**: 2.16
-**Date**: 2026-03-03
+**Version**: 2.17
+**Date**: 2026-03-04
 **Status**: Draft
 **Project Title**: 주행 상황 실시간 경고 시스템
 **Subtitle**: 구간 정보 및 긴급차량 접근 기반 앰비언트·클러스터 경보
@@ -27,6 +27,7 @@
 - EMS 관련 변수는 상위 문서 계층에서 논리 단말 `EMS_ALERT` 기준으로 관리하고, 내부 TX/RX 모듈 분해는 하단 보강 매핑에서만 관리한다.
 - V2 확장 변수(`Req_120~Req_124`)는 구현 활성 상태로 추적하며, 0302/0303/05~07과 코드/DBC를 동일 커밋에서 동기화한다.
 - 목표 설계는 옵션1(ETH 백본) 고정이며, CANoe.CAN 라이선스 제약 구간의 SIL 검증은 임시로 CAN 대체 백본을 사용하고 Ethernet 라이선스 확보 후 동일 케이스로 재검증한다.
+- SoT 계층은 분리 관리한다: CAN 실프레임은 도메인 DBC(`chassis_can.dbc`/`powertrain_can.dbc`/`body_can.dbc`/`infotainment_can.dbc`/`test_can.dbc` + `eth_backbone_can_stub.dbc`)를 따르고, Ethernet 논리 계약은 `ETH_INTERFACE_CONTRACT.md`를 따른다.
 
 ---
 
@@ -654,6 +655,7 @@
 
 - `0303`의 모든 Signal은 본 문서 변수와 1개 이상 매핑되어야 하며, `Comm_101~Comm_106`, `Comm_201~Comm_205` 확장 신호도 Var 추적표에 동기화되어야 한다.
 - `Comm_120~Comm_124`는 `Var_320~Var_329`와 구현 추적을 유지하고, 변경 시 0302/0303/05~07을 동일 커밋으로 동기화한다.
+- `Comm_004~Comm_006`, `Comm_120~Comm_124`, `Comm_201(0x11F)` 구간은 CANoe.CAN 환경에서 `eth_backbone_can_stub.dbc` 운반 경로와 논리 Ethernet 계약(`ETH_INTERFACE_CONTRACT.md`)을 동시에 만족해야 한다.
 - `timeoutClear`(내부 구현: `timeoutClear_ETH_CORE`)는 `Req_024(1000ms)` 검증 로직과 직접 연결되어야 한다.
 - `selectedAlertLevel`, `selectedAlertType`(내부 구현: `selectedAlertLevel_ETH_CORE`, `selectedAlertType_ETH_CORE`)는 `WARN_ARB_MGR` 출력의 단일 소스로 유지한다.
 - `speedLimit`/`speedLimitNorm`은 Req_010 과속 판정 비교 입력으로 0303 Comm_003과 정합되어야 한다.
@@ -675,6 +677,7 @@
 
 | 버전 | 날짜 | 변경 사항 |
 |---|---|---|
+| 2.17 | 2026-03-04 | DBC SoT 정합 보강: 작성 원칙/체크포인트에 `eth_backbone_can_stub.dbc` + `ETH_INTERFACE_CONTRACT.md` 병행 규칙을 명시하고 V2/긴급 경로(`Comm_004~006`, `Comm_120~124`, `Comm_201(0x11F)`)의 변수 추적 해석 기준을 고정. |
 | 2.16 | 2026-03-03 | V2 변수(`Var_320~329`)를 구현 기준으로 전환: `Var_321/324/325` Owner를 `WARN_ARB_MGR/CHASSIS_GW`로 정정하고 `brakePedalNorm`, `forceFailSafe` 상단 표준 변수를 추가. |
 | 2.15 | 2026-03-02 | 감사 정합 보강: 옵션1 설계 vs SIL 임시 CAN 대체 백본 검증 경계 문구를 작성 원칙에 추가. |
 | 2.14 | 2026-03-02 | V2 확장 제어 책임 분리 반영: `Var_321/324/325` Owner Node를 `DECEL_ASSIST_CTRL`로 조정해 `Func_121/123`과 정합화. |

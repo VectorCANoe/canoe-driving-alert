@@ -3,8 +3,8 @@
 **Document ID**: PROJ-04-SI
 **ISO 26262 Reference**: Part 6, Cl.8 (Software Unit Design and Implementation)
 **ASPICE Reference**: SWE.3 (Software Detailed Design and Unit Construction)
-**Version**: 2.12
-**Date**: 2026-03-03
+**Version**: 2.14
+**Date**: 2026-03-04
 **Status**: Draft
 **Project Title**: 주행 상황 실시간 경고 시스템
 **Subtitle**: 구간 정보 및 긴급차량 접근 기반 앰비언트·클러스터 경보
@@ -21,12 +21,13 @@
 - 구현 상세는 코드 문법이 아니라 `입력/처리/출력/타이밍/예외` 계약으로 기록한다.
 - 추적 체인은 `Req -> Func -> Flow -> Comm -> Var -> Code -> UT/IT/ST`를 유지한다.
 - 네트워크는 옵션1 아키텍처를 고정한다: `ETH_SWITCH + CHASSIS_GW/INFOTAINMENT_GW/BODY_GW/IVI_GW + 도메인 CAN`.
-- 통신 원본은 분리 관리한다: CAN=`canoe/databases/chassis_can.dbc` + `canoe/databases/powertrain_can.dbc` + `canoe/databases/body_can.dbc` + `canoe/databases/infotainment_can.dbc` + `canoe/databases/test_can.dbc`, Ethernet=`canoe/docs/operations/ETH_INTERFACE_CONTRACT.md`.
+- 통신 원본은 분리 관리한다: CAN=`canoe/databases/chassis_can.dbc` + `canoe/databases/powertrain_can.dbc` + `canoe/databases/body_can.dbc` + `canoe/databases/infotainment_can.dbc` + `canoe/databases/test_can.dbc` + `canoe/databases/eth_backbone_can_stub.dbc`, Ethernet(논리 계약)=`canoe/docs/operations/ETH_INTERFACE_CONTRACT.md`.
 - 범위 외 항목(OTA/UDS/DoIP)은 구현 대상에서 제외한다.
 - ASPICE SWE.3 BP1~BP8 관점에서 `상세 설계/인터페이스/동적행위/대안평가/추적성/합의/구현규칙`을 명시한다.
 - SIL 단계에서는 Panel/sysvar 경유 자극을 허용하며, 통신 계약(0302/0303/0304)은 유지한 채 ETH `UdpSocket` 기반 입력으로 점진 전환한다.
 - `SIL_TEST_CTRL`/`VEHICLE_BASE_TEST_CTRL`는 Validation Harness이며, `ETH_SWITCH`/도메인 게이트웨이의 통신 변환 역할과 분리한다.
 - `project.sysvars`의 `UiRender/*`, `Driver/gazeActive`, `V2X/policeDispatch`, `V2X/ambulanceDispatch`는 Verification-Harness 입력/렌더 변수로 관리하며 제품 Req 체인(01/03/05~07)과 분리한다.
+- CANoe.CAN 환경에서는 Ethernet 일부 경로(E100/E200 모니터링 및 V2 확장)가 CAN-stub(0x064/0x11F/0x232/0x313/0x314/0x315)로 대체 운반되며, 서비스 해석은 Ethernet 논리 계약 SoT를 우선한다.
 
 ---
 
@@ -350,6 +351,7 @@ Emergency Source (logical terminal)
 
 | 버전 | 날짜 | 변경 사항 |
 |---|---|---|
+| 2.14 | 2026-03-04 | 구현 원칙 정합 보강: 통신 SoT에 `eth_backbone_can_stub.dbc`를 추가하고, CANoe.CAN 환경의 CAN-stub 대체 운반 규칙(0x064/0x11F/0x232/0x313/0x314/0x315)과 Ethernet 논리 계약 우선 해석 원칙을 명시. |
 | 2.13 | 2026-03-03 | 감사 추적성 보강: `Func_101~119` / `Req_101~119` 기능-구현 상세 행을 추가하고, UT/IT 링크(`UT_BASE_*`, `IT_BASE_*`)를 1:1로 연결. |
 | 2.12 | 2026-03-03 | ETH_SWITCH 역할을 구현 기준(경로 상태 모니터링)으로 명확화하고, 코드 아티팩트 경로를 `canoe/src/capl/*` 실제 경로로 정합화. |
 | 2.11 | 2026-03-03 | Req_120~124 추적/타이밍 정합 반영: `Func_120~124` 및 `Var_320~329` 추적 항목 추가, `TASK_003`를 100ms 주기로 정합화, `DOMAIN_BOUNDARY_MGR`를 `MOD_15`로 반영. |
