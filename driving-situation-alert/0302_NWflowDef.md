@@ -3,7 +3,7 @@
 **Document ID**: PROJ-0302-NFD
 **ISO 26262 Reference**: Part 4, Cl.7 (System Design)
 **ASPICE Reference**: SYS.3 (System Architectural Design)
-**Version**: 3.12
+**Version**: 3.13
 **Date**: 2026-03-03
 **Status**: Draft
 **Project Title**: 주행 상황 실시간 경고 시스템
@@ -122,7 +122,7 @@
 |  |  |  | 1 | Infotainment Health Check | 12~15 | InfoFailCode | Rx |  | Tx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 | Test CAN | 0x230 | frmTestResultMsg | 0 | Scenario Result Report | 0 | scenarioResult | Tx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | Event |
 | Test CAN | 0x231 | frmBaseTestResultMsg | 0 | Base Result Report | 0~7 | BaseScenarioId | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | Tx | Event |
-|  |  |  | 1 | Base Result Report | 8 | BaseScnResult | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | Tx |  |
+|  |  |  | 1 | Base Result Report | 8 | BaseScenarioResult | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | Tx |  |
 | Ethernet Backbone CAN Stub | 0x064 | frmEmergencyBroadcastMsg | 0 | Emergency Broadcast | 0~3 | VehicleType |  |  |  |  |  |  |  | Tx | Tx | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | CAN-stub, 100ms |
 |  |  |  | 0 | Emergency Broadcast | 4~5 | Status |  |  |  |  |  |  |  | Tx | Tx | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 |  |  |  | 1 | Emergency Broadcast | 8~15 | SourceId |  |  |  |  |  |  |  | Tx | Tx | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
@@ -445,6 +445,7 @@
 
 | 버전 | 날짜 | 변경 사항 |
 |---|---|---|
+| 3.13 | 2026-03-03 | DBC 신호명 정합 보완: `BaseScnResult` 표기를 `BaseScenarioResult`로 동기화. |
 | 3.12 | 2026-03-03 | DBC 실측 재정합: `0x064/0x11F/0x232`를 `eth_backbone_can_stub.dbc` 기준으로 분리 표기하고, Chassis/Test 메시지 수 및 도메인 분리 표를 최신 DBC 구조로 수정. |
 | 3.11 | 2026-03-03 | DBC 실측 정합 반영: `frmEmergencyMonitorMsg(0x232)` 채널을 Chassis CAN으로 정정하고, 하단 통신 규모 표의 `Chassis CAN=25`, `Test CAN=2(0x230~0x231)`로 수정. |
 | 3.10 | 2026-03-02 | 0302/0303 최종 동기화 준비 반영: `Flow_201~Flow_205` 주의 문구를 병렬 작업 기준에서 DBC 동기화 운영 규칙으로 갱신. |

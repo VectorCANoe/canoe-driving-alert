@@ -3,7 +3,7 @@
 **Document ID**: PROJ-0303-CS
 **ISO 26262 Reference**: Part 6, Cl.7 (Software Architectural Design)
 **ASPICE Reference**: SWE.2 (Software Architectural Design)
-**Version**: 3.12
+**Version**: 3.13
 **Date**: 2026-03-03
 **Status**: Draft
 **Project Title**: 주행 상황 실시간 경고 시스템
@@ -122,14 +122,14 @@
 |  |  |  | InfoFailCode | 12~15 | Infotainment 오류 코드 | 0~15 | INFOTAINMENT_GW -> SIL_TEST_CTRL 전달 |
 | frmTestResultMsg | 0x230 | 1 | scenarioResult | 0 | 시나리오 판정 결과 | 0~1 | SIL_TEST_CTRL -> - 전달 (Validation-only) |
 | frmBaseTestResultMsg | 0x231 | 8 | BaseScenarioId | 0~7 | 기본 시나리오 ID | 0~255 | VEHICLE_BASE_TEST_CTRL -> SIL_TEST_CTRL 전달 (Validation-only) |
-|  |  |  | BaseScnResult | 8 | 기본 시나리오 판정 | 0~1 | VEHICLE_BASE_TEST_CTRL -> SIL_TEST_CTRL 전달 |
+|  |  |  | BaseScenarioResult | 8 | 기본 시나리오 판정 | 0~1 | VEHICLE_BASE_TEST_CTRL -> SIL_TEST_CTRL 전달 |
 | frmEmergencyBroadcastMsg | 0x064 | 4 | VehicleType | 0~3 | 긴급차량 타입 | 0~15 | EMS_ALERT(Tx:Police/Ambulance) -> EMS_ALERT(Rx) 전달 (CAN-stub) |
 |  |  |  | Status | 4~5 | 긴급 상태 | 0~3 | EMS_ALERT(Tx:Police/Ambulance) -> EMS_ALERT(Rx) 전달 (CAN-stub) |
 |  |  |  | SourceId | 8~15 | 긴급 송신 주체 ID | 0~255 | EMS_ALERT(Tx:Police/Ambulance) -> EMS_ALERT(Rx) 전달 (CAN-stub) |
 |  |  |  | EtaSeconds | 16~23 | 도달 예상 시간 | 0~255 s | EMS_ALERT(Tx:Police/Ambulance) -> EMS_ALERT(Rx) 전달 (CAN-stub) |
 |  |  |  | Direction | 24~27 | 접근 방향 | 0~15 | EMS_ALERT(Tx:Police/Ambulance) -> EMS_ALERT(Rx) 전달 (CAN-stub) |
-| frmEmergencyMonitorMsg | 0x232 | 2 | EmergencyContext | 0~7 | 긴급 컨텍스트 상태 | 0~255 | EMS_ALERT(Rx) -> SIL_TEST_CTRL, CHASSIS_GW 전달 (CAN-stub) |
-|  |  |  | TimeoutClearMon | 8 | 타임아웃 모니터 플래그 | 0~1 | EMS_ALERT(Rx) -> SIL_TEST_CTRL, CHASSIS_GW 전달 (CAN-stub) |
+| frmEmergencyMonitorMsg | 0x232 | 2 | EmergencyContext | 0~7 | 긴급 컨텍스트 상태 | 0~255 | EMS_ALERT(Rx) -> CAN-stub 버스 운반(ETH_SWITCH 모니터링) |
+|  |  |  | TimeoutClearMon | 8 | 타임아웃 모니터 플래그 | 0~1 | EMS_ALERT(Rx) -> CAN-stub 버스 운반(ETH_SWITCH 모니터링) |
 | frmIgnitionEngineMsg | 0x300 | 1 | IgnitionState | 0 | 시동 입력 상태 | 0~1 | SIL_TEST_CTRL -> ENGINE_CTRL 전달 |
 |  |  |  | EngineState | 1~2 | 엔진 동작 상태 | 0~3 | SIL_TEST_CTRL -> ENGINE_CTRL 전달 |
 | frmGearStateMsg | 0x301 | 1 | GearInput | 0~2 | 기어 입력값 | 0~7 | SIL_TEST_CTRL -> TRANSMISSION_CTRL 전달 |
@@ -201,8 +201,8 @@
 |  |  |  | ChassisDiagReqAct | 8 | Chassis 진단 요청 활성 | 0~1 | SIL_TEST_CTRL -> CHASSIS_GW 전달 |
 | frmChassisDiagResMsg | 0x11E | 3 | ChassisDiagResId | 0~7 | Chassis 진단 응답 ID | 0~255 | CHASSIS_GW -> SIL_TEST_CTRL 전달 |
 |  |  |  | ChassisDiagStatus | 8~11 | Chassis 진단 결과 | 0~15 | CHASSIS_GW -> SIL_TEST_CTRL 전달 |
-| frmAdasChassisStatusMsg | 0x11F | 2 | AdasChassisState | 0~7 | ADAS 섀시 상태 코드 | 0~255 | ADAS_WARN_CTRL -> CHASSIS_GW 전달 (CAN-stub) |
-|  |  |  | AdasHealthLevel | 8~15 | ADAS 헬스 레벨 | 0~255 | ADAS_WARN_CTRL -> CHASSIS_GW 전달 (CAN-stub) |
+| frmAdasChassisStatusMsg | 0x11F | 2 | AdasChassisState | 0~7 | ADAS 섀시 상태 코드 | 0~255 | ADAS_WARN_CTRL -> CAN-stub 버스 운반(상태 브로드캐스트) |
+|  |  |  | AdasHealthLevel | 8~15 | ADAS 헬스 레벨 | 0~255 | ADAS_WARN_CTRL -> CAN-stub 버스 운반(상태 브로드캐스트) |
 | frmBrakeWearMsg | 0x120 | 1 | BrakePadWearFL | 0~7 | 브레이크 패드 마모(전륜좌) | 0~100 % | CHASSIS_GW -> BRAKE_CTRL, DOMAIN_GW_ROUTER 전달 |
 |  |  |  | BrakePadWearFR | 8~15 | 브레이크 패드 마모(전륜우) | 0~100 % | CHASSIS_GW -> BRAKE_CTRL, DOMAIN_GW_ROUTER 전달 |
 | frmRoadFrictionMsg | 0x121 | 1 | RoadFrictionEst | 0~7 | 노면 마찰 추정치 | 0~255 | CHASSIS_GW -> ADAS_WARN_CTRL, DOMAIN_GW_ROUTER 전달 |
@@ -435,6 +435,7 @@
 
 | 버전 | 날짜 | 변경 사항 |
 |---|---|---|
+| 3.13 | 2026-03-03 | 감사 보완: `BaseScenarioResult` 신호명으로 정합하고, `0x11F/0x232` 전달대상 표현을 CAN-stub 운반/모니터링 문구로 완화. |
 | 3.12 | 2026-03-03 | DBC 실측 재정합: `eth_backbone_can_stub.dbc`를 SoT에 반영하고 `0x064/0x11F/0x232`의 신호/채널/규모 표를 CAN-stub 기준으로 수정. |
 | 3.11 | 2026-03-03 | 도메인 분리 DBC 기준 규모 표와 Comm/Flow 연결을 1차 정합화. |
 | 3.10 | 2026-03-02 | 0302/0303 최종 동기화 준비 반영: 도메인 통신 섹션 제목과 `Comm_101~106/201~205` 주의 문구를 병렬 작업 기준에서 DBC 동기화 운영 규칙으로 갱신. |

@@ -3,7 +3,7 @@
 **Document ID**: PROJ-0304-SV
 **ISO 26262 Reference**: Part 6, Cl.7 (Software Architectural Design)
 **ASPICE Reference**: SWE.2 / SWE.3
-**Version**: 2.13
+**Version**: 2.14
 **Date**: 2026-03-03
 **Status**: Draft
 **Project Title**: 주행 상황 실시간 경고 시스템
@@ -135,7 +135,7 @@
 | 170 | Infotainment | InfoDiagState | uint32 | 0 | 15 | 0 | Infotainment 진단 상태 |
 | 171 | Infotainment | InfoFailCode | uint32 | 0 | 15 | 0 | Infotainment 오류 코드 |
 | 172 | Test | BaseScenarioId | uint32 | 0 | 255 | 0 | 기본 시나리오 ID |
-| 173 | Test | BaseScnResult | uint32 | 0 | 1 | 0 | 기본 시나리오 판정 |
+| 173 | Test | BaseScenarioResult | uint32 | 0 | 1 | 0 | 기본 시나리오 판정 |
 | 174 | Test | TimeoutClearMon | uint32 | 0 | 1 | 0 | 타임아웃 모니터 플래그 |
 | 175 | Powertrain | IgnitionState | uint32 | 0 | 1 | 0 | 시동 입력 상태 |
 | 176 | Powertrain | EngineState | uint32 | 0 | 3 | 0 | 엔진 동작 상태 |
@@ -498,7 +498,7 @@
 | Var_170 | InfoDiagState | infoDiagState_CAN_BASE | CAN_BASE | DOMAIN_GW_ROUTER | Comm_105 | Flow_105 | Func_110, Func_111 | Req_110, Req_111 | 100ms 주기 수신 시 갱신 |
 | Var_171 | InfoFailCode | infoFailCode_CAN_BASE | CAN_BASE | DOMAIN_GW_ROUTER | Comm_105 | Flow_105 | Func_110, Func_111 | Req_110, Req_111 | 100ms 주기 수신 시 갱신 |
 | Var_172 | BaseScenarioId | baseScenarioId_CAN_BASE | CAN_BASE | SIL_TEST_CTRL | Comm_106 | Flow_106 | Func_112 | Req_112 | Event 발생 시 갱신 |
-| Var_173 | BaseScnResult | baseScnResult_CAN_BASE | CAN_BASE | SIL_TEST_CTRL | Comm_106 | Flow_106 | Func_112 | Req_112 | Event 발생 시 갱신 |
+| Var_173 | BaseScenarioResult | baseScenarioResult_CAN_BASE | CAN_BASE | SIL_TEST_CTRL | Comm_106 | Flow_106 | Func_112 | Req_112 | Event 발생 시 갱신 |
 | Var_174 | TimeoutClearMon | timeoutClearMon_CAN_BASE | CAN_BASE | SIL_TEST_CTRL | Comm_106 | Flow_106 | Func_112 | Req_112 | Event 발생 시 갱신 |
 | Var_175 | IgnitionState | ignitionState_CAN_BASE | CAN_BASE | ENGINE_CTRL/TRANSMISSION_CTRL | Comm_101 | Flow_101 | Func_101, Func_102 | Req_101, Req_102 | 100ms 주기 수신 시 갱신 |
 | Var_176 | EngineState | engineState_CAN_BASE | CAN_BASE | ENGINE_CTRL/TRANSMISSION_CTRL | Comm_101 | Flow_101 | Func_101, Func_102 | Req_101, Req_102 | 100ms 주기 수신 시 갱신 |
@@ -658,6 +658,7 @@
 
 | 버전 | 날짜 | 변경 사항 |
 |---|---|---|
+| 2.14 | 2026-03-03 | DBC 신호명 정합 보완: Test 결과 변수 `BaseScnResult`를 `BaseScenarioResult`로 동기화. |
 | 2.13 | 2026-03-03 | DBC 정합 반영: `frmAdasChassisStatusMsg(0x11F)` 신호명을 `AdasChassisState/AdasHealthLevel`로 동기화하고, 기존 비정합 변수(`LateralCtrlAvail/LongitudinalCtrlAvail/ChassisCtrlMode`)를 제거. |
 | 1.0 | 2026-02-23 | 초기 생성 |
 | 2.0 | 2026-02-25 | 옵션1 아키텍처 기준으로 전면 재작성. 변수 계층(CAN_IN/ETH_CORE/CAN_OUT) 분리, Var-Comm-Flow-Func-Req 추적 표 추가 |
