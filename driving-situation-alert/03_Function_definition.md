@@ -3,8 +3,8 @@
 **Document ID**: PROJ-03-FD
 **ISO 26262 Reference**: Part 4, Cl.7 (System Design)
 **ASPICE Reference**: SYS.3 (System Architectural Design)
-**Version**: 4.12
-**Date**: 2026-03-01
+**Version**: 4.20
+**Date**: 2026-03-02
 **Status**: Draft
 **Project Title**: 주행 상황 실시간 경고 시스템
 **Subtitle**: 구간 정보 및 긴급차량 접근 기반 앰비언트·클러스터 경보
@@ -16,12 +16,15 @@
 - 본 문서는 요구사항(01)의 What을 노드 기능(How)으로 분해한다.
 - 상단 표는 표준 양식 구조만 유지하고, 상세 추적 정보는 하단 표에 분리한다.
 - Panel은 테스트 자극/관측 인터페이스이며 기능 주체 ECU로 보지 않는다.
-- 기능 ID는 `Func_001~Func_043`으로 요구사항 ID와 1:1 대응한다.
-- 차량 기본 기능 확장 요구(`Req_101~Req_112`)는 `Func_101~Func_112`로 별도 관리한다.
+- 통합 기본요구사항 구간은 기능 ID `Func_001~Func_043`으로 요구사항 ID(`Req_001~Req_043`)와 1:1 대응한다.
+- 차량 기본 기능 확장 요구(`Req_101~Req_119`)는 `Func_101~Func_119`로 별도 관리한다.
+- V2 확장 요구(`Req_120~Req_124`)는 `Func_120~Func_124`로 별도 관리하며, 본 문서에서는 Pre-Activation 상태로 유지한다.
 - 제출 전 현대/기아 및 OEM 기준 명칭으로 일괄 대체하되, 기능 ID/추적 ID는 유지한다.
 - 네트워크 구현은 옵션1 아키텍처를 고정 적용한다: `ETH_SWITCH + CHASSIS_GW/INFOTAINMENT_GW/BODY_GW/IVI_GW + 도메인 CAN`.
+- 목표 설계는 옵션1(ETH 백본) 고정이며, CANoe.CAN 라이선스 제약 구간의 SIL 검증은 임시로 CAN 대체 백본을 사용하고 Ethernet 라이선스 확보 후 동일 케이스로 재검증한다.
 - `WARN_ARB_MGR`의 중재는 서비스(QoS) 우선순위 중재이며, CAN 비트 레벨 arbitration과 구분해 해석한다.
 - EMS는 문서 상위 계층에서 단일 논리 단말 `EMS_ALERT`로 정의하고, 내부 구현 모듈(`EMS_POLICE_TX`, `EMS_AMB_TX`, `EMS_ALERT_RX`)은 하단 매핑표에서만 분리 관리한다.
+- 본 사이클의 기능-요구 추적 범위는 `Req_001~043`, `Req_101~119`를 활성 범위로 유지하고, `Req_120~Req_124`는 Pre-Activation 확장 범위로 관리한다.
 
 ---
 
@@ -68,6 +71,18 @@
 | ECU 동작 | 도메인 게이트웨이 전달 | 도메인 경계 기반 메시지 전달 | Vehicle Baseline | Req_110 / Func_110 / IT_BASE_001 |
 | ECU 동작 | 도메인 경계 유지 | 도메인 통신 경계/정책 유지 | Vehicle Baseline | Req_111 / Func_111 / IT_BASE_001 |
 | ECU 동작 | 차량 기본 기능 SIL 검증 | 기본 기능 시나리오 실행/판정 | Vehicle Baseline | Req_112 / Func_112 / ST_BASE_001 |
+| ECU 동작 | 공조 상태 반영 | HVAC 상태/제어 신호 반영 | Vehicle Baseline | Req_113 / Func_113 / IT_BASE_EXT_BODY_001 |
+| ECU 동작 | 시트 상태 반영 | 시트 상태/제어 신호 반영 | Vehicle Baseline | Req_114 / Func_114 / IT_BASE_EXT_BODY_001 |
+| ECU 동작 | 미러 상태 반영 | 미러 상태 신호 반영 | Vehicle Baseline | Req_115 / Func_115 / IT_BASE_EXT_BODY_001 |
+| ECU 동작 | 도어 제어 상태 반영 | 도어 제어/잠금/열림 상태 반영 | Vehicle Baseline | Req_116 / Func_116 / IT_BASE_EXT_BODY_001 |
+| ECU 동작 | 와이퍼/우적 연동 반영 | 와이퍼/우적/오토라이트 상태 반영 | Vehicle Baseline | Req_117 / Func_117 / IT_BASE_EXT_BODY_001 |
+| ECU 동작 | 보안 상태 반영 | 이모빌라이저/경보 상태 반영 | Vehicle Baseline | Req_118 / Func_118 / IT_BASE_EXT_BODY_001 |
+| ECU 동작 | 오디오 상태 반영 | Audio Focus/Voice/TTS 상태 반영 | Vehicle Baseline | Req_119 / Func_119 / IT_BASE_EXT_IVI_001 |
+| ECU 동작 | 긴급차량 근접 위험 판단 | 긴급차량 방향/ETA/자차속도 결합 기반 위험도 산정 | V2 확장(Pre-Activation) | Req_120 / Flow_120 / Comm_120 / ST_V2_RISK_001(Planned) |
+| ECU 동작 | 위험도 기반 감속 보조 요청 | 위험도 임계 초과 시 감속 보조 요청 생성 | V2 확장(Pre-Activation) | Req_121 / Flow_121 / Comm_121 / ST_V2_RISK_001(Planned) |
+| ECU 동작 | 감속 보조-경고 동기화 | 감속 보조 활성 시 긴급 경고 최우선 + Ambient/Cluster 동기화 | V2 확장(Pre-Activation) | Req_122 / Flow_122 / Comm_122 / ST_V2_RISK_001(Planned) |
+| ECU 동작 | 운전자 개입 우선 해제 | 제동/조향 회피 입력 시 감속 보조 요청 즉시 해제 | V2 확장(Pre-Activation) | Req_123 / Flow_123 / Comm_123 / ST_V2_RISK_001(Planned) |
+| ECU 동작 | 도메인 경로 단절 강등(Fail-safe) | 도메인 경로 단절 시 자동 감속 보조 금지 + 최소 경고 채널 유지 | V2 확장(Pre-Activation) | Req_124 / Flow_124 / Comm_124 / ST_V2_FAILSAFE_001(Planned) |
 
 ---
 
@@ -124,18 +139,37 @@
 
 | Func ID | Req ID | 실제 노드명 | 기능명 | 기능 설명 | 실제값 정의(입력/출력) |
 |---|---|---|---|---|---|
-| Func_101 | Req_101 | ENGINE_CTRL | 시동 상태 반영 | 시동 On/Off 입력을 차량 기본 동작 상태로 반영 | 입력: ignitionState / 출력: engineState |
-| Func_102 | Req_102 | TRANSMISSION_CTRL | 기어 상태 반영 | P/R/N/D 기어 입력을 상태값으로 유지/전달 | 입력: gearInput / 출력: gearState |
-| Func_103 | Req_103 | ACCEL_CTRL | 가속 입력 반영 | 가속 페달 입력을 종방향 제어 입력으로 전달 | 입력: accelPedal / 출력: accelRequest |
-| Func_104 | Req_104 | BRAKE_CTRL | 제동 입력 반영 | 브레이크 페달 입력을 감속 제어 입력으로 전달 | 입력: brakePedal / 출력: brakeRequest |
-| Func_105 | Req_105 | STEERING_CTRL | 조향 입력 반영 | 조향 입력을 차량 상태/주의 판단 입력으로 전달 | 입력: steeringInput / 출력: steeringState |
-| Func_106 | Req_106 | HAZARD_CTRL | 비상등 기본 제어 | 비상등 On/Off 입력을 상태 출력으로 반영 | 입력: hazardSwitch / 출력: hazardState |
-| Func_107 | Req_107 | WINDOW_CTRL | 창문 기본 제어 | 창문 개폐 입력을 창문 상태로 반영 | 입력: windowCommand / 출력: windowState |
-| Func_108 | Req_108 | DRIVER_STATE_CTRL | 운전자 상태 반영 | 운전자 상태 입력(예: 졸음 단계)을 관련 도메인으로 전달 | 입력: driverStateLevel / 출력: driverStateInfo |
-| Func_109 | Req_109 | CLUSTER_BASE_CTRL | 클러스터 기본 표시 | 속도/기어/경고 기본 상태를 클러스터에 표시 | 입력: vehicleSpeed, gearState, warningTextCode / 출력: clusterBaseDisplay |
-| Func_110 | Req_110 | DOMAIN_GW_ROUTER | 도메인 게이트웨이 전달 | 도메인 간 입력/출력 메시지 라우팅 수행 | 입력: domainInputFrames / 출력: domainOutputFrames |
-| Func_111 | Req_111 | DOMAIN_BOUNDARY_MGR | 도메인 경계 유지 | 도메인별 통신 경계/역할 분리를 유지 | 입력: routingPolicy / 출력: boundaryStatus |
-| Func_112 | Req_112 | VEHICLE_BASE_TEST_CTRL | 차량 기본 기능 SIL 검증 | 기본 차량 기능 시나리오 실행 및 판정 | 입력: baseTestScenario / 출력: baseScenarioResult |
+| Func_101 | Req_101 | ENGINE_CTRL | 시동 상태 반영 | 시동 On/Off 입력을 차량 기본 동작 상태로 반영 | 입력: IgnitionState / 출력: EngineState |
+| Func_102 | Req_102 | TRANSMISSION_CTRL | 기어 상태 반영 | P/R/N/D 기어 입력을 상태값으로 유지/전달 | 입력: GearInput / 출력: GearState |
+| Func_103 | Req_103 | ACCEL_CTRL | 가속 입력 반영 | 가속 페달 입력을 종방향 제어 입력으로 전달 | 입력: AccelPedal / 출력: AccelRequest |
+| Func_104 | Req_104 | BRAKE_CTRL | 제동 입력 반영 | 브레이크 페달 입력을 감속 제어 입력으로 전달 | 입력: BrakePedal / 출력: BrakePressure |
+| Func_105 | Req_105 | STEERING_CTRL | 조향 입력 반영 | 조향 입력을 차량 상태/주의 판단 입력으로 전달 | 입력: steeringInput / 출력: SteeringState |
+| Func_106 | Req_106 | HAZARD_CTRL | 비상등 기본 제어 | 비상등 On/Off 입력을 상태 출력으로 반영 | 입력: HazardSwitch / 출력: HazardState |
+| Func_107 | Req_107 | WINDOW_CTRL | 창문 기본 제어 | 창문 개폐 입력을 창문 상태로 반영 | 입력: WindowCommand / 출력: WindowState |
+| Func_108 | Req_108 | DRIVER_STATE_CTRL | 운전자 상태 반영 | 운전자 상태 입력(예: 졸음 단계)을 관련 도메인으로 전달 | 입력: DriverStateLevel / 출력: DriverStateInfo |
+| Func_109 | Req_109 | CLUSTER_BASE_CTRL | 클러스터 기본 표시 | 속도/기어/경고 기본 상태를 클러스터에 표시 | 입력: ClusterSpeed, ClusterGear, warningTextCode / 출력: ClusterStatus |
+| Func_110 | Req_110 | DOMAIN_GW_ROUTER | 도메인 게이트웨이 전달 | 도메인 간 입력/출력 메시지 라우팅 수행 | 입력: RoutingPolicy / 출력: BodyGatewayRoute |
+| Func_111 | Req_111 | DOMAIN_BOUNDARY_MGR | 도메인 경계 유지 | 도메인별 통신 경계/역할 분리를 유지 | 입력: RoutingPolicy / 출력: BoundaryStatus |
+| Func_112 | Req_112 | VEHICLE_BASE_TEST_CTRL | 차량 기본 기능 SIL 검증 | 기본 차량 기능 시나리오 실행 및 판정 | 입력: BaseScenarioId / 출력: BaseScnResult |
+| Func_113 | Req_113 | BODY_GW | 공조 상태 반영 | 공조 상태/제어 프레임(HVAC) 수신 정보를 도메인 정책에 반영 | 입력: CabinSetTemp, BlowerLevel, AcCompressorReq, VentMode / 출력: CabinTemp |
+| Func_114 | Req_114 | DRIVER_STATE_CTRL | 시트 상태 반영 | 시트 상태/제어 프레임 수신 정보를 상태 관리에 반영 | 입력: DriverSeatPos, PassengerSeatPos, SeatHeatLevel, SeatVentLevel / 출력: DriverStateInfo |
+| Func_115 | Req_115 | WINDOW_CTRL | 미러 상태 반영 | 미러 상태 프레임(폴딩/열선/조정) 정보를 차량 상태에 반영 | 입력: MirrorFoldState, MirrorHeatState, MirrorAdjAxis / 출력: WindowState |
+| Func_116 | Req_116 | WINDOW_CTRL | 도어 제어 상태 반영 | 도어 제어/잠금/열림 상태를 수신/반영/전달 | 입력: DoorUnlockCmd, DoorLockState, DoorOpenWarn / 출력: DoorStateMask |
+| Func_117 | Req_117 | BCM_AMBIENT_CTRL | 와이퍼/우적 연동 반영 | 와이퍼/우적/오토라이트 상태를 연동 정책에 반영 | 입력: FrontWiperState, RearWiperState, RainSensorLevel, AutoHeadlampReq / 출력: WiperInterval |
+| Func_118 | Req_118 | DRIVER_STATE_CTRL | 보안 상태 반영 | 이모빌라이저/경보 상태를 보안 상태로 반영 | 입력: ImmoState, AlarmArmed, AlarmTrigger, AlarmZone / 출력: DriverStateInfo |
+| Func_119 | Req_119 | CLU_HMI_CTRL | 오디오 상태 반영 | 오디오 포커스/음성비서/TTS 상태를 HMI 정책에 반영 | 입력: AudioFocusOwner, VoiceAssistState, TtsState, TtsLangId / 출력: warningTextCode |
+
+---
+
+## V2 확장 기능 상세 표 (Pre-Activation, Phase-2)
+
+| Func ID | Req ID | 실제 노드명 | 기능명 | 기능 설명 | 실제값 정의(입력/출력) |
+|---|---|---|---|---|---|
+| Func_120 | Req_120 | ADAS_WARN_CTRL | 긴급차량 근접 위험 판단 | 긴급차량 방향/ETA/자차속도 결합 기반 근접 위험도 산정 | 입력: emergencyDirection, eta, vehicleSpeedNorm / 출력: proximityRiskLevel |
+| Func_121 | Req_121 | DECEL_ASSIST_CTRL | 위험도 기반 감속 보조 요청 | 위험도 임계 초과 시 감속 보조 요청 생성 | 입력: proximityRiskLevel / 출력: decelAssistReq |
+| Func_122 | Req_122 | WARN_ARB_MGR | 감속 보조-경고 동기화 | 감속 보조 요청 활성 시 긴급 경고 최우선 유지 및 Ambient/Cluster 출력 동기화 | 입력: decelAssistReq, selectedAlertType, selectedAlertLevel / 출력: selectedAlertType, selectedAlertLevel |
+| Func_123 | Req_123 | DECEL_ASSIST_CTRL | 운전자 개입 우선 해제 | 운전자 제동/조향 회피 입력 검출 시 감속 보조 요청 해제 | 입력: steeringInputNorm, BrakePedal / 출력: decelAssistReq |
+| Func_124 | Req_124 | DOMAIN_BOUNDARY_MGR | 도메인 경로 단절 강등(Fail-safe) | 도메인 경로 단절 감지 시 자동 감속 보조 금지 + 최소 경고 채널 유지 | 입력: domainPathStatus, e2eHealthState / 출력: decelAssistReq, failSafeMode |
 
 ---
 
@@ -145,7 +179,8 @@
 - 하단 표는 `Func/Req/노드/입출력` 기준으로 추적성을 보강한다.
 - 추적 체인: `Func -> Flow -> Comm -> Var -> Code -> UT/IT/ST`.
 - 옵션1 네트워크 전달 경로 고정: `입력 CAN -> 도메인 GW 정규화 -> ETH_SWITCH -> 중앙 경고코어 -> 도메인 GW -> 출력 CAN`.
-- `Func_101~Func_112`는 차량 기본 기능 확장 체인으로, 0302/0303/0304 도메인 DBC 분리 반영 단계에서 Flow/Comm/Var를 확장 연결한다.
+- `Func_101~Func_119`는 차량 기본 기능 확장 체인으로, 0302/0303/0304의 Flow/Comm/Var와 최신 도메인 DBC 기준으로 동기화되어야 한다.
+- `Func_120~Func_124`는 V2 확장(Pre-Activation) 체인으로 관리하며, 0302/0303/0304/05/06/07 동시 반영 전까지 활성 범위로 전환하지 않는다.
 
 ## EMS 논리 단말-내부 모듈 매핑
 
@@ -160,7 +195,7 @@
 | 도메인 | ECU |
 |---|---|
 | Powertrain | ENGINE_CTRL, TRANSMISSION_CTRL |
-| Chassis | ACCEL_CTRL, BRAKE_CTRL, STEERING_CTRL, EMS_ALERT, WARN_ARB_MGR, SIL_TEST_CTRL |
+| Chassis | ACCEL_CTRL, BRAKE_CTRL, STEERING_CTRL, DECEL_ASSIST_CTRL, EMS_ALERT, WARN_ARB_MGR, SIL_TEST_CTRL |
 | Body | BCM_AMBIENT_CTRL, HAZARD_CTRL, WINDOW_CTRL, DRIVER_STATE_CTRL |
 | Infotainment | NAV_CONTEXT_MGR, CLU_HMI_CTRL, CLUSTER_BASE_CTRL |
 | Gateway/Infra | CHASSIS_GW, INFOTAINMENT_GW, BODY_GW, IVI_GW, ETH_SWITCH, DOMAIN_GW_ROUTER, DOMAIN_BOUNDARY_MGR |
@@ -171,6 +206,14 @@
 
 | 버전 | 날짜 | 변경 사항 |
 |---|---|---|
+| 4.20 | 2026-03-02 | 감사 정합 보강: 통합구간 1:1 문구 명확화, 옵션1 설계 vs SIL 임시 CAN 대체 백본 검증 경계 문구 추가, V2 확장 행 검증 컬럼을 ST/Flow/Comm ID 기준으로 구체화. |
+| 4.19 | 2026-03-02 | V2 확장 제어 책임 분리: `Func_121/Func_123` 실제 노드를 `DECEL_ASSIST_CTRL`로 조정하고 Chassis ECU 인벤토리에 반영. |
+| 4.18 | 2026-03-02 | V2 확장 요구 반영: `Func_120~Func_124`(근접위험/감속보조/동기화/운전자개입해제/도메인단절강등) 추가, 작성 원칙의 활성/Pre-Activation 범위 분리, 상단 공식표 확장 항목 반영. |
+| 4.17 | 2026-03-02 | 03-하위문서 최종 동기화 준비 반영: `Func_101~Func_119` 설명을 병렬 반영 문구에서 최신 DBC 동기화 운영 문구로 정리. |
+| 4.16 | 2026-03-02 | Vehicle Baseline 상단 `검증` 참조 ID 정합화: `Req_113~Req_118`는 `IT_BASE_EXT_BODY_001`, `Req_119`는 `IT_BASE_EXT_IVI_001`로 연결 보정. |
+| 4.15 | 2026-03-02 | 본 사이클 추적 범위 고정(`Req_001~043`,`Req_101~119`) 원칙을 작성 원칙에 명시. |
+| 4.14 | 2026-03-02 | 0304 변수 계약명 정합화: `Func_101~Func_119` 입력/출력명을 0304 표준 Name 기준으로 보정(`AcCompressorReq`, `DoorUnlockCmd`, `ImmoState`, `TtsLangId` 등)하고 Domain/Test 변수명 불일치(`domainInputFrames`, `baseTestScenario`)를 제거. |
+| 4.13 | 2026-03-02 | V2 추적 밀도 보강 1차: 차량 기본 기능 확장 `Func_113~Func_119`(HVAC/Seat/Mirror/Door/Wiper-Rain/Security/Audio) 추가 및 `Req_113~Req_119` 1:1 매핑 반영. |
 | 4.12 | 2026-03-01 | 표현 명확화 반영: Func_001/003/004/006/012/022/024/025/027/034 문구를 고객 관점 요구(Req_012/022/024/025/027/034)와 정합되도록 보정. |
 | 4.2 | 2026-02-25 | 상단 공식 표준 양식 단순화, 하단 상세 추적 표 분리 |
 | 4.3 | 2026-02-25 | 옵션1 아키텍처 기준 반영. 출력 경로를 ETH 백본+도메인 GW 구조로 정합화하고 Func_013~016 입출력 정의를 실제 전달체계 기준으로 보정 |
