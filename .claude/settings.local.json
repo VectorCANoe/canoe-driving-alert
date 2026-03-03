@@ -64,7 +64,28 @@
       "mcp__canoe-advanced__set_system_variable",
       "mcp__canoe-advanced__save_configuration",
       "Bash(file:*)",
-      "Bash(git:*)"
+      "Bash(git:*)",
+      "Bash(mv:*)",
+      "Bash(mkdir:*)",
+      "Bash(sed:*)",
+      "WebFetch(domain:can-newsletter.org)",
+      "WebFetch(domain:kb.vector.com)",
+      "mcp__canoe-advanced__get_canoe_version_info",
+      "mcp__canoe-advanced__get_connection_status",
+      "WebFetch(domain:raw.githubusercontent.com)"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash .claude/hooks/rm-guard.sh"
+          }
+        ]
+      }
     ]
   },
   "enableAllProjectMcpServers": true,
