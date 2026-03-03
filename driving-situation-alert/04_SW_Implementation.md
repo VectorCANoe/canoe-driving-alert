@@ -165,6 +165,25 @@ Emergency Source (logical terminal)
 | Func_041 | Req_041 | SIL_TEST_CTRL | Flow_009 / Comm_009 / testScenario | Flow_009 / scenarioResult | `MOD_13.F041` | ST_SIL_001 |
 | Func_042 | Req_042 | SIL_TEST_CTRL | Flow_009 / Comm_009 / testScenario | Flow_009 / scenarioResult | `MOD_13.F042` | ST_SIL_002 |
 | Func_043 | Req_043 | SIL_TEST_CTRL | Flow_009 / Comm_009 / scenarioResult | Flow_009 / scenarioResult | `MOD_13.F043` | ST_RESULT_001 |
+| Func_101 | Req_101 | ENGINE_CTRL | Flow_101 / Comm_101 / IgnitionState, GearInput | Flow_101 / EngineState, EngineRpm | `ENGINE_CTRL.F101` | UT_BASE_PT_001 / IT_BASE_PT_001 |
+| Func_102 | Req_102 | TRANSMISSION_CTRL | Flow_101 / Comm_101 / IgnitionState, GearInput | Flow_101 / GearState | `TRANSMISSION_CTRL.F102` | UT_BASE_PT_001 / IT_BASE_PT_001 |
+| Func_103 | Req_103 | ACCEL_CTRL | Flow_102 / Comm_102 / AccelPedal | Flow_102 / AccelRequest, TorqueRequest | `ACCEL_CTRL.F103` | UT_BASE_CH_001 / IT_BASE_CH_001 |
+| Func_104 | Req_104 | BRAKE_CTRL | Flow_102 / Comm_102 / BrakePedal | Flow_102 / BrakePressure, BrakeMode, AbsActive, EspActive | `BRAKE_CTRL.F104` | UT_BASE_CH_001 / IT_BASE_CH_001 |
+| Func_105 | Req_105 | STEERING_CTRL | Flow_102 / Comm_102 / steeringInput, SteeringTorque | Flow_102 / SteeringState, SteeringAssistLv | `STEERING_CTRL.F105` | UT_BASE_CH_001 / IT_BASE_CH_001 |
+| Func_106 | Req_106 | HAZARD_CTRL | Flow_103 / Comm_103 / HazardSwitch | Flow_103 / HazardState, HazardLampReq | `HAZARD_CTRL.F106` | UT_BASE_BODY_001 / IT_BASE_BODY_001 |
+| Func_107 | Req_107 | WINDOW_CTRL | Flow_103 / Comm_103 / WindowCommand | Flow_103 / WindowState | `WINDOW_CTRL.F107` | UT_BASE_BODY_001 / IT_BASE_BODY_001 |
+| Func_108 | Req_108 | DRIVER_STATE_CTRL | Flow_103 / Comm_103 / DriverStateLevel | Flow_103 / DriverStateInfo | `DRIVER_STATE_CTRL.F108` | UT_BASE_BODY_001 / IT_BASE_BODY_001 |
+| Func_109 | Req_109 | CLUSTER_BASE_CTRL | Flow_104 / Comm_104 / ClusterSpeed, ClusterGear, warningTextCode | Flow_104 / ClusterStatus | `CLUSTER_BASE_CTRL.F109` | UT_BASE_IVI_001 / IT_BASE_IVI_001 |
+| Func_110 | Req_110 | DOMAIN_GW_ROUTER | Flow_105 / Comm_105 / RoutingPolicy, ChassisAliveCnt, BodyAliveCnt, InfoAliveCnt | Flow_105 / BodyGatewayRoute | `DOMAIN_GW_ROUTER.F110` | UT_BASE_GW_001 / IT_BASE_GW_001 |
+| Func_111 | Req_111 | DOMAIN_BOUNDARY_MGR | Flow_105 / Comm_105 / RoutingPolicy, BoundaryStatus | Flow_105 / BoundaryStatus | `MOD_15.F111` | UT_BASE_GW_001 / IT_BASE_GW_001 |
+| Func_112 | Req_112 | VEHICLE_BASE_TEST_CTRL | Flow_106 / Comm_106 / BaseScenarioId | Flow_106 / BaseScnResult | `VEHICLE_BASE_TEST_CTRL.F112` | UT_BASE_TEST_001 / IT_BASE_DIAG_001 |
+| Func_113 | Req_113 | BODY_GW | Flow_202 / Comm_202 / CabinSetTemp, BlowerLevel, AcCompressorReq, VentMode | Flow_202 / CabinTemp | `MOD_09.F113` | UT_BASE_EXT_BODY_001 / IT_BASE_EXT_BODY_001 |
+| Func_114 | Req_114 | DRIVER_STATE_CTRL | Flow_202 / Comm_202 / DriverSeatPos, PassengerSeatPos, SeatHeatLevel, SeatVentLevel | Flow_202 / DriverStateInfo | `DRIVER_STATE_CTRL.F114` | UT_BASE_EXT_BODY_001 / IT_BASE_EXT_BODY_001 |
+| Func_115 | Req_115 | WINDOW_CTRL | Flow_202 / Comm_202 / MirrorFoldState, MirrorHeatState, MirrorAdjAxis | Flow_202 / WindowState | `WINDOW_CTRL.F115` | UT_BASE_EXT_BODY_001 / IT_BASE_EXT_BODY_001 |
+| Func_116 | Req_116 | WINDOW_CTRL | Flow_202 / Comm_202 / DoorUnlockCmd, DoorLockState, DoorOpenWarn | Flow_202 / DoorStateMask | `WINDOW_CTRL.F116` | UT_BASE_EXT_BODY_001 / IT_BASE_EXT_BODY_001 |
+| Func_117 | Req_117 | BCM_AMBIENT_CTRL | Flow_202 / Comm_202 / FrontWiperState, RearWiperState, RainSensorLevel, AutoHeadlampReq | Flow_202 / WiperInterval | `MOD_11.F117` | UT_BASE_EXT_BODY_001 / IT_BASE_EXT_BODY_001 |
+| Func_118 | Req_118 | DRIVER_STATE_CTRL | Flow_202 / Comm_202 / ImmoState, AlarmArmed, AlarmTrigger, AlarmZone | Flow_202 / DriverStateInfo | `DRIVER_STATE_CTRL.F118` | UT_BASE_EXT_BODY_001 / IT_BASE_EXT_BODY_001 |
+| Func_119 | Req_119 | CLU_HMI_CTRL | Flow_203 / Comm_203 / AudioFocusOwner, VoiceAssistState, TtsState, TtsLangId | Flow_203 / warningTextCode | `MOD_12.F119` | UT_BASE_EXT_IVI_001 / IT_BASE_EXT_IVI_001 |
 | Func_120 | Req_120 | ADAS_WARN_CTRL | Flow_120 / Comm_120 / emergencyDirection, eta, vehicleSpeedNorm | Flow_120 / proximityRiskLevel | `MOD_01.F120` | UT_V2_RISK_001 / IT_V2_RISK_001 |
 | Func_121 | Req_121 | WARN_ARB_MGR | Flow_120 / Flow_121 / proximityRiskLevel, failSafeMode, driveStateNorm | Flow_121 / decelAssistReq | `MOD_06.F121` | UT_V2_RISK_001 / UT_V2_RELEASE_001 / IT_V2_RISK_001 |
 | Func_122 | Req_122 | WARN_ARB_MGR | Flow_122 / Comm_122 / decelAssistReq, selectedAlertType/Level | Flow_122 / selectedAlertType/Level | `MOD_06.F122` | UT_V2_RISK_001 / IT_V2_RISK_001 |
@@ -331,6 +350,7 @@ Emergency Source (logical terminal)
 
 | 버전 | 날짜 | 변경 사항 |
 |---|---|---|
+| 2.13 | 2026-03-03 | 감사 추적성 보강: `Func_101~119` / `Req_101~119` 기능-구현 상세 행을 추가하고, UT/IT 링크(`UT_BASE_*`, `IT_BASE_*`)를 1:1로 연결. |
 | 2.12 | 2026-03-03 | ETH_SWITCH 역할을 구현 기준(경로 상태 모니터링)으로 명확화하고, 코드 아티팩트 경로를 `canoe/src/capl/*` 실제 경로로 정합화. |
 | 2.11 | 2026-03-03 | Req_120~124 추적/타이밍 정합 반영: `Func_120~124` 및 `Var_320~329` 추적 항목 추가, `TASK_003`를 100ms 주기로 정합화, `DOMAIN_BOUNDARY_MGR`를 `MOD_15`로 반영. |
 | 2.10 | 2026-03-02 | ISO26262/ASPICE 운영 경계 반영: SIL 전용 `Verification-Harness` 변수(`V2X/policeDispatch`, `V2X/ambulanceDispatch`, `Driver/gazeActive`, `UiRender/*`)의 비제품 체인 분류를 작성 원칙/4.2 표로 명시. |

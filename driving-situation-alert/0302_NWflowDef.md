@@ -29,6 +29,8 @@
 - OTA/UDS/DoIP 관련 플로우는 본 문서 범위에서 제외한다.
 - `Flow_009`, `Flow_106`, `Flow_205`는 Validation Harness 경로(검증 전용)이며 양산 서비스 플로우와 구분한다.
 - 제출 전 현대/기아 및 OEM 기준으로 설명/별칭은 정리하되, Flow/Comm/ID/signal 식별자는 SoT 기준으로 고정 유지한다.
+- ID notation rule (fixed): document primary references use Logical IDs (0xE210/0xE211/0xE212); CANoe SIL execution uses Stub IDs (0x313/0x314/0x315) per canoe/docs/operations/ETH_INTERFACE_CONTRACT.md.
+
 - Vehicle Baseline(Req_101~Req_119) 플로우(`Flow_101~Flow_106`, `Flow_201~Flow_205`)는 본 문서에서 확정 정의하고, DBC는 이 정의를 구현 대상으로 사용한다.
 - V2 확장 요구(`Req_120~Req_124`) 플로우(`Flow_120~Flow_124`)는 구현 활성 상태로 관리하며, 관련 DBC/코드/테스트를 동일 커밋에서 동기화한다.
 - EMS는 상위 문서 레벨에서 논리 단말 `EMS_ALERT`로 표기하고, 상단 표의 `EMS_POLICE_TX/EMS_AMB_TX/EMS_ALERT_RX` 열은 내부 구현 모듈 분해 관점으로만 해석한다.
@@ -457,6 +459,7 @@
 
 | 버전 | 날짜 | 변경 사항 |
 |---|---|---|
+| 3.15 | 2026-03-03 | ID 표기 기준 고정: 문서 본문은 Logical ID(0xE210/0xE211/0xE212)를 우선 표기하고, CANoe SIL 실행 ID는 Stub(0x313/0x314/0x315)로 병기하도록 작성 원칙을 보강. |
 | 3.14 | 2026-03-03 | V2 확장 플로우를 Implemented 상태로 전환하고 `Flow_120~124` 메시지 ID를 코드/DBC 실값(`0x313/0x314/0x315`) 및 실제 송수신 노드(`WARN_ARB_MGR` 중심)로 정정. |
 | 3.13 | 2026-03-02 | 감사 정합 보강: 옵션1 설계 vs SIL 임시 CAN 대체 백본 검증 경계 문구를 작성 원칙에 추가. |
 | 3.12 | 2026-03-02 | V2 확장 제어 책임 분리 반영: `Flow_121/Flow_123`의 송신 노드를 `DECEL_ASSIST_CTRL`로 조정하고 Chassis CAN 경로 설명을 동기화. |

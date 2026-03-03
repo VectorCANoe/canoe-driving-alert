@@ -26,6 +26,8 @@
 - 본 설계는 Ethernet 백본(`ETH_SWITCH`) + 도메인 게이트웨이(`CHASSIS_GW`, `INFOTAINMENT_GW`, `BODY_GW`, `IVI_GW`) + 도메인 CAN 분배 구조를 사용한다.
 - 하단 추적표는 `Comm ID -> Flow ID -> Func ID -> Req ID`를 유지한다.
 - 제출 전 현대/기아 및 OEM 기준으로 설명/별칭은 정리하되, Message ID/DLC/Bit Position/Signal 식별자는 SoT 기준으로 고정 유지한다.
+- Message ID notation rule (fixed): architecture references use Logical IDs (0xE210/0xE211/0xE212) as primary; CANoe SIL implementation/test uses Stub IDs (0x313/0x314/0x315) per canoe/docs/operations/ETH_INTERFACE_CONTRACT.md.
+
 - 검증 범위는 CANoe SIL, CAN + Ethernet(UDP)로 고정한다.
 - 목표 설계는 옵션1(ETH 백본) 고정이며, CANoe.CAN 라이선스 제약 구간의 SIL 검증은 임시로 CAN 대체 백본을 사용하고 Ethernet 라이선스 확보 후 동일 케이스로 재검증한다.
 - `Comm_009`, `Comm_106`, `Comm_205`는 Validation Harness 통신(검증 전용)이며 양산 통신과 구분한다.
@@ -448,6 +450,7 @@
 
 | 버전 | 날짜 | 변경 사항 |
 |---|---|---|
+| 3.15 | 2026-03-03 | ID 표기 기준 고정: 문서 본문은 Logical ID(0xE210/0xE211/0xE212)를 우선 표기하고, CANoe SIL 실행 ID는 Stub(0x313/0x314/0x315)로 병기하도록 작성 원칙을 보강. |
 | 3.14 | 2026-03-03 | V2 확장 통신(`Comm_120~124`)을 Implemented 상태로 전환하고 메시지 ID/송수신 노드를 코드/DBC 실값(`0x313/0x314/0x315`, `WARN_ARB_MGR` 중심)으로 정정. |
 | 3.13 | 2026-03-02 | 감사 정합 보강: 옵션1 설계 vs SIL 임시 CAN 대체 백본 검증 경계 문구를 작성 원칙에 추가. |
 | 3.12 | 2026-03-02 | V2 확장 제어 책임 분리 반영: `Comm_121/Comm_123` 송수신 노드를 `DECEL_ASSIST_CTRL` 기준으로 조정. |
