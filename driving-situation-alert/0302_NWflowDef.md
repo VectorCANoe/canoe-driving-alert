@@ -3,8 +3,8 @@
 **Document ID**: PROJ-0302-NFD
 **ISO 26262 Reference**: Part 4, Cl.7 (System Design)
 **ASPICE Reference**: SYS.3 (System Architectural Design)
-**Version**: 3.8
-**Date**: 2026-03-01
+**Version**: 3.11
+**Date**: 2026-03-03
 **Status**: Draft
 **Project Title**: 주행 상황 실시간 경고 시스템
 **Subtitle**: 구간 정보 및 긴급차량 접근 기반 앰비언트·클러스터 경보
@@ -122,7 +122,7 @@
 | Test CAN | 0x230 | frmTestResultMsg | 0 | Scenario Result Report | 0 | scenarioResult | Tx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | Event |
 | Test CAN | 0x231 | frmBaseTestResultMsg | 0 | Base Result Report | 0~7 | BaseScenarioId | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | Tx | Event |
 |  |  |  | 1 | Base Result Report | 8 | BaseScnResult | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | Tx |  |
-| Test CAN | 0x232 | frmEmergencyMonitorMsg | 0 | Emergency Monitor | 0~7 | emergencyContext | Rx | Rx |  |  |  |  |  |  |  | Tx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | CAN, 100ms |
+| Chassis CAN | 0x232 | frmEmergencyMonitorMsg | 0 | Emergency Monitor | 0~7 | emergencyContext | Rx | Rx |  |  |  |  |  |  |  | Tx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | CAN, 100ms |
 |  |  |  | 1 | Emergency Monitor | 8 | TimeoutClearMon | Rx | Rx |  |  |  |  |  |  |  | Tx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 | Powertrain CAN | 0x300 | frmIgnitionEngineMsg | 0 | Ignition/Engine Check | 0 | IgnitionState | Tx |  |  |  |  |  |  |  |  |  |  |  |  |  |  | Rx |  |  |  |  |  |  |  |  |  | CAN, 100ms |
 |  |  |  | 0 | Ignition/Engine Check | 1~2 | EngineState | Tx |  |  |  |  |  |  |  |  |  |  |  |  |  |  | Rx |  |  |  |  |  |  |  |  |  |  |
@@ -392,11 +392,11 @@
 
 | 프로파일 | 원본 파일 | 현재 정의 메시지 수 | ID 범위 |
 |---|---|---|---|
-| Chassis Domain CAN | `chassis_can.dbc` | 24 | 0x100~0x121, 0x230~0x232 |
+| Chassis Domain CAN | `chassis_can.dbc` | 25 | 0x100~0x121, 0x230~0x232 |
 | Powertrain Domain CAN | `powertrain_can.dbc` | 19 | 0x300~0x312 |
 | Body Domain CAN | `body_can.dbc` | 24 | 0x210~0x219, 0x240~0x24D |
 | Infotainment Domain CAN | `infotainment_can.dbc` | 24 | 0x110, 0x220~0x228, 0x260~0x26D |
-| Test CAN | `test_can.dbc` | 3 | 0x230~0x232 |
+| Test CAN | `test_can.dbc` | 2 | 0x230~0x231 |
 | Ethernet Contract | `ETH_INTERFACE_CONTRACT.md` | 5 타입 | 0x510/0x511/0x512/0xE100/0xE200 |
 
 | 항목 | 현재 정의(문서/원본) | 확장 목표(Phase-B) | 비고 |
@@ -437,6 +437,9 @@
 
 | 버전 | 날짜 | 변경 사항 |
 |---|---|---|
+| 3.11 | 2026-03-03 | DBC 실측 정합 반영: `frmEmergencyMonitorMsg(0x232)` 채널을 Chassis CAN으로 정정하고, 하단 통신 규모 표의 `Chassis CAN=25`, `Test CAN=2(0x230~0x231)`로 수정. |
+| 3.10 | 2026-03-02 | 0302/0303 최종 동기화 준비 반영: `Flow_201~Flow_205` 주의 문구를 병렬 작업 기준에서 DBC 동기화 운영 규칙으로 갱신. |
+| 3.9 | 2026-03-02 | V2 추적 밀도 보강 1차: `Flow_202/Flow_203`의 Func/Req 매핑을 `Req_113~Req_119`, `Func_113~Func_119`까지 확장해 Body 확장 기능(HVAC/Seat/Mirror/Door/Wiper-Rain/Security) 및 Audio 상태 체인 정합을 반영. |
 | 1.0 | 2026-02-23 | 초기 생성 |
 | 2.0 | 2026-02-25 | 공식 표준 양식 기반으로 전면 재작성. CAN+Ethernet 범위 고정, OTA/UDS/DoIP 항목 제거, Flow/Func/Req 추적 표 추가 |
 | 2.1 | 2026-02-25 | 공식 0302 표준 샘플 구조에 맞춰 상단 표를 재정렬하고, 하단 추적 표에 Comm 연계/메시지 ID/활성·해제 조건을 보강 |
