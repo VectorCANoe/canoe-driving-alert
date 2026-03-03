@@ -16,6 +16,9 @@
 
 ---
 
+![alt text](tmp/02_concept.png)
+![alt text](tmp/02_networkflow.png)
+
 ## 2. 기준 아키텍처 (고정)
 
 - 채택안: **Option 1**
