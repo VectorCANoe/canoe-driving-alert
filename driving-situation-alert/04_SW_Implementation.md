@@ -3,8 +3,8 @@
 **Document ID**: PROJ-04-SI
 **ISO 26262 Reference**: Part 6, Cl.8 (Software Unit Design and Implementation)
 **ASPICE Reference**: SWE.3 (Software Detailed Design and Unit Construction)
-**Version**: 2.10
-**Date**: 2026-03-02
+**Version**: 2.11
+**Date**: 2026-03-03
 **Status**: Draft
 **Project Title**: 주행 상황 실시간 경고 시스템
 **Subtitle**: 구간 정보 및 긴급차량 접근 기반 앰비언트·클러스터 경보
@@ -113,6 +113,7 @@ Emergency Source (logical terminal)
 | MOD_12 | CLU_HMI_CTRL | `canoe/nodes/CLU_HMI_CTRL.can` | Cluster 경고 출력 |
 | MOD_13 | SIL_TEST_CTRL | `canoe/nodes/SIL_TEST_CTRL.can` | 테스트 실행/판정 |
 | MOD_14 | ETH_SWITCH | CANoe Ethernet Backbone 설정 | 이더넷 분배 인프라 |
+| MOD_15 | DOMAIN_BOUNDARY_MGR | `canoe/nodes/DOMAIN_BOUNDARY_MGR.can` | 도메인 경로 헬스/Fail-safe 게이트 |
 
 ---
 
@@ -163,6 +164,11 @@ Emergency Source (logical terminal)
 | Func_041 | Req_041 | SIL_TEST_CTRL | Flow_009 / Comm_009 / testScenario | Flow_009 / scenarioResult | `MOD_13.F041` | ST_SIL_001 |
 | Func_042 | Req_042 | SIL_TEST_CTRL | Flow_009 / Comm_009 / testScenario | Flow_009 / scenarioResult | `MOD_13.F042` | ST_SIL_002 |
 | Func_043 | Req_043 | SIL_TEST_CTRL | Flow_009 / Comm_009 / scenarioResult | Flow_009 / scenarioResult | `MOD_13.F043` | ST_RESULT_001 |
+| Func_120 | Req_120 | ADAS_WARN_CTRL | Flow_120 / Comm_120 / emergencyDirection, eta, vehicleSpeedNorm | Flow_120 / proximityRiskLevel | `MOD_01.F120` | UT_V2_RISK_001 / IT_V2_RISK_001 |
+| Func_121 | Req_121 | WARN_ARB_MGR | Flow_120 / Flow_121 / proximityRiskLevel, failSafeMode, driveStateNorm | Flow_121 / decelAssistReq | `MOD_06.F121` | UT_V2_RISK_001 / UT_V2_RELEASE_001 / IT_V2_RISK_001 |
+| Func_122 | Req_122 | WARN_ARB_MGR | Flow_122 / Comm_122 / decelAssistReq, selectedAlertType/Level | Flow_122 / selectedAlertType/Level | `MOD_06.F122` | UT_V2_RISK_001 / IT_V2_RISK_001 |
+| Func_123 | Req_123 | WARN_ARB_MGR | Flow_123 / Comm_123 / steeringInputNorm, brakePedalNorm | Flow_123 / decelAssistReq | `MOD_06.F123` | UT_V2_RELEASE_001 / IT_V2_RISK_001 |
+| Func_124 | Req_124 | DOMAIN_BOUNDARY_MGR | Flow_124 / Comm_124 / domainPathStatus, e2eHealthState | Flow_124 / decelAssistReq, failSafeMode | `MOD_15.F124` | UT_V2_FAILSAFE_001 / IT_V2_FAILSAFE_001 |
 
 ---
 
@@ -201,6 +207,16 @@ Emergency Source (logical terminal)
 | Var_027 | lastEmergencyRxMs | EMS_ALERT_RX | Flow_006 / Comm_006 |
 | Var_028 | duplicatePopupGuard | CLU_HMI_CTRL | Flow_008 / Comm_008 |
 | Var_029 | arbitrationSnapshotId | WARN_ARB_MGR | Flow_006 / Comm_006 |
+| Var_320 | proximityRiskLevel | ADAS_WARN_CTRL | Flow_120 / Comm_120 |
+| Var_321 | decelAssistReq | WARN_ARB_MGR | Flow_121 / Comm_121 |
+| Var_322 | selectedAlertLevel | WARN_ARB_MGR | Flow_122 / Comm_122 |
+| Var_323 | selectedAlertType | WARN_ARB_MGR | Flow_122 / Comm_122 |
+| Var_324 | steeringInputNorm | CHASSIS_GW | Flow_123 / Comm_123 |
+| Var_325 | brakePedalNorm | CHASSIS_GW | Flow_123 / Comm_123 |
+| Var_326 | domainPathStatus | DOMAIN_BOUNDARY_MGR | Flow_124 / Comm_124 |
+| Var_327 | e2eHealthState | DOMAIN_BOUNDARY_MGR | Flow_124 / Comm_124 |
+| Var_328 | failSafeMode | DOMAIN_BOUNDARY_MGR | Flow_124 / Comm_124 |
+| Var_329 | decelAssistReq | DOMAIN_BOUNDARY_MGR | Flow_124 / Comm_124 |
 
 ---
 
@@ -222,7 +238,7 @@ Emergency Source (logical terminal)
 |---|---|---|---|---|---|
 | TASK_001 | CHASSIS_GW | 100ms 주기 | frmVehicleStateCanMsg, frmSteeringCanMsg | ethVehicleStateMsg, ethSteeringMsg | 연속 2주기 누락 시 Fault |
 | TASK_002 | INFOTAINMENT_GW | 100ms 주기 | frmNavContextCanMsg | ethNavContextMsg | 연속 2주기 누락 시 일반구간 복귀 |
-| TASK_003 | ADAS_WARN_CTRL | Event + 10ms 내부 평가 | vehicleSpeedNorm, driveStateNorm, steeringInputNorm | warningState | 비주행 상태 시 경고 억제 |
+| TASK_003 | ADAS_WARN_CTRL | Event + 100ms 내부 평가 | vehicleSpeedNorm, driveStateNorm, steeringInputNorm | warningState, proximityRiskLevel | 비주행 상태 시 경고 억제 |
 | TASK_004 | NAV_CONTEXT_MGR | Event(입력 변경) | roadZone, navDirection, zoneDistance, speedLimit | baseZoneContext, speedLimitNorm | 입력 invalid 시 기본 컨텍스트/기본제한속도(30) |
 | TASK_005 | EMS_POLICE_TX | 100ms 주기 | Police Active/ETA/Direction | ETH_EmergencyAlert | Active=0이면 Clear 송신 |
 | TASK_006 | EMS_AMB_TX | 100ms 주기 | Ambulance Active/ETA/Direction | ETH_EmergencyAlert | Active=0이면 Clear 송신 |
@@ -314,6 +330,7 @@ Emergency Source (logical terminal)
 
 | 버전 | 날짜 | 변경 사항 |
 |---|---|---|
+| 2.11 | 2026-03-03 | Req_120~124 추적/타이밍 정합 반영: `Func_120~124` 및 `Var_320~329` 추적 항목 추가, `TASK_003`를 100ms 주기로 정합화, `DOMAIN_BOUNDARY_MGR`를 `MOD_15`로 반영. |
 | 2.10 | 2026-03-02 | ISO26262/ASPICE 운영 경계 반영: SIL 전용 `Verification-Harness` 변수(`V2X/policeDispatch`, `V2X/ambulanceDispatch`, `Driver/gazeActive`, `UiRender/*`)의 비제품 체인 분류를 작성 원칙/4.2 표로 명시. |
 | 2.9 | 2026-03-01 | 상단 공식 표와 아키텍처 요약의 EMS 표기를 `EMS_ALERT` 논리 단말 기준으로 통일하고, 내부 TX/RX 모듈은 상세 추적표에서만 분리 관리. |
 | 1.0 | 2026-02-23 | 초기 생성(구 스코프 기반) |

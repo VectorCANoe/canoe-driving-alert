@@ -12,6 +12,9 @@ variables
   dword gBodyTsMs;
   dword gInfoTsMs;
   int gLastBoundaryStatus;
+  int gLastDomainPathStatus;
+  int gLastE2eHealthState;
+  int gLastFailSafeMode;
 }
 
 on start
@@ -23,8 +26,15 @@ on start
   gBodyTsMs     = 0;
   gInfoTsMs     = 0;
   gLastBoundaryStatus = -1;
+  gLastDomainPathStatus = -1;
+  gLastE2eHealthState = -1;
+  gLastFailSafeMode = -1;
   @CoreState::domainBoundaryStatus = 0;
-  setTimer(tBoundaryCheck, 300);
+  @CoreState::domainPathStatus = 2;
+  @CoreState::e2eHealthState = 0;
+  @Core::failSafeMode = 1;
+  @Core::decelAssistReq = 0;
+  setTimer(tBoundaryCheck, 100);
   write("[DOMAIN_BOUNDARY_MGR] start");
 }
 
@@ -48,11 +58,23 @@ on message frmInfotainmentHealthMsg
 
 on timer tBoundaryCheck
 {
+  message ethFailSafeStateMsg mFailSafe;
   dword nowMs;
+  int routingPolicy;
+  int forceFailSafe;
   int allAlive;
+  int domainPathStatus;
+  int e2eHealthState;
+  int failSafeMode;
 
   nowMs    = (dword)(timeNow() / 100000);
   allAlive = 0;
+  routingPolicy = (int)@CoreState::routingPolicy;
+  forceFailSafe = (((int)@Test::forceFailSafe) == 1) ? 1 : 0;
+  if (routingPolicy < 0 || routingPolicy > 2)
+  {
+    routingPolicy = 0;
+  }
 
   /* All three domains must have been heard within 300 ms */
   if ((nowMs - gChassisTsMs) < 300 &&
@@ -66,6 +88,40 @@ on timer tBoundaryCheck
   }
 
   @CoreState::domainBoundaryStatus = allAlive;
+  domainPathStatus = (allAlive == 1) ? 0 : 2;
+  if (forceFailSafe == 1)
+  {
+    domainPathStatus = 2;
+    e2eHealthState = 0;
+  }
+  else if (allAlive == 1 && routingPolicy == 1)
+  {
+    e2eHealthState = 2;
+  }
+  else if (allAlive == 1)
+  {
+    e2eHealthState = 1;
+  }
+  else
+  {
+    e2eHealthState = 0;
+  }
+
+  failSafeMode = 0;
+  if (forceFailSafe == 1)
+  {
+    failSafeMode = 2;
+    @Core::decelAssistReq = 0;
+  }
+  else if (domainPathStatus >= 2 || e2eHealthState == 0)
+  {
+    failSafeMode = 1;
+    @Core::decelAssistReq = 0;
+  }
+
+  @CoreState::domainPathStatus = domainPathStatus;
+  @CoreState::e2eHealthState = e2eHealthState;
+  @Core::failSafeMode = failSafeMode;
 
   if (allAlive != gLastBoundaryStatus)
   {
@@ -73,6 +129,22 @@ on timer tBoundaryCheck
           allAlive, gChassisAlive, gBodyAlive, gInfoAlive);
     gLastBoundaryStatus = allAlive;
   }
+  if (domainPathStatus != gLastDomainPathStatus ||
+      e2eHealthState != gLastE2eHealthState ||
+      failSafeMode != gLastFailSafeMode)
+  {
+    write("[DOMAIN_BOUNDARY_MGR] path=%d e2e=%d failSafe=%d routing=%d force=%d",
+          domainPathStatus, e2eHealthState, failSafeMode, routingPolicy, forceFailSafe);
+    gLastDomainPathStatus = domainPathStatus;
+    gLastE2eHealthState = e2eHealthState;
+    gLastFailSafeMode = failSafeMode;
+  }
 
-  setTimer(tBoundaryCheck, 300);
+  mFailSafe.DomainPathStatus = domainPathStatus;
+  mFailSafe.E2eHealthState = e2eHealthState;
+  mFailSafe.FailSafeMode = failSafeMode;
+  mFailSafe.BoundaryAlive = allAlive;
+  output(mFailSafe);
+
+  setTimer(tBoundaryCheck, 100);
 }

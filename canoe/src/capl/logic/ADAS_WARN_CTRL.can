@@ -7,17 +7,96 @@ variables
   msTimer tAdasCycle;
   int gLastWarningState;
   dword gHighwayNoSteerStartMs;
+  int gLastRiskLevel;
+}
+
+int clampRange(int value, int minValue, int maxValue)
+{
+  if (value < minValue)
+  {
+    return minValue;
+  }
+  if (value > maxValue)
+  {
+    return maxValue;
+  }
+  return value;
+}
+
+int calcProximityRisk(int emergencyContext, int etaSec, int speed, int emergencyDirection, int driveState)
+{
+  int etaScore;
+  int speedScore;
+  int directionScore;
+  int typeBias;
+  int riskLevel;
+  int nearZero;
+  int relativeSpeedFactor;
+
+  int calcTtcScore;
+
+  if (driveState != 3 || emergencyContext == 0)
+  {
+    return 0;
+  }
+
+  /* Paper-grounded behavior: near term TTC carries stronger risk than late arrivals.
+     This mirrors inverse-TTC style calibration: high urgency near 0~2s, gradual release. */
+  etaScore = 0;
+  if (etaSec <= 2)
+  {
+    etaScore = 100;
+  }
+  else if (etaSec >= 20)
+  {
+    etaScore = 0;
+  }
+  else
+  {
+    etaScore = (20 - etaSec) * 6;
+  }
+  etaScore = clampRange(etaScore, 0, 100);
+
+  speedScore = clampRange((speed * 50) / 255, 0, 50);
+  relativeSpeedFactor = (speed > 120) ? 8 : ((speed > 80) ? 4 : 0);
+  nearZero = (etaSec == 0) ? 1 : 0;
+
+  if (emergencyDirection == 0)
+  {
+    directionScore = 25;
+  }
+  else if (emergencyDirection == 3)
+  {
+    directionScore = 10;
+  }
+  else
+  {
+    directionScore = 18;
+  }
+
+  typeBias = (emergencyContext == 2) ? 14 : 8;
+  calcTtcScore = etaScore + speedScore + directionScore + typeBias + relativeSpeedFactor;
+  if (nearZero == 1)
+  {
+    calcTtcScore = calcTtcScore + 10;
+  }
+  riskLevel = clampRange(calcTtcScore, 0, 100);
+  return clampRange(riskLevel, 0, 100);
 }
 
 void updateWarningState()
 {
+  message ethEmergencyRiskMsg mRisk;
   int speed;
   int driveState;
   int steeringInput;
   int speedLimit;
   int baseZoneContext;
   int emergencyContext;
+  int etaSec;
+  int emergencyDirection;
   int warningState;
+  int riskLevel;
   dword nowMs;
 
   speed = (int)@Core::vehicleSpeedNorm;
@@ -26,10 +105,14 @@ void updateWarningState()
   speedLimit = (int)@Core::speedLimitNorm;
   baseZoneContext = (int)@Core::baseZoneContext;
   emergencyContext = (int)@Core::emergencyContext;
+  etaSec = (int)@V2X::eta;
+  emergencyDirection = (int)@V2X::emergencyDirection;
   if (emergencyContext < 0 || emergencyContext > 2)
   {
     emergencyContext = 0;
   }
+  etaSec = clampRange(etaSec, 0, 255);
+  emergencyDirection = clampRange(emergencyDirection, 0, 3);
   if (speed < 0)
   {
     speed = 0;
@@ -54,6 +137,8 @@ void updateWarningState()
   {
     baseZoneContext = 0;
   }
+  riskLevel = calcProximityRisk(emergencyContext, etaSec, speed, emergencyDirection, driveState);
+  @Core::proximityRiskLevel = riskLevel;
   warningState = 0;
   nowMs = timeNow();
 
@@ -102,18 +187,28 @@ void updateWarningState()
     output(mAdas);
     gLastWarningState = warningState;
   }
+
+  mRisk.RiskLevel = clampRange(riskLevel, 0, 100);
+  mRisk.EtaSeconds = etaSec;
+  mRisk.VehicleSpeed = speed;
+  mRisk.EmergencyDirection = emergencyDirection;
+  mRisk.EmergencyType = emergencyContext;
+  output(mRisk);
+  gLastRiskLevel = riskLevel;
 }
 
 on start
 {
   gLastWarningState = -1;
   gHighwayNoSteerStartMs = 0;
-  setTimer(tAdasCycle, 10);
+  gLastRiskLevel = -1;
+  @Core::proximityRiskLevel = 0;
+  setTimer(tAdasCycle, 100);
   write("[ADAS_WARN_CTRL] start");
 }
 
 on timer tAdasCycle
 {
   updateWarningState();
-  setTimer(tAdasCycle, 10);
+  setTimer(tAdasCycle, 100);
 }

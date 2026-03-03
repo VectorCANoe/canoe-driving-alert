@@ -92,17 +92,23 @@ on timer tRoute100
   message frmPowertrainCtrlAuthMsg mCtrlAuth;
   int selectedAlertLevel;
   int timeoutClear;
+  int failSafeMode;
 
   gSpeedNorm = clampRange((int)@Core::vehicleSpeedNorm, 0, 255);
   gSpeedLimitNorm = clampRange((int)@Core::speedLimitNorm, 0, 255);
   gDriveMode = clampRange((int)@Core::driveStateNorm, 0, 7);
   selectedAlertLevel = clampRange((int)@Core::selectedAlertLevel, 0, 7);
   timeoutClear = clampRange((int)@Core::timeoutClear, 0, 1);
+  failSafeMode = clampRange((int)@Core::failSafeMode, 0, 2);
 
   /* DOMAIN_BOUNDARY_MGR monitors cross-domain health and writes domainBoundaryStatus */
   gBoundaryStatus = clampRange((int)@CoreState::domainBoundaryStatus, 0, 1);
 
-  if (timeoutClear == 1)
+  if (failSafeMode > 0)
+  {
+    gRoutingPolicy = 0;
+  }
+  else if (timeoutClear == 1)
   {
     gRoutingPolicy = 0;
   }

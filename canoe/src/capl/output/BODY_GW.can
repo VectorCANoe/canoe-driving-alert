@@ -6,111 +6,22 @@ variables
 {
   msTimer tBodyCycle;
   msTimer tBodyBase100;
-  int gLastAmbientMode;
-  int gLastAmbientColor;
-  int gLastAmbientPattern;
   int gBodyAliveCnt;
 }
 
 on start
 {
-  gLastAmbientMode = -1;
-  gLastAmbientColor = -1;
-  gLastAmbientPattern = -1;
   gBodyAliveCnt = 0;
-  setTimer(tBodyCycle, 10);
+  /* Ambient ownership is moved to BCM_AMBIENT_CTRL. Keep tBodyCycle as
+     a lightweight BODY_GW housekeeping tick at 50ms. */
+  setTimer(tBodyCycle, 50);
   setTimer(tBodyBase100, 100);
   write("[BODY_GW] start");
 }
 
 on timer tBodyCycle
 {
-  int alertLevel;
-  int alertType;
-  int timeoutClear;
-  int ambientMode;
-  int ambientColor;
-  int ambientPattern;
-  message frmAmbientControlMsg mAmbient;
-
-  alertLevel = (int)@Core::selectedAlertLevel;
-  alertType = (int)@Core::selectedAlertType;
-  timeoutClear = (int)@Core::timeoutClear;
-  if (alertLevel < 0 || alertLevel > 7)
-  {
-    alertLevel = 0;
-  }
-  if (alertType < 0 || alertType > 7)
-  {
-    alertType = 0;
-  }
-  timeoutClear = (timeoutClear == 1) ? 1 : 0;
-
-  if (timeoutClear == 1)
-  {
-    ambientMode = 0;
-    ambientColor = 0;
-    ambientPattern = 0;
-  }
-  else
-  {
-    ambientMode = alertLevel;
-    ambientColor = 0;
-    ambientPattern = 0;
-    if (alertLevel >= 6)
-    {
-      /* Req_035: emergency color distinct from zone colors
-         Req_036: emergency pattern distinct from zone patterns
-         6=RED/BLUE(police)  7=RED/WHITE(ambulance) */
-      ambientColor   = (alertType == 2) ? 7 : 6;
-      ambientPattern = (alertType == 2) ? 7 : 6;
-    }
-    else if (alertType == 3)
-    {
-      ambientColor   = 3; /* red   - Req_037 school zone fixed color */
-      ambientPattern = 5; /* fast flash - Req_037 school zone fixed pattern */
-    }
-    else if (alertType == 4)
-    {
-      ambientColor   = 4; /* orange - Req_038 highway fixed color */
-      ambientPattern = 4; /* pulse  - Req_038 highway fixed pattern */
-    }
-    else if (alertType == 5)
-    {
-      ambientColor   = 5; /* cyan      - Req_039 guide left */
-      ambientPattern = 2; /* flow-left - Req_039 guide left fixed pattern */
-    }
-    else if (alertType == 6)
-    {
-      ambientColor   = 5; /* cyan       - Req_039 guide right */
-      ambientPattern = 3; /* flow-right - Req_039 guide right fixed pattern */
-    }
-    else if (alertLevel > 0)
-    {
-      ambientColor   = 1; /* green - general fallback */
-      ambientPattern = 1; /* solid */
-    }
-  }
-
-  if (ambientMode != gLastAmbientMode ||
-      ambientColor != gLastAmbientColor ||
-      ambientPattern != gLastAmbientPattern)
-  {
-    @Body::ambientMode = ambientMode;
-    @Body::ambientColor = ambientColor;
-    @Body::ambientPattern = ambientPattern;
-
-    mAmbient.AmbientMode = ambientMode;
-    mAmbient.AmbientColor = ambientColor;
-    mAmbient.AmbientPattern = ambientPattern;
-    output(mAmbient);
-
-    gLastAmbientMode = ambientMode;
-    gLastAmbientColor = ambientColor;
-    gLastAmbientPattern = ambientPattern;
-  }
-
-  setTimer(tBodyCycle, 10);
+  setTimer(tBodyCycle, 50);
 }
 
 on timer tBodyBase100

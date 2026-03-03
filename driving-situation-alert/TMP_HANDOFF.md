@@ -22,7 +22,7 @@
 - Mandatory 1:1 traceability:
   - Req -> Func -> Flow -> Comm -> Var -> Code -> UT/IT/ST
 - Active Req range is locked for this cycle:
-  - Req_001~043, Req_101~119
+  - Req_001~043, Req_101~124
 - Keep separation:
   - 01 = What
   - 03+ = How
@@ -55,18 +55,18 @@
 - 00b_Project_Scope.md: Version 2.6 (Released)
 - 00c_Req_Classification_and_Safety_Profile.md: Version 1.4 (Draft)
 - 00d_HARA_Worksheet.md: Version 1.2 (Draft)
-- 01_Requirements.md: Version 5.15 (Draft)
+- 01_Requirements.md: Version 5.17 (Draft)
 - 02_Concept_design.md: Version 2.4 (In Progress, figure build)
-- 03_Function_definition.md: Version 4.17 (Draft)
-- 0301_SysFuncAnalysis.md: Version 3.14 (Draft)
-- 0302_NWflowDef.md: Version 3.10 (Draft)
-- 0303_Communication_Specification.md: Version 3.10 (Draft, DBC synced to SoT)
-- 0304_System_Variables.md: Version 2.12 (Draft)
+- 03_Function_definition.md: Version 4.21 (Draft)
+- 0301_SysFuncAnalysis.md: Version 3.18 (Draft)
+- 0302_NWflowDef.md: Version 3.14 (Draft)
+- 0303_Communication_Specification.md: Version 3.14 (Draft, DBC synced to SoT)
+- 0304_System_Variables.md: Version 2.16 (Draft)
 - 04_SW_Implementation.md: Version 2.10 (Draft)
-- 05_Unit_Test.md: Version 2.10 (Draft)
-- 06_Integration_Test.md: Version 4.11 (Draft)
-- 07_System_Test.md: Version 5.10 (Draft)
-- Traceability audit status: `Req -> Func -> Flow -> Comm -> Var -> UT/IT/ST` coverage aligned for active Req set (`Req_001~043`, `Req_101~119`)
+- 05_Unit_Test.md: Version 2.15 (Draft)
+- 06_Integration_Test.md: Version 4.14 (Draft)
+- 07_System_Test.md: Version 5.13 (Draft)
+- Traceability audit status: `Req -> Func -> Flow -> Comm -> Var -> UT/IT/ST` coverage aligned for active Req set (`Req_001~043`, `Req_101~124`)
 
 ## 7) Immediate Next Steps
 1. Finalize `02_Concept_design.md` with fixed final figures (architecture + network flow).

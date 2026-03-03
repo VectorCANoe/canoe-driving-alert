@@ -8,6 +8,7 @@ variables
   int gBrakePedal;
   int gWheelSpdFL;
   int gLastBrakePedal;
+  int gLastAssistReq;
 }
 
 on start
@@ -15,6 +16,7 @@ on start
   gBrakePedal    = 0;
   gWheelSpdFL    = 0;
   gLastBrakePedal = -1;
+  gLastAssistReq = -1;
   setTimer(tBrakeCycle, 100);
   write("[BRAKE_CTRL] start");
 }
@@ -38,20 +40,29 @@ on timer tBrakeCycle
   message frmEscStateMsg    mEsc;
   message frmBrakeTempMsg   mTemp;
   message frmBrakeWearMsg   mWear;
+  int decelAssistReq;
+  int appliedBrakePedal;
   int brakePressure;
   int absActive;
   int espActive;
   int absSlip;
 
-  brakePressure = gBrakePedal * 2;
+  decelAssistReq = ((int)@Core::decelAssistReq == 1) ? 1 : 0;
+  appliedBrakePedal = gBrakePedal;
+  if (decelAssistReq == 1 && appliedBrakePedal < 25)
+  {
+    appliedBrakePedal = 25;
+  }
+
+  brakePressure = appliedBrakePedal * 2;
   if (brakePressure > 255) brakePressure = 255;
 
-  absActive = ((gBrakePedal > 80) && (gWheelSpdFL > 10)) ? 1 : 0;
-  absSlip   = absActive ? ((gBrakePedal - 80) & 0x3F) : 0;
-  espActive = ((gBrakePedal > 40) && ((int)@Core::steeringInputNorm == 1)) ? 1 : 0;
+  absActive = ((appliedBrakePedal > 80) && (gWheelSpdFL > 10)) ? 1 : 0;
+  absSlip   = absActive ? ((appliedBrakePedal - 80) & 0x3F) : 0;
+  espActive = ((appliedBrakePedal > 40) && ((int)@Core::steeringInputNorm == 1)) ? 1 : 0;
 
   mStatus.BrakePressure = brakePressure;
-  mStatus.BrakeMode     = (gBrakePedal > 80) ? 2 : ((gBrakePedal > 0) ? 1 : 0);
+  mStatus.BrakeMode     = (appliedBrakePedal > 80) ? 2 : ((appliedBrakePedal > 0) ? 1 : 0);
   mStatus.AbsActive     = absActive;
   mStatus.EspActive     = espActive;
   output(mStatus);
@@ -66,18 +77,20 @@ on timer tBrakeCycle
   mEsc.EscYawTarget    = 128;
   output(mEsc);
 
-  mTemp.BrakeTempFL = 30 + (gBrakePedal / 5);
-  mTemp.BrakeTempFR = 30 + (gBrakePedal / 5);
+  mTemp.BrakeTempFL = 30 + (appliedBrakePedal / 5);
+  mTemp.BrakeTempFR = 30 + (appliedBrakePedal / 5);
   output(mTemp);
 
   mWear.BrakePadWearLvl = 10;
   output(mWear);
 
-  if (gBrakePedal != gLastBrakePedal)
+  if (gBrakePedal != gLastBrakePedal || decelAssistReq != gLastAssistReq)
   {
-    write("[BRAKE_CTRL] pedal=%d pressure=%d abs=%d esp=%d",
-          gBrakePedal, brakePressure, absActive, espActive);
+    write("[BRAKE_CTRL] pedal=%d assist=%d applied=%d pressure=%d abs=%d esp=%d",
+          gBrakePedal, decelAssistReq, appliedBrakePedal,
+          brakePressure, absActive, espActive);
     gLastBrakePedal = gBrakePedal;
+    gLastAssistReq = decelAssistReq;
   }
 
   setTimer(tBrakeCycle, 100);
