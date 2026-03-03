@@ -49,7 +49,7 @@
 | `00b_Project_Scope.md` | 2.7 | 2026-03-04 | 범위/제외 + 분류 운영 기준 |
 | `00c_Req_Classification_and_Safety_Profile.md` | 1.5 | 2026-03-04 | ISO26262/ASPICE 분류 기준(안전등급 잠금) |
 | `00d_HARA_Worksheet.md` | 1.3 | 2026-03-04 | HC-01~HC-05 S/E/C + Safety Goal + 승인 게이트 |
-| `01_Requirements.md` | 5.15 | 2026-03-02 | Req+VC 기준 |
+| `01_Requirements.md` | 5.17 | 2026-03-03 | Req+VC 기준 |
 | `03_Function_definition.md` | 4.21 | 2026-03-03 | 기능 정의 |
 | `0301_SysFuncAnalysis.md` | 3.19 | 2026-03-03 | 노드 기능 분석 |
 | `0302_NWflowDef.md` | 3.16 | 2026-03-04 | 네트워크 흐름 |
