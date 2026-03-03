@@ -1,21 +1,22 @@
 # 컨셉 디자인 (Concept Design)
 
-**Document ID**: PROJ-02-CD  
-**Version**: 2.4  
-**Date**: 2026-02-28  
-**Status**: In Progress (Figure Build)  
-**Project Title**: 주행 상황 실시간 경고 시스템  
+**Document ID**: PROJ-02-CD
+**Version**: 2.4
+**Date**: 2026-02-28
+**Status**: In Progress (Figure Build)
+**Project Title**: 주행 상황 실시간 경고 시스템
 **Subtitle**: 구간 정보 및 긴급차량 접근 기반 앰비언트·클러스터 경보
 
 ---
 
 ## 1. 문서 목적
 
-본 문서는 00~07 문서 체인 중 **시각 설계 증거(Architecture Visualization)**를 담당한다.  
+본 문서는 00~07 문서 체인 중 **시각 설계 증거(Architecture Visualization)**를 담당한다.
 현재는 그림 제작 전 단계로, 최종 반영 시 본문은 최소 설명만 남기고 대부분을 그림으로 대체한다.
 
 ---
-
+![alt text](tmp/02_concept.png)
+![alt text](tmp/02_networkflow.png)
 ## 2. 기준 아키텍처 (고정)
 
 - 채택안: **Option 1**
