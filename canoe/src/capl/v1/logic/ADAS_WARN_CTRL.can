@@ -8,7 +8,6 @@ variables
   int gLastWarningState;
   dword gHighwayNoSteerStartMs;
   int gLastRiskLevel;
-  int gRiskPublishTick;
 }
 
 int clampRange(int value, int minValue, int maxValue)
@@ -31,15 +30,36 @@ int calcProximityRisk(int emergencyContext, int etaSec, int speed, int emergency
   int directionScore;
   int typeBias;
   int riskLevel;
+  int nearZero;
+  int relativeSpeedFactor;
+
+  int calcTtcScore;
 
   if (driveState != 3 || emergencyContext == 0)
   {
     return 0;
   }
 
-  etaScore = 100 - (etaSec * 5);
+  /* Paper-grounded behavior: near term TTC carries stronger risk than late arrivals.
+     This mirrors inverse-TTC style calibration: high urgency near 0~2s, gradual release. */
+  etaScore = 0;
+  if (etaSec <= 2)
+  {
+    etaScore = 100;
+  }
+  else if (etaSec >= 20)
+  {
+    etaScore = 0;
+  }
+  else
+  {
+    etaScore = (20 - etaSec) * 6;
+  }
   etaScore = clampRange(etaScore, 0, 100);
-  speedScore = clampRange((speed * 40) / 255, 0, 40);
+
+  speedScore = clampRange((speed * 50) / 255, 0, 50);
+  relativeSpeedFactor = (speed > 120) ? 8 : ((speed > 80) ? 4 : 0);
+  nearZero = (etaSec == 0) ? 1 : 0;
 
   if (emergencyDirection == 0)
   {
@@ -54,8 +74,13 @@ int calcProximityRisk(int emergencyContext, int etaSec, int speed, int emergency
     directionScore = 18;
   }
 
-  typeBias = (emergencyContext == 2) ? 12 : 6;
-  riskLevel = ((etaScore * 55) / 100) + speedScore + directionScore + typeBias;
+  typeBias = (emergencyContext == 2) ? 14 : 8;
+  calcTtcScore = etaScore + speedScore + directionScore + typeBias + relativeSpeedFactor;
+  if (nearZero == 1)
+  {
+    calcTtcScore = calcTtcScore + 10;
+  }
+  riskLevel = clampRange(calcTtcScore, 0, 100);
   return clampRange(riskLevel, 0, 100);
 }
 
@@ -163,18 +188,13 @@ void updateWarningState()
     gLastWarningState = warningState;
   }
 
-  gRiskPublishTick = gRiskPublishTick + 1;
-  if (riskLevel != gLastRiskLevel || gRiskPublishTick >= 10)
-  {
-    mRisk.RiskLevel = clampRange(riskLevel, 0, 100);
-    mRisk.EtaSeconds = etaSec;
-    mRisk.VehicleSpeed = speed;
-    mRisk.EmergencyDirection = emergencyDirection;
-    mRisk.EmergencyType = emergencyContext;
-    output(mRisk);
-    gLastRiskLevel = riskLevel;
-    gRiskPublishTick = 0;
-  }
+  mRisk.RiskLevel = clampRange(riskLevel, 0, 100);
+  mRisk.EtaSeconds = etaSec;
+  mRisk.VehicleSpeed = speed;
+  mRisk.EmergencyDirection = emergencyDirection;
+  mRisk.EmergencyType = emergencyContext;
+  output(mRisk);
+  gLastRiskLevel = riskLevel;
 }
 
 on start
@@ -182,14 +202,13 @@ on start
   gLastWarningState = -1;
   gHighwayNoSteerStartMs = 0;
   gLastRiskLevel = -1;
-  gRiskPublishTick = 0;
   @Core::proximityRiskLevel = 0;
-  setTimer(tAdasCycle, 10);
+  setTimer(tAdasCycle, 100);
   write("[ADAS_WARN_CTRL] start");
 }
 
 on timer tAdasCycle
 {
   updateWarningState();
-  setTimer(tAdasCycle, 10);
+  setTimer(tAdasCycle, 100);
 }
