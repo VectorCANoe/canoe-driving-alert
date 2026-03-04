@@ -3,8 +3,8 @@
 **Document ID**: PROJ-07-ST
 **ISO 26262 Reference**: Part 4, Cl.10 (System Integration and System Qualification Test)
 **ASPICE Reference**: SYS.5 (System Qualification Test)
-**Version**: 5.8
-**Date**: 2026-02-28
+**Version**: 5.13
+**Date**: 2026-03-03
 **Status**: Draft
 **Project Title**: 주행 상황 실시간 경고 시스템
 **Subtitle**: 구간 정보 및 긴급차량 접근 기반 앰비언트·클러스터 경보
@@ -23,8 +23,11 @@
 - ST는 블랙박스 관점(입력 이벤트 -> 사용자 관찰 결과)으로 작성하며, 내부 구현 세부는 05/06 참조로 분리한다.
 - 상세 추적은 하단 ST 추적표에서 `Req/VC/Func/Flow/Comm/Var/IT`로 연결한다.
 - 검증 환경은 CANoe SIL, CAN+Ethernet으로 고정한다.
+- 임시 주석(실행 제약): 현재 CANoe.CAN 라이선스 환경에서는 SIL 실행 시 Ethernet 구간을 CAN 대체 백본으로 검증하며, Ethernet 라이선스 확보 후 동일 ST 케이스로 재검증한다.
 - 본 문서는 `FZ_001~FZ_012` 결과 반영 전 Baseline Draft이며, 측정값 확정 시 Pass/Fail를 기입한다.
 - `ST_SIL_001`, `ST_SIL_002`, `ST_RESULT_001`, `ST_BASE_DIAG_001`은 Validation Harness 기반 검증 시나리오(검증 전용)다.
+- ST 증적(로그/캡처/리포트)은 `canoe/logging/evidence/ST/` 경로 규칙으로 관리한다.
+- V2 확장 요구(`Req_120~Req_124`)는 구현 활성 상태로 ST 항목을 분리 관리하며, SIL 시나리오 15~19와 연계해 검증한다.
 
 ---
 
@@ -46,13 +49,17 @@
 | ST_TIMEOUT_001 | 긴급 알림 1000ms 무갱신 시 안전 해제 및 복귀 동작을 확인한다. |  |  |  |
 | ST_POLICY_001 | 긴급/구간 패턴·색상·문구 정책과 중복 팝업 억제가 요구대로 동작하는지 확인한다. |  |  |  |
 | ST_SIL_001 | 물리 하드웨어 없이 CANoe SIL에서 핵심 시나리오 수행이 가능한지 확인한다. |  |  |  |
-| ST_SIL_002 | CAN+Ethernet 동시 통신 조건에서 E2E 경고 체인이 유지되는지 확인한다. |  |  |  |
+| ST_SIL_002 | CAN+Ethernet(또는 CAN 대체 백본) 동시 통신 조건에서 E2E 경고 체인이 유지되는지 확인한다. |  |  |  |
 | ST_RESULT_001 | 시나리오별 합격/불합격 결과가 일관되게 기록·추적되는지 확인한다. |  |  |  |
 | ST_BASE_PT_001 | 시동/기어/동력계 상태가 Powertrain 시나리오에서 안정적으로 연동되는지 확인한다. |  |  |  |
 | ST_BASE_CH_001 | 가감속/조향/제동 입력이 Chassis 시나리오에서 안전 규칙대로 반영되는지 확인한다. |  |  |  |
 | ST_BASE_BODY_001 | 비상등/창문/운전자상태 등 Body 시나리오가 의도한 동작으로 유지되는지 확인한다. |  |  |  |
 | ST_BASE_IVI_001 | 클러스터 기본표시/안내/UI 상태가 Infotainment 시나리오에서 일관되게 유지되는지 확인한다. |  |  |  |
+| ST_BASE_EXT_BODY_001 | HVAC/Seat/Mirror/Door/Wiper-Rain/Security 상태가 Body 확장 시나리오에서 일관되게 반영되는지 확인한다. |  |  |  |
+| ST_BASE_EXT_IVI_001 | Audio Focus/Voice/TTS 상태가 Infotainment 확장 시나리오에서 일관되게 반영되는지 확인한다. |  |  |  |
 | ST_BASE_DIAG_001 | 테스트/진단 요청-응답 및 결과 기록이 시나리오 종료까지 추적 가능하게 유지되는지 확인한다. |  |  |  |
+| ST_V2_RISK_001 | 긴급차량 근접 위험도 기반 감속 보조 요청과 경고 출력 동기화가 일관되게 동작하는지 확인한다. (SIL Scenario 15/16/17/19) | Ready |  |  |
+| ST_V2_FAILSAFE_001 | 도메인 경로 단절 시 자동 감속 보조 금지와 최소 경고 채널 유지 강등이 동작하는지 확인한다. (SIL Scenario 18) | Ready |  |  |
 | ST_BASE_001 | 차량 기본 기능(시동/기어/가감속/조향/비상등/창문/기본표시/도메인경계)이 시스템 수준에서 일관되게 동작하는지 확인한다. |  |  |  |
 
 ---
@@ -75,14 +82,18 @@
 | ST_TIMEOUT_001 | Req_023,Req_024,Req_033,Req_034 | VC_023,VC_024,VC_033,VC_034 | Func_023,Func_024,Func_033,Func_034 | Flow_006,Flow_007,Flow_008 / Comm_006,Comm_007,Comm_008 | Var_017,Var_020,Var_021,Var_024 | IT_TIMEOUT_001 | `1000ms` 무갱신 해제 후 `150ms` 이내 복귀/완화 동작 정상 |
 | ST_POLICY_001 | Req_005,Req_025,Req_026,Req_027,Req_028,Req_032,Req_035,Req_036,Req_040 | VC_005,VC_025,VC_026,VC_027,VC_028,VC_032,VC_035,VC_036,VC_040 | Func_005,Func_025,Func_026,Func_027,Func_028,Func_032,Func_035,Func_036,Func_040 | Flow_006,Flow_007,Flow_008 / Comm_006,Comm_007,Comm_008 | Var_018,Var_019,Var_022,Var_023,Var_024,Var_028,Var_029 | IT_ARB_001, IT_OUT_001 | 중재/표시 정책과 결정론이 요구 기준을 충족 |
 | ST_SIL_001 | Req_041 | VC_041 | Func_041 | Flow_009 / Comm_009 | Var_025 | IT_SIL_001 | CANoe SIL 단독 환경에서 시나리오 실행 가능 |
-| ST_SIL_002 | Req_042 | VC_042 | Func_042 | Flow_001~Flow_009 / Comm_001~Comm_009 | Var_001~Var_031 | IT_SIL_001 | CAN+Ethernet 동시 조건에서 통신/기능 체인 유지 |
+| ST_SIL_002 | Req_042 | VC_042 | Func_042 | Flow_001~Flow_009 / Comm_001~Comm_009 | Var_001~Var_031 | IT_SIL_001 | CAN+Ethernet(또는 CAN 대체 백본) 동시 조건에서 통신/기능 체인 유지 |
 | ST_RESULT_001 | Req_043 | VC_043 | Func_043 | Flow_009 / Comm_009 | Var_026 | IT_SIL_001 | 결과 판정 로그와 요약 상태가 일치 |
 | ST_BASE_PT_001 | Req_101,Req_102,Req_110 | VC_101,VC_102,VC_110 | Func_101,Func_102,Func_110 | Flow_101,Flow_204,Flow_105 / Comm_101,Comm_204,Comm_105 | Var_175~Var_182,Var_298~Var_304,Var_309~Var_314 | IT_BASE_PT_001 | 시동/기어 전환 후 동력계 상태가 `150ms` 이내 반영되고 도메인 경계 연동이 유지 |
 | ST_BASE_CH_001 | Req_103,Req_104,Req_105,Req_110 | VC_103,VC_104,VC_105,VC_110 | Func_103,Func_104,Func_105,Func_110 | Flow_102,Flow_201,Flow_105 / Comm_102,Comm_201,Comm_105 | Var_101~Var_120,Var_204~Var_237 | IT_BASE_CH_001 | 가감속/조향/제동 입력 이벤트가 안전 규칙대로 반영되고 상태 연동이 유지 |
 | ST_BASE_BODY_001 | Req_106,Req_107,Req_108,Req_111 | VC_106,VC_107,VC_108,VC_111 | Func_106,Func_107,Func_108,Func_111 | Flow_103,Flow_202,Flow_105 / Comm_103,Comm_202,Comm_105 | Var_121~Var_146,Var_238~Var_267 | IT_BASE_BODY_001 | 비상등/창문/운전자상태 시나리오에서 출력과 상태가 기대값으로 유지 |
 | ST_BASE_IVI_001 | Req_109,Req_111 | VC_109,VC_111 | Func_109,Func_111 | Flow_104,Flow_203,Flow_105 / Comm_104,Comm_203,Comm_105 | Var_147~Var_171,Var_268~Var_297 | IT_BASE_IVI_001 | 표시/UI 이벤트가 누락 없이 반영되고 50/100ms 주기 규칙을 만족 |
+| ST_BASE_EXT_BODY_001 | Req_113,Req_114,Req_115,Req_116,Req_117,Req_118 | VC_113,VC_114,VC_115,VC_116,VC_117,VC_118 | Func_113,Func_114,Func_115,Func_116,Func_117,Func_118 | Flow_202,Flow_105 / Comm_202,Comm_105 | Var_238~Var_267 | IT_BASE_EXT_BODY_001 | HVAC/Seat/Mirror/Door/Wiper-Rain/Security 상태가 `150ms` 이내 반영되고 범위/매핑 규칙을 만족 |
+| ST_BASE_EXT_IVI_001 | Req_119 | VC_119 | Func_119 | Flow_203,Flow_105 / Comm_203,Comm_105 | Var_268~Var_271,Var_289~Var_290 | IT_BASE_EXT_IVI_001 | Audio Focus/Voice/TTS 상태가 `150ms` 이내 HMI 정책으로 반영되고 50/100ms 주기 규칙을 만족 |
 | ST_BASE_DIAG_001 | Req_112 | VC_112 | Func_112 | Flow_106,Flow_205 / Comm_106,Comm_205 | Var_172~Var_174 | IT_BASE_DIAG_001 | 진단 요청-응답 및 결과 로그가 시나리오 단위로 추적 가능하게 기록 |
-| ST_BASE_001 | Req_101~Req_112 | VC_101~VC_112 | Func_101~Func_112 | Flow_101~Flow_106,Flow_201~Flow_205 / Comm_101~Comm_106,Comm_201~Comm_205 | Var_101~Var_314 | IT_BASE_001, IT_BASE_PT_001, IT_BASE_CH_001, IT_BASE_BODY_001, IT_BASE_IVI_001, IT_BASE_DIAG_001 | 차량 기본 기능 E2E 시나리오에서 입력/상태/표시/경계/판정 체인이 일관되게 유지 |
+| ST_V2_RISK_001 | Req_120,Req_121,Req_122,Req_123 | VC_120,VC_121,VC_122,VC_123 | Func_120,Func_121,Func_122,Func_123 | Flow_120,Flow_121,Flow_122,Flow_123 / Comm_120,Comm_121,Comm_122,Comm_123 | Var_320,Var_321,Var_322,Var_323,Var_324,Var_325 | IT_V2_RISK_001 | 위험도 산정 주기 `100ms`, 감속 보조 요청 생성/해제 `150ms` 이내, Ambient/Cluster 동기 오프셋 `<=50ms` (SIL Scenario 15/16/17/19) |
+| ST_V2_FAILSAFE_001 | Req_124 | VC_124 | Func_124 | Flow_124 / Comm_124 | Var_326,Var_327,Var_328,Var_329 | IT_V2_FAILSAFE_001 | 단절 감지 후 `150ms` 이내 failSafeMode 전환, 자동 감속 보조 0건, 최소 경고 채널 유지 (SIL Scenario 18) |
+| ST_BASE_001 | Req_101~Req_119 | VC_101~VC_119 | Func_101~Func_119 | Flow_101~Flow_106,Flow_201~Flow_205 / Comm_101~Comm_106,Comm_201~Comm_205 | Var_101~Var_314 | IT_BASE_001, IT_BASE_PT_001, IT_BASE_CH_001, IT_BASE_BODY_001, IT_BASE_IVI_001, IT_BASE_EXT_BODY_001, IT_BASE_EXT_IVI_001, IT_BASE_DIAG_001 | 차량 기본 기능 E2E 시나리오에서 입력/상태/표시/경계/판정 체인이 일관되게 유지 |
 
 ---
 
@@ -90,6 +101,11 @@
 
 | 버전 | 날짜 | 변경 사항 |
 |---|---|---|
+| 5.13 | 2026-03-03 | V2 ST를 구현 활성 상태로 전환하고 `ST_V2_RISK_001`, `ST_V2_FAILSAFE_001` 상태를 Ready로 갱신. |
+| 5.12 | 2026-03-02 | V2 확장(Pre-Activation) ST 반영: `ST_V2_RISK_001`, `ST_V2_FAILSAFE_001` 추가 및 `Req_120~Req_124` 추적 체인(`IT_V2_RISK_001`, `IT_V2_FAILSAFE_001`) 연결. |
+| 5.11 | 2026-03-02 | 작성 원칙에 CANoe.CAN 실행 제약 임시 주석을 추가하고, `ST_SIL_002` 시나리오/합격기준에 CAN 대체 백본 조건을 병기. |
+| 5.10 | 2026-03-02 | 차량 기본 기능 확장 추적 보강: `Req/VC/Func_113~119`를 반영한 `ST_BASE_EXT_BODY_001`, `ST_BASE_EXT_IVI_001` 추가 및 `ST_BASE_001` 범위 확장(Req_101~119). |
+| 5.9 | 2026-03-02 | 증적 경로 규칙 고정: ST 실행 증적 저장 경로를 `canoe/logging/evidence/ST/`로 명시. |
 | 1.0 | 2026-02-23 | 초기 생성(구 스코프 기반) |
 | 2.0 | 2026-02-23 | 구버전 Scene 구조 반영 |
 | 3.0 | 2026-02-23 | 운전자 행동 중심 서술 전환 |

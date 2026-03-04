@@ -54,6 +54,14 @@ on message frmSteeringCanMsg
   @Core::steeringInputNorm = steering;
 }
 
+on message frmPedalInputCanMsg
+{
+  int brakePedal;
+
+  brakePedal = clampRange(this.BrakePedal, 0, 100);
+  @Core::brakePedalNorm = brakePedal;
+}
+
 on timer tChassisBase100
 {
   message frmWheelSpeedMsg mWheelSpd;

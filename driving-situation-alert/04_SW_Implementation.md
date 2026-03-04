@@ -3,8 +3,8 @@
 **Document ID**: PROJ-04-SI
 **ISO 26262 Reference**: Part 6, Cl.8 (Software Unit Design and Implementation)
 **ASPICE Reference**: SWE.3 (Software Detailed Design and Unit Construction)
-**Version**: 2.8
-**Date**: 2026-02-28
+**Version**: 2.14
+**Date**: 2026-03-04
 **Status**: Draft
 **Project Title**: 주행 상황 실시간 경고 시스템
 **Subtitle**: 구간 정보 및 긴급차량 접근 기반 앰비언트·클러스터 경보
@@ -21,11 +21,13 @@
 - 구현 상세는 코드 문법이 아니라 `입력/처리/출력/타이밍/예외` 계약으로 기록한다.
 - 추적 체인은 `Req -> Func -> Flow -> Comm -> Var -> Code -> UT/IT/ST`를 유지한다.
 - 네트워크는 옵션1 아키텍처를 고정한다: `ETH_SWITCH + CHASSIS_GW/INFOTAINMENT_GW/BODY_GW/IVI_GW + 도메인 CAN`.
-- 통신 원본은 분리 관리한다: CAN=`canoe/databases/chassis_can.dbc` + `canoe/databases/powertrain_can.dbc` + `canoe/databases/body_can.dbc` + `canoe/databases/infotainment_can.dbc` + `canoe/databases/test_can.dbc`, Ethernet=`canoe/docs/operations/ETH_INTERFACE_CONTRACT.md`.
+- 통신 원본은 분리 관리한다: CAN=`canoe/databases/chassis_can.dbc` + `canoe/databases/powertrain_can.dbc` + `canoe/databases/body_can.dbc` + `canoe/databases/infotainment_can.dbc` + `canoe/databases/test_can.dbc` + `canoe/databases/eth_backbone_can_stub.dbc`, Ethernet(논리 계약)=`canoe/docs/operations/ETH_INTERFACE_CONTRACT.md`.
 - 범위 외 항목(OTA/UDS/DoIP)은 구현 대상에서 제외한다.
 - ASPICE SWE.3 BP1~BP8 관점에서 `상세 설계/인터페이스/동적행위/대안평가/추적성/합의/구현규칙`을 명시한다.
 - SIL 단계에서는 Panel/sysvar 경유 자극을 허용하며, 통신 계약(0302/0303/0304)은 유지한 채 ETH `UdpSocket` 기반 입력으로 점진 전환한다.
 - `SIL_TEST_CTRL`/`VEHICLE_BASE_TEST_CTRL`는 Validation Harness이며, `ETH_SWITCH`/도메인 게이트웨이의 통신 변환 역할과 분리한다.
+- `project.sysvars`의 `UiRender/*`, `Driver/gazeActive`, `V2X/policeDispatch`, `V2X/ambulanceDispatch`는 Verification-Harness 입력/렌더 변수로 관리하며 제품 Req 체인(01/03/05~07)과 분리한다.
+- CANoe.CAN 환경에서는 Ethernet 일부 경로(E100/E200 모니터링 및 V2 확장)가 CAN-stub(0x064/0x11F/0x232/0x313/0x314/0x315)로 대체 운반되며, 서비스 해석은 Ethernet 논리 계약 SoT를 우선한다.
 
 ---
 
@@ -80,7 +82,7 @@ Emergency Source (logical terminal)
 |  |  | Gateway/Network |
 | CHASSIS_GW | Chassis CAN 입력 정규화 및 ETH 송신 | Flow_001,002 |
 | INFOTAINMENT_GW | Infotainment CAN 입력(구간/방향/거리/제한속도) 정규화 및 ETH 송신 | Flow_003 |
-| ETH_SWITCH | Ethernet 프레임 분배 및 도메인 전달 | Flow_001~008 |
+| ETH_SWITCH | ETH 경로 헬스 모니터링(메시지 age 기반 path health 판정) | Flow_001~008 |
 | BODY_GW | 중재 결과 ETH 수신 후 Ambient CAN 송신 | Flow_007 |
 | IVI_GW | 중재 결과 ETH 수신 후 Cluster CAN 송신 | Flow_008 |
 |  |  | Output |
@@ -91,6 +93,7 @@ Emergency Source (logical terminal)
 
 - 상단 공식표는 감사 일관성을 위해 `EMS_ALERT` 논리 단말 기준으로 표기한다.
 - 내부 구현 모듈(`EMS_POLICE_TX`, `EMS_AMB_TX`, `EMS_ALERT_RX`) 분해는 본문 상세 추적표(3장, 4장)에서 관리한다.
+- 프레임 포워딩은 Ethernet 스위칭 인프라(실차 스위치 또는 SIL 네트워크 스택)가 담당하고, `ETH_SWITCH` CAPL은 경로 상태 모니터링/진단 로직을 담당한다.
 
 ---
 
@@ -98,20 +101,21 @@ Emergency Source (logical terminal)
 
 | Module ID | Node | 구현 파일(계획) | 역할 |
 |---|---|---|---|
-| MOD_01 | ADAS_WARN_CTRL | `canoe/nodes/ADAS_WARN_CTRL.can` | 조건 판정/디바운스/트리거 |
-| MOD_02 | NAV_CONTEXT_MGR | `canoe/nodes/NAV_CONTEXT_MGR.can` | 구간 컨텍스트 계산 |
-| MOD_03 | EMS_POLICE_TX | `canoe/nodes/EMS_POLICE_TX.can` | 경찰 긴급 송신 |
-| MOD_04 | EMS_AMB_TX | `canoe/nodes/EMS_AMB_TX.can` | 구급 긴급 송신 |
-| MOD_05 | EMS_ALERT_RX | `canoe/nodes/EMS_ALERT_RX.can` | 긴급 수신/해제/타임아웃 |
-| MOD_06 | WARN_ARB_MGR | `canoe/nodes/WARN_ARB_MGR.can` | 우선순위 중재 |
-| MOD_07 | CHASSIS_GW | `canoe/nodes/CHASSIS_GW.can` | CAN->ETH 변환 |
-| MOD_08 | INFOTAINMENT_GW | `canoe/nodes/INFOTAINMENT_GW.can` | CAN->ETH 변환 |
-| MOD_09 | BODY_GW | `canoe/nodes/BODY_GW.can` | ETH->CAN 변환(Ambient) |
-| MOD_10 | IVI_GW | `canoe/nodes/IVI_GW.can` | ETH->CAN 변환(Cluster) |
-| MOD_11 | BCM_AMBIENT_CTRL | `canoe/nodes/BCM_AMBIENT_CTRL.can` | Ambient 출력 제어 |
-| MOD_12 | CLU_HMI_CTRL | `canoe/nodes/CLU_HMI_CTRL.can` | Cluster 경고 출력 |
-| MOD_13 | SIL_TEST_CTRL | `canoe/nodes/SIL_TEST_CTRL.can` | 테스트 실행/판정 |
-| MOD_14 | ETH_SWITCH | CANoe Ethernet Backbone 설정 | 이더넷 분배 인프라 |
+| MOD_01 | ADAS_WARN_CTRL | `canoe/src/capl/logic/ADAS_WARN_CTRL.can` | 조건 판정/디바운스/트리거 |
+| MOD_02 | NAV_CONTEXT_MGR | `canoe/src/capl/logic/NAV_CONTEXT_MGR.can` | 구간 컨텍스트 계산 |
+| MOD_03 | EMS_POLICE_TX | `canoe/src/capl/ems/EMS_POLICE_TX.can` | 경찰 긴급 송신 |
+| MOD_04 | EMS_AMB_TX | `canoe/src/capl/ems/EMS_AMB_TX.can` | 구급 긴급 송신 |
+| MOD_05 | EMS_ALERT_RX | `canoe/src/capl/logic/EMS_ALERT_RX.can` | 긴급 수신/해제/타임아웃 |
+| MOD_06 | WARN_ARB_MGR | `canoe/src/capl/logic/WARN_ARB_MGR.can` | 우선순위 중재 |
+| MOD_07 | CHASSIS_GW | `canoe/src/capl/input/CHASSIS_GW.can` | CAN->ETH 변환 |
+| MOD_08 | INFOTAINMENT_GW | `canoe/src/capl/input/INFOTAINMENT_GW.can` | CAN->ETH 변환 |
+| MOD_09 | BODY_GW | `canoe/src/capl/output/BODY_GW.can` | ETH->CAN 변환(Ambient) |
+| MOD_10 | IVI_GW | `canoe/src/capl/output/IVI_GW.can` | ETH->CAN 변환(Cluster) |
+| MOD_11 | BCM_AMBIENT_CTRL | `canoe/src/capl/output/BCM_AMBIENT_CTRL.can` | Ambient 출력 제어 |
+| MOD_12 | CLU_HMI_CTRL | `canoe/src/capl/output/CLU_HMI_CTRL.can` | Cluster 경고 출력 |
+| MOD_13 | SIL_TEST_CTRL | `canoe/src/capl/input/SIL_TEST_CTRL.can` | 테스트 실행/판정 |
+| MOD_14 | ETH_SWITCH | `canoe/src/capl/network/ETH_SWITCH.can` | ETH 경로 상태 모니터(Validation/Fail-safe 지원) |
+| MOD_15 | DOMAIN_BOUNDARY_MGR | `canoe/src/capl/ecu/DOMAIN_BOUNDARY_MGR.can` | 도메인 경로 헬스/Fail-safe 게이트 |
 
 ---
 
@@ -162,6 +166,30 @@ Emergency Source (logical terminal)
 | Func_041 | Req_041 | SIL_TEST_CTRL | Flow_009 / Comm_009 / testScenario | Flow_009 / scenarioResult | `MOD_13.F041` | ST_SIL_001 |
 | Func_042 | Req_042 | SIL_TEST_CTRL | Flow_009 / Comm_009 / testScenario | Flow_009 / scenarioResult | `MOD_13.F042` | ST_SIL_002 |
 | Func_043 | Req_043 | SIL_TEST_CTRL | Flow_009 / Comm_009 / scenarioResult | Flow_009 / scenarioResult | `MOD_13.F043` | ST_RESULT_001 |
+| Func_101 | Req_101 | ENGINE_CTRL | Flow_101 / Comm_101 / IgnitionState, GearInput | Flow_101 / EngineState, EngineRpm | `ENGINE_CTRL.F101` | UT_BASE_PT_001 / IT_BASE_PT_001 |
+| Func_102 | Req_102 | TRANSMISSION_CTRL | Flow_101 / Comm_101 / IgnitionState, GearInput | Flow_101 / GearState | `TRANSMISSION_CTRL.F102` | UT_BASE_PT_001 / IT_BASE_PT_001 |
+| Func_103 | Req_103 | ACCEL_CTRL | Flow_102 / Comm_102 / AccelPedal | Flow_102 / AccelRequest, TorqueRequest | `ACCEL_CTRL.F103` | UT_BASE_CH_001 / IT_BASE_CH_001 |
+| Func_104 | Req_104 | BRAKE_CTRL | Flow_102 / Comm_102 / BrakePedal | Flow_102 / BrakePressure, BrakeMode, AbsActive, EspActive | `BRAKE_CTRL.F104` | UT_BASE_CH_001 / IT_BASE_CH_001 |
+| Func_105 | Req_105 | STEERING_CTRL | Flow_102 / Comm_102 / steeringInput, SteeringTorque | Flow_102 / SteeringState, SteeringAssistLv | `STEERING_CTRL.F105` | UT_BASE_CH_001 / IT_BASE_CH_001 |
+| Func_106 | Req_106 | HAZARD_CTRL | Flow_103 / Comm_103 / HazardSwitch | Flow_103 / HazardState, HazardLampReq | `HAZARD_CTRL.F106` | UT_BASE_BODY_001 / IT_BASE_BODY_001 |
+| Func_107 | Req_107 | WINDOW_CTRL | Flow_103 / Comm_103 / WindowCommand | Flow_103 / WindowState | `WINDOW_CTRL.F107` | UT_BASE_BODY_001 / IT_BASE_BODY_001 |
+| Func_108 | Req_108 | DRIVER_STATE_CTRL | Flow_103 / Comm_103 / DriverStateLevel | Flow_103 / DriverStateInfo | `DRIVER_STATE_CTRL.F108` | UT_BASE_BODY_001 / IT_BASE_BODY_001 |
+| Func_109 | Req_109 | CLUSTER_BASE_CTRL | Flow_104 / Comm_104 / ClusterSpeed, ClusterGear, warningTextCode | Flow_104 / ClusterStatus | `CLUSTER_BASE_CTRL.F109` | UT_BASE_IVI_001 / IT_BASE_IVI_001 |
+| Func_110 | Req_110 | DOMAIN_GW_ROUTER | Flow_105 / Comm_105 / RoutingPolicy, ChassisAliveCnt, BodyAliveCnt, InfoAliveCnt | Flow_105 / BodyGatewayRoute | `DOMAIN_GW_ROUTER.F110` | UT_BASE_GW_001 / IT_BASE_GW_001 |
+| Func_111 | Req_111 | DOMAIN_BOUNDARY_MGR | Flow_105 / Comm_105 / RoutingPolicy, BoundaryStatus | Flow_105 / BoundaryStatus | `MOD_15.F111` | UT_BASE_GW_001 / IT_BASE_GW_001 |
+| Func_112 | Req_112 | VEHICLE_BASE_TEST_CTRL | Flow_106 / Comm_106 / BaseScenarioId | Flow_106 / BaseScenarioResult | `VEHICLE_BASE_TEST_CTRL.F112` | UT_BASE_TEST_001 / IT_BASE_DIAG_001 |
+| Func_113 | Req_113 | BODY_GW | Flow_202 / Comm_202 / CabinSetTemp, BlowerLevel, AcCompressorReq, VentMode | Flow_202 / CabinTemp | `MOD_09.F113` | UT_BASE_EXT_BODY_001 / IT_BASE_EXT_BODY_001 |
+| Func_114 | Req_114 | DRIVER_STATE_CTRL | Flow_202 / Comm_202 / DriverSeatPos, PassengerSeatPos, SeatHeatLevel, SeatVentLevel | Flow_202 / DriverStateInfo | `DRIVER_STATE_CTRL.F114` | UT_BASE_EXT_BODY_001 / IT_BASE_EXT_BODY_001 |
+| Func_115 | Req_115 | WINDOW_CTRL | Flow_202 / Comm_202 / MirrorFoldState, MirrorHeatState, MirrorAdjAxis | Flow_202 / WindowState | `WINDOW_CTRL.F115` | UT_BASE_EXT_BODY_001 / IT_BASE_EXT_BODY_001 |
+| Func_116 | Req_116 | WINDOW_CTRL | Flow_202 / Comm_202 / DoorUnlockCmd, DoorLockState, DoorOpenWarn | Flow_202 / DoorStateMask | `WINDOW_CTRL.F116` | UT_BASE_EXT_BODY_001 / IT_BASE_EXT_BODY_001 |
+| Func_117 | Req_117 | BCM_AMBIENT_CTRL | Flow_202 / Comm_202 / FrontWiperState, RearWiperState, RainSensorLevel, AutoHeadlampReq | Flow_202 / WiperInterval | `MOD_11.F117` | UT_BASE_EXT_BODY_001 / IT_BASE_EXT_BODY_001 |
+| Func_118 | Req_118 | DRIVER_STATE_CTRL | Flow_202 / Comm_202 / ImmoState, AlarmArmed, AlarmTrigger, AlarmZone | Flow_202 / DriverStateInfo | `DRIVER_STATE_CTRL.F118` | UT_BASE_EXT_BODY_001 / IT_BASE_EXT_BODY_001 |
+| Func_119 | Req_119 | CLU_HMI_CTRL | Flow_203 / Comm_203 / AudioFocusOwner, VoiceAssistState, TtsState, TtsLangId | Flow_203 / warningTextCode | `MOD_12.F119` | UT_BASE_EXT_IVI_001 / IT_BASE_EXT_IVI_001 |
+| Func_120 | Req_120 | ADAS_WARN_CTRL | Flow_120 / Comm_120 / emergencyDirection, eta, vehicleSpeedNorm | Flow_120 / proximityRiskLevel | `MOD_01.F120` | UT_V2_RISK_001 / IT_V2_RISK_001 |
+| Func_121 | Req_121 | WARN_ARB_MGR | Flow_120 / Flow_121 / proximityRiskLevel, failSafeMode, driveStateNorm | Flow_121 / decelAssistReq | `MOD_06.F121` | UT_V2_RISK_001 / UT_V2_RELEASE_001 / IT_V2_RISK_001 |
+| Func_122 | Req_122 | WARN_ARB_MGR | Flow_122 / Comm_122 / decelAssistReq, selectedAlertType/Level | Flow_122 / selectedAlertType/Level | `MOD_06.F122` | UT_V2_RISK_001 / IT_V2_RISK_001 |
+| Func_123 | Req_123 | WARN_ARB_MGR | Flow_123 / Comm_123 / steeringInputNorm, brakePedalNorm | Flow_123 / decelAssistReq | `MOD_06.F123` | UT_V2_RELEASE_001 / IT_V2_RISK_001 |
+| Func_124 | Req_124 | DOMAIN_BOUNDARY_MGR | Flow_124 / Comm_124 / domainPathStatus, e2eHealthState | Flow_124 / decelAssistReq, failSafeMode | `MOD_15.F124` | UT_V2_FAILSAFE_001 / IT_V2_FAILSAFE_001 |
 
 ---
 
@@ -200,6 +228,28 @@ Emergency Source (logical terminal)
 | Var_027 | lastEmergencyRxMs | EMS_ALERT_RX | Flow_006 / Comm_006 |
 | Var_028 | duplicatePopupGuard | CLU_HMI_CTRL | Flow_008 / Comm_008 |
 | Var_029 | arbitrationSnapshotId | WARN_ARB_MGR | Flow_006 / Comm_006 |
+| Var_320 | proximityRiskLevel | ADAS_WARN_CTRL | Flow_120 / Comm_120 |
+| Var_321 | decelAssistReq | WARN_ARB_MGR | Flow_121 / Comm_121 |
+| Var_322 | selectedAlertLevel | WARN_ARB_MGR | Flow_122 / Comm_122 |
+| Var_323 | selectedAlertType | WARN_ARB_MGR | Flow_122 / Comm_122 |
+| Var_324 | steeringInputNorm | CHASSIS_GW | Flow_123 / Comm_123 |
+| Var_325 | brakePedalNorm | CHASSIS_GW | Flow_123 / Comm_123 |
+| Var_326 | domainPathStatus | DOMAIN_BOUNDARY_MGR | Flow_124 / Comm_124 |
+| Var_327 | e2eHealthState | DOMAIN_BOUNDARY_MGR | Flow_124 / Comm_124 |
+| Var_328 | failSafeMode | DOMAIN_BOUNDARY_MGR | Flow_124 / Comm_124 |
+| Var_329 | decelAssistReq | DOMAIN_BOUNDARY_MGR | Flow_124 / Comm_124 |
+
+---
+
+## 4.2 Verification-Harness 변수 (SIL 전용)
+
+| 항목 | Namespace/Name | 용도 | 구현 모듈 | 제품 Req 체인 연결 |
+|---|---|---|---|---|
+| EMS 수동 디스패치 입력 | `V2X/policeDispatch`, `V2X/ambulanceDispatch` | Panel 버튼 기반 긴급 이벤트 주입(송신 트리거) | `EMS_POLICE_TX.can`, `EMS_AMB_TX.can` | 없음(검증 자극 전용) |
+| 운전자 시선 복귀 자극 | `Driver/gazeActive` | SIL 데모에서 경고 해제 경계 동작 자극 | `DRIVER_STATE_CTRL.can` | 없음(검증 자극 전용) |
+| 렌더 출력 버스 | `UiRender/*` (`renderMode`, `renderColor`, `renderPattern`, `renderTextCode`, `renderDirection`, `roadZoneColorCode`, `roadFlowDirection`, `vehicleObjectPos`, `emsBlinkPhase`, `ambientPulsePhase`, `icFlowPhase`, `activeAlertType`) | 패널 시각화 전용 파생 값 | `IVI_GW.can` | 없음(렌더 전용) |
+
+- 본 표 항목은 `00c`의 `Verification-Harness` 분류를 따르며, 감사 시 제품 기능 요구 미연결 항목으로 해석하지 않는다.
 
 ---
 
@@ -209,7 +259,7 @@ Emergency Source (logical terminal)
 |---|---|---|---|---|---|
 | TASK_001 | CHASSIS_GW | 100ms 주기 | frmVehicleStateCanMsg, frmSteeringCanMsg | ethVehicleStateMsg, ethSteeringMsg | 연속 2주기 누락 시 Fault |
 | TASK_002 | INFOTAINMENT_GW | 100ms 주기 | frmNavContextCanMsg | ethNavContextMsg | 연속 2주기 누락 시 일반구간 복귀 |
-| TASK_003 | ADAS_WARN_CTRL | Event + 10ms 내부 평가 | vehicleSpeedNorm, driveStateNorm, steeringInputNorm | warningState | 비주행 상태 시 경고 억제 |
+| TASK_003 | ADAS_WARN_CTRL | Event + 100ms 내부 평가 | vehicleSpeedNorm, driveStateNorm, steeringInputNorm | warningState, proximityRiskLevel | 비주행 상태 시 경고 억제 |
 | TASK_004 | NAV_CONTEXT_MGR | Event(입력 변경) | roadZone, navDirection, zoneDistance, speedLimit | baseZoneContext, speedLimitNorm | 입력 invalid 시 기본 컨텍스트/기본제한속도(30) |
 | TASK_005 | EMS_POLICE_TX | 100ms 주기 | Police Active/ETA/Direction | ETH_EmergencyAlert | Active=0이면 Clear 송신 |
 | TASK_006 | EMS_AMB_TX | 100ms 주기 | Ambulance Active/ETA/Direction | ETH_EmergencyAlert | Active=0이면 Clear 송신 |
@@ -301,6 +351,11 @@ Emergency Source (logical terminal)
 
 | 버전 | 날짜 | 변경 사항 |
 |---|---|---|
+| 2.14 | 2026-03-04 | 구현 원칙 정합 보강: 통신 SoT에 `eth_backbone_can_stub.dbc`를 추가하고, CANoe.CAN 환경의 CAN-stub 대체 운반 규칙(0x064/0x11F/0x232/0x313/0x314/0x315)과 Ethernet 논리 계약 우선 해석 원칙을 명시. |
+| 2.13 | 2026-03-03 | 감사 추적성 보강: `Func_101~119` / `Req_101~119` 기능-구현 상세 행을 추가하고, UT/IT 링크(`UT_BASE_*`, `IT_BASE_*`)를 1:1로 연결. |
+| 2.12 | 2026-03-03 | ETH_SWITCH 역할을 구현 기준(경로 상태 모니터링)으로 명확화하고, 코드 아티팩트 경로를 `canoe/src/capl/*` 실제 경로로 정합화. |
+| 2.11 | 2026-03-03 | Req_120~124 추적/타이밍 정합 반영: `Func_120~124` 및 `Var_320~329` 추적 항목 추가, `TASK_003`를 100ms 주기로 정합화, `DOMAIN_BOUNDARY_MGR`를 `MOD_15`로 반영. |
+| 2.10 | 2026-03-02 | ISO26262/ASPICE 운영 경계 반영: SIL 전용 `Verification-Harness` 변수(`V2X/policeDispatch`, `V2X/ambulanceDispatch`, `Driver/gazeActive`, `UiRender/*`)의 비제품 체인 분류를 작성 원칙/4.2 표로 명시. |
 | 2.9 | 2026-03-01 | 상단 공식 표와 아키텍처 요약의 EMS 표기를 `EMS_ALERT` 논리 단말 기준으로 통일하고, 내부 TX/RX 모듈은 상세 추적표에서만 분리 관리. |
 | 1.0 | 2026-02-23 | 초기 생성(구 스코프 기반) |
 | 2.0 | 2026-02-26 | 옵션1 아키텍처 기준으로 전면 재작성. 구버전 OTA/UDS/DoIP 구현 항목 제거, Func_001~043 구현 추적 표 및 타이밍/예외 처리 규칙 정립 |

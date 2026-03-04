@@ -3,8 +3,8 @@
 **Document ID**: PROJ-0302-NFD
 **ISO 26262 Reference**: Part 4, Cl.7 (System Design)
 **ASPICE Reference**: SYS.3 (System Architectural Design)
-**Version**: 3.13
-**Date**: 2026-03-03
+**Version**: 3.16
+**Date**: 2026-03-04
 **Status**: Draft
 **Project Title**: 주행 상황 실시간 경고 시스템
 **Subtitle**: 구간 정보 및 긴급차량 접근 기반 앰비언트·클러스터 경보
@@ -24,12 +24,16 @@
 - 옵션1 아키텍처를 고정한다: `중앙 경고코어 + Ethernet 백본(ETH_SWITCH) + 도메인 게이트웨이 + 도메인 CAN`.
 - 상세 추적 정보(`Flow/Func/Req/주기/활성/해제`)는 하단 표에 분리한다.
 - CAN 신호 원본은 계층 분리로 관리한다: 도메인 프로파일은 `canoe/databases/chassis_can.dbc`, `canoe/databases/powertrain_can.dbc`, `canoe/databases/body_can.dbc`, `canoe/databases/infotainment_can.dbc`, `canoe/databases/test_can.dbc`, `canoe/databases/eth_backbone_can_stub.dbc`를 사용하고, Ethernet 논리 계약은 `canoe/docs/operations/ETH_INTERFACE_CONTRACT.md`를 사용한다.
-- CANoe.CAN 라이선스 환경에서는 Ethernet 일부 경로(E100/E200 모니터링)를 `eth_backbone_can_stub.dbc`로 대체 운반하며, 상위 서비스 계약 SoT는 `ETH_INTERFACE_CONTRACT.md`를 유지한다.
 - 검증 범위는 CANoe SIL, CAN + Ethernet(UDP)만 사용한다.
+- 목표 설계는 옵션1(ETH 백본) 고정이며, CANoe.CAN 라이선스 제약 구간의 SIL 검증은 임시로 CAN 대체 백본을 사용하고 Ethernet 라이선스 확보 후 동일 케이스로 재검증한다.
+- CANoe.CAN 환경에서는 E100/E200 모니터링 경로와 V2 확장 경로 일부를 `eth_backbone_can_stub.dbc`(0x064/0x11F/0x232/0x313/0x314/0x315)로 대체 운반한다.
 - OTA/UDS/DoIP 관련 플로우는 본 문서 범위에서 제외한다.
 - `Flow_009`, `Flow_106`, `Flow_205`는 Validation Harness 경로(검증 전용)이며 양산 서비스 플로우와 구분한다.
 - 제출 전 현대/기아 및 OEM 기준으로 설명/별칭은 정리하되, Flow/Comm/ID/signal 식별자는 SoT 기준으로 고정 유지한다.
-- Vehicle Baseline(Req_101~Req_112) 플로우(`Flow_101~Flow_106`, `Flow_201~Flow_205`)는 본 문서에서 확정 정의하고, DBC는 이 정의를 구현 대상으로 사용한다.
+- ID notation rule (fixed): document primary references use Logical IDs (0xE210/0xE211/0xE212); CANoe SIL execution uses Stub IDs (0x313/0x314/0x315) per canoe/docs/operations/ETH_INTERFACE_CONTRACT.md.
+
+- Vehicle Baseline(Req_101~Req_119) 플로우(`Flow_101~Flow_106`, `Flow_201~Flow_205`)는 본 문서에서 확정 정의하고, DBC는 이 정의를 구현 대상으로 사용한다.
+- V2 확장 요구(`Req_120~Req_124`) 플로우(`Flow_120~Flow_124`)는 구현 활성 상태로 관리하며, 관련 DBC/코드/테스트를 동일 커밋에서 동기화한다.
 - EMS는 상위 문서 레벨에서 논리 단말 `EMS_ALERT`로 표기하고, 상단 표의 `EMS_POLICE_TX/EMS_AMB_TX/EMS_ALERT_RX` 열은 내부 구현 모듈 분해 관점으로만 해석한다.
 
 ---
@@ -123,12 +127,12 @@
 | Test CAN | 0x230 | frmTestResultMsg | 0 | Scenario Result Report | 0 | scenarioResult | Tx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | Event |
 | Test CAN | 0x231 | frmBaseTestResultMsg | 0 | Base Result Report | 0~7 | BaseScenarioId | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | Tx | Event |
 |  |  |  | 1 | Base Result Report | 8 | BaseScenarioResult | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | Tx |  |
-| Ethernet Backbone CAN Stub | 0x064 | frmEmergencyBroadcastMsg | 0 | Emergency Broadcast | 0~3 | VehicleType |  |  |  |  |  |  |  | Tx | Tx | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | CAN-stub, 100ms |
-|  |  |  | 0 | Emergency Broadcast | 4~5 | Status |  |  |  |  |  |  |  | Tx | Tx | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-|  |  |  | 1 | Emergency Broadcast | 8~15 | SourceId |  |  |  |  |  |  |  | Tx | Tx | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-|  |  |  | 2 | Emergency Broadcast | 16~23 | EtaSeconds |  |  |  |  |  |  |  | Tx | Tx | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-|  |  |  | 3 | Emergency Broadcast | 24~27 | Direction |  |  |  |  |  |  |  | Tx | Tx | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| Ethernet Backbone CAN Stub | 0x232 | frmEmergencyMonitorMsg | 0 | Emergency Monitor | 0~7 | EmergencyContext | Rx | Rx |  |  |  |  |  |  |  | Tx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | CAN-stub, 100ms |
+| Ethernet Backbone CAN Stub | 0x064 | frmEmergencyBroadcastMsg | 0 | Emergency Broadcast | 0~3 | emergencyType |  |  |  |  |  |  |  | Tx | Tx | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | CAN-stub, 100ms |
+|  |  |  | 0 | Emergency Broadcast | 4~5 | alertState |  |  |  |  |  |  |  | Tx | Tx | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+|  |  |  | 1 | Emergency Broadcast | 8~15 | sourceId |  |  |  |  |  |  |  | Tx | Tx | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+|  |  |  | 2 | Emergency Broadcast | 16~23 | eta |  |  |  |  |  |  |  | Tx | Tx | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+|  |  |  | 3 | Emergency Broadcast | 24~27 | emergencyDirection |  |  |  |  |  |  |  | Tx | Tx | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| Ethernet Backbone CAN Stub | 0x232 | frmEmergencyMonitorMsg | 0 | Emergency Monitor | 0~7 | emergencyContext | Rx | Rx |  |  |  |  |  |  |  | Tx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | CAN-stub, 100ms |
 |  |  |  | 1 | Emergency Monitor | 8 | TimeoutClearMon | Rx | Rx |  |  |  |  |  |  |  | Tx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 | Powertrain CAN | 0x300 | frmIgnitionEngineMsg | 0 | Ignition/Engine Check | 0 | IgnitionState | Tx |  |  |  |  |  |  |  |  |  |  |  |  |  |  | Rx |  |  |  |  |  |  |  |  |  | CAN, 100ms |
 |  |  |  | 0 | Ignition/Engine Check | 1~2 | EngineState | Tx |  |  |  |  |  |  |  |  |  |  |  |  |  |  | Rx |  |  |  |  |  |  |  |  |  |  |
@@ -297,10 +301,10 @@
 
 | 계층 | 적용 Flow ID | 원본 파일(SoT) | 유지 규칙 |
 |---|---|---|---|
-| Core CAN Profile | Flow_001, Flow_002, Flow_003(CAN), Flow_007(CAN 0x210), Flow_008(CAN 0x220), Flow_009(CAN 0x230) | `canoe/databases/chassis_can.dbc` + `canoe/databases/infotainment_can.dbc` + `canoe/databases/body_can.dbc` + `canoe/databases/test_can.dbc` | 상단 공식표와 동일 ID/Signal 유지 |
+| Core CAN Profile | Flow_001, Flow_002, Flow_003(CAN), Flow_007(CAN 0x210), Flow_008(CAN 0x220), Flow_009(CAN 0x230) | `canoe/databases/chassis_can.dbc` + `canoe/databases/infotainment_can.dbc` + `canoe/databases/body_can.dbc` + `canoe/databases/test_can.dbc` + `canoe/databases/eth_backbone_can_stub.dbc` | 상단 공식표와 동일 ID/Signal 유지(CAN-stub 포함) |
 | Core Ethernet Profile | Flow_001~Flow_008(Ethernet 구간) | `canoe/docs/operations/ETH_INTERFACE_CONTRACT.md` | E100/E200, 0x510/0x511/0x512 계약 우선 |
-| Chassis Domain Profile | Flow_102, Flow_106(일부), Flow_105(헬스 연계), Flow_201 | `canoe/databases/chassis_can.dbc` | 0x100~0x121 (0x11F 제외) 범위 준수 |
-| ETH Backbone CAN Stub Profile | Flow_004, Flow_005, Flow_006, Flow_201(일부) | `canoe/databases/eth_backbone_can_stub.dbc` | 0x064, 0x11F, 0x232 범위 준수 |
+| Chassis Domain Profile | Flow_102, Flow_106(일부), Flow_105(헬스 연계), Flow_201 | `canoe/databases/chassis_can.dbc` | 0x100~0x121(0x11F 제외) 범위 준수 |
+| ETH Backbone CAN Stub Profile | Flow_004, Flow_005, Flow_006, Flow_120, Flow_121, Flow_124, Flow_201(일부) | `canoe/databases/eth_backbone_can_stub.dbc` | 0x064/0x11F/0x232/0x313/0x314/0x315 범위 준수 |
 | Powertrain Domain Profile | Flow_101, Flow_105, Flow_204 | `canoe/databases/powertrain_can.dbc` | 0x300~0x312 범위 준수 |
 | Body Domain Profile | Flow_103, Flow_105, Flow_202 | `canoe/databases/body_can.dbc` | 0x210~0x219, 0x240~0x24D 범위 준수 |
 | Infotainment Domain Profile | Flow_104, Flow_105, Flow_203, Flow_205 | `canoe/databases/infotainment_can.dbc` | 0x110, 0x220~0x228, 0x260~0x26D 범위 준수 |
@@ -320,6 +324,11 @@
 | Flow_007 | Comm_007 | Func_008, Func_009, Func_013, Func_014, Func_015, Func_016, Func_033, Func_034, Func_035, Func_036, Func_037, Func_038, Func_039 | Req_008, Req_009, Req_013, Req_014, Req_015, Req_016, Req_033, Req_034, Req_035, Req_036, Req_037, Req_038, Req_039 | ethSelectedAlertMsg(0xE200), frmAmbientControlMsg(0x210) | WARN_ARB_MGR, BODY_GW | BODY_GW, BCM_AMBIENT_CTRL | Ethernet(UDP) + CAN | 50ms | selectedAlertLevel/selectedAlertType 수신 | timeoutClear=1 또는 기본 상태 복귀 |
 | Flow_008 | Comm_008 | Func_005, Func_019, Func_020, Func_021, Func_026, Func_040 | Req_005, Req_019, Req_020, Req_021, Req_026, Req_040 | ethSelectedAlertMsg(0xE200), frmClusterWarningMsg(0x220) | WARN_ARB_MGR, IVI_GW | IVI_GW, CLU_HMI_CTRL | Ethernet(UDP) + CAN | 50ms | selectedAlertLevel/selectedAlertType 수신 | alertState 해제 또는 문구 만료 |
 | Flow_009 | Comm_009 | Func_041, Func_042, Func_043 | Req_041, Req_042, Req_043 | frmTestResultMsg(0x230) | SIL_TEST_CTRL | SIL_TEST_CTRL(Log/Panel) | CAN | Event | 시나리오 실행 시작 | 판정 결과 기록 완료 (Validation-only) |
+| Flow_120 | Comm_120 | Func_120 | Req_120 | ethEmergencyRiskMsg(0x313) | ADAS_WARN_CTRL | WARN_ARB_MGR, SIL_TEST_CTRL | Ethernet(UDP) | 100ms | emergencyDirection/ETA/vehicleSpeed 갱신 | 위험도 입력 무효 또는 긴급 해제 |
+| Flow_121 | Comm_121 | Func_121 | Req_121 | ethDecelAssistReqMsg(0x314) | WARN_ARB_MGR | CHASSIS_GW, BRAKE_CTRL, SIL_TEST_CTRL | Ethernet(UDP) + CAN | Event + 50ms | proximityRiskLevel 임계 초과 | 임계 미만 또는 failSafeMode=1 |
+| Flow_122 | Comm_122 | Func_122 | Req_122 | ethSelectedAlertMsg(0xE200), frmAmbientControlMsg(0x210), frmClusterWarningMsg(0x220) | WARN_ARB_MGR | BODY_GW, IVI_GW, BCM_AMBIENT_CTRL, CLU_HMI_CTRL | Ethernet(UDP) + CAN | 50ms | decelAssistReq=1 | decelAssistReq=0 또는 긴급 해제 |
+| Flow_123 | Comm_123 | Func_123 | Req_123 | frmPedalInputCanMsg(0x102), frmSteeringCanMsg(0x101), ethDecelAssistReqMsg(0x314) | CHASSIS_GW, WARN_ARB_MGR | WARN_ARB_MGR, DOMAIN_GW_ROUTER, BRAKE_CTRL | CAN + Ethernet(UDP) | Event + 100ms | 운전자 제동/조향 회피 입력 검출 | decelAssistReq=0 전환 완료 |
+| Flow_124 | Comm_124 | Func_124 | Req_124 | frmChassisHealthMsg(0x109), frmBodyHealthMsg(0x219), frmInfotainmentHealthMsg(0x228), ethFailSafeStateMsg(0x315) | CHASSIS_GW, BODY_GW, INFOTAINMENT_GW, DOMAIN_BOUNDARY_MGR | DOMAIN_BOUNDARY_MGR, DOMAIN_GW_ROUTER, WARN_ARB_MGR, BODY_GW, IVI_GW, SIL_TEST_CTRL | CAN + Ethernet(UDP) | 100ms + Event | domainPathStatus=FAILED 또는 forceFailSafe=1 | 경로 복구 + Health 정상화 |
 
 ---
 
@@ -359,11 +368,11 @@
 | Domain Network | Gateway(경계 노드) | 대상 ECU/노드 | DBC 파일(정의) | ID 범위 | 연계 Flow |
 |---|---|---|---|---|---|
 | Core Integration CAN | CHASSIS_GW, INFOTAINMENT_GW, BODY_GW, IVI_GW, ETH_SWITCH | 경고 코어 체인 연계 노드 집합 | `canoe/databases/chassis_can.dbc` + `canoe/databases/infotainment_can.dbc` + `canoe/databases/body_can.dbc` + `canoe/databases/test_can.dbc` + `canoe/databases/eth_backbone_can_stub.dbc` | 0x100/0x101/0x110/0x210/0x220/0x230/0x064/0x11F/0x232 | Flow_001~Flow_009 |
-| Chassis CAN | CHASSIS_GW | ACCEL_CTRL, BRAKE_CTRL, STEERING_CTRL, ADAS_WARN_CTRL 입력 경로 | `canoe/databases/chassis_can.dbc` | 0x100~0x121 (0x11F 제외) | Flow_001, Flow_002, Flow_102, Flow_201 |
+| Chassis CAN | CHASSIS_GW | ACCEL_CTRL, BRAKE_CTRL, STEERING_CTRL, ADAS_WARN_CTRL 입력 경로 | `canoe/databases/chassis_can.dbc` | 0x100~0x121(0x11F 제외) | Flow_001, Flow_002, Flow_102, Flow_106, Flow_201, Flow_121, Flow_123 |
 | Powertrain CAN | DOMAIN_GW_ROUTER | ENGINE_CTRL, TRANSMISSION_CTRL | `canoe/databases/powertrain_can.dbc` | 0x300~0x312 | Flow_101, Flow_105, Flow_204 |
 | Body CAN | BODY_GW | BCM_AMBIENT_CTRL, HAZARD_CTRL, WINDOW_CTRL, DRIVER_STATE_CTRL | `canoe/databases/body_can.dbc` | 0x210~0x219, 0x240~0x24D | Flow_007, Flow_103, Flow_105, Flow_202 |
 | Infotainment CAN | INFOTAINMENT_GW, IVI_GW | NAV_CONTEXT_MGR, CLU_HMI_CTRL, CLUSTER_BASE_CTRL | `canoe/databases/infotainment_can.dbc` | 0x110, 0x220~0x228, 0x260~0x26D | Flow_003, Flow_008, Flow_104, Flow_105, Flow_203, Flow_205 |
-| ETH Backbone CAN Stub | ETH_SWITCH | EMS/ADAS 상태 프레임 대체 운반(라이선스 제약 대응) | `canoe/databases/eth_backbone_can_stub.dbc` | 0x064, 0x11F, 0x232 | Flow_004, Flow_005, Flow_006, Flow_201 |
+| ETH Backbone CAN Stub | ETH_SWITCH | EMS/ADAS 상태 프레임 대체 운반(라이선스 제약 대응) | `canoe/databases/eth_backbone_can_stub.dbc` | 0x064, 0x11F, 0x232, 0x313, 0x314, 0x315 | Flow_004, Flow_005, Flow_006, Flow_120, Flow_121, Flow_124, Flow_201 |
 | Ethernet UDP | ETH_SWITCH | EMS_ALERT(내부: EMS_POLICE_TX/EMS_AMB_TX/EMS_ALERT_RX), WARN_ARB_MGR, GW 집합 | `canoe/docs/operations/ETH_INTERFACE_CONTRACT.md` | 0x510/0x511/0x512/0xE100/0xE200 | Flow_004, Flow_005, Flow_006 |
 
 ---
@@ -386,12 +395,24 @@
 | Flow ID | Comm ID(0303 연계) | Func ID | Req ID | 관련 메시지(ID) | 주 경로 | Period | 상태 |
 |---|---|---|---|---|---|---|---|
 | Flow_201 | Comm_201 | Func_103, Func_104, Func_110 | Req_103, Req_104, Req_110 | frmEpsStateMsg(0x10A), frmAbsStateMsg(0x10B), frmEscStateMsg(0x10C), frmTcsStateMsg(0x10D), frmBrakeTempMsg(0x10E), frmSteeringAngleMsg(0x10F), frmWheelPulseMsg(0x11A), frmSuspensionStateMsg(0x11B), frmTirePressureMsg(0x11C), frmChassisDiagReqMsg(0x11D), frmChassisDiagResMsg(0x11E), frmAdasChassisStatusMsg(0x11F), frmBrakeWearMsg(0x120), frmRoadFrictionMsg(0x121) | Chassis CAN + ETH Backbone CAN Stub(0x11F) -> CHASSIS_GW -> 도메인 연계 노드 | 100ms + Event | Defined |
-| Flow_202 | Comm_202 | Func_106, Func_107, Func_108, Func_111 | Req_106, Req_107, Req_108, Req_111 | frmHvacStateMsg(0x240), frmHvacActuatorMsg(0x241), frmMirrorStateMsg(0x242), frmSeatStateMsg(0x243), frmSeatControlMsg(0x244), frmDoorControlMsg(0x245), frmInteriorLightMsg(0x246), frmRainLightAutoMsg(0x247), frmBcmDiagReqMsg(0x248), frmBcmDiagResMsg(0x249), frmImmobilizerStateMsg(0x24A), frmAlarmStateMsg(0x24B), frmBodyGatewayStateMsg(0x24C), frmBodyComfortStateMsg(0x24D) | Body CAN(차체편의/실내환경/진단) -> BODY_GW -> 출력/상태 노드 | 100ms + Event | Defined |
-| Flow_203 | Comm_203 | Func_109, Func_111 | Req_109, Req_111 | frmAudioFocusMsg(0x260), frmVoiceAssistStateMsg(0x261), frmMapRenderStateMsg(0x262), frmRouteAlertMsg(0x263), frmTrafficEventMsg(0x264), frmPhoneProjectionMsg(0x265), frmClusterNotifMsg(0x266), frmMediaMetaMsg(0x269), frmSpeechTtsStateMsg(0x26A), frmConnectivityStateMsg(0x26B), frmClusterSyncStateMsg(0x26D) | Infotainment CAN(안내/UI/연결상태) -> INFOTAINMENT_GW/IVI_GW -> NAV/HMI | 50/100ms | Defined |
+| Flow_202 | Comm_202 | Func_106, Func_107, Func_108, Func_111, Func_113, Func_114, Func_115, Func_116, Func_117, Func_118 | Req_106, Req_107, Req_108, Req_111, Req_113, Req_114, Req_115, Req_116, Req_117, Req_118 | frmHvacStateMsg(0x240), frmHvacActuatorMsg(0x241), frmMirrorStateMsg(0x242), frmSeatStateMsg(0x243), frmSeatControlMsg(0x244), frmDoorControlMsg(0x245), frmInteriorLightMsg(0x246), frmRainLightAutoMsg(0x247), frmBcmDiagReqMsg(0x248), frmBcmDiagResMsg(0x249), frmImmobilizerStateMsg(0x24A), frmAlarmStateMsg(0x24B), frmBodyGatewayStateMsg(0x24C), frmBodyComfortStateMsg(0x24D) | Body CAN(차체편의/실내환경/진단) -> BODY_GW -> 출력/상태 노드 | 100ms + Event | Defined |
+| Flow_203 | Comm_203 | Func_109, Func_111, Func_119 | Req_109, Req_111, Req_119 | frmAudioFocusMsg(0x260), frmVoiceAssistStateMsg(0x261), frmMapRenderStateMsg(0x262), frmRouteAlertMsg(0x263), frmTrafficEventMsg(0x264), frmPhoneProjectionMsg(0x265), frmClusterNotifMsg(0x266), frmMediaMetaMsg(0x269), frmSpeechTtsStateMsg(0x26A), frmConnectivityStateMsg(0x26B), frmClusterSyncStateMsg(0x26D) | Infotainment CAN(안내/UI/연결상태) -> INFOTAINMENT_GW/IVI_GW -> NAV/HMI | 50/100ms | Defined |
 | Flow_204 | Comm_204 | Func_101, Func_102, Func_110 | Req_101, Req_102, Req_110 | frmEngineTorqueMsg(0x30B), frmEngineLoadMsg(0x30C), frmTransShiftStateMsg(0x30D), frmThermalMgmtStateMsg(0x310), frmEnergyFlowStateMsg(0x311), frmPowertrainCtrlAuthMsg(0x312) | Powertrain CAN(토크/열관리/변속상태) -> DOMAIN_GW_ROUTER -> 엔진/변속 노드 | 100ms | Defined |
 | Flow_205 | Comm_205 | Func_112 | Req_112 | frmIviDiagReqMsg(0x267), frmIviDiagResMsg(0x268), frmIviHealthDetailMsg(0x26C), frmPtDiagReqMsg(0x30E), frmPtDiagResMsg(0x30F) | Test/Diag 경로(SIL_TEST_CTRL <-> 각 도메인 GW) | Event + 100ms | Defined (Validation-only) |
 
-- 주의: `Flow_201~Flow_205`는 문서 기준 설계 고정 항목이며, 대응 DBC 반영은 도메인별 DBC 병렬 작업에서 구현 완료 후 SoT로 동기화한다.
+- 주의: `Flow_201~Flow_205`는 도메인 분리 DBC(`*_can.dbc`)와 동기화된 확정 플로우이며, 변경 시 0303/0304를 동일 커밋에서 함께 갱신한다.
+
+## V2 확장 Flow (Implemented, Flow_120~Flow_124)
+
+| Flow ID | Comm ID(0303 연계) | Func ID | Req ID | 관련 메시지(ID) | 주 경로 | Period | 상태 |
+|---|---|---|---|---|---|---|---|
+| Flow_120 | Comm_120 | Func_120 | Req_120 | ethEmergencyRiskMsg(0x313) | EMS_ALERT(Rx)/ADAS_WARN_CTRL -> WARN_ARB_MGR | 100ms | Implemented |
+| Flow_121 | Comm_121 | Func_121 | Req_121 | ethDecelAssistReqMsg(0x314) | WARN_ARB_MGR -> CHASSIS_GW -> BRAKE_CTRL | Event + 50ms | Implemented |
+| Flow_122 | Comm_122 | Func_122 | Req_122 | ethSelectedAlertMsg(0xE200), frmAmbientControlMsg(0x210), frmClusterWarningMsg(0x220) | WARN_ARB_MGR -> BODY_GW/IVI_GW -> BCM_AMBIENT_CTRL/CLU_HMI_CTRL | 50ms | Implemented |
+| Flow_123 | Comm_123 | Func_123 | Req_123 | frmPedalInputCanMsg(0x102), frmSteeringCanMsg(0x101), ethDecelAssistReqMsg(0x314) | CHASSIS_GW -> WARN_ARB_MGR -> DOMAIN_GW_ROUTER/BRAKE_CTRL | Event + 100ms | Implemented |
+| Flow_124 | Comm_124 | Func_124 | Req_124 | frmChassisHealthMsg(0x109), frmBodyHealthMsg(0x219), frmInfotainmentHealthMsg(0x228), ethFailSafeStateMsg(0x315) | DOMAIN_BOUNDARY_MGR -> DOMAIN_GW_ROUTER -> WARN_ARB_MGR/BODY_GW/IVI_GW | 100ms + Event | Implemented |
+
+- 주의: `Flow_120~Flow_124`는 V2 확장 구현 플로우다. 변경 시 0303/0304/05~07과 코드/DBC를 동일 커밋에서 동기화한다.
 
 ---
 
@@ -399,18 +420,18 @@
 
 | 프로파일 | 원본 파일 | 현재 정의 메시지 수 | ID 범위 |
 |---|---|---|---|
-| Chassis Domain CAN | `chassis_can.dbc` | 23 | 0x100~0x121 (0x11F 제외) |
+| Chassis Domain CAN | `chassis_can.dbc` | 23 | 0x100~0x121(0x11F 제외) |
 | Powertrain Domain CAN | `powertrain_can.dbc` | 19 | 0x300~0x312 |
 | Body Domain CAN | `body_can.dbc` | 24 | 0x210~0x219, 0x240~0x24D |
 | Infotainment Domain CAN | `infotainment_can.dbc` | 24 | 0x110, 0x220~0x228, 0x260~0x26D |
 | Test CAN | `test_can.dbc` | 2 | 0x230~0x231 |
-| ETH Backbone CAN Stub | `eth_backbone_can_stub.dbc` | 3 | 0x064, 0x11F, 0x232 |
-| Ethernet Contract | `ETH_INTERFACE_CONTRACT.md` | 5 타입 | 0x510/0x511/0x512/0xE100/0xE200 |
+| ETH Backbone CAN Stub | `eth_backbone_can_stub.dbc` | 6 | 0x064, 0x11F, 0x232, 0x313, 0x314, 0x315 |
+| Ethernet Contract | `ETH_INTERFACE_CONTRACT.md` | 8 타입 | 0x510/0x511/0x512/0xE100/0xE200/0x313/0x314/0x315 |
 
 | 항목 | 현재 정의(문서/원본) | 확장 목표(Phase-B) | 비고 |
 |---|---|---|---|
-| CAN Message | 95(도메인 확장 설계 기준, ETH-stub 포함) | 90~130 | 메시지 세분화 + 건강상태/진단 채널 확장 |
-| Ethernet Message Type | 5 | 5~12 | UDP 계약 유지, 라우팅/헬스 이벤트 확장 가능 |
+| CAN Message | 98(도메인 확장 설계 + CAN-stub 포함) | 90~130 | 메시지 세분화 + 건강상태/진단 채널 확장 |
+| Ethernet Message Type | 8 | 8~12 | UDP 계약 유지, 리스크/감속요청/Fail-safe 이벤트 포함 |
 | Flow ID | 20(Flow_001~009,101~106,201~205) | 20+ | 서비스/기본기능 분리 유지 |
 | ECU/노드 | 20+ | 24~32 | OEM 명칭 전환 시 식별자 유지 |
 
@@ -425,7 +446,8 @@
 - 타임아웃(1000ms) 해제 Flow가 존재해야 한다.
 - `ETH_SWITCH` 경유 신호가 `BODY_GW/IVI_GW`에서 CAN으로 분배되는 Flow가 존재해야 한다.
 - `speedLimit` 신호가 `Flow_003/Comm_003`에서 `NAV_CONTEXT_MGR`와 `ADAS_WARN_CTRL`로 전달되어야 한다.
-- `Req_101~Req_112`는 `Flow_101~Flow_106`, `Flow_201~Flow_205`에서 누락 없이 연결되어야 한다.
+- `Req_101~Req_119`는 `Flow_101~Flow_106`, `Flow_201~Flow_205`에서 누락 없이 연결되어야 한다.
+- `Req_120~Req_124`는 `Flow_120~Flow_124`로 구현 추적을 유지하고, 변경 시 0303/0304/05~07을 동일 커밋으로 동기화한다.
 
 ---
 
@@ -445,9 +467,12 @@
 
 | 버전 | 날짜 | 변경 사항 |
 |---|---|---|
-| 3.13 | 2026-03-03 | DBC 신호명 정합 보완: `BaseScnResult` 표기를 `BaseScenarioResult`로 동기화. |
-| 3.12 | 2026-03-03 | DBC 실측 재정합: `0x064/0x11F/0x232`를 `eth_backbone_can_stub.dbc` 기준으로 분리 표기하고, Chassis/Test 메시지 수 및 도메인 분리 표를 최신 DBC 구조로 수정. |
-| 3.11 | 2026-03-03 | DBC 실측 정합 반영: `frmEmergencyMonitorMsg(0x232)` 채널을 Chassis CAN으로 정정하고, 하단 통신 규모 표의 `Chassis CAN=25`, `Test CAN=2(0x230~0x231)`로 수정. |
+| 3.16 | 2026-03-04 | DBC SoT 정합 보강: `eth_backbone_can_stub.dbc`를 원본 매핑에 반영하고 0x064/0x11F/0x232(및 0x313/0x314/0x315) CAN-stub 경로를 상단표/도메인표/규모표에 동기화. |
+| 3.15 | 2026-03-03 | ID 표기 기준 고정: 문서 본문은 Logical ID(0xE210/0xE211/0xE212)를 우선 표기하고, CANoe SIL 실행 ID는 Stub(0x313/0x314/0x315)로 병기하도록 작성 원칙을 보강. |
+| 3.14 | 2026-03-03 | V2 확장 플로우를 Implemented 상태로 전환하고 `Flow_120~124` 메시지 ID를 코드/DBC 실값(`0x313/0x314/0x315`) 및 실제 송수신 노드(`WARN_ARB_MGR` 중심)로 정정. |
+| 3.13 | 2026-03-02 | 감사 정합 보강: 옵션1 설계 vs SIL 임시 CAN 대체 백본 검증 경계 문구를 작성 원칙에 추가. |
+| 3.12 | 2026-03-02 | V2 확장 제어 책임 분리 반영: `Flow_121/Flow_123`의 송신 노드를 `DECEL_ASSIST_CTRL`로 조정하고 Chassis CAN 경로 설명을 동기화. |
+| 3.11 | 2026-03-02 | V2 확장(Pre-Activation) 반영: `Flow_120~Flow_124`(근접위험/감속보조/경고동기화/운전자개입해제/도메인단절강등) 추가 및 연계 체크포인트 보강. |
 | 3.10 | 2026-03-02 | 0302/0303 최종 동기화 준비 반영: `Flow_201~Flow_205` 주의 문구를 병렬 작업 기준에서 DBC 동기화 운영 규칙으로 갱신. |
 | 3.9 | 2026-03-02 | V2 추적 밀도 보강 1차: `Flow_202/Flow_203`의 Func/Req 매핑을 `Req_113~Req_119`, `Func_113~Func_119`까지 확장해 Body 확장 기능(HVAC/Seat/Mirror/Door/Wiper-Rain/Security) 및 Audio 상태 체인 정합을 반영. |
 | 1.0 | 2026-02-23 | 초기 생성 |

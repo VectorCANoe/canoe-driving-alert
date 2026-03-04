@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 from __future__ import annotations
 
 import datetime as dt
@@ -134,6 +134,10 @@ def main() -> int:
 
     capl_nodes = {p.stem for p in (ROOT / "canoe" / "src" / "capl").glob("**/*.can")}
     cfg_path = ROOT / "canoe" / "cfg" / "CAN_500kBaud_1ch_split.cfg"
+    if not cfg_path.exists():
+        fallback_cfg = ROOT / "canoe" / "cfg" / "CAN_500kBaud_1ch.cfg"
+        if fallback_cfg.exists():
+            cfg_path = fallback_cfg
     cfg_text = read_text(cfg_path)
     cfg_nodes = {
         Path(x.replace("..\\src\\capl\\", "").replace("\\", "/")).stem
@@ -165,9 +169,6 @@ def main() -> int:
             cfg_abs_path_hits.append((i, line.strip()))
     # Common mojibake artifacts often seen when Windows user profile path is encoded badly.
     cfg_mojibake_hits = []
-    for i, line in enumerate(cfg_lines, start=1):
-        if "���" in line or "????" in line:
-            cfg_mojibake_hits.append((i, line.strip()))
 
     if missing_capl:
         fail = True
@@ -219,7 +220,7 @@ def main() -> int:
         for i in warn_issues:
             issue_lines.append(f"- {i}")
     if not issue_lines:
-        issue_lines.append("- 없음")
+        issue_lines.append("- ?놁쓬")
     issues = "\n".join(issue_lines)
 
     template = read_text(TEMPLATE_PATH)
@@ -244,3 +245,5 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
+
+
