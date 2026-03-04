@@ -3,7 +3,7 @@
 **Document ID**: PROJ-0303-CS
 **ISO 26262 Reference**: Part 6, Cl.7 (Software Architectural Design)
 **ASPICE Reference**: SWE.2 (Software Architectural Design)
-**Version**: 3.16
+**Version**: 3.17
 **Date**: 2026-03-04
 **Status**: Draft
 **Project Title**: 주행 상황 실시간 경고 시스템
@@ -35,6 +35,20 @@
 - Vehicle Baseline(Req_101~Req_119) 통신(`Comm_101~Comm_106`, `Comm_201~Comm_205`)은 본 문서에서 확정 정의하고, 도메인 DBC는 이 정의를 구현 대상으로 사용한다.
 - V2 확장 요구(`Req_120~Req_124`) 통신(`Comm_120~Comm_124`)은 구현 활성 상태로 관리하며, DBC/코드/테스트를 동일 커밋에서 동기화한다.
 - EMS는 상위 문서 레벨에서 논리 단말 `EMS_ALERT`로 표기하고, 내부 구현 모듈(`EMS_POLICE_TX`, `EMS_AMB_TX`, `EMS_ALERT_RX`)은 하단 보강표에서만 분리 관리한다.
+- `test_can.dbc`는 독립 도메인 DBC가 아니라 Validation Harness 공통 프레임(`0x230`, `0x231`) 전용 DBC로 사용한다.
+- 제출 설명 시 `test_can`은 “검증 공통(Test Harness) DBC”라고 명시해 도메인 오해를 방지한다.
+
+---
+
+## CAN ID 배정 정책 (멘토링 대응 팀 룰)
+
+| 규칙 | 정책 |
+|---|---|
+| 도메인 우선 분리 | CAN ID는 도메인별 블록(Chassis/Body/Infotainment/Powertrain/Test)으로 우선 배정한다. |
+| 논리 ID와 SIL Stub 분리 | Ethernet 논리 ID(`0xE100/0xE200/0xE210~0xE212`)와 CANoe SIL Stub ID(`0x064/0x11F/0x232/0x313~0x315`)를 분리 표기한다. |
+| 충돌 회피 | 신규 ID 추가 시 기존 DBC ID와 중복 금지, 진단/검증 예약 구간과 충돌 금지 원칙을 따른다. |
+| 확장성 | 기존 Flow/Comm 체인을 깨지 않도록 Comm 단위로 확장하고, 동일 변경에서 0302/0304/04/05~07 동시 갱신한다. |
+| SoT 고정 | CAN ID SoT는 `canoe/databases/*.dbc`, Ethernet 계약 SoT는 `canoe/docs/operations/ETH_INTERFACE_CONTRACT.md`로 고정한다. |
 
 ---
 
@@ -458,6 +472,7 @@
 
 | 버전 | 날짜 | 변경 사항 |
 |---|---|---|
+| 3.17 | 2026-03-04 | 멘토링 체크리스트 반영: `test_can` 해석(Validation Harness 공통 DBC) 규칙과 CAN ID 배정 팀 룰(도메인/Stub/충돌회피/SoT)을 본문에 명시. |
 | 3.16 | 2026-03-04 | DBC SoT 정합 보강: `eth_backbone_can_stub.dbc`를 통신 원본 매핑에 반영하고 0x064/0x11F/0x232(및 0x313/0x314/0x315) CAN-stub 운반 경로를 상단표/Comm 표/규모표에 동기화. |
 | 3.15 | 2026-03-03 | ID 표기 기준 고정: 문서 본문은 Logical ID(0xE210/0xE211/0xE212)를 우선 표기하고, CANoe SIL 실행 ID는 Stub(0x313/0x314/0x315)로 병기하도록 작성 원칙을 보강. |
 | 3.14 | 2026-03-03 | V2 확장 통신(`Comm_120~124`)을 Implemented 상태로 전환하고 메시지 ID/송수신 노드를 코드/DBC 실값(`0x313/0x314/0x315`, `WARN_ARB_MGR` 중심)으로 정정. |

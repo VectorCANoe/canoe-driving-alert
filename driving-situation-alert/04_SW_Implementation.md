@@ -3,7 +3,7 @@
 **Document ID**: PROJ-04-SI
 **ISO 26262 Reference**: Part 6, Cl.8 (Software Unit Design and Implementation)
 **ASPICE Reference**: SWE.3 (Software Detailed Design and Unit Construction)
-**Version**: 2.14
+**Version**: 2.15
 **Date**: 2026-03-04
 **Status**: Draft
 **Project Title**: 주행 상황 실시간 경고 시스템
@@ -28,6 +28,7 @@
 - `SIL_TEST_CTRL`/`VEHICLE_BASE_TEST_CTRL`는 Validation Harness이며, `ETH_SWITCH`/도메인 게이트웨이의 통신 변환 역할과 분리한다.
 - `project.sysvars`의 `UiRender/*`, `Driver/gazeActive`, `V2X/policeDispatch`, `V2X/ambulanceDispatch`는 Verification-Harness 입력/렌더 변수로 관리하며 제품 Req 체인(01/03/05~07)과 분리한다.
 - CANoe.CAN 환경에서는 Ethernet 일부 경로(E100/E200 모니터링 및 V2 확장)가 CAN-stub(0x064/0x11F/0x232/0x313/0x314/0x315)로 대체 운반되며, 서비스 해석은 Ethernet 논리 계약 SoT를 우선한다.
+- Panel 구성은 `차량 화면 -> 제어 패널 -> 상태 모니터` 우선순위를 적용하고, UI는 표시/자극 전용 계층으로 유지한다.
 
 ---
 
@@ -351,6 +352,7 @@ Emergency Source (logical terminal)
 
 | 버전 | 날짜 | 변경 사항 |
 |---|---|---|
+| 2.15 | 2026-03-04 | 멘토링 체크리스트 반영: Panel 구성 우선순위(`차량 화면 -> 제어 패널 -> 상태 모니터`)와 UI-로직 분리 원칙을 작성 원칙에 명시. |
 | 2.14 | 2026-03-04 | 구현 원칙 정합 보강: 통신 SoT에 `eth_backbone_can_stub.dbc`를 추가하고, CANoe.CAN 환경의 CAN-stub 대체 운반 규칙(0x064/0x11F/0x232/0x313/0x314/0x315)과 Ethernet 논리 계약 우선 해석 원칙을 명시. |
 | 2.13 | 2026-03-03 | 감사 추적성 보강: `Func_101~119` / `Req_101~119` 기능-구현 상세 행을 추가하고, UT/IT 링크(`UT_BASE_*`, `IT_BASE_*`)를 1:1로 연결. |
 | 2.12 | 2026-03-03 | ETH_SWITCH 역할을 구현 기준(경로 상태 모니터링)으로 명확화하고, 코드 아티팩트 경로를 `canoe/src/capl/*` 실제 경로로 정합화. |

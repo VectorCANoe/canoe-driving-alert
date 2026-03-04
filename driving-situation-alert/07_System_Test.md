@@ -3,7 +3,7 @@
 **Document ID**: PROJ-07-ST
 **ISO 26262 Reference**: Part 4, Cl.10 (System Integration and System Qualification Test)
 **ASPICE Reference**: SYS.5 (System Qualification Test)
-**Version**: 5.13
+**Version**: 5.14
 **Date**: 2026-03-03
 **Status**: Draft
 **Project Title**: 주행 상황 실시간 경고 시스템
@@ -28,6 +28,7 @@
 - `ST_SIL_001`, `ST_SIL_002`, `ST_RESULT_001`, `ST_BASE_DIAG_001`은 Validation Harness 기반 검증 시나리오(검증 전용)다.
 - ST 증적(로그/캡처/리포트)은 `canoe/logging/evidence/ST/` 경로 규칙으로 관리한다.
 - V2 확장 요구(`Req_120~Req_124`)는 구현 활성 상태로 ST 항목을 분리 관리하며, SIL 시나리오 15~19와 연계해 검증한다.
+- Panel 검증은 `차량 화면 -> 제어 패널 -> 상태 모니터` 순서로 수행하고, 시스템 동작 확인은 차량 화면 기준으로 판정한다.
 
 ---
 
@@ -101,6 +102,7 @@
 
 | 버전 | 날짜 | 변경 사항 |
 |---|---|---|
+| 5.14 | 2026-03-04 | 멘토링 체크리스트 반영: ST 작성 원칙에 Panel 검증 우선순위(`차량 화면 -> 제어 패널 -> 상태 모니터`)를 추가. |
 | 5.13 | 2026-03-03 | V2 ST를 구현 활성 상태로 전환하고 `ST_V2_RISK_001`, `ST_V2_FAILSAFE_001` 상태를 Ready로 갱신. |
 | 5.12 | 2026-03-02 | V2 확장(Pre-Activation) ST 반영: `ST_V2_RISK_001`, `ST_V2_FAILSAFE_001` 추가 및 `Req_120~Req_124` 추적 체인(`IT_V2_RISK_001`, `IT_V2_FAILSAFE_001`) 연결. |
 | 5.11 | 2026-03-02 | 작성 원칙에 CANoe.CAN 실행 제약 임시 주석을 추가하고, `ST_SIL_002` 시나리오/합격기준에 CAN 대체 백본 조건을 병기. |
