@@ -5,6 +5,17 @@
 작성 주체: 문서작성팀  
 대상: CANoe 개발팀
 
+## 0. 실행 우선순위 (필수 고정)
+
+본 변경은 아래 순서를 반드시 지킨다.
+
+1. 도메인/게이트웨이 구조 유지(Ownership/경계 불변)
+2. 메시지 우선순위 기반 ID 정책 확정(Tier/Group)
+3. 매핑 매트릭스 + 승인 게이트 기반 변경 통제(G1~G4)
+4. 위 1~3이 확정된 뒤 `3/3/5` 전면 재할당 실행
+
+즉, `3/3/5`는 단독 목표가 아니라 상위 3개 원칙을 구현하는 수단이다.
+
 ## 1. 목적
 
 - 현행 도메인 블록 대역형 ID 정책을 종료하고, 11-bit `3/3/5` 인코딩으로 전면 전환한다.
@@ -31,7 +42,7 @@
 
 ## 4. 필수 수행 항목
 
-1. `Old ID -> New ID` 매핑표 98건 작성/확정  
+1. Annex A 파일(`driving-situation-alert/tmp/ID_335_AnnexA_Mapping_98_Template.csv`)에 `Old -> New` 98건 작성/확정  
 2. 활성 DBC 6종 `BO_` ID 전량 교체  
 3. CAPL/panel/sysvar/log raw ID 상수 전수 교체  
 4. 문서 체인 동시 반영:
@@ -40,12 +51,18 @@
    - ID 중복 0건
    - Old ID 잔존 참조 0건
    - SIL 시나리오 결과 동등
+6. 승인 게이트 준수:
+   - G1 Mapping Freeze
+   - G2 Implementation Freeze
+   - G3 Cutover Approval
+   - G4 Post-Cutover Audit
 
 ## 5. 수용 기준 (Acceptance)
 
 1. 정책 정합성
 - 모든 활성 ID가 `3/3/5` 해석 가능
 - Tier/Group/Index 규칙 위반 0건
+- Tier 우선순위 역전 0건(핵심 제어 프레임의 저우선 Tier 배치 금지)
 
 2. 기능 동등성
 - 기존 시나리오 Pass/Fail 결과 동등
@@ -60,8 +77,29 @@
 2. DBC 변경 diff 및 충돌 검사 결과
 3. CAPL/panel/sysvar/log 변경 파일 목록
 4. 회귀 결과 요약(핵심 시나리오, 실패/리스크 포함)
+5. Gate 승인 증빙(G1~G4) 및 승인자/승인일
 
-## 7. 비고
+## 7. Cutover/Rollback 규칙
+
+0. 롤백 기준점(개발팀 확정)
+- 백업 브랜치: `backup/rollback-20260305-160559`
+- 원격 브랜치: `origin/backup/rollback-20260305-160559`
+- 기준 커밋: `71d4402`
+
+1. Cutover 전
+- Annex A 98건 `Approved` 완료
+- 충돌 검사 0건, 핵심 시나리오 PASS
+
+2. Rollback 조건
+- 충돌 발생
+- Tier 우선순위 역전
+- 핵심 시나리오 Fail
+
+3. Rollback 방식
+- Cutover 직전 Git tag 기준 즉시 복귀
+- DBC/CAPL/문서를 동일 커밋 단위로 원복
+
+## 8. 비고
 
 - 본 지시는 기능 추가가 아니라 ID 스키마 전면 재정렬이다.
 - `canoe/cfg` 변경은 GUI-first 운영 원칙에 따라 개발팀에서 수행한다.

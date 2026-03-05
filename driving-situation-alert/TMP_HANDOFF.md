@@ -74,7 +74,7 @@
 - 00c_Req_Classification_and_Safety_Profile.md: Version 1.5 (Draft, Internal Baseline Locked)
 - 00d_HARA_Worksheet.md: Version 1.3 (Draft, Internal Baseline Approved)
 - 00e_ECU_Naming_Standard.md: Version 2.0 (Released, SoT Fixed)
-- 00f_CAN_ID_Allocation_Standard.md: Version 2.0 (Released, SoT Fixed)
+- 00f_CAN_ID_Allocation_Standard.md: Version 3.2 (Draft, Layered 3/3/5 Full Renumbering Gate Pending)
 - 01_Requirements.md: Version 5.18 (Draft)
 - 02_Concept_design.md: Version 2.6 (In Progress, Figure Build)
 - 03_Function_definition.md: Version 4.24 (Draft)
@@ -97,6 +97,7 @@
 4. Apply naming/ID SoT:
    - Use `00e_ECU_Naming_Standard.md` as canonical ECU naming policy
    - Use `00f_CAN_ID_Allocation_Standard.md` as canonical CAN-ID policy
+   - Finalize Annex A mapping(`tmp/ID_335_AnnexA_Mapping_98_Template.csv`) with G1~G4 gate approvals before cutover
    - Use `00g_RTE_Name_Mapping_Standard.md` as canonical RTE name mapping policy
    - Keep Canonical node names in trace docs; do not introduce unofficial abbreviations
 5. Keep SoT sync rule active:
