@@ -37,7 +37,7 @@
 | M40-02 | 도메인 DBC 분리/명명 정리 | 도메인 DBC 구조 유지 + `test_can` 제출 해석 문구 고정 | [~] | `canoe/databases/*.dbc`, `driving-situation-alert/0303_Communication_Specification.md` |
 | M40-03 | Ethernet SoT 분리 | CAN DBC와 ETH 계약 원본을 분리 명시 | [x] | `canoe/docs/operations/ETH_INTERFACE_CONTRACT.md`, `driving-situation-alert/0302_NWflowDef.md`, `driving-situation-alert/0303_Communication_Specification.md` |
 | M40-04 | test_can 해석 정리 | `test_can`을 공통/검증용으로 정의하고 오해 방지 설명 확보 | [~] | `driving-situation-alert/0303_Communication_Specification.md` (명칭 최종 확정/발표 문구 고정 잔여) |
-| M40-05 | 네트워크 도식 수정 | Ethernet 버스선 제거 + 스타형 연결 그림 반영 | [~] | `driving-situation-alert/02_Concept_design.md`, `driving-situation-alert/tmp/02_networkflow.png` |
+| M40-05 | 네트워크 도식 수정 | Ethernet 버스선 제거 + 스타형 연결 그림 반영 | [~] | `driving-situation-alert/02_Concept_design.md`, `driving-situation-alert/tmp/assets/current/02_networkflow.png` |
 | M40-06 | Panel 우선순위 반영 | `차량 화면(1) / 제어패널(2) / 상태모니터(3)` 기준을 설계/테스트에 반영 | [~] | `driving-situation-alert/04_SW_Implementation.md`, `driving-situation-alert/07_System_Test.md` (캡처 증빙 링크 잔여) |
 | M40-07 | KPI 과분석 배제 | 분석 지표 중심 대신 `설계대로 동작 검증` 중심으로 정리 | [x] | `driving-situation-alert/05_Unit_Test.md`, `driving-situation-alert/06_Integration_Test.md`, `driving-situation-alert/07_System_Test.md` |
 | M40-08 | Req 성격 분리 반영 | `Req_041~043`, `Req_112`를 검증환경/품질 성격으로 명시 | [x] | `driving-situation-alert/01_Requirements.md`, `driving-situation-alert/00c_Req_Classification_and_Safety_Profile.md` |

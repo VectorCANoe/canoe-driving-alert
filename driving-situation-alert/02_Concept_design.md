@@ -16,8 +16,8 @@
 
 ---
 
-![alt text](tmp/02_concept.png)
-![alt text](tmp/02_networkflow.png)
+![alt text](tmp/assets/current/02_concept.png)
+![alt text](tmp/assets/current/02_networkflow.png)
 
 ## 2. 기준 아키텍처 (고정)
 
