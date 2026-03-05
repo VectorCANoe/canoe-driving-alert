@@ -3,7 +3,7 @@
 **Document ID**: PROJ-03-FD
 **ISO 26262 Reference**: Part 4, Cl.7 (System Design)
 **ASPICE Reference**: SYS.3 (System Architectural Design)
-**Version**: 4.23
+**Version**: 4.24
 **Date**: 2026-03-05
 **Status**: Draft
 **Project Title**: 주행 상황 실시간 경고 시스템
@@ -20,7 +20,8 @@
 - 차량 기본 기능 확장 요구(`Req_101~Req_119`)는 `Func_101~Func_119`로 별도 관리한다.
 - V2 확장 요구(`Req_120~Req_124`)는 `Func_120~Func_124`로 별도 관리하며, 본 문서에서는 구현 활성 상태로 유지한다.
 - 제출 전 현대/기아 및 OEM 기준 명칭으로 일괄 대체하되, 기능 ID/추적 ID는 유지한다.
-- 명명 규칙 SoT는 `00e_ECU_Naming_Standard.md`, ID 규칙 SoT는 `00f_CAN_ID_Allocation_Standard.md`를 따른다.
+- ID 규칙 SoT는 `00f_CAN_ID_Allocation_Standard.md`를 따른다.
+- ECU 명칭은 Canonical(`UPPER_SNAKE_CASE`)만 사용하며, 명명 규칙 본문은 `00e/0301/04`에서만 관리한다.
 - 네트워크 구현은 옵션1 아키텍처를 고정 적용한다: `ETH_SWITCH + CHASSIS_GW/INFOTAINMENT_GW/BODY_GW/IVI_GW + 도메인 CAN`.
 - 목표 설계는 옵션1(ETH 백본) 고정이며, CANoe.CAN 라이선스 제약 구간의 SIL 검증은 임시로 CAN 대체 백본을 사용하고 Ethernet 라이선스 확보 후 동일 케이스로 재검증한다.
 - `WARN_ARB_MGR`의 중재는 서비스(QoS) 우선순위 중재이며, CAN 비트 레벨 arbitration과 구분해 해석한다.
@@ -207,6 +208,7 @@
 
 | 버전 | 날짜 | 변경 사항 |
 |---|---|---|
+| 4.24 | 2026-03-05 | ECU 명칭 관리 경계를 정리해 03 문서에서는 Canonical 표기만 유지하고, 명명 규칙 본문 관리 위치를 `00e/0301/04`로 고정. |
 | 4.23 | 2026-03-05 | Validation Harness 노드 명칭을 `VAL_SCENARIO_CTRL`/`VAL_BASELINE_CTRL`로 정리해 Req_041~043, Req_112 추적 표기 일관성을 강화. |
 | 4.22 | 2026-03-03 | 중간감사 대응 보강: 추적 체인을 `Req -> Func -> Flow -> Comm -> Var -> Code -> UT/IT/ST`로 통일하고, Vehicle Baseline `Req_101~Req_112` 검증 ID를 도메인 단위(`ST_BASE_PT/CH/BODY/IVI`, `IT_BASE_GW`, `ST_BASE_DIAG`)로 세분화. |
 | 4.21 | 2026-03-03 | `Func_121/Func_123` 소유 노드를 `WARN_ARB_MGR`로 정정하고 V2 확장(`Func_120~124`) 상태를 Implemented로 전환. Chassis 인벤토리에서 미구현 `DECEL_ASSIST_CTRL` 제거. |

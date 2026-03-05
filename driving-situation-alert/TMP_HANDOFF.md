@@ -41,6 +41,9 @@
 - Keep separation:
   - `01 = What`
   - `03+ = How`
+- ECU naming governance is fixed:
+  - Explicit rule management only in `00e`, `0301`, `04`
+  - Other chain docs use Canonical names only
 - Random Req audit must not break the trace chain.
 - Use V-model in both directions:
   - design to test
@@ -70,14 +73,16 @@
 - 00b_Project_Scope.md: Version 2.8 (Released)
 - 00c_Req_Classification_and_Safety_Profile.md: Version 1.5 (Draft, Internal Baseline Locked)
 - 00d_HARA_Worksheet.md: Version 1.3 (Draft, Internal Baseline Approved)
+- 00e_ECU_Naming_Standard.md: Version 2.0 (Released, SoT Fixed)
+- 00f_CAN_ID_Allocation_Standard.md: Version 1.0 (Draft)
 - 01_Requirements.md: Version 5.18 (Draft)
 - 02_Concept_design.md: Version 2.6 (In Progress, Figure Build)
-- 03_Function_definition.md: Version 4.23 (Draft)
-- 0301_SysFuncAnalysis.md: Version 3.20 (Draft)
+- 03_Function_definition.md: Version 4.24 (Draft)
+- 0301_SysFuncAnalysis.md: Version 3.22 (Draft)
 - 0302_NWflowDef.md: Version 3.17 (Draft)
-- 0303_Communication_Specification.md: Version 3.18 (Draft)
+- 0303_Communication_Specification.md: Version 3.19 (Draft)
 - 0304_System_Variables.md: Version 2.18 (Draft)
-- 04_SW_Implementation.md: Version 2.16 (Draft)
+- 04_SW_Implementation.md: Version 2.17 (Draft)
 - 05_Unit_Test.md: Version 2.16 (Draft)
 - 06_Integration_Test.md: Version 4.14 (Draft)
 - 07_System_Test.md: Version 5.14 (Draft)

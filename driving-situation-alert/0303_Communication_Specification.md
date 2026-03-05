@@ -3,7 +3,7 @@
 **Document ID**: PROJ-0303-CS
 **ISO 26262 Reference**: Part 6, Cl.7 (Software Architectural Design)
 **ASPICE Reference**: SWE.2 (Software Architectural Design)
-**Version**: 3.18
+**Version**: 3.19
 **Date**: 2026-03-05
 **Status**: Draft
 **Project Title**: 주행 상황 실시간 경고 시스템
@@ -42,7 +42,7 @@
 
 ## CAN ID 배정 정책 (Project SoT)
 
-- ID 상위 SoT는 `00f_CAN_ID_Allocation_Standard.md`, 명명 상위 SoT는 `00e_ECU_Naming_Standard.md`를 따른다.
+- ID 상위 SoT는 `00f_CAN_ID_Allocation_Standard.md`를 따른다.
 - 본 장은 통신 스펙 관점의 실행 규칙만 요약한다.
 
 | 규칙 | 정책 |
@@ -478,6 +478,7 @@
 
 | 버전 | 날짜 | 변경 사항 |
 |---|---|---|
+| 3.19 | 2026-03-05 | 통신 문서 경계 정리: 본 문서에서는 CAN ID/메시지 규칙만 명시하고 ECU 명명 규칙 본문은 `00e/0301/04` 관리 체계를 따르도록 정리. |
 | 3.18 | 2026-03-05 | Validation 결과 프레임(`0x230`,`0x231`)의 관리 기준을 `chassis_can.dbc` 통합으로 전환하고 Validation 노드 명칭(`VAL_*`) 및 Comm 매체 표기를 정합화. |
 | 3.17 | 2026-03-04 | 멘토링 체크리스트 반영: `test_can` 해석(Validation Harness 공통 DBC) 규칙과 CAN ID 배정 팀 룰(도메인/Stub/충돌회피/SoT)을 본문에 명시. |
 | 3.16 | 2026-03-04 | DBC SoT 정합 보강: `eth_backbone_can_stub.dbc`를 통신 원본 매핑에 반영하고 0x064/0x11F/0x232(및 0x313/0x314/0x315) CAN-stub 운반 경로를 상단표/Comm 표/규모표에 동기화. |

@@ -3,7 +3,7 @@
 **Document ID**: PROJ-0301-SFA
 **ISO 26262 Reference**: Part 4, Cl.7 (System Design)
 **ASPICE Reference**: SYS.3 (System Architectural Design)
-**Version**: 3.20
+**Version**: 3.22
 **Date**: 2026-03-05
 **Status**: Draft
 **Project Title**: 주행 상황 실시간 경고 시스템
@@ -231,6 +231,9 @@
 
 - 본 장의 상세 기준 SoT는 `00e_ECU_Naming_Standard.md`를 따른다.
 - Canonical ECU 명명표와 약어 정책은 `00e_ECU_Naming_Standard.md`의 `4. ECU 명명표 (Canonical Matrix)`를 기준으로 적용한다.
+- AUTOSAR 연계 구현은 `00e_ECU_Naming_Standard.md`의 `3.5 RTE Name Mapping 규칙`을 함께 적용한다.
+- 신규 ECU/인터페이스 추가 시 Canonical + shortName + 대표 RTE 생성명 2건을 동시 등록하고, `00e`의 길이 예산 규칙을 검토한다.
+- ECU 명명 규칙 본문은 `00e/0301/04`에서만 명시 관리하며, 타 체인 문서는 Canonical 명칭 사용만 유지한다.
 - 본 문서는 추적 체인 일관성을 위해 현행 Canonical 노드명을 유지한다.
 - 팀원 제안 축약명은 참고 입력으로만 사용하고, 공식명 변경은 00e 절차 승인 후 일괄 반영한다.
 
@@ -258,6 +261,7 @@
 
 | 버전 | 날짜 | 변경 사항 |
 |---|---|---|
+| 3.22 | 2026-03-05 | ECU 명명 거버넌스를 `00e/0301/04` 명시 관리 체계로 고정하고, 신규 ECU 등록 시 Canonical+shortName+RTE 샘플 등록 규칙을 명문화. |
 | 3.20 | 2026-03-05 | Validation Harness 노드 명칭을 `VAL_SCENARIO_CTRL`/`VAL_BASELINE_CTRL`로 정리하고 `VAL_*` 접두 규칙으로 표기 통일. |
 | 3.19 | 2026-03-03 | ETH_SWITCH 역할을 시스템 관점으로 명확화하고, 구현 관점(헬스 모니터링)은 04 문서에서 분리 관리하도록 정합화. |
 | 3.18 | 2026-03-03 | V2 확장 `Func_121/Func_123` 노드 소유를 `WARN_ARB_MGR`로 정정하고, 노드 표/Req-Func/시나리오 체인을 코드 구현 기준으로 동기화. |
