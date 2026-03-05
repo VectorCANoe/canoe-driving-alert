@@ -105,38 +105,57 @@ def main() -> int:
     # Implementation checks
     expected_nodes = {
         "ADAS_WARN_CTRL",
-        "NAV_CONTEXT_MGR",
+        "NAV_CTX_MGR",
         "WARN_ARB_MGR",
         "EMS_POLICE_TX",
         "EMS_AMB_TX",
         "EMS_ALERT_RX",
-        "BCM_AMBIENT_CTRL",
+        "AMBIENT_CTRL",
         "CLU_HMI_CTRL",
         "VAL_SCENARIO_CTRL",
         "VAL_BASELINE_CTRL",
-        "CHASSIS_GW",
+        "CHS_GW",
         "INFOTAINMENT_GW",
         "BODY_GW",
         "IVI_GW",
-        "ETH_SWITCH",
-        "DOMAIN_GW_ROUTER",
+        "ETH_SW",
+        "DOMAIN_ROUTER",
         "DOMAIN_BOUNDARY_MGR",
-        "ENGINE_CTRL",
-        "TRANSMISSION_CTRL",
+        "ENG_CTRL",
+        "TCM",
         "ACCEL_CTRL",
-        "BRAKE_CTRL",
-        "STEERING_CTRL",
+        "BRK_CTRL",
+        "STEER_CTRL",
         "HAZARD_CTRL",
         "WINDOW_CTRL",
-        "DRIVER_STATE_CTRL",
-        "CLUSTER_BASE_CTRL",
+        "DRV_STATE_MGR",
+        "CLU_BASE_CTRL",
     }
     alias_to_canonical = {
+        # Validation aliases
         "SIL_TEST_CTRL": "VAL_SCENARIO_CTRL",
         "VEHICLE_BASE_TEST_CTRL": "VAL_BASELINE_CTRL",
+        # Canonical migration aliases
+        "NAV_CONTEXT_MGR": "NAV_CTX_MGR",
+        "CHASSIS_GW": "CHS_GW",
+        "ETH_SWITCH": "ETH_SW",
+        "DOMAIN_GW_ROUTER": "DOMAIN_ROUTER",
+        "BRAKE_CTRL": "BRK_CTRL",
+        "STEERING_CTRL": "STEER_CTRL",
+        "BCM_AMBIENT_CTRL": "AMBIENT_CTRL",
+        "DRIVER_STATE_CTRL": "DRV_STATE_MGR",
+        "CLUSTER_BASE_CTRL": "CLU_BASE_CTRL",
+        "ENGINE_CTRL": "ENG_CTRL",
+        "TRANSMISSION_CTRL": "TCM",
+        "ACCL_CTRL": "ACCEL_CTRL",
+        "STRG_CTRL": "STEER_CTRL",
     }
 
-    capl_nodes_raw = {p.stem for p in (ROOT / "canoe" / "src" / "capl").glob("**/*.can")}
+    capl_nodes_raw = {
+        p.stem
+        for p in (ROOT / "canoe" / "src" / "capl").glob("**/*.can")
+        if "v1_legacy" not in p.parts
+    }
     capl_nodes = {alias_to_canonical.get(n, n) for n in capl_nodes_raw}
     cfg_candidates = [
         ROOT / "canoe" / "cfg" / "CAN_500kBaud_1ch_split.cfg",
@@ -245,7 +264,7 @@ def main() -> int:
         for i in warn_issues:
             issue_lines.append(f"- {i}")
     if not issue_lines:
-        issue_lines.append("- ?놁쓬")
+        issue_lines.append("- 없음")
     issues = "\n".join(issue_lines)
 
     if TEMPLATE_PATH.exists():
