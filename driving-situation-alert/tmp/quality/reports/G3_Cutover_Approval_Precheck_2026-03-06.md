@@ -38,11 +38,13 @@
   - `Test::forceFailSafe = 0`
 
 ## Gate decision
-- **Status: PASS (G3 Cutover Approval ready)**  
+- **Status: CLOSED (G3 Cutover Approval Completed)**  
+- Closed date: `2026-03-06`
+- Rollback reference baseline commit: `d7e2a70fa3cf40351a252e28d12cca4d288869c0` (`2026-03-06T03:12:02+09:00`)
 - G4(Post-Cutover Audit) 진행 전 제출 패키지:
   1. Annex A freeze CSV (`ID_335_AnnexA_Mapping_98_Template.csv`)
   2. Gate 결과 로그 (`doc_code_sync_gate`, `check_capl_sync`, `cfg_hygiene_gate`)
   3. 런타임 증적(본 보고서 + GUI 캡처)
 
 ## Note
-- 본 보고서는 G3 승인 증적 문서이며, 최종 승인 권한은 PM/QA 게이트 리뷰에 있음.
+- 본 보고서는 G3 종료 증적 문서이며, G4는 전체 개발 완료 시점까지 보류(HOLD)한다.

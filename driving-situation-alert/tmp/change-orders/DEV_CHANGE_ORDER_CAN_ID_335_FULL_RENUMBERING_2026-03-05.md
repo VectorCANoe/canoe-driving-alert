@@ -101,12 +101,25 @@
 4. 회귀 결과 요약(핵심 시나리오, 실패/리스크 포함)
 5. Gate 승인 증빙(G1~G4) 및 승인자/승인일
 
+## 6.1 Gate 상태 스냅샷 (2026-03-06)
+
+| Gate | 상태 | 비고 |
+|---|---|---|
+| G1 Mapping Freeze | Closed | Annex A 98건 `Approved`, 중복/공백 없음 |
+| G2 Implementation Freeze | Closed | DBC/CAPL/문서 동기화 및 품질 게이트 PASS |
+| G3 Cutover Approval | Closed | 런타임 증적 포함 승인 증빙 완료 |
+| G4 Post-Cutover Audit | Hold | 전체 개발 종료 전까지 보류 |
+
 ## 7. Cutover/Rollback 규칙
 
-0. 롤백 기준점(개발팀 확정)
-- 백업 브랜치: `backup/rollback-20260305-160559`
-- 원격 브랜치: `origin/backup/rollback-20260305-160559`
-- 기준 커밋: `71d4402`
+0. 롤백 기준점(현행 기록)
+- 기준 커밋: `d7e2a70fa3cf40351a252e28d12cca4d288869c0`
+- 기록 시각: `2026-03-06T03:12:02+09:00`
+- 기준 의미: G3 종료/ G4 보류 전환 시점의 운영 기준(main)
+- 과거 백업 참고:
+  - 백업 브랜치: `backup/rollback-20260305-160559`
+  - 원격 브랜치: `origin/backup/rollback-20260305-160559`
+  - 기준 커밋: `71d4402`
 
 1. Cutover 전
 - Annex A 98건 `Approved` 완료

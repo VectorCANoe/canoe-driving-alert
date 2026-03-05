@@ -42,5 +42,10 @@
 - GUI-first 원칙에 따라 `*.cfg/*.cfg.ini/*.stcfg`는 GUI에서만 최종 저장/수정한다.
 
 ## Decision
-- **G4 status: READY FOR QA SIGN-OFF**
-- 현재 기준으로 3/3/5 Cutover 이후 운영 기준(main) 유지 가능.
+- **G4 status: HOLD (Deferred)**
+- Hold reason: 전체 개발 범위가 아직 종료되지 않아 Post-Cutover 최종 감사를 지금 시점에 닫지 않는다.
+- Reopen criteria:
+  1. 잔여 개발 범위가 `main`에 반영 완료될 것
+  2. `check_capl_sync.py`, `doc_code_sync_gate.py`, `cfg_hygiene_gate.py` 재실행 PASS
+  3. 런타임(COM) 증적을 최신 구성으로 재채집하고 PM/QA 최종 리뷰 완료
+- 현재 기준으로 3/3/5 Cutover 이후 운영 기준(main)은 유지 가능하며, G4는 조건 충족 시 재개한다.

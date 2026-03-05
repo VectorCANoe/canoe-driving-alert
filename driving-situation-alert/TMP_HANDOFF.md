@@ -74,7 +74,7 @@
 - 00c_Req_Classification_and_Safety_Profile.md: Version 1.5 (Draft, Internal Baseline Locked)
 - 00d_HARA_Worksheet.md: Version 1.3 (Draft, Internal Baseline Approved)
 - 00e_ECU_Naming_Standard.md: Version 2.0 (Released, SoT Fixed)
-- 00f_CAN_ID_Allocation_Standard.md: Version 3.2 (Draft, Layered 3/3/5 Full Renumbering Gate Pending)
+- 00f_CAN_ID_Allocation_Standard.md: Version 3.3 (Draft, Policy SoT)
 - 01_Requirements.md: Version 5.18 (Draft)
 - 02_Concept_design.md: Version 2.6 (In Progress, Figure Build)
 - 03_Function_definition.md: Version 4.24 (Draft)
@@ -86,7 +86,7 @@
 - 05_Unit_Test.md: Version 2.16 (Draft)
 - 06_Integration_Test.md: Version 4.14 (Draft)
 - 07_System_Test.md: Version 5.14 (Draft)
-- Development Baseline Commit: `cef654f` (G3 PASS + G4 audit evidence prepared, 2026-03-06)
+- Development Baseline Commit: `d7e2a70` (G3 CLOSED + G4 HOLD, 2026-03-06)
 
 ## 7) Immediate Next Steps
 1. Finalize `02_Concept_design.md` figure evidence and keep star topology consistency.
@@ -98,7 +98,7 @@
 4. Apply naming/ID SoT:
    - Use `00e_ECU_Naming_Standard.md` as canonical ECU naming policy
    - Use `00f_CAN_ID_Allocation_Standard.md` as canonical CAN-ID policy
-   - Finalize Annex A mapping(`tmp/ID_335_AnnexA_Mapping_98_Template.csv`) with G1~G4 gate approvals before cutover
+   - Gate status 운영: G1/G2/G3 closed, G4 hold(전체 개발 종료 후 재개)
    - Use `00g_RTE_Name_Mapping_Standard.md` as canonical RTE name mapping policy
    - Keep Canonical node names in trace docs; do not introduce unofficial abbreviations
 5. Keep SoT sync rule active:
