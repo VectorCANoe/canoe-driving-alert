@@ -76,17 +76,17 @@
 
 ### 4.4 Arbitration Scope and Constraints (Normative)
 
-- This standard separates bus-level arbitration from application-level arbitration.
-- Bus arbitration scope (CAN controller / protocol level):
-  - Arbitration priority SHALL be determined only by CAN identifier value.
-  - Payload signals/bit-fields SHALL NOT affect bus arbitration order.
-  - In this project, once IDs are assigned, effective bus priority SHALL be interpreted as `Tier -> Group -> Index`.
-- Application arbitration scope (software logic level):
-  - Warning/decel/fail-safe decisions SHALL be determined by payload signals, timers, and state logic.
-  - Application arbitration MAY change feature state/output, but SHALL NOT override bus-level arbitration order.
-- Design consistency rule:
-  - Safety-critical paths SHALL satisfy both application urgency and bus-priority assignment.
-  - If an urgent function is mapped to a lower bus priority than required, the ID mapping SHALL be corrected via Annex A and gate review (G1~G4).
+- 본 표준은 버스 레벨 중재와 애플리케이션 레벨 중재를 분리하여 정의한다.
+- 버스 중재 범위(CAN 컨트롤러/프로토콜 레벨):
+  - 중재 우선순위는 CAN Identifier 값으로만 결정되어야 한다(SHALL).
+  - Payload 신호/비트필드는 버스 중재 순서에 영향을 주어서는 안 된다(SHALL NOT).
+  - 본 프로젝트에서 ID 배정 이후의 버스 우선순위 해석은 `Tier -> Group -> Index` 순서를 따른다.
+- 애플리케이션 중재 범위(소프트웨어 로직 레벨):
+  - 경고/감속보조/Fail-safe 판단은 payload 신호, 타이머, 상태 로직으로 결정되어야 한다(SHALL).
+  - 애플리케이션 중재는 기능 상태/출력을 변경할 수 있으나(MAY), 버스 레벨 중재 순서를 재정의해서는 안 된다(SHALL NOT).
+- 설계 일관성 규칙:
+  - 안전 핵심 경로는 애플리케이션 긴급도와 버스 우선순위 배정을 동시에 만족해야 한다(SHALL).
+  - 긴급 기능이 요구 수준보다 낮은 버스 우선순위로 배정된 경우, Annex A와 게이트 심사(G1~G4)를 통해 ID 매핑을 수정해야 한다(SHALL).
 
 ---
 
