@@ -1,0 +1,196 @@
+includes
+{
+}
+
+variables
+{
+  msTimer tChassisBase100;
+  int gChassisAliveCnt;
+  int gLastDiagServiceId;
+  int gLastDiagDidHigh;
+  int gLastDiagDidLow;
+}
+
+int clampRange(int value, int minValue, int maxValue)
+{
+  if (value < minValue)
+  {
+    return minValue;
+  }
+  if (value > maxValue)
+  {
+    return maxValue;
+  }
+  return value;
+}
+
+on start
+{
+  gChassisAliveCnt = 0;
+  gLastDiagServiceId = 0x22;
+  gLastDiagDidHigh = 0xF1;
+  gLastDiagDidLow = 0x00;
+  setTimer(tChassisBase100, 100);
+  write("[CHASSIS_GW] start");
+}
+
+on message frmVehicleStateCanMsg
+{
+  int speed;
+  int driveState;
+
+  speed = clampRange(this.gVehicleSpeed, 0, 255);
+  driveState = clampRange(this.gDriveState, 0, 3);
+
+  @Core::vehicleSpeedNorm = speed;
+  @Core::driveStateNorm = driveState;
+}
+
+on message frmSteeringCanMsg
+{
+  int steering;
+
+  steering = clampRange(this.SteeringInput, 0, 1);
+  @Core::steeringInputNorm = steering;
+}
+
+on message frmPedalInputCanMsg
+{
+  int brakePedal;
+
+  brakePedal = clampRange(this.BrakePedal, 0, 100);
+  @Core::brakePedalNorm = brakePedal;
+}
+
+on timer tChassisBase100
+{
+  message frmWheelSpeedMsg mWheelSpd;
+  message frmYawAccelMsg mYawAccel;
+  message frmBrakeStatusMsg mBrakeStatus;
+  message frmAccelStatusMsg mAccelStatus;
+  message frmSteeringTorqueMsg mSteerTorque;
+  message frmSteeringStateCanMsg mSteerState;
+  message frmChassisHealthMsg mHealth;
+  message frmEpsStateMsg mEps;
+  message frmAbsStateMsg mAbs;
+  message frmEscStateMsg mEsc;
+  message frmTcsStateMsg mTcs;
+  message frmBrakeTempMsg mBrakeTemp;
+  message frmSteeringAngleMsg mSteerAngle;
+  message frmWheelPulseMsg mWheelPulse;
+  message frmSuspensionStateMsg mSuspension;
+  message frmTirePressureMsg mTire;
+  message frmChassisDiagResMsg mDiagRes;
+  message frmBrakeWearMsg mBrakeWear;
+  message frmRoadFrictionMsg mFriction;
+  int speedNorm;
+  int steeringNorm;
+  int brakePressure;
+  int accelRequest;
+  int yawRate;
+  int latAccel;
+
+  speedNorm = clampRange((int)@Core::vehicleSpeedNorm, 0, 255);
+  steeringNorm = clampRange((int)@Core::steeringInputNorm, 0, 1);
+  brakePressure = (speedNorm < 5) ? 20 : 5;
+  accelRequest = clampRange(speedNorm / 2, 0, 100);
+  yawRate = steeringNorm * 15;
+  latAccel = speedNorm;
+
+  mWheelSpd.WheelSpdFL = speedNorm;
+  mWheelSpd.WheelSpdFR = speedNorm;
+  mWheelSpd.WheelSpdRL = speedNorm;
+  mWheelSpd.WheelSpdRR = speedNorm;
+  output(mWheelSpd);
+
+  mYawAccel.YawRate = yawRate;
+  mYawAccel.LatAccel = latAccel;
+  output(mYawAccel);
+
+  mBrakeStatus.BrakePressure = brakePressure;
+  mBrakeStatus.BrakeMode = (brakePressure > 10) ? 1 : 0;
+  mBrakeStatus.AbsActive = (brakePressure > 15) ? 1 : 0;
+  mBrakeStatus.EspActive = 0;
+  output(mBrakeStatus);
+
+  mAccelStatus.AccelRequest = accelRequest;
+  mAccelStatus.TorqueRequest = clampRange(accelRequest * 2, 0, 255);
+  output(mAccelStatus);
+
+  mSteerTorque.SteeringTorque = steeringNorm * 20;
+  mSteerTorque.SteeringAssistLv = 2;
+  output(mSteerTorque);
+
+  mSteerState.SteeringState = steeringNorm;
+  output(mSteerState);
+
+  mHealth.ChassisAliveCnt = gChassisAliveCnt & 0xFF;
+  mHealth.ChassisDiagState = 0;
+  mHealth.ChassisFailCode = 0;
+  output(mHealth);
+
+  mEps.EpsAssistState = 2;
+  mEps.EpsFaultState = 0;
+  mEps.EpsTemp = 55;
+  output(mEps);
+
+  mAbs.AbsCtrlState = (brakePressure > 15) ? 1 : 0;
+  mAbs.AbsSlipLevel = (brakePressure > 15) ? 8 : 0;
+  mAbs.AbsPressureCmd = brakePressure;
+  output(mAbs);
+
+  mEsc.EscCtrlState = 0;
+  mEsc.EscIntervention = 0;
+  mEsc.EscYawTarget = 0;
+  output(mEsc);
+
+  mTcs.TcsCtrlState = 0;
+  mTcs.TcsTorqueCut = 0;
+  mTcs.TcsSlipRatio = 0;
+  output(mTcs);
+
+  mBrakeTemp.BrakeTempFL = 45;
+  mBrakeTemp.BrakeTempFR = 46;
+  output(mBrakeTemp);
+
+  mSteerAngle.SteeringAngleRaw = steeringNorm * 30;
+  output(mSteerAngle);
+
+  mWheelPulse.WheelPulseFront = speedNorm;
+  mWheelPulse.WheelPulseRear = speedNorm;
+  output(mWheelPulse);
+
+  mSuspension.SuspensionMode = 1;
+  mSuspension.SuspensionLevel = 8;
+  mSuspension.DampingLevel = 12;
+  output(mSuspension);
+
+  mTire.TirePressFL = 230;
+  mTire.TirePressFR = 230;
+  mTire.TirePressRL = 228;
+  mTire.TirePressRR = 228;
+  output(mTire);
+
+  mDiagRes.ChsDiagRespCode = 0x62;
+  mDiagRes.ChsDiagData0 = gLastDiagDidHigh;
+  mDiagRes.ChsDiagData1 = gLastDiagDidLow;
+  output(mDiagRes);
+
+  mBrakeWear.BrakePadWearLvl = 12;
+
+  mFriction.RoadFrictionCoef = 80;
+  output(mFriction);
+
+  output(mBrakeWear);
+
+  gChassisAliveCnt = (gChassisAliveCnt + 1) & 0xFF;
+
+  setTimer(tChassisBase100, 100);
+}
+
+on message frmChassisDiagReqMsg
+{
+  gLastDiagServiceId = clampRange(this.ChsDiagServiceId, 0, 255);
+  gLastDiagDidHigh = clampRange(this.ChsDiagDidHigh, 0, 255);
+  gLastDiagDidLow = clampRange(this.ChsDiagDidLow, 0, 255);
+}

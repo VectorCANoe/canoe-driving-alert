@@ -1,7 +1,8 @@
-﻿# LEGACY_emergency_system.dbc 설명
+﻿# Legacy Emergency DBC Description
 
-- 위치: `canoe/databases/legacy/LEGACY_emergency_system.dbc`
-- 역할: 통합형 백업 DBC (호환성 참고용)
-- 적용 범위: 신규 개발 기본 경로 아님
+- Primary legacy location: `canoe/databases/v1_legacy/v1_split_345bdb4/emergency_system.dbc`
+- Backup artifact: `canoe/databases/v1_legacy/LEGACY_emergency_system.dbc.bak`
+- Purpose: compatibility backup only
+- Scope: not the default path for new development
 
-참고: 상세 아키텍처/요구 추적은 `driving-situation-alert` 문서 체인을 기준으로 검증합니다.
+Reference: architecture and traceability validation follows the `driving-situation-alert` chain.

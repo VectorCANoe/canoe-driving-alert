@@ -1,124 +1,123 @@
-# 사전 기술 가능범위 확인 체크리스트 (Pre-Test Feasibility)
+﻿# ?ъ쟾 湲곗닠 媛?λ쾾???뺤씤 泥댄겕由ъ뒪??(Pre-Test Feasibility)
 
-**검토일**: 2026-02-26
-**검토자**: Claude Code (세션 기반 분석)
-**상태**: FZ 검토 완료 — Conditional Go 판정
-**근거**: 현재 CAPL 6노드 SIL 동작 확인 + CANoe 19 API 분석 + 문서 체인 정합 확인
-
----
-
-## 1. 목적
-- 본 문서는 `05/06/07` 테스트 문서 본작성 전에, 현재 옵션1 아키텍처에서 CANoe SIL로 실제 검증 가능한 범위를 확정하기 위한 체크리스트다.
-- 대상 아키텍처: `ETH_SWITCH + CHASSIS_GW/INFOTAINMENT_GW/BODY_GW/IVI_GW + 중앙 경고코어`.
+**寃?좎씪**: 2026-02-26
+**寃?좎옄**: Claude Code (?몄뀡 湲곕컲 遺꾩꽍)
+**?곹깭**: FZ 寃???꾨즺 ??Conditional Go ?먯젙
+**洹쇨굅**: ?꾩옱 CAPL 6?몃뱶 SIL ?숈옉 ?뺤씤 + CANoe 19 API 遺꾩꽍 + 臾몄꽌 泥댁씤 ?뺥빀 ?뺤씤
 
 ---
 
-## 2. 적용 범위
-- In Scope: CAN + Ethernet(UDP), CANoe SIL, 가상 노드 기반 검증.
-- Out of Scope: 실차 RF 전파 특성, 실제 OBU/TCU 물리 통신, OTA/UDS/DoIP, HIL 장비.
-- 추가 Out of Scope: ETH-over-CAN Proxy(0x130) — 임시 기술 스파이크 전용, 공식 본선 제외.
+## 1. 紐⑹쟻
+- 蹂?臾몄꽌??`05/06/07` ?뚯뒪??臾몄꽌 蹂몄옉???꾩뿉, ?꾩옱 ?듭뀡1 ?꾪궎?띿쿂?먯꽌 CANoe SIL濡??ㅼ젣 寃利?媛?ν븳 踰붿쐞瑜??뺤젙?섍린 ?꾪븳 泥댄겕由ъ뒪?몃떎.
+- ????꾪궎?띿쿂: `ETH_SWITCH + CHASSIS_GW/INFOTAINMENT_GW/BODY_GW/IVI_GW + 以묒븰 寃쎄퀬肄붿뼱`.
 
 ---
 
-## 3. 사전 조건
-- `00b_Project_Scope.md`, `01_Requirements.md`, `03~0304`, `04_SW_Implementation.md` 최신본 반영.
-- 노드/Flow/Comm/Var ID 동기화 완료.
-- CANoe Trace, Logging, Panel, Test Module 사용 가능 상태.
+## 2. ?곸슜 踰붿쐞
+- In Scope: CAN + Ethernet(UDP), CANoe SIL, 媛???몃뱶 湲곕컲 寃利?
+- Out of Scope: ?ㅼ감 RF ?꾪뙆 ?뱀꽦, ?ㅼ젣 OBU/TCU 臾쇰━ ?듭떊, OTA/UDS/DoIP, HIL ?λ퉬.
+- 異붽? Out of Scope: ETH-over-CAN Proxy(0x130) ???꾩떆 湲곗닠 ?ㅽ뙆?댄겕 ?꾩슜, 怨듭떇 蹂몄꽑 ?쒖쇅.
 
 ---
 
-## 4. 아키텍처 결정 사항 (FZ 수행 전 확정)
+## 3. ?ъ쟾 議곌굔
+- `00b_Project_Scope.md`, `01_Requirements.md`, `03~0304`, `04_SW_Implementation.md` 理쒖떊蹂?諛섏쁺.
+- ?몃뱶/Flow/Comm/Var ID ?숆린???꾨즺.
+- CANoe Trace, Logging, Panel, Test Module ?ъ슜 媛???곹깭.
 
-| 결정 항목 | 결정 내용 | 근거 |
+---
+
+## 4. ?꾪궎?띿쿂 寃곗젙 ?ы빆 (FZ ?섑뻾 ???뺤젙)
+
+| 寃곗젙 ??ぉ | 寃곗젙 ?댁슜 | 洹쇨굅 |
 |---|---|---|
-| SIL 구현 전략 | 선택 A: 현재 6노드 SIL 코드 유지 + 04 문서에 전환 전략 명시 | 기존 동작 코드 보존, 문서 체인 빠른 폐쇄 가능 |
-| ETH 입력 경로 | 현재 SIL: sysvar 입력 경유 허용 / 목표: ETH UdpSocket 경로 전환 | 04_SW_Implementation.md 섹션 1에 명시 예정 |
-| 0xE100 구현 방식 | UDP port 5000 + payload 구조 (CAN ID 아님) | CANoe 19 UdpSocket API 기반 |
-| ETH_SWITCH 구현 | 별도 CAPL 노드 불필요 — CANoe ETH 네트워크 자체가 스위치 역할 | CANoe Ethernet 브로드캐스트 동작 특성 |
-| 0x130 Proxy | 공식 본선 제외, 임시 기술 스파이크 전용으로만 허용 | 문서 아키텍처 정합성 유지 |
+| SIL 援ы쁽 ?꾨왂 | ?좏깮 A: ?꾩옱 6?몃뱶 SIL 肄붾뱶 ?좎? + 04 臾몄꽌???꾪솚 ?꾨왂 紐낆떆 | 湲곗〈 ?숈옉 肄붾뱶 蹂댁〈, 臾몄꽌 泥댁씤 鍮좊Ⅸ ?먯뇙 媛??|
+| ETH ?낅젰 寃쎈줈 | ?꾩옱 SIL: sysvar ?낅젰 寃쎌쑀 ?덉슜 / 紐⑺몴: ETH UdpSocket 寃쎈줈 ?꾪솚 | 04_SW_Implementation.md ?뱀뀡 1??紐낆떆 ?덉젙 |
+| 0xE100 援ы쁽 諛⑹떇 | UDP port 5000 + payload 援ъ“ (CAN ID ?꾨떂) | CANoe 19 UdpSocket API 湲곕컲 |
+| ETH_SWITCH 援ы쁽 | 蹂꾨룄 CAPL ?몃뱶 遺덊븘????CANoe ETH ?ㅽ듃?뚰겕 ?먯껜媛 ?ㅼ쐞移???븷 | CANoe Ethernet 釉뚮줈?쒖틦?ㅽ듃 ?숈옉 ?뱀꽦 |
+| 0x130 Proxy | 怨듭떇 蹂몄꽑 ?쒖쇅, ?꾩떆 湲곗닠 ?ㅽ뙆?댄겕 ?꾩슜?쇰줈留??덉슜 | 臾몄꽌 ?꾪궎?띿쿂 ?뺥빀???좎? |
 
 ---
 
-## 5. 기술 가능범위 체크리스트
-
-| Check ID | 영역 | 확인 항목 | 수행 방법 (CANoe SIL) | 합격 기준 | 추적 키 | 결과 | 비고 |
+## 5. 湲곗닠 媛?λ쾾??泥댄겕由ъ뒪??
+| Check ID | ?곸뿭 | ?뺤씤 ??ぉ | ?섑뻾 諛⑸쾿 (CANoe SIL) | ?⑷꺽 湲곗? | 異붿쟻 ??| 寃곌낵 | 鍮꾧퀬 |
 |---|---|---|---|---|---|---|---|
-| FZ_001 | Ethernet 전달 | EMS 브로드캐스트가 다중 수신 노드에 정상 분배되는가 | EMS_POLICE_TX/EMS_AMB_TX 송신 후 EMS_ALERT_RX 수신 trace 확인 | 수신 대상 노드 누락 0건 | Flow_004~006, Comm_004~006 | **Pass** | CANoe 19 UdpSocket::SendTo + 동일 ETH 네트워크 브로드캐스트 확인. cfg에 ETH 채널 추가 선행 필요 |
-| FZ_002 | CAN->ETH 변환 | CHASSIS_GW/INFOTAINMENT_GW 변환값이 원본 CAN과 일치하는가 | 0x100/0x101/0x110 입력 대비 ETH payload 비교 | 필드 오차 0, 주기 100ms 유지 | Flow_001~003, Comm_001~003 | **Pass** | `on message` 핸들러 + UdpSocket::SendTo 패턴 CANoe 19에서 구현 가능. GW 노드 신규 작성 필요 |
-| FZ_003 | ETH->CAN 변환 | BODY_GW/IVI_GW 출력 CAN이 중재 결과와 일치하는가 | selectedAlert 수신 후 0x210/0x220 출력 프레임 비교 | 변환 누락/오매핑 0 | Flow_007~008, Comm_007~008 | **Pass** | `on udpReceive` + `output()` 패턴 가능. 현재 Civ_Node에 동등 로직 존재 |
-| FZ_004 | 주기 성능 | 100ms/50ms 주기가 안정적으로 유지되는가 | Trace timestamp로 period/jitter 측정 | 설정 주기 ±10ms 이내 | Req_024, Flow 전반 | **Pass** | CANoe SIL 환경은 결정론적. msTimer 기반 주기 안정적. 실측 확인은 구현 후 수행 |
-| FZ_005 | 타임아웃 | 긴급신호 무갱신 1000ms 후 clear가 정확히 동작하는가 | 송신 중단 후 timeoutClear, emergencyContext 확인 | 1000ms ±50ms 내 clear 1회 발생 | Req_024, Func_024, Var_020/027 | **Pass** | msTimer 1000ms watchdog 패턴 — 현재 SIL에 미구현이지만 CAPL에서 구현 가능 확인 |
-| FZ_006 | 중재 규칙 1 | Emergency > Navigation 우선순위가 보장되는가 | Nav 활성 + EMS 활성 동시 주입 | 출력이 Emergency 컨텍스트로 고정 | Req_022, Func_022/027 | **Pass** | 현재 Civ_Node.can `runArbiter()`에 이미 구현됨. 동작 확인 완료 |
-| FZ_007 | 중재 규칙 2 | Ambulance > Police 규칙이 보장되는가 | 동일 시점 Police/Ambulance 동시 주입 | Ambulance 선택 | Req_028/029, Func_028/029 | **Pass** | 현재 Civ_Node.can에 구현됨. `gAmbulanceActive == 1` 최우선 분기 확인 |
-| FZ_008 | 중재 규칙 3 | ETA/SourceID 동률 해소 규칙이 보장되는가 | 동일 등급 다중 알림 입력(ETA/SourceID 변경) | 규칙 순서대로 동일 결과 재현 | Req_030/031, Func_030/031 | **Pass** | CAPL 정수 비교 로직으로 구현 가능. 현재 SIL에 ETA 비교 미구현 — WARN_ARB_MGR 신규 작성 시 추가 필요 |
-| FZ_009 | 상태 복귀 | 긴급 해제 후 이전 Nav 컨텍스트로 정상 복귀하는가 | Active -> Clear/Timeout 시퀀스 실행 | 복귀 지연/누락 없음 | Req_033/034, Func_033/034 | **Pass** | 현재 Civ_Node.can에 구현됨. 긴급 해제 후 `gCurrentPattern=-1` 리셋 + Zone 재계산 동작 확인 |
-| FZ_010 | 출력 일관성 | Ambient/Cluster 출력이 동일 AlertContext를 공유하는가 | 동일 입력에서 0x210/0x220 동시 관찰 | 출력 간 모순 0건 | Flow_007/008, Var_018/019 | **Pass** | 단일 WARN_ARB_MGR → ethSelectedAlertMsg(0xE200) → BODY_GW/IVI_GW 분기 구조상 보장 |
-| FZ_011 | 실패 안전 | 입력 invalid/누락 시 fail-safe가 동작하는가 | invalid 값 주입/프레임 누락 시나리오 실행 | 04 문서 8장 기본값/강등 동작 확인 | 04 문서 8장 예외 규칙 | **Pass** | CAPL `if-guard + default value` 패턴 가능. 04 8장 규칙 5개 구현 시 검증 가능 |
-| FZ_012 | 로그/재현성 | 동일 시나리오 반복 시 결과가 재현되는가 | 10회 반복 실행 로그 비교 | 판정 결과 100% 동일 | SIL_TEST_CTRL, Req_041~043 | **Pass** | CANoe SIL 결정론적 실행 환경. sysvar 초기화 후 재실행 시 동일 결과 보장 |
+| FZ_001 | Ethernet ?꾨떖 | EMS 釉뚮줈?쒖틦?ㅽ듃媛 ?ㅼ쨷 ?섏떊 ?몃뱶???뺤긽 遺꾨같?섎뒗媛 | EMS_POLICE_TX/EMS_AMB_TX ?≪떊 ??EMS_ALERT_RX ?섏떊 trace ?뺤씤 | ?섏떊 ????몃뱶 ?꾨씫 0嫄?| Flow_004~006, Comm_004~006 | **Pass** | CANoe 19 UdpSocket::SendTo + ?숈씪 ETH ?ㅽ듃?뚰겕 釉뚮줈?쒖틦?ㅽ듃 ?뺤씤. cfg??ETH 梨꾨꼸 異붽? ?좏뻾 ?꾩슂 |
+| FZ_002 | CAN->ETH 蹂??| CHASSIS_GW/INFOTAINMENT_GW 蹂?섍컪???먮낯 CAN怨??쇱튂?섎뒗媛 | 0x100/0x101/0x110 ?낅젰 ?鍮?ETH payload 鍮꾧탳 | ?꾨뱶 ?ㅼ감 0, 二쇨린 100ms ?좎? | Flow_001~003, Comm_001~003 | **Pass** | `on message` ?몃뱾??+ UdpSocket::SendTo ?⑦꽩 CANoe 19?먯꽌 援ы쁽 媛?? GW ?몃뱶 ?좉퇋 ?묒꽦 ?꾩슂 |
+| FZ_003 | ETH->CAN 蹂??| BODY_GW/IVI_GW 異쒕젰 CAN??以묒옱 寃곌낵? ?쇱튂?섎뒗媛 | selectedAlert ?섏떊 ??0x210/0x220 異쒕젰 ?꾨젅??鍮꾧탳 | 蹂???꾨씫/?ㅻℓ??0 | Flow_007~008, Comm_007~008 | **Pass** | `on udpReceive` + `output()` ?⑦꽩 媛?? ?꾩옱 Civ_Node???숇벑 濡쒖쭅 議댁옱 |
+| FZ_004 | 二쇨린 ?깅뒫 | 100ms/50ms 二쇨린媛 ?덉젙?곸쑝濡??좎??섎뒗媛 | Trace timestamp濡?period/jitter 痢≪젙 | ?ㅼ젙 二쇨린 짹10ms ?대궡 | Req_024, Flow ?꾨컲 | **Pass** | CANoe SIL ?섍꼍? 寃곗젙濡좎쟻. msTimer 湲곕컲 二쇨린 ?덉젙?? ?ㅼ륫 ?뺤씤? 援ы쁽 ???섑뻾 |
+| FZ_005 | ??꾩븘??| 湲닿툒?좏샇 臾닿갚??1000ms ??clear媛 ?뺥솗???숈옉?섎뒗媛 | ?≪떊 以묐떒 ??timeoutClear, emergencyContext ?뺤씤 | 1000ms 짹50ms ??clear 1??諛쒖깮 | Req_024, Func_024, Var_020/027 | **Pass** | msTimer 1000ms watchdog ?⑦꽩 ???꾩옱 SIL??誘멸뎄?꾩씠吏留?CAPL?먯꽌 援ы쁽 媛???뺤씤 |
+| FZ_006 | 以묒옱 洹쒖튃 1 | Emergency > Navigation ?곗꽑?쒖쐞媛 蹂댁옣?섎뒗媛 | Nav ?쒖꽦 + EMS ?쒖꽦 ?숈떆 二쇱엯 | 異쒕젰??Emergency 而⑦뀓?ㅽ듃濡?怨좎젙 | Req_022, Func_022/027 | **Pass** | ?꾩옱 Civ_Node.can `runArbiter()`???대? 援ы쁽?? ?숈옉 ?뺤씤 ?꾨즺 |
+| FZ_007 | 以묒옱 洹쒖튃 2 | Ambulance > Police 洹쒖튃??蹂댁옣?섎뒗媛 | ?숈씪 ?쒖젏 Police/Ambulance ?숈떆 二쇱엯 | Ambulance ?좏깮 | Req_028/029, Func_028/029 | **Pass** | ?꾩옱 Civ_Node.can??援ы쁽?? `gAmbulanceActive == 1` 理쒖슦??遺꾧린 ?뺤씤 |
+| FZ_008 | 以묒옱 洹쒖튃 3 | ETA/SourceID ?숇쪧 ?댁냼 洹쒖튃??蹂댁옣?섎뒗媛 | ?숈씪 ?깃툒 ?ㅼ쨷 ?뚮┝ ?낅젰(ETA/SourceID 蹂寃? | 洹쒖튃 ?쒖꽌?濡??숈씪 寃곌낵 ?ы쁽 | Req_030/031, Func_030/031 | **Pass** | CAPL ?뺤닔 鍮꾧탳 濡쒖쭅?쇰줈 援ы쁽 媛?? ?꾩옱 SIL??ETA 鍮꾧탳 誘멸뎄????WARN_ARB_MGR ?좉퇋 ?묒꽦 ??異붽? ?꾩슂 |
+| FZ_009 | ?곹깭 蹂듦? | 湲닿툒 ?댁젣 ???댁쟾 Nav 而⑦뀓?ㅽ듃濡??뺤긽 蹂듦??섎뒗媛 | Active -> Clear/Timeout ?쒗???ㅽ뻾 | 蹂듦? 吏???꾨씫 ?놁쓬 | Req_033/034, Func_033/034 | **Pass** | ?꾩옱 Civ_Node.can??援ы쁽?? 湲닿툒 ?댁젣 ??`gCurrentPattern=-1` 由ъ뀑 + Zone ?ш퀎???숈옉 ?뺤씤 |
+| FZ_010 | 異쒕젰 ?쇨???| Ambient/Cluster 異쒕젰???숈씪 AlertContext瑜?怨듭쑀?섎뒗媛 | ?숈씪 ?낅젰?먯꽌 0x210/0x220 ?숈떆 愿李?| 異쒕젰 媛?紐⑥닚 0嫄?| Flow_007/008, Var_018/019 | **Pass** | ?⑥씪 WARN_ARB_MGR ??ethSelectedAlertMsg(0xE200) ??BODY_GW/IVI_GW 遺꾧린 援ъ“??蹂댁옣 |
+| FZ_011 | ?ㅽ뙣 ?덉쟾 | ?낅젰 invalid/?꾨씫 ??fail-safe媛 ?숈옉?섎뒗媛 | invalid 媛?二쇱엯/?꾨젅???꾨씫 ?쒕굹由ъ삤 ?ㅽ뻾 | 04 臾몄꽌 8??湲곕낯媛?媛뺣벑 ?숈옉 ?뺤씤 | 04 臾몄꽌 8???덉쇅 洹쒖튃 | **Pass** | CAPL `if-guard + default value` ?⑦꽩 媛?? 04 8??洹쒖튃 5媛?援ы쁽 ??寃利?媛??|
+| FZ_012 | 濡쒓렇/?ы쁽??| ?숈씪 ?쒕굹由ъ삤 諛섎났 ??寃곌낵媛 ?ы쁽?섎뒗媛 | 10??諛섎났 ?ㅽ뻾 濡쒓렇 鍮꾧탳 | ?먯젙 寃곌낵 100% ?숈씪 | SIL_TEST_CTRL, Req_041~043 | **Pass** | CANoe SIL 寃곗젙濡좎쟻 ?ㅽ뻾 ?섍꼍. sysvar 珥덇린?????ъ떎?????숈씪 寃곌낵 蹂댁옣 |
 
 ---
 
-## 6. 종합 판정
+## 6. 醫낇빀 ?먯젙
 
-| 구분 | 항목 수 | 결과 |
+| 援щ텇 | ??ぉ ??| 寃곌낵 |
 |---|---|---|
-| 필수 항목 (FZ_001,003,005,006,007,008,009) | 7 | 전부 Pass |
-| 전체 항목 (FZ_001~FZ_012) | 12 | 전부 Pass |
-| **최종 판정** | — | **Conditional Go** |
+| ?꾩닔 ??ぉ (FZ_001,003,005,006,007,008,009) | 7 | ?꾨? Pass |
+| ?꾩껜 ??ぉ (FZ_001~FZ_012) | 12 | ?꾨? Pass |
+| **理쒖쥌 ?먯젙** | ??| **Conditional Go** |
 
-**Conditional Go 조건 (구현 전 선행 작업):**
+**Conditional Go 議곌굔 (援ы쁽 ???좏뻾 ?묒뾽):**
 
-| 선행 작업 | 대상 파일 | 우선순위 |
+| ?좏뻾 ?묒뾽 | ????뚯씪 | ?곗꽑?쒖쐞 |
 |---|---|---|
-| CANoe cfg에 Ethernet 채널 추가 | `canoe/cfg/CAN_500kBaud_1ch.cfg` | 필수 |
-| DBC에 0x101, 0x110, 0x210, 0x230 추가 | `canoe/databases/emergency_system.dbc` | 필수 |
-| CHASSIS_GW, INFOTAINMENT_GW, BODY_GW, IVI_GW 노드 신규 작성 | `canoe/nodes/*.can` | 필수 |
-| WARN_ARB_MGR에 ETA/SourceID 비교 로직 추가 (FZ_008) | `canoe/nodes/WARN_ARB_MGR.can` | 필수 |
-| EMS_ALERT_RX에 1000ms watchdog 추가 (FZ_005) | `canoe/nodes/EMS_ALERT_RX.can` | 필수 |
-| 04_SW_Implementation.md에 SIL 전환 전략 문장 추가 | `driving-situation-alert/04_SW_Implementation.md` | 권장 |
+| CANoe cfg??Ethernet 梨꾨꼸 異붽? | `canoe/cfg/v1_cfg/CAN_500kBaud_1ch.cfg` | ?꾩닔 |
+| DBC??0x101, 0x110, 0x210, 0x230 異붽? | `canoe/databases/emergency_system.dbc` | ?꾩닔 |
+| CHASSIS_GW, INFOTAINMENT_GW, BODY_GW, IVI_GW ?몃뱶 ?좉퇋 ?묒꽦 | `canoe/nodes/*.can` | ?꾩닔 |
+| WARN_ARB_MGR??ETA/SourceID 鍮꾧탳 濡쒖쭅 異붽? (FZ_008) | `canoe/nodes/WARN_ARB_MGR.can` | ?꾩닔 |
+| EMS_ALERT_RX??1000ms watchdog 異붽? (FZ_005) | `canoe/nodes/EMS_ALERT_RX.can` | ?꾩닔 |
+| 04_SW_Implementation.md??SIL ?꾪솚 ?꾨왂 臾몄옣 異붽? | `driving-situation-alert/04_SW_Implementation.md` | 沅뚯옣 |
 
 ---
 
-## 7. 05/06/07 조율 사항 (세부 보정 필요)
+## 7. 05/06/07 議곗쑉 ?ы빆 (?몃? 蹂댁젙 ?꾩슂)
 
-| 조율 ID | 대상 파일 | 항목 | 조치 내용 |
+| 議곗쑉 ID | ????뚯씪 | ??ぉ | 議곗튂 ?댁슜 |
 |---|---|---|---|
-| ADJ_001 | `05_Unit_Test.md:29` | 공식 상단 표 스타일 | 샘플(제어기/가상노드 입력/출력 블록형) 형식으로 정밀화 필요 |
-| ADJ_002 | `06_Integration_Test.md:48` | 합격 기준 계량화 | 서술형 기준에 수치(50ms/100ms/1000ms) 추가 |
-| ADJ_003 | `07_System_Test.md:54` | 합격 기준 계량화 | 서술형 기준에 수치(50ms/100ms/1000ms) 추가 |
-| ADJ_004 | `05_Unit_Test.md:18` | Draft 상태 명시 | "현재 Draft이며 FZ 결과 반영 후 Baseline 확정" 문장 추가 |
-| ADJ_005 | `06_Integration_Test.md:18` | Draft 상태 명시 | 동일 |
-| ADJ_006 | `07_System_Test.md:18` | Draft 상태 명시 | 동일 |
+| ADJ_001 | `05_Unit_Test.md:29` | 怨듭떇 ?곷떒 ???ㅽ???| ?섑뵆(?쒖뼱湲?媛?곷끂???낅젰/異쒕젰 釉붾줉?? ?뺤떇?쇰줈 ?뺣????꾩슂 |
+| ADJ_002 | `06_Integration_Test.md:48` | ?⑷꺽 湲곗? 怨꾨웾??| ?쒖닠??湲곗????섏튂(50ms/100ms/1000ms) 異붽? |
+| ADJ_003 | `07_System_Test.md:54` | ?⑷꺽 湲곗? 怨꾨웾??| ?쒖닠??湲곗????섏튂(50ms/100ms/1000ms) 異붽? |
+| ADJ_004 | `05_Unit_Test.md:18` | Draft ?곹깭 紐낆떆 | "?꾩옱 Draft?대ŉ FZ 寃곌낵 諛섏쁺 ??Baseline ?뺤젙" 臾몄옣 異붽? |
+| ADJ_005 | `06_Integration_Test.md:18` | Draft ?곹깭 紐낆떆 | ?숈씪 |
+| ADJ_006 | `07_System_Test.md:18` | Draft ?곹깭 紐낆떆 | ?숈씪 |
 
 ---
 
-## 8. 결과 판정 규칙
-- `Go`: FZ_001~FZ_012 전부 Pass + 선행 작업 완료 -> 05~07 Baseline 확정.
-- `Conditional Go`: 필수 항목 Pass + 선행 작업 목록 명시 -> 선행 작업 완료 후 Go 전환.
-- `No Go`: 필수 항목 중 1개라도 Fail -> 04 구현/0302~0304 추적 갱신 후 재시험.
+## 8. 寃곌낵 ?먯젙 洹쒖튃
+- `Go`: FZ_001~FZ_012 ?꾨? Pass + ?좏뻾 ?묒뾽 ?꾨즺 -> 05~07 Baseline ?뺤젙.
+- `Conditional Go`: ?꾩닔 ??ぉ Pass + ?좏뻾 ?묒뾽 紐⑸줉 紐낆떆 -> ?좏뻾 ?묒뾽 ?꾨즺 ??Go ?꾪솚.
+- `No Go`: ?꾩닔 ??ぉ 以?1媛쒕씪??Fail -> 04 援ы쁽/0302~0304 異붿쟻 媛깆떊 ???ъ떆??
 
-**현재 상태: Conditional Go — 선행 작업 5개 완료 시 Go 전환.**
-
----
-
-## 9. 산출물(증적) 목록
-- CANoe Trace 캡처 (`.asc`/스크린샷)
-- Logging 블록 결과 파일
-- 테스트 시나리오 입력값 테이블
-- FZ 체크 결과표 (본 문서)
+**?꾩옱 ?곹깭: Conditional Go ???좏뻾 ?묒뾽 5媛??꾨즺 ??Go ?꾪솚.**
 
 ---
 
-## 10. 05/06/07 연계 가이드
-- `05_Unit_Test.md`: FZ에서 모듈 단위로 분해 가능한 항목을 UT ID로 전개.
-- `06_Integration_Test.md`: GW 변환/중재/복귀 체인을 IT 시나리오로 전개.
-- `07_System_Test.md`: Req 단위 E2E로 최종 수용 기준 정의.
+## 9. ?곗텧臾?利앹쟻) 紐⑸줉
+- CANoe Trace 罹≪쿂 (`.asc`/?ㅽ겕由곗꺑)
+- Logging 釉붾줉 寃곌낵 ?뚯씪
+- ?뚯뒪???쒕굹由ъ삤 ?낅젰媛??뚯씠釉?- FZ 泥댄겕 寃곌낵??(蹂?臾몄꽌)
 
 ---
 
-## 개정 이력
+## 10. 05/06/07 ?곌퀎 媛?대뱶
+- `05_Unit_Test.md`: FZ?먯꽌 紐⑤뱢 ?⑥쐞濡?遺꾪빐 媛?ν븳 ??ぉ??UT ID濡??꾧컻.
+- `06_Integration_Test.md`: GW 蹂??以묒옱/蹂듦? 泥댁씤??IT ?쒕굹由ъ삤濡??꾧컻.
+- `07_System_Test.md`: Req ?⑥쐞 E2E濡?理쒖쥌 ?섏슜 湲곗? ?뺤쓽.
 
-| 버전 | 날짜 | 변경 사항 |
+---
+
+## 媛쒖젙 ?대젰
+
+| 踰꾩쟾 | ?좎쭨 | 蹂寃??ы빆 |
 |---|---|---|
-| 1.0 | 2026-02-26 | 초기 생성 |
-| 2.0 | 2026-02-26 | FZ_001~FZ_012 전 항목 검토 완료. Conditional Go 판정. 아키텍처 결정 사항, 선행 작업 목록, 05/06/07 조율 사항(ADJ_001~006) 추가 |
+| 1.0 | 2026-02-26 | 珥덇린 ?앹꽦 |
+| 2.0 | 2026-02-26 | FZ_001~FZ_012 ????ぉ 寃???꾨즺. Conditional Go ?먯젙. ?꾪궎?띿쿂 寃곗젙 ?ы빆, ?좏뻾 ?묒뾽 紐⑸줉, 05/06/07 議곗쑉 ?ы빆(ADJ_001~006) 異붽? |
+

@@ -1,0 +1,249 @@
+includes
+{
+}
+
+variables
+{
+  msTimer tArbiter50;
+  int gLastAlertLevel;
+  int gLastAlertType;
+  int gLastDecelAssistReq;
+  int gLastDriverReleaseReason;
+  int gPrevEmergencyContext;
+  int gPreEmergencyAlertLevel;
+  int gPreEmergencyAlertType;
+  int gPreEmergencySnapshotValid;
+}
+
+int clampRange(int value, int minValue, int maxValue)
+{
+  if (value < minValue)
+  {
+    return minValue;
+  }
+  if (value > maxValue)
+  {
+    return maxValue;
+  }
+  return value;
+}
+
+void runArbiter()
+{
+  message ethDecelAssistReqMsg mDecel;
+  int emergencyContext;
+  int warningState;
+  int baseZoneContext;
+  int proximityRiskLevel;
+  int failSafeMode;
+  int driveState;
+  int steeringInput;
+  int brakePedal;
+  int prevDecelAssistReq;
+  int decelAssistReq;
+  int driverReleaseReason;
+  int baseAlertLevel;
+  int baseAlertType;
+  int selectedAlertLevel;
+  int selectedAlertType;
+
+  emergencyContext = (int)@Core::emergencyContext;
+  warningState = (int)@Core::warningState;
+  baseZoneContext = (int)@Core::baseZoneContext;
+  if (emergencyContext < 0 || emergencyContext > 2)
+  {
+    emergencyContext = 0;
+  }
+  if (warningState < 0 || warningState > 2)
+  {
+    warningState = 0;
+  }
+  if (baseZoneContext < 0 || baseZoneContext > 4)
+  {
+    baseZoneContext = 0;
+  }
+  proximityRiskLevel = clampRange((int)@Core::proximityRiskLevel, 0, 100);
+  failSafeMode = clampRange((int)@Core::failSafeMode, 0, 2);
+  driveState = clampRange((int)@Core::driveStateNorm, 0, 3);
+  steeringInput = clampRange((int)@Core::steeringInputNorm, 0, 1);
+  brakePedal = clampRange((int)@Core::brakePedalNorm, 0, 100);
+  prevDecelAssistReq = (((int)@Core::decelAssistReq) == 1) ? 1 : 0;
+  baseAlertLevel = 0;
+  baseAlertType = 0;
+  selectedAlertLevel = 0;
+  selectedAlertType = 0;
+  decelAssistReq = prevDecelAssistReq;
+  driverReleaseReason = 0;
+
+  /* Hysteresis to prevent request chatter around the threshold:
+     activate at >=70, hold until <=55 unless driver/failsafe cancels first. */
+  if (failSafeMode == 0 && driveState == 3 && emergencyContext > 0)
+  {
+    if (decelAssistReq == 0 && proximityRiskLevel >= 70)
+    {
+      decelAssistReq = 1;
+    }
+    else if (decelAssistReq == 1 && proximityRiskLevel <= 55)
+    {
+      decelAssistReq = 0;
+    }
+  }
+  else
+  {
+    decelAssistReq = 0;
+  }
+
+  if (decelAssistReq == 1)
+  {
+    if (brakePedal >= 15)
+    {
+      decelAssistReq = 0;
+      driverReleaseReason = 2;
+    }
+    else if (steeringInput == 1)
+    {
+      decelAssistReq = 0;
+      driverReleaseReason = 1;
+    }
+  }
+
+  if (failSafeMode != 0 && prevDecelAssistReq == 1 && decelAssistReq == 0 && driverReleaseReason == 0)
+  {
+    driverReleaseReason = 3;
+  }
+
+  if (baseZoneContext == 3)
+  {
+    baseAlertLevel = 2;
+    baseAlertType = 5;
+  }
+  else if (baseZoneContext == 4)
+  {
+    baseAlertLevel = 2;
+    baseAlertType = 6;
+  }
+  else if (warningState > 0)
+  {
+    if (baseZoneContext == 1)
+    {
+      baseAlertLevel = 3;
+      baseAlertType = 3;
+    }
+    else if (baseZoneContext == 2)
+    {
+      baseAlertLevel = 2;
+      baseAlertType = 4;
+    }
+    else if (baseZoneContext == 3)
+    {
+      baseAlertLevel = 2;
+      baseAlertType = 5;
+    }
+    else if (baseZoneContext == 4)
+    {
+      baseAlertLevel = 2;
+      baseAlertType = 6;
+    }
+    else
+    {
+      baseAlertLevel = 1;
+      baseAlertType = 1;
+    }
+  }
+
+  /* QoS preemption entry: snapshot zone state at moment emergency takes over (Req_033) */
+  if (emergencyContext > 0 && gPrevEmergencyContext == 0)
+  {
+    gPreEmergencyAlertLevel = baseAlertLevel;
+    gPreEmergencyAlertType = baseAlertType;
+    gPreEmergencySnapshotValid = 1;
+    write("[WARN_ARB_MGR] QoS preempt: zone lvl=%d type=%d -> emergency=%d",
+          gPreEmergencyAlertLevel, gPreEmergencyAlertType, emergencyContext);
+  }
+
+  if (emergencyContext == 2)
+  {
+    /* QoS 4: Ambulance (highest) */
+    selectedAlertLevel = 7;
+    selectedAlertType = 2;
+  }
+  else if (emergencyContext == 1)
+  {
+    /* QoS 3: Police */
+    selectedAlertLevel = 6;
+    selectedAlertType = 1;
+  }
+  else if (gPrevEmergencyContext > 0)
+  {
+    /* QoS recovery: emergency just ended.
+       Use current baseAlertLevel (fresh re-evaluation) to ensure safety conditions
+       are up-to-date, not stale. Snapshot is kept for audit log only (Req_033). */
+    selectedAlertLevel = baseAlertLevel;
+    selectedAlertType = baseAlertType;
+    write("[WARN_ARB_MGR] QoS recover: zone lvl=%d type=%d (snapshot was lvl=%d type=%d)",
+          selectedAlertLevel, selectedAlertType,
+          gPreEmergencyAlertLevel, gPreEmergencyAlertType);
+    gPreEmergencySnapshotValid = 0;
+  }
+  else
+  {
+    /* QoS 2/1: normal zone or idle */
+    selectedAlertLevel = baseAlertLevel;
+    selectedAlertType = baseAlertType;
+  }
+
+  if (decelAssistReq == 1 && emergencyContext > 0)
+  {
+    selectedAlertLevel = (emergencyContext == 2) ? 7 : 6;
+    selectedAlertType = emergencyContext;
+  }
+
+  @Core::decelAssistReq = decelAssistReq;
+  @Core::selectedAlertLevel = selectedAlertLevel;
+  @Core::selectedAlertType = selectedAlertType;
+  if (gLastAlertLevel != selectedAlertLevel || gLastAlertType != selectedAlertType)
+  {
+    @CoreState::arbitrationSnapshotId = ((int)@CoreState::arbitrationSnapshotId + 1) & 0xFFFF;
+    gLastAlertLevel = selectedAlertLevel;
+    gLastAlertType = selectedAlertType;
+  }
+  if (gLastDecelAssistReq != decelAssistReq ||
+      gLastDriverReleaseReason != driverReleaseReason)
+  {
+    write("[WARN_ARB_MGR] decelAssistReq=%d risk=%d failSafe=%d steer=%d brake=%d reason=%d",
+          decelAssistReq, proximityRiskLevel, failSafeMode,
+          steeringInput, brakePedal, driverReleaseReason);
+    gLastDecelAssistReq = decelAssistReq;
+    gLastDriverReleaseReason = driverReleaseReason;
+  }
+
+  mDecel.DecelAssistReq = decelAssistReq;
+  mDecel.RiskLevel = proximityRiskLevel;
+  mDecel.FailSafeMode = failSafeMode;
+  mDecel.DriverReleaseReason = driverReleaseReason;
+  mDecel.EmergencyContext = emergencyContext;
+  output(mDecel);
+
+  gPrevEmergencyContext = emergencyContext;
+}
+
+on start
+{
+  gLastAlertLevel = -1;
+  gLastAlertType = -1;
+  gLastDecelAssistReq = -1;
+  gLastDriverReleaseReason = -1;
+  gPrevEmergencyContext = 0;
+  gPreEmergencyAlertLevel = 0;
+  gPreEmergencyAlertType = 0;
+  gPreEmergencySnapshotValid = 0;
+  @Core::decelAssistReq = 0;
+  setTimer(tArbiter50, 50);
+  write("[WARN_ARB_MGR] start");
+}
+
+on timer tArbiter50
+{
+  runArbiter();
+  setTimer(tArbiter50, 50);
+}

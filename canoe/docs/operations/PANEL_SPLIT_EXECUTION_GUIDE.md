@@ -1,4 +1,4 @@
-# PANEL SPLIT EXECUTION GUIDE
+﻿# PANEL SPLIT EXECUTION GUIDE
 
 ## Goal
 - Promote two macro panels:
@@ -20,7 +20,7 @@
 
 ## Baseline Backup (GUI)
 - Save As current config to a new timestamped name before editing panels
-- Keep previous known-good cfg in `canoe/cfg/legacy/`
+- Keep previous known-good cfg in `canoe/cfg/v1_cfg/`
 
 ## Panel Actions (GUI)
 
@@ -99,3 +99,4 @@
 ## Note on Encoding
 - Keep code/script content in English ASCII where possible
 - Use UTF-8 for all text files
+

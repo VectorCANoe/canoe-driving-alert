@@ -1,0 +1,59 @@
+includes
+{
+}
+
+variables
+{
+  msTimer tHazardBlink;
+  int gHazardState;
+  int gHazardSwitch;
+  int gHazardLampReq;
+  int gBlinkPhase;
+  int gBlinkCount;
+}
+
+on start
+{
+  gHazardState  = 0;
+  gHazardSwitch = 0;
+  gHazardLampReq = 0;
+  gBlinkPhase   = 0;
+  gBlinkCount   = 0;
+  setTimer(tHazardBlink, 500);
+  write("[HAZARD_CTRL] start");
+}
+
+on message frmHazardControlMsg
+{
+  int prevState;
+  prevState    = gHazardState;
+  gHazardSwitch = this.HazardSwitch;
+  gHazardState  = this.HazardState;
+  if (gHazardState != prevState)
+  {
+    write("[HAZARD_CTRL] hazard state=%d switch=%d", gHazardState, gHazardSwitch);
+    gBlinkCount = 0;
+  }
+}
+
+on message frmLampControlMsg
+{
+  gHazardLampReq = this.HazardLampReq;
+}
+
+on timer tHazardBlink
+{
+  /* Manage blink phase when hazard is active */
+  if (gHazardState == 1 || gHazardLampReq == 1)
+  {
+    gBlinkPhase = 1 - gBlinkPhase;
+    gBlinkCount = gBlinkCount + 1;
+  }
+  else
+  {
+    gBlinkPhase = 0;
+    gBlinkCount = 0;
+  }
+
+  setTimer(tHazardBlink, 500);
+}

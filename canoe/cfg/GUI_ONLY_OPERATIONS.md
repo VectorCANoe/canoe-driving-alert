@@ -1,4 +1,4 @@
-# CANoe GUI-Only Operations
+﻿# CANoe GUI-Only Operations
 
 This project has recurring configuration corruption when `.cfg` state is edited outside CANoe GUI.
 Follow this file as a strict operational boundary.
@@ -35,4 +35,5 @@ Follow this file as a strict operational boundary.
 ## 5) Version Control Guidance
 - Commit `*.cfg` only when it is known-good from GUI save.
 - Do not commit transient `*.stcfg` unless explicitly required by process.
-- Archive obsolete configs under `canoe/cfg/legacy/` with timestamped names.
+- Archive obsolete configs under `canoe/cfg/v1_cfg/` with timestamped names.
+

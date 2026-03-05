@@ -1,10 +1,10 @@
-# Mentor Priority BP (Execution Baseline)
+﻿# Mentor Priority BP (Execution Baseline)
 
 **Document ID**: CANOE-BP-MENTOR-PRIORITY  
-**Version**: 1.0  
-**Date**: 2026-02-28  
+**Version**: 1.1  
+**Date**: 2026-03-05  
 **Status**: Active  
-**Scope**: CANoe SIL, CAN + Ethernet(UDP)
+**Scope**: CANoe SIL, CAN + Ethernet (UDP)
 
 ---
 
@@ -12,6 +12,7 @@
 
 This baseline applies mentor feedback first and keeps implementation decisions practical:
 
+- Historical note: v1 was a single-bus flat architecture used for fast parallel development.
 - Split CAN by network/domain DBC.
 - Keep Ethernet contract outside DBC.
 - Fix message ownership before deep logic refinement.
@@ -27,12 +28,13 @@ This baseline applies mentor feedback first and keeps implementation decisions p
 - `canoe/databases/body_can.dbc`
 - `canoe/databases/infotainment_can.dbc`
 - `canoe/databases/test_can.dbc`
+- `canoe/databases/eth_backbone_can_stub.dbc`
 
 2. Ethernet SoT is contract document only:
 - `canoe/docs/operations/ETH_INTERFACE_CONTRACT.md`
 
 3. Backup policy:
-- `canoe/databases/legacy/LEGACY_emergency_system.dbc` is backup compatibility artifact.
+- `canoe/databases/v1_legacy/v1_split_345bdb4/emergency_system.dbc` is backup compatibility artifact.
 - It must not replace split DBC SoT in design documents.
 
 4. Ownership policy:
@@ -63,7 +65,7 @@ This baseline applies mentor feedback first and keeps implementation decisions p
 
 ## 4. Gate Criteria
 
-The following gates are mandatory before calling a build "mentor-priority compliant":
+The following gates are mandatory before calling a build mentor-priority compliant:
 
 1. Split DBC presence pass.
 2. Ethernet contract presence pass.
@@ -94,4 +96,4 @@ The following gates are mandatory before calling a build "mentor-priority compli
 - Gate report:
   - `canoe/tmp/mentor_priority_gate_report.md`
 - Optional compatibility backup:
-  - `canoe/databases/legacy/LEGACY_emergency_system.dbc`
+  - `canoe/databases/v1_legacy/v1_split_345bdb4/emergency_system.dbc`
