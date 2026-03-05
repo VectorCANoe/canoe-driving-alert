@@ -1,7 +1,7 @@
 # CAN ID 배정 표준
 
 **Document ID**: PROJ-00F-CAN-ID  
-**Version**: 3.3  
+**Version**: 3.4  
 **Date**: 2026-03-06  
 **Status**: Draft (Policy SoT)  
 **Scope**: `0302 -> 0303 -> 0304 -> DBC -> 04 -> 05/06/07`
@@ -88,6 +88,12 @@
   - 안전 핵심 경로는 애플리케이션 긴급도와 버스 우선순위 배정을 동시에 만족해야 한다(SHALL).
   - 긴급 기능이 요구 수준보다 낮은 버스 우선순위로 배정된 경우, Annex A와 게이트 심사(G1~G4)를 통해 ID 매핑을 수정해야 한다(SHALL).
 
+### 4.5 긴급 우선 요구 해석 규칙 (Normative)
+
+- `Req_022/Req_028/Req_029/Req_030/Req_031`의 기본 판정 축은 애플리케이션 중재 규칙이다.
+- 위 요구의 기본 적합성은 `WARN_ARB_MGR` 선택 로직(Emergency > Zone, Ambulance > Police, ETA, SourceID)으로 검증한다.
+- 버스 우선순위 상향(더 낮은 CAN ID 강제)은 별도 요구/게이트 근거가 있을 때만 적용한다.
+
 ---
 
 ## 5. 3/3/5 사전
@@ -113,6 +119,9 @@
 | 5 | Validation harness/result | `VAL_SCENARIO_CTRL`, `VAL_BASELINE_CTRL` |
 | 6 | Emergency/V2 assist | `EMS_*`, `WARN_ARB_MGR` |
 | 7 | Diag/Reserve | 진단/예약 |
+
+- 해석 규칙: 메시지 이름에 `Diag`가 포함되어도 Group 7 강제 배정 사유가 되지 않는다.
+- Group 결정은 `Owner/도메인 경계 -> 안전/검증 경로 -> Group 사전` 순서로 수행한다.
 
 ### 5.3 Index 사전 (`[4:0]`)
 
@@ -202,6 +211,7 @@ rg -n "0x[0-9A-Fa-f]{2,3}" driving-situation-alert/{0302_NWflowDef.md,0303_Commu
 
 | 버전 | 날짜 | 변경 사항 |
 |---|---|---|
+| 3.4 | 2026-03-06 | 감사/운영 해석 보강: 긴급 우선 요구의 기본 판정 축을 기능중재로 명시하고, `Diag` 명칭과 Group 7 강제 배정을 분리하는 규칙을 추가. |
 | 3.3 | 2026-03-06 | 정책 문서 슬림화: 실행 절차(Cutover/Rollback/Gate/Acceptance)는 변경지시서 SoT로 이관하고 00f는 정책 원문 중심으로 재구성. |
 | 3.2 | 2026-03-05 | 실행력 보강: Annex A(98건 매핑 파일) 연결, Group 경계 명확화, Tier0 예외 규칙, 승인 게이트(G1~G4), Cutover/Rollback 절차를 추가. |
 | 3.1 | 2026-03-05 | 정책을 레이어드 모델로 재정의: `도메인 분리 구조 유지 + 3/3/5 인코딩 전면 적용` 병행 방식을 고정. |
