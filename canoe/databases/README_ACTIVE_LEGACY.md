@@ -5,6 +5,7 @@
 - `powertrain_can.dbc`
 - `body_can.dbc`
 - `infotainment_can.dbc`
+- `adas_can.dbc`
 - `eth_backbone_can_stub.dbc`
 
 These files are the canonical runtime set for split-domain architecture.

@@ -11,11 +11,12 @@
 
 | 파일명(계획) | 도메인 | 주요 노드 | 포함 메시지(초안) |
 |---|---|---|---|
-| `chassis_can.dbc` | Chassis | SIL_TEST_CTRL, CHASSIS_GW, ACCEL_CTRL, BRAKE_CTRL, STEERING_CTRL | 0x100, 0x101, (추가) 페달/조향 보강 메시지 |
+| `chassis_can.dbc` | Chassis | VAL_SCENARIO_CTRL, CHASSIS_GW, ACCEL_CTRL, BRAKE_CTRL, STEERING_CTRL | 0x100, 0x101, (추가) 페달/조향 보강 메시지 |
 | `powertrain_can.dbc` | Powertrain | ENGINE_CTRL, TRANSMISSION_CTRL, (필요 시 POWERTRAIN_GW) | (추가) 시동/기어/엔진 상태 메시지 |
 | `body_can.dbc` | Body | BODY_GW, BCM_AMBIENT_CTRL, HAZARD_CTRL, WINDOW_CTRL, DRIVER_STATE_CTRL | 0x210, (추가) 창문/비상등/운전자 상태 메시지 |
 | `infotainment_can.dbc` | Infotainment | INFOTAINMENT_GW, IVI_GW, NAV_CONTEXT_MGR, CLU_HMI_CTRL, CLUSTER_BASE_CTRL | 0x110, 0x220, (추가) 클러스터 기본 상태 메시지 |
-| `test_can.dbc` (선택) | SIL/Test | SIL_TEST_CTRL | 0x230 (결과 보고) |
+| `adas_can.dbc` | ADAS | ADAS_WARN_CTRL, WARN_ARB_MGR | 0x11F, 0x313 (ADAS 소유 프레임) |
+| `test_can.dbc` (deprecated) | Validation placeholder | - | 활성 경로 미사용 (0x230/0x231은 `chassis_can.dbc`) |
 
 ---
 

@@ -23,10 +23,10 @@
 - 0304에 아직 등재되지 않은 Vehicle Baseline 확장 신호는 DBC 원본 신호명(`AccelPedal`, `DriveMode` 등)으로 표기한다.
 - 옵션1 아키텍처를 고정한다: `중앙 경고코어 + Ethernet 백본(ETH_SWITCH) + 도메인 게이트웨이 + 도메인 CAN`.
 - 상세 추적 정보(`Flow/Func/Req/주기/활성/해제`)는 하단 표에 분리한다.
-- CAN 신호 원본은 계층 분리로 관리한다: 도메인 프로파일은 `canoe/databases/chassis_can.dbc`, `canoe/databases/powertrain_can.dbc`, `canoe/databases/body_can.dbc`, `canoe/databases/infotainment_can.dbc`, `canoe/databases/eth_backbone_can_stub.dbc`를 사용하고, Validation 결과 프레임(`0x230`,`0x231`)은 `chassis_can.dbc`에 통합 관리한다. Ethernet 논리 계약은 `canoe/docs/operations/ETH_INTERFACE_CONTRACT.md`를 사용한다.
+- CAN 신호 원본은 계층 분리로 관리한다: 도메인 프로파일은 `canoe/databases/chassis_can.dbc`, `canoe/databases/powertrain_can.dbc`, `canoe/databases/body_can.dbc`, `canoe/databases/infotainment_can.dbc`, `canoe/databases/adas_can.dbc`, `canoe/databases/eth_backbone_can_stub.dbc`를 사용하고, Validation 결과 프레임(`0x230`,`0x231`)은 `chassis_can.dbc`에 통합 관리한다. Ethernet 논리 계약은 `canoe/docs/operations/ETH_INTERFACE_CONTRACT.md`를 사용한다.
 - 검증 범위는 CANoe SIL, CAN + Ethernet(UDP)만 사용한다.
 - 목표 설계는 옵션1(ETH 백본) 고정이며, CANoe.CAN 라이선스 제약 구간의 SIL 검증은 임시로 CAN 대체 백본을 사용하고 Ethernet 라이선스 확보 후 동일 케이스로 재검증한다.
-- CANoe.CAN 환경에서는 E100/E200 모니터링 경로와 V2 확장 경로 일부를 `eth_backbone_can_stub.dbc`(0x064/0x11F/0x232/0x313/0x314/0x315)로 대체 운반한다.
+- CANoe.CAN 환경에서는 E100/E200 모니터링 경로와 V2 확장 경로 일부를 `eth_backbone_can_stub.dbc`(0x064/0x232/0x314/0x315)와 `adas_can.dbc`(0x11F/0x313)로 분리 대체 운반한다.
 - OTA/UDS/DoIP 관련 플로우는 본 문서 범위에서 제외한다.
 - `Flow_009`, `Flow_106`, `Flow_205`는 Validation Harness 경로(검증 전용)이며 양산 서비스 플로우와 구분한다.
 - 제출 전 현대/기아 및 OEM 기준으로 설명/별칭은 정리하되, Flow/Comm/ID/signal 식별자는 SoT 기준으로 고정 유지한다.
@@ -301,10 +301,11 @@
 
 | 계층 | 적용 Flow ID | 원본 파일(SoT) | 유지 규칙 |
 |---|---|---|---|
-| Core CAN Profile | Flow_001, Flow_002, Flow_003(CAN), Flow_007(CAN 0x210), Flow_008(CAN 0x220), Flow_009(CAN 0x230) | `canoe/databases/chassis_can.dbc` + `canoe/databases/infotainment_can.dbc` + `canoe/databases/body_can.dbc` + `canoe/databases/eth_backbone_can_stub.dbc` | 상단 공식표와 동일 ID/Signal 유지(CAN-stub 포함) |
+| Core CAN Profile | Flow_001, Flow_002, Flow_003(CAN), Flow_007(CAN 0x210), Flow_008(CAN 0x220), Flow_009(CAN 0x230) | `canoe/databases/chassis_can.dbc` + `canoe/databases/infotainment_can.dbc` + `canoe/databases/body_can.dbc` + `canoe/databases/adas_can.dbc` + `canoe/databases/eth_backbone_can_stub.dbc` | 상단 공식표와 동일 ID/Signal 유지(CAN-stub 포함) |
 | Core Ethernet Profile | Flow_001~Flow_008(Ethernet 구간) | `canoe/docs/operations/ETH_INTERFACE_CONTRACT.md` | E100/E200, 0x510/0x511/0x512 계약 우선 |
 | Chassis Domain Profile | Flow_102, Flow_106(일부), Flow_105(헬스 연계), Flow_201 | `canoe/databases/chassis_can.dbc` | 0x100~0x121(0x11F 제외) 범위 준수 |
-| ETH Backbone CAN Stub Profile | Flow_004, Flow_005, Flow_006, Flow_120, Flow_121, Flow_124, Flow_201(일부) | `canoe/databases/eth_backbone_can_stub.dbc` | 0x064/0x11F/0x232/0x313/0x314/0x315 범위 준수 |
+| ADAS Domain CAN Profile | Flow_120, Flow_201(일부) | `canoe/databases/adas_can.dbc` | 0x11F/0x313 범위 준수 (ADAS 소유 프레임) |
+| ETH Backbone CAN Stub Profile | Flow_004, Flow_005, Flow_006, Flow_121, Flow_124 | `canoe/databases/eth_backbone_can_stub.dbc` | 0x064/0x232/0x314/0x315 범위 준수 |
 | Powertrain Domain Profile | Flow_101, Flow_105, Flow_204 | `canoe/databases/powertrain_can.dbc` | 0x300~0x312 범위 준수 |
 | Body Domain Profile | Flow_103, Flow_105, Flow_202 | `canoe/databases/body_can.dbc` | 0x210~0x219, 0x240~0x24D 범위 준수 |
 | Infotainment Domain Profile | Flow_104, Flow_105, Flow_203, Flow_205 | `canoe/databases/infotainment_can.dbc` | 0x110, 0x220~0x228, 0x260~0x26D 범위 준수 |
@@ -367,12 +368,13 @@
 
 | Domain Network | Gateway(경계 노드) | 대상 ECU/노드 | DBC 파일(정의) | ID 범위 | 연계 Flow |
 |---|---|---|---|---|---|
-| Core Integration CAN | CHASSIS_GW, INFOTAINMENT_GW, BODY_GW, IVI_GW, ETH_SWITCH | 경고 코어 체인 연계 노드 집합 | `canoe/databases/chassis_can.dbc` + `canoe/databases/infotainment_can.dbc` + `canoe/databases/body_can.dbc` + `canoe/databases/eth_backbone_can_stub.dbc` | 0x100/0x101/0x110/0x210/0x220/0x230/0x064/0x11F/0x232 | Flow_001~Flow_009 |
+| Core Integration CAN | CHASSIS_GW, INFOTAINMENT_GW, BODY_GW, IVI_GW, ETH_SWITCH | 경고 코어 체인 연계 노드 집합 | `canoe/databases/chassis_can.dbc` + `canoe/databases/infotainment_can.dbc` + `canoe/databases/body_can.dbc` + `canoe/databases/adas_can.dbc` + `canoe/databases/eth_backbone_can_stub.dbc` | 0x100/0x101/0x110/0x210/0x220/0x230/0x064/0x232 | Flow_001~Flow_009 |
 | Chassis CAN | CHASSIS_GW | ACCEL_CTRL, BRAKE_CTRL, STEERING_CTRL, ADAS_WARN_CTRL 입력 경로 | `canoe/databases/chassis_can.dbc` | 0x100~0x121(0x11F 제외) | Flow_001, Flow_002, Flow_102, Flow_106, Flow_201, Flow_121, Flow_123 |
 | Powertrain CAN | DOMAIN_GW_ROUTER | ENGINE_CTRL, TRANSMISSION_CTRL | `canoe/databases/powertrain_can.dbc` | 0x300~0x312 | Flow_101, Flow_105, Flow_204 |
 | Body CAN | BODY_GW | BCM_AMBIENT_CTRL, HAZARD_CTRL, WINDOW_CTRL, DRIVER_STATE_CTRL | `canoe/databases/body_can.dbc` | 0x210~0x219, 0x240~0x24D | Flow_007, Flow_103, Flow_105, Flow_202 |
 | Infotainment CAN | INFOTAINMENT_GW, IVI_GW | NAV_CONTEXT_MGR, CLU_HMI_CTRL, CLUSTER_BASE_CTRL | `canoe/databases/infotainment_can.dbc` | 0x110, 0x220~0x228, 0x260~0x26D | Flow_003, Flow_008, Flow_104, Flow_105, Flow_203, Flow_205 |
-| ETH Backbone CAN Stub | ETH_SWITCH | EMS/ADAS 상태 프레임 대체 운반(라이선스 제약 대응) | `canoe/databases/eth_backbone_can_stub.dbc` | 0x064, 0x11F, 0x232, 0x313, 0x314, 0x315 | Flow_004, Flow_005, Flow_006, Flow_120, Flow_121, Flow_124, Flow_201 |
+| ADAS Domain CAN | ETH_SWITCH | ADAS 소유 상태/위험도 프레임 운반 | `canoe/databases/adas_can.dbc` | 0x11F, 0x313 | Flow_120, Flow_201(일부) |
+| ETH Backbone CAN Stub | ETH_SWITCH | EMS/경계/중재 프레임 대체 운반(라이선스 제약 대응) | `canoe/databases/eth_backbone_can_stub.dbc` | 0x064, 0x232, 0x314, 0x315 | Flow_004, Flow_005, Flow_006, Flow_121, Flow_124 |
 | Ethernet UDP | ETH_SWITCH | EMS_ALERT(내부: EMS_POLICE_TX/EMS_AMB_TX/EMS_ALERT_RX), WARN_ARB_MGR, GW 집합 | `canoe/docs/operations/ETH_INTERFACE_CONTRACT.md` | 0x510/0x511/0x512/0xE100/0xE200 | Flow_004, Flow_005, Flow_006 |
 
 ---
@@ -425,7 +427,8 @@
 | Body Domain CAN | `body_can.dbc` | 24 | 0x210~0x219, 0x240~0x24D |
 | Infotainment Domain CAN | `infotainment_can.dbc` | 24 | 0x110, 0x220~0x228, 0x260~0x26D |
 | Validation CAN (Chassis 통합) | `chassis_can.dbc` | 2 | 0x230~0x231 |
-| ETH Backbone CAN Stub | `eth_backbone_can_stub.dbc` | 6 | 0x064, 0x11F, 0x232, 0x313, 0x314, 0x315 |
+| ADAS Domain CAN | `adas_can.dbc` | 2 | 0x11F, 0x313 |
+| ETH Backbone CAN Stub | `eth_backbone_can_stub.dbc` | 4 | 0x064, 0x232, 0x314, 0x315 |
 | Ethernet Contract | `ETH_INTERFACE_CONTRACT.md` | 8 타입 | 0x510/0x511/0x512/0xE100/0xE200/0x313/0x314/0x315 |
 
 | 항목 | 현재 정의(문서/원본) | 확장 목표(Phase-B) | 비고 |
@@ -469,6 +472,7 @@
 |---|---|---|
 | 3.17 | 2026-03-05 | Validation 결과 프레임(`0x230`,`0x231`)의 SoT를 `test_can` 분리에서 `chassis_can.dbc` 통합 기준으로 전환하고 Validation 노드 명칭을 `VAL_*`로 정리. |
 | 3.16 | 2026-03-04 | DBC SoT 정합 보강: `eth_backbone_can_stub.dbc`를 원본 매핑에 반영하고 0x064/0x11F/0x232(및 0x313/0x314/0x315) CAN-stub 경로를 상단표/도메인표/규모표에 동기화. |
+| 3.17 | 2026-03-05 | ADAS 도메인 분리 반영: `adas_can.dbc`를 추가하고 ADAS 소유 프레임(0x11F/0x313)을 ETH Backbone CAN-stub에서 분리, SoT 표/도메인표/규모표를 동기화. |
 | 3.15 | 2026-03-03 | ID 표기 기준 고정: 문서 본문은 Logical ID(0xE210/0xE211/0xE212)를 우선 표기하고, CANoe SIL 실행 ID는 Stub(0x313/0x314/0x315)로 병기하도록 작성 원칙을 보강. |
 | 3.14 | 2026-03-03 | V2 확장 플로우를 Implemented 상태로 전환하고 `Flow_120~124` 메시지 ID를 코드/DBC 실값(`0x313/0x314/0x315`) 및 실제 송수신 노드(`WARN_ARB_MGR` 중심)로 정정. |
 | 3.13 | 2026-03-02 | 감사 정합 보강: 옵션1 설계 vs SIL 임시 CAN 대체 백본 검증 경계 문구를 작성 원칙에 추가. |

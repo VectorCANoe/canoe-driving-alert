@@ -22,7 +22,7 @@
 - `DLC`는 순수 숫자만 기재한다.
 - 상단 표의 `Signal`은 0304 표준 변수명(`vehicleSpeed` 등) 기준으로 작성하고, 코드/런타임 별칭(`g*`)은 하단 보강표에서만 관리한다.
 - 0304에 아직 등재되지 않은 Vehicle Baseline 확장 신호는 DBC 원본 신호명(`AccelPedal`, `DriveMode` 등)으로 표기한다.
-- CAN 통신 원본은 계층 분리로 관리한다: 도메인 프로파일은 `canoe/databases/chassis_can.dbc`, `canoe/databases/powertrain_can.dbc`, `canoe/databases/body_can.dbc`, `canoe/databases/infotainment_can.dbc`, `canoe/databases/eth_backbone_can_stub.dbc`를 사용하고, Validation 결과 프레임(`0x230`,`0x231`)은 `chassis_can.dbc`에 통합 관리한다. Ethernet 논리 계약은 `canoe/docs/operations/ETH_INTERFACE_CONTRACT.md`를 사용한다.
+- CAN 통신 원본은 계층 분리로 관리한다: 도메인 프로파일은 `canoe/databases/chassis_can.dbc`, `canoe/databases/powertrain_can.dbc`, `canoe/databases/body_can.dbc`, `canoe/databases/infotainment_can.dbc`, `canoe/databases/adas_can.dbc`, `canoe/databases/eth_backbone_can_stub.dbc`를 사용하고, Validation 결과 프레임(`0x230`,`0x231`)은 `chassis_can.dbc`에 통합 관리한다. Ethernet 논리 계약은 `canoe/docs/operations/ETH_INTERFACE_CONTRACT.md`를 사용한다.
 - 본 설계는 Ethernet 백본(`ETH_SWITCH`) + 도메인 게이트웨이(`CHASSIS_GW`, `INFOTAINMENT_GW`, `BODY_GW`, `IVI_GW`) + 도메인 CAN 분배 구조를 사용한다.
 - 하단 추적표는 `Comm ID -> Flow ID -> Func ID -> Req ID`를 유지한다.
 - 제출 전 현대/기아 및 OEM 기준으로 설명/별칭은 정리하되, Message ID/DLC/Bit Position/Signal 식별자는 SoT 기준으로 고정 유지한다.
@@ -30,7 +30,7 @@
 
 - 검증 범위는 CANoe SIL, CAN + Ethernet(UDP)로 고정한다.
 - 목표 설계는 옵션1(ETH 백본) 고정이며, CANoe.CAN 라이선스 제약 구간의 SIL 검증은 임시로 CAN 대체 백본을 사용하고 Ethernet 라이선스 확보 후 동일 케이스로 재검증한다.
-- CANoe.CAN 환경에서는 Ethernet 일부 경로(E100/E200 모니터링 및 V2 확장)를 `eth_backbone_can_stub.dbc`(0x064/0x11F/0x232/0x313/0x314/0x315)로 대체 운반한다.
+- CANoe.CAN 환경에서는 Ethernet 일부 경로(E100/E200 모니터링 및 V2 확장)를 `eth_backbone_can_stub.dbc`(0x064/0x232/0x314/0x315)와 `adas_can.dbc`(0x11F/0x313)로 분리 대체 운반한다.
 - `Comm_009`, `Comm_106`, `Comm_205`는 Validation Harness 통신(검증 전용)이며 양산 통신과 구분한다.
 - Vehicle Baseline(Req_101~Req_119) 통신(`Comm_101~Comm_106`, `Comm_201~Comm_205`)은 본 문서에서 확정 정의하고, 도메인 DBC는 이 정의를 구현 대상으로 사용한다.
 - V2 확장 요구(`Req_120~Req_124`) 통신(`Comm_120~Comm_124`)은 구현 활성 상태로 관리하며, DBC/코드/테스트를 동일 커밋에서 동기화한다.
@@ -315,9 +315,10 @@
 
 | 구분 | 범위 | 원본 파일 | 비고 |
 |---|---|---|---|
-| Core CAN Profile | Comm_001, Comm_002, Comm_003, Comm_007, Comm_008, Comm_009 | `canoe/databases/chassis_can.dbc` + `canoe/databases/infotainment_can.dbc` + `canoe/databases/body_can.dbc` + `canoe/databases/eth_backbone_can_stub.dbc` | 경고 코어 체인 단일 원본(CAN-stub 포함) |
-| Domain CAN Profile | Comm_101~Comm_106, Comm_201~Comm_205 | `canoe/databases/chassis_can.dbc` + `canoe/databases/powertrain_can.dbc` + `canoe/databases/body_can.dbc` + `canoe/databases/infotainment_can.dbc` + `canoe/databases/eth_backbone_can_stub.dbc` | 차량 기본 기능/도메인 분리 원본(CAN-stub 포함) |
-| ETH Stub Transport Profile | Comm_004, Comm_005, Comm_006, Comm_120, Comm_121, Comm_124, Comm_201(일부) | `canoe/databases/eth_backbone_can_stub.dbc` | CANoe.CAN 환경 대체 운반 원본 |
+| Core CAN Profile | Comm_001, Comm_002, Comm_003, Comm_007, Comm_008, Comm_009 | `canoe/databases/chassis_can.dbc` + `canoe/databases/infotainment_can.dbc` + `canoe/databases/body_can.dbc` + `canoe/databases/adas_can.dbc` + `canoe/databases/eth_backbone_can_stub.dbc` | 경고 코어 체인 단일 원본(CAN-stub 포함) |
+| Domain CAN Profile | Comm_101~Comm_106, Comm_201~Comm_205 | `canoe/databases/chassis_can.dbc` + `canoe/databases/powertrain_can.dbc` + `canoe/databases/body_can.dbc` + `canoe/databases/infotainment_can.dbc` + `canoe/databases/adas_can.dbc` + `canoe/databases/eth_backbone_can_stub.dbc` | 차량 기본 기능/도메인 분리 원본(CAN-stub 포함) |
+| ADAS CAN Profile | Comm_120, Comm_201(일부) | `canoe/databases/adas_can.dbc` | ADAS 소유 프레임 원본 |
+| ETH Stub Transport Profile | Comm_004, Comm_005, Comm_006, Comm_121, Comm_124 | `canoe/databases/eth_backbone_can_stub.dbc` | CANoe.CAN 환경 대체 운반 원본 |
 | Ethernet Profile (Logical Contract) | Comm_004, Comm_005, Comm_006, Comm_120, Comm_121, Comm_124 (및 Comm_001~003/007~008의 ETH 구간) | `canoe/docs/operations/ETH_INTERFACE_CONTRACT.md` | UDP 계약 단일 원본 |
 
 ---
@@ -378,9 +379,10 @@
 
 | Domain | 원본 파일(정의) | Comm 범위 | 핵심 Message |
 |---|---|---|---|
-| Core Integration CAN | `canoe/databases/chassis_can.dbc` + `canoe/databases/infotainment_can.dbc` + `canoe/databases/body_can.dbc` + `canoe/databases/eth_backbone_can_stub.dbc` | Comm_001, Comm_002, Comm_003, Comm_007, Comm_008, Comm_009 | frmVehicleStateCanMsg, frmSteeringCanMsg, frmNavContextCanMsg, frmAmbientControlMsg, frmClusterWarningMsg, frmTestResultMsg, frmEmergencyBroadcastMsg |
+| Core Integration CAN | `canoe/databases/chassis_can.dbc` + `canoe/databases/infotainment_can.dbc` + `canoe/databases/body_can.dbc` + `canoe/databases/adas_can.dbc` + `canoe/databases/eth_backbone_can_stub.dbc` | Comm_001, Comm_002, Comm_003, Comm_007, Comm_008, Comm_009 | frmVehicleStateCanMsg, frmSteeringCanMsg, frmNavContextCanMsg, frmAmbientControlMsg, frmClusterWarningMsg, frmTestResultMsg, frmEmergencyBroadcastMsg |
 | Chassis CAN | `canoe/databases/chassis_can.dbc` | Comm_001, Comm_002, Comm_102, Comm_105(헬스), Comm_201 | frmVehicleStateCanMsg, frmSteeringCanMsg, frmPedalInputCanMsg, frmBrakeStatusMsg, frmAccelStatusMsg, frmSteeringTorqueMsg, frmEpsStateMsg, frmAbsStateMsg |
-| ETH Backbone CAN Stub | `canoe/databases/eth_backbone_can_stub.dbc` | Comm_004, Comm_005, Comm_006, Comm_120, Comm_121, Comm_124, Comm_201(일부) | frmEmergencyBroadcastMsg, frmEmergencyMonitorMsg, frmAdasChassisStatusMsg, ethEmergencyRiskMsg, ethDecelAssistReqMsg, ethFailSafeStateMsg |
+| ADAS CAN | `canoe/databases/adas_can.dbc` | Comm_120, Comm_201(일부) | frmAdasChassisStatusMsg, ethEmergencyRiskMsg |
+| ETH Backbone CAN Stub | `canoe/databases/eth_backbone_can_stub.dbc` | Comm_004, Comm_005, Comm_006, Comm_121, Comm_124 | frmEmergencyBroadcastMsg, frmEmergencyMonitorMsg, ethDecelAssistReqMsg, ethFailSafeStateMsg |
 | Powertrain CAN | `canoe/databases/powertrain_can.dbc` | Comm_101, Comm_105, Comm_204 | frmIgnitionEngineMsg, frmGearStateMsg, frmPowertrainGatewayMsg, frmEngineSpeedTempMsg, frmPowerLimitMsg, frmCruiseStateMsg, frmEngineTorqueMsg, frmEngineLoadMsg |
 | Body CAN | `canoe/databases/body_can.dbc` | Comm_007, Comm_103, Comm_105, Comm_202 | frmAmbientControlMsg, frmHazardControlMsg, frmWindowControlMsg, frmDriverStateMsg, frmBodyHealthMsg, frmHvacStateMsg, frmMirrorStateMsg |
 | Infotainment CAN | `canoe/databases/infotainment_can.dbc` | Comm_003, Comm_008, Comm_104, Comm_105, Comm_203, Comm_205 | frmNavContextCanMsg, frmClusterWarningMsg, frmClusterBaseStateMsg, frmClusterThemeMsg, frmHmiPopupStateMsg, frmInfotainmentHealthMsg, frmAudioFocusMsg, frmMapRenderStateMsg |
@@ -436,7 +438,8 @@
 | Infotainment CAN | 24 | 0x110, 0x220~0x228, 0x260~0x26D | 24~30 |
 | Powertrain CAN | 19 | 0x300~0x312 | 19~25 |
 | Validation CAN (Chassis 통합) | 2 | 0x230~0x231 | 3~6 |
-| ETH Backbone CAN Stub | 6 | 0x064, 0x11F, 0x232, 0x313, 0x314, 0x315 | 6~10 |
+| ADAS CAN | 2 | 0x11F, 0x313 | 2~6 |
+| ETH Backbone CAN Stub | 4 | 0x064, 0x232, 0x314, 0x315 | 4~8 |
 | Ethernet UDP | 8 타입 | 0x510/0x511/0x512/0xE100/0xE200/0x313/0x314/0x315 | 8~12 타입 |
 
 - 통합 목표: CAN 메시지 `90~130`(CAN-stub 포함), Ethernet 메시지 타입 `5~12`, 전체 통신 항목 `100+`.
@@ -475,6 +478,7 @@
 | 3.18 | 2026-03-05 | Validation 결과 프레임(`0x230`,`0x231`)의 관리 기준을 `chassis_can.dbc` 통합으로 전환하고 Validation 노드 명칭(`VAL_*`) 및 Comm 매체 표기를 정합화. |
 | 3.17 | 2026-03-04 | 멘토링 체크리스트 반영: `test_can` 해석(Validation Harness 공통 DBC) 규칙과 CAN ID 배정 팀 룰(도메인/Stub/충돌회피/SoT)을 본문에 명시. |
 | 3.16 | 2026-03-04 | DBC SoT 정합 보강: `eth_backbone_can_stub.dbc`를 통신 원본 매핑에 반영하고 0x064/0x11F/0x232(및 0x313/0x314/0x315) CAN-stub 운반 경로를 상단표/Comm 표/규모표에 동기화. |
+| 3.17 | 2026-03-05 | ADAS 도메인 분리 반영: `adas_can.dbc`를 추가하고 ADAS 소유 프레임(0x11F/0x313)을 ETH Backbone CAN-stub에서 분리, 통신 원본표/도메인표를 동기화. |
 | 3.15 | 2026-03-03 | ID 표기 기준 고정: 문서 본문은 Logical ID(0xE210/0xE211/0xE212)를 우선 표기하고, CANoe SIL 실행 ID는 Stub(0x313/0x314/0x315)로 병기하도록 작성 원칙을 보강. |
 | 3.14 | 2026-03-03 | V2 확장 통신(`Comm_120~124`)을 Implemented 상태로 전환하고 메시지 ID/송수신 노드를 코드/DBC 실값(`0x313/0x314/0x315`, `WARN_ARB_MGR` 중심)으로 정정. |
 | 3.13 | 2026-03-02 | 감사 정합 보강: 옵션1 설계 vs SIL 임시 CAN 대체 백본 검증 경계 문구를 작성 원칙에 추가. |

@@ -11,7 +11,7 @@
 ## 1. 목적
 
 - 본 문서는 `E100/E200/E210/E211/E212`(논리 ID) 및 SIL Stub ID(`0x313/0x314/0x315`)를 포함한 Ethernet 메시지 계약의 단일 원본(Single Source of Truth)이다.
-- CAN 프레임 원본은 `canoe/databases/chassis_can.dbc`, `canoe/databases/powertrain_can.dbc`, `canoe/databases/body_can.dbc`, `canoe/databases/infotainment_can.dbc`, `canoe/databases/eth_backbone_can_stub.dbc`가 담당하며, Ethernet 프레임은 본 문서가 담당한다.
+- CAN 프레임 원본은 `canoe/databases/chassis_can.dbc`, `canoe/databases/powertrain_can.dbc`, `canoe/databases/body_can.dbc`, `canoe/databases/infotainment_can.dbc`, `canoe/databases/adas_can.dbc`, `canoe/databases/eth_backbone_can_stub.dbc`가 담당하며, Ethernet 프레임은 본 문서가 담당한다.
 
 ---
 

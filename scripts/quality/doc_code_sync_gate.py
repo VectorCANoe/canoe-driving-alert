@@ -133,23 +133,36 @@ def main() -> int:
     }
 
     capl_nodes = {p.stem for p in (ROOT / "canoe" / "src" / "capl").glob("**/*.can")}
-    cfg_path = ROOT / "canoe" / "cfg" / "CAN_500kBaud_1ch_split.cfg"
+    cfg_candidates = [
+        ROOT / "canoe" / "cfg" / "CAN_500kBaud_1ch_split.cfg",
+        ROOT / "canoe" / "cfg" / "CAN_v2_topology_wip.cfg",
+        ROOT / "canoe" / "cfg" / "CAN_500kBaud_1ch.cfg",
+        ROOT / "canoe" / "cfg" / "v1_cfg" / "CAN_500kBaud_1ch.cfg",
+    ]
+    cfg_path = next((p for p in cfg_candidates if p.exists()), cfg_candidates[0])
     if not cfg_path.exists():
-        fallback_cfg = ROOT / "canoe" / "cfg" / "CAN_500kBaud_1ch.cfg"
-        if fallback_cfg.exists():
-            cfg_path = fallback_cfg
-    cfg_text = read_text(cfg_path)
-    cfg_nodes = {
-        Path(x.replace("..\\src\\capl\\", "").replace("\\", "/")).stem
-        for x in re.findall(r"\.\.\\src\\capl\\[^\s\"<>]+\.can", cfg_text)
-    }
+        fail = True
+        fail_issues.append(
+            "Missing CFG file for gate: expected one of "
+            + ", ".join([p.name for p in cfg_candidates])
+        )
+        cfg_text = ""
+        cfg_nodes = set()
+    else:
+        cfg_text = read_text(cfg_path)
+        cfg_can_paths = re.findall(r"\"([^\"]+\.can)\"", cfg_text)
+        cfg_nodes = {
+            Path(x.replace("\\", "/")).stem
+            for x in cfg_can_paths
+        }
 
     dbc_paths = [
         ROOT / "canoe" / "databases" / "chassis_can.dbc",
         ROOT / "canoe" / "databases" / "powertrain_can.dbc",
         ROOT / "canoe" / "databases" / "body_can.dbc",
         ROOT / "canoe" / "databases" / "infotainment_can.dbc",
-        ROOT / "canoe" / "databases" / "test_can.dbc",
+        ROOT / "canoe" / "databases" / "adas_can.dbc",
+        ROOT / "canoe" / "databases" / "eth_backbone_can_stub.dbc",
     ]
     missing_dbc_files = [p.name for p in dbc_paths if not p.exists()]
 
@@ -223,7 +236,28 @@ def main() -> int:
         issue_lines.append("- ?놁쓬")
     issues = "\n".join(issue_lines)
 
-    template = read_text(TEMPLATE_PATH)
+    if TEMPLATE_PATH.exists():
+        template = read_text(TEMPLATE_PATH)
+    else:
+        template = """# Doc-Code Sync Report
+
+- Generated At: {{generated_at}}
+- Branch: {{branch}}
+- Commit: {{commit_sha}}
+- Gate Result: {{gate_result}}
+
+## Req Coverage
+{{req_coverage_table}}
+
+## Func Coverage
+{{func_coverage_table}}
+
+## Implementation Summary
+{{impl_summary}}
+
+## Issues
+{{issues}}
+"""
     rendered = (
         template.replace("{{generated_at}}", dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC"))
         .replace("{{commit_sha}}", git(["rev-parse", "--short", "HEAD"]))
@@ -245,5 +279,3 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-
-

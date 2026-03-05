@@ -1,0 +1,62 @@
+VERSION "ADAS_CAN_v1.0"
+
+
+NS_ :
+  NS_DESC_
+  CM_
+  BA_DEF_
+  BA_
+  VAL_
+  CAT_DEF_
+  CAT_
+  FILTER
+  BA_DEF_DEF_
+  EV_DATA_
+  ENVVAR_DATA_
+  SGTYPE_
+  SGTYPE_VAL_
+  BA_DEF_SGTYPE_
+  BA_SGTYPE_
+  SIG_TYPE_REF_
+  VAL_TABLE_
+  SIG_GROUP_
+  SIG_VALTYPE_
+  SIGTYPE_VALTYPE_
+  BO_TX_BU_
+  BA_DEF_REL_
+  BA_REL_
+  BA_SGTYPE_REL_
+  SG_MUL_VAL_
+
+BS_:
+
+BU_: ADAS_WARN_CTRL WARN_ARB_MGR CHASSIS_GW VAL_SCENARIO_CTRL Vector__XXX
+
+BO_ 287 frmAdasChassisStatusMsg: 2 ADAS_WARN_CTRL
+ SG_ AdasChassisState : 0|8@1+ (1,0) [0|255] "" CHASSIS_GW
+ SG_ AdasHealthLevel  : 8|8@1+ (1,0) [0|255] "" CHASSIS_GW
+
+BO_ 787 ethEmergencyRiskMsg: 5 ADAS_WARN_CTRL
+ SG_ RiskLevel          : 0|8@1+  (1,0) [0|100] "" WARN_ARB_MGR,VAL_SCENARIO_CTRL
+ SG_ EtaSeconds         : 8|8@1+  (1,0) [0|255] "s" WARN_ARB_MGR,VAL_SCENARIO_CTRL
+ SG_ VehicleSpeed       : 16|8@1+ (1,0) [0|255] "km/h" WARN_ARB_MGR,VAL_SCENARIO_CTRL
+ SG_ EmergencyDirection : 24|2@1+ (1,0) [0|3] "" WARN_ARB_MGR,VAL_SCENARIO_CTRL
+ SG_ EmergencyType      : 26|2@1+ (1,0) [0|2] "" WARN_ARB_MGR,VAL_SCENARIO_CTRL
+ SG_ Reserved0          : 28|12@1+ (1,0) [0|0] "" Vector__XXX
+
+CM_ BO_ 287 "Comm_201: ADAS chassis status output. ADAS-owned frame.";
+CM_ SG_ 287 AdasChassisState "Computed ADAS warning level (0=none).";
+CM_ SG_ 287 AdasHealthLevel  "ADAS node health (0=fault 1=ok).";
+
+CM_ BO_ 787 "Comm_120: Emergency proximity risk frame. ADAS-owned frame.";
+CM_ SG_ 787 RiskLevel "0..100 emergency proximity risk score.";
+CM_ SG_ 787 EtaSeconds "Emergency ETA seconds used by risk model.";
+CM_ SG_ 787 VehicleSpeed "Vehicle speed input used by risk model.";
+CM_ SG_ 787 EmergencyDirection "0=front 1=left 2=right 3=rear.";
+CM_ SG_ 787 EmergencyType "0=none 1=police 2=ambulance.";
+
+BA_DEF_ BO_ "GenMsgCycleTime" INT 0 10000;
+BA_DEF_DEF_ "GenMsgCycleTime" 0;
+BA_ "GenMsgCycleTime" BO_ 287 100;
+BA_ "GenMsgCycleTime" BO_ 787 100;
+
