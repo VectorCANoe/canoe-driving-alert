@@ -21,7 +21,7 @@
 - 구현 상세는 코드 문법이 아니라 `입력/처리/출력/타이밍/예외` 계약으로 기록한다.
 - 추적 체인은 `Req -> Func -> Flow -> Comm -> Var -> Code -> UT/IT/ST`를 유지한다.
 - 네트워크는 옵션1 아키텍처를 고정한다: `ETH_SWITCH + CHASSIS_GW/INFOTAINMENT_GW/BODY_GW/IVI_GW + 도메인 CAN`.
-- 통신 원본은 분리 관리한다: CAN=`canoe/databases/chassis_can.dbc` + `canoe/databases/powertrain_can.dbc` + `canoe/databases/body_can.dbc` + `canoe/databases/infotainment_can.dbc` + `canoe/databases/eth_backbone_can_stub.dbc` (Validation frame `0x230/0x231`은 `chassis_can.dbc` 통합), Ethernet(논리 계약)=`canoe/docs/operations/ETH_INTERFACE_CONTRACT.md`.
+- 통신 원본은 분리 관리한다: CAN=`canoe/databases/chassis_can.dbc` + `canoe/databases/powertrain_can.dbc` + `canoe/databases/body_can.dbc` + `canoe/databases/infotainment_can.dbc` + `canoe/databases/adas_can.dbc` + `canoe/databases/eth_backbone_can_stub.dbc` (Validation frame `0x230/0x231`은 `chassis_can.dbc` 통합), Ethernet(논리 계약)=`canoe/docs/operations/ETH_INTERFACE_CONTRACT.md`.
 - 범위 외 항목(OTA/UDS/DoIP)은 구현 대상에서 제외한다.
 - ASPICE SWE.3 BP1~BP8 관점에서 `상세 설계/인터페이스/동적행위/대안평가/추적성/합의/구현규칙`을 명시한다.
 - SIL 단계에서는 Panel/sysvar 경유 자극을 허용하며, 통신 계약(0302/0303/0304)은 유지한 채 ETH `UdpSocket` 기반 입력으로 점진 전환한다.

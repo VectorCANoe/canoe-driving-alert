@@ -89,9 +89,13 @@
    - Validation path: remove `test_can` dependency in active path
    - Validation ECU naming: `SIL_TEST_CTRL/VEHICLE_BASE_TEST_CTRL -> VAL_*`
    - ADAS domain directive: apply `adas_can.dbc` creation and ownership split via dev change order
-4. Keep SoT sync rule active:
+4. Apply naming/ID SoT:
+   - Use `00e_ECU_Naming_Standard.md` as canonical ECU naming policy
+   - Use `00f_CAN_ID_Allocation_Standard.md` as canonical CAN-ID policy
+   - Keep Canonical node names in trace docs; do not introduce unofficial abbreviations
+5. Keep SoT sync rule active:
    - Domain CAN DBC (`*_can.dbc`) + Ethernet contract (`ETH_INTERFACE_CONTRACT.md`) -> `0302/0303/0304`
-5. Reflect Mentoring MET40 open items in docs/evidence:
+6. Reflect Mentoring MET40 open items in docs/evidence:
    - `M40-01`, `M40-02`, `M40-04`, `M40-05`, `M40-06`, `M40-11`, `M40-14`
 
 ## 8) Do Not Do

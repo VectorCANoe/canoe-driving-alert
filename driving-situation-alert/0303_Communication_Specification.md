@@ -40,11 +40,14 @@
 
 ---
 
-## CAN ID 배정 정책 (멘토링 대응 팀 룰)
+## CAN ID 배정 정책 (Project SoT)
+
+- ID 상위 SoT는 `00f_CAN_ID_Allocation_Standard.md`, 명명 상위 SoT는 `00e_ECU_Naming_Standard.md`를 따른다.
+- 본 장은 통신 스펙 관점의 실행 규칙만 요약한다.
 
 | 규칙 | 정책 |
 |---|---|
-| 도메인 우선 분리 | CAN ID는 도메인별 블록(Chassis/Body/Infotainment/Powertrain/Test)으로 우선 배정한다. |
+| 도메인 우선 분리 | CAN ID는 도메인별 블록(Chassis/Body/Infotainment/Powertrain/ADAS reserved)으로 우선 배정한다. |
 | 논리 ID와 SIL Stub 분리 | Ethernet 논리 ID(`0xE100/0xE200/0xE210~0xE212`)와 CANoe SIL Stub ID(`0x064/0x11F/0x232/0x313~0x315`)를 분리 표기한다. |
 | 충돌 회피 | 신규 ID 추가 시 기존 DBC ID와 중복 금지, 진단/검증 예약 구간과 충돌 금지 원칙을 따른다. |
 | 확장성 | 기존 Flow/Comm 체인을 깨지 않도록 Comm 단위로 확장하고, 동일 변경에서 0302/0304/04/05~07 동시 갱신한다. |

@@ -20,6 +20,7 @@
 - 차량 기본 기능 확장 요구(`Req_101~Req_119`)는 `Func_101~Func_119`로 별도 관리한다.
 - V2 확장 요구(`Req_120~Req_124`)는 `Func_120~Func_124`로 별도 관리하며, 본 문서에서는 구현 활성 상태로 유지한다.
 - 제출 전 현대/기아 및 OEM 기준 명칭으로 일괄 대체하되, 기능 ID/추적 ID는 유지한다.
+- 명명 규칙 SoT는 `00e_ECU_Naming_Standard.md`, ID 규칙 SoT는 `00f_CAN_ID_Allocation_Standard.md`를 따른다.
 - 네트워크 구현은 옵션1 아키텍처를 고정 적용한다: `ETH_SWITCH + CHASSIS_GW/INFOTAINMENT_GW/BODY_GW/IVI_GW + 도메인 CAN`.
 - 목표 설계는 옵션1(ETH 백본) 고정이며, CANoe.CAN 라이선스 제약 구간의 SIL 검증은 임시로 CAN 대체 백본을 사용하고 Ethernet 라이선스 확보 후 동일 케이스로 재검증한다.
 - `WARN_ARB_MGR`의 중재는 서비스(QoS) 우선순위 중재이며, CAN 비트 레벨 arbitration과 구분해 해석한다.

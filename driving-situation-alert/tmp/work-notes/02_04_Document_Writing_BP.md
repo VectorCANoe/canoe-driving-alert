@@ -1,3 +1,7 @@
+> TEMP NOTE (STALE)
+> 이 문서는 참고용 임시 메모입니다. 공식 SoT는 `driving-situation-alert/00e_ECU_Naming_Standard.md`, `driving-situation-alert/00f_CAN_ID_Allocation_Standard.md` 및 정식 체인 문서(`01/03/0301/0302/0303/0304/04/05/06/07`)입니다.
+> 임시 문서와 SoT가 충돌하면 SoT를 우선 적용합니다.
+
 # 02/04 문서 작성 Best Practice 가이드
 
 **작성일**: 2026-02-26  

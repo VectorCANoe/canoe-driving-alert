@@ -18,6 +18,17 @@
 - 현재 ADAS 소유 메시지는 `chassis_can.dbc`/`eth_backbone_can_stub.dbc`에 분산되어 있어 도메인 소유 경계가 불명확하다.
 - 본 변경은 기능 추가가 아니라 DBC 구조/명명/소유 경계 정리다.
 
+## 2-1. 준수 표준 (필수)
+
+- 명명 상위 SoT: `driving-situation-alert/00e_ECU_Naming_Standard.md`
+- ID 상위 SoT: `driving-situation-alert/00f_CAN_ID_Allocation_Standard.md`
+- ECU 명칭 상세 매핑 기준: `00e_ECU_Naming_Standard.md`의 `4. ECU 명명표 (Canonical Matrix)`
+- 공식 노드명은 Canonical 명칭 유지:
+  - `VAL_SCENARIO_CTRL`, `VAL_BASELINE_CTRL`
+  - `ACCEL_CTRL`, `BRAKE_CTRL`, `STEERING_CTRL`, `ENGINE_CTRL`, `NAV_CONTEXT_MGR`, `BCM_AMBIENT_CTRL`
+- 비공식 축약(`SIL_TST`, `VEH_BASE_TST`, `ACCL_CTRL`, `BRK_CTRL`, `STRG_CTRL`, `ENG_CTRL`, `NAV_CTX_MGR`)은 산출물 반영 금지.
+- ADAS 신규 CAN ID는 예약 블록(`0x330~0x34F`)에서 우선 할당하고, 기존 ID와 충돌 0건을 증빙한다.
+
 ## 3. 변경 범위 (In Scope)
 
 1. DBC 구조 변경

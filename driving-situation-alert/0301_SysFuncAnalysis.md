@@ -229,13 +229,18 @@
 
 ## 5. ECU 명명 기준 (ISO/OEM 정합)
 
+- 본 장의 상세 기준 SoT는 `00e_ECU_Naming_Standard.md`를 따른다.
+- Canonical ECU 명명표와 약어 정책은 `00e_ECU_Naming_Standard.md`의 `4. ECU 명명표 (Canonical Matrix)`를 기준으로 적용한다.
+- 본 문서는 추적 체인 일관성을 위해 현행 Canonical 노드명을 유지한다.
+- 팀원 제안 축약명은 참고 입력으로만 사용하고, 공식명 변경은 00e 절차 승인 후 일괄 반영한다.
+
 | 분류 | 명명 규칙 | 현재 적용 예시 |
 |---|---|---|
 | Gateway | `*_GW` (도메인 경계 변환 역할) | CHASSIS_GW, INFOTAINMENT_GW, BODY_GW, IVI_GW |
 | Controller | `*_CTRL` (기능 판단/제어 역할) | ADAS_WARN_CTRL, BCM_AMBIENT_CTRL, CLU_HMI_CTRL |
 | Manager | `*_MGR` (중재/상태 관리 역할) | NAV_CONTEXT_MGR, WARN_ARB_MGR |
 | Emergency Terminal | `EMS_ALERT` (논리 단말), 내부 모듈은 `EMS_*_TX/RX`로 분리 | EMS_ALERT (internal: EMS_POLICE_TX, EMS_AMB_TX, EMS_ALERT_RX) |
-| Test/SIL | `VAL_*` (검증 제어 역할) | VAL_SCENARIO_CTRL |
+| Test/SIL | `VAL_*` (검증 제어 역할) | VAL_SCENARIO_CTRL, VAL_BASELINE_CTRL |
 
 - 적용 원칙: 상위 문서(03/0301/0302/0303/0304)는 `EMS_ALERT` 논리 식별자를 기본으로 사용하고, 코드/DBC 구현 모듈 표기는 하단 보강표에서만 `EMS_*_TX/RX`로 표기한다.
 
