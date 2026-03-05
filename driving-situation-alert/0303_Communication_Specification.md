@@ -63,23 +63,23 @@
 | frmVehicleStateCanMsg | 0x100 | 2 | vehicleSpeed | 0~7 | 차량 속도 | 0~255 km/h | VAL_SCENARIO_CTRL -> CHS_GW 전달 |
 |  |  |  | driveState | 8~9 | 주행 상태(PRND) | 0~3 | VAL_SCENARIO_CTRL -> CHS_GW 전달 |
 | frmSteeringCanMsg | 0x101 | 1 | steeringInput | 0 | 조향 입력 여부 | 0~1 | VAL_SCENARIO_CTRL -> CHS_GW 전달 |
-| frmPedalInputCanMsg | 0x102 | 2 | AccelPedal | 0~7 | 가속 페달 입력 | 0~100 % | VAL_SCENARIO_CTRL -> ACCL_CTRL 전달 |
+| frmPedalInputCanMsg | 0x102 | 2 | AccelPedal | 0~7 | 가속 페달 입력 | 0~100 % | VAL_SCENARIO_CTRL -> ACCEL_CTRL 전달 |
 |  |  |  | BrakePedal | 8~15 | 브레이크 페달 입력 | 0~100 % | VAL_SCENARIO_CTRL -> BRK_CTRL 전달 |
-| frmSteeringStateCanMsg | 0x103 | 1 | SteeringState | 0~1 | 조향 상태 | 0~3 | CHS_GW -> STRG_CTRL 전달 |
-| frmWheelSpeedMsg | 0x104 | 4 | WheelSpdFL | 0~7 | 전륜 좌 휠속도 | 0~255 km/h | CHS_GW -> ACCL_CTRL, BRK_CTRL, STRG_CTRL 전달 |
-|  |  |  | WheelSpdFR | 8~15 | 전륜 우 휠속도 | 0~255 km/h | CHS_GW -> ACCL_CTRL, BRK_CTRL, STRG_CTRL 전달 |
-|  |  |  | WheelSpdRL | 16~23 | 후륜 좌 휠속도 | 0~255 km/h | CHS_GW -> ACCL_CTRL, BRK_CTRL, STRG_CTRL 전달 |
-|  |  |  | WheelSpdRR | 24~31 | 후륜 우 휠속도 | 0~255 km/h | CHS_GW -> ACCL_CTRL, BRK_CTRL, STRG_CTRL 전달 |
-| frmYawAccelMsg | 0x105 | 4 | YawRate | 0~15 | 요레이트 | 0~65535 deg/s | CHS_GW -> BRK_CTRL, STRG_CTRL 전달 |
-|  |  |  | LatAccel | 16~31 | 횡가속도 | 0~65535 0.01m/s2 | CHS_GW -> BRK_CTRL, STRG_CTRL 전달 |
+| frmSteeringStateCanMsg | 0x103 | 1 | SteeringState | 0~1 | 조향 상태 | 0~3 | CHS_GW -> STEER_CTRL 전달 |
+| frmWheelSpeedMsg | 0x104 | 4 | WheelSpdFL | 0~7 | 전륜 좌 휠속도 | 0~255 km/h | CHS_GW -> ACCEL_CTRL, BRK_CTRL, STEER_CTRL 전달 |
+|  |  |  | WheelSpdFR | 8~15 | 전륜 우 휠속도 | 0~255 km/h | CHS_GW -> ACCEL_CTRL, BRK_CTRL, STEER_CTRL 전달 |
+|  |  |  | WheelSpdRL | 16~23 | 후륜 좌 휠속도 | 0~255 km/h | CHS_GW -> ACCEL_CTRL, BRK_CTRL, STEER_CTRL 전달 |
+|  |  |  | WheelSpdRR | 24~31 | 후륜 우 휠속도 | 0~255 km/h | CHS_GW -> ACCEL_CTRL, BRK_CTRL, STEER_CTRL 전달 |
+| frmYawAccelMsg | 0x105 | 4 | YawRate | 0~15 | 요레이트 | 0~65535 deg/s | CHS_GW -> BRK_CTRL, STEER_CTRL 전달 |
+|  |  |  | LatAccel | 16~31 | 횡가속도 | 0~65535 0.01m/s2 | CHS_GW -> BRK_CTRL, STEER_CTRL 전달 |
 | frmBrakeStatusMsg | 0x106 | 2 | BrakePressure | 0~7 | 브레이크 압력 | 0~255 % | BRK_CTRL -> CHS_GW 전달 |
 |  |  |  | BrakeMode | 8~9 | 브레이크 동작 모드 | 0~3 | BRK_CTRL -> CHS_GW 전달 |
 |  |  |  | AbsActive | 10 | ABS 활성 상태 | 0~1 | BRK_CTRL -> CHS_GW 전달 |
 |  |  |  | EspActive | 11 | ESP 활성 상태 | 0~1 | BRK_CTRL -> CHS_GW 전달 |
-| frmAccelStatusMsg | 0x107 | 2 | AccelRequest | 0~7 | 가속 요청 | 0~100 % | ACCL_CTRL -> CHS_GW 전달 |
-|  |  |  | TorqueRequest | 8~15 | 토크 요청 | 0~255 Nm | ACCL_CTRL -> CHS_GW 전달 |
-| frmSteeringTorqueMsg | 0x108 | 2 | SteeringTorque | 0~11 | 조향 토크 | 0~4095 0.1Nm | STRG_CTRL -> CHS_GW 전달 |
-|  |  |  | SteeringAssistLv | 12~15 | 조향 보조 레벨 | 0~15 | STRG_CTRL -> CHS_GW 전달 |
+| frmAccelStatusMsg | 0x107 | 2 | AccelRequest | 0~7 | 가속 요청 | 0~100 % | ACCEL_CTRL -> CHS_GW 전달 |
+|  |  |  | TorqueRequest | 8~15 | 토크 요청 | 0~255 Nm | ACCEL_CTRL -> CHS_GW 전달 |
+| frmSteeringTorqueMsg | 0x108 | 2 | SteeringTorque | 0~11 | 조향 토크 | 0~4095 0.1Nm | STEER_CTRL -> CHS_GW 전달 |
+|  |  |  | SteeringAssistLv | 12~15 | 조향 보조 레벨 | 0~15 | STEER_CTRL -> CHS_GW 전달 |
 | frmChassisHealthMsg | 0x109 | 2 | ChassisAliveCnt | 0~7 | Chassis Alive Counter | 0~255 | CHS_GW -> VAL_SCENARIO_CTRL 전달 |
 |  |  |  | ChassisDiagState | 8~11 | Chassis 진단 상태 | 0~15 | CHS_GW -> VAL_SCENARIO_CTRL 전달 |
 |  |  |  | ChassisFailCode | 12~15 | Chassis 오류 코드 | 0~15 | CHS_GW -> VAL_SCENARIO_CTRL 전달 |
@@ -196,23 +196,23 @@
 | ethSelectedAlertMsg | 0xE200 | 2 | selectedAlertLevel | 0~2 | 최종 경고 레벨 | 0~7 | WARN_ARB_MGR -> BODY_GW, IVI_GW 전달 (UDP) |
 |  |  |  | selectedAlertType | 3~5 | 최종 경고 타입 | 0~7 | WARN_ARB_MGR -> BODY_GW, IVI_GW 전달 (UDP) |
 |  |  |  | timeoutClear | 8 | 타임아웃 해제 플래그 | 0~1 | WARN_ARB_MGR -> BODY_GW, IVI_GW 전달 (UDP) |
-| frmEpsStateMsg | 0x10A | 2 | EpsAssistState | 0~2 | EPS 보조 상태 | 0~7 | CHS_GW -> STRG_CTRL, DOMAIN_ROUTER 전달 |
-|  |  |  | EpsFault | 3 | EPS 고장 상태 | 0~1 | CHS_GW -> STRG_CTRL, DOMAIN_ROUTER 전달 |
-|  |  |  | EpsTorqueReq | 8~15 | EPS 토크 요청 | 0~255 0.1Nm | CHS_GW -> STRG_CTRL, DOMAIN_ROUTER 전달 |
+| frmEpsStateMsg | 0x10A | 2 | EpsAssistState | 0~2 | EPS 보조 상태 | 0~7 | CHS_GW -> STEER_CTRL, DOMAIN_ROUTER 전달 |
+|  |  |  | EpsFault | 3 | EPS 고장 상태 | 0~1 | CHS_GW -> STEER_CTRL, DOMAIN_ROUTER 전달 |
+|  |  |  | EpsTorqueReq | 8~15 | EPS 토크 요청 | 0~255 0.1Nm | CHS_GW -> STEER_CTRL, DOMAIN_ROUTER 전달 |
 | frmAbsStateMsg | 0x10B | 2 | AbsCtrlState | 0~2 | ABS 제어 상태 | 0~7 | CHS_GW -> BRK_CTRL, DOMAIN_ROUTER 전달 |
 |  |  |  | AbsSlipLevel | 8~15 | ABS 슬립 레벨 | 0~255 | CHS_GW -> BRK_CTRL, DOMAIN_ROUTER 전달 |
-| frmEscStateMsg | 0x10C | 2 | EscCtrlState | 0~2 | ESC 제어 상태 | 0~7 | CHS_GW -> BRK_CTRL, STRG_CTRL, DOMAIN_ROUTER 전달 |
-|  |  |  | YawCtrlReq | 8~15 | 요 모멘트 제어 요구 | 0~255 | CHS_GW -> BRK_CTRL, STRG_CTRL, DOMAIN_ROUTER 전달 |
-| frmTcsStateMsg | 0x10D | 2 | TcsActive | 0 | TCS 활성 상태 | 0~1 | CHS_GW -> ACCL_CTRL, BRK_CTRL, DOMAIN_ROUTER 전달 |
-|  |  |  | TcsSlipRatio | 8~15 | TCS 슬립 비율 | 0~255 | CHS_GW -> ACCL_CTRL, BRK_CTRL, DOMAIN_ROUTER 전달 |
+| frmEscStateMsg | 0x10C | 2 | EscCtrlState | 0~2 | ESC 제어 상태 | 0~7 | CHS_GW -> BRK_CTRL, STEER_CTRL, DOMAIN_ROUTER 전달 |
+|  |  |  | YawCtrlReq | 8~15 | 요 모멘트 제어 요구 | 0~255 | CHS_GW -> BRK_CTRL, STEER_CTRL, DOMAIN_ROUTER 전달 |
+| frmTcsStateMsg | 0x10D | 2 | TcsActive | 0 | TCS 활성 상태 | 0~1 | CHS_GW -> ACCEL_CTRL, BRK_CTRL, DOMAIN_ROUTER 전달 |
+|  |  |  | TcsSlipRatio | 8~15 | TCS 슬립 비율 | 0~255 | CHS_GW -> ACCEL_CTRL, BRK_CTRL, DOMAIN_ROUTER 전달 |
 | frmBrakeTempMsg | 0x10E | 2 | BrakeTempFL | 0~7 | 브레이크 전륜좌 온도 | 0~255 degC | CHS_GW -> BRK_CTRL, DOMAIN_ROUTER 전달 |
 |  |  |  | BrakeTempFR | 8~15 | 브레이크 전륜우 온도 | 0~255 degC | CHS_GW -> BRK_CTRL, DOMAIN_ROUTER 전달 |
 |  |  |  | BrakeTempRL | 16~23 | 브레이크 후륜좌 온도 | 0~255 degC | CHS_GW -> BRK_CTRL, DOMAIN_ROUTER 전달 |
 |  |  |  | BrakeTempRR | 24~31 | 브레이크 후륜우 온도 | 0~255 degC | CHS_GW -> BRK_CTRL, DOMAIN_ROUTER 전달 |
-| frmSteeringAngleMsg | 0x10F | 2 | SteeringAngle | 0~15 | 조향각 | -720~720 deg | CHS_GW -> STRG_CTRL, ADAS_WARN_CTRL 전달 |
-|  |  |  | SteeringAngleRate | 16~31 | 조향각속도 | -1024~1023 deg/s | CHS_GW -> STRG_CTRL, ADAS_WARN_CTRL 전달 |
-| frmWheelPulseMsg | 0x11A | 2 | WheelPulseFL | 0~15 | 전륜좌 휠 펄스 | 0~65535 cnt | CHS_GW -> ACCL_CTRL, BRK_CTRL, STRG_CTRL 전달 |
-|  |  |  | WheelPulseFR | 16~31 | 전륜우 휠 펄스 | 0~65535 cnt | CHS_GW -> ACCL_CTRL, BRK_CTRL, STRG_CTRL 전달 |
+| frmSteeringAngleMsg | 0x10F | 2 | SteeringAngle | 0~15 | 조향각 | -720~720 deg | CHS_GW -> STEER_CTRL, ADAS_WARN_CTRL 전달 |
+|  |  |  | SteeringAngleRate | 16~31 | 조향각속도 | -1024~1023 deg/s | CHS_GW -> STEER_CTRL, ADAS_WARN_CTRL 전달 |
+| frmWheelPulseMsg | 0x11A | 2 | WheelPulseFL | 0~15 | 전륜좌 휠 펄스 | 0~65535 cnt | CHS_GW -> ACCEL_CTRL, BRK_CTRL, STEER_CTRL 전달 |
+|  |  |  | WheelPulseFR | 16~31 | 전륜우 휠 펄스 | 0~65535 cnt | CHS_GW -> ACCEL_CTRL, BRK_CTRL, STEER_CTRL 전달 |
 | frmSuspensionStateMsg | 0x11B | 2 | DamperMode | 0~2 | 댐퍼 모드 | 0~7 | CHS_GW -> DOMAIN_ROUTER 전달 |
 |  |  |  | RideHeight | 8~15 | 차고 높이 | 0~255 mm | CHS_GW -> DOMAIN_ROUTER 전달 |
 | frmTirePressureMsg | 0x11C | 4 | TirePressFL | 0~7 | 전륜좌 타이어 압력 | 0~255 kPa | CHS_GW -> DOMAIN_ROUTER 전달 |

@@ -41,7 +41,7 @@
 
 ## 네트워크 플로우 표 (공식 표준 양식)
 
-| Channel | ID hex | Symbolic Name(message name) | Byte no. | Function | Bit no. | signal name | VAL_SCENARIO_CTRL | CHS_GW | INFOTAINMENT_GW | DOMAIN_ROUTER | ETH_SW | ADAS_WARN_CTRL | NAV_CTX_MGR | EMS_POLICE_TX | EMS_AMB_TX | EMS_ALERT_RX | WARN_ARB_MGR | BODY_GW | IVI_GW | AMBIENT_CTRL | CLU_HMI_CTRL | ENG_CTRL | TCM | ACCL_CTRL | BRK_CTRL | STRG_CTRL | HAZARD_CTRL | WINDOW_CTRL | DRV_STATE_MGR | CLU_BASE_CTRL | VAL_BASELINE_CTRL | [비고] |
+| Channel | ID hex | Symbolic Name(message name) | Byte no. | Function | Bit no. | signal name | VAL_SCENARIO_CTRL | CHS_GW | INFOTAINMENT_GW | DOMAIN_ROUTER | ETH_SW | ADAS_WARN_CTRL | NAV_CTX_MGR | EMS_POLICE_TX | EMS_AMB_TX | EMS_ALERT_RX | WARN_ARB_MGR | BODY_GW | IVI_GW | AMBIENT_CTRL | CLU_HMI_CTRL | ENG_CTRL | TCM | ACCEL_CTRL | BRK_CTRL | STEER_CTRL | HAZARD_CTRL | WINDOW_CTRL | DRV_STATE_MGR | CLU_BASE_CTRL | VAL_BASELINE_CTRL | [비고] |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | Chassis CAN | 0x100 | frmVehicleStateCanMsg | 0 | Vehicle State Check | 0~7 | vehicleSpeed | Tx | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | CAN, 100ms |
 |  |  |  | 1 | Vehicle State Check | 8~9 | driveState | Tx | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
@@ -370,7 +370,7 @@
 | Domain Network | Gateway(경계 노드) | 대상 ECU/노드 | DBC 파일(정의) | ID 범위 | 연계 Flow |
 |---|---|---|---|---|---|
 | Core Integration CAN | CHS_GW, INFOTAINMENT_GW, BODY_GW, IVI_GW, ETH_SW | 경고 코어 체인 연계 노드 집합 | `canoe/databases/chassis_can.dbc` + `canoe/databases/infotainment_can.dbc` + `canoe/databases/body_can.dbc` + `canoe/databases/adas_can.dbc` + `canoe/databases/eth_backbone_can_stub.dbc` | 0x100/0x101/0x110/0x210/0x220/0x230/0x064/0x232 | Flow_001~Flow_009 |
-| Chassis CAN | CHS_GW | ACCL_CTRL, BRK_CTRL, STRG_CTRL, ADAS_WARN_CTRL 입력 경로 | `canoe/databases/chassis_can.dbc` | 0x100~0x121(0x11F 제외) | Flow_001, Flow_002, Flow_102, Flow_106, Flow_201, Flow_121, Flow_123 |
+| Chassis CAN | CHS_GW | ACCEL_CTRL, BRK_CTRL, STEER_CTRL, ADAS_WARN_CTRL 입력 경로 | `canoe/databases/chassis_can.dbc` | 0x100~0x121(0x11F 제외) | Flow_001, Flow_002, Flow_102, Flow_106, Flow_201, Flow_121, Flow_123 |
 | Powertrain CAN | DOMAIN_ROUTER | ENG_CTRL, TCM | `canoe/databases/powertrain_can.dbc` | 0x300~0x312 | Flow_101, Flow_105, Flow_204 |
 | Body CAN | BODY_GW | AMBIENT_CTRL, HAZARD_CTRL, WINDOW_CTRL, DRV_STATE_MGR | `canoe/databases/body_can.dbc` | 0x210~0x219, 0x240~0x24D | Flow_007, Flow_103, Flow_105, Flow_202 |
 | Infotainment CAN | INFOTAINMENT_GW, IVI_GW | NAV_CTX_MGR, CLU_HMI_CTRL, CLU_BASE_CTRL | `canoe/databases/infotainment_can.dbc` | 0x110, 0x220~0x228, 0x260~0x26D | Flow_003, Flow_008, Flow_104, Flow_105, Flow_203, Flow_205 |

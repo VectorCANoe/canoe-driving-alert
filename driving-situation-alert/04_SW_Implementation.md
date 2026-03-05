@@ -172,9 +172,9 @@ Emergency Source (logical terminal)
 | Func_043 | Req_043 | VAL_SCENARIO_CTRL | Flow_009 / Comm_009 / scenarioResult | Flow_009 / scenarioResult | `MOD_13.F043` | ST_RESULT_001 |
 | Func_101 | Req_101 | ENG_CTRL | Flow_101 / Comm_101 / IgnitionState, GearInput | Flow_101 / EngineState, EngineRpm | `ENG_CTRL.F101` | UT_BASE_PT_001 / IT_BASE_PT_001 |
 | Func_102 | Req_102 | TCM | Flow_101 / Comm_101 / IgnitionState, GearInput | Flow_101 / GearState | `TCM.F102` | UT_BASE_PT_001 / IT_BASE_PT_001 |
-| Func_103 | Req_103 | ACCL_CTRL | Flow_102 / Comm_102 / AccelPedal | Flow_102 / AccelRequest, TorqueRequest | `ACCL_CTRL.F103` | UT_BASE_CH_001 / IT_BASE_CH_001 |
+| Func_103 | Req_103 | ACCEL_CTRL | Flow_102 / Comm_102 / AccelPedal | Flow_102 / AccelRequest, TorqueRequest | `ACCEL_CTRL.F103` | UT_BASE_CH_001 / IT_BASE_CH_001 |
 | Func_104 | Req_104 | BRK_CTRL | Flow_102 / Comm_102 / BrakePedal | Flow_102 / BrakePressure, BrakeMode, AbsActive, EspActive | `BRK_CTRL.F104` | UT_BASE_CH_001 / IT_BASE_CH_001 |
-| Func_105 | Req_105 | STRG_CTRL | Flow_102 / Comm_102 / steeringInput, SteeringTorque | Flow_102 / SteeringState, SteeringAssistLv | `STRG_CTRL.F105` | UT_BASE_CH_001 / IT_BASE_CH_001 |
+| Func_105 | Req_105 | STEER_CTRL | Flow_102 / Comm_102 / steeringInput, SteeringTorque | Flow_102 / SteeringState, SteeringAssistLv | `STEER_CTRL.F105` | UT_BASE_CH_001 / IT_BASE_CH_001 |
 | Func_106 | Req_106 | HAZARD_CTRL | Flow_103 / Comm_103 / HazardSwitch | Flow_103 / HazardState, HazardLampReq | `HAZARD_CTRL.F106` | UT_BASE_BODY_001 / IT_BASE_BODY_001 |
 | Func_107 | Req_107 | WINDOW_CTRL | Flow_103 / Comm_103 / WindowCommand | Flow_103 / WindowState | `WINDOW_CTRL.F107` | UT_BASE_BODY_001 / IT_BASE_BODY_001 |
 | Func_108 | Req_108 | DRV_STATE_MGR | Flow_103 / Comm_103 / DriverStateLevel | Flow_103 / DriverStateInfo | `DRV_STATE_MGR.F108` | UT_BASE_BODY_001 / IT_BASE_BODY_001 |

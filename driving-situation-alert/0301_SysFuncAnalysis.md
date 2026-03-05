@@ -43,9 +43,9 @@
 | ENG_CTRL | 시동 상태 입력을 엔진 동작 상태로 반영 | 차량 기본 동작 |
 | TCM | 기어 입력(P/R/N/D) 상태 유지 및 전달 | 차량 기본 동작 |
 |  |  | Chassis |
-| ACCL_CTRL | 가속 페달 입력 상태 처리 | 차량 기본 동작 |
+| ACCEL_CTRL | 가속 페달 입력 상태 처리 | 차량 기본 동작 |
 | BRK_CTRL | 브레이크 페달 입력 상태 처리 | 차량 기본 동작 |
-| STRG_CTRL | 조향 입력 상태 처리 | 차량 기본 동작 |
+| STEER_CTRL | 조향 입력 상태 처리 | 차량 기본 동작 |
 | EMS_ALERT | 긴급 알림 송수신 상태 및 해제 상태 관리 | 송신/수신/타임아웃 통합 단말 |
 | WARN_ARB_MGR | 긴급 경고와 구간 경고 충돌 시 우선순위 중재 및 감속 보조 요청/해제 수행 | Emergency > Zone, Ambulance > Police |
 | VAL_SCENARIO_CTRL | SIL 시나리오 실행 및 판정 결과 기록 | 검증 제어 가상노드(Validation-only) |
@@ -92,9 +92,9 @@
 | Func_041, Func_042, Func_043 | Req_041, Req_042, Req_043 | VAL_SCENARIO_CTRL | testScenario | 시나리오 실행, CAN+ETH 검증, 판정 기록 | scenarioResult | 출력: scenarioResult |
 | Func_101 | Req_101 | ENG_CTRL | IgnitionState | 시동 상태 반영 | EngineState | 입력: IgnitionState / 출력: EngineState |
 | Func_102 | Req_102 | TCM | GearInput | 기어 상태 반영 | GearState | 입력: GearInput / 출력: GearState |
-| Func_103 | Req_103 | ACCL_CTRL | AccelPedal | 가속 입력 반영 | AccelRequest | 입력: AccelPedal / 출력: AccelRequest |
+| Func_103 | Req_103 | ACCEL_CTRL | AccelPedal | 가속 입력 반영 | AccelRequest | 입력: AccelPedal / 출력: AccelRequest |
 | Func_104 | Req_104 | BRK_CTRL | BrakePedal | 제동 입력 반영 | BrakePressure | 입력: BrakePedal / 출력: BrakePressure |
-| Func_105 | Req_105 | STRG_CTRL | steeringInput | 조향 입력 반영 | SteeringState | 입력: steeringInput / 출력: SteeringState |
+| Func_105 | Req_105 | STEER_CTRL | steeringInput | 조향 입력 반영 | SteeringState | 입력: steeringInput / 출력: SteeringState |
 | Func_106 | Req_106 | HAZARD_CTRL | HazardSwitch | 비상등 기본 제어 | HazardState | 입력: HazardSwitch / 출력: HazardState |
 | Func_107 | Req_107 | WINDOW_CTRL | WindowCommand | 창문 기본 제어 | WindowState | 입력: WindowCommand / 출력: WindowState |
 | Func_108 | Req_108 | DRV_STATE_MGR | DriverStateLevel | 운전자 상태 전달 | DriverStateInfo | 입력: DriverStateLevel / 출력: DriverStateInfo |
@@ -164,9 +164,9 @@
 | Req_043 | Func_043 | VAL_SCENARIO_CTRL | 판정 결과 산출 |
 | Req_101 | Func_101 | ENG_CTRL | 시동 상태 반영 |
 | Req_102 | Func_102 | TCM | 기어 상태 반영 |
-| Req_103 | Func_103 | ACCL_CTRL | 가속 입력 반영 |
+| Req_103 | Func_103 | ACCEL_CTRL | 가속 입력 반영 |
 | Req_104 | Func_104 | BRK_CTRL | 제동 입력 반영 |
-| Req_105 | Func_105 | STRG_CTRL | 조향 입력 반영 |
+| Req_105 | Func_105 | STEER_CTRL | 조향 입력 반영 |
 | Req_106 | Func_106 | HAZARD_CTRL | 비상등 기본 제어 |
 | Req_107 | Func_107 | WINDOW_CTRL | 창문 기본 제어 |
 | Req_108 | Func_108 | DRV_STATE_MGR | 운전자 상태 전달 |

@@ -145,9 +145,9 @@
 |---|---|---|---|---|---|
 | Func_101 | Req_101 | ENG_CTRL | 시동 상태 반영 | 시동 On/Off 입력을 차량 기본 동작 상태로 반영 | 입력: IgnitionState / 출력: EngineState |
 | Func_102 | Req_102 | TCM | 기어 상태 반영 | P/R/N/D 기어 입력을 상태값으로 유지/전달 | 입력: GearInput / 출력: GearState |
-| Func_103 | Req_103 | ACCL_CTRL | 가속 입력 반영 | 가속 페달 입력을 종방향 제어 입력으로 전달 | 입력: AccelPedal / 출력: AccelRequest |
+| Func_103 | Req_103 | ACCEL_CTRL | 가속 입력 반영 | 가속 페달 입력을 종방향 제어 입력으로 전달 | 입력: AccelPedal / 출력: AccelRequest |
 | Func_104 | Req_104 | BRK_CTRL | 제동 입력 반영 | 브레이크 페달 입력을 감속 제어 입력으로 전달 | 입력: BrakePedal / 출력: BrakePressure |
-| Func_105 | Req_105 | STRG_CTRL | 조향 입력 반영 | 조향 입력을 차량 상태/주의 판단 입력으로 전달 | 입력: steeringInput / 출력: SteeringState |
+| Func_105 | Req_105 | STEER_CTRL | 조향 입력 반영 | 조향 입력을 차량 상태/주의 판단 입력으로 전달 | 입력: steeringInput / 출력: SteeringState |
 | Func_106 | Req_106 | HAZARD_CTRL | 비상등 기본 제어 | 비상등 On/Off 입력을 상태 출력으로 반영 | 입력: HazardSwitch / 출력: HazardState |
 | Func_107 | Req_107 | WINDOW_CTRL | 창문 기본 제어 | 창문 개폐 입력을 창문 상태로 반영 | 입력: WindowCommand / 출력: WindowState |
 | Func_108 | Req_108 | DRV_STATE_MGR | 운전자 상태 반영 | 운전자 상태 입력(예: 졸음 단계)을 관련 도메인으로 전달 | 입력: DriverStateLevel / 출력: DriverStateInfo |
@@ -199,7 +199,7 @@
 | 도메인 | ECU |
 |---|---|
 | Powertrain | ENG_CTRL, TCM |
-| Chassis | ACCL_CTRL, BRK_CTRL, STRG_CTRL, EMS_ALERT, WARN_ARB_MGR, VAL_SCENARIO_CTRL |
+| Chassis | ACCEL_CTRL, BRK_CTRL, STEER_CTRL, EMS_ALERT, WARN_ARB_MGR, VAL_SCENARIO_CTRL |
 | Body | AMBIENT_CTRL, HAZARD_CTRL, WINDOW_CTRL, DRV_STATE_MGR |
 | Infotainment | NAV_CTX_MGR, CLU_HMI_CTRL, CLU_BASE_CTRL |
 | Gateway/Infra | CHS_GW, INFOTAINMENT_GW, BODY_GW, IVI_GW, ETH_SW, DOMAIN_ROUTER, DOMAIN_BOUNDARY_MGR |

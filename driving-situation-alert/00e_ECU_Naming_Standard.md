@@ -1,7 +1,7 @@
 # ECU 명명 및 약어 표준
 
 **Document ID**: PROJ-00E-ECU-NAMING
-**Version**: 2.6
+**Version**: 2.7
 **Date**: 2026-03-05
 **Status**: Released (SoT Fixed)
 **Scope**: `01 -> 03 -> 0301 -> 0302 -> 0303 -> 0304 -> 04 -> 05/06/07`
@@ -41,7 +41,7 @@
 
 - `CONTROL`/`CTRL` 혼용 금지.
 - 본 문서 Canonical로 정의된 약어형을 임의 변형해 사용 금지.
-- 풀네임 노드명(`NAV_CONTEXT_MGR`, `CHASSIS_GW`, `ETH_SWITCH`, `DOMAIN_GW_ROUTER`, `ACCEL_CTRL`, `BRAKE_CTRL`, `STEERING_CTRL`, `BCM_AMBIENT_CTRL`, `DRIVER_STATE_CTRL`, `CLUSTER_BASE_CTRL`, `ENGINE_CTRL`, `TRANSMISSION_CTRL`)을 Active 체인에 신규 사용 금지.
+- 풀네임/Legacy 노드명(`NAV_CONTEXT_MGR`, `CHASSIS_GW`, `ETH_SWITCH`, `DOMAIN_GW_ROUTER`, `BRAKE_CTRL`, `STEERING_CTRL`, `BCM_AMBIENT_CTRL`, `DRIVER_STATE_CTRL`, `CLUSTER_BASE_CTRL`, `ENGINE_CTRL`, `TRANSMISSION_CTRL`, `ACCL_CTRL`, `STRG_CTRL`)을 Active 체인에 신규 사용 금지.
 - `AMB`는 `Ambient` 의미 축약으로 사용 금지(혼선 방지). `Ambient`는 항상 `AMBIENT` 풀토큰을 사용한다.
 - 공식 체인(Req->...->Test)에 연결된 노드명 임의 변경 금지.
 
@@ -97,9 +97,9 @@
 | Gateway/Infra | `ETH_SW` | `ETHERNET_SWITCH` | `EthSw` | - | Active |
 | Gateway/Infra | `DOMAIN_ROUTER` | `DOMAIN_GATEWAY_ROUTER` | `DomainRouter` | - | Active |
 | Gateway/Infra | `DOMAIN_BOUNDARY_MGR` | `DOMAIN_BOUNDARY_MANAGER` | `DomainBoundaryMgr` | - | Active |
-| Chassis | `ACCL_CTRL` | `ACCELERATION_CONTROLLER` | `AcclCtrl` | - | Active |
+| Chassis | `ACCEL_CTRL` | `ACCELERATION_CONTROLLER` | `AccelCtrl` | `ACCL_CTRL` | Active |
 | Chassis | `BRK_CTRL` | `BRAKE_CONTROLLER` | `BrkCtrl` | - | Active |
-| Chassis | `STRG_CTRL` | `STEERING_CONTROLLER` | `StrgCtrl` | - | Active |
+| Chassis | `STEER_CTRL` | `STEERING_CONTROLLER` | `SteerCtrl` | `STRG_CTRL` | Active |
 | Body | `AMBIENT_CTRL` | `BODY_CONTROL_MODULE_AMBIENT_CONTROLLER` | `AmbientCtrl` | - | Active |
 | Body | `HAZARD_CTRL` | `HAZARD_CONTROLLER` | `HazardCtrl` | - | Active |
 | Body | `WINDOW_CTRL` | `WINDOW_CONTROLLER` | `WindowCtrl` | - | Active |
@@ -153,6 +153,7 @@
 
 | 버전 | 날짜 | 변경 사항 |
 |---|---|---|
+| 2.7 | 2026-03-05 | Chassis Canonical 명칭을 `ACCEL_CTRL`, `STEER_CTRL`로 확정하고 기존 `ACCL_CTRL`, `STRG_CTRL`를 Legacy alias로 강등. |
 | 2.6 | 2026-03-05 | 4.1을 간략 등록 표로 축약하고 근거 아티팩트 열을 제거(요약형 유지). |
 | 2.5 | 2026-03-05 | `canoe/src·databases·docs` 근거를 사용한 `Project-Specific ECU Registry`(4.1) 추가. |
 | 2.4 | 2026-03-05 | Full Name(확장형) 열을 약어 없는 명시적 풀네임으로 전면 정규화. |

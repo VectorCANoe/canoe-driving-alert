@@ -25,8 +25,8 @@
 - ECU 명칭 상세 매핑 기준: `00e_ECU_Naming_Standard.md`의 `4. ECU 명명표 (Canonical Matrix)`
 - 공식 노드명은 Canonical 명칭 유지:
   - `VAL_SCENARIO_CTRL`, `VAL_BASELINE_CTRL`
-  - `ACCEL_CTRL`, `BRAKE_CTRL`, `STEERING_CTRL`, `ENGINE_CTRL`, `NAV_CONTEXT_MGR`, `BCM_AMBIENT_CTRL`
-- 비공식 축약(`SIL_TST`, `VEH_BASE_TST`, `ACCL_CTRL`, `BRK_CTRL`, `STRG_CTRL`, `ENG_CTRL`, `NAV_CTX_MGR`)은 산출물 반영 금지.
+  - `ACCEL_CTRL`, `BRK_CTRL`, `STEER_CTRL`, `ENG_CTRL`, `NAV_CTX_MGR`, `AMBIENT_CTRL`
+- 비권장 alias(`SIL_TST`, `VEH_BASE_TST`, `ACCL_CTRL`, `STRG_CTRL`, `BRAKE_CTRL`, `STEERING_CTRL`, `ENGINE_CTRL`, `NAV_CONTEXT_MGR`, `BCM_AMBIENT_CTRL`)은 산출물 반영 금지.
 - ADAS 신규 CAN ID는 예약 블록(`0x330~0x34F`)에서 우선 할당하고, 기존 ID와 충돌 0건을 증빙한다.
 
 ## 3. 변경 범위 (In Scope)
@@ -101,14 +101,14 @@
 - Req/Func/Flow/Comm/Var/Test 체인에서 Validation 항목 참조 끊김 0건
 - Req/Func/Flow/Comm/Var/Test 체인에서 ADAS 도메인 항목 참조 끊김 0건
 
-## 7. 개발팀 산출물 요청
+## 7. 현재 확인 체크리스트 (문서팀 -> 개발팀)
 
-1. 변경 파일 목록(최종 경로)
-2. 이관 전/후 메시지 정의 비교표 (`0x230`, `0x231`)
-3. 시나리오 회귀 결과 요약(핵심 케이스)
-4. 잔여 리스크 및 롤백 방법
-5. ADAS 도메인 신설 전/후 메시지 ownership 매트릭스
-6. CAN ID 충돌/예약영역 점검 결과(체크리스트)
+1. 활성 cfg/운영 문서에서 `test_can.dbc` 참조가 0건인지 확인한다.
+2. 활성 경로(CAPL/DBC/cfg) 기준 ECU 명칭이 `00e` Canonical과 일치하는지 확인한다.
+3. `ACCEL_CTRL`/`STEER_CTRL` 전환이 적용되었는지 확인한다 (`ACCL_CTRL`/`STRG_CTRL`는 legacy-only).
+4. Legacy 명칭/파일은 `v1_legacy` 경로로 한정되어 있는지 확인한다.
+5. Validation 프레임(`0x230`, `0x231`)의 의미/타이밍이 변경 전과 동일한지 회귀 결과를 제출한다.
+6. ADAS ownership(`0x11F`, `0x313`)과 CAN ID 충돌 0건 증빙을 제출한다.
 
 ## 8. 전달 메모
 
