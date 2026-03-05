@@ -10,6 +10,23 @@ Use `driving-situation-alert/TMP_HANDOFF.md` as the current project intent/sourc
 - immediate next steps
 - non-negotiable traceability rules
 
+## Handoff Freshness Gate
+- Before treating `driving-situation-alert/TMP_HANDOFF.md` as SoT, check section `0) Freshness Control`.
+- If handoff status is `FRESH`, follow handoff-first execution.
+- If handoff status is `STALE` (or stale criteria are met), use canonical docs as temporary SoT in this order:
+  - `driving-situation-alert/01_Requirements.md`
+  - `driving-situation-alert/03_Function_definition.md`
+  - `driving-situation-alert/0301_SysFuncAnalysis.md`
+  - `driving-situation-alert/0302_NWflowDef.md`
+  - `driving-situation-alert/0303_Communication_Specification.md`
+  - `driving-situation-alert/0304_System_Variables.md`
+  - `driving-situation-alert/04_SW_Implementation.md`
+  - `driving-situation-alert/05_Unit_Test.md`
+  - `driving-situation-alert/06_Integration_Test.md`
+  - `driving-situation-alert/07_System_Test.md`
+  - `driving-situation-alert/tmp/mentoring/Mentoring_MET40.md`
+- After stale causes are cleared, update `TMP_HANDOFF.md` and switch back to handoff-first execution.
+
 ## Reference Standards (When Ambiguous)
 If any requirement, format, or wording is unclear, consult:
 - `reference/standards/ASPICE*`
@@ -43,4 +60,6 @@ Use those references to align:
 
 ## Notes
 - `driving-situation-alert/TMP_HANDOFF.md` is temporary and can be replaced as project state changes.
-- If this file and `driving-situation-alert/TMP_HANDOFF.md` conflict, follow the handoff first for current execution, then update this file if needed.
+- If this file and `driving-situation-alert/TMP_HANDOFF.md` conflict:
+  - when handoff is `FRESH`, follow handoff first
+  - when handoff is `STALE`, follow canonical docs first, then refresh handoff

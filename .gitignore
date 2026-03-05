@@ -105,9 +105,9 @@ certificates/
 secrets/
 
 # Large data files
-*.csv
-*.dat
-*.raw
+# NOTE:
+# - 전역 무시는 협업 전달 누락을 유발할 수 있어 해제한다.
+# - 대용량 산출물은 경로 기반(예: logging/, tmp_rm/)으로 관리한다.
 
 # Python (if using Python tools)
 __pycache__/
@@ -137,8 +137,6 @@ yarn-error.log
 **/change-requests/*.pending
 
 # Project local stash (do not commit)
-driving-situation-alert/tmp/_pending_cleanup/
-driving-situation-alert/tmp/reports/
 tmp_rm/
 
 nul

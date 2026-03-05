@@ -1,2 +1,4 @@
-# .can 파일은 canoe/src/capl/ 원본의 복사본 — 커밋 제외
-*.can
+# 로컬 실험/백업 파일만 제외 (공유용 .can은 추적 허용)
+*_local.can
+*.can~
+*.bak
