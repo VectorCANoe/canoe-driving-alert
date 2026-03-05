@@ -68,8 +68,8 @@
 | CLU_HMI_CTRL | 운전자 경고 문구/안내 및 오디오 상태 정보 표시 | 원인/방향/유형/오디오 상태 표시 |
 | CLU_BASE_CTRL | 속도/기어/기본 상태 표시 | 차량 기본 동작 |
 |  |  | Actual Device |
-| Ambient Lights | 실제 앰비언트 장치가 제어 신호를 수신해 점등/패턴 동작 수행 | frmAmbientControlMsg(0x210) 반영 |
-| Cluster Display | 실제 클러스터 장치가 경고 문구/상태를 표시 | frmClusterWarningMsg(0x220) 반영 |
+| Ambient Lights | 실제 앰비언트 장치가 제어 신호를 수신해 점등/패턴 동작 수행 | frmAmbientControlMsg(0x260) 반영 |
+| Cluster Display | 실제 클러스터 장치가 경고 문구/상태를 표시 | frmClusterWarningMsg(0x280) 반영 |
 | Navigation Panel | 사용자 입력(구간/방향/거리/제한속도) 제공 및 시각화 | Panel UI 입력 소스 |
 
 - 시스템 아키텍처 관점에서 ETH_SW는 백본 전달 인프라로 정의한다.
@@ -221,8 +221,8 @@
 
 - 각 노드의 출력은 `0302_NWflowDef.md`에서 반드시 Flow ID로 정의한다.
 - 최소 연계 규칙:
-- `selectedAlertLevel/selectedAlertType` -> `frmAmbientControlMsg(0x210)` 송신 Flow 존재
-- `selectedAlertLevel/selectedAlertType` -> `frmClusterWarningMsg(0x220)` 송신 Flow 존재
+- `selectedAlertLevel/selectedAlertType` -> `frmAmbientControlMsg(0x260)` 송신 Flow 존재
+- `selectedAlertLevel/selectedAlertType` -> `frmClusterWarningMsg(0x280)` 송신 Flow 존재
 - `ETH_EmergencyAlert(0xE100)` 송신/수신/해제 Flow 존재
 - 타임아웃(1000ms) 해제 Flow 존재
 
