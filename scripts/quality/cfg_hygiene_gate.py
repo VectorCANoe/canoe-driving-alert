@@ -27,6 +27,7 @@ EXCLUDE_DIRS = {
     ".git", ".idea", ".vscode", "__pycache__",
     "build", "dist", "tmp", "_pending_cleanup",
     "vector_samples_19_4_10",
+    "reference",
 }
 
 
@@ -106,7 +107,7 @@ def main() -> int:
             print(f"  ... ({len(strict_abs) - 20} more)")
 
     if warn_abs:
-        print("\n[WARN] Absolute paths in GUI-managed .cfg (advisory — expected from CANoe GUI save):")
+        _safe_print("\n[WARN] Absolute paths in GUI-managed .cfg (advisory - expected from CANoe GUI save):")
         for row in warn_abs[:10]:
             _safe_print(f"  - {row}")
 
