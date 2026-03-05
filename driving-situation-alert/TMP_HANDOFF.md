@@ -51,11 +51,11 @@
 
 ## 4) Node Naming Baseline (Current)
 - ADAS_WARN_CTRL
-- NAV_CONTEXT_MGR
+- NAV_CTX_MGR
 - WARN_ARB_MGR
 - EMS_ALERT (logical terminal)
 - EMS_POLICE_TX / EMS_AMB_TX / EMS_ALERT_RX (internal implementation modules, `AMB` = Ambulance)
-- BCM_AMBIENT_CTRL
+- AMBIENT_CTRL
 - CLU_HMI_CTRL
 - VAL_SCENARIO_CTRL
 - VAL_BASELINE_CTRL

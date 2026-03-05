@@ -23,7 +23,7 @@
 - ID 규칙 SoT는 `00f_CAN_ID_Allocation_Standard.md`를 따르며, 적용 참조는 `0303_Communication_Specification.md`를 사용한다.
 - ECU 명칭은 Canonical(`UPPER_SNAKE_CASE`)만 사용하며, 명명 규칙은 `00e`를 단일 SoT로 하고 본 문서는 ECU 적용 참조 문서로 유지한다.
 - RTE 생성명 규칙은 `00g_RTE_Name_Mapping_Standard.md`를 SoT로 하고, 본 문서가 아닌 `04`에서 적용한다.
-- 네트워크 구현은 옵션1 아키텍처를 고정 적용한다: `ETH_SWITCH + CHASSIS_GW/INFOTAINMENT_GW/BODY_GW/IVI_GW + 도메인 CAN`.
+- 네트워크 구현은 옵션1 아키텍처를 고정 적용한다: `ETH_SW + CHS_GW/INFOTAINMENT_GW/BODY_GW/IVI_GW + 도메인 CAN`.
 - 목표 설계는 옵션1(ETH 백본) 고정이며, CANoe.CAN 라이선스 제약 구간의 SIL 검증은 임시로 CAN 대체 백본을 사용하고 Ethernet 라이선스 확보 후 동일 케이스로 재검증한다.
 - `WARN_ARB_MGR`의 중재는 서비스(QoS) 우선순위 중재이며, CAN 비트 레벨 arbitration과 구분해 해석한다.
 - EMS는 문서 상위 계층에서 단일 논리 단말 `EMS_ALERT`로 정의하고, 내부 구현 모듈(`EMS_POLICE_TX`, `EMS_AMB_TX`, `EMS_ALERT_RX`)은 하단 매핑표에서만 분리 관리한다.
@@ -99,16 +99,16 @@
 | Func_004 | Req_004 | ADAS_WARN_CTRL | 경고 종료 트리거 | 해제 조건 성립 시 시스템 출력 종료 | 입력: warningState / 출력: warningState |
 | Func_005 | Req_005 | CLU_HMI_CTRL | 경고 원인 전달 | 경고 원인 텍스트 표시 | 입력: selectedAlertType / 출력: warningTextCode |
 | Func_006 | Req_006 | ADAS_WARN_CTRL | 반복 경고 디바운스 | 동일 조건 경고의 재출력 간격을 관리해 중복 표시를 억제 | 입력: warningState / 출력: warningState |
-| Func_007 | Req_007 | NAV_CONTEXT_MGR | 구간값 변경 반영 | roadZone/speedLimit 변경 시 구간 상태 갱신 | 입력: roadZone, navDirection, zoneDistance, speedLimit / 출력: baseZoneContext, speedLimitNorm |
-| Func_008 | Req_008 | BCM_AMBIENT_CTRL | 일반구간 정책 적용 | 일반 구간 기본 패턴 적용 | 입력: selectedAlertLevel / 출력: ambientMode |
-| Func_009 | Req_009 | BCM_AMBIENT_CTRL | 스쿨존 강화 경고 | 스쿨존 전용 강화 패턴 적용 | 입력: selectedAlertLevel / 출력: ambientMode |
+| Func_007 | Req_007 | NAV_CTX_MGR | 구간값 변경 반영 | roadZone/speedLimit 변경 시 구간 상태 갱신 | 입력: roadZone, navDirection, zoneDistance, speedLimit / 출력: baseZoneContext, speedLimitNorm |
+| Func_008 | Req_008 | AMBIENT_CTRL | 일반구간 정책 적용 | 일반 구간 기본 패턴 적용 | 입력: selectedAlertLevel / 출력: ambientMode |
+| Func_009 | Req_009 | AMBIENT_CTRL | 스쿨존 강화 경고 | 스쿨존 전용 강화 패턴 적용 | 입력: selectedAlertLevel / 출력: ambientMode |
 | Func_010 | Req_010 | ADAS_WARN_CTRL | 스쿨존 과속 경고 | 스쿨존 속도 초과 이벤트 판정 | 입력: vehicleSpeedNorm, speedLimitNorm, baseZoneContext / 출력: warningState |
 | Func_011 | Req_011 | ADAS_WARN_CTRL | 고속 장시간 무조향 감지 | 고속 구간 무조향 타이머 경고 | 입력: steeringInputNorm, baseZoneContext / 출력: warningState |
 | Func_012 | Req_012 | ADAS_WARN_CTRL | 무조향 경고 해제 | 고속도로 주의 경고 활성 상태에서 조향 입력 검출 시 경고 해제 | 입력: steeringInputNorm / 출력: warningState |
-| Func_013 | Req_013 | BCM_AMBIENT_CTRL | 유도구간 진입 전환 | 유도구간 진입 시 방향안내 모드 전환 | 입력: selectedAlertType, navDirection / 출력: ambientMode |
-| Func_014 | Req_014 | BCM_AMBIENT_CTRL | 좌우 방향 구분 표시 | navDirection 기준 좌/우 패턴 분기 | 입력: navDirection / 출력: ambientPattern |
-| Func_015 | Req_015 | BCM_AMBIENT_CTRL | 구간 전환 완화 | 전환 중 점멸 튐 현상 완화 | 입력: selectedAlertLevel / 출력: ambientPattern |
-| Func_016 | Req_016 | BCM_AMBIENT_CTRL | 구간경고 종료 복귀 | 조건 해제 시 기본 구간 패턴 복귀 | 입력: timeoutClear / 출력: ambientMode |
+| Func_013 | Req_013 | AMBIENT_CTRL | 유도구간 진입 전환 | 유도구간 진입 시 방향안내 모드 전환 | 입력: selectedAlertType, navDirection / 출력: ambientMode |
+| Func_014 | Req_014 | AMBIENT_CTRL | 좌우 방향 구분 표시 | navDirection 기준 좌/우 패턴 분기 | 입력: navDirection / 출력: ambientPattern |
+| Func_015 | Req_015 | AMBIENT_CTRL | 구간 전환 완화 | 전환 중 점멸 튐 현상 완화 | 입력: selectedAlertLevel / 출력: ambientPattern |
+| Func_016 | Req_016 | AMBIENT_CTRL | 구간경고 종료 복귀 | 조건 해제 시 기본 구간 패턴 복귀 | 입력: timeoutClear / 출력: ambientMode |
 | Func_017 | Req_017 | EMS_ALERT | 경찰 접근 경고 송신 | 경찰 긴급 ACTIVE 알림 송신 | 출력: emergencyType, emergencyDirection, eta, sourceId, alertState / ETH_EmergencyAlert |
 | Func_018 | Req_018 | EMS_ALERT | 구급 접근 경고 송신 | 구급 긴급 ACTIVE 알림 송신 | 출력: emergencyType, emergencyDirection, eta, sourceId, alertState / ETH_EmergencyAlert |
 | Func_019 | Req_019 | CLU_HMI_CTRL | 긴급차량 종류 표시 | 경찰/구급 타입 구분 표시 | 입력: selectedAlertType / 출력: warningTextCode |
@@ -125,13 +125,13 @@
 | Func_030 | Req_030 | WARN_ARB_MGR | ETA 우선 적용 | 동급 알림이면 ETA 최소값 선택 | 입력: eta / 출력: selectedAlertType |
 | Func_031 | Req_031 | WARN_ARB_MGR | SourceID 동률판정 | ETA 동률 시 sourceId 오름차순 | 입력: sourceId / 출력: selectedAlertType |
 | Func_032 | Req_032 | WARN_ARB_MGR | 중재결과 결정론 보장 | 동일 입력이면 동일 결과 출력 | 입력: arbitrationSnapshotId / 출력: selectedAlertLevel, selectedAlertType |
-| Func_033 | Req_033 | BCM_AMBIENT_CTRL | 종료후 이전상태 복원 | 긴급 종료 후 직전 구간 상태 복원 | 입력: timeoutClear, baseZoneContext / 출력: ambientMode |
-| Func_034 | Req_034 | BCM_AMBIENT_CTRL | 전환 깜빡임 완화 | 구간 경고에서 긴급 경고 전환 시 표시 안정화(점멸/소실 방지) 제어 | 입력: selectedAlertLevel / 출력: ambientPattern |
-| Func_035 | Req_035 | BCM_AMBIENT_CTRL | 긴급 색상 정책 | 긴급 색상 팔레트 고정 적용 | 입력: selectedAlertType / 출력: ambientColor |
-| Func_036 | Req_036 | BCM_AMBIENT_CTRL | 긴급 패턴 정책 | 긴급 점등 패턴 고정 적용 | 입력: selectedAlertLevel / 출력: ambientPattern |
-| Func_037 | Req_037 | BCM_AMBIENT_CTRL | 스쿨존 패턴 정책 | 스쿨존 패턴 고정 적용 | 입력: baseZoneContext / 출력: ambientColor, ambientPattern |
-| Func_038 | Req_038 | BCM_AMBIENT_CTRL | 고속도로 패턴 정책 | 고속 경고 패턴 고정 적용 | 입력: baseZoneContext / 출력: ambientColor, ambientPattern |
-| Func_039 | Req_039 | BCM_AMBIENT_CTRL | 유도선 패턴 정책 | 좌/우 유도 패턴 고정 적용 | 입력: navDirection, baseZoneContext / 출력: ambientColor, ambientPattern |
+| Func_033 | Req_033 | AMBIENT_CTRL | 종료후 이전상태 복원 | 긴급 종료 후 직전 구간 상태 복원 | 입력: timeoutClear, baseZoneContext / 출력: ambientMode |
+| Func_034 | Req_034 | AMBIENT_CTRL | 전환 깜빡임 완화 | 구간 경고에서 긴급 경고 전환 시 표시 안정화(점멸/소실 방지) 제어 | 입력: selectedAlertLevel / 출력: ambientPattern |
+| Func_035 | Req_035 | AMBIENT_CTRL | 긴급 색상 정책 | 긴급 색상 팔레트 고정 적용 | 입력: selectedAlertType / 출력: ambientColor |
+| Func_036 | Req_036 | AMBIENT_CTRL | 긴급 패턴 정책 | 긴급 점등 패턴 고정 적용 | 입력: selectedAlertLevel / 출력: ambientPattern |
+| Func_037 | Req_037 | AMBIENT_CTRL | 스쿨존 패턴 정책 | 스쿨존 패턴 고정 적용 | 입력: baseZoneContext / 출력: ambientColor, ambientPattern |
+| Func_038 | Req_038 | AMBIENT_CTRL | 고속도로 패턴 정책 | 고속 경고 패턴 고정 적용 | 입력: baseZoneContext / 출력: ambientColor, ambientPattern |
+| Func_039 | Req_039 | AMBIENT_CTRL | 유도선 패턴 정책 | 좌/우 유도 패턴 고정 적용 | 입력: navDirection, baseZoneContext / 출력: ambientColor, ambientPattern |
 | Func_040 | Req_040 | CLU_HMI_CTRL | 문구 길이 제한 | 경고 문구 길이/형식 고정 | 입력: warningTextCode / 출력: warningTextCode |
 | Func_041 | Req_041 | VAL_SCENARIO_CTRL | SIL 시나리오 실행 | CANoe SIL에서 시나리오 실행 제어 | 입력: testScenario / 출력: scenarioResult |
 | Func_042 | Req_042 | VAL_SCENARIO_CTRL | CAN+ETH 동시 검증 | CAN/Ethernet 동시 조건 검증 | 입력: testScenario / 출력: scenarioResult |
@@ -143,24 +143,24 @@
 
 | Func ID | Req ID | 실제 노드명 | 기능명 | 기능 설명 | 실제값 정의(입력/출력) |
 |---|---|---|---|---|---|
-| Func_101 | Req_101 | ENGINE_CTRL | 시동 상태 반영 | 시동 On/Off 입력을 차량 기본 동작 상태로 반영 | 입력: IgnitionState / 출력: EngineState |
-| Func_102 | Req_102 | TRANSMISSION_CTRL | 기어 상태 반영 | P/R/N/D 기어 입력을 상태값으로 유지/전달 | 입력: GearInput / 출력: GearState |
-| Func_103 | Req_103 | ACCEL_CTRL | 가속 입력 반영 | 가속 페달 입력을 종방향 제어 입력으로 전달 | 입력: AccelPedal / 출력: AccelRequest |
-| Func_104 | Req_104 | BRAKE_CTRL | 제동 입력 반영 | 브레이크 페달 입력을 감속 제어 입력으로 전달 | 입력: BrakePedal / 출력: BrakePressure |
-| Func_105 | Req_105 | STEERING_CTRL | 조향 입력 반영 | 조향 입력을 차량 상태/주의 판단 입력으로 전달 | 입력: steeringInput / 출력: SteeringState |
+| Func_101 | Req_101 | ENG_CTRL | 시동 상태 반영 | 시동 On/Off 입력을 차량 기본 동작 상태로 반영 | 입력: IgnitionState / 출력: EngineState |
+| Func_102 | Req_102 | TCM | 기어 상태 반영 | P/R/N/D 기어 입력을 상태값으로 유지/전달 | 입력: GearInput / 출력: GearState |
+| Func_103 | Req_103 | ACCL_CTRL | 가속 입력 반영 | 가속 페달 입력을 종방향 제어 입력으로 전달 | 입력: AccelPedal / 출력: AccelRequest |
+| Func_104 | Req_104 | BRK_CTRL | 제동 입력 반영 | 브레이크 페달 입력을 감속 제어 입력으로 전달 | 입력: BrakePedal / 출력: BrakePressure |
+| Func_105 | Req_105 | STRG_CTRL | 조향 입력 반영 | 조향 입력을 차량 상태/주의 판단 입력으로 전달 | 입력: steeringInput / 출력: SteeringState |
 | Func_106 | Req_106 | HAZARD_CTRL | 비상등 기본 제어 | 비상등 On/Off 입력을 상태 출력으로 반영 | 입력: HazardSwitch / 출력: HazardState |
 | Func_107 | Req_107 | WINDOW_CTRL | 창문 기본 제어 | 창문 개폐 입력을 창문 상태로 반영 | 입력: WindowCommand / 출력: WindowState |
-| Func_108 | Req_108 | DRIVER_STATE_CTRL | 운전자 상태 반영 | 운전자 상태 입력(예: 졸음 단계)을 관련 도메인으로 전달 | 입력: DriverStateLevel / 출력: DriverStateInfo |
-| Func_109 | Req_109 | CLUSTER_BASE_CTRL | 클러스터 기본 표시 | 속도/기어/경고 기본 상태를 클러스터에 표시 | 입력: ClusterSpeed, ClusterGear, warningTextCode / 출력: ClusterStatus |
-| Func_110 | Req_110 | DOMAIN_GW_ROUTER | 도메인 게이트웨이 전달 | 도메인 간 입력/출력 메시지 라우팅 수행 | 입력: RoutingPolicy / 출력: BodyGatewayRoute |
+| Func_108 | Req_108 | DRV_STATE_MGR | 운전자 상태 반영 | 운전자 상태 입력(예: 졸음 단계)을 관련 도메인으로 전달 | 입력: DriverStateLevel / 출력: DriverStateInfo |
+| Func_109 | Req_109 | CLU_BASE_CTRL | 클러스터 기본 표시 | 속도/기어/경고 기본 상태를 클러스터에 표시 | 입력: ClusterSpeed, ClusterGear, warningTextCode / 출력: ClusterStatus |
+| Func_110 | Req_110 | DOMAIN_ROUTER | 도메인 게이트웨이 전달 | 도메인 간 입력/출력 메시지 라우팅 수행 | 입력: RoutingPolicy / 출력: BodyGatewayRoute |
 | Func_111 | Req_111 | DOMAIN_BOUNDARY_MGR | 도메인 경계 유지 | 도메인별 통신 경계/역할 분리를 유지 | 입력: RoutingPolicy / 출력: BoundaryStatus |
 | Func_112 | Req_112 | VAL_BASELINE_CTRL | 차량 기본 기능 SIL 검증 | 기본 차량 기능 시나리오 실행 및 판정 | 입력: BaseScenarioId / 출력: BaseScenarioResult |
 | Func_113 | Req_113 | BODY_GW | 공조 상태 반영 | 공조 상태/제어 프레임(HVAC) 수신 정보를 도메인 정책에 반영 | 입력: CabinSetTemp, BlowerLevel, AcCompressorReq, VentMode / 출력: CabinTemp |
-| Func_114 | Req_114 | DRIVER_STATE_CTRL | 시트 상태 반영 | 시트 상태/제어 프레임 수신 정보를 상태 관리에 반영 | 입력: DriverSeatPos, PassengerSeatPos, SeatHeatLevel, SeatVentLevel / 출력: DriverStateInfo |
+| Func_114 | Req_114 | DRV_STATE_MGR | 시트 상태 반영 | 시트 상태/제어 프레임 수신 정보를 상태 관리에 반영 | 입력: DriverSeatPos, PassengerSeatPos, SeatHeatLevel, SeatVentLevel / 출력: DriverStateInfo |
 | Func_115 | Req_115 | WINDOW_CTRL | 미러 상태 반영 | 미러 상태 프레임(폴딩/열선/조정) 정보를 차량 상태에 반영 | 입력: MirrorFoldState, MirrorHeatState, MirrorAdjAxis / 출력: WindowState |
 | Func_116 | Req_116 | WINDOW_CTRL | 도어 제어 상태 반영 | 도어 제어/잠금/열림 상태를 수신/반영/전달 | 입력: DoorUnlockCmd, DoorLockState, DoorOpenWarn / 출력: DoorStateMask |
-| Func_117 | Req_117 | BCM_AMBIENT_CTRL | 와이퍼/우적 연동 반영 | 와이퍼/우적/오토라이트 상태를 연동 정책에 반영 | 입력: FrontWiperState, RearWiperState, RainSensorLevel, AutoHeadlampReq / 출력: WiperInterval |
-| Func_118 | Req_118 | DRIVER_STATE_CTRL | 보안 상태 반영 | 이모빌라이저/경보 상태를 보안 상태로 반영 | 입력: ImmoState, AlarmArmed, AlarmTrigger, AlarmZone / 출력: DriverStateInfo |
+| Func_117 | Req_117 | AMBIENT_CTRL | 와이퍼/우적 연동 반영 | 와이퍼/우적/오토라이트 상태를 연동 정책에 반영 | 입력: FrontWiperState, RearWiperState, RainSensorLevel, AutoHeadlampReq / 출력: WiperInterval |
+| Func_118 | Req_118 | DRV_STATE_MGR | 보안 상태 반영 | 이모빌라이저/경보 상태를 보안 상태로 반영 | 입력: ImmoState, AlarmArmed, AlarmTrigger, AlarmZone / 출력: DriverStateInfo |
 | Func_119 | Req_119 | CLU_HMI_CTRL | 오디오 상태 반영 | 오디오 포커스/음성비서/TTS 상태를 HMI 정책에 반영 | 입력: AudioFocusOwner, VoiceAssistState, TtsState, TtsLangId / 출력: warningTextCode |
 
 ---
@@ -182,7 +182,7 @@
 - 상단 표는 공식 표준 양식의 열 구성(분류/기능명/기능설명/비고/검증)을 유지한다.
 - 하단 표는 `Func/Req/노드/입출력` 기준으로 추적성을 보강한다.
 - 추적 체인: `Req -> Func -> Flow -> Comm -> Var -> Code -> UT/IT/ST`.
-- 옵션1 네트워크 전달 경로 고정: `입력 CAN -> 도메인 GW 정규화 -> ETH_SWITCH -> 중앙 경고코어 -> 도메인 GW -> 출력 CAN`.
+- 옵션1 네트워크 전달 경로 고정: `입력 CAN -> 도메인 GW 정규화 -> ETH_SW -> 중앙 경고코어 -> 도메인 GW -> 출력 CAN`.
 - `Func_101~Func_119`는 차량 기본 기능 확장 체인으로, 0302/0303/0304의 Flow/Comm/Var와 최신 도메인 DBC 기준으로 동기화되어야 한다.
 - `Func_120~Func_124`는 V2 확장 활성 체인으로 관리하며, 코드/DBC/05/06/07 변경을 동일 커밋 단위로 동기화한다.
 
@@ -198,11 +198,11 @@
 
 | 도메인 | ECU |
 |---|---|
-| Powertrain | ENGINE_CTRL, TRANSMISSION_CTRL |
-| Chassis | ACCEL_CTRL, BRAKE_CTRL, STEERING_CTRL, EMS_ALERT, WARN_ARB_MGR, VAL_SCENARIO_CTRL |
-| Body | BCM_AMBIENT_CTRL, HAZARD_CTRL, WINDOW_CTRL, DRIVER_STATE_CTRL |
-| Infotainment | NAV_CONTEXT_MGR, CLU_HMI_CTRL, CLUSTER_BASE_CTRL |
-| Gateway/Infra | CHASSIS_GW, INFOTAINMENT_GW, BODY_GW, IVI_GW, ETH_SWITCH, DOMAIN_GW_ROUTER, DOMAIN_BOUNDARY_MGR |
+| Powertrain | ENG_CTRL, TCM |
+| Chassis | ACCL_CTRL, BRK_CTRL, STRG_CTRL, EMS_ALERT, WARN_ARB_MGR, VAL_SCENARIO_CTRL |
+| Body | AMBIENT_CTRL, HAZARD_CTRL, WINDOW_CTRL, DRV_STATE_MGR |
+| Infotainment | NAV_CTX_MGR, CLU_HMI_CTRL, CLU_BASE_CTRL |
+| Gateway/Infra | CHS_GW, INFOTAINMENT_GW, BODY_GW, IVI_GW, ETH_SW, DOMAIN_ROUTER, DOMAIN_BOUNDARY_MGR |
 
 ---
 
