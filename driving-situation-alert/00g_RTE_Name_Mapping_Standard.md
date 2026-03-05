@@ -1,7 +1,7 @@
 # RTE Name Mapping 표준
 
 **Document ID**: PROJ-00G-RTE-NAMING  
-**Version**: 1.0  
+**Version**: 1.1  
 **Date**: 2026-03-05  
 **Status**: Released (SoT Fixed)  
 **Scope**: `04 -> Code(CAPL/C) -> 05/06/07`
@@ -74,9 +74,9 @@
 - shortName은 각 토큰의 의미를 유지한 `UpperCamelCase`로 변환한다.
 - 역할 토큰(`CTRL`, `MGR`, `GW`, `TX`, `RX`, `DEV`)은 축약 해제 없이 그대로 보존한다.
 - 예시:
-  - `NAV_CONTEXT_MGR` -> `NavContextMgr`
+  - `NAV_CTX_MGR` -> `NavCtxMgr`
   - `VAL_SCENARIO_CTRL` -> `ValScenarioCtrl`
-  - `DOMAIN_GW_ROUTER` -> `DomainGwRouter`
+  - `DOMAIN_ROUTER` -> `DomainRouter`
 
 ---
 
@@ -101,4 +101,5 @@
 
 | 버전 | 날짜 | 변경 사항 |
 |---|---|---|
+| 1.1 | 2026-03-05 | `00e` Canonical 약어 동기화: 예시 매핑을 `NAV_CTX_MGR`, `DOMAIN_ROUTER` 기준으로 갱신. |
 | 1.0 | 2026-03-05 | `00e`에서 RTE Name Mapping 규칙을 분리해 `00g` 표준 문서 신설. |
