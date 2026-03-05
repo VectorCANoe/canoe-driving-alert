@@ -66,6 +66,14 @@
   - Tier당 256개
   - Group당 32개 슬롯
 
+### 4.3 Assignment Decision Priority (Normative)
+
+- ID 배정 의사결정은 아래 우선순위를 따른다.
+  - 1) Owner/도메인 경계
+  - 2) 안전/검증 경로(Fail-safe/Validation 영향)
+  - 3) Tier/Group/Index 인코딩 규칙
+- 주의: `Group`은 단독 최상위 기준이 아니며, 1)과 2)를 만족한 뒤 적용되는 분류/정렬 축이다.
+
 ---
 
 ## 5. 3/3/5 사전
@@ -208,6 +216,7 @@
 
 - 파일: `driving-situation-alert/tmp/ID_335_AnnexA_Mapping_98_Template.csv`
 - 목적: `Old ID -> New ID` 전수 매핑의 단일 근거 파일
+- 운영 원칙: 실제 할당 상태(`status/approver/approved_date`)는 Annex A CSV를 단일 운영 테이블로 사용한다.
 - 필수 컬럼:
   - `new_tier`, `new_group`, `new_index`, `new_id_hex`, `new_id_dec`
   - `flow_ref`, `comm_ref`, `var_ref`, `code_ref`, `test_ref`
