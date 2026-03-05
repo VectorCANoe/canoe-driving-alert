@@ -28,4 +28,4 @@
 ## 5) 비고
 
 - `06_Integration_Test.md`는 Lean IT 운영 방침에 따라 `핵심 통합 체인` 위주 커버리지로 관리할 수 있다.
-- Validation Harness(`SIL_TEST_CTRL`, `VEHICLE_BASE_TEST_CTRL`)는 검증 전용(Non-Production) 계층으로 관리한다.
+- Validation Harness(`VAL_SCENARIO_CTRL`, `VAL_BASELINE_CTRL`)는 검증 전용(Non-Production) 계층으로 관리한다.

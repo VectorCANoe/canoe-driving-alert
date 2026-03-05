@@ -112,8 +112,8 @@ def main() -> int:
         "EMS_ALERT_RX",
         "BCM_AMBIENT_CTRL",
         "CLU_HMI_CTRL",
-        "SIL_TEST_CTRL",
-        "VEHICLE_BASE_TEST_CTRL",
+        "VAL_SCENARIO_CTRL",
+        "VAL_BASELINE_CTRL",
         "CHASSIS_GW",
         "INFOTAINMENT_GW",
         "BODY_GW",
@@ -131,8 +131,13 @@ def main() -> int:
         "DRIVER_STATE_CTRL",
         "CLUSTER_BASE_CTRL",
     }
+    alias_to_canonical = {
+        "SIL_TEST_CTRL": "VAL_SCENARIO_CTRL",
+        "VEHICLE_BASE_TEST_CTRL": "VAL_BASELINE_CTRL",
+    }
 
-    capl_nodes = {p.stem for p in (ROOT / "canoe" / "src" / "capl").glob("**/*.can")}
+    capl_nodes_raw = {p.stem for p in (ROOT / "canoe" / "src" / "capl").glob("**/*.can")}
+    capl_nodes = {alias_to_canonical.get(n, n) for n in capl_nodes_raw}
     cfg_candidates = [
         ROOT / "canoe" / "cfg" / "CAN_500kBaud_1ch_split.cfg",
         ROOT / "canoe" / "cfg" / "CAN_v2_topology_wip.cfg",
@@ -151,10 +156,11 @@ def main() -> int:
     else:
         cfg_text = read_text(cfg_path)
         cfg_can_paths = re.findall(r"\"([^\"]+\.can)\"", cfg_text)
-        cfg_nodes = {
+        cfg_nodes_raw = {
             Path(x.replace("\\", "/")).stem
             for x in cfg_can_paths
         }
+        cfg_nodes = {alias_to_canonical.get(n, n) for n in cfg_nodes_raw}
 
     dbc_paths = [
         ROOT / "canoe" / "databases" / "chassis_can.dbc",
@@ -202,6 +208,12 @@ def main() -> int:
         warn_sample = ", ".join([f"L{ln}" for ln, _ in cfg_mojibake_hits[:5]])
         warn_issues.append(
             f"CFG possible mojibake text detected: {len(cfg_mojibake_hits)} lines ({warn_sample}) in {cfg_path.name}"
+        )
+    legacy_name_hits = sorted((set(alias_to_canonical.keys()) & capl_nodes_raw) | (set(alias_to_canonical.keys()) & cfg_nodes_raw))
+    if legacy_name_hits:
+        warn_issues.append(
+            "Legacy validation labels detected (allowed by alias policy, GUI rename pending): "
+            + ", ".join(legacy_name_hits)
         )
 
     # boundary manager policy advisory

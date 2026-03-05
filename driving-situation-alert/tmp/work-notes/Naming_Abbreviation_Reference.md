@@ -20,7 +20,7 @@
 | `EMS_ALERT_RX` | Emergency Alert Receiver | 긴급 이벤트 수신/정규화/해제 처리 | `RX = 수신` |
 | `BCM_AMBIENT_CTRL` | Body Control Module Ambient Controller | 엠비언트(패턴/점등) 제어 | `BCM` 계열 출력 |
 | `CLU_HMI_CTRL` | Cluster HMI Controller | 클러스터 경고 UI/HMI 출력 제어 | `CLU = Cluster` |
-| `SIL_TEST_CTRL` | SIL Test Controller | CANoe SIL 환경 테스트 자극/검증 제어 | 테스트 전용 |
+| `VAL_SCENARIO_CTRL` | Validation Scenario Controller | CANoe SIL 환경 테스트 자극/검증 제어 | 테스트 전용 |
 | `BODY_GW` | Body Gateway | Body 도메인 게이트웨이 | `GW = Gateway` |
 | `CHASSIS_GW` | Chassis Gateway | Chassis 도메인 게이트웨이 |  |
 | `INFOTAINMENT_GW` | Infotainment Gateway | Infotainment 도메인 게이트웨이 |  |
@@ -36,7 +36,7 @@
 | `Context_Manager.can` | `NAV_CONTEXT_MGR` | 주행 문맥 생성/갱신 |
 | `Ambient_ECU.can` | `BCM_AMBIENT_CTRL` | 앰비언트 출력 제어 |
 | `Cluster_ECU.can` | `CLU_HMI_CTRL` | 클러스터 경고/HMI 표시 |
-| `Test_Node.can` | `SIL_TEST_CTRL` | SIL 테스트 제어/검증 |
+| `Test_Node.can` | `VAL_SCENARIO_CTRL` | SIL 테스트 제어/검증 |
 
 ### 2-2) 주요 메시지/신호 네이밍
 | 이름 | 의미 | 분류 |

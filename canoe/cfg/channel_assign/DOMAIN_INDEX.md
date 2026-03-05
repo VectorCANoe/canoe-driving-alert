@@ -19,7 +19,7 @@ This file documents domain-oriented CAPL ownership for the v2 runtime profile.
 - `EMS_POLICE_TX.can`
 - `ETH_SWITCH.can`
 - `NAV_CONTEXT_MGR.can`
-- `SIL_TEST_CTRL.can` (`VAL_SCENARIO_CTRL` role)
+- `VAL_SCENARIO_CTRL` (validation scenario controller)
 - `WARN_ARB_MGR.can`
 
 ### Infotainment
@@ -45,7 +45,7 @@ This file documents domain-oriented CAPL ownership for the v2 runtime profile.
 - `BRAKE_CTRL.can`
 - `CHASSIS_GW.can`
 - `STEERING_CTRL.can`
-- `VEHICLE_BASE_TEST_CTRL.can` (`VAL_BASELINE_CTRL` role)
+- `VAL_BASELINE_CTRL` (validation baseline controller)
 
 ## Legacy Category Mirror (`src/capl`)
 - `ecu`: vehicle/chassis/body/powertrain controller-side modules
@@ -54,5 +54,4 @@ This file documents domain-oriented CAPL ownership for the v2 runtime profile.
 - `logic`: arbitration and warning logic modules
 - `network`: backbone switch/transport monitoring module
 - `output`: HMI/IVI/body output adapter modules
-
 

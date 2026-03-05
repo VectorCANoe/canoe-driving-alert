@@ -71,7 +71,7 @@ GW 노드는 두 채널에 동시 할당되어야 함.
 - `ACCEL_CTRL.can` — 급가속 감지
 - `STEERING_CTRL.can` — 조향 입력 감지
 - `BRAKE_CTRL.can` — 급제동 감지
-- `VEHICLE_BASE_TEST_CTRL.can` (`VAL_BASELINE_CTRL` role) — 차속/기어 기반 테스트 제어
+- `VAL_BASELINE_CTRL` — 차속/기어 기반 테스트 제어
 
 ### Body/ (CAN ch2)
 - `BODY_GW.can` — 바디 ↔ ETH_Backbone 게이트웨이
@@ -80,7 +80,7 @@ GW 노드는 두 채널에 동시 할당되어야 함.
 - `HAZARD_CTRL.can` — 비상 점멸 제어
 - `WINDOW_CTRL.can` — 창문 제어
 - `DOMAIN_BOUNDARY_MGR.can` — 도메인 경계 관리
-- `SIL_TEST_CTRL.can` (`VAL_SCENARIO_CTRL` role) — SIL 테스트 오케스트레이터
+- `VAL_SCENARIO_CTRL` — SIL 테스트 오케스트레이터
 
 ### Infotainment/ (CAN ch3)
 - `INFOTAINMENT_GW.can` — 인포테인먼트 ↔ ETH_Backbone 게이트웨이

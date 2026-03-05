@@ -6,7 +6,7 @@
 - Validity Window: 7 days
 - Stale Criteria (any one = stale):
   - Freshness Status is marked `STALE`
-  - Node baseline includes deprecated names (`SIL_TEST_CTRL`, `VEHICLE_BASE_TEST_CTRL`) as active naming
+  - Node baseline includes deprecated validation node names as active naming
   - Document version snapshot differs from current headers in 01/03/0301/0302/0303/0304/04/05/06/07
 - Stale Recovery Rule:
   - Use canonical docs as temporary SoT:
@@ -87,7 +87,7 @@
 2. Fill execution evidence in `05/06/07` (`Pass/Fail`, owner, date, trace/log refs, panel capture links).
 3. Complete DBC naming/ownership alignment:
    - Validation path: remove `test_can` dependency in active path
-   - Validation ECU naming: `SIL_TEST_CTRL/VEHICLE_BASE_TEST_CTRL -> VAL_*`
+   - Validation ECU naming: legacy validation labels -> `VAL_*`
    - ADAS domain directive: apply `adas_can.dbc` creation and ownership split via dev change order
 4. Apply naming/ID SoT:
    - Use `00e_ECU_Naming_Standard.md` as canonical ECU naming policy
