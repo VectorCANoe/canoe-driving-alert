@@ -74,7 +74,7 @@
 - 00c_Req_Classification_and_Safety_Profile.md: Version 1.5 (Draft, Internal Baseline Locked)
 - 00d_HARA_Worksheet.md: Version 1.3 (Draft, Internal Baseline Approved)
 - 00e_ECU_Naming_Standard.md: Version 2.0 (Released, SoT Fixed)
-- 00f_CAN_ID_Allocation_Standard.md: Version 1.0 (Draft)
+- 00f_CAN_ID_Allocation_Standard.md: Version 2.0 (Released, SoT Fixed)
 - 01_Requirements.md: Version 5.18 (Draft)
 - 02_Concept_design.md: Version 2.6 (In Progress, Figure Build)
 - 03_Function_definition.md: Version 4.24 (Draft)
