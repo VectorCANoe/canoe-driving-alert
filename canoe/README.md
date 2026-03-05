@@ -6,7 +6,7 @@
 - CANoe 실행 cfg(활성): `cfg/CAN_v2_topology_wip.cfg`
 - CANoe 실행 cfg(v1 레거시): `cfg/v1_cfg/CAN_500kBaud_1ch.cfg`
 - 시스템 변수: `project/sysvars/project.sysvars`
-- CAN DB(활성): `databases/{chassis_can, powertrain_can, body_can, infotainment_can, eth_backbone_can_stub}.dbc`
+- CAN DB(활성): `databases/{chassis_can, powertrain_can, body_can, infotainment_can, adas_can, eth_backbone_can_stub}.dbc`
 - CAN DB(v1 레거시): `databases/v1_legacy/v1_split_345bdb4/emergency_system.dbc`
 - 빠른 파일 찾기: `FILE_INDEX.md`
 

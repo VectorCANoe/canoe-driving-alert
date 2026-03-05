@@ -36,6 +36,6 @@
 - Full checklist: `canoe/cfg/GUI_ONLY_OPERATIONS.md`
 
 ## Repository Boundary (Non-Negotiable)
-- DO NOT modify any file under `C:\Users\이준영\canoe-driving-alert\driving-situation-alert`.
-- That folder is source-of-truth documentation and is read-only for implementation tasks.
-- Only `C:\Users\이준영\canoe-driving-alert\canoe` can be changed during development.
+- This file scope is `canoe/` only.
+- For implementation tasks in this scope, modify only files under `C:\Users\이준영\CANoe-IVI-OTA\canoe`.
+- Documentation changes outside `canoe/` must follow repository-root policy and handoff rules.

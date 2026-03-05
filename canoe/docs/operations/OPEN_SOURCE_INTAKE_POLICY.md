@@ -1,4 +1,4 @@
-﻿# Open Source Intake Policy (canoe-driving-alert)
+﻿# Open Source Intake Policy (CANoe-IVI-OTA)
 
 Document ID: CANOE-OSS-POLICY
 Version: 1.0
@@ -36,7 +36,7 @@ Goal is to accelerate implementation while preserving traceability, license comp
 ## 5. Double-check Checklist (Required)
 Before merging any adaptation from external reference:
 1. Verify sender/receiver ownership alignment against `CAN_MESSAGE_OWNERSHIP_MATRIX.md`.
-2. Verify `split.cfg` node linkage coverage vs `canoe/src/capl/**/*.can`.
+2. Verify active v2 cfg node linkage coverage vs `canoe/src/capl/**/*.can`.
 3. Verify non-reserved signal assignments for output messages.
 4. Verify no domain merge/regression in DBC set.
 5. Verify test evidence trace hook exists (05/06/07 chain target).
@@ -49,3 +49,4 @@ Before merging any adaptation from external reference:
 ## 7. Enforcement
 If policy conflicts with ad-hoc implementation speed, policy wins.
 Exceptions must be documented in `canoe/tmp` with owner/date and explicit rollback plan.
+
