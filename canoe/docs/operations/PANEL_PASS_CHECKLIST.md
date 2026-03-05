@@ -5,7 +5,7 @@
 ## 0) 공통 준비
 - Configuration: `canoe/cfg/CAN_v2_topology_wip.cfg`
 - Measurement: Start
-- Active Nodes: 13개 (`SIL_TEST_CTRL` 포함)
+- Active Nodes: 13개 (`VAL_SCENARIO_CTRL` 포함)
 - Trace 창에 아래 메시지 표시:
   - `0x100`, `0x101`, `0x110`, `0x210`, `0x220`
 - Panel 출력 표시:

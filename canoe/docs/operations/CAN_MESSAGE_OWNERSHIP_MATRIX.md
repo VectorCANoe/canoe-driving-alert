@@ -6,9 +6,9 @@
 
 | Message | ID (hex) | DLC | Sender | DBC | Signals |
 |---|---|---|---|---|---|
-| frmVehicleStateCanMsg | 0x100 | 2 | SIL_TEST_CTRL | chassis_can.dbc | 3 |
-| frmSteeringCanMsg | 0x101 | 1 | SIL_TEST_CTRL | chassis_can.dbc | 2 |
-| frmPedalInputCanMsg | 0x102 | 2 | SIL_TEST_CTRL | chassis_can.dbc | 2 |
+| frmVehicleStateCanMsg | 0x100 | 2 | VAL_SCENARIO_CTRL | chassis_can.dbc | 3 |
+| frmSteeringCanMsg | 0x101 | 1 | VAL_SCENARIO_CTRL | chassis_can.dbc | 2 |
+| frmPedalInputCanMsg | 0x102 | 2 | VAL_SCENARIO_CTRL | chassis_can.dbc | 2 |
 | frmSteeringStateCanMsg | 0x103 | 1 | CHASSIS_GW | chassis_can.dbc | 2 |
 | frmWheelSpeedMsg | 0x104 | 4 | CHASSIS_GW | chassis_can.dbc | 4 |
 | frmYawAccelMsg | 0x105 | 4 | CHASSIS_GW | chassis_can.dbc | 2 |
@@ -22,11 +22,11 @@
 | frmTcsStateMsg | 0x10D | 2 | ACCEL_CTRL | chassis_can.dbc | 3 |
 | frmBrakeTempMsg | 0x10E | 2 | BRAKE_CTRL | chassis_can.dbc | 2 |
 | frmSteeringAngleMsg | 0x10F | 2 | STEERING_CTRL | chassis_can.dbc | 1 |
-| frmNavContextCanMsg | 0x110 | 3 | SIL_TEST_CTRL | infotainment_can.dbc | 5 |
+| frmNavContextCanMsg | 0x110 | 3 | VAL_SCENARIO_CTRL | infotainment_can.dbc | 5 |
 | frmWheelPulseMsg | 0x11A | 2 | CHASSIS_GW | chassis_can.dbc | 2 |
 | frmSuspensionStateMsg | 0x11B | 2 | CHASSIS_GW | chassis_can.dbc | 3 |
 | frmTirePressureMsg | 0x11C | 4 | CHASSIS_GW | chassis_can.dbc | 4 |
-| frmChassisDiagReqMsg | 0x11D | 3 | SIL_TEST_CTRL | chassis_can.dbc | 3 |
+| frmChassisDiagReqMsg | 0x11D | 3 | VAL_SCENARIO_CTRL | chassis_can.dbc | 3 |
 | frmChassisDiagResMsg | 0x11E | 3 | CHASSIS_GW | chassis_can.dbc | 3 |
 | frmAdasChassisStatusMsg | 0x11F | 2 | ADAS_WARN_CTRL | chassis_can.dbc | 2 |
 | frmBrakeWearMsg | 0x120 | 1 | BRAKE_CTRL | chassis_can.dbc | 1 |
@@ -50,8 +50,8 @@
 | frmClusterThemeMsg | 0x226 | 1 | IVI_GW | infotainment_can.dbc | 2 |
 | frmHmiPopupStateMsg | 0x227 | 1 | IVI_GW | infotainment_can.dbc | 3 |
 | frmInfotainmentHealthMsg | 0x228 | 2 | INFOTAINMENT_GW | infotainment_can.dbc | 3 |
-| frmTestResultMsg | 0x230 | 1 | SIL_TEST_CTRL | test_can.dbc | 2 |
-| frmBaseTestResultMsg | 0x231 | 8 | VEHICLE_BASE_TEST_CTRL | test_can.dbc | 6 |
+| frmTestResultMsg | 0x230 | 1 | VAL_SCENARIO_CTRL | chassis_can.dbc | 2 |
+| frmBaseTestResultMsg | 0x231 | 8 | VAL_BASELINE_CTRL | chassis_can.dbc | 6 |
 | frmEmergencyMonitorMsg | 0x232 | 2 | EMS_ALERT_RX | chassis_can.dbc | 3 |
 | frmHvacStateMsg | 0x240 | 2 | BODY_GW | body_can.dbc | 4 |
 | frmHvacActuatorMsg | 0x241 | 2 | BODY_GW | body_can.dbc | 5 |
@@ -74,15 +74,15 @@
 | frmTrafficEventMsg | 0x264 | 3 | INFOTAINMENT_GW | infotainment_can.dbc | 3 |
 | frmPhoneProjectionMsg | 0x265 | 1 | IVI_GW | infotainment_can.dbc | 3 |
 | frmClusterNotifMsg | 0x266 | 2 | IVI_GW | infotainment_can.dbc | 2 |
-| frmIviDiagReqMsg | 0x267 | 3 | SIL_TEST_CTRL | infotainment_can.dbc | 3 |
+| frmIviDiagReqMsg | 0x267 | 3 | VAL_SCENARIO_CTRL | infotainment_can.dbc | 3 |
 | frmIviDiagResMsg | 0x268 | 3 | INFOTAINMENT_GW | infotainment_can.dbc | 3 |
 | frmMediaMetaMsg | 0x269 | 2 | IVI_GW | infotainment_can.dbc | 4 |
 | frmSpeechTtsStateMsg | 0x26A | 2 | IVI_GW | infotainment_can.dbc | 4 |
 | frmConnectivityStateMsg | 0x26B | 2 | INFOTAINMENT_GW | infotainment_can.dbc | 4 |
 | frmIviHealthDetailMsg | 0x26C | 2 | INFOTAINMENT_GW | infotainment_can.dbc | 2 |
 | frmClusterSyncStateMsg | 0x26D | 2 | IVI_GW | infotainment_can.dbc | 3 |
-| frmIgnitionEngineMsg | 0x300 | 1 | SIL_TEST_CTRL | powertrain_can.dbc | 3 |
-| frmGearStateMsg | 0x301 | 1 | SIL_TEST_CTRL | powertrain_can.dbc | 3 |
+| frmIgnitionEngineMsg | 0x300 | 1 | VAL_SCENARIO_CTRL | powertrain_can.dbc | 3 |
+| frmGearStateMsg | 0x301 | 1 | VAL_SCENARIO_CTRL | powertrain_can.dbc | 3 |
 | frmPowertrainGatewayMsg | 0x302 | 2 | DOMAIN_GW_ROUTER | powertrain_can.dbc | 2 |
 | frmEngineSpeedTempMsg | 0x303 | 4 | ENGINE_CTRL | powertrain_can.dbc | 3 |
 | frmFuelBatteryStateMsg | 0x304 | 3 | ENGINE_CTRL | powertrain_can.dbc | 4 |
@@ -95,7 +95,7 @@
 | frmEngineTorqueMsg | 0x30B | 2 | ENGINE_CTRL | powertrain_can.dbc | 1 |
 | frmEngineLoadMsg | 0x30C | 1 | ENGINE_CTRL | powertrain_can.dbc | 1 |
 | frmTransShiftStateMsg | 0x30D | 2 | TRANSMISSION_CTRL | powertrain_can.dbc | 4 |
-| frmPtDiagReqMsg | 0x30E | 3 | SIL_TEST_CTRL | powertrain_can.dbc | 3 |
+| frmPtDiagReqMsg | 0x30E | 3 | VAL_SCENARIO_CTRL | powertrain_can.dbc | 3 |
 | frmPtDiagResMsg | 0x30F | 3 | DOMAIN_GW_ROUTER | powertrain_can.dbc | 3 |
 | frmThermalMgmtStateMsg | 0x310 | 2 | ENGINE_CTRL | powertrain_can.dbc | 3 |
 | frmEnergyFlowStateMsg | 0x311 | 2 | DOMAIN_GW_ROUTER | powertrain_can.dbc | 3 |

@@ -18,7 +18,6 @@ Quick index for the `canoe` folder.
   - `C:\Users\이준영\CANoe-IVI-OTA\canoe\databases\powertrain_can.dbc`
   - `C:\Users\이준영\CANoe-IVI-OTA\canoe\databases\body_can.dbc`
   - `C:\Users\이준영\CANoe-IVI-OTA\canoe\databases\infotainment_can.dbc`
-  - `C:\Users\이준영\CANoe-IVI-OTA\canoe\databases\test_can.dbc`
   - `C:\Users\이준영\CANoe-IVI-OTA\canoe\databases\eth_backbone_can_stub.dbc`
 - V1 legacy backup DBC:
   - `C:\Users\이준영\CANoe-IVI-OTA\canoe\databases\v1_legacy\v1_split_345bdb4\emergency_system.dbc`

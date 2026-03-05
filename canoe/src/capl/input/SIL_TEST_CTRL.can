@@ -501,7 +501,7 @@ on timer tScenarioPhase2
     @V2X::sourceId = 99;
     @V2X::emergencyDirection = 2;
     gScenarioPhase = 2;
-    write("[SIL_TEST_CTRL] Req_030 phase2: inject eta=10 sourceId=99");
+    write("[VAL_SCENARIO_CTRL] Req_030 phase2: inject eta=10 sourceId=99");
   }
   else if (gCurrentScenarioId == 10)
   {
@@ -511,7 +511,7 @@ on timer tScenarioPhase2
     @V2X::sourceId = 5;
     @V2X::emergencyDirection = 2;
     gScenarioPhase = 2;
-    write("[SIL_TEST_CTRL] Req_031 phase2: inject eta=10 sourceId=5");
+    write("[VAL_SCENARIO_CTRL] Req_031 phase2: inject eta=10 sourceId=5");
   }
   else if (gCurrentScenarioId == 11)
   {
@@ -523,7 +523,7 @@ on timer tScenarioPhase2
     @V2X::sourceId = 10;
     @V2X::emergencyDirection = 1;
     gScenarioPhase = 2;
-    write("[SIL_TEST_CTRL] Req_034 phase2: inject police, baseline snapshotId=%d",
+    write("[VAL_SCENARIO_CTRL] Req_034 phase2: inject police, baseline snapshotId=%d",
           gArbitrationSnapshotBaseline);
   }
   else if (gCurrentScenarioId == 12)
@@ -532,7 +532,7 @@ on timer tScenarioPhase2
     @Chassis::vehicleSpeed = 20;
     gScenarioPhase = 2;
     setTimer(tScenarioPhase3, 100);
-    write("[SIL_TEST_CTRL] Req_006 phase2: speed=20 clear warning");
+    write("[VAL_SCENARIO_CTRL] Req_006 phase2: speed=20 clear warning");
   }
   else if (gCurrentScenarioId == 13)
   {
@@ -544,7 +544,7 @@ on timer tScenarioPhase2
     @Chassis::steeringInput = 1;
     gScenarioPhase = 2;
     setTimer(tScenarioPhase3, 200);
-    write("[SIL_TEST_CTRL] Req_015 phase2: roadZone=2 baseline snapshotId=%d",
+    write("[VAL_SCENARIO_CTRL] Req_015 phase2: roadZone=2 baseline snapshotId=%d",
           gArbitrationSnapshotBaseline);
   }
   else if (gCurrentScenarioId == 17)
@@ -552,7 +552,7 @@ on timer tScenarioPhase2
     /* Req_123: simulate driver intervention (steering input) */
     @Chassis::steeringInput = 1;
     gScenarioPhase = 2;
-    write("[SIL_TEST_CTRL] Req_123 phase2: steering intervention");
+    write("[VAL_SCENARIO_CTRL] Req_123 phase2: steering intervention");
   }
 }
 
@@ -563,7 +563,7 @@ on timer tScenarioPhase3
     /* Req_006 + Req_026: Phase 3 - re-trigger school zone warning */
     @Chassis::vehicleSpeed = 45;
     gScenarioPhase = 3;
-    write("[SIL_TEST_CTRL] Req_006 phase3: speed=45 re-trigger warning");
+    write("[VAL_SCENARIO_CTRL] Req_006 phase3: speed=45 re-trigger warning");
   }
   else if (gCurrentScenarioId == 13)
   {
@@ -573,7 +573,7 @@ on timer tScenarioPhase3
     @Infotainment::speedLimit = 30;
     @Chassis::steeringInput = 1;
     gScenarioPhase = 3;
-    write("[SIL_TEST_CTRL] Req_015 phase3: roadZone=1 back to school zone");
+    write("[VAL_SCENARIO_CTRL] Req_015 phase3: roadZone=1 back to school zone");
   }
 }
 
@@ -588,7 +588,7 @@ on start
   @Test::scenarioResult = 0;
   @Test::forceFailSafe = 0;
   setTimer(tInput100, 100);
-  write("[SIL_TEST_CTRL] start");
+  write("[VAL_SCENARIO_CTRL] start");
 }
 
 on timer tInput100
@@ -721,14 +721,14 @@ on sysvar Test::testScenario
     gDemoRunning = 1;
     gDemoStepIndex = 0;
     runDemoStep();
-    write("[SIL_TEST_CTRL] auto demo start");
+    write("[VAL_SCENARIO_CTRL] auto demo start");
   }
   else if (scenarioId == 0)
   {
     gDemoRunning = 0;
     cancelTimer(tDemoStep);
     @Test::forceFailSafe = 0;
-    write("[SIL_TEST_CTRL] auto demo stop");
+    write("[VAL_SCENARIO_CTRL] auto demo stop");
   }
   else if (scenarioId >= 1 && scenarioId <= 19)
   {
@@ -737,7 +737,7 @@ on sysvar Test::testScenario
     applyScenarioPreset(scenarioId);
     gCurrentScenarioId = scenarioId;
     scheduleScenarioEvaluation(scenarioId);
-    write("[SIL_TEST_CTRL] apply scenario=%d", scenarioId);
+    write("[VAL_SCENARIO_CTRL] apply scenario=%d", scenarioId);
   }
   else if (scenarioId >= 200 && scenarioId <= 255)
   {
@@ -745,11 +745,11 @@ on sysvar Test::testScenario
     cancelTimer(tDemoStep);
     gCurrentScenarioId = scenarioId;
     sendBaselineDiagRequest(scenarioId);
-    write("[SIL_TEST_CTRL] send baseline diag request scenario=%d", scenarioId);
+    write("[VAL_SCENARIO_CTRL] send baseline diag request scenario=%d", scenarioId);
   }
   else
   {
-    write("[SIL_TEST_CTRL] ignore invalid scenario=%d", scenarioId);
+    write("[VAL_SCENARIO_CTRL] ignore invalid scenario=%d", scenarioId);
   }
 }
 

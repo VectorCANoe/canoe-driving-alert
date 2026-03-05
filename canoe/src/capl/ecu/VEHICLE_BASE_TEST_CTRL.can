@@ -18,7 +18,7 @@ on start
   gFlowCoverage        = 0;
   gTestHealth          = 0xFF;
   gTraceSnapshotId     = 0;
-  write("[VEHICLE_BASE_TEST_CTRL] start");
+  write("[VAL_BASELINE_CTRL] start");
 }
 
 on message frmTestResultMsg
@@ -43,6 +43,6 @@ on message frmTestResultMsg
   mResult.TestHealth         = gTestHealth & 0xFF;
   output(mResult);
 
-  write("[VEHICLE_BASE_TEST_CTRL] scenario id=%d result=%d health=%d",
+  write("[VAL_BASELINE_CTRL] scenario id=%d result=%d health=%d",
         gLastBaseScenarioId, gBaseScenarioResult, gTestHealth);
 }

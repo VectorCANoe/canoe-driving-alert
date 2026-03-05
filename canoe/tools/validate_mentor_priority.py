@@ -22,7 +22,7 @@ DBC_ACTIVE_FILES = [
     "powertrain_can.dbc",
     "body_can.dbc",
     "infotainment_can.dbc",
-    "test_can.dbc",
+    "eth_backbone_can_stub.dbc",
 ]
 DBC_BACKUP_FILE = "legacy/LEGACY_emergency_system.dbc"
 ETH_CONTRACT_REL = "canoe/docs/operations/ETH_INTERFACE_CONTRACT.md"

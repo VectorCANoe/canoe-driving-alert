@@ -6,7 +6,7 @@
 - CANoe 실행 cfg(활성): `cfg/CAN_v2_topology_wip.cfg`
 - CANoe 실행 cfg(v1 레거시): `cfg/v1_cfg/CAN_500kBaud_1ch.cfg`
 - 시스템 변수: `project/sysvars/project.sysvars`
-- CAN DB(활성): `databases/{chassis_can, powertrain_can, body_can, infotainment_can, test_can, eth_backbone_can_stub}.dbc`
+- CAN DB(활성): `databases/{chassis_can, powertrain_can, body_can, infotainment_can, eth_backbone_can_stub}.dbc`
 - CAN DB(v1 레거시): `databases/v1_legacy/v1_split_345bdb4/emergency_system.dbc`
 - 빠른 파일 찾기: `FILE_INDEX.md`
 
@@ -40,11 +40,11 @@ canoe/
 ```
 
 ## 활성 CAPL 노드 (26)
-- input: `SIL_TEST_CTRL`, `CHASSIS_GW`, `INFOTAINMENT_GW`
+- input: `VAL_SCENARIO_CTRL`, `CHASSIS_GW`, `INFOTAINMENT_GW`
 - logic: `NAV_CONTEXT_MGR`, `ADAS_WARN_CTRL`, `EMS_ALERT_RX`, `WARN_ARB_MGR`
 - output: `BODY_GW`, `IVI_GW`, `BCM_AMBIENT_CTRL`, `CLU_HMI_CTRL`
 - ems: `EMS_POLICE_TX`, `EMS_AMB_TX`
-- ecu/network: `ACCEL_CTRL`, `BRAKE_CTRL`, `STEERING_CTRL`, `ENGINE_CTRL`, `TRANSMISSION_CTRL`, `WINDOW_CTRL`, `HAZARD_CTRL`, `DRIVER_STATE_CTRL`, `CLUSTER_BASE_CTRL`, `DOMAIN_GW_ROUTER`, `DOMAIN_BOUNDARY_MGR`, `VEHICLE_BASE_TEST_CTRL`, `ETH_SWITCH`
+- ecu/network: `ACCEL_CTRL`, `BRAKE_CTRL`, `STEERING_CTRL`, `ENGINE_CTRL`, `TRANSMISSION_CTRL`, `WINDOW_CTRL`, `HAZARD_CTRL`, `DRIVER_STATE_CTRL`, `CLUSTER_BASE_CTRL`, `DOMAIN_GW_ROUTER`, `DOMAIN_BOUNDARY_MGR`, `VAL_BASELINE_CTRL`, `ETH_SWITCH`
 
 ## 운영 원칙
 - `00~07` 문서는 참고/검증 기준이며 구현 수정은 `canoe/`에서만 수행

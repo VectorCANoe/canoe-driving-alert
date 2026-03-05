@@ -27,7 +27,7 @@ This baseline applies mentor feedback first and keeps implementation decisions p
 - `canoe/databases/powertrain_can.dbc`
 - `canoe/databases/body_can.dbc`
 - `canoe/databases/infotainment_can.dbc`
-- `canoe/databases/test_can.dbc`
+- `canoe/databases/chassis_can.dbc`
 - `canoe/databases/eth_backbone_can_stub.dbc`
 
 2. Ethernet SoT is contract document only:

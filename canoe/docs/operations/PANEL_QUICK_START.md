@@ -96,5 +96,5 @@
 - `00~07` 문서는 구현 참조용이며, 구현/운영 변경은 `canoe/`에서만 수행합니다.
 
 ## 8) 자동 데모 모드
-- `Test::testScenario=100`으로 설정하면 SIL_TEST_CTRL이 4초 간격으로 시나리오 1~6을 순환합니다.
+- `Test::testScenario=100`으로 설정하면 VAL_SCENARIO_CTRL이 4초 간격으로 시나리오 1~6을 순환합니다.
 - 자동 데모 중지: `Test::testScenario=0`

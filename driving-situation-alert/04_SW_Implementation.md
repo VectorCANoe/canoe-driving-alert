@@ -114,7 +114,7 @@ Emergency Source (logical terminal)
 | MOD_10 | IVI_GW | `canoe/src/capl/output/IVI_GW.can` | ETH->CAN 변환(Cluster) |
 | MOD_11 | BCM_AMBIENT_CTRL | `canoe/src/capl/output/BCM_AMBIENT_CTRL.can` | Ambient 출력 제어 |
 | MOD_12 | CLU_HMI_CTRL | `canoe/src/capl/output/CLU_HMI_CTRL.can` | Cluster 경고 출력 |
-| MOD_13 | VAL_SCENARIO_CTRL | `canoe/src/capl/input/SIL_TEST_CTRL.can` | 테스트 실행/판정 (파일 리네임은 개발팀 이관 범위) |
+| MOD_13 | VAL_SCENARIO_CTRL | `canoe/src/capl/input/SIL_TEST_CTRL.can` (`VAL_SCENARIO_CTRL` role) | 테스트 실행/판정 |
 | MOD_14 | ETH_SWITCH | `canoe/src/capl/network/ETH_SWITCH.can` | ETH 경로 상태 모니터(Validation/Fail-safe 지원) |
 | MOD_15 | DOMAIN_BOUNDARY_MGR | `canoe/src/capl/ecu/DOMAIN_BOUNDARY_MGR.can` | 도메인 경로 헬스/Fail-safe 게이트 |
 

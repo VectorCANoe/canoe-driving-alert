@@ -81,7 +81,7 @@ MSG_META: Dict[str, Dict[str, object]] = {
     "frmVehicleStateCanMsg": {
         "id": 0x100,
         "dlc": 2,
-        "sender": "SIL_TEST_CTRL",
+        "sender": "VAL_SCENARIO_CTRL",
         "receivers": ["CHASSIS_GW"],
         "cycle_ms": 100,
         "comment": "Chassis CAN input: vehicle speed and drive state.",
@@ -89,7 +89,7 @@ MSG_META: Dict[str, Dict[str, object]] = {
     "frmSteeringCanMsg": {
         "id": 0x101,
         "dlc": 1,
-        "sender": "SIL_TEST_CTRL",
+        "sender": "VAL_SCENARIO_CTRL",
         "receivers": ["CHASSIS_GW"],
         "cycle_ms": 100,
         "comment": "Chassis CAN input: steering input state.",
@@ -97,7 +97,7 @@ MSG_META: Dict[str, Dict[str, object]] = {
     "frmNavContextCanMsg": {
         "id": 0x110,
         "dlc": 3,
-        "sender": "SIL_TEST_CTRL",
+        "sender": "VAL_SCENARIO_CTRL",
         "receivers": ["INFOTAINMENT_GW"],
         "cycle_ms": 100,
         "comment": "Infotainment CAN input: road zone, direction, distance, and speed limit.",
@@ -121,7 +121,7 @@ MSG_META: Dict[str, Dict[str, object]] = {
     "frmTestResultMsg": {
         "id": 0x230,
         "dlc": 1,
-        "sender": "SIL_TEST_CTRL",
+        "sender": "VAL_SCENARIO_CTRL",
         "receivers": ["Vector__XXX"],
         "cycle_ms": 0,
         "comment": "Scenario pass/fail result for SIL traceability.",
@@ -172,7 +172,7 @@ VALUE_TABLES: Dict[str, Dict[int, str]] = {
 }
 
 NODE_COMMENTS = {
-    "SIL_TEST_CTRL": "SIL test controller for CAN input injection and scenario result logging.",
+    "VAL_SCENARIO_CTRL": "SIL test controller for CAN input injection and scenario result logging.",
     "CHASSIS_GW": "Gateway: Chassis CAN input normalization to core variables.",
     "INFOTAINMENT_GW": "Gateway: Infotainment CAN input normalization to core variables.",
     "EMS_POLICE_TX": "Emergency producer node (Police) on Ethernet domain contract.",
@@ -188,7 +188,7 @@ NODE_COMMENTS = {
     "STEERING_CTRL": "Baseline vehicle function node for steering input handling.",
     "ENGINE_CTRL": "Baseline vehicle function node for ignition/engine state handling.",
     "TRANSMISSION_CTRL": "Baseline vehicle function node for gear state handling.",
-    "VEHICLE_BASE_TEST_CTRL": "Baseline SIL test controller for vehicle basic functions.",
+    "VAL_BASELINE_CTRL": "Baseline SIL test controller for vehicle basic functions.",
     "HAZARD_CTRL": "Baseline vehicle function node for hazard switch handling.",
     "WINDOW_CTRL": "Baseline vehicle function node for window command handling.",
     "DRIVER_STATE_CTRL": "Baseline vehicle function node for driver-state forwarding.",
@@ -631,7 +631,7 @@ def main() -> int:
             "WINDOW_CTRL",
             "DRIVER_STATE_CTRL",
             "CLUSTER_BASE_CTRL",
-            "VEHICLE_BASE_TEST_CTRL",
+            "VAL_BASELINE_CTRL",
             "DOMAIN_GW_ROUTER",
             "DOMAIN_BOUNDARY_MGR",
         ],
@@ -654,7 +654,7 @@ def main() -> int:
         "emergency_system_chassis.dbc": {
             "version": "Emergency_System_CAN_Chassis_v1.1",
             "ids": [0x100, 0x101, 0x230],
-            "extra_nodes": ["ACCEL_CTRL", "BRAKE_CTRL", "STEERING_CTRL", "VEHICLE_BASE_TEST_CTRL"],
+            "extra_nodes": ["ACCEL_CTRL", "BRAKE_CTRL", "STEERING_CTRL", "VAL_BASELINE_CTRL"],
             "comment": "Domain split: chassis CAN network from emergency_system.dbc baseline.",
         },
         "emergency_system_body.dbc": {
@@ -672,7 +672,7 @@ def main() -> int:
         "emergency_system_powertrain.dbc": {
             "version": "Emergency_System_CAN_Powertrain_v1.1",
             "ids": [],
-            "extra_nodes": ["SIL_TEST_CTRL", "ENGINE_CTRL", "TRANSMISSION_CTRL", "DOMAIN_GW_ROUTER"],
+            "extra_nodes": ["VAL_SCENARIO_CTRL", "ENGINE_CTRL", "TRANSMISSION_CTRL", "DOMAIN_GW_ROUTER"],
             "comment": "Domain split: powertrain CAN network from emergency_system.dbc baseline.",
             "extra_comments": [
                 "Current baseline has no dedicated powertrain CAN frame.",

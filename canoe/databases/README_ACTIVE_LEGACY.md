@@ -5,9 +5,11 @@
 - `powertrain_can.dbc`
 - `body_can.dbc`
 - `infotainment_can.dbc`
-- `test_can.dbc`
+- `eth_backbone_can_stub.dbc`
 
 These files are the canonical runtime set for split-domain architecture.
+
+`test_can.dbc` is kept as a deprecated placeholder only.
 
 ## Legacy Backup DBC
 - `legacy/LEGACY_emergency_system.dbc`

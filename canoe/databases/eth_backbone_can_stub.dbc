@@ -30,7 +30,7 @@ NS_ :
 
 BS_:
 
-BU_: EMS_POLICE_TX EMS_AMB_TX EMS_ALERT_RX ETH_SWITCH WARN_ARB_MGR ADAS_WARN_CTRL NAV_CONTEXT_MGR IVI_GW CHASSIS_GW SIL_TEST_CTRL DOMAIN_BOUNDARY_MGR Vector__XXX
+BU_: EMS_POLICE_TX EMS_AMB_TX EMS_ALERT_RX ETH_SWITCH WARN_ARB_MGR ADAS_WARN_CTRL NAV_CONTEXT_MGR IVI_GW CHASSIS_GW VAL_SCENARIO_CTRL DOMAIN_BOUNDARY_MGR Vector__XXX
 
 BO_ 100 frmEmergencyBroadcastMsg: 4 Vector__XXX
  SG_ VehicleType  : 0|4@1+  (1,0) [0|15]  ""    EMS_ALERT_RX
@@ -46,31 +46,31 @@ BO_ 287 frmAdasChassisStatusMsg: 2 ADAS_WARN_CTRL
  SG_ AdasHealthLevel  : 8|8@1+ (1,0) [0|255] "" CHASSIS_GW
 
 BO_ 562 frmEmergencyMonitorMsg: 2 EMS_ALERT_RX
- SG_ EmergencyContext : 0|8@1+ (1,0) [0|255] "" SIL_TEST_CTRL,CHASSIS_GW
- SG_ TimeoutClearMon  : 8|1@1+ (1,0) [0|1]   "" SIL_TEST_CTRL,CHASSIS_GW
+ SG_ EmergencyContext : 0|8@1+ (1,0) [0|255] "" VAL_SCENARIO_CTRL,CHASSIS_GW
+ SG_ TimeoutClearMon  : 8|1@1+ (1,0) [0|1]   "" VAL_SCENARIO_CTRL,CHASSIS_GW
  SG_ Reserved0        : 9|7@1+ (1,0) [0|0]   "" Vector__XXX
 
 BO_ 787 ethEmergencyRiskMsg: 5 ADAS_WARN_CTRL
- SG_ RiskLevel          : 0|8@1+  (1,0) [0|100] "" WARN_ARB_MGR,SIL_TEST_CTRL
- SG_ EtaSeconds         : 8|8@1+  (1,0) [0|255] "s" WARN_ARB_MGR,SIL_TEST_CTRL
- SG_ VehicleSpeed       : 16|8@1+ (1,0) [0|255] "km/h" WARN_ARB_MGR,SIL_TEST_CTRL
- SG_ EmergencyDirection : 24|2@1+ (1,0) [0|3] "" WARN_ARB_MGR,SIL_TEST_CTRL
- SG_ EmergencyType      : 26|2@1+ (1,0) [0|2] "" WARN_ARB_MGR,SIL_TEST_CTRL
+ SG_ RiskLevel          : 0|8@1+  (1,0) [0|100] "" WARN_ARB_MGR,VAL_SCENARIO_CTRL
+ SG_ EtaSeconds         : 8|8@1+  (1,0) [0|255] "s" WARN_ARB_MGR,VAL_SCENARIO_CTRL
+ SG_ VehicleSpeed       : 16|8@1+ (1,0) [0|255] "km/h" WARN_ARB_MGR,VAL_SCENARIO_CTRL
+ SG_ EmergencyDirection : 24|2@1+ (1,0) [0|3] "" WARN_ARB_MGR,VAL_SCENARIO_CTRL
+ SG_ EmergencyType      : 26|2@1+ (1,0) [0|2] "" WARN_ARB_MGR,VAL_SCENARIO_CTRL
  SG_ Reserved0          : 28|12@1+ (1,0) [0|0] "" Vector__XXX
 
 BO_ 788 ethDecelAssistReqMsg: 4 WARN_ARB_MGR
- SG_ DecelAssistReq      : 0|1@1+ (1,0) [0|1] "" SIL_TEST_CTRL,CHASSIS_GW
- SG_ FailSafeMode        : 1|2@1+ (1,0) [0|2] "" SIL_TEST_CTRL,CHASSIS_GW
- SG_ DriverReleaseReason : 3|2@1+ (1,0) [0|3] "" SIL_TEST_CTRL,CHASSIS_GW
- SG_ EmergencyContext    : 5|2@1+ (1,0) [0|2] "" SIL_TEST_CTRL,CHASSIS_GW
- SG_ RiskLevel           : 8|8@1+ (1,0) [0|100] "" SIL_TEST_CTRL,CHASSIS_GW
+ SG_ DecelAssistReq      : 0|1@1+ (1,0) [0|1] "" VAL_SCENARIO_CTRL,CHASSIS_GW
+ SG_ FailSafeMode        : 1|2@1+ (1,0) [0|2] "" VAL_SCENARIO_CTRL,CHASSIS_GW
+ SG_ DriverReleaseReason : 3|2@1+ (1,0) [0|3] "" VAL_SCENARIO_CTRL,CHASSIS_GW
+ SG_ EmergencyContext    : 5|2@1+ (1,0) [0|2] "" VAL_SCENARIO_CTRL,CHASSIS_GW
+ SG_ RiskLevel           : 8|8@1+ (1,0) [0|100] "" VAL_SCENARIO_CTRL,CHASSIS_GW
  SG_ Reserved0           : 16|16@1+ (1,0) [0|0] "" Vector__XXX
 
 BO_ 789 ethFailSafeStateMsg: 2 DOMAIN_BOUNDARY_MGR
- SG_ DomainPathStatus : 0|2@1+ (1,0) [0|2] "" WARN_ARB_MGR,SIL_TEST_CTRL
- SG_ E2eHealthState   : 2|2@1+ (1,0) [0|2] "" WARN_ARB_MGR,SIL_TEST_CTRL
- SG_ FailSafeMode     : 4|2@1+ (1,0) [0|2] "" WARN_ARB_MGR,SIL_TEST_CTRL
- SG_ BoundaryAlive    : 6|1@1+ (1,0) [0|1] "" WARN_ARB_MGR,SIL_TEST_CTRL
+ SG_ DomainPathStatus : 0|2@1+ (1,0) [0|2] "" WARN_ARB_MGR,VAL_SCENARIO_CTRL
+ SG_ E2eHealthState   : 2|2@1+ (1,0) [0|2] "" WARN_ARB_MGR,VAL_SCENARIO_CTRL
+ SG_ FailSafeMode     : 4|2@1+ (1,0) [0|2] "" WARN_ARB_MGR,VAL_SCENARIO_CTRL
+ SG_ BoundaryAlive    : 6|1@1+ (1,0) [0|1] "" WARN_ARB_MGR,VAL_SCENARIO_CTRL
  SG_ Reserved0        : 7|9@1+ (1,0) [0|0] "" Vector__XXX
 
 CM_ BO_ 100 "E100: Emergency vehicle broadcast. Sent by EMS_POLICE_TX (type=1) or EMS_AMB_TX (type=2) on ETH backbone (ch5). Received by EMS_ALERT_RX for priority arbitration. STUB: This file substitutes CANoe.Ethernet backbone using CAN ch5. Delete this file and replace with Ethernet network when CANoe.Ethernet license is available. Interface spec: 0303_Communication_Specification.md E100.";

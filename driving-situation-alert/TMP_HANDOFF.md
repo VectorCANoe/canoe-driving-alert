@@ -40,7 +40,8 @@
 - EMS_ALERT_RX
 - BCM_AMBIENT_CTRL
 - CLU_HMI_CTRL
-- SIL_TEST_CTRL
+- VAL_SCENARIO_CTRL
+- VAL_BASELINE_CTRL
 
 ## 5) Priority and Timing Rules
 - Emergency > Navigation context

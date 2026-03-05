@@ -29,14 +29,14 @@ NS_ :
 
 BS_:
 
-BU_: SIL_TEST_CTRL ENGINE_CTRL TRANSMISSION_CTRL CHASSIS_GW DOMAIN_GW_ROUTER Vector__XXX
+BU_: VAL_SCENARIO_CTRL ENGINE_CTRL TRANSMISSION_CTRL CHASSIS_GW DOMAIN_GW_ROUTER Vector__XXX
 
-BO_ 768 frmIgnitionEngineMsg: 1 SIL_TEST_CTRL
+BO_ 768 frmIgnitionEngineMsg: 1 VAL_SCENARIO_CTRL
  SG_ IgnitionState  : 0|1@1+ (1,0) [0|1] "" ENGINE_CTRL
  SG_ EngineState    : 1|2@1+ (1,0) [0|3] "" ENGINE_CTRL
  SG_ Reserved0      : 3|5@1+ (1,0) [0|0] "" Vector__XXX
 
-BO_ 769 frmGearStateMsg: 1 SIL_TEST_CTRL
+BO_ 769 frmGearStateMsg: 1 VAL_SCENARIO_CTRL
  SG_ GearInput      : 0|3@1+ (1,0) [0|7] "" TRANSMISSION_CTRL
  SG_ GearState      : 3|3@1+ (1,0) [0|7] "" TRANSMISSION_CTRL
  SG_ Reserved0      : 6|2@1+ (1,0) [0|0] "" Vector__XXX
@@ -83,9 +83,9 @@ BO_ 777 frmCruiseStateMsg: 2 DOMAIN_GW_ROUTER
  SG_ CruiseSetSpeed  : 8|8@1+ (1,0) [0|255] "km/h" ENGINE_CTRL,TRANSMISSION_CTRL
 
 BO_ 778 frmPowertrainHealthMsg: 2 DOMAIN_GW_ROUTER
- SG_ PtAliveCnt      : 0|8@1+ (1,0) [0|255] "" SIL_TEST_CTRL
- SG_ PtDiagState     : 8|4@1+ (1,0) [0|15] "" SIL_TEST_CTRL
- SG_ PtFailCode      : 12|4@1+ (1,0) [0|15] "" SIL_TEST_CTRL
+ SG_ PtAliveCnt      : 0|8@1+ (1,0) [0|255] "" VAL_SCENARIO_CTRL
+ SG_ PtDiagState     : 8|4@1+ (1,0) [0|15] "" VAL_SCENARIO_CTRL
+ SG_ PtFailCode      : 12|4@1+ (1,0) [0|15] "" VAL_SCENARIO_CTRL
 
 BO_ 779 frmEngineTorqueMsg: 2 ENGINE_CTRL
  SG_ EngineTorqueAct : 0|16@1+ (1,0) [0|65535] "Nm" DOMAIN_GW_ROUTER
@@ -99,15 +99,15 @@ BO_ 781 frmTransShiftStateMsg: 2 TRANSMISSION_CTRL
  SG_ Reserved0       : 6|2@1+ (1,0) [0|0] "" Vector__XXX
  SG_ ShiftSlip       : 8|8@1+ (1,0) [0|255] "" DOMAIN_GW_ROUTER
 
-BO_ 782 frmPtDiagReqMsg: 3 SIL_TEST_CTRL
+BO_ 782 frmPtDiagReqMsg: 3 VAL_SCENARIO_CTRL
  SG_ PtDiagServiceId : 0|8@1+ (1,0) [0|255] "" DOMAIN_GW_ROUTER
  SG_ PtDiagDidHigh   : 8|8@1+ (1,0) [0|255] "" DOMAIN_GW_ROUTER
  SG_ PtDiagDidLow    : 16|8@1+ (1,0) [0|255] "" DOMAIN_GW_ROUTER
 
 BO_ 783 frmPtDiagResMsg: 3 DOMAIN_GW_ROUTER
- SG_ PtDiagRespCode  : 0|8@1+ (1,0) [0|255] "" SIL_TEST_CTRL
- SG_ PtDiagData0     : 8|8@1+ (1,0) [0|255] "" SIL_TEST_CTRL
- SG_ PtDiagData1     : 16|8@1+ (1,0) [0|255] "" SIL_TEST_CTRL
+ SG_ PtDiagRespCode  : 0|8@1+ (1,0) [0|255] "" VAL_SCENARIO_CTRL
+ SG_ PtDiagData0     : 8|8@1+ (1,0) [0|255] "" VAL_SCENARIO_CTRL
+ SG_ PtDiagData1     : 16|8@1+ (1,0) [0|255] "" VAL_SCENARIO_CTRL
 
 BO_ 784 frmThermalMgmtStateMsg: 2 ENGINE_CTRL
  SG_ ThermalMode     : 0|3@1+ (1,0) [0|7] "" DOMAIN_GW_ROUTER
