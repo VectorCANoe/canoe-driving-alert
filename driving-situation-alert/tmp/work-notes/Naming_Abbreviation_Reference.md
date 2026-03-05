@@ -12,7 +12,7 @@
 ## 2) 프로젝트 핵심 약어/노드 명명표
 | 이름 | 약어/풀네임 | 의미(프로젝트 기준) | 비고 |
 |---|---|---|---|
-| `WARN_ARB_MGR` | Warning Arbitration Manager | 다중 경고 동시 발생 시 우선순위 중재 관리자 | `ARB = Arbiter(중재자)` |
+| `WARN_ARB_MGR` | Warning Arbitration Manager | 다중 경고 동시 발생 시 경보 우선순위 판정 관리자 | `ARB = Arbiter(중재자)` |
 | `ADAS_WARN_CTRL` | ADAS Warning Controller | 주행 문맥/위험 조건을 경고 레벨로 판정 | 경고 기준 판단 노드 |
 | `NAV_CONTEXT_MGR` | Navigation Context Manager | 구간/제한속도/유도 문맥을 생성/관리 | 내비 문맥 제공 |
 | `EMS_POLICE_TX` | Emergency Message Service Police Transmitter | 경찰 긴급 이벤트 송신 노드 | `TX = 송신` |
@@ -89,7 +89,7 @@
 |---|---|---|
 | ADAS_WARN_CTRL | ADAS Domain Logic | FCA/LDW/LKA/SCC와 같은 기능군의 상위 경고 판단 레이어 |
 | NAV_CONTEXT_MGR | IVI/Navi Context | IVI 또는 Navigation ECU 문맥 처리 레이어 |
-| WARN_ARB_MGR | ADAS/VCU Arbitration | 다중 ADAS/경고 이벤트 우선순위 중재 |
+| WARN_ARB_MGR | ADAS/VCU Arbitration | 다중 ADAS/경고 이벤트 경보 우선순위 판정 |
 | CLU_HMI_CTRL | Cluster HMI ECU | OEM의 Cluster ECU/HU 경고 표시 경로와 대응 |
 | BCM_AMBIENT_CTRL | BCM (Body Control Module) | 바디 램프/앰비언트 출력 제어 |
 | EMS_ALERT_RX | EMS/V2X Alert Handler | 긴급차량 메시지 수신·해제·타임아웃 처리 |

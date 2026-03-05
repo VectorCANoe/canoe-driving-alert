@@ -20,7 +20,7 @@
 - Scope In:
   - Navigation zone recognition (school zone, highway, guide lane)
   - V2V emergency alerts (police, ambulance)
-  - Ambient/service-priority arbitration
+  - Ambient/alert-priority decision
   - Vehicle baseline functions (`Req_101~119`) and V2 extension (`Req_120~124`)
 - Scope Out:
   - OTA/UDS subscription

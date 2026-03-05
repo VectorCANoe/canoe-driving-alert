@@ -29,7 +29,7 @@
 | D09 | 43:15~45:18 | Must | KPI/인사이트 분석보다 V-Model 폐쇄가 핵심 | 설계대로 구현/테스트/확인 증빙 중심으로 정리 |
 | D10 | 51:05~51:58 | Must | `Req_041~043`, `Req_112`는 사용자 기능요구가 아닌 검증환경/품질 성격 | 01/00c에서 성격 명확화, 체인 제거가 아니라 분류 정합 |
 | D11 | 1:00:37~1:00:54 | Must | Comm 문서에 Period/Event Trigger를 명시 | 0302/0303 핵심 Comm 주기/이벤트 빈칸 금지 |
-| D12 | 1:03:08~1:04:28 | Must | `우선순위 중재` 용어는 CAN arbitration과 혼동됨 | 서비스 레벨 용어로 치환(예: 서비스 우선순위) |
+| D12 | 1:03:08~1:04:28 | Must | 기존 우선순위 용어는 CAN arbitration과 혼동됨 | 경보 용어로 치환(예: 경보 우선순위 판정) |
 | D13 | 1:06:35~1:08:02 | Should | 요구사항 리미트는 없지만 과세분화는 통폐합 훈련 권장 | 지나친 분해 대신 묶음 수준 설계도 병행 |
 | D14 | 55:44~57:13 | Should | ADAS 항목이 적어도 도메인 의미를 지키는 편이 디펜스에 유리 | 기능 수가 적어도 구조적 일관성 우선 |
 
@@ -46,7 +46,7 @@
 | M40-07 | KPI 과분석 배제 | 분석 지표 중심 대신 `설계대로 동작 검증` 중심으로 정리 | [x] | `driving-situation-alert/05_Unit_Test.md`, `driving-situation-alert/06_Integration_Test.md`, `driving-situation-alert/07_System_Test.md` |
 | M40-08 | Req 성격 분리 반영 | `Req_041~043`, `Req_112`를 검증환경/품질 성격으로 명시 | [x] | `driving-situation-alert/01_Requirements.md`, `driving-situation-alert/00c_Req_Classification_and_Safety_Profile.md` |
 | M40-09 | 주기/이벤트 명시 | 0302/0303 핵심 Comm에 Period/Event 표기 누락 없음 | [x] | `driving-situation-alert/0302_NWflowDef.md`, `driving-situation-alert/0303_Communication_Specification.md` |
-| M40-10 | 용어 혼동 제거 | 서비스 우선순위와 CAN arbitration 용어 분리 | [x] | `driving-situation-alert/03_Function_definition.md`, `driving-situation-alert/0301_SysFuncAnalysis.md`, `driving-situation-alert/04_SW_Implementation.md` |
+| M40-10 | 용어 혼동 제거 | 경보 우선순위 판정과 CAN arbitration 용어 분리 | [x] | `driving-situation-alert/03_Function_definition.md`, `driving-situation-alert/0301_SysFuncAnalysis.md`, `driving-situation-alert/04_SW_Implementation.md` |
 | M40-11 | 요구사항 통폐합 품질 | 과세분화 구간 통폐합 근거와 개정 이력 유지 | [~] | `driving-situation-alert/01_Requirements.md` 개정이력 |
 | M40-12 | CAN ID 설계 근거 | ID 배정 룰(도메인/충돌회피/확장성/예약영역) 문서화 | [x] | `driving-situation-alert/0303_Communication_Specification.md` |
 | M40-13 | Ethernet DBC 경계 명시 | “Ethernet에는 CAN DBC 직접 적용하지 않음” 문구 고정 | [x] | `driving-situation-alert/0302_NWflowDef.md`, `driving-situation-alert/0303_Communication_Specification.md` |
