@@ -1,0 +1,253 @@
+includes
+{
+}
+
+variables
+{
+  msTimer tBodyCycle;
+  msTimer tBodyBase100;
+  int gLastAmbientMode;
+  int gLastAmbientColor;
+  int gLastAmbientPattern;
+  int gBodyAliveCnt;
+}
+
+on start
+{
+  gLastAmbientMode = -1;
+  gLastAmbientColor = -1;
+  gLastAmbientPattern = -1;
+  gBodyAliveCnt = 0;
+  setTimer(tBodyCycle, 10);
+  setTimer(tBodyBase100, 100);
+  write("[BODY_GW] start");
+}
+
+on timer tBodyCycle
+{
+  int alertLevel;
+  int alertType;
+  int timeoutClear;
+  int ambientMode;
+  int ambientColor;
+  int ambientPattern;
+  message frmAmbientControlMsg mAmbient;
+
+  alertLevel = (int)@Core::selectedAlertLevel;
+  alertType = (int)@Core::selectedAlertType;
+  timeoutClear = (int)@Core::timeoutClear;
+  if (alertLevel < 0 || alertLevel > 7)
+  {
+    alertLevel = 0;
+  }
+  if (alertType < 0 || alertType > 7)
+  {
+    alertType = 0;
+  }
+  timeoutClear = (timeoutClear == 1) ? 1 : 0;
+
+  if (timeoutClear == 1)
+  {
+    ambientMode = 0;
+    ambientColor = 0;
+    ambientPattern = 0;
+  }
+  else
+  {
+    ambientMode = alertLevel;
+    ambientColor = 0;
+    ambientPattern = 0;
+    if (alertLevel >= 6)
+    {
+      /* Req_035: emergency color distinct from zone colors
+         Req_036: emergency pattern distinct from zone patterns
+         6=RED/BLUE(police)  7=RED/WHITE(ambulance) */
+      ambientColor   = (alertType == 2) ? 7 : 6;
+      ambientPattern = (alertType == 2) ? 7 : 6;
+    }
+    else if (alertType == 3)
+    {
+      ambientColor   = 3; /* red   - Req_037 school zone fixed color */
+      ambientPattern = 5; /* fast flash - Req_037 school zone fixed pattern */
+    }
+    else if (alertType == 4)
+    {
+      ambientColor   = 4; /* orange - Req_038 highway fixed color */
+      ambientPattern = 4; /* pulse  - Req_038 highway fixed pattern */
+    }
+    else if (alertType == 5)
+    {
+      ambientColor   = 5; /* cyan      - Req_039 guide left */
+      ambientPattern = 2; /* flow-left - Req_039 guide left fixed pattern */
+    }
+    else if (alertType == 6)
+    {
+      ambientColor   = 5; /* cyan       - Req_039 guide right */
+      ambientPattern = 3; /* flow-right - Req_039 guide right fixed pattern */
+    }
+    else if (alertLevel > 0)
+    {
+      ambientColor   = 1; /* green - general fallback */
+      ambientPattern = 1; /* solid */
+    }
+  }
+
+  if (ambientMode != gLastAmbientMode ||
+      ambientColor != gLastAmbientColor ||
+      ambientPattern != gLastAmbientPattern)
+  {
+    @Body::ambientMode = ambientMode;
+    @Body::ambientColor = ambientColor;
+    @Body::ambientPattern = ambientPattern;
+
+    mAmbient.AmbientMode = ambientMode;
+    mAmbient.AmbientColor = ambientColor;
+    mAmbient.AmbientPattern = ambientPattern;
+    output(mAmbient);
+
+    gLastAmbientMode = ambientMode;
+    gLastAmbientColor = ambientColor;
+    gLastAmbientPattern = ambientPattern;
+  }
+
+  setTimer(tBodyCycle, 10);
+}
+
+on timer tBodyBase100
+{
+  message frmHazardControlMsg mHazard;
+  message frmWindowControlMsg mWindow;
+  message frmDriverStateMsg mDriver;
+  message frmDoorStateMsg mDoorState;
+  message frmLampControlMsg mLamp;
+  message frmWiperStateMsg mWiper;
+  message frmSeatBeltStateMsg mSeatBelt;
+  message frmCabinAirStateMsg mCabinAir;
+  message frmBodyHealthMsg mHealth;
+  message frmHvacStateMsg mHvacState;
+  message frmHvacActuatorMsg mHvacAct;
+  message frmMirrorStateMsg mMirror;
+  message frmSeatStateMsg mSeatState;
+  message frmSeatControlMsg mSeatCtrl;
+  message frmDoorControlMsg mDoorCtrl;
+  message frmBcmDiagReqMsg mBcmDiagReq;
+  message frmImmobilizerStateMsg mImmobilizer;
+  message frmAlarmStateMsg mAlarm;
+  message frmBodyGatewayStateMsg mBodyGwState;
+  message frmBodyComfortStateMsg mComfort;
+  int warningState;
+  int hazardActive;
+  int driverStateLevel;
+
+  warningState = (int)@Core::warningState;
+  hazardActive = ((int)@Core::selectedAlertLevel >= 6) ? 1 : 0;
+
+  if (warningState < 0)
+  {
+    warningState = 0;
+  }
+  if (warningState > 2)
+  {
+    warningState = 2;
+  }
+  driverStateLevel = warningState;
+
+  mHazard.HazardSwitch = hazardActive;
+  mHazard.HazardState = hazardActive;
+  output(mHazard);
+
+  mWindow.WindowCommand = 0;
+  mWindow.WindowState = 0;
+  output(mWindow);
+
+  mDriver.DriverStateLevel = driverStateLevel;
+  mDriver.DriverStateInfo = driverStateLevel;
+  output(mDriver);
+
+  mDoorState.DoorStateMask = 0;
+  mDoorState.DoorLockState = 1;
+  mDoorState.ChildLockState = 0;
+  mDoorState.DoorOpenWarn = 0;
+  output(mDoorState);
+
+  mLamp.HeadLampState = (hazardActive == 1) ? 2 : 1;
+  mLamp.TailLampState = 1;
+  mLamp.TurnLampState = 0;
+  mLamp.HazardLampReq = hazardActive;
+  output(mLamp);
+
+  mWiper.FrontWiperState = 0;
+  mWiper.RearWiperState = 0;
+  mWiper.WiperInterval = 0;
+  output(mWiper);
+
+  mSeatBelt.DriverSeatBelt = 1;
+  mSeatBelt.PassengerSeatBelt = 1;
+  mSeatBelt.RearSeatBelt = 3;
+  mSeatBelt.SeatBeltWarnLvl = (hazardActive == 1) ? 1 : 0;
+  output(mSeatBelt);
+
+  mCabinAir.CabinTemp = 24;
+  mCabinAir.AirQualityIndex = 90;
+  output(mCabinAir);
+
+  mHealth.BodyAliveCnt = gBodyAliveCnt & 0xFF;
+  mHealth.BodyDiagState = 0;
+  mHealth.BodyFailCode = 0;
+  output(mHealth);
+
+  mHvacState.CabinSetTemp = 23;
+  mHvacState.BlowerLevel = 5;
+  mHvacState.AcCompressorOn = 1;
+  output(mHvacState);
+
+  mHvacAct.VentMode = 2;
+  mHvacAct.RecircMode = 0;
+  mHvacAct.DefogMode = 0;
+  mHvacAct.FanRpmStep = 80;
+  output(mHvacAct);
+
+  mMirror.MirrorFoldState = 0;
+  mMirror.MirrorHeatState = 0;
+  mMirror.MirrorAdjustAxis = 0;
+  output(mMirror);
+
+  mSeatState.DriverSeatPos = 120;
+  mSeatState.PassengerSeatPos = 118;
+  output(mSeatState);
+
+  mSeatCtrl.DriverSeatCmd = 0;
+  mSeatCtrl.PassengerSeatCmd = 0;
+  mSeatCtrl.SeatHeatLevel = 0;
+  mSeatCtrl.SeatVentLevel = 0;
+  output(mSeatCtrl);
+
+  mDoorCtrl.DoorControlCmd = 0;
+  mDoorCtrl.ChildLockCmd = 0;
+  output(mDoorCtrl);
+
+  mBcmDiagReq.BcmDiagServiceId = 0x22;
+  mBcmDiagReq.BcmDiagDidHigh = 0xF1;
+  mBcmDiagReq.BcmDiagDidLow = 0x90;
+  output(mBcmDiagReq);
+
+  mImmobilizer.ImmobilizerState = 1;
+  mImmobilizer.KeyAuthState = 1;
+  output(mImmobilizer);
+
+  mAlarm.AlarmArmState = 1;
+  mAlarm.IntrusionDetect = 0;
+  output(mAlarm);
+
+  mBodyGwState.BodyGwRouteState = 1;
+  mBodyGwState.BodyGwHealth = 0;
+  output(mBodyGwState);
+
+  mComfort.ComfortProfile = 1;
+  mComfort.ComfortStatus = 0;
+  mComfort.ComfortError = 0;
+  output(mComfort);
+  gBodyAliveCnt = (gBodyAliveCnt + 1) & 0xFF;
+
+  setTimer(tBodyBase100, 100);
+}

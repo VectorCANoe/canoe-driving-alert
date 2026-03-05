@@ -1,0 +1,778 @@
+includes
+{
+}
+
+variables
+{
+  msTimer tInput100;
+  msTimer tDemoStep;
+  msTimer tScenarioEval;
+  msTimer tScenarioPhase2;
+  msTimer tScenarioPhase3;
+  int gDemoStepIndex;
+  int gDemoRunning;
+  int gCurrentScenarioId;
+  int gBaseTraceSnapshotId;
+  int gScenarioPhase;
+  int gArbitrationSnapshotBaseline;
+}
+
+int clampRange(int value, int minValue, int maxValue)
+{
+  if (value < minValue)
+  {
+    return minValue;
+  }
+  if (value > maxValue)
+  {
+    return maxValue;
+  }
+  return value;
+}
+
+int calcBaselineGearState(int driveState)
+{
+  if (driveState <= 0)
+  {
+    return 0; /* P */
+  }
+  if (driveState == 1)
+  {
+    return 1; /* R */
+  }
+  if (driveState == 2)
+  {
+    return 2; /* N */
+  }
+  return 3;   /* D */
+}
+
+int calcBaselineIgnitionState(int speed, int driveState)
+{
+  if (speed > 0 || driveState > 0)
+  {
+    return 1;
+  }
+  return 0;
+}
+
+void sendBaselineDiagRequest(int scenarioId)
+{
+  message frmIviDiagReqMsg mIvi;
+  message frmPtDiagReqMsg mPt;
+  message frmChassisDiagReqMsg mChs;
+  int didLow;
+
+  didLow = clampRange(scenarioId, 0, 255);
+
+  mIvi.IviDiagServiceId = 0x22;
+  mIvi.IviDiagDidHigh = 0xF1;
+  mIvi.IviDiagDidLow = didLow;
+  output(mIvi);
+
+  mPt.PtDiagServiceId = 0x22;
+  mPt.PtDiagDidHigh = 0xF1;
+  mPt.PtDiagDidLow = didLow;
+  output(mPt);
+
+  mChs.ChsDiagServiceId = 0x22;
+  mChs.ChsDiagDidHigh = 0xF1;
+  mChs.ChsDiagDidLow = didLow;
+  output(mChs);
+}
+
+void applyScenarioPreset(int scenarioId)
+{
+  @Chassis::driveState = 3;
+  @Chassis::vehicleSpeed = 20;
+  @Chassis::steeringInput = 1;
+  @Infotainment::roadZone = 0;
+  @Infotainment::navDirection = 0;
+  @Infotainment::zoneDistance = 50;
+  @Infotainment::speedLimit = 30;
+  @V2X::alertState = 0;
+  @V2X::emergencyType = 0;
+  @V2X::emergencyDirection = 1;
+  @V2X::eta = 10;
+  @V2X::sourceId = 1;
+  @Test::forceFailSafe = 0;
+
+  if (scenarioId == 1)
+  {
+    /* Normal idle */
+  }
+  else if (scenarioId == 2)
+  {
+    /* School zone overspeed */
+    @Infotainment::roadZone = 1;
+    @Chassis::vehicleSpeed = 45;
+    @Infotainment::speedLimit = 30;
+  }
+  else if (scenarioId == 3)
+  {
+    /* Highway no steering */
+    @Infotainment::roadZone = 2;
+    @Chassis::steeringInput = 0;
+    @Chassis::vehicleSpeed = 80;
+    @Infotainment::speedLimit = 100;
+  }
+  else if (scenarioId == 4)
+  {
+    /* Police emergency */
+    @V2X::alertState = 1;
+    @V2X::emergencyType = 1;
+    @V2X::eta = 12;
+    @V2X::emergencyDirection = 1;
+    @V2X::sourceId = 11;
+  }
+  else if (scenarioId == 5)
+  {
+    /* Ambulance emergency */
+    @V2X::alertState = 1;
+    @V2X::emergencyType = 2;
+    @V2X::eta = 8;
+    @V2X::emergencyDirection = 2;
+    @V2X::sourceId = 22;
+  }
+  else if (scenarioId == 6)
+  {
+    /* Timeout test preparation: emergency active then stop update externally */
+    @V2X::alertState = 1;
+    @V2X::emergencyType = 2;
+    @V2X::eta = 5;
+    @V2X::sourceId = 33;
+  }
+  else if (scenarioId == 7)
+  {
+    /* Guide zone left */
+    @Infotainment::roadZone = 3;
+    @Infotainment::navDirection = 1;
+    @Chassis::vehicleSpeed = 35;
+  }
+  else if (scenarioId == 8)
+  {
+    /* Guide zone right */
+    @Infotainment::roadZone = 3;
+    @Infotainment::navDirection = 2;
+    @Chassis::vehicleSpeed = 35;
+  }
+  else if (scenarioId == 9)
+  {
+    /* Req_030: ETA priority - Phase 1: Police ETA=20 sourceId=5 */
+    @V2X::alertState = 1;
+    @V2X::emergencyType = 1;
+    @V2X::eta = 20;
+    @V2X::sourceId = 5;
+    @V2X::emergencyDirection = 1;
+    gScenarioPhase = 1;
+    setTimer(tScenarioPhase2, 300);
+  }
+  else if (scenarioId == 10)
+  {
+    /* Req_031: SourceID tiebreaker - Phase 1: Police ETA=10 sourceId=20 */
+    @V2X::alertState = 1;
+    @V2X::emergencyType = 1;
+    @V2X::eta = 10;
+    @V2X::sourceId = 20;
+    @V2X::emergencyDirection = 1;
+    gScenarioPhase = 1;
+    setTimer(tScenarioPhase2, 300);
+  }
+  else if (scenarioId == 11)
+  {
+    /* Req_034: nav->emergency transition - Phase 1: guide zone stable */
+    @Infotainment::roadZone = 3;
+    @Infotainment::navDirection = 1;
+    @Chassis::vehicleSpeed = 35;
+    @V2X::alertState = 0;
+    @V2X::emergencyType = 0;
+    gScenarioPhase = 1;
+    setTimer(tScenarioPhase2, 400);
+  }
+  else if (scenarioId == 12)
+  {
+    /* Req_006 + Req_026: duplicate guard - Phase 1: school zone overspeed active */
+    @Infotainment::roadZone = 1;
+    @Chassis::vehicleSpeed = 45;
+    @Infotainment::speedLimit = 30;
+    @V2X::alertState = 0;
+    @V2X::emergencyType = 0;
+    gScenarioPhase = 1;
+    setTimer(tScenarioPhase2, 300);
+  }
+  else if (scenarioId == 13)
+  {
+    /* Req_015: zone transition stability - Phase 1: school zone warning stable */
+    @Infotainment::roadZone = 1;
+    @Chassis::vehicleSpeed = 45;
+    @Infotainment::speedLimit = 30;
+    @Chassis::steeringInput = 1;
+    @V2X::alertState = 0;
+    @V2X::emergencyType = 0;
+    gScenarioPhase = 1;
+    setTimer(tScenarioPhase2, 300);
+  }
+  else if (scenarioId == 14)
+  {
+    /* Req_110 + Req_111 + Req_112: domain boundary health - normal driving D gear */
+    @Chassis::driveState = 3;
+    @Chassis::vehicleSpeed = 60;
+    @Infotainment::roadZone = 0;
+    @V2X::alertState = 0;
+    @V2X::emergencyType = 0;
+    gScenarioPhase = 1;
+  }
+  else if (scenarioId == 15)
+  {
+    /* Req_120: emergency proximity risk score update */
+    @Chassis::vehicleSpeed = 70;
+    @Chassis::steeringInput = 0;
+    @V2X::alertState = 1;
+    @V2X::emergencyType = 1;
+    @V2X::emergencyDirection = 0;
+    @V2X::eta = 6;
+    @V2X::sourceId = 41;
+  }
+  else if (scenarioId == 16)
+  {
+    /* Req_121: risk-threshold decel assist activation */
+    @Chassis::vehicleSpeed = 90;
+    @Chassis::steeringInput = 0;
+    @V2X::alertState = 1;
+    @V2X::emergencyType = 2;
+    @V2X::emergencyDirection = 0;
+    @V2X::eta = 4;
+    @V2X::sourceId = 42;
+  }
+  else if (scenarioId == 17)
+  {
+    /* Req_123: driver intervention release */
+    @Chassis::vehicleSpeed = 90;
+    @Chassis::steeringInput = 0;
+    @V2X::alertState = 1;
+    @V2X::emergencyType = 2;
+    @V2X::emergencyDirection = 0;
+    @V2X::eta = 4;
+    @V2X::sourceId = 43;
+    gScenarioPhase = 1;
+    setTimer(tScenarioPhase2, 250);
+  }
+  else if (scenarioId == 18)
+  {
+    /* Req_124: forced fail-safe gating */
+    @Chassis::vehicleSpeed = 70;
+    @V2X::alertState = 1;
+    @V2X::emergencyType = 1;
+    @V2X::eta = 6;
+    @V2X::sourceId = 44;
+    @Test::forceFailSafe = 1;
+  }
+  else if (scenarioId == 19)
+  {
+    /* Req_122: decel assist + emergency warning sync */
+    @Infotainment::roadZone = 1;
+    @Infotainment::speedLimit = 30;
+    @Chassis::vehicleSpeed = 75;
+    @Chassis::steeringInput = 0;
+    @V2X::alertState = 1;
+    @V2X::emergencyType = 2;
+    @V2X::emergencyDirection = 0;
+    @V2X::eta = 4;
+    @V2X::sourceId = 45;
+  }
+}
+
+void scheduleScenarioEvaluation(int scenarioId)
+{
+  int evalDelayMs;
+
+  evalDelayMs = 700;
+  if (scenarioId == 3)
+  {
+    evalDelayMs = 11000;
+  }
+  else if (scenarioId == 6)
+  {
+    evalDelayMs = 1500; /* Req_024: ensure 200ms timeoutClear pulse has fully expired before eval */
+  }
+  else if (scenarioId == 7 || scenarioId == 8)
+  {
+    evalDelayMs = 700;
+  }
+  else if (scenarioId == 9 || scenarioId == 10)
+  {
+    evalDelayMs = 700;
+  }
+  else if (scenarioId == 11)
+  {
+    evalDelayMs = 800;
+  }
+  else if (scenarioId == 12)
+  {
+    evalDelayMs = 900;
+  }
+  else if (scenarioId == 13)
+  {
+    evalDelayMs = 1000;
+  }
+  else if (scenarioId == 14)
+  {
+    evalDelayMs = 700;
+  }
+  else if (scenarioId == 15 || scenarioId == 16 || scenarioId == 19)
+  {
+    evalDelayMs = 800;
+  }
+  else if (scenarioId == 17)
+  {
+    evalDelayMs = 900;
+  }
+  else if (scenarioId == 18)
+  {
+    evalDelayMs = 700;
+  }
+  setTimer(tScenarioEval, evalDelayMs);
+}
+
+void evaluateScenarioResult()
+{
+  int result;
+  int level;
+  int type;
+  int code;
+  int timeoutClear;
+  int ambientPattern;
+  int ambientColor;
+  int duplicatePopupGuard;
+  int snapshotDelta;
+  int proximityRiskLevel;
+  int decelAssistReq;
+  int failSafeMode;
+  int uiRenderAlertType;
+  int uiRenderTextCode;
+
+  result = 0;
+  level = (int)@Core::selectedAlertLevel;
+  type = (int)@Core::selectedAlertType;
+  code = (int)@Cluster::warningTextCode;
+  timeoutClear = ((int)@Core::timeoutClear == 1) ? 1 : 0;
+  ambientPattern = (int)@Body::ambientPattern;
+  ambientColor = (int)@Body::ambientColor;
+  duplicatePopupGuard = (int)@CoreState::duplicatePopupGuard;
+  proximityRiskLevel = (int)@Core::proximityRiskLevel;
+  decelAssistReq = (int)@Core::decelAssistReq;
+  failSafeMode = (int)@Core::failSafeMode;
+  uiRenderAlertType = (int)@UiRender::activeAlertType;
+  uiRenderTextCode = (int)@UiRender::renderTextCode;
+
+  if (gCurrentScenarioId == 1)
+  {
+    result = (level == 0 && code == 0) ? 1 : 0;
+  }
+  else if (gCurrentScenarioId == 2)
+  {
+    /* Req_010 + Req_037: school zone overspeed, fixed red fast-flash pattern */
+    result = (level == 3 && type == 3 && ambientColor == 3 && ambientPattern == 5) ? 1 : 0;
+  }
+  else if (gCurrentScenarioId == 3)
+  {
+    /* Req_011 + Req_038: highway no-steer, fixed orange pulse pattern */
+    result = (level == 2 && type == 4 && ambientColor == 4 && ambientPattern == 4) ? 1 : 0;
+  }
+  else if (gCurrentScenarioId == 4)
+  {
+    /* Req_017 + Req_035 + Req_036: police emergency, distinct red-blue color+pattern */
+    result = (level == 6 && type == 1 && code == 101 && duplicatePopupGuard > 0 &&
+              ambientColor == 6 && ambientPattern == 6) ? 1 : 0;
+  }
+  else if (gCurrentScenarioId == 5)
+  {
+    /* Req_018 + Req_035 + Req_036: ambulance emergency, distinct red-white color+pattern */
+    result = (level == 7 && type == 2 && code == 202 && duplicatePopupGuard > 0 &&
+              ambientColor == 7 && ambientPattern == 7) ? 1 : 0;
+  }
+  else if (gCurrentScenarioId == 6)
+  {
+    result = (timeoutClear == 1 && level == 0 && code == 0) ? 1 : 0;
+  }
+  else if (gCurrentScenarioId == 7)
+  {
+    /* Req_013 + Req_039: guide left, cyan flow-left pattern */
+    result = (level == 2 && type == 5 && ambientColor == 5 && ambientPattern == 2 && code == 31) ? 1 : 0;
+  }
+  else if (gCurrentScenarioId == 8)
+  {
+    /* Req_014 + Req_039: guide right, cyan flow-right pattern */
+    result = (level == 2 && type == 6 && ambientColor == 5 && ambientPattern == 3 && code == 32) ? 1 : 0;
+  }
+  else if (gCurrentScenarioId == 9)
+  {
+    /* Req_030: lower ETA competitor (sourceId=99, eta=10) should be active */
+    result = ((int)@V2X::eta == 10 && (int)@V2X::sourceId == 99 && level == 6) ? 1 : 0;
+  }
+  else if (gCurrentScenarioId == 10)
+  {
+    /* Req_031: lower sourceId (5) wins despite same ETA as prior active (sourceId=20) */
+    result = ((int)@V2X::sourceId == 5 && (int)@V2X::eta == 10 && level == 6) ? 1 : 0;
+  }
+  else if (gCurrentScenarioId == 11)
+  {
+    /* Req_034: emergency took over AND arbitration delta <= 3 (no repeated flips) */
+    snapshotDelta = ((int)@CoreState::arbitrationSnapshotId - gArbitrationSnapshotBaseline) & 0xFFFF;
+    result = (level == 6 && type == 1 && snapshotDelta <= 3) ? 1 : 0;
+  }
+  else if (gCurrentScenarioId == 12)
+  {
+    /* Req_006 + Req_026: re-triggered school zone warning still within guard window */
+    result = (level == 3 && type == 3 && duplicatePopupGuard > 0) ? 1 : 0;
+  }
+  else if (gCurrentScenarioId == 13)
+  {
+    /* Req_015: after zone flip (school->highway->school), settle correctly, <=3 arb changes */
+    snapshotDelta = ((int)@CoreState::arbitrationSnapshotId - gArbitrationSnapshotBaseline) & 0xFFFF;
+    result = (level == 3 && type == 3 && snapshotDelta <= 3) ? 1 : 0;
+  }
+  else if (gCurrentScenarioId == 14)
+  {
+    /* Req_110 + Req_111 + Req_112: all domain boundaries healthy, routing normal */
+    result = ((int)@CoreState::domainBoundaryStatus == 1 &&
+              (int)@CoreState::routingPolicy == 1 &&
+              level == 0) ? 1 : 0;
+  }
+  else if (gCurrentScenarioId == 15)
+  {
+    /* Req_120: risk level must be periodically computed from emergency/speed/ETA */
+    result = (proximityRiskLevel >= 60 && proximityRiskLevel <= 100) ? 1 : 0;
+  }
+  else if (gCurrentScenarioId == 16)
+  {
+    /* Req_121: threshold-crossing should request decel assist */
+    result = (proximityRiskLevel >= 70 && decelAssistReq == 1 && failSafeMode == 0 &&
+              level == 7 && type == 2) ? 1 : 0;
+  }
+  else if (gCurrentScenarioId == 17)
+  {
+    /* Req_123: steering intervention releases decel assist */
+    result = ((int)@Core::steeringInputNorm == 1 && decelAssistReq == 0 &&
+              failSafeMode == 0) ? 1 : 0;
+  }
+  else if (gCurrentScenarioId == 18)
+  {
+    /* Req_124: fail-safe blocks decel assist but keeps minimum warning path */
+    result = (failSafeMode >= 1 && decelAssistReq == 0 &&
+              level >= 6 && code >= 100) ? 1 : 0;
+  }
+  else if (gCurrentScenarioId == 19)
+  {
+    /* Req_122: decel assist active with emergency-priority sync to renderer */
+    result = (decelAssistReq == 1 && level == 7 && type == 2 &&
+              uiRenderAlertType == 2 && uiRenderTextCode >= 200 &&
+              ambientColor == 7 && code >= 200) ? 1 : 0;
+  }
+  else
+  {
+    result = ((int)@Test::scenarioResult == 1) ? 1 : 0;
+  }
+
+  @Test::scenarioResult = result;
+}
+
+void runDemoStep()
+{
+  gDemoStepIndex = gDemoStepIndex + 1;
+  if (gDemoStepIndex > 8)
+  {
+    gDemoStepIndex = 1;
+  }
+
+  applyScenarioPreset(gDemoStepIndex);
+  gCurrentScenarioId = gDemoStepIndex;
+  scheduleScenarioEvaluation(gDemoStepIndex);
+  setTimer(tDemoStep, 4000);
+}
+
+on timer tScenarioPhase2
+{
+  if (gCurrentScenarioId == 9)
+  {
+    /* Req_030: Phase 2 - inject lower ETA competitor (different sourceId) */
+    @V2X::emergencyType = 1;
+    @V2X::eta = 10;
+    @V2X::sourceId = 99;
+    @V2X::emergencyDirection = 2;
+    gScenarioPhase = 2;
+    write("[VAL_SCENARIO_CTRL] Req_030 phase2: inject eta=10 sourceId=99");
+  }
+  else if (gCurrentScenarioId == 10)
+  {
+    /* Req_031: Phase 2 - inject same ETA, lower SourceID competitor */
+    @V2X::emergencyType = 1;
+    @V2X::eta = 10;
+    @V2X::sourceId = 5;
+    @V2X::emergencyDirection = 2;
+    gScenarioPhase = 2;
+    write("[VAL_SCENARIO_CTRL] Req_031 phase2: inject eta=10 sourceId=5");
+  }
+  else if (gCurrentScenarioId == 11)
+  {
+    /* Req_034: Phase 2 - snapshot arbitration baseline then inject emergency */
+    gArbitrationSnapshotBaseline = (int)@CoreState::arbitrationSnapshotId;
+    @V2X::alertState = 1;
+    @V2X::emergencyType = 1;
+    @V2X::eta = 15;
+    @V2X::sourceId = 10;
+    @V2X::emergencyDirection = 1;
+    gScenarioPhase = 2;
+    write("[VAL_SCENARIO_CTRL] Req_034 phase2: inject police, baseline snapshotId=%d",
+          gArbitrationSnapshotBaseline);
+  }
+  else if (gCurrentScenarioId == 12)
+  {
+    /* Req_006 + Req_026: Phase 2 - clear school zone warning (speed drops below limit) */
+    @Chassis::vehicleSpeed = 20;
+    gScenarioPhase = 2;
+    setTimer(tScenarioPhase3, 100);
+    write("[VAL_SCENARIO_CTRL] Req_006 phase2: speed=20 clear warning");
+  }
+  else if (gCurrentScenarioId == 13)
+  {
+    /* Req_015: Phase 2 - snapshot baseline + switch to highway zone (steerInput=1: no warn) */
+    gArbitrationSnapshotBaseline = (int)@CoreState::arbitrationSnapshotId;
+    @Infotainment::roadZone = 2;
+    @Chassis::vehicleSpeed = 80;
+    @Infotainment::speedLimit = 100;
+    @Chassis::steeringInput = 1;
+    gScenarioPhase = 2;
+    setTimer(tScenarioPhase3, 200);
+    write("[VAL_SCENARIO_CTRL] Req_015 phase2: roadZone=2 baseline snapshotId=%d",
+          gArbitrationSnapshotBaseline);
+  }
+  else if (gCurrentScenarioId == 17)
+  {
+    /* Req_123: simulate driver intervention (steering input) */
+    @Chassis::steeringInput = 1;
+    gScenarioPhase = 2;
+    write("[VAL_SCENARIO_CTRL] Req_123 phase2: steering intervention");
+  }
+}
+
+on timer tScenarioPhase3
+{
+  if (gCurrentScenarioId == 12)
+  {
+    /* Req_006 + Req_026: Phase 3 - re-trigger school zone warning */
+    @Chassis::vehicleSpeed = 45;
+    gScenarioPhase = 3;
+    write("[VAL_SCENARIO_CTRL] Req_006 phase3: speed=45 re-trigger warning");
+  }
+  else if (gCurrentScenarioId == 13)
+  {
+    /* Req_015: Phase 3 - return to school zone (must re-settle without flip-flop) */
+    @Infotainment::roadZone = 1;
+    @Chassis::vehicleSpeed = 45;
+    @Infotainment::speedLimit = 30;
+    @Chassis::steeringInput = 1;
+    gScenarioPhase = 3;
+    write("[VAL_SCENARIO_CTRL] Req_015 phase3: roadZone=1 back to school zone");
+  }
+}
+
+on start
+{
+  gDemoStepIndex = 0;
+  gDemoRunning = 0;
+  gCurrentScenarioId = 0;
+  gBaseTraceSnapshotId = 0;
+  gScenarioPhase = 0;
+  gArbitrationSnapshotBaseline = 0;
+  @Test::scenarioResult = 0;
+  @Test::forceFailSafe = 0;
+  setTimer(tInput100, 100);
+  write("[VAL_SCENARIO_CTRL] start");
+}
+
+on timer tInput100
+{
+  message frmVehicleStateCanMsg mVeh;
+  message frmSteeringCanMsg mStr;
+  message frmNavContextCanMsg mNav;
+  message frmIgnitionEngineMsg mIgn;
+  message frmGearStateMsg mGear;
+  message frmPedalInputCanMsg mPedal;
+  message frmEngineSpeedTempMsg mEngTemp;
+  message frmFuelBatteryStateMsg mFuelBat;
+  message frmThrottleStateMsg mThrottle;
+  message frmTransmissionTempMsg mTransTemp;
+  message frmEngineTorqueMsg mEngineTorque;
+  message frmEngineLoadMsg mEngineLoad;
+  message frmTransShiftStateMsg mShift;
+  message frmThermalMgmtStateMsg mThermal;
+  int speed;
+  int driveState;
+  int steeringInput;
+  int roadZone;
+  int navDirection;
+  int zoneDistance;
+  int speedLimit;
+  int ignitionState;
+  int engineState;
+  int gearState;
+  int accelPedal;
+  int brakePedal;
+  int driveMode;
+
+  speed = clampRange((int)@Chassis::vehicleSpeed, 0, 255);
+  driveState = clampRange((int)@Chassis::driveState, 0, 3);
+  steeringInput = clampRange((int)@Chassis::steeringInput, 0, 1);
+  roadZone = clampRange((int)@Infotainment::roadZone, 0, 3);
+  navDirection = clampRange((int)@Infotainment::navDirection, 0, 3);
+  zoneDistance = clampRange((int)@Infotainment::zoneDistance, 0, 255);
+  speedLimit = clampRange((int)@Infotainment::speedLimit, 0, 255);
+  ignitionState = calcBaselineIgnitionState(speed, driveState);
+  engineState = (ignitionState == 1) ? 2 : 0;
+  gearState = calcBaselineGearState(driveState);
+  accelPedal = clampRange(speed / 2, 0, 100);
+  brakePedal = (driveState == 0) ? 30 : 0;
+  driveMode = gearState;
+
+  mVeh.gVehicleSpeed = speed;
+  mVeh.gDriveState = driveState;
+  output(mVeh);
+
+  mStr.SteeringInput = steeringInput;
+  output(mStr);
+
+  mNav.gRoadZone = roadZone;
+  mNav.gNavDirection = navDirection;
+  mNav.gZoneDistance = zoneDistance;
+  mNav.gSpeedLimit = speedLimit;
+  output(mNav);
+
+  /* Comm_101 baseline powertrain path */
+  mIgn.IgnitionState = ignitionState;
+  mIgn.EngineState = engineState;
+  output(mIgn);
+
+  mGear.GearInput = gearState;
+  mGear.GearState = gearState;
+  output(mGear);
+
+  /* Comm_102 baseline chassis input path */
+  mPedal.AccelPedal = accelPedal;
+  mPedal.BrakePedal = brakePedal;
+  output(mPedal);
+
+  /* Comm_105 baseline gateway/boundary path
+     DOMAIN_GW_ROUTER now owns gateway-state output frames. */
+
+  /* Comm_101 baseline powertrain detail path */
+  mEngTemp.EngineRpm = clampRange(speed * 40, 0, 65535);
+  mEngTemp.CoolantTemp = 85;
+  mEngTemp.OilTemp = 90;
+  output(mEngTemp);
+
+  mFuelBat.FuelLevel = 60;
+  mFuelBat.BatterySoc = 80;
+  mFuelBat.ChargingState = (engineState > 0) ? 1 : 0;
+  output(mFuelBat);
+
+  mThrottle.ThrottlePos = accelPedal;
+  mThrottle.ThrottleReq = accelPedal;
+  output(mThrottle);
+
+  mTransTemp.TransOilTemp = 75;
+  mTransTemp.ClutchTemp = 70;
+  output(mTransTemp);
+
+  /* Comm_204 extension path */
+  mEngineTorque.EngineTorqueAct = clampRange(accelPedal * 5, 0, 65535);
+  output(mEngineTorque);
+
+  mEngineLoad.EngineLoad = accelPedal;
+  output(mEngineLoad);
+
+  mShift.ShiftState = gearState;
+  mShift.ShiftTargetGear = gearState;
+  mShift.ShiftSlip = (driveState == 3 && speed > 90) ? 8 : 0;
+  output(mShift);
+
+  mThermal.ThermalMode = (engineState > 0) ? 1 : 0;
+  mThermal.FanDuty = 12;
+  mThermal.CoolantTarget = 88;
+  output(mThermal);
+
+  setTimer(tInput100, 100);
+}
+
+on sysvar Test::scenarioResult
+{
+  message frmTestResultMsg mRes;
+  mRes.ScenarioResult = (int)@Test::scenarioResult;
+  output(mRes);
+}
+
+on sysvar Test::testScenario
+{
+  int scenarioId;
+  scenarioId = (int)@Test::testScenario;
+
+  if (scenarioId == 100)
+  {
+    gDemoRunning = 1;
+    gDemoStepIndex = 0;
+    runDemoStep();
+    write("[VAL_SCENARIO_CTRL] auto demo start");
+  }
+  else if (scenarioId == 0)
+  {
+    gDemoRunning = 0;
+    cancelTimer(tDemoStep);
+    @Test::forceFailSafe = 0;
+    write("[VAL_SCENARIO_CTRL] auto demo stop");
+  }
+  else if (scenarioId >= 1 && scenarioId <= 19)
+  {
+    gDemoRunning = 0;
+    cancelTimer(tDemoStep);
+    applyScenarioPreset(scenarioId);
+    gCurrentScenarioId = scenarioId;
+    scheduleScenarioEvaluation(scenarioId);
+    write("[VAL_SCENARIO_CTRL] apply scenario=%d", scenarioId);
+  }
+  else if (scenarioId >= 200 && scenarioId <= 255)
+  {
+    gDemoRunning = 0;
+    cancelTimer(tDemoStep);
+    gCurrentScenarioId = scenarioId;
+    sendBaselineDiagRequest(scenarioId);
+    write("[VAL_SCENARIO_CTRL] send baseline diag request scenario=%d", scenarioId);
+  }
+  else
+  {
+    write("[VAL_SCENARIO_CTRL] ignore invalid scenario=%d", scenarioId);
+  }
+}
+
+on timer tDemoStep
+{
+  if (gDemoRunning == 1)
+  {
+    runDemoStep();
+  }
+}
+
+on timer tScenarioEval
+{
+  message frmBaseTestResultMsg mBase;
+
+  evaluateScenarioResult();
+  gBaseTraceSnapshotId = (gBaseTraceSnapshotId + 1) & 0xFFFF;
+
+  /* Comm_106 baseline aggregate result frame */
+  mBase.BaseScenarioId = clampRange(gCurrentScenarioId, 0, 255);
+  mBase.BaseScenarioResult = ((int)@Test::scenarioResult == 1) ? 1 : 0;
+  mBase.FlowCoverageMask = 0x007F; /* Flow_101~Flow_106 coverage */
+  mBase.TraceSnapshotId = gBaseTraceSnapshotId;
+  mBase.TestHealth = 0;
+  output(mBase);
+}

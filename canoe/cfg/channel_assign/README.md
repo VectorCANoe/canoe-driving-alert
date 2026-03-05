@@ -21,6 +21,15 @@
 
 ---
 
+## CAPL Sync Policy (Mandatory)
+- Runtime mirror rule: `canoe/src/capl/**` and `canoe/cfg/channel_assign/**` must stay 1:1 synchronized.
+- Sync acceptance criteria:
+  - same file set (`*.can`, excluding `v1_legacy`)
+  - same content hash for each same-name file
+- Validate before commit:
+  - `python scripts/quality/check_capl_sync.py`
+- If mismatch exists, stop and sync both trees before GUI save.
+
 ## CANoe GUI 노드 추가 절차
 
 1. `CAN_v2_topology_wip.cfg` 열기

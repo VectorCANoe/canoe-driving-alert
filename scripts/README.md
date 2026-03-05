@@ -10,6 +10,8 @@ This folder is organized by purpose.
   - `scripts/quality/cfg_hygiene_gate.py`
 - DBC validation helpers:
   - `scripts/quality/dbc/test_dbc_validation.py`
+- CAPL mirror sync gate:
+  - `scripts/quality/check_capl_sync.py`
 
 ## `scripts/canoe/`
 - CANoe configuration and CAPL linkage helpers.

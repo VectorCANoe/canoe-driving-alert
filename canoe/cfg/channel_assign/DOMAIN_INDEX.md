@@ -6,7 +6,8 @@ This file documents domain-oriented CAPL ownership for the v2 runtime profile.
 - v2 runtime cfg: `canoe/cfg/CAN_v2_topology_wip.cfg`
 - v2 runtime CAPL source: `canoe/cfg/channel_assign/**`
 - shared sysvars: `canoe/project/sysvars/project.sysvars`
-- legacy-style mirrored CAPL tree: `canoe/src/capl/**`
+- mirrored CAPL tree: `canoe/src/capl/**` (must remain 1:1 synchronized)
+- sync gate command: `python scripts/quality/check_capl_sync.py`
 
 ## Domain -> CAPL Files
 
