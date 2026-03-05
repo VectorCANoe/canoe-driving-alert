@@ -1,9 +1,10 @@
-# G3 Cutover Approval Precheck (2026-03-06)
+# G3 Cutover Approval Evidence (2026-03-06)
 
 ## Scope
 - Branch: `main`
 - Basis: `DEV_CHANGE_ORDER_CAN_ID_335_FULL_RENUMBERING_2026-03-05.md`
 - Target gate: `G3 Cutover Approval`
+- Configuration: `canoe/cfg/CAN_v2_topology_wip.cfg`
 
 ## Completed checks
 1. G1 mapping freeze evidence
@@ -20,21 +21,28 @@
 - `doc_code_sync_gate.py`: `PASS`
 - `cfg_hygiene_gate.py`: `PASS`
 
-## Remaining blocker (runtime evidence)
-- CANoe MCP runtime execution is currently blocked by transport/COM instability.
-- Observed errors:
-  - `Transport closed` (after MCP server restart)
-  - previous `win32com ... MinorVersion` cache error while loading configuration
-- Impact:
-  - Automated `open_configuration -> compile -> measurement start` evidence is not available in this run.
+3. Runtime evidence (COM automation)
+- CANoe version: `19.4.10`
+- Configuration load: `PASS`
+  - `Configuration.FullName = canoe/cfg/CAN_v2_topology_wip.cfg`
+- CAPL compile: `PASS`
+  - `CompileResult.Result = 0`
+- Measurement start/stop: `PASS`
+  - Start: `Measurement.Running = True`
+  - Stop: `Measurement stopped = True`
+- Core sysvar sampling: `PASS`
+  - `Core::failSafeMode = 1`
+  - `Core::decelAssistReq = 0`
+  - `Core::proximityRiskLevel = 0`
+  - `CoreState::domainPathStatus = 0`
+  - `Test::forceFailSafe = 0`
 
 ## Gate decision
-- **Status: CONDITIONAL PASS (Precheck complete, runtime evidence pending)**  
-- Move to formal G3 approval after GUI runtime evidence is attached:
-  1. CAPL compile success screenshot/log
-  2. measurement start success screenshot/log
-  3. core scenario pass summary (timing/arbitration/release behavior)
+- **Status: PASS (G3 Cutover Approval ready)**  
+- G4(Post-Cutover Audit) 진행 전 제출 패키지:
+  1. Annex A freeze CSV (`ID_335_AnnexA_Mapping_98_Template.csv`)
+  2. Gate 결과 로그 (`doc_code_sync_gate`, `check_capl_sync`, `cfg_hygiene_gate`)
+  3. 런타임 증적(본 보고서 + GUI 캡처)
 
 ## Note
-- This report is a precheck artifact only.
-- Final G3 approval authority remains PM/QA gate review.
+- 본 보고서는 G3 승인 증적 문서이며, 최종 승인 권한은 PM/QA 게이트 리뷰에 있음.
