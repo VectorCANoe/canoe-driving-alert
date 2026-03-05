@@ -74,6 +74,20 @@
   - 3) Tier/Group/Index 인코딩 규칙
 - 주의: `Group`은 단독 최상위 기준이 아니며, 1)과 2)를 만족한 뒤 적용되는 분류/정렬 축이다.
 
+### 4.4 Arbitration Scope and Constraints (Normative)
+
+- This standard separates bus-level arbitration from application-level arbitration.
+- Bus arbitration scope (CAN controller / protocol level):
+  - Arbitration priority SHALL be determined only by CAN identifier value.
+  - Payload signals/bit-fields SHALL NOT affect bus arbitration order.
+  - In this project, once IDs are assigned, effective bus priority SHALL be interpreted as `Tier -> Group -> Index`.
+- Application arbitration scope (software logic level):
+  - Warning/decel/fail-safe decisions SHALL be determined by payload signals, timers, and state logic.
+  - Application arbitration MAY change feature state/output, but SHALL NOT override bus-level arbitration order.
+- Design consistency rule:
+  - Safety-critical paths SHALL satisfy both application urgency and bus-priority assignment.
+  - If an urgent function is mapped to a lower bus priority than required, the ID mapping SHALL be corrected via Annex A and gate review (G1~G4).
+
 ---
 
 ## 5. 3/3/5 사전
