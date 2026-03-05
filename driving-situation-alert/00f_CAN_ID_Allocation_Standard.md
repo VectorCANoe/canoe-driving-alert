@@ -102,7 +102,7 @@
 ### 5.4 예외 규칙 (Legacy Stub/Transition)
 
 - Tier `0`은 신규 할당 금지다.
-- 전환 전 베이스라인의 저대역 ID(`0x1C0` 등)는 `Old ID`로만 인정하며 Cutover 대상에 포함한다.
+- 전환 전 베이스라인의 저대역 ID(`0x064` 포함)는 `Old ID`로만 인정하며 Cutover 대상에 포함한다.
 - 전환 완료 후 `0x000~0x0FF` 활성 운영 ID는 0건이어야 한다.
 - 논리 Ethernet ID(`0xE1xx/0xE2xx`)는 CAN 11-bit 3/3/5 대상이 아니다.
 
@@ -129,7 +129,8 @@
 
 - 현행 구조: 도메인 블록 대역형
 - 메시지 수: `98`
-- ID 범위: `0x100 ~ 0x2AA`
+- ID 범위(신규 3/3/5 배치 결과): `0x100 ~ 0x2AA`
+- Old baseline 참고 범위(전환 전): `0x064 ~ 0x315`
 - 중복: `0건`
 - 대표 블록:
   - `0x100~0x2A6` Chassis
@@ -212,7 +213,8 @@
   - `flow_ref`, `comm_ref`, `var_ref`, `code_ref`, `test_ref`
   - `status`, `approver`, `approved_date`
 - 규칙:
-  - 구현 착수 전 `status=Approved` 98건 완료
+  - 개발 착수 전 최소 `status=Draft-Proposed-G1` 98건 완료
+  - Cutover 승인 전 `status=Approved` 98건 완료
   - Cutover 전 승인자/일자 누락 0건
 
 ---
