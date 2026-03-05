@@ -13,6 +13,7 @@
 - `mentoring`: 멘토링 분석/액션 문서
 - `change-orders`: 개발팀 전달용 변경지시/이관 문서
 - `work-notes`: 작업 메모, 계획, 가이드 문서
+- `onboarding`: 팀 온보딩용 쉬운 설명서(3/3/5, 중재 규칙, 게이트, FAQ)
 - `quality/reports`: 품질 점검 리포트 산출물
 - `quality/templates`: 품질 점검 템플릿
 - `archive/pending_cleanup`: 레거시/초안 보관본(삭제 전 임시 보관)
