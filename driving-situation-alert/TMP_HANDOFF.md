@@ -86,6 +86,7 @@
 - 05_Unit_Test.md: Version 2.16 (Draft)
 - 06_Integration_Test.md: Version 4.14 (Draft)
 - 07_System_Test.md: Version 5.14 (Draft)
+- Development Baseline Commit: `cef654f` (G3 PASS + G4 audit evidence prepared, 2026-03-06)
 
 ## 7) Immediate Next Steps
 1. Finalize `02_Concept_design.md` figure evidence and keep star topology consistency.
