@@ -1,4 +1,4 @@
-includes
+﻿includes
 {
 }
 
@@ -18,7 +18,7 @@ on start
   gLastBrakePedal = -1;
   gLastAssistReq = -1;
   setTimer(tBrakeCycle, 100);
-  write("[BRAKE_CTRL] start");
+  write("[BRK_CTRL] start");
 }
 
 on message frmPedalInputCanMsg
@@ -86,7 +86,7 @@ on timer tBrakeCycle
 
   if (gBrakePedal != gLastBrakePedal || decelAssistReq != gLastAssistReq)
   {
-    write("[BRAKE_CTRL] pedal=%d assist=%d applied=%d pressure=%d abs=%d esp=%d",
+    write("[BRK_CTRL] pedal=%d assist=%d applied=%d pressure=%d abs=%d esp=%d",
           gBrakePedal, decelAssistReq, appliedBrakePedal,
           brakePressure, absActive, espActive);
     gLastBrakePedal = gBrakePedal;

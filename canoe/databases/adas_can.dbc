@@ -1,4 +1,4 @@
-VERSION "ADAS_CAN_v1.0"
+﻿VERSION "ADAS_CAN_v1.0"
 
 
 NS_ :
@@ -30,11 +30,11 @@ NS_ :
 
 BS_:
 
-BU_: ADAS_WARN_CTRL WARN_ARB_MGR CHASSIS_GW VAL_SCENARIO_CTRL Vector__XXX
+BU_: ADAS_WARN_CTRL WARN_ARB_MGR CHS_GW VAL_SCENARIO_CTRL Vector__XXX
 
 BO_ 287 frmAdasChassisStatusMsg: 2 ADAS_WARN_CTRL
- SG_ AdasChassisState : 0|8@1+ (1,0) [0|255] "" CHASSIS_GW
- SG_ AdasHealthLevel  : 8|8@1+ (1,0) [0|255] "" CHASSIS_GW
+ SG_ AdasChassisState : 0|8@1+ (1,0) [0|255] "" CHS_GW
+ SG_ AdasHealthLevel  : 8|8@1+ (1,0) [0|255] "" CHS_GW
 
 BO_ 787 ethEmergencyRiskMsg: 5 ADAS_WARN_CTRL
  SG_ RiskLevel          : 0|8@1+  (1,0) [0|100] "" WARN_ARB_MGR,VAL_SCENARIO_CTRL

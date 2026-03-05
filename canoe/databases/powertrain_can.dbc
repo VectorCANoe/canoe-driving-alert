@@ -1,4 +1,4 @@
-VERSION "Powertrain_CAN_v1.0"
+﻿VERSION "Powertrain_CAN_v1.0"
 
 NS_ :
   NS_DESC_
@@ -29,99 +29,99 @@ NS_ :
 
 BS_:
 
-BU_: VAL_SCENARIO_CTRL ENGINE_CTRL TRANSMISSION_CTRL CHASSIS_GW DOMAIN_GW_ROUTER Vector__XXX
+BU_: VAL_SCENARIO_CTRL ENG_CTRL TCM CHS_GW DOMAIN_ROUTER Vector__XXX
 
 BO_ 768 frmIgnitionEngineMsg: 1 VAL_SCENARIO_CTRL
- SG_ IgnitionState  : 0|1@1+ (1,0) [0|1] "" ENGINE_CTRL
- SG_ EngineState    : 1|2@1+ (1,0) [0|3] "" ENGINE_CTRL
+ SG_ IgnitionState  : 0|1@1+ (1,0) [0|1] "" ENG_CTRL
+ SG_ EngineState    : 1|2@1+ (1,0) [0|3] "" ENG_CTRL
  SG_ Reserved0      : 3|5@1+ (1,0) [0|0] "" Vector__XXX
 
 BO_ 769 frmGearStateMsg: 1 VAL_SCENARIO_CTRL
- SG_ GearInput      : 0|3@1+ (1,0) [0|7] "" TRANSMISSION_CTRL
- SG_ GearState      : 3|3@1+ (1,0) [0|7] "" TRANSMISSION_CTRL
+ SG_ GearInput      : 0|3@1+ (1,0) [0|7] "" TCM
+ SG_ GearState      : 3|3@1+ (1,0) [0|7] "" TCM
  SG_ Reserved0      : 6|2@1+ (1,0) [0|0] "" Vector__XXX
 
-BO_ 770 frmPowertrainGatewayMsg: 2 DOMAIN_GW_ROUTER
- SG_ RoutingPolicy  : 0|8@1+ (1,0) [0|255] "" ENGINE_CTRL,TRANSMISSION_CTRL
- SG_ BoundaryStatus : 8|8@1+ (1,0) [0|255] "" ENGINE_CTRL,TRANSMISSION_CTRL
+BO_ 770 frmPowertrainGatewayMsg: 2 DOMAIN_ROUTER
+ SG_ RoutingPolicy  : 0|8@1+ (1,0) [0|255] "" ENG_CTRL,TCM
+ SG_ BoundaryStatus : 8|8@1+ (1,0) [0|255] "" ENG_CTRL,TCM
 
-BO_ 771 frmEngineSpeedTempMsg: 4 ENGINE_CTRL
- SG_ EngineRpm       : 0|16@1+ (1,0) [0|65535] "rpm" TRANSMISSION_CTRL,DOMAIN_GW_ROUTER
- SG_ CoolantTemp     : 16|8@1+ (1,0) [0|255] "degC" TRANSMISSION_CTRL,DOMAIN_GW_ROUTER
- SG_ OilTemp         : 24|8@1+ (1,0) [0|255] "degC" TRANSMISSION_CTRL,DOMAIN_GW_ROUTER
+BO_ 771 frmEngineSpeedTempMsg: 4 ENG_CTRL
+ SG_ EngineRpm       : 0|16@1+ (1,0) [0|65535] "rpm" TCM,DOMAIN_ROUTER
+ SG_ CoolantTemp     : 16|8@1+ (1,0) [0|255] "degC" TCM,DOMAIN_ROUTER
+ SG_ OilTemp         : 24|8@1+ (1,0) [0|255] "degC" TCM,DOMAIN_ROUTER
 
-BO_ 772 frmFuelBatteryStateMsg: 3 ENGINE_CTRL
- SG_ FuelLevel       : 0|8@1+ (1,0) [0|100] "%" DOMAIN_GW_ROUTER
- SG_ BatterySoc      : 8|8@1+ (1,0) [0|100] "%" DOMAIN_GW_ROUTER
- SG_ ChargingState   : 16|2@1+ (1,0) [0|3] "" DOMAIN_GW_ROUTER
+BO_ 772 frmFuelBatteryStateMsg: 3 ENG_CTRL
+ SG_ FuelLevel       : 0|8@1+ (1,0) [0|100] "%" DOMAIN_ROUTER
+ SG_ BatterySoc      : 8|8@1+ (1,0) [0|100] "%" DOMAIN_ROUTER
+ SG_ ChargingState   : 16|2@1+ (1,0) [0|3] "" DOMAIN_ROUTER
  SG_ Reserved0       : 18|6@1+ (1,0) [0|0] "" Vector__XXX
 
-BO_ 773 frmThrottleStateMsg: 2 ENGINE_CTRL
- SG_ ThrottlePos     : 0|8@1+ (1,0) [0|100] "%" TRANSMISSION_CTRL,DOMAIN_GW_ROUTER
- SG_ ThrottleReq     : 8|8@1+ (1,0) [0|100] "%" TRANSMISSION_CTRL,DOMAIN_GW_ROUTER
+BO_ 773 frmThrottleStateMsg: 2 ENG_CTRL
+ SG_ ThrottlePos     : 0|8@1+ (1,0) [0|100] "%" TCM,DOMAIN_ROUTER
+ SG_ ThrottleReq     : 8|8@1+ (1,0) [0|100] "%" TCM,DOMAIN_ROUTER
 
-BO_ 774 frmTransmissionTempMsg: 2 TRANSMISSION_CTRL
- SG_ TransOilTemp    : 0|8@1+ (1,0) [0|255] "degC" ENGINE_CTRL,DOMAIN_GW_ROUTER
- SG_ ClutchTemp      : 8|8@1+ (1,0) [0|255] "degC" ENGINE_CTRL,DOMAIN_GW_ROUTER
+BO_ 774 frmTransmissionTempMsg: 2 TCM
+ SG_ TransOilTemp    : 0|8@1+ (1,0) [0|255] "degC" ENG_CTRL,DOMAIN_ROUTER
+ SG_ ClutchTemp      : 8|8@1+ (1,0) [0|255] "degC" ENG_CTRL,DOMAIN_ROUTER
 
-BO_ 775 frmVehicleModeMsg: 2 DOMAIN_GW_ROUTER
- SG_ DriveMode       : 0|3@1+ (1,0) [0|7] "" ENGINE_CTRL,TRANSMISSION_CTRL
- SG_ EcoMode         : 3|1@1+ (1,0) [0|1] "" ENGINE_CTRL,TRANSMISSION_CTRL
- SG_ SportMode       : 4|1@1+ (1,0) [0|1] "" ENGINE_CTRL,TRANSMISSION_CTRL
- SG_ SnowMode        : 5|1@1+ (1,0) [0|1] "" ENGINE_CTRL,TRANSMISSION_CTRL
+BO_ 775 frmVehicleModeMsg: 2 DOMAIN_ROUTER
+ SG_ DriveMode       : 0|3@1+ (1,0) [0|7] "" ENG_CTRL,TCM
+ SG_ EcoMode         : 3|1@1+ (1,0) [0|1] "" ENG_CTRL,TCM
+ SG_ SportMode       : 4|1@1+ (1,0) [0|1] "" ENG_CTRL,TCM
+ SG_ SnowMode        : 5|1@1+ (1,0) [0|1] "" ENG_CTRL,TCM
  SG_ Reserved0       : 6|2@1+ (1,0) [0|0] "" Vector__XXX
- SG_ PowertrainState : 8|8@1+ (1,0) [0|255] "" ENGINE_CTRL,TRANSMISSION_CTRL
+ SG_ PowertrainState : 8|8@1+ (1,0) [0|255] "" ENG_CTRL,TCM
 
-BO_ 776 frmPowerLimitMsg: 2 DOMAIN_GW_ROUTER
- SG_ TorqueLimit     : 0|8@1+ (1,0) [0|255] "Nm" ENGINE_CTRL,TRANSMISSION_CTRL
- SG_ SpeedLimit      : 8|8@1+ (1,0) [0|255] "km/h" ENGINE_CTRL,TRANSMISSION_CTRL
+BO_ 776 frmPowerLimitMsg: 2 DOMAIN_ROUTER
+ SG_ TorqueLimit     : 0|8@1+ (1,0) [0|255] "Nm" ENG_CTRL,TCM
+ SG_ SpeedLimit      : 8|8@1+ (1,0) [0|255] "km/h" ENG_CTRL,TCM
 
-BO_ 777 frmCruiseStateMsg: 2 DOMAIN_GW_ROUTER
- SG_ CruiseState     : 0|2@1+ (1,0) [0|3] "" ENGINE_CTRL,TRANSMISSION_CTRL
- SG_ GapLevel        : 2|2@1+ (1,0) [0|3] "" ENGINE_CTRL,TRANSMISSION_CTRL
+BO_ 777 frmCruiseStateMsg: 2 DOMAIN_ROUTER
+ SG_ CruiseState     : 0|2@1+ (1,0) [0|3] "" ENG_CTRL,TCM
+ SG_ GapLevel        : 2|2@1+ (1,0) [0|3] "" ENG_CTRL,TCM
  SG_ Reserved0       : 4|4@1+ (1,0) [0|0] "" Vector__XXX
- SG_ CruiseSetSpeed  : 8|8@1+ (1,0) [0|255] "km/h" ENGINE_CTRL,TRANSMISSION_CTRL
+ SG_ CruiseSetSpeed  : 8|8@1+ (1,0) [0|255] "km/h" ENG_CTRL,TCM
 
-BO_ 778 frmPowertrainHealthMsg: 2 DOMAIN_GW_ROUTER
+BO_ 778 frmPowertrainHealthMsg: 2 DOMAIN_ROUTER
  SG_ PtAliveCnt      : 0|8@1+ (1,0) [0|255] "" VAL_SCENARIO_CTRL
  SG_ PtDiagState     : 8|4@1+ (1,0) [0|15] "" VAL_SCENARIO_CTRL
  SG_ PtFailCode      : 12|4@1+ (1,0) [0|15] "" VAL_SCENARIO_CTRL
 
-BO_ 779 frmEngineTorqueMsg: 2 ENGINE_CTRL
- SG_ EngineTorqueAct : 0|16@1+ (1,0) [0|65535] "Nm" DOMAIN_GW_ROUTER
+BO_ 779 frmEngineTorqueMsg: 2 ENG_CTRL
+ SG_ EngineTorqueAct : 0|16@1+ (1,0) [0|65535] "Nm" DOMAIN_ROUTER
 
-BO_ 780 frmEngineLoadMsg: 1 ENGINE_CTRL
- SG_ EngineLoad      : 0|8@1+ (1,0) [0|100] "%" DOMAIN_GW_ROUTER
+BO_ 780 frmEngineLoadMsg: 1 ENG_CTRL
+ SG_ EngineLoad      : 0|8@1+ (1,0) [0|100] "%" DOMAIN_ROUTER
 
-BO_ 781 frmTransShiftStateMsg: 2 TRANSMISSION_CTRL
- SG_ ShiftState      : 0|3@1+ (1,0) [0|7] "" DOMAIN_GW_ROUTER
- SG_ ShiftTargetGear : 3|3@1+ (1,0) [0|7] "" DOMAIN_GW_ROUTER
+BO_ 781 frmTransShiftStateMsg: 2 TCM
+ SG_ ShiftState      : 0|3@1+ (1,0) [0|7] "" DOMAIN_ROUTER
+ SG_ ShiftTargetGear : 3|3@1+ (1,0) [0|7] "" DOMAIN_ROUTER
  SG_ Reserved0       : 6|2@1+ (1,0) [0|0] "" Vector__XXX
- SG_ ShiftSlip       : 8|8@1+ (1,0) [0|255] "" DOMAIN_GW_ROUTER
+ SG_ ShiftSlip       : 8|8@1+ (1,0) [0|255] "" DOMAIN_ROUTER
 
 BO_ 782 frmPtDiagReqMsg: 3 VAL_SCENARIO_CTRL
- SG_ PtDiagServiceId : 0|8@1+ (1,0) [0|255] "" DOMAIN_GW_ROUTER
- SG_ PtDiagDidHigh   : 8|8@1+ (1,0) [0|255] "" DOMAIN_GW_ROUTER
- SG_ PtDiagDidLow    : 16|8@1+ (1,0) [0|255] "" DOMAIN_GW_ROUTER
+ SG_ PtDiagServiceId : 0|8@1+ (1,0) [0|255] "" DOMAIN_ROUTER
+ SG_ PtDiagDidHigh   : 8|8@1+ (1,0) [0|255] "" DOMAIN_ROUTER
+ SG_ PtDiagDidLow    : 16|8@1+ (1,0) [0|255] "" DOMAIN_ROUTER
 
-BO_ 783 frmPtDiagResMsg: 3 DOMAIN_GW_ROUTER
+BO_ 783 frmPtDiagResMsg: 3 DOMAIN_ROUTER
  SG_ PtDiagRespCode  : 0|8@1+ (1,0) [0|255] "" VAL_SCENARIO_CTRL
  SG_ PtDiagData0     : 8|8@1+ (1,0) [0|255] "" VAL_SCENARIO_CTRL
  SG_ PtDiagData1     : 16|8@1+ (1,0) [0|255] "" VAL_SCENARIO_CTRL
 
-BO_ 784 frmThermalMgmtStateMsg: 2 ENGINE_CTRL
- SG_ ThermalMode     : 0|3@1+ (1,0) [0|7] "" DOMAIN_GW_ROUTER
- SG_ FanDuty         : 3|5@1+ (1,0) [0|31] "" DOMAIN_GW_ROUTER
- SG_ CoolantTarget   : 8|8@1+ (1,0) [0|255] "degC" DOMAIN_GW_ROUTER
+BO_ 784 frmThermalMgmtStateMsg: 2 ENG_CTRL
+ SG_ ThermalMode     : 0|3@1+ (1,0) [0|7] "" DOMAIN_ROUTER
+ SG_ FanDuty         : 3|5@1+ (1,0) [0|31] "" DOMAIN_ROUTER
+ SG_ CoolantTarget   : 8|8@1+ (1,0) [0|255] "degC" DOMAIN_ROUTER
 
-BO_ 785 frmEnergyFlowStateMsg: 2 DOMAIN_GW_ROUTER
- SG_ EnergyFlowMode  : 0|3@1+ (1,0) [0|7] "" ENGINE_CTRL,TRANSMISSION_CTRL
- SG_ RegenLevel      : 3|5@1+ (1,0) [0|31] "" ENGINE_CTRL,TRANSMISSION_CTRL
- SG_ PowerBalance    : 8|8@1+ (1,0) [0|255] "" ENGINE_CTRL,TRANSMISSION_CTRL
+BO_ 785 frmEnergyFlowStateMsg: 2 DOMAIN_ROUTER
+ SG_ EnergyFlowMode  : 0|3@1+ (1,0) [0|7] "" ENG_CTRL,TCM
+ SG_ RegenLevel      : 3|5@1+ (1,0) [0|31] "" ENG_CTRL,TCM
+ SG_ PowerBalance    : 8|8@1+ (1,0) [0|255] "" ENG_CTRL,TCM
 
-BO_ 786 frmPowertrainCtrlAuthMsg: 1 DOMAIN_GW_ROUTER
- SG_ CtrlAuthLevel   : 0|3@1+ (1,0) [0|7] "" ENGINE_CTRL,TRANSMISSION_CTRL
- SG_ CtrlAuthSource  : 3|3@1+ (1,0) [0|7] "" ENGINE_CTRL,TRANSMISSION_CTRL
+BO_ 786 frmPowertrainCtrlAuthMsg: 1 DOMAIN_ROUTER
+ SG_ CtrlAuthLevel   : 0|3@1+ (1,0) [0|7] "" ENG_CTRL,TCM
+ SG_ CtrlAuthSource  : 3|3@1+ (1,0) [0|7] "" ENG_CTRL,TCM
  SG_ Reserved0       : 6|2@1+ (1,0) [0|0] "" Vector__XXX
 
 CM_ BO_ 768 "Powertrain baseline: ignition state and engine state.";

@@ -1,4 +1,4 @@
-includes
+﻿includes
 {
 }
 
@@ -12,7 +12,7 @@ on start
 {
   gPrevGaze = 0;
   setTimer(tGazeCycle, 50);
-  write("[DRIVER_STATE_CTRL] start");
+  write("[DRV_STATE_MGR] start");
 }
 
 on timer tGazeCycle
@@ -28,7 +28,7 @@ on timer tGazeCycle
   if (gazeActive == 1 && gPrevGaze == 0)
   {
     @Core::warningState = 0;
-    write("[DRIVER_STATE_CTRL] gaze restored -> warning cleared");
+    write("[DRV_STATE_MGR] gaze restored -> warning cleared");
   }
   gPrevGaze = gazeActive;
 

@@ -1,4 +1,4 @@
-includes
+﻿includes
 {
 }
 
@@ -28,7 +28,7 @@ on start
   gClusterSyncAge    = 0;
   gLastSyncState     = -1;
   setTimer(tClusterCycle, 200);
-  write("[CLUSTER_BASE_CTRL] start");
+  write("[CLU_BASE_CTRL] start");
 }
 
 on message frmClusterBaseStateMsg
@@ -51,7 +51,7 @@ on message frmClusterSyncStateMsg
   gClusterSyncAge   = this.ClusterSyncAge;
   if (gClusterSyncState != gLastSyncState)
   {
-    write("[CLUSTER_BASE_CTRL] sync state=%d err=%d age=%dms",
+    write("[CLU_BASE_CTRL] sync state=%d err=%d age=%dms",
           gClusterSyncState, gClusterSyncError, gClusterSyncAge);
     gLastSyncState = gClusterSyncState;
   }
@@ -62,7 +62,7 @@ on timer tClusterCycle
   /* Cluster display refresh: log state change for debugging */
   if (gClusterSyncError > 0)
   {
-    write("[CLUSTER_BASE_CTRL] sync_err=%d spd=%d gear=%d",
+    write("[CLU_BASE_CTRL] sync_err=%d spd=%d gear=%d",
           gClusterSyncError, gClusterSpeed, gClusterGear);
   }
 

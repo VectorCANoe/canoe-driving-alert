@@ -1,4 +1,4 @@
-includes
+﻿includes
 {
 }
 
@@ -31,7 +31,7 @@ on start
   gLastDiagDidHigh = 0xF1;
   gLastDiagDidLow = 0x00;
   setTimer(tChassisBase100, 100);
-  write("[CHASSIS_GW] start");
+  write("[CHS_GW] start");
 }
 
 on message frmVehicleStateCanMsg

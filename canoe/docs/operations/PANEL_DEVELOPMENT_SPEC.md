@@ -18,7 +18,7 @@
 Panel Editor 실제 클릭 절차는 `canoe/PANEL_EDITOR_STEP_BY_STEP.md`를 따른다.
 
 ## 2) 아키텍처 고정점 (Panel 관점)
-- Option1 고정: `ETH_SWITCH + CHASSIS_GW/INFOTAINMENT_GW/BODY_GW/IVI_GW + 중앙 경고코어`
+- Option1 고정: `ETH_SW + CHS_GW/INFOTAINMENT_GW/BODY_GW/IVI_GW + 중앙 경고코어`
 - 검증 범위: CANoe SIL, CAN + Ethernet(UDP)
 - 핵심 출력:
   - Ambient: `frmAmbientControlMsg(0x210)`

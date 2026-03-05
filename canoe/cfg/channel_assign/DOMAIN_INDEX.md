@@ -17,34 +17,34 @@ This file documents domain-oriented CAPL ownership for the v2 runtime profile.
 - `EMS_ALERT_RX.can`
 - `EMS_AMB_TX.can`
 - `EMS_POLICE_TX.can`
-- `ETH_SWITCH.can`
-- `NAV_CONTEXT_MGR.can`
+- `ETH_SW.can`
+- `NAV_CTX_MGR.can`
 - `VAL_SCENARIO_CTRL` (validation scenario controller)
 - `WARN_ARB_MGR.can`
 
 ### Infotainment
-- `CLUSTER_BASE_CTRL.can`
+- `CLU_BASE_CTRL.can`
 - `CLU_HMI_CTRL.can`
 - `INFOTAINMENT_GW.can`
 - `IVI_GW.can`
 
 ### Body
-- `BCM_AMBIENT_CTRL.can`
+- `AMBIENT_CTRL.can`
 - `BODY_GW.can`
-- `DRIVER_STATE_CTRL.can`
+- `DRV_STATE_MGR.can`
 - `HAZARD_CTRL.can`
 - `WINDOW_CTRL.can`
 
 ### Powertrain
-- `DOMAIN_GW_ROUTER.can`
-- `ENGINE_CTRL.can`
-- `TRANSMISSION_CTRL.can`
+- `DOMAIN_ROUTER.can`
+- `ENG_CTRL.can`
+- `TCM.can`
 
 ### Chassis
 - `ACCEL_CTRL.can`
-- `BRAKE_CTRL.can`
-- `CHASSIS_GW.can`
-- `STEERING_CTRL.can`
+- `BRK_CTRL.can`
+- `CHS_GW.can`
+- `STEER_CTRL.can`
 - `VAL_BASELINE_CTRL` (validation baseline controller)
 
 ## Legacy Category Mirror (`src/capl`)

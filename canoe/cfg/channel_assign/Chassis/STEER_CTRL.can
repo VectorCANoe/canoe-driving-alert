@@ -1,4 +1,4 @@
-includes
+﻿includes
 {
 }
 
@@ -14,7 +14,7 @@ on start
   gSteeringState = 0;
   gPrevSteering  = -1;
   setTimer(tSteerCycle, 50);
-  write("[STEERING_CTRL] start");
+  write("[STEER_CTRL] start");
 }
 
 on timer tSteerCycle
@@ -28,7 +28,7 @@ on timer tSteerCycle
 
   if (steerInput != gPrevSteering)
   {
-    write("[STEERING_CTRL] input=%d", steerInput);
+    write("[STEER_CTRL] input=%d", steerInput);
     gPrevSteering = steerInput;
   }
 

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <CANoeConfiguration Version="19.0">
   <General>
     <Name>Driving Situation Linked Real-Time Warning System</Name>
@@ -57,23 +57,23 @@
       <Network>
         <Name>ETH</Name>
         <Type>Ethernet</Type>
-        <Description>ETH_SWITCH simulation backbone (UdpSocket, port 5000)</Description>
+        <Description>ETH_SW simulation backbone (UdpSocket, port 5000)</Description>
       </Network>
     </Networks>
 
     <Nodes>
       <Node>
-        <Name>SIL_TEST_CTRL</Name>
+        <Name>VAL_SCENARIO_CTRL</Name>
         <Network>CAN1</Network>
         <Type>Simulated</Type>
-        <CAPLFile>..\src\capl\input\SIL_TEST_CTRL.can</CAPLFile>
+        <CAPLFile>..\src\capl\input\VAL_SCENARIO_CTRL.can</CAPLFile>
         <Description>SIL test stimulus and test result publisher</Description>
       </Node>
       <Node>
-        <Name>CHASSIS_GW</Name>
+        <Name>CHS_GW</Name>
         <Network>CAN1</Network>
         <Type>Simulated</Type>
-        <CAPLFile>..\src\capl\input\CHASSIS_GW.can</CAPLFile>
+        <CAPLFile>..\src\capl\input\CHS_GW.can</CAPLFile>
         <Description>CAN 0x100/0x101 to UDP gateway</Description>
       </Node>
       <Node>
@@ -91,10 +91,10 @@
         <Description>ADAS warning-state evaluator</Description>
       </Node>
       <Node>
-        <Name>NAV_CONTEXT_MGR</Name>
+        <Name>NAV_CTX_MGR</Name>
         <Network>CAN1</Network>
         <Type>Simulated</Type>
-        <CAPLFile>..\src\capl\logic\NAV_CONTEXT_MGR.can</CAPLFile>
+        <CAPLFile>..\src\capl\logic\NAV_CTX_MGR.can</CAPLFile>
         <Description>Navigation context manager</Description>
       </Node>
       <Node>
@@ -140,10 +140,10 @@
         <Description>E200 UDP to CAN 0x220 gateway</Description>
       </Node>
       <Node>
-        <Name>BCM_AMBIENT_CTRL</Name>
+        <Name>AMBIENT_CTRL</Name>
         <Network>CAN1</Network>
         <Type>Simulated</Type>
-        <CAPLFile>..\src\capl\output\BCM_AMBIENT_CTRL.can</CAPLFile>
+        <CAPLFile>..\src\capl\output\AMBIENT_CTRL.can</CAPLFile>
         <Description>Ambient output consumer (CAN 0x210)</Description>
       </Node>
       <Node>

@@ -1,4 +1,4 @@
-# Ethernet Interface Contract (CANoe SIL)
+﻿# Ethernet Interface Contract (CANoe SIL)
 
 **Document ID**: CANOE-ETH-IFC  
 **Version**: 1.1  
@@ -19,13 +19,13 @@
 
 | Message | ID | DLC | Signal | Bit | Range | Tx Node | Rx Node | Period/Trigger | Clear/비고 |
 |---|---|---|---|---|---|---|---|---|---|
-| ethVehicleStateMsg | 0x510 | 2 | vehicleSpeed | 0~7 | 0~255 | CHASSIS_GW | ADAS_WARN_CTRL | 100ms | Chassis CAN(0x100) 정규화 |
-|  |  |  | driveState | 8~9 | 0~3 | CHASSIS_GW | ADAS_WARN_CTRL | 100ms | 0:P,1:R,2:N,3:D |
-| ethSteeringMsg | 0x511 | 1 | steeringInput | 0 | 0~1 | CHASSIS_GW | ADAS_WARN_CTRL | 100ms | Chassis CAN(0x101) 정규화 |
-| ethNavContextMsg | 0x512 | 3 | roadZone | 0~1 | 0~3 | INFOTAINMENT_GW | NAV_CONTEXT_MGR, ADAS_WARN_CTRL, WARN_ARB_MGR | 100ms | Infotainment CAN(0x110) 정규화 |
-|  |  |  | navDirection | 2~3 | 0~3 | INFOTAINMENT_GW | NAV_CONTEXT_MGR, ADAS_WARN_CTRL, WARN_ARB_MGR | 100ms | 0:None,1:Left,2:Right,3:Other |
-|  |  |  | zoneDistance | 8~15 | 0~255 | INFOTAINMENT_GW | NAV_CONTEXT_MGR, ADAS_WARN_CTRL, WARN_ARB_MGR | 100ms | m |
-|  |  |  | speedLimit | 16~23 | 0~255 | INFOTAINMENT_GW | NAV_CONTEXT_MGR, ADAS_WARN_CTRL, WARN_ARB_MGR | 100ms | km/h |
+| ethVehicleStateMsg | 0x510 | 2 | vehicleSpeed | 0~7 | 0~255 | CHS_GW | ADAS_WARN_CTRL | 100ms | Chassis CAN(0x100) 정규화 |
+|  |  |  | driveState | 8~9 | 0~3 | CHS_GW | ADAS_WARN_CTRL | 100ms | 0:P,1:R,2:N,3:D |
+| ethSteeringMsg | 0x511 | 1 | steeringInput | 0 | 0~1 | CHS_GW | ADAS_WARN_CTRL | 100ms | Chassis CAN(0x101) 정규화 |
+| ethNavContextMsg | 0x512 | 3 | roadZone | 0~1 | 0~3 | INFOTAINMENT_GW | NAV_CTX_MGR, ADAS_WARN_CTRL, WARN_ARB_MGR | 100ms | Infotainment CAN(0x110) 정규화 |
+|  |  |  | navDirection | 2~3 | 0~3 | INFOTAINMENT_GW | NAV_CTX_MGR, ADAS_WARN_CTRL, WARN_ARB_MGR | 100ms | 0:None,1:Left,2:Right,3:Other |
+|  |  |  | zoneDistance | 8~15 | 0~255 | INFOTAINMENT_GW | NAV_CTX_MGR, ADAS_WARN_CTRL, WARN_ARB_MGR | 100ms | m |
+|  |  |  | speedLimit | 16~23 | 0~255 | INFOTAINMENT_GW | NAV_CTX_MGR, ADAS_WARN_CTRL, WARN_ARB_MGR | 100ms | km/h |
 | ETH_EmergencyAlert | 0xE100 | 4 | emergencyType | 0~1 | 0~3 | EMS_POLICE_TX, EMS_AMB_TX | EMS_ALERT_RX | 100ms | 0:None,1:Police,2:Ambulance |
 |  |  |  | emergencyDirection | 2~3 | 0~3 | EMS_POLICE_TX, EMS_AMB_TX | EMS_ALERT_RX | 100ms | 0:Front,1:Left,2:Right,3:Rear |
 |  |  |  | eta | 8~15 | 0~255 | EMS_POLICE_TX, EMS_AMB_TX | EMS_ALERT_RX | 100ms | s |
@@ -39,11 +39,11 @@
 |  |  |  | vehicleSpeed | 16~23 | 0~255 | ADAS_WARN_CTRL | WARN_ARB_MGR, VAL_SCENARIO_CTRL | 100ms | 자차 속도(km/h) |
 |  |  |  | emergencyDirection | 24~25 | 0~3 | ADAS_WARN_CTRL | WARN_ARB_MGR, VAL_SCENARIO_CTRL | 100ms | 방향 정보 |
 |  |  |  | emergencyType | 26~27 | 0~2 | ADAS_WARN_CTRL | WARN_ARB_MGR, VAL_SCENARIO_CTRL | 100ms | 긴급차량 유형 |
-| ethDecelAssistReqMsg | 0x314(SIL Stub) / 0xE211(Logical) | 4 | decelAssistReq | 0 | 0~1 | WARN_ARB_MGR | CHASSIS_GW, BRAKE_CTRL, VAL_SCENARIO_CTRL | Event + 50ms | V2 감속보조 요청 |
-|  |  |  | failSafeMode | 1~2 | 0~2 | WARN_ARB_MGR | CHASSIS_GW, BRAKE_CTRL, VAL_SCENARIO_CTRL | Event + 50ms | 0:Normal,1:Degraded,2:Blocked |
-|  |  |  | driverReleaseReason | 3~4 | 0~3 | WARN_ARB_MGR | CHASSIS_GW, BRAKE_CTRL, VAL_SCENARIO_CTRL | Event + 50ms | 0:None,1:Steer,2:Brake,3:FailSafe |
-|  |  |  | emergencyContext | 5~6 | 0~2 | WARN_ARB_MGR | CHASSIS_GW, BRAKE_CTRL, VAL_SCENARIO_CTRL | Event + 50ms | 긴급 컨텍스트 |
-|  |  |  | proximityRiskLevel | 8~15 | 0~100 | WARN_ARB_MGR | CHASSIS_GW, BRAKE_CTRL, VAL_SCENARIO_CTRL | Event + 50ms | 위험도 전달 |
+| ethDecelAssistReqMsg | 0x314(SIL Stub) / 0xE211(Logical) | 4 | decelAssistReq | 0 | 0~1 | WARN_ARB_MGR | CHS_GW, BRK_CTRL, VAL_SCENARIO_CTRL | Event + 50ms | V2 감속보조 요청 |
+|  |  |  | failSafeMode | 1~2 | 0~2 | WARN_ARB_MGR | CHS_GW, BRK_CTRL, VAL_SCENARIO_CTRL | Event + 50ms | 0:Normal,1:Degraded,2:Blocked |
+|  |  |  | driverReleaseReason | 3~4 | 0~3 | WARN_ARB_MGR | CHS_GW, BRK_CTRL, VAL_SCENARIO_CTRL | Event + 50ms | 0:None,1:Steer,2:Brake,3:FailSafe |
+|  |  |  | emergencyContext | 5~6 | 0~2 | WARN_ARB_MGR | CHS_GW, BRK_CTRL, VAL_SCENARIO_CTRL | Event + 50ms | 긴급 컨텍스트 |
+|  |  |  | proximityRiskLevel | 8~15 | 0~100 | WARN_ARB_MGR | CHS_GW, BRK_CTRL, VAL_SCENARIO_CTRL | Event + 50ms | 위험도 전달 |
 | ethFailSafeStateMsg | 0x315(SIL Stub) / 0xE212(Logical) | 2 | domainPathStatus | 0~1 | 0~2 | DOMAIN_BOUNDARY_MGR | WARN_ARB_MGR, VAL_SCENARIO_CTRL | 100ms + Event | 0:Normal,1:Degraded,2:Failed |
 |  |  |  | e2eHealthState | 2~3 | 0~2 | DOMAIN_BOUNDARY_MGR | WARN_ARB_MGR, VAL_SCENARIO_CTRL | 100ms + Event | 0:Failed,1:Degraded,2:Healthy |
 |  |  |  | failSafeMode | 4~5 | 0~2 | DOMAIN_BOUNDARY_MGR | WARN_ARB_MGR, VAL_SCENARIO_CTRL | 100ms + Event | 강등 모드 상태 |

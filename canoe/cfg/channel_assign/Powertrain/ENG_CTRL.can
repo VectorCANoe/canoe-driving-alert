@@ -1,4 +1,4 @@
-includes
+﻿includes
 {
 }
 
@@ -20,7 +20,7 @@ on start
   gFuelLevel       = 80;
   gBatterySoc      = 95;
   setTimer(tEngineCycle, 100);
-  write("[ENGINE_CTRL] start");
+  write("[ENG_CTRL] start");
 }
 
 on message frmIgnitionEngineMsg
@@ -89,7 +89,7 @@ on timer tEngineCycle
 
   if (gEngineState != gLastEngineState)
   {
-    write("[ENGINE_CTRL] ignition=%d engine=%d rpm=%d",
+    write("[ENG_CTRL] ignition=%d engine=%d rpm=%d",
           gIgnitionState, gEngineState, rpm);
     gLastEngineState = gEngineState;
   }

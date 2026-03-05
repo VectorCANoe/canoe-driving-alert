@@ -1,4 +1,4 @@
-includes
+﻿includes
 {
 }
 
@@ -20,7 +20,7 @@ on start
   gLastGearState = -1;
   gShiftCounter  = 0;
   setTimer(tTransCycle, 100);
-  write("[TRANSMISSION_CTRL] start");
+  write("[TCM] start");
 }
 
 on message frmGearStateMsg
@@ -73,7 +73,7 @@ on timer tTransCycle
   {
     shiftState    = 2;
     gShiftCounter = 4;
-    write("[TRANSMISSION_CTRL] shift gear=%d->%d", gLastGearState, gGearState);
+    write("[TCM] shift gear=%d->%d", gLastGearState, gGearState);
   }
   else
   {

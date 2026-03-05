@@ -1,4 +1,4 @@
-includes
+﻿includes
 {
 }
 
@@ -10,7 +10,7 @@ variables
 on start
 {
   setTimer(tNavCycle, 10);
-  write("[NAV_CONTEXT_MGR] start");
+  write("[NAV_CTX_MGR] start");
 }
 
 on timer tNavCycle

@@ -1,4 +1,4 @@
-VERSION "ETH_Backbone_CAN_STUB_v2.1"
+﻿VERSION "ETH_Backbone_CAN_STUB_v2.1"
 
 
 NS_ :
@@ -30,7 +30,7 @@ NS_ :
 
 BS_:
 
-BU_: EMS_POLICE_TX EMS_AMB_TX EMS_ALERT_RX ETH_SWITCH WARN_ARB_MGR ADAS_WARN_CTRL NAV_CONTEXT_MGR IVI_GW CHASSIS_GW VAL_SCENARIO_CTRL DOMAIN_BOUNDARY_MGR Vector__XXX
+BU_: EMS_POLICE_TX EMS_AMB_TX EMS_ALERT_RX ETH_SW WARN_ARB_MGR ADAS_WARN_CTRL NAV_CTX_MGR IVI_GW CHS_GW VAL_SCENARIO_CTRL DOMAIN_BOUNDARY_MGR Vector__XXX
 
 BO_ 100 frmEmergencyBroadcastMsg: 4 Vector__XXX
  SG_ VehicleType  : 0|4@1+  (1,0) [0|15]  ""    EMS_ALERT_RX
@@ -42,16 +42,16 @@ BO_ 100 frmEmergencyBroadcastMsg: 4 Vector__XXX
  SG_ Reserved1    : 28|4@1+ (1,0) [0|0]   ""    Vector__XXX
 
 BO_ 562 frmEmergencyMonitorMsg: 2 EMS_ALERT_RX
- SG_ EmergencyContext : 0|8@1+ (1,0) [0|255] "" VAL_SCENARIO_CTRL,CHASSIS_GW
- SG_ TimeoutClearMon  : 8|1@1+ (1,0) [0|1]   "" VAL_SCENARIO_CTRL,CHASSIS_GW
+ SG_ EmergencyContext : 0|8@1+ (1,0) [0|255] "" VAL_SCENARIO_CTRL,CHS_GW
+ SG_ TimeoutClearMon  : 8|1@1+ (1,0) [0|1]   "" VAL_SCENARIO_CTRL,CHS_GW
  SG_ Reserved0        : 9|7@1+ (1,0) [0|0]   "" Vector__XXX
 
 BO_ 788 ethDecelAssistReqMsg: 4 WARN_ARB_MGR
- SG_ DecelAssistReq      : 0|1@1+ (1,0) [0|1] "" VAL_SCENARIO_CTRL,CHASSIS_GW
- SG_ FailSafeMode        : 1|2@1+ (1,0) [0|2] "" VAL_SCENARIO_CTRL,CHASSIS_GW
- SG_ DriverReleaseReason : 3|2@1+ (1,0) [0|3] "" VAL_SCENARIO_CTRL,CHASSIS_GW
- SG_ EmergencyContext    : 5|2@1+ (1,0) [0|2] "" VAL_SCENARIO_CTRL,CHASSIS_GW
- SG_ RiskLevel           : 8|8@1+ (1,0) [0|100] "" VAL_SCENARIO_CTRL,CHASSIS_GW
+ SG_ DecelAssistReq      : 0|1@1+ (1,0) [0|1] "" VAL_SCENARIO_CTRL,CHS_GW
+ SG_ FailSafeMode        : 1|2@1+ (1,0) [0|2] "" VAL_SCENARIO_CTRL,CHS_GW
+ SG_ DriverReleaseReason : 3|2@1+ (1,0) [0|3] "" VAL_SCENARIO_CTRL,CHS_GW
+ SG_ EmergencyContext    : 5|2@1+ (1,0) [0|2] "" VAL_SCENARIO_CTRL,CHS_GW
+ SG_ RiskLevel           : 8|8@1+ (1,0) [0|100] "" VAL_SCENARIO_CTRL,CHS_GW
  SG_ Reserved0           : 16|16@1+ (1,0) [0|0] "" Vector__XXX
 
 BO_ 789 ethFailSafeStateMsg: 2 DOMAIN_BOUNDARY_MGR

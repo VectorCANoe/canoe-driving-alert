@@ -1,4 +1,4 @@
-includes
+﻿includes
 {
 }
 
@@ -37,7 +37,7 @@ on start
   gEthPathHealthy = 0;
   gLastEthPathHealthy = -1;
   setTimer(tEthMonitor100, 100);
-  write("[ETH_SWITCH] start");
+  write("[ETH_SW] start");
 }
 
 on message frmVehicleStateCanMsg
@@ -74,7 +74,7 @@ on timer tEthMonitor100
                      (gEmergencyMonAgeMs <= 500)) ? 1 : 0;
   if (gEthPathHealthy != gLastEthPathHealthy)
   {
-    write("[ETH_SWITCH] path health=%d (veh=%dms nav=%dms steer=%dms ems=%dms)",
+    write("[ETH_SW] path health=%d (veh=%dms nav=%dms steer=%dms ems=%dms)",
           gEthPathHealthy,
           gVehicleStateAgeMs,
           gNavContextAgeMs,

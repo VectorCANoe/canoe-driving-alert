@@ -1,4 +1,4 @@
-VERSION "Infotainment_CAN_v1.0"
+﻿VERSION "Infotainment_CAN_v1.0"
 
 NS_ :
   NS_DESC_
@@ -29,26 +29,26 @@ NS_ :
 
 BS_:
 
-BU_: VAL_SCENARIO_CTRL INFOTAINMENT_GW IVI_GW NAV_CONTEXT_MGR CLU_HMI_CTRL CLUSTER_BASE_CTRL DOMAIN_BOUNDARY_MGR Vector__XXX
+BU_: VAL_SCENARIO_CTRL INFOTAINMENT_GW IVI_GW NAV_CTX_MGR CLU_HMI_CTRL CLU_BASE_CTRL DOMAIN_BOUNDARY_MGR Vector__XXX
 
 BO_ 272 frmNavContextCanMsg: 3 VAL_SCENARIO_CTRL
- SG_ gRoadZone     : 0|2@1+ (1,0) [0|3]    "" INFOTAINMENT_GW,NAV_CONTEXT_MGR
- SG_ gNavDirection : 2|2@1+ (1,0) [0|3]    "" INFOTAINMENT_GW,NAV_CONTEXT_MGR
+ SG_ gRoadZone     : 0|2@1+ (1,0) [0|3]    "" INFOTAINMENT_GW,NAV_CTX_MGR
+ SG_ gNavDirection : 2|2@1+ (1,0) [0|3]    "" INFOTAINMENT_GW,NAV_CTX_MGR
  SG_ Reserved0     : 4|4@1+ (1,0) [0|0]    "" Vector__XXX
- SG_ gZoneDistance : 8|8@1+ (1,0) [0|255]  "m" INFOTAINMENT_GW,NAV_CONTEXT_MGR
- SG_ gSpeedLimit   : 16|8@1+ (1,0) [0|255] "km/h" INFOTAINMENT_GW,NAV_CONTEXT_MGR
+ SG_ gZoneDistance : 8|8@1+ (1,0) [0|255]  "m" INFOTAINMENT_GW,NAV_CTX_MGR
+ SG_ gSpeedLimit   : 16|8@1+ (1,0) [0|255] "km/h" INFOTAINMENT_GW,NAV_CTX_MGR
 
 BO_ 544 frmClusterWarningMsg: 1 IVI_GW
  SG_ WarningTextCode : 0|8@1+ (1,0) [0|255] "" CLU_HMI_CTRL
 
 BO_ 545 frmClusterBaseStateMsg: 2 IVI_GW
- SG_ ClusterSpeed     : 0|8@1+ (1,0) [0|255] "km/h" CLUSTER_BASE_CTRL
- SG_ ClusterGear      : 8|3@1+ (1,0) [0|7] "" CLUSTER_BASE_CTRL
- SG_ ClusterStatus    : 11|5@1+ (1,0) [0|31] "" CLUSTER_BASE_CTRL
+ SG_ ClusterSpeed     : 0|8@1+ (1,0) [0|255] "km/h" CLU_BASE_CTRL
+ SG_ ClusterGear      : 8|3@1+ (1,0) [0|7] "" CLU_BASE_CTRL
+ SG_ ClusterStatus    : 11|5@1+ (1,0) [0|31] "" CLU_BASE_CTRL
 
 BO_ 546 frmNaviGuideStateMsg: 1 INFOTAINMENT_GW
- SG_ GuideLaneState   : 0|2@1+ (1,0) [0|3] "" NAV_CONTEXT_MGR
- SG_ GuideConfidence  : 2|6@1+ (1,0) [0|63] "" NAV_CONTEXT_MGR
+ SG_ GuideLaneState   : 0|2@1+ (1,0) [0|3] "" NAV_CTX_MGR
+ SG_ GuideConfidence  : 2|6@1+ (1,0) [0|63] "" NAV_CTX_MGR
 
 BO_ 547 frmMediaStateMsg: 2 IVI_GW
  SG_ MediaSource      : 0|3@1+ (1,0) [0|7] "" CLU_HMI_CTRL
@@ -65,15 +65,15 @@ BO_ 548 frmCallStateMsg: 2 IVI_GW
  SG_ Reserved0        : 12|4@1+ (1,0) [0|0] "" Vector__XXX
 
 BO_ 549 frmNavigationRouteMsg: 3 INFOTAINMENT_GW
- SG_ RouteClass       : 0|2@1+ (1,0) [0|3] "" NAV_CONTEXT_MGR
- SG_ GuideType        : 2|2@1+ (1,0) [0|3] "" NAV_CONTEXT_MGR
+ SG_ RouteClass       : 0|2@1+ (1,0) [0|3] "" NAV_CTX_MGR
+ SG_ GuideType        : 2|2@1+ (1,0) [0|3] "" NAV_CTX_MGR
  SG_ Reserved0        : 4|4@1+ (1,0) [0|0] "" Vector__XXX
- SG_ RouteProgress    : 8|8@1+ (1,0) [0|100] "%" NAV_CONTEXT_MGR
- SG_ EtaMinutes       : 16|8@1+ (1,0) [0|255] "min" NAV_CONTEXT_MGR
+ SG_ RouteProgress    : 8|8@1+ (1,0) [0|100] "%" NAV_CTX_MGR
+ SG_ EtaMinutes       : 16|8@1+ (1,0) [0|255] "min" NAV_CTX_MGR
 
 BO_ 550 frmClusterThemeMsg: 1 IVI_GW
- SG_ ThemeMode        : 0|3@1+ (1,0) [0|7] "" CLUSTER_BASE_CTRL
- SG_ ClusterBrightness : 3|5@1+ (1,0) [0|31] "" CLUSTER_BASE_CTRL
+ SG_ ThemeMode        : 0|3@1+ (1,0) [0|7] "" CLU_BASE_CTRL
+ SG_ ClusterBrightness : 3|5@1+ (1,0) [0|31] "" CLU_BASE_CTRL
 
 BO_ 551 frmHmiPopupStateMsg: 1 IVI_GW
  SG_ PopupType        : 0|4@1+ (1,0) [0|15] "" CLU_HMI_CTRL
@@ -96,20 +96,20 @@ BO_ 609 frmVoiceAssistStateMsg: 1 IVI_GW
  SG_ Reserved0        : 4|4@1+ (1,0) [0|0] "" Vector__XXX
 
 BO_ 610 frmMapRenderStateMsg: 2 INFOTAINMENT_GW
- SG_ MapRenderState   : 0|3@1+ (1,0) [0|7] "" NAV_CONTEXT_MGR
- SG_ ZoomLevel        : 3|5@1+ (1,0) [0|31] "" NAV_CONTEXT_MGR
- SG_ TileLoadPercent  : 8|8@1+ (1,0) [0|100] "%" NAV_CONTEXT_MGR
+ SG_ MapRenderState   : 0|3@1+ (1,0) [0|7] "" NAV_CTX_MGR
+ SG_ ZoomLevel        : 3|5@1+ (1,0) [0|31] "" NAV_CTX_MGR
+ SG_ TileLoadPercent  : 8|8@1+ (1,0) [0|100] "%" NAV_CTX_MGR
 
 BO_ 611 frmRouteAlertMsg: 2 INFOTAINMENT_GW
- SG_ RouteAlertType   : 0|4@1+ (1,0) [0|15] "" NAV_CONTEXT_MGR
- SG_ RouteAlertPrio   : 4|3@1+ (1,0) [0|7] "" NAV_CONTEXT_MGR
- SG_ RouteAlertActive : 7|1@1+ (1,0) [0|1] "" NAV_CONTEXT_MGR
- SG_ RouteAlertEta    : 8|8@1+ (1,0) [0|255] "s" NAV_CONTEXT_MGR
+ SG_ RouteAlertType   : 0|4@1+ (1,0) [0|15] "" NAV_CTX_MGR
+ SG_ RouteAlertPrio   : 4|3@1+ (1,0) [0|7] "" NAV_CTX_MGR
+ SG_ RouteAlertActive : 7|1@1+ (1,0) [0|1] "" NAV_CTX_MGR
+ SG_ RouteAlertEta    : 8|8@1+ (1,0) [0|255] "s" NAV_CTX_MGR
 
 BO_ 612 frmTrafficEventMsg: 3 INFOTAINMENT_GW
- SG_ TrafficEventType : 0|8@1+ (1,0) [0|255] "" NAV_CONTEXT_MGR
- SG_ TrafficSeverity  : 8|8@1+ (1,0) [0|255] "" NAV_CONTEXT_MGR
- SG_ TrafficDistance  : 16|8@1+ (1,0) [0|255] "m" NAV_CONTEXT_MGR
+ SG_ TrafficEventType : 0|8@1+ (1,0) [0|255] "" NAV_CTX_MGR
+ SG_ TrafficSeverity  : 8|8@1+ (1,0) [0|255] "" NAV_CTX_MGR
+ SG_ TrafficDistance  : 16|8@1+ (1,0) [0|255] "m" NAV_CTX_MGR
 
 BO_ 613 frmPhoneProjectionMsg: 1 IVI_GW
  SG_ ProjectionType   : 0|2@1+ (1,0) [0|3] "" CLU_HMI_CTRL
@@ -143,9 +143,9 @@ BO_ 618 frmSpeechTtsStateMsg: 2 IVI_GW
  SG_ TtsQueueDepth    : 8|8@1+ (1,0) [0|255] "" CLU_HMI_CTRL
 
 BO_ 619 frmConnectivityStateMsg: 2 INFOTAINMENT_GW
- SG_ ConnectivityType : 0|3@1+ (1,0) [0|7] "" NAV_CONTEXT_MGR
- SG_ ConnectivityState: 3|3@1+ (1,0) [0|7] "" NAV_CONTEXT_MGR
- SG_ SignalBars       : 8|4@1+ (1,0) [0|15] "" NAV_CONTEXT_MGR
+ SG_ ConnectivityType : 0|3@1+ (1,0) [0|7] "" NAV_CTX_MGR
+ SG_ ConnectivityState: 3|3@1+ (1,0) [0|7] "" NAV_CTX_MGR
+ SG_ SignalBars       : 8|4@1+ (1,0) [0|15] "" NAV_CTX_MGR
  SG_ Reserved0        : 12|4@1+ (1,0) [0|0] "" Vector__XXX
 
 BO_ 620 frmIviHealthDetailMsg: 2 INFOTAINMENT_GW
@@ -153,9 +153,9 @@ BO_ 620 frmIviHealthDetailMsg: 2 INFOTAINMENT_GW
  SG_ IviMemLoad       : 8|8@1+ (1,0) [0|100] "%" VAL_SCENARIO_CTRL
 
 BO_ 621 frmClusterSyncStateMsg: 2 IVI_GW
- SG_ ClusterSyncState : 0|4@1+ (1,0) [0|15] "" CLUSTER_BASE_CTRL
- SG_ ClusterSyncError : 4|4@1+ (1,0) [0|15] "" CLUSTER_BASE_CTRL
- SG_ ClusterSyncAge   : 8|8@1+ (1,0) [0|255] "ms" CLUSTER_BASE_CTRL
+ SG_ ClusterSyncState : 0|4@1+ (1,0) [0|15] "" CLU_BASE_CTRL
+ SG_ ClusterSyncError : 4|4@1+ (1,0) [0|15] "" CLU_BASE_CTRL
+ SG_ ClusterSyncAge   : 8|8@1+ (1,0) [0|255] "ms" CLU_BASE_CTRL
 
 CM_ BO_ 272 "Flow_003 navigation context input.";
 CM_ BO_ 544 "Flow_008 cluster warning output.";

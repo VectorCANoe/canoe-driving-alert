@@ -1,4 +1,4 @@
-includes
+﻿includes
 {
 }
 
@@ -20,7 +20,7 @@ on start
   gLastAlertType = -1;
   gFlashToggle   = 0;
   setTimer(tBcmExt100, 100);
-  write("[BCM_AMBIENT_CTRL] start");
+  write("[AMBIENT_CTRL] start");
 }
 
 on message frmBcmDiagReqMsg
