@@ -102,12 +102,12 @@ Emergency Source (logical terminal)
 
 | Module ID | Node | 구현 파일(계획) | 역할 |
 |---|---|---|---|
-| MOD_01 | ADAS_WARN_CTRL | `canoe/src/capl/logic/ADAS_WARN_CTRL.can` | 조건 판정/디바운스/트리거 |
+| MOD_01 | ADAS_WARN_CTRL | `canoe/src/capl/adas/ADAS_WARN_CTRL.can` | 조건 판정/디바운스/트리거 |
 | MOD_02 | NAV_CONTEXT_MGR | `canoe/src/capl/logic/NAV_CONTEXT_MGR.can` | 구간 컨텍스트 계산 |
 | MOD_03 | EMS_POLICE_TX | `canoe/src/capl/ems/EMS_POLICE_TX.can` | 경찰 긴급 송신 |
 | MOD_04 | EMS_AMB_TX | `canoe/src/capl/ems/EMS_AMB_TX.can` | 구급 긴급 송신 |
 | MOD_05 | EMS_ALERT_RX | `canoe/src/capl/logic/EMS_ALERT_RX.can` | 긴급 수신/해제/타임아웃 |
-| MOD_06 | WARN_ARB_MGR | `canoe/src/capl/logic/WARN_ARB_MGR.can` | 우선순위 중재 |
+| MOD_06 | WARN_ARB_MGR | `canoe/src/capl/adas/WARN_ARB_MGR.can` | 우선순위 중재 |
 | MOD_07 | CHASSIS_GW | `canoe/src/capl/input/CHASSIS_GW.can` | CAN->ETH 변환 |
 | MOD_08 | INFOTAINMENT_GW | `canoe/src/capl/input/INFOTAINMENT_GW.can` | CAN->ETH 변환 |
 | MOD_09 | BODY_GW | `canoe/src/capl/output/BODY_GW.can` | ETH->CAN 변환(Ambient) |

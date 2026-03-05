@@ -11,8 +11,11 @@ This file documents domain-oriented CAPL ownership for the v2 runtime profile.
 
 ## Domain -> CAPL Files
 
-### ETH_Backbone
+### ADAS
 - `ADAS_WARN_CTRL.can`
+- `WARN_ARB_MGR.can`
+
+### ETH_Backbone
 - `DOMAIN_BOUNDARY_MGR.can`
 - `EMS_ALERT_RX.can`
 - `EMS_AMB_TX.can`
@@ -20,7 +23,6 @@ This file documents domain-oriented CAPL ownership for the v2 runtime profile.
 - `ETH_SWITCH.can`
 - `NAV_CONTEXT_MGR.can`
 - `SIL_TEST_CTRL.can` (`VAL_SCENARIO_CTRL` role)
-- `WARN_ARB_MGR.can`
 
 ### Infotainment
 - `CLUSTER_BASE_CTRL.can`
@@ -48,11 +50,11 @@ This file documents domain-oriented CAPL ownership for the v2 runtime profile.
 - `VEHICLE_BASE_TEST_CTRL.can` (`VAL_BASELINE_CTRL` role)
 
 ## Legacy Category Mirror (`src/capl`)
+- `adas`: ADAS warning/risk logic modules
 - `ecu`: vehicle/chassis/body/powertrain controller-side modules
 - `ems`: emergency TX modules
 - `input`: gateway ingress and test harness ingress modules
 - `logic`: arbitration and warning logic modules
 - `network`: backbone switch/transport monitoring module
 - `output`: HMI/IVI/body output adapter modules
-
 
