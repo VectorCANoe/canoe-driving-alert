@@ -1,8 +1,8 @@
 # 프로젝트 범위 및 검증 전략 (Project Scope and Verification Strategy)
 
 **Document ID**: PROJ-00b-PS
-**Version**: 2.7
-**Date**: 2026-03-04
+**Version**: 2.8
+**Date**: 2026-03-05
 **Status**: Released
 **Project Title**: 주행 상황 실시간 경고 시스템
 **Subtitle**: 구간 정보 및 긴급차량 접근 기반 앰비언트·클러스터 경보
@@ -19,7 +19,7 @@
 - 시나리오 A: 구간 인식 기반 경고 패턴 동작
 - 시나리오 B: 긴급차량 접근 기반 경고 패턴 동작
 - 공통 베이스: 경고 표시/중재/복귀 로직
-- Validation Harness(`SIL_TEST_CTRL`, `VEHICLE_BASE_TEST_CTRL`)는 SIL 검증 전용 계층이며 양산 기능/사용자 기능 범위에 포함하지 않는다.
+- Validation Harness(`VAL_SCENARIO_CTRL`, `VAL_BASELINE_CTRL`)는 SIL 검증 전용 계층이며 양산 기능/사용자 기능 범위에 포함하지 않는다.
 
 본 프로젝트는 `CANoe SIL` 환경에서 아래 3개 기능군을 통합 검증한다.
 
@@ -83,7 +83,7 @@ WARN_ARB_MGR
 - Network: Ethernet UDP 백본 + Domain CAN-HS
 - Domain CAN 역할 분리: Body CAN(앰비언트, 0x210), Infotainment CAN(클러스터, 0x220)
 - 아키텍처 고정: `ETH_SWITCH + CHASSIS_GW/INFOTAINMENT_GW/BODY_GW/IVI_GW + 중앙 경고코어(ADAS_WARN_CTRL/NAV_CONTEXT_MGR/EMS_ALERT/WARN_ARB_MGR)`
-- 주요 노드: `SIL_TEST_CTRL`, `CHASSIS_GW`, `INFOTAINMENT_GW`, `ETH_SWITCH`, `ADAS_WARN_CTRL`, `NAV_CONTEXT_MGR`, `EMS_ALERT`, `WARN_ARB_MGR`, `BODY_GW`, `IVI_GW`, `BCM_AMBIENT_CTRL`, `CLU_HMI_CTRL`
+- 주요 노드: `VAL_SCENARIO_CTRL`, `CHASSIS_GW`, `INFOTAINMENT_GW`, `ETH_SWITCH`, `ADAS_WARN_CTRL`, `NAV_CONTEXT_MGR`, `EMS_ALERT`, `WARN_ARB_MGR`, `BODY_GW`, `IVI_GW`, `BCM_AMBIENT_CTRL`, `CLU_HMI_CTRL`
 - EMS 내부 구현 모듈(`EMS_POLICE_TX`, `EMS_AMB_TX`, `EMS_ALERT_RX`)은 03/0301/0302/0303/0304 하단 보강표에서 분리 관리한다.
 - Panel 입력: `gRoadZone`, `gNavDirection`, `gZoneDistance`, `gSpeedLimit`, 긴급차량 ON/OFF, ETA, 우선순위 테스트 토글
 
@@ -108,8 +108,9 @@ WARN_ARB_MGR
 
 ## 개정 이력
 
-- 2.6 (2026-03-02): 요구 분류/안전 프로파일 운영 기준 섹션에 HARA 워크시트(`00d_HARA_Worksheet.md`) 연계 규칙을 추가.
+- 2.8 (2026-03-05): Validation Harness 노드 명칭을 `VAL_SCENARIO_CTRL`/`VAL_BASELINE_CTRL`로 정리하고 범위 표기의 검증 전용 성격을 명확화.
 - 2.7 (2026-03-04): HARA 내부 승인 기준 반영으로 안전등급 운영 문구를 `Provisional` 단계에서 `QM/ASIL Candidate 잠금` 단계로 갱신.
+- 2.6 (2026-03-02): 요구 분류/안전 프로파일 운영 기준 섹션에 HARA 워크시트(`00d_HARA_Worksheet.md`) 연계 규칙을 추가.
 - 2.5 (2026-03-02): 상위 범위 문서 표기를 `EMS_ALERT` 논리 단말 기준으로 통일하고 내부 TX/RX 모듈은 03계열 하단 보강표 분리 원칙으로 정리. 요구 분류/안전 프로파일 운영 기준(Req Type, Req_041~043 성격, HARA 전 Provisional 정책, 00c 참조)을 추가.
 - 2.4 (2026-02-28): 멘토링 피드백 반영으로 Vehicle Baseline 기능군(시동/기어/입력/표시)을 프로젝트 범위에 추가.
 - 2.3 (2026-02-28): Navigation Context 입력에 `gSpeedLimit`을 추가해 Req_010 과속 판정 기준(`vehicleSpeed > speedLimit`)과 0302/0303/0304 체인을 정합화.

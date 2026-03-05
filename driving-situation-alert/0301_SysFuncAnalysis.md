@@ -3,8 +3,8 @@
 **Document ID**: PROJ-0301-SFA
 **ISO 26262 Reference**: Part 4, Cl.7 (System Design)
 **ASPICE Reference**: SYS.3 (System Architectural Design)
-**Version**: 3.19
-**Date**: 2026-03-03
+**Version**: 3.20
+**Date**: 2026-03-05
 **Status**: Draft
 **Project Title**: 주행 상황 실시간 경고 시스템
 **Subtitle**: 구간 정보 및 긴급차량 접근 기반 앰비언트·클러스터 경보
@@ -25,7 +25,7 @@
 - 상세 추적 정보(Func/Req/실제 입출력)는 하단 표에 분리한다.
 - 옵션1 아키텍처를 고정한다: 중앙 경고코어 + Ethernet 백본(ETH_SWITCH) + 도메인 게이트웨이 + 도메인 CAN.
 - 목표 설계는 옵션1(ETH 백본) 고정이며, CANoe.CAN 라이선스 제약 구간의 SIL 검증은 임시로 CAN 대체 백본을 사용하고 Ethernet 라이선스 확보 후 동일 케이스로 재검증한다.
-- `SIL_TEST_CTRL`/`VEHICLE_BASE_TEST_CTRL`는 Validation Harness(검증 전용)이며, Gateway/도메인 통신 경로의 기능 노드로 해석하지 않는다.
+- `VAL_SCENARIO_CTRL`/`VAL_BASELINE_CTRL`는 Validation Harness(검증 전용)이며, Gateway/도메인 통신 경로의 기능 노드로 해석하지 않는다.
 - 변수명은 0304 표준 Name(`vehicleSpeed`, `roadZone`, `speedLimit`) 기준으로 작성하고, 코드 별칭(`g*`)은 구현 문서에서만 사용한다.
 - ECU 노드명은 ISO 기능 분리 원칙(센싱/판단/중재/출력/게이트웨이)을 따르고, OEM 레퍼런스는 `reference/dbc/level3_communication/reference/*.dbc`를 참고한다.
 - 제출 전 현대/기아 및 OEM 기준 명칭으로 일괄 대체하되, 추적 ID 체계는 유지한다.
@@ -47,8 +47,8 @@
 | STEERING_CTRL | 조향 입력 상태 처리 | 차량 기본 동작 |
 | EMS_ALERT | 긴급 알림 송수신 상태 및 해제 상태 관리 | 송신/수신/타임아웃 통합 단말 |
 | WARN_ARB_MGR | 긴급 경고와 구간 경고 충돌 시 우선순위 중재 및 감속 보조 요청/해제 수행 | Emergency > Zone, Ambulance > Police |
-| SIL_TEST_CTRL | SIL 시나리오 실행 및 판정 결과 기록 | 검증 제어 가상노드(Validation-only) |
-| VEHICLE_BASE_TEST_CTRL | 차량 기본 기능 시나리오 실행 및 판정 결과 기록 | 검증 제어 가상노드(Validation-only) |
+| VAL_SCENARIO_CTRL | SIL 시나리오 실행 및 판정 결과 기록 | 검증 제어 가상노드(Validation-only) |
+| VAL_BASELINE_CTRL | 차량 기본 기능 시나리오 실행 및 판정 결과 기록 | 검증 제어 가상노드(Validation-only) |
 |  |  | Network Infra |
 | ETH_SWITCH | Ethernet 백본 전달 인프라(시스템 관점) | 도메인 간 프레임 전달 경로 |
 | CHASSIS_GW | Chassis CAN 입력을 Ethernet 정규 메시지로 변환 | CAN->ETH 변환 |
@@ -88,7 +88,7 @@
 | Func_022,025~032 | Req_022,025~032 | WARN_ARB_MGR | emergencyContext, warningState, baseZoneContext, emergencyType, eta, sourceId, arbitrationSnapshotId | 우선순위 중재 수행 | selectedAlertLevel, selectedAlertType | 입력: emergencyContext, warningState, baseZoneContext, emergencyType, eta, sourceId, arbitrationSnapshotId |
 | Func_008,009,033~039 | Req_008,009,033~039 | BCM_AMBIENT_CTRL | selectedAlertLevel, selectedAlertType, navDirection, baseZoneContext, timeoutClear | 경고 등급별 색상/패턴 적용, 전환 완화, 복원 | ambientMode, ambientColor, ambientPattern | 출력: ambientMode, ambientColor, ambientPattern |
 | Func_005,019~021,026,040 | Req_005,019~021,026,040 | CLU_HMI_CTRL | selectedAlertType, emergencyDirection, duplicatePopupGuard, warningTextCode | 경고 문구/종류/방향/양보 메시지 표시 | warningTextCode | 출력: warningTextCode |
-| Func_041, Func_042, Func_043 | Req_041, Req_042, Req_043 | SIL_TEST_CTRL | testScenario | 시나리오 실행, CAN+ETH 검증, 판정 기록 | scenarioResult | 출력: scenarioResult |
+| Func_041, Func_042, Func_043 | Req_041, Req_042, Req_043 | VAL_SCENARIO_CTRL | testScenario | 시나리오 실행, CAN+ETH 검증, 판정 기록 | scenarioResult | 출력: scenarioResult |
 | Func_101 | Req_101 | ENGINE_CTRL | IgnitionState | 시동 상태 반영 | EngineState | 입력: IgnitionState / 출력: EngineState |
 | Func_102 | Req_102 | TRANSMISSION_CTRL | GearInput | 기어 상태 반영 | GearState | 입력: GearInput / 출력: GearState |
 | Func_103 | Req_103 | ACCEL_CTRL | AccelPedal | 가속 입력 반영 | AccelRequest | 입력: AccelPedal / 출력: AccelRequest |
@@ -100,7 +100,7 @@
 | Func_109 | Req_109 | CLUSTER_BASE_CTRL | ClusterSpeed, ClusterGear, warningTextCode | 클러스터 기본 표시 | ClusterStatus | 입력: ClusterSpeed, ClusterGear, warningTextCode / 출력: ClusterStatus |
 | Func_110 | Req_110 | DOMAIN_GW_ROUTER | RoutingPolicy | 도메인 게이트웨이 전달 | BodyGatewayRoute | 입력: RoutingPolicy / 출력: BodyGatewayRoute |
 | Func_111 | Req_111 | DOMAIN_BOUNDARY_MGR | RoutingPolicy | 도메인 경계 유지 | BoundaryStatus | 입력: RoutingPolicy / 출력: BoundaryStatus |
-| Func_112 | Req_112 | VEHICLE_BASE_TEST_CTRL | BaseScenarioId | 차량 기본 기능 SIL 검증 | BaseScenarioResult | 입력: BaseScenarioId / 출력: BaseScenarioResult |
+| Func_112 | Req_112 | VAL_BASELINE_CTRL | BaseScenarioId | 차량 기본 기능 SIL 검증 | BaseScenarioResult | 입력: BaseScenarioId / 출력: BaseScenarioResult |
 | Func_113 | Req_113 | BODY_GW | CabinSetTemp, BlowerLevel, AcCompressorReq, VentMode | HVAC 상태/제어 프레임 반영 | CabinTemp | 입력: CabinSetTemp, BlowerLevel, AcCompressorReq, VentMode / 출력: CabinTemp |
 | Func_114 | Req_114 | DRIVER_STATE_CTRL | DriverSeatPos, PassengerSeatPos, SeatHeatLevel, SeatVentLevel | 시트 상태/제어 프레임 반영 | DriverStateInfo | 입력: DriverSeatPos, PassengerSeatPos, SeatHeatLevel, SeatVentLevel / 출력: DriverStateInfo |
 | Func_115 | Req_115 | WINDOW_CTRL | MirrorFoldState, MirrorHeatState, MirrorAdjAxis | 미러 상태 프레임 반영 | WindowState | 입력: MirrorFoldState, MirrorHeatState, MirrorAdjAxis / 출력: WindowState |
@@ -158,9 +158,9 @@
 | Req_038 | Func_038 | BCM_AMBIENT_CTRL | 고속도로 패턴 정책 |
 | Req_039 | Func_039 | BCM_AMBIENT_CTRL | 유도선 패턴 정책 |
 | Req_040 | Func_040 | CLU_HMI_CTRL | 문구 길이 제한 |
-| Req_041 | Func_041 | SIL_TEST_CTRL | SIL 시나리오 실행 |
-| Req_042 | Func_042 | SIL_TEST_CTRL | CAN+ETH 동시 검증 |
-| Req_043 | Func_043 | SIL_TEST_CTRL | 판정 결과 산출 |
+| Req_041 | Func_041 | VAL_SCENARIO_CTRL | SIL 시나리오 실행 |
+| Req_042 | Func_042 | VAL_SCENARIO_CTRL | CAN+ETH 동시 검증 |
+| Req_043 | Func_043 | VAL_SCENARIO_CTRL | 판정 결과 산출 |
 | Req_101 | Func_101 | ENGINE_CTRL | 시동 상태 반영 |
 | Req_102 | Func_102 | TRANSMISSION_CTRL | 기어 상태 반영 |
 | Req_103 | Func_103 | ACCEL_CTRL | 가속 입력 반영 |
@@ -172,7 +172,7 @@
 | Req_109 | Func_109 | CLUSTER_BASE_CTRL | 클러스터 기본 표시 |
 | Req_110 | Func_110 | DOMAIN_GW_ROUTER | 도메인 게이트웨이 전달 |
 | Req_111 | Func_111 | DOMAIN_BOUNDARY_MGR | 도메인 경계 유지 |
-| Req_112 | Func_112 | VEHICLE_BASE_TEST_CTRL | 차량 기본 기능 SIL 검증 |
+| Req_112 | Func_112 | VAL_BASELINE_CTRL | 차량 기본 기능 SIL 검증 |
 | Req_113 | Func_113 | BODY_GW | 공조 상태 반영 |
 | Req_114 | Func_114 | DRIVER_STATE_CTRL | 시트 상태 반영 |
 | Req_115 | Func_115 | WINDOW_CTRL | 미러 상태 반영 |
@@ -208,8 +208,8 @@
 
 | 시나리오 | 네트워크 전달 체인 |
 |---|---|
-| Chassis 상태 입력 | SIL_TEST_CTRL -> Chassis CAN -> CHASSIS_GW -> ETH_SWITCH -> ADAS_WARN_CTRL |
-| Nav 구간 입력 | SIL_TEST_CTRL -> Infotainment CAN(roadZone/navDirection/zoneDistance/speedLimit) -> INFOTAINMENT_GW -> ETH_SWITCH -> NAV_CONTEXT_MGR/WARN_ARB_MGR |
+| Chassis 상태 입력 | VAL_SCENARIO_CTRL -> Chassis CAN -> CHASSIS_GW -> ETH_SWITCH -> ADAS_WARN_CTRL |
+| Nav 구간 입력 | VAL_SCENARIO_CTRL -> Infotainment CAN(roadZone/navDirection/zoneDistance/speedLimit) -> INFOTAINMENT_GW -> ETH_SWITCH -> NAV_CONTEXT_MGR/WARN_ARB_MGR |
 | 긴급 신호 처리 | EMS_ALERT(Tx) -> ETH_SWITCH -> EMS_ALERT(Rx) -> WARN_ARB_MGR |
 | Ambient 출력 | WARN_ARB_MGR -> ETH_SWITCH -> BODY_GW -> Body CAN -> BCM_AMBIENT_CTRL |
 | Cluster 출력 | WARN_ARB_MGR -> ETH_SWITCH -> IVI_GW -> Infotainment CAN -> CLU_HMI_CTRL |
@@ -235,7 +235,7 @@
 | Controller | `*_CTRL` (기능 판단/제어 역할) | ADAS_WARN_CTRL, BCM_AMBIENT_CTRL, CLU_HMI_CTRL |
 | Manager | `*_MGR` (중재/상태 관리 역할) | NAV_CONTEXT_MGR, WARN_ARB_MGR |
 | Emergency Terminal | `EMS_ALERT` (논리 단말), 내부 모듈은 `EMS_*_TX/RX`로 분리 | EMS_ALERT (internal: EMS_POLICE_TX, EMS_AMB_TX, EMS_ALERT_RX) |
-| Test/SIL | `SIL_*` (검증 제어 역할) | SIL_TEST_CTRL |
+| Test/SIL | `VAL_*` (검증 제어 역할) | VAL_SCENARIO_CTRL |
 
 - 적용 원칙: 상위 문서(03/0301/0302/0303/0304)는 `EMS_ALERT` 논리 식별자를 기본으로 사용하고, 코드/DBC 구현 모듈 표기는 하단 보강표에서만 `EMS_*_TX/RX`로 표기한다.
 
@@ -253,6 +253,7 @@
 
 | 버전 | 날짜 | 변경 사항 |
 |---|---|---|
+| 3.20 | 2026-03-05 | Validation Harness 노드 명칭을 `VAL_SCENARIO_CTRL`/`VAL_BASELINE_CTRL`로 정리하고 `VAL_*` 접두 규칙으로 표기 통일. |
 | 3.19 | 2026-03-03 | ETH_SWITCH 역할을 시스템 관점으로 명확화하고, 구현 관점(헬스 모니터링)은 04 문서에서 분리 관리하도록 정합화. |
 | 3.18 | 2026-03-03 | V2 확장 `Func_121/Func_123` 노드 소유를 `WARN_ARB_MGR`로 정정하고, 노드 표/Req-Func/시나리오 체인을 코드 구현 기준으로 동기화. |
 | 3.17 | 2026-03-02 | 감사 정합 보강: 문서 범위를 `Func_001~Func_124`로 명확화하고 옵션1 설계 vs SIL 임시 CAN 대체 백본 검증 경계 문구를 추가. |
@@ -272,5 +273,5 @@
 | 3.8 | 2026-02-28 | 스쿨존 과속 판정 정합을 위해 NAV/ADAS 입력에 `speedLimit/speedLimitNorm`을 반영하고 Navigation Panel 입력 항목을 확장. |
 | 3.9 | 2026-02-28 | ISO/OEM 정합을 위한 ECU 명명 기준 섹션을 추가하고 노드 접미사 규칙(GW/CTRL/MGR/TX/RX)을 명문화. |
 | 3.10 | 2026-02-28 | 차량 기본 기능 확장 대응으로 기본 차량 ECU 노드와 Req_101~Req_112 / Func_101~Func_112 매핑을 추가. |
-| 3.11 | 2026-02-28 | 03 문서와의 노드 정합을 위해 `VEHICLE_BASE_TEST_CTRL`, `DOMAIN_GW_ROUTER`, `DOMAIN_BOUNDARY_MGR`를 상단 공식 노드 표에 추가. |
+| 3.11 | 2026-02-28 | 03 문서와의 노드 정합을 위해 `VAL_BASELINE_CTRL`, `DOMAIN_GW_ROUTER`, `DOMAIN_BOUNDARY_MGR`를 상단 공식 노드 표에 추가. |
 | 3.12 | 2026-03-01 | 멘토 피드백 반영: EMS 노드를 단일 논리 단말(`EMS_ALERT`)로 통합 표기하고, 내부 TX/RX 모듈은 하단 감사 보강표로 분리. |

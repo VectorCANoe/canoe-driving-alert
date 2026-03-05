@@ -3,8 +3,8 @@
 **Document ID**: PROJ-04-SI
 **ISO 26262 Reference**: Part 6, Cl.8 (Software Unit Design and Implementation)
 **ASPICE Reference**: SWE.3 (Software Detailed Design and Unit Construction)
-**Version**: 2.15
-**Date**: 2026-03-04
+**Version**: 2.16
+**Date**: 2026-03-05
 **Status**: Draft
 **Project Title**: 주행 상황 실시간 경고 시스템
 **Subtitle**: 구간 정보 및 긴급차량 접근 기반 앰비언트·클러스터 경보
@@ -21,11 +21,11 @@
 - 구현 상세는 코드 문법이 아니라 `입력/처리/출력/타이밍/예외` 계약으로 기록한다.
 - 추적 체인은 `Req -> Func -> Flow -> Comm -> Var -> Code -> UT/IT/ST`를 유지한다.
 - 네트워크는 옵션1 아키텍처를 고정한다: `ETH_SWITCH + CHASSIS_GW/INFOTAINMENT_GW/BODY_GW/IVI_GW + 도메인 CAN`.
-- 통신 원본은 분리 관리한다: CAN=`canoe/databases/chassis_can.dbc` + `canoe/databases/powertrain_can.dbc` + `canoe/databases/body_can.dbc` + `canoe/databases/infotainment_can.dbc` + `canoe/databases/test_can.dbc` + `canoe/databases/eth_backbone_can_stub.dbc`, Ethernet(논리 계약)=`canoe/docs/operations/ETH_INTERFACE_CONTRACT.md`.
+- 통신 원본은 분리 관리한다: CAN=`canoe/databases/chassis_can.dbc` + `canoe/databases/powertrain_can.dbc` + `canoe/databases/body_can.dbc` + `canoe/databases/infotainment_can.dbc` + `canoe/databases/eth_backbone_can_stub.dbc` (Validation frame `0x230/0x231`은 `chassis_can.dbc` 통합), Ethernet(논리 계약)=`canoe/docs/operations/ETH_INTERFACE_CONTRACT.md`.
 - 범위 외 항목(OTA/UDS/DoIP)은 구현 대상에서 제외한다.
 - ASPICE SWE.3 BP1~BP8 관점에서 `상세 설계/인터페이스/동적행위/대안평가/추적성/합의/구현규칙`을 명시한다.
 - SIL 단계에서는 Panel/sysvar 경유 자극을 허용하며, 통신 계약(0302/0303/0304)은 유지한 채 ETH `UdpSocket` 기반 입력으로 점진 전환한다.
-- `SIL_TEST_CTRL`/`VEHICLE_BASE_TEST_CTRL`는 Validation Harness이며, `ETH_SWITCH`/도메인 게이트웨이의 통신 변환 역할과 분리한다.
+- `VAL_SCENARIO_CTRL`/`VAL_BASELINE_CTRL`는 Validation Harness이며, `ETH_SWITCH`/도메인 게이트웨이의 통신 변환 역할과 분리한다.
 - `project.sysvars`의 `UiRender/*`, `Driver/gazeActive`, `V2X/policeDispatch`, `V2X/ambulanceDispatch`는 Verification-Harness 입력/렌더 변수로 관리하며 제품 Req 체인(01/03/05~07)과 분리한다.
 - CANoe.CAN 환경에서는 Ethernet 일부 경로(E100/E200 모니터링 및 V2 확장)가 CAN-stub(0x064/0x11F/0x232/0x313/0x314/0x315)로 대체 운반되며, 서비스 해석은 Ethernet 논리 계약 SoT를 우선한다.
 - Panel 구성은 `차량 화면 -> 제어 패널 -> 상태 모니터` 우선순위를 적용하고, UI는 표시/자극 전용 계층으로 유지한다.
@@ -90,7 +90,7 @@ Emergency Source (logical terminal)
 | BCM_AMBIENT_CTRL | 경고 레벨/타입 기반 앰비언트 패턴/색상 출력 | Func_008,009,013~016,033~039 |
 | CLU_HMI_CTRL | 경고 문구/방향/유형 표시 및 중복 억제 | Func_005,019~021,026,040 |
 |  |  | SIL Verification |
-| SIL_TEST_CTRL | 시나리오 실행, CAN+ETH 동시 검증, 결과 기록 | Func_041~043 |
+| VAL_SCENARIO_CTRL | 시나리오 실행, CAN+ETH 동시 검증, 결과 기록 | Func_041~043 |
 
 - 상단 공식표는 감사 일관성을 위해 `EMS_ALERT` 논리 단말 기준으로 표기한다.
 - 내부 구현 모듈(`EMS_POLICE_TX`, `EMS_AMB_TX`, `EMS_ALERT_RX`) 분해는 본문 상세 추적표(3장, 4장)에서 관리한다.
@@ -114,7 +114,7 @@ Emergency Source (logical terminal)
 | MOD_10 | IVI_GW | `canoe/src/capl/output/IVI_GW.can` | ETH->CAN 변환(Cluster) |
 | MOD_11 | BCM_AMBIENT_CTRL | `canoe/src/capl/output/BCM_AMBIENT_CTRL.can` | Ambient 출력 제어 |
 | MOD_12 | CLU_HMI_CTRL | `canoe/src/capl/output/CLU_HMI_CTRL.can` | Cluster 경고 출력 |
-| MOD_13 | SIL_TEST_CTRL | `canoe/src/capl/input/SIL_TEST_CTRL.can` | 테스트 실행/판정 |
+| MOD_13 | VAL_SCENARIO_CTRL | `canoe/src/capl/input/SIL_TEST_CTRL.can` | 테스트 실행/판정 (파일 리네임은 개발팀 이관 범위) |
 | MOD_14 | ETH_SWITCH | `canoe/src/capl/network/ETH_SWITCH.can` | ETH 경로 상태 모니터(Validation/Fail-safe 지원) |
 | MOD_15 | DOMAIN_BOUNDARY_MGR | `canoe/src/capl/ecu/DOMAIN_BOUNDARY_MGR.can` | 도메인 경로 헬스/Fail-safe 게이트 |
 
@@ -164,9 +164,9 @@ Emergency Source (logical terminal)
 | Func_038 | Req_038 | BCM_AMBIENT_CTRL | Flow_007 / Comm_007 / baseZoneContext | Flow_007 / ambientColor, ambientPattern | `MOD_11.F038` | UT_BCM_001 |
 | Func_039 | Req_039 | BCM_AMBIENT_CTRL | Flow_007 / Comm_007 / navDirection, baseZoneContext | Flow_007 / ambientColor, ambientPattern | `MOD_11.F039` | UT_BCM_001 |
 | Func_040 | Req_040 | CLU_HMI_CTRL | Flow_008 / Comm_008 / warningTextCode | Flow_008 / warningTextCode | `MOD_12.F040` | UT_CLU_001 |
-| Func_041 | Req_041 | SIL_TEST_CTRL | Flow_009 / Comm_009 / testScenario | Flow_009 / scenarioResult | `MOD_13.F041` | ST_SIL_001 |
-| Func_042 | Req_042 | SIL_TEST_CTRL | Flow_009 / Comm_009 / testScenario | Flow_009 / scenarioResult | `MOD_13.F042` | ST_SIL_002 |
-| Func_043 | Req_043 | SIL_TEST_CTRL | Flow_009 / Comm_009 / scenarioResult | Flow_009 / scenarioResult | `MOD_13.F043` | ST_RESULT_001 |
+| Func_041 | Req_041 | VAL_SCENARIO_CTRL | Flow_009 / Comm_009 / testScenario | Flow_009 / scenarioResult | `MOD_13.F041` | ST_SIL_001 |
+| Func_042 | Req_042 | VAL_SCENARIO_CTRL | Flow_009 / Comm_009 / testScenario | Flow_009 / scenarioResult | `MOD_13.F042` | ST_SIL_002 |
+| Func_043 | Req_043 | VAL_SCENARIO_CTRL | Flow_009 / Comm_009 / scenarioResult | Flow_009 / scenarioResult | `MOD_13.F043` | ST_RESULT_001 |
 | Func_101 | Req_101 | ENGINE_CTRL | Flow_101 / Comm_101 / IgnitionState, GearInput | Flow_101 / EngineState, EngineRpm | `ENGINE_CTRL.F101` | UT_BASE_PT_001 / IT_BASE_PT_001 |
 | Func_102 | Req_102 | TRANSMISSION_CTRL | Flow_101 / Comm_101 / IgnitionState, GearInput | Flow_101 / GearState | `TRANSMISSION_CTRL.F102` | UT_BASE_PT_001 / IT_BASE_PT_001 |
 | Func_103 | Req_103 | ACCEL_CTRL | Flow_102 / Comm_102 / AccelPedal | Flow_102 / AccelRequest, TorqueRequest | `ACCEL_CTRL.F103` | UT_BASE_CH_001 / IT_BASE_CH_001 |
@@ -178,7 +178,7 @@ Emergency Source (logical terminal)
 | Func_109 | Req_109 | CLUSTER_BASE_CTRL | Flow_104 / Comm_104 / ClusterSpeed, ClusterGear, warningTextCode | Flow_104 / ClusterStatus | `CLUSTER_BASE_CTRL.F109` | UT_BASE_IVI_001 / IT_BASE_IVI_001 |
 | Func_110 | Req_110 | DOMAIN_GW_ROUTER | Flow_105 / Comm_105 / RoutingPolicy, ChassisAliveCnt, BodyAliveCnt, InfoAliveCnt | Flow_105 / BodyGatewayRoute | `DOMAIN_GW_ROUTER.F110` | UT_BASE_GW_001 / IT_BASE_GW_001 |
 | Func_111 | Req_111 | DOMAIN_BOUNDARY_MGR | Flow_105 / Comm_105 / RoutingPolicy, BoundaryStatus | Flow_105 / BoundaryStatus | `MOD_15.F111` | UT_BASE_GW_001 / IT_BASE_GW_001 |
-| Func_112 | Req_112 | VEHICLE_BASE_TEST_CTRL | Flow_106 / Comm_106 / BaseScenarioId | Flow_106 / BaseScenarioResult | `VEHICLE_BASE_TEST_CTRL.F112` | UT_BASE_TEST_001 / IT_BASE_DIAG_001 |
+| Func_112 | Req_112 | VAL_BASELINE_CTRL | Flow_106 / Comm_106 / BaseScenarioId | Flow_106 / BaseScenarioResult | `VAL_BASELINE_CTRL.F112` | UT_BASE_TEST_001 / IT_BASE_DIAG_001 |
 | Func_113 | Req_113 | BODY_GW | Flow_202 / Comm_202 / CabinSetTemp, BlowerLevel, AcCompressorReq, VentMode | Flow_202 / CabinTemp | `MOD_09.F113` | UT_BASE_EXT_BODY_001 / IT_BASE_EXT_BODY_001 |
 | Func_114 | Req_114 | DRIVER_STATE_CTRL | Flow_202 / Comm_202 / DriverSeatPos, PassengerSeatPos, SeatHeatLevel, SeatVentLevel | Flow_202 / DriverStateInfo | `DRIVER_STATE_CTRL.F114` | UT_BASE_EXT_BODY_001 / IT_BASE_EXT_BODY_001 |
 | Func_115 | Req_115 | WINDOW_CTRL | Flow_202 / Comm_202 / MirrorFoldState, MirrorHeatState, MirrorAdjAxis | Flow_202 / WindowState | `WINDOW_CTRL.F115` | UT_BASE_EXT_BODY_001 / IT_BASE_EXT_BODY_001 |
@@ -224,8 +224,8 @@ Emergency Source (logical terminal)
 | Var_022 | ambientColor | BODY_GW, BCM_AMBIENT_CTRL | Flow_007 / Comm_007 |
 | Var_023 | ambientPattern | BODY_GW, BCM_AMBIENT_CTRL | Flow_007 / Comm_007 |
 | Var_024 | warningTextCode | IVI_GW, CLU_HMI_CTRL | Flow_008 / Comm_008 |
-| Var_025 | testScenario | SIL_TEST_CTRL | Flow_009 / Comm_009 |
-| Var_026 | scenarioResult | SIL_TEST_CTRL | Flow_009 / Comm_009 |
+| Var_025 | testScenario | VAL_SCENARIO_CTRL | Flow_009 / Comm_009 |
+| Var_026 | scenarioResult | VAL_SCENARIO_CTRL | Flow_009 / Comm_009 |
 | Var_027 | lastEmergencyRxMs | EMS_ALERT_RX | Flow_006 / Comm_006 |
 | Var_028 | duplicatePopupGuard | CLU_HMI_CTRL | Flow_008 / Comm_008 |
 | Var_029 | arbitrationSnapshotId | WARN_ARB_MGR | Flow_006 / Comm_006 |
@@ -282,7 +282,7 @@ Emergency Source (logical terminal)
 | IF_005 | WARN_ARB_MGR | BODY_GW, IVI_GW | selectedAlertLevel, selectedAlertType, timeoutClear | Flow_006~008 / Comm_006~008 | 50ms 출력 |
 | IF_006 | BODY_GW | BCM_AMBIENT_CTRL | ambientMode, ambientColor, ambientPattern | Flow_007 / Comm_007 | CAN ACK 실패 시 Fail-safe 적용 |
 | IF_007 | IVI_GW | CLU_HMI_CTRL | warningTextCode | Flow_008 / Comm_008 | CAN ACK 실패 시 최소 안내 코드 |
-| IF_008 | SIL_TEST_CTRL | SIL_TEST_CTRL(Log/Panel) | testScenario, scenarioResult | Flow_009 / Comm_009 | Event 기반 기록 |
+| IF_008 | VAL_SCENARIO_CTRL | VAL_SCENARIO_CTRL(Log/Panel) | testScenario, scenarioResult | Flow_009 / Comm_009 | Event 기반 기록 |
 
 ---
 
@@ -352,6 +352,7 @@ Emergency Source (logical terminal)
 
 | 버전 | 날짜 | 변경 사항 |
 |---|---|---|
+| 2.16 | 2026-03-05 | Validation 노드 명칭(`VAL_SCENARIO_CTRL`/`VAL_BASELINE_CTRL`)과 DBC 통합 정책(`0x230/0x231 -> chassis_can.dbc`)을 구현 추적 표/원칙에 반영. |
 | 2.15 | 2026-03-04 | 멘토링 체크리스트 반영: Panel 구성 우선순위(`차량 화면 -> 제어 패널 -> 상태 모니터`)와 UI-로직 분리 원칙을 작성 원칙에 명시. |
 | 2.14 | 2026-03-04 | 구현 원칙 정합 보강: 통신 SoT에 `eth_backbone_can_stub.dbc`를 추가하고, CANoe.CAN 환경의 CAN-stub 대체 운반 규칙(0x064/0x11F/0x232/0x313/0x314/0x315)과 Ethernet 논리 계약 우선 해석 원칙을 명시. |
 | 2.13 | 2026-03-03 | 감사 추적성 보강: `Func_101~119` / `Req_101~119` 기능-구현 상세 행을 추가하고, UT/IT 링크(`UT_BASE_*`, `IT_BASE_*`)를 1:1로 연결. |
