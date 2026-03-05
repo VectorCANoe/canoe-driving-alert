@@ -31,204 +31,204 @@ BS_:
 
 BU_: VAL_SCENARIO_CTRL INFOTAINMENT_GW IVI_GW NAV_CTX_MGR CLU_HMI_CTRL CLU_BASE_CTRL DOMAIN_BOUNDARY_MGR Vector__XXX
 
-BO_ 272 frmNavContextCanMsg: 3 VAL_SCENARIO_CTRL
+BO_ 675 frmNavContextCanMsg: 3 VAL_SCENARIO_CTRL
  SG_ gRoadZone     : 0|2@1+ (1,0) [0|3]    "" INFOTAINMENT_GW,NAV_CTX_MGR
  SG_ gNavDirection : 2|2@1+ (1,0) [0|3]    "" INFOTAINMENT_GW,NAV_CTX_MGR
  SG_ Reserved0     : 4|4@1+ (1,0) [0|0]    "" Vector__XXX
  SG_ gZoneDistance : 8|8@1+ (1,0) [0|255]  "m" INFOTAINMENT_GW,NAV_CTX_MGR
  SG_ gSpeedLimit   : 16|8@1+ (1,0) [0|255] "km/h" INFOTAINMENT_GW,NAV_CTX_MGR
 
-BO_ 544 frmClusterWarningMsg: 1 IVI_GW
+BO_ 640 frmClusterWarningMsg: 1 IVI_GW
  SG_ WarningTextCode : 0|8@1+ (1,0) [0|255] "" CLU_HMI_CTRL
 
-BO_ 545 frmClusterBaseStateMsg: 2 IVI_GW
+BO_ 641 frmClusterBaseStateMsg: 2 IVI_GW
  SG_ ClusterSpeed     : 0|8@1+ (1,0) [0|255] "km/h" CLU_BASE_CTRL
  SG_ ClusterGear      : 8|3@1+ (1,0) [0|7] "" CLU_BASE_CTRL
  SG_ ClusterStatus    : 11|5@1+ (1,0) [0|31] "" CLU_BASE_CTRL
 
-BO_ 546 frmNaviGuideStateMsg: 1 INFOTAINMENT_GW
+BO_ 642 frmNaviGuideStateMsg: 1 INFOTAINMENT_GW
  SG_ GuideLaneState   : 0|2@1+ (1,0) [0|3] "" NAV_CTX_MGR
  SG_ GuideConfidence  : 2|6@1+ (1,0) [0|63] "" NAV_CTX_MGR
 
-BO_ 547 frmMediaStateMsg: 2 IVI_GW
+BO_ 643 frmMediaStateMsg: 2 IVI_GW
  SG_ MediaSource      : 0|3@1+ (1,0) [0|7] "" CLU_HMI_CTRL
  SG_ MediaState       : 3|3@1+ (1,0) [0|7] "" CLU_HMI_CTRL
  SG_ MuteState        : 6|1@1+ (1,0) [0|1] "" CLU_HMI_CTRL
  SG_ Reserved0        : 7|1@1+ (1,0) [0|0] "" Vector__XXX
  SG_ VolumeLevel      : 8|8@1+ (1,0) [0|100] "%" CLU_HMI_CTRL
 
-BO_ 548 frmCallStateMsg: 2 IVI_GW
+BO_ 644 frmCallStateMsg: 2 IVI_GW
  SG_ CallState        : 0|3@1+ (1,0) [0|7] "" CLU_HMI_CTRL
  SG_ MicMute          : 3|1@1+ (1,0) [0|1] "" CLU_HMI_CTRL
  SG_ SignalQuality    : 4|4@1+ (1,0) [0|15] "" CLU_HMI_CTRL
  SG_ BtDeviceCount    : 8|4@1+ (1,0) [0|15] "" CLU_HMI_CTRL
  SG_ Reserved0        : 12|4@1+ (1,0) [0|0] "" Vector__XXX
 
-BO_ 549 frmNavigationRouteMsg: 3 INFOTAINMENT_GW
+BO_ 645 frmNavigationRouteMsg: 3 INFOTAINMENT_GW
  SG_ RouteClass       : 0|2@1+ (1,0) [0|3] "" NAV_CTX_MGR
  SG_ GuideType        : 2|2@1+ (1,0) [0|3] "" NAV_CTX_MGR
  SG_ Reserved0        : 4|4@1+ (1,0) [0|0] "" Vector__XXX
  SG_ RouteProgress    : 8|8@1+ (1,0) [0|100] "%" NAV_CTX_MGR
  SG_ EtaMinutes       : 16|8@1+ (1,0) [0|255] "min" NAV_CTX_MGR
 
-BO_ 550 frmClusterThemeMsg: 1 IVI_GW
+BO_ 646 frmClusterThemeMsg: 1 IVI_GW
  SG_ ThemeMode        : 0|3@1+ (1,0) [0|7] "" CLU_BASE_CTRL
  SG_ ClusterBrightness : 3|5@1+ (1,0) [0|31] "" CLU_BASE_CTRL
 
-BO_ 551 frmHmiPopupStateMsg: 1 IVI_GW
+BO_ 647 frmHmiPopupStateMsg: 1 IVI_GW
  SG_ PopupType        : 0|4@1+ (1,0) [0|15] "" CLU_HMI_CTRL
  SG_ PopupPriority    : 4|3@1+ (1,0) [0|7] "" CLU_HMI_CTRL
  SG_ PopupActive      : 7|1@1+ (1,0) [0|1] "" CLU_HMI_CTRL
 
-BO_ 552 frmInfotainmentHealthMsg: 2 INFOTAINMENT_GW
+BO_ 648 frmInfotainmentHealthMsg: 2 INFOTAINMENT_GW
  SG_ InfoAliveCnt     : 0|8@1+ (1,0) [0|255] "" VAL_SCENARIO_CTRL,DOMAIN_BOUNDARY_MGR
  SG_ InfoDiagState    : 8|4@1+ (1,0) [0|15] "" VAL_SCENARIO_CTRL,DOMAIN_BOUNDARY_MGR
  SG_ InfoFailCode     : 12|4@1+ (1,0) [0|15] "" VAL_SCENARIO_CTRL,DOMAIN_BOUNDARY_MGR
 
-BO_ 608 frmAudioFocusMsg: 1 IVI_GW
+BO_ 649 frmAudioFocusMsg: 1 IVI_GW
  SG_ AudioFocusOwner  : 0|3@1+ (1,0) [0|7] "" CLU_HMI_CTRL
  SG_ AudioDuckingLvl  : 3|3@1+ (1,0) [0|7] "" CLU_HMI_CTRL
  SG_ Reserved0        : 6|2@1+ (1,0) [0|0] "" Vector__XXX
 
-BO_ 609 frmVoiceAssistStateMsg: 1 IVI_GW
+BO_ 650 frmVoiceAssistStateMsg: 1 IVI_GW
  SG_ VoiceAssistState : 0|3@1+ (1,0) [0|7] "" CLU_HMI_CTRL
  SG_ WakeWordState    : 3|1@1+ (1,0) [0|1] "" CLU_HMI_CTRL
  SG_ Reserved0        : 4|4@1+ (1,0) [0|0] "" Vector__XXX
 
-BO_ 610 frmMapRenderStateMsg: 2 INFOTAINMENT_GW
+BO_ 651 frmMapRenderStateMsg: 2 INFOTAINMENT_GW
  SG_ MapRenderState   : 0|3@1+ (1,0) [0|7] "" NAV_CTX_MGR
  SG_ ZoomLevel        : 3|5@1+ (1,0) [0|31] "" NAV_CTX_MGR
  SG_ TileLoadPercent  : 8|8@1+ (1,0) [0|100] "%" NAV_CTX_MGR
 
-BO_ 611 frmRouteAlertMsg: 2 INFOTAINMENT_GW
+BO_ 652 frmRouteAlertMsg: 2 INFOTAINMENT_GW
  SG_ RouteAlertType   : 0|4@1+ (1,0) [0|15] "" NAV_CTX_MGR
  SG_ RouteAlertPrio   : 4|3@1+ (1,0) [0|7] "" NAV_CTX_MGR
  SG_ RouteAlertActive : 7|1@1+ (1,0) [0|1] "" NAV_CTX_MGR
  SG_ RouteAlertEta    : 8|8@1+ (1,0) [0|255] "s" NAV_CTX_MGR
 
-BO_ 612 frmTrafficEventMsg: 3 INFOTAINMENT_GW
+BO_ 653 frmTrafficEventMsg: 3 INFOTAINMENT_GW
  SG_ TrafficEventType : 0|8@1+ (1,0) [0|255] "" NAV_CTX_MGR
  SG_ TrafficSeverity  : 8|8@1+ (1,0) [0|255] "" NAV_CTX_MGR
  SG_ TrafficDistance  : 16|8@1+ (1,0) [0|255] "m" NAV_CTX_MGR
 
-BO_ 613 frmPhoneProjectionMsg: 1 IVI_GW
+BO_ 654 frmPhoneProjectionMsg: 1 IVI_GW
  SG_ ProjectionType   : 0|2@1+ (1,0) [0|3] "" CLU_HMI_CTRL
  SG_ ProjectionState  : 2|2@1+ (1,0) [0|3] "" CLU_HMI_CTRL
  SG_ Reserved0        : 4|4@1+ (1,0) [0|0] "" Vector__XXX
 
-BO_ 614 frmClusterNotifMsg: 2 IVI_GW
+BO_ 655 frmClusterNotifMsg: 2 IVI_GW
  SG_ ClusterNotifType : 0|8@1+ (1,0) [0|255] "" CLU_HMI_CTRL
  SG_ ClusterNotifArg  : 8|8@1+ (1,0) [0|255] "" CLU_HMI_CTRL
 
-BO_ 615 frmIviDiagReqMsg: 3 VAL_SCENARIO_CTRL
+BO_ 679 frmIviDiagReqMsg: 3 VAL_SCENARIO_CTRL
  SG_ IviDiagServiceId : 0|8@1+ (1,0) [0|255] "" INFOTAINMENT_GW
  SG_ IviDiagDidHigh   : 8|8@1+ (1,0) [0|255] "" INFOTAINMENT_GW
  SG_ IviDiagDidLow    : 16|8@1+ (1,0) [0|255] "" INFOTAINMENT_GW
 
-BO_ 616 frmIviDiagResMsg: 3 INFOTAINMENT_GW
+BO_ 656 frmIviDiagResMsg: 3 INFOTAINMENT_GW
  SG_ IviDiagRespCode  : 0|8@1+ (1,0) [0|255] "" VAL_SCENARIO_CTRL
  SG_ IviDiagData0     : 8|8@1+ (1,0) [0|255] "" VAL_SCENARIO_CTRL
  SG_ IviDiagData1     : 16|8@1+ (1,0) [0|255] "" VAL_SCENARIO_CTRL
 
-BO_ 617 frmMediaMetaMsg: 2 IVI_GW
+BO_ 657 frmMediaMetaMsg: 2 IVI_GW
  SG_ MediaTrackType   : 0|4@1+ (1,0) [0|15] "" CLU_HMI_CTRL
  SG_ MediaRepeatMode  : 4|2@1+ (1,0) [0|3] "" CLU_HMI_CTRL
  SG_ MediaShuffleMode : 6|2@1+ (1,0) [0|3] "" CLU_HMI_CTRL
  SG_ MediaRemainTime  : 8|8@1+ (1,0) [0|255] "s" CLU_HMI_CTRL
 
-BO_ 618 frmSpeechTtsStateMsg: 2 IVI_GW
+BO_ 658 frmSpeechTtsStateMsg: 2 IVI_GW
  SG_ TtsState         : 0|3@1+ (1,0) [0|7] "" CLU_HMI_CTRL
  SG_ TtsPriority      : 3|3@1+ (1,0) [0|7] "" CLU_HMI_CTRL
  SG_ Reserved0        : 6|2@1+ (1,0) [0|0] "" Vector__XXX
  SG_ TtsQueueDepth    : 8|8@1+ (1,0) [0|255] "" CLU_HMI_CTRL
 
-BO_ 619 frmConnectivityStateMsg: 2 INFOTAINMENT_GW
+BO_ 659 frmConnectivityStateMsg: 2 INFOTAINMENT_GW
  SG_ ConnectivityType : 0|3@1+ (1,0) [0|7] "" NAV_CTX_MGR
  SG_ ConnectivityState: 3|3@1+ (1,0) [0|7] "" NAV_CTX_MGR
  SG_ SignalBars       : 8|4@1+ (1,0) [0|15] "" NAV_CTX_MGR
  SG_ Reserved0        : 12|4@1+ (1,0) [0|0] "" Vector__XXX
 
-BO_ 620 frmIviHealthDetailMsg: 2 INFOTAINMENT_GW
+BO_ 660 frmIviHealthDetailMsg: 2 INFOTAINMENT_GW
  SG_ IviCpuLoad       : 0|8@1+ (1,0) [0|100] "%" VAL_SCENARIO_CTRL
  SG_ IviMemLoad       : 8|8@1+ (1,0) [0|100] "%" VAL_SCENARIO_CTRL
 
-BO_ 621 frmClusterSyncStateMsg: 2 IVI_GW
+BO_ 661 frmClusterSyncStateMsg: 2 IVI_GW
  SG_ ClusterSyncState : 0|4@1+ (1,0) [0|15] "" CLU_BASE_CTRL
  SG_ ClusterSyncError : 4|4@1+ (1,0) [0|15] "" CLU_BASE_CTRL
  SG_ ClusterSyncAge   : 8|8@1+ (1,0) [0|255] "ms" CLU_BASE_CTRL
 
-CM_ BO_ 272 "Flow_003 navigation context input.";
-CM_ BO_ 544 "Flow_008 cluster warning output.";
-CM_ BO_ 545 "Infotainment baseline: cluster base display payload (speed/gear/status).";
-CM_ BO_ 546 "Infotainment baseline: lane guidance state and confidence.";
-CM_ BO_ 547 "Infotainment baseline: media source/state/mute/volume.";
-CM_ BO_ 548 "Infotainment baseline: call state, mute, and signal quality.";
-CM_ BO_ 549 "Infotainment baseline: route class/progress/ETA.";
-CM_ BO_ 550 "Infotainment baseline: cluster theme and brightness.";
-CM_ BO_ 551 "Infotainment baseline: popup type/priority/active flag.";
-CM_ BO_ 552 "Infotainment health/diagnostic state.";
-CM_ BO_ 608 "Comm_203: audio focus extension.";
-CM_ BO_ 609 "Comm_203: voice assistant state extension.";
-CM_ BO_ 610 "Comm_203: map render state extension.";
-CM_ BO_ 611 "Comm_203: route alert extension.";
-CM_ BO_ 612 "Comm_203: traffic event extension.";
-CM_ BO_ 613 "Comm_203: phone projection extension.";
-CM_ BO_ 614 "Comm_203: cluster notification extension.";
-CM_ BO_ 615 "Comm_205: IVI diagnostic request.";
-CM_ BO_ 616 "Comm_205: IVI diagnostic response.";
-CM_ BO_ 617 "Comm_203: media metadata extension.";
-CM_ BO_ 618 "Comm_203: speech TTS state extension.";
-CM_ BO_ 619 "Comm_203: connectivity state extension.";
-CM_ BO_ 620 "Comm_205: IVI health detail extension.";
-CM_ BO_ 621 "Comm_203: cluster sync state extension.";
+CM_ BO_ 675 "Flow_003 navigation context input.";
+CM_ BO_ 640 "Flow_008 cluster warning output.";
+CM_ BO_ 641 "Infotainment baseline: cluster base display payload (speed/gear/status).";
+CM_ BO_ 642 "Infotainment baseline: lane guidance state and confidence.";
+CM_ BO_ 643 "Infotainment baseline: media source/state/mute/volume.";
+CM_ BO_ 644 "Infotainment baseline: call state, mute, and signal quality.";
+CM_ BO_ 645 "Infotainment baseline: route class/progress/ETA.";
+CM_ BO_ 646 "Infotainment baseline: cluster theme and brightness.";
+CM_ BO_ 647 "Infotainment baseline: popup type/priority/active flag.";
+CM_ BO_ 648 "Infotainment health/diagnostic state.";
+CM_ BO_ 649 "Comm_203: audio focus extension.";
+CM_ BO_ 650 "Comm_203: voice assistant state extension.";
+CM_ BO_ 651 "Comm_203: map render state extension.";
+CM_ BO_ 652 "Comm_203: route alert extension.";
+CM_ BO_ 653 "Comm_203: traffic event extension.";
+CM_ BO_ 654 "Comm_203: phone projection extension.";
+CM_ BO_ 655 "Comm_203: cluster notification extension.";
+CM_ BO_ 679 "Comm_205: IVI diagnostic request.";
+CM_ BO_ 656 "Comm_205: IVI diagnostic response.";
+CM_ BO_ 657 "Comm_203: media metadata extension.";
+CM_ BO_ 658 "Comm_203: speech TTS state extension.";
+CM_ BO_ 659 "Comm_203: connectivity state extension.";
+CM_ BO_ 660 "Comm_205: IVI health detail extension.";
+CM_ BO_ 661 "Comm_203: cluster sync state extension.";
 
 BA_DEF_ BO_ "GenMsgCycleTime" INT 0 10000;
 BA_DEF_DEF_ "GenMsgCycleTime" 0;
-BA_ "GenMsgCycleTime" BO_ 272 100;
-BA_ "GenMsgCycleTime" BO_ 544 50;
-BA_ "GenMsgCycleTime" BO_ 545 50;
-BA_ "GenMsgCycleTime" BO_ 546 100;
-BA_ "GenMsgCycleTime" BO_ 547 100;
-BA_ "GenMsgCycleTime" BO_ 548 100;
-BA_ "GenMsgCycleTime" BO_ 549 100;
-BA_ "GenMsgCycleTime" BO_ 550 50;
-BA_ "GenMsgCycleTime" BO_ 551 50;
-BA_ "GenMsgCycleTime" BO_ 552 100;
-BA_ "GenMsgCycleTime" BO_ 608 50;
-BA_ "GenMsgCycleTime" BO_ 609 50;
-BA_ "GenMsgCycleTime" BO_ 610 50;
-BA_ "GenMsgCycleTime" BO_ 611 50;
-BA_ "GenMsgCycleTime" BO_ 612 100;
-BA_ "GenMsgCycleTime" BO_ 613 50;
-BA_ "GenMsgCycleTime" BO_ 614 50;
-BA_ "GenMsgCycleTime" BO_ 615 0;
-BA_ "GenMsgCycleTime" BO_ 616 0;
-BA_ "GenMsgCycleTime" BO_ 617 50;
-BA_ "GenMsgCycleTime" BO_ 618 50;
-BA_ "GenMsgCycleTime" BO_ 619 100;
-BA_ "GenMsgCycleTime" BO_ 620 100;
-BA_ "GenMsgCycleTime" BO_ 621 50;
+BA_ "GenMsgCycleTime" BO_ 675 100;
+BA_ "GenMsgCycleTime" BO_ 640 50;
+BA_ "GenMsgCycleTime" BO_ 641 50;
+BA_ "GenMsgCycleTime" BO_ 642 100;
+BA_ "GenMsgCycleTime" BO_ 643 100;
+BA_ "GenMsgCycleTime" BO_ 644 100;
+BA_ "GenMsgCycleTime" BO_ 645 100;
+BA_ "GenMsgCycleTime" BO_ 646 50;
+BA_ "GenMsgCycleTime" BO_ 647 50;
+BA_ "GenMsgCycleTime" BO_ 648 100;
+BA_ "GenMsgCycleTime" BO_ 649 50;
+BA_ "GenMsgCycleTime" BO_ 650 50;
+BA_ "GenMsgCycleTime" BO_ 651 50;
+BA_ "GenMsgCycleTime" BO_ 652 50;
+BA_ "GenMsgCycleTime" BO_ 653 100;
+BA_ "GenMsgCycleTime" BO_ 654 50;
+BA_ "GenMsgCycleTime" BO_ 655 50;
+BA_ "GenMsgCycleTime" BO_ 679 0;
+BA_ "GenMsgCycleTime" BO_ 656 0;
+BA_ "GenMsgCycleTime" BO_ 657 50;
+BA_ "GenMsgCycleTime" BO_ 658 50;
+BA_ "GenMsgCycleTime" BO_ 659 100;
+BA_ "GenMsgCycleTime" BO_ 660 100;
+BA_ "GenMsgCycleTime" BO_ 661 50;
 
-VAL_ 272 gRoadZone
+VAL_ 675 gRoadZone
   0 "Normal"
   1 "SchoolZone"
   2 "Highway"
   3 "Guide" ;
 
-VAL_ 272 gNavDirection
+VAL_ 675 gNavDirection
   0 "None"
   1 "Left"
   2 "Right"
   3 "Other" ;
 
 
-VAL_ 546 GuideLaneState
+VAL_ 642 GuideLaneState
   0 "None"
   1 "Left"
   2 "Right"
   3 "Merge" ;
 
-VAL_ 547 MediaSource
+VAL_ 643 MediaSource
   0 "None"
   1 "Radio"
   2 "Bluetooth"
@@ -238,7 +238,7 @@ VAL_ 547 MediaSource
   6 "Reserved6"
   7 "Reserved7" ;
 
-VAL_ 547 MediaState
+VAL_ 643 MediaState
   0 "Stopped"
   1 "Playing"
   2 "Paused"
@@ -248,11 +248,11 @@ VAL_ 547 MediaState
   6 "Reserved6"
   7 "Reserved7" ;
 
-VAL_ 547 MuteState
+VAL_ 643 MuteState
   0 "Unmuted"
   1 "Muted" ;
 
-VAL_ 548 CallState
+VAL_ 644 CallState
   0 "Idle"
   1 "Ringing"
   2 "Connected"
@@ -262,23 +262,23 @@ VAL_ 548 CallState
   6 "Reserved6"
   7 "Reserved7" ;
 
-VAL_ 548 MicMute
+VAL_ 644 MicMute
   0 "Off"
   1 "On" ;
 
-VAL_ 549 RouteClass
+VAL_ 645 RouteClass
   0 "Local"
   1 "Primary"
   2 "Highway"
   3 "Mixed" ;
 
-VAL_ 549 GuideType
+VAL_ 645 GuideType
   0 "None"
   1 "Turn"
   2 "LaneChange"
   3 "Exit" ;
 
-VAL_ 550 ThemeMode
+VAL_ 646 ThemeMode
   0 "Default"
   1 "Sport"
   2 "Comfort"
@@ -288,6 +288,6 @@ VAL_ 550 ThemeMode
   6 "Reserved6"
   7 "Reserved7" ;
 
-VAL_ 551 PopupActive
+VAL_ 647 PopupActive
   0 "Inactive"
   1 "Active" ;

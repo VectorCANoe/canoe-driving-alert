@@ -31,186 +31,186 @@ BS_:
 
 BU_: BODY_GW AMBIENT_CTRL HAZARD_CTRL WINDOW_CTRL DRV_STATE_MGR WARN_ARB_MGR DOMAIN_BOUNDARY_MGR VAL_SCENARIO_CTRL Vector__XXX
 
-BO_ 528 frmAmbientControlMsg: 1 BODY_GW
+BO_ 608 frmAmbientControlMsg: 1 BODY_GW
  SG_ AmbientMode    : 0|3@1+ (1,0) [0|7] "" AMBIENT_CTRL
  SG_ AmbientColor   : 3|3@1+ (1,0) [0|7] "" AMBIENT_CTRL
  SG_ AmbientPattern : 6|2@1+ (1,0) [0|3] "" AMBIENT_CTRL
 
-BO_ 529 frmHazardControlMsg: 1 BODY_GW
+BO_ 609 frmHazardControlMsg: 1 BODY_GW
  SG_ HazardSwitch     : 0|1@1+ (1,0) [0|1] "" HAZARD_CTRL
  SG_ HazardState      : 1|1@1+ (1,0) [0|1] "" HAZARD_CTRL
  SG_ Reserved0        : 2|6@1+ (1,0) [0|0] "" Vector__XXX
 
-BO_ 530 frmWindowControlMsg: 1 BODY_GW
+BO_ 610 frmWindowControlMsg: 1 BODY_GW
  SG_ WindowCommand    : 0|2@1+ (1,0) [0|3] "" WINDOW_CTRL
  SG_ WindowState      : 2|2@1+ (1,0) [0|3] "" WINDOW_CTRL
  SG_ Reserved0        : 4|4@1+ (1,0) [0|0] "" Vector__XXX
 
-BO_ 531 frmDriverStateMsg: 1 BODY_GW
+BO_ 611 frmDriverStateMsg: 1 BODY_GW
  SG_ DriverStateLevel : 0|3@1+ (1,0) [0|7] "" DRV_STATE_MGR
  SG_ DriverStateInfo  : 3|3@1+ (1,0) [0|7] "" DRV_STATE_MGR
  SG_ Reserved0        : 6|2@1+ (1,0) [0|0] "" Vector__XXX
 
-BO_ 532 frmDoorStateMsg: 2 BODY_GW
+BO_ 612 frmDoorStateMsg: 2 BODY_GW
  SG_ DoorStateMask    : 0|8@1+ (1,0) [0|255] "" WINDOW_CTRL,DRV_STATE_MGR
  SG_ DoorLockState    : 8|2@1+ (1,0) [0|3] "" WINDOW_CTRL,DRV_STATE_MGR
  SG_ ChildLockState   : 10|1@1+ (1,0) [0|1] "" WINDOW_CTRL,DRV_STATE_MGR
  SG_ DoorOpenWarn     : 11|1@1+ (1,0) [0|1] "" WINDOW_CTRL,DRV_STATE_MGR
  SG_ Reserved0        : 12|4@1+ (1,0) [0|0] "" Vector__XXX
 
-BO_ 533 frmLampControlMsg: 1 BODY_GW
+BO_ 613 frmLampControlMsg: 1 BODY_GW
  SG_ HeadLampState    : 0|2@1+ (1,0) [0|3] "" AMBIENT_CTRL
  SG_ TailLampState    : 2|2@1+ (1,0) [0|3] "" AMBIENT_CTRL
  SG_ TurnLampState    : 4|2@1+ (1,0) [0|3] "" AMBIENT_CTRL
  SG_ HazardLampReq    : 6|1@1+ (1,0) [0|1] "" HAZARD_CTRL
  SG_ Reserved0        : 7|1@1+ (1,0) [0|0] "" Vector__XXX
 
-BO_ 534 frmWiperStateMsg: 1 BODY_GW
+BO_ 614 frmWiperStateMsg: 1 BODY_GW
  SG_ FrontWiperState  : 0|2@1+ (1,0) [0|3] "" AMBIENT_CTRL
  SG_ RearWiperState   : 2|2@1+ (1,0) [0|3] "" AMBIENT_CTRL
  SG_ WiperInterval    : 4|4@1+ (1,0) [0|15] "" AMBIENT_CTRL
 
-BO_ 535 frmSeatBeltStateMsg: 1 DRV_STATE_MGR
+BO_ 615 frmSeatBeltStateMsg: 1 DRV_STATE_MGR
  SG_ DriverSeatBelt   : 0|1@1+ (1,0) [0|1] "" BODY_GW,AMBIENT_CTRL
  SG_ PassengerSeatBelt : 1|1@1+ (1,0) [0|1] "" BODY_GW,AMBIENT_CTRL
  SG_ RearSeatBelt     : 2|2@1+ (1,0) [0|3] "" BODY_GW,AMBIENT_CTRL
  SG_ SeatBeltWarnLvl  : 4|2@1+ (1,0) [0|3] "" BODY_GW,AMBIENT_CTRL
  SG_ Reserved0        : 6|2@1+ (1,0) [0|0] "" Vector__XXX
 
-BO_ 536 frmCabinAirStateMsg: 2 DRV_STATE_MGR
+BO_ 616 frmCabinAirStateMsg: 2 DRV_STATE_MGR
  SG_ CabinTemp        : 0|8@1+ (1,0) [0|100] "degC" BODY_GW
  SG_ AirQualityIndex  : 8|8@1+ (1,0) [0|255] "" BODY_GW
 
-BO_ 537 frmBodyHealthMsg: 2 BODY_GW
+BO_ 617 frmBodyHealthMsg: 2 BODY_GW
  SG_ BodyAliveCnt     : 0|8@1+ (1,0) [0|255] "" VAL_SCENARIO_CTRL,DOMAIN_BOUNDARY_MGR
  SG_ BodyDiagState    : 8|4@1+ (1,0) [0|15] "" VAL_SCENARIO_CTRL,DOMAIN_BOUNDARY_MGR
  SG_ BodyFailCode     : 12|4@1+ (1,0) [0|15] "" VAL_SCENARIO_CTRL,DOMAIN_BOUNDARY_MGR
 
-BO_ 576 frmHvacStateMsg: 2 BODY_GW
+BO_ 618 frmHvacStateMsg: 2 BODY_GW
  SG_ CabinSetTemp     : 0|8@1+ (1,0) [0|100] "degC" DRV_STATE_MGR
  SG_ BlowerLevel      : 8|4@1+ (1,0) [0|15] "" DRV_STATE_MGR
  SG_ AcCompressorOn   : 12|1@1+ (1,0) [0|1] "" DRV_STATE_MGR
  SG_ Reserved0        : 13|3@1+ (1,0) [0|0] "" Vector__XXX
 
-BO_ 577 frmHvacActuatorMsg: 2 BODY_GW
+BO_ 619 frmHvacActuatorMsg: 2 BODY_GW
  SG_ VentMode         : 0|3@1+ (1,0) [0|7] "" DRV_STATE_MGR
  SG_ RecircMode       : 3|1@1+ (1,0) [0|1] "" DRV_STATE_MGR
  SG_ DefogMode        : 4|1@1+ (1,0) [0|1] "" DRV_STATE_MGR
  SG_ Reserved0        : 5|3@1+ (1,0) [0|0] "" Vector__XXX
  SG_ FanRpmStep       : 8|8@1+ (1,0) [0|255] "" DRV_STATE_MGR
 
-BO_ 578 frmMirrorStateMsg: 1 BODY_GW
+BO_ 620 frmMirrorStateMsg: 1 BODY_GW
  SG_ MirrorFoldState  : 0|2@1+ (1,0) [0|3] "" WINDOW_CTRL
  SG_ MirrorHeatState  : 2|1@1+ (1,0) [0|1] "" WINDOW_CTRL
  SG_ MirrorAdjustAxis : 3|2@1+ (1,0) [0|3] "" WINDOW_CTRL
  SG_ Reserved0        : 5|3@1+ (1,0) [0|0] "" Vector__XXX
 
-BO_ 579 frmSeatStateMsg: 2 DRV_STATE_MGR
+BO_ 621 frmSeatStateMsg: 2 DRV_STATE_MGR
  SG_ DriverSeatPos    : 0|8@1+ (1,0) [0|255] "" BODY_GW
  SG_ PassengerSeatPos : 8|8@1+ (1,0) [0|255] "" BODY_GW
 
-BO_ 580 frmSeatControlMsg: 2 DRV_STATE_MGR
+BO_ 622 frmSeatControlMsg: 2 DRV_STATE_MGR
  SG_ DriverSeatCmd    : 0|4@1+ (1,0) [0|15] "" BODY_GW
  SG_ PassengerSeatCmd : 4|4@1+ (1,0) [0|15] "" BODY_GW
  SG_ SeatHeatLevel    : 8|4@1+ (1,0) [0|15] "" BODY_GW
  SG_ SeatVentLevel    : 12|4@1+ (1,0) [0|15] "" BODY_GW
 
-BO_ 581 frmDoorControlMsg: 1 WINDOW_CTRL
+BO_ 623 frmDoorControlMsg: 1 WINDOW_CTRL
  SG_ DoorControlCmd   : 0|3@1+ (1,0) [0|7] "" BODY_GW
  SG_ ChildLockCmd     : 3|1@1+ (1,0) [0|1] "" BODY_GW
  SG_ Reserved0        : 4|4@1+ (1,0) [0|0] "" Vector__XXX
 
-BO_ 582 frmInteriorLightMsg: 1 AMBIENT_CTRL
+BO_ 624 frmInteriorLightMsg: 1 AMBIENT_CTRL
  SG_ CabinLightMode   : 0|3@1+ (1,0) [0|7] "" BODY_GW
  SG_ DomeLightLevel   : 3|5@1+ (1,0) [0|31] "" BODY_GW
 
-BO_ 583 frmRainLightAutoMsg: 1 AMBIENT_CTRL
+BO_ 625 frmRainLightAutoMsg: 1 AMBIENT_CTRL
  SG_ RainSenseLevel   : 0|4@1+ (1,0) [0|15] "" BODY_GW
  SG_ AutoLightState   : 4|2@1+ (1,0) [0|3] "" BODY_GW
  SG_ Reserved0        : 6|2@1+ (1,0) [0|0] "" Vector__XXX
 
-BO_ 584 frmBcmDiagReqMsg: 3 BODY_GW
+BO_ 626 frmBcmDiagReqMsg: 3 BODY_GW
  SG_ BcmDiagServiceId : 0|8@1+ (1,0) [0|255] "" AMBIENT_CTRL
  SG_ BcmDiagDidHigh   : 8|8@1+ (1,0) [0|255] "" AMBIENT_CTRL
  SG_ BcmDiagDidLow    : 16|8@1+ (1,0) [0|255] "" AMBIENT_CTRL
 
-BO_ 585 frmBcmDiagResMsg: 3 AMBIENT_CTRL
+BO_ 627 frmBcmDiagResMsg: 3 AMBIENT_CTRL
  SG_ BcmDiagRespCode  : 0|8@1+ (1,0) [0|255] "" BODY_GW
  SG_ BcmDiagData0     : 8|8@1+ (1,0) [0|255] "" BODY_GW
  SG_ BcmDiagData1     : 16|8@1+ (1,0) [0|255] "" BODY_GW
 
-BO_ 586 frmImmobilizerStateMsg: 1 BODY_GW
+BO_ 628 frmImmobilizerStateMsg: 1 BODY_GW
  SG_ ImmobilizerState : 0|2@1+ (1,0) [0|3] "" DRV_STATE_MGR
  SG_ KeyAuthState     : 2|2@1+ (1,0) [0|3] "" DRV_STATE_MGR
  SG_ Reserved0        : 4|4@1+ (1,0) [0|0] "" Vector__XXX
 
-BO_ 587 frmAlarmStateMsg: 1 BODY_GW
+BO_ 629 frmAlarmStateMsg: 1 BODY_GW
  SG_ AlarmArmState    : 0|2@1+ (1,0) [0|3] "" DRV_STATE_MGR
  SG_ IntrusionDetect  : 2|1@1+ (1,0) [0|1] "" DRV_STATE_MGR
  SG_ Reserved0        : 3|5@1+ (1,0) [0|0] "" Vector__XXX
 
-BO_ 588 frmBodyGatewayStateMsg: 2 BODY_GW
+BO_ 630 frmBodyGatewayStateMsg: 2 BODY_GW
  SG_ BodyGwRouteState : 0|8@1+ (1,0) [0|255] "" WARN_ARB_MGR
  SG_ BodyGwHealth     : 8|8@1+ (1,0) [0|255] "" WARN_ARB_MGR
 
-BO_ 589 frmBodyComfortStateMsg: 2 BODY_GW
+BO_ 631 frmBodyComfortStateMsg: 2 BODY_GW
  SG_ ComfortProfile   : 0|4@1+ (1,0) [0|15] "" WARN_ARB_MGR
  SG_ ComfortStatus    : 4|4@1+ (1,0) [0|15] "" WARN_ARB_MGR
  SG_ ComfortError     : 8|8@1+ (1,0) [0|255] "" WARN_ARB_MGR
 
-CM_ BO_ 528 "Flow_007 ambient output.";
-CM_ BO_ 529 "Body baseline: hazard switch and hazard state.";
-CM_ BO_ 530 "Body baseline: window command and window state.";
-CM_ BO_ 531 "Body baseline: driver state level and state info.";
-CM_ BO_ 532 "Body baseline: door mask/lock/child-lock/open-warning state.";
-CM_ BO_ 533 "Body baseline: lamp and hazard request state.";
-CM_ BO_ 534 "Body baseline: front/rear wiper state and interval.";
-CM_ BO_ 535 "Body baseline: seat-belt occupancy and warning level.";
-CM_ BO_ 536 "Body baseline: cabin temperature and air quality index.";
-CM_ BO_ 537 "Body health/diagnostic state.";
-CM_ BO_ 576 "Comm_202: HVAC state extension.";
-CM_ BO_ 577 "Comm_202: HVAC actuator extension.";
-CM_ BO_ 578 "Comm_202: mirror state extension.";
-CM_ BO_ 579 "Comm_202: seat state extension.";
-CM_ BO_ 580 "Comm_202: seat control extension.";
-CM_ BO_ 581 "Comm_202: door control extension.";
-CM_ BO_ 582 "Comm_202: interior light extension.";
-CM_ BO_ 583 "Comm_202: rain/light auto extension.";
-CM_ BO_ 584 "Comm_202: BCM diagnostic request.";
-CM_ BO_ 585 "Comm_202: BCM diagnostic response.";
-CM_ BO_ 586 "Comm_202: immobilizer state extension.";
-CM_ BO_ 587 "Comm_202: alarm state extension.";
-CM_ BO_ 588 "Comm_202: body gateway status extension.";
-CM_ BO_ 589 "Comm_202: body comfort status extension.";
+CM_ BO_ 608 "Flow_007 ambient output.";
+CM_ BO_ 609 "Body baseline: hazard switch and hazard state.";
+CM_ BO_ 610 "Body baseline: window command and window state.";
+CM_ BO_ 611 "Body baseline: driver state level and state info.";
+CM_ BO_ 612 "Body baseline: door mask/lock/child-lock/open-warning state.";
+CM_ BO_ 613 "Body baseline: lamp and hazard request state.";
+CM_ BO_ 614 "Body baseline: front/rear wiper state and interval.";
+CM_ BO_ 615 "Body baseline: seat-belt occupancy and warning level.";
+CM_ BO_ 616 "Body baseline: cabin temperature and air quality index.";
+CM_ BO_ 617 "Body health/diagnostic state.";
+CM_ BO_ 618 "Comm_202: HVAC state extension.";
+CM_ BO_ 619 "Comm_202: HVAC actuator extension.";
+CM_ BO_ 620 "Comm_202: mirror state extension.";
+CM_ BO_ 621 "Comm_202: seat state extension.";
+CM_ BO_ 622 "Comm_202: seat control extension.";
+CM_ BO_ 623 "Comm_202: door control extension.";
+CM_ BO_ 624 "Comm_202: interior light extension.";
+CM_ BO_ 625 "Comm_202: rain/light auto extension.";
+CM_ BO_ 626 "Comm_202: BCM diagnostic request.";
+CM_ BO_ 627 "Comm_202: BCM diagnostic response.";
+CM_ BO_ 628 "Comm_202: immobilizer state extension.";
+CM_ BO_ 629 "Comm_202: alarm state extension.";
+CM_ BO_ 630 "Comm_202: body gateway status extension.";
+CM_ BO_ 631 "Comm_202: body comfort status extension.";
 
 BA_DEF_ BO_ "GenMsgCycleTime" INT 0 10000;
 BA_DEF_DEF_ "GenMsgCycleTime" 0;
-BA_ "GenMsgCycleTime" BO_ 528 50;
-BA_ "GenMsgCycleTime" BO_ 529 100;
-BA_ "GenMsgCycleTime" BO_ 530 100;
-BA_ "GenMsgCycleTime" BO_ 531 100;
-BA_ "GenMsgCycleTime" BO_ 532 100;
-BA_ "GenMsgCycleTime" BO_ 533 100;
-BA_ "GenMsgCycleTime" BO_ 534 100;
-BA_ "GenMsgCycleTime" BO_ 535 100;
-BA_ "GenMsgCycleTime" BO_ 536 100;
-BA_ "GenMsgCycleTime" BO_ 537 100;
-BA_ "GenMsgCycleTime" BO_ 576 100;
-BA_ "GenMsgCycleTime" BO_ 577 100;
-BA_ "GenMsgCycleTime" BO_ 578 100;
-BA_ "GenMsgCycleTime" BO_ 579 100;
-BA_ "GenMsgCycleTime" BO_ 580 100;
-BA_ "GenMsgCycleTime" BO_ 581 100;
-BA_ "GenMsgCycleTime" BO_ 582 100;
-BA_ "GenMsgCycleTime" BO_ 583 100;
-BA_ "GenMsgCycleTime" BO_ 584 0;
-BA_ "GenMsgCycleTime" BO_ 585 0;
-BA_ "GenMsgCycleTime" BO_ 586 100;
-BA_ "GenMsgCycleTime" BO_ 587 100;
-BA_ "GenMsgCycleTime" BO_ 588 100;
-BA_ "GenMsgCycleTime" BO_ 589 100;
+BA_ "GenMsgCycleTime" BO_ 608 50;
+BA_ "GenMsgCycleTime" BO_ 609 100;
+BA_ "GenMsgCycleTime" BO_ 610 100;
+BA_ "GenMsgCycleTime" BO_ 611 100;
+BA_ "GenMsgCycleTime" BO_ 612 100;
+BA_ "GenMsgCycleTime" BO_ 613 100;
+BA_ "GenMsgCycleTime" BO_ 614 100;
+BA_ "GenMsgCycleTime" BO_ 615 100;
+BA_ "GenMsgCycleTime" BO_ 616 100;
+BA_ "GenMsgCycleTime" BO_ 617 100;
+BA_ "GenMsgCycleTime" BO_ 618 100;
+BA_ "GenMsgCycleTime" BO_ 619 100;
+BA_ "GenMsgCycleTime" BO_ 620 100;
+BA_ "GenMsgCycleTime" BO_ 621 100;
+BA_ "GenMsgCycleTime" BO_ 622 100;
+BA_ "GenMsgCycleTime" BO_ 623 100;
+BA_ "GenMsgCycleTime" BO_ 624 100;
+BA_ "GenMsgCycleTime" BO_ 625 100;
+BA_ "GenMsgCycleTime" BO_ 626 0;
+BA_ "GenMsgCycleTime" BO_ 627 0;
+BA_ "GenMsgCycleTime" BO_ 628 100;
+BA_ "GenMsgCycleTime" BO_ 629 100;
+BA_ "GenMsgCycleTime" BO_ 630 100;
+BA_ "GenMsgCycleTime" BO_ 631 100;
 
-VAL_ 528 AmbientMode
+VAL_ 608 AmbientMode
   0 "Off"
   1 "Basic"
   2 "Caution"
@@ -221,27 +221,27 @@ VAL_ 528 AmbientMode
   7 "Emergency" ;
 
 
-VAL_ 529 HazardSwitch
+VAL_ 609 HazardSwitch
   0 "Off"
   1 "On" ;
 
-VAL_ 529 HazardState
+VAL_ 609 HazardState
   0 "Inactive"
   1 "Active" ;
 
-VAL_ 530 WindowCommand
+VAL_ 610 WindowCommand
   0 "NoCmd"
   1 "Open"
   2 "Close"
   3 "Stop" ;
 
-VAL_ 530 WindowState
+VAL_ 610 WindowState
   0 "Unknown"
   1 "Opened"
   2 "Closed"
   3 "Moving" ;
 
-VAL_ 531 DriverStateLevel
+VAL_ 611 DriverStateLevel
   0 "Normal"
   1 "MildDrowsy"
   2 "Drowsy"
@@ -251,69 +251,69 @@ VAL_ 531 DriverStateLevel
   6 "Reserved6"
   7 "Reserved7" ;
 
-VAL_ 532 DoorLockState
+VAL_ 612 DoorLockState
   0 "Unlocked"
   1 "Locked"
   2 "AutoLock"
   3 "Fault" ;
 
-VAL_ 532 ChildLockState
+VAL_ 612 ChildLockState
   0 "Off"
   1 "On" ;
 
-VAL_ 532 DoorOpenWarn
+VAL_ 612 DoorOpenWarn
   0 "NoWarn"
   1 "Warn" ;
 
-VAL_ 533 HeadLampState
+VAL_ 613 HeadLampState
   0 "Off"
   1 "Parking"
   2 "LowBeam"
   3 "HighBeam" ;
 
-VAL_ 533 TailLampState
+VAL_ 613 TailLampState
   0 "Off"
   1 "On"
   2 "Auto"
   3 "Fault" ;
 
-VAL_ 533 TurnLampState
+VAL_ 613 TurnLampState
   0 "Off"
   1 "Left"
   2 "Right"
   3 "Hazard" ;
 
-VAL_ 533 HazardLampReq
+VAL_ 613 HazardLampReq
   0 "Off"
   1 "On" ;
 
-VAL_ 534 FrontWiperState
+VAL_ 614 FrontWiperState
   0 "Off"
   1 "Low"
   2 "High"
   3 "Auto" ;
 
-VAL_ 534 RearWiperState
+VAL_ 614 RearWiperState
   0 "Off"
   1 "On"
   2 "Intermittent"
   3 "Fault" ;
 
-VAL_ 535 DriverSeatBelt
+VAL_ 615 DriverSeatBelt
   0 "Unbuckled"
   1 "Buckled" ;
 
-VAL_ 535 PassengerSeatBelt
+VAL_ 615 PassengerSeatBelt
   0 "Unbuckled"
   1 "Buckled" ;
 
-VAL_ 535 RearSeatBelt
+VAL_ 615 RearSeatBelt
   0 "None"
   1 "SomeUnbuckled"
   2 "AllBuckled"
   3 "Fault" ;
 
-VAL_ 535 SeatBeltWarnLvl
+VAL_ 615 SeatBeltWarnLvl
   0 "None"
   1 "Info"
   2 "Warn"

@@ -37,7 +37,7 @@
 
 - 활성 DBC: `adas/body/chassis/eth_stub/infotainment/powertrain`
 - 메시지 수: `98`
-- ID 범위: `0x064 ~ 0x315`
+- ID 범위: `0x100 ~ 0x2AA`
 - 중복: 0건
 
 ## 4. 필수 수행 항목

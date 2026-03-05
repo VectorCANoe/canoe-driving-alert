@@ -102,7 +102,7 @@
 ### 5.4 예외 규칙 (Legacy Stub/Transition)
 
 - Tier `0`은 신규 할당 금지다.
-- 전환 전 베이스라인의 저대역 ID(`0x064` 등)는 `Old ID`로만 인정하며 Cutover 대상에 포함한다.
+- 전환 전 베이스라인의 저대역 ID(`0x1C0` 등)는 `Old ID`로만 인정하며 Cutover 대상에 포함한다.
 - 전환 완료 후 `0x000~0x0FF` 활성 운영 ID는 0건이어야 한다.
 - 논리 Ethernet ID(`0xE1xx/0xE2xx`)는 CAN 11-bit 3/3/5 대상이 아니다.
 
@@ -129,14 +129,14 @@
 
 - 현행 구조: 도메인 블록 대역형
 - 메시지 수: `98`
-- ID 범위: `0x064 ~ 0x315`
+- ID 범위: `0x100 ~ 0x2AA`
 - 중복: `0건`
 - 대표 블록:
-  - `0x100~0x12F` Chassis
-  - `0x210~0x24F` Body
-  - `0x220~0x26F` Infotainment
-  - `0x300~0x31F` Powertrain+V2
-  - `0x330~0x34F` ADAS reserve
+  - `0x100~0x2A6` Chassis
+  - `0x260~0x277` Body
+  - `0x280~0x2A7` Infotainment
+  - `0x109~0x2AA` Powertrain
+  - `0x111~0x1C4` ADAS + ETH Stub
 
 ---
 

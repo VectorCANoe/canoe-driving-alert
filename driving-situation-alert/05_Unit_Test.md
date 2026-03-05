@@ -47,15 +47,15 @@
 
 | 노드 | 분류 | 기능명 | 기능 설명 | Pass/Fail | 담당자 | 일자 |
 |---|---|---|---|---|---|---|
-| 제어기 | 제어 | CHS_GW | CAN(0x100/0x101) 수신값을 ETH(0x510/0x511)로 100ms 주기 변환 송신 |  |  |  |
-|  |  | INFOTAINMENT_GW | CAN(0x110) 구간/방향/거리/제한속도 입력을 ETH(0x512)로 100ms 주기 변환 송신 |  |  |  |
+| 제어기 | 제어 | CHS_GW | CAN(0x2A0/0x2A1) 수신값을 ETH(0x510/0x511)로 100ms 주기 변환 송신 |  |  |  |
+|  |  | INFOTAINMENT_GW | CAN(0x2A3) 구간/방향/거리/제한속도 입력을 ETH(0x512)로 100ms 주기 변환 송신 |  |  |  |
 |  |  | ADAS_WARN_CTRL | 주행/비주행, 과속(vehicleSpeed>speedLimit), 무조향 조건을 판정해 150ms 이내 경고 상태 반영 |  |  |  |
 |  |  | ADAS_WARN_CTRL + WARN_ARB_MGR + DOMAIN_BOUNDARY_MGR (V2 확장) | 긴급차량 방향/ETA/자차속도 기반 위험도 산정, 감속 보조 요청/해제, Fail-safe 강등 동기화 | Ready |  |  |
 |  |  | NAV_CTX_MGR | roadZone/navDirection/zoneDistance/speedLimit 입력으로 컨텍스트 계산 및 speedLimitNorm 갱신 |  |  |  |
 |  |  | EMS_ALERT | 경찰/구급 긴급 이벤트의 송신/수신/해제/타임아웃(1000ms) 모듈 로직을 유닛 단위로 검증 |  |  |  |
 |  |  | WARN_ARB_MGR | Emergency>Zone, Ambulance>Police, ETA, SourceID 규칙으로 단일 경고 결과 결정 |  |  |  |
-|  |  | BODY_GW | 중재 결과(E200)를 Ambient CAN(0x210)으로 50ms 주기 변환 송신 |  |  |  |
-|  |  | IVI_GW | 중재 결과(E200)를 Cluster CAN(0x220)으로 50ms 주기 변환 송신 |  |  |  |
+|  |  | BODY_GW | 중재 결과(E200)를 Ambient CAN(0x289)으로 50ms 주기 변환 송신 |  |  |  |
+|  |  | IVI_GW | 중재 결과(E200)를 Cluster CAN(0x280)으로 50ms 주기 변환 송신 |  |  |  |
 |  |  | AMBIENT_CTRL | selectedAlert 결과에 따라 ambientMode/color/pattern 정책 출력(전환 안정화 포함) |  |  |  |
 |  |  | CLU_HMI_CTRL | warningTextCode/방향 표시/중복팝업 억제 정책 적용 |  |  |  |
 |  |  | VAL_SCENARIO_CTRL | testScenario 실행, 통신 조건(CAN+Ethernet 또는 대체 백본) 판정, scenarioResult 기록 |  |  |  |
