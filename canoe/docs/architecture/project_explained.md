@@ -1,11 +1,18 @@
-﻿# project_profile.xml 설명
+﻿# project_profile.xml Description
 
-- 위치: `canoe/cfg/project_profile.xml`
-- 역할: 구조 설명용 XML 메타 파일 (CANoe 실행 파일 아님)
-- 경로 기준:
-  - DBC(실행): `..\databases\{chassis_can|body_can|infotainment_can|powertrain_can|test_can}.dbc`
-- DBC(백업): `..\databases\legacy\LEGACY_emergency_system.dbc`
-  - CAPL: `..\src\capl\{input|logic|output|ems}\*.can`
-  - SysVar: `..\sysvars\project.sysvars`
+- Location: `canoe/cfg/project_profile.xml`
+- Role: metadata for structure explanation (not a runnable CANoe config)
 
-실행 기준은 `canoe/cfg/CAN_500kBaud_1ch_split.cfg`입니다.
+## Path Baseline
+- Runtime split DBC set: `..\databases\{chassis_can|body_can|infotainment_can|powertrain_can|test_can|eth_backbone_can_stub}.dbc`
+- V1 legacy backup DBC: `..\databases\v1_legacy\v1_split_345bdb4\emergency_system.dbc`
+- CAPL mirror source: `..\src\capl\{input|logic|output|ems|ecu|network}\*.can`
+- System variables: `..\project\sysvars\project.sysvars`
+
+## Runtime Profile
+- Active runtime config: `canoe/cfg/CAN_v2_topology_wip.cfg`
+- V1 legacy backup config: `canoe/cfg/v1_cfg/CAN_500kBaud_1ch.cfg`
+
+## Note
+- V1 was a single-bus flat architecture used for fast parallel development.
+- V2 is domain-separated and uses `canoe/cfg/channel_assign/**` as runtime CAPL SoT.

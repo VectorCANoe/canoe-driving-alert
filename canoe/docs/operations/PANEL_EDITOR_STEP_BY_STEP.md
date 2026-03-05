@@ -5,7 +5,7 @@
 
 ## 0) 시작 전
 1. CANoe 실행
-2. `File -> Open Configuration` 에서 `canoe/cfg/CAN_500kBaud_1ch_split.cfg` 열기
+2. `File -> Open Configuration` 에서 `canoe/cfg/CAN_v2_topology_wip.cfg` 열기
 3. 측정은 정지 상태 유지 (`F9` Off)
 
 ## 1) Panel 생성
@@ -151,3 +151,4 @@
 ## 9) 증적 기록
 - 캡처 기준은 `canoe/PANEL_PASS_CHECKLIST.md` 사용
 - 시나리오별 Panel 화면 + Trace 화면 2종 캡처 저장
+

@@ -53,3 +53,5 @@ This file documents domain-oriented CAPL ownership for the v2 runtime profile.
 - `logic`: arbitration and warning logic modules
 - `network`: backbone switch/transport monitoring module
 - `output`: HMI/IVI/body output adapter modules
+
+

@@ -59,7 +59,7 @@
 ## Immediate Action Recommendation
 
 1. Keep runtime profile strict:
-- Use split canonical DBC runtime profile (`CAN_500kBaud_1ch_split.cfg`) as default.
+- Use split canonical DBC runtime profile (`CAN_v2_topology_wip.cfg`) as default.
 - Keep `CAN_500kBaud_1ch.cfg` + `emergency_system.dbc` as legacy backup profile only.
 
 2. Resolve one-source ID map:
@@ -68,4 +68,5 @@
 3. Re-run startup gate:
 - If running legacy cfg, either disable IL profile for unsupported Tx ownership or switch to split runtime profile.
 - Then proceed to scenario validation.
+
 

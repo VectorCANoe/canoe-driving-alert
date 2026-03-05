@@ -3,7 +3,7 @@
 이 문서는 CANoe GUI 캡처만으로 FZ_001~FZ_007 판정을 빠르게 남기기 위한 1페이지 체크리스트입니다.
 
 ## 0) 공통 준비
-- Configuration: `canoe/cfg/CAN_500kBaud_1ch_split.cfg`
+- Configuration: `canoe/cfg/CAN_v2_topology_wip.cfg`
 - Measurement: Start
 - Active Nodes: 13개 (`SIL_TEST_CTRL` 포함)
 - Trace 창에 아래 메시지 표시:
@@ -67,3 +67,4 @@
 ## 9) 운영 메모
 - 판정은 반드시 캡처(Trace + Panel) 2종 증적을 남긴다.
 - busy 충돌 시 `canoe/AGENTS.md` 복구 절차를 그대로 따른다.
+
