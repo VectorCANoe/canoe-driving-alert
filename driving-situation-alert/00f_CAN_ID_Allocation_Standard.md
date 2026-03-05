@@ -1,9 +1,9 @@
 # CAN ID 배정 표준
 
 **Document ID**: PROJ-00F-CAN-ID  
-**Version**: 3.2  
-**Date**: 2026-03-05  
-**Status**: Draft (Execution Gate Pending)  
+**Version**: 3.3  
+**Date**: 2026-03-06  
+**Status**: Draft (Policy SoT)  
 **Scope**: `0302 -> 0303 -> 0304 -> DBC -> 04 -> 05/06/07`
 
 ---
@@ -163,70 +163,17 @@
 
 ---
 
-## 8. 전환 정책 (Full Renumbering)
+## 8. 실행 거버넌스 분리 원칙
 
-- 전환 범위:
-  - 활성 메시지 `98`개 전량
-- 전환 방식:
-  - 단일 릴리즈 동시 Cutover
-  - dual schema(구 ID+신 ID 병행 운영) 금지
-- 유지 사항:
-  - 도메인 DBC 분리 구조
-  - Ethernet 논리 ID/Stub ID 분리 원칙
-
-### 8.1 Cutover/Rollback 규칙
-
-- Cutover 전 필수:
-  - Annex A 매핑표 98건 `Approved`
-  - 충돌 검사 0건
-  - 핵심 시나리오 회귀 PASS
-- Rollback 조건:
-  - 충돌 1건 이상
-  - Tier 우선순위 역전으로 타이밍 불합격
-  - 핵심 시나리오 Fail
-- Rollback 방법:
-  - Cutover 직전 Git tag로 즉시 복귀
-  - DBC/문서/CAPL을 동일 커밋 단위로 원복
-
-### 8.2 승인 게이트 (변경 통제)
-
-| 게이트 | 산출물 | 책임 | 승인 기준 |
-|---|---|---|---|
-| G1 Mapping Freeze | Annex A 98건 | 문서팀 | Tier/Group/Index 완전 기입, 중복 0건 |
-| G2 Implementation Freeze | DBC/CAPL/문서 동기화 PR | 개발팀 | `BO_` 전량 반영, 구 ID 잔존 0건 |
-| G3 Cutover Approval | 회귀 리포트 | PM/QA | 기능 동등성/타이밍 합격 |
-| G4 Post-Cutover Audit | 최종 증적 패키지 | 문서팀+개발팀 | 추적 체인 단절 0건 |
+- 본 문서는 ID 정책(원칙/분류/우선순위/용어)의 SoT다.
+- 실행 항목(Cutover/Rollback/승인 게이트/수용 기준/제출물)은 변경지시서 SoT를 따른다:
+  - `driving-situation-alert/tmp/change-orders/DEV_CHANGE_ORDER_CAN_ID_335_FULL_RENUMBERING_2026-03-05.md`
+- 정책 변경 없이 실행 절차만 조정하는 경우, 변경지시서만 개정한다.
+- 정책 자체(Tier/Group/Index, 중재 경계, SoT 우선순위)를 변경하는 경우에만 00f를 개정한다.
 
 ---
 
-## 9. 필수 작업 패키지
-
-1. `00f` Annex A 및 매핑 파일(`tmp/ID_335_AnnexA_Mapping_98_Template.csv`) 98개 전수 확정  
-2. `0302/0303/0304/04/05/06/07` ID 전량 동기화  
-3. 활성 DBC 6종 `BO_` ID 전량 재배정  
-4. CAPL/panel/sysvar/log raw ID 상수 전수 치환  
-5. 회귀검증(충돌/기능/타이밍/중재) 수행
-
----
-
-## 10. 수용 기준 (Acceptance)
-
-1. 정합성
-- ID 중복 0건
-- Tier/Group/Index 규칙 위반 0건
-- 구 ID 잔존 참조 0건
-- Tier 우선순위 역전(중요 제어 프레임이 저우선 Tier에 배치) 0건
-
-2. 기능 동등성
-- SIL 시나리오 Pass/Fail 동등
-- 경고 중재/해제/타이밍 동등
-
-3. 추적성
-- `Req -> Func -> Flow -> Comm -> Var -> Code -> UT/IT/ST` 단절 0건
-
----
-
-## 11. Annex A (98개 전수 매핑)
+## 9. Annex A (98개 전수 매핑)
 
 - 파일: `driving-situation-alert/tmp/ID_335_AnnexA_Mapping_98_Template.csv`
 - 목적: `Old ID -> New ID` 전수 매핑의 단일 근거 파일
@@ -235,14 +182,11 @@
   - `new_tier`, `new_group`, `new_index`, `new_id_hex`, `new_id_dec`
   - `flow_ref`, `comm_ref`, `var_ref`, `code_ref`, `test_ref`
   - `status`, `approver`, `approved_date`
-- 규칙:
-  - 개발 착수 전 최소 `status=Draft-Proposed-G1` 98건 완료
-  - Cutover 승인 전 `status=Approved` 98건 완료
-  - Cutover 전 승인자/일자 누락 0건
+- 상태/승인 규칙(G1~G4)은 변경지시서 기준으로 운영한다.
 
 ---
 
-## 12. 점검 명령 (권장)
+## 10. 점검 명령 (권장)
 
 ```bash
 awk '/^BO_ /{print $2}' canoe/databases/*.dbc | sort -n | uniq -d
@@ -254,10 +198,11 @@ rg -n "0x[0-9A-Fa-f]{2,3}" driving-situation-alert/{0302_NWflowDef.md,0303_Commu
 
 ---
 
-## 13. 개정 이력
+## 11. 개정 이력
 
 | 버전 | 날짜 | 변경 사항 |
 |---|---|---|
+| 3.3 | 2026-03-06 | 정책 문서 슬림화: 실행 절차(Cutover/Rollback/Gate/Acceptance)는 변경지시서 SoT로 이관하고 00f는 정책 원문 중심으로 재구성. |
 | 3.2 | 2026-03-05 | 실행력 보강: Annex A(98건 매핑 파일) 연결, Group 경계 명확화, Tier0 예외 규칙, 승인 게이트(G1~G4), Cutover/Rollback 절차를 추가. |
 | 3.1 | 2026-03-05 | 정책을 레이어드 모델로 재정의: `도메인 분리 구조 유지 + 3/3/5 인코딩 전면 적용` 병행 방식을 고정. |
 | 3.0 | 2026-03-05 | 3/3/5 인코딩 전면 전환 승인본으로 재정의(전면 교체 게이트/검증 기준 추가). |
