@@ -1,7 +1,7 @@
 # ECU 명명 및 약어 표준
 
 **Document ID**: PROJ-00E-ECU-NAMING  
-**Version**: 2.0  
+**Version**: 2.1  
 **Date**: 2026-03-05  
 **Status**: Released (SoT Fixed)  
 **Scope**: `01 -> 03 -> 0301 -> 0302 -> 0303 -> 0304 -> 04 -> 05/06/07`
@@ -20,8 +20,9 @@
 
 | 구분 | 기준 | 반영 포인트 |
 |---|---|---|
-| 국제/산업 | AUTOSAR CP SWC Modeling Guide (R24-11, 6.3.1/6.3.3) | shortName 제약, RTE 생성명 연결 규칙 |
+| 국제/산업 | AUTOSAR CP SWC Modeling Guide (R24-11, 6.3.1/6.3.3) | shortName 제약, 명명 일관성 |
 | 프로세스 | Automotive SPICE, ISO 26262 | 추적성/검증성/변경관리 |
+| 연계 SoT | `00g_RTE_Name_Mapping_Standard.md` | RTE 생성명 규칙 분리 적용 |
 | 내부 SoT | `0301`, `04`, `canoe/databases/*.dbc` | 실제 노드/소유/구현 기준 |
 | 멘토링 | MET40 | `VAL_*` 명명, 오해 유발 명칭 제거 |
 
@@ -40,6 +41,7 @@
 
 - `CONTROL`/`CTRL` 혼용 금지.
 - 임의 축약 금지: `ACCL`, `STRG`, `BRK`, `ENG`, `CTX`, `SIL_TST`, `VEH_BASE_TST`.
+- `AMB`는 `Ambient` 의미 축약으로 사용 금지(혼선 방지). `Ambient`는 항상 `AMBIENT` 풀토큰을 사용한다.
 - 공식 체인(Req->...->Test)에 연결된 노드명 임의 변경 금지.
 
 ## 3.3 통제 약어 사전
@@ -63,67 +65,14 @@
 | `ETH` | Ethernet | 백본/경로 계열 |
 | `PT` | Powertrain | 파워트레인 확장 식별 |
 | `TCM` | Transmission Control Module | 외부 비교용 약어만 허용 |
+| `AMB` | Ambulance | `EMS_AMB_TX` 구현 literal에서만 허용 (Ambient 의미로 사용 금지) |
 
-## 3.4 AUTOSAR 정합 (3계층 이름체계)
+## 3.4 AUTOSAR shortName 적용 원칙
 
 - 프로젝트 공식명(Canonical)은 `UPPER_SNAKE_CASE`를 유지한다.
 - AUTOSAR 모델명은 `UpperCamelCase` shortName을 사용한다.
-- RTE C API 명칭은 shortName 연결 결과로 생성된 값을 사용한다.
 - shortName 기본 제약: 영문 기반 식별자, 1..128, namespace unique.
-
-| 계층 | 목적 | 규칙 | 예시 |
-|---|---|---|---|
-| Project Canonical | 문서/DBC/CAPL/리뷰 기준명 | `UPPER_SNAKE_CASE` | `WARN_ARB_MGR` |
-| AUTOSAR shortName | SW-C/Port/Runnable 모델링명 | `UpperCamelCase` | `WarnArbMgr` |
-| RTE Generated | 코드 생성 API명 | `Rte_*` 연결 규칙 | `Rte_IRead_WarnArbMgr_InAlert_AlertState` |
-
-## 3.5 RTE Name Mapping 규칙 (AUTOSAR CP R24-11 반영)
-
-- AUTOSAR CP SWC Modeling Guide 6.3.3 기준으로, 모델 shortName은 RTE C 함수명으로 연결된다.
-- 적용 근거: `SWS_Rte_1153`, `SWS_Rte_3837`.
-- 생성명 패턴(대표):
-  - `Rte_IRead_<Runnable>_<Port>_<DataElement>`
-  - `Rte_IRead_<Component>_<Runnable>_<Port>_<DataElement>`
-- 원문 예시 토큰: `Wshr`, `WshrFrnt`, `Monr`, `OutdT`, `Val`.
-- 원문 예시 생성명:
-  - `Rte_IRead_Monr_OutdT_Val`
-  - `Rte_IRead_Wshr_Monr_OutdT_Val`
-
-### 3.5.1 Length Restriction 연계 (6.3.1)
-
-- RTE 생성명은 모델 요소명 연결 길이에 비례해 급격히 길어질 수 있다.
-- AUTOSAR 원문 예시: 단일 모델명이 최대 128일 경우 `Rte_IWrite_<Runnable>_<Port>_<Data>` 형식은 이론상 최대 397자까지 증가 가능하다.
-- 프로젝트 품질 규칙(가독성/리뷰성):
-  - `Rte_IRead/IWrite_<Runnable>_<Port>_<DataElement>`: 권장 `<= 64`
-  - `Rte_IRead/IWrite_<Component>_<Runnable>_<Port>_<DataElement>`: 권장 `<= 80`
-  - 권장값 초과 시 shortName 재설계(토큰 길이 축소, 중복 어근 제거)를 우선 적용한다.
-
-### 3.5.2 프로젝트 적용 제약
-
-- Canonical ECU명(`UPPER_SNAKE_CASE`)은 문서/DBC/CAPL 표준으로 유지한다.
-- AUTOSAR shortName은 RTE 생성명 충돌/과장길이 방지를 위해 토큰 길이를 관리한다.
-- shortName 토큰 권장 길이:
-  - SW-C/Prototype: `<= 16`
-  - Runnable: `<= 12`
-  - Port/DataElement: `<= 12`
-- 토큰은 의미 기반 약어만 허용하고, 임의 축약/모음제거형은 금지한다.
-- 대소문자만 다른 shortName 금지(사람/도구 혼동 방지).
-
-### 3.5.3 Canonical -> shortName 변환 규칙
-
-- Canonical 토큰(`_`)을 기준으로 단어 경계를 유지한다.
-- shortName은 각 토큰의 의미를 유지한 `UpperCamelCase`로 변환한다.
-- 역할 토큰(`CTRL`, `MGR`, `GW`, `TX`, `RX`, `DEV`)은 축약 해제 없이 그대로 보존한다.
-- 예시:
-  - `NAV_CONTEXT_MGR` -> `NavContextMgr`
-  - `VAL_SCENARIO_CTRL` -> `ValScenarioCtrl`
-  - `DOMAIN_GW_ROUTER` -> `DomainGwRouter`
-
-### 3.5.4 설계/리뷰 체크포인트
-
-- ECU 신규/변경 시 Canonical + AUTOSAR shortName을 동시에 등록한다.
-- RTE 함수명 샘플 2개 이상을 산출해 과도한 길이/중복을 사전 점검한다.
-- 포트/데이터명 변경 시 기존 생성 함수명과의 역추적 가능성을 유지한다.
+- RTE 생성 함수명 규칙/길이 예산/샘플 검토는 `00g_RTE_Name_Mapping_Standard.md`를 단일 SoT로 적용한다.
 
 ---
 
@@ -136,7 +85,7 @@
 | Core | `WARN_ARB_MGR` | `WarnArbMgr` | - | Active |
 | Core | `EMS_ALERT` | `EmsAlert` | - | Active |
 | EMS Internal | `EMS_POLICE_TX` | `EmsPoliceTx` | - | Active |
-| EMS Internal | `EMS_AMB_TX` | `EmsAmbTx` | - | Active |
+| EMS Internal | `EMS_AMB_TX` | `EmsAmbTx` | - | Active (`AMB=Ambulance` literal) |
 | EMS Internal | `EMS_ALERT_RX` | `EmsAlertRx` | - | Active |
 | Validation | `VAL_SCENARIO_CTRL` | `ValScenarioCtrl` | `SIL_TEST_CTRL`, `SIL_TST` | Active (legacy 금지) |
 | Validation | `VAL_BASELINE_CTRL` | `ValBaselineCtrl` | `VEHICLE_BASE_TEST_CTRL`, `VEH_BASE_TST` | Active (legacy 금지) |
@@ -165,8 +114,9 @@
 
 - 신규 ECU 포함 전체 ECU에 Canonical 명칭 적용.
 - Legacy 표기는 검색/이관 alias 용도로만 유지, 신규 반영 금지.
-- ECU 명명 규칙의 명시적 관리 문서는 `00e`, `0301`, `04`로 한정한다.
-- `01/03/0302/0303/0304/05/06/07`은 Canonical 명칭만 사용하고, 규칙 본문은 중복 정의하지 않는다.
+- ECU 명명 규칙의 명시적 관리 문서는 `00e`로 고정하고, 참조 문서는 `03`(ECU 적용)으로 한정한다.
+- RTE 생성명 정책은 `00g_RTE_Name_Mapping_Standard.md`를 SoT로 하고, 참조 문서는 `04`로 한정한다.
+- `01/0301/0302/0303/0304/05/06/07`은 Canonical 명칭만 사용하고, 규칙 본문은 중복 정의하지 않는다.
 - 개발팀 수용 기준:
   - cfg/channel_assign/CAPL/문서에서 legacy 표기 0건
   - `VAL_*` 명칭 일관성 100%
@@ -178,12 +128,12 @@
 | 체크 항목 | 기준 | 상태 |
 |---|---|---|
 | Scope/Status 고정 | `Status=Released (SoT Fixed)` 유지 | Locked |
-| 3계층 이름체계 | Canonical/shortName/RTE 계층 분리 정의 | Locked |
-| AUTOSAR 근거 | R24-11 `6.3.1`, `6.3.3`, `SWS_Rte_1153/3837` 반영 | Locked |
+| 계층 분리 | Canonical/shortName 계층 분리 정의 (RTE는 00g 분리) | Locked |
+| AUTOSAR 근거 | R24-11 shortName 제약 반영 | Locked |
 | 약어 사전 | 허용 약어 + 금지 축약 규칙 명시 | Locked |
 | Canonical Matrix | 활성 ECU Canonical/shortName/Legacy 매핑 표 보유 | Locked |
-| 운영 경계 | 명시적 관리 문서 `00e/0301/04` 한정 | Locked |
-| 추적 가능성 | 신규 ECU 시 Canonical+shortName+RTE 샘플 2건 등록 | Locked |
+| 운영 경계 | 명시 관리 `00e`, 참조 `03(ECU)` 한정 | Locked |
+| 추적 가능성 | 신규 ECU 시 Canonical+shortName 등록 | Locked |
 
 ---
 
@@ -191,7 +141,8 @@
 
 | 버전 | 날짜 | 변경 사항 |
 |---|---|---|
-| 2.0 | 2026-03-05 | SoT 확정본 고정: Status를 `Released (SoT Fixed)`로 전환하고, 운영 경계(`00e/0301/04`)와 Baseline Gate 체크리스트를 추가. |
+| 2.1 | 2026-03-05 | RTE 매핑 규칙을 `00g_RTE_Name_Mapping_Standard.md`로 분리하고, 00e는 ECU 명명/약어/Canonical 정책 SoT로 재정렬. |
+| 2.0 | 2026-03-05 | SoT 확정본 고정: Status를 `Released (SoT Fixed)`로 전환하고, 운영 경계를 `00e(관리)+03(ECU 참조)+04(RTE 참조)`로 정리, Baseline Gate 체크리스트를 추가. |
 | 1.2 | 2026-03-05 | AUTOSAR 6.3.1 길이제약 연계, Canonical->shortName 변환 규칙, RTE name budget 운영기준 추가. |
 | 1.1 | 2026-03-05 | AUTOSAR RTE name mapping(`SWS_Rte_1153/3837`) 기반 제약(토큰 길이/계층 분리/리뷰 체크포인트) 추가. |
 | 1.0 | 2026-03-05 | 통합 문서에서 ECU 명명/약어 표준을 00e로 분리 |

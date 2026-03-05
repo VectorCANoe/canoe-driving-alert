@@ -51,7 +51,7 @@ Vehicle State (gVehicleSpeed, gDriveState, SteeringInput)
   -> ADAS_WARN_CTRL
   -> WARN_ARB_MGR
 
-EMS_ALERT (internal: EMS_POLICE_TX / EMS_AMB_TX)
+EMS_ALERT (internal: EMS_POLICE_TX / EMS_AMB_TX, `AMB`=Ambulance)
   -> ETH_SWITCH (ETH_EmergencyAlert 브로드캐스트)
   -> EMS_ALERT (internal: EMS_ALERT_RX, 수신 차량)
   -> WARN_ARB_MGR
@@ -84,7 +84,7 @@ WARN_ARB_MGR
 - Domain CAN 역할 분리: Body CAN(앰비언트, 0x210), Infotainment CAN(클러스터, 0x220)
 - 아키텍처 고정: `ETH_SWITCH + CHASSIS_GW/INFOTAINMENT_GW/BODY_GW/IVI_GW + 중앙 경고코어(ADAS_WARN_CTRL/NAV_CONTEXT_MGR/EMS_ALERT/WARN_ARB_MGR)`
 - 주요 노드: `VAL_SCENARIO_CTRL`, `CHASSIS_GW`, `INFOTAINMENT_GW`, `ETH_SWITCH`, `ADAS_WARN_CTRL`, `NAV_CONTEXT_MGR`, `EMS_ALERT`, `WARN_ARB_MGR`, `BODY_GW`, `IVI_GW`, `BCM_AMBIENT_CTRL`, `CLU_HMI_CTRL`
-- EMS 내부 구현 모듈(`EMS_POLICE_TX`, `EMS_AMB_TX`, `EMS_ALERT_RX`)은 03/0301/0302/0303/0304 하단 보강표에서 분리 관리한다.
+- EMS 내부 구현 모듈(`EMS_POLICE_TX`, `EMS_AMB_TX`, `EMS_ALERT_RX`)은 03/0301/0302/0303/0304 하단 보강표에서 분리 관리하며, `Ambient`는 항상 `AMBIENT` 풀토큰을 사용한다.
 - Panel 입력: `gRoadZone`, `gNavDirection`, `gZoneDistance`, `gSpeedLimit`, 긴급차량 ON/OFF, ETA, 우선순위 테스트 토글
 
 ### 검증 제약 (필수)

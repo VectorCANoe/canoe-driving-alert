@@ -26,7 +26,9 @@
 - ASPICE SWE.3 BP1~BP8 관점에서 `상세 설계/인터페이스/동적행위/대안평가/추적성/합의/구현규칙`을 명시한다.
 - SIL 단계에서는 Panel/sysvar 경유 자극을 허용하며, 통신 계약(0302/0303/0304)은 유지한 채 ETH `UdpSocket` 기반 입력으로 점진 전환한다.
 - `VAL_SCENARIO_CTRL`/`VAL_BASELINE_CTRL`는 Validation Harness이며, `ETH_SWITCH`/도메인 게이트웨이의 통신 변환 역할과 분리한다.
-- ECU 명명 규칙의 명시적 관리 문서는 `00e/0301/04`로 고정하며, 본 문서는 구현 단계의 등록/점검 규칙만 관리한다.
+- ECU 명명 규칙은 `00e`를 SoT로 고정하고, RTE 생성명 규칙은 `00g_RTE_Name_Mapping_Standard.md`를 SoT로 고정한다.
+- 본 문서는 `00e/00g` 정책의 구현 적용 참조 문서로 관리한다.
+- 약어 충돌 방지 규칙: `EMS_AMB_TX`의 `AMB`는 `Ambulance` 의미의 구현 literal이며, `Ambient`는 항상 `AMBIENT` 풀토큰으로 표기한다.
 - `project.sysvars`의 `UiRender/*`, `Driver/gazeActive`, `V2X/policeDispatch`, `V2X/ambulanceDispatch`는 Verification-Harness 입력/렌더 변수로 관리하며 제품 Req 체인(01/03/05~07)과 분리한다.
 - CANoe.CAN 환경에서는 Ethernet 일부 경로(E100/E200 모니터링 및 V2 확장)가 CAN-stub(0x064/0x11F/0x232/0x313/0x314/0x315)로 대체 운반되며, 서비스 해석은 Ethernet 논리 계약 SoT를 우선한다.
 - Panel 구성은 `차량 화면 -> 제어 패널 -> 상태 모니터` 우선순위를 적용하고, UI는 표시/자극 전용 계층으로 유지한다.
@@ -340,7 +342,7 @@ Emergency Source (logical terminal)
 
 | 항목 | 규칙 | 근거 문서 |
 |---|---|---|
-| 모듈/노드 명명 | Node는 `UPPER_SNAKE_CASE`, 내부 상태는 `camelCase` 유지 | `00e_ECU_Naming_Standard.md`, `0301_SysFuncAnalysis.md` |
+| 모듈/노드 명명 | Node는 `UPPER_SNAKE_CASE`, 내부 상태는 `camelCase` 유지 | `00e_ECU_Naming_Standard.md`, `03_Function_definition.md` |
 | 인터페이스 명명 | 상위 공식 변수명은 0304 표준 Name, 코드 내부는 Internal Name 병기 | `0304_System_Variables.md` |
 | 주기/타임아웃 | CAN 입력 100ms, 출력 50ms, Emergency timeout 1000ms 고정 | `0302_NWflowDef.md`, `01_Requirements.md` |
 | 예외 처리 | invalid 값 수신 시 fail-safe 기본값 적용 후 로그 기록 | `0304_System_Variables.md`, 본 문서 8장 |
@@ -354,9 +356,9 @@ Emergency Source (logical terminal)
 | 항목 | 구현 운영 규칙 | 산출물 |
 |---|---|---|
 | Canonical 사용 | 코드 모듈/노드/문서 식별자는 Canonical(`UPPER_SNAKE_CASE`)을 기본으로 사용 | CAPL 파일명, 노드명, 추적표 |
-| 모델 매핑 | AUTOSAR 연계 대상은 `00e` 규칙에 따라 shortName을 병기 관리 | `00e` Canonical Matrix |
+| 모델 매핑 | AUTOSAR 연계 대상은 `00g` 규칙에 따라 shortName/RTE 생성명을 병기 관리 | `00g` RTE Name Mapping |
 | RTE 샘플 검토 | 신규 ECU/인터페이스 추가 시 RTE 생성명 샘플 2건 작성 및 길이 예산 점검 | 변경 검토 로그, 설계 리뷰 기록 |
-| 변경 승인 경로 | 명명 정책 변경은 `00e` 개정 -> `0301` 영향 반영 -> `04` 구현 반영 순으로 승인 | 개정 이력(00e/0301/04) |
+| 변경 승인 경로 | 명명 정책 변경은 `00e`(ECU) 개정 -> `00g`(RTE) 개정 -> `04` 구현 반영 순으로 승인 | 개정 이력(00e/00g/04) |
 | 타 문서 반영 원칙 | `01/03/0302/0303/0304/05/06/07`은 규칙 본문 없이 Canonical 사용만 유지 | 체인 문서 표기 정합 |
 
 ---
@@ -365,7 +367,7 @@ Emergency Source (logical terminal)
 
 | 버전 | 날짜 | 변경 사항 |
 |---|---|---|
-| 2.17 | 2026-03-05 | ECU 명명 거버넌스를 `00e/0301/04` 명시 관리 체계로 고정하고, 구현 단계 RTE 샘플 점검/승인 경로 규칙(12장)을 추가. |
+| 2.17 | 2026-03-05 | ECU/RTE 거버넌스를 `00e(ECU SoT)+00g(RTE SoT)+04(구현 참조)` 체계로 정리하고, 구현 단계 RTE 샘플 점검/승인 경로 규칙(12장)을 추가. |
 | 2.16 | 2026-03-05 | Validation 노드 명칭(`VAL_SCENARIO_CTRL`/`VAL_BASELINE_CTRL`)과 DBC 통합 정책(`0x230/0x231 -> chassis_can.dbc`)을 구현 추적 표/원칙에 반영. |
 | 2.15 | 2026-03-04 | 멘토링 체크리스트 반영: Panel 구성 우선순위(`차량 화면 -> 제어 패널 -> 상태 모니터`)와 UI-로직 분리 원칙을 작성 원칙에 명시. |
 | 2.14 | 2026-03-04 | 구현 원칙 정합 보강: 통신 SoT에 `eth_backbone_can_stub.dbc`를 추가하고, CANoe.CAN 환경의 CAN-stub 대체 운반 규칙(0x064/0x11F/0x232/0x313/0x314/0x315)과 Ethernet 논리 계약 우선 해석 원칙을 명시. |

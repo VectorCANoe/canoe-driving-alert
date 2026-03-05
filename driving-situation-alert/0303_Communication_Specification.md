@@ -35,6 +35,7 @@
 - Vehicle Baseline(Req_101~Req_119) 통신(`Comm_101~Comm_106`, `Comm_201~Comm_205`)은 본 문서에서 확정 정의하고, 도메인 DBC는 이 정의를 구현 대상으로 사용한다.
 - V2 확장 요구(`Req_120~Req_124`) 통신(`Comm_120~Comm_124`)은 구현 활성 상태로 관리하며, DBC/코드/테스트를 동일 커밋에서 동기화한다.
 - EMS는 상위 문서 레벨에서 논리 단말 `EMS_ALERT`로 표기하고, 내부 구현 모듈(`EMS_POLICE_TX`, `EMS_AMB_TX`, `EMS_ALERT_RX`)은 하단 보강표에서만 분리 관리한다.
+- 약어 충돌 방지 규칙: `EMS_AMB_TX`의 `AMB`는 `Ambulance` 의미의 구현 literal이며, `Ambient`는 항상 `AMBIENT` 풀토큰으로 표기한다.
 - Validation Harness 공통 프레임(`0x230`, `0x231`)은 독립 `test_can`이 아니라 `chassis_can.dbc`에 통합 관리한다.
 - 제출 설명 시 `0x230/0x231`은 “Validation frame(Chassis 통합)”으로 명시해 도메인 오해를 방지한다.
 
@@ -478,7 +479,7 @@
 
 | 버전 | 날짜 | 변경 사항 |
 |---|---|---|
-| 3.19 | 2026-03-05 | 통신 문서 경계 정리: 본 문서에서는 CAN ID/메시지 규칙만 명시하고 ECU 명명 규칙 본문은 `00e/0301/04` 관리 체계를 따르도록 정리. |
+| 3.19 | 2026-03-05 | 통신 문서 경계 정리: 본 문서에서는 CAN ID/메시지 규칙만 명시하고 ECU 명명은 `00e` SoT + `03`/`04` 참조 체계를 따르도록 정리. |
 | 3.18 | 2026-03-05 | Validation 결과 프레임(`0x230`,`0x231`)의 관리 기준을 `chassis_can.dbc` 통합으로 전환하고 Validation 노드 명칭(`VAL_*`) 및 Comm 매체 표기를 정합화. |
 | 3.17 | 2026-03-04 | 멘토링 체크리스트 반영: `test_can` 해석(Validation Harness 공통 DBC) 규칙과 CAN ID 배정 팀 룰(도메인/Stub/충돌회피/SoT)을 본문에 명시. |
 | 3.16 | 2026-03-04 | DBC SoT 정합 보강: `eth_backbone_can_stub.dbc`를 통신 원본 매핑에 반영하고 0x064/0x11F/0x232(및 0x313/0x314/0x315) CAN-stub 운반 경로를 상단표/Comm 표/규모표에 동기화. |

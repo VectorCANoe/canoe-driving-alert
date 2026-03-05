@@ -54,7 +54,7 @@
 - NAV_CONTEXT_MGR
 - WARN_ARB_MGR
 - EMS_ALERT (logical terminal)
-- EMS_POLICE_TX / EMS_AMB_TX / EMS_ALERT_RX (internal implementation modules)
+- EMS_POLICE_TX / EMS_AMB_TX / EMS_ALERT_RX (internal implementation modules, `AMB` = Ambulance)
 - BCM_AMBIENT_CTRL
 - CLU_HMI_CTRL
 - VAL_SCENARIO_CTRL
@@ -97,6 +97,7 @@
 4. Apply naming/ID SoT:
    - Use `00e_ECU_Naming_Standard.md` as canonical ECU naming policy
    - Use `00f_CAN_ID_Allocation_Standard.md` as canonical CAN-ID policy
+   - Use `00g_RTE_Name_Mapping_Standard.md` as canonical RTE name mapping policy
    - Keep Canonical node names in trace docs; do not introduce unofficial abbreviations
 5. Keep SoT sync rule active:
    - Domain CAN DBC (`*_can.dbc`) + Ethernet contract (`ETH_INTERFACE_CONTRACT.md`) -> `0302/0303/0304`

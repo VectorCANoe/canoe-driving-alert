@@ -35,6 +35,7 @@
 - Vehicle Baseline(Req_101~Req_119) 플로우(`Flow_101~Flow_106`, `Flow_201~Flow_205`)는 본 문서에서 확정 정의하고, DBC는 이 정의를 구현 대상으로 사용한다.
 - V2 확장 요구(`Req_120~Req_124`) 플로우(`Flow_120~Flow_124`)는 구현 활성 상태로 관리하며, 관련 DBC/코드/테스트를 동일 커밋에서 동기화한다.
 - EMS는 상위 문서 레벨에서 논리 단말 `EMS_ALERT`로 표기하고, 상단 표의 `EMS_POLICE_TX/EMS_AMB_TX/EMS_ALERT_RX` 열은 내부 구현 모듈 분해 관점으로만 해석한다.
+- 약어 충돌 방지 규칙: `EMS_AMB_TX`의 `AMB`는 `Ambulance` 의미의 구현 literal이며, `Ambient`는 항상 `AMBIENT` 풀토큰으로 표기한다.
 
 ---
 

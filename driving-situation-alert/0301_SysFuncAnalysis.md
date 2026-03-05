@@ -30,6 +30,7 @@
 - ECU 노드명은 ISO 기능 분리 원칙(센싱/판단/중재/출력/게이트웨이)을 따르고, OEM 레퍼런스는 `reference/dbc/level3_communication/reference/*.dbc`를 참고한다.
 - 제출 전 현대/기아 및 OEM 기준 명칭으로 일괄 대체하되, 추적 ID 체계는 유지한다.
 - EMS는 상위 문서 계층에서 단일 논리 단말 `EMS_ALERT`로 관리하고, 내부 구현 모듈(TX/RX)은 하단 보강표에서만 분리한다.
+- 약어 충돌 방지 규칙: `EMS_AMB_TX`의 `AMB`는 `Ambulance` 의미의 구현 literal이며, `Ambient`는 항상 `AMBIENT` 풀토큰으로 표기한다.
 
 ---
 
@@ -196,8 +197,8 @@
 | 고속도로 무조향 | NAV_CONTEXT_MGR -> ADAS_WARN_CTRL -> WARN_ARB_MGR -> BCM_AMBIENT_CTRL + CLU_HMI_CTRL | Func_011, Func_012, Func_027, Func_038, Func_040 |
 | 유도구간 방향 안내 | NAV_CONTEXT_MGR -> WARN_ARB_MGR -> BCM_AMBIENT_CTRL + CLU_HMI_CTRL | Func_013, Func_014, Func_039, Func_040 |
 | 경찰 긴급차량 접근 | EMS_ALERT(Police Tx) -> EMS_ALERT(Rx) -> WARN_ARB_MGR -> BCM_AMBIENT_CTRL + CLU_HMI_CTRL | Func_017, Func_023, Func_022, Func_035, Func_019 |
-| 구급 긴급차량 접근 | EMS_ALERT(Amb Tx) -> EMS_ALERT(Rx) -> WARN_ARB_MGR -> BCM_AMBIENT_CTRL + CLU_HMI_CTRL | Func_018, Func_023, Func_022, Func_035, Func_019 |
-| 경찰+구급 동시 충돌 | EMS_ALERT(Police Tx + Amb Tx) -> EMS_ALERT(Rx) -> WARN_ARB_MGR(우선순위/동률처리) -> 출력 노드 | Func_025~Func_031 |
+| 구급 긴급차량 접근 | EMS_ALERT(Ambulance Tx) -> EMS_ALERT(Rx) -> WARN_ARB_MGR -> BCM_AMBIENT_CTRL + CLU_HMI_CTRL | Func_018, Func_023, Func_022, Func_035, Func_019 |
+| 경찰+구급 동시 충돌 | EMS_ALERT(Police Tx + Ambulance Tx) -> EMS_ALERT(Rx) -> WARN_ARB_MGR(우선순위/동률처리) -> 출력 노드 | Func_025~Func_031 |
 | 긴급 해제 후 복귀 | EMS_ALERT(Rx 해제/타임아웃) -> WARN_ARB_MGR -> BCM_AMBIENT_CTRL/CLU_HMI_CTRL | Func_024, Func_033, Func_034 |
 | 교차로/합류구간 근접위험 감속 보조 | EMS_ALERT(Rx) + ADAS_WARN_CTRL(위험도 산정) + WARN_ARB_MGR(보조요청/해제+경고 동기화) -> BRAKE_CTRL + BCM_AMBIENT_CTRL + CLU_HMI_CTRL | Func_120, Func_121, Func_122, Func_123 |
 | 도메인 경로 단절 강등 | DOMAIN_BOUNDARY_MGR(경로 단절 감지) -> DOMAIN_GW_ROUTER -> WARN_ARB_MGR/출력노드 | Func_124 |
@@ -231,9 +232,9 @@
 
 - 본 장의 상세 기준 SoT는 `00e_ECU_Naming_Standard.md`를 따른다.
 - Canonical ECU 명명표와 약어 정책은 `00e_ECU_Naming_Standard.md`의 `4. ECU 명명표 (Canonical Matrix)`를 기준으로 적용한다.
-- AUTOSAR 연계 구현은 `00e_ECU_Naming_Standard.md`의 `3.5 RTE Name Mapping 규칙`을 함께 적용한다.
-- 신규 ECU/인터페이스 추가 시 Canonical + shortName + 대표 RTE 생성명 2건을 동시 등록하고, `00e`의 길이 예산 규칙을 검토한다.
-- ECU 명명 규칙 본문은 `00e/0301/04`에서만 명시 관리하며, 타 체인 문서는 Canonical 명칭 사용만 유지한다.
+- 신규 ECU/인터페이스 추가 시 Canonical + shortName을 동시 등록한다.
+- ECU 명명 규칙 본문은 `00e`를 SoT로 명시 관리하고, 참조 문서는 `03`(ECU)로 한정한다.
+- RTE 생성명 규칙은 `00g_RTE_Name_Mapping_Standard.md`를 SoT로 하고, 구현 문서(`04`)에서 적용한다.
 - 본 문서는 추적 체인 일관성을 위해 현행 Canonical 노드명을 유지한다.
 - 팀원 제안 축약명은 참고 입력으로만 사용하고, 공식명 변경은 00e 절차 승인 후 일괄 반영한다.
 
@@ -261,7 +262,7 @@
 
 | 버전 | 날짜 | 변경 사항 |
 |---|---|---|
-| 3.22 | 2026-03-05 | ECU 명명 거버넌스를 `00e/0301/04` 명시 관리 체계로 고정하고, 신규 ECU 등록 시 Canonical+shortName+RTE 샘플 등록 규칙을 명문화. |
+| 3.22 | 2026-03-05 | ECU 명명 거버넌스를 `00e(SoT)+03(ECU 참조)`로 정리하고, RTE 규칙은 `00g`/`04` 적용 체계로 분리. |
 | 3.20 | 2026-03-05 | Validation Harness 노드 명칭을 `VAL_SCENARIO_CTRL`/`VAL_BASELINE_CTRL`로 정리하고 `VAL_*` 접두 규칙으로 표기 통일. |
 | 3.19 | 2026-03-03 | ETH_SWITCH 역할을 시스템 관점으로 명확화하고, 구현 관점(헬스 모니터링)은 04 문서에서 분리 관리하도록 정합화. |
 | 3.18 | 2026-03-03 | V2 확장 `Func_121/Func_123` 노드 소유를 `WARN_ARB_MGR`로 정정하고, 노드 표/Req-Func/시나리오 체인을 코드 구현 기준으로 동기화. |

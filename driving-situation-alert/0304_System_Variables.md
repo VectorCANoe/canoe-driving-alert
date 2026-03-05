@@ -25,6 +25,7 @@
 - 제출 전 현대/기아 및 OEM 기준 명칭으로 일괄 대체하되, Var ID/추적 ID 체계는 유지한다.
 - `Namespace=Test` 변수는 Validation Harness 전용(Non-Production)으로 관리하며, 사용자 기능/양산 기능 변수와 구분한다.
 - EMS 관련 변수는 상위 문서 계층에서 논리 단말 `EMS_ALERT` 기준으로 관리하고, 내부 TX/RX 모듈 분해는 하단 보강 매핑에서만 관리한다.
+- 약어 충돌 방지 규칙: `EMS_AMB_TX`의 `AMB`는 `Ambulance` 의미의 구현 literal이며, `Ambient`는 항상 `AMBIENT` 풀토큰으로 표기한다.
 - V2 확장 변수(`Req_120~Req_124`)는 구현 활성 상태로 추적하며, 0302/0303/05~07과 코드/DBC를 동일 커밋에서 동기화한다.
 - 목표 설계는 옵션1(ETH 백본) 고정이며, CANoe.CAN 라이선스 제약 구간의 SIL 검증은 임시로 CAN 대체 백본을 사용하고 Ethernet 라이선스 확보 후 동일 케이스로 재검증한다.
 - SoT 계층은 분리 관리한다: CAN 실프레임은 도메인 DBC(`chassis_can.dbc`/`powertrain_can.dbc`/`body_can.dbc`/`infotainment_can.dbc`/`adas_can.dbc` + `eth_backbone_can_stub.dbc`)를 따르고, Validation 결과 프레임(`0x230`,`0x231`)은 `chassis_can.dbc`에 통합 관리한다. Ethernet 논리 계약은 `ETH_INTERFACE_CONTRACT.md`를 따른다.
