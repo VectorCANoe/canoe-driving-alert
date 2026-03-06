@@ -3,7 +3,7 @@
 **Document ID**: PROJ-04-SI
 **ISO 26262 Reference**: Part 6, Cl.8 (Software Unit Design and Implementation)
 **ASPICE Reference**: SWE.3 (Software Detailed Design and Unit Construction)
-**Version**: 2.21
+**Version**: 2.22
 **Date**: 2026-03-06
 **Status**: Draft
 **Project Title**: 주행 상황 실시간 경고 시스템
@@ -33,6 +33,7 @@
 - CANoe.CAN 환경에서는 Ethernet 일부 경로(E100/E200 모니터링 및 V2 확장)가 CAN-stub(0x1C0/0x1C1/0x1C2/0x1C3/0x1C4/0x111)로 대체 운반되며, 서비스 해석은 Ethernet 논리 계약 SoT를 우선한다.
 - ADAS 객체 인지 확장(`Req_130~Req_139`)은 `Func_130~Func_139`, `Flow_130~Flow_133`, `Comm_130~Comm_133`, `Var_330~Var_339` Pre-Activation(설계 선반영) 상태로 유지하고 구현 착수 시 0302/0303/0304/05/06/07을 동일 커밋으로 동기화한다.
 - 차량 경보 편의 확장(`Req_140~Req_147`)은 `Func_140~Func_147`, `Flow_103/104/105/203 + Flow_006/008`, `Comm_103/104/105/203 + Comm_006/008`, `Var_133/138~141/155/164/166~168/191~193/268/281/282` Pre-Activation(설계 선반영) 상태로 유지하고 구현 착수 시 0302/0303/0304/05/06/07을 동일 커밋으로 동기화한다.
+- 경고 강건성·인지성 확장(`Req_148~Req_155`)은 `Func_148~Func_155`, `Flow_130/133 + Flow_006/007/008 + Flow_104/105/124/203`, `Comm_130/133 + Comm_006/007/008 + Comm_104/105/124/203`, `Var_330/333/334 + Var_016/020/021/024/027/028 + Var_180/326/327/328 + Var_166/167/168/268/269/289/296/297` Pre-Activation(설계 선반영) 상태로 유지하고 구현 착수 시 0302/0303/0304/05/06/07을 동일 커밋으로 동기화한다.
 - Panel 구성은 `차량 화면 -> 제어 패널 -> 상태 모니터` 우선순위를 적용하고, UI는 표시/자극 전용 계층으로 유지한다.
 
 ---
@@ -81,10 +82,10 @@ Emergency Source (logical terminal)
 | 구현 모듈 | 기능 상세 | 비고 |
 |---|---|---|
 |  |  | Core |
-| ADAS_WARN_CTRL | 차량 상태 입력 기반 경고 조건 판정 및 경고 시작/종료 제어 | Func_001~004,006,010~012 |
+| ADAS_WARN_CTRL | 차량 상태 입력 기반 경고 조건 판정 및 경고 시작/종료 제어 | Func_001~004,006,010~012,130,131,136,148 |
 | NAV_CTX_MGR | 구간/방향/거리 입력을 컨텍스트로 변환 | Func_007 |
 | EMS_ALERT | 긴급알림 송신(Tx) 및 수신/해제/타임아웃(Rx) 통합 관리 | Func_017,018,023,024,144 |
-| WARN_ARB_MGR | 긴급/구간 충돌 중재 및 최종 경고 컨텍스트 생성 | Func_022,025,027~032,140~142 |
+| WARN_ARB_MGR | 긴급/구간 충돌 중재 및 최종 경고 컨텍스트 생성 | Func_022,025,027~032,140~142,149,150,152 |
 |  |  | Gateway/Network |
 | CHS_GW | Chassis CAN 입력 정규화 및 ETH 송신 | Flow_001,002 |
 | INFOTAINMENT_GW | Infotainment CAN 입력(구간/방향/거리/제한속도) 정규화 및 ETH 송신 | Flow_003 |
@@ -93,7 +94,7 @@ Emergency Source (logical terminal)
 | IVI_GW | 중재 결과 ETH 수신 후 Cluster CAN 송신 | Flow_008 |
 |  |  | Output |
 | AMBIENT_CTRL | 경고 레벨/타입 기반 앰비언트 패턴/색상 출력 | Func_008,009,013~016,033~039 |
-| CLU_HMI_CTRL | 경고 문구/방향/유형 표시 및 중복 억제 | Func_005,019~021,026,040,143,145~147 |
+| CLU_HMI_CTRL | 경고 문구/방향/유형 표시 및 중복 억제 | Func_005,019~021,026,040,143,145~147,153~155 |
 |  |  | SIL Verification |
 | VAL_SCENARIO_CTRL | 시나리오 실행, CAN+ETH 동시 검증, 결과 기록 | Func_041~043 |
 
@@ -213,6 +214,14 @@ Emergency Source (logical terminal)
 | Func_145 | Req_145 | CLU_HMI_CTRL | Flow_203 / Comm_203 / arbitrationSnapshotId, ClusterNotifType, ClusterNotifPrio | Flow_203 / Comm_203 / warningTextCode | `MOD_12.F145` | UT_BASE_ALERT_EXT_001 / IT_BASE_ALERT_EXT_001 |
 | Func_146 | Req_146 | CLU_HMI_CTRL | Flow_104,Flow_203 / Comm_104,Comm_203 / ThemeMode, PopupType, PopupPriority, PopupActive | Flow_203 / Comm_203 / warningTextCode, ClusterNotifPrio | `MOD_12.F146` | UT_BASE_ALERT_EXT_001 / IT_BASE_ALERT_EXT_001 |
 | Func_147 | Req_147 | CLU_HMI_CTRL | Flow_104,Flow_203 / Comm_104,Comm_203 / VolumeLevel, AudioFocusOwner | Flow_203 / Comm_203 / warningTextCode, ClusterNotifPrio | `MOD_12.F147` | UT_BASE_ALERT_EXT_001 / IT_BASE_ALERT_EXT_001 |
+| Func_148 | Req_148 | ADAS_WARN_CTRL | Flow_130,Flow_133 / Comm_130,Comm_133 / objectTrackValid, objectConfidence, objectRiskClass | Flow_130,Flow_133 / Comm_130,Comm_133 / objectRiskClass, selectedAlertLevel | `MOD_01.F148` | UT_BASE_ROBUST_EXT_001 / IT_BASE_ROBUST_EXT_001 |
+| Func_149 | Req_149 | WARN_ARB_MGR | Flow_006,Flow_105 / Comm_006,Comm_105 / lastEmergencyRxMs, timeoutClear, warningState, BoundaryStatus | Flow_006 / Comm_006 / warningState, selectedAlertLevel | `MOD_06.F149` | UT_BASE_ROBUST_EXT_001 / IT_BASE_ROBUST_EXT_001 |
+| Func_150 | Req_150 | WARN_ARB_MGR | Flow_006 / Comm_006 / warningState, selectedAlertLevel, duplicatePopupGuard | Flow_006 / Comm_006 / selectedAlertLevel, selectedAlertType | `MOD_06.F150` | UT_BASE_ROBUST_EXT_001 / IT_BASE_ROBUST_EXT_001 |
+| Func_151 | Req_151 | DOMAIN_BOUNDARY_MGR | Flow_105,Flow_124 / Comm_105,Comm_124 / domainPathStatus, e2eHealthState, BoundaryStatus | Flow_124 / Comm_124 / domainPathStatus, failSafeMode | `MOD_15.F151` | UT_BASE_ROBUST_EXT_001 / IT_BASE_ROBUST_EXT_001 |
+| Func_152 | Req_152 | WARN_ARB_MGR | Flow_006,Flow_124 / Comm_006,Comm_124 / failSafeMode, selectedAlertType, selectedAlertLevel | Flow_007,Flow_008 / Comm_007,Comm_008 / ambientMode, warningTextCode | `MOD_06.F152` | UT_BASE_ROBUST_EXT_001 / IT_BASE_ROBUST_EXT_001 |
+| Func_153 | Req_153 | CLU_HMI_CTRL | Flow_203 / Comm_203 / AudioFocusOwner, AudioDuckLevel, TtsState | Flow_008,Flow_203 / Comm_008,Comm_203 / warningTextCode, ClusterNotifPrio | `MOD_12.F153` | UT_BASE_ROBUST_EXT_001 / IT_BASE_ROBUST_EXT_001 |
+| Func_154 | Req_154 | CLU_HMI_CTRL | Flow_104,Flow_203 / Comm_104,Comm_203 / PopupType, PopupPriority, PopupActive, duplicatePopupGuard | Flow_008,Flow_203 / Comm_008,Comm_203 / warningTextCode, ClusterNotifPrio | `MOD_12.F154` | UT_BASE_ROBUST_EXT_001 / IT_BASE_ROBUST_EXT_001 |
+| Func_155 | Req_155 | CLU_HMI_CTRL | Flow_008,Flow_203 / Comm_008,Comm_203 / ClusterSyncState, ClusterSyncSeq, selectedAlertType, selectedAlertLevel | Flow_008,Flow_203 / Comm_008,Comm_203 / warningTextCode, ClusterNotifPrio | `MOD_12.F155` | UT_BASE_ROBUST_EXT_001 / IT_BASE_ROBUST_EXT_001 |
 
 ---
 
@@ -242,14 +251,14 @@ Emergency Source (logical terminal)
 | Var_018 | selectedAlertLevel | WARN_ARB_MGR, AMBIENT_CTRL | Flow_006,007 / Comm_006,007 |
 | Var_019 | selectedAlertType | WARN_ARB_MGR, AMBIENT_CTRL, CLU_HMI_CTRL | Flow_006~008 / Comm_006~008 |
 | Var_020 | timeoutClear | EMS_ALERT_RX, WARN_ARB_MGR, AMBIENT_CTRL | Flow_006,007 / Comm_006,007 |
-| Var_021 | ambientMode | BODY_GW, AMBIENT_CTRL | Flow_007 / Comm_007 |
+| Var_021 | ambientMode | WARN_ARB_MGR, BODY_GW, AMBIENT_CTRL | Flow_007 / Comm_007 |
 | Var_022 | ambientColor | BODY_GW, AMBIENT_CTRL | Flow_007 / Comm_007 |
 | Var_023 | ambientPattern | BODY_GW, AMBIENT_CTRL | Flow_007 / Comm_007 |
-| Var_024 | warningTextCode | IVI_GW, CLU_HMI_CTRL | Flow_008 / Comm_008 |
+| Var_024 | warningTextCode | WARN_ARB_MGR, IVI_GW, CLU_HMI_CTRL | Flow_008 / Comm_008 |
 | Var_025 | testScenario | VAL_SCENARIO_CTRL | Flow_009 / Comm_009 |
 | Var_026 | scenarioResult | VAL_SCENARIO_CTRL | Flow_009 / Comm_009 |
-| Var_027 | lastEmergencyRxMs | EMS_ALERT_RX | Flow_006 / Comm_006 |
-| Var_028 | duplicatePopupGuard | CLU_HMI_CTRL | Flow_008 / Comm_008 |
+| Var_027 | lastEmergencyRxMs | EMS_ALERT_RX, WARN_ARB_MGR | Flow_006 / Comm_006 |
+| Var_028 | duplicatePopupGuard | WARN_ARB_MGR, CLU_HMI_CTRL | Flow_008 / Comm_008 |
 | Var_029 | arbitrationSnapshotId | WARN_ARB_MGR | Flow_006 / Comm_006 |
 | Var_133 | TurnLampState | BODY_GW, WARN_ARB_MGR | Flow_103 / Comm_103 |
 | Var_138 | DriverSeatBelt | BODY_GW, WARN_ARB_MGR | Flow_103 / Comm_103 |
@@ -261,12 +270,17 @@ Emergency Source (logical terminal)
 | Var_166 | PopupType | INFOTAINMENT_GW, CLU_HMI_CTRL | Flow_104 / Comm_104 |
 | Var_167 | PopupPriority | INFOTAINMENT_GW, CLU_HMI_CTRL | Flow_104 / Comm_104 |
 | Var_168 | PopupActive | INFOTAINMENT_GW, CLU_HMI_CTRL | Flow_104 / Comm_104 |
+| Var_180 | BoundaryStatus | DOMAIN_ROUTER, DOMAIN_BOUNDARY_MGR | Flow_105,Flow_124 / Comm_105,Comm_124 |
 | Var_191 | DriveMode | DOMAIN_ROUTER, WARN_ARB_MGR | Flow_105 / Comm_105 |
 | Var_192 | EcoMode | DOMAIN_ROUTER, WARN_ARB_MGR | Flow_105 / Comm_105 |
 | Var_193 | SportMode | DOMAIN_ROUTER, WARN_ARB_MGR | Flow_105 / Comm_105 |
 | Var_268 | AudioFocusOwner | INFOTAINMENT_GW, CLU_HMI_CTRL | Flow_203 / Comm_203 |
+| Var_269 | AudioDuckLevel | INFOTAINMENT_GW, CLU_HMI_CTRL | Flow_203 / Comm_203 |
 | Var_281 | ClusterNotifType | INFOTAINMENT_GW, CLU_HMI_CTRL | Flow_203 / Comm_203 |
 | Var_282 | ClusterNotifPrio | INFOTAINMENT_GW, CLU_HMI_CTRL | Flow_203 / Comm_203 |
+| Var_289 | TtsState | INFOTAINMENT_GW, CLU_HMI_CTRL | Flow_203 / Comm_203 |
+| Var_296 | ClusterSyncState | INFOTAINMENT_GW, CLU_HMI_CTRL | Flow_203 / Comm_203 |
+| Var_297 | ClusterSyncSeq | INFOTAINMENT_GW, CLU_HMI_CTRL | Flow_203 / Comm_203 |
 | Var_320 | proximityRiskLevel | ADAS_WARN_CTRL | Flow_120 / Comm_120 |
 | Var_321 | decelAssistReq | WARN_ARB_MGR | Flow_121 / Comm_121 |
 | Var_322 | selectedAlertLevel | WARN_ARB_MGR | Flow_122 / Comm_122 |
@@ -364,7 +378,7 @@ Emergency Source (logical terminal)
 |---|---|---|
 | 스코프 정합 | CANoe SIL, CAN+Ethernet만 사용 | Defined |
 | 아키텍처 정합 | 옵션1(ETH_SW+Domain GW+CAN) 고정 | Defined |
-| Func 구현 커버리지 | Func_001~043, Func_101~119, Func_120~121, Func_123, Func_125~129, Func_130~147 Code Ref 존재 | Defined |
+| Func 구현 커버리지 | Func_001~043, Func_101~119, Func_120~121, Func_123, Func_125~129, Func_130~155 Code Ref 존재 | Defined |
 | Flow/Comm 정합 | 0302/0303과 ID/주기/조건 일치 | Defined |
 | Var 정합 | 0304 표준 Name + Internal Name 매핑 반영 | Defined |
 | 예외 처리 구현 | 5개 장애 규칙 구현 및 로그화 | Defined |
@@ -411,6 +425,7 @@ Emergency Source (logical terminal)
 
 | 버전 | 날짜 | 변경 사항 |
 |---|---|---|
+| 2.22 | 2026-03-06 | 경고 강건성·인지성 확장(Pre-Activation) 반영: `Func_148~Func_155` 구현 추적과 `Var_016/020/021/024/027/028/166/167/168/180/268/269/289/296/297/326/327/328/330/333/334` 보강표를 추가하고 05/06/07 연계 동기화 규칙을 작성 원칙에 반영. |
 | 2.21 | 2026-03-06 | 차량 경보 편의 확장(Pre-Activation) 반영: `Func_140~Func_147` 구현 추적, `Var_133/138~141/155/164/166~168/191~193/268/281/282` 보강표 추가, 05/06/07 연계 동기화 규칙을 작성 원칙에 반영. |
 | 2.20 | 2026-03-06 | ADAS 객체 인지 확장(Pre-Activation) 반영: `Func_130~Func_139` 구현 추적과 `Var_330~Var_339` 보강표를 추가하고 체인 동기화 규칙을 작성 원칙에 명시. |
 | 2.19 | 2026-03-06 | 용어/범위 정리: Verification-Harness에서 Driver 네임스페이스 자극 문구/행을 제거하고 `고속 무조향 기반 경고` 제품 체인과 분리 경계를 명확화. |

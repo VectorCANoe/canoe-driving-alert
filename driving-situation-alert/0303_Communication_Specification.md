@@ -3,7 +3,7 @@
 **Document ID**: PROJ-0303-CS
 **ISO 26262 Reference**: Part 6, Cl.7 (Software Architectural Design)
 **ASPICE Reference**: SWE.2 (Software Architectural Design)
-**Version**: 3.24
+**Version**: 3.25
 **Date**: 2026-03-06
 **Status**: Draft
 **Project Title**: 주행 상황 실시간 경고 시스템
@@ -37,6 +37,7 @@
 - ADAS 객체 인지 확장 요구(`Req_130~Req_139`) 통신(`Comm_130~Comm_133`)은 Pre-Activation(설계 선반영) 상태로 관리하며, 구현 착수 시 0302/0304/04/05/06/07을 동일 커밋에서 동기화한다.
 - `Comm_130~Comm_133` 활성 SoT 승격 조건은 `ETH_INTERFACE_CONTRACT.md v1.2`에 `E213~E216` 계약이 반영되는 것이다.
 - 차량 경보 편의 확장 요구(`Req_140~Req_147`) 통신은 `Comm_103/104/105/203`과 `Comm_006/008` Pre-Activation 매핑으로 관리하며, 구현 착수 시 0302/0304/04/05/06/07을 동일 커밋에서 동기화한다.
+- 경고 강건성·인지성 확장 요구(`Req_148~Req_155`) 통신은 `Comm_130/133`, `Comm_006/007/008`, `Comm_104/105/124/203` Pre-Activation 매핑으로 관리하며, 구현 착수 시 0302/0304/04/05/06/07을 동일 커밋에서 동기화한다.
 - EMS는 상위 문서 레벨에서 논리 단말 `EMS_ALERT`로 표기하고, 내부 구현 모듈(`EMS_POLICE_TX`, `EMS_AMB_TX`, `EMS_ALERT_RX`)은 하단 보강표에서만 분리 관리한다.
 - 약어 충돌 방지 규칙: `EMS_AMB_TX`의 `AMB`는 `Ambulance` 의미의 구현 literal이며, `Ambient`는 항상 `AMBIENT` 풀토큰으로 표기한다.
 - Validation Harness 공통 프레임(`0x2A5`, `0x2A6`)은 독립 `test_can`이 아니라 `chassis_can.dbc`에 통합 관리한다.
@@ -340,19 +341,19 @@
 | Comm_003 | Flow_003 | Func_007, Func_010 | Req_007, Req_010 | frmNavContextCanMsg(0x2A3), ethNavContextMsg(0x512) | VAL_SCENARIO_CTRL, INFOTAINMENT_GW | INFOTAINMENT_GW, NAV_CTX_MGR, ADAS_WARN_CTRL, WARN_ARB_MGR | CAN + Ethernet(UDP) | 100ms | 구간/방향/거리/제한속도 입력 갱신 |
 | Comm_004 | Flow_004 | Func_017 | Req_017 | ETH_EmergencyAlert(0xE100) | EMS_ALERT(Tx:Police) | EMS_ALERT(Rx) | Ethernet(UDP) | 100ms | alertState=Clear 또는 송신 중지 |
 | Comm_005 | Flow_005 | Func_018 | Req_017 | ETH_EmergencyAlert(0xE100) | EMS_ALERT(Tx:Ambulance) | EMS_ALERT(Rx) | Ethernet(UDP) | 100ms | alertState=Clear 또는 송신 중지 |
-| Comm_006 | Flow_006 | Func_022, Func_023, Func_024, Func_025, Func_027, Func_028, Func_029, Func_030, Func_031, Func_032, Func_144 | Req_022, Req_023, Req_024, Req_025, Req_027, Req_028, Req_029, Req_030, Req_031, Req_032, Req_144 | ETH_EmergencyAlert(0xE100), ethSelectedAlertMsg(0xE200) | EMS_ALERT(Rx), WARN_ARB_MGR | WARN_ARB_MGR, BODY_GW, IVI_GW | Ethernet(UDP) | Event + 50ms | 1000ms 무갱신 시 timeoutClear=1 |
-| Comm_007 | Flow_007 | Func_008, Func_009, Func_013, Func_014, Func_015, Func_016, Func_033, Func_034, Func_035, Func_036, Func_037, Func_038, Func_039 | Req_008, Req_009, Req_013, Req_014, Req_015, Req_016, Req_033, Req_034, Req_035, Req_037 | ethSelectedAlertMsg(0xE200), frmAmbientControlMsg(0x260) | WARN_ARB_MGR, BODY_GW | BODY_GW, AMBIENT_CTRL | Ethernet(UDP) + CAN | 50ms | selectedAlertLevel/selectedAlertType 수신 |
-| Comm_008 | Flow_008 | Func_005, Func_019, Func_020, Func_021, Func_026, Func_040, Func_143 | Req_005, Req_019, Req_020, Req_021, Req_026, Req_040, Req_143 | ethSelectedAlertMsg(0xE200), frmClusterWarningMsg(0x280) | WARN_ARB_MGR, IVI_GW | IVI_GW, CLU_HMI_CTRL | Ethernet(UDP) + CAN | 50ms | selectedAlertLevel/selectedAlertType 수신 |
+| Comm_006 | Flow_006 | Func_022, Func_023, Func_024, Func_025, Func_027, Func_028, Func_029, Func_030, Func_031, Func_032, Func_144, Func_149, Func_150, Func_152 | Req_022, Req_023, Req_024, Req_025, Req_027, Req_028, Req_029, Req_030, Req_031, Req_032, Req_144, Req_149, Req_150, Req_152 | ETH_EmergencyAlert(0xE100), ethSelectedAlertMsg(0xE200) | EMS_ALERT(Rx), WARN_ARB_MGR | WARN_ARB_MGR, BODY_GW, IVI_GW | Ethernet(UDP) | Event + 50ms | 1000ms 무갱신 시 timeoutClear=1 |
+| Comm_007 | Flow_007 | Func_008, Func_009, Func_013, Func_014, Func_015, Func_016, Func_033, Func_034, Func_035, Func_036, Func_037, Func_038, Func_039, Func_152 | Req_008, Req_009, Req_013, Req_014, Req_015, Req_016, Req_033, Req_034, Req_035, Req_037, Req_152 | ethSelectedAlertMsg(0xE200), frmAmbientControlMsg(0x260) | WARN_ARB_MGR, BODY_GW | BODY_GW, AMBIENT_CTRL | Ethernet(UDP) + CAN | 50ms | selectedAlertLevel/selectedAlertType 수신 |
+| Comm_008 | Flow_008 | Func_005, Func_019, Func_020, Func_021, Func_026, Func_040, Func_143, Func_152, Func_155 | Req_005, Req_019, Req_020, Req_021, Req_026, Req_040, Req_143, Req_152, Req_155 | ethSelectedAlertMsg(0xE200), frmClusterWarningMsg(0x280) | WARN_ARB_MGR, IVI_GW | IVI_GW, CLU_HMI_CTRL | Ethernet(UDP) + CAN | 50ms | selectedAlertLevel/selectedAlertType 수신 |
 | Comm_009 | Flow_009 | Func_041, Func_042, Func_043 | Req_041, Req_042, Req_043 | frmTestResultMsg(0x2A5) | VAL_SCENARIO_CTRL | VAL_SCENARIO_CTRL(Log/Panel) | CAN | Event | 판정 결과 기록 완료 시 종료 |
 | Comm_120 | Flow_120 | Func_120 | Req_120 | ethEmergencyRiskMsg(0x1C3) | ADAS_WARN_CTRL | WARN_ARB_MGR, VAL_SCENARIO_CTRL | Ethernet(UDP) | 100ms | 근접위험 산정 프레임 |
 | Comm_121 | Flow_121 | Func_121 | Req_121 | ethDecelAssistReqMsg(0x1C4) | WARN_ARB_MGR | CHS_GW, BRK_CTRL, VAL_SCENARIO_CTRL | Ethernet(UDP) + CAN | Event + 50ms | 감속 보조 요청 프레임 |
 | Comm_122 | Flow_122 | Func_125, Func_126 | Req_125, Req_126 | ethSelectedAlertMsg(0xE200), frmAmbientControlMsg(0x260), frmClusterWarningMsg(0x280) | WARN_ARB_MGR | BODY_GW, IVI_GW, AMBIENT_CTRL, CLU_HMI_CTRL | Ethernet(UDP) + CAN | 50ms | 감속 보조 활성 경고 동기화 |
 | Comm_123 | Flow_123 | Func_123 | Req_123 | frmPedalInputCanMsg(0x2A2), frmSteeringCanMsg(0x2A1), ethDecelAssistReqMsg(0x1C4) | CHS_GW, WARN_ARB_MGR | WARN_ARB_MGR, DOMAIN_ROUTER, BRK_CTRL | CAN + Ethernet(UDP) | Event + 100ms | 운전자 개입 시 보조 해제 |
-| Comm_124 | Flow_124 | Func_127, Func_128, Func_129 | Req_127, Req_128, Req_129 | frmChassisHealthMsg(0x103), frmBodyHealthMsg(0x269), frmInfotainmentHealthMsg(0x288), ethFailSafeStateMsg(0x111) | CHS_GW, BODY_GW, INFOTAINMENT_GW, DOMAIN_BOUNDARY_MGR | DOMAIN_BOUNDARY_MGR, DOMAIN_ROUTER, WARN_ARB_MGR, BODY_GW, IVI_GW, VAL_SCENARIO_CTRL | CAN + Ethernet(UDP) | 100ms + Event | 경로 단절 강등/보조 금지 |
-| Comm_130 | Flow_130 | Func_130, Func_131 | Req_130, Req_131 | ethObjectRiskInputMsg(0xE213) | CHS_GW, INFOTAINMENT_GW | ADAS_WARN_CTRL | Ethernet(UDP) | 100ms | 객체 목록/대표 위험 후보 입력 (Pre-Activation, ETH 계약 v1.2 대기) |
+| Comm_124 | Flow_124 | Func_127, Func_128, Func_129, Func_151, Func_152 | Req_127, Req_128, Req_129, Req_151, Req_152 | frmChassisHealthMsg(0x103), frmBodyHealthMsg(0x269), frmInfotainmentHealthMsg(0x288), ethFailSafeStateMsg(0x111) | CHS_GW, BODY_GW, INFOTAINMENT_GW, DOMAIN_BOUNDARY_MGR | DOMAIN_BOUNDARY_MGR, DOMAIN_ROUTER, WARN_ARB_MGR, BODY_GW, IVI_GW, VAL_SCENARIO_CTRL | CAN + Ethernet(UDP) | 100ms + Event | 경로 단절 강등/보조 금지 |
+| Comm_130 | Flow_130 | Func_130, Func_131, Func_148 | Req_130, Req_131, Req_148 | ethObjectRiskInputMsg(0xE213) | CHS_GW, INFOTAINMENT_GW | ADAS_WARN_CTRL | Ethernet(UDP) | 100ms | 객체 목록/대표 위험 후보 입력 (Pre-Activation, ETH 계약 v1.2 대기) |
 | Comm_131 | Flow_131 | Func_132, Func_133, Func_136 | Req_132, Req_133, Req_136 | ethObjectRiskStateMsg(0xE214) | ADAS_WARN_CTRL | WARN_ARB_MGR, VAL_SCENARIO_CTRL | Ethernet(UDP) | 100ms + Event | TTC/상대속도/거리 기반 위험 상태 (Pre-Activation, ETH 계약 v1.2 대기) |
 | Comm_132 | Flow_132 | Func_134, Func_135, Func_139 | Req_134, Req_135, Req_139 | ethObjectScenarioAlertMsg(0xE215), frmAmbientControlMsg(0x260), frmClusterWarningMsg(0x280) | WARN_ARB_MGR | BODY_GW, IVI_GW, AMBIENT_CTRL, CLU_HMI_CTRL | Ethernet(UDP) + CAN | Event + 50ms | 교차로/합류 객체 경고 및 우선순위 정합 (Pre-Activation, ETH 계약 v1.2 대기) |
-| Comm_133 | Flow_133 | Func_137, Func_138 | Req_137, Req_138 | ethObjectSafetyStateMsg(0xE216) | DOMAIN_BOUNDARY_MGR, EMS_ALERT | WARN_ARB_MGR, VAL_SCENARIO_CTRL | Ethernet(UDP) | Event | 신뢰도 강등 및 객체 이벤트 기록 (Pre-Activation, ETH 계약 v1.2 대기) |
+| Comm_133 | Flow_133 | Func_137, Func_138, Func_148 | Req_137, Req_138, Req_148 | ethObjectSafetyStateMsg(0xE216) | DOMAIN_BOUNDARY_MGR, EMS_ALERT | WARN_ARB_MGR, VAL_SCENARIO_CTRL | Ethernet(UDP) | Event | 신뢰도 강등 및 객체 이벤트 기록 (Pre-Activation, ETH 계약 v1.2 대기) |
 
 ---
 
@@ -409,8 +410,8 @@
 | Comm_101 | Flow_101 | Func_101, Func_102 | Req_101, Req_102 | frmIgnitionEngineMsg(0x2A8), frmGearStateMsg(0x2A9), frmEngineSpeedTempMsg(0x12A), frmTransmissionTempMsg(0x12D) | CAN(Powertrain) | 100ms |
 | Comm_102 | Flow_102 | Func_103, Func_104, Func_105 | Req_103, Req_104, Req_105 | frmPedalInputCanMsg(0x2A2), frmSteeringStateCanMsg(0x100), frmBrakeStatusMsg(0x120), frmAccelStatusMsg(0x121), frmSteeringTorqueMsg(0x122) | CAN(Chassis) | 100ms |
 | Comm_103 | Flow_103 | Func_106, Func_107, Func_140, Func_142 | Req_106, Req_107, Req_140, Req_142 | frmHazardControlMsg(0x261), frmWindowControlMsg(0x262), frmSeatBeltStateMsg(0x267), frmCabinAirStateMsg(0x268) | CAN(Body) | 100ms |
-| Comm_104 | Flow_104 | Func_109, Func_146 | Req_109, Req_146 | frmClusterBaseStateMsg(0x281), frmClusterThemeMsg(0x286), frmHmiPopupStateMsg(0x287) | CAN(Infotainment) | 50ms |
-| Comm_105 | Flow_105 | Func_110, Func_111, Func_141 | Req_110, Req_111, Req_141 | frmPowertrainGatewayMsg(0x109), frmVehicleModeMsg(0x10A), frmPowerLimitMsg(0x10B), frmCruiseStateMsg(0x10C), frmChassisHealthMsg(0x103), frmBodyHealthMsg(0x269), frmInfotainmentHealthMsg(0x288) | CAN(도메인 경계/라우팅) | 100ms |
+| Comm_104 | Flow_104 | Func_109, Func_146, Func_154 | Req_109, Req_146, Req_154 | frmClusterBaseStateMsg(0x281), frmClusterThemeMsg(0x286), frmHmiPopupStateMsg(0x287) | CAN(Infotainment) | 50ms |
+| Comm_105 | Flow_105 | Func_110, Func_111, Func_141, Func_149, Func_151 | Req_110, Req_111, Req_141, Req_149, Req_151 | frmPowertrainGatewayMsg(0x109), frmVehicleModeMsg(0x10A), frmPowerLimitMsg(0x10B), frmCruiseStateMsg(0x10C), frmChassisHealthMsg(0x103), frmBodyHealthMsg(0x269), frmInfotainmentHealthMsg(0x288) | CAN(도메인 경계/라우팅) | 100ms |
 | Comm_106 | Flow_106 | Func_112 | Req_112 | frmBaseTestResultMsg(0x2A6), frmTestResultMsg(0x2A5) | CAN(Chassis Validation frame) | Event |
 
 - 주의: `Comm_101~Comm_106`은 도메인 분리 DBC(`*_can.dbc`)와 동기화된 확정 Comm 세트다. 라우팅 동작 변경 시 0302/0304와 함께 갱신한다.
@@ -421,7 +422,7 @@
 |---|---|---|---|---|---|---|
 | Comm_201 | Flow_201 | Func_103, Func_104, Func_110 | Req_103, Req_104, Req_110 | frmEpsStateMsg(0x123), frmAbsStateMsg(0x124), frmEscStateMsg(0x125), frmTcsStateMsg(0x126), frmBrakeTempMsg(0x127), frmSteeringAngleMsg(0x128), frmWheelPulseMsg(0x104), frmSuspensionStateMsg(0x105), frmTirePressureMsg(0x106), frmChassisDiagReqMsg(0x2A4), frmChassisDiagResMsg(0x107), frmAdasChassisStatusMsg(0x1C1), frmBrakeWearMsg(0x129), frmRoadFrictionMsg(0x108) | CAN(Chassis + ETH Backbone CAN Stub) | 100ms + Event |
 | Comm_202 | Flow_202 | Func_106, Func_107, Func_111, Func_113, Func_114, Func_115, Func_116, Func_117, Func_118 | Req_106, Req_107, Req_111, Req_113, Req_116, Req_118 | frmHvacStateMsg(0x26A), frmHvacActuatorMsg(0x26B), frmMirrorStateMsg(0x26C), frmSeatStateMsg(0x26D), frmSeatControlMsg(0x26E), frmDoorControlMsg(0x26F), frmInteriorLightMsg(0x270), frmRainLightAutoMsg(0x271), frmBcmDiagReqMsg(0x272), frmBcmDiagResMsg(0x273), frmImmobilizerStateMsg(0x274), frmAlarmStateMsg(0x275), frmBodyGatewayStateMsg(0x276), frmBodyComfortStateMsg(0x277) | CAN(Body) | 100ms + Event |
-| Comm_203 | Flow_203 | Func_109, Func_111, Func_119, Func_145, Func_147 | Req_109, Req_111, Req_119, Req_145, Req_147 | frmAudioFocusMsg(0x289), frmVoiceAssistStateMsg(0x28A), frmMapRenderStateMsg(0x28B), frmRouteAlertMsg(0x28C), frmTrafficEventMsg(0x28D), frmPhoneProjectionMsg(0x28E), frmClusterNotifMsg(0x28F), frmMediaMetaMsg(0x291), frmSpeechTtsStateMsg(0x292), frmConnectivityStateMsg(0x293), frmClusterSyncStateMsg(0x295) | CAN(Infotainment) | 50/100ms |
+| Comm_203 | Flow_203 | Func_109, Func_111, Func_119, Func_145, Func_147, Func_153, Func_154, Func_155 | Req_109, Req_111, Req_119, Req_145, Req_147, Req_153, Req_154, Req_155 | frmAudioFocusMsg(0x289), frmVoiceAssistStateMsg(0x28A), frmMapRenderStateMsg(0x28B), frmRouteAlertMsg(0x28C), frmTrafficEventMsg(0x28D), frmPhoneProjectionMsg(0x28E), frmClusterNotifMsg(0x28F), frmMediaMetaMsg(0x291), frmSpeechTtsStateMsg(0x292), frmConnectivityStateMsg(0x293), frmClusterSyncStateMsg(0x295) | CAN(Infotainment) | 50/100ms |
 | Comm_204 | Flow_204 | Func_101, Func_102, Func_110 | Req_101, Req_102, Req_110 | frmEngineTorqueMsg(0x12E), frmEngineLoadMsg(0x12F), frmTransShiftStateMsg(0x130), frmThermalMgmtStateMsg(0x131), frmEnergyFlowStateMsg(0x10F), frmPowertrainCtrlAuthMsg(0x110) | CAN(Powertrain) | 100ms |
 | Comm_205 | Flow_205 | Func_112 | Req_112 | frmIviDiagReqMsg(0x2A7), frmIviDiagResMsg(0x290), frmIviHealthDetailMsg(0x294), frmPtDiagReqMsg(0x2AA), frmPtDiagResMsg(0x10E) | CAN(Validation/Diag) | Event + 100ms |
 
@@ -435,7 +436,7 @@
 | Comm_121 | Flow_121 | Func_121 | Req_121 | ethDecelAssistReqMsg(0x1C4) | Ethernet(UDP) + CAN | Event + 50ms |
 | Comm_122 | Flow_122 | Func_125, Func_126 | Req_125, Req_126 | ethSelectedAlertMsg(0xE200), frmAmbientControlMsg(0x260), frmClusterWarningMsg(0x280) | Ethernet(UDP) + CAN | 50ms |
 | Comm_123 | Flow_123 | Func_123 | Req_123 | frmPedalInputCanMsg(0x2A2), frmSteeringCanMsg(0x2A1), ethDecelAssistReqMsg(0x1C4) | CAN + Ethernet(UDP) | Event + 100ms |
-| Comm_124 | Flow_124 | Func_127, Func_128, Func_129 | Req_127, Req_128, Req_129 | frmChassisHealthMsg(0x103), frmBodyHealthMsg(0x269), frmInfotainmentHealthMsg(0x288), ethFailSafeStateMsg(0x111) | CAN + Ethernet(UDP) | 100ms + Event |
+| Comm_124 | Flow_124 | Func_127, Func_128, Func_129, Func_151, Func_152 | Req_127, Req_128, Req_129, Req_151, Req_152 | frmChassisHealthMsg(0x103), frmBodyHealthMsg(0x269), frmInfotainmentHealthMsg(0x288), ethFailSafeStateMsg(0x111) | CAN + Ethernet(UDP) | 100ms + Event |
 
 - 주의: `Comm_120~Comm_124`는 V2 확장 구현 Comm 세트다. 변경 시 0302/0304/05~07과 동일 커밋으로 동기화한다.
 
@@ -443,10 +444,10 @@
 
 | Comm ID | Flow ID(0302 연계) | Func ID | Req ID | Message(ID) | Protocol | 주기 |
 |---|---|---|---|---|---|---|
-| Comm_130 | Flow_130 | Func_130, Func_131 | Req_130, Req_131 | ethObjectRiskInputMsg(0xE213) | Ethernet(UDP) | 100ms |
+| Comm_130 | Flow_130 | Func_130, Func_131, Func_148 | Req_130, Req_131, Req_148 | ethObjectRiskInputMsg(0xE213) | Ethernet(UDP) | 100ms |
 | Comm_131 | Flow_131 | Func_132, Func_133, Func_136 | Req_132, Req_133, Req_136 | ethObjectRiskStateMsg(0xE214) | Ethernet(UDP) | 100ms + Event |
 | Comm_132 | Flow_132 | Func_134, Func_135, Func_139 | Req_134, Req_135, Req_139 | ethObjectScenarioAlertMsg(0xE215), frmAmbientControlMsg(0x260), frmClusterWarningMsg(0x280) | Ethernet(UDP) + CAN | Event + 50ms |
-| Comm_133 | Flow_133 | Func_137, Func_138 | Req_137, Req_138 | ethObjectSafetyStateMsg(0xE216) | Ethernet(UDP) | Event |
+| Comm_133 | Flow_133 | Func_137, Func_138, Func_148 | Req_137, Req_138, Req_148 | ethObjectSafetyStateMsg(0xE216) | Ethernet(UDP) | Event |
 
 - 주의: `Comm_130~Comm_133`는 ADAS 객체 인지 확장 Pre-Activation Comm 세트다. 구현 착수 시 0302/0304/04/05/06/07을 동일 커밋으로 동기화한다.
 - 활성 SoT 승격 조건: `ETH_INTERFACE_CONTRACT.md v1.2`에 `E213~E216` 계약 반영 완료.
@@ -482,6 +483,7 @@
 - `Req_120~Req_121`, `Req_123`, `Req_125~Req_129`는 Comm_120~Comm_124 구현 체인으로 추적하고, 변경 시 0302/0304/05~07을 동일 커밋으로 동기화한다.
 - `Req_130~Req_139`는 Comm_130~Comm_133 Pre-Activation 체인으로 추적하고, 구현 착수 시 0302/0304/04/05/06/07을 동일 커밋으로 동기화한다.
 - `Req_140~Req_147`는 Comm_103/104/105/203 + Comm_006/008 Pre-Activation 체인으로 추적하고, 구현 착수 시 0302/0304/04/05/06/07을 동일 커밋으로 동기화한다.
+- `Req_148~Req_155`는 Comm_130/133, Comm_006/007/008, Comm_104/105/124/203 Pre-Activation 체인으로 추적하고, 구현 착수 시 0302/0304/04/05/06/07을 동일 커밋으로 동기화한다.
 
 ---
 
@@ -501,6 +503,7 @@
 
 | 버전 | 날짜 | 변경 사항 |
 |---|---|---|
+| 3.25 | 2026-03-06 | 경고 강건성·인지성 확장(Pre-Activation) 반영: `Req_148~Req_155`를 `Comm_130/133`, `Comm_006/007/008`, `Comm_104/105/124/203`에 매핑하고 연계 체크포인트를 동기화. |
 | 3.24 | 2026-03-06 | 차량 경보 편의 확장(Pre-Activation) 반영: `Req_140~Req_147`을 `Comm_103/104/105/203` 및 `Comm_006/008`에 매핑하고 연계 체크포인트를 동기화. |
 | 3.23 | 2026-03-06 | SoT 정합 보강: `Comm_130~Comm_133`를 Pending Ethernet 계약(`ETH_INTERFACE_CONTRACT.md v1.2`, `E213~E216`)으로 분리하고 활성 SoT 범위를 명확화. |
 | 3.22 | 2026-03-06 | ADAS 객체 인지 확장(Pre-Activation) 반영: `Comm_130~Comm_133`와 `Req_130~Req_139` 추적을 추가하고 Ethernet SoT/체크포인트를 동기화. |

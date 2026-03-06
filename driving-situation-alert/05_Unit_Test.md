@@ -3,7 +3,7 @@
 **Document ID**: PROJ-05-UT
 **ISO 26262 Reference**: Part 6, Cl.9 (Software Unit Verification)
 **ASPICE Reference**: SWE.4 (Software Unit Verification)
-**Version**: 2.19
+**Version**: 2.20
 **Date**: 2026-03-06
 **Status**: Draft
 **Project Title**: 주행 상황 실시간 경고 시스템
@@ -30,6 +30,7 @@
 - V2 확장 요구(`Req_120~Req_121, Req_123, Req_125~Req_129`)는 구현 활성 상태로 UT 항목을 관리하며, SIL 시나리오 15~19를 기준 케이스로 운영한다.
 - ADAS 객체 인지 확장(`Req_130~Req_139`)은 Pre-Activation(설계 선반영) UT 항목(`UT_ADAS_OBJ_RISK_001`, `UT_ADAS_OBJ_SAFETY_001`)으로 관리한다.
 - 차량 경보 편의 확장(`Req_140~Req_147`)은 Pre-Activation(설계 선반영) UT 항목(`UT_BASE_ALERT_EXT_001`)으로 관리한다.
+- 경고 강건성·인지성 확장(`Req_148~Req_155`)은 Pre-Activation(설계 선반영) UT 항목(`UT_BASE_ROBUST_EXT_001`)으로 관리한다.
 
 ### 수치화 기준 (Req/Flow 파생)
 
@@ -56,6 +57,7 @@
 |  |  | ADAS_WARN_CTRL + WARN_ARB_MGR + DOMAIN_BOUNDARY_MGR (V2 확장) | 긴급차량 방향/ETA/자차속도 기반 위험도 산정, 감속 보조 요청/해제, Fail-safe 강등 동기화 | Ready |  |  |
 |  |  | ADAS_WARN_CTRL + WARN_ARB_MGR + DOMAIN_BOUNDARY_MGR (ADAS 객체 확장, Planned) | 객체 목록 수용, TTC/상대속도 기반 단계화, 교차로/합류 위험 경고, 신뢰도 저하 강등/이벤트 기록 | Planned |  |  |
 |  |  | WARN_ARB_MGR + EMS_ALERT + CLU_HMI_CTRL (차량 경보 편의 확장, Planned) | 방향지시등/주행모드/안전벨트 기반 경보 보정, 접근거리 표시, 이벤트 기록·이력, 표시/음량 설정 반영 | Planned |  |  |
+|  |  | WARN_ARB_MGR + DOMAIN_BOUNDARY_MGR + CLU_HMI_CTRL (경고 강건성·인지성 확장, Planned) | 입력 유효성/신선도 보호, 상태 전이 안정화, 채널 가용성·대체 출력, 오디오 경합/팝업 과밀/채널 동기 복원 정책 검증 | Planned |  |  |
 |  |  | NAV_CTX_MGR | roadZone/navDirection/zoneDistance/speedLimit 입력으로 컨텍스트 계산 및 speedLimitNorm 갱신 |  |  |  |
 |  |  | EMS_ALERT | 경찰/구급 긴급 이벤트의 송신/수신/해제/타임아웃(1000ms) 모듈 로직을 유닛 단위로 검증 |  |  |  |
 |  |  | WARN_ARB_MGR | Emergency>Zone, Ambulance>Police, ETA, SourceID 규칙으로 단일 경고 결과 결정 |  |  |  |
@@ -104,6 +106,7 @@
 | UT_ADAS_OBJ_RISK_001 | ADAS_WARN_CTRL, WARN_ARB_MGR | 객체 목록 수용/대표객체 선정/TTC·상대속도 단계화/교차로·합류 위험 경고/우선순위 정합 검증 | Req_130,Req_131,Req_132,Req_133,Req_134,Req_135,Req_136,Req_139 | VC_130,VC_131,VC_132,VC_133,VC_134,VC_135,VC_136,VC_139 | Func_130,Func_131,Func_132,Func_133,Func_134,Func_135,Func_136,Func_139 | Flow_130,Flow_131,Flow_132 / Comm_130,Comm_131,Comm_132 | Var_330,Var_331,Var_332,Var_334,Var_335,Var_336,Var_337,Var_338 | 객체 입력 후 `100ms` 내 위험 입력 반영, TTC 임계 시 `150ms` 내 경고 반영, 교차로/합류 분기 및 우선순위 결과가 규칙표와 일치 |
 | UT_ADAS_OBJ_SAFETY_001 | DOMAIN_BOUNDARY_MGR, EMS_ALERT | 객체 신뢰도 저하 강등/자동감속 차단 및 객체 이벤트 기록 검증 | Req_137,Req_138 | VC_137,VC_138 | Func_137,Func_138 | Flow_133 / Comm_133 | Var_333,Var_334,Var_339 | 신뢰도 기준 미만 시 `150ms` 내 `decelAssistReq=0` 강제 및 강등 적용, 이벤트 로그 누락 0건 |
 | UT_BASE_ALERT_EXT_001 | WARN_ARB_MGR, EMS_ALERT, CLU_HMI_CTRL | 차량 경보 편의 확장(방향지시등/모드/안전벨트 보정, 접근거리 표시, 이벤트 기록·이력, 표시/음량 설정) 유닛 검증 | Req_140,Req_141,Req_142,Req_143,Req_144,Req_145,Req_146,Req_147 | VC_140,VC_141,VC_142,VC_143,VC_144,VC_145,VC_146,VC_147 | Func_140,Func_141,Func_142,Func_143,Func_144,Func_145,Func_146,Func_147 | Flow_103,Flow_104,Flow_105,Flow_203,Flow_006,Flow_008 / Comm_103,Comm_104,Comm_105,Comm_203,Comm_006,Comm_008 | Var_009,Var_012,Var_024,Var_029,Var_133,Var_138,Var_139,Var_141,Var_155,Var_164,Var_166,Var_167,Var_168,Var_191,Var_192,Var_193,Var_268,Var_281,Var_282 | 입력 변화 반영 `150ms`, 접근거리 표시 갱신 `200ms`, 이벤트 기록 누락 0건, 표시/음량 설정 반영 `150ms` 기준 충족(Pre-Activation) |
+| UT_BASE_ROBUST_EXT_001 | ADAS_WARN_CTRL, WARN_ARB_MGR, DOMAIN_BOUNDARY_MGR, CLU_HMI_CTRL | 경고 강건성·인지성 확장(입력 유효성/신선도 보호, 전이 안정화, 채널 가용성·대체, 오디오 경합/팝업 과밀/채널 동기 복원) 유닛 검증 | Req_148,Req_149,Req_150,Req_151,Req_152,Req_153,Req_154,Req_155 | VC_148,VC_149,VC_150,VC_151,VC_152,VC_153,VC_154,VC_155 | Func_148,Func_149,Func_150,Func_151,Func_152,Func_153,Func_154,Func_155 | Flow_130,Flow_133,Flow_006,Flow_007,Flow_008,Flow_104,Flow_105,Flow_124,Flow_203 / Comm_130,Comm_133,Comm_006,Comm_007,Comm_008,Comm_104,Comm_105,Comm_124,Comm_203 | Var_330,Var_333,Var_334,Var_016,Var_020,Var_021,Var_024,Var_027,Var_028,Var_166,Var_167,Var_168,Var_180,Var_268,Var_269,Var_289,Var_296,Var_297,Var_326,Var_327,Var_328,Var_282 | 입력 유효성 필터링 `100ms`, stale/전이 안정화 `150ms`, 채널 가용성 판정/대체 출력 전환 `150ms`, 오디오 경합/팝업 과밀/동기 복원 `150ms` 기준 충족(Pre-Activation) |
 
 ---
 
@@ -126,6 +129,7 @@
 - `UT_EMS_RX_001`의 1000ms 타임아웃 결과는 `IT_TIMEOUT_001` 및 `IT_OUT_001`의 전제 조건이다.
 - `UT_ADAS_OBJ_RISK_001`, `UT_ADAS_OBJ_SAFETY_001`은 `IT_ADAS_OBJ_001`(Pre-Activation)의 선행 조건으로 사용한다.
 - `UT_BASE_ALERT_EXT_001`은 `IT_BASE_ALERT_EXT_001`(Pre-Activation)의 선행 조건으로 사용한다.
+- `UT_BASE_ROBUST_EXT_001`은 `IT_BASE_ROBUST_EXT_001`(Pre-Activation)의 선행 조건으로 사용한다.
 
 ---
 
@@ -133,6 +137,7 @@
 
 | 버전 | 날짜 | 변경 사항 |
 |---|---|---|
+| 2.20 | 2026-03-06 | 경고 강건성·인지성 확장(Pre-Activation) 반영: `UT_BASE_ROBUST_EXT_001` 추가, `Req_148~Req_155`/`Func_148~Func_155`/`Flow·Comm_130·133·006·007·008·104·105·124·203` 추적 및 06 연계 체크포인트를 동기화. |
 | 2.19 | 2026-03-06 | 차량 경보 편의 확장(Pre-Activation) 반영: `UT_BASE_ALERT_EXT_001` 추가, `Req_140~Req_147`/`Func_140~Func_147`/`Flow·Comm_103·104·105·203·006·008` 추적 및 06 연계 체크포인트를 동기화. |
 | 2.18 | 2026-03-06 | ADAS 객체 인지 확장(Pre-Activation) 반영: `UT_ADAS_OBJ_RISK_001`, `UT_ADAS_OBJ_SAFETY_001`를 추가하고 `Req_130~Req_139` 추적 및 06 연계 체크포인트를 동기화. |
 | 2.17 | 2026-03-06 | 미사용 체인 정리: `Req/VC/Func_108`을 `UT_BASE_001/UT_BASE_BODY_001` 추적 범위에서 제거하고 Baseline 범위를 `108 제외`로 동기화. |

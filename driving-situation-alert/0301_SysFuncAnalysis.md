@@ -3,7 +3,7 @@
 **Document ID**: PROJ-0301-SFA
 **ISO 26262 Reference**: Part 4, Cl.7 (System Design)
 **ASPICE Reference**: SYS.3 (System Architectural Design)
-**Version**: 3.25
+**Version**: 3.26
 **Date**: 2026-03-06
 **Status**: Draft
 **Project Title**: 주행 상황 실시간 경고 시스템
@@ -17,10 +17,11 @@
 
 ## 작성 원칙
 
-- 본 문서는 03_Function_definition.md의 Func_001~Func_121, Func_123, Func_125~Func_147를 노드 내부 동작 관점으로 분해한다.
+- 본 문서는 03_Function_definition.md의 Func_001~Func_121, Func_123, Func_125~Func_155를 노드 내부 동작 관점으로 분해한다.
 - V2 확장 요구(`Req_120~Req_121`, `Req_123`, `Req_125~Req_129`)는 `Func_120~Func_121`, `Func_123`, `Func_125~Func_129`로 구현 활성 상태에서 관리한다.
 - ADAS 객체 인지 확장 요구(`Req_130~Req_139`)는 `Func_130~Func_139`로 Pre-Activation(설계 선반영) 상태에서 관리한다.
 - 차량 경보 편의 확장 요구(`Req_140~Req_147`)는 `Func_140~Func_147`로 Pre-Activation(설계 선반영) 상태에서 관리한다.
+- 경고 강건성·인지성 확장 요구(`Req_148~Req_155`)는 `Func_148~Func_155`로 Pre-Activation(설계 선반영) 상태에서 관리한다.
 - 각 노드의 입력-처리-출력을 명확히 정의해 0302의 Tx/Rx 흐름 설계로 연결한다.
 - 요구사항(What) 문장을 반복하지 않고, 시스템 동작 로직(How)만 기술한다.
 - 상단 표는 공식 표준 양식의 열 구성(노드/기능 상세/비고)을 유지한다.
@@ -136,6 +137,14 @@
 | Func_145 | Req_145 | CLU_HMI_CTRL | arbitrationSnapshotId, ClusterNotifType, ClusterNotifPrio | 경보 이벤트 이력 조회/표시 | warningTextCode | 입력: arbitrationSnapshotId, ClusterNotifType, ClusterNotifPrio / 출력: warningTextCode |
 | Func_146 | Req_146 | CLU_HMI_CTRL | ThemeMode, PopupType, PopupPriority, PopupActive | 경보 표시 방식 설정 반영 | warningTextCode, ClusterNotifPrio | 입력: ThemeMode, PopupType, PopupPriority, PopupActive / 출력: warningTextCode, ClusterNotifPrio |
 | Func_147 | Req_147 | CLU_HMI_CTRL | VolumeLevel, AudioFocusOwner | 경보 음량 설정 반영 | warningTextCode, ClusterNotifPrio | 입력: VolumeLevel, AudioFocusOwner / 출력: warningTextCode, ClusterNotifPrio |
+| Func_148 | Req_148 | ADAS_WARN_CTRL | objectTrackValid, objectConfidence, objectRiskClass | 경고 입력 유효성/신뢰도 필터링 | objectRiskClass, selectedAlertLevel | 입력: objectTrackValid, objectConfidence, objectRiskClass / 출력: objectRiskClass, selectedAlertLevel |
+| Func_149 | Req_149 | WARN_ARB_MGR | lastEmergencyRxMs, timeoutClear, warningState | 핵심 입력 신선도(stale) 감지 및 보수 정책 전환 | warningState, selectedAlertLevel | 입력: lastEmergencyRxMs, timeoutClear, warningState / 출력: warningState, selectedAlertLevel |
+| Func_150 | Req_150 | WARN_ARB_MGR | warningState, selectedAlertLevel, duplicatePopupGuard | 경고 상태 전이 진동 억제(안정화) | selectedAlertLevel, selectedAlertType | 입력: warningState, selectedAlertLevel, duplicatePopupGuard / 출력: selectedAlertLevel, selectedAlertType |
+| Func_151 | Req_151 | DOMAIN_BOUNDARY_MGR | domainPathStatus, e2eHealthState, BoundaryStatus | 출력 채널 가용성 판정 | domainPathStatus, failSafeMode | 입력: domainPathStatus, e2eHealthState, BoundaryStatus / 출력: domainPathStatus, failSafeMode |
+| Func_152 | Req_152 | WARN_ARB_MGR | failSafeMode, selectedAlertType, selectedAlertLevel | 주 출력 채널 장애 시 대체 출력 정책 적용 | selectedAlertType, selectedAlertLevel, warningTextCode | 입력: failSafeMode, selectedAlertType, selectedAlertLevel / 출력: selectedAlertType, selectedAlertLevel, warningTextCode |
+| Func_153 | Req_153 | CLU_HMI_CTRL | AudioFocusOwner, AudioDuckLevel, TtsState | 오디오 경합 시 경고 인지성 보호 | warningTextCode, ClusterNotifPrio | 입력: AudioFocusOwner, AudioDuckLevel, TtsState / 출력: warningTextCode, ClusterNotifPrio |
+| Func_154 | Req_154 | CLU_HMI_CTRL | PopupType, PopupPriority, PopupActive, duplicatePopupGuard | 팝업 과밀 억제 및 우선 경고 선표시 | warningTextCode, ClusterNotifPrio | 입력: PopupType, PopupPriority, PopupActive, duplicatePopupGuard / 출력: warningTextCode, ClusterNotifPrio |
+| Func_155 | Req_155 | CLU_HMI_CTRL | ClusterSyncState, ClusterSyncSeq, selectedAlertType, selectedAlertLevel | 앰비언트/클러스터 경고 동기 일관성 관리 | warningTextCode, ClusterNotifPrio | 입력: ClusterSyncState, ClusterSyncSeq, selectedAlertType, selectedAlertLevel / 출력: warningTextCode, ClusterNotifPrio |
 
 ## 2-1. Req-Func 1:1 감사 매핑 표
 
@@ -228,6 +237,14 @@
 | Req_145 | Func_145 | CLU_HMI_CTRL | 경보 이벤트 이력 조회 |
 | Req_146 | Func_146 | CLU_HMI_CTRL | 경보 표시 방식 설정 반영 |
 | Req_147 | Func_147 | CLU_HMI_CTRL | 경보 음량 설정 반영 |
+| Req_148 | Func_148 | ADAS_WARN_CTRL | 경고 입력 유효성 필터링 |
+| Req_149 | Func_149 | WARN_ARB_MGR | 경고 입력 신선도 보호 |
+| Req_150 | Func_150 | WARN_ARB_MGR | 경고 상태 전이 안정화 |
+| Req_151 | Func_151 | DOMAIN_BOUNDARY_MGR | 출력 채널 가용성 판정 |
+| Req_152 | Func_152 | WARN_ARB_MGR | 출력 채널 장애 시 대체 경고 유지 |
+| Req_153 | Func_153 | CLU_HMI_CTRL | 오디오 경합 시 경고 인지성 보호 |
+| Req_154 | Func_154 | CLU_HMI_CTRL | 팝업 과밀 억제 및 우선 표시 |
+| Req_155 | Func_155 | CLU_HMI_CTRL | 경고 채널 동기 일관성 |
 
 ---
 
@@ -246,6 +263,7 @@
 | 도메인 경로 단절 강등 | DOMAIN_BOUNDARY_MGR(경로 단절 감지) -> DOMAIN_ROUTER -> WARN_ARB_MGR/출력노드 | Func_127, Func_128, Func_129 |
 | 객체 기반 교차로/합류 위험 경고 | ADAS_WARN_CTRL(객체 정규화/TTC/단계화) + WARN_ARB_MGR(교차로/합류 판정 및 우선순위 정합) + DOMAIN_BOUNDARY_MGR(신뢰도 강등) + EMS_ALERT(이벤트 기록) -> AMBIENT_CTRL + CLU_HMI_CTRL | Func_130, Func_131, Func_132, Func_133, Func_134, Func_135, Func_136, Func_137, Func_138, Func_139 |
 | 차량 경보 편의 확장 | BODY_GW/DOMAIN_ROUTER(방향지시등/주행모드/안전벨트 입력) + WARN_ARB_MGR(맥락/민감도/강조 보정) + EMS_ALERT(이벤트 기록) + CLU_HMI_CTRL(거리표시/이력/설정 반영) | Func_140, Func_141, Func_142, Func_143, Func_144, Func_145, Func_146, Func_147 |
+| 경고 강건성·인지성 확장 | ADAS_WARN_CTRL(입력 유효성 필터링) + WARN_ARB_MGR(신선도/상태전이 안정화/대체정책) + DOMAIN_BOUNDARY_MGR(채널 가용성 판정) + CLU_HMI_CTRL(오디오 경합/팝업 과밀/채널 동기 관리) | Func_148, Func_149, Func_150, Func_151, Func_152, Func_153, Func_154, Func_155 |
 
 ---
 
@@ -306,6 +324,7 @@
 
 | 버전 | 날짜 | 변경 사항 |
 |---|---|---|
+| 3.26 | 2026-03-06 | 경고 강건성·인지성 확장(Pre-Activation) 반영: `Func_148~Func_155`를 상세표/Req-Func 매핑/핵심 시나리오 체인에 추가하고 `Req_148~Req_155` 추적 경로를 고정. |
 | 3.25 | 2026-03-06 | 차량 경보 편의 확장(Pre-Activation) 반영: `Func_140~Func_147`를 상세표/Req-Func 매핑/핵심 시나리오 체인에 추가하고 `Req_140~Req_147` 추적 경로를 고정. |
 | 3.24 | 2026-03-06 | ADAS 객체 인지 확장(Pre-Activation) 반영: `Func_130~Func_139`를 상세표/Req-Func 매핑/핵심 시나리오 체인에 추가하고 `Req_130~Req_139` 추적 경로를 고정. |
 | 3.23 | 2026-03-06 | 미사용 체인 정리: `Req_108/Func_108`(운전자 상태 전달) 매핑 행을 삭제하고 01/03/0303/0304/04/05/06/07 기준과 동기화. |

@@ -3,7 +3,7 @@
 **Document ID**: PROJ-0304-SV
 **ISO 26262 Reference**: Part 6, Cl.7 (Software Architectural Design)
 **ASPICE Reference**: SWE.2 / SWE.3
-**Version**: 2.22
+**Version**: 2.23
 **Date**: 2026-03-06
 **Status**: Draft
 **Project Title**: 주행 상황 실시간 경고 시스템
@@ -29,6 +29,7 @@
 - V2 확장 변수(`Req_120~Req_121, Req_123, Req_125~Req_129`)는 구현 활성 상태로 추적하며, 0302/0303/05~07과 코드/DBC를 동일 커밋에서 동기화한다.
 - ADAS 객체 인지 확장 변수(`Req_130~Req_139`)는 `Var_330~Var_339` Pre-Activation(설계 선반영) 상태로 추적하며, 구현 착수 시 0302/0303/04/05/06/07과 동일 커밋에서 동기화한다.
 - 차량 경보 편의 확장 변수(`Req_140~Req_147`)는 `Var_009/012/024/029/133/138~141/155/164/166~168/191~193/268/281/282` Pre-Activation 매핑으로 추적하며, 구현 착수 시 0302/0303/04/05/06/07과 동일 커밋에서 동기화한다.
+- 경고 강건성·인지성 확장 변수(`Req_148~Req_155`)는 `Var_330/333/334`, `Var_016/020/021/024/027/028`, `Var_180/326/327/328`, `Var_166/167/168/268/269/289/296/297` Pre-Activation 매핑으로 추적하며, 구현 착수 시 0302/0303/04/05/06/07과 동일 커밋에서 동기화한다.
 - 목표 설계는 옵션1(ETH 백본) 고정이며, CANoe.CAN 라이선스 제약 구간의 SIL 검증은 임시로 CAN 대체 백본을 사용하고 Ethernet 라이선스 확보 후 동일 케이스로 재검증한다.
 - SoT 계층은 분리 관리한다: CAN 실프레임은 도메인 DBC(`chassis_can.dbc`/`powertrain_can.dbc`/`body_can.dbc`/`infotainment_can.dbc`/`adas_can.dbc` + `eth_backbone_can_stub.dbc`)를 따르고, Validation 결과 프레임(`0x2A5`,`0x2A6`)은 `chassis_can.dbc`에 통합 관리한다. Ethernet 논리 계약은 `ETH_INTERFACE_CONTRACT.md`를 따른다.
 
@@ -420,19 +421,19 @@
 | Var_014 | steeringInputNorm | steeringInput_ETH_CORE | ETH_CORE | ADAS_WARN_CTRL | Comm_002 | Flow_002 | Func_011, Func_012 | Req_011, Req_012 | CHS_GW 변환 메시지 수신 시 갱신 |
 | Var_031 | speedLimitNorm | speedLimit_ETH_CORE | ETH_CORE | NAV_CTX_MGR | Comm_003 | Flow_003 | Func_007, Func_010 | Req_007, Req_010 | NAV 입력 수신 시 정규화 갱신(기본값 30) |
 | Var_015 | baseZoneContext | baseZoneContext_ETH_CORE | ETH_CORE | NAV_CTX_MGR | Comm_003 | Flow_003 | Func_007 | Req_007 | NAV 컨텍스트 계산 후 갱신 |
-| Var_016 | warningState | warningState_ETH_CORE | ETH_CORE | ADAS_WARN_CTRL | Comm_001, Comm_002, Comm_006 | Flow_001, Flow_002, Flow_006 | Func_003, Func_004, Func_006, Func_010, Func_011, Func_012, Func_027 | Req_003, Req_004, Req_006, Req_010, Req_011, Req_012, Req_027 | 경고 조건 계산 시 갱신 |
+| Var_016 | warningState | warningState_ETH_CORE | ETH_CORE | ADAS_WARN_CTRL | Comm_001, Comm_002, Comm_006 | Flow_001, Flow_002, Flow_006 | Func_003, Func_004, Func_006, Func_010, Func_011, Func_012, Func_027, Func_149, Func_150 | Req_003, Req_004, Req_006, Req_010, Req_011, Req_012, Req_027, Req_149, Req_150 | 경고 조건 계산/신선도 보호/전이 안정화 시 갱신 |
 | Var_017 | emergencyContext | emergencyContext_ETH_CORE | ETH_CORE | EMS_ALERT | Comm_004, Comm_005, Comm_006 | Flow_004, Flow_005, Flow_006 | Func_017, Func_018, Func_023, Func_024 | Req_017, Req_023, Req_024 | E100 수신/해제/타임아웃 시 갱신 |
-| Var_018 | selectedAlertLevel | selectedAlertLevel_ETH_CORE | ETH_CORE | WARN_ARB_MGR | Comm_006 | Flow_006 | Func_022, Func_025, Func_026, Func_027, Func_028, Func_029, Func_030, Func_031, Func_032 | Req_022, Req_025, Req_026, Req_027, Req_028, Req_029, Req_030, Req_031, Req_032 | 중재 결과 생성 시 갱신 |
-| Var_019 | selectedAlertType | selectedAlertType_ETH_CORE | ETH_CORE | WARN_ARB_MGR | Comm_006 | Flow_006 | Func_022, Func_025, Func_026, Func_027, Func_028, Func_029, Func_030, Func_031, Func_032 | Req_022, Req_025, Req_026, Req_027, Req_028, Req_029, Req_030, Req_031, Req_032 | 중재 결과 생성 시 갱신 |
-| Var_020 | timeoutClear | timeoutClear_ETH_CORE | ETH_CORE | EMS_ALERT | Comm_006 | Flow_006 | Func_024, Func_033, Func_034 | Req_024, Req_033, Req_034 | 1000ms 무갱신 시 1로 전환(WARN_ARB_MGR 전달) |
-| Var_021 | ambientMode | ambientMode_CAN_OUT | CAN_OUT | BODY_GW/AMBIENT_CTRL | Comm_007 | Flow_007 | Func_008, Func_009, Func_013, Func_014, Func_015, Func_016, Func_033, Func_034, Func_035, Func_036, Func_037, Func_038, Func_039 | Req_008, Req_009, Req_013, Req_014, Req_015, Req_016, Req_033, Req_034, Req_035, Req_037 | 50ms 출력 주기 갱신 |
+| Var_018 | selectedAlertLevel | selectedAlertLevel_ETH_CORE | ETH_CORE | WARN_ARB_MGR | Comm_006 | Flow_006 | Func_022, Func_025, Func_026, Func_027, Func_028, Func_029, Func_030, Func_031, Func_032, Func_150, Func_152 | Req_022, Req_025, Req_026, Req_027, Req_028, Req_029, Req_030, Req_031, Req_032, Req_150, Req_152 | 중재 결과 생성/전이 안정화/대체 출력 정책 적용 시 갱신 |
+| Var_019 | selectedAlertType | selectedAlertType_ETH_CORE | ETH_CORE | WARN_ARB_MGR | Comm_006 | Flow_006 | Func_022, Func_025, Func_026, Func_027, Func_028, Func_029, Func_030, Func_031, Func_032, Func_150, Func_152, Func_155 | Req_022, Req_025, Req_026, Req_027, Req_028, Req_029, Req_030, Req_031, Req_032, Req_150, Req_152, Req_155 | 중재 결과 생성/전이 안정화/대체 출력 정책 및 채널 동기 기준 반영 시 갱신 |
+| Var_020 | timeoutClear | timeoutClear_ETH_CORE | ETH_CORE | EMS_ALERT | Comm_006 | Flow_006 | Func_024, Func_033, Func_034, Func_149 | Req_024, Req_033, Req_034, Req_149 | 1000ms 무갱신 시 1로 전환(WARN_ARB_MGR 전달), stale 보호 정책 입력으로 반영 |
+| Var_021 | ambientMode | ambientMode_CAN_OUT | CAN_OUT | BODY_GW/AMBIENT_CTRL | Comm_007 | Flow_007 | Func_008, Func_009, Func_013, Func_014, Func_015, Func_016, Func_033, Func_034, Func_035, Func_036, Func_037, Func_038, Func_039, Func_152 | Req_008, Req_009, Req_013, Req_014, Req_015, Req_016, Req_033, Req_034, Req_035, Req_037, Req_152 | 50ms 출력 주기 갱신(채널 대체 정책 반영 포함) |
 | Var_022 | ambientColor | ambientColor_CAN_OUT | CAN_OUT | BODY_GW/AMBIENT_CTRL | Comm_007 | Flow_007 | Func_014, Func_035, Func_037, Func_038, Func_039 | Req_014, Req_035, Req_037 | 50ms 출력 주기 갱신 |
 | Var_023 | ambientPattern | ambientPattern_CAN_OUT | CAN_OUT | BODY_GW/AMBIENT_CTRL | Comm_007 | Flow_007 | Func_014, Func_015, Func_036, Func_037, Func_038, Func_039 | Req_014, Req_015, Req_035, Req_037 | 50ms 출력 주기 갱신 |
-| Var_024 | warningTextCode | warningTextCode_CAN_OUT | CAN_OUT | IVI_GW/CLU_HMI_CTRL | Comm_008 | Flow_008 | Func_005, Func_019~Func_021, Func_026, Func_040, Func_143, Func_145, Func_146, Func_147 | Req_005, Req_019~Req_021, Req_026, Req_040, Req_143, Req_145, Req_146, Req_147 | 50ms 출력 주기 갱신 |
+| Var_024 | warningTextCode | warningTextCode_CAN_OUT | CAN_OUT | IVI_GW/CLU_HMI_CTRL | Comm_008 | Flow_008 | Func_005, Func_019~Func_021, Func_026, Func_040, Func_143, Func_145, Func_146, Func_147, Func_152, Func_153, Func_154, Func_155 | Req_005, Req_019~Req_021, Req_026, Req_040, Req_143, Req_145, Req_146, Req_147, Req_152, Req_153, Req_154, Req_155 | 50ms 출력 주기 갱신(대체 출력/인지성 보호/과밀 억제/동기 복원 포함) |
 | Var_025 | testScenario | testScenario_INPUT | TEST | VAL_SCENARIO_CTRL | Comm_009 | Flow_009 | Func_041, Func_042 | Req_041, Req_042 | 시나리오 시작 시 설정 |
 | Var_026 | scenarioResult | scenarioResult_OUTPUT | TEST | VAL_SCENARIO_CTRL | Comm_009 | Flow_009 | Func_043 | Req_043 | 시나리오 종료 시 판정 기록 |
-| Var_027 | lastEmergencyRxMs | lastEmergencyRxMs | CORE_STATE | EMS_ALERT | Comm_004, Comm_005, Comm_006 | Flow_004, Flow_005, Flow_006 | Func_023, Func_024 | Req_023, Req_024 | E100 수신 시각(ms) 기록, 1000ms 타임아웃 기준 |
-| Var_028 | duplicatePopupGuard | duplicatePopupGuard | CORE_STATE | CLU_HMI_CTRL | Comm_008 | Flow_008 | Func_026 | Req_026 | 동일 Alert 반복 시 타이머 갱신 |
+| Var_027 | lastEmergencyRxMs | lastEmergencyRxMs | CORE_STATE | EMS_ALERT | Comm_004, Comm_005, Comm_006 | Flow_004, Flow_005, Flow_006 | Func_023, Func_024, Func_149 | Req_023, Req_024, Req_149 | E100 수신 시각(ms) 기록, 1000ms 타임아웃 기준 및 입력 신선도 보호 기준 |
+| Var_028 | duplicatePopupGuard | duplicatePopupGuard | CORE_STATE | CLU_HMI_CTRL | Comm_008 | Flow_008 | Func_026, Func_150, Func_154 | Req_026, Req_150, Req_154 | 동일 Alert 반복 시 타이머 갱신, 전이 안정화/과밀 억제 입력으로 반영 |
 | Var_029 | arbitrationSnapshotId | arbitrationSnapshotId | CORE_STATE | WARN_ARB_MGR | Comm_006 | Flow_006 | Func_032, Func_144, Func_145 | Req_032, Req_144, Req_145 | 중재 수행 시 스냅샷 ID 증가 |
 | Var_BASE_A | --- Baseline Comm_101~Comm_106 추적 확장 --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | Var_101 | AccelPedal | accelPedal_CAN_BASE | CAN_BASE | CHS_GW | Comm_102 | Flow_102 | Func_103, Func_104, Func_105 | Req_103, Req_104, Req_105 | 100ms 주기 수신 시 갱신 |
@@ -498,9 +499,9 @@
 | Var_163 | EtaMinutes | etaMinutes_CAN_BASE | CAN_BASE | INFOTAINMENT_GW/IVI_GW | Comm_104 | Flow_104 | Func_109 | Req_109 | 50ms 주기 수신 시 갱신 |
 | Var_164 | ThemeMode | themeMode_CAN_BASE | CAN_BASE | INFOTAINMENT_GW/IVI_GW | Comm_104 | Flow_104 | Func_109, Func_146 | Req_109, Req_146 | 50ms 주기 수신 시 갱신 |
 | Var_165 | ClusterBrightness | clusterBrightness_CAN_BASE | CAN_BASE | INFOTAINMENT_GW/IVI_GW | Comm_104 | Flow_104 | Func_109 | Req_109 | 50ms 주기 수신 시 갱신 |
-| Var_166 | PopupType | popupType_CAN_BASE | CAN_BASE | INFOTAINMENT_GW/IVI_GW | Comm_104 | Flow_104 | Func_109, Func_146 | Req_109, Req_146 | 50ms 주기 수신 시 갱신 |
-| Var_167 | PopupPriority | popupPriority_CAN_BASE | CAN_BASE | INFOTAINMENT_GW/IVI_GW | Comm_104 | Flow_104 | Func_109, Func_146 | Req_109, Req_146 | 50ms 주기 수신 시 갱신 |
-| Var_168 | PopupActive | popupActive_CAN_BASE | CAN_BASE | INFOTAINMENT_GW/IVI_GW | Comm_104 | Flow_104 | Func_109, Func_146 | Req_109, Req_146 | 50ms 주기 수신 시 갱신 |
+| Var_166 | PopupType | popupType_CAN_BASE | CAN_BASE | INFOTAINMENT_GW/IVI_GW | Comm_104 | Flow_104 | Func_109, Func_146, Func_154 | Req_109, Req_146, Req_154 | 50ms 주기 수신 시 갱신(팝업 과밀 억제 입력 포함) |
+| Var_167 | PopupPriority | popupPriority_CAN_BASE | CAN_BASE | INFOTAINMENT_GW/IVI_GW | Comm_104 | Flow_104 | Func_109, Func_146, Func_154 | Req_109, Req_146, Req_154 | 50ms 주기 수신 시 갱신(팝업 과밀 억제 입력 포함) |
+| Var_168 | PopupActive | popupActive_CAN_BASE | CAN_BASE | INFOTAINMENT_GW/IVI_GW | Comm_104 | Flow_104 | Func_109, Func_146, Func_154 | Req_109, Req_146, Req_154 | 50ms 주기 수신 시 갱신(팝업 과밀 억제 입력 포함) |
 | Var_169 | InfoAliveCnt | infoAliveCnt_CAN_BASE | CAN_BASE | DOMAIN_ROUTER | Comm_105 | Flow_105 | Func_110, Func_111 | Req_110, Req_111 | 100ms 주기 수신 시 갱신 |
 | Var_170 | InfoDiagState | infoDiagState_CAN_BASE | CAN_BASE | DOMAIN_ROUTER | Comm_105 | Flow_105 | Func_110, Func_111 | Req_110, Req_111 | 100ms 주기 수신 시 갱신 |
 | Var_171 | InfoFailCode | infoFailCode_CAN_BASE | CAN_BASE | DOMAIN_ROUTER | Comm_105 | Flow_105 | Func_110, Func_111 | Req_110, Req_111 | 100ms 주기 수신 시 갱신 |
@@ -512,7 +513,7 @@
 | Var_177 | GearInput | gearInput_CAN_BASE | CAN_BASE | ENG_CTRL/TCM | Comm_101 | Flow_101 | Func_101, Func_102 | Req_101, Req_102 | 100ms 주기 수신 시 갱신 |
 | Var_178 | GearState | gearState_CAN_BASE | CAN_BASE | ENG_CTRL/TCM | Comm_101 | Flow_101 | Func_101, Func_102 | Req_101, Req_102 | 100ms 주기 수신 시 갱신 |
 | Var_179 | RoutingPolicy | routingPolicy_CAN_BASE | CAN_BASE | DOMAIN_ROUTER | Comm_105 | Flow_105 | Func_110, Func_111 | Req_110, Req_111 | 100ms 주기 수신 시 갱신 |
-| Var_180 | BoundaryStatus | boundaryStatus_CAN_BASE | CAN_BASE | DOMAIN_ROUTER | Comm_105 | Flow_105 | Func_110, Func_111 | Req_110, Req_111 | 100ms 주기 수신 시 갱신 |
+| Var_180 | BoundaryStatus | boundaryStatus_CAN_BASE | CAN_BASE | DOMAIN_ROUTER | Comm_105 | Flow_105 | Func_110, Func_111, Func_151 | Req_110, Req_111, Req_151 | 100ms 주기 수신 시 갱신(출력 채널 가용성 판정 입력 포함) |
 | Var_181 | EngineRpm | engineRpm_CAN_BASE | CAN_BASE | ENG_CTRL | Comm_101 | Flow_101 | Func_101, Func_102 | Req_101, Req_102 | 100ms 주기 수신 시 갱신 |
 | Var_182 | CoolantTemp | coolantTemp_CAN_BASE | CAN_BASE | ENG_CTRL | Comm_101 | Flow_101 | Func_101, Func_102 | Req_101, Req_102 | 100ms 주기 수신 시 갱신 |
 | Var_183 | OilTemp | oilTemp_CAN_BASE | CAN_BASE | DOMAIN_ROUTER | Comm_105 | Flow_105 | Func_110, Func_111 | Req_110, Req_111 | 100ms 주기 수신 시 갱신 |
@@ -600,8 +601,8 @@
 | Var_265 | BodyGatewayRoute | bodyGatewayRoute_CAN_EXT | CAN_EXT | BODY_GW | Comm_202 | Flow_202 | Func_106, Func_107, Func_111, Func_113, Func_114, Func_115, Func_116, Func_117, Func_118 | Req_106, Req_107, Req_111, Req_113, Req_116, Req_118 | 100ms 주기 수신 + Event 발생 시 갱신 |
 | Var_266 | ComfortMode | comfortMode_CAN_EXT | CAN_EXT | BODY_GW | Comm_202 | Flow_202 | Func_106, Func_107, Func_111, Func_113, Func_114, Func_115, Func_116, Func_117, Func_118 | Req_106, Req_107, Req_111, Req_113, Req_116, Req_118 | 100ms 주기 수신 + Event 발생 시 갱신 |
 | Var_267 | ChildSafetyState | childSafetyState_CAN_EXT | CAN_EXT | BODY_GW | Comm_202 | Flow_202 | Func_106, Func_107, Func_111, Func_113, Func_114, Func_115, Func_116, Func_117, Func_118 | Req_106, Req_107, Req_111, Req_113, Req_116, Req_118 | 100ms 주기 수신 + Event 발생 시 갱신 |
-| Var_268 | AudioFocusOwner | audioFocusOwner_CAN_EXT | CAN_EXT | INFOTAINMENT_GW/IVI_GW | Comm_203 | Flow_203 | Func_109, Func_111, Func_119, Func_147 | Req_109, Req_111, Req_119, Req_147 | 50/100ms 주기 수신 시 갱신 |
-| Var_269 | AudioDuckLevel | audioDuckLevel_CAN_EXT | CAN_EXT | INFOTAINMENT_GW/IVI_GW | Comm_203 | Flow_203 | Func_109, Func_111, Func_119 | Req_109, Req_111, Req_119 | 50/100ms 주기 수신 시 갱신 |
+| Var_268 | AudioFocusOwner | audioFocusOwner_CAN_EXT | CAN_EXT | INFOTAINMENT_GW/IVI_GW | Comm_203 | Flow_203 | Func_109, Func_111, Func_119, Func_147, Func_153 | Req_109, Req_111, Req_119, Req_147, Req_153 | 50/100ms 주기 수신 시 갱신(오디오 경합 인지성 보호 입력 포함) |
+| Var_269 | AudioDuckLevel | audioDuckLevel_CAN_EXT | CAN_EXT | INFOTAINMENT_GW/IVI_GW | Comm_203 | Flow_203 | Func_109, Func_111, Func_119, Func_153 | Req_109, Req_111, Req_119, Req_153 | 50/100ms 주기 수신 시 갱신(오디오 경합 인지성 보호 입력 포함) |
 | Var_270 | VoiceAssistState | voiceAssistState_CAN_EXT | CAN_EXT | INFOTAINMENT_GW/IVI_GW | Comm_203 | Flow_203 | Func_109, Func_111, Func_119 | Req_109, Req_111, Req_119 | 50/100ms 주기 수신 시 갱신 |
 | Var_271 | VoiceWakeSource | voiceWakeSource_CAN_EXT | CAN_EXT | INFOTAINMENT_GW/IVI_GW | Comm_203 | Flow_203 | Func_109, Func_111, Func_119 | Req_109, Req_111, Req_119 | 50/100ms 주기 수신 시 갱신 |
 | Var_272 | MapZoomLevel | mapZoomLevel_CAN_EXT | CAN_EXT | INFOTAINMENT_GW/IVI_GW | Comm_203 | Flow_203 | Func_109, Func_111 | Req_109, Req_111 | 50/100ms 주기 수신 시 갱신 |
@@ -614,22 +615,22 @@
 | Var_279 | ProjectionType | projectionType_CAN_EXT | CAN_EXT | INFOTAINMENT_GW/IVI_GW | Comm_203 | Flow_203 | Func_109, Func_111 | Req_109, Req_111 | 50/100ms 주기 수신 시 갱신 |
 | Var_280 | ProjectionState | projectionState_CAN_EXT | CAN_EXT | INFOTAINMENT_GW/IVI_GW | Comm_203 | Flow_203 | Func_109, Func_111 | Req_109, Req_111 | 50/100ms 주기 수신 시 갱신 |
 | Var_281 | ClusterNotifType | clusterNotifType_CAN_EXT | CAN_EXT | INFOTAINMENT_GW/IVI_GW | Comm_203 | Flow_203 | Func_109, Func_111, Func_145 | Req_109, Req_111, Req_145 | 50/100ms 주기 수신 시 갱신 |
-| Var_282 | ClusterNotifPrio | clusterNotifPrio_CAN_EXT | CAN_EXT | INFOTAINMENT_GW/IVI_GW | Comm_203 | Flow_203 | Func_109, Func_111, Func_145, Func_146, Func_147 | Req_109, Req_111, Req_145, Req_146, Req_147 | 50/100ms 주기 수신 시 갱신 |
+| Var_282 | ClusterNotifPrio | clusterNotifPrio_CAN_EXT | CAN_EXT | INFOTAINMENT_GW/IVI_GW | Comm_203 | Flow_203 | Func_109, Func_111, Func_145, Func_146, Func_147, Func_153, Func_154, Func_155 | Req_109, Req_111, Req_145, Req_146, Req_147, Req_153, Req_154, Req_155 | 50/100ms 주기 수신 시 갱신(인지성 보호/과밀 억제/채널 동기 출력 포함) |
 | Var_283 | IviDiagReqId | iviDiagReqId_CAN_EXT | CAN_EXT | VAL_SCENARIO_CTRL | Comm_205 | Flow_205 | Func_112 | Req_112 | Event + 100ms 진단 프레임 수신/송신 시 갱신 |
 | Var_284 | IviDiagReqAct | iviDiagReqAct_CAN_EXT | CAN_EXT | VAL_SCENARIO_CTRL | Comm_205 | Flow_205 | Func_112 | Req_112 | Event + 100ms 진단 프레임 수신/송신 시 갱신 |
 | Var_285 | IviDiagResId | iviDiagResId_CAN_EXT | CAN_EXT | VAL_SCENARIO_CTRL | Comm_205 | Flow_205 | Func_112 | Req_112 | Event + 100ms 진단 프레임 수신/송신 시 갱신 |
 | Var_286 | IviDiagStatus | iviDiagStatus_CAN_EXT | CAN_EXT | VAL_SCENARIO_CTRL | Comm_205 | Flow_205 | Func_112 | Req_112 | Event + 100ms 진단 프레임 수신/송신 시 갱신 |
 | Var_287 | MediaGenre | mediaGenre_CAN_EXT | CAN_EXT | INFOTAINMENT_GW/IVI_GW | Comm_203 | Flow_203 | Func_109, Func_111 | Req_109, Req_111 | 50/100ms 주기 수신 시 갱신 |
 | Var_288 | TrackProgress | trackProgress_CAN_EXT | CAN_EXT | INFOTAINMENT_GW/IVI_GW | Comm_203 | Flow_203 | Func_109, Func_111 | Req_109, Req_111 | 50/100ms 주기 수신 시 갱신 |
-| Var_289 | TtsState | ttsState_CAN_EXT | CAN_EXT | INFOTAINMENT_GW/IVI_GW | Comm_203 | Flow_203 | Func_109, Func_111, Func_119 | Req_109, Req_111, Req_119 | 50/100ms 주기 수신 시 갱신 |
+| Var_289 | TtsState | ttsState_CAN_EXT | CAN_EXT | INFOTAINMENT_GW/IVI_GW | Comm_203 | Flow_203 | Func_109, Func_111, Func_119, Func_153 | Req_109, Req_111, Req_119, Req_153 | 50/100ms 주기 수신 시 갱신(오디오 경합 인지성 보호 입력 포함) |
 | Var_290 | TtsLangId | ttsLangId_CAN_EXT | CAN_EXT | INFOTAINMENT_GW/IVI_GW | Comm_203 | Flow_203 | Func_109, Func_111, Func_119 | Req_109, Req_111, Req_119 | 50/100ms 주기 수신 시 갱신 |
 | Var_291 | LteState | lteState_CAN_EXT | CAN_EXT | INFOTAINMENT_GW/IVI_GW | Comm_203 | Flow_203 | Func_109, Func_111 | Req_109, Req_111 | 50/100ms 주기 수신 시 갱신 |
 | Var_292 | WifiState | wifiState_CAN_EXT | CAN_EXT | INFOTAINMENT_GW/IVI_GW | Comm_203 | Flow_203 | Func_109, Func_111 | Req_109, Req_111 | 50/100ms 주기 수신 시 갱신 |
 | Var_293 | BtState | btState_CAN_EXT | CAN_EXT | INFOTAINMENT_GW/IVI_GW | Comm_203 | Flow_203 | Func_109, Func_111 | Req_109, Req_111 | 50/100ms 주기 수신 시 갱신 |
 | Var_294 | CpuLoad | cpuLoad_CAN_EXT | CAN_EXT | INFOTAINMENT_GW/IVI_GW | Comm_203 | Flow_203 | Func_109, Func_111 | Req_109, Req_111 | 50/100ms 주기 수신 시 갱신 |
 | Var_295 | MemLoad | memLoad_CAN_EXT | CAN_EXT | INFOTAINMENT_GW/IVI_GW | Comm_203 | Flow_203 | Func_109, Func_111 | Req_109, Req_111 | 50/100ms 주기 수신 시 갱신 |
-| Var_296 | ClusterSyncState | clusterSyncState_CAN_EXT | CAN_EXT | INFOTAINMENT_GW/IVI_GW | Comm_203 | Flow_203 | Func_109, Func_111 | Req_109, Req_111 | 50/100ms 주기 수신 시 갱신 |
-| Var_297 | ClusterSyncSeq | clusterSyncSeq_CAN_EXT | CAN_EXT | INFOTAINMENT_GW/IVI_GW | Comm_203 | Flow_203 | Func_109, Func_111 | Req_109, Req_111 | 50/100ms 주기 수신 시 갱신 |
+| Var_296 | ClusterSyncState | clusterSyncState_CAN_EXT | CAN_EXT | INFOTAINMENT_GW/IVI_GW | Comm_203 | Flow_203 | Func_109, Func_111, Func_155 | Req_109, Req_111, Req_155 | 50/100ms 주기 수신 시 갱신(채널 동기 복원 입력 포함) |
+| Var_297 | ClusterSyncSeq | clusterSyncSeq_CAN_EXT | CAN_EXT | INFOTAINMENT_GW/IVI_GW | Comm_203 | Flow_203 | Func_109, Func_111, Func_155 | Req_109, Req_111, Req_155 | 50/100ms 주기 수신 시 갱신(채널 동기 복원 입력 포함) |
 | Var_298 | EngineTorqueAct | engineTorqueAct_CAN_EXT | CAN_EXT | DOMAIN_ROUTER | Comm_204 | Flow_204 | Func_101, Func_102, Func_110 | Req_101, Req_102, Req_110 | 100ms 주기 수신 시 갱신 |
 | Var_299 | EngineTorqueReq | engineTorqueReq_CAN_EXT | CAN_EXT | DOMAIN_ROUTER | Comm_204 | Flow_204 | Func_101, Func_102, Func_110 | Req_101, Req_102, Req_110 | 100ms 주기 수신 시 갱신 |
 | Var_300 | EngineLoad | engineLoad_CAN_EXT | CAN_EXT | DOMAIN_ROUTER | Comm_204 | Flow_204 | Func_101, Func_102, Func_110 | Req_101, Req_102, Req_110 | 100ms 주기 수신 시 갱신 |
@@ -653,15 +654,15 @@
 | Var_323 | selectedAlertType | selectedAlertType_V2_SYNC | ETH_V2 | WARN_ARB_MGR | Comm_122 | Flow_122 | Func_125, Func_126 | Req_125, Req_126 | 50ms 주기 경고 동기화 시 갱신 |
 | Var_324 | steeringInputNorm | steeringInputNorm_V2_RELEASE | CAN_V2 | CHS_GW | Comm_123 | Flow_123 | Func_123 | Req_123 | 운전자 개입 이벤트 수신 시 갱신 |
 | Var_325 | brakePedalNorm | brakePedalNorm_V2_RELEASE | CAN_V2 | CHS_GW | Comm_123 | Flow_123 | Func_123 | Req_123 | 운전자 제동 입력 이벤트 수신 시 갱신 |
-| Var_326 | domainPathStatus | domainPathStatus_V2_FAILSAFE | CAN_V2 | DOMAIN_BOUNDARY_MGR | Comm_124 | Flow_124 | Func_127, Func_128, Func_129 | Req_127, Req_128, Req_129 | 100ms 주기 경로상태 수신 시 갱신 |
-| Var_327 | e2eHealthState | e2eHealthState_V2_FAILSAFE | CAN_V2 | DOMAIN_BOUNDARY_MGR | Comm_124 | Flow_124 | Func_127, Func_128, Func_129 | Req_127, Req_128, Req_129 | 100ms 주기 헬스상태 수신 시 갱신 |
-| Var_328 | failSafeMode | failSafeMode_V2_FAILSAFE | ETH_V2 | DOMAIN_BOUNDARY_MGR | Comm_124 | Flow_124 | Func_127, Func_128, Func_129 | Req_127, Req_128, Req_129 | 단절 감지 시 즉시 갱신 |
+| Var_326 | domainPathStatus | domainPathStatus_V2_FAILSAFE | CAN_V2 | DOMAIN_BOUNDARY_MGR | Comm_124 | Flow_124 | Func_127, Func_128, Func_129, Func_151 | Req_127, Req_128, Req_129, Req_151 | 100ms 주기 경로상태 수신 시 갱신(채널 가용성 판정 입력 포함) |
+| Var_327 | e2eHealthState | e2eHealthState_V2_FAILSAFE | CAN_V2 | DOMAIN_BOUNDARY_MGR | Comm_124 | Flow_124 | Func_127, Func_128, Func_129, Func_151 | Req_127, Req_128, Req_129, Req_151 | 100ms 주기 헬스상태 수신 시 갱신(채널 가용성 판정 입력 포함) |
+| Var_328 | failSafeMode | failSafeMode_V2_FAILSAFE | ETH_V2 | DOMAIN_BOUNDARY_MGR | Comm_124 | Flow_124 | Func_127, Func_128, Func_129, Func_151, Func_152 | Req_127, Req_128, Req_129, Req_151, Req_152 | 단절 감지/가용성 판정/대체 출력 정책 적용 시 즉시 갱신 |
 | Var_329 | decelAssistReq | decelAssistReq_V2_BLOCK | ETH_V2 | DOMAIN_BOUNDARY_MGR | Comm_124 | Flow_124 | Func_127, Func_128, Func_129 | Req_127, Req_128, Req_129 | failSafeMode=1 전환 시 0 강제 갱신 |
-| Var_330 | objectTrackValid | objectTrackValid_ETH_ADAS | ETH_ADAS | ADAS_WARN_CTRL | Comm_130 | Flow_130 | Func_130, Func_131, Func_136 | Req_130, Req_131, Req_136 | 객체 목록 수신 시 유효성 갱신 |
+| Var_330 | objectTrackValid | objectTrackValid_ETH_ADAS | ETH_ADAS | ADAS_WARN_CTRL | Comm_130 | Flow_130 | Func_130, Func_131, Func_136, Func_148 | Req_130, Req_131, Req_136, Req_148 | 객체 목록 수신 시 유효성 갱신(입력 유효성 필터링 포함) |
 | Var_331 | objectRange | objectRange_ETH_ADAS | ETH_ADAS | ADAS_WARN_CTRL | Comm_130 | Flow_130 | Func_130, Func_131, Func_133 | Req_130, Req_131, Req_133 | 100ms 주기 객체 거리 갱신 |
 | Var_332 | objectRelSpeed | objectRelSpeed_ETH_ADAS | ETH_ADAS | ADAS_WARN_CTRL | Comm_130 | Flow_130 | Func_130, Func_131, Func_133 | Req_130, Req_131, Req_133 | 100ms 주기 상대속도 갱신 |
-| Var_333 | objectConfidence | objectConfidence_ETH_ADAS | ETH_ADAS | ADAS_WARN_CTRL, DOMAIN_BOUNDARY_MGR | Comm_130, Comm_133 | Flow_130, Flow_133 | Func_130, Func_137 | Req_130, Req_137 | 객체 신뢰도 갱신 및 강등 판정 입력 |
-| Var_334 | objectRiskClass | objectRiskClass_ETH_ADAS | ETH_ADAS | ADAS_WARN_CTRL, WARN_ARB_MGR | Comm_131, Comm_132, Comm_133 | Flow_131, Flow_132, Flow_133 | Func_131, Func_132, Func_133, Func_134, Func_135, Func_136, Func_138, Func_139 | Req_131, Req_132, Req_133, Req_134, Req_135, Req_136, Req_138, Req_139 | 위험 분류 갱신 시 즉시 반영 |
+| Var_333 | objectConfidence | objectConfidence_ETH_ADAS | ETH_ADAS | ADAS_WARN_CTRL, DOMAIN_BOUNDARY_MGR | Comm_130, Comm_133 | Flow_130, Flow_133 | Func_130, Func_137, Func_148 | Req_130, Req_137, Req_148 | 객체 신뢰도 갱신 및 강등 판정 입력(유효성 필터링 포함) |
+| Var_334 | objectRiskClass | objectRiskClass_ETH_ADAS | ETH_ADAS | ADAS_WARN_CTRL, WARN_ARB_MGR | Comm_131, Comm_132, Comm_133 | Flow_131, Flow_132, Flow_133 | Func_131, Func_132, Func_133, Func_134, Func_135, Func_136, Func_138, Func_139, Func_148 | Req_131, Req_132, Req_133, Req_134, Req_135, Req_136, Req_138, Req_139, Req_148 | 위험 분류 갱신 시 즉시 반영(입력 유효성 필터링 포함) |
 | Var_335 | objectTtcMin | objectTtcMin_ETH_ADAS | ETH_ADAS | ADAS_WARN_CTRL | Comm_131 | Flow_131 | Func_131, Func_132 | Req_131, Req_132 | TTC 계산 주기(100ms) 갱신 |
 | Var_336 | intersectionConflictFlag | intersectionConflictFlag_ETH_ADAS | ETH_ADAS | WARN_ARB_MGR | Comm_132 | Flow_132 | Func_134 | Req_134 | 교차로 위험 조건 성립 시 Event 갱신 |
 | Var_337 | mergeCutInFlag | mergeCutInFlag_ETH_ADAS | ETH_ADAS | WARN_ARB_MGR | Comm_132 | Flow_132 | Func_135 | Req_135 | 합류/끼어들기 위험 조건 성립 시 Event 갱신 |
@@ -676,6 +677,7 @@
 - `Comm_120~Comm_124`는 `Var_320~Var_329`와 구현 추적을 유지하고, 변경 시 0302/0303/05~07을 동일 커밋으로 동기화한다.
 - `Comm_130~Comm_133`는 `Var_330~Var_339` Pre-Activation 추적을 유지하고, 구현 착수 시 0302/0303/04/05/06/07을 동일 커밋으로 동기화한다.
 - `Req_140~Req_147`는 `Var_009/012/024/029/133/138~141/155/164/166~168/191~193/268/281/282` Pre-Activation 추적을 유지하고, 구현 착수 시 0302/0303/04/05/06/07을 동일 커밋으로 동기화한다.
+- `Req_148~Req_155`는 `Var_330/333/334`, `Var_016/020/021/024/027/028`, `Var_180/326/327/328`, `Var_166/167/168/268/269/289/296/297` Pre-Activation 추적을 유지하고, 구현 착수 시 0302/0303/04/05/06/07을 동일 커밋으로 동기화한다.
 - `Comm_004~Comm_006`, `Comm_120~Comm_124`, `Comm_201(0x1C1)` 구간은 CANoe.CAN 환경에서 `adas_can.dbc`(0x1C1/0x1C3) + `eth_backbone_can_stub.dbc`(0x1C0/0x1C2/0x1C4/0x111) 운반 경로와 논리 Ethernet 계약(`ETH_INTERFACE_CONTRACT.md`)을 동시에 만족해야 한다.
 - `timeoutClear`(내부 구현: `timeoutClear_ETH_CORE`)는 `Req_024(1000ms)` 검증 로직과 직접 연결되어야 한다.
 - `selectedAlertLevel`, `selectedAlertType`(내부 구현: `selectedAlertLevel_ETH_CORE`, `selectedAlertType_ETH_CORE`)는 `WARN_ARB_MGR` 출력의 단일 소스로 유지한다.
@@ -697,6 +699,7 @@
 
 | 버전 | 날짜 | 변경 사항 |
 |---|---|---|
+| 2.23 | 2026-03-06 | 경고 강건성·인지성 확장(Pre-Activation) 반영: `Req_148~Req_155` 매핑을 위해 `Var_330/333/334`, `Var_016/020/021/024/027/028`, `Var_180/326/327/328`, `Var_166/167/168/268/269/289/296/297` 추적 행을 확장하고 연계 체크포인트를 동기화. |
 | 2.22 | 2026-03-06 | 차량 경보 편의 확장(Pre-Activation) 반영: `Req_140~Req_147` 매핑을 위해 `Var_009/012/024/029/133/138~141/155/164/166~168/191~193/268/281/282` 추적 행을 확장하고 연계 체크포인트를 동기화. |
 | 2.21 | 2026-03-06 | ADAS 객체 인지 확장(Pre-Activation) 반영: 상단 변수(`ID 39~48`)와 추적 변수(`Var_330~Var_339`), `Comm_130~Comm_133` 체크포인트를 추가해 `Req_130~Req_139` 체인을 선반영. |
 | 2.20 | 2026-03-06 | 용어/범위 정리: Verification-Harness 운영 메모에서 Driver 네임스페이스 자극 항목을 제거하고 제품 체인을 `고속 무조향 의심 경고` 중심으로 정렬. |
