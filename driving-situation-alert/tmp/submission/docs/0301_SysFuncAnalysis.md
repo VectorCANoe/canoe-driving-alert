@@ -15,6 +15,8 @@
 
 ---
 
+> 제출용 축소본: 원본 SoT에서 제출 핵심만 발췌한 문서입니다.
+
 ## 작성 원칙
 
 - 본 문서는 03_Function_definition.md의 Func_001~Func_121, Func_123, Func_125~Func_155를 노드 내부 동작 관점으로 분해한다.
@@ -146,7 +148,7 @@
 | Func_154 | Req_154 | CLU_HMI_CTRL | PopupType, PopupPriority, PopupActive, duplicatePopupGuard | 팝업 과밀 억제 및 우선 경고 선표시 | warningTextCode, ClusterNotifPrio | 입력: PopupType, PopupPriority, PopupActive, duplicatePopupGuard / 출력: warningTextCode, ClusterNotifPrio |
 | Func_155 | Req_155 | CLU_HMI_CTRL | ClusterSyncState, ClusterSyncSeq, selectedAlertType, selectedAlertLevel | 앰비언트/클러스터 경고 동기 일관성 관리 | warningTextCode, ClusterNotifPrio | 입력: ClusterSyncState, ClusterSyncSeq, selectedAlertType, selectedAlertLevel / 출력: warningTextCode, ClusterNotifPrio |
 
-## 2-1. Req-Func 감사 매핑 표 (N:M 허용)
+## 2-1. Req-Func 1:1 감사 매핑 표
 
 | Req ID | Func ID | 실제 노드명 | 기능명 |
 |---|---|---|---|
@@ -248,124 +250,3 @@
 
 ---
 
-## 2-2. Legacy Req 상속 매핑 (감사 보강)
-
-| Legacy Req ID | Active Req ID | Func ID | 상속 규칙 |
-|---|---|---|---|
-| Req_018 | Req_017 | Func_018 | 구급차 분리 요구는 긴급차량 접근 통합 요구(Req_017) 결과를 상속한다. |
-| Req_036 | Req_035 | Func_036 | 긴급 패턴 분리 요구는 긴급 시각표현 통합 요구(Req_035) 결과를 상속한다. |
-| Req_038 | Req_037 | Func_038 | 고속도로 패턴 분리 요구는 구간 패턴 통합 요구(Req_037) 결과를 상속한다. |
-| Req_039 | Req_037 | Func_039 | 유도선 패턴 분리 요구는 구간 패턴 통합 요구(Req_037) 결과를 상속한다. |
-| Req_108 | Req_113,Req_116,Req_118 | Func_113,Func_116,Func_118 | 운전자 상태 단일 레벨 전달 요구는 Body 확장 상태 통합 요구(Req_113/Req_116/Req_118) 결과를 상속한다. |
-| Req_114 | Req_113 | Func_114 | 시트 상태 단독 요구는 실내편의 통합 요구(Req_113) 결과를 상속한다. |
-| Req_115 | Req_113 | Func_115 | 미러 상태 단독 요구는 실내편의 통합 요구(Req_113) 결과를 상속한다. |
-| Req_117 | Req_116 | Func_117 | 와이퍼/우적 연동 단독 요구는 차체 제어 통합 요구(Req_116) 결과를 상속한다. |
-| Req_122 | Req_125 | Func_125 | 감속 보조 중 긴급 최우선 단독 요구는 V2 통합 요구(Req_125) 결과를 상속한다. |
-| Req_124 | Req_127,Req_128,Req_129 | Func_127,Func_128,Func_129 | 도메인 단절 대응 단일 요구는 금지/최소유지/강등 3분할 요구 결과를 상속한다. |
-
----
-
-## 3. 핵심 시나리오 동작 체인
-
-| 시나리오 | 노드 동작 체인 | 연결 Func ID |
-|---|---|---|
-| 스쿨존 과속 | NAV_CTX_MGR -> ADAS_WARN_CTRL -> WARN_ARB_MGR -> AMBIENT_CTRL + CLU_HMI_CTRL | Func_007, Func_010, Func_027, Func_037, Func_040 |
-| 고속도로 무조향 | NAV_CTX_MGR -> ADAS_WARN_CTRL -> WARN_ARB_MGR -> AMBIENT_CTRL + CLU_HMI_CTRL | Func_011, Func_012, Func_027, Func_038, Func_040 |
-| 유도구간 방향 안내 | NAV_CTX_MGR -> WARN_ARB_MGR -> AMBIENT_CTRL + CLU_HMI_CTRL | Func_013, Func_014, Func_039, Func_040 |
-| 경찰 긴급차량 접근 | EMS_ALERT(Police Tx) -> EMS_ALERT(Rx) -> WARN_ARB_MGR -> AMBIENT_CTRL + CLU_HMI_CTRL | Func_017, Func_023, Func_022, Func_035, Func_019 |
-| 구급 긴급차량 접근 | EMS_ALERT(Ambulance Tx) -> EMS_ALERT(Rx) -> WARN_ARB_MGR -> AMBIENT_CTRL + CLU_HMI_CTRL | Func_018, Func_023, Func_022, Func_035, Func_019 |
-| 경찰+구급 동시 충돌 | EMS_ALERT(Police Tx + Ambulance Tx) -> EMS_ALERT(Rx) -> WARN_ARB_MGR(우선순위/동률처리) -> 출력 노드 | Func_025~Func_031 |
-| 긴급 해제 후 복귀 | EMS_ALERT(Rx 해제/타임아웃) -> WARN_ARB_MGR -> AMBIENT_CTRL/CLU_HMI_CTRL | Func_024, Func_033, Func_034 |
-| 교차로/합류구간 근접위험 감속 보조 | EMS_ALERT(Rx) + ADAS_WARN_CTRL(위험도 산정) + WARN_ARB_MGR(보조요청/해제+경고 동기화) -> BRK_CTRL + AMBIENT_CTRL + CLU_HMI_CTRL | Func_120, Func_121, Func_125, Func_126, Func_123 |
-| 도메인 경로 단절 강등 | DOMAIN_BOUNDARY_MGR(경로 단절 감지) -> DOMAIN_ROUTER -> WARN_ARB_MGR/출력노드 | Func_127, Func_128, Func_129 |
-| 객체 기반 교차로/합류 위험 경고 | ADAS_WARN_CTRL(객체 정규화/TTC/단계화) + WARN_ARB_MGR(교차로/합류 판정 및 우선순위 정합) + DOMAIN_BOUNDARY_MGR(신뢰도 강등) + EMS_ALERT(이벤트 기록) -> AMBIENT_CTRL + CLU_HMI_CTRL | Func_130, Func_131, Func_132, Func_133, Func_134, Func_135, Func_136, Func_137, Func_138, Func_139 |
-| 차량 경보 편의 확장 | BODY_GW/DOMAIN_ROUTER(방향지시등/주행모드/안전벨트 입력) + WARN_ARB_MGR(맥락/민감도/강조 보정) + EMS_ALERT(이벤트 기록) + CLU_HMI_CTRL(거리표시/이력/설정 반영) | Func_140, Func_141, Func_142, Func_143, Func_144, Func_145, Func_146, Func_147 |
-| 경고 강건성·인지성 확장 | ADAS_WARN_CTRL(입력 유효성 필터링) + WARN_ARB_MGR(신선도/상태전이 안정화/대체정책) + DOMAIN_BOUNDARY_MGR(채널 가용성 판정) + CLU_HMI_CTRL(오디오 경합/팝업 과밀/채널 동기 관리) | Func_148, Func_149, Func_150, Func_151, Func_152, Func_153, Func_154, Func_155 |
-
----
-
-## 3-1. 네트워크 전달 체인 (옵션1 고정)
-
-| 시나리오 | 네트워크 전달 체인 |
-|---|---|
-| Chassis 상태 입력 | VAL_SCENARIO_CTRL -> Chassis CAN -> CHS_GW -> ETH_SW -> ADAS_WARN_CTRL |
-| Nav 구간 입력 | VAL_SCENARIO_CTRL -> Infotainment CAN(roadZone/navDirection/zoneDistance/speedLimit) -> INFOTAINMENT_GW -> ETH_SW -> NAV_CTX_MGR/WARN_ARB_MGR |
-| 긴급 신호 처리 | EMS_ALERT(Tx) -> ETH_SW -> EMS_ALERT(Rx) -> WARN_ARB_MGR |
-| Ambient 출력 | WARN_ARB_MGR -> ETH_SW -> BODY_GW -> Body CAN -> AMBIENT_CTRL |
-| Cluster 출력 | WARN_ARB_MGR -> ETH_SW -> IVI_GW -> Infotainment CAN -> CLU_HMI_CTRL |
-
----
-
-## 4. 0302 연계 체크포인트
-
-- 각 노드의 출력은 `0302_NWflowDef.md`에서 반드시 Flow ID로 정의한다.
-- 최소 연계 규칙:
-- `selectedAlertLevel/selectedAlertType` -> `frmAmbientControlMsg(0x260)` 송신 Flow 존재
-- `selectedAlertLevel/selectedAlertType` -> `frmClusterWarningMsg(0x280)` 송신 Flow 존재
-- `ETH_EmergencyAlert(0xE100)` 송신/수신/해제 Flow 존재
-- 타임아웃(1000ms) 해제 Flow 존재
-
----
-
-## 5. ECU 명명 기준 (ISO/OEM 정합)
-
-- 본 장의 상세 기준 SoT는 `00e_ECU_Naming_Standard.md`를 따른다.
-- Canonical ECU 명명표와 약어 정책은 `00e_ECU_Naming_Standard.md`의 `4. ECU 명명표 (Canonical Matrix)`를 기준으로 적용한다.
-- 신규 ECU/인터페이스 추가 시 Canonical + shortName을 동시 등록한다.
-- ECU 명명 규칙 본문은 `00e`를 SoT로 명시 관리하고, 참조 문서는 `03`(ECU)로 한정한다.
-- RTE 생성명 규칙은 `00g_RTE_Name_Mapping_Standard.md`를 SoT로 하고, 구현 문서(`04`)에서 적용한다.
-- 본 문서는 추적 체인 일관성을 위해 현행 Canonical 노드명을 유지한다.
-- 팀원 제안 축약명은 참고 입력으로만 사용하고, 공식명 변경은 00e 절차 승인 후 일괄 반영한다.
-
-| 분류 | 명명 규칙 | 현재 적용 예시 |
-|---|---|---|
-| Gateway | `*_GW` (도메인 경계 변환 역할) | CHS_GW, INFOTAINMENT_GW, BODY_GW, IVI_GW |
-| Controller | `*_CTRL` (기능 판단/제어 역할) | ADAS_WARN_CTRL, AMBIENT_CTRL, CLU_HMI_CTRL |
-| Manager | `*_MGR` (중재/상태 관리 역할) | NAV_CTX_MGR, WARN_ARB_MGR |
-| Emergency Terminal | `EMS_ALERT` (논리 단말), 내부 모듈은 `EMS_*_TX/RX`로 분리 | EMS_ALERT (internal: EMS_POLICE_TX, EMS_AMB_TX, EMS_ALERT_RX) |
-| Test/SIL | `VAL_*` (검증 제어 역할) | VAL_SCENARIO_CTRL, VAL_BASELINE_CTRL |
-
-- 적용 원칙: 상위 문서(03/0301/0302/0303/0304)는 `EMS_ALERT` 논리 식별자를 기본으로 사용하고, 코드/DBC 구현 모듈 표기는 하단 보강표에서만 `EMS_*_TX/RX`로 표기한다.
-
-### EMS 내부 모듈 매핑(감사 보강)
-
-| 논리 노드 | 내부 모듈 | 역할 |
-|---|---|---|
-| EMS_ALERT | EMS_POLICE_TX | 경찰 긴급 이벤트 송신 |
-| EMS_ALERT | EMS_AMB_TX | 구급 긴급 이벤트 송신 |
-| EMS_ALERT | EMS_ALERT_RX | 긴급 이벤트 수신/해제/타임아웃 처리 |
-
----
-
-## 개정 이력
-
-| 버전 | 날짜 | 변경 사항 |
-|---|---|---|
-| 3.27 | 2026-03-06 | Legacy 누락군 보강: `Req_018/036/038/039/114/115/117/122/124` 상속 관계를 `2-2` 섹션으로 추가해 Req-Func 감사 추적을 보강. |
-| 3.26 | 2026-03-06 | 경고 강건성·인지성 확장(Pre-Activation) 반영: `Func_148~Func_155`를 상세표/Req-Func 매핑/핵심 시나리오 체인에 추가하고 `Req_148~Req_155` 추적 경로를 고정. |
-| 3.25 | 2026-03-06 | 차량 경보 편의 확장(Pre-Activation) 반영: `Func_140~Func_147`를 상세표/Req-Func 매핑/핵심 시나리오 체인에 추가하고 `Req_140~Req_147` 추적 경로를 고정. |
-| 3.24 | 2026-03-06 | ADAS 객체 인지 확장(Pre-Activation) 반영: `Func_130~Func_139`를 상세표/Req-Func 매핑/핵심 시나리오 체인에 추가하고 `Req_130~Req_139` 추적 경로를 고정. |
-| 3.23 | 2026-03-06 | 미사용 체인 정리: `Req_108/Func_108`(운전자 상태 전달) 매핑 행을 삭제하고 01/03/0303/0304/04/05/06/07 기준과 동기화. |
-| 3.22 | 2026-03-05 | ECU 명명 거버넌스를 `00e(SoT)+03(ECU 참조)`로 정리하고, RTE 규칙은 `00g`/`04` 적용 체계로 분리. |
-| 3.20 | 2026-03-05 | Validation Harness 노드 명칭을 `VAL_SCENARIO_CTRL`/`VAL_BASELINE_CTRL`로 정리하고 `VAL_*` 접두 규칙으로 표기 통일. |
-| 3.19 | 2026-03-03 | ETH_SW 역할을 시스템 관점으로 명확화하고, 구현 관점(헬스 모니터링)은 04 문서에서 분리 관리하도록 정합화. |
-| 3.18 | 2026-03-03 | V2 확장 `Func_121/Func_123` 노드 소유를 `WARN_ARB_MGR`로 정정하고, 노드 표/Req-Func/시나리오 체인을 코드 구현 기준으로 동기화. |
-| 3.17 | 2026-03-02 | 감사 정합 보강: 문서 범위를 `Func_001~Func_127,Func_128,Func_129`로 명확화하고 옵션1 설계 vs SIL 임시 CAN 대체 백본 검증 경계 문구를 추가. |
-| 3.16 | 2026-03-02 | V2 확장 제어 책임 분리: `DECEL_ASSIST_CTRL` 노드를 Chassis에 추가하고 `Func_121/Func_123` 실제 노드/시나리오 체인을 갱신. |
-| 3.15 | 2026-03-02 | V2 확장(Pre-Activation) 반영: `Func_120~Func_121, Func_123, Func_125~Func_129`(근접위험/감속보조/동기화/운전자개입해제/도메인단절강등) 상세표, Req-Func 매핑, 시나리오 체인 추가. |
-| 3.14 | 2026-03-02 | `Func_101~Func_119` 상세표의 입출력 변수를 0304 표준 Name으로 정합화(`BaseScenarioId/BaseScenarioResult`, `AcCompressorReq`, `DoorUnlockCmd`, `ImmoState`, `TtsLangId` 등)하고 누락 변수명을 제거. |
-| 3.13 | 2026-03-02 | V2 추적 밀도 보강 1차: `Req_113~Req_119`에 대응하는 `Func_113~Func_119`(HVAC/Seat/Mirror/Door/Wiper-Rain/Security/Audio)를 하단 상세표 및 1:1 감사 매핑에 추가. 상단 노드 설명도 기본 기능 확장 범위로 정합화. |
-| 2.0 | 2026-02-25 | 프로젝트 최신 스코프 기준 전면 재작성. 노드별 Input-Processing-Output 구조, Func/Req 연결, 핵심 시나리오 체인, 0302 연계 체크포인트 추가 |
-| 3.0 | 2026-02-25 | 상단 공식 표준 양식 반영, 하단 상세 추적 표 분리 |
-| 3.1 | 2026-02-25 | 상단 표를 이미지 표준 구조로 재정렬, 도메인 묶음(Powertrain/Chassis/Body/Infotainment/Actual Device) 반영 |
-| 3.2 | 2026-02-25 | 상단 헤더를 표준(기능 상세)로 정렬, Actual Device를 실제 장치 기준으로 수정, Func_013~016 추적 보완 |
-| 3.3 | 2026-02-25 | 옵션1 아키텍처 기준으로 Network Infra 노드(ETH_SW/도메인 GW)와 네트워크 전달 체인 섹션 추가 |
-| 3.4 | 2026-02-25 | Req_001~Req_043 / Func_001~Func_043 1:1 감사용 매핑 표(개별 행) 추가 |
-| 3.5 | 2026-02-26 | Cluster 출력 전달체인을 Infotainment CAN 경로로 정합화(IVI_GW -> CLU_HMI_CTRL) |
-| 3.6 | 2026-02-26 | 0304 표준 변수명 기준으로 상세 표기 통일(`g*` 별칭 제거) |
-| 3.7 | 2026-02-28 | 03/0304 정합 기준으로 하단 상세표 입출력 변수를 재정렬(비정의 변수 제거, Core/State 변수명 통일) |
-| 3.8 | 2026-02-28 | 스쿨존 과속 판정 정합을 위해 NAV/ADAS 입력에 `speedLimit/speedLimitNorm`을 반영하고 Navigation Panel 입력 항목을 확장. |
-| 3.9 | 2026-02-28 | ISO/OEM 정합을 위한 ECU 명명 기준 섹션을 추가하고 노드 접미사 규칙(GW/CTRL/MGR/TX/RX)을 명문화. |
-| 3.10 | 2026-02-28 | 차량 기본 기능 확장 대응으로 기본 차량 ECU 노드와 Req_101~Req_112 / Func_101~Func_112 매핑을 추가. |
-| 3.11 | 2026-02-28 | 03 문서와의 노드 정합을 위해 `VAL_BASELINE_CTRL`, `DOMAIN_ROUTER`, `DOMAIN_BOUNDARY_MGR`를 상단 공식 노드 표에 추가. |
-| 3.12 | 2026-03-01 | 멘토 피드백 반영: EMS 노드를 단일 논리 단말(`EMS_ALERT`)로 통합 표기하고, 내부 TX/RX 모듈은 하단 감사 보강표로 분리. |

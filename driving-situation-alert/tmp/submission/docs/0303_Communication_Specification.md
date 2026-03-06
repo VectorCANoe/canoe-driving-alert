@@ -15,6 +15,8 @@
 
 ---
 
+> 제출용 축소본: 원본 SoT에서 제출 핵심만 발췌한 문서입니다.
+
 ## 작성 원칙
 
 - 상단 표는 공식 샘플(`0303.md`)과 동일하게 `Message/Identifier/DLC/Signal/signal bit position/Data 설명/Data 범위/Data 사용` 열만 사용한다.
@@ -312,13 +314,6 @@
 |  |  |  | PtCtrlSource | 8~11 | 파워트레인 제어 출처 | 0~15 | DOMAIN_ROUTER -> ENG_CTRL, TCM 전달 |
 ---
 
-## 하단 보강표 (감사/추적 전용)
-
-- 상단 공식 표준 양식은 변경하지 않고 유지한다.
-- 아래 표들은 추적성/감사 해석 명확화를 위한 하단 보강 정보다.
-
----
-
 ## 통신 원본(Source of Truth) 매핑
 
 | 구분 | 범위 | 원본 파일 | 비고 |
@@ -354,54 +349,6 @@
 | Comm_131 | Flow_131 | Func_132, Func_133, Func_136 | Req_132, Req_133, Req_136 | ethObjectRiskStateMsg(0xE214) | ADAS_WARN_CTRL | WARN_ARB_MGR, VAL_SCENARIO_CTRL | Ethernet(UDP) | 100ms + Event | TTC/상대속도/거리 기반 위험 상태 (Pre-Activation, ETH 계약 v1.2 대기) |
 | Comm_132 | Flow_132 | Func_134, Func_135, Func_139 | Req_134, Req_135, Req_139 | ethObjectScenarioAlertMsg(0xE215), frmAmbientControlMsg(0x260), frmClusterWarningMsg(0x280) | WARN_ARB_MGR | BODY_GW, IVI_GW, AMBIENT_CTRL, CLU_HMI_CTRL | Ethernet(UDP) + CAN | Event + 50ms | 교차로/합류 객체 경고 및 우선순위 정합 (Pre-Activation, ETH 계약 v1.2 대기) |
 | Comm_133 | Flow_133 | Func_137, Func_138, Func_148 | Req_137, Req_138, Req_148 | ethObjectSafetyStateMsg(0xE216) | DOMAIN_BOUNDARY_MGR, EMS_ALERT | WARN_ARB_MGR, VAL_SCENARIO_CTRL | Ethernet(UDP) | Event | 신뢰도 강등 및 객체 이벤트 기록 (Pre-Activation, ETH 계약 v1.2 대기) |
-
----
-
-## Legacy Req 상속 매핑 (Comm 기준)
-
-| Legacy Req ID | Active Req ID | 상속 Comm | 상속 규칙 |
-|---|---|---|---|
-| Req_018 | Req_017 | Comm_005 | 구급차 분리 요구는 긴급차량 접근 통합 요구(Req_017)의 Comm 결과를 상속한다. |
-| Req_036 | Req_035 | Comm_007 | 긴급 패턴 분리 요구는 긴급 시각표현 통합 요구(Req_035)의 Comm 결과를 상속한다. |
-| Req_038 | Req_037 | Comm_007 | 고속도로 패턴 분리 요구는 구간 패턴 통합 요구(Req_037)의 Comm 결과를 상속한다. |
-| Req_039 | Req_037 | Comm_007 | 유도선 패턴 분리 요구는 구간 패턴 통합 요구(Req_037)의 Comm 결과를 상속한다. |
-| Req_108 | Req_113,Req_116,Req_118 | Comm_202, Comm_105 | 운전자 상태 단일 레벨 전달 요구는 Body 확장 상태 통합 요구(Req_113/Req_116/Req_118)의 Comm 결과를 상속한다. |
-| Req_114 | Req_113 | Comm_202 | 시트 상태 단독 요구는 실내편의 통합 요구(Req_113)의 Comm 결과를 상속한다. |
-| Req_115 | Req_113 | Comm_202 | 미러 상태 단독 요구는 실내편의 통합 요구(Req_113)의 Comm 결과를 상속한다. |
-| Req_117 | Req_116 | Comm_202 | 와이퍼/우적 연동 단독 요구는 차체 제어 통합 요구(Req_116)의 Comm 결과를 상속한다. |
-| Req_122 | Req_125 | Comm_122 | 감속 보조 중 긴급 최우선 단독 요구는 V2 통합 요구(Req_125)의 Comm 결과를 상속한다. |
-| Req_124 | Req_127,Req_128,Req_129 | Comm_124 | 도메인 단절 대응 단일 요구는 금지/최소유지/강등 3분할 요구 결과를 상속한다. |
-
----
-
-## Comm_006 메시지 단계 분해 (감사용 명확화)
-
-| 단계 | 상위 Comm ID | Message(ID) | Tx Node | Rx Node | 주기/조건 |
-|---|---|---|---|---|---|
-| Ingress | Comm_006 | ETH_EmergencyAlert(0xE100) | EMS_ALERT(Tx:Police/Ambulance) | EMS_ALERT(Rx) | 100ms, Active/Clear |
-| Egress | Comm_006 | ethSelectedAlertMsg(0xE200) | WARN_ARB_MGR | BODY_GW, IVI_GW | Event + 50ms |
-
-- 주의: `Comm_006`은 입력(E100)과 출력(E200) 단계를 묶은 논리 Comm이며, 감사 시에는 위 단계 표를 기준으로 `Rx/Tx`를 분리 해석한다.
-
-### EMS 논리 단말-내부 모듈 매핑 (감사 보강)
-
-| 논리 단말 | 내부 모듈 | 역할 |
-|---|---|---|
-| EMS_ALERT | EMS_POLICE_TX | 경찰 긴급 이벤트 송신 |
-| EMS_ALERT | EMS_AMB_TX | 구급 긴급 이벤트 송신 |
-| EMS_ALERT | EMS_ALERT_RX | 긴급 이벤트 수신/해제/타임아웃 |
-
-### 표준 Signal-별칭(g*) 매핑 (문서/코드 정합용)
-
-| 표준 Signal(0303/0304) | 코드/런타임 별칭 |
-|---|---|
-| vehicleSpeed | gVehicleSpeed |
-| driveState | gDriveState |
-| steeringInput | SteeringInput |
-| roadZone | gRoadZone |
-| navDirection | gNavDirection |
-| zoneDistance | gZoneDistance |
-| speedLimit | gSpeedLimit |
 
 ---
 
@@ -471,91 +418,3 @@
 
 ---
 
-## 메시지 규모 기준 (현업 BP 타깃)
-
-| Domain/Profile | 현재 정의 메시지 수 | 현재 사용 ID 범위 | 확장 목표(Phase-B) |
-|---|---|---|---|
-| Chassis CAN | 23 | 0x122~0x2A0(0x1C1 제외) | 24~30 |
-| Body CAN | 24 | 0x289~0x291, 0x277~0x292 | 24~30 |
-| Infotainment CAN | 24 | 0x2A3, 0x280~0x288, 0x289~0x295 | 24~30 |
-| Powertrain CAN | 19 | 0x110~0x2A8 | 19~25 |
-| Validation CAN (Chassis 통합) | 2 | 0x2A5~0x2A6 | 3~6 |
-| ADAS CAN | 2 | 0x1C1, 0x1C3 | 2~6 |
-| ETH Backbone CAN Stub | 4 | 0x1C0, 0x1C2, 0x1C4, 0x111 | 4~8 |
-| Ethernet UDP | 8 타입 | 0x510/0x511/0x512/0xE100/0xE200/0x1C3/0x1C4/0x111 | 8~12 타입 |
-
-- 통합 목표: CAN 메시지 `90~130`(CAN-stub 포함), Ethernet 메시지 타입 `5~12`, 전체 통신 항목 `100+`.
-
----
-
-## 0302/0304 연계 체크포인트
-
-- `Comm ID`는 `0302_NWflowDef.md`의 `Flow ID`와 기본 대응 관계를 유지하되, 확장/통합 시나리오에서는 하단 추적표에서 N:M 연결을 명시한다.
-- `Comm_001~Comm_009`, `Comm_101~Comm_106`, `Comm_201~Comm_205`는 `0304_System_Variables.md` Var 추적표와 동기화되어야 한다.
-- `EmergencyAlert` Active/Clear 신호가 1000ms 타임아웃 규칙과 일치해야 한다.
-- `selectedAlertLevel/selectedAlertType` 기반 Ambient/Cluster 출력 Comm이 모두 존재해야 한다.
-- `ETH_SW` 경유 Ethernet 신호가 각 도메인 게이트웨이에서 CAN 메시지로 정상 변환되어야 한다.
-- `speedLimit` 신호는 Comm_003에서 NAV_CTX_MGR와 ADAS_WARN_CTRL까지 연계되어야 한다.
-- `Req_101~Req_107`, `Req_109~Req_119`는 Comm_101~Comm_106, Comm_201~Comm_205에서 누락 없이 연결되어야 한다.
-- `Req_120~Req_121`, `Req_123`, `Req_125~Req_129`는 Comm_120~Comm_124 구현 체인으로 추적하고, 변경 시 0302/0304/05~07을 동일 커밋으로 동기화한다.
-- `Req_130~Req_139`는 Comm_130~Comm_133 Pre-Activation 체인으로 추적하고, 구현 착수 시 0302/0304/04/05/06/07을 동일 커밋으로 동기화한다.
-- `Req_140~Req_147`는 Comm_103/104/105/203 + Comm_006/008 Pre-Activation 체인으로 추적하고, 구현 착수 시 0302/0304/04/05/06/07을 동일 커밋으로 동기화한다.
-- `Req_148~Req_155`는 Comm_130/133, Comm_006/007/008, Comm_104/105/124/203 Pre-Activation 체인으로 추적하고, 구현 착수 시 0302/0304/04/05/06/07을 동일 커밋으로 동기화한다.
-
----
-
-## 통신 예외 처리 규칙
-
-| Comm Group | 예외 조건 | Fail-safe 동작 | 검증 포인트 |
-|---|---|---|---|
-| Group_A(Comm_001,002) | CHS_GW 변환 프레임 누락(연속 2주기) | ADAS_WARN_CTRL 입력 품질 플래그 저하, 경고 강등 모드 진입 | CAN 입력 정상 + ETH 변환 누락 시 동작 확인 |
-| Group_B(Comm_003) | INFOTAINMENT_GW 변환 프레임 누락(연속 2주기) | NAV_CTX_MGR를 일반구간 기본 컨텍스트로 복귀 | 유도구간 상태에서 변환 누락 주입 |
-| Group_C(Comm_004~006) | EmergencyAlert 1000ms 무갱신 | `timeoutClear=1`, emergencyContext clear, 출력 복귀 | Req_024 타임아웃 검증 |
-| Group_D(Comm_007) | BODY_GW CAN 송신 ACK 실패 | ambientMode를 안전 기본값(0)으로 전환 후 재전송 | CAN Tx fail 주입 테스트 |
-| Group_E(Comm_008) | IVI_GW CAN 송신 ACK 실패 | warningTextCode를 최소 안내 코드로 축소 후 재전송 | Cluster 경고 축소 출력 확인 |
-
----
-
-## 개정 이력
-
-| 버전 | 날짜 | 변경 사항 |
-|---|---|---|
-| 3.26 | 2026-03-06 | Legacy 누락군 보강: `Req_018/036/038/039/114/115/117/122/124` 상속 관계를 `Legacy Req 상속 매핑` 섹션으로 추가해 Comm 추적 누락을 해소. |
-| 3.25 | 2026-03-06 | 경고 강건성·인지성 확장(Pre-Activation) 반영: `Req_148~Req_155`를 `Comm_130/133`, `Comm_006/007/008`, `Comm_104/105/124/203`에 매핑하고 연계 체크포인트를 동기화. |
-| 3.24 | 2026-03-06 | 차량 경보 편의 확장(Pre-Activation) 반영: `Req_140~Req_147`을 `Comm_103/104/105/203` 및 `Comm_006/008`에 매핑하고 연계 체크포인트를 동기화. |
-| 3.23 | 2026-03-06 | SoT 정합 보강: `Comm_130~Comm_133`를 Pending Ethernet 계약(`ETH_INTERFACE_CONTRACT.md v1.2`, `E213~E216`)으로 분리하고 활성 SoT 범위를 명확화. |
-| 3.22 | 2026-03-06 | ADAS 객체 인지 확장(Pre-Activation) 반영: `Comm_130~Comm_133`와 `Req_130~Req_139` 추적을 추가하고 Ethernet SoT/체크포인트를 동기화. |
-| 3.21 | 2026-03-06 | 미사용 체인 정리: `Req_108/Func_108` 및 `frmDriverStateMsg(0x263)`를 Baseline Comm(103/202)·도메인 원본 표에서 제거하고 범위 문구를 `108 제외`로 동기화. |
-| 3.20 | 2026-03-06 | 감사 해석 보강: 긴급 우선 요구의 기본 판정 축(기능중재)과 `Diag` 명칭/Group 7 비강제 규칙을 CAN ID 정책 요약표에 명시. |
-| 3.19 | 2026-03-05 | 통신 문서 경계 정리: 본 문서에서는 CAN ID/메시지 규칙만 명시하고 ECU 명명은 `00e` SoT + `03`/`04` 참조 체계를 따르도록 정리. |
-| 3.18 | 2026-03-05 | Validation 결과 프레임(`0x2A5`,`0x2A6`)의 관리 기준을 `chassis_can.dbc` 통합으로 전환하고 Validation 노드 명칭(`VAL_*`) 및 Comm 매체 표기를 정합화. |
-| 3.17 | 2026-03-04 | 멘토링 체크리스트 반영: `test_can` 해석(Validation Harness 공통 DBC) 규칙과 CAN ID 배정 팀 룰(도메인/Stub/충돌회피/SoT)을 본문에 명시. |
-| 3.16 | 2026-03-04 | DBC SoT 정합 보강: `eth_backbone_can_stub.dbc`를 통신 원본 매핑에 반영하고 0x1C0/0x1C1/0x1C2(및 0x1C3/0x1C4/0x111) CAN-stub 운반 경로를 상단표/Comm 표/규모표에 동기화. |
-| 3.17 | 2026-03-05 | ADAS 도메인 분리 반영: `adas_can.dbc`를 추가하고 ADAS 소유 프레임(0x1C1/0x1C3)을 ETH Backbone CAN-stub에서 분리, 통신 원본표/도메인표를 동기화. |
-| 3.15 | 2026-03-03 | ID 표기 기준 고정: 문서 본문은 Logical ID(0xE210/0xE211/0xE212)를 우선 표기하고, CANoe SIL 실행 ID는 Stub(0x1C3/0x1C4/0x111)로 병기하도록 작성 원칙을 보강. |
-| 3.14 | 2026-03-03 | V2 확장 통신(`Comm_120~124`)을 Implemented 상태로 전환하고 메시지 ID/송수신 노드를 코드/DBC 실값(`0x1C3/0x1C4/0x111`, `WARN_ARB_MGR` 중심)으로 정정. |
-| 3.13 | 2026-03-02 | 감사 정합 보강: 옵션1 설계 vs SIL 임시 CAN 대체 백본 검증 경계 문구를 작성 원칙에 추가. |
-| 3.12 | 2026-03-02 | V2 확장 제어 책임 분리 반영: `Comm_121/Comm_123` 송수신 노드를 `DECEL_ASSIST_CTRL` 기준으로 조정. |
-| 3.11 | 2026-03-02 | V2 확장(Pre-Activation) 반영: `Comm_120~Comm_124`(근접위험/감속보조/경고동기화/운전자개입해제/도메인단절강등) 추가 및 연계 체크포인트 보강. |
-| 3.10 | 2026-03-02 | 0302/0303 최종 동기화 준비 반영: 도메인 통신 섹션 제목과 `Comm_101~106/201~205` 주의 문구를 병렬 작업 기준에서 DBC 동기화 운영 규칙으로 갱신. |
-| 1.0 | 2026-02-23 | 초기 생성 |
-| 2.0 | 2026-02-25 | 최신 프로젝트 스코프 반영 전면 재작성. Comm_001~Comm_009 및 Flow/Func/Req 1:1 추적 구조 반영, OTA/UDS/DoIP 제거 |
-| 2.1 | 2026-02-25 | 공식 샘플 표기 스타일(Identifier/DLC 순수값)로 상단 표 정렬, Ethernet 백본+도메인 게이트웨이+CAN 분배 구조 반영 |
-| 2.2 | 2026-02-25 | 상단 공식표 signal bit position을 개별 비트 행으로 전개하고 Comm별 통신 예외 처리 규칙 추가 |
-| 2.3 | 2026-02-25 | navDirection 범위를 0304 변수 정의(0~3)와 정합되게 통일하고 ScenarioResult bit 행(0 단일 bit) 표기를 일치화 |
-| 2.4 | 2026-02-26 | Cluster 경고 경로를 Infotainment CAN 기준으로 명확화(IVI_GW -> CLU_HMI_CTRL) |
-| 2.5 | 2026-02-26 | Comm_006 단계 분해 표(E100 Ingress / E200 Egress) 추가로 감사 해석 모호성 제거 |
-| 2.6 | 2026-02-26 | 상단 공식표 비변경 원칙을 명시하고 하단 보강표 구역(감사/추적 전용)으로 분리 |
-| 2.7 | 2026-02-26 | 상단 Signal 명칭을 0304 표준명(vehicleSpeed 등)으로 통일하고, g* 별칭은 하단 매핑표로 분리 |
-| 2.8 | 2026-02-28 | signal 케이스/명칭을 0304 표준명(`steeringInput/emergencyType/eta/sourceId` 등)으로 정합하고 `SelectedAlertContext` 잔여 표현 제거 |
-| 2.9 | 2026-02-28 | Nav 컨텍스트 메시지(0x2A3/0x512)에 `speedLimit`(bit16, DLC=3)를 추가하고 Comm_003을 Req_010/Func_010까지 확장 정합. |
-| 3.0 | 2026-02-28 | CAN/Ethernet 통신 원본 파일 분리 원칙을 명시하고 SoT 매핑 표를 추가(`emergency_system.dbc` / `ETH_INTERFACE_CONTRACT.md`). |
-| 3.1 | 2026-02-28 | DBC 병렬 작업용 도메인 통신 원본 확장 계획과 Vehicle Baseline Comm 계획(Comm_101~106, 예약 ID)을 추가. |
-| 3.2 | 2026-02-28 | Comm_101~106을 확정 정의로 전환하고 도메인별 메시지 규모 기준(총 CAN 80~120, 전체 100+)을 명시. |
-| 3.3 | 2026-02-28 | 도메인 분리 DBC(`emergency_system_*`) 실 메시지(0x126~0x2A8, 0x103~0x2A2, 0x288~0x28A, 0x1C2~0x2A6)를 Comm_101~106에 반영하고 SoT 계층 매핑을 보강. |
-| 3.4 | 2026-02-28 | 상단 공식표를 실메시지 기준(49 Message / 131 Signal)으로 확장하고 signal bit position을 범위 표기(`0~7`, `8~15`)로 정규화. |
-| 3.5 | 2026-02-28 | 상단 공식표를 Phase-B 확장 포함(99 Message / 242 Signal)으로 보강하고 Comm_201~205/Flow_201~205 연결 기준을 추가해 현업형 메시지 규모(100+)를 반영. |
-| 3.6 | 2026-02-28 | SoT 경로를 실제 분리 DBC 파일명(`*_can.dbc`)으로 정합화하고, Core/Domain 통신 원본 매핑 표기 충돌을 해소. |
-| 3.7 | 2026-02-28 | 0304 동기화 상태를 반영해 `Comm_101~106/201~205` 연계 체크포인트를 확정 문구로 갱신. |
-| 3.8 | 2026-03-01 | 멘토 피드백 반영: EMS를 논리 단말(`EMS_ALERT`) 기준으로 Comm 표기 통합, 내부 TX/RX 모듈은 하단 보강 매핑으로 분리. |
-| 3.9 | 2026-03-02 | V2 추적 밀도 보강 1차: `Comm_202/Comm_203` 매핑을 `Req_113~Req_119`, `Func_113~Func_119` 기준으로 확장해 Body/Infotainment 확장 신호의 요구-기능 연결을 명시. |
