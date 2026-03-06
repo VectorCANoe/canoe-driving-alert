@@ -13,8 +13,12 @@ variables
   int gPopupActive;
   int gVolumeLevel;
   int gAudioFocusOwner;
+  int gAudioDuckingLvl;
+  int gTtsState;
   int gNotifType;
   int gNotifArg;
+  int gClusterSyncState;
+  int gClusterSyncSeq;
   int gHistoryCodes[16];
   int gHistorySnaps[16];
   int gHistoryWriteIdx;
@@ -69,6 +73,61 @@ int applyDisplayPolicy(int code)
     else if (effectiveVolume >= 70)
     {
       coded = clampRange(coded + 5, 0, 255);
+    }
+  }
+
+  return coded;
+}
+
+int applyRobustPolicy(int code)
+{
+  int selectedAlertLevel;
+  int selectedAlertType;
+  int timeoutClear;
+  int expectedCode;
+  int coded;
+  int syncMismatch;
+
+  coded = code;
+  if (coded <= 0)
+  {
+    return 0;
+  }
+
+  if (gAudioFocusOwner != 0 && (gAudioDuckingLvl >= 4 || gTtsState >= 1))
+  {
+    coded = clampRange(coded + 6, 0, 255);
+  }
+
+  if (gPopupActive == 1 && gPopupPriority >= 5 &&
+      coded < 100 && (coded % 10) < 5)
+  {
+    coded = 0;
+  }
+
+  selectedAlertLevel = clampRange((int)@Core::selectedAlertLevel, 0, 7);
+  selectedAlertType = clampRange((int)@Core::selectedAlertType, 0, 15);
+  timeoutClear = (((int)@Core::timeoutClear) == 1) ? 1 : 0;
+  expectedCode = 0;
+  if (timeoutClear == 0 && selectedAlertLevel > 0)
+  {
+    expectedCode = clampRange((selectedAlertType * 10) + selectedAlertLevel, 0, 255);
+  }
+
+  syncMismatch = 0;
+  if (selectedAlertLevel > 0 &&
+      (gClusterSyncState == 0 || gClusterSyncSeq > 50 || coded == 0))
+  {
+    syncMismatch = 1;
+  }
+
+  if (syncMismatch == 1 && expectedCode > 0)
+  {
+    coded = expectedCode;
+    @CoreState::clusterNotifPrio = clampRange((int)@CoreState::clusterNotifPrio, 0, 255);
+    if ((int)@CoreState::clusterNotifPrio < 6)
+    {
+      @CoreState::clusterNotifPrio = 6;
     }
   }
 
@@ -136,8 +195,12 @@ on start
   gPopupActive = 0;
   gVolumeLevel = 30;
   gAudioFocusOwner = 0;
+  gAudioDuckingLvl = 0;
+  gTtsState = 0;
   gNotifType = 0;
   gNotifArg = 0;
+  gClusterSyncState = 1;
+  gClusterSyncSeq = 0;
   gHistoryWriteIdx = 0;
   gHistoryCount = 0;
   for (i = 0; i < 16; i = i + 1)
@@ -152,8 +215,12 @@ on start
   @CoreState::popupActive = 0;
   @CoreState::volumeLevel = 30;
   @CoreState::audioFocusOwner = 0;
+  @CoreState::audioDuckingLvl = 0;
+  @CoreState::ttsState = 0;
   @CoreState::clusterNotifType = 0;
   @CoreState::clusterNotifPrio = 0;
+  @CoreState::clusterSyncState = 1;
+  @CoreState::clusterSyncSeq = 0;
   @CoreState::alertHistoryCount = 0;
   @Test::historyQueryCode = 0;
   write("[CLU_HMI_CTRL] start");
@@ -184,7 +251,23 @@ on message frmMediaStateMsg
 on message frmAudioFocusMsg
 {
   gAudioFocusOwner = clampRange((int)this.AudioFocusOwner, 0, 7);
+  gAudioDuckingLvl = clampRange((int)this.AudioDuckingLvl, 0, 7);
   @CoreState::audioFocusOwner = gAudioFocusOwner;
+  @CoreState::audioDuckingLvl = gAudioDuckingLvl;
+}
+
+on message frmSpeechTtsStateMsg
+{
+  gTtsState = clampRange((int)this.TtsState, 0, 7);
+  @CoreState::ttsState = gTtsState;
+}
+
+on message frmClusterSyncStateMsg
+{
+  gClusterSyncState = clampRange((int)this.ClusterSyncState, 0, 15);
+  gClusterSyncSeq = clampRange((int)this.ClusterSyncAge, 0, 255);
+  @CoreState::clusterSyncState = gClusterSyncState;
+  @CoreState::clusterSyncSeq = gClusterSyncSeq;
 }
 
 on message frmClusterNotifMsg
@@ -198,13 +281,16 @@ on message frmClusterNotifMsg
 on message frmClusterWarningMsg
 {
   int code;
+  int rawCode;
   int prevCode;
   int guardRemainMs;
   dword nowMs;
   dword elapsedMs;
 
   prevCode = gLastDisplayedCode;
-  code = applyDisplayPolicy((int)this.WarningTextCode);
+  rawCode = clampRange((int)this.WarningTextCode, 0, 255);
+  code = applyDisplayPolicy(rawCode);
+  code = applyRobustPolicy(code);
   nowMs = timeNow();
   guardRemainMs = 0;
 
@@ -252,7 +338,9 @@ on message frmClusterWarningMsg
       respondHistoryQuery();
     }
 
-    write("[CLU] warning code=%d", code);
+    write("[CLU] warning code=%d raw=%d focus=%d duck=%d tts=%d popup=%d/%d sync=%d age=%d",
+          code, rawCode, gAudioFocusOwner, gAudioDuckingLvl, gTtsState,
+          gPopupPriority, gPopupActive, gClusterSyncState, gClusterSyncSeq);
   }
 }
 

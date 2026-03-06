@@ -13,6 +13,7 @@ variables
   dword gLastObjectTrackRxMs;
   int gLastObjectRiskClass;
   int gLastObjectEventCode;
+  int gLastInputFilterState;
 }
 
 int clampRange(int value, int minValue, int maxValue)
@@ -196,6 +197,7 @@ void updateWarningState()
   int mergeCutInFlag;
   int objectAlertHoldMs;
   int objectHoldActive;
+  int objectInputValid;
   dword nowMs;
 
   speed = (int)@Core::vehicleSpeedNorm;
@@ -251,6 +253,20 @@ void updateWarningState()
 
   nowMs = timeNow();
   objectHoldActive = 0;
+  objectInputValid = 0;
+
+  if (objectTrackValid == 1 &&
+      objectConfidence >= 25 &&
+      objectRange > 0 &&
+      objectRange <= 500)
+  {
+    objectInputValid = 1;
+  }
+
+  if (objectInputValid == 0)
+  {
+    objectTrackValid = 0;
+  }
 
   if (objectTrackValid == 1)
   {
@@ -280,6 +296,13 @@ void updateWarningState()
   if (objectHoldActive == 1 && objectRiskClass >= 2 && objectRiskClass < 3)
   {
     objectRiskClass = 3;
+  }
+
+  if (objectInputValid != gLastInputFilterState)
+  {
+    write("[ADAS_WARN_CTRL] input filter valid=%d track=%d conf=%d range=%d rel=%d",
+          objectInputValid, objectTrackValid, objectConfidence, objectRange, objectRelSpeed);
+    gLastInputFilterState = objectInputValid;
   }
 
   if (objectRiskClass != gLastObjectRiskClass)
@@ -449,6 +472,7 @@ on start
   gLastObjectTrackRxMs = 0;
   gLastObjectRiskClass = 0;
   gLastObjectEventCode = -1;
+  gLastInputFilterState = -1;
   @Core::proximityRiskLevel = 0;
   @Core::objectTrackValid = 0;
   @Core::objectRange = 0;

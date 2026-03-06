@@ -70,6 +70,7 @@ on timer tIviCycle
   int emergencyType;
   int emergencyDirection;
   int warningTextCode;
+  int speed;
   int emergencyDistanceM;
   int emergencyDistanceBand;
   int baseCode;
@@ -80,6 +81,7 @@ on timer tIviCycle
   timeoutClear = (int)@Core::timeoutClear;
   emergencyType = (int)@V2X::emergencyType;
   emergencyDirection = (int)@V2X::emergencyDirection;
+  speed = clampRange((int)@Core::vehicleSpeedNorm, 0, 255);
   if (alertLevel < 0 || alertLevel > 7)
   {
     alertLevel = 0;
@@ -251,6 +253,7 @@ on timer tIviBase50
   mAudio.AudioDuckingLvl = (alertLevel > 0) ? 4 : 1;
   output(mAudio);
   @CoreState::audioFocusOwner = mAudio.AudioFocusOwner;
+  @CoreState::audioDuckingLvl = mAudio.AudioDuckingLvl;
 
   mVoice.VoiceAssistState = 1;
   mVoice.WakeWordState = 1;
@@ -285,15 +288,18 @@ on timer tIviBase50
   mMedia.MediaRemainTime = 120;
   output(mMedia);
 
-  mTts.TtsState = 0;
+  mTts.TtsState = (alertLevel > 0 && displayModeSetting != 1) ? 1 : 0;
   mTts.TtsPriority = 0;
   mTts.TtsQueueDepth = 0;
   output(mTts);
+  @CoreState::ttsState = mTts.TtsState;
 
   mSync.ClusterSyncState = 1;
   mSync.ClusterSyncError = 0;
   mSync.ClusterSyncAge = 10;
   output(mSync);
+  @CoreState::clusterSyncState = mSync.ClusterSyncState;
+  @CoreState::clusterSyncSeq = mSync.ClusterSyncAge;
 
   gIviBaseTick = gIviBaseTick + 1;
   if ((gIviBaseTick % 2) == 0)

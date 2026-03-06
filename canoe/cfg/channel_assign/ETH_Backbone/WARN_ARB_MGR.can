@@ -13,6 +13,11 @@ variables
   int gPreEmergencyAlertLevel;
   int gPreEmergencyAlertType;
   int gPreEmergencySnapshotValid;
+  dword gLastStableAlertMs;
+  int gStableAlertLevel;
+  int gStableAlertType;
+  int gLastStaleInputState;
+  int gLastFallbackState;
 }
 
 int clampRange(int value, int minValue, int maxValue)
@@ -56,6 +61,13 @@ void runArbiter()
   int driverSeatBelt;
   int passengerSeatBelt;
   int seatBeltWarnLvl;
+  int timeoutClear;
+  int boundaryStatus;
+  int staleInput;
+  int fallbackApplied;
+  int duplicatePopupGuard;
+  dword nowMs;
+  dword lastEmergencyRxMs;
   int preAdjustAlertLevel;
   int preAdjustAlertType;
   int prevDecelAssistReq;
@@ -92,6 +104,13 @@ void runArbiter()
   objectTtcMin = clampRange((int)@Core::objectTtcMin, 0, 10000);
   intersectionConflictFlag = clampRange((int)@Core::intersectionConflictFlag, 0, 1);
   mergeCutInFlag = clampRange((int)@Core::mergeCutInFlag, 0, 1);
+  timeoutClear = (((int)@Core::timeoutClear) == 1) ? 1 : 0;
+  boundaryStatus = clampRange((int)@CoreState::domainBoundaryStatus, 0, 1);
+  duplicatePopupGuard = clampRange((int)@CoreState::duplicatePopupGuard, 0, 5000);
+  lastEmergencyRxMs = (dword)clampRange((int)@CoreState::lastEmergencyRxMs, 0, 2147483647);
+  nowMs = timeNow();
+  staleInput = 0;
+  fallbackApplied = 0;
   objectWarningActive = 0;
   if (objectTrackValid == 1 && objectConfidence >= 30 && objectRiskClass >= 2)
   {
@@ -275,6 +294,46 @@ void runArbiter()
     }
   }
 
+  /* Req_149: stale input protection for conservative warning policy. */
+  if (timeoutClear == 1)
+  {
+    staleInput = 1;
+  }
+  else if (emergencyContext > 0 && lastEmergencyRxMs > 0 &&
+           (nowMs - lastEmergencyRxMs) >= 1000)
+  {
+    staleInput = 1;
+  }
+  else if (boundaryStatus == 0 && (emergencyContext > 0 || selectedAlertLevel > 0))
+  {
+    staleInput = 1;
+  }
+  if (staleInput == 1)
+  {
+    if (selectedAlertLevel < 3)
+    {
+      selectedAlertLevel = 3;
+    }
+    if (selectedAlertType == 0)
+    {
+      selectedAlertType = (emergencyContext > 0) ? emergencyContext : 3;
+    }
+  }
+
+  /* Req_152: channel fallback warning policy in degraded/blocked output path. */
+  if (failSafeMode >= 1 && (selectedAlertLevel > 0 || staleInput == 1))
+  {
+    fallbackApplied = 1;
+    if (selectedAlertLevel < 4)
+    {
+      selectedAlertLevel = 4;
+    }
+    if (selectedAlertType == 0)
+    {
+      selectedAlertType = (emergencyContext > 0) ? emergencyContext : 3;
+    }
+  }
+
   preAdjustAlertLevel = selectedAlertLevel;
   preAdjustAlertType = selectedAlertType;
 
@@ -327,6 +386,39 @@ void runArbiter()
           driverSeatBelt, passengerSeatBelt, seatBeltWarnLvl);
   }
 
+  /* Req_150: suppress short-window alert oscillation for same-cause alerts. */
+  if (gStableAlertLevel < 0)
+  {
+    gStableAlertLevel = selectedAlertLevel;
+    gStableAlertType = selectedAlertType;
+    gLastStableAlertMs = nowMs;
+  }
+  else if (selectedAlertLevel != gStableAlertLevel || selectedAlertType != gStableAlertType)
+  {
+    if ((nowMs - gLastStableAlertMs) < 1000 &&
+        duplicatePopupGuard > 0 &&
+        selectedAlertType == gStableAlertType &&
+        selectedAlertLevel <= gStableAlertLevel)
+    {
+      selectedAlertLevel = gStableAlertLevel;
+      selectedAlertType = gStableAlertType;
+    }
+    else
+    {
+      gStableAlertLevel = selectedAlertLevel;
+      gStableAlertType = selectedAlertType;
+      gLastStableAlertMs = nowMs;
+    }
+  }
+
+  if (staleInput != gLastStaleInputState || fallbackApplied != gLastFallbackState)
+  {
+    write("[WARN_ARB_MGR] robust stale=%d fallback=%d timeout=%d boundary=%d failSafe=%d lastRx=%d",
+          staleInput, fallbackApplied, timeoutClear, boundaryStatus, failSafeMode, (int)lastEmergencyRxMs);
+    gLastStaleInputState = staleInput;
+    gLastFallbackState = fallbackApplied;
+  }
+
   @Core::decelAssistReq = decelAssistReq;
   @Core::selectedAlertLevel = selectedAlertLevel;
   @Core::selectedAlertType = selectedAlertType;
@@ -374,6 +466,11 @@ on start
   gPreEmergencyAlertLevel = 0;
   gPreEmergencyAlertType = 0;
   gPreEmergencySnapshotValid = 0;
+  gLastStableAlertMs = 0;
+  gStableAlertLevel = -1;
+  gStableAlertType = -1;
+  gLastStaleInputState = -1;
+  gLastFallbackState = -1;
   @Core::decelAssistReq = 0;
   setTimer(tArbiter50, 50);
   write("[WARN_ARB_MGR] start");
