@@ -29,7 +29,7 @@
 
 ## CAN ID 배정 정책 (Project SoT)
 
-- ID 상위 SoT는 `00f_CAN_ID_Allocation_Standard.md`를 따른다.
+- ID 상위 SoT는 `governance/00f_CAN_ID_Allocation_Standard.md`를 따른다.
 - 본 장은 통신 스펙 관점의 실행 규칙만 요약한다.
 
 | 규칙 | 정책 |

@@ -1,7 +1,7 @@
 # TMP Handoff (Next Codex Session)
 
 ## 0) Freshness Control
-- Last Updated: 2026-03-06
+- Last Updated: 2026-03-07
 - Freshness Status: FRESH
 - Validity Window: 7 days
 - Stale Criteria (any one = stale):
@@ -92,7 +92,7 @@
 - 05_Unit_Test.md: Version 2.21 (Draft)
 - 06_Integration_Test.md: Version 4.19 (Draft)
 - 07_System_Test.md: Version 5.19 (Draft)
-- Development Baseline Commit: `6178ef5` (mentoring checklist sync + vector sample ref sync, 2026-03-06)
+- Development Baseline Commit: `2678c58` (review-first freeze guidance added, 2026-03-07)
 
 ## 7) Immediate Next Steps
 1. Keep `02_Concept_design.md` figure baseline fixed and ensure PPT sync consistency (star topology).

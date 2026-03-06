@@ -227,7 +227,11 @@ def main():
         sys.exit(1)
 
     # Find all MD files
-    md_files = sorted(source_dir.glob("*.md"))
+    # Default submission behavior: exclude README-style index docs from workbook sheets.
+    md_files = sorted(
+        p for p in source_dir.glob("*.md")
+        if not p.stem.upper().startswith("README")
+    )
 
     print(f"\nFound {len(md_files)} files to convert in {source_dir}:")
     for md_file in md_files:
