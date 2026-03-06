@@ -42,6 +42,7 @@
 - 경고 강건성·인지성 확장 요구(`Req_148~Req_155`) 통신은 `Comm_130/133`, `Comm_006/007/008`, `Comm_104/105/124/203` Pre-Activation 매핑으로 관리하며, 구현 착수 시 0302/0304/04/05/06/07을 동일 커밋에서 동기화한다.
 - EMS는 상위 문서 레벨에서 논리 단말 `EMS_ALERT`로 표기하고, 내부 구현 모듈(`EMS_POLICE_TX`, `EMS_AMB_TX`, `EMS_ALERT_RX`)은 하단 보강표에서만 분리 관리한다.
 - 약어 충돌 방지 규칙: `EMS_AMB_TX`의 `AMB`는 `Ambulance` 의미의 구현 literal이며, `Ambient`는 항상 `AMBIENT` 풀토큰으로 표기한다.
+- `Req_108`은 Legacy 참조 요구로 관리하며 `Comm_202/Comm_105` 통합 결과를 상속 추적한다.
 - Validation Harness 공통 프레임(`0x2A5`, `0x2A6`)은 독립 `test_can`이 아니라 `chassis_can.dbc`에 통합 관리한다.
 - 제출 설명 시 `0x2A5/0x2A6`은 “Validation frame(Chassis 통합)”으로 명시해 도메인 오해를 방지한다.
 
@@ -417,4 +418,3 @@
 - 활성 SoT 승격 조건: `ETH_INTERFACE_CONTRACT.md v1.2`에 `E213~E216` 계약 반영 완료.
 
 ---
-

@@ -40,6 +40,7 @@
 - `Flow_130~Flow_133` 활성 SoT 승격 조건은 `ETH_INTERFACE_CONTRACT.md v1.2`에 `E213~E216` 계약이 반영되는 것이다.
 - EMS는 상위 문서 레벨에서 논리 단말 `EMS_ALERT`로 표기하고, 상단 표의 `EMS_POLICE_TX/EMS_AMB_TX/EMS_ALERT_RX` 열은 내부 구현 모듈 분해 관점으로만 해석한다.
 - 약어 충돌 방지 규칙: `EMS_AMB_TX`의 `AMB`는 `Ambulance` 의미의 구현 literal이며, `Ambient`는 항상 `AMBIENT` 풀토큰으로 표기한다.
+- `Req_108`은 Legacy 참조 요구로 관리하며 `Flow_202/Flow_105` 통합 결과를 상속 추적한다.
 
 ---
 
@@ -398,4 +399,3 @@
 - 주의: `Flow_130~Flow_133`는 ADAS 객체 인지 확장 Pre-Activation 플로우다. 구현 착수 시 0303/0304/04/05/06/07을 동일 커밋으로 동기화한다.
 
 ---
-

@@ -36,6 +36,7 @@
 - 제출 전 현대/기아 및 OEM 기준 명칭으로 일괄 대체하되, 추적 ID 체계는 유지한다.
 - EMS는 상위 문서 계층에서 단일 논리 단말 `EMS_ALERT`로 관리하고, 내부 구현 모듈(TX/RX)은 하단 보강표에서만 분리한다.
 - 약어 충돌 방지 규칙: `EMS_AMB_TX`의 `AMB`는 `Ambulance` 의미의 구현 literal이며, `Ambient`는 항상 `AMBIENT` 풀토큰으로 표기한다.
+- `Req_108`은 Legacy 참조 요구로 관리하며 `Req_113/Req_116/Req_118` 통합 결과를 상속 추적한다.
 
 ---
 
@@ -148,7 +149,7 @@
 | Func_154 | Req_154 | CLU_HMI_CTRL | PopupType, PopupPriority, PopupActive, duplicatePopupGuard | 팝업 과밀 억제 및 우선 경고 선표시 | warningTextCode, ClusterNotifPrio | 입력: PopupType, PopupPriority, PopupActive, duplicatePopupGuard / 출력: warningTextCode, ClusterNotifPrio |
 | Func_155 | Req_155 | CLU_HMI_CTRL | ClusterSyncState, ClusterSyncSeq, selectedAlertType, selectedAlertLevel | 앰비언트/클러스터 경고 동기 일관성 관리 | warningTextCode, ClusterNotifPrio | 입력: ClusterSyncState, ClusterSyncSeq, selectedAlertType, selectedAlertLevel / 출력: warningTextCode, ClusterNotifPrio |
 
-## 2-1. Req-Func 1:1 감사 매핑 표
+## 2-1. Req-Func 감사 매핑 표 (N:M 허용)
 
 | Req ID | Func ID | 실제 노드명 | 기능명 |
 |---|---|---|---|
@@ -202,6 +203,7 @@
 | Req_105 | Func_105 | STEER_CTRL | 조향 입력 반영 |
 | Req_106 | Func_106 | HAZARD_CTRL | 비상등 기본 제어 |
 | Req_107 | Func_107 | WINDOW_CTRL | 창문 기본 제어 |
+| Req_108 | Func_113, Func_116, Func_118 | DRV_STATE_MGR, WARN_ARB_MGR, CLU_HMI_CTRL | [Legacy] 운전자 상태 단일 레벨 전달(통합 상속) |
 | Req_109 | Func_109 | CLU_BASE_CTRL | 클러스터 기본 표시 |
 | Req_110 | Func_110 | DOMAIN_ROUTER | 도메인 게이트웨이 전달 |
 | Req_111 | Func_111 | DOMAIN_BOUNDARY_MGR | 도메인 경계 유지 |
@@ -249,4 +251,3 @@
 | Req_155 | Func_155 | CLU_HMI_CTRL | 경고 채널 동기 일관성 |
 
 ---
-
