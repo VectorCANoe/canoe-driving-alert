@@ -3,7 +3,7 @@
 **Document ID**: PROJ-0303-CS
 **ISO 26262 Reference**: Part 6, Cl.7 (Software Architectural Design)
 **ASPICE Reference**: SWE.2 (Software Architectural Design)
-**Version**: 3.25
+**Version**: 3.26
 **Date**: 2026-03-06
 **Status**: Draft
 **Project Title**: 주행 상황 실시간 경고 시스템
@@ -357,6 +357,22 @@
 
 ---
 
+## Legacy Req 상속 매핑 (Comm 기준)
+
+| Legacy Req ID | Active Req ID | 상속 Comm | 상속 규칙 |
+|---|---|---|---|
+| Req_018 | Req_017 | Comm_005 | 구급차 분리 요구는 긴급차량 접근 통합 요구(Req_017)의 Comm 결과를 상속한다. |
+| Req_036 | Req_035 | Comm_007 | 긴급 패턴 분리 요구는 긴급 시각표현 통합 요구(Req_035)의 Comm 결과를 상속한다. |
+| Req_038 | Req_037 | Comm_007 | 고속도로 패턴 분리 요구는 구간 패턴 통합 요구(Req_037)의 Comm 결과를 상속한다. |
+| Req_039 | Req_037 | Comm_007 | 유도선 패턴 분리 요구는 구간 패턴 통합 요구(Req_037)의 Comm 결과를 상속한다. |
+| Req_114 | Req_113 | Comm_202 | 시트 상태 단독 요구는 실내편의 통합 요구(Req_113)의 Comm 결과를 상속한다. |
+| Req_115 | Req_113 | Comm_202 | 미러 상태 단독 요구는 실내편의 통합 요구(Req_113)의 Comm 결과를 상속한다. |
+| Req_117 | Req_116 | Comm_202 | 와이퍼/우적 연동 단독 요구는 차체 제어 통합 요구(Req_116)의 Comm 결과를 상속한다. |
+| Req_122 | Req_125 | Comm_122 | 감속 보조 중 긴급 최우선 단독 요구는 V2 통합 요구(Req_125)의 Comm 결과를 상속한다. |
+| Req_124 | Req_127,Req_128,Req_129 | Comm_124 | 도메인 단절 대응 단일 요구는 금지/최소유지/강등 3분할 요구 결과를 상속한다. |
+
+---
+
 ## Comm_006 메시지 단계 분해 (감사용 명확화)
 
 | 단계 | 상위 Comm ID | Message(ID) | Tx Node | Rx Node | 주기/조건 |
@@ -503,6 +519,7 @@
 
 | 버전 | 날짜 | 변경 사항 |
 |---|---|---|
+| 3.26 | 2026-03-06 | Legacy 누락군 보강: `Req_018/036/038/039/114/115/117/122/124` 상속 관계를 `Legacy Req 상속 매핑` 섹션으로 추가해 Comm 추적 누락을 해소. |
 | 3.25 | 2026-03-06 | 경고 강건성·인지성 확장(Pre-Activation) 반영: `Req_148~Req_155`를 `Comm_130/133`, `Comm_006/007/008`, `Comm_104/105/124/203`에 매핑하고 연계 체크포인트를 동기화. |
 | 3.24 | 2026-03-06 | 차량 경보 편의 확장(Pre-Activation) 반영: `Req_140~Req_147`을 `Comm_103/104/105/203` 및 `Comm_006/008`에 매핑하고 연계 체크포인트를 동기화. |
 | 3.23 | 2026-03-06 | SoT 정합 보강: `Comm_130~Comm_133`를 Pending Ethernet 계약(`ETH_INTERFACE_CONTRACT.md v1.2`, `E213~E216`)으로 분리하고 활성 SoT 범위를 명확화. |

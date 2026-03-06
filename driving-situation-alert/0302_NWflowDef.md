@@ -3,7 +3,7 @@
 **Document ID**: PROJ-0302-NFD
 **ISO 26262 Reference**: Part 4, Cl.7 (System Design)
 **ASPICE Reference**: SYS.3 (System Architectural Design)
-**Version**: 3.22
+**Version**: 3.23
 **Date**: 2026-03-06
 **Status**: Draft
 **Project Title**: 주행 상황 실시간 경고 시스템
@@ -339,6 +339,23 @@
 
 ---
 
+## Legacy Req 상속 매핑 (Flow 기준)
+
+| Legacy Req ID | Active Req ID | 상속 Flow | 상속 규칙 |
+|---|---|---|---|
+| Req_018 | Req_017 | Flow_005 | 구급차 분리 요구는 긴급차량 접근 통합 요구(Req_017)의 Flow 결과를 상속한다. |
+| Req_036 | Req_035 | Flow_007 | 긴급 패턴 분리 요구는 긴급 시각표현 통합 요구(Req_035)의 Flow 결과를 상속한다. |
+| Req_038 | Req_037 | Flow_007 | 고속도로 패턴 분리 요구는 구간 패턴 통합 요구(Req_037)의 Flow 결과를 상속한다. |
+| Req_039 | Req_037 | Flow_007 | 유도선 패턴 분리 요구는 구간 패턴 통합 요구(Req_037)의 Flow 결과를 상속한다. |
+| Req_108 | Req_113,Req_116,Req_118 | Flow_202, Flow_105 | 운전자 상태 단일 레벨 전달 요구는 Body 확장 상태 묶음으로 대체되어 통합 Flow 결과를 상속한다. |
+| Req_114 | Req_113 | Flow_202 | 시트 상태 단독 요구는 실내편의 통합 요구(Req_113)의 Flow 결과를 상속한다. |
+| Req_115 | Req_113 | Flow_202 | 미러 상태 단독 요구는 실내편의 통합 요구(Req_113)의 Flow 결과를 상속한다. |
+| Req_117 | Req_116 | Flow_202 | 와이퍼/우적 연동 단독 요구는 차체 제어 통합 요구(Req_116)의 Flow 결과를 상속한다. |
+| Req_122 | Req_125 | Flow_122 | 감속 보조 중 긴급 최우선 단독 요구는 V2 통합 요구(Req_125)의 Flow 결과를 상속한다. |
+| Req_124 | Req_127,Req_128,Req_129 | Flow_124 | 도메인 단절 대응 단일 요구는 금지/최소유지/강등 3분할 요구 결과를 상속한다. |
+
+---
+
 ## Flow_006 메시지 단계 분해 (감사용 명확화)
 
 | 단계 | 상위 Flow ID | Message(ID) | Tx Node | Rx Node | 목적 |
@@ -490,6 +507,7 @@
 
 | 버전 | 날짜 | 변경 사항 |
 |---|---|---|
+| 3.23 | 2026-03-06 | Legacy 누락군 보강: `Req_018/036/038/039/108/114/115/117/122/124` 상속 관계를 `Legacy Req 상속 매핑` 섹션으로 추가해 Flow 추적 누락을 해소. |
 | 3.22 | 2026-03-06 | 경고 강건성·인지성 확장(Pre-Activation) 반영: `Req_148~Req_155`를 `Flow_130/133`, `Flow_006/007/008`, `Flow_104/105/124/203`에 매핑하고 연계 체크포인트를 동기화. |
 | 3.21 | 2026-03-06 | 차량 경보 편의 확장(Pre-Activation) 반영: `Req_140~Req_147`를 `Flow_103/104/105/203` 및 `Flow_006/008`에 매핑하고 연계 체크포인트를 동기화. |
 | 3.20 | 2026-03-06 | SoT 정합 보강: `Flow_130~Flow_133`를 Pending 계약(`ETH_INTERFACE_CONTRACT.md v1.2`, `E213~E216`)으로 명시해 Pre-Activation과 활성 SoT를 분리. |

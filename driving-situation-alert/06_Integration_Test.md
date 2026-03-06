@@ -3,7 +3,7 @@
 **Document ID**: PROJ-06-IT
 **ISO 26262 Reference**: Part 6, Cl.10 (Software Integration and Integration Test)
 **ASPICE Reference**: SWE.5 (Software Integration and Integration Test)
-**Version**: 4.18
+**Version**: 4.19
 **Date**: 2026-03-06
 **Status**: Draft
 **Project Title**: 주행 상황 실시간 경고 시스템
@@ -86,6 +86,24 @@
 | IT_BASE_DIAG_001 | Flow_106,Flow_205 | Comm_106,Comm_205 | Func_112 | Req_112 | VC_112 | UT_BASE_TEST_001 | 진단 요청-응답 및 결과 기록이 Event+100ms 기준으로 유지 |
 
 ---
+
+## Legacy Req 상속 매핑 (IT 기준)
+
+| Legacy Req ID | Active Req ID | 상속 IT | 상속 VC | 상속 규칙 |
+|---|---|---|---|---|
+| Req_018 | Req_017 | IT_EMS_001 | VC_017 | 구급차 분리 요구는 긴급차량 접근 통합 요구(Req_017)의 IT 결과를 상속한다. |
+| Req_036 | Req_035 | IT_OUT_001 | VC_035 | 긴급 패턴 분리 요구는 긴급 시각표현 통합 요구(Req_035)의 IT 결과를 상속한다. |
+| Req_038 | Req_037 | IT_OUT_001 | VC_037 | 고속도로 패턴 분리 요구는 구간 패턴 통합 요구(Req_037)의 IT 결과를 상속한다. |
+| Req_039 | Req_037 | IT_OUT_001 | VC_037 | 유도선 패턴 분리 요구는 구간 패턴 통합 요구(Req_037)의 IT 결과를 상속한다. |
+| Req_108 | Req_113,Req_116,Req_118 | IT_BASE_EXT_BODY_001 | VC_113,VC_116,VC_118 | 운전자 상태 단일 레벨 요구는 Body 확장 상태 묶음 검증 결과로 상속한다. |
+| Req_114 | Req_113 | IT_BASE_EXT_BODY_001 | VC_113 | 시트 상태 단독 요구는 실내편의 통합 요구(Req_113)의 IT 결과를 상속한다. |
+| Req_115 | Req_113 | IT_BASE_EXT_BODY_001 | VC_113 | 미러 상태 단독 요구는 실내편의 통합 요구(Req_113)의 IT 결과를 상속한다. |
+| Req_117 | Req_116 | IT_BASE_EXT_BODY_001 | VC_116 | 와이퍼/우적 연동 단독 요구는 차체 제어 통합 요구(Req_116)의 IT 결과를 상속한다. |
+| Req_122 | Req_125 | IT_V2_RISK_001 | VC_125 | 감속 보조 중 긴급 최우선 단독 요구는 V2 통합 요구(Req_125)의 IT 결과를 상속한다. |
+| Req_124 | Req_127,Req_128,Req_129 | IT_V2_FAILSAFE_001 | VC_127,VC_128,VC_129 | 도메인 단절 대응 단일 요구는 금지/최소유지/강등 3분할 요구의 IT 결과를 상속한다. |
+
+---
+
 ## 핵심 보강 케이스 (선별 수용)
 
 | IT 보강 ID | 기준 IT | Req/VC | 목적 | 입력/조건 | 합격 기준 | 선행 UT |
@@ -113,6 +131,7 @@
 
 | 버전 | 날짜 | 변경 사항 |
 |---|---|---|
+| 4.19 | 2026-03-06 | Legacy 누락군 보강: `Req_018/036/038/039/108/114/115/117/122/124` 상속 관계를 `Legacy Req 상속 매핑` 섹션으로 추가해 Lean IT advisory 누락을 해소. |
 | 4.18 | 2026-03-06 | 경고 강건성·인지성 확장(Pre-Activation) 반영: `IT_BASE_ROBUST_EXT_001` 추가, `Req_148~Req_155`/`Flow·Comm_130·133·006·007·008·104·105·124·203` 추적 및 07 연계 체크포인트를 동기화. |
 | 4.17 | 2026-03-06 | 차량 경보 편의 확장(Pre-Activation) 반영: `IT_BASE_ALERT_EXT_001` 추가, `Req_140~Req_147`/`Flow·Comm_103·104·105·203·006·008` 추적 및 07 연계 체크포인트를 동기화. |
 | 4.16 | 2026-03-06 | ADAS 객체 인지 확장(Pre-Activation) 반영: `IT_ADAS_OBJ_001`을 추가하고 `Req_130~Req_139`/`Flow_130~133`/`Comm_130~133` 추적 및 07 연계 체크포인트를 동기화. |
