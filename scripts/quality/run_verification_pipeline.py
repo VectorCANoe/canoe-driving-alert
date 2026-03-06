@@ -7,6 +7,7 @@ This wrapper keeps day-to-day execution simple while preserving existing tools:
   3) evidence_score_gate.py
   4) dev_completeness_smoke.py
   5) build_doc_binding_bundle.py / build_doc_fill_template.py
+  6) check_run_readiness.py
 """
 
 from __future__ import annotations
@@ -312,6 +313,22 @@ def cmd_finalize(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_status(args: argparse.Namespace) -> int:
+    cmd = [
+        sys.executable,
+        str(SCRIPT_DIR / "check_run_readiness.py"),
+        "--run-id",
+        args.run_id,
+        "--evidence-root",
+        str(args.evidence_root),
+        "--output-json",
+        str(args.output_json),
+        "--output-md",
+        str(args.output_md),
+    ]
+    return run_cmd(cmd)
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Run simplified verification evidence workflow")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -476,6 +493,21 @@ def build_parser() -> argparse.ArgumentParser:
         default=REPO_ROOT / "canoe" / "tmp" / "reports" / "verification" / "doc_fill_template.md",
     )
     p_finalize.set_defaults(func=cmd_finalize)
+
+    p_status = sub.add_parser("status", help="Check run readiness for finalize workflow")
+    p_status.add_argument("--run-id", required=True, help="Run ID, e.g. 20260307_1030")
+    p_status.add_argument("--evidence-root", type=Path, default=DEFAULT_EVIDENCE_ROOT)
+    p_status.add_argument(
+        "--output-json",
+        type=Path,
+        default=REPO_ROOT / "canoe" / "tmp" / "reports" / "verification" / "run_readiness.json",
+    )
+    p_status.add_argument(
+        "--output-md",
+        type=Path,
+        default=REPO_ROOT / "canoe" / "tmp" / "reports" / "verification" / "run_readiness.md",
+    )
+    p_status.set_defaults(func=cmd_status)
 
     return parser
 

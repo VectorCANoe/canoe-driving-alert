@@ -30,6 +30,7 @@ This file defines how current script assets are classified before CLI productiza
 - `scripts/quality/build_run_insight_report.py`
 - `scripts/quality/build_doc_binding_bundle.py`
 - `scripts/quality/build_doc_fill_template.py`
+- `scripts/quality/check_run_readiness.py`
 - `scripts/quality/dev_completeness_smoke.py`
 - `scripts/gates/doc_code_sync_gate.py`
 - `scripts/gates/cfg_hygiene_gate.py`
@@ -96,6 +97,7 @@ Canonical:
 - `python scripts/run.py verify insight --run-id <RUN_ID> [--baseline-run-id <RUN_ID>]`
 - `python scripts/run.py verify bind-doc --run-id <RUN_ID>`
 - `python scripts/run.py verify fill-template --run-id <RUN_ID>`
+- `python scripts/run.py verify status --run-id <RUN_ID>`
 - `python scripts/run.py verify finalize --run-id <RUN_ID> --owner <OWNER>`
 - `python scripts/run.py gate doc-sync`
 - `python scripts/run.py gate cfg-hygiene`
@@ -107,6 +109,7 @@ Compatibility aliases remain enabled during transition:
 
 - `verify-prepare`, `verify-smoke`, `verify-fill-score`, `verify-insight`, `verify-bind-doc`
 - `verify-fill-template`
+- `verify-status`
 - `verify-finalize`
 - `gate-doc-sync`, `gate-cfg-hygiene`, `gate-capl-sync`
 

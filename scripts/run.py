@@ -9,6 +9,7 @@ Canonical command contract:
   - gate cfg-hygiene
   - gate capl-sync
   - verify fill-template
+  - verify status
   - verify finalize
   - package build-exe
 
@@ -17,6 +18,7 @@ Legacy aliases are kept for compatibility:
   - verify-smoke
   - verify-fill-score
   - verify-fill-template
+  - verify-status
   - verify-finalize
   - gate-doc-sync
   - gate-cfg-hygiene
@@ -44,6 +46,7 @@ CONTRACT_CANONICAL = [
     "python scripts/run.py verify insight --run-id <YYYYMMDD_HHMM>",
     "python scripts/run.py verify bind-doc --run-id <YYYYMMDD_HHMM>",
     "python scripts/run.py verify fill-template --run-id <YYYYMMDD_HHMM>",
+    "python scripts/run.py verify status --run-id <YYYYMMDD_HHMM>",
     "python scripts/run.py verify finalize --run-id <YYYYMMDD_HHMM> --owner <OWNER>",
     "python scripts/run.py gate doc-sync",
     "python scripts/run.py gate cfg-hygiene",
@@ -59,6 +62,7 @@ CONTRACT_LEGACY = [
     "verify-insight",
     "verify-bind-doc",
     "verify-fill-template",
+    "verify-status",
     "verify-finalize",
     "gate-doc-sync",
     "gate-cfg-hygiene",
@@ -234,6 +238,23 @@ def cmd_verify_finalize(args: argparse.Namespace) -> int:
         cmd.append("--no-strict-metadata")
     if args.no_strict_axis:
         cmd.append("--no-strict-axis")
+    return run_cmd(cmd)
+
+
+def cmd_verify_status(args: argparse.Namespace) -> int:
+    cmd = [
+        sys.executable,
+        str(SCRIPTS / "quality" / "run_verification_pipeline.py"),
+        "status",
+        "--run-id",
+        args.run_id,
+        "--output-json",
+        str(args.output_json),
+        "--output-md",
+        str(args.output_md),
+    ]
+    if args.evidence_root:
+        cmd.extend(["--evidence-root", str(args.evidence_root)])
     return run_cmd(cmd)
 
 
@@ -450,6 +471,26 @@ def add_verify_finalize_args(p: argparse.ArgumentParser) -> None:
     p.set_defaults(func=cmd_verify_finalize)
 
 
+def add_verify_status_args(p: argparse.ArgumentParser) -> None:
+    p.add_argument("--run-id", required=True, help="Run ID, e.g. 20260306_1930")
+    p.add_argument(
+        "--evidence-root",
+        default="",
+        help="Optional evidence root path (default pipeline root is used when omitted)",
+    )
+    p.add_argument(
+        "--output-json",
+        default="canoe/tmp/reports/verification/run_readiness.json",
+        help="Run readiness JSON output path",
+    )
+    p.add_argument(
+        "--output-md",
+        default="canoe/tmp/reports/verification/run_readiness.md",
+        help="Run readiness markdown output path",
+    )
+    p.set_defaults(func=cmd_verify_status)
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Unified script launcher")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -462,6 +503,7 @@ def build_parser() -> argparse.ArgumentParser:
     add_verify_insight_args(verify_sub.add_parser("insight", help="Build run-level insight report"))
     add_verify_bind_doc_args(verify_sub.add_parser("bind-doc", help="Build 05/06/07 doc binding bundle"))
     add_verify_fill_template_args(verify_sub.add_parser("fill-template", help="Build 05/06/07 doc fill template"))
+    add_verify_status_args(verify_sub.add_parser("status", help="Check run readiness before finalize"))
     add_verify_finalize_args(verify_sub.add_parser("finalize", help="Run full post-run verification bundle"))
 
     gate = sub.add_parser("gate", help="Quality gate commands")
@@ -489,6 +531,7 @@ def build_parser() -> argparse.ArgumentParser:
     add_verify_insight_args(sub.add_parser("verify-insight", help="Legacy alias: verify insight"))
     add_verify_bind_doc_args(sub.add_parser("verify-bind-doc", help="Legacy alias: verify bind-doc"))
     add_verify_fill_template_args(sub.add_parser("verify-fill-template", help="Legacy alias: verify fill-template"))
+    add_verify_status_args(sub.add_parser("verify-status", help="Legacy alias: verify status"))
     add_verify_finalize_args(sub.add_parser("verify-finalize", help="Legacy alias: verify finalize"))
     sub.add_parser("gate-doc-sync", help="Legacy alias: gate doc-sync").set_defaults(func=cmd_gate_doc_sync)
     sub.add_parser("gate-cfg-hygiene", help="Legacy alias: gate cfg-hygiene").set_defaults(func=cmd_gate_cfg_hygiene)

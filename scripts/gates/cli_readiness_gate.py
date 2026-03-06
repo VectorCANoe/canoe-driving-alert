@@ -74,6 +74,7 @@ def main() -> int:
                 "python scripts/run.py verify insight --run-id <YYYYMMDD_HHMM>",
                 "python scripts/run.py verify bind-doc --run-id <YYYYMMDD_HHMM>",
                 "python scripts/run.py verify fill-template --run-id <YYYYMMDD_HHMM>",
+                "python scripts/run.py verify status --run-id <YYYYMMDD_HHMM>",
                 "python scripts/run.py verify finalize --run-id <YYYYMMDD_HHMM> --owner <OWNER>",
                 "python scripts/run.py gate doc-sync",
                 "python scripts/run.py gate cli-readiness",

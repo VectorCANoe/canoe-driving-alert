@@ -41,17 +41,22 @@ python scripts/run.py verify insight --run-id 20260307_1030
 python scripts/run.py verify bind-doc --run-id 20260307_1030
 ```
 
-6. Build 05/06/07 doc fill template (Pass/Fail, owner, date, evidence links)
+6. Check run readiness (raw marker / missing file precheck)
+```powershell
+python scripts/run.py verify status --run-id 20260307_1030
+```
+
+7. Build 05/06/07 doc fill template (Pass/Fail, owner, date, evidence links)
 ```powershell
 python scripts/run.py verify fill-template --run-id 20260307_1030 --owner-fallback DEV1
 ```
 
-7. Fast path (one-shot after raw logs are prepared)
+8. Fast path (one-shot after raw logs are prepared)
 ```powershell
 python scripts/run.py verify finalize --run-id 20260307_1030 --owner DEV1
 ```
 
-8. Optional baseline comparison
+9. Optional baseline comparison
 ```powershell
 python scripts/run.py verify insight --run-id 20260307_1030 --baseline-run-id 20260306_qa
 ```
@@ -74,6 +79,8 @@ Run-level:
 - `canoe/tmp/reports/verification/doc_binding_bundle.json`
 - `canoe/tmp/reports/verification/doc_fill_template.csv`
 - `canoe/tmp/reports/verification/doc_fill_template.md`
+- `canoe/tmp/reports/verification/run_readiness.json`
+- `canoe/tmp/reports/verification/run_readiness.md`
 
 ## 5) Insight Interpretation Rules
 

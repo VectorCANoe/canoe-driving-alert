@@ -9,6 +9,7 @@ Main tools:
   - `insight`
   - `bind-doc`
   - `fill-template`
+  - `status`
   - `finalize`
 - `evidence_score_gate.py`
 - `build_evidence_from_write_window.py`
@@ -35,6 +36,10 @@ Note:
   - Pass/Fail, owner, date, evidence links per test ID
   - action-required flag for missing evidence or missing doc IDs
   - csv/md bundle for direct document update work
+- `check_run_readiness.py` outputs run readiness report:
+  - template/raw/scored existence by UT/IT/ST
+  - evidence marker count (`[EVIDENCE_OUT]`)
+  - overall status (`NOT_PREPARED`, `PREPARED_PARTIAL`, `READY_FOR_FINALIZE`, `SCORED_READY`)
 - CLI readiness gate report output:
   - `canoe/tmp/reports/verification/cli_readiness_gate.json`
   - `canoe/tmp/reports/verification/cli_readiness_gate.md`
