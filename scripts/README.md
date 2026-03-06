@@ -83,6 +83,7 @@ Then you can use:
 - Script governance/inventory: `scripts/SCRIPT_INVENTORY.md`
 - Gate overview/mapping: `scripts/GATE_MATRIX.md`
 - End-to-end operational playbook: `canoe/docs/operations/VERIFICATION_INSIGHT_PLAYBOOK.md`
+- Team quick runbook (Korean ops note): `canoe/tmp/onboarding/VERIFY_EXECUTION_RUNBOOK.md`
 
 ## Compatibility
 
