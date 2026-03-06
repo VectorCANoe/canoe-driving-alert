@@ -151,43 +151,43 @@ void runArbiter()
     }
   }
 
-  /* QoS preemption entry: snapshot zone state at moment emergency takes over (Req_033) */
+  /* Alert Priority preemption entry: snapshot zone state at moment emergency takes over (Req_033) */
   if (emergencyContext > 0 && gPrevEmergencyContext == 0)
   {
     gPreEmergencyAlertLevel = baseAlertLevel;
     gPreEmergencyAlertType = baseAlertType;
     gPreEmergencySnapshotValid = 1;
-    write("[WARN_ARB_MGR] QoS preempt: zone lvl=%d type=%d -> emergency=%d",
+    write("[WARN_ARB_MGR] Alert Priority preempt: zone lvl=%d type=%d -> emergency=%d",
           gPreEmergencyAlertLevel, gPreEmergencyAlertType, emergencyContext);
   }
 
   if (emergencyContext == 2)
   {
-    /* QoS 4: Ambulance (highest) */
+    /* Alert Priority L4: Ambulance (highest) */
     selectedAlertLevel = 7;
     selectedAlertType = 2;
   }
   else if (emergencyContext == 1)
   {
-    /* QoS 3: Police */
+    /* Alert Priority L3: Police */
     selectedAlertLevel = 6;
     selectedAlertType = 1;
   }
   else if (gPrevEmergencyContext > 0)
   {
-    /* QoS recovery: emergency just ended.
+    /* Alert Priority recovery: emergency just ended.
        Use current baseAlertLevel (fresh re-evaluation) to ensure safety conditions
        are up-to-date, not stale. Snapshot is kept for audit log only (Req_033). */
     selectedAlertLevel = baseAlertLevel;
     selectedAlertType = baseAlertType;
-    write("[WARN_ARB_MGR] QoS recover: zone lvl=%d type=%d (snapshot was lvl=%d type=%d)",
+    write("[WARN_ARB_MGR] Alert Priority recover: zone lvl=%d type=%d (snapshot was lvl=%d type=%d)",
           selectedAlertLevel, selectedAlertType,
           gPreEmergencyAlertLevel, gPreEmergencyAlertType);
     gPreEmergencySnapshotValid = 0;
   }
   else
   {
-    /* QoS 2/1: normal zone or idle */
+    /* Alert Priority L2/L1: normal zone or idle */
     selectedAlertLevel = baseAlertLevel;
     selectedAlertType = baseAlertType;
   }

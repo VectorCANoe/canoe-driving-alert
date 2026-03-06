@@ -136,7 +136,7 @@ void updateWarningState()
     }
     else
     {
-      /* QoS timer freeze: do not reset highway timer during active emergency (Req_033).
+      /* Alert Priority timer freeze: do not reset highway timer during active emergency (Req_033).
          Prevents steeringInput glitches during emergency from invalidating the 10s count. */
       if (emergencyContext == 0)
       {
