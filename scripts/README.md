@@ -3,24 +3,52 @@
 Use this folder through one entrypoint:
 
 - `python scripts/run.py <command>`
+- `sdv <command>` (after local install)
+
+## Local CLI Install (F3 Baseline)
+
+From repository root:
+
+- `python -m pip install -e .`
+
+Then you can use:
+
+- `sdv contract`
+- `sdv verify prepare --run-id 20260306_1930`
+- `sdv gate doc-sync`
 
 ## Daily Commands
 
 ### Verification
 - Prepare run folders:
-  - `python scripts/run.py verify-prepare --run-id 20260306_1930`
+  - `python scripts/run.py verify prepare --run-id 20260306_1930`
+  - `sdv verify prepare --run-id 20260306_1930`
 - Smoke check (CANoe COM):
-  - `python scripts/run.py verify-smoke --owner DEV1`
+  - `python scripts/run.py verify smoke --owner DEV1`
+  - `sdv verify smoke --owner DEV1`
 - Fill + score one tier:
-  - `python scripts/run.py verify-fill-score --tier UT --run-id 20260306_1930 --owner DEV1`
+  - `python scripts/run.py verify fill-score --tier UT --run-id 20260306_1930 --owner DEV1`
+  - `sdv verify fill-score --tier UT --run-id 20260306_1930 --owner DEV1`
 
 ### Gates
 - Doc/code sync:
-  - `python scripts/run.py gate-doc-sync`
+  - `python scripts/run.py gate doc-sync`
+  - `sdv gate doc-sync`
 - CANoe cfg hygiene:
-  - `python scripts/run.py gate-cfg-hygiene`
+  - `python scripts/run.py gate cfg-hygiene`
+  - `sdv gate cfg-hygiene`
 - CAPL mirror sync (`src/capl` vs `cfg/channel_assign`):
-  - `python scripts/run.py gate-capl-sync`
+  - `python scripts/run.py gate capl-sync`
+  - `sdv gate capl-sync`
+- CLI readiness (before GUI phase):
+  - `python scripts/run.py gate cli-readiness`
+  - `sdv gate cli-readiness`
+
+### Packaging
+- Build exe one-folder baseline:
+  - `python scripts/run.py package build-exe --mode onefolder --clean`
+- Build exe one-file:
+  - `python scripts/run.py package build-exe --mode onefile --clean`
 
 ## Folder Roles
 
@@ -28,13 +56,17 @@ Use this folder through one entrypoint:
 - `scripts/canoe/`: CANoe setup/reload helpers
 - `scripts/docs/`: doc-authoring helpers (not day-to-day dev runtime)
 - `scripts/report/`: report conversion/export helpers
+- `scripts/release/`: CLI packaging/distribution scripts
 
 ## Recommended Rule
 
 - Daily work: only use `scripts/run.py`
 - Low-level scripts: call directly only when debugging a specific tool
+- Script governance/inventory: `scripts/SCRIPT_INVENTORY.md`
 
 ## Compatibility
 
 - `scripts/doc_code_sync_gate.py` is a backward-compat wrapper.
 - Preferred gate entrypoint remains `scripts/quality/doc_code_sync_gate.py`.
+- Legacy flat commands are still accepted (`verify-prepare`, `gate-doc-sync`, ...).
+- Print canonical contract: `python scripts/run.py contract`

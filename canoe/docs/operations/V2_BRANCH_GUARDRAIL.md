@@ -43,8 +43,8 @@ git push origin integration/v2-all-in
 
 ## Pre-merge gates (always)
 ```powershell
-python scripts/quality/cfg_hygiene_gate.py
-python scripts/quality/doc_code_sync_gate.py
+python scripts/run.py gate cfg-hygiene
+python scripts/run.py gate doc-sync
 ```
 
 ## Runtime/SIL pass criteria

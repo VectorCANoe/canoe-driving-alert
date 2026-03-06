@@ -10,6 +10,7 @@ This folder contains process and execution documents used by CANoe development/v
 - `SIL_PASS_CRITERIA.md`
 - `VERIFICATION_EVIDENCE_LOG_STANDARD.md`
 - `CAPL_coding_guideline.md`
+- `CLI_PRODUCTIZATION_BP.md`
 
 ## Panel / XVP
 - `PANEL_DEVELOPMENT_SPEC.md`

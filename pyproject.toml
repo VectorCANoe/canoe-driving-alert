@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "canoe-sdv-cli"
+version = "0.1.0"
+description = "Local CLI launcher for CANoe driving-alert verification and gates"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "Proprietary" }
+authors = [
+  { name = "VectorCANoe Development Team" }
+]
+keywords = ["canoe", "capl", "verification", "cli", "automotive"]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.11",
+  "Operating System :: Microsoft :: Windows",
+  "Environment :: Console",
+]
+
+[project.scripts]
+sdv = "sdv_cli:main"
+
+[tool.setuptools]
+py-modules = ["sdv_cli"]

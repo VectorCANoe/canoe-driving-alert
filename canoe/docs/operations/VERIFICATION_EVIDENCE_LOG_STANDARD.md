@@ -94,16 +94,8 @@
 
 ## 9) 실행 명령 예시
 ```powershell
-python scripts/quality/init_evidence_run.py --run-id 20260306_1930
-python scripts/quality/build_evidence_from_write_window.py `
-  --template-csv canoe/logging/evidence/UT/20260306_1930/verification_log.csv `
-  --raw-log canoe/logging/evidence/UT/20260306_1930/raw_write_window.txt `
-  --output-csv canoe/logging/evidence/UT/20260306_1930/verification_log_filled.csv `
-  --owner <OWNER> --run-date 2026-03-06
-python scripts/quality/evidence_score_gate.py `
-  --input canoe/logging/evidence/UT/20260306_1930/verification_log_filled.csv `
-  --output-csv canoe/tmp/reports/verification/ut_scored_log.csv `
-  --output-md  canoe/tmp/reports/verification/ut_scored_report.md
+python scripts/run.py verify prepare --run-id 20260306_1930
+python scripts/run.py verify fill-score --tier UT --run-id 20260306_1930 --owner <OWNER>
 ```
 
 ## 10) 05/06/07 반영 규칙

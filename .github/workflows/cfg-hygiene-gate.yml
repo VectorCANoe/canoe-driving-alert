@@ -6,6 +6,7 @@ on:
     paths:
       - "canoe/**"
       - "scripts/quality/cfg_hygiene_gate.py"
+      - "scripts/run.py"
       - ".github/workflows/cfg-hygiene-gate.yml"
 
 jobs:
@@ -24,4 +25,4 @@ jobs:
           python-version: "3.11"
 
       - name: Run CANoe text hygiene gate
-        run: python scripts/quality/cfg_hygiene_gate.py
+        run: python scripts/run.py gate cfg-hygiene

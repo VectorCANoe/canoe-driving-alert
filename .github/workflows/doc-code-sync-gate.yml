@@ -23,7 +23,7 @@ jobs:
           python-version: "3.11"
 
       - name: Run doc-code sync gate
-        run: python scripts/quality/doc_code_sync_gate.py
+        run: python scripts/run.py gate doc-sync
 
       - name: Upload report artifact
         if: always()
