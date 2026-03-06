@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ProjectTestCaseAttributes version="1" xmlns="http://www.vector-informatik.de/ITE/TestCaseAttributes">
+  <TestCaseAttributes>
+    <TestCaseAttribute>
+      <Name>Lifecycle</Name>
+      <Info>Defines the current state of the test case / test design.</Info>
+      <DataType>Enum</DataType>
+      <DefaultValue>submitted</DefaultValue>
+      <IsMandatory>false</IsMandatory>
+      <IsMultiValue>false</IsMultiValue>
+      <Values>
+        <Value>submitted</Value>
+        <Value>in implementation</Value>
+        <Value>ready for review</Value>
+        <Value>reopened</Value>
+        <Value>finished</Value>
+      </Values>
+    </TestCaseAttribute>
+    <TestCaseAttribute>
+      <Name>Note</Name>
+      <Info></Info>
+      <DataType>String</DataType>
+      <DefaultValue></DefaultValue>
+      <IsMandatory>false</IsMandatory>
+      <IsMultiValue>false</IsMultiValue>
+    </TestCaseAttribute>
+  </TestCaseAttributes>
+</ProjectTestCaseAttributes>

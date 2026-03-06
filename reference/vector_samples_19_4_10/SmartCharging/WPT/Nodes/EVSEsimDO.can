@@ -1,0 +1,494 @@
+/*@!Encoding:1252*/
+includes
+{
+  #include "EVSECommonFunctions.cin"
+  #include "EVSESendFunctions.cin"
+}
+
+variables
+{
+  char gPanelName[5] = "EVSE";
+  int EVSEProcessingLoopCounter = 0;
+  char evseConnections[256];
+
+  char responseCode[100];
+  const int ProcessingLoopRepetitions = 10;
+
+  int SessionId2[8];
+  int SessionId[8];    // Session ID for first session, used throughout all CAPL functions
+  
+  int AutoFill_header = 0;
+  int isSimulationRunning = 0;
+  
+  msTimer tDelayedStart;
+  const cStartAfterEthernetLinkUpSim = 1; //[ms]
+  const cStartAfterEthernetLinkUp = 1000; //[ms]
+  msTimer tRestartAfterReset;
+  const cRestartAfterReset = 100; //[ms]
+  
+  enum eMode
+  {
+    Ready = 0,
+    Charging = 1,
+    Error = 2
+  };
+  
+  enum eMode Mode = Ready;
+  
+  enum SmartChargingMessageIDs
+  {
+    //ScheduleRenegotiation
+    SRACChargeParameterDiscoveryReq = 400,
+    SRDCChargeParameterDiscoveryReq = 402,
+    SRScheduleExchangeReq = 404,
+    SRPowerDeliveryReq = 406,
+    //MeteringConfirmation
+    MeteringConfirmationReq = 450
+  };  
+
+}
+
+/**********************************************************************************************************************
+ *  ON START/STOP
+ *********************************************************************************************************************/
+
+on prestart
+{
+  if (isSimulated())
+  {
+    @sysvar::EVSE_Sim::SysEVSE_LinkStatus = 1;
+  }
+}
+
+on start
+{  
+  isSimulationRunning = 0;
+  FUNC_Set_DepartureTimeDefaults();
+  
+  if(isSimulated())
+  {
+    setTimer(tDelayedStart, cStartAfterEthernetLinkUpSim);
+  }
+  else
+    setTimer(tDelayedStart, cStartAfterEthernetLinkUp); //start simulation after "cStartAfterEthernetLinkUp" to ensure ethernet link is up
+}
+
+on timer tDelayedStart
+{
+  FUNC_EVSE_PrepareCommunication();
+}
+
+on timer tRestartAfterReset
+{
+  SetEVSEPluggedOutState();
+}
+
+on preStop
+{
+  @sysvar::EVSE_Sim::SysEVSE_StopCharging = 0;
+  SetChargingStationPicturesVisibility(Ready);
+
+  if (isSimulated())
+  {
+    @sysvar::EVSE_Sim::SysEVSE_LinkStatus = 0;
+  }
+}
+
+/**********************************************************************************************************************
+ *  ON SYSVAR
+ *********************************************************************************************************************/
+on sysvar EVSE_Sim::Control::SysEVSE_Reset
+{
+  if (@this == 1)
+  {
+    Reset_EVSE_Values(); 
+    FUNC_EVSE_PrepareCommunication();
+    @sysvar::EVSE_Sim::SysEVSE_SimState = 2;
+    SetEVSEPluggedOutState();
+    // allow TCP shutdown to take place before restarting and setting new key
+    setTimer(tRestartAfterReset, cRestartAfterReset);
+  }
+}
+
+void SetEVSEPluggedOutState()
+{
+  Reset_EVSE_Values();   
+  FUNC_EVSE_PrepareCommunication();
+}
+
+on sysvar EVSE_Sim::Control::SysEVSE_WaitResume
+{
+  if (@this == 1)
+  {
+    EVSE.StopSimulation.Call();
+    @sysvar::EVSE_Sim::SysEVSE_SimState = 2;
+  }
+}
+
+on sysvar EVSE_Sim::SysEVSE_StopCharging
+{
+  EVSE.SetNextEVSENotification.Call(_CCS::DataTypes::EVSENotificationType::Terminate);
+}
+
+on sysvar EVSE_Sim::Control::SysEVSE_TriggerMeteringConfirmation
+{
+  if (@this == 1)
+  {
+    EVSE.SetNextEVSENotification.Call(_CCS::DataTypes::EVSENotificationType::MeteringConfirmation);
+  }
+}
+
+on sysvar EVSE_Sim::Control::SysEVSE_ReturnFailed
+{  
+  if (@this == 1)
+  {
+    EVSE.SAP.SetNextResponseCode.Call(_CCS::DataTypes::SAPResponseCodeType::FAILED_NoNegotiation);
+    EVSE.ISO20.SetNextResponseCode.Call(_CCS::DataTypes::ISO20ResponseCodeType::FAILED);
+    SetChargingStationPicturesVisibility(Error);
+  }
+}
+
+on sysvar EVSE_Sim::Control::SysEVSE_AbortConnection
+{
+  if (@this == 1)
+  {
+    Reset_EVSE_Values();
+    FUNC_EVSE_PrepareCommunication();
+    SetChargingStationPicturesVisibility(Error);
+  }
+}
+
+on sysvar EVSE_Sim::Control::SysEVSE_TriggerScheduleRenegotiation
+{
+  EVSE.SetNextEVSENotification.Call(3); // ScheduleRenegotiation == 3
+}
+
+/**********************************************************************************************************************
+ *  ON V2G MESSAGE
+ *********************************************************************************************************************/
+
+// Manual definition of the parameter set for ServiceDetail Response by the user
+on value_change EVSE.ISO20.ServiceDetail_Request
+{
+  if(IsEVSERolePassive())
+    return;
+}
+
+on value_update CCS::Simulation::EVSE.SDP.SECC_Discovery_Wireless_Response
+{
+  if(IsEVSERolePassive())
+    return;
+
+  if (EVSEProcessingLoopCounter < ProcessingLoopRepetitions)
+  {
+    EVSEProcessingLoopCounter++; 
+  }
+  else
+  {
+    EVSEProcessingLoopCounter = 0;
+    EVSE.ISO20.FinishProcessing.Call();
+  }
+}
+
+on value_update CCS::Simulation::EVSE.ISO20.WPT_FinePositioning_Response
+{
+  if(IsEVSERolePassive())
+    return;
+
+  if (EVSEProcessingLoopCounter < ProcessingLoopRepetitions)
+  {
+    EVSEProcessingLoopCounter++; 
+  }
+  else
+  {
+    EVSEProcessingLoopCounter = 0;
+    EVSE.ISO20.FinishProcessing.Call();
+  }
+}
+
+on value_update CCS::Simulation::EVSE.ISO20.WPT_Pairing_Response
+{
+  if(IsEVSERolePassive())
+    return;
+
+  if (EVSEProcessingLoopCounter < ProcessingLoopRepetitions)
+  {
+    EVSEProcessingLoopCounter++; 
+  }
+  else
+  {
+    EVSEProcessingLoopCounter = 0;
+    EVSE.ISO20.FinishProcessing.Call();
+  }
+}
+
+on value_update CCS::Simulation::EVSE.ISO20.WPT_AlignmentCheck_Response
+{
+  if(IsEVSERolePassive())
+    return;
+
+  if ((EVSEProcessingLoopCounter < ProcessingLoopRepetitions) || ($EVSE.ISO20.WPT_AlignmentCheck_Request.EVProcessing != _CCS::DataTypes::parProcessingType::Finished))
+  {
+    EVSEProcessingLoopCounter++; 
+  }
+  else
+  {
+    EVSEProcessingLoopCounter = 0;
+    EVSE.ISO20.FinishProcessing.Call();
+  }
+}
+
+on value_update EVSE.ISO20.Authorization_Response
+{
+  if (EVSEProcessingLoopCounter < ProcessingLoopRepetitions)
+  {
+    EVSEProcessingLoopCounter++; 
+  }
+  else
+  {
+    EVSEProcessingLoopCounter = 0;
+    EVSE.ISO20.FinishProcessing.Call();
+  }
+}
+
+on value_update EVSE.ISO20.SessionSetup_Response
+{
+  long connectionCount;
+  byte sessionIdTemp[8];
+  int sessionIdTempInt[8];
+  char sessionIdTempChar[17];
+  long  lTemp;
+  byte tmpByte;
+  
+  strncpy(evseConnections, "", 256);
+  
+  memcpy(sessionIdTemp, $EVSE.ISO20.SessionSetup_Response.Header.SessionID);
+  
+  WriteHex(sessionIdTempChar, sessionIdTemp);
+  sessionIdTempChar[16] = '\0';
+  strncat(evseConnections, sessionIdTempChar, 256);
+  
+  SysSetVariableString(sysvar::EVSE_Sim::SysEVSE_Connections, evseConnections);
+}
+
+on value_update EVSE.ISO20.WPT_ChargeParameterDiscovery_Request
+{
+  if(IsEVSERolePassive())
+    return;
+
+  FUNC_Set_EVSEWPTLimits_ChargeParameterDiscoveryRes();
+}
+
+
+on value_update EVSE.ISO20.ScheduleExchange_Response
+{
+  if(IsEVSERolePassive())
+    return;
+  
+  if (EVSEProcessingLoopCounter < ProcessingLoopRepetitions)
+  {
+    EVSEProcessingLoopCounter++; 
+  }
+  else
+  {
+    EVSEProcessingLoopCounter = 0;
+    EVSE.ISO20.FinishProcessing.Call();
+  }
+}
+
+
+on value_update EVSE.ISO20.PowerDelivery_Request
+{
+  if(IsEVSERolePassive())
+    return;
+  
+  if($EVSE.ISO20.PowerDelivery_Request.ChargeProgress == _CCS::DataTypes::parChargeProgressType::`Start)
+  {
+
+  }
+  else if ($EVSE.ISO20.PowerDelivery_Request.ChargeProgress == _CCS::DataTypes::parChargeProgressType::`Stop
+            || $EVSE.ISO20.PowerDelivery_Request.ChargeProgress == _CCS::DataTypes::parChargeProgressType::Standby)
+  {
+
+  }
+}
+
+on value_update EVSE.ISO20.SessionStop_Request
+{
+
+}
+
+on value_update EVSE.ISO20.SessionStop_Response
+{
+  SetChargingStationPicturesVisibility(Ready); 
+}
+
+on value_update CCS::Simulation::EVSE.ISO20.WPT_ChargeLoop_Request
+{
+  SetChargingStationPicturesVisibility(Charging);
+ 
+  if(IsEVSERolePassive())
+    return;
+   
+  FUNC_Set_EVSEChargeLoopValues();
+}
+
+on value_update CCS::Simulation::EVSE.ISO20.WPT_ChargeLoop_Response
+{
+  if($EVSE.ISO20.WPT_ChargeLoop_Response.EVSEStatus.IsValid)
+  {
+    switch ($EVSE.ISO20.WPT_ChargeLoop_Response.EVSEStatus.EVSENotification)
+    {
+      case _CCS::DataTypes::EVSENotificationType::Pause:
+        sysSetVariableString(sysvar::EVSE_Sim::SysEVSE_StatusCode, "Pause"); break;
+        
+      case _CCS::DataTypes::EVSENotificationType::ExitStandby:
+         sysSetVariableString(sysvar::EVSE_Sim::SysEVSE_StatusCode, "ExitStandby"); break;
+        
+      case _CCS::DataTypes::EVSENotificationType::Terminate:
+        sysSetVariableString(sysvar::EVSE_Sim::SysEVSE_StatusCode, "Terminate"); break;
+        
+      case _CCS::DataTypes::EVSENotificationType::ScheduleRenegotiation:
+        sysSetVariableString(sysvar::EVSE_Sim::SysEVSE_StatusCode, "ScheduleRenegotiation"); break;
+        
+      case _CCS::DataTypes::EVSENotificationType::ServiceRenegotiation:
+        sysSetVariableString(sysvar::EVSE_Sim::SysEVSE_StatusCode, "ServiceRenegotiation"); break;
+        
+      case _CCS::DataTypes::EVSENotificationType::MeteringConfirmation:
+        sysSetVariableString(sysvar::EVSE_Sim::SysEVSE_StatusCode, "MeteringConfirmation"); break;     
+      
+      default:
+        sysSetVariableString(sysvar::EVSE_Sim::SysEVSE_StatusCode, "unknown StatusCode"); 
+    }
+  }
+}
+
+on value_update EVSE.Reporting.CCSError
+{
+  if($EVSE.Reporting.CCSError.LastReceivedMessage.IsValid){
+     if(!IsSideStreamMessageReceived())
+       SetChargingStationPicturesVisibility(Error);
+    }
+}
+
+on value_update EVSE.Reporting.EXIError
+{
+  SetChargingStationPicturesVisibility(Error);
+}
+
+/**********************************************************************************************************************
+ *  HELPER FUNCTIONS
+ *********************************************************************************************************************/
+void FUNC_Set_DepartureTimeDefaults()
+{
+  const int DepartureTimeDefault = 900; //15 min
+
+  $CCS::Simulation::EVSE.ISO20.ScheduleExchange_Response.SEResControlMode.Dynamic_SEResControlMode.DepartureTime =  DepartureTimeDefault;
+
+}
+
+void FUNC_EVSE_PrepareCommunication()
+{
+  FUNC_Set_Attributes();
+  // Start Simulation
+  EVSE.StartSimulation.Call();
+  @sysvar::EVSE_Sim::SysEVSE_SimState = 0;
+  strncpy(evseConnections, "", 256);
+  SysSetVariableString(sysvar::EVSE_Sim::SysEVSE_Connections, evseConnections); 
+
+  if (isSimulated())
+  {
+    @sysvar::EVSE_Sim::SysEVSE_LinkStatus = 1;
+  }
+}
+
+void WriteHex(char outText[], byte data[])
+{
+  WriteHex(outText, data, elcount(data), "", 0);
+}
+
+void WriteHex(char outText[], byte data[], int length)
+{
+  WriteHex(outText, data, length, "", length);
+}
+
+void WriteHexMacId(char outText[], byte data[])
+{
+  if (elcount(data) < 6)
+    return;
+  
+  WriteHex(outText, data, 6, ":", 1);
+}
+
+void WriteHexIPv6(char outText[], byte data[])
+{
+  if (elcount(data) < 16) return;
+  
+  WriteHex(outText, data, 16, ":", 2);
+}
+
+void WriteHex(char outText[], byte data[], int dataLength, char sep[], int sepEveryXChars)
+{
+  int i, sepCnt;
+  
+  if (dataLength <= 0) return;
+  if (elcount(outText) <= 0) return;
+  
+  sepCnt = (sepEveryXChars < 1 ? 1 : sepEveryXChars);
+    
+  // Clear string
+  snprintf(outText, 1, "");
+  
+  for (i=0; i< dataLength; i++)
+  {
+    // Append Byte as Hex
+    snprintf(outText, elcount(outText), "%s%02X", outText, data[i]); 
+    
+    // Append Separator
+    if (i < dataLength-1)
+    {
+      if (((i+1)%sepCnt) == 0)
+      {
+        snprintf(outText, elcount(outText), "%s%s", outText, sep);
+      }
+    }
+  }       
+}
+
+void FUNC_Set_Attributes()
+{
+  reReadSharedAttributes();
+}
+
+void SetChargingStationPicturesVisibility(int Mode)
+{
+  If(Mode == Ready)
+  {
+   SetControlVisibility(gPanelName, "pictureChargingStationReady", 1);
+   SetControlVisibility(gPanelName, "pictureChargingStationCharging", 0);
+   SetControlVisibility(gPanelName, "pictureChargingStationError", 0);
+  }
+  else If(Mode == Charging)
+  {
+   SetControlVisibility(gPanelName, "pictureChargingStationReady", 0);
+   SetControlVisibility(gPanelName, "pictureChargingStationCharging", 1);
+   SetControlVisibility(gPanelName, "pictureChargingStationError", 0);
+  }
+  else If(Mode == Error)
+  {
+   SetControlVisibility(gPanelName, "pictureChargingStationReady", 0);
+   SetControlVisibility(gPanelName, "pictureChargingStationCharging", 0);
+   SetControlVisibility(gPanelName, "pictureChargingStationError", 1);
+  }
+}
+
+int IsSideStreamMessageReceived()
+{
+ if(($EVSE.Reporting.CCSError.LastReceivedMessage == SRScheduleExchangeReq)||
+ ($EVSE.Reporting.CCSError.LastReceivedMessage == SRPowerDeliveryReq)||
+ ($EVSE.Reporting.CCSError.LastReceivedMessage == MeteringConfirmationReq))
+  return 1;
+ 
+return 0;
+    
+}

@@ -1,0 +1,86 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Panel Type="Vector.CANalyzer.Panels.PanelSerializer, Vector.CANalyzer.Panels.Serializer, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null">
+  <Object Type="Vector.CANalyzer.Panels.Runtime.Panel, Vector.CANalyzer.Panels.Common, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Panel" ControlName="Sender">
+    <Object Type="Vector.CANalyzer.Panels.Design.GroupBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="GroupBoxControl1" ControlName="Group Box">
+      <Object Type="Vector.CANalyzer.Panels.Design.ButtonControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="ButtonControl1" ControlName="Button">
+        <Property Name="Name">ButtonControl1</Property>
+        <Property Name="Size">75, 23</Property>
+        <Property Name="Location">56, 121</Property>
+        <Property Name="TabIndex">7</Property>
+        <Property Name="Text">Send</Property>
+        <Property Name="SymbolConfiguration">8;16;BSM;;;Send;1;;;-1;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl2" ControlName="Static Text 2">
+        <Property Name="Name">StaticTextControl2</Property>
+        <Property Name="Size">76, 15</Property>
+        <Property Name="Location">90, 19</Property>
+        <Property Name="Text">Type</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl1" ControlName="Static Text">
+        <Property Name="Name">StaticTextControl1</Property>
+        <Property Name="Size">70, 15</Property>
+        <Property Name="Location">6, 19</Property>
+        <Property Name="Text">Certificate</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.RadioButtonControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="RadioButtonControl5" ControlName="Radio Button 5">
+        <Property Name="Name">RadioButtonControl5</Property>
+        <Property Name="Size">107, 17</Property>
+        <Property Name="Location">91, 86</Property>
+        <Property Name="Text">Certificate Chain</Property>
+        <Property Name="TabIndex">4</Property>
+        <Property Name="SwitchValueVTXml">&lt;Version&gt;2&lt;/Version&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;RxValue&gt;3&lt;/RxValue&gt;</Property>
+        <Property Name="SwitchValueVT">1;Lower;3</Property>
+        <Property Name="SwitchValue">3</Property>
+        <Property Name="SymbolConfiguration">8;16;BSM;;;Type;1;;;-1;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.RadioButtonControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="RadioButtonControl4" ControlName="Radio Button 4">
+        <Property Name="Name">RadioButtonControl4</Property>
+        <Property Name="Size">96, 17</Property>
+        <Property Name="Location">91, 62</Property>
+        <Property Name="Text">Certificate</Property>
+        <Property Name="TabIndex">3</Property>
+        <Property Name="SwitchValueVTXml">&lt;Version&gt;2&lt;/Version&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;RxValue&gt;2&lt;/RxValue&gt;</Property>
+        <Property Name="SwitchValueVT">1;Lower;2</Property>
+        <Property Name="SwitchValue">2</Property>
+        <Property Name="SymbolConfiguration">8;16;BSM;;;Type;1;;;-1;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.RadioButtonControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="RadioButtonControl3" ControlName="Radio Button 3">
+        <Property Name="Name">RadioButtonControl3</Property>
+        <Property Name="Size">97, 17</Property>
+        <Property Name="Location">90, 38</Property>
+        <Property Name="Text">HashedId8</Property>
+        <Property Name="TabIndex">2</Property>
+        <Property Name="SymbolConfiguration">8;16;BSM;;;Type;1;;;-1;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.RadioButtonControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="RadioButtonControl2" ControlName="Radio Button 2">
+        <Property Name="Name">RadioButtonControl2</Property>
+        <Property Name="Size">70, 17</Property>
+        <Property Name="Location">6, 61</Property>
+        <Property Name="Text">Invalid</Property>
+        <Property Name="TabIndex">1</Property>
+        <Property Name="SymbolConfiguration">8;16;BSM;;;Certificate;1;;;-1;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.RadioButtonControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="RadioButtonControl1" ControlName="Radio Button">
+        <Property Name="Name">RadioButtonControl1</Property>
+        <Property Name="Size">63, 17</Property>
+        <Property Name="Location">6, 38</Property>
+        <Property Name="Text">Valid</Property>
+        <Property Name="TabIndex">0</Property>
+        <Property Name="SwitchValueVTXml">&lt;Version&gt;2&lt;/Version&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;RxValue&gt;0&lt;/RxValue&gt;</Property>
+        <Property Name="SwitchValueVT">1;Lower;0</Property>
+        <Property Name="SwitchValue">0</Property>
+        <Property Name="SymbolConfiguration">8;16;BSM;;;Certificate;1;;;-1;;;Value;;;0</Property>
+      </Object>
+      <Property Name="Name">GroupBoxControl1</Property>
+      <Property Name="Size">200, 164</Property>
+      <Property Name="Location">3, 3</Property>
+      <Property Name="Text">BSM</Property>
+      <Property Name="TabIndex">0</Property>
+      <Property Name="UseWindowsStyle">False</Property>
+    </Object>
+    <Property Name="Name">Panel</Property>
+    <Property Name="Size">213, 172</Property>
+    <Property Name="Location">0, 0</Property>
+    <Property Name="BackColor">White</Property>
+  </Object>
+</Panel>

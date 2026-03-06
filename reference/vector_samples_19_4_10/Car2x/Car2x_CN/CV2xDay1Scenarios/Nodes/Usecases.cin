@@ -1,0 +1,56 @@
+/*@!Encoding:1252*/
+includes
+{
+}
+
+variables
+{
+
+}
+
+// Fill values for LTA
+void Set_LTA_BSM_Values(long packet)
+{
+  // turn left turn light on
+  // 2 : leftTurnSignalOn
+  C2xSetTokenBitofBitString(packet, "BasicSafetyMessage", "bsmFrame.safetyExt.lights", 2, 1);
+}
+
+// Fill values for BSW/LCW
+void Set_BSW_LCW_BSM_Values(long packet)
+{
+  // turn light on
+  // 2 : leftTurnSignalOn
+  C2xSetTokenBitofBitString(packet, "BasicSafetyMessage", "bsmFrame.safetyExt.lights", 2, 1);
+}
+
+// Fill values for CLW
+void Set_CLW_BSM_Values(long packet)
+{ 
+  if (C2xIsTokenAvailable(packet, "BasicSafetyMessage", "bsmFrame.safetyExt.events") == 1)
+  {
+    // turn ABS on
+    if (C2xGetTokenBitOfBitString(packet, "BasicSafetyMessage", "bsmFrame.safetyExt.events", 2) == 1)
+    {
+      C2xSetTokenInt64(packet, "BasicSafetyMessage", "bsmFrame.brakes.antiLockBrake", 2);
+    }
+    // turn traction control on
+    if (C2xGetTokenBitOfBitString(packet, "BasicSafetyMessage", "bsmFrame.safetyExt.events", 3) == 1)
+    {
+      C2xSetTokenInt64(packet, "BasicSafetyMessage", "bsmFrame.brakes.traction", 2); 
+    }
+    // turn stability control on
+    if (C2xGetTokenBitOfBitString(packet, "BasicSafetyMessage", "bsmFrame.safetyExt.events", 3) == 1)
+    {
+      C2xSetTokenInt64(packet, "BasicSafetyMessage", "bsmFrame.brakes.scs", 2);
+    }
+  }
+}
+
+// Fill values for EVW
+void Set_EVW_BSM_Values(long packet)
+{
+  // special vehicle
+  C2xSetTokenInt64(packet, "BasicSafetyMessage", "bsmFrame.vehicleClass.classification", 65); // emergency_Fire_Ambulance_Vehicle
+}
+

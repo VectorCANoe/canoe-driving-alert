@@ -1,0 +1,25 @@
+version: "1.1"
+
+# Select one of the debugger configurations below
+default-debugger: GDB-Pico-Qemu
+
+debuggers:
+    GDB-Pico:
+        type: gdb
+        node: localhost
+        port: 1234
+        reset: false
+        run: true
+        gdb:
+            path-to-gdb-client: "C:/Program Files/Raspberry Pi/Pico SDK v1.5.1/gcc-arm-none-eabi/bin/arm-none-eabi-gdb.exe"
+            path-to-symbol-file: "../SUT/build/pico-hw/RaspiPico/RoomTemperatureControl.elf"
+
+    GDB-Pico-Qemu:
+        type: gdb
+        node: localhost
+        port: 1234
+        reset: false
+        run: true
+        gdb:
+            path-to-gdb-client: "C:/Program Files/Raspberry Pi/Pico SDK v1.5.1/gcc-arm-none-eabi/bin/arm-none-eabi-gdb.exe"
+            path-to-symbol-file: "../SUT/build/pico-qemu/RaspiPico/RoomTemperatureControl.elf"

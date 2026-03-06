@@ -1,0 +1,763 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--Vector Test Table Editor-->
+<ttroot version="32" minRequiredVersion="16" xmlns="http://www.vector-informatik.de/ITE/TestTable/1.0">
+  <tt>
+    <tc>
+      <title>Start engine</title>
+      <tcid>1b1a0a0a-9392-4ef7-930b-cd46374e5d24</tcid>
+      <preparation>
+        <title />
+        <set>
+          <title>Setting ignition switch to state one</title>
+          <in>
+            <assignment>
+              <sink>
+                <dbobject>SysVar_BEGIN_OF_OBJECT|1|IgnitionSwitch|IL|-1|0|END_OF_OBJECT_SysVar|</dbobject>
+              </sink>
+              <source>
+                <const>1</const>
+              </source>
+            </assignment>
+          </in>
+        </set>
+        <wait>
+          <title />
+          <time>
+            <value>
+              <const>500</const>
+            </value>
+            <unit>ms</unit>
+          </time>
+        </wait>
+        <set>
+          <title>Turning ignition switch further</title>
+          <in>
+            <assignment>
+              <sink>
+                <dbobject>SysVar_BEGIN_OF_OBJECT|1|IgnitionSwitch|IL|-1|0|END_OF_OBJECT_SysVar|</dbobject>
+              </sink>
+              <source>
+                <const>2</const>
+              </source>
+            </assignment>
+          </in>
+        </set>
+        <wait>
+          <title />
+          <time>
+            <value>
+              <const>2000</const>
+            </value>
+            <unit>ms</unit>
+          </time>
+        </wait>
+        <isalive>
+          <title />
+          <checkid />
+          <object>
+            <node>DBNode_BEGIN_OF_OBJECT|1|NodeOrFrameData_BEGIN_OF_OBJECT|1|1|PowerTrain|1|PowerTrain|Engine|END_OF_OBJECT_NodeOrFrameData|NodeData_BEGIN_OF_OBJECT|1|END_OF_OBJECT_NodeData|16|END_OF_OBJECT_|</node>
+          </object>
+          <time>
+            <value>
+              <const>1000</const>
+            </value>
+            <unit>ms</unit>
+          </time>
+        </isalive>
+        <wait>
+          <title />
+          <time>
+            <value>
+              <const>2000</const>
+            </value>
+            <unit>ms</unit>
+          </time>
+        </wait>
+      </preparation>
+    </tc>
+    <tg navid="4f747ecc-53bc-4f58-9ce0-8067dc2c2bf8">
+      <title>Powertrain Test</title>
+      <tc>
+        <title>Acceleration setting pedal positions</title>
+        <tcid>c8f5f075-d3e1-4d67-ae45-5cfc1acf490f</tcid>
+        <set>
+          <title>Fully press brake pedal </title>
+          <in>
+            <assignment>
+              <sink>
+                <dbobject>SysVar_BEGIN_OF_OBJECT|1|PedalPressure_Brake|PowerTrain|-1|0|END_OF_OBJECT_SysVar|</dbobject>
+              </sink>
+              <source>
+                <const>1</const>
+              </source>
+            </assignment>
+          </in>
+        </set>
+        <wait>
+          <title />
+          <time>
+            <value>
+              <const>500</const>
+            </value>
+            <unit>ms</unit>
+          </time>
+        </wait>
+        <awaitvaluematch>
+          <title>Make sure vehicle is stationary</title>
+          <timeout>
+            <value>
+              <const>7000</const>
+            </value>
+            <unit>ms</unit>
+          </timeout>
+          <compare>
+            <dbobject>SysVar_BEGIN_OF_OBJECT|1|CarSpeed_kmh|PowerTrain|-1|0|END_OF_OBJECT_SysVar|</dbobject>
+            <eq>
+              <const>0</const>
+            </eq>
+          </compare>
+        </awaitvaluematch>
+        <caplinline>
+          <title />
+          <active>false</active>
+          <code>graphicsWindowClear("Graphics Simulation");</code>
+        </caplinline>
+        <wait>
+          <title />
+          <time>
+            <value>
+              <const>1000</const>
+            </value>
+            <unit>ms</unit>
+          </time>
+        </wait>
+        <set>
+          <title>Start acceleration</title>
+          <in>
+            <assignment>
+              <sink>
+                <dbobject>SysVar_BEGIN_OF_OBJECT|1|PedalPressure_Brake|PowerTrain|-1|0|END_OF_OBJECT_SysVar|</dbobject>
+              </sink>
+              <source>
+                <const>0</const>
+              </source>
+            </assignment>
+            <assignment>
+              <sink>
+                <dbobject>SysVar_BEGIN_OF_OBJECT|1|PedalPressure_Gas|PowerTrain|-1|0|END_OF_OBJECT_SysVar|</dbobject>
+              </sink>
+              <source>
+                <const>1</const>
+              </source>
+            </assignment>
+          </in>
+        </set>
+        <wait>
+          <title />
+          <time>
+            <value>
+              <const>1000</const>
+            </value>
+            <unit>ms</unit>
+          </time>
+        </wait>
+        <awaitvaluematch>
+          <title>Wait until vehicle reaches 100 kph</title>
+          <timeout>
+            <value>
+              <const>20000</const>
+            </value>
+            <unit>ms</unit>
+          </timeout>
+          <compare>
+            <dbobject>SysVar_BEGIN_OF_OBJECT|1|CarSpeed_kmh|PowerTrain|-1|0|END_OF_OBJECT_SysVar|</dbobject>
+            <ge>
+              <const>100</const>
+            </ge>
+          </compare>
+        </awaitvaluematch>
+        <completion>
+          <title />
+          <set>
+            <title>Setting Cruise Control</title>
+            <in>
+              <assignment>
+                <sink>
+                  <dbobject>SysVar_BEGIN_OF_OBJECT|1|CCTargetSpeed|CruiseControl|-1|0|END_OF_OBJECT_SysVar|</dbobject>
+                </sink>
+                <source>
+                  <const>100</const>
+                </source>
+              </assignment>
+              <assignment>
+                <sink>
+                  <dbobject>SysVar_BEGIN_OF_OBJECT|1|CC_Active|CruiseControl|-1|0|END_OF_OBJECT_SysVar|</dbobject>
+                </sink>
+                <source>
+                  <const>1</const>
+                </source>
+              </assignment>
+              <assignment>
+                <sink>
+                  <dbobject>SysVar_BEGIN_OF_OBJECT|1|PedalPressure_Gas|PowerTrain|-1|0|END_OF_OBJECT_SysVar|</dbobject>
+                </sink>
+                <source>
+                  <const>0</const>
+                </source>
+              </assignment>
+            </in>
+          </set>
+          <wait>
+            <title />
+            <time>
+              <value>
+                <const>5000</const>
+              </value>
+              <unit>ms</unit>
+            </time>
+          </wait>
+        </completion>
+      </tc>
+      <tc>
+        <title>Braking test: Checking ABS functionality</title>
+        <tcid>96d51672-f717-4963-ba24-1bb3a93ad4e6</tcid>
+        <preparation>
+          <title />
+          <awaitvaluematch>
+            <title>Wait until car reaches 100 kph</title>
+            <timeout>
+              <value>
+                <const>20000</const>
+              </value>
+              <unit>ms</unit>
+            </timeout>
+            <compare>
+              <dbobject>DBSignal_BEGIN_OF_OBJECT|1|NodeOrFrameData_BEGIN_OF_OBJECT|1|1|PowerTrain|1|PowerTrain|Engine|END_OF_OBJECT_NodeOrFrameData|FrameData_BEGIN_OF_OBJECT|1|255|255|0|0|ABSdata|0|True|END_OF_OBJECT_FrameData|CarSpeed|7|END_OF_OBJECT_|</dbobject>
+              <ge>
+                <const>99.5</const>
+              </ge>
+            </compare>
+          </awaitvaluematch>
+          <set>
+            <title>Fully pressing brake pedal and reset error code</title>
+            <in>
+              <assignment>
+                <sink>
+                  <dbobject>SysVar_BEGIN_OF_OBJECT|1|PedalPressure_Brake|PowerTrain|-1|0|END_OF_OBJECT_SysVar|</dbobject>
+                </sink>
+                <source>
+                  <const>1</const>
+                </source>
+              </assignment>
+              <assignment>
+                <sink>
+                  <dbobject>DBSignal_BEGIN_OF_OBJECT|1|NodeOrFrameData_BEGIN_OF_OBJECT|1|1|PowerTrain|1|PowerTrain|Engine|END_OF_OBJECT_NodeOrFrameData|FrameData_BEGIN_OF_OBJECT|1|255|255|0|0|EngineStatus|0|True|END_OF_OBJECT_FrameData|ErrorCode|1|END_OF_OBJECT_|</dbobject>
+                </sink>
+                <source>
+                  <valuetable_entry>NoError</valuetable_entry>
+                </source>
+              </assignment>
+            </in>
+          </set>
+          <awaitvaluematch>
+            <title>Wait until the car starts to brake</title>
+            <timeout>
+              <value>
+                <const>2500</const>
+              </value>
+              <unit>ms</unit>
+            </timeout>
+            <compare>
+              <dbobject>SysVar_BEGIN_OF_OBJECT|1|ABSactive|PowerTrain|-1|0|END_OF_OBJECT_SysVar|</dbobject>
+              <eq>
+                <const>1</const>
+              </eq>
+            </compare>
+          </awaitvaluematch>
+          <caplinline>
+            <title />
+            <code>graphicsWindowClear("Graphics Simulation");</code>
+          </caplinline>
+          <awaitvaluematch>
+            <title>Wait until car is stationary</title>
+            <timeout>
+              <value>
+                <const>10000</const>
+              </value>
+              <unit>ms</unit>
+            </timeout>
+            <compare>
+              <dbobject>DBSignal_BEGIN_OF_OBJECT|1|NodeOrFrameData_BEGIN_OF_OBJECT|1|1|PowerTrain|1|PowerTrain|Engine|END_OF_OBJECT_NodeOrFrameData|FrameData_BEGIN_OF_OBJECT|1|255|255|0|0|ABSdata|0|True|END_OF_OBJECT_FrameData|CarSpeed|7|END_OF_OBJECT_|</dbobject>
+              <eq>
+                <const>0</const>
+              </eq>
+            </compare>
+          </awaitvaluematch>
+          <statecheck>
+            <title>Check is Shift Down during braking was successfull</title>
+            <expected>
+              <compare>
+                <value>
+                  <dbobject>DBSignal_BEGIN_OF_OBJECT|1|NodeOrFrameData_BEGIN_OF_OBJECT|1|1|PowerTrain|1|PowerTrain|Engine|END_OF_OBJECT_NodeOrFrameData|FrameData_BEGIN_OF_OBJECT|1|255|255|0|0|GearBoxInfo|0|True|END_OF_OBJECT_FrameData|Gear|7|END_OF_OBJECT_|</dbobject>
+                </value>
+                <eq>
+                  <const>0</const>
+                </eq>
+              </compare>
+            </expected>
+          </statecheck>
+        </preparation>
+        <completion>
+          <title />
+          <set>
+            <title>Deactivate brake</title>
+            <in>
+              <assignment>
+                <sink>
+                  <dbobject>SysVar_BEGIN_OF_OBJECT|1|PedalPressure_Brake|PowerTrain|-1|0|END_OF_OBJECT_SysVar|</dbobject>
+                </sink>
+                <source>
+                  <const>0</const>
+                </source>
+              </assignment>
+            </in>
+          </set>
+          <wait>
+            <title />
+            <time>
+              <value>
+                <const>1000</const>
+              </value>
+              <unit>ms</unit>
+            </time>
+          </wait>
+        </completion>
+      </tc>
+    </tg>
+    <tg navid="54658cb2-97fd-49d6-9c7b-7a3a5a7a811a">
+      <title>Gateway test</title>
+      <description>This test group tests the routing of the gateway node.</description>
+      <tc>
+        <title>Check the gateway routing by background checks </title>
+        <tcid>38842a56-9ea4-42d2-92ce-550cb60e3a79</tcid>
+        <requestresponsecheck>
+          <title>Check the routing of the car speed</title>
+          <checkid />
+          <request>
+            <pdu>
+              <dbobject>DBFrameOrPDU_BEGIN_OF_OBJECT|2|NodeOrFrameData_BEGIN_OF_OBJECT|1|1|PowerTrain|1|PowerTrain|Engine|END_OF_OBJECT_NodeOrFrameData|FrameData_BEGIN_OF_OBJECT|1|255|255|0|0|ABSdata|0|True|END_OF_OBJECT_FrameData|4|1|END_OF_OBJECT_|</dbobject>
+            </pdu>
+          </request>
+          <response>
+            <pdu>
+              <dbobject>DBFrameOrPDU_BEGIN_OF_OBJECT|2|NodeOrFrameData_BEGIN_OF_OBJECT|1|1|Comfort|2|Comfort|Gateway|END_OF_OBJECT_NodeOrFrameData|FrameData_BEGIN_OF_OBJECT|1|255|255|0|0|Gateway_2|0|True|END_OF_OBJECT_FrameData|4|1|END_OF_OBJECT_|</dbobject>
+              <payload>
+                <signalref>
+                  <dbobject>DBSignal_BEGIN_OF_OBJECT|1|NodeOrFrameData_BEGIN_OF_OBJECT|1|1|Comfort|2|Comfort|Gateway|END_OF_OBJECT_NodeOrFrameData|FrameData_BEGIN_OF_OBJECT|1|255|255|0|0|Gateway_2|0|True|END_OF_OBJECT_FrameData|CarSpeed|7|END_OF_OBJECT_|</dbobject>
+                  <reference>DBSignal_BEGIN_OF_OBJECT|1|NodeOrFrameData_BEGIN_OF_OBJECT|1|1|PowerTrain|1|PowerTrain|Engine|END_OF_OBJECT_NodeOrFrameData|FrameData_BEGIN_OF_OBJECT|1|255|255|0|0|ABSdata|0|True|END_OF_OBJECT_FrameData|CarSpeed|7|END_OF_OBJECT_|</reference>
+                </signalref>
+              </payload>
+            </pdu>
+          </response>
+          <timeout>
+            <value>
+              <const>200</const>
+            </value>
+            <unit>ms</unit>
+          </timeout>
+        </requestresponsecheck>
+        <requestresponsecheck>
+          <title>Check the routing of the gearbox state</title>
+          <checkid />
+          <request>
+            <pdu>
+              <dbobject>DBFrameOrPDU_BEGIN_OF_OBJECT|2|NodeOrFrameData_BEGIN_OF_OBJECT|1|1|PowerTrain|1|PowerTrain|Engine|END_OF_OBJECT_NodeOrFrameData|FrameData_BEGIN_OF_OBJECT|1|255|255|0|0|GearBoxInfo|0|True|END_OF_OBJECT_FrameData|4|1|END_OF_OBJECT_|</dbobject>
+            </pdu>
+          </request>
+          <response>
+            <pdu>
+              <dbobject>DBFrameOrPDU_BEGIN_OF_OBJECT|2|NodeOrFrameData_BEGIN_OF_OBJECT|1|1|Comfort|2|Comfort|Gateway|END_OF_OBJECT_NodeOrFrameData|FrameData_BEGIN_OF_OBJECT|1|255|255|0|0|Gateway_1|0|True|END_OF_OBJECT_FrameData|4|1|END_OF_OBJECT_|</dbobject>
+              <payload>
+                <signalref>
+                  <dbobject>DBSignal_BEGIN_OF_OBJECT|1|NodeOrFrameData_BEGIN_OF_OBJECT|1|1|Comfort|2|Comfort|Gateway|END_OF_OBJECT_NodeOrFrameData|FrameData_BEGIN_OF_OBJECT|1|255|255|0|0|Gateway_1|0|True|END_OF_OBJECT_FrameData|Gear|7|END_OF_OBJECT_|</dbobject>
+                  <reference>DBSignal_BEGIN_OF_OBJECT|1|NodeOrFrameData_BEGIN_OF_OBJECT|1|1|PowerTrain|1|PowerTrain|Engine|END_OF_OBJECT_NodeOrFrameData|FrameData_BEGIN_OF_OBJECT|1|255|255|0|0|GearBoxInfo|0|True|END_OF_OBJECT_FrameData|Gear|7|END_OF_OBJECT_|</reference>
+                </signalref>
+              </payload>
+            </pdu>
+          </response>
+          <timeout>
+            <value>
+              <const>200</const>
+            </value>
+            <unit>ms</unit>
+          </timeout>
+        </requestresponsecheck>
+        <wait>
+          <title />
+          <time>
+            <value>
+              <const>1000</const>
+            </value>
+            <unit>ms</unit>
+          </time>
+        </wait>
+        <wait>
+          <title />
+          <time>
+            <value>
+              <const>1000</const>
+            </value>
+            <unit>ms</unit>
+          </time>
+        </wait>
+      </tc>
+    </tg>
+    <tg navid="7db2ba08-5b69-49df-9763-dc2aa8152a64">
+      <title>Diagnostic functionality</title>
+      <tc>
+        <title>Check ECU information</title>
+        <tcid>0f0eb013-0e04-4242-9971-47025124c6f6</tcid>
+        <description>This test case asks the ECU "Engine" for some information:
+- ECU identification
+- Serial Number
+- Coding
+The return values are checked.</description>
+        <preparation>
+          <title />
+          <wait>
+            <title>
+            </title>
+            <time>
+              <value>
+                <const>5000</const>
+              </value>
+              <unit>ms</unit>
+            </time>
+          </wait>
+          <diagservice>
+            <title>Enable Default Session</title>
+            <service>DiaObj_BEGIN_OF_OBJECT|3|2|Engine||DEFAULT_SESSION_Start|||0|||END_OF_OBJECT_DiaObj|</service>
+            <timeout>
+              <value>
+                <const>500</const>
+              </value>
+              <unit>ms</unit>
+            </timeout>
+            <result>
+              <enum>pos</enum>
+            </result>
+            <diagrequest />
+            <diagresponse />
+          </diagservice>
+        </preparation>
+        <diagservice>
+          <title>Check ECU Identification</title>
+          <service>DiaObj_BEGIN_OF_OBJECT|3|2|Engine||ECU_Identification_Read|||0|||END_OF_OBJECT_DiaObj|</service>
+          <timeout>
+            <value>
+              <const>200</const>
+            </value>
+            <unit>ms</unit>
+          </timeout>
+          <result>
+            <enum>pos</enum>
+          </result>
+          <diagrequest />
+          <diagresponse>
+            <diagparam>
+              <qualifier>DiaVal_BEGIN_OF_OBJECT|3|4|Engine||ECU_Identification_Read|REI_PR|Diagnostic_Identification|1|||END_OF_OBJECT_DiaVal|</qualifier>
+              <phys>
+                <eq>
+                  <const>0x01</const>
+                </eq>
+              </phys>
+            </diagparam>
+          </diagresponse>
+        </diagservice>
+        <diagservice>
+          <title>Check Serial Number</title>
+          <service>DiaObj_BEGIN_OF_OBJECT|3|2|Engine||Serial_Number_Read|||0|||END_OF_OBJECT_DiaObj|</service>
+          <timeout>
+            <value>
+              <const>200</const>
+            </value>
+            <unit>ms</unit>
+          </timeout>
+          <result>
+            <enum>pos</enum>
+          </result>
+          <diagrequest />
+          <diagresponse>
+            <diagparam>
+              <qualifier>DiaVal_BEGIN_OF_OBJECT|3|4|Engine||Serial_Number_Read|REI_PR|Serial_Number|1|||END_OF_OBJECT_DiaVal|</qualifier>
+              <phys>
+                <eq>
+                  <const>3141528</const>
+                </eq>
+              </phys>
+            </diagparam>
+          </diagresponse>
+        </diagservice>
+        <diagservice>
+          <title>Check Coding</title>
+          <service>DiaObj_BEGIN_OF_OBJECT|3|2|Engine||Coding_Read|||0|||END_OF_OBJECT_DiaObj|</service>
+          <timeout>
+            <value>
+              <const>200</const>
+            </value>
+            <unit>ms</unit>
+          </timeout>
+          <result>
+            <enum>pos</enum>
+          </result>
+          <reportservicedetails>
+            <enum>always</enum>
+          </reportservicedetails>
+          <diagrequest />
+          <diagresponse>
+            <diagparam>
+              <qualifier>DiaVal_BEGIN_OF_OBJECT|3|4|Engine||Coding_Read|RDBLI_PR|Code_string.Country_variant|1|||END_OF_OBJECT_DiaVal|</qualifier>
+              <phys>
+                <one_of>
+                  <eq>
+                    <const>Europe</const>
+                  </eq>
+                  <eq>
+                    <const>USA</const>
+                  </eq>
+                </one_of>
+              </phys>
+            </diagparam>
+            <diagparam>
+              <qualifier>DiaVal_BEGIN_OF_OBJECT|3|4|Engine||Coding_Read|RDBLI_PR|Code_string.Vehicle_type|1|||END_OF_OBJECT_DiaVal|</qualifier>
+              <phys>
+                <eq>
+                  <const>Coupe</const>
+                </eq>
+              </phys>
+            </diagparam>
+          </diagresponse>
+        </diagservice>
+        <completion>
+          <title />
+          <diagservice>
+            <title>Disable Default Session</title>
+            <service>DiaObj_BEGIN_OF_OBJECT|3|2|Engine||STOP_SESSION_Stop|||0|||END_OF_OBJECT_DiaObj|</service>
+            <timeout>
+              <value>
+                <const>200</const>
+              </value>
+              <unit>ms</unit>
+            </timeout>
+            <result>
+              <enum>pos</enum>
+            </result>
+            <diagrequest />
+            <diagresponse />
+          </diagservice>
+        </completion>
+      </tc>
+      <tc>
+        <title>Clear / basically check fault memory</title>
+        <tcid>e638d0b1-e142-4cb7-8665-fb4628ace324</tcid>
+        <faultmem_status>
+          <title>Number of DTCs &gt;= 0</title>
+          <ecu>DiaObj_BEGIN_OF_OBJECT|3|0|Engine|||||0||END_OF_OBJECT_DiaObj|</ecu>
+          <reportservicedetails>
+            <enum>always</enum>
+          </reportservicedetails>
+          <dtcstatusuds>
+            <status_test_failed>
+              <bool>true</bool>
+            </status_test_failed>
+            <status_confirmed>
+              <bool>true</bool>
+            </status_confirmed>
+          </dtcstatusuds>
+          <expected_dtccount>
+            <ge>
+              <const>0</const>
+            </ge>
+          </expected_dtccount>
+        </faultmem_status>
+        <faultmem_clear>
+          <title>Clear all DTCs</title>
+          <ecu>DiaObj_BEGIN_OF_OBJECT|3|0|Engine|||||0||END_OF_OBJECT_DiaObj|</ecu>
+          <dtcs />
+        </faultmem_clear>
+        <faultmem_status>
+          <title>Number of DTCs == 0</title>
+          <ecu>DiaObj_BEGIN_OF_OBJECT|3|0|Engine|||||0||END_OF_OBJECT_DiaObj|</ecu>
+          <dtcstatusuds>
+            <status_test_failed>
+              <bool>true</bool>
+            </status_test_failed>
+            <status_confirmed>
+              <bool>true</bool>
+            </status_confirmed>
+          </dtcstatusuds>
+          <expected_dtccount>
+            <eq>
+              <const>0</const>
+            </eq>
+          </expected_dtccount>
+        </faultmem_status>
+      </tc>
+    </tg>
+    <tg navid="c07227e3-f2f9-4e7b-9c21-cf7af7755c67">
+      <title>Network Management</title>
+      <tc>
+        <title>Stop Engine</title>
+        <tcid>dcc7814c-dca7-4d8c-b5ae-39350fea7841</tcid>
+        <preparation>
+          <title />
+          <wait>
+            <title />
+            <time>
+              <value>
+                <const>5000</const>
+              </value>
+              <unit>ms</unit>
+            </time>
+          </wait>
+          <set>
+            <title>Stop engine</title>
+            <in>
+              <assignment>
+                <sink>
+                  <dbobject>SysVar_BEGIN_OF_OBJECT|1|IgnitionSwitch|IL|-1|0|END_OF_OBJECT_SysVar|</dbobject>
+                </sink>
+                <source>
+                  <const>0</const>
+                </source>
+              </assignment>
+            </in>
+          </set>
+          <wait>
+            <title />
+            <time>
+              <value>
+                <const>1000</const>
+              </value>
+              <unit>ms</unit>
+            </time>
+          </wait>
+        </preparation>
+        <goessleep>
+          <title />
+          <checkid />
+          <object>
+            <node>DBNode_BEGIN_OF_OBJECT|1|NodeOrFrameData_BEGIN_OF_OBJECT|1|1|PowerTrain|2|PowerTrain|Engine|END_OF_OBJECT_NodeOrFrameData|NodeData_BEGIN_OF_OBJECT|1|END_OF_OBJECT_NodeData|16|END_OF_OBJECT_|</node>
+          </object>
+          <time>
+            <value>
+              <const>8</const>
+            </value>
+            <unit>s</unit>
+          </time>
+        </goessleep>
+        <wait>
+          <title>Wait for 10 seconds</title>
+          <time>
+            <value>
+              <const>10</const>
+            </value>
+            <unit>s</unit>
+          </time>
+        </wait>
+      </tc>
+      <tc>
+        <title>Wake Up for a short time</title>
+        <tcid>a9ba8c0e-4a2b-431e-b761-6d3bbd5cd8d7</tcid>
+        <isalive>
+          <title />
+          <checkid />
+          <object>
+            <node>DBNode_BEGIN_OF_OBJECT|1|NodeOrFrameData_BEGIN_OF_OBJECT|1|1|PowerTrain|2|PowerTrain|Engine|END_OF_OBJECT_NodeOrFrameData|NodeData_BEGIN_OF_OBJECT|1|END_OF_OBJECT_NodeData|16|END_OF_OBJECT_|</node>
+          </object>
+          <time>
+            <value>
+              <const>2000</const>
+            </value>
+            <unit>ms</unit>
+          </time>
+        </isalive>
+        <set>
+          <title>Wake up node Engine</title>
+          <in>
+            <assignment>
+              <sink>
+                <dbobject>SysVar_BEGIN_OF_OBJECT|1|BusRequestAll|_NMControl::PowerTrain::StateControl|-1|0|END_OF_OBJECT_SysVar|</dbobject>
+              </sink>
+              <source>
+                <const>1</const>
+              </source>
+            </assignment>
+          </in>
+        </set>
+        <wait>
+          <title />
+          <time>
+            <value>
+              <const>500</const>
+            </value>
+            <unit>ms</unit>
+          </time>
+        </wait>
+        <set>
+          <title>Reset Wake Up Signal</title>
+          <in>
+            <assignment>
+              <sink>
+                <dbobject>SysVar_BEGIN_OF_OBJECT|1|BusRequestAll|_NMControl::PowerTrain::StateControl|-1|0|END_OF_OBJECT_SysVar|</dbobject>
+              </sink>
+              <source>
+                <const>0</const>
+              </source>
+            </assignment>
+          </in>
+        </set>
+        <wait>
+          <title>Wait for 3 seconds</title>
+          <time>
+            <value>
+              <const>3</const>
+            </value>
+            <unit>s</unit>
+          </time>
+        </wait>
+      </tc>
+      <tc>
+        <title>Goes to sleep after a short time</title>
+        <tcid>818f8438-78ff-4b02-915b-27993a5ea2e5</tcid>
+        <goessleep>
+          <title />
+          <checkid />
+          <object>
+            <node>DBNode_BEGIN_OF_OBJECT|1|NodeOrFrameData_BEGIN_OF_OBJECT|1|1|PowerTrain|2|PowerTrain|Engine|END_OF_OBJECT_NodeOrFrameData|NodeData_BEGIN_OF_OBJECT|1|END_OF_OBJECT_NodeData|16|END_OF_OBJECT_|</node>
+          </object>
+          <time>
+            <value>
+              <const>8</const>
+            </value>
+            <unit>s</unit>
+          </time>
+        </goessleep>
+        <wait>
+          <title>Wait for 10 seconds</title>
+          <time>
+            <value>
+              <const>10</const>
+            </value>
+            <unit>s</unit>
+          </time>
+        </wait>
+      </tc>
+    </tg>
+  </tt>
+  <ttlib>
+    <ts_definitions />
+    <tc_definitions />
+    <function_definitions />
+  </ttlib>
+</ttroot>

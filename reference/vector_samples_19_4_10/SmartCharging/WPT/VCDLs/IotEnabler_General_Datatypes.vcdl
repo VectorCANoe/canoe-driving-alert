@@ -1,0 +1,47 @@
+version 1.4;
+
+import module "IoTEnabler";
+
+
+namespace IoTEnablerGeneral
+{
+	
+  // General return code for IotEnabler functions
+  enum return_code_enum
+  {
+    OK,
+    ERROR
+  }
+ 
+  // State of the IoT Enabler device
+  enum device_state_enum
+  {
+    OFFLINE,
+    CONNECTING,
+    ONLINE,
+    DISCONNECTING
+  }
+
+  struct system_notification_type
+  {
+    string message;
+    uint8 status;
+  }
+ 
+  // Return value type all methods of the IoT Enabler interfaces
+  struct result
+  {
+    // Indicates whether the method call was succesful (OK) or unsuccesful (ERROR)
+    return_code_enum return_code;
+    // In case of an unsuccesful method call, an additional error information might be provided
+    [optional]
+    string additional_info;
+  }
+
+  // Device interface of the IoT Enabler
+  interface Device
+  {
+    consumed data device_state_enum device_state;
+    consumed data system_notification_type system_notification;
+  }
+}

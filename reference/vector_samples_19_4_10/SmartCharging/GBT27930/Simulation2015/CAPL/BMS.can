@@ -1,0 +1,843 @@
+/*@!Encoding:1252*/
+includes
+{
+  #include "GBT_HW_Interface_EV.cin"
+}
+
+variables
+{
+  enum DelayTransition
+  {
+    chm_to_bhm              = 0,
+    crmNotRecognized_to_brm = 1,
+    crmRecognized_to_bcp    = 2,
+    cml_to_broNotReady      = 3,
+    broNotReady_to_broReady = 4,
+    croReady_to_bcl         = 5,
+    bcl_to_bcl_bcs          = 15,
+    ccs_to_bcl_bcs_bsm      = 6, 
+    
+    cst_to_bsd              = 16,//BMS suspends charging 
+    
+    cst_to_bst              = 7, //Charger suspends charging
+    bst_to_bsd              = 8, //Charger suspends charging
+    
+    bsd_to_end              = 9
+  };
+  
+  enum AllowedMissingTime
+  {
+    crm_not_recognized  = 0,
+    crm_recognized      = 1,
+    cml                 = 2,
+    cro_not_ready       = 3,
+    cro_ready           = 4,
+    ccs                 = 5,
+    cst                 = 6,
+    csd                 = 7, 
+    chm                 = 8
+  };
+
+  enum CableState
+  {
+    unknown = 0,
+    disconnected,
+    connected
+  };
+  word cableStatus = unknown;
+  const double cCP2VoltageTolerance = 0.5;
+  msTimer tmr_InitTimeout;
+  msTimer tmrUpdateStatus;
+  msTimer tmrUpdatePanel;
+  msTimer tmr_check_CP2Voltage;
+  msTimer tmr_check_auxVoltage;
+  msTimer tmr_monitor_CP2Voltage;
+  msTimer tmr_monitor_auxVoltage;
+  msTimer tmr_resetSystem;
+  
+  dword msStartOfChargingMS = 0;
+  double inputEnergy;
+  
+  dword interval_check_CP2Voltage = 100;
+  dword interval_check_auxVoltage = 100;
+  dword interval_monitor_CP2Voltage = 1000;
+  dword interval_monitor_auxVoltage = 1000;
+  dword interval_resetSystem = 1;//3000;
+  long timeout_systemStartUp = 5000;
+
+  double CP2_voltage_measured;
+  double aux_voltage_measured;
+  
+  int checkPoint2_voltage_detected;
+  int system_initialized = 0;
+  int communication_onGoing = 0;
+  word lastBmsStatus;
+}
+
+//-----------------------------------------------------------------------------------------------------------------------------------------
+on start
+{
+  long color;
+  
+  GBT27930IL_InitAsBMS();
+  lastBmsStatus = 0;
+  
+  ST_Init();
+  CHA_open_close_K5K6(OPEN);
+  HV_source_reset();
+  BMS_set_voltage_CP2(12.0); // Simulation only: BMS is plugged out
+  cableStatus = unknown;
+  setControlForeColor("BMS", "btnStoreSettings", MakeRGB(0, 128, 0));
+  color = MakeRGB(0, 0, 0);
+  //Delay
+  setControlForeColor("BMS", "editChmToBhm"               , color);
+  setControlForeColor("BMS", "editCrmNotRecognizedToBrm"  , color);
+  setControlForeColor("BMS", "editCrmRecognizedToBcp"     , color);
+  setControlForeColor("BMS", "editCmlToBroNotReady"       , color);
+  setControlForeColor("BMS", "editBroNotReadyToBroReady"  , color);
+  setControlForeColor("BMS", "editCroReadyToBcl"          , color);
+  setControlForeColor("BMS", "editBclToBcs"               , color);
+  setControlForeColor("BMS", "editCcsToBsm"               , color);
+  setControlForeColor("BMS", "editCstToBsd"               , color);
+  setControlForeColor("BMS", "editCstToBst"               , color);
+  setControlForeColor("BMS", "editBstToBsd"               , color);
+  setControlForeColor("BMS", "editBsdToEnd"               , color);
+  //Missing
+  setControlForeColor("BMS", "editMissChm"              , color);
+  setControlForeColor("BMS", "editMissCrmNotRecognized" , color);
+  setControlForeColor("BMS", "editMissCrmRecognized"    , color);
+  setControlForeColor("BMS", "editMissCml"              , color);
+  setControlForeColor("BMS", "editMissCroNotReady"      , color);
+  setControlForeColor("BMS", "editMissCroReady"         , color);
+  setControlForeColor("BMS", "editMissCcs"              , color);
+  setControlForeColor("BMS", "editMissCst"              , color);
+  setControlForeColor("BMS", "editMissCsd"              , color);
+  color = MakeRGB(255, 255, 255);
+  //Delay
+  setControlBackColor("BMS", "editChmToBhm"        , color);
+  setControlBackColor("BMS", "editCrmNotRecognizedToBrm"        , color);
+  setControlBackColor("BMS", "editCrmRecognizedToBcp"        , color);
+  setControlBackColor("BMS", "editCmlToBroNotReady", color);
+  setControlBackColor("BMS", "editBroNotReadyToBroReady"   , color);
+  setControlBackColor("BMS", "editCroReadyToBcl"     , color);
+  setControlBackColor("BMS", "editBclToBcs"        , color);
+  setControlBackColor("BMS", "editCcsToBsm"        , color);
+  setControlBackColor("BMS", "editCstToBsd"        , color);
+  setControlBackColor("BMS", "editCstToBst"        , color);
+  setControlBackColor("BMS", "editBstToBsd"        , color);
+  setControlBackColor("BMS", "editBsdToEnd"        , color);
+  //Missing
+  setControlBackColor("BMS", "editMissChm"              , color);
+  setControlBackColor("BMS", "editMissCrmNotRecognized" , color);
+  setControlBackColor("BMS", "editMissCrmRecognized"    , color);
+  setControlBackColor("BMS", "editMissCml"              , color);
+  setControlBackColor("BMS", "editMissCroNotReady"      , color);
+  setControlBackColor("BMS", "editMissCroReady"         , color);
+  setControlBackColor("BMS", "editMissCcs"              , color);
+  setControlBackColor("BMS", "editMissCst"              , color);
+  setControlBackColor("BMS", "editMissCsd"              , color);
+}
+
+on preStop
+{
+  long color;
+  GBT27930IL_StopChargingSimulation();
+  CHA_open_close_K5K6(OPEN);
+  HV_source_reset(); 
+  BMS_set_voltage_CP2(12.0); // Simulation only: BMS is plugged out
+  setControlForeColor("BMS", "btnStoreSettings", MakeRGB(128, 128, 128));
+  color = MakeRGB(112, 112, 112);
+  //Delay
+  setControlForeColor("BMS", "editChmToBhm"               , color);
+  setControlForeColor("BMS", "editCrmNotRecognizedToBrm"  , color);
+  setControlForeColor("BMS", "editCrmRecognizedToBcp"     , color);
+  setControlForeColor("BMS", "editCmlToBroNotReady"       , color);
+  setControlForeColor("BMS", "editBroNotReadyToBroReady"  , color);
+  setControlForeColor("BMS", "editCroReadyToBcl"          , color);
+  setControlForeColor("BMS", "editBclToBcs"               , color);
+  setControlForeColor("BMS", "editCcsToBsm"               , color);
+  setControlForeColor("BMS", "editCstToBsd"               , color);
+  setControlForeColor("BMS", "editCstToBst"               , color);
+  setControlForeColor("BMS", "editBstToBsd"               , color);
+  setControlForeColor("BMS", "editBsdToEnd"               , color);
+  //Missing
+  setControlForeColor("BMS", "editMissChm"              , color);
+  setControlForeColor("BMS", "editMissCrmNotRecognized" , color);
+  setControlForeColor("BMS", "editMissCrmRecognized"    , color);
+  setControlForeColor("BMS", "editMissCml"              , color);
+  setControlForeColor("BMS", "editMissCroNotReady"      , color);
+  setControlForeColor("BMS", "editMissCroReady"         , color);
+  setControlForeColor("BMS", "editMissCcs"              , color);
+  setControlForeColor("BMS", "editMissCst"              , color);
+  setControlForeColor("BMS", "editMissCsd"              , color);
+  color = MakeRGB(224, 224, 224);
+  //Delay
+  setControlBackColor("BMS", "editChmToBhm"               , color);
+  setControlBackColor("BMS", "editCrmNotRecognizedToBrm"  , color);
+  setControlBackColor("BMS", "editCrmRecognizedToBcp"     , color);
+  setControlBackColor("BMS", "editCmlToBroNotReady"       , color);
+  setControlBackColor("BMS", "editBroNotReadyToBroReady"  , color);
+  setControlBackColor("BMS", "editCroReadyToBcl"          , color);
+  setControlBackColor("BMS", "editBclToBcs"               , color);
+  setControlBackColor("BMS", "editCcsToBsm"               , color);
+  setControlBackColor("BMS", "editCstToBsd"               , color);
+  setControlBackColor("BMS", "editCstToBst"               , color);
+  setControlBackColor("BMS", "editBstToBsd"               , color);
+  setControlBackColor("BMS", "editBsdToEnd"               , color);
+  //Missing
+  setControlBackColor("BMS", "editMissChm"              , color);
+  setControlBackColor("BMS", "editMissCrmNotRecognized" , color);
+  setControlBackColor("BMS", "editMissCrmRecognized"    , color);
+  setControlBackColor("BMS", "editMissCml"              , color);
+  setControlBackColor("BMS", "editMissCroNotReady"      , color);
+  setControlBackColor("BMS", "editMissCroReady"         , color);
+  setControlBackColor("BMS", "editMissCcs"              , color);
+  setControlBackColor("BMS", "editMissCst"              , color);
+  setControlBackColor("BMS", "editMissCsd"              , color);
+}
+
+on timer tmr_InitTimeout
+{
+  @sysvar::GBT27930::svStart = 1;  //STOP BMS
+  ST_Reset();
+  writeEx(-3, 3, "tmr_InitTimeout");      
+}
+
+on timer tmrUpdateStatus
+{
+  int commState;
+  SetBCS();  
+  $%NETWORK_NAME%::BSD::SuspendStateOfChargeSOC.phys = $BCS::CurrentChargeState.txrq;
+  commState = GBT27930IL_GetCommunicationState();
+  if(commState >= 12 && commState <= 14) // sending of BCL, BCS and BSM
+  {
+    setTimer(tmrUpdateStatus, 1000);
+  }
+  if( commState <= 8 || commState==18 || commState==19 || commState == 50 )
+  {
+    // open battery contactor 
+    if( abs(HV_measure_DC_I()) < 5 )
+      CHA_open_close_K5K6(OPEN);
+  }
+}
+
+on timer tmr_check_CP2Voltage
+{
+  CP2_voltage_measured = BMS_measure_voltage_CP2();
+  if ( CP2_voltage_measured >= 5.2 && CP2_voltage_measured <= 6.8) 
+  {
+    setTimer(tmr_check_auxVoltage, interval_check_auxVoltage);
+  }
+  else 
+  {
+    setTimer(tmr_check_CP2Voltage, interval_check_CP2Voltage);
+  }
+}
+
+on timer tmr_check_auxVoltage
+{
+  aux_voltage_measured = BMS_measure_auxiliary_voltage();
+  if ( aux_voltage_measured > 11 && aux_voltage_measured < 13 ) {
+    // VT6104 - enable CAN communication
+    Connect_CAN();
+    @sysvar::GBT27930::svStart = 0;  //START BMS
+    cancelTimer(tmr_InitTimeout);
+    writeEx(-3,3, "BMS node: tmr_check_auxVoltage called, CAN relays closed");
+  }
+  else 
+  {
+    setTimer(tmr_check_auxVoltage, interval_check_auxVoltage);
+  }
+}
+
+on timer tmr_monitor_CP2Voltage 
+{
+  CP2_voltage_measured = BMS_measure_voltage_CP2();
+  if ( CP2_voltage_measured < 5.2|| CP2_voltage_measured > 6.8) {
+    //@sysvar::GBT27930::svStart = 1;  //STOP BMS
+    writeEx(-3, 3, "BMS node: CP2Voltage (%f V) has detected a cable Plug Out! Would initiate BMS charging stop!", CP2_voltage_measured);
+  }
+  else {
+    setTimer(tmr_monitor_CP2Voltage, interval_monitor_CP2Voltage);
+  }
+}
+
+on timer tmr_monitor_auxVoltage
+{
+  aux_voltage_measured = BMS_measure_auxiliary_voltage();
+  if ( aux_voltage_measured < 11 || aux_voltage_measured > 13 ) {
+    //@sysvar::GBT27930::svStart = 1;  //STOP BMS
+    writeEx(-3, 3, "BMS node: Auxiliary Voltage (%f V) has detected a cable Plug Out! Would initiate BMS charging stop!", aux_voltage_measured);
+  }
+  else {
+    setTimer(tmr_monitor_auxVoltage, interval_monitor_auxVoltage);
+  }
+}  
+
+on timer tmr_resetSystem
+{
+  VT_EV_Init();
+}
+
+on sysvar GBT27930::svStart
+{
+  if(@this == 1)
+  {
+    byte resetData[4] = {0, 0, 0, 0};
+    GBT27930IL_SetMsgRawData(%NETWORK_NAME%::BST, 4, resetData );
+    GBT27930IL_ResetBlockedTxMessage(0x1E00, 0x56, 0xFFFFFFFF, 0x01000000); //BEM because of wrongly interpreted missing of CSD if CSD is stopped
+    GBT27930IL_StopChargingSimulation();
+    lastBmsStatus = 0;
+    
+    if (isSimulated() == 0)
+    {
+      Disconnect_CAN();
+      Disconnect_CC2();
+      //Disable resistance R5
+      BMS_set_resistance_R5(0.0);
+      Disconnect_CC1();
+      //Disable resistance R4
+      BMS_set_resistance_R4(0.0);
+      HV_source_reset();
+      CHA_open_close_K5K6(OPEN);
+      cancelTimer(tmr_monitor_CP2Voltage);
+      cancelTimer(tmr_monitor_auxVoltage);
+      setTimer(tmr_resetSystem, interval_resetSystem);
+    }
+  }
+  else
+  {    
+    VT_EV_Init();
+    
+    writeEx(-3, 3, "BMS node: K3 and K4 are closed");
+    SetDelayTransition();
+    SetMaxAllowedMissingTime();
+    
+    GBT27930IL_StartChargingSimulation();
+    Set_BMS_ManufacturereName();
+    @sysvar::GBT27930::Control::StartSimulation = 1;
+    
+    if (isSimulated() == 0)
+    {
+      setTimer(tmr_monitor_CP2Voltage, interval_monitor_CP2Voltage);
+      setTimer(tmr_monitor_auxVoltage, interval_monitor_auxVoltage);    
+    }
+  }
+}
+
+void ResetAllGroups()
+{
+  setDefaultControlColors("BMS", "groupBHM");
+  setDefaultControlColors("BMS", "groupBRM");
+  setDefaultControlColors("BMS", "groupBCP");
+  setDefaultControlColors("BMS", "groupBRO");
+  setDefaultControlColors("BMS", "groupBCL");
+  setDefaultControlColors("BMS", "groupBCS");
+  setDefaultControlColors("BMS", "groupBSM");
+  setDefaultControlColors("BMS", "groupBST");
+  setDefaultControlColors("BMS", "groupBSD");
+}
+
+//-----------------------------------------------------------------------------------------------------------------------------------------
+void VT_EV_Init()
+{
+  writeEx(-3, 3, "BMS node: Call VT_EV_Init. isSimulated() = %d", isSimulated());
+  if (isSimulated()) {
+    @sysvar::GBT27930::svStart = 0;
+    
+    CHA_open_close_K5K6(OPEN);
+  }
+  else {
+    writeEx(-3, 3, "BMS node: VT_EV_Init: 'isSimulated() = false' is called");
+    CP2_voltage_measured = 0.0;
+    checkPoint2_voltage_detected = 0;
+    
+    setTimer(tmr_InitTimeout, timeout_systemStartUp);
+    
+    // VT2004 - bus bar default
+    VT2004_busBar_default();
+    ST_Init();
+    
+    CHA_open_close_K5K6(OPEN);
+    BMS_set_voltage_CP2(6.0); // Simulation only: initiate with cable beeing plugged in
+    Connect_CC1();
+    Connect_CC2();
+    
+    setTimer(tmr_check_CP2Voltage, interval_check_CP2Voltage);   
+  }
+}
+
+on sysvar_update sysvar::GBT27930::Control::voltage_CP2
+{
+  if (cableStatus == connected && BMS_measure_voltage_CP2() > 12 - cCP2VoltageTolerance && BMS_measure_voltage_CP2() < 12 + cCP2VoltageTolerance)
+  {
+    writeLineEx(-3,1,"BMS: Connection to the charger has been removed");
+    cableStatus = disconnected;
+  }
+  else if (cableStatus != connected && BMS_measure_voltage_CP2() > 6 - cCP2VoltageTolerance && BMS_measure_voltage_CP2() < 6 + cCP2VoltageTolerance)
+  {
+    writeLineEx(-3,1,"BMS: Charger has been connected");
+    cableStatus = connected;
+  }
+}
+
+on timer tmrUpdatePanel
+{
+  dword bmsStatus;
+  long clrInactive, clrActive, clrChanging, clrBackActive;
+  clrInactive = MakeRGB(0,0,0);
+  clrActive = MakeRGB(0, 128, 0);
+  clrChanging = MakeRGB(128, 0, 0);
+  clrBackActive = MakeRGB(224, 224, 255);
+  
+  bmsStatus = GBT27930IL_GetCommunicationState();
+  if(lastBmsStatus != bmsStatus)
+  {
+    switch(bmsStatus)
+    {
+      case 3: //Sending of BHM
+        setControlForeColor("BMS", "groupBHM"   , clrActive);
+        setControlBackColor("BMS", "groupBHM"   , clrBackActive);
+        break;
+        
+      case 4: //Sending of BHM; delayed start of BRM is initiated
+        setControlForeColor("BMS", "groupBHM"   , clrChanging);
+        setControlBackColor("BMS", "groupBHM"   , clrBackActive);
+        break;
+        
+      case 5: //Sending of BRM 
+        setDefaultControlColors("BMS", "groupBHM");
+
+        setControlForeColor("BMS", "groupBRM"   , clrActive);
+        setControlBackColor("BMS", "groupBRM"   , clrBackActive);
+        break;
+
+      case 6: //Sending of BRM; delayed start of BCP is initiated
+        setControlForeColor("BMS", "groupBRM"   , clrChanging);
+        setControlBackColor("BMS", "groupBRM"   , clrBackActive);
+        break;
+        
+        
+      case 7: //Sending of BCP
+        setDefaultControlColors("BMS", "groupBRM");
+
+        setControlForeColor("BMS", "groupBCP"   , clrActive);
+        setControlBackColor("BMS", "groupBCP"   , clrBackActive);
+        break;
+
+      case 8: //Sending of BCP; delayed start of BRO (Not ready) is initiated
+        setControlForeColor("BMS", "groupBCP"   , clrChanging);
+        setControlBackColor("BMS", "groupBCP"   , clrBackActive);
+        break;
+        
+      case 9: //Sending of BRO (Not Ready for charging); delayed start of BRO (Ready for charging) is initiated
+        setDefaultControlColors("BMS", "groupBCP");
+
+        setControlForeColor("BMS", "groupBCP"   , clrActive);
+        setControlBackColor("BMS", "groupBCP"   , clrBackActive);
+        break;
+
+      case 10: //Sending of BRO(Ready for charging)
+        setControlForeColor("BMS", "groupBRO"   , clrActive);
+        setControlBackColor("BMS", "groupBRO"   , clrBackActive);
+        break;
+        
+      case 11: //Sending of BRO (Ready for charging); delayed start of BCL is initiated
+        setControlForeColor("BMS", "groupBRO"   , clrChanging);
+        setControlBackColor("BMS", "groupBRO"   , clrBackActive);
+        break;
+        
+      case 30: //Sending of BCL
+        setDefaultControlColors("BMS", "groupBRO");
+
+        setControlForeColor("BMS", "groupBCL"   , clrActive);
+        setControlBackColor("BMS", "groupBCL"   , clrBackActive);
+        break;        
+        
+      case 31: //Sending of BCL; delayed start of BCS is initiated
+        setDefaultControlColors("BMS", "groupBRO");
+
+        setControlForeColor("BMS", "groupBCL"   , clrActive);
+        setControlBackColor("BMS", "groupBCL"   , clrBackActive);
+        break;        
+        
+      case 12: //Sending of BCL und BCS
+      case 13: //Sending of BCL und BCS; delayed start of BSM is initiated
+        setDefaultControlColors("BMS", "groupBRO");
+
+        setControlForeColor("BMS", "groupBCL"   , clrActive);
+        setControlBackColor("BMS", "groupBCL"   , clrBackActive);
+        setControlForeColor("BMS", "groupBCS"   , clrActive);
+        setControlBackColor("BMS", "groupBCS"   , clrBackActive);
+        break;
+
+      case 14: //Sending of BCL, BCS and BSM
+        setControlForeColor("BMS", "groupBCL"   , clrActive);
+        setControlBackColor("BMS", "groupBCL"   , clrBackActive);
+        setControlForeColor("BMS", "groupBCS"   , clrActive);
+        setControlBackColor("BMS", "groupBCS"   , clrBackActive);
+        setControlForeColor("BMS", "groupBSM"   , clrActive);
+        setControlBackColor("BMS", "groupBSM"   , clrBackActive);
+        break;
+
+      case 15: //Sending of BCL, BCS and BSM; delayed start of BST is initiated
+        setControlForeColor("BMS", "groupBCL"   , clrChanging);
+        setControlBackColor("BMS", "groupBCL"   , clrBackActive);
+        setControlForeColor("BMS", "groupBCS"   , clrChanging);
+        setControlBackColor("BMS", "groupBCS"   , clrBackActive);
+        setControlForeColor("BMS", "groupBSM"   , clrChanging);
+        setControlBackColor("BMS", "groupBSM"   , clrBackActive);
+        break;
+        
+      case 16: //Sending of BST
+        setDefaultControlColors("BMS", "groupBCL");
+        setDefaultControlColors("BMS", "groupBCS");
+        setDefaultControlColors("BMS", "groupBSM");
+
+        setControlForeColor("BMS", "groupBST"   , clrActive);
+        setControlBackColor("BMS", "groupBST"   , clrBackActive);
+        break;
+        
+      case 17: //Sending of BST; delayed start of BSD is initiated
+        setDefaultControlColors("BMS", "groupBCL");
+        setDefaultControlColors("BMS", "groupBCS");
+        setDefaultControlColors("BMS", "groupBSM");
+
+        setControlForeColor("BMS", "groupBST"   , clrChanging);
+        setControlBackColor("BMS", "groupBST"   , clrBackActive);
+        break;
+        
+      case 18: //Sending of BSD; delayed stop of BSD is initiated 
+        setDefaultControlColors("BMS", "groupBCL");
+        setDefaultControlColors("BMS", "groupBCS");
+        setDefaultControlColors("BMS", "groupBSM");
+        setDefaultControlColors("BMS", "groupBST");
+
+        setControlForeColor("BMS", "groupBSD"   , clrActive);
+        setControlBackColor("BMS", "groupBSD"   , clrBackActive);
+        break;
+
+      case 19: //End of charging
+        setDefaultControlColors("BMS", "groupBSD");
+        break;
+        
+      case 50: //Sending of CEM
+        ResetAllGroups();
+        setControlForeColor("BMS", "groupBEM"   , clrActive);
+        setControlBackColor("BMS", "groupBEM"   , clrBackActive);
+        break;
+
+    }
+    lastBmsStatus = bmsStatus;
+  }  
+  setTimer(tmrUpdatePanel, 100);
+}
+
+
+
+SetMaxAllowedMissingTime()
+{
+  GBT27930IL_SetMaxAllowedMissingTimeForMsg(chm,                @GBT27930::BMS::MaxAllowedMissingTime::svCHM);
+  GBT27930IL_SetMaxAllowedMissingTimeForMsg(crm_not_recognized, @GBT27930::BMS::MaxAllowedMissingTime::svCRM_NotRecognized);
+  GBT27930IL_SetMaxAllowedMissingTimeForMsg(crm_recognized,     @GBT27930::BMS::MaxAllowedMissingTime::svCRM_Recognized);
+  GBT27930IL_SetMaxAllowedMissingTimeForMsg(cml,                @GBT27930::BMS::MaxAllowedMissingTime::svCML);
+  GBT27930IL_SetMaxAllowedMissingTimeForMsg(cro_not_ready,      @GBT27930::BMS::MaxAllowedMissingTime::svCRO_NotReady);
+  GBT27930IL_SetMaxAllowedMissingTimeForMsg(cro_ready,          @GBT27930::BMS::MaxAllowedMissingTime::svCRO_Ready);
+  GBT27930IL_SetMaxAllowedMissingTimeForMsg(ccs,                @GBT27930::BMS::MaxAllowedMissingTime::svCCS);
+  GBT27930IL_SetMaxAllowedMissingTimeForMsg(cst,                @GBT27930::BMS::MaxAllowedMissingTime::svCST);
+  GBT27930IL_SetMaxAllowedMissingTimeForMsg(csd,                @GBT27930::BMS::MaxAllowedMissingTime::svCSD);
+}
+
+on sysvar_update GBT27930::BMS::svManufacturerName
+{
+  Set_BMS_ManufacturereName();
+}
+
+Set_BMS_ManufacturereName()
+{
+  char buf[5];
+  dword textAsDWord;
+
+  sysGetVariableString(sysvar::GBT27930::BMS::svManufacturerName, buf, elcount(buf));
+  textAsDWord = (buf[0] << 0) + (buf[1] << 8) + (buf[2] << 16) + (buf[3] << 24);
+  $%NETWORK_NAME%::BRM::ManufacturerName = textAsDWord;
+}
+
+on sysvar GBT27930::BMS::svStoreSettings
+{
+  if(@this == 0)    
+    startValuesUpdateList("BMS Settings", 1);
+}
+
+long GBT27930IL_OnTxPrepare(pg* pgToSend)
+{
+  char buf[18];
+  int pos;
+
+  if(pgToSend.pgn == %NETWORK_NAME%::BRM.pgn && pgToSend.dlc >= 41)
+  {
+    sysGetVariableString(sysvar::GBT27930::BMS::svVIN, buf, elcount(buf));
+    for(pos = 0; pos < 17; pos++)
+    {
+      pgToSend.byte(pos + 24) = buf[pos];
+    }
+  }
+  
+  return 1;
+}
+
+on sysvar GBT27930::BMS::svSuspendCharging
+{
+  if(@this == 0)
+    return;
+
+  GBT27930IL_SuspendCharging();
+  @this = 0;
+}
+
+on sysvar GBT27930::BMS::svSuspendCharging2
+{
+  if(@this == 0)
+    return;
+  
+  //1. Set whole payload to 0x00
+  $%NETWORK_NAME%::BST::AbnormalVoltageError        = 0;
+  $%NETWORK_NAME%::BST::ExcessiveCurrentError       = 0;
+  $%NETWORK_NAME%::BST::OtherFaults                 = 0;
+  $%NETWORK_NAME%::BST::BmsConnectorOverTemp        = 0;
+  $%NETWORK_NAME%::BST::VoltageDetectionFault       = 0;
+  $%NETWORK_NAME%::BST::HighVoltageRelayFault       = 0;
+  $%NETWORK_NAME%::BST::BatterySetOverTemp          = 0;
+  $%NETWORK_NAME%::BST::ChargingConnectorFault      = 0;
+  $%NETWORK_NAME%::BST::OutputConnectorOverTemp     = 0;
+  $%NETWORK_NAME%::BST::InsulationFault             = 0;
+  $%NETWORK_NAME%::BST::ChargerSuspendsActively     = 0;
+  $%NETWORK_NAME%::BST::SettingValueOfSingleVoltage = 0;
+  $%NETWORK_NAME%::BST::SettingValueOfTotalVoltage  = 0;
+  $%NETWORK_NAME%::BST::RequiredSocTargetValue      = 0;
+
+  //2. Set selected signal to "1"
+  switch(@GBT27930::BMS::svCauseOfSuspendingCharging)
+  {
+    case 1  : $%NETWORK_NAME%::BST::AbnormalVoltageError        = 1; break;
+    case 2  : $%NETWORK_NAME%::BST::ExcessiveCurrentError       = 1; break;
+    case 3  : $%NETWORK_NAME%::BST::OtherFaults                 = 1; break;
+    case 4  : $%NETWORK_NAME%::BST::BmsConnectorOverTemp        = 1; break;
+    case 5  : $%NETWORK_NAME%::BST::VoltageDetectionFault       = 1; break;
+    case 6  : $%NETWORK_NAME%::BST::HighVoltageRelayFault       = 1; break;
+    case 7  : $%NETWORK_NAME%::BST::BatterySetOverTemp          = 1; break;
+    case 8  : $%NETWORK_NAME%::BST::ChargingConnectorFault      = 1; break;
+    case 9  : $%NETWORK_NAME%::BST::OutputConnectorOverTemp     = 1; break;
+    case 10 : $%NETWORK_NAME%::BST::InsulationFault             = 1; break;
+    case 11 : $%NETWORK_NAME%::BST::ChargerSuspendsActively     = 1; break;
+    case 12 : $%NETWORK_NAME%::BST::SettingValueOfSingleVoltage = 1; break;
+    case 13 : $%NETWORK_NAME%::BST::SettingValueOfTotalVoltage  = 1; break;
+    case 14 : $%NETWORK_NAME%::BST::RequiredSocTargetValue      = 1; break;
+  }  
+  //3. Suspend charging (start sending of BST)
+  GBT27930IL_SuspendCharging();
+  @this = 0;
+}
+
+on sysvar GBT27930::BMS::svStopChargingWithError
+{
+  if(@this == 1)
+    GBT27930IL_SetCommunicationState(50); //Send BMS Error Message
+  else
+    GBT27930IL_SetCommunicationState(19); //End of Charging
+}
+
+on sysvar GBT27930::BMS::svStopChargingWithError2
+{
+  if(@this == 1)
+  {  
+    //1. Set whole payload to 0x00
+    $%NETWORK_NAME%::BEM::Timeout_CRM_NotRecognized = 0;
+    $%NETWORK_NAME%::BEM::Timeout_CRM_Recognized    = 0;
+    $%NETWORK_NAME%::BEM::Timeout_CTS_CML           = 0;
+    $%NETWORK_NAME%::BEM::Timeout_CRO               = 0;
+    $%NETWORK_NAME%::BEM::Timeout_CCS               = 0;
+    $%NETWORK_NAME%::BEM::Timeout_CST               = 0;
+    $%NETWORK_NAME%::BEM::Timeout_CSD               = 0;
+    
+    //2. Set selected signal to "1"
+    switch(@GBT27930::BMS::svTimeoutOfMsg)
+    {
+      case 1: $%NETWORK_NAME%::BEM::Timeout_CRM_NotRecognized= 1; break;
+      case 2: $%NETWORK_NAME%::BEM::Timeout_CRM_Recognized   = 1; break;
+      case 3: $%NETWORK_NAME%::BEM::Timeout_CTS_CML          = 1; break;
+      case 4: $%NETWORK_NAME%::BEM::Timeout_CRO              = 1; break;
+      case 5: $%NETWORK_NAME%::BEM::Timeout_CCS              = 1; break;
+      case 6: $%NETWORK_NAME%::BEM::Timeout_CST              = 1; break;
+      case 7: $%NETWORK_NAME%::BEM::Timeout_CSD              = 1; break;
+    }
+    
+    //3. Send Charger Error Message
+    GBT27930IL_SetCommunicationState(50); 
+  }
+  else
+  {
+    GBT27930IL_SetCommunicationState(19); //End of Charging
+  }
+}
+
+on pg *
+{
+  if(this.pgn == %NETWORK_NAME%::BRM.PGN)
+  {
+    msStartOfChargingMS = 0;
+      inputEnergy = 0;
+      $%NETWORK_NAME%::BCS::EstimatedRemainingChargingTime.phys = 0;
+      $%NETWORK_NAME%::BCS::CurrentChargeState.phys = $BCP::StatusOfCharge.phys;
+  }
+  else if(this.pgn == %NETWORK_NAME%::BCL.PGN)
+  {
+    if(msStartOfChargingMS == 0)
+    {
+      msStartOfChargingMS = timeNow() / 100;
+      inputEnergy = 0;
+      $%NETWORK_NAME%::BCS::EstimatedRemainingChargingTime.phys = 0;
+      $%NETWORK_NAME%::BCS::CurrentChargeState.phys = $BCP::StatusOfCharge.phys;
+      setTimer(tmrUpdateStatus, 1000);
+      SetBCS();  
+    }
+  }
+  else if( this.pgn == %NETWORK_NAME%::BRO.PGN )
+  {
+    if($%NETWORK_NAME%::BRO::BmsReadyForCharging == 0x00 )
+    {
+      CHA_open_close_K5K6(CLOSE);
+      @RuntimeValues::PresentOutputVoltage =  getSignal(%NETWORK_NAME%::BRM::BatterySystemVoltage); // Set simulated voltage after HV connection est.
+    }
+  }
+}
+
+long GBT27930IL_OnRxMessage(pg * rxPG)
+{
+  if(rxPG.PGN == 0x1F00)//Charger Error message, CEM
+  {
+    GBT27930IL_SetCommunicationState(19); //End of charging
+  }
+  return 1;
+}
+
+on sysvar GBT27930::BMS::svInterruptBCL
+{
+  if(@this == 1)
+  {
+    GBT27930IL_BlockTxMessage(0x1000, 0xFFFFFFFF, 0,0);
+  }
+  else
+  {
+    GBT27930IL_ResetBlockedTxMessage(0x1000, 0xFFFFFFFF, 0,0);  
+  }
+}
+
+on sysvar GBT27930::BMS::svInterruptBCS
+{
+  if(@this == 1)
+  {
+    GBT27930IL_BlockTxMessage(0x1100, 0xFFFFFFFF, 0,0);
+  }
+  else
+  {
+    GBT27930IL_ResetBlockedTxMessage(0x1100, 0xFFFFFFFF, 0,0);  
+  }
+}
+
+on sysvar GBT27930::BMS::svInterruptBSM
+{
+  if(@this == 1)
+  {
+    GBT27930IL_BlockTxMessage(0x1300, 0xFFFFFFFF, 0,0);
+  }
+  else
+  {
+    GBT27930IL_ResetBlockedTxMessage(0x1300, 0xFFFFFFFF, 0,0);  
+  }
+}
+
+void SetDelayTransition()
+{
+  GBT27930IL_SetDelayForStateTransition(chm_to_bhm,              @GBT27930::BMS::DelayTransition::svCHM_to_BHM);
+  GBT27930IL_SetDelayForStateTransition(crmNotRecognized_to_brm, @GBT27930::BMS::DelayTransition::svCRM_not_recognized_to_BRM);
+  GBT27930IL_SetDelayForStateTransition(crmRecognized_to_bcp,    @GBT27930::BMS::DelayTransition::svCRM_recognized_to_BCP);
+  GBT27930IL_SetDelayForStateTransition(cml_to_broNotReady,      @GBT27930::BMS::DelayTransition::svCML_to_BRO_not_ready);
+  GBT27930IL_SetDelayForStateTransition(broNotReady_to_broReady, @GBT27930::BMS::DelayTransition::svBRO_not_ready_to_BRO_ready);
+  GBT27930IL_SetDelayForStateTransition(croReady_to_bcl,         @GBT27930::BMS::DelayTransition::svCRO_ready_to_BCL);
+  GBT27930IL_SetDelayForStateTransition(bcl_to_bcl_bcs,          @GBT27930::BMS::DelayTransition::svBCL_to_BCL_BCS);
+  GBT27930IL_SetDelayForStateTransition(ccs_to_bcl_bcs_bsm,      @GBT27930::BMS::DelayTransition::svCCS_to_BSM);
+  GBT27930IL_SetDelayForStateTransition(cst_to_bsd,              @GBT27930::BMS::DelayTransition::svCST_to_BSD);
+  GBT27930IL_SetDelayForStateTransition(cst_to_bst,              @GBT27930::BMS::DelayTransition::svCST_to_BST);
+  GBT27930IL_SetDelayForStateTransition(bst_to_bsd,              @GBT27930::BMS::DelayTransition::svBST_to_BSD);
+  GBT27930IL_SetDelayForStateTransition(bsd_to_end,              @GBT27930::BMS::DelayTransition::svBSD_to_End);
+}
+
+void GBT27930IL_OnTxMessage(pg * txPG)
+{
+  if(txPG.pgn == %NETWORK_NAME%::BRM.PGN)
+  {
+    msStartOfChargingMS = 0;
+    //inputEnergy = 0;
+    //$GBT_27930_BMS::BCS::EstimatedRemainingChargingTime.phys = 0;
+    //$GBT_27930_BMS::BCS::CurrentChargeState.phys = $BCP::StatusOfCharge.phys;
+  }
+  else if(txPG.pgn == %NETWORK_NAME%::BCL.PGN)
+  {
+    if(msStartOfChargingMS == 0)
+    {
+      msStartOfChargingMS = timeNowInt64() / 1000000;
+      //inputEnergy = 0;
+      //$GBT_27930_BMS::BCS::EstimatedRemainingChargingTime.phys = 0;
+      //$GBT_27930_BMS::BCS::CurrentChargeState.phys = $BCP::StatusOfCharge.phys;
+      setTimer(tmrUpdateStatus, 1000);
+      SetBCS();  
+    }
+  }
+  if( txPG.pgn == %NETWORK_NAME%::BRO.PGN )
+  {
+    if( $%NETWORK_NAME%::BRO::BmsReadyForCharging == 0x00 )
+      CHA_open_close_K5K6(CLOSE);
+  }
+  if( txPG.pgn == %NETWORK_NAME%::BSD.PGN )
+  {
+    if( abs(HV_measure_DC_I()) < 5 )
+      CHA_open_close_K5K6(OPEN);
+  }
+}
+void SetBCS()
+{
+  double additionalEnergy, remainingEnergy;
+  double chargingTimeMinutes;
+  
+  $%NETWORK_NAME%::BCS::MeasuredChargingVoltage.phys = getSignal(%NETWORK_NAME%::CCS::VoltageOutputValue) * (0.99 + random(100)/5000.0);
+  $%NETWORK_NAME%::BCS::MeasuredChargingCurrent.phys = getSignal(%NETWORK_NAME%::CCS::CurrentOutputValue) * (0.99 + random(100)/5000.0);
+  
+  additionalEnergy = abs((getSignal(%NETWORK_NAME%::CCS::VoltageOutputValue) * getSignal(%NETWORK_NAME%::CCS::CurrentOutputValue) * @GBT27930::BMS::svEfficiency / 100) / 3600000); //kWh
+  inputEnergy = inputEnergy + additionalEnergy;
+  $%NETWORK_NAME%::BCS::CurrentChargeState.phys = $BCP::StatusOfCharge.phys + (inputEnergy / $BCP::TotalNominalEnergy.phys) * 100;
+  remainingEnergy = $BCP::TotalNominalEnergy.phys * (1.0 - $BCP::StatusOfCharge.phys/100.0) - inputEnergy;
+  chargingTimeMinutes = ((timeNowInt64() / 1000000) - msStartOfChargingMS) / 60000.0;
+  if(inputEnergy == 0 || chargingTimeMinutes < 2)
+    $%NETWORK_NAME%::BCS::EstimatedRemainingChargingTime.phys = 0;
+  else
+    $%NETWORK_NAME%::BCS::EstimatedRemainingChargingTime.phys = (remainingEnergy / inputEnergy) * chargingTimeMinutes;
+}
+
+on sysvar_update sysvar::GBT27930::Control::auxiliary_voltage
+{
+  if(@this <= 0.2) //Relay for auxiliary power supply OFF (K3K4)
+    CHA_open_close_K5K6(OPEN);
+}
+
+on key 'n'
+{
+  if(@GBT27930::svStart == 0)
+  {
+    @GBT27930::svStart = 1;
+  }
+  else
+  {
+    @GBT27930::svStart = 0;
+  }
+}

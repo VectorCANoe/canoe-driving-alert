@@ -17,6 +17,19 @@ variables
   int gLastFailSafeMode;
 }
 
+int clampRange(int value, int minValue, int maxValue)
+{
+  if (value < minValue)
+  {
+    return minValue;
+  }
+  if (value > maxValue)
+  {
+    return maxValue;
+  }
+  return value;
+}
+
 on start
 {
   gChassisAlive = 0;
@@ -59,9 +72,14 @@ on message frmInfotainmentHealthMsg
 on timer tBoundaryCheck
 {
   message ethFailSafeStateMsg mFailSafe;
+  message ethObjectSafetyStateMsg mObjSafety;
   dword nowMs;
   int routingPolicy;
   int forceFailSafe;
+  int objectTrackValid;
+  int objectConfidence;
+  int objectEventCode;
+  int objectConfidenceLow;
   int allAlive;
   int domainPathStatus;
   int e2eHealthState;
@@ -71,6 +89,10 @@ on timer tBoundaryCheck
   allAlive = 0;
   routingPolicy = (int)@CoreState::routingPolicy;
   forceFailSafe = (((int)@Test::forceFailSafe) == 1) ? 1 : 0;
+  objectTrackValid = clampRange((int)@Core::objectTrackValid, 0, 1);
+  objectConfidence = clampRange((int)@Core::objectConfidence, 0, 100);
+  objectEventCode = clampRange((int)@Core::objectEventCode, 0, 65535);
+  objectConfidenceLow = (objectTrackValid == 1 && objectConfidence < 35) ? 1 : 0;
   if (routingPolicy < 0 || routingPolicy > 2)
   {
     routingPolicy = 0;
@@ -94,6 +116,11 @@ on timer tBoundaryCheck
     domainPathStatus = 2;
     e2eHealthState = 0;
   }
+  else if (objectConfidenceLow == 1)
+  {
+    domainPathStatus = 1;
+    e2eHealthState = 1;
+  }
   else if (allAlive == 1 && routingPolicy == 1)
   {
     e2eHealthState = 2;
@@ -114,6 +141,11 @@ on timer tBoundaryCheck
     @Core::decelAssistReq = 0;
   }
   else if (domainPathStatus >= 2 || e2eHealthState == 0)
+  {
+    failSafeMode = 1;
+    @Core::decelAssistReq = 0;
+  }
+  else if (objectConfidenceLow == 1)
   {
     failSafeMode = 1;
     @Core::decelAssistReq = 0;
@@ -145,6 +177,12 @@ on timer tBoundaryCheck
   mFailSafe.FailSafeMode = failSafeMode;
   mFailSafe.BoundaryAlive = allAlive;
   output(mFailSafe);
+
+  mObjSafety.ObjectConfidence = objectConfidence;
+  mObjSafety.ObjectEventCode = objectEventCode;
+  mObjSafety.ObjectFailSafeMode = failSafeMode;
+  mObjSafety.ObjectTrackValid = objectTrackValid;
+  output(mObjSafety);
 
   setTimer(tBoundaryCheck, 100);
 }

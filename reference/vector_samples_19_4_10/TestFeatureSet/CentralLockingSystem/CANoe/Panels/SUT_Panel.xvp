@@ -1,0 +1,335 @@
+<?xml version="1.0"?>
+<Panel Type="Vector.CANalyzer.Panels.PanelSerializer, Vector.CANalyzer.Panels.Serializer, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null">
+  <Object Type="Vector.CANalyzer.Panels.Runtime.Panel, Vector.CANalyzer.Panels.Common, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null" Name="Panel" Children="Controls" ControlName="System under Test">
+    <Object Type="Vector.CANalyzer.Panels.Design.GroupBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null" Name="GroupBoxControl31" Children="Controls" ControlName="GroupBoxControl31">
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl10" Children="Controls" ControlName="StaticTextControl10">
+        <Property Name="Name">StaticTextControl10</Property>
+        <Property Name="Size">60, 26</Property>
+        <Property Name="Location">48, 97</Property>
+        <Property Name="Text">Comfort 
+close</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl19" Children="Controls" ControlName="StaticTextControl19">
+        <Property Name="Name">StaticTextControl19</Property>
+        <Property Name="Size">55, 26</Property>
+        <Property Name="Location">121, 25</Property>
+        <Property Name="TextAlign">TopCenter</Property>
+        <Property Name="Text">Window
+control</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.SwitchControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null" Name="SwitchControl11" ControlName="SwitchControl11">
+        <Property Name="Name">SwitchControl11</Property>
+        <Property Name="Size">25, 25</Property>
+        <Property Name="Location">15, 97</Property>
+        <Property Name="StateCnt">2</Property>
+        <Property Name="Activation">Left</Property>
+        <Property Name="SwitchValues">1;2;0;1</Property>
+        <Property Name="SwitchValuesRx">1;2;0;1</Property>
+        <Property Name="SwitchValuesVT">1;2;0/Lower/0;1/Lower/1</Property>
+        <Property Name="SwitchValuesVTXml">&lt;Version&gt;2&lt;/Version&gt;&lt;Count&gt;2&lt;/Count&gt;&lt;RxValue&gt;0&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;0&lt;/TxValue&gt;&lt;RxValue&gt;1&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;1&lt;/TxValue&gt;</Property>
+        <Property Name="ImageFile">Bitmaps\ButtonQuadratic25_2.png</Property>
+        <Property Name="SymbolConfiguration">1;2;comfort;;LockingRemoteControlRequest;LockRequest</Property>
+        <Property Name="TabIndex">11</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl23" Children="Controls" ControlName="StaticTextControl23">
+        <Property Name="Name">StaticTextControl23</Property>
+        <Property Name="Size">60, 13</Property>
+        <Property Name="Location">49, 32</Property>
+        <Property Name="Text">Open car</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.SwitchControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null" Name="SwitchControl17" ControlName="SwitchControl17">
+        <Property Name="Name">SwitchControl17</Property>
+        <Property Name="Size">32, 32</Property>
+        <Property Name="Location">132, 93</Property>
+        <Property Name="StateCnt">2</Property>
+        <Property Name="SwitchValues">1;2;0;1</Property>
+        <Property Name="SwitchValuesRx">1;2;0;1</Property>
+        <Property Name="SwitchValuesVT">1;2;0/Lower/0;1/Lower/1</Property>
+        <Property Name="SwitchValuesVTXml">&lt;Version&gt;2&lt;/Version&gt;&lt;Count&gt;2&lt;/Count&gt;&lt;RxValue&gt;0&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;0&lt;/TxValue&gt;&lt;RxValue&gt;1&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;1&lt;/TxValue&gt;</Property>
+        <Property Name="IsButton">True</Property>
+        <Property Name="ImageFile">Bitmaps\WindowDown.bmp</Property>
+        <Property Name="SymbolConfiguration">1;2;comfort;;WindowControl;KeyDown</Property>
+        <Property Name="TabIndex">17</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.SwitchControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null" Name="SwitchControl22" ControlName="SwitchControl22">
+        <Property Name="Name">SwitchControl22</Property>
+        <Property Name="Size">32, 32</Property>
+        <Property Name="Location">11, 25</Property>
+        <Property Name="StateCnt">2</Property>
+        <Property Name="Activation">Left</Property>
+        <Property Name="SwitchValues">1;2;0;2</Property>
+        <Property Name="SwitchValuesRx">1;2;0;2</Property>
+        <Property Name="SwitchValuesVT">1;2;0/Lower/0;2/Lower/2</Property>
+        <Property Name="SwitchValuesVTXml">&lt;Version&gt;2&lt;/Version&gt;&lt;Count&gt;2&lt;/Count&gt;&lt;RxValue&gt;0&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;0&lt;/TxValue&gt;&lt;RxValue&gt;2&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;2&lt;/TxValue&gt;</Property>
+        <Property Name="IsButton">True</Property>
+        <Property Name="ImageFile">Bitmaps\ActionUnlock.bmp</Property>
+        <Property Name="SymbolConfiguration">1;2;comfort;;LockingRemoteControlRequest;LockRequest</Property>
+        <Property Name="TabIndex">22</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.SwitchControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null" Name="SwitchControl18" ControlName="SwitchControl18">
+        <Property Name="Name">SwitchControl18</Property>
+        <Property Name="Size">32, 30</Property>
+        <Property Name="Location">132, 64</Property>
+        <Property Name="StateCnt">2</Property>
+        <Property Name="SwitchValues">1;2;0;1</Property>
+        <Property Name="SwitchValuesRx">1;2;0;1</Property>
+        <Property Name="SwitchValuesVT">1;2;0/Lower/0;1/Lower/1</Property>
+        <Property Name="SwitchValuesVTXml">&lt;Version&gt;2&lt;/Version&gt;&lt;Count&gt;2&lt;/Count&gt;&lt;RxValue&gt;0&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;0&lt;/TxValue&gt;&lt;RxValue&gt;1&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;1&lt;/TxValue&gt;</Property>
+        <Property Name="IsButton">True</Property>
+        <Property Name="ImageFile">Bitmaps\WindowUp.bmp</Property>
+        <Property Name="SymbolConfiguration">1;2;comfort;;WindowControl;KeyUp</Property>
+        <Property Name="TabIndex">18</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.SwitchControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null" Name="SwitchControl21" ControlName="SwitchControl21">
+        <Property Name="Name">SwitchControl21</Property>
+        <Property Name="Size">32, 32</Property>
+        <Property Name="Location">11, 58</Property>
+        <Property Name="StateCnt">2</Property>
+        <Property Name="Activation">Left</Property>
+        <Property Name="SwitchValues">1;2;0;1</Property>
+        <Property Name="SwitchValuesRx">1;2;0;1</Property>
+        <Property Name="SwitchValuesVT">1;2;0/Lower/0;1/Lower/1</Property>
+        <Property Name="SwitchValuesVTXml">&lt;Version&gt;2&lt;/Version&gt;&lt;Count&gt;2&lt;/Count&gt;&lt;RxValue&gt;0&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;0&lt;/TxValue&gt;&lt;RxValue&gt;1&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;1&lt;/TxValue&gt;</Property>
+        <Property Name="IsButton">True</Property>
+        <Property Name="ImageFile">Bitmaps\ActionLock.bmp</Property>
+        <Property Name="SymbolConfiguration">1;2;comfort;;LockingRemoteControlRequest;LockRequest</Property>
+        <Property Name="TabIndex">21</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl20" Children="Controls" ControlName="StaticTextControl20">
+        <Property Name="Name">StaticTextControl20</Property>
+        <Property Name="Size">60, 13</Property>
+        <Property Name="Location">49, 65</Property>
+        <Property Name="Text">Close car</Property>
+      </Object>
+      <Property Name="Name">GroupBoxControl31</Property>
+      <Property Name="Size">191, 137</Property>
+      <Property Name="Location">6, 3</Property>
+      <Property Name="Text">Sensors</Property>
+      <Property Name="TabIndex">31</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.GroupBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null" Name="GroupBoxControl32" Children="Controls" ControlName="GroupBoxControl32">
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl3" Children="Controls" ControlName="Static Text 2">
+        <Property Name="Name">StaticTextControl3</Property>
+        <Property Name="Size">85, 13</Property>
+        <Property Name="Location">229, 19</Property>
+        <Property Name="Text">Window Lifts:</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.CheckBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null" Name="CheckBoxControl3" Children="Controls" ControlName="Check Box 3">
+        <Property Name="Name">CheckBoxControl3</Property>
+        <Property Name="Size">180, 30</Property>
+        <Property Name="Location">234, 74</Property>
+        <Property Name="CheckAlign">TopLeft</Property>
+        <Property Name="Text">Comfort close can't be stopped 
+by remote control</Property>
+        <Property Name="SymbolConfiguration">4;16;SystemUnderTest;;;ErrorInWindowApplication;1;;;-1</Property>
+        <Property Name="TabIndex">42</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl2" Children="Controls" ControlName="Static Text 1">
+        <Property Name="Name">StaticTextControl2</Property>
+        <Property Name="Size">128, 13</Property>
+        <Property Name="Location">11, 19</Property>
+        <Property Name="Text">Central Locking System:</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.CheckBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null" Name="CheckBoxControl4" Children="Controls" ControlName="Check Box 4">
+        <Property Name="Name">CheckBoxControl4</Property>
+        <Property Name="Size">180, 30</Property>
+        <Property Name="Location">234, 38</Property>
+        <Property Name="CheckAlign">TopLeft</Property>
+        <Property Name="Text">Do not check window control 
+against illegal commands</Property>
+        <Property Name="SymbolConfiguration">4;16;SystemUnderTest;;;ErrorKeyUpAndDownError;1;;;-1</Property>
+        <Property Name="TabIndex">41</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.CheckBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null" Name="CheckBoxControl1" Children="Controls" ControlName="Check Box 1">
+        <Property Name="Name">CheckBoxControl1</Property>
+        <Property Name="Size">185, 30</Property>
+        <Property Name="Location">16, 74</Property>
+        <Property Name="CheckAlign">TopLeft</Property>
+        <Property Name="Text">Do not track crash state on 
+velocity change</Property>
+        <Property Name="SymbolConfiguration">4;16;SystemUnderTest;;;ErrorCrashSensorOnVelocity;1;;;-1</Property>
+        <Property Name="TabIndex">40</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.CheckBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null" Name="CheckBoxControl2" Children="Controls" ControlName="Check Box 2">
+        <Property Name="Name">CheckBoxControl2</Property>
+        <Property Name="Size">185, 30</Property>
+        <Property Name="Location">16, 38</Property>
+        <Property Name="CheckAlign">TopLeft</Property>
+        <Property Name="Text">Open on crash even if engine is 
+not running</Property>
+        <Property Name="SymbolConfiguration">4;16;SystemUnderTest;;;ErrorInCrashSensorUsage;1;;;-1</Property>
+        <Property Name="TabIndex">39</Property>
+      </Object>
+      <Property Name="Name">GroupBoxControl32</Property>
+      <Property Name="Size">445, 109</Property>
+      <Property Name="Location">6, 144</Property>
+      <Property Name="Text">Error Simulation</Property>
+      <Property Name="TabIndex">32</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.GroupBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null" Name="GroupBoxControl35" Children="Controls" ControlName="GroupBoxControl35">
+      <Object Type="Vector.CANalyzer.Panels.Design.SwitchControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null" Name="SwitchControlBSI27" ControlName="SwitchControlBSI27">
+        <Property Name="Name">SwitchControlBSI27</Property>
+        <Property Name="Size">300, 85</Property>
+        <Property Name="Location">6, 19</Property>
+        <Property Name="StateCnt">17</Property>
+        <Property Name="SwitchValues">1;17;0;1;2;3;4;5;6;7;8;9;10;11;12;13;14;15;16</Property>
+        <Property Name="SwitchValuesRx">1;17;0;1;2;3;4;5;6;7;8;9;10;11;12;13;14;15;16</Property>
+        <Property Name="SwitchValuesVT">1;17;0/Lower/0;1/Lower/1;2/Lower/2;3/Lower/3;4/Lower/4;5/Lower/5;6/Lower/6;7/Lower/7;8/Lower/8;9/Lower/9;10/Lower/10;11/Lower/11;12/Lower/12;13/Lower/13;14/Lower/14;15/Lower/15;16/Lower/16</Property>
+        <Property Name="SwitchValuesVTXml">&lt;Version&gt;2&lt;/Version&gt;&lt;Count&gt;17&lt;/Count&gt;&lt;RxValue&gt;0&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;0&lt;/TxValue&gt;&lt;RxValue&gt;1&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;1&lt;/TxValue&gt;&lt;RxValue&gt;2&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;2&lt;/TxValue&gt;&lt;RxValue&gt;3&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;3&lt;/TxValue&gt;&lt;RxValue&gt;4&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;4&lt;/TxValue&gt;&lt;RxValue&gt;5&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;5&lt;/TxValue&gt;&lt;RxValue&gt;6&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;6&lt;/TxValue&gt;&lt;RxValue&gt;7&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;7&lt;/TxValue&gt;&lt;RxValue&gt;8&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;8&lt;/TxValue&gt;&lt;RxValue&gt;9&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;9&lt;/TxValue&gt;&lt;RxValue&gt;10&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;10&lt;/TxValue&gt;&lt;RxValue&gt;11&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;11&lt;/TxValue&gt;&lt;RxValue&gt;12&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;12&lt;/TxValue&gt;&lt;RxValue&gt;13&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;13&lt;/TxValue&gt;&lt;RxValue&gt;14&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;14&lt;/TxValue&gt;&lt;RxValue&gt;15&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;15&lt;/TxValue&gt;&lt;RxValue&gt;16&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;16&lt;/TxValue&gt;</Property>
+        <Property Name="ImageFile">Bitmaps\Windowsleft.bmp</Property>
+        <Property Name="SymbolConfiguration">1;2;comfort;;WindowState;WindowPosition</Property>
+        <Property Name="TabIndex">27</Property>
+        <Property Name="ReadOnlyControl">True</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl1" Children="Controls" ControlName="StaticTextControl1">
+        <Property Name="Name">StaticTextControl1</Property>
+        <Property Name="Size">65, 13</Property>
+        <Property Name="Location">351, 20</Property>
+        <Property Name="Text">Lock state</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null" Name="TextBoxControl1" Children="Controls" ControlName="Input/Output Box">
+        <Property Name="Name">TextBoxControl1</Property>
+        <Property Name="Size">57, 20</Property>
+        <Property Name="Location">351, 79</Property>
+        <Property Name="AlarmUpperTextColor">WindowText</Property>
+        <Property Name="ValueDecimalPlaces">0</Property>
+        <Property Name="AlarmLowerBkgColor">Salmon</Property>
+        <Property Name="BoxTextAlign">Center</Property>
+        <Property Name="ValueDisplay">Symbolic</Property>
+        <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+        <Property Name="AlarmLowerTextColor">WindowText</Property>
+        <Property Name="AlarmGeneralSettings">1;3;0;1</Property>
+        <Property Name="DisplayLabel">Hide</Property>
+        <Property Name="DescriptionText">LockState:</Property>
+        <Property Name="ValueType">RawValue</Property>
+        <Property Name="BoxBorderStyle">FixedSingle</Property>
+        <Property Name="DescriptionSize">0, 0</Property>
+        <Property Name="SymbolConfiguration">4;2;comfort;SUT;CentralLockingSystemState;LockState;0;CAN;;-1</Property>
+        <Property Name="TabIndex">40</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.SwitchControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null" Name="SwitchControl26" ControlName="SwitchControl26">
+        <Property Name="Name">SwitchControl26</Property>
+        <Property Name="Size">40, 39</Property>
+        <Property Name="Location">359, 38</Property>
+        <Property Name="StateCnt">2</Property>
+        <Property Name="SwitchValues">1;2;1;0</Property>
+        <Property Name="SwitchValuesRx">1;2;1;0</Property>
+        <Property Name="SwitchValuesVT">1;2;1/Lower/1;0/Lower/0</Property>
+        <Property Name="SwitchValuesVTXml">&lt;Version&gt;2&lt;/Version&gt;&lt;Count&gt;2&lt;/Count&gt;&lt;RxValue&gt;1&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;1&lt;/TxValue&gt;&lt;RxValue&gt;0&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;0&lt;/TxValue&gt;</Property>
+        <Property Name="ImageFile">Bitmaps\LockUnlock.bmp</Property>
+        <Property Name="SymbolConfiguration">1;2;comfort;;CentralLockingSystemState;LockState</Property>
+        <Property Name="TabIndex">26</Property>
+      </Object>
+      <Property Name="Name">GroupBoxControl35</Property>
+      <Property Name="Size">445, 114</Property>
+      <Property Name="Location">6, 259</Property>
+      <Property Name="Text">Actors</Property>
+      <Property Name="TabIndex">35</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.GroupBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null" Name="GroupBoxControl30" Children="Controls" ControlName="GroupBoxControl30">
+      <Object Type="Vector.CANalyzer.Panels.Design.MeterControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null" Name="MeterControl1" ControlName="Meter">
+        <Property Name="Name">MeterControl1</Property>
+        <Property Name="Size">161, 101</Property>
+        <Property Name="Location">96, 44</Property>
+        <Property Name="ScaleMax">220</Property>
+        <Property Name="SweepAngleFrom">-110</Property>
+        <Property Name="SweepAngleTo">110</Property>
+        <Property Name="SymbolConfiguration">4;2;comfort;SUT_Driver;VehicleMotion;Velocity;0;CAN;;-1</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.PictureBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null" Name="PictureBoxControl1" ControlName="Picture Box">
+        <Property Name="Name">PictureBoxControl1</Property>
+        <Property Name="Size">133, 101</Property>
+        <Property Name="Location">111, 23</Property>
+        <Property Name="TransparentColor">PowderBlue</Property>
+        <Property Name="ImageFile">Bitmaps\Tacho.png</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl16" Children="Controls" ControlName="StaticTextControl16">
+        <Property Name="Name">StaticTextControl16</Property>
+        <Property Name="Size">65, 26</Property>
+        <Property Name="Location">41, 61</Property>
+        <Property Name="Text">Speed up, 
+slow down</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.SwitchControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null" Name="SwitchControl12" ControlName="SwitchControl12">
+        <Property Name="Name">SwitchControl12</Property>
+        <Property Name="Size">25, 25</Property>
+        <Property Name="Location">9, 75</Property>
+        <Property Name="StateCnt">2</Property>
+        <Property Name="Activation">Left</Property>
+        <Property Name="SwitchValues">1;2;0;1</Property>
+        <Property Name="SwitchValuesRx">1;2;0;1</Property>
+        <Property Name="SwitchValuesVT">1;2;0/Lower/0;1/Lower/1</Property>
+        <Property Name="SwitchValuesVTXml">&lt;Version&gt;2&lt;/Version&gt;&lt;Count&gt;2&lt;/Count&gt;&lt;RxValue&gt;0&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;0&lt;/TxValue&gt;&lt;RxValue&gt;1&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;1&lt;/TxValue&gt;</Property>
+        <Property Name="IsButton">True</Property>
+        <Property Name="ImageFile">Bitmaps\ButtonQuadraticMinus.png</Property>
+        <Property Name="SymbolConfiguration">4;16;SystemUnderTest;;;Decelerate;1;;;-1</Property>
+        <Property Name="TabIndex">12</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl14" Children="Controls" ControlName="StaticTextControl14">
+        <Property Name="Name">StaticTextControl14</Property>
+        <Property Name="Size">50, 13</Property>
+        <Property Name="Location">41, 26</Property>
+        <Property Name="Text">Engine</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.SwitchControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null" Name="SwitchControl13" ControlName="SwitchControl13">
+        <Property Name="Name">SwitchControl13</Property>
+        <Property Name="Size">25, 25</Property>
+        <Property Name="Location">9, 50</Property>
+        <Property Name="StateCnt">2</Property>
+        <Property Name="Activation">Left</Property>
+        <Property Name="SwitchValues">1;2;0;1</Property>
+        <Property Name="SwitchValuesRx">1;2;0;1</Property>
+        <Property Name="SwitchValuesVT">1;2;0/Lower/0;1/Lower/1</Property>
+        <Property Name="SwitchValuesVTXml">&lt;Version&gt;2&lt;/Version&gt;&lt;Count&gt;2&lt;/Count&gt;&lt;RxValue&gt;0&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;0&lt;/TxValue&gt;&lt;RxValue&gt;1&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;1&lt;/TxValue&gt;</Property>
+        <Property Name="IsButton">True</Property>
+        <Property Name="ImageFile">Bitmaps\ButtonQuadraticPlus.png</Property>
+        <Property Name="SymbolConfiguration">4;16;SystemUnderTest;;;Accelerate;1;;;-1</Property>
+        <Property Name="TabIndex">13</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl24" Children="Controls" ControlName="StaticTextControl24">
+        <Property Name="Name">StaticTextControl24</Property>
+        <Property Name="Size">45, 13</Property>
+        <Property Name="Location">41, 111</Property>
+        <Property Name="Text">Crash</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.SwitchControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null" Name="SwitchControl15" ControlName="SwitchControl15">
+        <Property Name="Name">SwitchControl15</Property>
+        <Property Name="Size">25, 25</Property>
+        <Property Name="Location">9, 20</Property>
+        <Property Name="StateCnt">2</Property>
+        <Property Name="Activation">Left</Property>
+        <Property Name="SwitchValues">1;2;0;1</Property>
+        <Property Name="SwitchValuesRx">1;2;0;1</Property>
+        <Property Name="SwitchValuesVT">1;2;0/Lower/0;1/Lower/1</Property>
+        <Property Name="SwitchValuesVTXml">&lt;Version&gt;2&lt;/Version&gt;&lt;Count&gt;2&lt;/Count&gt;&lt;RxValue&gt;0&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;0&lt;/TxValue&gt;&lt;RxValue&gt;1&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;1&lt;/TxValue&gt;</Property>
+        <Property Name="ImageFile">Bitmaps\ButtonQuadraticOffOn.png</Property>
+        <Property Name="SymbolConfiguration">1;2;comfort;;VehicleMotion;EngineRunning</Property>
+        <Property Name="TabIndex">15</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.SwitchControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null" Name="SwitchControl25" ControlName="SwitchControl25">
+        <Property Name="Name">SwitchControl25</Property>
+        <Property Name="Size">25, 25</Property>
+        <Property Name="Location">9, 105</Property>
+        <Property Name="StateCnt">2</Property>
+        <Property Name="Activation">Left</Property>
+        <Property Name="SwitchValues">1;2;0;1</Property>
+        <Property Name="SwitchValuesRx">1;2;0;1</Property>
+        <Property Name="SwitchValuesVT">1;2;0/Lower/0;1/Lower/1</Property>
+        <Property Name="SwitchValuesVTXml">&lt;Version&gt;2&lt;/Version&gt;&lt;Count&gt;2&lt;/Count&gt;&lt;RxValue&gt;0&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;0&lt;/TxValue&gt;&lt;RxValue&gt;1&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;1&lt;/TxValue&gt;</Property>
+        <Property Name="IsButton">True</Property>
+        <Property Name="ImageFile">Bitmaps\ButtonQuadraticFlash.png</Property>
+        <Property Name="SymbolConfiguration">1;2;comfort;;VehicleMotion;CrashDetected</Property>
+        <Property Name="TabIndex">25</Property>
+      </Object>
+      <Property Name="Name">GroupBoxControl30</Property>
+      <Property Name="Size">251, 136</Property>
+      <Property Name="Location">201, 3</Property>
+      <Property Name="Text">Environment Simulation</Property>
+      <Property Name="TabIndex">30</Property>
+    </Object>
+    <Property Name="Name">Panel</Property>
+    <Property Name="Size">459, 380</Property>
+    <Property Name="BackColor">White</Property>
+    <Property Name="Panel">Panel</Property>
+  </Object>
+</Panel>

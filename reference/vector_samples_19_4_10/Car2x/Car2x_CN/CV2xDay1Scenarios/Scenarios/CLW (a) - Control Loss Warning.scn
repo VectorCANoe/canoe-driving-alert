@@ -1,0 +1,65 @@
+<scenario name="my scenario" simtime="0" simtimemax="1200" version="1" timelinezoom="1" hscrolloffset="0">
+  <routes>
+    <route name="ScenarioDefinitionRoute" color="255" width="3">
+      <points>
+        <point x="31,2190875511267" y="121,433139402794" />
+        <point x="31,2172959523477" y="121,434005756306" />
+      </points>
+      <stations>
+        <station name="RV" offset="96" color="255" trackingid="1" length="0" width="0" height="0" stationtype="Undefined" hostvehicle="False">
+          <attribute name="Speed" trigger="true" defaultvalue="0">
+            <keypoints>
+              <keypoint time="0" value="50" />
+              <keypoint time="3" value="50" />
+              <keypoint time="6" value="0" />
+            </keypoints>
+          </attribute>
+          <attribute name="Events_Vehicle_Events_BSM " datatype="I" interpolation="const" trigger="true" defaultvalue="0">
+            <eventKey name="BasicSafetyMessage" protocol="BSM" scope="CN" />
+            <keypoints>
+              <keypoint time="0" value="0" />
+              <keypoint time="3" value="1" comment="Vehicle_Events_BSM  on" />
+              <keypoint time="6" value="0" comment="Vehicle_Events_BSM  off" />
+            </keypoints>
+            <attribute name="VehicleEventsFlags" datatype="I" interpolation="const" trigger="true" defaultvalue="0">
+              <keypoints>
+                <keypoint time="0" value="0" />
+                <keypoint time="3" value="156" comment="ABSactivated, TractionControlLoss, StabilityControlactivated, HardBraking" />
+                <keypoint time="6" value="0" />
+              </keypoints>
+            </attribute>
+            <attribute name="AntiLockBrake" datatype="I" interpolation="const" trigger="true" defaultvalue="0">
+              <keypoints>
+                <keypoint time="0" value="0" />
+                <keypoint time="3" value="2" comment="On" />
+                <keypoint time="6" value="0" />
+              </keypoints>
+            </attribute>
+            <attribute name="Traction" datatype="I" interpolation="const" trigger="true" defaultvalue="0">
+              <keypoints>
+                <keypoint time="0" value="0" />
+                <keypoint time="3" value="2" comment="On" />
+                <keypoint time="6" value="0" />
+              </keypoints>
+            </attribute>
+            <attribute name="Scs" datatype="I" interpolation="const" trigger="true" defaultvalue="0">
+              <keypoints>
+                <keypoint time="0" value="0" />
+                <keypoint time="3" value="2" comment="On" />
+                <keypoint time="6" value="0" />
+              </keypoints>
+            </attribute>
+          </attribute>
+        </station>
+        <station name="HV" offset="6" color="32768" trackingid="2" length="0" width="0" height="0" stationtype="Undefined" hostvehicle="False">
+          <attribute name="Speed" trigger="true" defaultvalue="0">
+            <keypoints>
+              <keypoint time="0" value="60" />
+            </keypoints>
+          </attribute>
+        </station>
+      </stations>
+    </route>
+  </routes>
+  <tapes />
+</scenario>

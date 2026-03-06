@@ -1,0 +1,27 @@
+version 2.0;
+
+namespace SampleDataControl
+{
+  enum ECGType
+  {
+     Without_Arrhythmia,
+     With_Arrhythmia
+  }
+
+  interface ISampleDataControl
+  {
+    internal data path testDataDirectory = "../TestData";
+    internal data bool startSendingSampleDataToSUT;
+    internal data bool stopSendingSampleDataToSUT;
+
+    internal data bool simulateEmergency;
+    internal data bool stopSimulatingEmergency;
+
+    internal data bool isEmergencySimulationRunning;
+
+    internal data ECGType simulationECGType;
+  }
+
+  ISampleDataControl SampleDataControl;
+
+}

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema  xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <!-- application attributes -->
+  <xs:complexType name="stats_application_type">
+		<xs:attribute name="id" type="xs:integer"/>
+		<xs:attribute name="major" type="xs:integer"/>
+		<xs:attribute name="minor" type="xs:integer"/>
+		<xs:attribute name="build" type="xs:integer"/>
+  </xs:complexType>
+
+  <!-- file attributes -->
+  <xs:complexType name="stats_file_type">
+		<xs:attribute name="version" type="xs:integer"/>
+		<xs:attribute name="file_size" type="xs:integer"/>
+		<xs:attribute name="uncompressed_size" type="xs:integer"/>
+		<xs:attribute name="compression" type="xs:integer"/>
+  </xs:complexType>
+  
+  <!-- measurement attributes -->
+  <xs:complexType name="measurement_type">
+		<xs:attribute name="start_time" type="xs:long"/>
+		<xs:attribute name="last_object_time" type="xs:long"/>
+		<xs:attribute name="object_count" type="xs:long"/>
+  </xs:complexType> 
+
+  
+  <!-- statistics elements -->
+  <xs:complexType name="statistics_type">
+    <xs:sequence>
+      <xs:element name="application" type="stats_application_type" minOccurs="1" maxOccurs="1"/>
+      <xs:element name="file" type="stats_file_type" minOccurs="1" maxOccurs="1"/>
+      <xs:element name="measurement" type="measurement_type" minOccurs="1" maxOccurs="1"/>
+    </xs:sequence>
+    <xs:attributeGroup ref="root_attributes"/>
+  </xs:complexType>
+
+  <!-- statistics element -->
+  <xs:element name="stats" type="statistics_type"/>
+
+</xs:schema>

@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<Panel Type="Vector.CANalyzer.Panels.PanelSerializer, Vector.CANalyzer.Panels.Serializer, Version=16.0.145.0, Culture=neutral, PublicKeyToken=null">
+  <Object Type="Vector.CANalyzer.Panels.Runtime.Panel, Vector.CANalyzer.Panels.Common, Version=16.0.145.0, Culture=neutral, PublicKeyToken=null" Name="Panel" Children="Controls" ControlName="SimpleEcgStimulationBar">
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=16.0.145.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl1" Children="Controls" ControlName="Static Text 1">
+      <Property Name="Name">StaticTextControl1</Property>
+      <Property Name="Size">126, 15</Property>
+      <Property Name="Location">10, 131</Property>
+      <Property Name="Text">Ecg_Sample_Stimulation</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.TrackBarControl, Vector.CANalyzer.Panels.CommonControls, Version=16.0.145.0, Culture=neutral, PublicKeyToken=null" Name="TrackBarControl1" Children="Controls" ControlName="Track Bar 1">
+      <Property Name="Name">TrackBarControl1</Property>
+      <Property Name="Size">54, 106</Property>
+      <Property Name="Location">50, 20</Property>
+      <Property Name="MaximumSize">54, 100000</Property>
+      <Property Name="DisplayMinMax">True</Property>
+      <Property Name="Orientation">Vertical</Property>
+      <Property Name="Minimum">-10</Property>
+      <Property Name="MinimumDouble">-10</Property>
+      <Property Name="SymbolConfiguration">8;4096;SmartECG;SmartECG_IO.ecgAmplitude;;1;1;;;-1;;;;;;16</Property>
+      <Property Name="TabIndex">0</Property>
+    </Object>
+    <Property Name="Name">Panel</Property>
+    <Property Name="Size">144, 171</Property>
+    <Property Name="BackColor">White</Property>
+  </Object>
+</Panel>

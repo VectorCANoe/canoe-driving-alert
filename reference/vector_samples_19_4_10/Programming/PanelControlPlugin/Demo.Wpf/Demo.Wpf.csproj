@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net48</TargetFramework>
+    <OutputType>Library</OutputType>
+    <AssemblyName>Demo_WPF</AssemblyName>
+    <UseWPF>true</UseWPF>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyVersion>1.1.2.0</AssemblyVersion>
+    <FileVersion>1.1.2.0</FileVersion>
+    <Version>1.1.2</Version>
+    <PackageId>Demo_WP</PackageId>
+    <Description>Sample how to imlement a plugin customer user control for the panel designer</Description>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Vector.PanelControlPlugin.Wpf">
+      <HintPath>..\Exec64\Vector.PanelControlPlugin.Wpf.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+</Project>

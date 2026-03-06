@@ -1,0 +1,56 @@
+/*@!Encoding:1252*/
+includes
+{
+  
+}
+
+variables
+{
+  
+}
+
+on pg GBT_27930_Charger.*
+{  
+  if (isSimulated())
+  {
+    pg * msg = {dlc = 1785};
+    
+    if (this.dlc > 8)
+      return;
+    
+    if (this.sa > 0xAA)
+      return;
+    
+//    if (this.pgn == 0x700)
+//      return;
+    
+    msg = this;
+    
+    msg.msgChannel = 2;
+    // msg.dir = rx; //code has no effect
+    output(msg);
+  }
+}
+
+on pg GBT_27930_BMS.*
+{  
+  if (isSimulated())
+  {
+    pg * msg = {dlc = 1785};
+    
+    if (this.dlc > 8)
+      return;
+    
+    if (this.sa < 0xAA)
+      return;
+    
+//    if (this.pgn == 0x700)
+//      return;
+  
+    msg = this;
+    
+    msg.msgChannel = 1;
+    // msg.dir = rx; //code has no effect
+    output(msg);
+  }
+}

@@ -1,0 +1,190 @@
+version: 19.0.0
+modules:
+  - type: 1004
+    interface: 5
+    vdid: 9fcdb17cd34578cc10e91ff4fa4afc4b00000000
+    module-channel:
+      name: VT1004
+      active-values:
+        - name: var_Toggle_Bit
+          cycle-time: 1ms
+        - name: var_AddVoltage_check
+          cycle-time: 100ms
+        - name: var_Counter_Value
+          cycle-time: 100ms
+    channels:
+      - name: VT1004_Ch1
+        active-values:
+          - name: Avg128us
+            cycle-time: 100ms
+            integration-time: 100ms
+          - name: var_Comparator
+            cycle-time: 100ms
+      - name: VT1004_Ch2
+        active-values:
+          - name: var_AddVoltage_Input
+            cycle-time: 100ms
+      - name: VT1004_Ch3
+      - name: VT1004_Ch4
+  - type: 2004
+    interface: 7
+    vdid: eada9971bacfa8f9cf4ec6d4cb5e323e00000000
+    module-channel:
+      name: VT2004
+      active-values:
+        - name: var_Toggle_Bit
+          cycle-time: 10ms
+        - name: var_Counter_Value
+          cycle-time: 10ms
+    channels:
+      - name: VT2004_Ch1
+      - name: VT2004_Ch2
+      - name: VT2004_Ch3
+      - name: VT2004_Ch4
+  - type: 2516
+    interface: 2
+    vdid: 9fcdb17cd34578cc10e91ff4fa4afc4b00000000
+    module-channel:
+      name: VT2516
+      active-values:
+        - name: var_Toggle_Bit
+          cycle-time: 1ms
+        - name: var_AddVoltage_check
+          cycle-time: 100ms
+        - name: var_Counter_Value
+          cycle-time: 100ms
+    channels:
+      - name: VT2516_Ch1
+        active-values:
+          - name: Avg
+            cycle-time: 100ms
+            integration-time: 100ms
+          - name: var_Comparator
+            cycle-time: 100ms
+      - name: VT2516_Ch2
+        active-values:
+          - name: var_AddVoltage_Input
+            cycle-time: 100ms
+          - name: Avg
+            cycle-time: 100ms
+            integration-time: 100ms
+      - name: VT2516_Ch3
+      - name: VT2516_Ch4
+      - name: VT2516_Ch5
+      - name: VT2516_Ch6
+      - name: VT2516_Ch7
+      - name: VT2516_Ch8
+      - name: VT2516_Ch9
+      - name: VT2516_Ch10
+      - name: VT2516_Ch11
+      - name: VT2516_Ch12
+      - name: VT2516_Ch13
+      - name: VT2516_Ch14
+      - name: VT2516_Ch15
+      - name: VT2516_Ch16
+  - type: 2816
+    interface: 3
+    vdid: 512bbfdb027221d215dbba3dea90ef0900000000
+    module-channel:
+      name: VT2816
+      active-values:
+        - name: var_Toggle_Bit
+          cycle-time: 1ms
+        - name: var_AddVoltage_check
+          cycle-time: 100ms
+        - name: var_Counter_Value
+          cycle-time: 100ms
+    channels:
+      - name: VT2816_Ch1
+        active-values:
+          - name: AvgVoltage
+            cycle-time: 100ms
+            integration-time: 100ms
+          - name: var_Comparator
+            cycle-time: 100ms
+      - name: VT2816_Ch2
+      - name: VT2816_Ch3
+      - name: VT2816_Ch4
+      - name: VT2816_Ch5
+      - name: VT2816_Ch6
+      - name: VT2816_Ch7
+      - name: VT2816_Ch8
+      - name: VT2816_Ch9
+      - name: VT2816_Ch10
+      - name: VT2816_Ch11
+      - name: VT2816_Ch12
+      - name: VT2816_Ch13
+      - name: VT2816_Ch14
+      - name: VT2816_Ch15
+      - name: VT2816_Ch16
+        active-values:
+          - name: var_AddVoltage_Input
+            cycle-time: 100ms
+  - type: 2848
+    interface: 2
+    vdid: f0375bdcaf79b6ebd040956ffa2cb34100000000
+    module-channel:
+      name: VT2848
+      active-values:
+        - name: var_Counter_Value
+          cycle-time: 100ms
+        - name: var_Toggle_Bit
+          cycle-time: 1ms
+    channels:
+      - name: VT2848_Ch1
+        active-values:
+          - name: Bits
+            cycle-time: 100ms
+          - name: CurBit
+            cycle-time: 100ms
+          - name: var_Comparator
+            cycle-time: 100ms
+      - name: VT2848_Ch2
+      - name: VT2848_Ch3
+      - name: VT2848_Ch4
+      - name: VT2848_Ch5
+      - name: VT2848_Ch6
+      - name: VT2848_Ch7
+      - name: VT2848_Ch8
+      - name: VT2848_Ch9
+      - name: VT2848_Ch10
+      - name: VT2848_Ch11
+      - name: VT2848_Ch12
+      - name: VT2848_Ch13
+      - name: VT2848_Ch14
+      - name: VT2848_Ch15
+      - name: VT2848_Ch16
+      - name: VT2848_Ch17
+      - name: VT2848_Ch18
+      - name: VT2848_Ch19
+      - name: VT2848_Ch20
+      - name: VT2848_Ch21
+      - name: VT2848_Ch22
+      - name: VT2848_Ch23
+      - name: VT2848_Ch24
+      - name: VT2848_Ch25
+      - name: VT2848_Ch26
+      - name: VT2848_Ch27
+      - name: VT2848_Ch28
+      - name: VT2848_Ch29
+      - name: VT2848_Ch30
+      - name: VT2848_Ch31
+      - name: VT2848_Ch32
+      - name: VT2848_Ch33
+      - name: VT2848_Ch34
+      - name: VT2848_Ch35
+      - name: VT2848_Ch36
+      - name: VT2848_Ch37
+      - name: VT2848_Ch38
+      - name: VT2848_Ch39
+      - name: VT2848_Ch40
+      - name: VT2848_Ch41
+      - name: VT2848_Ch42
+      - name: VT2848_Ch43
+      - name: VT2848_Ch44
+      - name: VT2848_Ch45
+      - name: VT2848_Ch46
+      - name: VT2848_Ch47
+      - name: VT2848_Ch48
+vts-control-window:
+  serialized-config: rack[12];mapping[0,0,0];mapping[1,0,1];mapping[2,0,2];mapping[3,0,3];mapping[4,0,4];

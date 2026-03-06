@@ -1,0 +1,352 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Panel Type="Vector.CANalyzer.Panels.PanelSerializer, Vector.CANalyzer.Panels.Serializer, Version=19.2.76.0, Culture=neutral, PublicKeyToken=null">
+  <Object Type="Vector.CANalyzer.Panels.Runtime.Panel, Vector.CANalyzer.Panels.Common, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Panel" ControlName="Charging Station Setup">
+    <Object Type="Vector.CANalyzer.Panels.Design.GroupBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X7575b20ae1890e422dead42e0b19d0d22ae8" ControlName="Group Box 2">
+      <Object Type="Vector.CANalyzer.Panels.Design.GroupBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X7626c2d5ed42ce43e0eacc8ee19ccb01c701" ControlName="Group Box 4">
+        <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xcea810b9ebe2fe4037e9493e848772e9cc24" ControlName="Static Text 25">
+          <Property Name="Name">Xcea810b9ebe2fe4037e9493e848772e9cc24</Property>
+          <Property Name="Size">20, 18</Property>
+          <Property Name="Location">281, 66</Property>
+          <Property Name="TextAlign">MiddleLeft</Property>
+          <Property Name="ResizeAutomatically">False</Property>
+          <Property Name="Text">A</Property>
+        </Object>
+        <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X2839e217e211ce4432e8d84ec90352f147ee" ControlName="Static Text 24">
+          <Property Name="Name">X2839e217e211ce4432e8d84ec90352f147ee</Property>
+          <Property Name="Size">20, 18</Property>
+          <Property Name="Location">281, 90</Property>
+          <Property Name="TextAlign">MiddleLeft</Property>
+          <Property Name="ResizeAutomatically">False</Property>
+          <Property Name="Text">A</Property>
+        </Object>
+        <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X1bda4574e7bd8e4f8de9315e88f81bcd3c5b" ControlName="Static Text 23">
+          <Property Name="Name">X1bda4574e7bd8e4f8de9315e88f81bcd3c5b</Property>
+          <Property Name="Size">20, 18</Property>
+          <Property Name="Location">281, 42</Property>
+          <Property Name="TextAlign">MiddleLeft</Property>
+          <Property Name="ResizeAutomatically">False</Property>
+          <Property Name="Text">V</Property>
+        </Object>
+        <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xa0967a99e4de5e463de8f09ec461fe35c517" ControlName="Static Text 20">
+          <Property Name="Name">Xa0967a99e4de5e463de8f09ec461fe35c517</Property>
+          <Property Name="Size">20, 18</Property>
+          <Property Name="Location">281, 18</Property>
+          <Property Name="TextAlign">MiddleLeft</Property>
+          <Property Name="ResizeAutomatically">False</Property>
+          <Property Name="Text">V</Property>
+        </Object>
+        <Object Type="Vector.CANalyzer.Panels.Design.NumericUpDownControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xa37ef969e0886e484ae8ac3e6e5c683fb012" ControlName="Numeric Up/Down 11">
+          <Property Name="Name">Xa37ef969e0886e484ae8ac3e6e5c683fb012</Property>
+          <Property Name="Size">57, 18</Property>
+          <Property Name="Location">225, 90</Property>
+          <Property Name="TextAlign">Center</Property>
+          <Property Name="DecimalPlaces">1</Property>
+          <Property Name="Increment">10</Property>
+          <Property Name="Maximum">650</Property>
+          <Property Name="TabIndex">5</Property>
+          <Property Name="SymbolConfiguration">8;16;GBT27930::Charger::ChargingDischarging;;;MinDischargingCurrent;2;;;-1;;;Value;;;0</Property>
+        </Object>
+        <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X149d54b4e81abe4983e9762ea272b2102c63" ControlName="Static Text 18">
+          <Property Name="Name">X149d54b4e81abe4983e9762ea272b2102c63</Property>
+          <Property Name="Size">205, 18</Property>
+          <Property Name="Location">14, 90</Property>
+          <Property Name="TextAlign">MiddleLeft</Property>
+          <Property Name="ResizeAutomatically">False</Property>
+          <Property Name="Text">Min Discharge Current:</Property>
+        </Object>
+        <Object Type="Vector.CANalyzer.Panels.Design.NumericUpDownControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X960ccd8ae5d20e4ecbebcbee6dea527e0f51" ControlName="Numeric Up/Down 9">
+          <Property Name="Name">X960ccd8ae5d20e4ecbebcbee6dea527e0f51</Property>
+          <Property Name="Size">57, 18</Property>
+          <Property Name="Location">225, 66</Property>
+          <Property Name="TextAlign">Center</Property>
+          <Property Name="DecimalPlaces">1</Property>
+          <Property Name="Increment">10</Property>
+          <Property Name="Maximum">6500</Property>
+          <Property Name="TabIndex">3</Property>
+          <Property Name="SymbolConfiguration">8;16;GBT27930::Charger::ChargingDischarging;;;MaxDischargingCurrent;2;;;-1;;;Value;;;0</Property>
+        </Object>
+        <Object Type="Vector.CANalyzer.Panels.Design.NumericUpDownControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xa8a79d57eb61ce447fead7ee745575c764be" ControlName="Numeric Up/Down 8">
+          <Property Name="Name">Xa8a79d57eb61ce447fead7ee745575c764be</Property>
+          <Property Name="Size">57, 18</Property>
+          <Property Name="Location">225, 42</Property>
+          <Property Name="TextAlign">Center</Property>
+          <Property Name="DecimalPlaces">1</Property>
+          <Property Name="Increment">10</Property>
+          <Property Name="Maximum">6500</Property>
+          <Property Name="TabIndex">2</Property>
+          <Property Name="SymbolConfiguration">8;16;GBT27930::Charger::ChargingDischarging;;;MinDischargingVoltage;2;;;-1;;;Value;;;0</Property>
+        </Object>
+        <Object Type="Vector.CANalyzer.Panels.Design.NumericUpDownControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X373f556ce0e0de433be9e4cee9429cdfa3b3" ControlName="Numeric Up/Down 7">
+          <Property Name="Name">X373f556ce0e0de433be9e4cee9429cdfa3b3</Property>
+          <Property Name="Size">57, 18</Property>
+          <Property Name="Location">225, 18</Property>
+          <Property Name="TextAlign">Center</Property>
+          <Property Name="DecimalPlaces">1</Property>
+          <Property Name="Increment">10</Property>
+          <Property Name="Maximum">6500</Property>
+          <Property Name="TabIndex">1</Property>
+          <Property Name="SymbolConfiguration">8;16;GBT27930::Charger::ChargingDischarging;;;MaxDischargingVoltage;2;;;-1;;;Value;;;0</Property>
+        </Object>
+        <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xd9e12147eab39e4a92eaea9ea6e796702812" ControlName="Static Text 22">
+          <Property Name="Name">Xd9e12147eab39e4a92eaea9ea6e796702812</Property>
+          <Property Name="Size">184, 18</Property>
+          <Property Name="Location">14, 66</Property>
+          <Property Name="TextAlign">MiddleLeft</Property>
+          <Property Name="ResizeAutomatically">False</Property>
+          <Property Name="Text">Max Discharge Current:
+</Property>
+        </Object>
+        <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xb439f80aed01fe40ffea288e8d14dfd34b25" ControlName="Static Text 21">
+          <Property Name="Name">Xb439f80aed01fe40ffea288e8d14dfd34b25</Property>
+          <Property Name="Size">125, 18</Property>
+          <Property Name="Location">14, 42</Property>
+          <Property Name="TextAlign">MiddleLeft</Property>
+          <Property Name="ResizeAutomatically">False</Property>
+          <Property Name="Text">Min Discharge Voltage:</Property>
+        </Object>
+        <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X2a141f31eeb3ae4de9e85e0e7d4619479f84" ControlName="Static Text 17">
+          <Property Name="Name">X2a141f31eeb3ae4de9e85e0e7d4619479f84</Property>
+          <Property Name="Size">130, 18</Property>
+          <Property Name="Location">14, 18</Property>
+          <Property Name="TextAlign">MiddleLeft</Property>
+          <Property Name="ResizeAutomatically">False</Property>
+          <Property Name="Text">Max Discharge Voltage:</Property>
+        </Object>
+        <Property Name="Name">X7626c2d5ed42ce43e0eacc8ee19ccb01c701</Property>
+        <Property Name="Size">376, 125</Property>
+        <Property Name="Location">5, 174</Property>
+        <Property Name="Text">Discharging</Property>
+        <Property Name="TabIndex">10</Property>
+        <Property Name="UseWindowsStyle">False</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.GroupBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X32678379edf91e4731eb739e74da1a610297" ControlName="Group Box 3">
+        <Object Type="Vector.CANalyzer.Panels.Design.CheckBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X7cb27c73ee956e468cebd65e2e0200f67be4" ControlName="Check Box 1">
+          <Property Name="Name">X7cb27c73ee956e468cebd65e2e0200f67be4</Property>
+          <Property Name="Size">73, 16</Property>
+          <Property Name="Location">298, 116</Property>
+          <Property Name="CheckAlign">BottomLeft</Property>
+          <Property Name="TextAlign">BottomLeft</Property>
+          <Property Name="Text">Unlimited</Property>
+          <Property Name="TabIndex">14</Property>
+          <Property Name="SymbolConfiguration">8;16;GBT27930::Charger::ChargingDischarging;;;UnlimitedRestarts;1;;;-1;;;Value;;;0</Property>
+        </Object>
+        <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X5d2938e4ece6be44efe8acaea98e5fb140af" ControlName="Static Text 10">
+          <Property Name="Name">X5d2938e4ece6be44efe8acaea98e5fb140af</Property>
+          <Property Name="Size">20, 18</Property>
+          <Property Name="Location">281, 20</Property>
+          <Property Name="TextAlign">MiddleLeft</Property>
+          <Property Name="BackColor">White</Property>
+          <Property Name="Text">V</Property>
+        </Object>
+        <Object Type="Vector.CANalyzer.Panels.Design.NumericUpDownControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X315017a9e3f33e4596e9b89ea111cff7274e" ControlName="Numeric Up/Down 1">
+          <Property Name="Name">X315017a9e3f33e4596e9b89ea111cff7274e</Property>
+          <Property Name="Size">57, 18</Property>
+          <Property Name="Location">225, 20</Property>
+          <Property Name="TextAlign">Center</Property>
+          <Property Name="DecimalPlaces">1</Property>
+          <Property Name="Increment">10</Property>
+          <Property Name="Maximum">6500</Property>
+          <Property Name="TabIndex">13</Property>
+          <Property Name="SymbolConfiguration">8;16;GBT27930::Charger::ChargingDischarging;;;MaxVoltage;2;;;-1;;;Value;;;0</Property>
+        </Object>
+        <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X75cc631ee822de47f7e92b3e770a82dbe214" ControlName="Static Text 14">
+          <Property Name="Name">X75cc631ee822de47f7e92b3e770a82dbe214</Property>
+          <Property Name="Size">34, 18</Property>
+          <Property Name="Location">281, 68</Property>
+          <Property Name="TextAlign">MiddleLeft</Property>
+          <Property Name="ResizeAutomatically">False</Property>
+          <Property Name="Text">A</Property>
+        </Object>
+        <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X6cd7df8fe855ae4b2de8c09e6fe5a9014d1b" ControlName="Static Text 12">
+          <Property Name="Name">X6cd7df8fe855ae4b2de8c09e6fe5a9014d1b</Property>
+          <Property Name="Size">20, 18</Property>
+          <Property Name="Location">281, 44</Property>
+          <Property Name="TextAlign">MiddleLeft</Property>
+          <Property Name="ResizeAutomatically">False</Property>
+          <Property Name="Text">V</Property>
+        </Object>
+        <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X1e4f8e89ea2e2e433debaace1c8f6149c7eb" ControlName="Static Text 11">
+          <Property Name="Name">X1e4f8e89ea2e2e433debaace1c8f6149c7eb</Property>
+          <Property Name="Size">20, 18</Property>
+          <Property Name="Location">281, 92</Property>
+          <Property Name="TextAlign">MiddleLeft</Property>
+          <Property Name="ResizeAutomatically">False</Property>
+          <Property Name="Text">A</Property>
+        </Object>
+        <Object Type="Vector.CANalyzer.Panels.Design.NumericUpDownControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X475a12f7e7002e4863eb8e6e06c1b538dcbb" ControlName="Numeric Up/Down 5">
+          <Property Name="Name">X475a12f7e7002e4863eb8e6e06c1b538dcbb</Property>
+          <Property Name="Size">57, 18</Property>
+          <Property Name="Location">225, 116</Property>
+          <Property Name="TextAlign">Center</Property>
+          <Property Name="Maximum">6500</Property>
+          <Property Name="TabIndex">11</Property>
+          <Property Name="SymbolConfiguration">8;16;GBT27930::Charger::ChargingDischarging;;;MaxRestarts;1;;;-1;;;Value;;;0</Property>
+        </Object>
+        <Object Type="Vector.CANalyzer.Panels.Design.NumericUpDownControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X2affd455e3a15e4209ea6bfecb32be2910d4" ControlName="Numeric Up/Down 4">
+          <Property Name="Name">X2affd455e3a15e4209ea6bfecb32be2910d4</Property>
+          <Property Name="Size">57, 18</Property>
+          <Property Name="Location">225, 92</Property>
+          <Property Name="TextAlign">Center</Property>
+          <Property Name="DecimalPlaces">1</Property>
+          <Property Name="Increment">10</Property>
+          <Property Name="Maximum">650</Property>
+          <Property Name="TabIndex">10</Property>
+          <Property Name="SymbolConfiguration">8;16;GBT27930::Charger::ChargingDischarging;;;MinCurrent;2;;;-1;;;Value;;;0</Property>
+        </Object>
+        <Object Type="Vector.CANalyzer.Panels.Design.NumericUpDownControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X7477ef19e3adee4419e976aea00ce7906ed8" ControlName="Numeric Up/Down 3">
+          <Property Name="Name">X7477ef19e3adee4419e976aea00ce7906ed8</Property>
+          <Property Name="Size">57, 18</Property>
+          <Property Name="Location">225, 68</Property>
+          <Property Name="TextAlign">Center</Property>
+          <Property Name="DecimalPlaces">1</Property>
+          <Property Name="Increment">10</Property>
+          <Property Name="Maximum">6500</Property>
+          <Property Name="TabIndex">9</Property>
+          <Property Name="SymbolConfiguration">8;16;GBT27930::Charger::ChargingDischarging;;;MaxCurrent;2;;;-1;;;Value;;;0</Property>
+        </Object>
+        <Object Type="Vector.CANalyzer.Panels.Design.NumericUpDownControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X5a1cd752e9c84e4debe86cdecf35c9350cf1" ControlName="Numeric Up/Down 2">
+          <Property Name="Name">X5a1cd752e9c84e4debe86cdecf35c9350cf1</Property>
+          <Property Name="Size">57, 18</Property>
+          <Property Name="Location">225, 44</Property>
+          <Property Name="TextAlign">Center</Property>
+          <Property Name="DecimalPlaces">1</Property>
+          <Property Name="Increment">10</Property>
+          <Property Name="Maximum">6500</Property>
+          <Property Name="TabIndex">8</Property>
+          <Property Name="SymbolConfiguration">8;16;GBT27930::Charger::ChargingDischarging;;;MinVoltage;2;;;-1;;;Value;;;0</Property>
+        </Object>
+        <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X6e8d6058ea02be4005e8072e5c4f2f5e26b2" ControlName="Static Text 9">
+          <Property Name="Name">X6e8d6058ea02be4005e8072e5c4f2f5e26b2</Property>
+          <Property Name="Size">205, 18</Property>
+          <Property Name="Location">14, 116</Property>
+          <Property Name="TextAlign">MiddleLeft</Property>
+          <Property Name="ResizeAutomatically">False</Property>
+          <Property Name="Text">Max number of restarts:</Property>
+        </Object>
+        <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X03eba73fe8b6ee420ce8c05e13cfc87c4a5e" ControlName="Static Text 8">
+          <Property Name="Name">X03eba73fe8b6ee420ce8c05e13cfc87c4a5e</Property>
+          <Property Name="Size">184, 18</Property>
+          <Property Name="Location">14, 92</Property>
+          <Property Name="TextAlign">MiddleLeft</Property>
+          <Property Name="ResizeAutomatically">False</Property>
+          <Property Name="Text">Min Current:
+</Property>
+        </Object>
+        <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xe3ca9ee2e0b1fe4da1e8baee92b581c0f01f" ControlName="Static Text 7">
+          <Property Name="Name">Xe3ca9ee2e0b1fe4da1e8baee92b581c0f01f</Property>
+          <Property Name="Size">125, 18</Property>
+          <Property Name="Location">14, 68</Property>
+          <Property Name="TextAlign">MiddleLeft</Property>
+          <Property Name="ResizeAutomatically">False</Property>
+          <Property Name="Text">Max Current:
+</Property>
+        </Object>
+        <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xb044d1c9ee8c9e45cce9149e27e7914b2806" ControlName="Static Text 6">
+          <Property Name="Name">Xb044d1c9ee8c9e45cce9149e27e7914b2806</Property>
+          <Property Name="Size">70, 18</Property>
+          <Property Name="Location">14, 44</Property>
+          <Property Name="TextAlign">MiddleLeft</Property>
+          <Property Name="ResizeAutomatically">False</Property>
+          <Property Name="Text">Min Voltage:</Property>
+        </Object>
+        <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X741f9f05e64f7e4f65e8012e816bb2a7c0b0" ControlName="Static Text 4">
+          <Property Name="Name">X741f9f05e64f7e4f65e8012e816bb2a7c0b0</Property>
+          <Property Name="Size">73, 18</Property>
+          <Property Name="Location">14, 20</Property>
+          <Property Name="TextAlign">MiddleLeft</Property>
+          <Property Name="Text">Max Voltage:</Property>
+        </Object>
+        <Property Name="Name">X32678379edf91e4731eb739e74da1a610297</Property>
+        <Property Name="Size">376, 145</Property>
+        <Property Name="Location">5, 23</Property>
+        <Property Name="Text">Charging</Property>
+        <Property Name="TabIndex">9</Property>
+        <Property Name="UseWindowsStyle">False</Property>
+      </Object>
+      <Property Name="Name">X7575b20ae1890e422dead42e0b19d0d22ae8</Property>
+      <Property Name="Size">385, 306</Property>
+      <Property Name="Location">5, 131</Property>
+      <Property Name="Text">Charging Station Parameter</Property>
+      <Property Name="TabIndex">2</Property>
+      <Property Name="UseWindowsStyle">False</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.GroupBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xdeb86061ec3e0e4f82e9d9aed616cd0e07e9" ControlName="Group Box 1">
+      <Object Type="Vector.CANalyzer.Panels.Design.ComboBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X20776676ec5a7e446ae9ce5e46853d4cbd47" ControlName="Combo Box 3">
+        <Property Name="Name">X20776676ec5a7e446ae9ce5e46853d4cbd47</Property>
+        <Property Name="Size">163, 21</Property>
+        <Property Name="Location">128, 15</Property>
+        <Property Name="DisplayLabel">Left</Property>
+        <Property Name="DescriptionSize">5, 21</Property>
+        <Property Name="TabIndex">3</Property>
+        <Property Name="DescriptionText"></Property>
+        <Property Name="ShowValues">Decimal</Property>
+        <Property Name="UsedValueTable">PhysicalValue</Property>
+        <Property Name="SymbolConfiguration">8;16;GBT27930::Charger::VersionNegotiation;;;CANType;1;;;-1;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xe3c3e22be8fcbe4c1beae9ae14ffec68867e" ControlName="Static Text 3">
+        <Property Name="Name">Xe3c3e22be8fcbe4c1beae9ae14ffec68867e</Property>
+        <Property Name="Size">117, 21</Property>
+        <Property Name="Location">5, 15</Property>
+        <Property Name="TextAlign">MiddleLeft</Property>
+        <Property Name="ResizeAutomatically">False</Property>
+        <Property Name="Text">CAN Type:</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.ComboBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X4dc36d3be1ca5e4f7beb5a3ec6b8b0c9ae83" ControlName="Combo Box 2">
+        <Property Name="Name">X4dc36d3be1ca5e4f7beb5a3ec6b8b0c9ae83</Property>
+        <Property Name="Size">163, 21</Property>
+        <Property Name="Location">128, 69</Property>
+        <Property Name="DisplayLabel">Left</Property>
+        <Property Name="DescriptionSize">5, 21</Property>
+        <Property Name="TabIndex">2</Property>
+        <Property Name="DescriptionText"></Property>
+        <Property Name="ShowValues">Decimal</Property>
+        <Property Name="UsedValueTable">PhysicalValue</Property>
+        <Property Name="SymbolConfiguration">8;16;GBT27930::Charger::VersionNegotiation;;;TransportLayerVersion;1;;;-1;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X6446cf25e4310e416de9326eff5a281820cd" ControlName="Static Text 2">
+        <Property Name="Name">X6446cf25e4310e416de9326eff5a281820cd</Property>
+        <Property Name="Size">131, 21</Property>
+        <Property Name="Location">5, 69</Property>
+        <Property Name="TextAlign">MiddleLeft</Property>
+        <Property Name="ResizeAutomatically">False</Property>
+        <Property Name="Text">Transport Layer Version:</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xe580808aeb628e487ae87edec95cd567a668" ControlName="Static Text 1">
+        <Property Name="Name">Xe580808aeb628e487ae87edec95cd567a668</Property>
+        <Property Name="Size">117, 21</Property>
+        <Property Name="Location">5, 42</Property>
+        <Property Name="TextAlign">MiddleLeft</Property>
+        <Property Name="ResizeAutomatically">False</Property>
+        <Property Name="Text">Control Pilot Version:</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.ComboBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X4d97e4c4e3a6ee4864eb5a3ed9e25d588340" ControlName="Combo Box 1">
+        <Property Name="Name">X4d97e4c4e3a6ee4864eb5a3ed9e25d588340</Property>
+        <Property Name="Size">163, 21</Property>
+        <Property Name="Location">128, 42</Property>
+        <Property Name="DisplayLabel">Left</Property>
+        <Property Name="DescriptionSize">5, 21</Property>
+        <Property Name="TabIndex">1</Property>
+        <Property Name="DescriptionText"></Property>
+        <Property Name="ShowValues">Decimal</Property>
+        <Property Name="UsedValueTable">PhysicalValue</Property>
+        <Property Name="SymbolConfiguration">8;16;GBT27930::Charger::VersionNegotiation;;;ControlPilotVersion;1;;;-1;;;Value;;;0</Property>
+      </Object>
+      <Property Name="Name">Xdeb86061ec3e0e4f82e9d9aed616cd0e07e9</Property>
+      <Property Name="Size">296, 109</Property>
+      <Property Name="Location">99, 5</Property>
+      <Property Name="Text">VersionNegotiation</Property>
+      <Property Name="TabIndex">1</Property>
+      <Property Name="UseWindowsStyle">False</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.PictureBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X3ef96992ebb1be4794e8ceee14dc5deb31fe" ControlName="Picture Box 1">
+      <Property Name="Name">X3ef96992ebb1be4794e8ceee14dc5deb31fe</Property>
+      <Property Name="Size">157, 161</Property>
+      <Property Name="Location">-43, -14</Property>
+      <Property Name="ImageFile">BMP\chargingstation_grey.png</Property>
+    </Object>
+    <Property Name="Name">Panel</Property>
+    <Property Name="Size">400, 471</Property>
+    <Property Name="Location">0, 0</Property>
+    <Property Name="BackColor">White</Property>
+  </Object>
+</Panel>

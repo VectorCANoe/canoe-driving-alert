@@ -29,6 +29,13 @@ variables
   int gLockEta;
   int gLockSourceId;
   int gLockForceFailSafe;
+  int gLockObjectTrackValid;
+  int gLockObjectRange;
+  int gLockObjectRelSpeed;
+  int gLockObjectConfidence;
+  int gLockIntersectionConflictFlag;
+  int gLockMergeCutInFlag;
+  int gLockObjectAlertHoldMs;
   int gScenarioCmdInternalClear;
 }
 
@@ -111,6 +118,13 @@ void pushLockedScenarioInputs()
   @V2X::eta = clampRange(gLockEta, 0, 255);
   @V2X::sourceId = clampRange(gLockSourceId, 0, 255);
   @Test::forceFailSafe = clampRange(gLockForceFailSafe, 0, 1);
+  @Core::objectTrackValid = clampRange(gLockObjectTrackValid, 0, 1);
+  @Core::objectRange = clampRange(gLockObjectRange, 0, 500);
+  @Core::objectRelSpeed = clampRange(gLockObjectRelSpeed, -200, 200);
+  @Core::objectConfidence = clampRange(gLockObjectConfidence, 0, 100);
+  @Core::intersectionConflictFlag = clampRange(gLockIntersectionConflictFlag, 0, 1);
+  @Core::mergeCutInFlag = clampRange(gLockMergeCutInFlag, 0, 1);
+  @Core::objectAlertHoldMs = clampRange(gLockObjectAlertHoldMs, 0, 5000);
 }
 
 void applyScenarioPreset(int scenarioId)
@@ -129,6 +143,13 @@ void applyScenarioPreset(int scenarioId)
   gLockEta = 10;
   gLockSourceId = 1;
   gLockForceFailSafe = 0;
+  gLockObjectTrackValid = 0;
+  gLockObjectRange = 0;
+  gLockObjectRelSpeed = 0;
+  gLockObjectConfidence = 0;
+  gLockIntersectionConflictFlag = 0;
+  gLockMergeCutInFlag = 0;
+  gLockObjectAlertHoldMs = 300;
 
   if (scenarioId == 1)
   {
@@ -313,6 +334,82 @@ void applyScenarioPreset(int scenarioId)
     gLockEta = 4;
     gLockSourceId = 45;
   }
+  else if (scenarioId == 20)
+  {
+    /* Req_132: longitudinal TTC forward conflict */
+    gLockRoadZone = 2;
+    gLockVehicleSpeed = 85;
+    gLockSteeringInput = 0;
+    gLockObjectTrackValid = 1;
+    gLockObjectRange = 40;
+    gLockObjectRelSpeed = -45;
+    gLockObjectConfidence = 85;
+    gLockObjectAlertHoldMs = 300;
+  }
+  else if (scenarioId == 21)
+  {
+    /* Req_134: intersection lateral conflict */
+    gLockRoadZone = 2;
+    gLockVehicleSpeed = 60;
+    gLockSteeringInput = 1;
+    gLockObjectTrackValid = 1;
+    gLockObjectRange = 35;
+    gLockObjectRelSpeed = -35;
+    gLockObjectConfidence = 80;
+    gLockIntersectionConflictFlag = 1;
+    gLockObjectAlertHoldMs = 300;
+  }
+  else if (scenarioId == 22)
+  {
+    /* Req_135: merge/cut-in conflict */
+    gLockRoadZone = 2;
+    gLockVehicleSpeed = 78;
+    gLockSteeringInput = 1;
+    gLockObjectTrackValid = 1;
+    gLockObjectRange = 32;
+    gLockObjectRelSpeed = -38;
+    gLockObjectConfidence = 82;
+    gLockMergeCutInFlag = 1;
+    gLockObjectAlertHoldMs = 300;
+  }
+  else if (scenarioId == 23)
+  {
+    /* Req_137: object risk + decel assist request without emergency context */
+    gLockRoadZone = 2;
+    gLockVehicleSpeed = 90;
+    gLockSteeringInput = 0;
+    gLockObjectTrackValid = 1;
+    gLockObjectRange = 28;
+    gLockObjectRelSpeed = -55;
+    gLockObjectConfidence = 90;
+    gLockObjectAlertHoldMs = 300;
+  }
+  else if (scenarioId == 24)
+  {
+    /* Req_138: confidence degradation must force fail-safe-like downgrade */
+    gLockRoadZone = 2;
+    gLockVehicleSpeed = 80;
+    gLockSteeringInput = 0;
+    gLockObjectTrackValid = 1;
+    gLockObjectRange = 30;
+    gLockObjectRelSpeed = -40;
+    gLockObjectConfidence = 20;
+    gLockObjectAlertHoldMs = 300;
+  }
+  else if (scenarioId == 25)
+  {
+    /* Req_136: object tracking loss hold-time behavior */
+    gLockRoadZone = 2;
+    gLockVehicleSpeed = 72;
+    gLockSteeringInput = 1;
+    gLockObjectTrackValid = 1;
+    gLockObjectRange = 34;
+    gLockObjectRelSpeed = -34;
+    gLockObjectConfidence = 75;
+    gLockObjectAlertHoldMs = 500;
+    gScenarioPhase = 1;
+    setTimer(tScenarioPhase2, 350);
+  }
 
   pushLockedScenarioInputs();
   write("[EVIDENCE_IN] scenario=%d inputTsMs=%lu",
@@ -368,6 +465,14 @@ void scheduleScenarioEvaluation(int scenarioId)
   {
     evalDelayMs = 700;
   }
+  else if (scenarioId >= 20 && scenarioId <= 24)
+  {
+    evalDelayMs = 900;
+  }
+  else if (scenarioId == 25)
+  {
+    evalDelayMs = 1100;
+  }
   setTimer(tScenarioEval, evalDelayMs);
 }
 
@@ -385,6 +490,12 @@ void evaluateScenarioResult()
   int proximityRiskLevel;
   int decelAssistReq;
   int failSafeMode;
+  int objectTrackValid;
+  int objectRiskClass;
+  int objectTtcMin;
+  int objectEventCode;
+  int intersectionConflictFlag;
+  int mergeCutInFlag;
   int uiRenderAlertType;
   int uiRenderTextCode;
 
@@ -399,6 +510,12 @@ void evaluateScenarioResult()
   proximityRiskLevel = (int)@Core::proximityRiskLevel;
   decelAssistReq = (int)@Core::decelAssistReq;
   failSafeMode = (int)@Core::failSafeMode;
+  objectTrackValid = (int)@Core::objectTrackValid;
+  objectRiskClass = (int)@Core::objectRiskClass;
+  objectTtcMin = (int)@Core::objectTtcMin;
+  objectEventCode = (int)@Core::objectEventCode;
+  intersectionConflictFlag = (int)@Core::intersectionConflictFlag;
+  mergeCutInFlag = (int)@Core::mergeCutInFlag;
   uiRenderAlertType = (int)@UiRender::activeAlertType;
   uiRenderTextCode = (int)@UiRender::renderTextCode;
 
@@ -506,6 +623,42 @@ void evaluateScenarioResult()
               uiRenderAlertType == 2 && uiRenderTextCode >= 200 &&
               ambientColor == 7 && code >= 200) ? 1 : 0;
   }
+  else if (gCurrentScenarioId == 20)
+  {
+    /* Req_132: TTC-based forward object conflict warning */
+    result = (objectTrackValid == 1 && objectRiskClass >= 3 && objectTtcMin <= 3500 &&
+              proximityRiskLevel >= 60) ? 1 : 0;
+  }
+  else if (gCurrentScenarioId == 21)
+  {
+    /* Req_134: intersection conflict should map to object-context alert */
+    result = (intersectionConflictFlag == 1 && objectRiskClass >= 3 &&
+              level >= 4 && type == 5) ? 1 : 0;
+  }
+  else if (gCurrentScenarioId == 22)
+  {
+    /* Req_135: merge/cut-in conflict should map to object-context alert */
+    result = (mergeCutInFlag == 1 && objectRiskClass >= 3 &&
+              level >= 4 && type == 6) ? 1 : 0;
+  }
+  else if (gCurrentScenarioId == 23)
+  {
+    /* Req_137: object high-risk must trigger decel assist without emergency input */
+    result = ((int)@Core::emergencyContext == 0 && objectRiskClass >= 4 &&
+              proximityRiskLevel >= 75 && decelAssistReq == 1 && failSafeMode == 0) ? 1 : 0;
+  }
+  else if (gCurrentScenarioId == 24)
+  {
+    /* Req_138: low confidence must force degrade and cancel decel assist */
+    result = (objectTrackValid == 1 && (int)@Core::objectConfidence < 35 &&
+              failSafeMode >= 1 && decelAssistReq == 0) ? 1 : 0;
+  }
+  else if (gCurrentScenarioId == 25)
+  {
+    /* Req_136: hold-time should keep risk class/event around short track loss window */
+    result = (objectTrackValid == 1 && objectRiskClass >= 3 &&
+              objectEventCode >= 1381 && objectEventCode <= 1383) ? 1 : 0;
+  }
   else
   {
     result = ((int)@Test::scenarioResult == 1) ? 1 : 0;
@@ -597,6 +750,14 @@ on timer tScenarioPhase2
     gScenarioPhase = 2;
     write("[VAL_SCENARIO_CTRL] Req_123 phase2: steering intervention");
   }
+  else if (gCurrentScenarioId == 25)
+  {
+    /* Req_136: force temporary object loss and verify hold-time behavior */
+    gLockObjectTrackValid = 0;
+    pushLockedScenarioInputs();
+    gScenarioPhase = 2;
+    write("[VAL_SCENARIO_CTRL] Req_136 phase2: object track lost");
+  }
 }
 
 on timer tScenarioPhase3
@@ -644,12 +805,29 @@ on start
   gLockEta = 10;
   gLockSourceId = 1;
   gLockForceFailSafe = 0;
+  gLockObjectTrackValid = 0;
+  gLockObjectRange = 0;
+  gLockObjectRelSpeed = 0;
+  gLockObjectConfidence = 0;
+  gLockIntersectionConflictFlag = 0;
+  gLockMergeCutInFlag = 0;
+  gLockObjectAlertHoldMs = 300;
   gScenarioCmdInternalClear = 0;
   @Test::scenarioCommand = 0;
   @Test::scenarioCommandAck = 0;
   @Test::testScenario = 0;
   @Test::scenarioResult = 0;
   @Test::forceFailSafe = 0;
+  @Core::objectTrackValid = 0;
+  @Core::objectRange = 0;
+  @Core::objectRelSpeed = 0;
+  @Core::objectConfidence = 0;
+  @Core::objectRiskClass = 0;
+  @Core::objectTtcMin = 10000;
+  @Core::intersectionConflictFlag = 0;
+  @Core::mergeCutInFlag = 0;
+  @Core::objectAlertHoldMs = 300;
+  @Core::objectEventCode = 0;
   setTimer(tInput100, 100);
   write("[VAL_SCENARIO_CTRL] start");
 }
@@ -670,6 +848,7 @@ on timer tInput100
   message frmEngineLoadMsg mEngineLoad;
   message frmTransShiftStateMsg mShift;
   message frmThermalMgmtStateMsg mThermal;
+  message ethObjectRiskInputMsg mObjInput;
   int speed;
   int driveState;
   int steeringInput;
@@ -683,6 +862,13 @@ on timer tInput100
   int accelPedal;
   int brakePedal;
   int driveMode;
+  int objectTrackValid;
+  int objectRange;
+  int objectRelSpeed;
+  int objectConfidence;
+  int intersectionConflictFlag;
+  int mergeCutInFlag;
+  int objectAlertHoldMs;
 
   if (gScenarioInputLock == 1)
   {
@@ -711,6 +897,13 @@ on timer tInput100
   accelPedal = clampRange(speed / 2, 0, 100);
   brakePedal = (driveState == 0) ? 30 : 0;
   driveMode = gearState;
+  objectTrackValid = clampRange((int)@Core::objectTrackValid, 0, 1);
+  objectRange = clampRange((int)@Core::objectRange, 0, 500);
+  objectRelSpeed = clampRange((int)@Core::objectRelSpeed, -200, 200);
+  objectConfidence = clampRange((int)@Core::objectConfidence, 0, 100);
+  intersectionConflictFlag = clampRange((int)@Core::intersectionConflictFlag, 0, 1);
+  mergeCutInFlag = clampRange((int)@Core::mergeCutInFlag, 0, 1);
+  objectAlertHoldMs = clampRange((int)@Core::objectAlertHoldMs, 0, 5000);
 
   mVeh.gVehicleSpeed = speed;
   mVeh.gDriveState = driveState;
@@ -778,6 +971,16 @@ on timer tInput100
   mThermal.CoolantTarget = 88;
   output(mThermal);
 
+  /* Comm_130 pre-activation object input contract (E213 SIL stub path). */
+  mObjInput.ObjectTrackValid = objectTrackValid;
+  mObjInput.ObjectRangeM = objectRange;
+  mObjInput.ObjectRelSpeedKph = objectRelSpeed;
+  mObjInput.ObjectConfidence = objectConfidence;
+  mObjInput.IntersectionConflict = intersectionConflictFlag;
+  mObjInput.MergeCutIn = mergeCutInFlag;
+  mObjInput.ObjectAlertHoldMs = objectAlertHoldMs;
+  output(mObjInput);
+
   setTimer(tInput100, 100);
 }
 
@@ -814,7 +1017,7 @@ on sysvar Test::scenarioCommand
     @Test::forceFailSafe = 0;
     write("[VAL_SCENARIO_CTRL] command: auto demo stop");
   }
-  else if (scenarioId >= 1 && scenarioId <= 19)
+  else if (scenarioId >= 1 && scenarioId <= 25)
   {
     gDemoRunning = 0;
     cancelTimer(tDemoStep);
@@ -875,7 +1078,7 @@ on sysvar Test::testScenario
     @Test::forceFailSafe = 0;
     write("[VAL_SCENARIO_CTRL] auto demo stop");
   }
-  else if (scenarioId >= 1 && scenarioId <= 19)
+  else if (scenarioId >= 1 && scenarioId <= 25)
   {
     gDemoRunning = 0;
     cancelTimer(tDemoStep);
@@ -916,6 +1119,10 @@ on timer tScenarioEval
   int proximityRiskLevel;
   int decelAssistReq;
   int failSafeMode;
+  int objectTrackValid;
+  int objectRiskClass;
+  int objectTtcMin;
+  int objectEventCode;
   int renderAlertType;
   int renderTextCode;
   int clusterCode;
@@ -929,14 +1136,19 @@ on timer tScenarioEval
   proximityRiskLevel = (int)@Core::proximityRiskLevel;
   decelAssistReq = (int)@Core::decelAssistReq;
   failSafeMode = (int)@Core::failSafeMode;
+  objectTrackValid = (int)@Core::objectTrackValid;
+  objectRiskClass = (int)@Core::objectRiskClass;
+  objectTtcMin = (int)@Core::objectTtcMin;
+  objectEventCode = (int)@Core::objectEventCode;
   renderAlertType = (int)@UiRender::activeAlertType;
   renderTextCode = (int)@UiRender::renderTextCode;
   clusterCode = (int)@Cluster::warningTextCode;
 
-  write("[EVIDENCE_OUT] scenario=%d outputTsMs=%lu result=%d level=%d type=%d code=%d timeout=%d risk=%d decel=%d failSafe=%d renderType=%d renderCode=%d",
+  write("[EVIDENCE_OUT] scenario=%d outputTsMs=%lu result=%d level=%d type=%d code=%d timeout=%d risk=%d decel=%d failSafe=%d objValid=%d objClass=%d objTtc=%d objEvent=%d renderType=%d renderCode=%d",
         gCurrentScenarioId, (dword)(timeNow() / 100000), (int)@Test::scenarioResult,
         coreLevel, coreType, clusterCode, timeoutClear, proximityRiskLevel,
-        decelAssistReq, failSafeMode, renderAlertType, renderTextCode);
+        decelAssistReq, failSafeMode, objectTrackValid, objectRiskClass,
+        objectTtcMin, objectEventCode, renderAlertType, renderTextCode);
 
   /* Comm_106 baseline aggregate result frame */
   mBase.BaseScenarioId = clampRange(gCurrentScenarioId, 0, 255);

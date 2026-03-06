@@ -1,0 +1,37 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<systemvariables version="4">
+  <namespace name="" comment="" interface="">
+    <namespace name="I2CCommunication" comment="" interface="">
+      <namespace name="MasterFrame" comment="" interface="">
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" separateTransmissions="true" name="Timestamp" comment="" bitcount="64" isSigned="true" encoding="65001" type="longlong" startValue="0" />
+      </namespace>
+      <namespace name="MasterToSlave1" comment="" interface="">
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" separateTransmissions="true" name="R_Signal1" comment="" bitcount="32" isSigned="false" encoding="65001" type="int" startValue="0" minValue="0" minValuePhys="0" maxValue="255" maxValuePhys="255" />
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" separateTransmissions="true" name="R_Signal2" comment="" bitcount="32" isSigned="false" encoding="65001" type="int" startValue="0" minValue="0" minValuePhys="0" maxValue="4294967295" maxValuePhys="4294967295" />
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" separateTransmissions="true" name="W_Signal1" comment="" bitcount="32" isSigned="false" encoding="65001" type="int" startValue="0" minValue="0" minValuePhys="0" maxValue="255" maxValuePhys="255" />
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" separateTransmissions="true" name="W_Signal2" comment="" bitcount="32" isSigned="false" encoding="65001" type="int" startValue="0" minValue="0" minValuePhys="0" maxValue="4294967295" maxValuePhys="4294967295" />
+      </namespace>
+      <namespace name="MasterToSlave2" comment="" interface="">
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" separateTransmissions="true" name="R_Signal1" comment="" bitcount="32" isSigned="false" encoding="65001" type="int" startValue="0" minValue="0" minValuePhys="0" maxValue="255" maxValuePhys="255" />
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" separateTransmissions="true" name="R_Signal2" comment="" bitcount="32" isSigned="false" encoding="65001" type="int" startValue="0" minValue="0" minValuePhys="0" maxValue="4294967295" maxValuePhys="4294967295" />
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" separateTransmissions="true" name="W_Signal1" comment="" bitcount="32" isSigned="false" encoding="65001" type="int" startValue="0" minValue="0" minValuePhys="0" maxValue="255" maxValuePhys="255" />
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" separateTransmissions="true" name="W_Signal2" comment="" bitcount="32" isSigned="false" encoding="65001" type="int" startValue="0" minValue="0" minValuePhys="0" maxValue="4294967295" maxValuePhys="4294967295" />
+      </namespace>
+      <namespace name="Slave1ToMaster" comment="" interface="">
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" separateTransmissions="true" name="R_Signal1" comment="" bitcount="32" isSigned="false" encoding="65001" type="int" startValue="0" minValue="0" minValuePhys="0" maxValue="255" maxValuePhys="255" />
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" separateTransmissions="true" name="R_Signal2" comment="" bitcount="32" isSigned="false" encoding="65001" type="int" startValue="0" minValue="0" minValuePhys="0" maxValue="4294967295" maxValuePhys="4294967295" />
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" separateTransmissions="true" name="W_Signal1" comment="" bitcount="32" isSigned="false" encoding="65001" type="int" startValue="0" minValue="0" minValuePhys="0" maxValue="255" maxValuePhys="255" />
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" separateTransmissions="true" name="W_Signal2" comment="" bitcount="32" isSigned="false" encoding="65001" type="int" startValue="0" minValue="0" minValuePhys="0" maxValue="4294967295" maxValuePhys="4294967295" />
+      </namespace>
+      <namespace name="Slave2ToMaster" comment="" interface="">
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" separateTransmissions="true" name="R_Signal1" comment="" bitcount="32" isSigned="false" encoding="65001" type="int" startValue="0" minValue="0" minValuePhys="0" maxValue="255" maxValuePhys="255" />
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" separateTransmissions="true" name="R_Signal2" comment="" bitcount="32" isSigned="false" encoding="65001" type="int" startValue="0" minValue="0" minValuePhys="0" maxValue="4294967295" maxValuePhys="4294967295" />
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" separateTransmissions="true" name="W_Signal1" comment="" bitcount="32" isSigned="false" encoding="65001" type="int" startValue="0" minValue="0" minValuePhys="0" maxValue="255" maxValuePhys="255" />
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" separateTransmissions="true" name="W_Signal2" comment="" bitcount="32" isSigned="false" encoding="65001" type="int" startValue="0" minValue="0" minValuePhys="0" maxValue="4294967295" maxValuePhys="4294967295" />
+      </namespace>
+      <namespace name="SlaveFrame" comment="" interface="">
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" separateTransmissions="true" name="Timestamp" comment="" bitcount="64" isSigned="true" encoding="65001" type="longlong" startValue="0" />
+      </namespace>
+    </namespace>
+  </namespace>
+</systemvariables>

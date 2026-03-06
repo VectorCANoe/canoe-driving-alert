@@ -1,0 +1,323 @@
+/*@!Encoding:1252*/
+includes
+{
+   #include "CSMSMessageHandling.cin"
+}
+
+variables
+{
+  char gPanelName[5] = "CSMS";
+}
+
+on preStop
+{
+  UpdatePictureCSMSNotConnected();
+}
+
+on preStart
+{  
+  reReadAttributes();
+}
+
+on start
+{
+  OCPP::Simulation::CSMS.OpenWebSocketConnection.Call();
+}
+
+on value_change OCPP::Simulation::CSMS.CurrentWebsocketConnectionStatus
+{
+  UpdatePictureCSMS();
+}
+
+on sysvar sysvar::Common::SysSelectedProtocol
+{
+  setCSMSAttributeOCPPVersion();
+}
+
+on sysVar Control::CSMS::SysCSMS_Start
+{
+  if (@this == 1)
+  {
+    OCPP::Simulation::CSMS.OpenWebSocketConnection.Call();
+  }
+}
+
+on sysVar Control::CSMS::SysCSMS_Stop
+{
+  if (@this == 1)
+  {
+    OCPP::Simulation::CSMS.CloseWebSocketConnection.Call();
+  }
+}
+
+on sysvar Common::SysTLSEnabled
+{
+  setTLSEnabled(); 
+}
+
+int IsCSMSConnected()
+{
+  return $OCPP::Simulation::CSMS.CurrentWebsocketConnectionStatus == _OCPP::DataTypes::WebsocketConnectionStatusType::Connected;
+}
+
+void UpdatePictureCSMS()
+{
+  if (IsCSMSConnected())
+  {
+    UpdatePictureCSMSConnected();
+  }
+  else
+  {
+    UpdatePictureCSMSNotConnected();
+  }
+}
+
+void UpdatePictureCSMSConnected()
+{
+  SetCSMSPicturesVisibility(1);
+}
+
+void UpdatePictureCSMSNotConnected()
+{
+  SetCSMSPicturesVisibility(0);
+}
+
+void SetCSMSPicturesVisibility(int showConnected)
+{
+ SetControlVisibility(gPanelName, "pictureCSMSConnected", showConnected);
+ SetControlVisibility(gPanelName, "pictureCSMSDisconnected", !showConnected);
+}
+
+void reReadAttributes()
+{
+  setCSMSAttributeOCPPVersion();
+  setTLSEnabled();
+  setPort();
+}
+
+void setCSMSAttributeOCPPVersion()
+{
+  int retval;
+  
+  if (@sysvar::Common::SysSelectedProtocol == @sysvar::Common::SysSelectedProtocol::OCPP_16)
+  {
+    retval = setAttribute(OCPP::Simulation::CSMS, OCPPBinding::OCPPVersion, OCPPBinding::OCPP16);
+  }
+  else if (@sysvar::Common::SysSelectedProtocol == @sysvar::Common::SysSelectedProtocol::OCPP_201)
+  {
+    retval = setAttribute(OCPP::Simulation::CSMS, OCPPBinding::OCPPVersion, OCPPBinding::OCPP201); 
+  }
+  else if (@sysvar::Common::SysSelectedProtocol == @sysvar::Common::SysSelectedProtocol::OCPP_21)
+  {
+    retval = setAttribute(OCPP::Simulation::CSMS, OCPPBinding::OCPPVersion, OCPPBinding::OCPP21); 
+  }
+  else
+  {
+    writeLineEx(0 , 2,"Charging Station: No matching OCPP Version was found.");
+  }
+  
+  if (retval != 0)
+  {
+    writeLineEx(0 , 3,"Return value from function setAttribute() = %d (More information in CANoe-Help)", retval);
+  }   
+}
+
+void setTLSEnabled()
+{
+  if (@sysVar::Common::SysTLSEnabled == @sysVar::Common::SysTLSEnabled::Enabled){
+    setAttribute(OCPP::Simulation::CSMS, OCPPBinding::TLS, OCPPBinding::Enabled); 
+  }
+  else
+  {
+    setAttribute(OCPP::Simulation::CSMS, OCPPBinding::TLS, OCPPBinding::Disabled); 
+  }
+}
+
+void setPort()
+{
+  int retval;
+  
+  if (@sysVar::Common::SysTLSEnabled == @sysVar::Common::SysTLSEnabled::Enabled)
+  {
+    retval = setAttribute(OCPP::Simulation::CSMS, OCPPBinding::ServerPort, 443); 
+  }
+  else
+  {
+    retval = setAttribute(OCPP::Simulation::CSMS, OCPPBinding::ServerPort, 80); 
+  }
+  
+  if (retval != 0)
+  {
+    writeLineEx(0 , 3,"Return value from function setAttribute() = %d (More information in CANoe-Help)", retval);
+  } 
+}
+
+int IsOCPP16Used()
+{
+  return @sysvar::Common::SysSelectedProtocol == @sysvar::Common::SysSelectedProtocol::OCPP_16;
+}
+
+int IsOCPP201Used()
+{
+  return @sysvar::Common::SysSelectedProtocol == @sysvar::Common::SysSelectedProtocol::OCPP_201;
+}
+
+int IsOCPP21Used()
+{
+  return @sysvar::Common::SysSelectedProtocol == @sysvar::Common::SysSelectedProtocol::OCPP_21;
+}
+
+on sysVar Control::CSMS::Sys_StopTransaction
+{
+  if (@this == 1)
+  {
+    if (IsOCPP16Used())
+    {
+      $OCPP::Simulation::CSMS.OCPP16.RemoteStopTransactionRequest.transactionId = @sysvar::Control::CSMS::ReceivedValues::Sys_TransactionID_16;
+    }
+    else if (IsOCPP201Used())
+    {
+      char transactionIDStr[50];
+      sysGetVariableString(sysvar::Control::CSMS::ReceivedValues::Sys_TransactionID_201, transactionIDStr, elCount(transactionIDStr));
+      $OCPP::Simulation::CSMS.OCPP201.RequestStopTransactionRequest.transactionId = transactionIDStr;
+    } 
+    else if(IsOCPP21Used())
+    {
+      char transactionIDStr[50];
+      sysGetVariableString(sysvar::Control::CSMS::ReceivedValues::Sys_TransactionID_21, transactionIDStr, elCount(transactionIDStr));
+      $OCPP::Simulation::CSMS.OCPP21.RequestStopTransactionRequest.transactionId = transactionIDStr;
+    }
+    else
+    {
+      writeLineEx(0 , 2,"CSMS: No matching OCPP Version was found for stopping the transaction.");
+    }
+  }
+}
+
+on sysVar Control::CSMS::Sys_StartTransaction
+{
+  if (@this == 1)
+  {
+    if (IsOCPP16Used())
+    {
+      $OCPP::Simulation::CSMS.OCPP16.RemoteStartTransactionRequest;
+    }
+    else if (IsOCPP201Used())
+    {
+      $OCPP::Simulation::CSMS.OCPP201.RequestStartTransactionRequest;
+    } 
+    else if (IsOCPP21Used())
+    {
+      $OCPP::Simulation::CSMS.OCPP21.RequestStartTransactionRequest;
+    } 
+    else
+    {
+      writeLineEx(0 , 2, "CSMS: No matching OCPP Version was found for starting the transaction.");
+    }
+  }
+}
+
+on sysvar Control::CSMS::OCPP16::SysSendChangeConfiguration
+{
+  if (@this == 1)
+  {
+    // CSMS send default message for Pricing Requirements
+    $OCPP::Simulation::CSMS.OCPP16.ChangeConfigurationRequest.key = "DefaultPrice";
+    $OCPP::Simulation::CSMS.OCPP16.ChangeConfigurationRequest.value = "\"priceText\": \"0.15 $/kWh, idle fee after charging: 1 $/hr\", \"chargingPrice\": { \"kWhPrice\": 0.15, \"hourPrice\": 0.00, \"flatFee\": 0.00 }, \"idlePrice\": { \"graceMinutes\": 30, \"hourPrice\": 1.00 }";
+  }
+}
+
+on sysvar Control::CSMS::OCPP16::SysSendUserSpecificPrice
+{
+  long bufferLen = 500;
+  char bufferData[500];
+
+  if (@this == 1)
+  {
+    $OCPP::Simulation::CSMS.OCPP16.DataTransferReq.vendorId = "org.openchargealliance.costmsg";
+    $OCPP::Simulation::CSMS.OCPP16.DataTransferReq.messageId = "SetUserPrice";
+
+    snprintf(bufferData, bufferLen, "{\"idToken\": \"%s\", \"priceText\": $0.123 per kWh, 1$/hour idle fee\"}", $OCPP::Simulation::CSMS.OCPP16.AuthorizeRequest.idTag);
+    $OCPP::Simulation::CSMS.OCPP16.DataTransferReq.data = bufferData;
+  }
+}
+
+on sysvar Control::CSMS::OCPP16::SysSendRunningCostPrice
+{
+  if (@this == 1)
+  {
+    char time[100];
+    long bufferLen = 500;
+    char bufferData[500];
+
+    // fetch current time
+    GetCurrentTimeRFC3339(time);
+
+    writeLineEx(1, 1,"Central System sends cost and unit price at time %s", time);
+    snprintf(bufferData, bufferLen, "{\"transactionId\": %d, \"timestamp\": \"%s\", \"meterValue\": %d, \"cost\": 1.00, \"state\": \"Charging\", \"chargingPrice\": { \"kWhPrice\": 0.123 } }", $OCPP::Simulation::CSMS.OCPP16.StartTransactionResponse.transactionId, time, @Control::CSMS::OCPP16::SysMeterValue);
+
+    $OCPP::Simulation::CSMS.OCPP16.DataTransferReq.vendorId = "org.openchargealliance.costmsg";
+    $OCPP::Simulation::CSMS.OCPP16.DataTransferReq.messageId = "RunnningCost";
+    $OCPP::Simulation::CSMS.OCPP16.DataTransferReq.data = bufferData;
+  }
+}
+
+on sysvar Control::CSMS::OCPP201::SysSendCostUpdate
+{
+  long bufferLen = 500;
+  char bufferData[500];
+  char time[100];
+
+  if (@this == 1)
+  {
+    $OCPP::Simulation::CSMS.OCPP201.CostUpdatedRequest.totalCost = 10;
+
+    $OCPP::Simulation::CSMS.OCPP201.CostUpdatedRequest.transactionId = $OCPP::Simulation::CSMS.OCPP201.TransactionEventRequest.transactionInfo.transactionId;
+
+    GetCurrentTimeRFC3339(time);
+
+    snprintf(bufferData, bufferLen, "{\"vendorId\": \"org.openchargealliance.costmsg\", \"timestamp\": \"%s\", \"meterValue\": %d, \"state\": \"Charging\", \"chargingPrice\": {\"kWhPrice\": 0.123, \"hourPrice\": 0.00, \"flatFee\": 0.00 }, \"idlePrice\": { \"graceMinutes\": 30, \"hourPrice\": 1.00 }}", time, @Control::CSMS::OCPP201::SysMeterValue);
+
+    $OCPP::Simulation::CSMS.OCPP201.CostUpdatedRequest.customData = bufferData;
+  }
+}
+
+on sysvar Control::CSMS::OCPP21::SysSendCostUpdate
+{
+  long bufferLen = 500;
+  char bufferData[500];
+  char time[100];
+
+  if (@this == 1)
+  {
+    $OCPP::Simulation::CSMS.OCPP21.CostUpdatedRequest.totalCost = 10;
+
+    $OCPP::Simulation::CSMS.OCPP21.CostUpdatedRequest.transactionId = $OCPP::Simulation::CSMS.OCPP21.TransactionEventRequest.transactionInfo.transactionId;
+
+    GetCurrentTimeRFC3339(time);
+
+    snprintf(bufferData, bufferLen, "{\"vendorId\": \"org.openchargealliance.costmsg\", \"timestamp\": \"%s\", \"meterValue\": %d, \"state\": \"Charging\", \"chargingPrice\": {\"kWhPrice\": 0.123, \"hourPrice\": 0.00, \"flatFee\": 0.00 }, \"idlePrice\": { \"graceMinutes\": 30, \"hourPrice\": 1.00 }}", time, @Control::CSMS::OCPP21::SysMeterValue);
+
+    $OCPP::Simulation::CSMS.OCPP21.CostUpdatedRequest.customData = bufferData;
+  }
+}
+
+on sysvar Control::CSMS::OCPP201::SysSendSetDisplay
+{
+  if (@this == 1)
+  {
+    $OCPP::Simulation::CSMS.OCPP201.SetDisplayMessageRequest.message_.id = 1;
+    $OCPP::Simulation::CSMS.OCPP201.SetDisplayMessageRequest.message_.priority = "AlwaysFront";
+    $OCPP::Simulation::CSMS.OCPP201.SetDisplayMessageRequest.message_.message_.content = "$0.15 per kWh";
+  }
+}
+
+on sysvar Control::CSMS::OCPP21::SysSendSetDisplay
+{
+  if (@this == 1)
+  {
+    $OCPP::Simulation::CSMS.OCPP21.SetDisplayMessageRequest.message_.id = 1;
+    $OCPP::Simulation::CSMS.OCPP21.SetDisplayMessageRequest.message_.priority = "AlwaysFront";
+    $OCPP::Simulation::CSMS.OCPP21.SetDisplayMessageRequest.message_.message_.content = "$0.15 per kWh";
+  }
+}

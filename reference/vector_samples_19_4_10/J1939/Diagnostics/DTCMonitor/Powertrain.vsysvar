@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<systemvariables version="4">
+  <namespace name="" comment="" interface="">
+    <namespace name="Powertrain" comment="" interface="">
+      <namespace name="EBS" comment="" interface="">
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="BrakePedalPos" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="0" minValue="0" minValuePhys="0" maxValue="10" maxValuePhys="10" />
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="FaultAppPressureError" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="0" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1" />
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="FaultBrakePedalPos" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="0" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1" />
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SimulationMode" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="1" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1">
+          <valuetable name="VT_EBS_SimulationMode" definesMinMax="false">
+            <valuetableentry value="0" lowerBound="0" upperBound="0" description="ManualValueAdjustment" displayString="ManualValueAdjustment" />
+            <valuetableentry value="1" lowerBound="1" upperBound="1" description="SimulateValues" displayString="SimulateValues" />
+          </valuetable>
+        </variable>
+      </namespace>
+      <namespace name="EMS" comment="" interface="">
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="Accelerator" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="0" minValue="0" minValuePhys="0" maxValue="10" maxValuePhys="10" />
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="°C" name="EngineCoolantTemp" comment="" bitcount="64" isSigned="true" encoding="65001" type="float" startValue="0" minValue="-273" maxValue="1000" />
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="EngineSpeed" comment="" bitcount="64" isSigned="true" encoding="65001" type="float" startValue="0" minValue="0" maxValue="3000" />
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="FaultOxygen" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="0" minValue="0" minValuePhys="0" maxValue="2" maxValuePhys="2" />
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="FaultTemperature" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="0" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1" />
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SimulationMode" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="1" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1">
+          <valuetable name="VT_EMS_SimulationMode" definesMinMax="false">
+            <valuetableentry value="0" lowerBound="0" upperBound="0" description="ManualValueAdjustment" displayString="ManualValueAdjustment" />
+            <valuetableentry value="1" lowerBound="1" upperBound="1" description="SimulateValues" displayString="SimulateValues" />
+          </valuetable>
+        </variable>
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="Torque" comment="" bitcount="64" isSigned="true" encoding="65001" type="float" startValue="0" minValue="-3000" maxValue="3000" />
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="TorqueTakeoff" comment="" bitcount="64" isSigned="true" encoding="65001" type="float" startValue="0" minValue="-10000" maxValue="10000" />
+      </namespace>
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="IgnitionSwitch" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="2" minValue="0" minValuePhys="0" maxValue="2" maxValuePhys="2" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="km/h" name="VehicleSpeed" comment="" bitcount="64" isSigned="true" encoding="65001" type="float" startValue="0" minValue="0" maxValue="0" />
+    </namespace>
+  </namespace>
+</systemvariables>

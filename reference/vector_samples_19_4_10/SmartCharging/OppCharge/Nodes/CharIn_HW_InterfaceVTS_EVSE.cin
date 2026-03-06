@@ -1,0 +1,337 @@
+/*@!Encoding:1252*/
+/*
+This document provides an implementation of the CharIn hardware interface for the VT system. 
+The names are according to the CharIn Function List.
+In addition it implements a simulation of hardware related signals for the simulated mode to be used in the sample configuration.
+*/
+
+includes
+{
+}
+
+variables
+{
+}
+
+/// <CharINInterface>
+export long ST_Init()
+{  
+  @sysvar::VTS::VT_EVSE::Relay_K1 = 0;   // PP open
+  @sysvar::VTS::VT_EVSE::Relay_K2 = 0;
+  @sysvar::VTS::VT_EVSE::Relay_K3 = 1;   // switch K3  (1 Kohm)
+  @sysvar::VTS::VT_EVSE::Relay_K4 = 0;
+  @sysvar::VTS::VT_EVSE::Relay_K5 = 0;
+  @sysvar::VTS::VT_EVSE::Relay_K6 = 0;
+  @sysvar::VTS::VT_EVSE::Relay_K7 = 0;
+  @sysvar::VTS::VT_EVSE::Relay_K8 = 1;   // switch K8 (prep for 1Kohm)
+  @sysvar::VTS::VT_EVSE::Relay_K9 = 0;
+  @sysvar::VTS::VT_EVSE::Relay_K10 = 1;  // short diode
+  @sysvar::VTS::VT_EVSE::Relay_K11 = 0;
+  @sysvar::VTS::VT_EVSE::Relay_K12 = 0;
+  @sysvar::VTS::VT_EVSE::Relay_K13 = 0;
+  @sysvar::VTS::VT_EVSE::Relay_K14 = 0;
+  @sysvar::VTS::VT_EVSE::Relay_K15 = 0;
+  @sysvar::VTS::VT_EVSE::Relay_K16 = 0;
+  @sysvar::VTS::VT_EVSE::Relay_K17 = 0;
+  @sysvar::VTS::VT_EVSE::Relay_K18 = 0;
+  @sysvar::VTS::VT_EVSE::Relay_K19 = 0;
+  @sysvar::VTS::VT_EVSE::Relay_K20 = 0;
+  @sysvar::VTS::VT_EVSE::Relay_K21 = 0;
+  @sysvar::VTS::VT_EVSE::Relay_K22 = 0;
+  @sysvar::VTS::VT_EVSE::Relay_K23 = 1;
+  @sysvar::VTS::VT_EVSE::Relay_K24 = 1;
+  @sysvar::VTS::VT_EVSE::Relay_K25 = 0;
+  @sysvar::VTS::VT_EVSE::Relay_K26 = 0;   // CP open
+  @sysvar::VTS::VT_EVSE::Relay_K27 = 0;
+  @sysvar::VTS::VT_EVSE::Relay_K28 = 1;
+  @sysvar::VTS::VT_EVSE::Relay_K29 = 0;
+  //@sysvar::VTS::VT_EVSE::Relay_K30 = 0;
+  @sysvar::VTS::VT_EVSE::Relay_K31 = 0;
+  @sysvar::VTS::VT_EVSE::Relay_K32 = 0;
+  @sysvar::VTS::VT_EVSE::Relay_K33 = 0;
+  @sysvar::VTS::VT_EVSE::Relay_K34 = 0;
+  @sysvar::VTS::VT_EVSE::Relay_K35 = 0;
+  @sysvar::VTS::VT_EVSE::Relay_K36 = 0;
+  @sysvar::VTS::VT_EVSE::Relay_K37 = 0;
+
+  @sysvar::VTS::VT_EVSE::StimVoltageHigh = 0;
+  @sysvar::VTS::VT_EVSE::StimVoltageLow = -12;
+  @sysvar::VTS::VT_EVSE::StimFrequency = 1000;
+  @sysvar::VTS::VT_EVSE::StimDutyCycle = 100;  
+  
+  return 0;
+}
+
+/// <CharINInterface>
+export long ST_Reset()
+{
+  return 0;
+}
+
+/// <CharINInterface>
+export double CP_EVSE_get_Voltage_positive()
+{
+  return @VTS::VT_EVSE::MeasVoltageHigh; 
+}
+
+/// <CharINInterface>
+export double CP_EVSE_get_DutyCycle()
+{
+  return @sysvar::VTS::VT_EVSE::MeasDutyCycle;
+}
+
+/// <CharINInterface>
+export long CP_EVSE_set_Voltage(double voltage)
+{ 
+  @sysvar::VTS::VT_EVSE::StimVoltageHigh = voltage;
+  @sysvar::VTS::VT_EVSE::StimVoltageLow = - abs(voltage);
+
+  return 0;
+}
+
+on sysvar_update VTS::VT_EVSE::MeasVoltageHigh
+{
+  int State_old = 0; 
+  
+  if (11 < @this && @this < 13)
+  {
+    //write("State A");
+    @VT_Control::IEC61851_State_EVSE = 1; 
+    SetChargingStationPicturesVisibility(Ready);
+  }
+  else if (8 < @this && @this < 10)
+  {
+    //write("State B");
+    @VT_Control::IEC61851_State_EVSE = 2;
+    SetChargingStationPicturesVisibility(Charging);
+  }
+  else if (5 < @this && @this < 7)
+  {
+    //write("State C");
+    @VT_Control::IEC61851_State_EVSE = 3;
+  }
+  else if (2 < @this && @this < 4)
+  {
+    //write("State D");
+    @VT_Control::IEC61851_State_EVSE = 4;
+  }
+  else if (-1 < @this && @this  <1)
+  {
+    //write("State E");
+    @VT_Control::IEC61851_State_EVSE = 5;
+  }
+  else if (-13 < @this && @this < -11)
+  {
+    //write("State F");
+    @VT_Control::IEC61851_State_EVSE = 6;
+  }
+  else
+  {
+    @VT_Control::IEC61851_State_EVSE = 0;
+  }
+  
+  if (@VT_Control::IEC61851_State_EVSE != State_old)
+  {
+    write("VT_EVSE::IEC61851: State changed to: %d", @VT_Control::IEC61851_State_EVSE);
+        
+    State_old = @VT_Control::IEC61851_State_EVSE;
+  }
+}
+
+on sysvar_update VT_Control::IEC61851_State_EVSE
+{
+  if(@Common::SysUserChargingMode == @Common::SysUserChargingMode::AC)
+  {
+    if (@this == 3){ //State C
+      HV_set_AC_relays(1); //Close switches of Powersupply
+    }
+    else{
+      HV_set_AC_relays(0); //Open switches of Powersupply
+      HV_source_set_output(0);
+    }
+  }
+}
+
+/// <CharINInterface>
+export long CP_EVSE_set_Dutycycle(double dutyCycle)
+{
+  @sysvar::VTS::VT_EVSE::StimDutyCycle = dutyCycle; 
+  
+  if(dutyCycle > 0.0)
+    @sysvar::VT::EVSE_Enable_PWM = 1;
+  else
+    @sysvar::VT::EVSE_Enable_PWM = 0;
+  
+  return 0;
+}
+
+/// <CharINInterface>
+export long CP_EVSE_set_Oscillator(long OnOff)
+{
+  if (OnOff == 1)
+  {
+    @sysvar::VTS::VT_EVSE::Relay_K23 = 1;   // connect PLC
+    @sysvar::VTS::VT_EVSE::Relay_K24 = 1;   // connect PLC
+    @sysvar::VT::EVSE_Enable_PLC = 1;
+    write("VT_EVSE:: PLC relays connected");    
+  }
+  else
+  {
+    @sysvar::VTS::VT_EVSE::Relay_K23 = 0;   // connect PLC
+    @sysvar::VTS::VT_EVSE::Relay_K24 = 0;   // connect PLC
+    @sysvar::VT::EVSE_Enable_PLC = 0;
+    write("VT_EVSE:: PLC relays disconnected");    
+  }
+  
+  return 0;
+}
+
+/// <CharINInterface>
+export long CP_EVSE_set_open_circuit(long closed)
+{
+  if (closed == 1)
+  {
+    @sysvar::VTS::VT_EVSE::Relay_K26 = 1;   // switch CP_EVSE
+    @sysvar::VTS::VT_EVSE::Relay_K27 = 1;   // switch CP_EV
+    @sysvar::VTS::VT_EVSE::Relay_K28 = 1;   // switch PE
+    @sysvar::VT::EVSE_Connect = 1;
+    @sysvar::VT::EVSE_Enable_PLC = 1;
+    write("VT_EVSE::Connected");
+  }
+  else
+  {
+    @sysvar::VTS::VT_EVSE::Relay_K26 = 0;   // switch CP_EVSE
+    @sysvar::VTS::VT_EVSE::Relay_K27 = 0;   // switch CP_EV
+    @sysvar::VTS::VT_EVSE::Relay_K28 = 0;   // switch PE
+    @sysvar::VT::EVSE_Connect = 0;
+    @sysvar::VT::EVSE_Enable_PLC = 0;
+    write("VT_EVSE::Disconnected");
+  }
+  
+  return 0;
+}
+
+/// <CharINInterface>
+export long PP_EVSE_set_open_circuit(long closed)
+{
+  if(isSimulated())
+    return 0;
+  
+  if (closed > 0)
+  {
+    sysvar::VTS::Outlet_PP.SetStimulationMode(eVTSStimulationModeResistanceGreater);
+    sysvar::VTS::Outlet_PP.SetCurveType(eVTSCurveTypeConstant);
+    sysvar::VTS::Outlet_PP.StartStimulation();
+  }
+  else
+  {
+    sysvar::VTS::Outlet_PP.SetStimulationMode(eVTSStimulationModeNone);
+  }
+  
+  return 0;
+}
+
+/// <CharINInterface>
+export long PP_EVSE_set_resistance(double resistance)
+{
+  if(resistance > 0)
+    @sysvar::VTS::Outlet_PP::Resistor = resistance;
+  else
+    PP_EVSE_set_open_circuit(0); //open connection instead of setting 0 Ohm
+    
+  return 0;
+}
+
+/// <CharINInterfaceDC>
+export long HV_source_set_I_DC(double current)
+{
+  @EVSE_Sim::SysEVSE_PresentCurrent = current;
+  return 0;
+}
+
+/// <CharINInterfaceDC>
+export long HV_source_set_U_DC(double voltage)
+{
+  @EVSE_Sim::SysEVSE_PresentVoltage = voltage;
+  return 0;
+}
+
+/// <CharINInterfaceDC>
+export double HV_measure_DC_U()
+{
+  return @EVSE_Sim::SysEVSE_PresentVoltage;
+}
+
+/// <CharINInterfaceDC>
+export double HV_measure_DC_I()
+{
+  return @EVSE_Sim::SysEVSE_PresentCurrent;
+}
+
+
+/// <CharINInterfaceAC>
+export double HV_set_AC_relays(long enabled)
+{
+  return 0;
+}
+
+/// <CharINInterfaceAC>
+export double HV_measure_AC_I_L1_rms()
+{
+  return 0;
+}
+
+/// <CharINInterfaceAC>
+export double HV_measure_AC_I_L2_rms()
+{
+  return 0;
+}
+
+/// <CharINInterfaceAC>
+export double HV_measure_AC_I_L3_rms()
+{
+  return 0;
+}
+
+/// <CharINInterfaceAC>
+export long HV_source_set_U_L1_rms(double voltage)
+{
+  @EVSE_Sim::SysEVSE_PresentVoltage = voltage;
+  return 0;
+}
+
+/// <CharINInterfaceAC>
+export long HV_source_set_U_L2_rms(double voltage)
+{
+  return 0;
+}
+
+/// <CharINInterfaceAC>
+export long HV_source_set_U_L3_rms(double voltage)
+{
+  return 0;
+}
+
+/// <CharINInterfaceAC>
+export long HV_source_set_AC_frequency()
+{
+  return 0;  
+}
+
+/// <CharINInterface>
+export long HV_source_set_output(long enabled)
+{
+  return 0;
+}
+
+/// <CharINInterface>
+export long HV_source_perform_welding()
+{
+  return 0;
+}
+
+/// <CharINInterface>
+export long HV_get_isolation_state(long imdInstalled, long imdIntervalInMs, long imdDurationInMs)
+{
+  return 1;
+}

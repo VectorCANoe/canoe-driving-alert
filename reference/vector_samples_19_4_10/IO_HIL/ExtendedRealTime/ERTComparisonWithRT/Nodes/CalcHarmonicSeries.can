@@ -1,0 +1,65 @@
+/*@!Encoding:65001*/
+/**
+ * This CAPL program is used in both, an ERT and in a RT node. For this it gets compiled twice to different cbf files.
+ * The binary is executed in parallel once in ERT and once in RT.
+ *
+ * The amount of load can be controlled by:
+ * 1) LoadTaskFrequency variable: Frequency by which the load function is called (times per millisecond)
+ * 2) LoadTaskIterations variable: Number of iterations in load function
+ */
+
+variables
+{
+  timer genericLoadTimer;
+}
+
+on start
+{
+  @DemoControl::LoadTaskFrequency = 0;
+}
+
+on sysvar DemoControl::LoadTaskFrequency
+{
+  double interval;  
+  
+  cancelTimer(genericLoadTimer);
+  
+  if (@this == 0) 
+  {
+    return;
+  }
+  
+  interval = 1000000 / @this;
+  setTimerCyclic(genericLoadTimer, interval);  
+}
+
+on timer genericLoadTimer
+{
+#if EXTENDED_REAL_TIME
+  if(@DemoControl::EnableErtModel == 0)
+  {
+    return;
+  }
+#else
+  if (@DemoControl::EnableRtModel == 0)
+  {
+    return;
+  }
+#endif
+  calcHarmonicSeries(); 
+}
+
+// Load function which calculates the n-th number of the harmonic series, i.e. sum of 1/n for n >= 1
+void calcHarmonicSeries()
+{
+  int64 i;
+  double sum;
+  int64 n;
+  
+  n = @DemoControl::LoadTaskIterations;
+  sum = 0;
+  for(i=1;i<n;i++)
+  {
+    sum += (1.0 / (i));
+  }
+}

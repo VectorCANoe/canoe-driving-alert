@@ -1,0 +1,69 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Panel Type="Vector.CANalyzer.Panels.PanelSerializer, Vector.CANalyzer.Panels.Serializer, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null">
+  <Object Type="Vector.CANalyzer.Panels.Runtime.Panel, Vector.CANalyzer.Panels.Common, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Panel" ControlName="Overview">
+    <Object Type="Vector.CANalyzer.Panels.Design.PanelHelpControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X75faff94e1086e476fea76ee119aed0ce959" ControlName="File Button 3">
+      <Property Name="Name">X75faff94e1086e476fea76ee119aed0ce959</Property>
+      <Property Name="Size">51, 42</Property>
+      <Property Name="Location">5, 151</Property>
+      <Property Name="ImageFile">Bitmaps\SUT.png</Property>
+      <Property Name="TabIndex">7</Property>
+      <Property Name="Filename">..\OpenSutFolder.bat</Property>
+      <Property Name="WorkingDirectory"></Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xf27c25cde675ae426ee9a84e48ba3bbdc2a7" ControlName="Static Text 4">
+      <Property Name="Name">Xf27c25cde675ae426ee9a84e48ba3bbdc2a7</Property>
+      <Property Name="Size">271, 42</Property>
+      <Property Name="Location">62, 151</Property>
+      <Property Name="TextAlign">MiddleLeft</Property>
+      <Property Name="BackColor">255, 215, 228, 242</Property>
+      <Property Name="Text">Open the folder of the system under test (SUT)</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X4897a2afeb10be4266e96dbe44bdbeade0f1" ControlName="Static Text 1">
+      <Property Name="Name">X4897a2afeb10be4266e96dbe44bdbeade0f1</Property>
+      <Property Name="Size">271, 42</Property>
+      <Property Name="Location">62, 103</Property>
+      <Property Name="TextAlign">MiddleLeft</Property>
+      <Property Name="BackColor">255, 215, 228, 242</Property>
+      <Property Name="Text">Start the selected test environment.</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.PanelHelpControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xeb7c16e4e462ee4baeeb1fde35c8a7eb0e17" ControlName="File Button 1">
+      <Property Name="Name">Xeb7c16e4e462ee4baeeb1fde35c8a7eb0e17</Property>
+      <Property Name="Size">51, 42</Property>
+      <Property Name="Location">5, 103</Property>
+      <Property Name="ImageFile">Bitmaps\Play.png</Property>
+      <Property Name="TabIndex">6</Property>
+      <Property Name="Filename">..\..\Environments\StartSelectedTestEnvironment.bat</Property>
+      <Property Name="WorkingDirectory"></Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl3" ControlName="Static Text 3">
+      <Property Name="Name">StaticTextControl3</Property>
+      <Property Name="Size">271, 42</Property>
+      <Property Name="Location">62, 55</Property>
+      <Property Name="TextAlign">MiddleLeft</Property>
+      <Property Name="BackColor">255, 215, 228, 242</Property>
+      <Property Name="Text">Open the folder with the vhwdebugger-binding.yaml configuration file and select your test environment. </Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.PanelHelpControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="PanelHelpControl2" ControlName="File Button 2">
+      <Property Name="Name">PanelHelpControl2</Property>
+      <Property Name="Size">51, 42</Property>
+      <Property Name="Location">5, 55</Property>
+      <Property Name="ImageFile">Bitmaps\Config.png</Property>
+      <Property Name="TabIndex">5</Property>
+      <Property Name="Filename">..\OpenEnvironmentsFolder.bat</Property>
+      <Property Name="WorkingDirectory"></Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl2" ControlName="Static Text 2">
+      <Property Name="Name">StaticTextControl2</Property>
+      <Property Name="Size">328, 44</Property>
+      <Property Name="Location">5, 5</Property>
+      <Property Name="TextAlign">MiddleLeft</Property>
+      <Property Name="BackColor">255, 215, 228, 242</Property>
+      <Property Name="Font">Microsoft Sans Serif, 8.25pt, style=Bold</Property>
+      <Property Name="Text">The software under test and the selected test environment is not started automatically.</Property>
+    </Object>
+    <Property Name="Name">Panel</Property>
+    <Property Name="Size">338, 200</Property>
+    <Property Name="Location">0, 0</Property>
+    <Property Name="BackColor">255, 215, 228, 242</Property>
+  </Object>
+</Panel>

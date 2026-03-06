@@ -1,0 +1,64 @@
+version 2.0;
+
+import module "HwDebugger";
+
+// Set binding and YAML configuration globally for all distributed objects
+[Binding="HwDebugger"]
+[HwDebuggerBinding::ConfigFile="../../Environments/vhwdebugger-binding.yaml"]
+refine defaultnetwork;
+
+// Functional System Interface for the SUT (Sensors / Actuators)
+namespace RoomTemperatureControl
+{
+  enum State : uint8
+  {
+    OFF,
+    COOLING,
+    HEATING
+  }
+
+  interface ISensor
+  {
+    [OneWay]
+    consumed method void SetTemperature(double temperature);
+
+    // Helper variable for storing current Sensor value (Only accessibly by CANoe)
+    internal data double Temperature;
+  }
+
+  interface IHeater
+  {
+    [OneWay]
+    provided method void SetHeaterState(State state);
+
+    // Helper variable for storing current Heater state (Only accessibly by CANoe)
+    internal data uint8 HeaterState;
+  }
+
+  ISensor Sensor1;
+  ISensor Sensor2;
+  ISensor Sensor3;
+
+  IHeater Heater;
+}
+
+namespace Configuration
+{
+  // Interface which allows to change the behaviour of the application at runtime
+  interface IApplication
+  {
+    // Sets if the current heater state shall also be displayed on an RGB LED.
+    // Requires Raspberry Pi Pico hardware and separate RGB LED.
+    [OneWay]
+    consumed method void SetShowHeaterStateOnLED(bool showOnHW);
+
+    // Helper variable for storing current `ShowHeaterStateOnLED` value (Only accessibly by CANoe)
+    internal data bool ShowHeaterStateOnLED;
+  }
+
+  IApplication Application;
+
+  // This object allows to query the connection state between CANoe and the SIL Adapter,
+  // e.g. for test preconditions (Only accessibly by CANoe)
+  HwDebuggerBinding::IDebugger Debugger;
+}

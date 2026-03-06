@@ -1,0 +1,267 @@
+﻿/*@!Encoding:65001*/
+includes
+{
+  
+}
+
+void disable_control_panel()
+{
+  setControlVisibility("ControlPanel", "Text_NormalMode", 0);
+  setControlVisibility("ControlPanel", "Text_Manipulation", 0);
+  setControlVisibility("ControlPanel", "Text_RemoteAccess", 0);
+  setControlVisibility("ControlPanel", "Button_PlaceIntactPCB", 0); 
+  setControlVisibility("ControlPanel", "Button_PlaceDefectPCB", 0);
+  setControlVisibility("ControlPanel", "Button_StartConveyor", 0); 
+  setControlVisibility("ControlPanel", "Button_DisconnectS1", 0);
+  setControlVisibility("ControlPanel", "Button_DisconnectS2", 0);
+  setControlVisibility("ControlPanel", "Button_RepairS1", 0);
+  setControlVisibility("ControlPanel", "Button_RepairS2", 0);  
+  setControlVisibility("ControlPanel", "Button_QualityControl", 0);
+}
+
+void enable_control_panel()
+{
+  setControlVisibility("ControlPanel", "Text_NormalMode", 1);
+  setControlVisibility("ControlPanel", "Text_Manipulation", 1);
+  setControlVisibility("ControlPanel", "Text_RemoteAccess", 1);
+  setControlVisibility("ControlPanel", "Button_PlaceIntactPCB", 1); 
+  setControlVisibility("ControlPanel", "Button_PlaceDefectPCB", 1);
+  setControlVisibility("ControlPanel", "Button_StartConveyor", 1); 
+  setControlVisibility("ControlPanel", "Button_DisconnectS1", 1);
+  setControlVisibility("ControlPanel", "Button_DisconnectS2", 1);
+  setControlVisibility("ControlPanel", "Button_RepairS1", 1);
+  setControlVisibility("ControlPanel", "Button_RepairS2", 1);  
+  setControlVisibility("ControlPanel", "Button_QualityControl", 1);
+}
+
+export testcase process_three_intact_pcbs()
+{
+  int i;
+  int currentPCBIntactCount;
+  int countOfPCBs = 3;
+
+  currentPCBIntactCount = $SystemSimulation::evaluationParticipant.receivedData.pcbIntactCount;
+
+  disable_control_panel();      
+
+  for (i=0; i<countOfPCBs; i++)
+  {
+    sysSetVariableLong(sysvar::General::PCBIntactButton, 1);
+    testWaitForTimeout(350);
+    sysSetVariableLong(sysvar::General::StartSystem, 1);
+
+    testWaitForTimeout(13000);
+
+    sysSetVariableLong(sysvar::General::PCBIntactButton, 0);
+    sysSetVariableLong(sysvar::General::StartSystem, 0);
+  }  
+
+  if ($SystemSimulation::evaluationParticipant.receivedData.pcbIntactCount == currentPCBIntactCount + countOfPCBs)
+  {
+    testStepPass("Three intact PCBs processed as expected");
+  }
+  else
+  {
+    testStepFail("Error while processing three intact PCBs!");
+  } 
+}
+
+export testcase process_three_defect_pcbs()
+{
+  int i;
+  int currentPCBDefectCount;
+  int countOfPCBs = 3;
+
+  currentPCBDefectCount = $SystemSimulation::evaluationParticipant.receivedData.pcbDefectCount;
+
+  disable_control_panel();
+
+  for (i=0; i<countOfPCBs; i++)
+  {
+    sysSetVariableLong(sysvar::General::PCBDefectButton, 1);
+    testWaitForTimeout(350);
+    sysSetVariableLong(sysvar::General::StartSystem, 1);
+
+    testWaitForTimeout(13000);
+
+    sysSetVariableLong(sysvar::General::PCBDefectButton, 0);
+    sysSetVariableLong(sysvar::General::StartSystem, 0);
+  }  
+
+  if ($SystemSimulation::evaluationParticipant.receivedData.pcbDefectCount == currentPCBDefectCount + countOfPCBs)
+  {
+    testStepPass("Three defect PCBs processed as expected");
+  }
+  else
+  {
+    testStepFail("Error while processing three defect PCBs!");
+  } 
+}
+
+export testcase process_one_intact_pcb()
+{
+  int i;
+  int currentPCBIntactCount;
+  int countOfPCBs = 1;
+
+  currentPCBIntactCount = $SystemSimulation::evaluationParticipant.receivedData.pcbIntactCount;
+
+  disable_control_panel();
+
+  for (i=0; i<countOfPCBs; i++)
+  {
+    sysSetVariableLong(sysvar::General::PCBIntactButton, 1);
+    testWaitForTimeout(350);
+    sysSetVariableLong(sysvar::General::StartSystem, 1);
+
+    testWaitForTimeout(13000);
+
+    sysSetVariableLong(sysvar::General::PCBIntactButton, 0);
+    sysSetVariableLong(sysvar::General::StartSystem, 0);
+  }  
+
+  if ($SystemSimulation::evaluationParticipant.receivedData.pcbIntactCount == currentPCBIntactCount + countOfPCBs)
+  {
+    testStepPass("One intact PCBs processed as expected");
+  }
+  else
+  {
+    testStepFail("Error while processing one intact PCBs!");
+  } 
+}
+
+export testcase quality_control_after_three_intact_pcbs()
+{
+  char thirdLast[10];
+  char secondLast[10];
+  char last[10];
+
+  disable_control_panel();
+
+  sysSetVariableLong(sysvar::QualityControl::ButtonQualityControl, 1);
+
+  testWaitForTimeout(5500);
+
+  sysSetVariableLong(sysvar::QualityControl::ButtonQualityControl, 0);
+
+  sysGetVariableString(sysvar::QualityControl::ConditionThridLastPCB, thirdLast, elcount(thirdLast));
+  sysGetVariableString(sysvar::QualityControl::ConditionSecondLastPCB, secondLast, elcount(secondLast));
+  sysGetVariableString(sysvar::QualityControl::ConditionLastPCB, last, elcount(last));
+
+  if (mbstrncmp(thirdLast, "intact", 10) == 0 && mbstrncmp(secondLast, "intact", 10) == 0 && mbstrncmp(last, "intact", 10) == 0)
+  {
+    testStepPass("Quality Control after three intact PCBs was correct");
+  }
+  else
+  {
+    testStepFail("Error in Quality Control after three intact PCBs!");
+  } 
+}
+
+export testcase quality_control_after_three_defect_pcbs() 
+{
+  char thirdLast[10];
+  char secondLast[10];
+  char last[10];
+
+  disable_control_panel();
+
+  sysSetVariableLong(sysvar::QualityControl::ButtonQualityControl, 1);
+
+  testWaitForTimeout(5500);
+
+  sysSetVariableLong(sysvar::QualityControl::ButtonQualityControl, 0);
+
+  sysGetVariableString(sysvar::QualityControl::ConditionThridLastPCB, thirdLast, elcount(thirdLast));
+  sysGetVariableString(sysvar::QualityControl::ConditionSecondLastPCB, secondLast, elcount(secondLast));
+  sysGetVariableString(sysvar::QualityControl::ConditionLastPCB, last, elcount(last));
+
+  if (mbstrncmp(thirdLast, "defect", 10) == 0 && mbstrncmp(secondLast, "defect", 10) == 0 && mbstrncmp(last, "defect", 10) == 0)
+  {
+    testStepPass("Quality Control after three defect PCBs was correct");
+  }
+  else
+  {
+    testStepFail("Error in Quality Control after three defect PCBs!");
+  } 
+}
+
+export testcase quality_control_mixed() 
+{
+  char thirdLast[10];
+  char secondLast[10];
+  char last[10];
+
+  disable_control_panel();
+
+  sysSetVariableLong(sysvar::QualityControl::ButtonQualityControl, 1);
+
+  testWaitForTimeout(5500);
+
+  sysSetVariableLong(sysvar::QualityControl::ButtonQualityControl, 0);
+
+  sysGetVariableString(sysvar::QualityControl::ConditionThridLastPCB, thirdLast, elcount(thirdLast));
+  sysGetVariableString(sysvar::QualityControl::ConditionSecondLastPCB, secondLast, elcount(secondLast));
+  sysGetVariableString(sysvar::QualityControl::ConditionLastPCB, last, elcount(last));
+
+  setControlVisibility("ControlPanel", "Text_NormalMode", 1);
+  setControlVisibility("ControlPanel", "Text_Manipulation", 1);
+  setControlVisibility("ControlPanel", "Text_RemoteAccess", 1);
+  setControlVisibility("ControlPanel", "Button_PlaceIntactPCB", 1); 
+  setControlVisibility("ControlPanel", "Button_PlaceDefectPCB", 1);
+  setControlVisibility("ControlPanel", "Button_StartConveyor", 1); 
+  setControlVisibility("ControlPanel", "Button_DisconnectS1", 1);
+  setControlVisibility("ControlPanel", "Button_DisconnectS2", 1);
+  setControlVisibility("ControlPanel", "Button_RepairS1", 1);
+  setControlVisibility("ControlPanel", "Button_RepairS2", 1);  
+  setControlVisibility("ControlPanel", "Button_QualityControl", 1);
+
+  if (mbstrncmp(thirdLast, "defect", 10) == 0 && mbstrncmp(secondLast, "defect", 10) == 0 && mbstrncmp(last, "intact", 10) == 0)
+  {
+    testStepPass("Quality Control mixed was correct");
+  }
+  else
+  {
+    testStepFail("Error in Quality Control for mixed!");
+  } 
+}
+
+export testcase disconnect_and_repair_sensors()
+{
+  int systemStateCorrectCount = 0;
+
+  disable_control_panel();
+
+  if (sysGetVariableLong(sysvar::General::SystemState) == IDLE) systemStateCorrectCount++;
+  
+  sysSetVariableLong(sysvar::Sensors::S1Disconnected, 1);
+  testWaitForTimeout(2500);
+  sysSetVariableLong(sysvar::Sensors::S1Disconnected, 0);
+  if (sysGetVariableLong(sysvar::General::SystemState) == SENSOR_DEFECT_INFO) systemStateCorrectCount++;
+
+  sysSetVariableLong(sysvar::Sensors::S2Disconnected, 1);
+  testWaitForTimeout(1500);
+  sysSetVariableLong(sysvar::Sensors::S2Disconnected, 0);
+  if (sysGetVariableLong(sysvar::General::SystemState) == STOPPED) systemStateCorrectCount++;
+
+  sysSetVariableLong(sysvar::Sensors::RepairS1, 1);
+  testWaitForTimeout(2500);
+  sysSetVariableLong(sysvar::Sensors::RepairS1, 0);
+  if (sysGetVariableLong(sysvar::General::SystemState) == SENSOR_DEFECT_INFO) systemStateCorrectCount++;
+
+  sysSetVariableLong(sysvar::Sensors::RepairS2, 1);
+  testWaitForTimeout(1500);
+  sysSetVariableLong(sysvar::Sensors::RepairS2, 0);
+  if (sysGetVariableLong(sysvar::General::SystemState) == IDLE) systemStateCorrectCount++;      
+
+  if (systemStateCorrectCount == 5)
+  {
+    testStepPass("Disconnect and Repair Sensors was correct");
+  }
+  else
+  {
+    testStepFail("Error disconnecting and repairing Sensors!");
+  } 
+
+}
+

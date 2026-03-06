@@ -1,0 +1,175 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<FunctionBusLibrary Version="3" FormatMajorVersion="3" FormatMinorVersion="1" FormatPatchVersion="3">
+  <Namespaces>
+    <Namespace IsDefinedAsHidden="False" IsSystemDefined="False" Name="RoomTemperatureControl">
+      <Subnamespaces>
+        <Namespace IsDefinedAsHidden="False" IsSystemDefined="False" Name="_Generated">
+          <DataTypes>
+            <FunctionPrototype IsOneWay="True" AllowSpecialCharactersInMemberNames="False" HasFixedBinaryLayout="False" HasMotorolaByteOrder="False" Name="FuncOW_Void_I_Double_temperature">
+              <Result DataType="_SystemDataTypes::Void" />
+              <Parameters>
+                <Parameter IsOptional="False" Name="temperature">
+                  <DataType DataType="_SystemDataTypes::Double" />
+                </Parameter>
+              </Parameters>
+            </FunctionPrototype>
+            <FunctionPrototype IsOneWay="True" AllowSpecialCharactersInMemberNames="False" HasFixedBinaryLayout="False" HasMotorolaByteOrder="False" Name="FuncOW_Void_I_UInt8_State_state">
+              <Result DataType="_SystemDataTypes::Void" />
+              <Parameters>
+                <Parameter IsOptional="False" Name="state">
+                  <DataType DataType="_SystemDataTypes::UInt8">
+                    <NumericProperties MinValue="" MinValueType="Invalid" MaxValue="" MaxValueType="Invalid" IsBoolean="False" IsTimespan="False">
+                      <ImplToPhysEncodings TextualEncodings="RoomTemperatureControl::State" />
+                    </NumericProperties>
+                  </DataType>
+                </Parameter>
+              </Parameters>
+            </FunctionPrototype>
+          </DataTypes>
+        </Namespace>
+      </Subnamespaces>
+      <DOInterfaces>
+        <DOInterface IsAbstract="False" Name="ISensor">
+          <MemberData>
+            <DOMemberDataHolder Name="MemberData" />
+          </MemberData>
+          <DataMembers>
+            <DOIFDataMember LocalDirection="Internal" Name="Temperature">
+              <DataType DataType="_SystemDataTypes::Double" />
+            </DOIFDataMember>
+          </DataMembers>
+          <Methods>
+            <DOIFMethodMember Prototype="RoomTemperatureControl::_Generated::FuncOW_Void_I_Double_temperature" LocalDirection="Consumed" Name="SetTemperature" />
+          </Methods>
+        </DOInterface>
+        <DOInterface IsAbstract="False" Name="IHeater">
+          <MemberData>
+            <DOMemberDataHolder Name="MemberData" />
+          </MemberData>
+          <DataMembers>
+            <DOIFDataMember LocalDirection="Internal" Name="HeaterState">
+              <DataType DataType="_SystemDataTypes::UInt8" />
+            </DOIFDataMember>
+          </DataMembers>
+          <Methods>
+            <DOIFMethodMember Prototype="RoomTemperatureControl::_Generated::FuncOW_Void_I_UInt8_State_state" Name="SetHeaterState" />
+          </Methods>
+        </DOInterface>
+      </DOInterfaces>
+      <DistributedObjects>
+        <DistributedObject GenerateDotNetAPI="True" Name="Sensor1">
+          <DataType>
+            <ModifiedDOIF Reverse="False" IsDOReference="False" Interface="RoomTemperatureControl::ISensor" />
+          </DataType>
+          <MemberData>
+            <DOMemberDataHolder Name="MemberData" />
+          </MemberData>
+        </DistributedObject>
+        <DistributedObject GenerateDotNetAPI="True" Name="Sensor2">
+          <DataType>
+            <ModifiedDOIF Reverse="False" IsDOReference="False" Interface="RoomTemperatureControl::ISensor" />
+          </DataType>
+          <MemberData>
+            <DOMemberDataHolder Name="MemberData" />
+          </MemberData>
+        </DistributedObject>
+        <DistributedObject GenerateDotNetAPI="True" Name="Sensor3">
+          <DataType>
+            <ModifiedDOIF Reverse="False" IsDOReference="False" Interface="RoomTemperatureControl::ISensor" />
+          </DataType>
+          <MemberData>
+            <DOMemberDataHolder Name="MemberData" />
+          </MemberData>
+        </DistributedObject>
+        <DistributedObject GenerateDotNetAPI="True" Name="Heater">
+          <DataType>
+            <ModifiedDOIF Reverse="False" IsDOReference="False" Interface="RoomTemperatureControl::IHeater" />
+          </DataType>
+          <MemberData>
+            <DOMemberDataHolder Name="MemberData" />
+          </MemberData>
+        </DistributedObject>
+      </DistributedObjects>
+      <TextualEncodings>
+        <TextualEncodings DefinesMinMax="False" UnderlyingDataTypeHint="_SystemDataTypes::UInt8" Name="State">
+          <TextualEncoding TextualValue="OFF" DisplayValue="OFF" LowerBound="0" LowerBoundType="UInt32" UpperBound="0" UpperBoundType="UInt32" />
+          <TextualEncoding TextualValue="COOLING" DisplayValue="COOLING" LowerBound="1" LowerBoundType="UInt32" UpperBound="1" UpperBoundType="UInt32" />
+          <TextualEncoding TextualValue="HEATING" DisplayValue="HEATING" LowerBound="2" LowerBoundType="UInt32" UpperBound="2" UpperBoundType="UInt32" />
+        </TextualEncodings>
+      </TextualEncodings>
+    </Namespace>
+    <Namespace IsDefinedAsHidden="False" IsSystemDefined="False" Name="Configuration">
+      <Subnamespaces>
+        <Namespace IsDefinedAsHidden="False" IsSystemDefined="False" Name="_Generated">
+          <DataTypes>
+            <IntegerDataType IsSigned="False" BitCount="1" HasFixedBinaryLayout="True" HasMotorolaByteOrder="False" Name="UInt1" />
+            <FunctionPrototype IsOneWay="True" AllowSpecialCharactersInMemberNames="False" HasFixedBinaryLayout="False" HasMotorolaByteOrder="False" Name="FuncOW_Void_I_UInt1_Bool_showOnHW">
+              <Result DataType="_SystemDataTypes::Void" />
+              <Parameters>
+                <Parameter IsOptional="False" Name="showOnHW">
+                  <DataType DataType="Configuration::_Generated::UInt1">
+                    <NumericProperties MinValue="" MinValueType="Invalid" MaxValue="" MaxValueType="Invalid" IsBoolean="True" IsTimespan="False" />
+                  </DataType>
+                </Parameter>
+              </Parameters>
+            </FunctionPrototype>
+          </DataTypes>
+        </Namespace>
+      </Subnamespaces>
+      <DOInterfaces>
+        <DOInterface IsAbstract="False" Name="IApplication">
+          <MemberData>
+            <DOMemberDataHolder Name="MemberData" />
+          </MemberData>
+          <DataMembers>
+            <DOIFDataMember LocalDirection="Internal" Name="ShowHeaterStateOnLED">
+              <DataType DataType="Configuration::_Generated::UInt1">
+                <NumericProperties MinValue="" MinValueType="Invalid" MaxValue="" MaxValueType="Invalid" IsBoolean="True" IsTimespan="False" />
+              </DataType>
+            </DOIFDataMember>
+          </DataMembers>
+          <Methods>
+            <DOIFMethodMember Prototype="Configuration::_Generated::FuncOW_Void_I_UInt1_Bool_showOnHW" LocalDirection="Consumed" Name="SetShowHeaterStateOnLED" />
+          </Methods>
+        </DOInterface>
+      </DOInterfaces>
+      <DistributedObjects>
+        <DistributedObject GenerateDotNetAPI="True" Name="Application">
+          <DataType>
+            <ModifiedDOIF Reverse="False" IsDOReference="False" Interface="Configuration::IApplication" />
+          </DataType>
+          <MemberData>
+            <DOMemberDataHolder Name="MemberData" />
+          </MemberData>
+        </DistributedObject>
+        <DistributedObject GenerateDotNetAPI="True" Name="Debugger">
+          <DataType>
+            <ModifiedDOIF Reverse="False" IsDOReference="False" Interface="HwDebuggerBinding::IDebugger" />
+          </DataType>
+          <MemberData>
+            <DOMemberDataHolder Name="MemberData" />
+          </MemberData>
+        </DistributedObject>
+      </DistributedObjects>
+    </Namespace>
+  </Namespaces>
+  <DefaultDONetworkData>
+    <DefaultDONetworkData>
+      <AttributeValues>
+        <AttributeValue Definition="_SystemAttributes::Binding" InitialValue="HwDebugger" InitialValueType="String" />
+        <AttributeValue Definition="HwDebuggerBinding::ConfigFile" InitialValue="..\Environments\vhwdebugger-binding.yaml" InitialValueType="String" />
+      </AttributeValues>
+    </DefaultDONetworkData>
+  </DefaultDONetworkData>
+  <ModuleDependencies>
+    <ModuleDependency Module="_Internal" />
+    <ModuleDependency Module="_Internal" />
+    <ModuleDependency Module="_Internal" />
+    <ModuleDependency Module="_Internal" />
+    <ModuleDependency Module="_Internal" />
+    <ModuleDependency Module="_Internal" />
+    <ModuleDependency Module="_Internal" />
+    <ModuleDependency Module="_Internal" />
+    <ModuleDependency Module="HwDebugger" />
+  </ModuleDependencies>
+</FunctionBusLibrary>

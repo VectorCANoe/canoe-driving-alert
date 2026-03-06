@@ -1,0 +1,33 @@
+// This file was generated automatically. Changes to this file may
+// cause incorrect behavior and will be lost when regenerated.
+
+version 2.0;
+
+import module "ASAMXIL";
+
+namespace XILServer
+{
+    [Binding="ASAMXIL"]
+    [ASAMXILBinding::VendorName="Example Vendor"]
+    [ASAMXILBinding::ProductName="Example Product"]
+    [ASAMXILBinding::XILVersion=v2_1_0]
+    // relative paths must be relative to the *.cfg file (desktop editions) or the working directory (server editions)
+    [ASAMXILBinding::MAPortConfigPath="XILAPIConfiguration/VendorMAPortConfig.xml"]
+    [ASAMXILBinding::SampleTimeMs=100]
+    [ASAMXILBinding::MAPortName="MAPort"]
+    // relative paths must be relative to the *.cfg file (desktop editions) or the working directory (server editions)
+    [ASAMXILBinding::ImplementationManifestFolder="XILAPIConfiguration"]
+    virtualnetwork MAPortNetwork;
+
+    [VirtualNetwork=MAPortNetwork]
+    interface IMAPort
+    {
+        [ASAMXILBinding::VariableName="XILServer/MAPort.TestVariableReadable"]
+        consumed data double TestVariableReadable;
+
+        [ASAMXILBinding::VariableName="XILServer/MAPort.TestVariableWriteable"]
+        provided data double TestVariableWriteable;
+    }
+
+    IMAPort MAPort;
+}

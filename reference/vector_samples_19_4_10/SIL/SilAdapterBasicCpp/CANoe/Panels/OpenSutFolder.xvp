@@ -1,0 +1,74 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Panel Type="Vector.CANalyzer.Panels.PanelSerializer, Vector.CANalyzer.Panels.Serializer, Version=19.3.51.0, Culture=neutral, PublicKeyToken=null">
+  <Object Type="Vector.CANalyzer.Panels.Runtime.Panel, Vector.CANalyzer.Panels.Common, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Panel" ControlName="System Under Test">
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X332a6eedec584e4fdee8ec8ea343760e151d" ControlName="Static Text 4">
+      <Property Name="Name">X332a6eedec584e4fdee8ec8ea343760e151d</Property>
+      <Property Name="Size">254, 39</Property>
+      <Property Name="Location">67, 155</Property>
+      <Property Name="TextAlign">MiddleLeft</Property>
+      <Property Name="BackColor">255, 215, 228, 242</Property>
+      <Property Name="Text">Press the button to start the software under test
+written in C.</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.PanelHelpControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xa44f0cb0e52c7e4fc9ebfc8e57483843d291" ControlName="File Button 3">
+      <Property Name="Name">Xa44f0cb0e52c7e4fc9ebfc8e57483843d291</Property>
+      <Property Name="Size">51, 42</Property>
+      <Property Name="Location">10, 152</Property>
+      <Property Name="ImageFile">Bitmaps\Play.png</Property>
+      <Property Name="TabIndex">5</Property>
+      <Property Name="Filename">..\StartSutC.bat</Property>
+      <Property Name="WorkingDirectory"></Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X0391ece1eb668e49cde9e21e3773c912704d" ControlName="Static Text 3">
+      <Property Name="Name">X0391ece1eb668e49cde9e21e3773c912704d</Property>
+      <Property Name="Size">254, 39</Property>
+      <Property Name="Location">67, 106</Property>
+      <Property Name="TextAlign">MiddleLeft</Property>
+      <Property Name="BackColor">255, 215, 228, 242</Property>
+      <Property Name="Text">Press the button to start the software under test
+written in C++.</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.PanelHelpControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X8fca260fef830e4f82eb727e366e32a49be1" ControlName="File Button 2">
+      <Property Name="Name">X8fca260fef830e4f82eb727e366e32a49be1</Property>
+      <Property Name="Size">51, 42</Property>
+      <Property Name="Location">10, 103</Property>
+      <Property Name="ImageFile">Bitmaps\Play.png</Property>
+      <Property Name="TabIndex">4</Property>
+      <Property Name="Filename">..\StartSutCpp.bat</Property>
+      <Property Name="WorkingDirectory"></Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl2" ControlName="Static Text 2">
+      <Property Name="Name">StaticTextControl2</Property>
+      <Property Name="Size">311, 40</Property>
+      <Property Name="Location">10, 11</Property>
+      <Property Name="TextAlign">MiddleLeft</Property>
+      <Property Name="BackColor">255, 215, 228, 242</Property>
+      <Property Name="Font">Microsoft Sans Serif, 8.25pt, style=Bold</Property>
+      <Property Name="Text">The software under test is not started automatically. 
+Start the executable from the file system or via button.
+</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.PanelHelpControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="PanelHelpControl1" ControlName="File Button 1">
+      <Property Name="Name">PanelHelpControl1</Property>
+      <Property Name="Size">51, 42</Property>
+      <Property Name="Location">10, 55</Property>
+      <Property Name="ImageFile">Bitmaps\SUT.png</Property>
+      <Property Name="TabIndex">3</Property>
+      <Property Name="Filename">..\OpenSutFolder.bat</Property>
+      <Property Name="WorkingDirectory"></Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl1" ControlName="Static Text 1">
+      <Property Name="Name">StaticTextControl1</Property>
+      <Property Name="Size">255, 39</Property>
+      <Property Name="Location">66, 58</Property>
+      <Property Name="TextAlign">MiddleLeft</Property>
+      <Property Name="BackColor">255, 215, 228, 242</Property>
+      <Property Name="Text">Press the button to open the folder that contains 
+the software under test written in C++ / C.</Property>
+    </Object>
+    <Property Name="Name">Panel</Property>
+    <Property Name="Size">326, 202</Property>
+    <Property Name="Location">0, 0</Property>
+    <Property Name="BackColor">255, 215, 228, 242</Property>
+  </Object>
+</Panel>

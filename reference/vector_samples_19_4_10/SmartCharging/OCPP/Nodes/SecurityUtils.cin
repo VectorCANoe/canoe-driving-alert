@@ -1,0 +1,41 @@
+/*@!Encoding:1252*/
+variables {
+  qword objectFactoryHandle;
+  qword pkiAccessHandle;
+  qword encoderHandle, decoderHandle;
+}
+
+/*
+Init Security Manager handlers
+*/
+void initSecurityManager() 
+{
+    objectFactoryHandle = GetX509ObjectFactory();
+    X509ObjectFactory_createX509PkiAccess(objectFactoryHandle, pkiAccessHandle);
+    X509ObjectFactory_createX509Encoder(objectFactoryHandle, encoderHandle);
+    X509ObjectFactory_createX509Decoder(objectFactoryHandle, decoderHandle);
+}
+
+/*
+Load certificate from Sercurity Manager
+*/
+dword loadCertificate(char certificateName[], qword& outCertificateHandle)
+{
+  byte derBuffer[5000];
+  dword derBufferLen = 5000;
+  int returnCode;
+  returnCode = 0;
+  
+  returnCode = X509PkiAccess_LoadCertificateByName(pkiAccessHandle, certificateName, outCertificateHandle);
+
+  if (returnCode == 1)
+  {
+    returnCode = X509Encoder_EncodeCertificate(encoderHandle, outCertificateHandle, derBuffer, derBufferLen);
+    if (returnCode == 1)
+    {
+      sysSetVariableData(sysvar::Security::SysDEREncodedCertificate, derBuffer, derBufferLen);
+    }
+  }
+
+  return returnCode;
+}

@@ -1,0 +1,202 @@
+/*@!Encoding:1252*/
+includes
+{
+
+}
+
+variables
+{
+}
+
+on prestart 
+{
+  @Test::SysTestApplyControlMode = 0;
+}
+
+on sysVar Test::SysTestApplyControlMode
+{
+  if (@this == 1)
+  {
+    if(IsEVSERolePassive())
+    {
+      EVSE.StopSimulation.Call();
+      EVSE.SetAdHocSendingEnabled.Call(1);
+      reReadSharedAttributes();
+    }
+    else
+    {
+      //EVSE is always active
+    }
+  }
+  else
+  {
+    // PEVSE needs to close the connection in order to start again
+    Reset_EVSE_Values();
+  }
+}
+
+on sysVar Test::SysSendSECCDiscoveryRes
+{
+  if (@this == 1 && IsEVSERolePassive())
+  {
+    if(@sysVar::Common::SysTLSEnabled == @Common::SysTLSEnabled::TLSDisabled)
+      $EVSE.SDP.SECC_Discovery_Wireless_Response.SecurityType = 0x10;
+    else
+      $EVSE.SDP.SECC_Discovery_Wireless_Response.SecurityType = 0x00;
+  }
+}
+
+on sysVar Test::SysSendSupportedAppProtocolRes
+{
+  if (@this == 1 && IsEVSERolePassive())
+  {
+    $EVSE.SAP.SupportedAppProtocol_Response.ResponseCode = $EVSE.SAP.SupportedAppProtocol_Response.ResponseCode;
+  }
+}
+
+on sysVar Test::SysSendSessionSetupRes
+{  
+  if (@this == 1 && IsEVSERolePassive())
+  {
+    $EVSE.ISO20.SessionSetup_Response.ResponseCode = $EVSE.ISO20.SessionSetup_Response.ResponseCode;
+  }
+}
+
+on sysVar Test::SysSendAuthorizationSetupRes
+{  
+  if (@this == 1 && IsEVSERolePassive())
+  {
+    if(@Common::SysUserAuthorizationMode == @Common::SysUserAuthorizationMode::PnC)
+    {
+      int i;
+      for(i = 0; i < 16; i++)
+      {
+        $EVSE.ISO20.AuthorizationSetup_Response.ASResAuthorizationMode.PnC_ASResAuthorizationMode.GenChallenge[i] = i+1;
+      }
+    }
+    $EVSE.ISO20.AuthorizationSetup_Response.ResponseCode = $EVSE.ISO20.AuthorizationSetup_Response.ResponseCode;
+  }
+}
+
+on sysVar Test::SysSendServiceDiscoveryRes
+{
+  if (@this == 1 && IsEVSERolePassive())
+  {
+    $EVSE.ISO20.ServiceDiscovery_Response.EnergyTransferServiceList.Service[0].ServiceID = _CCS::DataTypes::ServiceIDEncoding::WPT;
+  }
+}
+
+on sysVar Test::SysSendServiceDetailRes
+{
+  if (@this == 1 && IsEVSERolePassive())
+  {    
+    // Definition of required service ID (shall be equal to the if query
+    $EVSE.ISO20.ServiceDetail_Response.ServiceID = $EVSE.ISO20.ServiceDetail_Request.ServiceID;  
+  }
+}
+
+on sysVar Test::SysSendServiceSelRes
+{
+  if (@this == 1 && IsEVSERolePassive())
+  {
+    $EVSE.ISO20.ServiceSelection_Response.ResponseCode = $EVSE.ISO20.ServiceSelection_Response.ResponseCode;
+  }
+}
+
+on sysVar Test::SysSendCertificateInstallationRes
+{
+  if (@this == 1 && IsEVSERolePassive())
+  {    
+    $EVSE.ISO20.CertificateInstallation_Response.ResponseCode = $EVSE.ISO20.CertificateInstallation_Response.ResponseCode;
+  }
+}
+
+on sysVar Test::SysSendAuthorizationRes
+{  
+  if (@this == 1 && IsEVSERolePassive())
+  {
+    $EVSE.ISO20.Authorization_Response.ResponseCode = $EVSE.ISO20.Authorization_Response.ResponseCode;
+  }
+}
+
+on sysVar Test::SysSendPairingRes
+{  
+  if (@this == 1 && IsEVSERolePassive())
+  {
+    $EVSE.ISO20.WPT_Pairing_Response.Header.TimeStamp = $EVSE.ISO20.WPT_Pairing_Response.Header.TimeStamp;
+  }
+}
+
+on sysVar Test::SysSendFinePositioningRes
+{  
+  if (@this == 1 && IsEVSERolePassive())
+  {
+    $EVSE.ISO20.WPT_FinePositioning_Response.Header.TimeStamp = $EVSE.ISO20.WPT_FinePositioning_Response.Header.TimeStamp;
+  }
+}
+
+on sysVar Test::SysSendFinePositioningSetupRes
+{  
+  if (@this == 1 && IsEVSERolePassive())
+  {
+    $EVSE.ISO20.WPT_FinePositioningSetup_Response.Header.TimeStamp = $EVSE.ISO20.WPT_FinePositioningSetup_Response.Header.TimeStamp;
+  }
+}
+
+on sysVar Test::SysSendAlignmentCheckRes
+{  
+  if (@this == 1 && IsEVSERolePassive())
+  {
+    $EVSE.ISO20.WPT_AlignmentCheck_Response.Header.TimeStamp = $EVSE.ISO20.WPT_AlignmentCheck_Response.Header.TimeStamp;
+  }
+}
+
+on sysVar Test::SysSendWPTChargeLoopRes
+{  
+  if (@this == 1 && IsEVSERolePassive())
+  {
+    $EVSE.ISO20.WPT_ChargeLoop_Response.Header.TimeStamp = $EVSE.ISO20.WPT_ChargeLoop_Response.Header.TimeStamp;
+  }
+}
+
+on sysVar Test::SysSendChargeParDiscoveryRes
+{
+  if (@this == 1 && IsEVSERolePassive())
+  {
+    $EVSE.ISO20.WPT_ChargeParameterDiscovery_Response.Header.TimeStamp = $EVSE.ISO20.WPT_ChargeParameterDiscovery_Response.Header.TimeStamp;
+  }
+}
+
+on sysVar Test::SysSendPowerDeliveryRes
+{
+  if (@this == 1 && IsEVSERolePassive())
+  {    
+    $EVSE.ISO20.PowerDelivery_Response.Header.TimeStamp = $EVSE.ISO20.PowerDelivery_Response.Header.TimeStamp;
+  }  
+}
+  
+
+
+on sysVar Test::SysSendMeteringConfirmationRes
+{  
+  if (@this == 1 && IsEVSERolePassive())
+  {    
+    $EVSE.MeteringConfirmation.MeteringConfirmation_Response.ResponseCode = $EVSE.MeteringConfirmation.MeteringConfirmation_Response.ResponseCode;
+  }
+}
+
+on sysVar Test::SysSendScheduleExRes
+{  
+  if (@this == 1 && IsEVSERolePassive())
+  {
+    $EVSE.ISO20.ScheduleExchange_Response.ResponseCode = $EVSE.ISO20.ScheduleExchange_Response.ResponseCode;
+  }
+}
+
+on sysVar Test::SysSendSessionStopRes
+{  
+  if (@this == 1 && IsEVSERolePassive())
+  {
+    $EVSE.ISO20.SessionStop_Response.ResponseCode = $EVSE.ISO20.SessionStop_Response.ResponseCode;
+  }
+}

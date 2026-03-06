@@ -1,0 +1,78 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<FunctionBusLibrary Version="53" FormatMajorVersion="3" FormatMinorVersion="1" FormatPatchVersion="4">
+  <Namespaces>
+    <Namespace IsDefinedAsHidden="False" IsSystemDefined="False" Name="CCS">
+      <Subnamespaces>
+        <Namespace IsDefinedAsHidden="False" IsSystemDefined="False" Name="Simulation">
+          <DistributedObjects>
+            <DistributedObject GenerateDotNetAPI="True" Name="EV">
+              <AttributeValues>
+                <AttributeValue Definition="_CCS::DataTypes::IAEP" InitialValue="Clusters::CCS_Network::EV_UDP" InitialValueType="String" />
+                <AttributeValue Definition="_SystemAttributes::DispatchToAnalysis" InitialValue="2" InitialValueType="Int32" />
+              </AttributeValues>
+              <DataType>
+                <ModifiedDOIF Reverse="False" IsDOReference="False" Interface="_CCS::DataTypes::IVehicle" />
+              </DataType>
+              <MemberData>
+                <DOMemberDataHolder Name="MemberData" />
+              </MemberData>
+            </DistributedObject>
+          </DistributedObjects>
+        </Namespace>
+      </Subnamespaces>
+    </Namespace>
+    <Namespace IsDefinedAsHidden="False" IsSystemDefined="False" Name="Clusters">
+      <Subnamespaces>
+        <Namespace IsDefinedAsHidden="False" IsSystemDefined="False" Name="CCS_Network">
+          <AdditionalInfo>
+            <ClusterInfo Provider="BindingCommon" Creator="Manual" />
+            <CommonBindingApi Provider="BindingCommon" Creator="Manual">
+              <CommonIP>
+                <CommonIPApi>
+                  <IpStacks>
+                    <IpStack DefaultTTL="64" DefaultTTLMulticast="1" UseFlowLabel="False" EnableIpForwarding="False" EnableTcpTimestampOption="True" TcpDelayedAcknowledge="True" Node="Clusters::EV_Node" Name="EV_IPStack">
+                      <NetworkInterfaces>
+                        <NetworkInterface MacAddress="02:00:00:00:FF:00" MTU="1500" EthernetNetworkAccess="Clusters::CCS_NetworkAccess" Name="EV_NetworkInterface" />
+                      </NetworkInterfaces>
+                      <StackSecurityConfiguration IsActive="True" SecurityProfileId="2498701024" />
+                    </IpStack>
+                  </IpStacks>
+                  <NEPs>
+                    <UnicastNEP NetworkAdapter="Clusters::CCS_Network::EV_IPStack::EV_NetworkInterface" Name="EV_NEP">
+                      <StaticIpConfig IpAddress="fe80::1" Prefix="64" Priority="0" />
+                    </UnicastNEP>
+                  </NEPs>
+                  <AEPs>
+                    <AEP Protocol="UDP" Port="51118" HasIsTCPServerValue="False" NEP="Clusters::CCS_Network::EV_NEP" Name="EV_UDP" />
+                  </AEPs>
+                </CommonIPApi>
+              </CommonIP>
+              <CommonCAN>
+                <CommonCANApi />
+              </CommonCAN>
+            </CommonBindingApi>
+          </AdditionalInfo>
+        </Namespace>
+      </Subnamespaces>
+      <AdditionalInfo>
+        <ClusterIndependentCommonBindingApi Provider="BindingCommon" Creator="Manual">
+          <CommonNetworkAccess>
+            <CommonNetworkAccessApi>
+              <NetworkAccesses>
+                <EthernetNetworkAccess NetworkName="CCS_Network" HasChannelValue="True" Channel="1" Name="CCS_NetworkAccess" />
+              </NetworkAccesses>
+            </CommonNetworkAccessApi>
+          </CommonNetworkAccess>
+          <CommonNodes>
+            <CommonNodeApi>
+              <Nodes>
+                <Node Name="EV_Node" />
+              </Nodes>
+            </CommonNodeApi>
+          </CommonNodes>
+        </ClusterIndependentCommonBindingApi>
+        <SystemInfo Provider="BindingCommon" Creator="Manual" />
+      </AdditionalInfo>
+    </Namespace>
+  </Namespaces>
+</FunctionBusLibrary>

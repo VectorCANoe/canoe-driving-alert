@@ -1,0 +1,10 @@
+version: 2.1.0
+
+test-tree:
+  - dotnet-test-case: SimpleTestCaseNet
+    title: Simple Test Case Net
+  - capl-test-case: SimpleTestCaseCapl
+    title: Simple Test Case CAPL
+# For Python a 64-bit interpreter must be installed
+#  - python-test-case: SimpleTestCasePy
+#    title: Simple Test Case Python

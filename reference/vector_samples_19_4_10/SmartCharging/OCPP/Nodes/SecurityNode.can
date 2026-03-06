@@ -1,0 +1,267 @@
+/*@!Encoding:1252*/
+includes
+{
+   #include "SecurityUtils.cin"
+}
+
+variables {
+}
+
+on start 
+{
+  initSecurityManager();    
+  storeCertificateToBeInstalled(); // Loading string from input
+}
+
+/*
+Callback for loading the certificate into SysDEREncodedCertificate
+*/
+on sysvar Security::SysInstallCertificateName
+{
+  storeCertificateToBeInstalled();
+}
+
+storeCertificateToBeInstalled()
+{
+  char bufferCertificateString[100];
+  long bufferCertificateLen = 100;
+  qword certificateHandle;
+  int result;
+  sysGetVariableString(sysvar::Security::SysInstallCertificateName, bufferCertificateString, bufferCertificateLen);
+
+  result = loadCertificate(bufferCertificateString, certificateHandle);
+  if (result == 1)
+  {
+    writeLineEx(1, 1, "Successfully loading certificate: %s!", bufferCertificateString);
+  } 
+  else 
+  {
+    writeLineEx(1, 3, "Error loading certificate: %s! with error code %d", bufferCertificateString, result);
+  }
+}
+
+/*
+Function to sign CSR
+*/
+void SignCSR()
+{
+  qword csrHandle, csrCertHandle;
+  qword signerHandle;
+  qword subjectHandle;
+
+  char bufferCertString[100];
+  long bufferCertLen = 100;
+  
+  char strbufferCertName[100];
+  long bufferCertNameLen = 100;
+
+  byte csrByteBuffer[1000];
+  long csrByteBufferLen = 1000; 
+
+  byte csrCertByteBuffer[1000];
+  dword csrCertByteBufferLen = 1000;
+
+  char csrDEREncodedBuffer[5000];
+  dword csrDEREncodedBufferLen = 5000;
+  
+  int returnCode = 0;
+  
+  byte serialNumber[5] = {0x1, 0x2, 0x3, 0x4, 0x5};
+  
+  sysGetVariableData(sysvar::Security::SysCSR, csrByteBuffer, csrByteBufferLen);
+
+  // Decode CSR into Handle
+  returnCode = X509Decoder_DecodeSigningRequest(decoderHandle, csrHandle, csrByteBuffer, csrByteBufferLen);
+  if (returnCode < 1)
+      writeLineEx(1, 3, "Could not decode CSR, return value was %d", returnCode);
+
+  // Create Certifcate from CSR
+  returnCode = X509ObjectFactory_createX509CertificateFromCsr(objectFactoryHandle, csrCertHandle, csrHandle);
+  if (returnCode < 1)
+      writeLineEx(1, 3, "Could not create Certificate from CSR, return value was %d", returnCode);
+
+  // Load Signer from Security Manager
+  {
+    sysGetVariableString(sysvar::Security::CSR::SysSigningCertificateName, bufferCertString, bufferCertLen);
+  
+    returnCode = X509PkiAccess_LoadSignerByName(pkiAccessHandle, bufferCertString, "SHA-512", signerHandle);
+    if (returnCode < 1)
+        writeLineEx(1, 3, "Could not load signer %s, return value was %d", bufferCertString, returnCode);
+  }
+
+  // Set validity and serial number in certificate
+  returnCode = X509Certificate_SetValidFrom(csrCertHandle, "20240901000000Z"); 
+  if (returnCode < 1)
+      writeLineEx(1, 3, "Could not set \"validFrom\" in certificate, return value was %d", returnCode);
+  returnCode = X509Certificate_SetValidTo(csrCertHandle, "20251201000000Z");
+  if (returnCode < 1)
+      writeLineEx(1, 3, "Could not set \"validTo\" in certificate, return value was %d", returnCode);
+  returnCode = X509Certificate_SetSerialNo(csrCertHandle, serialNumber, elCount(serialNumber));
+  if (returnCode < 1)
+      writeLineEx(1, 3, "Could not set \"serialNo\" in certificate, return value was %d", returnCode);
+
+  // Set subject attributes
+  returnCode = X509Certificate_GetSubjectDN(csrCertHandle, subjectHandle);
+  if (returnCode < 1)
+      writeLineEx(1, 3, "Could not get \"subjectDN\" from certificate, return value was %d", returnCode);
+  
+  // Set certificate name
+  {
+    sysGetVariableString(sysvar::Security::CSR::SysNewCertificateName, strbufferCertName, bufferCertNameLen);
+    
+    returnCode = X509DN_SetValueForAttribute(subjectHandle, "2.5.4.3", strbufferCertName);
+    if (returnCode < 1)
+        writeLineEx(1, 3, "Could not set \"Common Name\" in certificate, return value was %d", returnCode);
+  }
+  
+  // Set company
+  returnCode = X509DN_SetValueForAttribute(subjectHandle, "2.5.4.10", "Vector Informatik GmbH");
+  if (returnCode < 1)
+      writeLineEx(1, 3, "Could not set \"Organization\" in certificate, return value was %d", returnCode);
+  
+  // Set country
+  returnCode = X509DN_SetValueForAttribute(subjectHandle, "2.5.4.6", "DE");
+  if (returnCode < 1)
+      writeLineEx(1, 3, "Could not set \"Country\" in certificate, return value was %d", returnCode);
+
+  // Set Subject Key ID extension
+  {  
+    byte publicKey[500];
+    stack dword publicKeyLen = 500;
+    
+    returnCode = Pkcs10SigningRequest_GetPublicKey(csrHandle, publicKey, publicKeyLen); 
+    if (returnCode < 1)
+        writeLineEx(1, 3, "Could not get PublicKey from CRS, return value was %d", returnCode);
+    
+    returnCode = X509Certificate_SetSubjectKeyIdentifierFromKey(csrCertHandle, publicKey, publicKeyLen);
+    if (returnCode < 1)
+        writeLineEx(1, 3, "Could not set \"SubjectKeyIdentifier\" in certificate, return value was %d", returnCode);
+  }
+
+  // Set Authority Key ID extension
+  {
+    byte subjectKeyIDFromSigner[500];
+    stack dword subjectKeyIDFromSignerLen = 500;
+    
+    returnCode = X509Signer_GetSubjectKeyIdentifier(signerHandle, subjectKeyIDFromSigner, subjectKeyIDFromSignerLen);
+    if (returnCode < 1)
+        writeLineEx(1, 3, "Could not get \"SubjectKeyIdentifier\" from signer, return value was %d", returnCode);
+    
+    
+    returnCode = X509Certificate_SetAuthorityKeyIdentifier(csrCertHandle, subjectKeyIDFromSigner, subjectKeyIDFromSignerLen);
+    if (returnCode < 1)
+        writeLineEx(1, 3, "Could not set \"AuthorityKeyIdentifier\" in certificate, return value was %d", returnCode);
+  }
+
+  // Finish and sign the CSR
+  returnCode = X509Signer_UpdateAndSignCertificate(signerHandle, csrCertHandle);
+  if (returnCode < 1)
+      writeLineEx(1, 3, "Could not update and sign, return value was %d", returnCode);
+
+  // Encode in DER format
+  returnCode = X509Encoder_EncodeCertificate(encoderHandle, csrCertHandle, csrCertByteBuffer, csrCertByteBufferLen); // (DER-) encode the certificate structure into a byte buffer
+  if (returnCode < 1)
+      writeLineEx(1, 3, "Could not encode certificate, return value was %d", returnCode);
+
+
+  // Convert to string
+  returnCode = X509ObjectFactory_BytesToHexString(objectFactoryHandle, csrCertByteBuffer, csrCertByteBufferLen, csrDEREncodedBuffer, csrDEREncodedBufferLen);
+  if (returnCode < 1)
+      writeLineEx(1, 3, "Could not convert bytes to hex string, return value was %d", returnCode);
+
+  LoadSub2Certificate();
+  
+  LoadSub1Certificate();
+  
+  // Set in variable for creation of certificate chain in C# code
+  sysSetVariableString(sysvar::Security::CSR::SysCert_DER, csrDEREncodedBuffer);
+}
+
+LoadSub2Certificate()
+{
+  const int cInitialBufferSize = 10000;
+  byte rawsub2Buffer[cInitialBufferSize];
+  char sub2Buffer[cInitialBufferSize];
+  char sub2CertName[cInitialBufferSize];
+  dword dLenBuffer, sub2BufferLen, sub2CertNameLen;
+  qword certHandle;
+  int retVal;
+  
+  retVal = 0;
+  
+  sub2CertNameLen = elcount(sub2CertName);
+  sysGetVariableString(sysvar::Security::CSR::SysSigningCertificateName, sub2CertName, sub2CertNameLen);
+  
+  if(strlen(sub2CertName) > 1)
+  {
+    retVal = X509PkiAccess_LoadCertificateByName(pkiAccessHandle, sub2CertName, certHandle);
+    if (retVal >= 1)
+    {
+      // Encode in DER format
+      dLenBuffer = elcount(rawsub2Buffer);
+      retVal = X509Encoder_EncodeCertificate(encoderHandle, certHandle, rawsub2Buffer , dLenBuffer); // (DER-) encode the certificate structure into a byte buffer
+      if (retVal < 1)
+        writeLineEx(1, 3, "Could not encode Sub2 certificate, return value was %d", retVal);
+      
+      // Convert to string
+      sub2BufferLen = elcount(sub2Buffer);
+      retVal = X509ObjectFactory_BytesToHexString(objectFactoryHandle, rawsub2Buffer, dLenBuffer, sub2Buffer, sub2BufferLen);
+      if (retVal < 1)
+        writeLineEx(1, 3, "Could not convert bytes to hex string, return value was %d", retVal);
+      
+      // Set in variable for later creation of certificate chain
+      sysSetVariableString(sysvar::Security::CSR::SysSub2Cert_DER, sub2Buffer);
+    }
+    else
+    {
+      writeLineEx(1, 3, "Could not load certificate %s, return value was %d", sub2CertName, retVal);
+    }
+  }
+}
+
+LoadSub1Certificate()
+{
+  const int cInitialBufferSize = 10000;
+  byte rawSub1Buffer[cInitialBufferSize];
+  char sub1Buffer[cInitialBufferSize];
+  char sub1CertName[cInitialBufferSize];
+  dword dLenBuffer, sub1BufferLen, sub1CertNameLen;
+  qword certHandle;
+  int retVal;
+  
+  retVal = 0;
+  
+  sub1CertNameLen = elcount(sub1CertName);
+  sysGetVariableString(sysvar::Security::CSR::SysSub1CertName, sub1CertName, sub1CertNameLen);
+  
+  if(strlen(sub1CertName) > 1)
+  {
+    retVal = X509PkiAccess_LoadCertificateByName(pkiAccessHandle, sub1CertName, certHandle);
+    if (retVal >= 1)
+    {
+      // Encode in DER format
+      dLenBuffer = elcount(rawSub1Buffer);
+      retVal = X509Encoder_EncodeCertificate(encoderHandle, certHandle, rawSub1Buffer , dLenBuffer); // (DER-) encode the certificate structure into a byte buffer
+      if (retVal < 1)
+        writeLineEx(1, 3, "Could not encode Sub2 certificate, return value was %d", retVal);
+      
+      // Convert to string
+      sub1BufferLen = elcount(sub1Buffer);
+      retVal = X509ObjectFactory_BytesToHexString(objectFactoryHandle, rawSub1Buffer, dLenBuffer, sub1Buffer, sub1BufferLen);
+      if (retVal < 1)
+        writeLineEx(1, 3, "Could not convert bytes to hex string, return value was %d", retVal);
+      
+      // Set in variable for later creation of certificate chain
+      sysSetVariableString(sysvar::Security::CSR::SysSub1Cert_DER, sub1Buffer);
+    }
+    else
+    {
+      writeLineEx(1, 3, "Could not load certificate %s, return value was %d", sub1CertName, retVal);
+    }
+  }
+}
+
+on sysvar Security::SysCSR
+{
+  SignCSR();
+}

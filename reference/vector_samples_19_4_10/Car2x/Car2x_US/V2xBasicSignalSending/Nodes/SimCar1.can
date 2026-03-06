@@ -1,0 +1,58 @@
+/*@!Encoding:1252*/
+includes
+{
+  #include "..\DataSources_Templates\ASNV_Template_BaseDatatypes.cin"
+  #include "..\DataSources_Templates\ASNV_Template_BasicSafetyMessage.cin"
+}
+
+variables
+{
+  long gHeading = 28800;  // 360°, divide through 0.0125 to get the heading val
+  long gLatitude = 424407310;
+  long gLongitude = -834384340;
+  
+  int gLatCounter = 0;
+  
+  struct BasicSafetyMessage gBSM;
+}
+
+/****************************************************************/
+// Called on simulation start
+/****************************************************************/
+on start
+{
+  // register the pre transmit callback
+  C2xRegisterCallback(1, "OnTxBSM", "BasicSafetyMessage") ;
+}
+
+/****************************************************************/
+// Callback before sending BSM
+/****************************************************************/
+void OnTxBSM(LONG packet)
+{
+  API_GetBasicSafetyMessageParams(packet, gBSM);
+  
+  gBSM.value.basicSafetyMessage.coreData.heading = gHeading;
+  gBSM.value.basicSafetyMessage.coreData.lat = gLatitude;
+  gBSM.value.basicSafetyMessage.coreData.lon = gLongitude;
+
+  API_SetBasicSafetyMessageParams(packet, gBSM);
+  
+  gLatitude += 200;
+  gLatCounter++;
+  
+  if(gLatCounter % 10 == 0)
+  {
+    gLongitude -= 80;
+    gHeading -= 30;
+  }
+  
+  // Set values back, so that vehicles drive in a loop
+  if(gLatitude >= 424441110)
+  {
+    gHeading = 28800;
+    gLatitude = 424407310;
+    gLongitude = -834384340;
+    gLatCounter = 0;
+  }
+}

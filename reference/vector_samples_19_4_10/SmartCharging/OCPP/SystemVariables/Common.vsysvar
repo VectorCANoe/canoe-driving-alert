@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<systemvariables version="4">
+  <namespace name="" comment="" interface="">
+    <namespace name="Common" comment="" interface="">
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysSelectedProtocol" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" minValue="1" minValuePhys="1" maxValue="3" maxValuePhys="3">
+        <valuetable name="OCPPVersions" definesMinMax="true">
+          <valuetableentry value="1" lowerBound="1" upperBound="1" description="OCPP_16" displayString="OCPP_16" />
+          <valuetableentry value="2" lowerBound="2" upperBound="2" description="OCPP_201" displayString="OCPP_201" />
+          <valuetableentry value="3" lowerBound="3" upperBound="3" description="OCPP_21" displayString="OCPP_21" />
+        </valuetable>
+      </variable>
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysTLSEnabled" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1">
+        <valuetable name="Custom" definesMinMax="true">
+          <valuetableentry value="0" lowerBound="0" upperBound="0" description="Disabled" displayString="Disabled" />
+          <valuetableentry value="1" lowerBound="1" upperBound="1" description="Enabled" displayString="Enabled" />
+        </valuetable>
+      </variable>
+    </namespace>
+  </namespace>
+</systemvariables>

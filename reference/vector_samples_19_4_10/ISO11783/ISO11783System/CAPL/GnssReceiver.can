@@ -1,0 +1,240 @@
+﻿/*@!Encoding:65001*/
+includes
+{
+}
+
+variables
+{
+  //Reference point (Stuttgart - Weilimdorf, Germany)
+  double gLatRef = 48.8275000;
+  double gLonRef = 9.0905;
+  double gRefAlt = 322.0;
+  
+  float gTotalDistance = 0;       // Total distance of the trajectory. Is calculated in 'on start'
+  dword gDevice = 0;              // 0: Vehicle, 1: GPS Receiver
+  float gSpeedDisturbance = 0.5;  // Used to create some variance in speed
+  long gStartDelayMs = 10000;
+  
+  msTimer gUpdateSpeedTimer;
+  msTimer gStartDelayTimer;
+  msTimer gSyncControlsTimer;
+  msTimer gAccelerateTimer;
+}
+
+on preStart
+{ 
+  InitRoute();
+}
+
+on start
+{
+  float length;
+  // Fill PG 129029/0x1F805 with additional data
+  GNSSIL_SetValGNSSPositionData(0, 0, 2, 1, 4, 0.21, 0.54, 7.63);
+  GNSSIL_AddRefStation(0, 123, 0.123);
+  GNSSIL_AddRefStation(0, 456, 0.456);
+  
+  GNSSIL_EnableGNSSMsg(0x1F805, 1, 6, 1000);
+  GNSSIL_EnableGNSSMsg(0x1F803, 1, 6, 50);
+  
+  gSyncControlsTimer.setCyclic(100);
+  
+  if(@Control::svAutoPlay > 0)
+  {
+    gStartDelayTimer.set(gStartDelayMs);
+  }
+}
+
+void InitRoute()
+{
+  GNSSIL_SetStartPoint(gLatRef, gLonRef, gRefAlt);
+  //  First meander from north to north
+  GNSSIL_AddMeander(0.0, 27.0, 127.0, 10.0, 0, 1);
+  GNSSIL_AddMeander(180.0, 27.0, 120.0, 10.0, 1, 1);
+  // Second meander from north to north
+  GNSSIL_AddMeander(0.0, 27.0, 130.0, 10.0, 0, 1);
+  GNSSIL_AddMeander(180.0, 27.0, 124.0, 10.0, 1, 1);
+  // Third meander from north to south
+  GNSSIL_AddMeander(0.0, 27.0, 135.0, 10.0, 0, 1);
+  // Last straight and return to start
+  GNSSIL_AddStraightToXYDiff(0.0, -131.0);
+  GNSSIL_AddBezierToXYDiff(-10.0, -11.0);
+  GNSSIL_AddStraightToXYDiff(-105, -6);
+  GNSSIL_AddBezierToGeoPoint(gLatRef, gLonRef);
+  
+  GNSSIL_GetTotalLength(gTotalDistance);
+  
+  // Just for alignment
+  GNSSIL_AddStraightToXYDiff(0, 2); 
+  GNSSIL_StopAtEnd();
+}
+
+on sysvar Control::svAutoPlay
+{
+  if(@Control::svAutoPlay > 0)
+  {
+    gStartDelayTimer.set(gStartDelayMs);
+  }
+  else
+  {
+    gUpdateSpeedTimer.cancel();
+    gStartDelayMs = 100;
+  }
+}
+
+/*
+* User clicks on the brakes.
+*/
+on sysvar Tractor::svSlowDown
+{
+  if(@Tractor::svSlowDown > 0)
+  {
+    gAccelerateTimer.setCyclic(200);
+  }
+}
+
+/*
+* User clicks on the gas pedal.
+*/
+on sysvar Tractor::svSpeedUp
+{
+  if(@Tractor::svSpeedUp > 0)
+  {
+    gAccelerateTimer.setCyclic(200);
+  }
+}
+
+/*
+* Used to speed up or slow down depending on the state of gas pedal or brakes.
+*/
+on timer gAccelerateTimer
+{
+  float currentSpeed;
+  GNSSIL_GetCurrentSpeed(gDevice, currentSpeed);
+  if(@Tractor::svSpeedUp > 0)
+  {
+    if(currentSpeed < 9.8)
+    { 
+      GNSSIL_ChangeSpeed(currentSpeed + 0.2, 200);
+    }else
+    {
+      GNSSIL_ChangeSpeed(10.0, 200);
+    }
+  }
+  else if(@Tractor::svSlowDown > 0)
+  {
+    if(currentSpeed > 0.4)
+    { 
+      GNSSIL_ChangeSpeed(currentSpeed - 0.4, 200);
+    }
+    else
+    { 
+      GNSSIL_ChangeSpeed(0, 200);
+    }
+  }
+  else
+  {
+    gAccelerateTimer.cancel();
+  }
+}
+
+/*
+* Start up delay since the TC needs 6s for startup.
+*/
+on timer gStartDelayTimer
+{
+  GNSSIL_ChangeSpeed(10.0, 2000);
+  gUpdateSpeedTimer.setCyclic(100);
+}
+
+/*
+* Sets a speed depending on course change or end of route.
+* Also calculates a steering position which is set in the Tractor ECU (Tractor.can).
+*/
+on timer gUpdateSpeedTimer
+{
+  float currentDist, currentCourse, nextCourse20, nextCourse1, targetSpeed, currentSpeed;
+  long disturbanceCounter = 0; 
+  
+  GNSSIL_GetCurrentDistance(currentDist);
+  GNSSIL_GetCurrentCourse(gDevice, currentCourse);
+  nextCourse20 = GetUpcomingCourse(20.0);
+  nextCourse1 = GetUpcomingCourse(1.0);
+  
+  if(currentDist >= gTotalDistance)
+  {
+    GNSSIL_ChangeSpeed(0, 2000);
+    gUpdateSpeedTimer.cancel();
+    return;
+  }
+  if((nextCourse20 - currentCourse > 5) || (nextCourse20 - currentCourse < -5) ||
+    currentDist + 20 > gTotalDistance)
+  {
+    // Reduce the speed when the course changes or if the route ends
+    targetSpeed = disturbanceCounter > 1 ? 4.0 + gSpeedDisturbance : 4.0 - gSpeedDisturbance;
+  }
+  else
+  {
+    targetSpeed = disturbanceCounter > 1 ? 10.0 + gSpeedDisturbance : 10.0 - gSpeedDisturbance;
+  }
+    
+  GNSSIL_ChangeSpeed(targetSpeed, 2000);
+  disturbanceCounter = (disturbanceCounter + 1) % 4;
+  
+  @GNSS_Calculations::svSteeringWheelPos = CalculateSteeringPosition(currentCourse, nextCourse1);
+  @GNSS_Calculations::svTurnSignalDirection = SetTurnSignal(currentCourse, nextCourse20);
+}
+
+long CalculateSteeringPosition(float currentCourse, float nextCourse)
+{
+  if(nextCourse - currentCourse < 0)
+  {
+    // Turn left
+    // 10 is a more or less randomly picked prescaler to set a kind of realistic steering position.
+    return 6 - (long)((6 / 10.0) * (currentCourse - nextCourse));
+  }
+  else if (nextCourse - currentCourse >= 0)
+  {
+    // Turn right
+    return (long)((6 / 10.0) * (nextCourse - currentCourse)) + 6;  
+  }
+  return 6;
+}
+
+long SetTurnSignal(float currentCourse, float nextCourse)
+{
+  if(nextCourse - currentCourse < -10)
+  {
+    // Turn left
+    return -1;
+  }
+  else if (nextCourse - currentCourse > 10)
+  {
+    // Turn right
+    return 1;
+  }
+  return 0;
+}
+
+float GetUpcomingCourse(float distance)
+{
+  float currentDist, upcomingCourse;
+  
+  GNSSIL_GetCurrentDistance(currentDist);
+  if(currentDist + distance >= gTotalDistance)
+  {
+    GNSSIL_GetCourseByDistance(gDevice, gTotalDistance, upcomingCourse);
+  }
+  else
+  {
+    GNSSIL_GetCourseByDistance(gDevice, currentDist + distance, upcomingCourse);
+  }
+  return upcomingCourse;
+}
+
+on timer gSyncControlsTimer
+{
+  float currentSpeed;
+  GNSSIL_GetCurrentSpeed(gDevice, currentSpeed);
+  @Tractor::svSpeed = currentSpeed;
+}

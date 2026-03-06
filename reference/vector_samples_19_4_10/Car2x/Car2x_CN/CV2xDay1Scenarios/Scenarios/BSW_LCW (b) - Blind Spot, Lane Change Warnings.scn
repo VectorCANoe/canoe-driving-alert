@@ -1,0 +1,44 @@
+<scenario name="my scenario" simtime="17,4705882352941" simtimemax="60" version="1" timelinezoom="1" hscrolloffset="0">
+  <routes>
+    <route name="ScenarioDefinitionRoute" color="0" width="3">
+      <points>
+        <point x="31,2149122002132" y="121,418527942672" />
+        <point x="31,2153471363822" y="121,422187093423" />
+      </points>
+      <stations>
+        <station name="HV" offset="80" color="32768" trackingid="1" length="0" width="0" height="0" stationtype="Undefined" hostvehicle="False">
+          <attribute name="Speed" trigger="true" defaultvalue="0">
+            <keypoints>
+              <keypoint time="0" value="40" />
+            </keypoints>
+          </attribute>
+          <attribute name="LeftTurnSignal" datatype="I" interpolation="const" trigger="true" defaultvalue="0">
+            <keypoints>
+              <keypoint time="0" value="0" />
+              <keypoint time="6" value="1" />
+            </keypoints>
+          </attribute>
+        </station>
+      </stations>
+      <refpoints>
+        <refpoint name="RefPoint" offset="250" color="14772545" id="0" />
+      </refpoints>
+    </route>
+    <route name="RefRoute1" color="255" width="3">
+      <points>
+        <point x="31,2149236697325" y="121,418525260463" />
+        <point x="31,2153597527953" y="121,422181729005" />
+      </points>
+      <stations>
+        <station name="RV" offset="0" color="255" trackingid="1" length="0" width="0" height="0" stationtype="Undefined" hostvehicle="False">
+          <attribute name="Speed" trigger="true" defaultvalue="0">
+            <keypoints>
+              <keypoint time="0" value="72" />
+            </keypoints>
+          </attribute>
+        </station>
+      </stations>
+    </route>
+  </routes>
+  <tapes />
+</scenario>

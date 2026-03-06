@@ -1,0 +1,78 @@
+/*@!Encoding:1252*/
+includes
+{
+  
+}
+
+variables
+{
+  /* Timer for cyclic transfer of data to queue */
+  msTimer ServerTxUpdateTimer;
+  long gDurationServerTxUpdateTimer = 50; 
+  
+  /* limitation of value transmitted by UART */
+  const long gMaxNbrUartValues = 255;
+ 
+  /* array used to prepare the UART data */
+  dword gUartTxData[gMaxNbrUartValues];
+  
+  /* index to read out current value from array to be transferred to UART queue */
+  long gBufferIndex = 0;    
+  
+  /* variable to check return value from CAPL function */  
+  long gRetval1 = 0;
+}
+
+on start
+{  
+  /* call function to fill array with static values */
+  PrepareUartTxBuffer();  
+  
+  /* start cyclic timer */  
+  setTimerCyclic(ServerTxUpdateTimer, gDurationServerTxUpdateTimer);  
+} 
+
+void PrepareUartTxBuffer()
+{
+  long lBufferIndex = 0;
+  
+  /* fill array with static values */
+  for (lBufferIndex = 0; lBufferIndex < gMaxNbrUartValues-1; lBufferIndex++)
+  {
+    gUartTxData[lBufferIndex] = (gMaxNbrUartValues - lBufferIndex);
+  }   
+} 
+
+on timer ServerTxUpdateTimer
+{  
+  if (gBufferIndex < gMaxNbrUartValues)
+  {
+    /* transfer array value to UART queue */
+    gRetval1 = sensorQueueSerialFrame("SENSOR::UART::UartServer",gUartTxData[gBufferIndex]);
+    
+    /* update user panel */
+    @sysvar::UartCommunication::ServerSignal = gUartTxData[gBufferIndex];
+    
+    /* check return value from CAPL function */    
+    if (0 != gRetval1)
+    {
+      write("sensorQueueSerialFrame --> ErrorCode = %d", gRetval1);
+    }
+    gBufferIndex++;
+  }
+  /* no UART transmit action, just reset gBufferIndex */
+  else
+  {
+    gBufferIndex = 0;   
+  }  
+} 
+
+on sysvar sysvar::UartCommunication::ServerSignalResetFlag
+{
+  /* check for active state of reset signal */
+  if (1 == @sysvar::UartCommunication::ServerSignalResetFlag)
+  {
+    gBufferIndex = 0;
+  }
+}
+

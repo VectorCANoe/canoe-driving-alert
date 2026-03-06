@@ -1,0 +1,62 @@
+<scenario name="my scenario" simtime="0" simtimemax="1200" version="1" timelinezoom="1" hscrolloffset="0">
+  <routes>
+    <route name="ScenarioDefinitionRoute" color="16711680">
+      <points>
+        <point x="48,8271285039839" y="9,10686222298432" />
+        <point x="48,8256533779366" y="9,01760062067232" />
+      </points>
+      <stations>
+        <station name="DuT" offset="0" color="32768" trackingid="1" length="0" width="0" height="0">
+          <attribute name="Speed" trigger="true" defaultvalue="0">
+            <keypoints>
+              <keypoint time="0" value="0" />
+            </keypoints>
+          </attribute>
+        </station>
+        <station name="HLN_AWWD" offset="1000" color="255" trackingid="2" length="0" width="0" height="0">
+          <attribute name="Speed" trigger="true" defaultvalue="0">
+            <keypoints>
+              <keypoint time="0" value="0" />
+            </keypoints>
+          </attribute>
+          <attribute name="Events_Vehicle_Events_DENM1" datatype="I" interpolation="const" trigger="true" defaultvalue="0">
+            <keypoints>
+              <keypoint time="0" value="1" comment="Vehicle_Events_DENM on" />
+            </keypoints>
+            <attribute name="EventPosAndTime" datatype="I" interpolation="linear" trigger="true" defaultvalue="0">
+              <keypoints>
+                <keypoint time="0" value="0" />
+              </keypoints>
+            </attribute>
+            <attribute name="CauseCode" datatype="I" interpolation="const" trigger="true" defaultvalue="0">
+              <keypoints>
+                <keypoint time="0" value="14" comment="WrongWayDriving" />
+              </keypoints>
+            </attribute>
+            <attribute name="SubCauseCode" datatype="I" interpolation="const" trigger="true" defaultvalue="0">
+              <keypoints>
+                <keypoint time="0" value="2" comment="WrongDirection" />
+              </keypoints>
+            </attribute>
+            <attribute name="ActionIdOriginatingStationId" datatype="I" interpolation="const" trigger="true" defaultvalue="0">
+              <keypoints>
+                <keypoint time="0" value="0" />
+              </keypoints>
+            </attribute>
+            <attribute name="ActionIdSequenceNumber" datatype="I" interpolation="const" trigger="true" defaultvalue="0">
+              <keypoints>
+                <keypoint time="0" value="1" />
+              </keypoints>
+            </attribute>
+            <attribute name="EventZone" datatype="I" interpolation="const" trigger="true" defaultvalue="0">
+              <keypoints>
+                <keypoint time="0" value="2500" />
+              </keypoints>
+            </attribute>
+          </attribute>
+        </station>
+      </stations>
+    </route>
+  </routes>
+  <tapes />
+</scenario>

@@ -1,0 +1,278 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Panel Type="Vector.CANalyzer.Panels.PanelSerializer, Vector.CANalyzer.Panels.Serializer, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null">
+  <Object Type="Vector.CANalyzer.Panels.Runtime.Panel, Vector.CANalyzer.Panels.Common, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Panel" ControlName=" ">
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl3" ControlName="Static Text 1">
+      <Property Name="Name">StaticTextControl3</Property>
+      <Property Name="Size">100, 15</Property>
+      <Property Name="Location">344, 91</Property>
+      <Property Name="Text">Counter Freq. (Hz)</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.GroupBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="GroupBoxControl2" ControlName="Group Box 3">
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl17" ControlName="Static Text 17">
+        <Property Name="Name">StaticTextControl17</Property>
+        <Property Name="Size">116, 15</Property>
+        <Property Name="Location">317, 231</Property>
+        <Property Name="Text">Fan RPMs (1000/min)</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl16" ControlName="Static Text 16">
+        <Property Name="Name">StaticTextControl16</Property>
+        <Property Name="Size">124, 15</Property>
+        <Property Name="Location">197, 231</Property>
+        <Property Name="Text">Fan Ctrl Duty Cycle (%)</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl12" ControlName="Static Text 13">
+        <Property Name="Name">StaticTextControl12</Property>
+        <Property Name="Size">101, 15</Property>
+        <Property Name="Location">52, 231</Property>
+        <Property Name="Text">Fan Speed Control</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.LCDControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="LCDControl3" ControlName="LCD Control 3">
+        <Property Name="Name">LCDControl3</Property>
+        <Property Name="Size">110, 47</Property>
+        <Property Name="Location">200, 180</Property>
+        <Property Name="DecimalPlaces">0</Property>
+        <Property Name="NumberIntDigits">3</Property>
+        <Property Name="SymbolConfiguration">8;128;VIO;;VIO4028Out;FanPwmDutyCycleOut_Ch16;2;;;-1;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.TrackBarControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="TrackBarControl4" ControlName="Track Bar 4">
+        <Property Name="Name">TrackBarControl4</Property>
+        <Property Name="Size">160, 47</Property>
+        <Property Name="Location">20, 180</Property>
+        <Property Name="BorderStyle">FixedSingle</Property>
+        <Property Name="TabIndex">81</Property>
+        <Property Name="SmallChangeDouble">0.5</Property>
+        <Property Name="LargeChangeDouble">0.5</Property>
+        <Property Name="TickFrequencyDouble">0.5</Property>
+        <Property Name="MaximumSize">100000, 47</Property>
+        <Property Name="LargeChange">1</Property>
+        <Property Name="SymbolConfiguration">8;16;Internal;;;FanSpeedControl;2;;;-1;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.LCDControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="LCDControl8" ControlName="LCD Control 7">
+        <Property Name="Name">LCDControl8</Property>
+        <Property Name="Size">110, 47</Property>
+        <Property Name="Location">320, 180</Property>
+        <Property Name="ColorOff">Black</Property>
+        <Property Name="DecimalPlaces">2</Property>
+        <Property Name="NumberIntDigits">1</Property>
+        <Property Name="SymbolConfiguration">8;16;Internal;;;FanRPMs;2;;;-1;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl9" ControlName="Static Text 12">
+        <Property Name="Name">StaticTextControl9</Property>
+        <Property Name="Size">70, 47</Property>
+        <Property Name="Location">110, 340</Property>
+        <Property Name="BorderStyle">FixedSingle</Property>
+        <Property Name="TextAlign">MiddleCenter</Property>
+        <Property Name="BackColor">WhiteSmoke</Property>
+        <Property Name="ResizeAutomatically">False</Property>
+        <Property Name="Text">Temp. Sens.</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl15" ControlName="Static Text 15">
+        <Property Name="Name">StaticTextControl15</Property>
+        <Property Name="Size">70, 47</Property>
+        <Property Name="Location">20, 340</Property>
+        <Property Name="BorderStyle">FixedSingle</Property>
+        <Property Name="TextAlign">MiddleCenter</Property>
+        <Property Name="BackColor">WhiteSmoke</Property>
+        <Property Name="ResizeAutomatically">False</Property>
+        <Property Name="Text">Dist. Sensor</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl14" ControlName="Static Text 14">
+        <Property Name="Name">StaticTextControl14</Property>
+        <Property Name="Size">160, 47</Property>
+        <Property Name="Location">20, 420</Property>
+        <Property Name="BorderStyle">FixedSingle</Property>
+        <Property Name="TextAlign">MiddleCenter</Property>
+        <Property Name="BackColor">WhiteSmoke</Property>
+        <Property Name="ResizeAutomatically">False</Property>
+        <Property Name="Text">Clock Module</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.ClockControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="ClockControl1" ControlName="Clock Control 1">
+        <Property Name="Name">ClockControl1</Property>
+        <Property Name="Size">190, 47</Property>
+        <Property Name="Location">220, 420</Property>
+        <Property Name="SymbolConfiguration"></Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.TrackBarControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="TrackBarControl3" ControlName="Track Bar 3">
+        <Property Name="Name">TrackBarControl3</Property>
+        <Property Name="Size">160, 47</Property>
+        <Property Name="Location">20, 260</Property>
+        <Property Name="BorderStyle">FixedSingle</Property>
+        <Property Name="BackColor">WhiteSmoke</Property>
+        <Property Name="TabIndex">60</Property>
+        <Property Name="MaximumDouble">5</Property>
+        <Property Name="SmallChangeDouble">0.25</Property>
+        <Property Name="LargeChangeDouble">0.25</Property>
+        <Property Name="TickFrequencyDouble">0.25</Property>
+        <Property Name="MaximumSize">100000, 47</Property>
+        <Property Name="Maximum">5</Property>
+        <Property Name="LargeChange">1</Property>
+        <Property Name="SymbolConfiguration">8;128;VIO;;VIO1008In;DimmLedPwmControlIn_Ch01;2;;;-1;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl8" ControlName="Static Text 8">
+        <Property Name="Name">StaticTextControl8</Property>
+        <Property Name="Size">160, 15</Property>
+        <Property Name="Location">22, 311</Property>
+        <Property Name="Text">PWM Dimmable LED (on DUT)</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl7" ControlName="Static Text 7">
+        <Property Name="Name">StaticTextControl7</Property>
+        <Property Name="Size">96, 15</Property>
+        <Property Name="Location">325, 151</Property>
+        <Property Name="Text">LED Current (mA)</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl6" ControlName="Static Text 6">
+        <Property Name="Name">StaticTextControl6</Property>
+        <Property Name="Size">88, 15</Property>
+        <Property Name="Location">209, 151</Property>
+        <Property Name="Text">LED Voltage (V)</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl1" ControlName="Static Text 3">
+        <Property Name="Name">StaticTextControl1</Property>
+        <Property Name="Size">120, 15</Property>
+        <Property Name="Location">44, 151</Property>
+        <Property Name="Text">Analog Dimmable LED</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl10" ControlName="Static Text 10">
+        <Property Name="Name">StaticTextControl10</Property>
+        <Property Name="Size">106, 15</Property>
+        <Property Name="Location">321, 311</Property>
+        <Property Name="Text">LED Duty Cycle (%)</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.LCDControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="LCDControl11" ControlName="LCD Control 11">
+        <Property Name="Name">LCDControl11</Property>
+        <Property Name="Size">110, 47</Property>
+        <Property Name="Location">320, 340</Property>
+        <Property Name="NumberIntDigits">2</Property>
+        <Property Name="SymbolConfiguration">8;16;Internal;;;AmbientTempCelsius;1;;;-1;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.LCDControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="LCDControl10" ControlName="LCD Control 10">
+        <Property Name="Name">LCDControl10</Property>
+        <Property Name="Size">110, 47</Property>
+        <Property Name="Location">200, 340</Property>
+        <Property Name="DecimalPlaces">0</Property>
+        <Property Name="NumberIntDigits">3</Property>
+        <Property Name="SymbolConfiguration">8;128;VIO;;VIO4028In;DistDutyCycleIn_Ch14;2;;;-1;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl4" ControlName="Static Text 4">
+        <Property Name="Name">StaticTextControl4</Property>
+        <Property Name="Size">106, 15</Property>
+        <Property Name="Location">321, 391</Property>
+        <Property Name="Text">Ambient Temp. (°C)</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl13" ControlName="Static Text 9">
+        <Property Name="Name">StaticTextControl13</Property>
+        <Property Name="Size">76, 15</Property>
+        <Property Name="Location">214, 391</Property>
+        <Property Name="Text">Distance (cm)</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl5" ControlName="Static Text 5">
+        <Property Name="Name">StaticTextControl5</Property>
+        <Property Name="Size">79, 15</Property>
+        <Property Name="Location">213, 71</Property>
+        <Property Name="Text">Counter Value</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.LCDControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="LCDControl7" ControlName="LCD Control 9">
+        <Property Name="Name">LCDControl7</Property>
+        <Property Name="Size">110, 47</Property>
+        <Property Name="Location">200, 100</Property>
+        <Property Name="DecimalPlaces">2</Property>
+        <Property Name="NumberIntDigits">1</Property>
+        <Property Name="SymbolConfiguration">8;128;VIO;;VIO2004Out;DimmLedVoltageOut_Ch01;2;;;-1;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.LCDControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="LCDControl4" ControlName="LCD Control 4">
+        <Property Name="Name">LCDControl4</Property>
+        <Property Name="Size">110, 47</Property>
+        <Property Name="Location">320, 260</Property>
+        <Property Name="DecimalPlaces">0</Property>
+        <Property Name="NumberIntDigits">3</Property>
+        <Property Name="SymbolConfiguration">8;128;VIO;;VIO4028In;PwmLedDutyCycleIn_Ch5;2;;;-1;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.LCDControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="LCDControl6" ControlName="LCD Control 6">
+        <Property Name="Name">LCDControl6</Property>
+        <Property Name="Size">110, 47</Property>
+        <Property Name="Location">320, 100</Property>
+        <Property Name="ColorOff">Black</Property>
+        <Property Name="DecimalPlaces">0</Property>
+        <Property Name="NumberIntDigits">3</Property>
+        <Property Name="SymbolConfiguration">8;16;Internal;;;DimmLedCurrMillis;1;;;-1;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.TrackBarControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="TrackBarControl1" ControlName="Track Bar 1">
+        <Property Name="Name">TrackBarControl1</Property>
+        <Property Name="Size">160, 47</Property>
+        <Property Name="Location">20, 100</Property>
+        <Property Name="BorderStyle">FixedSingle</Property>
+        <Property Name="TabIndex">43</Property>
+        <Property Name="MaximumDouble">5</Property>
+        <Property Name="SmallChangeDouble">0.25</Property>
+        <Property Name="LargeChangeDouble">0.25</Property>
+        <Property Name="TickFrequencyDouble">0.25</Property>
+        <Property Name="MaximumSize">100000, 47</Property>
+        <Property Name="Maximum">5</Property>
+        <Property Name="LargeChange">1</Property>
+        <Property Name="SymbolConfiguration">8;128;VIO;;VIO2004Out;DimmLedVoltageOut_Ch01;2;;;-1;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl11" ControlName="Static Text 11">
+        <Property Name="Name">StaticTextControl11</Property>
+        <Property Name="Size">145, 15</Property>
+        <Property Name="Location">32, 71</Property>
+        <Property Name="Text">4-bit Counter Speed Control</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.LCDControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="LCDControl2" ControlName="LCD Control 2">
+        <Property Name="Name">LCDControl2</Property>
+        <Property Name="Size">110, 47</Property>
+        <Property Name="Location">200, 260</Property>
+        <Property Name="DecimalPlaces">2</Property>
+        <Property Name="NumberIntDigits">1</Property>
+        <Property Name="SymbolConfiguration">8;128;VIO;;VIO1008In;DimmLedPwmControlIn_Ch01;2;;;-1;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.TrackBarControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="TrackBarControl2" ControlName="Track Bar 2">
+        <Property Name="Name">TrackBarControl2</Property>
+        <Property Name="Size">160, 47</Property>
+        <Property Name="Location">20, 20</Property>
+        <Property Name="BorderStyle">FixedSingle</Property>
+        <Property Name="TabIndex">56</Property>
+        <Property Name="MaximumDouble">5</Property>
+        <Property Name="MinimumDouble">0.5</Property>
+        <Property Name="SmallChangeDouble">0.25</Property>
+        <Property Name="LargeChangeDouble">0.25</Property>
+        <Property Name="TickFrequencyDouble">0.25</Property>
+        <Property Name="MaximumSize">100000, 47</Property>
+        <Property Name="Minimum">1</Property>
+        <Property Name="Maximum">5</Property>
+        <Property Name="LargeChange">1</Property>
+        <Property Name="SymbolConfiguration">8;128;VIO;;VIO2004Out;CounterSpeedVoltageOut_Ch02;2;;;-1;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl2" ControlName="Static Text 2">
+        <Property Name="Name">StaticTextControl2</Property>
+        <Property Name="Size">116, 15</Property>
+        <Property Name="Location">198, 311</Property>
+        <Property Name="Text">PWM Control Volt. (V)</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.LCDControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="LCDControl5" ControlName="LCD Control 5">
+        <Property Name="Name">LCDControl5</Property>
+        <Property Name="Size">110, 47</Property>
+        <Property Name="Location">200, 20</Property>
+        <Property Name="DecimalPlaces">0</Property>
+        <Property Name="NumberIntDigits">3</Property>
+        <Property Name="SymbolConfiguration">8;16;Internal;;;CounterValue;1;;;-1;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.LCDControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="LCDControl1" ControlName="LCD Control 1">
+        <Property Name="Name">LCDControl1</Property>
+        <Property Name="Size">110, 47</Property>
+        <Property Name="Location">320, 20</Property>
+        <Property Name="NumberIntDigits">2</Property>
+        <Property Name="SymbolConfiguration">8;16;Internal;;;CounterFreq;1;;;-1;;;Value;;;0</Property>
+      </Object>
+      <Property Name="Name">GroupBoxControl2</Property>
+      <Property Name="Size">450, 485</Property>
+      <Property Name="Location">20, 20</Property>
+      <Property Name="Text">CANoe Dashboard</Property>
+      <Property Name="TabIndex">67</Property>
+      <Property Name="UseWindowsStyle">False</Property>
+    </Object>
+    <Property Name="Name">Panel</Property>
+    <Property Name="Size">490, 525</Property>
+    <Property Name="Location">0, 0</Property>
+    <Property Name="BackColor">White</Property>
+  </Object>
+</Panel>

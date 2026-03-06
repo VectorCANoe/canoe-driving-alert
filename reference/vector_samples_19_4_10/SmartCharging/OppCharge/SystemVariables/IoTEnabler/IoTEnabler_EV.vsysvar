@@ -1,0 +1,62 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<systemvariables version="4">
+  <namespace name="" comment="" interface="">
+    <namespace name="IoTEnabler" comment="" interface="">
+      <namespace name="VSE" comment="" interface="">
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysEV_VSE" comment="Vendor specific elements used by EV" bitcount="0" isSigned="true" encoding="65001" type="string" />
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysEV_VSE_AdditionalInformation" comment="" bitcount="0" isSigned="true" encoding="65001" type="string" />
+        <variable anlyzLocal="2" readOnly="true" valueSequence="false" unit="" name="SysEV_VSE_ElementID" comment="" bitcount="0" isSigned="true" encoding="65001" type="string" startValue="dd" />
+        <variable anlyzLocal="2" readOnly="true" valueSequence="false" unit="" name="SysEV_VSE_ElementType" comment="" bitcount="0" isSigned="true" encoding="65001" type="string" startValue="02" />
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysEV_VSE_EnergyTransferType" comment="" bitcount="32" isSigned="false" encoding="65001" type="int" startValue="2" minValue="0" minValuePhys="0" maxValue="14" maxValuePhys="14">
+          <valuetable name="EnergyTransferType" definesMinMax="true">
+            <valuetableentry value="0" lowerBound="0" upperBound="0" description="AC" displayString="AC" />
+            <valuetableentry value="1" lowerBound="1" upperBound="1" description="DC" displayString="DC" />
+            <valuetableentry value="2" lowerBound="2" upperBound="2" description="WPT" displayString="WPT" />
+            <valuetableentry value="3" lowerBound="3" upperBound="3" description="ACD" displayString="ACD" />
+            <valuetableentry value="4" lowerBound="4" upperBound="4" description="AC_DC" displayString="AC_DC" />
+            <valuetableentry value="5" lowerBound="5" upperBound="5" description="AC_WPT" displayString="AC_WPT" />
+            <valuetableentry value="6" lowerBound="6" upperBound="6" description="AC_ACD" displayString="AC_ACD" />
+            <valuetableentry value="7" lowerBound="7" upperBound="7" description="DC_WPT" displayString="DC_WPT" />
+            <valuetableentry value="8" lowerBound="8" upperBound="8" description="DC_ACD" displayString="DC_ACD" />
+            <valuetableentry value="9" lowerBound="9" upperBound="9" description="WPT_ACD" displayString="WPT_ACD" />
+            <valuetableentry value="10" lowerBound="10" upperBound="10" description="AC_DC_WPT" displayString="AC_DC_WPT" />
+            <valuetableentry value="11" lowerBound="11" upperBound="11" description="AC_DC_ACD" displayString="AC_DC_ACD" />
+            <valuetableentry value="12" lowerBound="12" upperBound="12" description="AC_WPT_ACD" displayString="AC_WPT_ACD" />
+            <valuetableentry value="13" lowerBound="13" upperBound="13" description="DC_WPT_ACD" displayString="DC_WPT_ACD" />
+            <valuetableentry value="14" lowerBound="14" upperBound="14" description="AC_DC_WPT_ACD" displayString="AC_DC_WPT_ACD" />
+          </valuetable>
+        </variable>
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysEV_VSE_Length" comment="" bitcount="0" isSigned="true" encoding="65001" type="string" />
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysEV_VSE_OrganizationalID" comment="" bitcount="0" isSigned="true" encoding="65001" type="string" startValue="70B3D53190" />
+      </namespace>
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysEV_ClientWifiInterface" comment="" bitcount="0" isSigned="true" encoding="65001" type="string" startValue="wlan0" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysEV_ConnectToSecureNetwork" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="0" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1">
+        <valuetable name="Custom" definesMinMax="true">
+          <valuetableentry value="0" lowerBound="0" upperBound="0" description="ConnectToUnsecure" displayString="ConnectToUnsecure" />
+          <valuetableentry value="1" lowerBound="1" upperBound="1" description="ConnectToSecure" displayString="ConnectToSecure" />
+        </valuetable>
+      </variable>
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysEV_CountryCode" comment="" bitcount="0" isSigned="true" encoding="65001" type="string" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysEV_MAC" comment="" bitcount="0" isSigned="true" encoding="65001" type="string" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysEV_SSID" comment="" bitcount="0" isSigned="true" encoding="65001" type="string" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysEV_WifiClient_AdditionalInfo" comment="" bitcount="0" isSigned="true" encoding="65001" type="string" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysEV_WifiClient_State" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="0" minValue="0" minValuePhys="0" maxValue="99" maxValuePhys="99">
+        <valuetable name="WifiState_Values" definesMinMax="true">
+          <valuetableentry value="0" lowerBound="0" upperBound="0" description="Initial" displayString="Initial" />
+          <valuetableentry value="1" lowerBound="1" upperBound="1" description="Configuring" displayString="Configuring" />
+          <valuetableentry value="2" lowerBound="2" upperBound="2" description="AdddingUnsecuredNetwork" displayString="AdddingUnsecuredNetwork" />
+          <valuetableentry value="3" lowerBound="3" upperBound="3" description="AddingSecuredNetwork" displayString="AddingSecuredNetwork" />
+          <valuetableentry value="4" lowerBound="4" upperBound="4" description="SettingForwardingMACAddress" displayString="SettingForwardingMACAddress" />
+          <valuetableentry value="5" lowerBound="5" upperBound="5" description="AddingVendorSpecificElements" displayString="AddingVendorSpecificElements" />
+          <valuetableentry value="6" lowerBound="6" upperBound="6" description="StartingClient" displayString="StartingClient" />
+          <valuetableentry value="7" lowerBound="7" upperBound="7" description="Connecting" displayString="Connecting" />
+          <valuetableentry value="8" lowerBound="8" upperBound="8" description="Connected" displayString="Connected" />
+          <valuetableentry value="9" lowerBound="9" upperBound="9" description="Disconnecting" displayString="Disconnecting" />
+          <valuetableentry value="10" lowerBound="10" upperBound="10" description="Disconnected" displayString="Disconnected" />
+          <valuetableentry value="99" lowerBound="99" upperBound="99" description="Error" displayString="Error" />
+        </valuetable>
+      </variable>
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysEV_WPA2Key" comment="" bitcount="0" isSigned="true" encoding="65001" type="string" />
+    </namespace>
+  </namespace>
+</systemvariables>

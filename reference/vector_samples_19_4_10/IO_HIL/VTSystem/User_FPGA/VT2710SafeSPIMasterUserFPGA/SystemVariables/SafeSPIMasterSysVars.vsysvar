@@ -1,0 +1,53 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<systemvariables version="4">
+  <namespace name="" comment="" interface="">
+    <namespace name="SafeSPIMaster" comment="" interface="">
+      <namespace name="Slave1" comment="" interface="">
+        <struct name="FastFrame1Data" isUnion="False" definedBinaryLayout="True" comment="">
+          <structMember relativeOffset="0" byteOrder="0" isOptional="False" isHidden="False" name="Crc" comment="" bitcount="3" isSigned="false" encoding="65001" type="int" />
+          <structMember relativeOffset="1" byteOrder="0" isOptional="False" isHidden="False" name="RollingCounter" comment="" bitcount="8" isSigned="false" encoding="65001" type="int" />
+          <structMember relativeOffset="0" byteOrder="0" isOptional="False" isHidden="False" name="UInt8_Signal" comment="" bitcount="8" isSigned="false" encoding="65001" type="int" />
+          <structMember relativeOffset="0" byteOrder="0" isOptional="False" isHidden="False" name="SA" comment="" bitcount="5" isSigned="false" encoding="65001" type="int" />
+          <structMember relativeOffset="0" byteOrder="0" isOptional="False" isHidden="False" name="D" comment="" bitcount="1" isSigned="false" encoding="65001" type="int" />
+        </struct>
+        <struct name="FastFrame2Data" isUnion="False" definedBinaryLayout="True" comment="">
+          <structMember relativeOffset="0" byteOrder="0" isOptional="False" isHidden="False" name="Crc" comment="" bitcount="3" isSigned="false" encoding="65001" type="int" />
+          <structMember relativeOffset="0" byteOrder="0" isOptional="False" isHidden="False" name="S0" comment="" bitcount="1" isSigned="false" encoding="65001" type="int" />
+          <structMember relativeOffset="0" byteOrder="0" isOptional="False" isHidden="False" name="Int16_Signal" comment="" bitcount="16" isSigned="true" encoding="65001" type="int" />
+          <structMember relativeOffset="0" byteOrder="0" isOptional="False" isHidden="False" name="SA" comment="" bitcount="5" isSigned="false" encoding="65001" type="int" />
+          <structMember relativeOffset="0" byteOrder="0" isOptional="False" isHidden="False" name="D" comment="" bitcount="1" isSigned="false" encoding="65001" type="int" />
+        </struct>
+        <struct name="RawCommandStruct" isUnion="False" definedBinaryLayout="True" comment="">
+          <structMember relativeOffset="0" byteOrder="0" isOptional="False" isHidden="False" name="CommandFrameNumber" comment="" bitcount="32" isSigned="false" encoding="65001" type="int" />
+          <structMember relativeOffset="0" byteOrder="0" isOptional="False" isHidden="False" name="CommandNumBits" comment="" bitcount="32" isSigned="false" encoding="65001" type="int" />
+          <structMember relativeOffset="0" byteOrder="0" isOptional="False" isHidden="False" name="CommandCrc" comment="" bitcount="32" isSigned="false" encoding="65001" type="int" />
+          <structMember relativeOffset="0" byteOrder="0" isOptional="False" isHidden="False" name="CommandCrcExpected" comment="" bitcount="32" isSigned="false" encoding="65001" type="int" />
+          <structMember relativeOffset="0" byteOrder="0" isOptional="False" isHidden="False" name="CommandData" comment="" bitcount="64" isSigned="false" encoding="65001" type="longlong" />
+        </struct>
+        <struct name="RawResponseStruct" isUnion="False" definedBinaryLayout="True" comment="">
+          <structMember relativeOffset="0" byteOrder="0" isOptional="False" isHidden="False" name="ResponseFrameNumber" comment="" bitcount="32" isSigned="false" encoding="65001" type="int" />
+          <structMember relativeOffset="0" byteOrder="0" isOptional="False" isHidden="False" name="ResponseNumBits" comment="" bitcount="32" isSigned="false" encoding="65001" type="int" />
+          <structMember relativeOffset="0" byteOrder="0" isOptional="False" isHidden="False" name="ResponseCrc" comment="" bitcount="32" isSigned="false" encoding="65001" type="int" />
+          <structMember relativeOffset="0" byteOrder="0" isOptional="False" isHidden="False" name="ResponseCrcExpected" comment="" bitcount="32" isSigned="false" encoding="65001" type="int" />
+          <structMember relativeOffset="0" byteOrder="0" isOptional="False" isHidden="False" name="ResponseData" comment="" bitcount="64" isSigned="false" encoding="65001" type="longlong" />
+        </struct>
+        <struct name="SlowFrameData" isUnion="False" definedBinaryLayout="True" comment="">
+          <structMember relativeOffset="0" byteOrder="0" isOptional="False" isHidden="False" name="Crc" comment="" bitcount="3" isSigned="false" encoding="65001" type="int" />
+          <structMember relativeOffset="1" byteOrder="0" isOptional="False" isHidden="False" name="UInt16_Signal" comment="" bitcount="16" isSigned="false" encoding="65001" type="int" />
+          <structMember relativeOffset="0" byteOrder="0" isOptional="False" isHidden="False" name="SA" comment="" bitcount="5" isSigned="false" encoding="65001" type="int" />
+          <structMember relativeOffset="0" byteOrder="0" isOptional="False" isHidden="False" name="D" comment="" bitcount="1" isSigned="false" encoding="65001" type="int" />
+        </struct>
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" separateTransmissions="true" name="CommandCrcError" comment="" bitcount="192" isSigned="true" encoding="65001" type="struct" structDefinition="SafeSPIMaster::Slave1::RawCommandStruct" />
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" separateTransmissions="true" name="FastFrame1" comment="" bitcount="26" isSigned="true" encoding="65001" type="struct" structDefinition="SafeSPIMaster::Slave1::FastFrame1Data" />
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" separateTransmissions="true" name="FastFrame1CrcError" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="0" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1" />
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" separateTransmissions="true" name="FastFrame2" comment="" bitcount="26" isSigned="true" encoding="65001" type="struct" structDefinition="SafeSPIMaster::Slave1::FastFrame2Data" />
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" separateTransmissions="true" name="FastFrame2CrcError" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="0" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1" />
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" separateTransmissions="true" name="RawCommand" comment="" bitcount="192" isSigned="true" encoding="65001" type="struct" structDefinition="SafeSPIMaster::Slave1::RawCommandStruct" />
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" separateTransmissions="true" name="RawResponse" comment="" bitcount="192" isSigned="true" encoding="65001" type="struct" structDefinition="SafeSPIMaster::Slave1::RawResponseStruct" />
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" separateTransmissions="true" name="ResponseCrcError" comment="" bitcount="192" isSigned="true" encoding="65001" type="struct" structDefinition="SafeSPIMaster::Slave1::RawResponseStruct" />
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" separateTransmissions="true" name="SlowFrame" comment="" bitcount="26" isSigned="true" encoding="65001" type="struct" structDefinition="SafeSPIMaster::Slave1::SlowFrameData" />
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" separateTransmissions="true" name="SlowFrameCrcError" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="0" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1" />
+      </namespace>
+    </namespace>
+  </namespace>
+</systemvariables>

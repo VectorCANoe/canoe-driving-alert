@@ -1,0 +1,32 @@
+version 2.0;
+
+import module "SilKit";
+
+namespace SmartECG
+{
+  [Binding="SilKit"]
+  interface ISmartECG_IO
+  {
+    provided data int32 ecgAmplitude;          //SENSORS 
+    
+    consumed data double currentHeartRate;    //ACTUATORS
+    consumed data double averagedHeartRate;
+    consumed data bool heartRateAlarmOn;
+  }
+  
+   ISmartECG_IO SmartECG_IO;
+  
+  [Binding="SilKit"]
+  interface IECGMonitor
+  {
+    // ############ Metrics
+    consumed data double averagedHeartRate;
+    consumed data double currentHeartRate; 
+    consumed data int32 ecgSample;
+    
+    // ############ Alert conditions
+    consumed data bool heartRateCritical;
+  }
+  
+  IECGMonitor ECGMonitor;
+}

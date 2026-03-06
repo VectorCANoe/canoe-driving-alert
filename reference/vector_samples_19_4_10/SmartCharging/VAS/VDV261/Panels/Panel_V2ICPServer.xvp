@@ -1,0 +1,90 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Panel Type="Vector.CANalyzer.Panels.PanelSerializer, Vector.CANalyzer.Panels.Serializer, Version=19.0.141.0, Culture=neutral, PublicKeyToken=null">
+  <Object Type="Vector.CANalyzer.Panels.Runtime.Panel, Vector.CANalyzer.Panels.Common, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Panel" ControlName="V2ICPServer">
+    <Object Type="Vector.CANalyzer.Panels.Design.SwitchControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X17d911f2e8a17e4f89eab43e299e9907f6a0" ControlName="buttonDMSShutdown">
+      <Property Name="Name">X17d911f2e8a17e4f89eab43e299e9907f6a0</Property>
+      <Property Name="Size">28, 28</Property>
+      <Property Name="Location">271, 221</Property>
+      <Property Name="SymbolConfiguration">8;16;SimulationControl;;;Sys_DMSShutdown;1;;;-1;;;Value;;;0</Property>
+      <Property Name="ImageFile">BMP\button_stop.bmp</Property>
+      <Property Name="TabIndex">4</Property>
+      <Property Name="IsButton">True</Property>
+      <Property Name="Epsilon">0</Property>
+      <Property Name="Increment">1</Property>
+      <Property Name="StartValue">0</Property>
+      <Property Name="SwitchValuesVTXml">&lt;Version&gt;2&lt;/Version&gt;&lt;Count&gt;2&lt;/Count&gt;&lt;RxValue&gt;0&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;0&lt;/TxValue&gt;&lt;RxValue&gt;1&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;1&lt;/TxValue&gt;</Property>
+      <Property Name="SwitchValuesVT">1;2;0/Lower/0;1/Lower/1</Property>
+      <Property Name="SwitchValues">1;2;0;1</Property>
+      <Property Name="SwitchValuesRx">1;2;0;1</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.SwitchControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xd871d31de31aae4b4eea37ce87982cf4f3d2" ControlName="buttonDMSStartup">
+      <Property Name="Name">Xd871d31de31aae4b4eea37ce87982cf4f3d2</Property>
+      <Property Name="Size">28, 28</Property>
+      <Property Name="Location">237, 221</Property>
+      <Property Name="SymbolConfiguration">8;16;SimulationControl;;;Sys_DMSStartup;1;;;-1;;;Value;;;0</Property>
+      <Property Name="ImageFile">BMP\button_start.bmp</Property>
+      <Property Name="TabIndex">3</Property>
+      <Property Name="IsButton">True</Property>
+      <Property Name="Epsilon">0</Property>
+      <Property Name="Increment">1</Property>
+      <Property Name="StartValue">0</Property>
+      <Property Name="SwitchValuesVTXml">&lt;Version&gt;2&lt;/Version&gt;&lt;Count&gt;2&lt;/Count&gt;&lt;RxValue&gt;0&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;0&lt;/TxValue&gt;&lt;RxValue&gt;1&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;1&lt;/TxValue&gt;</Property>
+      <Property Name="SwitchValuesVT">1;2;0/Lower/0;1/Lower/1</Property>
+      <Property Name="SwitchValues">1;2;0;1</Property>
+      <Property Name="SwitchValuesRx">1;2;0;1</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X4b02a3e6eaa4ce44eae8aebeb81970c4925f" ControlName="Input/Output Box 2">
+      <Property Name="Name">X4b02a3e6eaa4ce44eae8aebeb81970c4925f</Property>
+      <Property Name="Size">217, 21</Property>
+      <Property Name="Location">5, 248</Property>
+      <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+      <Property Name="AlarmLowerBkgColor">Salmon</Property>
+      <Property Name="AlarmLowerTextColor">Black</Property>
+      <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+      <Property Name="AlarmUpperTextColor">Black</Property>
+      <Property Name="BoxBorderStyle">FixedSingle</Property>
+      <Property Name="DisplayLabel">Left</Property>
+      <Property Name="TabIndex">2</Property>
+      <Property Name="DescriptionText">Password:</Property>
+      <Property Name="ValueDisplay">Text</Property>
+      <Property Name="UsedValueTable">ImplValue</Property>
+      <Property Name="DescriptionSize">57, 21</Property>
+      <Property Name="SymbolConfiguration">8;4096;V2ICP::Endpoints;V2ICPServer.Control.BasicAuthConfig.Password;;1;4;;;-1;;;Value;;;16</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X4417b131e3578e49b6e9446e2760a1ec1917" ControlName="Input/Output Box 1">
+      <Property Name="Name">X4417b131e3578e49b6e9446e2760a1ec1917</Property>
+      <Property Name="Size">217, 21</Property>
+      <Property Name="Location">5, 221</Property>
+      <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+      <Property Name="AlarmLowerBkgColor">Salmon</Property>
+      <Property Name="AlarmLowerTextColor">Black</Property>
+      <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+      <Property Name="AlarmUpperTextColor">Black</Property>
+      <Property Name="BoxBorderStyle">FixedSingle</Property>
+      <Property Name="DisplayLabel">Left</Property>
+      <Property Name="TabIndex">1</Property>
+      <Property Name="DescriptionText">Username:</Property>
+      <Property Name="ValueDisplay">Text</Property>
+      <Property Name="UsedValueTable">ImplValue</Property>
+      <Property Name="DescriptionSize">59, 21</Property>
+      <Property Name="SymbolConfiguration">8;4096;V2ICP::Endpoints;V2ICPServer.Control.BasicAuthConfig.Username;;1;4;;;-1;;;Value;;;16</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.PictureBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X07783a77ee7e0e410bebca2e67757c3d667b" ControlName="pictureDMSConnected">
+      <Property Name="Name">X07783a77ee7e0e410bebca2e67757c3d667b</Property>
+      <Property Name="Size">363, 215</Property>
+      <Property Name="Location">0, 0</Property>
+      <Property Name="IsVisibleByLoad">False</Property>
+      <Property Name="ImageFile">BMP\dms_green.png</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.PictureBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xbca0b57ceedd0e4190eb0b5ed7e5b2b0c65c" ControlName="pictureDMSDisconnected">
+      <Property Name="Name">Xbca0b57ceedd0e4190eb0b5ed7e5b2b0c65c</Property>
+      <Property Name="Size">363, 215</Property>
+      <Property Name="Location">0, 0</Property>
+      <Property Name="ImageFile">BMP\dms_gray.png</Property>
+    </Object>
+    <Property Name="Name">Panel</Property>
+    <Property Name="Size">365, 274</Property>
+    <Property Name="Location">0, 0</Property>
+    <Property Name="BackColor">White</Property>
+  </Object>
+</Panel>

@@ -1,0 +1,103 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<systemvariables version="4">
+  <namespace name="" comment="" interface="">
+    <namespace name="Common" comment="" interface="">
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysPricingRequirementMode" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1" />
+    </namespace>
+    <namespace name="Control" comment="" interface="">
+      <namespace name="ChargingStation" comment="" interface="">
+        <namespace name="OCPP16" comment="" interface="">
+          <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysIdToken" comment="" bitcount="0" isSigned="true" encoding="65001" type="string" />
+          <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysMeterValue" comment="" bitcount="64" isSigned="true" encoding="65001" type="longlong" />
+          <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysSendAuthorize" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="0" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1" />
+          <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysSendMeterValue" comment="" bitcount="64" isSigned="true" encoding="65001" type="longlong" startValue="0" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1" />
+          <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysStartTransaction" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="0" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1" />
+        </namespace>
+        <namespace name="OCPP201" comment="" interface="">
+          <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysEventTypeTransaction" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="2" maxValuePhys="2">
+            <valuetable name="Custom" definesMinMax="false">
+              <valuetableentry value="0" lowerBound="0" upperBound="0" description="Started" displayString="Started" />
+              <valuetableentry value="1" lowerBound="1" upperBound="1" description="Updated" displayString="Updated" />
+              <valuetableentry value="3" lowerBound="3" upperBound="3" description="Finished" displayString="Finished" />
+            </valuetable>
+          </variable>
+          <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysIdToken" comment="" bitcount="0" isSigned="true" encoding="65001" type="string" />
+          <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysMeterValue" comment="" bitcount="64" isSigned="true" encoding="65001" type="longlong" />
+          <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysSendAuthorize" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="0" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1" />
+          <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysSendTransactionEvent" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="0" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1" />
+          <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysTransactionId" comment="" bitcount="0" isSigned="true" encoding="65001" type="string" />
+        </namespace>
+        <namespace name="OCPP21" comment="" interface="">
+          <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysEventTypeTransaction" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="2" maxValuePhys="2">
+            <valuetable name="Custom" definesMinMax="false">
+              <valuetableentry value="0" lowerBound="0" upperBound="0" description="Started" displayString="Started" />
+              <valuetableentry value="1" lowerBound="1" upperBound="1" description="Updated" displayString="Updated" />
+              <valuetableentry value="3" lowerBound="3" upperBound="3" description="Finished" displayString="Finished" />
+            </valuetable>
+          </variable>
+          <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysIdToken" comment="" bitcount="0" isSigned="true" encoding="65001" type="string" />
+          <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysMeterValue" comment="" bitcount="64" isSigned="true" encoding="65001" type="longlong" />
+          <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysSendAuthorize" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="0" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1" />
+          <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysSendTransactionEvent" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="0" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1" />
+          <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysTransactionId" comment="" bitcount="0" isSigned="true" encoding="65001" type="string" />
+        </namespace>
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysChargingStation_ConnectionURL" comment="" bitcount="0" isSigned="true" encoding="65001" type="string" />
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysChargingStation_CSMSAddress" comment="" bitcount="0" isSigned="true" encoding="65001" type="string" />
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysChargingStation_HTTPBasicAuthenticationEnabled" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1">
+          <valuetable name="Custom" definesMinMax="true">
+            <valuetableentry value="0" lowerBound="0" upperBound="0" description="Disabled" displayString="Disabled" />
+            <valuetableentry value="1" lowerBound="1" upperBound="1" description="Enabled" displayString="Enabled" />
+          </valuetable>
+        </variable>
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysChargingStation_HTTPBasicAuthenticationPassword" comment="" bitcount="0" isSigned="true" encoding="65001" type="string" />
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysChargingStation_HTTPBasicAuthenticationUsername" comment="" bitcount="0" isSigned="true" encoding="65001" type="string" />
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysChargingStation_Start" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="0" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1" />
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysChargingStation_Stop" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="0" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1" />
+      </namespace>
+      <namespace name="CSMS" comment="" interface="">
+        <namespace name="OCPP16" comment="" interface="">
+          <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysMeterValue" comment="" bitcount="64" isSigned="true" encoding="65001" type="longlong" />
+          <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysSendChangeConfiguration" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="0" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1" />
+          <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysSendRunningCostPrice" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" />
+          <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysSendUserSpecificPrice" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="0" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1" />
+          <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysTransactionId" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="0" />
+        </namespace>
+        <namespace name="OCPP201" comment="" interface="">
+          <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysMeterValue" comment="" bitcount="64" isSigned="true" encoding="65001" type="longlong" />
+          <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysSendCostUpdate" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="0" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1" />
+          <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysSendSetDisplay" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="0" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1" />
+        </namespace>
+        <namespace name="OCPP21" comment="" interface="">
+          <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysMeterValue" comment="" bitcount="64" isSigned="true" encoding="65001" type="longlong" />
+          <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysSendCostUpdate" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="0" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1" />
+          <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysSendSetDisplay" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="0" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1" />
+        </namespace>
+        <namespace name="ReceivedValues" comment="" interface="">
+          <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="Sys_TransactionID_16" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" />
+          <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="Sys_TransactionID_201" comment="" bitcount="0" isSigned="true" encoding="65001" type="string" />
+          <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="Sys_TransactionID_21" comment="" bitcount="0" isSigned="true" encoding="65001" type="string" />
+        </namespace>
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="InputV2GCertificateName" comment="" bitcount="0" isSigned="true" encoding="65001" type="string" />
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SendDeleteCertificateRequest" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="0" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1" />
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SendInstallCertificateRequest" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="0" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1" />
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SendVariableRequest" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="0" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1" />
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="Status" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="0" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1">
+          <valuetable name="Custom" definesMinMax="false">
+            <valuetableentry value="0" lowerBound="0" upperBound="0" description="Disable" displayString="Disable" />
+            <valuetableentry value="1" lowerBound="1" upperBound="1" description="Enable" displayString="Enable" />
+          </valuetable>
+        </variable>
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="Sys_StartTransaction" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="0" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1" />
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="Sys_StopTransaction" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="0" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1" />
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysCSMS_Start" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="0" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1" />
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysCSMS_Stop" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="0" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1" />
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysSendTriggerMessageReq" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="0" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1" />
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="TypeComponent" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="0" minValue="0" minValuePhys="0" maxValue="2" maxValuePhys="2">
+          <valuetable name="Custom" definesMinMax="false">
+            <valuetableentry value="0" lowerBound="0" upperBound="0" description="AuthCtrlr" displayString="AuthCtrlr" />
+          </valuetable>
+        </variable>
+      </namespace>
+    </namespace>
+  </namespace>
+</systemvariables>

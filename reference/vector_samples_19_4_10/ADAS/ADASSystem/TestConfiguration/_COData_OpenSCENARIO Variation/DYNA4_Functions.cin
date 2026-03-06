@@ -1,0 +1,99 @@
+/*@!Encoding:1252*/
+/*
+ * DYNA4_Functions.cin
+ *
+ * This include provides functions, that can be used to control the DYNA4 simulation.
+ *
+ * This file has been prepared for DYNA4 R8. Don't use with different versions!
+ *
+ * Copyright 2020-2023, Vector Informatik GmbH - All right reserved
+ *
+ */
+
+export long DYNA4LoadScenario(char scenarioFolderPath[])
+{
+  char UserFiles[1024];
+  long res;
+  sysSetVariableString("DYNA4","UserFileAbsPath", scenarioFolderPath);
+  testWaitForSysVar(sysvar::DYNA4::UserFileNames,1000);
+  sysGetVariableString(sysvar::DYNA4::UserFileNames,UserFiles,elcount(UserFiles));
+  res = strstr_regex(UserFiles, ".*\\.dat");
+  if (res != -1)
+  {
+    return 1;
+  }
+  else
+  {
+    return -1;
+  }  
+}
+
+export void DYNA4WaitForScenarioLoad(int waitForAnimationProjectLoad)
+{
+  if (waitForAnimationProjectLoad == 1) {
+    // reset status variable to ensure the correct check in any execution speed
+    sysSetVariableInt("AnimationProjectLauncher","Status",3);
+    testWaitForSignalMatch(sysvar::AnimationProjectLauncher::Status,4,100000);
+  }
+  else {
+    // use the call to animation laucher to see, that file sync, dat file assignment, ... is over
+    sysSetVariableInt("AnimationProjectLauncher","TriggerAnimationProjectLauncher",0);
+    testWaitForSignalMatch(sysvar::AnimationProjectLauncher::TriggerAnimationProjectLauncher,1,100000);
+  }
+}
+
+export void DYNA4WaitForScenarioEnd()
+{
+  // wait shortly to make sure the state set was reset from previous simulations
+  testWaitForTimeout(250);
+  testWaitForSignalMatch(sysvar::DYNA4::state_v_trace,8.0,1000000);
+}
+
+export long DYNA4IsScenarioFinished()
+{
+  char resetVariable[1024];
+  double value;
+  
+  sysGetVariableString(sysvar::DYNA4::ModelName, resetVariable, elcount(resetVariable));
+  strncat(resetVariable, "::Parameters::SimulationControl::DYNA4_Reset",  elcount(resetVariable));
+  value = sysGetVariableFloat(resetVariable, "Value");
+  
+  if (value == 1.0) {
+    // simulation should be started when calling this function
+    return -1;
+  }
+  if (@DYNA4::state_v_trace == 8.0) {
+    // state_v_trace == 8.0 indicates, that the DYNA4 scenario length is reached
+    return 1;
+  }
+  else
+  {
+    // scenario is still running
+    return 0;
+  }
+}
+
+export void DYNA4StartScenario()
+{
+  char resetVariable[1024];
+  
+  TestWaitForTimeout(100);
+  
+  sysGetVariableString(sysvar::DYNA4::ModelName, resetVariable, elcount(resetVariable));
+  strncat(resetVariable, "::Parameters::SimulationControl::DYNA4_Reset",  elcount(resetVariable));
+  
+  sysSetVariableFloat(resetVariable, "Value", 0);
+  testStep("Info", "DYNA4 Scenario started");
+}
+
+export void DYNA4StopScenario()
+{
+  char resetVariable[1024];
+  
+  sysGetVariableString(sysvar::DYNA4::ModelName, resetVariable, elcount(resetVariable));
+  strncat(resetVariable, "::Parameters::SimulationControl::DYNA4_Reset",  elcount(resetVariable));
+  
+  sysSetVariableFloat(resetVariable, "Value", 1);
+  
+  testStep("Info", "DYNA4 Scenario stopped");
+}

@@ -1,0 +1,33 @@
+﻿/*@!Encoding:65001*/
+includes
+{
+}
+
+variables
+{
+  timer simultaneousTimer;
+}
+
+on sysvar MultiCANoe::Events::TriggerSimultaneousEvents
+{
+  if (@this == 1)
+  {
+    // The simulaneousTimer should fire in 10 ms in all instances. Calculate this as an absolute timestamp that is
+    // stored in the shared system variable SimultaneousEventTimestamp.
+    const int64 millisecondToNanoseconds = 1000000;
+    @MultiCANoe::Events::SimultaneousEventTimestamp = timeNowNS() + 10 * millisecondToNanoseconds;
+  }
+}
+
+on sysvar MultiCANoe::Events::SimultaneousEventTimestamp
+{
+  // Set up a relative timer based on the given absolute time in SimultaneousEventTimestamp
+  int64 timerDuration;
+  timerDuration = @this - timeNowNS();
+  if (timerDuration < 0)
+  {
+    write("Error: SimultaneousEventTimestamp is negative, set up timer with timstamp 0");
+    timerDuration = 0;
+  }
+  setTimer(simultaneousTimer, 0, timerDuration);
+}

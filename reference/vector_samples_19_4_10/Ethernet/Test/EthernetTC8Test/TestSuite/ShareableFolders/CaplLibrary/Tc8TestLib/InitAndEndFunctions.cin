@@ -1,0 +1,419 @@
+/*@!Encoding:1252*/
+/***************************************************************************************
+ * Demo- and Example-Programs
+ *
+ * Please note: The demo and example programs only show special aspects of the software.
+ * With regard to the fact that these programs are meant for demonstration purposes only,
+ * Vector Informatik's liability shall be expressly excluded in cases of ordinary
+ * negligence, to the extent admissible by law or statute.
+ *
+ * Beta-Version
+ *
+ * These programs are fully operative programs. However, they are not thoroughly tested
+ * yet (beta-version). With regard to the fact that the programs are a beta-version only,
+ * Vector Informatik's liability shall be expressly excluded in cases of ordinary
+ * negligence, to the extent admissible by law or statute.
+ *
+ * DESCRIPTION:
+ *
+ * Demo test implementation of the 'OPEN Alliance Automotive Ethernet ECU Test
+ * Specification - TC8 ECU Test' (Document Version 2.0, August 23, 2017)
+ *
+ * Copyright (c) Vector Informatik GmbH. All rights reserved.
+ ***************************************************************************************/
+
+variables
+{
+  char gTestCaseName[64];
+  word gTestCaseNumber;
+  enum Bool gStubFunctionRequired;
+}
+
+byte GetIpAddr(char parameterName[], char addrValue[], IP_Address addr)
+{
+  if(addr.ParseAddressFromString(addrValue)!=0)
+  {
+    writeLineEx(0, 3, "Invalid IP address detected for parameter %s: '%s'", parameterName, addrValue);
+    return 1;
+  }
+  return 0;
+}
+
+byte ReportIfIdentical(char name1[], char name2[], char value1[], char value2[], char descr[])
+{ 
+  if(strncmp(value1, value2, 255)==0)
+  {
+    writeLineEx(0, 3, "Identical %s detected (%s), please check parameters %s and %s", descr, value1, name1, name2);
+    return 1;
+  }
+  
+  return 0;
+}
+
+word ReportIfWrongIPVersion(char name[], char value[])
+{
+  byte version;
+  ip_Address addr;
+  if(GetIpAddr(name, value, addr)!=0)
+    return 1;
+  version = (varprop::IPVersion==varprop::IPVersion::IPv4) ? 4 : 6;
+  if((version==4 && addr.IsIPv6Address()) || (version==6 && addr.IsIPv4Address()))
+  {
+    writeLineEx(0, 3, "Invalid IP address detected for parameter %s: '%s' is not valid for IPVersion::IPv%d", name, value, version);
+    return 1;
+  }
+  return 0;
+}
+
+word ReportIfDifferentSubnet(char name1[], char name2[], char value1[], char value2[])
+{
+  byte reportError;
+  int count, i;
+  ip_Address addr1, addr2, subnetMaskAddr;
+  
+  if(GetIpAddr(name1, value1, addr1)!=0 ||
+     GetIpAddr(name2, value2, addr2)!=0 ||
+     GetIpAddr("Host1SubnetMask", syspar::Host1SubnetMask, subnetMaskAddr)!=0)
+    return 1;
+
+  if((addr1.IsIPv4Address() && (addr2.IsIPv4Address()!=1 || subnetMaskAddr.IsIPv4Address()!=1)) ||
+     (addr1.IsIPv6Address() && (addr2.IsIPv6Address()!=1 || subnetMaskAddr.IsIPv6Address()!=1))   )
+  {
+    writeLineEx(0, 3, "Inconsistent/Different IP address versions detected, please check these parameters: %s, %s, Host1SubnetMask", name1, name2);
+    return 1;
+  }
+  
+  reportError = 0;
+  if(addr1.IsIPv6Address())
+  {
+    byte byteAddr1[16], byteAddr2[16], byteSubnetMask[16];
+
+    if(addr1.GetAddressAsArray(byteAddr1)!=0 ||
+       addr2.GetAddressAsArray(byteAddr2)!=0 ||
+       subnetMaskAddr.GetAddressAsArray(byteSubnetMask)!=0)
+    {
+      writeLineEx(0, 3, "Convertion of IP addresses to byte array failed");
+      return 1;
+    }
+    
+    for(i=0; i<16; i++)
+    {
+      if( (byteAddr1[i] & byteSubnetMask[i]) != (byteAddr2[i] & byteSubnetMask[i]) )
+      {
+        reportError = 1;
+        break;
+      }
+    }
+  }
+  else
+  {
+    if((addr1.IPV4Address & subnetMaskAddr.IPV4Address) != (addr2.IPV4Address & subnetMaskAddr.IPV4Address) )
+    {
+      reportError = 1;
+    }
+  }
+  
+  if(reportError)
+  {
+    writeLineEx(0, 3, "IP addresses with different subnets detected, please check these parameters: %s='%s', %s='%s', Host1SubnetMask='%s'",
+      name1, value1, name2, value2, syspar::Host1SubnetMask);
+    return 1;
+  }
+
+  return 0;
+}
+
+void GeneralConsistencyCheck()
+{
+  word countFailed;
+
+  if(IpGetAdapterMacId(1)!=0)
+    writeLineEx(0, 2, "Ignoring MAC address of Tester configured via 'TCP/IP Stack', using parameter MacAddressTester defined in GeneralTestParameters.vparam");
+
+  countFailed += ReportIfIdentical("IpAddressTester" , "DIface0Ip"                   , syspar::IpAddressTester  , syspar::DIface0Ip                   , "IP addresses");
+  countFailed += ReportIfIdentical("IpAddressTester" , "Host1Ip"                     , syspar::IpAddressTester  , syspar::Host1Ip                     , "IP addresses");
+  countFailed += ReportIfIdentical("IpAddressTester" , "Host2Ip"                     , syspar::IpAddressTester  , syspar::Host2Ip                     , "IP addresses");
+  countFailed += ReportIfIdentical("IpAddressTester" , "TestabilityServicesIpAddress", syspar::IpAddressTester  , syspar::TestabilityServicesIpAddress, "IP addresses");
+  countFailed += ReportIfIdentical("Host1Ip"         , "DIface0Ip"                   , syspar::Host1Ip          , syspar::DIface0Ip                   , "IP addresses");
+  countFailed += ReportIfIdentical("Host1Ip"         , "TestabilityServicesIpAddress", syspar::Host1Ip          , syspar::TestabilityServicesIpAddress, "IP addresses");
+  countFailed += ReportIfIdentical("Host1Ip"         , "Host2Ip"                     , syspar::Host1Ip          , syspar::Host2Ip                     , "IP addresses");
+  countFailed += ReportIfIdentical("Host2Ip"         , "DIface0Ip"                   , syspar::Host2Ip          , syspar::DIface0Ip                   , "IP addresses");
+  countFailed += ReportIfIdentical("Host2Ip"         , "TestabilityServicesIpAddress", syspar::Host2Ip          , syspar::TestabilityServicesIpAddress, "IP addresses");
+  countFailed += ReportIfIdentical("MacAddressTester", "DIface0MacAddr"              , syspar::MacAddressTester , syspar::DIface0MacAddr              , "MAC addresses");
+  countFailed += ReportIfIdentical("MacAddressTester", "Host1Mac"                    , syspar::MacAddressTester , syspar::Host1Mac                    , "MAC addresses");
+  countFailed += ReportIfIdentical("MacAddressTester", "Host2Mac"                    , syspar::MacAddressTester , syspar::Host2Mac                    , "MAC addresses");
+  countFailed += ReportIfIdentical("Host1Mac"        , "DIface0MacAddr"              , syspar::Host1Mac         , syspar::DIface0MacAddr              , "MAC addresses");
+  countFailed += ReportIfIdentical("Host1Mac"        , "Host2Mac"                    , syspar::Host1Mac         , syspar::Host2Mac                    , "MAC addresses");
+  countFailed += ReportIfIdentical("Host2Mac"        , "DIface0MacAddr"              , syspar::Host2Mac         , syspar::DIface0MacAddr              , "MAC addresses");
+  countFailed += ReportIfWrongIPVersion("DIface0Ip"                   , syspar::DIface0Ip);
+  countFailed += ReportIfWrongIPVersion("IpAddressTester"             , syspar::IpAddressTester);
+  countFailed += ReportIfWrongIPVersion("Host1Ip"                     , syspar::Host1Ip);
+  countFailed += ReportIfWrongIPVersion("Host2Ip"                     , syspar::Host2Ip);
+  countFailed += ReportIfWrongIPVersion("TestabilityServicesIpAddress", syspar::TestabilityServicesIpAddress); 
+  countFailed += ReportIfWrongIPVersion("IpAddressUnused"             , syspar::IpAddressUnused); 
+  countFailed += ReportIfWrongIPVersion("Host1SubnetMask"             , syspar::Host1SubnetMask); 
+  countFailed += ReportIfWrongIPVersion("AllZeroIPAddress"            , syspar::AllZeroIPAddress); 
+  countFailed += ReportIfDifferentSubnet("IpAddressTester", "Host1Ip"                     , syspar::IpAddressTester, syspar::Host1Ip);
+  countFailed += ReportIfDifferentSubnet("IpAddressTester", "Host2Ip"                     , syspar::IpAddressTester, syspar::Host2Ip);
+  countFailed += ReportIfDifferentSubnet("IpAddressTester", "DIface0Ip"                   , syspar::IpAddressTester, syspar::DIface0Ip);
+  countFailed += ReportIfDifferentSubnet("IpAddressTester", "TestabilityServicesIpAddress", syspar::IpAddressTester, syspar::TestabilityServicesIpAddress);
+
+  if(countFailed>0)
+  {
+    writeLineEx(0, 3, "Measurement will be stopped because of detected error(s)");
+    stop();
+  }
+}
+
+void Internal_InitTestFixture(enum TestGroup testGroup, char ethReceivePacketFunctionName[])
+{
+  GeneralConsistencyCheck();
+    
+  @sysvar::Internal::TestabilityServicesUdpPort = syspar::TestabilityServicesUdpPort;   
+  sysSetVariableString(sysvar::Internal::DIface0MacAddr, syspar::DIface0MacAddr);
+  sysSetVariableString(sysvar::Internal::DIface0Ip, syspar::DIface0Ip);
+  sysSetVariableString(sysvar::Internal::Host1SubnetMaskTester, syspar::Host1SubnetMask);  
+
+  Internal_InitTestFixture(testGroup, ethReceivePacketFunctionName, 2);
+}
+
+int ConvertSubnetMaskToCidr(char subnetMask[])
+{
+  long       res;
+  ip_Address subnetIp;
+  byte       subnetArray[16];
+  byte       ipv4Buf[4];
+  int        i;
+  byte       b;
+  
+  if(subnetIp.ParseAddressFromString(subnetMask) != 0)
+    return -1;
+  
+  if(subnetIp.GetAddressAsArray(subnetArray) !=0)
+  {
+    if(subnetIp.GetAddressAsArray(ipv4Buf) == 0)
+      memcpy(subnetArray, ipv4Buf, elcount(ipv4Buf));
+    else
+      return -1;
+  }
+  
+  for(i = 0; i < elcount(subnetArray); i++)
+  {
+    if(subnetArray[i] != 0xFF)
+      break;
+  }
+  
+  b = i < elcount(subnetArray) ? subnetArray[i] : 0;
+  i = i * 8;
+  while(b >> 7 != 0)
+  {
+    b = b << 1;
+    i++;
+  }
+  
+  return i;
+}
+
+void Internal_InitTestFixture(enum TestGroup testGroup, char ethReceivePacketFunctionName[], int numberOfBusses)
+{
+  const dword AF_INET = 2;   // IPv4 adapter family
+  const dword AF_INET6 = 28; // IPv6 adapter family
+  
+  int prefix;  
+  long res;
+  char tempstr[12];
+  
+  /******************************************************************************************************************/  
+  long resMask;
+  IP_Address addr;
+  IP_Address mask;
+  IP_Address addresses[10];
+  dword count, i;
+  qword macAddress;
+  word countBusContexts;
+  
+  // TODO: programatically add VLAN to tester
+  
+  macAddress = ethGetMacAddressAsNumber(syspar::MacAddressTester);
+  res = ipSetAdapterMacId(1, macAddress);
+  if(res!=0)
+  {
+    writeLineEx(0, 3, "Setting MAC address of tester failed");
+    stop();
+    return;
+  }
+  
+  res = addr.ParseAddressFromString(syspar::IpAddressTester);
+  if (res == 0)
+  {
+    int adapterIndex = 1;
+    
+    // VLAN handling
+    if(syspar::DIface0VLAN > 0 && syspar::DIface0VLAN < 4096)
+    {
+      int idx;
+      idx = ipGetAdapter(1, syspar::DIface0VLAN);
+      if(idx > 0)
+        adapterIndex = idx;
+      else
+       write("DIface0VLAN is set to %d, but the tester has no corresponding VLAN configured. Please add VLAN %d in the TCP/IP-stack settings of the tester", syspar::DIface0VLAN, syspar::DIface0VLAN);        
+    }
+    
+    prefix = ConvertSubnetMaskToCidr(syspar::Host1SubnetMask);
+
+    res = IpGetAdapterAddress(adapterIndex, addresses, count);
+    if(res==0)
+    {
+      for(i=0; i<count; ++i)
+      {
+        if(addr.MatchesAddress(addresses[i]))
+        {
+          res = ipRemoveAdapterAddress(adapterIndex, addr, prefix);
+          if(res != 0)
+          {
+            writeLineEx(0, 3, "Tester IpRemoveAdapterAddress returned error %d, address %s", res, syspar::IpAddressTester);
+          }
+          break;
+        }
+      }
+    }
+    else
+    {
+      writeLineEx(0, 3, "Tester IpGetAdapterAddress returned error %d", res);
+    }
+    
+    res = ipAddAdapterAddress(adapterIndex, addr, prefix);
+    if(res != 0)
+    {
+      writeLineEx(0, 3, "Tester setting adapter address failed, IpAddAdapterAddress returned error %d, address: %s, prefix: %d", res, syspar::IpAddressTester, prefix);
+      if(addr.IsIPv4Address())
+        writeLineEx(0, 3, "Please ensure that 'IPv4 Enabled' is selected for this network");
+      else
+        writeLineEx(0, 3, "Please ensure that 'IPv6 Enabled' is selected for this network");
+      stop();
+      return;
+    }
+  }
+  else
+  {
+    writeLineEx(0, 3, "Invalid DUT IP address IP_Address.ParseAddressFromString(%s) returend error %d", syspar::IpAddressTester, res);
+    stop();
+    return;
+  }
+  /******************************************************************************************************************/ 
+  
+  sysSetVariableInt(sysvar::TC8_DUT_Config::TestGroup, (dword)testGroup);
+  
+  gMaximumChannelNumber = numberOfBusses;
+  
+    /* store bus contexts */
+  countBusContexts = 0;
+  for(i = 1; i <= numberOfBusses; i++)
+  {
+    snprintf(tempstr, elcount(tempstr), "Ethernet_%d", i);
+    if (GetBusNameContext(tempstr) != 0)
+    {
+      countBusContexts += 1;
+      SetBusContext(GetBusNameContext(tempstr));
+      res = EthReceivePacket(ethReceivePacketFunctionName);
+   
+      if (res != 0)
+      {
+       write("Failed to subscribe to EthReceivePacket for %s (%d)", tempstr, res);
+      }
+    }
+  }  
+  if(countBusContexts==0)
+  {
+    writeLineEx(0, 3, "Failed to get any bus context of Ethernet_*");
+  }
+  
+  StubInitialization();
+  testWaitForTimeout(syspar::InitialBootTimeMs);
+    
+}
+
+void Internal_InitTestCase(char testCaseName[], int testGroup, char testGroupName[], int testCaseNumber, enum Bool stubFunctionRequired)
+{
+  
+  write("===========================================");
+  write("Starting Testcase %s", testCaseName);
+  write("===========================================");
+
+  strncpy(gTestCaseName, testCaseName, elcount(gTestCaseName));
+  gTestCaseNumber = testCaseNumber;
+  gStubFunctionRequired = stubFunctionRequired;
+  sysSetVariableInt(sysvar::TC8_DUT_Config::RunTestabilityStartAndEndFunctions, syspar::RunTestabilityStartAndEndFunctions);
+
+  sysSetVariableString(sysvar::TC8_DUT_Config::CurrentTestcaseName, testCaseName);
+  sysSetVariableInt(sysvar::TC8_DUT_Config::TestGroup, testGroup);
+  sysSetVariableString(sysvar::TC8_DUT_Config::TestGroupName, testGroupName);
+
+  if ((syspar::RunTestabilityStartAndEndFunctions == 1 && gStubFunctionRequired == kTrue) || syspar::RunTestabilityStartAndEndFunctions == 2) {
+    Stub_GeneralStartTest();
+  }
+  // Leave the DUT some additional time to prepare the test case
+  testWaitForTimeout(syspar::TestCompletionTimeMs);
+  
+  gExtractingParameters.Clear();
+  gExtractingParametersCount = 0;
+  
+  InternalClearAllParameters();
+}
+
+void Internal_EndTestFixture()
+{
+  StubCleanup();
+}
+
+void Internal_EndTestCase()
+{
+  if ((syspar::RunTestabilityStartAndEndFunctions == 1 && gStubFunctionRequired == kTrue) || syspar::RunTestabilityStartAndEndFunctions == 2) {
+    Stub_GeneralEndTest(gTestCaseNumber, gTestCaseName);
+    // leave the test case time to complete
+    testWaitForTimeout(syspar::TestCompletionTimeMs);
+  }
+  
+  sysSetVariableString(sysvar::TC8_DUT_Config::CurrentTestcaseName, "");
+}
+
+void InternalRemoveHostAddresses()
+{
+  const dword IPV4_STR_SIZE = 16;    // IPv4 string size
+  const dword AF_INET = 2;           // IPv4 adapter family
+  const dword BUFSIZE = 10;          // Buffer size of the address-array
+  dword i;                           // a loop variable
+  dword ipv4Addr[BUFSIZE];           // an array where all ipv4 adapter addresses are stored in
+  char ipv4AddrStr[IPV4_STR_SIZE];   // human readable ipv4 string buffer.
+  long ipv4AdrCount;                 // IPv4 address count
+  dword ifIdx;                       // interface index
+  long result;                       // function result.
+  dword host1Ip;
+  dword host1Subnet;
+  
+  host1Ip = ipGetAddressAsNumber(syspar::Host1Ip);
+  host1Subnet = ipGetAddressAsNumber(syspar::Host1SubnetMask);
+
+  for (ifIdx = 1; ifIdx <= 2; ifIdx++)
+  {
+    ipv4AdrCount = IpGetAdapterAddressCount( ifIdx, AF_INET );
+    if (ipv4AdrCount >= 0)
+    {
+      result = IpGetAdapterAddress( ifIdx, ipv4Addr, elcount(ipv4Addr) );
+      if (result == 0)
+      {
+        for (i = 0; i < ipv4AdrCount; i++)
+        {
+          if (ipv4Addr[i] == host1Ip)
+          {
+            result = IpRemoveAdapterAddress(i, ipGetAddressAsNumber(syspar::Host1Ip), ipGetAddressAsNumber(syspar::Host1SubnetMask));
+            if( result != 0 )
+            {
+              write( "IpRemoveAdapterAddress Host1 failed, error code %d, last error %d", result, IpGetLastError());
+            }
+          }
+        }
+      }
+    }
+  }
+}

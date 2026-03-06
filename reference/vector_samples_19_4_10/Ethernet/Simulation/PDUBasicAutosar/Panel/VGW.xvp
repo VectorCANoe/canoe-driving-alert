@@ -1,0 +1,159 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Panel Type="Vector.CANalyzer.Panels.PanelSerializer, Vector.CANalyzer.Panels.Serializer, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null">
+  <Object Type="Vector.CANalyzer.Panels.Runtime.Panel, Vector.CANalyzer.Panels.Common, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Panel" ControlName="VGW">
+    <Object Type="Vector.CANalyzer.Panels.Design.GroupBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="GroupBoxControl1" ControlName="Group Box">
+      <Object Type="Vector.CANalyzer.Panels.Design.CheckBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="CheckBoxControl1" ControlName="Check Box">
+        <Property Name="Name">CheckBoxControl1</Property>
+        <Property Name="Size">178, 17</Property>
+        <Property Name="Location">6, 19</Property>
+        <Property Name="BackColor">White</Property>
+        <Property Name="Text">Enable Service (sif_1001)</Property>
+        <Property Name="TabIndex">8</Property>
+        <Property Name="SymbolConfiguration">8;16;VGW;;;EnableService;1;;;-1;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.TrackBarControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="TrackBarControl4" ControlName="Track Bar">
+        <Property Name="Name">TrackBarControl4</Property>
+        <Property Name="Size">106, 24</Property>
+        <Property Name="Location">168, 118</Property>
+        <Property Name="BackColor">White</Property>
+        <Property Name="TickStyle">None</Property>
+        <Property Name="TabIndex">7</Property>
+        <Property Name="MaximumDouble">200</Property>
+        <Property Name="TickFrequencyDouble">NaN</Property>
+        <Property Name="MaximumSize">100000, 24</Property>
+        <Property Name="Maximum">200</Property>
+        <Property Name="SymbolConfiguration">8;2;Vehicle_Ethernet;VGW;EMotorStatus;EMotorTemperature;1;Ethernet;;-1;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="TextBoxControl4" ControlName="Input/Output Box">
+        <Property Name="Name">TextBoxControl4</Property>
+        <Property Name="Size">156, 21</Property>
+        <Property Name="Location">6, 120</Property>
+        <Property Name="AlarmGeneralSettings">1;2;0;100</Property>
+        <Property Name="AlarmLowerBkgColor">Salmon</Property>
+        <Property Name="AlarmLowerTextColor">WindowText</Property>
+        <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+        <Property Name="AlarmUpperTextColor">WindowText</Property>
+        <Property Name="BoxBorderStyle">FixedSingle</Property>
+        <Property Name="DisplayLabel">Left</Property>
+        <Property Name="TextBackColor">White</Property>
+        <Property Name="TabIndex">6</Property>
+        <Property Name="DescriptionText">EMotorTemperature:</Property>
+        <Property Name="ValueDecimalPlaces">0</Property>
+        <Property Name="ValueDisplay">Decimal</Property>
+        <Property Name="UsedValueTable">RawValue</Property>
+        <Property Name="DescriptionSize">109, 21</Property>
+        <Property Name="SymbolConfiguration">8;2;Vehicle_Ethernet;VGW;EMotorStatus;EMotorTemperature;1;Ethernet;;-1;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.TrackBarControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="TrackBarControl3" ControlName="Track Bar">
+        <Property Name="Name">TrackBarControl3</Property>
+        <Property Name="Size">106, 24</Property>
+        <Property Name="Location">168, 92</Property>
+        <Property Name="BackColor">White</Property>
+        <Property Name="TickStyle">None</Property>
+        <Property Name="TabIndex">5</Property>
+        <Property Name="MaximumDouble">6000</Property>
+        <Property Name="TickFrequencyDouble">NaN</Property>
+        <Property Name="MaximumSize">100000, 24</Property>
+        <Property Name="Maximum">6000</Property>
+        <Property Name="SymbolConfiguration">8;2;Vehicle_Ethernet;VGW;EMotorStatus;EMotorSpeed;1;Ethernet;;-1;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="TextBoxControl3" ControlName="Input/Output Box">
+        <Property Name="Name">TextBoxControl3</Property>
+        <Property Name="Size">124, 21</Property>
+        <Property Name="Location">38, 94</Property>
+        <Property Name="AlarmGeneralSettings">1;2;0;100</Property>
+        <Property Name="AlarmLowerBkgColor">Salmon</Property>
+        <Property Name="AlarmLowerTextColor">WindowText</Property>
+        <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+        <Property Name="AlarmUpperTextColor">WindowText</Property>
+        <Property Name="BoxBorderStyle">FixedSingle</Property>
+        <Property Name="DisplayLabel">Left</Property>
+        <Property Name="TextBackColor">White</Property>
+        <Property Name="TabIndex">4</Property>
+        <Property Name="DescriptionText">EMotorSpeed:</Property>
+        <Property Name="ValueDecimalPlaces">0</Property>
+        <Property Name="ValueDisplay">Decimal</Property>
+        <Property Name="UsedValueTable">RawValue</Property>
+        <Property Name="DescriptionSize">77, 21</Property>
+        <Property Name="SymbolConfiguration">8;2;Vehicle_Ethernet;VGW;EMotorStatus;EMotorSpeed;1;Ethernet;;-1;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.TrackBarControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="TrackBarControl2" ControlName="Track Bar">
+        <Property Name="Name">TrackBarControl2</Property>
+        <Property Name="Size">106, 24</Property>
+        <Property Name="Location">168, 66</Property>
+        <Property Name="BackColor">White</Property>
+        <Property Name="TickStyle">None</Property>
+        <Property Name="TabIndex">3</Property>
+        <Property Name="MaximumDouble">100</Property>
+        <Property Name="TickFrequencyDouble">NaN</Property>
+        <Property Name="MaximumSize">100000, 24</Property>
+        <Property Name="Maximum">100</Property>
+        <Property Name="SymbolConfiguration">8;2;Vehicle_Ethernet;VGW;EMotorStatus;EMotorPower;1;Ethernet;;-1;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="TextBoxControl2" ControlName="Input/Output Box">
+        <Property Name="Name">TextBoxControl2</Property>
+        <Property Name="Size">123, 21</Property>
+        <Property Name="Location">39, 68</Property>
+        <Property Name="AlarmGeneralSettings">1;2;0;100</Property>
+        <Property Name="AlarmLowerBkgColor">Salmon</Property>
+        <Property Name="AlarmLowerTextColor">WindowText</Property>
+        <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+        <Property Name="AlarmUpperTextColor">WindowText</Property>
+        <Property Name="BoxBorderStyle">FixedSingle</Property>
+        <Property Name="DisplayLabel">Left</Property>
+        <Property Name="TextBackColor">White</Property>
+        <Property Name="TabIndex">2</Property>
+        <Property Name="DescriptionText">EMotorPower:</Property>
+        <Property Name="ValueDecimalPlaces">0</Property>
+        <Property Name="ValueDisplay">Decimal</Property>
+        <Property Name="UsedValueTable">RawValue</Property>
+        <Property Name="DescriptionSize">76, 21</Property>
+        <Property Name="SymbolConfiguration">8;2;Vehicle_Ethernet;VGW;EMotorStatus;EMotorPower;1;Ethernet;;-1;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.TrackBarControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="TrackBarControl1" ControlName="Track Bar">
+        <Property Name="Name">TrackBarControl1</Property>
+        <Property Name="Size">106, 24</Property>
+        <Property Name="Location">168, 40</Property>
+        <Property Name="BackColor">White</Property>
+        <Property Name="TickStyle">None</Property>
+        <Property Name="TabIndex">1</Property>
+        <Property Name="MaximumDouble">250</Property>
+        <Property Name="TickFrequencyDouble">NaN</Property>
+        <Property Name="MaximumSize">100000, 24</Property>
+        <Property Name="Maximum">250</Property>
+        <Property Name="SymbolConfiguration">8;2;Vehicle_Ethernet;VGW;EMotorStatus;EMotorCurrent;1;Ethernet;;-1;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="TextBoxControl1" ControlName="Input/Output Box">
+        <Property Name="Name">TextBoxControl1</Property>
+        <Property Name="Size">129, 21</Property>
+        <Property Name="Location">33, 42</Property>
+        <Property Name="AlarmGeneralSettings">1;2;0;100</Property>
+        <Property Name="AlarmLowerBkgColor">Salmon</Property>
+        <Property Name="AlarmLowerTextColor">WindowText</Property>
+        <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+        <Property Name="AlarmUpperTextColor">WindowText</Property>
+        <Property Name="BoxBorderStyle">FixedSingle</Property>
+        <Property Name="DisplayLabel">Left</Property>
+        <Property Name="TextBackColor">White</Property>
+        <Property Name="TabIndex">0</Property>
+        <Property Name="DescriptionText">EMotorCurrent:</Property>
+        <Property Name="ValueDecimalPlaces">0</Property>
+        <Property Name="ValueDisplay">Decimal</Property>
+        <Property Name="UsedValueTable">RawValue</Property>
+        <Property Name="DescriptionSize">82, 21</Property>
+        <Property Name="SymbolConfiguration">8;2;Vehicle_Ethernet;VGW;EMotorStatus;EMotorCurrent;1;Ethernet;;-1;;;Value;;;0</Property>
+      </Object>
+      <Property Name="Name">GroupBoxControl1</Property>
+      <Property Name="Size">291, 150</Property>
+      <Property Name="Location">3, 3</Property>
+      <Property Name="BackColor">White</Property>
+      <Property Name="Text">VGW - TX PDU</Property>
+      <Property Name="TabIndex">0</Property>
+      <Property Name="UseWindowsStyle">False</Property>
+    </Object>
+    <Property Name="Name">Panel</Property>
+    <Property Name="Size">303, 162</Property>
+    <Property Name="Location">0, 0</Property>
+    <Property Name="BackColor">White</Property>
+  </Object>
+</Panel>

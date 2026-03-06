@@ -1,0 +1,76 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<systemvariables version="4">
+  <namespace name="" comment="" interface="">
+    <namespace name="CAMValues" comment="" interface="">
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="HasLFC" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="-1" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="IncidentCC" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="-1" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="IncidentSCC" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="-1" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="LightBarInUse" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="-1" minValue="0" minValuePhys="0" maxValue="2" maxValuePhys="2">
+        <valuetable name="On_Off" definesMinMax="true">
+          <valuetableentry value="0" lowerBound="0" upperBound="0" description="Off" displayString="Off" />
+          <valuetableentry value="1" lowerBound="1" upperBound="1" description="On" displayString="On" />
+          <valuetableentry value="2" lowerBound="2" upperBound="2" description="Invalid" displayString="Invalid" />
+        </valuetable>
+      </variable>
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SirenInUse" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="-1" minValue="0" minValuePhys="0" maxValue="2" maxValuePhys="2">
+        <valuetable name="On_Off" definesMinMax="true">
+          <valuetableentry value="0" lowerBound="0" upperBound="0" description="Off" displayString="Off" />
+          <valuetableentry value="1" lowerBound="1" upperBound="1" description="On" displayString="On" />
+          <valuetableentry value="2" lowerBound="2" upperBound="2" description="Invalid" displayString="Invalid" />
+        </valuetable>
+      </variable>
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="VehicleRole" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="-1" minValue="5" minValuePhys="5" maxValue="7" maxValuePhys="7">
+        <valuetable name="Custom" definesMinMax="false">
+          <valuetableentry value="0" lowerBound="0" upperBound="0" description="default" displayString="default" />
+          <valuetableentry value="1" lowerBound="1" upperBound="1" description="publicTransport" displayString="publicTransport" />
+          <valuetableentry value="2" lowerBound="2" upperBound="2" description="specialTransport" displayString="specialTransport" />
+          <valuetableentry value="3" lowerBound="3" upperBound="3" description="dangerousGoods" displayString="dangerousGoods" />
+          <valuetableentry value="4" lowerBound="4" upperBound="4" description="roadWork" displayString="roadWork" />
+          <valuetableentry value="5" lowerBound="5" upperBound="5" description="rescue" displayString="rescue" />
+          <valuetableentry value="6" lowerBound="6" upperBound="6" description="emergency" displayString="emergency" />
+          <valuetableentry value="7" lowerBound="7" upperBound="7" description="safetyCar" displayString="safetyCar" />
+          <valuetableentry value="8" lowerBound="8" upperBound="8" description="agriculture" displayString="agriculture" />
+          <valuetableentry value="9" lowerBound="9" upperBound="9" description="commercial" displayString="commercial" />
+          <valuetableentry value="10" lowerBound="10" upperBound="10" description="military" displayString="military" />
+          <valuetableentry value="11" lowerBound="11" upperBound="11" description="roadOperator" displayString="roadOperator" />
+          <valuetableentry value="12" lowerBound="12" upperBound="12" description="taxi" displayString="taxi" />
+        </valuetable>
+      </variable>
+    </namespace>
+    <namespace name="DENMvalues" comment="" interface="">
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="CauseCode" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="-1">
+        <valuetable name="Custom" definesMinMax="false">
+          <valuetableentry value="15" lowerBound="15" upperBound="15" description="rescueAndRecoveryWorkInProgress" displayString="rescueAndRecoveryWorkInProgress" />
+          <valuetableentry value="95" lowerBound="95" upperBound="95" description="emergencyVehicleApproaching" displayString="emergencyVehicleApproaching" />
+        </valuetable>
+      </variable>
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="EventPositionHeading" comment="" bitcount="64" isSigned="true" encoding="65001" type="float" startValue="-1" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="m/s" name="EventSpeed" comment="" bitcount="64" isSigned="true" encoding="65001" type="float" startValue="-1" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="InformationQuality" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="-1" minValue="0" minValuePhys="0" maxValue="7" maxValuePhys="7" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="LanePosition" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="-1" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="RelevanceDistance" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="-1" minValue="0" minValuePhys="0" maxValue="7" maxValuePhys="7">
+        <valuetable name="Custom" definesMinMax="false">
+          <valuetableentry value="0" lowerBound="0" upperBound="0" description="lessThan50m" displayString="lessThan50m" />
+          <valuetableentry value="1" lowerBound="1" upperBound="1" description="lessThan100m" displayString="lessThan100m" />
+          <valuetableentry value="2" lowerBound="2" upperBound="2" description="lessThan200m" displayString="lessThan200m" />
+          <valuetableentry value="3" lowerBound="3" upperBound="3" description="lessThan500m" displayString="lessThan500m" />
+          <valuetableentry value="4" lowerBound="4" upperBound="4" description="lessThan1000m" displayString="lessThan1000m" />
+          <valuetableentry value="5" lowerBound="5" upperBound="5" description="lessThan5km" displayString="lessThan5km" />
+          <valuetableentry value="6" lowerBound="6" upperBound="6" description="lessThan10km" displayString="lessThan10km" />
+          <valuetableentry value="7" lowerBound="7" upperBound="7" description="over10km" displayString="over10km" />
+        </valuetable>
+      </variable>
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="RelevanceTrafficDirection" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="-1" minValue="0" minValuePhys="0" maxValue="3" maxValuePhys="3">
+        <valuetable name="Custom" definesMinMax="false">
+          <valuetableentry value="0" lowerBound="0" upperBound="0" description="allTrafficDirections" displayString="allTrafficDirections" />
+          <valuetableentry value="1" lowerBound="1" upperBound="1" description="upstreamTraffic" displayString="upstreamTraffic" />
+          <valuetableentry value="2" lowerBound="2" upperBound="2" description="downstreamTraffic" displayString="downstreamTraffic" />
+          <valuetableentry value="3" lowerBound="3" upperBound="3" description="oppositeTraffic" displayString="oppositeTraffic" />
+        </valuetable>
+      </variable>
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="StationType" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="-1" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SubCauseCode" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="-1" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="ValidityDuration" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="-1" />
+    </namespace>
+  </namespace>
+</systemvariables>

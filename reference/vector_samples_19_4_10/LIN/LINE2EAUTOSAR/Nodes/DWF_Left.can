@@ -1,0 +1,102 @@
+/*@!Encoding:1252*/
+variables
+{
+  const long kINACTIVE = 0x00;
+  const long kACTIVE   = 0x01;
+  const long kDOWN     = 0x00;
+  const long kHALT     = 0x01;
+  const long kUP       = 0x02;
+  const long kMINUS    = -1;
+  const long kPLUS    = +1;
+
+  msTimer tWinMovment;
+  const long gWIN_SPEED = 100;  // in ms
+  
+  long gDirection     = 0;
+  long gTimerIsActive = kINACTIVE;
+}
+
+on start
+{
+  @PanelFaultInjection::DisturbCNT = 0;
+  @PanelFaultInjection::DisturbCRC = 0;
+}
+
+on timer tWinMovment
+{
+  if(gTimerIsActive)
+  {
+    if(gDirection == -1 && $DWFL_01::DWFL_WinPos != 0  ||  gDirection == +1 && $DWFL_01::DWFL_WinPos != 16)
+    {
+      $DWFL_01::DWFL_WinPos = $DWFL_01::DWFL_WinPos + gDirection;
+    }
+    
+    cancelTimer(this);
+    SetTimer(this,gWIN_SPEED);
+    
+    if(gDirection == -1 && $DWFL_01::DWFL_WinPos <= 0  ||  gDirection == +1 && $DWFL_01::DWFL_WinPos >= 16)
+    {
+        $GWI_01::GWI_FrontWindowsLeft = 1;
+    }
+
+  }
+}
+
+Start_WindowsMovment (int winDir)
+{
+  gTimerIsActive = kACTIVE;
+  gDirection = winDir;
+  cancelTimer(tWinMovment);
+  SetTimer(tWinMovment,gWIN_SPEED);
+}
+
+Stop_WindowsMovment ()
+{
+  gDirection = 0;
+  gTimerIsActive = kINACTIVE;
+  CancelTimer(tWinMovment);
+}
+
+WindowsMovement ()
+{
+  if(gTimerIsActive == kINACTIVE) 
+  {
+    if($GWI_01::GWI_FrontWindowsLeft == kDOWN)    Start_WindowsMovment(kMINUS);
+    else if($GWI_01::GWI_FrontWindowsLeft == kUP) Start_WindowsMovment(kPLUS);
+  }
+  if($GWI_01::GWI_FrontWindowsLeft == kHALT)  Stop_WindowsMovment(); 
+}
+
+on linFrame GWI_01
+{
+  if(this.MsgChannel == %CHANNEL%) 
+  {
+    WindowsMovement();
+  }
+}
+
+// Start or Stop CNT Fault Injection when sysvar is changed by panel button
+on sysvar PanelFaultInjection::DisturbCNT{
+  long res;
+  if (@PanelFaultInjection::DisturbCNT == 0)
+  {
+    res = ARILFaultInjectionDisturbSequenceCounter(DWF_Left::DWFL_01, "SG_DWFL_E2E_SigGroup", 0, 2, 0, 200, 2);
+    write("Disabled ILFaultInjectionDisturbSequenceCounter (returncode = %d)", res);
+  }else{
+    res = ARILFaultInjectionDisturbSequenceCounter(DWF_Left::DWFL_01, "SG_DWFL_E2E_SigGroup", 0, 2, -1, 200, 2);
+    write("Enabled ILFaultInjectionDisturbSequenceCounter (returncode = %d)", res);
+  }
+}
+
+// Start or Stop CRC Fault Injection when sysvar is changed by panel button
+on sysvar PanelFaultInjection::DisturbCRC{
+  long res;
+  if (@PanelFaultInjection::DisturbCRC == 0)
+  {
+    res = ARILFaultInjectionDisturbChecksum(DWF_Left::DWFL_01, "SG_DWFL_E2E_SigGroup", 0, 1, 0, 0);
+    write("Disabled ILFaultInjectionDisturbSequenceCounter (returncode = %d)", res);
+  }else{
+    res = ARILFaultInjectionDisturbChecksum(DWF_Left::DWFL_01, "SG_DWFL_E2E_SigGroup", 0, 1, -1, 0);
+    write("Enabled ILFaultInjectionDisturbSequenceCounter (returncode = %d)", res);
+  }
+}

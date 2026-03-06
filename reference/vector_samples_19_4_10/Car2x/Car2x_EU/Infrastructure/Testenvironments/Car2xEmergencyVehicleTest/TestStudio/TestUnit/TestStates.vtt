@@ -1,0 +1,316 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--Vector Test Table Editor-->
+<ttroot version="30" xmlns="http://www.vector-informatik.de/ITE/TestTable/1.0" minRequiredVersion="16">
+  <tt>
+    <ts navid="9473b29d-3caf-4952-8e89-b67226c7bf75">
+      <title />
+      <breakonfail>false</breakonfail>
+      <tc>
+        <title>Test_Initialization</title>
+        <tcid>61f5e490-cd5a-4c6e-af44-f68cb91fb7ee</tcid>
+        <preparation>
+          <title />
+          <caplfunction>
+            <title />
+            <name>CleanTestStateOutput</name>
+          </caplfunction>
+          <set>
+            <title>Set TestState</title>
+            <in>
+              <assignment>
+                <sink>
+                  <dbobject>SysVar_BEGIN_OF_OBJECT|1|TestState|TestConfiguration|-1|0|END_OF_OBJECT_SysVar|</dbobject>
+                </sink>
+                <source>
+                  <const>1</const>
+                </source>
+              </assignment>
+            </in>
+          </set>
+          <wait>
+            <title />
+            <time>
+              <value>
+                <const>100</const>
+              </value>
+              <unit>ms</unit>
+            </time>
+          </wait>
+          <set>
+            <title />
+            <in>
+              <assignment>
+                <sink>
+                  <dbobject>SysVar_BEGIN_OF_OBJECT|1|StartPAReporting|TestConfiguration|-1|0|END_OF_OBJECT_SysVar|</dbobject>
+                </sink>
+                <source>
+                  <const>1</const>
+                </source>
+              </assignment>
+            </in>
+          </set>
+        </preparation>
+        <breakonfail>false</breakonfail>
+        <caplfunction>
+          <title />
+          <name>WaitForMessage</name>
+        </caplfunction>
+        <caplfunction>
+          <title />
+          <name>PrintInitialData</name>
+        </caplfunction>
+        <canoestandardservice>
+          <title />
+          <name>testReportAddWindowCapture</name>
+          <param>
+            <type>char[]</type>
+            <value>
+              <const>Map Window</const>
+            </value>
+          </param>
+          <param>
+            <type>char[]</type>
+            <value>
+              <const>
+              </const>
+            </value>
+          </param>
+          <param>
+            <type>char[]</type>
+            <value>
+              <const>Screenshot of Map Window</const>
+            </value>
+          </param>
+        </canoestandardservice>
+        <caplfunction>
+          <title>Report initial Protocol Analyzer Violations</title>
+          <name>TestReportAddProtocolAnalyzerViolations</name>
+        </caplfunction>
+      </tc>
+      <tc>
+        <title>Test_Execution</title>
+        <tcid>7c8a3940-9dec-4755-aeb1-b2617a8ce3fa</tcid>
+        <precondition>
+          <compare>
+            <value>
+              <dbobject>SysVar_BEGIN_OF_OBJECT|1|StopTest_Called|TestConfiguration|-1|0|END_OF_OBJECT_SysVar|</dbobject>
+            </value>
+            <ne>
+              <const>1</const>
+            </ne>
+          </compare>
+        </precondition>
+        <preparation>
+          <title />
+          <set>
+            <title>Set TestState</title>
+            <in>
+              <assignment>
+                <sink>
+                  <dbobject>SysVar_BEGIN_OF_OBJECT|1|TestState|TestConfiguration|-1|0|END_OF_OBJECT_SysVar|</dbobject>
+                </sink>
+                <source>
+                  <const>2</const>
+                </source>
+              </assignment>
+            </in>
+          </set>
+        </preparation>
+        <breakonfail>false</breakonfail>
+        <awaitvaluematch>
+          <title>Stop the test</title>
+          <timeout>
+            <value>
+              <const>900</const>
+            </value>
+            <unit>s</unit>
+          </timeout>
+          <joincondition>
+            <enum>all</enum>
+          </joincondition>
+          <compare>
+            <dbobject>SysVar_BEGIN_OF_OBJECT|1|StopTest_Called|TestConfiguration|-1|0|END_OF_OBJECT_SysVar|</dbobject>
+            <eq>
+              <const>1</const>
+            </eq>
+          </compare>
+        </awaitvaluematch>
+      </tc>
+      <tc>
+        <title>Test_Finalization</title>
+        <tcid>0557034f-ba55-438c-bb61-4fdb33b6e510</tcid>
+        <preparation>
+          <title />
+          <set>
+            <title>Set TestState</title>
+            <in>
+              <assignment>
+                <sink>
+                  <dbobject>SysVar_BEGIN_OF_OBJECT|1|TestState|TestConfiguration|-1|0|END_OF_OBJECT_SysVar|</dbobject>
+                </sink>
+                <source>
+                  <const>3</const>
+                </source>
+              </assignment>
+            </in>
+          </set>
+          <wait>
+            <title />
+            <time>
+              <value>
+                <const>100</const>
+              </value>
+              <unit>ms</unit>
+            </time>
+          </wait>
+        </preparation>
+        <breakonfail>false</breakonfail>
+        <caplfunction>
+          <title />
+          <name>PrintTestStopData</name>
+        </caplfunction>
+        <canoestandardservice>
+          <title />
+          <name>testReportAddWindowCapture</name>
+          <param>
+            <type>char[]</type>
+            <value>
+              <const>Map Window</const>
+            </value>
+          </param>
+          <param>
+            <type>char[]</type>
+            <value>
+              <const />
+            </value>
+          </param>
+          <param>
+            <type>char[]</type>
+            <value>
+              <const>Screenshot of Map Window</const>
+            </value>
+          </param>
+        </canoestandardservice>
+        <canoestandardservice>
+          <title />
+          <name>testReportAddWindowCapture</name>
+          <param>
+            <type>char[]</type>
+            <value>
+              <const>Data - CAM</const>
+            </value>
+          </param>
+          <param>
+            <type>char[]</type>
+            <value>
+              <const />
+            </value>
+          </param>
+          <param>
+            <type>char[]</type>
+            <value>
+              <const>Screenshot of Data Window - CAM</const>
+            </value>
+          </param>
+        </canoestandardservice>
+        <canoestandardservice>
+          <title />
+          <name>testReportAddWindowCapture</name>
+          <param>
+            <type>char[]</type>
+            <value>
+              <const>Data - DENM</const>
+            </value>
+          </param>
+          <param>
+            <type>char[]</type>
+            <value>
+              <const>
+              </const>
+            </value>
+          </param>
+          <param>
+            <type>char[]</type>
+            <value>
+              <const>Screenshot of Data Window - DENM</const>
+            </value>
+          </param>
+        </canoestandardservice>
+        <canoestandardservice>
+          <title />
+          <name>testReportAddWindowCapture</name>
+          <param>
+            <type>char[]</type>
+            <value>
+              <const>Visualization</const>
+            </value>
+          </param>
+          <param>
+            <type>char[]</type>
+            <value>
+              <const />
+            </value>
+          </param>
+          <param>
+            <type>char[]</type>
+            <value>
+              <const>Screenshot of Panel "Visualization"</const>
+            </value>
+          </param>
+        </canoestandardservice>
+        <canoestandardservice>
+          <title />
+          <name>testReportAddWindowCapture</name>
+          <param>
+            <type>char[]</type>
+            <value>
+              <const>Trace</const>
+            </value>
+          </param>
+          <param>
+            <type>char[]</type>
+            <value>
+              <const />
+            </value>
+          </param>
+          <param>
+            <type>char[]</type>
+            <value>
+              <const>Screenshot of Trace Window</const>
+            </value>
+          </param>
+        </canoestandardservice>
+        <caplfunction>
+          <title />
+          <name>TestReportAddProtocolAnalyzerViolations</name>
+        </caplfunction>
+      </tc>
+      <tc>
+        <title>Test_Completed</title>
+        <tcid>9151a248-1992-4a57-964b-1d60023d4822</tcid>
+        <preparation>
+          <title />
+          <set>
+            <title>Set TestState</title>
+            <in>
+              <assignment>
+                <sink>
+                  <dbobject>SysVar_BEGIN_OF_OBJECT|1|TestState|TestConfiguration|-1|0|END_OF_OBJECT_SysVar|</dbobject>
+                </sink>
+                <source>
+                  <const>4</const>
+                </source>
+              </assignment>
+            </in>
+          </set>
+        </preparation>
+        <breakonfail>false</breakonfail>
+      </tc>
+    </ts>
+  </tt>
+  <ttlib>
+    <ts_definitions />
+    <tc_definitions />
+    <function_definitions />
+  </ttlib>
+</ttroot>

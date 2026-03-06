@@ -1,0 +1,79 @@
+/*@!Encoding:1252*/
+includes
+{
+  
+}
+
+variables
+{
+  enum Media_AudioChannelMaskFlags
+  {
+    SpeakerFrontLeft = 0x01,
+    SpeakerFrontRight = 0x02,
+    SpeakerFrontCenter = 0x04,
+    SpeakerLowFrequency = 0x08,
+    SpeakerBackLeft = 0x10,
+    SpeakerBackRight = 0x20,
+    SpeakerFrontLeftCenter = 0x40,
+    SpeakerRightOfCenter = 0x80,
+    SpeakerBackCenter = 0x100,
+    SpeakerSideLeft = 0x200,
+    SpeakerSideRight = 0x400,
+    SpeakerTopCenter = 0x800,
+    SpeakerTopFrontLeft = 0x1000,
+    SpeakerTopFrontCenter = 0x2000,
+    SpeakerTopFrontRight = 0x4000,
+    SpeakerTopBackLeft = 0x8000,
+    SpeakerTopBackCenter = 0x10000,
+    SpeakerTopBackRight = 0x20000
+  };
+}
+
+long MediaCheckHandleAndStopIfError(dword handle, char function[])
+{
+  char text[256];
+  
+  if (handle == 0)
+  {
+    strncpy(text, function, elCount(text));
+    strncat(text, " returned 0, MediaGetLastError", elCount(text));
+    
+    return MediaStopIfError(MediaGetLastError(), text);
+  }
+  
+  return kAvbOK;
+}
+
+long MediaStopIfError(long returnCode, char function[])
+{
+  if (returnCode != kAvbOK && returnCode != kAvbIoPending)
+  {
+    MediaWriteErrorAndStop(returnCode, function);
+    return returnCode;
+  }
+  
+  return kAvbOK;
+}
+
+void MediaWriteErrorAndStop(long errorCode, char function[])
+{
+  char text[256];
+  
+  snprintf(text, elCount(text), "%s returned ", function);
+ 
+  MediaWriteErrorAndStop(text, errorCode);
+}
+
+void MediaWriteErrorAndStop(char text[], long errorCode)
+{
+  char textOut[256];
+  long ret;
+    
+  PrependCaplFileName(text, textOut);
+  
+  snprintf(text, elCount(text), "%d", errorCode);
+  strncat(textOut, text, elCount(textOut));
+  
+  write(textOut);
+  Stop();
+}

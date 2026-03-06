@@ -1,0 +1,25 @@
+version: 2.2.0
+
+test-tree:
+  - test-fixture: Compare Brake Distance
+    elements:
+      - capl-test-case: Brake_Distance
+        title: Brake no ABS [Brake_Distance] [Brake_Distance]
+        description: This testcase checks the distance for the brake sequence. A Simulink model takes the actual brake distance and the setpoint for an upper limit as input. If the limit is excessed the system variable BrakeDistVerdict is  set as an output of the Simulink model. This system variable represents the verdict of the test case and is evaluated by the state change pattern within the test unit.
+        params: [0]
+      - capl-test-case: Brake_Distance
+        title: Brake with ABS [Brake_Distance] [Brake_Distance]
+        description: This testcase checks the distance for the brake sequence. A Simulink model takes the actual brake distance and the setpoint for an upper limit as input. If the limit is excessed the system variable BrakeDistVerdict is  set as an output of the Simulink model. This system variable represents the verdict of the test case and is evaluated by the state change pattern within the test unit.
+        params: [1]
+  - test-fixture: Compare Brake Time
+    elements:
+      - capl-test-case: Brake_Time
+        title: Brake Time no ABS
+        description: This testcase measures the time which is needed for a full brake. \nHere, the evaluation of the physical value is done in the YAML test unit.
+        params: [0]
+      - capl-test-case: Brake_Time
+        title: Brake Time ABS
+        description: This testcase measures the time which is needed for a full brake. \nHere, the evaluation of the physical value is done in the YAML test unit.
+        params: [1]
+
+

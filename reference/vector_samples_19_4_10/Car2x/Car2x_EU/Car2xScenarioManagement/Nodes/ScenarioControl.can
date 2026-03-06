@@ -1,0 +1,249 @@
+/*@!Encoding:1252*/
+includes
+{
+  #include "DrawRouteUtils.cin"
+}
+
+variables
+{
+  /*
+    Default names of objects in scenario files (should be the same in all files).
+  */
+  char egoVehicle[50] = "DuT";
+  char scenarioRoute[50] = "ScenarioDefinitionRoute";
+  
+  // Name of route and reference point for EVA scenarios
+  char collisionRoute[50] = "Route_EVA";
+  char collisionPoint[50] = "CollisionPoint1"; 
+  
+  // Name of route and reference point for AVWC scenario
+  char refRoute[50] = "Route_RSU";
+  char refPoint[50] = "RefPoint1";
+  
+  /*
+    Default name of the route file and name. Values are given in the system variables.
+  */
+  char routeFile[255] = "";
+  char loadedRoute[50] = "";
+  
+  long routeHandle = -1;
+  
+  char[50] scenarioFiles[int64];
+  long scenarioHandle[int64];
+}
+
+
+/********************************************************************************************************************************
+****************************************************Starting Scenario************************************************************
+*********************************************************************************************************************************/
+void startScenarioOnRoute(long scenarioHandle)
+{
+  int status;
+  // Try to start the scenario.
+    
+  write("Starting scenario on route '%s' from current GNSS position.", loadedRoute);
+  C2xStartScenario(scenarioHandle, routeHandle, "DuT", @GNSS::Ath1.Latitude, @GNSS::Ath1.Longitude, @GNSS::Ath1.Direction);
+}
+
+/****************************************************************
+ ********************Load Scenarios******************************
+ ****************************************************************/
+void loadScenarios()
+{ 
+  for (int64 mykey : scenarioFiles)
+  {
+    loadScenario(mykey);
+  }
+}
+
+void loadScenario(int64 idx)
+{
+  C2xLoadScenario(scenarioFiles[idx], scenarioHandle[idx]);
+}
+
+/********************************************************************************************************************************
+****************************************************Control Buttons and Sysvar***************************************************
+*********************************************************************************************************************************/
+
+on start
+{  
+  // if route path is given relative, get it as absolute for Panel
+  char absPath[256], relPath[256];
+  int i;
+  long n;
+  
+  sysGetVariableString(sysvar::RouteCtrl::FileName, relPath, elCount(relPath));
+  getAbsFilePath(relPath, absPath, 256);
+  sysSetVariableString(sysvar::RouteCtrl::FileName, absPath);
+  
+  // get the given file and route name
+  sysGetVariableString(sysvar::RouteCtrl::FileName, routeFile, elCount(routeFile));
+  sysGetVariableString(sysvar::RouteCtrl::RouteName, loadedRoute, elCount(loadedRoute));
+  
+  C2xLoadRoute(routeFile, loadedRoute, @RouteCtrl::LoopFlag, routeHandle);
+  
+  setScenarioFiles();
+}
+
+void setScenarioFiles()
+{
+  snprintf(scenarioFiles[0], 50, "Scenarios/Car2xScenario_EVA_Back.scn");
+  snprintf(scenarioFiles[1], 50, "Scenarios/Car2xScenario_EVA_Front.scn");
+  snprintf(scenarioFiles[2], 50, "Scenarios/Car2xScenario_EVCollision_Left.scn");
+  snprintf(scenarioFiles[3], 50, "Scenarios/Car2xScenario_EVCollision_Right.scn");
+  snprintf(scenarioFiles[4], 50, "Scenarios/Car2xScenario_StatEV.scn");
+  
+  setControlProperty("", "StartBtnState_0", "Text", "Start EVA Back");
+  setControlProperty("", "StartBtnState_1", "Text", "Start EVA Front");
+  setControlProperty("", "StartBtnState_2", "Text", "Start EVA Left");
+  setControlProperty("", "StartBtnState_3", "Text", "Start EVA Right");
+  setControlProperty("", "StartBtnState_4", "Text", "Start StatEV");
+  
+  setControlProperty("", "StopBtnState_0", "Text", "Stop EVA Back");
+  setControlProperty("", "StopBtnState_1", "Text", "Stop EVA Front");
+  setControlProperty("", "StopBtnState_2", "Text", "Stop EVA Left");
+  setControlProperty("", "StopBtnState_3", "Text", "Stop EVA Right");
+  setControlProperty("", "StopBtnState_4", "Text", "Stop StatEV");
+}
+
+// Called when pressing/releasing the "Start Scenario" button
+// in the "Scenario Control" panel
+on sysvar ScenarioCtrl::StartBtnState
+{
+  int i, n;
+  long handle;
+  if (@this == 1 /*button pressed*/)
+  {
+    // load all scenarios
+    loadScenarios();
+    n = C2xGetScenarioCount();
+    for (i=0; i<n; i++)
+    {
+      handle = C2xGetScenarioHandle(i);
+      startScenarioOnRoute(handle);
+    }
+  }
+}
+
+// Called when pressing/releasing the "Stop Scenario" button
+// in the "Scenario Control" panel
+on sysvar ScenarioCtrl::StopBtnState
+{
+  int i, n;
+  long handle;
+  if (@this == 1 /*button pressed*/)
+  {
+    n = C2xGetScenarioCount();
+    for (i=0; i<n; i++)
+    {
+      handle = C2xGetScenarioHandle(i);
+      C2xStopScenario(handle);
+    }
+  }
+}
+
+on sysvar ScenarioCtrl::StartBtnState_0
+{
+  if (@this == 1 /*button pressed*/)
+  {
+    loadScenario(0);
+    startScenarioOnRoute(scenarioHandle[0]);
+  }
+}
+
+on sysvar ScenarioCtrl::StartBtnState_1
+{
+  if (@this == 1 /*button pressed*/)
+  {
+    loadScenario(1);
+    startScenarioOnRoute(scenarioHandle[1]);
+  }
+}
+
+on sysvar ScenarioCtrl::StartBtnState_2
+{
+  if (@this == 1 /*button pressed*/)
+  {
+    loadScenario(2);
+    startScenarioOnRoute(scenarioHandle[2]);
+  }
+}
+
+on sysvar ScenarioCtrl::StartBtnState_3
+{
+  if (@this == 1 /*button pressed*/)
+  {
+    loadScenario(3);
+    startScenarioOnRoute(scenarioHandle[3]);
+  }
+}
+
+on sysvar ScenarioCtrl::StartBtnState_4
+{
+  if (@this == 1 /*button pressed*/)
+  {
+    loadScenario(4);
+    startScenarioOnRoute(scenarioHandle[4]);
+  }
+}
+
+
+on sysvar ScenarioCtrl::StopBtnState_0
+{
+  if (@this == 1 /*button pressed*/)
+  {
+    C2xStopScenario(scenarioHandle[0]);
+  }
+}
+
+on sysvar ScenarioCtrl::StopBtnState_1
+{
+  if (@this == 1 /*button pressed*/)
+  {
+    C2xStopScenario(scenarioHandle[1]);
+  }
+}
+
+on sysvar ScenarioCtrl::StopBtnState_2
+{
+  if (@this == 1 /*button pressed*/)
+  {
+    C2xStopScenario(scenarioHandle[2]);
+  }
+}
+
+on sysvar ScenarioCtrl::StopBtnState_3
+{
+  if (@this == 1 /*button pressed*/)
+  {
+    C2xStopScenario(scenarioHandle[3]);
+  }
+}
+
+on sysvar ScenarioCtrl::StopBtnState_4
+{
+  if (@this == 1 /*button pressed*/)
+  {
+    C2xStopScenario(scenarioHandle[4]);
+  }
+}
+
+
+
+// Called when pressing/releasing the "Draw Route" button
+// in the "Scenario Control" panel
+on sysvar RouteCtrl::DrawRouteBtnState
+{
+  if (@this == 1 /*button pressed*/)
+  {
+    // get the given file and route name
+    sysGetVariableString(sysvar::RouteCtrl::FileName, routeFile, elCount(routeFile));
+    sysGetVariableString(sysvar::RouteCtrl::RouteName, loadedRoute, elCount(loadedRoute));
+    if (C2xLoadRoute(routeFile, loadedRoute, @RouteCtrl::LoopFlag) == -1)
+    {
+      write("Route File Path '%s' doesn't exist or file doesn't contain route by name '%s'", routeFile, loadedRoute);
+      return;
+    }
+    DrawRouteInMapWindow(loadedRoute);
+  }
+}

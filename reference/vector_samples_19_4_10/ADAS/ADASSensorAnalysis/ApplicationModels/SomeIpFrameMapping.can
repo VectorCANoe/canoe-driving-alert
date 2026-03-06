@@ -1,0 +1,244 @@
+/*@!Encoding:1252*/
+includes
+{
+  
+}
+
+variables
+{  
+  distObjRef ::_ADAS::DataModel::IDetectedLane detLane;
+  distObjRef ::_ADAS::DataModel::IDetectedLaneBoundary detLaneBoundary;
+   
+  struct PositionLanePoints
+  {
+    double x;
+    double y;
+  };
+  
+  struct LanePoints
+  {
+    int    length;
+    struct PositionLanePoints positionLanePoints[100];
+  };
+}
+
+on start
+{
+  $FrontCamera.sensor_info.sensor_view_configuration.range.impl = 60;
+  $FrontCamera.sensor_info.sensor_view_configuration.field_of_view_horizontal.impl = 1;
+}
+
+on PDU*
+{
+  byte pduPayload[20000];
+  byte someIPdata[20000];
+  
+  long someIpMsgHdl = 0;
+
+  if(this.LongHeaderID == 0x27108001) // Lanes
+  {        
+    memcpy(pduPayload, this.Payload, this.PduLength);
+    memcpy_off(someIPdata, 8, pduPayload, 0, this.PduLength);
+    
+    someIPdata[0] = 0x27;
+    someIPdata[1] = 0x10;
+    someIPdata[2] = 0x80;
+    someIPdata[3] = 0x01;
+    someIPdata[4] = this.PduLength >> 24;
+    someIPdata[5] = this.PduLength >> 16;
+    someIPdata[6] = this.PduLength >> 8;
+    someIPdata[7] = this.PduLength;
+    
+    someIpMsgHdl = SomeIpCreateMessage(this.PduLength + 8, someIPdata);
+    
+    OnSomeipProcessRxMessage(someIpMsgHdl, 0);
+    
+    SomeIpReleaseMessage(someIpMsgHdl);
+  }
+  else if(this.LongHeaderID == 0x27108002) // Lane Boundaries
+  {        
+    memcpy(pduPayload, this.Payload, this.PduLength);
+    memcpy_off(someIPdata, 8, pduPayload, 0, this.PduLength);
+    
+    someIPdata[0] = 0x27;
+    someIPdata[1] = 0x10;
+    someIPdata[2] = 0x80;
+    someIPdata[3] = 0x02;
+    someIPdata[4] = this.PduLength >> 24;
+    someIPdata[5] = this.PduLength >> 16;
+    someIPdata[6] = this.PduLength >> 8;
+    someIPdata[7] = this.PduLength;
+    
+    someIpMsgHdl = SomeIpCreateMessage(this.PduLength + 8, someIPdata);
+    
+    OnSomeipProcessRxMessage(someIpMsgHdl, 0);
+    
+    SomeIpReleaseMessage(someIpMsgHdl);
+  }
+}
+
+long OnSomeipProcessRxMessage(dword messageHandle, long rxChannel)
+{
+  dword msgId;
+  dword msgLength;
+
+  stack struct LanePoints lanePoints;
+
+  msgId = SomeIpGetMessageId(messageHandle);
+  msgLength = SomeIpGetLength(messageHandle);
+  
+  if(msgId == 0x27108001) // Lanes
+  {
+    stack int i, j = 0;
+    stack int laneCount, segmentCount = 0;
+      
+    laneCount = SomeIpGetValueDWord(messageHandle, "Lane");
+    
+    for(i = 0; i <  laneCount; i++)
+    {
+      stack double x, y = 0;
+      stack int trackingId = 0;
+      
+      stack char qualifierTrackingId[100]   = "Lane[0]::ID";
+      stack char qualifierSegmentCount[100] = "Lane[0]::Segment";
+      stack char qualifierLaneX[200]        = "Lane[0].Segment[0].X";
+      stack char qualifierLaneY[200]        = "Lane[0].Segment[0].Y";
+      
+      snprintf(qualifierTrackingId, elcount(qualifierTrackingId), "Lane[%i]::ID", i);
+      trackingId = SomeIpGetValueDWord(messageHandle, qualifierTrackingId);
+      
+      snprintf(qualifierSegmentCount, elcount(qualifierSegmentCount), "Lane[%i]::Segment", i);
+      segmentCount = SomeIpGetValueDWord(messageHandle, qualifierSegmentCount);
+      
+      lanePoints.length = segmentCount;
+      
+      for(j = 0; j < segmentCount; j++)
+      {
+        snprintf(qualifierLaneX, elcount(qualifierLaneX), "Lane[%i].Segment[%i].X", i, j);
+        snprintf(qualifierLaneY, elcount(qualifierLaneY), "Lane[%i].Segment[%i].Y", i, j);
+        
+        x = SomeIpGetValuePhys(messageHandle, qualifierLaneX);
+        y = SomeIpGetValuePhys(messageHandle, qualifierLaneY);
+      
+        lanePoints.positionLanePoints[j].x = x;
+        lanePoints.positionLanePoints[j].y = y;
+      }
+      
+      DrawLaneSegment(trackingId, lanePoints);  
+    }
+  }
+    
+  if(msgId == 0x27108002) // Lane Boundaries
+  {
+    stack int i, j = 0;
+    stack int laneCount, segmentCount = 0;
+    
+    laneCount = SomeIpGetValueDWord(messageHandle, "Lane");
+    
+    for(i = 0; i <  laneCount; i++)
+    {
+      stack double x, y = 0;
+      stack int trackingId = 0;
+      
+      stack char qualifierTrackingId[100]   = "Lane[0]::ID";
+      stack char qualifierSegmentCount[100] = "Lane[0]::Segment";
+      stack char qualifierLaneX[200]        = "Lane[0].Segment[0].X";
+      stack char qualifierLaneY[200]        = "Lane[0].Segment[0].Y";
+      
+      snprintf(qualifierTrackingId, elcount(qualifierTrackingId), "Lane[%i]::ID", i);
+      trackingId = SomeIpGetValueDWord(messageHandle, qualifierTrackingId);
+      
+      snprintf(qualifierSegmentCount, elcount(qualifierSegmentCount), "Lane[%i]::Segment", i);
+      segmentCount = SomeIpGetValueDWord(messageHandle, qualifierSegmentCount);
+      
+      lanePoints.length = segmentCount;
+      
+      for(j = 0; j < segmentCount; j++)
+      {
+        snprintf(qualifierLaneX, elcount(qualifierLaneX), "Lane[%i].Segment[%i].X", i, j);
+        snprintf(qualifierLaneY, elcount(qualifierLaneY), "Lane[%i].Segment[%i].Y", i, j);
+        
+        x = SomeIpGetValuePhys(messageHandle, qualifierLaneX);
+        y = SomeIpGetValuePhys(messageHandle, qualifierLaneY);
+      
+        lanePoints.positionLanePoints[j].x = x;
+        lanePoints.positionLanePoints[j].y = y;
+      }
+      
+      DrawLaneBoundarySegment(trackingId, lanePoints);   
+    }
+  }
+
+  return 1;
+}
+
+void DrawLaneSegment(int trackingId, struct LanePoints lanePoints)
+{
+  int i = 0;
+  
+  stack char detLaneName [100];
+  stack char detLaneNameWithAdasPrefix [100];
+  
+  memcpy(detLaneName, FrontCamera.GetOrCreateDetectedObject.Call_Phys(trackingId, _ADAS::DataModel::EDetectedObjectType::IDetectedLane), elCount(FrontCamera.GetOrCreateDetectedObject.Call_Phys(trackingId, _ADAS::DataModel::EDetectedObjectType:: IDetectedLane)));
+  
+  snprintf(detLaneNameWithAdasPrefix, elcount(detLaneNameWithAdasPrefix),"ADAS::%s", detLaneName);
+  detLane = (distObjRef _ADAS::DataModel::IDetectedLane) lookupDistObj(detLaneNameWithAdasPrefix);
+
+  if(detLane.IsValid)
+  {
+    $detLane.lane.header.tracking_id.value.impl = trackingId;
+    $detLane.lane.header.measurement_state.impl = 2;
+    
+    $detLane.lane.candidate[0].classification.centerline.Length = lanePoints.length;
+    
+    for(i = 0; i < lanePoints.length; i++)
+    {
+      $detLane.lane.candidate[0].classification.centerline[i].x.impl = lanePoints.positionLanePoints[i].x;
+      $detLane.lane.candidate[0].classification.centerline[i].y.impl = lanePoints.positionLanePoints[i].y;
+    }
+  }
+  
+  ClearCenterPointStruct(lanePoints);
+}
+
+void DrawLaneBoundarySegment(int trackingId, struct LanePoints lanePoints)
+{
+  int i = 0;
+  
+  stack char detLaneBoundaryName [100];
+  stack char detLaneBoundaryNameWithAdasPrefix [100];
+  
+  memcpy(detLaneBoundaryName, FrontCamera.GetOrCreateDetectedObject.Call_Phys(trackingId, _ADAS::DataModel::EDetectedObjectType::IDetectedLaneBoundary), elCount(FrontCamera.GetOrCreateDetectedObject.Call_Phys(trackingId, _ADAS::DataModel::EDetectedObjectType:: IDetectedLaneBoundary)));
+  
+  snprintf(detLaneBoundaryNameWithAdasPrefix, elcount(detLaneBoundaryNameWithAdasPrefix),"ADAS::%s", detLaneBoundaryName);
+  detLaneBoundary = (distObjRef _ADAS::DataModel::IDetectedLaneBoundary) lookupDistObj(detLaneBoundaryNameWithAdasPrefix);
+
+  if(detLaneBoundary.IsValid)
+  {
+    $detLaneBoundary.lane_boundary.header.tracking_id.value.impl = trackingId;
+    $detLaneBoundary.lane_boundary.header.measurement_state.impl = 2;
+    
+    $detLaneBoundary.lane_boundary.boundary_line.Length = lanePoints.length;
+    
+    for(i = 0; i < lanePoints.length; i++)
+    {
+      $detLaneBoundary.lane_boundary.boundary_line[i].position.x.impl = lanePoints.positionLanePoints[i].x;
+      $detLaneBoundary.lane_boundary.boundary_line[i].position.y.impl = lanePoints.positionLanePoints[i].y;
+    }
+  }
+  
+  ClearCenterPointStruct(lanePoints);
+}
+
+void ClearCenterPointStruct(struct LanePoints lanePoints)
+{
+  int i = 0;
+  
+  for(i = 0; i < lanePoints.length; i++)
+  {
+    lanePoints.positionLanePoints[i].x = 0;
+    lanePoints.positionLanePoints[i].y = 0;
+  }
+  
+  lanePoints.length = 0;
+}

@@ -1,0 +1,49 @@
+/*@!Encoding:1252*/
+variables
+{
+  // Fall into default session if not request was received for this long
+  const word cSessionTimeout=17000;
+  mstimer tSessionTimer;
+  // Fall into default session if no Tester Present was received for this long
+  word gS3ServerTimeout;
+  msTimer tS3ServerTimer;  
+  // P2 Timeout values used in response of Session Control service
+  long gP2ClientTimeout;
+  long gP2extClientTimeout;  
+  
+}
+
+on timer tS3ServerTimer
+{
+  writeDbgLvlPrefix( 2, "S3 server timed out (S3 server timeout=%d ms), falling back to default session.", gS3ServerTimeout);
+  @%BASE_FILE_NAME_NO_EXT%::TesterPresent=0;
+  S3ServerReset();
+}
+
+on timer tSessionTimer
+{
+  writeDbgLvlPrefix( 2, "Session timed out (session timeout=%d ms), falling back to default session.", cSessionTimeout);
+
+  ResetSession();
+}
+
+// Refresh timer to avoid falling back into default session
+void refreshS3Timer()
+{
+  if (!@sysvarMember::%BASE_FILE_NAME_NO_EXT%::Download.InProgress) setTimer(tS3ServerTimer, gS3ServerTimeout);
+  writeDbgLvlPrefix( 3, "S3 timer canceled");
+  @%BASE_FILE_NAME_NO_EXT%::TesterPresent=1;
+}
+
+void refreshSessionTimer()
+{
+  cancelTimer( tSessionTimer);
+  writeDbgLvlPrefix( 3, "Session timer canceled");
+  setTimer( tSessionTimer, cSessionTimeout);
+}
+
+void refreshSessionTimerAndSendPositiveResponse(diagResponse * resp)
+{
+  refreshSessionTimer();
+  diagSendPositiveResponse(resp);
+}

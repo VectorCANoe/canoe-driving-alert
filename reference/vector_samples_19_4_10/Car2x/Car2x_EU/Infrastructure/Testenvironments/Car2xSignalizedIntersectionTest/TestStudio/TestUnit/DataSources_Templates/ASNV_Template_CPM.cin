@@ -1,0 +1,4703 @@
+/*@!Encoding:1252*/
+/*
+//  (c) Vector Informatik GmbH. All rights reserved.
+//
+//  This file contains definitions of structs and methods that may be used
+//  to set and get the values of an ASN.1 defined packet's payload.
+//
+//  //This example demonstrates how to set a packet's payload:
+//  LONG packetHandle;
+//  struct CPM payload;
+//  //you need to set the values of the variable "payload" yourself
+//  packetHandle = API_InitCPMPacket();
+//  if (packetHandle!=0) {
+//    if (API_SetCPMParams(packetHandle, payload)==0) {
+//      if (C2xCompletePacket(packetHandle)==0) {
+//        C2xOutputPacket(packetHandle);
+//      }
+//    }
+//  }
+//                                                                             */
+includes
+{
+
+}
+variables
+{
+    struct CPMItsPduHeader {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        BYTE protocolVersion;  // INTEGER, 0..255, currentVersion(1);
+        BYTE messageID;  // INTEGER, 0..255, denm(1), cam(2), poi(3), spatem(4), mapem(5), ivim(6), ev_rsr(7), tistpgtransaction(8), srem(9), ssem(10), evcsn(11);
+        DWORD stationID;  // INTEGER, 0..4294967295;
+    };
+    
+    struct CPMPerceivedObjectContainerSegmentInfo {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        BYTE totalMsgSegments;  // INTEGER, 1..127;
+        BYTE thisSegmentNum;  // INTEGER, 1..127;
+    };
+    
+    struct CPMPosConfidenceEllipse {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        WORD semiMajorConfidence;  // INTEGER, 0..4095, oneCentimeter(1), outOfRange(4094), unavailable(4095);
+        WORD semiMinorConfidence;  // INTEGER, 0..4095, oneCentimeter(1), outOfRange(4094), unavailable(4095);
+        WORD semiMajorOrientation;  // INTEGER, 0..3601, wgs84North(0), wgs84East(900), wgs84South(1800), wgs84West(2700), unavailable(3601);
+    };
+    
+    struct CPMAltitude {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        LONG altitudeValue;  // INTEGER, -100000..800001, referenceEllipsoidSurface(0), oneCentimeter(1), unavailable(800001);
+        INT altitudeConfidence;  // ENUMERATED, alt_000_01(0), alt_000_02(1), alt_000_05(2), alt_000_10(3), alt_000_20(4), alt_000_50(5), alt_001_00(6), alt_002_00(7), alt_005_00(8), alt_010_00(9), alt_020_00(10), alt_050_00(11), alt_100_00(12), alt_200_00(13), outOfRange(14), unavailable(15);
+    };
+    
+    struct CPMReferencePosition {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        LONG latitude;  // INTEGER, -900000000..900000001, oneMicrodegreeNorth(10), oneMicrodegreeSouth(-10), unavailable(900000001);
+        LONG longitude;  // INTEGER, -1800000000..1800000001, oneMicrodegreeEast(10), oneMicrodegreeWest(-10), unavailable(1800000001);
+        struct CPMPosConfidenceEllipse positionConfidenceEllipse;  // SEQUENCE;
+        struct CPMAltitude altitude;  // SEQUENCE;
+    };
+    
+    struct CPMCpmManagementContainer {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        BYTE stationType;  // INTEGER, 0..255, unknown(0), pedestrian(1), cyclist(2), moped(3), motorcycle(4), passengerCar(5), bus(6), lightTruck(7), heavyTruck(8), trailer(9), specialVehicles(10), tram(11), roadSideUnit(15);
+        struct CPMPerceivedObjectContainerSegmentInfo perceivedObjectContainerSegmentInfo;  // SEQUENCE, OPTIONAL;
+        struct CPMReferencePosition referencePosition;  // SEQUENCE;
+    };
+    
+    struct CPMHeading {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        WORD headingValue;  // INTEGER, 0..3601, wgs84North(0), wgs84East(900), wgs84South(1800), wgs84West(2700), unavailable(3601);
+        BYTE headingConfidence;  // INTEGER, 1..127, equalOrWithinZeroPointOneDegree(1), equalOrWithinOneDegree(10), outOfRange(126), unavailable(127);
+    };
+    
+    struct CPMSpeed {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        WORD speedValue;  // INTEGER, 0..16383, standstill(0), oneCentimeterPerSec(1), unavailable(16383);
+        BYTE speedConfidence;  // INTEGER, 1..127, equalOrWithinOneCentimeterPerSec(1), equalOrWithinOneMeterPerSec(100), outOfRange(126), unavailable(127);
+    };
+    
+    struct CPMWGS84Angle {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        WORD value;  // INTEGER, 0..3601, wgs84North(0), wgs84East(900), wgs84South(1800), wgs84West(2700), unavailable(3601);
+        BYTE confidence;  // INTEGER, 1..127, zeroPointOneDegree(1), oneDegree(10), outOfRange(126), unavailable(127);
+    };
+    
+    struct CPMLongitudinalAcceleration {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        INT longitudinalAccelerationValue;  // INTEGER, -160..161, pointOneMeterPerSecSquaredForward(1), pointOneMeterPerSecSquaredBackward(-1), unavailable(161);
+        BYTE longitudinalAccelerationConfidence;  // INTEGER, 0..102, pointOneMeterPerSecSquared(1), outOfRange(101), unavailable(102);
+    };
+    
+    struct CPMLateralAcceleration {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        INT lateralAccelerationValue;  // INTEGER, -160..161, pointOneMeterPerSecSquaredToRight(-1), pointOneMeterPerSecSquaredToLeft(1), unavailable(161);
+        BYTE lateralAccelerationConfidence;  // INTEGER, 0..102, pointOneMeterPerSecSquared(1), outOfRange(101), unavailable(102);
+    };
+    
+    struct CPMVerticalAcceleration {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        INT verticalAccelerationValue;  // INTEGER, -160..161, pointOneMeterPerSecSquaredUp(1), pointOneMeterPerSecSquaredDown(-1), unavailable(161);
+        BYTE verticalAccelerationConfidence;  // INTEGER, 0..102, pointOneMeterPerSecSquared(1), outOfRange(101), unavailable(102);
+    };
+    
+    struct CPMYawRate {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        INT yawRateValue;  // INTEGER, -32766..32767, straight(0), degSec_000_01ToRight(-1), degSec_000_01ToLeft(1), unavailable(32767);
+        INT yawRateConfidence;  // ENUMERATED, degSec_000_01(0), degSec_000_05(1), degSec_000_10(2), degSec_001_00(3), degSec_005_00(4), degSec_010_00(5), degSec_100_00(6), outOfRange(7), unavailable(8);
+    };
+    
+    struct CPMCartesianAngle {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        WORD value;  // INTEGER, 0..3601, zeroPointOneDegree(1), oneDegree(10), unavailable(3601);
+        BYTE confidence;  // INTEGER, 1..127, zeroPointOneDegree(1), oneDegree(10), outOfRange(126), unavailable(127);
+    };
+    
+    struct CPMVehicleLength {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        WORD vehicleLengthValue;  // INTEGER, 1..1023, tenCentimeters(1), outOfRange(1022), unavailable(1023);
+        INT vehicleLengthConfidenceIndication;  // ENUMERATED, noTrailerPresent(0), trailerPresentWithKnownLength(1), trailerPresentWithUnknownLength(2), trailerPresenceIsUnknown(3), unavailable(4);
+    };
+    
+    struct CPMTrailerData {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        BYTE refPointId;  // INTEGER, 0..255;
+        BYTE hitchPointOffset;  // INTEGER, 0..100, zeroPointOneMeter(1), oneMeter(10);
+        BYTE frontOverhang;  // INTEGER, 0..50, zeroPointOneMeter(1), oneMeter(10);
+        BYTE rearOverhang;  // INTEGER, 0..150, zeroPointOneMeter(1), oneMeter(10);
+        struct OPT_BYTE_ASN trailerWidth;  // INTEGER, OPTIONAL, 1..62, tenCentimeters(1), outOfRange(61), unavailable(62);
+        struct CPMCartesianAngle hitchAngle;  // SEQUENCE, OPTIONAL;
+    };
+    
+    struct CPMTrailerDataContainer {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        INT length;
+        struct CPMTrailerData arrayValue[2];  // SEQUENCE;
+    };
+    
+    struct CPMOriginatingVehicleContainer {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        struct CPMHeading heading;  // SEQUENCE;
+        struct CPMSpeed speed;  // SEQUENCE;
+        struct CPMWGS84Angle vehicleOrientationAngle;  // SEQUENCE, OPTIONAL;
+        struct OPT_ENUM_ASN driveDirection;  // ENUMERATED, OPTIONAL, forward(0), backward(1), unavailable(2);
+        struct CPMLongitudinalAcceleration longitudinalAcceleration;  // SEQUENCE, OPTIONAL;
+        struct CPMLateralAcceleration lateralAcceleration;  // SEQUENCE, OPTIONAL;
+        struct CPMVerticalAcceleration verticalAcceleration;  // SEQUENCE, OPTIONAL;
+        struct CPMYawRate yawRate;  // SEQUENCE, OPTIONAL;
+        struct CPMCartesianAngle pitchAngle;  // SEQUENCE, OPTIONAL;
+        struct CPMCartesianAngle rollAngle;  // SEQUENCE, OPTIONAL;
+        struct CPMVehicleLength vehicleLength;  // SEQUENCE, OPTIONAL;
+        struct OPT_BYTE_ASN vehicleWidth;  // INTEGER, OPTIONAL, 1..62, tenCentimeters(1), outOfRange(61), unavailable(62);
+        struct OPT_BYTE_ASN vehicleHeight;  // INTEGER, OPTIONAL, 0..127;
+        struct CPMTrailerDataContainer trailerDataContainer;  // SEQUENCEOF, OPTIONAL;
+    };
+    
+    struct CPMIntersectionReferenceID {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        struct OPT_WORD_ASN region;  // INTEGER, OPTIONAL, 0..65535;
+        WORD id;  // INTEGER, 0..65535;
+    };
+    
+    struct CPMRoadSegmentReferenceID {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        struct OPT_WORD_ASN region;  // INTEGER, OPTIONAL, 0..65535;
+        WORD id;  // INTEGER, 0..65535;
+    };
+    
+    struct CPMOriginatingRSUContainer {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        INT choice;
+        struct CPMIntersectionReferenceID intersectionReferenceId;  // SEQUENCE;
+        struct CPMRoadSegmentReferenceID roadSegmentReferenceId;  // SEQUENCE;
+    };
+    
+    struct CPMStationDataContainer {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        INT choice;
+        struct CPMOriginatingVehicleContainer originatingVehicleContainer;  // SEQUENCE;
+        struct CPMOriginatingRSUContainer originatingRSUContainer;  // CHOICE;
+    };
+    
+    struct CPMVehicleSensorProperties {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        WORD range;  // INTEGER, 0..10000, zeroPointOneMeter(1), oneMeter(10);
+        WORD horizontalOpeningAngleStart;  // INTEGER, 0..3601, zeroPointOneDegree(1), oneDegree(10), unavailable(3601);
+        WORD horizontalOpeningAngleEnd;  // INTEGER, 0..3601, zeroPointOneDegree(1), oneDegree(10), unavailable(3601);
+        struct OPT_WORD_ASN verticalOpeningAngleStart;  // INTEGER, OPTIONAL, 0..3601, zeroPointOneDegree(1), oneDegree(10), unavailable(3601);
+        struct OPT_WORD_ASN verticalOpeningAngleEnd;  // INTEGER, OPTIONAL, 0..3601, zeroPointOneDegree(1), oneDegree(10), unavailable(3601);
+    };
+    
+    struct CPMVehicleSensorPropertyList {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        INT length;
+        struct CPMVehicleSensorProperties arrayValue[10];  // SEQUENCE;
+    };
+    
+    struct CPMVehicleSensor {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        struct OPT_BYTE_ASN refPointId;  // INTEGER, OPTIONAL, 0..255;
+        INT xSensorOffset;  // INTEGER, -5000..0, negativeZeroPointZeroOneMeter(-1), negativeOneMeter(-100);
+        INT ySensorOffset;  // INTEGER, -1000..1000, zeroPointZeroOneMeter(1), oneMeter(100);
+        struct OPT_WORD_ASN zSensorOffset;  // INTEGER, OPTIONAL, 0..1000, zeroPointZeroOneMeter(1), oneMeter(100);
+        struct CPMVehicleSensorPropertyList vehicleSensorPropertyList;  // SEQUENCEOF;
+    };
+    
+    struct CPMNode_XY_20b {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        INT x;  // INTEGER, -512..511;
+        INT y;  // INTEGER, -512..511;
+    };
+    
+    struct CPMNode_XY_22b {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        INT x;  // INTEGER, -1024..1023;
+        INT y;  // INTEGER, -1024..1023;
+    };
+    
+    struct CPMNode_XY_24b {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        INT x;  // INTEGER, -2048..2047;
+        INT y;  // INTEGER, -2048..2047;
+    };
+    
+    struct CPMNode_XY_26b {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        INT x;  // INTEGER, -4096..4095;
+        INT y;  // INTEGER, -4096..4095;
+    };
+    
+    struct CPMNode_XY_28b {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        INT x;  // INTEGER, -8192..8191;
+        INT y;  // INTEGER, -8192..8191;
+    };
+    
+    struct CPMNode_XY_32b {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        INT x;  // INTEGER, -32768..32767;
+        INT y;  // INTEGER, -32768..32767;
+    };
+    
+    struct CPMNode_LLmD_64b {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        LONG lon;  // INTEGER, -1800000000..1800000001, oneMicrodegreeEast(10), oneMicrodegreeWest(-10), unavailable(1800000001);
+        LONG lat;  // INTEGER, -900000000..900000001, oneMicrodegreeNorth(10), oneMicrodegreeSouth(-10), unavailable(900000001);
+    };
+    
+    struct CPMReg_Empty {
+    };
+    
+    struct CPMDSRC_RegionalExtensionEmpty {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        BYTE regionId;  // INTEGER, 0..255, noRegion(0), addGrpA(1), addGrpB(2), addGrpC(3);
+        struct CPMReg_Empty regExtValue;  // TABLE;
+    };
+    
+    struct CPMNodeOffsetPointXY {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        INT choice;
+        struct CPMNode_XY_20b node_XY1;  // SEQUENCE;
+        struct CPMNode_XY_22b node_XY2;  // SEQUENCE;
+        struct CPMNode_XY_24b node_XY3;  // SEQUENCE;
+        struct CPMNode_XY_26b node_XY4;  // SEQUENCE;
+        struct CPMNode_XY_28b node_XY5;  // SEQUENCE;
+        struct CPMNode_XY_32b node_XY6;  // SEQUENCE;
+        struct CPMNode_LLmD_64b node_LatLon;  // SEQUENCE;
+        struct CPMDSRC_RegionalExtensionEmpty regional;  // SEQUENCE;
+    };
+    
+    struct CPMNodeOffsetPointZ {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        INT choice;
+        INT node_Z1;  // INTEGER, -512..511;
+        INT node_Z2;  // INTEGER, -1024..1023;
+        INT node_Z3;  // INTEGER, -2048..2047;
+        INT node_Z4;  // INTEGER, -4096..4095;
+        INT node_Z5;  // INTEGER, -8192..8191;
+        INT node_Z6;  // INTEGER, -32768..32767;
+    };
+    
+    struct CPMOffsetPoint {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        struct CPMNodeOffsetPointXY nodeOffsetPointxy;  // CHOICE;
+        struct CPMNodeOffsetPointZ nodeOffsetPointZ;  // CHOICE, OPTIONAL;
+    };
+    
+    struct CPMAreaRadial {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        WORD range;  // INTEGER, 0..10000, zeroPointOneMeter(1), oneMeter(10);
+        WORD stationaryHorizontalOpeningAngleStart;  // INTEGER, 0..3601, wgs84North(0), wgs84East(900), wgs84South(1800), wgs84West(2700), unavailable(3601);
+        WORD stationaryHorizontalOpeningAngleEnd;  // INTEGER, 0..3601, wgs84North(0), wgs84East(900), wgs84South(1800), wgs84West(2700), unavailable(3601);
+        struct OPT_WORD_ASN verticalOpeningAngleStart;  // INTEGER, OPTIONAL, 0..3601, zeroPointOneDegree(1), oneDegree(10), unavailable(3601);
+        struct OPT_WORD_ASN verticalOpeningAngleEnd;  // INTEGER, OPTIONAL, 0..3601, zeroPointOneDegree(1), oneDegree(10), unavailable(3601);
+        struct CPMOffsetPoint sensorPositionOffset;  // SEQUENCE, OPTIONAL;
+        struct OPT_INT_ASN sensorHeight;  // INTEGER, OPTIONAL, -5000..5000, zeroPointZeroOneMeter(1);
+    };
+    
+    struct CPMPolyPointList {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        INT length;
+        struct CPMOffsetPoint arrayValue[16];  // SEQUENCE;
+    };
+    
+    struct CPMAreaPolygon {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        struct CPMPolyPointList polyPointList;  // SEQUENCEOF;
+    };
+    
+    struct CPMAreaCircular {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        struct CPMOffsetPoint nodeCenterPoint;  // SEQUENCE, OPTIONAL;
+        WORD radius;  // INTEGER, 0..10000, zeroPointOneMeter(1), oneMeter(10);
+    };
+    
+    struct CPMAreaEllipse {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        struct CPMOffsetPoint nodeCenterPoint;  // SEQUENCE, OPTIONAL;
+        WORD semiMinorRangeLength;  // INTEGER, 0..10000, zeroPointOneMeter(1), oneMeter(10);
+        WORD semiMajorRangeLength;  // INTEGER, 0..10000, zeroPointOneMeter(1), oneMeter(10);
+        WORD semiMajorRangeOrientation;  // INTEGER, 0..3601, wgs84North(0), wgs84East(900), wgs84South(1800), wgs84West(2700), unavailable(3601);
+        struct OPT_WORD_ASN semiHeight;  // INTEGER, OPTIONAL, 0..10000, zeroPointOneMeter(1), oneMeter(10);
+    };
+    
+    struct CPMAreaRectangle {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        struct CPMOffsetPoint nodeCenterPoint;  // SEQUENCE, OPTIONAL;
+        WORD semiMajorRangeLength;  // INTEGER, 0..10000, zeroPointOneMeter(1), oneMeter(10);
+        WORD semiMinorRangeLength;  // INTEGER, 0..10000, zeroPointOneMeter(1), oneMeter(10);
+        WORD semiMajorRangeOrientation;  // INTEGER, 0..3601, wgs84North(0), wgs84East(900), wgs84South(1800), wgs84West(2700), unavailable(3601);
+        struct OPT_WORD_ASN semiHeight;  // INTEGER, OPTIONAL, 0..10000, zeroPointOneMeter(1), oneMeter(10);
+    };
+    
+    struct CPMDetectionArea {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        INT choice;
+        struct CPMVehicleSensor vehicleSensor;  // SEQUENCE;
+        struct CPMAreaRadial stationarySensorRadial;  // SEQUENCE;
+        struct CPMAreaPolygon stationarySensorPolygon;  // SEQUENCE;
+        struct CPMAreaCircular stationarySensorCircular;  // SEQUENCE;
+        struct CPMAreaEllipse stationarySensorEllipse;  // SEQUENCE;
+        struct CPMAreaRectangle stationarySensorRectangle;  // SEQUENCE;
+    };
+    
+    struct CPMSensorInformation {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        BYTE sensorID;  // INTEGER, 0..255;
+        BYTE type;  // INTEGER, 0..15, undefined(0), radar(1), lidar(2), monovideo(3), stereovision(4), nightvision(5), ultrasonic(6), pmd(7), fusion(8), inductionloop(9), sphericalCamera(10), itssaggregation(11);
+        struct CPMDetectionArea detectionArea;  // CHOICE;
+        struct OPT_BYTE_ASN freeSpaceConfidence;  // INTEGER, OPTIONAL, 0..101, unknown(0), onePercent(1), oneHundredPercent(100), unavailable(101);
+    };
+    
+    struct CPMSensorInformationContainer {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        INT length;
+        struct CPMSensorInformation arrayValue[128];  // SEQUENCE;
+    };
+    
+    struct CPMSensorIdList {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        INT length;
+        BYTE arrayValue[128];  // INTEGER, 0..255;
+    };
+    
+    struct CPMObjectDistanceWithConfidence {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        LONG value;  // INTEGER, -132768..132767, zeroPointZeroOneMeter(1), oneMeter(100);
+        BYTE confidence;  // INTEGER, 0..102, zeroPointZeroOneMeter(1), oneMeter(100), outOfRange(101), unavailable(102);
+    };
+    
+    struct CPMSpeedExtended {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        INT value;  // INTEGER, -16383..16383, standstill(0), oneCentimeterPerSec(1), unavailable(16383);
+        BYTE confidence;  // INTEGER, 1..127, equalOrWithinOneCentimeterPerSec(1), equalOrWithinOneMeterPerSec(100), outOfRange(126), unavailable(127);
+    };
+    
+    struct CPMObjectDimension {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        WORD value;  // INTEGER, 0..1023, zeroPointOneMeter(1), oneMeter(10);
+        BYTE confidence;  // INTEGER, 0..102, zeroPointZeroOneMeter(1), oneMeter(100), outOfRange(101), unavailable(102);
+    };
+    
+    struct CPMVehicleSubclass {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        struct OPT_BYTE_ASN type;  // INTEGER, OPTIONAL, 0..255, unknown(0), moped(1), motorcycle(2), passengerCar(3), bus(4), lightTruck(5), heavyTruck(6), trailer(7), specialVehicles(8), tram(9), emergencyVehicle(10), agricultural(11);
+        struct OPT_BYTE_ASN confidence;  // INTEGER, OPTIONAL, 0..101, unknown(0), onePercent(1), oneHundredPercent(100), unavailable(101);
+    };
+    
+    struct CPMPersonSubclass {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        struct OPT_BYTE_ASN type;  // INTEGER, OPTIONAL, 0..255, unknown(0), pedestrian(1), personInWheelchair(2), cyclist(3), personWithStroller(4), personOnSkates(5), personGroup(6);
+        struct OPT_BYTE_ASN confidence;  // INTEGER, OPTIONAL, 0..101, unknown(0), onePercent(1), oneHundredPercent(100), unavailable(101);
+    };
+    
+    struct CPMAnimalSubclass {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        struct OPT_BYTE_ASN type;  // INTEGER, OPTIONAL, 0..255, unknown(0);
+        struct OPT_BYTE_ASN confidence;  // INTEGER, OPTIONAL, 0..101, unknown(0), onePercent(1), oneHundredPercent(100), unavailable(101);
+    };
+    
+    struct CPMOtherSubclass {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        struct OPT_BYTE_ASN type;  // INTEGER, OPTIONAL, 0..255, unknown(0), roadSideUnit(1);
+        struct OPT_BYTE_ASN confidence;  // INTEGER, OPTIONAL, 0..101, unknown(0), onePercent(1), oneHundredPercent(100), unavailable(101);
+    };
+    
+    struct CPMObjectClass_class {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        INT choice;
+        struct CPMVehicleSubclass vehicle;  // SEQUENCE;
+        struct CPMPersonSubclass person;  // SEQUENCE;
+        struct CPMAnimalSubclass animal;  // SEQUENCE;
+        struct CPMOtherSubclass other;  // SEQUENCE;
+    };
+    
+    struct CPMObjectClass {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        BYTE confidence;  // INTEGER, 0..101, unknown(0), onePercent(1), oneHundredPercent(100), unavailable(101);
+        struct CPMObjectClass_class class;  // CHOICE;
+    };
+    
+    struct CPMObjectClassDescription {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        INT length;
+        struct CPMObjectClass arrayValue[8];  // SEQUENCE;
+    };
+    
+    struct CPMLongitudinalLanePosition {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        WORD longitudinalLanePositionValue;  // INTEGER, 0..32767, zeroPointOneMeter(1);
+        BYTE longitudinalLanePositionConfidence;  // INTEGER, 0..102, zeroPointZeroOneMeter(1), oneMeter(100), outOfRange(101), unavailable(102);
+    };
+    
+    struct CPMMatchedPosition {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        struct OPT_BYTE_ASN laneID;  // INTEGER, OPTIONAL, 0..255;
+        struct CPMLongitudinalLanePosition longitudinalLanePosition;  // SEQUENCE, OPTIONAL;
+    };
+    
+    struct CPMPerceivedObject {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        BYTE objectID;  // INTEGER, 0..255;
+        struct CPMSensorIdList sensorIDList;  // SEQUENCEOF, OPTIONAL;
+        INT timeOfMeasurement;  // INTEGER, -1500..1500, oneMilliSecond(1);
+        struct OPT_WORD_ASN objectAge;  // INTEGER, OPTIONAL, 0..1500, oneMiliSec(1);
+        struct OPT_BYTE_ASN objectConfidence;  // INTEGER, OPTIONAL, 0..101, unknown(0), onePercent(1), oneHundredPercent(100), unavailable(101);
+        struct CPMObjectDistanceWithConfidence xDistance;  // SEQUENCE;
+        struct CPMObjectDistanceWithConfidence yDistance;  // SEQUENCE;
+        struct CPMObjectDistanceWithConfidence zDistance;  // SEQUENCE, OPTIONAL;
+        struct CPMSpeedExtended xSpeed;  // SEQUENCE;
+        struct CPMSpeedExtended ySpeed;  // SEQUENCE;
+        struct CPMSpeedExtended zSpeed;  // SEQUENCE, OPTIONAL;
+        struct CPMLongitudinalAcceleration xAcceleration;  // SEQUENCE, OPTIONAL;
+        struct CPMLateralAcceleration yAcceleration;  // SEQUENCE, OPTIONAL;
+        struct CPMVerticalAcceleration zAcceleration;  // SEQUENCE, OPTIONAL;
+        struct CPMCartesianAngle yawAngle;  // SEQUENCE, OPTIONAL;
+        struct CPMObjectDimension planarObjectDimension1;  // SEQUENCE, OPTIONAL;
+        struct CPMObjectDimension planarObjectDimension2;  // SEQUENCE, OPTIONAL;
+        struct CPMObjectDimension verticalObjectDimension;  // SEQUENCE, OPTIONAL;
+        struct OPT_BYTE_ASN objectRefPoint;  // INTEGER, OPTIONAL, 0..8, mid(0), bottomLeft(1), midLeft(2), topLeft(3), bottomMid(4), topMid(5), bottomRight(6), midRight(7), topRight(8);
+        struct OPT_BYTE_ASN dynamicStatus;  // INTEGER, OPTIONAL, 0..2, dynamic(0), hasBeenDynamic(1), static(2);
+        struct CPMObjectClassDescription classification;  // SEQUENCEOF, OPTIONAL;
+        struct CPMMatchedPosition matchedPosition;  // SEQUENCE, OPTIONAL;
+    };
+    
+    struct CPMPerceivedObjectContainer {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        INT length;
+        struct CPMPerceivedObject arrayValue[128];  // SEQUENCE;
+    };
+    
+    struct CPMFreeSpaceArea {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        INT choice;
+        struct CPMAreaPolygon freeSpacePolygon;  // SEQUENCE;
+        struct CPMAreaCircular freeSpaceCircular;  // SEQUENCE;
+        struct CPMAreaEllipse freeSpaceEllipse;  // SEQUENCE;
+        struct CPMAreaRectangle freeSpaceRectangle;  // SEQUENCE;
+    };
+    
+    struct CPMFreeSpaceAddendum {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        BYTE freeSpaceConfidence;  // INTEGER, 0..101, unknown(0), onePercent(1), oneHundredPercent(100), unavailable(101);
+        struct CPMFreeSpaceArea freeSpaceArea;  // CHOICE;
+        struct CPMSensorIdList sensorIDList;  // SEQUENCEOF, OPTIONAL;
+        struct OPT_BOOL_ASN shadowingApplies;  // BOOLEAN, OPTIONAL;
+    };
+    
+    struct CPMFreeSpaceAddendumContainer {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        INT length;
+        struct CPMFreeSpaceAddendum arrayValue[128];  // SEQUENCE;
+    };
+    
+    struct CPMCpmParameters {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        struct CPMCpmManagementContainer managementContainer;  // SEQUENCE;
+        struct CPMStationDataContainer stationDataContainer;  // CHOICE, OPTIONAL;
+        struct CPMSensorInformationContainer sensorInformationContainer;  // SEQUENCEOF, OPTIONAL;
+        struct CPMPerceivedObjectContainer perceivedObjectContainer;  // SEQUENCEOF, OPTIONAL;
+        struct CPMFreeSpaceAddendumContainer freeSpaceAddendumContainer;  // SEQUENCEOF, OPTIONAL;
+        BYTE numberOfPerceivedObjects;  // INTEGER, 0..255;
+    };
+    
+    struct CPMCollectivePerceptionMessage {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        WORD generationDeltaTime;  // INTEGER, 0..65535, oneMilliSec(1);
+        struct CPMCpmParameters cpmParameters;  // SEQUENCE;
+    };
+    
+    struct CPM {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        struct CPMItsPduHeader header;  // SEQUENCE;
+        struct CPMCollectivePerceptionMessage cpm;  // SEQUENCE;
+    };
+    
+}
+
+/*
+// init function to create a simple packet handle
+*/ 
+LONG API_InitCPMPacket()
+{
+  return C2xInitPacket("CPM"); 
+}
+
+/*
+// init function to create a simple packet handle and
+// initialize the struct with valid data
+*/ 
+LONG API_InitCPMPacket(struct CPM msgStruct)
+{
+  long pktHandle;
+
+  pktHandle = API_InitCPMPacket();
+
+  if (pktHandle != 0)
+  {
+    // create valid message and application data
+    if (C2xCompletePacket(pktHandle) == 0) 
+    {
+      API_GetCPMParams(pktHandle, msgStruct);
+    }
+  }
+  return pktHandle;
+}
+
+/*
+// init function to create a packet with security layer and
+// initialize the struct with valid data
+*/ 
+LONG API_InitCPMPacket(struct CPM msgStruct, char packetTypeDesignator[], char certificateName[])
+{
+  long pktHandle, certHdl;
+
+  // initialize the packet
+  pktHandle = C2xInitPacket("CPM", packetTypeDesignator);
+
+  if (pktHandle != 0)
+  {
+    certHdl = C2xSecCertificateGetHandle(certificateName);  // get the certificate handle for the cert with name "certificateName"
+    if (certHdl != 0) 
+    {
+      C2xSecPacketSetSignerHandle(pktHandle, certHdl); // set the certHdl to the packet
+    }
+
+    // create valid message and application data
+    if (C2xCompletePacket(pktHandle) == 0) 
+    {
+      // copy application data to the application structure
+      API_GetCPMParams(pktHandle, msgStruct);
+    }
+  }
+  return pktHandle;
+}
+    
+
+int GetCPMItsPduHeaderParams(LONG packetHandle, struct CPMItsPduHeader value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "protocolVersion");
+  value.protocolVersion = C2xGetTokenInt(packetHandle, "CPM", newPath);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "messageID");
+  value.messageID = C2xGetTokenInt(packetHandle, "CPM", newPath);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "stationID");
+  value.stationID = C2xGetTokenInt64(packetHandle, "CPM", newPath);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int SetCPMItsPduHeaderParams(LONG packetHandle, struct CPMItsPduHeader value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "protocolVersion");
+  C2xSetTokenInt(packetHandle, "CPM", newPath, value.protocolVersion);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "messageID");
+  C2xSetTokenInt(packetHandle, "CPM", newPath, value.messageID);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "stationID");
+  C2xSetTokenInt64(packetHandle, "CPM", newPath, value.stationID);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int GetCPMPerceivedObjectContainerSegmentInfoParams(LONG packetHandle, struct CPMPerceivedObjectContainerSegmentInfo value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "totalMsgSegments");
+  value.totalMsgSegments = C2xGetTokenInt(packetHandle, "CPM", newPath);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "thisSegmentNum");
+  value.thisSegmentNum = C2xGetTokenInt(packetHandle, "CPM", newPath);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int SetCPMPerceivedObjectContainerSegmentInfoParams(LONG packetHandle, struct CPMPerceivedObjectContainerSegmentInfo value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "totalMsgSegments");
+  C2xSetTokenInt(packetHandle, "CPM", newPath, value.totalMsgSegments);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "thisSegmentNum");
+  C2xSetTokenInt(packetHandle, "CPM", newPath, value.thisSegmentNum);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int GetCPMPosConfidenceEllipseParams(LONG packetHandle, struct CPMPosConfidenceEllipse value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "semiMajorConfidence");
+  value.semiMajorConfidence = C2xGetTokenInt(packetHandle, "CPM", newPath);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "semiMinorConfidence");
+  value.semiMinorConfidence = C2xGetTokenInt(packetHandle, "CPM", newPath);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "semiMajorOrientation");
+  value.semiMajorOrientation = C2xGetTokenInt(packetHandle, "CPM", newPath);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int SetCPMPosConfidenceEllipseParams(LONG packetHandle, struct CPMPosConfidenceEllipse value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "semiMajorConfidence");
+  C2xSetTokenInt(packetHandle, "CPM", newPath, value.semiMajorConfidence);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "semiMinorConfidence");
+  C2xSetTokenInt(packetHandle, "CPM", newPath, value.semiMinorConfidence);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "semiMajorOrientation");
+  C2xSetTokenInt(packetHandle, "CPM", newPath, value.semiMajorOrientation);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int GetCPMAltitudeParams(LONG packetHandle, struct CPMAltitude value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "altitudeValue");
+  value.altitudeValue = C2xGetTokenInt(packetHandle, "CPM", newPath);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "altitudeConfidence");
+  value.altitudeConfidence = C2xGetTokenInt(packetHandle, "CPM", newPath);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int SetCPMAltitudeParams(LONG packetHandle, struct CPMAltitude value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "altitudeValue");
+  C2xSetTokenInt(packetHandle, "CPM", newPath, value.altitudeValue);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "altitudeConfidence");
+  C2xSetTokenInt(packetHandle, "CPM", newPath, value.altitudeConfidence);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int GetCPMReferencePositionParams(LONG packetHandle, struct CPMReferencePosition value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "latitude");
+  value.latitude = C2xGetTokenInt(packetHandle, "CPM", newPath);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "longitude");
+  value.longitude = C2xGetTokenInt(packetHandle, "CPM", newPath);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "positionConfidenceEllipse");
+  GetCPMPosConfidenceEllipseParams(packetHandle, value.positionConfidenceEllipse, newPath);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "altitude");
+  GetCPMAltitudeParams(packetHandle, value.altitude, newPath);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int SetCPMReferencePositionParams(LONG packetHandle, struct CPMReferencePosition value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "latitude");
+  C2xSetTokenInt(packetHandle, "CPM", newPath, value.latitude);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "longitude");
+  C2xSetTokenInt(packetHandle, "CPM", newPath, value.longitude);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "positionConfidenceEllipse");
+  SetCPMPosConfidenceEllipseParams(packetHandle, value.positionConfidenceEllipse, newPath);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "altitude");
+  SetCPMAltitudeParams(packetHandle, value.altitude, newPath);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int GetCPMCpmManagementContainerParams(LONG packetHandle, struct CPMCpmManagementContainer value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "stationType");
+  value.stationType = C2xGetTokenInt(packetHandle, "CPM", newPath);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "perceivedObjectContainerSegmentInfo");
+  value.perceivedObjectContainerSegmentInfo.isValidFlag = C2xIsTokenAvailable(packetHandle, "CPM", newPath);
+  if(value.perceivedObjectContainerSegmentInfo.isValidFlag==1)
+  {
+    GetCPMPerceivedObjectContainerSegmentInfoParams(packetHandle, value.perceivedObjectContainerSegmentInfo, newPath);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "referencePosition");
+  GetCPMReferencePositionParams(packetHandle, value.referencePosition, newPath);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int SetCPMCpmManagementContainerParams(LONG packetHandle, struct CPMCpmManagementContainer value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "stationType");
+  C2xSetTokenInt(packetHandle, "CPM", newPath, value.stationType);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "perceivedObjectContainerSegmentInfo");
+  if(value.perceivedObjectContainerSegmentInfo.isValidFlag==1)
+  {
+    SetCPMPerceivedObjectContainerSegmentInfoParams(packetHandle, value.perceivedObjectContainerSegmentInfo, newPath);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "CPM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "CPM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "referencePosition");
+  SetCPMReferencePositionParams(packetHandle, value.referencePosition, newPath);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int GetCPMHeadingParams(LONG packetHandle, struct CPMHeading value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "headingValue");
+  value.headingValue = C2xGetTokenInt(packetHandle, "CPM", newPath);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "headingConfidence");
+  value.headingConfidence = C2xGetTokenInt(packetHandle, "CPM", newPath);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int SetCPMHeadingParams(LONG packetHandle, struct CPMHeading value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "headingValue");
+  C2xSetTokenInt(packetHandle, "CPM", newPath, value.headingValue);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "headingConfidence");
+  C2xSetTokenInt(packetHandle, "CPM", newPath, value.headingConfidence);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int GetCPMSpeedParams(LONG packetHandle, struct CPMSpeed value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "speedValue");
+  value.speedValue = C2xGetTokenInt(packetHandle, "CPM", newPath);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "speedConfidence");
+  value.speedConfidence = C2xGetTokenInt(packetHandle, "CPM", newPath);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int SetCPMSpeedParams(LONG packetHandle, struct CPMSpeed value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "speedValue");
+  C2xSetTokenInt(packetHandle, "CPM", newPath, value.speedValue);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "speedConfidence");
+  C2xSetTokenInt(packetHandle, "CPM", newPath, value.speedConfidence);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int GetCPMWGS84AngleParams(LONG packetHandle, struct CPMWGS84Angle value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "value");
+  value.value = C2xGetTokenInt(packetHandle, "CPM", newPath);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "confidence");
+  value.confidence = C2xGetTokenInt(packetHandle, "CPM", newPath);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int SetCPMWGS84AngleParams(LONG packetHandle, struct CPMWGS84Angle value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "value");
+  C2xSetTokenInt(packetHandle, "CPM", newPath, value.value);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "confidence");
+  C2xSetTokenInt(packetHandle, "CPM", newPath, value.confidence);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int GetCPMLongitudinalAccelerationParams(LONG packetHandle, struct CPMLongitudinalAcceleration value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "longitudinalAccelerationValue");
+  value.longitudinalAccelerationValue = C2xGetTokenInt(packetHandle, "CPM", newPath);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "longitudinalAccelerationConfidence");
+  value.longitudinalAccelerationConfidence = C2xGetTokenInt(packetHandle, "CPM", newPath);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int SetCPMLongitudinalAccelerationParams(LONG packetHandle, struct CPMLongitudinalAcceleration value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "longitudinalAccelerationValue");
+  C2xSetTokenInt(packetHandle, "CPM", newPath, value.longitudinalAccelerationValue);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "longitudinalAccelerationConfidence");
+  C2xSetTokenInt(packetHandle, "CPM", newPath, value.longitudinalAccelerationConfidence);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int GetCPMLateralAccelerationParams(LONG packetHandle, struct CPMLateralAcceleration value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "lateralAccelerationValue");
+  value.lateralAccelerationValue = C2xGetTokenInt(packetHandle, "CPM", newPath);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "lateralAccelerationConfidence");
+  value.lateralAccelerationConfidence = C2xGetTokenInt(packetHandle, "CPM", newPath);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int SetCPMLateralAccelerationParams(LONG packetHandle, struct CPMLateralAcceleration value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "lateralAccelerationValue");
+  C2xSetTokenInt(packetHandle, "CPM", newPath, value.lateralAccelerationValue);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "lateralAccelerationConfidence");
+  C2xSetTokenInt(packetHandle, "CPM", newPath, value.lateralAccelerationConfidence);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int GetCPMVerticalAccelerationParams(LONG packetHandle, struct CPMVerticalAcceleration value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "verticalAccelerationValue");
+  value.verticalAccelerationValue = C2xGetTokenInt(packetHandle, "CPM", newPath);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "verticalAccelerationConfidence");
+  value.verticalAccelerationConfidence = C2xGetTokenInt(packetHandle, "CPM", newPath);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int SetCPMVerticalAccelerationParams(LONG packetHandle, struct CPMVerticalAcceleration value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "verticalAccelerationValue");
+  C2xSetTokenInt(packetHandle, "CPM", newPath, value.verticalAccelerationValue);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "verticalAccelerationConfidence");
+  C2xSetTokenInt(packetHandle, "CPM", newPath, value.verticalAccelerationConfidence);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int GetCPMYawRateParams(LONG packetHandle, struct CPMYawRate value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "yawRateValue");
+  value.yawRateValue = C2xGetTokenInt(packetHandle, "CPM", newPath);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "yawRateConfidence");
+  value.yawRateConfidence = C2xGetTokenInt(packetHandle, "CPM", newPath);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int SetCPMYawRateParams(LONG packetHandle, struct CPMYawRate value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "yawRateValue");
+  C2xSetTokenInt(packetHandle, "CPM", newPath, value.yawRateValue);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "yawRateConfidence");
+  C2xSetTokenInt(packetHandle, "CPM", newPath, value.yawRateConfidence);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int GetCPMCartesianAngleParams(LONG packetHandle, struct CPMCartesianAngle value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "value");
+  value.value = C2xGetTokenInt(packetHandle, "CPM", newPath);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "confidence");
+  value.confidence = C2xGetTokenInt(packetHandle, "CPM", newPath);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int SetCPMCartesianAngleParams(LONG packetHandle, struct CPMCartesianAngle value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "value");
+  C2xSetTokenInt(packetHandle, "CPM", newPath, value.value);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "confidence");
+  C2xSetTokenInt(packetHandle, "CPM", newPath, value.confidence);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int GetCPMVehicleLengthParams(LONG packetHandle, struct CPMVehicleLength value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "vehicleLengthValue");
+  value.vehicleLengthValue = C2xGetTokenInt(packetHandle, "CPM", newPath);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "vehicleLengthConfidenceIndication");
+  value.vehicleLengthConfidenceIndication = C2xGetTokenInt(packetHandle, "CPM", newPath);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int SetCPMVehicleLengthParams(LONG packetHandle, struct CPMVehicleLength value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "vehicleLengthValue");
+  C2xSetTokenInt(packetHandle, "CPM", newPath, value.vehicleLengthValue);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "vehicleLengthConfidenceIndication");
+  C2xSetTokenInt(packetHandle, "CPM", newPath, value.vehicleLengthConfidenceIndication);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int GetCPMTrailerDataParams(LONG packetHandle, struct CPMTrailerData value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "refPointId");
+  value.refPointId = C2xGetTokenInt(packetHandle, "CPM", newPath);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "hitchPointOffset");
+  value.hitchPointOffset = C2xGetTokenInt(packetHandle, "CPM", newPath);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "frontOverhang");
+  value.frontOverhang = C2xGetTokenInt(packetHandle, "CPM", newPath);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "rearOverhang");
+  value.rearOverhang = C2xGetTokenInt(packetHandle, "CPM", newPath);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "trailerWidth");
+  value.trailerWidth.isValidFlag = C2xIsTokenAvailable(packetHandle, "CPM", newPath);
+  if(value.trailerWidth.isValidFlag==1)
+  {
+    value.trailerWidth.value = C2xGetTokenInt(packetHandle, "CPM", newPath);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "hitchAngle");
+  value.hitchAngle.isValidFlag = C2xIsTokenAvailable(packetHandle, "CPM", newPath);
+  if(value.hitchAngle.isValidFlag==1)
+  {
+    GetCPMCartesianAngleParams(packetHandle, value.hitchAngle, newPath);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  return result;
+}
+
+int SetCPMTrailerDataParams(LONG packetHandle, struct CPMTrailerData value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "refPointId");
+  C2xSetTokenInt(packetHandle, "CPM", newPath, value.refPointId);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "hitchPointOffset");
+  C2xSetTokenInt(packetHandle, "CPM", newPath, value.hitchPointOffset);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "frontOverhang");
+  C2xSetTokenInt(packetHandle, "CPM", newPath, value.frontOverhang);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "rearOverhang");
+  C2xSetTokenInt(packetHandle, "CPM", newPath, value.rearOverhang);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "trailerWidth");
+  if(value.trailerWidth.isValidFlag==1)
+  {
+    C2xSetTokenInt(packetHandle, "CPM", newPath, value.trailerWidth.value);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "CPM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "CPM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "hitchAngle");
+  if(value.hitchAngle.isValidFlag==1)
+  {
+    SetCPMCartesianAngleParams(packetHandle, value.hitchAngle, newPath);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "CPM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "CPM", newPath);
+    }
+  }
+
+  return result;
+}
+
+int GetCPMTrailerDataContainerParams(LONG packetHandle, struct CPMTrailerDataContainer value, char oldPath[])
+{
+  char newPath[300]; 
+  int i;
+  int result;
+
+  result = 0;
+
+  value.length = C2xGetTokenInt(packetHandle, "CPM", oldPath);
+  if((result = CheckLastError("CPM", gkFuncRefGet, result))==0)
+  {
+    for(i=0; i<value.length; i++)
+    {
+      snprintf(newPath, elcount(newPath), "%s[%d]", oldPath, i);
+      GetCPMTrailerDataParams(packetHandle, value.arrayValue[i], newPath);
+      result = CheckLastError("CPM", gkFuncRefGet, result);
+    }
+  }
+  return result;
+}
+
+int SetCPMTrailerDataContainerParams(LONG packetHandle, struct CPMTrailerDataContainer value, char oldPath[])
+{
+  char newPath[300]; 
+  int i;
+  int result;
+
+  result = 0;
+
+  C2xRemoveToken(packetHandle, "CPM", oldPath);
+  for(i=0; i<value.length; i++)
+  {
+    snprintf(newPath, elcount(newPath), "%s[%d]", oldPath, i);
+    SetCPMTrailerDataParams(packetHandle, value.arrayValue[i], newPath);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  return result;
+}
+
+int GetCPMOriginatingVehicleContainerParams(LONG packetHandle, struct CPMOriginatingVehicleContainer value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "heading");
+  GetCPMHeadingParams(packetHandle, value.heading, newPath);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "speed");
+  GetCPMSpeedParams(packetHandle, value.speed, newPath);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "vehicleOrientationAngle");
+  value.vehicleOrientationAngle.isValidFlag = C2xIsTokenAvailable(packetHandle, "CPM", newPath);
+  if(value.vehicleOrientationAngle.isValidFlag==1)
+  {
+    GetCPMWGS84AngleParams(packetHandle, value.vehicleOrientationAngle, newPath);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "driveDirection");
+  value.driveDirection.isValidFlag = C2xIsTokenAvailable(packetHandle, "CPM", newPath);
+  if(value.driveDirection.isValidFlag==1)
+  {
+    value.driveDirection.value = C2xGetTokenInt(packetHandle, "CPM", newPath);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "longitudinalAcceleration");
+  value.longitudinalAcceleration.isValidFlag = C2xIsTokenAvailable(packetHandle, "CPM", newPath);
+  if(value.longitudinalAcceleration.isValidFlag==1)
+  {
+    GetCPMLongitudinalAccelerationParams(packetHandle, value.longitudinalAcceleration, newPath);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "lateralAcceleration");
+  value.lateralAcceleration.isValidFlag = C2xIsTokenAvailable(packetHandle, "CPM", newPath);
+  if(value.lateralAcceleration.isValidFlag==1)
+  {
+    GetCPMLateralAccelerationParams(packetHandle, value.lateralAcceleration, newPath);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "verticalAcceleration");
+  value.verticalAcceleration.isValidFlag = C2xIsTokenAvailable(packetHandle, "CPM", newPath);
+  if(value.verticalAcceleration.isValidFlag==1)
+  {
+    GetCPMVerticalAccelerationParams(packetHandle, value.verticalAcceleration, newPath);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "yawRate");
+  value.yawRate.isValidFlag = C2xIsTokenAvailable(packetHandle, "CPM", newPath);
+  if(value.yawRate.isValidFlag==1)
+  {
+    GetCPMYawRateParams(packetHandle, value.yawRate, newPath);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "pitchAngle");
+  value.pitchAngle.isValidFlag = C2xIsTokenAvailable(packetHandle, "CPM", newPath);
+  if(value.pitchAngle.isValidFlag==1)
+  {
+    GetCPMCartesianAngleParams(packetHandle, value.pitchAngle, newPath);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "rollAngle");
+  value.rollAngle.isValidFlag = C2xIsTokenAvailable(packetHandle, "CPM", newPath);
+  if(value.rollAngle.isValidFlag==1)
+  {
+    GetCPMCartesianAngleParams(packetHandle, value.rollAngle, newPath);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "vehicleLength");
+  value.vehicleLength.isValidFlag = C2xIsTokenAvailable(packetHandle, "CPM", newPath);
+  if(value.vehicleLength.isValidFlag==1)
+  {
+    GetCPMVehicleLengthParams(packetHandle, value.vehicleLength, newPath);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "vehicleWidth");
+  value.vehicleWidth.isValidFlag = C2xIsTokenAvailable(packetHandle, "CPM", newPath);
+  if(value.vehicleWidth.isValidFlag==1)
+  {
+    value.vehicleWidth.value = C2xGetTokenInt(packetHandle, "CPM", newPath);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "vehicleHeight");
+  value.vehicleHeight.isValidFlag = C2xIsTokenAvailable(packetHandle, "CPM", newPath);
+  if(value.vehicleHeight.isValidFlag==1)
+  {
+    value.vehicleHeight.value = C2xGetTokenInt(packetHandle, "CPM", newPath);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "trailerDataContainer");
+  value.trailerDataContainer.isValidFlag = C2xIsTokenAvailable(packetHandle, "CPM", newPath);
+  if(value.trailerDataContainer.isValidFlag==1)
+  {
+    GetCPMTrailerDataContainerParams(packetHandle, value.trailerDataContainer, newPath);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  return result;
+}
+
+int SetCPMOriginatingVehicleContainerParams(LONG packetHandle, struct CPMOriginatingVehicleContainer value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "heading");
+  SetCPMHeadingParams(packetHandle, value.heading, newPath);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "speed");
+  SetCPMSpeedParams(packetHandle, value.speed, newPath);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "vehicleOrientationAngle");
+  if(value.vehicleOrientationAngle.isValidFlag==1)
+  {
+    SetCPMWGS84AngleParams(packetHandle, value.vehicleOrientationAngle, newPath);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "CPM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "CPM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "driveDirection");
+  if(value.driveDirection.isValidFlag==1)
+  {
+    C2xSetTokenInt(packetHandle, "CPM", newPath, value.driveDirection.value);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "CPM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "CPM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "longitudinalAcceleration");
+  if(value.longitudinalAcceleration.isValidFlag==1)
+  {
+    SetCPMLongitudinalAccelerationParams(packetHandle, value.longitudinalAcceleration, newPath);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "CPM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "CPM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "lateralAcceleration");
+  if(value.lateralAcceleration.isValidFlag==1)
+  {
+    SetCPMLateralAccelerationParams(packetHandle, value.lateralAcceleration, newPath);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "CPM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "CPM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "verticalAcceleration");
+  if(value.verticalAcceleration.isValidFlag==1)
+  {
+    SetCPMVerticalAccelerationParams(packetHandle, value.verticalAcceleration, newPath);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "CPM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "CPM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "yawRate");
+  if(value.yawRate.isValidFlag==1)
+  {
+    SetCPMYawRateParams(packetHandle, value.yawRate, newPath);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "CPM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "CPM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "pitchAngle");
+  if(value.pitchAngle.isValidFlag==1)
+  {
+    SetCPMCartesianAngleParams(packetHandle, value.pitchAngle, newPath);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "CPM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "CPM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "rollAngle");
+  if(value.rollAngle.isValidFlag==1)
+  {
+    SetCPMCartesianAngleParams(packetHandle, value.rollAngle, newPath);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "CPM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "CPM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "vehicleLength");
+  if(value.vehicleLength.isValidFlag==1)
+  {
+    SetCPMVehicleLengthParams(packetHandle, value.vehicleLength, newPath);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "CPM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "CPM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "vehicleWidth");
+  if(value.vehicleWidth.isValidFlag==1)
+  {
+    C2xSetTokenInt(packetHandle, "CPM", newPath, value.vehicleWidth.value);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "CPM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "CPM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "vehicleHeight");
+  if(value.vehicleHeight.isValidFlag==1)
+  {
+    C2xSetTokenInt(packetHandle, "CPM", newPath, value.vehicleHeight.value);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "CPM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "CPM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "trailerDataContainer");
+  if(value.trailerDataContainer.isValidFlag==1)
+  {
+    SetCPMTrailerDataContainerParams(packetHandle, value.trailerDataContainer, newPath);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "CPM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "CPM", newPath);
+    }
+  }
+
+  return result;
+}
+
+int GetCPMIntersectionReferenceIDParams(LONG packetHandle, struct CPMIntersectionReferenceID value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "region");
+  value.region.isValidFlag = C2xIsTokenAvailable(packetHandle, "CPM", newPath);
+  if(value.region.isValidFlag==1)
+  {
+    value.region.value = C2xGetTokenInt(packetHandle, "CPM", newPath);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "id");
+  value.id = C2xGetTokenInt(packetHandle, "CPM", newPath);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int SetCPMIntersectionReferenceIDParams(LONG packetHandle, struct CPMIntersectionReferenceID value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "region");
+  if(value.region.isValidFlag==1)
+  {
+    C2xSetTokenInt(packetHandle, "CPM", newPath, value.region.value);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "CPM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "CPM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "id");
+  C2xSetTokenInt(packetHandle, "CPM", newPath, value.id);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int GetCPMRoadSegmentReferenceIDParams(LONG packetHandle, struct CPMRoadSegmentReferenceID value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "region");
+  value.region.isValidFlag = C2xIsTokenAvailable(packetHandle, "CPM", newPath);
+  if(value.region.isValidFlag==1)
+  {
+    value.region.value = C2xGetTokenInt(packetHandle, "CPM", newPath);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "id");
+  value.id = C2xGetTokenInt(packetHandle, "CPM", newPath);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int SetCPMRoadSegmentReferenceIDParams(LONG packetHandle, struct CPMRoadSegmentReferenceID value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "region");
+  if(value.region.isValidFlag==1)
+  {
+    C2xSetTokenInt(packetHandle, "CPM", newPath, value.region.value);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "CPM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "CPM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "id");
+  C2xSetTokenInt(packetHandle, "CPM", newPath, value.id);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int GetCPMOriginatingRSUContainerParams(LONG packetHandle, struct CPMOriginatingRSUContainer value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  value.choice = C2xGetTokenInt(packetHandle, "CPM", oldPath);
+
+  switch(value.choice)
+  {
+    case 0:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "intersectionReferenceId");
+      GetCPMIntersectionReferenceIDParams(packetHandle, value.intersectionReferenceId, newPath);
+      result = CheckLastError("CPM", gkFuncRefGet, result);
+    }
+    break;
+    case 1:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "roadSegmentReferenceId");
+      GetCPMRoadSegmentReferenceIDParams(packetHandle, value.roadSegmentReferenceId, newPath);
+      result = CheckLastError("CPM", gkFuncRefGet, result);
+    }
+    break;
+  }
+  return result;
+}
+
+int SetCPMOriginatingRSUContainerParams(LONG packetHandle, struct CPMOriginatingRSUContainer value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  switch(value.choice)
+  {
+    case 0:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "intersectionReferenceId");
+      SetCPMIntersectionReferenceIDParams(packetHandle, value.intersectionReferenceId, newPath);
+      result = CheckLastError("CPM", gkFuncRefGet, result);
+    }
+    break;
+    case 1:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "roadSegmentReferenceId");
+      SetCPMRoadSegmentReferenceIDParams(packetHandle, value.roadSegmentReferenceId, newPath);
+      result = CheckLastError("CPM", gkFuncRefGet, result);
+    }
+    break;
+  }
+  return result;
+}
+
+int GetCPMStationDataContainerParams(LONG packetHandle, struct CPMStationDataContainer value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  value.choice = C2xGetTokenInt(packetHandle, "CPM", oldPath);
+
+  switch(value.choice)
+  {
+    case 0:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "originatingVehicleContainer");
+      GetCPMOriginatingVehicleContainerParams(packetHandle, value.originatingVehicleContainer, newPath);
+      result = CheckLastError("CPM", gkFuncRefGet, result);
+    }
+    break;
+    case 1:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "originatingRSUContainer");
+      GetCPMOriginatingRSUContainerParams(packetHandle, value.originatingRSUContainer, newPath);
+      result = CheckLastError("CPM", gkFuncRefGet, result);
+    }
+    break;
+  }
+  return result;
+}
+
+int SetCPMStationDataContainerParams(LONG packetHandle, struct CPMStationDataContainer value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  switch(value.choice)
+  {
+    case 0:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "originatingVehicleContainer");
+      SetCPMOriginatingVehicleContainerParams(packetHandle, value.originatingVehicleContainer, newPath);
+      result = CheckLastError("CPM", gkFuncRefGet, result);
+    }
+    break;
+    case 1:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "originatingRSUContainer");
+      SetCPMOriginatingRSUContainerParams(packetHandle, value.originatingRSUContainer, newPath);
+      result = CheckLastError("CPM", gkFuncRefGet, result);
+    }
+    break;
+  }
+  return result;
+}
+
+int GetCPMVehicleSensorPropertiesParams(LONG packetHandle, struct CPMVehicleSensorProperties value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "range");
+  value.range = C2xGetTokenInt(packetHandle, "CPM", newPath);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "horizontalOpeningAngleStart");
+  value.horizontalOpeningAngleStart = C2xGetTokenInt(packetHandle, "CPM", newPath);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "horizontalOpeningAngleEnd");
+  value.horizontalOpeningAngleEnd = C2xGetTokenInt(packetHandle, "CPM", newPath);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "verticalOpeningAngleStart");
+  value.verticalOpeningAngleStart.isValidFlag = C2xIsTokenAvailable(packetHandle, "CPM", newPath);
+  if(value.verticalOpeningAngleStart.isValidFlag==1)
+  {
+    value.verticalOpeningAngleStart.value = C2xGetTokenInt(packetHandle, "CPM", newPath);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "verticalOpeningAngleEnd");
+  value.verticalOpeningAngleEnd.isValidFlag = C2xIsTokenAvailable(packetHandle, "CPM", newPath);
+  if(value.verticalOpeningAngleEnd.isValidFlag==1)
+  {
+    value.verticalOpeningAngleEnd.value = C2xGetTokenInt(packetHandle, "CPM", newPath);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  return result;
+}
+
+int SetCPMVehicleSensorPropertiesParams(LONG packetHandle, struct CPMVehicleSensorProperties value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "range");
+  C2xSetTokenInt(packetHandle, "CPM", newPath, value.range);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "horizontalOpeningAngleStart");
+  C2xSetTokenInt(packetHandle, "CPM", newPath, value.horizontalOpeningAngleStart);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "horizontalOpeningAngleEnd");
+  C2xSetTokenInt(packetHandle, "CPM", newPath, value.horizontalOpeningAngleEnd);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "verticalOpeningAngleStart");
+  if(value.verticalOpeningAngleStart.isValidFlag==1)
+  {
+    C2xSetTokenInt(packetHandle, "CPM", newPath, value.verticalOpeningAngleStart.value);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "CPM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "CPM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "verticalOpeningAngleEnd");
+  if(value.verticalOpeningAngleEnd.isValidFlag==1)
+  {
+    C2xSetTokenInt(packetHandle, "CPM", newPath, value.verticalOpeningAngleEnd.value);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "CPM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "CPM", newPath);
+    }
+  }
+
+  return result;
+}
+
+int GetCPMVehicleSensorPropertyListParams(LONG packetHandle, struct CPMVehicleSensorPropertyList value, char oldPath[])
+{
+  char newPath[300]; 
+  int i;
+  int result;
+
+  result = 0;
+
+  value.length = C2xGetTokenInt(packetHandle, "CPM", oldPath);
+  if((result = CheckLastError("CPM", gkFuncRefGet, result))==0)
+  {
+    for(i=0; i<value.length; i++)
+    {
+      snprintf(newPath, elcount(newPath), "%s[%d]", oldPath, i);
+      GetCPMVehicleSensorPropertiesParams(packetHandle, value.arrayValue[i], newPath);
+      result = CheckLastError("CPM", gkFuncRefGet, result);
+    }
+  }
+  return result;
+}
+
+int SetCPMVehicleSensorPropertyListParams(LONG packetHandle, struct CPMVehicleSensorPropertyList value, char oldPath[])
+{
+  char newPath[300]; 
+  int i;
+  int result;
+
+  result = 0;
+
+  C2xRemoveToken(packetHandle, "CPM", oldPath);
+  for(i=0; i<value.length; i++)
+  {
+    snprintf(newPath, elcount(newPath), "%s[%d]", oldPath, i);
+    SetCPMVehicleSensorPropertiesParams(packetHandle, value.arrayValue[i], newPath);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  return result;
+}
+
+int GetCPMVehicleSensorParams(LONG packetHandle, struct CPMVehicleSensor value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "refPointId");
+  value.refPointId.isValidFlag = C2xIsTokenAvailable(packetHandle, "CPM", newPath);
+  if(value.refPointId.isValidFlag==1)
+  {
+    value.refPointId.value = C2xGetTokenInt(packetHandle, "CPM", newPath);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "xSensorOffset");
+  value.xSensorOffset = C2xGetTokenInt(packetHandle, "CPM", newPath);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "ySensorOffset");
+  value.ySensorOffset = C2xGetTokenInt(packetHandle, "CPM", newPath);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "zSensorOffset");
+  value.zSensorOffset.isValidFlag = C2xIsTokenAvailable(packetHandle, "CPM", newPath);
+  if(value.zSensorOffset.isValidFlag==1)
+  {
+    value.zSensorOffset.value = C2xGetTokenInt(packetHandle, "CPM", newPath);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "vehicleSensorPropertyList");
+  GetCPMVehicleSensorPropertyListParams(packetHandle, value.vehicleSensorPropertyList, newPath);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int SetCPMVehicleSensorParams(LONG packetHandle, struct CPMVehicleSensor value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "refPointId");
+  if(value.refPointId.isValidFlag==1)
+  {
+    C2xSetTokenInt(packetHandle, "CPM", newPath, value.refPointId.value);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "CPM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "CPM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "xSensorOffset");
+  C2xSetTokenInt(packetHandle, "CPM", newPath, value.xSensorOffset);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "ySensorOffset");
+  C2xSetTokenInt(packetHandle, "CPM", newPath, value.ySensorOffset);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "zSensorOffset");
+  if(value.zSensorOffset.isValidFlag==1)
+  {
+    C2xSetTokenInt(packetHandle, "CPM", newPath, value.zSensorOffset.value);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "CPM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "CPM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "vehicleSensorPropertyList");
+  SetCPMVehicleSensorPropertyListParams(packetHandle, value.vehicleSensorPropertyList, newPath);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int GetCPMNode_XY_20bParams(LONG packetHandle, struct CPMNode_XY_20b value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "x");
+  value.x = C2xGetTokenInt(packetHandle, "CPM", newPath);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "y");
+  value.y = C2xGetTokenInt(packetHandle, "CPM", newPath);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int SetCPMNode_XY_20bParams(LONG packetHandle, struct CPMNode_XY_20b value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "x");
+  C2xSetTokenInt(packetHandle, "CPM", newPath, value.x);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "y");
+  C2xSetTokenInt(packetHandle, "CPM", newPath, value.y);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int GetCPMNode_XY_22bParams(LONG packetHandle, struct CPMNode_XY_22b value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "x");
+  value.x = C2xGetTokenInt(packetHandle, "CPM", newPath);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "y");
+  value.y = C2xGetTokenInt(packetHandle, "CPM", newPath);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int SetCPMNode_XY_22bParams(LONG packetHandle, struct CPMNode_XY_22b value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "x");
+  C2xSetTokenInt(packetHandle, "CPM", newPath, value.x);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "y");
+  C2xSetTokenInt(packetHandle, "CPM", newPath, value.y);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int GetCPMNode_XY_24bParams(LONG packetHandle, struct CPMNode_XY_24b value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "x");
+  value.x = C2xGetTokenInt(packetHandle, "CPM", newPath);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "y");
+  value.y = C2xGetTokenInt(packetHandle, "CPM", newPath);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int SetCPMNode_XY_24bParams(LONG packetHandle, struct CPMNode_XY_24b value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "x");
+  C2xSetTokenInt(packetHandle, "CPM", newPath, value.x);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "y");
+  C2xSetTokenInt(packetHandle, "CPM", newPath, value.y);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int GetCPMNode_XY_26bParams(LONG packetHandle, struct CPMNode_XY_26b value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "x");
+  value.x = C2xGetTokenInt(packetHandle, "CPM", newPath);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "y");
+  value.y = C2xGetTokenInt(packetHandle, "CPM", newPath);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int SetCPMNode_XY_26bParams(LONG packetHandle, struct CPMNode_XY_26b value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "x");
+  C2xSetTokenInt(packetHandle, "CPM", newPath, value.x);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "y");
+  C2xSetTokenInt(packetHandle, "CPM", newPath, value.y);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int GetCPMNode_XY_28bParams(LONG packetHandle, struct CPMNode_XY_28b value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "x");
+  value.x = C2xGetTokenInt(packetHandle, "CPM", newPath);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "y");
+  value.y = C2xGetTokenInt(packetHandle, "CPM", newPath);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int SetCPMNode_XY_28bParams(LONG packetHandle, struct CPMNode_XY_28b value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "x");
+  C2xSetTokenInt(packetHandle, "CPM", newPath, value.x);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "y");
+  C2xSetTokenInt(packetHandle, "CPM", newPath, value.y);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int GetCPMNode_XY_32bParams(LONG packetHandle, struct CPMNode_XY_32b value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "x");
+  value.x = C2xGetTokenInt(packetHandle, "CPM", newPath);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "y");
+  value.y = C2xGetTokenInt(packetHandle, "CPM", newPath);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int SetCPMNode_XY_32bParams(LONG packetHandle, struct CPMNode_XY_32b value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "x");
+  C2xSetTokenInt(packetHandle, "CPM", newPath, value.x);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "y");
+  C2xSetTokenInt(packetHandle, "CPM", newPath, value.y);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int GetCPMNode_LLmD_64bParams(LONG packetHandle, struct CPMNode_LLmD_64b value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "lon");
+  value.lon = C2xGetTokenInt(packetHandle, "CPM", newPath);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "lat");
+  value.lat = C2xGetTokenInt(packetHandle, "CPM", newPath);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int SetCPMNode_LLmD_64bParams(LONG packetHandle, struct CPMNode_LLmD_64b value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "lon");
+  C2xSetTokenInt(packetHandle, "CPM", newPath, value.lon);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "lat");
+  C2xSetTokenInt(packetHandle, "CPM", newPath, value.lat);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int GetCPMDSRC_RegionalExtensionEmptyParams(LONG packetHandle, struct CPMDSRC_RegionalExtensionEmpty value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "regionId");
+  value.regionId = C2xGetTokenInt(packetHandle, "CPM", newPath);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int SetCPMDSRC_RegionalExtensionEmptyParams(LONG packetHandle, struct CPMDSRC_RegionalExtensionEmpty value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+
+  return result;
+}
+
+int GetCPMNodeOffsetPointXYParams(LONG packetHandle, struct CPMNodeOffsetPointXY value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  value.choice = C2xGetTokenInt(packetHandle, "CPM", oldPath);
+
+  switch(value.choice)
+  {
+    case 0:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "node_XY1");
+      GetCPMNode_XY_20bParams(packetHandle, value.node_XY1, newPath);
+      result = CheckLastError("CPM", gkFuncRefGet, result);
+    }
+    break;
+    case 1:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "node_XY2");
+      GetCPMNode_XY_22bParams(packetHandle, value.node_XY2, newPath);
+      result = CheckLastError("CPM", gkFuncRefGet, result);
+    }
+    break;
+    case 2:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "node_XY3");
+      GetCPMNode_XY_24bParams(packetHandle, value.node_XY3, newPath);
+      result = CheckLastError("CPM", gkFuncRefGet, result);
+    }
+    break;
+    case 3:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "node_XY4");
+      GetCPMNode_XY_26bParams(packetHandle, value.node_XY4, newPath);
+      result = CheckLastError("CPM", gkFuncRefGet, result);
+    }
+    break;
+    case 4:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "node_XY5");
+      GetCPMNode_XY_28bParams(packetHandle, value.node_XY5, newPath);
+      result = CheckLastError("CPM", gkFuncRefGet, result);
+    }
+    break;
+    case 5:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "node_XY6");
+      GetCPMNode_XY_32bParams(packetHandle, value.node_XY6, newPath);
+      result = CheckLastError("CPM", gkFuncRefGet, result);
+    }
+    break;
+    case 6:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "node_LatLon");
+      GetCPMNode_LLmD_64bParams(packetHandle, value.node_LatLon, newPath);
+      result = CheckLastError("CPM", gkFuncRefGet, result);
+    }
+    break;
+    case 7:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "regional");
+      GetCPMDSRC_RegionalExtensionEmptyParams(packetHandle, value.regional, newPath);
+      result = CheckLastError("CPM", gkFuncRefGet, result);
+    }
+    break;
+  }
+  return result;
+}
+
+int SetCPMNodeOffsetPointXYParams(LONG packetHandle, struct CPMNodeOffsetPointXY value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  switch(value.choice)
+  {
+    case 0:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "node_XY1");
+      SetCPMNode_XY_20bParams(packetHandle, value.node_XY1, newPath);
+      result = CheckLastError("CPM", gkFuncRefGet, result);
+    }
+    break;
+    case 1:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "node_XY2");
+      SetCPMNode_XY_22bParams(packetHandle, value.node_XY2, newPath);
+      result = CheckLastError("CPM", gkFuncRefGet, result);
+    }
+    break;
+    case 2:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "node_XY3");
+      SetCPMNode_XY_24bParams(packetHandle, value.node_XY3, newPath);
+      result = CheckLastError("CPM", gkFuncRefGet, result);
+    }
+    break;
+    case 3:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "node_XY4");
+      SetCPMNode_XY_26bParams(packetHandle, value.node_XY4, newPath);
+      result = CheckLastError("CPM", gkFuncRefGet, result);
+    }
+    break;
+    case 4:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "node_XY5");
+      SetCPMNode_XY_28bParams(packetHandle, value.node_XY5, newPath);
+      result = CheckLastError("CPM", gkFuncRefGet, result);
+    }
+    break;
+    case 5:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "node_XY6");
+      SetCPMNode_XY_32bParams(packetHandle, value.node_XY6, newPath);
+      result = CheckLastError("CPM", gkFuncRefGet, result);
+    }
+    break;
+    case 6:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "node_LatLon");
+      SetCPMNode_LLmD_64bParams(packetHandle, value.node_LatLon, newPath);
+      result = CheckLastError("CPM", gkFuncRefGet, result);
+    }
+    break;
+    case 7:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "regional");
+      SetCPMDSRC_RegionalExtensionEmptyParams(packetHandle, value.regional, newPath);
+      result = CheckLastError("CPM", gkFuncRefGet, result);
+    }
+    break;
+  }
+  return result;
+}
+
+int GetCPMNodeOffsetPointZParams(LONG packetHandle, struct CPMNodeOffsetPointZ value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  value.choice = C2xGetTokenInt(packetHandle, "CPM", oldPath);
+
+  switch(value.choice)
+  {
+    case 0:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "node_Z1");
+      value.node_Z1 = C2xGetTokenInt(packetHandle, "CPM", newPath);
+      result = CheckLastError("CPM", gkFuncRefGet, result);
+    }
+    break;
+    case 1:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "node_Z2");
+      value.node_Z2 = C2xGetTokenInt(packetHandle, "CPM", newPath);
+      result = CheckLastError("CPM", gkFuncRefGet, result);
+    }
+    break;
+    case 2:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "node_Z3");
+      value.node_Z3 = C2xGetTokenInt(packetHandle, "CPM", newPath);
+      result = CheckLastError("CPM", gkFuncRefGet, result);
+    }
+    break;
+    case 3:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "node_Z4");
+      value.node_Z4 = C2xGetTokenInt(packetHandle, "CPM", newPath);
+      result = CheckLastError("CPM", gkFuncRefGet, result);
+    }
+    break;
+    case 4:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "node_Z5");
+      value.node_Z5 = C2xGetTokenInt(packetHandle, "CPM", newPath);
+      result = CheckLastError("CPM", gkFuncRefGet, result);
+    }
+    break;
+    case 5:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "node_Z6");
+      value.node_Z6 = C2xGetTokenInt(packetHandle, "CPM", newPath);
+      result = CheckLastError("CPM", gkFuncRefGet, result);
+    }
+    break;
+  }
+  return result;
+}
+
+int SetCPMNodeOffsetPointZParams(LONG packetHandle, struct CPMNodeOffsetPointZ value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  switch(value.choice)
+  {
+    case 0:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "node_Z1");
+      C2xSetTokenInt(packetHandle, "CPM", newPath, value.node_Z1);
+      result = CheckLastError("CPM", gkFuncRefGet, result);
+    }
+    break;
+    case 1:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "node_Z2");
+      C2xSetTokenInt(packetHandle, "CPM", newPath, value.node_Z2);
+      result = CheckLastError("CPM", gkFuncRefGet, result);
+    }
+    break;
+    case 2:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "node_Z3");
+      C2xSetTokenInt(packetHandle, "CPM", newPath, value.node_Z3);
+      result = CheckLastError("CPM", gkFuncRefGet, result);
+    }
+    break;
+    case 3:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "node_Z4");
+      C2xSetTokenInt(packetHandle, "CPM", newPath, value.node_Z4);
+      result = CheckLastError("CPM", gkFuncRefGet, result);
+    }
+    break;
+    case 4:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "node_Z5");
+      C2xSetTokenInt(packetHandle, "CPM", newPath, value.node_Z5);
+      result = CheckLastError("CPM", gkFuncRefGet, result);
+    }
+    break;
+    case 5:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "node_Z6");
+      C2xSetTokenInt(packetHandle, "CPM", newPath, value.node_Z6);
+      result = CheckLastError("CPM", gkFuncRefGet, result);
+    }
+    break;
+  }
+  return result;
+}
+
+int GetCPMOffsetPointParams(LONG packetHandle, struct CPMOffsetPoint value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "nodeOffsetPointxy");
+  GetCPMNodeOffsetPointXYParams(packetHandle, value.nodeOffsetPointxy, newPath);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "nodeOffsetPointZ");
+  value.nodeOffsetPointZ.isValidFlag = C2xIsTokenAvailable(packetHandle, "CPM", newPath);
+  if(value.nodeOffsetPointZ.isValidFlag==1)
+  {
+    GetCPMNodeOffsetPointZParams(packetHandle, value.nodeOffsetPointZ, newPath);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  return result;
+}
+
+int SetCPMOffsetPointParams(LONG packetHandle, struct CPMOffsetPoint value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "nodeOffsetPointxy");
+  SetCPMNodeOffsetPointXYParams(packetHandle, value.nodeOffsetPointxy, newPath);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "nodeOffsetPointZ");
+  if(value.nodeOffsetPointZ.isValidFlag==1)
+  {
+    SetCPMNodeOffsetPointZParams(packetHandle, value.nodeOffsetPointZ, newPath);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "CPM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "CPM", newPath);
+    }
+  }
+
+  return result;
+}
+
+int GetCPMAreaRadialParams(LONG packetHandle, struct CPMAreaRadial value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "range");
+  value.range = C2xGetTokenInt(packetHandle, "CPM", newPath);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "stationaryHorizontalOpeningAngleStart");
+  value.stationaryHorizontalOpeningAngleStart = C2xGetTokenInt(packetHandle, "CPM", newPath);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "stationaryHorizontalOpeningAngleEnd");
+  value.stationaryHorizontalOpeningAngleEnd = C2xGetTokenInt(packetHandle, "CPM", newPath);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "verticalOpeningAngleStart");
+  value.verticalOpeningAngleStart.isValidFlag = C2xIsTokenAvailable(packetHandle, "CPM", newPath);
+  if(value.verticalOpeningAngleStart.isValidFlag==1)
+  {
+    value.verticalOpeningAngleStart.value = C2xGetTokenInt(packetHandle, "CPM", newPath);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "verticalOpeningAngleEnd");
+  value.verticalOpeningAngleEnd.isValidFlag = C2xIsTokenAvailable(packetHandle, "CPM", newPath);
+  if(value.verticalOpeningAngleEnd.isValidFlag==1)
+  {
+    value.verticalOpeningAngleEnd.value = C2xGetTokenInt(packetHandle, "CPM", newPath);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "sensorPositionOffset");
+  value.sensorPositionOffset.isValidFlag = C2xIsTokenAvailable(packetHandle, "CPM", newPath);
+  if(value.sensorPositionOffset.isValidFlag==1)
+  {
+    GetCPMOffsetPointParams(packetHandle, value.sensorPositionOffset, newPath);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "sensorHeight");
+  value.sensorHeight.isValidFlag = C2xIsTokenAvailable(packetHandle, "CPM", newPath);
+  if(value.sensorHeight.isValidFlag==1)
+  {
+    value.sensorHeight.value = C2xGetTokenInt(packetHandle, "CPM", newPath);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  return result;
+}
+
+int SetCPMAreaRadialParams(LONG packetHandle, struct CPMAreaRadial value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "range");
+  C2xSetTokenInt(packetHandle, "CPM", newPath, value.range);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "stationaryHorizontalOpeningAngleStart");
+  C2xSetTokenInt(packetHandle, "CPM", newPath, value.stationaryHorizontalOpeningAngleStart);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "stationaryHorizontalOpeningAngleEnd");
+  C2xSetTokenInt(packetHandle, "CPM", newPath, value.stationaryHorizontalOpeningAngleEnd);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "verticalOpeningAngleStart");
+  if(value.verticalOpeningAngleStart.isValidFlag==1)
+  {
+    C2xSetTokenInt(packetHandle, "CPM", newPath, value.verticalOpeningAngleStart.value);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "CPM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "CPM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "verticalOpeningAngleEnd");
+  if(value.verticalOpeningAngleEnd.isValidFlag==1)
+  {
+    C2xSetTokenInt(packetHandle, "CPM", newPath, value.verticalOpeningAngleEnd.value);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "CPM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "CPM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "sensorPositionOffset");
+  if(value.sensorPositionOffset.isValidFlag==1)
+  {
+    SetCPMOffsetPointParams(packetHandle, value.sensorPositionOffset, newPath);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "CPM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "CPM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "sensorHeight");
+  if(value.sensorHeight.isValidFlag==1)
+  {
+    C2xSetTokenInt(packetHandle, "CPM", newPath, value.sensorHeight.value);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "CPM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "CPM", newPath);
+    }
+  }
+
+  return result;
+}
+
+int GetCPMPolyPointListParams(LONG packetHandle, struct CPMPolyPointList value, char oldPath[])
+{
+  char newPath[300]; 
+  int i;
+  int result;
+
+  result = 0;
+
+  value.length = C2xGetTokenInt(packetHandle, "CPM", oldPath);
+  if((result = CheckLastError("CPM", gkFuncRefGet, result))==0)
+  {
+    for(i=0; i<value.length; i++)
+    {
+      snprintf(newPath, elcount(newPath), "%s[%d]", oldPath, i);
+      GetCPMOffsetPointParams(packetHandle, value.arrayValue[i], newPath);
+      result = CheckLastError("CPM", gkFuncRefGet, result);
+    }
+  }
+  return result;
+}
+
+int SetCPMPolyPointListParams(LONG packetHandle, struct CPMPolyPointList value, char oldPath[])
+{
+  char newPath[300]; 
+  int i;
+  int result;
+
+  result = 0;
+
+  C2xRemoveToken(packetHandle, "CPM", oldPath);
+  for(i=0; i<value.length; i++)
+  {
+    snprintf(newPath, elcount(newPath), "%s[%d]", oldPath, i);
+    SetCPMOffsetPointParams(packetHandle, value.arrayValue[i], newPath);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  return result;
+}
+
+int GetCPMAreaPolygonParams(LONG packetHandle, struct CPMAreaPolygon value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "polyPointList");
+  GetCPMPolyPointListParams(packetHandle, value.polyPointList, newPath);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int SetCPMAreaPolygonParams(LONG packetHandle, struct CPMAreaPolygon value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "polyPointList");
+  SetCPMPolyPointListParams(packetHandle, value.polyPointList, newPath);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int GetCPMAreaCircularParams(LONG packetHandle, struct CPMAreaCircular value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "nodeCenterPoint");
+  value.nodeCenterPoint.isValidFlag = C2xIsTokenAvailable(packetHandle, "CPM", newPath);
+  if(value.nodeCenterPoint.isValidFlag==1)
+  {
+    GetCPMOffsetPointParams(packetHandle, value.nodeCenterPoint, newPath);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "radius");
+  value.radius = C2xGetTokenInt(packetHandle, "CPM", newPath);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int SetCPMAreaCircularParams(LONG packetHandle, struct CPMAreaCircular value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "nodeCenterPoint");
+  if(value.nodeCenterPoint.isValidFlag==1)
+  {
+    SetCPMOffsetPointParams(packetHandle, value.nodeCenterPoint, newPath);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "CPM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "CPM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "radius");
+  C2xSetTokenInt(packetHandle, "CPM", newPath, value.radius);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int GetCPMAreaEllipseParams(LONG packetHandle, struct CPMAreaEllipse value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "nodeCenterPoint");
+  value.nodeCenterPoint.isValidFlag = C2xIsTokenAvailable(packetHandle, "CPM", newPath);
+  if(value.nodeCenterPoint.isValidFlag==1)
+  {
+    GetCPMOffsetPointParams(packetHandle, value.nodeCenterPoint, newPath);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "semiMinorRangeLength");
+  value.semiMinorRangeLength = C2xGetTokenInt(packetHandle, "CPM", newPath);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "semiMajorRangeLength");
+  value.semiMajorRangeLength = C2xGetTokenInt(packetHandle, "CPM", newPath);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "semiMajorRangeOrientation");
+  value.semiMajorRangeOrientation = C2xGetTokenInt(packetHandle, "CPM", newPath);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "semiHeight");
+  value.semiHeight.isValidFlag = C2xIsTokenAvailable(packetHandle, "CPM", newPath);
+  if(value.semiHeight.isValidFlag==1)
+  {
+    value.semiHeight.value = C2xGetTokenInt(packetHandle, "CPM", newPath);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  return result;
+}
+
+int SetCPMAreaEllipseParams(LONG packetHandle, struct CPMAreaEllipse value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "nodeCenterPoint");
+  if(value.nodeCenterPoint.isValidFlag==1)
+  {
+    SetCPMOffsetPointParams(packetHandle, value.nodeCenterPoint, newPath);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "CPM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "CPM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "semiMinorRangeLength");
+  C2xSetTokenInt(packetHandle, "CPM", newPath, value.semiMinorRangeLength);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "semiMajorRangeLength");
+  C2xSetTokenInt(packetHandle, "CPM", newPath, value.semiMajorRangeLength);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "semiMajorRangeOrientation");
+  C2xSetTokenInt(packetHandle, "CPM", newPath, value.semiMajorRangeOrientation);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "semiHeight");
+  if(value.semiHeight.isValidFlag==1)
+  {
+    C2xSetTokenInt(packetHandle, "CPM", newPath, value.semiHeight.value);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "CPM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "CPM", newPath);
+    }
+  }
+
+  return result;
+}
+
+int GetCPMAreaRectangleParams(LONG packetHandle, struct CPMAreaRectangle value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "nodeCenterPoint");
+  value.nodeCenterPoint.isValidFlag = C2xIsTokenAvailable(packetHandle, "CPM", newPath);
+  if(value.nodeCenterPoint.isValidFlag==1)
+  {
+    GetCPMOffsetPointParams(packetHandle, value.nodeCenterPoint, newPath);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "semiMajorRangeLength");
+  value.semiMajorRangeLength = C2xGetTokenInt(packetHandle, "CPM", newPath);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "semiMinorRangeLength");
+  value.semiMinorRangeLength = C2xGetTokenInt(packetHandle, "CPM", newPath);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "semiMajorRangeOrientation");
+  value.semiMajorRangeOrientation = C2xGetTokenInt(packetHandle, "CPM", newPath);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "semiHeight");
+  value.semiHeight.isValidFlag = C2xIsTokenAvailable(packetHandle, "CPM", newPath);
+  if(value.semiHeight.isValidFlag==1)
+  {
+    value.semiHeight.value = C2xGetTokenInt(packetHandle, "CPM", newPath);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  return result;
+}
+
+int SetCPMAreaRectangleParams(LONG packetHandle, struct CPMAreaRectangle value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "nodeCenterPoint");
+  if(value.nodeCenterPoint.isValidFlag==1)
+  {
+    SetCPMOffsetPointParams(packetHandle, value.nodeCenterPoint, newPath);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "CPM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "CPM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "semiMajorRangeLength");
+  C2xSetTokenInt(packetHandle, "CPM", newPath, value.semiMajorRangeLength);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "semiMinorRangeLength");
+  C2xSetTokenInt(packetHandle, "CPM", newPath, value.semiMinorRangeLength);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "semiMajorRangeOrientation");
+  C2xSetTokenInt(packetHandle, "CPM", newPath, value.semiMajorRangeOrientation);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "semiHeight");
+  if(value.semiHeight.isValidFlag==1)
+  {
+    C2xSetTokenInt(packetHandle, "CPM", newPath, value.semiHeight.value);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "CPM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "CPM", newPath);
+    }
+  }
+
+  return result;
+}
+
+int GetCPMDetectionAreaParams(LONG packetHandle, struct CPMDetectionArea value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  value.choice = C2xGetTokenInt(packetHandle, "CPM", oldPath);
+
+  switch(value.choice)
+  {
+    case 0:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "vehicleSensor");
+      GetCPMVehicleSensorParams(packetHandle, value.vehicleSensor, newPath);
+      result = CheckLastError("CPM", gkFuncRefGet, result);
+    }
+    break;
+    case 1:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "stationarySensorRadial");
+      GetCPMAreaRadialParams(packetHandle, value.stationarySensorRadial, newPath);
+      result = CheckLastError("CPM", gkFuncRefGet, result);
+    }
+    break;
+    case 2:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "stationarySensorPolygon");
+      GetCPMAreaPolygonParams(packetHandle, value.stationarySensorPolygon, newPath);
+      result = CheckLastError("CPM", gkFuncRefGet, result);
+    }
+    break;
+    case 3:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "stationarySensorCircular");
+      GetCPMAreaCircularParams(packetHandle, value.stationarySensorCircular, newPath);
+      result = CheckLastError("CPM", gkFuncRefGet, result);
+    }
+    break;
+    case 4:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "stationarySensorEllipse");
+      GetCPMAreaEllipseParams(packetHandle, value.stationarySensorEllipse, newPath);
+      result = CheckLastError("CPM", gkFuncRefGet, result);
+    }
+    break;
+    case 5:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "stationarySensorRectangle");
+      GetCPMAreaRectangleParams(packetHandle, value.stationarySensorRectangle, newPath);
+      result = CheckLastError("CPM", gkFuncRefGet, result);
+    }
+    break;
+  }
+  return result;
+}
+
+int SetCPMDetectionAreaParams(LONG packetHandle, struct CPMDetectionArea value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  switch(value.choice)
+  {
+    case 0:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "vehicleSensor");
+      SetCPMVehicleSensorParams(packetHandle, value.vehicleSensor, newPath);
+      result = CheckLastError("CPM", gkFuncRefGet, result);
+    }
+    break;
+    case 1:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "stationarySensorRadial");
+      SetCPMAreaRadialParams(packetHandle, value.stationarySensorRadial, newPath);
+      result = CheckLastError("CPM", gkFuncRefGet, result);
+    }
+    break;
+    case 2:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "stationarySensorPolygon");
+      SetCPMAreaPolygonParams(packetHandle, value.stationarySensorPolygon, newPath);
+      result = CheckLastError("CPM", gkFuncRefGet, result);
+    }
+    break;
+    case 3:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "stationarySensorCircular");
+      SetCPMAreaCircularParams(packetHandle, value.stationarySensorCircular, newPath);
+      result = CheckLastError("CPM", gkFuncRefGet, result);
+    }
+    break;
+    case 4:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "stationarySensorEllipse");
+      SetCPMAreaEllipseParams(packetHandle, value.stationarySensorEllipse, newPath);
+      result = CheckLastError("CPM", gkFuncRefGet, result);
+    }
+    break;
+    case 5:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "stationarySensorRectangle");
+      SetCPMAreaRectangleParams(packetHandle, value.stationarySensorRectangle, newPath);
+      result = CheckLastError("CPM", gkFuncRefGet, result);
+    }
+    break;
+  }
+  return result;
+}
+
+int GetCPMSensorInformationParams(LONG packetHandle, struct CPMSensorInformation value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "sensorID");
+  value.sensorID = C2xGetTokenInt(packetHandle, "CPM", newPath);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "type");
+  value.type = C2xGetTokenInt(packetHandle, "CPM", newPath);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "detectionArea");
+  GetCPMDetectionAreaParams(packetHandle, value.detectionArea, newPath);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "freeSpaceConfidence");
+  value.freeSpaceConfidence.isValidFlag = C2xIsTokenAvailable(packetHandle, "CPM", newPath);
+  if(value.freeSpaceConfidence.isValidFlag==1)
+  {
+    value.freeSpaceConfidence.value = C2xGetTokenInt(packetHandle, "CPM", newPath);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  return result;
+}
+
+int SetCPMSensorInformationParams(LONG packetHandle, struct CPMSensorInformation value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "sensorID");
+  C2xSetTokenInt(packetHandle, "CPM", newPath, value.sensorID);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "type");
+  C2xSetTokenInt(packetHandle, "CPM", newPath, value.type);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "detectionArea");
+  SetCPMDetectionAreaParams(packetHandle, value.detectionArea, newPath);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "freeSpaceConfidence");
+  if(value.freeSpaceConfidence.isValidFlag==1)
+  {
+    C2xSetTokenInt(packetHandle, "CPM", newPath, value.freeSpaceConfidence.value);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "CPM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "CPM", newPath);
+    }
+  }
+
+  return result;
+}
+
+int GetCPMSensorInformationContainerParams(LONG packetHandle, struct CPMSensorInformationContainer value, char oldPath[])
+{
+  char newPath[300]; 
+  int i;
+  int result;
+
+  result = 0;
+
+  value.length = C2xGetTokenInt(packetHandle, "CPM", oldPath);
+  if((result = CheckLastError("CPM", gkFuncRefGet, result))==0)
+  {
+    for(i=0; i<value.length; i++)
+    {
+      snprintf(newPath, elcount(newPath), "%s[%d]", oldPath, i);
+      GetCPMSensorInformationParams(packetHandle, value.arrayValue[i], newPath);
+      result = CheckLastError("CPM", gkFuncRefGet, result);
+    }
+  }
+  return result;
+}
+
+int SetCPMSensorInformationContainerParams(LONG packetHandle, struct CPMSensorInformationContainer value, char oldPath[])
+{
+  char newPath[300]; 
+  int i;
+  int result;
+
+  result = 0;
+
+  C2xRemoveToken(packetHandle, "CPM", oldPath);
+  for(i=0; i<value.length; i++)
+  {
+    snprintf(newPath, elcount(newPath), "%s[%d]", oldPath, i);
+    SetCPMSensorInformationParams(packetHandle, value.arrayValue[i], newPath);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  return result;
+}
+
+int GetCPMSensorIdListParams(LONG packetHandle, struct CPMSensorIdList value, char oldPath[])
+{
+  char newPath[300]; 
+  int i;
+  int result;
+
+  result = 0;
+
+  value.length = C2xGetTokenInt(packetHandle, "CPM", oldPath);
+  if((result = CheckLastError("CPM", gkFuncRefGet, result))==0)
+  {
+    for(i=0; i<value.length; i++)
+    {
+      snprintf(newPath, elcount(newPath), "%s[%d]", oldPath, i);
+      value.arrayValue[i] = C2xGetTokenInt64(packetHandle, "CPM", newPath);
+      result = CheckLastError("CPM", gkFuncRefGet, result);
+    }
+  }
+  return result;
+}
+
+int SetCPMSensorIdListParams(LONG packetHandle, struct CPMSensorIdList value, char oldPath[])
+{
+  char newPath[300]; 
+  int i;
+  int result;
+
+  result = 0;
+
+  C2xRemoveToken(packetHandle, "CPM", oldPath);
+  for(i=0; i<value.length; i++)
+  {
+    snprintf(newPath, elcount(newPath), "%s[%d]", oldPath, i);
+    C2xSetTokenInt64(packetHandle, "CPM", newPath, value.arrayValue[i]);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  return result;
+}
+
+int GetCPMObjectDistanceWithConfidenceParams(LONG packetHandle, struct CPMObjectDistanceWithConfidence value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "value");
+  value.value = C2xGetTokenInt(packetHandle, "CPM", newPath);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "confidence");
+  value.confidence = C2xGetTokenInt(packetHandle, "CPM", newPath);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int SetCPMObjectDistanceWithConfidenceParams(LONG packetHandle, struct CPMObjectDistanceWithConfidence value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "value");
+  C2xSetTokenInt(packetHandle, "CPM", newPath, value.value);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "confidence");
+  C2xSetTokenInt(packetHandle, "CPM", newPath, value.confidence);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int GetCPMSpeedExtendedParams(LONG packetHandle, struct CPMSpeedExtended value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "value");
+  value.value = C2xGetTokenInt(packetHandle, "CPM", newPath);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "confidence");
+  value.confidence = C2xGetTokenInt(packetHandle, "CPM", newPath);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int SetCPMSpeedExtendedParams(LONG packetHandle, struct CPMSpeedExtended value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "value");
+  C2xSetTokenInt(packetHandle, "CPM", newPath, value.value);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "confidence");
+  C2xSetTokenInt(packetHandle, "CPM", newPath, value.confidence);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int GetCPMObjectDimensionParams(LONG packetHandle, struct CPMObjectDimension value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "value");
+  value.value = C2xGetTokenInt(packetHandle, "CPM", newPath);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "confidence");
+  value.confidence = C2xGetTokenInt(packetHandle, "CPM", newPath);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int SetCPMObjectDimensionParams(LONG packetHandle, struct CPMObjectDimension value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "value");
+  C2xSetTokenInt(packetHandle, "CPM", newPath, value.value);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "confidence");
+  C2xSetTokenInt(packetHandle, "CPM", newPath, value.confidence);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int GetCPMVehicleSubclassParams(LONG packetHandle, struct CPMVehicleSubclass value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "type");
+  value.type.isValidFlag = C2xIsTokenAvailable(packetHandle, "CPM", newPath);
+  if(value.type.isValidFlag==1)
+  {
+    value.type.value = C2xGetTokenInt(packetHandle, "CPM", newPath);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "confidence");
+  value.confidence.isValidFlag = C2xIsTokenAvailable(packetHandle, "CPM", newPath);
+  if(value.confidence.isValidFlag==1)
+  {
+    value.confidence.value = C2xGetTokenInt(packetHandle, "CPM", newPath);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  return result;
+}
+
+int SetCPMVehicleSubclassParams(LONG packetHandle, struct CPMVehicleSubclass value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "type");
+  if(value.type.isValidFlag==1)
+  {
+    C2xSetTokenInt(packetHandle, "CPM", newPath, value.type.value);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "CPM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "CPM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "confidence");
+  if(value.confidence.isValidFlag==1)
+  {
+    C2xSetTokenInt(packetHandle, "CPM", newPath, value.confidence.value);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "CPM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "CPM", newPath);
+    }
+  }
+
+  return result;
+}
+
+int GetCPMPersonSubclassParams(LONG packetHandle, struct CPMPersonSubclass value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "type");
+  value.type.isValidFlag = C2xIsTokenAvailable(packetHandle, "CPM", newPath);
+  if(value.type.isValidFlag==1)
+  {
+    value.type.value = C2xGetTokenInt(packetHandle, "CPM", newPath);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "confidence");
+  value.confidence.isValidFlag = C2xIsTokenAvailable(packetHandle, "CPM", newPath);
+  if(value.confidence.isValidFlag==1)
+  {
+    value.confidence.value = C2xGetTokenInt(packetHandle, "CPM", newPath);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  return result;
+}
+
+int SetCPMPersonSubclassParams(LONG packetHandle, struct CPMPersonSubclass value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "type");
+  if(value.type.isValidFlag==1)
+  {
+    C2xSetTokenInt(packetHandle, "CPM", newPath, value.type.value);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "CPM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "CPM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "confidence");
+  if(value.confidence.isValidFlag==1)
+  {
+    C2xSetTokenInt(packetHandle, "CPM", newPath, value.confidence.value);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "CPM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "CPM", newPath);
+    }
+  }
+
+  return result;
+}
+
+int GetCPMAnimalSubclassParams(LONG packetHandle, struct CPMAnimalSubclass value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "type");
+  value.type.isValidFlag = C2xIsTokenAvailable(packetHandle, "CPM", newPath);
+  if(value.type.isValidFlag==1)
+  {
+    value.type.value = C2xGetTokenInt(packetHandle, "CPM", newPath);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "confidence");
+  value.confidence.isValidFlag = C2xIsTokenAvailable(packetHandle, "CPM", newPath);
+  if(value.confidence.isValidFlag==1)
+  {
+    value.confidence.value = C2xGetTokenInt(packetHandle, "CPM", newPath);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  return result;
+}
+
+int SetCPMAnimalSubclassParams(LONG packetHandle, struct CPMAnimalSubclass value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "type");
+  if(value.type.isValidFlag==1)
+  {
+    C2xSetTokenInt(packetHandle, "CPM", newPath, value.type.value);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "CPM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "CPM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "confidence");
+  if(value.confidence.isValidFlag==1)
+  {
+    C2xSetTokenInt(packetHandle, "CPM", newPath, value.confidence.value);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "CPM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "CPM", newPath);
+    }
+  }
+
+  return result;
+}
+
+int GetCPMOtherSubclassParams(LONG packetHandle, struct CPMOtherSubclass value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "type");
+  value.type.isValidFlag = C2xIsTokenAvailable(packetHandle, "CPM", newPath);
+  if(value.type.isValidFlag==1)
+  {
+    value.type.value = C2xGetTokenInt(packetHandle, "CPM", newPath);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "confidence");
+  value.confidence.isValidFlag = C2xIsTokenAvailable(packetHandle, "CPM", newPath);
+  if(value.confidence.isValidFlag==1)
+  {
+    value.confidence.value = C2xGetTokenInt(packetHandle, "CPM", newPath);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  return result;
+}
+
+int SetCPMOtherSubclassParams(LONG packetHandle, struct CPMOtherSubclass value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "type");
+  if(value.type.isValidFlag==1)
+  {
+    C2xSetTokenInt(packetHandle, "CPM", newPath, value.type.value);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "CPM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "CPM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "confidence");
+  if(value.confidence.isValidFlag==1)
+  {
+    C2xSetTokenInt(packetHandle, "CPM", newPath, value.confidence.value);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "CPM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "CPM", newPath);
+    }
+  }
+
+  return result;
+}
+
+int GetCPMObjectClass_classParams(LONG packetHandle, struct CPMObjectClass_class value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  value.choice = C2xGetTokenInt(packetHandle, "CPM", oldPath);
+
+  switch(value.choice)
+  {
+    case 0:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "vehicle");
+      GetCPMVehicleSubclassParams(packetHandle, value.vehicle, newPath);
+      result = CheckLastError("CPM", gkFuncRefGet, result);
+    }
+    break;
+    case 1:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "person");
+      GetCPMPersonSubclassParams(packetHandle, value.person, newPath);
+      result = CheckLastError("CPM", gkFuncRefGet, result);
+    }
+    break;
+    case 2:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "animal");
+      GetCPMAnimalSubclassParams(packetHandle, value.animal, newPath);
+      result = CheckLastError("CPM", gkFuncRefGet, result);
+    }
+    break;
+    case 3:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "other");
+      GetCPMOtherSubclassParams(packetHandle, value.other, newPath);
+      result = CheckLastError("CPM", gkFuncRefGet, result);
+    }
+    break;
+  }
+  return result;
+}
+
+int SetCPMObjectClass_classParams(LONG packetHandle, struct CPMObjectClass_class value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  switch(value.choice)
+  {
+    case 0:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "vehicle");
+      SetCPMVehicleSubclassParams(packetHandle, value.vehicle, newPath);
+      result = CheckLastError("CPM", gkFuncRefGet, result);
+    }
+    break;
+    case 1:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "person");
+      SetCPMPersonSubclassParams(packetHandle, value.person, newPath);
+      result = CheckLastError("CPM", gkFuncRefGet, result);
+    }
+    break;
+    case 2:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "animal");
+      SetCPMAnimalSubclassParams(packetHandle, value.animal, newPath);
+      result = CheckLastError("CPM", gkFuncRefGet, result);
+    }
+    break;
+    case 3:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "other");
+      SetCPMOtherSubclassParams(packetHandle, value.other, newPath);
+      result = CheckLastError("CPM", gkFuncRefGet, result);
+    }
+    break;
+  }
+  return result;
+}
+
+int GetCPMObjectClassParams(LONG packetHandle, struct CPMObjectClass value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "confidence");
+  value.confidence = C2xGetTokenInt(packetHandle, "CPM", newPath);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "class");
+  GetCPMObjectClass_classParams(packetHandle, value.class, newPath);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int SetCPMObjectClassParams(LONG packetHandle, struct CPMObjectClass value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "confidence");
+  C2xSetTokenInt(packetHandle, "CPM", newPath, value.confidence);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "class");
+  SetCPMObjectClass_classParams(packetHandle, value.class, newPath);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int GetCPMObjectClassDescriptionParams(LONG packetHandle, struct CPMObjectClassDescription value, char oldPath[])
+{
+  char newPath[300]; 
+  int i;
+  int result;
+
+  result = 0;
+
+  value.length = C2xGetTokenInt(packetHandle, "CPM", oldPath);
+  if((result = CheckLastError("CPM", gkFuncRefGet, result))==0)
+  {
+    for(i=0; i<value.length; i++)
+    {
+      snprintf(newPath, elcount(newPath), "%s[%d]", oldPath, i);
+      GetCPMObjectClassParams(packetHandle, value.arrayValue[i], newPath);
+      result = CheckLastError("CPM", gkFuncRefGet, result);
+    }
+  }
+  return result;
+}
+
+int SetCPMObjectClassDescriptionParams(LONG packetHandle, struct CPMObjectClassDescription value, char oldPath[])
+{
+  char newPath[300]; 
+  int i;
+  int result;
+
+  result = 0;
+
+  C2xRemoveToken(packetHandle, "CPM", oldPath);
+  for(i=0; i<value.length; i++)
+  {
+    snprintf(newPath, elcount(newPath), "%s[%d]", oldPath, i);
+    SetCPMObjectClassParams(packetHandle, value.arrayValue[i], newPath);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  return result;
+}
+
+int GetCPMLongitudinalLanePositionParams(LONG packetHandle, struct CPMLongitudinalLanePosition value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "longitudinalLanePositionValue");
+  value.longitudinalLanePositionValue = C2xGetTokenInt(packetHandle, "CPM", newPath);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "longitudinalLanePositionConfidence");
+  value.longitudinalLanePositionConfidence = C2xGetTokenInt(packetHandle, "CPM", newPath);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int SetCPMLongitudinalLanePositionParams(LONG packetHandle, struct CPMLongitudinalLanePosition value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "longitudinalLanePositionValue");
+  C2xSetTokenInt(packetHandle, "CPM", newPath, value.longitudinalLanePositionValue);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "longitudinalLanePositionConfidence");
+  C2xSetTokenInt(packetHandle, "CPM", newPath, value.longitudinalLanePositionConfidence);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int GetCPMMatchedPositionParams(LONG packetHandle, struct CPMMatchedPosition value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "laneID");
+  value.laneID.isValidFlag = C2xIsTokenAvailable(packetHandle, "CPM", newPath);
+  if(value.laneID.isValidFlag==1)
+  {
+    value.laneID.value = C2xGetTokenInt(packetHandle, "CPM", newPath);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "longitudinalLanePosition");
+  value.longitudinalLanePosition.isValidFlag = C2xIsTokenAvailable(packetHandle, "CPM", newPath);
+  if(value.longitudinalLanePosition.isValidFlag==1)
+  {
+    GetCPMLongitudinalLanePositionParams(packetHandle, value.longitudinalLanePosition, newPath);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  return result;
+}
+
+int SetCPMMatchedPositionParams(LONG packetHandle, struct CPMMatchedPosition value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "laneID");
+  if(value.laneID.isValidFlag==1)
+  {
+    C2xSetTokenInt(packetHandle, "CPM", newPath, value.laneID.value);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "CPM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "CPM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "longitudinalLanePosition");
+  if(value.longitudinalLanePosition.isValidFlag==1)
+  {
+    SetCPMLongitudinalLanePositionParams(packetHandle, value.longitudinalLanePosition, newPath);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "CPM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "CPM", newPath);
+    }
+  }
+
+  return result;
+}
+
+int GetCPMPerceivedObjectParams(LONG packetHandle, struct CPMPerceivedObject value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "objectID");
+  value.objectID = C2xGetTokenInt(packetHandle, "CPM", newPath);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "sensorIDList");
+  value.sensorIDList.isValidFlag = C2xIsTokenAvailable(packetHandle, "CPM", newPath);
+  if(value.sensorIDList.isValidFlag==1)
+  {
+    GetCPMSensorIdListParams(packetHandle, value.sensorIDList, newPath);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "timeOfMeasurement");
+  value.timeOfMeasurement = C2xGetTokenInt(packetHandle, "CPM", newPath);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "objectAge");
+  value.objectAge.isValidFlag = C2xIsTokenAvailable(packetHandle, "CPM", newPath);
+  if(value.objectAge.isValidFlag==1)
+  {
+    value.objectAge.value = C2xGetTokenInt(packetHandle, "CPM", newPath);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "objectConfidence");
+  value.objectConfidence.isValidFlag = C2xIsTokenAvailable(packetHandle, "CPM", newPath);
+  if(value.objectConfidence.isValidFlag==1)
+  {
+    value.objectConfidence.value = C2xGetTokenInt(packetHandle, "CPM", newPath);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "xDistance");
+  GetCPMObjectDistanceWithConfidenceParams(packetHandle, value.xDistance, newPath);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "yDistance");
+  GetCPMObjectDistanceWithConfidenceParams(packetHandle, value.yDistance, newPath);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "zDistance");
+  value.zDistance.isValidFlag = C2xIsTokenAvailable(packetHandle, "CPM", newPath);
+  if(value.zDistance.isValidFlag==1)
+  {
+    GetCPMObjectDistanceWithConfidenceParams(packetHandle, value.zDistance, newPath);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "xSpeed");
+  GetCPMSpeedExtendedParams(packetHandle, value.xSpeed, newPath);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "ySpeed");
+  GetCPMSpeedExtendedParams(packetHandle, value.ySpeed, newPath);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "zSpeed");
+  value.zSpeed.isValidFlag = C2xIsTokenAvailable(packetHandle, "CPM", newPath);
+  if(value.zSpeed.isValidFlag==1)
+  {
+    GetCPMSpeedExtendedParams(packetHandle, value.zSpeed, newPath);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "xAcceleration");
+  value.xAcceleration.isValidFlag = C2xIsTokenAvailable(packetHandle, "CPM", newPath);
+  if(value.xAcceleration.isValidFlag==1)
+  {
+    GetCPMLongitudinalAccelerationParams(packetHandle, value.xAcceleration, newPath);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "yAcceleration");
+  value.yAcceleration.isValidFlag = C2xIsTokenAvailable(packetHandle, "CPM", newPath);
+  if(value.yAcceleration.isValidFlag==1)
+  {
+    GetCPMLateralAccelerationParams(packetHandle, value.yAcceleration, newPath);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "zAcceleration");
+  value.zAcceleration.isValidFlag = C2xIsTokenAvailable(packetHandle, "CPM", newPath);
+  if(value.zAcceleration.isValidFlag==1)
+  {
+    GetCPMVerticalAccelerationParams(packetHandle, value.zAcceleration, newPath);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "yawAngle");
+  value.yawAngle.isValidFlag = C2xIsTokenAvailable(packetHandle, "CPM", newPath);
+  if(value.yawAngle.isValidFlag==1)
+  {
+    GetCPMCartesianAngleParams(packetHandle, value.yawAngle, newPath);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "planarObjectDimension1");
+  value.planarObjectDimension1.isValidFlag = C2xIsTokenAvailable(packetHandle, "CPM", newPath);
+  if(value.planarObjectDimension1.isValidFlag==1)
+  {
+    GetCPMObjectDimensionParams(packetHandle, value.planarObjectDimension1, newPath);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "planarObjectDimension2");
+  value.planarObjectDimension2.isValidFlag = C2xIsTokenAvailable(packetHandle, "CPM", newPath);
+  if(value.planarObjectDimension2.isValidFlag==1)
+  {
+    GetCPMObjectDimensionParams(packetHandle, value.planarObjectDimension2, newPath);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "verticalObjectDimension");
+  value.verticalObjectDimension.isValidFlag = C2xIsTokenAvailable(packetHandle, "CPM", newPath);
+  if(value.verticalObjectDimension.isValidFlag==1)
+  {
+    GetCPMObjectDimensionParams(packetHandle, value.verticalObjectDimension, newPath);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "objectRefPoint");
+  value.objectRefPoint.isValidFlag = C2xIsTokenAvailable(packetHandle, "CPM", newPath);
+  if(value.objectRefPoint.isValidFlag==1)
+  {
+    value.objectRefPoint.value = C2xGetTokenInt(packetHandle, "CPM", newPath);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "dynamicStatus");
+  value.dynamicStatus.isValidFlag = C2xIsTokenAvailable(packetHandle, "CPM", newPath);
+  if(value.dynamicStatus.isValidFlag==1)
+  {
+    value.dynamicStatus.value = C2xGetTokenInt(packetHandle, "CPM", newPath);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "classification");
+  value.classification.isValidFlag = C2xIsTokenAvailable(packetHandle, "CPM", newPath);
+  if(value.classification.isValidFlag==1)
+  {
+    GetCPMObjectClassDescriptionParams(packetHandle, value.classification, newPath);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "matchedPosition");
+  value.matchedPosition.isValidFlag = C2xIsTokenAvailable(packetHandle, "CPM", newPath);
+  if(value.matchedPosition.isValidFlag==1)
+  {
+    GetCPMMatchedPositionParams(packetHandle, value.matchedPosition, newPath);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  return result;
+}
+
+int SetCPMPerceivedObjectParams(LONG packetHandle, struct CPMPerceivedObject value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "objectID");
+  C2xSetTokenInt(packetHandle, "CPM", newPath, value.objectID);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "sensorIDList");
+  if(value.sensorIDList.isValidFlag==1)
+  {
+    SetCPMSensorIdListParams(packetHandle, value.sensorIDList, newPath);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "CPM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "CPM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "timeOfMeasurement");
+  C2xSetTokenInt(packetHandle, "CPM", newPath, value.timeOfMeasurement);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "objectAge");
+  if(value.objectAge.isValidFlag==1)
+  {
+    C2xSetTokenInt(packetHandle, "CPM", newPath, value.objectAge.value);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "CPM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "CPM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "objectConfidence");
+  if(value.objectConfidence.isValidFlag==1)
+  {
+    C2xSetTokenInt(packetHandle, "CPM", newPath, value.objectConfidence.value);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "CPM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "CPM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "xDistance");
+  SetCPMObjectDistanceWithConfidenceParams(packetHandle, value.xDistance, newPath);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "yDistance");
+  SetCPMObjectDistanceWithConfidenceParams(packetHandle, value.yDistance, newPath);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "zDistance");
+  if(value.zDistance.isValidFlag==1)
+  {
+    SetCPMObjectDistanceWithConfidenceParams(packetHandle, value.zDistance, newPath);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "CPM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "CPM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "xSpeed");
+  SetCPMSpeedExtendedParams(packetHandle, value.xSpeed, newPath);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "ySpeed");
+  SetCPMSpeedExtendedParams(packetHandle, value.ySpeed, newPath);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "zSpeed");
+  if(value.zSpeed.isValidFlag==1)
+  {
+    SetCPMSpeedExtendedParams(packetHandle, value.zSpeed, newPath);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "CPM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "CPM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "xAcceleration");
+  if(value.xAcceleration.isValidFlag==1)
+  {
+    SetCPMLongitudinalAccelerationParams(packetHandle, value.xAcceleration, newPath);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "CPM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "CPM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "yAcceleration");
+  if(value.yAcceleration.isValidFlag==1)
+  {
+    SetCPMLateralAccelerationParams(packetHandle, value.yAcceleration, newPath);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "CPM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "CPM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "zAcceleration");
+  if(value.zAcceleration.isValidFlag==1)
+  {
+    SetCPMVerticalAccelerationParams(packetHandle, value.zAcceleration, newPath);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "CPM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "CPM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "yawAngle");
+  if(value.yawAngle.isValidFlag==1)
+  {
+    SetCPMCartesianAngleParams(packetHandle, value.yawAngle, newPath);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "CPM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "CPM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "planarObjectDimension1");
+  if(value.planarObjectDimension1.isValidFlag==1)
+  {
+    SetCPMObjectDimensionParams(packetHandle, value.planarObjectDimension1, newPath);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "CPM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "CPM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "planarObjectDimension2");
+  if(value.planarObjectDimension2.isValidFlag==1)
+  {
+    SetCPMObjectDimensionParams(packetHandle, value.planarObjectDimension2, newPath);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "CPM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "CPM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "verticalObjectDimension");
+  if(value.verticalObjectDimension.isValidFlag==1)
+  {
+    SetCPMObjectDimensionParams(packetHandle, value.verticalObjectDimension, newPath);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "CPM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "CPM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "objectRefPoint");
+  if(value.objectRefPoint.isValidFlag==1)
+  {
+    C2xSetTokenInt(packetHandle, "CPM", newPath, value.objectRefPoint.value);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "CPM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "CPM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "dynamicStatus");
+  if(value.dynamicStatus.isValidFlag==1)
+  {
+    C2xSetTokenInt(packetHandle, "CPM", newPath, value.dynamicStatus.value);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "CPM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "CPM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "classification");
+  if(value.classification.isValidFlag==1)
+  {
+    SetCPMObjectClassDescriptionParams(packetHandle, value.classification, newPath);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "CPM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "CPM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "matchedPosition");
+  if(value.matchedPosition.isValidFlag==1)
+  {
+    SetCPMMatchedPositionParams(packetHandle, value.matchedPosition, newPath);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "CPM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "CPM", newPath);
+    }
+  }
+
+  return result;
+}
+
+int GetCPMPerceivedObjectContainerParams(LONG packetHandle, struct CPMPerceivedObjectContainer value, char oldPath[])
+{
+  char newPath[300]; 
+  int i;
+  int result;
+
+  result = 0;
+
+  value.length = C2xGetTokenInt(packetHandle, "CPM", oldPath);
+  if((result = CheckLastError("CPM", gkFuncRefGet, result))==0)
+  {
+    for(i=0; i<value.length; i++)
+    {
+      snprintf(newPath, elcount(newPath), "%s[%d]", oldPath, i);
+      GetCPMPerceivedObjectParams(packetHandle, value.arrayValue[i], newPath);
+      result = CheckLastError("CPM", gkFuncRefGet, result);
+    }
+  }
+  return result;
+}
+
+int SetCPMPerceivedObjectContainerParams(LONG packetHandle, struct CPMPerceivedObjectContainer value, char oldPath[])
+{
+  char newPath[300]; 
+  int i;
+  int result;
+
+  result = 0;
+
+  C2xRemoveToken(packetHandle, "CPM", oldPath);
+  for(i=0; i<value.length; i++)
+  {
+    snprintf(newPath, elcount(newPath), "%s[%d]", oldPath, i);
+    SetCPMPerceivedObjectParams(packetHandle, value.arrayValue[i], newPath);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  return result;
+}
+
+int GetCPMFreeSpaceAreaParams(LONG packetHandle, struct CPMFreeSpaceArea value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  value.choice = C2xGetTokenInt(packetHandle, "CPM", oldPath);
+
+  switch(value.choice)
+  {
+    case 0:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "freeSpacePolygon");
+      GetCPMAreaPolygonParams(packetHandle, value.freeSpacePolygon, newPath);
+      result = CheckLastError("CPM", gkFuncRefGet, result);
+    }
+    break;
+    case 1:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "freeSpaceCircular");
+      GetCPMAreaCircularParams(packetHandle, value.freeSpaceCircular, newPath);
+      result = CheckLastError("CPM", gkFuncRefGet, result);
+    }
+    break;
+    case 2:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "freeSpaceEllipse");
+      GetCPMAreaEllipseParams(packetHandle, value.freeSpaceEllipse, newPath);
+      result = CheckLastError("CPM", gkFuncRefGet, result);
+    }
+    break;
+    case 3:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "freeSpaceRectangle");
+      GetCPMAreaRectangleParams(packetHandle, value.freeSpaceRectangle, newPath);
+      result = CheckLastError("CPM", gkFuncRefGet, result);
+    }
+    break;
+  }
+  return result;
+}
+
+int SetCPMFreeSpaceAreaParams(LONG packetHandle, struct CPMFreeSpaceArea value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  switch(value.choice)
+  {
+    case 0:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "freeSpacePolygon");
+      SetCPMAreaPolygonParams(packetHandle, value.freeSpacePolygon, newPath);
+      result = CheckLastError("CPM", gkFuncRefGet, result);
+    }
+    break;
+    case 1:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "freeSpaceCircular");
+      SetCPMAreaCircularParams(packetHandle, value.freeSpaceCircular, newPath);
+      result = CheckLastError("CPM", gkFuncRefGet, result);
+    }
+    break;
+    case 2:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "freeSpaceEllipse");
+      SetCPMAreaEllipseParams(packetHandle, value.freeSpaceEllipse, newPath);
+      result = CheckLastError("CPM", gkFuncRefGet, result);
+    }
+    break;
+    case 3:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "freeSpaceRectangle");
+      SetCPMAreaRectangleParams(packetHandle, value.freeSpaceRectangle, newPath);
+      result = CheckLastError("CPM", gkFuncRefGet, result);
+    }
+    break;
+  }
+  return result;
+}
+
+int GetCPMFreeSpaceAddendumParams(LONG packetHandle, struct CPMFreeSpaceAddendum value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "freeSpaceConfidence");
+  value.freeSpaceConfidence = C2xGetTokenInt(packetHandle, "CPM", newPath);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "freeSpaceArea");
+  GetCPMFreeSpaceAreaParams(packetHandle, value.freeSpaceArea, newPath);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "sensorIDList");
+  value.sensorIDList.isValidFlag = C2xIsTokenAvailable(packetHandle, "CPM", newPath);
+  if(value.sensorIDList.isValidFlag==1)
+  {
+    GetCPMSensorIdListParams(packetHandle, value.sensorIDList, newPath);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "shadowingApplies");
+  value.shadowingApplies.isValidFlag = C2xIsTokenAvailable(packetHandle, "CPM", newPath);
+  if(value.shadowingApplies.isValidFlag==1)
+  {
+    value.shadowingApplies.value = C2xGetTokenInt64(packetHandle, "CPM", newPath);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  return result;
+}
+
+int SetCPMFreeSpaceAddendumParams(LONG packetHandle, struct CPMFreeSpaceAddendum value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "freeSpaceConfidence");
+  C2xSetTokenInt(packetHandle, "CPM", newPath, value.freeSpaceConfidence);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "freeSpaceArea");
+  SetCPMFreeSpaceAreaParams(packetHandle, value.freeSpaceArea, newPath);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "sensorIDList");
+  if(value.sensorIDList.isValidFlag==1)
+  {
+    SetCPMSensorIdListParams(packetHandle, value.sensorIDList, newPath);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "CPM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "CPM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "shadowingApplies");
+  if(value.shadowingApplies.isValidFlag==1)
+  {
+    C2xSetTokenInt64(packetHandle, "CPM", newPath, value.shadowingApplies.value);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "CPM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "CPM", newPath);
+    }
+  }
+
+  return result;
+}
+
+int GetCPMFreeSpaceAddendumContainerParams(LONG packetHandle, struct CPMFreeSpaceAddendumContainer value, char oldPath[])
+{
+  char newPath[300]; 
+  int i;
+  int result;
+
+  result = 0;
+
+  value.length = C2xGetTokenInt(packetHandle, "CPM", oldPath);
+  if((result = CheckLastError("CPM", gkFuncRefGet, result))==0)
+  {
+    for(i=0; i<value.length; i++)
+    {
+      snprintf(newPath, elcount(newPath), "%s[%d]", oldPath, i);
+      GetCPMFreeSpaceAddendumParams(packetHandle, value.arrayValue[i], newPath);
+      result = CheckLastError("CPM", gkFuncRefGet, result);
+    }
+  }
+  return result;
+}
+
+int SetCPMFreeSpaceAddendumContainerParams(LONG packetHandle, struct CPMFreeSpaceAddendumContainer value, char oldPath[])
+{
+  char newPath[300]; 
+  int i;
+  int result;
+
+  result = 0;
+
+  C2xRemoveToken(packetHandle, "CPM", oldPath);
+  for(i=0; i<value.length; i++)
+  {
+    snprintf(newPath, elcount(newPath), "%s[%d]", oldPath, i);
+    SetCPMFreeSpaceAddendumParams(packetHandle, value.arrayValue[i], newPath);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  return result;
+}
+
+int GetCPMCpmParametersParams(LONG packetHandle, struct CPMCpmParameters value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "managementContainer");
+  GetCPMCpmManagementContainerParams(packetHandle, value.managementContainer, newPath);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "stationDataContainer");
+  value.stationDataContainer.isValidFlag = C2xIsTokenAvailable(packetHandle, "CPM", newPath);
+  if(value.stationDataContainer.isValidFlag==1)
+  {
+    GetCPMStationDataContainerParams(packetHandle, value.stationDataContainer, newPath);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "sensorInformationContainer");
+  value.sensorInformationContainer.isValidFlag = C2xIsTokenAvailable(packetHandle, "CPM", newPath);
+  if(value.sensorInformationContainer.isValidFlag==1)
+  {
+    GetCPMSensorInformationContainerParams(packetHandle, value.sensorInformationContainer, newPath);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "perceivedObjectContainer");
+  value.perceivedObjectContainer.isValidFlag = C2xIsTokenAvailable(packetHandle, "CPM", newPath);
+  if(value.perceivedObjectContainer.isValidFlag==1)
+  {
+    GetCPMPerceivedObjectContainerParams(packetHandle, value.perceivedObjectContainer, newPath);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "freeSpaceAddendumContainer");
+  value.freeSpaceAddendumContainer.isValidFlag = C2xIsTokenAvailable(packetHandle, "CPM", newPath);
+  if(value.freeSpaceAddendumContainer.isValidFlag==1)
+  {
+    GetCPMFreeSpaceAddendumContainerParams(packetHandle, value.freeSpaceAddendumContainer, newPath);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "numberOfPerceivedObjects");
+  value.numberOfPerceivedObjects = C2xGetTokenInt(packetHandle, "CPM", newPath);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int SetCPMCpmParametersParams(LONG packetHandle, struct CPMCpmParameters value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "managementContainer");
+  SetCPMCpmManagementContainerParams(packetHandle, value.managementContainer, newPath);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "stationDataContainer");
+  if(value.stationDataContainer.isValidFlag==1)
+  {
+    SetCPMStationDataContainerParams(packetHandle, value.stationDataContainer, newPath);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "CPM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "CPM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "sensorInformationContainer");
+  if(value.sensorInformationContainer.isValidFlag==1)
+  {
+    SetCPMSensorInformationContainerParams(packetHandle, value.sensorInformationContainer, newPath);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "CPM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "CPM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "perceivedObjectContainer");
+  if(value.perceivedObjectContainer.isValidFlag==1)
+  {
+    SetCPMPerceivedObjectContainerParams(packetHandle, value.perceivedObjectContainer, newPath);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "CPM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "CPM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "freeSpaceAddendumContainer");
+  if(value.freeSpaceAddendumContainer.isValidFlag==1)
+  {
+    SetCPMFreeSpaceAddendumContainerParams(packetHandle, value.freeSpaceAddendumContainer, newPath);
+    result = CheckLastError("CPM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "CPM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "CPM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "numberOfPerceivedObjects");
+  C2xSetTokenInt(packetHandle, "CPM", newPath, value.numberOfPerceivedObjects);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int GetCPMCollectivePerceptionMessageParams(LONG packetHandle, struct CPMCollectivePerceptionMessage value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "generationDeltaTime");
+  value.generationDeltaTime = C2xGetTokenInt(packetHandle, "CPM", newPath);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "cpmParameters");
+  GetCPMCpmParametersParams(packetHandle, value.cpmParameters, newPath);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int SetCPMCollectivePerceptionMessageParams(LONG packetHandle, struct CPMCollectivePerceptionMessage value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "generationDeltaTime");
+  C2xSetTokenInt(packetHandle, "CPM", newPath, value.generationDeltaTime);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "cpmParameters");
+  SetCPMCpmParametersParams(packetHandle, value.cpmParameters, newPath);
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int API_GetCPMParams(LONG packetHandle, struct CPM value)
+{
+  int result;
+  result = 0;
+
+  value.header.isValidFlag = 1;
+  GetCPMItsPduHeaderParams(packetHandle, value.header, "header");
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  value.cpm.isValidFlag = 1;
+  GetCPMCollectivePerceptionMessageParams(packetHandle, value.cpm, "cpm");
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int API_SetCPMParams(LONG packetHandle, struct CPM value)
+{
+  int result;
+  result = 0;
+
+  SetCPMItsPduHeaderParams(packetHandle, value.header, "header");
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  SetCPMCollectivePerceptionMessageParams(packetHandle, value.cpm, "cpm");
+  result = CheckLastError("CPM", gkFuncRefGet, result);
+
+  return result;
+}
+

@@ -1,0 +1,222 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Panel Type="Vector.CANalyzer.Panels.PanelSerializer, Vector.CANalyzer.Panels.Serializer, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null">
+  <Object Type="Vector.CANalyzer.Panels.Runtime.Panel, Vector.CANalyzer.Panels.Common, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Panel" ControlName="Display Panel">
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl0" ControlName="StaticTextControl0">
+      <Property Name="Name">StaticTextControl0</Property>
+      <Property Name="Size">35, 15</Property>
+      <Property Name="Location">220, 145</Property>
+      <Property Name="Text">(ms)</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl1" ControlName="StaticTextControl1">
+      <Property Name="Name">StaticTextControl1</Property>
+      <Property Name="Size">35, 15</Property>
+      <Property Name="Location">220, 121</Property>
+      <Property Name="Text">(ms)</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl2" ControlName="StaticTextControl2">
+      <Property Name="Name">StaticTextControl2</Property>
+      <Property Name="Size">35, 15</Property>
+      <Property Name="Location">220, 97</Property>
+      <Property Name="Text">(ms)</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl3" ControlName="StaticTextControl3">
+      <Property Name="Name">StaticTextControl3</Property>
+      <Property Name="Size">35, 15</Property>
+      <Property Name="Location">220, 73</Property>
+      <Property Name="Text">(ms)</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl4" ControlName="StaticTextControl4">
+      <Property Name="Name">StaticTextControl4</Property>
+      <Property Name="Size">35, 15</Property>
+      <Property Name="Location">220, 49</Property>
+      <Property Name="Text">(ms)</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl6" ControlName="StaticTextControl6">
+      <Property Name="Name">StaticTextControl6</Property>
+      <Property Name="Size">113, 15</Property>
+      <Property Name="Location">15, 145</Property>
+      <Property Name="Text">HiPrStress1(txRq)</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl7" ControlName="StaticTextControl7">
+      <Property Name="Name">StaticTextControl7</Property>
+      <Property Name="Size">113, 15</Property>
+      <Property Name="Location">15, 121</Property>
+      <Property Name="Text">Stress2</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl8" ControlName="StaticTextControl8">
+      <Property Name="Name">StaticTextControl8</Property>
+      <Property Name="Size">113, 15</Property>
+      <Property Name="Location">15, 97</Property>
+      <Property Name="Text">Stress1</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl9" ControlName="StaticTextControl9">
+      <Property Name="Name">StaticTextControl9</Property>
+      <Property Name="Size">113, 15</Property>
+      <Property Name="Location">15, 73</Property>
+      <Property Name="Text">HiPrStress3</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl10" ControlName="StaticTextControl10">
+      <Property Name="Name">StaticTextControl10</Property>
+      <Property Name="Size">113, 15</Property>
+      <Property Name="Location">15, 49</Property>
+      <Property Name="Text">HiPrStress2</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl11" ControlName="StaticTextControl11">
+      <Property Name="Name">StaticTextControl11</Property>
+      <Property Name="Size">113, 15</Property>
+      <Property Name="Location">15, 25</Property>
+      <Property Name="Text">HiPrStress1</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="TextBoxControl12" ControlName="Float6">
+      <Property Name="Name">TextBoxControl12</Property>
+      <Property Name="Size">55, 19</Property>
+      <Property Name="Location">163, 144</Property>
+      <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+      <Property Name="AlarmLowerBkgColor">Blue</Property>
+      <Property Name="AlarmLowerTextColor">Black</Property>
+      <Property Name="AlarmUpperBkgColor">Red</Property>
+      <Property Name="AlarmUpperTextColor">Black</Property>
+      <Property Name="BoxBorderStyle">FixedSingle</Property>
+      <Property Name="DisplayLabel">Hide</Property>
+      <Property Name="BoxBackColor">255, 254, 254, 254</Property>
+      <Property Name="BoxTextAlign">Center</Property>
+      <Property Name="ReadOnlyControl">True</Property>
+      <Property Name="TabIndex">12</Property>
+      <Property Name="TabStopActive">False</Property>
+      <Property Name="DescriptionText">Float6:</Property>
+      <Property Name="ValueDisplay">Double</Property>
+      <Property Name="UsedValueTable">RawValue</Property>
+      <Property Name="DescriptionSize">58, 0</Property>
+      <Property Name="SymbolConfiguration">8;16;Stress;;;Float6;2;;;-1;;;Value;;;0</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="TextBoxControl13" ControlName="Float5">
+      <Property Name="Name">TextBoxControl13</Property>
+      <Property Name="Size">55, 19</Property>
+      <Property Name="Location">163, 120</Property>
+      <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+      <Property Name="AlarmLowerBkgColor">Blue</Property>
+      <Property Name="AlarmLowerTextColor">Black</Property>
+      <Property Name="AlarmUpperBkgColor">Red</Property>
+      <Property Name="AlarmUpperTextColor">Black</Property>
+      <Property Name="BoxBorderStyle">FixedSingle</Property>
+      <Property Name="DisplayLabel">Hide</Property>
+      <Property Name="BoxBackColor">255, 254, 254, 254</Property>
+      <Property Name="BoxTextAlign">Center</Property>
+      <Property Name="ReadOnlyControl">True</Property>
+      <Property Name="TabIndex">13</Property>
+      <Property Name="TabStopActive">False</Property>
+      <Property Name="DescriptionText">Float5:</Property>
+      <Property Name="ValueDisplay">Double</Property>
+      <Property Name="UsedValueTable">RawValue</Property>
+      <Property Name="DescriptionSize">58, 0</Property>
+      <Property Name="SymbolConfiguration">8;16;Stress;;;Float5;2;;;-1;;;Value;;;0</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="TextBoxControl14" ControlName="Float4">
+      <Property Name="Name">TextBoxControl14</Property>
+      <Property Name="Size">55, 19</Property>
+      <Property Name="Location">163, 96</Property>
+      <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+      <Property Name="AlarmLowerBkgColor">Blue</Property>
+      <Property Name="AlarmLowerTextColor">Black</Property>
+      <Property Name="AlarmUpperBkgColor">Red</Property>
+      <Property Name="AlarmUpperTextColor">Black</Property>
+      <Property Name="BoxBorderStyle">FixedSingle</Property>
+      <Property Name="DisplayLabel">Hide</Property>
+      <Property Name="BoxBackColor">255, 254, 254, 254</Property>
+      <Property Name="BoxTextAlign">Center</Property>
+      <Property Name="ReadOnlyControl">True</Property>
+      <Property Name="TabIndex">14</Property>
+      <Property Name="TabStopActive">False</Property>
+      <Property Name="DescriptionText">Float4:</Property>
+      <Property Name="ValueDisplay">Double</Property>
+      <Property Name="UsedValueTable">RawValue</Property>
+      <Property Name="DescriptionSize">58, 0</Property>
+      <Property Name="SymbolConfiguration">8;16;Stress;;;Float4;2;;;-1;;;Value;;;0</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="TextBoxControl15" ControlName="Float3">
+      <Property Name="Name">TextBoxControl15</Property>
+      <Property Name="Size">55, 19</Property>
+      <Property Name="Location">163, 72</Property>
+      <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+      <Property Name="AlarmLowerBkgColor">Blue</Property>
+      <Property Name="AlarmLowerTextColor">Black</Property>
+      <Property Name="AlarmUpperBkgColor">Red</Property>
+      <Property Name="AlarmUpperTextColor">Black</Property>
+      <Property Name="BoxBorderStyle">FixedSingle</Property>
+      <Property Name="DisplayLabel">Hide</Property>
+      <Property Name="BoxBackColor">255, 254, 254, 254</Property>
+      <Property Name="BoxTextAlign">Center</Property>
+      <Property Name="ReadOnlyControl">True</Property>
+      <Property Name="TabIndex">15</Property>
+      <Property Name="TabStopActive">False</Property>
+      <Property Name="DescriptionText">Float3:</Property>
+      <Property Name="ValueDisplay">Double</Property>
+      <Property Name="UsedValueTable">RawValue</Property>
+      <Property Name="DescriptionSize">58, 0</Property>
+      <Property Name="SymbolConfiguration">8;16;Stress;;;Float3;2;;;-1;;;Value;;;0</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="TextBoxControl16" ControlName="Float2">
+      <Property Name="Name">TextBoxControl16</Property>
+      <Property Name="Size">55, 19</Property>
+      <Property Name="Location">163, 48</Property>
+      <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+      <Property Name="AlarmLowerBkgColor">Blue</Property>
+      <Property Name="AlarmLowerTextColor">Black</Property>
+      <Property Name="AlarmUpperBkgColor">Red</Property>
+      <Property Name="AlarmUpperTextColor">Black</Property>
+      <Property Name="BoxBorderStyle">FixedSingle</Property>
+      <Property Name="DisplayLabel">Hide</Property>
+      <Property Name="BoxBackColor">255, 254, 254, 254</Property>
+      <Property Name="BoxTextAlign">Center</Property>
+      <Property Name="ReadOnlyControl">True</Property>
+      <Property Name="TabIndex">16</Property>
+      <Property Name="TabStopActive">False</Property>
+      <Property Name="DescriptionText">Float2:</Property>
+      <Property Name="ValueDisplay">Double</Property>
+      <Property Name="UsedValueTable">RawValue</Property>
+      <Property Name="DescriptionSize">58, 0</Property>
+      <Property Name="SymbolConfiguration">8;16;Stress;;;Float2;2;;;-1;;;Value;;;0</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="TextBoxControl17" ControlName="Float1">
+      <Property Name="Name">TextBoxControl17</Property>
+      <Property Name="Size">55, 19</Property>
+      <Property Name="Location">163, 24</Property>
+      <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+      <Property Name="AlarmLowerBkgColor">Blue</Property>
+      <Property Name="AlarmLowerTextColor">Black</Property>
+      <Property Name="AlarmUpperBkgColor">Red</Property>
+      <Property Name="AlarmUpperTextColor">Black</Property>
+      <Property Name="BoxBorderStyle">FixedSingle</Property>
+      <Property Name="DisplayLabel">Hide</Property>
+      <Property Name="BoxBackColor">255, 254, 254, 254</Property>
+      <Property Name="BoxTextAlign">Center</Property>
+      <Property Name="ReadOnlyControl">True</Property>
+      <Property Name="TabIndex">17</Property>
+      <Property Name="TabStopActive">False</Property>
+      <Property Name="DescriptionText">Float1:</Property>
+      <Property Name="ValueDisplay">Double</Property>
+      <Property Name="UsedValueTable">RawValue</Property>
+      <Property Name="DescriptionSize">58, 0</Property>
+      <Property Name="SymbolConfiguration">8;16;Stress;;;Float1;2;;;-1;;;Value;;;0</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.GroupBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="GroupBoxControl18" ControlName="GroupBoxControl18">
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl5" ControlName="StaticTextControl5">
+        <Property Name="Name">StaticTextControl5</Property>
+        <Property Name="Size">35, 15</Property>
+        <Property Name="Location">214, 22</Property>
+        <Property Name="Text">(ms)</Property>
+      </Object>
+      <Property Name="Name">GroupBoxControl18</Property>
+      <Property Name="Size">253, 167</Property>
+      <Property Name="Location">5, 3</Property>
+      <Property Name="Text">Cycle Times </Property>
+      <Property Name="TabIndex">18</Property>
+      <Property Name="UseWindowsStyle">False</Property>
+    </Object>
+    <Property Name="Name">Panel</Property>
+    <Property Name="Size">262, 174</Property>
+    <Property Name="Location">0, 0</Property>
+    <Property Name="BackColor">White</Property>
+    <Property Name="Panel">Panel</Property>
+  </Object>
+</Panel>

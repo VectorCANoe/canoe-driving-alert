@@ -1,0 +1,83 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<FunctionBusLibrary Version="26" FormatMajorVersion="3" FormatMinorVersion="1" FormatPatchVersion="5">
+  <Namespaces>
+    <Namespace IsDefinedAsHidden="False" IsSystemDefined="False" Name="ModbusDemo">
+      <Subnamespaces>
+        <Namespace IsDefinedAsHidden="False" IsSystemDefined="False" Name="_Generated">
+          <DataTypes>
+            <FunctionPrototype IsOneWay="False" AllowSpecialCharactersInMemberNames="False" HasFixedBinaryLayout="False" HasMotorolaByteOrder="False" Name="Func_Double">
+              <Result DataType="_SystemDataTypes::Double" />
+            </FunctionPrototype>
+            <FunctionPrototype IsOneWay="True" AllowSpecialCharactersInMemberNames="False" HasFixedBinaryLayout="False" HasMotorolaByteOrder="False" Name="FuncOW_Void_I_Double_value">
+              <Result DataType="_SystemDataTypes::Void" />
+              <Parameters>
+                <Parameter IsOptional="False" Name="value">
+                  <DataType DataType="_SystemDataTypes::Double" />
+                </Parameter>
+              </Parameters>
+            </FunctionPrototype>
+          </DataTypes>
+        </Namespace>
+      </Subnamespaces>
+      <DOInterfaces>
+        <DOInterface IsAbstract="False" Name="ModbusDoubleVariable">
+          <BaseInterfaces>
+            <ModifiedDOIF Reverse="False" IsDOReference="False" Interface="ModbusBinding::Client::IModbusVariable" />
+          </BaseInterfaces>
+          <MemberData>
+            <DOMemberDataHolder Name="MemberData" />
+          </MemberData>
+          <Fields>
+            <DOIFFieldMember LocalDirection="Consumed" Name="Value">
+              <DataType DataType="_SystemDataTypes::Double" />
+              <Getter>
+                <DOIFMethodMember Prototype="ModbusDemo::_Generated::Func_Double" LocalDirection="Consumed" Name="Get" />
+              </Getter>
+              <Setter>
+                <DOIFMethodMember Prototype="ModbusDemo::_Generated::FuncOW_Void_I_Double_value" LocalDirection="Consumed" Name="Set" />
+              </Setter>
+            </DOIFFieldMember>
+          </Fields>
+        </DOInterface>
+      </DOInterfaces>
+      <DistributedObjects>
+        <DistributedObject GenerateDotNetAPI="True" Name="server">
+          <AttributeValues>
+            <AttributeValue Definition="ModbusBinding::Server::Port" InitialValue="502" InitialValueType="UInt32" />
+          </AttributeValues>
+          <DataType>
+            <ModifiedDOIF Reverse="False" IsDOReference="False" Interface="ModbusBinding::Server::IModbusServer" />
+          </DataType>
+          <MemberData>
+            <DOMemberDataHolder Name="MemberData" />
+          </MemberData>
+        </DistributedObject>
+        <DistributedObject GenerateDotNetAPI="True" Name="client">
+          <DataType>
+            <ModifiedDOIF Reverse="False" IsDOReference="False" Interface="ModbusBinding::Client::IModbusClient" />
+          </DataType>
+          <MemberData>
+            <DOMemberDataHolder Name="MemberData" />
+          </MemberData>
+        </DistributedObject>
+        <DistributedObject GenerateDotNetAPI="True" Name="thermostatSetting">
+          <AttributeValues>
+            <AttributeValue Definition="ModbusBinding::Client::AccessMethod" InitialValue="3" InitialValueType="Int64" />
+            <AttributeValue Definition="ModbusBinding::Client::TargetIP" InitialValue="127.0.0.31" InitialValueType="String" />
+            <AttributeValue Definition="ModbusBinding::Client::TargetPort" InitialValue="502" InitialValueType="UInt32" />
+          </AttributeValues>
+          <DataType>
+            <ModifiedDOIF Reverse="False" IsDOReference="False" Interface="ModbusDemo::ModbusDoubleVariable" />
+          </DataType>
+          <MemberData>
+            <DOMemberDataHolder Name="MemberData" />
+          </MemberData>
+        </DistributedObject>
+      </DistributedObjects>
+    </Namespace>
+  </Namespaces>
+  <ModuleDependencies>
+    <ModuleDependency Module="_Internal" />
+    <ModuleDependency Module="Modbus" />
+  </ModuleDependencies>
+</FunctionBusLibrary>

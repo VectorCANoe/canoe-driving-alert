@@ -1,0 +1,53 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<systemvariables version="4">
+  <namespace name="" comment="" interface="">
+    <namespace name="ExternalSignals" comment="" interface="">
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="CarDataObs" comment="" bitcount="384" isSigned="true" encoding="65001" type="struct" structDefinition="PowerTrain::CarDataStruct" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="OdometerValue" comment="" bitcount="32" isSigned="false" encoding="65001" type="int" startValue="0" minValue="0" minValuePhys="0" maxValue="9999999" maxValuePhys="9999999" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="OpenDoorContacts" comment="" bitcount="128" isSigned="true" encoding="65001" type="struct" structDefinition="OpenDoorContactStruct" />
+      <variable anlyzLocal="0" readOnly="false" valueSequence="false" unit="" name="SupplyVoltage" comment="" bitcount="64" isSigned="true" encoding="65001" type="float" startValue="12.4" />
+    </namespace>
+    <namespace name="PowerTrain" comment="" interface="">
+      <struct name="CarDataStruct" isUnion="False" definedBinaryLayout="True" comment="">
+        <structMember relativeOffset="0" byteOrder="0" isOptional="False" isHidden="False" name="CarSpeedMph" comment="" bitcount="64" isSigned="true" encoding="65001" type="float" />
+        <structMember relativeOffset="0" byteOrder="0" isOptional="False" isHidden="False" name="CarSpeedKmh" comment="" bitcount="64" isSigned="false" encoding="65001" type="float" />
+        <structMember relativeOffset="0" byteOrder="0" isOptional="False" isHidden="False" name="CarAccelerationForce" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="-10000">
+          <linearencoding factor="1" offset="-10000" unit="N" />
+        </structMember>
+        <structMember relativeOffset="0" byteOrder="0" isOptional="False" isHidden="False" name="IgnitionKeyPos" comment="" bitcount="32" isSigned="false" encoding="65001" type="int" startValue="0" minValue="0" minValuePhys="0" maxValue="3" maxValuePhys="3">
+          <valuetable name="IgnitionKeyPositions" definesMinMax="false">
+            <valuetableentry value="0" lowerBound="0" upperBound="0" description="Off" displayString="Off" />
+            <valuetableentry value="1" lowerBound="1" upperBound="1" description="KeyInserted" displayString="KeyInserted" />
+            <valuetableentry value="2" lowerBound="2" upperBound="2" description="Kl15" displayString="Kl15" />
+            <valuetableentry value="3" lowerBound="3" upperBound="3" description="Ignition" displayString="Ignition" />
+          </valuetable>
+        </structMember>
+        <structMember relativeOffset="0" byteOrder="0" isOptional="False" isHidden="False" name="AcceleratorPosition" comment="" bitcount="64" isSigned="false" encoding="65001" type="float" startValue="0" minValue="0" maxValue="100" />
+        <structMember relativeOffset="0" byteOrder="0" isOptional="False" isHidden="False" name="BrakeActive" comment="" bitcount="32" isSigned="false" encoding="65001" type="int" startValue="0" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1" />
+        <structMember relativeOffset="0" byteOrder="0" isOptional="False" isHidden="False" name="RunningEngine" comment="" bitcount="32" isSigned="false" encoding="65001" type="int" startValue="0" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1" />
+        <structMember relativeOffset="0" byteOrder="0" isOptional="False" isHidden="False" name="OdometerValue" comment="" bitcount="64" isSigned="false" encoding="65001" type="longlong" startValue="0" minValue="0" minValuePhys="0" maxValue="9999999" maxValuePhys="9999999">
+          <linearencoding factor="0.1" offset="0" unit="km*10" />
+        </structMember>
+      </struct>
+      <struct name="EngineDataStruct" isUnion="False" definedBinaryLayout="True" comment="">
+        <structMember relativeOffset="0" byteOrder="0" isOptional="False" isHidden="False" name="EngSpeed" comment="" bitcount="32" isSigned="false" encoding="65001" type="int" startValue="0" minValue="0" minValuePhys="0" maxValue="8000" maxValuePhys="8000">
+          <linearencoding factor="1" offset="0" unit="rpm" />
+        </structMember>
+        <structMember relativeOffset="0" byteOrder="0" isOptional="False" isHidden="False" name="EngTemp" comment="" bitcount="32" isSigned="false" encoding="65001" type="int">
+          <linearencoding factor="2" offset="-50" unit="degC" />
+        </structMember>
+        <structMember relativeOffset="0" byteOrder="0" isOptional="False" isHidden="False" name="EngForce" comment="" bitcount="32" isSigned="false" encoding="65001" type="int" startValue="0" minValue="0" minValuePhys="0" maxValue="0" maxValuePhys="0" />
+        <structMember relativeOffset="0" byteOrder="0" isOptional="False" isHidden="False" name="EngPower" comment="" bitcount="32" isSigned="false" encoding="65001" type="int" startValue="0" minValue="0" minValuePhys="0" maxValue="150" maxValuePhys="150">
+          <linearencoding factor="1" offset="0" unit="kW" />
+        </structMember>
+        <structMember relativeOffset="0" byteOrder="0" isOptional="False" isHidden="False" name="EngPetrolLevel" comment="" bitcount="32" isSigned="false" encoding="65001" type="int" startValue="0" minValue="0" minValuePhys="0" maxValue="255" maxValuePhys="255" />
+        <structMember relativeOffset="0" byteOrder="0" isOptional="False" isHidden="False" name="EngPictureIndex" comment="" bitcount="32" isSigned="false" encoding="65001" type="int" startValue="0" minValue="0" minValuePhys="0" maxValue="16" maxValuePhys="16" />
+      </struct>
+      <struct name="GearBoxDataStruct" isUnion="False" definedBinaryLayout="True" comment="">
+        <structMember relativeOffset="0" byteOrder="0" isOptional="False" isHidden="False" name="Gear" comment="" bitcount="32" isSigned="false" encoding="65001" type="int" startValue="0" minValue="0" minValuePhys="0" maxValue="5" maxValuePhys="5" />
+        <structMember relativeOffset="0" byteOrder="0" isOptional="False" isHidden="False" name="BtnGearUp" comment="" bitcount="32" isSigned="false" encoding="65001" type="int" startValue="0" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1" />
+        <structMember relativeOffset="0" byteOrder="0" isOptional="False" isHidden="False" name="BtnGearDown" comment="" bitcount="32" isSigned="false" encoding="65001" type="int" startValue="0" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1" />
+      </struct>
+    </namespace>
+  </namespace>
+</systemvariables>

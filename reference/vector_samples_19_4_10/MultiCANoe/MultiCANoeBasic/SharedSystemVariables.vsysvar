@@ -1,0 +1,58 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<systemvariables version="4">
+  <namespace name="" comment="" interface="">
+    <namespace name="MultiCANoe" comment="" interface="">
+      <namespace name="Control" comment="" interface="">
+        <namespace name="Test" comment="" interface="">
+          <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" context="All instances" name="AgentTestRunning" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="0" />
+          <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" context="All instances" name="CoordinatorTestRunning" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="0" />
+          <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" context="All instances" name="ExecuteTestOnAgent" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="0" />
+          <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" context="All instances" name="ExecuteTestOnCoordinator" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="0" />
+          <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" context="All instances" name="ExecuteTests" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="0" />
+          <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" context="All instances" name="SuccessfulTestModules" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" />
+          <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" context="All instances" name="TestTrigger" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" />
+        </namespace>
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="ms" context="All instances" name="CounterDelay" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="1" minValue="1" minValuePhys="1" maxValue="1000" maxValuePhys="1000" />
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" context="All instances" name="CountInAgent" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="2" maxValuePhys="2">
+          <valuetable name="On_Off" definesMinMax="true">
+            <valuetableentry value="0" lowerBound="0" upperBound="0" description="Off" displayString="Off" />
+            <valuetableentry value="1" lowerBound="1" upperBound="1" description="On" displayString="On" />
+            <valuetableentry value="2" lowerBound="2" upperBound="2" description="Invalid" displayString="Invalid" />
+          </valuetable>
+        </variable>
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" context="All instances" name="CountInAll" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="2" maxValuePhys="2">
+          <valuetable name="On_Off" definesMinMax="true">
+            <valuetableentry value="0" lowerBound="0" upperBound="0" description="Off" displayString="Off" />
+            <valuetableentry value="1" lowerBound="1" upperBound="1" description="On" displayString="On" />
+            <valuetableentry value="2" lowerBound="2" upperBound="2" description="Invalid" displayString="Invalid" />
+          </valuetable>
+        </variable>
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" context="All instances" name="CountInCoordinator" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="2" maxValuePhys="2">
+          <valuetable name="On_Off" definesMinMax="true">
+            <valuetableentry value="0" lowerBound="0" upperBound="0" description="Off" displayString="Off" />
+            <valuetableentry value="1" lowerBound="1" upperBound="1" description="On" displayString="On" />
+            <valuetableentry value="2" lowerBound="2" upperBound="2" description="Invalid" displayString="Invalid" />
+          </valuetable>
+        </variable>
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" context="All instances" name="StartSystem" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="2" maxValuePhys="2">
+          <valuetable name="On_Off" definesMinMax="true">
+            <valuetableentry value="0" lowerBound="0" upperBound="0" description="Off" displayString="Off" />
+            <valuetableentry value="1" lowerBound="1" upperBound="1" description="On" displayString="On" />
+            <valuetableentry value="2" lowerBound="2" upperBound="2" description="Invalid" displayString="Invalid" />
+          </valuetable>
+        </variable>
+      </namespace>
+      <namespace name="Counter" comment="" interface="">
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" context="Agent1" name="CounterAgent" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" />
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" context="All instances" name="CounterAll" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" />
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" context="CANoe" name="CounterCoordinator" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" />
+      </namespace>
+      <namespace name="Events" comment="" interface="">
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" context="All instances" name="SimultaneousEventTimestamp" comment="" bitcount="64" isSigned="true" encoding="65001" type="longlong" />
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" context="Agent1" name="SysVarEventAgent" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" />
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" context="CANoe" name="SysVarEventCoordinator" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" />
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="TriggerSimultaneousEvents" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" />
+      </namespace>
+    </namespace>
+  </namespace>
+</systemvariables>

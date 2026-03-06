@@ -1,0 +1,14 @@
+version: 2.2.0
+
+test-tree:
+  - capl-test-case: TCReadSerialNumber
+    title: TCReadSerialNumber
+  - capl-test-case: TCDownload
+    title: TCDownload 
+    params: [2, "DoIP_ECU"]
+  - capl-test-case: TC_TLS_ReadSerialNumber
+    title: TC_TLS_ReadSerialNumber
+  - capl-test-case: TC_TLS_ReadEcuIdentification
+    title: TC_TLS_ReadEcuIdentification
+
+        

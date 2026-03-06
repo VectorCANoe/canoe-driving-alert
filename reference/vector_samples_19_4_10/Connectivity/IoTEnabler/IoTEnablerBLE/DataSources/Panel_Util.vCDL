@@ -1,0 +1,102 @@
+version 2.0;
+
+//import "VH4110_Types.vCDL";
+
+namespace PanelUtil
+{
+    struct SampleType
+    {
+        uint32 value;
+        uint8 percentage;
+    }
+
+
+    interface ISmartphonePanel
+    {
+        internal data list<SampleType, 20, 20> samples;
+        internal data int scan_button = 1;
+        internal data int hci_trace_button = 0;
+        internal data int rpa_mode_button = 0;
+
+        internal data string selected_mac = "";
+        internal data string address_type = "";
+        internal data int8 rssi;
+        internal data string company = "";
+        internal data uint16 manufacturer_oui_1 = 0;
+        internal data bytes manufacturer_data_1;
+        internal data string service_uuid_1;
+        internal data bytes service_data_1;
+
+        internal data int connect_button;
+        internal data int discover_button;
+        internal data int disconnect_button;
+        internal data int stat_mode_button = 0;
+        internal data int update_phy_button = 0;
+        internal data int update_conn_button = 0;
+        internal data uint8 hci_handle = 0;
+
+        internal data int gatt_read_button;
+        internal data int gatt_write_button;
+        internal data int gatt_subscribe_button;
+        internal data int gatt_unsubscribe_button;
+
+        internal data int l2cap_connect_button;
+        internal data int l2cap_read_button;
+        internal data int l2cap_write_button;
+        internal data int l2cap_async_mode_button;
+        internal data int l2cap_close_button;
+        internal data int l2cap_psm = 38;
+        internal data int l2cap_socket = -1;
+
+        internal data bytes gatt_read_data;
+        internal data bytes gatt_write_data;
+
+        internal data bytes l2cap_read_data;
+        internal data bytes l2cap_write_data;
+    }
+
+    ISmartphonePanel smartphonePanel;
+
+    interface IVehiclePanel
+    {
+        internal data int advertise_button = 0;
+        internal data int hci_trace_button = 0;
+        internal data int rpa_mode_button = 0;
+
+        internal data string connected_mac = "";
+        internal data uint32 address_type = 0;
+        internal data uint8 hci_handle = 0;
+        internal data int8 rssi = 0;
+        internal data int rssi_distance = 0;
+
+        internal data string name = "VH4110";
+        internal data uint16 interval = 50;
+        internal data string uuid = "FFF5"; 
+        internal data string service_uuid = "5810bbc0-b499-11e9-a2a3-2a2ae2dbcce4";
+        internal data bytes service_data;
+
+        internal data int disconnect_button;
+
+        internal data int gatt_sample_button;
+
+        internal data int gatt_read_button;
+        internal data int gatt_write_button;
+
+
+        internal data int l2cap_listen_button;
+        internal data int l2cap_accept_button;
+        internal data int l2cap_read_button;
+        internal data int l2cap_write_button;
+        internal data int l2cap_async_mode_button;
+        internal data int l2cap_close_button;
+        internal data int l2cap_psm = 38;
+        internal data int l2cap_socket = -1;
+
+        internal data bytes gatt_read_data;
+        internal data bytes gatt_write_data;
+        internal data bytes l2cap_read_data;
+        internal data bytes l2cap_write_data;
+    }
+
+    IVehiclePanel vehiclePanel;
+}

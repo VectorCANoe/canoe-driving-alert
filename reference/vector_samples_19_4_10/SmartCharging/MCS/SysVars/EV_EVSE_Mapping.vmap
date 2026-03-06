@@ -1,0 +1,75 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Mapping Version="6">
+  <RuntimeGroup Active="True" Name="Static Mapping">
+    <LogicalGroup Active="True" Name="Group 1" IsCustomBinding="False">
+      <MappingRelation Active="True" DirectionVar1ToVar2="True" Offset="0" Factor="1" Assignment="OnChange" CyclicTimerValue="10">
+        <ValueObject1 ItemType="symSystemVariable">
+          <BusType>-1</BusType>
+          <DatabaseName>EV_Sim::Control::SysEV_ChargeDischarge</DatabaseName>
+          <Description />
+          <EnvVarName />
+          <FullName>EV_Sim::Control::SysEV_ChargeDischarge</FullName>
+          <ID>2</ID>
+          <MessageName />
+          <Name>EV_Sim::Control::SysEV_ChargeDischarge</Name>
+          <NeedsMessage>False</NeedsMessage>
+          <NetworkName />
+          <NodeName />
+          <SignalName />
+          <SignalPort />
+          <VariableType>1</VariableType>
+        </ValueObject1>
+        <ValueObject2 ItemType="symSystemVariable">
+          <BusType>-1</BusType>
+          <DatabaseName>EVSE_Sim::Control::SysEVSE_ChargeDischarge</DatabaseName>
+          <Description />
+          <EnvVarName />
+          <FullName>EVSE_Sim::Control::SysEVSE_ChargeDischarge</FullName>
+          <ID>2</ID>
+          <MessageName />
+          <Name>EVSE_Sim::Control::SysEVSE_ChargeDischarge</Name>
+          <NeedsMessage>False</NeedsMessage>
+          <NetworkName />
+          <NodeName />
+          <SignalName />
+          <SignalPort />
+          <VariableType>1</VariableType>
+        </ValueObject2>
+      </MappingRelation>
+      <MappingRelation Active="True" DirectionVar1ToVar2="True" Offset="0" Factor="1" Assignment="OnChange" CyclicTimerValue="10">
+        <ValueObject1 ItemType="symSystemVariable">
+          <BusType>-1</BusType>
+          <DatabaseName>EVSE_Sim::Control::SysEVSE_ChargeDischarge</DatabaseName>
+          <Description />
+          <EnvVarName />
+          <FullName>EVSE_Sim::Control::SysEVSE_ChargeDischarge</FullName>
+          <ID>2</ID>
+          <MessageName />
+          <Name>EVSE_Sim::Control::SysEVSE_ChargeDischarge</Name>
+          <NeedsMessage>False</NeedsMessage>
+          <NetworkName />
+          <NodeName />
+          <SignalName />
+          <SignalPort />
+          <VariableType>1</VariableType>
+        </ValueObject1>
+        <ValueObject2 ItemType="symSystemVariable">
+          <BusType>-1</BusType>
+          <DatabaseName>EV_Sim::Control::SysEV_ChargeDischarge</DatabaseName>
+          <Description />
+          <EnvVarName />
+          <FullName>EV_Sim::Control::SysEV_ChargeDischarge</FullName>
+          <ID>2</ID>
+          <MessageName />
+          <Name>EV_Sim::Control::SysEV_ChargeDischarge</Name>
+          <NeedsMessage>False</NeedsMessage>
+          <NetworkName />
+          <NodeName />
+          <SignalName />
+          <SignalPort />
+          <VariableType>1</VariableType>
+        </ValueObject2>
+      </MappingRelation>
+    </LogicalGroup>
+  </RuntimeGroup>
+</Mapping>

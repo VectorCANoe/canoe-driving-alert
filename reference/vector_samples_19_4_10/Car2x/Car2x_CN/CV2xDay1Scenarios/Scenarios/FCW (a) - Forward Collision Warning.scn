@@ -1,0 +1,29 @@
+<scenario name="my scenario" simtime="0" simtimemax="1200" version="1" timelinezoom="1" hscrolloffset="0">
+  <routes>
+    <route name="ScenarioDefinitionRoute" color="255">
+      <points>
+        <point x="31,2149122002132" y="121,418527942672" />
+        <point x="31,2153471363822" y="121,422187093423" />
+      </points>
+      <stations>
+        <station name="RV" offset="200" color="255" trackingid="1" length="0" width="0" height="0">
+          <attribute name="Speed" trigger="true" defaultvalue="0">
+            <keypoints>
+              <keypoint time="0" value="30" />
+              <keypoint time="8" value="30" />
+              <keypoint time="11" value="0" />
+            </keypoints>
+          </attribute>
+        </station>
+        <station name="HV" offset="0" color="32768" trackingid="2" length="0" width="0" height="0">
+          <attribute name="Speed" trigger="true" defaultvalue="0">
+            <keypoints>
+              <keypoint time="0" value="65" />
+            </keypoints>
+          </attribute>
+        </station>
+      </stations>
+    </route>
+  </routes>
+  <tapes />
+</scenario>

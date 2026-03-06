@@ -1,0 +1,116 @@
+/*@!Encoding:1252*/
+variables
+{
+  _align(1) struct stPacketInfo
+  {
+    long Channel;
+    long Dir;
+    long RadioChannel;
+    long SignalStrength;
+    long SignalQuality;
+
+    qword Timestamp;
+    struct Pos2D Sender;
+    double Distance;
+  };  
+  
+  long gPacketInfoUpdateSysVars       = 0;
+  char gPacketInfoBaseNamespace[1+15] = "C2x::PacketInfo";
+  char gPacketInfoChannelPrefix[1+3]  = "ATH";
+}
+
+on sysvar_update C2x::PacketInfo::UpdateEnabled
+{
+  gPacketInfoUpdateSysVars = @this;
+}
+
+
+API_ActivatePacketInfoSysVarUpdate()
+{
+  gPacketInfoUpdateSysVars = 1;
+}
+
+API_DeActivatePacketInfoSysVarUpdate()
+{
+  gPacketInfoUpdateSysVars = 0;
+}
+
+API_GetPacketInfo(long channel, long dir, long radioChannel, long signalStrength, long signalQuality, long packet, struct stPacketInfo sPacketInfo)
+{ 
+  struct Pos2D posRX;
+  
+  /*Data from Callback*/ 
+  sPacketInfo.Channel         = channel;
+  sPacketInfo.Dir             = dir;
+  sPacketInfo.RadioChannel    = radioChannel;
+  sPacketInfo.SignalQuality   = signalQuality;
+  sPacketInfo.SignalStrength  = signalStrength;
+  
+  /*Additional Data*/
+  sPacketInfo.Timestamp        = C2xGetThisTimeNS();
+  
+  API_GetPosition(packet, sPacketInfo.Sender);
+
+  API_GetGnssPosition(channel, posRX);
+  
+  sPacketInfo.Distance = API_PosCalcDistance(sPacketInfo.Sender, posRX);
+    
+  /*Sysvar Update*/
+  API_UpdatePacketInfoSysVars(sPacketInfo);
+}
+
+
+
+API_UpdatePacketInfoSysVars(struct stPacketInfo sPacketInfo)
+{
+  char structName[1+31];
+  char memberName[1+63];
+  
+  // Do not update Sysvars (System Stress) if not explicitly requested
+  if(!gPacketInfoUpdateSysVars) return;
+  
+  // Prepare struct name
+  snprintf(structName, elcount(structName), "%s%ld", gPacketInfoChannelPrefix, sPacketInfo.Channel);
+  
+  /*Begin Update*/
+  sysBeginVariableStructUpdate("C2x", structName);
+  
+  /*Timestamp*/
+  snprintf(memberName, elcount(memberName), "%s.Timestamp", structName);
+  sysSetVariableQWord(gPacketInfoBaseNamespace, memberName, sPacketInfo.Timestamp);
+  
+  /*Channel*/
+  snprintf(memberName, elcount(memberName), "%s.Channel", structName);
+  sysSetVariableInt(gPacketInfoBaseNamespace, memberName, sPacketInfo.Channel);
+  
+  /*Direction*/
+  snprintf(memberName, elcount(memberName), "%s.Direction", structName);
+  sysSetVariableInt(gPacketInfoBaseNamespace, memberName, sPacketInfo.Dir);
+  
+  /*Radio Channel*/
+  snprintf(memberName, elcount(memberName), "%s.RadioChannel", structName);
+  sysSetVariableInt(gPacketInfoBaseNamespace, memberName, sPacketInfo.RadioChannel);
+    
+  /*Signal Quality*/
+  snprintf(memberName, elcount(memberName), "%s.SignalQuality", structName);
+  sysSetVariableInt(gPacketInfoBaseNamespace, memberName, sPacketInfo.SignalQuality);
+  
+  /*Signal Strength*/
+  snprintf(memberName, elcount(memberName), "%s.SignalStrength", structName);
+  sysSetVariableInt(gPacketInfoBaseNamespace, memberName, sPacketInfo.SignalStrength);
+  
+  /*Sender Latitude*/
+  snprintf(memberName, elcount(memberName), "%s.SenderLatitude", structName);
+  sysSetVariableFloat(gPacketInfoBaseNamespace, memberName, sPacketInfo.Sender.latitude);
+  
+  /*Sender Longitude*/
+  snprintf(memberName, elcount(memberName), "%s.SenderLongitude", structName);
+  sysSetVariableFloat(gPacketInfoBaseNamespace, memberName, sPacketInfo.Sender.longitude);
+  
+  /*Distance*/
+  snprintf(memberName, elcount(memberName), "%s.Distance", structName);
+  sysSetVariableFloat(gPacketInfoBaseNamespace, memberName, sPacketInfo.Distance);
+  
+  /*End Update*/
+  sysEndVariableStructUpdate("C2x", structName);  
+}

@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<systemvariables version="4">
+  <namespace name="" comment="" interface="">
+    <namespace name="VH5110_Demo" comment="" interface="">
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="CP_State" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="-1" minValue="-1" minValuePhys="-1" maxValue="5" maxValuePhys="5">
+        <valuetable name="CP_State" definesMinMax="true">
+          <valuetableentry value="-1" lowerBound="-1" upperBound="-1" description="CP_State_NotSet" displayString="CP_State_NotSet" />
+          <valuetableentry value="0" lowerBound="0" upperBound="0" description="CP_State_A" displayString="CP_State_A" />
+          <valuetableentry value="1" lowerBound="1" upperBound="1" description="CP_State_B" displayString="CP_State_B" />
+          <valuetableentry value="2" lowerBound="2" upperBound="2" description="CP_State_C" displayString="CP_State_C" />
+          <valuetableentry value="3" lowerBound="3" upperBound="3" description="CP_State_D" displayString="CP_State_D" />
+          <valuetableentry value="4" lowerBound="4" upperBound="4" description="CP_State_E" displayString="CP_State_E" />
+          <valuetableentry value="5" lowerBound="5" upperBound="5" description="CP_State_F" displayString="CP_State_F" />
+        </valuetable>
+      </variable>
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="EnergyTransfered" comment="" bitcount="64" isSigned="true" encoding="65001" type="float" startValue="0" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="PWM_DutyCycle_scaled" comment="" bitcount="64" isSigned="true" encoding="65001" type="float" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="PWM_Frequency_scaled" comment="" bitcount="64" isSigned="true" encoding="65001" type="float" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="PWM_MaximumCurrent" comment="current indicated by PWM calculated according Table A.8 from the IEC 61851" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="0">
+        <valuetable name="MaxCurrent" definesMinMax="false">
+          <valuetableentry value="-1" lowerBound="-1" upperBound="-1" description="HLC" displayString="HLC" />
+        </valuetable>
+      </variable>
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="PWM_Voltage_scaled" comment="" bitcount="64" isSigned="true" encoding="65001" type="float" />
+      <variable anlyzLocal="1" readOnly="false" valueSequence="false" unit="" name="Slac_Atten_Index" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" />
+      <variable anlyzLocal="1" readOnly="false" valueSequence="false" unit="dB" name="Slac_Atten_Value" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" />
+    </namespace>
+  </namespace>
+</systemvariables>

@@ -1,0 +1,22 @@
+﻿/*@!Encoding:65001*/
+includes
+{
+  
+}
+
+variables
+{
+
+}
+
+on any_monitored_value_update _CCS::DataTypes::IMonitoredVehicle.SLAC.CM_ATTEN_CHAR_IND
+{
+  int i;
+    
+  /* Store Attenuation values in sysvars for graphical display */
+  for (i = 0; i < $this.value.ATTEN_PROFILE.length; ++i)
+  {
+    @sysvar::VH5110_Demo::Slac_Atten_Value = $this.value.ATTEN_PROFILE[i];
+    @sysvar::VH5110_Demo::Slac_Atten_Index = i;
+  }
+}

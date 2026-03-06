@@ -1,0 +1,1684 @@
+/*@!Encoding:1252*/
+
+///////////////////////////////////////
+// v. 2.1
+///////////////////////////////////////
+includes
+{
+  #include "CommonConst.CIN"
+  #include "CommonFunctions.cin"
+  #include "Plugin\Plugin_CT_TIMServer.cin"
+}
+
+variables
+{
+
+  using namespace TIMServer;  
+  using namespace TIMServer::HandlingOfRequestedFunctionValues;
+  byte sAutoStart = 0; // > 0 if auto start of the server is enabled
+  char sLwATableFile[100] = "ServerLwATable.txt";
+  char sPanelNameServer[100] = "TIM Server";
+  char sPanelNameServerAuxValves[100] = "TIM Server Auxiliary Valves";
+  int  sFreezedHearbeatCounter = -1;
+
+  int sNumOfReqForTestlabCertToIgnore;
+  int sNumOfReqForManufactCertToIgnore;
+  int sNumOfReqForManufactSeriesCertToIgnore;
+  int sNumOfReqForDeviceCertToIgnore;
+  
+  dword sRowVehicleSpeed; //Kombination of vehicle speed from TIM12 (v1) and TIM12_CS (v2)
+}
+
+on start
+{
+  sysSetVariableInt(sysvar::TIMServer::svStart, 0);  
+  @sysvar::TIMServer::svTIMServerFreezeState = 0;
+  
+  Iso11783IL_SetVerbosity(cVerbosityErrorsAndWarnings);
+  setDefaultControlColors("TIM Server", "btnOperatorACK");
+  
+  Iso11783IL_TIMConnectSysVarToState(@TIMServer::svAddressOfSelectedTIMClient, "TIMServer::svTIMServerState");  
+
+  ReflectSupportedFacilitiesByVisibility_Reset();  
+  
+  Plugin_OnStart();
+}
+
+on signal TIM12_CS_TIMServer::VehicleSpeed_VS
+{
+  word rowSpeed;
+  
+  rowSpeed = $TIM12_CS_TIMServer::VehicleSpeed_VS.phys;
+  if(rowSpeed > 0 && rowSpeed <= 0xFAFF)
+  {
+    sRowVehicleSpeed = rowSpeed;
+  }
+}
+
+on signal TIM12_TIMServer::VehicleSpeed
+{
+  word rowSpeed;
+  
+  rowSpeed = $TIM12_TIMServer::VehicleSpeed.phys;
+  if(rowSpeed > 0 && rowSpeed <= 0xFAFF)
+  {
+    sRowVehicleSpeed = rowSpeed;
+  }
+}
+
+
+on sysvar sysvar::ISO11783TIMClientAndServerDemo::TIMServer::ILState
+{
+  if (sAutoStart && @this == 2) //online
+  {
+    Iso11783IL_TIMActivateServer();
+  }
+}
+
+on sysvar sysvar::TIMServer::svStart
+{
+  if(@this > 0)
+  {
+    Iso11783IL_TIMSetProperty("enableDemoMode", @svDemoModeActive);  
+    if(@svDemoModeActive == 1)
+    {
+      writeEx(0, 2, "\nTIM Server: Demo mode is activated (Certificates and keys are not validated)");
+    }
+    sRowVehicleSpeed = 0x7D80; //0 m/s (stop)
+    EnableSettingsControls(0);
+    StartServer();
+    AdjustControlVisibilityAccordingToVersion(0);
+  }
+  else
+  {
+    StopServer();
+    EnableSettingsControls(1);
+    AdjustControlVisibilityAccordingToVersion(1);
+  }
+}
+
+on preStop
+{
+  EnableSettingsControls(1);
+  ReflectSupportedFacilitiesByVisibility_Reset();  
+  @TIMServer::svStart = 0;
+}
+
+/*
+*/
+void AdjustControlVisibilityAccordingToVersion(word visible)
+{
+  if(@svImplementedVersion < 2)
+  {
+    SetControlVisibility(sPanelNameServer, "grpReqFacilities_FTL", visible);
+    SetControlVisibility(sPanelNameServer, "grpReqFacilities_RTL", visible);
+    SetControlVisibility(sPanelNameServer, "cbChangeOfDirection", visible);
+    SetControlVisibility(sPanelNameServer, "grpFrontTopLinkage", visible);
+    SetControlVisibility(sPanelNameServer, "grpRearTopLinkage", visible);
+  }
+}
+
+/*
+*/
+void EnableSettingsControls(word enable) 
+{
+  EnableControl(sPanelNameServer, "grpCertSequence", enable);
+  EnableControl(sPanelNameServer, "grpNumOfCertRequestsToIgnore", enable);
+  EnableControl(sPanelNameServer, "grpDeactivatedChecks", enable);
+  EnableControl(sPanelNameServer, "grpHandlingOfRequestedFunctionValues", enable);
+
+  EnableControl(sPanelNameServer, "gbCertificates", enable);
+  EnableControl(sPanelNameServer, "gbComplianceInformation", enable);
+  EnableControl(sPanelNameServer, "gbSupportedFacilities", enable);
+  EnableControl(sPanelNameServer, "ioMinVersion", enable);
+  EnableControl(sPanelNameServer, "ioImplVersion", enable);
+  EnableControl(sPanelNameServer, "cbServerMaster", enable);
+  EnableControl(sPanelNameServer, "ioProductId", enable);
+  EnableControl(sPanelNameServer, "ioBootTime", enable);
+  EnableControl(sPanelNameServer, "ioMinAuthVersion", enable);
+  EnableControl(sPanelNameServer, "ioImplAuthVersion", enable);
+}
+
+
+
+on sysvar sysvar::TIMServer::svOperatorACK
+{
+  if(@this == 0)
+  {
+    Iso11783IL_TIMOperatorAcknowledge();
+    setDefaultControlColors("TIM Server", "btnOperatorACK");
+  }
+}
+
+on sysvar sysvar::TIMServer::svACKStartOfMotion
+{
+  if(@this > 0)
+  {
+    Iso11783IL_TIMOperatorAcknowledgeStartOfMotion();
+  }
+  else
+  {
+    setDefaultControlColors("TIM Server", "btnAckStartOfMotion");
+  }
+}
+
+on sysvar_update sysvar::TIMServer::svSystemOperationState
+{
+  Iso11783IL_TIMSetSystemOperationState(@this);
+}
+
+on sysvar sysvar::TIMServer::svStoreLwAKeyTable
+{
+  if(@this > 0)
+  {
+    Iso11783IL_TIMSaveLwATable(sLwATableFile);
+  }
+}
+
+on sysvar sysvar::TIMServer::svClearLwAKeyTable
+{
+  if(@this > 0)
+  {
+    Iso11783IL_TIMClearLwATable();
+    Iso11783IL_TIMSaveLwATable(sLwATableFile);
+  }
+}
+
+on sysvar sysvar::TIMServer::svContinue
+{
+  if(@this > 0)
+  {
+    if(@TIMServer::svIdentifySelectedTIMClientByAddress == 1)
+      Iso11783IL_TIMContinueConnection(@TIMServer::svAddressOfSelectedTIMClient);
+    else
+      Iso11783IL_TIMContinueConnection(TIMClient1);
+  }
+}
+
+on sysvar sysvar::TIMServer::svContinueAndFreeze
+{
+  if(@this > 0)
+  {
+    if(@TIMServer::svIdentifySelectedTIMClientByAddress == 1)
+      Iso11783IL_TIMContinueConnection(@TIMServer::svAddressOfSelectedTIMClient);
+    else
+      Iso11783IL_TIMContinueConnection(TIMClient1);
+  }
+  
+  // set new freeze state if state has been changed
+  if (@sysvar::TIMServer::svTIMServerFreezeState > 0)
+  {
+    if(@TIMServer::svIdentifySelectedTIMClientByAddress == 1)
+      Iso11783IL_TIMFreezeConnection(@TIMServer::svAddressOfSelectedTIMClient,  @sysvar::TIMServer::svTIMServerFreezeState, "TIMServer::svIsFrozen");  
+    else  
+      Iso11783IL_TIMFreezeConnection(TIMClient1,                                 @sysvar::TIMServer::svTIMServerFreezeState, "TIMServer::svIsFrozen");  
+  } 
+}
+
+on sysvar sysvar::TIMServer::svDisableNameCheck
+{
+  UpdateDeactivatedCertificateChecks();
+}
+
+on sysvar sysvar::TIMServer::svDisableICCCheck
+{
+  UpdateDeactivatedCertificateChecks();
+}
+
+on sysvar sysvar::TIMServer::svDisableFctCapabilitiesCheck
+{
+  UpdateDeactivatedCertificateChecks();
+}
+
+on sysvar sysvar::TIMServer::svDisableCRLCheck
+{
+  UpdateDeactivatedCertificateChecks();
+}
+
+on sysvar sysvar::TIMServer::svDisableCertificateTypeCheck
+{
+  UpdateDeactivatedCertificateChecks();
+}
+
+on sysvar sysvar::TIMServer::Functions::AuxValve01::svSetByServer
+{
+  SetAuxValveValueByServer(1, @this); 
+}
+
+on sysvar sysvar::TIMServer::Functions::AuxValve02::svSetByServer
+{
+  SetAuxValveValueByServer(2, @this); 
+}
+
+on sysvar sysvar::TIMServer::Functions::AuxValve03::svSetByServer
+{
+  SetAuxValveValueByServer(3, @this); 
+}
+
+on sysvar sysvar::TIMServer::Functions::AuxValve04::svSetByServer
+{
+  SetAuxValveValueByServer(4, @this); 
+}
+
+on sysvar sysvar::TIMServer::Functions::AuxValve05::svSetByServer
+{
+  SetAuxValveValueByServer(5, @this); 
+}
+
+on sysvar sysvar::TIMServer::Functions::AuxValve06::svSetByServer
+{
+  SetAuxValveValueByServer(6, @this); 
+}
+
+on sysvar sysvar::TIMServer::Functions::AuxValve07::svSetByServer
+{
+  SetAuxValveValueByServer(7, @this); 
+}
+
+on sysvar sysvar::TIMServer::Functions::AuxValve08::svSetByServer
+{
+  SetAuxValveValueByServer(8, @this); 
+}
+
+on sysvar sysvar::TIMServer::Functions::AuxValve09::svSetByServer
+{
+  SetAuxValveValueByServer(9, @this); 
+}
+
+on sysvar sysvar::TIMServer::Functions::AuxValve10::svSetByServer
+{
+  SetAuxValveValueByServer(10, @this); 
+}
+
+on sysvar sysvar::TIMServer::Functions::AuxValve11::svSetByServer
+{
+  SetAuxValveValueByServer(11, @this); 
+}
+
+on sysvar sysvar::TIMServer::Functions::AuxValve12::svSetByServer
+{
+  SetAuxValveValueByServer(12, @this); 
+}
+
+on sysvar sysvar::TIMServer::Functions::AuxValve13::svSetByServer
+{
+  SetAuxValveValueByServer(13, @this); 
+}
+
+on sysvar sysvar::TIMServer::Functions::AuxValve14::svSetByServer
+{
+  SetAuxValveValueByServer(14, @this); 
+}
+
+on sysvar sysvar::TIMServer::Functions::AuxValve15::svSetByServer
+{
+  SetAuxValveValueByServer(15, @this); 
+}
+
+on sysvar sysvar::TIMServer::Functions::AuxValve16::svSetByServer
+{
+  SetAuxValveValueByServer(16, @this); 
+}
+
+on sysvar sysvar::TIMServer::Functions::AuxValve17::svSetByServer
+{
+  SetAuxValveValueByServer(17, @this); 
+}
+
+on sysvar sysvar::TIMServer::Functions::AuxValve18::svSetByServer
+{
+  SetAuxValveValueByServer(18, @this); 
+}
+
+on sysvar sysvar::TIMServer::Functions::AuxValve19::svSetByServer
+{
+  SetAuxValveValueByServer(19, @this); 
+}
+
+on sysvar sysvar::TIMServer::Functions::AuxValve20::svSetByServer
+{
+  SetAuxValveValueByServer(20, @this); 
+}
+
+on sysvar sysvar::TIMServer::Functions::AuxValve21::svSetByServer
+{
+  SetAuxValveValueByServer(22, @this); 
+}
+
+on sysvar sysvar::TIMServer::Functions::AuxValve22::svSetByServer
+{
+  SetAuxValveValueByServer(22, @this); 
+}
+
+on sysvar sysvar::TIMServer::Functions::AuxValve23::svSetByServer
+{
+  SetAuxValveValueByServer(23, @this); 
+}
+
+on sysvar sysvar::TIMServer::Functions::AuxValve24::svSetByServer
+{
+  SetAuxValveValueByServer(24, @this); 
+}
+
+on sysvar sysvar::TIMServer::Functions::AuxValve25::svSetByServer
+{
+  SetAuxValveValueByServer(25, @this); 
+}
+
+on sysvar sysvar::TIMServer::Functions::AuxValve26::svSetByServer
+{
+  SetAuxValveValueByServer(26, @this); 
+}
+
+on sysvar sysvar::TIMServer::Functions::AuxValve27::svSetByServer
+{
+  SetAuxValveValueByServer(27, @this); 
+}
+
+on sysvar sysvar::TIMServer::Functions::AuxValve28::svSetByServer
+{
+  SetAuxValveValueByServer(28, @this); 
+}
+
+on sysvar sysvar::TIMServer::Functions::AuxValve29::svSetByServer
+{
+  SetAuxValveValueByServer(29, @this); 
+}
+
+on sysvar sysvar::TIMServer::Functions::AuxValve30::svSetByServer
+{
+  SetAuxValveValueByServer(30, @this); 
+}
+
+on sysvar sysvar::TIMServer::Functions::AuxValve31::svSetByServer
+{
+  SetAuxValveValueByServer(31, @this); 
+}
+
+on sysvar sysvar::TIMServer::Functions::AuxValve32::svSetByServer
+{
+  SetAuxValveValueByServer(32, @this); 
+}
+
+on sysvar sysvar::TIMServer::Functions::FrontPTO::svSetByServer
+{
+  dword rawValue;
+  rawValue = (@this + 4016.0) * 8.0;
+  Iso11783IL_TIMSetFunctionValue(cFrontPTO, rawValue);
+  @sysvar::TIMServer::Functions::FrontPTO::svValue = @this;
+}
+
+on sysvar sysvar::TIMServer::Functions::RearPTO::svSetByServer
+{
+  dword rawValue;
+  rawValue = (@this + 4016.0) * 8.0;
+  Iso11783IL_TIMSetFunctionValue(cRearPTO, rawValue);
+  @sysvar::TIMServer::Functions::RearPTO::svValue = @this;
+}
+
+on sysvar sysvar::TIMServer::Functions::FrontHitch::svSetByServer
+{
+  dword rawValue;
+  rawValue = @this * 100.0;
+  Iso11783IL_TIMSetFunctionValue(cFrontHitch, rawValue);
+  @sysvar::TIMServer::Functions::FrontHitch::svValue = @this;
+}
+
+on sysvar sysvar::TIMServer::Functions::RearHitch::svSetByServer
+{
+  dword rawValue;
+  rawValue = @this * 100.0;
+  Iso11783IL_TIMSetFunctionValue(cRearHitch, rawValue);
+  @sysvar::TIMServer::Functions::RearHitch::svValue = @this;
+}
+
+on sysvar sysvar::TIMServer::Functions::VehicleSpeed::svSetByServer
+{
+  dword rawValue;
+  rawValue = (@this + 32.128) * 1000.0;
+  Iso11783IL_TIMSetFunctionValue(cVehicleSpeed, rawValue);
+  @sysvar::TIMServer::Functions::VehicleSpeed::svValue = @this;
+}
+
+on sysvar sysvar::TIMServer::Functions::ExtGuidance::svSetByServer
+{
+  dword rawValue;
+  rawValue = (@this + 8032) * 4.0;
+  Iso11783IL_TIMSetFunctionValue(cExternalGuidance, rawValue);
+  @sysvar::TIMServer::Functions::ExtGuidance::svValue = @this;
+}
+
+on sysvar sysvar::TIMServer::Functions::FrontTopLinkage::svSetByServer
+{
+  dword rawValue;
+  rawValue = @this * 100.0;
+  Iso11783IL_TIMSetFunctionValue(cFrontTopLinkage, rawValue);
+  @sysvar::TIMServer::Functions::FrontTopLinkage::svValue = @this;
+}
+
+on sysvar sysvar::TIMServer::Functions::RearTopLinkage::svSetByServer
+{
+  dword rawValue;
+  rawValue = @this * 100.0;
+  Iso11783IL_TIMSetFunctionValue(cRearTopLinkage, rawValue);
+  @sysvar::TIMServer::Functions::RearTopLinkage::svValue = @this;
+}
+
+on sysvar sysvar::TIMServer::Functions::FrontHitch::svStatusMsgState
+{
+  Iso11783IL_TIMSetStateOfFunctionStatusMessage(cFrontHitch, @this); 
+}
+
+on sysvar sysvar::TIMServer::Functions::RearHitch::svStatusMsgState
+{
+  Iso11783IL_TIMSetStateOfFunctionStatusMessage(cRearHitch, @this); 
+}
+
+on sysvar sysvar::TIMServer::Functions::FrontTopLinkage::svStatusMsgState
+{
+  Iso11783IL_TIMSetStateOfFunctionStatusMessage(cFrontTopLinkage, @this); 
+}
+
+on sysvar sysvar::TIMServer::Functions::RearTopLinkage::svStatusMsgState
+{
+  Iso11783IL_TIMSetStateOfFunctionStatusMessage(cRearTopLinkage, @this); 
+}
+
+on sysvar sysvar::TIMServer::svSetAllSupportedFacilities
+{
+  SetAllAuxValveFacilities(1);
+
+  @TIMServer::SupportedFacilities::FrontPTO::svDisengagement = 1;
+  @TIMServer::SupportedFacilities::FrontPTO::svEngagementCounterClockwise = 1;
+  @TIMServer::SupportedFacilities::FrontPTO::svEngagementClockwise = 1;
+  @TIMServer::SupportedFacilities::FrontPTO::svSpeedCounterClockwise = 1;
+  @TIMServer::SupportedFacilities::FrontPTO::svSpeedClockwise = 1;
+  @TIMServer::SupportedFacilities::RearPTO::svDisengagement = 1;
+  @TIMServer::SupportedFacilities::RearPTO::svEngagementCounterClockwise = 1;
+  @TIMServer::SupportedFacilities::RearPTO::svEngagementClockwise = 1;
+  @TIMServer::SupportedFacilities::RearPTO::svSpeedCounterClockwise = 1;
+  @TIMServer::SupportedFacilities::RearPTO::svSpeedClockwise = 1;
+  @TIMServer::SupportedFacilities::FrontHitch::svMotion = 1;
+  @TIMServer::SupportedFacilities::FrontHitch::svPosition = 1;
+  @TIMServer::SupportedFacilities::RearHitch::svMotion = 1;
+  @TIMServer::SupportedFacilities::RearHitch::svPosition = 1;
+  @TIMServer::SupportedFacilities::VehicleSpeed::svForwardDirection = 1;
+  @TIMServer::SupportedFacilities::VehicleSpeed::svReverseDirection = 1;
+  @TIMServer::SupportedFacilities::VehicleSpeed::svStopMotion = 1;
+  @TIMServer::SupportedFacilities::VehicleSpeed::svStartMotion = 1;
+  @TIMServer::SupportedFacilities::VehicleSpeed::svForwardSpeed = 1;
+  @TIMServer::SupportedFacilities::VehicleSpeed::svReverseSpeed = 1;
+//  @TIMServer::SupportedFacilities::VehicleSpeed::svChangeOfDirection = 1;
+  @TIMServer::SupportedFacilities::ExtGuidance::svCurvature = 1;
+  @TIMServer::SupportedFacilities::FrontTopLinkage::svMotion = 1;
+  @TIMServer::SupportedFacilities::FrontTopLinkage::svPosition = 1;
+  @TIMServer::SupportedFacilities::RearTopLinkage::svMotion = 1;
+  @TIMServer::SupportedFacilities::RearTopLinkage::svPosition = 1;
+
+}
+
+on sysvar sysvar::TIMServer::svResetAllSupportedFacilities
+{
+  SetAllAuxValveFacilities(0);
+  
+  @TIMServer::SupportedFacilities::FrontPTO::svDisengagement = 0;
+  @TIMServer::SupportedFacilities::FrontPTO::svEngagementCounterClockwise = 0;
+  @TIMServer::SupportedFacilities::FrontPTO::svEngagementClockwise = 0;
+  @TIMServer::SupportedFacilities::FrontPTO::svSpeedCounterClockwise = 0;
+  @TIMServer::SupportedFacilities::FrontPTO::svSpeedClockwise = 0;
+  @TIMServer::SupportedFacilities::RearPTO::svDisengagement = 0;
+  @TIMServer::SupportedFacilities::RearPTO::svEngagementCounterClockwise = 0;
+  @TIMServer::SupportedFacilities::RearPTO::svEngagementClockwise = 0;
+  @TIMServer::SupportedFacilities::RearPTO::svSpeedCounterClockwise = 0;
+  @TIMServer::SupportedFacilities::RearPTO::svSpeedClockwise = 0;
+  @TIMServer::SupportedFacilities::FrontHitch::svMotion = 0;
+  @TIMServer::SupportedFacilities::FrontHitch::svPosition = 0;
+  @TIMServer::SupportedFacilities::RearHitch::svMotion = 0;
+  @TIMServer::SupportedFacilities::RearHitch::svPosition = 0;
+  @TIMServer::SupportedFacilities::VehicleSpeed::svForwardDirection = 0;
+  @TIMServer::SupportedFacilities::VehicleSpeed::svReverseDirection = 0;
+  @TIMServer::SupportedFacilities::VehicleSpeed::svStopMotion = 0;
+  @TIMServer::SupportedFacilities::VehicleSpeed::svStartMotion = 0;
+  @TIMServer::SupportedFacilities::VehicleSpeed::svForwardSpeed = 0;
+  @TIMServer::SupportedFacilities::VehicleSpeed::svReverseSpeed = 0;
+  @TIMServer::SupportedFacilities::VehicleSpeed::svChangeOfDirection = 0;
+  @TIMServer::SupportedFacilities::ExtGuidance::svCurvature = 0;
+  @TIMServer::SupportedFacilities::FrontTopLinkage::svMotion = 0;
+  @TIMServer::SupportedFacilities::FrontTopLinkage::svPosition = 0;
+  @TIMServer::SupportedFacilities::RearTopLinkage::svMotion = 0;
+  @TIMServer::SupportedFacilities::RearTopLinkage::svPosition = 0;
+}
+
+on sysvar sysvar::TIMServer::svSetAllAuxValveslSupportedFacilities
+{
+  SetAllAuxValveFacilities(1);
+}
+
+on sysvar sysvar::TIMServer::svResetAllAuxValvesSupportedFacilities
+{
+  SetAllAuxValveFacilities(0);
+}
+
+on sysvar sysvar::TIMServer::svOpenAuxValvesPanel
+{
+  if (@this == 0)
+  {
+    openPanel("TIM Server Auxiliary Valves");
+  }
+}
+
+///////////////////////////////////////////////////////////
+// Functions
+///////////////////////////////////////////////////////////
+
+void SetAllAuxValveFacilities(byte enable)
+{
+  byte valveNumber;
+  char valveNamespace[100];
+  for (valveNumber = 1; valveNumber<=32; ++valveNumber)
+  {
+    snprintf(valveNamespace, elcount(valveNamespace), "TIMServer::SupportedFacilities::AuxValve%02d", valveNumber);
+    if (sysSetVariableDWord(valveNamespace, "svState", enable) != 0)
+    {
+      writeLineEx(cWriteTargetCaplPage, cWriteSeverityError, "TIM Server: Failed to set state value of %s", valveNamespace);
+    }      
+    if (sysSetVariableDWord(valveNamespace, "svFlow", enable) != 0)
+    {
+      writeLineEx(cWriteTargetCaplPage, cWriteSeverityError, "TIM Server: Failed to set flow value of %s", valveNamespace);
+    }     
+  } 
+}
+
+void StartServer()
+{  
+  dword fileHandle;
+ 
+  Plugin_StartServer();
+  ReflectSupportedFacilitiesByVisibility();
+  
+  sNumOfReqForTestlabCertToIgnore        = @TIMServer::svNumOfIgnRqstForTestlab;
+  sNumOfReqForManufactCertToIgnore       = @TIMServer::svNumOfIgnRqstForManufact;  
+  sNumOfReqForManufactSeriesCertToIgnore = @TIMServer::svNumOfIgnRqstForManufactSeries;  
+  sNumOfReqForDeviceCertToIgnore         = @TIMServer::svNumOfIgnRqstForDevice;  
+
+  DefaultPreparationSequence_Server();
+
+  if(@TIMServer::svIdentifySelectedTIMClientByAddress == 1)
+  {
+    Iso11783IL_TIMConnectSysVarToState(@TIMServer::svAddressOfSelectedTIMClient, "TIMServer::svTIMServerState");
+  }
+  else
+  {
+    Iso11783IL_TIMConnectSysVarToState(TIMClient1, "TIMServer::svTIMServerState");
+  }
+  
+  // load LwA key table if file exists
+  fileHandle = openFileRead(sLwATableFile, 0);
+  if (fileHandle)
+  {
+    fileClose(fileHandle);
+    Iso11783IL_TIMLoadLwATable(sLwATableFile);
+  }
+  
+  if(@sysvar::TIMServer::svTIMServerFreezeState > 0)
+  {
+    if(@TIMServer::svIdentifySelectedTIMClientByAddress == 1)
+    {
+      Iso11783IL_TIMFreezeConnection(@TIMServer::svAddressOfSelectedTIMClient, @sysvar::TIMServer::svTIMServerFreezeState, "TIMServer::svIsFrozen");
+    }
+    else
+    {
+      Iso11783IL_TIMFreezeConnection(TIMClient1, @sysvar::TIMServer::svTIMServerFreezeState, "TIMServer::svIsFrozen");
+    }
+  }
+  
+  Iso11783IL_TIMActivateServer();
+  setDefaultControlColors("TIM Server", "btnOperatorACK");
+}
+
+void StopServer()
+{
+  byte useGracefulShutown;
+  useGracefulShutown = Plugin_ServerIsConfiguredFromCT() ? 0 : 1;
+  
+  Iso11783IL_TIMDeactivateServer(useGracefulShutown);
+  setDefaultControlColors("TIM Server", "btnOperatorACK");
+  setDefaultControlColors("TIM Server", "btnAckStartOfMotion");
+
+  ReflectSupportedFacilitiesByVisibility_Reset();  
+  Plugin_StopServer();
+}
+
+void DefaultPreparationSequence_Server()
+{
+  char buf[100];
+  long value, implementedVersion;
+  
+  Plugin_DefaultPreparationSequence();
+  
+  UpdateDeactivatedCertificateChecks();
+
+  value = sysGetVariableInt(sysvar::TIMServer::svIsServerMaster);
+  Iso11783IL_TIMSetProperty("isServerMaster", value);
+  value = sysGetVariableInt(sysvar::TIMServer::svBootTime);
+  Iso11783IL_TIMSetProperty("bootTime", value);
+  value = sysGetVariableInt(sysvar::TIMServer::svMinimumVersion);
+  Iso11783IL_TIMSetProperty("minimumVersion", value);
+  implementedVersion = sysGetVariableInt(sysvar::TIMServer::svImplementedVersion);
+  Iso11783IL_TIMSetProperty("implementedVersion", implementedVersion);
+//  if (implementedVersion <= 1)
+//  {
+//    if (@TIMServer::SupportedFacilities::VehicleSpeed::svChangeOfDirection == 1)
+//    {
+//      writeLineEx(cWriteTargetCaplPage, cWriteSeverityInformation, "TIM Server: Since the implemented version is <= 1, the facility 'Vehicle change of direction' is set to 'not defined when the server was built'");   
+      
+//    }    
+//    @TIMServer::SupportedFacilities::VehicleSpeed::svChangeOfDirection = 0;  
+//  }
+  value = sysGetVariableInt(sysvar::TIMServer::svMinimumAuthVersion);
+  Iso11783IL_TIMSetProperty("minimumAuthVersion", value);
+  value = sysGetVariableInt(sysvar::TIMServer::svImplementedAuthVersion);
+  Iso11783IL_TIMSetProperty("implementedAuthVersion", value);
+  Iso11783IL_TIMSetProperty("requireAcknowledgeOfStartOfMotion", @TIMServer::svRequireOperatorAcknowledgeForStartOfMotion); 
+
+  //Set product identification
+  sysGetVariableString(sysvar::TIMServer::svProductIdentification, buf, elcount(buf));
+  Iso11783IL_TIMSetProductIdentification(buf);
+
+  //Set compliance information
+  Iso11783IL_TIMSetComplianceCertification(@TIMServer::svCCITestProtocolPublicationYear, @TIMServer::svCCITestProtocolRevision, @TIMServer::svCCILaboratoryType, @TIMServer::svCCILaboratoryID, @TIMServer::svCCIReferenceNumber);
+  
+  // Set sequence of requested certficates
+  if (Iso11783IL_TIMSetCertificateSequence(@TIMServer::svCertificateType1, @TIMServer::svCertificateType2, @TIMServer::svCertificateType3, @TIMServer::svCertificateType4) != 0)
+  {
+    writeLineEx(cWriteTargetCaplPage, cWriteSeverityError, "TIM Server: Failed to set certificate sequence");   
+  }
+  
+  // Set suported functions and their facilities (if not configured in the plugin)
+  if(!Plugin_ServerIsConfiguredByPlugin()) 
+  {
+    SetSupportedFunctionFacilities();
+    SetStartValuesForAllSupportedFunctions();
+  }
+   
+  // Set root certificates
+  sysGetVariableString(sysvar::TIMServer::svRootCertificate, buf, elcount(buf));
+  Iso11783IL_TIMAddCertificate(cCertificateType_AEFRoot, buf);     
+  
+  // Set test lab certifiates 
+  sysGetVariableString(sysvar::TIMServer::svAEFTestlabCertificate, buf, elcount(buf));
+  Iso11783IL_TIMAddCertificate(cCertificateType_Testlab, buf); 
+  
+  // Set manufacturer certificate
+  sysGetVariableString(sysvar::TIMServer::svManufacturerCertificate, buf, elcount(buf));
+  Iso11783IL_TIMAddCertificate(cCertificateType_Manufacturer, buf);
+  
+  // Set manufacturer series certificate
+  sysGetVariableString(sysvar::TIMServer::svManufacturerSeriesCertificate, buf, elcount(buf));
+  if (strncmp(buf, "-", elcount(buf)) == 0)
+  {
+    Iso11783IL_TIMRemoveCertificate(cCertificateType_ManufacturerSeries);
+  }
+  else if (strlen(buf) > 0)
+  {
+    Iso11783IL_TIMAddCertificate(cCertificateType_ManufacturerSeries, buf);
+  }
+  
+  // Set device certificate
+  sysGetVariableString(sysvar::TIMServer::svDeviceCertificate, buf, elcount(buf));
+  Iso11783IL_TIMAddCertificate(cCertificateType_Device, buf);
+  
+  // Set server private key
+  sysGetVariableString(sysvar::TIMServer::svPrivateKey, buf, elcount(buf));
+  Iso11783IL_TIMSetPrivateKey(buf);
+
+  // Set CRL Signing
+  sysGetVariableString(sysvar::TIMServer::svCRLSigningCertificate, buf, elcount(buf));
+  Iso11783IL_TIMAddCertificate(cCertificateType_CRLSigning, buf);   
+  
+  // Set CRL
+  sysGetVariableString(sysvar::TIMServer::svCRLCertificate, buf, elcount(buf));
+  Iso11783IL_TIMSetCRL(cCRLType_CRL, buf);                             
+  
+  // Set CRL Sub CA
+  sysGetVariableString(sysvar::TIMServer::svCRLSubCACertificate, buf, elcount(buf));
+  Iso11783IL_TIMSetCRL(cCRLType_CRLSignCA, buf);                
+  
+  // Set current operation state
+  @TIMServer::svSystemOperationState = RequirementsForNormalOperationFulfilled;
+  
+  InitSystemVariablesForAllFacilities();
+}
+
+void SetStartValuesForAllSupportedFunctions()
+{
+  dword duration_NotAV, cylceTime;
+  duration_NotAV = (@TIMServer::svUseContinousFunctionValueChanges == 0) ? 0 : @svTimeToPassTheEntireValueRange_NotAuxValves;
+  cylceTime = (@TIMServer::svUseContinousFunctionValueChanges == 0) ? 0 : @svCycleTimeForValueChange;
+
+  SetStartValuesForAllSupportedAuxValves();
+
+  if(@TIMServer::SupportedFacilities::FrontPTO::svDisengagement || 
+      @TIMServer::SupportedFacilities::FrontPTO::svEngagementCounterClockwise || 
+      @TIMServer::SupportedFacilities::FrontPTO::svEngagementClockwise || 
+      @TIMServer::SupportedFacilities::FrontPTO::svSpeedCounterClockwise || 
+      @TIMServer::SupportedFacilities::FrontPTO::svSpeedClockwise)
+  {
+    Iso11783IL_TIMSetFunctionValue(cFrontPTO, 0x7D80); // block
+    Iso11783IL_TIMSetDurationForTotalValueRange(cFrontPTO, duration_NotAV, cylceTime);
+  }
+  
+  if(@TIMServer::SupportedFacilities::RearPTO::svDisengagement || 
+      @TIMServer::SupportedFacilities::RearPTO::svEngagementCounterClockwise || 
+      @TIMServer::SupportedFacilities::RearPTO::svEngagementClockwise || 
+      @TIMServer::SupportedFacilities::RearPTO::svSpeedCounterClockwise || 
+      @TIMServer::SupportedFacilities::RearPTO::svSpeedClockwise)
+  {
+    Iso11783IL_TIMSetFunctionValue(cRearPTO, 0x7D80); // block
+    Iso11783IL_TIMSetDurationForTotalValueRange(cRearPTO, duration_NotAV, cylceTime);
+  }
+  
+  if(@TIMServer::SupportedFacilities::FrontHitch::svMotion || 
+      @TIMServer::SupportedFacilities::FrontHitch::svPosition)
+  {
+    Iso11783IL_TIMSetFunctionValue(cFrontHitch, 0x0); // Full Lower
+    Iso11783IL_TIMSetDurationForTotalValueRange(cFrontHitch, duration_NotAV, cylceTime);
+  }
+    
+  if(@TIMServer::SupportedFacilities::RearHitch::svMotion || 
+      @TIMServer::SupportedFacilities::RearHitch::svPosition)
+  {
+    Iso11783IL_TIMSetFunctionValue(cRearHitch, 0x0); // Full Lower
+    Iso11783IL_TIMSetDurationForTotalValueRange(cRearHitch, duration_NotAV, cylceTime);
+  }
+  
+  if(@TIMServer::SupportedFacilities::VehicleSpeed::svForwardSpeed || 
+      @TIMServer::SupportedFacilities::VehicleSpeed::svReverseSpeed || 
+      @TIMServer::SupportedFacilities::VehicleSpeed::svStartMotion || 
+      @TIMServer::SupportedFacilities::VehicleSpeed::svStopMotion || 
+      @TIMServer::SupportedFacilities::VehicleSpeed::svForwardDirection || 
+      @TIMServer::SupportedFacilities::VehicleSpeed::svReverseDirection || 
+      @TIMServer::SupportedFacilities::VehicleSpeed::svChangeOfDirection)
+  {
+    Iso11783IL_TIMSetFunctionValue(cVehicleSpeed, 0x7D80); // Stop
+    Iso11783IL_TIMSetDurationForTotalValueRange(cVehicleSpeed, duration_NotAV, cylceTime);
+  }
+
+  if(@TIMServer::SupportedFacilities::ExtGuidance::svCurvature)
+  {
+    Iso11783IL_TIMSetFunctionValue(cExternalGuidance, 0x7D80); // Straight ahead
+    Iso11783IL_TIMSetDurationForTotalValueRange(cExternalGuidance, duration_NotAV, cylceTime);
+  }
+  
+  if(@TIMServer::SupportedFacilities::FrontTopLinkage::svMotion || 
+     @TIMServer::SupportedFacilities::FrontTopLinkage::svPosition)
+  {
+    Iso11783IL_TIMSetFunctionValue(cFrontTopLinkage, 0x0); // Full Lower
+    Iso11783IL_TIMSetDurationForTotalValueRange(cFrontTopLinkage, duration_NotAV, cylceTime);
+  }
+    
+  if(@TIMServer::SupportedFacilities::RearTopLinkage::svMotion || 
+      @TIMServer::SupportedFacilities::RearTopLinkage::svPosition)
+  {
+    Iso11783IL_TIMSetFunctionValue(cRearTopLinkage, 0x0); // Full Lower
+    Iso11783IL_TIMSetDurationForTotalValueRange(cRearTopLinkage, duration_NotAV, cylceTime);
+  }
+}
+
+void SetStartValuesForAllSupportedAuxValves()
+{
+  byte valveNumber;
+  char valveNamespace[100], facilityStateName[30], facilityFlowName[30];
+  dword stateValue, flowValue;
+  dword duration_AV, cylceTime;
+  duration_AV = (@TIMServer::svUseContinousFunctionValueChanges == 0) ? 0 : @svTimeToPassTheEntireValueRange_AuxValves;
+  cylceTime = (@TIMServer::svUseContinousFunctionValueChanges == 0) ? 0 : @svCycleTimeForValueChange;
+
+  for (valveNumber = 1; valveNumber<=32; ++valveNumber)
+  {
+    snprintf(valveNamespace, elcount(valveNamespace), "TIMServer::SupportedFacilities::AuxValve%02d", valveNumber); 
+    stateValue = sysGetVariableDWord(valveNamespace, "svState");
+    flowValue  = sysGetVariableDWord(valveNamespace, "svFlow");
+    if (stateValue || flowValue)
+    {
+      Iso11783IL_TIMSetFunctionValue(valveNumber, 0x7D80); // 0% flow
+      Iso11783IL_TIMSetDurationForTotalValueRange(valveNumber, duration_AV, cylceTime);
+    }
+  }
+}
+
+///////////////////////////////////////////////
+void InitSystemVariablesForAllFacilities()
+{
+  InitSystemVariablesForAllAuxValvesFacilities();
+
+  @TIMServer::Functions::FrontPTO::svValue = 0;
+  @TIMServer::Functions::FrontPTO::svSetByServer = 0;
+  if(@TIMServer::SupportedFacilities::FrontPTO::svDisengagement || 
+      @TIMServer::SupportedFacilities::FrontPTO::svEngagementCounterClockwise || 
+      @TIMServer::SupportedFacilities::FrontPTO::svEngagementClockwise || 
+      @TIMServer::SupportedFacilities::FrontPTO::svSpeedCounterClockwise || 
+      @TIMServer::SupportedFacilities::FrontPTO::svSpeedClockwise)
+  {
+    Iso11783IL_TIMConnectSysVarToFunctionState(cFrontPTO     , "TIMServer::Functions::FrontPTO::svState");
+  }
+  
+  @TIMServer::Functions::RearPTO::svValue = 0;
+  @TIMServer::Functions::RearPTO::svSetByServer = 0;
+  if(@TIMServer::SupportedFacilities::RearPTO::svDisengagement || 
+      @TIMServer::SupportedFacilities::RearPTO::svEngagementCounterClockwise || 
+      @TIMServer::SupportedFacilities::RearPTO::svEngagementClockwise || 
+      @TIMServer::SupportedFacilities::RearPTO::svSpeedCounterClockwise || 
+      @TIMServer::SupportedFacilities::RearPTO::svSpeedClockwise)
+  {
+    Iso11783IL_TIMConnectSysVarToFunctionState(cRearPTO     , "TIMServer::Functions::RearPTO::svState");
+  }
+  
+  @TIMServer::Functions::FrontHitch::svValue = 0;
+  @TIMServer::Functions::FrontHitch::svSetByServer = 0;
+  if(@TIMServer::SupportedFacilities::FrontHitch::svMotion || 
+      @TIMServer::SupportedFacilities::FrontHitch::svPosition)
+  {
+    Iso11783IL_TIMConnectSysVarToFunctionState(cFrontHitch , "TIMServer::Functions::FrontHitch::svState");
+  }
+    
+  @TIMServer::Functions::RearHitch::svValue = 0;
+  @TIMServer::Functions::RearHitch::svSetByServer = 0;
+  if(@TIMServer::SupportedFacilities::RearHitch::svMotion || 
+      @TIMServer::SupportedFacilities::RearHitch::svPosition)
+  {
+    Iso11783IL_TIMConnectSysVarToFunctionState(cRearHitch , "TIMServer::Functions::RearHitch::svState");
+  }
+  
+  @TIMServer::Functions::VehicleSpeed::svValue = 0.0;
+  @TIMServer::Functions::VehicleSpeed::svSetByServer = 0.0;
+  if(@TIMServer::SupportedFacilities::VehicleSpeed::svForwardSpeed || 
+      @TIMServer::SupportedFacilities::VehicleSpeed::svReverseSpeed || 
+      @TIMServer::SupportedFacilities::VehicleSpeed::svStartMotion || 
+      @TIMServer::SupportedFacilities::VehicleSpeed::svStopMotion || 
+      @TIMServer::SupportedFacilities::VehicleSpeed::svForwardDirection || 
+      @TIMServer::SupportedFacilities::VehicleSpeed::svReverseDirection || 
+      @TIMServer::SupportedFacilities::VehicleSpeed::svChangeOfDirection)
+  {
+    Iso11783IL_TIMConnectSysVarToFunctionState(cVehicleSpeed, "TIMServer::Functions::VehicleSpeed::svState");
+  }
+
+  @TIMServer::Functions::ExtGuidance::svValue = 0.0;
+  @TIMServer::Functions::ExtGuidance::svSetByServer = 0.0;
+  if(@TIMServer::SupportedFacilities::ExtGuidance::svCurvature)
+  {
+    Iso11783IL_TIMConnectSysVarToFunctionState(cExternalGuidance, "TIMServer::Functions::ExtGuidance::svState");
+  }
+  
+  @TIMServer::Functions::FrontTopLinkage::svValue = 0;
+  @TIMServer::Functions::FrontTopLinkage::svSetByServer = 0;
+  if(@TIMServer::SupportedFacilities::FrontTopLinkage::svMotion || 
+      @TIMServer::SupportedFacilities::FrontTopLinkage::svPosition)
+  {
+    Iso11783IL_TIMConnectSysVarToFunctionState(cFrontTopLinkage , "TIMServer::Functions::FrontTopLinkage::svState");
+  }
+    
+  @TIMServer::Functions::RearTopLinkage::svValue = 0;
+  @TIMServer::Functions::RearTopLinkage::svSetByServer = 0;
+  if(@TIMServer::SupportedFacilities::RearTopLinkage::svMotion || 
+      @TIMServer::SupportedFacilities::RearTopLinkage::svPosition)
+  {
+    Iso11783IL_TIMConnectSysVarToFunctionState(cRearTopLinkage , "TIMServer::Functions::RearTopLinkage::svState");
+  }
+}
+
+void InitSystemVariablesForAllAuxValvesFacilities()
+{
+  byte valveNumber;
+  char valveNamespace[100], valveFunctionStateWithNamespace[100], facilityStateName[30], facilityFlowName[30];
+  dword stateValue, flowValue;
+  long result;
+  
+  for (valveNumber = 1; valveNumber<=32; ++valveNumber)
+  {
+    snprintf(valveNamespace, elcount(valveNamespace), "TIMServer::SupportedFacilities::AuxValve%02d", valveNumber);
+    snprintf(valveFunctionStateWithNamespace, elcount(valveFunctionStateWithNamespace), "TIMServer::Functions::AuxValve%02d::svState", valveNumber);
+    snprintf(facilityStateName, elcount(facilityStateName), "auxiliaryValve%dState", valveNumber);
+    snprintf(facilityFlowName, elcount(facilityFlowName), "auxiliaryValve%dState", valveNumber);
+    
+    // get system variable values
+    if (sysGetVariableDWord(valveNamespace, "svState", stateValue) != 0)
+    {
+      writeLineEx(cWriteTargetCaplPage, cWriteSeverityError, "TIM Server: Failed to get state value of %s", valveNamespace);
+    }      
+    if (sysGetVariableDWord(valveNamespace, "svFlow", flowValue) != 0)
+    {
+      writeLineEx(cWriteTargetCaplPage, cWriteSeverityError, "TIM Server: Failed to get flow value of %s", valveNamespace);
+    }
+    
+    // connect function state to a system variable
+    if (stateValue || flowValue)
+    {
+      Iso11783IL_TIMConnectSysVarToFunctionState(valveNumber, valveFunctionStateWithNamespace);
+    }
+  }
+}
+
+
+void SetSupportedFunctionFacilities()
+{
+  Iso11783IL_TIMResetAllSupportedFunctions();
+  
+  // Auxiliary Valves 1-32
+  SetSupportedAuxValvuesFacilities();  
+  
+  // Front PTO
+  if( @TIMServer::SupportedFacilities::FrontPTO::svDisengagement ||
+      @TIMServer::SupportedFacilities::FrontPTO::svEngagementCounterClockwise ||
+      @TIMServer::SupportedFacilities::FrontPTO::svEngagementClockwise ||
+      @TIMServer::SupportedFacilities::FrontPTO::svSpeedCounterClockwise ||
+      @TIMServer::SupportedFacilities::FrontPTO::svSpeedClockwise)
+  {
+    Iso11783IL_TIMSetSupportedFacility("frontPTODisengagement",             @TIMServer::SupportedFacilities::FrontPTO::svDisengagement);
+    Iso11783IL_TIMSetSupportedFacility("frontPTOEngagementCounterClockwise",@TIMServer::SupportedFacilities::FrontPTO::svEngagementCounterClockwise);
+    Iso11783IL_TIMSetSupportedFacility("frontPTOEngagementClockwise",       @TIMServer::SupportedFacilities::FrontPTO::svEngagementClockwise);
+    Iso11783IL_TIMSetSupportedFacility("frontPTOSpeedCounterClockwise",     @TIMServer::SupportedFacilities::FrontPTO::svSpeedCounterClockwise);
+    Iso11783IL_TIMSetSupportedFacility("frontPTOSpeedClockwise",            @TIMServer::SupportedFacilities::FrontPTO::svSpeedClockwise);
+  }
+
+  // Rear PTO
+  if( @TIMServer::SupportedFacilities::RearPTO::svDisengagement ||
+      @TIMServer::SupportedFacilities::RearPTO::svEngagementCounterClockwise ||
+      @TIMServer::SupportedFacilities::RearPTO::svEngagementClockwise ||
+      @TIMServer::SupportedFacilities::RearPTO::svSpeedCounterClockwise ||
+      @TIMServer::SupportedFacilities::RearPTO::svSpeedClockwise)
+  {
+    Iso11783IL_TIMSetSupportedFacility("rearPTODisengagement",             @TIMServer::SupportedFacilities::RearPTO::svDisengagement);
+    Iso11783IL_TIMSetSupportedFacility("rearPTOEngagementCounterClockwise",@TIMServer::SupportedFacilities::RearPTO::svEngagementCounterClockwise);
+    Iso11783IL_TIMSetSupportedFacility("rearPTOEngagementClockwise",       @TIMServer::SupportedFacilities::RearPTO::svEngagementClockwise);
+    Iso11783IL_TIMSetSupportedFacility("rearPTOSpeedCounterClockwise",     @TIMServer::SupportedFacilities::RearPTO::svSpeedCounterClockwise);
+    Iso11783IL_TIMSetSupportedFacility("rearPTOSpeedClockwise",            @TIMServer::SupportedFacilities::RearPTO::svSpeedClockwise);
+  }
+  
+  // Front Hitch
+  if( @TIMServer::SupportedFacilities::FrontHitch::svMotion ||
+      @TIMServer::SupportedFacilities::FrontHitch::svPosition)
+  {
+    Iso11783IL_TIMSetSupportedFacility("frontHitchMotion",             @TIMServer::SupportedFacilities::FrontHitch::svMotion);
+    Iso11783IL_TIMSetSupportedFacility("frontHitchPosition",           @TIMServer::SupportedFacilities::FrontHitch::svPosition);
+  }
+
+  // Rear Hitch
+  if( @TIMServer::SupportedFacilities::RearHitch::svMotion ||
+      @TIMServer::SupportedFacilities::RearHitch::svPosition)
+  {
+    Iso11783IL_TIMSetSupportedFacility("rearHitchMotion",             @TIMServer::SupportedFacilities::RearHitch::svMotion);
+    Iso11783IL_TIMSetSupportedFacility("rearHitchPosition",           @TIMServer::SupportedFacilities::RearHitch::svPosition);
+  }
+  
+  // Vehicle Speed
+  if( @TIMServer::SupportedFacilities::VehicleSpeed::svForwardSpeed ||
+      @TIMServer::SupportedFacilities::VehicleSpeed::svReverseSpeed ||
+    @TIMServer::SupportedFacilities::VehicleSpeed::svStartMotion ||
+    @TIMServer::SupportedFacilities::VehicleSpeed::svStopMotion ||
+    @TIMServer::SupportedFacilities::VehicleSpeed::svForwardDirection ||
+    @TIMServer::SupportedFacilities::VehicleSpeed::svReverseDirection)
+  {  
+    Iso11783IL_TIMSetSupportedFacility("vehicleSpeedForward",            @TIMServer::SupportedFacilities::VehicleSpeed::svForwardSpeed);
+    Iso11783IL_TIMSetSupportedFacility("vehicleSpeedReverse",            @TIMServer::SupportedFacilities::VehicleSpeed::svReverseSpeed);
+    Iso11783IL_TIMSetSupportedFacility("vehicleSpeedStartMotion",        @TIMServer::SupportedFacilities::VehicleSpeed::svStartMotion);
+    Iso11783IL_TIMSetSupportedFacility("vehicleSpeedStopMotion",         @TIMServer::SupportedFacilities::VehicleSpeed::svStopMotion);
+    Iso11783IL_TIMSetSupportedFacility("vehicleSpeedForwardDirection",   @TIMServer::SupportedFacilities::VehicleSpeed::svForwardDirection);
+    Iso11783IL_TIMSetSupportedFacility("vehicleSpeedReverseDirection",   @TIMServer::SupportedFacilities::VehicleSpeed::svReverseDirection);
+    if(@TIMClient1::svImplementedVersion <= 2)
+    {
+      Iso11783IL_TIMSetSupportedFacility("vehicleSpeedChangeOfDirection",  3); // set to 'The facility was not defined when the server was built'
+    }
+    else
+    {
+      Iso11783IL_TIMSetSupportedFacility("vehicleSpeedChangeOfDirection",  @TIMServer::SupportedFacilities::VehicleSpeed::svChangeOfDirection); 
+    }
+  }
+  
+  //External Guidance
+  if(@TIMServer::SupportedFacilities::ExtGuidance::svCurvature)
+  {
+    Iso11783IL_TIMSetSupportedFacility("externalGuidanceCurvature",   @TIMServer::SupportedFacilities::ExtGuidance::svCurvature);
+  }
+  
+  // Front Top Linkage
+  if( @TIMServer::SupportedFacilities::FrontTopLinkage::svMotion ||
+      @TIMServer::SupportedFacilities::FrontTopLinkage::svPosition)
+  {
+    Iso11783IL_TIMSetSupportedFacility("frontTopLinkageMotion",             @TIMServer::SupportedFacilities::FrontTopLinkage::svMotion);
+    Iso11783IL_TIMSetSupportedFacility("frontTopLinkagePosition",           @TIMServer::SupportedFacilities::FrontTopLinkage::svPosition);
+  }
+
+  // Rear Top Linkage
+  if( @TIMServer::SupportedFacilities::RearTopLinkage::svMotion ||
+      @TIMServer::SupportedFacilities::RearTopLinkage::svPosition)
+  {
+    Iso11783IL_TIMSetSupportedFacility("rearTopLinkageMotion",             @TIMServer::SupportedFacilities::RearTopLinkage::svMotion);
+    Iso11783IL_TIMSetSupportedFacility("rearTopLinkagePosition",           @TIMServer::SupportedFacilities::RearTopLinkage::svPosition);
+  }
+}
+
+void SetSupportedAuxValvuesFacilities()
+{
+  byte valveNumber;
+  char valveNamespace[100], facilityStateName[30], facilityFlowName[30];
+  dword stateValue, flowValue;
+  long result;
+  
+  for (valveNumber = 1; valveNumber<=32; ++valveNumber)
+  {
+    snprintf(valveNamespace, elcount(valveNamespace), "TIMServer::SupportedFacilities::AuxValve%02d", valveNumber);
+    snprintf(facilityStateName, elcount(facilityStateName), "auxiliaryValve%dState", valveNumber);
+    snprintf(facilityFlowName, elcount(facilityFlowName), "auxiliaryValve%dFlow", valveNumber);
+    
+    // get system variable values
+    if (sysGetVariableDWord(valveNamespace, "svState", stateValue) != 0)
+    {
+      writeLineEx(cWriteTargetCaplPage, cWriteSeverityError, "TIM Server: Failed to get state value of %s", valveNamespace);
+    }      
+    if (sysGetVariableDWord(valveNamespace, "svFlow", flowValue) != 0)
+    {
+      writeLineEx(cWriteTargetCaplPage, cWriteSeverityError, "TIM Server: Failed to get flow value of %s", valveNamespace);
+    }
+    
+    // set supported TIM server facilities
+    if (stateValue || flowValue)
+    {
+      if (Iso11783IL_TIMSetSupportedFacility(facilityStateName, stateValue) != 0)
+      {
+        writeLineEx(cWriteTargetCaplPage, cWriteSeverityError, "TIM Server: Failed to set supported state facility of valve %d", valveNumber);
+      }
+      if (Iso11783IL_TIMSetSupportedFacility(facilityFlowName,  flowValue) != 0)
+      {
+        writeLineEx(cWriteTargetCaplPage, cWriteSeverityError, "TIM Server: Failed to set supported valve facility of valve %d", valveNumber);
+      }
+    }
+  }
+}
+
+void SetAuxValveValueByServer(byte valveNumber, double physicalValue)
+{
+  dword rawValue;
+  char valveNamespace[100];
+  
+  snprintf(valveNamespace, elcount(valveNamespace), "TIMServer::SupportedFacilities::AuxValve%02d", valveNumber); 
+  
+  rawValue = (physicalValue + 128.512) * 250.0;
+  Iso11783IL_TIMSetFunctionValue(valveNumber, rawValue);
+  if (sysSetVariableFloat(valveNamespace, "svValue", physicalValue) != 0)
+  {
+    writeLineEx(cWriteTargetCaplPage, cWriteSeverityError, "TIM Server: Failed to set value of %s", valveNamespace);
+  }
+}
+
+double ConvertAuxValveValueToPhysical(dword auxValveValueRaw)
+{
+  return (auxValveValueRaw * 0.004) - 128.512;
+}
+
+void UpdateDeactivatedCertificateChecks()
+{
+  long deactivatedChecks;
+  
+  deactivatedChecks = 0;
+  deactivatedChecks |= (@TIMServer::svDisableICCCheck > 0)             ?  0x01 : 0;   
+  deactivatedChecks |= (@TIMServer::svDisableNameCheck > 0)            ?  0x02 : 0;   
+  deactivatedChecks |= (@TIMServer::svDisableFctCapabilitiesCheck > 0) ?  0x04 : 0;   
+  deactivatedChecks |= (@TIMServer::svDisableCRLCheck > 0)             ?  0x08 : 0;   
+  deactivatedChecks |= (@TIMServer::svDisableCertificateTypeCheck > 0) ?  0x10 : 0;   
+  
+  if (Iso11783IL_TIMSetProperty("deactivateCertificateValidation", deactivatedChecks) != 0)
+  {
+    writeLineEx(cWriteTargetCaplPage, cWriteSeverityError, "TIM Server: Failed to set deactivated certificate validations");   
+  }
+}
+
+long Iso11783IL_OnTxPrepare( pg * txPG )
+{ 
+  switch( txPG.PGN ) 
+  {
+    case TIM12.pgn:
+    {
+      switch (txPG.byte(0))
+      {
+        case TIMServerStatus_Msg:
+        {
+          if (sysGetVariableInt(sysvar::TIMServer::svFreezeServerHeartbeatCounter) > 0)
+          {
+            // if error injection is active we always send the same heartbeat counter
+            if (sFreezedHearbeatCounter < 0)
+            {
+              sFreezedHearbeatCounter =  txPG.byte(1);
+            }
+            txPG.byte(1) = sFreezedHearbeatCounter;
+          }
+          else
+          {
+            // if error injection is deactivated we reset the heartbeat variable  
+            sFreezedHearbeatCounter = -1;
+          }
+          break;
+        }
+        
+        default:
+        {
+          break;
+        }
+      }   
+      break;
+    }
+    
+    default:
+    {
+      break;
+    }
+  }
+  return Plugin_OnTxPrepare(txPG);
+}
+
+/*
+*/
+void ReflectSupportedFacilitiesByVisibility_Reset()
+{
+  byte valveNumber;
+  // Auxiliary Values ----------------------------------------------------------
+  for (valveNumber = 1; valveNumber<=32; ++valveNumber)
+  {
+    char valveNamespace[100], facilityStateName[30], facilityFlowName[30], buffer[100];
+    snprintf(valveNamespace, elcount(valveNamespace), "TIMServer::SupportedFacilities::AuxValve%02d", valveNumber); 
+    snprintf(buffer, elcount(buffer), "grpAuxValve%02d", valveNumber); 
+    SetControlVisibilityOnTwoPanels(sPanelNameServer, sPanelNameServerAuxValves, buffer, 1);
+  }
+  SetControlVisibility(sPanelNameServer, "grpRearPTO",          1);
+  SetControlVisibility(sPanelNameServer, "grpFrontPTO",         1);
+  SetControlVisibility(sPanelNameServer, "grpRearHitch",       1);
+  SetControlVisibility(sPanelNameServer, "grpFrontHitch",       1);
+  SetControlVisibility(sPanelNameServer, "grpVehicleSpeed",      1);
+  SetControlVisibility(sPanelNameServer, "grpExtGuidance",      1);
+  SetControlVisibility(sPanelNameServer, "grpRearTopLinkage",   1);
+  SetControlVisibility(sPanelNameServer, "grpFrontTopLinkage",  1);
+}
+
+/*
+*/
+void ReflectSupportedFacilitiesByVisibility()
+{
+  byte valveNumber;
+  // Auxiliary Values ----------------------------------------------------------
+  for (valveNumber = 1; valveNumber<=32; ++valveNumber)
+  {
+    dword stateValue, flowValue;
+    char valveNamespace[100], facilityStateName[30], facilityFlowName[30], buffer[100];
+    snprintf(valveNamespace, elcount(valveNamespace), "TIMServer::SupportedFacilities::AuxValve%02d", valveNumber); 
+    stateValue = sysGetVariableDWord(valveNamespace, "svState");
+    flowValue  = sysGetVariableDWord(valveNamespace, "svFlow");
+    snprintf(buffer, elcount(buffer), "grpAuxValve%02d", valveNumber); 
+    SetControlVisibilityOnTwoPanels(sPanelNameServer, sPanelNameServerAuxValves, buffer, stateValue == 1 || flowValue == 1);
+  }
+
+  SetControlVisibility(sPanelNameServer, "grpRearPTO",          @SupportedFacilities::RearPTO::svSpeedCounterClockwise == 1 || 
+                                                                @SupportedFacilities::RearPTO::svSpeedClockwise == 1 ||
+                                                                @SupportedFacilities::RearPTO::svEngagementCounterClockwise == 1 ||
+                                                                @SupportedFacilities::RearPTO::svDisengagement == 1 ||
+                                                                @SupportedFacilities::RearPTO::svEngagementClockwise == 1);
+  
+  SetControlVisibility(sPanelNameServer, "grpFrontPTO",         @SupportedFacilities::FrontPTO::svSpeedCounterClockwise == 1 ||
+                                                                @SupportedFacilities::FrontPTO::svSpeedClockwise == 1 ||
+                                                                @SupportedFacilities::FrontPTO::svEngagementCounterClockwise == 1 ||
+                                                                @SupportedFacilities::FrontPTO::svDisengagement == 1 ||
+                                                                @SupportedFacilities::FrontPTO::svEngagementClockwise == 1);
+  
+  SetControlVisibility(sPanelNameServer, "grpRearHitch",        @SupportedFacilities::RearHitch::svMotion == 1 ||
+                                                                @SupportedFacilities::RearHitch::svPosition == 1);
+  
+  SetControlVisibility(sPanelNameServer, "grpFrontHitch",       @SupportedFacilities::FrontHitch::svMotion == 1 ||      
+                                                                @SupportedFacilities::FrontHitch::svPosition == 1);
+  
+  SetControlVisibility(sPanelNameServer, "grpVehicleSpeed",      @SupportedFacilities::VehicleSpeed::svReverseSpeed == 1 ||
+                                                                @SupportedFacilities::VehicleSpeed::svForwardSpeed == 1 ||
+                                                                @SupportedFacilities::VehicleSpeed::svStopMotion == 1 ||
+                                                                @SupportedFacilities::VehicleSpeed::svReverseDirection == 1 ||
+                                                                @SupportedFacilities::VehicleSpeed::svForwardDirection == 1);
+  
+  SetControlVisibility(sPanelNameServer, "grpExtGuidance",      @SupportedFacilities::ExtGuidance::svCurvature == 1);
+  
+  SetControlVisibility(sPanelNameServer, "grpRearTopLinkage",   @SupportedFacilities::RearTopLinkage::svMotion == 1 || 
+                                                                @SupportedFacilities::RearTopLinkage::svPosition == 1);
+  
+  SetControlVisibility(sPanelNameServer, "grpFrontTopLinkage",  @SupportedFacilities::FrontTopLinkage::svMotion == 1 ||
+                                                                @SupportedFacilities::FrontTopLinkage::svPosition == 1);
+}
+
+/*
+*/
+void Iso11783IL_TIMOnFunctionValueRequested (
+  dword fctID, 
+  dword requestedRawValue, 
+  dword& calculatedRawValue, 
+  dword& calculcatedExitReasonCode,
+  dword& calculcatedAutomationStatus ) 
+{ 
+  switch (fctID)
+  {
+    case cAuxValve01:
+    case cAuxValve02:
+    case cAuxValve03:
+    case cAuxValve04:
+    case cAuxValve05:
+    case cAuxValve06:
+    case cAuxValve07:
+    case cAuxValve08:
+    case cAuxValve09:
+    case cAuxValve10:
+    case cAuxValve11:
+    case cAuxValve12:
+    case cAuxValve13:
+    case cAuxValve14:
+    case cAuxValve15:
+    case cAuxValve16:
+    case cAuxValve17:
+    case cAuxValve18:
+    case cAuxValve19:
+    case cAuxValve20:
+    case cAuxValve21:
+    case cAuxValve22:
+    case cAuxValve23:
+    case cAuxValve24:
+    case cAuxValve25:
+    case cAuxValve26:
+    case cAuxValve27:
+    case cAuxValve28:
+    case cAuxValve29:
+    case cAuxValve30:
+    case cAuxValve31:
+    case cAuxValve32:
+    {
+      if ( (0xFB02 <= requestedRawValue && requestedRawValue <= 0xFBFC) // reserved
+        || (0xFBFE == requestedRawValue) // reserved
+        || (0xFC00 <= requestedRawValue && requestedRawValue <= 0xFFFF) // reserved
+        || (0xFBFF == requestedRawValue)) // ready to control
+      {
+        calculcatedAutomationStatus = cAutomationEnabled;
+      }
+      // limit values of auxiliary valve 1 to +- 100%
+      else if ((calculatedRawValue >= 0x0001) && (calculatedRawValue <= 0x7D7F)) // -128.508 to -0.004 % flow (Extend) 
+      {
+        if (calculatedRawValue < 0x1BD8)
+        {
+          calculatedRawValue = 0x1BD8; // -100%
+          calculcatedExitReasonCode = cReasonRemoteCommandOutOfRange;
+          calculcatedAutomationStatus = cActiveLimitedLow;
+        }     
+      }
+      else if ((calculatedRawValue >= 0x7D81) && (calculatedRawValue <= 0xFAFF)) // +0.004 to +128.508 % flow (Retract)
+      {
+        if (calculatedRawValue > 0xDF28) // 100%
+        {
+          calculatedRawValue = 0xDF28;
+          calculcatedExitReasonCode = cReasonRemoteCommandOutOfRange;
+          calculcatedAutomationStatus = cActiveLimitedHigh;
+        }
+      }
+      break;
+    }
+    
+    case cRearPTO:
+    case cFrontPTO:
+    {  
+      switch (requestedRawValue)
+      {
+        case 0x0000: // PTO on, speed counter-clockwise set by TIM server
+        {
+          // if current speed is counter-clockwise or of we set the smallest possible clockwise value
+          if (((calculatedRawValue >= 0x7D81) && (calculatedRawValue <= 0xFAFF)) || // speed clockwise
+                calculatedRawValue == 0x7D80) // off 
+          {
+            calculatedRawValue = 0x7D7F; // -0,125 1/min 
+          }
+          break;
+        }
+          
+        case 0xFB00: // PTO on, speed clockwise set by TIM server
+        {
+          // if current speed is counter-clockwise we set the smallest possible clockwise value
+          if (((calculatedRawValue >= 0x0001) && (calculatedRawValue <= 0x7D7F)) || // speed counter-clockwise 
+                calculatedRawValue == 0x7D80) // off    
+          {
+            calculatedRawValue = 0x7D81; // 0,125 1/min 
+          }
+          break;
+        }
+        
+        default:
+          break;
+      }
+      
+      
+      if ( (0xFB01 <= requestedRawValue && requestedRawValue <= 0xFBFC) // reserved
+        || (0xFBFE == requestedRawValue) // reserved
+        || (0xFC00 <= requestedRawValue && requestedRawValue <= 0xFFFF) // reserved
+        || (0xFBFF == requestedRawValue)) // ready to control
+      {
+        calculcatedAutomationStatus = cAutomationEnabled;
+      }
+      else
+      // limit values of rear PTO to +- 3000 1/min
+      if ((calculatedRawValue >= 0x0001) && (calculatedRawValue <= 0x7D7F)) // speed counter-clockwise 
+      {
+        if (calculatedRawValue < 0x1FC0)
+        {
+          calculatedRawValue = 0x1FC0; // -3000 1/min
+          calculcatedExitReasonCode = cReasonRemoteCommandOutOfRange;
+          calculcatedAutomationStatus = cActiveLimitedLow;
+        }     
+      }
+      else if ((calculatedRawValue >= 0x7D81) && (calculatedRawValue <= 0xFAFF)) // speed clockwise
+      {
+        if (calculatedRawValue > 0xDB40) // 3000 1/min
+        {
+          calculatedRawValue = 0xDB40;
+          calculcatedExitReasonCode = cReasonRemoteCommandOutOfRange;
+          calculcatedAutomationStatus = cActiveLimitedHigh;
+        }
+      }
+      break;      
+    }
+    
+    case cRearHitch:
+    case cFrontHitch:
+    {
+      if ( (0x2711 <= requestedRawValue && requestedRawValue <= 0xFAFF) // reserved
+        || (0xFB04 <= requestedRawValue && requestedRawValue <= 0xFBFC) // reserved
+        || (0xFBFE == requestedRawValue) // reserved
+        || (0xFC00 <= requestedRawValue && requestedRawValue <= 0xFFFF) // reserved
+        || (0xFBFF == requestedRawValue)) // ready to control
+      {
+        calculcatedAutomationStatus = cAutomationEnabled;
+      }
+      break;      
+    }
+    
+    case cVehicleSpeed:
+    {      
+      switch (requestedRawValue)
+      {
+        case 0x0000: // Reverse speed set by TIM Server
+        {
+          // if current speed is counter-clockwise or of we set the smallest possible clockwise value
+          if (((calculatedRawValue >= 0x7D81) && (calculatedRawValue <= 0xFAFF)) || // speed clockwise
+                calculatedRawValue == 0x7D80) // off 
+          {
+            calculatedRawValue = 0x7D7F; // -0,001 m/s
+          }
+          break;
+        }
+        case 0xFB00: // Forward speed set by TIM server
+        {
+          // if current speed is counter-clockwise we set the smallest possible clockwise value
+          if (((calculatedRawValue >= 0x0001) && (calculatedRawValue <= 0x7D7F)) || // speed counter-clockwise 
+                calculatedRawValue == 0x7D80) // off    
+          {
+            calculatedRawValue = 0x7D81; // 0,125 1/min 
+          }
+          break;
+        }
+        default:
+        {
+          // check if client wants to start motion
+          if (((requestedRawValue >= 0x0001) && (requestedRawValue <= 0x7D7F)) || // reverse speed
+              ((requestedRawValue >= 0x7D81) && (requestedRawValue <= 0xFAFF))) // forward speed
+          {
+            if (sRowVehicleSpeed == 0x7D80) //0 m/s (stop)
+            {
+              if ((@TIMServer::SupportedFacilities::VehicleSpeed::svStartMotion == 1) &&
+                  (Iso11783IL_TIMGetProperty("requireAcknowledgeOfStartOfMotion") > 0))
+              {
+                ActivateControlColors("TIM Server", "btnAckStartOfMotion");
+              }
+            }
+          }            
+          break;
+        }
+      }
+      
+      if ((0xFB01 <= requestedRawValue && requestedRawValue <= 0xFBFC) // reserved
+        || (0xFC00 <= requestedRawValue && requestedRawValue <= 0xFFFF) // reserved
+        || (0xFBFF == requestedRawValue)) // ready to control
+      {
+        calculcatedAutomationStatus = cAutomationEnabled;
+      }
+      else
+      // limit values of vehicle speed to 25 m/s
+      if ((calculatedRawValue >= 0x0001) && (calculatedRawValue <= 0x7D7F)) // reverse speed
+      {
+        if (calculatedRawValue < 0x1BD8)
+        {
+          calculatedRawValue = 0x1BD8;
+          calculcatedExitReasonCode = cReasonRemoteCommandOutOfRange;
+          calculcatedAutomationStatus = cActiveLimitedLow;
+        }     
+      }
+      else if ((calculatedRawValue >= 0x7D81) && (calculatedRawValue <= 0xFAFF)) // forward speed
+      {
+        if (calculatedRawValue > 0xDF25)
+        {
+          calculatedRawValue = 0xDF25; // 25 m/s
+          calculcatedExitReasonCode = cReasonRemoteCommandOutOfRange;
+          calculcatedAutomationStatus = cActiveLimitedHigh;
+        }
+      }
+      break;
+    }
+    
+    case cExternalGuidance:
+    {
+      if ((0xFB00 <= requestedRawValue && requestedRawValue <= 0xFBFC) // reserved
+        || (0xFBFE == requestedRawValue) // reserved
+        || (0xFC00 <= requestedRawValue && requestedRawValue <= 0xFFFF) // reserved
+        || (0xFBFF == requestedRawValue)) // ready to control
+      {
+        calculcatedAutomationStatus = cAutomationEnabled;
+      }
+      break;
+    }
+    
+    case cFrontTopLinkage:
+    case cRearTopLinkage:
+    {
+      if ( (0x2711 <= requestedRawValue && requestedRawValue <= 0xFAFF) // reserved
+        || (0xFB04 <= requestedRawValue && requestedRawValue <= 0xFBFC) // reserved
+        || (0xFBFE == requestedRawValue) // reserved
+        || (0xFC00 <= requestedRawValue && requestedRawValue <= 0xFFFF) // reserved
+        || (0xFBFF == requestedRawValue)) // ready to control
+      {
+        calculcatedAutomationStatus = cAutomationEnabled;
+      }
+      break;          
+    }
+    
+    default:
+      break;
+  }  
+  
+   Plugin_TIMOnFunctionValueRequested(fctID,
+                                     requestedRawValue,
+                                     calculatedRawValue,
+                                     calculcatedExitReasonCode,
+                                     calculcatedAutomationStatus);
+}
+
+void Iso11783IL_TIMOnFunctionValueChanged(dword fctID, dword fctValueRaw)
+{ 
+  // Set svValue (physical value)
+  switch (fctID)
+  {
+    case cAuxValve01:       @TIMServer::Functions::AuxValve01::svValue      = ConvertAuxValveValueToPhysical(fctValueRaw); break;     
+    case cAuxValve02:       @TIMServer::Functions::AuxValve02::svValue      = ConvertAuxValveValueToPhysical(fctValueRaw); break;     
+    case cAuxValve03:       @TIMServer::Functions::AuxValve03::svValue      = ConvertAuxValveValueToPhysical(fctValueRaw); break;     
+    case cAuxValve04:       @TIMServer::Functions::AuxValve04::svValue      = ConvertAuxValveValueToPhysical(fctValueRaw); break;     
+    case cAuxValve05:       @TIMServer::Functions::AuxValve05::svValue      = ConvertAuxValveValueToPhysical(fctValueRaw); break;     
+    case cAuxValve06:       @TIMServer::Functions::AuxValve06::svValue      = ConvertAuxValveValueToPhysical(fctValueRaw); break;     
+    case cAuxValve07:       @TIMServer::Functions::AuxValve07::svValue      = ConvertAuxValveValueToPhysical(fctValueRaw); break;     
+    case cAuxValve08:       @TIMServer::Functions::AuxValve08::svValue      = ConvertAuxValveValueToPhysical(fctValueRaw); break;     
+    case cAuxValve09:       @TIMServer::Functions::AuxValve09::svValue      = ConvertAuxValveValueToPhysical(fctValueRaw); break;     
+    case cAuxValve10:       @TIMServer::Functions::AuxValve10::svValue      = ConvertAuxValveValueToPhysical(fctValueRaw); break;     
+    case cAuxValve11:       @TIMServer::Functions::AuxValve11::svValue      = ConvertAuxValveValueToPhysical(fctValueRaw); break;     
+    case cAuxValve12:       @TIMServer::Functions::AuxValve12::svValue      = ConvertAuxValveValueToPhysical(fctValueRaw); break;     
+    case cAuxValve13:       @TIMServer::Functions::AuxValve13::svValue      = ConvertAuxValveValueToPhysical(fctValueRaw); break;     
+    case cAuxValve14:       @TIMServer::Functions::AuxValve14::svValue      = ConvertAuxValveValueToPhysical(fctValueRaw); break;     
+    case cAuxValve15:       @TIMServer::Functions::AuxValve15::svValue      = ConvertAuxValveValueToPhysical(fctValueRaw); break;     
+    case cAuxValve16:       @TIMServer::Functions::AuxValve16::svValue      = ConvertAuxValveValueToPhysical(fctValueRaw); break;     
+    case cAuxValve17:       @TIMServer::Functions::AuxValve17::svValue      = ConvertAuxValveValueToPhysical(fctValueRaw); break;     
+    case cAuxValve18:       @TIMServer::Functions::AuxValve18::svValue      = ConvertAuxValveValueToPhysical(fctValueRaw); break;     
+    case cAuxValve19:       @TIMServer::Functions::AuxValve19::svValue      = ConvertAuxValveValueToPhysical(fctValueRaw); break;     
+    case cAuxValve20:       @TIMServer::Functions::AuxValve20::svValue      = ConvertAuxValveValueToPhysical(fctValueRaw); break;     
+    case cAuxValve21:       @TIMServer::Functions::AuxValve21::svValue      = ConvertAuxValveValueToPhysical(fctValueRaw); break;     
+    case cAuxValve22:       @TIMServer::Functions::AuxValve22::svValue      = ConvertAuxValveValueToPhysical(fctValueRaw); break;     
+    case cAuxValve23:       @TIMServer::Functions::AuxValve23::svValue      = ConvertAuxValveValueToPhysical(fctValueRaw); break;     
+    case cAuxValve24:       @TIMServer::Functions::AuxValve24::svValue      = ConvertAuxValveValueToPhysical(fctValueRaw); break;     
+    case cAuxValve25:       @TIMServer::Functions::AuxValve25::svValue      = ConvertAuxValveValueToPhysical(fctValueRaw); break;     
+    case cAuxValve26:       @TIMServer::Functions::AuxValve26::svValue      = ConvertAuxValveValueToPhysical(fctValueRaw); break;     
+    case cAuxValve27:       @TIMServer::Functions::AuxValve27::svValue      = ConvertAuxValveValueToPhysical(fctValueRaw); break;     
+    case cAuxValve28:       @TIMServer::Functions::AuxValve28::svValue      = ConvertAuxValveValueToPhysical(fctValueRaw); break;     
+    case cAuxValve29:       @TIMServer::Functions::AuxValve29::svValue      = ConvertAuxValveValueToPhysical(fctValueRaw); break;     
+    case cAuxValve30:       @TIMServer::Functions::AuxValve30::svValue      = ConvertAuxValveValueToPhysical(fctValueRaw); break;     
+    case cAuxValve31:       @TIMServer::Functions::AuxValve31::svValue      = ConvertAuxValveValueToPhysical(fctValueRaw); break;     
+    case cAuxValve32:       @TIMServer::Functions::AuxValve32::svValue      = ConvertAuxValveValueToPhysical(fctValueRaw); break;     
+      
+    case cFrontPTO:         @TIMServer::Functions::FrontPTO::svValue        = (fctValueRaw * 0.125) - 4016.0;              break;    
+    case cRearPTO:          @TIMServer::Functions::RearPTO::svValue         = (fctValueRaw * 0.125) - 4016.0;              break;    
+    case cFrontHitch:       @TIMServer::Functions::FrontHitch::svValue      = fctValueRaw * 0.01;                          break;    
+    case cRearHitch:        @TIMServer::Functions::RearHitch::svValue       = fctValueRaw * 0.01;                          break;    
+    case cVehicleSpeed:     @TIMServer::Functions::VehicleSpeed::svValue    = (fctValueRaw * 0.001) - 32.128;              break;
+    case cExternalGuidance: @TIMServer::Functions::ExtGuidance::svValue     = (fctValueRaw * 0.25) - 8032.0;               break;
+    case cFrontTopLinkage:  @TIMServer::Functions::FrontTopLinkage::svValue = fctValueRaw * 0.01;                          break;    
+    case cRearTopLinkage:   @TIMServer::Functions::RearTopLinkage::svValue  = fctValueRaw * 0.01;                          break;    
+      
+    default:  break;
+  }
+
+  // Then set svValueHex (raw value)
+  switch (fctID)
+  {
+    case cAuxValve01:       @TIMServer::Functions::AuxValve01::svValueHex       = fctValueRaw; break;     
+    case cAuxValve02:       @TIMServer::Functions::AuxValve02::svValueHex       = fctValueRaw; break;     
+    case cAuxValve03:       @TIMServer::Functions::AuxValve03::svValueHex       = fctValueRaw; break;     
+    case cAuxValve04:       @TIMServer::Functions::AuxValve04::svValueHex       = fctValueRaw; break;     
+    case cAuxValve05:       @TIMServer::Functions::AuxValve05::svValueHex       = fctValueRaw; break;     
+    case cAuxValve06:       @TIMServer::Functions::AuxValve06::svValueHex       = fctValueRaw; break;     
+    case cAuxValve07:       @TIMServer::Functions::AuxValve07::svValueHex       = fctValueRaw; break;     
+    case cAuxValve08:       @TIMServer::Functions::AuxValve08::svValueHex       = fctValueRaw; break;     
+    case cAuxValve09:       @TIMServer::Functions::AuxValve09::svValueHex       = fctValueRaw; break;     
+    case cAuxValve10:       @TIMServer::Functions::AuxValve10::svValueHex       = fctValueRaw; break;     
+    case cAuxValve11:       @TIMServer::Functions::AuxValve11::svValueHex       = fctValueRaw; break;     
+    case cAuxValve12:       @TIMServer::Functions::AuxValve12::svValueHex       = fctValueRaw; break;     
+    case cAuxValve13:       @TIMServer::Functions::AuxValve13::svValueHex       = fctValueRaw; break;     
+    case cAuxValve14:       @TIMServer::Functions::AuxValve14::svValueHex       = fctValueRaw; break;     
+    case cAuxValve15:       @TIMServer::Functions::AuxValve15::svValueHex       = fctValueRaw; break;     
+    case cAuxValve16:       @TIMServer::Functions::AuxValve16::svValueHex       = fctValueRaw; break;     
+    case cAuxValve17:       @TIMServer::Functions::AuxValve17::svValueHex       = fctValueRaw; break;     
+    case cAuxValve18:       @TIMServer::Functions::AuxValve18::svValueHex       = fctValueRaw; break;     
+    case cAuxValve19:       @TIMServer::Functions::AuxValve19::svValueHex       = fctValueRaw; break;     
+    case cAuxValve20:       @TIMServer::Functions::AuxValve20::svValueHex       = fctValueRaw; break;     
+    case cAuxValve21:       @TIMServer::Functions::AuxValve21::svValueHex       = fctValueRaw; break;     
+    case cAuxValve22:       @TIMServer::Functions::AuxValve22::svValueHex       = fctValueRaw; break;     
+    case cAuxValve23:       @TIMServer::Functions::AuxValve23::svValueHex       = fctValueRaw; break;     
+    case cAuxValve24:       @TIMServer::Functions::AuxValve24::svValueHex       = fctValueRaw; break;     
+    case cAuxValve25:       @TIMServer::Functions::AuxValve25::svValueHex       = fctValueRaw; break;     
+    case cAuxValve26:       @TIMServer::Functions::AuxValve26::svValueHex       = fctValueRaw; break;     
+    case cAuxValve27:       @TIMServer::Functions::AuxValve27::svValueHex       = fctValueRaw; break;     
+    case cAuxValve28:       @TIMServer::Functions::AuxValve28::svValueHex       = fctValueRaw; break;     
+    case cAuxValve29:       @TIMServer::Functions::AuxValve29::svValueHex       = fctValueRaw; break;     
+    case cAuxValve30:       @TIMServer::Functions::AuxValve30::svValueHex       = fctValueRaw; break;     
+    case cAuxValve31:       @TIMServer::Functions::AuxValve31::svValueHex       = fctValueRaw; break;     
+    case cAuxValve32:       @TIMServer::Functions::AuxValve32::svValueHex       = fctValueRaw; break;     
+      
+    case cFrontPTO:         @TIMServer::Functions::FrontPTO::svValueHex         = fctValueRaw; break;
+    case cRearPTO:          @TIMServer::Functions::RearPTO::svValueHex          = fctValueRaw; break;
+    case cFrontHitch:       @TIMServer::Functions::FrontHitch::svValueHex       = fctValueRaw; break;
+    case cRearHitch:        @TIMServer::Functions::RearHitch::svValueHex        = fctValueRaw; break;
+    case cVehicleSpeed:     @TIMServer::Functions::VehicleSpeed::svValueHex     = fctValueRaw; break;
+    case cExternalGuidance: @TIMServer::Functions::ExtGuidance::svValueHex      = fctValueRaw; break;
+    case cFrontTopLinkage:  @TIMServer::Functions::FrontTopLinkage::svValueHex  = fctValueRaw; break;
+    case cRearTopLinkage:   @TIMServer::Functions::RearTopLinkage::svValueHex   = fctValueRaw; break;
+      
+    default:  break;
+  }
+}
+
+Iso11783IL_TIMOnClientReadyToControl(dword functionID, dword clientAddress) 
+{
+  ActivateControlColors("TIM Server", "btnOperatorACK");
+}
+
+void Iso11783IL_TIMOnFunctionStateChanged(dword functionID, dword newState) 
+{
+}
+
+long Iso11783IL_OnRxMessage(pg * rxPG)
+{
+  if((rxPG.pgn == AUTH21.pgn) && (rxPG.byte(0) == 2)) // Server Certificate Request
+  {
+    switch(rxPG.Byte(4))
+    {
+      case 1: // testlab
+      {
+        if(sNumOfReqForTestlabCertToIgnore > 0)
+        {
+          sNumOfReqForTestlabCertToIgnore--;
+          return 0;
+        }
+        else
+        {
+          return 1;
+        }
+      }
+      break;
+
+      case 2: // Manufacturer
+      {
+        if(sNumOfReqForManufactCertToIgnore > 0)
+        {
+          sNumOfReqForManufactCertToIgnore--;
+          return 0;
+        }
+        else
+        {
+          return 1;
+        }
+      }
+      break;
+      
+      case 3: // Manufacturer Series
+      {
+        if(sNumOfReqForManufactSeriesCertToIgnore > 0)
+        {
+          sNumOfReqForManufactSeriesCertToIgnore--;
+          return 0;
+        }
+        else
+        {
+          return 1;
+        }
+      }
+      break;
+      
+      case 4: // Device
+      {
+        if(sNumOfReqForDeviceCertToIgnore > 0)
+        {
+          sNumOfReqForDeviceCertToIgnore--;
+          return 0;
+        }
+        else
+        {
+          return 1;
+        }
+      }
+      break;
+    }
+  }
+  
+  return Plugin_OnRxMessage(rxPG);
+}
+

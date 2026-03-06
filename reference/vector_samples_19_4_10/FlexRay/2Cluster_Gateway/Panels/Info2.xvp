@@ -1,0 +1,62 @@
+<?xml version="1.0"?>
+<Panel Type="Vector.CANalyzer.Panels.PanelSerializer, Vector.CANalyzer.Panels.Serializer, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null">
+  <Object Type="Vector.CANalyzer.Panels.Runtime.Panel, Vector.CANalyzer.Panels.Common, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null" Name="Panel" Children="Controls" ControlName="Info2">
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl6" Children="Controls" ControlName="StaticTextControl6">
+      <Property Name="Name">StaticTextControl6</Property>
+      <Property Name="Size">199, 26</Property>
+      <Property Name="Location">133, 100</Property>
+      <Property Name="BackColor">White</Property>
+      <Property Name="Text">Stops sending of frames that are sent by 
+specific ECU
+</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl7" Children="Controls" ControlName="StaticTextControl7">
+      <Property Name="Name">StaticTextControl7</Property>
+      <Property Name="Size">112, 22</Property>
+      <Property Name="Location">15, 100</Property>
+      <Property Name="BackColor">White</Property>
+      <Property Name="Text">Stop ECU &lt;name&gt;:</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl4" Children="Controls" ControlName="StaticTextControl4">
+      <Property Name="Name">StaticTextControl4</Property>
+      <Property Name="Size">200, 19</Property>
+      <Property Name="Location">133, 72</Property>
+      <Property Name="BackColor">White</Property>
+      <Property Name="Text">Stops sending of all gateway's frames</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl5" Children="Controls" ControlName="StaticTextControl5">
+      <Property Name="Name">StaticTextControl5</Property>
+      <Property Name="Size">94, 22</Property>
+      <Property Name="Location">15, 72</Property>
+      <Property Name="BackColor">White</Property>
+      <Property Name="Text">Stop Sending:</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl3" Children="Controls" ControlName="StaticTextControl3">
+      <Property Name="Name">StaticTextControl3</Property>
+      <Property Name="Size">186, 26</Property>
+      <Property Name="Location">133, 34</Property>
+      <Property Name="BackColor">White</Property>
+      <Property Name="Text">Enables or disables the forwarding for 
+both directions
+</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl2" Children="Controls" ControlName="StaticTextControl2">
+      <Property Name="Name">StaticTextControl2</Property>
+      <Property Name="Size">73, 22</Property>
+      <Property Name="Location">15, 34</Property>
+      <Property Name="BackColor">White</Property>
+      <Property Name="Text">Routing:</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl1" Children="Controls" ControlName="StaticTextControl1">
+      <Property Name="Name">StaticTextControl1</Property>
+      <Property Name="Size">209, 17</Property>
+      <Property Name="Location">15, 11</Property>
+      <Property Name="BackColor">White</Property>
+      <Property Name="Font">Microsoft Sans Serif, 10pt, style=Bold</Property>
+      <Property Name="Text">General Control of Gateway</Property>
+    </Object>
+    <Property Name="Name">Panel</Property>
+    <Property Name="Size">344, 145</Property>
+    <Property Name="BackColor">White</Property>
+  </Object>
+</Panel>

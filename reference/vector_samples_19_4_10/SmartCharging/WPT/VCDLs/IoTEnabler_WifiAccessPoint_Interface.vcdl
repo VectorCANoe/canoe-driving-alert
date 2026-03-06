@@ -1,0 +1,151 @@
+version 1.4;
+
+import "IotEnabler_General_Datatypes.vcdl";
+
+namespace IoTEnablerWifiAccessPoint
+{
+  using ::IoTEnablerGeneral;
+  
+  struct ChannelInfoType
+  {
+      uint32 channel;
+      uint32 frequency;
+  }
+
+  typedef ChannelInfoTypeList = list<ChannelInfoType>;
+
+  struct ConnectedDeviceInfoType
+  {
+      string mac_address;
+  }
+
+  typedef ConnectedDeviceInfoTypeList = list<ConnectedDeviceInfoType>;
+
+  struct ConnectedDevicesInfoType
+  {
+      ConnectedDeviceInfoTypeList devices;
+  }
+
+  enum FrequencyBandEnum : uint32
+  {
+    FiveGHz = 0,
+    TwoPointFourGHz = 1
+  }
+
+  interface IWiFiAccessPoint
+  {
+      // !
+      // @brief Configure which Wi-Fi interface to use, the network name for the access point, the broadcasting frequency band, and which country it is being operated in
+      // @param[in] interface_name The name of the Wi-Fi stick's interface
+      // @param[in] network_ssid The desired name for the access point network
+      // @param[in] frequency_band The desired frequency band to broadcast the access point network on (5 GHz or 2.4 GHz, see FrequencyBandEnum for exact syntax)
+      // @param[in] country_code The country code where the IoTEnabler is being operated (e.g. DE, US, JP...)
+      // @return Error if the named interface doesn't have a Wi-Fi stick connected, or if an existing config couldn't be overwritten. Otherwise success
+      consumed method result configure(string interface_name, string network_ssid, FrequencyBandEnum frequency_band, string country_code);
+
+      // !
+      // @brief Activate or deactivate Wi-Fi 4 (IEEE 802.11n / HT)
+      // @note Must be called after configure() and before starting the access point
+      // @param[in] activate Activate / deactivate
+      // @return Error if the access point hasn't been configured yet. Otherwise success
+      consumed method result activate_wifi4(bool activate);
+
+      // !
+      // @brief Activate or deactivate Wi-Fi 5 (IEEE 802.11ac / VHT). Activating Wi-Fi-5 restricts the frequency band to 5 GHz
+      // @note Must be called after configure() and before starting the access point
+      // @param[in] activate Activate / deactivate
+      // @return Error if the access point hasn't been configured yet. Otherwise success
+      consumed method result activate_wifi5(bool activate);
+
+      // !
+      // @brief Set the frequency band the access point should broadcast on
+      // @note Must be called after configure() and before starting the access point
+      // @warning Will overwrite your channel selection if it doesn't match the new frequency band!
+      // @param[in] frequency_band Either 5 GHz or 2.4 GHz (See FrequencyBandEnum for exact syntax). If Wi-Fi 5 is active, only 5 GHz is available
+      // @return Error if Wi-Fi 5 is active and 2.4 GHz was selected, or if the access point hasn't been configured yet. Otherwise success
+      consumed method result set_frequency_band(FrequencyBandEnum frequency_band);
+
+      // !
+      // @brief Manually set the forwarding MAC address for a simulated device while using the IoT Enabler as a bridge between CANoe and other Wi-Fi devices
+      // @details The MAC address of the simulated access point should be set here so that Wi-Fi frames can be forwarded to and from it over the IoT Enabler.
+      // Otherwise frames will not have the correct address and cannot be caught or sent over the IoT Enabler properly
+      // @note Must be called before starting the access point
+      // @param[in] mac_address The desired forwarding MAC address
+      // @return Error if \p mac_address is incorrectly formatted, otherwise success
+      consumed method result set_forwarding_mac_address(string mac_address);
+
+      // !
+      // @brief Manually set the access points's IP address (v4)
+      // @note Must be called before starting the access point
+      // @param[in] ipv4_address The desired IP address (v4)
+      // @return Error if \p ipv4_address is incorrectly formatted, otherwise success
+      consumed method result set_ipv4_address(string ipv4_address);
+
+      // !
+      // @brief Manually set the access points's IP address (v6)
+      // @note Must be called before starting the access point
+      // @param[in] ipv6_address The desired IP address (v6)
+      // @return Error if \p ipv6_address is incorrectly formatted, otherwise success
+      consumed method result set_ipv6_address(string ipv6_address);
+
+      // !
+      // @brief Add authentification / encryption to the access point
+      // @note Must be called after configure() and before starting the access point
+      // @param[in] password Desired password for authentification, must be 8-63 characters
+      // @param[in] use_wpa1 Activate WPA1
+      // @param[in] use_wpa2 Activate WPA2
+      // @return Error if no authentification protocols were chosen, if the method is called multiple times,
+      // if the access point hasn't been configured yet, or if the password length is wrong. Otherwise success
+      consumed method result add_authentification(string password, bool use_wpa1, bool use_wpa2);
+
+      // !
+      // @brief Set the interval between beacon frames. If called multiple times, overwrites the previous value
+      // @note Must be called after configure() and before starting the access point
+      // @param[in] interval_in_kus The desired interval in kus (1.024 ms) (default: 100; range 15..65535)
+      // @return Error if the interval is out of its range, or if the access point hasn't been configured yet. Otherwise success
+      consumed method result set_beacon_interval(uint32 interval_in_kus);
+
+      // !
+      // @brief Set additional vendor specific elements to the end of Beacon and Probe Response frames.
+      // @details The format for these element(s) is a hexdump of the raw information elements (id+len+payload for one or more elements, e.g. dd0411223301).
+      // If called multiple times, overwrites the previous value
+      // @note Must be called after configure() and before starting the access point
+      // @param[in] vendor_elements Desired custom vendor elements
+      // @return Error if \p vendor_elements is formatted incorrectly, or if the access point hasn't been configured yet. Otherwise success
+      consumed method result add_vendor_specific_elements(string vendor_elements);
+
+      // !
+      // @brief Retrieve channels available for the access point
+      // @note Must be called after configure()
+      // @param[out] channels Available channels and their frequencies in MHz
+      // @return Success
+      consumed method result get_available_channels(out ChannelInfoTypeList channels);
+
+      // !
+      // @brief Change the channel the access point is broadcasting on
+      // @note Must be called after configure()
+      // @warning Will overwrite your frequency band selection if it doesn't match the new channel!
+      // @param[in] channel The desired channel. If Wi-Fi 5 is active, only channels in the 5 GHz frequency band are available
+      // @return Error if Wi-Fi 5 is active and a channel in the 2.4 GHz frequency band was selected, or if the access point hasn't been configured yet. Otherwise success
+      consumed method result set_channel(uint32 channel);
+
+      // !
+      // @brief Start the access point
+      // @note Must be called after configure(), and after all desired properties have been configured
+      // @return Error if the access point is already running or hasn't been configured yet, or if hostapd couldn't be restarted or connected to. Otherwise success
+      consumed method result start_access_point();
+
+      // !
+      // @brief Stop the access point
+      // @return Success
+      consumed method result stop_access_point();
+
+      consumed data ConnectedDeviceInfoType device_connect;
+
+      consumed data ConnectedDeviceInfoType device_disconnect;
+
+      consumed data ConnectedDevicesInfoType connected_devices;
+
+  }
+	  
+}

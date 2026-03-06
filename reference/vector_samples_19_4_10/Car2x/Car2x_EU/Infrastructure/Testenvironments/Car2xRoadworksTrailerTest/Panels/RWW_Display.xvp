@@ -1,0 +1,99 @@
+<?xml version="1.0"?>
+<Panel Type="Vector.CANalyzer.Panels.PanelSerializer, Vector.CANalyzer.Panels.Serializer, Version=17.3.71.0, Culture=neutral, PublicKeyToken=null">
+  <Object Type="Vector.CANalyzer.Panels.Runtime.Panel, Vector.CANalyzer.Panels.Common, Version=17.3.71.0, Culture=neutral, PublicKeyToken=null" Name="Panel" Children="Controls" ControlName="RWW Configuration">
+    <Object Type="Vector.CANalyzer.Panels.Design.StartStopControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.71.0, Culture=neutral, PublicKeyToken=null" Name="StartStopControl1" Children="Controls" ControlName="Start Stop Control 1">
+      <Property Name="Name">StartStopControl1</Property>
+      <Property Name="Size">112, 56</Property>
+      <Property Name="Location">48, 18</Property>
+      <Property Name="TabIndex">12</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.GroupBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.71.0, Culture=neutral, PublicKeyToken=null" Name="GroupBoxControl2" Children="Controls" ControlName="Group Box 2">
+      <Object Type="Vector.CANalyzer.Panels.Design.ComboBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.71.0, Culture=neutral, PublicKeyToken=null" Name="ComboBoxControl1" Children="Controls" ControlName="Combo Box 1">
+        <Property Name="Name">ComboBoxControl1</Property>
+        <Property Name="Size">121, 38</Property>
+        <Property Name="Location">5, 17</Property>
+        <Property Name="BackColor">Window</Property>
+        <Property Name="ForeColor">WindowText</Property>
+        <Property Name="TextBackColor">White</Property>
+        <Property Name="DisplayLabel">Top</Property>
+        <Property Name="DescriptionText">IsMobileFlag</Property>
+        <Property Name="UsedValueTable">PhysicalValue</Property>
+        <Property Name="DescriptionSize">121, 17</Property>
+        <Property Name="SymbolConfiguration">8;16;RWW_Configuration;;;Expected_IsMobile;1;;;-1;;;;;;0</Property>
+        <Property Name="TabIndex">9</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.ComboBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.71.0, Culture=neutral, PublicKeyToken=null" Name="ComboBoxControl2" Children="Controls" ControlName="Combo Box 2">
+        <Property Name="Name">ComboBoxControl2</Property>
+        <Property Name="Size">121, 38</Property>
+        <Property Name="Location">5, 58</Property>
+        <Property Name="BackColor">Window</Property>
+        <Property Name="ForeColor">WindowText</Property>
+        <Property Name="TextBackColor">White</Property>
+        <Property Name="DisplayLabel">Top</Property>
+        <Property Name="DescriptionText">TrafficFlowRule</Property>
+        <Property Name="UsedValueTable">PhysicalValue</Property>
+        <Property Name="DescriptionSize">121, 17</Property>
+        <Property Name="SymbolConfiguration">8;16;RWW_Configuration;;;Expected_TrafficFlow;1;;;-1;;;;;;0</Property>
+        <Property Name="TabIndex">10</Property>
+      </Object>
+      <Property Name="Name">GroupBoxControl2</Property>
+      <Property Name="Size">203, 121</Property>
+      <Property Name="Location">2, 86</Property>
+      <Property Name="Text">Expected Values</Property>
+      <Property Name="TabIndex">11</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.GroupBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.71.0, Culture=neutral, PublicKeyToken=null" Name="GroupBoxControl1" Children="Controls" ControlName="Group Box 1">
+      <Object Type="Vector.CANalyzer.Panels.Design.RadioButtonControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.71.0, Culture=neutral, PublicKeyToken=null" Name="RadioButtonControl4" Children="Controls" ControlName="Radio Button 4">
+        <Property Name="Name">RadioButtonControl4</Property>
+        <Property Name="Size">77, 17</Property>
+        <Property Name="Location">5, 20</Property>
+        <Property Name="Text">Undefined </Property>
+        <Property Name="SwitchValueVTXml">&lt;Version&gt;2&lt;/Version&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;RxValue&gt;-1&lt;/RxValue&gt;</Property>
+        <Property Name="SwitchValueVT">1;Lower;-1</Property>
+        <Property Name="SwitchValue">-1</Property>
+        <Property Name="SymbolConfiguration">8;16;RWW_Configuration;;;RWW_Usecase;1;;;-1;;;;;;0</Property>
+        <Property Name="TabIndex">8</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.RadioButtonControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.71.0, Culture=neutral, PublicKeyToken=null" Name="RadioButtonControl3" Children="Controls" ControlName="Radio Button 3">
+        <Property Name="Name">RadioButtonControl3</Property>
+        <Property Name="Size">125, 17</Property>
+        <Property Name="Location">5, 65</Property>
+        <Property Name="Text">RWW Road Closure </Property>
+        <Property Name="SwitchValueVTXml">&lt;Version&gt;2&lt;/Version&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;RxValue&gt;RWW_RC&lt;/RxValue&gt;</Property>
+        <Property Name="SwitchValueVT">1;Lower;RWW_RC</Property>
+        <Property Name="SymbolConfiguration">8;16;RWW_Configuration;;;RWW_Usecase;1;;;-1;;;;;;0</Property>
+        <Property Name="TabIndex">6</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.RadioButtonControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.71.0, Culture=neutral, PublicKeyToken=null" Name="RadioButtonControl2" Children="Controls" ControlName="Radio Button 2">
+        <Property Name="Name">RadioButtonControl2</Property>
+        <Property Name="Size">149, 17</Property>
+        <Property Name="Location">5, 87</Property>
+        <Property Name="Text">RWW Roadworks Mobile </Property>
+        <Property Name="SwitchValueVTXml">&lt;Version&gt;2&lt;/Version&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;RxValue&gt;RWW_RM&lt;/RxValue&gt;</Property>
+        <Property Name="SwitchValueVT">1;Lower;RWW_RM</Property>
+        <Property Name="SwitchValue">2</Property>
+        <Property Name="SymbolConfiguration">8;16;RWW_Configuration;;;RWW_Usecase;1;;;-1;;;;;;0</Property>
+        <Property Name="TabIndex">7</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.RadioButtonControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.71.0, Culture=neutral, PublicKeyToken=null" Name="RadioButtonControl1" Children="Controls" ControlName="Radio Button 1">
+        <Property Name="Name">RadioButtonControl1</Property>
+        <Property Name="Size">123, 17</Property>
+        <Property Name="Location">5, 41</Property>
+        <Property Name="Text">RWW Lane Closure </Property>
+        <Property Name="SwitchValueVTXml">&lt;Version&gt;2&lt;/Version&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;RxValue&gt;RWW_LC&lt;/RxValue&gt;</Property>
+        <Property Name="SwitchValueVT">1;Lower;RWW_LC</Property>
+        <Property Name="SwitchValue">0</Property>
+        <Property Name="SymbolConfiguration">8;16;RWW_Configuration;;;RWW_Usecase;1;;;-1;;;;;;0</Property>
+        <Property Name="TabIndex">4</Property>
+      </Object>
+      <Property Name="Name">GroupBoxControl1</Property>
+      <Property Name="Size">203, 110</Property>
+      <Property Name="Location">2, 211</Property>
+      <Property Name="Text">RWW Usecases</Property>
+      <Property Name="TabIndex">8</Property>
+    </Object>
+    <Property Name="Name">Panel</Property>
+    <Property Name="Size">208, 326</Property>
+    <Property Name="BackColor">White</Property>
+  </Object>
+</Panel>

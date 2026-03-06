@@ -1,0 +1,622 @@
+/*@!Encoding:1252*/
+variables
+{
+  char VIN[18]="VECT0RVEH1CLE0001";
+}
+
+
+on sysvar sysvarMember::%BASE_FILE_NAME_NO_EXT%::FaultMemoryGui.BtnStoreDTC
+{
+  byte status, severity;
+  
+  if (@this) { // only when button was pressed (not when released)
+    status =   (@sysvarMember::%BASE_FILE_NAME_NO_EXT%::FaultMemoryGui.StatusByte[7] << 7)
+             | (@sysvarMember::%BASE_FILE_NAME_NO_EXT%::FaultMemoryGui.StatusByte[6] << 6)
+             | (@sysvarMember::%BASE_FILE_NAME_NO_EXT%::FaultMemoryGui.StatusByte[5] << 5)
+             | (@sysvarMember::%BASE_FILE_NAME_NO_EXT%::FaultMemoryGui.StatusByte[4] << 4)
+             | (@sysvarMember::%BASE_FILE_NAME_NO_EXT%::FaultMemoryGui.StatusByte[3] << 3)
+             | (@sysvarMember::%BASE_FILE_NAME_NO_EXT%::FaultMemoryGui.StatusByte[2] << 2)
+             | (@sysvarMember::%BASE_FILE_NAME_NO_EXT%::FaultMemoryGui.StatusByte[1] << 1)
+             |  @sysvarMember::%BASE_FILE_NAME_NO_EXT%::FaultMemoryGui.StatusByte[0];
+    
+    severity = (@sysvarMember::%BASE_FILE_NAME_NO_EXT%::FaultMemoryGui.SeverityByte[7] << 7)
+             | (@sysvarMember::%BASE_FILE_NAME_NO_EXT%::FaultMemoryGui.SeverityByte[6] << 6)
+             | (@sysvarMember::%BASE_FILE_NAME_NO_EXT%::FaultMemoryGui.SeverityByte[5] << 5)
+             | (@sysvarMember::%BASE_FILE_NAME_NO_EXT%::FaultMemoryGui.SeverityByte[4] << 4)
+             | (@sysvarMember::%BASE_FILE_NAME_NO_EXT%::FaultMemoryGui.SeverityByte[3] << 3)
+             | (@sysvarMember::%BASE_FILE_NAME_NO_EXT%::FaultMemoryGui.SeverityByte[2] << 2)
+             | (@sysvarMember::%BASE_FILE_NAME_NO_EXT%::FaultMemoryGui.SeverityByte[1] << 1)
+             |  @sysvarMember::%BASE_FILE_NAME_NO_EXT%::FaultMemoryGui.SeverityByte[0];
+    
+    AddFault(@sysvarMember::%BASE_FILE_NAME_NO_EXT%::FaultMemoryGui.DTC_ToStore, status, severity);
+  }
+}
+
+on sysvar sysvarMember::%BASE_FILE_NAME_NO_EXT%::FaultMemoryInternal.FaultMemoryActivated
+{
+  setControlVisibility("%BASE_FILE_NAME_NO_EXT%_FaultMemory", "DtcStorageWarningText", @this?0:1);
+}
+
+determineSupportedIdsAndSendResponse(diagResponse * resp, word offset, char parameterName[], byte supportedIDs[])
+{
+  byte supportedIDsWithOffset[4];
+  
+  memcpy_off(supportedIDsWithOffset, 0, supportedIDs, offset, elcount(supportedIDsWithOffset));
+  
+  resp.SetParameterRaw(parameterName, supportedIDsWithOffset, elcount(supportedIDsWithOffset));
+  resp.SendResponse();
+}
+
+on diagRequest %BASE_FILE_NAME_NO_EXT%.*
+{
+  diagResponse this resp;
+  
+  // As this handler should only be called in case of functional requests for services 
+  // which are not supported by this ECU, send no response at all as specified in J1979-2, chapter 6.2.5
+}
+
+//*********************************
+// Mode 0x01 (PIDs / Request Current Powertrain Diagnostic Data)
+//*********************************
+
+on diagRequest %BASE_FILE_NAME_NO_EXT%.PID_F400_PID_supported_F401_F420_Read
+{
+  diagResponse this resp;
+
+  refreshS3Timer();
+  determineSupportedIdsAndSendResponse(resp, 0, "DataRecord", cSupportedPIDs);
+}
+
+on diagRequest %BASE_FILE_NAME_NO_EXT%.PID_F420_PID_supported_F421_F440_Read
+{
+  diagResponse this resp;
+  
+  refreshS3Timer();
+  determineSupportedIdsAndSendResponse(resp, 4, "DataRecord", cSupportedPIDs);
+}
+
+on diagRequest %BASE_FILE_NAME_NO_EXT%.PID_F440_PID_supported_F441_F460_Read
+{
+  diagResponse this resp;
+  
+  refreshS3Timer();
+  determineSupportedIdsAndSendResponse(resp, 8, "DataRecord", cSupportedPIDs);
+}
+
+on diagRequest %BASE_FILE_NAME_NO_EXT%.PID_F460_PID_supported_F461_F480_Read
+{
+  diagResponse this resp;
+  
+  refreshS3Timer();
+  determineSupportedIdsAndSendResponse(resp, 12, "DataRecord", cSupportedPIDs);
+}
+
+on diagRequest %BASE_FILE_NAME_NO_EXT%.PID_F480_PID_supported_F481_F4A0_Read
+{
+  diagResponse this resp;
+  
+  refreshS3Timer();
+  determineSupportedIdsAndSendResponse(resp, 16, "DataRecord", cSupportedPIDs);
+}
+
+on diagRequest %BASE_FILE_NAME_NO_EXT%.PID_F4A0_PID_supported_F4A1_F4C0_Read
+{
+  diagResponse this resp;
+  
+  refreshS3Timer();
+  determineSupportedIdsAndSendResponse(resp, 20, "DataRecord", cSupportedPIDs);
+}
+
+on diagRequest %BASE_FILE_NAME_NO_EXT%.PID_F4C0_PID_supported_F4C1_F4E0_Read
+{
+  diagResponse this resp;
+  
+  refreshS3Timer();
+  determineSupportedIdsAndSendResponse(resp, 24, "DataRecord", cSupportedPIDs);
+}
+
+on diagRequest %BASE_FILE_NAME_NO_EXT%.PID_F4E0_PID_supported_F4E1_F4FF_Read
+{
+  diagResponse this resp;
+  
+  refreshS3Timer();
+  determineSupportedIdsAndSendResponse(resp, 28, "DataRecord", cSupportedPIDs);
+}
+
+on diagRequest %BASE_FILE_NAME_NO_EXT%.PID_F401_Monitor_Status_since_DTCs_cleared_Read
+{
+  diagResponse this resp;
+  
+  refreshS3Timer();
+  resp.SetParameter("NbrOfEmissionRelatedDTCsAndMILStatus.MILStatus", @sysvarMember::%BASE_FILE_NAME_NO_EXT%::OBD.MIL_Status); 
+  resp.SetParameter("NbrOfEmissionRelatedDTCsAndMILStatus.NumEmissionRelatedDTCs", @sysvarMember::%BASE_FILE_NAME_NO_EXT%::FaultMemoryInternal.NumberOfStoredEmissionRelatedDTCs); 
+
+  resp.SetParameter("SuppContTests.ComprehensiveComponentMonitoringComplete", @sysvarMember::ECM_OBDonUDS_CAN::IncompleteMonitors.ComprehensiveComponent); 
+  resp.SetParameter("SuppContTests.ComprehensiveComponentMonitoringSupported", @sysvarMember::ECM_OBDonUDS_CAN::SupportedMonitors.ComprehensiveComponent); 
+  resp.SetParameter("SuppContTests.FuelSystemMonitoringComplete", @sysvarMember::ECM_OBDonUDS_CAN::IncompleteMonitors.FuelSystem); 
+  resp.SetParameter("SuppContTests.FuelSystemMonitoringSupported", @sysvarMember::ECM_OBDonUDS_CAN::SupportedMonitors.FuelSystem); 
+  resp.SetParameter("SuppContTests.MisfireMonitoringComplete", @sysvarMember::ECM_OBDonUDS_CAN::IncompleteMonitors.Misfire); 
+  resp.SetParameter("SuppContTests.MisfireMonitoringSupported", @sysvarMember::ECM_OBDonUDS_CAN::SupportedMonitors.Misfire); 
+  
+  resp.SetParameter("SuppTestRunMinOnce.ACSysRefrigMonRunOnce", @sysvarMember::ECM_OBDonUDS_CAN::SupportedMonitors.A_C_SystemRefrigerant);
+  resp.SetParameter("SuppTestRunMinOnce.EgrSysMon", @sysvarMember::ECM_OBDonUDS_CAN::SupportedMonitors.EgrSystem);
+  resp.SetParameter("SuppTestRunMinOnce.OxySensHeaterMonRunOnce", @sysvarMember::ECM_OBDonUDS_CAN::SupportedMonitors.OxygenSensorHeater);
+  resp.SetParameter("SuppTestRunMinOnce.OxySensMonRunOnce", @sysvarMember::ECM_OBDonUDS_CAN::SupportedMonitors.OxygenSensor);
+  resp.SetParameter("SuppTestRunMinOnce.SecondaryAirSysMonRunOnce", @sysvarMember::ECM_OBDonUDS_CAN::SupportedMonitors.SecondaryAir);
+  resp.SetParameter("SuppTestRunMinOnce.SuppCatalystMon", @sysvarMember::ECM_OBDonUDS_CAN::SupportedMonitors.Catalyst);
+  resp.SetParameter("SuppTestRunMinOnce.SuppEvaporativeSystemMon", @sysvarMember::ECM_OBDonUDS_CAN::SupportedMonitors.EvaporativeSystem);
+  resp.SetParameter("SuppTestRunMinOnce.SuppHeatedCatalystMon", @sysvarMember::ECM_OBDonUDS_CAN::SupportedMonitors.HeatedCatalyst);
+  
+  resp.SetParameter("SuppTestStatus.ACSystemRefrigMonStat", @sysvarMember::ECM_OBDonUDS_CAN::IncompleteMonitors.A_C_SystemRefrigerant); 
+  resp.SetParameter("SuppTestStatus.CatalystMonStat", @sysvarMember::ECM_OBDonUDS_CAN::IncompleteMonitors.Catalyst); 
+  resp.SetParameter("SuppTestStatus.EgrSystemMonStat", @sysvarMember::ECM_OBDonUDS_CAN::IncompleteMonitors.EgrSystem); 
+  resp.SetParameter("SuppTestStatus.EvaporativeSystemMonStat", @sysvarMember::ECM_OBDonUDS_CAN::IncompleteMonitors.EvaporativeSystem); 
+  resp.SetParameter("SuppTestStatus.HeatedCatalystMonStat", @sysvarMember::ECM_OBDonUDS_CAN::IncompleteMonitors.HeatedCatalyst); 
+  resp.SetParameter("SuppTestStatus.OxygenSensorMonStatus", @sysvarMember::ECM_OBDonUDS_CAN::IncompleteMonitors.OxygenSensor); 
+  resp.SetParameter("SuppTestStatus.OxySensHeaterMonStat", @sysvarMember::ECM_OBDonUDS_CAN::IncompleteMonitors.OxygenSensorHeater); 
+  resp.SetParameter("SuppTestStatus.SecondaryAirSystemMonStat", @sysvarMember::ECM_OBDonUDS_CAN::IncompleteMonitors.SecondaryAir); 
+
+  resp.SendResponse();
+}  
+
+on diagRequest %BASE_FILE_NAME_NO_EXT%.PID_F40C_Engine_RPM_Read
+{
+  diagResponse this resp;
+  
+  refreshS3Timer();
+  resp.SetParameter(cParamAccessPhysical, "EngineRpm", @Vehicle::RPM); 
+  resp.SendResponse();  
+}
+
+on diagRequest %BASE_FILE_NAME_NO_EXT%.PID_F40D_Vehicle_Speed_Sensor_Read
+{
+  diagResponse this resp;
+  
+  refreshS3Timer();
+  resp.SetParameter(cParamAccessPhysical, "VehicleSpeedSensor", @Vehicle::VehicleSpeedSensor); 
+  resp.SendResponse();  
+}
+
+
+on diagRequest %BASE_FILE_NAME_NO_EXT%.PID_F41C_Vehicle_design_respective_OBD_requirements_Read
+{
+  diagResponse this resp;
+  
+  refreshS3Timer();
+  resp.SetParameter("OBD_Requirements", @Vehicle::OBD_Requirements); 
+  resp.SendResponse();
+}  
+
+on diagRequest %BASE_FILE_NAME_NO_EXT%.PID_F421_Travel_Distance_While_MIL_Activated_Read
+{
+  diagResponse this resp;
+  
+  refreshS3Timer();
+  resp.SetParameter("MIL_Distance", @Vehicle::DistanceTravelledWhileMILActivated); 
+  resp.SendResponse();
+}  
+
+on diagRequest %BASE_FILE_NAME_NO_EXT%.PID_F431_Distance_since_DTCs_cleared_Read
+{
+  diagResponse this resp;
+  
+  refreshS3Timer();
+  resp.SetParameter("Distance_since_clear_DTC", @Vehicle::DistanceTravelledSinceDTCsCleared); 
+  resp.SendResponse();
+}  
+
+on diagRequest %BASE_FILE_NAME_NO_EXT%.PID_F441_Monitor_status_of_driving_cycle_Read
+{
+  diagResponse this resp;
+  byte bSuppContTests, bSuppTestRunMinOnce, bSuppTestStatus;
+  
+  refreshS3Timer();
+  
+  bSuppContTests=@ECM_OBDonUDS_CAN::SupportedMonitors.Misfire |
+  ((@ECM_OBDonUDS_CAN::SupportedMonitors.FuelSystem) << 1) |
+  ((@ECM_OBDonUDS_CAN::SupportedMonitors.ComprehensiveComponent) << 2) |
+  ((@ECM_OBDonUDS_CAN::IncompleteMonitors.Misfire) << 4) |
+  ((@ECM_OBDonUDS_CAN::IncompleteMonitors.FuelSystem) << 5) |
+  ((@ECM_OBDonUDS_CAN::IncompleteMonitors.ComprehensiveComponent) << 6);
+  
+  bSuppTestRunMinOnce=@ECM_OBDonUDS_CAN::SupportedMonitors.Catalyst  |
+  ((@ECM_OBDonUDS_CAN::SupportedMonitors.HeatedCatalyst) << 1) |
+  ((@ECM_OBDonUDS_CAN::SupportedMonitors.EvaporativeSystem) << 2) |
+  ((@ECM_OBDonUDS_CAN::SupportedMonitors.SecondaryAir) << 3) |
+  ((@ECM_OBDonUDS_CAN::SupportedMonitors.A_C_SystemRefrigerant) << 4) |
+  ((@ECM_OBDonUDS_CAN::SupportedMonitors.OxygenSensor) << 5) |
+  ((@ECM_OBDonUDS_CAN::SupportedMonitors.OxygenSensorHeater) << 6) |
+  ((@ECM_OBDonUDS_CAN::SupportedMonitors.EgrSystem) << 7);
+
+  bSuppTestStatus=@ECM_OBDonUDS_CAN::IncompleteMonitors.Catalyst  |
+  ((@ECM_OBDonUDS_CAN::IncompleteMonitors.HeatedCatalyst) << 1) |
+  ((@ECM_OBDonUDS_CAN::IncompleteMonitors.EvaporativeSystem) << 2) |
+  ((@ECM_OBDonUDS_CAN::IncompleteMonitors.SecondaryAir) << 3) |
+  ((@ECM_OBDonUDS_CAN::IncompleteMonitors.A_C_SystemRefrigerant) << 4) |
+  ((@ECM_OBDonUDS_CAN::IncompleteMonitors.OxygenSensor) << 5) |
+  ((@ECM_OBDonUDS_CAN::IncompleteMonitors.OxygenSensorHeater) << 6) |
+  ((@ECM_OBDonUDS_CAN::IncompleteMonitors.EgrSystem) << 7);
+  
+  resp.SetParameter("SuppContTests", bSuppContTests); 
+  resp.SetParameter("SuppTestRunMinOnce", bSuppTestRunMinOnce); 
+  resp.SetParameter("SuppTestStatus", bSuppTestStatus); 
+  resp.SendResponse();
+}  
+
+on diagRequest %BASE_FILE_NAME_NO_EXT%.PID_F44D_Minutes_Run_By_Engine_While_MIL_Active_Read
+{
+  diagResponse this resp;
+  
+  refreshS3Timer();
+  resp.SetParameter("MIL_Time", @Vehicle::EngineRuntimeWhileMILActivated); 
+  resp.SendResponse();
+}  
+
+on diagRequest %BASE_FILE_NAME_NO_EXT%.PID_F44E_Time_Since_DTC_Cleared_Read
+{
+  diagResponse this resp;
+  
+  refreshS3Timer();
+  resp.SetParameter("Clear_Time", @Vehicle::EngineRuntimeSinceDTCsCleared); 
+  resp.SendResponse();
+}  
+
+on diagRequest %BASE_FILE_NAME_NO_EXT%.PID_F451_Type_of_fuel_currently_being_utilized_by_the_vehicle_Read
+{
+  diagResponse this resp;
+  
+  refreshS3Timer();
+  resp.SetParameter("Type_of_fuel_currently_being_utilized_by_the_vehicle", @Vehicle::Fuel_Type); 
+  resp.SendResponse();
+}  
+
+
+on diagRequest %BASE_FILE_NAME_NO_EXT%.PID_F4A4_Transmission_Actual_Gear_Read
+{
+  diagResponse this resp;
+  
+  refreshS3Timer();
+  resp.SetParameter("Transmission_Actual_Gear_Status_Supported.Transmission_Actual_Gear_Status_Supported", 1); 
+  resp.SetParameter("Transmission_Actual_Gear_Status_Supported.Transmission_Actual_Gear_Ratio_Supported", 0); 
+  resp.SetParameter("Transmission_Actual_Gear_Status.Transmission_Actual_Gear_Status", @sysvar::Vehicle::Gear); 
+  resp.SendResponse();  
+}
+
+//*********************************
+// Mode 0x06 (OBDMIDs)
+//*********************************
+
+on diagRequest %BASE_FILE_NAME_NO_EXT%.MID_F600_OBD_Monitor_IDs_supported_F601_F620_Request_OnBoard_Monitoring_Test_Results_Read_Supported
+{
+  diagResponse this resp;
+  
+  refreshS3Timer();
+  determineSupportedIdsAndSendResponse(resp, 0, "Supported_OBDMIDs", cSupportedOBDMIDs);
+}
+
+on diagRequest %BASE_FILE_NAME_NO_EXT%.MID_F620_OBD_Monitor_IDs_supported_F621_F640_Request_OnBoard_Monitoring_Test_Results_Read_Supported
+{
+  diagResponse this resp;
+  
+  refreshS3Timer();
+  determineSupportedIdsAndSendResponse(resp, 4, "Supported_OBDMIDs", cSupportedOBDMIDs);
+}
+
+on diagRequest %BASE_FILE_NAME_NO_EXT%.MID_F640_OBD_Monitor_IDs_supported_F641_F660_Request_OnBoard_Monitoring_Test_Results_Read_Supported
+{
+  diagResponse this resp;
+  
+  refreshS3Timer();
+  determineSupportedIdsAndSendResponse(resp, 8, "Supported_OBDMIDs", cSupportedOBDMIDs);
+}
+
+on diagRequest %BASE_FILE_NAME_NO_EXT%.MID_F660_OBD_Monitor_IDs_supported_F661_F680_Request_OnBoard_Monitoring_Test_Results_Read_Supported
+{
+  diagResponse this resp;
+  
+  refreshS3Timer();
+  determineSupportedIdsAndSendResponse(resp, 12, "Supported_OBDMIDs", cSupportedOBDMIDs);
+}
+
+on diagRequest %BASE_FILE_NAME_NO_EXT%.MID_F680_OBD_Monitor_IDs_supported_F681_F6A0_Request_OnBoard_Monitoring_Test_Results_Read_Supported
+{
+  diagResponse this resp;
+  
+  refreshS3Timer();
+  determineSupportedIdsAndSendResponse(resp, 16, "Supported_OBDMIDs", cSupportedOBDMIDs);
+}
+
+on diagRequest %BASE_FILE_NAME_NO_EXT%.MID_F6A0_OBD_Monitor_IDs_supported_F6A1_F6C0_Request_OnBoard_Monitoring_Test_Results_Read_Supported
+{
+  diagResponse this resp;
+  
+  refreshS3Timer();
+  determineSupportedIdsAndSendResponse(resp, 20, "Supported_OBDMIDs", cSupportedOBDMIDs);
+}
+
+on diagRequest %BASE_FILE_NAME_NO_EXT%.MID_F6C0_OBD_Monitor_IDs_supported_F6C1_F6E0_Request_OnBoard_Monitoring_Test_Results_Read_Supported
+{
+  diagResponse this resp;
+  
+  refreshS3Timer();
+  determineSupportedIdsAndSendResponse(resp, 24, "Supported_OBDMIDs", cSupportedOBDMIDs);
+}
+
+on diagRequest %BASE_FILE_NAME_NO_EXT%.MID_F6E0_OBD_Monitor_IDs_supported_F6E1_F6FE_Request_OnBoard_Monitoring_Test_Results_Read_Supported
+{
+  diagResponse this resp;
+  
+  refreshS3Timer();
+  determineSupportedIdsAndSendResponse(resp, 28, "Supported_OBDMIDs", cSupportedOBDMIDs);
+}
+
+on diagRequest %BASE_FILE_NAME_NO_EXT%.MID_F608_Exhaust_Gas_Sensor_Monitor_Bank_2_Sensor_4_Request_OnBoard_Monitoring_Test_Results
+{
+  diagResponse this resp;
+  
+  refreshS3Timer();
+  resp.SetParameter("OBDMID", 0xF608);
+  resp.SetComplexParameter("OBDMID_DataRecordIteration", 0, "Standard_Manufacturer_Defined_TID", 0x8E);
+  resp.SetComplexParameter("OBDMID_DataRecordIteration", 0, "Unit_And_Scaling_ID_1", 0x10);
+  resp.SetComplexParameter("OBDMID_DataRecordIteration", 0, "Test_Value", 0x0000);
+  resp.SetComplexParameter("OBDMID_DataRecordIteration", 0, "Min_Test_Limit", 0x0000);
+  resp.SetComplexParameter("OBDMID_DataRecordIteration", 0, "Max_Test_Limit", 0x0320);
+  resp.SetComplexParameter("OBDMID_DataRecordIteration", 1, "Standard_Manufacturer_Defined_TID", 0x8B);
+  resp.SetComplexParameter("OBDMID_DataRecordIteration", 1, "Unit_And_Scaling_ID_1", 0x85);
+  resp.SetComplexParameter("OBDMID_DataRecordIteration", 1, "Test_Value", 0x0012);
+  resp.SetComplexParameter("OBDMID_DataRecordIteration", 1, "Min_Test_Limit", 0xF5BF);
+  resp.SetComplexParameter("OBDMID_DataRecordIteration", 1, "Max_Test_Limit", 0x7FFF);
+  resp.SetComplexParameter("OBDMID_DataRecordIteration", 2, "Standard_Manufacturer_Defined_TID", 0x8A);
+  resp.SetComplexParameter("OBDMID_DataRecordIteration", 2, "Unit_And_Scaling_ID_1", 0x85);
+  resp.SetComplexParameter("OBDMID_DataRecordIteration", 2, "Test_Value", 0x0012);
+  resp.SetComplexParameter("OBDMID_DataRecordIteration", 2, "Min_Test_Limit", 0x8000);
+  resp.SetComplexParameter("OBDMID_DataRecordIteration", 2, "Max_Test_Limit", 0x0A3F);
+  resp.SetComplexParameter("OBDMID_DataRecordIteration", 3, "Standard_Manufacturer_Defined_TID", 0x85);
+  resp.SetComplexParameter("OBDMID_DataRecordIteration", 3, "Unit_And_Scaling_ID_1", 0x33);
+  resp.SetComplexParameter("OBDMID_DataRecordIteration", 3, "Test_Value", 0x103E);
+  resp.SetComplexParameter("OBDMID_DataRecordIteration", 3, "Min_Test_Limit", 0x0000);
+  resp.SetComplexParameter("OBDMID_DataRecordIteration", 3, "Max_Test_Limit", 0x3800);
+  resp.SetComplexParameter("OBDMID_DataRecordIteration", 4, "Standard_Manufacturer_Defined_TID", 0x81);
+  resp.SetComplexParameter("OBDMID_DataRecordIteration", 4, "Unit_And_Scaling_ID_1", 0x10);
+  resp.SetComplexParameter("OBDMID_DataRecordIteration", 4, "Test_Value", 0x0000);
+  resp.SetComplexParameter("OBDMID_DataRecordIteration", 4, "Min_Test_Limit", 0x0000);
+  resp.SetComplexParameter("OBDMID_DataRecordIteration", 4, "Max_Test_Limit", 0x0190);
+  resp.SendResponse();  
+}
+
+//*********************************
+// Mode 0x08 (TIDs)
+//*********************************
+
+on diagRequest %BASE_FILE_NAME_NO_EXT%.TID_E000_TID_supported_E001_E020_Start
+{
+  diagResponse this resp;
+  
+  refreshS3Timer();
+  determineSupportedIdsAndSendResponse(resp, 0, "DataRecord", cSupportedTIDs);
+}
+
+on diagRequest %BASE_FILE_NAME_NO_EXT%.TID_E020_TID_supported_E021_E040_Start
+{
+  diagResponse this resp;
+  
+  refreshS3Timer();
+  determineSupportedIdsAndSendResponse(resp, 4, "DataRecord", cSupportedTIDs);
+}
+
+on diagRequest %BASE_FILE_NAME_NO_EXT%.TID_E040_TID_supported_E041_E060_Start
+{
+  diagResponse this resp;
+  
+  refreshS3Timer();
+  determineSupportedIdsAndSendResponse(resp, 8, "DataRecord", cSupportedTIDs);
+}
+
+on diagRequest %BASE_FILE_NAME_NO_EXT%.TID_E060_TID_supported_E061_E080_Start
+{
+  diagResponse this resp;
+  
+  refreshS3Timer();
+  determineSupportedIdsAndSendResponse(resp, 12, "DataRecord", cSupportedTIDs);
+}
+
+on diagRequest %BASE_FILE_NAME_NO_EXT%.TID_E080_TID_supported_E081_E0A0_Start
+{
+  diagResponse this resp;
+  
+  refreshS3Timer();
+  determineSupportedIdsAndSendResponse(resp, 16, "DataRecord", cSupportedTIDs);
+}
+
+on diagRequest %BASE_FILE_NAME_NO_EXT%.TID_E0A0_TID_supported_E0A1_E0C0_Start
+{
+  diagResponse this resp;
+  
+  refreshS3Timer();
+  determineSupportedIdsAndSendResponse(resp, 20, "DataRecord", cSupportedTIDs);
+}
+
+on diagRequest %BASE_FILE_NAME_NO_EXT%.TID_E0C0_TID_supported_E0C1_E0E0_Start
+{
+  diagResponse this resp;
+  
+  refreshS3Timer();
+  determineSupportedIdsAndSendResponse(resp, 24, "DataRecord", cSupportedTIDs);
+}
+
+on diagRequest %BASE_FILE_NAME_NO_EXT%.TID_E0E0_TID_supported_E0E1_E0FF_Start
+{
+  diagResponse this resp;
+  
+  refreshS3Timer();
+  determineSupportedIdsAndSendResponse(resp, 26, "DataRecord", cSupportedTIDs);
+}
+
+on diagRequest %BASE_FILE_NAME_NO_EXT%.TID_E001_Evaporative_system_leak_test_Start
+{
+  diagResponse this resp;
+  
+  refreshS3Timer();
+  resp.SendResponse();
+}
+
+//*********************************
+// Mode 0x09 (INFOTYPES)
+//*********************************
+
+on diagRequest %BASE_FILE_NAME_NO_EXT%.InfoType_F800_ITID_supported_F801_F820_Read
+{
+  diagResponse this resp;
+  
+  refreshS3Timer();
+  determineSupportedIdsAndSendResponse(resp, 0, "DataRecord", cSupportedINFOTYPEs);
+}
+
+on diagRequest %BASE_FILE_NAME_NO_EXT%.InfoType_F820_ITID_supported_F821_F840_Read
+{
+  diagResponse this resp;
+  
+  refreshS3Timer();
+  determineSupportedIdsAndSendResponse(resp, 4, "DataRecord", cSupportedINFOTYPEs);
+}
+
+on diagRequest %BASE_FILE_NAME_NO_EXT%.InfoType_F840_ITID_supported_F841_F860_Read
+{
+  diagResponse this resp;
+  
+  refreshS3Timer();
+  determineSupportedIdsAndSendResponse(resp, 8, "DataRecord", cSupportedINFOTYPEs);
+}
+
+on diagRequest %BASE_FILE_NAME_NO_EXT%.InfoType_F860_ITID_supported_F861_F880_Read
+{
+  diagResponse this resp;
+  
+  refreshS3Timer();
+  determineSupportedIdsAndSendResponse(resp, 12, "DataRecord", cSupportedINFOTYPEs);
+}
+
+on diagRequest %BASE_FILE_NAME_NO_EXT%.InfoType_F880_ITID_supported_F881_F8A0_Read
+{
+  diagResponse this resp;
+  
+  refreshS3Timer();
+  determineSupportedIdsAndSendResponse(resp, 16, "DataRecord", cSupportedINFOTYPEs);
+}
+
+on diagRequest %BASE_FILE_NAME_NO_EXT%.InfoType_F8A0_ITID_supported_F8A1_F8C0_Read
+{
+  diagResponse this resp;
+  
+  refreshS3Timer();
+  determineSupportedIdsAndSendResponse(resp, 20, "DataRecord", cSupportedINFOTYPEs);
+}
+
+on diagRequest %BASE_FILE_NAME_NO_EXT%.InfoType_F8C0_ITID_supported_F8C1_F8E0_Read
+{
+  diagResponse this resp;
+  
+  refreshS3Timer();
+  determineSupportedIdsAndSendResponse(resp, 24, "DataRecord", cSupportedINFOTYPEs);
+}
+
+on diagRequest %BASE_FILE_NAME_NO_EXT%.InfoType_F8E0_ITID_supported_F8E1_F8FF_Read
+{
+  diagResponse this resp;
+  
+  refreshS3Timer();
+  determineSupportedIdsAndSendResponse(resp, 26, "DataRecord", cSupportedINFOTYPEs);
+}
+
+on diagRequest %BASE_FILE_NAME_NO_EXT%.InfoType_F810_Protocol_Identification_Read
+{
+  diagResponse this resp;
+
+  refreshS3Timer();
+  resp.SetParameter("Protocol_Identification", 1);
+  resp.SendResponse();
+}
+
+on diagRequest %BASE_FILE_NAME_NO_EXT%.InfoType_F802_Vehicle_Identification_Number_Read_with_Iterations
+{
+  diagResponse this resp;
+  char VIN_String[18];
+  byte VIN[17];
+
+  refreshS3Timer();
+  sysGetVariableString(sysvar::Vehicle::VIN, VIN_String, elcount(VIN_String));
+  memcpy(VIN,VIN_String, elcount(VIN));
+  if (!strncmp("%BASE_FILE_NAME_NO_EXT%", "ECM_OBDonUDS_CAN", 17)) {
+    resp.SetComplexParameterRaw("Iteration", 0, "Vehicle_Identification_Number", VIN, elcount(VIN));
+    resp.SendResponse();
+  }
+}
+
+on diagRequest %BASE_FILE_NAME_NO_EXT%.InfoType_F808_In_use_Performance_Tracking_Read
+{
+  diagResponse this resp;
+  
+  refreshS3Timer();
+  
+  resp.Resize(59);
+
+  resp.SetParameter("OBD_Monitoring_Conditions_Encountered_Counts", @sysvarMember::%BASE_FILE_NAME_NO_EXT%::OBD.OBD_MonitoringConditionsEncounteredCounts);
+  resp.SetParameter("Ignition_Cycle_Counter", @sysvarMember::%BASE_FILE_NAME_NO_EXT%::OBD.IgnitionCycleCounter);
+  resp.SetParameter("Catalyst_Monitor_Completion_Counts_Bank_1", @sysvarMember::%BASE_FILE_NAME_NO_EXT%::OBD.CatalystMonitorCompletionCountsBank1);
+  resp.SetParameter("Catalyst_Monitor_Conditions_Encountered_Counts_Bank_1", @sysvarMember::%BASE_FILE_NAME_NO_EXT%::OBD.CatalystMonitorConditionsEncounteredCountsBank1);
+  resp.SetParameter("O2_Sensor_Monitor_Completion_Counts_Bank_1", @sysvarMember::%BASE_FILE_NAME_NO_EXT%::OBD.O2SensorMonitorCompletionCountsBank1);
+  resp.SetParameter("O2_Sensor_Monitor_Conditions_Encountered_Counts_Bank_1", @sysvarMember::%BASE_FILE_NAME_NO_EXT%::OBD.O2SensorMonitorConditionsEncounteredCountsBank1);
+  resp.SetParameter("EGR_and_or_VVT_Monitor_Completion_Condition_Counts", @sysvarMember::%BASE_FILE_NAME_NO_EXT%::OBD.EGR_AndOrVVT_MonitorCompletionCounts);
+  resp.SetParameter("EGR_and_or_VVT_Monitor_Conditions_Encountered_Counts", @sysvarMember::%BASE_FILE_NAME_NO_EXT%::OBD.EGR_AndOrVVT_MonitorConditionsEncounteredCounts);
+  resp.SetParameter("Secondary_O2_Sensor_Monitor_Completion_Counts_Bank_1", @sysvarMember::%BASE_FILE_NAME_NO_EXT%::OBD.SecondaryO2SensorMonitorCompletionCountsBank1);
+  resp.SetParameter("Secondary_O2_Sensor_Monitor_Conditions_Encountered_Counts_Bank_1", @sysvarMember::%BASE_FILE_NAME_NO_EXT%::OBD.SecondaryO2SensorMonitorConditionsEncounteredCountsBank1);
+  resp.SetParameter("Particulate_Filter_Monitor_Completion_Counts_Bank_1", @sysvarMember::%BASE_FILE_NAME_NO_EXT%::OBD.ParticulateFilterMonitorCompletionCountsBank1);
+  resp.SetParameter("Particulate_Filter_Monitor_Conditions_Encountered_Counts_Bank_1", @sysvarMember::%BASE_FILE_NAME_NO_EXT%::OBD.ParticulateFilterMonitorConditionsEncounteredCountsBank1);
+
+  resp.SendResponse();  
+}
+
+on diagRequest %BASE_FILE_NAME_NO_EXT%.InfoType_F80A_ECU_Module_Acronym_and_Text_Name_Read_with_Iterations
+{
+  diagResponse this resp;
+  long ret;
+  
+  refreshS3Timer();
+  resp.SetComplexParameterRaw("Iteration", 0, "ECU_Module_Acronym", ecuAcronym, elcount(ecuAcronym));
+  resp.SendResponse();
+}
+
+on diagRequest %BASE_FILE_NAME_NO_EXT%.InfoType_F80B_In_use_Performance_Tracking_Read
+{
+  diagResponse this resp;
+  
+  refreshS3Timer();
+
+  resp.SetParameter("OBD_Monitoring_Conditions_Encountered_Counts", 1);
+  resp.SetParameter("Ignition_Cycle_Counter", 2);
+  resp.SetParameter("NMHC_Catalyst_Monitor_Completion_Condition_Counts", 3);
+  resp.SetParameter("NMHC_Catalyst_Monitor_Conditions_Encountered_Counts", 4);
+  resp.SetParameter("NOx_Catalyst_Monitor_Completion_Condition_Counts", 5);
+  resp.SetParameter("NOx_Catalyst_Monitor_Conditions_Encountered_Counts", 6);
+  resp.SetParameter("NOx_Adsorber_Monitor_Completion_Condition_Counts", 7);
+  resp.SetParameter("NOx_Adsorber_Monitor_Conditions_Encountered_Counts", 8);
+  resp.SetParameter("PM_Filter_Monitor_Completion_Condition_Counts", 9);
+  resp.SetParameter("PM_Filter_Monitor_Conditions_Encountered_Counts", 10);
+  resp.SetParameter("Exhaust_Gas_Sensor_Monitor_Completion_Condition_Counts", 11);
+  resp.SetParameter("Exhaust_Gas_Sensor_Monitor_Conditions_Encountered_Counts", 12);
+  resp.SetParameter("EGR_and_or_VVT_Monitor_Completion_Condition_Counts", 13);
+  resp.SetParameter("EGR_and_or_VVT_Monitor_Conditions_Encountered_Counts", 14);
+  resp.SetParameter("Boost_Pressure_Monitor_Completion_Conditions_Counts", 15);
+  resp.SetParameter("Boost_Pressure_Monitor_Conditions_Encountered_Counts", 16);
+  if (@sysvar::Vehicle::FuelSystemMonitoringSupported) {
+    //resp.SetParameter("Number_of_Data_Items", 18);
+    resp.SetParameter("Fuel_Monitor_Completion_Conditions_Counts", 17);
+    resp.SetParameter("Fuel_Monitor_Conditions_Encountered_Counts", 18);
+  }
+  else {
+    resp.resize(35);
+  }
+
+  resp.SendResponse();  
+}
+

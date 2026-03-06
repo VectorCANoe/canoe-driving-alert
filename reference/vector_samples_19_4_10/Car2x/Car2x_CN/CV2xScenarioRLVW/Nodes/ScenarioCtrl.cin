@@ -1,0 +1,41 @@
+/*@!Encoding:1252*/
+/////////////////////////////////////////////////////////////////
+// ScenarioCtrl.cin CAPL include handles loading the available
+// scenario files as well start/stop of the scenario by the 
+// corresponding buttons in the "Scenario" panel
+/////////////////////////////////////////////////////////////////
+
+// Upon selecting the new scenario variant in the scenario panel, 
+// stop currently runng scenario and load the new one.
+on sysvar ScenarioCtrl::ActiveScenarioVariant
+{
+  if (C2xIsScenarioStarted() == 1)
+  {
+    C2xStopScenario();
+  }
+  
+  if (@this == RLVW_SCENARIO_A)
+  {
+    C2xLoadScenario("Scenarios\\RLVW (a) - Red Light Violation Warning.scn");  
+  }
+}
+
+// Called when pressing/releasing the "Start" button
+// in the "Scenario" panel
+on sysvar ScenarioCtrl::StartBtnState
+{
+  if (@this == 1 /*button pressed*/)
+  {
+    C2xStartScenario();
+  }
+}
+
+// Called when pressing/releasing the "Stop" button
+// in the "Scenario" panel
+on sysvar ScenarioCtrl::StopBtnState
+{
+  if (@this == 1 /*button pressed*/)
+  {
+    C2xStopScenario();
+  }
+}

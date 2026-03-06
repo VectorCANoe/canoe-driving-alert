@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<systemvariables version="4">
+  <namespace name="" comment="" interface="">
+    <namespace name="R09Decoding" comment="" interface="">
+      <struct name="svStructR09_16" isUnion="False" definedBinaryLayout="True" comment="">
+        <structMember relativeOffset="0" byteOrder="0" isOptional="False" isHidden="False" name="TimetableDeviation" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" />
+        <structMember relativeOffset="0" byteOrder="0" isOptional="False" isHidden="False" name="HoldRequest" comment="" bitcount="264" isSigned="false" encoding="65001" type="string" />
+        <structMember relativeOffset="0" byteOrder="0" isOptional="False" isHidden="False" name="RouteNo" comment="" bitcount="32" isSigned="false" encoding="65001" type="int" />
+        <structMember relativeOffset="0" byteOrder="0" isOptional="False" isHidden="False" name="LineNo" comment="" bitcount="32" isSigned="false" encoding="65001" type="int" />
+        <structMember relativeOffset="0" byteOrder="0" isOptional="False" isHidden="False" name="ReportingPointNo" comment="" bitcount="32" isSigned="false" encoding="65001" type="int" />
+        <structMember relativeOffset="0" byteOrder="0" isOptional="False" isHidden="False" name="Priority" comment="" bitcount="32" isSigned="false" encoding="65001" type="int" />
+        <structMember relativeOffset="0" byteOrder="0" isOptional="False" isHidden="False" name="DestinationNo" comment="" bitcount="32" isSigned="false" encoding="65001" type="int" />
+        <structMember relativeOffset="0" byteOrder="0" isOptional="False" isHidden="False" name="PlatoonLength" comment="" bitcount="32" isSigned="false" encoding="65001" type="int" />
+      </struct>
+      <struct name="svStructR09Decoding" isUnion="False" definedBinaryLayout="True" comment="">
+        <structMember relativeOffset="0" byteOrder="0" isOptional="False" isHidden="False" name="R09_16_RawData" comment="The raw R09 bytes contained in the CAM." bitcount="72" isSigned="false" encoding="65001" type="data" arrayLength="0" />
+        <structMember relativeOffset="0" byteOrder="0" isOptional="False" isHidden="False" name="EmbarkationStatus" comment="Part of the CAM." bitcount="32" isSigned="false" encoding="65001" type="int" />
+        <structMember relativeOffset="0" byteOrder="0" isOptional="False" isHidden="False" name="SignalStrength" comment="CAM Rx Information." bitcount="32" isSigned="true" encoding="65001" type="int" />
+        <structMember relativeOffset="0" byteOrder="0" isOptional="False" isHidden="False" name="StationID" comment="Part of the CAM." bitcount="32" isSigned="false" encoding="65001" type="int" />
+        <structMember relativeOffset="0" byteOrder="0" isOptional="False" isHidden="False" name="StationType" comment="Part of the CAM." bitcount="168" isSigned="false" encoding="65001" type="string" />
+        <structMember relativeOffset="0" byteOrder="0" isOptional="False" isHidden="False" name="R09_16_Data" comment="Decoded R09 content." bitcount="488" isSigned="true" encoding="65001" type="struct" structDefinition="R09Decoding::svStructR09_16" />
+        <structMember relativeOffset="0" byteOrder="0" isOptional="False" isHidden="False" name="Latitude" comment="CAM Rx Information." bitcount="64" isSigned="false" encoding="65001" type="float" />
+        <structMember relativeOffset="0" byteOrder="0" isOptional="False" isHidden="False" name="Longitude" comment="CAM Rx Information." bitcount="64" isSigned="false" encoding="65001" type="float" />
+      </struct>
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="DrawBubbles" comment="Enables the drawing of Filled Ellipses at the GNSS-Positions where a CAM with R09 has been received. " bitcount="32" isSigned="false" encoding="65001" type="int" startValue="1" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="DrawMeldepunkte" comment="Enables the drawing of &quot;R09 Meldepunkt&quot; at the GNSS-Position where a CAM with R09 has been received." bitcount="32" isSigned="false" encoding="65001" type="int" startValue="1" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="R09_16" comment="Raw and processed R09 data" bitcount="952" isSigned="true" encoding="65001" type="struct" structDefinition="R09Decoding::svStructR09Decoding" />
+    </namespace>
+  </namespace>
+</systemvariables>

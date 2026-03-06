@@ -1,0 +1,60 @@
+/*@!Encoding:1252*/
+includes
+{
+  #include "Common.cin"
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// 
+// This node is using the extended address claimed support 
+//
+// It uses the the callback J1939ILOnAddressClaimConflict to calulate a new address
+// if the node loses address arbitration. The IL tries to claim that address.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+variables
+{
+  byte lastUsedAddress;
+}
+
+on preStart
+{
+  J1939ILSetNodeProperty("AddressClaimSupport", ExtendedAddressClaimSupport);
+}
+
+on start
+{
+  lastUsedAddress = J1939ILGetAddress();
+}
+
+on sysvar svChangeAddress_Node4
+{
+  if(@this == 1)
+  {
+    @sysvar::J1939AddressClaimingDemo::Node4::ILAddress = @svNewAddress_Node4;
+  }
+}
+
+// this callback is called if an address claim confict happens
+dword J1939ILOnAddressClaimConflict(dword addressArbitrationIsLost, dword newAddress, dword& suppressAddressClaimed)
+{
+  if (addressArbitrationIsLost)
+  {
+    if(lastUsedAddress < 0xFE) 
+    {
+      // calclulate new address and return it so the IL uses it for address claiming
+      lastUsedAddress++;
+      writeEx(SinkWriteWindowCAPL, SeverityWarning, "\nNode4 loses address arbitration and claims address %u", lastUsedAddress);
+      return lastUsedAddress;
+    }
+  }
+  else
+  {
+    ReportAddressClaimConflict("Node4", addressArbitrationIsLost, newAddress);
+  }
+  
+  return newAddress;
+}
+
+

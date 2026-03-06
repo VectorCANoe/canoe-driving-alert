@@ -1,0 +1,110 @@
+/*@!Encoding:1252*/
+
+//////////////////////////////////////////////////////////////////////////////////////////
+//
+// Node3.can
+//
+// Copyright 2022, Vector Informatik GmbH - All right reserved
+//
+// This node uses CAPL functions J1939InitializeMultiPG and J1939AddContainedPG
+// to transmit two Contained Parameter Groups (C-PGs) with CAN FD according to J1939-22.
+// Because the node does not use the J1939 IL an Address Claimed message is sent manually on 
+// measurement start.
+//
+//////////////////////////////////////////////////////////////////////////////////////////
+
+includes
+{ 
+}
+
+variables
+{
+  const byte AddressOfNode3 = 3;
+}
+
+on preStart
+{
+  // Initialize system variables with values of database
+  @Node3::CPG2::TypeOfSerice       = CPg2.J1939CPgTOS;
+  @Node3::CPG2::TrailerFormatValue = CPg2.J1939CPgTF;
+  @Node3::CPG3::TypeOfSerice       = CPg3.J1939CPgTOS;
+  @Node3::CPG3::TrailerFormatValue = CPg3.J1939CPgTF;
+}
+
+on start
+{
+  // Send Address Claimed message on startup
+  pg AC_Node3 ac;
+  output(ac);
+}
+on sysvar_update sysvar::Node3::TransmitCPGs
+{
+  message* multiPG;
+  pg CPg2 cpg2;
+  pg CPg3 cpg3;
+  byte position;
+  
+  const byte DataLengthOfMessage1WithoutAssuranceData = 8;
+
+  if (@this > 0)
+  {
+    // Initialize Multi-PG
+    J1939InitializeMultiPG(multiPG, AddressOfNode3);
+    
+    // Add first Contained PG
+    cpg2.CPg2_Signal = 0x11;
+    cpg2.tos = @Node3::CPG2::TypeOfSerice;
+    cpg2.tf  = @Node3::CPG2::TrailerFormatValue;
+    @Node3::CPG2::AssuranceDataLength = GetAssuranceDataLength(cpg2.tos, cpg2.tf);
+    for (position=0; position<@Node3::CPG2::AssuranceDataLength; ++position)
+    {
+      cpg2.byte(8+position) = position;
+    }
+    cpg2.dlc = DataLengthOfMessage1WithoutAssuranceData + @Node3::CPG2::AssuranceDataLength;
+    J1939AddContainedPG(multiPG, cpg2);
+    
+    // Add second Contained PG
+    cpg3.CPg3_Signal = 0x22; // 
+    cpg3.tos = @Node3::CPG3::TypeOfSerice;
+    cpg3.tf  = @Node3::CPG3::TrailerFormatValue;
+    @Node3::CPG3::AssuranceDataLength = GetAssuranceDataLength(cpg3.tos, cpg3.tf);
+    for (position=0; position < @Node3::CPG3::AssuranceDataLength; ++position)
+    {
+      cpg3.byte(8+position) = position;
+    }
+    cpg3.dlc = DataLengthOfMessage1WithoutAssuranceData + @Node3::CPG3::AssuranceDataLength;
+    J1939AddContainedPG(multiPG, cpg3);
+    
+    output(multiPG);
+  }
+}
+
+//Adjust assurance data length for new valuues of typeOfService and trailerFormatValue (Node3::CPG2)
+on sysvar (Node3::CPG2::TypeOfSerice | Node3::CPG2::TrailerFormatValue)
+{
+  @Node3::CPG2::AssuranceDataLength = GetAssuranceDataLength(@Node3::CPG2::TypeOfSerice, @Node3::CPG2::TrailerFormatValue);
+}
+
+//Adjust assurance data length for new valuues of typeOfService and trailerFormatValue (Node3::CPG3)
+on sysvar (Node3::CPG3::TypeOfSerice | Node3::CPG3::TrailerFormatValue)
+{
+  @Node3::CPG3::AssuranceDataLength = GetAssuranceDataLength(@Node3::CPG3::TypeOfSerice, @Node3::CPG3::TrailerFormatValue);
+}
+
+// Calculate assurance data length
+byte GetAssuranceDataLength(byte typeOfService, byte trailerFormat)
+{ 
+  if (typeOfService == 1)
+  {
+    switch (trailerFormat)
+    {
+      case 1: return 4;
+      case 2: return 4;
+      case 3: return 8;
+      case 5: return 8;
+      case 6: return 8;
+      default: break;
+    }
+  }  
+  return 0;
+}

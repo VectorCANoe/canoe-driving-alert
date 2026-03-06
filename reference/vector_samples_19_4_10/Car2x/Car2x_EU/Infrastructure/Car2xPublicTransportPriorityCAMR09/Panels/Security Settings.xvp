@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<Panel Type="Vector.CANalyzer.Panels.PanelSerializer, Vector.CANalyzer.Panels.Serializer, Version=17.3.49.0, Culture=neutral, PublicKeyToken=null">
+  <Object Type="Vector.CANalyzer.Panels.Runtime.Panel, Vector.CANalyzer.Panels.Common, Version=17.3.49.0, Culture=neutral, PublicKeyToken=null" Name="Panel" Children="Controls" ControlName="Security Settings">
+    <Object Type="Vector.CANalyzer.Panels.Design.GroupBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.49.0, Culture=neutral, PublicKeyToken=null" Name="GroupBoxControl1" Children="Controls" ControlName="Group Box 1">
+      <Object Type="Vector.CANalyzer.Panels.Design.RadioButtonControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.49.0, Culture=neutral, PublicKeyToken=null" Name="RadioButtonControl2" Children="Controls" ControlName="Radio Button 2">
+        <Property Name="Name">RadioButtonControl2</Property>
+        <Property Name="Size">200, 17</Property>
+        <Property Name="Location">13, 51</Property>
+        <Property Name="Text">Security Header with unsecured data</Property>
+        <Property Name="SymbolConfiguration">8;16;SecuritySettings;;;Type;1;;;-1;;;;;;0</Property>
+        <Property Name="TabIndex">5</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.RadioButtonControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.49.0, Culture=neutral, PublicKeyToken=null" Name="RadioButtonControl1" Children="Controls" ControlName="Radio Button 1">
+        <Property Name="Name">RadioButtonControl1</Property>
+        <Property Name="Size">181, 17</Property>
+        <Property Name="Location">13, 28</Property>
+        <Property Name="Text">Security Header with signed data</Property>
+        <Property Name="SwitchValueVTXml">&lt;Version&gt;2&lt;/Version&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;RxValue&gt;0&lt;/RxValue&gt;</Property>
+        <Property Name="SwitchValueVT">1;Lower;0</Property>
+        <Property Name="SwitchValue">0</Property>
+        <Property Name="SymbolConfiguration">8;16;SecuritySettings;;;Type;1;;;-1;;;;;;0</Property>
+        <Property Name="TabIndex">4</Property>
+      </Object>
+      <Property Name="Name">GroupBoxControl1</Property>
+      <Property Name="Size">219, 82</Property>
+      <Property Name="Location">11, 10</Property>
+      <Property Name="Text">Security Header Settings</Property>
+      <Property Name="TabIndex">0</Property>
+    </Object>
+    <Property Name="Name">Panel</Property>
+    <Property Name="Size">240, 99</Property>
+    <Property Name="BackColor">White</Property>
+  </Object>
+</Panel>

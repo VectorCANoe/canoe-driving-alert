@@ -1,0 +1,272 @@
+/*@!Encoding:1252*/
+
+includes
+{
+  #include "IoTEnablerControl_Monitor.cin"
+}
+
+variables 
+{
+  const int cMinimumLengthVendorSpecificElements = 7;
+}
+
+on start
+{
+  @sysvar::IoTEnabler::SysEV_WifiClient_State = sysvar::IoTEnabler::SysEV_WifiClient_State::Initial;
+  sysSetVariableString(sysvar::IoTEnabler::SysEV_WifiClient_AdditionalInfo, "");
+  
+  ReadVendorSpecificElements();
+  ConfigureClient();
+}
+
+on value_change IoTEnabler::WiFiClient.connection_status
+{
+  if ($IoTEnabler::WiFiClient.connection_status.connected)
+  {
+    @sysvar::EV_Sim::SysEV_LinkStatus = 1;
+    @sysvar::IoTEnabler::SysEV_WifiClient_State = sysvar::IoTEnabler::SysEV_WifiClient_State::Connected;
+  }
+  else
+  {
+    @sysvar::EV_Sim::SysEV_LinkStatus = 0;
+    @sysvar::IoTEnabler::SysEV_WifiClient_State = sysvar::IoTEnabler::SysEV_WifiClient_State::Disconnected;
+  }
+}
+
+on value_update IoTEnabler::WiFiController.wifi_beacon
+{
+  @Common::SysBeaconFrameReceived = 1;
+}
+
+void ConfigureClient() 
+{
+  stack char countrycode[10];
+  stack char interfaceWifiClient[30];
+  
+  sysGetVariableString(sysvar::IoTEnabler::SysEV_CountryCode, countrycode, elcount(countrycode));
+  sysGetVariableString(sysvar::IoTEnabler::SysEV_ClientWifiInterface, interfaceWifiClient, elcount(interfaceWifiClient));
+  
+  @sysvar::IoTEnabler::SysEV_WifiClient_State = sysvar::IoTEnabler::SysEV_WifiClient_State::Configuring;
+  
+  IoTEnabler::WiFiClient.configure.CallAsync(
+    interfaceWifiClient, countrycode, 
+    delegate (callContext IoTEnabler::WiFiClient.configure cco) 
+    {
+      sysSetVariableString(sysvar::IoTEnabler::SysEV_WifiClient_AdditionalInfo, cco.Result.additional_info);
+      
+      if (cco.Result.return_code == 0)
+      {
+        if (@sysvar::IoTEnabler::SysEV_ConnectToSecureNetwork == sysvar::IoTEnabler::SysEV_ConnectToSecureNetwork::ConnectToUnsecure)
+        {
+          AddUnsecuredNetwork();
+        }
+        else
+        {
+          AddSecuredNetwork();
+        }
+      }
+      else
+      {
+        @sysvar::IoTEnabler::SysEV_WifiClient_State = sysvar::IoTEnabler::SysEV_WifiClient_State::Error;
+      }
+  });
+}
+
+void AddUnsecuredNetwork()
+{
+  stack char ssid[50];
+  sysGetVariableString(sysvar::IoTEnabler::SysEV_SSID, ssid, elcount(ssid));
+  
+  @sysvar::IoTEnabler::SysEV_WifiClient_State = sysvar::IoTEnabler::SysEV_WifiClient_State::AdddingUnsecuredNetwork;
+  
+  IoTEnabler::WiFiClient.add_unsecured_network_config.CallAsync(
+    ssid,
+    delegate (callContext IoTEnabler::WiFiClient.add_unsecured_network_config cco) 
+      {
+        sysSetVariableString(sysvar::IoTEnabler::SysEV_WifiClient_AdditionalInfo, cco.Result.additional_info);
+        
+        if (cco.Result.return_code == 0)
+        {
+          SetForwardingMACAddress();
+        }
+        else
+        {
+          @sysvar::IoTEnabler::SysEV_WifiClient_State = sysvar::IoTEnabler::SysEV_WifiClient_State::Error;
+        }
+  });
+}
+
+void AddSecuredNetwork()
+{
+  stack char ssid[50];
+  stack char wpa2Key[50];
+  
+  sysGetVariableString(sysvar::IoTEnabler::SysEV_SSID, ssid, elcount(ssid));
+  sysGetVariableString(sysvar::IoTEnabler::SysEV_WPA2Key, wpa2Key, elcount(wpa2Key));
+  
+  @sysvar::IoTEnabler::SysEV_WifiClient_State = sysvar::IoTEnabler::SysEV_WifiClient_State::AddingSecuredNetwork;
+  
+  IoTEnabler::WiFiClient.add_secured_network_config.CallAsync(
+    ssid, wpa2Key,
+    delegate (callContext IoTEnabler::WiFiClient.add_secured_network_config cco) 
+      {
+        sysSetVariableString(sysvar::IoTEnabler::SysEV_WifiClient_AdditionalInfo, cco.Result.additional_info);
+        
+        if (cco.Result.return_code == 0)
+        {
+          SetForwardingMACAddress();
+        }
+        else
+        {
+          @sysvar::IoTEnabler::SysEV_WifiClient_State = sysvar::IoTEnabler::SysEV_WifiClient_State::Error;
+        }
+  });
+}
+
+void SetForwardingMACAddress()
+{
+  stack char forwardingMACAddress[50];
+  sysGetVariableString(sysvar::IoTEnabler::SysEV_MAC, forwardingMACAddress, elcount(forwardingMACAddress));
+  
+  @sysvar::IoTEnabler::SysEV_WifiClient_State = sysvar::IoTEnabler::SysEV_WifiClient_State::SettingForwardingMACAddress;
+  
+  IoTEnabler::WiFiClient.set_forwarding_mac_address.CallAsync(
+    forwardingMACAddress,
+    delegate (callContext IoTEnabler::WiFiClient.set_forwarding_mac_address cco) 
+    {
+      sysSetVariableString(sysvar::IoTEnabler::SysEV_WifiClient_AdditionalInfo, cco.Result.additional_info);
+      
+      if (cco.Result.return_code == 0)
+      {
+        SetVendorSpecificElements();
+      }
+      else
+      {
+        @sysvar::IoTEnabler::SysEV_WifiClient_State = sysvar::IoTEnabler::SysEV_WifiClient_State::Error;
+      }
+  });
+}
+
+void SetVendorSpecificElements()
+{
+  stack char vendorSpecificElements[515];
+  sysGetVariableString(sysvar::IoTEnabler::VSE::SysEV_VSE, vendorSpecificElements, elCount(vendorSpecificElements));
+  
+  @sysvar::IoTEnabler::SysEV_WifiClient_State = sysvar::IoTEnabler::SysEV_WifiClient_State::SettingForwardingMACAddress;
+  
+  IoTEnabler::WiFiClient.add_vendor_specific_elements.CallAsync(
+    vendorSpecificElements,
+    delegate (callContext IoTEnabler::WiFiClient.add_vendor_specific_elements cco) 
+    {
+      sysSetVariableString(sysvar::IoTEnabler::SysEV_WifiClient_AdditionalInfo, cco.Result.additional_info);
+      
+      if (cco.Result.return_code == 0)
+      {
+        StartClient();
+      }
+      else
+      {
+        @sysvar::IoTEnabler::SysEV_WifiClient_State = sysvar::IoTEnabler::SysEV_WifiClient_State::Error;
+      }
+  });
+
+}
+
+void StartClient()
+{
+  @sysvar::IoTEnabler::SysEV_WifiClient_State = sysvar::IoTEnabler::SysEV_WifiClient_State::StartingClient;
+  
+  IoTEnabler::WiFiClient.start_client.CallAsync(
+    delegate (callContext IoTEnabler::WiFiClient.start_client cco) 
+    {
+      sysSetVariableString(sysvar::IoTEnabler::SysEV_WifiClient_AdditionalInfo, cco.Result.additional_info);
+      
+      if (cco.Result.return_code == 0)
+      {
+        Connect();
+      }
+      else
+      {
+        @sysvar::IoTEnabler::SysEV_WifiClient_State = sysvar::IoTEnabler::SysEV_WifiClient_State::Error;
+      }
+  });
+}
+
+void Connect()
+{
+  stack char ssid[50];
+  sysGetVariableString(sysvar::IoTEnabler::SysEV_SSID, ssid, elcount(ssid));
+  
+  @sysvar::IoTEnabler::SysEV_WifiClient_State = sysvar::IoTEnabler::SysEV_WifiClient_State::Connecting;
+  
+  IoTEnabler::WiFiClient.connect.CallAsync(ssid);
+}
+
+on fct_returned IoTEnabler::WiFiClient.connect 
+{
+  sysSetVariableString(sysvar::IoTEnabler::SysEV_WifiClient_AdditionalInfo, this.Result.additional_info);
+      
+  if (this.Result.return_code == 0)
+  {
+    @sysvar::IoTEnabler::SysEV_WifiClient_State = sysvar::IoTEnabler::SysEV_WifiClient_State::Connected;
+  }
+  else
+  {
+    @sysvar::IoTEnabler::SysEV_WifiClient_State = sysvar::IoTEnabler::SysEV_WifiClient_State::Error;
+  }
+}
+
+
+void Disconnect()
+{
+  stack char ssid[50];
+  sysGetVariableString(sysvar::IoTEnabler::SysEV_SSID, ssid, elcount(ssid));
+  
+  @sysvar::IoTEnabler::SysEV_WifiClient_State = sysvar::IoTEnabler::SysEV_WifiClient_State::Disconnecting;
+  
+  IoTEnabler::WiFiClient.disconnect.CallAsync(
+    delegate (callContext IoTEnabler::WiFiClient.disconnect cco) 
+    {
+      sysSetVariableString(sysvar::IoTEnabler::SysEV_WifiClient_AdditionalInfo, cco.Result.additional_info);
+      
+      if (cco.Result.return_code == 0)
+      {
+        @sysvar::IoTEnabler::SysEV_WifiClient_State = sysvar::IoTEnabler::SysEV_WifiClient_State::Disconnected;
+      }
+      else
+      {
+        @sysvar::IoTEnabler::SysEV_WifiClient_State = sysvar::IoTEnabler::SysEV_WifiClient_State::Error;
+      }
+  });
+}
+
+void ReadVendorSpecificElements()
+{
+  stack char tmp_vse_para[515];
+  stack char final_vse_para[515];
+  
+  stack char vse_element_id[3];
+  stack int vse_length = 0;
+  stack char vse_length_string[3];
+  stack char vse_organizational_id[11];
+  stack char vse_element_type[3];
+  stack  int vse_energy_transfer_type;
+  stack char energy_transfer_type[15][3] = {"01", "02", "04", "08", "03", "05", "09", "06", "0a", "0c", "07", "0b", "0d", "0e", "0f"};
+  stack char vse_additional_information[477];
+  
+  sysGetVariableString(sysvar::IoTEnabler::VSE::SysEV_VSE_ElementID, vse_element_id, elcount(vse_element_id));
+  sysGetVariableString(sysvar::IoTEnabler::VSE::SysEV_VSE_OrganizationalID, vse_organizational_id, elcount(vse_organizational_id));
+  sysGetVariableString(sysvar::IoTEnabler::VSE::SysEV_VSE_ElementType, vse_element_type, elcount(vse_element_type));
+  vse_energy_transfer_type = @sysvar::IoTEnabler::VSE::SysEV_VSE_EnergyTransferType;
+  sysGetVariableString(sysvar::IoTEnabler::VSE::SysEV_VSE_AdditionalInformation, vse_additional_information, elcount(vse_additional_information));
+  
+  vse_length = cMinimumLengthVendorSpecificElements + mbstrlen(vse_additional_information)/2;
+  snprintf(vse_length_string, elcount(vse_length_string), "%.2X", vse_length);
+  
+  snprintf(tmp_vse_para, elcount(tmp_vse_para), "%s%s%s%s%s%s", vse_element_id, vse_length_string, vse_organizational_id, vse_element_type, energy_transfer_type[vse_energy_transfer_type], vse_additional_information);
+  
+  //TODO remove once firmware is updated
+  toLower(final_vse_para, tmp_vse_para, elCount(tmp_vse_para));
+  
+  sysSetVariableString(sysvar::IoTEnabler::VSE::SysEV_VSE, final_vse_para);
+}

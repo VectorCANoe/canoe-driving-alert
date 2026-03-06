@@ -1,0 +1,93 @@
+/*@!Encoding:1252*/
+
+variables
+{
+  int gEventReached = 1;
+}
+
+/***************************************************************************/
+// Visualizes Usecases on the Dashboard Panel. 
+// 
+// param usecaseName:       Name of the usecase which shall be presented,
+//                          mapped to a sysvar
+// param distance:          Distance to the event, mapped to a sysvar
+// param dashboardPicture:  Path to the picture which shall be presented
+/***************************************************************************/
+double getUsecaseDistance()
+{
+  float lat, lon;
+  long intLat, intLon;
+  int distanceBetweenVehicles = 0;
+  
+  if (@ScenarioCtrl::ScenarioNumber == 0)
+  {
+    lat = C2xGetStationAttributeDouble("Sender_EEBL", "Latitude");
+    lon = C2xGetStationAttributeDouble("Sender_EEBL", "Longitude");
+    distanceBetweenVehicles = API_PosCalcDistance(lat, lon, @GNSS::Ath1.Latitude, @GNSS::Ath1.Longitude);
+  }
+  if (@ScenarioCtrl::ScenarioNumber == 1)
+  {
+    lat = C2xGetStationAttributeDouble("Sender_StationaryVehicle", "Latitude");
+    lon = C2xGetStationAttributeDouble("Sender_StationaryVehicle", "Longitude");
+    distanceBetweenVehicles = API_PosCalcDistance(lat, lon, @GNSS::Ath1.Latitude, @GNSS::Ath1.Longitude);
+  }
+  return distanceBetweenVehicles;
+}
+
+
+void visualizeUsecase()
+{
+  if (@ScenarioCtrl::ScenarioNumber == 0)
+  {
+    visualizeUsecase("Electronic Emergency Brake Light", getUsecaseDistance(), "..\\PANELS\\BMP\\EEBL.jpg");
+  }
+  if (@ScenarioCtrl::ScenarioNumber == 1)
+  {
+    visualizeUsecase("Stationary Vehicle Ahead", getUsecaseDistance(), "..\\PANELS\\BMP\\SVA.jpg");
+  }
+}
+
+void visualizeUsecase(char usecaseName[], int distance, char dashboardPicture[])
+{
+  if (gEventReached == 0)
+  {
+    if (distance >= 0)
+    {
+      @sysvar::Usecases::DistanceToEvent = distance * 3.28084;
+      SysSetVariableString("Usecases",  "UsecaseName", usecaseName);
+      setPictureBoxImage  ("Head Unit", "pbUsecases", dashboardPicture);
+      SetControlVisibility("Head Unit", "progressBarDistance", 1);
+      SetControlVisibility("Head Unit", "stDistanceBar", 1);
+      SetControlVisibility("Head Unit", "pbUsecases", 1);
+      SetControlVisibility("Head Unit", "pbDefault", 0);
+      SetControlVisibility("Head Unit", "ioDistance", 1);
+      if (distance == 0)
+      {
+        gEventReached = 1;
+      }
+    }
+    else
+    {
+      // Clear the Dashboard panel
+      ResetPanel();
+    }
+  }
+  else
+  {
+    // Clear the Dashboard panel
+    ResetPanel();
+  }
+}
+/***************************************************************************/
+// Clears the Dashboard Panel and sets it back to its default values
+/***************************************************************************/
+void ResetPanel()
+{
+  @sysvar::Usecases::DistanceToEvent = 0;
+  SysSetVariableString("Usecases", "UsecaseName", "");
+  SetControlVisibility("Head Unit", "pbUsecases", 0);
+  SetControlVisibility("Head Unit", "pbDefault", 1);
+  SetControlVisibility("Head Unit", "progressBarDistance", 0);
+  SetControlVisibility("Head Unit", "stDistanceBar", 0);
+  SetControlVisibility("Head Unit", "ioDistance", 0);
+}

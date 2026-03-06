@@ -1,0 +1,60 @@
+/*@!Encoding:1252*/
+includes
+{
+  #include "Common.cin"
+}
+
+variables
+{   
+  byte AddressOfNode10 = 10;
+  byte AddressOfNode11 = 11;
+  byte AddressOfNode30 = 30;
+  byte AddressOfNode31 = 31;
+}
+
+//
+// This gateway forwards message 
+//
+
+on start
+{
+}
+
+on message CAN1.*
+{
+  message * canMsg;
+  byte destinationAddress;
+
+  if (this.dir == Tx) return;
+
+  destinationAddress = GetDestinationAddressOfCANID(this.id);
+  
+  if ((destinationAddress == AddressOfNode30) || 
+      (destinationAddress == AddressOfNode31) || 
+      (destinationAddress == GlobalAddress))
+  {
+    canMsg = this;
+    canMsg.can = 3;
+    output(canMsg);
+  }
+}
+
+on message CAN3.*
+{
+  message * canMsg;
+  byte destinationAddress;
+ 
+  if (this.dir == Tx) return;
+  
+  destinationAddress = GetDestinationAddressOfCANID(this.id);
+  
+  if ((destinationAddress == AddressOfNode10) || 
+      (destinationAddress == AddressOfNode11) || 
+      (destinationAddress == GlobalAddress))
+  {
+    canMsg = this;
+    canMsg.can = 1;
+    output(canMsg);   
+  }
+}
+

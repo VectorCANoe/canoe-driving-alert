@@ -1,0 +1,215 @@
+/*@!Encoding:1252*/
+includes
+{
+  #include "Diagnostics\CCI_DoIP.cin"
+#if (TOOL_MAJOR_VERSION >= 19)
+  #define DOIP_PERIODIC_MESSAGES_SUPPORTED
+#elif (TOOL_MAJOR_VERSION == 18 && TOOL_SERVICE_PACK>=3)
+  #define UNSOLICITED_RESPONSES_SUPPORTED
+#endif
+  #include "..\CAPL_Includes\CommonDiagImplementation.cin"
+  #include "..\CAPL_Includes\Ethernet.cin"
+  #include "..\CAPL_Includes\LibFunctions_DHCP.cin"
+}
+
+variables
+{
+  char gECU[20]="DoIP_ECU";
+}
+
+on preStart
+{
+  DoIP_ConfigureVehicleAnnouncement(0,0,500);
+  diagInitEcuSimulation(gECU);
+}
+
+on timer tLinkUpSequence
+{
+  ethSetLinkStatus(1,1);
+  DoIP_AnnounceVehicle();
+  setTimer(tDelayedResponse, cWaitTimeAfterLinkUpBeforeResponse);
+}
+
+on sysvar sysvar::%BASE_FILE_NAME_NO_EXT%::BtnCloseTcpConnection
+{
+  DoIP_CloseConnection();
+}
+
+on key *
+{
+  if (this > '0' && this <'7') {
+    AddFaultByIndex((word)(this-'1')); // store corresponding DTC in fault memory
+  }
+}
+
+void _Diag_ChannelStateChanged( long newState)
+{
+  char channelStateDescription[6][15] = {
+    "Closed",
+    "Opened",
+    "Connected",
+    "Online",
+    "ClosePending",
+    "ConnectPending"
+  };
+  if (0<=newState && newState<=5) {
+    writeDbgLvlPrefix( 2, "Channel state changed to '%s'", channelStateDescription[newState]);
+  }
+  else {
+    writeDbgLvlPrefix( 0, "Channel state changed to %d (unknown state!)", newState);
+  }
+  
+  if (newState == 1 || newState == 2) // Opened or Connected
+  {
+    @sysvar::%BASE_FILE_NAME_NO_EXT%::RoutingActivated=1;
+  }
+  else{
+    @sysvar::%BASE_FILE_NAME_NO_EXT%::RoutingActivated=0;
+  }
+}
+
+void InitECU()
+{
+  InitFaultmem(SupportedDTC);  
+  InitDDDIDs();
+  InitVariantCoding();
+
+  SetLedColor();
+
+  @sysvarMember::%BASE_FILE_NAME_NO_EXT%::RewritableData.SerialNumber=@sysvar::%BASE_FILE_NAME_NO_EXT%::DefaultSerialNumber;
+
+  gS3ServerTimeout=diagGetCommParameter("CANoe.S3ServerTime");
+  gP2ClientTimeout=150;
+  gP2extClientTimeout=2000;
+
+  // Switch off sending of periodic Data Identifiers
+  gSineSendMode=Off;
+  gSawtoothSendMode=Off;
+  @sysvar::Tester::BtnInternalsCyclicRead=0;
+  @sysvar::Tester::BtnWindowPosCyclicRead=0;
+  gDDDIDSendMode=Off;
+
+  setTimerCyclic(tUpdateInternalValues, 100);  // Update internal values every 100 ms
+
+  // Set timers for periodic Data Identifiers
+  setTimerCyclic(tDIDSendSlow, 5000);  
+  setTimerCyclic(tDIDSendMedium, 1000);
+  setTimerCyclic(tDIDSendFast, 100);  
+  
+  ResetSession();
+  @sysvar::%BASE_FILE_NAME_NO_EXT%::TesterPresent=0;
+  enableControl("%BASE_FILE_NAME_NO_EXT%_Application", "ButtonCloseTcpConnection", 0);
+  @sysvar::%BASE_FILE_NAME_NO_EXT%::AuthenticationStatus=0;
+}
+
+// Simulate erroneous ECU not responding at all to this service
+on diagRequest %BASE_FILE_NAME_NO_EXT%.Additional.UnimplementedServiceData_Read
+{
+  // Send no response at all
+}
+
+on diagRequest %BASE_FILE_NAME_NO_EXT%.Additional.WindowLiftFinePositionRead
+{
+  diagResponse this resp;
+
+  if (@%BASE_FILE_NAME_NO_EXT%::RewritableData.VariantCoding.WindowLiftSupport) {
+    refreshS3Timer();  
+
+    diagSetParameter(resp, "WindowLiftFinePosition", @sysvarMember::%BASE_FILE_NAME_NO_EXT%::InternalData.WindowFinePosition);
+    diagSendPositiveResponse(resp);
+    return;
+  }
+  else {
+    ResetSession();
+    sendNegativeResponse(resp, cNRC_ConditionsNotCorrectOrRequestSequenceError);
+  }
+}
+
+on diagRequest %BASE_FILE_NAME_NO_EXT%.Additional.WindowLiftFinePositionWrite
+{
+  double dblTargetPositionInPercent;
+  diagResponse this resp;
+
+  if (@%BASE_FILE_NAME_NO_EXT%::RewritableData.VariantCoding.WindowLiftSupport) {
+    refreshS3Timer();  
+    refreshSessionTimer();
+
+    dblTargetPositionInPercent=diagGetParameter(this, "TargetPosition");
+    if (dblTargetPositionInPercent<=100.0 && dblTargetPositionInPercent>=0.0) {
+      SetWindowLiftPosition(dblTargetPositionInPercent);
+      resp.sendPositiveResponse();
+    }
+    else {
+      ResetSession();
+      sendNegativeResponse(resp, cNRC_RequestOutOfRange);
+    }  
+  }
+  else {
+    sendNegativeResponse(resp, cNRC_ConditionsNotCorrectOrRequestSequenceError);
+  }
+}
+
+// Handle both Hard and soft reset within one function (i.e. handle all services within one class)
+on diagRequest %BASE_FILE_NAME_NO_EXT%.Reset::*
+{
+  diagResponse this resp;
+  byte subFunction;
+
+  subFunction=diagGetPrimitiveByte(this, 1);
+  
+  refreshS3Timer();
+  
+  if (subFunction==0x01) { // simulate HW Reset taking longer than SW reset
+    sendNegativeResponse(this, cNRC_RequestCorrectlyReceivedResponsePending);
+    DoIP_CloseConnection(); // Close TCP connection as well
+    setTimer(tLinkDownSequence, cHardResetDuration_ms); // positive response needs to be sent within P6ext Server after RP
+  }
+  else {
+    diagSetPrimitiveByte(resp, 1, subFunction);
+    diagSendPositiveResponse(resp);
+  }
+  InitECU();
+}
+
+configureAndAnnounceVehicle()
+{
+  writeDbgLvlPrefix(2, "Trying to announce vehicle!");
+  DoIP_ConfigureVehicleAnnouncement(0,3,500);
+  DoIP_AnnounceVehicle();   
+}
+
+on sysvar sysvar::%BASE_FILE_NAME_NO_EXT%::AnnounceVehicle
+{
+  if (@this) configureAndAnnounceVehicle();
+}
+
+on sysvar sysvar::DiagAccessEth::ActivationLineStatus
+{
+  if (@this) {
+    if (!@DiagAccessEth::TcpConnectionEstablished && @%BASE_FILE_NAME_NO_EXT%::IpAddressDiagAccessEthAssigned)
+    {
+      configureAndAnnounceVehicle();
+    }
+  }
+}
+
+on sysvar %BASE_FILE_NAME_NO_EXT%::IpAddressDiagAccessEthAssigned
+{
+  if (@this) {
+    if (!@DiagAccessEth::TcpConnectionEstablished && @DiagAccessEth::ActivationLineStatus) {
+      configureAndAnnounceVehicle();
+    }
+  }
+}
+
+on sysvar sysvar::DiagAccessEth::TcpConnectionEstablished
+{
+  if (@this==1)
+  {
+    enableControl("%BASE_FILE_NAME_NO_EXT%_Application", "ButtonCloseTcpConnection", 1);
+  }
+  else
+  {
+    enableControl("%BASE_FILE_NAME_NO_EXT%_Application", "ButtonCloseTcpConnection", 0);
+  }
+}

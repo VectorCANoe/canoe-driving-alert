@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<OpenScenario>
+  <FileHeader author="Vector DYNA4 aggregated" date="2023-02-21T16:13:21" description="Aggregated from Vehicles.xosc, Pedestrians.xosc, RoadWorks_Vehicles.xosc, Roadworks.xosc" revMajor="1" revMinor="2"/>
+  <Catalog name="catalog">
+    <Vehicle name="{original_catalog:Vehicles}VW_Golf_Sportsvan_2015" vehicleCategory="car">
+      <BoundingBox>
+        <Center x="1.349" y="0.0" z="0.788"/>
+        <Dimensions height="1.577" length="4.358" width="1.815"/>
+      </BoundingBox>
+      <Performance maxAcceleration="5.0" maxDeceleration="10.0" maxSpeed="70.0"/>
+      <Axles>
+        <FrontAxle maxSteering="0.5" positionX="2.67" positionZ="0.329" trackWidth="1.52" wheelDiameter="0.659"/>
+        <RearAxle maxSteering="0.0" positionX="0.0" positionZ="0.329" trackWidth="1.526" wheelDiameter="0.659"/>
+      </Axles>
+      <Properties>
+        <Property name="AnimationFile" value="cms:/$(database)/TrafficDatabase/Basics/TrafficModules/TrafficObjects/PassengerCar/Vehicle_VW_Golf_Sportsvan_2015.dapx"/>
+      </Properties>
+    </Vehicle>
+    <Vehicle name="{original_catalog:Vehicles}VW_Tiguan_R_2021" vehicleCategory="car">
+      <BoundingBox>
+        <Center x="1.349" y="0.0" z="0.834"/>
+        <Dimensions height="1.668" length="4.514" width="1.859"/>
+      </BoundingBox>
+      <Performance maxAcceleration="5.0" maxDeceleration="10.0" maxSpeed="70.0"/>
+      <Axles>
+        <FrontAxle maxSteering="0.5" positionX="2.678" positionZ="0.373" trackWidth="1.546" wheelDiameter="0.746"/>
+        <RearAxle maxSteering="0.0" positionX="0.0" positionZ="0.373" trackWidth="1.546" wheelDiameter="0.746"/>
+      </Axles>
+      <Properties>
+        <Property name="AnimationFile" value="cms:/$(database)/TrafficDatabase/Basics/TrafficModules/TrafficObjects/PassengerCar/Vehicle_VW_Tiguan_R_2021.dapx"/>
+      </Properties>
+    </Vehicle>
+    <Vehicle name="{original_catalog:Vehicles}Neoplan_Skyliner_2015" vehicleCategory="bus">
+      <BoundingBox>
+        <Center x="3.126" y="0.0" z="2.0"/>
+        <Dimensions height="4.0" length="14.0" width="2.55"/>
+      </BoundingBox>
+      <Performance maxAcceleration="2.0" maxDeceleration="10.0" maxSpeed="50.0"/>
+      <Axles>
+        <FrontAxle maxSteering="0.5" positionX="8.172" positionZ="0.502" trackWidth="2.152" wheelDiameter="1.004"/>
+        <RearAxle maxSteering="0.0" positionX="0.0" positionZ="0.502" trackWidth="2.088" wheelDiameter="1.004"/>
+        <AdditionalAxle maxSteering="0.0" positionX="1.468" positionZ="0.502" trackWidth="2.088" wheelDiameter="1.004"/>
+      </Axles>
+      <Properties>
+        <Property name="AnimationFile" value="cms:/$(database)/TrafficDatabase/Basics/TrafficModules/TrafficObjects/Bus/Vehicle_Neoplan_Skyliner_2015.dapx"/>
+      </Properties>
+    </Vehicle>
+    <Vehicle name="{original_catalog:Vehicles}VW_Arteon_R_Shooting_Brake_2021" vehicleCategory="car">
+      <BoundingBox>
+        <Center x="1.302" y="0.0" z="0.731"/>
+        <Dimensions height="1.462" length="4.866" width="1.871"/>
+      </BoundingBox>
+      <Performance maxAcceleration="5.0" maxDeceleration="10.0" maxSpeed="70.0"/>
+      <Axles>
+        <FrontAxle maxSteering="0.5" positionX="2.838" positionZ="0.334" trackWidth="1.604" wheelDiameter="0.668"/>
+        <RearAxle maxSteering="0.0" positionX="0.0" positionZ="0.334" trackWidth="1.604" wheelDiameter="0.668"/>
+      </Axles>
+      <Properties>
+        <Property name="AnimationFile" value="cms:/$(database)/TrafficDatabase/Basics/TrafficModules/TrafficObjects/PassengerCar/Vehicle_VW_Arteon_R_Shooting_Brake_2021.dapx"/>
+      </Properties>
+    </Vehicle>
+    <Vehicle name="{original_catalog:Vehicles}Tesla_Model_X_2016" vehicleCategory="car">
+      <BoundingBox>
+        <Center x="1.402" y="0.0" z="0.84"/>
+        <Dimensions height="1.68" length="5.057" width="1.999"/>
+      </BoundingBox>
+      <Performance maxAcceleration="5.0" maxDeceleration="10.0" maxSpeed="70.0"/>
+      <Axles>
+        <FrontAxle maxSteering="0.5" positionX="2.965" positionZ="0.388" trackWidth="1.638" wheelDiameter="0.776"/>
+        <RearAxle maxSteering="0.0" positionX="0.0" positionZ="0.388" trackWidth="1.6" wheelDiameter="0.776"/>
+      </Axles>
+      <Properties>
+        <Property name="AnimationFile" value="cms:/$(database)/TrafficDatabase/Basics/TrafficModules/TrafficObjects/PassengerCar/Vehicle_Tesla_Model_X_2016.dapx"/>
+      </Properties>
+    </Vehicle>
+    <Vehicle name="{original_catalog:RoadWorks_Vehicles}IVECO_Daily_Van_2014" vehicleCategory="van">
+      <BoundingBox>
+        <Center x="1.66" y="0.0" z="1.226"/>
+        <Dimensions height="2.451" length="5.436" width="2.036"/>
+      </BoundingBox>
+      <Performance maxAcceleration="3.0" maxDeceleration="10.0" maxSpeed="50.0"/>
+      <Axles>
+        <FrontAxle maxSteering="0.5" positionX="3.451" positionZ="0.334" trackWidth="1.752" wheelDiameter="0.669"/>
+        <RearAxle maxSteering="0.0" positionX="0.0" positionZ="0.334" trackWidth="1.772" wheelDiameter="0.669"/>
+      </Axles>
+      <Properties>
+        <Property name="AnimationFile" value="cms:/$(database)/OpenSCENARIO/Catalogs/Vehicles/CommercialVehicle/Vehicle_IVECO_Daily_Van_2014_Orange.dapx"/>
+      </Properties>
+    </Vehicle>
+    <Vehicle name="{original_catalog:RoadWorks_Vehicles}Trailer_WarningSign_Large" vehicleCategory="trailer">
+      <BoundingBox>
+        <Center x="2.0" y="0.0" z="1.25"/>
+        <Dimensions height="4.0" length="5.436" width="2.5"/>
+      </BoundingBox>
+      <Performance maxAcceleration="3.0" maxDeceleration="10.0" maxSpeed="50.0"/>
+      <Axles>
+        <FrontAxle maxSteering="0.5" positionX="3.451" positionZ="0.334" trackWidth="1.752" wheelDiameter="0.669"/>
+        <RearAxle maxSteering="0.0" positionX="0.0" positionZ="0.334" trackWidth="1.772" wheelDiameter="0.669"/>
+      </Axles>
+      <Properties>
+        <Property name="AnimationFile" value="cms:/$(database)/OpenSCENARIO/Catalogs/Vehicles/ConstructionVehicle/Trailer_WarningSign_Large.dapx"/>
+      </Properties>
+    </Vehicle>
+    <Pedestrian mass="0.0" name="{original_catalog:Pedestrians}ConstructionWorker_Male" pedestrianCategory="pedestrian">
+      <BoundingBox>
+        <Center x="0.0" y="0.0" z="0.926"/>
+        <Dimensions height="1.852" length="0.912" width="0.614"/>
+      </BoundingBox>
+      <Properties>
+        <Property name="AnimationFile" value="cms:/$(database)/OpenSCENARIO/Catalogs/Pedestrians/Pedestrian/Pedestrian_ConstructionWorker_Male.dapx"/>
+      </Properties>
+    </Pedestrian>
+    <Trajectory closed="false" name="{original_catalog:Roadworks}road worker passing truck">
+      <Shape>
+        <Nurbs order="2">
+          <ControlPoint time="0.0" weight="1.0">
+            <Position>
+              <LanePosition laneId="3" offset="0.0" roadId="0" s="450.0"/>
+            </Position>
+          </ControlPoint>
+          <ControlPoint time="4.0" weight="1.0">
+            <Position>
+              <LanePosition laneId="2" offset="0.0" roadId="0" s="480.0"/>
+            </Position>
+          </ControlPoint>
+          <ControlPoint time="20.0" weight="1.0">
+            <Position>
+              <LanePosition laneId="3" offset="-1.5" roadId="0" s="520.0"/>
+            </Position>
+          </ControlPoint>
+          <Knot value="2.0"/>
+          <Knot value="2.0"/>
+          <Knot value="3.0"/>
+          <Knot value="5.0"/>
+          <Knot value="5.0"/>
+        </Nurbs>
+      </Shape>
+    </Trajectory>
+    <Trajectory closed="false" name="{original_catalog:Roadworks}road worker passing van">
+      <Shape>
+        <Nurbs order="2">
+          <ControlPoint time="0.0" weight="1.0">
+            <Position>
+              <LanePosition laneId="2" offset="0.0" roadId="0" s="420.0"/>
+            </Position>
+          </ControlPoint>
+          <ControlPoint time="6.0" weight="1.0">
+            <Position>
+              <LanePosition laneId="2" offset="0.0" roadId="0" s="450.0"/>
+            </Position>
+          </ControlPoint>
+          <ControlPoint time="6.5" weight="1.0">
+            <Position>
+              <LanePosition laneId="2" offset="-0.75" roadId="0" s="451.0"/>
+            </Position>
+          </ControlPoint>
+          <ControlPoint time="7.0" weight="1.0">
+            <Position>
+              <LanePosition laneId="2" offset="-1.5" roadId="0" s="450.0"/>
+            </Position>
+          </ControlPoint>
+          <ControlPoint time="20.0" weight="1.0">
+            <Position>
+              <LanePosition laneId="2" offset="-1.5" roadId="0" s="430.0"/>
+            </Position>
+          </ControlPoint>
+          <Knot value="1.0"/>
+          <Knot value="1.0"/>
+          <Knot value="2.0"/>
+          <Knot value="3.0"/>
+          <Knot value="4.0"/>
+          <Knot value="5.0"/>
+          <Knot value="5.0"/>
+        </Nurbs>
+      </Shape>
+    </Trajectory>
+  </Catalog>
+</OpenScenario>

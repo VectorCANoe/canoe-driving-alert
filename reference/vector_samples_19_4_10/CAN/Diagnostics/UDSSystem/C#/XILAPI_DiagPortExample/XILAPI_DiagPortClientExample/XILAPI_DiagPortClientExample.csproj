@@ -1,0 +1,155 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ProjectGuid>{BC02DB55-91EE-4D1F-81B8-B5FD2BED4379}</ProjectGuid>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <PlatformTarget Condition=" '$(Platform)' == 'x86' ">x86</PlatformTarget>
+    <PlatformTarget Condition=" '$(Platform)' == 'x64' ">x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ProductVersion>18.2.0</ProductVersion>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>XILAPI_DiagPortClientExample</RootNamespace>
+    <AssemblyName>XILAPI_DiagPortClientExample</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug_XIL_API_2_1_0'">
+    <Configuration>Debug</Configuration>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug_XIL_API_2_2_0'">
+    <Configuration>Debug</Configuration>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Release_XIL_API_2_1_0'">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Release_XIL_API_2_2_0'">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug_XIL_API_2_1_0|x86'">
+    <OutputPath>bin\x86\Debug_XIL_API_2_1_0\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;XIL_API_2_1_0;X86</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug_XIL_API_2_1_0|x64'">
+    <OutputPath>bin\x64\Debug_XIL_API_2_1_0\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;XIL_API_2_1_0;X64</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug_XIL_API_2_2_0|x86'">
+    <OutputPath>bin\x86\Debug_XIL_API_2_2_0\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;XIL_API_2_2_0;X86</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug_XIL_API_2_2_0|x64'">
+    <OutputPath>bin\x64\Debug_XIL_API_2_2_0\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;XIL_API_2_2_0;X64</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release_XIL_API_2_1_0|x86'">
+    <OutputPath>bin\x86\Release_XIL_API_2_1_0\</OutputPath>
+    <DefineConstants>TRACE;XIL_API_2_1_0;X86</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release_XIL_API_2_1_0|x64'">
+    <OutputPath>bin\x64\Release_XIL_API_2_1_0\</OutputPath>
+    <DefineConstants>TRACE;XIL_API_2_1_0;X64</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release_XIL_API_2_2_0|x86'">
+    <OutputPath>bin\x86\Release_XIL_API_2_2_0\</OutputPath>
+    <DefineConstants>TRACE;XIL_API_2_2_0;X86</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release_XIL_API_2_2_0|x64'">
+    <OutputPath>bin\x64\Release_XIL_API_2_2_0\</OutputPath>
+    <DefineConstants>TRACE;XIL_API_2_2_0;X64</DefineConstants>
+  </PropertyGroup>
+  <Choose>
+    <When Condition="$(DefineConstants.Contains(XIL_API_2_1_0))">
+      <ItemGroup>
+        <Reference Include="ASAM.XIL.Implementation.TestbenchFactory, Version=2.1.0.0, Culture=neutral, PublicKeyToken=fc9d65855b27d387, processorArchitecture=MSIL">
+          <SpecificVersion>False</SpecificVersion>
+          <HintPath>C:\Windows\Microsoft.NET\assembly\GAC_MSIL\ASAM.XIL.Implementation.TestbenchFactory\v4.0_2.1.0.0__fc9d65855b27d387\ASAM.XIL.Implementation.TestbenchFactory.dll</HintPath>
+          <Private>False</Private>
+        </Reference>
+        <Reference Include="ASAM.XIL.Interfaces, Version=2.1.0.0, Culture=neutral, PublicKeyToken=bf471dff114ae984, processorArchitecture=MSIL">
+          <SpecificVersion>False</SpecificVersion>
+          <HintPath>C:\Windows\Microsoft.NET\assembly\GAC_MSIL\ASAM.XIL.Interfaces\v4.0_2.1.0.0__bf471dff114ae984\ASAM.XIL.Interfaces.dll</HintPath>
+          <Private>False</Private>
+        </Reference>
+      </ItemGroup>
+    </When>
+    <When Condition="$(DefineConstants.Contains(XIL_API_2_2_0))">
+      <ItemGroup>
+        <Reference Include="ASAM.XIL.Implementation.TestbenchFactory, Version=2.2.0.0, Culture=neutral, PublicKeyToken=bf471dff114ae984, processorArchitecture=MSIL">
+          <SpecificVersion>False</SpecificVersion>
+          <HintPath>C:\Windows\Microsoft.NET\assembly\GAC_MSIL\ASAM.XIL.Implementation.TestbenchFactory\v4.0_2.2.0.0__bf471dff114ae984\ASAM.XIL.Implementation.TestbenchFactory.dll</HintPath>
+          <Private>False</Private>
+        </Reference>
+        <Reference Include="ASAM.XIL.Interfaces, Version=2.2.0.0, Culture=neutral, PublicKeyToken=bf471dff114ae984, processorArchitecture=MSIL">
+          <SpecificVersion>False</SpecificVersion>
+          <HintPath>C:\Windows\Microsoft.NET\assembly\GAC_MSIL\ASAM.XIL.Interfaces\v4.0_2.2.0.0__bf471dff114ae984\ASAM.XIL.Interfaces.dll</HintPath>
+          <Private>False</Private>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Source\XilApiClient.cs" />
+    <Compile Include="Source\XilApiDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Source\XilApiDialog.Designer.cs">
+      <DependentUpon>XilApiDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Source\Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <EmbeddedResource Include="Source\XilApiDialog.resx">
+      <DependentUpon>XilApiDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

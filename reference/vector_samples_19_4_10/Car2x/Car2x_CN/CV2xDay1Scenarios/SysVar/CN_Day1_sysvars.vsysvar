@@ -1,0 +1,64 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<systemvariables version="4">
+  <namespace name="" comment="" interface="">
+    <namespace name="ScenarioCtrl" comment="" interface="">
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="ScenarioFolderName" comment="Path to the folder containing all scenario files. Can also be given relative to the configuration file." bitcount="0" isSigned="true" encoding="65001" type="string" startValue="Scenarios" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="ScenarioFileName" comment="Name of the scenario file that should be loaded for the corresponding ScenarioNumber. File ending .scn can be left out." bitcount="32" isSigned="true" encoding="65001" type="int">
+        <valuetable name="ScenarioFileName" definesMinMax="false">
+          <valuetableentry value="0" lowerBound="0" upperBound="0" description="AVW (a) - Abnormal Vehicle Warning" displayString="AVW (a) - Abnormal Vehicle Warning" />
+          <valuetableentry value="1" lowerBound="1" upperBound="1" description="AVW (b) - Abnormal Vehicle Warning" displayString="AVW (b) - Abnormal Vehicle Warning" />
+          <valuetableentry value="2" lowerBound="2" upperBound="2" description="BSW_LCW (a) - Blind Spot, Lane Change Warnings" displayString="BSW_LCW (a) - Blind Spot, Lane Change Warnings" />
+          <valuetableentry value="3" lowerBound="3" upperBound="3" description="BSW_LCW (b) - Blind Spot, Lane Change Warnings" displayString="BSW_LCW (b) - Blind Spot, Lane Change Warnings" />
+          <valuetableentry value="4" lowerBound="4" upperBound="4" description="CLW (a) - Control Loss Warning" displayString="CLW (a) - Control Loss Warning" />
+          <valuetableentry value="5" lowerBound="5" upperBound="5" description="CLW (b) - Control Loss Warning" displayString="CLW (b) - Control Loss Warning" />
+          <valuetableentry value="6" lowerBound="6" upperBound="6" description="DNPW (a) - Do Not Pass Warning" displayString="DNPW (a) - Do Not Pass Warning" />
+          <valuetableentry value="7" lowerBound="7" upperBound="7" description="EBW (a) - Emergency Brake Warning" displayString="EBW (a) - Emergency Brake Warning" />
+          <valuetableentry value="8" lowerBound="8" upperBound="8" description="EBW (b) - Emergency Brake Warning" displayString="EBW (b) - Emergency Brake Warning" />
+          <valuetableentry value="9" lowerBound="9" upperBound="9" description="EVW (a) - Emergency Vehicle Warning" displayString="EVW (a) - Emergency Vehicle Warning" />
+          <valuetableentry value="10" lowerBound="10" upperBound="10" description="FCW (a) - Forward Collision Warning" displayString="FCW (a) - Forward Collision Warning" />
+          <valuetableentry value="11" lowerBound="11" upperBound="11" description="FCW (b) - Forward Collision Warning" displayString="FCW (b) - Forward Collision Warning" />
+          <valuetableentry value="12" lowerBound="12" upperBound="12" description="FCW (c) - Forward Collision Warning" displayString="FCW (c) - Forward Collision Warning" />
+          <valuetableentry value="13" lowerBound="13" upperBound="13" description="FCW (d) - Forward Collision Warning" displayString="FCW (d) - Forward Collision Warning" />
+          <valuetableentry value="15" lowerBound="15" upperBound="15" description="HLW (a) - Hazardous Location Warning" displayString="HLW (a) - Hazardous Location Warning" />
+          <valuetableentry value="16" lowerBound="16" upperBound="16" description="ICW (a) - Intersection Collision Warning" displayString="ICW (a) - Intersection Collision Warning" />
+          <valuetableentry value="17" lowerBound="17" upperBound="17" description="ICW (b) - Intersection Collision Warning" displayString="ICW (b) - Intersection Collision Warning" />
+          <valuetableentry value="18" lowerBound="18" upperBound="18" description="IVS (a) - In-Vehicle Signage" displayString="IVS (a) - In-Vehicle Signage" />
+          <valuetableentry value="19" lowerBound="19" upperBound="19" description="LTA (a) - Left Turn Assist" displayString="LTA (a) - Left Turn Assist" />
+          <valuetableentry value="21" lowerBound="21" upperBound="21" description="SLW (a) - Speed Limit Warning" displayString="SLW (a) - Speed Limit Warning" />
+          <valuetableentry value="22" lowerBound="22" upperBound="22" description="TJW (a) - Traffic Jam Warning" displayString="TJW (a) - Traffic Jam Warning" />
+          <valuetableentry value="23" lowerBound="23" upperBound="23" description="VRUCW (a) - Vulnerable Road User Collision Warning" displayString="VRUCW (a) - Vulnerable Road User Collision Warning" />
+          <valuetableentry value="24" lowerBound="24" upperBound="24" description="VRUCW (b) - Vulnerable Road User Collision Warning" displayString="VRUCW (b) - Vulnerable Road User Collision Warning" />
+          <valuetableentry value="25" lowerBound="25" upperBound="25" description="VRUCW (c) - Vulnerable Road User Collision Warning" displayString="VRUCW (c) - Vulnerable Road User Collision Warning" />
+        </valuetable>
+      </variable>
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="ScenarioNumber" comment="Title of the scenario." bitcount="32" isSigned="true" encoding="65001" type="int">
+        <valuetable name="ScenarioNumber" definesMinMax="false">
+          <valuetableentry value="0" lowerBound="0" upperBound="0" description="Abnormal Vehicle Warning (AVW) (a)" displayString="Abnormal Vehicle Warning (AVW) (a)" />
+          <valuetableentry value="1" lowerBound="1" upperBound="1" description="Abnormal Vehicle Warning (AVW) (b)" displayString="Abnormal Vehicle Warning (AVW) (b)" />
+          <valuetableentry value="2" lowerBound="2" upperBound="2" description="Blind Spot Lane Change Warnings (BSW/LCW) (a)" displayString="Blind Spot Lane Change Warnings (BSW/LCW)(a)" />
+          <valuetableentry value="3" lowerBound="3" upperBound="3" description="Blind Spot Lane Change Warnings (BSW/LCW) (b)" displayString="Blind Spot Lane Change Warnings (BSW/LCW)(b)" />
+          <valuetableentry value="4" lowerBound="4" upperBound="4" description="Control Loss Warning (CLW) (a)" displayString="Control Loss Warning (CLW) (a)" />
+          <valuetableentry value="5" lowerBound="5" upperBound="5" description="Control Loss Warning (CLW) (b)" displayString="Control Loss Warning (CLW) (b)" />
+          <valuetableentry value="6" lowerBound="6" upperBound="6" description="Do Not Pass Warning (DNPW)" displayString="Do Not Pass Warning (DNPW)" />
+          <valuetableentry value="7" lowerBound="7" upperBound="7" description="Emergency Brake Warning (EBW) (a)" displayString="Emergency Brake Warning (EBW) (a)" />
+          <valuetableentry value="8" lowerBound="8" upperBound="8" description="Emergency Brake Warning (EBW) (b)" displayString="Emergency Brake Warning (EBW) (b)" />
+          <valuetableentry value="9" lowerBound="9" upperBound="9" description="Emergency Vehicle Warning (EVW)" displayString="Emergency Vehicle Warning (EVW)" />
+          <valuetableentry value="10" lowerBound="10" upperBound="10" description="Forward Collision Warning (FCW) (a)" displayString="Forward Collision Warning (FCW) (a)" />
+          <valuetableentry value="11" lowerBound="11" upperBound="11" description="Forward Collision Warning (FCW) (b)" displayString="Forward Collision Warning (FCW) (b)" />
+          <valuetableentry value="12" lowerBound="12" upperBound="12" description="Forward Collision Warning (FCW) (c)" displayString="Forward Collision Warning (FCW) (c)" />
+          <valuetableentry value="13" lowerBound="13" upperBound="13" description="Forward Collision Warning (FCW) (d)" displayString="Forward Collision Warning (FCW) (d)" />
+          <valuetableentry value="15" lowerBound="15" upperBound="15" description="Hazardous Location Warning (HLW)" displayString="Hazardous Location Warning (HLW)" />
+          <valuetableentry value="16" lowerBound="16" upperBound="16" description="Intersection Collision Warning (ICW) (a)" displayString="Intersection Collision Warning (ICW) (a)" />
+          <valuetableentry value="17" lowerBound="17" upperBound="17" description="Intersection Collision Warning (ICW) (b)" displayString="Intersection Collision Warning (ICW) (b)" />
+          <valuetableentry value="18" lowerBound="18" upperBound="18" description="In-Vehicle Signage (IVS)" displayString="In-Vehicle Signage (IVS)" />
+          <valuetableentry value="19" lowerBound="19" upperBound="19" description="Left Turn Assist (LTA)" displayString="Left Turn Assist (LTA)" />
+          <valuetableentry value="21" lowerBound="21" upperBound="21" description="Speed Limit Warning (SLW)" displayString="Speed Limit Warning (SLW)" />
+          <valuetableentry value="22" lowerBound="22" upperBound="22" description="Traffic Jam Warning (TJW)" displayString="Traffic Jam Warning (TJW)" />
+          <valuetableentry value="23" lowerBound="23" upperBound="23" description="Vulnerable Road User Collision Warning (VRUCW) (a)" displayString="Vulnerable Road User Collision Warning (VRUCW) (a)" />
+          <valuetableentry value="24" lowerBound="24" upperBound="24" description="Vulnerable Road User Collision Warning (VRUCW) (b)" displayString="Vulnerable Road User Collision Warning (VRUCW) (b)" />
+          <valuetableentry value="25" lowerBound="25" upperBound="25" description="Vulnerable Road User Collision Warning (VRUCW) (c)" displayString="Vulnerable Road User Collision Warning (VRUCW) (c)" />
+        </valuetable>
+      </variable>
+    </namespace>
+  </namespace>
+</systemvariables>

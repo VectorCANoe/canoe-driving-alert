@@ -1,0 +1,36 @@
+version 1.4;
+
+namespace adas_msgs
+{
+  namespace msg
+  {
+    namespace dds_
+    {
+      struct RadarObject_
+      {
+        uint64 trackingId;
+        uint64 measurementStatus;
+        double posX;
+        double posY;
+        double posZ;
+        double speed;
+      }
+      
+      struct ResultsAlgorithm_
+      {
+        double timeToImpact;
+        int32 isWarningActive;
+      }
+      
+      struct InputRos_
+      {
+        adas_msgs::msg::dds_::RadarObject_ radarObject;
+      }
+      
+      struct OutputRos_
+      {
+        adas_msgs::msg::dds_::ResultsAlgorithm_ results;
+      }
+    }
+  }
+}

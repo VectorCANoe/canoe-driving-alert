@@ -1,0 +1,200 @@
+version: 19.0.0
+modules:
+  - type: 2710
+    interface: 6
+    module-channel:
+      name: M2_VT2710
+    channels:
+      - name: ECUSIM
+        start-state-enabled: true
+        active-values:
+          - name: PSI5FifoSensorFrameCounter
+            cycle-time: 1ms
+          - name: Slave2SENTFifoSensorFrameCounter
+            cycle-time: 1ms
+          - name: Slave1SENTFifoSensorFrameCounter
+            cycle-time: 1ms
+          - name: Slave3SENTFifoSensorFrameCounter
+            cycle-time: 1ms
+          - name: Slave4SENTFifoSensorFrameCounter
+            cycle-time: 1ms
+        start-values:
+          - name: RelaySentSpcPullup
+            value: 1
+      - name: SENSORSIM
+        active-values:
+          - name: Slave3SENTFifoSensorFrameCounter
+            cycle-time: 1ms
+          - name: Slave4SENTFifoSensorFrameCounter
+            cycle-time: 1ms
+          - name: PSI5FifoSensorFrameCounter
+            cycle-time: 1ms
+          - name: Slave1SENTFifoSensorFrameCounter
+            cycle-time: 1ms
+          - name: Slave2SENTFifoSensorFrameCounter
+            cycle-time: 1ms
+      - name: M2_Piggy_Ch3
+        active-values:
+          - name: Slave2SENTFifoSensorFrameCounter
+            cycle-time: 1ms
+          - name: PSI5FifoSensorFrameCounter
+            cycle-time: 1ms
+          - name: Slave3SENTFifoSensorFrameCounter
+            cycle-time: 1ms
+          - name: Slave1SENTFifoSensorFrameCounter
+            cycle-time: 1ms
+          - name: Slave4SENTFifoSensorFrameCounter
+            cycle-time: 1ms
+      - name: M2_Piggy_Ch4
+        active-values:
+          - name: PSI5FifoSensorFrameCounter
+            cycle-time: 1ms
+          - name: Slave1SENTFifoSensorFrameCounter
+            cycle-time: 1ms
+          - name: Slave2SENTFifoSensorFrameCounter
+            cycle-time: 1ms
+          - name: Slave3SENTFifoSensorFrameCounter
+            cycle-time: 1ms
+          - name: Slave4SENTFifoSensorFrameCounter
+            cycle-time: 1ms
+      - name: M2_SPI_Ch1
+        active-values:
+          - name: SpiMasterSendFifo
+            cycle-time: 1ms
+          - name: SpiSlaveSendFifoSlave1
+            cycle-time: 1ms
+          - name: SpiSlaveSendFifoSlave2
+            cycle-time: 1ms
+          - name: SpiSlaveSendFifoSlave3
+            cycle-time: 1ms
+          - name: SpiSlaveSendFifoSlave4
+            cycle-time: 1ms
+          - name: SpiSlaveSendFifoSlave5
+            cycle-time: 1ms
+      - name: M2_SPI_Ch2
+        active-values:
+          - name: SpiMasterSendFifo
+            cycle-time: 1ms
+          - name: SpiSlaveSendFifoSlave1
+            cycle-time: 1ms
+          - name: SpiSlaveSendFifoSlave2
+            cycle-time: 1ms
+          - name: SpiSlaveSendFifoSlave3
+            cycle-time: 1ms
+          - name: SpiSlaveSendFifoSlave4
+            cycle-time: 1ms
+          - name: SpiSlaveSendFifoSlave5
+            cycle-time: 1ms
+      - name: M2_UART_Ch1
+        active-values:
+          - name: UartCom1Rs232_1SendFifo
+            cycle-time: 1ms
+          - name: UartCom5Rs485_1SendFifo
+            cycle-time: 1ms
+          - name: UartCom3Lvds1SendFifo
+            cycle-time: 1ms
+      - name: M2_UART_Ch2
+        active-values:
+          - name: UartCom1Rs232_1SendFifo
+            cycle-time: 1ms
+          - name: UartCom5Rs485_1SendFifo
+            cycle-time: 1ms
+          - name: UartCom3Lvds1SendFifo
+            cycle-time: 1ms
+      - name: M2_RS485_Ch1
+      - name: M2_RS485_Ch2
+      - name: M2_I2C_Ch1
+        active-values:
+          - name: I2cMasterSendFifoChannel
+            cycle-time: 1ms
+          - name: I2cSlaveSendFifoSlave1
+            cycle-time: 1ms
+          - name: I2cSlaveSendFifoSlave2
+            cycle-time: 1ms
+          - name: I2cSlaveSendFifoSlave3
+            cycle-time: 1ms
+          - name: I2cSlaveSendFifoSlave4
+            cycle-time: 1ms
+          - name: I2cSlaveSendFifoSlave5
+            cycle-time: 1ms
+      - name: M2_I2C_Ch2
+        active-values:
+          - name: I2cMasterSendFifoChannel
+            cycle-time: 1ms
+          - name: I2cSlaveSendFifoSlave1
+            cycle-time: 1ms
+          - name: I2cSlaveSendFifoSlave2
+            cycle-time: 1ms
+          - name: I2cSlaveSendFifoSlave3
+            cycle-time: 1ms
+          - name: I2cSlaveSendFifoSlave4
+            cycle-time: 1ms
+          - name: I2cSlaveSendFifoSlave5
+            cycle-time: 1ms
+      - name: M2_LVDS_Ch1
+      - name: M2_LVDS_Ch2
+      - name: M2_DIO_Ch1
+      - name: M2_DIO_Ch2
+    module-specific-settings:
+      supply-voltage: 3.2999999999999998
+      supply-voltage-lvds: 3.2999999999999998
+      supply-voltage-lvds-enabled: false
+      lvds-connector-usage-1: canoe
+      lvds-connector-usage-2: canoe
+      connectors:
+        - int-to-ext: false
+          supply-mode: internal
+          pins:
+            - dio-direction: input
+              used-for: spi
+              user-fpga-mode: din
+            - dio-direction: input
+              used-for: spi
+              user-fpga-mode: din
+            - dio-direction: input
+              used-for: spi
+              user-fpga-mode: din
+            - dio-direction: input
+              used-for: spi
+              user-fpga-mode: din
+            - dio-direction: input
+              used-for: spi
+              user-fpga-mode: din
+            - dio-direction: input
+              used-for: spi
+              user-fpga-mode: din
+            - dio-direction: input
+              used-for: spi
+              user-fpga-mode: din
+            - dio-direction: input
+              used-for: spi
+              user-fpga-mode: din
+        - int-to-ext: false
+          supply-mode: internal
+          pins:
+            - dio-direction: input
+              used-for: spi
+              user-fpga-mode: din
+            - dio-direction: input
+              used-for: spi
+              user-fpga-mode: din
+            - dio-direction: input
+              used-for: spi
+              user-fpga-mode: din
+            - dio-direction: input
+              used-for: spi
+              user-fpga-mode: din
+            - dio-direction: input
+              used-for: spi
+              user-fpga-mode: din
+            - dio-direction: input
+              used-for: spi
+              user-fpga-mode: din
+            - dio-direction: input
+              used-for: spi
+              user-fpga-mode: din
+            - dio-direction: input
+              used-for: spi
+              user-fpga-mode: din
+vts-control-window:
+  serialized-config: rack[12];mapping[0,0,0];

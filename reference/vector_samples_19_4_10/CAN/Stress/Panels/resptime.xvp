@@ -1,0 +1,225 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Panel Type="Vector.CANalyzer.Panels.PanelSerializer, Vector.CANalyzer.Panels.Serializer, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null">
+  <Object Type="Vector.CANalyzer.Panels.Runtime.Panel, Vector.CANalyzer.Panels.Common, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Panel" ControlName="Latency Time  Measurement">
+    <Object Type="Vector.CANalyzer.Panels.Design.RadioButtonControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="RadioButtonControl0" ControlName="RadioButtonControl0">
+      <Property Name="Name">RadioButtonControl0</Property>
+      <Property Name="Size">100, 17</Property>
+      <Property Name="Location">25, 210</Property>
+      <Property Name="Text">Nanosecond</Property>
+      <Property Name="TabIndex">0</Property>
+      <Property Name="SwitchValueVTXml">&lt;Version&gt;2&lt;/Version&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;RxValue&gt;3&lt;/RxValue&gt;</Property>
+      <Property Name="SwitchValueVT">1;Lower;3</Property>
+      <Property Name="SwitchValue">3</Property>
+      <Property Name="SymbolConfiguration">8;16;CycleAndResponse;;;TimeFactor;1;;;-1;;;Value;;;0</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.RadioButtonControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="RadioButtonControl1" ControlName="RadioButtonControl1">
+      <Property Name="Name">RadioButtonControl1</Property>
+      <Property Name="Size">100, 17</Property>
+      <Property Name="Location">25, 184</Property>
+      <Property Name="Text">Millisecond</Property>
+      <Property Name="TabIndex">1</Property>
+      <Property Name="SwitchValueVTXml">&lt;Version&gt;2&lt;/Version&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;RxValue&gt;2&lt;/RxValue&gt;</Property>
+      <Property Name="SwitchValueVT">1;Lower;2</Property>
+      <Property Name="SwitchValue">2</Property>
+      <Property Name="SymbolConfiguration">8;16;CycleAndResponse;;;TimeFactor;1;;;-1;;;Value;;;0</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.RadioButtonControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="RadioButtonControl2" ControlName="time_unit">
+      <Property Name="Name">RadioButtonControl2</Property>
+      <Property Name="Size">100, 17</Property>
+      <Property Name="Location">25, 158</Property>
+      <Property Name="Text">Second</Property>
+      <Property Name="TabIndex">2</Property>
+      <Property Name="SymbolConfiguration">8;16;CycleAndResponse;;;TimeFactor;1;;;-1;;;Value;;;0</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="TextBoxControl3" ControlName="TextBoxControl3">
+      <Property Name="Name">TextBoxControl3</Property>
+      <Property Name="Size">170, 19</Property>
+      <Property Name="Location">208, 209</Property>
+      <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+      <Property Name="AlarmLowerBkgColor">Blue</Property>
+      <Property Name="AlarmLowerTextColor">Black</Property>
+      <Property Name="AlarmUpperBkgColor">Red</Property>
+      <Property Name="AlarmUpperTextColor">Black</Property>
+      <Property Name="BoxBorderStyle">FixedSingle</Property>
+      <Property Name="DisplayLabel">Hide</Property>
+      <Property Name="BoxBackColor">255, 254, 254, 254</Property>
+      <Property Name="BoxTextAlign">Right</Property>
+      <Property Name="ReadOnlyControl">True</Property>
+      <Property Name="TabIndex">3</Property>
+      <Property Name="TabStopActive">False</Property>
+      <Property Name="DescriptionText">CurrentTimeDiffMin:</Property>
+      <Property Name="ValueDecimalPlaces">6</Property>
+      <Property Name="ValueDisplay">Double</Property>
+      <Property Name="UsedValueTable">RawValue</Property>
+      <Property Name="DescriptionSize">125, 0</Property>
+      <Property Name="SymbolConfiguration">8;16;CycleAndResponse;;;CurrentTimeDiffMin;2;;;-1;;;Value;;;0</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="TextBoxControl4" ControlName="TextBoxControl4">
+      <Property Name="Name">TextBoxControl4</Property>
+      <Property Name="Size">170, 19</Property>
+      <Property Name="Location">208, 183</Property>
+      <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+      <Property Name="AlarmLowerBkgColor">Blue</Property>
+      <Property Name="AlarmLowerTextColor">Black</Property>
+      <Property Name="AlarmUpperBkgColor">Red</Property>
+      <Property Name="AlarmUpperTextColor">Black</Property>
+      <Property Name="BoxBorderStyle">FixedSingle</Property>
+      <Property Name="DisplayLabel">Hide</Property>
+      <Property Name="BoxBackColor">255, 254, 254, 254</Property>
+      <Property Name="BoxTextAlign">Right</Property>
+      <Property Name="ReadOnlyControl">True</Property>
+      <Property Name="TabIndex">4</Property>
+      <Property Name="TabStopActive">False</Property>
+      <Property Name="DescriptionText">CurrentTimeDiffMax:</Property>
+      <Property Name="ValueDecimalPlaces">6</Property>
+      <Property Name="ValueDisplay">Double</Property>
+      <Property Name="UsedValueTable">RawValue</Property>
+      <Property Name="DescriptionSize">128, 0</Property>
+      <Property Name="SymbolConfiguration">8;16;CycleAndResponse;;;CurrentTimeDiffMax;2;;;-1;;;Value;;;0</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="TextBoxControl5" ControlName="TextBoxControl5">
+      <Property Name="Name">TextBoxControl5</Property>
+      <Property Name="Size">170, 19</Property>
+      <Property Name="Location">208, 157</Property>
+      <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+      <Property Name="AlarmLowerBkgColor">Blue</Property>
+      <Property Name="AlarmLowerTextColor">Black</Property>
+      <Property Name="AlarmUpperBkgColor">Red</Property>
+      <Property Name="AlarmUpperTextColor">Black</Property>
+      <Property Name="BoxBorderStyle">FixedSingle</Property>
+      <Property Name="DisplayLabel">Hide</Property>
+      <Property Name="BoxBackColor">255, 254, 254, 254</Property>
+      <Property Name="BoxTextAlign">Right</Property>
+      <Property Name="ReadOnlyControl">True</Property>
+      <Property Name="TabIndex">5</Property>
+      <Property Name="TabStopActive">False</Property>
+      <Property Name="DescriptionText">CurrentTimeDiff:</Property>
+      <Property Name="ValueDecimalPlaces">6</Property>
+      <Property Name="ValueDisplay">Double</Property>
+      <Property Name="UsedValueTable">RawValue</Property>
+      <Property Name="DescriptionSize">107, 0</Property>
+      <Property Name="SymbolConfiguration">8;16;CycleAndResponse;;;CurrentTimeDiff;2;;;-1;;;Value;;;0</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl6" ControlName="StaticTextControl6">
+      <Property Name="Name">StaticTextControl6</Property>
+      <Property Name="Size">46, 15</Property>
+      <Property Name="Location">154, 210</Property>
+      <Property Name="Text">Min</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl7" ControlName="StaticTextControl7">
+      <Property Name="Name">StaticTextControl7</Property>
+      <Property Name="Size">46, 15</Property>
+      <Property Name="Location">154, 184</Property>
+      <Property Name="Text">Max</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="TextBoxControl9" ControlName="TextBoxControl9">
+      <Property Name="Name">TextBoxControl9</Property>
+      <Property Name="Size">170, 19</Property>
+      <Property Name="Location">208, 101</Property>
+      <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+      <Property Name="AlarmLowerBkgColor">Blue</Property>
+      <Property Name="AlarmLowerTextColor">Black</Property>
+      <Property Name="AlarmUpperBkgColor">Red</Property>
+      <Property Name="AlarmUpperTextColor">Black</Property>
+      <Property Name="BoxBorderStyle">FixedSingle</Property>
+      <Property Name="DisplayLabel">Hide</Property>
+      <Property Name="BoxBackColor">255, 254, 254, 254</Property>
+      <Property Name="BoxTextAlign">Right</Property>
+      <Property Name="ReadOnlyControl">True</Property>
+      <Property Name="TabIndex">9</Property>
+      <Property Name="TabStopActive">False</Property>
+      <Property Name="DescriptionText">ReceivedMsgTime:</Property>
+      <Property Name="ValueDecimalPlaces">6</Property>
+      <Property Name="ValueDisplay">Double</Property>
+      <Property Name="UsedValueTable">RawValue</Property>
+      <Property Name="DescriptionSize">121, 0</Property>
+      <Property Name="SymbolConfiguration">8;16;CycleAndResponse;;;ReceivedMsgTime;2;;;-1;;;Value;;;0</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="TextBoxControl10" ControlName="TextBoxControl10">
+      <Property Name="Name">TextBoxControl10</Property>
+      <Property Name="Size">170, 19</Property>
+      <Property Name="Location">208, 65</Property>
+      <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+      <Property Name="AlarmLowerBkgColor">Blue</Property>
+      <Property Name="AlarmLowerTextColor">Black</Property>
+      <Property Name="AlarmUpperBkgColor">Red</Property>
+      <Property Name="AlarmUpperTextColor">Black</Property>
+      <Property Name="BoxBorderStyle">FixedSingle</Property>
+      <Property Name="DisplayLabel">Hide</Property>
+      <Property Name="BoxBackColor">255, 254, 254, 254</Property>
+      <Property Name="BoxTextAlign">Right</Property>
+      <Property Name="TabIndex">10</Property>
+      <Property Name="DescriptionText">TransmitMsgTime:</Property>
+      <Property Name="ValueDecimalPlaces">6</Property>
+      <Property Name="ValueDisplay">Double</Property>
+      <Property Name="UsedValueTable">RawValue</Property>
+      <Property Name="DescriptionSize">118, 0</Property>
+      <Property Name="SymbolConfiguration">8;16;CycleAndResponse;;;TransmitMsgTime;2;;;-1;;;Value;;;0</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl11" ControlName="StaticTextControl11">
+      <Property Name="Name">StaticTextControl11</Property>
+      <Property Name="Size">90, 15</Property>
+      <Property Name="Location">15, 111</Property>
+      <Property Name="Text">CyclicMessage</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl12" ControlName="StaticTextControl12">
+      <Property Name="Name">StaticTextControl12</Property>
+      <Property Name="Size">187, 15</Property>
+      <Property Name="Location">15, 96</Property>
+      <Property Name="Text">Time stamp of transmitted message </Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl13" ControlName="StaticTextControl13">
+      <Property Name="Name">StaticTextControl13</Property>
+      <Property Name="Size">110, 15</Property>
+      <Property Name="Location">15, 75</Property>
+      <Property Name="Text">ResponseMessage</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl14" ControlName="StaticTextControl14">
+      <Property Name="Name">StaticTextControl14</Property>
+      <Property Name="Size">185, 15</Property>
+      <Property Name="Location">15, 60</Property>
+      <Property Name="Text">Time stamp of received message</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl15" ControlName="StaticTextControl15">
+      <Property Name="Name">StaticTextControl15</Property>
+      <Property Name="Size">370, 15</Property>
+      <Property Name="Location">15, 25</Property>
+      <Property Name="Text">Latency between a received message and directly transmitted message</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.GroupBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="GroupBoxControl16" ControlName="GroupBoxControl16">
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl8" ControlName="StaticTextControl8">
+        <Property Name="Name">StaticTextControl8</Property>
+        <Property Name="Size">45, 15</Property>
+        <Property Name="Location">152, 154</Property>
+        <Property Name="Text">Current</Property>
+      </Object>
+      <Property Name="Name">GroupBoxControl16</Property>
+      <Property Name="Size">394, 245</Property>
+      <Property Name="Location">3, 3</Property>
+      <Property Name="Text">Node </Property>
+      <Property Name="TabIndex">16</Property>
+      <Property Name="UseWindowsStyle">False</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.GroupBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="GroupBoxControl17" ControlName="time_unit">
+      <Property Name="Name">GroupBoxControl17</Property>
+      <Property Name="Size">133, 102</Property>
+      <Property Name="Location">15, 135</Property>
+      <Property Name="Text">Time unit</Property>
+      <Property Name="TabIndex">17</Property>
+      <Property Name="UseWindowsStyle">False</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.GroupBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="GroupBoxControl18" ControlName="analysis">
+      <Property Name="Name">GroupBoxControl18</Property>
+      <Property Name="Size">229, 102</Property>
+      <Property Name="Location">158, 135</Property>
+      <Property Name="Text">Analysis difference time</Property>
+      <Property Name="TabIndex">18</Property>
+      <Property Name="UseWindowsStyle">False</Property>
+    </Object>
+    <Property Name="Name">Panel</Property>
+    <Property Name="Size">400, 254</Property>
+    <Property Name="Location">0, 0</Property>
+    <Property Name="BackColor">White</Property>
+    <Property Name="Panel">Panel</Property>
+  </Object>
+</Panel>

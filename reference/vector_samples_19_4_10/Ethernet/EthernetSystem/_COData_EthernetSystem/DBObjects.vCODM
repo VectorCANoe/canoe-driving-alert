@@ -1,0 +1,1096 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<FunctionBusLibrary Version="96" FormatMajorVersion="3" FormatMinorVersion="5" FormatPatchVersion="1">
+  <Namespaces>
+    <Namespace IsDefinedAsHidden="False" IsSystemDefined="True" Name="Vehicle_Ethernet">
+      <Subnamespaces>
+        <Namespace IsDefinedAsHidden="False" IsSystemDefined="True" Name="Interfaces">
+          <DOInterfaces>
+            <DOInterface IsAbstract="False" Name="sif_1002">
+              <AttributeValues>
+                <AttributeValue Definition="_SystemAttributes::Binding" InitialValue="SOMEIP" InitialValueType="String" />
+                <AttributeValue Definition="_SystemAttributes::CommunicationPattern" InitialValue="2" InitialValueType="Int32" />
+              </AttributeValues>
+              <MemberData>
+                <DOMemberDataHolder Name="MemberData" />
+              </MemberData>
+            </DOInterface>
+            <DOInterface IsAbstract="False" Name="sif_1002_PDUs">
+              <BaseInterfaces>
+                <ModifiedDOIF Reverse="False" IsDOReference="False" Interface="Vehicle_Ethernet::Interfaces::sif_1002" />
+              </BaseInterfaces>
+              <MemberData>
+                <DOMemberDataHolder Name="MemberData" />
+              </MemberData>
+              <DataMembers>
+                <DOIFDataMember Name="BatteryStatus">
+                  <DataType DataType="Vehicle_Ethernet::DataTypes::BatteryStatus" />
+                </DOIFDataMember>
+              </DataMembers>
+            </DOInterface>
+            <DOInterface IsAbstract="False" Name="sif_1000">
+              <AttributeValues>
+                <AttributeValue Definition="_SystemAttributes::Binding" InitialValue="SOMEIP" InitialValueType="String" />
+                <AttributeValue Definition="_SystemAttributes::CommunicationPattern" InitialValue="2" InitialValueType="Int32" />
+              </AttributeValues>
+              <MemberData>
+                <DOMemberDataHolder Name="MemberData" />
+              </MemberData>
+            </DOInterface>
+            <DOInterface IsAbstract="False" Name="sif_1000_PDUs">
+              <BaseInterfaces>
+                <ModifiedDOIF Reverse="False" IsDOReference="False" Interface="Vehicle_Ethernet::Interfaces::sif_1000" />
+              </BaseInterfaces>
+              <MemberData>
+                <DOMemberDataHolder Name="MemberData" />
+              </MemberData>
+              <DataMembers>
+                <DOIFDataMember Name="VehicleDistance">
+                  <DataType DataType="Vehicle_Ethernet::DataTypes::VehicleDistance" />
+                </DOIFDataMember>
+                <DOIFDataMember Name="VehicleSpeed">
+                  <DataType DataType="Vehicle_Ethernet::DataTypes::VehicleSpeed" />
+                </DOIFDataMember>
+              </DataMembers>
+            </DOInterface>
+            <DOInterface IsAbstract="False" Name="sif_1001">
+              <AttributeValues>
+                <AttributeValue Definition="_SystemAttributes::Binding" InitialValue="SOMEIP" InitialValueType="String" />
+                <AttributeValue Definition="_SystemAttributes::CommunicationPattern" InitialValue="2" InitialValueType="Int32" />
+              </AttributeValues>
+              <MemberData>
+                <DOMemberDataHolder Name="MemberData" />
+              </MemberData>
+            </DOInterface>
+            <DOInterface IsAbstract="False" Name="sif_1001_PDUs">
+              <BaseInterfaces>
+                <ModifiedDOIF Reverse="False" IsDOReference="False" Interface="Vehicle_Ethernet::Interfaces::sif_1001" />
+              </BaseInterfaces>
+              <MemberData>
+                <DOMemberDataHolder Name="MemberData" />
+              </MemberData>
+              <DataMembers>
+                <DOIFDataMember Name="EMotorStatus">
+                  <DataType DataType="Vehicle_Ethernet::DataTypes::EMotorStatus" />
+                </DOIFDataMember>
+              </DataMembers>
+            </DOInterface>
+            <DOInterface IsAbstract="False" Name="sif_1003">
+              <AttributeValues>
+                <AttributeValue Definition="_SystemAttributes::Binding" InitialValue="SOMEIP" InitialValueType="String" />
+                <AttributeValue Definition="_SystemAttributes::CommunicationPattern" InitialValue="2" InitialValueType="Int32" />
+              </AttributeValues>
+              <MemberData>
+                <DOMemberDataHolder Name="MemberData" />
+              </MemberData>
+            </DOInterface>
+            <DOInterface IsAbstract="False" Name="sif_1003_PDUs">
+              <BaseInterfaces>
+                <ModifiedDOIF Reverse="False" IsDOReference="False" Interface="Vehicle_Ethernet::Interfaces::sif_1003" />
+              </BaseInterfaces>
+              <MemberData>
+                <DOMemberDataHolder Name="MemberData" />
+              </MemberData>
+              <DataMembers>
+                <DOIFDataMember Name="ExteriorTemperature">
+                  <DataType DataType="Vehicle_Ethernet::DataTypes::ExteriorTemperature" />
+                </DOIFDataMember>
+                <DOIFDataMember Name="Time">
+                  <DataType DataType="Vehicle_Ethernet::DataTypes::Time" />
+                </DOIFDataMember>
+              </DataMembers>
+            </DOInterface>
+            <DOInterface IsAbstract="False" Name="CameraObjectDetection">
+              <AttributeValues>
+                <AttributeValue Definition="_SystemAttributes::Binding" InitialValue="SOMEIP" InitialValueType="String" />
+                <AttributeValue Definition="_SystemAttributes::CommunicationPattern" InitialValue="2" InitialValueType="Int32" />
+              </AttributeValues>
+              <MemberData>
+                <DOMemberDataHolder Name="MemberData" />
+              </MemberData>
+              <Events>
+                <DOIFEventMember Name="TrafficSignDetection">
+                  <DataType DataType="Vehicle_Ethernet::DataTypes::TrafficSignDetection" />
+                </DOIFEventMember>
+                <DOIFEventMember Name="LaneDetection">
+                  <DataType DataType="Vehicle_Ethernet::DataTypes::LaneDetection" />
+                </DOIFEventMember>
+              </Events>
+              <Fields>
+                <DOIFFieldMember Name="FrameRate">
+                  <DataType DataType="_SystemDataTypes::UInt8" />
+                  <Getter>
+                    <DOIFMethodMember Prototype="Vehicle_Ethernet::DataTypes::UInt8_Getter_Prototype" Name="Get" />
+                  </Getter>
+                  <Setter>
+                    <DOIFMethodMember Prototype="Vehicle_Ethernet::DataTypes::UInt8_Setter_Prototype" Name="Set" />
+                  </Setter>
+                  <Event>
+                    <DOIFEventMember Name="Notification">
+                      <DataType DataType="_SystemDataTypes::UInt8" />
+                    </DOIFEventMember>
+                  </Event>
+                </DOIFFieldMember>
+              </Fields>
+              <Methods>
+                <DOIFMethodMember Prototype="Vehicle_Ethernet::DataTypes::StartStop_Prototype" Name="StartStop" />
+              </Methods>
+            </DOInterface>
+            <DOInterface IsAbstract="False" Name="ObstacleDetection">
+              <AttributeValues>
+                <AttributeValue Definition="_SystemAttributes::Binding" InitialValue="SOMEIP" InitialValueType="String" />
+                <AttributeValue Definition="_SystemAttributes::CommunicationPattern" InitialValue="2" InitialValueType="Int32" />
+              </AttributeValues>
+              <MemberData>
+                <DOMemberDataHolder Name="MemberData" />
+              </MemberData>
+              <Events>
+                <DOIFEventMember Name="ObstacleDetection">
+                  <DataType DataType="Vehicle_Ethernet::DataTypes::ObstacleDetection" />
+                </DOIFEventMember>
+              </Events>
+            </DOInterface>
+            <DOInterface IsAbstract="False" Name="DetectionStatus">
+              <AttributeValues>
+                <AttributeValue Definition="_SystemAttributes::Binding" InitialValue="SOMEIP" InitialValueType="String" />
+                <AttributeValue Definition="_SystemAttributes::CommunicationPattern" InitialValue="2" InitialValueType="Int32" />
+              </AttributeValues>
+              <MemberData>
+                <DOMemberDataHolder Name="MemberData" />
+              </MemberData>
+              <Events>
+                <DOIFEventMember Name="TrafficSignInfo">
+                  <DataType DataType="Vehicle_Ethernet::DataTypes::TrafficSignInfo_2" />
+                </DOIFEventMember>
+                <DOIFEventMember Name="LaneInfo">
+                  <DataType DataType="Vehicle_Ethernet::DataTypes::LaneInfo" />
+                </DOIFEventMember>
+              </Events>
+            </DOInterface>
+            <DOInterface IsAbstract="False" Name="HUTxPDUs">
+              <AttributeValues>
+                <AttributeValue Definition="_SystemAttributes::Binding" InitialValue="AutosarPDU" InitialValueType="String" />
+                <AttributeValue Definition="_SystemAttributes::CommunicationPattern" InitialValue="2" InitialValueType="Int32" />
+              </AttributeValues>
+              <MemberData>
+                <DOMemberDataHolder Name="MemberData" />
+              </MemberData>
+              <DataMembers>
+                <DOIFDataMember Name="VolumeRequest">
+                  <DataType DataType="Vehicle_Ethernet::DataTypes::VolumeRequest" />
+                </DOIFDataMember>
+              </DataMembers>
+            </DOInterface>
+            <DOInterface IsAbstract="False" Name="AMPRxPDUs">
+              <AttributeValues>
+                <AttributeValue Definition="_SystemAttributes::Binding" InitialValue="AutosarPDU" InitialValueType="String" />
+                <AttributeValue Definition="_SystemAttributes::CommunicationPattern" InitialValue="2" InitialValueType="Int32" />
+              </AttributeValues>
+              <MemberData>
+                <DOMemberDataHolder Name="MemberData" />
+              </MemberData>
+              <DataMembers>
+                <DOIFDataMember LocalDirection="Consumed" Name="VolumeRequest">
+                  <DataType DataType="Vehicle_Ethernet::DataTypes::VolumeRequest" />
+                </DOIFDataMember>
+              </DataMembers>
+            </DOInterface>
+          </DOInterfaces>
+        </Namespace>
+        <Namespace IsDefinedAsHidden="False" IsSystemDefined="True" Name="DataTypes">
+          <DataTypes>
+            <StructDataType Bitcount="80" RawBitcount="80" HasFixedBinaryLayout="True" HasMotorolaByteOrder="False" Name="BatteryStatus">
+              <Fields>
+                <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="BatteryTemperature">
+                  <AttributeValues>
+                    <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="memberName:BatteryTemperature" InitialValueType="String" />
+                  </AttributeValues>
+                  <DataType DataType="_SystemDataTypes::UInt16">
+                    <NumericProperties MinValue="-273" MinValueType="Double" MaxValue="6280.5" MaxValueType="Double" IsBoolean="False" IsTimespan="False">
+                      <ImplToPhysEncodings LinearEncodings="Vehicle_Ethernet::Encodings::BatteryTemperature_UInt16" />
+                    </NumericProperties>
+                  </DataType>
+                </DataTypeField>
+                <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="RemainingCapacity">
+                  <AttributeValues>
+                    <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="memberName:RemainingCapacity" InitialValueType="String" />
+                  </AttributeValues>
+                  <DataType DataType="_SystemDataTypes::UInt32">
+                    <NumericProperties MinValue="0" MinValueType="Double" MaxValue="4294967.2949999999" MaxValueType="Double" IsBoolean="False" IsTimespan="False">
+                      <ImplToPhysEncodings LinearEncodings="Vehicle_Ethernet::Encodings::RemainingCapacity_UInt32" />
+                    </NumericProperties>
+                  </DataType>
+                </DataTypeField>
+                <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="Capacity">
+                  <AttributeValues>
+                    <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="memberName:Capacity" InitialValueType="String" />
+                  </AttributeValues>
+                  <DataType DataType="_SystemDataTypes::UInt32">
+                    <NumericProperties MinValue="0" MinValueType="Double" MaxValue="4294967.2949999999" MaxValueType="Double" IsBoolean="False" IsTimespan="False">
+                      <ImplToPhysEncodings LinearEncodings="Vehicle_Ethernet::Encodings::RemainingCapacity_UInt32" />
+                    </NumericProperties>
+                  </DataType>
+                </DataTypeField>
+              </Fields>
+            </StructDataType>
+            <StructDataType Bitcount="64" RawBitcount="64" HasFixedBinaryLayout="True" HasMotorolaByteOrder="False" Name="VehicleDistance">
+              <Fields>
+                <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="VehicleTripDistance">
+                  <AttributeValues>
+                    <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="memberName:VehicleTripDistance" InitialValueType="String" />
+                  </AttributeValues>
+                  <DataType DataType="_SystemDataTypes::UInt32">
+                    <NumericProperties MinValue="-1000" MinValueType="Double" MaxValue="42948672.950000003" MaxValueType="Double" IsBoolean="False" IsTimespan="False">
+                      <ImplToPhysEncodings LinearEncodings="Vehicle_Ethernet::Encodings::VehicleTripDistance_UInt32_Linear" TextualEncodings="Vehicle_Ethernet::Encodings::VehicleTripDistance_UInt32_Textual" />
+                    </NumericProperties>
+                  </DataType>
+                </DataTypeField>
+                <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="VehicleTotalDistance">
+                  <AttributeValues>
+                    <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="memberName:VehicleTotalDistance" InitialValueType="String" />
+                  </AttributeValues>
+                  <DataType DataType="_SystemDataTypes::UInt32">
+                    <NumericProperties MinValue="-1000" MinValueType="Double" MaxValue="42948672.950000003" MaxValueType="Double" IsBoolean="False" IsTimespan="False">
+                      <ImplToPhysEncodings LinearEncodings="Vehicle_Ethernet::Encodings::VehicleTripDistance_UInt32_Linear" TextualEncodings="Vehicle_Ethernet::Encodings::VehicleTripDistance_UInt32_Textual" />
+                    </NumericProperties>
+                  </DataType>
+                </DataTypeField>
+              </Fields>
+            </StructDataType>
+            <StructDataType Bitcount="24" RawBitcount="24" HasFixedBinaryLayout="True" HasMotorolaByteOrder="False" Name="VehicleSpeed">
+              <Fields>
+                <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="VehicleSpeed">
+                  <AttributeValues>
+                    <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="memberName:VehicleSpeed" InitialValueType="String" />
+                  </AttributeValues>
+                  <DataType DataType="_SystemDataTypes::UInt16">
+                    <NumericProperties MinValue="-100" MinValueType="Double" MaxValue="6453.5" MaxValueType="Double" IsBoolean="False" IsTimespan="False">
+                      <ImplToPhysEncodings LinearEncodings="Vehicle_Ethernet::Encodings::VehicleSpeed_UInt16" />
+                    </NumericProperties>
+                  </DataType>
+                </DataTypeField>
+                <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="VehicleDirection">
+                  <AttributeValues>
+                    <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="memberName:VehicleDirection" InitialValueType="String" />
+                  </AttributeValues>
+                  <DataType DataType="_SystemDataTypes::UInt8">
+                    <NumericProperties MinValue="1" MinValueType="UInt64" MaxValue="2" MaxValueType="UInt64" IsBoolean="False" IsTimespan="False">
+                      <ImplToPhysEncodings TextualEncodings="Vehicle_Ethernet::Encodings::VehicleDirection_UInt8" />
+                    </NumericProperties>
+                  </DataType>
+                </DataTypeField>
+              </Fields>
+            </StructDataType>
+            <StructDataType Bitcount="96" RawBitcount="96" HasFixedBinaryLayout="True" HasMotorolaByteOrder="False" Name="EMotorStatus">
+              <Fields>
+                <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="EMotorSpeed">
+                  <AttributeValues>
+                    <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="memberName:EMotorSpeed" InitialValueType="String" />
+                  </AttributeValues>
+                  <DataType DataType="_SystemDataTypes::UInt16">
+                    <NumericProperties MinValue="-100" MinValueType="Double" MaxValue="6453.5" MaxValueType="Double" IsBoolean="False" IsTimespan="False">
+                      <ImplToPhysEncodings LinearEncodings="Vehicle_Ethernet::Encodings::VehicleSpeed_UInt16" />
+                    </NumericProperties>
+                  </DataType>
+                </DataTypeField>
+                <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="EMotorTemperature">
+                  <AttributeValues>
+                    <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="memberName:EMotorTemperature" InitialValueType="String" />
+                  </AttributeValues>
+                  <DataType DataType="_SystemDataTypes::UInt16">
+                    <NumericProperties MinValue="-273" MinValueType="Double" MaxValue="6280.5" MaxValueType="Double" IsBoolean="False" IsTimespan="False">
+                      <ImplToPhysEncodings LinearEncodings="Vehicle_Ethernet::Encodings::BatteryTemperature_UInt16" />
+                    </NumericProperties>
+                  </DataType>
+                </DataTypeField>
+                <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="EMotorCurrent">
+                  <AttributeValues>
+                    <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="memberName:EMotorCurrent" InitialValueType="String" />
+                  </AttributeValues>
+                  <DataType DataType="_SystemDataTypes::UInt32">
+                    <NumericProperties MinValue="-1000" MinValueType="Double" MaxValue="4293967.2949999999" MaxValueType="Double" IsBoolean="False" IsTimespan="False">
+                      <ImplToPhysEncodings LinearEncodings="Vehicle_Ethernet::Encodings::EMotorCurrent_UInt32" />
+                    </NumericProperties>
+                  </DataType>
+                </DataTypeField>
+                <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="EMotorPower">
+                  <AttributeValues>
+                    <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="memberName:EMotorPower" InitialValueType="String" />
+                  </AttributeValues>
+                  <DataType DataType="_SystemDataTypes::UInt32">
+                    <NumericProperties MinValue="-1000" MinValueType="Double" MaxValue="4293967.2949999999" MaxValueType="Double" IsBoolean="False" IsTimespan="False">
+                      <ImplToPhysEncodings LinearEncodings="Vehicle_Ethernet::Encodings::EMotorPower_UInt32" />
+                    </NumericProperties>
+                  </DataType>
+                </DataTypeField>
+              </Fields>
+            </StructDataType>
+            <StructDataType Bitcount="16" RawBitcount="16" HasFixedBinaryLayout="True" HasMotorolaByteOrder="False" Name="ExteriorTemperature">
+              <Fields>
+                <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="ExteriorTemperature">
+                  <AttributeValues>
+                    <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="memberName:ExteriorTemperature" InitialValueType="String" />
+                  </AttributeValues>
+                  <DataType DataType="_SystemDataTypes::UInt16">
+                    <NumericProperties MinValue="-273" MinValueType="Double" MaxValue="6280.5" MaxValueType="Double" IsBoolean="False" IsTimespan="False">
+                      <ImplToPhysEncodings LinearEncodings="Vehicle_Ethernet::Encodings::BatteryTemperature_UInt16" />
+                    </NumericProperties>
+                  </DataType>
+                </DataTypeField>
+              </Fields>
+            </StructDataType>
+            <StructDataType Bitcount="128" RawBitcount="24" HasFixedBinaryLayout="True" HasMotorolaByteOrder="False" Name="Time">
+              <Fields>
+                <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="Minute">
+                  <AttributeValues>
+                    <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="memberName:Minute" InitialValueType="String" />
+                  </AttributeValues>
+                  <DataType DataType="_SystemDataTypes::UInt8">
+                    <NumericProperties MinValue="0" MinValueType="UInt64" MaxValue="255" MaxValueType="UInt64" IsBoolean="False" IsTimespan="False">
+                      <ImplToPhysEncodings LinearEncodings="Vehicle_Ethernet::Encodings::Minute_UInt8" />
+                    </NumericProperties>
+                  </DataType>
+                </DataTypeField>
+                <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="Second">
+                  <AttributeValues>
+                    <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="memberName:Second" InitialValueType="String" />
+                  </AttributeValues>
+                  <DataType DataType="_SystemDataTypes::UInt8">
+                    <NumericProperties MinValue="0" MinValueType="UInt64" MaxValue="255" MaxValueType="UInt64" IsBoolean="False" IsTimespan="False">
+                      <ImplToPhysEncodings LinearEncodings="Vehicle_Ethernet::Encodings::Second_UInt8" />
+                    </NumericProperties>
+                  </DataType>
+                </DataTypeField>
+                <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="Hour">
+                  <AttributeValues>
+                    <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="memberName:Hour" InitialValueType="String" />
+                  </AttributeValues>
+                  <DataType DataType="_SystemDataTypes::UInt8">
+                    <NumericProperties MinValue="0" MinValueType="UInt64" MaxValue="255" MaxValueType="UInt64" IsBoolean="False" IsTimespan="False">
+                      <ImplToPhysEncodings LinearEncodings="Vehicle_Ethernet::Encodings::Hour_UInt8" />
+                    </NumericProperties>
+                  </DataType>
+                </DataTypeField>
+              </Fields>
+            </StructDataType>
+            <StructDataType Bitcount="304" RawBitcount="304" HasFixedBinaryLayout="True" HasMotorolaByteOrder="False" Name="TrafficSignDetection">
+              <Fields>
+                <DataTypeField RelativeBitOffset="64" IsOptional="False" IsHidden="False" Name="DetectedTrafficSigns">
+                  <AttributeValues>
+                    <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="memberName:DetectedTrafficSigns" InitialValueType="String" />
+                  </AttributeValues>
+                  <DataType DataType="Vehicle_Ethernet::DataTypes::TrafficSignInfo_Array" />
+                </DataTypeField>
+              </Fields>
+            </StructDataType>
+            <StructDataType Bitcount="80" RawBitcount="80" HasFixedBinaryLayout="True" HasMotorolaByteOrder="False" Name="TrafficSignInfo">
+              <Fields>
+                <DataTypeField RelativeBitOffset="32" IsOptional="False" IsHidden="False" Name="SignType">
+                  <AttributeValues>
+                    <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="memberName:SignType" InitialValueType="String" />
+                  </AttributeValues>
+                  <DataType DataType="_SystemDataTypes::UInt8">
+                    <NumericProperties MinValue="0" MinValueType="UInt64" MaxValue="100" MaxValueType="UInt64" IsBoolean="False" IsTimespan="False">
+                      <ImplToPhysEncodings TextualEncodings="Vehicle_Ethernet::Encodings::UInt8_UInt8" />
+                    </NumericProperties>
+                  </DataType>
+                </DataTypeField>
+                <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="DistanceToSign">
+                  <AttributeValues>
+                    <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="memberName:DistanceToSign" InitialValueType="String" />
+                  </AttributeValues>
+                  <DataType DataType="_SystemDataTypes::UInt32">
+                    <NumericProperties MinValue="-1000" MinValueType="Double" MaxValue="42948672.950000003" MaxValueType="Double" IsBoolean="False" IsTimespan="False">
+                      <ImplToPhysEncodings LinearEncodings="Vehicle_Ethernet::Encodings::VehicleTripDistance_UInt32_Linear" TextualEncodings="Vehicle_Ethernet::Encodings::VehicleTripDistance_UInt32_Textual" />
+                    </NumericProperties>
+                  </DataType>
+                </DataTypeField>
+                <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="Reliability">
+                  <AttributeValues>
+                    <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="memberName:Reliability" InitialValueType="String" />
+                  </AttributeValues>
+                  <DataType DataType="_SystemDataTypes::UInt8">
+                    <NumericProperties MinValue="0" MinValueType="UInt64" MaxValue="255" MaxValueType="UInt64" IsBoolean="False" IsTimespan="False">
+                      <ImplToPhysEncodings LinearEncodings="Vehicle_Ethernet::Encodings::UInt8_UInt8_2" />
+                    </NumericProperties>
+                  </DataType>
+                </DataTypeField>
+              </Fields>
+            </StructDataType>
+            <ArrayDataType MaxLength="3" MinLength="3" HasMaxLength="True" HasFixedBinaryLayout="True" HasMotorolaByteOrder="False" Name="TrafficSignInfo_Array">
+              <BaseType DataType="Vehicle_Ethernet::DataTypes::TrafficSignInfo" />
+            </ArrayDataType>
+            <StructDataType Bitcount="496" RawBitcount="496" HasFixedBinaryLayout="True" HasMotorolaByteOrder="False" Name="LaneDetection">
+              <Fields>
+                <DataTypeField RelativeBitOffset="64" IsOptional="False" IsHidden="False" Name="DetectedLaneBorder">
+                  <AttributeValues>
+                    <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="memberName:DetectedLaneBorder" InitialValueType="String" />
+                  </AttributeValues>
+                  <DataType DataType="Vehicle_Ethernet::DataTypes::DetectedLaneBorder_Array" />
+                </DataTypeField>
+              </Fields>
+            </StructDataType>
+            <StructDataType Bitcount="144" RawBitcount="144" HasFixedBinaryLayout="True" HasMotorolaByteOrder="False" Name="DetectedLaneBorder">
+              <Fields>
+                <DataTypeField RelativeBitOffset="32" IsOptional="False" IsHidden="False" Name="LaneSegmentX">
+                  <AttributeValues>
+                    <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="memberName:LaneSegmentX" InitialValueType="String" />
+                  </AttributeValues>
+                  <DataType DataType="_SystemDataTypes::UInt32">
+                    <NumericProperties MinValue="-1000" MinValueType="Double" MaxValue="42948672.950000003" MaxValueType="Double" IsBoolean="False" IsTimespan="False">
+                      <ImplToPhysEncodings LinearEncodings="Vehicle_Ethernet::Encodings::VehicleTripDistance_UInt32_Linear" TextualEncodings="Vehicle_Ethernet::Encodings::VehicleTripDistance_UInt32_Textual" />
+                    </NumericProperties>
+                  </DataType>
+                </DataTypeField>
+                <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="BorderLeft">
+                  <AttributeValues>
+                    <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="memberName:BorderLeft" InitialValueType="String" />
+                  </AttributeValues>
+                  <DataType DataType="_SystemDataTypes::UInt32">
+                    <NumericProperties MinValue="-1000" MinValueType="Double" MaxValue="42948672.950000003" MaxValueType="Double" IsBoolean="False" IsTimespan="False">
+                      <ImplToPhysEncodings LinearEncodings="Vehicle_Ethernet::Encodings::VehicleTripDistance_UInt32_Linear" TextualEncodings="Vehicle_Ethernet::Encodings::VehicleTripDistance_UInt32_Textual" />
+                    </NumericProperties>
+                  </DataType>
+                </DataTypeField>
+                <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="BorderRight">
+                  <AttributeValues>
+                    <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="memberName:BorderRight" InitialValueType="String" />
+                  </AttributeValues>
+                  <DataType DataType="_SystemDataTypes::UInt32">
+                    <NumericProperties MinValue="-1000" MinValueType="Double" MaxValue="42948672.950000003" MaxValueType="Double" IsBoolean="False" IsTimespan="False">
+                      <ImplToPhysEncodings LinearEncodings="Vehicle_Ethernet::Encodings::VehicleTripDistance_UInt32_Linear" TextualEncodings="Vehicle_Ethernet::Encodings::VehicleTripDistance_UInt32_Textual" />
+                    </NumericProperties>
+                  </DataType>
+                </DataTypeField>
+                <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="ReliabilityLeft">
+                  <AttributeValues>
+                    <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="memberName:ReliabilityLeft" InitialValueType="String" />
+                  </AttributeValues>
+                  <DataType DataType="_SystemDataTypes::UInt8">
+                    <NumericProperties MinValue="0" MinValueType="UInt64" MaxValue="255" MaxValueType="UInt64" IsBoolean="False" IsTimespan="False">
+                      <ImplToPhysEncodings LinearEncodings="Vehicle_Ethernet::Encodings::UInt8_UInt8_2" />
+                    </NumericProperties>
+                  </DataType>
+                </DataTypeField>
+                <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="ReliabilityRight">
+                  <AttributeValues>
+                    <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="memberName:ReliabilityRight" InitialValueType="String" />
+                  </AttributeValues>
+                  <DataType DataType="_SystemDataTypes::UInt8">
+                    <NumericProperties MinValue="0" MinValueType="UInt64" MaxValue="255" MaxValueType="UInt64" IsBoolean="False" IsTimespan="False">
+                      <ImplToPhysEncodings LinearEncodings="Vehicle_Ethernet::Encodings::UInt8_UInt8_2" />
+                    </NumericProperties>
+                  </DataType>
+                </DataTypeField>
+              </Fields>
+            </StructDataType>
+            <ArrayDataType MaxLength="3" MinLength="3" HasMaxLength="True" HasFixedBinaryLayout="True" HasMotorolaByteOrder="False" Name="DetectedLaneBorder_Array">
+              <BaseType DataType="Vehicle_Ethernet::DataTypes::DetectedLaneBorder" />
+            </ArrayDataType>
+            <FunctionPrototype IsOneWay="False" AllowSpecialCharactersInMemberNames="False" HasFixedBinaryLayout="False" HasMotorolaByteOrder="False" Name="StartStop_Prototype">
+              <Result DataType="_SystemDataTypes::Void" />
+              <Parameters>
+                <Parameter IsOptional="False" Name="Activate">
+                  <DataType DataType="_SystemDataTypes::UInt8">
+                    <NumericProperties MinValue="0" MinValueType="UInt64" MaxValue="1" MaxValueType="UInt64" IsBoolean="False" IsTimespan="False">
+                      <ImplToPhysEncodings TextualEncodings="Vehicle_Ethernet::Encodings::UInt8_UInt8_5" />
+                    </NumericProperties>
+                  </DataType>
+                </Parameter>
+                <Parameter IsOptional="False" Direction="Out" Name="Result">
+                  <DataType DataType="_SystemDataTypes::UInt8">
+                    <NumericProperties MinValue="0" MinValueType="UInt64" MaxValue="1" MaxValueType="UInt64" IsBoolean="False" IsTimespan="False">
+                      <ImplToPhysEncodings TextualEncodings="Vehicle_Ethernet::Encodings::UInt8_UInt8_6" />
+                    </NumericProperties>
+                  </DataType>
+                </Parameter>
+              </Parameters>
+            </FunctionPrototype>
+            <FunctionPrototype IsOneWay="False" AllowSpecialCharactersInMemberNames="False" HasFixedBinaryLayout="False" HasMotorolaByteOrder="False" Name="UInt8_Getter_Prototype">
+              <Result DataType="_SystemDataTypes::UInt8" />
+            </FunctionPrototype>
+            <FunctionPrototype IsOneWay="False" AllowSpecialCharactersInMemberNames="False" HasFixedBinaryLayout="False" HasMotorolaByteOrder="False" Name="UInt8_Setter_Prototype">
+              <Result DataType="_SystemDataTypes::UInt8" />
+              <Parameters>
+                <Parameter IsOptional="False" Name="newValue">
+                  <DataType DataType="_SystemDataTypes::UInt8" />
+                </Parameter>
+              </Parameters>
+            </FunctionPrototype>
+            <StructDataType Bitcount="424" RawBitcount="424" HasFixedBinaryLayout="True" HasMotorolaByteOrder="False" Name="ObstacleDetection">
+              <Fields>
+                <DataTypeField RelativeBitOffset="64" IsOptional="False" IsHidden="False" Name="Segment">
+                  <AttributeValues>
+                    <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="memberName:Segment" InitialValueType="String" />
+                  </AttributeValues>
+                  <DataType DataType="Vehicle_Ethernet::DataTypes::SegmentDT_Array" />
+                </DataTypeField>
+              </Fields>
+            </StructDataType>
+            <StructDataType Bitcount="72" RawBitcount="72" HasFixedBinaryLayout="True" HasMotorolaByteOrder="False" Name="SegmentDT">
+              <Fields>
+                <DataTypeField RelativeBitOffset="32" IsOptional="False" IsHidden="False" Name="Distance">
+                  <AttributeValues>
+                    <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="memberName:Distance" InitialValueType="String" />
+                  </AttributeValues>
+                  <DataType DataType="_SystemDataTypes::UInt32">
+                    <NumericProperties MinValue="-1000" MinValueType="Double" MaxValue="42948672.950000003" MaxValueType="Double" IsBoolean="False" IsTimespan="False">
+                      <ImplToPhysEncodings LinearEncodings="Vehicle_Ethernet::Encodings::VehicleTripDistance_UInt32_Linear" TextualEncodings="Vehicle_Ethernet::Encodings::VehicleTripDistance_UInt32_Textual" />
+                    </NumericProperties>
+                  </DataType>
+                </DataTypeField>
+                <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="Reliability">
+                  <AttributeValues>
+                    <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="memberName:Reliability" InitialValueType="String" />
+                  </AttributeValues>
+                  <DataType DataType="_SystemDataTypes::UInt8">
+                    <NumericProperties MinValue="0" MinValueType="UInt64" MaxValue="255" MaxValueType="UInt64" IsBoolean="False" IsTimespan="False">
+                      <ImplToPhysEncodings LinearEncodings="Vehicle_Ethernet::Encodings::UInt8_UInt8_2" />
+                    </NumericProperties>
+                  </DataType>
+                </DataTypeField>
+              </Fields>
+            </StructDataType>
+            <ArrayDataType MaxLength="5" MinLength="5" HasMaxLength="True" HasFixedBinaryLayout="True" HasMotorolaByteOrder="False" Name="SegmentDT_Array">
+              <BaseType DataType="Vehicle_Ethernet::DataTypes::SegmentDT" />
+            </ArrayDataType>
+            <StructDataType Bitcount="64" RawBitcount="64" HasFixedBinaryLayout="True" HasMotorolaByteOrder="False" Name="TrafficSignInfo_2">
+              <Fields>
+                <DataTypeField RelativeBitOffset="32" IsOptional="False" IsHidden="False" Name="SpeedLimit">
+                  <AttributeValues>
+                    <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="memberName:SpeedLimit" InitialValueType="String" />
+                  </AttributeValues>
+                  <DataType DataType="_SystemDataTypes::UInt8" />
+                </DataTypeField>
+                <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="NoPassingZone">
+                  <AttributeValues>
+                    <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="memberName:NoPassingZone" InitialValueType="String" />
+                  </AttributeValues>
+                  <DataType DataType="_SystemDataTypes::UInt8" />
+                </DataTypeField>
+                <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="RoadWork">
+                  <AttributeValues>
+                    <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="memberName:RoadWork" InitialValueType="String" />
+                  </AttributeValues>
+                  <DataType DataType="_SystemDataTypes::UInt8" />
+                </DataTypeField>
+                <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="Hazard">
+                  <AttributeValues>
+                    <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="memberName:Hazard" InitialValueType="String" />
+                  </AttributeValues>
+                  <DataType DataType="_SystemDataTypes::UInt8" />
+                </DataTypeField>
+              </Fields>
+            </StructDataType>
+            <StructDataType Bitcount="64" RawBitcount="64" HasFixedBinaryLayout="True" HasMotorolaByteOrder="False" Name="LaneInfo">
+              <Fields>
+                <DataTypeField RelativeBitOffset="32" IsOptional="False" IsHidden="False" Name="LaneReliabilityLeft">
+                  <AttributeValues>
+                    <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="memberName:LaneReliabilityLeft" InitialValueType="String" />
+                  </AttributeValues>
+                  <DataType DataType="_SystemDataTypes::UInt8">
+                    <NumericProperties MinValue="0" MinValueType="UInt64" MaxValue="255" MaxValueType="UInt64" IsBoolean="False" IsTimespan="False">
+                      <ImplToPhysEncodings LinearEncodings="Vehicle_Ethernet::Encodings::UInt8_UInt8_2" />
+                    </NumericProperties>
+                  </DataType>
+                </DataTypeField>
+                <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="LaneReliabilityRight">
+                  <AttributeValues>
+                    <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="memberName:LaneReliabilityRight" InitialValueType="String" />
+                  </AttributeValues>
+                  <DataType DataType="_SystemDataTypes::UInt8">
+                    <NumericProperties MinValue="0" MinValueType="UInt64" MaxValue="255" MaxValueType="UInt64" IsBoolean="False" IsTimespan="False">
+                      <ImplToPhysEncodings LinearEncodings="Vehicle_Ethernet::Encodings::UInt8_UInt8_2" />
+                    </NumericProperties>
+                  </DataType>
+                </DataTypeField>
+                <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="LaneDeparture">
+                  <AttributeValues>
+                    <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="memberName:LaneDeparture" InitialValueType="String" />
+                  </AttributeValues>
+                  <DataType DataType="_SystemDataTypes::UInt8" />
+                </DataTypeField>
+                <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="CollisionWarning">
+                  <AttributeValues>
+                    <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="memberName:CollisionWarning" InitialValueType="String" />
+                  </AttributeValues>
+                  <DataType DataType="_SystemDataTypes::UInt8" />
+                </DataTypeField>
+              </Fields>
+            </StructDataType>
+            <StructDataType Bitcount="128" RawBitcount="8" HasFixedBinaryLayout="True" HasMotorolaByteOrder="False" Name="VolumeRequest">
+              <Fields>
+                <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="VolumeRequestVolumeRequest">
+                  <AttributeValues>
+                    <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="memberName:VolumeRequestVolumeRequest" InitialValueType="String" />
+                  </AttributeValues>
+                  <DataType DataType="_SystemDataTypes::UInt8">
+                    <NumericProperties MinValue="0" MinValueType="UInt64" MaxValue="255" MaxValueType="UInt64" IsBoolean="False" IsTimespan="False">
+                      <ImplToPhysEncodings LinearEncodings="Vehicle_Ethernet::Encodings::VolumeRequestVolumeRequest_UInt8" />
+                    </NumericProperties>
+                  </DataType>
+                </DataTypeField>
+              </Fields>
+            </StructDataType>
+          </DataTypes>
+        </Namespace>
+        <Namespace IsDefinedAsHidden="False" IsSystemDefined="True" Name="Encodings">
+          <LinearEncodings>
+            <LinearEncodings Name="BatteryTemperature_UInt16">
+              <LinearEncoding Factor="0.1" Offset="-273" Unit="°C" LowerBound="0" LowerBoundType="UInt32" UpperBound="65535" UpperBoundType="UInt32" />
+            </LinearEncodings>
+            <LinearEncodings Name="RemainingCapacity_UInt32">
+              <LinearEncoding Factor="0.001" Offset="0" Unit="kWh" LowerBound="0" LowerBoundType="UInt32" UpperBound="4294967295" UpperBoundType="UInt32" />
+            </LinearEncodings>
+            <LinearEncodings Name="VehicleTripDistance_UInt32_Linear">
+              <LinearEncoding Factor="0.01" Offset="-1000" Unit="m" LowerBound="0" LowerBoundType="UInt32" UpperBound="4294967295" UpperBoundType="UInt32" />
+            </LinearEncodings>
+            <LinearEncodings Name="VehicleSpeed_UInt16">
+              <LinearEncoding Factor="0.1" Offset="-100" Unit="km/h" LowerBound="0" LowerBoundType="UInt32" UpperBound="65535" UpperBoundType="UInt32" />
+            </LinearEncodings>
+            <LinearEncodings Name="EMotorCurrent_UInt32">
+              <LinearEncoding Factor="0.001" Offset="-1000" Unit="A" LowerBound="0" LowerBoundType="UInt32" UpperBound="4294967295" UpperBoundType="UInt32" />
+            </LinearEncodings>
+            <LinearEncodings Name="EMotorPower_UInt32">
+              <LinearEncoding Factor="0.001" Offset="-1000" Unit="kW" LowerBound="0" LowerBoundType="UInt32" UpperBound="4294967295" UpperBoundType="UInt32" />
+            </LinearEncodings>
+            <LinearEncodings Name="Minute_UInt8">
+              <LinearEncoding Factor="1" Offset="0" Unit="m" LowerBound="0" LowerBoundType="UInt32" UpperBound="255" UpperBoundType="UInt32" />
+            </LinearEncodings>
+            <LinearEncodings Name="Second_UInt8">
+              <LinearEncoding Factor="1" Offset="0" Unit="sec" LowerBound="0" LowerBoundType="UInt32" UpperBound="255" UpperBoundType="UInt32" />
+            </LinearEncodings>
+            <LinearEncodings Name="Hour_UInt8">
+              <LinearEncoding Factor="1" Offset="0" Unit="h" LowerBound="0" LowerBoundType="UInt32" UpperBound="255" UpperBoundType="UInt32" />
+            </LinearEncodings>
+            <LinearEncodings Name="UInt8_UInt8_2">
+              <LinearEncoding Factor="1" Offset="0" Unit="%" LowerBound="0" LowerBoundType="UInt32" UpperBound="255" UpperBoundType="UInt32" />
+            </LinearEncodings>
+            <LinearEncodings Name="VolumeRequestVolumeRequest_UInt8">
+              <LinearEncoding Factor="1" Offset="0" LowerBound="0" LowerBoundType="UInt32" UpperBound="255" UpperBoundType="UInt32" />
+            </LinearEncodings>
+          </LinearEncodings>
+          <TextualEncodings>
+            <TextualEncodings DefinesMinMax="False" IsEnum="False" Name="VehicleTripDistance_UInt32_Textual">
+              <TextualEncoding TextualValue="NoDistance" DisplayValue="NoDistance" LowerBound="0" LowerBoundType="UInt32" UpperBound="0" UpperBoundType="UInt32" />
+            </TextualEncodings>
+            <TextualEncodings DefinesMinMax="False" IsEnum="False" Name="VehicleDirection_UInt8">
+              <TextualEncoding TextualValue="Forward" DisplayValue="Forward" LowerBound="1" LowerBoundType="UInt32" UpperBound="1" UpperBoundType="UInt32" />
+              <TextualEncoding TextualValue="Backward" DisplayValue="Backward" LowerBound="2" LowerBoundType="UInt32" UpperBound="2" UpperBoundType="UInt32" />
+            </TextualEncodings>
+            <TextualEncodings DefinesMinMax="False" IsEnum="False" Name="UInt8_UInt8">
+              <TextualEncoding TextualValue="NoObject" DisplayValue="NoObject" LowerBound="0" LowerBoundType="UInt32" UpperBound="0" UpperBoundType="UInt32" />
+              <TextualEncoding TextualValue="NoLimit" DisplayValue="NoLimit" LowerBound="1" LowerBoundType="UInt32" UpperBound="1" UpperBoundType="UInt32" />
+              <TextualEncoding TextualValue="NoPassingZoneSign" DisplayValue="NoPassingZoneSign" LowerBound="2" LowerBoundType="UInt32" UpperBound="2" UpperBoundType="UInt32" />
+              <TextualEncoding TextualValue="NoPassingZoneEndSign" DisplayValue="NoPassingZoneEndSign" LowerBound="3" LowerBoundType="UInt32" UpperBound="3" UpperBoundType="UInt32" />
+              <TextualEncoding TextualValue="HazardSign" DisplayValue="HazardSign" LowerBound="4" LowerBoundType="UInt32" UpperBound="4" UpperBoundType="UInt32" />
+              <TextualEncoding TextualValue="HazardEndSign" DisplayValue="HazardEndSign" LowerBound="5" LowerBoundType="UInt32" UpperBound="5" UpperBoundType="UInt32" />
+              <TextualEncoding TextualValue="RoadworkSign" DisplayValue="RoadworkSign" LowerBound="6" LowerBoundType="UInt32" UpperBound="6" UpperBoundType="UInt32" />
+              <TextualEncoding TextualValue="RoadworkEndSign" DisplayValue="RoadworkEndSign" LowerBound="7" LowerBoundType="UInt32" UpperBound="7" UpperBoundType="UInt32" />
+              <TextualEncoding TextualValue="SpeedLimit30Sign" DisplayValue="SpeedLimit30Sign" LowerBound="30" LowerBoundType="UInt32" UpperBound="30" UpperBoundType="UInt32" />
+              <TextualEncoding TextualValue="SpeedLimit40Sign" DisplayValue="SpeedLimit40Sign" LowerBound="40" LowerBoundType="UInt32" UpperBound="40" UpperBoundType="UInt32" />
+              <TextualEncoding TextualValue="SpeedLimit50Sign" DisplayValue="SpeedLimit50Sign" LowerBound="50" LowerBoundType="UInt32" UpperBound="50" UpperBoundType="UInt32" />
+              <TextualEncoding TextualValue="SpeedLimit60Sign" DisplayValue="SpeedLimit60Sign" LowerBound="60" LowerBoundType="UInt32" UpperBound="60" UpperBoundType="UInt32" />
+              <TextualEncoding TextualValue="SpeedLimit70Sign" DisplayValue="SpeedLimit70Sign" LowerBound="70" LowerBoundType="UInt32" UpperBound="70" UpperBoundType="UInt32" />
+              <TextualEncoding TextualValue="SpeedLimit80Sign" DisplayValue="SpeedLimit80Sign" LowerBound="80" LowerBoundType="UInt32" UpperBound="80" UpperBoundType="UInt32" />
+              <TextualEncoding TextualValue="SpeedLimit100Sign" DisplayValue="SpeedLimit100Sign" LowerBound="100" LowerBoundType="UInt32" UpperBound="100" UpperBoundType="UInt32" />
+            </TextualEncodings>
+            <TextualEncodings DefinesMinMax="False" IsEnum="False" Name="UInt8_UInt8_5">
+              <TextualEncoding TextualValue="Deactivate" DisplayValue="Deactivate" LowerBound="0" LowerBoundType="UInt32" UpperBound="0" UpperBoundType="UInt32" />
+              <TextualEncoding TextualValue="Activate" DisplayValue="Activate" LowerBound="1" LowerBoundType="UInt32" UpperBound="1" UpperBoundType="UInt32" />
+            </TextualEncodings>
+            <TextualEncodings DefinesMinMax="False" IsEnum="False" Name="UInt8_UInt8_6">
+              <TextualEncoding TextualValue="Failed" DisplayValue="Failed" LowerBound="0" LowerBoundType="UInt32" UpperBound="0" UpperBoundType="UInt32" />
+              <TextualEncoding TextualValue="Success" DisplayValue="Success" LowerBound="1" LowerBoundType="UInt32" UpperBound="1" UpperBoundType="UInt32" />
+            </TextualEncodings>
+          </TextualEncodings>
+        </Namespace>
+        <Namespace IsDefinedAsHidden="False" IsSystemDefined="True" Name="VGW">
+          <DistributedObjects>
+            <DistributedObject GenerateDotNetAPI="True" Name="BatteryPSI1">
+              <DataType>
+                <ModifiedDOIF Reverse="False" IsDOReference="False" Interface="Vehicle_Ethernet::Interfaces::sif_1002_PDUs" />
+              </DataType>
+              <MemberData>
+                <DOMemberDataHolder Name="MemberData">
+                  <Data>
+                    <DOInstanceMemberData Name="BatteryStatus">
+                      <AttributeValues>
+                        <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="cluster:Vehicle_Ethernet,node:VGW,serviceId:1002,majorVersion:1,instanceId:1,pduName:BatteryStatus" InitialValueType="String" />
+                      </AttributeValues>
+                    </DOInstanceMemberData>
+                  </Data>
+                </DOMemberDataHolder>
+              </MemberData>
+            </DistributedObject>
+            <DistributedObject GenerateDotNetAPI="True" Name="DriveStatusPSI1">
+              <DataType>
+                <ModifiedDOIF Reverse="False" IsDOReference="False" Interface="Vehicle_Ethernet::Interfaces::sif_1000_PDUs" />
+              </DataType>
+              <MemberData>
+                <DOMemberDataHolder Name="MemberData">
+                  <Data>
+                    <DOInstanceMemberData Name="VehicleDistance">
+                      <AttributeValues>
+                        <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="cluster:Vehicle_Ethernet,node:VGW,serviceId:1000,majorVersion:1,instanceId:1,pduName:VehicleDistance" InitialValueType="String" />
+                      </AttributeValues>
+                    </DOInstanceMemberData>
+                    <DOInstanceMemberData Name="VehicleSpeed">
+                      <AttributeValues>
+                        <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="cluster:Vehicle_Ethernet,node:VGW,serviceId:1000,majorVersion:1,instanceId:1,pduName:VehicleSpeed" InitialValueType="String" />
+                      </AttributeValues>
+                    </DOInstanceMemberData>
+                  </Data>
+                </DOMemberDataHolder>
+              </MemberData>
+            </DistributedObject>
+            <DistributedObject GenerateDotNetAPI="True" Name="EnginePSI1">
+              <DataType>
+                <ModifiedDOIF Reverse="False" IsDOReference="False" Interface="Vehicle_Ethernet::Interfaces::sif_1001_PDUs" />
+              </DataType>
+              <MemberData>
+                <DOMemberDataHolder Name="MemberData">
+                  <Data>
+                    <DOInstanceMemberData Name="EMotorStatus">
+                      <AttributeValues>
+                        <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="cluster:Vehicle_Ethernet,node:VGW,serviceId:1001,majorVersion:1,instanceId:1,pduName:EMotorStatus" InitialValueType="String" />
+                      </AttributeValues>
+                    </DOInstanceMemberData>
+                  </Data>
+                </DOMemberDataHolder>
+              </MemberData>
+            </DistributedObject>
+            <DistributedObject GenerateDotNetAPI="True" Name="InformationPSI1">
+              <DataType>
+                <ModifiedDOIF Reverse="False" IsDOReference="False" Interface="Vehicle_Ethernet::Interfaces::sif_1003_PDUs" />
+              </DataType>
+              <MemberData>
+                <DOMemberDataHolder Name="MemberData">
+                  <Data>
+                    <DOInstanceMemberData Name="ExteriorTemperature">
+                      <AttributeValues>
+                        <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="cluster:Vehicle_Ethernet,node:VGW,serviceId:1003,majorVersion:1,instanceId:1,pduName:ExteriorTemperature" InitialValueType="String" />
+                      </AttributeValues>
+                    </DOInstanceMemberData>
+                    <DOInstanceMemberData Name="Time">
+                      <AttributeValues>
+                        <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="cluster:Vehicle_Ethernet,node:VGW,serviceId:1003,majorVersion:1,instanceId:1,pduName:Time" InitialValueType="String" />
+                      </AttributeValues>
+                    </DOInstanceMemberData>
+                  </Data>
+                </DOMemberDataHolder>
+              </MemberData>
+            </DistributedObject>
+          </DistributedObjects>
+        </Namespace>
+        <Namespace IsDefinedAsHidden="False" IsSystemDefined="True" Name="CAMF">
+          <DistributedObjects>
+            <DistributedObject GenerateDotNetAPI="True" Name="CameraObjectDetectionPSI1">
+              <DataType>
+                <ModifiedDOIF Reverse="False" IsDOReference="False" Interface="Vehicle_Ethernet::Interfaces::CameraObjectDetection" />
+              </DataType>
+              <MemberData>
+                <DOMemberDataHolder Name="MemberData">
+                  <Data>
+                    <DOInstanceMemberData Name="TrafficSignDetection">
+                      <AttributeValues>
+                        <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="cluster:Vehicle_Ethernet,node:CAMF,serviceId:2001,majorVersion:1,instanceId:1,eventId:32868" InitialValueType="String" />
+                      </AttributeValues>
+                    </DOInstanceMemberData>
+                    <DOInstanceMemberData Name="LaneDetection">
+                      <AttributeValues>
+                        <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="cluster:Vehicle_Ethernet,node:CAMF,serviceId:2001,majorVersion:1,instanceId:1,eventId:32869" InitialValueType="String" />
+                      </AttributeValues>
+                    </DOInstanceMemberData>
+                    <DOInstanceMemberData Name="StartStop">
+                      <AttributeValues>
+                        <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="cluster:Vehicle_Ethernet,node:CAMF,serviceId:2001,majorVersion:1,instanceId:1,methodId:300,inParams:[Activate],outParams:[Result]" InitialValueType="String" />
+                      </AttributeValues>
+                    </DOInstanceMemberData>
+                    <DOInstanceMemberData Name="FrameRate">
+                      <AttributeValues>
+                        <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="cluster:Vehicle_Ethernet,node:CAMF,serviceId:2001,majorVersion:1,instanceId:1,notifierId:32968,getterId:201,setterId:202" InitialValueType="String" />
+                      </AttributeValues>
+                    </DOInstanceMemberData>
+                  </Data>
+                </DOMemberDataHolder>
+              </MemberData>
+            </DistributedObject>
+          </DistributedObjects>
+        </Namespace>
+        <Namespace IsDefinedAsHidden="False" IsSystemDefined="True" Name="LRR">
+          <DistributedObjects>
+            <DistributedObject GenerateDotNetAPI="True" Name="ObstacleDetectionPSI1">
+              <DataType>
+                <ModifiedDOIF Reverse="False" IsDOReference="False" Interface="Vehicle_Ethernet::Interfaces::ObstacleDetection" />
+              </DataType>
+              <MemberData>
+                <DOMemberDataHolder Name="MemberData">
+                  <Data>
+                    <DOInstanceMemberData Name="ObstacleDetection">
+                      <AttributeValues>
+                        <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="cluster:Vehicle_Ethernet,node:LRR,serviceId:2002,majorVersion:1,instanceId:1,eventId:32868" InitialValueType="String" />
+                      </AttributeValues>
+                    </DOInstanceMemberData>
+                  </Data>
+                </DOMemberDataHolder>
+              </MemberData>
+            </DistributedObject>
+          </DistributedObjects>
+        </Namespace>
+        <Namespace IsDefinedAsHidden="False" IsSystemDefined="True" Name="ADAS">
+          <DistributedObjects>
+            <DistributedObject GenerateDotNetAPI="True" Name="DetectionStatusPSI1">
+              <DataType>
+                <ModifiedDOIF Reverse="False" IsDOReference="False" Interface="Vehicle_Ethernet::Interfaces::DetectionStatus" />
+              </DataType>
+              <MemberData>
+                <DOMemberDataHolder Name="MemberData">
+                  <Data>
+                    <DOInstanceMemberData Name="TrafficSignInfo">
+                      <AttributeValues>
+                        <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="cluster:Vehicle_Ethernet,node:ADAS,serviceId:2000,majorVersion:1,instanceId:1,eventId:32868" InitialValueType="String" />
+                      </AttributeValues>
+                    </DOInstanceMemberData>
+                    <DOInstanceMemberData Name="LaneInfo">
+                      <AttributeValues>
+                        <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="cluster:Vehicle_Ethernet,node:ADAS,serviceId:2000,majorVersion:1,instanceId:1,eventId:32869" InitialValueType="String" />
+                      </AttributeValues>
+                    </DOInstanceMemberData>
+                  </Data>
+                </DOMemberDataHolder>
+              </MemberData>
+            </DistributedObject>
+            <DistributedObject GenerateDotNetAPI="True" Name="CameraObjectDetectionCSI1">
+              <DataType>
+                <ModifiedDOIF Reverse="True" IsDOReference="False" Interface="Vehicle_Ethernet::Interfaces::CameraObjectDetection" />
+              </DataType>
+              <MemberData>
+                <DOMemberDataHolder Name="MemberData">
+                  <Data>
+                    <DOInstanceMemberData Name="TrafficSignDetection">
+                      <AttributeValues>
+                        <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="cluster:Vehicle_Ethernet,node:ADAS,serviceId:2001,majorVersion:1,instanceId:1,shortName:CameraObjectDetectionCSI1,eventId:32868" InitialValueType="String" />
+                      </AttributeValues>
+                    </DOInstanceMemberData>
+                    <DOInstanceMemberData Name="LaneDetection">
+                      <AttributeValues>
+                        <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="cluster:Vehicle_Ethernet,node:ADAS,serviceId:2001,majorVersion:1,instanceId:1,shortName:CameraObjectDetectionCSI1,eventId:32869" InitialValueType="String" />
+                      </AttributeValues>
+                    </DOInstanceMemberData>
+                    <DOInstanceMemberData Name="StartStop">
+                      <AttributeValues>
+                        <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="cluster:Vehicle_Ethernet,node:ADAS,serviceId:2001,majorVersion:1,instanceId:1,shortName:CameraObjectDetectionCSI1,methodId:300,inParams:[Activate],outParams:[Result]" InitialValueType="String" />
+                      </AttributeValues>
+                    </DOInstanceMemberData>
+                    <DOInstanceMemberData Name="FrameRate">
+                      <AttributeValues>
+                        <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="cluster:Vehicle_Ethernet,node:ADAS,serviceId:2001,majorVersion:1,instanceId:1,shortName:CameraObjectDetectionCSI1,notifierId:32968,getterId:201,setterId:202" InitialValueType="String" />
+                      </AttributeValues>
+                    </DOInstanceMemberData>
+                  </Data>
+                </DOMemberDataHolder>
+              </MemberData>
+            </DistributedObject>
+            <DistributedObject GenerateDotNetAPI="True" Name="DriveStatusCSI1">
+              <DataType>
+                <ModifiedDOIF Reverse="True" IsDOReference="False" Interface="Vehicle_Ethernet::Interfaces::sif_1000_PDUs" />
+              </DataType>
+              <MemberData>
+                <DOMemberDataHolder Name="MemberData">
+                  <Data>
+                    <DOInstanceMemberData Name="VehicleDistance">
+                      <AttributeValues>
+                        <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="cluster:Vehicle_Ethernet,node:ADAS,serviceId:1000,majorVersion:1,instanceId:1,shortName:DriveStatusCSI1,pduName:VehicleDistance" InitialValueType="String" />
+                      </AttributeValues>
+                    </DOInstanceMemberData>
+                    <DOInstanceMemberData Name="VehicleSpeed">
+                      <AttributeValues>
+                        <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="cluster:Vehicle_Ethernet,node:ADAS,serviceId:1000,majorVersion:1,instanceId:1,shortName:DriveStatusCSI1,pduName:VehicleSpeed" InitialValueType="String" />
+                      </AttributeValues>
+                    </DOInstanceMemberData>
+                  </Data>
+                </DOMemberDataHolder>
+              </MemberData>
+            </DistributedObject>
+            <DistributedObject GenerateDotNetAPI="True" Name="ObstacleDetectionCSI1">
+              <DataType>
+                <ModifiedDOIF Reverse="True" IsDOReference="False" Interface="Vehicle_Ethernet::Interfaces::ObstacleDetection" />
+              </DataType>
+              <MemberData>
+                <DOMemberDataHolder Name="MemberData">
+                  <Data>
+                    <DOInstanceMemberData Name="ObstacleDetection">
+                      <AttributeValues>
+                        <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="cluster:Vehicle_Ethernet,node:ADAS,serviceId:2002,majorVersion:1,instanceId:1,shortName:ObstacleDetectionCSI1,eventId:32868" InitialValueType="String" />
+                      </AttributeValues>
+                    </DOInstanceMemberData>
+                  </Data>
+                </DOMemberDataHolder>
+              </MemberData>
+            </DistributedObject>
+          </DistributedObjects>
+        </Namespace>
+        <Namespace IsDefinedAsHidden="False" IsSystemDefined="True" Name="HU">
+          <DistributedObjects>
+            <DistributedObject GenerateDotNetAPI="True" Name="InformationCSI1">
+              <DataType>
+                <ModifiedDOIF Reverse="True" IsDOReference="False" Interface="Vehicle_Ethernet::Interfaces::sif_1003_PDUs" />
+              </DataType>
+              <MemberData>
+                <DOMemberDataHolder Name="MemberData">
+                  <Data>
+                    <DOInstanceMemberData Name="ExteriorTemperature">
+                      <AttributeValues>
+                        <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="cluster:Vehicle_Ethernet,node:HU,serviceId:1003,majorVersion:1,instanceId:1,shortName:InformationCSI1,pduName:ExteriorTemperature" InitialValueType="String" />
+                      </AttributeValues>
+                    </DOInstanceMemberData>
+                    <DOInstanceMemberData Name="Time">
+                      <AttributeValues>
+                        <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="cluster:Vehicle_Ethernet,node:HU,serviceId:1003,majorVersion:1,instanceId:1,shortName:InformationCSI1,pduName:Time" InitialValueType="String" />
+                      </AttributeValues>
+                    </DOInstanceMemberData>
+                  </Data>
+                </DOMemberDataHolder>
+              </MemberData>
+            </DistributedObject>
+            <DistributedObject GenerateDotNetAPI="True" Name="TxPDUs">
+              <DataType>
+                <ModifiedDOIF Reverse="False" IsDOReference="False" Interface="Vehicle_Ethernet::Interfaces::HUTxPDUs" />
+              </DataType>
+              <MemberData>
+                <DOMemberDataHolder Name="MemberData">
+                  <Data>
+                    <DOInstanceMemberData Name="VolumeRequest">
+                      <AttributeValues>
+                        <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="cluster:Vehicle_Ethernet,node:HU,pduName:VolumeRequest" InitialValueType="String" />
+                      </AttributeValues>
+                    </DOInstanceMemberData>
+                  </Data>
+                </DOMemberDataHolder>
+              </MemberData>
+            </DistributedObject>
+          </DistributedObjects>
+        </Namespace>
+        <Namespace IsDefinedAsHidden="False" IsSystemDefined="True" Name="IC">
+          <DistributedObjects>
+            <DistributedObject GenerateDotNetAPI="True" Name="BatteryCSI1">
+              <DataType>
+                <ModifiedDOIF Reverse="True" IsDOReference="False" Interface="Vehicle_Ethernet::Interfaces::sif_1002_PDUs" />
+              </DataType>
+              <MemberData>
+                <DOMemberDataHolder Name="MemberData">
+                  <Data>
+                    <DOInstanceMemberData Name="BatteryStatus">
+                      <AttributeValues>
+                        <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="cluster:Vehicle_Ethernet,node:IC,serviceId:1002,majorVersion:1,instanceId:1,shortName:BatteryCSI1,pduName:BatteryStatus" InitialValueType="String" />
+                      </AttributeValues>
+                    </DOInstanceMemberData>
+                  </Data>
+                </DOMemberDataHolder>
+              </MemberData>
+            </DistributedObject>
+            <DistributedObject GenerateDotNetAPI="True" Name="DriveStatusCSI2">
+              <DataType>
+                <ModifiedDOIF Reverse="True" IsDOReference="False" Interface="Vehicle_Ethernet::Interfaces::sif_1000_PDUs" />
+              </DataType>
+              <MemberData>
+                <DOMemberDataHolder Name="MemberData">
+                  <Data>
+                    <DOInstanceMemberData Name="VehicleDistance">
+                      <AttributeValues>
+                        <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="cluster:Vehicle_Ethernet,node:IC,serviceId:1000,majorVersion:1,instanceId:1,shortName:DriveStatusCSI2,pduName:VehicleDistance" InitialValueType="String" />
+                      </AttributeValues>
+                    </DOInstanceMemberData>
+                    <DOInstanceMemberData Name="VehicleSpeed">
+                      <AttributeValues>
+                        <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="cluster:Vehicle_Ethernet,node:IC,serviceId:1000,majorVersion:1,instanceId:1,shortName:DriveStatusCSI2,pduName:VehicleSpeed" InitialValueType="String" />
+                      </AttributeValues>
+                    </DOInstanceMemberData>
+                  </Data>
+                </DOMemberDataHolder>
+              </MemberData>
+            </DistributedObject>
+            <DistributedObject GenerateDotNetAPI="True" Name="EngineCSI1">
+              <DataType>
+                <ModifiedDOIF Reverse="True" IsDOReference="False" Interface="Vehicle_Ethernet::Interfaces::sif_1001_PDUs" />
+              </DataType>
+              <MemberData>
+                <DOMemberDataHolder Name="MemberData">
+                  <Data>
+                    <DOInstanceMemberData Name="EMotorStatus">
+                      <AttributeValues>
+                        <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="cluster:Vehicle_Ethernet,node:IC,serviceId:1001,majorVersion:1,instanceId:1,shortName:EngineCSI1,pduName:EMotorStatus" InitialValueType="String" />
+                      </AttributeValues>
+                    </DOInstanceMemberData>
+                  </Data>
+                </DOMemberDataHolder>
+              </MemberData>
+            </DistributedObject>
+            <DistributedObject GenerateDotNetAPI="True" Name="InformationCSI2">
+              <DataType>
+                <ModifiedDOIF Reverse="True" IsDOReference="False" Interface="Vehicle_Ethernet::Interfaces::sif_1003_PDUs" />
+              </DataType>
+              <MemberData>
+                <DOMemberDataHolder Name="MemberData">
+                  <Data>
+                    <DOInstanceMemberData Name="ExteriorTemperature">
+                      <AttributeValues>
+                        <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="cluster:Vehicle_Ethernet,node:IC,serviceId:1003,majorVersion:1,instanceId:1,shortName:InformationCSI2,pduName:ExteriorTemperature" InitialValueType="String" />
+                      </AttributeValues>
+                    </DOInstanceMemberData>
+                    <DOInstanceMemberData Name="Time">
+                      <AttributeValues>
+                        <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="cluster:Vehicle_Ethernet,node:IC,serviceId:1003,majorVersion:1,instanceId:1,shortName:InformationCSI2,pduName:Time" InitialValueType="String" />
+                      </AttributeValues>
+                    </DOInstanceMemberData>
+                  </Data>
+                </DOMemberDataHolder>
+              </MemberData>
+            </DistributedObject>
+            <DistributedObject GenerateDotNetAPI="True" Name="DetectionStatusCSI1">
+              <DataType>
+                <ModifiedDOIF Reverse="True" IsDOReference="False" Interface="Vehicle_Ethernet::Interfaces::DetectionStatus" />
+              </DataType>
+              <MemberData>
+                <DOMemberDataHolder Name="MemberData">
+                  <Data>
+                    <DOInstanceMemberData Name="TrafficSignInfo">
+                      <AttributeValues>
+                        <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="cluster:Vehicle_Ethernet,node:IC,serviceId:2000,majorVersion:1,instanceId:1,shortName:DetectionStatusCSI1,eventId:32868" InitialValueType="String" />
+                      </AttributeValues>
+                    </DOInstanceMemberData>
+                    <DOInstanceMemberData Name="LaneInfo">
+                      <AttributeValues>
+                        <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="cluster:Vehicle_Ethernet,node:IC,serviceId:2000,majorVersion:1,instanceId:1,shortName:DetectionStatusCSI1,eventId:32869" InitialValueType="String" />
+                      </AttributeValues>
+                    </DOInstanceMemberData>
+                  </Data>
+                </DOMemberDataHolder>
+              </MemberData>
+            </DistributedObject>
+          </DistributedObjects>
+        </Namespace>
+        <Namespace IsDefinedAsHidden="False" IsSystemDefined="True" Name="AMP">
+          <DistributedObjects>
+            <DistributedObject GenerateDotNetAPI="True" Name="RxPDUs">
+              <DataType>
+                <ModifiedDOIF Reverse="False" IsDOReference="False" Interface="Vehicle_Ethernet::Interfaces::AMPRxPDUs" />
+              </DataType>
+              <MemberData>
+                <DOMemberDataHolder Name="MemberData">
+                  <Data>
+                    <DOInstanceMemberData Name="VolumeRequest">
+                      <AttributeValues>
+                        <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="cluster:Vehicle_Ethernet,node:AMP,pduName:VolumeRequest" InitialValueType="String" />
+                      </AttributeValues>
+                    </DOInstanceMemberData>
+                  </Data>
+                </DOMemberDataHolder>
+              </MemberData>
+            </DistributedObject>
+          </DistributedObjects>
+        </Namespace>
+      </Subnamespaces>
+    </Namespace>
+  </Namespaces>
+</FunctionBusLibrary>

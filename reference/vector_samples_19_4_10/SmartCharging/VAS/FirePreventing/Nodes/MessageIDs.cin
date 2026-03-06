@@ -1,0 +1,78 @@
+/*@!Encoding:1252*/
+
+variables 
+{
+  byte SessionId[8];
+  enum SmartChargingMessageIDs
+  {
+    InvalidMessage = 0,
+    SECCDiscoveryReq = 1,
+    SECCDiscoveryRes = 2,
+    SupportedAppProtocolReq = 3,
+    SupportedAppProtocolRes = 4,
+    SessionSetupReq = 5,
+    SessionSetupRes = 6,
+    ServiceDiscoveryReq = 7,
+    ServiceDiscoveryRes = 8,
+    ServiceDetailReq = 9,
+    ServiceDetailRes = 10,
+    PaymentServiceSelectionReq = 11,
+    PaymentServiceSelectionRes = 12,
+    PaymentDetailsReq = 13,
+    PaymentDetailsRes = 14,
+    ContractAuthentiationReq = 15,
+    ContractAuthentiationRes = 16,
+    ChargeParameterDiscoveryReq = 17,
+    ChargeParameterDiscoveryRes = 18,
+    PowerDeliveryReq = 19,
+    PowerDeliveryRes = 20,
+    ChargingStatusReq = 21,
+    ChargingStatusRes = 22,
+    MeteringReceiptReq = 23,
+    MeteringReceiptRes = 24,
+    CableCheckReq = 25,
+    CableCheckRes = 26,
+    PreChargeReq = 27,
+    PreChargeRes = 28,
+    CurrentDemandReq = 29,
+    CurrentDemandRes = 30,
+    WeldingDetectionReq = 31,
+    WeldingDetectionRes = 32,
+    SessionStopReq = 33,
+    SessionStopRes = 34,
+    CertificateUpdateReq = 35,
+    CertificateUpdateRes = 36,
+    CertificateInstallationReq = 37,
+    CertificateInstallationRes = 38,
+    CmSLACParamReq = 101,
+    CmSLACParamCnf = 102,
+    CmStartAttenCharInd = 103,
+    CmMNBCSoundInd = 105,
+    CmAttenProfileInd = 107,
+    VsAttenChar = 109,
+    CmAttenCharInd = 111,
+    CmAttenCharRsp = 112,
+    CmValidateReq = 113,
+    CmValidateCnf = 114,
+    CmSLACMatchReq = 115,
+    CmSLACMatchCnf = 116,
+    CmSetKeyReq = 117,
+    CmSetKeyCnf = 118,
+    VsSetKeyReq = 119,
+    VsSetKeyCnf = 120,
+    CmAmpMapReq = 121,
+    CmAmpMapCnf = 122,
+    VsPILinkStatusReq = 123,
+    VsPILinkStatusCnf = 124,
+    StLinkStatusReq = 125,
+    StLinkStatusCnf = 126,
+    VsNwInfoReq = 127,
+    VsNwInfoCnf = 128
+  };  
+
+}
+
+void SetLastMessageID(dword id)
+{
+  @sysvar::Common::LastReceivedMessageId = id;
+}

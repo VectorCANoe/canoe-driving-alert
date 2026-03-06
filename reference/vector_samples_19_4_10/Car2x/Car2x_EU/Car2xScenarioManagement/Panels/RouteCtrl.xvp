@@ -1,0 +1,89 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Panel Type="Vector.CANalyzer.Panels.PanelSerializer, Vector.CANalyzer.Panels.Serializer, Version=19.0.71.0, Culture=neutral, PublicKeyToken=null">
+  <Object Type="Vector.CANalyzer.Panels.Runtime.Panel, Vector.CANalyzer.Panels.Common, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Panel" ControlName="RouteCtrl">
+    <Object Type="Vector.CANalyzer.Panels.Design.GroupBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xf669b66fe476de4d88e9faaedb4ee8266939" ControlName="Group Box 1">
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X75c75c67ee3f2e4793e84f0ef7090d04629d" ControlName="Static Text 3">
+        <Property Name="Name">X75c75c67ee3f2e4793e84f0ef7090d04629d</Property>
+        <Property Name="Size">62, 15</Property>
+        <Property Name="Location">54, 59</Property>
+        <Property Name="Text">Route File:</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.PathControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X23d58407e2ba7e4e69eaaadea1e9f9dd1039" ControlName="Path Dialog 2">
+        <Property Name="Name">X23d58407e2ba7e4e69eaaadea1e9f9dd1039</Property>
+        <Property Name="Size">169, 23</Property>
+        <Property Name="Location">115, 55</Property>
+        <Property Name="CustomToolTipText">Available file formats are kml, gpx, nmea.</Property>
+        <Property Name="TabIndex">22</Property>
+        <Property Name="FileDlgFilter">Supported Formats|*.kml;*.gpx;*.nmea|KML|*.kml|GPX|*.gpx|NMEA|*.nmea</Property>
+        <Property Name="SymbolConfiguration">8;16;RouteCtrl;;;FileName;4;;;-1;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.ButtonControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X70327631ec5c1e45f8e84a6e75e21fe4b014" ControlName="Button 1">
+        <Property Name="Name">X70327631ec5c1e45f8e84a6e75e21fe4b014</Property>
+        <Property Name="Size">109, 22</Property>
+        <Property Name="Location">175, 106</Property>
+        <Property Name="UseWindowsStyle">False</Property>
+        <Property Name="TransparentColor">Transparent</Property>
+        <Property Name="UseTransparentColor">False</Property>
+        <Property Name="BackColor">255, 255, 255, 192</Property>
+        <Property Name="TabIndex">18</Property>
+        <Property Name="TabStopActive">False</Property>
+        <Property Name="Text">Draw Route</Property>
+        <Property Name="SymbolConfiguration">8;16;RouteCtrl;;;DrawRouteBtnState;1;;;-1;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X65656de8e8752e44b9ea8d4e213a6470902e" ControlName="Static Text 2">
+        <Property Name="Name">X65656de8e8752e44b9ea8d4e213a6470902e</Property>
+        <Property Name="Size">322, 30</Property>
+        <Property Name="Location">5, 17</Property>
+        <Property Name="TextAlign">MiddleCenter</Property>
+        <Property Name="Text">Specify a route with the file path (.kml, .gpx or .nmea) and its 
+name in the file. Configure the route to be considered as a loop.</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xd3222482e061ce40d5e9e2ee6c9a7ae65f06" ControlName="Input/Output Box 1">
+        <Property Name="Name">Xd3222482e061ce40d5e9e2ee6c9a7ae65f06</Property>
+        <Property Name="Size">240, 21</Property>
+        <Property Name="Location">44, 83</Property>
+        <Property Name="CustomToolTipText">KML: name of the Placemark containing the route; GPX: name of the trk containing the route; NMEA: name of the file</Property>
+        <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+        <Property Name="AlarmLowerBkgColor">Salmon</Property>
+        <Property Name="AlarmLowerTextColor">WindowText</Property>
+        <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+        <Property Name="AlarmUpperTextColor">WindowText</Property>
+        <Property Name="BoxBorderStyle">FixedSingle</Property>
+        <Property Name="DisplayLabel">Left</Property>
+        <Property Name="TabIndex">17</Property>
+        <Property Name="TabStopActive">False</Property>
+        <Property Name="DescriptionText">Route Name:</Property>
+        <Property Name="ValueDecimalPlaces">0</Property>
+        <Property Name="ValueDisplay">Text</Property>
+        <Property Name="UsedValueTable">PhysicalValue</Property>
+        <Property Name="DescriptionSize">71, 21</Property>
+        <Property Name="SymbolConfiguration">8;16;RouteCtrl;;;RouteName;4;;;-1;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.ComboBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X3bddef84e6e17e4f88eb9bae2be27a3bd38f" ControlName="Combo Box 1">
+        <Property Name="Name">X3bddef84e6e17e4f88eb9bae2be27a3bd38f</Property>
+        <Property Name="Size">120, 21</Property>
+        <Property Name="Location">38, 105</Property>
+        <Property Name="CustomToolTipText">On: End and Start of the route get connected to form a loop. Off: Route is loaded as is.</Property>
+        <Property Name="DisplayLabel">Left</Property>
+        <Property Name="DescriptionSize">77, 21</Property>
+        <Property Name="TextBackColor">White</Property>
+        <Property Name="TabIndex">18</Property>
+        <Property Name="DescriptionText">Load As Loop:</Property>
+        <Property Name="UsedValueTable">PhysicalValue</Property>
+        <Property Name="SymbolConfiguration">8;16;RouteCtrl;;;LoopFlag;1;;;-1;;;Value;;;0</Property>
+        <Property Name="DropDownWidth">71</Property>
+      </Object>
+      <Property Name="Name">Xf669b66fe476de4d88e9faaedb4ee8266939</Property>
+      <Property Name="Size">331, 130</Property>
+      <Property Name="Location">5, 5</Property>
+      <Property Name="Font">Microsoft Sans Serif, 7.8pt, style=Bold</Property>
+      <Property Name="Text">Route</Property>
+      <Property Name="TabIndex">1</Property>
+      <Property Name="UseWindowsStyle">False</Property>
+    </Object>
+    <Property Name="Name">Panel</Property>
+    <Property Name="Size">339, 139</Property>
+    <Property Name="Location">0, 0</Property>
+    <Property Name="BackColor">White</Property>
+  </Object>
+</Panel>

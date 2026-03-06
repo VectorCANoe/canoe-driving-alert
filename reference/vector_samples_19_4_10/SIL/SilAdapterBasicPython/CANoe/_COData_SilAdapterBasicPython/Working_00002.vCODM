@@ -1,0 +1,92 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<FunctionBusLibrary Version="51" FormatMajorVersion="3" FormatMinorVersion="5" FormatPatchVersion="1">
+  <Namespaces>
+    <Namespace IsDefinedAsHidden="False" IsSystemDefined="False" Name="RoomTemperatureControl">
+      <DOInterfaces>
+        <DOInterface IsAbstract="False" Name="ISensor">
+          <AttributeValues>
+            <AttributeValue Definition="_SystemAttributes::Binding" InitialValue="SilKit" InitialValueType="String" />
+          </AttributeValues>
+          <MemberData>
+            <DOMemberDataHolder Name="MemberData" />
+          </MemberData>
+          <DataMembers>
+            <DOIFDataMember Name="Temperature">
+              <DataType DataType="_SystemDataTypes::Double" />
+            </DOIFDataMember>
+          </DataMembers>
+        </DOInterface>
+        <DOInterface IsAbstract="False" Name="IHeating">
+          <AttributeValues>
+            <AttributeValue Definition="_SystemAttributes::Binding" InitialValue="SilKit" InitialValueType="String" />
+          </AttributeValues>
+          <MemberData>
+            <DOMemberDataHolder Name="MemberData" />
+          </MemberData>
+          <DataMembers>
+            <DOIFDataMember LocalDirection="Consumed" Name="HeaterState">
+              <DataType DataType="_SystemDataTypes::UInt8">
+                <NumericProperties MinValue="" MinValueType="Invalid" MaxValue="" MaxValueType="Invalid" IsBoolean="False" IsTimespan="False">
+                  <ImplToPhysEncodings TextualEncodings="RoomTemperatureControl::State" />
+                </NumericProperties>
+              </DataType>
+            </DOIFDataMember>
+          </DataMembers>
+        </DOInterface>
+      </DOInterfaces>
+      <DistributedObjects>
+        <DistributedObject GenerateDotNetAPI="True" Name="Sensor1">
+          <DataType>
+            <ModifiedDOIF Reverse="False" IsDOReference="False" Interface="RoomTemperatureControl::ISensor" />
+          </DataType>
+          <MemberData>
+            <DOMemberDataHolder Name="MemberData" />
+          </MemberData>
+        </DistributedObject>
+        <DistributedObject GenerateDotNetAPI="True" Name="Sensor2">
+          <DataType>
+            <ModifiedDOIF Reverse="False" IsDOReference="False" Interface="RoomTemperatureControl::ISensor" />
+          </DataType>
+          <MemberData>
+            <DOMemberDataHolder Name="MemberData" />
+          </MemberData>
+        </DistributedObject>
+        <DistributedObject GenerateDotNetAPI="True" Name="Sensor3">
+          <DataType>
+            <ModifiedDOIF Reverse="False" IsDOReference="False" Interface="RoomTemperatureControl::ISensor" />
+          </DataType>
+          <MemberData>
+            <DOMemberDataHolder Name="MemberData" />
+          </MemberData>
+        </DistributedObject>
+        <DistributedObject GenerateDotNetAPI="True" Name="Heating">
+          <DataType>
+            <ModifiedDOIF Reverse="False" IsDOReference="False" Interface="RoomTemperatureControl::IHeating" />
+          </DataType>
+          <MemberData>
+            <DOMemberDataHolder Name="MemberData" />
+          </MemberData>
+        </DistributedObject>
+      </DistributedObjects>
+      <TextualEncodings>
+        <TextualEncodings DefinesMinMax="False" IsEnum="True" Name="State">
+          <TextualEncoding TextualValue="OFF" DisplayValue="OFF" LowerBound="0" LowerBoundType="UInt32" UpperBound="0" UpperBoundType="UInt32" />
+          <TextualEncoding TextualValue="COOLING" DisplayValue="COOLING" LowerBound="1" LowerBoundType="UInt32" UpperBound="1" UpperBoundType="UInt32" />
+          <TextualEncoding TextualValue="HEATING" DisplayValue="HEATING" LowerBound="2" LowerBoundType="UInt32" UpperBound="2" UpperBoundType="UInt32" />
+        </TextualEncodings>
+      </TextualEncodings>
+    </Namespace>
+  </Namespaces>
+  <ModuleDependencies>
+    <ModuleDependency Module="_Internal" />
+    <ModuleDependency Module="_Internal" />
+    <ModuleDependency Module="_Internal" />
+    <ModuleDependency Module="_Internal" />
+    <ModuleDependency Module="_Internal" />
+    <ModuleDependency Module="SilKit" />
+    <ModuleDependency Module="_Internal" />
+    <ModuleDependency Module="_Internal" />
+    <ModuleDependency Module="_Internal" />
+    <ModuleDependency Module="_Internal" />
+  </ModuleDependencies>
+</FunctionBusLibrary>

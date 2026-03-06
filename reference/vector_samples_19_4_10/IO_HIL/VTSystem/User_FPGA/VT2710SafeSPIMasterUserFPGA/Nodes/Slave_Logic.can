@@ -1,0 +1,163 @@
+/*@!Encoding:1252*/
+includes
+{
+  #include "SafeSPI_Utils.cin"
+}
+
+variables
+{
+  const dword cCrcPolynom = 0xB;
+  const dword cCrcSeed = 0x7;
+  const qword cCrcDataMask = 0x7FFFFF8ll;
+  const dword cSlowFrameAfterNumFastFrames = 200;
+  
+  dword gFrameData[3] = { 0, 0, 0 };
+  dword gCurrentFrameIndex = 0;
+  dword gNumFastFrames = 0;
+  dword gRollingCounterValue = 0;
+}
+
+on preStart
+{
+  PrepareFastFrame1Data();
+  PrepareFastFrame2Data();
+  PrepareSlowFrameData();
+  
+  FillMisoQueue();
+}
+
+on sysvar SENSOR::SPI::SlaveChannel::Slave1_IF::SSPI_32b_IF
+{
+  QueueNextMisoFrame();
+}
+
+on sysvar (SensorData::Slave1::Fast_UInt8 | SensorData::Slave1::FastFrame1CrcError)
+{
+  PrepareFastFrame1Data();
+}
+
+on sysvar (SensorData::Slave1::Fast_Int16 | SensorData::Slave1::FastFrame2CrcError)
+{
+  PrepareFastFrame2Data();
+}
+
+on sysvar (SensorData::Slave1::Slow_UInt16 | SensorData::Slave1::SlowFrameCrcError)
+{
+  PrepareSlowFrameData();
+}
+
+void PrepareFastFrame1Data()
+{
+  dword data;
+  dword crc;
+  
+  data = 0 << 20; // SA = 0
+  data |= (@SensorData::Slave1::Fast_UInt8 & 0xFF) << 12;
+  data |= (gRollingCounterValue & 0xFF) << 4;
+  
+  crc = CalculateCrc(data, cCrcDataMask, cCrcPolynom, cCrcSeed);
+  
+  if (@SensorData::Slave1::FastFrame1CrcError)
+  {
+    crc = ~crc & 0x7;
+  }
+  
+  data |= crc;
+  
+  gFrameData[0] = data;  
+}
+
+void PrepareFastFrame2Data()
+{
+  dword data;
+  dword crc;
+  
+  data = 1 << 25; // D = 1
+  data |= 1 << 20; // SA = 1
+  data |= (@SensorData::Slave1::Fast_Int16 & 0xFFFF) << 4;
+  
+  crc = CalculateCrc(data, cCrcDataMask, cCrcPolynom, cCrcSeed);
+  
+  if (@SensorData::Slave1::FastFrame2CrcError)
+  {
+    crc = ~crc & 0x7;
+  }
+  
+  data |= crc;
+  
+  gFrameData[1] = data;  
+}
+
+void PrepareSlowFrameData()
+{
+  dword data;  
+  dword crc;
+  
+  data = 2 << 20; // SA = 2
+  data |= (@SensorData::Slave1::Slow_UInt16 & 0xFFFF) << 4;
+  
+  crc = CalculateCrc(data, cCrcDataMask, cCrcPolynom, cCrcSeed);
+  
+  if (@SensorData::Slave1::SlowFrameCrcError)
+  {
+    crc = ~crc & 0x7;
+  }
+  
+  data |= crc;
+  
+  gFrameData[2] = data;  
+}
+
+void FillMisoQueue()
+{
+  while (QueueNextMisoFrame() == eSensorNoError);
+}
+
+enum sensorErrorCode QueueNextMisoFrame()
+{
+  enum sensorErrorCode result;
+  byte buffer[4];
+    
+  sensorInsertInteger(buffer, elCount(buffer), gFrameData[gCurrentFrameIndex], 0, 32, 1);    
+  result = sysvar::SENSOR::SPI::SlaveChannel::Slave1_IF.QueueMisoData(buffer, 32);
+  
+  if (result == eSensorNoError)
+  {
+    switch (gCurrentFrameIndex)
+    {
+      case 0:
+        gNumFastFrames++;
+        gCurrentFrameIndex++;
+        if (gRollingCounterValue < 255)
+        {
+          gRollingCounterValue++;
+        }
+        else
+        {
+          gRollingCounterValue = 0;
+        }
+        @SensorData::Slave1::Fast_UInt8_RollingCtr = gRollingCounterValue;
+        PrepareFastFrame1Data();
+        break;
+        
+      case 1:
+        if (++gNumFastFrames >= cSlowFrameAfterNumFastFrames)
+        {
+          gCurrentFrameIndex++;
+        }
+        else
+        {
+          gCurrentFrameIndex = 0;
+        }
+        break;
+        
+      case 2:
+        gCurrentFrameIndex = 0;
+        gNumFastFrames = 0;
+        break;
+    }
+    
+  }
+  
+  return result;
+}

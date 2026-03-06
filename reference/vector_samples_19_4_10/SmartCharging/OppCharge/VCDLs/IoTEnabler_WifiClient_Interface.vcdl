@@ -1,0 +1,123 @@
+version 1.4;
+
+import "IotEnabler_General_Datatypes.vcdl";
+
+namespace IoTEnablerWifiClient
+{
+  using ::IoTEnablerGeneral;
+  
+  typedef stringList = list<string>;
+
+  struct ScannedAccessPointInfoType
+  {
+      string bssid;
+      uint32 frequency;
+      int32 signal_level;
+      stringList flags;
+      string ssid;
+  }
+
+  typedef ScannedAccessPointInfoTypeList = list<ScannedAccessPointInfoType>;
+
+  struct ClientConnectionStatusType
+  {
+      bool connected;
+  }
+
+  interface IWiFiClient
+  {
+      // !
+      // @brief Configure which Wi-Fi interface to use and which country it is being operated in
+      // @param[in] interface_name The name of the Wi-Fi stick's interface
+      // @param[in] country_code The country code where the IoTEnabler is being operated (e.g. DE, US, JP...)
+      // @return Error if the named interface doesn't have a Wi-Fi stick connected, or if an existing config couldn't be overwritten. Otherwise success.
+      consumed method result configure(string interface_name, string country_code);
+
+      // !
+      // @brief Manually set the client's IP address (v4)
+      // @note Must be called before starting the client
+      // @param[in] ipv4_address The desired IP address (v4)
+      // @return Error if \p ipv4_address is incorrectly formatted, otherwise success
+      consumed method result set_ipv4_address(string ipv4_address);
+
+      // !
+      // @brief Manually set the client's IP address (v6)
+      // @note Must be called before starting the client
+      // @param[in] ipv6_address The desired IP address (v6)
+      // @return Error if \p ipv6_address is incorrectly formatted, otherwise success
+      consumed method result set_ipv6_address(string ipv6_address);
+
+      // !
+      // @brief Manually set the forwarding MAC address for a simulated device while using the IoT Enabler as a bridge between CANoe and other Wi-Fi devices
+      // @details The MAC address of the simulated client should be set here so that Wi-Fi frames can be forwarded to and from it over the IoT Enabler.
+      // Otherwise frames will not have the correct address and cannot be caught or sent over the IoT Enabler properly
+      // @note Must be called before starting the client
+      // @param[in] mac_address The desired forwarding MAC address
+      // @return Error if \p mac_address is incorrectly formatted, otherwise success
+      consumed method result set_forwarding_mac_address(string mac_address);
+
+      // !
+      // @brief Configure an unsecured network
+      // @note Must be called after configure() and before starting the client
+      // @param[in] ssid Name of the unsecured network
+      // @return Error if the client hasn't been configured yet, or if the network was already added. Otherwise success
+      consumed method result add_unsecured_network_config(string ssid);
+
+      // !
+      // @brief Configure a secured (WPA1/WPA2) network
+      // @note Must be called after configure() and before starting the client
+      // @param[in] ssid Name of the unsecured network
+      // @return Error if the client hasn't been configured yet, or if the network was already added. Otherwise success
+      consumed method result add_secured_network_config(string ssid, string password);
+
+      // !
+      // @brief Remove a previously configured network
+      // @note Must be called after configure() and before starting the client
+      // @param[in] ssid Name of the network to be removed
+      // @return Error if the client hasn't been configured yet, or if the given network wasn't found in the config. Otherwise success
+      consumed method result remove_network_config(string ssid);
+
+      // !
+      // @brief Set additional vendor specific elements to the end of Association, Reassociation, and Probe Request frames.
+      // @details The format for these element(s) is a hexdump of the raw information elements (id+len+payload for one or more elements, e.g. dd0411223301).
+      // If called multiple times, overwrites the previous value
+      // @param[in] vendor_elements Desired custom vendor elements
+      // @return Error if \p vendor_elements is formatted incorrectly. Otherwise success
+      consumed method result add_vendor_specific_elements(string vendor_elements);
+
+      // !
+      // @brief Start the Wi-Fi client
+      // @note Must be called after configure(), and after all desired networks have been configured
+      // @return Error if the client is already running or hasn't been configured yet, or if wpa_supplicant couldn't be started or connected to. Otherwise success
+      consumed method result start_client();
+
+      // !
+      // @brief Stop the Wi-Fi client
+      // @return Success
+      consumed method result stop_client();
+
+      // !
+      // @brief Connect to a previously configured network. If connection fails, disconnect() is called
+      // @note Can only be called after client has been started
+      // @param[in] ssid The name of the network to be connected to
+      // @return Error if the network config couldn't be found, or if the client hasn't been started. On connection fail, an error is returned if disconnection fails as well.
+      consumed method result connect(string ssid);
+
+      // !
+      // @brief Disconnect from all active connections
+      // @note Can only be called after client has been started
+      // @return Error if the client hasn't been started, or if disconnection fails. Otherwise success
+      consumed method result disconnect();
+
+      // !
+      // @brief Scan for Wi-Fi access points in the area
+      // @note Can only be called after client has been started
+      // @param[out] devices A list of found access points and their properties
+      // @return Error if the client hasn't been started, if the scan couldn't be completed, or if the scan results couldn't be read. Otherwise success
+      consumed method result scan(out ScannedAccessPointInfoTypeList devices);
+
+      consumed data ClientConnectionStatusType connection_status;
+
+  }
+
+}

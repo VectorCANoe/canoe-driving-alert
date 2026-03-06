@@ -1,0 +1,419 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<FunctionBusLibrary Version="570" FormatMajorVersion="3" FormatMinorVersion="5" FormatPatchVersion="1">
+  <Namespaces>
+    <Namespace IsDefinedAsHidden="False" IsSystemDefined="False" Name="SystemSimulation" Comment="**************************************************&#xD;&#xA;">
+      <Subnamespaces>
+        <Namespace IsDefinedAsHidden="False" IsSystemDefined="False" Name="_Generated">
+          <DataTypes>
+            <IntegerDataType IsSigned="False" BitCount="1" HasFixedBinaryLayout="True" HasMotorolaByteOrder="False" Name="UInt1" />
+          </DataTypes>
+        </Namespace>
+      </Subnamespaces>
+      <DOInterfaces>
+        <DOInterface IsAbstract="False" Name="PCBInspectionMonitoring">
+          <AttributeValues>
+            <AttributeValue Definition="_SystemAttributes::CommunicationPattern" InitialValue="2" InitialValueType="Int32" />
+            <AttributeValue Definition="_SystemAttributes::Binding" InitialValue="DDS" InitialValueType="String" />
+            <AttributeValue Definition="DDS::Domain::ID" InitialValue="10" InitialValueType="Int64" />
+          </AttributeValues>
+          <MemberData>
+            <DOMemberDataHolder Name="MemberData">
+              <Data>
+                <DOIFMemberData Name="receivedData">
+                  <AttributeValues>
+                    <AttributeValue Definition="DDS::Topic::Name" InitialValue="PCBInspection" InitialValueType="String" />
+                  </AttributeValues>
+                </DOIFMemberData>
+              </Data>
+            </DOMemberDataHolder>
+          </MemberData>
+          <DataMembers>
+            <DOIFDataMember LocalDirection="Consumed" Name="receivedData">
+              <DataType DataType="SystemSimulation::PCBInspectionData" />
+            </DOIFDataMember>
+          </DataMembers>
+        </DOInterface>
+        <DOInterface IsAbstract="False" Name="PCBInspectionCamera">
+          <AttributeValues>
+            <AttributeValue Definition="_SystemAttributes::CommunicationPattern" InitialValue="2" InitialValueType="Int32" />
+            <AttributeValue Definition="_SystemAttributes::Binding" InitialValue="DDS" InitialValueType="String" />
+            <AttributeValue Definition="DDS::Domain::ID" InitialValue="10" InitialValueType="Int64" />
+          </AttributeValues>
+          <MemberData>
+            <DOMemberDataHolder Name="MemberData">
+              <Data>
+                <DOIFMemberData Name="cameraData">
+                  <AttributeValues>
+                    <AttributeValue Definition="DDS::Topic::Name" InitialValue="PCBInspection" InitialValueType="String" />
+                  </AttributeValues>
+                  <InitialValues>
+                    <InitialValue MemberPath=".cam.id" Value="138" ValueType="UInt32" />
+                  </InitialValues>
+                </DOIFMemberData>
+              </Data>
+            </DOMemberDataHolder>
+          </MemberData>
+          <DataMembers>
+            <DOIFDataMember Name="cameraData">
+              <DataType DataType="SystemSimulation::PCBInspectionData" />
+            </DOIFDataMember>
+          </DataMembers>
+        </DOInterface>
+        <DOInterface IsAbstract="False" Name="PCBInspectionConveyorMonitoring">
+          <AttributeValues>
+            <AttributeValue Definition="_SystemAttributes::CommunicationPattern" InitialValue="2" InitialValueType="Int32" />
+            <AttributeValue Definition="_SystemAttributes::Binding" InitialValue="DDS" InitialValueType="String" />
+            <AttributeValue Definition="DDS::Domain::ID" InitialValue="10" InitialValueType="Int64" />
+          </AttributeValues>
+          <MemberData>
+            <DOMemberDataHolder Name="MemberData">
+              <Data>
+                <DOIFMemberData Name="receivedData">
+                  <AttributeValues>
+                    <AttributeValue Definition="DDS::Topic::Name" InitialValue="PCBInspectionConveyor" InitialValueType="String" />
+                  </AttributeValues>
+                </DOIFMemberData>
+              </Data>
+            </DOMemberDataHolder>
+          </MemberData>
+          <DataMembers>
+            <DOIFDataMember LocalDirection="Consumed" Name="receivedData">
+              <DataType DataType="SystemSimulation::Sensor" />
+            </DOIFDataMember>
+          </DataMembers>
+        </DOInterface>
+        <DOInterface IsAbstract="False" Name="PCBInspectionConveyorSensors">
+          <AttributeValues>
+            <AttributeValue Definition="_SystemAttributes::CommunicationPattern" InitialValue="2" InitialValueType="Int32" />
+            <AttributeValue Definition="_SystemAttributes::Binding" InitialValue="DDS" InitialValueType="String" />
+            <AttributeValue Definition="DDS::Domain::ID" InitialValue="10" InitialValueType="Int64" />
+          </AttributeValues>
+          <MemberData>
+            <DOMemberDataHolder Name="MemberData">
+              <Data>
+                <DOIFMemberData Name="sensorData">
+                  <AttributeValues>
+                    <AttributeValue Definition="DDS::Topic::Name" InitialValue="PCBInspectionConveyor" InitialValueType="String" />
+                  </AttributeValues>
+                </DOIFMemberData>
+              </Data>
+            </DOMemberDataHolder>
+          </MemberData>
+          <DataMembers>
+            <DOIFDataMember Name="sensorData">
+              <DataType DataType="SystemSimulation::Sensor" />
+            </DOIFDataMember>
+          </DataMembers>
+        </DOInterface>
+        <DOInterface IsAbstract="False" Name="ISortingStationConveyor">
+          <AttributeValues>
+            <AttributeValue Definition="_SystemAttributes::CommunicationPattern" InitialValue="2" InitialValueType="Int32" />
+            <AttributeValue Definition="_SystemAttributes::Binding" InitialValue="DDS" InitialValueType="String" />
+            <AttributeValue Definition="DDS::Domain::ID" InitialValue="10" InitialValueType="Int64" />
+          </AttributeValues>
+          <MemberData>
+            <DOMemberDataHolder Name="MemberData">
+              <Data>
+                <DOIFMemberData Name="receivedData">
+                  <AttributeValues>
+                    <AttributeValue Definition="DDS::Topic::Name" InitialValue="SortingStationConveyor" InitialValueType="String" />
+                    <AttributeValue Definition="DDS::Reader::Reliability" InitialValue="1" InitialValueType="Int32" />
+                  </AttributeValues>
+                </DOIFMemberData>
+                <DOIFMemberData Name="handoverSensorS3">
+                  <AttributeValues>
+                    <AttributeValue Definition="DDS::Topic::Name" InitialValue="SortingStationConveyor" InitialValueType="String" />
+                    <AttributeValue Definition="DDS::Writer::Reliability" InitialValue="1" InitialValueType="Int32" />
+                  </AttributeValues>
+                </DOIFMemberData>
+                <DOIFMemberData Name="sortingStationSensorS4">
+                  <AttributeValues>
+                    <AttributeValue Definition="DDS::Topic::Name" InitialValue="SortingStationConveyor" InitialValueType="String" />
+                    <AttributeValue Definition="DDS::Writer::Reliability" InitialValue="1" InitialValueType="Int32" />
+                  </AttributeValues>
+                </DOIFMemberData>
+                <DOIFMemberData Name="sortingStationSensorS5">
+                  <AttributeValues>
+                    <AttributeValue Definition="DDS::Topic::Name" InitialValue="SortingStationConveyor" InitialValueType="String" />
+                    <AttributeValue Definition="DDS::Writer::Reliability" InitialValue="1" InitialValueType="Int32" />
+                  </AttributeValues>
+                </DOIFMemberData>
+              </Data>
+            </DOMemberDataHolder>
+          </MemberData>
+          <DataMembers>
+            <DOIFDataMember LocalDirection="Consumed" Name="receivedData">
+              <DataType DataType="SystemSimulation::Sensor" />
+            </DOIFDataMember>
+            <DOIFDataMember Name="handoverSensorS3">
+              <DataType DataType="SystemSimulation::Sensor" />
+            </DOIFDataMember>
+            <DOIFDataMember Name="sortingStationSensorS4">
+              <DataType DataType="SystemSimulation::Sensor" />
+            </DOIFDataMember>
+            <DOIFDataMember Name="sortingStationSensorS5">
+              <DataType DataType="SystemSimulation::Sensor" />
+            </DOIFDataMember>
+          </DataMembers>
+        </DOInterface>
+        <DOInterface IsAbstract="False" Name="IEvaluation">
+          <AttributeValues>
+            <AttributeValue Definition="_SystemAttributes::CommunicationPattern" InitialValue="2" InitialValueType="Int32" />
+            <AttributeValue Definition="_SystemAttributes::Binding" InitialValue="DDS" InitialValueType="String" />
+            <AttributeValue Definition="DDS::Domain::ID" InitialValue="10" InitialValueType="Int64" />
+          </AttributeValues>
+          <MemberData>
+            <DOMemberDataHolder Name="MemberData">
+              <Data>
+                <DOIFMemberData Name="receivedData">
+                  <AttributeValues>
+                    <AttributeValue Definition="DDS::Topic::Name" InitialValue="SortingStation" InitialValueType="String" />
+                    <AttributeValue Definition="DDS::Reader::Reliability" InitialValue="1" InitialValueType="Int32" />
+                  </AttributeValues>
+                </DOIFMemberData>
+                <DOIFMemberData Name="dataWriter">
+                  <AttributeValues>
+                    <AttributeValue Definition="DDS::Topic::Name" InitialValue="SortingStation" InitialValueType="String" />
+                    <AttributeValue Definition="DDS::Writer::Reliability" InitialValue="1" InitialValueType="Int32" />
+                  </AttributeValues>
+                </DOIFMemberData>
+              </Data>
+            </DOMemberDataHolder>
+          </MemberData>
+          <DataMembers>
+            <DOIFDataMember LocalDirection="Consumed" Name="receivedData">
+              <DataType DataType="SystemSimulation::Evaluation" />
+            </DOIFDataMember>
+            <DOIFDataMember Name="dataWriter">
+              <DataType DataType="SystemSimulation::Evaluation" />
+            </DOIFDataMember>
+          </DataMembers>
+        </DOInterface>
+      </DOInterfaces>
+      <DistributedObjects>
+        <DistributedObject GenerateDotNetAPI="True" Name="pcbInspectionMonitoring">
+          <AttributeValues>
+            <AttributeValue Definition="DDS::Reader::Reliability" InitialValue="1" InitialValueType="Int32" />
+            <AttributeValue Definition="DDS::Reader::Durability" InitialValue="1" InitialValueType="Int32" />
+            <AttributeValue Definition="DDS::Reader::History" InitialValue="1" InitialValueType="Int32" />
+          </AttributeValues>
+          <DataType>
+            <ModifiedDOIF Reverse="False" IsDOReference="False" Interface="SystemSimulation::PCBInspectionMonitoring" />
+          </DataType>
+          <MemberData>
+            <DOMemberDataHolder Name="MemberData" />
+          </MemberData>
+        </DistributedObject>
+        <DistributedObject GenerateDotNetAPI="True" Name="remoteQualityControlReader">
+          <AttributeValues>
+            <AttributeValue Definition="DDS::Reader::Reliability" InitialValue="1" InitialValueType="Int32" />
+            <AttributeValue Definition="DDS::Reader::Durability" InitialValue="1" InitialValueType="Int32" />
+            <AttributeValue Definition="DDS::Reader::History" InitialValue="1" InitialValueType="Int32" />
+            <AttributeValue Definition="_SystemAttributes::AutoConnect" InitialValue="0" InitialValueType="UInt32" />
+          </AttributeValues>
+          <DataType>
+            <ModifiedDOIF Reverse="False" IsDOReference="False" Interface="SystemSimulation::PCBInspectionMonitoring" />
+          </DataType>
+          <MemberData>
+            <DOMemberDataHolder Name="MemberData" />
+          </MemberData>
+        </DistributedObject>
+        <DistributedObject GenerateDotNetAPI="True" Name="pcbInspectionCamera">
+          <AttributeValues>
+            <AttributeValue Definition="DDS::Writer::Reliability" InitialValue="1" InitialValueType="Int32" />
+            <AttributeValue Definition="DDS::Writer::Durability" InitialValue="1" InitialValueType="Int32" />
+            <AttributeValue Definition="DDS::Writer::History" InitialValue="0" InitialValueType="Int32" />
+            <AttributeValue Definition="DDS::Writer::KEEP_LAST_Depth" InitialValue="3" InitialValueType="Int64" />
+          </AttributeValues>
+          <DataType>
+            <ModifiedDOIF Reverse="False" IsDOReference="False" Interface="SystemSimulation::PCBInspectionCamera" />
+          </DataType>
+          <MemberData>
+            <DOMemberDataHolder Name="MemberData" />
+          </MemberData>
+        </DistributedObject>
+        <DistributedObject GenerateDotNetAPI="True" Name="pcbInspectionConveyorMonitoring">
+          <AttributeValues>
+            <AttributeValue Definition="DDS::Reader::Ownership" InitialValue="1" InitialValueType="Int32" />
+            <AttributeValue Definition="DDS::Reader::Liveliness" InitialValue="1" InitialValueType="Int32" />
+            <AttributeValue Definition="DDS::Reader::Liveliness_leaseDuration" InitialValue="2000000000" InitialValueType="Int64" />
+          </AttributeValues>
+          <DataType>
+            <ModifiedDOIF Reverse="False" IsDOReference="False" Interface="SystemSimulation::PCBInspectionConveyorMonitoring" />
+          </DataType>
+          <MemberData>
+            <DOMemberDataHolder Name="MemberData" />
+          </MemberData>
+        </DistributedObject>
+        <DistributedObject GenerateDotNetAPI="True" Name="pcbInspectionSensorS1">
+          <AttributeValues>
+            <AttributeValue Definition="DDS::Writer::Ownership" InitialValue="1" InitialValueType="Int32" />
+            <AttributeValue Definition="DDS::Writer::OwnershipStrength" InitialValue="17" InitialValueType="Int32" />
+            <AttributeValue Definition="DDS::Writer::Liveliness" InitialValue="1" InitialValueType="Int32" />
+            <AttributeValue Definition="DDS::Writer::Liveliness_leaseDuration" InitialValue="1500000000" InitialValueType="Int64" />
+          </AttributeValues>
+          <DataType>
+            <ModifiedDOIF Reverse="False" IsDOReference="False" Interface="SystemSimulation::PCBInspectionConveyorSensors" />
+          </DataType>
+          <MemberData>
+            <DOMemberDataHolder Name="MemberData" />
+          </MemberData>
+        </DistributedObject>
+        <DistributedObject GenerateDotNetAPI="True" Name="pcbInspectionSensorS2">
+          <AttributeValues>
+            <AttributeValue Definition="DDS::Writer::Ownership" InitialValue="1" InitialValueType="Int32" />
+            <AttributeValue Definition="DDS::Writer::OwnershipStrength" InitialValue="10" InitialValueType="Int32" />
+            <AttributeValue Definition="DDS::Writer::Liveliness" InitialValue="1" InitialValueType="Int32" />
+            <AttributeValue Definition="DDS::Writer::Liveliness_leaseDuration" InitialValue="1500000000" InitialValueType="Int64" />
+          </AttributeValues>
+          <DataType>
+            <ModifiedDOIF Reverse="False" IsDOReference="False" Interface="SystemSimulation::PCBInspectionConveyorSensors" />
+          </DataType>
+          <MemberData>
+            <DOMemberDataHolder Name="MemberData" />
+          </MemberData>
+        </DistributedObject>
+        <DistributedObject GenerateDotNetAPI="True" Name="sortingStationConveyorParticipant">
+          <DataType>
+            <ModifiedDOIF Reverse="False" IsDOReference="False" Interface="SystemSimulation::ISortingStationConveyor" />
+          </DataType>
+          <MemberData>
+            <DOMemberDataHolder Name="MemberData" />
+          </MemberData>
+        </DistributedObject>
+        <DistributedObject GenerateDotNetAPI="True" Name="evaluationParticipant">
+          <DataType>
+            <ModifiedDOIF Reverse="False" IsDOReference="False" Interface="SystemSimulation::IEvaluation" />
+          </DataType>
+          <MemberData>
+            <DOMemberDataHolder Name="MemberData" />
+          </MemberData>
+        </DistributedObject>
+      </DistributedObjects>
+      <DataTypes>
+        <StructDataType Bitcount="0" RawBitcount="0" HasFixedBinaryLayout="False" HasMotorolaByteOrder="False" Name="Evaluation">
+          <Fields>
+            <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="pcbIntactCount">
+              <DataType DataType="_SystemDataTypes::UInt32" />
+            </DataTypeField>
+            <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="pcbDefectCount">
+              <DataType DataType="_SystemDataTypes::UInt32" />
+            </DataTypeField>
+          </Fields>
+        </StructDataType>
+        <StructDataType Bitcount="0" RawBitcount="0" HasFixedBinaryLayout="False" HasMotorolaByteOrder="False" Name="Sensor">
+          <Fields>
+            <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="id">
+              <DataType DataType="_SystemDataTypes::UTF8String" />
+            </DataTypeField>
+            <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="operatingState">
+              <DataType DataType="_SystemDataTypes::UTF8String" />
+            </DataTypeField>
+            <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="detection">
+              <DataType DataType="SystemSimulation::_Generated::UInt1">
+                <NumericProperties MinValue="" MinValueType="Invalid" MaxValue="" MaxValueType="Invalid" IsBoolean="True" IsTimespan="False" />
+              </DataType>
+            </DataTypeField>
+            <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="alive">
+              <DataType DataType="SystemSimulation::_Generated::UInt1">
+                <NumericProperties MinValue="" MinValueType="Invalid" MaxValue="" MaxValueType="Invalid" IsBoolean="True" IsTimespan="False" />
+              </DataType>
+            </DataTypeField>
+          </Fields>
+        </StructDataType>
+        <StructDataType Bitcount="0" RawBitcount="0" HasFixedBinaryLayout="False" HasMotorolaByteOrder="False" Name="Camera">
+          <Fields>
+            <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="id">
+              <DataType DataType="_SystemDataTypes::UInt8" />
+            </DataTypeField>
+            <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="operatingState">
+              <DataType DataType="_SystemDataTypes::UTF8String" />
+            </DataTypeField>
+          </Fields>
+        </StructDataType>
+        <StructDataType Bitcount="0" RawBitcount="0" HasFixedBinaryLayout="False" HasMotorolaByteOrder="False" Name="Resistor">
+          <Fields>
+            <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="id">
+              <DataType DataType="_SystemDataTypes::UInt8" />
+            </DataTypeField>
+            <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="resistance">
+              <DataType DataType="_SystemDataTypes::UInt32" />
+            </DataTypeField>
+            <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="componentCondition">
+              <DataType DataType="_SystemDataTypes::UTF8String" />
+            </DataTypeField>
+          </Fields>
+        </StructDataType>
+        <StructDataType Bitcount="0" RawBitcount="0" HasFixedBinaryLayout="False" HasMotorolaByteOrder="False" Name="Capacitor">
+          <Fields>
+            <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="id">
+              <DataType DataType="_SystemDataTypes::UInt8" />
+            </DataTypeField>
+            <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="capacity">
+              <DataType DataType="_SystemDataTypes::UInt32" />
+            </DataTypeField>
+            <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="componentCondition">
+              <DataType DataType="_SystemDataTypes::UTF8String" />
+            </DataTypeField>
+          </Fields>
+        </StructDataType>
+        <StructDataType Bitcount="0" RawBitcount="0" HasFixedBinaryLayout="False" HasMotorolaByteOrder="False" Name="Chip">
+          <Fields>
+            <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="id">
+              <DataType DataType="_SystemDataTypes::UInt8" />
+            </DataTypeField>
+            <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="componentCondition">
+              <DataType DataType="_SystemDataTypes::UTF8String" />
+            </DataTypeField>
+          </Fields>
+        </StructDataType>
+        <StructDataType Bitcount="0" RawBitcount="0" HasFixedBinaryLayout="False" HasMotorolaByteOrder="False" Name="Components">
+          <Fields>
+            <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="r1">
+              <DataType DataType="SystemSimulation::Resistor" />
+            </DataTypeField>
+            <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="r2">
+              <DataType DataType="SystemSimulation::Resistor" />
+            </DataTypeField>
+            <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="c1">
+              <DataType DataType="SystemSimulation::Capacitor" />
+            </DataTypeField>
+            <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="c2">
+              <DataType DataType="SystemSimulation::Capacitor" />
+            </DataTypeField>
+            <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="ic1">
+              <DataType DataType="SystemSimulation::Chip" />
+            </DataTypeField>
+          </Fields>
+        </StructDataType>
+        <StructDataType Bitcount="0" RawBitcount="0" HasFixedBinaryLayout="False" HasMotorolaByteOrder="False" Name="PCB">
+          <Fields>
+            <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="serialNumber">
+              <DataType DataType="_SystemDataTypes::UInt8" />
+            </DataTypeField>
+            <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="comp">
+              <DataType DataType="SystemSimulation::Components" />
+            </DataTypeField>
+            <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="overallCondition">
+              <DataType DataType="_SystemDataTypes::UTF8String" />
+            </DataTypeField>
+          </Fields>
+        </StructDataType>
+        <StructDataType Bitcount="0" RawBitcount="0" HasFixedBinaryLayout="False" HasMotorolaByteOrder="False" Name="PCBInspectionData">
+          <Fields>
+            <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="cam">
+              <DataType DataType="SystemSimulation::Camera" />
+            </DataTypeField>
+            <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="analyzedPCB">
+              <DataType DataType="SystemSimulation::PCB" />
+            </DataTypeField>
+          </Fields>
+        </StructDataType>
+      </DataTypes>
+    </Namespace>
+  </Namespaces>
+  <ModuleDependencies>
+    <ModuleDependency Module="_Internal" />
+    <ModuleDependency Module="DDS" />
+  </ModuleDependencies>
+</FunctionBusLibrary>

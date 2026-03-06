@@ -1,0 +1,58 @@
+/*@!Encoding:1252*/
+
+//*********************************
+// Mode 0x01 (PIDs / Request Current Powertrain Diagnostic Data)
+//*********************************
+
+on diagRequest %BASE_FILE_NAME_NO_EXT%.PID_F402_Freeze_Frame_DTC_Read
+{
+  diagResponse this resp;
+
+  refreshS3Timer();
+  resp.Resize(6);
+  resp.SetParameter("DataRecord", @sysvarMember::%BASE_FILE_NAME_NO_EXT%::FaultMemoryInternal.DtcThatCausedFreezeFrameStorage); 
+  diagSendPositiveResponse(resp);  
+}
+
+//*********************************
+// OBDonUDS specific DTC read services
+//*********************************
+
+//WWH-OBD / OBDonUDS
+on diagRequest %BASE_FILE_NAME_NO_EXT%.PrimaryFaultMemory_Read_OBDonUDS_DTCs
+{
+  byte statusMask= (cStatusBit_TestFailed);  
+  diagResponse this resp;
+
+  ReadAllIdentified(resp, statusMask, fmtOBDonUDS);  
+}
+
+on diagRequest %BASE_FILE_NAME_NO_EXT%.PrimaryFaultMemory_Read_OBDonUDS_DTCs_with_Permanent_Status
+{
+  byte statusMask= (cStatusBit_TestFailed | cStatusBit_ConfirmedDTC);
+  diagResponse this resp;
+
+  ReadAllIdentified(resp, statusMask, fmtOBDonUDS);  
+}
+
+// Only OBDonUDS
+on diagRequest %BASE_FILE_NAME_NO_EXT%.PrimaryFaultMemory_Read_Supported_DTC_Extended_Data_Information
+{
+  diagResponse this resp;
+  byte extDataRecord;
+  
+  extDataRecord=(byte)this.getParameter("Record_Numbers");
+
+  ReadAllSupported(resp, fmtOBDonUDS, extDataRecord);
+}
+
+on diagRequest %BASE_FILE_NAME_NO_EXT%.PrimaryFaultMemory_Read_DTC_Readiness_By_Readiness_Group
+{
+  byte statusMask=0xFF;
+  byte readinessGroup;
+  diagResponse this resp;
+  
+  readinessGroup=(byte)this.getParameter("_ReadinessGroupIdentifier");
+
+  ReadAllIdentified(resp, statusMask, fmtOBDonUDS, readinessGroup);  
+}

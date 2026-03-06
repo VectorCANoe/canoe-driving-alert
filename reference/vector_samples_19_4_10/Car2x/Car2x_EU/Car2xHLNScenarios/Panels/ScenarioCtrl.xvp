@@ -1,0 +1,158 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Panel Type="Vector.CANalyzer.Panels.PanelSerializer, Vector.CANalyzer.Panels.Serializer, Version=18.0.0.0, Culture=neutral, PublicKeyToken=null">
+  <Object Type="Vector.CANalyzer.Panels.Runtime.Panel, Vector.CANalyzer.Panels.Common, Version=18.0.0.0, Culture=neutral, PublicKeyToken=null" Name="Panel" ControlName="Scenario Control Panel">
+    <Object Type="Vector.CANalyzer.Panels.Design.GroupBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.0.0, Culture=neutral, PublicKeyToken=null" Name="GroupBoxControl1" ControlName="Group Box 1">
+      <Object Type="Vector.CANalyzer.Panels.Design.ButtonControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.0.0, Culture=neutral, PublicKeyToken=null" Name="ButtonControl1" ControlName="Button 1">
+        <Property Name="Name">ButtonControl1</Property>
+        <Property Name="Size">109, 22</Property>
+        <Property Name="Location">180, 44</Property>
+        <Property Name="UseWindowsStyle">False</Property>
+        <Property Name="TransparentColor">Transparent</Property>
+        <Property Name="UseTransparentColor">False</Property>
+        <Property Name="BackColor">255, 255, 192, 192</Property>
+        <Property Name="TabIndex">12</Property>
+        <Property Name="Text">Stop Scenario</Property>
+        <Property Name="SymbolConfiguration">8;16;ScenarioCtrl;;;StopBtnState;1;;;-1;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.ComboBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.0.0, Culture=neutral, PublicKeyToken=null" Name="ComboBoxControl2" ControlName="Combo Box 2">
+        <Property Name="Name">ComboBoxControl2</Property>
+        <Property Name="Size">246, 21</Property>
+        <Property Name="Location">43, 97</Property>
+        <Property Name="DisplayLabel">Left</Property>
+        <Property Name="DescriptionSize">63, 21</Property>
+        <Property Name="TextBackColor">White</Property>
+        <Property Name="TabIndex">16</Property>
+        <Property Name="DescriptionText">Start Mode:</Property>
+        <Property Name="UsedValueTable">PhysicalValue</Property>
+        <Property Name="SymbolConfiguration">8;16;ScenarioCtrl;;;StartScenarioRelative;1;;;-1;;;Value;;;0</Property>
+        <Property Name="DropDownWidth">65</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.ButtonControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.0.0, Culture=neutral, PublicKeyToken=null" Name="ButtonControl2" ControlName="Button 2">
+        <Property Name="Name">ButtonControl2</Property>
+        <Property Name="Size">109, 22</Property>
+        <Property Name="Location">44, 44</Property>
+        <Property Name="UseWindowsStyle">False</Property>
+        <Property Name="TransparentColor">Transparent</Property>
+        <Property Name="UseTransparentColor">False</Property>
+        <Property Name="BackColor">255, 189, 255, 191</Property>
+        <Property Name="TabIndex">11</Property>
+        <Property Name="TabStopActive">False</Property>
+        <Property Name="Text">Start Scenario</Property>
+        <Property Name="SymbolConfiguration">8;16;ScenarioCtrl;;;StartBtnState;1;;;-1;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.0.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl2" ControlName="Static Text 2">
+        <Property Name="Name">StaticTextControl2</Property>
+        <Property Name="Size">321, 27</Property>
+        <Property Name="Location">5, 12</Property>
+        <Property Name="TextAlign">MiddleCenter</Property>
+        <Property Name="Text">Load and start a Scenario at the current GNSS position on 
+a loaded route or relative.</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.ComboBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.0.0, Culture=neutral, PublicKeyToken=null" Name="ComboBoxControl1" ControlName="Combo Box 1">
+        <Property Name="Name">ComboBoxControl1</Property>
+        <Property Name="Size">235, 21</Property>
+        <Property Name="Location">54, 70</Property>
+        <Property Name="DisplayLabel">Left</Property>
+        <Property Name="DescriptionSize">52, 21</Property>
+        <Property Name="TextBackColor">White</Property>
+        <Property Name="TabIndex">14</Property>
+        <Property Name="DescriptionText">Scenario:</Property>
+        <Property Name="UsedValueTable">PhysicalValue</Property>
+        <Property Name="SymbolConfiguration">8;16;ScenarioCtrl;;;ScenarioNumber;1;;;-1;;;Value;;;0</Property>
+        <Property Name="DropDownWidth">206</Property>
+      </Object>
+      <Property Name="Name">GroupBoxControl1</Property>
+      <Property Name="Size">331, 125</Property>
+      <Property Name="Location">3, 2</Property>
+      <Property Name="BackColor">White</Property>
+      <Property Name="Font">Microsoft Sans Serif, 7.8pt, style=Bold</Property>
+      <Property Name="Text">Scenario</Property>
+      <Property Name="TabIndex">24</Property>
+      <Property Name="UseWindowsStyle">False</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.GroupBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.0.0, Culture=neutral, PublicKeyToken=null" Name="GroupBoxControl2" ControlName="Group Box 2">
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.0.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl1" ControlName="Static Text 1">
+        <Property Name="Name">StaticTextControl1</Property>
+        <Property Name="Size">62, 15</Property>
+        <Property Name="Location">54, 59</Property>
+        <Property Name="Text">Route File:</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.PathControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.0.0, Culture=neutral, PublicKeyToken=null" Name="PathControl1" ControlName="Path Dialog 1">
+        <Property Name="Name">PathControl1</Property>
+        <Property Name="Size">169, 23</Property>
+        <Property Name="Location">115, 55</Property>
+        <Property Name="CustomToolTipText">Available file formats are kml, gpx, nmea.</Property>
+        <Property Name="TabIndex">22</Property>
+        <Property Name="FileDlgFilter">Supported Formats|*.kml;*.gpx;*.nmea|KML|*.kml|GPX|*.gpx|NMEA|*.nmea</Property>
+        <Property Name="SymbolConfiguration">8;16;RouteCtrl;;;FileName;4;;;-1;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.ButtonControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.0.0, Culture=neutral, PublicKeyToken=null" Name="ButtonControl3" ControlName="Button 3">
+        <Property Name="Name">ButtonControl3</Property>
+        <Property Name="Size">109, 22</Property>
+        <Property Name="Location">175, 106</Property>
+        <Property Name="UseWindowsStyle">False</Property>
+        <Property Name="TransparentColor">Transparent</Property>
+        <Property Name="UseTransparentColor">False</Property>
+        <Property Name="BackColor">255, 255, 255, 192</Property>
+        <Property Name="TabIndex">18</Property>
+        <Property Name="TabStopActive">False</Property>
+        <Property Name="Text">Draw Route</Property>
+        <Property Name="SymbolConfiguration">8;16;RouteCtrl;;;DrawRouteBtnState;1;;;-1;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.0.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl3" ControlName="Static Text 3">
+        <Property Name="Name">StaticTextControl3</Property>
+        <Property Name="Size">322, 30</Property>
+        <Property Name="Location">5, 17</Property>
+        <Property Name="TextAlign">MiddleCenter</Property>
+        <Property Name="Text">Specify a route with the file path (.kml, .gpx or .nmea) and its 
+name in the file. Configure the route to be considered as a loop.</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.0.0, Culture=neutral, PublicKeyToken=null" Name="TextBoxControl1" ControlName="RouteName">
+        <Property Name="Name">TextBoxControl1</Property>
+        <Property Name="Size">240, 21</Property>
+        <Property Name="Location">44, 83</Property>
+        <Property Name="CustomToolTipText">KML: name of the Placemark containing the route; GPX: name of the trk containing the route; NMEA: name of the file</Property>
+        <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+        <Property Name="AlarmLowerBkgColor">Salmon</Property>
+        <Property Name="AlarmLowerTextColor">WindowText</Property>
+        <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+        <Property Name="AlarmUpperTextColor">WindowText</Property>
+        <Property Name="BoxBorderStyle">FixedSingle</Property>
+        <Property Name="DisplayLabel">Left</Property>
+        <Property Name="TabIndex">17</Property>
+        <Property Name="TabStopActive">False</Property>
+        <Property Name="DescriptionText">Route Name:</Property>
+        <Property Name="ValueDecimalPlaces">0</Property>
+        <Property Name="ValueDisplay">Text</Property>
+        <Property Name="UsedValueTable">PhysicalValue</Property>
+        <Property Name="DescriptionSize">71, 21</Property>
+        <Property Name="SymbolConfiguration">8;16;RouteCtrl;;;RouteName;4;;;-1;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.ComboBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.0.0, Culture=neutral, PublicKeyToken=null" Name="ComboBoxControl3" ControlName="Combo Box 3">
+        <Property Name="Name">ComboBoxControl3</Property>
+        <Property Name="Size">120, 21</Property>
+        <Property Name="Location">38, 105</Property>
+        <Property Name="CustomToolTipText">On: End and Start of the route get connected to form a loop. Off: Route is loaded as is.</Property>
+        <Property Name="DisplayLabel">Left</Property>
+        <Property Name="DescriptionSize">77, 21</Property>
+        <Property Name="TextBackColor">White</Property>
+        <Property Name="TabIndex">18</Property>
+        <Property Name="DescriptionText">Load As Loop:</Property>
+        <Property Name="UsedValueTable">PhysicalValue</Property>
+        <Property Name="SymbolConfiguration">8;16;RouteCtrl;;;LoopFlag;1;;;-1;;;Value;;;0</Property>
+        <Property Name="DropDownWidth">71</Property>
+      </Object>
+      <Property Name="Name">GroupBoxControl2</Property>
+      <Property Name="Size">331, 134</Property>
+      <Property Name="Location">3, 132</Property>
+      <Property Name="Font">Microsoft Sans Serif, 7.8pt, style=Bold</Property>
+      <Property Name="Text">Route</Property>
+      <Property Name="TabIndex">25</Property>
+      <Property Name="UseWindowsStyle">False</Property>
+    </Object>
+    <Property Name="Name">Panel</Property>
+    <Property Name="Size">337, 270</Property>
+    <Property Name="Location">0, 0</Property>
+    <Property Name="BackColor">White</Property>
+  </Object>
+</Panel>

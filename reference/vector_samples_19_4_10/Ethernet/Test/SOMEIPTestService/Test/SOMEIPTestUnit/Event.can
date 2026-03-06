@@ -1,0 +1,63 @@
+/*@!Encoding:1252*/
+variables
+{
+  const dword kSOMEIPEvent_TxTimeoutMs = 100;
+  const dword kSOMEIPEvent_RxTimeoutMs = 100;
+}
+
+// test event MotorState
+export testcase EDRV_Event_DrivingPSI1_MotorState()
+{
+  char tc[47] = "Event_EDRV_DrivingPSI1_MotorState";
+  long result = 0;
+  
+  testCaseDescription("Trigger Event EDRV::DrivingPSI1.MotorState on provider-side and wait for receiption on consumer-side");
+  
+  testStep( tc, "Trigger Event EDRV::DrivingPSI1.MotorState from EDRV" );
+  
+  $EDRV::DrivingPSI1.MotorState.Temperature.phys = 1;
+  $EDRV::DrivingPSI1.MotorState.Speed.phys = 2;
+  $EDRV::DrivingPSI1.MotorState.Torque.phys = 3;
+  $EDRV::DrivingPSI1.MotorState.Current.phys = 4;
+  
+  testStep( tc, "Wait for TX of Trigger EDRV::DrivingPSI1.MotorState" );
+  
+  result = testWaitForUpdate( EDRV::DrivingPSI1.MotorState, kSOMEIPEvent_TxTimeoutMs );
+  
+  if ( result != 1 )
+  {
+    testStepFail( tc, "Error, testWaitForUpdate for Event EDRV::DrivingPSI1.MotorState failed with result %d", result );
+  }
+
+  testStep( tc, "Wait for RX of HPCM::DrivingCSI1.MotorState" );
+  
+  result = testWaitForUpdate( HPCM::DrivingCSI1.MotorState, kSOMEIPEvent_RxTimeoutMs );
+  
+  if ( result != 1 )
+  {
+    testStepFail( tc, "Error, testWaitForUpdate for Event HPCM::DrivingCSI1.MotorState failed with result %d", result );
+  }
+
+  if ($HPCM::DrivingCSI1.MotorState.Temperature.phys != 1)
+  {
+    testStepFail( tc, "HPCM::DrivingCSI1.MotorState.Temperature is %f, but %s expected", $HPCM::DrivingCSI1.MotorState.Temperature.phys, "1" );
+    return;
+  }
+  if ($HPCM::DrivingCSI1.MotorState.Speed.phys != 2)
+  {
+    testStepFail( tc, "HPCM::DrivingCSI1.MotorState.Speed is %f, but %s expected", $HPCM::DrivingCSI1.MotorState.Speed.phys, "2" );
+    return;
+  }
+  if ($HPCM::DrivingCSI1.MotorState.Torque.phys != 3)
+  {
+    testStepFail( tc, "HPCM::DrivingCSI1.MotorState.Torque is %f, but %s expected", $HPCM::DrivingCSI1.MotorState.Torque.phys, "3" );
+    return;
+  }
+  if ($HPCM::DrivingCSI1.MotorState.Current.phys != 4)
+  {
+    testStepFail( tc, "HPCM::DrivingCSI1.MotorState.Current is %f, but %s expected", $HPCM::DrivingCSI1.MotorState.Current.phys, "4" );
+    return;
+  }
+  
+  testStepPass( tc );
+}

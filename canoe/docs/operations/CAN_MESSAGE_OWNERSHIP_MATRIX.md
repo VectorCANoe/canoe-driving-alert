@@ -37,8 +37,8 @@
 | frmDoorStateMsg | 0x214 | 2 | BODY_GW | body_can.dbc | 5 |
 | frmLampControlMsg | 0x215 | 1 | BODY_GW | body_can.dbc | 5 |
 | frmWiperStateMsg | 0x216 | 1 | BODY_GW | body_can.dbc | 3 |
-| frmSeatBeltStateMsg | 0x217 | 1 | DRV_STATE_MGR | body_can.dbc | 5 |
-| frmCabinAirStateMsg | 0x218 | 2 | DRV_STATE_MGR | body_can.dbc | 2 |
+| frmSeatBeltStateMsg | 0x217 | 1 | BODY_GW | body_can.dbc | 5 |
+| frmCabinAirStateMsg | 0x218 | 2 | BODY_GW | body_can.dbc | 2 |
 | frmBodyHealthMsg | 0x219 | 2 | BODY_GW | body_can.dbc | 3 |
 | frmClusterWarningMsg | 0x220 | 1 | IVI_GW | infotainment_can.dbc | 1 |
 | frmClusterBaseStateMsg | 0x221 | 2 | IVI_GW | infotainment_can.dbc | 3 |
@@ -55,8 +55,8 @@
 | frmHvacStateMsg | 0x240 | 2 | BODY_GW | body_can.dbc | 4 |
 | frmHvacActuatorMsg | 0x241 | 2 | BODY_GW | body_can.dbc | 5 |
 | frmMirrorStateMsg | 0x242 | 1 | BODY_GW | body_can.dbc | 4 |
-| frmSeatStateMsg | 0x243 | 2 | DRV_STATE_MGR | body_can.dbc | 2 |
-| frmSeatControlMsg | 0x244 | 2 | DRV_STATE_MGR | body_can.dbc | 4 |
+| frmSeatStateMsg | 0x243 | 2 | BODY_GW | body_can.dbc | 2 |
+| frmSeatControlMsg | 0x244 | 2 | BODY_GW | body_can.dbc | 4 |
 | frmDoorControlMsg | 0x245 | 1 | WINDOW_CTRL | body_can.dbc | 3 |
 | frmInteriorLightMsg | 0x246 | 1 | AMBIENT_CTRL | body_can.dbc | 2 |
 | frmRainLightAutoMsg | 0x247 | 1 | AMBIENT_CTRL | body_can.dbc | 3 |

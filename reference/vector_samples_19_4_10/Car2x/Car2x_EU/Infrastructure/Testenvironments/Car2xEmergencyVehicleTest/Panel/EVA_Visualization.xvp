@@ -1,0 +1,156 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Panel Type="Vector.CANalyzer.Panels.PanelSerializer, Vector.CANalyzer.Panels.Serializer, Version=18.0.0.0, Culture=neutral, PublicKeyToken=null">
+  <Object Type="Vector.CANalyzer.Panels.Runtime.Panel, Vector.CANalyzer.Panels.Common, Version=18.0.0.0, Culture=neutral, PublicKeyToken=null" Name="Panel" ControlName="Visualization">
+    <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.0.0, Culture=neutral, PublicKeyToken=null" Name="X8d2812f7ebb55e4e75ea990ebfa73b32187b" ControlName="Input/Output Box 1">
+      <Property Name="Name">X8d2812f7ebb55e4e75ea990ebfa73b32187b</Property>
+      <Property Name="Size">58, 39</Property>
+      <Property Name="Location">74, 4</Property>
+      <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+      <Property Name="AlarmLowerBkgColor">Salmon</Property>
+      <Property Name="AlarmLowerTextColor">WindowText</Property>
+      <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+      <Property Name="AlarmUpperTextColor">WindowText</Property>
+      <Property Name="BoxBorderStyle">FixedSingle</Property>
+      <Property Name="DisplayLabel">Top</Property>
+      <Property Name="ReadOnlyControl">True</Property>
+      <Property Name="TabIndex">11</Property>
+      <Property Name="TabStopActive">False</Property>
+      <Property Name="DescriptionText">Siren:</Property>
+      <Property Name="ValueDecimalPlaces">0</Property>
+      <Property Name="ValueDisplay">Symbolic</Property>
+      <Property Name="UsedValueTable">PhysicalValue</Property>
+      <Property Name="DescriptionSize">58, 21</Property>
+      <Property Name="SymbolConfiguration">8;16;CAMValues;;;SirenInUse;1;;;-1;;;Value;;;0</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.0.0, Culture=neutral, PublicKeyToken=null" Name="TextBoxControl6" ControlName="LightBar">
+      <Property Name="Name">TextBoxControl6</Property>
+      <Property Name="Size">58, 39</Property>
+      <Property Name="Location">12, 4</Property>
+      <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+      <Property Name="AlarmLowerBkgColor">Salmon</Property>
+      <Property Name="AlarmLowerTextColor">WindowText</Property>
+      <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+      <Property Name="AlarmUpperTextColor">WindowText</Property>
+      <Property Name="BoxBorderStyle">FixedSingle</Property>
+      <Property Name="DisplayLabel">Top</Property>
+      <Property Name="ReadOnlyControl">True</Property>
+      <Property Name="TabIndex">11</Property>
+      <Property Name="TabStopActive">False</Property>
+      <Property Name="DescriptionText">LightBar:</Property>
+      <Property Name="ValueDecimalPlaces">0</Property>
+      <Property Name="ValueDisplay">Symbolic</Property>
+      <Property Name="UsedValueTable">PhysicalValue</Property>
+      <Property Name="DescriptionSize">58, 21</Property>
+      <Property Name="SymbolConfiguration">8;16;CAMValues;;;LightBarInUse;1;;;-1;;;Value;;;0</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.0.0, Culture=neutral, PublicKeyToken=null" Name="TextBoxControl5" ControlName="ValidityDuration">
+      <Property Name="Name">TextBoxControl5</Property>
+      <Property Name="Size">119, 39</Property>
+      <Property Name="Location">12, 184</Property>
+      <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+      <Property Name="AlarmLowerBkgColor">Salmon</Property>
+      <Property Name="AlarmLowerTextColor">WindowText</Property>
+      <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+      <Property Name="AlarmUpperTextColor">WindowText</Property>
+      <Property Name="BoxBorderStyle">FixedSingle</Property>
+      <Property Name="DisplayLabel">Top</Property>
+      <Property Name="ReadOnlyControl">True</Property>
+      <Property Name="TabIndex">10</Property>
+      <Property Name="TabStopActive">False</Property>
+      <Property Name="DescriptionText">ValidityDuration:</Property>
+      <Property Name="ValueDecimalPlaces">0</Property>
+      <Property Name="ValueDisplay">Decimal</Property>
+      <Property Name="UsedValueTable">PhysicalValue</Property>
+      <Property Name="DescriptionSize">119, 21</Property>
+      <Property Name="SymbolConfiguration">8;16;DENMvalues;;;ValidityDuration;1;;;-1;;;Value;;;0</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.0.0, Culture=neutral, PublicKeyToken=null" Name="TextBoxControl4" ControlName="SubCauseCode">
+      <Property Name="Name">TextBoxControl4</Property>
+      <Property Name="Size">119, 39</Property>
+      <Property Name="Location">12, 138</Property>
+      <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+      <Property Name="AlarmLowerBkgColor">Salmon</Property>
+      <Property Name="AlarmLowerTextColor">WindowText</Property>
+      <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+      <Property Name="AlarmUpperTextColor">WindowText</Property>
+      <Property Name="BoxBorderStyle">FixedSingle</Property>
+      <Property Name="DisplayLabel">Top</Property>
+      <Property Name="ReadOnlyControl">True</Property>
+      <Property Name="TabIndex">9</Property>
+      <Property Name="TabStopActive">False</Property>
+      <Property Name="DescriptionText">SubCauseCode:</Property>
+      <Property Name="ValueDecimalPlaces">0</Property>
+      <Property Name="ValueDisplay">Decimal</Property>
+      <Property Name="UsedValueTable">PhysicalValue</Property>
+      <Property Name="DescriptionSize">119, 21</Property>
+      <Property Name="SymbolConfiguration">8;16;DENMvalues;;;SubCauseCode;1;;;-1;;;Value;;;0</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.0.0, Culture=neutral, PublicKeyToken=null" Name="TextBoxControl3" ControlName="CauseCode">
+      <Property Name="Name">TextBoxControl3</Property>
+      <Property Name="Size">119, 39</Property>
+      <Property Name="Location">12, 94</Property>
+      <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+      <Property Name="AlarmLowerBkgColor">Salmon</Property>
+      <Property Name="AlarmLowerTextColor">WindowText</Property>
+      <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+      <Property Name="AlarmUpperTextColor">WindowText</Property>
+      <Property Name="BoxBorderStyle">FixedSingle</Property>
+      <Property Name="DisplayLabel">Top</Property>
+      <Property Name="ReadOnlyControl">True</Property>
+      <Property Name="TabIndex">8</Property>
+      <Property Name="TabStopActive">False</Property>
+      <Property Name="DescriptionText">CauseCode:</Property>
+      <Property Name="ValueDecimalPlaces">0</Property>
+      <Property Name="ValueDisplay">Symbolic</Property>
+      <Property Name="UsedValueTable">PhysicalValue</Property>
+      <Property Name="DescriptionSize">119, 21</Property>
+      <Property Name="SymbolConfiguration">8;16;DENMvalues;;;CauseCode;1;;;-1;;;Value;;;0</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.0.0, Culture=neutral, PublicKeyToken=null" Name="TextBoxControl2" ControlName="VehicleRole">
+      <Property Name="Name">TextBoxControl2</Property>
+      <Property Name="Size">119, 39</Property>
+      <Property Name="Location">12, 48</Property>
+      <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+      <Property Name="AlarmLowerBkgColor">Salmon</Property>
+      <Property Name="AlarmLowerTextColor">WindowText</Property>
+      <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+      <Property Name="AlarmUpperTextColor">WindowText</Property>
+      <Property Name="BoxBorderStyle">FixedSingle</Property>
+      <Property Name="DisplayLabel">Top</Property>
+      <Property Name="ReadOnlyControl">True</Property>
+      <Property Name="TabIndex">7</Property>
+      <Property Name="TabStopActive">False</Property>
+      <Property Name="DescriptionText">VehicleRole:</Property>
+      <Property Name="ValueDecimalPlaces">0</Property>
+      <Property Name="ValueDisplay">Symbolic</Property>
+      <Property Name="UsedValueTable">PhysicalValue</Property>
+      <Property Name="DescriptionSize">119, 21</Property>
+      <Property Name="SymbolConfiguration">8;16;CAMValues;;;VehicleRole;1;;;-1;;;Value;;;0</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.0.0, Culture=neutral, PublicKeyToken=null" Name="TextBoxControl1" ControlName="EventSpeed">
+      <Property Name="Name">TextBoxControl1</Property>
+      <Property Name="Size">119, 39</Property>
+      <Property Name="Location">12, 228</Property>
+      <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+      <Property Name="AlarmLowerBkgColor">Salmon</Property>
+      <Property Name="AlarmLowerTextColor">WindowText</Property>
+      <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+      <Property Name="AlarmUpperTextColor">WindowText</Property>
+      <Property Name="BoxBorderStyle">FixedSingle</Property>
+      <Property Name="DisplayLabel">Top</Property>
+      <Property Name="ShowUnit">True</Property>
+      <Property Name="ReadOnlyControl">True</Property>
+      <Property Name="TabIndex">1</Property>
+      <Property Name="TabStopActive">False</Property>
+      <Property Name="DescriptionText">EventSpeed:</Property>
+      <Property Name="ValueDisplay">Double</Property>
+      <Property Name="UsedValueTable">PhysicalValue</Property>
+      <Property Name="DescriptionSize">119, 21</Property>
+      <Property Name="SymbolConfiguration">8;16;DENMvalues;;;EventSpeed;2;;;-1;;;Value;;;0</Property>
+    </Object>
+    <Property Name="Name">Panel</Property>
+    <Property Name="Size">144, 271</Property>
+    <Property Name="Location">0, 0</Property>
+    <Property Name="BackColor">White</Property>
+  </Object>
+</Panel>

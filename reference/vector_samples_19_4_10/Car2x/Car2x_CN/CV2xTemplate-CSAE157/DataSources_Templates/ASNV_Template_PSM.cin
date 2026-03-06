@@ -1,0 +1,3148 @@
+/*@!Encoding:1252*/
+/*
+//  (c) Vector Informatik GmbH. All rights reserved.
+//
+//  This file contains definitions of structs and methods that may be used
+//  to set and get the values of an ASN.1 defined packet's payload.
+//
+//  //This example demonstrates how to set a packet's payload:
+//  LONG packetHandle;
+//  struct PSM payload;
+//  //you need to set the values of the variable "payload" yourself
+//  packetHandle = API_InitPSMPacket();
+//  if (packetHandle!=0) {
+//    if (API_SetPSMParams(packetHandle, payload)==0) {
+//      if (C2xCompletePacket(packetHandle)==0) {
+//        C2xOutputPacket(packetHandle);
+//      }
+//    }
+//  }
+//                                                                             */
+includes
+{
+}
+variables
+{
+    struct PSMPersonalSafetyMessage_id {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        CHAR string[9];
+        INT  stringLength;
+    };
+    
+    struct PSMPosition3D {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        LONG lat;  // INTEGER, -900000000..900000001;
+        LONG lon;  // INTEGER, -1799999999..1800000001;
+        struct OPT_LONG_ASN elevation;  // INTEGER, OPTIONAL, -4096..61439;
+    };
+    
+    struct PSMPositionalAccuracy {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        BYTE semiMajor;  // INTEGER, 0..255;
+        BYTE semiMinor;  // INTEGER, 0..255;
+        WORD orientation;  // INTEGER, 0..65535;
+    };
+    
+    struct PSMAccelerationSet4Way {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        INT lon;  // INTEGER, -2000..2001;
+        INT lat;  // INTEGER, -2000..2001;
+        INT vert;  // INTEGER, -127..127;
+        INT yaw;  // INTEGER, -32767..32767;
+    };
+    
+    struct PSMDDateTime {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        struct OPT_WORD_ASN year;  // INTEGER, OPTIONAL, 0..4095;
+        struct OPT_BYTE_ASN month;  // INTEGER, OPTIONAL, 0..12;
+        struct OPT_BYTE_ASN day;  // INTEGER, OPTIONAL, 0..31;
+        struct OPT_BYTE_ASN hour;  // INTEGER, OPTIONAL, 0..24;
+        struct OPT_BYTE_ASN minute;  // INTEGER, OPTIONAL, 0..60;
+        struct OPT_WORD_ASN second;  // INTEGER, OPTIONAL, 0..65535;
+        struct OPT_INT_ASN offset;  // INTEGER, OPTIONAL, -720..721;
+    };
+    
+    struct PSMPositionConfidenceSet {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        INT pos;  // ENUMERATED, unavailable(0), a500m(1), a200m(2), a100m(3), a50m(4), a20m(5), a10m(6), a5m(7), a2m(8), a1m(9), a50cm(10), a20cm(11), a10cm(12), a5cm(13), a2cm(14), a1cm(15);
+        struct OPT_ENUM_ASN elevation;  // ENUMERATED, OPTIONAL, unavailable(0), elev_500_00(1), elev_200_00(2), elev_100_00(3), elev_050_00(4), elev_020_00(5), elev_010_00(6), elev_005_00(7), elev_002_00(8), elev_001_00(9), elev_000_50(10), elev_000_20(11), elev_000_10(12), elev_000_05(13), elev_000_02(14), elev_000_01(15);
+    };
+    
+    struct PSMMotionConfidenceSet {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        struct OPT_ENUM_ASN speedCfd;  // ENUMERATED, OPTIONAL, unavailable(0), prec100ms(1), prec10ms(2), prec5ms(3), prec1ms(4), prec0_1ms(5), prec0_05ms(6), prec0_01ms(7);
+        struct OPT_ENUM_ASN headingCfd;  // ENUMERATED, OPTIONAL, unavailable(0), prec10deg(1), prec05deg(2), prec01deg(3), prec0_1deg(4), prec0_05deg(5), prec0_01deg(6), prec0_0125deg(7);
+        struct OPT_ENUM_ASN steerCfd;  // ENUMERATED, OPTIONAL, unavailable(0), prec2deg(1), prec1deg(2), prec0_02deg(3);
+    };
+    
+    struct PSMFullPositionVector {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        struct PSMDDateTime utcTime;  // SEQUENCE, OPTIONAL;
+        struct PSMPosition3D pos;  // SEQUENCE;
+        struct OPT_WORD_ASN heading;  // INTEGER, OPTIONAL, 0..28800;
+        struct OPT_ENUM_ASN transmission;  // ENUMERATED, OPTIONAL, neutral(0), park(1), forwardGears(2), reverseGears(3), reserved1(4), reserved2(5), reserved3(6), unavailable(7);
+        struct OPT_WORD_ASN speed;  // INTEGER, OPTIONAL, 0..8191;
+        struct PSMPositionalAccuracy posAccuracy;  // SEQUENCE, OPTIONAL;
+        struct PSMPositionConfidenceSet posConficence;  // SEQUENCE, OPTIONAL;
+        struct OPT_ENUM_ASN timeConfidence;  // ENUMERATED, OPTIONAL, unavailable(0), time_100_000(1), time_050_000(2), time_020_000(3), time_010_000(4), time_002_000(5), time_001_000(6), time_000_500(7), time_000_200(8), time_000_100(9), time_000_050(10), time_000_020(11), time_000_010(12), time_000_005(13), time_000_002(14), time_000_001(15), time_000_000_5(16), time_000_000_2(17), time_000_000_1(18), time_000_000_05(19), time_000_000_02(20), time_000_000_01(21), time_000_000_005(22), time_000_000_002(23), time_000_000_001(24), time_000_000_000_5(25), time_000_000_000_2(26), time_000_000_000_1(27), time_000_000_000_05(28), time_000_000_000_02(29), time_000_000_000_01(30), time_000_000_000_005(31), time_000_000_000_002(32), time_000_000_000_001(33), time_000_000_000_000_5(34), time_000_000_000_000_2(35), time_000_000_000_000_1(36), time_000_000_000_000_05(37), time_000_000_000_000_02(38), time_000_000_000_000_01(39);
+        struct PSMMotionConfidenceSet motionCfd;  // SEQUENCE, OPTIONAL;
+    };
+    
+    struct PSMGNSSstatus {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        CHAR string[9];
+        INT  stringLength;
+    };
+    
+    struct PSMPosition_LL_24B {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        INT lon;  // INTEGER, -2048..2047;
+        INT lat;  // INTEGER, -2048..2047;
+    };
+    
+    struct PSMPosition_LL_28B {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        INT lon;  // INTEGER, -8192..8191;
+        INT lat;  // INTEGER, -8192..8191;
+    };
+    
+    struct PSMPosition_LL_32B {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        INT lon;  // INTEGER, -32768..32767;
+        INT lat;  // INTEGER, -32768..32767;
+    };
+    
+    struct PSMPosition_LL_36B {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        LONG lon;  // INTEGER, -131072..131071;
+        LONG lat;  // INTEGER, -131072..131071;
+    };
+    
+    struct PSMPosition_LL_44B {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        LONG lon;  // INTEGER, -2097152..2097151;
+        LONG lat;  // INTEGER, -2097152..2097151;
+    };
+    
+    struct PSMPosition_LL_48B {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        LONG lon;  // INTEGER, -8388608..8388607;
+        LONG lat;  // INTEGER, -8388608..8388607;
+    };
+    
+    struct PSMPosition_LLmD_64b {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        LONG lon;  // INTEGER, -1799999999..1800000001;
+        LONG lat;  // INTEGER, -900000000..900000001;
+    };
+    
+    struct PSMPositionOffsetLL {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        INT choice;
+        struct PSMPosition_LL_24B position_LL1;  // SEQUENCE;
+        struct PSMPosition_LL_28B position_LL2;  // SEQUENCE;
+        struct PSMPosition_LL_32B position_LL3;  // SEQUENCE;
+        struct PSMPosition_LL_36B position_LL4;  // SEQUENCE;
+        struct PSMPosition_LL_44B position_LL5;  // SEQUENCE;
+        struct PSMPosition_LL_48B position_LL6;  // SEQUENCE;
+        struct PSMPosition_LLmD_64b position_LatLon;  // SEQUENCE;
+    };
+    
+    struct PSMVerticalOffset {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        INT choice;
+        INT offset1;  // INTEGER, -64..63;
+        INT offset2;  // INTEGER, -128..127;
+        INT offset3;  // INTEGER, -256..255;
+        INT offset4;  // INTEGER, -512..511;
+        INT offset5;  // INTEGER, -1024..1023;
+        INT offset6;  // INTEGER, -2048..2047;
+        LONG elevation;  // INTEGER, -4096..61439;
+    };
+    
+    struct PSMPositionOffsetLLV {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        struct PSMPositionOffsetLL offsetLL;  // CHOICE;
+        struct PSMVerticalOffset offsetV;  // CHOICE, OPTIONAL;
+    };
+    
+    struct PSMPathHistoryPoint {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        struct PSMPositionOffsetLLV llvOffset;  // SEQUENCE;
+        WORD timeOffset;  // INTEGER, 1..65535;
+        struct OPT_WORD_ASN speed;  // INTEGER, OPTIONAL, 0..8191;
+        struct PSMPositionConfidenceSet posAccuracy;  // SEQUENCE, OPTIONAL;
+        struct OPT_BYTE_ASN heading;  // INTEGER, OPTIONAL, 0..240;
+    };
+    
+    struct PSMPathHistoryPointList {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        INT length;
+        struct PSMPathHistoryPoint arrayValue[23];  // SEQUENCE;
+    };
+    
+    struct PSMPathHistory {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        struct PSMFullPositionVector initialPosition;  // SEQUENCE, OPTIONAL;
+        struct PSMGNSSstatus currGNSSstatus;  // BITSTRING, OPTIONAL;
+        struct PSMPathHistoryPointList crumbData;  // SEQUENCEOF;
+    };
+    
+    struct PSMNodeReferenceID {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        struct OPT_WORD_ASN region;  // INTEGER, OPTIONAL, 0..65535;
+        WORD id;  // INTEGER, 0..65535;
+    };
+    
+    struct PSMReferenceLanes {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        CHAR string[17];
+        INT  stringLength;
+    };
+    
+    struct PSMReferenceLink {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        struct PSMNodeReferenceID upstreamNodeId;  // SEQUENCE;
+        struct PSMNodeReferenceID downstreamNodeId;  // SEQUENCE;
+        struct PSMReferenceLanes referenceLanes;  // BITSTRING, OPTIONAL;
+    };
+    
+    struct PSMAccSet4WayConfidence {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        INT lonAccConfidence;  // ENUMERATED, unavailable(0), prec100deg(1), prec10deg(2), prec5deg(3), prec1deg(4), prec0_1deg(5), prec0_05deg(6), prec0_01deg(7);
+        INT latAccConfidence;  // ENUMERATED, unavailable(0), prec100deg(1), prec10deg(2), prec5deg(3), prec1deg(4), prec0_1deg(5), prec0_05deg(6), prec0_01deg(7);
+        INT vertAccConfidence;  // ENUMERATED, unavailable(0), prec100deg(1), prec10deg(2), prec5deg(3), prec1deg(4), prec0_1deg(5), prec0_05deg(6), prec0_01deg(7);
+        INT yawRateCon;  // ENUMERATED, unavailable(0), prec100deg(1), prec10deg(2), prec5deg(3), prec1deg(4), prec0_1deg(5), prec0_05deg(6), prec0_01deg(7);
+    };
+    
+    struct PSMPathPlanningPoint {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        struct PSMReferenceLink posInMap;  // SEQUENCE, OPTIONAL;
+        struct PSMPositionOffsetLLV pos;  // SEQUENCE;
+        struct PSMPositionConfidenceSet posAccuracy;  // SEQUENCE, OPTIONAL;
+        struct OPT_WORD_ASN speed;  // INTEGER, OPTIONAL, 0..8191;
+        struct OPT_ENUM_ASN speedCfd;  // ENUMERATED, OPTIONAL, unavailable(0), prec100ms(1), prec10ms(2), prec5ms(3), prec1ms(4), prec0_1ms(5), prec0_05ms(6), prec0_01ms(7);
+        struct OPT_WORD_ASN heading;  // INTEGER, OPTIONAL, 0..28800;
+        struct OPT_ENUM_ASN headingCfd;  // ENUMERATED, OPTIONAL, unavailable(0), prec10deg(1), prec05deg(2), prec01deg(3), prec0_1deg(4), prec0_05deg(5), prec0_01deg(6), prec0_0125deg(7);
+        struct PSMAccelerationSet4Way accelSet;  // SEQUENCE, OPTIONAL;
+        struct PSMAccSet4WayConfidence acc4WayConfidence;  // SEQUENCE, OPTIONAL;
+        struct OPT_WORD_ASN estimatedTime;  // INTEGER, OPTIONAL, 1..65535;
+        struct OPT_BYTE_ASN timeConfidence;  // INTEGER, OPTIONAL, 0..200;
+    };
+    
+    struct PSMPathPlanning {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        INT length;
+        struct PSMPathPlanningPoint arrayValue[100];  // SEQUENCE;
+    };
+    
+    struct PSMPropelledInformation {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        INT choice;
+        INT human;  // ENUMERATED, unavailable(0), otherTypes(1), onFoot(2), skateboard(3), pushOrKickScooter(4), wheelchair(5);
+        INT animal;  // ENUMERATED, unavailable(0), otherTypes(1), animalMounted(2), animalDrawnCarriage(3);
+        INT motor;  // ENUMERATED, unavailable(0), otherTypes(1), wheelChair(2), bicycle(3), scooter(4), selfBalancingDevice(5);
+    };
+    
+    struct PSMPersonalDeviceUsageState {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        CHAR string[10];
+        INT  stringLength;
+    };
+    
+    struct PSMPersonalAssistive {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        CHAR string[7];
+        INT  stringLength;
+    };
+    
+    struct PSMPersonalExtensions {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        struct PSMPersonalDeviceUsageState useState;  // BITSTRING, OPTIONAL;
+        struct PSMPersonalAssistive assistType;  // BITSTRING, OPTIONAL;
+    };
+    
+    struct PSMRoadWorkerActivityType {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        CHAR string[7];
+        INT  stringLength;
+    };
+    
+    struct PSMRoadWorkerExtensions {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        struct OPT_ENUM_ASN workerType;  // ENUMERATED, OPTIONAL, unavailable(0), trafficPolice(1), constructionPersonnel(2), policeOfficers(3), trafficControlPersons(4), railroadCrossingGuards(5), emergencyOrganizationPersonnel(6);
+        struct PSMRoadWorkerActivityType activityType;  // BITSTRING, OPTIONAL;
+    };
+    
+    struct PSMPersonalRequest {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        struct OPT_ENUM_ASN crossing;  // ENUMERATED, OPTIONAL, unavailable(0), request(1), crossing(2), finish(3);
+    };
+    
+    struct PSMNon_motorData {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        INT basicType;  // ENUMERATED, unavailable(0), aPEDESTRIAN(1), aPEDALCYCLIST(2), aROADWORKER(3), anANIMAL(4);
+        struct PSMPropelledInformation propulsion;  // CHOICE, OPTIONAL;
+        struct OPT_ENUM_ASN clusterSize;  // ENUMERATED, OPTIONAL, unavailable(0), small(1), medium(2), large(3);
+        struct OPT_ENUM_ASN attachment;  // ENUMERATED, OPTIONAL, unavailable(0), stroller(1), bicycleTrailer(2), cart(3), wheelchair(4), otherWalkAssistAttachments(5), pet(6);
+        struct PSMPersonalExtensions personalExt;  // SEQUENCE, OPTIONAL;
+        struct PSMRoadWorkerExtensions roadWorkerExt;  // SEQUENCE, OPTIONAL;
+        struct PSMPersonalRequest personalReq;  // SEQUENCE, OPTIONAL;
+    };
+    
+    struct PSMPersonalSafetyMessage {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        BYTE msgCnt;  // INTEGER, 0..127;
+        struct PSMPersonalSafetyMessage_id id;  // OCTETSTRING;
+        WORD secMark;  // INTEGER, 0..65535;
+        struct OPT_ENUM_ASN timeConfidence;  // ENUMERATED, OPTIONAL, unavailable(0), time_100_000(1), time_050_000(2), time_020_000(3), time_010_000(4), time_002_000(5), time_001_000(6), time_000_500(7), time_000_200(8), time_000_100(9), time_000_050(10), time_000_020(11), time_000_010(12), time_000_005(13), time_000_002(14), time_000_001(15), time_000_000_5(16), time_000_000_2(17), time_000_000_1(18), time_000_000_05(19), time_000_000_02(20), time_000_000_01(21), time_000_000_005(22), time_000_000_002(23), time_000_000_001(24), time_000_000_000_5(25), time_000_000_000_2(26), time_000_000_000_1(27), time_000_000_000_05(28), time_000_000_000_02(29), time_000_000_000_01(30), time_000_000_000_005(31), time_000_000_000_002(32), time_000_000_000_001(33), time_000_000_000_000_5(34), time_000_000_000_000_2(35), time_000_000_000_000_1(36), time_000_000_000_000_05(37), time_000_000_000_000_02(38), time_000_000_000_000_01(39);
+        struct PSMPosition3D pos;  // SEQUENCE;
+        struct PSMPositionalAccuracy posAccuracy;  // SEQUENCE;
+        WORD speed;  // INTEGER, 0..8191;
+        WORD heading;  // INTEGER, 0..28800;
+        struct PSMAccelerationSet4Way accelSet;  // SEQUENCE, OPTIONAL;
+        struct PSMPathHistory pathHistory;  // SEQUENCE, OPTIONAL;
+        struct PSMPathPlanning path_Planning;  // SEQUENCEOF, OPTIONAL;
+        BYTE overallRadius;  // INTEGER, 0..200;
+        struct PSMNon_motorData non_motorData;  // SEQUENCE;
+    };
+    
+    struct PSMMessageTypes {
+        struct PSMPersonalSafetyMessage psmData;  // SEQUENCE;
+    };
+    
+    struct PSMMessageFrameExt {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        WORD messageId;  // INTEGER, 0..32767;
+        struct PSMMessageTypes value;  // TABLE;
+    };
+    
+    struct PSM {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        INT choice;
+        struct PSMMessageFrameExt msgFrameExt;  // SEQUENCE;
+    };
+    
+}
+
+/*
+// init function to create a simple packet handle
+*/ 
+LONG API_InitPSMPacket()
+{
+  return C2xInitPacket("PSM"); 
+}
+
+/*
+// init function to create a simple packet handle and
+// initialize the struct with valid data
+*/ 
+LONG API_InitPSMPacket(struct PSM msgStruct)
+{
+  long pktHandle;
+
+  pktHandle = API_InitPSMPacket();
+
+  if (pktHandle != 0)
+  {
+    // create valid message and application data
+    if (C2xCompletePacket(pktHandle) == 0) 
+    {
+      API_GetPSMParams(pktHandle, msgStruct);
+    }
+  }
+  return pktHandle;
+}
+
+/*
+// init function to create a packet with security layer and
+// initialize the struct with valid data
+*/ 
+LONG API_InitPSMPacket(struct PSM msgStruct, char packetTypeDesignator[], char certificateName[])
+{
+  long pktHandle, certHdl;
+
+  // initialize the packet
+  pktHandle = C2xInitPacket("PSM", packetTypeDesignator);
+
+  if (pktHandle != 0)
+  {
+    certHdl = C2xSecCertificateGetHandle(certificateName);  // get the certificate handle for the cert with name "certificateName"
+    if (certHdl != 0) 
+    {
+      C2xSecPacketSetSignerHandle(pktHandle, certHdl); // set the certHdl to the packet
+    }
+
+    // create valid message and application data
+    if (C2xCompletePacket(pktHandle) == 0) 
+    {
+      // copy application data to the application structure
+      API_GetPSMParams(pktHandle, msgStruct);
+    }
+  }
+  return pktHandle;
+}
+    
+
+int GetPSMPosition3DParams(LONG packetHandle, struct PSMPosition3D value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "lat");
+  value.lat = C2xGetTokenInt(packetHandle, "PSM", newPath);
+  result = CheckLastError("PSM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "lon");
+  value.lon = C2xGetTokenInt(packetHandle, "PSM", newPath);
+  result = CheckLastError("PSM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "elevation");
+  value.elevation.isValidFlag = C2xIsTokenAvailable(packetHandle, "PSM", newPath);
+  if(value.elevation.isValidFlag==1)
+  {
+    value.elevation.value = C2xGetTokenInt(packetHandle, "PSM", newPath);
+    result = CheckLastError("PSM", gkFuncRefGet, result);
+  }
+  return result;
+}
+
+int SetPSMPosition3DParams(LONG packetHandle, struct PSMPosition3D value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "lat");
+  C2xSetTokenInt(packetHandle, "PSM", newPath, value.lat);
+  result = CheckLastError("PSM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "lon");
+  C2xSetTokenInt(packetHandle, "PSM", newPath, value.lon);
+  result = CheckLastError("PSM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "elevation");
+  if(value.elevation.isValidFlag==1)
+  {
+    C2xSetTokenInt(packetHandle, "PSM", newPath, value.elevation.value);
+    result = CheckLastError("PSM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "PSM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "PSM", newPath);
+    }
+  }
+
+  return result;
+}
+
+int GetPSMPositionalAccuracyParams(LONG packetHandle, struct PSMPositionalAccuracy value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "semiMajor");
+  value.semiMajor = C2xGetTokenInt(packetHandle, "PSM", newPath);
+  result = CheckLastError("PSM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "semiMinor");
+  value.semiMinor = C2xGetTokenInt(packetHandle, "PSM", newPath);
+  result = CheckLastError("PSM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "orientation");
+  value.orientation = C2xGetTokenInt(packetHandle, "PSM", newPath);
+  result = CheckLastError("PSM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int SetPSMPositionalAccuracyParams(LONG packetHandle, struct PSMPositionalAccuracy value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "semiMajor");
+  C2xSetTokenInt(packetHandle, "PSM", newPath, value.semiMajor);
+  result = CheckLastError("PSM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "semiMinor");
+  C2xSetTokenInt(packetHandle, "PSM", newPath, value.semiMinor);
+  result = CheckLastError("PSM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "orientation");
+  C2xSetTokenInt(packetHandle, "PSM", newPath, value.orientation);
+  result = CheckLastError("PSM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int GetPSMAccelerationSet4WayParams(LONG packetHandle, struct PSMAccelerationSet4Way value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "lon");
+  value.lon = C2xGetTokenInt(packetHandle, "PSM", newPath);
+  result = CheckLastError("PSM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "lat");
+  value.lat = C2xGetTokenInt(packetHandle, "PSM", newPath);
+  result = CheckLastError("PSM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "vert");
+  value.vert = C2xGetTokenInt(packetHandle, "PSM", newPath);
+  result = CheckLastError("PSM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "yaw");
+  value.yaw = C2xGetTokenInt(packetHandle, "PSM", newPath);
+  result = CheckLastError("PSM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int SetPSMAccelerationSet4WayParams(LONG packetHandle, struct PSMAccelerationSet4Way value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "lon");
+  C2xSetTokenInt(packetHandle, "PSM", newPath, value.lon);
+  result = CheckLastError("PSM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "lat");
+  C2xSetTokenInt(packetHandle, "PSM", newPath, value.lat);
+  result = CheckLastError("PSM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "vert");
+  C2xSetTokenInt(packetHandle, "PSM", newPath, value.vert);
+  result = CheckLastError("PSM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "yaw");
+  C2xSetTokenInt(packetHandle, "PSM", newPath, value.yaw);
+  result = CheckLastError("PSM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int GetPSMDDateTimeParams(LONG packetHandle, struct PSMDDateTime value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "year");
+  value.year.isValidFlag = C2xIsTokenAvailable(packetHandle, "PSM", newPath);
+  if(value.year.isValidFlag==1)
+  {
+    value.year.value = C2xGetTokenInt(packetHandle, "PSM", newPath);
+    result = CheckLastError("PSM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "month");
+  value.month.isValidFlag = C2xIsTokenAvailable(packetHandle, "PSM", newPath);
+  if(value.month.isValidFlag==1)
+  {
+    value.month.value = C2xGetTokenInt(packetHandle, "PSM", newPath);
+    result = CheckLastError("PSM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "day");
+  value.day.isValidFlag = C2xIsTokenAvailable(packetHandle, "PSM", newPath);
+  if(value.day.isValidFlag==1)
+  {
+    value.day.value = C2xGetTokenInt(packetHandle, "PSM", newPath);
+    result = CheckLastError("PSM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "hour");
+  value.hour.isValidFlag = C2xIsTokenAvailable(packetHandle, "PSM", newPath);
+  if(value.hour.isValidFlag==1)
+  {
+    value.hour.value = C2xGetTokenInt(packetHandle, "PSM", newPath);
+    result = CheckLastError("PSM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "minute");
+  value.minute.isValidFlag = C2xIsTokenAvailable(packetHandle, "PSM", newPath);
+  if(value.minute.isValidFlag==1)
+  {
+    value.minute.value = C2xGetTokenInt(packetHandle, "PSM", newPath);
+    result = CheckLastError("PSM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "second");
+  value.second.isValidFlag = C2xIsTokenAvailable(packetHandle, "PSM", newPath);
+  if(value.second.isValidFlag==1)
+  {
+    value.second.value = C2xGetTokenInt(packetHandle, "PSM", newPath);
+    result = CheckLastError("PSM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "offset");
+  value.offset.isValidFlag = C2xIsTokenAvailable(packetHandle, "PSM", newPath);
+  if(value.offset.isValidFlag==1)
+  {
+    value.offset.value = C2xGetTokenInt(packetHandle, "PSM", newPath);
+    result = CheckLastError("PSM", gkFuncRefGet, result);
+  }
+  return result;
+}
+
+int SetPSMDDateTimeParams(LONG packetHandle, struct PSMDDateTime value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "year");
+  if(value.year.isValidFlag==1)
+  {
+    C2xSetTokenInt(packetHandle, "PSM", newPath, value.year.value);
+    result = CheckLastError("PSM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "PSM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "PSM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "month");
+  if(value.month.isValidFlag==1)
+  {
+    C2xSetTokenInt(packetHandle, "PSM", newPath, value.month.value);
+    result = CheckLastError("PSM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "PSM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "PSM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "day");
+  if(value.day.isValidFlag==1)
+  {
+    C2xSetTokenInt(packetHandle, "PSM", newPath, value.day.value);
+    result = CheckLastError("PSM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "PSM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "PSM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "hour");
+  if(value.hour.isValidFlag==1)
+  {
+    C2xSetTokenInt(packetHandle, "PSM", newPath, value.hour.value);
+    result = CheckLastError("PSM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "PSM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "PSM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "minute");
+  if(value.minute.isValidFlag==1)
+  {
+    C2xSetTokenInt(packetHandle, "PSM", newPath, value.minute.value);
+    result = CheckLastError("PSM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "PSM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "PSM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "second");
+  if(value.second.isValidFlag==1)
+  {
+    C2xSetTokenInt(packetHandle, "PSM", newPath, value.second.value);
+    result = CheckLastError("PSM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "PSM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "PSM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "offset");
+  if(value.offset.isValidFlag==1)
+  {
+    C2xSetTokenInt(packetHandle, "PSM", newPath, value.offset.value);
+    result = CheckLastError("PSM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "PSM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "PSM", newPath);
+    }
+  }
+
+  return result;
+}
+
+int GetPSMPositionConfidenceSetParams(LONG packetHandle, struct PSMPositionConfidenceSet value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "pos");
+  value.pos = C2xGetTokenInt(packetHandle, "PSM", newPath);
+  result = CheckLastError("PSM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "elevation");
+  value.elevation.isValidFlag = C2xIsTokenAvailable(packetHandle, "PSM", newPath);
+  if(value.elevation.isValidFlag==1)
+  {
+    value.elevation.value = C2xGetTokenInt(packetHandle, "PSM", newPath);
+    result = CheckLastError("PSM", gkFuncRefGet, result);
+  }
+  return result;
+}
+
+int SetPSMPositionConfidenceSetParams(LONG packetHandle, struct PSMPositionConfidenceSet value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "pos");
+  C2xSetTokenInt(packetHandle, "PSM", newPath, value.pos);
+  result = CheckLastError("PSM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "elevation");
+  if(value.elevation.isValidFlag==1)
+  {
+    C2xSetTokenInt(packetHandle, "PSM", newPath, value.elevation.value);
+    result = CheckLastError("PSM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "PSM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "PSM", newPath);
+    }
+  }
+
+  return result;
+}
+
+int GetPSMMotionConfidenceSetParams(LONG packetHandle, struct PSMMotionConfidenceSet value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "speedCfd");
+  value.speedCfd.isValidFlag = C2xIsTokenAvailable(packetHandle, "PSM", newPath);
+  if(value.speedCfd.isValidFlag==1)
+  {
+    value.speedCfd.value = C2xGetTokenInt(packetHandle, "PSM", newPath);
+    result = CheckLastError("PSM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "headingCfd");
+  value.headingCfd.isValidFlag = C2xIsTokenAvailable(packetHandle, "PSM", newPath);
+  if(value.headingCfd.isValidFlag==1)
+  {
+    value.headingCfd.value = C2xGetTokenInt(packetHandle, "PSM", newPath);
+    result = CheckLastError("PSM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "steerCfd");
+  value.steerCfd.isValidFlag = C2xIsTokenAvailable(packetHandle, "PSM", newPath);
+  if(value.steerCfd.isValidFlag==1)
+  {
+    value.steerCfd.value = C2xGetTokenInt(packetHandle, "PSM", newPath);
+    result = CheckLastError("PSM", gkFuncRefGet, result);
+  }
+  return result;
+}
+
+int SetPSMMotionConfidenceSetParams(LONG packetHandle, struct PSMMotionConfidenceSet value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "speedCfd");
+  if(value.speedCfd.isValidFlag==1)
+  {
+    C2xSetTokenInt(packetHandle, "PSM", newPath, value.speedCfd.value);
+    result = CheckLastError("PSM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "PSM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "PSM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "headingCfd");
+  if(value.headingCfd.isValidFlag==1)
+  {
+    C2xSetTokenInt(packetHandle, "PSM", newPath, value.headingCfd.value);
+    result = CheckLastError("PSM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "PSM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "PSM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "steerCfd");
+  if(value.steerCfd.isValidFlag==1)
+  {
+    C2xSetTokenInt(packetHandle, "PSM", newPath, value.steerCfd.value);
+    result = CheckLastError("PSM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "PSM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "PSM", newPath);
+    }
+  }
+
+  return result;
+}
+
+int GetPSMFullPositionVectorParams(LONG packetHandle, struct PSMFullPositionVector value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "utcTime");
+  value.utcTime.isValidFlag = C2xIsTokenAvailable(packetHandle, "PSM", newPath);
+  if(value.utcTime.isValidFlag==1)
+  {
+    GetPSMDDateTimeParams(packetHandle, value.utcTime, newPath);
+    result = CheckLastError("PSM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "pos");
+  GetPSMPosition3DParams(packetHandle, value.pos, newPath);
+  result = CheckLastError("PSM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "heading");
+  value.heading.isValidFlag = C2xIsTokenAvailable(packetHandle, "PSM", newPath);
+  if(value.heading.isValidFlag==1)
+  {
+    value.heading.value = C2xGetTokenInt(packetHandle, "PSM", newPath);
+    result = CheckLastError("PSM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "transmission");
+  value.transmission.isValidFlag = C2xIsTokenAvailable(packetHandle, "PSM", newPath);
+  if(value.transmission.isValidFlag==1)
+  {
+    value.transmission.value = C2xGetTokenInt(packetHandle, "PSM", newPath);
+    result = CheckLastError("PSM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "speed");
+  value.speed.isValidFlag = C2xIsTokenAvailable(packetHandle, "PSM", newPath);
+  if(value.speed.isValidFlag==1)
+  {
+    value.speed.value = C2xGetTokenInt(packetHandle, "PSM", newPath);
+    result = CheckLastError("PSM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "posAccuracy");
+  value.posAccuracy.isValidFlag = C2xIsTokenAvailable(packetHandle, "PSM", newPath);
+  if(value.posAccuracy.isValidFlag==1)
+  {
+    GetPSMPositionalAccuracyParams(packetHandle, value.posAccuracy, newPath);
+    result = CheckLastError("PSM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "posConficence");
+  value.posConficence.isValidFlag = C2xIsTokenAvailable(packetHandle, "PSM", newPath);
+  if(value.posConficence.isValidFlag==1)
+  {
+    GetPSMPositionConfidenceSetParams(packetHandle, value.posConficence, newPath);
+    result = CheckLastError("PSM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "timeConfidence");
+  value.timeConfidence.isValidFlag = C2xIsTokenAvailable(packetHandle, "PSM", newPath);
+  if(value.timeConfidence.isValidFlag==1)
+  {
+    value.timeConfidence.value = C2xGetTokenInt(packetHandle, "PSM", newPath);
+    result = CheckLastError("PSM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "motionCfd");
+  value.motionCfd.isValidFlag = C2xIsTokenAvailable(packetHandle, "PSM", newPath);
+  if(value.motionCfd.isValidFlag==1)
+  {
+    GetPSMMotionConfidenceSetParams(packetHandle, value.motionCfd, newPath);
+    result = CheckLastError("PSM", gkFuncRefGet, result);
+  }
+  return result;
+}
+
+int SetPSMFullPositionVectorParams(LONG packetHandle, struct PSMFullPositionVector value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "utcTime");
+  if(value.utcTime.isValidFlag==1)
+  {
+    SetPSMDDateTimeParams(packetHandle, value.utcTime, newPath);
+    result = CheckLastError("PSM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "PSM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "PSM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "pos");
+  SetPSMPosition3DParams(packetHandle, value.pos, newPath);
+  result = CheckLastError("PSM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "heading");
+  if(value.heading.isValidFlag==1)
+  {
+    C2xSetTokenInt(packetHandle, "PSM", newPath, value.heading.value);
+    result = CheckLastError("PSM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "PSM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "PSM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "transmission");
+  if(value.transmission.isValidFlag==1)
+  {
+    C2xSetTokenInt(packetHandle, "PSM", newPath, value.transmission.value);
+    result = CheckLastError("PSM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "PSM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "PSM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "speed");
+  if(value.speed.isValidFlag==1)
+  {
+    C2xSetTokenInt(packetHandle, "PSM", newPath, value.speed.value);
+    result = CheckLastError("PSM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "PSM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "PSM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "posAccuracy");
+  if(value.posAccuracy.isValidFlag==1)
+  {
+    SetPSMPositionalAccuracyParams(packetHandle, value.posAccuracy, newPath);
+    result = CheckLastError("PSM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "PSM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "PSM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "posConficence");
+  if(value.posConficence.isValidFlag==1)
+  {
+    SetPSMPositionConfidenceSetParams(packetHandle, value.posConficence, newPath);
+    result = CheckLastError("PSM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "PSM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "PSM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "timeConfidence");
+  if(value.timeConfidence.isValidFlag==1)
+  {
+    C2xSetTokenInt(packetHandle, "PSM", newPath, value.timeConfidence.value);
+    result = CheckLastError("PSM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "PSM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "PSM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "motionCfd");
+  if(value.motionCfd.isValidFlag==1)
+  {
+    SetPSMMotionConfidenceSetParams(packetHandle, value.motionCfd, newPath);
+    result = CheckLastError("PSM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "PSM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "PSM", newPath);
+    }
+  }
+
+  return result;
+}
+
+int GetPSMPosition_LL_24BParams(LONG packetHandle, struct PSMPosition_LL_24B value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "lon");
+  value.lon = C2xGetTokenInt(packetHandle, "PSM", newPath);
+  result = CheckLastError("PSM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "lat");
+  value.lat = C2xGetTokenInt(packetHandle, "PSM", newPath);
+  result = CheckLastError("PSM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int SetPSMPosition_LL_24BParams(LONG packetHandle, struct PSMPosition_LL_24B value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "lon");
+  C2xSetTokenInt(packetHandle, "PSM", newPath, value.lon);
+  result = CheckLastError("PSM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "lat");
+  C2xSetTokenInt(packetHandle, "PSM", newPath, value.lat);
+  result = CheckLastError("PSM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int GetPSMPosition_LL_28BParams(LONG packetHandle, struct PSMPosition_LL_28B value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "lon");
+  value.lon = C2xGetTokenInt(packetHandle, "PSM", newPath);
+  result = CheckLastError("PSM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "lat");
+  value.lat = C2xGetTokenInt(packetHandle, "PSM", newPath);
+  result = CheckLastError("PSM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int SetPSMPosition_LL_28BParams(LONG packetHandle, struct PSMPosition_LL_28B value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "lon");
+  C2xSetTokenInt(packetHandle, "PSM", newPath, value.lon);
+  result = CheckLastError("PSM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "lat");
+  C2xSetTokenInt(packetHandle, "PSM", newPath, value.lat);
+  result = CheckLastError("PSM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int GetPSMPosition_LL_32BParams(LONG packetHandle, struct PSMPosition_LL_32B value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "lon");
+  value.lon = C2xGetTokenInt(packetHandle, "PSM", newPath);
+  result = CheckLastError("PSM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "lat");
+  value.lat = C2xGetTokenInt(packetHandle, "PSM", newPath);
+  result = CheckLastError("PSM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int SetPSMPosition_LL_32BParams(LONG packetHandle, struct PSMPosition_LL_32B value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "lon");
+  C2xSetTokenInt(packetHandle, "PSM", newPath, value.lon);
+  result = CheckLastError("PSM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "lat");
+  C2xSetTokenInt(packetHandle, "PSM", newPath, value.lat);
+  result = CheckLastError("PSM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int GetPSMPosition_LL_36BParams(LONG packetHandle, struct PSMPosition_LL_36B value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "lon");
+  value.lon = C2xGetTokenInt(packetHandle, "PSM", newPath);
+  result = CheckLastError("PSM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "lat");
+  value.lat = C2xGetTokenInt(packetHandle, "PSM", newPath);
+  result = CheckLastError("PSM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int SetPSMPosition_LL_36BParams(LONG packetHandle, struct PSMPosition_LL_36B value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "lon");
+  C2xSetTokenInt(packetHandle, "PSM", newPath, value.lon);
+  result = CheckLastError("PSM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "lat");
+  C2xSetTokenInt(packetHandle, "PSM", newPath, value.lat);
+  result = CheckLastError("PSM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int GetPSMPosition_LL_44BParams(LONG packetHandle, struct PSMPosition_LL_44B value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "lon");
+  value.lon = C2xGetTokenInt(packetHandle, "PSM", newPath);
+  result = CheckLastError("PSM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "lat");
+  value.lat = C2xGetTokenInt(packetHandle, "PSM", newPath);
+  result = CheckLastError("PSM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int SetPSMPosition_LL_44BParams(LONG packetHandle, struct PSMPosition_LL_44B value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "lon");
+  C2xSetTokenInt(packetHandle, "PSM", newPath, value.lon);
+  result = CheckLastError("PSM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "lat");
+  C2xSetTokenInt(packetHandle, "PSM", newPath, value.lat);
+  result = CheckLastError("PSM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int GetPSMPosition_LL_48BParams(LONG packetHandle, struct PSMPosition_LL_48B value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "lon");
+  value.lon = C2xGetTokenInt(packetHandle, "PSM", newPath);
+  result = CheckLastError("PSM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "lat");
+  value.lat = C2xGetTokenInt(packetHandle, "PSM", newPath);
+  result = CheckLastError("PSM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int SetPSMPosition_LL_48BParams(LONG packetHandle, struct PSMPosition_LL_48B value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "lon");
+  C2xSetTokenInt(packetHandle, "PSM", newPath, value.lon);
+  result = CheckLastError("PSM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "lat");
+  C2xSetTokenInt(packetHandle, "PSM", newPath, value.lat);
+  result = CheckLastError("PSM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int GetPSMPosition_LLmD_64bParams(LONG packetHandle, struct PSMPosition_LLmD_64b value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "lon");
+  value.lon = C2xGetTokenInt(packetHandle, "PSM", newPath);
+  result = CheckLastError("PSM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "lat");
+  value.lat = C2xGetTokenInt(packetHandle, "PSM", newPath);
+  result = CheckLastError("PSM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int SetPSMPosition_LLmD_64bParams(LONG packetHandle, struct PSMPosition_LLmD_64b value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "lon");
+  C2xSetTokenInt(packetHandle, "PSM", newPath, value.lon);
+  result = CheckLastError("PSM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "lat");
+  C2xSetTokenInt(packetHandle, "PSM", newPath, value.lat);
+  result = CheckLastError("PSM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int GetPSMPositionOffsetLLParams(LONG packetHandle, struct PSMPositionOffsetLL value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  value.choice = C2xGetTokenInt(packetHandle, "PSM", oldPath);
+
+  switch(value.choice)
+  {
+    case 0:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "position_LL1");
+      GetPSMPosition_LL_24BParams(packetHandle, value.position_LL1, newPath);
+      result = CheckLastError("PSM", gkFuncRefGet, result);
+    }
+    break;
+    case 1:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "position_LL2");
+      GetPSMPosition_LL_28BParams(packetHandle, value.position_LL2, newPath);
+      result = CheckLastError("PSM", gkFuncRefGet, result);
+    }
+    break;
+    case 2:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "position_LL3");
+      GetPSMPosition_LL_32BParams(packetHandle, value.position_LL3, newPath);
+      result = CheckLastError("PSM", gkFuncRefGet, result);
+    }
+    break;
+    case 3:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "position_LL4");
+      GetPSMPosition_LL_36BParams(packetHandle, value.position_LL4, newPath);
+      result = CheckLastError("PSM", gkFuncRefGet, result);
+    }
+    break;
+    case 4:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "position_LL5");
+      GetPSMPosition_LL_44BParams(packetHandle, value.position_LL5, newPath);
+      result = CheckLastError("PSM", gkFuncRefGet, result);
+    }
+    break;
+    case 5:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "position_LL6");
+      GetPSMPosition_LL_48BParams(packetHandle, value.position_LL6, newPath);
+      result = CheckLastError("PSM", gkFuncRefGet, result);
+    }
+    break;
+    case 6:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "position_LatLon");
+      GetPSMPosition_LLmD_64bParams(packetHandle, value.position_LatLon, newPath);
+      result = CheckLastError("PSM", gkFuncRefGet, result);
+    }
+    break;
+  }
+  return result;
+}
+
+int SetPSMPositionOffsetLLParams(LONG packetHandle, struct PSMPositionOffsetLL value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  switch(value.choice)
+  {
+    case 0:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "position_LL1");
+      SetPSMPosition_LL_24BParams(packetHandle, value.position_LL1, newPath);
+      result = CheckLastError("PSM", gkFuncRefGet, result);
+    }
+    break;
+    case 1:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "position_LL2");
+      SetPSMPosition_LL_28BParams(packetHandle, value.position_LL2, newPath);
+      result = CheckLastError("PSM", gkFuncRefGet, result);
+    }
+    break;
+    case 2:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "position_LL3");
+      SetPSMPosition_LL_32BParams(packetHandle, value.position_LL3, newPath);
+      result = CheckLastError("PSM", gkFuncRefGet, result);
+    }
+    break;
+    case 3:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "position_LL4");
+      SetPSMPosition_LL_36BParams(packetHandle, value.position_LL4, newPath);
+      result = CheckLastError("PSM", gkFuncRefGet, result);
+    }
+    break;
+    case 4:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "position_LL5");
+      SetPSMPosition_LL_44BParams(packetHandle, value.position_LL5, newPath);
+      result = CheckLastError("PSM", gkFuncRefGet, result);
+    }
+    break;
+    case 5:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "position_LL6");
+      SetPSMPosition_LL_48BParams(packetHandle, value.position_LL6, newPath);
+      result = CheckLastError("PSM", gkFuncRefGet, result);
+    }
+    break;
+    case 6:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "position_LatLon");
+      SetPSMPosition_LLmD_64bParams(packetHandle, value.position_LatLon, newPath);
+      result = CheckLastError("PSM", gkFuncRefGet, result);
+    }
+    break;
+  }
+  return result;
+}
+
+int GetPSMVerticalOffsetParams(LONG packetHandle, struct PSMVerticalOffset value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  value.choice = C2xGetTokenInt(packetHandle, "PSM", oldPath);
+
+  switch(value.choice)
+  {
+    case 0:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "offset1");
+      value.offset1 = C2xGetTokenInt(packetHandle, "PSM", newPath);
+      result = CheckLastError("PSM", gkFuncRefGet, result);
+    }
+    break;
+    case 1:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "offset2");
+      value.offset2 = C2xGetTokenInt(packetHandle, "PSM", newPath);
+      result = CheckLastError("PSM", gkFuncRefGet, result);
+    }
+    break;
+    case 2:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "offset3");
+      value.offset3 = C2xGetTokenInt(packetHandle, "PSM", newPath);
+      result = CheckLastError("PSM", gkFuncRefGet, result);
+    }
+    break;
+    case 3:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "offset4");
+      value.offset4 = C2xGetTokenInt(packetHandle, "PSM", newPath);
+      result = CheckLastError("PSM", gkFuncRefGet, result);
+    }
+    break;
+    case 4:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "offset5");
+      value.offset5 = C2xGetTokenInt(packetHandle, "PSM", newPath);
+      result = CheckLastError("PSM", gkFuncRefGet, result);
+    }
+    break;
+    case 5:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "offset6");
+      value.offset6 = C2xGetTokenInt(packetHandle, "PSM", newPath);
+      result = CheckLastError("PSM", gkFuncRefGet, result);
+    }
+    break;
+    case 6:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "elevation");
+      value.elevation = C2xGetTokenInt(packetHandle, "PSM", newPath);
+      result = CheckLastError("PSM", gkFuncRefGet, result);
+    }
+    break;
+  }
+  return result;
+}
+
+int SetPSMVerticalOffsetParams(LONG packetHandle, struct PSMVerticalOffset value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  switch(value.choice)
+  {
+    case 0:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "offset1");
+      C2xSetTokenInt(packetHandle, "PSM", newPath, value.offset1);
+      result = CheckLastError("PSM", gkFuncRefGet, result);
+    }
+    break;
+    case 1:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "offset2");
+      C2xSetTokenInt(packetHandle, "PSM", newPath, value.offset2);
+      result = CheckLastError("PSM", gkFuncRefGet, result);
+    }
+    break;
+    case 2:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "offset3");
+      C2xSetTokenInt(packetHandle, "PSM", newPath, value.offset3);
+      result = CheckLastError("PSM", gkFuncRefGet, result);
+    }
+    break;
+    case 3:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "offset4");
+      C2xSetTokenInt(packetHandle, "PSM", newPath, value.offset4);
+      result = CheckLastError("PSM", gkFuncRefGet, result);
+    }
+    break;
+    case 4:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "offset5");
+      C2xSetTokenInt(packetHandle, "PSM", newPath, value.offset5);
+      result = CheckLastError("PSM", gkFuncRefGet, result);
+    }
+    break;
+    case 5:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "offset6");
+      C2xSetTokenInt(packetHandle, "PSM", newPath, value.offset6);
+      result = CheckLastError("PSM", gkFuncRefGet, result);
+    }
+    break;
+    case 6:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "elevation");
+      C2xSetTokenInt(packetHandle, "PSM", newPath, value.elevation);
+      result = CheckLastError("PSM", gkFuncRefGet, result);
+    }
+    break;
+  }
+  return result;
+}
+
+int GetPSMPositionOffsetLLVParams(LONG packetHandle, struct PSMPositionOffsetLLV value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "offsetLL");
+  GetPSMPositionOffsetLLParams(packetHandle, value.offsetLL, newPath);
+  result = CheckLastError("PSM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "offsetV");
+  value.offsetV.isValidFlag = C2xIsTokenAvailable(packetHandle, "PSM", newPath);
+  if(value.offsetV.isValidFlag==1)
+  {
+    GetPSMVerticalOffsetParams(packetHandle, value.offsetV, newPath);
+    result = CheckLastError("PSM", gkFuncRefGet, result);
+  }
+  return result;
+}
+
+int SetPSMPositionOffsetLLVParams(LONG packetHandle, struct PSMPositionOffsetLLV value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "offsetLL");
+  SetPSMPositionOffsetLLParams(packetHandle, value.offsetLL, newPath);
+  result = CheckLastError("PSM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "offsetV");
+  if(value.offsetV.isValidFlag==1)
+  {
+    SetPSMVerticalOffsetParams(packetHandle, value.offsetV, newPath);
+    result = CheckLastError("PSM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "PSM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "PSM", newPath);
+    }
+  }
+
+  return result;
+}
+
+int GetPSMPathHistoryPointParams(LONG packetHandle, struct PSMPathHistoryPoint value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "llvOffset");
+  GetPSMPositionOffsetLLVParams(packetHandle, value.llvOffset, newPath);
+  result = CheckLastError("PSM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "timeOffset");
+  value.timeOffset = C2xGetTokenInt(packetHandle, "PSM", newPath);
+  result = CheckLastError("PSM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "speed");
+  value.speed.isValidFlag = C2xIsTokenAvailable(packetHandle, "PSM", newPath);
+  if(value.speed.isValidFlag==1)
+  {
+    value.speed.value = C2xGetTokenInt(packetHandle, "PSM", newPath);
+    result = CheckLastError("PSM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "posAccuracy");
+  value.posAccuracy.isValidFlag = C2xIsTokenAvailable(packetHandle, "PSM", newPath);
+  if(value.posAccuracy.isValidFlag==1)
+  {
+    GetPSMPositionConfidenceSetParams(packetHandle, value.posAccuracy, newPath);
+    result = CheckLastError("PSM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "heading");
+  value.heading.isValidFlag = C2xIsTokenAvailable(packetHandle, "PSM", newPath);
+  if(value.heading.isValidFlag==1)
+  {
+    value.heading.value = C2xGetTokenInt(packetHandle, "PSM", newPath);
+    result = CheckLastError("PSM", gkFuncRefGet, result);
+  }
+  return result;
+}
+
+int SetPSMPathHistoryPointParams(LONG packetHandle, struct PSMPathHistoryPoint value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "llvOffset");
+  SetPSMPositionOffsetLLVParams(packetHandle, value.llvOffset, newPath);
+  result = CheckLastError("PSM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "timeOffset");
+  if (value.timeOffset < 1)
+  {
+    C2xSetTokenInt(packetHandle, "PSM", newPath, 1);
+  }
+  else if (value.timeOffset > 65535)
+  {
+    C2xSetTokenInt(packetHandle, "PSM", newPath, 65535);
+  }
+  else
+  {
+    C2xSetTokenInt(packetHandle, "PSM", newPath, value.timeOffset);
+  }
+  result = CheckLastError("PSM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "speed");
+  if(value.speed.isValidFlag==1)
+  {
+    C2xSetTokenInt(packetHandle, "PSM", newPath, value.speed.value);
+    result = CheckLastError("PSM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "PSM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "PSM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "posAccuracy");
+  if(value.posAccuracy.isValidFlag==1)
+  {
+    SetPSMPositionConfidenceSetParams(packetHandle, value.posAccuracy, newPath);
+    result = CheckLastError("PSM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "PSM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "PSM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "heading");
+  if(value.heading.isValidFlag==1)
+  {
+    C2xSetTokenInt(packetHandle, "PSM", newPath, value.heading.value);
+    result = CheckLastError("PSM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "PSM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "PSM", newPath);
+    }
+  }
+
+  return result;
+}
+
+int GetPSMPathHistoryPointListParams(LONG packetHandle, struct PSMPathHistoryPointList value, char oldPath[])
+{
+  char newPath[300]; 
+  int i;
+  int result;
+
+  result = 0;
+
+  value.length = C2xGetTokenInt(packetHandle, "PSM", oldPath);
+  if((result = CheckLastError("PSM", gkFuncRefGet, result))==0)
+  {
+    for(i=0; i<value.length; i++)
+    {
+      snprintf(newPath, elcount(newPath), "%s[%d]", oldPath, i);
+      GetPSMPathHistoryPointParams(packetHandle, value.arrayValue[i], newPath);
+      result = CheckLastError("PSM", gkFuncRefGet, result);
+    }
+  }
+  return result;
+}
+
+int SetPSMPathHistoryPointListParams(LONG packetHandle, struct PSMPathHistoryPointList value, char oldPath[])
+{
+  char newPath[300]; 
+  int i;
+  int result;
+
+  result = 0;
+
+  C2xRemoveToken(packetHandle, "PSM", oldPath);
+  for(i=0; i<value.length; i++)
+  {
+    snprintf(newPath, elcount(newPath), "%s[%d]", oldPath, i);
+    SetPSMPathHistoryPointParams(packetHandle, value.arrayValue[i], newPath);
+    result = CheckLastError("PSM", gkFuncRefGet, result);
+  }
+  return result;
+}
+
+int GetPSMPathHistoryParams(LONG packetHandle, struct PSMPathHistory value, char oldPath[])
+{
+  char newPath[300]; 
+  int j; 
+  int k;
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "initialPosition");
+  value.initialPosition.isValidFlag = C2xIsTokenAvailable(packetHandle, "PSM", newPath);
+  if(value.initialPosition.isValidFlag==1)
+  {
+    GetPSMFullPositionVectorParams(packetHandle, value.initialPosition, newPath);
+    result = CheckLastError("PSM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "currGNSSstatus");
+  value.currGNSSstatus.isValidFlag = C2xIsTokenAvailable(packetHandle, "PSM", newPath);
+  if(value.currGNSSstatus.isValidFlag==1)
+  {
+    value.currGNSSstatus.isValidFlag = 1;
+    value.currGNSSstatus.stringLength = C2xGetTokenLengthBit(packetHandle, "PSM", newPath);
+    if ((result = CheckLastError("PSM", gkFuncRefGet, result))==0)
+    {
+      if(value.currGNSSstatus.stringLength > 0)
+      {
+        for(j=0; j<value.currGNSSstatus.stringLength; j++)
+        {
+          if(C2xGetTokenBitOfBitString(packetHandle, "PSM", newPath, j) == 0)
+          {
+            value.currGNSSstatus.string[j] = '0';
+          }
+          else if(C2xGetTokenBitOfBitString(packetHandle, "PSM", newPath, j) == 1)
+          {
+            value.currGNSSstatus.string[j] = '1';
+          }
+
+          if(value.currGNSSstatus.stringLength == 1)
+          {
+            value.currGNSSstatus.string[1] = '0';
+          }
+          result = CheckLastError("PSM", gkFuncRefGet, result);
+        }
+      }
+      else
+      {
+        for(k = value.currGNSSstatus.stringLength+1; k > -1; k--)
+        {
+          if(value.currGNSSstatus.string[k] == '1')
+          {
+            value.currGNSSstatus.string[k] = '0';
+          }
+        }
+      }
+    }
+
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "crumbData");
+  GetPSMPathHistoryPointListParams(packetHandle, value.crumbData, newPath);
+  result = CheckLastError("PSM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int SetPSMPathHistoryParams(LONG packetHandle, struct PSMPathHistory value, char oldPath[])
+{
+  char newPath[300]; 
+  int j;
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "initialPosition");
+  if(value.initialPosition.isValidFlag==1)
+  {
+    SetPSMFullPositionVectorParams(packetHandle, value.initialPosition, newPath);
+    result = CheckLastError("PSM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "PSM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "PSM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "currGNSSstatus");
+  if(value.currGNSSstatus.isValidFlag==1)
+  {
+      for(j=0; j<value.currGNSSstatus.stringLength; j++)
+      {
+        if(value.currGNSSstatus.string[j] == '0')
+        {
+          C2xSetTokenBitOfBitString(packetHandle, "PSM", newPath, j, 0);
+        }
+        else
+        {
+          C2xSetTokenBitOfBitString(packetHandle, "PSM", newPath, j, 1);
+        }
+        result = CheckLastError("PSM", gkFuncRefGet, result);
+      }
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "PSM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "PSM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "crumbData");
+  SetPSMPathHistoryPointListParams(packetHandle, value.crumbData, newPath);
+  result = CheckLastError("PSM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int GetPSMNodeReferenceIDParams(LONG packetHandle, struct PSMNodeReferenceID value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "region");
+  value.region.isValidFlag = C2xIsTokenAvailable(packetHandle, "PSM", newPath);
+  if(value.region.isValidFlag==1)
+  {
+    value.region.value = C2xGetTokenInt(packetHandle, "PSM", newPath);
+    result = CheckLastError("PSM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "id");
+  value.id = C2xGetTokenInt(packetHandle, "PSM", newPath);
+  result = CheckLastError("PSM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int SetPSMNodeReferenceIDParams(LONG packetHandle, struct PSMNodeReferenceID value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "region");
+  if(value.region.isValidFlag==1)
+  {
+    C2xSetTokenInt(packetHandle, "PSM", newPath, value.region.value);
+    result = CheckLastError("PSM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "PSM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "PSM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "id");
+  C2xSetTokenInt(packetHandle, "PSM", newPath, value.id);
+  result = CheckLastError("PSM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int GetPSMReferenceLinkParams(LONG packetHandle, struct PSMReferenceLink value, char oldPath[])
+{
+  char newPath[300]; 
+  int j; 
+  int k;
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "upstreamNodeId");
+  GetPSMNodeReferenceIDParams(packetHandle, value.upstreamNodeId, newPath);
+  result = CheckLastError("PSM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "downstreamNodeId");
+  GetPSMNodeReferenceIDParams(packetHandle, value.downstreamNodeId, newPath);
+  result = CheckLastError("PSM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "referenceLanes");
+  value.referenceLanes.isValidFlag = C2xIsTokenAvailable(packetHandle, "PSM", newPath);
+  if(value.referenceLanes.isValidFlag==1)
+  {
+    value.referenceLanes.isValidFlag = 1;
+    value.referenceLanes.stringLength = C2xGetTokenLengthBit(packetHandle, "PSM", newPath);
+    if ((result = CheckLastError("PSM", gkFuncRefGet, result))==0)
+    {
+      if(value.referenceLanes.stringLength > 0)
+      {
+        for(j=0; j<value.referenceLanes.stringLength; j++)
+        {
+          if(C2xGetTokenBitOfBitString(packetHandle, "PSM", newPath, j) == 0)
+          {
+            value.referenceLanes.string[j] = '0';
+          }
+          else if(C2xGetTokenBitOfBitString(packetHandle, "PSM", newPath, j) == 1)
+          {
+            value.referenceLanes.string[j] = '1';
+          }
+
+          if(value.referenceLanes.stringLength == 1)
+          {
+            value.referenceLanes.string[1] = '0';
+          }
+          result = CheckLastError("PSM", gkFuncRefGet, result);
+        }
+      }
+      else
+      {
+        for(k = value.referenceLanes.stringLength+1; k > -1; k--)
+        {
+          if(value.referenceLanes.string[k] == '1')
+          {
+            value.referenceLanes.string[k] = '0';
+          }
+        }
+      }
+    }
+
+  }
+  return result;
+}
+
+int SetPSMReferenceLinkParams(LONG packetHandle, struct PSMReferenceLink value, char oldPath[])
+{
+  char newPath[300]; 
+  int j;
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "upstreamNodeId");
+  SetPSMNodeReferenceIDParams(packetHandle, value.upstreamNodeId, newPath);
+  result = CheckLastError("PSM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "downstreamNodeId");
+  SetPSMNodeReferenceIDParams(packetHandle, value.downstreamNodeId, newPath);
+  result = CheckLastError("PSM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "referenceLanes");
+  if(value.referenceLanes.isValidFlag==1)
+  {
+      for(j=0; j<value.referenceLanes.stringLength; j++)
+      {
+        if(value.referenceLanes.string[j] == '0')
+        {
+          C2xSetTokenBitOfBitString(packetHandle, "PSM", newPath, j, 0);
+        }
+        else
+        {
+          C2xSetTokenBitOfBitString(packetHandle, "PSM", newPath, j, 1);
+        }
+        result = CheckLastError("PSM", gkFuncRefGet, result);
+      }
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "PSM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "PSM", newPath);
+    }
+  }
+
+  return result;
+}
+
+int GetPSMAccSet4WayConfidenceParams(LONG packetHandle, struct PSMAccSet4WayConfidence value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "lonAccConfidence");
+  value.lonAccConfidence = C2xGetTokenInt(packetHandle, "PSM", newPath);
+  result = CheckLastError("PSM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "latAccConfidence");
+  value.latAccConfidence = C2xGetTokenInt(packetHandle, "PSM", newPath);
+  result = CheckLastError("PSM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "vertAccConfidence");
+  value.vertAccConfidence = C2xGetTokenInt(packetHandle, "PSM", newPath);
+  result = CheckLastError("PSM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "yawRateCon");
+  value.yawRateCon = C2xGetTokenInt(packetHandle, "PSM", newPath);
+  result = CheckLastError("PSM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int SetPSMAccSet4WayConfidenceParams(LONG packetHandle, struct PSMAccSet4WayConfidence value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "lonAccConfidence");
+  C2xSetTokenInt(packetHandle, "PSM", newPath, value.lonAccConfidence);
+  result = CheckLastError("PSM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "latAccConfidence");
+  C2xSetTokenInt(packetHandle, "PSM", newPath, value.latAccConfidence);
+  result = CheckLastError("PSM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "vertAccConfidence");
+  C2xSetTokenInt(packetHandle, "PSM", newPath, value.vertAccConfidence);
+  result = CheckLastError("PSM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "yawRateCon");
+  C2xSetTokenInt(packetHandle, "PSM", newPath, value.yawRateCon);
+  result = CheckLastError("PSM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int GetPSMPathPlanningPointParams(LONG packetHandle, struct PSMPathPlanningPoint value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "posInMap");
+  value.posInMap.isValidFlag = C2xIsTokenAvailable(packetHandle, "PSM", newPath);
+  if(value.posInMap.isValidFlag==1)
+  {
+    GetPSMReferenceLinkParams(packetHandle, value.posInMap, newPath);
+    result = CheckLastError("PSM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "pos");
+  GetPSMPositionOffsetLLVParams(packetHandle, value.pos, newPath);
+  result = CheckLastError("PSM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "posAccuracy");
+  value.posAccuracy.isValidFlag = C2xIsTokenAvailable(packetHandle, "PSM", newPath);
+  if(value.posAccuracy.isValidFlag==1)
+  {
+    GetPSMPositionConfidenceSetParams(packetHandle, value.posAccuracy, newPath);
+    result = CheckLastError("PSM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "speed");
+  value.speed.isValidFlag = C2xIsTokenAvailable(packetHandle, "PSM", newPath);
+  if(value.speed.isValidFlag==1)
+  {
+    value.speed.value = C2xGetTokenInt(packetHandle, "PSM", newPath);
+    result = CheckLastError("PSM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "speedCfd");
+  value.speedCfd.isValidFlag = C2xIsTokenAvailable(packetHandle, "PSM", newPath);
+  if(value.speedCfd.isValidFlag==1)
+  {
+    value.speedCfd.value = C2xGetTokenInt(packetHandle, "PSM", newPath);
+    result = CheckLastError("PSM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "heading");
+  value.heading.isValidFlag = C2xIsTokenAvailable(packetHandle, "PSM", newPath);
+  if(value.heading.isValidFlag==1)
+  {
+    value.heading.value = C2xGetTokenInt(packetHandle, "PSM", newPath);
+    result = CheckLastError("PSM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "headingCfd");
+  value.headingCfd.isValidFlag = C2xIsTokenAvailable(packetHandle, "PSM", newPath);
+  if(value.headingCfd.isValidFlag==1)
+  {
+    value.headingCfd.value = C2xGetTokenInt(packetHandle, "PSM", newPath);
+    result = CheckLastError("PSM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "accelSet");
+  value.accelSet.isValidFlag = C2xIsTokenAvailable(packetHandle, "PSM", newPath);
+  if(value.accelSet.isValidFlag==1)
+  {
+    GetPSMAccelerationSet4WayParams(packetHandle, value.accelSet, newPath);
+    result = CheckLastError("PSM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "acc4WayConfidence");
+  value.acc4WayConfidence.isValidFlag = C2xIsTokenAvailable(packetHandle, "PSM", newPath);
+  if(value.acc4WayConfidence.isValidFlag==1)
+  {
+    GetPSMAccSet4WayConfidenceParams(packetHandle, value.acc4WayConfidence, newPath);
+    result = CheckLastError("PSM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "estimatedTime");
+  value.estimatedTime.isValidFlag = C2xIsTokenAvailable(packetHandle, "PSM", newPath);
+  if(value.estimatedTime.isValidFlag==1)
+  {
+    value.estimatedTime.value = C2xGetTokenInt(packetHandle, "PSM", newPath);
+    result = CheckLastError("PSM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "timeConfidence");
+  value.timeConfidence.isValidFlag = C2xIsTokenAvailable(packetHandle, "PSM", newPath);
+  if(value.timeConfidence.isValidFlag==1)
+  {
+    value.timeConfidence.value = C2xGetTokenInt(packetHandle, "PSM", newPath);
+    result = CheckLastError("PSM", gkFuncRefGet, result);
+  }
+  return result;
+}
+
+int SetPSMPathPlanningPointParams(LONG packetHandle, struct PSMPathPlanningPoint value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "posInMap");
+  if(value.posInMap.isValidFlag==1)
+  {
+    SetPSMReferenceLinkParams(packetHandle, value.posInMap, newPath);
+    result = CheckLastError("PSM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "PSM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "PSM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "pos");
+  SetPSMPositionOffsetLLVParams(packetHandle, value.pos, newPath);
+  result = CheckLastError("PSM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "posAccuracy");
+  if(value.posAccuracy.isValidFlag==1)
+  {
+    SetPSMPositionConfidenceSetParams(packetHandle, value.posAccuracy, newPath);
+    result = CheckLastError("PSM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "PSM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "PSM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "speed");
+  if(value.speed.isValidFlag==1)
+  {
+    C2xSetTokenInt(packetHandle, "PSM", newPath, value.speed.value);
+    result = CheckLastError("PSM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "PSM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "PSM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "speedCfd");
+  if(value.speedCfd.isValidFlag==1)
+  {
+    C2xSetTokenInt(packetHandle, "PSM", newPath, value.speedCfd.value);
+    result = CheckLastError("PSM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "PSM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "PSM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "heading");
+  if(value.heading.isValidFlag==1)
+  {
+    C2xSetTokenInt(packetHandle, "PSM", newPath, value.heading.value);
+    result = CheckLastError("PSM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "PSM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "PSM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "headingCfd");
+  if(value.headingCfd.isValidFlag==1)
+  {
+    C2xSetTokenInt(packetHandle, "PSM", newPath, value.headingCfd.value);
+    result = CheckLastError("PSM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "PSM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "PSM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "accelSet");
+  if(value.accelSet.isValidFlag==1)
+  {
+    SetPSMAccelerationSet4WayParams(packetHandle, value.accelSet, newPath);
+    result = CheckLastError("PSM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "PSM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "PSM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "acc4WayConfidence");
+  if(value.acc4WayConfidence.isValidFlag==1)
+  {
+    SetPSMAccSet4WayConfidenceParams(packetHandle, value.acc4WayConfidence, newPath);
+    result = CheckLastError("PSM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "PSM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "PSM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "estimatedTime");
+  if(value.estimatedTime.isValidFlag==1)
+  {
+    if (value.estimatedTime.value < 1)
+    {
+        C2xSetTokenInt(packetHandle, "PSM", newPath, 1);
+    }
+    else if (value.estimatedTime.value > 65535)
+    {
+        C2xSetTokenInt(packetHandle, "PSM", newPath, 65535);
+    }
+    else
+    {
+        C2xSetTokenInt(packetHandle, "PSM", newPath, value.estimatedTime.value);
+    }
+    result = CheckLastError("PSM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "PSM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "PSM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "timeConfidence");
+  if(value.timeConfidence.isValidFlag==1)
+  {
+    C2xSetTokenInt(packetHandle, "PSM", newPath, value.timeConfidence.value);
+    result = CheckLastError("PSM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "PSM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "PSM", newPath);
+    }
+  }
+
+  return result;
+}
+
+int GetPSMPathPlanningParams(LONG packetHandle, struct PSMPathPlanning value, char oldPath[])
+{
+  char newPath[300]; 
+  int i;
+  int result;
+
+  result = 0;
+
+  value.length = C2xGetTokenInt(packetHandle, "PSM", oldPath);
+  if((result = CheckLastError("PSM", gkFuncRefGet, result))==0)
+  {
+    for(i=0; i<value.length; i++)
+    {
+      snprintf(newPath, elcount(newPath), "%s[%d]", oldPath, i);
+      GetPSMPathPlanningPointParams(packetHandle, value.arrayValue[i], newPath);
+      result = CheckLastError("PSM", gkFuncRefGet, result);
+    }
+  }
+  return result;
+}
+
+int SetPSMPathPlanningParams(LONG packetHandle, struct PSMPathPlanning value, char oldPath[])
+{
+  char newPath[300]; 
+  int i;
+  int result;
+
+  result = 0;
+
+  C2xRemoveToken(packetHandle, "PSM", oldPath);
+  for(i=0; i<value.length; i++)
+  {
+    snprintf(newPath, elcount(newPath), "%s[%d]", oldPath, i);
+    SetPSMPathPlanningPointParams(packetHandle, value.arrayValue[i], newPath);
+    result = CheckLastError("PSM", gkFuncRefGet, result);
+  }
+  return result;
+}
+
+int GetPSMPropelledInformationParams(LONG packetHandle, struct PSMPropelledInformation value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  value.choice = C2xGetTokenInt(packetHandle, "PSM", oldPath);
+
+  switch(value.choice)
+  {
+    case 0:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "human");
+      value.human = C2xGetTokenInt(packetHandle, "PSM", newPath);
+      result = CheckLastError("PSM", gkFuncRefGet, result);
+    }
+    break;
+    case 1:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "animal");
+      value.animal = C2xGetTokenInt(packetHandle, "PSM", newPath);
+      result = CheckLastError("PSM", gkFuncRefGet, result);
+    }
+    break;
+    case 2:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "motor");
+      value.motor = C2xGetTokenInt(packetHandle, "PSM", newPath);
+      result = CheckLastError("PSM", gkFuncRefGet, result);
+    }
+    break;
+  }
+  return result;
+}
+
+int SetPSMPropelledInformationParams(LONG packetHandle, struct PSMPropelledInformation value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  switch(value.choice)
+  {
+    case 0:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "human");
+      C2xSetTokenInt(packetHandle, "PSM", newPath, value.human);
+      result = CheckLastError("PSM", gkFuncRefGet, result);
+    }
+    break;
+    case 1:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "animal");
+      C2xSetTokenInt(packetHandle, "PSM", newPath, value.animal);
+      result = CheckLastError("PSM", gkFuncRefGet, result);
+    }
+    break;
+    case 2:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "motor");
+      C2xSetTokenInt(packetHandle, "PSM", newPath, value.motor);
+      result = CheckLastError("PSM", gkFuncRefGet, result);
+    }
+    break;
+  }
+  return result;
+}
+
+int GetPSMPersonalExtensionsParams(LONG packetHandle, struct PSMPersonalExtensions value, char oldPath[])
+{
+  char newPath[300]; 
+  int j; 
+  int k;
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "useState");
+  value.useState.isValidFlag = C2xIsTokenAvailable(packetHandle, "PSM", newPath);
+  if(value.useState.isValidFlag==1)
+  {
+    value.useState.isValidFlag = 1;
+    value.useState.stringLength = C2xGetTokenLengthBit(packetHandle, "PSM", newPath);
+    if ((result = CheckLastError("PSM", gkFuncRefGet, result))==0)
+    {
+      if(value.useState.stringLength > 0)
+      {
+        for(j=0; j<value.useState.stringLength; j++)
+        {
+          if(C2xGetTokenBitOfBitString(packetHandle, "PSM", newPath, j) == 0)
+          {
+            value.useState.string[j] = '0';
+          }
+          else if(C2xGetTokenBitOfBitString(packetHandle, "PSM", newPath, j) == 1)
+          {
+            value.useState.string[j] = '1';
+          }
+
+          if(value.useState.stringLength == 1)
+          {
+            value.useState.string[1] = '0';
+          }
+          result = CheckLastError("PSM", gkFuncRefGet, result);
+        }
+      }
+      else
+      {
+        for(k = value.useState.stringLength+1; k > -1; k--)
+        {
+          if(value.useState.string[k] == '1')
+          {
+            value.useState.string[k] = '0';
+          }
+        }
+      }
+    }
+
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "assistType");
+  value.assistType.isValidFlag = C2xIsTokenAvailable(packetHandle, "PSM", newPath);
+  if(value.assistType.isValidFlag==1)
+  {
+    value.assistType.isValidFlag = 1;
+    value.assistType.stringLength = C2xGetTokenLengthBit(packetHandle, "PSM", newPath);
+    if ((result = CheckLastError("PSM", gkFuncRefGet, result))==0)
+    {
+      if(value.assistType.stringLength > 0)
+      {
+        for(j=0; j<value.assistType.stringLength; j++)
+        {
+          if(C2xGetTokenBitOfBitString(packetHandle, "PSM", newPath, j) == 0)
+          {
+            value.assistType.string[j] = '0';
+          }
+          else if(C2xGetTokenBitOfBitString(packetHandle, "PSM", newPath, j) == 1)
+          {
+            value.assistType.string[j] = '1';
+          }
+
+          if(value.assistType.stringLength == 1)
+          {
+            value.assistType.string[1] = '0';
+          }
+          result = CheckLastError("PSM", gkFuncRefGet, result);
+        }
+      }
+      else
+      {
+        for(k = value.assistType.stringLength+1; k > -1; k--)
+        {
+          if(value.assistType.string[k] == '1')
+          {
+            value.assistType.string[k] = '0';
+          }
+        }
+      }
+    }
+
+  }
+  return result;
+}
+
+int SetPSMPersonalExtensionsParams(LONG packetHandle, struct PSMPersonalExtensions value, char oldPath[])
+{
+  char newPath[300]; 
+  int j;
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "useState");
+  if(value.useState.isValidFlag==1)
+  {
+      for(j=0; j<value.useState.stringLength; j++)
+      {
+        if(value.useState.string[j] == '0')
+        {
+          C2xSetTokenBitOfBitString(packetHandle, "PSM", newPath, j, 0);
+        }
+        else
+        {
+          C2xSetTokenBitOfBitString(packetHandle, "PSM", newPath, j, 1);
+        }
+        result = CheckLastError("PSM", gkFuncRefGet, result);
+      }
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "PSM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "PSM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "assistType");
+  if(value.assistType.isValidFlag==1)
+  {
+      for(j=0; j<value.assistType.stringLength; j++)
+      {
+        if(value.assistType.string[j] == '0')
+        {
+          C2xSetTokenBitOfBitString(packetHandle, "PSM", newPath, j, 0);
+        }
+        else
+        {
+          C2xSetTokenBitOfBitString(packetHandle, "PSM", newPath, j, 1);
+        }
+        result = CheckLastError("PSM", gkFuncRefGet, result);
+      }
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "PSM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "PSM", newPath);
+    }
+  }
+
+  return result;
+}
+
+int GetPSMRoadWorkerExtensionsParams(LONG packetHandle, struct PSMRoadWorkerExtensions value, char oldPath[])
+{
+  char newPath[300]; 
+  int j; 
+  int k;
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "workerType");
+  value.workerType.isValidFlag = C2xIsTokenAvailable(packetHandle, "PSM", newPath);
+  if(value.workerType.isValidFlag==1)
+  {
+    value.workerType.value = C2xGetTokenInt(packetHandle, "PSM", newPath);
+    result = CheckLastError("PSM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "activityType");
+  value.activityType.isValidFlag = C2xIsTokenAvailable(packetHandle, "PSM", newPath);
+  if(value.activityType.isValidFlag==1)
+  {
+    value.activityType.isValidFlag = 1;
+    value.activityType.stringLength = C2xGetTokenLengthBit(packetHandle, "PSM", newPath);
+    if ((result = CheckLastError("PSM", gkFuncRefGet, result))==0)
+    {
+      if(value.activityType.stringLength > 0)
+      {
+        for(j=0; j<value.activityType.stringLength; j++)
+        {
+          if(C2xGetTokenBitOfBitString(packetHandle, "PSM", newPath, j) == 0)
+          {
+            value.activityType.string[j] = '0';
+          }
+          else if(C2xGetTokenBitOfBitString(packetHandle, "PSM", newPath, j) == 1)
+          {
+            value.activityType.string[j] = '1';
+          }
+
+          if(value.activityType.stringLength == 1)
+          {
+            value.activityType.string[1] = '0';
+          }
+          result = CheckLastError("PSM", gkFuncRefGet, result);
+        }
+      }
+      else
+      {
+        for(k = value.activityType.stringLength+1; k > -1; k--)
+        {
+          if(value.activityType.string[k] == '1')
+          {
+            value.activityType.string[k] = '0';
+          }
+        }
+      }
+    }
+
+  }
+  return result;
+}
+
+int SetPSMRoadWorkerExtensionsParams(LONG packetHandle, struct PSMRoadWorkerExtensions value, char oldPath[])
+{
+  char newPath[300]; 
+  int j;
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "workerType");
+  if(value.workerType.isValidFlag==1)
+  {
+    C2xSetTokenInt(packetHandle, "PSM", newPath, value.workerType.value);
+    result = CheckLastError("PSM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "PSM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "PSM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "activityType");
+  if(value.activityType.isValidFlag==1)
+  {
+      for(j=0; j<value.activityType.stringLength; j++)
+      {
+        if(value.activityType.string[j] == '0')
+        {
+          C2xSetTokenBitOfBitString(packetHandle, "PSM", newPath, j, 0);
+        }
+        else
+        {
+          C2xSetTokenBitOfBitString(packetHandle, "PSM", newPath, j, 1);
+        }
+        result = CheckLastError("PSM", gkFuncRefGet, result);
+      }
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "PSM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "PSM", newPath);
+    }
+  }
+
+  return result;
+}
+
+int GetPSMPersonalRequestParams(LONG packetHandle, struct PSMPersonalRequest value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "crossing");
+  value.crossing.isValidFlag = C2xIsTokenAvailable(packetHandle, "PSM", newPath);
+  if(value.crossing.isValidFlag==1)
+  {
+    value.crossing.value = C2xGetTokenInt(packetHandle, "PSM", newPath);
+    result = CheckLastError("PSM", gkFuncRefGet, result);
+  }
+  return result;
+}
+
+int SetPSMPersonalRequestParams(LONG packetHandle, struct PSMPersonalRequest value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "crossing");
+  if(value.crossing.isValidFlag==1)
+  {
+    C2xSetTokenInt(packetHandle, "PSM", newPath, value.crossing.value);
+    result = CheckLastError("PSM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "PSM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "PSM", newPath);
+    }
+  }
+
+  return result;
+}
+
+int GetPSMNon_motorDataParams(LONG packetHandle, struct PSMNon_motorData value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "basicType");
+  value.basicType = C2xGetTokenInt(packetHandle, "PSM", newPath);
+  result = CheckLastError("PSM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "propulsion");
+  value.propulsion.isValidFlag = C2xIsTokenAvailable(packetHandle, "PSM", newPath);
+  if(value.propulsion.isValidFlag==1)
+  {
+    GetPSMPropelledInformationParams(packetHandle, value.propulsion, newPath);
+    result = CheckLastError("PSM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "clusterSize");
+  value.clusterSize.isValidFlag = C2xIsTokenAvailable(packetHandle, "PSM", newPath);
+  if(value.clusterSize.isValidFlag==1)
+  {
+    value.clusterSize.value = C2xGetTokenInt(packetHandle, "PSM", newPath);
+    result = CheckLastError("PSM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "attachment");
+  value.attachment.isValidFlag = C2xIsTokenAvailable(packetHandle, "PSM", newPath);
+  if(value.attachment.isValidFlag==1)
+  {
+    value.attachment.value = C2xGetTokenInt(packetHandle, "PSM", newPath);
+    result = CheckLastError("PSM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "personalExt");
+  value.personalExt.isValidFlag = C2xIsTokenAvailable(packetHandle, "PSM", newPath);
+  if(value.personalExt.isValidFlag==1)
+  {
+    GetPSMPersonalExtensionsParams(packetHandle, value.personalExt, newPath);
+    result = CheckLastError("PSM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "roadWorkerExt");
+  value.roadWorkerExt.isValidFlag = C2xIsTokenAvailable(packetHandle, "PSM", newPath);
+  if(value.roadWorkerExt.isValidFlag==1)
+  {
+    GetPSMRoadWorkerExtensionsParams(packetHandle, value.roadWorkerExt, newPath);
+    result = CheckLastError("PSM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "personalReq");
+  value.personalReq.isValidFlag = C2xIsTokenAvailable(packetHandle, "PSM", newPath);
+  if(value.personalReq.isValidFlag==1)
+  {
+    GetPSMPersonalRequestParams(packetHandle, value.personalReq, newPath);
+    result = CheckLastError("PSM", gkFuncRefGet, result);
+  }
+  return result;
+}
+
+int SetPSMNon_motorDataParams(LONG packetHandle, struct PSMNon_motorData value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "basicType");
+  C2xSetTokenInt(packetHandle, "PSM", newPath, value.basicType);
+  result = CheckLastError("PSM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "propulsion");
+  if(value.propulsion.isValidFlag==1)
+  {
+    SetPSMPropelledInformationParams(packetHandle, value.propulsion, newPath);
+    result = CheckLastError("PSM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "PSM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "PSM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "clusterSize");
+  if(value.clusterSize.isValidFlag==1)
+  {
+    C2xSetTokenInt(packetHandle, "PSM", newPath, value.clusterSize.value);
+    result = CheckLastError("PSM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "PSM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "PSM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "attachment");
+  if(value.attachment.isValidFlag==1)
+  {
+    C2xSetTokenInt(packetHandle, "PSM", newPath, value.attachment.value);
+    result = CheckLastError("PSM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "PSM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "PSM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "personalExt");
+  if(value.personalExt.isValidFlag==1)
+  {
+    SetPSMPersonalExtensionsParams(packetHandle, value.personalExt, newPath);
+    result = CheckLastError("PSM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "PSM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "PSM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "roadWorkerExt");
+  if(value.roadWorkerExt.isValidFlag==1)
+  {
+    SetPSMRoadWorkerExtensionsParams(packetHandle, value.roadWorkerExt, newPath);
+    result = CheckLastError("PSM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "PSM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "PSM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "personalReq");
+  if(value.personalReq.isValidFlag==1)
+  {
+    SetPSMPersonalRequestParams(packetHandle, value.personalReq, newPath);
+    result = CheckLastError("PSM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "PSM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "PSM", newPath);
+    }
+  }
+
+  return result;
+}
+
+int GetPSMPersonalSafetyMessageParams(LONG packetHandle, struct PSMPersonalSafetyMessage value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "msgCnt");
+  value.msgCnt = C2xGetTokenInt(packetHandle, "PSM", newPath);
+  result = CheckLastError("PSM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "id");
+  value.id.stringLength = C2xGetTokenData(packetHandle, "PSM", newPath, elcount(value.id.string), value.id.string);
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "secMark");
+  value.secMark = C2xGetTokenInt(packetHandle, "PSM", newPath);
+  result = CheckLastError("PSM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "timeConfidence");
+  value.timeConfidence.isValidFlag = C2xIsTokenAvailable(packetHandle, "PSM", newPath);
+  if(value.timeConfidence.isValidFlag==1)
+  {
+    value.timeConfidence.value = C2xGetTokenInt(packetHandle, "PSM", newPath);
+    result = CheckLastError("PSM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "pos");
+  GetPSMPosition3DParams(packetHandle, value.pos, newPath);
+  result = CheckLastError("PSM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "posAccuracy");
+  GetPSMPositionalAccuracyParams(packetHandle, value.posAccuracy, newPath);
+  result = CheckLastError("PSM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "speed");
+  value.speed = C2xGetTokenInt(packetHandle, "PSM", newPath);
+  result = CheckLastError("PSM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "heading");
+  value.heading = C2xGetTokenInt(packetHandle, "PSM", newPath);
+  result = CheckLastError("PSM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "accelSet");
+  value.accelSet.isValidFlag = C2xIsTokenAvailable(packetHandle, "PSM", newPath);
+  if(value.accelSet.isValidFlag==1)
+  {
+    GetPSMAccelerationSet4WayParams(packetHandle, value.accelSet, newPath);
+    result = CheckLastError("PSM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "pathHistory");
+  value.pathHistory.isValidFlag = C2xIsTokenAvailable(packetHandle, "PSM", newPath);
+  if(value.pathHistory.isValidFlag==1)
+  {
+    GetPSMPathHistoryParams(packetHandle, value.pathHistory, newPath);
+    result = CheckLastError("PSM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "path_Planning");
+  value.path_Planning.isValidFlag = C2xIsTokenAvailable(packetHandle, "PSM", newPath);
+  if(value.path_Planning.isValidFlag==1)
+  {
+    GetPSMPathPlanningParams(packetHandle, value.path_Planning, newPath);
+    result = CheckLastError("PSM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "overallRadius");
+  value.overallRadius = C2xGetTokenInt(packetHandle, "PSM", newPath);
+  result = CheckLastError("PSM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "non_motorData");
+  GetPSMNon_motorDataParams(packetHandle, value.non_motorData, newPath);
+  result = CheckLastError("PSM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int SetPSMPersonalSafetyMessageParams(LONG packetHandle, struct PSMPersonalSafetyMessage value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "msgCnt");
+  C2xSetTokenInt(packetHandle, "PSM", newPath, value.msgCnt);
+  result = CheckLastError("PSM", gkFuncRefGet, result);
+
+  if(value.id.stringLength == 0)
+  {
+    value.id.stringLength = 8;
+    memcpy(value.id.string, "00000000", value.id.stringLength);
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "id");
+  C2xSetTokenData(packetHandle, "PSM", newPath, value.id.stringLength, value.id.string);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "secMark");
+  C2xSetTokenInt(packetHandle, "PSM", newPath, value.secMark);
+  result = CheckLastError("PSM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "timeConfidence");
+  if(value.timeConfidence.isValidFlag==1)
+  {
+    C2xSetTokenInt(packetHandle, "PSM", newPath, value.timeConfidence.value);
+    result = CheckLastError("PSM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "PSM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "PSM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "pos");
+  SetPSMPosition3DParams(packetHandle, value.pos, newPath);
+  result = CheckLastError("PSM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "posAccuracy");
+  SetPSMPositionalAccuracyParams(packetHandle, value.posAccuracy, newPath);
+  result = CheckLastError("PSM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "speed");
+  C2xSetTokenInt(packetHandle, "PSM", newPath, value.speed);
+  result = CheckLastError("PSM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "heading");
+  C2xSetTokenInt(packetHandle, "PSM", newPath, value.heading);
+  result = CheckLastError("PSM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "accelSet");
+  if(value.accelSet.isValidFlag==1)
+  {
+    SetPSMAccelerationSet4WayParams(packetHandle, value.accelSet, newPath);
+    result = CheckLastError("PSM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "PSM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "PSM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "pathHistory");
+  if(value.pathHistory.isValidFlag==1)
+  {
+    SetPSMPathHistoryParams(packetHandle, value.pathHistory, newPath);
+    result = CheckLastError("PSM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "PSM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "PSM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "path_Planning");
+  if(value.path_Planning.isValidFlag==1)
+  {
+    SetPSMPathPlanningParams(packetHandle, value.path_Planning, newPath);
+    result = CheckLastError("PSM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "PSM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "PSM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "overallRadius");
+  C2xSetTokenInt(packetHandle, "PSM", newPath, value.overallRadius);
+  result = CheckLastError("PSM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "non_motorData");
+  SetPSMNon_motorDataParams(packetHandle, value.non_motorData, newPath);
+  result = CheckLastError("PSM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int GetPSMMessageTypesParams(LONG packetHandle, WORD tableKey, struct PSMMessageTypes value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  switch(tableKey)
+  {
+    case 15:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "psmData");
+      GetPSMPersonalSafetyMessageParams(packetHandle, value.psmData, newPath);
+      result = CheckLastError("PSM", gkFuncRefGet, result);
+    }
+    break;
+  }
+  return result;
+}
+
+int SetPSMMessageTypesParams(LONG packetHandle, WORD tableKey, struct PSMMessageTypes value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  switch(tableKey)
+  {
+    case 15:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "psmData");
+      SetPSMPersonalSafetyMessageParams(packetHandle, value.psmData, newPath);
+      result = CheckLastError("PSM", gkFuncRefGet, result);
+    }
+    break;
+  }
+  return result;
+}
+
+int GetPSMMessageFrameExtParams(LONG packetHandle, struct PSMMessageFrameExt value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "messageId");
+  value.messageId = C2xGetTokenInt(packetHandle, "PSM", newPath);
+  result = CheckLastError("PSM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "value");
+  GetPSMMessageTypesParams(packetHandle, value.messageId, value.value, newPath);
+  result = CheckLastError("PSM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int SetPSMMessageFrameExtParams(LONG packetHandle, struct PSMMessageFrameExt value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "value");
+  SetPSMMessageTypesParams(packetHandle, value.messageId, value.value, newPath);
+  result = CheckLastError("PSM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int API_GetPSMParams(LONG packetHandle, struct PSM value)
+{
+  int result;
+  result = 0;
+
+  value.msgFrameExt.isValidFlag = 1;
+  GetPSMMessageFrameExtParams(packetHandle, value.msgFrameExt, "msgFrameExt");
+  result = CheckLastError("PSM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int API_SetPSMParams(LONG packetHandle, struct PSM value)
+{
+  int result;
+  result = 0;
+
+  SetPSMMessageFrameExtParams(packetHandle, value.msgFrameExt, "msgFrameExt");
+  result = CheckLastError("PSM", gkFuncRefGet, result);
+
+  return result;
+}
+

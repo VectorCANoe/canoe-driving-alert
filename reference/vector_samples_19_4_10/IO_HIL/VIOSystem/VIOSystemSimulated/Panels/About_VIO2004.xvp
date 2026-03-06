@@ -1,0 +1,72 @@
+<?xml version="1.0"?>
+<Panel Type="Vector.CANalyzer.Panels.PanelSerializer, Vector.CANalyzer.Panels.Serializer, Version=17.3.40.0, Culture=neutral, PublicKeyToken=null">
+  <Object Type="Vector.CANalyzer.Panels.Runtime.Panel, Vector.CANalyzer.Panels.Common, Version=17.3.40.0, Culture=neutral, PublicKeyToken=null" Name="Panel" Children="Controls" ControlName="About the VIO2004">
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.40.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl8" Children="Controls" ControlName="Static Text">
+      <Property Name="Name">StaticTextControl8</Property>
+      <Property Name="Size">149, 13</Property>
+      <Property Name="Location">730, 277</Property>
+      <Property Name="BackColor">HighlightText</Property>
+      <Property Name="Font">Microsoft Sans Serif, 8.25pt, style=Bold</Property>
+      <Property Name="Text">Image of a VIO2004 card</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.PictureBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.40.0, Culture=neutral, PublicKeyToken=null" Name="PictureBoxControl1" ControlName="Picture Box">
+      <Property Name="Name">PictureBoxControl1</Property>
+      <Property Name="Size">358, 250</Property>
+      <Property Name="Location">625, 21</Property>
+      <Property Name="BorderStyle">FixedSingle</Property>
+      <Property Name="ImageFile">bmp\VIO2004.jpg</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.40.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl2" Children="Controls" ControlName="Static Text">
+      <Property Name="Name">StaticTextControl2</Property>
+      <Property Name="Size">555, 104</Property>
+      <Property Name="Location">19, 129</Property>
+      <Property Name="BackColor">HighlightText</Property>
+      <Property Name="Text">The generated voltages are used as follows:
+
+Channel 01 generates a voltage depending on the position of the 'Analog Dimmable LED' slider on the CANoe panel.
+This voltage is used to dim an LED on the DUT.
+
+Channel 02 generates a voltage depending on the position of the 'Counter Speed' slider on the CANoe panel.
+This voltage is used to calculate the counter speed of the 4-bit counter on the DUT.
+The voltage range is 0..10V, the counter speed range is 2..20Hz.
+</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.40.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl5" Children="Controls" ControlName="Static Text">
+      <Property Name="Name">StaticTextControl5</Property>
+      <Property Name="Size">80, 13</Property>
+      <Property Name="Location">11, 106</Property>
+      <Property Name="BackColor">HighlightText</Property>
+      <Property Name="Font">Microsoft Sans Serif, 8.25pt, style=Bold</Property>
+      <Property Name="Text">Signal usage</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.40.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl4" Children="Controls" ControlName="Static Text">
+      <Property Name="Name">StaticTextControl4</Property>
+      <Property Name="Size">201, 16</Property>
+      <Property Name="Location">3, 7</Property>
+      <Property Name="BackColor">HighlightText</Property>
+      <Property Name="Font">Microsoft Sans Serif, 9.25pt, style=Bold</Property>
+      <Property Name="Text">The simulated VIO2004 card</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.40.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl3" Children="Controls" ControlName="Static Text">
+      <Property Name="Name">StaticTextControl3</Property>
+      <Property Name="Size">115, 13</Property>
+      <Property Name="Location">11, 39</Property>
+      <Property Name="BackColor">HighlightText</Property>
+      <Property Name="Font">Microsoft Sans Serif, 8.25pt, style=Bold</Property>
+      <Property Name="Text">Signal connections</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.40.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl1" Children="Controls" ControlName="Static Text">
+      <Property Name="Name">StaticTextControl1</Property>
+      <Property Name="Size">471, 30</Property>
+      <Property Name="Location">17, 62</Property>
+      <Property Name="BackColor">HighlightText</Property>
+      <Property Name="Font">Microsoft Sans Serif, 9pt</Property>
+      <Property Name="Text">Channel 01 generates the voltage for the analog dimmable LED.
+Channel 02 generates the voltage that controls the counter speed for the 4-bit counter.
+</Property>
+    </Object>
+    <Property Name="Name">Panel</Property>
+    <Property Name="Size">1000, 300</Property>
+    <Property Name="BackColor">HighlightText</Property>
+  </Object>
+</Panel>

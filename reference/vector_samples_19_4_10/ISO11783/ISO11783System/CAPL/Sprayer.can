@@ -1,0 +1,361 @@
+/*@!Encoding:1252*/
+includes
+{
+}
+
+variables
+{
+  const int   gNumOfSections = 11;
+
+  msTimer tmrTestSequence;
+  msTimer tmrTankVolume;
+  int gTestSequenceNummer;
+  int gSprayerIsEnabled;
+  int gTestIsEnabled, gOnIsEnabled, gOffIsEnabled;
+  int gActivatedSections[gNumOfSections];
+  long gLastSetpointCondensedWorkState;
+  double gLastSetpointAppRate;
+}
+
+int GetNumOfActivatedSections()
+{
+  int pos, numOfActivatedSections;
+  numOfActivatedSections = 0;
+  for(pos = 0; pos < gNumOfSections; pos++)
+  {
+    if(gActivatedSections[pos] != 0)
+    {
+      numOfActivatedSections++;
+    }
+  }
+  return numOfActivatedSections;
+}
+
+on start
+{
+  Iso11783IL_OPSetProperty("Version", 5);
+  Iso11783IL_OPLoad("ObjectPools\\Sprayer.iop");
+
+  Iso11783IL_PDDLoadDeviceDescription("DeviceDescriptions\\Sprayer.xml");
+  Iso11783IL_PDDSetParameter("version", 4);
+  
+  gSprayerIsEnabled = 0;
+  gTestIsEnabled = 0;
+  gOnIsEnabled = 0;
+  gOffIsEnabled = 0;
+  {
+    int pos;
+    for(pos = 0; pos < gNumOfSections; pos++)
+    {
+      gActivatedSections[pos] = 0;
+    }
+  }
+  gLastSetpointCondensedWorkState = 0;
+  gLastSetpointAppRate = 0;
+  
+  Iso11783IL_DelayRxMessage(0xCB00, 0xF7, 0xFFFF, 0x23, 100);
+  Iso11783IL_DelayRxMessage(0xE600, 0x26, 0xF0, 0xA0, 2);
+}
+
+on timer tmrTankVolume
+{
+  double tankVolume, actualAppRate;
+  
+  Iso11783IL_PDDGetValuePhysical(0x89, 1, tankVolume);
+  Iso11783IL_PDDGetValuePhysical(0x25, 2, actualAppRate);
+
+  tankVolume = tankVolume - actualAppRate / (60 * 10) ;
+  
+  Iso11783IL_PDDSetValuePhysical(0x89, 1, tankVolume);
+  Iso11783IL_OPSetNumericValue(10, tankVolume);  // Set "Volume"
+}
+
+/*
+*/
+void SetNewSetpointCondensedWorkState(long newValue)
+{
+  int pos;
+  Iso11783IL_PDDSetValueRaw(0x0122, 0x2, newValue);
+  for(pos = 0; pos < gNumOfSections; pos++)
+  {
+    int sectionStateOld, sectionStateNew;
+    //Compare values of "Setpoint" and "Actual"
+    sectionStateNew = Iso11783IL_PDDGetSectionState(0x0122, 0x2, pos+1);
+    gActivatedSections[pos] = sectionStateNew;
+    sectionStateOld = Iso11783IL_PDDGetSectionState(0x00a1, 0x2, pos+1);
+    if(sectionStateOld != sectionStateNew)
+    {
+      if(sectionStateNew == 1)
+      {
+        ReplaceObject(GetContainerId_SectionOFF(pos), GetContainerId_SectionON(pos));
+      }
+      else
+      {
+        ReplaceObject(GetContainerId_SectionON(pos), GetContainerId_SectionOFF(pos));
+      }
+    }
+  }
+  Iso11783IL_PDDSetValueRaw(0x00a1, 0x2, newValue); //mirrow to the "Actual condensed Work State"
+}
+
+void RecalculateActualAppRate(double setpointAppRate)
+{
+  double actualAppRate; //in l/min
+//  actualAppRate = (setpointAppRate * 300 * 60) / 1000000 ;
+  actualAppRate = (setpointAppRate * 300 * 60 * GetNumOfActivatedSections()) / (1000000 * gNumOfSections);
+//  writeEx(-3, 3, "App Rate: %f, Num of activated sections: %d", actualAppRate, GetNumOfActivatedSections());
+  //recalculate to the "Actual App rate"
+  Iso11783IL_OPSetNumericValue(12, setpointAppRate);
+  Iso11783IL_OPSetNumericValue(11, actualAppRate);
+  Iso11783IL_OPSetNumericValue(21000, actualAppRate);
+  Iso11783IL_PDDSetValuePhysical(0x0025, 2, actualAppRate);
+}
+
+/*
+*/
+void Iso11783IL_PDDOnDataChanged( dword ddi, dword elNum, double value )
+{
+  if(ddi == 0x122 && elNum == 2) // "Setpoint condensed Work State"
+  {
+    Iso11783IL_PDDGetValueRaw(0x0122, 2, gLastSetpointCondensedWorkState);
+    if(gSprayerIsEnabled)
+    {
+      SetNewSetpointCondensedWorkState(gLastSetpointCondensedWorkState);  
+      RecalculateActualAppRate(gLastSetpointAppRate);
+    }
+  }
+  else if(ddi == 0x6 && elNum == 2) // "Setpoint App rate"
+  {
+    gLastSetpointAppRate = value;
+    if(gSprayerIsEnabled)
+    {
+      RecalculateActualAppRate(gLastSetpointAppRate);
+    }
+  }
+}
+
+void Iso11783IL_PDDOnStateChanged( dword state )
+{
+  if(state == 8) // Task active
+  {
+    Iso11783IL_PDDSetLogTrigger( 8, 0x00a1, 2, 1 ); 
+    Iso11783IL_PDDSetLogTrigger( 8, 0x0025, 2, 1 ); 
+    Iso11783IL_PDDSetLogTrigger( 8, 0x0089, 1, 1000 ); 
+  }
+  else
+  {
+    Iso11783IL_PDDSetLogTrigger( 8, 0x00a1, 2, 0 ); 
+    Iso11783IL_PDDSetLogTrigger( 8, 0x0025, 2, 0 ); 
+    Iso11783IL_PDDSetLogTrigger( 8, 0x0089, 1, 0 ); 
+  }
+}
+
+/*
+*/
+int GetContainerId_SectionON(int sectionNumber)
+{
+  int containerId;
+  switch(sectionNumber)
+  {
+    case 0: containerId = 3200; break;
+    case 1: containerId = 3201; break;
+    case 2: containerId = 3202; break;
+    case 3: containerId = 3203; break;
+    case 4: containerId = 3204; break;
+    case 5: containerId = 3205; break;
+    case 6: containerId = 3206; break;
+    case 7: containerId = 3207; break;
+    case 8: containerId = 3208; break;
+    case 9: containerId = 3209; break;
+    case 10:containerId = 3210; break;
+  }
+  return containerId;
+}
+
+/*
+*/
+int GetContainerId_SectionOFF(int sectionNumber)
+{
+  int containerId;
+  switch(sectionNumber)
+  {
+    case 0: containerId = 3100; break;
+    case 1: containerId = 3101; break;
+    case 2: containerId = 3102; break;
+    case 3: containerId = 3103; break;
+    case 4: containerId = 3104; break;
+    case 5: containerId = 3105; break;
+    case 6: containerId = 3106; break;
+    case 7: containerId = 3107; break;
+    case 8: containerId = 3108; break;
+    case 9: containerId = 3109; break;
+    case 10:containerId = 3110; break;
+  }
+  return containerId;
+}
+
+/*
+*/
+on timer tmrTestSequence
+{
+  switch(gTestSequenceNummer)
+  {
+    case 0:
+      ReplaceObject(3100, 3200);
+      ReplaceObject(3110, 3210);
+      break;
+    case 1:
+      ReplaceObject(3200, 3100);
+      ReplaceObject(3210, 3110);
+      ReplaceObject(3101, 3201);
+      ReplaceObject(3109, 3209);
+      break;
+    case 2:
+      ReplaceObject(3201, 3101);
+      ReplaceObject(3209, 3109);
+      ReplaceObject(3102, 3202);
+      ReplaceObject(3108, 3208);
+      break;
+    case 3:
+      ReplaceObject(3202, 3102);
+      ReplaceObject(3208, 3108);
+      ReplaceObject(3103, 3203);
+      ReplaceObject(3107, 3207);
+      break;
+    case 4:
+      ReplaceObject(3203, 3103);
+      ReplaceObject(3207, 3107);
+      ReplaceObject(3104, 3204);
+      ReplaceObject(3106, 3206);
+      break;
+    case 5:
+      ReplaceObject(3204, 3104);
+      ReplaceObject(3206, 3106);
+      ReplaceObject(3105, 3205);
+      break;
+    case 6:
+      ReplaceObject(3205, 3105);
+      ReplaceObject(3106, 3206);
+      ReplaceObject(3104, 3204);
+      break;
+    case 7:
+      ReplaceObject(3206, 3106);
+      ReplaceObject(3204, 3104);
+      ReplaceObject(3107, 3207);
+      ReplaceObject(3103, 3203);
+      break;
+    case 8:
+      ReplaceObject(3207, 3107);
+      ReplaceObject(3203, 3103);
+      ReplaceObject(3108, 3208);
+      ReplaceObject(3102, 3202);
+      break;
+    case 9:
+      ReplaceObject(3208, 3108);
+      ReplaceObject(3202, 3102);
+      ReplaceObject(3109, 3209);
+      ReplaceObject(3101, 3201);
+      break;
+    case 10:
+      ReplaceObject(3209, 3109);
+      ReplaceObject(3201, 3101);
+      ReplaceObject(3110, 3210);
+      ReplaceObject(3100, 3200);
+      break;
+    case 11:
+      ReplaceObject(3210, 3110);
+      ReplaceObject(3200, 3100);
+      ReplaceObject(220, 170);// key "Test" in black
+      ReplaceObject(160, 210);// key "ON" in black
+      ReplaceObject(212, 162);// key "OFF" in gray
+      gTestIsEnabled = 1;
+      gOnIsEnabled = 1;
+      break;
+    default:
+      Iso11783IL_PDDSetValuePhysical(0x89, 1, 1000);
+      return;
+  }
+  if(gTestSequenceNummer != 11)
+  {
+    Iso11783IL_OPSetNumericValue(10, gTestSequenceNummer * 110);  // Set "Volume"
+    Iso11783IL_OPSetNumericValue(11, gTestSequenceNummer * 24);   // Set "Output"
+  }
+  else
+  {
+    Iso11783IL_OPSetNumericValue(10, 1000); // Set "Volume"
+    Iso11783IL_OPSetNumericValue(11, 0);    // Set "Output"
+  }
+  SetTimer(tmrTestSequence, 500);
+  gTestSequenceNummer++;
+}
+
+/*
+*/
+void ReplaceObject(dword objectIdToHide, dword objectIdToShow)
+{
+  Iso11783IL_OPShowObject(objectIdToHide, 0);
+  Iso11783IL_OPShowObject(objectIdToShow, 1);
+}
+
+/*
+*/
+void Iso11783IL_OPOnStateChange( dword state )
+{
+  if(state == 5) //active  
+  {
+    ReplaceObject(220, 170);// key "Test" in black
+    gTestIsEnabled = 1;
+  }
+}
+
+/*
+*/
+void Iso11783IL_OPOnKeyActivation(dword objectID, dword parentID, dword keyCode, dword activation )
+{
+  if(activation == 0) // Key is relased
+  {
+    if(keyCode == 3 && gTestIsEnabled == 1) // Key "Test"
+    {
+      setTimer (tmrTestSequence, 1);
+      gTestSequenceNummer = 0;
+      ReplaceObject(170, 220);// key "Test" in gray
+      ReplaceObject(210, 160);// key "ON" in gray
+      ReplaceObject(212, 162);// key "OFF" in gray
+      gTestIsEnabled = 0;
+    }
+    else if(keyCode == 1 && gOnIsEnabled == 1) // Key "On"
+    {
+      if(gSprayerIsEnabled == 0)
+      {
+        // Restart
+        SetNewSetpointCondensedWorkState(gLastSetpointCondensedWorkState);
+        RecalculateActualAppRate(gLastSetpointAppRate);
+      }
+      gSprayerIsEnabled = 1;
+      gTestIsEnabled = 0;
+      gOnIsEnabled = 0;
+      gOffIsEnabled = 1;
+      ReplaceObject(170, 220);// key "Test" in gray
+      ReplaceObject(210, 160);// key "ON" in gray
+      ReplaceObject(162, 212);// key "OFF" in black
+      setTimerCyclic(tmrTankVolume, 100);
+    }
+    else if(keyCode == 2 && gOffIsEnabled == 1) // Key "Off"
+    {
+      if(gSprayerIsEnabled == 1)
+      {
+        //Stop 
+        SetNewSetpointCondensedWorkState(0);
+        RecalculateActualAppRate(0);
+      }
+      gSprayerIsEnabled = 0;
+      gTestIsEnabled = 1;
+      gOnIsEnabled = 1;
+      gOffIsEnabled = 0;
+      ReplaceObject(220, 170);// key "Test" in black
+      ReplaceObject(160, 210);// key "ON" in black
+      ReplaceObject(212, 162);// key "OFF" in gray
+      cancelTimer(tmrTankVolume);
+    }
+  }
+}

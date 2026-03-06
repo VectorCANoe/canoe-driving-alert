@@ -1,0 +1,183 @@
+/*@!Encoding:1252*/
+includes
+{
+  
+}
+
+variables
+{
+  const dword cNumSensorsPerChannel = 4;
+  
+  enum ePauseMode
+  {
+    eNoPause = 0,
+    eFixedPause = 1,
+    eFixedFrameLength = 2
+  };
+  
+  struct stSensorConfig
+  {
+    dword NumDataNibbles;
+    dword NumLowTicks;
+    double TickLengthUs;
+    double MinTriggerTimeTicks;
+    double MaxTriggerTimeTicks;
+    double TotalTriggerTimeTicks;
+    enum ePauseMode PauseMode;
+    dword PauseLength;
+  };  
+  
+  struct stSensorConfig gSensorConfigs[cNumSensorsPerChannel] =
+  {
+    { 6, 5, 3.0,  1.5,  4.0, 20.00, eNoPause, 0 }, // Sensor 1 Nibbles: 6, Ticklength: 3.0 us, Min trig:  1.5 ticks, Max trig:  4.0 ticks, Total: 20.0 ticks, No pause
+    { 5, 5, 3.0,  7.0, 10.5, 20.00, eNoPause, 0 }, // Sensor 2 Nibbles: 5, Ticklength: 3.0 us, Min trig:  7.0 ticks, Max trig: 10.5 ticks, Total: 20.0 ticks, No pause
+    { 4, 5, 3.0, 11.0, 14.5, 20.00, eNoPause, 0 }, // Sensor 3 Nibbles: 4, Ticklength: 3.0 us, Min trig: 11.0 ticks, Max trig: 14.5 ticks, Total: 20.0 ticks, No pause
+    { 3, 5, 3.0, 15.0, 18.5, 20.00, eNoPause, 0 }  // Sensor 4 Nibbles: 3, Ticklength: 3.0 us, Min trig: 15.0 ticks, Max trig: 18.5 ticks, Total: 20.0 ticks, No pause
+  };
+}
+
+dword GetMaxSensorSpcFrameLengthNs(dword sensorIdx)
+{
+  double numTicks;
+  struct stSensorConfig c;
+  memcpy(c, gSensorConfigs[sensorIdx]);
+  
+  numTicks = c.TotalTriggerTimeTicks; // trigger time
+  numTicks += c.NumLowTicks; // min. high time before next trigger
+  
+  if (c.PauseMode == eFixedFrameLength)
+  {
+    numTicks += c.PauseLength;
+  }
+  else
+  {
+    numTicks += 56; // sync
+    numTicks += (c.NumDataNibbles + 2) * 27; // status + data + crc
+    numTicks += c.NumLowTicks; // end pulse
+    
+    if (c.PauseMode == eFixedPause)
+    {
+      numTicks += c.PauseLength;
+    }
+  } 
+  
+  return _round(numTicks * c.TickLengthUs * 1000);
+}
+
+dword GetSpcTriggerLengthNs(dword sensorIdx)
+{
+  struct stSensorConfig c;
+  memcpy(c, gSensorConfigs[sensorIdx]);
+  
+  // Always use the minimal trigger length.
+  // The effective trigger length is extended depending on the bus capacity and the pull-up resistor value.
+  return _round(c.MinTriggerTimeTicks * c.TickLengthUs * 1000);
+}
+
+void BuildAndTransmitSpcSchedule()
+{
+  dword activeSensors;
+  dword triggerPulseLen[cNumSensorsPerChannel];
+  dword responseSpaceLen[cNumSensorsPerChannel];
+  
+  activeSensors = 0;
+  
+  // Sensor 1 selected for cyclic triggering?
+  if (@SpcScheduler::EnableCyclicTriggerSensor1 == 1)
+  {
+    triggerPulseLen[activeSensors] = GetSpcTriggerLengthNs(0);
+    responseSpaceLen[activeSensors] = GetMaxSensorSpcFrameLengthNs(0) - triggerPulseLen[activeSensors];
+    activeSensors++;
+  }
+  
+  // Sensor 2 selected for cyclic triggering?
+  if (@SpcScheduler::EnableCyclicTriggerSensor2 == 1)
+  {
+    triggerPulseLen[activeSensors] = GetSpcTriggerLengthNs(1);
+    responseSpaceLen[activeSensors] = GetMaxSensorSpcFrameLengthNs(1) - triggerPulseLen[activeSensors];
+    activeSensors++;
+  }
+  
+  // Sensor 3 selected for cyclic triggering?
+  if (@SpcScheduler::EnableCyclicTriggerSensor3 == 1)
+  {
+    triggerPulseLen[activeSensors] = GetSpcTriggerLengthNs(2);
+    responseSpaceLen[activeSensors] = GetMaxSensorSpcFrameLengthNs(2) - triggerPulseLen[activeSensors];
+    activeSensors++;
+  }
+
+  // Sensor 4 selected for cyclic triggering?
+  if (@SpcScheduler::EnableCyclicTriggerSensor4 == 1)
+  {
+    triggerPulseLen[activeSensors] = GetSpcTriggerLengthNs(3);
+    responseSpaceLen[activeSensors] = GetMaxSensorSpcFrameLengthNs(3) - triggerPulseLen[activeSensors];
+    activeSensors++;
+  }
+  
+  if (activeSensors == 0)
+  {
+    // No sensor activated for cyclic triggering. Stop any running cyclic transmission.
+    sysvar::SENSOR::SENT::ECUSIM.StopSpcTriggerPulseTransmission();
+  }
+  else
+  {
+    // Queue repeated trigger pulse sequence for the selected sensors.
+    sysvar::SENSOR::SENT::ECUSIM.QueueSpcTriggerPulseSequence(triggerPulseLen, responseSpaceLen, activeSensors, 1);
+  }  
+}
+
+void TriggerSensorOnce(dword sensorIdx)
+{
+  dword triggerPulseLen;
+  dword responseSpaceLen;
+  
+  triggerPulseLen = GetSpcTriggerLengthNs(sensorIdx);
+  responseSpaceLen = GetMaxSensorSpcFrameLengthNs(sensorIdx) - triggerPulseLen;
+  
+  // Queue a single, non repeated trigger pulse for the specified sensor.
+  sysvar::SENSOR::SENT::ECUSIM.QueueSpcTriggerPulse(triggerPulseLen, responseSpaceLen, 0);
+  
+  // Ensure continuation of cyclic trigger pulse transmission after single trigger.
+  BuildAndTransmitSpcSchedule();
+}
+
+on sysvar (SpcScheduler::EnableCyclicTriggerSensor1 |
+  SpcScheduler::EnableCyclicTriggerSensor2 |
+  SpcScheduler::EnableCyclicTriggerSensor3 |
+  SpcScheduler::EnableCyclicTriggerSensor4)
+{
+  // Reasseble and queue the trigger pulse schedule on any change of a sensor selection.
+  BuildAndTransmitSpcSchedule();
+}
+
+on sysvar SpcScheduler::TriggerOnceSensor1
+{
+  if (@this == 1)
+  {
+    TriggerSensorOnce(0);
+  }
+}
+
+on sysvar SpcScheduler::TriggerOnceSensor2
+{
+  if (@this == 1)
+  {
+    TriggerSensorOnce(1);
+  }
+}
+
+on sysvar SpcScheduler::TriggerOnceSensor3
+{
+  if (@this == 1)
+  {
+    TriggerSensorOnce(2);
+  }
+}
+
+on sysvar SpcScheduler::TriggerOnceSensor4
+{
+  if (@this == 1)
+  {
+    TriggerSensorOnce(3);
+  }
+}

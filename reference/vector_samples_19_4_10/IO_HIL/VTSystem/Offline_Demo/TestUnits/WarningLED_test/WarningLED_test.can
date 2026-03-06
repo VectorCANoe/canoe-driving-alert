@@ -1,0 +1,127 @@
+/*@!Encoding:1252*/
+variables
+{
+}
+
+export testcase LEDTest(double ResistanceValue, double ExpectedLEDVoltage){
+  @sysvar::VTS_simulated::M1_Ch1::RelayShortCircuit = 0;
+  testStep("","Set system variable 'VTS_simulated::M1_Ch1::RelayShortCircuit': 0");
+  @sysvar::VTS_simulated::M2_Ch2::RelayShortCircuit = 0;
+  testStep("","Set system variable 'VTS_simulated::M2_Ch2::RelayShortCircuit': 0");
+  @sysvar::VTS_simulated::M2_Ch1::IntLoadResistor = 500;
+  testStep("","Set system variable 'VTS_simulated::M2_Ch1::IntLoadResistor': 500");
+  @sysvar::VTS_simulated::M3_SupInt::RefVoltage = 12;
+  testStep("","Set system variable 'VTS_simulated::M3_SupInt::RefVoltage': 12");
+  @sysvar::VTS_simulated::M1_Ch1::Resistor = ResistanceValue;
+  testStep("","Set system variable 'VTS_simulated::M1_Ch1::Resistor': %.0f", ResistanceValue);
+  
+  testWaitForTimeout(100);
+
+  testStep("","Check system variable 'VTS_simulated::M4_Ch1::Cur' value, condition: ==%.1f", ExpectedLEDVoltage);
+  if (sysGetVariableLong(sysvar::VTS_simulated::M4_Ch1::Cur)==ExpectedLEDVoltage){
+    TestStepPass("","Validation of the expected parameter succesfull: VTS_simulated::M4_Ch1::Cur value: %d", sysGetVariableLong(sysvar::VTS_simulated::M4_Ch1::Cur));
+  }
+  else{
+    TestStepFail("","Validation of the expected parameter failed: VTS_simulated::M4_Ch1::Cur value: %d", sysGetVariableLong(sysvar::VTS_simulated::M4_Ch1::Cur));
+  }
+
+}
+
+export testcase WarningLedShortCircuitTest(){
+    long M4_Ch1_Cur;
+    M4_Ch1_Cur = 0;
+    testStep("","Set system variable 'VTS_simulated::M1_Ch1::Resistor': 2000");
+    @sysvar::VTS_simulated::M1_Ch1::Resistor=2000;
+    testWaitForTimeout(100);
+
+    testStep("","VTS_simulated::M1_Ch1::RelayShortCircuit': 1");
+    @sysvar::VTS_simulated::M1_Ch1::RelayShortCircuit=1;
+    
+    testWaitForTimeout(100);
+    testStep("","Check system variable 'VTS_simulated::M4_Ch1::Cur', condition: ==5");
+    M4_Ch1_Cur = sysGetVariableLong(sysvar::VTS_simulated::M4_Ch1::Cur);
+
+    if (M4_Ch1_Cur==5){
+    TestStepPass("","Check system variable 'VTS_simulated::M4_Ch1::Cur' passed, value: ==%d",M4_Ch1_Cur);
+    }
+    else{
+    TestStepFail("","Check system variable 'VTS_simulated::M4_Ch1::Cur' failed, value: ==%d",M4_Ch1_Cur);
+    }
+}
+
+export testcase DiagnosticTests(){
+  //diagzeug
+  int respFaultMemory;
+  float param[4];
+  diagRequest ECU.FaultMemory_Clear reqFaultMemory_Clear;
+  diagRequest ECU.FaultMemory_ReadAllIdentified reqClearDiagnosticInformation;
+  diagResponse ECU.FaultMemory_Clear respFaultMemory_Clear;
+  diagResponse ECU.FaultMemory_ReadAllIdentified respClearDiagnosticInformation;
+
+
+  diagSendRequest(reqFaultMemory_Clear);
+  testWaitForDiagRequestSent(reqFaultMemory_Clear,0);
+  TestWaitForDiagResponse(reqFaultMemory_Clear,0);
+
+
+  if (diagIsPositiveResponse(respFaultMemory_Clear)){
+    TestStepPass("","Positive response received");
+  }
+  else{
+    TestStepFail("","Response received is not positive");
+  }
+  
+
+  @sysvar::VTS_simulated::M1_Ch1::RelayShortCircuit=0;
+  TestStep("","Set system variable 'VTS_simulated::M1_Ch1::RelayShortCircuit': 0");
+  @sysvar::VTS_simulated::M1_Ch1::RelayShortCircuit=1;
+  TestStep("","Set system variable 'VTS_simulated::M1_Ch1::RelayShortCircuit': 1");
+
+  testWaitForTimeout(100);
+  testStep("","Check system variable 'VTS_simulated::M4_Ch1::Cur', condition: ==5");
+  if (sysGetVariableLong(sysvar::VTS_simulated::M4_Ch1::Cur)==5.0){
+  TestStepPass("","Check system variable 'VTS_simulated::M4_Ch1::Cur' passed, value: ==%d",sysGetVariableLong(sysvar::VTS_simulated::M4_Ch1::Cur));
+    }
+  else{
+    TestStepFail("","Check system variable 'VTS_simulated::M4_Ch1::Cur' failed, value: ==%d",sysGetVariableLong(sysvar::VTS_simulated::M4_Ch1::Cur));
+  }
+
+
+  diagSendRequest(reqClearDiagnosticInformation);
+  TestWaitForDiagRequestSent(reqClearDiagnosticInformation,0);
+  TestWaitForDiagResponse(reqClearDiagnosticInformation,0);
+
+  if (diagIsPositiveResponse(respClearDiagnosticInformation)){
+    TestStepPass("","Positive response received");
+  }
+  else{
+    TestStepFail("","Response received is not positive");
+  }
+  
+  diagGetRespParameter(reqClearDiagnosticInformation,"DTC",param);
+  
+  if (param[0]==0x03){
+    TestStepPass("Evaluate Response","Parameter 'DTC': Passed, received value is %.0f%.0f %.0f %.0f. condition: byte[1] == 0x03", param[3],param[2],param[1],param[0]);
+  }
+  else{
+    TestStepPass("Evaluate Response","Parameter 'DTC': Failed, received value is %.0f%.0f %.0f %.0f. condition: byte[1] == 0x03", param[3],param[2],param[1],param[0]);
+  }
+}
+
+export ResetAll_completion(){
+  @sysvar::VTS_simulated::M1_Ch1::Resistor = 0;
+  testStep("","Set system variable 'VTS_simulated::M1_Ch1::Resistor': 0");
+  @sysvar::VTS_simulated::M1_Ch1::RelayShortCircuit = 0;
+  testStep("","Set system variable 'VTS_simulated::M1_Ch1::RelayShortCircuit': 0");
+  @sysvar::VTS_simulated::M2_Ch2::RelayShortCircuit = 0;
+  testStep("","Set system variable 'VTS_simulated::M2_Ch2::RelayShortCircuit': 0");
+  @sysvar::VTS_simulated::M2_Ch1::IntLoadResistor = 500;
+  testStep("","Set system variable 'VTS_simulated::M2_Ch1::IntLoadResistor': 500");
+  @sysvar::VTS_simulated::M3_SupInt::RefVoltage = 12;
+  testStep("","Set system variable 'VTS_simulated::M3_SupInt::RefVoltage': 12");
+
+
+  testStepPass("","Passed");
+  testWaitForTimeout(100);
+}
+

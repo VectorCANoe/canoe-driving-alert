@@ -1,0 +1,495 @@
+version 2.0;
+
+import module "HTTP";
+import module "SerializationService";
+import module "SecurityManagerAttributes";
+
+namespace V2ICP
+{
+  namespace DataTypes
+  { 
+    const string HTTPContentType = "application/json; charset=US-ASCII";
+    const string HTTPAccept = "application/json";
+    const string HTTPMethod = "POST";
+
+	  const int32 LengthVIN = 17;
+	  const string ValidCharsVIN = "1234567890ABCDEFGHJKLMNPRSTUVWXYZ";
+
+    namespace V1
+    {
+       // Header 
+        const string HTTPUserAgent = "V2ICP-Client/1.0.0"; 
+
+        [Min=0, Max=255]
+        typedef SEQ_Type       = int64;//uint8;
+        
+        typedef VIN_Type       = string; // ASCII, 17 Chars
+        
+        typedef MAC_Type       = string; // ASCII, 12 Chars
+        
+        [Unit="km", Min=0, Max=21055406]
+        typedef ODO_Type       = int64;//uint32; // ...
+        
+        [Unit="min", Min=0, Max=250]
+        typedef REQTIME_Type   = int64;//uint8; // ...
+        
+        [Unit="kWh", Min=0, Max=1000]
+        typedef EAMOUNT_Type   = int64;//uint16; // ...
+        
+        const int64 odo_SNA           = 0xFFFFFFFF;
+        const int64 chrg_stat_SNA     = 0xFF;
+        const int64 prec_reqtime_SNA  = 0xFF;
+        const int64 prec_eamount_SNA  = 0xFFFF;
+        const int64 bat_eamount_SNA   = 0xFFFF;
+        const int64 bat_reqtime_SNA   = 0xFF;
+
+        enum StateOfCharge : int64 //uint8
+        {
+          [Display="ready to charge"]     READY_TO_CHARGE = 0,
+          [Display="charging"]            CHARGING = 1,
+          [Display="charging impossible"] CHARGING_IMPOSSIBLE = 2,
+          [Display="SNA"]                 SNA = chrg_stat_SNA
+        }
+
+        struct V2ICPRequestContent
+        {
+          [!Optional] SEQ_Type       seq;
+          [!Optional] VIN_Type       vin;
+          [!Optional] MAC_Type       evccid;
+          [ Optional] ODO_Type       odo;
+          [ Optional] REQTIME_Type   bat_reqtime;
+          [ Optional] EAMOUNT_Type   bat_eamount;
+          [ Optional] EAMOUNT_Type   prec_eamount;
+          [ Optional] REQTIME_Type   prec_reqtime;
+          [ Optional] StateOfCharge  chrg_stat;    
+        }
+
+        [Unit="5min", Min=0, Max=1440]
+        typedef DriveOff_Type           = int64;//uint16;
+        
+        [Unit="°C", Min=-50, Max=70]
+        typedef AmbientTemperature_Type = int64;//int8;
+
+        const int64 ambienttemp_SNA   = 0xFF;
+        const int64 prec_dsrd_SNA     = 0xFF;
+        const int64 prec_hvac_SNA     = 0x3;
+        const int64 driveoff_SNA      = 0xFFFF;
+
+        enum PreconditioningRequestByDMS : int64 //uint8
+        {
+          [Display="no"]  NO = 0,
+          [Display="yes"] YES = 1,
+          [Display="SNA"] SNA = prec_dsrd_SNA
+        }
+
+        enum PreconditioningRequestByHVAC : int64 //uint2
+        {
+          [Display="nur warmes Wasser und Belueften"]             ONLY_HOT_WATER_AND_VENTILATION                = 0,
+          [Display="heisses Wasser und Heizen"]                   HOT_WATER_AND_HEATER                          = 1,
+          [Display="kein warmes Wasser, Kuehlen oder Belueften"]  NO_HOT_WATER_OR_COOLING_OR_VENTILATION        = 2,
+          [Display="keine Klima-Vorkonditionierung oder SNA"]     NO_PRECONDITIONING_OR_SNA                     = prec_hvac_SNA
+        }
+
+        struct V2ICPResponseContent
+        {
+          [!Optional] SEQ_Type                      seq;
+          [!Optional] VIN_Type                      vin;
+          [ Optional] DriveOff_Type                 driveoff;
+          [ Optional] PreconditioningRequestByDMS   prec_dsrd;
+          [ Optional] PreconditioningRequestByHVAC  prec_hvac;
+          [ Optional] AmbientTemperature_Type       ambienttemp;
+        }  
+
+        struct V2ICPResponse
+        {
+            uint64 StatusCode;
+            string StatusText;
+            [Optional] V2ICPResponseContent Content;
+        }
+
+      
+        [Binding="SerializationService"]
+        [Serialization=JSON]
+        interface ISerializer
+        {
+            [SerializationService::Method=Serialize]
+            consumed method bytes                                   Serialize_V2ICPRequestContent(V2ICP::DataTypes::V1::V2ICPRequestContent requestContent);
+            
+            [SerializationService::Method=Serialize]
+            consumed method bytes                                   Serialize_V2ICPResponseContent(V2ICP::DataTypes::V1::V2ICPResponseContent responseContent);
+
+
+            [SerializationService::Method=Deserialize]
+            consumed method V2ICP::DataTypes::V1::V2ICPRequestContent      Deserialize_V2ICPRequestContent(bytes requestBytes);
+
+            [SerializationService::Method=Deserialize]
+            consumed method V2ICP::DataTypes::V1::V2ICPResponseContent     Deserialize_V2ICPResponseContent(bytes responseBytes);            
+        }
+
+        V2ICP::DataTypes::V1::ISerializer   V2ICPSerializer;
+    }
+  
+  
+  
+    namespace V2
+    {
+        // Basic Auth once per Session
+        // response strings all lower or all captial
+
+        const string HTTPUserAgent = "V2ICP-Client/2.0.0"; 
+
+        [Min=0, Max=255]
+        typedef SEQ_Type       = int64;//uint8;
+        
+        typedef VIN_Type       = string; // ASCII, 17 Chars
+        
+        typedef MAC_Type       = string; // ASCII, 12 Chars
+        
+        [Unit="km", Min=0, Max=21055406]
+        typedef ODO_Type       = int64;//int32; // ...
+        
+        [Unit="min", Min=0, Max=250]
+        typedef REQTIME_Type   = int64;//uint32; // ...
+        
+        [Unit="kWh", Min=0, Max=1000]
+        typedef EAMOUNT_Type   = int64;//uint32; // ...
+        
+        const int64 odo_SNA           = -1;
+        const int64 chrg_stat_SNA     = -1;
+        const int64 prec_reqtime_SNA  = -1;
+        const int64 prec_eamount_SNA  = -1;
+        const int64 bat_eamount_SNA   = -1;
+        const int64 bat_reqtime_SNA   = -1;
+        const int64 h2_stat_SNA       = -1;
+        const int64 bat_stat_SNA      = -1;
+
+        enum StateOfCharge : int64 //uint8
+        {
+          [Display="ready to charge"]               READY_TO_CHARGE               = 0,
+          [Display="charging"]                      CHARGING                      = 1,
+          [Display="charging impossible"]           CHARGING_IMPOSSIBLE           = 2,
+          [Display="charging and preconditioning"]  CHARGING_AND_PRECONDITIONING  = 3,
+          [Display="preconditioning"]               PRECONDITIONING               = 4,
+          [Display="SNA"]                           SNA                           = chrg_stat_SNA
+        }
+
+        enum StateOfH2
+        {
+          [Display="Wasserstoffanlage in Ordnung"]        WASSERSTOFFANLAGE_IN_ORDNUNG        = 0,
+          [Display="Wasserstoffanlage nicht in Ordnung"]  WASSERSTOFFANLAGE_NICHT_IN_ORDNUNG  = 1,
+          [Display="SNA"]                                 SNA                                 = h2_stat_SNA          
+        }
+
+        enum StateOfBattery
+        {
+          [Display="status of battery is okay"]      STATUS_OF_BATTERY_IS_OKAY      = 0,
+          [Display="status of battery is not okay"]  STATUS_OF_BATTERY_IS_NOT_OKAY  = 1,
+          [Display="critical battery status"]        CRITICAL_BATTERY_STATUS        = 2,
+          [Display="SNA"]                            SNA                            = h2_stat_SNA          
+        }
+
+
+        struct V2ICPRequestContent
+        {
+          [!Optional] SEQ_Type        seq;
+          [!Optional] VIN_Type        vin;
+          [!Optional] MAC_Type        evccid;
+          [ Optional] ODO_Type        odo;
+          [ Optional] REQTIME_Type    bat_reqtime;
+          [ Optional] EAMOUNT_Type    bat_eamount;
+          [ Optional] EAMOUNT_Type    prec_eamount;
+          [ Optional] REQTIME_Type    prec_reqtime;
+          [ Optional] StateOfCharge   chrg_stat;   
+          [ Optional] StateOfH2       h2_stat;
+          [ Optional] StateOfBattery  bat_stat;
+        }
+
+
+        [Unit="5min", Min=0, Max=1440]
+        typedef DriveOff_Type           = int64;//int32;
+        
+        [Unit="°C", Min=-50, Max=70]
+        typedef AmbientTemperature_Type = int64;//int32;
+        
+        [Unit="km", Min=0, Max=1000]
+        typedef TargetDistance_Type     = int64;//int32;
+        
+        [Unit="%", Min=0, Max=100]
+        typedef TargetSoC_Type          = int64;//int32;
+
+        const int64 ambienttemp_SNA   = -51;
+        const int64 prec_dsrd_SNA     = -1;
+        const int64 prec_hvac_SNA     = -1;
+        const int64 driveoff_SNA      = -1;
+        const int64 target_dist_SNA   = -1;
+        const int64 target_soc_SNA    = -1;
+
+        enum PreconditioningRequestByDMS : int64 //int32
+        {
+          [Display="no"]  NO = 0,
+          [Display="yes"] YES = 1,
+          [Display="SNA"] SNA = prec_dsrd_SNA
+        }
+
+        enum PreconditioningRequestByHVAC : int64 //int32
+        {
+          [Display="nur warmes Wasser und Belueften"]             ONLY_HOT_WATER_AND_VENTILATION                = 0,
+          [Display="heisses Wasser und Heizen"]                   HOT_WATER_AND_HEATER                          = 1,
+          [Display="kein warmes Wasser, Kuehlen oder Belueften"]  NO_HOT_WATER_OR_COOLING_OR_VENTILATION        = 2,
+          [Display="keine Klima-Vorkonditionierung oder SNA"]     NO_PRECONDITIONING_OR_AUTO_SELECT_BY_VEHICLE  = 3,
+          [Display="SNA"]                                         SNA                                           = prec_hvac_SNA
+        }
+
+        struct V2ICPResponseContent
+        {
+          [!Optional] SEQ_Type                      seq;
+          [!Optional] VIN_Type                      vin;
+          [ Optional] DriveOff_Type                 driveoff;
+          [ Optional] PreconditioningRequestByDMS   prec_dsrd;
+          [ Optional] PreconditioningRequestByHVAC  prec_hvac;
+          [ Optional] AmbientTemperature_Type       ambienttemp;
+          [ Optional] TargetDistance_Type           target_dist;
+          [ Optional] TargetSoC_Type                target_soc;
+        }  
+
+        struct V2ICPResponse
+        {
+            uint64 StatusCode;
+            string StatusText;
+            [Optional] V2ICPResponseContent Content;
+        }
+
+        [Binding="SerializationService"]
+        [Serialization=JSON]
+        interface ISerializer
+        {
+            [SerializationService::Method=Serialize]
+            consumed method bytes                                   Serialize_V2ICPRequestContent(V2ICP::DataTypes::V2::V2ICPRequestContent requestContent);
+            
+            [SerializationService::Method=Serialize]
+            consumed method bytes                                   Serialize_V2ICPResponseContent(V2ICP::DataTypes::V2::V2ICPResponseContent responseContent);
+
+
+            [SerializationService::Method=Deserialize]
+            consumed method V2ICP::DataTypes::V2::V2ICPRequestContent      Deserialize_V2ICPRequestContent(bytes requestBytes);
+
+            [SerializationService::Method=Deserialize]
+            consumed method V2ICP::DataTypes::V2::V2ICPResponseContent     Deserialize_V2ICPResponseContent(bytes responseBytes);    
+                    
+        }
+
+        V2ICP::DataTypes::V2::ISerializer   V2ICPSerializer;
+
+    }    
+
+
+  }
+
+  
+  
+  namespace Interfaces
+  {
+    
+
+
+    interface IV2ICPClient
+    {
+        // HTTPBinding::Path: do not prefix with '/'
+
+        [HTTPBinding::Method=POST]
+        [HTTPBinding::Path="v1/vehicleMessage"]
+        internal method V2ICP::DataTypes::V1::V2ICPResponse   V2ICPMethodV1(V2ICP::DataTypes::V1::V2ICPRequestContent vehicleMessage);
+
+        [HTTPBinding::Method=POST]
+        [HTTPBinding::Path="v2/vehicleMessage"]
+        internal method V2ICP::DataTypes::V2::V2ICPResponse   V2ICPMethodV2(V2ICP::DataTypes::V2::V2ICPRequestContent vehicleMessage);
+
+        internal event void OnRequestFailure;
+        internal event void OnResponseTimeout;
+
+        internal data string BasicAuthUsername;
+        internal data string BasicAuthPassword;
+
+        internal data uint32 ResponseTimeout;
+    }
+
+    interface IBasicAuthConfig
+    {
+      internal data bool MustBePresent; // Tells the Server whether a Auth Header is expected
+      internal data string Username;
+      internal data string Password;
+
+      internal data bool   ContinueWhenHeaderMissing;           // Tells the Server that the processing of the request shall not abort when the expected header is not present
+      internal data bool   ContinueWhenUsernameMismatch;       // Tells the Server that the processing of the request shall not abort when the received Auth Header Username doesn't match the expected value
+      internal data bool   ContinueWhenUsernameFormatMismatch; // Tells the Server that the processing of the request shall not abort when the received Auth Header Username's format doesn't match the V2ICP requirements
+      internal data bool   ContinueWhenPasswordMismatch;       // Tells the Server that the processing of the request shall not abort when the received Auth Header Password doesn't match the expected value
+      internal data bool   ContinueWhenPasswordFormatMismatch; // Tells the Server that the processing of the request shall not abort when the received Auth Header Password's format doesn't match the V2ICP requirements
+    }
+
+    struct MethodData
+    {
+      string MethodValue;
+      bool   MethodMatch;
+    }
+
+    struct BasicAuthData
+    {
+      bool   HeaderPresent;
+      string AuthorizationScheme; // Basic, Bearer, Digest, Apikey, ...
+      string Base64Value;
+      string PlainValue;
+      string Username;
+      bool   UsernameMatch;
+      bool   UsernameFormatMatch;
+      string Password;
+      bool   PasswordMatch;
+      bool   PasswordFormatMatch;
+    }
+    
+    interface IUserAgentConfig
+    {
+      internal data bool   MustBePresent;
+      internal data bool   ContinueWhenHeaderMissing;
+      internal data bool   ContinueWhenMismatch;
+    }
+
+        
+    struct UserAgentData
+    {
+      bool   HeaderPresent;
+      string UserAgent;
+      bool   UserAgentMatch;
+    }
+
+    interface IContentTypeConfig
+    {
+      internal data bool   ContinueWhenHeaderMissing;
+      internal data bool   ContinueWhenContentTypeMismatch;
+    }
+
+    struct ContentTypeData
+    {
+      bool   HeaderPresent;
+      string ContentType;
+      bool   ContentTypeMatch;
+    }
+
+    interface IAcceptConfig
+    {
+      internal data bool   ContinueWhenHeaderMissing;
+      internal data bool   ContinueWhenAcceptMismatch;
+    }
+
+    struct AcceptData
+    {
+      bool   HeaderPresent;
+      string Accept;
+      bool   AcceptMatch;
+    }
+
+    interface IPathConfig
+    {
+      internal data string PathV1;
+      internal data string PathV2;
+      internal data bool   RejectPathV1;
+      internal data bool   RejectPathV2;
+    }
+
+    struct PathData
+    {
+      string PathValue;
+      bool   PathV1Match;
+      bool   PathV2Match;
+    }
+
+    struct ResponseFaultInjection
+    {
+      [Optional] string CustomContentString;
+      [Optional] bytes  CustomContentBytes;
+      [Optional] uint8  CustomSequenceNumber;
+      [Optional] string CustomVIN;
+      [Optional] uint32 CustomStatusCode;
+      [Optional] string CustomStatusText;
+    }
+
+    struct ResponseDataV1
+    {
+      [Optional] V2ICP::DataTypes::V1::DriveOff_Type                 Driveoff;
+      [Optional] V2ICP::DataTypes::V1::PreconditioningRequestByDMS   PrecDsrd;
+      [Optional] V2ICP::DataTypes::V1::PreconditioningRequestByHVAC  PrecHvac;
+      [Optional] V2ICP::DataTypes::V1::AmbientTemperature_Type       AmbientTemp;
+    }
+
+    struct ResponseDataV2
+    {
+      [Optional] V2ICP::DataTypes::V2::DriveOff_Type                 Driveoff;
+      [Optional] V2ICP::DataTypes::V2::PreconditioningRequestByDMS   PrecDsrd;
+      [Optional] V2ICP::DataTypes::V2::PreconditioningRequestByHVAC  PrecHvac;
+      [Optional] V2ICP::DataTypes::V2::AmbientTemperature_Type       AmbientTemp;
+      [Optional] V2ICP::DataTypes::V2::TargetDistance_Type           TargetDistance;
+      [Optional] V2ICP::DataTypes::V2::TargetSoC_Type                TargetSoC;
+    }
+
+    interface IResponseControl
+    {
+      //internal data bool   SuspendResponse; // not yet available
+      internal data uint32                  ResponseDelay;
+
+      internal data ResponseFaultInjection  FaultInjection;
+      internal data ResponseDataV1          ResponseDataV1;
+      internal data ResponseDataV2          ResponseDataV2;
+    }
+
+    interface IServerControl
+    {
+      embedded IResponseControl   ResponseControl;
+      embedded IUserAgentConfig   UserAgentConfig;
+      embedded IBasicAuthConfig   BasicAuthConfig;
+      embedded IContentTypeConfig ContentTypeConfig;
+      embedded IAcceptConfig      AcceptConfig;
+      embedded IPathConfig        PathConfig;
+    }
+
+    struct ServerPreProcessingData
+    {
+      [Optional] MethodData      MethodData;
+      [Optional] UserAgentData   UserAgentData;
+      [Optional] BasicAuthData   BasicAuthData;
+      [Optional] ContentTypeData ContentTypeData;
+      [Optional] AcceptData      AcceptData;
+      [Optional] PathData        PathData;
+
+      [Optional] V2ICP::DataTypes::V1::V2ICPRequestContent  V1RequestData;
+      [Optional] V2ICP::DataTypes::V2::V2ICPRequestContent  V2RequestData;
+      [Optional] string V1RequestString;
+      [Optional] string V2RequestString;
+    }
+
+    struct ServerPostProcessingData
+    {
+      // Values available after Indication finished
+      [Optional] V2ICP::DataTypes::V1::V2ICPResponseContent V1ResponseData;
+      [Optional] V2ICP::DataTypes::V2::V2ICPResponseContent V2ResponseData;
+      [Optional] string V1ResponseString;
+      [Optional] string V2ResponseString;
+      
+      [Optional] uint64 StatusCode;
+      [Optional] string StatusText;
+    }
+
+    interface IV2ICPServer : HTTPBinding::Server::IHTTPServer
+    {
+        internal method void Startup();
+        internal method void Shutdown();
+
+        embedded IServerControl Control;
+
+        internal event ServerPreProcessingData  PreProcessingData;
+        internal event ServerPostProcessingData PostProcessingData;
+
+        internal event void OnRequestReceived;
+        internal event void OnProcessingAborted;
+    }
+
+  }
+}

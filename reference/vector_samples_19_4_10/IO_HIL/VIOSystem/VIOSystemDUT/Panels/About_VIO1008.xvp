@@ -1,0 +1,69 @@
+<?xml version="1.0"?>
+<Panel Type="Vector.CANalyzer.Panels.PanelSerializer, Vector.CANalyzer.Panels.Serializer, Version=17.3.40.0, Culture=neutral, PublicKeyToken=null">
+  <Object Type="Vector.CANalyzer.Panels.Runtime.Panel, Vector.CANalyzer.Panels.Common, Version=17.3.40.0, Culture=neutral, PublicKeyToken=null" Name="Panel" Children="Controls" ControlName="About the VIO1008">
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.40.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl8" Children="Controls" ControlName="Static Text">
+      <Property Name="Name">StaticTextControl8</Property>
+      <Property Name="Size">149, 13</Property>
+      <Property Name="Location">733, 274</Property>
+      <Property Name="BackColor">HighlightText</Property>
+      <Property Name="Font">Microsoft Sans Serif, 8.25pt, style=Bold</Property>
+      <Property Name="Text">Image of a VIO1008 card</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.PictureBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.40.0, Culture=neutral, PublicKeyToken=null" Name="PictureBoxControl1" ControlName="Picture Box">
+      <Property Name="Name">PictureBoxControl1</Property>
+      <Property Name="Size">358, 250</Property>
+      <Property Name="Location">623, 18</Property>
+      <Property Name="BorderStyle">FixedSingle</Property>
+      <Property Name="ImageFile">bmp\VIO1008.jpg</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.40.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl2" Children="Controls" ControlName="Static Text">
+      <Property Name="Name">StaticTextControl2</Property>
+      <Property Name="Size">492, 91</Property>
+      <Property Name="Location">19, 146</Property>
+      <Property Name="BackColor">HighlightText</Property>
+      <Property Name="Text">The voltage measured with Channel 01 is used to display the slider setting on the DUT.
+The slider voltage is calculated into a PWM signal within the Arduino.
+This PWM signal dims an LED labelled 'PWM Dimmable LED'.
+
+The voltage measured with Channel 02 is used to calculate a temperature from the TMP36GZ's signal.
+The offset is 0.5V, the gradient is 10mV/°C. The temperature is calculated as T = (Usens - 0.5V) / 0.01.
+
+</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.40.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl5" Children="Controls" ControlName="Static Text">
+      <Property Name="Name">StaticTextControl5</Property>
+      <Property Name="Size">80, 13</Property>
+      <Property Name="Location">11, 123</Property>
+      <Property Name="BackColor">HighlightText</Property>
+      <Property Name="Font">Microsoft Sans Serif, 8.25pt, style=Bold</Property>
+      <Property Name="Text">Signal usage</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.40.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl4" Children="Controls" ControlName="Static Text">
+      <Property Name="Name">StaticTextControl4</Property>
+      <Property Name="Size">243, 16</Property>
+      <Property Name="Location">3, 7</Property>
+      <Property Name="BackColor">HighlightText</Property>
+      <Property Name="Font">Microsoft Sans Serif, 9.25pt, style=Bold</Property>
+      <Property Name="Text">VIO1008 voltage measurment card</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.40.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl3" Children="Controls" ControlName="Static Text">
+      <Property Name="Name">StaticTextControl3</Property>
+      <Property Name="Size">115, 13</Property>
+      <Property Name="Location">11, 39</Property>
+      <Property Name="BackColor">HighlightText</Property>
+      <Property Name="Font">Microsoft Sans Serif, 8.25pt, style=Bold</Property>
+      <Property Name="Text">Signal connections</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.40.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl1" Children="Controls" ControlName="Static Text">
+      <Property Name="Name">StaticTextControl1</Property>
+      <Property Name="Size">449, 26</Property>
+      <Property Name="Location">18, 62</Property>
+      <Property Name="BackColor">HighlightText</Property>
+      <Property Name="Text">Channel 01 measures the analog voltage coming from a slider on the device under test (DUT).
+Channel 02 measures the analog voltage of a TMP36GZ temperature sensor on the DUT.</Property>
+    </Object>
+    <Property Name="Name">Panel</Property>
+    <Property Name="Size">1000, 300</Property>
+    <Property Name="BackColor">HighlightText</Property>
+  </Object>
+</Panel>

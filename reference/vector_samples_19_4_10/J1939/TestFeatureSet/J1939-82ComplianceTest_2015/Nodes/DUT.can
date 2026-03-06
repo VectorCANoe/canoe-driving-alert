@@ -1,0 +1,239 @@
+/*@!Encoding:1252*/
+//
+// (c)2019 by Vector Informatik GmbH 
+// 
+// This is a demo device designed to be used for the J1939-82 Compliance Test 2015 only!
+// Do not use this software for productive projects or in any other situation.
+//
+includes
+{ 
+}
+
+variables
+{
+  msTimer tmrReset, tmrStartStop;
+  byte buttonsAreEnabled;
+  byte ignoreAddressViolation;
+}
+
+//Reset
+on sysvar CT::GUI::CFG::BUTTONS::BtnReset
+{
+  if(@this == 0 || buttonsAreEnabled == 0)
+    return;
+  
+  setTimer(tmrReset, 1000);
+  J1939ILControlStop(1);
+  ActivateButtons(0);
+}
+on timer tmrReset
+{
+  J1939ILSetNodeProperty("AAC",                   0);
+  J1939ILSetNodeProperty("IndustryGroup",         4);
+  J1939ILSetNodeProperty("VehicleSystemInstance", 11);
+  J1939ILSetNodeProperty("VehicleSystem",         20);
+  J1939ILSetNodeProperty("Function",              13);
+  J1939ILSetNodeProperty("FunctionInstance",      1);
+  J1939ILSetNodeProperty("ECUInstance",           2);
+  J1939ILSetNodeProperty("ManufacturerCode",      1861);
+  J1939ILSetNodeProperty("IdentityNumber",        12345);
+
+  J1939ILControlStart(171);
+  ActivateButtons(1);
+}
+
+//Reconnect
+on sysvar CT::GUI::CFG::BUTTONS::BtnReconnect
+{
+  if(@this == 0 || buttonsAreEnabled == 0)
+    return;
+  
+  setTimer(tmrStartStop, 1000);
+  J1939ILControlStop(1);
+  ActivateButtons(0);
+}
+//Reboot
+on sysvar CT::GUI::CFG::BUTTONS::BtnReboot
+{
+  if(@this == 0 || buttonsAreEnabled == 0)
+    return;
+  
+  setTimer(tmrStartStop, 1500);
+  J1939ILControlStop(1);
+  ActivateButtons(0);
+}
+//Reboot/Reconnect
+on timer tmrStartStop
+{
+  J1939ILControlStart();
+  ActivateButtons(1);
+}
+
+on start
+{
+  J1939ILSetNodeProperty("AddressClaimSupport", 2);
+  J1939ILControlStart(171);
+  J1939ILActivateDiagnosticsSupport(1);
+  InitAddressViolationDetectiopn();
+  {
+    byte rowData[16] = {0x10, 0x02, 0x30, 0x04, 0x50, 0x06, 0x70, 0x08, 0x05, 0x11, 0x12, 0x13, 0x21, 0x31, 0x41, 0x51};
+    J1939ILSetMsgRawData(MSG_DUT_FEDA, 16, rowData);
+  }
+  {
+    byte rowData[13] = {0x41, 0x42, 0x43, 0x44, 0x45, 0x2A, 0x42, 0x41, 0x2A, 0x2A, 0x44, 0x41, 0x2A};  
+    J1939ILSetMsgRawData(MSG_DUT_COMP_ID, 13, rowData);
+  }
+  buttonsAreEnabled = 1;
+}
+
+void InitAddressViolationDetectiopn()
+{
+  if(@CT::CFG::DUT::ERROR::Err_7_ignore_address_violation_ == 1)
+    J1939ILEnableAddressViolationDetection(0);
+  else
+    J1939ILEnableAddressViolationDetection(3);
+}
+
+on sysvar CT::CFG::DUT::ERROR::Err_7_ignore_address_violation_
+{
+  InitAddressViolationDetectiopn();
+}
+
+void ActivateButtons(long activate)
+{
+  if(activate)
+  {
+    setControlForeColor("DUT Control", "BtnReset",      MakeRGB(178, 34, 34));
+    setControlForeColor("DUT Control", "BtnReboot",     MakeRGB(178, 34, 34));
+    setControlForeColor("DUT Control", "BtnReconnect",  MakeRGB(178, 34, 34));
+    setControlForeColor("DUT Control", "BtnOffOn1ms",   MakeRGB(178, 34, 34));
+    setControlForeColor("DUT Control", "BtnOffOn5s",    MakeRGB(178, 34, 34));
+    buttonsAreEnabled = 1;
+  }
+  else
+  {
+    setControlForeColor("DUT Control", "BtnReset",      MakeRGB(176, 176, 176));
+    setControlForeColor("DUT Control", "BtnReboot",     MakeRGB(176, 176, 176));
+    setControlForeColor("DUT Control", "BtnReconnect",  MakeRGB(176, 176, 176));
+    setControlForeColor("DUT Control", "BtnOffOn1ms",   MakeRGB(176, 176, 176));
+    setControlForeColor("DUT Control", "BtnOffOn5s",    MakeRGB(176, 176, 176));
+    buttonsAreEnabled = 0;
+  }
+}
+
+on preStart
+{
+  J1939ILControlInit();
+}
+
+on preStop
+{
+  ActivateButtons(1);
+}
+
+long J1939ILOnRequest(long rqPGN, long sourceAddr, long destAddr)
+{
+  if(rqPGN == 0xFEE3 && destAddr != 0xFF)
+  {
+    return 2;
+  }
+  return 1;
+}
+
+long J1939ILOnTxPrepare(pg * txPG)
+{
+  if(@CT::CFG::DUT::ERROR::Err_1_Wrong_Padding == 1 && txPG.pgn == 0xFECA && txPG.dlc == 8)
+  {
+    txPG.byte(6) = 0;
+    txPG.byte(7) = 0;
+  }
+  return 1;
+}
+
+long J1939ILOnRxMessage(pg * rxPG)
+{
+  //data about current RTS/CTS transport
+  dword pgnOfRtsCts = 0xFFFFFFFF;
+  byte totalNumOfPackets;
+  word totalSize;
+  if(rxPG.pgn == 0xEC00)
+  {
+    pg TPCMxx curTPCM;
+    byte controlByte;
+    
+    controlByte = rxPG.byte(0);
+    curTPCM = rxPG;
+    if(controlByte == 0x10)
+    {
+      pgnOfRtsCts = curTPCM.PGNumber;
+      totalSize = curTPCM.TotalMessageSize;
+      totalNumOfPackets = curTPCM.TotalNumberOfPackets;
+    }
+    else if(controlByte == 0xFF || controlByte == 0x13)
+    {
+      pgnOfRtsCts = 0xFFFFFFFF;
+    }
+  }
+  
+  if(@CT::CFG::DUT::ERROR::Err_2_consider_Prio == 1 && rxPG.PGN == 0xEA00 && rxPG.Prio == 0)
+  {
+    // Ignore RQST with Prio=0
+    return 0;
+  }
+  if(@CT::CFG::DUT::ERROR::Err_3_consider_Abort_for_BAM == 1 && rxPG.PGN == 0xEC00 && rxPG.SA == 0xF9 && rxPG.DA == 0xFF && rxPG.byte(0) == 0xFF)
+  {
+    // Abort really stops a transmitted BAM
+    J1939ILKillTp(1, 0xAB, 0xFF);
+    return 1;
+  }
+  if(@CT::CFG::DUT::ERROR::Err_4_BAM_kills_not_finished_BAM == 1 && rxPG.PGN == 0xEC00 && rxPG.SA == 0xF9 && rxPG.da == 0xFF)
+  {
+    // Received BAM Frame kills the not finished receiving BAM
+    J1939ILKillTp(1, 0xF9, 0xFF);
+    return 1;
+  }
+  if(@CT::CFG::DUT::ERROR::Err_5_ignore_Hold == 1 && rxPG.PGN == 0xEC00 && rxPG.SA == 0xF9 && rxPG.DA == 0xAB && rxPG.byte(0) == 0x11 && rxPG.byte(1) == 0)
+  {
+    // DUT ignores a CTS with "hold connection"
+    rxPG.byte(1) = 1;
+    rxPG.byte(2) = 1;
+    return 1;
+  }
+  if(@CT::CFG::DUT::ERROR::Err_6_accept_TP_DT_with_dlc_less_8 == 1 && rxPG.pgn == 0xEB00 && rxPG.dlc < 8)
+  {
+    // DUT accepts TP.DT with dlc < 8
+    pg TPCMxx myEoMA;
+    if(pgnOfRtsCts == 0xFFFFFFFF)
+    {
+      return 1;
+    }
+    J1939ILKillTp(2, rxPG.sa, rxPG.da);
+    J1939InitPGData(myEoMA);
+    myEoMA.sa = rxPG.da;
+    myEoMA.da = rxPG.sa;
+    myEoMA.ControlByte = 0x13; //EoMA
+    myEoMA.TotalMessageSizeEoMA = totalSize;
+    myEoMA.TotalNumberOfPacketsEoMA = totalNumOfPackets;
+    myEoMA.PGNumber = pgnOfRtsCts;
+    output(myEoMA);
+    return 0;
+  }
+  
+  return 1; 
+}
+
+long J1939ILOnAddressViolation( pg * txPG )
+{
+  long lastTime = 0;
+  long curTime;
+  curTime = timeNow();
+  if(curTime - lastTime > 500000)
+  {
+    lastTime = curTime;
+    return 1;
+  }
+  else
+  {
+    return 0;
+  }
+}

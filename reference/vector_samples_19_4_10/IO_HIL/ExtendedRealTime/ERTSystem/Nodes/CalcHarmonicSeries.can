@@ -1,0 +1,35 @@
+/*@!Encoding:65001*/
+includes
+{
+  
+}
+
+variables
+{
+  msTimer genericLoadTimer;
+}
+
+on start
+{
+  @sysvar::Calc::ToggleCalculation = 0;
+  setTimerCyclic(genericLoadTimer, 5);
+}
+
+on timer genericLoadTimer
+{
+  calcHarmonicSeries(); 
+}
+
+void calcHarmonicSeries()
+{
+  int64 i;
+  double sum;
+  int64 n;
+  n = 10000 * @sysvar::Calc::ToggleCalculation;
+  sum = 0;
+  for(i=1;i<n;i++)
+  {
+    sum += (1.0 / (i));
+  }
+}
+

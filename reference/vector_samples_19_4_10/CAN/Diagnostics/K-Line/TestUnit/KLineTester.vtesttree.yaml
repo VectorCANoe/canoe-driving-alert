@@ -1,0 +1,12 @@
+version: 2.2.0
+
+test-tree:
+  - test-fixture: K-Line Tester
+    description: K-Line Tester
+    elements:
+      - capl-test-case: TC_AccessTimingParameters
+        title: Read ECU Timings
+      - capl-test-case: TC_FastInitLowPhase
+        title: Verify Fast Init Low Phase
+      - capl-test-case: TC_NoAnswerAfterP2ExtendenTimout
+        title: Verify Request Not Answered After Timout

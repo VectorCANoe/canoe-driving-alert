@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<SensorConfiguration xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Psi5 />
+  <Lvds />
+  <Uart />
+  <Sent />
+  <I2C />
+  <Spi>
+    <SpiChannel name="SlaveChannel" hardwareChannelId="5" signalVoltageLowV="0" signalVoltageHighV="3.3">
+      <SpiMaster name="Master" simulationMode="real" />
+      <SpiSlave name="Slave1_IF" simulationMode="simulated" chipSelectMode="lowActive" clockFrequencyHz="1000000" clockPhase="secondEdge" clockPolarity="idleLow" waitTimeAfterCsActiveUs="0" waitTimeBeforeCsInactiveUs="0" operationMode="streaming" decoderLength="7" decoderMask="127" decoderPhaseMisoData="0" decoderPhaseBehavior="fixedPattern">
+        <SpiFrame name="SSPI_32b_IF" lengthBits="32" mappedDecoderValue="0">
+          <Miso>
+            <SpiFrameMember name="D" isConstant="false" lengthBits="1" offsetBits="6" initialValue="0" bitOrder="MSB0" isSigned="false">
+              <Scaling unit="" offset="0" factor="1" />
+            </SpiFrameMember>
+            <SpiFrameMember name="SA" isConstant="false" lengthBits="5" offsetBits="7" initialValue="0" bitOrder="MSB0" isSigned="false">
+              <Scaling unit="" offset="0" factor="1" />
+            </SpiFrameMember>
+            <SpiFrameMember name="ReadData" isConstant="false" lengthBits="17" offsetBits="12" initialValue="0" bitOrder="MSB0" isSigned="false">
+              <Scaling unit="" offset="0" factor="1" />
+            </SpiFrameMember>
+            <SpiFrameMember name="CRC" isConstant="false" lengthBits="3" offsetBits="29" initialValue="0" bitOrder="MSB0" isSigned="false">
+              <Scaling unit="" offset="0" factor="1" />
+            </SpiFrameMember>
+          </Miso>
+          <Mosi>
+            <SpiFrameMember name="TA" isConstant="false" lengthBits="5" offsetBits="0" initialValue="0" bitOrder="MSB0" isSigned="false">
+              <Scaling unit="" offset="0" factor="1" />
+            </SpiFrameMember>
+            <SpiFrameMember name="WriteData" isConstant="false" lengthBits="22" offsetBits="5" initialValue="0" bitOrder="MSB0" isSigned="false">
+              <Scaling unit="" offset="0" factor="1" />
+            </SpiFrameMember>
+            <SpiFrameMember name="CRC" isConstant="false" lengthBits="3" offsetBits="27" initialValue="0" bitOrder="MSB0" isSigned="false">
+              <Scaling unit="" offset="0" factor="1" />
+            </SpiFrameMember>
+          </Mosi>
+        </SpiFrame>
+      </SpiSlave>
+    </SpiChannel>
+  </Spi>
+  <Rs485 />
+</SensorConfiguration>

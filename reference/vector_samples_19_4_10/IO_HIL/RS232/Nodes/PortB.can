@@ -1,0 +1,369 @@
+/*@!Encoding:1252*/
+includes
+{
+  
+}
+
+variables
+{  
+  /* This grogram code is a demo code to show how to create own routines 
+  to start RS232 communication to third party hardware. Vector is not liable 
+  or responsible for damages or injuries using that code.*/
+  
+  const int cHANDSHAKE_DISABLED = 0;
+  const int cBUFFER_SIZE = 1000;
+  const int cTXBUFFER_SIZE = 20;
+  
+  // data is copied from callback buffer to gReceiverBuffer (collects data)
+  byte gReceiverCallbackBuffer[cBUFFER_SIZE];
+  
+  // returnvalues for CAPL functions
+  dword retVal_RS232ClosePortB = 0;
+  dword retVal_RS232OpenPortB = 0;
+  dword retVal_RS232ConfigurePortB = 0;  
+  dword retVal_Rs232SetHandshakePortB = 0;
+  dword retVal_Rs232ReceivePortB = 0;
+  dword retVal_Rs232SendPortB = 0;
+  
+  char gcharTxBuffer [cTXBUFFER_SIZE];
+  byte gbytTxBuffer [cTXBUFFER_SIZE];
+  long gchrbyteIndex = 0;
+
+  char gcharReceiverBuffer[cBUFFER_SIZE];
+  byte gEmptyBuffer[cBUFFER_SIZE];
+  long gNumberOfReceivedBytes = 0;
+  dword gNumberOfBytesToCopy;
+
+   // timer to light up and down LED control on panel
+   msTimer tmrBytesReceived;  
+}
+
+on start
+{  
+  // clear string for transmission data on Port A
+  if (0 != sysSetVariableString(sysvar::RS232::TransmissionDataPortA,""))
+    write("on start --> Port A sysSetVariableString --> Error --> cleaning --> sysvar::RS232::TransmissionDataPortA");
+    
+  // clear string for reception data on Port B
+  if (0 != sysSetVariableString(sysvar::RS232::ReceptionDataPortB,""))
+    write("on start --> Port B sysSetVariableString --> Error --> cleaning --> sysvar::RS232::TransmissionDataPortB");
+
+  InitSerialPort();
+}
+
+on preStop
+{
+  retVal_RS232ClosePortB = rs232Close(@sysvar::RS232::SerialComPortPortB);
+  switch(retVal_RS232ClosePortB)
+  {
+    case(0x0):
+    {
+      write("on preStop PortB --> rs232Close --> Error");
+      break;
+    }
+    case(0x1):
+    {
+      // write("on preStop PortB --> rs232Close --> Succes");
+      break;
+    }
+    default:
+    {
+      write("on preStop PortB --> rs232Close --> Unhandled Returnvalue");
+      break;
+    }    
+  }
+}
+
+
+
+on sysvar sysvar::RS232::SerialComPortPortB
+{
+  InitSerialPort();   
+}
+
+on sysvar sysvar::RS232::BitPerSecondsPortB
+{
+  InitSerialPort();   
+}
+
+on sysvar sysvar::RS232::DataBitsPortB
+{
+  InitSerialPort();    
+}
+
+on sysvar sysvar::RS232::ParityPortB
+{  
+  InitSerialPort();   
+}
+
+on sysvar sysvar::RS232::StopBitsPortB
+{
+  InitSerialPort();     
+}
+
+byte InitSerialPort()
+{
+  retVal_RS232ClosePortB = RS232Close(@sysvar::RS232::SerialComPortPortB);
+  switch(retVal_RS232ClosePortB)
+  {
+    case(0x0):
+    {
+      write("Port B RS232Close --> Error");
+      break;      
+    }
+    case(0x1):
+    {
+      // write("Port B RS232Close --> Success");
+      break;
+    }
+    default:
+    {
+      write("Port B RS232Close --> Unhandled returnvalue");
+     break; 
+    }    
+  }
+  
+  @sysvar::RS232::TransmissionStatePortB = 0;
+  
+  retVal_RS232OpenPortB = RS232Open(@sysvar::RS232::SerialComPortPortB);
+  switch(retVal_RS232OpenPortB)
+  {
+    case(0x0):
+    {
+      write("Port B RS232Open --> Error");
+      break;
+    }
+    case(0x1):
+    {
+      // write("Port B RS232Open --> Success --> Open");
+      break;
+    }
+    default:
+    {
+      write("Port B RS232Open --> Unhandled returnvalue");
+      break;
+    }
+  }
+  
+  retVal_RS232ConfigurePortB = RS232Configure(@sysvar::RS232::SerialComPortPortB, @sysvar::RS232::BitPerSecondsPortB, @sysvar::RS232::DataBitsPortB, @sysvar::RS232::StopBitsPortB, @sysvar::RS232::ParityPortB);
+  switch(retVal_RS232ConfigurePortB)
+  {
+    case(0):
+    {
+      write("Port B RS232Configure --> Error");
+      break; 
+    }
+    case(0x1):
+    {
+      // write("Port B RS232Configure --> Success");
+      break;
+    }
+    default:
+    {
+      write("Port B RS232Configure --> Unhandled return value");
+      break;
+    }
+  }
+  
+  retVal_Rs232SetHandshakePortB = Rs232SetHandshake(@sysvar::RS232::SerialComPortPortB, cHANDSHAKE_DISABLED, 0, 0, 0, 0);
+  switch(retVal_Rs232SetHandshakePortB)
+  {
+    case(0x0):
+    {
+      write("Port B Rs232SetHandshake --> Error");
+      break;      
+    }
+    case(0x1):
+    {
+      // write("Port B Rs232SetHandshake --> Success");
+      break;
+    }
+    default:
+    {
+      write("Port B Rs232SetHandshake --> Unhandled Returnvalue");
+      break;      
+    }
+  }
+  
+  retVal_Rs232ReceivePortB = Rs232Receive(@sysvar::RS232::SerialComPortPortB, gReceiverCallbackBuffer, cBUFFER_SIZE);
+  switch(retVal_Rs232ReceivePortB)
+  {
+    case(0x0):
+    {
+      write("Port B Rs232Receive --> Error");
+      break;
+    }
+    case(0x1):
+    {
+      //write("Port B Rs232Receive --> Success");
+      break;      
+    }
+    default:
+    {
+      write("Port B Rs232Receive --> Unhandled Returnvalue");
+      break;      
+    }
+  }  
+  return 0; 
+}
+
+on sysvar sysvar::RS232::SendDataPortB
+{ 
+  // check current state of sysVar SendDataPortB
+  if (1 == @sysvar::RS232::SendDataPortB)
+  {
+    // transmission active at the moment 
+    if (1 == @sysvar::RS232::TransmissionStatePortB)
+    {
+      write("Port B Ongoing transmission, please wait for completion of previous one !");    
+    }
+    else
+    {
+      // no transmission active at the moment - execute current transmit request      
+      sysGetVariableString(sysvar::RS232::TransmissionDataPortB, gcharTxBuffer, elcount(gcharTxBuffer));
+      
+      if (0 != strlen(gcharTxBuffer))
+      {
+        for (gchrbyteIndex = 0; gchrbyteIndex < strlen(gcharTxBuffer); gchrbyteIndex++)
+          gbytTxBuffer[gchrbyteIndex] = gcharTxBuffer[gchrbyteIndex];
+        
+         retVal_Rs232SendPortB = Rs232Send(@sysvar::RS232::SerialComPortPortB, gbytTxBuffer, strlen(gcharTxBuffer));
+         switch(retVal_Rs232SendPortB)
+         {
+           case(0x0):
+           {
+             write("Port B Rs232Send --> Error");
+             break;
+           }
+           case(0x1):
+           {
+             // write("Port B Rs232Send --> Success");
+             @sysvar::RS232::TransmissionStatePortB = 1;
+             break;
+           }
+           default:
+           {
+             write("Port B Rs232Send --> Unhandled returnvalue");
+             break;
+           }        
+        }
+      }
+      else
+      {
+         write("Port B No data to be transmitted on Port B");      
+      }
+    }
+  }    
+}
+
+RS232OnSend(dword port, byte buffer[], dword number)
+{
+  // set state
+  @sysvar::RS232::TransmissionStatePortB= 0;
+}
+
+RS232OnError(dword port, dword errorFlags)
+{
+  // make state public
+  @sysvar::RS232::TransmissionStatePortB= 0;
+
+  write("Port B RS232OnError PortB --> Error handler called with error code %d !", errorFlags);
+
+  if (errorFlags & 1)
+    write("Port B RS232OnError --> %d informs of send error",errorFlags);
+  if (errorFlags & 2)
+    write("Port B RS232OnError --> %d informs of receive error",errorFlags);
+  if (errorFlags & 4)
+    write("Port B RS232OnError --> %d informs of frame error",errorFlags);
+  if (errorFlags & 8)
+    write("Port B RS232OnError --> %d informs of parity error",errorFlags);
+  if (errorFlags & 16)
+    write("Port B RS232OnError --> %d informs of overrun error",errorFlags);
+  if (errorFlags & 32)
+    write("Port B RS232OnError --> %d informs of receiver overrun error",errorFlags);
+  if (errorFlags & 64)
+    write("Port B RS232OnError --> %d informs of break state",errorFlags);
+  if (errorFlags & 128)
+    write("Port B RS232OnError --> %d informs of send timeout error",errorFlags);
+}
+
+on sysvar sysvar::RS232::ClearDataPortB
+{
+  if (1 == @sysvar::RS232::ClearDataPortB)
+  {
+    // clear transmission string on user command for Port B
+    if (0 != sysSetVariableString(sysvar::RS232::TransmissionDataPortB,""))
+      write("Port B sysvar::RS232::ClearDataPortB --> sysSetVariableString --> Error --> cleaning --> sysvar::RS232::TransmissionDataPortB");
+    
+    // clear reception string ion user command for Port B
+    if (0 != sysSetVariableString(sysvar::RS232::ReceptionDataPortB,""))
+     write("Port B sysvar::RS232::ClearDataPortB --> sysSetVariableString --> Error --> cleaning --> sysvar::RS232::TransmissionDataPortB");    
+  
+    strncpy(gcharReceiverBuffer, "", strlen(""));    
+  }  
+}
+
+RS232OnReceive(dword RXport, byte RXbuffer[], dword numberRxBytes)
+{
+  // collect data as long as buffer has space for it
+  if ((gNumberOfReceivedBytes + numberRxBytes) > cBUFFER_SIZE)
+  {
+     // no more than that ! it is full now
+     gNumberOfBytesToCopy = cBUFFER_SIZE - gNumberOfReceivedBytes; 
+  } 
+  else
+   {
+     gNumberOfBytesToCopy = numberRxBytes;
+   }
+
+  if (gNumberOfBytesToCopy == 0)
+  {
+     // nothing to add
+     return; 
+  }
+
+  CopyBuffer(gcharReceiverBuffer, gNumberOfReceivedBytes, RXbuffer, gNumberOfBytesToCopy);
+  gNumberOfReceivedBytes += gNumberOfBytesToCopy; 
+
+  // indicate data reception
+  @sysvar::RS232::ReceptionIndicationPortB = 1;
+  
+  cancelTimer(tmrBytesReceived);
+  setTimer(tmrBytesReceived,500);
+}
+
+CopyBuffer(char destBuffer[], dword destOffset, byte srcBuffer[], dword srcNumber)
+{
+  dword i;
+  
+  // transfer byte data into string buffer
+  for (i=0; i<srcNumber; i++)
+  {
+    destBuffer[destOffset+i] = srcBuffer[i];
+  }
+}
+
+ClearBuffer(char destBuffer[], dword numberBytesToBeCleared)
+{
+  dword j;
+  
+  // clean buffer to show current transmission only
+  for (j = 0; j < numberBytesToBeCleared; j++)
+  {
+    destBuffer[j] = 0;
+  }  
+}
+
+
+on timer tmrBytesReceived
+{
+  sysSetVariableString(sysvar::RS232::ReceptionDataPortB, gcharReceiverBuffer);
+     
+  // reset buffer
+  ClearBuffer(gcharReceiverBuffer, gNumberOfReceivedBytes); 
+  gNumberOfReceivedBytes = 0;
+
+  // reset data indication
+  sysSetVariableLong(sysvar::RS232::ReceptionIndicationPortB,0); 
+}
+

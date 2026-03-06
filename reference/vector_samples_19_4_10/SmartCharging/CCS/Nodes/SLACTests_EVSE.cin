@@ -1,0 +1,191 @@
+/*@!Encoding:1252*/
+includes
+{
+
+}
+
+variables
+{
+  byte EVSEMacAddress[6] = { 0x02, 0x00, 0x00, 0x00, 0x01, 0x02 };
+  byte EVMacAddress[6] = { 0x02, 0x00, 0x00, 0x00, 0x00, 0x00 };
+  
+  // SLAC message parameters
+  byte MyRunId[8] =  { 0x1F, 0xF1, 0x2E, 0xE2, 0x3D, 0xD3, 0xC4, 0x4C };
+  byte NMK[16] =  { 0xAA, 0xBB, 0xCC, 0xDD, 0xEE, 0xFF, 0x11, 0x22, 0xAA, 0xBB, 0xCC, 0xDD, 0xEE, 0xFF, 0x11, 0x22 };
+  byte NID[7]  =  { 0x10, 0x20, 0x30, 0x40, 0x50, 0x60, 0x70 };
+  byte SLACtestId[17] = { 0xFF, 0xAA, 0xBB, 0xCC, 0xDD, 0xEE, 0xFF, 0x11, 0x22, 0xAA, 0xBB, 0xCC, 0xDD, 0xEE, 0xFF, 0x11, 0x22 };
+  byte SLACtestNonce[4] = { 0xF0, 0xE1, 0xD2, 0xC3 };
+  byte SLACtestPID[2] = { 0xFF, 0x22 };
+  byte SLACtestOUI[3] = { 0x11, 0x22, 0x33 };
+  const cAADsize = 58;
+  
+  msTimer tMessageTxEVSE;
+}
+
+on timer tMessageTxEVSE
+{
+  @sysvar::EVSE_Sim::SysEVSE_MessageTx = 0;
+}
+
+on preStart
+{
+  @SLAC_Test::SysStartSLACTest = 0;
+}
+
+/**********************************************************************************************************************
+ *  Common
+ *********************************************************************************************************************/
+
+on sysVar SLAC_Test::SysStartSLACTest
+{  
+  if (@this == 1)
+  {    
+    EVSE.ResetSimulation.Call();
+    EVSE.SetAdHocSendingEnabled.Call(1);
+  }
+}
+
+///**********************************************************************************************************************
+// *  EVSE
+// *********************************************************************************************************************/
+
+on value_update EVSE.OnLastTransmittedMessageIdChanged.LatestCall.lastTxMessageId
+{
+  @sysvar::EVSE_Sim::SysEVSE_MessageTx = 1;
+  setTimer(tMessageTxEVSE,150);
+}
+
+on sysVar SLAC_Test::SysSendEVSE_CM_Set_Key_Req
+{
+  if (@this > 0)
+  {
+    int i;
+    
+    for(i = 0; i < elcount(NMK); i++){
+      $EVSE.SLAC.CM_SET_KEY_REQ.NMK[i] = NMK[i];
+    }
+    for(i = 0; i < elcount(NID); i++){
+      $EVSE.SLAC.CM_SET_KEY_REQ.NID[i] = NID[i];
+    }
+    if(@this == 2)
+    {
+      $EVSE.SLAC.CM_SET_KEY_REQ.KeyType = 0x04;
+      for(i = 0; i < elcount(SLACtestNonce); i++){
+        $EVSE.SLAC.CM_SET_KEY_REQ.MyNonce[i] = SLACtestNonce[i];
+      }    
+      for(i = 0; i < elcount(SLACtestNonce); i++){
+        $EVSE.SLAC.CM_SET_KEY_REQ.YourNonce[i] = SLACtestNonce[i];
+      }    
+      $EVSE.SLAC.CM_SET_KEY_REQ.PID = 0x1F;
+      for(i = 0; i < elcount(SLACtestPID); i++){
+        $EVSE.SLAC.CM_SET_KEY_REQ.PRN[i] = SLACtestPID[i];
+      }
+      $EVSE.SLAC.CM_SET_KEY_REQ.PMN = 0xF1;
+      $EVSE.SLAC.CM_SET_KEY_REQ.CCoCapability = 0x02;
+      $EVSE.SLAC.CM_SET_KEY_REQ.NewEKS = 0x01;
+    }
+  }  
+}
+
+on sysVar SLAC_Test::SysSendCM_SLAC_Parm_Cnf
+{
+  if (@this > 0)
+  {
+    int i;
+    for(i = 0; i < elcount(MyRunId); i++){
+      $EVSE.SLAC.CM_SLAC_PARM_CNF.RunID[i] = MyRunId[i];
+    }
+    $EVSE.SLAC.CM_SLAC_PARM_CNF.NumSounds = 10;
+    $EVSE.SLAC.CM_SLAC_PARM_CNF.TimeOut.impl = 6;
+    
+    if(@this == 2)
+    {
+      for(i = 0; i < elcount(EVSEMacAddress); i++){
+      $EVSE.SLAC.CM_SLAC_PARM_CNF.ForwardingStation[i] = EVSEMacAddress[i];
+      }
+      $EVSE.SLAC.CM_SLAC_PARM_CNF.RespType = 0x00;
+      for(i = 0; i < elcount(EVMacAddress); i++){
+        $EVSE.SLAC.CM_SLAC_PARM_CNF.MSoundTarget[i] = EVMacAddress[i];
+      }
+      $EVSE.SLAC.CM_SLAC_PARM_CNF.ApplicationType = 0x05;
+      $EVSE.SLAC.CM_SLAC_PARM_CNF.SecurityType = 0x06;
+    }    
+  }  
+}
+
+on sysVar SLAC_Test::SysSendCM_Atten_Char_Ind
+{  
+  if (@this > 0)
+  {
+    int i;
+    for(i = 0; i < cAADsize; i++){
+      $EVSE.SLAC.CM_ATTEN_CHAR_IND.ATTEN_PROFILE[i] = i+1;
+    }
+    $EVSE.SLAC.CM_ATTEN_CHAR_IND.NumSounds = 10;
+    $EVSE.SLAC.CM_ATTEN_CHAR_IND.NumGroups = 58;
+    
+    if(@this == 2)
+    {
+      $EVSE.SLAC.CM_ATTEN_CHAR_IND.ApplicationType = 0x05;
+      $EVSE.SLAC.CM_ATTEN_CHAR_IND.SecurityType = 0x06;
+      for(i = 0; i < elcount(SLACtestId); i++){
+        $EVSE.SLAC.CM_ATTEN_CHAR_IND.SourceID[i] = SLACtestId[i];
+      }
+      for(i = 0; i < elcount(SLACtestId); i++){
+        $EVSE.SLAC.CM_ATTEN_CHAR_IND.RespID[i] = SLACtestId[i];
+      }
+    } 
+  }  
+}
+
+on sysVar SLAC_Test::SysSendCM_Validate_Cnf
+{
+  if (@this > 0)
+  {
+    $EVSE.SLAC.CM_VALIDATE_CNF.ValidateResult = 0x01;
+    $EVSE.SLAC.CM_VALIDATE_CNF.ToggleNum = 0x02;
+    
+    if(@this == 2)
+      $EVSE.SLAC.CM_VALIDATE_CNF.SignalType = 0x01;
+  }  
+}
+
+on sysVar SLAC_Test::SysSendCM_SLAC_Match_Cnf
+{
+  if (@this > 0)
+  {
+    int i;
+    for(i = 0; i < elcount(MyRunId); i++){
+      $EVSE.SLAC.CM_SLAC_MATCH_CNF.RunID[i] = MyRunId[i];
+    }
+    for(i = 0; i < elcount(EVMacAddress); i++){
+      $EVSE.SLAC.CM_SLAC_MATCH_CNF.PevMAC[i] = EVMacAddress[i];
+    }
+    for(i = 0; i < elcount(EVSEMacAddress); i++){
+      $EVSE.SLAC.CM_SLAC_MATCH_CNF.EvseMAC[i] = EVSEMacAddress[i];
+    }
+    for(i = 0; i < elcount(NID); i++){
+      $EVSE.SLAC.CM_SLAC_MATCH_CNF.NID[i] = NID[i];
+    }
+    for(i = 0; i < elcount(NMK); i++){
+      $EVSE.SLAC.CM_SLAC_MATCH_CNF.NMK[i] = NMK[i];
+    }
+    
+    if(@this == 2)
+    {
+      $EVSE.SLAC.CM_SLAC_MATCH_CNF.ApplicationType = 0x11;
+      $EVSE.SLAC.CM_SLAC_MATCH_CNF.SecurityType = 0x0F;
+      $EVSE.SLAC.CM_SLAC_MATCH_CNF.MVFLength[0] = 0x32;
+      for(i = 0; i < elcount(SLACtestId); i++){
+        $EVSE.SLAC.CM_SLAC_MATCH_CNF.PevID[i] = SLACtestId[i];
+      }
+      for(i = 0; i < elcount(SLACtestId); i++){
+        $EVSE.SLAC.CM_SLAC_MATCH_CNF.EvseID[i] = SLACtestId[i];
+      }
+      for(i = 0; i < elcount(SLACtestId); i++){
+        $EVSE.SLAC.CM_SLAC_MATCH_CNF.ReservedField[i] = SLACtestId[i];
+      }
+      $EVSE.SLAC.CM_SLAC_MATCH_CNF.Reserved = 0x12;
+    }
+  }  
+}

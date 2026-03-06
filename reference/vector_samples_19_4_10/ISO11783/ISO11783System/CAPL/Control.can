@@ -1,0 +1,67 @@
+﻿/*@!Encoding:65001*/
+includes
+{
+  
+}
+
+variables
+{
+  
+}
+
+on pg VT12
+{
+  // ledTest
+  if(this.VTFunctionVTtoECU == VT12.VTFunctionVTtoECU::EndOfObjectPoolResponse)
+  {
+    @Control::svTest = 1;
+  }
+  else if(this.VTFunctionVTtoECU == VT12.VTFunctionVTtoECU::SoftKeyActivation
+  && this.KeyActivationCode == VT12.KeyActivationCode::KeyHasBeenReleased
+  && this.KeyObjectID == 153)
+  {
+    @Control::svTest = 2;
+  }
+  
+  //ledGas
+  if(this.VTFunctionVTtoECU == VT12.VTFunctionVTtoECU::SoftKeyActivation
+  && this.KeyActivationCode == VT12.KeyActivationCode::KeyHasBeenReleased
+  && this.KeyObjectID == 151)
+  {
+    @Control::svGas = 1;
+    @Control::svOn = 2;
+  }
+}
+
+on sysvar GPS::GPS1.Speed
+{
+  if(@this > 5)
+  {
+    @Control::svAdjustSpeed = 1;
+    @Control::svOnOff = 1;
+    @Control::svGas = 2;
+  }
+}
+
+on pg PD_TC
+{
+  //ledStartTask
+  if(this.Command == PD_TC.Command::DeviceDescription
+  && this.DeviceDescriptionMsgType == PD_TC.DeviceDescriptionMsgType::ObjectPoolActivateResponse)
+  {
+    @Control::svStartTask = 1;
+    @Control::svTest = 2;
+  }
+  
+  //ledOn
+  if(this.Command == PD_TC.Command::TaskControllerStatus
+  && this.StatusTotalsActive == 1 && @Control::svStartTask == 1)
+  {
+    if(@Control::svOn == 0)
+    {
+      @Control::svOn = 1;
+    }
+    @Control::svStartTask = 2;
+  }
+  
+}

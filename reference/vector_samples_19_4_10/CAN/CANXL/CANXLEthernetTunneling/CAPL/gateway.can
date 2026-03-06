@@ -1,0 +1,43 @@
+/*@!Encoding:1252*/
+
+includes
+{
+  #include "common.cin"
+  #include "tunneling.cin"
+  #include "fragmentation.cin"
+}
+
+variables
+{
+  
+}
+
+on ethernetPacket*
+{
+  stack message* msg;
+  
+  // do not process tx events
+  if (this.Dir == Tx)
+  {
+    return;
+  }
+  
+  if (this.msgChannel != 1)
+  {
+    return;
+  }
+  
+  TunnelEthernetFrame(msg, this, @sysvar::Gateway::TunnelMode);
+
+  msg.id = @sysvar::Gateway::CanId;
+  
+  if (@sysvar::Gateway::UseFragmentation)
+  {
+    FragmentMessage(msg, @sysvar::Gateway::FragmentSize);
+  }
+  else
+  {
+    output(msg);
+  }
+  
+}

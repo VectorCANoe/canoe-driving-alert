@@ -1,0 +1,838 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--Vector Test Table Editor-->
+<ttroot version="32" xmlns="http://www.vector-informatik.de/ITE/TestTable/1.0">
+  <tt>
+    <tf navid="70aa64da-0f43-4682-abb8-5e08290c0d19">
+      <title>J1939 Compliance Test Tables</title>
+      <description>All J1939 Compliance Test Tables...</description>
+      <preparation>
+        <title>Init Compliance Tests</title>
+        <caplfunction>
+          <title>Initialize Test Environment</title>
+          <name>CTF_INIT_ENV</name>
+        </caplfunction>
+      </preparation>
+      <tf navid="96127e2e-9325-44b9-a326-148f932324e3">
+        <title>Table A10 (interactive)</title>
+        <active>true</active>
+        <capltestcase>
+          <title />
+          <name>CTC_A10_01_CA_NAME</name>
+          <tcid>8cd3ca6a-8e3c-48c8-a18c-8a200de9d66f</tcid>
+        </capltestcase>
+        <capltestcase>
+          <title />
+          <name>CTC_A10_02_System_Initialization</name>
+          <tcid>8b4915ca-672b-4541-8e07-4806d818efba</tcid>
+        </capltestcase>
+        <capltestcase>
+          <title />
+          <name>CTC_A10_03_Non_AAC_Device_Fails</name>
+          <tcid>5c3961a4-a6d4-4b08-b2b5-b6d41dd72155</tcid>
+        </capltestcase>
+        <capltestcase>
+          <title />
+          <name>CTC_A10_04_CommandedAddresses_On_CC_Device</name>
+          <tcid>1bc1b86a-1aa6-4014-a11a-d26773e86833</tcid>
+        </capltestcase>
+        <capltestcase>
+          <title />
+          <name>CTC_A10_05_Address_Recalculation_On_AAC_Device</name>
+          <tcid>ababb3c0-cc25-4592-b134-5e505d82f37f</tcid>
+        </capltestcase>
+        <capltestcase>
+          <title />
+          <name>CTC_A10_06_Send_AC_Request</name>
+          <tcid>da668b37-de7b-4efc-8a89-7fb3e9638b17</tcid>
+        </capltestcase>
+        <capltestcase>
+          <title />
+          <name>CTC_A10_07_Receive_AC_Request_Glob</name>
+          <tcid>8f8ffa27-8b2c-4111-8057-88bd05a6816f</tcid>
+        </capltestcase>
+        <capltestcase>
+          <title />
+          <name>CTC_A10_08_Receive_AC_Request_P2P</name>
+          <tcid>d48e0a1f-7df7-4008-b00b-20cbcfb5d31f</tcid>
+        </capltestcase>
+        <capltestcase>
+          <title />
+          <name>CTC_A10_09_Behaviour_After_AC_Bootup</name>
+          <tcid>10e28093-e707-4006-ace1-d2ff47a525a4</tcid>
+        </capltestcase>
+        <capltestcase>
+          <title />
+          <name>CTC_A10_10_Receive_AC_Low_Prio_Conflict</name>
+          <tcid>0565018b-72ef-484a-bfbd-1e5a8e4d7d6b</tcid>
+        </capltestcase>
+        <capltestcase>
+          <title />
+          <name>CTC_A10_11_Receive_AC_High_Prio_Conflict</name>
+          <tcid>3224a4fa-abc2-4e3c-95c8-e0f2370b3fe6</tcid>
+        </capltestcase>
+        <capltestcase>
+          <title />
+          <name>CTC_A10_12_Receive_AC_Request_If_Not_Claimed</name>
+          <tcid>a3c622ab-3145-4cf3-9c6b-236c3d1f3555</tcid>
+        </capltestcase>
+        <tf navid="ee6e64a5-2eab-4f01-a440-351fd8d626a5">
+          <title>CTC_A10_13_Power_Interruption</title>
+          <capltestcase>
+            <title />
+            <name>CTC_A10_13_Power_Interruption_Short</name>
+            <tcid>ece047a1-4fb2-47ad-8381-a5067b91839e</tcid>
+          </capltestcase>
+          <capltestcase>
+            <title />
+            <name>CTC_A10_13_Power_Interruption_Long</name>
+            <tcid>df424fea-3604-4aa8-9e59-50d1d8475537</tcid>
+          </capltestcase>
+        </tf>
+        <capltestcase>
+          <title />
+          <name>CTC_A10_14_Network_Disruption</name>
+          <tcid>b619c021-70e9-4433-a950-efabf3b9635c</tcid>
+        </capltestcase>
+        <capltestcase>
+          <title />
+          <name>CTC_A10_15_Address_Continuity</name>
+          <tcid>f66004b0-5fc7-44a0-af45-5c8025d25899</tcid>
+        </capltestcase>
+        <capltestcase>
+          <title />
+          <name>CTC_A10_16_Address_Violation_Response</name>
+          <tcid>44c63abe-acc1-4b4c-a94c-49cd43ff765f</tcid>
+        </capltestcase>
+        <capltestcase>
+          <title />
+          <name>CTC_A10_17_System_Notification_Of_Continued_Address_Violation</name>
+          <tcid>64a5fd58-0e0d-466e-8a85-54115796ba69</tcid>
+        </capltestcase>
+        <capltestcase>
+          <title />
+          <name>CTC_A10_18_NAME_Management</name>
+          <tcid>0e359845-970e-4537-bbd1-f4238db95ed3</tcid>
+        </capltestcase>
+      </tf>
+      <tf navid="cdaab870-0e75-4578-be46-8afe3505cab7">
+        <title>Table A3</title>
+        <description> Data link transmit tests - Data link transmit tests - general</description>
+        <capltestcase>
+          <title />
+          <name>CTC_A03_01_PGN</name>
+          <tcid>a4e612e3-eb99-44a3-944c-ce39da9c07ed</tcid>
+        </capltestcase>
+        <capltestcase>
+          <title />
+          <name>CTC_A03_02_EDP</name>
+          <tcid>16c6d198-4846-4bae-807c-3011abb477cc</tcid>
+        </capltestcase>
+        <capltestcase>
+          <title />
+          <name>CTC_A03_03_DP</name>
+          <tcid>6c9bbd87-0a79-40c8-ac54-3a8027da5de1</tcid>
+        </capltestcase>
+        <capltestcase>
+          <title />
+          <name>CTC_A03_04_DLC</name>
+          <tcid>90b57fa1-cb35-4f03-a3c4-35a0d33570ec</tcid>
+        </capltestcase>
+        <capltestcase>
+          <title />
+          <name>CTC_A03_05_DataByteOrder</name>
+          <tcid>8f7ea381-f238-473a-bb04-ff8dd7e6f989</tcid>
+        </capltestcase>
+        <capltestcase>
+          <title />
+          <name>CTC_A03_06_DataPadding</name>
+          <tcid>fd973527-0965-4cf1-890e-1c328da606c5</tcid>
+        </capltestcase>
+        <capltestcase>
+          <title />
+          <name>CTC_A03_07_ReqSched</name>
+          <tcid>3b81adb9-abec-430c-a3b9-f917a0fa1f1a</tcid>
+        </capltestcase>
+        <capltestcase>
+          <title />
+          <name>CTC_A03_08_ReqRetr</name>
+          <tcid>2d7cc7dc-e7b5-4d6b-b77f-829a9d60822a</tcid>
+        </capltestcase>
+        <capltestcase>
+          <title />
+          <name>CTC_A03_09_ReqInterpret</name>
+          <tcid>2210d0f8-4c7a-4829-aef7-40c76d08a63b</tcid>
+        </capltestcase>
+        <capltestcase>
+          <title />
+          <name>CTC_A03_10_RespTime</name>
+          <tcid>f97ab3f0-9c2f-468d-81a9-bd54049d98c9</tcid>
+        </capltestcase>
+        <capltestcase>
+          <title />
+          <name>CTC_A03_11_RespOwnGlobReq</name>
+          <tcid>09ded258-8343-4852-8795-a3cb78b21868</tcid>
+        </capltestcase>
+        <capltestcase>
+          <title />
+          <name>CTC_A03_12_SupportAckAdrData</name>
+          <tcid>d1e80f1f-c688-4dd0-a53c-fbc4dd51855d</tcid>
+        </capltestcase>
+      </tf>
+      <tf navid="e514e713-e338-4d6b-b423-02889ea82b79">
+        <title>Table A4</title>
+        <capltestcase>
+          <title />
+          <name>CTC_A04_01_MsgTolerance</name>
+          <tcid>20a0468a-3fd8-4465-913b-80488ae5f2d2</tcid>
+        </capltestcase>
+        <capltestcase>
+          <title />
+          <name>CTC_A04_02_CAN2B</name>
+          <tcid>746a6dca-61de-4318-8cdf-5825c8086ff7</tcid>
+        </capltestcase>
+        <capltestcase>
+          <title />
+          <name>CTC_A04_03_PGNReceivePrioIndep</name>
+          <tcid>3fb011bc-769d-4d2b-b3ae-c4a842583bc3</tcid>
+        </capltestcase>
+        <capltestcase>
+          <title />
+          <name>CTC_A04_04_EDPinPGN</name>
+          <tcid>fc021b70-92c2-4c41-ae48-04a0071e45aa</tcid>
+        </capltestcase>
+        <capltestcase>
+          <title />
+          <name>CTC_A04_05_DPinPGN</name>
+          <tcid>ab69a1ef-8b76-4105-9cac-3985ec56dc94</tcid>
+        </capltestcase>
+        <capltestcase>
+          <title />
+          <name>CTC_A04_06_FilterOnDstAddr</name>
+          <tcid>9c6d4b5b-6166-47ba-a25d-298c7b52b156</tcid>
+        </capltestcase>
+        <capltestcase>
+          <title />
+          <name>CTC_A04_07_GlobDestAddr</name>
+          <tcid>aed0ca8d-32e9-4d9e-8c95-5ef4e168202c</tcid>
+        </capltestcase>
+        <capltestcase>
+          <title />
+          <name>CTC_A04_08_PDUProcCapabilities</name>
+          <tcid>622a6a2a-0fa9-41d3-a4c2-24072e88b76e</tcid>
+        </capltestcase>
+        <capltestcase>
+          <title />
+          <name>CTC_A04_09_Multipacket_Single</name>
+          <tcid>6a77ea31-af3f-4377-9115-2a6883bfb386</tcid>
+        </capltestcase>
+        <capltestcase>
+          <title />
+          <name>CTC_A04_10_Multipacket_PDU1</name>
+          <tcid>2f18b6f9-5d9a-4595-849c-ab8a3e24c757</tcid>
+        </capltestcase>
+        <capltestcase>
+          <title />
+          <name>CTC_A04_11_Multipacket_PDU2</name>
+          <tcid>e006ff37-bef9-41c2-bffb-3d7f622465e7</tcid>
+        </capltestcase>
+        <capltestcase>
+          <title />
+          <name>CTC_A04_12_Requests</name>
+          <tcid>5b6610bb-1041-456f-b09e-0e3fb4753f27</tcid>
+        </capltestcase>
+        <capltestcase>
+          <title />
+          <name>CTC_A04_13_P2P_Response_PDU1_DLC8</name>
+          <tcid>1ca0a776-d61e-4ad4-97ab-b047026523b0</tcid>
+        </capltestcase>
+        <capltestcase>
+          <title />
+          <name>CTC_A04_14_Glob_Response_PDU1_DLC8</name>
+          <tcid>595cab16-19fa-4361-94b1-96350f43bd82</tcid>
+        </capltestcase>
+        <capltestcase>
+          <title />
+          <name>CTC_A04_15_P2P_Response_PDU1_DLCx</name>
+          <tcid>62dc407a-3ae6-4c84-adf7-b2b23cfe29d7</tcid>
+        </capltestcase>
+        <capltestcase>
+          <title />
+          <name>CTC_A04_16_Glob_Response_PDU1_DLCx</name>
+          <tcid>289d3811-4758-4e3c-8f42-5e1293f50c52</tcid>
+        </capltestcase>
+        <capltestcase>
+          <title />
+          <name>CTC_A04_17_P2P_Response_PDU2_DLC8</name>
+          <tcid>ae2a8c56-939f-47e9-91d1-6d6ace143fed</tcid>
+        </capltestcase>
+        <capltestcase>
+          <title />
+          <name>CTC_A04_18_Glob_Response_PDU2_DLC8</name>
+          <tcid>787b2006-d23c-478c-9aba-1e741bf9323a</tcid>
+        </capltestcase>
+        <capltestcase>
+          <title />
+          <name>CTC_A04_19_P2P_Response_PDU2_DLCx</name>
+          <tcid>2564f8d3-8c12-4658-9535-5a249455de53</tcid>
+        </capltestcase>
+        <capltestcase>
+          <title />
+          <name>CTC_A04_20_Glob_Response_PDU2_DLCx</name>
+          <tcid>5a1fc1c9-2691-4f52-9c91-4688a40cca83</tcid>
+        </capltestcase>
+        <tf navid="f79a13a3-0c94-4cbc-a084-07ab008c330e">
+          <title>CTC_A04_21_Response_Timing</title>
+          <description>Verify DUT sends all required responses 
+within 200 ms (Tr) after the Request</description>
+          <ts navid="c81a5af5-a217-48cc-8879-09d57f4a84e8">
+            <title>A04_13 - A04_20 Sequence</title>
+            <description>To check this, The testcases A04_13 to A04_20 are executed. All have to pass. They are "repeated" here due each of them implies the response time checking.</description>
+            <breakonfail>false</breakonfail>
+            <capltestcase>
+              <title>CTC_A04_21_Response_Timing_A04_13</title>
+              <name>CTC_A04_13_P2P_Response_PDU1_DLC8</name>
+              <tcid>bf480f9e-c88a-4535-bf1a-184db123d7aa</tcid>
+            </capltestcase>
+            <capltestcase>
+              <title>CTC_A04_21_Response_Timing_A04_14</title>
+              <name>CTC_A04_14_Glob_Response_PDU1_DLC8</name>
+              <tcid>0654071b-c520-47fe-8ca6-006ab39ac4b1</tcid>
+            </capltestcase>
+            <capltestcase>
+              <title>CTC_A04_21_Response_Timing_A04_15</title>
+              <name>CTC_A04_15_P2P_Response_PDU1_DLCx</name>
+              <tcid>f5733598-45d2-440e-8af7-8b521a826eee</tcid>
+            </capltestcase>
+            <capltestcase>
+              <title>CTC_A04_21_Response_Timing_A04_16</title>
+              <name>CTC_A04_16_Glob_Response_PDU1_DLCx</name>
+              <tcid>81301fde-b4c0-4470-a453-f0f984e3edba</tcid>
+            </capltestcase>
+            <capltestcase>
+              <title>CTC_A04_21_Response_Timing_A04_17</title>
+              <name>CTC_A04_17_P2P_Response_PDU2_DLC8</name>
+              <tcid>6e4fd96f-99b9-4621-95d8-83ce14262f26</tcid>
+            </capltestcase>
+            <capltestcase>
+              <title>CTC_A04_21_Response_Timing_A04_18</title>
+              <name>CTC_A04_18_Glob_Response_PDU2_DLC8</name>
+              <tcid>b26c5f95-07db-47da-8e43-ddfeeb490498</tcid>
+            </capltestcase>
+            <capltestcase>
+              <title>CTC_A04_21_Response_Timing_A04_19</title>
+              <name>CTC_A04_19_P2P_Response_PDU2_DLCx</name>
+              <tcid>3ef2f71c-0537-4175-b1b1-6da3bfc166c9</tcid>
+            </capltestcase>
+            <capltestcase>
+              <title>CTC_A04_21_Response_Timing_A04_20</title>
+              <name>CTC_A04_20_Glob_Response_PDU2_DLCx</name>
+              <tcid>18f22b8e-72fa-41a3-b4fc-036369c55087</tcid>
+            </capltestcase>
+          </ts>
+        </tf>
+        <capltestcase>
+          <title />
+          <name>CTC_A04_22_P2P_NACK</name>
+          <tcid>1d456af9-1cda-441a-9777-53f318dfbd78</tcid>
+        </capltestcase>
+        <capltestcase>
+          <title />
+          <name>CTC_A04_23_Glob_NACK</name>
+          <tcid>a5ac3656-09ce-4d98-b27a-cfd0fa9b89d9</tcid>
+        </capltestcase>
+        <capltestcase>
+          <title />
+          <name>CTC_A04_24_Applicaple_ACK_Response</name>
+          <tcid>106dc75d-0ff1-4ed3-90e9-74a96fa85649</tcid>
+        </capltestcase>
+        <capltestcase>
+          <title />
+          <name>CTC_A04_25_ACK_DENY</name>
+          <tcid>efa6657f-9621-402c-8241-fa2cc9a470a1</tcid>
+        </capltestcase>
+        <capltestcase>
+          <title />
+          <name>CTC_A04_26_ACK_BUSY</name>
+          <tcid>6878c645-a15f-4d3f-8928-a4d75a4de6a6</tcid>
+        </capltestcase>
+        <capltestcase>
+          <title />
+          <name>CTC_A04_27_ACK_Address</name>
+          <tcid>e7e8d850-bc92-4cb0-91e6-22e773606f0e</tcid>
+        </capltestcase>
+        <capltestcase>
+          <title />
+          <name>CTC_A04_28_Request2_Xfer_PGN_Yes</name>
+          <tcid>91b23fbe-d950-4c0a-a9dc-656f62b9fd01</tcid>
+        </capltestcase>
+        <capltestcase>
+          <title />
+          <name>CTC_A04_29_Request2_Xfer_PGN_No</name>
+          <tcid>ab765c69-01e1-4400-8de5-f82478bf99dd</tcid>
+        </capltestcase>
+        <capltestcase>
+          <title />
+          <name>CTC_A04_30_Response2_NACK</name>
+          <tcid>64f482ff-5ee3-411c-a86a-a97ac43b3605</tcid>
+        </capltestcase>
+        <capltestcase>
+          <title />
+          <name>CTC_A04_31_ThirdParty_Requests</name>
+          <tcid>1cae4bdd-aeb5-4812-aff5-b8311b9362c7</tcid>
+        </capltestcase>
+      </tf>
+      <tf navid="c0751e31-106b-44ed-a47c-e7d81fdb9bd1">
+        <title>Table A5</title>
+        <capltestcase>
+          <title />
+          <name>CTC_A05_01_BAM_Init</name>
+          <tcid>7bbea5d9-990d-4bb3-b73d-cfeda0f7e97e</tcid>
+        </capltestcase>
+        <capltestcase>
+          <title />
+          <name>CTC_A05_02_BAM_Data_Timing_First_DT</name>
+          <tcid>131a7abc-ba4d-4e6d-9a78-36b30b0d995c</tcid>
+        </capltestcase>
+        <capltestcase>
+          <title />
+          <name>CTC_A05_03_BAM_Data_Timing_Subsequent_DTs</name>
+          <tcid>33209976-1cd0-497c-88c2-19923436bfa2</tcid>
+        </capltestcase>
+        <capltestcase>
+          <title />
+          <name>CTC_A05_04_BAM_No_Abort</name>
+          <tcid>c635589e-e880-47da-a4a6-6f06c62645de</tcid>
+        </capltestcase>
+        <capltestcase>
+          <title />
+          <name>CTC_A05_05_BAM_Data_Content</name>
+          <tcid>7b932fd2-52a3-4f71-8c21-f8ef3d8904b9</tcid>
+        </capltestcase>
+        <capltestcase>
+          <title />
+          <name>CTC_A05_06_BAM_Data_Sequence</name>
+          <tcid>eea43493-2717-4fc3-8694-b3df262416c4</tcid>
+        </capltestcase>
+        <capltestcase>
+          <title />
+          <name>CTC_A05_07_BAM_Data_DLC</name>
+          <tcid>57f27806-b597-4aec-8bfa-dc0f28ab6b12</tcid>
+        </capltestcase>
+        <capltestcase>
+          <title />
+          <name>CTC_A05_08_BAM_Data_Padding</name>
+          <tcid>72e4c1c3-2220-4654-a7a7-876b6c6364f6</tcid>
+        </capltestcase>
+        <capltestcase>
+          <title />
+          <name>CTC_A05_09_BAM_Data_Prio</name>
+          <tcid>55715332-2ad2-4516-a88a-c24475cc7de9</tcid>
+        </capltestcase>
+        <capltestcase>
+          <title />
+          <name>CTC_A05_10_BAM_Singularity</name>
+          <tcid>d1315e86-6acc-49f7-9a53-838e85849a1c</tcid>
+        </capltestcase>
+        <capltestcase>
+          <title />
+          <name>CTC_A05_11_BAM_Simultaneous</name>
+          <tcid>05b7dfc4-b9d2-41a1-be49-59fad941e4d0</tcid>
+        </capltestcase>
+      </tf>
+      <tf navid="71ba40ba-dc18-4d4e-af33-c0a5af1d9205">
+        <title>Table A6</title>
+        <active>true</active>
+        <capltestcase>
+          <title />
+          <name>CTC_A06_01_BAM_Receive_PGN</name>
+          <tcid>0abb80f8-9d91-4843-a00e-5a9ec153dd2c</tcid>
+        </capltestcase>
+        <capltestcase>
+          <title />
+          <name>CTC_A06_02_BAM_Receive_Discard_Invalid</name>
+          <tcid>f66b2440-4576-4994-9308-00594e78bac7</tcid>
+        </capltestcase>
+        <capltestcase>
+          <title />
+          <name>CTC_A06_03_BAM_Receive_No_Abort_Unsupported_PGN</name>
+          <tcid>19391e85-4880-4eeb-847a-061b9d6b1ec9</tcid>
+        </capltestcase>
+        <capltestcase>
+          <title />
+          <name>CTC_A06_04_BAM_Receive_Timing</name>
+          <tcid>c1b3ed8a-701b-4a7f-9d04-a9095e78c547</tcid>
+        </capltestcase>
+        <capltestcase>
+          <title />
+          <name>CTC_A06_05_BAM_Receive_Timing_DT</name>
+          <tcid>73a99929-adeb-4a63-86ac-84343a61d562</tcid>
+        </capltestcase>
+        <capltestcase>
+          <title />
+          <name>CTC_A06_06_BAM_Receive_DT_Seq</name>
+          <tcid>69012085-d870-447f-847a-b1d3fface0e2</tcid>
+        </capltestcase>
+        <capltestcase>
+          <title />
+          <name>CTC_A06_07_BAM_Receive_DT_Wrong_DLC</name>
+          <tcid>6b53d953-00d9-49c0-83c9-df5dbe00ef46</tcid>
+        </capltestcase>
+        <capltestcase>
+          <title />
+          <name>CTC_A06_08_BAM_Receive_DT_Prios</name>
+          <tcid>050f6e2d-a2c1-44db-bb33-138895bae9b4</tcid>
+        </capltestcase>
+        <capltestcase>
+          <title />
+          <name>CTC_A06_09_BAM_Receive_DT_Uses_Padding</name>
+          <tcid>623168c5-3572-4264-8f40-a5cf715f6fc7</tcid>
+        </capltestcase>
+        <capltestcase>
+          <title />
+          <name>CTC_A06_10_BAM_Receive_NoEOM</name>
+          <tcid>ab04b48e-48a1-4705-add9-2b09675c8d64</tcid>
+        </capltestcase>
+        <capltestcase>
+          <title />
+          <name>CTC_A06_11_BAM_Receive_No_Abort_Invalid</name>
+          <tcid>4870b896-b872-41a2-82cc-f24d3e86d24e</tcid>
+        </capltestcase>
+        <capltestcase>
+          <title />
+          <name>CTC_A06_12_BAM_Receive_Singularity</name>
+          <tcid>2aa1a157-9cf5-4354-9281-e2955003e3d4</tcid>
+        </capltestcase>
+        <capltestcase>
+          <title />
+          <name>CTC_A06_13_BAM_Receive_Multiple_Transport</name>
+          <tcid>2efd32cf-e093-4871-a239-e834400c85cf</tcid>
+        </capltestcase>
+      </tf>
+      <tf navid="4cafce2c-d3d9-4456-9b07-ee42a9ce2fc8">
+        <title>Table A7</title>
+        <active>true</active>
+        <capltestcase>
+          <title />
+          <name>CTC_A07_01_TP_Init</name>
+          <tcid>c5c43288-9544-490c-91ee-7bea6bbb65cf</tcid>
+        </capltestcase>
+        <capltestcase>
+          <title />
+          <name>CTC_A07_02_TP_RTS</name>
+          <tcid>d691f381-755d-46a1-a14d-0aa4c2e4ab63</tcid>
+        </capltestcase>
+        <capltestcase>
+          <title />
+          <active>true</active>
+          <name>CTC_A07_03_TP_CTS</name>
+          <tcid>4ef41733-b110-49a2-a8fd-c9f22c5f571a</tcid>
+        </capltestcase>
+        <capltestcase>
+          <title />
+          <name>CTC_A07_04_TP_RTS_Abort</name>
+          <tcid>9156a037-f161-4ab1-ad33-6412d94f22dd</tcid>
+        </capltestcase>
+        <capltestcase>
+          <title />
+          <active>true</active>
+          <name>CTC_A07_05_TP_Multiple_CTS</name>
+          <tcid>959d9a59-48f8-4932-9e8b-2e1e6d2d8ba7</tcid>
+        </capltestcase>
+        <capltestcase>
+          <title />
+          <active>true</active>
+          <name>CTC_A07_06_TP_CTS_Retransmission</name>
+          <tcid>b1e7d5d4-92cb-4b02-bd51-8033afbb9c9b</tcid>
+        </capltestcase>
+        <capltestcase>
+          <title />
+          <name>CTC_A07_07_TP_CTS_Single_Hold</name>
+          <tcid>c85becc3-66d5-4604-be95-9d0f7ff357e5</tcid>
+        </capltestcase>
+        <capltestcase>
+          <title />
+          <name>CTC_A07_08_TP_CTS_Consequtive_Hold</name>
+          <tcid>84897713-6254-47d6-9d54-f6598a5bc2d1</tcid>
+        </capltestcase>
+        <capltestcase>
+          <title />
+          <name>CTC_A07_09_TP_CTS_Data_After_Hold</name>
+          <tcid>ae33ad96-602f-440d-afef-931b5fd63859</tcid>
+        </capltestcase>
+        <capltestcase>
+          <title />
+          <name>CTC_A07_10_TP_Multiple_CTS</name>
+          <tcid>32800499-8b2c-417c-b39f-e913e58d642f</tcid>
+        </capltestcase>
+        <capltestcase>
+          <title />
+          <name>CTC_A07_11_TP_CTS_Outside</name>
+          <tcid>21b29efb-13ae-4227-9a0a-94f9ce766607</tcid>
+        </capltestcase>
+        <capltestcase>
+          <title />
+          <name>CTC_A07_12_TP_First_DT</name>
+          <tcid>b3882287-7fde-4710-8f42-4b169bf650f3</tcid>
+        </capltestcase>
+        <capltestcase>
+          <title />
+          <name>CTC_A07_13_TP_Requested_DTs</name>
+          <tcid>bc11402a-0716-42c6-8458-8aa65b283635</tcid>
+        </capltestcase>
+        <capltestcase>
+          <title />
+          <name>CTC_A07_14_TP_Data_Content</name>
+          <tcid>ee7f651d-f32f-4ba8-a9ab-fa63a46af45b</tcid>
+        </capltestcase>
+        <capltestcase>
+          <title />
+          <name>CTC_A07_15_TP_DT_Sequence</name>
+          <tcid>45f52013-c1c2-49a0-8efa-41a28e1d60c6</tcid>
+        </capltestcase>
+        <capltestcase>
+          <title />
+          <name>CTC_A07_16_TP_DT_Timeout</name>
+          <tcid>7fc88da8-1106-47df-8a50-cb3423ad2cf9</tcid>
+        </capltestcase>
+        <capltestcase>
+          <title />
+          <name>CTC_A07_17_TP_DT_DLC</name>
+          <tcid>253ff96e-5420-451d-9cc2-15e2fdf7af45</tcid>
+        </capltestcase>
+        <capltestcase>
+          <title />
+          <active>true</active>
+          <name>CTC_A07_18_TP_DT_Padding</name>
+          <tcid>5819eefa-38e5-4851-b5db-54cd4d48042b</tcid>
+        </capltestcase>
+        <capltestcase>
+          <title />
+          <active>true</active>
+          <name>CTC_A07_19_TP_DT_Prio</name>
+          <tcid>6786a3da-d82a-48a0-a8bf-a8693aad18b9</tcid>
+        </capltestcase>
+        <tf navid="d6d1f04b-b3c8-4f30-878e-1883ec1f6f89">
+          <title>CTC_A07_20_TP_EOM ()</title>
+          <capltestcase>
+            <title />
+            <name>CTC_A07_20_TP_EOM_P01_Normal</name>
+            <tcid>ba966dc7-9e25-4597-aa79-406678e71cb0</tcid>
+          </capltestcase>
+          <capltestcase>
+            <title />
+            <name>CTC_A07_20_TP_EOM_P02_Abort_Missing_EOM</name>
+            <tcid>2240b540-4353-4743-bb23-7d38bdb6b7c1</tcid>
+          </capltestcase>
+          <capltestcase>
+            <title />
+            <name>CTC_A07_20_TP_EOM_P03_DP</name>
+            <tcid>d0695c1f-9e15-4652-b7b8-a83884e8db5d</tcid>
+          </capltestcase>
+          <capltestcase>
+            <title />
+            <name>CTC_A07_20_TP_EOM_P04_EDP</name>
+            <tcid>58a2f226-4483-4ace-b898-c0b6aa882f77</tcid>
+          </capltestcase>
+          <capltestcase>
+            <title />
+            <active>true</active>
+            <name>CTC_A07_20_TP_EOM_P05_CTS_Hold</name>
+            <tcid>177b8918-57cf-4d00-9018-63e88e4c2fed</tcid>
+          </capltestcase>
+          <capltestcase>
+            <title />
+            <active>true</active>
+            <name>CTC_A07_20_TP_EOM_P06_Ignore_Extra_EOM</name>
+            <tcid>8c816648-7595-4202-b17f-7fc884cbad2d</tcid>
+          </capltestcase>
+        </tf>
+        <capltestcase>
+          <title />
+          <name>CTC_A07_21_TP_Originator_Abort</name>
+          <tcid>6d1f9a48-2a74-485c-9ec7-97725d240843</tcid>
+        </capltestcase>
+        <capltestcase>
+          <title />
+          <name>CTC_A07_22_TP_Behaviour_After_Receiver_Abort</name>
+          <tcid>8bf7aab8-b650-4c12-a83c-8189188732e8</tcid>
+        </capltestcase>
+        <capltestcase>
+          <title />
+          <name>CTC_A07_23_TP_Singularity</name>
+          <tcid>c0178bfe-5eba-4c88-826e-5033e3afecc4</tcid>
+        </capltestcase>
+        <capltestcase>
+          <title />
+          <name>CTC_A07_24_TP_Simultaneous_TX</name>
+          <tcid>fb2806cb-a1d5-436b-bc9d-46a5312ad667</tcid>
+        </capltestcase>
+        <capltestcase>
+          <title />
+          <name>CTC_A07_25_TP_Simultaneous_TX_RX</name>
+          <tcid>fb7586a2-4e9a-4b5a-9361-9c7c1a790f1e</tcid>
+        </capltestcase>
+        <capltestcase>
+          <title />
+          <name>CTC_A07_26_TP_Simultaneous_TX_BAM</name>
+          <tcid>af46b3f6-f3b5-4669-8252-2c88069294ed</tcid>
+        </capltestcase>
+        <capltestcase>
+          <title />
+          <name>CTC_A07_27_TP_Simultaneous_TX_RX_BAM</name>
+          <tcid>4eb32a4f-c5b3-4f12-9593-961b045faaa6</tcid>
+        </capltestcase>
+        <capltestcase>
+          <title />
+          <name>CTC_A07_28_TP_Component_ID_Format</name>
+          <tcid>b78a2af7-407d-4e78-bad0-d300101a572e</tcid>
+        </capltestcase>
+      </tf>
+      <tf navid="e368dcb2-3cd0-4c41-a073-e09e5ab84ad7">
+        <title>Table A8</title>
+        <active>true</active>
+        <capltestcase>
+          <title />
+          <name>CTC_A08_01_TP_Receive_RTS</name>
+          <tcid>f6e8ec03-55ee-49aa-a32c-ffec51b2b796</tcid>
+        </capltestcase>
+        <capltestcase>
+          <title />
+          <name>CTC_A08_02_TP_Receive_RTS_Validate_CTS</name>
+          <tcid>9a969e96-dad4-4285-a3a9-1bf10359aaee</tcid>
+        </capltestcase>
+        <capltestcase>
+          <title />
+          <name>CTC_A08_03_TP_Receive_Multiple_RTS</name>
+          <tcid>71c9418a-4a2b-4666-9cc6-b127b831d31e</tcid>
+        </capltestcase>
+        <capltestcase>
+          <title />
+          <name>CTC_A08_04_TP_Receive_RTS_Rejection</name>
+          <tcid>49d326ae-89c9-477a-b72a-41b914604410</tcid>
+        </capltestcase>
+        <capltestcase>
+          <title />
+          <name>CTC_A08_05_TP_Receive_RTS_Unsupported</name>
+          <tcid>8dfa1d15-0682-4643-973b-6c39b1e7b6b3</tcid>
+        </capltestcase>
+        <capltestcase>
+          <title />
+          <name>CTC_A08_06_TP_Receive_RTS_Invalid</name>
+          <tcid>7676b2da-3f59-4203-a6a7-ea056e5c397b</tcid>
+        </capltestcase>
+        <capltestcase>
+          <title />
+          <name>CTC_A08_07_TP_Send_CTS_Numbering</name>
+          <tcid>3e190190-80be-492d-ae26-4c1079bbafc3</tcid>
+        </capltestcase>
+        <capltestcase>
+          <title />
+          <name>CTC_A08_08_TP_Send_CTS_Foreign_PGN</name>
+          <tcid>35ce3a4a-4bb2-405e-b011-bd9275f87666</tcid>
+        </capltestcase>
+        <capltestcase>
+          <title />
+          <name>CTC_A08_09_TP_Send_Multiple_CTS</name>
+          <tcid>080d2593-c9f1-4d05-b459-06e4f7815d18</tcid>
+        </capltestcase>
+        <capltestcase>
+          <title />
+          <name>CTC_A08_10_TP_Send_First_CTS_Hold</name>
+          <tcid>8db0303e-611c-4f81-a747-1ee5eb1ee5b1</tcid>
+        </capltestcase>
+        <capltestcase>
+          <title />
+          <name>CTC_A08_11_TP_Send_Consecutive_CTS_Hold</name>
+          <tcid>19a5e979-cacd-4db2-8832-7907ed0abb45</tcid>
+        </capltestcase>
+        <capltestcase>
+          <title />
+          <name>CTC_A08_12_TP_CTS_after_CTS_Hold</name>
+          <tcid>f68d075a-ab23-4c4a-9cd7-9e6b6a581adc</tcid>
+        </capltestcase>
+        <capltestcase>
+          <title />
+          <name>CTC_A08_13_TP_First_DT_Timing</name>
+          <tcid>6c2ec817-b0f1-4ccd-a353-e2b7a51245c4</tcid>
+        </capltestcase>
+        <capltestcase>
+          <title />
+          <name>CTC_A08_14_TP_Send_Consecutive_CTS</name>
+          <tcid>52189d2e-e229-4bf2-9486-8fc2ee3acf6f</tcid>
+        </capltestcase>
+        <capltestcase>
+          <title />
+          <name>CTC_A08_15_TP_DT_Timing_After_CTS</name>
+          <tcid>6d36fdf6-7464-48e4-b34f-5825ee4a5607</tcid>
+        </capltestcase>
+        <capltestcase>
+          <title />
+          <name>CTC_A08_16_TP_Consecutive_DT_Timing</name>
+          <tcid>2790be89-5123-46fb-ae73-e5e3fdfb9622</tcid>
+        </capltestcase>
+        <capltestcase>
+          <title />
+          <name>CTC_A08_17_TP_DT_Sequential_Order</name>
+          <tcid>36442f78-b8aa-4a90-8a38-2b3fb8b8153b</tcid>
+        </capltestcase>
+        <capltestcase>
+          <title />
+          <name>CTC_A08_18_TP_Receive_DT_Data_Size</name>
+          <tcid>4a06007d-6954-47e7-95e7-6454fa00f6f5</tcid>
+        </capltestcase>
+        <capltestcase>
+          <title />
+          <name>CTC_A08_19_TP_Receive_DT_Prios</name>
+          <tcid>72d46511-cc88-4bc4-98ef-50ad89bec260</tcid>
+        </capltestcase>
+        <capltestcase>
+          <title />
+          <name>CTC_A08_20_TP_Send_EOM</name>
+          <tcid>299981dd-bef0-4ddf-b317-d328e193c056</tcid>
+        </capltestcase>
+        <capltestcase>
+          <title />
+          <name>CTC_A08_21_TP_Receive_Abort</name>
+          <tcid>6b9f33dd-b6c5-415e-916c-d2175788e5ec</tcid>
+        </capltestcase>
+        <capltestcase>
+          <title />
+          <name>CTC_A08_22_TP_Send_Abort</name>
+          <tcid>e8f704c4-d11e-4ec5-8fb6-e87c374ed612</tcid>
+        </capltestcase>
+        <capltestcase>
+          <title />
+          <name>CTC_A08_23_TP_Simultaneous_Different_Originators</name>
+          <tcid>19a15daa-92f0-4d88-96a6-f1bf0f853e94</tcid>
+        </capltestcase>
+        <capltestcase>
+          <title />
+          <name>CTC_A08_24_TP_Simultaneous_RTSCTS_BAM</name>
+          <tcid>94f9b7ea-190b-466b-9503-cc310bc68d28</tcid>
+        </capltestcase>
+        <capltestcase>
+          <title />
+          <name>CTC_A08_25_TP_Simultaneous_Same_Originator</name>
+          <tcid>9ad94485-9c08-4bdf-b3e6-817389327a6f</tcid>
+        </capltestcase>
+        <capltestcase>
+          <title />
+          <name>CTC_A08_26_TP_Connection_Limit</name>
+          <tcid>7202d2e1-6dbd-45cb-aee5-8c0ff34636fe</tcid>
+        </capltestcase>
+      </tf>
+      <completion>
+        <title>Finalize Compliance Tests</title>
+        <caplfunction>
+          <title />
+          <name>CTF_EXIT</name>
+        </caplfunction>
+      </completion>
+    </tf>
+  </tt>
+  <ttlib>
+    <ts_definitions />
+    <tc_definitions />
+    <function_definitions />
+  </ttlib>
+</ttroot>

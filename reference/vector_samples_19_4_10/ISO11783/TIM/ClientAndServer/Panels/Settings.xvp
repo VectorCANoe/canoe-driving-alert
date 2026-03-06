@@ -1,0 +1,55 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Panel Type="Vector.CANalyzer.Panels.PanelSerializer, Vector.CANalyzer.Panels.Serializer, Version=19.3.41.0, Culture=neutral, PublicKeyToken=null">
+  <Object Type="Vector.CANalyzer.Panels.Runtime.Panel, Vector.CANalyzer.Panels.Common, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Panel" ControlName="Settings">
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X7bdcb41ce3368e424de80bcedb7072e12ab2" ControlName="Static Text 2">
+      <Property Name="Name">X7bdcb41ce3368e424de80bcedb7072e12ab2</Property>
+      <Property Name="Size">199, 152</Property>
+      <Property Name="Location">18, 47</Property>
+      <Property Name="Font">Microsoft Sans Serif, 9pt</Property>
+      <Property Name="Text">Real mode. 
+Please make sure that:
+- AuthLib.dlls are located in Exec32 
+   and Exec64 directories of CANoe.
+- Valid certificates are configured 
+   for simulated TIM Client and 
+   TIM Server.
+- Manufacturer Code values are 
+   defined in DBC for simulated 
+   TIM Clients and TIM Server 
+   matching those from certificates.</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.RadioButtonControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X4d052ba2ec99ee4765ea067eebc76a98d136" ControlName="Radio Button 2">
+      <Property Name="Name">X4d052ba2ec99ee4765ea067eebc76a98d136</Property>
+      <Property Name="Size">14, 15</Property>
+      <Property Name="Location">2, 47</Property>
+      <Property Name="Font">Microsoft Sans Serif, 9pt</Property>
+      <Property Name="Text"></Property>
+      <Property Name="TabIndex">3</Property>
+      <Property Name="SwitchValueVTXml">&lt;Version&gt;2&lt;/Version&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;RxValue&gt;0&lt;/RxValue&gt;</Property>
+      <Property Name="SwitchValueVT">1;Lower;0</Property>
+      <Property Name="SwitchValue">0</Property>
+      <Property Name="SymbolConfiguration">8;16;;;;DemoMode;1;;;-1;;;Value;;;0</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.RadioButtonControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X716359bfe2170e496ae8e10e86ca440a36ba" ControlName="Radio Button 1">
+      <Property Name="Name">X716359bfe2170e496ae8e10e86ca440a36ba</Property>
+      <Property Name="Size">14, 14</Property>
+      <Property Name="Location">2, 8</Property>
+      <Property Name="Font">Microsoft Sans Serif, 9pt</Property>
+      <Property Name="Text"></Property>
+      <Property Name="TabIndex">2</Property>
+      <Property Name="SymbolConfiguration">8;16;;;;DemoMode;1;;;-1;;;Value;;;0</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X43e1b34eee40de43a5e9cbce9b385c5fe26d" ControlName="Static Text 1">
+      <Property Name="Name">X43e1b34eee40de43a5e9cbce9b385c5fe26d</Property>
+      <Property Name="Size">191, 30</Property>
+      <Property Name="Location">18, 7</Property>
+      <Property Name="Font">Microsoft Sans Serif, 9pt</Property>
+      <Property Name="Text">Demo mode. 
+No certificates / keys are validated</Property>
+    </Object>
+    <Property Name="Name">Panel</Property>
+    <Property Name="Size">221, 209</Property>
+    <Property Name="Location">0, 0</Property>
+    <Property Name="BackColor">White</Property>
+  </Object>
+</Panel>

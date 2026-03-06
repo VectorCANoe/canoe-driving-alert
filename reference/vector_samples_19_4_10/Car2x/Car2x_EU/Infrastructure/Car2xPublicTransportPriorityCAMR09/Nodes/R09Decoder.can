@@ -1,0 +1,36 @@
+/*@!Encoding:1252*/
+includes
+{
+  #include "\Library\Util.cin"
+  
+  #include "\Library\Car2xAPI_Constants.cin"
+  
+  #include "..\DataSources_Templates\ASNV_Template_BaseDatatypes.cin"
+  
+  #include "..\DataSources_Templates\ASNV_Template_CAM.cin"
+  
+  #include "\Library\R09Decoding.cin"
+}
+
+on start
+{ 
+  enum CallbackType { OnRx, PreTx };
+
+  C2xRegisterCallback(OnRx, "OnRxCAM", "CAM") ;  
+}
+
+void OnRxCAM(long channel, long dir, long radioChannel, long signalStrength, long signalQuality, long packet)
+{
+  struct CAM camMessage;
+  struct stR09_16 r09_16;
+  
+  API_GetCAMParams(packet, camMessage);
+  
+  if(API_R09_GetFromCAM(camMessage.cam.camParameters, r09_16))
+  {
+    API_R09_SetSysVars(camMessage, r09_16);
+    API_R09_DrawObjects(camMessage, r09_16);
+  }
+  
+  @Priority::RequesterStationId = camMessage.header.stationID;
+}

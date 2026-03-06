@@ -1,0 +1,30 @@
+/*@!Encoding:1252*/
+includes
+{
+}
+
+variables
+{
+}
+
+// VT1004
+// VT1104
+// VT2516
+// VT2848
+
+
+
+on sysvar sysvarMember::Control::VT1004.Threshold { sysvar::VTS::VT1004_Ch1.SetPWMThreshold(@this); }
+// VT1104
+on sysvar sysvarMember::Control::VT2516.Threshold { sysvar::VTS::VT2516.SetThreshold1_8(@this); }
+on sysvar sysvarMember::Control::VT2848.Threshold { sysvar::VTS::VT2848.SetThreshold(0, @this); }
+
+
+
+on start
+{
+  sysvar::VTS::VT1004_Ch1.SetPWMThreshold(@sysvarMember::Control::VT1004.Threshold);
+  // VT1104
+  sysvar::VTS::VT2516.SetThreshold1_8(@sysvarMember::Control::VT2516.Threshold);
+  sysvar::VTS::VT2848.SetThreshold(0, @sysvarMember::Control::VT2848.Threshold);
+}

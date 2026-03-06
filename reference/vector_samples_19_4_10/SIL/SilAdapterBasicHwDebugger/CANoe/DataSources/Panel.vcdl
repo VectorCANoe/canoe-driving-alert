@@ -1,0 +1,13 @@
+version 2.0;
+
+namespace Internal
+{
+  // Helper interface to provide variables for the CANoe panel.
+  interface IPanel {
+    internal data bool   GenerateSensorValuesActive = false;
+    internal data bool   ShowHeaterStateOnHW = false;
+    internal data double AverageTemperature;
+  }
+
+  IPanel Panel;
+}

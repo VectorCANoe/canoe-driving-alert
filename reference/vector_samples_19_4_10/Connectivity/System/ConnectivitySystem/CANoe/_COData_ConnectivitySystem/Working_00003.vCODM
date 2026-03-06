@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<FunctionBusLibrary Version="48" FormatMajorVersion="3" FormatMinorVersion="5" FormatPatchVersion="1">
+  <Namespaces>
+    <Namespace IsDefinedAsHidden="False" IsSystemDefined="False" Name="HTTPSettings">
+      <DistributedObjects>
+        <DistributedObject GenerateDotNetAPI="True" Name="mySettings">
+          <AttributeValues>
+            <AttributeValue Definition="HTTPBinding::Settings::Monitoring::Logging" InitialValue="0" InitialValueType="Int32" />
+            <AttributeValue Definition="HTTPBinding::Settings::Monitoring::BodySize" InitialValue="256" InitialValueType="UInt32" />
+          </AttributeValues>
+          <DataType>
+            <ModifiedDOIF Reverse="False" IsDOReference="False" Interface="HTTPBinding::Settings::IHTTPSettings" />
+          </DataType>
+          <MemberData>
+            <DOMemberDataHolder Name="MemberData" />
+          </MemberData>
+        </DistributedObject>
+      </DistributedObjects>
+    </Namespace>
+  </Namespaces>
+  <ModuleDependencies>
+    <ModuleDependency Module="_Internal" />
+    <ModuleDependency Module="HTTP" />
+  </ModuleDependencies>
+</FunctionBusLibrary>

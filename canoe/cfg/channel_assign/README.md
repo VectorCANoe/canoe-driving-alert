@@ -11,7 +11,7 @@
 | 채널 | 폴더 | DBC | 역할 |
 |------|------|-----|------|
 | CAN ch1 — Chassis | `Chassis/` | `chassis_can.dbc` | 섀시 ECU (가속/제동/조향) + GW |
-| CAN ch2 — Body | `Body/` | `body_can.dbc` | 바디 ECU (앰비언트/BCM/운전자 상태) + GW |
+| CAN ch2 — Body | `Body/` | `body_can.dbc` | 바디 ECU (앰비언트/BCM/컴포트) + GW |
 | CAN ch3 — Infotainment | `Infotainment/` | `infotainment_can.dbc` | IVI/CLU/클러스터 + GW |
 | CAN ch4 — Powertrain | `Powertrain/` | `powertrain_can.dbc` | 엔진/변속기 + 도메인 라우터 |
 | CAN ch5 — ETH_Backbone | `ETH_Backbone/` | `eth_backbone_can_stub.dbc` | 경고 코어 + EMS + 스위치 (**ETH stub**) |
@@ -76,7 +76,7 @@ GW 노드는 두 채널에 동시 할당되어야 함.
 ### Body/ (CAN ch2)
 - `BODY_GW.can` — 바디 ↔ ETH_Backbone 게이트웨이
 - `AMBIENT_CTRL.can` — 앰비언트 라이트 제어 (핵심 출력)
-- `DRV_STATE_MGR.can` — 운전자 상태 감지 (라엘 담당)
+- `DRV_STATE_MGR.can` — 비활성 placeholder (활성 제품 경로 미사용)
 - `HAZARD_CTRL.can` — 비상 점멸 제어
 - `WINDOW_CTRL.can` — 창문 제어
 - `DOMAIN_BOUNDARY_MGR.can` — 도메인 경계 관리

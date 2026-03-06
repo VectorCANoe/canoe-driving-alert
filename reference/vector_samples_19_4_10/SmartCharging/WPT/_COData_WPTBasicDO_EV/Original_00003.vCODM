@@ -1,0 +1,99 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<FunctionBusLibrary Version="66" FormatMajorVersion="3" FormatMinorVersion="1" FormatPatchVersion="7">
+  <Namespaces>
+    <Namespace IsDefinedAsHidden="False" IsSystemDefined="False" Name="VSE">
+      <Subnamespaces>
+        <Namespace IsDefinedAsHidden="False" IsSystemDefined="False" Name="_Internal">
+          <DataTypes>
+            <ArrayDataType MaxLength="0" MinLength="0" HasMaxLength="False" HasFixedBinaryLayout="False" HasMotorolaByteOrder="False" Name="List__VSE_EnergyTransferType_Type_Inf">
+              <BaseType DataType="_SystemDataTypes::UInt8">
+                <NumericProperties MinValue="0" MinValueType="UInt32" MaxValue="8" MaxValueType="UInt32" IsBoolean="False" IsTimespan="False">
+                  <ImplToPhysEncodings TextualEncodings="VSE::EnergyTransferType_Type" />
+                </NumericProperties>
+              </BaseType>
+            </ArrayDataType>
+            <ArrayDataType MaxLength="2" MinLength="2" HasMaxLength="True" HasFixedBinaryLayout="False" HasMotorolaByteOrder="False" Name="Array_UInt8_2">
+              <BaseType DataType="_SystemDataTypes::UInt8" />
+            </ArrayDataType>
+            <ArrayDataType MaxLength="3" MinLength="3" HasMaxLength="True" HasFixedBinaryLayout="False" HasMotorolaByteOrder="False" Name="Array_UInt8_3">
+              <BaseType DataType="_SystemDataTypes::UInt8" />
+            </ArrayDataType>
+            <ArrayDataType MaxLength="5" MinLength="5" HasMaxLength="True" HasFixedBinaryLayout="False" HasMotorolaByteOrder="False" Name="Array_UInt8_5">
+              <BaseType DataType="_SystemDataTypes::UInt8" />
+            </ArrayDataType>
+          </DataTypes>
+        </Namespace>
+      </Subnamespaces>
+      <DOInterfaces>
+        <DOInterface IsAbstract="False" Name="IVSE">
+          <AttributeValues>
+            <AttributeValue Definition="_SystemAttributes::Binding" InitialValue="Abstract" InitialValueType="String" />
+          </AttributeValues>
+          <MemberData>
+            <DOMemberDataHolder Name="MemberData" />
+          </MemberData>
+          <DataMembers>
+            <DOIFDataMember LocalDirection="Internal" Name="BeaconFrameVSE">
+              <DataType DataType="VSE::AccessPointVSE" />
+            </DOIFDataMember>
+            <DOIFDataMember LocalDirection="Internal" Name="ProbeResponseVSE">
+              <DataType DataType="VSE::AccessPointVSE" />
+            </DOIFDataMember>
+            <DOIFDataMember LocalDirection="Internal" Name="ProbeRequestVSE">
+              <DataType DataType="VSE::ClientVSE" />
+            </DOIFDataMember>
+          </DataMembers>
+        </DOInterface>
+      </DOInterfaces>
+      <DistributedObjects>
+        <DistributedObject GenerateDotNetAPI="True" Name="InterpretedVSE">
+          <DataType>
+            <ModifiedDOIF Reverse="False" IsDOReference="False" Interface="VSE::IVSE" />
+          </DataType>
+          <MemberData>
+            <DOMemberDataHolder Name="MemberData" />
+          </MemberData>
+        </DistributedObject>
+      </DistributedObjects>
+      <DataTypes>
+        <StructDataType Bitcount="0" RawBitcount="0" HasFixedBinaryLayout="False" HasMotorolaByteOrder="False" Name="AccessPointVSE">
+          <Fields>
+            <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="ElementType">
+              <DataType DataType="_SystemDataTypes::UInt8" />
+            </DataTypeField>
+            <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="energyTransferType">
+              <DataType DataType="VSE::_Internal::List__VSE_EnergyTransferType_Type_Inf" />
+            </DataTypeField>
+            <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="countryCode">
+              <DataType DataType="VSE::_Internal::Array_UInt8_2" />
+            </DataTypeField>
+            <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="operatorID">
+              <DataType DataType="VSE::_Internal::Array_UInt8_3" />
+            </DataTypeField>
+            <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="chargingSiteID">
+              <DataType DataType="VSE::_Internal::Array_UInt8_5" />
+            </DataTypeField>
+          </Fields>
+        </StructDataType>
+        <StructDataType Bitcount="0" RawBitcount="0" HasFixedBinaryLayout="False" HasMotorolaByteOrder="False" Name="ClientVSE">
+          <Fields>
+            <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="ElementType">
+              <DataType DataType="_SystemDataTypes::UInt8" />
+            </DataTypeField>
+            <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="energyTransferType">
+              <DataType DataType="VSE::_Internal::List__VSE_EnergyTransferType_Type_Inf" />
+            </DataTypeField>
+          </Fields>
+        </StructDataType>
+      </DataTypes>
+      <TextualEncodings>
+        <TextualEncodings DefinesMinMax="False" IsEnum="True" Name="EnergyTransferType_Type">
+          <TextualEncoding TextualValue="AC" DisplayValue="AC" LowerBound="1" LowerBoundType="UInt32" UpperBound="1" UpperBoundType="UInt32" />
+          <TextualEncoding TextualValue="DC" DisplayValue="DC" LowerBound="2" LowerBoundType="UInt32" UpperBound="2" UpperBoundType="UInt32" />
+          <TextualEncoding TextualValue="WPT" DisplayValue="WPT" LowerBound="4" LowerBoundType="UInt32" UpperBound="4" UpperBoundType="UInt32" />
+          <TextualEncoding TextualValue="ACD" DisplayValue="ACD" LowerBound="8" LowerBoundType="UInt32" UpperBound="8" UpperBoundType="UInt32" />
+        </TextualEncodings>
+      </TextualEncodings>
+    </Namespace>
+  </Namespaces>
+</FunctionBusLibrary>

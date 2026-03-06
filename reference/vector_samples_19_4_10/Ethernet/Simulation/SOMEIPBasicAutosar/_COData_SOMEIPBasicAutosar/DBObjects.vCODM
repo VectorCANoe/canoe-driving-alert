@@ -1,0 +1,307 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<FunctionBusLibrary Version="29" FormatMajorVersion="3" FormatMinorVersion="5" FormatPatchVersion="1">
+  <Namespaces>
+    <Namespace IsDefinedAsHidden="False" IsSystemDefined="True" Name="Vehicle_Ethernet">
+      <Subnamespaces>
+        <Namespace IsDefinedAsHidden="False" IsSystemDefined="True" Name="Interfaces">
+          <DOInterfaces>
+            <DOInterface IsAbstract="False" Name="CameraObjectDetection">
+              <AttributeValues>
+                <AttributeValue Definition="_SystemAttributes::Binding" InitialValue="SOMEIP" InitialValueType="String" />
+                <AttributeValue Definition="_SystemAttributes::CommunicationPattern" InitialValue="2" InitialValueType="Int32" />
+              </AttributeValues>
+              <MemberData>
+                <DOMemberDataHolder Name="MemberData" />
+              </MemberData>
+              <Events>
+                <DOIFEventMember Name="TrafficSignDetection">
+                  <DataType DataType="Vehicle_Ethernet::DataTypes::TrafficSignDetection" />
+                </DOIFEventMember>
+                <DOIFEventMember Name="LaneDetection">
+                  <DataType DataType="Vehicle_Ethernet::DataTypes::LaneDetection" />
+                </DOIFEventMember>
+              </Events>
+              <Fields>
+                <DOIFFieldMember Name="FrameRate">
+                  <DataType DataType="_SystemDataTypes::UInt8" />
+                  <Getter>
+                    <DOIFMethodMember Prototype="Vehicle_Ethernet::DataTypes::UInt8_Getter_Prototype" Name="Get" />
+                  </Getter>
+                  <Setter>
+                    <DOIFMethodMember Prototype="Vehicle_Ethernet::DataTypes::UInt8_Setter_Prototype" Name="Set" />
+                  </Setter>
+                  <Event>
+                    <DOIFEventMember Name="Notification">
+                      <DataType DataType="_SystemDataTypes::UInt8" />
+                    </DOIFEventMember>
+                  </Event>
+                </DOIFFieldMember>
+              </Fields>
+              <Methods>
+                <DOIFMethodMember Prototype="Vehicle_Ethernet::DataTypes::StartStop_Prototype" Name="StartStop" />
+              </Methods>
+            </DOInterface>
+          </DOInterfaces>
+        </Namespace>
+        <Namespace IsDefinedAsHidden="False" IsSystemDefined="True" Name="DataTypes">
+          <DataTypes>
+            <StructDataType Bitcount="304" RawBitcount="304" HasFixedBinaryLayout="True" HasMotorolaByteOrder="False" Name="TrafficSignDetection">
+              <Fields>
+                <DataTypeField RelativeBitOffset="64" IsOptional="False" IsHidden="False" Name="DetectedTrafficSigns">
+                  <AttributeValues>
+                    <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="memberName:DetectedTrafficSigns" InitialValueType="String" />
+                  </AttributeValues>
+                  <DataType DataType="Vehicle_Ethernet::DataTypes::TrafficSignInfo_Array" />
+                </DataTypeField>
+              </Fields>
+            </StructDataType>
+            <StructDataType Bitcount="80" RawBitcount="80" HasFixedBinaryLayout="True" HasMotorolaByteOrder="False" Name="TrafficSignInfo">
+              <Fields>
+                <DataTypeField RelativeBitOffset="32" IsOptional="False" IsHidden="False" Name="SignType">
+                  <AttributeValues>
+                    <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="memberName:SignType" InitialValueType="String" />
+                  </AttributeValues>
+                  <DataType DataType="_SystemDataTypes::UInt8">
+                    <NumericProperties MinValue="0" MinValueType="UInt64" MaxValue="100" MaxValueType="UInt64" IsBoolean="False" IsTimespan="False">
+                      <ImplToPhysEncodings TextualEncodings="Vehicle_Ethernet::Encodings::UInt8_UInt8" />
+                    </NumericProperties>
+                  </DataType>
+                </DataTypeField>
+                <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="DistanceToSign">
+                  <AttributeValues>
+                    <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="memberName:DistanceToSign" InitialValueType="String" />
+                  </AttributeValues>
+                  <DataType DataType="_SystemDataTypes::UInt32">
+                    <NumericProperties MinValue="-1000" MinValueType="Double" MaxValue="42948672.950000003" MaxValueType="Double" IsBoolean="False" IsTimespan="False">
+                      <ImplToPhysEncodings LinearEncodings="Vehicle_Ethernet::Encodings::UInt32_UInt32_Linear" TextualEncodings="Vehicle_Ethernet::Encodings::UInt32_UInt32_Textual" />
+                    </NumericProperties>
+                  </DataType>
+                </DataTypeField>
+                <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="Reliability">
+                  <AttributeValues>
+                    <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="memberName:Reliability" InitialValueType="String" />
+                  </AttributeValues>
+                  <DataType DataType="_SystemDataTypes::UInt8">
+                    <NumericProperties MinValue="0" MinValueType="UInt64" MaxValue="255" MaxValueType="UInt64" IsBoolean="False" IsTimespan="False">
+                      <ImplToPhysEncodings LinearEncodings="Vehicle_Ethernet::Encodings::UInt8_UInt8_2" />
+                    </NumericProperties>
+                  </DataType>
+                </DataTypeField>
+              </Fields>
+            </StructDataType>
+            <ArrayDataType MaxLength="3" MinLength="3" HasMaxLength="True" HasFixedBinaryLayout="True" HasMotorolaByteOrder="False" Name="TrafficSignInfo_Array">
+              <BaseType DataType="Vehicle_Ethernet::DataTypes::TrafficSignInfo" />
+            </ArrayDataType>
+            <StructDataType Bitcount="496" RawBitcount="496" HasFixedBinaryLayout="True" HasMotorolaByteOrder="False" Name="LaneDetection">
+              <Fields>
+                <DataTypeField RelativeBitOffset="64" IsOptional="False" IsHidden="False" Name="DetectedLaneBorder">
+                  <AttributeValues>
+                    <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="memberName:DetectedLaneBorder" InitialValueType="String" />
+                  </AttributeValues>
+                  <DataType DataType="Vehicle_Ethernet::DataTypes::DetectedLaneBorder_Array" />
+                </DataTypeField>
+              </Fields>
+            </StructDataType>
+            <StructDataType Bitcount="144" RawBitcount="144" HasFixedBinaryLayout="True" HasMotorolaByteOrder="False" Name="DetectedLaneBorder">
+              <Fields>
+                <DataTypeField RelativeBitOffset="32" IsOptional="False" IsHidden="False" Name="LaneSegmentX">
+                  <AttributeValues>
+                    <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="memberName:LaneSegmentX" InitialValueType="String" />
+                  </AttributeValues>
+                  <DataType DataType="_SystemDataTypes::UInt32">
+                    <NumericProperties MinValue="-1000" MinValueType="Double" MaxValue="42948672.950000003" MaxValueType="Double" IsBoolean="False" IsTimespan="False">
+                      <ImplToPhysEncodings LinearEncodings="Vehicle_Ethernet::Encodings::UInt32_UInt32_Linear" TextualEncodings="Vehicle_Ethernet::Encodings::UInt32_UInt32_Textual" />
+                    </NumericProperties>
+                  </DataType>
+                </DataTypeField>
+                <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="BorderLeft">
+                  <AttributeValues>
+                    <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="memberName:BorderLeft" InitialValueType="String" />
+                  </AttributeValues>
+                  <DataType DataType="_SystemDataTypes::UInt32">
+                    <NumericProperties MinValue="-1000" MinValueType="Double" MaxValue="42948672.950000003" MaxValueType="Double" IsBoolean="False" IsTimespan="False">
+                      <ImplToPhysEncodings LinearEncodings="Vehicle_Ethernet::Encodings::UInt32_UInt32_Linear" TextualEncodings="Vehicle_Ethernet::Encodings::UInt32_UInt32_Textual" />
+                    </NumericProperties>
+                  </DataType>
+                </DataTypeField>
+                <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="BorderRight">
+                  <AttributeValues>
+                    <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="memberName:BorderRight" InitialValueType="String" />
+                  </AttributeValues>
+                  <DataType DataType="_SystemDataTypes::UInt32">
+                    <NumericProperties MinValue="-1000" MinValueType="Double" MaxValue="42948672.950000003" MaxValueType="Double" IsBoolean="False" IsTimespan="False">
+                      <ImplToPhysEncodings LinearEncodings="Vehicle_Ethernet::Encodings::UInt32_UInt32_Linear" TextualEncodings="Vehicle_Ethernet::Encodings::UInt32_UInt32_Textual" />
+                    </NumericProperties>
+                  </DataType>
+                </DataTypeField>
+                <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="ReliabilityLeft">
+                  <AttributeValues>
+                    <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="memberName:ReliabilityLeft" InitialValueType="String" />
+                  </AttributeValues>
+                  <DataType DataType="_SystemDataTypes::UInt8">
+                    <NumericProperties MinValue="0" MinValueType="UInt64" MaxValue="255" MaxValueType="UInt64" IsBoolean="False" IsTimespan="False">
+                      <ImplToPhysEncodings LinearEncodings="Vehicle_Ethernet::Encodings::UInt8_UInt8_2" />
+                    </NumericProperties>
+                  </DataType>
+                </DataTypeField>
+                <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="ReliabilityRight">
+                  <AttributeValues>
+                    <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="memberName:ReliabilityRight" InitialValueType="String" />
+                  </AttributeValues>
+                  <DataType DataType="_SystemDataTypes::UInt8">
+                    <NumericProperties MinValue="0" MinValueType="UInt64" MaxValue="255" MaxValueType="UInt64" IsBoolean="False" IsTimespan="False">
+                      <ImplToPhysEncodings LinearEncodings="Vehicle_Ethernet::Encodings::UInt8_UInt8_2" />
+                    </NumericProperties>
+                  </DataType>
+                </DataTypeField>
+              </Fields>
+            </StructDataType>
+            <ArrayDataType MaxLength="3" MinLength="3" HasMaxLength="True" HasFixedBinaryLayout="True" HasMotorolaByteOrder="False" Name="DetectedLaneBorder_Array">
+              <BaseType DataType="Vehicle_Ethernet::DataTypes::DetectedLaneBorder" />
+            </ArrayDataType>
+            <FunctionPrototype IsOneWay="False" AllowSpecialCharactersInMemberNames="False" HasFixedBinaryLayout="False" HasMotorolaByteOrder="False" Name="StartStop_Prototype">
+              <Result DataType="_SystemDataTypes::Void" />
+              <Parameters>
+                <Parameter IsOptional="False" Name="Activate">
+                  <DataType DataType="_SystemDataTypes::UInt8">
+                    <NumericProperties MinValue="0" MinValueType="UInt64" MaxValue="1" MaxValueType="UInt64" IsBoolean="False" IsTimespan="False">
+                      <ImplToPhysEncodings TextualEncodings="Vehicle_Ethernet::Encodings::UInt8_UInt8_5" />
+                    </NumericProperties>
+                  </DataType>
+                </Parameter>
+                <Parameter IsOptional="False" Direction="Out" Name="Result">
+                  <DataType DataType="_SystemDataTypes::UInt8">
+                    <NumericProperties MinValue="0" MinValueType="UInt64" MaxValue="1" MaxValueType="UInt64" IsBoolean="False" IsTimespan="False">
+                      <ImplToPhysEncodings TextualEncodings="Vehicle_Ethernet::Encodings::UInt8_UInt8_6" />
+                    </NumericProperties>
+                  </DataType>
+                </Parameter>
+              </Parameters>
+            </FunctionPrototype>
+            <FunctionPrototype IsOneWay="False" AllowSpecialCharactersInMemberNames="False" HasFixedBinaryLayout="False" HasMotorolaByteOrder="False" Name="UInt8_Getter_Prototype">
+              <Result DataType="_SystemDataTypes::UInt8" />
+            </FunctionPrototype>
+            <FunctionPrototype IsOneWay="False" AllowSpecialCharactersInMemberNames="False" HasFixedBinaryLayout="False" HasMotorolaByteOrder="False" Name="UInt8_Setter_Prototype">
+              <Result DataType="_SystemDataTypes::UInt8" />
+              <Parameters>
+                <Parameter IsOptional="False" Name="newValue">
+                  <DataType DataType="_SystemDataTypes::UInt8" />
+                </Parameter>
+              </Parameters>
+            </FunctionPrototype>
+          </DataTypes>
+        </Namespace>
+        <Namespace IsDefinedAsHidden="False" IsSystemDefined="True" Name="Encodings">
+          <LinearEncodings>
+            <LinearEncodings Name="UInt32_UInt32_Linear">
+              <LinearEncoding Factor="0.01" Offset="-1000" Unit="m" LowerBound="0" LowerBoundType="UInt32" UpperBound="4294967295" UpperBoundType="UInt32" />
+            </LinearEncodings>
+            <LinearEncodings Name="UInt8_UInt8_2">
+              <LinearEncoding Factor="1" Offset="0" Unit="%" LowerBound="0" LowerBoundType="UInt32" UpperBound="255" UpperBoundType="UInt32" />
+            </LinearEncodings>
+          </LinearEncodings>
+          <TextualEncodings>
+            <TextualEncodings DefinesMinMax="False" IsEnum="False" Name="UInt8_UInt8">
+              <TextualEncoding TextualValue="NoObject" DisplayValue="NoObject" LowerBound="0" LowerBoundType="UInt32" UpperBound="0" UpperBoundType="UInt32" />
+              <TextualEncoding TextualValue="NoLimit" DisplayValue="NoLimit" LowerBound="1" LowerBoundType="UInt32" UpperBound="1" UpperBoundType="UInt32" />
+              <TextualEncoding TextualValue="NoPassingZoneSign" DisplayValue="NoPassingZoneSign" LowerBound="2" LowerBoundType="UInt32" UpperBound="2" UpperBoundType="UInt32" />
+              <TextualEncoding TextualValue="NoPassingZoneEndSign" DisplayValue="NoPassingZoneEndSign" LowerBound="3" LowerBoundType="UInt32" UpperBound="3" UpperBoundType="UInt32" />
+              <TextualEncoding TextualValue="HazardSign" DisplayValue="HazardSign" LowerBound="4" LowerBoundType="UInt32" UpperBound="4" UpperBoundType="UInt32" />
+              <TextualEncoding TextualValue="HazardEndSign" DisplayValue="HazardEndSign" LowerBound="5" LowerBoundType="UInt32" UpperBound="5" UpperBoundType="UInt32" />
+              <TextualEncoding TextualValue="RoadworkSign" DisplayValue="RoadworkSign" LowerBound="6" LowerBoundType="UInt32" UpperBound="6" UpperBoundType="UInt32" />
+              <TextualEncoding TextualValue="RoadworkEndSign" DisplayValue="RoadworkEndSign" LowerBound="7" LowerBoundType="UInt32" UpperBound="7" UpperBoundType="UInt32" />
+              <TextualEncoding TextualValue="SpeedLimit30Sign" DisplayValue="SpeedLimit30Sign" LowerBound="30" LowerBoundType="UInt32" UpperBound="30" UpperBoundType="UInt32" />
+              <TextualEncoding TextualValue="SpeedLimit40Sign" DisplayValue="SpeedLimit40Sign" LowerBound="40" LowerBoundType="UInt32" UpperBound="40" UpperBoundType="UInt32" />
+              <TextualEncoding TextualValue="SpeedLimit50Sign" DisplayValue="SpeedLimit50Sign" LowerBound="50" LowerBoundType="UInt32" UpperBound="50" UpperBoundType="UInt32" />
+              <TextualEncoding TextualValue="SpeedLimit60Sign" DisplayValue="SpeedLimit60Sign" LowerBound="60" LowerBoundType="UInt32" UpperBound="60" UpperBoundType="UInt32" />
+              <TextualEncoding TextualValue="SpeedLimit70Sign" DisplayValue="SpeedLimit70Sign" LowerBound="70" LowerBoundType="UInt32" UpperBound="70" UpperBoundType="UInt32" />
+              <TextualEncoding TextualValue="SpeedLimit80Sign" DisplayValue="SpeedLimit80Sign" LowerBound="80" LowerBoundType="UInt32" UpperBound="80" UpperBoundType="UInt32" />
+              <TextualEncoding TextualValue="SpeedLimit100Sign" DisplayValue="SpeedLimit100Sign" LowerBound="100" LowerBoundType="UInt32" UpperBound="100" UpperBoundType="UInt32" />
+            </TextualEncodings>
+            <TextualEncodings DefinesMinMax="False" IsEnum="False" Name="UInt32_UInt32_Textual">
+              <TextualEncoding TextualValue="NoDistance" DisplayValue="NoDistance" LowerBound="4294967295" LowerBoundType="UInt32" UpperBound="4294967295" UpperBoundType="UInt32" />
+            </TextualEncodings>
+            <TextualEncodings DefinesMinMax="False" IsEnum="False" Name="UInt8_UInt8_5">
+              <TextualEncoding TextualValue="Deactivate" DisplayValue="Deactivate" LowerBound="0" LowerBoundType="UInt32" UpperBound="0" UpperBoundType="UInt32" />
+              <TextualEncoding TextualValue="Activate" DisplayValue="Activate" LowerBound="1" LowerBoundType="UInt32" UpperBound="1" UpperBoundType="UInt32" />
+            </TextualEncodings>
+            <TextualEncodings DefinesMinMax="False" IsEnum="False" Name="UInt8_UInt8_6">
+              <TextualEncoding TextualValue="Failed" DisplayValue="Failed" LowerBound="0" LowerBoundType="UInt32" UpperBound="0" UpperBoundType="UInt32" />
+              <TextualEncoding TextualValue="Success" DisplayValue="Success" LowerBound="1" LowerBoundType="UInt32" UpperBound="1" UpperBoundType="UInt32" />
+            </TextualEncodings>
+          </TextualEncodings>
+        </Namespace>
+        <Namespace IsDefinedAsHidden="False" IsSystemDefined="True" Name="CAMF">
+          <DistributedObjects>
+            <DistributedObject GenerateDotNetAPI="True" Name="CameraObjectDetectionPSI1">
+              <DataType>
+                <ModifiedDOIF Reverse="False" IsDOReference="False" Interface="Vehicle_Ethernet::Interfaces::CameraObjectDetection" />
+              </DataType>
+              <MemberData>
+                <DOMemberDataHolder Name="MemberData">
+                  <Data>
+                    <DOInstanceMemberData Name="TrafficSignDetection">
+                      <AttributeValues>
+                        <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="cluster:Vehicle_Ethernet,node:CAMF,serviceId:2001,majorVersion:1,instanceId:1,eventId:32868" InitialValueType="String" />
+                      </AttributeValues>
+                    </DOInstanceMemberData>
+                    <DOInstanceMemberData Name="LaneDetection">
+                      <AttributeValues>
+                        <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="cluster:Vehicle_Ethernet,node:CAMF,serviceId:2001,majorVersion:1,instanceId:1,eventId:32869" InitialValueType="String" />
+                      </AttributeValues>
+                    </DOInstanceMemberData>
+                    <DOInstanceMemberData Name="StartStop">
+                      <AttributeValues>
+                        <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="cluster:Vehicle_Ethernet,node:CAMF,serviceId:2001,majorVersion:1,instanceId:1,methodId:300,inParams:[Activate],outParams:[Result]" InitialValueType="String" />
+                      </AttributeValues>
+                    </DOInstanceMemberData>
+                    <DOInstanceMemberData Name="FrameRate">
+                      <AttributeValues>
+                        <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="cluster:Vehicle_Ethernet,node:CAMF,serviceId:2001,majorVersion:1,instanceId:1,notifierId:32968,getterId:201,setterId:202" InitialValueType="String" />
+                      </AttributeValues>
+                    </DOInstanceMemberData>
+                  </Data>
+                </DOMemberDataHolder>
+              </MemberData>
+            </DistributedObject>
+          </DistributedObjects>
+        </Namespace>
+        <Namespace IsDefinedAsHidden="False" IsSystemDefined="True" Name="ADAS">
+          <DistributedObjects>
+            <DistributedObject GenerateDotNetAPI="True" Name="CameraObjectDetectionCSI1">
+              <DataType>
+                <ModifiedDOIF Reverse="True" IsDOReference="False" Interface="Vehicle_Ethernet::Interfaces::CameraObjectDetection" />
+              </DataType>
+              <MemberData>
+                <DOMemberDataHolder Name="MemberData">
+                  <Data>
+                    <DOInstanceMemberData Name="TrafficSignDetection">
+                      <AttributeValues>
+                        <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="cluster:Vehicle_Ethernet,node:ADAS,serviceId:2001,majorVersion:1,instanceId:1,shortName:CameraObjectDetectionCSI1,eventId:32868" InitialValueType="String" />
+                      </AttributeValues>
+                    </DOInstanceMemberData>
+                    <DOInstanceMemberData Name="LaneDetection">
+                      <AttributeValues>
+                        <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="cluster:Vehicle_Ethernet,node:ADAS,serviceId:2001,majorVersion:1,instanceId:1,shortName:CameraObjectDetectionCSI1,eventId:32869" InitialValueType="String" />
+                      </AttributeValues>
+                    </DOInstanceMemberData>
+                    <DOInstanceMemberData Name="StartStop">
+                      <AttributeValues>
+                        <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="cluster:Vehicle_Ethernet,node:ADAS,serviceId:2001,majorVersion:1,instanceId:1,shortName:CameraObjectDetectionCSI1,methodId:300,inParams:[Activate],outParams:[Result]" InitialValueType="String" />
+                      </AttributeValues>
+                    </DOInstanceMemberData>
+                    <DOInstanceMemberData Name="FrameRate">
+                      <AttributeValues>
+                        <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="cluster:Vehicle_Ethernet,node:ADAS,serviceId:2001,majorVersion:1,instanceId:1,shortName:CameraObjectDetectionCSI1,notifierId:32968,getterId:201,setterId:202" InitialValueType="String" />
+                      </AttributeValues>
+                    </DOInstanceMemberData>
+                  </Data>
+                </DOMemberDataHolder>
+              </MemberData>
+            </DistributedObject>
+          </DistributedObjects>
+        </Namespace>
+      </Subnamespaces>
+    </Namespace>
+  </Namespaces>
+</FunctionBusLibrary>

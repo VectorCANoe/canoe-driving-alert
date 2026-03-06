@@ -1,0 +1,125 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Panel Type="Vector.CANalyzer.Panels.PanelSerializer, Vector.CANalyzer.Panels.Serializer, Version=19.3.60.0, Culture=neutral, PublicKeyToken=null">
+  <Object Type="Vector.CANalyzer.Panels.Runtime.Panel, Vector.CANalyzer.Panels.Common, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Panel" ControlName="IDSM">
+    <Object Type="Vector.CANalyzer.Panels.Design.CheckBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xdffa5fc9eb14ae42feeb042ea78c3b78581d" ControlName="CheckBoxCyclicTransmissionMode">
+      <Property Name="Name">Xdffa5fc9eb14ae42feeb042ea78c3b78581d</Property>
+      <Property Name="Size">155, 16</Property>
+      <Property Name="Location">302, 255</Property>
+      <Property Name="Text">Cyclic Transmission Mode</Property>
+      <Property Name="TabIndex">5</Property>
+      <Property Name="SymbolConfiguration">8;16;IDSMPanel;;;CyclicTransmissionMode;1;;;-1;;;Value;;;0</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.GroupBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xd8a3d1a3e93a9e466ae8c40e626de6cf3c20" ControlName="GroupBoxEventFrame">
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X48809860e74ede4792e8e38eea6df2c7647a" ControlName="Static Text 3">
+        <Property Name="Name">X48809860e74ede4792e8e38eea6df2c7647a</Property>
+        <Property Name="Size">81, 15</Property>
+        <Property Name="Location">239, 75</Property>
+        <Property Name="Text">Range: 0-0x3F</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xc8629a12e719ce4b40eb540ed9738f0611ad" ControlName="Static Text 2">
+        <Property Name="Name">Xc8629a12e719ce4b40eb540ed9738f0611ad</Property>
+        <Property Name="Size">284, 27</Property>
+        <Property Name="Location">239, 17</Property>
+        <Property Name="Text">AR internal Ids: 0-0x7FFF, 
+customer specific Ids: 0x8000-0xFFFE</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X2bc8592dee610e4513e99c2e20c94145617d" ControlName="Input/Output Box 2">
+        <Property Name="Name">X2bc8592dee610e4513e99c2e20c94145617d</Property>
+        <Property Name="Size">221, 21</Property>
+        <Property Name="Location">5, 71</Property>
+        <Property Name="AlarmGeneralSettings">1;3;0;63</Property>
+        <Property Name="AlarmLowerBkgColor">Salmon</Property>
+        <Property Name="AlarmLowerTextColor">Black</Property>
+        <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+        <Property Name="AlarmUpperTextColor">Black</Property>
+        <Property Name="BoxBorderStyle">FixedSingle</Property>
+        <Property Name="DisplayLabel">Left</Property>
+        <Property Name="TabIndex">2</Property>
+        <Property Name="DescriptionText">Sensor Instance Id (hex):</Property>
+        <Property Name="ValueDecimalPlaces">0</Property>
+        <Property Name="ValueDisplay">Hexadecimal</Property>
+        <Property Name="UsedValueTable">PhysicalValue</Property>
+        <Property Name="DescriptionSize">128, 21</Property>
+        <Property Name="SymbolConfiguration">8;16;IDSMPanel;;;SensorInstanceID;1;;;-1;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xdde62150e41a5e40f4e9ba9e2dc6bc521eb4" ControlName="Input/Output Box 1">
+        <Property Name="Name">Xdde62150e41a5e40f4e9ba9e2dc6bc521eb4</Property>
+        <Property Name="Size">215, 21</Property>
+        <Property Name="Location">11, 21</Property>
+        <Property Name="AlarmGeneralSettings">1;3;0;65534</Property>
+        <Property Name="AlarmLowerBkgColor">Salmon</Property>
+        <Property Name="AlarmLowerTextColor">Black</Property>
+        <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+        <Property Name="AlarmUpperTextColor">Black</Property>
+        <Property Name="BoxBorderStyle">FixedSingle</Property>
+        <Property Name="DisplayLabel">Left</Property>
+        <Property Name="TabIndex">1</Property>
+        <Property Name="DescriptionText">Event Id (hex):               </Property>
+        <Property Name="ValueDecimalPlaces">0</Property>
+        <Property Name="ValueDisplay">Hexadecimal</Property>
+        <Property Name="UsedValueTable">PhysicalValue</Property>
+        <Property Name="DescriptionSize">121, 21</Property>
+        <Property Name="SymbolConfiguration">8;16;IDSMPanel;;;EventID;1;;;-1;;;Value;;;0</Property>
+      </Object>
+      <Property Name="Name">Xd8a3d1a3e93a9e466ae8c40e626de6cf3c20</Property>
+      <Property Name="Size">533, 104</Property>
+      <Property Name="Location">13, 128</Property>
+      <Property Name="Text">Event Frame</Property>
+      <Property Name="TabIndex">4</Property>
+      <Property Name="UseWindowsStyle">False</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.ButtonControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X5d718e02eb83de4b79ea734ecd663f700d7d" ControlName="ButtonSend">
+      <Property Name="Name">X5d718e02eb83de4b79ea734ecd663f700d7d</Property>
+      <Property Name="Size">75, 23</Property>
+      <Property Name="Location">471, 248</Property>
+      <Property Name="TabIndex">2</Property>
+      <Property Name="Text">Send QSEv </Property>
+      <Property Name="SymbolConfiguration">8;16;IDSMPanel;;;Button_Send;1;;;-1;;;Value;;;0</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.GroupBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xf018d5aee5475e47f7e924fef81aa3dfd76c" ControlName="GroupBoxProtocol">
+      <Object Type="Vector.CANalyzer.Panels.Design.RadioButtonControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xb6081040e1aa3e455ee9119ec617ad9800c6" ControlName="Radio Button 3">
+        <Property Name="Name">Xb6081040e1aa3e455ee9119ec617ad9800c6</Property>
+        <Property Name="Size">150, 17</Property>
+        <Property Name="Location">26, 70</Property>
+        <Property Name="Text">CAN TP (IDs=0x12,0x13)</Property>
+        <Property Name="TabIndex">3</Property>
+        <Property Name="SwitchValueVTXml">&lt;Version&gt;2&lt;/Version&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;RxValue&gt;CAN_TP&lt;/RxValue&gt;</Property>
+        <Property Name="SwitchValueVT">1;Lower;CAN_TP</Property>
+        <Property Name="SwitchValue">2</Property>
+        <Property Name="SymbolConfiguration">8;16;IDSMPanel;;;Bus_Protocol;1;;;-1;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.RadioButtonControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xae3a1b9ee8802e47e1eae3ceb9df5b5310c6" ControlName="RadioButtonCANFD">
+        <Property Name="Name">Xae3a1b9ee8802e47e1eae3ceb9df5b5310c6</Property>
+        <Property Name="Size">113, 17</Property>
+        <Property Name="Location">26, 47</Property>
+        <Property Name="Text">CAN FD (ID=0xA)</Property>
+        <Property Name="TabIndex">2</Property>
+        <Property Name="SwitchValueVTXml">&lt;Version&gt;2&lt;/Version&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;RxValue&gt;CAN_FD&lt;/RxValue&gt;</Property>
+        <Property Name="SwitchValueVT">1;Lower;CAN_FD</Property>
+        <Property Name="SwitchValue">1</Property>
+        <Property Name="SymbolConfiguration">8;16;IDSMPanel;;;Bus_Protocol;1;;;-1;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.RadioButtonControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X32d7d699eca2ee4da2e8bbceb1bac4e7dc6c" ControlName="Radio Button 1">
+        <Property Name="Name">X32d7d699eca2ee4da2e8bbceb1bac4e7dc6c</Property>
+        <Property Name="Size">94, 17</Property>
+        <Property Name="Location">26, 24</Property>
+        <Property Name="Text">CAN (ID=0x9)</Property>
+        <Property Name="TabIndex">1</Property>
+        <Property Name="SwitchValueVTXml">&lt;Version&gt;2&lt;/Version&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;RxValue&gt;0&lt;/RxValue&gt;</Property>
+        <Property Name="SwitchValueVT">1;Lower;0</Property>
+        <Property Name="SwitchValue">0</Property>
+        <Property Name="SymbolConfiguration">8;16;IDSMPanel;;;Bus_Protocol;1;;;-1;;;Value;;;0</Property>
+      </Object>
+      <Property Name="Name">Xf018d5aee5475e47f7e924fef81aa3dfd76c</Property>
+      <Property Name="Size">533, 100</Property>
+      <Property Name="Location">13, 16</Property>
+      <Property Name="Text">Protocol</Property>
+      <Property Name="TabIndex">1</Property>
+      <Property Name="UseWindowsStyle">False</Property>
+    </Object>
+    <Property Name="Name">Panel</Property>
+    <Property Name="Size">562, 289</Property>
+    <Property Name="Location">0, 0</Property>
+    <Property Name="BackColor">White</Property>
+  </Object>
+</Panel>

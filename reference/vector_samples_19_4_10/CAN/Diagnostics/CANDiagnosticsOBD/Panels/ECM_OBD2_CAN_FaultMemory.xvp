@@ -1,0 +1,340 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Panel Type="Vector.CANalyzer.Panels.PanelSerializer, Vector.CANalyzer.Panels.Serializer, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null">
+  <Object Type="Vector.CANalyzer.Panels.Runtime.Panel, Vector.CANalyzer.Panels.Common, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Panel" ControlName="ECM_OBD2_CAN_FaultMemory">
+    <Object Type="Vector.CANalyzer.Panels.Design.GroupBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="GroupBoxControl1" ControlName="Group Box 1">
+      <Object Type="Vector.CANalyzer.Panels.Design.CheckBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="CheckBoxControl11" ControlName="Check Box 3">
+        <Property Name="Name">CheckBoxControl11</Property>
+        <Property Name="Size">119, 17</Property>
+        <Property Name="Location">14, 180</Property>
+        <Property Name="BackColor">White</Property>
+        <Property Name="Text">Check immediately</Property>
+        <Property Name="TabIndex">2</Property>
+        <Property Name="SymbolConfiguration">8;128;ECM_OBD2_CAN;;FaultMemoryGui;SeverityByte;1;;;7;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.CheckBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="CheckBoxControl10" ControlName="Check Box 2">
+        <Property Name="Name">CheckBoxControl10</Property>
+        <Property Name="Size">114, 17</Property>
+        <Property Name="Location">14, 157</Property>
+        <Property Name="BackColor">White</Property>
+        <Property Name="Text">Check at next halt</Property>
+        <Property Name="TabIndex">2</Property>
+        <Property Name="SymbolConfiguration">8;128;ECM_OBD2_CAN;;FaultMemoryGui;SeverityByte;1;;;6;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.CheckBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="CheckBoxControl13" ControlName="Check Box 5">
+        <Property Name="Name">CheckBoxControl13</Property>
+        <Property Name="Size">113, 17</Property>
+        <Property Name="Location">14, 134</Property>
+        <Property Name="BackColor">White</Property>
+        <Property Name="Text">Maintenance only</Property>
+        <Property Name="TabIndex">2</Property>
+        <Property Name="SymbolConfiguration">8;128;ECM_OBD2_CAN;;FaultMemoryGui;SeverityByte;1;;;5;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.CheckBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="CheckBoxControl15" ControlName="Check Box 7">
+        <Property Name="Name">CheckBoxControl15</Property>
+        <Property Name="Size">89, 17</Property>
+        <Property Name="Location">14, 111</Property>
+        <Property Name="BackColor">White</Property>
+        <Property Name="Text">DTC Class 4</Property>
+        <Property Name="TabIndex">2</Property>
+        <Property Name="SymbolConfiguration">8;128;ECM_OBD2_CAN;;FaultMemoryGui;SeverityByte;1;;;4;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.CheckBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="CheckBoxControl12" ControlName="Check Box 4">
+        <Property Name="Name">CheckBoxControl12</Property>
+        <Property Name="Size">89, 17</Property>
+        <Property Name="Location">14, 88</Property>
+        <Property Name="BackColor">White</Property>
+        <Property Name="Text">DTC Class 3</Property>
+        <Property Name="TabIndex">2</Property>
+        <Property Name="SymbolConfiguration">8;128;ECM_OBD2_CAN;;FaultMemoryGui;SeverityByte;1;;;3;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.CheckBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="CheckBoxControl14" ControlName="Check Box 6">
+        <Property Name="Name">CheckBoxControl14</Property>
+        <Property Name="Size">89, 17</Property>
+        <Property Name="Location">14, 65</Property>
+        <Property Name="BackColor">White</Property>
+        <Property Name="Text">DTC Class 2</Property>
+        <Property Name="TabIndex">2</Property>
+        <Property Name="SymbolConfiguration">8;128;ECM_OBD2_CAN;;FaultMemoryGui;SeverityByte;1;;;2;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.CheckBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="CheckBoxControl9" ControlName="Check Box 1">
+        <Property Name="Name">CheckBoxControl9</Property>
+        <Property Name="Size">89, 17</Property>
+        <Property Name="Location">14, 42</Property>
+        <Property Name="BackColor">White</Property>
+        <Property Name="Text">DTC Class 1</Property>
+        <Property Name="TabIndex">2</Property>
+        <Property Name="SymbolConfiguration">8;128;ECM_OBD2_CAN;;FaultMemoryGui;SeverityByte;1;;;1;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.CheckBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="CheckBoxControl16" ControlName="Check Box 8">
+        <Property Name="Name">CheckBoxControl16</Property>
+        <Property Name="Size">89, 17</Property>
+        <Property Name="Location">14, 19</Property>
+        <Property Name="BackColor">White</Property>
+        <Property Name="Text">DTC Class 0</Property>
+        <Property Name="TabIndex">2</Property>
+        <Property Name="SymbolConfiguration">8;128;ECM_OBD2_CAN;;FaultMemoryGui;SeverityByte;1;;;0;;;Value;;;0</Property>
+      </Object>
+      <Property Name="Name">GroupBoxControl1</Property>
+      <Property Name="Size">242, 201</Property>
+      <Property Name="Location">3, 233</Property>
+      <Property Name="BackColor">White</Property>
+      <Property Name="Text">Severity byte</Property>
+      <Property Name="TabIndex">49</Property>
+      <Property Name="UseWindowsStyle">False</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.HexEditorControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="HexEditorControl2" ControlName="Hex/Text Editor 2">
+      <Property Name="Name">HexEditorControl2</Property>
+      <Property Name="Size">32, 15</Property>
+      <Property Name="Location">201, 436</Property>
+      <Property Name="Font">Microsoft Sans Serif, 8.25pt</Property>
+      <Property Name="ReadOnlyControl">False</Property>
+      <Property Name="TabIndex">41</Property>
+      <Property Name="ViewLayout">OnlyHexfield</Property>
+      <Property Name="ColumnCount">1</Property>
+      <Property Name="FixedLength">1</Property>
+      <Property Name="SymbolConfiguration">8;128;ECM_OBD2_CAN;;FaultMemoryGui;DTCSeverityAvailabilityMask;8;;;-1;;;Value;;;0</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl6" ControlName="Static Text 6">
+      <Property Name="Name">StaticTextControl6</Property>
+      <Property Name="Size">26, 15</Property>
+      <Property Name="Location">179, 436</Property>
+      <Property Name="Text">/ 0x</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl5" ControlName="Static Text 5">
+      <Property Name="Name">StaticTextControl5</Property>
+      <Property Name="Size">35, 15</Property>
+      <Property Name="Location">176, 473</Property>
+      <Property Name="BackColor">White</Property>
+      <Property Name="Text">OBD:</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl4" ControlName="Static Text 4">
+      <Property Name="Name">StaticTextControl4</Property>
+      <Property Name="Size">73, 15</Property>
+      <Property Name="Location">77, 473</Property>
+      <Property Name="BackColor">White</Property>
+      <Property Name="Text">user-defined:</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl3" ControlName="Static Text 2">
+      <Property Name="Name">StaticTextControl3</Property>
+      <Property Name="Size">48, 15</Property>
+      <Property Name="Location">3, 473</Property>
+      <Property Name="BackColor">White</Property>
+      <Property Name="Text">primary:</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="TextBoxControl2" ControlName="Input/Output Box 2">
+      <Property Name="Name">TextBoxControl2</Property>
+      <Property Name="Size">23, 19</Property>
+      <Property Name="Location">213, 471</Property>
+      <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+      <Property Name="AlarmLowerBkgColor">Salmon</Property>
+      <Property Name="AlarmLowerTextColor">WindowText</Property>
+      <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+      <Property Name="AlarmUpperTextColor">WindowText</Property>
+      <Property Name="BoxBorderStyle">FixedSingle</Property>
+      <Property Name="DisplayLabel">Hide</Property>
+      <Property Name="BoxBackColor">255, 240, 240, 240</Property>
+      <Property Name="TextBackColor">White</Property>
+      <Property Name="ReadOnlyControl">True</Property>
+      <Property Name="TabIndex">34</Property>
+      <Property Name="TabStopActive">False</Property>
+      <Property Name="DescriptionText">FaultMemoryInternal.NumberOfStoredEmissionRelatedDTCs:</Property>
+      <Property Name="ValueDecimalPlaces">0</Property>
+      <Property Name="ValueDisplay">Double</Property>
+      <Property Name="UsedValueTable">RawValue</Property>
+      <Property Name="DescriptionSize">0, 0</Property>
+      <Property Name="SymbolConfiguration">8;128;ECM_OBD2_CAN;;FaultMemoryInternal;NumberOfStoredEmissionRelatedDTCs;1;;;-1;;;Value;;;0</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="TextBoxControl1" ControlName="Input/Output Box 1">
+      <Property Name="Name">TextBoxControl1</Property>
+      <Property Name="Size">23, 19</Property>
+      <Property Name="Location">151, 471</Property>
+      <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+      <Property Name="AlarmLowerBkgColor">Salmon</Property>
+      <Property Name="AlarmLowerTextColor">WindowText</Property>
+      <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+      <Property Name="AlarmUpperTextColor">WindowText</Property>
+      <Property Name="BoxBorderStyle">FixedSingle</Property>
+      <Property Name="DisplayLabel">Hide</Property>
+      <Property Name="BoxBackColor">255, 240, 240, 240</Property>
+      <Property Name="TextBackColor">White</Property>
+      <Property Name="ReadOnlyControl">True</Property>
+      <Property Name="TabIndex">34</Property>
+      <Property Name="TabStopActive">False</Property>
+      <Property Name="DescriptionText">FaultMemoryInternal.NumberOfStoredUserDefinedDTCs:</Property>
+      <Property Name="ValueDecimalPlaces">0</Property>
+      <Property Name="ValueDisplay">Double</Property>
+      <Property Name="UsedValueTable">RawValue</Property>
+      <Property Name="DescriptionSize">0, 0</Property>
+      <Property Name="SymbolConfiguration">8;128;ECM_OBD2_CAN;;FaultMemoryInternal;NumberOfStoredUserDefinedDTCs;1;;;-1;;;Value;;;0</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl2" ControlName="DtcStorageWarningText">
+      <Property Name="Name">StaticTextControl2</Property>
+      <Property Name="Size">232, 15</Property>
+      <Property Name="Location">8, 583</Property>
+      <Property Name="IsVisibleByLoad">False</Property>
+      <Property Name="TextAlign">MiddleCenter</Property>
+      <Property Name="ForeColor">Red</Property>
+      <Property Name="Text">Warning: Storage of DTCs deactivated!</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.HexEditorControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="HexEditorControl1" ControlName="Hex/Text Editor 1">
+      <Property Name="Name">HexEditorControl1</Property>
+      <Property Name="Size">32, 15</Property>
+      <Property Name="Location">150, 436</Property>
+      <Property Name="Font">Microsoft Sans Serif, 8.25pt</Property>
+      <Property Name="ReadOnlyControl">False</Property>
+      <Property Name="TabIndex">28</Property>
+      <Property Name="ViewLayout">OnlyHexfield</Property>
+      <Property Name="ColumnCount">1</Property>
+      <Property Name="FixedLength">1</Property>
+      <Property Name="SymbolConfiguration">8;128;ECM_OBD2_CAN;;FaultMemoryGui;DTCStatusAvailabilityMask;8;;;-1;;;Value;;;0</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl1" ControlName="Static Text 1">
+      <Property Name="Name">StaticTextControl1</Property>
+      <Property Name="Size">152, 15</Property>
+      <Property Name="Location">2, 436</Property>
+      <Property Name="Text">Status/SeverityAvailability: 0x</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.CAPLOutputViewControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="CAPLOutputViewControl1" ControlName="StoredDTCs">
+      <Property Name="Name">CAPLOutputViewControl1</Property>
+      <Property Name="Size">242, 85</Property>
+      <Property Name="Location">3, 496</Property>
+      <Property Name="TabIndex">22</Property>
+      <Property Name="OutputMode">Overwrite</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl8" ControlName="Static Text 3">
+      <Property Name="Name">StaticTextControl8</Property>
+      <Property Name="Size">239, 15</Property>
+      <Property Name="Location">2, 456</Property>
+      <Property Name="BackColor">White</Property>
+      <Property Name="Text">Faults in fault memory with status/severity S:</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.GroupBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="GroupBoxControl3" ControlName="Group Box 3">
+      <Object Type="Vector.CANalyzer.Panels.Design.CheckBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="CheckBoxControl8" ControlName="Check Box">
+        <Property Name="Name">CheckBoxControl8</Property>
+        <Property Name="Size">164, 17</Property>
+        <Property Name="Location">14, 180</Property>
+        <Property Name="BackColor">White</Property>
+        <Property Name="Text">Warning indicator requested</Property>
+        <Property Name="TabIndex">2</Property>
+        <Property Name="SymbolConfiguration">8;128;ECM_OBD2_CAN;;FaultMemoryGui;StatusByte;1;;;7;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.CheckBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="CheckBoxControl7" ControlName="Check Box">
+        <Property Name="Name">CheckBoxControl7</Property>
+        <Property Name="Size">222, 17</Property>
+        <Property Name="Location">14, 157</Property>
+        <Property Name="BackColor">White</Property>
+        <Property Name="Text">Test not completed this monitoring cycle</Property>
+        <Property Name="TabIndex">2</Property>
+        <Property Name="SymbolConfiguration">8;128;ECM_OBD2_CAN;;FaultMemoryGui;StatusByte;1;;;6;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.CheckBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="CheckBoxControl6" ControlName="Check Box">
+        <Property Name="Name">CheckBoxControl6</Property>
+        <Property Name="Size">153, 17</Property>
+        <Property Name="Location">14, 134</Property>
+        <Property Name="BackColor">White</Property>
+        <Property Name="Text">Test failed since last clear</Property>
+        <Property Name="TabIndex">2</Property>
+        <Property Name="SymbolConfiguration">8;128;ECM_OBD2_CAN;;FaultMemoryGui;StatusByte;1;;;5;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.CheckBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="CheckBoxControl5" ControlName="Check Box">
+        <Property Name="Name">CheckBoxControl5</Property>
+        <Property Name="Size">195, 17</Property>
+        <Property Name="Location">14, 111</Property>
+        <Property Name="BackColor">White</Property>
+        <Property Name="Text">Test not completed since last clear</Property>
+        <Property Name="TabIndex">2</Property>
+        <Property Name="SymbolConfiguration">8;128;ECM_OBD2_CAN;;FaultMemoryGui;StatusByte;1;;;4;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.CheckBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="CheckBoxControl4" ControlName="Check Box">
+        <Property Name="Name">CheckBoxControl4</Property>
+        <Property Name="Size">103, 17</Property>
+        <Property Name="Location">14, 88</Property>
+        <Property Name="BackColor">White</Property>
+        <Property Name="Text">Confirmed DTC</Property>
+        <Property Name="TabIndex">2</Property>
+        <Property Name="SymbolConfiguration">8;128;ECM_OBD2_CAN;;FaultMemoryGui;StatusByte;1;;;3;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.CheckBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="CheckBoxControl3" ControlName="Check Box">
+        <Property Name="Name">CheckBoxControl3</Property>
+        <Property Name="Size">92, 17</Property>
+        <Property Name="Location">14, 65</Property>
+        <Property Name="BackColor">White</Property>
+        <Property Name="Text">Pending DTC</Property>
+        <Property Name="TabIndex">2</Property>
+        <Property Name="SymbolConfiguration">8;128;ECM_OBD2_CAN;;FaultMemoryGui;StatusByte;1;;;2;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.CheckBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="CheckBoxControl2" ControlName="Check Box">
+        <Property Name="Name">CheckBoxControl2</Property>
+        <Property Name="Size">180, 17</Property>
+        <Property Name="Location">14, 42</Property>
+        <Property Name="BackColor">White</Property>
+        <Property Name="Text">Test failed this monitoring cycle</Property>
+        <Property Name="TabIndex">2</Property>
+        <Property Name="SymbolConfiguration">8;128;ECM_OBD2_CAN;;FaultMemoryGui;StatusByte;1;;;1;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.CheckBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="CheckBoxControl1" ControlName="Check Box">
+        <Property Name="Name">CheckBoxControl1</Property>
+        <Property Name="Size">77, 17</Property>
+        <Property Name="Location">14, 19</Property>
+        <Property Name="BackColor">White</Property>
+        <Property Name="Text">Test failed</Property>
+        <Property Name="TabIndex">2</Property>
+        <Property Name="SymbolConfiguration">8;128;ECM_OBD2_CAN;;FaultMemoryGui;StatusByte;1;;;0;;;Value;;;0</Property>
+      </Object>
+      <Property Name="Name">GroupBoxControl3</Property>
+      <Property Name="Size">242, 201</Property>
+      <Property Name="Location">3, 30</Property>
+      <Property Name="BackColor">White</Property>
+      <Property Name="Text">Status byte</Property>
+      <Property Name="TabIndex">3</Property>
+      <Property Name="UseWindowsStyle">False</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.ComboBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="ComboBoxControl1" ControlName="Combo Box">
+      <Property Name="Name">ComboBoxControl1</Property>
+      <Property Name="Size">144, 21</Property>
+      <Property Name="Location">3, 3</Property>
+      <Property Name="DisplayLabel">Left</Property>
+      <Property Name="DescriptionSize">71, 21</Property>
+      <Property Name="TextBackColor">White</Property>
+      <Property Name="TabIndex">1</Property>
+      <Property Name="DescriptionText">DTC to store:</Property>
+      <Property Name="SymbolConfiguration">8;128;ECM_OBD2_CAN;;FaultMemoryGui;DTC_ToStore;1;;;-1;;;Value;;;0</Property>
+      <Property Name="DropDownWidth">230</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="TextBoxControl6" ControlName="Input/Output Box 3">
+      <Property Name="Name">TextBoxControl6</Property>
+      <Property Name="Size">23, 19</Property>
+      <Property Name="Location">51, 471</Property>
+      <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+      <Property Name="AlarmLowerBkgColor">Salmon</Property>
+      <Property Name="AlarmLowerTextColor">WindowText</Property>
+      <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+      <Property Name="AlarmUpperTextColor">WindowText</Property>
+      <Property Name="BoxBorderStyle">FixedSingle</Property>
+      <Property Name="DisplayLabel">Hide</Property>
+      <Property Name="BoxBackColor">255, 240, 240, 240</Property>
+      <Property Name="TextBackColor">White</Property>
+      <Property Name="ReadOnlyControl">True</Property>
+      <Property Name="TabIndex">4</Property>
+      <Property Name="TabStopActive">False</Property>
+      <Property Name="DescriptionText">FaultMemoryInternal.NumberOfStoredDTCs:</Property>
+      <Property Name="ValueDecimalPlaces">0</Property>
+      <Property Name="ValueDisplay">Double</Property>
+      <Property Name="UsedValueTable">RawValue</Property>
+      <Property Name="DescriptionSize">0, 0</Property>
+      <Property Name="SymbolConfiguration">8;128;ECM_OBD2_CAN;;FaultMemoryInternal;NumberOfStoredDTCs;1;;;-1;;;Value;;;0</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.ButtonControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="ButtonControl1" ControlName="ButtonStoreDTC">
+      <Property Name="Name">ButtonControl1</Property>
+      <Property Name="Size">89, 23</Property>
+      <Property Name="Location">156, 1</Property>
+      <Property Name="TabIndex">0</Property>
+      <Property Name="Text">Store DTC</Property>
+      <Property Name="SymbolConfiguration">8;128;ECM_OBD2_CAN;;FaultMemoryGui;BtnStoreDTC;1;;;-1;;;Value;;;0</Property>
+    </Object>
+    <Property Name="Name">Panel</Property>
+    <Property Name="Size">248, 601</Property>
+    <Property Name="Location">0, 0</Property>
+    <Property Name="BackColor">White</Property>
+  </Object>
+</Panel>

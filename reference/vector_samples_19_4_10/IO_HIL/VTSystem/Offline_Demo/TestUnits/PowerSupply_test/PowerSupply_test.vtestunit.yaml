@@ -1,0 +1,8 @@
+version: 2.1.0
+
+test-unit-information:
+  caption: Power Supply Test
+  description: In this test case the VT2004's resistor decade is set to a very high resistance value. This should make the ECU turn on the cooling and turn off the heating unit. That behavior is then validated. After that the power supply is set to an overvoltage value. This should make the ECU and thus the cooling unit shut down. This behavior is then validated, too. After that the same test is repeated by setting the power supply to an undervoltage state. The same behavior is expected here. The remaining two testcases craete an under/overvoltage and read out the fault memory.
+test-unit-implementation:
+  - source-file-path: PowerSupply_test.vtesttree.yaml
+  - source-file-path: PowerSupply.can

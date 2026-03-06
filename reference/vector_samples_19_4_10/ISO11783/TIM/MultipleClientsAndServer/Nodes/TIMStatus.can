@@ -1,0 +1,290 @@
+/*@!Encoding:1252*/
+
+///////////////////////////////////////
+// v. 2.0
+///////////////////////////////////////
+includes
+{
+  #include "CommonConst.CIN"  
+}
+
+variables
+{
+  int lastTIMClientStatusTime = 0;
+  int lastTIMServerStatusTime = 0;
+                              
+  int lastAUTHClientStatusTime = 0;
+  int lastAUTHServerStatusTime = 0;
+  
+  msTimer timClientStatusTimeout;
+  msTimer timServerStatusTimeout;
+  msTimer authClientStatusTimeout;
+  msTimer authServerStatusTimeout;
+  
+  int clientAuthState_Autenticated = 0;
+  int serverAuthState_Autenticated = 0;
+  int lastTIMServerState = cAutomationUnavailable;
+  
+  enum StatusMsgState
+  {
+    cNotInitialized             = 0,
+    cMsgTimeout                 = 1,
+    cCyclicOK                   = 2,
+    cCyclicSuccessfullFinished  = 3
+  };
+}
+
+on start
+{
+  ResetStates();
+}
+
+on timer timClientStatusTimeout
+{
+  @TIMClientObserver::State_TIMStatusMsg = cMsgTimeout;
+}
+
+on timer authClientStatusTimeout
+{
+  if(clientAuthState_Autenticated == 0)
+    @TIMClientObserver::State_AuthStatusMsg = cMsgTimeout;
+  else
+    @TIMClientObserver::State_AuthStatusMsg = cCyclicSuccessfullFinished;
+}
+
+on timer timServerStatusTimeout
+{
+  @TIMServerObserver::State_TIMStatusMsg = cMsgTimeout;
+}
+
+on timer authServerStatusTimeout
+{
+  if(clientAuthState_Autenticated == 0)
+    @TIMServerObserver::State_AuthStatusMsg = cMsgTimeout;
+  else
+    @TIMServerObserver::State_AuthStatusMsg = cCyclicSuccessfullFinished;
+}
+
+on pg *
+{
+  switch (this.pgn)
+  {
+    case TIM12_PGN:
+    {
+      if(this.byte(0) == 0xFA)
+      {
+        int curTIMServerState;
+        if(@TIMServerObserver::State_TIMStatusMsg == cNotInitialized)
+          @TIMServerObserver::State_TIMStatusMsg = cCyclicOK;
+        
+        cancelTimer(timServerStatusTimeout);
+        setTimer(timServerStatusTimeout, cTIMStatusTimeout);
+        curTIMServerState = this.byte(3) >> 4;
+        if(curTIMServerState == cAutomationNotReady)
+        {
+          SetFunctionAutomationStatus_ForAll(cAutomationNotReady);
+        }
+        if(curTIMServerState == cAutomationEnabled && lastTIMServerState < cAutomationEnabled) 
+        {
+          SetFunctionAutomationStatus_ForAll(cAutomationReadyToEnable);
+        }
+        lastTIMServerState = curTIMServerState;
+      }
+      else if(this.byte(0) <= 0x46)
+      {
+        ExtractFunctionAutomationStatus(this);
+      }
+    }
+    break;
+    
+    case TIM12_CS_PGN:
+    {
+      if(this.byte(0) <= 0x48 && this.byte(1) == 1)
+      {
+        ExtractFunctionAutomationStatus(this);
+      }
+    }
+    break;
+
+    case TIM21_PGN:
+    {
+      if(this.byte(0) == 0xF9)
+      {
+        if(@TIMClientObserver::State_TIMStatusMsg == cNotInitialized)
+          @TIMClientObserver::State_TIMStatusMsg = cCyclicOK;
+        
+        cancelTimer(timClientStatusTimeout);
+        setTimer(timClientStatusTimeout, cTIMStatusTimeout);
+      }
+    }
+    break;
+    
+    case AUTH12_PGN:
+    {
+      if(this.byte(0) == 0xF9) // Auth_ServerAuthenticationStatus
+      {
+        if (this.byte(3) & 0x80) // (Re)Start bit is set 
+        {
+          @TIMServerObserver::State_TIMStatusMsg  = cNotInitialized;
+          @TIMServerObserver::State_AuthStatusMsg = cCyclicOK;    
+          serverAuthState_Autenticated = 0;
+        }
+        
+        if(@TIMServerObserver::State_AuthStatusMsg == cNotInitialized)
+          @TIMServerObserver::State_AuthStatusMsg = cCyclicOK;
+        else if(@TIMServerObserver::State_AuthStatusMsg == cCyclicOK && this.byte(2) == 0x1)
+          serverAuthState_Autenticated = 1;
+
+        cancelTimer(authServerStatusTimeout);
+        setTimer(authServerStatusTimeout, cAUTHStatusTimeout);
+      }
+    }
+    break;
+    
+    case AUTH21_PGN:
+    {
+      
+      if(this.byte(0) == 0xFA) // Auth_ClientAuthenticationStatus
+      {
+        if (this.byte(3) & 0x80) // (Re)Start bit is set 
+        {
+          @TIMClientObserver::State_TIMStatusMsg  = cNotInitialized;
+          @TIMClientObserver::State_AuthStatusMsg = cCyclicOK;
+          clientAuthState_Autenticated = 0;
+        }
+        
+        if(@TIMClientObserver::State_AuthStatusMsg == cNotInitialized)
+          @TIMClientObserver::State_AuthStatusMsg = cCyclicOK;
+        else if(@TIMClientObserver::State_AuthStatusMsg == cCyclicOK && this.byte(2) == 0x1)
+          clientAuthState_Autenticated = 1;
+        
+        cancelTimer(authClientStatusTimeout);
+        setTimer(authClientStatusTimeout, cAUTHStatusTimeout);
+      }
+    }
+    break;
+  }
+}
+
+void ExtractFunctionAutomationStatus(pg * pgTIM12_X)
+{
+  byte functionId, functionAutomationStatus;
+  
+  functionId = pgTIM12_X.byte(0);
+  functionAutomationStatus = pgTIM12_X.byte(2) & 0xF;
+  SetFunctionAutomationStatus(functionId, functionAutomationStatus);
+}
+
+/*
+*/
+void SetFunctionAutomationStatus_ForAll(int functionAutomationState)
+{
+  @TIMServerObserver::Functions::AuxValve01::svAutomationState       = functionAutomationState;
+  @TIMServerObserver::Functions::AuxValve02::svAutomationState       = functionAutomationState;
+  @TIMServerObserver::Functions::AuxValve03::svAutomationState       = functionAutomationState;
+  @TIMServerObserver::Functions::AuxValve04::svAutomationState       = functionAutomationState;
+  @TIMServerObserver::Functions::AuxValve05::svAutomationState       = functionAutomationState;
+  @TIMServerObserver::Functions::AuxValve06::svAutomationState       = functionAutomationState;
+  @TIMServerObserver::Functions::AuxValve07::svAutomationState       = functionAutomationState;
+  @TIMServerObserver::Functions::AuxValve08::svAutomationState       = functionAutomationState;
+  @TIMServerObserver::Functions::AuxValve09::svAutomationState       = functionAutomationState;
+  @TIMServerObserver::Functions::AuxValve10::svAutomationState       = functionAutomationState;
+  @TIMServerObserver::Functions::AuxValve11::svAutomationState       = functionAutomationState;
+  @TIMServerObserver::Functions::AuxValve12::svAutomationState       = functionAutomationState;
+  @TIMServerObserver::Functions::AuxValve13::svAutomationState       = functionAutomationState;
+  @TIMServerObserver::Functions::AuxValve14::svAutomationState       = functionAutomationState;
+  @TIMServerObserver::Functions::AuxValve15::svAutomationState       = functionAutomationState;
+  @TIMServerObserver::Functions::AuxValve16::svAutomationState       = functionAutomationState;
+  @TIMServerObserver::Functions::AuxValve17::svAutomationState       = functionAutomationState;
+  @TIMServerObserver::Functions::AuxValve18::svAutomationState       = functionAutomationState;
+  @TIMServerObserver::Functions::AuxValve19::svAutomationState       = functionAutomationState;
+  @TIMServerObserver::Functions::AuxValve20::svAutomationState       = functionAutomationState;
+  @TIMServerObserver::Functions::AuxValve21::svAutomationState       = functionAutomationState;
+  @TIMServerObserver::Functions::AuxValve22::svAutomationState       = functionAutomationState;
+  @TIMServerObserver::Functions::AuxValve24::svAutomationState       = functionAutomationState;
+  @TIMServerObserver::Functions::AuxValve25::svAutomationState       = functionAutomationState;
+  @TIMServerObserver::Functions::AuxValve27::svAutomationState       = functionAutomationState;
+  @TIMServerObserver::Functions::AuxValve28::svAutomationState       = functionAutomationState;
+  @TIMServerObserver::Functions::AuxValve29::svAutomationState       = functionAutomationState;
+  @TIMServerObserver::Functions::AuxValve30::svAutomationState       = functionAutomationState;
+  @TIMServerObserver::Functions::AuxValve31::svAutomationState       = functionAutomationState;
+  @TIMServerObserver::Functions::AuxValve32::svAutomationState       = functionAutomationState;
+                                                                     
+  @TIMServerObserver::Functions::FrontPTO::svAutomationState         = functionAutomationState;
+  @TIMServerObserver::Functions::RearPTO::svAutomationState          = functionAutomationState;
+  @TIMServerObserver::Functions::FrontHitch::svAutomationState       = functionAutomationState;
+  @TIMServerObserver::Functions::RearHitch::svAutomationState        = functionAutomationState;
+  @TIMServerObserver::Functions::VehicleSpeed::svAutomationState     = functionAutomationState;
+  @TIMServerObserver::Functions::ExtGuidance::svAutomationState      = functionAutomationState;
+  @TIMServerObserver::Functions::FrontTopLinkage::svAutomationState  = functionAutomationState;
+  @TIMServerObserver::Functions::RearTopLinkage::svAutomationState   = functionAutomationState;
+}
+
+/*
+*/
+void SetFunctionAutomationStatus(byte functionId, byte statusValue)
+{
+  switch(functionId)
+  {
+    case cAuxValve01      : @TIMServerObserver::Functions::AuxValve01::svAutomationState       = statusValue; break;
+    case cAuxValve02      : @TIMServerObserver::Functions::AuxValve02::svAutomationState       = statusValue; break;
+    case cAuxValve03      : @TIMServerObserver::Functions::AuxValve03::svAutomationState       = statusValue; break;
+    case cAuxValve04      : @TIMServerObserver::Functions::AuxValve04::svAutomationState       = statusValue; break;
+    case cAuxValve05      : @TIMServerObserver::Functions::AuxValve05::svAutomationState       = statusValue; break;
+    case cAuxValve06      : @TIMServerObserver::Functions::AuxValve06::svAutomationState       = statusValue; break;
+    case cAuxValve07      : @TIMServerObserver::Functions::AuxValve07::svAutomationState       = statusValue; break;
+    case cAuxValve08      : @TIMServerObserver::Functions::AuxValve08::svAutomationState       = statusValue; break;
+    case cAuxValve09      : @TIMServerObserver::Functions::AuxValve09::svAutomationState       = statusValue; break;
+    case cAuxValve10      : @TIMServerObserver::Functions::AuxValve10::svAutomationState       = statusValue; break;
+    case cAuxValve11      : @TIMServerObserver::Functions::AuxValve11::svAutomationState       = statusValue; break;
+    case cAuxValve12      : @TIMServerObserver::Functions::AuxValve12::svAutomationState       = statusValue; break;
+    case cAuxValve13      : @TIMServerObserver::Functions::AuxValve13::svAutomationState       = statusValue; break;
+    case cAuxValve14      : @TIMServerObserver::Functions::AuxValve14::svAutomationState       = statusValue; break;
+    case cAuxValve15      : @TIMServerObserver::Functions::AuxValve15::svAutomationState       = statusValue; break;
+    case cAuxValve16      : @TIMServerObserver::Functions::AuxValve16::svAutomationState       = statusValue; break;
+    case cAuxValve17      : @TIMServerObserver::Functions::AuxValve17::svAutomationState       = statusValue; break;
+    case cAuxValve18      : @TIMServerObserver::Functions::AuxValve18::svAutomationState       = statusValue; break;
+    case cAuxValve19      : @TIMServerObserver::Functions::AuxValve19::svAutomationState       = statusValue; break;
+    case cAuxValve20      : @TIMServerObserver::Functions::AuxValve20::svAutomationState       = statusValue; break;
+    case cAuxValve21      : @TIMServerObserver::Functions::AuxValve21::svAutomationState       = statusValue; break;
+    case cAuxValve22      : @TIMServerObserver::Functions::AuxValve22::svAutomationState       = statusValue; break;
+    case cAuxValve24      : @TIMServerObserver::Functions::AuxValve24::svAutomationState       = statusValue; break;
+    case cAuxValve25      : @TIMServerObserver::Functions::AuxValve25::svAutomationState       = statusValue; break;
+    case cAuxValve27      : @TIMServerObserver::Functions::AuxValve27::svAutomationState       = statusValue; break;
+    case cAuxValve28      : @TIMServerObserver::Functions::AuxValve28::svAutomationState       = statusValue; break;
+    case cAuxValve29      : @TIMServerObserver::Functions::AuxValve29::svAutomationState       = statusValue; break;
+    case cAuxValve30      : @TIMServerObserver::Functions::AuxValve30::svAutomationState       = statusValue; break;
+    case cAuxValve31      : @TIMServerObserver::Functions::AuxValve31::svAutomationState       = statusValue; break;
+    case cAuxValve32      : @TIMServerObserver::Functions::AuxValve32::svAutomationState       = statusValue; break;
+      
+    case cFrontPTO        : @TIMServerObserver::Functions::FrontPTO::svAutomationState         = statusValue; break;
+    case cRearPTO         : @TIMServerObserver::Functions::RearPTO::svAutomationState          = statusValue; break;
+    case cFrontHitch      : @TIMServerObserver::Functions::FrontHitch::svAutomationState       = statusValue; break;
+    case cRearHitch       : @TIMServerObserver::Functions::RearHitch::svAutomationState        = statusValue; break;
+    case cVehicleSpeed    : @TIMServerObserver::Functions::VehicleSpeed::svAutomationState     = statusValue; break;
+    case cExternalGuidance: @TIMServerObserver::Functions::ExtGuidance::svAutomationState      = statusValue; break;
+    case cFrontTopLinkage : @TIMServerObserver::Functions::FrontTopLinkage::svAutomationState  = statusValue; break;
+    case cRearTopLinkage  : @TIMServerObserver::Functions::RearTopLinkage::svAutomationState   = statusValue; break;
+  }
+}
+
+on sysvar_update sysvar::TIMObserver::Reset
+{
+  if (@this)
+  {
+    ResetStates();
+  }
+}
+
+/*
+*/
+void ResetStates()
+{
+  @TIMClientObserver::State_TIMStatusMsg  = cNotInitialized;
+  @TIMClientObserver::State_AuthStatusMsg = cNotInitialized;
+  @TIMServerObserver::State_TIMStatusMsg  = cNotInitialized;
+  @TIMServerObserver::State_AuthStatusMsg = cNotInitialized;  
+
+  SetFunctionAutomationStatus_ForAll(cAutomationNotReady);
+  lastTIMServerState = cAutomationUnavailable;
+}

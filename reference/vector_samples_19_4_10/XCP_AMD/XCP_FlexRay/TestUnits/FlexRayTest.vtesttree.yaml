@@ -1,0 +1,17 @@
+version: 2.2.0
+
+test-tree:
+  - test-fixture: FlexRay Demo Testmodule
+    description: FlexRay Demo Testmodule
+    elements:
+      - capl-test-case: TC_Connection
+        title: Connection test
+      - capl-test-case: TC_Upload_ampl
+        title: Change the amplitude
+      - capl-test-case: TC_Upload_period
+        title: Change the period
+      - capl-test-case: TC_Upload_testString
+        title: Change the testString
+
+
+        

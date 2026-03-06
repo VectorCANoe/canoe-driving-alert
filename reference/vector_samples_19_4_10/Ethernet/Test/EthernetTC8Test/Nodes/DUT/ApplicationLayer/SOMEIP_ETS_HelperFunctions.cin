@@ -1,0 +1,860 @@
+/*@!Encoding:1252*/
+/***************************************************************************************
+ * Demo- and Example-Programs
+ *
+ * Please note: The demo and example programs only show special aspects of the software.
+ * With regard to the fact that these programs are meant for demonstration purposes only,
+ * Vector Informatik's liability shall be expressly excluded in cases of ordinary
+ * negligence, to the extent admissible by law or statute.
+ *
+ * Beta-Version
+ *
+ * These programs are fully operative programs. However, they are not thoroughly tested
+ * yet (beta-version). With regard to the fact that the programs are a beta-version only,
+ * Vector Informatik's liability shall be expressly excluded in cases of ordinary
+ * negligence, to the extent admissible by law or statute.
+ *
+ * DESCRIPTION:
+ *
+ * Demo test implementation of the 'OPEN Alliance Automotive Ethernet ECU Test
+ * Specification - TC8 ECU Test' (Document Version 3.0, May 7, 2020)
+ *
+ * Copyright (c) Vector Informatik GmbH. All rights reserved.
+ ***************************************************************************************/
+
+includes
+{
+  #include "SOMEIP_ETS_ServiceMethods.cin"
+  //#include "Encoding.cin"
+}
+
+variables
+{
+  const dword gCP_LATIN1 = 1252;
+  const dword gCP_UTF16LE = 1200;
+  const dword gCP_UTF8 = 65001;
+  const dword PROTOCOL_TCP = 6;
+  const dword PROTOCOL_UDP = 17;
+  
+  dword gPsiUdp, gPsiTcp; // Provided service interfaces
+  dword gPsiUdpAep, gPsiTcpAep; // There AEPs
+  
+  dword gFieldHandle_InterfaceVersion;
+  dword gFieldHandle_TestFieldUINT8;
+  dword gFieldHandle_TestFieldUINT8Array;
+  dword gFieldHandle_TestFieldUINT8Reliable;
+
+  dword gEventHandle_TestEventUINT8;
+  dword gEventHandle_TestEventUINT8Array;
+  dword gEventHandle_TestEventUINT8E2E;
+  dword gEventHandle_TestEventUINT8Reliable;
+  dword gEventHandle_TestEventUINT8Multicast;
+}
+
+dword ETSCloseLocalApplicationEndpoint(dword aep)
+{
+  dword result;
+  result = SomeIpCloseLocalApplicationEndpoint(aep);
+  if(result != 0)
+  {
+    write("Error @  SomeIpCloseLocalApplicationEndpoint %d", result);
+  }
+  return result;
+}
+
+dword ETSOpenLocalApplicationEndpoint(IP_Endpoint endpoint)
+{
+  dword aep;
+  aep = SomeIpOpenLocalApplicationEndpoint(endpoint);
+  return aep;
+}
+
+dword ETSOpenLocalApplicationEndpoint(dword transportProtocol, dword port)
+{
+  dword aep;
+  aep = SomeIpOpenLocalApplicationEndpoint(transportProtocol, port);
+  return aep;
+}
+
+dword ETSOpenLocalApplicationEndpoint(dword transportProtocol, dword port, dword ipv4Address)
+{
+  stack IP_Endpoint endpoint;
+  endpoint.PortNumber = port;
+  endpoint.address.IPv4Address = ipv4Address;
+  if(transportProtocol == PROTOCOL_TCP)
+   endpoint.SetToTCP();
+  else
+    endpoint.SetToUDP();
+  
+  return ETSOpenLocalApplicationEndpoint(endpoint);
+}
+
+dword ETSOpenLocalApplicationEndpoint(dword transportProtocol, dword port, byte ipv6Address[])
+{
+  stack IP_Endpoint endpoint;
+  endpoint.PortNumber = port;
+  endpoint.address.SetAddressAsArray(ipv6Address);
+  if(transportProtocol == PROTOCOL_TCP)
+   endpoint.SetToTCP();
+  else
+    endpoint.SetToUDP();
+  
+  return ETSOpenLocalApplicationEndpoint(endpoint);
+}
+
+
+enum Bool startETSService()
+{
+  if(SomeIpSDSetServiceStatus(gPsiTcp, 1)==0 && SomeIpSDSetServiceStatus(gPsiUdp, 1)==0 && setDefaultValues()==kTrue)
+    return kTrue;
+  else
+    return kFalse;
+}
+
+enum Bool stopETSService()
+{
+  StopAllEventTimer();
+  
+  if(SomeIpSDSetServiceStatus(gPsiTcp, 0)==0 && SomeIpSDSetServiceStatus(gPsiUdp, 0)==0)
+    return kTrue;
+  else
+    return kFalse;
+}
+
+enum Bool setDefaultValues()
+{
+  if(setFieldToDefault_InterfaceVersion() && setFieldToDefault_TestFieldUINT8() &&
+     setFieldToDefault_TestFieldUINT8Array() && setFieldToDefault_TestFieldUINT8Reliable() &&
+     setEventToDefault_TestEventUINT() && setEventToDefault_TestEventUINT8Array() &&
+     setEventToDefault_TestEventUINTReliable() && setEventToDefault_TestEventUINTMulticast())
+  {
+    return kTrue;
+  }
+  else
+  {
+    ReportSomeIpError("Setting of default values failed");
+    return kFalse;
+  }
+}
+
+dword reverseBits(dword arg, byte bitCount)
+{
+  dword i, result, lsb;
+  result = 0;
+  for(i=0; i<bitCount; ++i)
+  {
+    lsb = arg & 1;
+    arg = arg >> 1;
+    result = result << 1;
+    result |= lsb;
+  }
+  return result;
+}
+
+dword getBigEndianWORD(byte buffer[], dword offset)
+{
+  return (buffer[offset] <<8) + buffer[offset+1];
+}
+
+void setBigEndianWORD(byte buffer[], dword offset, dword value)
+{
+  buffer[offset]   = (value >>  8) & 0xFF;
+  buffer[offset+1] = (value      ) & 0xFF;
+}
+
+dword getBigEndianDWORD(byte buffer[], dword offset)
+{
+  return ((buffer[offset]) << 24) + (buffer[offset+1] << 16) + (buffer[offset+2] <<8) + buffer[offset+3];
+}
+
+void setBigEndianDWORD(byte buffer[], dword offset, dword value)
+{
+  buffer[offset]   = (value >> 24) & 0xFF;
+  buffer[offset+1] = (value >> 16) & 0xFF;
+  buffer[offset+2] = (value >>  8) & 0xFF;
+  buffer[offset+3] = (value      ) & 0xFF;
+}
+
+enum Bool ETSSomeIpRegisterMethod(dword psiHandle, dword methodId, long fireAndForget)
+{
+  long result;
+  char callbackMethodName[128];
+  char methodName[64];
+  result=sysGetVariableDescriptionForValue(sysvar::TC8_ETS::ETS_Method, methodId, methodName, elcount(methodName));
+  if(result!=0)
+  {
+    write("ERROR: sysGetVariableDescriptionForValue returned rc:%ld for methodID: %d", result, methodId);
+    return kFalse;
+  }
+  snprintf(callbackMethodName, elcount(callbackMethodName), "OnService_ETS_MethodRequest_%s", methodName);
+  
+  SomeIpAddMethod(psiHandle, methodId, callbackMethodName, fireAndForget); 
+  if(SomeIpGetLastError()!=0)
+  {
+      ReportSomeIpError("Method registration error");
+      return kFalse;
+  }
+  return kTrue;
+}
+
+enum Bool ETSSomeIpAddField(dword psiHandle, long notificationId, long getterId, long setterId, dword & fieldHandle )
+{
+  fieldHandle = SomeIpAddField(psiHandle, notificationId, getterId, setterId);
+  if(fieldHandle==0)
+  {
+    ReportSomeIpError("Adding field failed");
+    return kFalse;
+  }
+  return kTrue;
+}
+
+enum Bool ETSSomeIpAddFieldResponseMethod( dword psiHandle, dword methodId)
+{
+  long result;
+  char callbackMethodName[128];
+  char methodName[64];
+  result=sysGetVariableDescriptionForValue(sysvar::TC8_ETS::ETS_Method, methodId, methodName, elcount(methodName));
+  if(result!=0)
+  {
+    write("ERROR: sysGetVariableDescriptionForValue returned rc:%ld for methodID: %d", result, methodId);
+    return kFalse;
+  }
+  snprintf(callbackMethodName, elcount(callbackMethodName), "OnService_ETS_FieldResponse_%s", methodName);
+  
+  if(SomeIpAddMethod(psiHandle, methodId, callbackMethodName)==0)
+  {
+    ReportSomeIpError("Adding method failed");
+    return kFalse;
+  }
+  return kTrue;
+}
+
+enum Bool ETSSomeIpAddEvent( dword psiHandle, dword eventId, char onPrepareEventCallback[], dword & eventHandle)
+{
+  eventHandle = SomeIpAddEvent(psiHandle, eventId, onPrepareEventCallback);
+  if(eventHandle==0)
+  {
+    ReportSomeIpError("Adding event failed");
+    return kFalse;
+  }
+  return kTrue;    
+}
+
+enum Bool ETSSomeIpAddProvidedEventGroup( dword psiHandle, dword eventGroupId, dword & egHandle)
+{
+  egHandle = SomeIpAddProvidedEventGroup(psiHandle, eventGroupId);
+  if(egHandle==0)
+  {
+    ReportSomeIpError("Adding event group failed");
+    return kFalse;
+  }
+  return kTrue;    
+}
+
+enum Bool ETSSomeIpAddFieldToEventgroup( dword evgHandle, dword fieldHandle)
+{
+  if(SomeIpAddFieldToEventgroup(evgHandle, fieldHandle)!=0)
+  {
+    ReportSomeIpError("Adding field to event group failed");
+    return kFalse;
+  }
+  return kTrue;
+}
+
+enum Bool ETSSomeIpAddEventToEventgroup( dword evgHandle, dword evHandle)
+{
+  if(SomeIpAddEventToEventgroup(evgHandle, evHandle)!=0)
+  {
+    ReportSomeIpError("Adding event to event group failed");
+    return kFalse;
+  }
+  return kTrue;
+}
+
+enum Bool InitEndpoint(IP_Endpoint endpoint, dword protocol, char addr[], dword port)
+{
+  if(endpoint.ParseEndpointFromString(addr)!=0)
+    return kFalse;
+  
+  if(protocol == PROTOCOL_TCP)
+    endpoint.SetToTCP();
+  else
+    endpoint.SetToUDP();
+  
+  endpoint.PortNumber = port;
+  return kTrue;
+}
+
+enum Bool InitEndpoint(IP_Endpoint endpoint, char addr[], dword port)
+{
+  return InitEndpoint(endpoint, PROTOCOL_UDP, addr, port);
+}
+
+void SetMulticastAddress(dword eventGroupHandle, IP_Address multicastAddress)
+{
+  byte addressArray[16];
+  if(multicastAddress.IsIPv4Address())
+    SomeIpSetProperty(eventGroupHandle, "MulticastIp", multicastAddress.IPv4Address);
+  else
+  {
+    multicastAddress.GetAddressAsArray(addressArray);
+    SomeIpSetProperty(eventGroupHandle, "MulticastIpv6", addressArray);
+  }
+}
+
+enum Bool destroyETSService()
+{
+  dword result;
+  result = SomeIpReleaseProvidedServiceInstance(gPsiUdp)==0;
+  result = SomeIpReleaseProvidedServiceInstance(gPsiTcp)==0 && result;
+  result = ETSCloseLocalApplicationEndpoint(gPsiUdpAep)==0 && result;
+  result = ETSCloseLocalApplicationEndpoint(gPsiTcpAep)==0 && result;
+  gPsiUdp=0;
+  gPsiTcp=0;
+  gPsiUdpAep=0;
+  gPsiTcpAep=0;
+  return result ? kTrue : kFalse;
+}
+
+void RemoveETSServiceUDP()
+{ 
+  SomeIpReleaseProvidedServiceInstance(gPsiUdp); 
+  gPsiUdp = 0; 
+  
+  SomeIpCloseLocalApplicationEndpoint(gPsiUdpAep);
+  gPsiUdpAep = 0;
+}
+
+enum Bool CreateETSServiceUDP(dword instanceId, int64 multicastThreshold, IP_Endpoint endpoint)
+{
+  IP_Address multicastAddress;
+  dword aep, egHandle;
+  long fireAndForget_yes = 1, fireAndForget_no = 0;
+  char multicastAddressString[64];
+  sysGetVariableString(sysvar::TC8_ETS_Config::EventGroupId1Si1MulticastAddr, multicastAddressString, elcount(multicastAddressString));
+
+  if(multicastAddress.ParseAddressFromString(multicastAddressString)!=0)
+  {
+    write("ERROR: Invalid address: %s", multicastAddressString);
+    return kFalse;
+  }
+  
+  endpoint.SetToUdp();
+  gPsiUdpAep = ETSOpenLocalApplicationEndpoint(endpoint);
+
+  if(gPsiUdpAep==0)
+  {
+    ReportSomeIpError("UDP Server AEP creation failed");
+    return kFalse;
+  }
+  
+  gPsiUdp = SomeIpCreateProvidedServiceInstance(gPsiUdpAep, @sysvar::TC8_ETS_Config::ETS_ServiceId, instanceId); 
+  if(gPsiUdp==0)
+  {
+    ReportSomeIpError("UDP Server creation failed");
+    return kFalse;
+  }
+  
+  if(SomeIpSDSetServiceStatus(gPsiUdp, 0)!=0)
+    return kFalse;
+  
+  if(ETSSomeIpAddField(gPsiUdp, FIELD_ID_InterfaceVersion, sysvar::TC8_ETS::ETS_Method::get_InterfaceVersion, -1, gFieldHandle_InterfaceVersion)==kFalse ||
+     ETSSomeIpAddFieldResponseMethod(gPsiUdp, sysvar::TC8_ETS::ETS_Method::get_InterfaceVersion)==kFalse)
+    return kFalse;
+
+  if(ETSSomeIpAddField(gPsiUdp, FIELD_ID_TestFieldUINT8, sysvar::TC8_ETS::ETS_Method::get_TestFieldUINT8,
+       sysvar::TC8_ETS::ETS_Method::set_TestFieldUINT8, gFieldHandle_TestFieldUINT8)==kFalse ||
+     ETSSomeIpAddFieldResponseMethod(gPsiUdp, sysvar::TC8_ETS::ETS_Method::get_TestFieldUINT8)==kFalse ||
+     ETSSomeIpAddFieldResponseMethod(gPsiUdp, sysvar::TC8_ETS::ETS_Method::set_TestFieldUINT8)==kFalse)
+    return kFalse;
+  
+  if(ETSSomeIpAddField(gPsiUdp, FIELD_ID_TestFieldUINT8Array, sysvar::TC8_ETS::ETS_Method::get_TestFieldUINT8Array,
+       sysvar::TC8_ETS::ETS_Method::set_TestFieldUINT8Array, gFieldHandle_TestFieldUINT8Array)==kFalse ||
+     ETSSomeIpAddFieldResponseMethod(gPsiUdp, sysvar::TC8_ETS::ETS_Method::get_TestFieldUINT8Array)==kFalse ||
+     ETSSomeIpAddFieldResponseMethod(gPsiUdp, sysvar::TC8_ETS::ETS_Method::set_TestFieldUINT8Array)==kFalse)
+    return kFalse;
+
+  if(ETSSomeIpAddEvent(gPsiUdp, EVENT_ID_TestEventUINT8, "OnService_ETS_PrepareEvent_TestEventUINT8", gEventHandle_TestEventUINT8)==kFalse ||
+     ETSSomeIpAddEvent(gPsiUdp, EVENT_ID_TestEventUINT8Array, "OnService_ETS_PrepareEvent_TestEventUINT8Array", gEventHandle_TestEventUINT8Array)==kFalse ||
+     //ETSSomeIpAddEvent(gPsiUdp, 0x08004, "OnService_ETS_PrepareEvent_TestEventUINT8E2E", gEventHandle_TestEventUINT8E2E)==kFalse ||
+     ETSSomeIpAddEvent(gPsiUdp, EVENT_ID_TestEventUINT8Multicast, "OnService_ETS_PrepareEvent_TestEventUINT8Multicast", gEventHandle_TestEventUINT8Multicast)==kFalse)
+    return kFalse;
+  
+  if(ETSSomeIpAddProvidedEventGroup(gPsiUdp, EVENTGROUP_ID_EvgAll, egHandle)==kFalse ||
+     ETSSomeIpAddFieldToEventgroup(egHandle, gFieldHandle_InterfaceVersion)==kFalse ||
+     ETSSomeIpAddFieldToEventgroup(egHandle, gFieldHandle_TestFieldUINT8)==kFalse ||
+     ETSSomeIpAddFieldToEventgroup(egHandle, gFieldHandle_TestFieldUINT8Array)==kFalse ||
+     ETSSomeIpAddEventToEventGroup(egHandle, gEventHandle_TestEventUINT8)==kFalse ||
+     ETSSomeIpAddEventToEventGroup(egHandle, gEventHandle_TestEventUINT8Array)==kFalse ||
+     //ETSSomeIpAddEventToEventGroup(egHandle, gEventHandle_TestFieldUINT8E2E)==kFalse)
+     ETSSomeIpAddEventToEventGroup(egHandle, gEventHandle_TestEventUINT8Multicast)==kFalse)
+    return kFalse;
+  SetMulticastAddress(egHandle, multicastAddress);
+  SomeIpSetProperty(egHandle, "MulticastThreshold", multicastThreshold);
+  
+  if(ETSSomeIpAddProvidedEventGroup(gPsiUdp, EVENTGROUP_ID_EvgUnreliableOnly, egHandle)==kFalse ||
+     ETSSomeIpAddFieldToEventgroup(egHandle, gFieldHandle_InterfaceVersion)==kFalse ||
+     ETSSomeIpAddFieldToEventgroup(egHandle, gFieldHandle_TestFieldUINT8)==kFalse ||
+     ETSSomeIpAddFieldToEventgroup(egHandle, gFieldHandle_TestFieldUINT8Array)==kFalse ||
+     ETSSomeIpAddEventToEventGroup(egHandle, gEventHandle_TestEventUINT8)==kFalse ||
+     ETSSomeIpAddEventToEventGroup(egHandle, gEventHandle_TestEventUINT8Array)==kFalse ||
+     ETSSomeIpAddEventToEventGroup(egHandle, gEventHandle_TestEventUINT8Multicast)==kFalse)
+    return kFalse;
+  SetMulticastAddress(egHandle, multicastAddress);
+  SomeIpSetProperty(egHandle, "MulticastThreshold", multicastThreshold);
+  
+  if(ETSSomeIpAddProvidedEventGroup(gPsiUdp, EVENTGROUP_ID_EvgMulticast, egHandle)==kFalse ||
+     ETSSomeIpAddEventToEventGroup(egHandle, gEventHandle_TestEventUINT8Multicast)==kFalse)
+    return kFalse;
+  SetMulticastAddress(egHandle, multicastAddress);
+  SomeIpSetProperty(egHandle, "MulticastThreshold", multicastThreshold);
+
+  // create service functions
+  if(ETSSomeIpRegisterMethod(gPsiUdp, sysvar::TC8_ETS::ETS_Method::checkByteOrder, fireAndForget_no)==kFalse ||
+     ETSSomeIpRegisterMethod(gPsiUdp, sysvar::TC8_ETS::ETS_Method::clientServiceActivate, fireAndForget_yes)==kFalse ||
+     ETSSomeIpRegisterMethod(gPsiUdp, sysvar::TC8_ETS::ETS_Method::clientServiceDeactivate, fireAndForget_yes)==kFalse ||
+     ETSSomeIpRegisterMethod(gPsiUdp, sysvar::TC8_ETS::ETS_Method::clientServiceSubscribeEventgroup, fireAndForget_yes)==kFalse ||
+     ETSSomeIpRegisterMethod(gPsiUdp, sysvar::TC8_ETS::ETS_Method::echoCommonDatatypes, fireAndForget_no)==kFalse ||
+     ETSSomeIpRegisterMethod(gPsiUdp, sysvar::TC8_ETS::ETS_Method::echoENUM, fireAndForget_no)==kFalse ||
+     ETSSomeIpRegisterMethod(gPsiUdp, sysvar::TC8_ETS::ETS_Method::echoFLOAT64, fireAndForget_no)==kFalse ||
+     ETSSomeIpRegisterMethod(gPsiUdp, sysvar::TC8_ETS::ETS_Method::echoInt64, fireAndForget_no)==kFalse ||
+     ETSSomeIpRegisterMethod(gPsiUdp, sysvar::TC8_ETS::ETS_Method::echoINT8, fireAndForget_no)==kFalse ||
+     ETSSomeIpRegisterMethod(gPsiUdp, sysvar::TC8_ETS::ETS_Method::echoStaticUINT8Array, fireAndForget_no)==kFalse ||
+     ETSSomeIpRegisterMethod(gPsiUdp, sysvar::TC8_ETS::ETS_Method::echoUINT8, fireAndForget_no)==kFalse ||
+     ETSSomeIpRegisterMethod(gPsiUdp, sysvar::TC8_ETS::ETS_Method::echoUINT8Array, fireAndForget_no)==kFalse ||
+     ETSSomeIpRegisterMethod(gPsiUdp, sysvar::TC8_ETS::ETS_Method::echoUINT8Array8BitLength, fireAndForget_no)==kFalse || 
+     ETSSomeIpRegisterMethod(gPsiUdp, sysvar::TC8_ETS::ETS_Method::echoUINT8Array16BitLength, fireAndForget_no)==kFalse ||
+     ETSSomeIpRegisterMethod(gPsiUdp, sysvar::TC8_ETS::ETS_Method::echoUINT8Array2Dim, fireAndForget_no)==kFalse ||
+     ETSSomeIpRegisterMethod(gPsiUdp, sysvar::TC8_ETS::ETS_Method::echoUINT8ArrayMinSize, fireAndForget_no)==kFalse ||
+     //ETSSomeIpRegisterMethod(gPsiUdp, 11, fireAndForget_no,  "OnService_ETS_MethodRequest_echoUINT8E2E")==kFalse || 
+     ETSSomeIpRegisterMethod(gPsiUdp, sysvar::TC8_ETS::ETS_Method::echoUNION, fireAndForget_no)==kFalse ||
+     ETSSomeIpRegisterMethod(gPsiUdp, sysvar::TC8_ETS::ETS_Method::echoUTF16DYNAMIC, fireAndForget_no)==kFalse ||
+     ETSSomeIpRegisterMethod(gPsiUdp, sysvar::TC8_ETS::ETS_Method::echoUTF16FIXED, fireAndForget_no)==kFalse ||
+     ETSSomeIpRegisterMethod(gPsiUdp, sysvar::TC8_ETS::ETS_Method::echoUTF8DYNAMIC, fireAndForget_no)==kFalse ||
+     ETSSomeIpRegisterMethod(gPsiUdp, sysvar::TC8_ETS::ETS_Method::echoUTF8FIXED, fireAndForget_no)==kFalse ||
+     ETSSomeIpRegisterMethod(gPsiUdp, sysvar::TC8_ETS::ETS_Method::resetInterface, fireAndForget_yes)==kFalse ||
+     ETSSomeIpRegisterMethod(gPsiUdp, sysvar::TC8_ETS::ETS_Method::suspendInterface, fireAndForget_yes)==kFalse ||
+     ETSSomeIpRegisterMethod(gPsiUdp, sysvar::TC8_ETS::ETS_Method::triggerEventUINT8, fireAndForget_yes)==kFalse ||
+     ETSSomeIpRegisterMethod(gPsiUdp, sysvar::TC8_ETS::ETS_Method::triggerEventUINT8Array, fireAndForget_yes)==kFalse ||
+     ETSSomeIpRegisterMethod(gPsiUdp, sysvar::TC8_ETS::ETS_Method::triggerEventUINT8Reliable, fireAndForget_yes)==kFalse ||
+     ETSSomeIpRegisterMethod(gPsiUdp, sysvar::TC8_ETS::ETS_Method::triggerEventUINT8Multicast, fireAndForget_yes)==kFalse ||
+     ETSSomeIpRegisterMethod(gPsiUdp, sysvar::TC8_ETS::ETS_Method::clientServiceGetLastValueOfEventTCP, fireAndForget_no)==kFalse ||
+     ETSSomeIpRegisterMethod(gPsiUdp, sysvar::TC8_ETS::ETS_Method::clientServiceGetLastValueOfEventUDPUnicast, fireAndForget_no)==kFalse ||
+     ETSSomeIpRegisterMethod(gPsiUdp, sysvar::TC8_ETS::ETS_Method::clientServiceGetLastValueOfEventUDPMulticast, fireAndForget_no)==kFalse ||
+     ETSSomeIpRegisterMethod(gPsiUdp, sysvar::TC8_ETS::ETS_Method::echoBitfields, fireAndForget_no)==kFalse)
+    return kFalse;
+  
+  return kTrue;
+}
+
+void RemoveETSServiceTCP()
+{
+  SomeIpReleaseProvidedServiceInstance(gPsiTcp); 
+  gPsiTcp = 0;
+  
+  SomeIpCloseLocalApplicationEndpoint(gPsiTcpAep);
+  gPsiTcpAep = 0;
+}
+
+enum Bool CreateETSServiceTCP(dword instanceId, IP_Endpoint endpoint)
+{
+  dword egHandle;
+  long fireAndForget_yes = 1, fireAndForget_no = 0;
+  
+  endpoint.SetToTcp();
+  gPsiTcpAep = ETSOpenLocalApplicationEndpoint(endpoint);
+  if(gPsiTcpAep==0)
+  {
+    ReportSomeIpError("TCP Server AEP creation failed");
+    return kFalse;
+  }
+
+  gPsiTcp = SomeIpCreateProvidedServiceInstance(gPsiTcpAep, @sysvar::TC8_ETS_Config::ETS_ServiceId, instanceId); 
+  if(gPsiTcp==0)
+  {
+    ReportSomeIpError("TCP Server creation failed");
+    return kFalse;
+  }
+
+  if(ETSSomeIpAddField(gPsiTcp, FIELD_ID_TestFieldUINT8Reliable, sysvar::TC8_ETS::ETS_Method::get_TestFieldUINT8Reliable, sysvar::TC8_ETS::ETS_Method::set_TestFieldUINT8Reliable, gFieldHandle_TestFieldUINT8Reliable)==kFalse ||
+     ETSSomeIpAddFieldResponseMethod(gPsiTcp, sysvar::TC8_ETS::ETS_Method::get_TestFieldUINT8Reliable)==kFalse ||
+     ETSSomeIpAddFieldResponseMethod(gPsiTcp, sysvar::TC8_ETS::ETS_Method::set_TestFieldUINT8Reliable)==kFalse)
+    return kFalse;
+    
+  if(ETSSomeIpAddEvent(gPsiTcp, EVENT_ID_TestEventUINT8Reliable, "OnService_ETS_PrepareEvent_TestEventUINT8Reliable", gEventHandle_TestEventUINT8Reliable)==kFalse ||    
+     ETSSomeIpAddProvidedEventGroup(gPsiTcp, EVENTGROUP_ID_EvgAll, egHandle)==kFalse ||
+     ETSSomeIpAddFieldToEventgroup(egHandle, gFieldHandle_TestFieldUINT8Reliable)==kFalse ||
+     ETSSomeIpAddEventToEventGroup(egHandle, gEventHandle_TestEventUINT8Reliable)==kFalse ||
+     ETSSomeIpRegisterMethod(gPsiTcp, sysvar::TC8_ETS::ETS_Method::echoUINT8RELIABLE, fireAndForget_no)==kFalse)
+    return kFalse;
+  
+  return kTrue;
+}
+
+void RemoveETSService()
+{
+  RemoveETSServiceUDP();
+  RemoveETSServiceTCP();
+}
+
+enum Bool CreateETSService(dword instanceId, char ipv4AddressString[], int64 multicastThreshold)
+{
+  IP_Endpoint endpoint;
+  if(InitEndpoint(endpoint, ipv4AddressString, @sysvar::TC8_ETS_Config::ETS_Port)!=kTrue)
+  {
+    write("UDP Server AEP init endpoint failed");
+    return kFalse;
+  }
+  
+  write("%s: Creating ETS service: instanceId %u, port %u, multicastThreshold %lld at %.5f", gETSProcessName, instanceId, @sysvar::TC8_ETS_Config::ETS_Port, multicastThreshold, timeNowFloat()/100000.0);
+
+  if(CreateETSServiceUDP(instanceId, multicastThreshold, endpoint)==kFalse ||
+     CreateETSServiceTCP(instanceId, endpoint)==kFalse)
+    return kFalse;
+  
+  return kTrue;
+}
+
+enum Bool GetMethodArgumentDWord(dword messageHandle, char argumentName[], dword & arg, dword & errorCode)
+{
+  arg = SomeIpGetValueDWord(messageHandle, argumentName);
+  if(SomeIpGetLastError()==0)
+    return kTrue;
+  
+  ReportSomeIpError("Get method argument failed");
+  errorCode = sysvar::TC8_ETS::ETS_MethodResult::GeneralFailure;
+  return kFalse;
+}
+
+enum Bool GetMethodArgumentStringUTF16(dword messageHandle, char argumentName[], dword bufferLength, char buffer[], dword & errorCode)
+{
+  const dword BUFFER_SIZE = 512;
+  byte charData[BUFFER_SIZE], utf16Data[BUFFER_SIZE];
+  char utf16Value[BUFFER_SIZE];
+  long utf16ValueLength, charDataLength, conversionRC;
+  dword countCopiedBytes;
+  
+  countCopiedBytes = SomeIpGetValueString(messageHandle, argumentName, elCount(utf16Value), utf16Value);
+  if(SomeIpGetLastError()!=0)
+    return kFalse;
+  
+  //write("############## GetMethodArgumentStringUTF16: #bytes=%d", countCopiedBytes);
+  
+  // The string has to be converted as expected, this is not done by the IL
+  // Examine the payload, which contains the BOM according to the DB
+  // This works only because the UTF16 ETS methods have just one argument, the string
+  if(hasPayloadBigEndianBOM(messageHandle)==kTrue)
+    swapBytes(utf16Value, countCopiedBytes);
+  
+  utf16ValueLength = elcount(utf16Value);
+  memcpy(utf16Data, utf16Value, utf16ValueLength);
+  conversionRC = ConvertString(charData, charDataLength, elCount(charData), gCP_LATIN1, utf16Data, countCopiedBytes/*utf16ValueLength*/, gCP_UTF16LE);
+  if(conversionRC!=0)
+  {
+    //write("Convertion of UTF-16 string failed %ld, UTF-16 codepage: %u", conversionRC, gCP_UTF16LE);
+    errorCode = sysvar::TC8_ETS::ETS_MethodResult::GeneralFailure;
+    return kFalse;
+  }   
+
+  if(charDataLength*2>countCopiedBytes)
+  {
+    write("Number of converted string chars (%d) does not match number of bytes received (%d), [0]: 0x%x", charDataLength, countCopiedBytes, charData[0]);
+    errorCode = sysvar::TC8_ETS::ETS_MethodResult::MALFORMED_MESSAGE;
+    return kFalse;    
+  }
+  else if(charDataLength>=bufferLength)
+  {
+    //write("Converted string is too long for buffer");
+    errorCode = sysvar::TC8_ETS::ETS_MethodResult::GeneralFailure;
+    return kFalse;    
+  }
+  memcpy(buffer, charData, charDataLength);
+  //write("Number of converted string chars (%d), number of bytes received (%d), '%s'", charDataLength, countCopiedBytes, buffer);
+  return kTrue;
+}
+
+enum Bool GetMethodArgumentStringUTF8(dword messageHandle, char argumentName[], dword bufferLength, char buffer[], dword & errorCode)
+{
+  const dword BUFFER_SIZE = 512;
+  byte charData[BUFFER_SIZE], utf8Data[BUFFER_SIZE];
+  char utf8Value[BUFFER_SIZE];
+  long utf8ValueLength, charDataLength, conversionRC;
+  dword countCopiedBytes;
+  
+  countCopiedBytes = SomeIpGetValueString(messageHandle, argumentName, elCount(utf8Value), utf8Value);
+  if(SomeIpGetLastError()!=0)
+    return kFalse;
+
+  utf8ValueLength = elcount(utf8Value);
+  memcpy(utf8Data, utf8Value, utf8ValueLength);
+  conversionRC = ConvertString(charData, charDataLength, elCount(charData), gCP_LATIN1, utf8Data, countCopiedBytes/*utf8ValueLength*/, gCP_UTF8);
+  if(conversionRC!=0)
+  {
+    errorCode=sysvar::TC8_ETS::ETS_MethodResult::GeneralFailure;
+    //write("Convertion of UTF-8 string failed: %ld, UTF-16 codepage: %u", conversionRC, gCP_UTF8);
+    return kFalse;
+  }   
+
+  if(charDataLength>countCopiedBytes)
+  {
+    errorCode=sysvar::TC8_ETS::ETS_MethodResult::MALFORMED_MESSAGE;
+    //write("Number of converted string chars (%d) does not match number of bytes received (%d), [0]: 0x%x", charDataLength, countCopiedBytes, charData[0]);
+    return kFalse;    
+  }
+  else if(charDataLength>=bufferLength)
+  {
+    errorCode=sysvar::TC8_ETS::ETS_MethodResult::GeneralFailure;
+    //write("Converted string is too long for buffer ,strlen: %ld, buffer size: %d", charDataLength, bufferLength);
+    return kFalse;    
+  }
+  memcpy(buffer, charData, charDataLength);
+  //write("Number of converted string chars (%d), number of bytes received (%d), '%s'", charDataLength, countCopiedBytes, buffer);
+  return kTrue;
+}
+
+enum Bool GetMethodArgumentLong(dword messageHandle, char argumentName[], long & arg, dword & errorCode)
+{
+  arg = SomeIpGetValueLong(messageHandle, argumentName);
+  if(SomeIpGetLastError()==0)
+    return kTrue;
+  
+  ReportSomeIpError("Get method argument failed");
+  errorCode = sysvar::TC8_ETS::ETS_MethodResult::GeneralFailure;
+  return kFalse;
+}
+
+enum Bool GetMethodArgumentFloat(dword messageHandle, char argumentName[], float & arg, dword & errorCode)
+{
+  arg = SomeIpGetValueFloat(messageHandle, argumentName);
+  if(SomeIpGetLastError()==0)
+    return kTrue;
+  
+  ReportSomeIpError("Get method argument failed");
+  errorCode = sysvar::TC8_ETS::ETS_MethodResult::GeneralFailure;
+  return kFalse;
+}
+
+enum Bool SetMethodArgumentDWord(dword messageHandle, char argumentName[], dword value, dword & errorCode)
+{
+  char gTmpErrorString[256];
+
+  if(SomeIpSetValueDWord(messageHandle, argumentName, value)==0)
+    return kTrue;
+  
+  snprintf(gTmpErrorString, elCount(gTmpErrorString), "Setting of argument %s failed", argumentName);
+  ReportSomeIpError(gTmpErrorString);
+  errorCode = sysvar::TC8_ETS::ETS_MethodResult::GeneralFailure;
+  return kFalse;
+}
+
+enum Bool SetMethodArgumentArray(dword messageHandle, char argumentName[], byte data[], dword & errorCode)
+{
+  enum Bool success;
+  dword i;
+  char tmpString[256];
+
+  success=kTrue;
+  for(i=0; i<elcount(data) && success==kTrue; ++i)
+  {
+    snprintf(tmpString, elCount(tmpString), "%s[%d]", argumentName, i);
+    if(SomeIpSetValueDWord(messageHandle, tmpString, data[i])!=0)
+      success=kFalse;
+  }
+  if(success!=kTrue)
+  {
+    snprintf(tmpString, elCount(tmpString), "Setting of argument %s[%d] failed", argumentName, i);
+    ReportSomeIpError(tmpString);
+    errorCode = sysvar::TC8_ETS::ETS_MethodResult::GeneralFailure;
+  }
+  return success;
+}
+
+enum Bool hasPayloadBigEndianBOM(dword messageHandle)
+{
+  const dword MAX_START_INDEX_BOM = 4;
+  byte payload[256];
+  dword i, payloadLength;
+  
+  payloadLength = SomeIpGetData(messageHandle, elcount(payload), payload);
+  //write("### payloadLength: %d", payloadLength);
+  for(i=0; i<payloadLength && i<=MAX_START_INDEX_BOM && (i+1)<payloadLength; ++i)
+  {
+    if(payload[i]==0xFE && payload[i+1]==0xFF)
+    {
+      return kTrue;
+    }
+  }
+  
+  return kFalse;
+}
+
+void swapBytes(byte data[], dword dataLength)
+{
+  dword i;
+  byte tmp;
+  for(i=0; i<dataLength; i+=2)
+  {
+    tmp = data[i];
+    data[i] = data[i+1];
+    data[i+1] = tmp;
+  }
+}
+
+void swapBytes(char data[], dword dataLength)
+{
+  dword i;
+  byte tmp;
+  for(i=0; i<dataLength; i+=2)
+  {
+    tmp = data[i];
+    data[i] = data[i+1];
+    data[i+1] = tmp;
+  }
+}
+
+enum Bool SetMethodArgumentStringUTF16(dword messageHandle, char argumentName[], char value[], dword & errorCode)
+{
+  const dword BUFFER_SIZE = 512;
+  byte encodedData[BUFFER_SIZE], valueData[BUFFER_SIZE];
+  char encodedValue[BUFFER_SIZE];
+  long encodedSize, valueLength, conversionRC;
+  enum Bool requiresBigEndian;
+  
+  //write("############## SetMethodArgumentStringUTF16: %s='%s'", argumentName, value);
+
+  // The string has to be converted as expected, this is not done by the IL
+  // Examine the empty payload, which contains the BOM according to the DB
+  // This works only because the UTF16 ETS methods have just one argument, the string
+  requiresBigEndian = hasPayloadBigEndianBOM(messageHandle);
+  
+  valueLength = strlen(value);
+  if(strlen(value)>=elcount(valueData))
+  {
+    write("Buffer is not large enougth for string conversion");
+    errorCode = sysvar::TC8_ETS::ETS_MethodResult::GeneralFailure;
+    return kFalse;
+  }
+  
+  memcpy(valueData, value, valueLength);
+  conversionRC = ConvertString(encodedData, encodedSize, elCount(encodedData), gCP_UTF16LE, valueData, valueLength, gCP_LATIN1);
+  if(conversionRC!=0 || encodedSize<2)
+  {
+    write("Convertion of string failed %ld, UTF-16 codepage: %u", conversionRC, gCP_UTF16LE);
+    errorCode = sysvar::TC8_ETS::ETS_MethodResult::GeneralFailure;
+    return kFalse;
+  }
+  
+  if(requiresBigEndian)
+  {
+    swapBytes(encodedData, encodedSize);
+  }
+  
+  encodedSize -= 2; // encodedSize is inclusive the termination, SomeIpSetValueString requires it without
+  memcpy(encodedValue, encodedData, encodedSize);
+  if(SomeIpSetValueString(messageHandle, argumentName, encodedValue, encodedSize)==0 && SomeIpGetLastError()!=0)
+  {
+    ReportSomeIpError("Set method argument failed");
+    errorCode = sysvar::TC8_ETS::ETS_MethodResult::GeneralFailure;
+    return kFalse;
+  }
+
+  return kTrue;
+}
+
+enum Bool SetMethodArgumentStringUTF8(dword messageHandle, char argumentName[], char value[], dword & errorCode)
+{
+  const dword BUFFER_SIZE = 512;
+  byte encodedData[BUFFER_SIZE], valueData[BUFFER_SIZE];
+  char encodedValue[BUFFER_SIZE];
+  long encodedSize, valueLength, conversionRC;
+
+  valueLength = strlen(value);
+  if(strlen(value)>=elcount(valueData))
+  {
+    //write("Buffer is not large enougth for string conversion");
+    errorCode = sysvar::TC8_ETS::ETS_MethodResult::GeneralFailure;
+    return kFalse;
+  }
+  
+  memcpy(valueData, value, valueLength);
+  conversionRC = ConvertString(encodedData, encodedSize, elCount(encodedData), gCP_UTF8, valueData, valueLength, gCP_LATIN1);
+  if(conversionRC!=0 || encodedSize<1)
+  {
+    //write("Convertion of string failed %ld, UTF-8 codepage: %u. encodedSize: %ld", conversionRC, gCP_UTF8, encodedSize);
+    errorCode = sysvar::TC8_ETS::ETS_MethodResult::GeneralFailure;
+    return kFalse;
+  }   
+  encodedSize -= 1; // encodedSize is inclusive the termination, SomeIpSetValueString requires it without
+  memcpy(encodedValue, encodedData, encodedSize);
+  if(SomeIpSetValueString(messageHandle, argumentName, encodedValue, encodedSize)==0 && SomeIpGetLastError()!=0)
+  {
+    ReportSomeIpError("Set method argument failed");
+    errorCode = sysvar::TC8_ETS::ETS_MethodResult::GeneralFailure;
+    return kFalse;
+  }
+
+  return kTrue;
+}
+
+enum Bool SetMethodArgumentLong(dword messageHandle, char argumentName[], long value, dword & errorCode)
+{
+  if(SomeIpSetValueLong(messageHandle, argumentName, value)==0)
+    return kTrue;
+  
+  ReportSomeIpError("Set method argument failed");
+  errorCode = sysvar::TC8_ETS::ETS_MethodResult::GeneralFailure;
+  return kFalse;
+}
+
+enum Bool SetMethodArgumentInt64(dword messageHandle, char argumentName[], int64 value, dword & errorCode)
+{
+  if(SomeIpSetValueInt64(messageHandle, argumentName, value)==0)
+    return kTrue;
+  
+  ReportSomeIpError("Set method argument failed");
+  errorCode = sysvar::TC8_ETS::ETS_MethodResult::GeneralFailure;
+  return kFalse;
+}
+
+enum Bool SetMethodArgumentFloat(dword messageHandle, char argumentName[], float value, dword & errorCode)
+{
+  if(SomeIpSetValueFloat(messageHandle, argumentName, value)==0)
+    return kTrue;
+  
+  ReportSomeIpError("Set method argument failed");
+  errorCode = sysvar::TC8_ETS::ETS_MethodResult::GeneralFailure;
+  return kFalse;
+}
+
+void HandleMethodRequest_echoUINT8Array(DWORD methodHandle, DWORD messageHandle, DWORD messageResponseHandle,
+  DWORD minExpectedNumberOfElements, char argumentNameReq[], char argumentNameRes[])
+{
+  dword numberOfElements, errorCode;
+  dword arg;
+  char reqBuffer[64], resBuffer[64];
+  int i;
+
+  if(GetMethodArgumentDWord(messageHandle, argumentNameReq, numberOfElements, errorCode)==kFalse)
+  {
+    SomeIpSetReturnCode(messageResponseHandle, errorCode);
+    return;
+  }
+
+  if(numberOfElements<minExpectedNumberOfElements)
+  {
+    SomeIpSetReturnCode(messageResponseHandle, sysvar::TC8_ETS::ETS_MethodResult::MALFORMED_MESSAGE);
+    return;
+  }
+  
+  for(i=0; i<numberOfElements; ++i)
+  {
+    snprintf(reqBuffer, elCount(reqBuffer), "%s[%d]", argumentNameReq, i);
+    snprintf(resBuffer, elCount(resBuffer), "%s[%d]", argumentNameRes, i);
+    if(GetMethodArgumentDWord(messageHandle,   reqBuffer, arg, errorCode)==kFalse ||
+       SetMethodArgumentDWord(messageResponseHandle, resBuffer, arg, errorCode)==kFalse)
+    {
+      SomeIpSetReturnCode(messageResponseHandle, errorCode);
+      return;
+    }
+  }
+}

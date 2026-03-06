@@ -1,0 +1,59 @@
+/*@!Encoding:1252*/
+// ===================================================================================
+// Common application implementation for all simulation nodes
+// ===================================================================================
+
+variables {
+  char cSessionTypeParameterName[20] = "DiagSessionType";
+}
+
+on start
+{
+  long value;
+
+  setWriteDbgLevel(0);
+  
+  InitECU();
+}
+
+void S3ServerReset()
+{
+  ResetSession();  
+}
+
+void ResetSession()
+{
+  @sysvarMember::%BASE_FILE_NAME_NO_EXT%::Session.CurrentSession = DefaultSession;
+
+  ResetLock();
+}
+
+void ResetLock()
+{
+  //Security Access not implemented in this sample configuration
+}
+
+void ResetSessionAndSendNegativeResponse(diagResponse * resp, dword nrc)
+{
+  ResetSession();
+  sendNegativeResponse( resp, nrc); 
+}
+
+void ResetSessionAndSendNegativeResponse(diagRequest * req, dword nrc)
+{
+  ResetSession();
+  sendNegativeResponse( req, nrc); 
+}
+
+// Send Negative Response with given negative response code to given Request if ECU is in default session
+enum bool PreventAccessInsideDefaultSession(diagRequest * req, byte nrc)
+{
+  if(DefaultSession==@sysvarMember::%BASE_FILE_NAME_NO_EXT%::Session.CurrentSession)
+  {
+    // The ECU is in default session, so send negative response.
+    ResetSessionAndSendNegativeResponse( req, nrc);
+    return TRUE;
+  }
+  
+  return FALSE;
+}

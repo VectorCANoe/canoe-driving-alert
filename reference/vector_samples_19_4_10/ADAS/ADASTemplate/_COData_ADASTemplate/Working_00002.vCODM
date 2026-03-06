@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<FunctionBusLibrary Version="1" FormatMajorVersion="1" FormatMinorVersion="2" FormatPatchVersion="1" FormatFeatureVersion="3">
+  <Namespaces>
+    <Namespace IsDefinedAsHidden="False" IsSystemDefined="False" Name="ADAS">
+      <DistributedObjects>
+        <DistributedObject GenerateDotNetAPI="True" Name="VehicleSensor_1">
+          <AttributeValues>
+            <AttributeValue Definition="_ADAS::DataModel::SensorId" InitialValue="1" InitialValueType="UInt64" />
+          </AttributeValues>
+          <DataType>
+            <ModifiedDOIF Reverse="False" IsDOReference="False" Interface="_ADAS::DataModel::ISensor" />
+          </DataType>
+          <MemberData>
+            <DOMemberDataHolder Name="MemberData" />
+          </MemberData>
+        </DistributedObject>
+      </DistributedObjects>
+    </Namespace>
+  </Namespaces>
+</FunctionBusLibrary>

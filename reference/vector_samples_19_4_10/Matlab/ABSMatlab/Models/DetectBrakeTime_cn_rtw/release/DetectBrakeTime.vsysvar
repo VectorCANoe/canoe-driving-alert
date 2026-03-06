@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<systemvariables version="4">
+<namespace name="" comment="" interface="">
+  <namespace name="Control" comment="" interface="">
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name ="brakeActive" comment="" bitcount="64" isSigned="true" encoding="65001" type="float"/>
+  </namespace>
+  <namespace name="DetectBrakeTime" comment="" interface="">
+    <namespace name="Parameters" comment="" interface="">
+      <namespace name="Enabled_Subsystem" comment="" interface="">
+        <namespace name="Compare_To_Zero" comment="" interface="">
+          <namespace name="Constant" comment="" interface="">
+            <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name ="Value" comment="" bitcount="32" isSigned="true" encoding="65001" type="int"/>
+          </namespace>
+        </namespace>
+        <namespace name="Signal_Input" comment="" interface="">
+          <namespace name="S_Function" comment="" interface="">
+            <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name ="P1" comment="" bitcount="64" isSigned="true" encoding="65001" type="float"/>
+            <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name ="P2" comment="" bitcount="64" isSigned="true" encoding="65001" type="float"/>
+            <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name ="P3" comment="" bitcount="64" isSigned="true" encoding="65001" type="float"/>
+            <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name ="P4" comment="" bitcount="64" isSigned="true" encoding="65001" type="float"/>
+            <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="P5" comment="" bitcount="64" isSigned="true" encoding="65001" type="floatarray" arrayLength="2"/>
+            <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name ="P6" comment="" bitcount="64" isSigned="true" encoding="65001" type="float"/>
+            <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name ="P7" comment="" bitcount="64" isSigned="true" encoding="65001" type="float"/>
+            <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="P8" comment="" bitcount="64" isSigned="true" encoding="65001" type="floatarray" arrayLength="9"/>
+          </namespace>
+        </namespace>
+        <namespace name="Discrete_Derivative" comment="" interface="">
+          <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name ="ICPrevScaledInput" comment="" bitcount="64" isSigned="true" encoding="65001" type="float"/>
+        </namespace>
+        <namespace name="If_Body_subsystem" comment="" interface="">
+          <namespace name="Unit_Delay" comment="" interface="">
+            <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name ="InitialCondition" comment="" bitcount="64" isSigned="true" encoding="65001" type="float"/>
+          </namespace>
+          <namespace name="constant1" comment="" interface="">
+            <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name ="Value" comment="" bitcount="64" isSigned="true" encoding="65001" type="float"/>
+          </namespace>
+        </namespace>
+      </namespace>
+      <namespace name="Simulation_Step" comment="" interface="">
+        <namespace name="S_Function1" comment="" interface="">
+          <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name ="P1" comment="" bitcount="64" isSigned="true" encoding="65001" type="float"/>
+        </namespace>
+        <namespace name="S_Function" comment="" interface="">
+          <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name ="P1" comment="" bitcount="64" isSigned="true" encoding="65001" type="float"/>
+        </namespace>
+      </namespace>
+    </namespace>
+  </namespace>
+  <namespace name="MatlabIO" comment="" interface="">
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name ="BrakeTime" comment="" bitcount="64" isSigned="true" encoding="65001" type="float"/>
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name ="BrakeTimeVerdict" comment="" bitcount="64" isSigned="true" encoding="65001" type="float"/>
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name ="SetPointBrakeTime" comment="" bitcount="64" isSigned="true" encoding="65001" type="float"/>
+  </namespace>
+</namespace>
+</systemvariables>

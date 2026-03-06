@@ -1,0 +1,185 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<systemvariables version="4">
+  <namespace name="" comment="" interface="">
+    <namespace name="RS232" comment="" interface="">
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="BitPerSecondsPortA" comment="" bitcount="32" isSigned="false" encoding="65001" type="int" startValue="9600" minValue="110" minValuePhys="110" maxValue="115200" maxValuePhys="115200">
+        <valuetable name="ValueTableBitPerSecondsPortA" definesMinMax="true">
+          <valuetableentry value="110" lowerBound="110" upperBound="110" description="Speed110bps" displayString="Speed110bps" />
+          <valuetableentry value="300" lowerBound="300" upperBound="300" description="Speed300bps" displayString="Speed300bps" />
+          <valuetableentry value="600" lowerBound="600" upperBound="600" description="Speed600bps" displayString="Speed600bps" />
+          <valuetableentry value="1200" lowerBound="1200" upperBound="1200" description="Speed1200bps" displayString="Speed1200bps" />
+          <valuetableentry value="1800" lowerBound="1800" upperBound="1800" description="Speed1800bps" displayString="Speed1800bps" />
+          <valuetableentry value="2400" lowerBound="2400" upperBound="2400" description="Speed2400bps" displayString="Speed2400bps" />
+          <valuetableentry value="4800" lowerBound="4800" upperBound="4800" description="Speed4800bps" displayString="Speed4800bps" />
+          <valuetableentry value="9600" lowerBound="9600" upperBound="9600" description="Speed9600bps" displayString="Speed9600bps" />
+          <valuetableentry value="14400" lowerBound="14400" upperBound="14400" description="Speed14400bps" displayString="Speed14400bps" />
+          <valuetableentry value="19200" lowerBound="19200" upperBound="19200" description="Speed19200bps" displayString="Speed19200bps" />
+          <valuetableentry value="38400" lowerBound="38400" upperBound="38400" description="Speed38400bps" displayString="Speed38400bps" />
+          <valuetableentry value="57600" lowerBound="57600" upperBound="57600" description="Speed57600bps" displayString="Speed57600bps" />
+          <valuetableentry value="115200" lowerBound="115200" upperBound="115200" description="Speed115200bps" displayString="Speed115200bps" />
+        </valuetable>
+      </variable>
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="BitPerSecondsPortB" comment="" bitcount="32" isSigned="false" encoding="65001" type="int" startValue="9600" minValue="110" minValuePhys="110" maxValue="115200" maxValuePhys="115200">
+        <valuetable name="ValueTableBitPerSecondsPortB" definesMinMax="true">
+          <valuetableentry value="110" lowerBound="110" upperBound="110" description="Speed110bps" displayString="Speed110bps" />
+          <valuetableentry value="300" lowerBound="300" upperBound="300" description="Speed300bps" displayString="Speed300bps" />
+          <valuetableentry value="600" lowerBound="600" upperBound="600" description="Speed600bps" displayString="Speed600bps" />
+          <valuetableentry value="1200" lowerBound="1200" upperBound="1200" description="Speed1200bps" displayString="Speed1200bps" />
+          <valuetableentry value="1800" lowerBound="1800" upperBound="1800" description="Speed1800bps" displayString="Speed1800bps" />
+          <valuetableentry value="2400" lowerBound="2400" upperBound="2400" description="Speed2400bps" displayString="Speed2400bps" />
+          <valuetableentry value="4800" lowerBound="4800" upperBound="4800" description="Speed4800bps" displayString="Speed4800bps" />
+          <valuetableentry value="9600" lowerBound="9600" upperBound="9600" description="Speed9600bps" displayString="Speed9600bps" />
+          <valuetableentry value="14400" lowerBound="14400" upperBound="14400" description="Speed14400bps" displayString="Speed14400bps" />
+          <valuetableentry value="19200" lowerBound="19200" upperBound="19200" description="Speed19200bps" displayString="Speed19200bps" />
+          <valuetableentry value="38400" lowerBound="38400" upperBound="38400" description="Speed38400bps" displayString="Speed38400bps" />
+          <valuetableentry value="57600" lowerBound="57600" upperBound="57600" description="Speed57600bps" displayString="Speed57600bps" />
+          <valuetableentry value="115200" lowerBound="115200" upperBound="115200" description="Speed115200bps" displayString="Speed115200bps" />
+        </valuetable>
+      </variable>
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="ClearDataPortA" comment="" bitcount="32" isSigned="false" encoding="65001" type="int" startValue="0" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="ClearDataPortB" comment="" bitcount="32" isSigned="false" encoding="65001" type="int" startValue="0" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="DataBitsPortA" comment="" bitcount="32" isSigned="false" encoding="65001" type="int" startValue="8" minValue="0" minValuePhys="0">
+        <valuetable name="ValueTableDataBitsPortA" definesMinMax="false">
+          <valuetableentry value="5" lowerBound="5" upperBound="5" description="PortADataBits5" displayString="PortADataBits5" />
+          <valuetableentry value="6" lowerBound="6" upperBound="6" description="PortADataBits6" displayString="PortADataBits6" />
+          <valuetableentry value="7" lowerBound="7" upperBound="7" description="PortADataBits7" displayString="PortADataBits7" />
+          <valuetableentry value="8" lowerBound="8" upperBound="8" description="PortADataBits8" displayString="PortADataBits8" />
+        </valuetable>
+      </variable>
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="DataBitsPortB" comment="" bitcount="32" isSigned="false" encoding="65001" type="int" startValue="8" minValue="0" minValuePhys="0">
+        <valuetable name="ValueTableDataBitsPortB" definesMinMax="false">
+          <valuetableentry value="5" lowerBound="5" upperBound="5" description="PortBDataBits5" displayString="PortBDataBits5" />
+          <valuetableentry value="6" lowerBound="6" upperBound="6" description="PortBDataBits6" displayString="PortBDataBits6" />
+          <valuetableentry value="7" lowerBound="7" upperBound="7" description="PortBDataBits7" displayString="PortBDataBits7" />
+          <valuetableentry value="8" lowerBound="8" upperBound="8" description="PortBDataBits8" displayString="PortBDataBits8" />
+        </valuetable>
+      </variable>
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="FlowControlPortA" comment="" bitcount="32" isSigned="false" encoding="65001" type="int" startValue="0" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1">
+        <valuetable name="ValueTableFlowControlPortA" definesMinMax="false">
+          <valuetableentry value="0" lowerBound="0" upperBound="0" description="FlowControlNone" displayString="FlowControlNone" />
+          <valuetableentry value="1" lowerBound="1" upperBound="1" description="FlowControlXonXoff" displayString="FlowControlXonXoff" />
+          <valuetableentry value="2" lowerBound="2" upperBound="2" description="FlowControlHardware" displayString="FlowControlHardware" />
+        </valuetable>
+      </variable>
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="FlowControlPortB" comment="" bitcount="32" isSigned="false" encoding="65001" type="int" startValue="0" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1">
+        <valuetable name="ValueTableFlowControlPortB" definesMinMax="false">
+          <valuetableentry value="0" lowerBound="0" upperBound="0" description="FlowControlNone" displayString="FlowControlNone" />
+          <valuetableentry value="1" lowerBound="1" upperBound="1" description="FlowControlXonXoff" displayString="FlowControlXonXoff" />
+          <valuetableentry value="2" lowerBound="2" upperBound="2" description="FlowControlHardware" displayString="FlowControlHardware" />
+        </valuetable>
+      </variable>
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="HandShakePortA" comment="" bitcount="32" isSigned="false" encoding="65001" type="int" startValue="0" minValue="0" minValuePhys="0" maxValue="128" maxValuePhys="128">
+        <valuetable name="ValueTableHandShakePortA" definesMinMax="false">
+          <valuetableentry value="0" lowerBound="0" upperBound="0" description="noHandShakeAtAll" displayString="noHandShakeAtAll" />
+          <valuetableentry value="10" lowerBound="10" upperBound="10" description="hardwareHandShakeUseDTRandDSR" displayString="hardwareHandShakeUseDTRandDSR" />
+          <valuetableentry value="33" lowerBound="33" upperBound="33" description="hardwareHandShakeUseRTSandCTS" displayString="hardwareHandShakeUseRTSandCTS" />
+          <valuetableentry value="65" lowerBound="65" upperBound="65" description="hardwareHandShakeUseRTSandCTSUseToggleVariant" displayString="hardwareHandShakeUseRTSandCTSUseToggleVariant" />
+          <valuetableentry value="128" lowerBound="128" upperBound="128" description="softwareHandShakeUseXonandXoffCharacters" displayString="softwareHandShakeUseXonandXoffCharacters" />
+        </valuetable>
+      </variable>
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="HandShakePortB" comment="" bitcount="32" isSigned="false" encoding="65001" type="int" startValue="0" minValue="0" minValuePhys="0" maxValue="128" maxValuePhys="128">
+        <valuetable name="ValueTableHandShakePortB" definesMinMax="false">
+          <valuetableentry value="0" lowerBound="0" upperBound="0" description="noHandShakeAtAll" displayString="noHandShakeAtAll" />
+          <valuetableentry value="10" lowerBound="10" upperBound="10" description="hardwareHandShakeUseDTRandDSR" displayString="hardwareHandShakeUseDTRandDSR" />
+          <valuetableentry value="33" lowerBound="33" upperBound="33" description="hardwareHandShakeUseRTSandCTS" displayString="hardwareHandShakeUseRTSandCTS" />
+          <valuetableentry value="65" lowerBound="65" upperBound="65" description="hardwareHandShakeUseRTSandCTSUseToggleVariant" displayString="hardwareHandShakeUseRTSandCTSUseToggleVariant" />
+          <valuetableentry value="128" lowerBound="128" upperBound="128" description="softwareHandShakeUseXonandXoffCharacters" displayString="softwareHandShakeUseXonandXoffCharacters" />
+        </valuetable>
+      </variable>
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="ParityPortA" comment="" bitcount="32" isSigned="false" encoding="65001" type="int" startValue="0" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1">
+        <valuetable name="ValueTableParityPortA" definesMinMax="false">
+          <valuetableentry value="0" lowerBound="0" upperBound="0" description="NoParity" displayString="NoParity" />
+          <valuetableentry value="1" lowerBound="1" upperBound="1" description="OddParity" displayString="OddParity" />
+          <valuetableentry value="2" lowerBound="2" upperBound="2" description="EvenParity" displayString="EvenParity" />
+        </valuetable>
+      </variable>
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="ParityPortB" comment="" bitcount="32" isSigned="false" encoding="65001" type="int" startValue="0" minValue="0" minValuePhys="0">
+        <valuetable name="ValueTableParityPortB" definesMinMax="false">
+          <valuetableentry value="0" lowerBound="0" upperBound="0" description="NoParity" displayString="NoParity" />
+          <valuetableentry value="1" lowerBound="1" upperBound="1" description="OddParity" displayString="OddParity" />
+          <valuetableentry value="2" lowerBound="2" upperBound="2" description="EvenParity" displayString="EvenParity" />
+        </valuetable>
+      </variable>
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="ReceptionDataPortA" comment="" bitcount="0" isSigned="true" encoding="65001" type="string" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="ReceptionDataPortB" comment="" bitcount="0" isSigned="true" encoding="65001" type="string" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="ReceptionIndicationPortA" comment="" bitcount="32" isSigned="false" encoding="65001" type="int" startValue="0" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="ReceptionIndicationPortB" comment="" bitcount="32" isSigned="false" encoding="65001" type="int" startValue="0" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SendDataPortA" comment="" bitcount="32" isSigned="false" encoding="65001" type="int" startValue="0" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SendDataPortB" comment="" bitcount="32" isSigned="false" encoding="65001" type="int" startValue="0" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SerialComPortPortA" comment="" bitcount="32" isSigned="false" encoding="65001" type="int" startValue="5" minValue="1" minValuePhys="1" maxValue="20" maxValuePhys="20">
+        <valuetable name="ValueTableComPortPortA" definesMinMax="false">
+          <valuetableentry value="1" lowerBound="1" upperBound="1" description="ComPort1" displayString="ComPort1" />
+          <valuetableentry value="2" lowerBound="2" upperBound="2" description="ComPort2" displayString="ComPort2" />
+          <valuetableentry value="3" lowerBound="3" upperBound="3" description="ComPort3" displayString="ComPort3" />
+          <valuetableentry value="4" lowerBound="4" upperBound="4" description="ComPort4" displayString="ComPort4" />
+          <valuetableentry value="5" lowerBound="5" upperBound="5" description="ComPort5" displayString="ComPort5" />
+          <valuetableentry value="6" lowerBound="6" upperBound="6" description="ComPort6" displayString="ComPort6" />
+          <valuetableentry value="7" lowerBound="7" upperBound="7" description="ComPort7" displayString="ComPort7" />
+          <valuetableentry value="8" lowerBound="8" upperBound="8" description="ComPort8" displayString="ComPort8" />
+          <valuetableentry value="9" lowerBound="9" upperBound="9" description="ComPort9" displayString="ComPort9" />
+          <valuetableentry value="10" lowerBound="10" upperBound="10" description="ComPort10" displayString="ComPort10" />
+          <valuetableentry value="11" lowerBound="11" upperBound="11" description="ComPort11" displayString="ComPort11" />
+          <valuetableentry value="12" lowerBound="12" upperBound="12" description="ComPort12" displayString="ComPort12" />
+          <valuetableentry value="13" lowerBound="13" upperBound="13" description="ComPort13" displayString="ComPort13" />
+          <valuetableentry value="14" lowerBound="14" upperBound="14" description="ComPort14" displayString="ComPort14" />
+          <valuetableentry value="15" lowerBound="15" upperBound="15" description="ComPort15" displayString="ComPort15" />
+          <valuetableentry value="16" lowerBound="16" upperBound="16" description="ComPort16" displayString="ComPort16" />
+          <valuetableentry value="17" lowerBound="17" upperBound="17" description="ComPort17" displayString="ComPort17" />
+          <valuetableentry value="18" lowerBound="18" upperBound="18" description="ComPort18" displayString="ComPort18" />
+          <valuetableentry value="19" lowerBound="19" upperBound="19" description="ComPort19" displayString="ComPort19" />
+          <valuetableentry value="20" lowerBound="20" upperBound="20" description="ComPort20" displayString="ComPort20" />
+        </valuetable>
+      </variable>
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SerialComPortPortB" comment="" bitcount="32" isSigned="false" encoding="65001" type="int" startValue="7" minValue="1" minValuePhys="1" maxValue="20" maxValuePhys="20">
+        <valuetable name="ValueTableComPortPortB" definesMinMax="false">
+          <valuetableentry value="1" lowerBound="1" upperBound="1" description="ComPort1" displayString="ComPort1" />
+          <valuetableentry value="2" lowerBound="2" upperBound="2" description="ComPort2" displayString="ComPort2" />
+          <valuetableentry value="3" lowerBound="3" upperBound="3" description="ComPort3" displayString="ComPort3" />
+          <valuetableentry value="4" lowerBound="4" upperBound="4" description="ComPort4" displayString="ComPort4" />
+          <valuetableentry value="5" lowerBound="5" upperBound="5" description="ComPort5" displayString="ComPort5" />
+          <valuetableentry value="6" lowerBound="6" upperBound="6" description="ComPort6" displayString="ComPort6" />
+          <valuetableentry value="7" lowerBound="7" upperBound="7" description="ComPort7" displayString="ComPort7" />
+          <valuetableentry value="8" lowerBound="8" upperBound="8" description="ComPort8" displayString="ComPort8" />
+          <valuetableentry value="9" lowerBound="9" upperBound="9" description="ComPort9" displayString="ComPort9" />
+          <valuetableentry value="10" lowerBound="10" upperBound="10" description="ComPort10" displayString="ComPort10" />
+          <valuetableentry value="11" lowerBound="11" upperBound="11" description="ComPort11" displayString="ComPort11" />
+          <valuetableentry value="12" lowerBound="12" upperBound="12" description="ComPort12" displayString="ComPort12" />
+          <valuetableentry value="13" lowerBound="13" upperBound="13" description="ComPort13" displayString="ComPort13" />
+          <valuetableentry value="14" lowerBound="14" upperBound="14" description="ComPort14" displayString="ComPort14" />
+          <valuetableentry value="15" lowerBound="15" upperBound="15" description="ComPort15" displayString="ComPort15" />
+          <valuetableentry value="16" lowerBound="16" upperBound="16" description="ComPort16" displayString="ComPort16" />
+          <valuetableentry value="17" lowerBound="17" upperBound="17" description="ComPort17" displayString="ComPort17" />
+          <valuetableentry value="18" lowerBound="18" upperBound="18" description="ComPort18" displayString="ComPort18" />
+          <valuetableentry value="19" lowerBound="19" upperBound="19" description="ComPort19" displayString="ComPort19" />
+          <valuetableentry value="20" lowerBound="20" upperBound="20" description="ComPort20" displayString="ComPort20" />
+        </valuetable>
+      </variable>
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="StopBitsPortA" comment="" bitcount="32" isSigned="false" encoding="65001" type="int" startValue="1" minValue="1" minValuePhys="1" maxValue="2" maxValuePhys="2">
+        <valuetable name="ValueTableStopBitsPortA" definesMinMax="false">
+          <valuetableentry value="1" lowerBound="1" upperBound="1" description="Stopbit1" displayString="Stopbit1" />
+          <valuetableentry value="2" lowerBound="2" upperBound="2" description="Stopbit2" displayString="Stopbit2" />
+        </valuetable>
+      </variable>
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="StopBitsPortB" comment="" bitcount="32" isSigned="false" encoding="65001" type="int" startValue="1" minValue="1" minValuePhys="1" maxValue="2" maxValuePhys="2">
+        <valuetable name="ValueTableStopBitsPortB" definesMinMax="false">
+          <valuetableentry value="1" lowerBound="1" upperBound="1" description="Stopbit1" displayString="Stopbit1" />
+          <valuetableentry value="2" lowerBound="2" upperBound="2" description="Stopbit2" displayString="Stopbit2" />
+        </valuetable>
+      </variable>
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="TransmissionDataPortA" comment="" bitcount="0" isSigned="true" encoding="65001" type="string" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="TransmissionDataPortB" comment="" bitcount="0" isSigned="true" encoding="65001" type="string" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="TransmissionStatePortA" comment="" bitcount="32" isSigned="false" encoding="65001" type="int" startValue="0" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1">
+        <valuetable name="ValueTableTransmissionStatePortA" definesMinMax="false">
+          <valuetableentry value="0" lowerBound="0" upperBound="0" description="NoTransmissionPortA" displayString="NoTransmissionPortA" />
+          <valuetableentry value="1" lowerBound="1" upperBound="1" description="TransmissionPortA" displayString="TransmissionPortA" />
+        </valuetable>
+      </variable>
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="TransmissionStatePortB" comment="" bitcount="32" isSigned="false" encoding="65001" type="int" startValue="0" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1">
+        <valuetable name="ValueTableTransmissionStatePortB" definesMinMax="false">
+          <valuetableentry value="0" lowerBound="0" upperBound="0" description="NoTransmissionPortB" displayString="NoTransmissionPortB" />
+          <valuetableentry value="1" lowerBound="1" upperBound="1" description="TransmissionPortB" displayString="TransmissionPortB" />
+        </valuetable>
+      </variable>
+    </namespace>
+  </namespace>
+</systemvariables>

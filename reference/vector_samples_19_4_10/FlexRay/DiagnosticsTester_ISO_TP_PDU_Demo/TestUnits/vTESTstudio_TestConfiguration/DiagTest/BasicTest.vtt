@@ -1,0 +1,324 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--Vector Test Table Editor-->
+<ttroot version="19" minRequiredVersion="16" xmlns="http://www.vector-informatik.de/ITE/TestTable/1.0">
+  <tt>
+    <tg navid="b2872ec4-2aaa-4cfe-9c25-726bcaa492d8">
+      <title>Group 1</title>
+      <tc>
+        <title>Test ECU Identification</title>
+        <tcid>7706eb87-391b-4c3a-92b3-add220cba154</tcid>
+        <breakonfail>false</breakonfail>
+        <diagservice>
+          <title />
+          <service>DiaObj_BEGIN_OF_OBJECT|3|2|ECM|Identification|EcuIdentification_Read|||0||CommonDiagnostics|END_OF_OBJECT_DiaObj|</service>
+          <diagrequest />
+          <diagresponse>
+            <primitive>DiaObj_BEGIN_OF_OBJECT|3|3|ECM|Identification|EcuIdentification_Read|RDBI_PR||1||CommonDiagnostics|END_OF_OBJECT_DiaObj|</primitive>
+            <diagparam>
+              <qualifier>DiaVal_BEGIN_OF_OBJECT|3|4|ECM|Identification|EcuIdentification_Read|RDBI_PR|Part_Number|1||CommonDiagnostics|END_OF_OBJECT_DiaVal|</qualifier>
+              <phys>
+                <eq>
+                  <const>CANoe UDS ECU</const>
+                </eq>
+              </phys>
+            </diagparam>
+          </diagresponse>
+        </diagservice>
+      </tc>
+      <tc>
+        <title>Test Processor Type</title>
+        <tcid>470835d3-4b2b-4d2c-9c6e-d32583027662</tcid>
+        <breakonfail>false</breakonfail>
+        <diagservice>
+          <title />
+          <service>DiaObj_BEGIN_OF_OBJECT|3|2|ECM|Identification|ProcessorType_Read|||0||CommonDiagnostics|END_OF_OBJECT_DiaObj|</service>
+          <diagrequest />
+          <diagresponse>
+            <primitive>DiaObj_BEGIN_OF_OBJECT|3|3|ECM|Identification|ProcessorType_Read|RDBI_PR||1||CommonDiagnostics|END_OF_OBJECT_DiaObj|</primitive>
+            <diagparam>
+              <qualifier>DiaVal_BEGIN_OF_OBJECT|3|4|ECM|Identification|ProcessorType_Read|RDBI_PR|Processor_Type|1||CommonDiagnostics|END_OF_OBJECT_DiaVal|</qualifier>
+              <phys>
+                <eq>
+                  <valuetable_entry>Motorola HC12 MC68HC12D60</valuetable_entry>
+                </eq>
+              </phys>
+            </diagparam>
+          </diagresponse>
+        </diagservice>
+      </tc>
+      <tc>
+        <title>Test Diagnostics Version</title>
+        <tcid>4fdf8fdc-e066-42ca-8776-b4c8be2368d6</tcid>
+        <breakonfail>false</breakonfail>
+        <diagservice>
+          <title />
+          <service>DiaObj_BEGIN_OF_OBJECT|3|2|ECM|Identification|DiagnosticVersion_Read|||0||CommonDiagnostics|END_OF_OBJECT_DiaObj|</service>
+          <diagrequest />
+          <diagresponse>
+            <primitive>DiaObj_BEGIN_OF_OBJECT|3|3|ECM|Identification|DiagnosticVersion_Read|RDBI_PR||1||CommonDiagnostics|END_OF_OBJECT_DiaObj|</primitive>
+            <diagparam>
+              <qualifier>DiaVal_BEGIN_OF_OBJECT|3|4|ECM|Identification|DiagnosticVersion_Read|RDBI_PR|Diagnostic_Version_dump|1||CommonDiagnostics|END_OF_OBJECT_DiaVal|</qualifier>
+              <phys>
+                <eq>
+                  <const>0x100</const>
+                </eq>
+              </phys>
+            </diagparam>
+          </diagresponse>
+        </diagservice>
+      </tc>
+      <tc>
+        <title>Test Development Data</title>
+        <tcid>ab25eb0f-e0eb-4807-82a0-a79df6305d9c</tcid>
+        <breakonfail>false</breakonfail>
+        <diagservice>
+          <title />
+          <service>DiaObj_BEGIN_OF_OBJECT|3|2|ECM|Identification|DevelopmentData_Read|||0||CommonDiagnostics|END_OF_OBJECT_DiaObj|</service>
+          <diagrequest />
+          <diagresponse>
+            <primitive>DiaObj_BEGIN_OF_OBJECT|3|3|ECM|Identification|DevelopmentData_Read|RDBI_PR||1||CommonDiagnostics|END_OF_OBJECT_DiaObj|</primitive>
+            <diagparam>
+              <qualifier>DiaVal_BEGIN_OF_OBJECT|3|4|ECM|Identification|DevelopmentData_Read|RDBI_PR|TransportLayerVersion|1||CommonDiagnostics|END_OF_OBJECT_DiaVal|</qualifier>
+              <phys>
+                <eq>
+                  <const>4</const>
+                </eq>
+              </phys>
+            </diagparam>
+          </diagresponse>
+        </diagservice>
+      </tc>
+      <tc>
+        <title>Test Serial Number</title>
+        <tcid>8a5c4d31-aa2b-413c-945a-7fd850af681e</tcid>
+        <breakonfail>false</breakonfail>
+        <diagservice>
+          <title />
+          <service>DiaObj_BEGIN_OF_OBJECT|3|2|ECM|Identification|SerialNumber_Read|||0||CommonDiagnostics|END_OF_OBJECT_DiaObj|</service>
+          <diagrequest />
+          <diagresponse>
+            <primitive>DiaObj_BEGIN_OF_OBJECT|3|3|ECM|Identification|SerialNumber_Read|RDBI_PR||1||CommonDiagnostics|END_OF_OBJECT_DiaObj|</primitive>
+            <diagparam>
+              <qualifier>DiaVal_BEGIN_OF_OBJECT|3|4|ECM|Identification|SerialNumber_Read|RDBI_PR|SerialNumber|1||CommonDiagnostics|END_OF_OBJECT_DiaVal|</qualifier>
+              <phys>
+                <lt>
+                  <const>170000</const>
+                </lt>
+              </phys>
+            </diagparam>
+          </diagresponse>
+        </diagservice>
+      </tc>
+    </tg>
+    <tg navid="7eae7984-dccd-4fc7-a290-50765a9eec71">
+      <title>Group2</title>
+      <ts navid="aad3a25a-926d-40f0-99ca-84db7c9891b8">
+        <title>Set Serial Number</title>
+        <breakonfail>false</breakonfail>
+        <ttfunction>
+          <title />
+          <name>EnterProgrammingSession</name>
+        </ttfunction>
+        <diagservice>
+          <title />
+          <service>DiaObj_BEGIN_OF_OBJECT|3|2|ECM|Identification|SerialNumber_Write|||0||CommonDiagnostics|END_OF_OBJECT_DiaObj|</service>
+          <diagrequest>
+            <diagparam>
+              <qualifier>DiaVal_BEGIN_OF_OBJECT|3|4|ECM|Identification|SerialNumber_Write|WDBI_RQ|SerialNumber|0||CommonDiagnostics|END_OF_OBJECT_DiaVal|</qualifier>
+              <phys>
+                <dbobject>SysVar_BEGIN_OF_OBJECT|1|SerialNumberOut|DiagTester|-1|0|END_OF_OBJECT_SysVar|</dbobject>
+              </phys>
+            </diagparam>
+          </diagrequest>
+          <diagresponse>
+            <primitive>DiaObj_BEGIN_OF_OBJECT|3|3|ECM|Identification|SerialNumber_Write|WDBI_PR||1||CommonDiagnostics|END_OF_OBJECT_DiaObj|</primitive>
+          </diagresponse>
+        </diagservice>
+        <set>
+          <title />
+          <in>
+            <assignment>
+              <sink>
+                <dbobject>SysVar_BEGIN_OF_OBJECT|1|SerialNumberOut|DiagTester|-1|0|END_OF_OBJECT_SysVar|</dbobject>
+              </sink>
+              <source>
+                <expression>
+                  <const>@DiagTester::SerialNumberOut+1</const>
+                </expression>
+              </source>
+            </assignment>
+          </in>
+        </set>
+        <diagservice>
+          <title />
+          <service>DiaObj_BEGIN_OF_OBJECT|3|2|ECM|Sessions|DefaultSession_Start|||0||CommonDiagnostics|END_OF_OBJECT_DiaObj|</service>
+          <diagrequest />
+          <diagresponse>
+            <primitive>DiaObj_BEGIN_OF_OBJECT|3|3|ECM|Sessions|DefaultSession_Start|STDS_PR||1||CommonDiagnostics|END_OF_OBJECT_DiaObj|</primitive>
+          </diagresponse>
+        </diagservice>
+      </ts>
+      <ts navid="e36e34d2-8cf6-4bf8-b846-e2ab64d9da6e">
+        <title>Set Variant Coding</title>
+        <breakonfail>false</breakonfail>
+        <ttfunction>
+          <title />
+          <name>EnterProgrammingSession</name>
+        </ttfunction>
+        <ttfunction>
+          <title />
+          <name>RequestSeedAndSendGeneratedKey</name>
+        </ttfunction>
+        <diagservice>
+          <title />
+          <service>DiaObj_BEGIN_OF_OBJECT|3|2|ECM|VariantCoding|Coding_Write|||0||CommonDiagnostics|END_OF_OBJECT_DiaObj|</service>
+          <diagrequest>
+            <diagparam>
+              <qualifier>DiaVal_BEGIN_OF_OBJECT|3|4|ECM|VariantCoding|Coding_Write|WDBI_RQ|Codingstring/Codingstring.CountryType|0||CommonDiagnostics|END_OF_OBJECT_DiaVal|</qualifier>
+              <phys>
+                <valuetable_entry>Europe</valuetable_entry>
+              </phys>
+            </diagparam>
+            <diagparam>
+              <qualifier>DiaVal_BEGIN_OF_OBJECT|3|4|ECM|VariantCoding|Coding_Write|WDBI_RQ|Codingstring/Codingstring.VehicleType|0||CommonDiagnostics|END_OF_OBJECT_DiaVal|</qualifier>
+              <phys>
+                <valuetable_entry>Coupe</valuetable_entry>
+              </phys>
+            </diagparam>
+            <diagparam>
+              <qualifier>DiaVal_BEGIN_OF_OBJECT|3|4|ECM|VariantCoding|Coding_Write|WDBI_RQ|Codingstring/Codingstring.SpecialAdjustment|0||CommonDiagnostics|END_OF_OBJECT_DiaVal|</qualifier>
+              <phys>
+                <dbobject>SysVar_BEGIN_OF_OBJECT|1|SpecialSetting|DiagTester|-1|0|END_OF_OBJECT_SysVar|</dbobject>
+              </phys>
+            </diagparam>
+          </diagrequest>
+          <diagresponse>
+            <primitive>DiaObj_BEGIN_OF_OBJECT|3|3|ECM|VariantCoding|Coding_Write|WDBI_PR||1||CommonDiagnostics|END_OF_OBJECT_DiaObj|</primitive>
+          </diagresponse>
+        </diagservice>
+        <diagservice>
+          <title />
+          <service>DiaObj_BEGIN_OF_OBJECT|3|2|ECM|Sessions|DefaultSession_Start|||0||CommonDiagnostics|END_OF_OBJECT_DiaObj|</service>
+          <diagrequest />
+          <diagresponse>
+            <primitive>DiaObj_BEGIN_OF_OBJECT|3|3|ECM|Sessions|DefaultSession_Start|STDS_PR||1||CommonDiagnostics|END_OF_OBJECT_DiaObj|</primitive>
+          </diagresponse>
+        </diagservice>
+      </ts>
+    </tg>
+  </tt>
+  <ttlib>
+    <ts_definitions />
+    <tc_definitions />
+    <function_definitions>
+      <function_definition navid="da2e1ef5-0d25-4af0-aa32-c301e2eea1df">
+        <name>ComputeKeyFromSeed</name>
+        <parameters />
+        <variables />
+        <caplinline>
+          <title />
+          <code>byte  gSeedArray[2];
+int   gSeedArraySize      = 2;
+int   gSecurityLevel      = 0x20;
+char  gVariant[200]       = "";
+char  gOption[200]        = "";
+byte  gKeyArray[2];
+int   gMaxKeyArraySize    = 2;  
+DWORD gActualSize         = 0; 
+int ret;
+
+@DiagTestUnit::GeneratedKey = 0;
+gSeedArray[0] = (@DiagTestUnit::SecuritySeed &gt;&gt; 8) &amp; 0xff;
+gSeedArray[1] =  @DiagTestUnit::SecuritySeed       &amp; 0xff;
+ret=diagGenerateKeyFromSeed("ECM", gSeedArray, 2, 1, gVariant, gOption, gKeyArray, gMaxKeyArraySize, gActualSize);
+if(ret == 0)
+{ 
+    /* write key value into system variable */  
+    @DiagTestUnit::GeneratedKey = gKeyArray[0] &lt;&lt; 8;       // High Byte 
+    @DiagTestUnit::GeneratedKey = @DiagTestUnit::GeneratedKey | gKeyArray[1];   // Low  Byte 
+    @DiagTestUnit::GeneratedKey = @DiagTestUnit::GeneratedKey &amp; 0x0000FFFF;
+}</code>
+        </caplinline>
+      </function_definition>
+      <function_definition navid="f6570849-c93a-44b1-9b54-83f7d3482d65">
+        <name>EnterProgrammingSession</name>
+        <parameters />
+        <diagservice>
+          <title />
+          <service>DiaObj_BEGIN_OF_OBJECT|3|2|ECM|Sessions|ExtendedDiagnosticSession_Start|||0||CommonDiagnostics|END_OF_OBJECT_DiaObj|</service>
+          <diagrequest />
+          <diagresponse>
+            <primitive>DiaObj_BEGIN_OF_OBJECT|3|3|ECM|Sessions|ExtendedDiagnosticSession_Start|STDS_PR||1||CommonDiagnostics|END_OF_OBJECT_DiaObj|</primitive>
+          </diagresponse>
+        </diagservice>
+        <diagunlock>
+          <title />
+          <active>false</active>
+          <ecu>DiaObj_BEGIN_OF_OBJECT|3|0|ECM|||||0||END_OF_OBJECT_DiaObj|</ecu>
+          <reportservicedetails>
+            <enum>always</enum>
+          </reportservicedetails>
+          <securitylevel>
+            <const>1</const>
+          </securitylevel>
+        </diagunlock>
+        <ttfunction>
+          <title />
+          <name>RequestSeedAndSendGeneratedKey</name>
+        </ttfunction>
+        <diagservice>
+          <title />
+          <service>DiaObj_BEGIN_OF_OBJECT|3|2|ECM|Sessions|ProgrammingSession_Start|||0||CommonDiagnostics|END_OF_OBJECT_DiaObj|</service>
+          <diagrequest />
+          <diagresponse>
+            <primitive>DiaObj_BEGIN_OF_OBJECT|3|3|ECM|Sessions|ProgrammingSession_Start|STDS_PR||1||CommonDiagnostics|END_OF_OBJECT_DiaObj|</primitive>
+          </diagresponse>
+        </diagservice>
+      </function_definition>
+      <function_definition navid="dfaf5729-1f41-4f01-a038-95f7249242ce">
+        <name>RequestSeedAndSendGeneratedKey</name>
+        <parameters />
+        <diagservice>
+          <title />
+          <service>DiaObj_BEGIN_OF_OBJECT|3|2|ECM|SecurityAccess|SeedLevel1_Request|||0||CommonDiagnostics|END_OF_OBJECT_DiaObj|</service>
+          <diagrequest>
+            <diagparam>
+              <qualifier>DiaVal_BEGIN_OF_OBJECT|3|4|ECM|SecurityAccess|SeedLevel1_Request|SA_RSD_RQ|SecurityAccessType|0||CommonDiagnostics|END_OF_OBJECT_DiaVal|</qualifier>
+              <phys>
+                <const>1</const>
+              </phys>
+            </diagparam>
+          </diagrequest>
+          <diagresponse>
+            <primitive>DiaObj_BEGIN_OF_OBJECT|3|3|ECM|SecurityAccess|SeedLevel1_Request|SA_RSD_PR||1||CommonDiagnostics|END_OF_OBJECT_DiaObj|</primitive>
+            <diagparam_read>
+              <qualifier>DiaVal_BEGIN_OF_OBJECT|3|4|ECM|SecurityAccess|SeedLevel1_Request|SA_RSD_PR|SecuritySeed|1||CommonDiagnostics|END_OF_OBJECT_DiaVal|</qualifier>
+              <copytovar>
+                <dbobject>SysVar_BEGIN_OF_OBJECT|1|SecuritySeed|DiagTestUnit|-1|0|END_OF_OBJECT_SysVar|</dbobject>
+              </copytovar>
+            </diagparam_read>
+          </diagresponse>
+        </diagservice>
+        <ttfunction>
+          <title />
+          <name>ComputeKeyFromSeed</name>
+        </ttfunction>
+        <diagservice>
+          <title />
+          <service>DiaObj_BEGIN_OF_OBJECT|3|2|ECM|SecurityAccess|KeyLevel1_Send|||0||CommonDiagnostics|END_OF_OBJECT_DiaObj|</service>
+          <diagrequest>
+            <diagparam>
+              <qualifier>DiaVal_BEGIN_OF_OBJECT|3|4|ECM|SecurityAccess|KeyLevel1_Send|SA_SK_RQ|SecurityKey|0||CommonDiagnostics|END_OF_OBJECT_DiaVal|</qualifier>
+              <phys>
+                <dbobject>SysVar_BEGIN_OF_OBJECT|1|GeneratedKey|DiagTestUnit|-1|0|END_OF_OBJECT_SysVar|</dbobject>
+              </phys>
+            </diagparam>
+          </diagrequest>
+          <diagresponse>
+            <primitive>DiaObj_BEGIN_OF_OBJECT|3|3|ECM|SecurityAccess|KeyLevel1_Send|SA_SK_PR||1||CommonDiagnostics|END_OF_OBJECT_DiaObj|</primitive>
+          </diagresponse>
+        </diagservice>
+      </function_definition>
+    </function_definitions>
+  </ttlib>
+</ttroot>

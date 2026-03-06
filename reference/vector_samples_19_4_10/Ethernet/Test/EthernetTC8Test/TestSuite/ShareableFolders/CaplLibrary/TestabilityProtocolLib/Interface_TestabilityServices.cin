@@ -1,0 +1,678 @@
+/*@!Encoding:1252*/
+/***************************************************************************************
+ * Demo- and Example-Programs
+ *
+ * Please note: The demo and example programs only show special aspects of the software.
+ * With regard to the fact that these programs are meant for demonstration purposes only,
+ * Vector Informatik's liability shall be expressly excluded in cases of ordinary
+ * negligence, to the extent admissible by law or statute.
+ *
+ * Beta-Version
+ *
+ * These programs are fully operative programs. However, they are not thoroughly tested
+ * yet (beta-version). With regard to the fact that the programs are a beta-version only,
+ * Vector Informatik's liability shall be expressly excluded in cases of ordinary
+ * negligence, to the extent admissible by law or statute.
+ *
+ * DESCRIPTION:
+ *
+ * Demo test implementation of the 'OPEN Alliance Automotive Ethernet ECU Test
+ * Specification - TC8 ECU Test' (Document Version 2.0, August 23, 2017)
+ *
+ * Copyright (c) Vector Informatik GmbH. All rights reserved.
+ ***************************************************************************************/
+
+includes
+{
+  #include "Internal_TestabilityUtils.cin"
+}
+
+variables
+{
+}
+
+/**
+ * Function to initialize the Testability Service Client (Tester)
+ */
+void InitTestabilityServiceClient(dword responseTimeoutMs)
+{
+  InternalInitTestabilityServiceClient(responseTimeoutMs);
+}
+
+/**
+ * Function to clean up the Testability Service Client (Tester)
+ */
+void CleanupTestabilityServiceClient()
+{
+  InternalCleanupTestabilityServiceClient();
+}
+
+/// <TestabilityServiceGeneral>
+/**
+ * Service Primitive GetVersion (General)
+ */
+enum TestabilityMessageResultIds SP_General_GetVersion()
+{
+  InternalResetTestabilityMessage();
+  
+  return InternalSendTestabilityRequest_WaitForResponse(kTestabilityGroupGeneral, kTestabilityGroupGeneralGetVersion);
+}
+
+/// <TestabilityServiceGeneral>
+/**
+ * Service Primitive StartTest (General)
+ */
+enum TestabilityMessageResultIds SP_General_StartTest()
+{
+  InternalResetTestabilityMessage();
+  return InternalSendTestabilityRequest_WaitForResponse(kTestabilityGroupGeneral, kTestabilityGroupGeneralStartTest);
+}
+
+/// <TestabilityServiceGeneral>
+/**
+ * Service Primitive End Test (General)
+ */
+enum TestabilityMessageResultIds SP_General_EndTest(word tcId, char tsName[])
+{
+  InternalResetTestabilityMessage();
+  
+  InternalAddParamInt(tcId);
+  InternalAddParamText(tsName);
+  
+  return InternalSendTestabilityRequest_WaitForResponse(kTestabilityGroupGeneral, kTestabilityGroupGeneralEndTest);
+}
+
+/// <TestabilityServiceForUDP>
+/**
+ * Service Primitive Create And Bind (UDP)
+ */
+enum TestabilityMessageResultIds SP_Udp_CreateAndBind(byte doBind, word localPort, ip_Address localIpAddress)
+{
+  InternalResetTestabilityMessage();
+  
+  InternalAddParamBool(doBind);
+  InternalAddParamInt(localPort);
+  
+  InternalAddParamIp(localIpAddress);
+  
+  return InternalSendTestabilityRequest_WaitForResponse(kTestabilityGroupUDP, kTestabilityGroupUDPCreateAndBind);
+}
+
+/// <TestabilityServiceForUDP>
+/**
+ * Service Primitive Close Socket (UDP)
+ */
+enum TestabilityMessageResultIds SP_Udp_CloseSocket(word socketHandle)
+{
+  InternalResetTestabilityMessage();
+  
+  InternalAddParamInt(socketHandle);
+  
+  return InternalSendTestabilityRequest_WaitForResponse(kTestabilityGroupUDP, kTestabilityGroupUDPCloseSocket);
+}
+
+/// <TestabilityServiceForUDP>
+/**
+ * Service Primitive Send Data (UDP)
+ */
+enum TestabilityMessageResultIds SP_Udp_SendData_DontWaitForResponse(word socketHandle, word dataLength, word destPort, ip_Address destIpAddress, char data[])
+{
+  InternalResetTestabilityMessage();
+  
+  InternalAddParamInt(socketHandle);
+  InternalAddParamInt(dataLength);
+  InternalAddParamInt(destPort);
+  
+  InternalAddParamIp(destIpAddress);
+  InternalAddParamVarLength(data);
+  
+  return InternalSendTestabilityRequest_DontWaitForResponse(kTestabilityGroupUDP, kTestabilityGroupUDPSendData);
+}
+
+/// <TestabilityServiceForUDP>
+/**
+ * Service Primitive Receive and Forward (UDP)
+ */
+enum TestabilityMessageResultIds SP_Udp_ReceiveAndForward(word socketHandle, word maxFwd, word maxLen)
+{
+  InternalResetTestabilityMessage();
+  
+  InternalAddParamInt(socketHandle);
+  InternalAddParamInt(maxFwd);
+  InternalAddParamInt(maxLen);
+  
+  return InternalSendTestabilityRequest_WaitForResponse(kTestabilityGroupUDP, kTestabilityGroupUDPReceiveAndFwd);
+}
+
+/// <TestabilityServiceForUDP>
+/**
+ * Service Primitive Configure Socket (UDP)
+ */
+enum TestabilityMessageResultIds SP_Udp_ConfigureSocket(word socketHandle, word paramId, byte data[], word length)
+{
+  InternalResetTestabilityMessage();
+  
+  InternalAddParamInt(socketHandle);
+  InternalAddParamInt(paramId);
+  InternalAddParamVarLength(length, data);
+  
+  return InternalSendTestabilityRequest_WaitForResponse(kTestabilityGroupUDP, kTestabilityGroupUDPConfigureSocket);
+}
+
+/// <TestabilityServiceForUDP>
+/**
+ * Service Primitive Shutdown (UDP)
+ */
+enum TestabilityMessageResultIds SP_Udp_Shutdown(word socketHandle, byte typeId)
+{
+  InternalResetTestabilityMessage();
+  
+  InternalAddParamInt(socketHandle);
+  InternalAddParamInt(typeId);
+  
+  return InternalSendTestabilityRequest_WaitForResponse(kTestabilityGroupUDP, kTestabilityGroupUDPShutdown);
+}
+
+/// <TestabilityServiceForTCP>
+/**
+ * Service Primitive Create And Bind (TCP)
+ */
+enum TestabilityMessageResultIds SP_Tcp_CreateAndBind(byte doBind, word localPort, ip_Address localIpAddress)
+{
+  InternalResetTestabilityMessage();
+  
+  InternalAddParamBool(doBind);
+  InternalAddParamInt(localPort);
+
+  InternalAddParamIp(localIpAddress);
+  
+  return InternalSendTestabilityRequest_WaitForResponse(kTestabilityGroupTCP, kTestabilityGroupTCPCreateAndBind);
+}
+
+/// <TestabilityServiceForTCP>
+/**
+ * Service Primitive Connect (TCP)
+ */
+enum TestabilityMessageResultIds SP_Tcp_Connect(word socketHandle, word dstPort, ip_Address dstIpAddress, byte awaitResponse)
+{
+  InternalResetTestabilityMessage();
+  
+  InternalAddParamInt(socketHandle);
+  InternalAddParamInt(dstPort);
+  
+  InternalAddParamIp(dstIpAddress);
+  
+  if(awaitResponse)
+    return InternalSendTestabilityRequest_WaitForResponse(kTestabilityGroupTCP, kTestabilityGroupTCPConnect);
+  else
+    return InternalSendTestabilityRequest_DontWaitForResponse(kTestabilityGroupTCP, kTestabilityGroupTCPConnect);
+}
+
+/// <TestabilityServiceForTCP>
+/**
+ * Service Listen and Accept (TCP)
+ */
+enum TestabilityMessageResultIds SP_Tcp_Listen_and_Accept(word socketHandle, word maxCon)
+{
+  InternalResetTestabilityMessage();
+  
+  InternalAddParamInt(socketHandle);
+  InternalAddParamInt(maxCon);
+  
+  return InternalSendTestabilityRequest_WaitForResponse(kTestabilityGroupTCP, kTestabilityGroupTCPListenAndAccept);
+}
+
+/// <TestabilityServiceForTCP>
+/**
+ * Service Primitive Close Socket (TCP)
+ */
+enum TestabilityMessageResultIds SP_Tcp_CloseSocket(word socketHandle, byte abort, byte awaitResponse)
+{
+  InternalResetTestabilityMessage();
+  
+  InternalAddParamInt(socketHandle);
+  InternalAddParamBool(abort);
+  
+  if(awaitResponse)
+    return InternalSendTestabilityRequest_WaitForResponse(kTestabilityGroupTCP, kTestabilityGroupTCPCloseSocket);
+  else
+    return InternalSendTestabilityRequest_DontWaitForResponse(kTestabilityGroupTCP, kTestabilityGroupTCPCloseSocket);
+}
+
+/// <TestabilityServiceForTCP>
+/**
+ * Service Primitive Send Data (TCP)
+ */
+enum TestabilityMessageResultIds SP_Tcp_SendData(word socketHandle, word dataLength, char data[], byte flags, byte awaitResponse)
+{
+  InternalResetTestabilityMessage();
+  
+  InternalAddParamInt(socketHandle);
+  InternalAddParamInt(dataLength);
+  
+  InternalAddParamInt(flags);  
+  InternalAddParamVarLength(data);
+  
+  if(awaitResponse)
+    return InternalSendTestabilityRequest_WaitForResponse(kTestabilityGroupTCP, kTestabilityGroupTCPSendData);
+  else
+    return InternalSendTestabilityRequest_DontWaitForResponse(kTestabilityGroupTCP, kTestabilityGroupTCPSendData);
+}
+
+/// <TestabilityServiceForTCP>
+/**
+ * Service Primitive Receive and Forward (TCP)
+ */
+enum TestabilityMessageResultIds SP_Tcp_ReceiveAndForward(word socketHandle, word maxFwd, word maxLen)
+{
+  InternalResetTestabilityMessage();
+  
+  InternalAddParamInt(socketHandle);
+  InternalAddParamInt(maxFwd);
+  InternalAddParamInt(maxLen);
+  
+  return InternalSendTestabilityRequest_WaitForResponse(kTestabilityGroupTCP, kTestabilityGroupTCPReceiveAndFwd);
+}
+
+/// <TestabilityServiceForTCP>
+/**
+ * Service Primitive Configure Socket (TCP)
+ */
+enum TestabilityMessageResultIds SP_Tcp_ConfigureSocket(word socketHandle, word paramId, byte data[], word dataLength)
+{
+  InternalResetTestabilityMessage();
+  
+  InternalAddParamInt(socketHandle);
+  InternalAddParamInt(paramId);
+  InternalAddParamVarLength(dataLength, data);
+  
+  return InternalSendTestabilityRequest_WaitForResponse(kTestabilityGroupTCP, kTestabilityGroupTCPConfigureSocket);
+}
+
+/// <TestabilityServiceForTCP>
+/**
+ * Service Primitive Shutdown (TCP)
+ */
+enum TestabilityMessageResultIds SP_Tcp_Shutdown(word socketHandle, byte typeId)
+{
+  InternalResetTestabilityMessage();
+  
+  InternalAddParamInt(socketHandle);
+  InternalAddParamInt(typeId);
+  
+  return InternalSendTestabilityRequest_WaitForResponse(kTestabilityGroupTCP, kTestabilityGroupTCPShutdown);
+}
+
+/// <TestabilityServiceForARP>
+/**
+ * Service Primitive Clear Arp Table (ARP)
+ */
+enum TestabilityMessageResultIds SP_Arp_ClearArpTable()
+{
+  InternalResetTestabilityMessage();
+  testStep("SP_Arp_ClearArpTable","Clear Arp Table (ARP) with PID=0xFF.");
+  return InternalSendTestabilityRequest_WaitForResponse(kTestabilityGroupARP, kTestabilityGroupARPClearArpTable);
+}
+
+/// <TestabilityServiceForARP>
+/**
+ * Service Primitive Add Static Arp Table Entry (ARP)
+ */
+enum TestabilityMessageResultIds SP_Arp_AddStaticArpTableEntry(dword ipAddr, qword macAddress)
+{
+  byte data[6];
+
+  InternalResetTestabilityMessage();
+
+  // Set IP address
+  InternalAddParamVarLength(swapDWord(ipAddr));
+
+  // Set MAC address
+  data[5] = (macAddress >> 40) & 0xFF;
+  data[4] = (macAddress >> 32) & 0xFF;
+  data[3] = (macAddress >> 24) & 0xFF;
+  data[2] = (macAddress >> 16) & 0xFF;
+  data[1] = (macAddress >> 8)  & 0xFF;
+  data[0] =  macAddress        & 0xFF;
+  InternalAddParamVarLength(elcount(data),data);
+  testStep("SP_Arp_AddStaticArpTableEntry","Add Static Arp Table Entry (ARP) with PID=0xFD.");
+  return InternalSendTestabilityRequest_WaitForResponse(kTestabilityGroupARP, kTestabilityGroupARPAddStaticEntry);
+}
+/// <TestabilityServiceForARP>
+/**
+ * Service Primitive Delete Static Arp Table Entry (ARP)
+ */
+enum TestabilityMessageResultIds SP_Arp_DeleteStaticArpTableEntry(dword ipAddr, qword macAddress)
+{
+  byte data[6];
+
+  InternalResetTestabilityMessage();
+
+  // Set IP address
+  InternalAddParamVarLength(swapDWord(ipAddr));
+
+  // Set MAC address
+  data[5] = (macAddress >> 40) & 0xFF;
+  data[4] = (macAddress >> 32) & 0xFF;
+  data[3] = (macAddress >> 24) & 0xFF;
+  data[2] = (macAddress >> 16) & 0xFF;
+  data[1] = (macAddress >> 8)  & 0xFF;
+  data[0] =  macAddress        & 0xFF;
+  InternalAddParamVarLength(elcount(data),data);
+  testStep("SP_Arp_DeleteStaticArpTableEntry","Delete Static Arp Table Entry (ARP) with PID=0xFC.");
+  return InternalSendTestabilityRequest_WaitForResponse(kTestabilityGroupARP, kTestabilityGroupARPDeleteStaticEntry);
+}
+
+/// <TestabilityServiceForARP>
+/**
+ * Service Primitive Set Timeout for Dynamic Arp Table Entry (ARP)
+ */
+enum TestabilityMessageResultIds SP_Arp_SetTimeoutForDynamicArpTableEntry(dword timeout)
+{
+  InternalResetTestabilityMessage();
+
+  // Set timeout
+  InternalAddParamVarLength(timeout);
+
+  testStep("SP_Arp_SetTimeoutForDynamicArpTableEntry","Set Timeout for Dynamic Arp Table Entry (ARP) with PID=0xFB.");
+  return InternalSendTestabilityRequest_WaitForResponse(kTestabilityGroupARP, kTestabilityGroupARPSetTimeOut);
+}
+
+/// <TestabilityServiceForARP>
+/**
+ * Service Primitive Clear Timeout for Dynamic Arp Table Entry (ARP)
+ */
+enum TestabilityMessageResultIds SP_Arp_ClearTimeoutForDynamicArpTableEntry()
+{
+  InternalResetTestabilityMessage();
+
+  testStep("SP_Arp_ClearTimeoutForDynamicArpTableEntry","Clear Timeout for Dynamic Arp Table Entry (ARP) with PID=0xFA.");
+  return InternalSendTestabilityRequest_WaitForResponse(kTestabilityGroupARP, kTestabilityGroupARPClearTimeOut);
+}
+
+/// <TestabilityServiceForICMPv4>
+/**
+ * Service Primitive Echo Request (ICMPv4)
+ */
+enum TestabilityMessageResultIds SP_Icmp_EchoRequest_DontWaitForResponse(char ifName[], dword ipAddr, byte data[], word dataLen)
+{
+  InternalResetTestabilityMessage();
+
+  // Set ifName
+  InternalAddParamText(ifName);
+  // Set IP address
+  InternalAddParamVarLength(swapDWord(ipAddr));
+  // Set data
+  InternalAddParamVarLength(dataLen, data);
+
+  return InternalSendTestabilityRequest_DontWaitForResponse(kTestabilityGroupICMP, kTestabilityGroupICMPv4EchoRequest);
+}
+
+/// <TestabilityServiceForICMPv6>
+/**
+ * Service Primitive Echo Request (ICMPv6)
+ */
+enum TestabilityMessageResultIds SP_Icmpv6_EchoRequest(char ifName[], ip_Address ipAddr, byte data[], word dataLen)
+{
+  InternalResetTestabilityMessage();
+
+  InternalAddParamText(ifName);
+  InternalAddParamIp(ipAddr);
+  InternalAddParamVarLength(dataLen, data);
+
+  return InternalSendTestabilityRequest_WaitForResponse(kTestabilityGroupICMPv6, kTestabilityGroupICMPv6EchoRequest);
+}
+
+/// <TestabilityServiceForIPv4>
+/**
+ * Service Primitive Static Address (IPv4)
+ */
+enum TestabilityMessageResultIds SP_Ipv4_StaticAddress(char ifName[], ip_Address ipAddr, byte netMask)
+{
+  InternalResetTestabilityMessage();
+
+  InternalAddParamText(ifName);
+  InternalAddParamIp(ipAddr);
+  InternalAddParamInt(netMask);
+
+  return InternalSendTestabilityRequest_WaitForResponse(kTestabilityGroupIP, kTestabilityGroupIPv4StaticAddress);
+}
+
+/// <TestabilityServiceForIPv4>
+/**
+ * Service Primitive Static Route (IPv4)
+ */
+enum TestabilityMessageResultIds SP_Ipv4_StaticRoute(char ifName[], ip_Address subNet, byte netMask, ip_Address gateway)
+{
+  InternalResetTestabilityMessage();
+
+  InternalAddParamText(ifName);
+  InternalAddParamIp(subNet);
+  InternalAddParamInt(netMask);
+  InternalAddParamIp(gateway);
+
+  return InternalSendTestabilityRequest_WaitForResponse(kTestabilityGroupIP, kTestabilityGroupIPv4StaticRoute);
+}
+
+/// <TestabilityServiceForIPv6>
+/**
+ * Service Primitive Static Address (IPv6)
+ */
+enum TestabilityMessageResultIds SP_Ipv6_StaticAddress(char ifName[], ip_Address ipAddr, byte netMask)
+{
+  InternalResetTestabilityMessage();
+
+  InternalAddParamText(ifName);
+  InternalAddParamIp(ipAddr);
+  InternalAddParamInt(netMask);
+
+  return InternalSendTestabilityRequest_WaitForResponse(kTestabilityGroupIPv6, kTestabilityGroupIPv6StaticAddress);
+}
+
+/// <TestabilityServiceForIPv6>
+/**
+ * Service Primitive Static Route (IPv6)
+ */
+enum TestabilityMessageResultIds SP_Ipv6_StaticRoute(char ifName[], ip_Address subNet, byte netMask, ip_Address gateway)
+{
+  InternalResetTestabilityMessage();
+
+  InternalAddParamText(ifName);
+  InternalAddParamIp(subNet);
+  InternalAddParamInt(netMask);
+  InternalAddParamIp(gateway);
+
+  return InternalSendTestabilityRequest_WaitForResponse(kTestabilityGroupIPv6, kTestabilityGroupIPv6StaticRoute);
+}
+
+/// <TestabilityServiceForTCP>
+/**
+ * Service Primitive get state (TCP)
+ */
+enum TestabilityMessageResultIds SP_Tcp_GetState(word socketHandle)
+{
+  InternalResetTestabilityMessage();
+  
+  InternalAddParamInt(socketHandle);
+  
+  return InternalSendTestabilityRequest_WaitForResponse(kTestabilityGroupTCP, kTestabilityGroupTCPGetState);
+}
+
+/// <TestabilityServiceForICMPv4>
+/**
+ * Service Primitive ICMP receive and forward (ICMPv4)
+ */
+enum TestabilityMessageResultIds SP_ICMP_ReceiveAndForward(word wMaxFwd, word wMaxLen)
+{
+  
+  
+  InternalResetTestabilityMessage();
+
+  // Set wMaxFwd
+  InternalAddParamInt(wMaxFwd);
+  // Set wMaxLen
+  InternalAddParamInt(wMaxLen);
+
+  return InternalSendTestabilityRequest_WaitForResponse(kTestabilityGroupICMP, kTestabilityGroupICMPv4ReceiveAndFwd);
+}
+
+/// <TestabilityServiceForSOMEIP>
+/**
+ * Service Primitive Start Service (SOMEIP)
+ */
+enum TestabilityMessageResultIds SP_SomeIp_Start_Service(word wServiceID, word wNumberOfInst)
+{
+  InternalResetTestabilityMessage();
+  
+  InternalAddParamInt(wServiceID);
+  InternalAddParamInt(wNumberOfInst);
+    
+  return InternalSendTestabilityRequest_WaitForResponse(kTestabilityGroupSOMEIP, kTestabilityGroupSOMEIPStartService);
+}
+
+/// <TestabilityServiceForSOMEIP>
+/**
+ * Service Primitive Start Service (SOMEIP)
+ */
+enum TestabilityMessageResultIds SP_SomeIp_Start_Service(word wServiceID, word wNumberOfInst, dword dwCycle, dword dwTTL)
+{
+  InternalResetTestabilityMessage();
+  
+  InternalAddParamInt(wServiceID);   //Service ID
+  InternalAddParamInt(wNumberOfInst); //Number of Instance
+  InternalAddParamInt(dwCycle);       //SD cyclic offer delay
+  InternalAddParamInt(dwTTL);         //SD time to live
+    
+  return InternalSendTestabilityRequest_WaitForResponse(kTestabilityGroupSOMEIP, kTestabilityGroupSOMEIPStartService);
+}
+
+/// <TestabilityServiceForSOMEIP>
+/**
+ * Service Primitive Stop Service (SOMEIP)
+ */
+enum TestabilityMessageResultIds SP_SomeIp_Stop_Service_DontWaitForResponse(word wServiceID)
+{
+  InternalResetTestabilityMessage();
+  
+  InternalAddParamInt(wServiceID);
+    
+  return InternalSendTestabilityRequest_DontWaitForResponse(kTestabilityGroupSOMEIP, kTestabilityGroupSOMEIPStopService);
+}
+
+/// <TestabilityServiceForSOMEIP>
+/**
+ * Service Primitive Start Service (SOMEIP)
+ */
+enum TestabilityMessageResultIds SP_SomeIp_Trigger_Event(word wServiceID, word wEventGID, word wEventID)
+{
+  InternalResetTestabilityMessage();
+  
+  InternalAddParamInt(wServiceID);   //Service ID
+  InternalAddParamInt(wEventGID);    //Event group ID
+  InternalAddParamInt(wEventID);     //Event ID
+    
+  return InternalSendTestabilityRequest_WaitForResponse(kTestabilityGroupSOMEIP, kTestabilityGroupSOMEIPTriggerEvent);
+}
+
+/// <TestabilityServiceForDHCPv4>
+/**
+ * Service Primitive init dhcp client (DHCP)
+ */
+enum TestabilityMessageResultIds SP_Dhcp_Init_Client(char ifName[])
+{
+  InternalResetTestabilityMessage();
+  InternalAddParamText(ifName);
+  return InternalSendTestabilityRequest_WaitForResponse(kTestabilityGroupDHCP, kTestabilityGroupDhcpInitialiazeClient);
+}
+
+/// <TestabilityServiceForDHCPv4>
+/**
+ * Service Primitive stop dhcp client (DHCP)
+ */
+enum TestabilityMessageResultIds SP_Dhcp_Stop_Client(char ifName[])
+{
+  InternalResetTestabilityMessage();
+  InternalAddParamText(ifName);
+  return InternalSendTestabilityRequest_WaitForResponse(kTestabilityGroupDHCP, kTestabilityGroupDhcpStopClient);
+}
+
+/// <TestabilityServiceForDHCPv4>
+/**
+ * Service Primitive set dhcp option (DHCP)
+ */
+enum TestabilityMessageResultIds SP_Dhcp_Set_Option(char ifName[], byte code, word valueLen, byte value[])
+{
+  InternalResetTestabilityMessage();
+  InternalAddParamText(ifName);
+  InternalAddParamInt(code);
+  InternalAddParamVarLength(valueLen, value);
+  return InternalSendTestabilityRequest_WaitForResponse(kTestabilityGroupDHCP, kTestabilityGroupDhcpSetOption);
+}
+
+/// <TestabilityServiceForETH>
+/**
+ * Service Primitive Interface Up (ETH)
+ */
+enum TestabilityMessageResultIds SP_Eth_InterfaceUp(char ifName[])
+{
+  InternalResetTestabilityMessage();
+  InternalAddParamText(ifName);
+  return InternalSendTestabilityRequest_WaitForResponse(kTestabilityGroupETH, kTestabilityGroupEthInterfaceUp);
+}
+
+/// <TestabilityServiceForETH>
+/**
+ * Service Primitive Interface Down (ETH)
+ */
+enum TestabilityMessageResultIds SP_Eth_InterfaceDown_DontWaitForResponse(char ifName[])
+{
+  InternalResetTestabilityMessage();
+  InternalAddParamText(ifName);
+  return InternalSendTestabilityRequest_DontWaitForResponse(kTestabilityGroupETH, kTestabilityGroupEthInterfaceDown);
+}
+
+/// <TestabilityServiceForPHY>
+/**
+ * Service Primitive Read Signal Quality (PHY)
+ */
+enum TestabilityMessageResultIds SP_Phy_ReadSignalQuality(char ifName[])
+{
+  InternalResetTestabilityMessage();
+  InternalAddParamText(ifName);
+  return InternalSendTestabilityRequest_WaitForResponse(kTestabilityGroupPHY, kTestabilityGroupPhyReadSignalQuality);
+}
+
+/// <TestabilityServiceForPHY>
+/**
+ * Service Primitive Read Cable Diagnostics Result (PHY)
+ */
+enum TestabilityMessageResultIds SP_Phy_ReadCableDiagnosticsResult(char ifName[])
+{
+  InternalResetTestabilityMessage();
+  InternalAddParamText(ifName);
+  return InternalSendTestabilityRequest_WaitForResponse(kTestabilityGroupPHY, kTestabilityGroupPhyReadDiagResult);
+}
+
+/// <TestabilityServiceForPHY>
+/**
+ * Service Primitive Activate PHY Test Mode (PHY)
+ */
+enum TestabilityMessageResultIds SP_Phy_ActivatePhyTestMode(char ifName[], byte testMode)
+{
+  InternalResetTestabilityMessage();
+  InternalAddParamText(ifName);
+  InternalAddParamInt(testMode);
+  return InternalSendTestabilityRequest_WaitForResponse(kTestabilityGroupPHY, kTestabilityGroupPhyActivateTestMode);
+}
+
+/// <TestabilityServiceForPHY>
+/**
+ * Service Primitive Set PHY Tx Mode (PHY)
+ */
+enum TestabilityMessageResultIds SP_Phy_SetPhyTxMode(char ifName[], byte txMode)
+{
+  InternalResetTestabilityMessage();
+  InternalAddParamText(ifName);
+  InternalAddParamInt(txMode);
+  return InternalSendTestabilityRequest_WaitForResponse(kTestabilityGroupPHY, kTestabilityGroupPhySetPhyTxMode);
+}

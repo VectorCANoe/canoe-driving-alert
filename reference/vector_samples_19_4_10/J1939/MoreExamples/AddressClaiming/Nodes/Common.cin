@@ -1,0 +1,42 @@
+/*@!Encoding:1252*/
+
+variables
+{
+  const int SinkTraceWindow = -3;
+  const int SinkWriteWindowCAPL = 1;
+  const byte AddressNull = 254;
+  
+  enum Severity
+  {
+    SeveritySuccess,
+    SeverityInformation,
+    SeverityWarning,
+    SeverityError
+  };
+  
+  enum AddressClaimSupport
+  {
+    NoAddressClaimSupport        = 0,
+    BasicAddressClaimSupport     = 1,
+    ExtendedAddressClaimSupport  = 2
+  };
+}
+
+void ReportAddressClaimConflict(char nodeName[], dword addressArbitrationIsLost, dword newAddress)
+{
+  if (addressArbitrationIsLost)
+  {
+    if (newAddress < AddressNull)
+    {
+      writeEx(SinkWriteWindowCAPL, SeverityWarning, "\n%s loses address arbitration and claims address %u", nodeName, newAddress);
+    }
+    else
+    {
+      writeEx(SinkWriteWindowCAPL, SeverityWarning, "\n%s loses address arbitration", nodeName);
+    }
+  }
+  else
+  {
+    writeEx(SinkWriteWindowCAPL, SeverityWarning, "\n%s wins address arbitration", nodeName);    
+  }
+}

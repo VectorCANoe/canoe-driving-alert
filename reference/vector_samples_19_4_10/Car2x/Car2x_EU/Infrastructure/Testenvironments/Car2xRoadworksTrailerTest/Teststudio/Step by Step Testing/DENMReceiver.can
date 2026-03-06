@@ -1,0 +1,72 @@
+/*@!Encoding:1252*/
+includes
+{
+  
+}
+
+variables
+{
+  char rwwTesterName[11] = "DuT";
+}
+
+on preStart
+{
+  enum CallbackType { OnRx };
+  C2xRegisterCallback(OnRx,  "OnRxDENM",    "DENM");
+}
+
+// Callback function on receiving DENM messages
+void OnRxDENM(long channel, long dir, long radioChannel, long signalStrength, long signalQuality, long packet)
+{
+  long stationHandle;
+  char stationName[100];
+  char buffer[100];
+  char trafficFlowRule[100];
+  long trafficFlowValue;
+  char expectedTrafficFlowRule[100];
+  
+  stationHandle = C2xGetStationHandle(packet);
+  C2xGetStationName(stationHandle, elcount(stationName), stationName);
+  if (strncmp(stationName, rwwTesterName, elcount(rwwTesterName) + 1) == 0)
+  {
+    if (@RWW_Usecases::RunTests == 1)
+    {
+      sysGetVariableDescriptionForValue("RWW_Configuration", "Expected_TrafficFlow", @RWW_Configuration::Expected_TrafficFlow, expectedTrafficFlowRule, elcount(expectedTrafficFlowRule));
+      if (C2xIsTokenAvailable(packet, "DENM", "denm.alacarte.roadWorks.trafficFlowRule"))
+      {
+        trafficFlowValue = C2xGetTokenInt64(packet, "DENM", "denm.alacarte.roadWorks.trafficFlowRule");
+        if (trafficFlowValue != @RWW_Configuration::Expected_TrafficFlow)
+        {
+          @RWW_Usecases::LaneInfoError += 1;
+          sysGetVariableDescriptionForValue("RSU_RoadWorksWarning", "TrafficFlowRule", trafficFlowValue, trafficFlowRule, elcount(trafficFlowRule));
+          snprintf(buffer,elcount(buffer), "TrafficFlowRule should be %i(%s), but is %i(%s)", @RWW_Configuration::Expected_TrafficFlow, expectedTrafficFlowRule, trafficFlowValue, trafficFlowRule);
+          C2xReportProtocolViolation(stationHandle, 0, "RWW|DENM|CustomRules|RWW-LC", 61002, "Wrong TrafficFlowRule", "Wrong TrafficFlowRule", buffer);     
+        }
+      }
+      
+      @RSU_RoadWorksWarning::SubCauseCode = C2xGetTokenInt64(packet, "DENM", "denm.situation.eventType.subCauseCode");
+      if (@RWW_Configuration::RWW_Usecase == 0)
+      {
+        if (@RSU_RoadWorksWarning::SubCauseCode != 0 && @RSU_RoadWorksWarning::SubCauseCode != 4)
+        {
+          @RWW_Usecases::SubCCError += 1; 
+        }
+      }
+      else if (@RWW_Configuration::RWW_Usecase == 1)
+      {
+        if (@RSU_RoadWorksWarning::SubCauseCode != 1)
+        {
+          @RWW_Usecases::SubCCError += 1; 
+        }
+      }
+      else if (@RWW_Configuration::RWW_Usecase == 2)
+      {
+        if (@RSU_RoadWorksWarning::SubCauseCode != 0 && @RSU_RoadWorksWarning::SubCauseCode != 3)
+        {
+          @RWW_Usecases::SubCCError += 1;
+        }
+      }
+    }
+  }
+}
+

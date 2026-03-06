@@ -1,0 +1,105 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Panel Type="Vector.CANalyzer.Panels.PanelSerializer, Vector.CANalyzer.Panels.Serializer, Version=19.3.27.0, Culture=neutral, PublicKeyToken=null">
+  <Object Type="Vector.CANalyzer.Panels.Runtime.Panel, Vector.CANalyzer.Panels.Common, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Panel" ControlName="J2602-2012 Wake-up Transmission (IUT Simulation)">
+    <Object Type="Vector.CANalyzer.Panels.Design.GroupBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X521c44c8ec27fe439beacb0e1e4bc75551aa" ControlName="Group Box 1">
+      <Object Type="Vector.CANalyzer.Panels.Design.NumericUpDownControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X2b6c7a34ee3a6e4276ea6b3eddfccbdd9359" ControlName="Numeric Up/Down 2">
+        <Property Name="Name">X2b6c7a34ee3a6e4276ea6b3eddfccbdd9359</Property>
+        <Property Name="Size">96, 18</Property>
+        <Property Name="Location">263, 72</Property>
+        <Property Name="Minimum">140</Property>
+        <Property Name="Maximum">310</Property>
+        <Property Name="TabIndex">6</Property>
+        <Property Name="SymbolConfiguration">8;16;LINConformanceTestDemoVariables_Channel1;;;WakeupRetrDelay;1;;;-1;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.NumericUpDownControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X93c7e367e3460e4235e908fec596d33f735a" ControlName="Numeric Up/Down 5">
+        <Property Name="Name">X93c7e367e3460e4235e908fec596d33f735a</Property>
+        <Property Name="Size">96, 18</Property>
+        <Property Name="Location">263, 101</Property>
+        <Property Name="Minimum">1</Property>
+        <Property Name="Maximum">3</Property>
+        <Property Name="TabIndex">5</Property>
+        <Property Name="SymbolConfiguration">8;16;LINConformanceTestDemoVariables_Channel1;;;WakeupSequences;1;;;-1;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xb7d1f580efbb8e4c48ebf52eeeadafe7018f" ControlName="Static Text 5">
+        <Property Name="Name">Xb7d1f580efbb8e4c48ebf52eeeadafe7018f</Property>
+        <Property Name="Size">152, 15</Property>
+        <Property Name="Location">5, 102</Property>
+        <Property Name="BackColor">White</Property>
+        <Property Name="Text">Sequences in one cycle [1-3]:</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.NumericUpDownControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X3fffd821ef38ae4b3ae90a2e34427b1c52dd" ControlName="Numeric Up/Down 4">
+        <Property Name="Name">X3fffd821ef38ae4b3ae90a2e34427b1c52dd</Property>
+        <Property Name="Size">96, 18</Property>
+        <Property Name="Location">263, 129</Property>
+        <Property Name="Minimum">1410</Property>
+        <Property Name="Maximum">3100</Property>
+        <Property Name="TabIndex">4</Property>
+        <Property Name="SymbolConfiguration">8;16;LINConformanceTestDemoVariables_Channel1;;;WakeupSequencesDelay;1;;;-1;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X31d003e2ebfd5e4311eb40cedbecc397696b" ControlName="Static Text 4">
+        <Property Name="Name">X31d003e2ebfd5e4311eb40cedbecc397696b</Property>
+        <Property Name="Size">222, 15</Property>
+        <Property Name="Location">5, 132</Property>
+        <Property Name="BackColor">White</Property>
+        <Property Name="Text">Delay between sequences [1400..3100] ms:</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X6bb00dd0e87a6e4107eaa07e55a0a5e99dcb" ControlName="Static Text 3">
+        <Property Name="Name">X6bb00dd0e87a6e4107eaa07e55a0a5e99dcb</Property>
+        <Property Name="Size">199, 15</Property>
+        <Property Name="Location">5, 74</Property>
+        <Property Name="BackColor">White</Property>
+        <Property Name="Text">Delay between requests [140..310] ms:</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xe8c95ea6e6fd7e41c9ea688e4ccf328eef09" ControlName="Static Text 2">
+        <Property Name="Name">Xe8c95ea6e6fd7e41c9ea688e4ccf328eef09</Property>
+        <Property Name="Size">148, 15</Property>
+        <Property Name="Location">5, 46</Property>
+        <Property Name="BackColor">White</Property>
+        <Property Name="Text">Requests in sequence [1..3]:</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.NumericUpDownControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X3dbadbb0ee8fae4cc0e9c53e8b5e7e197ddd" ControlName="Numeric Up/Down 3">
+        <Property Name="Name">X3dbadbb0ee8fae4cc0e9c53e8b5e7e197ddd</Property>
+        <Property Name="Size">96, 18</Property>
+        <Property Name="Location">263, 45</Property>
+        <Property Name="Minimum">1</Property>
+        <Property Name="Maximum">3</Property>
+        <Property Name="TabIndex">3</Property>
+        <Property Name="SymbolConfiguration">8;16;LINConformanceTestDemoVariables_Channel1;;;WakeupRequestsInSequence;1;;;-1;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X342f67eee4c44e415ae9caeeb4bc5875fd18" ControlName="Static Text 1">
+        <Property Name="Name">X342f67eee4c44e415ae9caeeb4bc5875fd18</Property>
+        <Property Name="Size">201, 15</Property>
+        <Property Name="Location">5, 18</Property>
+        <Property Name="BackColor">White</Property>
+        <Property Name="Text">Wake-up request length [250..5000] us:</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.NumericUpDownControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X10ea0116e425ce447aeb74fe5e8ec0b4e8dd" ControlName="Numeric Up/Down 1">
+        <Property Name="Name">X10ea0116e425ce447aeb74fe5e8ec0b4e8dd</Property>
+        <Property Name="Size">96, 18</Property>
+        <Property Name="Location">263, 16</Property>
+        <Property Name="Minimum">250</Property>
+        <Property Name="Maximum">5000</Property>
+        <Property Name="TabIndex">2</Property>
+        <Property Name="SymbolConfiguration">8;16;LINConformanceTestDemoVariables_Channel1;;;WakeupLength;1;;;-1;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.ButtonControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X782a8a95eda91e482fe88d7e0fa2cb44732d" ControlName="Button 1">
+        <Property Name="Name">X782a8a95eda91e482fe88d7e0fa2cb44732d</Property>
+        <Property Name="Size">147, 23</Property>
+        <Property Name="Location">112, 163</Property>
+        <Property Name="TabIndex">1</Property>
+        <Property Name="Text">Start Wake-up Sequence</Property>
+        <Property Name="SymbolConfiguration">8;16;LINConformanceTestDemoVariables_Channel1;;;SendWakeupSequencies;1;;;-1;;;Value;;;0</Property>
+      </Object>
+      <Property Name="Name">X521c44c8ec27fe439beacb0e1e4bc75551aa</Property>
+      <Property Name="Size">379, 194</Property>
+      <Property Name="Location">5, 5</Property>
+      <Property Name="Text">J2602-2012 Node Wakeup</Property>
+      <Property Name="TabIndex">14</Property>
+      <Property Name="UseWindowsStyle">False</Property>
+    </Object>
+    <Property Name="Name">Panel</Property>
+    <Property Name="Size">389, 203</Property>
+    <Property Name="Location">0, 0</Property>
+    <Property Name="BackColor">White</Property>
+  </Object>
+</Panel>

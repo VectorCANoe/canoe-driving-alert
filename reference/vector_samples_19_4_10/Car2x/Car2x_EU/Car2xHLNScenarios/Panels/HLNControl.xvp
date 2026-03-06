@@ -1,0 +1,142 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Panel Type="Vector.CANalyzer.Panels.PanelSerializer, Vector.CANalyzer.Panels.Serializer, Version=18.0.0.0, Culture=neutral, PublicKeyToken=null">
+  <Object Type="Vector.CANalyzer.Panels.Runtime.Panel, Vector.CANalyzer.Panels.Common, Version=18.0.0.0, Culture=neutral, PublicKeyToken=null" Name="Panel" ControlName="HLN Control Panel">
+    <Object Type="Vector.CANalyzer.Panels.Design.GroupBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.0.0, Culture=neutral, PublicKeyToken=null" Name="GroupBoxControl2" ControlName="EventHistoryBox">
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.0.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl3" ControlName="Static Text 3">
+        <Property Name="Name">StaticTextControl3</Property>
+        <Property Name="Size">321, 40</Property>
+        <Property Name="Location">5, 14</Property>
+        <Property Name="Text">Only valid for Linear Event! For positive values, the EventZone 
+is set downstream of the EventPosition. For negative values 
+upstream. </Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.0.0, Culture=neutral, PublicKeyToken=null" Name="TextBoxControl1" ControlName="Input/Output Box 1">
+        <Property Name="Name">TextBoxControl1</Property>
+        <Property Name="Size">229, 21</Property>
+        <Property Name="Location">36, 60</Property>
+        <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+        <Property Name="AlarmLowerBkgColor">Salmon</Property>
+        <Property Name="AlarmLowerTextColor">WindowText</Property>
+        <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+        <Property Name="AlarmUpperTextColor">WindowText</Property>
+        <Property Name="BoxBorderStyle">FixedSingle</Property>
+        <Property Name="DisplayLabel">Left</Property>
+        <Property Name="TabIndex">1</Property>
+        <Property Name="TabStopActive">False</Property>
+        <Property Name="DescriptionText">Max. Event Zone Length:</Property>
+        <Property Name="ValueDecimalPlaces">0</Property>
+        <Property Name="ValueDisplay">Decimal</Property>
+        <Property Name="UsedValueTable">PhysicalValue</Property>
+        <Property Name="DescriptionSize">130, 21</Property>
+        <Property Name="SymbolConfiguration">8;16;HLN_Ctrl;;;eventHistorySize;1;;;-1;;;Value;;;0</Property>
+      </Object>
+      <Property Name="Name">GroupBoxControl2</Property>
+      <Property Name="Size">332, 86</Property>
+      <Property Name="Location">2, 176</Property>
+      <Property Name="Font">Microsoft Sans Serif, 7.8pt, style=Bold</Property>
+      <Property Name="Text">Specify the approximate length of the EventZone</Property>
+      <Property Name="TabIndex">11</Property>
+      <Property Name="UseWindowsStyle">False</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.CheckBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.0.0, Culture=neutral, PublicKeyToken=null" Name="CheckBoxControl1" ControlName="Check Box 1">
+      <Property Name="Name">CheckBoxControl1</Property>
+      <Property Name="Size">119, 17</Property>
+      <Property Name="Location">7, 2</Property>
+      <Property Name="Text">Use custom values</Property>
+      <Property Name="TabIndex">3</Property>
+      <Property Name="SymbolConfiguration">8;16;HLN_Ctrl;;;overwriteValues;1;;;-1;;;Value;;;0</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.GroupBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.0.0, Culture=neutral, PublicKeyToken=null" Name="GroupBoxControl1" ControlName="CustomValuesGroup">
+      <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.0.0, Culture=neutral, PublicKeyToken=null" Name="TextBoxControl3" ControlName="Input/Output Box 3">
+        <Property Name="Name">TextBoxControl3</Property>
+        <Property Name="Size">155, 21</Property>
+        <Property Name="Location">64, 99</Property>
+        <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+        <Property Name="AlarmLowerBkgColor">Salmon</Property>
+        <Property Name="AlarmLowerTextColor">WindowText</Property>
+        <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+        <Property Name="AlarmUpperTextColor">WindowText</Property>
+        <Property Name="BoxBorderStyle">FixedSingle</Property>
+        <Property Name="DisplayLabel">Left</Property>
+        <Property Name="TabIndex">9</Property>
+        <Property Name="TabStopActive">False</Property>
+        <Property Name="DescriptionText">Information Quality:</Property>
+        <Property Name="ValueDecimalPlaces">0</Property>
+        <Property Name="ValueDisplay">Decimal</Property>
+        <Property Name="UsedValueTable">PhysicalValue</Property>
+        <Property Name="DescriptionSize">102, 21</Property>
+        <Property Name="SymbolConfiguration">8;16;HLN_Ctrl;;;informationQuality;1;;;-1;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.0.0, Culture=neutral, PublicKeyToken=null" Name="TextBoxControl2" ControlName="Input/Output Box 2">
+        <Property Name="Name">TextBoxControl2</Property>
+        <Property Name="Size">137, 21</Property>
+        <Property Name="Location">82, 125</Property>
+        <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+        <Property Name="AlarmLowerBkgColor">Salmon</Property>
+        <Property Name="AlarmLowerTextColor">WindowText</Property>
+        <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+        <Property Name="AlarmUpperTextColor">WindowText</Property>
+        <Property Name="BoxBorderStyle">FixedSingle</Property>
+        <Property Name="DisplayLabel">Left</Property>
+        <Property Name="TabIndex">8</Property>
+        <Property Name="TabStopActive">False</Property>
+        <Property Name="DescriptionText">Validy Duration:</Property>
+        <Property Name="ValueDecimalPlaces">0</Property>
+        <Property Name="ValueDisplay">Decimal</Property>
+        <Property Name="UsedValueTable">PhysicalValue</Property>
+        <Property Name="DescriptionSize">84, 21</Property>
+        <Property Name="SymbolConfiguration">8;16;HLN_Ctrl;;;validyDuration;1;;;-1;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.ComboBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.0.0, Culture=neutral, PublicKeyToken=null" Name="ComboBoxControl1" ControlName="Combo Box 1">
+        <Property Name="Name">ComboBoxControl1</Property>
+        <Property Name="Size">200, 21</Property>
+        <Property Name="Location">102, 18</Property>
+        <Property Name="DisplayLabel">Left</Property>
+        <Property Name="DescriptionSize">64, 21</Property>
+        <Property Name="TextBackColor">White</Property>
+        <Property Name="TabIndex">0</Property>
+        <Property Name="DescriptionText">Event Type:</Property>
+        <Property Name="UsedValueTable">PhysicalValue</Property>
+        <Property Name="SymbolConfiguration">8;16;HLN_Ctrl;;;eventHistory;1;;;-1;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.ComboBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.0.0, Culture=neutral, PublicKeyToken=null" Name="ComboBoxControl3" ControlName="RelevanceDist">
+        <Property Name="Name">ComboBoxControl3</Property>
+        <Property Name="Size">244, 21</Property>
+        <Property Name="Location">58, 45</Property>
+        <Property Name="DisplayLabel">Left</Property>
+        <Property Name="DescriptionSize">108, 21</Property>
+        <Property Name="TextBackColor">White</Property>
+        <Property Name="TabIndex">7</Property>
+        <Property Name="DescriptionText">Relevance Distance:</Property>
+        <Property Name="ShowValues">Decimal</Property>
+        <Property Name="UsedValueTable">PhysicalValue</Property>
+        <Property Name="SymbolConfiguration">8;16;HLN_Ctrl;;;relevanceDistance;1;;;-1;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.ComboBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.0.0, Culture=neutral, PublicKeyToken=null" Name="ComboBoxControl2" ControlName="TrafficDir">
+        <Property Name="Name">ComboBoxControl2</Property>
+        <Property Name="Size">279, 21</Property>
+        <Property Name="Location">23, 72</Property>
+        <Property Name="DisplayLabel">Left</Property>
+        <Property Name="DescriptionSize">143, 21</Property>
+        <Property Name="TextBackColor">White</Property>
+        <Property Name="TabIndex">6</Property>
+        <Property Name="DescriptionText">Relevance Traffic Direction:</Property>
+        <Property Name="ShowValues">Decimal</Property>
+        <Property Name="UsedValueTable">PhysicalValue</Property>
+        <Property Name="SymbolConfiguration">8;16;HLN_Ctrl;;;trafficDirection;1;;;-1;;;Value;;;0</Property>
+        <Property Name="DropDownWidth">135</Property>
+      </Object>
+      <Property Name="Name">GroupBoxControl1</Property>
+      <Property Name="Size">332, 150</Property>
+      <Property Name="Location">2, 23</Property>
+      <Property Name="Font">Microsoft Sans Serif, 7.8pt, style=Bold</Property>
+      <Property Name="Text">Specify custom DENM values</Property>
+      <Property Name="TabIndex">10</Property>
+      <Property Name="UseWindowsStyle">False</Property>
+    </Object>
+    <Property Name="Name">Panel</Property>
+    <Property Name="Size">337, 267</Property>
+    <Property Name="Location">0, 0</Property>
+    <Property Name="BackColor">White</Property>
+  </Object>
+</Panel>

@@ -1,0 +1,235 @@
+/*@!Encoding:1252*/
+includes
+{
+  
+}
+
+variables
+{
+  // Variables for calculation of step-time deviation
+  int64 stepTimeCount_ERT;
+  int64 stepTimeCount_RT;
+  int skipNextStepTime_RT = 0;
+  int skipNextStepTime_ERT = 0;
+  
+  // Variables for calculation of average CPU-load
+  const int queueSize = 10;
+  double cpuLoadQueue_ERT[queueSize];
+  double cpuLoadQueue_RT[queueSize];
+  msTimer cpuLoadCalcTimer;
+}
+
+on start
+{
+  InitQueue(cpuLoadQueue_ERT);
+  InitQueue(cpuLoadQueue_RT);
+  
+  ResetValues();
+}
+
+void ResetValues()
+{
+  stepTimeCount_ERT = 0;
+  stepTimeCount_RT = 0;
+  @CalculatedValues::MaxStepTimeDeviation_ERT = 0;
+  @CalculatedValues::MaxStepTimeDeviation_RT = 0;
+  @CalculatedValues::AvgStepTimeDeviation_ERT = 0;
+  @CalculatedValues::AvgStepTimeDeviation_RT = 0;
+}
+
+on sysvar DemoControl::EnableRtModel
+{
+  // After model reactivation the first step-time contains the difference to the last time the model was activated 
+  // and thus a huge number that we want to skip.
+  skipNextStepTime_RT = 1;
+}
+
+on sysvar DemoControl::EnableErtModel
+{
+  // After model reactivation the first step-time contains the difference to the last time the model was activated 
+  // and thus a huge number that we want to skip.
+  skipNextStepTime_ERT = 1;
+}
+
+on sysvar DemoControl::ModelCycleTimeUs
+{
+  // The reported step-time from RT and ERT is delayed to the reported @ModelCycleTimeUs, thus we skip a small number
+  // of step-times.
+  skipNextStepTime_RT = 10;
+  skipNextStepTime_ERT = 10;
+  
+  // RT models do not correctly work with cycle-times < 1 ms, thus we disable the RT model
+  if (@this < 1000)
+  {
+    @DemoControl::EnableRtModel = 0;
+  }
+}
+
+on sysvar DemoControl::ResetValues
+{
+  if (@this == 1)
+  {
+    ResetValues();
+  }
+}
+
+void InitQueue(double queue[])
+{
+  stack int i;
+  for (i = 0 ; i < queueSize ; i++) 
+  {
+    queue[i] = -1;
+  }
+}
+
+double AddToQueueAndReturnAvg(double queue[], double newValue)
+{ 
+  stack double sum = 0;
+  stack int count = 0;
+  stack int i;
+  
+  // Move all elements in the queue to next element -> removes oldest element
+  for (i = queueSize-1 ; i > 0 ; i--) 
+  {
+    if (queue[i-1] != -1) 
+    {
+      queue[i] = queue[i-1];
+      sum += queue[i];
+      count++;
+    }
+  }
+  
+  // Add 'newValue' as newest element to queue
+  queue[0] = newValue;
+  sum += newValue;
+  count++;
+  
+  // Return average of all elements in the queue
+  return sum / count;  
+}
+
+// ERT reports the CPU usage per CPU core, each stored in its own system variable. The number of CPU cores depends on 
+// the used VTP device. This function dynamically retrieves all CPUUsageCore-variables and calculates the total CPU
+// Usage.
+double GetCpuUsageTotalInErt()
+{
+  stack int i = 0;
+  stack double sum = 0;
+  stack int coreCount = 0;
+    
+  for (i = 1 ; i < 10 ; i++) 
+  {
+    stack char coreNumber[2];
+    stack char variableName[20];
+    double core;
+    long returnCode;
+    
+    ltoa(i, coreNumber, 10);
+    strncat(variableName, "CPUUsageCore", 20);   
+    strncat(variableName, coreNumber, 20);
+    
+    // Retrieves values for variables "CPUUsageCore1", "CPUUsageCore2", ...
+    returnCode = sysGetVariableFloat("CANoe::ExtendedRealTime", variableName, core);
+    if (returnCode != 0)
+    {
+      // Variable does not exist -> found all CPUUsageCore-variables
+      break;
+    }
+    sum += core;
+    coreCount++;
+  }
+  return sum / coreCount;
+}
+
+on timer cpuLoadCalcTimer 
+{
+  // The CPU load is calculated once per second by RT and ERT. Due to the used sampling these values fluctuate, thus
+  // we calculate the average over the last 10 seconds.
+  
+  double cpuLoadAvg;
+  double currentCpuLoad;
+    
+  currentCpuLoad = GetCpuUsageTotalInErt();    
+  cpuLoadAvg = AddToQueueAndReturnAvg(cpuLoadQueue_ERT, currentCpuLoad);
+  
+  @CalculatedValues::CpuLoad_ERT = cpuLoadAvg;
+}
+
+on sysvar CANoe::ExtendedRealTime::CPUUsageCore1
+{
+  // The "CPUUsageCoreX" variables are updated by ERT once a second and received by this CAPL program shortly one after
+  // another. The number of physical cores and thus the number of "CPUUsageCoreX" variables depends on the used VTP 
+  // device. The variable "CPUUsageCore1" always exists, thus we start the calculation of the CPU load shortly (= 1ms)
+  // after we received it.
+  cpuLoadCalcTimer.set(1);  
+}
+
+on sysvar CANoe::Simulation::CPUUsageTotal
+{
+  // The CPU load is calculated once per second by RT and ERT. Due to the used sampling these values fluctuate, thus
+  // we calculate the average over the last 10 seconds.
+  
+  double cpuLoadAvg;
+  
+  cpuLoadAvg = AddToQueueAndReturnAvg(cpuLoadQueue_RT, @this);
+  
+  @CalculatedValues::CpuLoad_RT = cpuLoadAvg;
+}
+
+// This function calculates the max and average of the step-time deviation for ERT
+on sysvar ErtModel::Performance::StepTime
+{
+  double diffStepTime;
+  
+  if (skipNextStepTime_ERT > 0) 
+  {
+    skipNextStepTime_ERT--;
+    return;
+  }
+    
+  
+  // We are interested in the deviation to the programmed cycle-time
+  diffStepTime = abs(@this - @DemoControl::ModelCycleTimeUs);
+  
+  // Update max value
+  if(diffStepTime > @sysvar::CalculatedValues::MaxStepTimeDeviation_ERT)
+  {
+    @sysvar::CalculatedValues::MaxStepTimeDeviation_ERT = diffStepTime;
+  }
+  
+  // Update avg value
+  stepTimeCount_ERT++;
+  @sysvar::CalculatedValues::AvgStepTimeDeviation_ERT += (diffStepTime - @sysvar::CalculatedValues::AvgStepTimeDeviation_ERT) / stepTimeCount_ERT;
+}
+  
+// This function calculates the max and average of the step-time deviation for RT
+on sysvar RtkModel::Performance::StepTime
+{
+  double diffStepTime;
+  
+  if (skipNextStepTime_RT > 0) 
+  {
+    skipNextStepTime_RT--;
+    return;
+  }
+    
+  
+  // We are interested in the deviation to the programmed cycle-time
+  diffStepTime = abs(@this - @DemoControl::ModelCycleTimeUs);
+  
+  // Update max value
+  if(diffStepTime > @sysvar::CalculatedValues::MaxStepTimeDeviation_RT)
+  {
+    @sysvar::CalculatedValues::MaxStepTimeDeviation_RT = diffStepTime;
+  }
+  
+  // Update avg value
+  stepTimeCount_RT++;
+  @sysvar::CalculatedValues::AvgStepTimeDeviation_RT += (diffStepTime - @sysvar::CalculatedValues::AvgStepTimeDeviation_RT) / stepTimeCount_RT;
+}
+
+// This CAPL node forwards all messages (i.e. no filtering is done)
+on message *
+{
+  output(this);
+}

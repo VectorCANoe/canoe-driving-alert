@@ -1,0 +1,1014 @@
+/*@!Encoding:1252*/
+includes
+{
+  #include "GBT_HW_Interface_EVSE.cin"
+}
+
+variables
+{
+  enum DelayTransition
+  {
+    k3k4_to_chm             = 11,
+    bhm_to_crmNotRecognized = 0,
+    brm_to_crmRecognized    = 1,
+    bcp_to_cml              = 2,
+    broReady_to_croNotReady = 3,
+    croNotReady_to_croReady = 4,
+    bcs_to_ccs              = 5,
+    bst_to_cst              = 6,
+    bsd_to_csd              = 7,
+    csd_to_end              = 8
+  };
+  
+  enum AllowedMissingTime
+  {
+    brm        = 0,
+    bcp        = 1,
+    broNotReady= 2,
+    broReady   = 3,
+    bcl        = 4,
+    bcs        = 5,
+    bst        = 6,
+    bsd        = 7
+  };
+  
+  enum PGN
+  {
+    kCRM = 0x100,
+    kBRM = 0x200,
+    kBCP = 0x600,
+    kCTS = 0x700,
+    kCML = 0x800,
+    kBRO = 0x900,
+    kCRO = 0xA00,
+    kBCL = 0x1000,
+    kBCS = 0x1100,
+    kCCS = 0x1200,
+    kBSM = 0x1300,
+    kBMV = 0x1500,
+    kBMT = 0x1600,
+    kBSP = 0x1700,
+    kBST = 0x1900,
+    kCST = 0x1A00,
+    kBSD = 0x1C00,
+    kCSD = 0x1D00,
+    kBEM = 0x1E00,
+    kCEM = 0x1F00,
+    kDM1 = 0x2000,
+    kDM2 = 0x2100,
+    kDM3 = 0x2200,
+    kDM4 = 0x2300,
+    kDM5 = 0x2400,
+    kDM6 = 0x2500,
+    kCHM = 0x2600,
+    kBHM = 0x2700
+  };
+  
+  dword msStartOfChargingMS = 0;
+  msTimer tmrUpdateStatus;
+  msTimer tmrUpdatePanel;
+  double outputEnergy;
+  word lastChargerStatus;
+  char gPanelName[8] = "Charger";
+  enum eMode
+  {
+    Ready = 0,
+    Starting,
+    InsulationTest,
+    PreCharge,
+    Charging,
+    Stopping,
+    Error
+  };
+  
+  const double cPreChargeMinimumCurrent = 0.5;
+  const double cInsulationTestVoltage = 1000.0;
+  const double cBatteryVoltageTolerance = 5.0;
+  const double cMinOutputVoltage = 120;
+  const double cMaxOutputVoltage = 1000;
+  
+  dword gInsulationTestStartTime = 0;
+  dword gPreChargeStartTime = 0;
+  
+  enum eMode PresentMode = Ready;
+  
+  const deferStopTime = 1000;
+  msTimer tOpenHVonMeasurementStop;
+  const cOpenHVonMeasurementStopDelay = 500;
+  msTimer tActionsAfterContactorOpen;
+  const cActionsAfterContactorOpenDelay = 100;
+  
+  const deferConnectionControlSequence = 50;
+  msTimer tmrConnectionControlSequence;
+  enum eConnectionControlSequnece
+  {
+    T0 = 0,
+    T1, 
+    T2, 
+    T3,
+    T4,
+    T5,
+    T19,
+    T20,
+    T21
+  };
+  word gConnectionControlSequence;
+  int gConnectionControlSequenceCounter;
+  double cCP1VoltageTolerance = 0.5;
+  int SimulationActive = 0;
+}
+
+on start 
+{
+  long color;
+  GBT27930IL_InitAsCharger();
+  lastChargerStatus = 0;
+
+  setControlForeColor("Charger", "btnStoreSettings", MakeRGB(0, 128, 0));
+
+  color = MakeRGB(0, 0, 0);
+  setControlForeColor("Charger", "editK3K4toChm"        , color);
+  setControlForeColor("Charger", "editCrmNotRecognized" , color);
+  setControlForeColor("Charger", "editCrmRecognized"    , color);
+  setControlForeColor("Charger", "editCmlCts"           , color);
+  setControlForeColor("Charger", "editCroReady"         , color);
+  setControlForeColor("Charger", "editCroNotReady"      , color);
+  setControlForeColor("Charger", "editCcs"              , color);
+  setControlForeColor("Charger", "editCst"              , color);
+  setControlForeColor("Charger", "editCsd"              , color);
+  setControlForeColor("Charger", "editEnd"              , color);
+  setControlForeColor("Charger", "editMissBcp"          , color);
+  setControlForeColor("Charger", "editMissBroNotReady"  , color);
+  setControlForeColor("Charger", "editMissBroReady"     , color);
+  setControlForeColor("Charger", "editMissBcl"          , color);
+  setControlForeColor("Charger", "editMissBcs"          , color);
+  setControlForeColor("Charger", "editMissBst"          , color);
+  
+
+  color = MakeRGB(255, 255, 255);
+  setControlBackColor("Charger", "editK3K4toChm"        , color);
+  setControlBackColor("Charger", "editCrmNotRecognized" , color);
+  setControlBackColor("Charger", "editCrmRecognized"    , color);
+  setControlBackColor("Charger", "editCmlCts"           , color);
+  setControlBackColor("Charger", "editCroReady"         , color);
+  setControlBackColor("Charger", "editCroNotReady"      , color);
+  setControlBackColor("Charger", "editCcs"              , color);
+  setControlBackColor("Charger", "editCst"              , color);
+  setControlBackColor("Charger", "editCsd"              , color);
+  setControlBackColor("Charger", "editEnd"              , color);
+  setControlBackColor("Charger", "editMissBcp"          , color);
+  setControlBackColor("Charger", "editMissBroNotReady"  , color);
+  setControlBackColor("Charger", "editMissBroReady"     , color);
+  setControlBackColor("Charger", "editMissBcl"          , color);
+  setControlBackColor("Charger", "editMissBcs"          , color);
+  setControlBackColor("Charger", "editMissBst"          , color);
+
+  $CSD::ChargerNo = $CRM::ChargerNumber;
+  CHA_set_voltage_CP1(6.0); // Simulation only: Switch S closed, but vehicle not connected
+  ST_Init();
+}
+
+on preStop
+{
+  long color;
+  SetChargingStationMode(Ready); 
+  GBT27930IL_StopChargingSimulation();
+  deferStop(deferStopTime);
+  setTimer(tOpenHVonMeasurementStop, cOpenHVonMeasurementStopDelay); // delay to ensure reduce of current and voltage
+
+  HV_source_set_I_DC(cPreChargeMinimumCurrent);
+  HV_source_set_U_DC(HV_measure_DC_U_VeriVolt());
+  
+  setControlForeColor("Charger", "btnStoreSettings", MakeRGB(128, 128, 128));
+  
+  color = MakeRGB(112, 112, 112);
+  setControlForeColor("Charger", "editK3K4toChm"        , color);
+  setControlForeColor("Charger", "editCrmNotRecognized" , color);
+  setControlForeColor("Charger", "editCrmRecognized"    , color);
+  setControlForeColor("Charger", "editCmlCts"           , color);
+  setControlForeColor("Charger", "editCroReady"         , color);
+  setControlForeColor("Charger", "editCroNotReady"      , color);
+  setControlForeColor("Charger", "editCcs"              , color);
+  setControlForeColor("Charger", "editCst"              , color);
+  setControlForeColor("Charger", "editCsd"              , color);
+  setControlForeColor("Charger", "editEnd"              , color);
+  setControlForeColor("Charger", "editMissBcp"          , color);
+  setControlForeColor("Charger", "editMissBroNotReady"  , color);
+  setControlForeColor("Charger", "editMissBroReady"     , color);
+  setControlForeColor("Charger", "editMissBcl"          , color);
+  setControlForeColor("Charger", "editMissBcs"          , color);
+  setControlForeColor("Charger", "editMissBst"          , color);
+
+  color = MakeRGB(224, 224, 224);
+  setControlBackColor("Charger", "editK3K4toChm"        , color);
+  setControlBackColor("Charger", "editCrmNotRecognized" , color);
+  setControlBackColor("Charger", "editCrmRecognized"    , color);
+  setControlBackColor("Charger", "editCmlCts"           , color);
+  setControlBackColor("Charger", "editCroReady"         , color);
+  setControlBackColor("Charger", "editCroNotReady"      , color);
+  setControlBackColor("Charger", "editCcs"              , color);
+  setControlBackColor("Charger", "editCst"              , color);
+  setControlBackColor("Charger", "editCsd"              , color);
+  setControlBackColor("Charger", "editEnd"              , color);
+  setControlBackColor("Charger", "editMissBcp"          , color);
+  setControlBackColor("Charger", "editMissBroNotReady"  , color);
+  setControlBackColor("Charger", "editMissBroReady"     , color);
+  setControlBackColor("Charger", "editMissBcl"          , color);
+  setControlBackColor("Charger", "editMissBcs"          , color);
+  setControlBackColor("Charger", "editMissBst"          , color);
+
+}
+
+on timer tOpenHVonMeasurementStop
+{
+  HV_source_set_U_DC(0);
+  HV_source_set_I_DC(0);
+  
+  HV_open_close_K1K2(OPEN);
+  
+  CHA_set_auxiliary_voltage(0.0);
+  CHA_open_close_K3K4(OPEN); // T17
+  open_close_lock(OPEN); // T18
+  gConnectionControlSequence = T19;
+  CHA_open_close_S(OPEN); 
+  CHA_set_voltage_CP1(6.0); // Simulation only: Switch S open and vehicle fully connected
+  setTimerCyclic(tmrConnectionControlSequence, deferConnectionControlSequence);
+  SetTimer(tActionsAfterContactorOpen, cActionsAfterContactorOpenDelay);
+}
+
+on timer tActionsAfterContactorOpen
+{
+  ST_Reset();
+}
+
+on sysvar GBT27930::svStart
+{
+  SimulationActive = 1;
+  if(@this == 1)
+  {
+    GBT27930IL_StopChargingSimulation();
+    HV_source_reset();
+    CHA_set_auxiliary_voltage(0.0);
+    
+    Disconnect_CAN();
+    HV_open_close_K1K2(OPEN);
+    CHA_open_close_K3K4(OPEN);
+    CHA_open_Close_S(OPEN); //Plug-out starting
+    Disconnect_CC1();
+    Disconnect_CC2();
+    CHA_open_close_S(CLOSE); //Plug-out completed
+  }
+  else
+  {
+    PresentMode = Ready;
+    gInsulationTestStartTime = 0;
+    SetMaxAllowedMissingTime();
+    SetDelayTransition();
+    ResetAllGroups();
+    outputEnergy = $CSD::OutputEnergy.phys = 0;
+    //Reset / clean start of relays
+    HV_open_close_K1K2(OPEN);
+    CHA_open_close_K3K4(OPEN);
+    CHA_open_close_S(CLOSE);
+        
+    Connect_CAN();
+    if (CompareWithTolerance(CHA_measure_voltage_CP1(), 6.0 /*V*/, cCP1VoltageTolerance))
+    {
+      gConnectionControlSequence = T0;
+    } 
+    else if (CompareWithTolerance(CHA_measure_voltage_CP1(), 4.0 /*V*/, cCP1VoltageTolerance))
+    { 
+      gConnectionControlSequence = T2;
+      WriteLineEx(-3,1,"Charger: Vehicle Connector seems to be already fully connected. Skipping Connection Control Sequence.");
+    }
+    else 
+    {
+      WriteLineEx(-3,3,"Charger: Check Point 1 Voltage is not in range. Please make sure cable is either unconnected or fully connected and switch S is not pressed.");
+    }
+    gConnectionControlSequenceCounter = 0;
+    setTimerCyclic(tmrUpdatePanel, 100);
+    setTimerCyclic(tmrConnectionControlSequence, deferConnectionControlSequence);
+  }
+}
+
+on timer tmrConnectionControlSequence
+{
+  switch(gConnectionControlSequence)
+  {
+    case(T0): // coupler not connected, switch S not pressed - Press (open) switch S 
+      gConnectionControlSequenceCounter++;
+      CHA_open_close_S(OPEN); // Plug-in starting (after T0)
+      CHA_set_voltage_CP1(12.0); // Simulation only: Switch S open, but vehicle not connected
+      if (CompareWithTolerance(CHA_measure_voltage_CP1(), 12.0 /*V*/, cCP1VoltageTolerance))
+      {
+        gConnectionControlSequence = T1;
+        gConnectionControlSequenceCounter = 0;
+      }
+      else if (gConnectionControlSequenceCounter == 2) // give relay time before reporting
+        WriteLineEx(-3,1,"Charger: Vehicle coupler is not connected. Press connector switch S and connect plug cable into vehicle inlet.");
+      break;
+    case(T1): // coupler not connected, switch S pressed - Press connect coupler
+      gConnectionControlSequenceCounter++;
+      Connect_CC1(); // PlugIn Cable 
+      Connect_CC2(); // PlugIn Cable
+      CHA_set_voltage_CP1(6.0); // Simulation only: Switch S open and vehicle fully connected
+      if (CompareWithTolerance(CHA_measure_voltage_CP1(), 6.0 /*V*/, cCP1VoltageTolerance))
+      {
+        gConnectionControlSequence = T2;
+        gConnectionControlSequenceCounter = 0;
+      }
+      else if (gConnectionControlSequenceCounter == 2) // give relay time before reporting
+        WriteLineEx(-3,1,"Charger: Vehicle coupler is not fully connected. Keep the connector switch S pressed and connect plug cable into vehicle inlet.");
+      break;
+    case(T2): // coupler connected, switch S still pressed -  Release (close) switch S 
+      gConnectionControlSequenceCounter++;
+      CHA_open_close_S(CLOSE);
+      CHA_set_voltage_CP1(4.0); // Simulation only: Switch S closed and vehicle fully connected
+      open_close_lock(CLOSE); //T2' Electronic lock feedback
+      if (CompareWithTolerance(CHA_measure_voltage_CP1(), 4.0 /*V*/, cCP1VoltageTolerance))
+      {
+        gConnectionControlSequence = T3;
+        gConnectionControlSequenceCounter = 0;
+      }
+      else if (gConnectionControlSequenceCounter == 2) // give relay time before reporting
+        WriteLineEx(-3,1,"Charger: Vehicle coupler is not fully connected. Once the cable is fully inserted into the vehicle inlet, please release the connector switch S.");
+      break;
+    case(T3):
+    CHA_open_close_K3K4(CLOSE); //T3
+      gConnectionControlSequence = T4;
+      break;
+    case(T4):
+      /* Initiate data interaction */
+      cancelTimer(tmrConnectionControlSequence);      
+      msStartOfChargingMS = 0;
+      GBT27930IL_StartChargingSimulation(); // T4  
+      SetChargingStationMode(Starting);
+      CHA_set_auxiliary_voltage(cAux_voltage);
+      break;
+    case(T19): // press Switch S
+    case(T20): // plugOut
+      gConnectionControlSequenceCounter++;
+      if (CompareWithTolerance(CHA_measure_voltage_CP1(), 6.0 /*V*/, cCP1VoltageTolerance))
+      {
+        open_close_lock(OPEN); // T18 Electronic lock feedback
+        CHA_open_close_S(OPEN); // Plug-out starting (after T0)
+        CHA_set_voltage_CP1(12.0); // Simulation only: Switch S is open but vehicle is still fully connected
+        gConnectionControlSequence = T20;
+      }
+      if (CompareWithTolerance(CHA_measure_voltage_CP1(), 12.0 /*V*/, cCP1VoltageTolerance))
+      {
+        Disconnect_CC1();
+        Disconnect_CC2();
+        CHA_set_voltage_CP1(6.0); // Simulation only: Switch S is open and vehicle disconnected
+        gConnectionControlSequence = T21;        
+        gConnectionControlSequenceCounter = 0;
+      }
+      else if (gConnectionControlSequenceCounter == 4) // give relay time before reporting
+        WriteLineEx(-3,1,"Charger: Vehicle coupler is not disconnected yet. Please press the connector switch S and remove cable from vehicle socket.");
+      break;
+    case(T21):
+      gConnectionControlSequenceCounter++;
+      if (CompareWithTolerance(CHA_measure_voltage_CP1(), 6.0 /*V*/, cCP1VoltageTolerance))
+      {
+        cancelTimer(tmrConnectionControlSequence);
+        WriteLineEx(-3,1,"Charger: Vehicle coupler is fully disconnected and switch S is detected as released.");
+        gConnectionControlSequenceCounter = 0;
+      }
+      else if (gConnectionControlSequenceCounter == 2) // give relay time before reporting
+        WriteLineEx(-3,1,"Charger: Vehicle coupler is not fully disconnected yet. Please release the connector switch S.");
+      break;
+    case(T5): //Sanity check in case connection state is increased incorrectly
+    default:
+        WriteLineEx(-3,1,"Charger: Reached undefined state in connection control sequence");  
+      break;
+  }
+}
+word CompareWithTolerance(double testValue, double targetValue, double tolerance)
+{
+  if (testValue > targetValue - tolerance && testValue < targetValue + tolerance)
+  {
+    return 1;
+  }
+  return 0;
+}
+
+dword timeNowMs()
+{
+  return timeNow()/100;
+}
+
+void ResetVariables()
+{
+  lastChargerStatus = 0;
+  gInsulationTestStartTime = 0;
+  gPreChargeStartTime = 0;
+}
+
+void ResetAllGroups()
+{
+  setDefaultControlColors("Charger", "groupCHM");
+  setDefaultControlColors("Charger", "groupCRM");
+  setDefaultControlColors("Charger", "groupCML");
+  setDefaultControlColors("Charger", "groupCTS");
+  setDefaultControlColors("Charger", "groupCRO");
+  setDefaultControlColors("Charger", "groupCCS");
+  setDefaultControlColors("Charger", "groupCST");
+  setDefaultControlColors("Charger", "groupCEM");
+  setDefaultControlColors("Charger", "groupCSD");
+}
+
+on timer tmrUpdatePanel
+{
+  dword chargerStatus;
+  long clrInactive, clrActive, clrChanging, clrBackActive;
+  clrInactive = MakeRGB(0,0,0);
+  clrActive = MakeRGB(0, 128, 0);
+  clrChanging = MakeRGB(128, 0, 0);
+  clrBackActive = MakeRGB(224, 224, 255);
+  
+  
+  chargerStatus = GBT27930IL_GetCommunicationState();
+  if(lastChargerStatus != chargerStatus)
+  {
+    switch(chargerStatus)
+    {
+      case 1: //Sending of CHM
+        setControlForeColor("Charger", "groupCHM"   , clrActive);
+        setControlBackColor("Charger", "groupCHM"   , clrBackActive);        
+        break;
+        
+      case 2: //Sending of CHM; delayed start of CRM (BMS is not recognized) is initiated
+        setControlForeColor("Charger", "groupCHM"   , clrChanging);
+        setControlBackColor("Charger", "groupCHM"   , clrBackActive);
+        break;
+        
+      case 3: //Sending of CRM (BMS is not recognized)
+        setDefaultControlColors("Charger", "groupCHM");
+
+        setControlForeColor("Charger", "groupCRM"   , clrActive);
+        setControlBackColor("Charger", "groupCRM"   , clrBackActive);
+        
+        break;
+
+      case 4: //Sending of CRM (BMS is not recognized); delayed start of CRM (BMS is recognized) is initiated
+      case 5: //Sending of CRM (BMS is recognized)
+        break;
+
+      case 6: //Sending of CRM (BMS is recognized); delayed start of CML is initiated
+        setControlForeColor("Charger", "groupCRM"   , clrChanging);
+        setControlBackColor("Charger", "groupCRM"   , clrBackActive);
+        break;
+        
+      case 7: //Sending of CML
+        setDefaultControlColors("Charger", "groupCRM");
+
+        setControlForeColor("Charger", "groupCML"   , clrActive);
+        setControlBackColor("Charger", "groupCML"   , clrBackActive);
+        setControlForeColor("Charger", "groupCTS"   , clrActive);
+        setControlBackColor("Charger", "groupCTS"   , clrBackActive);
+        break;
+
+      case 8: //Sending of CML; delayed start of CRO (Not ready for charging) is initiated
+        setControlForeColor("Charger", "groupCML"   , clrChanging);
+        setControlBackColor("Charger", "groupCML"   , clrBackActive);
+        setControlForeColor("Charger", "groupCTS"   , clrChanging);
+        setControlBackColor("Charger", "groupCTS"   , clrBackActive);
+        break;
+        
+      case 9: //Sending of CRO (Not ready for charging); delayed start of CRO (Ready for charging) is initiated
+        setDefaultControlColors("Charger", "groupCML");
+        setDefaultControlColors("Charger", "groupCTS");
+
+        setControlForeColor("Charger", "groupCRO"   , clrActive);
+        setControlBackColor("Charger", "groupCRO"   , clrBackActive);
+        break;
+        
+      case 10: //Sending of CRO (Ready for charging)
+        break;
+        
+      case 11: //Sending of CRO (Ready for charging); delayed start of CCS is initiated
+        setControlForeColor("Charger", "groupCRO"   , clrChanging);
+        setControlBackColor("Charger", "groupCRO"   , clrBackActive);
+        break;
+
+      case 12: //Sending of CCS
+        setDefaultControlColors("Charger", "groupCRO");
+        
+        setControlForeColor("Charger", "groupCCS"   , clrActive);
+        setControlBackColor("Charger", "groupCCS"   , clrBackActive);
+        break;
+
+      case 13: //Sending of CCS; delayed start of CST is initiated
+        setControlForeColor("Charger", "groupCCS"   , clrChanging);
+        setControlBackColor("Charger", "groupCCS"   , clrBackActive);
+        break;
+        
+      case 14: //Sending of CST
+        setDefaultControlColors("Charger", "groupCCS");
+
+        setControlForeColor("Charger", "groupCST"   , clrActive);
+        setControlBackColor("Charger", "groupCST"   , clrBackActive);
+        StartTimerReadyToOpen_K1_K2(100);
+        break;
+        
+      case 15: //Sending of CST; delayed start of CSD is initiated
+        setControlForeColor("Charger", "groupCST"   , clrChanging);
+        setControlBackColor("Charger", "groupCST"   , clrBackActive);
+        StartTimerReadyToOpen_K1_K2(100);
+        break;
+        
+      case 16: //Sending of CSD; delayed stop of CSD is initiated 
+        setDefaultControlColors("Charger", "groupCST");
+
+        setControlForeColor("Charger", "groupCSD"   , clrActive);
+        setControlBackColor("Charger", "groupCSD"   , clrBackActive);
+        break;
+
+      case 17: //End of charging
+        setDefaultControlColors("Charger", "groupCSD");
+        HV_source_reset();
+        if(CHA_measure_voltage_CP1() >= 4.1 || CHA_measure_voltage_CP1() <= 3.9) //~4V
+          StartTimerReadyToOpen_K1_K2(50);
+        else
+          StartTimerReadyToOpen_K1_K2(100);
+        break;
+      case 50: //Sending of CEM
+        ResetAllGroups();
+        setControlForeColor("Charger", "groupCEM"   , clrActive);
+        setControlBackColor("Charger", "groupCEM"   , clrBackActive);
+        break;
+    }
+    lastChargerStatus = chargerStatus;
+  }  
+}
+
+SetMaxAllowedMissingTime()
+{
+  GBT27930IL_SetMaxAllowedMissingTimeForMsg(brm        , @GBT27930::Charger::MaxAllowedMissingTime::svBRM);
+  GBT27930IL_SetMaxAllowedMissingTimeForMsg(bcp        , @GBT27930::Charger::MaxAllowedMissingTime::svBCP);
+  GBT27930IL_SetMaxAllowedMissingTimeForMsg(broNotReady, @GBT27930::Charger::MaxAllowedMissingTime::svBRO_NotReady);
+  GBT27930IL_SetMaxAllowedMissingTimeForMsg(broReady   , @GBT27930::Charger::MaxAllowedMissingTime::svBRO_Ready);
+  GBT27930IL_SetMaxAllowedMissingTimeForMsg(bcl        , @GBT27930::Charger::MaxAllowedMissingTime::svBCL);
+  GBT27930IL_SetMaxAllowedMissingTimeForMsg(bcs        , @GBT27930::Charger::MaxAllowedMissingTime::svBCS);
+  GBT27930IL_SetMaxAllowedMissingTimeForMsg(bst        , @GBT27930::Charger::MaxAllowedMissingTime::svBST);
+  GBT27930IL_SetMaxAllowedMissingTimeForMsg(bsd        , @GBT27930::Charger::MaxAllowedMissingTime::svBSD);
+}
+
+on sysvar GBT27930::Charger::svSuspendCharging
+{
+  if(@this == 1)
+  {
+    GBT27930IL_SuspendCharging();
+    SetChargingStationMode(Error);
+  }
+}
+
+on sysvar GBT27930::Charger::svSuspendCharging2
+{
+  if(@this == 0)
+    return;
+  
+  //1. Set whole payload to 0x00
+  $%NETWORK_NAME%::CST::ConditionReached          = 0;
+  $%NETWORK_NAME%::CST::SuspendsArtificially       = 0;
+  $%NETWORK_NAME%::CST::FaultSuspension           = 0;
+  $%NETWORK_NAME%::CST::BmsActivelySuspends       = 0;
+  $%NETWORK_NAME%::CST::ChargerOverTemp           = 0;
+  $%NETWORK_NAME%::CST::ChargingConnectorFault    = 0;
+  $%NETWORK_NAME%::CST::ChargerIntPartOverTemp    = 0;
+  $%NETWORK_NAME%::CST::CannotSupplyReqElQuantity = 0;
+  $%NETWORK_NAME%::CST::SuddenStop                = 0;
+  $%NETWORK_NAME%::CST::OtherFault                = 0;
+  $%NETWORK_NAME%::CST::CurrentMismatchError      = 0;
+  $%NETWORK_NAME%::CST::AbnormalVoltageError      = 0;
+
+  //2. Set selected signal to "1"
+  switch(@GBT27930::Charger::svCauseOfSuspendingCharging)
+  {
+    case 1  : $%NETWORK_NAME%::CST::ConditionReached          = 1; break;
+    case 2  : $%NETWORK_NAME%::CST::SuspendsArtificially      = 1; break;
+    case 3  : $%NETWORK_NAME%::CST::FaultSuspension           = 1; break;
+    case 4  : $%NETWORK_NAME%::CST::BmsActivelySuspends       = 1; break;
+    case 5  : $%NETWORK_NAME%::CST::ChargerOverTemp           = 1; break;
+    case 6  : $%NETWORK_NAME%::CST::ChargingConnectorFault    = 1; break;
+    case 7  : $%NETWORK_NAME%::CST::ChargerIntPartOverTemp    = 1; break;
+    case 8  : $%NETWORK_NAME%::CST::CannotSupplyReqElQuantity = 1; break;
+    case 9  : $%NETWORK_NAME%::CST::SuddenStop                = 1; break;
+    case 10 : $%NETWORK_NAME%::CST::OtherFault                = 1; break;
+    case 11 : $%NETWORK_NAME%::CST::CurrentMismatchError      = 1; break;
+    case 12 : $%NETWORK_NAME%::CST::AbnormalVoltageError      = 1; break;
+  }  
+  //3. Suspend charging (start sending of CST)
+  GBT27930IL_SuspendCharging();
+  SetChargingStationMode(Error);
+}
+
+on sysvar GBT27930::Charger::svStopChargingWithError
+{
+  if(@this == 1)
+  {
+    GBT27930IL_SetCommunicationState(50); //Send Charger Error Message
+    SetChargingStationMode(Error);
+  }
+  else
+  {
+    GBT27930IL_SetCommunicationState(17); //End of Charging
+    SetChargingStationMode(Ready);
+  }
+}
+
+on sysvar GBT27930::Charger::svStopChargingWithError2
+{
+  if(@this == 1)
+  {  
+    //1. Set whole payload to 0x00
+    $%NETWORK_NAME%::CEM::Timeout_BRM = 0;
+    $%NETWORK_NAME%::CEM::Timeout_BCP = 0;
+    $%NETWORK_NAME%::CEM::Timeout_BRO = 0;
+    $%NETWORK_NAME%::CEM::Timeout_BCS = 0;
+    $%NETWORK_NAME%::CEM::Timeout_BCL = 0;
+    $%NETWORK_NAME%::CEM::Timeout_BST = 0;
+    $%NETWORK_NAME%::CEM::Timeout_BSD = 0;
+    
+    //2. Set selected signal to "1"
+    switch(@GBT27930::Charger::svTimeoutOfMsg)
+    {
+      case 1: $%NETWORK_NAME%::CEM::Timeout_BRM = 1; break;
+      case 2: $%NETWORK_NAME%::CEM::Timeout_BCP = 1; break;
+      case 3: $%NETWORK_NAME%::CEM::Timeout_BRO = 1; break;
+      case 4: $%NETWORK_NAME%::CEM::Timeout_BCS = 1; break;
+      case 5: $%NETWORK_NAME%::CEM::Timeout_BCL = 1; break;
+      case 6: $%NETWORK_NAME%::CEM::Timeout_BST = 1; break;
+      case 7: $%NETWORK_NAME%::CEM::Timeout_BSD = 1; break;
+    }
+    
+    //3. Send Charger Error Message
+    GBT27930IL_SetCommunicationState(50);
+    SetChargingStationMode(Error);
+  }
+  else
+  {
+    GBT27930IL_SetCommunicationState(17); //End of Charging
+    SetChargingStationMode(Ready);
+  }
+}
+
+on sysvar GBT27930::Charger::svStoreSettings
+{
+  if(@this == 0)    
+    startValuesUpdateList("Charger Settings");
+}
+
+
+on sysvar_update GBT27930::Charger::svChargerLocation
+{
+  char buf[4];
+  dword textAsDWord;
+
+  sysGetVariableString(this, buf, elcount(buf));
+  textAsDWord = (buf[0] << 0) + (buf[1] << 8) + (buf[2] << 16);
+  $CRM::ChargerLocation = textAsDWord;
+}
+
+void SetDelayTransition()
+{
+  GBT27930IL_SetDelayForStateTransition(k3k4_to_chm,               @GBT27930::Charger::DelayTransition::svK3K4_to_CHM);
+  GBT27930IL_SetDelayForStateTransition(bhm_to_crmNotRecognized,   @GBT27930::Charger::DelayTransition::svBHM_to_CRM_not_recognized);
+  GBT27930IL_SetDelayForStateTransition(brm_to_crmRecognized,      @GBT27930::Charger::DelayTransition::svBRM_to_CRMrecognized);
+  GBT27930IL_SetDelayForStateTransition(bcp_to_cml,                @GBT27930::Charger::DelayTransition::svBCP_to_CML);
+  GBT27930IL_SetDelayForStateTransition(broReady_to_croNotReady,   @GBT27930::Charger::DelayTransition::svBRO_ready_to_CRO_not_ready);
+  GBT27930IL_SetDelayForStateTransition(croNotReady_to_croReady,   @GBT27930::Charger::DelayTransition::svCRO_not_ready_to_CRO_ready);
+  GBT27930IL_SetDelayForStateTransition(bcs_to_ccs,                @GBT27930::Charger::DelayTransition::svBCS_to_CCS);
+  GBT27930IL_SetDelayForStateTransition(bst_to_cst,                @GBT27930::Charger::DelayTransition::svBST_to_CST);
+  GBT27930IL_SetDelayForStateTransition(bsd_to_csd,                @GBT27930::Charger::DelayTransition::svBSD_to_CSD);
+  GBT27930IL_SetDelayForStateTransition(csd_to_end,                @GBT27930::Charger::DelayTransition::svCSD_to_End);
+}
+
+///////////////////////////
+on timer tmrUpdateStatus
+{
+  double additionalEnergy;
+  SetCCS();
+  
+  $%NETWORK_NAME%::CSD::CumulativeChargingTime = $%NETWORK_NAME%::CCS::CumulativeChargingTime;
+  
+  additionalEnergy = abs($%NETWORK_NAME%::CCS::CurrentOutputValue.phys * $%NETWORK_NAME%::CCS::VoltageOutputValue.phys)/3600000.0;
+  outputEnergy = outputEnergy + additionalEnergy;
+  @GBT27930::Charger::svCalculatedOutputEnergy = @GBT27930::Charger::svCalculatedOutputEnergy + additionalEnergy;
+  $CSD::OutputEnergy.phys = outputEnergy;
+  
+  if(GBT27930IL_GetCommunicationState() == 12) //sending of CCS
+    setTimer(tmrUpdateStatus, 1000);
+}
+void GBT27930IL_OnTxMessage(pg * txPG)
+{
+  int newState;
+  newState = GBT27930IL_GetCommunicationState();
+  if(newState != @sysvar::GBT27930::Charger::svCommunicationState)
+  @sysvar::GBT27930::Charger::svCommunicationState = newState;
+  if(txPG.PGN == %NETWORK_NAME%::CRM.PGN)
+  {
+    $CCS::CumulativeChargingTime = 0;
+  }
+  else if(txPG.pgn == %NETWORK_NAME%::CCS.PGN && msStartOfChargingMS == 0)
+  {
+    msStartOfChargingMS = timeNowInt64() / 1000000;
+    SetCCS();
+    setTimer(tmrUpdateStatus, 1000);
+  }
+}
+
+void SetCCS()
+{
+  if( PresentMode != Charging) return;
+
+  $CCS::CumulativeChargingTime = (timeNowInt64() / 1000000 - msStartOfChargingMS) / 60000;
+  
+  $CCS::VoltageOutputValue.phys = HV_measure_DC_U();
+  $CCS::CurrentOutputValue.phys = HV_measure_DC_I();
+}
+
+void PrepareForContactorsOpen()
+{
+  HV_source_set_I_DC(cPreChargeMinimumCurrent);
+  HV_source_set_U_DC(HV_measure_DC_U_VeriVolt());
+}
+
+void EnterErrorState()
+{
+  GBT27930IL_StopChargingSimulation();
+  SetChargingStationMode(Error);
+  PrepareForContactorsOpen();
+}
+
+// states must only change for straight-forward simulation!
+// "Starting" state will only be set if started via "(Re)Start charging..." button of "Control" panel
+void HandleBmsMessage(long pgn)
+{
+  switch(pgn)
+  {
+    case kBHM:
+      if( PresentMode == Starting) {
+        ResetVariables();
+        SetChargingStationMode(InsulationTest);
+      }
+      break;
+      
+    case kBRO:
+      if( PresentMode == InsulationTest) {
+        SetChargingStationMode(PreCharge);
+      }
+      break;
+      
+    case kBCS:
+      if( PresentMode == PreCharge) {
+        SetChargingStationMode(Charging);
+      }
+      break;
+    
+    case kBST:
+    case kBSD:
+    case kBMV:
+    case kBMT:
+    case kBSP:
+      if( PresentMode == Charging) {
+        SetChargingStationMode(Stopping);
+      }
+      break;
+      
+    case kBEM:
+      EnterErrorState();
+      break;
+      
+    default:
+      break;
+  }
+}
+
+long GBT27930IL_OnRxMessage(pg * rxPG)
+{
+  int newState;
+  HandleBmsMessage(rxPG.PGN);
+  newState = GBT27930IL_GetCommunicationState();
+  if(newState != @sysvar::GBT27930::Charger::svCommunicationState)
+    @sysvar::GBT27930::Charger::svCommunicationState = newState;
+  return 1;
+}
+On sysvar GBT27930::Charger::svInterruptCCS
+{
+  if(@this == 1)
+  {
+    GBT27930IL_BlockTxMessage(0x1200, 0xFFFFFFFF, 0,0);
+  }
+  else
+  {
+    GBT27930IL_ResetBlockedTxMessage(0x1200, 0xFFFFFFFF, 0,0);  
+  }
+}
+
+int IsVoltageWithinRange(double refVoltage, double measVoltage, double range )
+{
+  return ( measVoltage-range < refVoltage &&  
+       refVoltage < measVoltage+range );
+}
+
+void SetChargingStationMode(enum eMode Mode)
+{
+  PresentMode = Mode;
+  SetChargingStationPicturesVisibility(Mode);
+  if(Mode == Error)
+  {
+    writeLineEx(-3,1,"Current A: %d", abs(HV_measure_DC_I()));
+    PrepareForContactorsOpen();
+  }
+}
+
+void SetChargingStationPicturesVisibility(enum eMode Mode)
+{  
+  If(Mode == Ready)
+  {
+   SetControlVisibility(gPanelName, "pictureChargingStationReady", 1);
+   SetControlVisibility(gPanelName, "pictureChargingStationCharging", 0);
+   SetControlVisibility(gPanelName, "pictureChargingStationError", 0);
+  }
+  else If(Mode == Charging)
+  {
+   SetControlVisibility(gPanelName, "pictureChargingStationReady", 0);
+   SetControlVisibility(gPanelName, "pictureChargingStationCharging", 1);
+   SetControlVisibility(gPanelName, "pictureChargingStationError", 0);
+  }
+  else If(Mode == Error)
+  {
+   SetControlVisibility(gPanelName, "pictureChargingStationReady", 0);
+   SetControlVisibility(gPanelName, "pictureChargingStationCharging", 0);
+   SetControlVisibility(gPanelName, "pictureChargingStationError", 1);
+  }
+}
+
+on pg kBHM
+{
+  if( PresentMode != InsulationTest) return;
+  
+  if( gInsulationTestStartTime == 0 ) 
+  {
+    if(HV_measure_DC_U_VeriVolt() < 10) // ensure vehicle contactors opened
+    {
+      HV_open_close_K1K2(CLOSE);  // Charger closes contactors
+      HV_source_set_I_DC(cPreChargeMinimumCurrent); // user parameter to ensure voltage can be increased
+      HV_source_set_U_DC(cInsulationTestVoltage); // apply test voltage => default 1000V
+      
+      // enable the insulation monitor
+      HV_enable_insulation_state(1);
+      
+      gInsulationTestStartTime = timeNowMs();
+      writelineex(-4,1,"BHM: Insulation test started: %d", gInsulationTestStartTime);
+    }
+    else {
+      EnterErrorState();
+    }
+  }
+  else if( (timeNowMs() - gInsulationTestStartTime) > (@GBT27930::Charger::DelayTransition::svBHM_to_CRM_not_recognized/2) ) 
+  {
+    // terminate insulation test
+    HV_source_set_I_DC(0);
+    HV_source_set_U_DC(0);
+    
+    // disable the insulation monitor
+    HV_enable_insulation_state(0);
+    
+    if(HV_measure_DC_U_VeriVolt() < 60 )
+    {
+      HV_open_close_K1K2(OPEN);
+      writelineex(-4,1,"BHM: finishing Insulation test");
+    }
+  }
+  else if ( gInsulationTestStartTime > 0 ) 
+  {
+    // during insulation test
+    stack long status = HV_get_insulation_state( 1 );
+    
+    if( status == 2) {
+      writelineex(-4,3,"Insulation test failed");
+      EnterErrorState();
+    }
+  }
+  
+}
+
+on pg kBRO
+{
+  if( PresentMode != PreCharge ) return;
+    
+  if (gPreChargeStartTime == 0 && this.byte(0) == 0xAA ) // BMS is ready for charging
+  {
+    stack double outerVoltage;
+
+    writeLineEx(-4,1,"PreCharge started");
+    
+    gPreChargeStartTime = timeNowMs();  
+    
+    outerVoltage = HV_measure_DC_U_VeriVolt();
+    // TODO: "normal voltage criteria
+    // 1. compare measured Battery voltage with communicated battery voltage <= +/- 5% ?
+    // 2. battery voltage between min/max of charger output limits
+    if( (outerVoltage < cMinOutputVoltage || outerVoltage > cMaxOutputVoltage) // crit. #2
+        /* || (crit #1, we don't care) */ ) 
+    {
+      EnterErrorState();
+      writeLineEx(-4,3,"outerVoltage: %f", outerVoltage);
+      writeLineEx(-4,3,"cMinOutputVoltage: %f", cMinOutputVoltage);
+      writeLineEx(-4,3,"cMaxOutputVoltage: %f", cMaxOutputVoltage);
+      writeLineEx(-4,3,"Normal Voltage Criteria not met. Fault level (2)");
+    }
+ } 
+ else if( gPreChargeStartTime > 0 )
+ {
+    stack double outerVoltage, chargerVoltage;
+    
+    outerVoltage = HV_measure_DC_U_VeriVolt();
+    chargerVoltage = HV_measure_DC_U();
+    HV_source_set_U_DC(outerVoltage);
+    HV_source_set_I_DC(cPreChargeMinimumCurrent);
+    
+    //check with tolerance (upper / lower limit) specification: (1V~10V)
+    if(IsVoltageWithinRange(chargerVoltage, outerVoltage, cBatteryVoltageTolerance))
+    {
+      HV_open_close_K1K2(CLOSE);
+    }
+  }
+}
+
+on pg kBCL
+{
+  int chargingMode;
+  double voltage, current;
+
+  if( PresentMode != Charging && PresentMode != PreCharge) return;
+  
+  voltage = this.word(0) / 10;          // Data resolution: 0.1V/bit, 0V offset
+  current = (this.word(2) / 10.0) - 400;  // Data resolution: 0.1A/bit, -400A offset
+  chargingMode = this.byte(4);
+  
+  if(IsVoltageWithinRange(HV_measure_DC_U(), HV_measure_DC_U_VeriVolt(), cBatteryVoltageTolerance)) //check with tolerance (upper / lower limit) specification: (1V~10V)
+  {
+//    writelineex(-4,1,"BCL: closing contactors");
+    // only close contactors if voltages match
+    HV_open_close_K1K2(CLOSE);
+    SetChargingStationMode(Charging);
+  }
+  else {
+//    writelineex(-4,1,"BCL: adjusting voltage: %d, %d +/- %.2f",HV_measure_DC_U(), HV_measure_DC_U_VeriVolt(), cBatteryVoltageTolerance );
+    HV_source_set_U_DC(HV_measure_DC_U_VeriVolt());
+    return;
+  }
+
+  if( PresentMode != Charging ) return;
+  
+  if(IsVoltageWithinRange(HV_measure_DC_U(), HV_measure_DC_U_VeriVolt(), cBatteryVoltageTolerance))
+  {
+    stack double permVoltage = $BCP::TotalMaxPermChargingVoltage;
+    stack double permCurrent = $BCP::MaxPermChargingCurrent;
+    
+    if(chargingMode == 1)                   // Constant Voltage
+    {
+      HV_source_set_U_DC(voltage);
+      // note: currents are negative -> use _max to get min
+      HV_source_set_I_DC(_max(permCurrent,(double)$%NETWORK_NAME%::Charger::CML::MaxOutputCurrent));
+    }
+    else if(chargingMode == 2)              // Constant Current
+    {
+      HV_source_set_I_DC(current);
+      HV_source_set_U_DC(_min(permVoltage,(double)$%NETWORK_NAME%::Charger::CML::MaxOutputVoltage));
+    }
+  }
+}
+
+on pg kBST
+{
+  if(SimulationActive != 1) return;
+  PrepareForContactorsOpen();
+}
+    
+on pg kBSD
+{
+  if(SimulationActive != 1) return;
+  PrepareForContactorsOpen();
+}
+  
+on pg kBMV
+{
+  if(SimulationActive != 1) return;
+  PrepareForContactorsOpen();
+}
+
+on pg kBMT
+{
+  if(SimulationActive != 1) return;
+  PrepareForContactorsOpen();
+}
+ 
+on pg kBSP
+{
+  if(SimulationActive != 1) return;
+  PrepareForContactorsOpen();
+}

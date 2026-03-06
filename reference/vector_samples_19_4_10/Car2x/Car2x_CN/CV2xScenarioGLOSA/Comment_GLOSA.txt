@@ -1,0 +1,16 @@
+This sample configuration requires "C-V2X" as physical layer. Please choose 
+"C-V2X" in Ribbon Hardware > Network Hardware > Ath1 before the CANoe 
+measurement start.
+
+GLOSA - Green Light Optimal Speed Advisory scenario.
+
+According to T/CSAE 53-2017, GLOSA Scenario Ch. 5.2.14
+
+(a) HV vehicle approaches at V2I-equipped intersection
+
+The road side unit (RSU) broadcasts the topology an traffic lights signal 
+state of the road intersection. The HV vehicle drives from a distance
+towards the intersection. The GLOSA application in the HV vehicles
+calculates the minimum an maximum speed advised to cross the intersection
+without stopping. The calculation use the position data, speed and 
+intersection traffic lights data for this purpose.

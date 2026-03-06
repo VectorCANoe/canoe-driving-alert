@@ -1,0 +1,638 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<FunctionBusLibrary Version="21" FormatMajorVersion="3" FormatMinorVersion="5" FormatPatchVersion="1">
+  <Namespaces>
+    <Namespace IsDefinedAsHidden="False" IsSystemDefined="True" Name="MM">
+      <Subnamespaces>
+        <Namespace IsDefinedAsHidden="False" IsSystemDefined="True" Name="Interfaces">
+          <DOInterfaces>
+            <DOInterface IsAbstract="False" Name="CDPlayer">
+              <AttributeValues>
+                <AttributeValue Definition="_SystemAttributes::Binding" InitialValue="SOMEIP" InitialValueType="String" />
+                <AttributeValue Definition="_SystemAttributes::CommunicationPattern" InitialValue="2" InitialValueType="Int32" />
+              </AttributeValues>
+              <MemberData>
+                <DOMemberDataHolder Name="MemberData" />
+              </MemberData>
+              <Fields>
+                <DOIFFieldMember Name="AudioDiskInfo">
+                  <DataType DataType="MM::DataTypes::AUDIODISKINFO_Array" />
+                  <Getter>
+                    <DOIFMethodMember Prototype="MM::DataTypes::AUDIODISKINFO_Array_Getter_Prototype" Name="Get" />
+                  </Getter>
+                </DOIFFieldMember>
+                <DOIFFieldMember Name="ActiveDisk">
+                  <DataType DataType="MM::DataTypes::UINTM8" />
+                  <Setter>
+                    <DOIFMethodMember Prototype="MM::DataTypes::UINTM8_Setter_Prototype" Name="Set" />
+                  </Setter>
+                  <Event>
+                    <DOIFEventMember Name="Notification">
+                      <DataType DataType="MM::DataTypes::UINTM8" />
+                    </DOIFEventMember>
+                  </Event>
+                </DOIFFieldMember>
+                <DOIFFieldMember Name="DeckStatus">
+                  <DataType DataType="MM::DataTypes::UINTM32">
+                    <NumericProperties MinValue="0" MinValueType="UInt64" MaxValue="6" MaxValueType="UInt64" IsBoolean="False" IsTimespan="False">
+                      <ImplToPhysEncodings TextualEncodings="MM::Encodings::DECKSTATUS_UINTM32" />
+                    </NumericProperties>
+                  </DataType>
+                  <Setter>
+                    <DOIFMethodMember Prototype="MM::DataTypes::UINTM32_Setter_Prototype" Name="Set" />
+                  </Setter>
+                  <Event>
+                    <DOIFEventMember Name="Notification">
+                      <DataType DataType="MM::DataTypes::UINTM32">
+                        <NumericProperties MinValue="0" MinValueType="UInt64" MaxValue="6" MaxValueType="UInt64" IsBoolean="False" IsTimespan="False">
+                          <ImplToPhysEncodings TextualEncodings="MM::Encodings::DECKSTATUS_UINTM32" />
+                        </NumericProperties>
+                      </DataType>
+                    </DOIFEventMember>
+                  </Event>
+                </DOIFFieldMember>
+                <DOIFFieldMember Name="MagazineStatus">
+                  <DataType DataType="MM::DataTypes::UINTM32">
+                    <NumericProperties MinValue="0" MinValueType="UInt64" MaxValue="3" MaxValueType="UInt64" IsBoolean="False" IsTimespan="False">
+                      <ImplToPhysEncodings TextualEncodings="MM::Encodings::MAGAZINESTATUS_UINTM32" />
+                    </NumericProperties>
+                  </DataType>
+                  <Event>
+                    <DOIFEventMember Name="Notification">
+                      <DataType DataType="MM::DataTypes::UINTM32">
+                        <NumericProperties MinValue="0" MinValueType="UInt64" MaxValue="3" MaxValueType="UInt64" IsBoolean="False" IsTimespan="False">
+                          <ImplToPhysEncodings TextualEncodings="MM::Encodings::MAGAZINESTATUS_UINTM32" />
+                        </NumericProperties>
+                      </DataType>
+                    </DOIFEventMember>
+                  </Event>
+                </DOIFFieldMember>
+                <DOIFFieldMember Name="MediaInfo">
+                  <DataType DataType="MM::DataTypes::MEDIAINFO_Array" />
+                  <Event>
+                    <DOIFEventMember Name="Notification">
+                      <DataType DataType="MM::DataTypes::MEDIAINFO_Array" />
+                    </DOIFEventMember>
+                  </Event>
+                </DOIFFieldMember>
+                <DOIFFieldMember Name="PeakLevel">
+                  <DataType DataType="MM::DataTypes::PEAKLEVEL" />
+                  <Event>
+                    <DOIFEventMember Name="Notification">
+                      <DataType DataType="MM::DataTypes::PEAKLEVEL" />
+                    </DOIFEventMember>
+                  </Event>
+                </DOIFFieldMember>
+                <DOIFFieldMember Name="TimePosition">
+                  <DataType DataType="MM::DataTypes::TIMEPOSITION" />
+                  <Event>
+                    <DOIFEventMember Name="Notification">
+                      <DataType DataType="MM::DataTypes::TIMEPOSITION" />
+                    </DOIFEventMember>
+                  </Event>
+                </DOIFFieldMember>
+                <DOIFFieldMember Name="TrackPosition">
+                  <DataType DataType="MM::DataTypes::UINTM16" />
+                  <Setter>
+                    <DOIFMethodMember Prototype="MM::DataTypes::UINTM16_Setter_Prototype" Name="Set" />
+                  </Setter>
+                  <Event>
+                    <DOIFEventMember Name="Notification">
+                      <DataType DataType="MM::DataTypes::UINTM16" />
+                    </DOIFEventMember>
+                  </Event>
+                </DOIFFieldMember>
+              </Fields>
+              <Methods>
+                <DOIFMethodMember Prototype="MM::DataTypes::IncrementTrack_Prototype" Name="IncrementTrack" />
+                <DOIFMethodMember Prototype="MM::DataTypes::DecrementTrack_Prototype" Name="DecrementTrack" />
+                <DOIFMethodMember Prototype="MM::DataTypes::IncrementDisc_Prototype" Name="IncrementDisc" />
+                <DOIFMethodMember Prototype="MM::DataTypes::DecrementDisc_Prototype" Name="DecrementDisc" />
+              </Methods>
+            </DOInterface>
+            <DOInterface IsAbstract="False" Name="Navigation">
+              <AttributeValues>
+                <AttributeValue Definition="_SystemAttributes::Binding" InitialValue="SOMEIP" InitialValueType="String" />
+                <AttributeValue Definition="_SystemAttributes::CommunicationPattern" InitialValue="2" InitialValueType="Int32" />
+              </AttributeValues>
+              <MemberData>
+                <DOMemberDataHolder Name="MemberData" />
+              </MemberData>
+              <Events>
+                <DOIFEventMember Name="Position">
+                  <DataType DataType="MM::DataTypes::Position" />
+                </DOIFEventMember>
+              </Events>
+            </DOInterface>
+            <DOInterface IsAbstract="False" Name="TVReceiver">
+              <AttributeValues>
+                <AttributeValue Definition="_SystemAttributes::Binding" InitialValue="SOMEIP" InitialValueType="String" />
+                <AttributeValue Definition="_SystemAttributes::CommunicationPattern" InitialValue="2" InitialValueType="Int32" />
+              </AttributeValues>
+              <MemberData>
+                <DOMemberDataHolder Name="MemberData" />
+              </MemberData>
+              <Methods>
+                <DOIFMethodMember Prototype="MM::DataTypes::Start_Prototype" Name="Start" />
+                <DOIFMethodMember Prototype="MM::DataTypes::Stop_Prototype" Name="Stop" />
+              </Methods>
+            </DOInterface>
+          </DOInterfaces>
+        </Namespace>
+        <Namespace IsDefinedAsHidden="False" IsSystemDefined="True" Name="DataTypes">
+          <DataTypes>
+            <IntegerDataType IsSigned="False" BitCount="8" HasFixedBinaryLayout="True" HasMotorolaByteOrder="True" Name="UINTM8" />
+            <FunctionPrototype IsOneWay="False" AllowSpecialCharactersInMemberNames="False" HasFixedBinaryLayout="False" HasMotorolaByteOrder="False" Name="IncrementTrack_Prototype">
+              <Result DataType="_SystemDataTypes::Void" />
+              <Parameters>
+                <Parameter IsOptional="False" Name="NSteps">
+                  <DataType DataType="MM::DataTypes::UINTM8" />
+                </Parameter>
+              </Parameters>
+            </FunctionPrototype>
+            <FunctionPrototype IsOneWay="False" AllowSpecialCharactersInMemberNames="False" HasFixedBinaryLayout="False" HasMotorolaByteOrder="False" Name="DecrementTrack_Prototype">
+              <Result DataType="_SystemDataTypes::Void" />
+              <Parameters>
+                <Parameter IsOptional="False" Name="NSteps">
+                  <DataType DataType="MM::DataTypes::UINTM8" />
+                </Parameter>
+              </Parameters>
+            </FunctionPrototype>
+            <FunctionPrototype IsOneWay="False" AllowSpecialCharactersInMemberNames="False" HasFixedBinaryLayout="False" HasMotorolaByteOrder="False" Name="IncrementDisc_Prototype">
+              <Result DataType="_SystemDataTypes::Void" />
+              <Parameters>
+                <Parameter IsOptional="False" Name="NSteps">
+                  <DataType DataType="MM::DataTypes::UINTM8" />
+                </Parameter>
+              </Parameters>
+            </FunctionPrototype>
+            <FunctionPrototype IsOneWay="False" AllowSpecialCharactersInMemberNames="False" HasFixedBinaryLayout="False" HasMotorolaByteOrder="False" Name="DecrementDisc_Prototype">
+              <Result DataType="_SystemDataTypes::Void" />
+              <Parameters>
+                <Parameter IsOptional="False" Name="NSteps">
+                  <DataType DataType="MM::DataTypes::UINTM8" />
+                </Parameter>
+              </Parameters>
+            </FunctionPrototype>
+            <StructDataType Bitcount="0" RawBitcount="0" HasFixedBinaryLayout="False" HasMotorolaByteOrder="True" Name="AUDIODISKINFO">
+              <Fields>
+                <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="audioTitle">
+                  <AttributeValues>
+                    <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="memberName:audioTitle" InitialValueType="String" />
+                  </AttributeValues>
+                  <DataType DataType="MM::DataTypes::STRINGUTF8DYNAMICM" />
+                </DataTypeField>
+                <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="audioTime">
+                  <AttributeValues>
+                    <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="memberName:audioTime" InitialValueType="String" />
+                  </AttributeValues>
+                  <DataType DataType="MM::DataTypes::UINTM16" />
+                </DataTypeField>
+                <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="trackNo">
+                  <AttributeValues>
+                    <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="memberName:trackNo" InitialValueType="String" />
+                  </AttributeValues>
+                  <DataType DataType="MM::DataTypes::UINTM8" />
+                </DataTypeField>
+                <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="audioFilename">
+                  <AttributeValues>
+                    <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="memberName:audioFilename" InitialValueType="String" />
+                  </AttributeValues>
+                  <DataType DataType="MM::DataTypes::STRINGUTF8DYNAMICM" />
+                </DataTypeField>
+              </Fields>
+            </StructDataType>
+            <StringDataType Encoding="UTF8" MaxLength="-1" IsFilesystemPathType="False" BitCount="0" HasFixedBinaryLayout="False" HasMotorolaByteOrder="True" Name="STRINGUTF8DYNAMICM" />
+            <IntegerDataType IsSigned="False" BitCount="16" HasFixedBinaryLayout="True" HasMotorolaByteOrder="True" Name="UINTM16" />
+            <ArrayDataType MaxLength="6" MinLength="6" HasMaxLength="True" HasFixedBinaryLayout="False" HasMotorolaByteOrder="True" Name="AUDIODISKINFO_Array">
+              <BaseType DataType="MM::DataTypes::AUDIODISKINFO" />
+            </ArrayDataType>
+            <FunctionPrototype IsOneWay="False" AllowSpecialCharactersInMemberNames="False" HasFixedBinaryLayout="False" HasMotorolaByteOrder="False" Name="AUDIODISKINFO_Array_Getter_Prototype">
+              <Result DataType="MM::DataTypes::AUDIODISKINFO_Array" />
+            </FunctionPrototype>
+            <FunctionPrototype IsOneWay="False" AllowSpecialCharactersInMemberNames="False" HasFixedBinaryLayout="False" HasMotorolaByteOrder="False" Name="UINTM8_Setter_Prototype">
+              <Result DataType="MM::DataTypes::UINTM8" />
+              <Parameters>
+                <Parameter IsOptional="False" Name="newValue">
+                  <DataType DataType="MM::DataTypes::UINTM8" />
+                </Parameter>
+              </Parameters>
+            </FunctionPrototype>
+            <IntegerDataType IsSigned="False" BitCount="32" HasFixedBinaryLayout="True" HasMotorolaByteOrder="True" Name="UINTM32" />
+            <FunctionPrototype IsOneWay="False" AllowSpecialCharactersInMemberNames="False" HasFixedBinaryLayout="False" HasMotorolaByteOrder="False" Name="UINTM32_Setter_Prototype">
+              <Result DataType="MM::DataTypes::UINTM32">
+                <NumericProperties MinValue="0" MinValueType="UInt64" MaxValue="6" MaxValueType="UInt64" IsBoolean="False" IsTimespan="False">
+                  <ImplToPhysEncodings TextualEncodings="MM::Encodings::DECKSTATUS_UINTM32" />
+                </NumericProperties>
+              </Result>
+              <Parameters>
+                <Parameter IsOptional="False" Name="newValue">
+                  <DataType DataType="MM::DataTypes::UINTM32">
+                    <NumericProperties MinValue="0" MinValueType="UInt64" MaxValue="6" MaxValueType="UInt64" IsBoolean="False" IsTimespan="False">
+                      <ImplToPhysEncodings TextualEncodings="MM::Encodings::DECKSTATUS_UINTM32" />
+                    </NumericProperties>
+                  </DataType>
+                </Parameter>
+              </Parameters>
+            </FunctionPrototype>
+            <StructDataType Bitcount="0" RawBitcount="0" HasFixedBinaryLayout="False" HasMotorolaByteOrder="True" Name="MEDIAINFO">
+              <Fields>
+                <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="mediaTitle">
+                  <AttributeValues>
+                    <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="memberName:mediaTitle" InitialValueType="String" />
+                  </AttributeValues>
+                  <DataType DataType="MM::DataTypes::STRINGUTF8DYNAMICM" />
+                </DataTypeField>
+                <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="mediaType">
+                  <AttributeValues>
+                    <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="memberName:mediaType" InitialValueType="String" />
+                  </AttributeValues>
+                  <DataType DataType="MM::DataTypes::UINTM32">
+                    <NumericProperties MinValue="0" MinValueType="UInt64" MaxValue="4" MaxValueType="UInt64" IsBoolean="False" IsTimespan="False">
+                      <ImplToPhysEncodings TextualEncodings="MM::Encodings::MEDIATYPE_UINTM32" />
+                    </NumericProperties>
+                  </DataType>
+                </DataTypeField>
+                <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="mediaFileSystem">
+                  <AttributeValues>
+                    <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="memberName:mediaFileSystem" InitialValueType="String" />
+                  </AttributeValues>
+                  <DataType DataType="MM::DataTypes::UINTM32">
+                    <NumericProperties MinValue="0" MinValueType="UInt64" MaxValue="10" MaxValueType="UInt64" IsBoolean="False" IsTimespan="False">
+                      <ImplToPhysEncodings TextualEncodings="MM::Encodings::MEDIAFILESYSTEM_UINTM32" />
+                    </NumericProperties>
+                  </DataType>
+                </DataTypeField>
+                <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="firstTrack">
+                  <AttributeValues>
+                    <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="memberName:firstTrack" InitialValueType="String" />
+                  </AttributeValues>
+                  <DataType DataType="MM::DataTypes::UINTM16" />
+                </DataTypeField>
+                <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="lastTrack">
+                  <AttributeValues>
+                    <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="memberName:lastTrack" InitialValueType="String" />
+                  </AttributeValues>
+                  <DataType DataType="MM::DataTypes::UINTM16" />
+                </DataTypeField>
+                <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="playTime">
+                  <AttributeValues>
+                    <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="memberName:playTime" InitialValueType="String" />
+                  </AttributeValues>
+                  <DataType DataType="MM::DataTypes::UINTM32" />
+                </DataTypeField>
+              </Fields>
+            </StructDataType>
+            <ArrayDataType MaxLength="6" MinLength="6" HasMaxLength="True" HasFixedBinaryLayout="False" HasMotorolaByteOrder="True" Name="MEDIAINFO_Array">
+              <BaseType DataType="MM::DataTypes::MEDIAINFO" />
+            </ArrayDataType>
+            <StructDataType Bitcount="16" RawBitcount="16" HasFixedBinaryLayout="True" HasMotorolaByteOrder="True" Name="PEAKLEVEL">
+              <Fields>
+                <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="levelLeft">
+                  <AttributeValues>
+                    <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="memberName:levelLeft" InitialValueType="String" />
+                  </AttributeValues>
+                  <DataType DataType="MM::DataTypes::UINTM8" />
+                </DataTypeField>
+                <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="levelRight">
+                  <AttributeValues>
+                    <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="memberName:levelRight" InitialValueType="String" />
+                  </AttributeValues>
+                  <DataType DataType="MM::DataTypes::UINTM8" />
+                </DataTypeField>
+              </Fields>
+            </StructDataType>
+            <StructDataType Bitcount="48" RawBitcount="48" HasFixedBinaryLayout="True" HasMotorolaByteOrder="True" Name="TIMEPOSITION">
+              <Fields>
+                <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="diskTime">
+                  <AttributeValues>
+                    <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="memberName:diskTime" InitialValueType="String" />
+                  </AttributeValues>
+                  <DataType DataType="MM::DataTypes::UINTM16" />
+                </DataTypeField>
+                <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="trackTime">
+                  <AttributeValues>
+                    <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="memberName:trackTime" InitialValueType="String" />
+                  </AttributeValues>
+                  <DataType DataType="MM::DataTypes::UINTM16" />
+                </DataTypeField>
+                <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="titleTime">
+                  <AttributeValues>
+                    <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="memberName:titleTime" InitialValueType="String" />
+                  </AttributeValues>
+                  <DataType DataType="MM::DataTypes::UINTM16" />
+                </DataTypeField>
+              </Fields>
+            </StructDataType>
+            <FunctionPrototype IsOneWay="False" AllowSpecialCharactersInMemberNames="False" HasFixedBinaryLayout="False" HasMotorolaByteOrder="False" Name="UINTM16_Setter_Prototype">
+              <Result DataType="MM::DataTypes::UINTM16" />
+              <Parameters>
+                <Parameter IsOptional="False" Name="newValue">
+                  <DataType DataType="MM::DataTypes::UINTM16" />
+                </Parameter>
+              </Parameters>
+            </FunctionPrototype>
+            <StructDataType Bitcount="96" RawBitcount="96" HasFixedBinaryLayout="True" HasMotorolaByteOrder="True" Name="Position">
+              <Fields>
+                <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="longitude">
+                  <AttributeValues>
+                    <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="memberName:longitude" InitialValueType="String" />
+                  </AttributeValues>
+                  <DataType DataType="MM::DataTypes::UINTM32" />
+                </DataTypeField>
+                <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="latitude">
+                  <AttributeValues>
+                    <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="memberName:latitude" InitialValueType="String" />
+                  </AttributeValues>
+                  <DataType DataType="MM::DataTypes::UINTM32" />
+                </DataTypeField>
+                <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="altitude">
+                  <AttributeValues>
+                    <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="memberName:altitude" InitialValueType="String" />
+                  </AttributeValues>
+                  <DataType DataType="MM::DataTypes::UINTM32" />
+                </DataTypeField>
+              </Fields>
+            </StructDataType>
+            <FunctionPrototype IsOneWay="False" AllowSpecialCharactersInMemberNames="False" HasFixedBinaryLayout="False" HasMotorolaByteOrder="False" Name="Start_Prototype">
+              <Result DataType="_SystemDataTypes::Void" />
+            </FunctionPrototype>
+            <FunctionPrototype IsOneWay="False" AllowSpecialCharactersInMemberNames="False" HasFixedBinaryLayout="False" HasMotorolaByteOrder="False" Name="Stop_Prototype">
+              <Result DataType="_SystemDataTypes::Void" />
+            </FunctionPrototype>
+          </DataTypes>
+        </Namespace>
+        <Namespace IsDefinedAsHidden="False" IsSystemDefined="True" Name="Encodings">
+          <TextualEncodings>
+            <TextualEncodings DefinesMinMax="False" IsEnum="False" Name="DECKSTATUS_UINTM32">
+              <TextualEncoding TextualValue="Play" DisplayValue="Play" LowerBound="0" LowerBoundType="UInt32" UpperBound="0" UpperBoundType="UInt32" />
+              <TextualEncoding TextualValue="Stop" DisplayValue="Stop" LowerBound="1" LowerBoundType="UInt32" UpperBound="1" UpperBoundType="UInt32" />
+              <TextualEncoding TextualValue="Pause" DisplayValue="Pause" LowerBound="2" LowerBoundType="UInt32" UpperBound="2" UpperBoundType="UInt32" />
+              <TextualEncoding TextualValue="Load" DisplayValue="Load" LowerBound="3" LowerBoundType="UInt32" UpperBound="3" UpperBoundType="UInt32" />
+              <TextualEncoding TextualValue="Unload" DisplayValue="Unload" LowerBound="4" LowerBoundType="UInt32" UpperBound="4" UpperBoundType="UInt32" />
+              <TextualEncoding TextualValue="Search_Forward" DisplayValue="Search Forward" LowerBound="5" LowerBoundType="UInt32" UpperBound="5" UpperBoundType="UInt32" />
+              <TextualEncoding TextualValue="Search_Backward" DisplayValue="Search Backward" LowerBound="6" LowerBoundType="UInt32" UpperBound="6" UpperBoundType="UInt32" />
+            </TextualEncodings>
+            <TextualEncodings DefinesMinMax="False" IsEnum="False" Name="MAGAZINESTATUS_UINTM32">
+              <TextualEncoding TextualValue="NoMagazine" DisplayValue="NoMagazine" LowerBound="0" LowerBoundType="UInt32" UpperBound="0" UpperBoundType="UInt32" />
+              <TextualEncoding TextualValue="Magazine_loaded" DisplayValue="Magazine loaded" LowerBound="1" LowerBoundType="UInt32" UpperBound="1" UpperBoundType="UInt32" />
+              <TextualEncoding TextualValue="DiskCheck" DisplayValue="DiskCheck" LowerBound="2" LowerBoundType="UInt32" UpperBound="2" UpperBoundType="UInt32" />
+              <TextualEncoding TextualValue="DiskChange" DisplayValue="DiskChange" LowerBound="3" LowerBoundType="UInt32" UpperBound="3" UpperBoundType="UInt32" />
+            </TextualEncodings>
+            <TextualEncodings DefinesMinMax="False" IsEnum="False" Name="MEDIATYPE_UINTM32">
+              <TextualEncoding TextualValue="no_disk_unknown" DisplayValue="no disk / unknown" LowerBound="0" LowerBoundType="UInt32" UpperBound="0" UpperBoundType="UInt32" />
+              <TextualEncoding TextualValue="Audio" DisplayValue="Audio" LowerBound="1" LowerBoundType="UInt32" UpperBound="1" UpperBoundType="UInt32" />
+              <TextualEncoding TextualValue="Video" DisplayValue="Video" LowerBound="2" LowerBoundType="UInt32" UpperBound="2" UpperBoundType="UInt32" />
+              <TextualEncoding TextualValue="ROM" DisplayValue="ROM" LowerBound="3" LowerBoundType="UInt32" UpperBound="3" UpperBoundType="UInt32" />
+              <TextualEncoding TextualValue="Mixed" DisplayValue="Mixed" LowerBound="4" LowerBoundType="UInt32" UpperBound="4" UpperBoundType="UInt32" />
+            </TextualEncodings>
+            <TextualEncodings DefinesMinMax="False" IsEnum="False" Name="MEDIAFILESYSTEM_UINTM32">
+              <TextualEncoding TextualValue="no_disk_unknown" DisplayValue="no disk / unknown" LowerBound="0" LowerBoundType="UInt32" UpperBound="0" UpperBoundType="UInt32" />
+              <TextualEncoding TextualValue="CDDA_CD_Digital_Audio_" DisplayValue="CDDA (CD Digital Audio)" LowerBound="1" LowerBoundType="UInt32" UpperBound="1" UpperBoundType="UInt32" />
+              <TextualEncoding TextualValue="BridgeDisc" DisplayValue="BridgeDisc" LowerBound="2" LowerBoundType="UInt32" UpperBound="2" UpperBoundType="UInt32" />
+              <TextualEncoding TextualValue="ISO9660_Format_of_CDROM_" DisplayValue="ISO9660 (Format of CDROM)" LowerBound="3" LowerBoundType="UInt32" UpperBound="3" UpperBoundType="UInt32" />
+              <TextualEncoding TextualValue="Joliet_Format_of_CDROM_" DisplayValue="Joliet (Format of CDROM)" LowerBound="4" LowerBoundType="UInt32" UpperBound="4" UpperBoundType="UInt32" />
+              <TextualEncoding TextualValue="PhotoCD" DisplayValue="PhotoCD" LowerBound="5" LowerBoundType="UInt32" UpperBound="5" UpperBoundType="UInt32" />
+              <TextualEncoding TextualValue="HFS" DisplayValue="HFS" LowerBound="6" LowerBoundType="UInt32" UpperBound="6" UpperBoundType="UInt32" />
+              <TextualEncoding TextualValue="CDi_CD_Interactive_that_is_with_application_" DisplayValue="CDi (CD Interactive, that is with application)" LowerBound="7" LowerBoundType="UInt32" UpperBound="7" UpperBoundType="UInt32" />
+              <TextualEncoding TextualValue="CDExtra" DisplayValue="CDExtra" LowerBound="8" LowerBoundType="UInt32" UpperBound="8" UpperBoundType="UInt32" />
+              <TextualEncoding TextualValue="CDXA" DisplayValue="CDXA" LowerBound="9" LowerBoundType="UInt32" UpperBound="9" UpperBoundType="UInt32" />
+              <TextualEncoding TextualValue="UDF" DisplayValue="UDF" LowerBound="10" LowerBoundType="UInt32" UpperBound="10" UpperBoundType="UInt32" />
+            </TextualEncodings>
+          </TextualEncodings>
+        </Namespace>
+        <Namespace IsDefinedAsHidden="False" IsSystemDefined="True" Name="HeadUnit">
+          <DistributedObjects>
+            <DistributedObject GenerateDotNetAPI="True" Name="CDPlayer_1_1">
+              <DataType>
+                <ModifiedDOIF Reverse="True" IsDOReference="False" Interface="MM::Interfaces::CDPlayer" />
+              </DataType>
+              <MemberData>
+                <DOMemberDataHolder Name="MemberData">
+                  <Data>
+                    <DOInstanceMemberData Name="IncrementTrack">
+                      <AttributeValues>
+                        <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="cluster:MM,node:HeadUnit,serviceId:10,majorVersion:1,instanceId:1,shortName:CDPlayer_1_1,methodId:21,inParams:[NSteps]" InitialValueType="String" />
+                      </AttributeValues>
+                    </DOInstanceMemberData>
+                    <DOInstanceMemberData Name="DecrementTrack">
+                      <AttributeValues>
+                        <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="cluster:MM,node:HeadUnit,serviceId:10,majorVersion:1,instanceId:1,shortName:CDPlayer_1_1,methodId:22,inParams:[NSteps]" InitialValueType="String" />
+                      </AttributeValues>
+                    </DOInstanceMemberData>
+                    <DOInstanceMemberData Name="IncrementDisc">
+                      <AttributeValues>
+                        <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="cluster:MM,node:HeadUnit,serviceId:10,majorVersion:1,instanceId:1,shortName:CDPlayer_1_1,methodId:23,inParams:[NSteps]" InitialValueType="String" />
+                      </AttributeValues>
+                    </DOInstanceMemberData>
+                    <DOInstanceMemberData Name="DecrementDisc">
+                      <AttributeValues>
+                        <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="cluster:MM,node:HeadUnit,serviceId:10,majorVersion:1,instanceId:1,shortName:CDPlayer_1_1,methodId:24,inParams:[NSteps]" InitialValueType="String" />
+                      </AttributeValues>
+                    </DOInstanceMemberData>
+                    <DOInstanceMemberData Name="AudioDiskInfo">
+                      <AttributeValues>
+                        <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="cluster:MM,node:HeadUnit,serviceId:10,majorVersion:1,instanceId:1,shortName:CDPlayer_1_1,getterId:31" InitialValueType="String" />
+                      </AttributeValues>
+                    </DOInstanceMemberData>
+                    <DOInstanceMemberData Name="ActiveDisk">
+                      <AttributeValues>
+                        <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="cluster:MM,node:HeadUnit,serviceId:10,majorVersion:1,instanceId:1,shortName:CDPlayer_1_1,notifierId:33,setterId:35" InitialValueType="String" />
+                      </AttributeValues>
+                    </DOInstanceMemberData>
+                    <DOInstanceMemberData Name="DeckStatus">
+                      <AttributeValues>
+                        <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="cluster:MM,node:HeadUnit,serviceId:10,majorVersion:1,instanceId:1,shortName:CDPlayer_1_1,notifierId:36,setterId:38" InitialValueType="String" />
+                      </AttributeValues>
+                    </DOInstanceMemberData>
+                    <DOInstanceMemberData Name="MagazineStatus">
+                      <AttributeValues>
+                        <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="cluster:MM,node:HeadUnit,serviceId:10,majorVersion:1,instanceId:1,shortName:CDPlayer_1_1,notifierId:39" InitialValueType="String" />
+                      </AttributeValues>
+                    </DOInstanceMemberData>
+                    <DOInstanceMemberData Name="MediaInfo">
+                      <AttributeValues>
+                        <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="cluster:MM,node:HeadUnit,serviceId:10,majorVersion:1,instanceId:1,shortName:CDPlayer_1_1,notifierId:42" InitialValueType="String" />
+                      </AttributeValues>
+                    </DOInstanceMemberData>
+                    <DOInstanceMemberData Name="PeakLevel">
+                      <AttributeValues>
+                        <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="cluster:MM,node:HeadUnit,serviceId:10,majorVersion:1,instanceId:1,shortName:CDPlayer_1_1,notifierId:45" InitialValueType="String" />
+                      </AttributeValues>
+                    </DOInstanceMemberData>
+                    <DOInstanceMemberData Name="TimePosition">
+                      <AttributeValues>
+                        <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="cluster:MM,node:HeadUnit,serviceId:10,majorVersion:1,instanceId:1,shortName:CDPlayer_1_1,notifierId:48" InitialValueType="String" />
+                      </AttributeValues>
+                    </DOInstanceMemberData>
+                    <DOInstanceMemberData Name="TrackPosition">
+                      <AttributeValues>
+                        <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="cluster:MM,node:HeadUnit,serviceId:10,majorVersion:1,instanceId:1,shortName:CDPlayer_1_1,notifierId:51,setterId:53" InitialValueType="String" />
+                      </AttributeValues>
+                    </DOInstanceMemberData>
+                  </Data>
+                </DOMemberDataHolder>
+              </MemberData>
+            </DistributedObject>
+            <DistributedObject GenerateDotNetAPI="True" Name="Navigation_1_1">
+              <DataType>
+                <ModifiedDOIF Reverse="True" IsDOReference="False" Interface="MM::Interfaces::Navigation" />
+              </DataType>
+              <MemberData>
+                <DOMemberDataHolder Name="MemberData">
+                  <Data>
+                    <DOInstanceMemberData Name="Position">
+                      <AttributeValues>
+                        <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="cluster:MM,node:HeadUnit,serviceId:11,majorVersion:1,instanceId:1,shortName:Navigation_1_1,eventId:1" InitialValueType="String" />
+                      </AttributeValues>
+                    </DOInstanceMemberData>
+                  </Data>
+                </DOMemberDataHolder>
+              </MemberData>
+            </DistributedObject>
+            <DistributedObject GenerateDotNetAPI="True" Name="TVReceiver_1_1">
+              <DataType>
+                <ModifiedDOIF Reverse="True" IsDOReference="False" Interface="MM::Interfaces::TVReceiver" />
+              </DataType>
+              <MemberData>
+                <DOMemberDataHolder Name="MemberData">
+                  <Data>
+                    <DOInstanceMemberData Name="Start">
+                      <AttributeValues>
+                        <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="cluster:MM,node:HeadUnit,serviceId:12,majorVersion:1,instanceId:1,shortName:TVReceiver_1_1,methodId:21" InitialValueType="String" />
+                      </AttributeValues>
+                    </DOInstanceMemberData>
+                    <DOInstanceMemberData Name="Stop">
+                      <AttributeValues>
+                        <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="cluster:MM,node:HeadUnit,serviceId:12,majorVersion:1,instanceId:1,shortName:TVReceiver_1_1,methodId:22" InitialValueType="String" />
+                      </AttributeValues>
+                    </DOInstanceMemberData>
+                  </Data>
+                </DOMemberDataHolder>
+              </MemberData>
+            </DistributedObject>
+          </DistributedObjects>
+        </Namespace>
+        <Namespace IsDefinedAsHidden="False" IsSystemDefined="True" Name="CD_Changer">
+          <DistributedObjects>
+            <DistributedObject GenerateDotNetAPI="True" Name="CDPlayer_1_1">
+              <DataType>
+                <ModifiedDOIF Reverse="False" IsDOReference="False" Interface="MM::Interfaces::CDPlayer" />
+              </DataType>
+              <MemberData>
+                <DOMemberDataHolder Name="MemberData">
+                  <Data>
+                    <DOInstanceMemberData Name="IncrementTrack">
+                      <AttributeValues>
+                        <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="cluster:MM,node:CD_Changer,serviceId:10,majorVersion:1,instanceId:1,methodId:21,inParams:[NSteps]" InitialValueType="String" />
+                      </AttributeValues>
+                    </DOInstanceMemberData>
+                    <DOInstanceMemberData Name="DecrementTrack">
+                      <AttributeValues>
+                        <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="cluster:MM,node:CD_Changer,serviceId:10,majorVersion:1,instanceId:1,methodId:22,inParams:[NSteps]" InitialValueType="String" />
+                      </AttributeValues>
+                    </DOInstanceMemberData>
+                    <DOInstanceMemberData Name="IncrementDisc">
+                      <AttributeValues>
+                        <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="cluster:MM,node:CD_Changer,serviceId:10,majorVersion:1,instanceId:1,methodId:23,inParams:[NSteps]" InitialValueType="String" />
+                      </AttributeValues>
+                    </DOInstanceMemberData>
+                    <DOInstanceMemberData Name="DecrementDisc">
+                      <AttributeValues>
+                        <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="cluster:MM,node:CD_Changer,serviceId:10,majorVersion:1,instanceId:1,methodId:24,inParams:[NSteps]" InitialValueType="String" />
+                      </AttributeValues>
+                    </DOInstanceMemberData>
+                    <DOInstanceMemberData Name="AudioDiskInfo">
+                      <AttributeValues>
+                        <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="cluster:MM,node:CD_Changer,serviceId:10,majorVersion:1,instanceId:1,getterId:31" InitialValueType="String" />
+                      </AttributeValues>
+                    </DOInstanceMemberData>
+                    <DOInstanceMemberData Name="ActiveDisk">
+                      <AttributeValues>
+                        <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="cluster:MM,node:CD_Changer,serviceId:10,majorVersion:1,instanceId:1,notifierId:33,setterId:35" InitialValueType="String" />
+                      </AttributeValues>
+                    </DOInstanceMemberData>
+                    <DOInstanceMemberData Name="DeckStatus">
+                      <AttributeValues>
+                        <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="cluster:MM,node:CD_Changer,serviceId:10,majorVersion:1,instanceId:1,notifierId:36,setterId:38" InitialValueType="String" />
+                      </AttributeValues>
+                    </DOInstanceMemberData>
+                    <DOInstanceMemberData Name="MagazineStatus">
+                      <AttributeValues>
+                        <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="cluster:MM,node:CD_Changer,serviceId:10,majorVersion:1,instanceId:1,notifierId:39" InitialValueType="String" />
+                      </AttributeValues>
+                    </DOInstanceMemberData>
+                    <DOInstanceMemberData Name="MediaInfo">
+                      <AttributeValues>
+                        <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="cluster:MM,node:CD_Changer,serviceId:10,majorVersion:1,instanceId:1,notifierId:42" InitialValueType="String" />
+                      </AttributeValues>
+                    </DOInstanceMemberData>
+                    <DOInstanceMemberData Name="PeakLevel">
+                      <AttributeValues>
+                        <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="cluster:MM,node:CD_Changer,serviceId:10,majorVersion:1,instanceId:1,notifierId:45" InitialValueType="String" />
+                      </AttributeValues>
+                    </DOInstanceMemberData>
+                    <DOInstanceMemberData Name="TimePosition">
+                      <AttributeValues>
+                        <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="cluster:MM,node:CD_Changer,serviceId:10,majorVersion:1,instanceId:1,notifierId:48" InitialValueType="String" />
+                      </AttributeValues>
+                    </DOInstanceMemberData>
+                    <DOInstanceMemberData Name="TrackPosition">
+                      <AttributeValues>
+                        <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="cluster:MM,node:CD_Changer,serviceId:10,majorVersion:1,instanceId:1,notifierId:51,setterId:53" InitialValueType="String" />
+                      </AttributeValues>
+                    </DOInstanceMemberData>
+                  </Data>
+                </DOMemberDataHolder>
+              </MemberData>
+            </DistributedObject>
+          </DistributedObjects>
+        </Namespace>
+        <Namespace IsDefinedAsHidden="False" IsSystemDefined="True" Name="GPS_Unit">
+          <DistributedObjects>
+            <DistributedObject GenerateDotNetAPI="True" Name="Navigation_1_1">
+              <DataType>
+                <ModifiedDOIF Reverse="False" IsDOReference="False" Interface="MM::Interfaces::Navigation" />
+              </DataType>
+              <MemberData>
+                <DOMemberDataHolder Name="MemberData">
+                  <Data>
+                    <DOInstanceMemberData Name="Position">
+                      <AttributeValues>
+                        <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="cluster:MM,node:GPS_Unit,serviceId:11,majorVersion:1,instanceId:1,eventId:1" InitialValueType="String" />
+                      </AttributeValues>
+                    </DOInstanceMemberData>
+                  </Data>
+                </DOMemberDataHolder>
+              </MemberData>
+            </DistributedObject>
+          </DistributedObjects>
+        </Namespace>
+        <Namespace IsDefinedAsHidden="False" IsSystemDefined="True" Name="TV_Receiver">
+          <DistributedObjects>
+            <DistributedObject GenerateDotNetAPI="True" Name="TVReceiver_1_1">
+              <DataType>
+                <ModifiedDOIF Reverse="False" IsDOReference="False" Interface="MM::Interfaces::TVReceiver" />
+              </DataType>
+              <MemberData>
+                <DOMemberDataHolder Name="MemberData">
+                  <Data>
+                    <DOInstanceMemberData Name="Start">
+                      <AttributeValues>
+                        <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="cluster:MM,node:TV_Receiver,serviceId:12,majorVersion:1,instanceId:1,methodId:21" InitialValueType="String" />
+                      </AttributeValues>
+                    </DOInstanceMemberData>
+                    <DOInstanceMemberData Name="Stop">
+                      <AttributeValues>
+                        <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="cluster:MM,node:TV_Receiver,serviceId:12,majorVersion:1,instanceId:1,methodId:22" InitialValueType="String" />
+                      </AttributeValues>
+                    </DOInstanceMemberData>
+                  </Data>
+                </DOMemberDataHolder>
+              </MemberData>
+            </DistributedObject>
+          </DistributedObjects>
+        </Namespace>
+      </Subnamespaces>
+    </Namespace>
+  </Namespaces>
+</FunctionBusLibrary>

@@ -1,0 +1,118 @@
+/*@!Encoding:1252*/
+includes
+{
+  
+}
+
+variables
+{
+  /* definitions of buffer sizes and number of signals */
+  const long cNumberSignals = 4;
+  const long cBufferSize = 100;
+  
+  double gValueBuffer[cNumberSignals][cBufferSize];
+  long gValueIndex[cNumberSignals];
+  
+  double gAverage[cNumberSignals];
+  long gBufferIndex[cNumberSignals]; 
+}
+
+/* event handling for the first signal, delivered by sysVar from EtherCAT option */
+on sysvar sysvarMember::ECAT::Network::Slave_001::Task0.Channel_1.Value
+{
+  if (gValueIndex[0] < cBufferSize)
+  {
+    /* fill buffer with measurement values */
+    sysGetVariableMemberPhys(sysvarMember::ECAT::Network::Slave_001::Task0.Channel_1.Value, gValueBuffer[0][gValueIndex[0]]);
+    gValueIndex[0]++;
+  }
+  else
+  {
+    gValueIndex[0] = 0;    
+    sysGetVariableMemberPhys(sysvarMember::ECAT::Network::Slave_001::Task0.Channel_1.Value, gValueBuffer[0][gValueIndex[0]]);
+  
+    /* calculate average */
+    for(gBufferIndex[0] = 0; gBufferIndex[0] < cBufferSize; gBufferIndex[0]++)
+    {
+      gAverage[0] += gValueBuffer[0][gBufferIndex[0]];
+    }
+    /* transfer the average to the sysVar */
+    @sysvar::Measurement::gAvgChn1 =  gAverage[0] / cBufferSize;
+    gAverage[0] = 0.0;
+  }
+}
+
+/* event handling for the second signal, delivered by sysVar from EtherCAT option */
+on sysvar sysvarMember::ECAT::Network::Slave_001::Task0.Channel_2.Value
+{
+  if (gValueIndex[1] < cBufferSize)
+  {
+    /* fill buffer with measurement values */
+    sysGetVariableMemberPhys(sysvarMember::ECAT::Network::Slave_001::Task0.Channel_2.Value, gValueBuffer[1][gValueIndex[1]]);
+    gValueIndex[1]++;
+  }
+  else
+  {
+    gValueIndex[1] = 0;    
+    sysGetVariableMemberPhys(sysvarMember::ECAT::Network::Slave_001::Task0.Channel_2.Value, gValueBuffer[1][gValueIndex[1]]);
+    
+    /* calculate average */
+    for(gBufferIndex[1] = 0; gBufferIndex[1] < cBufferSize; gBufferIndex[1]++)
+    {
+      gAverage[1] += gValueBuffer[1][gBufferIndex[1]];
+    }
+    /* transfer the average to the sysVar */
+    @sysvar::Measurement::gAvgChn2 =  gAverage[1] / cBufferSize;
+    gAverage[1] = 0.0;
+  }
+}
+
+/* event handling for the third signal, delivered by sysVar from EtherCAT option */
+on sysvar sysvarMember::ECAT::Network::Slave_001::Task0.Channel_3.Value
+{
+  if (gValueIndex[2] < cBufferSize)
+  {
+    /* fill buffer with measurement values */
+    sysGetVariableMemberPhys(sysvarMember::ECAT::Network::Slave_001::Task0.Channel_3.Value, gValueBuffer[2][gValueIndex[2]]);
+    gValueIndex[2]++;
+  }
+  else
+  {
+    gValueIndex[2] = 0;    
+    sysGetVariableMemberPhys(sysvarMember::ECAT::Network::Slave_001::Task0.Channel_3.Value, gValueBuffer[2][gValueIndex[2]]);
+
+    /* calculate average */
+    for(gBufferIndex[2] = 0; gBufferIndex[2] < cBufferSize; gBufferIndex[2]++)
+    {
+      gAverage[2] += gValueBuffer[2][gBufferIndex[2]];
+    }
+    /* transfer the average to the sysVar */
+    @sysvar::Measurement::gAvgChn3=  gAverage[2] / cBufferSize;
+    gAverage[2] = 0.0;
+  }
+}
+
+/* event handling for the forth signal, delivered by sysVar from EtherCAT option */
+on sysvar sysvarMember::ECAT::Network::Slave_001::Task0.Channel_4.Value
+{
+  if (gValueIndex[3] < cBufferSize)
+  {
+    /* fill buffer with measurement values */
+    sysGetVariableMemberPhys(sysvarMember::ECAT::Network::Slave_001::Task0.Channel_4.Value, gValueBuffer[3][gValueIndex[3]]);
+    gValueIndex[3]++;
+  }
+  else
+  {
+    gValueIndex[3] = 0;    
+    sysGetVariableMemberPhys(sysvarMember::ECAT::Network::Slave_001::Task0.Channel_4.Value, gValueBuffer[3][gValueIndex[3]]);
+  
+    /* calculate average */    
+    for(gBufferIndex[3] = 0; gBufferIndex[3] < cBufferSize; gBufferIndex[3]++)
+    {
+      gAverage[3] += gValueBuffer[3][gBufferIndex[3]];
+    }
+    /* transfer the average to the sysVar */
+    @sysvar::Measurement::gAvgChn4=  gAverage[3] / cBufferSize;
+    gAverage[3] = 0.0;
+  }
+}

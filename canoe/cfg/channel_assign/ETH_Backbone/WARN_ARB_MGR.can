@@ -31,6 +31,7 @@ int clampRange(int value, int minValue, int maxValue)
 void runArbiter()
 {
   message ethDecelAssistReqMsg mDecel;
+  message ethObjectScenarioAlertMsg mObjAlert;
   int emergencyContext;
   int warningState;
   int baseZoneContext;
@@ -39,6 +40,15 @@ void runArbiter()
   int driveState;
   int steeringInput;
   int brakePedal;
+  int objectTrackValid;
+  int objectConfidence;
+  int objectRiskClass;
+  int objectTtcMin;
+  int intersectionConflictFlag;
+  int mergeCutInFlag;
+  int objectWarningActive;
+  int decelRiskOnThreshold;
+  int decelRiskOffThreshold;
   int prevDecelAssistReq;
   int decelAssistReq;
   int driverReleaseReason;
@@ -67,6 +77,18 @@ void runArbiter()
   driveState = clampRange((int)@Core::driveStateNorm, 0, 3);
   steeringInput = clampRange((int)@Core::steeringInputNorm, 0, 1);
   brakePedal = clampRange((int)@Core::brakePedalNorm, 0, 100);
+  objectTrackValid = clampRange((int)@Core::objectTrackValid, 0, 1);
+  objectConfidence = clampRange((int)@Core::objectConfidence, 0, 100);
+  objectRiskClass = clampRange((int)@Core::objectRiskClass, 0, 7);
+  objectTtcMin = clampRange((int)@Core::objectTtcMin, 0, 10000);
+  intersectionConflictFlag = clampRange((int)@Core::intersectionConflictFlag, 0, 1);
+  mergeCutInFlag = clampRange((int)@Core::mergeCutInFlag, 0, 1);
+  objectWarningActive = 0;
+  if (objectTrackValid == 1 && objectConfidence >= 30 && objectRiskClass >= 2)
+  {
+    objectWarningActive = 1;
+  }
+
   prevDecelAssistReq = (((int)@Core::decelAssistReq) == 1) ? 1 : 0;
   baseAlertLevel = 0;
   baseAlertType = 0;
@@ -75,15 +97,22 @@ void runArbiter()
   decelAssistReq = prevDecelAssistReq;
   driverReleaseReason = 0;
 
-  /* Hysteresis to prevent request chatter around the threshold:
-     activate at >=70, hold until <=55 unless driver/failsafe cancels first. */
-  if (failSafeMode == 0 && driveState == 3 && emergencyContext > 0)
+  decelRiskOnThreshold = 70;
+  decelRiskOffThreshold = 55;
+  if (emergencyContext == 0 && objectWarningActive == 1)
   {
-    if (decelAssistReq == 0 && proximityRiskLevel >= 70)
+    decelRiskOnThreshold = 75;
+    decelRiskOffThreshold = 60;
+  }
+
+  /* Hysteresis to prevent request chatter around threshold. */
+  if (failSafeMode == 0 && driveState == 3 && (emergencyContext > 0 || objectWarningActive == 1))
+  {
+    if (decelAssistReq == 0 && proximityRiskLevel >= decelRiskOnThreshold)
     {
       decelAssistReq = 1;
     }
-    else if (decelAssistReq == 1 && proximityRiskLevel <= 55)
+    else if (decelAssistReq == 1 && proximityRiskLevel <= decelRiskOffThreshold)
     {
       decelAssistReq = 0;
     }
@@ -175,9 +204,7 @@ void runArbiter()
   }
   else if (gPrevEmergencyContext > 0)
   {
-    /* Alert Priority recovery: emergency just ended.
-       Use current baseAlertLevel (fresh re-evaluation) to ensure safety conditions
-       are up-to-date, not stale. Snapshot is kept for audit log only (Req_033). */
+    /* Alert Priority recovery: emergency just ended. */
     selectedAlertLevel = baseAlertLevel;
     selectedAlertType = baseAlertType;
     write("[WARN_ARB_MGR] Alert Priority recover: zone lvl=%d type=%d (snapshot was lvl=%d type=%d)",
@@ -187,15 +214,49 @@ void runArbiter()
   }
   else
   {
-    /* Alert Priority L2/L1: normal zone or idle */
+    /* Normal zone or idle */
     selectedAlertLevel = baseAlertLevel;
     selectedAlertType = baseAlertType;
+
+    /* Req_134/135/139 pre-activation: object-context arbitration when no emergency. */
+    if (objectWarningActive == 1)
+    {
+      if (intersectionConflictFlag == 1)
+      {
+        selectedAlertLevel = 4;
+        selectedAlertType = 5;
+      }
+      else if (mergeCutInFlag == 1)
+      {
+        selectedAlertLevel = 4;
+        selectedAlertType = 6;
+      }
+      else
+      {
+        selectedAlertLevel = (objectRiskClass >= 4) ? 5 : 3;
+        selectedAlertType = 4;
+      }
+    }
   }
 
-  if (decelAssistReq == 1 && emergencyContext > 0)
+  if (decelAssistReq == 1)
   {
-    selectedAlertLevel = (emergencyContext == 2) ? 7 : 6;
-    selectedAlertType = emergencyContext;
+    if (emergencyContext > 0)
+    {
+      selectedAlertLevel = (emergencyContext == 2) ? 7 : 6;
+      selectedAlertType = emergencyContext;
+    }
+    else if (objectWarningActive == 1)
+    {
+      if (selectedAlertLevel < 5)
+      {
+        selectedAlertLevel = 5;
+      }
+      if (selectedAlertType == 0)
+      {
+        selectedAlertType = 4;
+      }
+    }
   }
 
   @Core::decelAssistReq = decelAssistReq;
@@ -210,9 +271,10 @@ void runArbiter()
   if (gLastDecelAssistReq != decelAssistReq ||
       gLastDriverReleaseReason != driverReleaseReason)
   {
-    write("[WARN_ARB_MGR] decelAssistReq=%d risk=%d failSafe=%d steer=%d brake=%d reason=%d",
+    write("[WARN_ARB_MGR] decelAssistReq=%d risk=%d failSafe=%d steer=%d brake=%d reason=%d objClass=%d objTtc=%d objConf=%d",
           decelAssistReq, proximityRiskLevel, failSafeMode,
-          steeringInput, brakePedal, driverReleaseReason);
+          steeringInput, brakePedal, driverReleaseReason,
+          objectRiskClass, objectTtcMin, objectConfidence);
     gLastDecelAssistReq = decelAssistReq;
     gLastDriverReleaseReason = driverReleaseReason;
   }
@@ -223,6 +285,13 @@ void runArbiter()
   mDecel.DriverReleaseReason = driverReleaseReason;
   mDecel.EmergencyContext = emergencyContext;
   output(mDecel);
+
+  mObjAlert.ObjectAlertLevel = clampRange(selectedAlertLevel, 0, 7);
+  mObjAlert.ObjectAlertType = clampRange(selectedAlertType, 0, 7);
+  mObjAlert.IntersectionConflict = intersectionConflictFlag;
+  mObjAlert.MergeCutIn = mergeCutInFlag;
+  mObjAlert.ObjectRiskClass = clampRange(objectRiskClass, 0, 7);
+  output(mObjAlert);
 
   gPrevEmergencyContext = emergencyContext;
 }

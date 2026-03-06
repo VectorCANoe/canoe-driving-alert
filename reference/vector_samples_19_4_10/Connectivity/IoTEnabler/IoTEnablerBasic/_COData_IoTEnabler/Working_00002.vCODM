@@ -1,0 +1,422 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<FunctionBusLibrary Version="18" FormatMajorVersion="3" FormatMinorVersion="1" FormatPatchVersion="3">
+  <Namespaces>
+    <Namespace IsDefinedAsHidden="False" IsSystemDefined="False" Name="IoTEnabler">
+      <Subnamespaces>
+        <Namespace IsDefinedAsHidden="False" IsSystemDefined="False" Name="_Generated">
+          <DataTypes>
+            <IntegerDataType IsSigned="False" BitCount="1" HasFixedBinaryLayout="True" HasMotorolaByteOrder="False" Name="UInt1" />
+            <FunctionPrototype IsOneWay="False" AllowSpecialCharactersInMemberNames="False" HasFixedBinaryLayout="False" HasMotorolaByteOrder="False" Name="Func_IoTEnabler_NDevice_result_I_UTF8String_country_code_I_UTF8String_ssid_I_UTF8String_psk_I_UTF8String_key_mgmt_I_UInt1_Bool_reset">
+              <Result DataType="IoTEnabler::NDevice::result" />
+              <Parameters>
+                <Parameter IsOptional="False" Name="country_code">
+                  <DataType DataType="_SystemDataTypes::UTF8String" />
+                </Parameter>
+                <Parameter IsOptional="False" Name="ssid">
+                  <DataType DataType="_SystemDataTypes::UTF8String" />
+                </Parameter>
+                <Parameter IsOptional="False" Name="psk">
+                  <DataType DataType="_SystemDataTypes::UTF8String" />
+                </Parameter>
+                <Parameter IsOptional="False" Name="key_mgmt">
+                  <DataType DataType="_SystemDataTypes::UTF8String" />
+                </Parameter>
+                <Parameter IsOptional="False" Name="reset">
+                  <DataType DataType="IoTEnabler::_Generated::UInt1">
+                    <NumericProperties MinValue="" MinValueType="Invalid" MaxValue="" MaxValueType="Invalid" IsBoolean="True" IsTimespan="False" />
+                  </DataType>
+                </Parameter>
+              </Parameters>
+            </FunctionPrototype>
+            <ArrayDataType MaxLength="0" MinLength="0" HasMaxLength="False" HasFixedBinaryLayout="False" HasMotorolaByteOrder="False" Name="VarArray_0_Inf_UTF8String">
+              <BaseType DataType="_SystemDataTypes::UTF8String" />
+            </ArrayDataType>
+            <ArrayDataType MaxLength="0" MinLength="0" HasMaxLength="False" HasFixedBinaryLayout="False" HasMotorolaByteOrder="False" Name="VarArray_0_Inf_IoTEnabler_NDevice_ip_device">
+              <BaseType DataType="IoTEnabler::NDevice::ip_device" />
+            </ArrayDataType>
+            <FunctionPrototype IsOneWay="False" AllowSpecialCharactersInMemberNames="False" HasFixedBinaryLayout="False" HasMotorolaByteOrder="False" Name="Func_IoTEnabler_NDevice_result_O_VarArray_0_Inf_UTF8String_list_serial_O_VarArray_0_Inf_IoTEnabler_NDevice_ip_device_list_ip_O_VarArray_0_Inf_UTF8String_list_hci">
+              <Result DataType="IoTEnabler::NDevice::result" />
+              <Parameters>
+                <Parameter IsOptional="False" Direction="Out" Name="list_serial">
+                  <DataType DataType="IoTEnabler::_Generated::VarArray_0_Inf_UTF8String" />
+                </Parameter>
+                <Parameter IsOptional="False" Direction="Out" Name="list_ip">
+                  <DataType DataType="IoTEnabler::_Generated::VarArray_0_Inf_IoTEnabler_NDevice_ip_device" />
+                </Parameter>
+                <Parameter IsOptional="False" Direction="Out" Name="list_hci">
+                  <DataType DataType="IoTEnabler::_Generated::VarArray_0_Inf_UTF8String" />
+                </Parameter>
+              </Parameters>
+            </FunctionPrototype>
+            <FunctionPrototype IsOneWay="False" AllowSpecialCharactersInMemberNames="False" HasFixedBinaryLayout="False" HasMotorolaByteOrder="False" Name="Func_IoTEnabler_NDevice_result_O_Double_temperature">
+              <Result DataType="IoTEnabler::NDevice::result" />
+              <Parameters>
+                <Parameter IsOptional="False" Direction="Out" Name="temperature">
+                  <DataType DataType="_SystemDataTypes::Double" />
+                </Parameter>
+              </Parameters>
+            </FunctionPrototype>
+            <FunctionPrototype IsOneWay="False" AllowSpecialCharactersInMemberNames="False" HasFixedBinaryLayout="False" HasMotorolaByteOrder="False" Name="Func_IoTEnabler_NDevice_result_I_Int32_log_level">
+              <Result DataType="IoTEnabler::NDevice::result" />
+              <Parameters>
+                <Parameter IsOptional="False" Name="log_level">
+                  <DataType DataType="_SystemDataTypes::Int32" />
+                </Parameter>
+              </Parameters>
+            </FunctionPrototype>
+            <FunctionPrototype IsOneWay="False" AllowSpecialCharactersInMemberNames="False" HasFixedBinaryLayout="False" HasMotorolaByteOrder="False" Name="Func_IoTEnabler_NDevice_result_I_UTF8String_unit">
+              <Result DataType="IoTEnabler::NDevice::result" />
+              <Parameters>
+                <Parameter IsOptional="False" Name="unit">
+                  <DataType DataType="_SystemDataTypes::UTF8String" />
+                </Parameter>
+              </Parameters>
+            </FunctionPrototype>
+            <FunctionPrototype IsOneWay="False" AllowSpecialCharactersInMemberNames="False" HasFixedBinaryLayout="False" HasMotorolaByteOrder="False" Name="Func_IoTEnabler_NDevice_result_I_Int64_time_since_epoch">
+              <Result DataType="IoTEnabler::NDevice::result" />
+              <Parameters>
+                <Parameter IsOptional="False" Name="time_since_epoch">
+                  <DataType DataType="_SystemDataTypes::Int64" />
+                </Parameter>
+              </Parameters>
+            </FunctionPrototype>
+            <FunctionPrototype IsOneWay="False" AllowSpecialCharactersInMemberNames="False" HasFixedBinaryLayout="False" HasMotorolaByteOrder="False" Name="Func_IoTEnabler_NDevice_result_I_UTF8String_timezone">
+              <Result DataType="IoTEnabler::NDevice::result" />
+              <Parameters>
+                <Parameter IsOptional="False" Name="timezone">
+                  <DataType DataType="_SystemDataTypes::UTF8String" />
+                </Parameter>
+              </Parameters>
+            </FunctionPrototype>
+            <FunctionPrototype IsOneWay="False" AllowSpecialCharactersInMemberNames="False" HasFixedBinaryLayout="False" HasMotorolaByteOrder="False" Name="Func_IoTEnabler_NDevice_result_I_Int64_time_since_epoch_O_UTF8String_firmware_version">
+              <Result DataType="IoTEnabler::NDevice::result" />
+              <Parameters>
+                <Parameter IsOptional="False" Name="time_since_epoch">
+                  <DataType DataType="_SystemDataTypes::Int64" />
+                </Parameter>
+                <Parameter IsOptional="False" Direction="Out" Name="firmware_version">
+                  <DataType DataType="_SystemDataTypes::UTF8String" />
+                </Parameter>
+              </Parameters>
+            </FunctionPrototype>
+            <FunctionPrototype IsOneWay="False" AllowSpecialCharactersInMemberNames="False" HasFixedBinaryLayout="False" HasMotorolaByteOrder="False" Name="Func_IoTEnabler_NDevice_result_I_UTF8String_protocol_I_UTF8String_interface_id">
+              <Result DataType="IoTEnabler::NDevice::result" />
+              <Parameters>
+                <Parameter IsOptional="False" Name="protocol">
+                  <DataType DataType="_SystemDataTypes::UTF8String" />
+                </Parameter>
+                <Parameter IsOptional="False" Name="interface_id">
+                  <DataType DataType="_SystemDataTypes::UTF8String" />
+                </Parameter>
+              </Parameters>
+            </FunctionPrototype>
+            <FunctionPrototype IsOneWay="False" AllowSpecialCharactersInMemberNames="False" HasFixedBinaryLayout="False" HasMotorolaByteOrder="False" Name="Func_IoTEnabler_NDevice_result_I_UTF8String_protocol_I_UTF8String_interface_id_I_UTF8String_device_id_I_UInt1_Bool_permit_join">
+              <Result DataType="IoTEnabler::NDevice::result" />
+              <Parameters>
+                <Parameter IsOptional="False" Name="protocol">
+                  <DataType DataType="_SystemDataTypes::UTF8String" />
+                </Parameter>
+                <Parameter IsOptional="False" Name="interface_id">
+                  <DataType DataType="_SystemDataTypes::UTF8String" />
+                </Parameter>
+                <Parameter IsOptional="False" Name="device_id">
+                  <DataType DataType="_SystemDataTypes::UTF8String" />
+                </Parameter>
+                <Parameter IsOptional="False" Name="permit_join">
+                  <DataType DataType="IoTEnabler::_Generated::UInt1">
+                    <NumericProperties MinValue="" MinValueType="Invalid" MaxValue="" MaxValueType="Invalid" IsBoolean="True" IsTimespan="False" />
+                  </DataType>
+                </Parameter>
+              </Parameters>
+            </FunctionPrototype>
+            <FunctionPrototype IsOneWay="False" AllowSpecialCharactersInMemberNames="False" HasFixedBinaryLayout="False" HasMotorolaByteOrder="False" Name="Func_IoTEnabler_NDevice_result_I_UTF8String_protocol">
+              <Result DataType="IoTEnabler::NDevice::result" />
+              <Parameters>
+                <Parameter IsOptional="False" Name="protocol">
+                  <DataType DataType="_SystemDataTypes::UTF8String" />
+                </Parameter>
+              </Parameters>
+            </FunctionPrototype>
+            <FunctionPrototype IsOneWay="False" AllowSpecialCharactersInMemberNames="False" HasFixedBinaryLayout="False" HasMotorolaByteOrder="False" Name="Func_IoTEnabler_NDevice_result">
+              <Result DataType="IoTEnabler::NDevice::result" />
+            </FunctionPrototype>
+            <FunctionPrototype IsOneWay="False" AllowSpecialCharactersInMemberNames="False" HasFixedBinaryLayout="False" HasMotorolaByteOrder="False" Name="Func_NIoTEnabler_NIVectorDemo_result_I_UTF8String_string_in_I_Bytes_bytes_in_O_UTF8String_string_out_O_Int32_number_out">
+              <Result DataType="NIoTEnabler::NIVectorDemo::result" />
+              <Parameters>
+                <Parameter IsOptional="False" Name="string_in">
+                  <DataType DataType="_SystemDataTypes::UTF8String" />
+                </Parameter>
+                <Parameter IsOptional="False" Name="bytes_in">
+                  <DataType DataType="_SystemDataTypes::Bytes" />
+                </Parameter>
+                <Parameter IsOptional="False" Direction="Out" Name="string_out">
+                  <DataType DataType="_SystemDataTypes::UTF8String" />
+                </Parameter>
+                <Parameter IsOptional="False" Direction="Out" Name="number_out">
+                  <DataType DataType="_SystemDataTypes::Int32" />
+                </Parameter>
+              </Parameters>
+            </FunctionPrototype>
+            <FunctionPrototype IsOneWay="False" AllowSpecialCharactersInMemberNames="False" HasFixedBinaryLayout="False" HasMotorolaByteOrder="False" Name="Func_NIoTEnabler_NIVectorDemo_result_I_Int32_number_in_O_Int32_number_out">
+              <Result DataType="NIoTEnabler::NIVectorDemo::result" />
+              <Parameters>
+                <Parameter IsOptional="False" Name="number_in">
+                  <DataType DataType="_SystemDataTypes::Int32" />
+                </Parameter>
+                <Parameter IsOptional="False" Direction="Out" Name="number_out">
+                  <DataType DataType="_SystemDataTypes::Int32" />
+                </Parameter>
+              </Parameters>
+            </FunctionPrototype>
+            <FunctionPrototype IsOneWay="False" AllowSpecialCharactersInMemberNames="False" HasFixedBinaryLayout="False" HasMotorolaByteOrder="False" Name="Func_NIoTEnabler_NIVectorDemo_result_I_NIoTEnabler_NIVectorDemo_struct_typeList_complex_in_O_NIoTEnabler_NIVectorDemo_struct_typeList_complex_out">
+              <Result DataType="NIoTEnabler::NIVectorDemo::result" />
+              <Parameters>
+                <Parameter IsOptional="False" Name="complex_in">
+                  <DataType DataType="NIoTEnabler::NIVectorDemo::struct_typeList" />
+                </Parameter>
+                <Parameter IsOptional="False" Direction="Out" Name="complex_out">
+                  <DataType DataType="NIoTEnabler::NIVectorDemo::struct_typeList" />
+                </Parameter>
+              </Parameters>
+            </FunctionPrototype>
+          </DataTypes>
+        </Namespace>
+        <Namespace IsDefinedAsHidden="False" IsSystemDefined="False" Name="NDevice">
+          <DOInterfaces>
+            <DOInterface IsAbstract="False" Name="Device">
+              <MemberData>
+                <DOMemberDataHolder Name="MemberData" />
+              </MemberData>
+              <DataMembers>
+                <DOIFDataMember LocalDirection="Consumed" Name="device_state">
+                  <DataType DataType="_SystemDataTypes::Int64">
+                    <NumericProperties MinValue="" MinValueType="Invalid" MaxValue="" MaxValueType="Invalid" IsBoolean="False" IsTimespan="False">
+                      <ImplToPhysEncodings TextualEncodings="IoTEnabler::NDevice::device_state_enum" />
+                    </NumericProperties>
+                  </DataType>
+                </DOIFDataMember>
+              </DataMembers>
+              <Methods>
+                <DOIFMethodMember Prototype="IoTEnabler::_Generated::Func_IoTEnabler_NDevice_result_I_UTF8String_country_code_I_UTF8String_ssid_I_UTF8String_psk_I_UTF8String_key_mgmt_I_UInt1_Bool_reset" LocalDirection="Consumed" Name="setup_wifi" />
+                <DOIFMethodMember Prototype="IoTEnabler::_Generated::Func_IoTEnabler_NDevice_result_O_VarArray_0_Inf_UTF8String_list_serial_O_VarArray_0_Inf_IoTEnabler_NDevice_ip_device_list_ip_O_VarArray_0_Inf_UTF8String_list_hci" LocalDirection="Consumed" Name="list_hardware" />
+                <DOIFMethodMember Prototype="IoTEnabler::_Generated::Func_IoTEnabler_NDevice_result_O_Double_temperature" LocalDirection="Consumed" Name="measure_temperature" />
+                <DOIFMethodMember Prototype="IoTEnabler::_Generated::Func_IoTEnabler_NDevice_result_I_Int32_log_level" LocalDirection="Consumed" Name="set_log_level" />
+                <DOIFMethodMember Prototype="IoTEnabler::_Generated::Func_IoTEnabler_NDevice_result_I_UTF8String_unit" LocalDirection="Consumed" Name="download_logs" />
+                <DOIFMethodMember Prototype="IoTEnabler::_Generated::Func_IoTEnabler_NDevice_result_I_Int64_time_since_epoch" LocalDirection="Consumed" Name="set_time" />
+                <DOIFMethodMember Prototype="IoTEnabler::_Generated::Func_IoTEnabler_NDevice_result_I_UTF8String_timezone" LocalDirection="Consumed" Name="set_time_zone" />
+                <DOIFMethodMember Prototype="IoTEnabler::_Generated::Func_IoTEnabler_NDevice_result_I_Int64_time_since_epoch_O_UTF8String_firmware_version" LocalDirection="Consumed" Name="connect" />
+                <DOIFMethodMember Prototype="IoTEnabler::_Generated::Func_IoTEnabler_NDevice_result_I_UTF8String_protocol_I_UTF8String_interface_id" LocalDirection="Consumed" Name="add_network_interface_vectordemo" />
+                <DOIFMethodMember Prototype="IoTEnabler::_Generated::Func_IoTEnabler_NDevice_result_I_UTF8String_protocol_I_UTF8String_interface_id" LocalDirection="Consumed" Name="add_network_interface_ble" />
+                <DOIFMethodMember Prototype="IoTEnabler::_Generated::Func_IoTEnabler_NDevice_result_I_UTF8String_protocol_I_UTF8String_interface_id_I_UTF8String_device_id_I_UInt1_Bool_permit_join" LocalDirection="Consumed" Name="add_network_interface_zigbee" />
+                <DOIFMethodMember Prototype="IoTEnabler::_Generated::Func_IoTEnabler_NDevice_result_I_UTF8String_protocol_I_UTF8String_interface_id" LocalDirection="Consumed" Name="remove_network_interface" />
+                <DOIFMethodMember Prototype="IoTEnabler::_Generated::Func_IoTEnabler_NDevice_result_I_UTF8String_protocol" LocalDirection="Consumed" Name="remove_all_interfaces" />
+                <DOIFMethodMember Prototype="IoTEnabler::_Generated::Func_IoTEnabler_NDevice_result" LocalDirection="Consumed" Name="start_measurement" />
+                <DOIFMethodMember Prototype="IoTEnabler::_Generated::Func_IoTEnabler_NDevice_result" LocalDirection="Consumed" Name="stop_measurement" />
+              </Methods>
+            </DOInterface>
+          </DOInterfaces>
+          <DataTypes>
+            <StructDataType Bitcount="0" RawBitcount="0" HasFixedBinaryLayout="False" HasMotorolaByteOrder="False" Name="result">
+              <Fields>
+                <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="return_code">
+                  <DataType DataType="_SystemDataTypes::Int64">
+                    <NumericProperties MinValue="" MinValueType="Invalid" MaxValue="" MaxValueType="Invalid" IsBoolean="False" IsTimespan="False">
+                      <ImplToPhysEncodings TextualEncodings="IoTEnabler::NDevice::return_code_enum" />
+                    </NumericProperties>
+                  </DataType>
+                </DataTypeField>
+                <DataTypeField RelativeBitOffset="0" IsOptional="True" IsHidden="False" Name="additional_info">
+                  <DataType DataType="_SystemDataTypes::UTF8String" />
+                </DataTypeField>
+              </Fields>
+            </StructDataType>
+            <StructDataType Bitcount="0" RawBitcount="0" HasFixedBinaryLayout="False" HasMotorolaByteOrder="False" Name="ip_device">
+              <Fields>
+                <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="device">
+                  <DataType DataType="_SystemDataTypes::UTF8String" />
+                </DataTypeField>
+                <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="ip">
+                  <DataType DataType="_SystemDataTypes::UTF8String" />
+                </DataTypeField>
+              </Fields>
+            </StructDataType>
+          </DataTypes>
+          <TextualEncodings>
+            <TextualEncodings DefinesMinMax="False" Name="return_code_enum">
+              <TextualEncoding TextualValue="OK" DisplayValue="OK" LowerBound="0" LowerBoundType="Int64" UpperBound="0" UpperBoundType="Int64" />
+              <TextualEncoding TextualValue="ERROR" DisplayValue="ERROR" LowerBound="1" LowerBoundType="Int64" UpperBound="1" UpperBoundType="Int64" />
+            </TextualEncodings>
+            <TextualEncodings DefinesMinMax="False" Name="device_state_enum">
+              <TextualEncoding TextualValue="OFFLINE" DisplayValue="OFFLINE" LowerBound="0" LowerBoundType="Int64" UpperBound="0" UpperBoundType="Int64" />
+              <TextualEncoding TextualValue="CONNECTING" DisplayValue="CONNECTING" LowerBound="1" LowerBoundType="Int64" UpperBound="1" UpperBoundType="Int64" />
+              <TextualEncoding TextualValue="ONLINE" DisplayValue="ONLINE" LowerBound="2" LowerBoundType="Int64" UpperBound="2" UpperBoundType="Int64" />
+              <TextualEncoding TextualValue="DISCONNECTING" DisplayValue="DISCONNECTING" LowerBound="3" LowerBoundType="Int64" UpperBound="3" UpperBoundType="Int64" />
+            </TextualEncodings>
+          </TextualEncodings>
+        </Namespace>
+      </Subnamespaces>
+      <DistributedObjects>
+        <DistributedObject GenerateDotNetAPI="True" Name="DeviceControl">
+          <DataType>
+            <ModifiedDOIF Reverse="False" IsDOReference="False" Interface="IoTEnabler::NDevice::Device" />
+          </DataType>
+          <MemberData>
+            <DOMemberDataHolder Name="MemberData" />
+          </MemberData>
+          <Networks>
+            <Network VirtualDONetwork="IoTEnabler::IoTEnabler" />
+          </Networks>
+        </DistributedObject>
+        <DistributedObject GenerateDotNetAPI="True" Name="VectorDemoControl">
+          <DataType>
+            <ModifiedDOIF Reverse="False" IsDOReference="False" Interface="NIoTEnabler::NIVectorDemo::IVectorDemo" />
+          </DataType>
+          <MemberData>
+            <DOMemberDataHolder Name="MemberData" />
+          </MemberData>
+          <Networks>
+            <Network VirtualDONetwork="IoTEnabler::IoTEnabler" />
+          </Networks>
+        </DistributedObject>
+      </DistributedObjects>
+      <DONetworks>
+        <VirtualDONetwork Name="IoTEnabler">
+          <AttributeValues>
+            <AttributeValue Definition="_SystemAttributes::Binding" InitialValue="IoTEnabler" InitialValueType="String" />
+            <AttributeValue Definition="IoTEnablerBinding::Attributes::LogLevel" InitialValue="2" InitialValueType="Int32" />
+          </AttributeValues>
+        </VirtualDONetwork>
+      </DONetworks>
+    </Namespace>
+    <Namespace IsDefinedAsHidden="False" IsSystemDefined="False" Name="NIoTEnabler">
+      <Subnamespaces>
+        <Namespace IsDefinedAsHidden="False" IsSystemDefined="False" Name="NIVectorDemo">
+          <DOInterfaces>
+            <DOInterface IsAbstract="False" Name="IVectorDemo">
+              <MemberData>
+                <DOMemberDataHolder Name="MemberData" />
+              </MemberData>
+              <DataMembers>
+                <DOIFDataMember Name="trigger_call">
+                  <DataType DataType="NIoTEnabler::NIVectorDemo::trigger_call_type" />
+                </DOIFDataMember>
+                <DOIFDataMember LocalDirection="Consumed" Name="load_notification">
+                  <DataType DataType="NIoTEnabler::NIVectorDemo::system_load_type" />
+                </DOIFDataMember>
+              </DataMembers>
+              <Methods>
+                <DOIFMethodMember Prototype="IoTEnabler::_Generated::Func_NIoTEnabler_NIVectorDemo_result_I_UTF8String_string_in_I_Bytes_bytes_in_O_UTF8String_string_out_O_Int32_number_out" Name="echo_canoe" />
+                <DOIFMethodMember Prototype="IoTEnabler::_Generated::Func_NIoTEnabler_NIVectorDemo_result_I_Int32_number_in_O_Int32_number_out" LocalDirection="Consumed" Name="echo_number" />
+                <DOIFMethodMember Prototype="IoTEnabler::_Generated::Func_NIoTEnabler_NIVectorDemo_result_I_NIoTEnabler_NIVectorDemo_struct_typeList_complex_in_O_NIoTEnabler_NIVectorDemo_struct_typeList_complex_out" LocalDirection="Consumed" Name="echo_complex_type" />
+              </Methods>
+            </DOInterface>
+          </DOInterfaces>
+          <DataTypes>
+            <ArrayDataType MaxLength="0" MinLength="0" HasMaxLength="False" HasFixedBinaryLayout="False" HasMotorolaByteOrder="False" Name="boolList">
+              <BaseType DataType="IoTEnabler::_Generated::UInt1">
+                <NumericProperties MinValue="" MinValueType="Invalid" MaxValue="" MaxValueType="Invalid" IsBoolean="True" IsTimespan="False" />
+              </BaseType>
+            </ArrayDataType>
+            <ArrayDataType MaxLength="0" MinLength="0" HasMaxLength="False" HasFixedBinaryLayout="False" HasMotorolaByteOrder="False" Name="struct_typeList">
+              <BaseType DataType="NIoTEnabler::NIVectorDemo::struct_type" />
+            </ArrayDataType>
+            <StructDataType Bitcount="0" RawBitcount="0" HasFixedBinaryLayout="False" HasMotorolaByteOrder="False" Name="inner_struct_type">
+              <Fields>
+                <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="member_1">
+                  <DataType DataType="_SystemDataTypes::Bytes" />
+                </DataTypeField>
+                <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="member_2">
+                  <DataType DataType="_SystemDataTypes::Int32" />
+                </DataTypeField>
+              </Fields>
+            </StructDataType>
+            <StructDataType Bitcount="0" RawBitcount="0" HasFixedBinaryLayout="False" HasMotorolaByteOrder="False" Name="struct_type">
+              <Fields>
+                <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="member_1">
+                  <DataType DataType="_SystemDataTypes::UTF8String" />
+                </DataTypeField>
+                <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="member_2">
+                  <DataType DataType="_SystemDataTypes::Float" />
+                </DataTypeField>
+                <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="member_3">
+                  <DataType DataType="NIoTEnabler::NIVectorDemo::boolList" />
+                </DataTypeField>
+                <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="member_4">
+                  <DataType DataType="NIoTEnabler::NIVectorDemo::inner_struct_type" />
+                </DataTypeField>
+              </Fields>
+            </StructDataType>
+            <StructDataType Bitcount="0" RawBitcount="0" HasFixedBinaryLayout="False" HasMotorolaByteOrder="False" Name="system_load_type">
+              <Fields>
+                <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="cpu_user">
+                  <DataType DataType="_SystemDataTypes::Float" />
+                </DataTypeField>
+                <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="cpu_system">
+                  <DataType DataType="_SystemDataTypes::Float" />
+                </DataTypeField>
+                <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="cpu_idle">
+                  <DataType DataType="_SystemDataTypes::Float" />
+                </DataTypeField>
+                <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="mem_total">
+                  <DataType DataType="_SystemDataTypes::UInt32" />
+                </DataTypeField>
+                <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="mem_free">
+                  <DataType DataType="_SystemDataTypes::UInt32" />
+                </DataTypeField>
+                <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="disk_usage">
+                  <DataType DataType="_SystemDataTypes::Float" />
+                </DataTypeField>
+              </Fields>
+            </StructDataType>
+            <StructDataType Bitcount="0" RawBitcount="0" HasFixedBinaryLayout="False" HasMotorolaByteOrder="False" Name="trigger_call_type">
+              <Fields>
+                <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="some_string">
+                  <DataType DataType="_SystemDataTypes::UTF8String" />
+                </DataTypeField>
+                <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="some_bytes">
+                  <DataType DataType="_SystemDataTypes::Bytes" />
+                </DataTypeField>
+              </Fields>
+            </StructDataType>
+            <StructDataType Bitcount="0" RawBitcount="0" HasFixedBinaryLayout="False" HasMotorolaByteOrder="False" Name="result">
+              <Fields>
+                <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="return_code">
+                  <DataType DataType="_SystemDataTypes::Int64">
+                    <NumericProperties MinValue="" MinValueType="Invalid" MaxValue="" MaxValueType="Invalid" IsBoolean="False" IsTimespan="False">
+                      <ImplToPhysEncodings TextualEncodings="NIoTEnabler::NIVectorDemo::return_code_enum" />
+                    </NumericProperties>
+                  </DataType>
+                </DataTypeField>
+                <DataTypeField RelativeBitOffset="0" IsOptional="True" IsHidden="False" Name="additional_info">
+                  <DataType DataType="_SystemDataTypes::UTF8String" />
+                </DataTypeField>
+              </Fields>
+            </StructDataType>
+          </DataTypes>
+          <TextualEncodings>
+            <TextualEncodings DefinesMinMax="False" Name="return_code_enum">
+              <TextualEncoding TextualValue="OK" DisplayValue="OK" LowerBound="0" LowerBoundType="Int64" UpperBound="0" UpperBoundType="Int64" />
+              <TextualEncoding TextualValue="ERROR" DisplayValue="ERROR" LowerBound="1" LowerBoundType="Int64" UpperBound="1" UpperBoundType="Int64" />
+            </TextualEncodings>
+          </TextualEncodings>
+        </Namespace>
+      </Subnamespaces>
+    </Namespace>
+  </Namespaces>
+  <ModuleDependencies>
+    <ModuleDependency Module="_Internal" />
+    <ModuleDependency Module="_Internal" />
+    <ModuleDependency Module="IoTEnabler" />
+    <ModuleDependency Module="_Internal" />
+    <ModuleDependency Module="_Internal" />
+    <ModuleDependency Module="_Internal" />
+    <ModuleDependency Module="_Internal" />
+    <ModuleDependency Module="_Internal" />
+    <ModuleDependency Module="_Internal" />
+    <ModuleDependency Module="_Internal" />
+    <ModuleDependency Module="_Internal" />
+    <ModuleDependency Module="_Internal" />
+    <ModuleDependency Module="_Internal" />
+    <ModuleDependency Module="_Internal" />
+  </ModuleDependencies>
+</FunctionBusLibrary>

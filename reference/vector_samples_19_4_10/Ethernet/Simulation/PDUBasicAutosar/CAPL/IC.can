@@ -1,0 +1,25 @@
+/*@!Encoding:1252*/
+includes
+{
+  
+}
+
+variables
+{
+  
+}
+
+on sysvar sysvar::IC::SubscribeService
+{
+  if (@this == 1)
+  {
+    // ensure that the node is subscribed to all event groups of service "EngineCSI1"
+    Vehicle_Ethernet::IC::EngineCSI1.Connect();
+  }
+  else
+  {
+    // ensure that the node is desubscribed from all event groups of service "EngineCSI1"
+    Vehicle_Ethernet::IC::EngineCSI1.Disconnect();
+  }
+}
+

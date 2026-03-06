@@ -1,0 +1,151 @@
+/*@!Encoding:1252*/
+
+variables
+{
+  const int ETH_MAX_PAYLOAD = 1530;
+  
+  const byte HEADER_VERSION = 1;
+  
+  struct Header
+  {
+    byte AOT; // add on type
+    byte SECN; // simple extended content
+    byte Version;
+    byte FF; // first fragment
+    byte LF; // last fragment
+    byte Reserved;
+    word FCNT; // fragment counter
+  };
+  
+  struct Buffer
+  {
+    byte IsUsed;
+    byte Data[2048];
+    word SizeUsed;
+    word FCNT;
+    dword TID;
+    word LowPrioCount;
+  };
+}
+
+void InitFragment(message* fragment, message* msg)
+{
+  fragment.CAN = msg.CAN;
+  fragment.ID = msg.ID;
+  fragment.AF = msg.AF;
+  fragment.SDT = msg.SDT; // check
+  fragment.VCID = 0;
+  fragment.SEC = 1;
+  fragment.FDF = 1;
+  fragment.XLF = 1;
+}
+
+void InitHeader(struct Header header)
+{
+  header.AOT = 1; // fragmentation
+  header.SECN = 0;
+  header.Version = HEADER_VERSION;
+  header.FF = 0;
+  header.LF = 0;
+  header.Reserved = 0;
+  header.FCNT = 0;
+}
+
+void SetFirstFragment(struct Header header)
+{
+  header.FF = 1;
+  header.LF = 0;
+}
+
+void SetConsecutiveFragment(struct Header header)
+{
+  header.FF = 0;
+  header.LF = 0;
+}
+
+void SetLastFragment(struct Header header)
+{
+  header.FF = 0;
+  header.LF = 1;
+}
+
+void WriteHeader(message* fragment, struct Header header)
+{  
+  fragment.byte(0) = 0;
+  fragment.byte(0) |= header.AOT << 5;     
+  fragment.byte(0) |= header.SECN << 4;    
+  fragment.byte(0) |= header.Version << 2; 
+  fragment.byte(0) |= header.FF << 1;    
+  fragment.byte(0) |= header.LF & 0x01; 
+  
+  fragment.byte(1) = 0;
+  fragment.byte(1) |= header.Reserved;
+  
+  fragment.byte(2) = 0;
+  fragment.byte(2) |= header.FCNT >> 8;
+  
+  fragment.byte(3) = 0;
+  fragment.byte(3) |= header.FCNT & 0xFF;
+}
+
+void ReadHeader(message* msg, struct Header header)
+{
+  header.AOT = msg.byte(0) >> 5 & 0x7;
+  header.SECN = msg.byte(0) >> 4 & 0x1;
+  header.Version = msg.byte(0) >> 2 & 0x3;
+  header.FF = msg.byte(0) >> 1 & 0x1;
+  header.LF = msg.byte(0) & 0x1;
+
+  header.Reserved = msg.byte(1);
+  header.FCNT = (msg.byte(2) << 8) + msg.byte(3);
+}
+
+byte IsAddOnMessage(message* msg)
+{
+  return msg.SEC == 1;
+}
+
+byte HasFragmentationAddOn(message* msg)
+{
+  return (msg.byte(0) >> 5 & 0x07) == 1;
+}
+
+word GetFcnt(message* msg)
+{
+  return (msg.byte(2) << 8) + msg.byte(3);
+}
+
+byte IsVersionValid(struct Header header)
+{
+  return header.Version == HEADER_VERSION;
+}
+
+byte IsVersionValid(message* msg)
+{
+  return (msg.byte(0) >> 2 & 0x3) == HEADER_VERSION;
+}
+
+byte GetFfBit(message* msg)
+{
+  return msg.byte(0) >> 1 & 0x1;
+}
+
+byte GetLfBit(message* msg)
+{
+  return msg.byte(0) & 0x1;
+}
+
+byte IsFirstFragment(message* msg)
+{
+  return (GetFfBit(msg) == 1) && (GetLfBit(msg) == 0);
+}
+
+byte IsLastFragment(message* msg)
+{
+  return (GetFfBit(msg) == 0) && (GetLfBit(msg) == 1);
+}
+
+byte IsConsecutiveFragment(message* msg)
+{
+  return (GetFfBit(msg) == 0) && (GetLfBit(msg) == 0);
+}

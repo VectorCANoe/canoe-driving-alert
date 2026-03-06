@@ -1,0 +1,71 @@
+<?xml version="1.0"?>
+<Panel Type="Vector.CANalyzer.Panels.PanelSerializer, Vector.CANalyzer.Panels.Serializer, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null">
+  <Object Type="Vector.CANalyzer.Panels.Runtime.Panel, Vector.CANalyzer.Panels.Common, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null" Name="Panel" Children="Controls" ControlName="CAN 3">
+    <Object Type="Vector.CANalyzer.Panels.Design.GroupBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null" Name="GroupBoxControl4" Children="Controls" ControlName="Group Box 4">
+      <Object Type="Vector.CANalyzer.Panels.Design.ButtonControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null" Name="ButtonControl12" Children="Controls" ControlName="Button 12">
+        <Property Name="Name">ButtonControl12</Property>
+        <Property Name="Size">188, 23</Property>
+        <Property Name="Location">4, 19</Property>
+        <Property Name="Text">Send PDU2 with DLC 8</Property>
+        <Property Name="SymbolConfiguration">8;16;CAN3::ECU31;;;SendPDU2_DLC08;1;;;-1;;;;;;0</Property>
+        <Property Name="TabIndex">2</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.ButtonControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null" Name="ButtonControl9" Children="Controls" ControlName="Button 9">
+        <Property Name="Name">ButtonControl9</Property>
+        <Property Name="Size">188, 23</Property>
+        <Property Name="Location">4, 48</Property>
+        <Property Name="Text">Send PDU2 with DLC 23</Property>
+        <Property Name="SymbolConfiguration">8;16;CAN3::ECU31;;;SendPDU2_DLC23;1;;;-1;;;;;;0</Property>
+        <Property Name="TabIndex">3</Property>
+      </Object>
+      <Property Name="Name">GroupBoxControl4</Property>
+      <Property Name="Size">198, 79</Property>
+      <Property Name="Location">3, 117</Property>
+      <Property Name="BackColor">White</Property>
+      <Property Name="Text">ECU_31</Property>
+      <Property Name="TabIndex">5</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.GroupBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null" Name="GroupBoxControl1" Children="Controls" ControlName="Group Box 1">
+      <Object Type="Vector.CANalyzer.Panels.Design.ComboBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null" Name="ComboBoxControl1" Children="Controls" ControlName="Combo Box 1">
+        <Property Name="Name">ComboBoxControl1</Property>
+        <Property Name="Size">188, 19</Property>
+        <Property Name="Location">4, 79</Property>
+        <Property Name="DropDownWidth">103</Property>
+        <Property Name="BackColor">White</Property>
+        <Property Name="ForeColor">WindowText</Property>
+        <Property Name="TextBackColor">White</Property>
+        <Property Name="DisplayLabel">Left</Property>
+        <Property Name="DescriptionText">Destination:</Property>
+        <Property Name="UsedValueTable">PhysicalValue</Property>
+        <Property Name="DescriptionSize">64, 19</Property>
+        <Property Name="SymbolConfiguration">8;16;CAN3::ECU30;;;DestinationAddress;1;;;-1;;;;;;0</Property>
+        <Property Name="TabIndex">6</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.ButtonControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null" Name="ButtonControl2" Children="Controls" ControlName="Button 2">
+        <Property Name="Name">ButtonControl2</Property>
+        <Property Name="Size">188, 23</Property>
+        <Property Name="Location">4, 48</Property>
+        <Property Name="Text">Send PDU1 with DLC 23</Property>
+        <Property Name="SymbolConfiguration">8;16;CAN3::ECU30;;;SendPDU1_DLC23;1;;;-1;;;;;;0</Property>
+        <Property Name="TabIndex">1</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.ButtonControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null" Name="ButtonControl1" Children="Controls" ControlName="Button 1">
+        <Property Name="Name">ButtonControl1</Property>
+        <Property Name="Size">188, 23</Property>
+        <Property Name="Location">4, 19</Property>
+        <Property Name="Text">Send PDU1 with DLC 8</Property>
+        <Property Name="SymbolConfiguration">8;16;CAN3::ECU30;;;SendPDU1_DLC08;1;;;-1;;;;;;0</Property>
+        <Property Name="TabIndex">0</Property>
+      </Object>
+      <Property Name="Name">GroupBoxControl1</Property>
+      <Property Name="Size">198, 108</Property>
+      <Property Name="Location">3, 3</Property>
+      <Property Name="BackColor">White</Property>
+      <Property Name="Text">ECU_30</Property>
+      <Property Name="TabIndex">1</Property>
+    </Object>
+    <Property Name="Name">Panel</Property>
+    <Property Name="Size">204, 200</Property>
+    <Property Name="BackColor">White</Property>
+  </Object>
+</Panel>

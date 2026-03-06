@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<systemvariables version="4">
+  <namespace name="" comment="" interface="">
+    <namespace name="ScenarioCtrl" comment="" interface="">
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="ScenarioFolderName" comment="Path to the folder containing all scenario files. Can also be given relative to the configuration file." bitcount="0" isSigned="true" encoding="65001" type="string" startValue="Scenarios" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="ScenarioFileName" comment="Name of the scenario file that should be loaded for the corresponding ScenarioNumber. File ending .scn can be left out." bitcount="32" isSigned="true" encoding="65001" type="int">
+        <valuetable name="ScenarioFileName" definesMinMax="false">
+          <valuetableentry value="0" lowerBound="0" upperBound="0" description="Scenario_HardBraking" displayString="Scenario_HardBraking" />
+          <valuetableentry value="1" lowerBound="1" upperBound="1" description="Scenario_StationaryVehicle" displayString="Scenario_StationaryVehicle" />
+        </valuetable>
+      </variable>
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="ScenarioNumber" comment="" bitcount="32" isSigned="true" encoding="65001" type="int">
+        <valuetable name="ScenarioNumber" definesMinMax="false">
+          <valuetableentry value="0" lowerBound="0" upperBound="0" description="Emergency Electr. Bake" displayString="Emergency Electr. Bake" />
+          <valuetableentry value="1" lowerBound="1" upperBound="1" description="Stationary Vehicle" displayString="Stationary Vehicle" />
+        </valuetable>
+      </variable>
+    </namespace>
+    <namespace name="DuT" comment="" interface="">
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="isEvent" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="0" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1" />
+    </namespace>
+    <namespace name="Usecases" comment="" interface="">
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="ft" name="DistanceToEvent" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" minValue="0" minValuePhys="0" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="UsecaseName" comment="" bitcount="0" isSigned="true" encoding="65001" type="string" />
+    </namespace>
+  </namespace>
+</systemvariables>

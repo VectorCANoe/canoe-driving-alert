@@ -1,0 +1,2214 @@
+/*@!Encoding:1252*/
+includes
+{
+  #include "GBT_HW_Interface_EV.cin"
+  #include "Shared.cin"
+  #include "VersionList.cin"
+}
+
+variables
+{
+  // Presentation variables
+  char gPanelName[5] = "BMS";
+  char gcontrolCharge[20] = "Progress Bar Charge";
+  char gcontrolDischarge[23] = "Progress Bar Discharge";
+  dword msStartOfChargingMS = 0;
+  
+  // State Machine
+  msTimer stateTransitionTimer;
+  word currentBmsPhase; 
+  msTimer timer_Tout0_Bms;
+  msTimer timer_Tout1_Bms;
+  msTimer timer_Tout2_Bms;
+  int first_CHM_or_CRM_received;
+  int bmsPowerSupplyStatus;
+  int skipAuthentication = 0;
+  int skipScheduling = 0;
+  int skipPowerSupply = 0;
+  
+  // Version Negotiation
+  msTimer sendCyclicVersionNegotiationMessage;
+  word messageCycleTimeVersionNegotiation = 50; // see Table 8
+  int currentVersionIndex;
+  int vehicleVersionHasChanged;
+  
+  // Function Negotiation
+  word vehicleNegotiationState = kInitialization;
+  int FDCParameterConfiguration = 0x01;
+  int FDCAuthentication = 0x01;
+  int FDCScheduling = 0x01;
+  int FDCOutputCircuitDetection = 0x01;
+  int FDCPowerSupplyMode = 0x01;
+  int FDCPreChargingAndEnergyTransmission = 0x01;
+  int FDCEndMessage = 0x01;  
+  
+  // General Messages
+  msTimer sendCyclicVehicleChargingCircuitContactorStatusMessage;
+  msTimer sendCyclicVehicleChargingCircuitContactorStatusMessageAfterChange;
+  int sentVehicleContactorStatusAfterChangeCounter;
+
+  // Authentication
+  
+  // Schedule
+  
+  // Output Circuit Detection
+  enum ChargerAllowsAdhesionDetection
+  {
+    kAdhesionDetectionInformationNotTransmitted = 0,
+    kAdhesionDetectionAllowed,
+    kAdhesionDetectionNotAllowed,
+    kAdhesionDetectionAbnormal
+  };
+  msTimer sendCyclicVehicleAdhesionDetectionMessage;
+  
+  // Power Supply Mode 
+  msTimer timer_monitorExternalVoltageK5K6;
+  const int cMonitorExternalVoltageK5K6Period = 50;
+  msTimer timer_SimulatePowerSupplyFinish;
+  msTimer sendCyclicVehiclePowerSupplyDemandMessage;
+  const int cVehiclePowerSupplyDemandCycleTimeMs = 1000;
+  msTimer sendVehiclePowerSupplyDemandMessageAfterChange;
+  const int cVehiclePowerSupplyDemandAfterChangeTimeMs = 50;
+  int sentPowerSupplyDemandCounter;
+
+  // Pre Charge & Energy Transfer
+  msTimer sendCyclicVehicleChargingRequest;
+  msTimer sendCyclicVehicleBidirectionalChargingRequest; 
+  const int cVehicleChargingRequestTimeMs = 1000;
+  msTimer sendVehicleChargingRequestAfterChange; 
+  int sentVehicleChargingRequestAfterChangeCounter;
+  msTimer sendVehicleBidirectionalChargingRequestAfterChange;
+  int sentVehicleBidirectionalChargingRequestAfterChangeCounter; 
+  
+  msTimer sendCyclicVehicleChargingBasicInformation; 
+  msTimer sendCyclicVehicleBidirectionalChargingBasicInformation;
+  
+  const int cVehicleChargingBasicInformationTimeMs = 1000;
+  msTimer sendCyclicVehicleBidirectionalDynamicOutputCapability; 
+  const int cVehicleBidirectionalDynamicOutputCapabilityCycleTimeMs = 250;
+  
+  msTimer sendCyclicVehicleBatteryBasicInformation;
+  msTimer sendCyclicVehicleBidirectionalChargingBatteryInfo; 
+  const int cVehicleBidirectionalChargingBatteryInfoCycleTimeMs = 1000;
+  
+  // End Module
+  const int cVehicleAdhesionDetectionCycleTimeMs = 250;
+  int sentVehicleAdhesionDetectionCounter;
+  int chargerAllowsAdhesionDetection;
+  msTimer timer_delayedEndMessageFunctionNegotiationFailed;
+}
+
+/////////////////////////////////////////////////////////////////////////////////////
+/*--------------------------------------Timer--------------------------------------*/
+/////////////////////////////////////////////////////////////////////////////////////
+
+on timer stateTransitionTimer
+{
+  @sysvar::GBT27930::BMS::CurrentBmsStatus = kStatus0;
+  @sysvar::GBT27930::BMS::CurrentBmsFunctionModule = currentBmsPhase;
+  writeLineEx(1,1,"BMS: Transitioning to phase %d", currentBmsPhase);
+  switch(currentBmsPhase)
+  {
+    case kFunctionNegotiationPhase:
+      setTimerCyclic(sendCyclicVehicleChargingCircuitContactorStatusMessage, cContactorStatusCycleTimeMs);
+      StartFunctionNegotiationPhase();
+      break;
+    case kParameterConfigurationPhase:
+      StartParameterConfiguration();
+      break;
+    case kAuthenticationPhase:
+      StartAuthenticiation();
+      break;
+    case kSchedulingPhase:
+      StartScheduling();
+      break;
+    case kOutputCircuitDetectionPhase:
+      StartOutputCircuitDetection();
+      break;
+    case kPowerSupplyModePhase:
+      StartPowerSupplyMode();
+      break;
+    case kPreChargingAndEnergyTransferPhase:
+      StartPreChargeAndEnergyTransfer();
+      break;
+    case kEndPhase:
+      StartEndPhase();
+      break;
+  default:
+    break;
+  }
+}
+
+on timer sendCyclicVersionNegotiationMessage
+{
+  if(vehicleNegotiationState <= kNegotiating) // periodic sending
+  {
+    vehicleNegotiationState = kNegotiating;
+    setTimer(sendCyclicVersionNegotiationMessage, messageCycleTimeVersionNegotiation);
+  }
+  else if (vehicleNegotiationState == kAppendixMNegotiationSucceeded || vehicleNegotiationState == kNegotiationFailed) // switch to Appendix M (Category A)
+  {
+    CancelTimers();
+    StartGBT27930CategoryACommunication();
+  }
+  else if (vehicleNegotiationState == kNegotiationSucceeded)
+  {
+    cancelTimer(timer_Tout0_Bms);
+    currentBmsPhase = kFunctionNegotiationPhase; // start at 'function negotiation' for possible compatibility with Category A
+    StartTimerIfNotRunning(stateTransitionTimer,  @sysvar::GBT27930::BMS::DelayTransition::VersionNegotiation_to_FunctionNegotiation);
+  }
+  SendVehicleVersionNegotiation();
+}
+
+on timer timer_Tout0_Bms
+{
+  switch(currentBmsPhase)
+  {
+    case kVersionNegotiation:
+      @sysvar::GBT27930::BMS::VersionNegotiation::NegotiationResult = 2; // Negotiation Failed 
+      writeLineEx(1,1,"BMS: Version Negotiation timeout reached. Fallback to GBT27930 Category A communication.");
+      CancelTimers();
+      StartGBT27930CategoryACommunication();
+      break;
+    case kFunctionNegotiationPhase:
+      SendEndMessageAndEnterEndModule(_GBT27930::DataTypes::parEndType::FunctionModuleInformationInteractionTimeout, _GBT27930::DataTypes::FunctionModuleInteractionTimeoutTypeEncoding::function_negotiation_phase_timeout);
+      break;
+    case kParameterConfigurationPhase:
+      SendEndMessageAndEnterEndModule(_GBT27930::DataTypes::parEndType::FunctionModuleInformationInteractionTimeout, _GBT27930::DataTypes::FunctionModuleInteractionTimeoutTypeEncoding::parameter_configuration_phase_timeout);
+      @sysvar::GBT27930::BMS::CurrentBmsStatus = kStatus4;
+      break;
+    case kAuthenticationPhase:
+      SendEndMessageAndEnterEndModule(_GBT27930::DataTypes::parEndType::FunctionModuleInformationInteractionTimeout, _GBT27930::DataTypes::FunctionModuleInteractionTimeoutTypeEncoding::authentication_phase_timeout);
+      @sysvar::GBT27930::BMS::CurrentBmsStatus = kStatus4;
+      break;
+    case kSchedulingPhase:
+      SendEndMessageAndEnterEndModule(_GBT27930::DataTypes::parEndType::FunctionModuleInformationInteractionTimeout, _GBT27930::DataTypes::FunctionModuleInteractionTimeoutTypeEncoding::scheduling_phase_timeout);
+      @sysvar::GBT27930::BMS::CurrentBmsStatus = kStatus7;
+      break;
+    case kOutputCircuitDetectionPhase:
+      SendEndMessageAndEnterEndModule(_GBT27930::DataTypes::parEndType::FunctionModuleInformationInteractionTimeout, _GBT27930::DataTypes::FunctionModuleInteractionTimeoutTypeEncoding::output_circuit_detection_phase_timeout);
+      @sysvar::GBT27930::BMS::CurrentBmsStatus = kStatus4;
+      break;
+    case kPowerSupplyModePhase:
+      SendEndMessageAndEnterEndModule(_GBT27930::DataTypes::parEndType::FunctionModuleInformationInteractionTimeout, _GBT27930::DataTypes::FunctionModuleInteractionTimeoutTypeEncoding::power_supply_mode_phase_timeout);
+      @sysvar::GBT27930::BMS::CurrentBmsStatus = kStatus7;
+      break;
+    case kEndPhase:
+      SendEndMessageWithoutChangingModule(_GBT27930::DataTypes::parEndType::FunctionModuleInformationInteractionTimeout, _GBT27930::DataTypes::FunctionModuleInteractionTimeoutTypeEncoding::end_phase_timeout);
+      @sysvar::GBT27930::BMS::CurrentBmsStatus = kStatus5;
+      break;
+    default:
+      break;
+  }
+}
+
+on timer timer_Tout1_Bms
+{
+  switch(currentBmsPhase)
+  {
+    case kPowerSupplyModePhase:
+      if (@sysvar::GBT27930::BMS::CurrentBmsStatus == kStatus3)
+      {
+        cancelTimer(sendCyclicVehiclePowerSupplyDemandMessage);
+        cancelTimer(timer_Tout0_Bms);
+        cancelTimer(timer_Tout2_Bms);
+        @sysvar::GBT27930::BMS::CurrentBmsStatus = kStatus7;
+        SendEndMessageAndEnterEndModule(_GBT27930::DataTypes::parEndType::FunctionModuleInformationInteractionTimeout, 0x0664); // Timeout for PGI 0x64 "Charger dynamic output status"
+      }
+      break;
+    case kEndPhase:
+      if(@sysvar::GBT27930::BMS::CurrentBmsStatus == kStatus1)
+      {
+        chargerAllowsAdhesionDetection = kAdhesionDetectionNotAllowed;
+      }
+      else if(@sysvar::GBT27930::BMS::CurrentBmsStatus == kStatus2)
+      {
+        chargerAllowsAdhesionDetection = kAdhesionDetectionNotAllowed;
+        StartTimerReadyToOpen_K5_K6(cOpenContactorsTimeoutMs);
+      }
+      else if(@sysvar::GBT27930::BMS::CurrentBmsStatus == kStatus3)
+      {
+        chargerAllowsAdhesionDetection = kAdhesionDetectionAbnormal;
+      }
+      @sysvar::GBT27930::BMS::CurrentBmsStatus = kStatus4;
+      break;
+    default:
+      break;
+  }
+}
+
+on timer timer_Tout2_Bms
+{
+  switch(currentBmsPhase)
+  {
+    case kPowerSupplyModePhase:
+      if (@sysvar::GBT27930::BMS::CurrentBmsStatus == kStatus3)
+      {
+        cancelTimer(sendCyclicVehiclePowerSupplyDemandMessage);
+        cancelTimer(timer_Tout0_Bms);
+        cancelTimer(timer_Tout1_Bms);
+        @sysvar::GBT27930::BMS::CurrentBmsStatus = kStatus7;
+        SendEndMessageAndEnterEndModule(_GBT27930::DataTypes::parEndType::FunctionModuleInformationInteractionTimeout, 0x0666); // Timeout for PGI 0x66 "Charger Basic information of charger power supply"
+      }
+      break;
+    case kPreChargingAndEnergyTransferPhase:
+      cancelTimer(timer_Tout0_Bms);
+      cancelTimer(timer_Tout1_Bms);
+      cancelTimer(timer_Tout2_Bms);
+      cancelTimer(sendCyclicVehicleBidirectionalChargingRequest); //T1
+      cancelTimer(sendCyclicVehicleBidirectionalChargingBasicInformation); //T2
+      cancelTimer(sendCyclicVehicleBidirectionalChargingBatteryInfo); //T2
+      cancelTimer(sendCyclicVehicleBidirectionalDynamicOutputCapability); //T3
+      @sysvar::GBT27930::BMS::CurrentBmsStatus = kStatus6;
+      if (@sysvar::GBT27930::BMS::CurrentBmsStatus == kStatus3 && @sysvar::GBT27930::BMS::ChargingDischarging::EnergyTransferDirection == sysvar::GBT27930::BMS::ChargingDischarging::EnergyTransferDirection::Charging)
+      {
+         SendEndMessageAndEnterEndModule(_GBT27930::DataTypes::parEndType::FunctionModuleInformationInteractionTimeout, 0x0686); // Timeout for PGI 0x86 "Charger Bidirectional Charging Dynamic Output Capabilities"
+      }
+      else
+      {
+        SendEndMessageAndEnterEndModule(_GBT27930::DataTypes::parEndType::FunctionModuleInformationInteractionTimeout, 0x0683); // Timeout for PGI 0x83 "Charger Discharge Request"
+      }
+      break;
+    default:
+      break;
+  }
+}
+
+on timer sendCyclicVehiclePowerSupplyDemandMessage
+{
+  SendPowerSupplyDemandMessage();
+}
+
+on timer sendVehiclePowerSupplyDemandMessageAfterChange
+{
+  if (sentPowerSupplyDemandCounter < 1) // second message on change
+  {
+    sentPowerSupplyDemandCounter++;
+    SendPowerSupplyDemandMessage();
+    StartTimerIfNotRunning(sendVehiclePowerSupplyDemandMessageAfterChange, cVehiclePowerSupplyDemandAfterChangeTimeMs);
+  } 
+  else // third message on change
+  {
+    SendPowerSupplyDemandMessage();
+    sentPowerSupplyDemandCounter = 0;
+    StartCyclicTimerIfNotRunning(sendCyclicVehiclePowerSupplyDemandMessage, cVehiclePowerSupplyDemandCycleTimeMs); // return to cyclic sending
+  }
+}
+
+on timer sendCyclicVehicleChargingCircuitContactorStatusMessage
+{
+  SendVehicleChargingContactorStatusMessage();
+}
+
+on timer sendCyclicVehicleChargingCircuitContactorStatusMessageAfterChange
+{
+  if(sentVehicleContactorStatusAfterChangeCounter < 1) // second 
+  {
+    SendVehicleChargingContactorStatusMessage();
+    setTimer(sendCyclicVehicleChargingCircuitContactorStatusMessageAfterChange, cURMAfterChangeCycleTimeMs);
+    sentVehicleContactorStatusAfterChangeCounter++;
+  }
+  else // thid
+  {
+    SendVehicleChargingContactorStatusMessage();
+    sentVehicleContactorStatusAfterChangeCounter = 0;
+  }
+}
+
+on timer timer_monitorExternalVoltageK5K6
+{
+  if (@sysvar::GBT27930::BMS::CurrentBmsStatus == kStatus1 && HV_measure_DC_U() < 60)
+  {
+    CHA_open_close_K5K6(CLOSE);
+    @sysvar::GBT27930::BMS::CurrentBmsStatus = kStatus2;
+  }
+}
+
+on timer timer_SimulatePowerSupplyFinish
+{
+  if (@sysvar::GBT27930::BMS::CurrentBmsStatus == kStatus3)
+  {   
+    StartTimerReadyToOpen_K5_K6(cOpenContactorsTimeoutMs);
+    cancelTimer(sendCyclicVehiclePowerSupplyDemandMessage); // turn T1 off
+    cancelTimer(timer_Tout1_Bms);
+    cancelTimer(timer_Tout2_Bms);
+    $BMS.GBT27930_2_2024.VehiclePowerSupplyCompletion.VehiclePowerSupplyEndRequest = _GBT27930::DataTypes::parVehiclePowerSupplyEndRequestType::EndPowerSupply;
+    @sysvar::GBT27930::BMS::CurrentBmsStatus = kStatus4;
+  } 
+}
+
+on timer timer_delayedEndMessageFunctionNegotiationFailed
+{
+  SendEndMessageAndEnterEndModule(_GBT27930::DataTypes::parEndType::FunctionModuleExecutionFailed, _GBT27930::DataTypes::VehicleFunctionModuleExecutionFailTypeEncoding::function_negotiation_execution_fail);
+}
+
+on timer sendCyclicVehicleAdhesionDetectionMessage
+{
+  if(chargerAllowsAdhesionDetection == kAdhesionDetectionInformationNotTransmitted)
+    $BMS.GBT27930_2_2024.VehicleAdhesionDetection.VehicleAdhesionDetectionStatus = _GBT27930::DataTypes::AdhesionCheckTypeEncoding::to_be_detected;
+  else if (chargerAllowsAdhesionDetection == kAdhesionDetectionNotAllowed)
+    $BMS.GBT27930_2_2024.VehicleAdhesionDetection.VehicleAdhesionDetectionStatus = _GBT27930::DataTypes::AdhesionCheckTypeEncoding::no_detection;
+  else if (chargerAllowsAdhesionDetection == kAdhesionDetectionAbnormal)
+    $BMS.GBT27930_2_2024.VehicleAdhesionDetection.VehicleAdhesionDetectionStatus = _GBT27930::DataTypes::AdhesionCheckTypeEncoding::abnormal_termination;
+  else
+  {
+    if (sentVehicleAdhesionDetectionCounter <= 1)
+    {
+      $BMS.GBT27930_2_2024.VehicleAdhesionDetection.VehicleAdhesionDetectionStatus = _GBT27930::DataTypes::AdhesionCheckTypeEncoding::detection_in_progress;
+    }
+    else
+    {
+      $BMS.GBT27930_2_2024.VehicleAdhesionDetection.VehicleAdhesionDetectionStatus = _GBT27930::DataTypes::AdhesionCheckTypeEncoding::detection_passed;
+    }
+    
+    sentVehicleAdhesionDetectionCounter++;
+  }
+  
+  if(@sysvar::GBT27930::BMS::CurrentBmsStatus == kStatus3)
+  {
+    cancelTimer(timer_Tout1_Bms);
+    @sysvar::GBT27930::BMS::CurrentBmsStatus = kStatus4;
+  }
+}
+
+on timer sendCyclicVehicleBidirectionalDynamicOutputCapability
+{
+  SendVehicleBidirectionalDynamicOutputCapability();
+}
+
+
+on timer sendCyclicVehicleChargingRequest
+{
+  if (!isTimerActive(sendVehicleChargingRequestAfterChange))
+    SendVehicleChargingRequest();
+}
+
+on timer sendVehicleChargingRequestAfterChange
+{
+  if(sentVehicleChargingRequestAfterChangeCounter < 1) // send second message
+  {
+    SendVehicleChargingRequest();
+    sentVehicleChargingRequestAfterChangeCounter++;
+    setTimer(sendVehicleChargingRequestAfterChange, cURMAfterChangeCycleTimeMs);
+  }
+  else  // send third message
+  {
+    SendVehicleChargingRequest();
+    sentVehicleChargingRequestAfterChangeCounter = 0;
+    setTimerCyclic(sendCyclicVehicleChargingRequest, cVehicleChargingRequestTimeMs);
+  }
+}
+
+on timer sendCyclicVehicleBidirectionalChargingRequest
+{
+  if (!isTimerActive(sendVehicleBidirectionalChargingRequestAfterChange))
+    SendVehicleBidirectionalChargingRequest();
+}
+
+on timer sendVehicleBidirectionalChargingRequestAfterChange
+{
+  if(sentVehicleBidirectionalChargingRequestAfterChangeCounter < 1) // send second message
+  {
+    SendVehicleBidirectionalChargingRequest();
+    sentVehicleBidirectionalChargingRequestAfterChangeCounter++;
+    setTimer(sendVehicleBidirectionalChargingRequestAfterChange, cURMAfterChangeCycleTimeMs);
+  }
+  else  // send third message
+  {
+    SendVehicleBidirectionalChargingRequest();
+    sentVehicleBidirectionalChargingRequestAfterChangeCounter = 0;
+    setTimerCyclic(sendCyclicVehicleBidirectionalChargingRequest, cVehicleChargingRequestTimeMs);
+  }
+}
+
+on timer sendCyclicVehicleChargingBasicInformation
+{
+  SendVehicleChargingBasicInformation();
+}
+
+on timer sendCyclicVehicleBidirectionalChargingBasicInformation
+{
+  SendVehicleBidirectionalChargingInfo();
+}
+
+on timer sendCyclicVehicleBatteryBasicInformation
+{
+  SendCyclicVehicleBatteryBasicInformation();
+}
+
+on timer sendCyclicVehicleBidirectionalChargingBatteryInfo
+{
+  SendVehicleBidirectionalChargingBatteryInfo();
+}
+
+void CancelTimers()
+{
+  writeLineEx(-3, 1, "BMS: Cancel all timers");
+  cancelTimer(stateTransitionTimer);
+  cancelTimer(sendCyclicVersionNegotiationMessage);
+  cancelTimer(timer_Tout0_Bms);
+  cancelTimer(timer_Tout1_Bms);
+  cancelTimer(timer_Tout2_Bms);
+  cancelTimer(sendCyclicVehicleChargingCircuitContactorStatusMessage);
+  cancelTimer(sendCyclicVehicleChargingCircuitContactorStatusMessageAfterChange);
+  cancelTimer(sendCyclicVehiclePowerSupplyDemandMessage);
+  cancelTimer(sendCyclicVehicleAdhesionDetectionMessage);
+  cancelTimer(timer_delayedEndMessageFunctionNegotiationFailed);
+  cancelTimer(sendCyclicVehicleChargingRequest);
+  cancelTimer(sendCyclicVehicleBidirectionalChargingRequest);
+  cancelTimer(sendCyclicVehicleChargingBasicInformation);
+  cancelTimer(sendCyclicVehicleBatteryBasicInformation);
+  cancelTimer(sendCyclicVehicleBidirectionalChargingBasicInformation);
+  cancelTimer(sendCyclicVehicleBidirectionalChargingBatteryInfo);
+  cancelTimer(sendCyclicVehicleBidirectionalDynamicOutputCapability);
+  cancelTimer(timer_monitorExternalVoltageK5K6);
+  cancelTimer(timer_SimulatePowerSupplyFinish);
+  cancelTimer(sendVehicleChargingRequestAfterChange);
+} 
+
+/////////////////////////////////////////////////////////////////////////////////////
+/*------------------------------------On Event-------------------------------------*/
+/////////////////////////////////////////////////////////////////////////////////////
+
+on sysvar_change GBT27930::BMS::ContactorStatus_K5K6
+{
+  UpdateK5K6StatusText();
+  
+  if(currentBmsPhase != kInitial && currentBmsPhase != kEndPhase)
+  {
+    sentVehicleContactorStatusAfterChangeCounter = 0;
+    SendVehicleChargingContactorStatusMessage();
+    setTimerCyclic(sendCyclicVehicleChargingCircuitContactorStatusMessageAfterChange, cURMAfterChangeCycleTimeMs);
+  }
+}
+
+on sysvar_change GBT27930::BMS::CurrentBmsStatus
+{
+  writeLineEx(1,1,"BMS: Switch to bms state: %d within %d", @this, currentBmsPhase);
+}
+
+on sysvar_change GBT27930::BMS::PowerSupplyMode::CurrentDemand
+{ 
+  if (!isTimerActive(sendVehiclePowerSupplyDemandMessageAfterChange))
+  {
+    SendPowerSupplyDemandMessage();
+    cancelTimer(sendCyclicVehiclePowerSupplyDemandMessage);
+    StartTimerIfNotRunning(sendVehiclePowerSupplyDemandMessageAfterChange, cVehiclePowerSupplyDemandAfterChangeTimeMs);
+  }
+}
+
+on sysvar_change GBT27930::BMS::PowerSupplyMode::VoltageDemand
+{
+  if (!isTimerActive(sendVehiclePowerSupplyDemandMessageAfterChange))
+  {
+    SendPowerSupplyDemandMessage();
+    cancelTimer(sendCyclicVehiclePowerSupplyDemandMessage);
+    StartTimerIfNotRunning(sendVehiclePowerSupplyDemandMessageAfterChange, cVehiclePowerSupplyDemandAfterChangeTimeMs);
+  }
+}
+
+on sysvar_change GBT27930::BMS::ChargingDischarging::TargetCurrent
+{
+  if(!isTimerActive(sendVehicleChargingRequestAfterChange) && !isTimerActive(sendVehicleBidirectionalChargingRequestAfterChange))
+  {
+    if (currentBmsPhase == kPreChargingAndEnergyTransferPhase && $BMS.GBT27930_2_2024.VehicleFunctionNegotiationAckResult.PreChargingAndEnergyTransmission == 1)
+    {
+      SendVehicleChargingRequest();
+      sentVehicleChargingRequestAfterChangeCounter = 0;
+      StartTimerIfNotRunning(sendVehicleChargingRequestAfterChange, cURMAfterChangeCycleTimeMs);
+    }
+    else 
+    {
+      SendVehicleBidirectionalChargingRequest();
+      sentVehicleBidirectionalChargingRequestAfterChangeCounter = 0;
+      StartTimerIfNotRunning(sendVehicleBidirectionalChargingRequestAfterChange, cURMAfterChangeCycleTimeMs);
+    }
+  }
+}
+
+on sysvar_change GBT27930::BMS::ChargingDischarging::TargetVoltage
+{
+  if(!isTimerActive(sendVehicleChargingRequestAfterChange) && !isTimerActive(sendVehicleBidirectionalChargingRequestAfterChange))
+  {
+    if (currentBmsPhase == kPreChargingAndEnergyTransferPhase && $BMS.GBT27930_2_2024.VehicleFunctionNegotiationAckResult.PreChargingAndEnergyTransmission == 1)
+    {
+      SendVehicleChargingRequest();
+      sentVehicleChargingRequestAfterChangeCounter = 0;
+      StartTimerIfNotRunning(sendVehicleChargingRequestAfterChange, cURMAfterChangeCycleTimeMs);
+    }
+    else 
+    {
+      SendVehicleBidirectionalChargingRequest();
+      sentVehicleBidirectionalChargingRequestAfterChangeCounter = 0;
+      StartTimerIfNotRunning(sendVehicleBidirectionalChargingRequestAfterChange, cURMAfterChangeCycleTimeMs);
+    }
+  }
+}
+
+on sysvar_change GBT27930::BMS::Control::ManualTriggerChargingStop
+{
+  if (@sysvar::GBT27930::BMS::Control::ManualTriggerChargingStop == 1 && currentBmsPhase == kPreChargingAndEnergyTransferPhase)
+  {
+    writeLineEx(-3, 1, "BMS: Triggered abort charging process");
+    StopChargingProcedure(_GBT27930::DataTypes::VehicleEndChargingEncoding::ends_normally_manual_end);
+  }
+}
+
+on sysvar GBT27930::BMS::ChargingDischarging::SysEV_ClearBattery
+{
+  @sysvar::GBT27930::BMS::ChargingDischarging::SoC = 0;
+}
+
+on sysvar_change GBT27930::BMS::ChargingDischarging::SoC 
+{
+  if (@this >= 100)
+    StopChargingProcedure(_GBT27930::DataTypes::VehicleEndChargingEncoding::ends_normally_conditions_met);
+  else if(@sysvar::GBT27930::BMS::ChargingDischarging::EnergyTransferDirection == sysvar::GBT27930::BMS::ChargingDischarging::EnergyTransferDirection::Discharging 
+    && @this <= @sysvar::GBT27930::BMS::ChargingDischarging::MinSOC)
+    StopChargingProcedure(_GBT27930::DataTypes::VehicleEndChargingEncoding::ends_normally_conditions_met);
+}
+
+on sysvar_update GBT27930::BMS::ChargingDischarging::EnergyTransferDirection
+{
+  if (@this == sysvar::GBT27930::BMS::ChargingDischarging::EnergyTransferDirection::Charging)
+  {
+    setControlVisibility(gPanelName, gcontrolCharge, 1);
+    setControlVisibility(gPanelName, gcontrolDischarge, 0);
+  } else {
+    setControlVisibility(gPanelName, gcontrolCharge, 0);
+    setControlVisibility(gPanelName, gcontrolDischarge, 1);
+  }
+}
+
+
+/////////////////////////////////////////////////////////////////////////////////////
+/*--------------------------------------Control------------------------------------*/
+/////////////////////////////////////////////////////////////////////////////////////
+
+void ResetSentMessageCounters()
+{
+  sentVehicleContactorStatusAfterChangeCounter = 0;
+  sentPowerSupplyDemandCounter = 0;
+  sentVehicleChargingRequestAfterChangeCounter = 0;
+}
+
+on start
+{
+  ST_Init();
+  CHA_open_close_K5K6(OPEN);
+  HV_source_reset();
+  BMS_set_voltage_CP2(12.0);
+  ResetSentMessageCounters();
+  bmsPowerSupplyStatus = kPowerSupplyNotReady;
+  currentBmsPhase = kInitial;
+  msStartOfChargingMS = 0;
+  @sysvar::GBT27930::BMS::ChargingDischarging::SoC = @sysvar::GBT27930::BMS::ChargingDischarging::StartingSoC;
+}
+
+on preStop
+{
+  HV_source_reset(); 
+  CHA_open_close_K5K6(OPEN);
+  BMS_set_voltage_CP2(12.0);
+}
+
+void EndCommunication()
+{
+  msStartOfChargingMS = 0;
+}
+
+void StartGBT27930CategoryACommunication()
+{
+  // Not implemented
+  writeLineEx(1,3,"BMS: GBT27930 Category A communication is not supported within this Configuration. Please use Sample Configuration 'GB/T 27930 (2023 Category A) Simulation'.");
+  EndCommunication();
+}
+
+void ResetStateVariables()
+{
+  int skipAuthentication = 0;
+  int skipScheduling = 0;
+  int skipPowerSupply = 0;
+}
+
+on sysvar GBT27930::svStart
+{
+  // setting the charging module
+  if (@sysvar::GBT27930::BMS::ChargingDischarging::EnergyTransferDirection == @sysvar::GBT27930::BMS::ChargingDischarging::EnergyTransferDirection::Charging)
+  {
+    FDCPreChargingAndEnergyTransmission = 0x01;
+  }
+  else
+  {
+    FDCPreChargingAndEnergyTransmission = 0x02;
+  }
+
+  currentBmsPhase = kInitial;
+  @sysvar::GBT27930::BMS::CurrentBmsFunctionModule = @sysvar::GBT27930::BMS::CurrentBmsFunctionModule::Initial;
+  @sysvar::GBT27930::BMS::CurrentBmsStatus = 0;
+  
+  if(@this == 0) // Plug-In
+  {
+    //Reset / clean start of relays
+    ResetSentMessageCounters();
+    CHA_open_close_K5K6(OPEN);
+    
+    BMS_set_voltage_CP2(6.0); 
+    if (@sysvar::GBT27930::BMS::VersionNegotiation::ControlPilotVersion == sysvar::GBT27930::BMS::VersionNegotiation::ControlPilotVersion::NewVersionCPCircuit)
+    {
+      CHA_open_close_S2(CLOSE);
+      CHA_open_close_S3(CLOSE);
+      BMS_set_voltage_CP3(4.0); 
+    
+    }
+    
+    writeEx(-3, 1, "K3 and K4 are closed");
+    VT2004_busBar_default();
+    @sysvar::GBT27930::BMS::ChargingDischarging::SoC = 30;
+    BMS_set_resistance_R4(cRes_R4);
+    BMS_set_resistance_R5(cRes_R5);
+    Connect_CC1();
+    Connect_CC2();
+    Connect_CAN();
+    StartCommunication();
+    bmsPowerSupplyStatus = kPowerSupplyNotReady;
+  }
+  else // Plug-Out
+  {
+    CancelTimers();
+    ResetSentMessageCounters();
+    ResetStateVariables();
+    BMS_set_voltage_CP2(12.0);
+    Disconnect_CC1();
+    Disconnect_CC2();
+    Disconnect_CAN();
+    disconnect_resistances();
+    HV_source_reset();
+    CHA_open_close_K5K6(OPEN);
+  }
+}
+
+void StartCommunication()
+{
+  CancelTimers();
+  ResetVariable();
+  first_CHM_or_CRM_received = 0;
+  vehicleNegotiationState = kInitialization; // set State S0: Initialization
+  currentVersionIndex = NUM_BMS_VERSIONS-1;
+  if (isVersionSortedAscending(vehicleVersions, currentVersionIndex) == 0)
+  {
+    writeLineEx(1,3,"Failed to start Communication: struct vehicleVersions is not in ascending order. Please fix struct in 'Vehicle.can'");
+    return;
+  }
+  if (@sysvar::GBT27930::BMS::VersionNegotiation::vehicleUseVersionStruct == sysvar::GBT27930::BMS::VersionNegotiation::vehicleUseVersionStruct::VersionList)
+  {
+    SetSysvarVehicleVersionFromVersionStruct(currentVersionIndex);
+  }
+  // Reset ChargerVersion sysvars
+  @sysvar::GBT27930::BMS::VersionNegotiation::ReceivedChargerProtocolVersion[0] = 0;
+  @sysvar::GBT27930::BMS::VersionNegotiation::ReceivedChargerProtocolVersion[1] = 0;
+  @sysvar::GBT27930::BMS::VersionNegotiation::ReceivedChargerProtocolVersion[2] = 0;
+  @sysvar::GBT27930::BMS::VersionNegotiation::NegotiationResult = 0;
+  vehicleVersionHasChanged = 0;
+  StartTimerIfNotRunning(sendCyclicVersionNegotiationMessage, @GBT27930::BMS::DelayTransition::svK3K4_to_VersionNegotiation);
+  setTimer(timer_Tout0_Bms, @sysvar::GBT27930::BMS::Timeouts::Tout0_VersionNegotiation); // Timeout Version Negotiation after Tout0 expires
+}
+
+void StartFunctionNegotiationPhase()
+{
+  writeLineEx(-3,1,"#### BMS: Enter Function Negotiation ####");
+  setTimer(timer_Tout0_Bms, @sysvar::GBT27930::BMS::Timeouts::Tout0_FunctionNegotiation);
+  @sysvar::GBT27930::BMS::CurrentBmsStatus = kStatus1;
+}
+
+void StartParameterConfiguration()
+{
+  writeLineEx(-3,1,"#### BMS: Enter Parameter Configuration ####");
+  @sysvar::GBT27930::BMS::CurrentBmsStatus = kStatus0;
+  setTimer(timer_Tout0_Bms, @sysvar::GBT27930::BMS::Timeouts::Tout0_ParameterConfiguration);
+  @sysvar::GBT27930::BMS::CurrentBmsStatus = kStatus1;
+}
+
+void StartAuthenticiation()
+{
+  writeLineEx(-3,1,"#### BMS: Enter Authentication ####");
+  if (@sysvar::GBT27930::BMS::Authentication::AuthenticationType == @sysvar::GBT27930::BMS::Authentication::AuthenticationType::Scan)
+  { // await ChargerAuthenticationParameter
+    @sysvar::GBT27930::BMS::CurrentBmsStatus = kStatus0;
+    setTimer(timer_Tout0_Bms, @sysvar::GBT27930::BMS::Timeouts::Tout0_Authentication);
+    @sysvar::GBT27930::BMS::CurrentBmsStatus = kStatus1;
+  } 
+  else if (@sysvar::GBT27930::BMS::Authentication::AuthenticationType == @sysvar::GBT27930::BMS::Authentication::AuthenticationType::EVIN) 
+  {
+    $BMS.GBT27930_2_2024.VehicleEVINAuthenticationParameter.EVIN[0] = 'V';
+    $BMS.GBT27930_2_2024.VehicleEVINAuthenticationParameter.EVIN[1] = 'E';
+    $BMS.GBT27930_2_2024.VehicleEVINAuthenticationParameter.EVIN[2] = 'C';
+    $BMS.GBT27930_2_2024.VehicleEVINAuthenticationParameter.EVIN[3] = 'T';
+    @sysvar::GBT27930::BMS::CurrentBmsStatus = kStatus1;
+    setTimer(timer_Tout0_Bms, @sysvar::GBT27930::BMS::Timeouts::Tout0_Authentication);
+  } 
+  else if (@sysvar::GBT27930::BMS::Authentication::AuthenticationType == @sysvar::GBT27930::BMS::Authentication::AuthenticationType::Cloud)
+  {
+    $BMS.GBT27930_2_2024.VehicleCloudAuthenticationParameter.VIN[0] = 'V';
+    $BMS.GBT27930_2_2024.VehicleCloudAuthenticationParameter.VIN[1] = 'E';
+    $BMS.GBT27930_2_2024.VehicleCloudAuthenticationParameter.VIN[2] = 'C';
+    $BMS.GBT27930_2_2024.VehicleCloudAuthenticationParameter.VIN[3] = 'T';
+    @sysvar::GBT27930::BMS::CurrentBmsStatus = kStatus1;
+    setTimer(timer_Tout0_Bms, @sysvar::GBT27930::BMS::Timeouts::Tout0_Authentication);
+  } 
+  else 
+  {
+    writeLineEx(-3,1,"Enum Error: @sysvar::GBT27930::BMS::Authentication::AuthenticationType is set to unhandled value");
+  }
+}
+
+void StartScheduling()
+{
+  writeLineEx(-3,1,"#### BMS: Enter Scheduling ####");
+  @sysvar::GBT27930::BMS::CurrentBmsStatus = kStatus0;
+  setTimer(timer_Tout0_Bms, @sysvar::GBT27930::BMS::Timeouts::Tout0_Scheduling);
+  @sysvar::GBT27930::BMS::CurrentBmsStatus = kStatus1;
+}
+
+void StartOutputCircuitDetection()
+{
+  writeLineEx(-3,1,"#### BMS: Enter Output Circuit Detection ####");
+  @sysvar::GBT27930::BMS::CurrentBmsStatus = kStatus0;
+  setTimer(timer_Tout0_Bms, @sysvar::GBT27930::BMS::Timeouts::Tout0_OutputCircuitDetection);
+  CHA_open_close_S3(OPEN);
+  @sysvar::GBT27930::BMS::CurrentBmsStatus = kStatus1;
+}
+
+void StartPowerSupplyMode()
+{
+  writeLineEx(-3,1,"#### BMS: Enter Power Supply Mode ####");
+
+  if (@sysvar::GBT27930::BMS::DelayTransition::PowerSupplyReadySimulationDuration > @sysvar::GBT27930::BMS::DelayTransition::PowerSupplyFinishSimulationDuration)
+  {
+    writeLineEx(1,2,"PowerSupplyReadySimulationDuration is smaller than PowerSupplyFinishSimulationDuration. Setting PowerSupplyReadySimulationDuration to PowerSupplyFinishSimulationDuration/2");
+    @sysvar::GBT27930::BMS::DelayTransition::PowerSupplyReadySimulationDuration = @sysvar::GBT27930::BMS::DelayTransition::PowerSupplyFinishSimulationDuration/2;
+  }
+
+  StartTimerIfNotRunning(timer_Tout0_Bms, @sysvar::GBT27930::BMS::Timeouts::Tout0_PowerSupplyMode);
+  @sysvar::GBT27930::BMS::CurrentBmsStatus = kStatus1;
+
+  // Power Supply Mode ready status is determined by the vehicle when K5 & K6 have < 60 V
+  StartTimerIfNotRunning(timer_monitorExternalVoltageK5K6, cMonitorExternalVoltageK5K6Period);
+  // Power Supply Mode ends when the Vehicle reports "Power supply completed". For Simulation the PowerSupplyFinishSimulationDuration can be used.
+  StartTimerIfNotRunning(timer_SimulatePowerSupplyFinish, @sysvar::GBT27930::BMS::DelayTransition::PowerSupplyFinishSimulationDuration);
+}
+
+void StartPreChargeAndEnergyTransfer()
+{
+  writeLineEx(-3,1,"#### BMS: Enter Pre-Charge and EnergyTransfer ####");
+  StartTimerIfNotRunning(timer_Tout0_Bms, @sysvar::GBT27930::BMS::Timeouts::Tout0_PreChargingAndEnergyTransfer);
+  @sysvar::GBT27930::BMS::CurrentBmsStatus = kStatus1;
+}
+
+void StartEndPhase()
+{
+  writeLineEx(-3,1,"#### BMS: Enter End Phase ####");
+  @sysvar::GBT27930::BMS::CurrentBmsStatus = kStatus0;
+  chargerAllowsAdhesionDetection = kAdhesionDetectionInformationNotTransmitted;
+  $BMS.GBT27930_2_2024.VehicleAdhesionDetection.VehicleAdhesionDetectionStatus = _GBT27930::DataTypes::AdhesionCheckTypeEncoding::to_be_detected;
+  sentVehicleAdhesionDetectionCounter = 0;
+  setTimerCyclic(sendCyclicVehicleAdhesionDetectionMessage, cVehicleAdhesionDetectionCycleTimeMs);
+  setTimer(timer_Tout0_Bms, @sysvar::GBT27930::BMS::Timeouts::Tout0_EndPhase);
+  setTimer(timer_Tout1_Bms, @sysvar::GBT27930::BMS::Timeouts::Tout1_EndPhase_ChargerAdhesionDetectionReceived);
+  @sysvar::GBT27930::BMS::CurrentBmsStatus = kStatus0;
+}
+
+void CompleteEndPhase()
+{
+  CHA_open_close_K5K6(OPEN);
+  if (@sysvar::GBT27930::BMS::VersionNegotiation::ControlPilotVersion == sysvar::GBT27930::BMS::VersionNegotiation::ControlPilotVersion::NewVersionCPCircuit)
+  {
+    CHA_open_close_S3(CLOSE);
+    BMS_set_voltage_CP2(6.0);
+  }   
+  CancelTimers();
+  EndCommunication();
+}
+
+/////////////////////////////////////////////////////////////////////////////////////
+/*--------------------------------Message Handling---------------------------------*/
+/////////////////////////////////////////////////////////////////////////////////////
+
+on fct_called BMS.OnLastReceivedMessageIdChanged
+{
+  switch($BMS.OnLastReceivedMessageIdChanged.LatestCall.lastRxMessageId)
+  {
+    case kCHM:
+    case kCRM:
+      if (first_CHM_or_CRM_received == 0)
+      {
+        first_CHM_or_CRM_received = 1;
+        writeLineEx(1,1,"Received CHM/CRM message from Charger. Fallback to GBT27930 Category A communication.");
+        @sysvar::GBT27930::BMS::VersionNegotiation::NegotiationResult = 2; // set vehicle negotiation failed
+        vehicleNegotiationState = kNegotiationFailed; // Charger uses GBT27930 Category: set negotiation failed
+      }
+      break;
+    case kChargerVersionNegotiation:
+      if(vehicleNegotiationState == kNegotiating)
+      {
+        if ($BMS.Charger_VersionNegotiation.VersionNegotiationResult == 0 && (ChargerVersionHasChanged() || vehicleVersionHasChanged)) // Charger: Continue negotiation
+        {
+          vehicleVersionHasChanged = 0;
+          vehicleNegotiationState = ProcessVehicleVersionNegotiation();
+        }
+        else if ($BMS.Charger_VersionNegotiation.VersionNegotiationResult == 1) // Charger: Negotiation succeeded
+        {
+          if ($BMS.Charger_VersionNegotiation.ProtocolVersion.MajorVersionNumber == 1 
+           && $BMS.Charger_VersionNegotiation.ProtocolVersion.MinorVersionNumber == 1
+           && $BMS.Charger_VersionNegotiation.ProtocolVersion.TemporaryVersionNumber == 0
+           && CheckVehicleVersionConsistent() == 1)
+          {
+            @sysvar::GBT27930::BMS::VersionNegotiation::NegotiationResult = 1; // set vehicle negotiation succeeded
+            vehicleNegotiationState = kAppendixMNegotiationSucceeded; // Negotiation successful: Use GBT27930 Category A 
+          }
+          if ($BMS.Charger_VersionNegotiation.ProtocolVersion.MajorVersionNumber >= 2 
+           && $BMS.Charger_VersionNegotiation.ProtocolVersion.MinorVersionNumber == 0
+           && $BMS.Charger_VersionNegotiation.ProtocolVersion.TemporaryVersionNumber == 0
+           && CheckVehicleVersionConsistent() == 1)
+          {
+            @sysvar::GBT27930::BMS::VersionNegotiation::NegotiationResult = 1; // set vehicle negotiation succeeded
+            vehicleNegotiationState = kNegotiationSucceeded; // Negotiation successful: Use GBT27930 Category B
+          }
+        }
+        else if ($BMS.Charger_VersionNegotiation.VersionNegotiationResult == 2) // Vechicle: Negotiation failed
+        {
+          @sysvar::GBT27930::BMS::VersionNegotiation::NegotiationResult = 2; // set vehicle negotiation failed
+          vehicleNegotiationState = kNegotiationFailed; // Negotiation failed: Use GBT27930 Category A 
+        }
+      }
+      break;
+    case kChargerSupportFunction:
+      ProcessChargerSupportFunction();
+      break;
+    case kChargerChargingParameters:
+      ProcessChargerChargingParameters_ChargingOnly();
+      break;
+    case kChargerChargingAndDischargingParameters:
+      ProcessChargerChargingParameters_ChargingAndDischarging();
+      break;
+    case kChargerDetectionInformation:
+      ProcessChargerDetectionInformation();
+      break;
+    case kChargerPhaseRequest:
+      ProcessChargerPhaseRequest();
+      break;
+    case kChargerScanAuthenticationParameter:
+      ProcessScanAuthenticationParameter();
+      break;
+    case kChargerScanAuthenticationResult:
+      ProcessScanAuthenticationResult();
+      break;
+    case kChargerEVINAuthenticationResult:
+      ProcessEVINAuthenticationResult();
+      break;
+    case kChargerScheduledChargingInformation:
+      ProcessChargerScheduledChargingInformation();
+      break;
+    case kChargerScheduledChargingAcknowledgement:
+      ProcessChargerScheduledChargingAcknowledgement();
+      break;
+    case kChargerWakeUp:
+      ProcessChargerWakeUp();
+      break;
+    case kChargerCloudAuthenticationParameter:
+      if (@sysvar::GBT27930::BMS::CurrentBmsStatus == kStatus1)
+      {
+        @sysvar::GBT27930::BMS::CurrentBmsStatus = kStatus2;
+      }
+      break;
+    case kChargerCloudAuthenticationResult:
+      if (@sysvar::GBT27930::BMS::CurrentBmsStatus == kStatus2)
+      {
+        if ($BMS.GBT27930_2_2024.ChargerCloudAuthenticationResult.AuthenticationResult == 0xAA)
+        {
+          @sysvar::GBT27930::BMS::CurrentBmsStatus = kStatus3; // wait for next ChargerPhaseRequest
+        } else if (@sysvar::GBT27930::BMS::Authentication::ReAuthenticationAllowed == 1) {
+          $BMS.GBT27930_2_2024.VehicleCloudReAuthenticationRequest.FDC = @sysvar::GBT27930::BMS::Authentication::ReAuthentificationMethod;
+          @sysvar::GBT27930::BMS::CurrentBmsStatus = kStatus3; // wait for new FDC phase ack 
+        } else {
+          SendEndMessageAndEnterEndModule(_GBT27930::DataTypes::parEndType::FunctionModuleExecutionFailed, _GBT27930::DataTypes::VehicleFunctionModuleExecutionFailTypeEncoding::authentication_execution_fail);
+          @sysvar::GBT27930::BMS::CurrentBmsStatus = kStatus4;
+          cancelTimer(timer_Tout0_Bms);
+        }
+      }
+      break;
+    case kChargerPowerSupplyStatus:
+      ProcessChargerPowerSupplyStatus();
+      break;
+    case kChargerDynamicOutputCapability:
+      // Reset Tout1
+      cancelTimer(timer_Tout1_Bms);
+      StartTimerIfNotRunning(timer_Tout1_Bms, @sysvar::GBT27930::BMS::Timeouts::Tout1_PowerSupplyMode_DynamicOutputCapacityReceived);
+      if ($BMS.GBT27930_2_2024.ChargerDynamicOutputCapability.MaxCurrent.phys < $BMS.GBT27930_2_2024.VehiclePowerSupplyDemand.Current.phys)
+      {
+        @sysvar::GBT27930::BMS::PowerSupplyMode::CurrentDemand = $BMS.GBT27930_2_2024.ChargerDynamicOutputCapability.MaxCurrent.phys;
+        writeLineEx(1,1,"BMS: Power Supply current demand has been reduced from %f A due to %f A", @sysvar::GBT27930::BMS::PowerSupplyMode::CurrentDemand, $BMS.GBT27930_2_2024.ChargerDynamicOutputCapability.MaxCurrent.phys);
+      }
+      SendPowerSupplyDemandMessage();
+      break;
+    case kChargerPowerSupplyBasicInformation:
+      // Reset Tout2
+      cancelTimer(timer_Tout2_Bms);
+      StartTimerIfNotRunning(timer_Tout2_Bms, @sysvar::GBT27930::BMS::Timeouts::Tout2_PowerSupplyMode_BasicChargingInformationReceived);
+      SendPowerSupplyDemandMessage();
+      break;
+    case kChargerDCSupplyCircuitContactorStatus:
+      ProcessChargerDCSupplyCircuitContactorStatus();
+      break;
+    case kChargerAllowsAdhesionDetection:
+      ProcessChargerAllowsAdhesionDetection();
+      break;
+    case kChargerStatistics:
+      cancelTimer(sendCyclicVehicleAdhesionDetectionMessage);
+      $BMS.GBT27930_2_2024.VehicleStatistics;
+      @sysvar::GBT27930::BMS::CurrentBmsStatus = kStatus5;
+      CompleteEndPhase();
+      break;    
+    case kChargerReadyStatus:
+      ProcessChargerReadyStatus();
+      break;
+    case kChargerBidirectionalChargingReadyStatus:
+      ProcessChargerBidirectionalChargingReadyStatus();
+      break;
+    case kChargerEnergyTransferDynamicOutputCapability:
+      // Reset Tout1
+      cancelTimer(timer_Tout1_Bms);
+      if ($BMS.GBT27930_2_2024.ChargerEnergyTransferDynamicOutputCapability.MaxCurrent.phys < @sysvar::GBT27930::BMS::ChargingDischarging::TargetCurrent)
+      {
+        writeLineEx(1,1,"BMS: Charger max. current (%f A) is smaller than the requested current (%d A). Reducing target current", $BMS.GBT27930_2_2024.ChargerEnergyTransferDynamicOutputCapability.MaxCurrent.phys, @sysvar::GBT27930::BMS::ChargingDischarging::TargetCurrent);
+        @sysvar::GBT27930::BMS::ChargingDischarging::TargetCurrent = $BMS.GBT27930_2_2024.ChargerEnergyTransferDynamicOutputCapability.MaxCurrent.phys;
+        // change of @sysvar::GBT27930::BMS::ChargingDischarging::TargetCurrent trigger sending VehicleChargingRequest message
+      }
+      break;
+    case kChargerDischargeRequest:
+      ProcessChargerDischargeRequest(); 
+      break;
+    case kChargerEnd:
+      ProcessChargerEnd();      
+     break;
+    //case kChargerSupportedFunction:
+      // Important - ToDo: cancelTimer(sendCyclicVersionNegotiationMessage) after first appearance
+    default:
+      // Handle for PGN not implemented
+      break;
+  }
+}
+
+void SendVehicleVersionNegotiation()
+{
+  $BMS.Vehicle_VersionNegotiation.CANType = @sysvar::GBT27930::BMS::VersionNegotiation::CANType;
+  $BMS.Vehicle_VersionNegotiation.VersionNegotiationResult = @sysvar::GBT27930::BMS::VersionNegotiation::NegotiationResult;
+  $BMS.Vehicle_VersionNegotiation.ProtocolVersion.MajorVersionNumber = @sysvar::GBT27930::BMS::VersionNegotiation::ProtocolMajor;
+  $BMS.Vehicle_VersionNegotiation.ProtocolVersion.MinorVersionNumber = @sysvar::GBT27930::BMS::VersionNegotiation::ProtocolMinor;
+  $BMS.Vehicle_VersionNegotiation.ProtocolVersion.TemporaryVersionNumber = @sysvar::GBT27930::BMS::VersionNegotiation::ProtocolTemporary;
+  $BMS.Vehicle_VersionNegotiation.CPVersion = @sysvar::GBT27930::BMS::VersionNegotiation::ControlPilotVersion;
+  $BMS.Vehicle_VersionNegotiation.TLVersion = @sysvar::GBT27930::BMS::VersionNegotiation::TransportLayerVersion;
+}
+
+/////////////////////////////////////////////////////////////////////////////////////
+/*--------------------------------------Helper-------------------------------------*/
+/////////////////////////////////////////////////////////////////////////////////////
+
+void ResetVariable()
+{
+  FDCPreChargingAndEnergyTransmission = @sysvar::GBT27930::BMS::Control::SysEV_ChargeDischarge;
+}
+
+int ChargerVersionHasChanged()
+{
+  if ($BMS.Charger_VersionNegotiation.ProtocolVersion.MajorVersionNumber == @sysvar::GBT27930::BMS::VersionNegotiation::ReceivedChargerProtocolVersion[0]
+     && $BMS.Charger_VersionNegotiation.ProtocolVersion.MinorVersionNumber == @sysvar::GBT27930::BMS::VersionNegotiation::ReceivedChargerProtocolVersion[1]
+     && $BMS.Charger_VersionNegotiation.ProtocolVersion.TemporaryVersionNumber == @sysvar::GBT27930::BMS::VersionNegotiation::ReceivedChargerProtocolVersion[2])
+  {
+    return 0;
+  }
+  @sysvar::GBT27930::BMS::VersionNegotiation::ReceivedChargerProtocolVersion[0] = $BMS.Charger_VersionNegotiation.ProtocolVersion.MajorVersionNumber;
+  @sysvar::GBT27930::BMS::VersionNegotiation::ReceivedChargerProtocolVersion[1] = $BMS.Charger_VersionNegotiation.ProtocolVersion.MinorVersionNumber;
+  @sysvar::GBT27930::BMS::VersionNegotiation::ReceivedChargerProtocolVersion[2] = $BMS.Charger_VersionNegotiation.ProtocolVersion.TemporaryVersionNumber;
+  return 1;
+}
+
+
+int CheckVehicleVersionConsistent()
+{
+  if ($BMS.Vehicle_VersionNegotiation.ProtocolVersion.MajorVersionNumber == $BMS.Charger_VersionNegotiation.ProtocolVersion.MajorVersionNumber 
+     && $BMS.Vehicle_VersionNegotiation.ProtocolVersion.MinorVersionNumber == $BMS.Charger_VersionNegotiation.ProtocolVersion.MinorVersionNumber 
+     && $BMS.Vehicle_VersionNegotiation.ProtocolVersion.TemporaryVersionNumber == $BMS.Charger_VersionNegotiation.ProtocolVersion.TemporaryVersionNumber)
+    return 1;
+  return 0;
+}
+
+int CheckVehicleVersionLowerThanCharger()
+{
+  // Compare main version number
+  if ($BMS.Charger_VersionNegotiation.ProtocolVersion.MajorVersionNumber > 
+      $BMS.Vehicle_VersionNegotiation.ProtocolVersion.MajorVersionNumber)
+  {
+    return 1;
+  }
+  // If main versions are equal, compare minor version number
+  if ($BMS.Charger_VersionNegotiation.ProtocolVersion.MajorVersionNumber == 
+      $BMS.Vehicle_VersionNegotiation.ProtocolVersion.MajorVersionNumber 
+  &&  $BMS.Charger_VersionNegotiation.ProtocolVersion.MinorVersionNumber > 
+      $BMS.Vehicle_VersionNegotiation.ProtocolVersion.MinorVersionNumber)
+  {
+    return 1;
+  }
+  // If main and minor versions are equal, compare temporary version number
+  if ($BMS.Charger_VersionNegotiation.ProtocolVersion.MajorVersionNumber == 
+      $BMS.Vehicle_VersionNegotiation.ProtocolVersion.MajorVersionNumber 
+  &&  $BMS.Charger_VersionNegotiation.ProtocolVersion.MinorVersionNumber == 
+      $BMS.Vehicle_VersionNegotiation.ProtocolVersion.MinorVersionNumber 
+  &&  $BMS.Charger_VersionNegotiation.ProtocolVersion.TemporaryVersionNumber > 
+      $BMS.Vehicle_VersionNegotiation.ProtocolVersion.TemporaryVersionNumber)
+  {
+    return 1;
+  }
+  // Otherwise, vehicle version is not lower
+  return 0;
+}
+
+int ProcessVehicleVersionNegotiation()
+{
+  if (CheckVehicleVersionConsistent())
+  {
+    @sysvar::GBT27930::BMS::VersionNegotiation::NegotiationResult = 1; // set vehicle negotiation succeeded
+  }
+  else if (CheckVehicleVersionLowerThanCharger())
+  {
+    @sysvar::GBT27930::BMS::VersionNegotiation::NegotiationResult = 0; // set vehicle "negotiation continue"
+  }
+  // if version not consistent nor vehicle version is lower than charger, try next vehicle version
+  else if (--currentVersionIndex < 0)
+  {
+    writeLineEx(-3,1,"Charger has reached lowest version");
+    @sysvar::GBT27930::BMS::VersionNegotiation::NegotiationResult = 2; // set vehicle negotiation failed
+    return 4; // Reached lowest vehicle version; 
+  }
+  else 
+  {
+    writeLineEx(-3,1,"BMS try next lower version: %i", currentVersionIndex);
+    @sysvar::GBT27930::BMS::VersionNegotiation::NegotiationResult = 0; // set vehicle "negotiation continue"
+    SetSysvarVehicleVersionFromVersionStruct(currentVersionIndex); // Try next lower version
+    vehicleVersionHasChanged = 1;
+  }
+  return 1;
+}
+
+void SetSysvarVehicleVersionFromVersionStruct(int versionIndex)
+{
+  if (versionIndex>=0 && versionIndex<NUM_BMS_VERSIONS)
+  {
+    @sysvar::GBT27930::BMS::VersionNegotiation::ProtocolMajor = vehicleVersions[versionIndex].major;
+    @sysvar::GBT27930::BMS::VersionNegotiation::ProtocolMinor = vehicleVersions[versionIndex].minor;
+    @sysvar::GBT27930::BMS::VersionNegotiation::ProtocolTemporary = vehicleVersions[versionIndex].temporary;
+  }
+  else
+  {
+    writeLineEx(1,3,"BMS - Error during VersionNegotiation: VersionIndex %i is invalid", versionIndex);
+  }
+}
+
+void SendVehicleFunctionNegotiationAckResult()
+{
+  if (skipAuthentication)
+  {
+    $GBT27930::Simulation::BMS.GBT27930_2_2024.VehicleFunctionNegotiationAckResult.Authentication = 0x00;
+  }
+  else
+  {
+    $GBT27930::Simulation::BMS.GBT27930_2_2024.VehicleFunctionNegotiationAckResult.Authentication = @sysvar::GBT27930::BMS::FunctionNegotiation::FDCAuthentication;
+  }
+
+  if (skipScheduling)
+  {
+    $GBT27930::Simulation::BMS.GBT27930_2_2024.VehicleFunctionNegotiationAckResult.Booking = 0x00;
+  }
+  else
+  {
+    $GBT27930::Simulation::BMS.GBT27930_2_2024.VehicleFunctionNegotiationAckResult.Booking = @sysvar::GBT27930::BMS::FunctionNegotiation::FDCScheduling;
+  }
+  
+  if (skipPowerSupply)
+  {
+    $GBT27930::Simulation::BMS.GBT27930_2_2024.VehicleFunctionNegotiationAckResult.PowerSupplyMode = 0x00;
+  }
+  else
+  {
+    $GBT27930::Simulation::BMS.GBT27930_2_2024.VehicleFunctionNegotiationAckResult.PowerSupplyMode = @sysvar::GBT27930::BMS::FunctionNegotiation::FDCPowerSupplyMode;
+  }
+
+  $GBT27930::Simulation::BMS.GBT27930_2_2024.VehicleFunctionNegotiationAckResult.ParameterConfiguration = @sysvar::GBT27930::BMS::FunctionNegotiation::FDCParameterConfiguration;
+  $GBT27930::Simulation::BMS.GBT27930_2_2024.VehicleFunctionNegotiationAckResult.OutputCircuitDetection = @sysvar::GBT27930::BMS::FunctionNegotiation::FDCOutputCircuitDetection;
+  $GBT27930::Simulation::BMS.GBT27930_2_2024.VehicleFunctionNegotiationAckResult.PreChargingAndEnergyTransmission = @sysvar::GBT27930::BMS::FunctionNegotiation::FDCPreChargingAndEnergyTransmission;
+  $GBT27930::Simulation::BMS.GBT27930_2_2024.VehicleFunctionNegotiationAckResult.EndFunctionModule = @sysvar::GBT27930::BMS::FunctionNegotiation::FDCEndMessage;
+}
+
+// the first match in FDC is the right one
+void ProcessChargerSupportFunction()
+{
+  int negotiationSucceded = 1; // boolean
+
+  int negotiationParameterConfigSucceded = 0;
+  int negotiationAuthentication = 0;
+  int negotiationReservation = 0;
+  int negotiationOutputLoop = 0;
+  int negotiationPowerSupply = 0;
+  int negotiationPrecharge = 0;
+  int negotiationEndMessage = 0;
+
+  if(currentBmsPhase == kFunctionNegotiationPhase && @sysvar::GBT27930::BMS::CurrentBmsStatus == kStatus1)
+  {
+    // Parameter Configuration
+    FDCParameterConfiguration = @sysvar::GBT27930::BMS::FunctionNegotiation::FDCParameterConfiguration;
+    if ($GBT27930::Simulation::BMS.GBT27930_2_2024.ChargerSupportFunction.ParameterConfiguration.FDCSupport8 != 0 && FDCParameterConfiguration == 8) {
+        negotiationParameterConfigSucceded = 8;
+    } else if ($GBT27930::Simulation::BMS.GBT27930_2_2024.ChargerSupportFunction.ParameterConfiguration.FDCSupport7 != 0 && FDCParameterConfiguration == 7) {
+        negotiationParameterConfigSucceded = 7;
+    } else if ($GBT27930::Simulation::BMS.GBT27930_2_2024.ChargerSupportFunction.ParameterConfiguration.FDCSupport6 != 0 && FDCParameterConfiguration == 6) {
+        negotiationParameterConfigSucceded = 6;
+    } else if ($GBT27930::Simulation::BMS.GBT27930_2_2024.ChargerSupportFunction.ParameterConfiguration.FDCSupport5 != 0 && FDCParameterConfiguration == 5) {
+        negotiationParameterConfigSucceded = 5;
+    } else if ($GBT27930::Simulation::BMS.GBT27930_2_2024.ChargerSupportFunction.ParameterConfiguration.FDCSupport4 != 0 && FDCParameterConfiguration == 4) {
+        negotiationParameterConfigSucceded = 4;
+    } else if ($GBT27930::Simulation::BMS.GBT27930_2_2024.ChargerSupportFunction.ParameterConfiguration.FDCSupport3 != 0 && FDCParameterConfiguration == 3) {
+        negotiationParameterConfigSucceded = 3;
+    } else if ($GBT27930::Simulation::BMS.GBT27930_2_2024.ChargerSupportFunction.ParameterConfiguration.FDCSupport2 != 0 && FDCParameterConfiguration == 2) {
+        negotiationParameterConfigSucceded = 2;
+    } else if ($GBT27930::Simulation::BMS.GBT27930_2_2024.ChargerSupportFunction.ParameterConfiguration.FDCSupport1 != 0 && FDCParameterConfiguration == 1) {
+        negotiationParameterConfigSucceded = 1;
+    } else {
+      WriteLineEx(1, 3, "BMS: Charger does not support the choosen Parameter Configuration FDC %d. Please revisit BMS Function Negotiation Configuration.", FDCParameterConfiguration);
+    }
+    
+    // Authentication 
+    FDCAuthentication = @sysvar::GBT27930::BMS::FunctionNegotiation::FDCAuthentication;
+    if ($GBT27930::Simulation::BMS.GBT27930_2_2024.ChargerSupportFunction.Authentication.FDCSupport8 != 0 && FDCAuthentication == 8) {
+        negotiationAuthentication = 8;
+    } else if ($GBT27930::Simulation::BMS.GBT27930_2_2024.ChargerSupportFunction.Authentication.FDCSupport7 != 0 && FDCAuthentication == 7) {
+        negotiationAuthentication = 7;
+    } else if ($GBT27930::Simulation::BMS.GBT27930_2_2024.ChargerSupportFunction.Authentication.FDCSupport6 != 0 && FDCAuthentication == 6) {
+        negotiationAuthentication = 6;
+    } else if ($GBT27930::Simulation::BMS.GBT27930_2_2024.ChargerSupportFunction.Authentication.FDCSupport5 != 0 && FDCAuthentication == 5) {
+        negotiationAuthentication = 5;
+    } else if ($GBT27930::Simulation::BMS.GBT27930_2_2024.ChargerSupportFunction.Authentication.FDCSupport4 != 0 && FDCAuthentication == 4) {
+        negotiationAuthentication = 4;
+    } else if ($GBT27930::Simulation::BMS.GBT27930_2_2024.ChargerSupportFunction.Authentication.FDCSupport3 != 0 && FDCAuthentication == 3) {
+        negotiationAuthentication = 3;
+    } else if ($GBT27930::Simulation::BMS.GBT27930_2_2024.ChargerSupportFunction.Authentication.FDCSupport2 != 0 && FDCAuthentication == 2) {
+        negotiationAuthentication = 2;
+    } else if ($GBT27930::Simulation::BMS.GBT27930_2_2024.ChargerSupportFunction.Authentication.FDCSupport1 != 0 && FDCAuthentication == 1) {
+        negotiationAuthentication = 1;
+    } else if (FDCAuthentication == 0) { // optional Module
+        skipAuthentication = 1;
+    } else {
+        WriteLineEx(1, 3, "BMS: Charger does not support the choosen Authentication FDC %d. Please revisit BMS Function Negotiation Configuration.", FDCAuthentication);
+    }
+    
+    // Reservation (Booking)
+    FDCScheduling = @sysvar::GBT27930::BMS::FunctionNegotiation::FDCScheduling;
+    if ($GBT27930::Simulation::BMS.GBT27930_2_2024.ChargerSupportFunction.Booking.FDCSupport8 != 0 && FDCScheduling == 8) {
+        negotiationReservation = 8;
+    } else if ($GBT27930::Simulation::BMS.GBT27930_2_2024.ChargerSupportFunction.Booking.FDCSupport7 != 0 && FDCScheduling == 7) {
+        negotiationReservation = 7;
+    } else if ($GBT27930::Simulation::BMS.GBT27930_2_2024.ChargerSupportFunction.Booking.FDCSupport6 != 0 && FDCScheduling == 6) {
+        negotiationReservation = 6;
+    } else if ($GBT27930::Simulation::BMS.GBT27930_2_2024.ChargerSupportFunction.Booking.FDCSupport5 != 0 && FDCScheduling == 5) {
+        negotiationReservation = 5;
+    } else if ($GBT27930::Simulation::BMS.GBT27930_2_2024.ChargerSupportFunction.Booking.FDCSupport4 != 0 && FDCScheduling == 4) {
+        negotiationReservation = 4;
+    } else if ($GBT27930::Simulation::BMS.GBT27930_2_2024.ChargerSupportFunction.Booking.FDCSupport3 != 0 && FDCScheduling == 3) {
+        negotiationReservation = 3;
+    } else if ($GBT27930::Simulation::BMS.GBT27930_2_2024.ChargerSupportFunction.Booking.FDCSupport2 != 0 && FDCScheduling == 2) {
+        negotiationReservation = 2;
+    } else if ($GBT27930::Simulation::BMS.GBT27930_2_2024.ChargerSupportFunction.Booking.FDCSupport1 != 0 && FDCScheduling == 1) {
+        negotiationReservation = 1;
+    } else if (FDCScheduling == 0) { // optional Module
+        skipScheduling = 1;
+    } else {
+      WriteLineEx(1, 3, "BMS: Charger does not support the choosen Scheduling FDC %d. Please revisit BMS Function Negotiation Configuration.", FDCScheduling);
+    }
+    
+    // OutputLoop (Output Circuit Detection)
+    FDCOutputCircuitDetection = @sysvar::GBT27930::BMS::FunctionNegotiation::FDCOutputCircuitDetection;
+    if ($GBT27930::Simulation::BMS.GBT27930_2_2024.ChargerSupportFunction.OutputCircuitDetection.FDCSupport8 != 0 && FDCOutputCircuitDetection == 8) {
+        negotiationOutputLoop = 8;
+    } else if ($GBT27930::Simulation::BMS.GBT27930_2_2024.ChargerSupportFunction.OutputCircuitDetection.FDCSupport7 != 0 && FDCOutputCircuitDetection == 7) {
+        negotiationOutputLoop = 7;
+    } else if ($GBT27930::Simulation::BMS.GBT27930_2_2024.ChargerSupportFunction.OutputCircuitDetection.FDCSupport6 != 0 && FDCOutputCircuitDetection == 6) {
+        negotiationOutputLoop = 6;
+    } else if ($GBT27930::Simulation::BMS.GBT27930_2_2024.ChargerSupportFunction.OutputCircuitDetection.FDCSupport5 != 0 && FDCOutputCircuitDetection == 5) {
+        negotiationOutputLoop = 5;
+    } else if ($GBT27930::Simulation::BMS.GBT27930_2_2024.ChargerSupportFunction.OutputCircuitDetection.FDCSupport4 != 0 && FDCOutputCircuitDetection == 4) {
+        negotiationOutputLoop = 4;
+    } else if ($GBT27930::Simulation::BMS.GBT27930_2_2024.ChargerSupportFunction.OutputCircuitDetection.FDCSupport3 != 0 && FDCOutputCircuitDetection == 3) {
+        negotiationOutputLoop = 3;
+    } else if ($GBT27930::Simulation::BMS.GBT27930_2_2024.ChargerSupportFunction.OutputCircuitDetection.FDCSupport2 != 0 && FDCOutputCircuitDetection == 2) {
+        negotiationOutputLoop = 2;
+    } else if ($GBT27930::Simulation::BMS.GBT27930_2_2024.ChargerSupportFunction.OutputCircuitDetection.FDCSupport1 != 0 && FDCOutputCircuitDetection == 1) {
+        negotiationOutputLoop = 1;
+    } else {
+      WriteLineEx(1, 3, "BMS: Charger does not support the choosen Output Circuit Detection FDC %d. Please revisit BMS Function Negotiation Configuration.", FDCOutputCircuitDetection);
+    }
+
+    // PowerSupply (Power Supply Mode)
+    FDCPowerSupplyMode = @sysvar::GBT27930::BMS::FunctionNegotiation::FDCPowerSupplyMode;
+    if ($GBT27930::Simulation::BMS.GBT27930_2_2024.ChargerSupportFunction.PowerSupplyMode.FDCSupport8 != 0 && FDCPowerSupplyMode == 8) {
+        negotiationPowerSupply = 8;
+    } else if ($GBT27930::Simulation::BMS.GBT27930_2_2024.ChargerSupportFunction.PowerSupplyMode.FDCSupport7 != 0 && FDCPowerSupplyMode == 7) {
+        negotiationPowerSupply = 7;
+    } else if ($GBT27930::Simulation::BMS.GBT27930_2_2024.ChargerSupportFunction.PowerSupplyMode.FDCSupport6 != 0 && FDCPowerSupplyMode == 6) {
+        negotiationPowerSupply = 6;
+    } else if ($GBT27930::Simulation::BMS.GBT27930_2_2024.ChargerSupportFunction.PowerSupplyMode.FDCSupport5 != 0 && FDCPowerSupplyMode == 5) {
+        negotiationPowerSupply = 5;
+    } else if ($GBT27930::Simulation::BMS.GBT27930_2_2024.ChargerSupportFunction.PowerSupplyMode.FDCSupport4 != 0 && FDCPowerSupplyMode == 4) {
+        negotiationPowerSupply = 4;
+    } else if ($GBT27930::Simulation::BMS.GBT27930_2_2024.ChargerSupportFunction.PowerSupplyMode.FDCSupport3 != 0 && FDCPowerSupplyMode == 3) {
+        negotiationPowerSupply = 3;
+    } else if ($GBT27930::Simulation::BMS.GBT27930_2_2024.ChargerSupportFunction.PowerSupplyMode.FDCSupport2 != 0 && FDCPowerSupplyMode == 2) {
+        negotiationPowerSupply = 2;
+    } else if ($GBT27930::Simulation::BMS.GBT27930_2_2024.ChargerSupportFunction.PowerSupplyMode.FDCSupport1 != 0 && FDCPowerSupplyMode == 1) {
+        negotiationPowerSupply = 1;
+    } else if (FDCPowerSupplyMode == 0) { // optional Module
+        skipPowerSupply = 1;
+    } else {
+        WriteLineEx(1, 3, "BMS: Charger does not support the choosen Power Supply Mode FDC %d. Please revisit BMS Function Negotiation Configuration.", FDCPowerSupplyMode);
+    }
+
+    // Precharge (Pre-Charging and Energy Transmission)
+    FDCPreChargingAndEnergyTransmission = @sysvar::GBT27930::BMS::FunctionNegotiation::FDCPreChargingAndEnergyTransmission;
+    if ($GBT27930::Simulation::BMS.GBT27930_2_2024.ChargerSupportFunction.PreChargingAndEnergyTransmission.FDCSupport8 != 0 && FDCPreChargingAndEnergyTransmission == 8) {
+        negotiationPrecharge = 8;
+    } else if ($GBT27930::Simulation::BMS.GBT27930_2_2024.ChargerSupportFunction.PreChargingAndEnergyTransmission.FDCSupport7 != 0 && FDCPreChargingAndEnergyTransmission == 7) {
+        negotiationPrecharge = 7;
+    } else if ($GBT27930::Simulation::BMS.GBT27930_2_2024.ChargerSupportFunction.PreChargingAndEnergyTransmission.FDCSupport6 != 0 && FDCPreChargingAndEnergyTransmission == 6) {
+        negotiationPrecharge = 6;
+    } else if ($GBT27930::Simulation::BMS.GBT27930_2_2024.ChargerSupportFunction.PreChargingAndEnergyTransmission.FDCSupport5 != 0 && FDCPreChargingAndEnergyTransmission == 5) {
+        negotiationPrecharge = 5;
+    } else if ($GBT27930::Simulation::BMS.GBT27930_2_2024.ChargerSupportFunction.PreChargingAndEnergyTransmission.FDCSupport4 != 0 && FDCPreChargingAndEnergyTransmission == 4) {
+        negotiationPrecharge = 4;
+    } else if ($GBT27930::Simulation::BMS.GBT27930_2_2024.ChargerSupportFunction.PreChargingAndEnergyTransmission.FDCSupport3 != 0 && FDCPreChargingAndEnergyTransmission == 3) {
+        negotiationPrecharge = 3;
+    } else if ($GBT27930::Simulation::BMS.GBT27930_2_2024.ChargerSupportFunction.PreChargingAndEnergyTransmission.FDCSupport2 != 0 && FDCPreChargingAndEnergyTransmission == 2) {
+        negotiationPrecharge = 2;
+    } else if ($GBT27930::Simulation::BMS.GBT27930_2_2024.ChargerSupportFunction.PreChargingAndEnergyTransmission.FDCSupport1 != 0 && FDCPreChargingAndEnergyTransmission == 1) {
+        negotiationPrecharge = 1;
+    } else {
+      WriteLineEx(1, 3, "BMS: Charger does not support the choosen Pre-Charging And Energy Transmission FDC %d. Please revisit BMS Function Negotiation Configuration.", FDCPreChargingAndEnergyTransmission);
+    }
+    
+    // EndMessage
+    FDCEndMessage = @sysvar::GBT27930::BMS::FunctionNegotiation::FDCEndMessage;
+    if ($GBT27930::Simulation::BMS.GBT27930_2_2024.ChargerSupportFunction.EndMessage.FDCSupport8 != 0 && FDCEndMessage == 8) {
+        negotiationEndMessage = 8;
+    } else if ($GBT27930::Simulation::BMS.GBT27930_2_2024.ChargerSupportFunction.EndMessage.FDCSupport7 != 0 && FDCEndMessage == 7) {
+        negotiationEndMessage = 7;
+    } else if ($GBT27930::Simulation::BMS.GBT27930_2_2024.ChargerSupportFunction.EndMessage.FDCSupport6 != 0 && FDCEndMessage == 6) {
+        negotiationEndMessage = 6;
+    } else if ($GBT27930::Simulation::BMS.GBT27930_2_2024.ChargerSupportFunction.EndMessage.FDCSupport5 != 0 && FDCEndMessage == 5) {
+        negotiationEndMessage = 5;
+    } else if ($GBT27930::Simulation::BMS.GBT27930_2_2024.ChargerSupportFunction.EndMessage.FDCSupport4 != 0 && FDCEndMessage == 4) {
+        negotiationEndMessage = 4;
+    } else if ($GBT27930::Simulation::BMS.GBT27930_2_2024.ChargerSupportFunction.EndMessage.FDCSupport3 != 0 && FDCEndMessage == 3) {
+        negotiationEndMessage = 3;
+    } else if ($GBT27930::Simulation::BMS.GBT27930_2_2024.ChargerSupportFunction.EndMessage.FDCSupport2 != 0 && FDCEndMessage == 2) {
+        negotiationEndMessage = 2;
+    } else if ($GBT27930::Simulation::BMS.GBT27930_2_2024.ChargerSupportFunction.EndMessage.FDCSupport1 != 0 && FDCEndMessage == 1) {
+        negotiationEndMessage = 1;
+    } else {
+      WriteLineEx(1, 3, "BMS: Charger does not support the choosen End Message FDC %d. Please revisit BMS Function Negotiation Configuration.", FDCEndMessage);
+    }
+
+    // Check if mandatory negotiations succeeded
+    if (negotiationParameterConfigSucceded == 0 ||  
+        negotiationOutputLoop == 0 || negotiationPrecharge == 0 || negotiationEndMessage == 0)
+    {
+      negotiationSucceded = 0;
+    }
+
+    if (negotiationSucceded == 0)
+    {
+      writeLineEx(1, 3, "BMS: Function Negotiation Failed");
+      SendEndMessageAndEnterEndModule(_GBT27930::DataTypes::parEndType::FunctionModuleExecutionFailed, _GBT27930::DataTypes::VehicleFunctionModuleExecutionFailTypeEncoding::function_negotiation_execution_fail);
+      StartTimerIfNotRunning(timer_delayedEndMessageFunctionNegotiationFailed, 15);
+      cancelTimer(timer_Tout0_Bms);
+    }
+    else
+    {
+      @sysvar::GBT27930::BMS::CurrentBmsStatus = kStatus2;
+      SendVehicleFunctionNegotiationAckResult();
+    }
+  }
+}
+
+void ProcessChargerPhaseRequest()
+{
+  int stateTransitionTimerDuration = 100;
+  stateTransitionTimerDuration = @sysvar::GBT27930::BMS::DelayTransition::AnyMessage_to_End;
+  
+  // valid next phase
+  switch(currentBmsPhase)
+  {
+    case kInitial:
+    case kVersionNegotiation:
+    case kFunctionNegotiationPhase:
+      if (@sysvar::GBT27930::BMS::CurrentBmsStatus == kStatus2)
+      {
+        if ($BMS.GBT27930_2_2024.ChargerPhaseRequest.Phase == _GBT27930::DataTypes::PhaseTypeEncoding::parameter_configuration_charging_mode)
+        {
+          $BMS.GBT27930_2_2024.VehicleAcknowledge.PhaseAck = _GBT27930::DataTypes::PhaseAckTypeEncoding::acknowledgement_succeeded;
+          currentBmsPhase = kParameterConfigurationPhase;
+          @sysvar::GBT27930::BMS::CurrentBmsStatus = kStatus3;
+          stateTransitionTimerDuration = @sysvar::GBT27930::BMS::DelayTransition::FunctionNegotiation_to_ParameterConfiguration;
+        }
+        else
+        {
+          $BMS.GBT27930_2_2024.VehicleAcknowledge.PhaseAck = _GBT27930::DataTypes::PhaseAckTypeEncoding::acknowledgement_failed;
+          currentBmsPhase = kEndPhase;
+          @sysvar::GBT27930::BMS::CurrentBmsStatus = kStatus4;
+        }
+      }
+      break;
+    case kParameterConfigurationPhase:
+      @sysvar::GBT27930::BMS::CurrentBmsStatus = kStatus3;
+      if($BMS.GBT27930_2_2024.ChargerPhaseRequest.Phase == _GBT27930::DataTypes::PhaseTypeEncoding::authentication_scan_code_swipe_card // = 0x3001
+        || $BMS.GBT27930_2_2024.ChargerPhaseRequest.Phase == _GBT27930::DataTypes::PhaseTypeEncoding::authentication_scan_evin_authentication // = 0x3002
+        || $BMS.GBT27930_2_2024.ChargerPhaseRequest.Phase == _GBT27930::DataTypes::PhaseTypeEncoding::authentication_scan_cloud_authentication /* = 0x3003*/)
+      {
+        @sysvar::GBT27930::BMS::Authentication::AuthenticationType = $BMS.GBT27930_2_2024.ChargerPhaseRequest.Phase - 0x3001; // Scan = 0, EVIN =1, Cloud = 2
+        $BMS.GBT27930_2_2024.VehicleAcknowledge.PhaseAck = _GBT27930::DataTypes::PhaseAckTypeEncoding::acknowledgement_succeeded;
+        currentBmsPhase = kAuthenticationPhase;
+        stateTransitionTimerDuration = @sysvar::GBT27930::BMS::DelayTransition::ParameterConfiguration_to_Authentication;
+      }
+      else if (skipAuthentication && skipScheduling && $BMS.GBT27930_2_2024.ChargerPhaseRequest.Phase == _GBT27930::DataTypes::PhaseTypeEncoding::output_circuit_detection)
+      {
+        $BMS.GBT27930_2_2024.VehicleAcknowledge.PhaseAck = _GBT27930::DataTypes::PhaseAckTypeEncoding::acknowledgement_succeeded;
+        currentBmsPhase = kOutputCircuitDetectionPhase;
+        stateTransitionTimerDuration = @sysvar::GBT27930::BMS::DelayTransition::ParameterConfiguration_to_OutputCircuitDetectionPhase;
+      }
+      else if (skipAuthentication && $BMS.GBT27930_2_2024.ChargerPhaseRequest.Phase == _GBT27930::DataTypes::PhaseTypeEncoding::scheduling_vehicle_defined_start_time)
+      {
+        $BMS.GBT27930_2_2024.VehicleAcknowledge.PhaseAck = _GBT27930::DataTypes::PhaseAckTypeEncoding::acknowledgement_succeeded;
+        currentBmsPhase = kSchedulingPhase;
+        stateTransitionTimerDuration = @sysvar::GBT27930::BMS::DelayTransition::ParameterConfiguration_to_Scheduling;
+      }
+      else
+      {
+        $BMS.GBT27930_2_2024.VehicleAcknowledge.PhaseAck = _GBT27930::DataTypes::PhaseAckTypeEncoding::acknowledgement_failed;
+        currentBmsPhase = kEndPhase;
+        @sysvar::GBT27930::BMS::CurrentBmsStatus = kStatus4;
+      }
+      break;
+    case kAuthenticationPhase:
+      @sysvar::GBT27930::BMS::CurrentBmsStatus = kStatus3;
+      if($BMS.GBT27930_2_2024.ChargerPhaseRequest.Phase == _GBT27930::DataTypes::PhaseTypeEncoding::scheduling_vehicle_defined_start_time)
+      {
+        $BMS.GBT27930_2_2024.VehicleAcknowledge.PhaseAck = _GBT27930::DataTypes::PhaseAckTypeEncoding::acknowledgement_succeeded;
+        currentBmsPhase = kSchedulingPhase;
+        stateTransitionTimerDuration = @sysvar::GBT27930::BMS::DelayTransition::Authentication_to_Scheduling;
+      }
+      else if ((@sysvar::GBT27930::BMS::CurrentBmsStatus == kStatus2 || @sysvar::GBT27930::BMS::CurrentBmsStatus == kStatus3)  
+               && ($BMS.GBT27930_2_2024.ChargerPhaseRequest.Phase == _GBT27930::DataTypes::PhaseTypeEncoding::authentication_scan_code_swipe_card 
+                || $BMS.GBT27930_2_2024.ChargerPhaseRequest.Phase == _GBT27930::DataTypes::PhaseTypeEncoding::authentication_scan_evin_authentication 
+                || $BMS.GBT27930_2_2024.ChargerPhaseRequest.Phase == _GBT27930::DataTypes::PhaseTypeEncoding::authentication_scan_cloud_authentication))
+      {
+        @sysvar::GBT27930::BMS::Authentication::AuthenticationType = $BMS.GBT27930_2_2024.ChargerPhaseRequest.Phase - 0x3001; // Scan = 0, EVIN = 1, Cloud = 2
+        $BMS.GBT27930_2_2024.VehicleAcknowledge.PhaseAck = _GBT27930::DataTypes::PhaseAckTypeEncoding::acknowledgement_succeeded;
+      }
+      else if (skipScheduling && $BMS.GBT27930_2_2024.ChargerPhaseRequest.Phase == _GBT27930::DataTypes::PhaseTypeEncoding::output_circuit_detection)
+      {
+        $BMS.GBT27930_2_2024.VehicleAcknowledge.PhaseAck = _GBT27930::DataTypes::PhaseAckTypeEncoding::acknowledgement_succeeded;
+        currentBmsPhase = kOutputCircuitDetectionPhase;
+        stateTransitionTimerDuration = @sysvar::GBT27930::BMS::DelayTransition::Authentication_to_OutputCircuitDetectionPhase;
+      }
+      else
+      {
+        $BMS.GBT27930_2_2024.VehicleAcknowledge.PhaseAck = _GBT27930::DataTypes::PhaseAckTypeEncoding::acknowledgement_failed;
+        currentBmsPhase = kEndPhase;
+        @sysvar::GBT27930::BMS::CurrentBmsStatus = kStatus4;
+      }
+      cancelTimer(timer_Tout0_Bms);
+      break;
+    case kSchedulingPhase:
+      if($BMS.GBT27930_2_2024.ChargerPhaseRequest.Phase == _GBT27930::DataTypes::PhaseTypeEncoding::output_circuit_detection)
+      {
+        $BMS.GBT27930_2_2024.VehicleAcknowledge.PhaseAck = _GBT27930::DataTypes::PhaseAckTypeEncoding::acknowledgement_succeeded;
+        currentBmsPhase = kOutputCircuitDetectionPhase;
+        @sysvar::GBT27930::BMS::CurrentBmsStatus = kStatus6;
+        stateTransitionTimerDuration = @sysvar::GBT27930::BMS::DelayTransition::Scheduling_to_OutputCircuitDetectionPhase;
+      }
+      else
+      {
+        $BMS.GBT27930_2_2024.VehicleAcknowledge.PhaseAck = _GBT27930::DataTypes::PhaseAckTypeEncoding::acknowledgement_failed;
+        currentBmsPhase = kEndPhase;
+        @sysvar::GBT27930::BMS::CurrentBmsStatus = kStatus7;
+      }
+      break;
+    case kOutputCircuitDetectionPhase:
+      @sysvar::GBT27930::BMS::CurrentBmsStatus = kStatus3;
+      if($BMS.GBT27930_2_2024.ChargerPhaseRequest.Phase == _GBT27930::DataTypes::PhaseTypeEncoding::power_supply_mode)
+      {
+        $BMS.GBT27930_2_2024.VehicleAcknowledge.PhaseAck = _GBT27930::DataTypes::PhaseAckTypeEncoding::acknowledgement_succeeded;
+        currentBmsPhase = kPowerSupplyModePhase;
+        stateTransitionTimerDuration = @sysvar::GBT27930::BMS::DelayTransition::OutputCircuitDetectionPhase_to_PowerSupplyMode;
+      }
+      else if (skipPowerSupply && $BMS.GBT27930_2_2024.ChargerPhaseRequest.Phase == _GBT27930::DataTypes::PhaseTypeEncoding::precharge_and_energy_transfer_charging)
+      {
+        $BMS.GBT27930_2_2024.VehicleAcknowledge.PhaseAck = _GBT27930::DataTypes::PhaseAckTypeEncoding::acknowledgement_succeeded;
+        currentBmsPhase = kPreChargingAndEnergyTransferPhase;
+        stateTransitionTimerDuration = @sysvar::GBT27930::BMS::DelayTransition::OutputCircuitDetectionPhase_to_PreChargeAndEnergyTransmission;
+      }
+      else
+      {
+        $BMS.GBT27930_2_2024.VehicleAcknowledge.PhaseAck = _GBT27930::DataTypes::PhaseAckTypeEncoding::acknowledgement_failed;
+        currentBmsPhase = kEndPhase;
+        @sysvar::GBT27930::BMS::CurrentBmsStatus = kStatus4;
+      }
+      break;
+    case kPowerSupplyModePhase:
+      if (@sysvar::GBT27930::BMS::CurrentBmsStatus == kStatus5)
+      {
+        if ($BMS.GBT27930_2_2024.ChargerPhaseRequest.Phase == _GBT27930::DataTypes::PhaseTypeEncoding::precharge_and_energy_transfer_charging)
+        {
+          $BMS.GBT27930_2_2024.VehicleAcknowledge.PhaseAck = _GBT27930::DataTypes::PhaseAckTypeEncoding::acknowledgement_succeeded;
+          currentBmsPhase = kPreChargingAndEnergyTransferPhase;
+          @sysvar::GBT27930::BMS::CurrentBmsStatus = kStatus6;
+          
+        stateTransitionTimerDuration = @sysvar::GBT27930::BMS::DelayTransition::PowerSupplyMode_to_PreChargeAndEnergyTransmission;
+        }
+        else
+        {
+          $BMS.GBT27930_2_2024.VehicleAcknowledge.PhaseAck = _GBT27930::DataTypes::PhaseAckTypeEncoding::acknowledgement_failed;
+          currentBmsPhase = kEndPhase;
+          @sysvar::GBT27930::BMS::CurrentBmsStatus = kStatus7;
+        }
+      }
+      break;
+    case kPreChargingAndEnergyTransferPhase:
+      if (@sysvar::GBT27930::BMS::CurrentBmsStatus == kStatus5 && $BMS.GBT27930_2_2024.ChargerPhaseRequest.Phase == _GBT27930::DataTypes::PhaseTypeEncoding::end_message)
+      {
+        $BMS.GBT27930_2_2024.VehicleAcknowledge.PhaseAck = _GBT27930::DataTypes::PhaseAckTypeEncoding::acknowledgement_succeeded;
+        @sysvar::GBT27930::BMS::CurrentBmsStatus = kStatus6;
+        cancelTimer(timer_Tout1_Bms);
+        currentBmsPhase = kEndPhase;
+      }
+      else
+      {
+        $BMS.GBT27930_2_2024.VehicleAcknowledge.PhaseAck = _GBT27930::DataTypes::PhaseAckTypeEncoding::acknowledgement_failed;
+        @sysvar::GBT27930::BMS::CurrentBmsStatus = kStatus7;
+        cancelTimer(timer_Tout1_Bms);
+        currentBmsPhase = kEndPhase;
+      }
+      break;
+    case kEndPhase:
+      if ($BMS.GBT27930_2_2024.ChargerPhaseRequest.Phase == _GBT27930::DataTypes::PhaseTypeEncoding::end_message)
+      {
+        $BMS.GBT27930_2_2024.VehicleAcknowledge.PhaseAck = _GBT27930::DataTypes::PhaseAckTypeEncoding::acknowledgement_succeeded;
+        currentBmsPhase = kEndPhase;
+        @sysvar::GBT27930::BMS::CurrentBmsStatus = kStatus0;
+      }
+      else
+      {
+        $BMS.GBT27930_2_2024.VehicleAcknowledge.PhaseAck = _GBT27930::DataTypes::PhaseAckTypeEncoding::acknowledgement_failed;
+        currentBmsPhase = kEndPhase;
+        @sysvar::GBT27930::BMS::CurrentBmsStatus = kStatus0;
+      }
+      break;
+    default:
+      writeLineEx(-3,1,"Logic Error BMS: State in currentBmsPhase does not exist: %d", currentBmsPhase);
+      break;
+  }
+
+  cancelTimer(timer_Tout0_Bms);
+  StartTimerIfNotRunning(stateTransitionTimer,  stateTransitionTimerDuration);
+}
+
+void ProcessScanAuthenticationParameter()
+{
+  if ( @sysvar::GBT27930::BMS::CurrentBmsStatus == kStatus1)
+  {
+    SendVehicleAuthenticationWait();
+    if (@sysvar::GBT27930::BMS::Authentication::ScanAuthenticationStatus == 0x00)
+    {
+      @sysvar::GBT27930::BMS::CurrentBmsStatus = kStatus4;
+    } // else keep kStatus 1
+  }
+}
+
+void ProcessScanAuthenticationResult()
+{
+  if ( @sysvar::GBT27930::BMS::CurrentBmsStatus == kStatus2)
+  {
+    if ($BMS.GBT27930_2_2024.ChargerScanAuthenticationResult.AuthenticationResult == _GBT27930::DataTypes::parAuthenResultType::AuthenSucceeded)
+    {
+      @sysvar::GBT27930::BMS::CurrentBmsStatus = kStatus2;
+    } else {
+      SendEndMessageAndEnterEndModule(_GBT27930::DataTypes::parEndType::FunctionModuleExecutionFailed, _GBT27930::DataTypes::VehicleFunctionModuleExecutionFailTypeEncoding::authentication_execution_fail);
+      @sysvar::GBT27930::BMS::CurrentBmsStatus = kStatus4;
+    }
+  }
+}
+
+void ProcessEVINAuthenticationResult()
+{
+  if ($BMS.GBT27930_2_2024.ChargerEVINAuthenticationResult.AuthenticationResult == 0xAA)
+  {
+    @sysvar::GBT27930::BMS::CurrentBmsStatus = kStatus2; // wait for next ChargerPhaseRequest
+  } 
+  else if (@sysvar::GBT27930::BMS::Authentication::ReAuthenticationAllowed) 
+  {
+    $BMS.GBT27930_2_2024.VehicleEVINReAuthenticationRequest.FDC = @sysvar::GBT27930::BMS::Authentication::ReAuthentificationMethod;
+    @sysvar::GBT27930::BMS::CurrentBmsStatus = kStatus2;
+  } 
+  else 
+  {
+    SendEndMessageAndEnterEndModule(_GBT27930::DataTypes::parEndType::FunctionModuleExecutionFailed, _GBT27930::DataTypes::VehicleFunctionModuleExecutionFailTypeEncoding::authentication_execution_fail);
+    @sysvar::GBT27930::BMS::CurrentBmsStatus = kStatus4;
+    cancelTimer(timer_Tout0_Bms);
+  }
+}
+
+void SendVehicleAuthenticationWait()
+{
+  // Simulation: always agree to waiting time 
+  @sysvar::GBT27930::BMS::Authentication::ScanAuthenticationStatus = 0xAA;
+  $BMS.GBT27930_2_2024.VehicleScanAuthenticationWaiting.AuthenticationStatus = @sysvar::GBT27930::BMS::Authentication::ScanAuthenticationStatus;
+}
+
+void ProcessChargerScheduledChargingInformation()
+{
+  $BMS.GBT27930_2_2024.VehicleScheduledChargingInformation.ExpectedChargingStartTime = @sysvar::GBT27930::BMS::Scheduling::ExpectedChargingStartTime;
+  $BMS.GBT27930_2_2024.VehicleScheduledChargingInformation.ExpectedDepartureTime = @sysvar::GBT27930::BMS::Scheduling::ExpectedDepartureTime;
+  @sysvar::GBT27930::BMS::CurrentBmsStatus = kStatus2;
+}
+
+void ProcessChargerScheduledChargingAcknowledgement()
+{
+  if(@sysvar::GBT27930::BMS::CurrentBmsStatus == kStatus2)
+  {
+    if($BMS.GBT27930_2_2024.ChargerScheduledChargingAcknowledgement.ScheduledChargingAcknowledgement == _GBT27930::DataTypes::ScheduledChargingAcknowledgementTypeEncoding::acknowledgement_succeeded)
+    { // Scheduling succeeded: Start schedule as specified
+      $BMS.GBT27930_2_2024.VehicleScheduledChargingNegotiation.ChargeImmediately = _GBT27930::DataTypes::ChargeImmediatelyTypeEncoding::scheduling_successful;
+      $BMS.GBT27930_2_2024.VehicleScheduledChargingNegotiation.ScheduleNegotiationResult = _GBT27930::DataTypes::SchedulingNegotiationResultTypeEncoding::negotiation_succeeded;
+      @sysvar::GBT27930::BMS::CurrentBmsStatus = kStatus3;
+      ReactToK3K4Disconnect();
+    }
+    else if ($BMS.GBT27930_2_2024.ChargerScheduledChargingAcknowledgement.ScheduledChargingAcknowledgement == _GBT27930::DataTypes::ScheduledChargingAcknowledgementTypeEncoding::acknowledgement_failed
+      && $BMS.GBT27930_2_2024.ChargerScheduledChargingAcknowledgement.SupportsImmediateCharging == _GBT27930::DataTypes::SupportsImmediateChargingTypeEncoding::immediate_charging_supported
+      && @sysvar::GBT27930::BMS::Scheduling::SupportsImmediateCharging == @sysvar::GBT27930::BMS::Scheduling::SupportsImmediateCharging::ImmediateChargingSupported)
+    { // Scheduling failed, immediate charging supported
+      $BMS.GBT27930_2_2024.VehicleScheduledChargingNegotiation.ChargeImmediately = _GBT27930::DataTypes::ChargeImmediatelyTypeEncoding::charge_immediately;
+      $BMS.GBT27930_2_2024.VehicleScheduledChargingNegotiation.ScheduleNegotiationResult = _GBT27930::DataTypes::SchedulingNegotiationResultTypeEncoding::negotiation_failed;
+      @sysvar::GBT27930::BMS::CurrentBmsStatus = kStatus5;
+    }
+    else
+    { // Scheduling failed, immediate charging not supported
+      $BMS.GBT27930_2_2024.VehicleScheduledChargingNegotiation.ChargeImmediately = _GBT27930::DataTypes::ChargeImmediatelyTypeEncoding::do_not_charge_immediately;
+      $BMS.GBT27930_2_2024.VehicleScheduledChargingNegotiation.ScheduleNegotiationResult = _GBT27930::DataTypes::SchedulingNegotiationResultTypeEncoding::negotiation_failed;
+      @sysvar::GBT27930::BMS::CurrentBmsStatus = kStatus7;
+    }
+  }
+}
+
+void ProcessChargerWakeUp()
+{
+  if(@sysvar::GBT27930::BMS::CurrentBmsStatus == kStatus3 ||  @sysvar::GBT27930::BMS::CurrentBmsStatus == kStatus4)
+  {
+    $BMS.GBT27930_2_2024.VehicleWakeUp.WakeUp = _GBT27930::DataTypes::WakeUpTypeEncoding::wake_up;
+    @sysvar::GBT27930::BMS::CurrentBmsStatus = kStatus5;
+  }
+}
+
+void ProcessChargerChargingParameters_ChargingOnly()
+{
+  if(@sysvar::GBT27930::BMS::CurrentBmsStatus == kStatus1)
+  {
+    SendVehicleChargingParameters();
+    // Charger parameters OK
+    if($BMS.GBT27930_2_2024.ChargerChargingParameters.MinOutputVoltage.phys <= $BMS.GBT27930_2_2024.VehicleChargingParameters.MaxChargingVoltage.phys
+      && $BMS.GBT27930_2_2024.ChargerChargingParameters.MinOutputCurrent.phys <= $BMS.GBT27930_2_2024.VehicleChargingParameters.MaxChargingCurrent.phys)
+    {
+      @sysvar::GBT27930::BMS::CurrentBmsStatus = kStatus2;
+    }
+    else // Charger parameters not OK
+    {
+      SendEndMessageAndEnterEndModule(_GBT27930::DataTypes::parEndType::FunctionModuleExecutionFailed, _GBT27930::DataTypes::VehicleFunctionModuleExecutionFailTypeEncoding::parameter_configuration_parameter_mismatch);
+      @sysvar::GBT27930::BMS::CurrentBmsStatus = kStatus4;
+    }
+  }
+}
+
+void ProcessChargerChargingParameters_ChargingAndDischarging()
+{
+  if(@sysvar::GBT27930::BMS::CurrentBmsStatus == kStatus1)
+  {
+    SendVehicleChargingAndDischargingParameters();
+    // Charger parameters OK
+    if($BMS.GBT27930_2_2024.ChargerChargingAndDischargingParameters.MinOutputVoltage.phys <= $BMS.GBT27930_2_2024.VehicleChargingAndDischargingParameters.MaxChargingVoltage.phys
+      && $BMS.GBT27930_2_2024.ChargerChargingAndDischargingParameters.MinOutputCurrent.phys <= $BMS.GBT27930_2_2024.VehicleChargingAndDischargingParameters.MaxChargingCurrent.phys)
+    {
+      @sysvar::GBT27930::BMS::CurrentBmsStatus = kStatus2;
+    }
+    else // Charger parameters not OK
+    {
+      SendEndMessageAndEnterEndModule(_GBT27930::DataTypes::parEndType::FunctionModuleExecutionFailed, _GBT27930::DataTypes::VehicleFunctionModuleExecutionFailTypeEncoding::parameter_configuration_parameter_mismatch);
+      @sysvar::GBT27930::BMS::CurrentBmsStatus = kStatus4;
+    }
+  }
+}
+
+void ProcessChargerDetectionInformation()
+{
+  if($BMS.GBT27930_2_2024.ChargerDetectionInformation.AdhesionDetectionStatus == _GBT27930::DataTypes::parCheckType::DetectionSuccessful
+    && $BMS.GBT27930_2_2024.ChargerDetectionInformation.ShortCircuitDetectionStatus == _GBT27930::DataTypes::parCheckType::DetectionSuccessful
+    && $BMS.GBT27930_2_2024.ChargerDetectionInformation.InsulationDetectionStatus == _GBT27930::DataTypes::parCheckType::DetectionSuccessful
+    && $BMS.GBT27930_2_2024.ChargerDetectionInformation.DischargeStatus == _GBT27930::DataTypes::parDischargeType::DischargeCompleted) 
+    {
+      @sysvar::GBT27930::BMS::CurrentBmsStatus = kStatus2;
+      $BMS.GBT27930_2_2024.VehicleDetectionAcknowledgement.DetectionAcknowledgementStatus = _GBT27930::DataTypes::parDetectionAcknowledgement::DetectionAcknowledgementCompleted;     
+      if (@sysvar::GBT27930::BMS::VersionNegotiation::ControlPilotVersion == sysvar::GBT27930::BMS::VersionNegotiation::ControlPilotVersion::NewVersionCPCircuit)
+      {
+        CHA_open_close_S3(OPEN);
+        BMS_set_voltage_CP2(0.0); // simulation only: Cp2 becomes 0 V after S3 is opened
+      }
+    }
+
+  if($BMS.GBT27930_2_2024.ChargerDetectionInformation.AdhesionDetectionStatus == _GBT27930::DataTypes::parCheckType::DetectionFailed
+  || $BMS.GBT27930_2_2024.ChargerDetectionInformation.ShortCircuitDetectionStatus == _GBT27930::DataTypes::parCheckType::DetectionFailed
+  || $BMS.GBT27930_2_2024.ChargerDetectionInformation.InsulationDetectionStatus == _GBT27930::DataTypes::parCheckType::DetectionFailed 
+  || $BMS.GBT27930_2_2024.ChargerDetectionInformation.DischargeStatus == _GBT27930::DataTypes::parDischargeType::DischargeFailed)
+  {
+    SendEndMessageAndEnterEndModule(_GBT27930::DataTypes::parEndType::EndCharging, _GBT27930::DataTypes::VehicleFunctionModuleExecutionFailTypeEncoding::output_circuit_detection_charger_detection_fail);
+    currentBmsPhase = kEndPhase;
+    @sysvar::GBT27930::BMS::CurrentBmsStatus = kStatus4;
+    StartTimerIfNotRunning(stateTransitionTimer,  100);    
+  }
+}
+
+void ProcessChargerPowerSupplyStatus()
+{
+  if(@sysvar::GBT27930::BMS::CurrentBmsStatus == kStatus1)
+  {
+    $BMS.GBT27930_2_2024.VehiclePowerSupplyStatus.VehiclePowerSupplyStatus = _GBT27930::DataTypes::parPowerSupplyStatusType::NotReady;
+    // keep S1, state S2 will be set with timer_SimulatePowerSupplyReady 
+  }
+  else if(@sysvar::GBT27930::BMS::CurrentBmsStatus == kStatus2)
+  {
+    if ($BMS.GBT27930_2_2024.ChargerPowerSupplyStatus.ChargerPowerSupplyStatus == _GBT27930::DataTypes::parPowerSupplyStatusType::Ready)
+    {
+      SendPowerSupplyDemandMessage();
+      setTimerCyclic(sendCyclicVehiclePowerSupplyDemandMessage, cVehiclePowerSupplyDemandCycleTimeMs); // T1 on (1 s) , periodically send VehiclePowerSupplyDemandRequest
+      cancelTimer(timer_Tout0_Bms);
+      StartTimerIfNotRunning(timer_Tout1_Bms, @sysvar::GBT27930::BMS::Timeouts::Tout1_PowerSupplyMode_DynamicOutputCapacityReceived); // 5 s time to receive ChargerDynamicOutputCapacity
+      StartTimerIfNotRunning(timer_Tout2_Bms, @sysvar::GBT27930::BMS::Timeouts::Tout2_PowerSupplyMode_BasicChargingInformationReceived); // 5 s time to receive ChargerBasicChargingInformation
+      @sysvar::GBT27930::BMS::CurrentBmsStatus = kStatus3;
+    } else {
+      $BMS.GBT27930_2_2024.VehiclePowerSupplyStatus.VehiclePowerSupplyStatus = _GBT27930::DataTypes::parPowerSupplyStatusType::Ready;
+    }
+  }
+}
+
+void ProcessChargerDCSupplyCircuitContactorStatus()
+{
+  if(currentBmsPhase == kPowerSupplyModePhase 
+    && @sysvar::GBT27930::BMS::CurrentBmsStatus == kStatus4
+    && $BMS.GBT27930_2_2024.ChargerDCSupplyCircuitContactorStatus.StatusK1 == _GBT27930::DataTypes::parContactorStatusType::OFF
+    && $BMS.GBT27930_2_2024.ChargerDCSupplyCircuitContactorStatus.StatusK2 == _GBT27930::DataTypes::parContactorStatusType::OFF)
+  {
+    @sysvar::GBT27930::BMS::CurrentBmsStatus = kStatus5;
+  }
+  
+  if(currentBmsPhase == kPreChargingAndEnergyTransferPhase && @sysvar::GBT27930::BMS::CurrentBmsStatus == kStatus4)
+  {
+    if ($BMS.GBT27930_2_2024.ChargerDCSupplyCircuitContactorStatus.StatusK1 == _GBT27930::DataTypes::parContactorStatusType::OFF && $BMS.GBT27930_2_2024.ChargerDCSupplyCircuitContactorStatus.StatusK2 == _GBT27930::DataTypes::parContactorStatusType::OFF)
+    {
+      @sysvar::GBT27930::BMS::CurrentBmsStatus = kStatus5; // Ready for phase acknoledgement
+    }
+  }
+}
+
+void ProcessChargerAllowsAdhesionDetection()
+{
+  if($BMS.GBT27930_2_2024.ChargerAllowsAdhesionDetection.AllowAdhesionDetection == _GBT27930::DataTypes::parEnableType::NotAllowed
+    && (chargerAllowsAdhesionDetection == kAdhesionDetectionInformationNotTransmitted || chargerAllowsAdhesionDetection == kAdhesionDetectionNotAllowed))
+  { // Not transmitted yet or consistent communication
+    chargerAllowsAdhesionDetection = kAdhesionDetectionNotAllowed;
+    if(@sysvar::GBT27930::BMS::CurrentBmsStatus < kStatus4)
+    {
+      cancelTimer(timer_Tout1_Bms);
+      @sysvar::GBT27930::BMS::CurrentBmsStatus = kStatus4;
+    }
+  }
+  else if($BMS.GBT27930_2_2024.ChargerAllowsAdhesionDetection.AllowAdhesionDetection == _GBT27930::DataTypes::parEnableType::Allowed
+    && (chargerAllowsAdhesionDetection == kAdhesionDetectionInformationNotTransmitted || chargerAllowsAdhesionDetection == kAdhesionDetectionAllowed))
+  { // Not transmitted yet or consistent communication
+    chargerAllowsAdhesionDetection = kAdhesionDetectionAllowed;      
+    if(@sysvar::GBT27930::BMS::CurrentBmsStatus == kStatus1)
+    {
+      @sysvar::GBT27930::BMS::CurrentBmsStatus = kStatus2;
+    }
+  }
+  else
+  { // Inconsistent communication
+    chargerAllowsAdhesionDetection = kAdhesionDetectionAbnormal;
+  }
+}
+
+void ProcessChargerReadyStatus()
+{
+  if ($BMS.GBT27930_2_2024.ChargerReadyStatus.ReadyStatus == _GBT27930::DataTypes::parReadyType::NotReady)
+  {
+    if(currentBmsPhase == kPreChargingAndEnergyTransferPhase && @sysvar::GBT27930::BMS::CurrentBmsStatus == kStatus1)
+    {
+      SendVehicleReadyStatus(0);
+      if (@sysvar::GBT27930::BMS::ContactorStatus_K5K6 == OPEN)
+      {
+        writeLineEx(-3, 1, "Closing K5 and K6");
+        CHA_open_close_K5K6(CLOSE);
+      }
+      // skip "battery successfully put in use" for simulation of BMS
+      @sysvar::GBT27930::BMS::CurrentBmsStatus = kStatus2;
+    }
+
+    else if(currentBmsPhase == kPreChargingAndEnergyTransferPhase && @sysvar::GBT27930::BMS::CurrentBmsStatus == kStatus2)
+    {
+      SendVehicleReadyStatus(1);
+      @sysvar::GBT27930::BMS::CurrentBmsStatus = kStatus2;
+    }
+  }
+
+  else if ($BMS.GBT27930_2_2024.ChargerReadyStatus.ReadyStatus == _GBT27930::DataTypes::parReadyType::Ready)
+  {
+    // start of charging
+    msStartOfChargingMS = timeNow() / 100; // timeNow returns simulation time in 10 microseconds (10e-5) -> /100 to get milliseconds
+    SendVehicleChargingRequest();
+    SendVehicleChargingBasicInformation();
+
+    // activate T1, T2
+    StartCyclicTimerIfNotRunning(sendCyclicVehicleChargingRequest, cVehicleChargingRequestTimeMs);
+    StartCyclicTimerIfNotRunning(sendCyclicVehicleChargingBasicInformation, cVehicleChargingBasicInformationTimeMs); // T2
+    StartCyclicTimerIfNotRunning(sendCyclicVehicleBatteryBasicInformation, cVehicleBidirectionalChargingBatteryInfoCycleTimeMs); // also T2
+
+    cancelTimer(timer_Tout0_Bms);
+    StartTimerIfNotRunning(timer_Tout1_Bms, @sysvar::GBT27930::BMS::Timeouts::Tout1_PreChargingAndEnergyTransfer); // timeout for message from charger (dynamic output capability)
+    @sysvar::GBT27930::BMS::CurrentBmsStatus = kStatus3;
+  }
+}
+
+void ProcessChargerBidirectionalChargingReadyStatus()
+{
+  @sysvar::GBT27930::BMS::ChargingDischarging::EnergyTransferDirection = $BMS.GBT27930_2_2024.ChargerBidirectionalChargingReadyStatus.EnergyTransferDirection.phys;
+
+  if ($BMS.GBT27930_2_2024.ChargerBidirectionalChargingReadyStatus.ChargerReadyStatus == _GBT27930::DataTypes::parReadyType::NotReady)
+  {
+    if(currentBmsPhase == kPreChargingAndEnergyTransferPhase && @sysvar::GBT27930::BMS::CurrentBmsStatus == kStatus1)
+    {
+      writeLineEx(-3, 1, "Closing K5 and K6");
+      SendVehicleBidirectionalChargingReadyStatus(0);
+      CHA_open_close_K5K6(CLOSE);
+      @sysvar::GBT27930::BMS::CurrentBmsStatus = kStatus2;
+    }
+
+    else if(currentBmsPhase == kPreChargingAndEnergyTransferPhase && @sysvar::GBT27930::BMS::CurrentBmsStatus == kStatus2)
+    {
+      SendVehicleReadyStatus(1);
+      @sysvar::GBT27930::BMS::CurrentBmsStatus = kStatus2;
+    }
+  }
+
+  else if ($BMS.GBT27930_2_2024.ChargerBidirectionalChargingReadyStatus.ChargerReadyStatus == _GBT27930::DataTypes::parReadyType::Ready)
+  {
+    if(currentBmsPhase == kPreChargingAndEnergyTransferPhase && @sysvar::GBT27930::BMS::CurrentBmsStatus == kStatus1)
+    {
+        SendVehicleBidirectionalChargingReadyStatus(0);
+    }
+    else if ($BMS.GBT27930_2_2024.ChargerBidirectionalChargingReadyStatus.EnergyTransferDirection == 0x00) // vehicle_charging
+    {
+      if (currentBmsPhase == kPreChargingAndEnergyTransferPhase && @sysvar::GBT27930::BMS::CurrentBmsStatus == kStatus2)
+      {
+        SendVehicleBidirectionalChargingRequest();
+        SendVehicleBidirectionalChargingInfo();
+        SendVehicleBidirectionalChargingBatteryInfo();
+
+        // activate T1, T2
+        StartCyclicTimerIfNotRunning(sendCyclicVehicleBidirectionalChargingRequest, cVehicleChargingRequestTimeMs);
+        StartCyclicTimerIfNotRunning(sendCyclicVehicleBidirectionalChargingBasicInformation, cVehicleChargingBasicInformationTimeMs);
+        StartCyclicTimerIfNotRunning(sendCyclicVehicleBidirectionalChargingBatteryInfo, cVehicleBidirectionalChargingBatteryInfoCycleTimeMs);
+
+        cancelTimer(timer_Tout0_Bms);
+        setTimer(timer_Tout1_Bms, @sysvar::GBT27930::BMS::Timeouts::Tout1_PreChargingAndEnergyTransfer); // timeout for message from charger (dynamic output capability)
+        @sysvar::GBT27930::BMS::CurrentBmsStatus = kStatus3;
+      }
+    }
+    else if ($BMS.GBT27930_2_2024.ChargerBidirectionalChargingReadyStatus.EnergyTransferDirection == 0x01) // vehicle_discharging
+    {
+      if (currentBmsPhase == kPreChargingAndEnergyTransferPhase && @sysvar::GBT27930::BMS::CurrentBmsStatus == kStatus2)
+      {
+        SendVehicleBidirectionalDynamicOutputCapability();
+        SendVehicleBidirectionalChargingInfo();
+        SendVehicleBidirectionalChargingBatteryInfo();
+
+        // activate T2, T3
+        StartCyclicTimerIfNotRunning(sendCyclicVehicleBidirectionalChargingBasicInformation, cVehicleChargingBasicInformationTimeMs); // T2 
+        StartCyclicTimerIfNotRunning(sendCyclicVehicleBidirectionalChargingBatteryInfo, cVehicleBidirectionalChargingBatteryInfoCycleTimeMs); // T2
+        StartCyclicTimerIfNotRunning(sendCyclicVehicleBidirectionalDynamicOutputCapability, cVehicleBidirectionalDynamicOutputCapabilityCycleTimeMs); // T3
+
+        cancelTimer(timer_Tout0_Bms);
+        setTimer(timer_Tout2_Bms, @sysvar::GBT27930::BMS::Timeouts::Tout2_PreChargingAndEnergyTransfer); // timeout for message from charger (dynamic output capability)
+        @sysvar::GBT27930::BMS::CurrentBmsStatus = kStatus3;
+      }
+    }
+  }
+}
+
+void StopChargingProcedure(int endReason)
+{
+  // cancel T1, T2
+  cancelTimer(sendCyclicVehicleChargingRequest);
+  cancelTimer(sendCyclicVehicleBidirectionalChargingRequest);
+  cancelTimer(sendCyclicVehicleChargingBasicInformation);
+  cancelTimer(sendCyclicVehicleBatteryBasicInformation);
+  cancelTimer(sendCyclicVehicleBidirectionalChargingBasicInformation);
+  cancelTimer(sendCyclicVehicleBidirectionalChargingBatteryInfo);
+
+  SendEndMessageWithoutChangingModule(_GBT27930::DataTypes::parEndType::EndCharging, _GBT27930::DataTypes::VehicleEndChargingEncoding::ends_normally_manual_end);
+
+  // this will trigger behaviour when receiving contactor status
+  @sysvar::GBT27930::BMS::CurrentBmsStatus = kStatus4;
+}
+
+void ProcessChargerDischargeRequest()
+{
+  double outputEnergy;
+  double chargingTimeMinutes;
+  setTimer(timer_Tout2_Bms, @sysvar::GBT27930::BMS::Timeouts::Tout2_PreChargingAndEnergyTransfer);
+  
+  chargingTimeMinutes = ((timeNow() / 100) - msStartOfChargingMS) / 60000.0; // timeNow returns simulation time in 10 microseconds (10e-5) -> /100 to get milliseconds
+  outputEnergy = abs($BMS.GBT27930_2_2024.ChargerBidirectionalChargingInfo.OutputVoltage.phys * $BMS.GBT27930_2_2024.ChargerDischargeRequest.CurrentDemand.phys / 1000 /*W -> kW*/) * (chargingTimeMinutes / 60); //kWh
+  if (@sysvar::GBT27930::BMS::ChargingDischarging::SoC <= @sysvar::GBT27930::BMS::ChargingDischarging::MinSOC)
+  {
+    @sysvar::GBT27930::BMS::ChargingDischarging::SoC = @sysvar::GBT27930::BMS::ChargingDischarging::MinSOC;
+    StopChargingProcedure(_GBT27930::DataTypes::VehicleEndChargingEncoding::ends_normally_conditions_met);
+  }
+  else
+  {
+    @sysvar::GBT27930::BMS::ChargingDischarging::SoC = @sysvar::GBT27930::BMS::ChargingDischarging::SoC - (outputEnergy * 100 / @sysvar::GBT27930::BMS::ChargingDischarging::TotalCapacity);
+  }
+}
+  
+void ProcessChargerEnd()
+{
+  // Cyclic messages that shall be stopped if 'end message' is sent or received
+  if(currentBmsPhase == kPreChargingAndEnergyTransferPhase)
+  {
+    // PreCharge and EnergyTransfer
+    cancelTimer(sendCyclicVehicleChargingRequest);
+    cancelTimer(sendCyclicVehicleBidirectionalChargingRequest);
+    cancelTimer(sendCyclicVehicleChargingBasicInformation);
+    cancelTimer(sendCyclicVehicleBatteryBasicInformation);
+    cancelTimer(sendCyclicVehicleBidirectionalChargingBasicInformation);
+    cancelTimer(sendCyclicVehicleBidirectionalChargingBatteryInfo);
+    cancelTimer(sendCyclicVehicleBidirectionalDynamicOutputCapability);
+  }
+  
+  // Actual end of communication, do not respond to End message from charger to prevent endless loop
+  if(currentBmsPhase == kEndPhase && @sysvar::GBT27930::BMS::CurrentBmsStatus == kStatus5)
+    return;
+
+  // when normal end
+  if (currentBmsPhase == kPreChargingAndEnergyTransferPhase && @sysvar::GBT27930::BMS::CurrentBmsStatus <= kStatus3)
+  {
+    StopChargingProcedure(_GBT27930::DataTypes::VehicleEndChargingEncoding::ends_normally_manual_end);
+    return;
+  }
+
+  // Don't do anything when receiving ChargerEnd when already waiting for PhaseRequest
+  if (currentBmsPhase == kPreChargingAndEnergyTransferPhase && @sysvar::GBT27930::BMS::CurrentBmsStatus > kStatus3)
+  {
+    return;
+  }
+  
+  if(currentBmsPhase == kEndPhase)
+  {
+    SendEndMessageWithoutChangingModule(_GBT27930::DataTypes::parEndType::EndCharging, _GBT27930::DataTypes::VehicleEndChargingEncoding::charger_actively_ends_end_message);
+  }
+  else
+  {
+    SendEndMessageAndEnterEndModule(_GBT27930::DataTypes::parEndType::EndCharging, _GBT27930::DataTypes::VehicleEndChargingEncoding::charger_actively_ends_end_message);
+  }
+}
+
+void SendPowerSupplyDemandMessage()
+{
+  $BMS.GBT27930_2_2024.VehiclePowerSupplyDemand.Voltage.phys = @sysvar::GBT27930::BMS::PowerSupplyMode::VoltageDemand;
+  $BMS.GBT27930_2_2024.VehiclePowerSupplyDemand.Current.phys = @sysvar::GBT27930::BMS::PowerSupplyMode::CurrentDemand;
+}
+
+
+void SendVehicleChargingContactorStatusMessage()
+{
+  long contactorStatusEncoding;
+  if(@sysvar::GBT27930::BMS::ContactorStatus_K5K6 == @sysvar::GBT27930::BMS::ContactorStatus_K5K6::Open)
+  {
+    contactorStatusEncoding = _GBT27930::DataTypes::parContactorStatusType::OFF;
+  }
+  else if (@sysvar::GBT27930::BMS::ContactorStatus_K5K6 == @sysvar::GBT27930::BMS::ContactorStatus_K5K6::Close)
+  {
+    contactorStatusEncoding = _GBT27930::DataTypes::parContactorStatusType::ON;
+  }
+  else
+  {
+    contactorStatusEncoding = _GBT27930::DataTypes::parContactorStatusType::Untrusted;
+  }
+  $BMS.GBT27930_2_2024.VehicleChargingCircuitContactorStatus.StatusK5 = contactorStatusEncoding;
+  $BMS.GBT27930_2_2024.VehicleChargingCircuitContactorStatus.StatusK6 = contactorStatusEncoding;
+}
+
+void SendEndMessageAndEnterEndModule(long endType, long endReason)
+{
+  // Cyclic messages that shall be stopped if 'end message' is sent or received
+  if(currentBmsPhase == kPreChargingAndEnergyTransferPhase)
+  {
+    // PreCharge and EnergyTransfer
+    cancelTimer(sendCyclicVehicleChargingRequest);
+    cancelTimer(sendCyclicVehicleBidirectionalChargingRequest);
+    cancelTimer(sendCyclicVehicleChargingBasicInformation);
+    cancelTimer(sendCyclicVehicleBatteryBasicInformation);
+    cancelTimer(sendCyclicVehicleBidirectionalChargingBasicInformation);
+    cancelTimer(sendCyclicVehicleBidirectionalChargingBatteryInfo);
+    cancelTimer(sendCyclicVehicleBidirectionalDynamicOutputCapability);
+  }
+  
+  cancelTimer(timer_Tout0_Bms);
+  currentBmsPhase = kEndPhase;
+  SendEndMessageWithoutChangingModule(endType, endReason);
+  StartTimerIfNotRunning(stateTransitionTimer,  100);
+}
+
+void SendEndMessageWithoutChangingModule(long endType, long endReason)
+{
+  $BMS.GBT27930_2_2024.VehicleEnd.EndType = endType;
+  switch(endType)
+  {
+    case _GBT27930::DataTypes::parEndType::EndCharging:
+      $BMS.GBT27930_2_2024.VehicleEnd.EndReason.EndCharging = endReason;
+      break;
+    case _GBT27930::DataTypes::parEndType::FunctionModuleInformationInteractionTimeout:
+      $BMS.GBT27930_2_2024.VehicleEnd.EndReason.FunctionModuleInteractionTimeout = endReason;
+      break;
+    case _GBT27930::DataTypes::parEndType::FunctionModuleExecutionFailed:
+      $BMS.GBT27930_2_2024.VehicleEnd.EndReason.FunctionModuleExecutionFail = endReason;
+      break;
+    case _GBT27930::DataTypes::parEndType::PhaseAcknowledgementFailed:
+      $BMS.GBT27930_2_2024.VehicleEnd.EndReason.PhaseAcknowledgementFail = endReason;
+      break;
+    default:
+      $BMS.GBT27930_2_2024.VehicleEnd.EndReason.UnknownEndType = endReason;
+      break;
+  }
+}
+
+void SendVehicleChargingParameters()
+{
+  $BMS.GBT27930_2_2024.VehicleChargingParameters.MaxChargingCurrent.phys = @sysvar::GBT27930::BMS::ChargingDischarging::MaxCurrent;
+  $BMS.GBT27930_2_2024.VehicleChargingParameters.MaxChargingVoltage.phys = @sysvar::GBT27930::BMS::ChargingDischarging::MaxVoltage;
+  $BMS.GBT27930_2_2024.VehicleChargingParameters.MaxEnergyCapacity.phys = @sysvar::GBT27930::BMS::ChargingDischarging::TotalCapacity;
+  $BMS.GBT27930_2_2024.VehicleChargingParameters.CurrentSOC.phys = @sysvar::GBT27930::BMS::ChargingDischarging::SoC;
+  $BMS.GBT27930_2_2024.VehicleChargingParameters.MaxVoltageMinParallelBatteryUnit.phys = @sysvar::GBT27930::BMS::ChargingDischarging::MaxVoltageMinParallelBatteryUnit;
+  $BMS.GBT27930_2_2024.VehicleChargingParameters.BatteryMaxTemperature.phys = @sysvar::GBT27930::BMS::ChargingDischarging::BatteryMaxTemperature;
+  $BMS.GBT27930_2_2024.VehicleChargingParameters.BatteryType = @sysvar::GBT27930::BMS::ChargingDischarging::BatteryType;
+  if (@sysvar::GBT27930::BMS::ChargingDischarging::UnlimitedRestarts)
+  {
+    $BMS.GBT27930_2_2024.VehicleChargingParameters.NumberOfAllowedRestarts = 0xFE; // Unlimited restarts (see Table C.4)
+  } else {
+    $BMS.GBT27930_2_2024.VehicleChargingParameters.NumberOfAllowedRestarts = @sysvar::GBT27930::BMS::ChargingDischarging::MaxRestarts;
+  }
+}
+
+void SendVehicleChargingAndDischargingParameters()
+{
+  $BMS.GBT27930_2_2024.VehicleChargingAndDischargingParameters.MaxChargingCurrent.phys = @sysvar::GBT27930::BMS::ChargingDischarging::MaxCurrent;
+  $BMS.GBT27930_2_2024.VehicleChargingAndDischargingParameters.MaxChargingVoltage.phys = @sysvar::GBT27930::BMS::ChargingDischarging::MaxVoltage;
+  $BMS.GBT27930_2_2024.VehicleChargingAndDischargingParameters.MaxEnergyCapacity.phys = @sysvar::GBT27930::BMS::ChargingDischarging::TotalCapacity;
+  $BMS.GBT27930_2_2024.VehicleChargingAndDischargingParameters.CurrentSOC.phys = @sysvar::GBT27930::BMS::ChargingDischarging::SoC;
+  $BMS.GBT27930_2_2024.VehicleChargingAndDischargingParameters.MaxDischargingCurrent.phys = @sysvar::GBT27930::BMS::ChargingDischarging::MaxDischargeCurrent;
+  $BMS.GBT27930_2_2024.VehicleChargingAndDischargingParameters.MinDischargingCurrent.phys = @sysvar::GBT27930::BMS::ChargingDischarging::MinDischargeCurrent;
+  $BMS.GBT27930_2_2024.VehicleChargingAndDischargingParameters.MinDischargingVoltage.phys = @sysvar::GBT27930::BMS::ChargingDischarging::MinDischargeVoltage;
+  $BMS.GBT27930_2_2024.VehicleChargingAndDischargingParameters.MaxVoltageMinParallelBatteryUnit.phys = @sysvar::GBT27930::BMS::ChargingDischarging::MaxVoltageMinParallelBatteryUnit; // 9
+  $BMS.GBT27930_2_2024.VehicleChargingAndDischargingParameters.MinVoltageMinParallelBatteryUnit.phys = @sysvar::GBT27930::BMS::ChargingDischarging::MinVoltageMinParallelBatteryUnit; // 10
+  $BMS.GBT27930_2_2024.VehicleChargingAndDischargingParameters.BatteryMaxTemperature.phys = @sysvar::GBT27930::BMS::ChargingDischarging::BatteryMaxTemperature; 
+  $BMS.GBT27930_2_2024.VehicleChargingAndDischargingParameters.PerformedChargeDischargeCycles.phys = @sysvar::GBT27930::BMS::ChargingDischarging::PerformedChargeDischargeCycles; // 12
+  $BMS.GBT27930_2_2024.VehicleChargingAndDischargingParameters.RemainingChargeDischargeCycles.phys = @sysvar::GBT27930::BMS::ChargingDischarging::RemainingChargeDischargeCycles; // 13
+  $BMS.GBT27930_2_2024.VehicleChargingAndDischargingParameters.MinRemainingDrivingRange.phys = @sysvar::GBT27930::BMS::ChargingDischarging::MinRemainingDrivingRange; 
+  $BMS.GBT27930_2_2024.VehicleChargingAndDischargingParameters.MinSOC.phys = @sysvar::GBT27930::BMS::ChargingDischarging::MinSOC; 
+  $BMS.GBT27930_2_2024.VehicleChargingAndDischargingParameters.BatteryType = @sysvar::GBT27930::BMS::ChargingDischarging::BatteryType; 
+  if (@sysvar::GBT27930::BMS::ChargingDischarging::UnlimitedRestarts)
+  {
+    $BMS.GBT27930_2_2024.VehicleChargingAndDischargingParameters.NumberOfAllowedRestarts = 0xFE; // Unlimited restarts (see Table C.10)
+  } else {
+    $BMS.GBT27930_2_2024.VehicleChargingAndDischargingParameters.NumberOfAllowedRestarts = @sysvar::GBT27930::BMS::ChargingDischarging::MaxRestarts; 
+  }
+}
+
+void SendVehicleReadyStatus(int VehicleStatus)
+{
+  if (VehicleStatus == 0)
+  {
+    $BMS.GBT27930_2_2024.VehicleReadyStatus.ReadyStatus = _GBT27930::DataTypes::parReadyType::NotReady;
+  }
+
+  if (VehicleStatus == 1)
+  {
+    $BMS.GBT27930_2_2024.VehicleReadyStatus.ReadyStatus = _GBT27930::DataTypes::parReadyType::Ready;
+  }
+  $BMS.GBT27930_2_2024.VehicleReadyStatus.PresentVoltage.phys = HV_measure_DC_U();
+}
+
+void SendVehicleBidirectionalChargingReadyStatus(int VehicleStatus)
+{
+  if (VehicleStatus == 0)
+  {
+    $BMS.GBT27930_2_2024.VehicleBidirectionalChargingReadyStatus.VehicleReadyStatus = _GBT27930::DataTypes::parReadyType::NotReady;
+  }
+
+  if (VehicleStatus == 1)
+  {
+    $BMS.GBT27930_2_2024.VehicleBidirectionalChargingReadyStatus.VehicleReadyStatus = _GBT27930::DataTypes::parReadyType::Ready;
+  }
+  $BMS.GBT27930_2_2024.VehicleBidirectionalChargingReadyStatus.PresentVoltage.phys = HV_measure_DC_U();
+  if (@sysvar::GBT27930::BMS::ChargingDischarging::DrivingEnergyConsumption != 0)
+  {
+    $BMS.GBT27930_2_2024.VehicleBidirectionalChargingReadyStatus.DrivingRange.impl = (1000 *@sysvar::GBT27930::BMS::ChargingDischarging::TotalCapacity / @sysvar::GBT27930::BMS::ChargingDischarging::DrivingEnergyConsumption); // DrivingEnergyConsumption (in kWh / 100km) 
+  } 
+  else 
+  {
+    $BMS.GBT27930_2_2024.VehicleBidirectionalChargingReadyStatus.DrivingRange.phys = 0; 
+    WriteLineEx(1,2,"BMS: DrivingRange is set to zero, as no DrivingEnergyConsumption is given");
+  }
+  $BMS.GBT27930_2_2024.VehicleBidirectionalChargingReadyStatus.TotalCapacity.phys = @sysvar::GBT27930::BMS::ChargingDischarging::TotalCapacity;
+}
+
+void SendVehicleChargingRequest()
+{
+  $BMS.GBT27930_2_2024.VehicleChargingRequest.VoltageRequest.phys = @sysvar::GBT27930::BMS::ChargingDischarging::TargetVoltage;
+  $BMS.GBT27930_2_2024.VehicleChargingRequest.CurrentRequest.phys = @sysvar::GBT27930::BMS::ChargingDischarging::TargetCurrent;
+  $BMS.GBT27930_2_2024.VehicleChargingRequest.ChargingMode = @sysvar::GBT27930::BMS::ChargingDischarging::ChargingMode;
+}
+
+void SendVehicleBidirectionalChargingRequest()
+{
+  $BMS.GBT27930_2_2024.VehicleBidirectionalChargingRequest.VoltageRequest.phys = @sysvar::GBT27930::BMS::ChargingDischarging::TargetVoltage;
+  $BMS.GBT27930_2_2024.VehicleBidirectionalChargingRequest.CurrentRequest.phys =  @sysvar::GBT27930::BMS::ChargingDischarging::TargetCurrent;
+  $BMS.GBT27930_2_2024.VehicleBidirectionalChargingRequest.ChargingMode = @sysvar::GBT27930::BMS::ChargingDischarging::ChargingMode;
+}
+
+void SendVehiclePause()
+{
+  $BMS.GBT27930_2_2024.VehiclePause.PauseStatus = @sysvar::GBT27930::BMS::ChargingDischarging::PauseCharging;
+}
+
+void SendVehicleBidirectionalChargingInfo()
+{
+  double inputEnergy;
+  double chargingTimeMinutes;
+  chargingTimeMinutes = ((timeNow() / 100) - msStartOfChargingMS) / 60000.0; // timeNow returns simulation time in 10 microseconds (10e-5) -> /100 to get milliseconds
+  inputEnergy = abs($BMS.GBT27930_2_2024.ChargerBidirectionalChargingInfo.OutputVoltage.phys * $BMS.GBT27930_2_2024.ChargerBidirectionalChargingInfo.ChargingOutputCurrent.phys / 1000 /*W -> kW*/) * (chargingTimeMinutes / 60); //kWh
+  @sysvar::GBT27930::BMS::ChargingDischarging::SoC = @sysvar::GBT27930::BMS::ChargingDischarging::SoC + (inputEnergy * 100 / @sysvar::GBT27930::BMS::ChargingDischarging::TotalCapacity);
+  if (@sysvar::GBT27930::BMS::ChargingDischarging::SoC > 100)
+     @sysvar::GBT27930::BMS::ChargingDischarging::SoC = 100;
+  
+  if (@sysvar::GBT27930::BMS::ChargingDischarging::DrivingEnergyConsumption != 0)
+  {
+    $BMS.GBT27930_2_2024.VehicleBidirectionalChargingInfo.DrivingRange.phys = @sysvar::GBT27930::BMS::ChargingDischarging::TotalCapacity / @sysvar::GBT27930::BMS::ChargingDischarging::DrivingEnergyConsumption; 
+  } 
+  else 
+  {
+    $BMS.GBT27930_2_2024.VehicleBidirectionalChargingInfo.DrivingRange.phys = 0; 
+    WriteLineEx(1,2,"BMS: DrivingRange is set to zero, as no DrivingEnergyConsumption is given");
+  }
+  $BMS.GBT27930_2_2024.VehicleBidirectionalChargingInfo.EstimatedTimeRemaining.phys = 0; // ToDo: Calculate est remaining charging time
+  $BMS.GBT27930_2_2024.VehicleBidirectionalChargingInfo.SoC.phys = @sysvar::GBT27930::BMS::ChargingDischarging::SoC;
+}
+
+void SendCyclicVehicleBatteryBasicInformation()
+{
+   $BMS.GBT27930_2_2024.VehicleBatteryBasicInformation.BatteryMaxTemperature.phys = @sysvar::GBT27930::BMS::ChargingDischarging::BatteryMaxTemperature;
+   $BMS.GBT27930_2_2024.VehicleBatteryBasicInformation.BatteryMinTemperature.phys = @sysvar::GBT27930::BMS::ChargingDischarging::BatteryMinTemperature;
+   $BMS.GBT27930_2_2024.VehicleBatteryBasicInformation.MaxVoltageMinParallelBatteryUnit.phys = @sysvar::GBT27930::BMS::ChargingDischarging::MaxVoltageMinParallelBatteryUnit;
+   $BMS.GBT27930_2_2024.VehicleBatteryBasicInformation.MinVoltageMinParallelBatteryUnit.phys = @sysvar::GBT27930::BMS::ChargingDischarging::MinVoltageMinParallelBatteryUnit;
+}
+
+void SendVehicleBidirectionalChargingBatteryInfo()
+{
+   $BMS.GBT27930_2_2024.VehicleBidirectionalChargingBatteryInfo.BatteryMaxTemperature.phys = @sysvar::GBT27930::BMS::ChargingDischarging::BatteryMaxTemperature;
+   $BMS.GBT27930_2_2024.VehicleBidirectionalChargingBatteryInfo.BatteryMinTemperature.phys = @sysvar::GBT27930::BMS::ChargingDischarging::BatteryMinTemperature;
+   $BMS.GBT27930_2_2024.VehicleBidirectionalChargingBatteryInfo.MaxVoltageMinParallelBatteryUnit.phys = @sysvar::GBT27930::BMS::ChargingDischarging::MaxVoltageMinParallelBatteryUnit;
+   $BMS.GBT27930_2_2024.VehicleBidirectionalChargingBatteryInfo.MinVoltageMinParallelBatteryUnit.phys = @sysvar::GBT27930::BMS::ChargingDischarging::MinVoltageMinParallelBatteryUnit;
+}
+
+void SendVehicleBidirectionalDynamicOutputCapability()
+{
+  $BMS.GBT27930_2_2024.VehicleBidirectionalDynamicOutputCapability.ChangeInVehicleOutputCapacity = @sysvar::GBT27930::BMS::ChargingDischarging::ChangeInVehicleOuputCapacity;
+  $BMS.GBT27930_2_2024.VehicleBidirectionalDynamicOutputCapability.MaxCurrent.phys = @sysvar::GBT27930::BMS::ChargingDischarging::MaxCurrent;
+}
+
+void SendVehicleChargingBasicInformation()
+{
+  double inputEnergy, remainingEnergy;
+  double chargingTimeMinutes;
+  chargingTimeMinutes = ((timeNow() / 100) - msStartOfChargingMS) / 60000.0; // timeNow returns simulation time in 10 microseconds (10e-5) -> /100 to get milliseconds
+  inputEnergy = abs($BMS.GBT27930_2_2024.ChargerChargingBasicInformation.PresentVoltage.phys * $BMS.GBT27930_2_2024.ChargerChargingBasicInformation.PresentCurrent.phys / 1000 /*W -> kW*/) * (chargingTimeMinutes / 60); //kWh
+  @sysvar::GBT27930::BMS::ChargingDischarging::SoC = inputEnergy * 100 / @sysvar::GBT27930::BMS::ChargingDischarging::TotalCapacity * 100;
+  
+  // remaining Energy until SoC = 100%
+  remainingEnergy = @sysvar::GBT27930::BMS::ChargingDischarging::TotalCapacity * (1.0 - @sysvar::GBT27930::BMS::ChargingDischarging::SoC/100.0) - inputEnergy;
+  
+  $BMS.GBT27930_2_2024.VehicleChargingBasicInformation.SoC.phys = @sysvar::GBT27930::BMS::ChargingDischarging::SoC;
+  if (HV_measure_DC_U() > 0 && HV_measure_DC_I() > 0)
+  {
+    // remaining time until SoC = 100%
+    $BMS.GBT27930_2_2024.VehicleChargingBasicInformation.RemainingTime.phys = (remainingEnergy / abs(HV_measure_DC_U()) * abs(HV_measure_DC_I()) / 1000) * 60;
+  } else {
+    $BMS.GBT27930_2_2024.VehicleChargingBasicInformation.RemainingTime.phys = 0;
+  }
+}
+
+void ReactToK3K4Disconnect()
+{
+  if(currentBmsPhase == kSchedulingPhase && @sysvar::GBT27930::BMS::CurrentBmsStatus == kStatus3)
+  {
+    cancelTimer(timer_Tout0_Bms);
+    @sysvar::GBT27930::BMS::CurrentBmsStatus = kStatus4;
+  }
+}
+
+/////////////////////////////////////////////////////////////////////////////////////
+/*-----------------------------------Presentation----------------------------------*/
+/////////////////////////////////////////////////////////////////////////////////////
+
+void UpdateK5K6StatusText()
+{
+  If(@sysvar::GBT27930::BMS::ContactorStatus_K5K6 == sysvar::GBT27930::BMS::ContactorStatus_K5K6::Close)
+  {
+   SetControlVisibility(gPanelName, "txt_K5K6Opened", 0);
+   SetControlVisibility(gPanelName, "txt_K5K6Closed", 1);
+  }
+  else If(@sysvar::GBT27930::BMS::ContactorStatus_K5K6  == sysvar::GBT27930::BMS::ContactorStatus_K5K6::Open)
+  {
+   SetControlVisibility(gPanelName, "txt_K5K6Opened", 1);
+   SetControlVisibility(gPanelName, "txt_K5K6Closed", 0);
+  }
+}
+
+/////////////////////////////////////////////////////////////////////////////////////
+/*-----------------------------------Key Inputs------------------------------------*/
+/////////////////////////////////////////////////////////////////////////////////////
+
+on key 'n'
+{
+}

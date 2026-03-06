@@ -1,0 +1,144 @@
+<?xml version="1.0"?>
+<Panel Type="Vector.CANalyzer.Panels.PanelSerializer, Vector.CANalyzer.Panels.Serializer, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null">
+  <Object Type="Vector.CANalyzer.Panels.Runtime.Panel, Vector.CANalyzer.Panels.Common, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null" Name="Panel" Children="Controls" ControlName="FDSDemo">
+    <Object Type="Vector.CANalyzer.Panels.Design.GroupBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null" Name="GroupBoxControl3" Children="Controls" ControlName="">
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl5" Children="Controls" ControlName="">
+        <Property Name="Name">StaticTextControl5</Property>
+        <Property Name="Size">77, 13</Property>
+        <Property Name="Location">5, 20</Property>
+        <Property Name="Text">Current Value:</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null" Name="TextBoxControl3" Children="Controls" ControlName="">
+        <Property Name="Name">TextBoxControl3</Property>
+        <Property Name="Size">99, 20</Property>
+        <Property Name="Location">87, 16</Property>
+        <Property Name="AlarmUpperTextColor">WindowText</Property>
+        <Property Name="AlarmLowerBkgColor">Salmon</Property>
+        <Property Name="ValueDisplay">Double</Property>
+        <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+        <Property Name="AlarmLowerTextColor">WindowText</Property>
+        <Property Name="AlarmGeneralSettings">1;2;-90;90</Property>
+        <Property Name="DisplayLabel">Hide</Property>
+        <Property Name="DescriptionText">GPS1.Longitude:</Property>
+        <Property Name="BoxBorderStyle">FixedSingle</Property>
+        <Property Name="DescriptionSize">0, 0</Property>
+        <Property Name="SymbolConfiguration">4;128;GPS;;GPS1;Longitude;2;;;-1</Property>
+        <Property Name="TabIndex">0</Property>
+      </Object>
+      <Property Name="Name">GroupBoxControl3</Property>
+      <Property Name="Size">196, 44</Property>
+      <Property Name="Location">9, 235</Property>
+      <Property Name="Text">Longitude</Property>
+      <Property Name="TabIndex">6</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl8" Children="Controls" ControlName="Static Text 3">
+      <Property Name="Name">StaticTextControl8</Property>
+      <Property Name="Size">416, 13</Property>
+      <Property Name="Location">9, 159</Property>
+      <Property Name="BackColor">221, 221, 221</Property>
+      <Property Name="Font">Microsoft Sans Serif, 6pt</Property>
+      <Property Name="Text">
+      </Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl4" Children="Controls" ControlName="Static Text 3">
+      <Property Name="Name">StaticTextControl4</Property>
+      <Property Name="Size">135, 16</Property>
+      <Property Name="Location">8, 6</Property>
+      <Property Name="Font">Microsoft Sans Serif, 9.75pt, style=Bold</Property>
+      <Property Name="Text">AFDX FDS Demo</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl3" Children="Controls" ControlName="Static Text 2">
+      <Property Name="Name">StaticTextControl3</Property>
+      <Property Name="Size">422, 88</Property>
+      <Property Name="Location">7, 65</Property>
+      <Property Name="Text">This demo shows the functionality of Functional Data Sets (FDS)
+The longitude and latitude values of the GPS window will be modified automatically.
+The GPS values are transfered into the FDS-Signal value via a CAPL-program 
+and will be sent out.
+
+For more information, please press the [Help] button</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.GroupBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null" Name="GroupBoxControl2" Children="Controls" ControlName="">
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl2" Children="Controls" ControlName="">
+        <Property Name="Name">StaticTextControl2</Property>
+        <Property Name="Size">77, 13</Property>
+        <Property Name="Location">5, 20</Property>
+        <Property Name="Text">Current Value:</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null" Name="TextBoxControl2" Children="Controls" ControlName="">
+        <Property Name="Name">TextBoxControl2</Property>
+        <Property Name="Size">99, 20</Property>
+        <Property Name="Location">87, 16</Property>
+        <Property Name="AlarmUpperTextColor">WindowText</Property>
+        <Property Name="AlarmLowerBkgColor">Salmon</Property>
+        <Property Name="ValueDisplay">Double</Property>
+        <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+        <Property Name="AlarmLowerTextColor">WindowText</Property>
+        <Property Name="AlarmGeneralSettings">1;0;0;0</Property>
+        <Property Name="DisplayLabel">Hide</Property>
+        <Property Name="DescriptionText">GPS1.Altitude:</Property>
+        <Property Name="BoxBorderStyle">FixedSingle</Property>
+        <Property Name="DescriptionSize">0, 0</Property>
+        <Property Name="SymbolConfiguration">5;128;GPS;;GPS1;Altitude;2;;;-1;;;</Property>
+        <Property Name="TabIndex">0</Property>
+      </Object>
+      <Property Name="Name">GroupBoxControl2</Property>
+      <Property Name="Size">196, 44</Property>
+      <Property Name="Location">9, 285</Property>
+      <Property Name="Text">Altitude</Property>
+      <Property Name="TabIndex">5</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.GroupBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null" Name="GroupBoxControl1" Children="Controls" ControlName="Group Box">
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl1" Children="Controls" ControlName="Static Text">
+        <Property Name="Name">StaticTextControl1</Property>
+        <Property Name="Size">77, 13</Property>
+        <Property Name="Location">5, 20</Property>
+        <Property Name="Text">Current Value:</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null" Name="TextBoxControl1" Children="Controls" ControlName="Input/Output Box">
+        <Property Name="Name">TextBoxControl1</Property>
+        <Property Name="Size">99, 20</Property>
+        <Property Name="Location">87, 16</Property>
+        <Property Name="AlarmUpperTextColor">WindowText</Property>
+        <Property Name="AlarmLowerBkgColor">Salmon</Property>
+        <Property Name="ValueDisplay">Double</Property>
+        <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+        <Property Name="AlarmLowerTextColor">WindowText</Property>
+        <Property Name="AlarmGeneralSettings">1;2;-90;90</Property>
+        <Property Name="DisplayLabel">Hide</Property>
+        <Property Name="BoxBorderStyle">FixedSingle</Property>
+        <Property Name="DescriptionSize">0, 0</Property>
+        <Property Name="SymbolConfiguration">4;128;GPS;;GPS1;Latitude;2;;;-1</Property>
+        <Property Name="TabIndex">0</Property>
+      </Object>
+      <Property Name="Name">GroupBoxControl1</Property>
+      <Property Name="Size">196, 44</Property>
+      <Property Name="Location">9, 185</Property>
+      <Property Name="Text">Latitude</Property>
+      <Property Name="TabIndex">4</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StartStopControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null" Name="StartStopControl1" Children="Controls" ControlName="Start Stop Control">
+      <Property Name="Name">StartStopControl1</Property>
+      <Property Name="Size">112, 56</Property>
+      <Property Name="Location">257, 3</Property>
+      <Property Name="TabIndex">3</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.PanelHelpControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null" Name="PanelHelpControl1" Children="Controls" ControlName="File Button">
+      <Property Name="Name">PanelHelpControl1</Property>
+      <Property Name="Size">52, 52</Property>
+      <Property Name="Location">375, 5</Property>
+      <Property Name="Image">iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAANRSURBVFhH7VY/aBNRGL+hg0MGh4wdHDp07ODg4ODYoYODg0MHJXdVSsQKRQpWKHYQUagQREGkSEWRIIoKIgUVMsTkEoNtraW1pjbVqNXWmtRq0/j5/d69K5fncXcJHfODjzvuvft+7/v/tCaaqAu9UyEtku7WDHNMi6QSWsTMCzHSSc1IxfmbrvVkwnL3DgLEhjkUiuY2um+8p7HkN0rOlym3uE6TS7/IXChTPLNC+s08hU/kKpqeiu3cQXpSe5m80BWbFYSDD5ao7cwE8bcaaT39mvruLoo9R0bz/C25yh7plFoahJE+DKtjz74IC8Oncv8RqxKKZml7v/BGuk9qqxNsOciT8yU6dO2dK5mXHLg0I7wBz3BIuqTWgLBiXoAlKnn72Um6k/5Oy6UKAaXfVZED2KuGZt/5abqfWyXtaKqk6S9bpfYA4IRDzOFGp8LjtxZoY7MqiN1Qqf4VeeD85+LTIkVvf8D7qNTuA7Yerof7nDHvOPdGENh4PvOThh5+FJavrm/JrxZwePu/Xb1ZMvNlKxSRbJtk8QDXOUoN2W4rgcASG1dffK1Z2zMwIUJhA4dyrm/r01ODksUD3GRQ52o84YHx6TURU1jlXIOnnN4ZGf9cs47KwL+iefmCN6HJOBV4CZQn5kqS2gIqQN2HROVnQbJ4gFsr4q8qcBN4wkkOLwzcK7juRc7sPvmKJIsH+JRBD3A9sSypiQorf2j/hbeu+yA4gEhqX/BgCRKCzsuzkproydQPyzqXfbaIEOhmUbJ4gKca6l+UjYsiW2zr0ZDUpFQF6/AAH8CULB7gkYqppjYUVTBw0JT89kEOXpmj4cef+D0zLFk8wGMUQwR5gAx3U1iPtBzLiERFC+c+0CFZfMDzHBaqDcUpaMu4C/TH3bPeFqyjY3JuPZLaAwCXCZ7nyAW3moYg6wG0Ybd1CKxG7FsimQrrbJfaA4IvEwgFshdTTVUOy4prm9K62jUIyDEDhOtxVWsIRrof1YD2i1ngl+0QxByHg+WC3DBHpLYGgcsEz3OMVFiEweKWnDgcsh0JB68ItzdsuQpcJniewxuYahgsuCnBSgjChCdKzbKaE67umAcB5jlGKqYat2x0P9Fe0eHQZFDngUutiSYATfsHcW7KkS+gCGUAAAAASUVORK5CYII=</Property>
+      <Property Name="Filename">CANoeCANalyzer.chm</Property>
+      <Property Name="WorkingDirectory">
+      </Property>
+      <Property Name="Arguments">AFDXBasicFDS.cfg</Property>
+      <Property Name="Text">
+      </Property>
+      <Property Name="ImageFile">Bitmaps\PanelHelp.png</Property>
+      <Property Name="TabIndex">2</Property>
+    </Object>
+    <Property Name="Name">Panel</Property>
+    <Property Name="Size">434, 339</Property>
+    <Property Name="BackColor">White</Property>
+  </Object>
+</Panel>

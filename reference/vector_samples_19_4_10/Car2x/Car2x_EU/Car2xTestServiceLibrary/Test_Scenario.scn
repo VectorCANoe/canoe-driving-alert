@@ -1,0 +1,75 @@
+<scenario name="my scenario" simtime="5,3393665158371" simtimemax="30" version="1" timelinezoom="1" hscrolloffset="0">
+  <routes>
+    <route name="Route1" color="16711680">
+      <points>
+        <point x="48,8204675178558" y="9,09773734791566" />
+        <point x="48,8208277804561" y="9,09743064816285" />
+        <point x="48,8210820953347" y="9,0972138531952" />
+        <point x="48,8216684039426" y="9,09672032673646" />
+        <point x="48,8225655134762" y="9,09621607144166" />
+        <point x="48,8231871232624" y="9,09601222355652" />
+        <point x="48,8239711882471" y="9,09592639286805" />
+        <point x="48,8249671449998" y="9,09588347752381" />
+        <point x="48,8253132529959" y="9,09582983334351" />
+      </points>
+      <stations>
+        <station name="DUT" offset="502" color="16711680" trackingid="1" length="4" width="1,9" height="1,5">
+          <attribute name="Speed" trigger="true" defaultvalue="0">
+            <keypoints>
+              <keypoint time="0" value="0" />
+            </keypoints>
+          </attribute>
+          <attribute name="Events_Vehicle_Events_DENM1" datatype="I" interpolation="const" trigger="true" defaultvalue="0">
+            <keypoints>
+              <keypoint time="0" value="1" comment="Vehicle_Events_DENM on" />
+            </keypoints>
+            <attribute name="EventPosAndTime" datatype="I" interpolation="linear" trigger="true" defaultvalue="0">
+              <keypoints>
+                <keypoint time="0" value="0" />
+              </keypoints>
+            </attribute>
+            <attribute name="CauseCode" datatype="I" interpolation="const" trigger="true" defaultvalue="0">
+              <keypoints>
+                <keypoint time="0" value="91" comment="VehicleBreakdown" />
+              </keypoints>
+            </attribute>
+            <attribute name="SubCauseCode" datatype="I" interpolation="const" trigger="true" defaultvalue="0">
+              <keypoints>
+                <keypoint time="0" value="1" comment="LackOfFuel" />
+              </keypoints>
+            </attribute>
+            <attribute name="ActionIdOriginatingStationId" datatype="I" interpolation="const" trigger="true" defaultvalue="0">
+              <keypoints>
+                <keypoint time="0" value="1" />
+              </keypoints>
+            </attribute>
+            <attribute name="ActionIdSequenceNumber" datatype="I" interpolation="const" trigger="true" defaultvalue="0">
+              <keypoints>
+                <keypoint time="0" value="1" />
+              </keypoints>
+            </attribute>
+          </attribute>
+        </station>
+        <station name="Station1" offset="250" color="65535" trackingid="2" length="4" width="2" height="1,5">
+          <attribute name="Speed" trigger="true" defaultvalue="0">
+            <keypoints>
+              <keypoint time="0" value="60" />
+              <keypoint time="8" value="60" />
+              <keypoint time="21,5" value="0" />
+            </keypoints>
+          </attribute>
+        </station>
+        <station name="Station2" offset="200" color="255" trackingid="3" length="4" width="2" height="1,5">
+          <attribute name="Speed" trigger="true" defaultvalue="0">
+            <keypoints>
+              <keypoint time="0" value="50" />
+              <keypoint time="14" value="50" />
+              <keypoint time="27,5" value="0" />
+            </keypoints>
+          </attribute>
+        </station>
+      </stations>
+    </route>
+  </routes>
+  <tapes />
+</scenario>

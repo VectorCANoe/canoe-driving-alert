@@ -1,0 +1,244 @@
+/*@!Encoding:1252*/
+variables
+{
+  enum MediaMajorTypes
+  {
+    eMediaAudio = 0,
+    eMediaStream = 1,
+    eMediaTimeStamp = 2,
+    eMediaVideo = 3
+  };
+  
+  
+  enum MediaSubtypes
+  {
+   AudioFormat_AAC = 0,
+   AudioFormat_ADTS,
+   AudioFormat_ALAC             ,
+   AudioFormat_AMR_NB           ,
+   AudioFormat_AMR_WB           ,
+   AudioFormat_AMR_WP           ,
+   AudioFormat_Dolby_AC3        ,
+   AudioFormat_Dolby_AC3_SPDIF  ,
+   AudioFormat_DRM              ,
+   AudioFormat_DTS              ,
+   AudioFormat_FLAC             ,
+   AudioFormat_Float            ,
+   AudioFormat_MP3              ,
+   AudioFormat_MPEG             ,
+   AudioFormat_MSP              ,
+   AudioFormat_Opus             ,
+   AudioFormat_PCM              ,
+   AudioFormat_QCELP            ,
+   AudioFormat_WMASPDIF         ,
+   AudioFormat_WMAudio_Lossless ,
+   AudioFormat_WMAudioV8,
+   AudioFormat_WMAudioV9
+  };
+  
+  
+  enum MediaTypeValueType
+  {
+    eMediaDword = 0,
+  	eMediaString = 1,
+    eMediaByteArray = 2
+  };
+  
+  struct MediaTypeKeyValue
+  {
+    enum MediaTypeValueType MediaValueType;
+    dword  DwordValue;	 
+    byte   HasValue;
+  };
+  
+  struct MediaTypeKeyValue mediaProperties[char[]];
+}
+
+
+dword ConvertStringValueToDword(char property[], char value[])
+{
+  dword result = 0;
+  
+  if(strncmp(property, "MajorType", elcount(property)) == 0)
+  {
+      if(strncmp(value,"MediaType_Audio", elcount(value)) == 0)
+      {
+        result= eMediaAudio;
+      }
+      if(strncmp(value,"MediaType_Stream", elcount(value)) == 0)
+      {
+        result= eMediaStream;
+      }
+      if(strncmp(value,"MediaType_Timestamp", elcount(value)) == 0)
+      {
+        result= eMediaTimeStamp;
+      }
+       if(strncmp(value,"MediaType_Video", elcount(value)) == 0)
+      {
+        result= eMediaVideo;
+      }
+  }
+  if(strncmp(property, "Subtype", elcount(property)) == 0)
+  {
+        if(strncmp(value,"AudioFormat_AAC"             ,elcount(value))==0) return AudioFormat_AAC;
+        if(strncmp(value,"AudioFormat_ADTS"            ,elcount(value))==0)  return AudioFormat_ADTS;
+        if(strncmp(value,"AudioFormat_ALAC"            ,elcount(value))==0)  return AudioFormat_ALAC;
+        if(strncmp(value,"AudioFormat_AMR_NB"          ,elcount(value))==0)  return AudioFormat_AMR_NB;
+        if(strncmp(value,"AudioFormat_AMR_WB"          ,elcount(value))==0)  return AudioFormat_AMR_WB;
+        if(strncmp(value,"AudioFormat_AMR_WP"          ,elcount(value))==0)  return AudioFormat_AMR_WP;
+        if(strncmp(value,"AudioFormat_Dolby_AC3"       ,elcount(value))==0)  return AudioFormat_Dolby_AC3;
+        if(strncmp(value,"AudioFormat_Dolby_AC3_SPDIF", elcount(value))==0)  return AudioFormat_Dolby_AC3_SPDIF;
+        if(strncmp(value,"AudioFormat_DRM"             ,elcount(value))==0)  return AudioFormat_DRM;
+        if(strncmp(value,"AudioFormat_DTS"             ,elcount(value))==0)  return AudioFormat_DTS;
+        if(strncmp(value,"AudioFormat_FLAC"            ,elcount(value))==0)  return AudioFormat_FLAC;
+        if(strncmp(value,"AudioFormat_Float"           ,elcount(value))==0)  return AudioFormat_Float;
+        if(strncmp(value,"AudioFormat_MP3"             ,elcount(value))==0)  return AudioFormat_MP3;
+        if(strncmp(value,"AudioFormat_MPEG"            ,elcount(value))==0)  return AudioFormat_MPEG;
+        if(strncmp(value,"AudioFormat_MSP"             ,elcount(value))==0)  return AudioFormat_MSP;
+        if(strncmp(value,"AudioFormat_Opus"            ,elcount(value))==0)  return AudioFormat_Opus;
+        if(strncmp(value,"AudioFormat_PCM"             ,elcount(value))==0)  return AudioFormat_PCM;
+        if(strncmp(value,"AudioFormat_QCELP"           ,elcount(value))==0)  return AudioFormat_QCELP;
+        if(strncmp(value,"AudioFormat_WMASPDIF"        ,elcount(value))==0)  return AudioFormat_WMASPDIF;
+        if(strncmp(value,"AudioFormat_WMAudio_Lossless",elcount(value))==0)  return AudioFormat_WMAudio_Lossless;
+        if(strncmp(value,"AudioFormat_WMAudioV8"       ,elcount(value))==0)  return AudioFormat_WMAudioV8;
+        if(strncmp(value,"AudioFormat_WMAudioV9"       ,elcount(value))==0)  return AudioFormat_WMAudioV9;           
+  }
+  return result;
+}
+
+
+void ConvertDwordToString(char property[], dword value, char valueAsString[])
+{
+  dword result = 0;
+  if(strncmp(property, "MajorType", elcount(property)) == 0)
+  {
+      if(value == eMediaAudio)
+      {
+        strncpy(valueAsString, "MediaType_Audio", elcount(valueAsString));
+      }
+      if(value == eMediaStream)
+      {
+        strncpy(valueAsString, "MediaType_Stream", elcount(valueAsString));
+      }
+      if(value == eMediaTimeStamp)
+      {
+          strncpy(valueAsString, "MediaType_Timestamp", elcount(valueAsString));
+      }
+      if(value == eMediaVideo)
+      {
+          strncpy(valueAsString, "MediaType_Video", elcount(valueAsString));
+      }       
+  }
+  if(strncmp(property, "Subtype", elcount(property)) == 0)
+  {
+    switch(value)
+    {
+       case AudioFormat_AAC              :  strncpy(valueAsString, "AudioFormat_AAC", elcount(valueAsString)); break;
+       case AudioFormat_ADTS             :  strncpy(valueAsString, "AudioFormat_ADTS", elcount(valueAsString)); break;
+       case AudioFormat_ALAC             :  strncpy(valueAsString, "AudioFormat_ALAC", elcount(valueAsString)); break;
+       case AudioFormat_AMR_NB           :  strncpy(valueAsString, "AudioFormat_AMR_NB", elcount(valueAsString)); break;
+       case AudioFormat_AMR_WB           :  strncpy(valueAsString, "AudioFormat_AMR_WB", elcount(valueAsString)); break;
+       case AudioFormat_AMR_WP           :  strncpy(valueAsString, "AudioFormat_AMR_WP", elcount(valueAsString)); break;
+       case AudioFormat_Dolby_AC3        :  strncpy(valueAsString, "AudioFormat_Dolby_AC3", elcount(valueAsString)); break;
+       case AudioFormat_Dolby_AC3_SPDIF  :  strncpy(valueAsString, "AudioFormat_Dolby_AC3_SPDIF", elcount(valueAsString)); break;
+       case AudioFormat_DRM              :  strncpy(valueAsString, "AudioFormat_DRM", elcount(valueAsString)); break;
+       case AudioFormat_DTS              :  strncpy(valueAsString, "AudioFormat_DTS", elcount(valueAsString)); break;
+       case AudioFormat_FLAC             :  strncpy(valueAsString, "AudioFormat_FLAC", elcount(valueAsString)); break;
+       case AudioFormat_Float            :  strncpy(valueAsString, "AudioFormat_Float", elcount(valueAsString)); break;
+       case AudioFormat_MP3              :  strncpy(valueAsString, "AudioFormat_MP3", elcount(valueAsString)); break;
+       case AudioFormat_MPEG             :  strncpy(valueAsString, "AudioFormat_MPEG", elcount(valueAsString)); break;
+       case AudioFormat_MSP              :  strncpy(valueAsString, "AudioFormat_MSP", elcount(valueAsString)); break;
+       case AudioFormat_Opus             :  strncpy(valueAsString, "AudioFormat_Opus", elcount(valueAsString)); break;
+       case AudioFormat_PCM              :  strncpy(valueAsString, "AudioFormat_PCM", elcount(valueAsString)); break;
+       case AudioFormat_QCELP            :  strncpy(valueAsString, "AudioFormat_QCELP", elcount(valueAsString)); break;
+       case AudioFormat_WMASPDIF         :  strncpy(valueAsString, "AudioFormat_WMASPDIF", elcount(valueAsString)); break;
+       case AudioFormat_WMAudio_Lossless :  strncpy(valueAsString, "AudioFormat_WMAudio_Lossless", elcount(valueAsString)); break;
+       case AudioFormat_WMAudioV8        :  strncpy(valueAsString, "AudioFormat_WMAudioV8", elcount(valueAsString)); break;
+       case AudioFormat_WMAudioV9        :  strncpy(valueAsString, "AudioFormat_WMAudioV9", elcount(valueAsString)); break;
+       default: valueAsString[0] = '\0';
+    }
+  }
+}
+
+
+void SetMetaInformation(char property[])
+{
+  
+  if(strncmp(property, "MajorType", elcount(property)) == 0
+  || strncmp(property, "Subtype", elcount(property)) == 0)
+  {
+     mediaProperties[property].MediaValueType = eMediaString;
+  }
+  else if(strncmp(property, "AudioFolddownMatrix", elcount(property)) == 0)
+  {
+     mediaProperties[property].MediaValueType = eMediaByteArray;
+  }
+  else
+  {
+     mediaProperties[property].MediaValueType = eMediaDword;
+  }
+   mediaProperties[property].HasValue = 0;
+}
+
+void InitalizePropertyMetaInforamtion()
+{
+  //General Format Properties
+  SetMetaInformation("AllSamplesIndependent");
+  //SetMetaInformation("FixedSizeSamples");
+  SetMetaInformation("MajorType");
+ // SetMetaInformation("SampleSize");
+  SetMetaInformation("Subtype");
+  //Audio Properties
+  //SetMetaInformation("AacAudioProfileLevelIndication");
+  //SetMetaInformation("AacPayloadType");
+  SetMetaInformation("AudioAvgBytesPerSecond");
+  SetMetaInformation("AudioBitsPerSample");
+  SetMetaInformation("AudioBlockAlignment");  
+  //SetMetaInformation("AudioChannelMask");
+  //SetMetaInformation("AudioFloatSamplesPerSecond");
+  //SetMetaInformation("AudioFolddownMatrix");
+  SetMetaInformation("AudioNumChannels");
+  //SetMetaInformation("AudioSamplesPerBlock");
+  SetMetaInformation("AudioSamplesPerSecond");
+  //SetMetaInformation("AudioValidBitsPerSample");
+  //SetMetaInformation("AudioWmadrcAvgref");
+  //SetMetaInformation("AudioWmadrcAvgtarget");
+  //SetMetaInformation("AudioWmadrcPeakref");
+  //SetMetaInformation("AudioWmadrcPeaktarget");
+  //SetMetaInformation("OriginalWaveFormatTag");
+}
+
+
+void ReadOutProperty(dword mediaTypeHandle, char property[])
+{
+  dword result;
+  dword value;
+  char valueAsString[255];
+  byte valueAsByteArray[1024];
+  dword length;
+  if(mediaProperties.containsKey(property))
+  {
+    if(mediaProperties[property].MediaValueType == eMediaDword)
+    {
+      result = MediaGetProperty(mediaTypeHandle, property, value);
+    }
+    else if(mediaProperties[property].MediaValueType == eMediaString)
+    {
+      result = MediaGetProperty(mediaTypeHandle, property, elcount(valueAsString), valueAsString);
+      value = ConvertStringValueToDword(property, valueAsString);
+    }
+    else if(mediaProperties[property].MediaValueType == eMediaByteArray)
+    {
+      int i;
+      length = elcount(valueAsByteArray);
+      result = MediaGetProperty(mediaTypeHandle, property, length, valueAsByteArray);     
+    }
+  
+    if(result == 0)
+    {
+       mediaProperties[property].HasValue = 1;
+       mediaProperties[property].DwordValue = value;
+    }
+  }
+}
+

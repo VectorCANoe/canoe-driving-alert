@@ -1,0 +1,176 @@
+/*@!Encoding:1252*/
+includes
+{
+  #include "include/Avb.cin"
+  #include "include/Media.cin"
+  #include "include/SineGenerator.cin"
+}
+
+variables
+{
+  const dword kTalker_AudioSamplesPerSecond = 48000;
+  const dword kTalker_AudioBitsPerSample = 16;
+  const dword kTalker_AudioNumChannels = 1;
+
+  const dword kTalker_MaxBuffers = 4;
+  
+  const int kTalker_MaxInt = 0x7FFF;
+  
+  dword gTalker_Handle;
+  dword gTalker_SendResult;
+}
+
+on start
+{
+  long result;
+  dword ret;
+  dword mediaTypeHandle;
+  
+  byte destinationAddress[6] = { 1, 2, 3, 4, 5, 6 };
+  
+  gTalker_Handle = AvbOpenTalker();
+    
+  if (CheckHandleAndStopIfError(gTalker_Handle, "AvbOpenTalker") != 0)
+  {
+    return;
+  }
+  
+  mediaTypeHandle = MediaCreateMediaType();
+  
+  if (MediaCheckHandleAndStopIfError(mediaTypeHandle, "MediaCreateMediaType") != 0)
+  {
+    return;
+  }
+  
+  ret = MediaSetProperty(mediaTypeHandle, "MajorType", "MediaType_Audio");
+  
+  if (MediaStopIfError(ret, "MediaSetProperty[MajorType]") != 0)
+  {
+    return;
+  }
+  
+  ret = MediaSetProperty(mediaTypeHandle, "Subtype", "AudioFormat_PCM");
+  
+  if (MediaStopIfError(ret, "MediaSetProperty[Subtype]") != 0)
+  {
+    return;
+  }
+  
+  ret = MediaSetProperty(mediaTypeHandle, "AudioBitsPerSample", kTalker_AudioBitsPerSample);
+  
+  if (MediaStopIfError(ret, "MediaSetProperty[BitsPerSample]") != 0)
+  {
+    return;
+  }
+  
+  ret = MediaSetProperty(mediaTypeHandle, "AudioSamplesPerSecond", kTalker_AudioSamplesPerSecond);
+  
+  if (MediaStopIfError(ret, "MediaSetProperty[SamplesPerSecond]") != 0)
+  {
+    return;
+  }
+
+  ret = MediaSetProperty(mediaTypeHandle, "AudioNumChannels", kTalker_AudioNumChannels);
+  
+  if (MediaStopIfError(ret, "MediaSetProperty[MajorType]") != 0)
+  {
+    return;
+  }
+  
+  ret = MediaSetProperty(mediaTypeHandle, "AudioChannelMask", SpeakerFrontCenter);
+  
+  if (MediaStopIfError(ret, "MediaSetProperty[MajorType]") != 0)
+  {
+    return;
+  }
+  
+  result = AvbSetMediaType(gTalker_Handle, mediaTypeHandle);
+  
+  if (MediaStopIfError(result, "AvbSetMediaType") != 0)
+  {
+    return;
+  }
+  
+  result = AvbConnect(gTalker_Handle, destinationAddress, "OnAvbConnect");
+  
+  if (StopIfError(result, "AvbConnect") != 0)
+  {
+    return;
+  }
+  
+  if (result != kAvbIoPending)
+  {
+    SineGenerator_Start(kTalker_AudioSamplesPerSecond / 100, _pow(10, @Frequency));
+  }
+}
+
+on preStop
+{
+  dword result;
+  
+  SineGenerator_Stop();
+  
+  if (gTalker_Handle != 0)
+  {
+    result = AvbCloseTalker(gTalker_Handle);
+    
+    if (StopIfError(result, "AvbCloseTalker") != 0)
+    {
+      return;
+    }
+  }
+}
+
+on sysvar_update Frequency
+{
+  word frequencyHz;
+  
+  frequencyHz = _pow(10, @this);
+  
+  SineGenerator_SetFrequency(frequencyHz);
+  
+  @DisplayFrequency = frequencyHz;
+}
+
+void OnAvbConnect(dword talkerHandle, dword result)
+{  
+  if (result != kAvbOK)
+  {
+    WriteErrorAndStop(result, "OnAvbConnect");
+    return;
+  }
+
+  SineGenerator_Start(kTalker_AudioSamplesPerSecond / 100, _pow(10, @Frequency));
+}
+
+void OnAvbSend(dword talkerHandle, dword result, int buffer[], dword length)
+{
+  if (result != kAvbOK)
+  {
+    WriteErrorAndStop(result, "OnAvbSend");
+    return;
+  }
+}
+
+void OnSineGeneratorTimer(float values[], dword count)
+{  
+  int buffer[kSineGenerator_MaxBuffers];
+  dword i, result;
+  
+  for (i = 0; i < count; i++)
+  {
+    buffer[i] = (int)(values[i] * kTalker_MaxInt);
+  }
+ 
+  result = AvbSend(gTalker_Handle, buffer, count, "OnAvbSend");
+
+  if (gTalker_SendResult == kAvbDataOmmitted)
+  {
+    Write("Samples ommitted (delivered too late to AvbSend)");
+  }
+  else if (StopIfError(result, "AvbSend") != 0)
+  {
+    return;
+  }
+}
+

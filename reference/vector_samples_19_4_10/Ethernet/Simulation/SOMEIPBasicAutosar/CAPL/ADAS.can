@@ -1,0 +1,52 @@
+/*@!Encoding:1252*/
+includes
+{
+  
+}
+
+variables
+{
+  
+}
+
+on sysvar sysvar::ADAS::SubscribeService
+{
+  if (@this == 1)
+  {
+    // ensure that the node is subscribed to all event groups of service "CameraObjectDetectionCSI1"
+    Vehicle_Ethernet::ADAS::CameraObjectDetectionCSI1.Connect();
+  }
+  else
+  {
+    // ensure that the node is desubscribed from all event groups of service "CameraObjectDetectionCSI1"
+    Vehicle_Ethernet::ADAS::CameraObjectDetectionCSI1.Disconnect();
+  }
+}
+
+on sysvar sysvar::ADAS::Methods::StartStop::Call
+{
+  // call method if button 'Call' was pressed
+  if(@this == 1)
+  {
+    // use value of system variable 'ADAS::Methods::StartStop::Param1' as method parameter
+    Vehicle_Ethernet::ADAS::CameraObjectDetectionCSI1.StartStop.CallAsync(@sysvar::ADAS::Methods::StartStop::Param1); 
+  }
+}
+
+on sysvar sysvar::ADAS::Fields::FrameRate::Get
+{
+  // call getter if button 'Get' was pressed
+  if(@this == 1)
+  {
+    Vehicle_Ethernet::ADAS::CameraObjectDetectionCSI1.FrameRate.Get.CallAsync();
+  }
+}
+
+on sysvar sysvar::ADAS::Fields::FrameRate::Set
+{
+  // call setter if button 'Set' was pressed
+  if(@this == 1)
+  {
+    Vehicle_Ethernet::ADAS::CameraObjectDetectionCSI1.FrameRate.Set.CallAsync(@sysvar::ADAS::Fields::FrameRate::Value);
+  }
+}

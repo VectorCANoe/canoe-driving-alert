@@ -1,0 +1,14 @@
+﻿/*@!Encoding:65001*/
+includes
+{
+  
+}
+
+variables
+{
+  
+}
+
+export void set_total_variations(int total_iterations){
+  sysSetVariableLong(sysvar::parameterVariation::totalIterations, total_iterations);
+}

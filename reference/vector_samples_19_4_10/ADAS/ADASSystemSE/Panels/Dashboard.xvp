@@ -1,0 +1,96 @@
+<?xml version="1.0"?>
+<Panel Type="Vector.CANalyzer.Panels.PanelSerializer, Vector.CANalyzer.Panels.Serializer, Version=14.0.82.0, Culture=neutral, PublicKeyToken=null">
+  <Object Type="Vector.CANalyzer.Panels.Runtime.Panel, Vector.CANalyzer.Panels.Common, Version=14.0.82.0, Culture=neutral, PublicKeyToken=null" Name="Panel" Children="Controls" ControlName="Dashboard">
+    <Object Type="Vector.CANalyzer.Panels.Design.PictureBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=14.0.82.0, Culture=neutral, PublicKeyToken=null" Name="PictureBoxControl3" ControlName="pbInformation">
+      <Property Name="Name">PictureBoxControl3</Property>
+      <Property Name="Size">118, 70</Property>
+      <Property Name="Location">274, 161</Property>
+      <Property Name="ImageFile">BITMAPS\BrakeAssistantActive.jpg</Property>
+      <Property Name="IsVisibleByLoad">False</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=14.0.82.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl1" Children="Controls" ControlName="tbInformation">
+      <Property Name="Name">StaticTextControl1</Property>
+      <Property Name="Size">116, 13</Property>
+      <Property Name="Location">274, 237</Property>
+      <Property Name="Text">Brake Assistant Active</Property>
+      <Property Name="ForeColor">ControlLightLight</Property>
+      <Property Name="IsVisibleByLoad">False</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=14.0.82.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl2" Children="Controls" ControlName="km/h">
+      <Property Name="Name">StaticTextControl2</Property>
+      <Property Name="Size">32, 13</Property>
+      <Property Name="Location">472, 230</Property>
+      <Property Name="Text">km/h</Property>
+      <Property Name="ForeColor">White</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=14.0.82.0, Culture=neutral, PublicKeyToken=null" Name="TextBoxControl1" Children="Controls" ControlName="CarSpeedEuropean">
+      <Property Name="Name">TextBoxControl1</Property>
+      <Property Name="Size">48, 31</Property>
+      <Property Name="Location">464, 199</Property>
+      <Property Name="AlarmUpperTextColor">WindowText</Property>
+      <Property Name="BoxForeColor">White</Property>
+      <Property Name="ValueDecimalPlaces">0</Property>
+      <Property Name="AlarmLowerBkgColor">Salmon</Property>
+      <Property Name="BoxTextAlign">Center</Property>
+      <Property Name="TextBackColor">Black</Property>
+      <Property Name="ValueDisplay">Decimal</Property>
+      <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+      <Property Name="AlarmLowerTextColor">WindowText</Property>
+      <Property Name="BoxFont">Microsoft Sans Serif, 20pt, style=Bold</Property>
+      <Property Name="AlarmUpperFont">Microsoft Sans Serif, 20pt, style=Bold</Property>
+      <Property Name="AlarmLowerFont">Microsoft Sans Serif, 20pt, style=Bold</Property>
+      <Property Name="AlarmGeneralSettings">1;0;0;300</Property>
+      <Property Name="DisplayLabel">Hide</Property>
+      <Property Name="TextFont">Microsoft Sans Serif, 8pt</Property>
+      <Property Name="DescriptionText">   km/h</Property>
+      <Property Name="BoxBorderStyle">None</Property>
+      <Property Name="BoxBackColor">Black</Property>
+      <Property Name="TextForeColor">White</Property>
+      <Property Name="DescriptionSize">0, 0</Property>
+      <Property Name="UsedValueTable">PhysicalValue</Property>
+      <Property Name="SymbolConfiguration">8;16;Dashboard;;;Speed;1;;;-1;;;;;;0</Property>
+      <Property Name="TabIndex">22</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.PictureBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=14.0.82.0, Culture=neutral, PublicKeyToken=null" Name="PictureBoxControl1" ControlName="Black Circle Speed">
+      <Property Name="Name">PictureBoxControl1</Property>
+      <Property Name="Size">82, 82</Property>
+      <Property Name="Location">447, 173</Property>
+      <Property Name="ImageFile">Bitmaps\DashboardCircleBlack.png</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.PictureBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=14.0.82.0, Culture=neutral, PublicKeyToken=null" Name="PictureBoxControl2" ControlName="Black Circle Gear">
+      <Property Name="Name">PictureBoxControl2</Property>
+      <Property Name="Size">82, 82</Property>
+      <Property Name="Location">137, 172</Property>
+      <Property Name="ImageFile">Bitmaps\DashboardCircleBlack.png</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.MeterControl, Vector.CANalyzer.Panels.CommonControls, Version=14.0.82.0, Culture=neutral, PublicKeyToken=null" Name="MeterControl1" ControlName="CarSpeedEuropean">
+      <Property Name="Name">MeterControl1</Property>
+      <Property Name="Size">158, 154</Property>
+      <Property Name="Location">408, 136</Property>
+      <Property Name="ScaleMax">220</Property>
+      <Property Name="SweepAngleFrom">-132</Property>
+      <Property Name="SweepAngleTo">132</Property>
+      <Property Name="PivotDistance">45</Property>
+      <Property Name="NeedleShape">TriangleSlimFilled</Property>
+      <Property Name="SymbolConfiguration">8;16;Dashboard;;;Speed;1;;;-1;;;;;;0</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.MeterControl, Vector.CANalyzer.Panels.CommonControls, Version=14.0.82.0, Culture=neutral, PublicKeyToken=null" Name="MeterControl2" ControlName="Sig:EngineSpeed">
+      <Property Name="Name">MeterControl2</Property>
+      <Property Name="Size">158, 154</Property>
+      <Property Name="Location">98, 136</Property>
+      <Property Name="ScaleMax">8000</Property>
+      <Property Name="PivotDistance">45</Property>
+      <Property Name="NeedleShape">TriangleSlimFilled</Property>
+      <Property Name="SymbolConfiguration">8;16;Dashboard;;;Rpm;2;;;-1;;;;;;0</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.PictureBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=14.0.82.0, Culture=neutral, PublicKeyToken=null" Name="PictureBoxControl4" ControlName="Picture Box 1">
+      <Property Name="Name">PictureBoxControl4</Property>
+      <Property Name="Size">665, 359</Property>
+      <Property Name="Location">0, 0</Property>
+      <Property Name="ImageFile">Bitmaps\DashboardCombi.png</Property>
+    </Object>
+    <Property Name="Name">Panel</Property>
+    <Property Name="Size">665, 359</Property>
+    <Property Name="BackColor">Black</Property>
+  </Object>
+</Panel>

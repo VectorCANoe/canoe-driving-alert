@@ -1,0 +1,57 @@
+/*@!Encoding:1252*/
+includes
+{
+  #include "Common.cin"
+}
+
+variables
+{
+  byte Counter;
+}
+
+on preStart
+{
+  Counter = 0;
+}
+
+on sysvar_update sysvar::CAN2::ECU21::SendPDU2_DLC08
+{
+  if (@this > 0)
+  {
+    J1939ILSetSignal(CAN2::PDU2_DLC08_ECU21::Signal1, Counter++ );
+    J1939ILSetMsgEvent(CAN2::PDU2_DLC08_ECU21); 
+    
+    InitCalculationOfTransmissionTime();
+  }
+}
+
+on sysvar_update sysvar::CAN2::ECU21::SendPDU2_DLC23
+{
+  if (@this > 0)
+  {
+    J1939ILSetSignal(CAN2::PDU2_DLC23_ECU21::Signal1, Counter++ );
+    J1939ILSetMsgEvent(CAN2::PDU2_DLC23_ECU21); 
+    
+    InitCalculationOfTransmissionTime();
+  }
+}
+
+on pg CAN2::PDU1_DLC08_ECU10
+{
+  CalculateTransmissionTime();
+}
+
+on pg CAN2::PDU1_DLC23_ECU10
+{
+  CalculateTransmissionTime();
+}
+
+on pg CAN2::PDU2_DLC08_ECU11
+{
+  CalculateTransmissionTime();
+}
+
+on pg CAN2::PDU2_DLC23_ECU11
+{
+  CalculateTransmissionTime();
+}

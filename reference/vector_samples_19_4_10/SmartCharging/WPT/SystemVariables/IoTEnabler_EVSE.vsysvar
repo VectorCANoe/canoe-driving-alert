@@ -1,0 +1,113 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<systemvariables version="4">
+  <namespace name="" comment="" interface="">
+    <namespace name="IoTEnabler" comment="" interface="">
+      <namespace name="VSE" comment="" interface="">
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysEVSE_VSE" comment="Vendor specific elements used by EVSE" bitcount="0" isSigned="true" encoding="65001" type="string" />
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysEVSE_VSE_AdditionalInformation" comment="" bitcount="0" isSigned="true" encoding="65001" type="string" />
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysEVSE_VSE_ChargingSiteID" comment="" bitcount="0" isSigned="true" encoding="65001" type="string" />
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysEVSE_VSE_CountryCode" comment="" bitcount="0" isSigned="true" encoding="65001" type="string" />
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysEVSE_VSE_CountryCode_Index" comment="" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="1" minValuePhys="1" maxValue="43" maxValuePhys="43">
+          <valuetable name="CountryCode" definesMinMax="true">
+            <valuetableentry value="1" lowerBound="1" upperBound="1" description="Argentina" displayString="Argentina" />
+            <valuetableentry value="2" lowerBound="2" upperBound="2" description="Australia" displayString="Australia" />
+            <valuetableentry value="3" lowerBound="3" upperBound="3" description="Austria" displayString="Austria" />
+            <valuetableentry value="4" lowerBound="4" upperBound="4" description="Belgium" displayString="Belgium" />
+            <valuetableentry value="5" lowerBound="5" upperBound="5" description="Brazil" displayString="Brazil" />
+            <valuetableentry value="6" lowerBound="6" upperBound="6" description="Canada" displayString="Canada" />
+            <valuetableentry value="7" lowerBound="7" upperBound="7" description="Chile" displayString="Chile" />
+            <valuetableentry value="8" lowerBound="8" upperBound="8" description="China" displayString="China" />
+            <valuetableentry value="9" lowerBound="9" upperBound="9" description="Congo" displayString="Congo" />
+            <valuetableentry value="10" lowerBound="10" upperBound="10" description="Croatia" displayString="Croatia" />
+            <valuetableentry value="11" lowerBound="11" upperBound="11" description="Czechia" displayString="Czechia" />
+            <valuetableentry value="12" lowerBound="12" upperBound="12" description="Denmark" displayString="Denmark" />
+            <valuetableentry value="13" lowerBound="13" upperBound="13" description="Egypt" displayString="Egypt" />
+            <valuetableentry value="14" lowerBound="14" upperBound="14" description="Estonia" displayString="Estonia" />
+            <valuetableentry value="15" lowerBound="15" upperBound="15" description="Finland" displayString="Finland" />
+            <valuetableentry value="16" lowerBound="16" upperBound="16" description="France" displayString="France" />
+            <valuetableentry value="17" lowerBound="17" upperBound="17" description="Germany" displayString="Germany" />
+            <valuetableentry value="18" lowerBound="18" upperBound="18" description="Greece" displayString="Greece" />
+            <valuetableentry value="19" lowerBound="19" upperBound="19" description="Hong_Kong" displayString="Hong_Kong" />
+            <valuetableentry value="20" lowerBound="20" upperBound="20" description="Hungary" displayString="Hungary" />
+            <valuetableentry value="21" lowerBound="21" upperBound="21" description="India" displayString="India" />
+            <valuetableentry value="22" lowerBound="22" upperBound="22" description="Ireland" displayString="Ireland" />
+            <valuetableentry value="23" lowerBound="23" upperBound="23" description="Israel" displayString="Israel" />
+            <valuetableentry value="24" lowerBound="24" upperBound="24" description="Italy" displayString="Italy" />
+            <valuetableentry value="25" lowerBound="25" upperBound="25" description="Japan" displayString="Japan" />
+            <valuetableentry value="26" lowerBound="26" upperBound="26" description="Mexico" displayString="Mexico" />
+            <valuetableentry value="27" lowerBound="27" upperBound="27" description="Netherlands" displayString="Netherlands" />
+            <valuetableentry value="28" lowerBound="28" upperBound="28" description="Norway" displayString="Norway" />
+            <valuetableentry value="29" lowerBound="29" upperBound="29" description="Poland" displayString="Poland" />
+            <valuetableentry value="30" lowerBound="30" upperBound="30" description="Portugal" displayString="Portugal" />
+            <valuetableentry value="31" lowerBound="31" upperBound="31" description="Russian_Federation" displayString="Russian_Federation" />
+            <valuetableentry value="32" lowerBound="32" upperBound="32" description="Singapore" displayString="Singapore" />
+            <valuetableentry value="33" lowerBound="33" upperBound="33" description="South_Africa" displayString="South_Africa" />
+            <valuetableentry value="34" lowerBound="34" upperBound="34" description="Spain" displayString="Spain" />
+            <valuetableentry value="35" lowerBound="35" upperBound="35" description="Sweden" displayString="Sweden" />
+            <valuetableentry value="36" lowerBound="36" upperBound="36" description="Switzerland" displayString="Switzerland" />
+            <valuetableentry value="37" lowerBound="37" upperBound="37" description="Thailand" displayString="Thailand" />
+            <valuetableentry value="38" lowerBound="38" upperBound="38" description="Turkey" displayString="Turkey" />
+            <valuetableentry value="39" lowerBound="39" upperBound="39" description="Ukraine" displayString="Ukraine" />
+            <valuetableentry value="40" lowerBound="40" upperBound="40" description="United_Arab_Emirates" displayString="United_Arab_Emirates" />
+            <valuetableentry value="41" lowerBound="41" upperBound="41" description="United_Kingdom" displayString="United_Kingdom" />
+            <valuetableentry value="42" lowerBound="42" upperBound="42" description="United_States_of_America" displayString="United_States_of_America" />
+            <valuetableentry value="43" lowerBound="43" upperBound="43" description="Uruguay" displayString="Uruguay" />
+          </valuetable>
+        </variable>
+        <variable anlyzLocal="2" readOnly="true" valueSequence="false" unit="" name="SysEVSE_VSE_ElementID" comment="" bitcount="0" isSigned="true" encoding="65001" type="string" startValue="dd" />
+        <variable anlyzLocal="2" readOnly="true" valueSequence="false" unit="" name="SysEVSE_VSE_ElementType" comment="" bitcount="0" isSigned="true" encoding="65001" type="string" startValue="01" />
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysEVSE_VSE_EnergyTransferType" comment="" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="14" maxValuePhys="14">
+          <valuetable name="EnergyTransferType" definesMinMax="true">
+            <valuetableentry value="0" lowerBound="0" upperBound="0" description="AC" displayString="AC" />
+            <valuetableentry value="1" lowerBound="1" upperBound="1" description="DC" displayString="DC" />
+            <valuetableentry value="2" lowerBound="2" upperBound="2" description="WPT" displayString="WPT" />
+            <valuetableentry value="3" lowerBound="3" upperBound="3" description="ACD" displayString="ACD" />
+            <valuetableentry value="4" lowerBound="4" upperBound="4" description="AC_DC" displayString="AC_DC" />
+            <valuetableentry value="5" lowerBound="5" upperBound="5" description="AC_WPT" displayString="AC_WPT" />
+            <valuetableentry value="6" lowerBound="6" upperBound="6" description="AC_ACD" displayString="AC_ACD" />
+            <valuetableentry value="7" lowerBound="7" upperBound="7" description="DC_WPT" displayString="DC_WPT" />
+            <valuetableentry value="8" lowerBound="8" upperBound="8" description="DC_ACD" displayString="DC_ACD" />
+            <valuetableentry value="9" lowerBound="9" upperBound="9" description="WPT_ACD" displayString="WPT_ACD" />
+            <valuetableentry value="10" lowerBound="10" upperBound="10" description="AC_DC_WPT" displayString="AC_DC_WPT" />
+            <valuetableentry value="11" lowerBound="11" upperBound="11" description="AC_DC_ACD" displayString="AC_DC_ACD" />
+            <valuetableentry value="12" lowerBound="12" upperBound="12" description="AC_WPT_ACD" displayString="AC_WPT_ACD" />
+            <valuetableentry value="13" lowerBound="13" upperBound="13" description="DC_WPT_ACD" displayString="DC_WPT_ACD" />
+            <valuetableentry value="14" lowerBound="14" upperBound="14" description="AC_DC_WPT_ACD" displayString="AC_DC_WPT_ACD" />
+          </valuetable>
+        </variable>
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysEVSE_VSE_Length" comment="" bitcount="0" isSigned="true" encoding="65001" type="string" />
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysEVSE_VSE_OperatorID" comment="" bitcount="0" isSigned="true" encoding="65001" type="string" />
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysEVSE_VSE_OrganizationalID" comment="" bitcount="0" isSigned="true" encoding="65001" type="string" />
+      </namespace>
+      <variable anlyzLocal="2" readOnly="true" valueSequence="false" unit="" name="SysEVSE_AccessPointWifiInterface" comment="" bitcount="0" isSigned="true" encoding="65001" type="string" startValue="wlan0" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysEVSE_ChannelToSendOn" comment="" bitcount="32" isSigned="false" encoding="65001" type="int" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysEVSE_CountryCode" comment="" bitcount="0" isSigned="true" encoding="65001" type="string" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysEVSE_MAC" comment="" bitcount="0" isSigned="true" encoding="65001" type="string" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysEVSE_NumberOfConnectedDevices" comment="" bitcount="32" isSigned="false" encoding="65001" type="int" startValue="0" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysEVSE_OpenSecureNetwork" comment="" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1">
+        <valuetable name="Custom" definesMinMax="true">
+          <valuetableentry value="0" lowerBound="0" upperBound="0" description="OpenUnsecure" displayString="OpenUnsecure" />
+          <valuetableentry value="1" lowerBound="1" upperBound="1" description="OpenSecure" displayString="OpenSecure" />
+        </valuetable>
+      </variable>
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysEVSE_SSID" comment="" bitcount="0" isSigned="true" encoding="65001" type="string" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysEVSE_WifiAccessPoint_AdditionalInfo" comment="" bitcount="0" isSigned="true" encoding="65001" type="string" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysEVSE_WifiAccessPoint_State" comment="" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="99" maxValuePhys="99">
+        <valuetable name="WifiState_Values" definesMinMax="true">
+          <valuetableentry value="0" lowerBound="0" upperBound="0" description="Initial" displayString="Initial" />
+          <valuetableentry value="1" lowerBound="1" upperBound="1" description="Configuring" displayString="Configuring" />
+          <valuetableentry value="2" lowerBound="2" upperBound="2" description="AdddingAuthentication" displayString="AdddingAuthentication" />
+          <valuetableentry value="3" lowerBound="3" upperBound="3" description="SettingForwardingMACAddress" displayString="SettingForwardingMACAddress" />
+          <valuetableentry value="4" lowerBound="4" upperBound="4" description="AddingVendorSpecificElements" displayString="AddingVendorSpecificElements" />
+          <valuetableentry value="5" lowerBound="5" upperBound="5" description="SettingChannelToSendOn" displayString="SettingChannelToSendOn" />
+          <valuetableentry value="6" lowerBound="6" upperBound="6" description="StartingAccessPoint" displayString="StartingAccessPoint" />
+          <valuetableentry value="7" lowerBound="7" upperBound="7" description="Running" displayString="Running" />
+          <valuetableentry value="8" lowerBound="8" upperBound="8" description="StoppingAccessPoint" displayString="StoppingAccessPoint" />
+          <valuetableentry value="9" lowerBound="9" upperBound="9" description="Stopped" displayString="Stopped" />
+          <valuetableentry value="99" lowerBound="99" upperBound="99" description="Error" displayString="Error" />
+        </valuetable>
+      </variable>
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysEVSE_WPA2Key" comment="" bitcount="0" isSigned="true" encoding="65001" type="string" />
+    </namespace>
+  </namespace>
+</systemvariables>

@@ -1,0 +1,92 @@
+/*@!Encoding:1252*/
+includes
+{
+  #include "..\DataSources_Templates\ASNV_Template_BaseDatatypes.cin"
+  #include "..\DataSources_Templates\ASNV_Template_CAM.cin"
+  #include "..\DataSources_Templates\ASNV_Template_SREM.cin"
+  #include "..\DataSources_Templates\ASNV_Template_SSEM.cin"
+}
+
+variables
+{
+  struct SREM pktSREM;
+  struct SSEM pktSSEM;
+  double intersectionRefPosLat = 48.825146;
+  double intersectionRefPosLon = 9.096219;
+}
+
+on start
+{
+  enum CallbackType { OnRx, PreTx };
+  
+  C2xRegisterCallback(OnRx, "OnRXSREM", "SREM");
+  C2xRegisterCallback(PreTx, "OnPreTxSSEM", "SSEM");
+}
+
+//Set SysVars on Attribute Update
+void OnStationAttributeTrigger(char attributeName[])
+{
+  if(strncmp(attributeName, "SSEM", strlen(attributeName)) == 0)
+  {
+    @SSEM_Simulation::Active = C2xGetStationAttributeInt64("SSEM");
+  }
+  
+  if((strncmp(attributeName, "SSEM::Status", strlen(attributeName)) == 0) && (@SSEM_Simulation::OverrideStatus == 0))
+  {
+    @SSEM_Simulation::Status = C2xGetStationAttributeInt64("Status");
+  }
+}
+
+void OnRxSREM(long channel, long dir, long radioChannel, long signalStrength, long signalQuality, long packet)
+{
+  // Copy SREM to struct
+  API_GetSREMParams(packet, pktSREM);
+  //Send SSEM
+  if(@SSEM_Simulation::Active == 1)
+  {
+    C2xSendMsg("SSEM");
+  }
+}
+
+// Callback function before sending SSEM messages
+void OnPreTxSSEM(LONG packet)
+{
+  C2xSetTokenInt64(packet, "geo_eh", "areaPosLatitude", intersectionRefPosLat * 1e7);
+  C2xSetTokenInt64(packet, "geo_eh", "areaPosLongitude", intersectionRefPosLon * 1e7);
+  C2xSetTokenInt64(packet, "geo_eh", "distanceA", 400);
+  
+  API_GetSSEMParams(packet, pktSSEM);
+  
+  //Set Intersection Id
+  pktSSEM.ssm.status.arrayValue[0].id.id = pktSREM.srm.requests.arrayValue[0].request.id.id;
+  
+  //Set Lane Ids
+  pktSSEM.ssm.status.arrayValue[0].sigStatus.arrayValue[0].inboundOn.isValidFlag = 1;
+  pktSSEM.ssm.status.arrayValue[0].sigStatus.arrayValue[0].inboundOn.choice = 0;
+  pktSSEM.ssm.status.arrayValue[0].sigStatus.arrayValue[0].inboundOn.lane = pktSREM.srm.requests.arrayValue[0].request.inBoundLane.lane;
+  
+  pktSSEM.ssm.status.arrayValue[0].sigStatus.arrayValue[0].outboundOn.isValidFlag = 1;
+  pktSSEM.ssm.status.arrayValue[0].sigStatus.arrayValue[0].outboundOn.choice = 0;
+  pktSSEM.ssm.status.arrayValue[0].sigStatus.arrayValue[0].outboundOn.lane = pktSREM.srm.requests.arrayValue[0].request.outBoundLane.lane;;
+
+  //Set Request Id
+  pktSSEM.ssm.status.arrayValue[0].sigStatus.arrayValue[0].requester.request = pktSREM.srm.requests.arrayValue[0].request.requestID;
+  
+  //Set Requestor Station Id
+  pktSSEM.ssm.status.arrayValue[0].sigStatus.arrayValue[0].requester.isValidFlag = 1;
+  pktSSEM.ssm.status.arrayValue[0].sigStatus.arrayValue[0].requester.id.isValidFlag = 1;
+  pktSSEM.ssm.status.arrayValue[0].sigStatus.arrayValue[0].requester.id.choice = 1;
+  pktSSEM.ssm.status.arrayValue[0].sigStatus.arrayValue[0].requester.id.stationID = pktSREM.srm.requestor.id.stationID;
+  
+  //Set Sequence No
+  pktSSEM.ssm.status.arrayValue[0].sigStatus.arrayValue[0].requester.sequenceNumber = pktSREM.srm.sequenceNumber.value;
+  
+  //Set Requestor Role
+  pktSSEM.ssm.status.arrayValue[0].sigStatus.arrayValue[0].requester.typeData.isValidFlag = 1;
+  pktSSEM.ssm.status.arrayValue[0].sigStatus.arrayValue[0].requester.typeData.role = pktSREM.srm.requestor.type.role;
+  
+  //Set Signal Status
+  pktSSEM.ssm.status.arrayValue[0].sigStatus.arrayValue[0].status = @SSEM_Simulation::Status;
+  
+  API_SetSSEMParams(packet, pktSSEM);
+}

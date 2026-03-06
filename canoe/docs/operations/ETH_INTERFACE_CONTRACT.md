@@ -1,8 +1,8 @@
 ﻿# Ethernet Interface Contract (CANoe SIL)
 
 **Document ID**: CANOE-ETH-IFC  
-**Version**: 1.1  
-**Date**: 2026-03-03  
+**Version**: 1.2  
+**Date**: 2026-03-06  
 **Status**: Active  
 **Scope**: CANoe SIL, UDP 기반 Ethernet 계약 정의
 
@@ -10,7 +10,7 @@
 
 ## 1. 목적
 
-- 본 문서는 `E100/E200/E210/E211/E212`(논리 ID) 및 SIL Stub ID(`0x1C3/0x1C4/0x111`)를 포함한 Ethernet 메시지 계약의 단일 원본(Single Source of Truth)이다.
+- 본 문서는 `E100/E200/E210~E216`(논리 ID) 및 SIL Stub ID(`0x1C3/0x1C4/0x111/0x1C5~0x1C8`)를 포함한 Ethernet 메시지 계약의 단일 원본(Single Source of Truth)이다.
 - CAN 프레임 원본은 `canoe/databases/chassis_can.dbc`, `canoe/databases/powertrain_can.dbc`, `canoe/databases/body_can.dbc`, `canoe/databases/infotainment_can.dbc`, `canoe/databases/adas_can.dbc`, `canoe/databases/eth_backbone_can_stub.dbc`가 담당하며, Ethernet 프레임은 본 문서가 담당한다.
 
 ---
@@ -48,6 +48,26 @@
 |  |  |  | e2eHealthState | 2~3 | 0~2 | DOMAIN_BOUNDARY_MGR | WARN_ARB_MGR, VAL_SCENARIO_CTRL | 100ms + Event | 0:Failed,1:Degraded,2:Healthy |
 |  |  |  | failSafeMode | 4~5 | 0~2 | DOMAIN_BOUNDARY_MGR | WARN_ARB_MGR, VAL_SCENARIO_CTRL | 100ms + Event | 강등 모드 상태 |
 |  |  |  | boundaryAlive | 6 | 0~1 | DOMAIN_BOUNDARY_MGR | WARN_ARB_MGR, VAL_SCENARIO_CTRL | 100ms + Event | 경계관리 노드 생존 상태 |
+| ethObjectRiskInputMsg | 0x1C5(SIL Stub) / 0xE213(Logical) | 8 | objectTrackValid | 0 | 0~1 | VAL_SCENARIO_CTRL (SIL harness) | ADAS_WARN_CTRL | 100ms | 객체 입력 유효성 |
+|  |  |  | objectRange | 1~9 | 0~500 | VAL_SCENARIO_CTRL (SIL harness) | ADAS_WARN_CTRL | 100ms | 대표 객체 상대거리(m) |
+|  |  |  | objectRelSpeed | 10~18 | -200~200 | VAL_SCENARIO_CTRL (SIL harness) | ADAS_WARN_CTRL | 100ms | 대표 객체 상대속도(km/h) |
+|  |  |  | objectConfidence | 19~25 | 0~100 | VAL_SCENARIO_CTRL (SIL harness) | ADAS_WARN_CTRL | 100ms | 객체 신뢰도(%) |
+|  |  |  | intersectionConflict | 26 | 0~1 | VAL_SCENARIO_CTRL (SIL harness) | ADAS_WARN_CTRL | 100ms | 교차로 충돌 맥락 |
+|  |  |  | mergeCutIn | 27 | 0~1 | VAL_SCENARIO_CTRL (SIL harness) | ADAS_WARN_CTRL | 100ms | 합류/끼어들기 맥락 |
+|  |  |  | objectAlertHoldMs | 28~40 | 0~5000 | VAL_SCENARIO_CTRL (SIL harness) | ADAS_WARN_CTRL | 100ms | 추적손실 보수 유지시간(ms) |
+| ethObjectRiskStateMsg | 0x1C6(SIL Stub) / 0xE214(Logical) | 6 | objectRiskClass | 0~2 | 0~7 | ADAS_WARN_CTRL | WARN_ARB_MGR, VAL_SCENARIO_CTRL | 100ms + Event | 객체 위험 등급 |
+|  |  |  | objectTtcMinMs | 3~16 | 0~10000 | ADAS_WARN_CTRL | WARN_ARB_MGR, VAL_SCENARIO_CTRL | 100ms + Event | 객체 최소 TTC(ms) |
+|  |  |  | objectRiskLevel | 17~23 | 0~100 | ADAS_WARN_CTRL | WARN_ARB_MGR, VAL_SCENARIO_CTRL | 100ms + Event | 객체 위험도(0~100) |
+|  |  |  | objectTrackValid | 24 | 0~1 | ADAS_WARN_CTRL | WARN_ARB_MGR, VAL_SCENARIO_CTRL | 100ms + Event | 객체 추적 유효 상태 |
+| ethObjectScenarioAlertMsg | 0x1C7(SIL Stub) / 0xE215(Logical) | 4 | objectAlertLevel | 0~2 | 0~7 | WARN_ARB_MGR | BODY_GW, IVI_GW, VAL_SCENARIO_CTRL | Event + 50ms | 객체 맥락 경고 레벨 |
+|  |  |  | objectAlertType | 3~5 | 0~7 | WARN_ARB_MGR | BODY_GW, IVI_GW, VAL_SCENARIO_CTRL | Event + 50ms | 객체 맥락 경고 타입 |
+|  |  |  | intersectionConflict | 6 | 0~1 | WARN_ARB_MGR | BODY_GW, IVI_GW, VAL_SCENARIO_CTRL | Event + 50ms | 교차로 충돌 플래그 |
+|  |  |  | mergeCutIn | 7 | 0~1 | WARN_ARB_MGR | BODY_GW, IVI_GW, VAL_SCENARIO_CTRL | Event + 50ms | 합류 충돌 플래그 |
+|  |  |  | objectRiskClass | 8~10 | 0~7 | WARN_ARB_MGR | BODY_GW, IVI_GW, VAL_SCENARIO_CTRL | Event + 50ms | 객체 위험 분류 |
+| ethObjectSafetyStateMsg | 0x1C8(SIL Stub) / 0xE216(Logical) | 4 | objectConfidence | 0~6 | 0~100 | DOMAIN_BOUNDARY_MGR | WARN_ARB_MGR, VAL_SCENARIO_CTRL, EMS_ALERT_RX | 100ms + Event | 객체 신뢰도 |
+|  |  |  | objectEventCode | 7~22 | 0~65535 | DOMAIN_BOUNDARY_MGR | WARN_ARB_MGR, VAL_SCENARIO_CTRL, EMS_ALERT_RX | 100ms + Event | 객체 이벤트 코드 |
+|  |  |  | objectFailSafeMode | 23~24 | 0~2 | DOMAIN_BOUNDARY_MGR | WARN_ARB_MGR, VAL_SCENARIO_CTRL, EMS_ALERT_RX | 100ms + Event | 객체 경로 강등 모드 |
+|  |  |  | objectTrackValid | 25 | 0~1 | DOMAIN_BOUNDARY_MGR | WARN_ARB_MGR, VAL_SCENARIO_CTRL, EMS_ALERT_RX | 100ms + Event | 객체 추적 유효 상태 |
 
 ---
 
@@ -58,9 +78,13 @@
 | 0xE210 | 0x1C3 | `ethEmergencyRiskMsg` |
 | 0xE211 | 0x1C4 | `ethDecelAssistReqMsg` |
 | 0xE212 | 0x111 | `ethFailSafeStateMsg` |
+| 0xE213 | 0x1C5 | `ethObjectRiskInputMsg` |
+| 0xE214 | 0x1C6 | `ethObjectRiskStateMsg` |
+| 0xE215 | 0x1C7 | `ethObjectScenarioAlertMsg` |
+| 0xE216 | 0x1C8 | `ethObjectSafetyStateMsg` |
 
 - 시스템/문서 아키텍처는 Logical ID를 기준으로 해석한다.
-- CANoe.CAN 라이선스 SIL 구현은 Stub ID(0x1C3/0x1C4/0x111)를 사용한다.
+- CANoe.CAN 라이선스 SIL 구현은 Stub ID(0x1C3/0x1C4/0x111/0x1C5~0x1C8)를 사용한다.
 - Ethernet 라이선스 적용 시 동일 의미를 Logical ID 기반으로 재검증한다.
 
 ---
@@ -78,5 +102,6 @@
 
 | 버전 | 날짜 | 변경 사항 |
 |---|---|---|
+| 1.2 | 2026-03-06 | ADAS 객체 인지 Pre-Activation 계약 추가: `E213~E216` (`ethObjectRiskInputMsg`, `ethObjectRiskStateMsg`, `ethObjectScenarioAlertMsg`, `ethObjectSafetyStateMsg`) 및 SIL Stub ID(`0x1C5~0x1C8`) 반영. |
 | 1.1 | 2026-03-03 | V2 확장 메시지(`ethEmergencyRiskMsg`, `ethDecelAssistReqMsg`, `ethFailSafeStateMsg`) 및 SIL Stub ID 매핑(0x1C3/0x1C4/0x111) 추가. |
 | 1.0 | 2026-02-28 | Ethernet 계약 원본 문서 신규 생성(0x510/0x511/0x512/0xE100/0xE200) |

@@ -1,0 +1,77 @@
+/*@!Encoding:1252*/
+
+variables
+{
+  enum WriteServertiy
+  {
+    Success,
+    Information,
+    Warning,
+    Error
+  };
+
+  const byte NullAddress = 254;
+  const byte GlobalAddress = 255;
+  
+  const int SinkTraceWindow = -3;
+
+  DWORD Bus1;
+  DWORD Bus2;
+  DWORD Bus3;
+}
+
+byte IsPDU1_CANID(dword canId)
+{
+  return ((canId >> 16) & 0xff) < 240;
+}
+
+byte IsPDU1_PGN(dword pgn)
+{
+  return ((pgn >> 8) & 0xff) < 240;
+}
+
+// Get PGN contained in a CAN ID
+dword GetPGNOfCANID(dword canId)
+{
+  if (IsPDU1_CANID(canId))
+  {
+    return (canId >> 8) & 0x3ff00;
+  }
+  else
+  {
+    return (canId >> 8) & 0x3ffff;
+  }
+}
+
+byte GetDestinationAddressOfPgn(dword pgn, byte destinationAddress)
+{
+  return destinationAddress = IsPDU1_PGN(pgn) ? destinationAddress : GlobalAddress; 
+}
+
+dword GetDestinationAddressOfCANID(dword canId)
+{
+  if (IsPDU1_CANID(canId))
+  {
+    return (canId >> 8) & 0xff;
+  }
+  else
+  {
+    return GlobalAddress;
+  }
+}
+
+dword GetSourceAddressOfCANID(dword canId)
+{
+  return (canId & 0xFF);
+}
+
+void InitCalculationOfTransmissionTime()
+{
+  @Times::TimestampOfMessageTransmission = timeNowNS();
+}
+
+void CalculateTransmissionTime()
+{
+  @Times::TransmissionTime = (TimeNowNS() - @Times::TimestampOfMessageTransmission) / 1000000.0;
+}
+

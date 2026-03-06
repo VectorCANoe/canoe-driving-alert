@@ -1,0 +1,90 @@
+/*@!Encoding:1252*/
+includes
+{
+  
+}
+
+variables
+{
+  enum VWaitThreshold
+  {
+    kUnderThreshold = 0,
+    kOverThreshold = 1
+  };
+}
+
+export testcase NoWarningWhenTTIIsAbove3000ms()
+{
+  double timeToImpact = 0;
+  int    isWarningActive = 0;
+  
+  if(TestWaitForADASDetectedObjectTimeToCollision(kOverThreshold, 3.0, 2, 10000))
+  {
+    // Need to wait for ROS messages
+    testWaitForTimeout(100); // ms
+    
+    timeToImpact = $OutputROS.output.results.timeToImpact;
+    isWarningActive = $OutputROS.output.results.isWarningActive.impl;
+    
+    if(timeToImpact > 3000) // ok
+    {
+      testStepPass("Time To Impact (TTI) algoritm output is over 3000 ms.");
+    }
+    else // nok
+    {
+      testStepFail("Time To Impact (TTI) algoritm output is under 3000 ms.");
+    }
+   
+    if(isWarningActive == 0) // ok
+    {
+      testStepPass("Success, no warning was provided as expected.");
+    }
+    else // nok
+    {
+      testStepFail("Fail, the TTI was too high, but a warning was provided anyways.");
+    }
+  }
+  else
+  {
+    testStepInconclusive("No TTI over 3 seconds for Detected Moving Object 103 was recognised");
+  }
+}
+
+export testcase IsTimeToImpactCalculationCorrectAndIsWarningProvided()
+{
+  double minAcceptableTTI = 2000.0;
+  double maxAcceptableTTI = 3000.0;
+  double timeToImpact = 0;
+  int    isWarningActive = 0;
+  
+  if(TestWaitForADASDetectedObjectTimeToCollision(kUnderThreshold, 3.0, 2, 10000))
+  {
+    // Need to wait for ROS messages
+    testWaitForTimeout(100); // ms
+    
+    timeToImpact = $OutputROS.output.results.timeToImpact.impl;
+    isWarningActive = $OutputROS.output.results.isWarningActive.impl;
+    
+    if(timeToImpact > minAcceptableTTI && timeToImpact < maxAcceptableTTI)
+    {
+      testStepPass("Time To Impact (TTI) calculation is correct.");
+    }
+    else
+    {
+      testStepFail("Time To Impact (TTI) calculation is wrong.");
+    }
+    
+    if(isWarningActive)
+    {
+      testStepPass("Success, a warning was provided when necessary.");
+    }
+    else
+    {
+      testStepFail("Fail, the TTI indicates that a warning is necessary, but no warning was provided.");
+    }    
+  }
+  else
+  {
+    testStepInconclusive("No TTI under 3 seconds for Detected Moving Object 103 was recognised");
+  }
+}

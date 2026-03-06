@@ -1,0 +1,66 @@
+version: 2.2.0
+
+test-tree:
+  - test-fixture: CANXL
+    capl-preparation: caplprepareusecase
+    elements:
+      - test-fixture: Test Protocol Fields
+        elements:
+        - test-fixture: ArbitrationFields
+          elements:
+            - capl-test-case: SOFXLF
+              title: SOF_XLF
+              params: [2780,2780,0,0]
+            - capl-test-case: PriorityID
+              title: Priority ID
+              params: [701,701,0,0]
+            - capl-test-case: RRSBit
+              title: RRS Bit
+              params: [702,702,0,0]
+            - capl-test-case: IDEBit
+              title: IDE Bit
+              params: [703,703,0,0]
+            - capl-test-case: FDFBit
+              title: FDF Bit
+              params: [704,704,0,0]
+            - capl-test-case: XLFBit
+              title: XLF Bit
+              params: [705,705,0,0]
+        - test-fixture: Control Fields
+          elements:
+            - capl-test-case: ControlGroupresXLAF
+              title: ControlGroup(resXL - AF)
+              params: [2781,2781,0,0]
+            - capl-test-case: resXL
+              title: resXL
+              params: [706,706,0,0]
+            - capl-test-case: ADSGroupADHDLn
+              title: ADSGroup(ADH-DLn)
+              params: [2782,2782,0,0]
+        - capl-test-case: DataField
+          title: Data Field
+          params: [2783,2783,1,0]
+        - capl-test-case: CRCField 
+          title: CRC Field
+          params: [2784,2784,1,0]
+        - test-fixture: Ack Field
+          elements:
+            - capl-test-case: DASField
+              title: DAS Field
+              params: [2786,2786,0,0]
+            - capl-test-case: AckField
+              title: Ack Field
+              params: [2785,2785,0,0]
+      - test-fixture: Provoke Errors
+        elements:
+        - capl-test-case: DataField
+          title: DataField
+          params: [2783,2783,1,1]
+    capl-completion: caplcompleteusecase
+
+
+
+                        
+
+
+        

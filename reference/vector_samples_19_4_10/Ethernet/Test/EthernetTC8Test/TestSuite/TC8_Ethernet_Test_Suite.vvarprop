@@ -1,0 +1,106 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ProjectVariantPropertyModel>
+  <FileFormatVersion>3</FileFormatVersion>
+  <ProjectVariantProperties>
+    <VariantProperties>
+      <VariantProperty>
+        <Name>TCPriority</Name>
+        <Info></Info>
+        <ValueType>Integer</ValueType>
+        <Modifiable>false</Modifiable>
+        <TUStartValueRef></TUStartValueRef>
+        <PreDefinedValues />
+        <PossibleValues />
+        <ValueTable>
+          <RestrictValuesToValueTable>false</RestrictValuesToValueTable>
+          <ValueTableEntries>
+            <ValueTableEntry>
+              <IntValue>0</IntValue>
+              <StrValue>MUST</StrValue>
+              <IsHexValue>false</IsHexValue>
+            </ValueTableEntry>
+            <ValueTableEntry>
+              <IntValue>1</IntValue>
+              <StrValue>SHOULD</StrValue>
+              <IsHexValue>false</IsHexValue>
+            </ValueTableEntry>
+            <ValueTableEntry>
+              <IntValue>2</IntValue>
+              <StrValue>MAY</StrValue>
+              <IsHexValue>false</IsHexValue>
+            </ValueTableEntry>
+          </ValueTableEntries>
+        </ValueTable>
+      </VariantProperty>
+      <VariantProperty>
+        <Name>IPVersion</Name>
+        <Info></Info>
+        <ValueType>Integer</ValueType>
+        <Modifiable>false</Modifiable>
+        <TUStartValueRef></TUStartValueRef>
+        <PreDefinedValues />
+        <PossibleValues>
+          <PossibleValue>
+            <IntegerValue>0</IntegerValue>
+            <DoubleValue>NaN</DoubleValue>
+            <StringValue></StringValue>
+            <IsHexValue>false</IsHexValue>
+            <IsRawValue>true</IsRawValue>
+          </PossibleValue>
+          <PossibleValue>
+            <IntegerValue>1</IntegerValue>
+            <DoubleValue>NaN</DoubleValue>
+            <StringValue></StringValue>
+            <IsHexValue>false</IsHexValue>
+            <IsRawValue>true</IsRawValue>
+          </PossibleValue>
+        </PossibleValues>
+        <ValueTable>
+          <RestrictValuesToValueTable>true</RestrictValuesToValueTable>
+          <ValueTableEntries>
+            <ValueTableEntry>
+              <IntValue>0</IntValue>
+              <StrValue>IPv4</StrValue>
+              <IsHexValue>false</IsHexValue>
+            </ValueTableEntry>
+            <ValueTableEntry>
+              <IntValue>1</IntValue>
+              <StrValue>IPv6</StrValue>
+              <IsHexValue>false</IsHexValue>
+            </ValueTableEntry>
+          </ValueTableEntries>
+        </ValueTable>
+      </VariantProperty>
+      <VariantProperty>
+        <Name>DeprecatedTestHandling</Name>
+        <Info></Info>
+        <ValueType>Integer</ValueType>
+        <Modifiable>false</Modifiable>
+        <TUStartValueRef></TUStartValueRef>
+        <PreDefinedValues />
+        <PossibleValues />
+        <ValueTable>
+          <RestrictValuesToValueTable>false</RestrictValuesToValueTable>
+          <ValueTableEntries>
+            <ValueTableEntry>
+              <IntValue>0</IntValue>
+              <StrValue>HideDeprecatedTests</StrValue>
+              <IsHexValue>false</IsHexValue>
+            </ValueTableEntry>
+            <ValueTableEntry>
+              <IntValue>1</IntValue>
+              <StrValue>ShowDeprecatedTests</StrValue>
+              <IsHexValue>false</IsHexValue>
+            </ValueTableEntry>
+            <ValueTableEntry>
+              <IntValue>2</IntValue>
+              <StrValue>RunDeprecatedTests</StrValue>
+              <IsHexValue>false</IsHexValue>
+            </ValueTableEntry>
+          </ValueTableEntries>
+        </ValueTable>
+      </VariantProperty>
+    </VariantProperties>
+    <ModifiableParameters />
+  </ProjectVariantProperties>
+</ProjectVariantPropertyModel>

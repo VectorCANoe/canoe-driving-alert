@@ -1,0 +1,69 @@
+<scenario name="my scenario" simtime="0" simtimemax="15" version="1" timelinezoom="1" hscrolloffset="0">
+  <routes>
+    <route name="Route1" color="16711680" width="3,7">
+      <points>
+        <point x="48,8219126568706" y="9,09656821247075" />
+        <point x="48,8221837639578" y="9,09640524925923" />
+        <point x="48,8223740482749" y="9,09628734532133" />
+        <point x="48,8225947037903" y="9,09619348169882" />
+        <point x="48,8227655160959" y="9,09612800692033" />
+        <point x="48,8229321745554" y="9,09608461235656" />
+        <point x="48,8231356889882" y="9,09604982403936" />
+        <point x="48,8233725306413" y="9,09601381471417" />
+        <point x="48,826144596603" y="9,09580786493946" />
+      </points>
+      <stations>
+        <station name="EgoVehicle" offset="40" color="32768" trackingid="1" length="4" width="2" height="1,5" hostvehicle="True">
+          <attribute name="Speed" trigger="true" defaultvalue="0">
+            <keypoints>
+              <keypoint time="0" value="80" />
+              <keypoint time="4" value="80" />
+              <keypoint time="5,5" value="0" />
+              <keypoint time="7" value="0" />
+              <keypoint time="7,5" value="60" />
+              <keypoint time="14" value="50" />
+            </keypoints>
+          </attribute>
+          <sensors>
+            <sensor name="FrontRadar" color="8036607" sensorId="1" posX="0" posY="0" posZ="0" apertureAngle="60" rotationAngle="0" range="60" detectionType="7" />
+          </sensors>
+        </station>
+        <station name="BrakingVehicle" offset="100" color="255" trackingid="2" length="4" width="2" height="1,5" hostvehicle="False">
+          <attribute name="Speed" trigger="true" defaultvalue="0">
+            <keypoints>
+              <keypoint time="0" value="50" />
+              <keypoint time="4" value="50" />
+              <keypoint time="4,5" value="0" />
+              <keypoint time="5,5" value="0" />
+              <keypoint time="7" value="0" />
+              <keypoint time="7,5" value="80" />
+            </keypoints>
+          </attribute>
+        </station>
+      </stations>
+    </route>
+    <route name="Route2" color="16711680" width="3,8">
+      <points>
+        <point x="48,8248783585938" y="9,09585172804677" />
+        <point x="48,8233800585372" y="9,09596148745029" />
+        <point x="48,8233471672428" y="9,09602208850801" />
+        <point x="48,8233595980803" y="9,09661302924899" />
+        <point x="48,8234941997763" y="9,099636304481" />
+      </points>
+      <stations>
+        <station name="EmergencyVehicle" offset="50" color="16711680" trackingid="3" length="4" width="2" height="1,5" hostvehicle="False">
+          <attribute name="Speed" trigger="true" defaultvalue="0">
+            <keypoints>
+              <keypoint time="0" value="80" />
+              <keypoint time="4,5" value="80" />
+              <keypoint time="5" value="40" />
+              <keypoint time="5,5" value="40" />
+              <keypoint time="6,5" value="80" />
+            </keypoints>
+          </attribute>
+        </station>
+      </stations>
+    </route>
+  </routes>
+  <tapes />
+</scenario>

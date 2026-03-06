@@ -1,0 +1,387 @@
+/*@!Encoding:1252*/
+variables
+{
+   const int gPerformaceAccelerator = 1;  // make simulation faster (speedup 1..10)
+
+  // Constants
+  // Init variables
+  const float kMinCatalystTemperature             = 20.0;  // Minimum Catalyst Temperature [°C]
+  const float kMaxCatalystTemperature             = 250.0; // Maximum Catalyst Temperature [°C]
+  const float kMinTankLevel                       = 10.0;  // Minimum Tank Level [%]
+  const float kMaxTankLevel                       = 100.0; // Maximum Tank Level [%]
+  const float kMinUreaPressure                    = 0.0;   // Minimum Urea Pressure [kPa]
+  const float kMaxUreaPressure                    = 500.0; // Maximum Urea Pressure [kPa]
+  // Init variabels for PROB_1_EAS Messages
+  const float kInitReductionFluidPressure         = 0.0;   // Init Urea Pressure [kPa]
+  const float kInitCatalystUpstreamTemperature    = 20.0;  // Init Cat. Upstream Temperature [°C]				
+  const float kInitCatalystDownstreamTemperature  = 20.0;  // Init Cat. Downstream Temperature [°C]
+  // Init variabels for PROB_2_EAS Messages
+  const float kInitReductionFluidTankTemperature  = 20.0;  // Init Tank Temperature [°C]
+  const float kInitReductionFluidTankLevel        = 100.0; // Init Tank Level [%]
+  const float kInitActualDosingQuantity           = 0;     // Init Actual Dosing Quantity in [g/h]
+  const int kInitActualTransitionState            = 0;     // Init Actual Transition State in [-]
+  const int kInitActualMachineState               = 0;     // Init Actual Machine State in [-]
+  // DTC flash lamp status
+  const byte kFlashLampStatusAllLampsOff                    = 0xFF;
+  const byte kLampStatusFlashMalfunctionIndicatorLampSlowOn = 0x3F;
+  const byte kLampStatusFlashRedStopLampSlowOn              = 0xCF; 
+  const byte kLampStatusFlashAmberWarningLampSlowOn         = 0xF3;
+  const byte kLampStatusFlashProtectLampSlowOn              = 0xFC;
+  // DTC lamp status
+  const byte kLampStatusAllLampsOff                     = 0x00;
+  const byte kLampStatusMalfunctionIndicatorLampOn      = 0x40; 
+  const byte kLampStatusRedStopLampOn                   = 0x10;
+  const byte kLampStatusAmberWarningLampOn              = 0x04;
+  const byte kLampStatusProtectLampOn                   = 0x01;
+  
+  // FMIs
+  const dword kSPNDownstreamCatalystError  = 520192;
+  const dword kSPNUpstreamCatalystError    = 520193;
+  const dword kSPNDosingError              = 520194;
+  const dword kSPNFluidPressureError       = 520195;
+  const dword kSPNReductionFluidTankLevel  = 520196;
+ 
+  // Global
+  // Global variabels for PROB_1_EAS Messages
+  float gReductionFluidPressure         = kInitReductionFluidPressure;        // Init Urea Pressure [kPa]
+  float gCatalystUpstreamTemperature    = kInitCatalystUpstreamTemperature;   // Init Cat. Upstream Temperature [°C]
+  float gCatalystDownstreamTemperature  = kInitCatalystDownstreamTemperature; // Init Cat. Downstream Temperature [°C]
+  // Global variabels for PROB_2_EAS Messages
+  float gReductionFluidTankTemperature  = kInitReductionFluidTankTemperature; // Init Tank Temperature [°C]
+  float gReductionFluidTankLevel        = kInitReductionFluidTankLevel;       // Init Tank Level [%]
+  int   gCatalystTankLevelCritical      = 0;                                  // Init Tank Level critical status variable 
+  int   gCatalystTankLevelStop          = 0;                                  // Init Tank Level stop status variable
+  float gActualDosingQuantity           = kInitActualDosingQuantity;          // Actual Dosing Quantity in [g/h]
+  float gActualTransitionState          = kInitActualTransitionState;         // Actual Transition State in [-]
+  float gActualMachineState             = kInitActualMachineState;            // Actual Machine State in [-]
+  
+  // Global variabels for Receive Messages
+  float gEngineSpeed                    = 0.0; // Engine Speed [rpm]
+  float gEngineOilTemperature           = 0.0; // Engine Oil Temperature [°C]
+  float gEngineCoolantTemperature       = 0.0; // Engine Coolant Temperature [°C]
+  float gActualEngineTorque             = 0.0; // Actual Engine Torque [%]
+  float gAmbientTemperature             = 0.0; // Ambient Temperature [°C]
+  float gBarometricPressure             = 0.0; // Barometric Pressure [kPa]
+  float gRequestedDosingQuantity        = 0.0; // Requested Dosing Quantity [g/h]
+   
+  // Constants for diagnostics
+  const byte kFMI_AboveNormal  = 0;  // Data valid but above normal operation range
+  const byte kFMI_BelowNormal  = 1;  // Data valid but below normal operation range
+  const byte kFMI_DataErratic  = 2;  // Data erratic, intermittent or incorrect
+  const byte kFMI_CauseUnknown = 11; // Root cause not known
+
+  // Timers
+  const int   kSystemTime      = 100;                  // System time in [ms]
+  msTimer     SystemTimer;                             // System timer
+}
+
+on start
+{
+  setTimer(SystemTimer, kSystemTime);
+  
+  J1939ILActivateDiagnosticsSupport(1); 
+  UpdateDTCLampStatus();
+  UpdatePROB_1_EAS();
+  UpdatePROB_2_EAS();
+}
+
+on timer SystemTimer
+{
+  CalcCatUpstreamTemperature();
+  CalcCatDownstreamTemperature();
+  CalcActualDosingQuantity();
+  CalcReductionFluidTankLevel();
+  CalcReductionFluidPressure();
+  UpdatePROB_1_EAS();
+  UpdatePROB_2_EAS();
+ 
+  setTimer(SystemTimer, kSystemTime); 
+}
+
+on pg PROA_1_EMS
+{
+  gRequestedDosingQuantity = this.RequestedUreaQuantity.phys;
+}
+
+on pg EEC1_EMS
+{
+  gEngineSpeed        = this.EngSpeed.phys;
+  gActualEngineTorque = this.ActualEngPercentTorque.phys;
+}
+
+//
+// (Re-)Fill Tank if key 'r' is pressed
+//
+on key 'r'
+{
+  // Reset Tank Level
+  gReductionFluidTankLevel   = kInitReductionFluidTankLevel;
+  gCatalystTankLevelCritical = 0;
+  gCatalystTankLevelStop     = 0;
+  
+  // Deactivate possible DTCs
+  DeactivateDTC(kSPNReductionFluidTankLevel, kFMI_BelowNormal);
+  DeactivateDTC(kSPNReductionFluidTankLevel, kFMI_CauseUnknown); 
+}
+
+//
+// DTC for Transmission gear signal.
+//
+on sysvar EAS::DownstreamCatalystError
+{
+  if (@this == 1) 
+  {
+    ActivateDTC( kSPNDownstreamCatalystError, kFMI_BelowNormal );
+  }
+  else 
+  {
+    DeactivateDTC(kSPNDownstreamCatalystError, kFMI_BelowNormal);
+  }
+}
+
+//
+// DTC for Upstream Catalyst Sensor.
+//
+on sysvar EAS::UpstreamCatalystError
+{
+  if (@this == 1) 
+  {
+    ActivateDTC(kSPNUpstreamCatalystError, kFMI_AboveNormal);
+  }
+  else 
+  {
+    DeactivateDTC(kSPNUpstreamCatalystError, kFMI_AboveNormal);
+  }
+}
+
+//
+// DTC for Transmission gear signal.
+//
+on sysvar EAS::FluidPressureError
+{
+  if (@this == 1) 
+  {
+    ActivateDTC( kSPNFluidPressureError, kFMI_DataErratic );
+  }
+  else 
+  {
+    DeactivateDTC( kSPNFluidPressureError, kFMI_DataErratic );
+  }
+}
+
+//
+// DTC for Transmission gear signal.
+//
+on sysvar EAS::DosingError
+{
+  if (@this == 1) 
+  {
+    ActivateDTC(kSPNDosingError, kFMI_CauseUnknown);
+  }
+  else 
+  {
+    DeactivateDTC(kSPNDosingError, kFMI_CauseUnknown);
+  }
+}
+
+//
+// Update signals of message PROB_2_EAS
+//
+void UpdatePROB_2_EAS()
+{
+  J1939ILSetSignal(Aftertreatment::PROB_2_EAS::ActualTransitionState, gActualTransitionState);
+  J1939ILSetSignal(Aftertreatment::PROB_2_EAS::ActualMachineState, gActualMachineState);
+  J1939ILSetSignal(Aftertreatment::PROB_2_EAS::ActualDosingQuantity, gActualDosingQuantity);
+  J1939ILSetSignal(Aftertreatment::PROB_2_EAS::ReductionFluidTankTemperature, gReductionFluidTankTemperature);
+  J1939ILSetSignal(Aftertreatment::PROB_2_EAS::ReductionFluidTankLevel, gReductionFluidTankLevel);
+}
+
+//
+// Update signals of message PROB_1_EAS
+//
+void UpdatePROB_1_EAS()
+{
+  J1939ILSetSignal(Aftertreatment::PROB_1_EAS::ReductionFluidPressure, gReductionFluidPressure);
+  J1939ILSetSignal(Aftertreatment::PROB_1_EAS::CatalystUpstreamTemperature, gCatalystUpstreamTemperature);
+  J1939ILSetSignal(Aftertreatment::PROB_1_EAS::CatalystDownstreamTemperature,  gCatalystDownstreamTemperature);
+}
+
+//
+// Active a diagnostics trouble code
+//
+void ActivateDTC(dword spn, word fmi)
+{
+  J1939ILActivateDTC( spn, fmi, 0 );
+  UpdateDTCLampStatus();
+}
+
+//
+// Deactivate a iagnostics trouble code
+//
+void DeactivateDTC(dword spn, byte fmi)
+{
+  J1939ILDeactivateDTC(spn, fmi, 1);
+  UpdateDTCLampStatus();
+}
+
+//
+// Upate the diagnostics lamp status
+//
+void UpdateDTCLampStatus()
+{
+  dword status, occurrenceCount;
+  word lampStatus;
+  word flashLampStatus;
+  
+  lampStatus      = kLampStatusAllLampsOff;
+  flashLampStatus = kFlashLampStatusAllLampsOff;
+  
+  J1939ILGetDTCStatus(kSPNDownstreamCatalystError, kFMI_BelowNormal, status, occurrenceCount);
+  if (status == 1) // active
+  {
+    lampStatus |= kLampStatusAmberWarningLampOn;
+  }
+  
+  J1939ILGetDTCStatus(kSPNUpstreamCatalystError, kFMI_AboveNormal, status, occurrenceCount);
+  if (status == 1) // active
+  {
+    lampStatus |= kLampStatusAmberWarningLampOn;
+  }  
+
+  J1939ILGetDTCStatus(kSPNDosingError, kFMI_CauseUnknown, status, occurrenceCount);
+  if (status == 1) // active
+  {
+    lampStatus |= kLampStatusMalfunctionIndicatorLampOn;
+  }
+  
+  J1939ILGetDTCStatus(kSPNFluidPressureError, kFMI_DataErratic, status, occurrenceCount);
+  if (status == 1) // active
+  {
+    lampStatus |= kLampStatusRedStopLampOn;
+    
+    flashLampStatus &= kLampStatusFlashRedStopLampSlowOn;
+  }
+  
+  J1939ILGetDTCStatus(kSPNReductionFluidTankLevel, kFMI_BelowNormal, status, occurrenceCount);
+  if (status == 1) // active
+  {
+    lampStatus |= kLampStatusAmberWarningLampOn;
+  }
+  
+  J1939ILGetDTCStatus(kSPNReductionFluidTankLevel, kFMI_CauseUnknown, status, occurrenceCount);
+  if (status == 1) // active
+  {
+    lampStatus |= kLampStatusMalfunctionIndicatorLampOn;
+  }
+   
+  J1939ILSetLampStatus( DM1.pgn, lampStatus | (flashLampStatus << 8) );
+}
+
+//
+// Calculate Catalyst Upstream Temperature
+//
+void CalcCatUpstreamTemperature ()
+{
+  // Calculate new Upstream Temperature value on every timer event
+  if (gEngineSpeed > 0)
+  {
+    gCatalystUpstreamTemperature = gCatalystUpstreamTemperature + gPerformaceAccelerator*(gActualEngineTorque - 10) * 0.01;
+  }
+  // Limit Upstream Temperature value (min, max)
+  gCatalystUpstreamTemperature = LimitGovernor (gCatalystUpstreamTemperature, kMinCatalystTemperature, kMaxCatalystTemperature);  
+}
+
+//
+// Calculate Catalyst Downstream Temperature
+//
+void CalcCatDownstreamTemperature ()
+{
+  // Calculate new Downstream Temperature value on every timer event
+  if (gEngineSpeed > 0)
+  {
+    gCatalystDownstreamTemperature = gCatalystDownstreamTemperature + gPerformaceAccelerator*(gActualEngineTorque - 10) * 0.009;
+  }
+  // Limit Downstream Temperature value (min, max)
+  gCatalystDownstreamTemperature = LimitGovernor (gCatalystDownstreamTemperature, kMinCatalystTemperature, kMaxCatalystTemperature);
+}
+
+//
+// Calculate Actual Dosing Quantity
+//
+void CalcActualDosingQuantity ()
+{
+  // Calculate Actual Dosing Quantity
+  if (gCatalystUpstreamTemperature > 150 && gActualMachineState == 1)
+  {
+    gActualDosingQuantity = gRequestedDosingQuantity;
+  }
+  else
+  {
+    gActualDosingQuantity = 0; 
+  }
+}
+
+//
+// Calculate Reduction Fluid Tank Level
+//
+void CalcReductionFluidTankLevel ()
+{
+  // Calculate Tank Level
+  gReductionFluidTankLevel = gReductionFluidTankLevel - gPerformaceAccelerator*(gActualDosingQuantity * 1/36000);
+  // Limit Tank Level value (min, max)
+  gReductionFluidTankLevel = LimitGovernor (gReductionFluidTankLevel, kMinTankLevel, kMaxTankLevel);
+
+  if (gReductionFluidTankLevel < 20)
+  {
+    if (gCatalystTankLevelCritical == 0)
+    {
+      ActivateDTC(kSPNReductionFluidTankLevel, kFMI_BelowNormal);
+      gCatalystTankLevelCritical = 1;
+    }
+        
+    if (gReductionFluidTankLevel <= 10)
+    {
+      if (gCatalystTankLevelStop == 0)// && gCatalystUpstreamTemperature >= 150)
+      {
+        DeactivateDTC(kSPNReductionFluidTankLevel, kFMI_BelowNormal);
+        ActivateDTC(kSPNReductionFluidTankLevel, kFMI_CauseUnknown);
+        gCatalystTankLevelStop = 1;
+      }
+      gActualDosingQuantity = 0;
+    }
+  }
+}
+
+//
+// Calculate Reduction Fluid Pressure
+//
+void CalcReductionFluidPressure ()
+{
+  // Calculate Urea Pressure
+  gReductionFluidPressure = gReductionFluidPressure + 4 * gPerformaceAccelerator;
+  // Limit Tank Level value (min, max)
+  gReductionFluidPressure = LimitGovernor (gReductionFluidPressure, kMinUreaPressure, kMaxUreaPressure);
+
+  if (gReductionFluidPressure < 500)
+  {
+    gActualMachineState = 41;
+    gActualTransitionState = 53;
+  }
+  else
+  {
+    gActualMachineState = 1;
+    gActualTransitionState = 19;
+  }
+}
+
+//
+// Limit value
+//
+float LimitGovernor (float value, float min, float max)
+{
+  if (value < min) return min;
+  if (value > max) return max;
+
+  return value;
+}
+

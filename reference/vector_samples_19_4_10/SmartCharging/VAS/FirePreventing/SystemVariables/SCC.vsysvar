@@ -1,0 +1,92 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<systemvariables version="4">
+  <namespace name="" comment="" interface="">
+    <namespace name="Common" comment="" interface="">
+      <namespace name="VT_Access" comment="" interface="">
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="ChipPresent" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="0" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1" />
+      </namespace>
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="ChargeProgress" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="-1" minValue="-1" minValuePhys="-1" maxValue="2" maxValuePhys="2">
+        <valuetable name="Custom" definesMinMax="true">
+          <valuetableentry value="-1" lowerBound="-1" upperBound="-1" description="Initial" displayString="Initial" />
+          <valuetableentry value="0" lowerBound="0" upperBound="0" description="Stop" displayString="Stop" />
+          <valuetableentry value="1" lowerBound="1" upperBound="1" description="Start" displayString="Start" />
+          <valuetableentry value="2" lowerBound="2" upperBound="2" description="ReNegotiation" displayString="ReNegotiation" />
+        </valuetable>
+      </variable>
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="LastReceivedMessageId" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="0" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="LastReceivedResponseCode" comment="" bitcount="0" isSigned="true" encoding="65001" type="string" startValue=" " />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysMessageDelay" comment="" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="1500" maxValuePhys="1500" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysMessageDelayJitter" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysProtocolBar" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysSlacState" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="0" minValue="0" minValuePhys="0" maxValue="5" maxValuePhys="5" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysTLSEnabled" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysUseProcessing" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysVerboseWrite" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysWriteMessageData" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1" />
+    </namespace>
+    <namespace name="PanelControl" comment="" interface="">
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="switchDMSRunning" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="0" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="Sys_ClientConnectionStatus" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="0" minValue="0" minValuePhys="0" maxValue="2" maxValuePhys="2">
+        <valuetable name="On_Off" definesMinMax="true">
+          <valuetableentry value="0" lowerBound="0" upperBound="0" description="Off" displayString="Off" />
+          <valuetableentry value="1" lowerBound="1" upperBound="1" description="On" displayString="On" />
+          <valuetableentry value="2" lowerBound="2" upperBound="2" description="Invalid" displayString="Invalid" />
+        </valuetable>
+      </variable>
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysClientAllBatteryModuleTemperatures" comment="" bitcount="32" isSigned="true" encoding="65001" type="intarray" arrayLength="8" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysClientBatteryDataExchangeStrategy" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="2" maxValuePhys="2">
+        <valuetable name="Custom" definesMinMax="true">
+          <valuetableentry value="0" lowerBound="0" upperBound="0" description="CASE_1" displayString="CASE_1" />
+          <valuetableentry value="1" lowerBound="1" upperBound="1" description="CASE_2" displayString="CASE_2" />
+          <valuetableentry value="2" lowerBound="2" upperBound="2" description="CASE_3" displayString="CASE_3" />
+        </valuetable>
+      </variable>
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysClientBatteryID" comment="" bitcount="0" isSigned="true" encoding="65001" type="string" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysClientCloseTcpSocket" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="0" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysClientEncryptedVIN" comment="" bitcount="0" isSigned="true" encoding="65001" type="string" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysClientMaxMinBatteryCellVoltages" comment="" bitcount="32" isSigned="true" encoding="65001" type="intarray" arrayLength="2" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysClientMaxMinBatteryModuleTemperatures" comment="" bitcount="32" isSigned="true" encoding="65001" type="intarray" arrayLength="2" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysClientOpenTcpSocket" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="0" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysClientSelectedElementGroupA" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" minValue="1" minValuePhys="1" maxValue="3" maxValuePhys="3">
+        <valuetable name="Custom" definesMinMax="true">
+          <valuetableentry value="1" lowerBound="1" upperBound="1" description="TimeStamp" displayString="TimeStamp" />
+          <valuetableentry value="2" lowerBound="2" upperBound="2" description="SessionDuration" displayString="SessionDuration" />
+          <valuetableentry value="3" lowerBound="3" upperBound="3" description="Counter" displayString="Counter" />
+        </valuetable>
+      </variable>
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysClientSelectedElementGroupB" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" minValue="1" minValuePhys="1" maxValue="3" maxValuePhys="3">
+        <valuetable name="Custom" definesMinMax="true">
+          <valuetableentry value="1" lowerBound="1" upperBound="1" description="VIN" displayString="VIN" />
+          <valuetableentry value="2" lowerBound="2" upperBound="2" description="BatteryID" displayString="BatteryID" />
+          <valuetableentry value="3" lowerBound="3" upperBound="3" description="EncryptedVIN" displayString="EncryptedVIN" />
+        </valuetable>
+      </variable>
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysClientSelectedElementGroupG" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" minValue="1" minValuePhys="1" maxValue="2" maxValuePhys="2">
+        <valuetable name="Custom" definesMinMax="true">
+          <valuetableentry value="1" lowerBound="1" upperBound="1" description="AllBatteryCellVoltages" displayString="AllBatteryCellVoltages" />
+          <valuetableentry value="2" lowerBound="2" upperBound="2" description="MaxMinBatteryCellVoltages" displayString="MaxMinBatteryCellVoltages" />
+        </valuetable>
+      </variable>
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysClientSelectedElementGroupH" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" minValue="1" minValuePhys="1" maxValue="2" maxValuePhys="2">
+        <valuetable name="Custom" definesMinMax="true">
+          <valuetableentry value="1" lowerBound="1" upperBound="1" description="AllBatteryTemperatures" displayString="AllBatteryTemperatures" />
+          <valuetableentry value="2" lowerBound="2" upperBound="2" description="MaxMinBatteryTemperatures" displayString="MaxMinBatteryTemperatures" />
+        </valuetable>
+      </variable>
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysClientTcpResponsesActive" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1">
+        <valuetable name="Custom" definesMinMax="true">
+          <valuetableentry value="0" lowerBound="0" upperBound="0" description="BlockTcpAcks" displayString="BlockTcpAcks" />
+          <valuetableentry value="1" lowerBound="1" upperBound="1" description="SendTcpAcks" displayString="SendTcpAcks" />
+        </valuetable>
+      </variable>
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysDmsCloseTcpSocket" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="0" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysDmsTcpResponsesActive" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1">
+        <valuetable name="Custom" definesMinMax="true">
+          <valuetableentry value="0" lowerBound="0" upperBound="0" description="BlockTcpAcks" displayString="BlockTcpAcks" />
+          <valuetableentry value="1" lowerBound="1" upperBound="1" description="SendTcpAcks" displayString="SendTcpAcks" />
+        </valuetable>
+      </variable>
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysSendBatteryDataOnce" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1" />
+    </namespace>
+  </namespace>
+</systemvariables>

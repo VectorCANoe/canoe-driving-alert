@@ -1,0 +1,133 @@
+<?xml version="1.0"?>
+<Panel Type="Vector.CANalyzer.Panels.PanelSerializer, Vector.CANalyzer.Panels.Serializer, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null">
+  <Object Type="Vector.CANalyzer.Panels.Runtime.Panel, Vector.CANalyzer.Panels.Common, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null" Name="Panel" Children="Controls" ControlName="DUT: activate wrong Behavior">
+    <Object Type="Vector.CANalyzer.Panels.Design.LEDBand, Vector.CANalyzer.Panels.CommonControls, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null" Name="LEDBand3" ControlName="LED Band 3">
+      <Property Name="Name">LEDBand3</Property>
+      <Property Name="Size">13, 155</Property>
+      <Property Name="Location">242, -6</Property>
+      <Property Name="Color">Black</Property>
+      <Property Name="LedBandHeight">2</Property>
+      <Property Name="Rotation">90</Property>
+      <Property Name="LedBandLength">145</Property>
+      <Property Name="FadeColor">False</Property>
+      <Property Name="RoundCorners">False</Property>
+      <Property Name="StartingPoint">7;150</Property>
+      <Property Name="SymbolConfiguration">
+      </Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl2" Children="Controls" ControlName="Static Text 2">
+      <Property Name="Name">StaticTextControl2</Property>
+      <Property Name="Size">70, 14</Property>
+      <Property Name="Location">255, 3</Property>
+      <Property Name="BackColor">White</Property>
+      <Property Name="Font">Microsoft Sans Serif, 8.25pt, style=Bold</Property>
+      <Property Name="Text">Test Cases</Property>
+      <Property Name="ForeColor">Firebrick</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl1" Children="Controls" ControlName="Static Text 1">
+      <Property Name="Name">StaticTextControl1</Property>
+      <Property Name="Size">98, 14</Property>
+      <Property Name="Location">61, 3</Property>
+      <Property Name="BackColor">White</Property>
+      <Property Name="Font">Microsoft Sans Serif, 8.25pt, style=Bold</Property>
+      <Property Name="Text">Wrong Behavior</Property>
+      <Property Name="ForeColor">Firebrick</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.CheckBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null" Name="CheckBoxControl2" Children="Controls" ControlName="ChkA4">
+      <Property Name="Name">CheckBoxControl2</Property>
+      <Property Name="Size">313, 18</Property>
+      <Property Name="Location">5, 39</Property>
+      <Property Name="Text">DUT doesn't ignore Prio.............A4.03</Property>
+      <Property Name="BackColor">White</Property>
+      <Property Name="ForeColor">Firebrick</Property>
+      <Property Name="Font">Courier New, 8.25pt</Property>
+      <Property Name="SymbolConfiguration">8;16;CT::CFG::DUT::ERROR;;;Err_2_consider_Prio;1;;;-1;;;;;;0</Property>
+      <Property Name="TabIndex">1</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.CheckBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null" Name="CheckBoxControl1" Children="Controls" ControlName="ChkA3">
+      <Property Name="Name">CheckBoxControl1</Property>
+      <Property Name="Size">313, 18</Property>
+      <Property Name="Location">5, 22</Property>
+      <Property Name="Text">DM01 with wrong padding.............A3.06</Property>
+      <Property Name="BackColor">White</Property>
+      <Property Name="ForeColor">Firebrick</Property>
+      <Property Name="Font">Courier New, 8.25pt</Property>
+      <Property Name="SymbolConfiguration">8;16;CT::CFG::DUT::ERROR;;;Err_1_Wrong_Padding;1;;;-1;;;;;;0</Property>
+      <Property Name="TabIndex">0</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.CheckBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null" Name="CheckBoxControl3" Children="Controls" ControlName="ChkA5">
+      <Property Name="Name">CheckBoxControl3</Property>
+      <Property Name="Size">313, 18</Property>
+      <Property Name="Location">5, 56</Property>
+      <Property Name="Text">CM_Abort stops transmitted BAM......A5.04
+</Property>
+      <Property Name="BackColor">White</Property>
+      <Property Name="ForeColor">Firebrick</Property>
+      <Property Name="Font">Courier New, 8.25pt</Property>
+      <Property Name="SymbolConfiguration">8;16;CT::CFG::DUT::ERROR;;;Err_3_consider_Abort_for_BAM;1;;;-1;;;;;;0</Property>
+      <Property Name="TabIndex">2</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.CheckBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null" Name="CheckBoxControl4" Children="Controls" ControlName="ChkA6">
+      <Property Name="Name">CheckBoxControl4</Property>
+      <Property Name="Size">334, 18</Property>
+      <Property Name="Location">5, 73</Property>
+      <Property Name="Text">CM_BAM kills not finished BAM.......A6.11/12
+</Property>
+      <Property Name="BackColor">White</Property>
+      <Property Name="ForeColor">Firebrick</Property>
+      <Property Name="Font">Courier New, 8.25pt</Property>
+      <Property Name="SymbolConfiguration">8;16;CT::CFG::DUT::ERROR;;;Err_4_BAM_kills_not_finished_BAM;1;;;-1;;;;;;0</Property>
+      <Property Name="TabIndex">3</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.CheckBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null" Name="CheckBoxControl5" Children="Controls" ControlName="ChkA7">
+      <Property Name="Name">CheckBoxControl5</Property>
+      <Property Name="Size">355, 18</Property>
+      <Property Name="Location">5, 90</Property>
+      <Property Name="Text">DUT ignores "hold connection".......A7.7/8/9/20
+</Property>
+      <Property Name="BackColor">White</Property>
+      <Property Name="ForeColor">Firebrick</Property>
+      <Property Name="Font">Courier New, 8.25pt</Property>
+      <Property Name="SymbolConfiguration">8;16;CT::CFG::DUT::ERROR;;;Err_5_ignore_Hold;1;;;-1;;;;;;0</Property>
+      <Property Name="TabIndex">4</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.CheckBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null" Name="CheckBoxControl7" Children="Controls" ControlName="ChkA8">
+      <Property Name="Name">CheckBoxControl7</Property>
+      <Property Name="Size">313, 18</Property>
+      <Property Name="Location">5, 107</Property>
+      <Property Name="Text">DUT accepts TP.DT with dlc&lt;8........A8.18</Property>
+      <Property Name="BackColor">White</Property>
+      <Property Name="ForeColor">Firebrick</Property>
+      <Property Name="Font">Courier New, 8.25pt</Property>
+      <Property Name="SymbolConfiguration">8;16;CT::CFG::DUT::ERROR;;;Err_6_accept_TP_DT_with_dlc_less_8;1;;;-1;;;;;;0</Property>
+      <Property Name="TabIndex">6</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.CheckBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null" Name="CheckBoxControl6" Children="Controls" ControlName="ChkIgnoreAddressViolation">
+      <Property Name="Name">CheckBoxControl6</Property>
+      <Property Name="Size">320, 18</Property>
+      <Property Name="Location">5, 125</Property>
+      <Property Name="Text">DUT ignores Address Violation.......A10.16</Property>
+      <Property Name="BackColor">White</Property>
+      <Property Name="ForeColor">Firebrick</Property>
+      <Property Name="Font">Courier New, 8.25pt</Property>
+      <Property Name="SymbolConfiguration">8;16;CT::CFG::DUT::ERROR;;;Err_7_ignore_address_violation_;1;;;-1;;;;;;0</Property>
+      <Property Name="TabIndex">5</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.LEDBand, Vector.CANalyzer.Panels.CommonControls, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null" Name="LEDBand1" ControlName="LED Band 1">
+      <Property Name="Name">LEDBand1</Property>
+      <Property Name="Size">357, 13</Property>
+      <Property Name="Location">-6, 14</Property>
+      <Property Name="Color">Black</Property>
+      <Property Name="LedBandHeight">2</Property>
+      <Property Name="LedBandLength">347</Property>
+      <Property Name="FadeColor">False</Property>
+      <Property Name="RoundCorners">False</Property>
+      <Property Name="StartingPoint">4.8;6.4</Property>
+      <Property Name="SymbolConfiguration">
+      </Property>
+    </Object>
+    <Property Name="Name">Panel</Property>
+    <Property Name="Size">347, 144</Property>
+    <Property Name="BackColor">White</Property>
+  </Object>
+</Panel>

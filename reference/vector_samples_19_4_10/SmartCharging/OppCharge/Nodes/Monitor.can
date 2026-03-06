@@ -1,0 +1,28 @@
+/*@!Encoding:1252*/
+includes
+{
+  #include "Monitor.cin"
+}
+
+on sysvar Common::LastReceivedMessageId
+{
+  UpdateProgressBar(@this);
+}
+
+on start
+{
+  ClearProtocolPanel();  
+    
+  @sysvar::Common::SysSlacState = 0;
+  @sysvar::Common::SysProtocolBar = 0; 
+}
+
+long GetChargeState()
+{
+  return @sysvar::Common::ChargeProgress;
+}
+
+void GetResponseCode(char responseCode[])
+{
+  sysGetVariableString(sysvar::Common::LastReceivedResponseCode, responseCode, elCount(responseCode));
+}

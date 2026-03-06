@@ -1,0 +1,54 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<testtree>
+  <title></title>
+  <version>1</version>
+  <caplfunction>
+    <name>Ttsv2hgsd_Tet_TtInit</name>
+  </caplfunction>
+  <testfixture>
+    <title>Message Cycle Time</title>
+    <description>Checks the differ message cycle time</description>
+    <preparation>
+      <title></title>
+      <caplfunction>
+        <name>Ttsv2hgsd_Tet_Tf_Preparation0</name>
+      </caplfunction>
+    </preparation>
+    <testcase>
+      <title>Get ECU Information</title>
+      <caplfunction>
+        <name>Ttsv2hgsd_Tet_CaplTcCall0</name>
+      </caplfunction>
+    </testcase>
+    <testcase>
+      <title>Check cycle time of message ABSData</title>
+      <caplfunction>
+        <name>Ttsv2hgsd_Tet_CaplTcCall1</name>
+      </caplfunction>
+    </testcase>
+    <testcase>
+      <title>Check cycle time of message GearBoxInfo</title>
+      <caplfunction>
+        <name>Ttsv2hgsd_Tet_CaplTcCall2</name>
+      </caplfunction>
+    </testcase>
+    <testcase>
+      <title>Check cycle time of message EngineData</title>
+      <caplfunction>
+        <name>Ttsv2hgsd_Tet_CaplTcCall3</name>
+      </caplfunction>
+    </testcase>
+    <testcase>
+      <title>Check Power Train channel for undefined messages - this test will pass</title>
+      <caplfunction>
+        <name>Ttsv2hgsd_Tet_CaplTcCall4</name>
+      </caplfunction>
+    </testcase>
+    <testcase>
+      <title>Check Power Train channel for undefined messages - this test will fail</title>
+      <caplfunction>
+        <name>Ttsv2hgsd_Tet_CaplTcCall5</name>
+      </caplfunction>
+    </testcase>
+  </testfixture>
+</testtree>

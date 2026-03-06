@@ -1,0 +1,475 @@
+
+includes
+{
+  #include "ScopeUtils.cin"
+  #include "scope\ScopeBitAnalyse.cin"
+}
+
+variables
+{
+  char testReportDir[256] = "TestReport";  //subdirectory for the test report
+  const long testStepNameLength = 256;
+  char testStepName[testStepNameLength];
+  
+  message * canTestMessage; //the can message to be analyzed
+ 
+  msTimer tm1;  //general purpose timer
+}
+
+//capl preparation
+export void caplprepareusecase(){
+  int type;
+  type=3;
+  StartSendingMessage(type);
+  InitMasks();
+  InitScopeDevice();
+  ScopeWaitForMessageAndTrigger();
+}
+
+//capl completion
+export void caplcompleteusecase(){
+  CancelMsg();
+  AddBitmaskInfoCANClassic();
+}
+
+
+//transmit a message periodically. This message will be analyzed
+testfunction StartSendingMessage(int type)
+{
+  message SUT_Frame msg1;
+
+  if(type == 0)
+  {
+    msg1.FDF = msg1.BRS = 0;
+  }
+  else if(type == 1)
+  {
+   msg1.FDF = msg1.BRS = 1;
+  }
+  else
+  {
+    msg1.XLF = msg1.FDF = msg1.BRS = 1;
+  }
+  
+  
+   //enable ACK
+  canSetChannelOutput(%CHANNEL%, 1);
+  
+  canTestMessage = msg1;
+  canTestMessage.can = %CHANNEL%;
+  settimercyclic(tm1,100);
+  
+}
+
+//stop the transmission of the test message and go to silent mode
+testfunction CancelMsg()
+{
+  canceltimer(tm1);
+  canSetChannelOutput(%CHANNEL%, 0);
+}
+
+on timer tm1
+{
+  output(canTestMessage);
+}
+
+testcase GetBitData(char logFileName[])
+{
+  const long maxPath = 256;
+  char logFileNameDefault[maxPath] = "bitInfoDefault.asc";
+  char logFilePath[maxPath];
+  dword i;
+  long rc;
+  ScopeAnalysisSetup signalSetup;
+  const long nameLength = 256;
+  char name[nameLength];
+  
+  const dword bitDataCount = 18200;
+  dword arraySize;
+  
+  ScopeBitData canHigh[bitDataCount], canLow[bitDataCount], canDiff[bitDataCount];
+  
+  double arbSamplingPointInPercent, dataSamplingPointInPercent;
+  CANSettings canSettingsArb, canSettingsData;
+
+  if(!canFdGetConfiguration(%CHANNEL%, canSettingsArb, canSettingsData))
+  {
+    testStepFail(testStepName, "Internal error unable to read the bit timing.");
+    return;
+  }
+
+  strncpy(logFilePath, testReportDir, maxPath);
+  strncat(logFilePath, "\\", maxPath);
+  strncat(logFilePath, logFileName, maxPath);
+  setLogFileName("BitInfo",logFilePath);
+  
+  startLogging("BitInfo");
+  
+  //set the voltage sampling point (where the voltage is taken) to the sampling point of the CAN controller
+  arbSamplingPointInPercent = GetSamplingPointInPercent(canSettingsArb.tseg1, canSettingsArb.tseg2);
+  signalSetup.samplePoint = (char)arbSamplingPointInPercent;
+
+  dataSamplingPointInPercent = GetSamplingPointInPercent(canSettingsData.tseg1, canSettingsData.tseg2);
+  signalSetup.samplePointDataPhase = (char)dataSamplingPointInPercent;
+  
+  arraySize = bitDataCount;
+  rc = testWaitScopeGetMessageBits(canTestMessage, signalSetup, arraySize, canHigh, canLow, canDiff);
+  if(!CheckStatusInternal(rc, "testWaitScopeGetMessageBits")) 
+  {
+    return;
+  }
+
+  if(canTestMessage.edl)
+  {
+    writeToLogEx("Voltage levels at sampling point %d%% (arbitration phase), %d%% (data phase):", signalSetup.samplePoint, signalSetup.samplePointDataPhase);
+  }
+  else
+  {
+    writeToLogEx("Voltage levels at sampling point %d%%:", signalSetup.samplePoint);
+  }
+  writeToLogEx("                           Bit\t      Bit start [ns]\tCAN high [V]\tCAN low  [V]\tCAN diff [V]\tLength [ns]\t     Value\t   isStuff");
+  writeToLogEx("--------------------------------------------------------------------------------------------------------------------------------------------------");
+  
+  for(i=0;i<arraySize;++i)
+  {
+    GetCANBitFieldName(canDiff[i].type, name, elcount(name));
+    writeToLogEx("%30s\t%20I64u\t%12.3f\t%12.3f\t%12.3f\t%11d\t%10d\t%10d", 
+      name, canDiff[i].startTime, canHigh[i].signalVoltage, canLow[i].signalVoltage, canDiff[i].signalVoltage, 
+      canDiff[i].bitLength, canDiff[i].bitValue, canDiff[i].typeex);
+  }
+  stopLogging("BitInfo");
+
+  //change logfile name -> current logfile will be closed
+  strncpy(logFilePath, testReportDir, maxPath);
+  strncat(logFilePath, "\\", maxPath);
+  strncat(logFilePath, logFileNameDefault, maxPath);
+  setLogFileName("BitInfo",logFilePath);
+  
+  TestReportAddExternalRef("url", "Bit information", logFileName);
+}
+
+//Initialize the bit masks, connect to scope
+testfunction InitMasks ()
+{
+  maxNumOfErrorsToShow =20;
+  
+  InitBitMaskArbitration();
+  InitBitMaskData();
+}
+
+testfunction InitScopeDevice()
+{
+  strncpy(testStepName, "Test Prepration", testStepNameLength);
+  
+  //testWaitForTimeout(1000); //needed for virtual scope, if test modul is started immiditly
+  if(DoScopeConnect() <= 0 ) return;
+}
+
+testfunction ScopeWaitForMessageAndTrigger()
+{
+  if(!WaitForAnyCANMessage()) 
+  {
+    write("Waiting for CAN message failed");
+    return;
+  }
+
+  
+  if(!DoScopeTrigger()) 
+  {
+    write("Scope trigger failed");
+    return;
+  }
+  
+  {
+    long res;
+    res = testWaitForScopeFitData(canTestMessage, eCAPLScopeDataField_CAN_MESSAGE, eCAPLScopeDataField_CAN_MESSAGE);
+    if(CheckStatusInternal(res, "testWaitForScopeFitData"))
+    {
+      const long bufLength = 256;
+      char buffer[bufLength];
+      snprintf(buffer, bufLength, "Frame under test. ID = %d, DLC = %d, EDL = %d, BRS = %d",
+        valOfId(canTestMessage.id), canTestMessage.dlc, canTestMessage.edl, canTestMessage.BRS);
+      TestReportAddWindowCapture("Scope", scopeTestStepName, buffer);
+    }
+  }
+}
+
+int WaitForAnyCANMessage()
+{
+  long res;
+  res = TestWaitForMessage(1000);
+
+  if(res < 0){
+    testStepFail(testStepName, "No message received", "");
+    return 0;
+  }
+  
+  res = TestGetWaitEventMsgData(canTestMessage);
+  if(res != 0){
+    testStepFail(testStepName, "No message received", "");
+    return 0;
+  }
+  return 1;
+}
+
+export testcase SOFXLF(int fieldSart, int fieldEnd, int bitMask, int provokeError){
+  char fieldName[255];
+  //if not overwritten by Fail, the result is Pass
+  testStepPass();
+  
+  GetCANBitFieldName(fieldSart, fieldName, elcount(fieldName));
+  if(bitMask == 0)
+  {
+    DoBitAnlyz(bitMaskArb, fieldSart,fieldEnd,  fieldName, bitLengthArb);  
+  }
+  else
+  {
+    if(provokeError == 1)
+    {
+      ModifyMaskToProvokeError();
+    }    
+    DoBitAnlyz(bitMaskData, fieldSart,fieldEnd,  fieldName, bitLengthArb);  
+  }
+}
+
+export testcase PriorityID(int fieldSart, int fieldEnd, int bitMask, int provokeError){
+  char fieldName[255];
+  //if not overwritten by Fail, the result is Pass
+  testStepPass(); 
+  
+  GetCANBitFieldName(fieldSart, fieldName, elcount(fieldName));
+  if(bitMask == 0)
+  {
+    DoBitAnlyz(bitMaskArb, fieldSart,fieldEnd,  fieldName, bitLengthArb);  
+  }
+  else
+  {
+    if(provokeError == 1)
+    {
+      ModifyMaskToProvokeError();
+    }    
+    DoBitAnlyz(bitMaskData, fieldSart,fieldEnd,  fieldName, bitLengthArb);  
+  }
+}
+
+export testcase RRSBit(int fieldSart, int fieldEnd, int bitMask, int provokeError){
+  char fieldName[255];
+  //if not overwritten by Fail, the result is Pass
+  testStepPass();
+  
+  GetCANBitFieldName(fieldSart, fieldName, elcount(fieldName));
+  if(bitMask == 0)
+  {
+    DoBitAnlyz(bitMaskArb, fieldSart,fieldEnd,  fieldName, bitLengthArb);  
+  }
+  else
+  {
+    if(provokeError == 1)
+    {
+      ModifyMaskToProvokeError();
+    }    
+    DoBitAnlyz(bitMaskData, fieldSart,fieldEnd,  fieldName, bitLengthArb);  
+  }
+}
+
+export testcase IDEBit(int fieldSart, int fieldEnd, int bitMask, int provokeError){
+  char fieldName[255];
+  //if not overwritten by Fail, the result is Pass
+  testStepPass();
+  
+  GetCANBitFieldName(fieldSart, fieldName, elcount(fieldName));
+  if(bitMask == 0)
+  {
+    DoBitAnlyz(bitMaskArb, fieldSart,fieldEnd,  fieldName, bitLengthArb);  
+  }
+  else
+  {
+    if(provokeError == 1)
+    {
+      ModifyMaskToProvokeError();
+    }    
+    DoBitAnlyz(bitMaskData, fieldSart,fieldEnd,  fieldName, bitLengthArb);  
+  }
+}
+
+export testcase FDFBit(int fieldSart, int fieldEnd, int bitMask, int provokeError){
+  char fieldName[255];
+  //if not overwritten by Fail, the result is Pass
+  testStepPass();
+  
+  GetCANBitFieldName(fieldSart, fieldName, elcount(fieldName));
+  if(bitMask == 0)
+  {
+    DoBitAnlyz(bitMaskArb, fieldSart,fieldEnd,  fieldName, bitLengthArb);  
+  }
+  else
+  {
+    if(provokeError == 1)
+    {
+      ModifyMaskToProvokeError();
+    }    
+    DoBitAnlyz(bitMaskData, fieldSart,fieldEnd,  fieldName, bitLengthArb);  
+  }
+}
+
+export testcase XLFBit(int fieldSart, int fieldEnd, int bitMask, int provokeError){
+  char fieldName[255];
+  //if not overwritten by Fail, the result is Pass
+  testStepPass();
+  
+  GetCANBitFieldName(fieldSart, fieldName, elcount(fieldName));
+  if(bitMask == 0)
+  {
+    DoBitAnlyz(bitMaskArb, fieldSart,fieldEnd,  fieldName, bitLengthArb);  
+  }
+  else
+  {
+    if(provokeError == 1)
+    {
+      ModifyMaskToProvokeError();
+    }    
+    DoBitAnlyz(bitMaskData, fieldSart,fieldEnd,  fieldName, bitLengthArb);  
+  }
+}
+
+export testcase ControlGroupresXLAF(int fieldSart, int fieldEnd, int bitMask, int provokeError){
+  char fieldName[255];
+  //if not overwritten by Fail, the result is Pass
+  testStepPass();
+     
+  GetCANBitFieldName(fieldSart, fieldName, elcount(fieldName));
+  if(bitMask == 0)
+  {
+    DoBitAnlyz(bitMaskArb, fieldSart,fieldEnd,  fieldName, bitLengthArb);  
+  }
+  else
+  {
+    if(provokeError == 1)
+    {
+      ModifyMaskToProvokeError();
+    }    
+    DoBitAnlyz(bitMaskData, fieldSart,fieldEnd,  fieldName, bitLengthArb);  
+  }
+}
+
+
+export testcase resXL(int fieldSart, int fieldEnd, int bitMask, int provokeError){
+  char fieldName[255];
+  //if not overwritten by Fail, the result is Pass
+  testStepPass();
+
+  GetCANBitFieldName(fieldSart, fieldName, elcount(fieldName));
+  if(bitMask == 0)
+  {
+    DoBitAnlyz(bitMaskArb, fieldSart,fieldEnd,  fieldName, bitLengthArb);  
+  }
+  else
+  {
+    if(provokeError == 1)
+    {
+      ModifyMaskToProvokeError();
+    }    
+    DoBitAnlyz(bitMaskData, fieldSart,fieldEnd,  fieldName, bitLengthArb);  
+  }
+}
+
+export testcase ADSGroupADHDLn(int fieldSart, int fieldEnd, int bitMask, int provokeError){
+  char fieldName[255];
+  //if not overwritten by Fail, the result is Pass
+  testStepPass();
+
+  GetCANBitFieldName(fieldSart, fieldName, elcount(fieldName));
+  if(bitMask == 0)
+  {
+    DoBitAnlyz(bitMaskArb, fieldSart,fieldEnd,  fieldName, bitLengthArb);  
+  }
+  else
+  {
+    if(provokeError == 1)
+    {
+      ModifyMaskToProvokeError();
+    }    
+    DoBitAnlyz(bitMaskData, fieldSart,fieldEnd,  fieldName, bitLengthArb);  
+  }
+}
+
+export testcase DataField(int fieldSart, int fieldEnd, int bitMask, int provokeError){
+  char fieldName[255];
+  //if not overwritten by Fail, the result is Pass
+  testStepPass();
+
+  GetCANBitFieldName(fieldSart, fieldName, elcount(fieldName));
+  if(bitMask == 0)
+  {
+    DoBitAnlyz(bitMaskArb, fieldSart,fieldEnd,  fieldName, bitLengthArb);  
+  }
+  else
+  {
+    if(provokeError == 1)
+    {
+      ModifyMaskToProvokeError();
+    }    
+    DoBitAnlyz(bitMaskData, fieldSart,fieldEnd,  fieldName, bitLengthArb);  
+  }
+}
+
+export testcase CRCField(int fieldSart, int fieldEnd, int bitMask, int provokeError){
+  char fieldName[255];
+  //if not overwritten by Fail, the result is Pass
+  testStepPass();
+  
+  GetCANBitFieldName(fieldSart, fieldName, elcount(fieldName));
+  if(bitMask == 0)
+  {
+    DoBitAnlyz(bitMaskArb, fieldSart,fieldEnd,  fieldName, bitLengthArb);  
+  }
+  else
+  {
+    if(provokeError == 1)
+    {
+      ModifyMaskToProvokeError();
+    }    
+    DoBitAnlyz(bitMaskData, fieldSart,fieldEnd,  fieldName, bitLengthArb);  
+  }
+}
+
+export testcase DASField(int fieldSart, int fieldEnd, int bitMask, int provokeError){
+  char fieldName[255];
+  //if not overwritten by Fail, the result is Pass
+  testStepPass();
+  
+  GetCANBitFieldName(fieldSart, fieldName, elcount(fieldName));
+  if(bitMask == 0)
+  {
+    DoBitAnlyz(bitMaskArb, fieldSart,fieldEnd,  fieldName, bitLengthArb);  
+  }
+  else
+  {
+    if(provokeError == 1)
+    {
+      ModifyMaskToProvokeError();
+    }    
+    DoBitAnlyz(bitMaskData, fieldSart,fieldEnd,  fieldName, bitLengthArb);  
+  }
+}
+
+export testcase AckField(int fieldSart, int fieldEnd, int bitMask, int provokeError){
+  char fieldName[255];
+
+  //if not overwritten by Fail, the result is Pass
+  testStepPass();
+  
+  GetCANBitFieldName(fieldSart, fieldName, elcount(fieldName));
+  if(bitMask == 0)
+  {
+    DoBitAnlyz(bitMaskArb, fieldSart,fieldEnd,  fieldName, bitLengthArb);  
+  }
+  else
+  {
+    if(provokeError == 1)
+    {
+      ModifyMaskToProvokeError();
+    }    
+    DoBitAnlyz(bitMaskData, fieldSart,fieldEnd,  fieldName, bitLengthArb);  
+  }
+}

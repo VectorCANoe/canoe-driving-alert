@@ -1,0 +1,34 @@
+<scenario name="my scenario" simtime="0" simtimemax="1200" version="1" timelinezoom="1" hscrolloffset="0">
+  <routes>
+    <route name="ScenarioDefinitionRoute" color="0">
+      <points>
+        <point x="31,2149122002132" y="121,418527942672" />
+        <point x="31,2153471363822" y="121,422187093423" />
+      </points>
+      <stations>
+        <station name="HV" offset="0" color="16711680" trackingid="1" length="0" width="0" height="0">
+          <attribute name="Speed" trigger="true" defaultvalue="0">
+            <keypoints>
+              <keypoint time="0" value="50" />
+            </keypoints>
+          </attribute>
+        </station>
+        <station name="RSU_IVS" offset="100" color="255" trackingid="2" length="0" width="0" height="0">
+          <attribute name="Speed" trigger="true" defaultvalue="0">
+            <keypoints>
+              <keypoint time="0" value="0" />
+            </keypoints>
+          </attribute>
+        </station>
+        <station name="RoadSign" offset="200" color="49152" trackingid="3" length="0" width="0" height="0">
+          <attribute name="Speed" trigger="true" defaultvalue="0">
+            <keypoints>
+              <keypoint time="0" value="0" />
+            </keypoints>
+          </attribute>
+        </station>
+      </stations>
+    </route>
+  </routes>
+  <tapes />
+</scenario>

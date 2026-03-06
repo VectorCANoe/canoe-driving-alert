@@ -1,0 +1,22 @@
+/*@!Encoding:1252*/
+includes
+{
+  #include "Shared.cin"
+}
+
+variables
+{
+const int NUM_BMS_VERSIONS = 3;
+struct Version vehicleVersions[NUM_BMS_VERSIONS] = {
+    {2, 0, 0},
+    {2, 0, 9}, // example version for vehicle
+    {2, 2, 9} // example version for vehicle 
+  };
+  
+const int NUM_CHARGER_VERSIONS = 3;
+struct Version chargerVersions[NUM_CHARGER_VERSIONS] = {
+    {2, 0, 0},
+    {2, 1, 9}, // example version for charger
+    {2, 2, 3} // example version for charger 
+  };
+}

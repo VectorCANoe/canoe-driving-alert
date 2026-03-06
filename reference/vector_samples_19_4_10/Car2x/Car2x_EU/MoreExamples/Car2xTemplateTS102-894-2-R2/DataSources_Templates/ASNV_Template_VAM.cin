@@ -1,0 +1,4807 @@
+/*@!Encoding:1252*/
+/*
+//  (c) Vector Informatik GmbH. All rights reserved.
+//
+//  This file contains definitions of structs and methods that may be used
+//  to set and get the values of an ASN.1 defined packet's payload.
+//
+//  //This example demonstrates how to set a packet's payload:
+//  LONG packetHandle;
+//  struct VAM payload;
+//  //you need to set the values of the variable "payload" yourself
+//  packetHandle = API_InitVAMPacket();
+//  if (packetHandle!=0) {
+//    if (API_SetVAMParams(packetHandle, payload)==0) {
+//      if (C2xCompletePacket(packetHandle)==0) {
+//        C2xOutputPacket(packetHandle);
+//      }
+//    }
+//  }
+//                                                                             */
+includes
+{
+ 
+}
+variables
+{
+    struct VAMItsPduHeader {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        BYTE protocolVersion;  // INTEGER, 0..255;
+        BYTE messageID;  // INTEGER, 0..255, denm(1), cam(2), poim(3), spatem(4), mapem(5), ivim(6), rfu1(7), rfu2(8), srem(9), ssem(10), evcsn(11), saem(12), rtcmem(13), cpm(14), imzm(15), vam(16), dsm(17), mim(18), mvm(19), mcm(20);
+        DWORD StationID;  // INTEGER, 0..4294967295;
+    };
+    
+    struct VAMPositionConfidenceEllipse {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        WORD semiMajorAxisLength;  // INTEGER, 0..4095, doNotUse(0), outOfRange(4094), unavailable(4095);
+        WORD semiMinorAxisLength;  // INTEGER, 0..4095, doNotUse(0), outOfRange(4094), unavailable(4095);
+        WORD semiMajorAxisOrientation;  // INTEGER, 0..3601, wgs84North(0), wgs84East(900), wgs84South(1800), wgs84West(2700), doNotUse(3600), unavailable(3601);
+    };
+    
+    struct VAMAltitude {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        LONG altitudeValue;  // INTEGER, -100000..800001, negativeOutOfRange(-100000), postiveOutOfRange(800000), unavailable(800001);
+        INT altitudeConfidence;  // ENUMERATED, alt_000_01(0), alt_000_02(1), alt_000_05(2), alt_000_10(3), alt_000_20(4), alt_000_50(5), alt_001_00(6), alt_002_00(7), alt_005_00(8), alt_010_00(9), alt_020_00(10), alt_050_00(11), alt_100_00(12), alt_200_00(13), outOfRange(14), unavailable(15);
+    };
+    
+    struct VAMReferencePositionWithConfidence {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        LONG latitude;  // INTEGER, -900000000..900000001, unavailable(900000001);
+        LONG longitude;  // INTEGER, -1800000000..1800000001, valueNotUsed(-1800000000), unavailable(1800000001);
+        struct VAMPositionConfidenceEllipse positionConfidenceEllipse;  // SEQUENCE;
+        struct VAMAltitude altitude;  // SEQUENCE;
+    };
+    
+    struct VAMBasicContainer {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        BYTE stationType;  // INTEGER, 0..255, unknown(0), pedestrian(1), cyclist(2), moped(3), motorcycle(4), passengerCar(5), bus(6), lightTruck(7), heavyTruck(8), trailer(9), specialVehicle(10), tram(11), lightVruVehicle(12), animal(13), agricultural(14), roadSideUnit(15);
+        struct VAMReferencePositionWithConfidence referencePosition;  // SEQUENCE;
+    };
+    
+    struct VAMWgs84Angle {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        WORD value;  // INTEGER, 0..3601, wgs84North(0), wgs84East(900), wgs84South(1800), wgs84West(2700), doNotUse(3600), unavailable(3601);
+        BYTE confidence;  // INTEGER, 1..127, outOfRange(126), unavailable(127);
+    };
+    
+    struct VAMSpeed {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        WORD speedValue;  // INTEGER, 0..16383, standstill(0), outOfRange(16382), unavailable(16383);
+        BYTE speedConfidence;  // INTEGER, 1..127, outOfRange(126), unavailable(127);
+    };
+    
+    struct VAMLongitudinalAcceleration {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        INT longitudinalAccelerationValue;  // INTEGER, -160..161, negativeOutOfRange(-160), positiveOutOfRange(160), unavailable(161);
+        BYTE longitudinalAccelerationConfidence;  // INTEGER, 0..102, outOfRange(101), unavailable(102);
+    };
+    
+    struct VAMCurvature {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        INT curvatureValue;  // INTEGER, -1023..1023, outOfRangeNegative(-1023), straight(0), outOfRangePositive(1022), unavailable(1023);
+        INT curvatureConfidence;  // ENUMERATED, onePerMeter_0_00002(0), onePerMeter_0_0001(1), onePerMeter_0_0005(2), onePerMeter_0_002(3), onePerMeter_0_01(4), onePerMeter_0_1(5), outOfRange(6), unavailable(7);
+    };
+    
+    struct VAMYawRate {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        INT yawRateValue;  // INTEGER, -32766..32767, negativeOutOfRange(-32766), positiveOutOfRange(32766), unavailable(32767);
+        INT yawRateConfidence;  // ENUMERATED, degSec_000_01(0), degSec_000_05(1), degSec_000_10(2), degSec_001_00(3), degSec_005_00(4), degSec_010_00(5), degSec_100_00(6), outOfRange(7), unavailable(8);
+    };
+    
+    struct VAMLateralAcceleration {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        INT lateralAccelerationValue;  // INTEGER, -160..161, negativeOutOfRange(-160), positiveOutOfRange(160), unavailable(161);
+        BYTE lateralAccelerationConfidence;  // INTEGER, 0..102, outOfRange(101), unavailable(102);
+    };
+    
+    struct VAMVerticalAcceleration {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        INT verticalAccelerationValue;  // INTEGER, -160..161, negativeOutOfRange(-160), positiveOutOfRange(160), unavailable(161);
+        BYTE verticalAccelerationConfidence;  // INTEGER, 0..102, outOfRange(101), unavailable(102);
+    };
+    
+    struct VAMLanePositionAndType {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        INT transversalPosition;  // INTEGER, -1..14, offTheRoad(-1), innerHardShoulder(0), outerHardShoulder(14);
+        struct OPT_BYTE_ASN laneType;  // INTEGER, OPTIONAL, 0..31, traffic(0), through(1), reversible(2), acceleration(3), deceleration(4), leftHandTurning(5), rightHandTurning(6), dedicatedVehicle(7), bus(8), taxi(9), hov(10), hot(11), pedestrian(12), cycleLane(13), median(14), striping(15), trackedVehicle(16), parking(17), emergency(18), verge(19), minimumRiskManoeuvre(20), exclusiveCycleLane(21), unknown(31);
+        struct OPT_BYTE_ASN direction;  // INTEGER, OPTIONAL, 0..3, sameDirection(0), oppositeDirection(1), bothDirections(2), unavailable(3);
+    };
+    
+    struct VAMLanePositionWithLateralDetails {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        WORD distanceToLeftBorder;  // INTEGER, 0..511;
+        WORD distanceToRightBorder;  // INTEGER, 0..511;
+    };
+    
+    struct VAMTrafficIslandPosition {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        struct VAMLanePositionAndType oneSide;  // SEQUENCE;
+        struct VAMLanePositionAndType otherSide;  // SEQUENCE;
+    };
+    
+    struct VAMLanePositionOptions {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        INT choice;
+        INT simplelanePosition;  // INTEGER, -1..14, offTheRoad(-1), innerHardShoulder(0), outerHardShoulder(14);
+        BYTE simpleLaneType;  // INTEGER, 0..31, traffic(0), through(1), reversible(2), acceleration(3), deceleration(4), leftHandTurning(5), rightHandTurning(6), dedicatedVehicle(7), bus(8), taxi(9), hov(10), hot(11), pedestrian(12), cycleLane(13), median(14), striping(15), trackedVehicle(16), parking(17), emergency(18), verge(19), minimumRiskManoeuvre(20), exclusiveCycleLane(21), unknown(31);
+        struct VAMLanePositionAndType detailedlanePosition;  // SEQUENCE;
+        struct VAMLanePositionWithLateralDetails lanePositionWithLateralDetails;  // SEQUENCE;
+        struct VAMTrafficIslandPosition trafficIslandPosition;  // SEQUENCE;
+    };
+    
+    struct VAMRoadSegmentReferenceId {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        struct OPT_WORD_ASN region;  // INTEGER, OPTIONAL, 0..65535;
+        WORD id;  // INTEGER, 0..65535;
+    };
+    
+    struct VAMIntersectionReferenceId {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        struct OPT_WORD_ASN region;  // INTEGER, OPTIONAL, 0..65535;
+        WORD id;  // INTEGER, 0..65535;
+    };
+    
+    struct VAMMapReference {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        INT choice;
+        struct VAMRoadSegmentReferenceId roadsegment;  // SEQUENCE;
+        struct VAMIntersectionReferenceId intersection;  // SEQUENCE;
+    };
+    
+    struct VAMLongitudinalLanePosition {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        WORD longitudinalLanePositionValue;  // INTEGER, 0..32767, outOfRange(32766), unavailable(32767);
+        WORD longitudinalLanePositionConfidence;  // INTEGER, 0..1023, outOfRange(1022), unavailable(1023);
+    };
+    
+    struct VAMMapPosition {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        struct VAMMapReference mapReference;  // CHOICE, OPTIONAL;
+        struct OPT_BYTE_ASN laneId;  // INTEGER, OPTIONAL, 0..255;
+        struct OPT_BYTE_ASN connectionId;  // INTEGER, OPTIONAL, 0..255;
+        struct VAMLongitudinalLanePosition longitudinalLanePosition;  // SEQUENCE, OPTIONAL;
+    };
+    
+    struct VAMSensorTypes {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        CHAR string[17];
+        INT  stringLength;
+    };
+    
+    struct VAMStoredInformationType {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        CHAR string[9];
+        INT  stringLength;
+    };
+    
+    struct VAMMetaInformation {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        struct VAMSensorTypes usedDetectionInformation;  // BITSTRING;
+        struct VAMStoredInformationType usedStoredInformation;  // BITSTRING;
+        struct OPT_BYTE_ASN confidenceValue;  // INTEGER, OPTIONAL, 1..101, unavailable(101);
+    };
+    
+    struct VAMGeneralizedLanePosition {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        struct VAMLanePositionOptions lanePositionBased;  // CHOICE;
+        struct VAMMapPosition mapBased;  // SEQUENCE, OPTIONAL;
+        struct VAMMetaInformation confidence;  // SEQUENCE;
+    };
+    
+    struct VAMCartesianAngle {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        WORD value;  // INTEGER, 0..3601, valueNotUsed(3600), unavailable(3601);
+        BYTE confidence;  // INTEGER, 1..127, outOfRange(126), unavailable(127);
+    };
+    
+    struct VAMVruHighFrequencyContainer {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        struct VAMWgs84Angle heading;  // SEQUENCE;
+        struct VAMSpeed speed;  // SEQUENCE;
+        struct VAMLongitudinalAcceleration longitudinalAcceleration;  // SEQUENCE;
+        struct VAMCurvature curvature;  // SEQUENCE, OPTIONAL;
+        struct OPT_ENUM_ASN curvatureCalculationMode;  // ENUMERATED, OPTIONAL, yawRateUsed(0), yawRateNotUsed(1), unavailable(2);
+        struct VAMYawRate yawRate;  // SEQUENCE, OPTIONAL;
+        struct VAMLateralAcceleration lateralAcceleration;  // SEQUENCE, OPTIONAL;
+        struct VAMVerticalAcceleration verticalAcceleration;  // SEQUENCE, OPTIONAL;
+        struct VAMGeneralizedLanePosition vruLanePosition;  // SEQUENCE, OPTIONAL;
+        struct OPT_BYTE_ASN environment;  // INTEGER, OPTIONAL, 0..15, unavailable(0), intersectionCrossing(1), zebraCrossing(2), sidewalk(3), onVehicleRoad(4), protectedGeographicArea(5);
+        struct OPT_BYTE_ASN movementControl;  // INTEGER, OPTIONAL, 0..15, unavailable(0), braking(1), hardBraking(2), stopPedaling(3), brakingAndStopPedaling(4), hardBrakingAndStopPedaling(5), noReaction(6);
+        struct VAMWgs84Angle orientation;  // SEQUENCE, OPTIONAL;
+        struct VAMCartesianAngle rollAngle;  // SEQUENCE, OPTIONAL;
+        struct OPT_BYTE_ASN deviceUsage;  // INTEGER, OPTIONAL, 0..15, unavailable(0), other(1), idle(2), listeningToAudio(3), typing(4), calling(5), playingGames(6), reading(7), viewing(8);
+    };
+    
+    struct VAMVruProfileAndSubprofile {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        INT choice;
+        BYTE pedestrian;  // INTEGER, 0..15, unavailable(0), ordinary_pedestrian(1), road_worker(2), first_responder(3);
+        BYTE bicyclistAndLightVruVehicle;  // INTEGER, 0..15, unavailable(0), bicyclist(1), wheelchair_user(2), horse_and_rider(3), rollerskater(4), e_scooter(5), personal_transporter(6), pedelec(7), speed_pedelec(8), roadbike(9), childrensbike(10);
+        BYTE motorcyclist;  // INTEGER, 0..15, unavailable(0), moped(1), motorcycle(2), motorcycle_and_sidecar_right(3), motorcycle_and_sidecar_left(4);
+        BYTE animal;  // INTEGER, 0..15, unavailable(0), wild_animal(1), farm_animal(2), service_animal(3);
+    };
+    
+    struct VAMExteriorLights {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        CHAR string[9];
+        INT  stringLength;
+    };
+    
+    struct VAMVruSpecificExteriorLights {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        CHAR string[9];
+        INT  stringLength;
+    };
+    
+    struct VAMVruExteriorLights {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        struct VAMExteriorLights vehicular;  // BITSTRING;
+        struct VAMVruSpecificExteriorLights vruSpecific;  // BITSTRING;
+    };
+    
+    struct VAMVruLowFrequencyContainer {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        struct VAMVruProfileAndSubprofile profileAndSubprofile;  // CHOICE;
+        struct OPT_BYTE_ASN sizeClass;  // INTEGER, OPTIONAL, 0..15, unavailable(0), low(1), medium(2), high(3);
+        struct VAMVruExteriorLights exteriorLights;  // SEQUENCE, OPTIONAL;
+    };
+    
+    struct VAMCartesianPosition3d {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        INT xCoordinate;  // INTEGER, -32768..32767, negativeOutOfRange(-32768), positiveOutOfRange(32767);
+        INT yCoordinate;  // INTEGER, -32768..32767, negativeOutOfRange(-32768), positiveOutOfRange(32767);
+        struct OPT_INT_ASN zCoordinate;  // INTEGER, OPTIONAL, -32768..32767, negativeOutOfRange(-32768), positiveOutOfRange(32767);
+    };
+    
+    struct VAMRectangularShape {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        struct VAMCartesianPosition3d shapeReferencePoint;  // SEQUENCE, OPTIONAL;
+        WORD semiLength;  // INTEGER, 0..4095;
+        WORD semiBreadth;  // INTEGER, 0..4095;
+        struct OPT_WORD_ASN orientation;  // INTEGER, OPTIONAL, 0..3601, valueNotUsed(3600), unavailable(3601);
+        struct OPT_WORD_ASN height;  // INTEGER, OPTIONAL, 0..4095;
+    };
+    
+    struct VAMCircularShape {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        struct VAMCartesianPosition3d shapeReferencePoint;  // SEQUENCE, OPTIONAL;
+        WORD radius;  // INTEGER, 0..4095;
+        struct OPT_WORD_ASN height;  // INTEGER, OPTIONAL, 0..4095;
+    };
+    
+    struct VAMSequenceOfCartesianPosition3d {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        INT length;
+        struct VAMCartesianPosition3d arrayValue[16];  // SEQUENCE;
+    };
+    
+    struct VAMPolygonalShape {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        struct VAMCartesianPosition3d shapeReferencePoint;  // SEQUENCE, OPTIONAL;
+        struct VAMSequenceOfCartesianPosition3d polygon;  // SEQUENCEOF;
+        struct OPT_WORD_ASN height;  // INTEGER, OPTIONAL, 0..4095;
+    };
+    
+    struct VAMEllipticalShape {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        struct VAMCartesianPosition3d shapeReferencePoint;  // SEQUENCE, OPTIONAL;
+        WORD semiMajorAxisLength;  // INTEGER, 0..4095;
+        WORD semiMinorAxisLength;  // INTEGER, 0..4095;
+        struct OPT_WORD_ASN orientation;  // INTEGER, OPTIONAL, 0..3601, valueNotUsed(3600), unavailable(3601);
+        struct OPT_WORD_ASN height;  // INTEGER, OPTIONAL, 0..4095;
+    };
+    
+    struct VAMRadialShape {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        struct VAMCartesianPosition3d shapeReferencePoint;  // SEQUENCE, OPTIONAL;
+        WORD range;  // INTEGER, 0..4095;
+        WORD horizontalOpeningAngleStart;  // INTEGER, 0..3601, valueNotUsed(3600), unavailable(3601);
+        WORD horizontalOpeningAngleEnd;  // INTEGER, 0..3601, valueNotUsed(3600), unavailable(3601);
+        struct OPT_WORD_ASN verticalOpeningAngleStart;  // INTEGER, OPTIONAL, 0..3601, valueNotUsed(3600), unavailable(3601);
+        struct OPT_WORD_ASN verticalOpeningAngleEnd;  // INTEGER, OPTIONAL, 0..3601, valueNotUsed(3600), unavailable(3601);
+    };
+    
+    struct VAMRadialShapeDetails {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        WORD range;  // INTEGER, 0..4095;
+        WORD horizontalOpeningAngleStart;  // INTEGER, 0..3601, valueNotUsed(3600), unavailable(3601);
+        WORD horizontalOpeningAngleEnd;  // INTEGER, 0..3601, valueNotUsed(3600), unavailable(3601);
+        struct OPT_WORD_ASN verticalOpeningAngleStart;  // INTEGER, OPTIONAL, 0..3601, valueNotUsed(3600), unavailable(3601);
+        struct OPT_WORD_ASN verticalOpeningAngleEnd;  // INTEGER, OPTIONAL, 0..3601, valueNotUsed(3600), unavailable(3601);
+    };
+    
+    struct VAMRadialShapesList {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        INT length;
+        struct VAMRadialShapeDetails arrayValue[16];  // SEQUENCE;
+    };
+    
+    struct VAMRadialShapes {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        BYTE refPointId;  // INTEGER, 0..255;
+        INT xCoordinate;  // INTEGER, -3094..1001, negativeOutOfRange(-3094), positiveOutOfRange(1001);
+        INT yCoordinate;  // INTEGER, -3094..1001, negativeOutOfRange(-3094), positiveOutOfRange(1001);
+        struct OPT_INT_ASN zCoordinate;  // INTEGER, OPTIONAL, -3094..1001, negativeOutOfRange(-3094), positiveOutOfRange(1001);
+        struct VAMRadialShapesList radialShapesList;  // SEQUENCEOF;
+    };
+    
+    struct VAMShape {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        INT choice;
+        struct VAMRectangularShape rectangular;  // SEQUENCE;
+        struct VAMCircularShape circular;  // SEQUENCE;
+        struct VAMPolygonalShape polygonal;  // SEQUENCE;
+        struct VAMEllipticalShape elliptical;  // SEQUENCE;
+        struct VAMRadialShape radial;  // SEQUENCE;
+        struct VAMRadialShapes radialShapes;  // SEQUENCE;
+    };
+    
+    struct VAMVruClusterProfiles {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        CHAR string[5];
+        INT  stringLength;
+    };
+    
+    struct VAMVruClusterInformation {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        struct OPT_BYTE_ASN clusterId;  // INTEGER, OPTIONAL, 0..255;
+        struct VAMShape clusterBoundingBoxShape;  // CHOICE, OPTIONAL;
+        BYTE clusterCardinalitySize;  // INTEGER, 0..255;
+        struct VAMVruClusterProfiles clusterProfiles;  // BITSTRING, OPTIONAL;
+    };
+    
+    struct VAMVruClusterInformationContainer {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        struct VAMVruClusterInformation vruClusterInformation;  // SEQUENCE;
+    };
+    
+    struct VAMClusterJoinInfo {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        BYTE clusterId;  // INTEGER, 0..255;
+        BYTE joinTime;  // INTEGER, 1..255, unavailable(255);
+    };
+    
+    struct VAMClusterLeaveInfo {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        BYTE clusterId;  // INTEGER, 0..255;
+        BYTE clusterLeaveReason;  // INTEGER, 0..15, notProvided(0), clusterLeaderLost(1), clusterDisbandedByLeader(2), outOfClusterBoundingBox(3), outOfClusterSpeedRange(4), joiningAnotherCluster(5), cancelledJoin(6), failedJoin(7), safetyCondition(8);
+    };
+    
+    struct VAMClusterBreakupInfo {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        BYTE clusterBreakupReason;  // INTEGER, 0..15, notProvided(0), clusteringPurposeCompleted(1), leaderMovedOutOfClusterBoundingBox(2), joiningAnotherCluster(3), enteringLowRiskAreaBasedOnMaps(4), receptionOfCpmContainingCluster(5);
+        BYTE breakupTime;  // INTEGER, 1..255, unavailable(255);
+    };
+    
+    struct VAMVruClusterOperationContainer {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        struct VAMClusterJoinInfo clusterJoinInfo;  // SEQUENCE, OPTIONAL;
+        struct VAMClusterLeaveInfo clusterLeaveInfo;  // SEQUENCE, OPTIONAL;
+        struct VAMClusterBreakupInfo clusterBreakupInfo;  // SEQUENCE, OPTIONAL;
+        struct OPT_BYTE_ASN clusterIdChangeTimeInfo;  // INTEGER, OPTIONAL, 1..255, unavailable(255);
+    };
+    
+    struct VAMDeltaReferencePosition {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        LONG deltaLatitude;  // INTEGER, -131071..131072, unavailable(131072);
+        LONG deltaLongitude;  // INTEGER, -131071..131072, unavailable(131072);
+        INT deltaAltitude;  // INTEGER, -12700..12800, negativeOutOfRange(-12700), positiveOutOfRange(12799), unavailable(12800);
+    };
+    
+    struct VAMPathPoint {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        struct VAMDeltaReferencePosition pathPosition;  // SEQUENCE;
+        struct OPT_WORD_ASN pathDeltaTime;  // INTEGER, OPTIONAL, 1..65535;
+    };
+    
+    struct VAMPathHistory {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        INT length;
+        struct VAMPathPoint arrayValue[40];  // SEQUENCE;
+    };
+    
+    struct VAMPosConfidenceEllipse {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        WORD semiMajorConfidence;  // INTEGER, 0..4095, doNotUse(0), outOfRange(4094), unavailable(4095);
+        WORD semiMinorConfidence;  // INTEGER, 0..4095, doNotUse(0), outOfRange(4094), unavailable(4095);
+        WORD semiMajorOrientation;  // INTEGER, 0..3601, wgs84North(0), wgs84East(900), wgs84South(1800), wgs84West(2700), doNotUse(3600), unavailable(3601);
+    };
+    
+    struct VAMPathDeltaTimeChoice {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        INT choice;
+        BYTE deltaTimeHighPrecision;  // INTEGER, 0..127, unavailable(127);
+        BYTE deltaTimeBigRange;  // INTEGER, 0..127;
+        DWORD deltaTimeMidRange;  // INTEGER, 0..86400;
+    };
+    
+    struct VAMPathPointPredicted {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        LONG deltaLatitude;  // INTEGER, -131071..131072, unavailable(131072);
+        LONG deltaLongitude;  // INTEGER, -131071..131072, unavailable(131072);
+        struct VAMPosConfidenceEllipse horizontalPositionConfidence;  // SEQUENCE, OPTIONAL;
+        struct OPT_INT_ASN deltaAltitude;  // INTEGER, OPTIONAL, -12700..12800, negativeOutOfRange(-12700), positiveOutOfRange(12799), unavailable(12800);
+        struct OPT_ENUM_ASN altitudeConfidence;  // ENUMERATED, OPTIONAL, alt_000_01(0), alt_000_02(1), alt_000_05(2), alt_000_10(3), alt_000_20(4), alt_000_50(5), alt_001_00(6), alt_002_00(7), alt_005_00(8), alt_010_00(9), alt_020_00(10), alt_050_00(11), alt_100_00(12), alt_200_00(13), outOfRange(14), unavailable(15);
+        struct VAMPathDeltaTimeChoice pathDeltaTime;  // CHOICE, OPTIONAL;
+        struct OPT_WORD_ASN symmetricAreaOffset;  // INTEGER, OPTIONAL, 0..511;
+        struct OPT_WORD_ASN asymmetricAreaOffset;  // INTEGER, OPTIONAL, 0..511;
+    };
+    
+    struct VAMPathPredicted {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        INT length;
+        struct VAMPathPointPredicted arrayValue[16];  // SEQUENCE;
+    };
+    
+    struct VAMSafeDistanceIndication {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        struct OPT_DWORD_ASN subjectStation;  // INTEGER, OPTIONAL, 0..4294967295;
+        INT safeDistanceIndicator;  // BOOLEAN;
+        struct OPT_BYTE_ASN timeToCollision;  // INTEGER, OPTIONAL, 0..127, unavailable(127);
+    };
+    
+    struct VAMSequenceOfSafeDistanceIndication {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        INT length;
+        struct VAMSafeDistanceIndication arrayValue[8];  // SEQUENCE;
+    };
+    
+    struct VAMTrajectoryInterceptionIndication {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        struct OPT_DWORD_ASN subjectStation;  // INTEGER, OPTIONAL, 0..4294967295;
+        BYTE trajectoryInterceptionProbability;  // INTEGER, 0..63, unavailable(63);
+        struct OPT_BYTE_ASN trajectoryInterceptionConfidence;  // INTEGER, OPTIONAL, 0..3, lessthan50percent(0), between50and70Percent(1), between70and90Percent(2), above90Percent(3);
+    };
+    
+    struct VAMSequenceOfTrajectoryInterceptionIndication {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        INT length;
+        struct VAMTrajectoryInterceptionIndication arrayValue[8];  // SEQUENCE;
+    };
+    
+    struct VAMAccelerationChangeIndication {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        INT accelOrDecel;  // ENUMERATED, accelerate(0), decelerate(1);
+        BYTE actionDeltaTime;  // INTEGER, 0..127, unavailable(127);
+    };
+    
+    struct VAMHeadingChangeIndication {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        INT direction;  // ENUMERATED, left(-0), right(1);
+        BYTE actionDeltaTime;  // INTEGER, 0..127, unavailable(127);
+    };
+    
+    struct VAMStabilityChangeIndication {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        BYTE lossProbability;  // INTEGER, 0..63, stable(0), totalLossOfStability(50), unavailable(63);
+        BYTE actionDeltaTime;  // INTEGER, 0..127, unavailable(127);
+    };
+    
+    struct VAMVruMotionPredictionContainer {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        struct VAMPathHistory pathHistory;  // SEQUENCEOF, OPTIONAL;
+        struct VAMPathPredicted pathPrediction;  // SEQUENCEOF, OPTIONAL;
+        struct VAMSequenceOfSafeDistanceIndication safeDistance;  // SEQUENCEOF, OPTIONAL;
+        struct VAMSequenceOfTrajectoryInterceptionIndication trajectoryInterceptionIndication;  // SEQUENCEOF, OPTIONAL;
+        struct VAMAccelerationChangeIndication accelerationChangeIndication;  // SEQUENCE, OPTIONAL;
+        struct VAMHeadingChangeIndication headingChangeIndication;  // SEQUENCE, OPTIONAL;
+        struct VAMStabilityChangeIndication stabilityChangeIndication;  // SEQUENCE, OPTIONAL;
+    };
+    
+    struct VAMVamParameters {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        struct VAMBasicContainer basicContainer;  // SEQUENCE;
+        struct VAMVruHighFrequencyContainer vruHighFrequencyContainer;  // SEQUENCE;
+        struct VAMVruLowFrequencyContainer vruLowFrequencyContainer;  // SEQUENCE, OPTIONAL;
+        struct VAMVruClusterInformationContainer vruClusterInformationContainer;  // SEQUENCE, OPTIONAL;
+        struct VAMVruClusterOperationContainer vruClusterOperationContainer;  // SEQUENCE, OPTIONAL;
+        struct VAMVruMotionPredictionContainer vruMotionPredictionContainer;  // SEQUENCE, OPTIONAL;
+    };
+    
+    struct VAMVruAwareness {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        WORD generationDeltaTime;  // INTEGER, 0..65535, oneMilliSec(1);
+        struct VAMVamParameters vamParameters;  // SEQUENCE;
+    };
+    
+    struct VAM {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        struct VAMItsPduHeader header;  // SEQUENCE;
+        struct VAMVruAwareness vam;  // SEQUENCE;
+    };
+    
+}
+
+/*
+// init function to create a simple packet handle
+*/ 
+LONG API_InitVAMPacket()
+{
+  return C2xInitPacket("VAM"); 
+}
+
+/*
+// init function to create a simple packet handle and
+// initialize the struct with valid data
+*/ 
+LONG API_InitVAMPacket(struct VAM msgStruct)
+{
+  long pktHandle;
+
+  pktHandle = API_InitVAMPacket();
+
+  if (pktHandle != 0)
+  {
+    // create valid message and application data
+    if (C2xCompletePacket(pktHandle) == 0) 
+    {
+      API_GetVAMParams(pktHandle, msgStruct);
+    }
+  }
+  return pktHandle;
+}
+
+/*
+// init function to create a packet with security layer and
+// initialize the struct with valid data
+*/ 
+LONG API_InitVAMPacket(struct VAM msgStruct, char packetTypeDesignator[], char certificateName[])
+{
+  long pktHandle, certHdl;
+
+  // initialize the packet
+  pktHandle = C2xInitPacket("VAM", packetTypeDesignator);
+
+  if (pktHandle != 0)
+  {
+    certHdl = C2xSecCertificateGetHandle(certificateName);  // get the certificate handle for the cert with name "certificateName"
+    if (certHdl != 0) 
+    {
+      C2xSecPacketSetSignerHandle(pktHandle, certHdl); // set the certHdl to the packet
+    }
+
+    // create valid message and application data
+    if (C2xCompletePacket(pktHandle) == 0) 
+    {
+      // copy application data to the application structure
+      API_GetVAMParams(pktHandle, msgStruct);
+    }
+  }
+  return pktHandle;
+}
+    
+
+int GetVAMItsPduHeaderParams(LONG packetHandle, struct VAMItsPduHeader value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "protocolVersion");
+  value.protocolVersion = C2xGetTokenInt(packetHandle, "VAM", newPath);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "messageID");
+  value.messageID = C2xGetTokenInt(packetHandle, "VAM", newPath);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "StationID");
+  value.StationID = C2xGetTokenInt64(packetHandle, "VAM", newPath);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int SetVAMItsPduHeaderParams(LONG packetHandle, struct VAMItsPduHeader value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "protocolVersion");
+  C2xSetTokenInt(packetHandle, "VAM", newPath, value.protocolVersion);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "messageID");
+  C2xSetTokenInt(packetHandle, "VAM", newPath, value.messageID);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "StationID");
+  C2xSetTokenInt64(packetHandle, "VAM", newPath, value.StationID);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int GetVAMPositionConfidenceEllipseParams(LONG packetHandle, struct VAMPositionConfidenceEllipse value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "semiMajorAxisLength");
+  value.semiMajorAxisLength = C2xGetTokenInt(packetHandle, "VAM", newPath);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "semiMinorAxisLength");
+  value.semiMinorAxisLength = C2xGetTokenInt(packetHandle, "VAM", newPath);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "semiMajorAxisOrientation");
+  value.semiMajorAxisOrientation = C2xGetTokenInt(packetHandle, "VAM", newPath);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int SetVAMPositionConfidenceEllipseParams(LONG packetHandle, struct VAMPositionConfidenceEllipse value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "semiMajorAxisLength");
+  C2xSetTokenInt(packetHandle, "VAM", newPath, value.semiMajorAxisLength);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "semiMinorAxisLength");
+  C2xSetTokenInt(packetHandle, "VAM", newPath, value.semiMinorAxisLength);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "semiMajorAxisOrientation");
+  C2xSetTokenInt(packetHandle, "VAM", newPath, value.semiMajorAxisOrientation);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int GetVAMAltitudeParams(LONG packetHandle, struct VAMAltitude value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "altitudeValue");
+  value.altitudeValue = C2xGetTokenInt(packetHandle, "VAM", newPath);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "altitudeConfidence");
+  value.altitudeConfidence = C2xGetTokenInt(packetHandle, "VAM", newPath);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int SetVAMAltitudeParams(LONG packetHandle, struct VAMAltitude value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "altitudeValue");
+  C2xSetTokenInt(packetHandle, "VAM", newPath, value.altitudeValue);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "altitudeConfidence");
+  C2xSetTokenInt(packetHandle, "VAM", newPath, value.altitudeConfidence);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int GetVAMReferencePositionWithConfidenceParams(LONG packetHandle, struct VAMReferencePositionWithConfidence value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "latitude");
+  value.latitude = C2xGetTokenInt(packetHandle, "VAM", newPath);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "longitude");
+  value.longitude = C2xGetTokenInt(packetHandle, "VAM", newPath);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "positionConfidenceEllipse");
+  GetVAMPositionConfidenceEllipseParams(packetHandle, value.positionConfidenceEllipse, newPath);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "altitude");
+  GetVAMAltitudeParams(packetHandle, value.altitude, newPath);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int SetVAMReferencePositionWithConfidenceParams(LONG packetHandle, struct VAMReferencePositionWithConfidence value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "latitude");
+  C2xSetTokenInt(packetHandle, "VAM", newPath, value.latitude);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "longitude");
+  C2xSetTokenInt(packetHandle, "VAM", newPath, value.longitude);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "positionConfidenceEllipse");
+  SetVAMPositionConfidenceEllipseParams(packetHandle, value.positionConfidenceEllipse, newPath);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "altitude");
+  SetVAMAltitudeParams(packetHandle, value.altitude, newPath);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int GetVAMBasicContainerParams(LONG packetHandle, struct VAMBasicContainer value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "stationType");
+  value.stationType = C2xGetTokenInt(packetHandle, "VAM", newPath);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "referencePosition");
+  GetVAMReferencePositionWithConfidenceParams(packetHandle, value.referencePosition, newPath);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int SetVAMBasicContainerParams(LONG packetHandle, struct VAMBasicContainer value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "stationType");
+  C2xSetTokenInt(packetHandle, "VAM", newPath, value.stationType);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "referencePosition");
+  SetVAMReferencePositionWithConfidenceParams(packetHandle, value.referencePosition, newPath);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int GetVAMWgs84AngleParams(LONG packetHandle, struct VAMWgs84Angle value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "value");
+  value.value = C2xGetTokenInt(packetHandle, "VAM", newPath);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "confidence");
+  value.confidence = C2xGetTokenInt(packetHandle, "VAM", newPath);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int SetVAMWgs84AngleParams(LONG packetHandle, struct VAMWgs84Angle value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "value");
+  C2xSetTokenInt(packetHandle, "VAM", newPath, value.value);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "confidence");
+  if (value.confidence < 1)
+  {
+    C2xSetTokenInt(packetHandle, "VAM", newPath, 1);
+  }
+  else if (value.confidence > 127)
+  {
+    C2xSetTokenInt(packetHandle, "VAM", newPath, 127);
+  }
+  else
+  {
+    C2xSetTokenInt(packetHandle, "VAM", newPath, value.confidence);
+  }
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int GetVAMSpeedParams(LONG packetHandle, struct VAMSpeed value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "speedValue");
+  value.speedValue = C2xGetTokenInt(packetHandle, "VAM", newPath);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "speedConfidence");
+  value.speedConfidence = C2xGetTokenInt(packetHandle, "VAM", newPath);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int SetVAMSpeedParams(LONG packetHandle, struct VAMSpeed value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "speedValue");
+  C2xSetTokenInt(packetHandle, "VAM", newPath, value.speedValue);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "speedConfidence");
+  if (value.speedConfidence < 1)
+  {
+    C2xSetTokenInt(packetHandle, "VAM", newPath, 1);
+  }
+  else if (value.speedConfidence > 127)
+  {
+    C2xSetTokenInt(packetHandle, "VAM", newPath, 127);
+  }
+  else
+  {
+    C2xSetTokenInt(packetHandle, "VAM", newPath, value.speedConfidence);
+  }
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int GetVAMLongitudinalAccelerationParams(LONG packetHandle, struct VAMLongitudinalAcceleration value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "longitudinalAccelerationValue");
+  value.longitudinalAccelerationValue = C2xGetTokenInt(packetHandle, "VAM", newPath);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "longitudinalAccelerationConfidence");
+  value.longitudinalAccelerationConfidence = C2xGetTokenInt(packetHandle, "VAM", newPath);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int SetVAMLongitudinalAccelerationParams(LONG packetHandle, struct VAMLongitudinalAcceleration value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "longitudinalAccelerationValue");
+  C2xSetTokenInt(packetHandle, "VAM", newPath, value.longitudinalAccelerationValue);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "longitudinalAccelerationConfidence");
+  C2xSetTokenInt(packetHandle, "VAM", newPath, value.longitudinalAccelerationConfidence);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int GetVAMCurvatureParams(LONG packetHandle, struct VAMCurvature value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "curvatureValue");
+  value.curvatureValue = C2xGetTokenInt(packetHandle, "VAM", newPath);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "curvatureConfidence");
+  value.curvatureConfidence = C2xGetTokenInt(packetHandle, "VAM", newPath);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int SetVAMCurvatureParams(LONG packetHandle, struct VAMCurvature value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "curvatureValue");
+  C2xSetTokenInt(packetHandle, "VAM", newPath, value.curvatureValue);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "curvatureConfidence");
+  C2xSetTokenInt(packetHandle, "VAM", newPath, value.curvatureConfidence);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int GetVAMYawRateParams(LONG packetHandle, struct VAMYawRate value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "yawRateValue");
+  value.yawRateValue = C2xGetTokenInt(packetHandle, "VAM", newPath);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "yawRateConfidence");
+  value.yawRateConfidence = C2xGetTokenInt(packetHandle, "VAM", newPath);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int SetVAMYawRateParams(LONG packetHandle, struct VAMYawRate value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "yawRateValue");
+  C2xSetTokenInt(packetHandle, "VAM", newPath, value.yawRateValue);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "yawRateConfidence");
+  C2xSetTokenInt(packetHandle, "VAM", newPath, value.yawRateConfidence);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int GetVAMLateralAccelerationParams(LONG packetHandle, struct VAMLateralAcceleration value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "lateralAccelerationValue");
+  value.lateralAccelerationValue = C2xGetTokenInt(packetHandle, "VAM", newPath);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "lateralAccelerationConfidence");
+  value.lateralAccelerationConfidence = C2xGetTokenInt(packetHandle, "VAM", newPath);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int SetVAMLateralAccelerationParams(LONG packetHandle, struct VAMLateralAcceleration value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "lateralAccelerationValue");
+  C2xSetTokenInt(packetHandle, "VAM", newPath, value.lateralAccelerationValue);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "lateralAccelerationConfidence");
+  C2xSetTokenInt(packetHandle, "VAM", newPath, value.lateralAccelerationConfidence);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int GetVAMVerticalAccelerationParams(LONG packetHandle, struct VAMVerticalAcceleration value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "verticalAccelerationValue");
+  value.verticalAccelerationValue = C2xGetTokenInt(packetHandle, "VAM", newPath);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "verticalAccelerationConfidence");
+  value.verticalAccelerationConfidence = C2xGetTokenInt(packetHandle, "VAM", newPath);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int SetVAMVerticalAccelerationParams(LONG packetHandle, struct VAMVerticalAcceleration value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "verticalAccelerationValue");
+  C2xSetTokenInt(packetHandle, "VAM", newPath, value.verticalAccelerationValue);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "verticalAccelerationConfidence");
+  C2xSetTokenInt(packetHandle, "VAM", newPath, value.verticalAccelerationConfidence);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int GetVAMLanePositionAndTypeParams(LONG packetHandle, struct VAMLanePositionAndType value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "transversalPosition");
+  value.transversalPosition = C2xGetTokenInt(packetHandle, "VAM", newPath);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "laneType");
+  value.laneType.isValidFlag = C2xIsTokenAvailable(packetHandle, "VAM", newPath);
+  if(value.laneType.isValidFlag==1)
+  {
+    value.laneType.value = C2xGetTokenInt(packetHandle, "VAM", newPath);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "direction");
+  value.direction.isValidFlag = C2xIsTokenAvailable(packetHandle, "VAM", newPath);
+  if(value.direction.isValidFlag==1)
+  {
+    value.direction.value = C2xGetTokenInt(packetHandle, "VAM", newPath);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  return result;
+}
+
+int SetVAMLanePositionAndTypeParams(LONG packetHandle, struct VAMLanePositionAndType value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "transversalPosition");
+  C2xSetTokenInt(packetHandle, "VAM", newPath, value.transversalPosition);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "laneType");
+  if(value.laneType.isValidFlag==1)
+  {
+    C2xSetTokenInt(packetHandle, "VAM", newPath, value.laneType.value);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "VAM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "VAM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "direction");
+  if(value.direction.isValidFlag==1)
+  {
+    C2xSetTokenInt(packetHandle, "VAM", newPath, value.direction.value);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "VAM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "VAM", newPath);
+    }
+  }
+
+  return result;
+}
+
+int GetVAMLanePositionWithLateralDetailsParams(LONG packetHandle, struct VAMLanePositionWithLateralDetails value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "distanceToLeftBorder");
+  value.distanceToLeftBorder = C2xGetTokenInt(packetHandle, "VAM", newPath);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "distanceToRightBorder");
+  value.distanceToRightBorder = C2xGetTokenInt(packetHandle, "VAM", newPath);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int SetVAMLanePositionWithLateralDetailsParams(LONG packetHandle, struct VAMLanePositionWithLateralDetails value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "distanceToLeftBorder");
+  C2xSetTokenInt(packetHandle, "VAM", newPath, value.distanceToLeftBorder);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "distanceToRightBorder");
+  C2xSetTokenInt(packetHandle, "VAM", newPath, value.distanceToRightBorder);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int GetVAMTrafficIslandPositionParams(LONG packetHandle, struct VAMTrafficIslandPosition value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "oneSide");
+  GetVAMLanePositionAndTypeParams(packetHandle, value.oneSide, newPath);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "otherSide");
+  GetVAMLanePositionAndTypeParams(packetHandle, value.otherSide, newPath);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int SetVAMTrafficIslandPositionParams(LONG packetHandle, struct VAMTrafficIslandPosition value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "oneSide");
+  SetVAMLanePositionAndTypeParams(packetHandle, value.oneSide, newPath);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "otherSide");
+  SetVAMLanePositionAndTypeParams(packetHandle, value.otherSide, newPath);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int GetVAMLanePositionOptionsParams(LONG packetHandle, struct VAMLanePositionOptions value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  value.choice = C2xGetTokenInt(packetHandle, "VAM", oldPath);
+
+  switch(value.choice)
+  {
+    case 0:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "simplelanePosition");
+      value.simplelanePosition = C2xGetTokenInt(packetHandle, "VAM", newPath);
+      result = CheckLastError("VAM", gkFuncRefGet, result);
+    }
+    break;
+    case 1:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "simpleLaneType");
+      value.simpleLaneType = C2xGetTokenInt(packetHandle, "VAM", newPath);
+      result = CheckLastError("VAM", gkFuncRefGet, result);
+    }
+    break;
+    case 2:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "detailedlanePosition");
+      GetVAMLanePositionAndTypeParams(packetHandle, value.detailedlanePosition, newPath);
+      result = CheckLastError("VAM", gkFuncRefGet, result);
+    }
+    break;
+    case 3:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "lanePositionWithLateralDetails");
+      GetVAMLanePositionWithLateralDetailsParams(packetHandle, value.lanePositionWithLateralDetails, newPath);
+      result = CheckLastError("VAM", gkFuncRefGet, result);
+    }
+    break;
+    case 4:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "trafficIslandPosition");
+      GetVAMTrafficIslandPositionParams(packetHandle, value.trafficIslandPosition, newPath);
+      result = CheckLastError("VAM", gkFuncRefGet, result);
+    }
+    break;
+  }
+  return result;
+}
+
+int SetVAMLanePositionOptionsParams(LONG packetHandle, struct VAMLanePositionOptions value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  switch(value.choice)
+  {
+    case 0:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "simplelanePosition");
+      C2xSetTokenInt(packetHandle, "VAM", newPath, value.simplelanePosition);
+      result = CheckLastError("VAM", gkFuncRefGet, result);
+    }
+    break;
+    case 1:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "simpleLaneType");
+      C2xSetTokenInt(packetHandle, "VAM", newPath, value.simpleLaneType);
+      result = CheckLastError("VAM", gkFuncRefGet, result);
+    }
+    break;
+    case 2:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "detailedlanePosition");
+      SetVAMLanePositionAndTypeParams(packetHandle, value.detailedlanePosition, newPath);
+      result = CheckLastError("VAM", gkFuncRefGet, result);
+    }
+    break;
+    case 3:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "lanePositionWithLateralDetails");
+      SetVAMLanePositionWithLateralDetailsParams(packetHandle, value.lanePositionWithLateralDetails, newPath);
+      result = CheckLastError("VAM", gkFuncRefGet, result);
+    }
+    break;
+    case 4:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "trafficIslandPosition");
+      SetVAMTrafficIslandPositionParams(packetHandle, value.trafficIslandPosition, newPath);
+      result = CheckLastError("VAM", gkFuncRefGet, result);
+    }
+    break;
+  }
+  return result;
+}
+
+int GetVAMRoadSegmentReferenceIdParams(LONG packetHandle, struct VAMRoadSegmentReferenceId value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "region");
+  value.region.isValidFlag = C2xIsTokenAvailable(packetHandle, "VAM", newPath);
+  if(value.region.isValidFlag==1)
+  {
+    value.region.value = C2xGetTokenInt(packetHandle, "VAM", newPath);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "id");
+  value.id = C2xGetTokenInt(packetHandle, "VAM", newPath);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int SetVAMRoadSegmentReferenceIdParams(LONG packetHandle, struct VAMRoadSegmentReferenceId value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "region");
+  if(value.region.isValidFlag==1)
+  {
+    C2xSetTokenInt(packetHandle, "VAM", newPath, value.region.value);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "VAM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "VAM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "id");
+  C2xSetTokenInt(packetHandle, "VAM", newPath, value.id);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int GetVAMIntersectionReferenceIdParams(LONG packetHandle, struct VAMIntersectionReferenceId value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "region");
+  value.region.isValidFlag = C2xIsTokenAvailable(packetHandle, "VAM", newPath);
+  if(value.region.isValidFlag==1)
+  {
+    value.region.value = C2xGetTokenInt(packetHandle, "VAM", newPath);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "id");
+  value.id = C2xGetTokenInt(packetHandle, "VAM", newPath);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int SetVAMIntersectionReferenceIdParams(LONG packetHandle, struct VAMIntersectionReferenceId value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "region");
+  if(value.region.isValidFlag==1)
+  {
+    C2xSetTokenInt(packetHandle, "VAM", newPath, value.region.value);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "VAM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "VAM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "id");
+  C2xSetTokenInt(packetHandle, "VAM", newPath, value.id);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int GetVAMMapReferenceParams(LONG packetHandle, struct VAMMapReference value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  value.choice = C2xGetTokenInt(packetHandle, "VAM", oldPath);
+
+  switch(value.choice)
+  {
+    case 0:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "roadsegment");
+      GetVAMRoadSegmentReferenceIdParams(packetHandle, value.roadsegment, newPath);
+      result = CheckLastError("VAM", gkFuncRefGet, result);
+    }
+    break;
+    case 1:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "intersection");
+      GetVAMIntersectionReferenceIdParams(packetHandle, value.intersection, newPath);
+      result = CheckLastError("VAM", gkFuncRefGet, result);
+    }
+    break;
+  }
+  return result;
+}
+
+int SetVAMMapReferenceParams(LONG packetHandle, struct VAMMapReference value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  switch(value.choice)
+  {
+    case 0:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "roadsegment");
+      SetVAMRoadSegmentReferenceIdParams(packetHandle, value.roadsegment, newPath);
+      result = CheckLastError("VAM", gkFuncRefGet, result);
+    }
+    break;
+    case 1:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "intersection");
+      SetVAMIntersectionReferenceIdParams(packetHandle, value.intersection, newPath);
+      result = CheckLastError("VAM", gkFuncRefGet, result);
+    }
+    break;
+  }
+  return result;
+}
+
+int GetVAMLongitudinalLanePositionParams(LONG packetHandle, struct VAMLongitudinalLanePosition value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "longitudinalLanePositionValue");
+  value.longitudinalLanePositionValue = C2xGetTokenInt(packetHandle, "VAM", newPath);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "longitudinalLanePositionConfidence");
+  value.longitudinalLanePositionConfidence = C2xGetTokenInt(packetHandle, "VAM", newPath);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int SetVAMLongitudinalLanePositionParams(LONG packetHandle, struct VAMLongitudinalLanePosition value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "longitudinalLanePositionValue");
+  C2xSetTokenInt(packetHandle, "VAM", newPath, value.longitudinalLanePositionValue);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "longitudinalLanePositionConfidence");
+  C2xSetTokenInt(packetHandle, "VAM", newPath, value.longitudinalLanePositionConfidence);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int GetVAMMapPositionParams(LONG packetHandle, struct VAMMapPosition value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "mapReference");
+  value.mapReference.isValidFlag = C2xIsTokenAvailable(packetHandle, "VAM", newPath);
+  if(value.mapReference.isValidFlag==1)
+  {
+    GetVAMMapReferenceParams(packetHandle, value.mapReference, newPath);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "laneId");
+  value.laneId.isValidFlag = C2xIsTokenAvailable(packetHandle, "VAM", newPath);
+  if(value.laneId.isValidFlag==1)
+  {
+    value.laneId.value = C2xGetTokenInt(packetHandle, "VAM", newPath);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "connectionId");
+  value.connectionId.isValidFlag = C2xIsTokenAvailable(packetHandle, "VAM", newPath);
+  if(value.connectionId.isValidFlag==1)
+  {
+    value.connectionId.value = C2xGetTokenInt(packetHandle, "VAM", newPath);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "longitudinalLanePosition");
+  value.longitudinalLanePosition.isValidFlag = C2xIsTokenAvailable(packetHandle, "VAM", newPath);
+  if(value.longitudinalLanePosition.isValidFlag==1)
+  {
+    GetVAMLongitudinalLanePositionParams(packetHandle, value.longitudinalLanePosition, newPath);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  return result;
+}
+
+int SetVAMMapPositionParams(LONG packetHandle, struct VAMMapPosition value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "mapReference");
+  if(value.mapReference.isValidFlag==1)
+  {
+    SetVAMMapReferenceParams(packetHandle, value.mapReference, newPath);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "VAM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "VAM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "laneId");
+  if(value.laneId.isValidFlag==1)
+  {
+    C2xSetTokenInt(packetHandle, "VAM", newPath, value.laneId.value);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "VAM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "VAM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "connectionId");
+  if(value.connectionId.isValidFlag==1)
+  {
+    C2xSetTokenInt(packetHandle, "VAM", newPath, value.connectionId.value);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "VAM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "VAM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "longitudinalLanePosition");
+  if(value.longitudinalLanePosition.isValidFlag==1)
+  {
+    SetVAMLongitudinalLanePositionParams(packetHandle, value.longitudinalLanePosition, newPath);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "VAM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "VAM", newPath);
+    }
+  }
+
+  return result;
+}
+
+int GetVAMMetaInformationParams(LONG packetHandle, struct VAMMetaInformation value, char oldPath[])
+{
+  char newPath[300]; 
+  int j; 
+  int k;
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "usedDetectionInformation");
+  value.usedDetectionInformation.isValidFlag = 1;
+  value.usedDetectionInformation.stringLength = C2xGetTokenLengthBit(packetHandle, "VAM", newPath);
+  if ((result = CheckLastError("VAM", gkFuncRefGet, result))==0)
+  {
+    if(value.usedDetectionInformation.stringLength > 0)
+    {
+      for(j=0; j<value.usedDetectionInformation.stringLength; j++)
+      {
+        if(C2xGetTokenBitOfBitString(packetHandle, "VAM", newPath, j) == 0)
+        {
+          value.usedDetectionInformation.string[j] = '0';
+        }
+        else if(C2xGetTokenBitOfBitString(packetHandle, "VAM", newPath, j) == 1)
+        {
+          value.usedDetectionInformation.string[j] = '1';
+        }
+
+        if(value.usedDetectionInformation.stringLength == 1)
+        {
+          value.usedDetectionInformation.string[1] = '0';
+        }
+        result = CheckLastError("VAM", gkFuncRefGet, result);
+      }
+    }
+    else
+    {
+      for(k = value.usedDetectionInformation.stringLength+1; k > -1; k--)
+      {
+        if(value.usedDetectionInformation.string[k] == '1')
+        {
+          value.usedDetectionInformation.string[k] = '0';
+        }
+      }
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "usedStoredInformation");
+  value.usedStoredInformation.isValidFlag = 1;
+  value.usedStoredInformation.stringLength = C2xGetTokenLengthBit(packetHandle, "VAM", newPath);
+  if ((result = CheckLastError("VAM", gkFuncRefGet, result))==0)
+  {
+    if(value.usedStoredInformation.stringLength > 0)
+    {
+      for(j=0; j<value.usedStoredInformation.stringLength; j++)
+      {
+        if(C2xGetTokenBitOfBitString(packetHandle, "VAM", newPath, j) == 0)
+        {
+          value.usedStoredInformation.string[j] = '0';
+        }
+        else if(C2xGetTokenBitOfBitString(packetHandle, "VAM", newPath, j) == 1)
+        {
+          value.usedStoredInformation.string[j] = '1';
+        }
+
+        if(value.usedStoredInformation.stringLength == 1)
+        {
+          value.usedStoredInformation.string[1] = '0';
+        }
+        result = CheckLastError("VAM", gkFuncRefGet, result);
+      }
+    }
+    else
+    {
+      for(k = value.usedStoredInformation.stringLength+1; k > -1; k--)
+      {
+        if(value.usedStoredInformation.string[k] == '1')
+        {
+          value.usedStoredInformation.string[k] = '0';
+        }
+      }
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "confidenceValue");
+  value.confidenceValue.isValidFlag = C2xIsTokenAvailable(packetHandle, "VAM", newPath);
+  if(value.confidenceValue.isValidFlag==1)
+  {
+    value.confidenceValue.value = C2xGetTokenInt(packetHandle, "VAM", newPath);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  return result;
+}
+
+int SetVAMMetaInformationParams(LONG packetHandle, struct VAMMetaInformation value, char oldPath[])
+{
+  char newPath[300]; 
+  int j;
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "usedDetectionInformation");
+    for(j=0; j<value.usedDetectionInformation.stringLength; j++)
+    {
+      if(value.usedDetectionInformation.string[j] == '0')
+      {
+        C2xSetTokenBitOfBitString(packetHandle, "VAM", newPath, j, 0);
+      }
+      else
+      {
+        C2xSetTokenBitOfBitString(packetHandle, "VAM", newPath, j, 1);
+      }
+      result = CheckLastError("VAM", gkFuncRefGet, result);
+    }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "usedStoredInformation");
+    for(j=0; j<value.usedStoredInformation.stringLength; j++)
+    {
+      if(value.usedStoredInformation.string[j] == '0')
+      {
+        C2xSetTokenBitOfBitString(packetHandle, "VAM", newPath, j, 0);
+      }
+      else
+      {
+        C2xSetTokenBitOfBitString(packetHandle, "VAM", newPath, j, 1);
+      }
+      result = CheckLastError("VAM", gkFuncRefGet, result);
+    }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "confidenceValue");
+  if(value.confidenceValue.isValidFlag==1)
+  {
+    if (value.confidenceValue.value < 1)
+    {
+        C2xSetTokenInt(packetHandle, "VAM", newPath, 1);
+    }
+    else if (value.confidenceValue.value > 101)
+    {
+        C2xSetTokenInt(packetHandle, "VAM", newPath, 101);
+    }
+    else
+    {
+        C2xSetTokenInt(packetHandle, "VAM", newPath, value.confidenceValue.value);
+    }
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "VAM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "VAM", newPath);
+    }
+  }
+
+  return result;
+}
+
+int GetVAMGeneralizedLanePositionParams(LONG packetHandle, struct VAMGeneralizedLanePosition value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "lanePositionBased");
+  GetVAMLanePositionOptionsParams(packetHandle, value.lanePositionBased, newPath);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "mapBased");
+  value.mapBased.isValidFlag = C2xIsTokenAvailable(packetHandle, "VAM", newPath);
+  if(value.mapBased.isValidFlag==1)
+  {
+    GetVAMMapPositionParams(packetHandle, value.mapBased, newPath);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "confidence");
+  GetVAMMetaInformationParams(packetHandle, value.confidence, newPath);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int SetVAMGeneralizedLanePositionParams(LONG packetHandle, struct VAMGeneralizedLanePosition value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "lanePositionBased");
+  SetVAMLanePositionOptionsParams(packetHandle, value.lanePositionBased, newPath);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "mapBased");
+  if(value.mapBased.isValidFlag==1)
+  {
+    SetVAMMapPositionParams(packetHandle, value.mapBased, newPath);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "VAM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "VAM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "confidence");
+  SetVAMMetaInformationParams(packetHandle, value.confidence, newPath);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int GetVAMCartesianAngleParams(LONG packetHandle, struct VAMCartesianAngle value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "value");
+  value.value = C2xGetTokenInt(packetHandle, "VAM", newPath);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "confidence");
+  value.confidence = C2xGetTokenInt(packetHandle, "VAM", newPath);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int SetVAMCartesianAngleParams(LONG packetHandle, struct VAMCartesianAngle value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "value");
+  C2xSetTokenInt(packetHandle, "VAM", newPath, value.value);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "confidence");
+  if (value.confidence < 1)
+  {
+    C2xSetTokenInt(packetHandle, "VAM", newPath, 1);
+  }
+  else if (value.confidence > 127)
+  {
+    C2xSetTokenInt(packetHandle, "VAM", newPath, 127);
+  }
+  else
+  {
+    C2xSetTokenInt(packetHandle, "VAM", newPath, value.confidence);
+  }
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int GetVAMVruHighFrequencyContainerParams(LONG packetHandle, struct VAMVruHighFrequencyContainer value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "heading");
+  GetVAMWgs84AngleParams(packetHandle, value.heading, newPath);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "speed");
+  GetVAMSpeedParams(packetHandle, value.speed, newPath);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "longitudinalAcceleration");
+  GetVAMLongitudinalAccelerationParams(packetHandle, value.longitudinalAcceleration, newPath);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "curvature");
+  value.curvature.isValidFlag = C2xIsTokenAvailable(packetHandle, "VAM", newPath);
+  if(value.curvature.isValidFlag==1)
+  {
+    GetVAMCurvatureParams(packetHandle, value.curvature, newPath);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "curvatureCalculationMode");
+  value.curvatureCalculationMode.isValidFlag = C2xIsTokenAvailable(packetHandle, "VAM", newPath);
+  if(value.curvatureCalculationMode.isValidFlag==1)
+  {
+    value.curvatureCalculationMode.value = C2xGetTokenInt(packetHandle, "VAM", newPath);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "yawRate");
+  value.yawRate.isValidFlag = C2xIsTokenAvailable(packetHandle, "VAM", newPath);
+  if(value.yawRate.isValidFlag==1)
+  {
+    GetVAMYawRateParams(packetHandle, value.yawRate, newPath);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "lateralAcceleration");
+  value.lateralAcceleration.isValidFlag = C2xIsTokenAvailable(packetHandle, "VAM", newPath);
+  if(value.lateralAcceleration.isValidFlag==1)
+  {
+    GetVAMLateralAccelerationParams(packetHandle, value.lateralAcceleration, newPath);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "verticalAcceleration");
+  value.verticalAcceleration.isValidFlag = C2xIsTokenAvailable(packetHandle, "VAM", newPath);
+  if(value.verticalAcceleration.isValidFlag==1)
+  {
+    GetVAMVerticalAccelerationParams(packetHandle, value.verticalAcceleration, newPath);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "vruLanePosition");
+  value.vruLanePosition.isValidFlag = C2xIsTokenAvailable(packetHandle, "VAM", newPath);
+  if(value.vruLanePosition.isValidFlag==1)
+  {
+    GetVAMGeneralizedLanePositionParams(packetHandle, value.vruLanePosition, newPath);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "environment");
+  value.environment.isValidFlag = C2xIsTokenAvailable(packetHandle, "VAM", newPath);
+  if(value.environment.isValidFlag==1)
+  {
+    value.environment.value = C2xGetTokenInt(packetHandle, "VAM", newPath);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "movementControl");
+  value.movementControl.isValidFlag = C2xIsTokenAvailable(packetHandle, "VAM", newPath);
+  if(value.movementControl.isValidFlag==1)
+  {
+    value.movementControl.value = C2xGetTokenInt(packetHandle, "VAM", newPath);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "orientation");
+  value.orientation.isValidFlag = C2xIsTokenAvailable(packetHandle, "VAM", newPath);
+  if(value.orientation.isValidFlag==1)
+  {
+    GetVAMWgs84AngleParams(packetHandle, value.orientation, newPath);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "rollAngle");
+  value.rollAngle.isValidFlag = C2xIsTokenAvailable(packetHandle, "VAM", newPath);
+  if(value.rollAngle.isValidFlag==1)
+  {
+    GetVAMCartesianAngleParams(packetHandle, value.rollAngle, newPath);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "deviceUsage");
+  value.deviceUsage.isValidFlag = C2xIsTokenAvailable(packetHandle, "VAM", newPath);
+  if(value.deviceUsage.isValidFlag==1)
+  {
+    value.deviceUsage.value = C2xGetTokenInt(packetHandle, "VAM", newPath);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  return result;
+}
+
+int SetVAMVruHighFrequencyContainerParams(LONG packetHandle, struct VAMVruHighFrequencyContainer value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "heading");
+  SetVAMWgs84AngleParams(packetHandle, value.heading, newPath);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "speed");
+  SetVAMSpeedParams(packetHandle, value.speed, newPath);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "longitudinalAcceleration");
+  SetVAMLongitudinalAccelerationParams(packetHandle, value.longitudinalAcceleration, newPath);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "curvature");
+  if(value.curvature.isValidFlag==1)
+  {
+    SetVAMCurvatureParams(packetHandle, value.curvature, newPath);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "VAM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "VAM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "curvatureCalculationMode");
+  if(value.curvatureCalculationMode.isValidFlag==1)
+  {
+    C2xSetTokenInt(packetHandle, "VAM", newPath, value.curvatureCalculationMode.value);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "VAM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "VAM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "yawRate");
+  if(value.yawRate.isValidFlag==1)
+  {
+    SetVAMYawRateParams(packetHandle, value.yawRate, newPath);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "VAM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "VAM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "lateralAcceleration");
+  if(value.lateralAcceleration.isValidFlag==1)
+  {
+    SetVAMLateralAccelerationParams(packetHandle, value.lateralAcceleration, newPath);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "VAM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "VAM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "verticalAcceleration");
+  if(value.verticalAcceleration.isValidFlag==1)
+  {
+    SetVAMVerticalAccelerationParams(packetHandle, value.verticalAcceleration, newPath);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "VAM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "VAM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "vruLanePosition");
+  if(value.vruLanePosition.isValidFlag==1)
+  {
+    SetVAMGeneralizedLanePositionParams(packetHandle, value.vruLanePosition, newPath);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "VAM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "VAM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "environment");
+  if(value.environment.isValidFlag==1)
+  {
+    C2xSetTokenInt(packetHandle, "VAM", newPath, value.environment.value);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "VAM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "VAM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "movementControl");
+  if(value.movementControl.isValidFlag==1)
+  {
+    C2xSetTokenInt(packetHandle, "VAM", newPath, value.movementControl.value);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "VAM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "VAM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "orientation");
+  if(value.orientation.isValidFlag==1)
+  {
+    SetVAMWgs84AngleParams(packetHandle, value.orientation, newPath);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "VAM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "VAM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "rollAngle");
+  if(value.rollAngle.isValidFlag==1)
+  {
+    SetVAMCartesianAngleParams(packetHandle, value.rollAngle, newPath);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "VAM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "VAM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "deviceUsage");
+  if(value.deviceUsage.isValidFlag==1)
+  {
+    C2xSetTokenInt(packetHandle, "VAM", newPath, value.deviceUsage.value);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "VAM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "VAM", newPath);
+    }
+  }
+
+  return result;
+}
+
+int GetVAMVruProfileAndSubprofileParams(LONG packetHandle, struct VAMVruProfileAndSubprofile value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  value.choice = C2xGetTokenInt(packetHandle, "VAM", oldPath);
+
+  switch(value.choice)
+  {
+    case 0:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "pedestrian");
+      value.pedestrian = C2xGetTokenInt(packetHandle, "VAM", newPath);
+      result = CheckLastError("VAM", gkFuncRefGet, result);
+    }
+    break;
+    case 1:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "bicyclistAndLightVruVehicle");
+      value.bicyclistAndLightVruVehicle = C2xGetTokenInt(packetHandle, "VAM", newPath);
+      result = CheckLastError("VAM", gkFuncRefGet, result);
+    }
+    break;
+    case 2:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "motorcyclist");
+      value.motorcyclist = C2xGetTokenInt(packetHandle, "VAM", newPath);
+      result = CheckLastError("VAM", gkFuncRefGet, result);
+    }
+    break;
+    case 3:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "animal");
+      value.animal = C2xGetTokenInt(packetHandle, "VAM", newPath);
+      result = CheckLastError("VAM", gkFuncRefGet, result);
+    }
+    break;
+  }
+  return result;
+}
+
+int SetVAMVruProfileAndSubprofileParams(LONG packetHandle, struct VAMVruProfileAndSubprofile value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  switch(value.choice)
+  {
+    case 0:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "pedestrian");
+      C2xSetTokenInt(packetHandle, "VAM", newPath, value.pedestrian);
+      result = CheckLastError("VAM", gkFuncRefGet, result);
+    }
+    break;
+    case 1:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "bicyclistAndLightVruVehicle");
+      C2xSetTokenInt(packetHandle, "VAM", newPath, value.bicyclistAndLightVruVehicle);
+      result = CheckLastError("VAM", gkFuncRefGet, result);
+    }
+    break;
+    case 2:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "motorcyclist");
+      C2xSetTokenInt(packetHandle, "VAM", newPath, value.motorcyclist);
+      result = CheckLastError("VAM", gkFuncRefGet, result);
+    }
+    break;
+    case 3:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "animal");
+      C2xSetTokenInt(packetHandle, "VAM", newPath, value.animal);
+      result = CheckLastError("VAM", gkFuncRefGet, result);
+    }
+    break;
+  }
+  return result;
+}
+
+int GetVAMVruExteriorLightsParams(LONG packetHandle, struct VAMVruExteriorLights value, char oldPath[])
+{
+  char newPath[300]; 
+  int j; 
+  int k;
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "vehicular");
+  value.vehicular.isValidFlag = 1;
+  value.vehicular.stringLength = C2xGetTokenLengthBit(packetHandle, "VAM", newPath);
+  if ((result = CheckLastError("VAM", gkFuncRefGet, result))==0)
+  {
+    if(value.vehicular.stringLength > 0)
+    {
+      for(j=0; j<value.vehicular.stringLength; j++)
+      {
+        if(C2xGetTokenBitOfBitString(packetHandle, "VAM", newPath, j) == 0)
+        {
+          value.vehicular.string[j] = '0';
+        }
+        else if(C2xGetTokenBitOfBitString(packetHandle, "VAM", newPath, j) == 1)
+        {
+          value.vehicular.string[j] = '1';
+        }
+
+        if(value.vehicular.stringLength == 1)
+        {
+          value.vehicular.string[1] = '0';
+        }
+        result = CheckLastError("VAM", gkFuncRefGet, result);
+      }
+    }
+    else
+    {
+      for(k = value.vehicular.stringLength+1; k > -1; k--)
+      {
+        if(value.vehicular.string[k] == '1')
+        {
+          value.vehicular.string[k] = '0';
+        }
+      }
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "vruSpecific");
+  value.vruSpecific.isValidFlag = 1;
+  value.vruSpecific.stringLength = C2xGetTokenLengthBit(packetHandle, "VAM", newPath);
+  if ((result = CheckLastError("VAM", gkFuncRefGet, result))==0)
+  {
+    if(value.vruSpecific.stringLength > 0)
+    {
+      for(j=0; j<value.vruSpecific.stringLength; j++)
+      {
+        if(C2xGetTokenBitOfBitString(packetHandle, "VAM", newPath, j) == 0)
+        {
+          value.vruSpecific.string[j] = '0';
+        }
+        else if(C2xGetTokenBitOfBitString(packetHandle, "VAM", newPath, j) == 1)
+        {
+          value.vruSpecific.string[j] = '1';
+        }
+
+        if(value.vruSpecific.stringLength == 1)
+        {
+          value.vruSpecific.string[1] = '0';
+        }
+        result = CheckLastError("VAM", gkFuncRefGet, result);
+      }
+    }
+    else
+    {
+      for(k = value.vruSpecific.stringLength+1; k > -1; k--)
+      {
+        if(value.vruSpecific.string[k] == '1')
+        {
+          value.vruSpecific.string[k] = '0';
+        }
+      }
+    }
+  }
+
+  return result;
+}
+
+int SetVAMVruExteriorLightsParams(LONG packetHandle, struct VAMVruExteriorLights value, char oldPath[])
+{
+  char newPath[300]; 
+  int j;
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "vehicular");
+    for(j=0; j<value.vehicular.stringLength; j++)
+    {
+      if(value.vehicular.string[j] == '0')
+      {
+        C2xSetTokenBitOfBitString(packetHandle, "VAM", newPath, j, 0);
+      }
+      else
+      {
+        C2xSetTokenBitOfBitString(packetHandle, "VAM", newPath, j, 1);
+      }
+      result = CheckLastError("VAM", gkFuncRefGet, result);
+    }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "vruSpecific");
+    for(j=0; j<value.vruSpecific.stringLength; j++)
+    {
+      if(value.vruSpecific.string[j] == '0')
+      {
+        C2xSetTokenBitOfBitString(packetHandle, "VAM", newPath, j, 0);
+      }
+      else
+      {
+        C2xSetTokenBitOfBitString(packetHandle, "VAM", newPath, j, 1);
+      }
+      result = CheckLastError("VAM", gkFuncRefGet, result);
+    }
+
+  return result;
+}
+
+int GetVAMVruLowFrequencyContainerParams(LONG packetHandle, struct VAMVruLowFrequencyContainer value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "profileAndSubprofile");
+  GetVAMVruProfileAndSubprofileParams(packetHandle, value.profileAndSubprofile, newPath);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "sizeClass");
+  value.sizeClass.isValidFlag = C2xIsTokenAvailable(packetHandle, "VAM", newPath);
+  if(value.sizeClass.isValidFlag==1)
+  {
+    value.sizeClass.value = C2xGetTokenInt(packetHandle, "VAM", newPath);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "exteriorLights");
+  value.exteriorLights.isValidFlag = C2xIsTokenAvailable(packetHandle, "VAM", newPath);
+  if(value.exteriorLights.isValidFlag==1)
+  {
+    GetVAMVruExteriorLightsParams(packetHandle, value.exteriorLights, newPath);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  return result;
+}
+
+int SetVAMVruLowFrequencyContainerParams(LONG packetHandle, struct VAMVruLowFrequencyContainer value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "profileAndSubprofile");
+  SetVAMVruProfileAndSubprofileParams(packetHandle, value.profileAndSubprofile, newPath);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "sizeClass");
+  if(value.sizeClass.isValidFlag==1)
+  {
+    C2xSetTokenInt(packetHandle, "VAM", newPath, value.sizeClass.value);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "VAM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "VAM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "exteriorLights");
+  if(value.exteriorLights.isValidFlag==1)
+  {
+    SetVAMVruExteriorLightsParams(packetHandle, value.exteriorLights, newPath);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "VAM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "VAM", newPath);
+    }
+  }
+
+  return result;
+}
+
+int GetVAMCartesianPosition3dParams(LONG packetHandle, struct VAMCartesianPosition3d value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "xCoordinate");
+  value.xCoordinate = C2xGetTokenInt(packetHandle, "VAM", newPath);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "yCoordinate");
+  value.yCoordinate = C2xGetTokenInt(packetHandle, "VAM", newPath);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "zCoordinate");
+  value.zCoordinate.isValidFlag = C2xIsTokenAvailable(packetHandle, "VAM", newPath);
+  if(value.zCoordinate.isValidFlag==1)
+  {
+    value.zCoordinate.value = C2xGetTokenInt(packetHandle, "VAM", newPath);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  return result;
+}
+
+int SetVAMCartesianPosition3dParams(LONG packetHandle, struct VAMCartesianPosition3d value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "xCoordinate");
+  C2xSetTokenInt(packetHandle, "VAM", newPath, value.xCoordinate);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "yCoordinate");
+  C2xSetTokenInt(packetHandle, "VAM", newPath, value.yCoordinate);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "zCoordinate");
+  if(value.zCoordinate.isValidFlag==1)
+  {
+    C2xSetTokenInt(packetHandle, "VAM", newPath, value.zCoordinate.value);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "VAM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "VAM", newPath);
+    }
+  }
+
+  return result;
+}
+
+int GetVAMRectangularShapeParams(LONG packetHandle, struct VAMRectangularShape value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "shapeReferencePoint");
+  value.shapeReferencePoint.isValidFlag = C2xIsTokenAvailable(packetHandle, "VAM", newPath);
+  if(value.shapeReferencePoint.isValidFlag==1)
+  {
+    GetVAMCartesianPosition3dParams(packetHandle, value.shapeReferencePoint, newPath);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "semiLength");
+  value.semiLength = C2xGetTokenInt(packetHandle, "VAM", newPath);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "semiBreadth");
+  value.semiBreadth = C2xGetTokenInt(packetHandle, "VAM", newPath);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "orientation");
+  value.orientation.isValidFlag = C2xIsTokenAvailable(packetHandle, "VAM", newPath);
+  if(value.orientation.isValidFlag==1)
+  {
+    value.orientation.value = C2xGetTokenInt(packetHandle, "VAM", newPath);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "height");
+  value.height.isValidFlag = C2xIsTokenAvailable(packetHandle, "VAM", newPath);
+  if(value.height.isValidFlag==1)
+  {
+    value.height.value = C2xGetTokenInt(packetHandle, "VAM", newPath);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  return result;
+}
+
+int SetVAMRectangularShapeParams(LONG packetHandle, struct VAMRectangularShape value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "shapeReferencePoint");
+  if(value.shapeReferencePoint.isValidFlag==1)
+  {
+    SetVAMCartesianPosition3dParams(packetHandle, value.shapeReferencePoint, newPath);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "VAM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "VAM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "semiLength");
+  C2xSetTokenInt(packetHandle, "VAM", newPath, value.semiLength);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "semiBreadth");
+  C2xSetTokenInt(packetHandle, "VAM", newPath, value.semiBreadth);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "orientation");
+  if(value.orientation.isValidFlag==1)
+  {
+    C2xSetTokenInt(packetHandle, "VAM", newPath, value.orientation.value);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "VAM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "VAM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "height");
+  if(value.height.isValidFlag==1)
+  {
+    C2xSetTokenInt(packetHandle, "VAM", newPath, value.height.value);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "VAM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "VAM", newPath);
+    }
+  }
+
+  return result;
+}
+
+int GetVAMCircularShapeParams(LONG packetHandle, struct VAMCircularShape value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "shapeReferencePoint");
+  value.shapeReferencePoint.isValidFlag = C2xIsTokenAvailable(packetHandle, "VAM", newPath);
+  if(value.shapeReferencePoint.isValidFlag==1)
+  {
+    GetVAMCartesianPosition3dParams(packetHandle, value.shapeReferencePoint, newPath);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "radius");
+  value.radius = C2xGetTokenInt(packetHandle, "VAM", newPath);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "height");
+  value.height.isValidFlag = C2xIsTokenAvailable(packetHandle, "VAM", newPath);
+  if(value.height.isValidFlag==1)
+  {
+    value.height.value = C2xGetTokenInt(packetHandle, "VAM", newPath);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  return result;
+}
+
+int SetVAMCircularShapeParams(LONG packetHandle, struct VAMCircularShape value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "shapeReferencePoint");
+  if(value.shapeReferencePoint.isValidFlag==1)
+  {
+    SetVAMCartesianPosition3dParams(packetHandle, value.shapeReferencePoint, newPath);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "VAM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "VAM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "radius");
+  C2xSetTokenInt(packetHandle, "VAM", newPath, value.radius);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "height");
+  if(value.height.isValidFlag==1)
+  {
+    C2xSetTokenInt(packetHandle, "VAM", newPath, value.height.value);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "VAM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "VAM", newPath);
+    }
+  }
+
+  return result;
+}
+
+int GetVAMSequenceOfCartesianPosition3dParams(LONG packetHandle, struct VAMSequenceOfCartesianPosition3d value, char oldPath[])
+{
+  char newPath[300]; 
+  int i;
+  int result;
+
+  result = 0;
+
+  value.length = C2xGetTokenInt(packetHandle, "VAM", oldPath);
+  if((result = CheckLastError("VAM", gkFuncRefGet, result))==0)
+  {
+    for(i=0; i<value.length; i++)
+    {
+      snprintf(newPath, elcount(newPath), "%s[%d]", oldPath, i);
+      GetVAMCartesianPosition3dParams(packetHandle, value.arrayValue[i], newPath);
+      result = CheckLastError("VAM", gkFuncRefGet, result);
+    }
+  }
+  return result;
+}
+
+int SetVAMSequenceOfCartesianPosition3dParams(LONG packetHandle, struct VAMSequenceOfCartesianPosition3d value, char oldPath[])
+{
+  char newPath[300]; 
+  int i;
+  int result;
+
+  result = 0;
+
+  C2xRemoveToken(packetHandle, "VAM", oldPath);
+  for(i=0; i<value.length; i++)
+  {
+    snprintf(newPath, elcount(newPath), "%s[%d]", oldPath, i);
+    SetVAMCartesianPosition3dParams(packetHandle, value.arrayValue[i], newPath);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  return result;
+}
+
+int GetVAMPolygonalShapeParams(LONG packetHandle, struct VAMPolygonalShape value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "shapeReferencePoint");
+  value.shapeReferencePoint.isValidFlag = C2xIsTokenAvailable(packetHandle, "VAM", newPath);
+  if(value.shapeReferencePoint.isValidFlag==1)
+  {
+    GetVAMCartesianPosition3dParams(packetHandle, value.shapeReferencePoint, newPath);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "polygon");
+  GetVAMSequenceOfCartesianPosition3dParams(packetHandle, value.polygon, newPath);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "height");
+  value.height.isValidFlag = C2xIsTokenAvailable(packetHandle, "VAM", newPath);
+  if(value.height.isValidFlag==1)
+  {
+    value.height.value = C2xGetTokenInt(packetHandle, "VAM", newPath);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  return result;
+}
+
+int SetVAMPolygonalShapeParams(LONG packetHandle, struct VAMPolygonalShape value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "shapeReferencePoint");
+  if(value.shapeReferencePoint.isValidFlag==1)
+  {
+    SetVAMCartesianPosition3dParams(packetHandle, value.shapeReferencePoint, newPath);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "VAM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "VAM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "polygon");
+  SetVAMSequenceOfCartesianPosition3dParams(packetHandle, value.polygon, newPath);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "height");
+  if(value.height.isValidFlag==1)
+  {
+    C2xSetTokenInt(packetHandle, "VAM", newPath, value.height.value);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "VAM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "VAM", newPath);
+    }
+  }
+
+  return result;
+}
+
+int GetVAMEllipticalShapeParams(LONG packetHandle, struct VAMEllipticalShape value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "shapeReferencePoint");
+  value.shapeReferencePoint.isValidFlag = C2xIsTokenAvailable(packetHandle, "VAM", newPath);
+  if(value.shapeReferencePoint.isValidFlag==1)
+  {
+    GetVAMCartesianPosition3dParams(packetHandle, value.shapeReferencePoint, newPath);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "semiMajorAxisLength");
+  value.semiMajorAxisLength = C2xGetTokenInt(packetHandle, "VAM", newPath);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "semiMinorAxisLength");
+  value.semiMinorAxisLength = C2xGetTokenInt(packetHandle, "VAM", newPath);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "orientation");
+  value.orientation.isValidFlag = C2xIsTokenAvailable(packetHandle, "VAM", newPath);
+  if(value.orientation.isValidFlag==1)
+  {
+    value.orientation.value = C2xGetTokenInt(packetHandle, "VAM", newPath);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "height");
+  value.height.isValidFlag = C2xIsTokenAvailable(packetHandle, "VAM", newPath);
+  if(value.height.isValidFlag==1)
+  {
+    value.height.value = C2xGetTokenInt(packetHandle, "VAM", newPath);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  return result;
+}
+
+int SetVAMEllipticalShapeParams(LONG packetHandle, struct VAMEllipticalShape value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "shapeReferencePoint");
+  if(value.shapeReferencePoint.isValidFlag==1)
+  {
+    SetVAMCartesianPosition3dParams(packetHandle, value.shapeReferencePoint, newPath);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "VAM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "VAM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "semiMajorAxisLength");
+  C2xSetTokenInt(packetHandle, "VAM", newPath, value.semiMajorAxisLength);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "semiMinorAxisLength");
+  C2xSetTokenInt(packetHandle, "VAM", newPath, value.semiMinorAxisLength);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "orientation");
+  if(value.orientation.isValidFlag==1)
+  {
+    C2xSetTokenInt(packetHandle, "VAM", newPath, value.orientation.value);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "VAM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "VAM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "height");
+  if(value.height.isValidFlag==1)
+  {
+    C2xSetTokenInt(packetHandle, "VAM", newPath, value.height.value);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "VAM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "VAM", newPath);
+    }
+  }
+
+  return result;
+}
+
+int GetVAMRadialShapeParams(LONG packetHandle, struct VAMRadialShape value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "shapeReferencePoint");
+  value.shapeReferencePoint.isValidFlag = C2xIsTokenAvailable(packetHandle, "VAM", newPath);
+  if(value.shapeReferencePoint.isValidFlag==1)
+  {
+    GetVAMCartesianPosition3dParams(packetHandle, value.shapeReferencePoint, newPath);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "range");
+  value.range = C2xGetTokenInt(packetHandle, "VAM", newPath);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "horizontalOpeningAngleStart");
+  value.horizontalOpeningAngleStart = C2xGetTokenInt(packetHandle, "VAM", newPath);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "horizontalOpeningAngleEnd");
+  value.horizontalOpeningAngleEnd = C2xGetTokenInt(packetHandle, "VAM", newPath);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "verticalOpeningAngleStart");
+  value.verticalOpeningAngleStart.isValidFlag = C2xIsTokenAvailable(packetHandle, "VAM", newPath);
+  if(value.verticalOpeningAngleStart.isValidFlag==1)
+  {
+    value.verticalOpeningAngleStart.value = C2xGetTokenInt(packetHandle, "VAM", newPath);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "verticalOpeningAngleEnd");
+  value.verticalOpeningAngleEnd.isValidFlag = C2xIsTokenAvailable(packetHandle, "VAM", newPath);
+  if(value.verticalOpeningAngleEnd.isValidFlag==1)
+  {
+    value.verticalOpeningAngleEnd.value = C2xGetTokenInt(packetHandle, "VAM", newPath);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  return result;
+}
+
+int SetVAMRadialShapeParams(LONG packetHandle, struct VAMRadialShape value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "shapeReferencePoint");
+  if(value.shapeReferencePoint.isValidFlag==1)
+  {
+    SetVAMCartesianPosition3dParams(packetHandle, value.shapeReferencePoint, newPath);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "VAM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "VAM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "range");
+  C2xSetTokenInt(packetHandle, "VAM", newPath, value.range);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "horizontalOpeningAngleStart");
+  C2xSetTokenInt(packetHandle, "VAM", newPath, value.horizontalOpeningAngleStart);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "horizontalOpeningAngleEnd");
+  C2xSetTokenInt(packetHandle, "VAM", newPath, value.horizontalOpeningAngleEnd);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "verticalOpeningAngleStart");
+  if(value.verticalOpeningAngleStart.isValidFlag==1)
+  {
+    C2xSetTokenInt(packetHandle, "VAM", newPath, value.verticalOpeningAngleStart.value);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "VAM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "VAM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "verticalOpeningAngleEnd");
+  if(value.verticalOpeningAngleEnd.isValidFlag==1)
+  {
+    C2xSetTokenInt(packetHandle, "VAM", newPath, value.verticalOpeningAngleEnd.value);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "VAM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "VAM", newPath);
+    }
+  }
+
+  return result;
+}
+
+int GetVAMRadialShapeDetailsParams(LONG packetHandle, struct VAMRadialShapeDetails value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "range");
+  value.range = C2xGetTokenInt(packetHandle, "VAM", newPath);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "horizontalOpeningAngleStart");
+  value.horizontalOpeningAngleStart = C2xGetTokenInt(packetHandle, "VAM", newPath);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "horizontalOpeningAngleEnd");
+  value.horizontalOpeningAngleEnd = C2xGetTokenInt(packetHandle, "VAM", newPath);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "verticalOpeningAngleStart");
+  value.verticalOpeningAngleStart.isValidFlag = C2xIsTokenAvailable(packetHandle, "VAM", newPath);
+  if(value.verticalOpeningAngleStart.isValidFlag==1)
+  {
+    value.verticalOpeningAngleStart.value = C2xGetTokenInt(packetHandle, "VAM", newPath);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "verticalOpeningAngleEnd");
+  value.verticalOpeningAngleEnd.isValidFlag = C2xIsTokenAvailable(packetHandle, "VAM", newPath);
+  if(value.verticalOpeningAngleEnd.isValidFlag==1)
+  {
+    value.verticalOpeningAngleEnd.value = C2xGetTokenInt(packetHandle, "VAM", newPath);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  return result;
+}
+
+int SetVAMRadialShapeDetailsParams(LONG packetHandle, struct VAMRadialShapeDetails value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "range");
+  C2xSetTokenInt(packetHandle, "VAM", newPath, value.range);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "horizontalOpeningAngleStart");
+  C2xSetTokenInt(packetHandle, "VAM", newPath, value.horizontalOpeningAngleStart);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "horizontalOpeningAngleEnd");
+  C2xSetTokenInt(packetHandle, "VAM", newPath, value.horizontalOpeningAngleEnd);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "verticalOpeningAngleStart");
+  if(value.verticalOpeningAngleStart.isValidFlag==1)
+  {
+    C2xSetTokenInt(packetHandle, "VAM", newPath, value.verticalOpeningAngleStart.value);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "VAM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "VAM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "verticalOpeningAngleEnd");
+  if(value.verticalOpeningAngleEnd.isValidFlag==1)
+  {
+    C2xSetTokenInt(packetHandle, "VAM", newPath, value.verticalOpeningAngleEnd.value);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "VAM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "VAM", newPath);
+    }
+  }
+
+  return result;
+}
+
+int GetVAMRadialShapesListParams(LONG packetHandle, struct VAMRadialShapesList value, char oldPath[])
+{
+  char newPath[300]; 
+  int i;
+  int result;
+
+  result = 0;
+
+  value.length = C2xGetTokenInt(packetHandle, "VAM", oldPath);
+  if((result = CheckLastError("VAM", gkFuncRefGet, result))==0)
+  {
+    for(i=0; i<value.length; i++)
+    {
+      snprintf(newPath, elcount(newPath), "%s[%d]", oldPath, i);
+      GetVAMRadialShapeDetailsParams(packetHandle, value.arrayValue[i], newPath);
+      result = CheckLastError("VAM", gkFuncRefGet, result);
+    }
+  }
+  return result;
+}
+
+int SetVAMRadialShapesListParams(LONG packetHandle, struct VAMRadialShapesList value, char oldPath[])
+{
+  char newPath[300]; 
+  int i;
+  int result;
+
+  result = 0;
+
+  C2xRemoveToken(packetHandle, "VAM", oldPath);
+  for(i=0; i<value.length; i++)
+  {
+    snprintf(newPath, elcount(newPath), "%s[%d]", oldPath, i);
+    SetVAMRadialShapeDetailsParams(packetHandle, value.arrayValue[i], newPath);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  return result;
+}
+
+int GetVAMRadialShapesParams(LONG packetHandle, struct VAMRadialShapes value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "refPointId");
+  value.refPointId = C2xGetTokenInt(packetHandle, "VAM", newPath);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "xCoordinate");
+  value.xCoordinate = C2xGetTokenInt(packetHandle, "VAM", newPath);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "yCoordinate");
+  value.yCoordinate = C2xGetTokenInt(packetHandle, "VAM", newPath);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "zCoordinate");
+  value.zCoordinate.isValidFlag = C2xIsTokenAvailable(packetHandle, "VAM", newPath);
+  if(value.zCoordinate.isValidFlag==1)
+  {
+    value.zCoordinate.value = C2xGetTokenInt(packetHandle, "VAM", newPath);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "radialShapesList");
+  GetVAMRadialShapesListParams(packetHandle, value.radialShapesList, newPath);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int SetVAMRadialShapesParams(LONG packetHandle, struct VAMRadialShapes value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "refPointId");
+  C2xSetTokenInt(packetHandle, "VAM", newPath, value.refPointId);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "xCoordinate");
+  C2xSetTokenInt(packetHandle, "VAM", newPath, value.xCoordinate);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "yCoordinate");
+  C2xSetTokenInt(packetHandle, "VAM", newPath, value.yCoordinate);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "zCoordinate");
+  if(value.zCoordinate.isValidFlag==1)
+  {
+    C2xSetTokenInt(packetHandle, "VAM", newPath, value.zCoordinate.value);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "VAM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "VAM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "radialShapesList");
+  SetVAMRadialShapesListParams(packetHandle, value.radialShapesList, newPath);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int GetVAMShapeParams(LONG packetHandle, struct VAMShape value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  value.choice = C2xGetTokenInt(packetHandle, "VAM", oldPath);
+
+  switch(value.choice)
+  {
+    case 0:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "rectangular");
+      GetVAMRectangularShapeParams(packetHandle, value.rectangular, newPath);
+      result = CheckLastError("VAM", gkFuncRefGet, result);
+    }
+    break;
+    case 1:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "circular");
+      GetVAMCircularShapeParams(packetHandle, value.circular, newPath);
+      result = CheckLastError("VAM", gkFuncRefGet, result);
+    }
+    break;
+    case 2:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "polygonal");
+      GetVAMPolygonalShapeParams(packetHandle, value.polygonal, newPath);
+      result = CheckLastError("VAM", gkFuncRefGet, result);
+    }
+    break;
+    case 3:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "elliptical");
+      GetVAMEllipticalShapeParams(packetHandle, value.elliptical, newPath);
+      result = CheckLastError("VAM", gkFuncRefGet, result);
+    }
+    break;
+    case 4:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "radial");
+      GetVAMRadialShapeParams(packetHandle, value.radial, newPath);
+      result = CheckLastError("VAM", gkFuncRefGet, result);
+    }
+    break;
+    case 5:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "radialShapes");
+      GetVAMRadialShapesParams(packetHandle, value.radialShapes, newPath);
+      result = CheckLastError("VAM", gkFuncRefGet, result);
+    }
+    break;
+  }
+  return result;
+}
+
+int SetVAMShapeParams(LONG packetHandle, struct VAMShape value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  switch(value.choice)
+  {
+    case 0:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "rectangular");
+      SetVAMRectangularShapeParams(packetHandle, value.rectangular, newPath);
+      result = CheckLastError("VAM", gkFuncRefGet, result);
+    }
+    break;
+    case 1:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "circular");
+      SetVAMCircularShapeParams(packetHandle, value.circular, newPath);
+      result = CheckLastError("VAM", gkFuncRefGet, result);
+    }
+    break;
+    case 2:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "polygonal");
+      SetVAMPolygonalShapeParams(packetHandle, value.polygonal, newPath);
+      result = CheckLastError("VAM", gkFuncRefGet, result);
+    }
+    break;
+    case 3:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "elliptical");
+      SetVAMEllipticalShapeParams(packetHandle, value.elliptical, newPath);
+      result = CheckLastError("VAM", gkFuncRefGet, result);
+    }
+    break;
+    case 4:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "radial");
+      SetVAMRadialShapeParams(packetHandle, value.radial, newPath);
+      result = CheckLastError("VAM", gkFuncRefGet, result);
+    }
+    break;
+    case 5:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "radialShapes");
+      SetVAMRadialShapesParams(packetHandle, value.radialShapes, newPath);
+      result = CheckLastError("VAM", gkFuncRefGet, result);
+    }
+    break;
+  }
+  return result;
+}
+
+int GetVAMVruClusterInformationParams(LONG packetHandle, struct VAMVruClusterInformation value, char oldPath[])
+{
+  char newPath[300]; 
+  int j; 
+  int k;
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "clusterId");
+  value.clusterId.isValidFlag = C2xIsTokenAvailable(packetHandle, "VAM", newPath);
+  if(value.clusterId.isValidFlag==1)
+  {
+    value.clusterId.value = C2xGetTokenInt(packetHandle, "VAM", newPath);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "clusterBoundingBoxShape");
+  value.clusterBoundingBoxShape.isValidFlag = C2xIsTokenAvailable(packetHandle, "VAM", newPath);
+  if(value.clusterBoundingBoxShape.isValidFlag==1)
+  {
+    GetVAMShapeParams(packetHandle, value.clusterBoundingBoxShape, newPath);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "clusterCardinalitySize");
+  value.clusterCardinalitySize = C2xGetTokenInt(packetHandle, "VAM", newPath);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "clusterProfiles");
+  value.clusterProfiles.isValidFlag = C2xIsTokenAvailable(packetHandle, "VAM", newPath);
+  if(value.clusterProfiles.isValidFlag==1)
+  {
+    value.clusterProfiles.isValidFlag = 1;
+    value.clusterProfiles.stringLength = C2xGetTokenLengthBit(packetHandle, "VAM", newPath);
+    if ((result = CheckLastError("VAM", gkFuncRefGet, result))==0)
+    {
+      if(value.clusterProfiles.stringLength > 0)
+      {
+        for(j=0; j<value.clusterProfiles.stringLength; j++)
+        {
+          if(C2xGetTokenBitOfBitString(packetHandle, "VAM", newPath, j) == 0)
+          {
+            value.clusterProfiles.string[j] = '0';
+          }
+          else if(C2xGetTokenBitOfBitString(packetHandle, "VAM", newPath, j) == 1)
+          {
+            value.clusterProfiles.string[j] = '1';
+          }
+
+          if(value.clusterProfiles.stringLength == 1)
+          {
+            value.clusterProfiles.string[1] = '0';
+          }
+          result = CheckLastError("VAM", gkFuncRefGet, result);
+        }
+      }
+      else
+      {
+        for(k = value.clusterProfiles.stringLength+1; k > -1; k--)
+        {
+          if(value.clusterProfiles.string[k] == '1')
+          {
+            value.clusterProfiles.string[k] = '0';
+          }
+        }
+      }
+    }
+
+  }
+  return result;
+}
+
+int SetVAMVruClusterInformationParams(LONG packetHandle, struct VAMVruClusterInformation value, char oldPath[])
+{
+  char newPath[300]; 
+  int j;
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "clusterId");
+  if(value.clusterId.isValidFlag==1)
+  {
+    C2xSetTokenInt(packetHandle, "VAM", newPath, value.clusterId.value);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "VAM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "VAM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "clusterBoundingBoxShape");
+  if(value.clusterBoundingBoxShape.isValidFlag==1)
+  {
+    SetVAMShapeParams(packetHandle, value.clusterBoundingBoxShape, newPath);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "VAM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "VAM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "clusterCardinalitySize");
+  C2xSetTokenInt(packetHandle, "VAM", newPath, value.clusterCardinalitySize);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "clusterProfiles");
+  if(value.clusterProfiles.isValidFlag==1)
+  {
+      for(j=0; j<value.clusterProfiles.stringLength; j++)
+      {
+        if(value.clusterProfiles.string[j] == '0')
+        {
+          C2xSetTokenBitOfBitString(packetHandle, "VAM", newPath, j, 0);
+        }
+        else
+        {
+          C2xSetTokenBitOfBitString(packetHandle, "VAM", newPath, j, 1);
+        }
+        result = CheckLastError("VAM", gkFuncRefGet, result);
+      }
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "VAM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "VAM", newPath);
+    }
+  }
+
+  return result;
+}
+
+int GetVAMVruClusterInformationContainerParams(LONG packetHandle, struct VAMVruClusterInformationContainer value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "vruClusterInformation");
+  GetVAMVruClusterInformationParams(packetHandle, value.vruClusterInformation, newPath);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int SetVAMVruClusterInformationContainerParams(LONG packetHandle, struct VAMVruClusterInformationContainer value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "vruClusterInformation");
+  SetVAMVruClusterInformationParams(packetHandle, value.vruClusterInformation, newPath);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int GetVAMClusterJoinInfoParams(LONG packetHandle, struct VAMClusterJoinInfo value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "clusterId");
+  value.clusterId = C2xGetTokenInt(packetHandle, "VAM", newPath);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "joinTime");
+  value.joinTime = C2xGetTokenInt(packetHandle, "VAM", newPath);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int SetVAMClusterJoinInfoParams(LONG packetHandle, struct VAMClusterJoinInfo value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "clusterId");
+  C2xSetTokenInt(packetHandle, "VAM", newPath, value.clusterId);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "joinTime");
+  if (value.joinTime < 1)
+  {
+    C2xSetTokenInt(packetHandle, "VAM", newPath, 1);
+  }
+  else if (value.joinTime > 255)
+  {
+    C2xSetTokenInt(packetHandle, "VAM", newPath, 255);
+  }
+  else
+  {
+    C2xSetTokenInt(packetHandle, "VAM", newPath, value.joinTime);
+  }
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int GetVAMClusterLeaveInfoParams(LONG packetHandle, struct VAMClusterLeaveInfo value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "clusterId");
+  value.clusterId = C2xGetTokenInt(packetHandle, "VAM", newPath);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "clusterLeaveReason");
+  value.clusterLeaveReason = C2xGetTokenInt(packetHandle, "VAM", newPath);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int SetVAMClusterLeaveInfoParams(LONG packetHandle, struct VAMClusterLeaveInfo value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "clusterId");
+  C2xSetTokenInt(packetHandle, "VAM", newPath, value.clusterId);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "clusterLeaveReason");
+  C2xSetTokenInt(packetHandle, "VAM", newPath, value.clusterLeaveReason);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int GetVAMClusterBreakupInfoParams(LONG packetHandle, struct VAMClusterBreakupInfo value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "clusterBreakupReason");
+  value.clusterBreakupReason = C2xGetTokenInt(packetHandle, "VAM", newPath);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "breakupTime");
+  value.breakupTime = C2xGetTokenInt(packetHandle, "VAM", newPath);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int SetVAMClusterBreakupInfoParams(LONG packetHandle, struct VAMClusterBreakupInfo value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "clusterBreakupReason");
+  C2xSetTokenInt(packetHandle, "VAM", newPath, value.clusterBreakupReason);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "breakupTime");
+  if (value.breakupTime < 1)
+  {
+    C2xSetTokenInt(packetHandle, "VAM", newPath, 1);
+  }
+  else if (value.breakupTime > 255)
+  {
+    C2xSetTokenInt(packetHandle, "VAM", newPath, 255);
+  }
+  else
+  {
+    C2xSetTokenInt(packetHandle, "VAM", newPath, value.breakupTime);
+  }
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int GetVAMVruClusterOperationContainerParams(LONG packetHandle, struct VAMVruClusterOperationContainer value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "clusterJoinInfo");
+  value.clusterJoinInfo.isValidFlag = C2xIsTokenAvailable(packetHandle, "VAM", newPath);
+  if(value.clusterJoinInfo.isValidFlag==1)
+  {
+    GetVAMClusterJoinInfoParams(packetHandle, value.clusterJoinInfo, newPath);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "clusterLeaveInfo");
+  value.clusterLeaveInfo.isValidFlag = C2xIsTokenAvailable(packetHandle, "VAM", newPath);
+  if(value.clusterLeaveInfo.isValidFlag==1)
+  {
+    GetVAMClusterLeaveInfoParams(packetHandle, value.clusterLeaveInfo, newPath);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "clusterBreakupInfo");
+  value.clusterBreakupInfo.isValidFlag = C2xIsTokenAvailable(packetHandle, "VAM", newPath);
+  if(value.clusterBreakupInfo.isValidFlag==1)
+  {
+    GetVAMClusterBreakupInfoParams(packetHandle, value.clusterBreakupInfo, newPath);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "clusterIdChangeTimeInfo");
+  value.clusterIdChangeTimeInfo.isValidFlag = C2xIsTokenAvailable(packetHandle, "VAM", newPath);
+  if(value.clusterIdChangeTimeInfo.isValidFlag==1)
+  {
+    value.clusterIdChangeTimeInfo.value = C2xGetTokenInt(packetHandle, "VAM", newPath);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  return result;
+}
+
+int SetVAMVruClusterOperationContainerParams(LONG packetHandle, struct VAMVruClusterOperationContainer value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "clusterJoinInfo");
+  if(value.clusterJoinInfo.isValidFlag==1)
+  {
+    SetVAMClusterJoinInfoParams(packetHandle, value.clusterJoinInfo, newPath);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "VAM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "VAM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "clusterLeaveInfo");
+  if(value.clusterLeaveInfo.isValidFlag==1)
+  {
+    SetVAMClusterLeaveInfoParams(packetHandle, value.clusterLeaveInfo, newPath);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "VAM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "VAM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "clusterBreakupInfo");
+  if(value.clusterBreakupInfo.isValidFlag==1)
+  {
+    SetVAMClusterBreakupInfoParams(packetHandle, value.clusterBreakupInfo, newPath);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "VAM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "VAM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "clusterIdChangeTimeInfo");
+  if(value.clusterIdChangeTimeInfo.isValidFlag==1)
+  {
+    if (value.clusterIdChangeTimeInfo.value < 1)
+    {
+        C2xSetTokenInt(packetHandle, "VAM", newPath, 1);
+    }
+    else if (value.clusterIdChangeTimeInfo.value > 255)
+    {
+        C2xSetTokenInt(packetHandle, "VAM", newPath, 255);
+    }
+    else
+    {
+        C2xSetTokenInt(packetHandle, "VAM", newPath, value.clusterIdChangeTimeInfo.value);
+    }
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "VAM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "VAM", newPath);
+    }
+  }
+
+  return result;
+}
+
+int GetVAMDeltaReferencePositionParams(LONG packetHandle, struct VAMDeltaReferencePosition value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "deltaLatitude");
+  value.deltaLatitude = C2xGetTokenInt(packetHandle, "VAM", newPath);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "deltaLongitude");
+  value.deltaLongitude = C2xGetTokenInt(packetHandle, "VAM", newPath);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "deltaAltitude");
+  value.deltaAltitude = C2xGetTokenInt(packetHandle, "VAM", newPath);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int SetVAMDeltaReferencePositionParams(LONG packetHandle, struct VAMDeltaReferencePosition value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "deltaLatitude");
+  C2xSetTokenInt(packetHandle, "VAM", newPath, value.deltaLatitude);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "deltaLongitude");
+  C2xSetTokenInt(packetHandle, "VAM", newPath, value.deltaLongitude);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "deltaAltitude");
+  C2xSetTokenInt(packetHandle, "VAM", newPath, value.deltaAltitude);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int GetVAMPathPointParams(LONG packetHandle, struct VAMPathPoint value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "pathPosition");
+  GetVAMDeltaReferencePositionParams(packetHandle, value.pathPosition, newPath);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "pathDeltaTime");
+  value.pathDeltaTime.isValidFlag = C2xIsTokenAvailable(packetHandle, "VAM", newPath);
+  if(value.pathDeltaTime.isValidFlag==1)
+  {
+    value.pathDeltaTime.value = C2xGetTokenInt(packetHandle, "VAM", newPath);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  return result;
+}
+
+int SetVAMPathPointParams(LONG packetHandle, struct VAMPathPoint value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "pathPosition");
+  SetVAMDeltaReferencePositionParams(packetHandle, value.pathPosition, newPath);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "pathDeltaTime");
+  if(value.pathDeltaTime.isValidFlag==1)
+  {
+    if (value.pathDeltaTime.value < 1)
+    {
+        C2xSetTokenInt(packetHandle, "VAM", newPath, 1);
+    }
+    else if (value.pathDeltaTime.value > 65535)
+    {
+        C2xSetTokenInt(packetHandle, "VAM", newPath, 65535);
+    }
+    else
+    {
+        C2xSetTokenInt(packetHandle, "VAM", newPath, value.pathDeltaTime.value);
+    }
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "VAM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "VAM", newPath);
+    }
+  }
+
+  return result;
+}
+
+int GetVAMPathHistoryParams(LONG packetHandle, struct VAMPathHistory value, char oldPath[])
+{
+  char newPath[300]; 
+  int i;
+  int result;
+
+  result = 0;
+
+  value.length = C2xGetTokenInt(packetHandle, "VAM", oldPath);
+  if((result = CheckLastError("VAM", gkFuncRefGet, result))==0)
+  {
+    for(i=0; i<value.length; i++)
+    {
+      snprintf(newPath, elcount(newPath), "%s[%d]", oldPath, i);
+      GetVAMPathPointParams(packetHandle, value.arrayValue[i], newPath);
+      result = CheckLastError("VAM", gkFuncRefGet, result);
+    }
+  }
+  return result;
+}
+
+int SetVAMPathHistoryParams(LONG packetHandle, struct VAMPathHistory value, char oldPath[])
+{
+  char newPath[300]; 
+  int i;
+  int result;
+
+  result = 0;
+
+  C2xRemoveToken(packetHandle, "VAM", oldPath);
+  for(i=0; i<value.length; i++)
+  {
+    snprintf(newPath, elcount(newPath), "%s[%d]", oldPath, i);
+    SetVAMPathPointParams(packetHandle, value.arrayValue[i], newPath);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  return result;
+}
+
+int GetVAMPosConfidenceEllipseParams(LONG packetHandle, struct VAMPosConfidenceEllipse value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "semiMajorConfidence");
+  value.semiMajorConfidence = C2xGetTokenInt(packetHandle, "VAM", newPath);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "semiMinorConfidence");
+  value.semiMinorConfidence = C2xGetTokenInt(packetHandle, "VAM", newPath);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "semiMajorOrientation");
+  value.semiMajorOrientation = C2xGetTokenInt(packetHandle, "VAM", newPath);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int SetVAMPosConfidenceEllipseParams(LONG packetHandle, struct VAMPosConfidenceEllipse value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "semiMajorConfidence");
+  C2xSetTokenInt(packetHandle, "VAM", newPath, value.semiMajorConfidence);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "semiMinorConfidence");
+  C2xSetTokenInt(packetHandle, "VAM", newPath, value.semiMinorConfidence);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "semiMajorOrientation");
+  C2xSetTokenInt(packetHandle, "VAM", newPath, value.semiMajorOrientation);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int GetVAMPathDeltaTimeChoiceParams(LONG packetHandle, struct VAMPathDeltaTimeChoice value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  value.choice = C2xGetTokenInt(packetHandle, "VAM", oldPath);
+
+  switch(value.choice)
+  {
+    case 0:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "deltaTimeHighPrecision");
+      value.deltaTimeHighPrecision = C2xGetTokenInt(packetHandle, "VAM", newPath);
+      result = CheckLastError("VAM", gkFuncRefGet, result);
+    }
+    break;
+    case 1:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "deltaTimeBigRange");
+      value.deltaTimeBigRange = C2xGetTokenInt(packetHandle, "VAM", newPath);
+      result = CheckLastError("VAM", gkFuncRefGet, result);
+    }
+    break;
+    case 2:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "deltaTimeMidRange");
+      value.deltaTimeMidRange = C2xGetTokenInt(packetHandle, "VAM", newPath);
+      result = CheckLastError("VAM", gkFuncRefGet, result);
+    }
+    break;
+  }
+  return result;
+}
+
+int SetVAMPathDeltaTimeChoiceParams(LONG packetHandle, struct VAMPathDeltaTimeChoice value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  switch(value.choice)
+  {
+    case 0:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "deltaTimeHighPrecision");
+      C2xSetTokenInt(packetHandle, "VAM", newPath, value.deltaTimeHighPrecision);
+      result = CheckLastError("VAM", gkFuncRefGet, result);
+    }
+    break;
+    case 1:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "deltaTimeBigRange");
+      C2xSetTokenInt(packetHandle, "VAM", newPath, value.deltaTimeBigRange);
+      result = CheckLastError("VAM", gkFuncRefGet, result);
+    }
+    break;
+    case 2:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "deltaTimeMidRange");
+      C2xSetTokenInt(packetHandle, "VAM", newPath, value.deltaTimeMidRange);
+      result = CheckLastError("VAM", gkFuncRefGet, result);
+    }
+    break;
+  }
+  return result;
+}
+
+int GetVAMPathPointPredictedParams(LONG packetHandle, struct VAMPathPointPredicted value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "deltaLatitude");
+  value.deltaLatitude = C2xGetTokenInt(packetHandle, "VAM", newPath);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "deltaLongitude");
+  value.deltaLongitude = C2xGetTokenInt(packetHandle, "VAM", newPath);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "horizontalPositionConfidence");
+  value.horizontalPositionConfidence.isValidFlag = C2xIsTokenAvailable(packetHandle, "VAM", newPath);
+  if(value.horizontalPositionConfidence.isValidFlag==1)
+  {
+    GetVAMPosConfidenceEllipseParams(packetHandle, value.horizontalPositionConfidence, newPath);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "deltaAltitude");
+  value.deltaAltitude.isValidFlag = C2xIsTokenAvailable(packetHandle, "VAM", newPath);
+  if(value.deltaAltitude.isValidFlag==1)
+  {
+    value.deltaAltitude.value = C2xGetTokenInt(packetHandle, "VAM", newPath);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "altitudeConfidence");
+  value.altitudeConfidence.isValidFlag = C2xIsTokenAvailable(packetHandle, "VAM", newPath);
+  if(value.altitudeConfidence.isValidFlag==1)
+  {
+    value.altitudeConfidence.value = C2xGetTokenInt(packetHandle, "VAM", newPath);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "pathDeltaTime");
+  value.pathDeltaTime.isValidFlag = C2xIsTokenAvailable(packetHandle, "VAM", newPath);
+  if(value.pathDeltaTime.isValidFlag==1)
+  {
+    GetVAMPathDeltaTimeChoiceParams(packetHandle, value.pathDeltaTime, newPath);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "symmetricAreaOffset");
+  value.symmetricAreaOffset.isValidFlag = C2xIsTokenAvailable(packetHandle, "VAM", newPath);
+  if(value.symmetricAreaOffset.isValidFlag==1)
+  {
+    value.symmetricAreaOffset.value = C2xGetTokenInt(packetHandle, "VAM", newPath);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "asymmetricAreaOffset");
+  value.asymmetricAreaOffset.isValidFlag = C2xIsTokenAvailable(packetHandle, "VAM", newPath);
+  if(value.asymmetricAreaOffset.isValidFlag==1)
+  {
+    value.asymmetricAreaOffset.value = C2xGetTokenInt(packetHandle, "VAM", newPath);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  return result;
+}
+
+int SetVAMPathPointPredictedParams(LONG packetHandle, struct VAMPathPointPredicted value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "deltaLatitude");
+  C2xSetTokenInt(packetHandle, "VAM", newPath, value.deltaLatitude);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "deltaLongitude");
+  C2xSetTokenInt(packetHandle, "VAM", newPath, value.deltaLongitude);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "horizontalPositionConfidence");
+  if(value.horizontalPositionConfidence.isValidFlag==1)
+  {
+    SetVAMPosConfidenceEllipseParams(packetHandle, value.horizontalPositionConfidence, newPath);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "VAM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "VAM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "deltaAltitude");
+  if(value.deltaAltitude.isValidFlag==1)
+  {
+    C2xSetTokenInt(packetHandle, "VAM", newPath, value.deltaAltitude.value);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "VAM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "VAM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "altitudeConfidence");
+  if(value.altitudeConfidence.isValidFlag==1)
+  {
+    C2xSetTokenInt(packetHandle, "VAM", newPath, value.altitudeConfidence.value);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "VAM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "VAM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "pathDeltaTime");
+  if(value.pathDeltaTime.isValidFlag==1)
+  {
+    SetVAMPathDeltaTimeChoiceParams(packetHandle, value.pathDeltaTime, newPath);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "VAM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "VAM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "symmetricAreaOffset");
+  if(value.symmetricAreaOffset.isValidFlag==1)
+  {
+    C2xSetTokenInt(packetHandle, "VAM", newPath, value.symmetricAreaOffset.value);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "VAM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "VAM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "asymmetricAreaOffset");
+  if(value.asymmetricAreaOffset.isValidFlag==1)
+  {
+    C2xSetTokenInt(packetHandle, "VAM", newPath, value.asymmetricAreaOffset.value);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "VAM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "VAM", newPath);
+    }
+  }
+
+  return result;
+}
+
+int GetVAMPathPredictedParams(LONG packetHandle, struct VAMPathPredicted value, char oldPath[])
+{
+  char newPath[300]; 
+  int i;
+  int result;
+
+  result = 0;
+
+  value.length = C2xGetTokenInt(packetHandle, "VAM", oldPath);
+  if((result = CheckLastError("VAM", gkFuncRefGet, result))==0)
+  {
+    for(i=0; i<value.length; i++)
+    {
+      snprintf(newPath, elcount(newPath), "%s[%d]", oldPath, i);
+      GetVAMPathPointPredictedParams(packetHandle, value.arrayValue[i], newPath);
+      result = CheckLastError("VAM", gkFuncRefGet, result);
+    }
+  }
+  return result;
+}
+
+int SetVAMPathPredictedParams(LONG packetHandle, struct VAMPathPredicted value, char oldPath[])
+{
+  char newPath[300]; 
+  int i;
+  int result;
+
+  result = 0;
+
+  C2xRemoveToken(packetHandle, "VAM", oldPath);
+  for(i=0; i<value.length; i++)
+  {
+    snprintf(newPath, elcount(newPath), "%s[%d]", oldPath, i);
+    SetVAMPathPointPredictedParams(packetHandle, value.arrayValue[i], newPath);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  return result;
+}
+
+int GetVAMSafeDistanceIndicationParams(LONG packetHandle, struct VAMSafeDistanceIndication value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "subjectStation");
+  value.subjectStation.isValidFlag = C2xIsTokenAvailable(packetHandle, "VAM", newPath);
+  if(value.subjectStation.isValidFlag==1)
+  {
+    value.subjectStation.value = C2xGetTokenInt64(packetHandle, "VAM", newPath);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "safeDistanceIndicator");
+  value.safeDistanceIndicator = C2xGetTokenInt64(packetHandle, "VAM", newPath);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "timeToCollision");
+  value.timeToCollision.isValidFlag = C2xIsTokenAvailable(packetHandle, "VAM", newPath);
+  if(value.timeToCollision.isValidFlag==1)
+  {
+    value.timeToCollision.value = C2xGetTokenInt(packetHandle, "VAM", newPath);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  return result;
+}
+
+int SetVAMSafeDistanceIndicationParams(LONG packetHandle, struct VAMSafeDistanceIndication value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "subjectStation");
+  if(value.subjectStation.isValidFlag==1)
+  {
+    C2xSetTokenInt64(packetHandle, "VAM", newPath, value.subjectStation.value);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "VAM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "VAM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "safeDistanceIndicator");
+  C2xSetTokenInt64(packetHandle, "VAM", newPath, value.safeDistanceIndicator);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "timeToCollision");
+  if(value.timeToCollision.isValidFlag==1)
+  {
+    C2xSetTokenInt(packetHandle, "VAM", newPath, value.timeToCollision.value);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "VAM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "VAM", newPath);
+    }
+  }
+
+  return result;
+}
+
+int GetVAMSequenceOfSafeDistanceIndicationParams(LONG packetHandle, struct VAMSequenceOfSafeDistanceIndication value, char oldPath[])
+{
+  char newPath[300]; 
+  int i;
+  int result;
+
+  result = 0;
+
+  value.length = C2xGetTokenInt(packetHandle, "VAM", oldPath);
+  if((result = CheckLastError("VAM", gkFuncRefGet, result))==0)
+  {
+    for(i=0; i<value.length; i++)
+    {
+      snprintf(newPath, elcount(newPath), "%s[%d]", oldPath, i);
+      GetVAMSafeDistanceIndicationParams(packetHandle, value.arrayValue[i], newPath);
+      result = CheckLastError("VAM", gkFuncRefGet, result);
+    }
+  }
+  return result;
+}
+
+int SetVAMSequenceOfSafeDistanceIndicationParams(LONG packetHandle, struct VAMSequenceOfSafeDistanceIndication value, char oldPath[])
+{
+  char newPath[300]; 
+  int i;
+  int result;
+
+  result = 0;
+
+  C2xRemoveToken(packetHandle, "VAM", oldPath);
+  for(i=0; i<value.length; i++)
+  {
+    snprintf(newPath, elcount(newPath), "%s[%d]", oldPath, i);
+    SetVAMSafeDistanceIndicationParams(packetHandle, value.arrayValue[i], newPath);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  return result;
+}
+
+int GetVAMTrajectoryInterceptionIndicationParams(LONG packetHandle, struct VAMTrajectoryInterceptionIndication value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "subjectStation");
+  value.subjectStation.isValidFlag = C2xIsTokenAvailable(packetHandle, "VAM", newPath);
+  if(value.subjectStation.isValidFlag==1)
+  {
+    value.subjectStation.value = C2xGetTokenInt64(packetHandle, "VAM", newPath);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "trajectoryInterceptionProbability");
+  value.trajectoryInterceptionProbability = C2xGetTokenInt(packetHandle, "VAM", newPath);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "trajectoryInterceptionConfidence");
+  value.trajectoryInterceptionConfidence.isValidFlag = C2xIsTokenAvailable(packetHandle, "VAM", newPath);
+  if(value.trajectoryInterceptionConfidence.isValidFlag==1)
+  {
+    value.trajectoryInterceptionConfidence.value = C2xGetTokenInt(packetHandle, "VAM", newPath);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  return result;
+}
+
+int SetVAMTrajectoryInterceptionIndicationParams(LONG packetHandle, struct VAMTrajectoryInterceptionIndication value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "subjectStation");
+  if(value.subjectStation.isValidFlag==1)
+  {
+    C2xSetTokenInt64(packetHandle, "VAM", newPath, value.subjectStation.value);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "VAM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "VAM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "trajectoryInterceptionProbability");
+  C2xSetTokenInt(packetHandle, "VAM", newPath, value.trajectoryInterceptionProbability);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "trajectoryInterceptionConfidence");
+  if(value.trajectoryInterceptionConfidence.isValidFlag==1)
+  {
+    C2xSetTokenInt(packetHandle, "VAM", newPath, value.trajectoryInterceptionConfidence.value);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "VAM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "VAM", newPath);
+    }
+  }
+
+  return result;
+}
+
+int GetVAMSequenceOfTrajectoryInterceptionIndicationParams(LONG packetHandle, struct VAMSequenceOfTrajectoryInterceptionIndication value, char oldPath[])
+{
+  char newPath[300]; 
+  int i;
+  int result;
+
+  result = 0;
+
+  value.length = C2xGetTokenInt(packetHandle, "VAM", oldPath);
+  if((result = CheckLastError("VAM", gkFuncRefGet, result))==0)
+  {
+    for(i=0; i<value.length; i++)
+    {
+      snprintf(newPath, elcount(newPath), "%s[%d]", oldPath, i);
+      GetVAMTrajectoryInterceptionIndicationParams(packetHandle, value.arrayValue[i], newPath);
+      result = CheckLastError("VAM", gkFuncRefGet, result);
+    }
+  }
+  return result;
+}
+
+int SetVAMSequenceOfTrajectoryInterceptionIndicationParams(LONG packetHandle, struct VAMSequenceOfTrajectoryInterceptionIndication value, char oldPath[])
+{
+  char newPath[300]; 
+  int i;
+  int result;
+
+  result = 0;
+
+  C2xRemoveToken(packetHandle, "VAM", oldPath);
+  for(i=0; i<value.length; i++)
+  {
+    snprintf(newPath, elcount(newPath), "%s[%d]", oldPath, i);
+    SetVAMTrajectoryInterceptionIndicationParams(packetHandle, value.arrayValue[i], newPath);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  return result;
+}
+
+int GetVAMAccelerationChangeIndicationParams(LONG packetHandle, struct VAMAccelerationChangeIndication value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "accelOrDecel");
+  value.accelOrDecel = C2xGetTokenInt(packetHandle, "VAM", newPath);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "actionDeltaTime");
+  value.actionDeltaTime = C2xGetTokenInt(packetHandle, "VAM", newPath);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int SetVAMAccelerationChangeIndicationParams(LONG packetHandle, struct VAMAccelerationChangeIndication value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "accelOrDecel");
+  C2xSetTokenInt(packetHandle, "VAM", newPath, value.accelOrDecel);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "actionDeltaTime");
+  C2xSetTokenInt(packetHandle, "VAM", newPath, value.actionDeltaTime);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int GetVAMHeadingChangeIndicationParams(LONG packetHandle, struct VAMHeadingChangeIndication value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "direction");
+  value.direction = C2xGetTokenInt(packetHandle, "VAM", newPath);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "actionDeltaTime");
+  value.actionDeltaTime = C2xGetTokenInt(packetHandle, "VAM", newPath);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int SetVAMHeadingChangeIndicationParams(LONG packetHandle, struct VAMHeadingChangeIndication value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "direction");
+  C2xSetTokenInt(packetHandle, "VAM", newPath, value.direction);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "actionDeltaTime");
+  C2xSetTokenInt(packetHandle, "VAM", newPath, value.actionDeltaTime);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int GetVAMStabilityChangeIndicationParams(LONG packetHandle, struct VAMStabilityChangeIndication value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "lossProbability");
+  value.lossProbability = C2xGetTokenInt(packetHandle, "VAM", newPath);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "actionDeltaTime");
+  value.actionDeltaTime = C2xGetTokenInt(packetHandle, "VAM", newPath);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int SetVAMStabilityChangeIndicationParams(LONG packetHandle, struct VAMStabilityChangeIndication value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "lossProbability");
+  C2xSetTokenInt(packetHandle, "VAM", newPath, value.lossProbability);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "actionDeltaTime");
+  C2xSetTokenInt(packetHandle, "VAM", newPath, value.actionDeltaTime);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int GetVAMVruMotionPredictionContainerParams(LONG packetHandle, struct VAMVruMotionPredictionContainer value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "pathHistory");
+  value.pathHistory.isValidFlag = C2xIsTokenAvailable(packetHandle, "VAM", newPath);
+  if(value.pathHistory.isValidFlag==1)
+  {
+    GetVAMPathHistoryParams(packetHandle, value.pathHistory, newPath);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "pathPrediction");
+  value.pathPrediction.isValidFlag = C2xIsTokenAvailable(packetHandle, "VAM", newPath);
+  if(value.pathPrediction.isValidFlag==1)
+  {
+    GetVAMPathPredictedParams(packetHandle, value.pathPrediction, newPath);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "safeDistance");
+  value.safeDistance.isValidFlag = C2xIsTokenAvailable(packetHandle, "VAM", newPath);
+  if(value.safeDistance.isValidFlag==1)
+  {
+    GetVAMSequenceOfSafeDistanceIndicationParams(packetHandle, value.safeDistance, newPath);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "trajectoryInterceptionIndication");
+  value.trajectoryInterceptionIndication.isValidFlag = C2xIsTokenAvailable(packetHandle, "VAM", newPath);
+  if(value.trajectoryInterceptionIndication.isValidFlag==1)
+  {
+    GetVAMSequenceOfTrajectoryInterceptionIndicationParams(packetHandle, value.trajectoryInterceptionIndication, newPath);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "accelerationChangeIndication");
+  value.accelerationChangeIndication.isValidFlag = C2xIsTokenAvailable(packetHandle, "VAM", newPath);
+  if(value.accelerationChangeIndication.isValidFlag==1)
+  {
+    GetVAMAccelerationChangeIndicationParams(packetHandle, value.accelerationChangeIndication, newPath);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "headingChangeIndication");
+  value.headingChangeIndication.isValidFlag = C2xIsTokenAvailable(packetHandle, "VAM", newPath);
+  if(value.headingChangeIndication.isValidFlag==1)
+  {
+    GetVAMHeadingChangeIndicationParams(packetHandle, value.headingChangeIndication, newPath);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "stabilityChangeIndication");
+  value.stabilityChangeIndication.isValidFlag = C2xIsTokenAvailable(packetHandle, "VAM", newPath);
+  if(value.stabilityChangeIndication.isValidFlag==1)
+  {
+    GetVAMStabilityChangeIndicationParams(packetHandle, value.stabilityChangeIndication, newPath);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  return result;
+}
+
+int SetVAMVruMotionPredictionContainerParams(LONG packetHandle, struct VAMVruMotionPredictionContainer value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "pathHistory");
+  if(value.pathHistory.isValidFlag==1)
+  {
+    SetVAMPathHistoryParams(packetHandle, value.pathHistory, newPath);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "VAM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "VAM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "pathPrediction");
+  if(value.pathPrediction.isValidFlag==1)
+  {
+    SetVAMPathPredictedParams(packetHandle, value.pathPrediction, newPath);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "VAM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "VAM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "safeDistance");
+  if(value.safeDistance.isValidFlag==1)
+  {
+    SetVAMSequenceOfSafeDistanceIndicationParams(packetHandle, value.safeDistance, newPath);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "VAM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "VAM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "trajectoryInterceptionIndication");
+  if(value.trajectoryInterceptionIndication.isValidFlag==1)
+  {
+    SetVAMSequenceOfTrajectoryInterceptionIndicationParams(packetHandle, value.trajectoryInterceptionIndication, newPath);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "VAM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "VAM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "accelerationChangeIndication");
+  if(value.accelerationChangeIndication.isValidFlag==1)
+  {
+    SetVAMAccelerationChangeIndicationParams(packetHandle, value.accelerationChangeIndication, newPath);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "VAM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "VAM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "headingChangeIndication");
+  if(value.headingChangeIndication.isValidFlag==1)
+  {
+    SetVAMHeadingChangeIndicationParams(packetHandle, value.headingChangeIndication, newPath);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "VAM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "VAM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "stabilityChangeIndication");
+  if(value.stabilityChangeIndication.isValidFlag==1)
+  {
+    SetVAMStabilityChangeIndicationParams(packetHandle, value.stabilityChangeIndication, newPath);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "VAM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "VAM", newPath);
+    }
+  }
+
+  return result;
+}
+
+int GetVAMVamParametersParams(LONG packetHandle, struct VAMVamParameters value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "basicContainer");
+  GetVAMBasicContainerParams(packetHandle, value.basicContainer, newPath);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "vruHighFrequencyContainer");
+  GetVAMVruHighFrequencyContainerParams(packetHandle, value.vruHighFrequencyContainer, newPath);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "vruLowFrequencyContainer");
+  value.vruLowFrequencyContainer.isValidFlag = C2xIsTokenAvailable(packetHandle, "VAM", newPath);
+  if(value.vruLowFrequencyContainer.isValidFlag==1)
+  {
+    GetVAMVruLowFrequencyContainerParams(packetHandle, value.vruLowFrequencyContainer, newPath);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "vruClusterInformationContainer");
+  value.vruClusterInformationContainer.isValidFlag = C2xIsTokenAvailable(packetHandle, "VAM", newPath);
+  if(value.vruClusterInformationContainer.isValidFlag==1)
+  {
+    GetVAMVruClusterInformationContainerParams(packetHandle, value.vruClusterInformationContainer, newPath);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "vruClusterOperationContainer");
+  value.vruClusterOperationContainer.isValidFlag = C2xIsTokenAvailable(packetHandle, "VAM", newPath);
+  if(value.vruClusterOperationContainer.isValidFlag==1)
+  {
+    GetVAMVruClusterOperationContainerParams(packetHandle, value.vruClusterOperationContainer, newPath);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "vruMotionPredictionContainer");
+  value.vruMotionPredictionContainer.isValidFlag = C2xIsTokenAvailable(packetHandle, "VAM", newPath);
+  if(value.vruMotionPredictionContainer.isValidFlag==1)
+  {
+    GetVAMVruMotionPredictionContainerParams(packetHandle, value.vruMotionPredictionContainer, newPath);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  return result;
+}
+
+int SetVAMVamParametersParams(LONG packetHandle, struct VAMVamParameters value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "basicContainer");
+  SetVAMBasicContainerParams(packetHandle, value.basicContainer, newPath);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "vruHighFrequencyContainer");
+  SetVAMVruHighFrequencyContainerParams(packetHandle, value.vruHighFrequencyContainer, newPath);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "vruLowFrequencyContainer");
+  if(value.vruLowFrequencyContainer.isValidFlag==1)
+  {
+    SetVAMVruLowFrequencyContainerParams(packetHandle, value.vruLowFrequencyContainer, newPath);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "VAM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "VAM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "vruClusterInformationContainer");
+  if(value.vruClusterInformationContainer.isValidFlag==1)
+  {
+    SetVAMVruClusterInformationContainerParams(packetHandle, value.vruClusterInformationContainer, newPath);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "VAM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "VAM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "vruClusterOperationContainer");
+  if(value.vruClusterOperationContainer.isValidFlag==1)
+  {
+    SetVAMVruClusterOperationContainerParams(packetHandle, value.vruClusterOperationContainer, newPath);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "VAM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "VAM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "vruMotionPredictionContainer");
+  if(value.vruMotionPredictionContainer.isValidFlag==1)
+  {
+    SetVAMVruMotionPredictionContainerParams(packetHandle, value.vruMotionPredictionContainer, newPath);
+    result = CheckLastError("VAM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "VAM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "VAM", newPath);
+    }
+  }
+
+  return result;
+}
+
+int GetVAMVruAwarenessParams(LONG packetHandle, struct VAMVruAwareness value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "generationDeltaTime");
+  value.generationDeltaTime = C2xGetTokenInt(packetHandle, "VAM", newPath);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "vamParameters");
+  GetVAMVamParametersParams(packetHandle, value.vamParameters, newPath);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int SetVAMVruAwarenessParams(LONG packetHandle, struct VAMVruAwareness value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "generationDeltaTime");
+  C2xSetTokenInt(packetHandle, "VAM", newPath, value.generationDeltaTime);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "vamParameters");
+  SetVAMVamParametersParams(packetHandle, value.vamParameters, newPath);
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int API_GetVAMParams(LONG packetHandle, struct VAM value)
+{
+  int result;
+  result = 0;
+
+  value.header.isValidFlag = 1;
+  GetVAMItsPduHeaderParams(packetHandle, value.header, "header");
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  value.vam.isValidFlag = 1;
+  GetVAMVruAwarenessParams(packetHandle, value.vam, "vam");
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int API_SetVAMParams(LONG packetHandle, struct VAM value)
+{
+  int result;
+  result = 0;
+
+  SetVAMItsPduHeaderParams(packetHandle, value.header, "header");
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  SetVAMVruAwarenessParams(packetHandle, value.vam, "vam");
+  result = CheckLastError("VAM", gkFuncRefGet, result);
+
+  return result;
+}
+

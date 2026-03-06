@@ -1,0 +1,65 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<FunctionBusLibrary Version="36" FormatMajorVersion="3" FormatMinorVersion="1" FormatPatchVersion="4">
+  <Namespaces>
+    <Namespace IsDefinedAsHidden="False" IsSystemDefined="False" Name="CHAdeMO">
+      <Subnamespaces>
+        <Namespace IsDefinedAsHidden="False" IsSystemDefined="False" Name="Simulation">
+          <DistributedObjects>
+            <DistributedObject GenerateDotNetAPI="True" Name="EVSE">
+              <AttributeValues>
+                <AttributeValue Definition="_CHAdeMO::DataTypes::ICANController" InitialValue="Clusters::CHAdeMO_Network_EVSE::EVSE_Controller" InitialValueType="String" />
+                <AttributeValue Definition="_SystemAttributes::DispatchToAnalysis" InitialValue="2" InitialValueType="Int32" />
+              </AttributeValues>
+              <DataType>
+                <ModifiedDOIF Reverse="False" IsDOReference="False" Interface="_CHAdeMO::DataTypes::IChargePoint" />
+              </DataType>
+              <MemberData>
+                <DOMemberDataHolder Name="MemberData" />
+              </MemberData>
+            </DistributedObject>
+          </DistributedObjects>
+        </Namespace>
+      </Subnamespaces>
+    </Namespace>
+    <Namespace IsDefinedAsHidden="False" IsSystemDefined="False" Name="Clusters">
+      <Subnamespaces>
+        <Namespace IsDefinedAsHidden="False" IsSystemDefined="False" Name="CHAdeMO_Network_EVSE">
+          <AdditionalInfo>
+            <ClusterInfo Provider="BindingCommon" Creator="Manual" />
+            <CommonBindingApi Provider="BindingCommon" Creator="Manual">
+              <CommonIP>
+                <CommonIPApi />
+              </CommonIP>
+              <CommonCAN>
+                <CommonCANApi>
+                  <CANControllers>
+                    <CANController CANNetworkAccess="Clusters::CHAdeMO_Network_EVSEAccess" Node="Clusters::EVSE_Node" Name="EVSE_Controller" />
+                  </CANControllers>
+                </CommonCANApi>
+              </CommonCAN>
+            </CommonBindingApi>
+          </AdditionalInfo>
+        </Namespace>
+      </Subnamespaces>
+      <AdditionalInfo>
+        <ClusterIndependentCommonBindingApi Provider="BindingCommon" Creator="Manual">
+          <CommonNetworkAccess>
+            <CommonNetworkAccessApi>
+              <NetworkAccesses>
+                <CANNetworkAccess HasBaudRateValue="False" HasBaudRateFDValue="False" HasBaudRateXLValue="False" NetworkName="CHAdeMO_Network_EVSE" HasChannelValue="True" Channel="1" Name="CHAdeMO_Network_EVSEAccess" />
+              </NetworkAccesses>
+            </CommonNetworkAccessApi>
+          </CommonNetworkAccess>
+          <CommonNodes>
+            <CommonNodeApi>
+              <Nodes>
+                <Node Name="EVSE_Node" />
+              </Nodes>
+            </CommonNodeApi>
+          </CommonNodes>
+        </ClusterIndependentCommonBindingApi>
+        <SystemInfo Provider="BindingCommon" Creator="Manual" />
+      </AdditionalInfo>
+    </Namespace>
+  </Namespaces>
+</FunctionBusLibrary>

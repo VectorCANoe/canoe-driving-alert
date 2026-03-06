@@ -1,0 +1,181 @@
+/*@!Encoding:1252*/
+includes
+{
+}
+
+variables
+{
+  ////////////////////////////////////////
+  
+  enum States
+  {
+    eUnavailable,               // 0
+    eDark,                      // 1
+    eStopThenProceed,           // 2
+    eStopAndRemain,             // 3  (Red)
+    ePreMovement,               // 4  (RedYellow)
+    ePermissiveMovementAllowed, // 5  (Green - permissive)
+    eProtectedMovementAllowed,  // 6  (Green - protected)
+    ePermissiveClearance,       // 7  (Yellow - permissive)
+    eProtectedClearance,        // 8  (Yellow - protected)
+    eCautionConflictingTraffic  // 9
+  };
+  struct SignalGroup
+  {
+    word id;
+    word stateTime[4];
+    word nextStateChange;
+    word states[4];
+    word currentStateIndex;
+  };
+  
+struct SignalGroup signalGroup_1[5] =
+{
+    {
+      /* id */ 1,
+      /* stateTime */ { 210,  30,  120,  30 },
+      /* nextStateChange */ 30,
+      /* states */ { 3,  4,  5,  7 },
+      /* currentStateIndex */ 1
+    },
+    {
+      /* id */ 2,
+      /* stateTime */ { 300,  30,  30,  30 },
+      /* nextStateChange */ 30,
+      /* states */ { 3,  4,  6,  8 },
+      /* currentStateIndex */ 1
+    },
+    {
+      /* id */ 3,
+      /* stateTime */ {  270,  30,  60,  30 },
+      /* nextStateChange */ 270,
+      /* states */ { 3,  4,  5,  7 },
+      /* currentStateIndex */ 0
+    },
+    {
+      /* id */ 4,
+      /* stateTime */ {  210,  30,  120,  30 },
+      /* nextStateChange */ 90,
+      /* states */ { 3,  4,  5,  7 },
+      /* currentStateIndex */ 0
+    },
+    {
+      /* id */ 5,
+      /* stateTime */ { 300,  30,  30,  30 },
+      /* nextStateChange */ 180,
+      /* states */ { 3,  4,  6,  8 },
+      /* currentStateIndex */ 0
+    }
+};
+struct SignalGroup signalGroup_2[4] =
+{
+    {
+      /* id */ 1,
+      /* stateTime */ {  120,  30,  180,  30 },
+      /* nextStateChange */ 30,
+      /* states */ { 3,  4,  5,  7 },
+      /* currentStateIndex */ 1
+    },
+    {
+      /* id */ 2,
+      /* stateTime */ {  270,  30,  30,  30 },
+      /* nextStateChange */ 30,
+      /* states */ { 3,  4,  6,  8 },
+      /* currentStateIndex */ 1
+    },
+    {
+      /* id */ 3,
+      /* stateTime */ {  240,  30,  60,  30 },
+      /* nextStateChange */ 240,
+      /* states */ { 3,  4,  5,  7 },
+      /* currentStateIndex */ 0
+    },
+    {
+      /* id */ 4,
+      /* stateTime */ {  210,  30,  90,  30 },
+      /* nextStateChange */ 90,
+      /* states */ { 3,  4,  5,  7 },
+      /* currentStateIndex */ 0
+    }
+};
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// SPAT
+////////////////////////////////////////////////////////////////////////////////
+
+void UpdateSpat(struct SPAT spatPdu, dword signalGroupCnt, dword intersectionId, struct SignalGroup signalGroup[])
+{
+  word eventState;
+  word iSignalGroup;
+
+  int64 nowUtc; // utc 0.1 seconds since 1970
+  dword minGreenTime;
+	
+  int64 itsTimestamp = 0; // original time stamp
+  int64 itsTS2004 = 0; // converted to 2004 format
+  int64 minuteOfTheYear;
+  int64 msInMinute;
+  enum enumRefTime{en2004 = 0, en2010 = 1};
+  long utcTime[9];
+
+  itsTimestamp = C2xGetITSTimestamp();
+  itsTS2004 = C2xConvertTimeToMSSinceUTC(itsTimestamp, en2004);
+  C2xConvertMod32TsToUTC(itsTS2004, en2004, elCount(utcTime), utcTime);
+  minuteOfTheYear = utcTime[8]  * 1440 + utcTime[3] * 60 + utcTime[2];
+  msInMinute = utcTime[1] * 1000 + utcTime[0]; 
+
+  nowUtc = itsTimestamp / 100;
+  spatPdu.spat.intersections.arrayValue[intersectionId].moy.isValidFlag =1;
+  spatPdu.spat.intersections.arrayValue[intersectionId].moy.value = minuteOfTheYear;
+  spatPdu.spat.intersections.arrayValue[intersectionId].timeStamp.isValidFlag =1;
+  spatPdu.spat.intersections.arrayValue[intersectionId].timeStamp.value = msInMinute;
+
+  for (iSignalGroup = 0 ; iSignalGroup < signalGroupCnt ; ++iSignalGroup)
+  {
+    signalGroup[iSignalGroup].nextStateChange -= 1;
+    if (signalGroup[iSignalGroup].nextStateChange == 0)
+    {
+      if (signalGroup[iSignalGroup].currentStateIndex == 3)
+        signalGroup[iSignalGroup].currentStateIndex = 0;
+      else
+        signalGroup[iSignalGroup].currentStateIndex += 1;
+      
+      signalGroup[iSignalGroup].nextStateChange = signalGroup[iSignalGroup].stateTime[signalGroup[iSignalGroup].currentStateIndex];
+    }
+    
+    eventState = signalGroup[iSignalGroup].states[signalGroup[iSignalGroup].currentStateIndex];
+    spatPdu.spat.intersections.arrayValue[intersectionId].states.arrayValue[iSignalGroup].state_time_speed.arrayValue[0].eventState = eventState;
+    
+    if (eventState == eProtectedMovementAllowed || eventState == ePermissiveMovementAllowed)
+    {
+      minGreenTime = signalGroup[iSignalGroup].nextStateChange / 10;
+      if (minGreenTime > 3)
+        minGreenTime = 3;
+
+      spatPdu.spat.intersections.arrayValue[intersectionId].states.arrayValue[iSignalGroup].state_time_speed.arrayValue[0].timing.minEndTime = (nowUtc + minGreenTime * 10) % 36000;
+      spatPdu.spat.intersections.arrayValue[intersectionId].states.arrayValue[iSignalGroup].state_time_speed.arrayValue[0].timing.maxEndTime.isValidFlag = 1;
+      spatPdu.spat.intersections.arrayValue[intersectionId].states.arrayValue[iSignalGroup].state_time_speed.arrayValue[0].timing.maxEndTime.value = (nowUtc + signalGroup[iSignalGroup].nextStateChange * 10) % 36000;
+    }
+    else
+    {
+      spatPdu.spat.intersections.arrayValue[intersectionId].states.arrayValue[iSignalGroup].state_time_speed.arrayValue[0].timing.minEndTime = (nowUtc + signalGroup[iSignalGroup].nextStateChange * 10) % 36000;
+      spatPdu.spat.intersections.arrayValue[intersectionId].states.arrayValue[iSignalGroup].state_time_speed.arrayValue[0].timing.maxEndTime.isValidFlag = 0;
+    }
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// Util
+////////////////////////////////////////////////////////////////////////////////
+
+void DisableIntersection()
+{
+  C2xDisableMsg("MAP") ;
+  C2xDisableMsg("SPAT") ;
+  @sysvar::RSU_TrafficLight::State = -1;
+  @sysvar::RSU_TrafficLight::TimeToSwitch = 0.0;
+}
+////////////////////////////////////////////////////////////////////////////////
+// EOF
+////////////////////////////////////////////////////////////////////////////////

@@ -1,0 +1,696 @@
+﻿/*@!Encoding:65001*/
+variables
+{
+  // "Global Variables"
+  enum systemState {sOFF, sIDLE, sRUNNING, sSENSOR_DEFECT_INFO, sSTOPPED};
+  enum conditionOfPlacedPCB {DEFECT, GOOD, NOTHING_PLACED};
+  
+  int counterConveyorAnimation = 0;
+  int currentPlacedPCB = NOTHING_PLACED;
+  int startLock = 0;
+  
+  char componentCondition[5][10];
+  
+  msTimer SystemProcessTimer; 
+  msTimer PCBInspectionSensorsAliveTimer;
+  
+  // PCB Inspection Variables
+  int systemRuns = 0;
+  msTimer PCBInspectionTimer;
+  
+  // Sorting Station Variables
+  msTimer SortingStationGoodTimer;
+  msTimer SortingStationDefectTimer;
+  msTimer SortingStationPneumaticTimer;
+  
+  // Remote Quality Control Variables
+  int pcbRingbufferIdx = 0;
+  int i;
+  int j;
+    
+  // Array of PCB Structs with ID and condition
+  struct
+  {
+    int pcbID;
+    char pcbCondition[10];
+  } PCB[3];
+  
+  struct
+  {
+    int id;
+    char condition[10];
+  } temp;
+
+  msTimer QualityControlTimer;
+}
+
+
+
+on start 
+{
+  // System Flow
+  sysSetVariableLong(sysvar::General::SystemState, sIDLE);
+  PCBInspectionSensorsAliveTimer.set(1000);
+  
+  // PCB Inspection 
+  setPictureBoxImage("System", "ConveyorPCBInspection", "ConveyorPCBInspectionDefault.png");
+  sysSetVariableLong(sysvar::PCBInspection::InspectionOutcomeLED, 0);
+  
+  $SystemSimulation::pcbInspectionSensorS1.sensorData.id = "S1";
+  $SystemSimulation::pcbInspectionSensorS1.sensorData.operatingState = "active";
+  $SystemSimulation::pcbInspectionSensorS1.sensorData.detection = 0;
+  $SystemSimulation::pcbInspectionSensorS1.sensorData.alive = 1;
+  
+  $SystemSimulation::pcbInspectionSensorS2.sensorData.id = "S2";
+  $SystemSimulation::pcbInspectionSensorS2.sensorData.operatingState = "active";
+  $SystemSimulation::pcbInspectionSensorS2.sensorData.detection = 0;
+  $SystemSimulation::pcbInspectionSensorS2.sensorData.alive = 1;
+  
+  // Sorting Station
+  setPictureBoxImage("System", "ConveyorSortingStation", "ConveyorSortingStationDefault.png");  
+  
+  $SystemSimulation::sortingStationConveyorParticipant.handoverSensorS3.id = "S3";
+  $SystemSimulation::sortingStationConveyorParticipant.handoverSensorS3.operatingState = "active";
+  $SystemSimulation::sortingStationConveyorParticipant.handoverSensorS3.detection = 0;
+  $SystemSimulation::sortingStationConveyorParticipant.handoverSensorS3.alive = 1;
+  
+  $SystemSimulation::sortingStationConveyorParticipant.sortingStationSensorS4.id = "S4";
+  $SystemSimulation::sortingStationConveyorParticipant.sortingStationSensorS4.operatingState = "active";
+  $SystemSimulation::sortingStationConveyorParticipant.sortingStationSensorS4.detection = 0;
+  $SystemSimulation::sortingStationConveyorParticipant.sortingStationSensorS4.alive = 1;
+  
+  $SystemSimulation::sortingStationConveyorParticipant.sortingStationSensorS5.id = "S5";
+  $SystemSimulation::sortingStationConveyorParticipant.sortingStationSensorS5.operatingState = "active";
+  $SystemSimulation::sortingStationConveyorParticipant.sortingStationSensorS5.detection = 0;
+  $SystemSimulation::sortingStationConveyorParticipant.sortingStationSensorS5.alive = 1;
+  
+  $SystemSimulation::evaluationParticipant.dataWriter.pcbIntactCount = 0;
+  $SystemSimulation::evaluationParticipant.dataWriter.pcbDefectCount = 0;
+  
+  // Remote Quality Control
+  sysSetVariableLong(sysvar::QualityControl::ThirdLastPCBID, 0);
+  sysSetVariableLong(sysvar::QualityControl::SecondLastPCBID, 0);
+  sysSetVariableLong(sysvar::QualityControl::LastPCBID, 0);
+  sysSetVariableString(sysvar::QualityControl::ConditionThridLastPCB, "---");
+  sysSetVariableString(sysvar::QualityControl::ConditionSecondLastPCB, "---");
+  sysSetVariableString(sysvar::QualityControl::ConditionLastPCB, "---");
+}
+
+
+
+on stopMeasurement
+{  
+  // Control Panel
+  setControlVisibility("System", "PlacePCBMessage", 0);
+  
+  // System Flow
+  sysSetVariableLong(sysvar::General::SystemState, sOFF);
+  
+  setControlVisibility("System", "QualityControlOn", 0);
+  setControlVisibility("System", "QualityControlOff", 1);
+  
+  pcbRingbufferIdx = 0;
+}
+
+
+
+//****************************** START CONTROL PANEL ******************************//
+
+// Place Good PCB Button
+on sysvar General::PCBIntactButton
+{
+  if (sysGetVariableLong(sysvar::General::PCBIntactButton) == 1 && startLock == 0)
+  {
+    currentPlacedPCB = GOOD;
+    setPictureBoxImage("System", "ConveyorPCBInspection", "ConveyorPCBInspection1good.png");
+    setControlVisibility("ControlPanel", "PlacePCBMessage", 0);
+    setControlVisibility("System", "PersonNormal", 0);
+    setControlVisibility("System", "PersonPlacingPCB", 1);
+  }
+}
+
+// Place Defect PCB Button
+on sysvar General::PCBDefectButton
+{
+  if (sysGetVariableLong(sysvar::General::PCBDefectButton) == 1 && startLock == 0)
+  {
+    currentPlacedPCB = DEFECT;
+    setPictureBoxImage("System", "ConveyorPCBInspection", "ConveyorPCBInspection1defect.png");
+    setControlVisibility("ControlPanel", "PlacePCBMessage", 0);
+    setControlVisibility("System", "PersonNormal", 0);
+    setControlVisibility("System", "PersonPlacingPCB", 1);
+  }
+}
+
+// Start Conveyor Button
+on sysvar General::StartSystem
+{
+  if (sysGetVariableLong(sysvar::General::StartSystem) == 1)
+  {   
+    if (startLock == 0 && currentPlacedPCB != NOTHING_PLACED && sysGetVariableLong(sysvar::General::SystemState) != sSTOPPED) 
+    {
+      startLock = 1;
+      sysSetVariableLong(sysvar::General::RunFinished, 0);
+      if (sysGetVariableLong(sysvar::General::SystemState) != sSENSOR_DEFECT_INFO) 
+      {
+        sysSetVariableLong(sysvar::General::SystemState, sRUNNING);
+      }
+      setControlVisibility("System", "PersonNormal", 1);
+      setControlVisibility("System", "PersonPlacingPCB", 0);
+      SystemProcessTimer.setCyclic(750);
+    }
+
+    if (startLock == 2)
+    {
+      setControlVisibility("ControlPanel", "WaitToStartAgain", 1);
+    }
+    
+    if (currentPlacedPCB == NOTHING_PLACED)
+    {
+      setControlVisibility("ControlPanel", "PlacePCBMessage", 1);
+    }
+  }
+}
+
+// Disconnect Sensor S1 Button
+on sysvar Sensors::S1Disconnected
+{
+  if (sysGetVariableLong(sysvar::Sensors::S1Disconnected) == 1 && SystemSimulation::pcbInspectionSensorS1.IsConnected())
+  {
+    $SystemSimulation::pcbInspectionSensorS1.sensorData.operatingState = "defect";
+    SystemSimulation::pcbInspectionSensorS1.Disconnect();
+    setControlVisibility("System", "S1_PCBInspection", 0);
+    setControlVisibility("System", "Sensor1Defect", 1);
+    
+    if (SystemSimulation::pcbInspectionSensorS2.IsConnected())
+    {
+      sysSetVariableLong(sysvar::General::SystemState, sSENSOR_DEFECT_INFO); 
+      setControlVisibility("System", "InfoNoSensor", 0);
+      setControlVisibility("System", "InfoS1", 0);
+      setControlVisibility("System", "InfoS2", 1);
+    }
+    else
+    {
+      sysSetVariableLong(sysvar::General::SystemState, sSTOPPED); 
+      setControlVisibility("System", "InfoNoSensor", 1);
+      setControlVisibility("System", "InfoS1", 0);
+      setControlVisibility("System", "InfoS2", 0);
+      SystemProcessTimer.cancel();
+    }
+  }
+}
+
+// Disconnect Sensor S2 Button
+on sysvar Sensors::S2Disconnected
+{
+  if (sysGetVariableLong(sysvar::Sensors::S2Disconnected) == 1 && SystemSimulation::pcbInspectionSensorS2.IsConnected())
+  {
+    $SystemSimulation::pcbInspectionSensorS2.sensorData.operatingState = "defect";
+    SystemSimulation::pcbInspectionSensorS2.Disconnect();
+    setControlVisibility("System", "S2_PCBInspection", 0);
+    setControlVisibility("System", "Sensor2Defect", 1);
+    
+    if (SystemSimulation::pcbInspectionSensorS1.IsConnected())
+    {
+      sysSetVariableLong(sysvar::General::SystemState, sSENSOR_DEFECT_INFO); 
+      setControlVisibility("System", "InfoNoSensor", 0);
+      setControlVisibility("System", "InfoS1", 1);
+      setControlVisibility("System", "InfoS2", 0);
+    }
+    else
+    {
+      sysSetVariableLong(sysvar::General::SystemState, sSTOPPED); 
+      setControlVisibility("System", "InfoNoSensor", 1);
+      setControlVisibility("System", "InfoS1", 0);
+      setControlVisibility("System", "InfoS2", 0);
+      SystemProcessTimer.cancel();
+    }
+  }
+}
+
+void ContinueSystemAfterSensorRepair()
+{
+  if (sysGetVariableLong(sysvar::General::SystemState) == sSENSOR_DEFECT_INFO)
+  {
+    if (startLock == 0) sysSetVariableLong(sysvar::General::SystemState, sIDLE); 
+    if (startLock == 2) 
+    {
+      sysSetVariableLong(sysvar::General::SystemState, sRUNNING); 
+      SystemProcessTimer.setCyclic(750); 
+    }
+  }
+  if (sysGetVariableLong(sysvar::General::SystemState) == sSTOPPED)
+  {
+    sysSetVariableLong(sysvar::General::SystemState, sSENSOR_DEFECT_INFO); 
+    if (startLock == 2) 
+    {
+      SystemProcessTimer.setCyclic(750); 
+    }
+  }
+}
+
+// Repair Sensor S1 Button
+on sysvar Sensors::RepairS1
+{
+  if (sysGetVariableLong(sysvar::Sensors::RepairS1) == 1 && !SystemSimulation::pcbInspectionSensorS1.IsConnected())
+  {
+    SystemSimulation::pcbInspectionSensorS1.Connect();
+    $SystemSimulation::pcbInspectionSensorS1.sensorData.operatingState = "active";
+    setControlVisibility("System", "S1_PCBInspection", 1);
+    setControlVisibility("System", "Sensor1Defect", 0);
+    setControlVisibility("System", "InfoNoSensor", 0);
+      setControlVisibility("System", "InfoS1", 1);
+      setControlVisibility("System", "InfoS2", 0);
+    
+    ContinueSystemAfterSensorRepair();
+  }
+}
+
+// Repair Sensor S2 Button
+on sysvar Sensors::RepairS2
+{
+  if (sysGetVariableLong(sysvar::Sensors::RepairS2) == 1 && !SystemSimulation::pcbInspectionSensorS2.IsConnected())
+  {
+    SystemSimulation::pcbInspectionSensorS2.Connect();
+    $SystemSimulation::pcbInspectionSensorS2.sensorData.operatingState = "active";
+    setControlVisibility("System", "S2_PCBInspection", 1);
+    setControlVisibility("System", "Sensor2Defect", 0);
+    setControlVisibility("System", "InfoNoSensor", 0);
+    
+    if (SystemSimulation::pcbInspectionSensorS1.IsConnected())
+    {
+      setControlVisibility("System", "InfoS1", 1);
+      setControlVisibility("System", "InfoS2", 0);
+    }
+    else
+    {
+      setControlVisibility("System", "InfoS1", 0);
+      setControlVisibility("System", "InfoS2", 1);
+    }
+    
+    ContinueSystemAfterSensorRepair();
+  }
+}
+
+//****************************** END CONTROL PANEL ******************************//
+
+
+
+//****************************** START PCB INSPECTION ******************************//
+
+void SetPCBComponents()
+{
+  $SystemSimulation::pcbInspectionCamera.cameraData.cam.operatingState = "ok";
+  
+  if (systemRuns == 0) 
+  {
+    $SystemSimulation::pcbInspectionCamera.cameraData.analyzedPCB.serialNumber = 1;  
+    systemRuns = 1;
+  }
+  else
+  {
+    $SystemSimulation::pcbInspectionCamera.cameraData.analyzedPCB.serialNumber++;
+  }
+  
+  $SystemSimulation::pcbInspectionCamera.cameraData.analyzedPCB.comp.r1.id = 81;
+  $SystemSimulation::pcbInspectionCamera.cameraData.analyzedPCB.comp.r1.resistance = 10000;
+  $SystemSimulation::pcbInspectionCamera.cameraData.analyzedPCB.comp.r1.componentCondition = "intact";
+  
+  $SystemSimulation::pcbInspectionCamera.cameraData.analyzedPCB.comp.r2.id = 82;
+  $SystemSimulation::pcbInspectionCamera.cameraData.analyzedPCB.comp.r2.resistance = 1000;
+  $SystemSimulation::pcbInspectionCamera.cameraData.analyzedPCB.comp.r2.componentCondition = "intact";
+  
+  $SystemSimulation::pcbInspectionCamera.cameraData.analyzedPCB.comp.c1.id = 91;
+  $SystemSimulation::pcbInspectionCamera.cameraData.analyzedPCB.comp.c1.capacity = 50;
+  $SystemSimulation::pcbInspectionCamera.cameraData.analyzedPCB.comp.c1.componentCondition = "intact";
+  
+  $SystemSimulation::pcbInspectionCamera.cameraData.analyzedPCB.comp.c2.id = 92;
+  $SystemSimulation::pcbInspectionCamera.cameraData.analyzedPCB.comp.c2.capacity = 38;
+  $SystemSimulation::pcbInspectionCamera.cameraData.analyzedPCB.comp.c2.componentCondition = "intact";
+  if(currentPlacedPCB == DEFECT)
+  {
+    $SystemSimulation::pcbInspectionCamera.cameraData.analyzedPCB.comp.c2.componentCondition = "defect";
+  }
+  
+  $SystemSimulation::pcbInspectionCamera.cameraData.analyzedPCB.comp.ic1.id = 51;
+  $SystemSimulation::pcbInspectionCamera.cameraData.analyzedPCB.comp.ic1.componentCondition = "intact";
+}
+
+void ProcessPCBInspection()
+{
+  if (SystemSimulation::pcbInspectionSensorS1.IsConnected())
+  {
+    setPictureBoxImage("System", "S1_PCBInspection", "SensorUpDetection.png");
+    $SystemSimulation::pcbInspectionSensorS1.sensorData.detection = 1;
+  }  
+  if (SystemSimulation::pcbInspectionSensorS2.IsConnected())
+  {
+    setPictureBoxImage("System", "S2_PCBInspection", "SensorUpDetection.png");
+    $SystemSimulation::pcbInspectionSensorS2.sensorData.detection = 1;
+  }
+  
+  setControlVisibility("System", "CameraPCBInspectionOff", 0);  
+  setControlVisibility("System", "CameraPCBInspectionOn", 1);  
+    
+  PCBInspectionTimer.set(1200);
+}
+
+void EvaluatePCBComponents()
+{
+  SetPCBComponents();
+  
+  if(mbstrncmp($SystemSimulation::pcbInspectionCamera.cameraData.analyzedPCB.comp.r1.componentCondition,"intact",10) == 0 &&
+    mbstrncmp($SystemSimulation::pcbInspectionCamera.cameraData.analyzedPCB.comp.r2.componentCondition,"intact",10) == 0  &&
+    mbstrncmp($SystemSimulation::pcbInspectionCamera.cameraData.analyzedPCB.comp.c1.componentCondition,"intact",10) == 0  &&
+    mbstrncmp($SystemSimulation::pcbInspectionCamera.cameraData.analyzedPCB.comp.c2.componentCondition,"intact",10) == 0  &&
+    mbstrncmp($SystemSimulation::pcbInspectionCamera.cameraData.analyzedPCB.comp.ic1.componentCondition,"intact",10) == 0)
+  {
+    sysSetVariableLong(sysvar::PCBInspection::InspectionOutcomeLED, 1); // Green LED
+    $SystemSimulation::pcbInspectionCamera.cameraData.analyzedPCB.overallCondition = "intact";
+  }
+  else
+  {
+    sysSetVariableLong(sysvar::PCBInspection::InspectionOutcomeLED, 2); // Red LED
+    $SystemSimulation::pcbInspectionCamera.cameraData.analyzedPCB.overallCondition = "defect";
+  }
+}
+
+on timer PCBInspectionTimer 
+{
+  EvaluatePCBComponents();
+  
+  if (SystemSimulation::pcbInspectionSensorS1.IsConnected())
+  {
+    $SystemSimulation::pcbInspectionSensorS1.sensorData.detection = 0;
+  }  
+  if (SystemSimulation::pcbInspectionSensorS2.IsConnected())
+  {
+    $SystemSimulation::pcbInspectionSensorS2.sensorData.detection = 0;
+  }
+  
+  SystemProcessTimer.setCyclic(750);
+}
+
+//****************************** END PCB INSPECTION ******************************//
+
+
+
+//****************************** START SORTING STATION ******************************//
+
+void ProcessSortingStationGood()
+{   
+  SortingStationGoodTimer.set(1200);
+}
+
+void ProcessSortingStationDefect()
+{
+  SortingStationDefectTimer.set(1200);
+}
+
+void CleanupSortingStation()
+{
+  setPictureBoxImage("System", "ConveyorSortingStation", "ConveyorSortingStationDefault.png");
+  setControlVisibility("ControlPanel", "WaitToStartAgain", 0);
+  counterConveyorAnimation = 0;
+  sysSetVariableLong(sysvar::General::RunFinished, 1);
+  if (sysGetVariableLong(sysvar::General::SystemState) != sSENSOR_DEFECT_INFO) 
+  {
+    sysSetVariableLong(sysvar::General::SystemState, sIDLE);
+  }   
+  sysSetVariableLong(sysvar::PCBInspection::InspectionOutcomeLED, 0);
+  
+  SortingStationPneumaticTimer.set(400);
+}
+
+on timer SortingStationGoodTimer
+{  
+  $SystemSimulation::evaluationParticipant.dataWriter.pcbIntactCount++;
+  
+  setControlVisibility("System", "SortingPneumaticGoodOff", 0);
+  setControlVisibility("System", "SortingPneumaticGoodOn", 1);
+  
+  if ($SystemSimulation::evaluationParticipant.receivedData.pcbIntactCount < 1)
+  {
+    setPictureBoxImage("System", "SortingBoxGood", "SortedBoxGood.png");
+  }
+  else
+  {
+    setPictureBoxImage("System", "SortingBoxGood", "SortedBoxMultipleGood.png");
+  }
+  
+  // Cleanup
+  setPictureBoxImage("System", "S4_SortingGood", "SensorRightNoDetection.png");
+  $SystemSimulation::sortingStationConveyorParticipant.sortingStationSensorS4.detection = 0;
+  CleanupSortingStation(); 
+}
+
+on timer SortingStationDefectTimer
+{
+  $SystemSimulation::evaluationParticipant.dataWriter.pcbDefectCount++;
+  
+  setControlVisibility("System", "SortingPneumaticDefectOff", 0);
+  setControlVisibility("System", "SortingPneumaticDefectOn", 1);
+  
+  if ($SystemSimulation::evaluationParticipant.receivedData.pcbDefectCount < 1)
+  {
+    setPictureBoxImage("System", "SortingBoxDefect", "SortedBoxDefect.png");
+  }
+  else
+  {
+    setPictureBoxImage("System", "SortingBoxDefect", "SortedBoxMultipleDefect.png");
+  }
+  
+  // Cleanup
+  setPictureBoxImage("System", "S5_SortingDefect", "SensorRightNoDetection.png");
+  $SystemSimulation::sortingStationConveyorParticipant.sortingStationSensorS5.detection = 0;
+  CleanupSortingStation();
+}
+
+on timer SortingStationPneumaticTimer
+{
+  setControlVisibility("System", "SortingPneumaticGoodOff", 1);
+  setControlVisibility("System", "SortingPneumaticGoodOn", 0);
+  setControlVisibility("System", "SortingPneumaticDefectOff", 1);
+  setControlVisibility("System", "SortingPneumaticDefectOn", 0);
+}
+
+//****************************** END SORTING STATION ******************************//
+
+
+
+//****************************** START REMOTE QUALITY CONTROL ******************************//
+
+on sysvar QualityControl::CurrentPCBID 
+{   
+  // CurrentPCBID system variable is mapped to remoteQualityControlReader.receivedData.analyzedPCB.serialNumber
+  PCB[pcbRingbufferIdx].pcbID = sysGetVariableLong(sysvar::QualityControl::CurrentPCBID);
+  
+  // CurrentPCBCondition system variable is mapped to remoteQualityControlReader.receivedData.analyzedPCB.overallCondition
+  sysGetVariableString(sysvar::QualityControl::CurrentPCBCondition, PCB[pcbRingbufferIdx].pcbCondition, 10);
+    
+  pcbRingbufferIdx++;  
+  
+  if (pcbRingbufferIdx > 2)
+  {
+    pcbRingbufferIdx = 0;
+  }
+}
+
+// Quality Control Button
+on sysvar QualityControl::ButtonQualityControl
+{
+  if (sysGetVariableLong(sysvar::QualityControl::ButtonQualityControl) == 1) 
+  {
+    setControlVisibility("System", "QualityControlOff", 0);
+    setControlVisibility("System", "QualityControlOn", 1);
+    SystemSimulation::remoteQualityControlReader.Connect();
+    
+    QualityControlTimer.set(5000);
+  }
+}
+
+on timer QualityControlTimer
+{
+  setControlVisibility("System", "QualityControlOff", 1);
+  setControlVisibility("System", "QualityControlOn", 0);
+  
+  SystemSimulation::remoteQualityControlReader.Disconnect();
+  
+  // Sort Struct accorindg the ID
+  for (i = 0; i < 2; i++) 
+  {
+    for (j = i+1; j < 3; j++) 
+    {
+      if (PCB[i].pcbID > PCB[j].pcbID) 
+      {
+        temp.id = PCB[i].pcbID;
+        mbstrncpy(temp.condition, PCB[i].pcbCondition, 10);
+        
+        PCB[i].pcbID = PCB[j].pcbID;
+        mbstrncpy(PCB[i].pcbCondition, PCB[j].pcbCondition, 10);
+        
+        PCB[j].pcbID = temp.id;
+        mbstrncpy(PCB[j].pcbCondition, temp.condition, 10);
+      }
+    }
+  }
+  
+  sysSetVariableLong(sysvar::QualityControl::ThirdLastPCBID, PCB[0].pcbID);
+  sysSetVariableLong(sysvar::QualityControl::SecondLastPCBID, PCB[1].pcbID);
+  sysSetVariableLong(sysvar::QualityControl::LastPCBID, PCB[2].pcbID);
+  
+  sysSetVariableString(sysvar::QualityControl::ConditionThridLastPCB, PCB[0].pcbCondition);
+  sysSetVariableString(sysvar::QualityControl::ConditionSecondLastPCB, PCB[1].pcbCondition);
+  sysSetVariableString(sysvar::QualityControl::ConditionLastPCB, PCB[2].pcbCondition);
+}
+
+//****************************** START REMOTE QUALITY CONTROL ******************************//
+
+
+
+//****************************** START SYSTEM FLOW ******************************//
+
+// System State Machine
+void ProgramFlow(int currentPlacedPCB)
+{
+  
+  switch (counterConveyorAnimation)
+  {
+    case 0:
+      if(currentPlacedPCB) setPictureBoxImage("System", "ConveyorPCBInspection", "ConveyorPCBInspection2good.png");
+      else setPictureBoxImage("System", "ConveyorPCBInspection", "ConveyorPCBInspection2defect.png");
+      counterConveyorAnimation++;
+      startLock = 2;
+      break;
+    case 1:
+      if(currentPlacedPCB) setPictureBoxImage("System", "ConveyorPCBInspection", "ConveyorPCBInspection3good.png");
+      else setPictureBoxImage("System", "ConveyorPCBInspection", "ConveyorPCBInspection3defect.png");
+      counterConveyorAnimation++;
+      break;
+    case 2:
+      if(currentPlacedPCB) setPictureBoxImage("System", "ConveyorPCBInspection", "ConveyorPCBInspection4good.png");
+      else setPictureBoxImage("System", "ConveyorPCBInspection", "ConveyorPCBInspection4defect.png");
+      counterConveyorAnimation++;
+      break;
+    case 3:
+      if(currentPlacedPCB) setPictureBoxImage("System", "ConveyorPCBInspection", "ConveyorPCBInspection5good.png");
+      else setPictureBoxImage("System", "ConveyorPCBInspection", "ConveyorPCBInspection5defect.png");
+      counterConveyorAnimation++;
+      break;
+    case 4: // Stop for PCB Inspection
+      if(currentPlacedPCB) setPictureBoxImage("System", "ConveyorPCBInspection", "ConveyorPCBInspection6good.png");
+      else setPictureBoxImage("System", "ConveyorPCBInspection", "ConveyorPCBInspection6defect.png");
+      SystemProcessTimer.cancel(); 
+      ProcessPCBInspection();
+      counterConveyorAnimation++;
+      break;
+    case 5: 
+      if(currentPlacedPCB) setPictureBoxImage("System", "ConveyorPCBInspection", "ConveyorPCBInspection7good.png");
+      else setPictureBoxImage("System", "ConveyorPCBInspection", "ConveyorPCBInspection7defect.png");
+      // Clean up PCB Inspection
+      if (SystemSimulation::pcbInspectionSensorS1.IsConnected())
+      {
+        setPictureBoxImage("System", "S1_PCBInspection", "SensorUpNoDetection.png");  
+        $SystemSimulation::pcbInspectionSensorS1.sensorData.detection = 0;
+      }
+      if (SystemSimulation::pcbInspectionSensorS2.IsConnected())
+      {
+        setPictureBoxImage("System", "S2_PCBInspection", "SensorUpNoDetection.png");   
+        $SystemSimulation::pcbInspectionSensorS2.sensorData.detection = 0;
+      }
+      setControlVisibility("System", "CameraPCBInspectionOff", 1);  
+      setControlVisibility("System", "CameraPCBInspectionOn", 0);
+      counterConveyorAnimation++;
+      break;
+    case 6:
+      setPictureBoxImage("System", "ConveyorPCBInspection", "ConveyorPCBInspectionDefault.png");
+      if(currentPlacedPCB) setPictureBoxImage("System", "ConveyorSortingStation", "ConveyorSortingStation1good.png");
+      else setPictureBoxImage("System", "ConveyorSortingStation", "ConveyorSortingStation1defect.png");
+      setPictureBoxImage("System", "S3_Handover", "SensorLeftDetection.png");
+      $SystemSimulation::sortingStationConveyorParticipant.handoverSensorS3.detection = 1;
+      counterConveyorAnimation++;
+      break;
+    case 7:
+      if(currentPlacedPCB) setPictureBoxImage("System", "ConveyorSortingStation", "ConveyorSortingStation2good.png");
+      else setPictureBoxImage("System", "ConveyorSortingStation", "ConveyorSortingStation2defect.png");
+      setPictureBoxImage("System", "S3_Handover", "SensorLeftNoDetection.png");
+      $SystemSimulation::sortingStationConveyorParticipant.handoverSensorS3.detection = 0;
+      counterConveyorAnimation++;
+      break;
+    case 8:
+      if(currentPlacedPCB) setPictureBoxImage("System", "ConveyorSortingStation", "ConveyorSortingStation3good.png");
+      else setPictureBoxImage("System", "ConveyorSortingStation", "ConveyorSortingStation3defect.png");
+      counterConveyorAnimation++;
+      break;
+    case 9:
+      if(currentPlacedPCB) setPictureBoxImage("System", "ConveyorSortingStation", "ConveyorSortingStation4good.png");
+      else setPictureBoxImage("System", "ConveyorSortingStation", "ConveyorSortingStation4defect.png");
+      counterConveyorAnimation++;
+      break;
+    case 10: // Sorting good PCB
+      if(currentPlacedPCB) setPictureBoxImage("System", "ConveyorSortingStation", "ConveyorSortingStation5good.png");
+      else setPictureBoxImage("System", "ConveyorSortingStation", "ConveyorSortingStation5defect.png");
+      setPictureBoxImage("System", "S4_SortingGood", "SensorRightDetection.png");
+      $SystemSimulation::sortingStationConveyorParticipant.sortingStationSensorS4.detection = 1;
+      if (mbstrncmp($SystemSimulation::pcbInspectionMonitoring.receivedData.analyzedPCB.overallCondition,"intact",10) == 0)
+      {
+        SystemProcessTimer.cancel();
+        ProcessSortingStationGood();
+      }
+      else
+      {
+        counterConveyorAnimation++;
+      }
+      break;
+    case 11:
+      if(currentPlacedPCB) setPictureBoxImage("System", "ConveyorSortingStation", "ConveyorSortingStation6good.png");
+      else setPictureBoxImage("System", "ConveyorSortingStation", "ConveyorSortingStation6defect.png");
+      setPictureBoxImage("System", "S4_SortingGood", "SensorRightNoDetection.png");
+      $SystemSimulation::sortingStationConveyorParticipant.sortingStationSensorS4.detection = 0;
+      counterConveyorAnimation++;
+      break;
+    case 12: // Sorting defect PCB
+      if(currentPlacedPCB) setPictureBoxImage("System", "ConveyorSortingStation", "ConveyorSortingStation7good.png");
+      else setPictureBoxImage("System", "ConveyorSortingStation", "ConveyorSortingStation7defect.png");
+      setPictureBoxImage("System", "S5_SortingDefect", "SensorRightDetection.png");
+      $SystemSimulation::sortingStationConveyorParticipant.sortingStationSensorS5.detection = 1;
+      SystemProcessTimer.cancel();
+      ProcessSortingStationDefect();
+      break;
+    default:
+      break;
+  }
+}
+
+// Main timer
+on timer SystemProcessTimer 
+{
+  ProgramFlow(currentPlacedPCB);
+}
+
+// Cleanup after one PCB was processed 
+on sysvar General::RunFinished
+{
+  if (sysGetVariableLong(sysvar::General::RunFinished) == 1)
+  {
+    startLock = 0;
+    currentPlacedPCB = NOTHING_PLACED;
+  }
+}
+
+// Periodic alive message for S1 and S2
+on timer PCBInspectionSensorsAliveTimer
+{
+  if (SystemSimulation::pcbInspectionSensorS1.IsConnected())
+  {
+    $SystemSimulation::pcbInspectionSensorS1.sensorData.alive = 1;
+  }
+  if (SystemSimulation::pcbInspectionSensorS2.IsConnected())
+  {
+    $SystemSimulation::pcbInspectionSensorS2.sensorData.alive = 1;
+  }
+  
+  PCBInspectionSensorsAliveTimer.set(1000);
+}
+
+//****************************** END SYSTEM FLOW ******************************//

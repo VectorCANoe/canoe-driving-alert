@@ -1,0 +1,175 @@
+/*@!Encoding:1252*/
+variables
+{
+  long gIviStatus = 1;
+}
+
+on start
+{
+  C2xRegisterCallback(1, "OnTxIVIM", "IVIM"); // 1 = Tx
+}
+
+on key 'n'
+{
+  gIviStatus = 0; // New
+}
+
+on key 'u'
+{
+  gIviStatus = 1; // Update
+}
+
+on key 'c'
+{
+  gIviStatus = 2; // Cancel
+}
+
+void OnTxIVIM(LONG packet)
+{
+  int64 itsTimestamp = 0; // original time stamp
+  int64 itsTS2004 = 0; // converted to 2004 format
+  int64 itsTS2004mod32signed = 0;
+  enum enumRefTime{en2004 = 0, en2010 = 1};
+
+  itsTimestamp = C2xGetITSTimestamp();
+  itsTS2004 = C2xConvertTimeToMSSinceUTC(itsTimestamp, en2004);
+
+  // geo_eh
+  C2xSetTokenInt(packet, "geo_eh", "lpvGNAddrStationType", 15); // RoadSideUnit
+  C2xSetTokenInt(packet, "geo_eh", "lpvLatitude", 488537269);
+  C2xSetTokenInt(packet, "geo_eh", "lpvLongitude", 91224169 - 10000);
+  C2xSetTokenInt(packet, "geo_eh", "lpvPositionAccuracyIndicator", 1);
+  C2xSetTokenInt(packet, "geo_eh", "areaPosLatitude", 488443848);
+  C2xSetTokenInt(packet, "geo_eh", "areaPosLongitude", 91138924);
+  C2xSetTokenInt(packet, "geo_eh", "distanceA", 2800);
+  
+  // header
+  C2xSetTokenInt64(packet, "IVIM", "header.protocolVersion", 2);
+  C2xSetTokenInt64(packet, "IVIM", "header.messageID", 6); // ivim
+  C2xSetTokenInt64(packet, "IVIM", "header.stationID", 1);
+  
+  // ivi.mandatory
+  C2xSetTokenInt64(packet, "IVIM", "ivi.mandatory.iviIdentificationNumber", 42);
+  C2xSetTokenInt64(packet, "IVIM", "ivi.mandatory.iviStatus", gIviStatus);
+  C2xSetTokenInt64(packet, "IVIM", "ivi.mandatory.timeStamp", itsTS2004); // update
+  
+  /////////////
+  //// GLC ////
+  /////////////
+  
+  // ivi.optional[0].glc (Speed limit 120 km/h)
+  C2xSetTokenInt64(packet, "IVIM", "ivi.optional[0].glc.referencePosition.latitude", 488537269);
+  C2xSetTokenInt64(packet, "IVIM", "ivi.optional[0].glc.referencePosition.longitude", 91224169);
+  
+  C2xSetTokenInt64(packet, "IVIM", "ivi.optional[0].glc.parts[0].zoneId", 1);
+  C2xSetTokenInt64(packet, "IVIM", "ivi.optional[0].glc.parts[0].zone.segment_carriagewayOrLane.line.deltaPositions[0].deltaLatitude", 7139);
+  C2xSetTokenInt64(packet, "IVIM", "ivi.optional[0].glc.parts[0].zone.segment_carriagewayOrLane.line.deltaPositions[0].deltaLongitude", 4549);
+  C2xSetTokenInt64(packet, "IVIM", "ivi.optional[0].glc.parts[0].zone.segment_carriagewayOrLane.line.deltaPositions[1].deltaLatitude", 2252);
+  C2xSetTokenInt64(packet, "IVIM", "ivi.optional[0].glc.parts[0].zone.segment_carriagewayOrLane.line.deltaPositions[1].deltaLongitude", 1480);
+  
+  C2xSetTokenInt64(packet, "IVIM", "ivi.optional[0].glc.parts[1].zoneId", 2);
+  C2xSetTokenInt64(packet, "IVIM", "ivi.optional[0].glc.parts[1].zone.segment_carriagewayOrLane.line.deltaPositions[0].deltaLatitude", -34963);
+  C2xSetTokenInt64(packet, "IVIM", "ivi.optional[0].glc.parts[1].zone.segment_carriagewayOrLane.line.deltaPositions[0].deltaLongitude", -22513);
+  C2xSetTokenInt64(packet, "IVIM", "ivi.optional[0].glc.parts[1].zone.segment_carriagewayOrLane.line.deltaPositions[1].deltaLatitude", -8013);
+  C2xSetTokenInt64(packet, "IVIM", "ivi.optional[0].glc.parts[1].zone.segment_carriagewayOrLane.line.deltaPositions[1].deltaLongitude", -5536);
+  C2xSetTokenInt64(packet, "IVIM", "ivi.optional[0].glc.parts[1].zone.segment_carriagewayOrLane.line.deltaPositions[2].deltaLatitude", -7695);
+  C2xSetTokenInt64(packet, "IVIM", "ivi.optional[0].glc.parts[1].zone.segment_carriagewayOrLane.line.deltaPositions[2].deltaLongitude", -6127);
+  C2xSetTokenInt64(packet, "IVIM", "ivi.optional[0].glc.parts[1].zone.segment_carriagewayOrLane.line.deltaPositions[3].deltaLatitude", -6884);
+  C2xSetTokenInt64(packet, "IVIM", "ivi.optional[0].glc.parts[1].zone.segment_carriagewayOrLane.line.deltaPositions[3].deltaLongitude", -6196);
+  C2xSetTokenInt64(packet, "IVIM", "ivi.optional[0].glc.parts[1].zone.segment_carriagewayOrLane.line.deltaPositions[4].deltaLatitude", -6601);
+  C2xSetTokenInt64(packet, "IVIM", "ivi.optional[0].glc.parts[1].zone.segment_carriagewayOrLane.line.deltaPositions[4].deltaLongitude", -6732);
+  
+  // ivi.optional[1].glc (Speed limit 100 km/h)
+  C2xSetTokenInt64(packet, "IVIM", "ivi.optional[1].glc.referencePosition.latitude", 488473113);
+  C2xSetTokenInt64(packet, "IVIM", "ivi.optional[1].glc.referencePosition.longitude", 91177065);
+  
+  C2xSetTokenInt64(packet, "IVIM", "ivi.optional[1].glc.parts[0].zoneId", 3);
+  C2xSetTokenInt64(packet, "IVIM", "ivi.optional[1].glc.parts[0].zone.segment_carriagewayOrLane.line.deltaPositions[0].deltaLatitude", 6601);
+  C2xSetTokenInt64(packet, "IVIM", "ivi.optional[1].glc.parts[0].zone.segment_carriagewayOrLane.line.deltaPositions[0].deltaLongitude", 6732);
+  C2xSetTokenInt64(packet, "IVIM", "ivi.optional[1].glc.parts[0].zone.segment_carriagewayOrLane.line.deltaPositions[1].deltaLatitude", 6884);
+  C2xSetTokenInt64(packet, "IVIM", "ivi.optional[1].glc.parts[0].zone.segment_carriagewayOrLane.line.deltaPositions[1].deltaLongitude", 6196);
+  
+  C2xSetTokenInt64(packet, "IVIM", "ivi.optional[1].glc.parts[1].zoneId", 4);
+  C2xSetTokenInt64(packet, "IVIM", "ivi.optional[1].glc.parts[1].zone.segment_carriagewayOrLane.line.deltaPositions[0].deltaLatitude", -7325);
+  C2xSetTokenInt64(packet, "IVIM", "ivi.optional[1].glc.parts[1].zone.segment_carriagewayOrLane.line.deltaPositions[0].deltaLongitude", -7913);
+  C2xSetTokenInt64(packet, "IVIM", "ivi.optional[1].glc.parts[1].zone.segment_carriagewayOrLane.line.deltaPositions[1].deltaLatitude", -6972);
+  C2xSetTokenInt64(packet, "IVIM", "ivi.optional[1].glc.parts[1].zone.segment_carriagewayOrLane.line.deltaPositions[1].deltaLongitude", -8556);
+  C2xSetTokenInt64(packet, "IVIM", "ivi.optional[1].glc.parts[1].zone.segment_carriagewayOrLane.line.deltaPositions[2].deltaLatitude", -7696);
+  C2xSetTokenInt64(packet, "IVIM", "ivi.optional[1].glc.parts[1].zone.segment_carriagewayOrLane.line.deltaPositions[2].deltaLongitude", -10353);
+  C2xSetTokenInt64(packet, "IVIM", "ivi.optional[1].glc.parts[1].zone.segment_carriagewayOrLane.line.deltaPositions[3].deltaLatitude", -7272);
+  C2xSetTokenInt64(packet, "IVIM", "ivi.optional[1].glc.parts[1].zone.segment_carriagewayOrLane.line.deltaPositions[3].deltaLongitude", -11319);
+  
+  // ivi.optional[2].glc (Speed limit 80 km/h)
+  C2xSetTokenInt64(packet, "IVIM", "ivi.optional[2].glc.referencePosition.latitude", 488443848);
+  C2xSetTokenInt64(packet, "IVIM", "ivi.optional[2].glc.referencePosition.longitude", 91138924);
+  
+  C2xSetTokenInt64(packet, "IVIM", "ivi.optional[2].glc.parts[0].zoneId", 5);
+  C2xSetTokenInt64(packet, "IVIM", "ivi.optional[2].glc.parts[0].zone.segment_carriagewayOrLane.line.deltaPositions[0].deltaLatitude", 7272);
+  C2xSetTokenInt64(packet, "IVIM", "ivi.optional[2].glc.parts[0].zone.segment_carriagewayOrLane.line.deltaPositions[0].deltaLongitude", 11319);
+  C2xSetTokenInt64(packet, "IVIM", "ivi.optional[2].glc.parts[0].zone.segment_carriagewayOrLane.line.deltaPositions[1].deltaLatitude", 7696);
+  C2xSetTokenInt64(packet, "IVIM", "ivi.optional[2].glc.parts[0].zone.segment_carriagewayOrLane.line.deltaPositions[1].deltaLongitude", 10353);
+  
+  C2xSetTokenInt64(packet, "IVIM", "ivi.optional[2].glc.parts[1].zoneId", 6);
+  C2xSetTokenInt64(packet, "IVIM", "ivi.optional[2].glc.parts[1].zone.segment_carriagewayOrLane.line.deltaPositions[0].deltaLatitude", -8332);
+  C2xSetTokenInt64(packet, "IVIM", "ivi.optional[2].glc.parts[1].zone.segment_carriagewayOrLane.line.deltaPositions[0].deltaLongitude", -14189);
+  C2xSetTokenInt64(packet, "IVIM", "ivi.optional[2].glc.parts[1].zone.segment_carriagewayOrLane.line.deltaPositions[1].deltaLatitude", -7555);
+  C2xSetTokenInt64(packet, "IVIM", "ivi.optional[2].glc.parts[1].zone.segment_carriagewayOrLane.line.deltaPositions[1].deltaLongitude", -15476);
+  C2xSetTokenInt64(packet, "IVIM", "ivi.optional[2].glc.parts[1].zone.segment_carriagewayOrLane.line.deltaPositions[2].deltaLatitude", -7467);
+  C2xSetTokenInt64(packet, "IVIM", "ivi.optional[2].glc.parts[1].zone.segment_carriagewayOrLane.line.deltaPositions[2].deltaLongitude", -17113);
+  C2xSetTokenInt64(packet, "IVIM", "ivi.optional[2].glc.parts[1].zone.segment_carriagewayOrLane.line.deltaPositions[3].deltaLatitude", -7396);
+  C2xSetTokenInt64(packet, "IVIM", "ivi.optional[2].glc.parts[1].zone.segment_carriagewayOrLane.line.deltaPositions[3].deltaLongitude", -17220);
+  
+  // ivi.optional[3].glc (End of maximum speed zone)
+  C2xSetTokenInt64(packet, "IVIM", "ivi.optional[3].glc.referencePosition.latitude", 488413098);
+  C2xSetTokenInt64(packet, "IVIM", "ivi.optional[3].glc.referencePosition.longitude", 91074926);
+  
+  C2xSetTokenInt64(packet, "IVIM", "ivi.optional[3].glc.parts[0].zoneId", 7);
+  C2xSetTokenInt64(packet, "IVIM", "ivi.optional[3].glc.parts[0].zone.segment_carriagewayOrLane.line.deltaPositions[0].deltaLatitude", 7396);
+  C2xSetTokenInt64(packet, "IVIM", "ivi.optional[3].glc.parts[0].zone.segment_carriagewayOrLane.line.deltaPositions[0].deltaLongitude", 17220);
+  C2xSetTokenInt64(packet, "IVIM", "ivi.optional[3].glc.parts[0].zone.segment_carriagewayOrLane.line.deltaPositions[1].deltaLatitude", 7467);
+  C2xSetTokenInt64(packet, "IVIM", "ivi.optional[3].glc.parts[0].zone.segment_carriagewayOrLane.line.deltaPositions[1].deltaLongitude", 17113);
+  
+  C2xSetTokenInt64(packet, "IVIM", "ivi.optional[3].glc.parts[1].zoneId", 8);
+  C2xSetTokenInt64(packet, "IVIM", "ivi.optional[3].glc.parts[1].zone.segment_carriagewayOrLane.line.deltaPositions[0].deltaLatitude", -30274);
+  C2xSetTokenInt64(packet, "IVIM", "ivi.optional[3].glc.parts[1].zone.segment_carriagewayOrLane.line.deltaPositions[0].deltaLongitude", -70445);
+  C2xSetTokenInt64(packet, "IVIM", "ivi.optional[3].glc.parts[1].zone.segment_carriagewayOrLane.line.deltaPositions[1].deltaLatitude", -7779);
+  C2xSetTokenInt64(packet, "IVIM", "ivi.optional[3].glc.parts[1].zone.segment_carriagewayOrLane.line.deltaPositions[1].deltaLongitude", -18296);
+  
+  /////////////
+  //// GIV ////
+  /////////////
+  
+  // ivi.optional[4].giv[0] (Speed limit 120 km/h)
+  C2xSetTokenInt64(packet, "IVIM", "ivi.optional[4].giv[0].detectionZoneIds[0]", 1);
+  C2xSetTokenInt64(packet, "IVIM", "ivi.optional[4].giv[0].relevanceZoneIds[0]", 2);
+  C2xSetTokenInt64(packet, "IVIM", "ivi.optional[4].giv[0].roadSignCodes[0].code.iso14823.pictogramCode.serviceCategoryCode.trafficSignPictogram", 1);
+  C2xSetTokenInt64(packet, "IVIM", "ivi.optional[4].giv[0].roadSignCodes[0].code.iso14823.pictogramCode.pictogramCategoryCode.nature", 5);
+  C2xSetTokenInt64(packet, "IVIM", "ivi.optional[4].giv[0].roadSignCodes[0].code.iso14823.pictogramCode.pictogramCategoryCode.serialNumber", 57);
+  C2xSetTokenInt64(packet, "IVIM", "ivi.optional[4].giv[0].roadSignCodes[0].code.iso14823.attributes[0].spe.speedLimitMax", 120);
+  C2xSetTokenInt64(packet, "IVIM", "ivi.optional[4].giv[0].roadSignCodes[0].code.iso14823.attributes[0].spe.unit", 0); //kmperh
+  
+  // ivi.optional[4].giv[1] (Speed limit 100 km/h)
+  C2xSetTokenInt64(packet, "IVIM", "ivi.optional[4].giv[1].detectionZoneIds[0]", 3);
+  C2xSetTokenInt64(packet, "IVIM", "ivi.optional[4].giv[1].relevanceZoneIds[0]", 4);
+  C2xSetTokenInt64(packet, "IVIM", "ivi.optional[4].giv[1].roadSignCodes[0].code.iso14823.pictogramCode.serviceCategoryCode.trafficSignPictogram", 1);
+  C2xSetTokenInt64(packet, "IVIM", "ivi.optional[4].giv[1].roadSignCodes[0].code.iso14823.pictogramCode.pictogramCategoryCode.nature", 5);
+  C2xSetTokenInt64(packet, "IVIM", "ivi.optional[4].giv[1].roadSignCodes[0].code.iso14823.pictogramCode.pictogramCategoryCode.serialNumber", 57);
+  C2xSetTokenInt64(packet, "IVIM", "ivi.optional[4].giv[1].roadSignCodes[0].code.iso14823.attributes[0].spe.speedLimitMax", 100);
+  C2xSetTokenInt64(packet, "IVIM", "ivi.optional[4].giv[1].roadSignCodes[0].code.iso14823.attributes[0].spe.unit", 0); //kmperh
+  
+  // ivi.optional[4].giv[2] (Speed limit 80 km/h)
+  C2xSetTokenInt64(packet, "IVIM", "ivi.optional[4].giv[2].detectionZoneIds[0]", 5);
+  C2xSetTokenInt64(packet, "IVIM", "ivi.optional[4].giv[2].relevanceZoneIds[0]", 6);
+  C2xSetTokenInt64(packet, "IVIM", "ivi.optional[4].giv[2].roadSignCodes[0].code.iso14823.pictogramCode.serviceCategoryCode.trafficSignPictogram", 1);
+  C2xSetTokenInt64(packet, "IVIM", "ivi.optional[4].giv[2].roadSignCodes[0].code.iso14823.pictogramCode.pictogramCategoryCode.nature", 5);
+  C2xSetTokenInt64(packet, "IVIM", "ivi.optional[4].giv[2].roadSignCodes[0].code.iso14823.pictogramCode.pictogramCategoryCode.serialNumber", 57);
+  C2xSetTokenInt64(packet, "IVIM", "ivi.optional[4].giv[2].roadSignCodes[0].code.iso14823.attributes[0].spe.speedLimitMax", 80);
+  C2xSetTokenInt64(packet, "IVIM", "ivi.optional[4].giv[2].roadSignCodes[0].code.iso14823.attributes[0].spe.unit", 0); //kmperh
+  
+  // ivi.optional[4].giv[3] (End of maximum speed zone)
+  C2xSetTokenInt64(packet, "IVIM", "ivi.optional[4].giv[3].detectionZoneIds[0]", 7);
+  C2xSetTokenInt64(packet, "IVIM", "ivi.optional[4].giv[3].relevanceZoneIds[0]", 8);
+  C2xSetTokenInt64(packet, "IVIM", "ivi.optional[4].giv[3].roadSignCodes[0].code.iso14823.pictogramCode.serviceCategoryCode.trafficSignPictogram", 2);
+  C2xSetTokenInt64(packet, "IVIM", "ivi.optional[4].giv[3].roadSignCodes[0].code.iso14823.pictogramCode.pictogramCategoryCode.nature", 8);
+  C2xSetTokenInt64(packet, "IVIM", "ivi.optional[4].giv[3].roadSignCodes[0].code.iso14823.pictogramCode.pictogramCategoryCode.serialNumber", 71);
+}

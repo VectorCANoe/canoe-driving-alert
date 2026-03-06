@@ -1,0 +1,67 @@
+/*@!Encoding:1252*/
+
+// This CAPL include file contains utility functions which allow
+// adding the Protocol Analyzer rule list and all detected 
+// rule violations directly to the test report of the running test.
+
+variables
+{
+  long addPAErrorsToTestReport = 1;
+}
+
+// Add Protocol Analyzer rule list to the informational
+// part of the CANoe test report
+void TestReportAddProtocolAnalyzerRuleList()
+{
+  char rules[40000], ruleline[1000];
+  long offset, lineStartPos, lineEndPos;
+  offset = 0;
+  lineEndPos = 0;
+  lineStartPos = 0;
+  TestReportAddMiscInfoBlock("Protocol Analyzer rule list:");
+  if (C2xProtocolAnalyzerGetRuleList(elcount(rules), rules) == 0)
+  {
+	  // Add Protocol Analyzer rule list to the test report line by line
+    while (lineEndPos != -1)
+    {
+      lineEndPos = strstr_off(rules, offset, "\n");
+      if (lineEndPos != -1)
+      {
+        substr_cpy(ruleline, rules, lineStartPos, lineEndPos-lineStartPos, elcount(ruleline));
+        offset = lineStartPos = lineEndPos + 1;
+        TestReportAddExtendedInfo("text", ruleline);
+      }
+    }
+  }
+}
+
+// This callback function is called each time Protocol Analyzer
+// detects the violation of one of the predefined rules 
+void OnProtocolViolation(long severity, long handle, char scope[], long ruleId, char ruleName[],
+  char violationDescription[], char ruleDescription[])
+{
+  char paMessage[2000];
+  
+  if (addPAErrorsToTestReport > 0)
+  {
+    snprintf(paMessage,elcount(paMessage), "Scope: %s\nRule: %s \nViolation Descr.: %s \nRule Descr.: %s",
+      scope, ruleName, violationDescription, ruleDescription);
+
+    if (severity == 0)
+    {
+      testStepFail( "Protocol Analyzer Error", paMessage); 
+    }
+    else 
+    {
+      testStepWarning( "Protocol Analyzer Warning", paMessage); 
+    }
+  }
+}
+
+// Enables or disables adding detected Protocol Analyzer
+// rule violations to the test report 
+void ProtocolAnalyzerEnableTestReporting(long enabled)
+{
+  addPAErrorsToTestReport = (enabled != 0 ? 1 : 0);
+}
+

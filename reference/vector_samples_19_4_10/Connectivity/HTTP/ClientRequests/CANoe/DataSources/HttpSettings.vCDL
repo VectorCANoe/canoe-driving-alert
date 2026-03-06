@@ -1,0 +1,10 @@
+version 2.0;
+
+import module "HTTP";
+
+namespace HTTPSettings 
+{
+	[HTTPBinding::Settings::Monitoring::Logging=None]
+	[HTTPBinding::Settings::Monitoring::BodySize=256]
+	HTTPBinding::Settings::IHTTPSettings mySettings;
+}

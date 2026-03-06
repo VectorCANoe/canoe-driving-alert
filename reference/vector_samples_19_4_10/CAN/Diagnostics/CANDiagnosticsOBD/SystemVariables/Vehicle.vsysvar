@@ -1,0 +1,72 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<systemvariables version="4">
+  <namespace name="" comment="" interface="">
+    <namespace name="Vehicle" comment="" interface="">
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="DistanceTravelledSinceDTCsCleared" comment="" bitcount="32" isSigned="false" encoding="65001" type="int" startValue="22025" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="DistanceTravelledWhileMILActivated" comment="" bitcount="32" isSigned="false" encoding="65001" type="int" startValue="0" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="EngineRuntimeSinceDTCsCleared" comment="" bitcount="32" isSigned="false" encoding="65001" type="int" startValue="20189" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="EngineRuntimeWhileMILActivated" comment="" bitcount="32" isSigned="false" encoding="65001" type="int" startValue="0" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="Fuel_Type" comment="" bitcount="32" isSigned="false" encoding="65001" type="int" startValue="1" minValue="0" minValuePhys="0" maxValue="33" maxValuePhys="33">
+        <valuetable name="FuelType" definesMinMax="true">
+          <valuetableentry value="0" lowerBound="0" upperBound="0" description="Not_vailable" displayString="Not_vailable" />
+          <valuetableentry value="1" lowerBound="1" upperBound="1" description="Gasoline_Petrol" displayString="Gasoline_Petrol" />
+          <valuetableentry value="2" lowerBound="2" upperBound="2" description="Methanol" displayString="Methanol" />
+          <valuetableentry value="3" lowerBound="3" upperBound="3" description="Ethanol" displayString="Ethanol" />
+          <valuetableentry value="4" lowerBound="4" upperBound="4" description="Diesel" displayString="Diesel" />
+          <valuetableentry value="5" lowerBound="5" upperBound="5" description="Liquefied_Petroleum_Gas_LPG" displayString="Liquefied_Petroleum_Gas_LPG" />
+          <valuetableentry value="6" lowerBound="6" upperBound="6" description="Compressed_Natual_Gas_CNG" displayString="Compressed_Natual_Gas_CNG" />
+          <valuetableentry value="7" lowerBound="7" upperBound="7" description="Propane" displayString="Propane" />
+          <valuetableentry value="8" lowerBound="8" upperBound="8" description="Batteryelectric" displayString="Batteryelectric" />
+          <valuetableentry value="9" lowerBound="9" upperBound="9" description="Bi_fuel_vehicle_using_gasoline" displayString="Bi_fuel_vehicle_using_gasoline" />
+          <valuetableentry value="10" lowerBound="10" upperBound="10" description="Bi_fuel_vehicle_using_methanol" displayString="Bi_fuel_vehicle_using_methanol" />
+          <valuetableentry value="11" lowerBound="11" upperBound="11" description="Bi_fuel_vehicle_using_ethanol" displayString="Bi_fuel_vehicle_using_ethanol" />
+          <valuetableentry value="12" lowerBound="12" upperBound="12" description="Bi_fuel_vehicle_using_LPG" displayString="Bi_fuel_vehicle_using_LPG" />
+          <valuetableentry value="13" lowerBound="13" upperBound="13" description="Bi_fuel_vehicle_using_CNG" displayString="Bi_fuel_vehicle_using_CNG" />
+          <valuetableentry value="14" lowerBound="14" upperBound="14" description="Bi_fuel_vehicle_using_propane" displayString="Bi_fuel_vehicle_using_propane" />
+          <valuetableentry value="15" lowerBound="15" upperBound="15" description="Bi_fuel_vehicle_using_battery_not_to_be_used" displayString="Bi_fuel_vehicle_using_battery_not_to_be_used" />
+          <valuetableentry value="16" lowerBound="16" upperBound="16" description="Bi_fuel_vehicle_using_battery_and_combustion_engine_not_to_be_used" displayString="Bi_fuel_vehicle_using_battery_and_combustion_engine_not_to_be_used" />
+          <valuetableentry value="17" lowerBound="17" upperBound="17" description="Hybrid_vehicle_using_gasoline_engine_not_to_be_used" displayString="Hybrid_vehicle_using_gasoline_engine_not_to_be_used" />
+          <valuetableentry value="18" lowerBound="18" upperBound="18" description="Hybrid_vehicle_using_gasoline_engine_on_ethanol_not_to_be_used" displayString="Hybrid_vehicle_using_gasoline_engine_on_ethanol_not_to_be_used" />
+          <valuetableentry value="19" lowerBound="19" upperBound="19" description="Hybrid_vehicle_using_diesel_engine_not_to_be_used" displayString="Hybrid_vehicle_using_diesel_engine_not_to_be_used" />
+          <valuetableentry value="20" lowerBound="20" upperBound="20" description="Hybrid_vehicle_using_battery_not_to_be_used" displayString="Hybrid_vehicle_using_battery_not_to_be_used" />
+          <valuetableentry value="21" lowerBound="21" upperBound="21" description="Hybrid_vehicle_using_battery_and_combustion_engine_not_to_be_used" displayString="Hybrid_vehicle_using_battery_and_combustion_engine_not_to_be_used" />
+          <valuetableentry value="22" lowerBound="22" upperBound="22" description="Hybrid_vehicle_in_regeneration_mode_not_to_be_used" displayString="Hybrid_vehicle_in_regeneration_mode_not_to_be_used" />
+          <valuetableentry value="23" lowerBound="23" upperBound="23" description="Bi_fuel_vehicle_using_diesel_as_defined_in_J1979_not_to_be_used" displayString="Bi_fuel_vehicle_using_diesel_as_defined_in_J1979_not_to_be_used" />
+          <valuetableentry value="24" lowerBound="24" upperBound="24" description="Natural_Gas_as_defined_in_SAE_J1939_not_to_be_used" displayString="Natural_Gas_as_defined_in_SAE_J1939_not_to_be_used" />
+          <valuetableentry value="25" lowerBound="25" upperBound="25" description="Bi_fuel_vehicle_using_Natural_Gas" displayString="Bi_fuel_vehicle_using_Natural_Gas" />
+          <valuetableentry value="26" lowerBound="26" upperBound="26" description="Bi_fuel_vehicle_using_Diesel" displayString="Bi_fuel_vehicle_using_Diesel" />
+          <valuetableentry value="27" lowerBound="27" upperBound="27" description="Natural_Gas_Compressed_or_Liquefied_Natural_Gas" displayString="Natural_Gas_Compressed_or_Liquefied_Natural_Gas" />
+          <valuetableentry value="28" lowerBound="28" upperBound="28" description="Dual_Fuel_Diesel_and_CNG" displayString="Dual_Fuel_Diesel_and_CNG" />
+          <valuetableentry value="29" lowerBound="29" upperBound="29" description="Dual_Fuel_Diesel_and_LNG" displayString="Dual_Fuel_Diesel_and_LNG" />
+          <valuetableentry value="30" lowerBound="30" upperBound="30" description="Fuel_cell_utilizing_hydrogen" displayString="Fuel_cell_utilizing_hydrogen" />
+          <valuetableentry value="31" lowerBound="31" upperBound="31" description="Kerosene" displayString="Kerosene" />
+          <valuetableentry value="32" lowerBound="32" upperBound="32" description="Hevy_Fuel_Oil" displayString="Hevy_Fuel_Oil" />
+          <valuetableentry value="33" lowerBound="33" upperBound="33" description="ISO_SAE_Reserved" displayString="ISO_SAE_Reserved" />
+        </valuetable>
+      </variable>
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="FuelSystemMonitoringSupported" comment="" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1">
+        <valuetable name="On_Off" definesMinMax="true">
+          <valuetableentry value="0" lowerBound="0" upperBound="0" description="Off" displayString="Off" />
+          <valuetableentry value="1" lowerBound="1" upperBound="1" description="On" displayString="On" />
+        </valuetable>
+      </variable>
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="Gear" comment="" bitcount="32" isSigned="false" encoding="65001" type="int" startValue="0" minValue="0" minValuePhys="0" maxValue="7" maxValuePhys="7">
+        <valuetable name="GearValues" definesMinMax="false">
+          <valuetableentry value="0" lowerBound="0" upperBound="0" description="N" displayString="N" />
+          <valuetableentry value="1" lowerBound="1" upperBound="1" description="1" displayString="1" />
+          <valuetableentry value="2" lowerBound="2" upperBound="2" description="2" displayString="2" />
+          <valuetableentry value="3" lowerBound="3" upperBound="3" description="3" displayString="3" />
+          <valuetableentry value="4" lowerBound="4" upperBound="4" description="4" displayString="4" />
+          <valuetableentry value="5" lowerBound="5" upperBound="5" description="5" displayString="5" />
+          <valuetableentry value="6" lowerBound="6" upperBound="6" description="6" displayString="6" />
+          <valuetableentry value="7" lowerBound="7" upperBound="7" description="7" displayString="7" />
+        </valuetable>
+      </variable>
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="MIL_Status" comment="" bitcount="32" isSigned="false" encoding="65001" type="int" startValue="0" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="rpm" name="RPM" comment="" bitcount="32" isSigned="false" encoding="65001" type="int" startValue="0" minValue="0" minValuePhys="0" maxValue="9999999" maxValuePhys="9999999" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="%" name="ThrottlePosition" comment="" bitcount="32" isSigned="false" encoding="65001" type="int" startValue="0" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="km/h" name="VehicleSpeedSensor" comment="" bitcount="32" isSigned="false" encoding="65001" type="int" startValue="0" minValue="0" minValuePhys="0" maxValue="250" maxValuePhys="250" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="VIN" comment="" bitcount="0" isSigned="true" encoding="65001" type="string" startValue="VECT0RVEH1CLE0001" />
+    </namespace>
+  </namespace>
+</systemvariables>

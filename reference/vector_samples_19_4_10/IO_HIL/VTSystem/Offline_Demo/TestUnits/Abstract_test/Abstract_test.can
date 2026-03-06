@@ -1,0 +1,79 @@
+/*@!Encoding:1252*/
+variables
+{
+
+}
+
+export testcase CoolingTest(){
+    int Coolingval;
+    Coolingval=0;
+    
+    testStep("","Set system variable 'Abstract::Temperature' to 30");
+    @sysvar::Abstract::Temperature=30.0;
+    testWaitForTimeout(100);
+
+    testStep("","Check that cooling is at 100% ");
+    
+    Coolingval=sysGetVariableLong(sysvar::Abstract::Cooling);
+    if (Coolingval==100){
+        testStepPass("","Check system variable 'Abstract::WarningLED' value passed: = %d, condition = 100", Coolingval);
+    }
+    else{
+        testStepFail("","Check system variable 'Abstract::WarningLED' value failed: = %d, condition = 100", Coolingval);
+    }
+
+
+}
+
+export testcase HeatingTest(){
+    int Heatingval;
+    Heatingval=0;
+
+    testStep("","Set system variable 'Abstract::Temperature' to 3");
+    @sysvar::Abstract::Temperature=3.0;
+    testWaitForTimeout(100);
+   
+    testStep("","Check that heating is at 100% ");
+    
+    Heatingval=sysGetVariableLong(sysvar::Abstract::Heating);
+    if (Heatingval==100){
+        testStepPass("","Check system variable 'Abstract::WarningLED' value passed: = %d, condition = 100", Heatingval);
+    }
+    else{
+        testStepFail("","Check system variable 'Abstract::WarningLED' value failed: = %d, condition = 100", Heatingval);
+    }
+
+    
+
+}
+
+export testcase SensoreFailureTest(){
+    long WarningLEDval;
+    WarningLEDval=0;
+
+    testStep("","Set system variable 'Abstract::SensorError' to 3");
+    @sysvar::Abstract::SensorError=1;
+
+    testStep("","Check that warning LED is on");
+    testWaitForTimeout(100);
+    
+    WarningLEDval=sysGetVariableLong(sysvar::Abstract::WarningLED);
+    if (WarningLEDval==1){
+        testStepPass("","Check system variable 'Abstract::WarningLED' value passed: = %d, condition = 1", WarningLEDval);
+    }
+    else{
+        testStepFail("","Check system variable 'Abstract::WarningLED' value failed: = %d, condition = 1", WarningLEDval);
+    }
+
+}
+
+export completion(){
+    @sysvar::Abstract::Temperature=22.4;
+    @sysvar::Abstract::SensorError=0;
+    @sysvar::VTS_simulated::M1_Ch1::Resistor=2300;
+    @sysvar::VTS_simulated::M1_Ch1::RelayShortCircuit=0;
+    @sysvar::VTS_simulated::M2_Ch2::RelayShortCircuit=0;
+    @sysvar::VTS_simulated::M2_Ch1::IntLoadResistor=500;
+    @sysvar::VTS_simulated::M3_SupInt::RefVoltage=12;
+}
+ 

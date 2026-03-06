@@ -1,0 +1,548 @@
+/*@!Encoding:1252*/
+includes
+{
+  // Import required CAPL include files
+  //--- begin generated part --- Block start #GlobalBody_Includes#; do not delete this line and do not add application code in this code block!
+  /* #ChannelGlobalStart# |CAN2| #BusGlobalStart# |Comfort| */
+  /* #ChannelGlobalEnd# |CAN2| #BusGlobalEnd# |Comfort| */
+  //--- end generated part --- Block end #GlobalBody_Includes#; do not delete this line! Add application code below this line.
+  //--- begin generated part --- Block start #Body_Includes#; do not delete this line and do not add application code in this code block!
+  /* #ChannelStart# |CAN2| #BusStart# |Comfort| */
+  #include "..\CAPL\PDU-IL-KL30-Helper_CAN2.cin"
+  #include "..\CAPL\PDU-NM-Panel-Helper_CAN2.cin"
+  #include "..\CAPL\PDU-NM-ASR-Helper_CAN2.cin"
+  /* #ChannelEnd# |CAN2| #BusEnd# |Comfort| */
+  //--- end generated part --- Block end #Body_Includes#; do not delete this line! Add application code below this line.
+}
+
+variables
+{
+  // Define global variables for this CAPL file
+
+  /*--- #GenHeader Begin# --- begin generated comment ---
+  | Generated on Wednesday, November 06, 2024, 12:59:23
+  | By ModelGenerator for Vector 4.7.5, ModelGeneratorVectorDLL 4.7.5
+  | Package Vector 4.0.79
+  | Vector Modeling Components Addon 4.0.79
+  | Target Bus: Comfort; Channel: CAN2; DB Cluster: Comfort;
+  | From Database: Comfort_FD_2021_12_1.arxml
+  | CANoe Version 18.3.118.0
+    --- #GenHeader End  # --- end generated comment --- */
+
+  char gECU[256] = "%NODE_NAME%";
+  //--- begin generated part --- Block start #Hdr_GlobalVariables#; do not delete this line and do not add application code in this code block!
+  /* #ChannelStart# |CAN2| #BusStart# |Comfort| */
+  /* #ChannelEnd# |CAN2| #BusEnd# |Comfort| */
+  //--- end generated part --- Block end #Hdr_GlobalVariables#; do not delete this line! Add application code below this line.
+  //--- begin generated part --- Block start #GlobalBody_GlobalVariables#; do not delete this line and do not add application code in this code block!
+  /* #ChannelGlobalStart# |CAN2| #BusGlobalStart# |Comfort| */
+  /* #ChannelGlobalEnd# |CAN2| #BusGlobalEnd# |Comfort| */
+  //--- end generated part --- Block end #GlobalBody_GlobalVariables#; do not delete this line! Add application code below this line.
+  //--- begin generated part --- Block start #Body_GlobalVariables#; do not delete this line and do not add application code in this code block!
+  /* #ChannelStart# |CAN2| #BusStart# |Comfort| */
+  char gCAN2BusName[256] = "Comfort";
+  int gCAN2Channel = 2; // The channel the bus is attached to
+  int gCAN2TXEnable = 1; // enable/disable TX of application messages
+
+  long gCAN2DisturbanceMode;
+  long gCAN2DisturbanceCount;
+  long gCAN2DisturbanceValue;
+  long gCAN2DisturbanceContinueMode;
+  double gCAN2DisturbancePeriod;
+  qword gCAN2DisturbanceValue64;
+  /* #ChannelEnd# |CAN2| #BusEnd# |Comfort| */
+  //--- end generated part --- Block end #Body_GlobalVariables#; do not delete this line! Add application code below this line.
+  
+  int GasPosTimer_interval=25;
+  msTimer GasPosTimer;
+  msTimer tABSregulation;
+  int ABSregulation_interval=2500;
+  int ABS_active_recently=0;
+  
+  // environmental constants
+  double gravitational_acceleration=9.81;        // [m/(s^2)]
+}
+
+on preStart
+{
+  // Initialize CAPL includes and node's modules/DLLs
+  //--- begin generated part --- Block start #Hdr_OnInit#; do not delete this line and do not add application code in this code block!
+  /* #ChannelStart# |CAN2| #BusStart# |Comfort| */
+  /* #ChannelEnd# |CAN2| #BusEnd# |Comfort| */
+  //--- end generated part --- Block end #Hdr_OnInit#; do not delete this line! Add application code below this line.
+  //--- begin generated part --- Block start #GlobalBody_OnInit#; do not delete this line and do not add application code in this code block!
+  /* #ChannelGlobalStart# |CAN2| #BusGlobalStart# |Comfort| */
+  /* #ChannelGlobalEnd# |CAN2| #BusGlobalEnd# |Comfort| */
+  //--- end generated part --- Block end #GlobalBody_OnInit#; do not delete this line! Add application code below this line.
+  //--- begin generated part --- Block start #Body_OnInit#; do not delete this line and do not add application code in this code block!
+  /* #ChannelStart# |CAN2| #BusStart# |Comfort| */
+  ILCAN2_OnInit();
+  NMCAN2_OnInit();
+  /* #ChannelEnd# |CAN2| #BusEnd# |Comfort| */
+  //--- end generated part --- Block end #Body_OnInit#; do not delete this line! Add application code below this line.
+}
+
+on start
+{
+  // Start CAPL includes and node's modules/DLLs
+  //--- begin generated part --- Block start #Hdr_OnStart#; do not delete this line and do not add application code in this code block!
+  /* #ChannelStart# |CAN2| #BusStart# |Comfort| */
+  /* #ChannelEnd# |CAN2| #BusEnd# |Comfort| */
+  //--- end generated part --- Block end #Hdr_OnStart#; do not delete this line! Add application code below this line.
+  //--- begin generated part --- Block start #GlobalBody_OnStart#; do not delete this line and do not add application code in this code block!
+  /* #ChannelGlobalStart# |CAN2| #BusGlobalStart# |Comfort| */
+  /* #ChannelGlobalEnd# |CAN2| #BusGlobalEnd# |Comfort| */
+  //--- end generated part --- Block end #GlobalBody_OnStart#; do not delete this line! Add application code below this line.
+  //--- begin generated part --- Block start #Body_OnStart#; do not delete this line and do not add application code in this code block!
+  /* #ChannelStart# |CAN2| #BusStart# |Comfort| */
+  ILCAN2_OnStart();
+  NMCAN2_OnStart();
+  if (@sysvar::NM_CAN2::NODES::N_Dashboard::DeactivateNM == 0)
+  {
+    NMCAN2_PassiveBusStart();
+  }
+  /* #ChannelEnd# |CAN2| #BusEnd# |Comfort| */
+  //--- end generated part --- Block end #Body_OnStart#; do not delete this line! Add application code below this line.
+  
+  setTimer(GasPosTimer,GasPosTimer_interval);
+}
+
+on preStop
+{
+  // Prepare stopping
+  //--- begin generated part --- Block start #Hdr_OnStopping#; do not delete this line and do not add application code in this code block!
+  /* #ChannelStart# |CAN2| #BusStart# |Comfort| */
+  /* #ChannelEnd# |CAN2| #BusEnd# |Comfort| */
+  //--- end generated part --- Block end #Hdr_OnStopping#; do not delete this line! Add application code below this line.
+  //--- begin generated part --- Block start #GlobalBody_OnStopping#; do not delete this line and do not add application code in this code block!
+  /* #ChannelGlobalStart# |CAN2| #BusGlobalStart# |Comfort| */
+  /* #ChannelGlobalEnd# |CAN2| #BusGlobalEnd# |Comfort| */
+  //--- end generated part --- Block end #GlobalBody_OnStopping#; do not delete this line! Add application code below this line.
+  //--- begin generated part --- Block start #Body_OnStopping#; do not delete this line and do not add application code in this code block!
+  /* #ChannelStart# |CAN2| #BusStart# |Comfort| */
+  /* #ChannelEnd# |CAN2| #BusEnd# |Comfort| */
+  //--- end generated part --- Block end #Body_OnStopping#; do not delete this line! Add application code below this line.
+}
+
+on stopMeasurement
+{
+  // Stop actions
+  //--- begin generated part --- Block start #Hdr_OnStop#; do not delete this line and do not add application code in this code block!
+  /* #ChannelStart# |CAN2| #BusStart# |Comfort| */
+  /* #ChannelEnd# |CAN2| #BusEnd# |Comfort| */
+  //--- end generated part --- Block end #Hdr_OnStop#; do not delete this line! Add application code below this line.
+  //--- begin generated part --- Block start #GlobalBody_OnStop#; do not delete this line and do not add application code in this code block!
+  /* #ChannelGlobalStart# |CAN2| #BusGlobalStart# |Comfort| */
+  /* #ChannelGlobalEnd# |CAN2| #BusGlobalEnd# |Comfort| */
+  //--- end generated part --- Block end #GlobalBody_OnStop#; do not delete this line! Add application code below this line.
+  //--- begin generated part --- Block start #Body_OnStop#; do not delete this line and do not add application code in this code block!
+  /* #ChannelStart# |CAN2| #BusStart# |Comfort| */
+  /* #ChannelEnd# |CAN2| #BusEnd# |Comfort| */
+  //--- end generated part --- Block end #Body_OnStop#; do not delete this line! Add application code below this line.
+}
+
+void StartSim(dword busContext, int busActive, int mode)
+{
+  // Called when ... due to ...
+  //   mode == 1: ILControlResume
+  //   mode == 2: ILControlStart
+  //   mode == 3: ILControlSimulationOn
+  //--- begin generated part --- Block start #Hdr_StartSim#; do not delete this line and do not add application code in this code block!
+  /* #ChannelStart# |CAN2| #BusStart# |Comfort| */
+  /* #ChannelEnd# |CAN2| #BusEnd# |Comfort| */
+  //--- end generated part --- Block end #Hdr_StartSim#; do not delete this line! Add application code below this line.
+  //write("[%.6f %NODE_NAME%] StartSim(0x%X, %d, %d)", TimeNowNS()/1e9, busContext, busActive, mode);
+  //--- begin generated part --- Block start #Body_StartSim#; do not delete this line and do not add application code in this code block!
+  /* #ChannelStart# |CAN2| #BusStart# |Comfort| */
+  /* #ChannelEnd# |CAN2| #BusEnd# |Comfort| */
+  //--- end generated part --- Block end #Body_StartSim#; do not delete this line! Add application code below this line.
+}
+
+void StopSim(dword busContext, int busActive, int mode)
+{
+  // Called when ... due to ...
+  //   mode == 1: ILControlWait
+  //   mode == 2: ILControlStop
+  //   mode == 3: ILControlSimulationOff
+  //--- begin generated part --- Block start #Hdr_StopSim#; do not delete this line and do not add application code in this code block!
+  /* #ChannelStart# |CAN2| #BusStart# |Comfort| */
+  /* #ChannelEnd# |CAN2| #BusEnd# |Comfort| */
+  //--- end generated part --- Block end #Hdr_StopSim#; do not delete this line! Add application code below this line.
+  //write("[%.6f %NODE_NAME%] StopSim(0x%X, %d, %d)", TimeNowNS()/1e9, busContext, busActive, mode);
+  //--- begin generated part --- Block start #Body_StopSim#; do not delete this line and do not add application code in this code block!
+  /* #ChannelStart# |CAN2| #BusStart# |Comfort| */
+  /* #ChannelEnd# |CAN2| #BusEnd# |Comfort| */
+  //--- end generated part --- Block end #Body_StopSim#; do not delete this line! Add application code below this line.
+}
+
+on sysvar_update sysvar::IL::Klemme15
+{
+  // Handle system state variable
+  //--- begin generated part --- Block start #Hdr_KL15_Klemme15#; do not delete this line and do not add application code in this code block!
+  /* #ChannelStart# |CAN2| #BusStart# |Comfort| */
+  /* #ChannelEnd# |CAN2| #BusEnd# |Comfort| */
+  //--- end generated part --- Block end #Hdr_KL15_Klemme15#; do not delete this line! Add application code below this line.
+  //--- begin generated part --- Block start #Body_KL15_Klemme15#; do not delete this line and do not add application code in this code block!
+  /* #ChannelStart# |CAN2| #BusStart# |Comfort| */
+  ILCAN2_OnEnvKlemme15(@this);
+  /* #ChannelEnd# |CAN2| #BusEnd# |Comfort| */
+  //--- end generated part --- Block end #Body_KL15_Klemme15#; do not delete this line! Add application code below this line.
+}
+
+on sysvar_update sysvar::IL::Klemme30
+{
+  // Handle system state variable
+  //--- begin generated part --- Block start #Hdr_KL30_Klemme30#; do not delete this line and do not add application code in this code block!
+  /* #ChannelStart# |CAN2| #BusStart# |Comfort| */
+  /* #ChannelEnd# |CAN2| #BusEnd# |Comfort| */
+  //--- end generated part --- Block end #Hdr_KL30_Klemme30#; do not delete this line! Add application code below this line.
+  //--- begin generated part --- Block start #Body_KL30_Klemme30#; do not delete this line and do not add application code in this code block!
+  /* #ChannelStart# |CAN2| #BusStart# |Comfort| */
+  ILCAN2_OnEnvKlemme30(@this);
+  /* #ChannelEnd# |CAN2| #BusEnd# |Comfort| */
+  //--- end generated part --- Block end #Body_KL30_Klemme30#; do not delete this line! Add application code below this line.
+}
+
+dword applPDUILTxPending(dword busContext, dword shortId, dword longId, char name[], dword& aPDULength, byte data[])
+{
+  dword ret = 1;
+  //--- begin generated part --- Block start #Hdr_applPDUILTxPending#; do not delete this line and do not add application code in this code block!
+  /* #ChannelStart# |CAN2| #BusStart# |Comfort| */
+  /* #ChannelEnd# |CAN2| #BusEnd# |Comfort| */
+  //--- end generated part --- Block end #Hdr_applPDUILTxPending#; do not delete this line! Add application code below this line.
+  //write("[%.6f %NODE_NAME%] applPDUILTxPending(0x%X, 0x%X, 0x%X, %s, %d, %d)", TimeNowNS()/1e9, busContext, shortId, longId, name, aPDULength, elcount(data));
+  //--- begin generated part --- Block start #Body_applPDUILTxPending#; do not delete this line and do not add application code in this code block!
+  /* #ChannelStart# |CAN2| #BusStart# |Comfort| */
+  /* #ChannelEnd# |CAN2| #BusEnd# |Comfort| */
+  //--- end generated part --- Block end #Body_applPDUILTxPending#; do not delete this line! Add application code below this line.
+  return ret;
+}
+
+dword applPDUILStart(dword busContext, dword busActive, dword mode)
+{
+  dword ret = 1;
+  //--- begin generated part --- Block start #Hdr_applPDUILStart#; do not delete this line and do not add application code in this code block!
+  /* #ChannelStart# |CAN2| #BusStart# |Comfort| */
+  /* #ChannelEnd# |CAN2| #BusEnd# |Comfort| */
+  //--- end generated part --- Block end #Hdr_applPDUILStart#; do not delete this line! Add application code below this line.
+  //write("[%.6f %NODE_NAME%] applPDUILStart(0x%X, %d, %d)", TimeNowNS()/1e9, busContext, busActive, mode);
+  //--- begin generated part --- Block start #Body_applPDUILStart#; do not delete this line and do not add application code in this code block!
+  /* #ChannelStart# |CAN2| #BusStart# |Comfort| */
+  /* #ChannelEnd# |CAN2| #BusEnd# |Comfort| */
+  //--- end generated part --- Block end #Body_applPDUILStart#; do not delete this line! Add application code below this line.
+  //--- begin generated part --- Block start #Footer_applPDUILStart#; do not delete this line and do not add application code in this code block!
+  /* #ChannelStart# |CAN2| #BusStart# |Comfort| */
+  StartSim(busContext, busActive, mode);
+  /* #ChannelEnd# |CAN2| #BusEnd# |Comfort| */
+  //--- end generated part --- Block end #Footer_applPDUILStart#; do not delete this line! Add application code below this line.
+  return ret;
+}
+
+dword applPDUILStop(dword busContext, dword busActive, dword mode)
+{
+  dword ret = 1;
+  //--- begin generated part --- Block start #Hdr_applPDUILStop#; do not delete this line and do not add application code in this code block!
+  /* #ChannelStart# |CAN2| #BusStart# |Comfort| */
+  /* #ChannelEnd# |CAN2| #BusEnd# |Comfort| */
+  //--- end generated part --- Block end #Hdr_applPDUILStop#; do not delete this line! Add application code below this line.
+  //write("[%.6f %NODE_NAME%] applPDUILStop(0x%X, %d, %d)", TimeNowNS()/1e9, busContext, busActive, mode);
+  //--- begin generated part --- Block start #Body_applPDUILStop#; do not delete this line and do not add application code in this code block!
+  /* #ChannelStart# |CAN2| #BusStart# |Comfort| */
+  StopSim(busContext, busActive, mode);
+  /* #ChannelEnd# |CAN2| #BusEnd# |Comfort| */
+  //--- end generated part --- Block end #Body_applPDUILStop#; do not delete this line! Add application code below this line.
+  //--- begin generated part --- Block start #Footer_applPDUILStop#; do not delete this line and do not add application code in this code block!
+  /* #ChannelStart# |CAN2| #BusStart# |Comfort| */
+  /* #ChannelEnd# |CAN2| #BusEnd# |Comfort| */
+  //--- end generated part --- Block end #Footer_applPDUILStop#; do not delete this line! Add application code below this line.
+  return ret;
+}
+
+void Nm_NetworkStartInd()
+{
+  // Callback of CAN AUTOSAR NM DLL
+  dword lBusContext;
+  //--- begin generated part --- Block start #Hdr_Nm_NetworkStartInd#; do not delete this line and do not add application code in this code block!
+  /* #ChannelStart# |CAN2| #BusStart# |Comfort| */
+  /* #ChannelEnd# |CAN2| #BusEnd# |Comfort| */
+  //--- end generated part --- Block end #Hdr_Nm_NetworkStartInd#; do not delete this line! Add application code below this line.
+  lBusContext = GetBusContext();
+  //--- begin generated part --- Block start #Body_Nm_NetworkStartInd#; do not delete this line and do not add application code in this code block!
+  /* #ChannelStart# |CAN2| #BusStart# |Comfort| */
+  if (lBusContext == gNMCAN2_BusContext) NMCAN2_IndNetworkStart();
+  /* #ChannelEnd# |CAN2| #BusEnd# |Comfort| */
+  //--- end generated part --- Block end #Body_Nm_NetworkStartInd#; do not delete this line! Add application code below this line.
+  SetBusContext(lBusContext);
+}
+
+void Nm_NetworkModeInd()
+{
+  // Callback of CAN AUTOSAR NM DLL
+  dword lBusContext;
+  //--- begin generated part --- Block start #Hdr_Nm_NetworkModeInd#; do not delete this line and do not add application code in this code block!
+  /* #ChannelStart# |CAN2| #BusStart# |Comfort| */
+  /* #ChannelEnd# |CAN2| #BusEnd# |Comfort| */
+  //--- end generated part --- Block end #Hdr_Nm_NetworkModeInd#; do not delete this line! Add application code below this line.
+  lBusContext = GetBusContext();
+  //--- begin generated part --- Block start #Body_Nm_NetworkModeInd#; do not delete this line and do not add application code in this code block!
+  /* #ChannelStart# |CAN2| #BusStart# |Comfort| */
+  if (lBusContext == gNMCAN2_BusContext) NMCAN2_IndNetworkMode();
+  /* #ChannelEnd# |CAN2| #BusEnd# |Comfort| */
+  //--- end generated part --- Block end #Body_Nm_NetworkModeInd#; do not delete this line! Add application code below this line.
+  SetBusContext(lBusContext);
+}
+
+void Nm_NetworkTimeoutInd()
+{
+  // Callback of CAN AUTOSAR NM DLL
+  dword lBusContext;
+  //--- begin generated part --- Block start #Hdr_Nm_NetworkTimeoutInd#; do not delete this line and do not add application code in this code block!
+  /* #ChannelStart# |CAN2| #BusStart# |Comfort| */
+  /* #ChannelEnd# |CAN2| #BusEnd# |Comfort| */
+  //--- end generated part --- Block end #Hdr_Nm_NetworkTimeoutInd#; do not delete this line! Add application code below this line.
+  lBusContext = GetBusContext();
+  //--- begin generated part --- Block start #Body_Nm_NetworkTimeoutInd#; do not delete this line and do not add application code in this code block!
+  /* #ChannelStart# |CAN2| #BusStart# |Comfort| */
+  if (lBusContext == gNMCAN2_BusContext) NMCAN2_IndNetworkTimeout();
+  /* #ChannelEnd# |CAN2| #BusEnd# |Comfort| */
+  //--- end generated part --- Block end #Body_Nm_NetworkTimeoutInd#; do not delete this line! Add application code below this line.
+  SetBusContext(lBusContext);
+}
+
+void Nm_PrepareBusSleepModeInd()
+{
+  // Callback of CAN AUTOSAR NM DLL
+  dword lBusContext;
+  //--- begin generated part --- Block start #Hdr_Nm_PrepareBusSleepModeInd#; do not delete this line and do not add application code in this code block!
+  /* #ChannelStart# |CAN2| #BusStart# |Comfort| */
+  /* #ChannelEnd# |CAN2| #BusEnd# |Comfort| */
+  //--- end generated part --- Block end #Hdr_Nm_PrepareBusSleepModeInd#; do not delete this line! Add application code below this line.
+  lBusContext = GetBusContext();
+  //--- begin generated part --- Block start #Body_Nm_PrepareBusSleepModeInd#; do not delete this line and do not add application code in this code block!
+  /* #ChannelStart# |CAN2| #BusStart# |Comfort| */
+  if (lBusContext == gNMCAN2_BusContext) NMCAN2_IndPrepareBusSleepMode();
+  /* #ChannelEnd# |CAN2| #BusEnd# |Comfort| */
+  //--- end generated part --- Block end #Body_Nm_PrepareBusSleepModeInd#; do not delete this line! Add application code below this line.
+  SetBusContext(lBusContext);
+}
+
+void Nm_BusSleepModeInd()
+{
+  // Callback of CAN AUTOSAR NM DLL
+  dword lBusContext;
+  //--- begin generated part --- Block start #Hdr_Nm_BusSleepModeInd#; do not delete this line and do not add application code in this code block!
+  /* #ChannelStart# |CAN2| #BusStart# |Comfort| */
+  /* #ChannelEnd# |CAN2| #BusEnd# |Comfort| */
+  //--- end generated part --- Block end #Hdr_Nm_BusSleepModeInd#; do not delete this line! Add application code below this line.
+  lBusContext = GetBusContext();
+  //--- begin generated part --- Block start #Body_Nm_BusSleepModeInd#; do not delete this line and do not add application code in this code block!
+  /* #ChannelStart# |CAN2| #BusStart# |Comfort| */
+  if (lBusContext == gNMCAN2_BusContext) NMCAN2_IndBusSleepMode();
+  /* #ChannelEnd# |CAN2| #BusEnd# |Comfort| */
+  //--- end generated part --- Block end #Body_Nm_BusSleepModeInd#; do not delete this line! Add application code below this line.
+  SetBusContext(lBusContext);
+  
+}
+
+void Nm_StateChangeNotification(long previousState, long currentState)
+{
+  // Callback of CAN AUTOSAR NM DLL
+  dword lBusContext;
+  //--- begin generated part --- Block start #Hdr_Nm_StateChangeNotification#; do not delete this line and do not add application code in this code block!
+  /* #ChannelStart# |CAN2| #BusStart# |Comfort| */
+  /* #ChannelEnd# |CAN2| #BusEnd# |Comfort| */
+  //--- end generated part --- Block end #Hdr_Nm_StateChangeNotification#; do not delete this line! Add application code below this line.
+  lBusContext = GetBusContext();
+  //--- begin generated part --- Block start #Body_Nm_StateChangeNotification#; do not delete this line and do not add application code in this code block!
+  /* #ChannelStart# |CAN2| #BusStart# |Comfort| */
+  if (lBusContext == gNMCAN2_BusContext) NMCAN2_IndStateChangeNotification(previousState, currentState);
+  /* #ChannelEnd# |CAN2| #BusEnd# |Comfort| */
+  //--- end generated part --- Block end #Body_Nm_StateChangeNotification#; do not delete this line! Add application code below this line.
+  SetBusContext(lBusContext);
+
+}
+
+on pdu Console_2
+{
+    switch(this.Active) 
+  {
+    case this.Active::None:
+            @sysvar::ComfortBus::DashboardTurnIndRightDisplay = 0;
+            @sysvar::ComfortBus::DashboardTurnIndLeftDisplay = 0;
+            @sysvar::ComfortBus::DashboardWarnIndDisplay = 0;
+    break;
+    case this.Active::Warning:
+            @sysvar::ComfortBus::DashboardTurnIndRightDisplay = this.Phase;
+            @sysvar::ComfortBus::DashboardTurnIndLeftDisplay = this.Phase;
+            @sysvar::ComfortBus::DashboardWarnIndDisplay = this.Phase;
+    break;
+    case this.Active::Turn_left:
+            @sysvar::ComfortBus::DashboardTurnIndRightDisplay = 0;
+            @sysvar::ComfortBus::DashboardTurnIndLeftDisplay = this.Phase;
+            @sysvar::ComfortBus::DashboardWarnIndDisplay = 0;
+    break;
+    case this.Active::Turn_right:
+            @sysvar::ComfortBus::DashboardTurnIndRightDisplay = this.Phase;
+            @sysvar::ComfortBus::DashboardTurnIndLeftDisplay = 0;
+            @sysvar::ComfortBus::DashboardWarnIndDisplay = 0;
+    break;
+    default:
+            runError(1010,1010);
+    break;
+  }
+
+}
+
+
+on timer GasPosTimer{
+  
+  ABSActive();
+  if(@sysvar::PowerTrain::PedalPressure_Brake==0){
+    ABS_active_recently=0;
+    @sysvar::PowerTrain::ABSactive=0;
+    @sysvar::ComfortBus::DashboardABSDisplay = 0;
+  }
+  
+  if(@sysvar::CruiseControl::DrivingCycleAcceleration_Switch==0&&@sysvar::CruiseControl::DrivingCycleDeceleration_Switch==0){
+    switch(@sysvar::PowerTrain::PedalPressure_Gas){
+      case 1:
+        if(@sysvar::PowerTrain::ThrottlePosition<100){
+          @sysvar::PowerTrain::ThrottlePosition+=5;
+        }
+        break;
+      case 0 :
+        if(@sysvar::PowerTrain::ThrottlePosition>0){
+          @sysvar::PowerTrain::ThrottlePosition=0;
+        }
+        break;
+    }
+  
+    if (@sysvar::PowerTrain::ABSactive!=1){
+      
+      switch(@sysvar::PowerTrain::PedalPressure_Brake){      
+       case 1:
+        if(@sysvar::PowerTrain::BrakePressure<100 && ABS_active_recently==1){
+          @sysvar::PowerTrain::BrakePressure+=0.25;
+        }
+        else if(@sysvar::PowerTrain::BrakePressure<100){
+          @sysvar::PowerTrain::BrakePressure+=5;
+        }
+        
+        @sysvar::CruiseControl::CC_Active=0; // turns off cruise control when braking
+        break;
+      case 0:
+        if(@sysvar::PowerTrain::BrakePressure>0){
+          @sysvar::PowerTrain::BrakePressure=0;
+        }
+        break;
+      }
+      
+    }
+    else{
+      if (@sysvar::PowerTrain::BrakePressure>80){
+        @sysvar::PowerTrain::BrakePressure-=5;
+      }
+    }
+  }
+  
+  
+  
+  SetTimer(GasPosTimer,GasPosTimer_interval);
+}
+
+
+void ABSActive() 
+{
+  /*
+  if (@sysvar::PowerTrain::BrakePressure == 100 && $CarSpeed > 0.5) {
+    @sysvar::ComfortBus::DashboardABSDisplay = 1;
+  } 
+  else {
+    @sysvar::ComfortBus::DashboardABSDisplay = 0;
+  }*/
+  
+  // ABS is only activated under the following conditions:
+  // a minimum brake pressure of 50 must be applied
+  // wheels are about to slip, when deceleration is very high and grip is not high enough
+  // maximum stable deceleration for car: dry asphalt ~ 0.9g, wet asphalt ~ 0.6g, snow ~0.3g
+  int brake_pressure_threshhold=50;
+  
+  if (- @sysvar::PowerTrain::Vehicle_Acceleration > 0.9 * gravitational_acceleration && @sysvar::PowerTrain::CarSpeed_kmh > 15.0 && @sysvar::PowerTrain::BrakePressure>50){
+    @sysvar::PowerTrain::ABSactive=1;
+    @sysvar::ComfortBus::DashboardABSDisplay = 1;
+    ABS_active_recently=1;
+    setTimer(tABSregulation,ABSregulation_interval);
+  }
+  else if(ABS_active_recently!=1){
+    @sysvar::PowerTrain::ABSactive=0;
+    @sysvar::ComfortBus::DashboardABSDisplay = 0;
+  }
+
+}
+
+on timer tABSregulation{
+  ABS_active_recently=0;
+  @sysvar::PowerTrain::ABSactive=0;
+  @sysvar::ComfortBus::DashboardABSDisplay = 0;
+}
+
+//--- begin generated part --- Block start <#Helper_Functions#> do not delete this line and do not add application code in this code block!
+/* #ChannelStart# |CAN2| #BusStart# |Comfort| */
+/* #ChannelEnd# |CAN2| #BusEnd# |Comfort| */
+//--- end generated part --- Block end <#Helper_Functions#> do not delete this line! Add application code below this line.
+
+//--- begin generated part --- Block start <#SysVar_Handler#> do not delete this line and do not add application code in this code block!
+/* #ChannelStart# |CAN2| #BusStart# |Comfort| */
+on sysvar_update sysvar::IL_CAN2::NODES::N_Dashboard::EnableNode
+{
+  ILCAN2_Enable(@this && @sysvar::IL_CAN2::enable_AllNodes && @sysvar::IL::Klemme30);
+}
+
+on sysvar_update sysvar::IL_CAN2::enable_AllNodes
+{
+  ILCAN2_Enable(@this && @sysvar::IL_CAN2::NODES::N_Dashboard::EnableNode && @sysvar::IL::Klemme30);
+}
+
+on sysvar_update sysvar::NM_CAN2::NODES::N_Dashboard::DeactivateNM
+{
+  if( @this == 1 || @sysvar::NM_CAN2::StateControl::DeactivateNM == 1)
+  {
+    NMCAN2_Enable(0);
+  }
+  else
+  {
+    NMCAN2_Enable(1);
+  }
+}
+
+on sysvar_update sysvar::NM_CAN2::StateControl::DeactivateNM
+{
+  if( @this == 1 || @sysvar::NM_CAN2::NODES::N_Dashboard::DeactivateNM == 1)
+  {
+    NMCAN2_Enable(0);
+  }
+  else
+  {
+    NMCAN2_Enable(1);
+  }
+}
+
+on sysvar_update sysvar::NM_CAN2::NODES::N_Dashboard::OpenNodePanel
+{
+  OpenNodePanel("Comfort::Dashboard", 1);
+}
+
+on sysvar_update sysvar::NM_CAN2::StateControl::CloseNodePanels
+{
+  OpenNodePanel("Comfort::Dashboard", 0);
+}
+
+/* #ChannelEnd# |CAN2| #BusEnd# |Comfort| */
+//--- end generated part --- Block end <#SysVar_Handler#> do not delete this line! Add application code below this line.
+
+//--- begin generated part --- Block start <#MsgUpdateFcns#> do not delete this line and do not add application code in this code block!
+/* #ChannelStart# |CAN2| #BusStart# |Comfort| */
+/* #ChannelEnd# |CAN2| #BusEnd# |Comfort| */
+//--- end generated part --- Block end <#MsgUpdateFcns#> do not delete this line! Add application code below this line.
+
+

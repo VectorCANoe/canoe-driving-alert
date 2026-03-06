@@ -1,0 +1,836 @@
+/*@!Encoding:1252*/
+/***************************************************************************************
+ * Demo- and Example-Programs
+ *
+ * Please note: The demo and example programs only show special aspects of the software.
+ * With regard to the fact that these programs are meant for demonstration purposes only,
+ * Vector Informatik's liability shall be expressly excluded in cases of ordinary
+ * negligence, to the extent admissible by law or statute.
+ *
+ * Beta-Version
+ *
+ * These programs are fully operative programs. However, they are not thoroughly tested
+ * yet (beta-version). With regard to the fact that the programs are a beta-version only,
+ * Vector Informatik's liability shall be expressly excluded in cases of ordinary
+ * negligence, to the extent admissible by law or statute.
+ *
+ * DESCRIPTION:
+ *
+ * Demo test implementation of the 'OPEN Alliance Automotive Ethernet ECU Test
+ * Specification - TC8 ECU Test' (Document Version 2.0, August 23, 2017)
+ *
+ * Copyright (c) Vector Informatik GmbH. All rights reserved.
+ ***************************************************************************************/
+ 
+includes
+{
+  #include "StubFunctionImplementation.cin"
+}
+
+variables
+{
+  long            gSocketId[10]; // socket id. -1 if socket is not open
+  enum TcpStateId gSocketState[10];
+  word            gSocketPort[10]; //port of dut
+  dword           gSequenceNumber[10];
+  dword           gAcknowledgement[10];
+  word            gConnectedPort[10]; //port of tester
+  char            gConnectedIP[10][64];
+}
+
+enum StubFunctionResult CallStubImplementation(char functionName[], enum StubFunctionResult result)
+{
+  switch(result)
+  {
+    case kOk:             testStepPass(functionName); break;
+    case kNotImplemented:
+    {
+      testStepInconclusive(functionName, "Function %s is not implemented", functionName );
+      testCaseFail(); // workaround, until break on inconclusive is supported
+    }
+    break;
+    default:              testStepFail(functionName); break;
+  }  
+  return result;
+}
+
+/// <GeneralStubFunctions>
+void StubInitialization()
+{
+  StubInitializationImpl();
+}
+
+/// <GeneralStubFunctions>
+void StubCleanup()
+{ 
+  StubCleanupImpl();
+}
+
+/// <GeneralStubFunctions>
+export testfunction Stub_GeneralStartTest()
+{
+  CallStubImplementation("Stub_GeneralStartTest", Stub_GeneralStartTestImpl());
+}
+
+/// <GeneralStubFunctions>
+export testfunction Stub_GeneralEndTest(word testCaseId, char testCaseName[])
+{
+  CallStubImplementation("Stub_GeneralEndTest", Stub_GeneralEndTestImpl(testCaseId, testCaseName));
+}
+
+/// <ArpStubFunctions>
+/**
+ * Makes DUT add a static ARP entry.
+ * @param idAddress The IP address of the ARP entry.
+ * @param macAddress The MAC address of the ARP entry.
+ */
+export testfunction Stub_AddStaticArpTableEntry(char ipAddr[], char macAddress[])
+{
+  CallStubImplementation("Stub_AddStaticArpTableEntry", Stub_AddStaticArpTableEntryImpl(ipAddr, macAddress));
+}
+
+/// <ArpStubFunctions>
+/**
+ * Makes DUT clear its ARP table.
+ */
+export testfunction Stub_ClearArpTable()
+{
+  CallStubImplementation("Stub_ClearArpTable", Stub_ClearArpTableImpl());
+}
+
+/// <ArpStubFunctions>
+/**
+ * Makes DUT reset a defined timeout for dynamic ARP table entries.
+ */
+export testfunction Stub_ClearTimeoutForDynamicArpTableEntry()
+{
+  CallStubImplementation("Stub_ClearTimeoutForDynamicArpTableEntry", Stub_ClearTimeoutForDynamicArpTableEntryImpl());
+}
+
+/// <ArpStubFunctions>
+/**
+ * Makes DUT delete a static ARP entry.
+ * @param ipAddr The IP address of the ARP entry.
+ * @param macAddress The MAC address of the ARP entry.
+ */
+export testfunction Stub_DeleteStaticArpTableEntry(char ipAddr[], char macAddress[])
+{
+  CallStubImplementation("Stub_DeleteStaticArpTableEntry", Stub_DeleteStaticArpTableEntryImpl(ipAddr, macAddress));
+}
+
+/// <ArpStubFunctions>
+/**
+ * Makes DUT set a defined timeout for dynamic ARP table entries.
+ * @param timeout The Timeout for the dynamic ARP table entries.
+ */
+export testfunction Stub_SetTimeoutForDynamicArpTableEntry(dword timeout)
+{
+  CallStubImplementation("Stub_SetTimeoutForDynamicArpTableEntry", Stub_SetTimeoutForDynamicArpTableEntryImpl(timeout));
+}
+
+/// <DhcpStubFunctions>
+export testfunction Stub_AdditionalOptionClientIdentifier(char ifName[], char clientIdentifier[])
+{
+  CallStubImplementation("Stub_AdditionalOptionClientIdentifier", Stub_AdditionalOptionClientIdentifierImpl(ifName, clientIdentifier));
+}
+
+/// <DhcpStubFunctions>
+export testfunction Stub_AdditionalOptionLeaseTime(char ifName[], dword leaseTimeSeconds)
+{
+  CallStubImplementation("Stub_AdditionalOptionLeaseTime", Stub_AdditionalOptionLeaseTimeImpl(ifName, leaseTimeSeconds));
+}
+
+/// <DhcpStubFunctions>
+export testfunction Stub_AdditionalOptionMaximumSize(char ifName[], word maximumSize)
+{
+  CallStubImplementation("Stub_AdditionalOptionMaximumSize", Stub_AdditionalOptionMaximumSizeImpl(ifName, maximumSize));
+}
+
+/// <DhcpStubFunctions>
+export testfunction Stub_BringUpNetwork(char ifName[])
+{
+  CallStubImplementation("Stub_BringUpNetwork", Stub_BringUpNetworkImpl(ifName));
+}
+
+/// <DhcpStubFunctions>
+export testfunction Stub_ConfigureDhcpClient(char ifName[])
+{
+  CallStubImplementation("Stub_ConfigureDhcpClient", Stub_ConfigureDhcpClientImpl(ifName));
+}
+
+/// <DhcpStubFunctions>
+export testfunction Stub_Reboot(char ifName[])
+{
+  CallStubImplementation("Stub_Reboot", Stub_RebootImpl(ifName));
+}
+
+/// <DhcpStubFunctions>
+export testfunction Stub_ReleaseNetwork(char ifName[])
+{
+  CallStubImplementation("Stub_ReleaseNetwork", Stub_ReleaseNetworkImpl(ifName));
+}
+
+/// <DhcpStubFunctions>
+/**
+ * Resets all client configurations for all configured interfaces on the DUT.
+ * Needed for testcase DHCPv4_CLIENT_CONSTRUCTING_MESSAGES_07
+ */
+export testfunction Stub_ResetAllClientConfigurations()
+{
+  CallStubImplementation("Stub_ResetAllClientConfigurations", Stub_ResetAllClientConfigurationsImpl());
+}
+
+/// <DhcpStubFunctions>
+/**
+  * Verfifies that DUT has correctly logged that initialization process has failed and is restarting for
+  * Needed for testcase DHCPv4_CLIENT_ALLOCATING_11
+ */
+export testfunction Stub_VerfiyDutHasLoggedFailingInitProcess()
+{
+  CallStubImplementation("Stub_VerfiyDutHasLoggedFailingInitProcess", Stub_VerfiyDutHasLoggedFailingInitProcessImpl());
+}
+
+/// <IcmpStubFunctions>
+/**
+ * Makes DUT send an ICMP echo request.
+ * @param ifName The name of the interface to send the echo request from.
+ * @paramm destAddr The destination IP address of to send the echo request to.
+ * @param data The data payload of the echo request.
+ */
+export testfunction Stub_IcmpEchoRequest(char ifName[], char destAddr[], byte data[])
+{
+  CallStubImplementation("Stub_IcmpEchoRequest", Stub_IcmpEchoRequestImpl(ifName, destAddr, data));
+}
+
+/// <IcmpStubFunctions>
+/**
+ * Data that will be received after the call of this SP will be forwarded to the test system.
+ */
+export testfunction Stub_IcmpReceiveAndForward()
+{
+  CallStubImplementation("Stub_IcmpReceiveAndForward", Stub_IcmpReceiveAndForwardImpl());
+}
+
+/// <IcmpStubFunctions>
+/**
+ * This is not just a wrapper.
+ * Checks the data that returns after Stub_UdpReceiveAndForward according to various parameters.
+ * @param timeoutMilliseconds Listen timeout in milliseconds.
+ * @param srcIpAddress Compares with the IP source address of the received datagram.
+ * @param destIpAddress Compares with the IP destination address of the received datagram.
+ * @param ttl Compares with the time to live of the received datagram.
+ * @param options Compares with the options of the received datagram.
+ */
+export testfunction Stub_ReceiveIcmpDestUnreachable(long timeoutMilliseconds, char srcIpAddress[], char destIpAddress[], enum IcmpDestUnreachableCodes code, char checksum[])
+{
+  CallStubImplementation("Stub_ReceiveIcmpDestUnreachable", Stub_ReceiveIcmpDestUnreachableImpl(timeoutMilliseconds, srcIpAddress, destIpAddress, code, checksum));
+}
+
+/// <Ipv4AutoconfStubFunctions>
+/**
+* Externally configure DHCP Client.
+* @param ifName The interface name.
+*/
+export testfunction Stub_InitDhcpClient(char ifName[])
+{
+  CallStubImplementation("Stub_InitDhcpClient", Stub_InitDhcpClientImpl(ifName));
+}
+
+/// <Ipv4AutoconfStubFunctions>
+/**
+* Externally cause DUT to bring down <DIface-0>
+* @param ifName The interface name.
+*/
+export testfunction Stub_InterfaceDown(char ifName[])
+{
+  CallStubImplementation("Stub_InterfaceDown", Stub_InterfaceDownImpl(ifName));
+}
+
+/// <Ipv4AutoconfStubFunctions>
+/**
+* Externally cause DUT to bring up <DIface-0>
+* @param ifName The interface name.
+*/
+export testfunction Stub_InterfaceUp(char ifName[])
+{
+  CallStubImplementation("Stub_InterfaceUp", Stub_InterfaceUpImpl(ifName));
+}
+
+/// <Ipv4AutoconfStubFunctions>
+/**
+* Remove a static IP address from the DUT.
+* @param ifName The interface name.
+*/
+export testfunction Stub_IpRemoveStaticAddress(char ifName[])
+{
+  CallStubImplementation("Stub_IpRemoveStaticAddress", Stub_IpRemoveStaticAddressImpl(ifName));
+}
+
+/// <Ipv4AutoconfStubFunctions>
+/**
+* Remove a static Route from the DUT.
+* @param ifName The interface name.
+*/
+export testfunction Stub_IpRemoveStaticRoute(char ifName[])
+{
+  CallStubImplementation("Stub_IpRemoveStaticRoute", Stub_IpRemoveStaticRouteImpl(ifName));
+}
+
+/// <Ipv4AutoconfStubFunctions>
+/**
+* Externally cause DUT to shutdown.
+* @param ifName The interface name.
+*/
+export testfunction Stub_StopDhcpClient(char ifName[])
+{
+  CallStubImplementation("Stub_StopDhcpClient", Stub_StopDhcpClientImpl(ifName));
+}
+
+/// <Ipv4StubFunctions>
+/**
+ * Assign an IP address to the DUT.
+ */
+export testfunction Stub_IpAddStaticAddress(char ifName[], char ipAddr[], char subnetMask[])
+{
+  CallStubImplementation("Stub_IpAddStaticAddress", Stub_IpAddStaticAddressImpl(ifName, ipAddr, subnetMask));
+}
+
+/// <Layer2StubFunctions>
+/**
+ * Add an entry to the ARL table
+ * @param channel The name of the channel on the DUT
+ * @param macAddress The MAC address of the entry
+ */
+export testfunction Stub_AddEntryToArlTable(char channel[], char macAddress[])
+{
+  CallStubImplementation("Stub_AddEntryToArlTable", Stub_AddEntryToArlTableImpl(channel, macAddress));
+}
+
+/// <Layer2StubFunctions>
+/**
+ * Authenticates the port on the DUT (e.g. via EAPoL)
+ * @param channel The channel on which the port should be authenticated
+ */
+export testfunction Stub_AuthenticatePort(int channel)
+{
+  CallStubImplementation("Stub_AuthenticatePort", Stub_AuthenticatePortImpl(channel));
+
+}
+
+/// <Layer2StubFunctions>
+enum StubFunctionResult Stub_CheckMacSec(long packetHandle)
+{
+  return Stub_CheckMacSecImpl(packetHandle);
+}
+
+/// <Layer2StubFunctions>
+/**
+ * Reads out the traffic counter and compares it with a given value
+ * @param channel The channel on which the traffic counter should be read
+ * @param expectedValue The expected value of the channel
+ * @param displayWarnings If this is true, a warning instead of a fail will be dispalyed
+ */
+export testfunction Stub_CheckTrafficCounter(int channel, int expectedValue, enum Bool displayWarnings)
+{
+  CallStubImplementation("Stub_CheckTrafficCounter", Stub_CheckTrafficCounterImpl(channel, expectedValue, displayWarnings));
+}
+
+/// <Layer2StubFunctions>
+/**
+* Clear the ARL table on the DUT.
+*/
+export testfunction Stub_ClearArlTable()
+{
+  CallStubImplementation("Stub_ClearArlTable", Stub_ClearArlTableImpl());
+}
+
+/// <Layer2StubFunctions>
+/**
+ * Disables a port on the DUT
+ * @param channel The channel on which the port should be disabled
+ */
+export testfunction Stub_DisablePort(int channel)
+{
+  CallStubImplementation("Stub_DisablePort", Stub_DisablePortImpl(channel));
+}
+
+/// <Layer2StubFunctions>
+/**
+* Read the ARL table of the DUT and compare it to the expected ARL table.
+* @param outChannel The comma separated channel numbers in the same order as the corresponding MAC addresses.
+* @param outMac The comma separated MAC addresses in the same order as the correspoding channels.
+*/
+export enum StubFunctionResult Stub_ReadArlTable(char outChannel[], char outMac[])
+{  
+  return CallStubImplementation("Stub_ReadArlTable", Stub_ReadArlTableImpl(outChannel, outMac));
+}
+
+/// <Layer2StubFunctions>
+/**
+ * Resets the traffic counter
+ * @param channel The channel on which the traffic counter should be reset
+ */
+export testfunction Stub_ResetTrafficCounter(int channel)
+{
+  CallStubImplementation("Stub_ResetTrafficCounter", Stub_ResetTrafficCounterImpl(channel));
+}
+
+/// <Layer2StubFunctions>
+/**
+ * Tries to authenticate a port with invalid authentication information (e.g. via EAPoL)
+ * Note: Usage of non-standard Service Primitive 
+ * @param channel The channel on which the port should be authenticated
+ */
+export testfunction Stub_TryToAuthenticatePortWithInvalidInformation(int channel)
+{
+  CallStubImplementation("Stub_TryToAuthenticatePortWithInvalidInformation", Stub_TryToAuthenticatePortWithInvalidInformationImpl(channel));
+}
+
+/// <SOMEIPStubFunctions>
+/**
+* Start a SOME/IP service on the DUT.
+* @param serviceId The service ID.
+* @param numInstances The number of service instances.
+*/
+export testfunction Stub_StartSomeIpService(word serviceId, word numInstances)
+{
+  CallStubImplementation("Stub_StartSomeIpService", Stub_StartSomeIpServiceImpl(serviceId, numInstances));
+}
+
+/// <SOMEIPStubFunctions>
+/**
+* Stop a SOME/IP service on the DUT.
+* @param serviceId The service ID.
+*/
+export testfunction Stub_StopSomeIpService(word serviceId)
+{
+  CallStubImplementation("Stub_StopSomeIpService", Stub_StopSomeIpServiceImpl(serviceId));
+}
+
+/// <SOMEIPStubFunctions>
+/**
+* Trigger a SOME/IP event.
+* @param serviceId The service ID.
+* @param eventGroupId The event group ID.
+* @param eventId The event ID.
+*/
+export testfunction Stub_TriggerSomeIpEvent(word serviceId, word eventGroupId, word eventId)
+{
+  CallStubImplementation("Stub_TriggerSomeIpEvent", Stub_TriggerSomeIpEventImpl(serviceId, eventGroupId, eventId));
+}
+
+/// <TcpStubFunctions>
+/**
+ * Get the current Tcp State.
+ * @param tcpStateId Current Tcp State
+ */
+export testfunction Stub_GetTcpState(enum TcpStateId tcpStateId)
+{
+  CallStubImplementation("Stub_GetTcpState", Stub_GetTcpStateImpl(tcpStateId, 0));
+}
+
+/// <TcpStubFunctions>
+/**
+ * Get the current Tcp State.
+ * @param tcpStateId Current Tcp State
+ * @param socketHandle The socket handle
+ */
+export testfunction Stub_GetTcpState(enum TcpStateId tcpStateId, int socketHandle)
+{
+  CallStubImplementation("Stub_GetTcpState", Stub_GetTcpStateImpl(tcpStateId, socketHandle));
+}
+
+/// <TcpStubFunctions>
+/**
+ * Check if the DUT has issued an urgent signal to its applications.
+ */
+export testfunction Stub_TcpCheckUrgentSignal()
+{
+  CallStubImplementation("Stub_TcpCheckUrgentSignal", Stub_TcpCheckUrgentSignalImpl());
+}
+
+/// <TcpStubFunctions>
+export testfunction Stub_TcpCloseSocket(enum Bool abort)
+{
+  CallStubImplementation("Stub_TcpCloseSocket", Stub_TcpCloseSocketImpl(0, abort, Success));
+}
+
+/// <TcpStubFunctions>
+export testfunction Stub_TcpCloseSocket(enum TestabilityMessageResultIds expectedResult, enum Bool abort)
+{
+  CallStubImplementation("Stub_TcpCloseSocket", Stub_TcpCloseSocketImpl(0, abort, expectedResult));
+}
+
+/// <TcpStubFunctions>
+export testfunction Stub_TcpCloseSocket(int socketId, enum Bool abort, enum TestabilityMessageResultIds expectedResult)
+{
+  CallStubImplementation("Stub_TcpCloseSocket", Stub_TcpCloseSocketImpl(socketId, abort, expectedResult));
+}
+
+/// <TcpStubFunctions>
+/**
+ * This SP is used to select and set parameters that can be configured on a socket basis.
+ * @param paramId Selects the parameter to be configured
+ * @param paramVal The value of the selected parameter that must match the corresponding length.
+ */
+export testfunction Stub_TcpConfigureSocket(enum TcpParameterId paramId, word paramVal)
+{
+  CallStubImplementation("Stub_TcpConfigureSocket", Stub_TcpConfigureSocketImpl(paramId, paramVal));
+}
+
+/// <TcpStubFunctions>
+/**
+ * Connect a TCP socket to a remote destination with wait for a response.
+ * @param destPort Port of the remote destination.
+ * @param expectedResult expected TCP error result.
+ */
+export testfunction Stub_TcpConnect(word socketHandle, char destIpAddr[], word destPort, enum TestabilityMessageResultIds expectedResult)
+{
+  CallStubImplementation("Stub_TcpConnect", Stub_TcpConnectImpl(socketHandle, destIpAddr, destPort, expectedResult));
+}
+
+/// <TcpStubFunctions>
+/**
+ * Creates a socket and optionally binds this socket to a port and a local IP address.
+ * @param localPort Local port to bind.
+ */
+export testfunction Stub_TcpCreateAndBind(word dutPort, enum Bool doBind, word socketIndex)
+{
+  CallStubImplementation("Stub_TcpCreateAndBind", Stub_TcpCreateAndBindImpl(socketIndex, dutPort, doBind));
+}
+
+/// <TcpStubFunctions>
+/**
+ * Move Socket on dut to listen State
+ * @param maxCon Maximum number of connections allowed to establish
+ */
+export testfunction Stub_TcpListenAndAccept(word maxCon)
+{
+  CallStubImplementation("Stub_TcpListenAndAccept", Stub_TcpListenAndAcceptImpl(maxCon, 0));
+}
+
+/// <TcpStubFunctions>
+/**
+ * Move Specific Socket on dut to listen State
+ * @param maxCon Maximum number of connections allowed to establish
+ */
+export testfunction Stub_TcpListenAndAccept(word maxCon, word socketIndex)
+{
+  CallStubImplementation("Stub_TcpListenAndAccept", Stub_TcpListenAndAcceptImpl(maxCon, socketIndex));
+}
+
+/// <TcpStubFunctions>
+/**
+ * Validate new Connection established
+ * @param timeoutMilliseconds timeout
+ */
+export testfunction Stub_TcpListenAndAcceptEvent(long timeoutMilliseconds)
+{
+  CallStubImplementation("Stub_TcpListenAndAcceptEvent", Stub_TcpListenAndAcceptEventImpl(timeoutMilliseconds));
+}
+
+/// <TcpStubFunctions>
+/**
+ * Data that will be received after the call of this SP will be forwarded to the test system.
+ */
+export testfunction Stub_TcpReceiveAndForward()
+{
+  CallStubImplementation("Stub_TcpReceiveAndForward", Stub_TcpReceiveAndForwardImpl(Success, syspar::Wildcard));
+}
+
+/// <TcpStubFunctions>
+/**
+ * Data that will be received after the call of this SP will be forwarded to the test system.
+ * @param expectedResult expected TCP error result.
+ */
+export testfunction Stub_TcpReceiveAndForward(enum TestabilityMessageResultIds expectedResult)
+{
+  CallStubImplementation("Stub_TcpReceiveAndForward", Stub_TcpReceiveAndForwardImpl(expectedResult, syspar::Wildcard));
+}
+
+/// <TcpStubFunctions>
+/**
+ * Data that will be received after the call of this SP will be forwarded to the test system.
+ * @param expectedResult expected TCP error result.
+ */
+export testfunction Stub_TcpReceiveAndForward(enum TestabilityMessageResultIds expectedResult, word expectedDropCnt)
+{
+  char dropCnt[10];
+  
+  snprintf(dropCnt, elcount(dropCnt), "%u", expectedDropCnt);
+  
+  CallStubImplementation("Stub_TcpReceiveAndForward", Stub_TcpReceiveAndForwardImpl(expectedResult, dropCnt));
+}
+
+/// <TcpStubFunctions>
+/**
+ * This is not just a wrapper.
+ * Checks the data that returns after Stub_TcpReceiveAndForward according to various parameters.
+ * @param timeoutMilliseconds Listen timeout in milliseconds.
+ * @param fullLen Compares with the full length of available data in bytes.
+ * @param payload Compares with the payload that was received.
+ */
+export testfunction Stub_TcpReceiveAndForwardEvent(long timeoutMilliseconds, word fullLen, char payload[])
+{
+  char len[255];
+  snprintf(len, elcount(len), "%d", fullLen);
+  CallStubImplementation("Stub_TcpReceiveAndForwardEvent", Stub_TcpReceiveAndForwardEventImpl(timeoutMilliseconds, len, payload, kTrue, Success));
+}
+
+/// <TcpStubFunctions>
+/**
+ * This is not just a wrapper.
+ * Checks the data that returns after Stub_TcpReceiveAndForward according to various parameters.
+ * @param timeoutMilliseconds Listen timeout in milliseconds.
+ * @param fullLen Compares with the full length of available data in bytes.
+ * @param payload Compares with the payload that was received.
+ */
+export testfunction Stub_TcpReceiveAndForwardEvent(long timeoutMilliseconds, char fullLen[], char payload[])
+{
+  CallStubImplementation("Stub_TcpReceiveAndForwardEvent", Stub_TcpReceiveAndForwardEventImpl(timeoutMilliseconds, fullLen, payload, kTrue, Success));
+}
+
+/// <TcpStubFunctions>
+/**
+ * This is not just a wrapper.
+ * Checks the data that returns after Stub_TcpReceiveAndForward according to various parameters.
+ * @param timeoutMilliseconds Listen timeout in milliseconds.
+ * @param expectedResult expected TCP error result.
+ */
+export testfunction Stub_TcpReceiveAndForwardEvent(long timeoutMilliseconds, enum TestabilityMessageResultIds expectedResult)
+{
+  CallStubImplementation("Stub_TcpReceiveAndForwardEvent", Stub_TcpReceiveAndForwardEventImpl(timeoutMilliseconds, syspar::Wildcard, syspar::Wildcard, kTrue, expectedResult));
+}
+
+/// <TcpStubFunctions>
+/**
+ * Data that will be received after the call of this SP will be forwarded to the test system.
+ * @param maxLength Maximum length of payload to be forwarded per event.
+ */
+export testfunction Stub_TcpReceiveAndForwardMaxLength(word maxLength)
+{
+  CallStubImplementation("Stub_TcpReceiveAndForwardMaxLength", Stub_TcpReceiveAndForwardMaxLengthImpl(maxLength));
+}
+
+/// <TcpStubFunctions>
+/**
+ * Sends data to a connected target.
+ * @param totalLength Total length: repeat data up to that length.
+ * @param flags Flags of the message.
+ * @param data Data to transmit.
+ */
+export testfunction Stub_TcpSendData(word totalLength, enum TcpFlag flags, char data[])
+{
+  CallStubImplementation("Stub_TcpSendData", Stub_TcpSendDataImpl(Success, totalLength, flags, data, 0));
+}
+
+/// <TcpStubFunctions>
+/**
+ * Sends data to a connected target.
+ * @param totalLength Total length: repeat data up to that length.
+ * @param flags Flags of the message.
+ * @param data Data to transmit.
+ */
+export testfunction Stub_TcpSendData(char totalLength[], enum TcpFlag flags, char data[])
+{
+  CallStubImplementation("Stub_TcpSendData", Stub_TcpSendDataImpl(Success, atol(totalLength), flags, data, 0));
+}
+
+/// <TcpStubFunctions>
+/**
+ * Sends data to a connected target and waiting for a response.
+ * @param totalLength Total length: repeat data up to that length.
+ * @param flags Flags of the message.
+ * @param data Data to transmit.
+ * @param expectedResult expected TCP error result
+ */
+export testfunction Stub_TcpSendData(enum TestabilityMessageResultIds expectedResult, char totalLength[], enum TcpFlag flags, char data[])
+{
+  CallStubImplementation("Stub_TcpSendData", Stub_TcpSendDataImpl(expectedResult, atol(totalLength), flags, data, 0));
+}
+
+/// <TcpStubFunctions>
+/**
+ * Sends data to a connected target and waiting for a response.
+ * @param totalLength Total length: repeat data up to that length.
+ * @param flags Flags of the message.
+ * @param data Data to transmit.
+ * @param expectedResult expected TCP error result
+ * @param sockethandle The sockethandle
+ */
+export testfunction Stub_TcpSendData(enum TestabilityMessageResultIds expectedResult, char totalLength[], enum TcpFlag flags, char data[], int sockethandle)
+{
+  CallStubImplementation("Stub_TcpSendData", Stub_TcpSendDataImpl(expectedResult, atol(totalLength), flags, data, sockethandle));
+}
+
+/// <TcpStubFunctions>
+/**
+ * Shutdown socket.
+ * @param typeId Type ID to control shutdown
+ */
+export testfunction Stub_TcpShutdown(enum TcpSocketShutdownType typeId)
+{
+  CallStubImplementation("Stub_TcpShutdown", Stub_TcpShutdownImpl(Success, typeId));
+}
+
+/// <TcpStubFunctions>
+/**
+ * Shutdown socket.
+ * @param typeId Type ID to control shutdown
+ */
+export testfunction Stub_TcpShutdown(enum TestabilityMessageResultIds expectedResult, enum TcpSocketShutdownType typeId)
+{
+  CallStubImplementation("Stub_TcpShutdown", Stub_TcpShutdownImpl(expectedResult, typeId));
+}
+
+/// <TcpStubFunctions>
+/**
+ * This is not just a wrapper.
+ * Checks the data that returns after Stub_TcpReceiveAndForward according to various parameters.
+ * @param timeoutMilliseconds Listen timeout in milliseconds.
+ * @param fullLen Compares with the full length of available data in bytes.
+ * @param payload Compares with the payload that was received.
+ */
+export testfunction Stub_UnexpectedTcpReceiveAndForwardEvent(long timeoutMilliseconds, char fullLen[], char payload[])
+{
+  CallStubImplementation("Stub_UnexpectedTcpReceiveAndForwardEvent", Stub_TcpReceiveAndForwardEventImpl(timeoutMilliseconds, fullLen, payload, kFalse, /* dummy */ Success));
+}
+
+/// <UdpStubFunctions>
+/**
+ * Closes a socket.
+ */
+export testfunction Stub_UdpCloseSocket(int socketId)
+{
+  CallStubImplementation("Stub_UdpCloseSocket", Stub_UdpCloseSocketImpl(socketId));
+}
+
+/// <UdpStubFunctions>
+/**
+ * This SP is used to select and set parameters that can be configured on a socket basis.
+ * @param paramId Selects the parameter to be configured
+ * @param paramVal The value of the selected parameter that must match the corresponding length.
+ */
+export testfunction Stub_UdpConfigureSocket(word paramId, word paramVal)
+{
+  CallStubImplementation("Stub_UdpConfigureSocket", Stub_UdpConfigureSocketImpl(paramId, paramVal));
+}
+
+/// <UdpStubFunctions>
+/**
+ * This SP is used to select and set parameters that can be configured on a socket basis.
+ * @param paramId Selects the parameter to be configured
+ * @param paramVal The value of the selected parameter that must match the corresponding length.
+ */
+export testfunction Stub_UdpConfigureSocket(word paramId, char paramVal[])
+{
+  CallStubImplementation("Stub_UdpConfigureSocket", Stub_UdpConfigureSocketImpl(paramId, paramVal));
+}
+
+/// <UdpStubFunctions>
+/**
+ * Creates a socket and optionally binds this socket to a port and a local IP address.
+ * @param localPort Local port to bind
+ */
+export testfunction Stub_UdpCreateAndBind(char localPort[])
+{
+  CallStubImplementation("Stub_UdpCreateAndBind", Stub_UdpCreateAndBindImpl(atol(localPort), syspar::DIface0Ip, kTrue, 0));
+}
+
+/// <UdpStubFunctions>
+/**
+ * Creates a socket and optionally binds this socket to a port and a local IP address.
+ * @param localPort Local port to bind
+ * @param ipAddr the IP Address of the socket
+ * @param the number of the socket if several sockets are opened. Starts counting with zero
+ */
+export testfunction Stub_UdpCreateAndBind(char localPort[], char ipAddr[], int socketNumber, enum Bool doBind)
+{
+  CallStubImplementation("Stub_UdpCreateAndBind", Stub_UdpCreateAndBindImpl(atol(localPort), ipAddr, doBind, socketNumber));
+}
+
+/// <UdpStubFunctions>
+/**
+ * Data that will be received after the call of this SP will be forwarded to the test system.
+ */
+export testfunction Stub_UdpReceiveAndForward()
+{
+  CallStubImplementation("Stub_UdpReceiveAndForward", Stub_UdpReceiveAndForwardImpl(0, 0xFFFF));
+}
+
+/// <UdpStubFunctions>
+/**
+ * Data that will be received after the call of this SP will be forwarded to the test system.
+ * @param socketNumber: The number of the socket that shall be used
+ */
+export testfunction Stub_UdpReceiveAndForward(int socketNumber, word maxFwd)
+{
+  CallStubImplementation("Stub_UdpReceiveAndForward", Stub_UdpReceiveAndForwardImpl(socketNumber, maxFwd));
+}
+
+/// <UdpStubFunctions>
+/**
+ * This is not just a wrapper.
+ * Checks the data that returns after Stub_UdpReceiveAndForward according to various parameters.
+ * @param timeoutMilliseconds Listen timeout in milliseconds.
+ * @param fullLen Compares with the full length of available data in bytes.
+ * @param srcPort Compares with the UDP source port of the received datagram.
+ * @param srcIpAddress Compares with the IP source address of the received datagram.
+ * @param payload Compares with the payload that was received.
+ */
+export testfunction Stub_UdpReceiveAndForwardEvent(long timeoutMilliseconds, char fullLen[], char srcPort[], char srcIpAddress[], char payload[])
+{
+  CallStubImplementation("Stub_UdpReceiveAndForwardEvent", Stub_UdpReceiveAndForwardEventImpl(timeoutMilliseconds, fullLen, srcPort, srcIpAddress, payload, kTrue));
+}
+
+/// <UdpStubFunctions>
+/**
+ * Sends data to a target.
+ * @param totalLength Total length: repeat data up to that length
+ * @param destinationPort Destination port
+ * @param destinationAddress Destination address
+ * @param data Data to transmit
+ */
+export testfunction Stub_UdpSendData(char totalLength[], char destinationPort[], char destinationAddress[], char data[])
+{
+  CallStubImplementation("Stub_UdpSendData", Stub_UdpSendDataImpl(0, totalLength, destinationPort, destinationAddress, data));
+}
+
+/// <UdpStubFunctions>
+/**
+ * Sends data to a target.
+ * @param socketNumber the number of the socket which shall send the data (if several sockets are opened via stub function. starts counting at zero).
+ * @param totalLength Total length: repeat data up to that length
+ * @param destinationPort Destination port
+ * @param destinationAddress Destination address
+ * @param data Data to transmit
+ */
+export testfunction Stub_UdpSendData(int socketNumber, char totalLength[], char destinationPort[], char destinationAddress[], char data[])
+{
+  CallStubImplementation("Stub_UdpSendData", Stub_UdpSendDataImpl(socketNumber, totalLength, destinationPort, destinationAddress, data));
+}
+
+/// <UdpStubFunctions>
+/**
+ * This is not just a wrapper.
+ * Checks the data that returns after Stub_UdpReceiveAndForward according to various parameters.
+ * @param timeoutMilliseconds Listen timeout in milliseconds.
+ * @param fullLen Compares with the full length of available data in bytes.
+ * @param srcPort Compares with the UDP source port of the received datagram.
+ * @param srcIpAddress Compares with the IP source address of the received datagram.
+ * @param payload Compares with the payload that was received.
+ */
+export testfunction Stub_UnexpectedUdpReceiveAndForwardEvent(long timeoutMilliseconds, char fullLen[], char srcPort[], char srcIpAddress[], char payload[])
+{
+  CallStubImplementation("Stub_UnexpectedUdpReceiveAndForwardEvent", Stub_UdpReceiveAndForwardEventImpl(timeoutMilliseconds, fullLen, srcPort, srcIpAddress, payload, kFalse));
+}
+
+float Stub_DhcpCalculateT1InMillisecondsUsedByDut(dword leaseTimeSeconds)
+{
+  return Stub_DhcpCalculateT1InMillisecondsUsedByDutImpl(leaseTimeSeconds);
+}
+
+float Stub_DhcpCalculateT2InMillisecondsUsedByDut(dword leaseTimeSeconds)
+{
+  return Stub_DhcpCalculateT2InMillisecondsUsedByDutImpl(leaseTimeSeconds);
+}

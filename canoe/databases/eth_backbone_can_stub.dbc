@@ -1,4 +1,4 @@
-﻿VERSION "ETH_Backbone_CAN_STUB_v2.1"
+VERSION "ETH_Backbone_CAN_STUB_v2.1"
 
 
 NS_ :
@@ -54,6 +54,38 @@ BO_ 452 ethDecelAssistReqMsg: 4 WARN_ARB_MGR
  SG_ RiskLevel           : 8|8@1+ (1,0) [0|100] "" VAL_SCENARIO_CTRL,CHS_GW
  SG_ Reserved0           : 16|16@1+ (1,0) [0|0] "" Vector__XXX
 
+BO_ 453 ethObjectRiskInputMsg: 8 VAL_SCENARIO_CTRL
+ SG_ ObjectTrackValid      : 0|1@1+  (1,0) [0|1] "" ADAS_WARN_CTRL
+ SG_ ObjectRangeM          : 1|9@1+  (1,0) [0|500] "m" ADAS_WARN_CTRL
+ SG_ ObjectRelSpeedKph     : 10|9@1- (1,0) [-200|200] "km/h" ADAS_WARN_CTRL
+ SG_ ObjectConfidence      : 19|7@1+ (1,0) [0|100] "%" ADAS_WARN_CTRL
+ SG_ IntersectionConflict  : 26|1@1+ (1,0) [0|1] "" ADAS_WARN_CTRL
+ SG_ MergeCutIn            : 27|1@1+ (1,0) [0|1] "" ADAS_WARN_CTRL
+ SG_ ObjectAlertHoldMs     : 28|13@1+ (1,0) [0|5000] "ms" ADAS_WARN_CTRL
+ SG_ Reserved0             : 41|23@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 454 ethObjectRiskStateMsg: 6 ADAS_WARN_CTRL
+ SG_ ObjectRiskClass       : 0|3@1+   (1,0) [0|7] "" WARN_ARB_MGR,VAL_SCENARIO_CTRL
+ SG_ ObjectTtcMinMs        : 3|14@1+  (1,0) [0|10000] "ms" WARN_ARB_MGR,VAL_SCENARIO_CTRL
+ SG_ ObjectRiskLevel       : 17|7@1+  (1,0) [0|100] "" WARN_ARB_MGR,VAL_SCENARIO_CTRL
+ SG_ ObjectTrackValid      : 24|1@1+  (1,0) [0|1] "" WARN_ARB_MGR,VAL_SCENARIO_CTRL
+ SG_ Reserved0             : 25|23@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 455 ethObjectScenarioAlertMsg: 4 WARN_ARB_MGR
+ SG_ ObjectAlertLevel      : 0|3@1+   (1,0) [0|7] "" BODY_GW,IVI_GW,VAL_SCENARIO_CTRL
+ SG_ ObjectAlertType       : 3|3@1+   (1,0) [0|7] "" BODY_GW,IVI_GW,VAL_SCENARIO_CTRL
+ SG_ IntersectionConflict  : 6|1@1+   (1,0) [0|1] "" BODY_GW,IVI_GW,VAL_SCENARIO_CTRL
+ SG_ MergeCutIn            : 7|1@1+   (1,0) [0|1] "" BODY_GW,IVI_GW,VAL_SCENARIO_CTRL
+ SG_ ObjectRiskClass       : 8|3@1+   (1,0) [0|7] "" BODY_GW,IVI_GW,VAL_SCENARIO_CTRL
+ SG_ Reserved0             : 11|21@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 456 ethObjectSafetyStateMsg: 4 DOMAIN_BOUNDARY_MGR
+ SG_ ObjectConfidence      : 0|7@1+   (1,0) [0|100] "%" WARN_ARB_MGR,VAL_SCENARIO_CTRL,EMS_ALERT_RX
+ SG_ ObjectEventCode       : 7|16@1+  (1,0) [0|65535] "" WARN_ARB_MGR,VAL_SCENARIO_CTRL,EMS_ALERT_RX
+ SG_ ObjectFailSafeMode    : 23|2@1+  (1,0) [0|2] "" WARN_ARB_MGR,VAL_SCENARIO_CTRL,EMS_ALERT_RX
+ SG_ ObjectTrackValid      : 25|1@1+  (1,0) [0|1] "" WARN_ARB_MGR,VAL_SCENARIO_CTRL,EMS_ALERT_RX
+ SG_ Reserved0             : 26|6@1+  (1,0) [0|0] "" Vector__XXX
+
 BO_ 273 ethFailSafeStateMsg: 2 DOMAIN_BOUNDARY_MGR
  SG_ DomainPathStatus : 0|2@1+ (1,0) [0|2] "" WARN_ARB_MGR,VAL_SCENARIO_CTRL
  SG_ E2eHealthState   : 2|2@1+ (1,0) [0|2] "" WARN_ARB_MGR,VAL_SCENARIO_CTRL
@@ -74,6 +106,24 @@ CM_ BO_ 452 "E788: Deceleration assist request frame. Produced by WARN_ARB_MGR (
 CM_ SG_ 452 DecelAssistReq "0=off 1=active.";
 CM_ SG_ 452 FailSafeMode "0=normal 1=degraded 2=blocked.";
 CM_ SG_ 452 DriverReleaseReason "0=none 1=steering 2=brake 3=failsafe.";
+CM_ BO_ 453 "E213: Object risk input frame (SIL harness path). Produced by VAL_SCENARIO_CTRL and consumed by ADAS_WARN_CTRL.";
+CM_ SG_ 453 ObjectTrackValid "Object track validity.";
+CM_ SG_ 453 ObjectRangeM "Representative object range in meters.";
+CM_ SG_ 453 ObjectRelSpeedKph "Relative speed of representative object (negative=closing).";
+CM_ SG_ 453 ObjectConfidence "Object confidence score in percent.";
+CM_ SG_ 453 IntersectionConflict "1=intersection lateral conflict context.";
+CM_ SG_ 453 MergeCutIn "1=merge/cut-in conflict context.";
+CM_ SG_ 453 ObjectAlertHoldMs "Conservative hold time for temporary track loss.";
+CM_ BO_ 454 "E214: Object risk state frame. Produced by ADAS_WARN_CTRL for object TTC/risk arbitration.";
+CM_ SG_ 454 ObjectRiskClass "0=none .. 5=critical object risk class.";
+CM_ SG_ 454 ObjectTtcMinMs "Representative object minimum TTC in ms.";
+CM_ SG_ 454 ObjectRiskLevel "Normalized object risk level (0..100).";
+CM_ BO_ 455 "E215: Object scenario alert frame. Produced by WARN_ARB_MGR for object-context alert sharing.";
+CM_ SG_ 455 ObjectAlertLevel "Object-context selected alert level.";
+CM_ SG_ 455 ObjectAlertType "Object-context selected alert type.";
+CM_ BO_ 456 "E216: Object safety state frame. Produced by DOMAIN_BOUNDARY_MGR for confidence/failsafe/event trace.";
+CM_ SG_ 456 ObjectEventCode "Object alert event code (Req_138 traceability).";
+CM_ SG_ 456 ObjectFailSafeMode "Object path fail-safe mode mirror.";
 CM_ BO_ 273 "E789: Fail-safe state frame. Produced by DOMAIN_BOUNDARY_MGR (Req_124).";
 CM_ SG_ 273 DomainPathStatus "0=normal 1=degraded 2=failed.";
 CM_ SG_ 273 E2eHealthState "0=failed 1=degraded 2=healthy.";
@@ -84,6 +134,10 @@ BA_DEF_DEF_ "GenMsgCycleTime" 0;
 BA_ "GenMsgCycleTime" BO_ 448 0;
 BA_ "GenMsgCycleTime" BO_ 450 100;
 BA_ "GenMsgCycleTime" BO_ 452 50;
+BA_ "GenMsgCycleTime" BO_ 453 100;
+BA_ "GenMsgCycleTime" BO_ 454 100;
+BA_ "GenMsgCycleTime" BO_ 455 50;
+BA_ "GenMsgCycleTime" BO_ 456 100;
 BA_ "GenMsgCycleTime" BO_ 273 300;
 
 VAL_ 448 VehicleType 0 "NONE" 1 "POLICE" 2 "AMBULANCE";
@@ -92,6 +146,14 @@ VAL_ 448 Direction 0 "UNKNOWN" 1 "FRONT" 2 "REAR" 3 "SIDE";
 VAL_ 450 TimeoutClearMon 0 "NoClear" 1 "Clear";
 VAL_ 452 DecelAssistReq 0 "OFF" 1 "ON";
 VAL_ 452 DriverReleaseReason 0 "NONE" 1 "STEER" 2 "BRAKE" 3 "FAILSAFE";
+VAL_ 453 ObjectTrackValid 0 "INVALID" 1 "VALID";
+VAL_ 453 IntersectionConflict 0 "NO" 1 "YES";
+VAL_ 453 MergeCutIn 0 "NO" 1 "YES";
+VAL_ 454 ObjectTrackValid 0 "INVALID" 1 "VALID";
+VAL_ 455 IntersectionConflict 0 "NO" 1 "YES";
+VAL_ 455 MergeCutIn 0 "NO" 1 "YES";
+VAL_ 456 ObjectFailSafeMode 0 "NORMAL" 1 "DEGRADED" 2 "BLOCKED";
+VAL_ 456 ObjectTrackValid 0 "INVALID" 1 "VALID";
 VAL_ 273 DomainPathStatus 0 "NORMAL" 1 "DEGRADED" 2 "FAILED";
 VAL_ 273 E2eHealthState 0 "FAILED" 1 "DEGRADED" 2 "HEALTHY";
 VAL_ 273 FailSafeMode 0 "NORMAL" 1 "DEGRADED" 2 "BLOCKED";

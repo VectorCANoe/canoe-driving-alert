@@ -1,0 +1,1428 @@
+version 2.0;
+import module "IoTEnabler";
+namespace NIoTEnabler
+{
+
+namespace NIBTController
+{
+struct ACLType
+{
+    uint16 handle;
+    uint16 length;
+    bool fragment;
+    bool auto_flush;
+    bool point_to_point;
+    bool broadcast;
+    bytes payload;
+}
+
+struct ATTExchangeMTURequestType
+{
+    uint16 client_mtu_size;
+}
+
+struct ATTExchangeMTUResponseType
+{
+    uint16 server_mtu_size;
+}
+
+struct ATTReadRequestType
+{
+    uint16 handle;
+}
+
+struct ATTReadResponseType
+{
+    bytes value;
+}
+
+struct ATTReadTypeRequestType
+{
+    uint16 start_handle;
+    uint16 end_handle;
+    string uuid;
+}
+
+struct ATTReadTypeResponseType
+{
+    uint8 length;
+    bytes payload;
+}
+
+enum ATTOpCodeEnum : uint32
+{
+	ERROR = 1,
+	EXCHANGE_MTU_REQUEST = 2,
+	EXCHANGE_MTU_RESPONSE = 3,
+	FIND_INFO_REQUEST = 4,
+	FIND_INFO_RESPONE = 5,
+	FIND_BY_TYPE_REQUEST = 6,
+	FIND_BY_TYPE_RESPONSE = 7,
+	READ_BY_TYPE_REQUEST = 8,
+	READ_BY_TYPE_RESPONSE = 9,
+	READ_REQUEST = 10,
+	READ_RESPONSE = 11,
+	READ_BLOB_REQUEST = 12,
+	READ_BLOB_RESPONSE = 13,
+	READ_MULTI_REQUEST = 14,
+	READ_MULTI_RESPONSE = 15,
+	READ_BY_GROUP_REQUEST = 16,
+	READ_BY_GROUP_RESPONSE = 17,
+	WRITE_REQUEST = 18,
+	WRITE_RESPONSE = 19,
+	WRITE_COMMAND = 82,
+	PREP_WRITE_REQUEST = 22,
+	PREP_WRITE_RESPONSE = 23,
+	EXEC_WRITE_REQUEST = 24,
+	EXEC_WRITE_RESPONSE = 25,
+	HANDLE_VALUE_NOTIFY = 27,
+	HANDLE_VALUE_INDICATION = 29,
+	HANDLE_VALUE_CONFIGURATION = 30
+}
+
+struct ATTType
+{
+    ATTOpCodeEnum opcode;
+    bytes parameters;
+}
+
+struct ATTWriteRequestType
+{
+    uint16 handle;
+    bytes value;
+}
+
+struct ATTWriteResponseType
+{
+    bytes payload;
+}
+
+struct SampleType
+{
+    uint32 value;
+    float percentage;
+}
+
+typedef SampleTypeList = list<SampleType>;
+
+struct AdvertisementStatType
+{
+    string mac;
+    uint32 sample_count;
+    int32 avg_rssi;
+    SampleTypeList samples;
+}
+
+typedef AdvertisementStatTypeList = list<AdvertisementStatType>;
+
+struct AdvertisementStatsType
+{
+    AdvertisementStatTypeList devices;
+}
+
+enum CapabilityEnum : uint32
+{
+	DisplayOnly = 0,
+	DisplayYesNo = 1,
+	KeyboardOnly = 2,
+	NoInputNoOutput = 3,
+	KeyboardDisplay = 4
+}
+
+struct HCICommandLEConnUpdateType
+{
+    uint16 handle;
+    uint16 min_interval;
+    uint16 max_interval;
+    uint16 latency;
+    uint16 supervision_timeout;
+    uint16 ce_min_length;
+    uint16 ce_max_length;
+}
+
+struct HCICommandLEExtCreateConnPhyType
+{
+    uint16 scan_interval;
+    uint16 scan_window;
+    uint16 min_interval;
+    uint16 max_interval;
+    uint16 latency;
+    uint16 supervision_timeout;
+    uint16 ce_min_length;
+    uint16 ce_max_length;
+}
+
+typedef HCICommandLEExtCreateConnPhyTypeList = list<HCICommandLEExtCreateConnPhyType>;
+
+enum HCILEAddrEnum : uint32
+{
+	PUBLIC = 0,
+	RANDOM = 1,
+	LE_RANDOM = 2,
+	PUBLIC_IDENTITY = 3,
+	RANDOM_IDENTITY = 4,
+	NO_ADDRESS = 255
+}
+
+struct HCICommandLEExtCreateConnType
+{
+    uint8 filter_policy;
+    HCILEAddrEnum own_address_type;
+    HCILEAddrEnum peer_address_type;
+    string peer_address;
+    uint8 init_phys;
+    HCICommandLEExtCreateConnPhyTypeList phys;
+}
+
+struct HCICommandLEReadRemoteFeaturesType
+{
+    uint16 handle;
+}
+
+enum HCICommandEnum : uint32
+{
+	NO_OPERATION = 0,
+	INQUIRY = 1025,
+	INQUIRY_CANCEL = 1026,
+	PERIODIC_INQUIRY = 1027,
+	EXIT_PERIODIC_INQUIRY = 1028,
+	CREATE_CONN = 1029,
+	DISCONNECT = 1030,
+	ADD_SCO_CONN = 1031,
+	CREATE_CONN_CANCEL = 1032,
+	ACCEPT_CONN_REQUEST = 1033,
+	REJECT_CONN_REQUEST = 1034,
+	LINK_KEY_REQUEST_REPLY = 1035,
+	LINK_KEY_REQUEST_NEG_REPLY = 1036,
+	PIN_CODE_REQUEST_REPLY = 1037,
+	PIN_CODE_REQUEST_NEG_REPLY = 1038,
+	CHANGE_CONN_PKT_TYPE = 1039,
+	AUTH_REQUESTED = 1041,
+	SET_CONN_ENCRYPT = 1043,
+	CHANGE_CONN_LINK_KEY = 1045,
+	LINK_KEY_SELECTION = 1047,
+	REMOTE_NAME_REQUEST = 1049,
+	REMOTE_NAME_REQUEST_CANCEL = 1050,
+	READ_REMOTE_FEATURES = 1051,
+	READ_REMOTE_EXT_FEATURES = 1052,
+	READ_REMOTE_VERSION = 1053,
+	READ_CLOCK_OFFSET = 1055,
+	READ_LMP_HANDLE = 1056,
+	SETUP_SYNC_CONN = 1064,
+	ACCEPT_SYNC_CONN_REQUEST = 1065,
+	REJECT_SYNC_CONN_REQUEST = 1066,
+	IO_CAPABILITY_REQUEST_REPLY = 1067,
+	USER_CONFIRM_REQUEST_REPLY = 1068,
+	USER_CONFIRM_REQUEST_NEG_REPLY = 1069,
+	USER_PASSKEY_REQUEST_REPLY = 1070,
+	USER_PASSKEY_REQUEST_NEG_REPLY = 1071,
+	REMOTE_OOB_DATA_REQUEST_REPLY = 1072,
+	REMOTE_OOB_DATA_REQUEST_NEG_REPLY = 1075,
+	IO_CAPABILITY_REQUEST_NEG_REPLY = 1076,
+	CREATE_PHY_LINK = 1077,
+	ACCEPT_PHY_LINK = 1078,
+	DISCONN_PHY_LINK = 1079,
+	CREATE_LOGIC_LINK = 1080,
+	ACCEPT_LOGIC_LINK = 1081,
+	DISCONN_LOGIC_LINK = 1082,
+	LOGIC_LINK_CANCEL = 1083,
+	FLOW_SPEC_MODIFY = 1084,
+	ENHANCED_SETUP_SYNC_CONN = 1085,
+	ENHANCED_ACCEPT_SYNC_CONN_REQUEST = 1086,
+	TRUNCATED_PAGE = 1087,
+	TRUNCATED_PAGE_CANCEL = 1088,
+	SET_PERIPHERAL_BROADCAST = 1089,
+	SET_PERIPHERAL_BROADCAST_RECEIVE = 1090,
+	START_SYNC_TRAIN = 1091,
+	RECEIVE_SYNC_TRAIN = 1092,
+	REMOTE_OOB_EXT_DATA_REQUEST_REPLY = 1093,
+	HOLD_MODE = 2049,
+	SNIFF_MODE = 2051,
+	EXIT_SNIFF_MODE = 2052,
+	PARK_STATE = 2053,
+	EXIT_PARK_STATE = 2054,
+	QOS_SETUP = 2055,
+	ROLE_DISCOVERY = 2057,
+	SWITCH_ROLE = 2059,
+	READ_LINK_POLICY = 2060,
+	WRITE_LINK_POLICY = 2061,
+	READ_DEFAULT_LINK_POLICY = 2062,
+	WRITE_DEFAULT_LINK_POLICY = 2063,
+	FLOW_SPEC = 2064,
+	SNIFF_SUBRATING = 2065,
+	SET_EVENT_MASK = 3073,
+	RESET = 3075,
+	SET_EVENT_FILTER = 3077,
+	FLUSH = 3080,
+	READ_PIN_TYPE = 3081,
+	WRITE_PIN_TYPE = 3082,
+	CREATE_NEW_UNIT_KEY = 3083,
+	READ_STORED_LINK_KEY = 3085,
+	WRITE_STORED_LINK_KEY = 3089,
+	DELETE_STORED_LINK_KEY = 3090,
+	WRITE_LOCAL_NAME = 3091,
+	READ_LOCAL_NAME = 3092,
+	READ_CONN_ACCEPT_TIMEOUT = 3093,
+	WRITE_CONN_ACCEPT_TIMEOUT = 3094,
+	READ_PAGE_TIMEOUT = 3095,
+	WRITE_PAGE_TIMEOUT = 3096,
+	READ_SCAN_ENABLE = 3097,
+	WRITE_SCAN_ENABLE = 3098,
+	READ_PAGE_SCAN_ACTIVITY = 3099,
+	WRITE_PAGE_SCAN_ACTIVITY = 3100,
+	READ_INQUIRY_SCAN_ACTIVITY = 3101,
+	WRITE_INQUIRY_SCAN_ACTIVITY = 3102,
+	READ_AUTH_ENABLE = 3103,
+	WRITE_AUTH_ENABLE = 3104,
+	READ_ENCRYPT_MODE = 3105,
+	WRITE_ENCRYPT_MODE = 3106,
+	READ_CLASS_OF_DEV = 3107,
+	WRITE_CLASS_OF_DEV = 3108,
+	READ_VOICE_SETTING = 3109,
+	WRITE_VOICE_SETTING = 3110,
+	READ_AUTO_FLUSH_TIMEOUT = 3111,
+	WRITE_AUTO_FLUSH_TIMEOUT = 3112,
+	READ_NUM_BROADCAST_RETRANS = 3113,
+	WRITE_NUM_BROADCAST_RETRANS = 3114,
+	READ_HOLD_MODE_ACTIVITY = 3115,
+	WRITE_HOLD_MODE_ACTIVITY = 3116,
+	READ_TX_POWER = 3117,
+	READ_SYNC_FLOW_CONTROL = 3118,
+	WRITE_SYNC_FLOW_CONTROL = 3119,
+	SET_HOST_FLOW_CONTROL = 3121,
+	HOST_BUFFER_SIZE = 3123,
+	HOST_NUM_COMPLETED_PACKETS = 3125,
+	READ_LINK_SUPV_TIMEOUT = 3126,
+	WRITE_LINK_SUPV_TIMEOUT = 3127,
+	READ_NUM_SUPPORTED_IAC = 3128,
+	READ_CURRENT_IAC_LAP = 3129,
+	WRITE_CURRENT_IAC_LAP = 3130,
+	READ_PAGE_SCAN_PERIOD_MODE = 3131,
+	WRITE_PAGE_SCAN_PERIOD_MODE = 3132,
+	READ_PAGE_SCAN_MODE = 3133,
+	WRITE_PAGE_SCAN_MODE = 3134,
+	SET_AFH_HOST_CLASSIFICATION = 3135,
+	READ_INQUIRY_SCAN_TYPE = 3138,
+	WRITE_INQUIRY_SCAN_TYPE = 3139,
+	READ_INQUIRY_MODE = 3140,
+	WRITE_INQUIRY_MODE = 3141,
+	READ_PAGE_SCAN_TYPE = 3142,
+	WRITE_PAGE_SCAN_TYPE = 3143,
+	READ_AFH_ASSESSMENT_MODE = 3144,
+	WRITE_AFH_ASSESSMENT_MODE = 3145,
+	READ_EXT_INQUIRY_RESPONSE = 3153,
+	WRITE_EXT_INQUIRY_RESPONSE = 3154,
+	REFRESH_ENCRYPT_KEY = 3155,
+	READ_SIMPLE_PAIRING_MODE = 3157,
+	WRITE_SIMPLE_PAIRING_MODE = 3158,
+	READ_LOCAL_OOB_DATA = 3159,
+	READ_INQUIRY_RESP_TX_POWER = 3160,
+	WRITE_INQUIRY_TX_POWER = 3161,
+	READ_ERRONEOUS_REPORTING = 3162,
+	WRITE_ERRONEOUS_REPORTING = 3163,
+	ENHANCED_FLUSH = 3167,
+	SEND_KEYPRESS_NOTIFY = 3168,
+	SET_EVENT_MASK_PAGE2 = 3171,
+	READ_LOCATION_DATA = 3172,
+	WRITE_LOCATION_DATA = 3173,
+	READ_FLOW_CONTROL_MODE = 3174,
+	WRITE_FLOW_CONTROL_MODE = 3175,
+	READ_ENHANCED_TX_POWER = 3176,
+	SHORT_RANGE_MODE = 3179,
+	READ_LE_HOST_SUPPORTED = 3180,
+	WRITE_LE_HOST_SUPPORTED = 3181,
+	SET_RESERVED_LT_ADDR = 3188,
+	DELETE_RESERVED_LT_ADDR = 3189,
+	SET_PERIPHERAL_BROADCAST_DATA = 3190,
+	READ_SYNC_TRAIN_PARAMS = 3191,
+	WRITE_SYNC_TRAIN_PARAMS = 3192,
+	READ_SECURE_CONN_SUPPORT = 3193,
+	WRITE_SECURE_CONN_SUPPORT = 3194,
+	READ_AUTH_PAYLOAD_TIMEOUT = 3195,
+	WRITE_AUTH_PAYLOAD_TIMEOUT = 3196,
+	READ_LOCAL_OOB_EXT_DATA = 3197,
+	READ_EXT_PAGE_TIMEOUT = 3198,
+	WRITE_EXT_PAGE_TIMEOUT = 3199,
+	READ_EXT_INQUIRY_LENGTH = 3200,
+	WRITE_EXT_INQUIRY_LENGTH = 3201,
+	CONFIG_DATA_PATH = 3203,
+	READ_LOCAL_VERSION = 4097,
+	READ_LOCAL_COMMANDS = 4098,
+	READ_LOCAL_FEATURES = 4099,
+	READ_LOCAL_EXT_FEATURES = 4100,
+	READ_BUFFER_SIZE = 4101,
+	READ_COUNTRY_CODE = 4103,
+	READ_BD_ADDR = 4105,
+	READ_DATA_BLOCK_SIZE = 4106,
+	READ_LOCAL_CODECS = 4107,
+	READ_LOCAL_PAIRING_OPTIONS = 4108,
+	READ_LOCAL_CODECS_V2 = 4109,
+	READ_LOCAL_CODEC_CAPS = 4110,
+	READ_LOCAL_CTRL_DELAY = 4111,
+	READ_FAILED_CONTACT_COUNTER = 5121,
+	RESET_FAILED_CONTACT_COUNTER = 5122,
+	READ_LINK_QUALITY = 5123,
+	READ_RSSI = 5125,
+	READ_AFH_CHANNEL_MAP = 5126,
+	READ_CLOCK = 5127,
+	READ_ENCRYPT_KEY_SIZE = 5128,
+	READ_LOCAL_AMP_INFO = 5129,
+	READ_LOCAL_AMP_ASSOC = 5130,
+	WRITE_REMOTE_AMP_ASSOC = 5131,
+	GET_MWS_TRANSPORT_CONFIG = 5132,
+	SET_TRIGGERED_CLOCK_CAPTURE = 5133,
+	READ_LOOPBACK_MODE = 6145,
+	WRITE_LOOPBACK_MODE = 6146,
+	ENABLE_DUT_MODE = 6147,
+	WRITE_SSP_DEBUG_MODE = 6148,
+	LE_SET_EVENT_MASK = 8193,
+	LE_READ_BUFFER_SIZE = 8194,
+	LE_READ_LOCAL_FEATURES = 8195,
+	LE_SET_RANDOM_ADDRESS = 8197,
+	LE_SET_ADV_PARAMETERS = 8198,
+	LE_READ_ADV_TX_POWER = 8199,
+	LE_SET_ADV_DATA = 8200,
+	LE_SET_SCAN_RSP_DATA = 8201,
+	LE_SET_ADV_ENABLE = 8202,
+	LE_SET_SCAN_PARAMETERS = 8203,
+	LE_SET_SCAN_ENABLE = 8204,
+	LE_CREATE_CONN = 8205,
+	LE_CREATE_CONN_CANCEL = 8206,
+	LE_READ_ACCEPT_LIST_SIZE = 8207,
+	LE_CLEAR_ACCEPT_LIST = 8208,
+	LE_ADD_TO_ACCEPT_LIST = 8209,
+	LE_REMOVE_FROM_ACCEPT_LIST = 8210,
+	LE_CONN_UPDATE = 8211,
+	LE_SET_HOST_CLASSIFICATION = 8212,
+	LE_READ_CHANNEL_MAP = 8213,
+	LE_READ_REMOTE_FEATURES = 8214,
+	LE_ENCRYPT = 8215,
+	LE_RAND = 8216,
+	LE_START_ENCRYPT = 8217,
+	LE_LTK_REQ_REPLY = 8218,
+	LE_LTK_REQ_NEG_REPLY = 8219,
+	LE_READ_SUPPORTED_STATES = 8220,
+	LE_RECEIVER_TEST = 8221,
+	LE_TRANSMITTER_TEST = 8222,
+	LE_TEST_END = 8223,
+	LE_CONN_PARAM_REQ_REPLY = 8224,
+	LE_CONN_PARAM_REQ_NEG_REPLY = 8225,
+	LE_SET_DATA_LENGTH = 8226,
+	LE_READ_DEFAULT_DATA_LENGTH = 8227,
+	LE_WRITE_DEFAULT_DATA_LENGTH = 8228,
+	LE_READ_LOCAL_PK256 = 8229,
+	LE_GENERATE_DHKEY = 8230,
+	LE_ADD_TO_RESOLV_LIST = 8231,
+	LE_REMOVE_FROM_RESOLV_LIST = 8232,
+	LE_CLEAR_RESOLV_LIST = 8233,
+	LE_READ_RESOLV_LIST_SIZE = 8234,
+	LE_READ_PEER_RESOLV_ADDR = 8235,
+	LE_READ_LOCAL_RESOLV_ADDR = 8236,
+	LE_SET_RESOLV_ENABLE = 8237,
+	LE_SET_RESOLV_TIMEOUT = 8238,
+	LE_READ_MAX_DATA_LENGTH = 8239,
+	LE_READ_PHY = 8240,
+	LE_SET_DEFAULT_PHY = 8241,
+	LE_SET_PHY = 8242,
+	LE_ENHANCED_RECEIVER_TEST = 8243,
+	LE_ENHANCED_TRANSMITTER_TEST = 8244,
+	LE_SET_ADV_SET_RAND_ADDR = 8245,
+	LE_SET_EXT_ADV_PARAMS = 8246,
+	LE_SET_EXT_ADV_DATA = 8247,
+	LE_SET_EXT_SCAN_RSP_DATA = 8248,
+	LE_SET_EXT_ADV_ENABLE = 8249,
+	LE_READ_MAX_ADV_DATA_LEN = 8250,
+	LE_READ_NUM_SUPPORTED_ADV_SETS = 8251,
+	LE_REMOVE_ADV_SET = 8252,
+	LE_CLEAR_ADV_SETS = 8253,
+	LE_SET_PA_PARAMS = 8254,
+	LE_SET_PA_DATA = 8255,
+	LE_SET_PA_ENABLE = 8256,
+	LE_SET_EXT_SCAN_PARAMS = 8257,
+	LE_SET_EXT_SCAN_ENABLE = 8258,
+	LE_EXT_CREATE_CONN = 8259,
+	LE_PA_CREATE_SYNC = 8260,
+	LE_PA_CREATE_SYNC_CANCEL = 8261,
+	LE_PA_TERM_SYNC = 8262,
+	LE_ADD_DEV_PA_LIST = 8263,
+	LE_REMOVE_DEV_PA_LIST = 8264,
+	LE_CLEAR_PA_LIST = 8265,
+	LE_READ_PA_LIST_SIZE = 8266,
+	LE_READ_TX_POWER = 8267,
+	LE_READ_RF_PATH_COMPENSATION = 8268,
+	LE_WRITE_RF_PATH_COMPENSATION = 8269,
+	LE_SET_PRIV_MODE = 8270,
+	LE_RECEIVER_TEST_V3 = 8271,
+	LE_TX_TEST_V3 = 8272,
+	SET_PA_REC_ENABLE = 8281,
+	PERIODIC_SYNC_TRANS = 8282,
+	PA_SET_INFO_TRANS = 8283,
+	PA_SYNC_TRANS_PARAMS = 8284,
+	DEFAULT_PA_SYNC_TRANS_PARAMS = 8285,
+	LE_READ_BUFFER_SIZE_V2 = 8288,
+	LE_READ_ISO_TX_SYNC = 8289,
+	LE_SET_CIG_PARAMS = 8290,
+	LE_SET_CIG_PARAMS_TEST = 8291,
+	LE_CREATE_CIS = 8292,
+	LE_REMOVE_CIG = 8293,
+	LE_ACCEPT_CIS = 8294,
+	LE_REJECT_CIS = 8295,
+	LE_CREATE_BIG = 8296,
+	LE_CREATE_BIG_TEST = 8297,
+	LE_TERM_BIG = 8298,
+	LE_BIG_CREATE_SYNC = 8299,
+	LE_BIG_TERM_SYNC = 8300,
+	LE_REQ_PEER_SCA = 8301,
+	LE_SETUP_ISO_PATH = 8302,
+	LE_REMOVE_ISO_PATH = 8303,
+	LE_ISO_TX_TEST = 8304,
+	LE_ISO_RX_TEST = 8305,
+	LE_ISO_READ_TEST_COUNTER = 8306,
+	LE_ISO_TEST_END = 8307,
+	LE_SET_HOST_FEATURE = 8308
+}
+
+struct HCICommandType
+{
+    HCICommandEnum opcode;
+    uint8 length;
+    bytes payload;
+}
+
+enum HCIStatusEnum : uint32
+{
+	SUCCESS = 0,
+	UNKNOWN_HCI_COMMAND = 1,
+	UNKNOWN_CONNECTION_IDENTIFIER = 2,
+	HARDWARE_FAILURE = 3,
+	PAGE_TIMEOUT = 4,
+	AUTHENTICATION_FAILURE = 5,
+	PIN_OR_KEY_MISSING = 6,
+	MEMORY_CAPACITY_EXCEEDED = 7,
+	CONNECTION_TIMEOUT = 8,
+	CONNECTION_LIMIT_EXCEEDED = 9,
+	SYNCHRONOUS_CONNECTION_LIMIT_TO_A_DEVICE_EXCEEDED = 10,
+	CONNECTION_ALREADY_EXISTS = 11,
+	COMMAND_DISALLOWED = 12,
+	CONNECTION_REJECTED_LIMITED_RESOURCES = 13,
+	CONNECTION_REJECTED_SECURITY_REASONS = 14,
+	CONNECTION_REJECTED_UNACCEPTABLE_BD_ADDR = 15,
+	CONNECTION_ACCEPT_TIMEOUT_EXCEEDED = 16,
+	UNSUPPORTED_FEATURE_OR_PARAMETER_VALUE = 17,
+	INVALID_HCI_COMMAND_PARAMETERS = 18,
+	REMOTE_USER_TERMINATED_CONNECTION = 19,
+	REMOTE_DEVICE_TERMINATED_LOW_RESOURCES = 20,
+	REMOTE_DEVICE_TERMINATED_POWER_OFF = 21,
+	CONNECTION_TERMINATED_BY_LOCAL_HOST = 22,
+	REPEATED_ATTEMPTS = 23,
+	PAIRING_NOT_ALLOWED = 24,
+	UNKNOWN_LMP_PDU = 25,
+	UNSUPPORTED_REMOTE_FEATURE = 26,
+	SCO_OFFSET_REJECTED = 27,
+	SCO_INTERVAL_REJECTED = 28,
+	SCO_AIR_MODE_REJECTED = 29,
+	INVALID_LL_PARAMETERS = 30,
+	UNSPECIFIED_ERROR = 31,
+	UNSUPPORTED_LL_PARAMETER_VALUE = 32,
+	ROLE_CHANGE_NOT_ALLOWED = 33,
+	LL_RESPONSE_TIMEOUT = 34,
+	LL_PROCEDURE_COLLISION = 35,
+	LMP_PDU_NOT_ALLOWED = 36,
+	ENCRYPTION_MODE_NOT_ACCEPTABLE = 37,
+	LINK_KEY_CANNOT_BE_CHANGED = 38,
+	REQUESTED_QOS_NOT_SUPPORTED = 39,
+	INSTANT_PASSED = 40,
+	PAIRING_WITH_UNIT_KEY_NOT_SUPPORTED = 41,
+	DIFFERENT_TRANSACTION_COLLISION = 42,
+	RESERVED_FOR_FUTURE_USE = 51,
+	QOS_UNACCEPTABLE_PARAMETER = 44,
+	QOS_REJECTED = 45,
+	CHANNEL_CLASSIFICATION_NOT_SUPPORTED = 46,
+	INSUFFICIENT_SECURITY = 47,
+	PARAMETER_OUT_OF_MANDATORY_RANGE = 48,
+	ROLE_SWITCH_PENDING = 50,
+	RESERVED_SLOT_VIOLATION = 52,
+	ROLE_SWITCH_FAILED = 53,
+	EXTENDED_INQUIRY_RESPONSE_TOO_LARGE = 54,
+	SECURE_SIMPLE_PAIRING_NOT_SUPPORTED_BY_HOST = 55,
+	HOST_BUSY_PAIRING = 56,
+	NO_SUITABLE_CHANNEL_FOUND = 57,
+	CONTROLLER_BUSY = 58,
+	UNACCEPTABLE_CONNECTION_PARAMETERS = 59,
+	ADVERTISING_TIMEOUT = 60,
+	CONNECTION_TERMINATED_DUE_TO_MIC_FAILURE = 61,
+	SYNCHRONIZATION_TIMEOUT = 62,
+	PREVIOUSLY_USED = 63,
+	COARSE_CLOCK_ADJUSTMENT_REJECTED = 64,
+	TYPE0_SUBMAP_NOT_DEFINED = 65,
+	UNKNOWN_ADVERTISING_IDENTIFIER = 66,
+	LIMIT_REACHED = 67,
+	OPERATION_CANCELLED_BY_HOST = 68,
+	PACKET_TOO_LONG = 69
+}
+
+struct HCIEventCmdCompleteType
+{
+    uint8 ncmd;
+    HCICommandEnum command;
+    HCIStatusEnum status;
+}
+
+struct HCIEventCmdStatusType
+{
+    HCIStatusEnum status;
+    uint8 ncmd;
+    HCICommandEnum command;
+}
+
+struct HCIEventDisconnectCompleteType
+{
+    HCIStatusEnum status;
+    uint16 handle;
+    HCIStatusEnum reason;
+}
+
+struct HCIEventLEAdvType
+{
+    uint8 num_reports;
+    uint8 event_type;
+    HCILEAddrEnum address_type;
+    string address;
+    uint8 data_len;
+    bytes data;
+    uint8 rssi;
+}
+
+struct HCIEventLEConnCompleteType
+{
+    HCIStatusEnum status;
+    uint16 handle;
+    uint8 role;
+    HCILEAddrEnum peer_address_type;
+    string peer_address;
+    uint16 interval;
+    uint16 latency;
+    uint16 supervision_timeout;
+    uint8 clock_accuracy;
+}
+
+struct HCIEventLEConnUpdateCompleteType
+{
+    HCIStatusEnum status;
+    uint16 handle;
+    uint16 interval;
+    uint16 latency;
+    uint16 supervision_timeout;
+}
+
+enum HCILEDataStatusEnum : uint32
+{
+	COMPLETE = 0,
+	INCOMPLETE_MORE = 1,
+	INCOMPLETE_TRUNCATED = 2,
+	RESERVED = 3
+}
+
+enum HCILEPrimaryPhyEnum : uint32
+{
+	NO_PACKETS = 0,
+	LE_1M = 1,
+	LE_2M = 3,
+	LE_CODED = 4
+}
+
+enum HCILESecondaryPhyEnum : uint32
+{
+	NO_PACKETS = 0,
+	LE_1M = 1,
+	LE_2M = 3,
+	LE_CODED = 4
+}
+
+struct HCIEventLEExtAdvReportType
+{
+    uint16 event_type;
+    bool connectable;
+    bool scannable;
+    bool directed;
+    bool scan_response;
+    bool legacy_pdu;
+    HCILEDataStatusEnum data_status;
+    HCILEAddrEnum address_type;
+    string address;
+    HCILEPrimaryPhyEnum primary_phy;
+    HCILESecondaryPhyEnum secondary_phy;
+    uint8 sid;
+    uint8 tx_power;
+    uint8 rssi;
+    uint16 interval;
+    HCILEAddrEnum direct_address_type;
+    string direct_address;
+    uint8 data_len;
+    bytes data;
+}
+
+typedef HCIEventLEExtAdvReportTypeList = list<HCIEventLEExtAdvReportType>;
+
+struct HCIEventLEExtAdvType
+{
+    uint8 num_reports;
+    HCIEventLEExtAdvReportTypeList reports;
+}
+
+struct HCIEventLEExtConnCompleteType
+{
+    HCIStatusEnum status;
+    uint16 handle;
+    uint8 role;
+    HCILEAddrEnum peer_address_type;
+    string peer_address;
+    string local_private_address;
+    string peer_private_address;
+    uint16 interval;
+    uint16 latency;
+    uint16 supervision_timeout;
+    uint8 clock_accuracy;
+}
+
+enum HCILEFeatureEnum : uint32
+{
+	LE_ENCRYPTION = 0,
+	CONNECTION_PARAMETERS_REQUEST_PROCEDURE = 1,
+	EXTENDED_REJECT_INDICATION = 2,
+	PERIPHERAL_INITIATED_FEATURE_EXCHANGE = 3,
+	LE_PING = 4,
+	LE_DATA_PACKET_LENGTH_EXTENSION = 5,
+	LL_PRIVACY = 6,
+	EXTENDED_SCANNER_FILTER_POLICIES = 7,
+	LE_2M_PHY = 8,
+	STABLE_MODULATION_INDEX_TRANSMITTER = 9,
+	STABLE_MODULATION_INDEX_RECEIVER = 10,
+	LE_CODED_PHY = 11,
+	LE_EXTENDED_ADVERTISING = 12,
+	LE_PERIODIC_ADVERTISING = 13,
+	CHANNEL_SELECTION_ALGORITHM_2 = 14,
+	LE_POWER_CLASS_1 = 15,
+	MINIMUM_NUMBER_OF_USED_CHANNELS_PROCEDURE = 16,
+	CONNECTION_CTE_REQUEST = 17,
+	CONNECTION_CTE_RESPONSE = 18,
+	CONNECTIONLESS_CTE_TRANSMITTER = 19,
+	CONNECTIONLESS_CTR_RECEIVER = 20,
+	ANTENNA_SWITCHING_DURING_CTE_TRANSMISSION = 21,
+	ANTENNA_SWITCHING_DURING_CTE_RECEPTION = 22,
+	RECEIVING_CONSTANT_TONE_EXTENSIONS = 23,
+	PERIODIC_ADVERTISING_SYNC_TRANSFER_SENDER = 24,
+	PERIODIC_ADVERTISING_SYNC_TRANSFER_RECIPIENT = 25,
+	SLEEP_CLOCK_ACCURACY_UPDATES = 26,
+	REMOTE_PUBLIC_KEY_VALIDATION = 27,
+	CONNECTED_ISOCHRONOUS_STREAM_CENTRAL = 28,
+	CONNECTED_ISOCHRONOUS_STREAM_PERIPHERAL = 29,
+	ISOCHRONOUS_BROADCASTER = 30,
+	SYNCHRONIZED_RECEIVER = 31,
+	CONNECTED_ISOCHRONOUS_STREAM = 32,
+	LE_POWER_CONTROL_REQUEST = 33,
+	LE_POWER_CONTROL_REQUEST_DUP = 34,
+	LE_PATH_LOSS_MONITORING = 35,
+	PERIODIC_ADVERTISING_ADI_SUPPORT = 36,
+	CONNECTION_SUBRATING = 37,
+	CONNECTION_SUBRATING_HOST_SUPPORT = 38,
+	CHANNEL_CLASSIFICATION = 39
+}
+
+typedef HCILEFeatureEnumList = list<HCILEFeatureEnum>;
+
+struct HCIEventLERemoteFeaturesCompleteType
+{
+    HCIStatusEnum status;
+    uint16 handle;
+    uint64 features_raw;
+    HCILEFeatureEnumList features;
+}
+
+enum HCIEventEnum : uint32
+{
+	INQUIRY_COMPLETE = 1,
+	INQUIRY_RESULT = 2,
+	CONN_COMPLETE = 3,
+	CONN_REQUEST = 4,
+	DISCONNECT_COMPLETE = 5,
+	AUTH_COMPLETE = 6,
+	REMOTE_NAME_REQUEST_COMPLETE = 7,
+	ENCRYPT_CHANGE = 8,
+	CHANGE_CONN_LINK_KEY_COMPLETE = 9,
+	LINK_KEY_TYPE_CHANGED = 10,
+	REMOTE_FEATURES_COMPLETE = 11,
+	REMOTE_VERSION_COMPLETE = 12,
+	QOS_SETUP_COMPLETE = 13,
+	CMD_COMPLETE = 14,
+	CMD_STATUS = 15,
+	HARDWARE_ERROR = 16,
+	FLUSH_OCCURRED = 17,
+	ROLE_CHANGE = 18,
+	NUM_COMPLETED_PACKETS = 19,
+	MODE_CHANGE = 20,
+	RETURN_LINK_KEYS = 21,
+	PIN_CODE_REQUEST = 22,
+	LINK_KEY_REQUEST = 23,
+	LINK_KEY_NOTIFY = 24,
+	LOOPBACK_COMMAND = 25,
+	DATA_BUFFER_OVERFLOW = 26,
+	MAX_SLOTS_CHANGE = 27,
+	CLOCK_OFFSET_COMPLETE = 28,
+	CONN_PKT_TYPE_CHANGED = 29,
+	QOS_VIOLATION = 30,
+	PSCAN_MODE_CHANGE = 31,
+	PSCAN_REP_MODE_CHANGE = 32,
+	FLOW_SPEC_COMPLETE = 33,
+	INQUIRY_RESULT_WITH_RSSI = 34,
+	REMOTE_EXT_FEATURES_COMPLETE = 35,
+	SYNC_CONN_COMPLETE = 44,
+	SYNC_CONN_CHANGED = 45,
+	SNIFF_SUBRATING = 46,
+	EXT_INQUIRY_RESULT = 47,
+	ENCRYPT_KEY_REFRESH_COMPLETE = 48,
+	IO_CAPABILITY_REQUEST = 49,
+	IO_CAPABILITY_RESPONSE = 50,
+	USER_CONFIRM_REQUEST = 51,
+	USER_PASSKEY_REQUEST = 52,
+	REMOTE_OOB_DATA_REQUEST = 53,
+	SIMPLE_PAIRING_COMPLETE = 54,
+	LINK_SUPV_TIMEOUT_CHANGED = 56,
+	ENHANCED_FLUSH_COMPLETE = 57,
+	USER_PASSKEY_NOTIFY = 59,
+	KEYPRESS_NOTIFY = 60,
+	REMOTE_HOST_FEATURES_NOTIFY = 61,
+	LE_META_EVENT = 62,
+	PHY_LINK_COMPLETE = 64,
+	CHANNEL_SELECTED = 65,
+	DISCONN_PHY_LINK_COMPLETE = 66,
+	PHY_LINK_LOSS_EARLY_WARNING = 67,
+	PHY_LINK_RECOVERY = 68,
+	LOGIC_LINK_COMPLETE = 69,
+	DISCONN_LOGIC_LINK_COMPLETE = 70,
+	FLOW_SPEC_MODIFY_COMPLETE = 71,
+	NUM_COMPLETED_DATA_BLOCKS = 72,
+	SHORT_RANGE_MODE_CHANGE = 76,
+	AMP_STATUS_CHANGE = 77,
+	TRIGGERED_CLOCK_CAPTURE = 78,
+	SYNC_TRAIN_COMPLETE = 79,
+	SYNC_TRAIN_RECEIVED = 80,
+	PERIPHERAL_BROADCAST_RECEIVE = 81,
+	PERIPHERAL_BROADCAST_TIMEOUT = 82,
+	TRUNCATED_PAGE_COMPLETE = 83,
+	PERIPHERAL_PAGE_RESPONSE_TIMEOUT = 84,
+	PERIPHERAL_BROADCAST_CHANNEL_MAP_CHANGE = 85,
+	INQUIRY_RESPONSE_NOTIFY = 86,
+	AUTH_PAYLOAD_TIMEOUT_EXPIRED = 87,
+	LE_CONN_COMPLETE = 32769,
+	LE_ADV_REPORT = 32770,
+	LE_CONN_UPDATE_COMPLETE = 32771,
+	LE_REMOTE_FEATURES_COMPLETE = 32772,
+	LE_LONG_TERM_KEY_REQUEST = 32773,
+	LE_CONN_PARAM_REQUEST = 32774,
+	LE_DATA_LENGTH_CHANGE = 32775,
+	LE_READ_LOCAL_PK256_COMPLETE = 32776,
+	LE_GENERATE_DHKEY_COMPLETE = 32777,
+	LE_ENHANCED_CONN_COMPLETE = 32778,
+	LE_DIRECT_ADV_REPORT = 32779,
+	LE_PHY_UPDATE_COMPLETE = 32780,
+	LE_EXT_ADV_REPORT = 32781,
+	LE_PA_SYNC_ESTABLISHED = 32782,
+	LE_PA_REPORT = 32783,
+	LE_PA_SYNC_LOST = 32784,
+	LE_ADV_SET_TERM = 32786,
+	LE_SCAN_REQ_RECEIVED = 32787,
+	LE_CHAN_SELECT_ALG = 32788,
+	LE_CTE_REQUEST_FAILED = 32791,
+	LE_PA_SYNC_TRANS_REC = 32792,
+	LE_CIS_ESTABLISHED = 32793,
+	LE_CIS_REQ = 32794,
+	LE_BIG_COMPLETE = 32795,
+	LE_BIG_TERMINATE = 32796,
+	LE_BIG_SYNC_ESTABILISHED = 32797,
+	LE_BIG_SYNC_LOST = 32798,
+	LE_REQ_PEER_SCA_COMPLETE = 32799,
+	LE_BIG_INFO_ADV_REPORT = 32802
+}
+
+struct HCIEventType
+{
+    HCIEventEnum opcode;
+    uint8 length;
+    bytes payload;
+}
+
+struct KeyInfoType
+{
+    string address;
+    string key;
+}
+
+typedef KeyInfoTypeList = list<KeyInfoType>;
+
+struct L2CAPSignalLEConnectionFlowControlType
+{
+    uint16 cid;
+    uint16 credits;
+}
+
+struct L2CAPSignalLEConnectionRequestType
+{
+    uint16 psm;
+    uint16 source_cid;
+    uint16 mtu;
+    uint16 mps;
+    uint16 credits;
+}
+
+struct L2CAPSignalLEConnectionResponseType
+{
+    uint16 destination_cid;
+    uint16 mtu;
+    uint16 mps;
+    uint16 credits;
+    uint16 status;
+}
+
+enum L2CAPSignalEnum : uint32
+{
+	CMD_REJECT = 1,
+	CONN_REQUEST = 2,
+	CONN_RESPONSE = 3,
+	CONFIG_REQUEST = 4,
+	CONFIG_RESPONSE = 5,
+	DISCONN_REQUEST = 6,
+	DISCONN_RESPONSE = 7,
+	ECHO_REQUEST = 8,
+	ECHO_RESPONSE = 9,
+	INFO_REQUEST = 10,
+	INFO_RESPONSE = 11,
+	CREATE_CHAN_REQUEST = 12,
+	CREATE_CHAN_RESPONSE = 13,
+	MOVE_CHAN_REQUEST = 14,
+	MOVE_CHAN_RESPONSE = 15,
+	MOVE_CHAN_CFM = 16,
+	MOVE_CHAN_CFM_RESPONSE = 17,
+	CONN_PARAM_REQUEST = 18,
+	CONN_PARAM_RESPONSE = 19,
+	LE_CONN_REQUEST = 20,
+	LE_CONN_RESPONSE = 21,
+	LE_FLOWCTL_CREDITS = 22,
+	ECRED_CONN_REQUEST = 23,
+	ECRED_CONN_RESPONSE = 24,
+	ECRED_RECONF_REQUEST = 25,
+	ECRED_RECONF_RESPONSE = 26
+}
+
+struct L2CAPSignalType
+{
+    L2CAPSignalEnum opcode;
+    uint8 ident;
+    uint16 length;
+    bytes parameters;
+}
+
+struct L2CAPType
+{
+    uint16 length;
+    uint16 cid;
+    bytes payload;
+}
+
+enum CSRKTypeEnum : uint32
+{
+	UNAUTH_LOCAL_CSRK = 0,
+	UNAUTH_REMOTE_CSRR = 1,
+	AUTH_LOCAL_CSRK = 2,
+	AUTH_REMOTE_CSRF = 3
+}
+
+struct MgmtEventNewCSRKType
+{
+    uint8 persistent;
+    string address;
+    HCILEAddrEnum address_type;
+    CSRKTypeEnum key_type;
+    string key;
+}
+
+struct MgmtEventNewIRKType
+{
+    uint8 persistent;
+    string address;
+    string identity;
+    HCILEAddrEnum address_type;
+    string key;
+}
+
+enum LTKKeyTypeEnum : uint32
+{
+	LEGACY_NOAUTH = 0,
+	LEGACY_AUTH = 1,
+	P256_NOAUTH = 2,
+	P256_AUTH = 3,
+	P256_DEBUG = 4
+}
+
+struct MgmtEventNewLTKType
+{
+    uint8 persistent;
+    string identity;
+    HCILEAddrEnum address_type;
+    LTKKeyTypeEnum key_type;
+    uint8 master;
+    uint8 key_size;
+    uint16 diversifier;
+    string random;
+    string key;
+}
+
+struct MgmtEventNotifyPasskeyType
+{
+    string address;
+    HCILEAddrEnum address_type;
+    uint32 value;
+    uint8 entered;
+}
+
+struct MgmtEventRequestConfirmType
+{
+    string address;
+    HCILEAddrEnum address_type;
+    uint8 confirm_hint;
+    uint32 value;
+}
+
+struct MgmtEventRequestPINType
+{
+    string address;
+    HCILEAddrEnum address_type;
+    uint8 persistent;
+}
+
+struct MgmtEventRequestPasskeyType
+{
+    string address;
+    HCILEAddrEnum address_type;
+}
+
+struct SMPPairingRequestType
+{
+    CapabilityEnum io_capability;
+    uint8 oob_data;
+    uint8 auth_request;
+    uint8 bonding;
+    bool mitm;
+    bool sc;
+    bool kp;
+    uint8 max_key_size;
+    uint8 initiator_key;
+    uint8 responder_key;
+}
+
+struct SMPPairingResponseType
+{
+    CapabilityEnum io_capability;
+    uint8 oob_data;
+    uint8 auth_request;
+    uint8 bonding;
+    bool mitm;
+    bool sc;
+    bool kp;
+    uint8 max_key_size;
+    uint8 initiator_key;
+    uint8 responder_key;
+}
+
+enum SMPEnum : uint32
+{
+	PAIRING_REQUEST = 1,
+	PAIRING_RESPONSE = 2,
+	PAIRING_CONFIRM = 3,
+	PAIRING_RANDOM = 4,
+	PAIRING_FAILED = 5,
+	ENCRYPT_INFO = 6,
+	CENTRAL_IDENT = 7,
+	IDENT_INFO = 8,
+	IDENT_ADDR_INFO = 9,
+	SIGNING_INFO = 10,
+	SECURITY_REQUEST = 11,
+	PUBLIC_KEY = 12,
+	DHKEY_CHECK = 13,
+	KEYPRESS_NOTIFY = 14
+}
+
+struct SMPType
+{
+    SMPEnum opcode;
+    bytes parameters;
+}
+
+enum SystemParameterEnum : uint32
+{
+	BREDR_PAGE_SCAN_TYPE = 0,
+	BREDR_PAGE_SCAN_INTERVAL = 1,
+	BREDR_PAGE_SCAN_WINDOW = 2,
+	BREDR_INQUIRY_SCAN_TYPE = 3,
+	BREDR_INQUIRY_SCAN_INTERVAL = 4,
+	BREDR_INQUIRY_SCAN_WINDOW = 5,
+	BREDR_LINK_SUPERVISION_TIMEOUT = 6,
+	BREDR_PAGE_TIMEOUT = 7,
+	BREDR_MIN_SNIFF_INTERVAL = 8,
+	BREDR_MAX_SNIFF_INTERVAL = 9,
+	LE_ADVERTISEMENT_MIN_INTERVAL = 10,
+	LE_ADVERTISEMENT_MAX_INTERVAL = 11,
+	LE_MAX_ADVERTISEMENT_ROTATION_INTERVAL = 12,
+	LE_SCAN_INTERVAL_AUTO_CONNECT = 13,
+	LE_SCAN_WINDOW_AUTO_CONNECT = 14,
+	LE_SCAN_INTERVAL_WAKE_UP = 15,
+	LE_SCAN_WINDOW_WAKE_UP = 16,
+	LE_SCAN_INTERVAL_DISCOVERY = 17,
+	LE_SCAN_WINDOW_DISCOVERY = 18,
+	LE_SCAN_INTERVAL_ADV_MONITORING = 19,
+	LE_SCAN_WINDOW_ADV_MONITORING = 20,
+	LE_SCAN_INTERVAL_CONNECT = 21,
+	LE_SCAN_WINDOW_CONNECT = 22,
+	LE_MIN_CONNECTION_INTERVAL = 23,
+	LE_MAX_CONNECTION_INTERVAL = 24,
+	LE_CONNECTION_LATENCY = 25,
+	LE_CONNECTION_SUPERVISION_TIMEOUT = 26,
+	LE_AUTOCONNECT_TIMEOUT = 27
+}
+
+struct SystemParameterType
+{
+    SystemParameterEnum name;
+    bytes value;
+}
+
+typedef SystemParameterTypeList = list<SystemParameterType>;
+
+typedef stringList = list<string>;
+
+struct adapter_info_type
+{
+    string address;
+    string addresstype;
+    string name;
+    bool powered;
+    uint32 discoverabletimeout;
+    uint32 pairabletimeout;
+    bool discovering;
+    stringList uuids;
+    stringList roles;
+    string alias;
+}
+
+struct pairing_trace_type
+{
+    string action;
+    string reply;
+    string device;
+    string uuid;
+    string entered;
+}
+
+enum return_code_enum { OK, ERROR }
+struct result
+{
+  return_code_enum return_code;
+  [Optional]
+  string additional_info;
+}
+
+
+interface IBTController
+{
+    // !
+    // @brief Configure which bluetooth adapter to use
+    // @param[in] adapter_id The HCI adapter ID of the bluetooth dongle
+    // @return Success
+    consumed method result configure(string adapter_id);
+
+    // !
+    // @brief Enable or disable Resovable Private Address (RPA)
+    // @param[in] enable Enable or disable RPA
+    // @param[in] irk Identity key
+    // @return Success
+    consumed method result rpa_set(bool enable, string irk);
+
+    // !
+    // @brief Return current Resovable Private Address (RPA) settings
+    // @param[out] public_address Public address
+    // @param[out] private_address Private address
+    // @param[out] irk Identity key
+    // @return Success
+    consumed method result rpa_get(out string public_address, out string private_address, out string irk);
+
+    // !
+    // @brief Enable or disable tracing of lower level Bluetooth protocol data
+    // @param[in] enable Enable or disable tracing
+    // @return Success
+    consumed method result trace(bool enable);
+
+    // !
+    // @brief Enable or disable reporting of statistics, such as min/avg/max advertisement interval
+    // @param[in] enable Enable or disable reporting
+    // @return Success
+    consumed method result stats(bool enable);
+
+    // !
+    // @brief Set Maximum Transmission Unit (MTU) size for GATT
+    // @param[in] mtu_size MTU size (value must be 23-517)
+    // @return Success
+    consumed method result gatt_mtu_set(uint16 mtu_size);
+
+    // !
+    // @brief Get Maximum Transmission Unit (MTU) size for GATT
+    // @param[out] mtu_size MTU size
+    // @return Success
+    consumed method result gatt_mtu_get(out uint16 mtu_size);
+
+    // !
+    // @brief Configure the BLE connection settings
+    // @param[in] scan_window How long to scan (in units of 0.625ms)
+    // @param[in] scan_interval How long to wait between scans (in units of 0.625ms)
+    // @return Success
+    consumed method result le_connect_config_set(uint16 scan_window, uint16 scan_interval);
+
+    // !
+    // @brief Get information about Bluetooth system parameters
+    // @param[out] parameters List of system parameters and values
+    // @return Success
+    consumed method result system_parameters_get(out SystemParameterTypeList parameters);
+
+    // !
+    // @brief Set a given Bluetooth system parameter
+    // @param[in] name Name of the parameter (use get_system_parameters() to get all parameter names)
+    // @param[in] value Value of the parameter
+    // @return Success
+    consumed method result system_parameter_set(SystemParameterEnum name, bytes value);
+
+    // !
+    // @brief Get information about the adapter in use
+    // @param[out] adapter_info Information about the found adapter
+    // @return Error if no adapter found or configured, otherwise success
+    consumed method result adapter_info(out adapter_info_type adapter_info);
+
+    // !
+    // @brief Get the local BLE Out of Band (OOB) data
+    // @param[out] random_value The local randomizer (P-256)
+    // @param[out] confirm_value The local hash (P-256)
+    // @return Error if reading OOB data failed, otherwise success
+    consumed method result oob_local_data_get(out string random_value, out string confirm_value);
+
+    // !
+    // @brief Inject an Identity Resolving Key (IRK) to be used for a BLE connection
+    // @param[in] device The device to be associated with the IRK
+    // @param[in] irk Identity Resolving Key
+    // @return Success
+    consumed method result irk_set(string device, string irk);
+
+    // !
+    // @brief Inject a Long Term Key (LTK) to be used for a BLE connection
+    // @param[in] device The device to be associated with the LTK
+    // @param[in] ltk Long Term Key
+    // @return Success
+    consumed method result ltk_set(string device, string ltk);
+
+    // !
+    // @brief Get all stored Identity Resolving Keys (IRKs) associated with the currently used bluetooth adapter
+    // @param[out] irks List of Identity Resolving Keys (IRKs) and their addresses
+    // @return Success
+    consumed method result irks(out KeyInfoTypeList irks);
+
+    // !
+    // @brief Get all stored Long Term Keys (LTKs) associated with the currently used bluetooth adapter
+    // @param[out] ltks List of Long Term Keys (LTKs) and their addresses
+    // @return Success
+    consumed method result ltks(out KeyInfoTypeList ltks);
+
+    // !
+    // @brief Get paired devices associated with the currently used bluetooth adapter
+    // @param[out] devices List of device MAC addresses
+    // @return Error if error while reading paired devices, otherwise success
+    consumed method result paired_devices(out stringList devices);
+
+    // !
+    // @brief Get the stored cache of a given device
+    // @param[in] device MAC address of the device
+    // @param[out] cache Stored bytes in the cache of the given device
+    // @return Error if error while reading cached devices, otherwise success
+    consumed method result device_cache_get(string device, out bytes cache);
+
+    // !
+    // @brief Write in the stored cache of a given device
+    // @param[in] device MAC address of the device
+    // @param[in] cache Bytes to be written in the cache of the given device
+    // @return Error if error while reading cached devices or writing to the cache, otherwise success
+    consumed method result device_cache_set(string device, bytes cache);
+
+    // !
+    // @brief Restart bluetooth services on the system
+    // @return Success
+    consumed method result reset_soft();
+
+    // !
+    // @brief Wipe all bonding data and restart bluetooth services on the system
+    // @return Success
+    consumed method result reset_hard();
+
+    // !
+    // @brief Set the remote BLE Out of Band (OOB) data on a given device
+    // @param[in] device MAC address of the device
+    // @param[in] random_value The remote randomizer (P-256), must be a hex string of length 32
+    // @param[in] confirm_value The remote hash (P-256), must be a hex string of length 32
+    // @return Error if setting OOB data failed, otherwise success
+    consumed method result oob_remote_data_set(string device, string random_value, string confirm_value);
+
+    // !
+    // @brief Remove the remote BLE Out of Band (OOB) data for all devices
+    // @return Error if setting OOB data failed, otherwise success
+    consumed method result oob_remote_data_clear();
+
+    // !
+    // @brief Pair with a remote device (request)
+    // @param[in] device MAC address of the device
+    // @param[in] capability Override the global IO (display/keyboard) capabilities for this pairing event only
+    // @return Error if OOB pairing fails, otherwise success
+    consumed method result pairing_request(string device, CapabilityEnum capability);
+
+    // !
+    // @brief Enable or disable responding to a pairing request
+    // @param[in] enable Enable or disable
+    // @param[in] capability Override the global IO (display/keyboard) capabilities for this pairing event only
+    // @return Error if OOB pairing fails, otherwise success
+    consumed method result pairing_respond(bool enable, CapabilityEnum capability);
+
+    // !
+    // @brief Unpair with a remote device
+    // @param[in] device MAC address of the device
+    // @return Success
+    consumed method result pairing_remove(string device);
+
+    // !
+    // @brief Disconnect a connected remote device
+    // @param[in] device MAC address of the device
+    // @return Success
+    consumed method result disconnect(string device);
+
+    // !
+    // @brief Set code for passkey pairing
+    // @param[in] passkey Passkey used for pairing
+    // @param[in] accept Accept or reject the pairing request
+    // @return Success
+    consumed method result pairing_passkey(uint32 passkey, bool accept);
+
+    // !
+    // @brief Set code for (legacy) pin pairing
+    // @param[in] device MAC address of the device
+    // @param[in] pin Pin used for pairing
+    // @param[in] accept Accept or reject the pairing request
+    // @return Success
+    consumed method result pairing_pin(string device, string pin, bool accept);
+
+    // !
+    // @brief Confirm pairing without providing passkey or pin
+    // @param[in] accept Accept or reject the pairing request
+    // @return Success
+    consumed method result pairing_confirm(bool accept);
+
+    // !
+    // @brief Set a static passkey (instead of generating a random one)
+    // @param[in] passkey Passkey
+    // @return Success
+    consumed method result pairing_static_passkey_set(uint64 passkey);
+
+    // !
+    // @brief Send a raw HCI command to the controller
+    // @param[in] ogf Object group field
+    // @param[in] ocf Object command field
+    // @param[in] parameters Command parameters
+    // @return Success
+    consumed method result hci_command_transmit(uint8 ogf, uint16 ocf, bytes parameters, out bytes response);
+
+    consumed data pairing_trace_type pairing_trace;
+
+    consumed data AdvertisementStatsType advertisement_stats;
+
+    consumed data HCIEventLEAdvType hci_event_le_advertisement;
+
+    consumed data HCIEventLEExtAdvType hci_event_le_ext_advertisement;
+
+    consumed data HCIEventCmdCompleteType hci_event_cmd_complete;
+
+    consumed data HCIEventCmdStatusType hci_event_cmd_status;
+
+    consumed data HCIEventLEConnCompleteType hci_event_le_conn_complete;
+
+    consumed data HCIEventLEExtConnCompleteType hci_event_le_ext_conn_complete;
+
+    consumed data HCIEventLERemoteFeaturesCompleteType hci_event_le_remote_features_complete;
+
+    consumed data HCIEventLEConnUpdateCompleteType hci_event_le_conn_update_complete;
+
+    consumed data HCIEventType hci_event;
+
+    consumed data HCICommandType hci_command;
+
+    consumed data HCICommandLEExtCreateConnType hci_le_ext_create_conn;
+
+    consumed data HCICommandLEReadRemoteFeaturesType hci_le_read_remote_features;
+
+    consumed data HCICommandLEConnUpdateType hci_le_conn_update;
+
+    consumed data ACLType acl_data;
+
+    consumed data L2CAPType l2cap_data;
+
+    consumed data ATTType att_data;
+
+    consumed data ATTReadRequestType att_read_request;
+
+    consumed data ATTReadResponseType att_read_response;
+
+    consumed data ATTReadTypeRequestType att_read_type_request;
+
+    consumed data ATTReadTypeResponseType att_read_type_response;
+
+    consumed data ATTWriteRequestType att_write_request;
+
+    consumed data ATTWriteResponseType att_write_response;
+
+    consumed data ATTExchangeMTURequestType att_exchange_mtu_request;
+
+    consumed data ATTExchangeMTUResponseType att_exchange_mtu_response;
+
+    consumed data L2CAPSignalType l2cap_signal;
+
+    consumed data L2CAPSignalLEConnectionRequestType l2cap_signal_le_connection_request;
+
+    consumed data L2CAPSignalLEConnectionResponseType l2cap_signal_le_connection_response;
+
+    consumed data L2CAPSignalLEConnectionFlowControlType l2cap_signal_le_flow_control;
+
+    consumed data SMPType smp;
+
+    consumed data SMPPairingRequestType smp_pairing_request;
+
+    consumed data SMPPairingResponseType smp_pairing_response;
+
+    consumed data MgmtEventNewIRKType irk_available;
+
+    consumed data MgmtEventNewLTKType ltk_available;
+
+    consumed data MgmtEventNewCSRKType csrk_available;
+
+    consumed data MgmtEventRequestConfirmType request_confirm;
+
+    consumed data MgmtEventRequestPINType request_pin;
+
+    consumed data MgmtEventRequestPasskeyType request_passkey;
+
+    consumed data MgmtEventNotifyPasskeyType notify_passkey;
+
+    consumed data HCIEventDisconnectCompleteType disconnect_complete;
+
+}}
+}

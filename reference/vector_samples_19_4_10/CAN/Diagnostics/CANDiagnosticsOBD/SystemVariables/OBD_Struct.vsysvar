@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<systemvariables version="4">
+  <namespace name="" comment="" interface="">
+    <struct name="OBD_Struct" isUnion="False" definedBinaryLayout="True" comment="">
+      <structMember relativeOffset="0" byteOrder="0" isOptional="False" isHidden="False" name="MandatoryPIDs" comment="" bitcount="8" isSigned="false" encoding="65001" type="data" arrayLength="4" startValue="AA==" />
+      <structMember relativeOffset="0" byteOrder="0" isOptional="False" isHidden="False" name="SupportedPIDs" comment="" bitcount="64" isSigned="true" encoding="65001" type="data" arrayLength="12" startValue="ACBAYICgwOA=" />
+      <structMember relativeOffset="0" byteOrder="0" isOptional="False" isHidden="False" name="MandatoryInfoTypes" comment="" bitcount="8" isSigned="false" encoding="65001" type="data" arrayLength="4" startValue="AA==" />
+      <structMember relativeOffset="0" byteOrder="0" isOptional="False" isHidden="False" name="SupportedInfoTypes" comment="" bitcount="8" isSigned="false" encoding="65001" type="data" arrayLength="4" startValue="AA==" />
+      <structMember relativeOffset="0" byteOrder="0" isOptional="False" isHidden="False" name="MandatoryOBDMIDs" comment="" bitcount="8" isSigned="false" encoding="65001" type="data" arrayLength="4" startValue="AA==" />
+      <structMember relativeOffset="0" byteOrder="0" isOptional="False" isHidden="False" name="SupportedOBDMIDs" comment="" bitcount="8" isSigned="false" encoding="65001" type="data" arrayLength="4" startValue="AA==" />
+      <structMember relativeOffset="0" byteOrder="0" isOptional="False" isHidden="False" name="MandatoryTIDs" comment="" bitcount="8" isSigned="false" encoding="65001" type="data" arrayLength="4" startValue="AA==" />
+      <structMember relativeOffset="0" byteOrder="0" isOptional="False" isHidden="False" name="SupportedTIDs" comment="" bitcount="8" isSigned="false" encoding="65001" type="data" arrayLength="4" startValue="AA==" />
+      <structMember relativeOffset="0" byteOrder="0" isOptional="False" isHidden="False" name="MIL_Status" comment="" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="2" maxValuePhys="2">
+        <valuetable name="On_Off" definesMinMax="false">
+          <valuetableentry value="0" lowerBound="0" upperBound="0" description="Off" displayString="Off" />
+          <valuetableentry value="1" lowerBound="1" upperBound="1" description="On" displayString="On" />
+          <valuetableentry value="2" lowerBound="2" upperBound="2" description="Invalid" displayString="Invalid" />
+        </valuetable>
+      </structMember>
+      <structMember relativeOffset="0" byteOrder="0" isOptional="False" isHidden="False" name="OBD_MonitoringConditionsEncounteredCounts" comment="" bitcount="32" isSigned="false" encoding="65001" type="int" startValue="314" />
+      <structMember relativeOffset="0" byteOrder="0" isOptional="False" isHidden="False" name="IgnitionCycleCounter" comment="" bitcount="32" isSigned="false" encoding="65001" type="int" startValue="1788" />
+      <structMember relativeOffset="0" byteOrder="0" isOptional="False" isHidden="False" name="CatalystMonitorCompletionCountsBank1" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="765" />
+      <structMember relativeOffset="0" byteOrder="0" isOptional="False" isHidden="False" name="CatalystMonitorConditionsEncounteredCountsBank1" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="314" />
+      <structMember relativeOffset="0" byteOrder="0" isOptional="False" isHidden="False" name="O2SensorMonitorCompletionCountsBank1" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="564" />
+      <structMember relativeOffset="0" byteOrder="0" isOptional="False" isHidden="False" name="O2SensorMonitorConditionsEncounteredCountsBank1" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="314" />
+      <structMember relativeOffset="0" byteOrder="0" isOptional="False" isHidden="False" name="EGR_AndOrVVT_MonitorCompletionCounts" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="1097" />
+      <structMember relativeOffset="0" byteOrder="0" isOptional="False" isHidden="False" name="EGR_AndOrVVT_MonitorConditionsEncounteredCounts" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="314" />
+      <structMember relativeOffset="0" byteOrder="0" isOptional="False" isHidden="False" name="SecondaryO2SensorMonitorCompletionCountsBank1" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="561" />
+      <structMember relativeOffset="0" byteOrder="0" isOptional="False" isHidden="False" name="SecondaryO2SensorMonitorConditionsEncounteredCountsBank1" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="314" />
+      <structMember relativeOffset="0" byteOrder="0" isOptional="False" isHidden="False" name="ParticulateFilterMonitorCompletionCountsBank1" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="636" />
+      <structMember relativeOffset="0" byteOrder="0" isOptional="False" isHidden="False" name="ParticulateFilterMonitorConditionsEncounteredCountsBank1" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="314" />
+    </struct>
+  </namespace>
+</systemvariables>

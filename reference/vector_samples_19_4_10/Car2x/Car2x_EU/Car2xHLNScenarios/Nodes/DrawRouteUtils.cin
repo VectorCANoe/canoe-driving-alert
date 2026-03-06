@@ -1,0 +1,102 @@
+/*@!Encoding:1252*/
+variables
+{
+  enum mapObjectType { Square = 1, Rectangle = 2, Ellipse = 3, Cross = 4, Triangle = 5, Line = 6, Bitmap = 7, Text = 8, Vehicle = 9, Polyline = 10};
+  long gRefPointHandle;
+  long tempHandles[int64];
+  long gRouteHandle;
+}
+
+long DrawCrossAtPosition(double lat, double lng)
+{
+    // init object
+    long handle;
+    handle = CreateMapObject( Cross  );
+    SetMapObjectPosition(handle, lat, lng);
+    SetMapObjectSize(handle, 10);
+    SetMapObjectLineColor(handle, makeRGB(random(200), random(200), random(200)));
+    SetMapObjectPenWidth(handle, 5);
+    // draw object
+    DrawMapObject(handle);
+    return handle;
+}
+
+void DrawRouteInMapWindow(char routeName[])
+{
+  double x, y, h;
+  int i, n; 
+  long rgb;
+  
+  // delete previously drawn route and create new
+  DeleteMapObject(gRouteHandle);
+  gRouteHandle = CreateMapObject(Polyline);
+
+  // create random color for route
+  rgb = makeRGB(random(200), random(200), random(200));
+  SetMapObjectLineColor(gRouteHandle, rgb);
+  SetMapObjectPenWidth(gRouteHandle, 2);
+  
+  n = C2xGetNumberOfRoutePoints(routeName);
+  
+  // draw route in map window
+  for (i = 0; i<n; i++)
+  {
+    C2xGetRoutePoint(routeName,i, x, y, h);
+    AddMapPolylinePoint(gRouteHandle, x, y);
+  }
+  DrawMapObject(gRouteHandle);
+}
+
+void CleanTemporaryRoutes()
+{
+  for (int64 aKey : tempHandles)
+  {
+    DeleteMapObject(tempHandles[aKey]);
+  }
+  tempHandles.clear();
+  DeleteMapObject(gRefPointHandle);
+}
+
+void DrawTemporaryRouteInMapWindow(char routeName[])
+{
+  double x, y, h;
+  int i, n; 
+  long rgb;
+  long handle;
+
+  CleanTemporaryRoutes();
+  
+  // init object
+  handle = CreateMapObject( Polyline );
+
+  // create random color for route
+  rgb = makeRGB(random(200), random(200), random(200));
+  SetMapObjectLineColor(handle, rgb);
+  SetMapObjectPenWidth(handle, 2);
+  
+  n = C2xGetNumberOfRoutePoints(routeName);
+  
+  // draw route in map window
+  for (i = 0; i<n; i = i+1)
+  {
+    C2xGetRoutePoint(routeName,i, x, y, h);
+    AddMapPolylinePoint(handle, x, y);
+    tempHandles[i-1] = handle;
+  }
+  DrawMapObject(handle);
+}
+
+void DrawReferencePointInMapWindow(char pointName[])
+{
+  double x, y;
+  
+  DeleteMapObject(gRefPointHandle);
+
+  C2xGetReferencePoint(pointName, x, y);
+  gRefPointHandle = CreateMapObject( 7 ); // bitmap
+  SetMapObjectPosition(gRefPointHandle, x, y);  
+  SetMapObjectBmpFilePath(gRefPointHandle, "Bitmap\\ReferencePoint.bmp");
+  SetMapObjectSize(gRefPointHandle, 20);
+  // draw object
+  DrawMapObject(gRefPointHandle);
+}

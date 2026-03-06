@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<systemvariables version="4">
+  <namespace name="" comment="" interface="">
+    <namespace name="EVCC" comment="" interface="">
+      <namespace name="IEC61851" comment="" interface="">
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="Ohm" name="Rv1" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" />
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="Ohm" name="Rv3" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" />
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="Ohm" name="Rv4" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" />
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="Ohm" name="Rv5" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" />
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="Ohm" name="Rv6" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" />
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="Ohm" name="Rv7" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" />
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="Sv3" comment="" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1">
+          <valuetable name="On_Off" definesMinMax="true">
+            <valuetableentry value="0" lowerBound="0" upperBound="0" description="Off" displayString="Off" />
+            <valuetableentry value="1" lowerBound="1" upperBound="1" description="On" displayString="On" />
+          </valuetable>
+        </variable>
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="Sv4" comment="" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1">
+          <valuetable name="On_Off" definesMinMax="true">
+            <valuetableentry value="0" lowerBound="0" upperBound="0" description="Off" displayString="Off" />
+            <valuetableentry value="1" lowerBound="1" upperBound="1" description="On" displayString="On" />
+          </valuetable>
+        </variable>
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="Volt" name="Vv1_ID_EV" comment="" bitcount="64" isSigned="true" encoding="65001" type="float" minValue="-100" maxValue="100" />
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="Vv2_CE_EV" comment="" bitcount="64" isSigned="true" encoding="65001" type="float" />
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="Volt" name="Xv1" comment="" bitcount="64" isSigned="true" encoding="65001" type="float" minValue="0" maxValue="25" />
+      </namespace>
+    </namespace>
+  </namespace>
+</systemvariables>

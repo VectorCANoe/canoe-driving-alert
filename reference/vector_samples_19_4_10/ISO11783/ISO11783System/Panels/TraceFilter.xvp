@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+<Panel Type="Vector.CANalyzer.Panels.PanelSerializer, Vector.CANalyzer.Panels.Serializer, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null">
+  <Object Type="Vector.CANalyzer.Panels.Runtime.Panel, Vector.CANalyzer.Panels.Common, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null" Name="Panel" Children="Controls" ControlName="Trace Filter">
+    <Object Type="Vector.CANalyzer.Panels.Design.CheckBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null" Name="CheckBoxControl4" Children="Controls" ControlName="Check Box 4">
+      <Property Name="Name">CheckBoxControl4</Property>
+      <Property Name="Size">139, 17</Property>
+      <Property Name="Location">4, 136</Property>
+      <Property Name="Text">File Server</Property>
+      <Property Name="SymbolConfiguration">8;16;TraceFilter;;;FSFilterIsActive;1;;;-1;;;;;;0</Property>
+      <Property Name="TabIndex">5</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.CheckBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null" Name="CheckBoxControl3" Children="Controls" ControlName="Check Box 3">
+      <Property Name="Name">CheckBoxControl3</Property>
+      <Property Name="Size">139, 17</Property>
+      <Property Name="Location">4, 115</Property>
+      <Property Name="Text">Tractor ECU</Property>
+      <Property Name="SymbolConfiguration">8;16;TraceFilter;;;TECUFilterIsActive;1;;;-1;;;;;;0</Property>
+      <Property Name="TabIndex">3</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.CheckBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null" Name="CheckBoxControl2" Children="Controls" ControlName="Check Box 2">
+      <Property Name="Name">CheckBoxControl2</Property>
+      <Property Name="Size">139, 17</Property>
+      <Property Name="Location">4, 94</Property>
+      <Property Name="Text">Task Controller</Property>
+      <Property Name="SymbolConfiguration">8;16;TraceFilter;;;TCFilterIsActive;1;;;-1;;;;;;0</Property>
+      <Property Name="TabIndex">2</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.CheckBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null" Name="CheckBoxControl1" Children="Controls" ControlName="Check Box 1">
+      <Property Name="Name">CheckBoxControl1</Property>
+      <Property Name="Size">139, 17</Property>
+      <Property Name="Location">4, 71</Property>
+      <Property Name="Text">Virtual Terminal </Property>
+      <Property Name="SymbolConfiguration">8;16;TraceFilter;;;VTFilterIsActive;1;;;-1;;;;;;0</Property>
+      <Property Name="TabIndex">1</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl1" Children="Controls" ControlName="Static Text 1">
+      <Property Name="Name">StaticTextControl1</Property>
+      <Property Name="Size">183, 39</Property>
+      <Property Name="Location">4, 12</Property>
+      <Property Name="Text">Use check boxes to enable
+or disable filtering of cyclic messages 
+in Window 'Trace Filtered':
+</Property>
+    </Object>
+    <Property Name="Name">Panel</Property>
+    <Property Name="Size">188, 168</Property>
+    <Property Name="BackColor">White</Property>
+  </Object>
+</Panel>

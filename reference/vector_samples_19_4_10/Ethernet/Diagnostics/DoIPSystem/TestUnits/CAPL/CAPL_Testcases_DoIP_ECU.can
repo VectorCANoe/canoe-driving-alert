@@ -1,0 +1,542 @@
+/*@!Encoding:1252*/
+includes
+{
+  #include "..\..\CAPL_Includes\DiagDefinitions.cin"
+  #include "..\..\CAPL_Includes\LibFunctions_Write.cin"
+  #include "..\..\CAPL_Includes\LibFunctions_Tester.cin"
+  #include "..\..\CAPL_Includes\Download_Tester.cin"
+}
+
+variables
+{
+  char gECU[9] = "DoIP_ECU";    // ECU qualifier defined in the "Diagnostics/ISO TP..." configuration dialog
+  char gResultString[200];      // String for temporary test step result outputs
+  
+  // Simulated Voltages applied via System Variable
+  const cNormalVoltageValue_V=12.4;
+  const cHighVoltageValue1_V=15.4;
+  const cHighVoltageValue2_V=16.1;
+  const cLowVoltageValue_V=9.5;
+  
+  const cExpectedOccurranceCounterValue=2;
+  
+  const cDtcVoltageTooHigh=0x000017;
+  
+  char cExpectedSwitchedVariant[20]="Base_Variant";
+  char cExpectedIdentifiedVariant[20]="DevSample";
+  
+  enum eFaultmemType gFaultMemType=ftUDS;
+}
+
+
+
+ApplyVoltage(double voltage, dword ms)
+{
+  IncTestStepId();
+  @sysvar::ExternalSignals::SupplyVoltage=voltage;
+  TestStepPass (gTestIdStr, "Stimulate ECU with voltage %2.1fV for 1 sec.", voltage);
+  testWaitForTimeout(ms); // Wait 1sec until DTC should have been stored in case of over- or undervoltage before reading the fault memory
+}
+
+InitFaultMemAndGenerateTwoDTCs()
+{
+  diagRequest DoIP_ECU.FaultMemory_Clear reqClear;
+
+  SendRequestAndWaitForFirstResponse(reqClear, TRUE, FALSE); // Clear fault memory to have a defined precondition
+
+  ApplyVoltage(cLowVoltageValue_V, 1010);   // Low voltage: Stimulate setting 1nd DTC (0x000001)
+  ApplyVoltage(cHighVoltageValue1_V, 1010) ;// High voltage, 1st time: Stimulate setting 2st DTC (0x000002)
+  ApplyVoltage(cNormalVoltageValue_V, 20);  // Set voltage back to normal level
+  ApplyVoltage(cHighVoltageValue2_V, 1010); // High voltage, 2nd time:  Add snapshot record for DTC 0x000002
+  ApplyVoltage(cNormalVoltageValue_V, 10);  // Set voltage back to normal level
+}
+
+ChangeSession(enum eSessionType requestedSession)
+{
+  diagRequest DoIP_ECU.DefaultSession_Start reqDefault;
+  diagRequest DoIP_ECU.ExtendedDiagnosticSession_Start reqExtended;
+  diagRequest DoIP_ECU.ProgrammingSession_Start reqProgramming;
+  
+  switch(requestedSession) {
+    case DefaultSession:
+      SendRequestAndWaitForFirstResponse(reqDefault, TRUE, FALSE);
+      break;
+    case ExtendedSession:
+      // switching from programming directly to extended session is not allowed, therefore switch always to Default Session first
+      SendRequestAndWaitForFirstResponse(reqDefault, TRUE, FALSE);
+      SendRequestAndWaitForFirstResponse(reqExtended, TRUE, FALSE);
+      break;
+    case ProgrammingSession:
+      SendRequestAndWaitForFirstResponse(reqProgramming, TRUE, FALSE);
+      break;
+    default:
+      testStepErrorInTestSystem(gTestIdStr, "Requested session is not supported");
+      break;
+  }
+}
+
+//
+// Switch to identified variant for further thests
+// Example: Read configured variant before and after switching the variant to the identified variant
+//
+
+export testcase TCDetermineVariant(int tcId)
+{
+  char activeVariant[50];
+  char errStr[100];
+  long ret;
+  
+  setTestId(tcId, 1);
+
+  ret=diagGetActiveVariant(gECU,activeVariant, elcount(activeVariant));
+  if (ret >= 0) {
+    testStepPass(gTestIdStr, "Active variant BEFORE switching: %s", activeVariant);
+  }
+  else {
+    testStepFail(gTestIdStr, "Error %d while getting active variant", ret);
+  }
+
+  IncTestStepId();
+  ret=testWaitForDiagChangedActiveVariant(gECU, cExpectedSwitchedVariant);
+  if(ret > 0 ) {
+    testStepPass(gTestIdStr, "Successfully changed variant!");
+  }
+  else {
+    diagGetErrorString(ret, errStr, elcount(errStr));
+    testStepFail(gTestIdStr, "Error %d while changing active variant (%s)", ret, errStr);
+  }
+
+  IncTestStepId();
+  ret=diagGetActiveVariant(gECU, activeVariant, elcount(activeVariant));
+  if (ret >= 0) {
+    if (strncmp(activeVariant, cExpectedSwitchedVariant, elcount(cExpectedSwitchedVariant))) {
+      testStepFail(gTestIdStr, "Error: Active variant after switching (%s) different than expected (%s)!", activeVariant, cExpectedSwitchedVariant);
+    }
+    else {
+      testStepPass(gTestIdStr, "Active variant AFTER first switching: %s", activeVariant);
+    }
+  }
+  else {
+    testStepFail(gTestIdStr, "Error %d while getting active variant", ret);
+  }
+  
+  IncTestStepId();
+  ret=testWaitForDiagSetIdentifiedVariant(gECU);
+  if(ret > 0){
+    testStepPass(gTestIdStr, "Successfully set identified variant!");
+  }
+  else {
+    diagGetErrorString(ret, errStr, elcount(errStr));
+    testStepFail(gTestIdStr, "Error %d while setting identified variant (%s)", ret, errStr);
+  }
+  
+  IncTestStepId();
+  ret=diagGetActiveVariant(gECU, activeVariant, elcount(activeVariant));
+  if (ret >= 0) {
+    if (strncmp(activeVariant, cExpectedIdentifiedVariant, elcount(cExpectedIdentifiedVariant))) {
+      testStepFail(gTestIdStr, "Error: Identified variant (%s) different than expected (%s)!", activeVariant, cExpectedIdentifiedVariant);
+    }
+    else {
+      testStepPass(gTestIdStr, "Active variant AFTER identification: %s", activeVariant);
+    }
+  }
+  else {
+    testStepFail(gTestIdStr, "Error %d while getting active variant", ret);
+  }
+}
+
+//
+// Create and send a diagnostic request
+// Example: Send a request for reading the serial number of the ECU
+//
+
+export testcase TCSendDiagnosticRequest(int tcId)
+{
+  diagRequest DoIP_ECU.SerialNumber_Read req; // Create a request object for the "Serial_Number_Read" service
+  long ret;
+
+  setTestId(tcId, 1);
+  if (0<=(ret=diagSendRequest(req))) { // Trigger sending the request
+    testStepPass(gTestIdStr, "Trigger sending the request succeded.");
+  }
+  else {    
+    snprintf(gResultString, elcount(gResultString), "Trigger sending the request failed (Return code=%d)!", ret);
+    testStepFail(gTestIdStr, gResultString);
+  }
+  // In this test case, there is no check whether the request really was sent on the network and no evaluation of the response is performed.
+  // Therefore, wait until the response should be processed before continuing the test.
+  testWaitForTimeout(300);
+}
+
+//
+// Set the parameters of a request
+// Example: Set status of door contacts but do not evaluate the response (ignore the negative response)
+// Note: There is no check in this test case whether the response was positive or negative since the
+//       main focus of this example is setting parameter values
+//
+
+export testcase TCSetDoorContacts(int tcId)
+{
+  diagRequest DoIP_ECU.Door_Status_Control reqCtrl;
+  diagRequest DoIP_ECU.Door_Status_ReturnControl reqRetCtrl;
+  long ret;
+
+  setTestId(tcId, 1);
+  if (0<=(ret=diagSetParameter(reqCtrl, "Door_Contact/Door_Contact", 0))) { // Set status of all door contacts to "0"
+    testStepPass(gTestIdStr, "Setting the parameter within the request before sending it succeded.");
+  }
+  else {
+    snprintf(gResultString, elcount(gResultString), "Setting the parameter within the request failed (Return code=%d)!", ret);
+    testStepFail(gTestIdStr, gResultString);
+  }
+  
+  // The following library function sends the request and waits for the response.
+  IncTestStepId();
+  SendRequestAndWaitForFirstResponse(reqCtrl, TRUE, FALSE);
+  
+
+  IncTestStepId();
+  if (0<=(ret=diagSetParameter(reqCtrl, "Door_Contact.Door_contact_front_right", 1))) { // Set status of one single door contact to "1"
+    testStepPass(gTestIdStr, "Setting the parameter within the request before sending it succeded.");
+  }
+  else {
+    snprintf(gResultString, elcount(gResultString), "Setting the parameter within the request failed (Return code=%d)!", ret);
+    testStepFail(gTestIdStr, gResultString);
+  }
+  
+  IncTestStepId();
+  // The following library function sends the request and waits for the response.
+  SendRequestAndWaitForFirstResponse(reqCtrl, TRUE, FALSE);
+  
+  IncTestStepId();
+  SendRequestAndWaitForFirstResponse(reqRetCtrl, TRUE, FALSE);
+}
+
+//
+// Send a request, receive a response and check the response parameter values
+// Example: Read and check the serial number of the ECU
+//
+
+export testcase TCReadSerialNumber(int tcId)
+{
+  const cExpectedSerialNumber=1397051953;
+  diagRequest DoIP_ECU.SerialNumber_Read req; // Create a request object for the "Serial_Number_Read" service
+  long ret;
+
+  setTestId(tcId, 1);
+  SendRequestAndWaitForFirstResponse(req, TRUE, FALSE);
+
+  IncTestStepId(); // Library function: Update test step ID for test report output
+  if ( -1 == diagGetLastResponseCode() ){
+    testStepPass(gTestIdStr, "The received response was a positive response.");
+  }
+  else {
+    testStepFail(gTestIdStr, "The received response was a negative response.");
+    return; // No parameter to evaluate in case of a negative response
+  }
+  
+  IncTestStepId(); 
+  if (cExpectedSerialNumber==(ret=diagGetRespParameter(req, "SerialNumber"))) { // Extract the serial number from the response and check it for correctness
+    snprintf(gResultString, elcount(gResultString), "Read serial number is correct (%d).", ret);
+    testStepPass(gTestIdStr, gResultString);
+  }
+  else {
+    snprintf(gResultString, elcount(gResultString), "Read serial number is wrong (expected=%d, read=%d)!", cExpectedSerialNumber, ret);
+    testStepFail(gTestIdStr, gResultString);
+  }
+}
+
+//
+// Read the fault memory
+// Example: Generate a low voltage DTC and check whether the DTC was correctly stored
+//
+
+export testcase TCReadFaultMemory(int tcId)
+{
+  char expectedSymbolicDTC_US[16] = "Voltage too low";
+  char expectedSymbolicDTC_DE[20] = "Spannung zu niedrig";
+  char expectedSymbolicDTC_JP[20] = "????";
+  char receivedSymbolicDTC[20];
+  diagRequest DoIP_ECU.FaultMemory_ReadAllIdentified reqIdentified;
+  long ret;
+  word numberOfReadDTCs;
+
+  setTestId(tcId, 1);
+  InitFaultMemAndGenerateTwoDTCs();
+
+  IncTestStepId(); 
+  DiagSetParameter(reqIdentified, "DTCStatusMask.TestFailed", 1);  // DTCs with status "Test failed"
+  SendRequestAndWaitForFirstResponse(reqIdentified, TRUE, FALSE);
+
+  IncTestStepId(); 
+  ret=DiagGetRespPrimitiveSize(reqIdentified);
+  numberOfReadDTCs=(ret-3)/(gFaultMemType+1); // length of response == header + DTCAvailabilityMask + numberOfReadDTCs * (size of DTC + status byte)
+  if (2 == numberOfReadDTCs) { 
+    snprintf(gResultString, elcount(gResultString), "Number of read DTCs is correct (%d).", numberOfReadDTCs);
+    testStepPass(gTestIdStr, gResultString);
+  }
+  else {
+    snprintf(gResultString, elcount(gResultString), "Number of read DTCs is wrong (expected=%d, read=%d)!", 2, numberOfReadDTCs);
+    testStepFail(gTestIdStr, gResultString);
+    return;
+  }
+
+  IncTestStepId(); 
+  // Example: Symbolic access
+  if (0>(ret=diagGetComplexRespParameter(reqIdentified, "ListOfDTC", 0, "DTC", receivedSymbolicDTC, elcount(receivedSymbolicDTC)))) { // Extract the DTC from the response and check it for correctness
+    testStepFail(gTestIdStr, "Error when trying to read 1st DTC!");
+  }
+  else {  
+    if (0!=strncmp(receivedSymbolicDTC, expectedSymbolicDTC_US, elcount(expectedSymbolicDTC_US)) &&
+        0!=strncmp(receivedSymbolicDTC, expectedSymbolicDTC_DE, elcount(expectedSymbolicDTC_DE)) &&
+        0!=strncmp(receivedSymbolicDTC, expectedSymbolicDTC_JP, elcount(expectedSymbolicDTC_JP))) {
+      snprintf(gResultString, elcount(gResultString), "Read 1st DTC symbolic value is wrong (expected='%s', '%s' or '%s', read='%s')!", expectedSymbolicDTC_US, expectedSymbolicDTC_DE, expectedSymbolicDTC_JP, receivedSymbolicDTC);
+      testStepFail(gTestIdStr, gResultString);
+    }
+    else {
+      snprintf(gResultString, elcount(gResultString), "Read 1st DTC symbolic value is correct (%s).", receivedSymbolicDTC);
+      testStepPass(gTestIdStr, gResultString);
+    }
+  }
+
+  IncTestStepId(); 
+  // Example: access by DTC
+  if (0>(ret=diagGetComplexRespParameter(reqIdentified, "ListOfDTC", 1, "DTC"))) { // Extract the DTC from the response and check it for correctness
+    testStepFail(gTestIdStr, "Error when trying to read 2nd DTC!");
+  }
+  else {  
+    if (cDtcVoltageTooHigh!=ret) { 
+      snprintf(gResultString, elcount(gResultString), "Read 2nd DTC is wrong (expected=0x%06x, read=0x%06x)!", cDtcVoltageTooHigh, ret);
+      testStepFail(gTestIdStr, gResultString);
+    }
+    else {
+      snprintf(gResultString, elcount(gResultString), "Read 2nd DTC is correct (0x%06x).", ret);
+      testStepPass(gTestIdStr, gResultString);
+    }
+  }
+}
+
+//
+// Read extended data of a DTC
+// Example: Generate a low voltage DTC and check whether the extended data of the DTC was correctly stored
+//
+
+export testcase TCReadExtendedData(int tcId)
+{
+  diagRequest DoIP_ECU.FaultMemory_Clear reqClear;
+  diagRequest DoIP_ECU.FaultMemory_Read_extended_data_record reqExtended;
+  long ret;
+  long receivedOccurrenceCounterValue;
+  
+  setTestId(tcId, 1);
+  InitFaultMemAndGenerateTwoDTCs();
+  
+  IncTestStepId(); 
+  if (0<=(ret=diagSetParameter(reqExtended, "DTC", cDtcVoltageTooHigh))) {
+    testStepPass(gTestIdStr, "Setting parameter 'DTC' within the request before sending it succeded.");
+  }
+  else {
+    snprintf(gResultString, elcount(gResultString), "Setting the parameter 'DTC' within the request failed (Return code=%d)!", ret);
+    testStepFail(gTestIdStr, gResultString);
+  }
+
+  IncTestStepId(); 
+  if (0<=(ret=diagSetParameter(reqExtended, "DTCExtendedDataRecordNumber.Record_Numbers", 1))) {
+    testStepPass(gTestIdStr, "Setting parameter 'DTCExtendedDataRecordNumber.Record_Numbers' within the request before sending it succeded.");
+  }
+  else {
+    snprintf(gResultString, elcount(gResultString), "Setting the parameter 'DTCExtendedDataRecordNumber.Record_Numbers' within the request failed (Return code=%d)!", ret);
+    testStepFail(gTestIdStr, gResultString);
+  }
+  
+  IncTestStepId(); 
+  SendRequestAndWaitForFirstResponse(reqExtended, TRUE, FALSE);
+  
+  IncTestStepId(); 
+  if (cDtcVoltageTooHigh==(ret=diagGetRespParameter(reqExtended, "DTC"))) {
+    testStepPass(gTestIdStr, "Received DTC for Extended Data as expected.");
+  }
+  else {
+    snprintf(gResultString, elcount(gResultString), "Received DTC for Extended Data was wrong (expected=%d, received=%d)!", cDtcVoltageTooHigh, ret);
+    testStepFail(gTestIdStr, gResultString);
+  }
+
+  IncTestStepId(); 
+  if (1==(ret=diagGetComplexRespParameter(reqExtended, "ListOfDTCExtendedDataRecord", 0, "Record_Numbers"))) {
+    testStepPass(gTestIdStr, "Received 'Record_Numbers' as expected.");
+  }
+  else {
+    snprintf(gResultString, elcount(gResultString), "Received 'Record_Numbers' was wrong (expected=%d, received=%d)!", 1, ret);
+    testStepFail(gTestIdStr, gResultString);
+  }
+  
+  IncTestStepId(); 
+  if (cExpectedOccurranceCounterValue==(receivedOccurrenceCounterValue=diagGetComplexRespParameter(reqExtended, cParamAccessPhysical, "ListOfDTCExtendedDataRecord", 0, "OccurrenceCounter"))) {
+    testStepPass(gTestIdStr, "Received Extended Data with OccurrenceCounter value as expected.");
+  }
+  else {
+    snprintf(gResultString, elcount(gResultString), "Received OccurrenceCounter in Extended Data was wrong (expected=%d, received=%d)!", cExpectedOccurranceCounterValue, receivedOccurrenceCounterValue);
+    testStepFail(gTestIdStr, gResultString);
+  }
+}
+
+//
+// Read snapshot data of a DTC
+// Example: Generate a low voltage DTC and check whether the snapshot data of the DTC was correctly stored
+//
+
+export testcase TCReadSnapshotData(int tcId)
+{
+  diagRequest DoIP_ECU.FaultMemory_Clear reqClear;
+  diagRequest DoIP_ECU.FaultMemory_Read_snapshot_record reqSnapshot;
+  long ret;
+
+  setTestId(tcId, 1);
+  InitFaultMemAndGenerateTwoDTCs();
+  
+  IncTestStepId(); 
+  if (0<=(ret=diagSetParameter(reqSnapshot, "DTC", cDtcVoltageTooHigh))) {
+    testStepPass(gTestIdStr, "Setting parameter 'DTC' within the request before sending it succeded.");
+  }
+  else {
+    snprintf(gResultString, elcount(gResultString), "Setting the parameter 'DTC' within the request failed (Return code=%d)!", ret);
+    testStepFail(gTestIdStr, gResultString);
+  }
+
+  IncTestStepId(); 
+  if (0<=(ret=diagSetParameter(reqSnapshot, "Record_Numbers", 2))) {
+    testStepPass(gTestIdStr, "Setting parameter 'Record_Numbers' for 2nd snapshot record succeded.");
+  }
+  else {
+    snprintf(gResultString, elcount(gResultString), "Setting the parameter 'Record_Numbers' within the request failed (Return code=%d)!", ret);
+    testStepFail(gTestIdStr, gResultString);
+  }
+  
+  IncTestStepId(); 
+  SendRequestAndWaitForFirstResponse(reqSnapshot, TRUE, FALSE);  
+}
+
+//
+// Write and read multiplexed data
+// Example: At first write the data and then read it back and compare the read and written data
+// Note that the service used is only available in the variant "DevSample" (i.e. TCDetermineVariant() has to be performed before)
+//
+
+export testcase TCWriteAndReadVariantSpecificData(int tcId)
+{
+  diagRequest DoIP_ECU.DID_VariantSpecificData_Write reqWrite;
+  diagRequest DoIP_ECU.DID_VariantSpecificData_Read reqRead;
+  const byte cVariantSpecificDataExpected=0x77;
+  long VariantSpecificDataReceived;
+  long ret;
+  
+  setTestId(tcId, 1);
+  if (0<=(ret=diagSetParameter(reqWrite, "VariantSpecificData", cVariantSpecificDataExpected))) {
+    testStepPass(gTestIdStr, "Setting parameter 'VariantSpecificData' within the write request before sending it succeded.");
+  }
+  else {
+    snprintf(gResultString, elcount(gResultString), "Setting the parameter 'VariantSpecificData' within the read request failed (Return code=%d)!", ret);
+    testStepFail(gTestIdStr, gResultString);
+  }
+
+  testReportWriteDiagObject(reqWrite);
+  
+  IncTestStepId(); 
+  SendRequestAndWaitForFirstResponse(reqWrite, TRUE, FALSE);
+  
+  testReportWriteDiagObject(reqRead);
+
+  IncTestStepId(); 
+  SendRequestAndWaitForFirstResponse(reqRead, TRUE, FALSE);
+  
+  IncTestStepId(); 
+  if (0<=(VariantSpecificDataReceived=diagGetRespParameter(reqRead, "VariantSpecificData"))) { 
+    testStepPass(gTestIdStr, "Getting parameter 'VariantSpecificData' within the read response succeded.");
+  }
+  else {
+    snprintf(gResultString, elcount(gResultString), "Getting the parameter 'VariantSpecificData' within the read response failed (Return code=%d)!", VariantSpecificDataReceived);
+    testStepFail(gTestIdStr, gResultString);
+  }
+
+  IncTestStepId(); 
+  if (cVariantSpecificDataExpected == (byte)VariantSpecificDataReceived) {
+    testStepPass(gTestIdStr, "Parameter 'VariantSpecificData' has expected value.");
+  }
+  else {
+    snprintf(gResultString, elcount(gResultString), "Parameter 'VariantSpecificData' has wrong value (expected: %d, received: %d)!", cVariantSpecificDataExpected, VariantSpecificDataReceived);
+    testStepFail(gTestIdStr, gResultString);
+  }  
+}
+
+export testcase TCDefineAndReadDDDIDs(int tcId)
+{
+  diagRequest DoIP_ECU.Dynamically_Define_Periodic_Data_ClearAll reqClear;
+  diagRequest DoIP_ECU.Dynamically_Define_Periodic_Data_Define_By_Identifier reqDefine;
+  diagRequest DoIP_ECU.Dynamically_Define_Periodic_Data_Read reqRead;
+  diagRequest DoIP_ECU.Dynamically_Define_Periodic_Data_Send_fast reqSendFast;
+  diagRequest DoIP_ECU.Dynamically_Define_Periodic_Data_Stop_all reqStop;
+  diagResponse DoIP_ECU.Dynamically_Define_Periodic_Data_Send_slow respUnsolicited;
+  double receivedVoltage[1];
+  long ret;
+  
+  setTestId(tcId, 1);
+  SendRequestAndWaitForFirstResponse(reqClear, TRUE, FALSE);
+  
+  IncTestStepId(); 
+  reqDefine.SetComplexParameter("ListOfParameter", 0, "SourceDID", 0x0001);
+  reqDefine.SetComplexParameter("ListOfParameter", 0, "PositionInSourceDID", 1);
+  reqDefine.SetComplexParameter("ListOfParameter", 0, "MemorySize", 4);
+  reqDefine.SetComplexParameter("ListOfParameter", 1, "SourceDID", 0x0107);
+  reqDefine.SetComplexParameter("ListOfParameter", 1, "PositionInSourceDID", 1);
+  reqDefine.SetComplexParameter("ListOfParameter", 1, "MemorySize", 2);
+  SendRequestAndWaitForFirstResponse(reqDefine, TRUE, FALSE);
+  
+  IncTestStepId(); 
+  SendRequestAndWaitForFirstResponse(reqRead, TRUE, FALSE);
+  
+  IncTestStepId(); 
+  diagGetRespParameter(reqRead, cParamAccessPhysical, "InternalVoltage", receivedVoltage);
+  if (receivedVoltage[0]!=5.0) {
+    testStepFail(gTestIdStr, "DDDID value did not contain expected data (received: %1.1fV, expected: 5.0V!", receivedVoltage[0]);
+  }
+  else {
+    testStepPass(gTestIdStr, "DDDID value with correct data received in physical response (received: %1.1fV)!", receivedVoltage[0]);
+  }
+  
+  IncTestStepId(); 
+  ChangeSession(ExtendedSession);
+
+  IncTestStepId(); 
+  SendRequestAndWaitForFirstResponse(reqSendFast, TRUE, FALSE);
+  
+  IncTestStepId();
+  if (0<=(ret=testWaitForDiagResponse(1500))) { // Wait for unsolicited responses
+    if (0<=(ret=diagGetLastResponse(respUnsolicited))) {
+      testStepPass(gTestIdStr, "Received unsolicited response as expected!");
+      TestReportWriteDiagObject (respUnsolicited);
+
+      if (0>(ret=diagGetParameter(respUnsolicited, cParamAccessPhysical, "SupplyVoltage", receivedVoltage))) {
+        testStepFail(gTestIdStr, "Parameter 'SupplyVoltage' not found in unsolicited response, error=%d!", ret);
+      }
+      else {
+        testStepPass(gTestIdStr, "Parameter 'SupplyVoltage' found as expected in unsolicited response!");
+      }
+        
+      if (receivedVoltage[0]!=12.4) {
+        testStepFail(gTestIdStr, "DDDID value in unsolicited response did not contain expected data (received: %1.1lfV, expected: 12.4V!", receivedVoltage[0]);
+      }
+      else {
+        testStepPass(gTestIdStr, "DDDID value with correct data received in unsolicited response (received: %1.1lfV)!", receivedVoltage[0]);
+      }
+    }
+    else {
+      testStepFail(gTestIdStr, "Did not receive unsolicited response (Return code=%d)!",ret);
+    }
+  }
+  else {
+    testStepFail(gTestIdStr, "Valid response missing or received too late (Return code=%d)!",ret);
+  }
+  
+  IncTestStepId(); 
+  SendRequestAndWaitForFirstResponse(reqStop, TRUE, FALSE);
+}

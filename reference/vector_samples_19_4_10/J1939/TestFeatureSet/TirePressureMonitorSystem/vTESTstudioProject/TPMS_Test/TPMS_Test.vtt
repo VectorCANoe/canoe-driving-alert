@@ -1,0 +1,460 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--Vector Test Table Editor-->
+<ttroot version="24" xmlns="http://www.vector-informatik.de/ITE/TestTable/1.0">
+  <tt>
+    <tf navid="d409c02f-8a3e-45ac-90f5-19bfce6ac9bc">
+      <title>Network Management Tests</title>
+      <preparation>
+        <title />
+        <j1939_acl_violation>
+          <title>Check address claiming of TirePressureController</title>
+          <checkid />
+          <j1939_node>
+            <dbobject>DBNode_BEGIN_OF_OBJECT|1|NodeOrFrameData_BEGIN_OF_OBJECT|1|1|J1939|1|TPMS|TirePressureController|END_OF_OBJECT_NodeOrFrameData|NodeData_BEGIN_OF_OBJECT|1|END_OF_OBJECT_NodeData|16|END_OF_OBJECT_|</dbobject>
+          </j1939_node>
+          <timeout>
+            <value>
+              <const>260</const>
+            </value>
+            <unit>ms</unit>
+          </timeout>
+          <acl_allow_addrbefore>
+            <bool>true</bool>
+          </acl_allow_addrbefore>
+          <acl_allow_nonexpected>
+            <bool>true</bool>
+          </acl_allow_nonexpected>
+          <acl_allow_claimingother>
+            <bool>true</bool>
+          </acl_allow_claimingother>
+        </j1939_acl_violation>
+        <awaitvaluematch>
+          <title>Wait for Address Claimled message of the DUT</title>
+          <timeout>
+            <value>
+              <const>1</const>
+            </value>
+            <unit>s</unit>
+          </timeout>
+          <compare>
+            <dbobject>DBSignal_BEGIN_OF_OBJECT|1|NodeOrFrameData_BEGIN_OF_OBJECT|1|1|J1939|1|TPMS|TirePressureController|END_OF_OBJECT_NodeOrFrameData|FrameData_BEGIN_OF_OBJECT|1|51|255|0|0|AC|-1729167618|False|END_OF_OBJECT_FrameData|Function|7|END_OF_OBJECT_|</dbobject>
+            <eq>
+              <expression>
+                <const>TirePressureController.NmJ1939Function</const>
+              </expression>
+            </eq>
+          </compare>
+          <compare>
+            <dbobject>DBSignal_BEGIN_OF_OBJECT|1|NodeOrFrameData_BEGIN_OF_OBJECT|1|1|J1939|1|TPMS|TirePressureController|END_OF_OBJECT_NodeOrFrameData|FrameData_BEGIN_OF_OBJECT|1|51|255|0|0|AC|-1729167618|False|END_OF_OBJECT_FrameData|ManufacturerCode|7|END_OF_OBJECT_|</dbobject>
+            <eq>
+              <expression>
+                <const>TirePressureController.NmJ1939ManufacturerCode</const>
+              </expression>
+            </eq>
+          </compare>
+          <compare>
+            <dbobject>DBSignal_BEGIN_OF_OBJECT|1|NodeOrFrameData_BEGIN_OF_OBJECT|1|1|J1939|1|TPMS|TirePressureController|END_OF_OBJECT_NodeOrFrameData|FrameData_BEGIN_OF_OBJECT|1|51|255|0|0|AC|-1729167618|False|END_OF_OBJECT_FrameData|IdentityNumber|7|END_OF_OBJECT_|</dbobject>
+            <eq>
+              <expression>
+                <const>TirePressureController.NmJ1939IdentityNumber</const>
+              </expression>
+            </eq>
+          </compare>
+        </awaitvaluematch>
+      </preparation>
+      <tc>
+        <title>Request Address Claimed message (global)</title>
+        <tcid>bf74abd0-dbb1-49bf-9001-94543ccce3e0</tcid>
+        <description>The tester sends a global Request for Address Claimed message. The DUT must respond with a Address Claimed message.</description>
+        <j1939_acl_request>
+          <title />
+          <acl_allow_nonconfnode>
+            <bool>false</bool>
+          </acl_allow_nonconfnode>
+          <acl_allow_differentaddr>
+            <bool>false</bool>
+          </acl_allow_differentaddr>
+          <request>
+            <enum>global</enum>
+          </request>
+          <j1939_node>
+            <dbobject>DBNode_BEGIN_OF_OBJECT|1|NodeOrFrameData_BEGIN_OF_OBJECT|1|1|J1939|1|TPMS|TirePressureController|END_OF_OBJECT_NodeOrFrameData|NodeData_BEGIN_OF_OBJECT|1|END_OF_OBJECT_NodeData|16|END_OF_OBJECT_|</dbobject>
+          </j1939_node>
+        </j1939_acl_request>
+        <wait>
+          <title />
+          <time>
+            <value>
+              <const>10</const>
+            </value>
+            <unit>ms</unit>
+          </time>
+        </wait>
+      </tc>
+      <tc>
+        <title>Request Address Claimed message (specific)</title>
+        <tcid>5e3943b2-6143-400b-ac5a-8279a5843f37</tcid>
+        <description>The tester sends a specific Request for Address Claimed message to the DUT. The DUT must respond with a Address Claimed message.</description>
+        <j1939_acl_request>
+          <title />
+          <acl_allow_nonconfnode>
+            <bool>false</bool>
+          </acl_allow_nonconfnode>
+          <acl_allow_differentaddr>
+            <bool>false</bool>
+          </acl_allow_differentaddr>
+          <request>
+            <enum>specific</enum>
+          </request>
+          <j1939_node>
+            <dbobject>DBNode_BEGIN_OF_OBJECT|1|NodeOrFrameData_BEGIN_OF_OBJECT|1|1|J1939|1|TPMS|TirePressureController|END_OF_OBJECT_NodeOrFrameData|NodeData_BEGIN_OF_OBJECT|1|END_OF_OBJECT_NodeData|16|END_OF_OBJECT_|</dbobject>
+          </j1939_node>
+        </j1939_acl_request>
+        <wait>
+          <title />
+          <time>
+            <value>
+              <const>10</const>
+            </value>
+            <unit>ms</unit>
+          </time>
+        </wait>
+      </tc>
+      <tc>
+        <title>Attempt to claim DUT's address using lower priority than DUT</title>
+        <tcid>ae3a5fa4-e088-43b2-bc25-eadade8d6979</tcid>
+        <description>Sends an Adress Claimed (AC) message with a lower priority than the DUT. The DUT must send the AC again with the claimed address.</description>
+        <j1939_acl_conflict>
+          <title />
+          <priority>
+            <enum>lower</enum>
+          </priority>
+          <j1939_node>
+            <dbobject>DBNode_BEGIN_OF_OBJECT|1|NodeOrFrameData_BEGIN_OF_OBJECT|1|1|J1939|1|TPMS|TirePressureController|END_OF_OBJECT_NodeOrFrameData|NodeData_BEGIN_OF_OBJECT|1|END_OF_OBJECT_NodeData|16|END_OF_OBJECT_|</dbobject>
+          </j1939_node>
+        </j1939_acl_conflict>
+        <wait>
+          <title />
+          <time>
+            <value>
+              <const>10</const>
+            </value>
+            <unit>ms</unit>
+          </time>
+        </wait>
+      </tc>
+      <tc>
+        <title>Attempt to claim DUT's address using higher priority than DUT</title>
+        <tcid>8e0c633a-8d0a-4d07-acd5-275759017f13</tcid>
+        <description>Sends an Adress Claimed (AC) message with a higher priority than the DUT. Depending upon the Arbitrary Address capability of the DUT,
+it must send a Cannot Claim Address message or it must claim a new address.</description>
+        <j1939_acl_conflict>
+          <title />
+          <priority>
+            <enum>higher</enum>
+          </priority>
+          <j1939_node>
+            <dbobject>DBNode_BEGIN_OF_OBJECT|1|NodeOrFrameData_BEGIN_OF_OBJECT|1|1|J1939|1|TPMS|TirePressureController|END_OF_OBJECT_NodeOrFrameData|NodeData_BEGIN_OF_OBJECT|1|END_OF_OBJECT_NodeData|16|END_OF_OBJECT_|</dbobject>
+          </j1939_node>
+        </j1939_acl_conflict>
+        <wait>
+          <title />
+          <time>
+            <value>
+              <const>10</const>
+            </value>
+            <unit>ms</unit>
+          </time>
+        </wait>
+      </tc>
+      <tc>
+        <title>Send a Commanded Address PG to the DUT</title>
+        <tcid>33bebca9-0e6f-4f0f-bf63-3bf19ec9fbcf</tcid>
+        <description>Sends a Commanded Address message to the DUT. The DUT must claim the new address.</description>
+        <j1939_commanded_address>
+          <title />
+          <j1939_node>
+            <dbobject>DBNode_BEGIN_OF_OBJECT|1|NodeOrFrameData_BEGIN_OF_OBJECT|1|1|J1939|1|TPMS|TirePressureController|END_OF_OBJECT_NodeOrFrameData|NodeData_BEGIN_OF_OBJECT|1|END_OF_OBJECT_NodeData|16|END_OF_OBJECT_|</dbobject>
+          </j1939_node>
+          <source_address>
+            <expression>
+              <const>Tester.NmStationAddress</const>
+            </expression>
+          </source_address>
+          <new_address>
+            <expression>
+              <const>TirePressureController.NmStationAddress + 1</const>
+            </expression>
+          </new_address>
+        </j1939_commanded_address>
+        <wait>
+          <title />
+          <time>
+            <value>
+              <const>10</const>
+            </value>
+            <unit>ms</unit>
+          </time>
+        </wait>
+      </tc>
+      <tc>
+        <title>Request AC from DUT while DUT is claiming a new address</title>
+        <tcid>e2eecc02-2960-4fc4-96f1-8ce86e616fc3</tcid>
+        <description>Send a request for AC to the DUT while the DUT is in claiming phase (250ms after AC). The DUT must respond to the request after the claiming phase.</description>
+        <comment>
+          <title>Force DUT to perform address claiming</title>
+        </comment>
+        <j1939_commanded_address>
+          <title />
+          <j1939_node>
+            <dbobject>DBNode_BEGIN_OF_OBJECT|1|NodeOrFrameData_BEGIN_OF_OBJECT|1|1|J1939|1|TPMS|TirePressureController|END_OF_OBJECT_NodeOrFrameData|NodeData_BEGIN_OF_OBJECT|1|END_OF_OBJECT_NodeData|16|END_OF_OBJECT_|</dbobject>
+          </j1939_node>
+          <source_address>
+            <expression>
+              <const>Tester.NmStationAddress</const>
+            </expression>
+          </source_address>
+          <new_address>
+            <expression>
+              <const>TirePressureController.NmStationAddress + 2</const>
+            </expression>
+          </new_address>
+        </j1939_commanded_address>
+        <comment>
+          <title>Send a request, immedatelly after receiveing the Address Claimed message</title>
+        </comment>
+        <wait>
+          <title>Wait 1ms until Address Claimed message is sent</title>
+          <active>true</active>
+          <time>
+            <value>
+              <const>5</const>
+            </value>
+            <unit>ms</unit>
+          </time>
+        </wait>
+        <send>
+          <title>Send Request for Address Claimed to the DUT</title>
+          <messages>
+            <j1939_pg>
+              <dbobject>DBFrameOrPDU_BEGIN_OF_OBJECT|2|NodeOrFrameData_BEGIN_OF_OBJECT|1|1|J1939|1|TPMS|TirePressureController|END_OF_OBJECT_NodeOrFrameData|FrameData_BEGIN_OF_OBJECT|1|51|255|0|0|RQST|-1729429762|False|END_OF_OBJECT_FrameData|4|0|END_OF_OBJECT_|</dbobject>
+              <source_address>
+                <expression>
+                  <const>Tester.NmStationAddress</const>
+                </expression>
+              </source_address>
+              <destination_address>
+                <expression>
+                  <const>TirePressureController.NmStationAddress + 2</const>
+                </expression>
+              </destination_address>
+              <payload>
+                <signal>
+                  <dbobject>DBSignal_BEGIN_OF_OBJECT|1|NodeOrFrameData_BEGIN_OF_OBJECT|1|1|J1939|1|TPMS|TirePressureController|END_OF_OBJECT_NodeOrFrameData|FrameData_BEGIN_OF_OBJECT|1|51|255|0|0|RQST|-1729429762|False|END_OF_OBJECT_FrameData|ParameterGroupNumber|7|END_OF_OBJECT_|</dbobject>
+                  <source>
+                    <expression>
+                      <const>AC.pgn</const>
+                    </expression>
+                  </source>
+                </signal>
+              </payload>
+            </j1939_pg>
+          </messages>
+        </send>
+        <caplfunction>
+          <title />
+          <name>SaveCurrentTime</name>
+        </caplfunction>
+        <comment>
+          <title> During claiming phase the DUT is not allowed to send a response for a Request for Address Claimed or other requests</title>
+        </comment>
+        <awaitvaluematch>
+          <title>Wait for Address Claimled message of the DUT</title>
+          <timeout>
+            <value>
+              <const>1</const>
+            </value>
+            <unit>s</unit>
+          </timeout>
+          <await_nextupdate>
+            <bool>true</bool>
+          </await_nextupdate>
+          <compare>
+            <dbobject>DBSignal_BEGIN_OF_OBJECT|1|NodeOrFrameData_BEGIN_OF_OBJECT|1|1|J1939|1|TPMS|TirePressureController|END_OF_OBJECT_NodeOrFrameData|FrameData_BEGIN_OF_OBJECT|1|51|255|0|0|AC|-1729167618|False|END_OF_OBJECT_FrameData|Function|7|END_OF_OBJECT_|</dbobject>
+            <eq>
+              <expression>
+                <const>TirePressureController.NmJ1939Function</const>
+              </expression>
+            </eq>
+          </compare>
+          <compare>
+            <dbobject>DBSignal_BEGIN_OF_OBJECT|1|NodeOrFrameData_BEGIN_OF_OBJECT|1|1|J1939|1|TPMS|TirePressureController|END_OF_OBJECT_NodeOrFrameData|FrameData_BEGIN_OF_OBJECT|1|51|255|0|0|AC|-1729167618|False|END_OF_OBJECT_FrameData|ManufacturerCode|7|END_OF_OBJECT_|</dbobject>
+            <eq>
+              <expression>
+                <const>TirePressureController.NmJ1939ManufacturerCode</const>
+              </expression>
+            </eq>
+          </compare>
+          <compare>
+            <dbobject>DBSignal_BEGIN_OF_OBJECT|1|NodeOrFrameData_BEGIN_OF_OBJECT|1|1|J1939|1|TPMS|TirePressureController|END_OF_OBJECT_NodeOrFrameData|FrameData_BEGIN_OF_OBJECT|1|51|255|0|0|AC|-1729167618|False|END_OF_OBJECT_FrameData|IdentityNumber|7|END_OF_OBJECT_|</dbobject>
+            <eq>
+              <expression>
+                <const>TirePressureController.NmJ1939IdentityNumber</const>
+              </expression>
+            </eq>
+          </compare>
+        </awaitvaluematch>
+        <caplfunction>
+          <title />
+          <name>CheckCurrentTime</name>
+          <param>
+            <type>dword</type>
+            <value>
+              <const>235</const>
+            </value>
+          </param>
+        </caplfunction>
+        <comment>
+          <title>Clean up (send Commanded Address with default address)</title>
+        </comment>
+        <j1939_commanded_address>
+          <title />
+          <j1939_node>
+            <dbobject>DBNode_BEGIN_OF_OBJECT|1|NodeOrFrameData_BEGIN_OF_OBJECT|1|1|J1939|1|TPMS|TirePressureController|END_OF_OBJECT_NodeOrFrameData|NodeData_BEGIN_OF_OBJECT|1|END_OF_OBJECT_NodeData|16|END_OF_OBJECT_|</dbobject>
+          </j1939_node>
+          <source_address>
+            <expression>
+              <const>Tester.NmStationAddress</const>
+            </expression>
+          </source_address>
+          <new_address>
+            <expression>
+              <const>TirePressureController.NmStationAddress</const>
+            </expression>
+          </new_address>
+        </j1939_commanded_address>
+        <wait>
+          <title />
+          <time>
+            <value>
+              <const>300</const>
+            </value>
+            <unit>ms</unit>
+          </time>
+        </wait>
+      </tc>
+    </tf>
+    <tf navid="4a3b409a-dd4b-45b3-93e4-9d2da914d1b3">
+      <title>Request Tests</title>
+      <preparation>
+        <title />
+        <j1939_request_violation>
+          <title />
+          <active>true</active>
+          <checkid />
+          <expect>
+            <response>
+              <bool>true</bool>
+            </response>
+            <nack>
+              <bool>true</bool>
+            </nack>
+          </expect>
+          <allow_specific_ack>
+            <bool>true</bool>
+          </allow_specific_ack>
+          <response>
+            <j1939_node>DBNode_BEGIN_OF_OBJECT|1|NodeOrFrameData_BEGIN_OF_OBJECT|1|1|J1939|1|TPMS|TirePressureController|END_OF_OBJECT_NodeOrFrameData|NodeData_BEGIN_OF_OBJECT|1|END_OF_OBJECT_NodeData|16|END_OF_OBJECT_|</j1939_node>
+          </response>
+        </j1939_request_violation>
+        <j1939_bam_violation>
+          <title />
+          <active>true</active>
+          <checkid />
+          <j1939_node>DBNode_BEGIN_OF_OBJECT|1|NodeOrFrameData_BEGIN_OF_OBJECT|1|1|J1939|1|TPMS|TirePressureController|END_OF_OBJECT_NodeOrFrameData|NodeData_BEGIN_OF_OBJECT|1|END_OF_OBJECT_NodeData|16|END_OF_OBJECT_|</j1939_node>
+        </j1939_bam_violation>
+      </preparation>
+      <tc>
+        <title>Request an unknown PGN from the DUT</title>
+        <tcid>b2052f1f-39c3-4a6c-8dfd-4998a9bf159c</tcid>
+        <j1939_request>
+          <title />
+          <request>
+            <enum>specific</enum>
+          </request>
+          <expect>
+            <nack>
+              <bool>true</bool>
+            </nack>
+          </expect>
+          <response>
+            <j1939_pgraw>
+              <network>Network_BEGIN_OF_OBJECT|1|J1939|1|1|END_OF_OBJECT_Network|</network>
+              <pgn>
+                <const>0xFD12</const>
+              </pgn>
+              <source_address>
+                <expression>
+                  <const>TirePressureController.NmStationAddress</const>
+                </expression>
+              </source_address>
+              <destination_address>
+                <expression>
+                  <const>Tester.NmStationAddress</const>
+                </expression>
+              </destination_address>
+              <payload />
+            </j1939_pgraw>
+          </response>
+        </j1939_request>
+        <wait>
+          <title />
+          <time>
+            <value>
+              <const>10</const>
+            </value>
+            <unit>ms</unit>
+          </time>
+        </wait>
+      </tc>
+      <capltestcase>
+        <title>Request all parameter groups supported by the DUT</title>
+        <name>TC2_1_RequestAllPGs</name>
+        <tcid>e3f11b2e-c86f-4f13-98a2-9fe563eb5298</tcid>
+      </capltestcase>
+      <capltestcase>
+        <title>Request TIRE message from the DUT</title>
+        <name>TC2_2_RequestTIRE</name>
+        <tcid>0b95c5f0-3e4b-4f79-8002-494611b90ef0</tcid>
+      </capltestcase>
+      <capltestcase>
+        <title>Request TPRI message from the DUT</title>
+        <name>TC2_3_RequestTPRI</name>
+        <tcid>c21ac090-e433-4591-9249-cfc93df3a85d</tcid>
+      </capltestcase>
+    </tf>
+    <tf navid="9abfe76c-2885-4256-bea6-9ec710d7cfbf">
+      <title>Function Tests</title>
+      <capltestcase>
+        <title>Set reference pressure by sending TPMS message</title>
+        <name>TC3_1_SetRefPressureWithTPRS</name>
+        <tcid>22965384-62eb-4d5a-beda-6cce45777448</tcid>
+      </capltestcase>
+      <capltestcase>
+        <title>Reduce tire pressure and wait for DM1 message</title>
+        <name>TC3_2_ReduceTirePressue</name>
+        <tcid>df2ca370-3502-4ca4-82bb-d4e13906e6c6</tcid>
+      </capltestcase>
+      <capltestcase>
+        <title>Increase tire pressure and wait for DM1 message</title>
+        <name>TC3_3_IncreaseTirePressue</name>
+        <tcid>f2fdc5ef-886c-4f5b-a15e-3e8765bc6344</tcid>
+      </capltestcase>
+    </tf>
+  </tt>
+  <ttlib>
+    <ts_definitions />
+    <tc_definitions />
+    <function_definitions />
+  </ttlib>
+</ttroot>

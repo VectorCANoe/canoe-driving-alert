@@ -1,0 +1,47 @@
+version: 4.0.0
+
+scenarios:
+  - name: YamlFDX
+
+system-variables:
+  - file-path: "./EasyFDX.vsysvar"
+
+fdx:
+  transport-layer: udp/ipv6
+  port: 2801
+  description-files:
+    - file-path: "./FDXDescription_Easy.xml"
+
+databases:
+  - name: easy
+    file-path: "./CANdb/easy.dbc"
+
+can-networks:
+  - name: easy
+    database: easy
+    application-channel: 1
+    can-settings:
+      bit-rate-k-bit-s: 83.333
+
+simulation-nodes:
+  - name: Engine
+    file-path: "./Nodes/engine.can"
+    database-node: Engine
+    network-assignments:
+      - network: easy
+  - name: Light
+    file-path: "./Nodes/light.can"
+    database-node: Light
+    network-assignments:
+      - network: easy
+  - name: Display
+    file-path: "./Nodes/display.can"
+    database-node: Display
+    network-assignments:
+      - network: easy
+
+global-settings:
+  database:
+    use-application-layer-objects: []
+  dotnet:
+    target-version: dotnet-4.7

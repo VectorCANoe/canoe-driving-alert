@@ -1,0 +1,11 @@
+version 2.0;
+
+import module "MQTT";
+
+namespace MQTTSettings
+{
+	[MQTTBinding::Settings::Mode=CANoeHosted]
+	[MQTTBinding::Settings::CANoeHosted::Port=1883]
+	[MQTTBinding::Settings::CANoeHosted::Verbosity=MQTT]
+	MQTTBinding::Settings::IMQTTSettings CANoeHostedSettings;
+}

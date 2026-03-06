@@ -1,0 +1,72 @@
+/*@!Encoding:1252*/
+includes
+{
+  
+}
+
+variables
+{
+  /* variable for SPI data animation */
+  word gCounterUp = 0;
+ 
+  /* Byte array used to prepare the MOSI data */
+  byte gSPIMasterTxData[2] = {0x00, 0x00};
+  
+  /* Timer for cyclic update of transfer buffer for MOSI SPI channel */
+  msTimer SPIMasterTimer;
+  long gDurationSPIMasterTimer = 1;    
+}
+
+on start
+{
+  /* start cyclic execution of timer */
+  setTimerCyclic(SPIMasterTimer, gDurationSPIMasterTimer);
+}
+
+on timer SPIMasterTimer
+{
+  /* send the word counter (raw data) value to the byte array */
+  gSPIMasterTxData[0] = (0xFF00 && gCounterUp) >> 8;
+  gSPIMasterTxData[1] = (0x00FF && gCounterUp);
+    
+  /* Send the prepared byte array to the queue */
+  sensorQueueMosiData("SENSOR::SPI::SPIMaster::Slave1", gSPIMasterTxData,16);
+
+  /* increment counter for next timer action */
+  gCounterUp++;  
+}
+
+on sysvar sysvar::SPIRawData::Sysvar_ResetMosiData
+{
+  /* check current value to execute in active state only -> reset gCounterUp */
+  if (1 == @sysvar::SPIRawData::Sysvar_ResetMosiData)
+  {
+    gCounterUp = 0;    
+  }  
+}
+
+on sysvar sysvar::SENSOR::SPI::SPIMaster::Slave1::RawFrame
+{
+  /* handle received RawFrame with 82 bytes 
+     copy whole raw frame into
+     byte 0:7 = Timestamp information
+     byte 8:9 = Frame length information
+     byte 10:17 = SCLK information
+     byte 18:49 = MosiRawData
+     byte 50:81 = MisoRawData */ 
+  
+  byte lMisoArray[82];
+  long lCopiedBytes;
+  word lMisoData; 
+    
+  /* transfer data from raw frame into byte buffer */
+  if (0 != sysGetVariableData(sysVar::SENSOR::SPI::SPIMaster::Slave1::RawFrame, lMisoArray, lCopiedBytes))
+  {
+    write("sysGetVariableData --> ERROR");
+  }
+     
+  /* transfer MisoRawData to Sysvar to be displayed on panel */
+  lMisoData = lMisoArray[51];
+  lMisoData = lMisoData + (lMisoArray[50] << 8);
+  @sysvar::SPIRawData::Sysvar_MisoData = lMisoData;   
+}

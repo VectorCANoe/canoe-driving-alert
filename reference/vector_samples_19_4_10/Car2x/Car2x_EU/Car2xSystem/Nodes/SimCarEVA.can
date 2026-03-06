@@ -1,0 +1,74 @@
+/*@!Encoding:1252*/
+includes
+{
+  #include "Car2xAPI.cin"
+  #include "..\DataSources_Templates\ASNV_Template_BaseDatatypes.cin"
+  #include "..\DataSources_Templates\ASNV_Template_DENM.cin"
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// Variables
+////////////////////////////////////////////////////////////////////////////////
+variables
+{
+ 
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// start / init packet
+////////////////////////////////////////////////////////////////////////////////
+on start
+{ 
+  C2xRegisterCallback(kRxIndication   , "OnRx");
+}
+	
+////////////////////////////////////////////////////////////////////////////////
+// Scenario Start
+////////////////////////////////////////////////////////////////////////////////
+void OnScenarioStateChanged(long newState)
+{ 
+  // Scenario stop
+  if(newState == 2)
+  {
+    C2xStopNode();
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// On Rx
+////////////////////////////////////////////////////////////////////////////////
+void OnRx(LONG channel, LONG dir, LONG radioChannel, LONG signalStrength, LONG sigQuality, LONG packet)
+{
+  struct Pos2D pos2d;
+  long stationHdl ;
+  char stationName[128] ;
+
+  stationHdl = C2xGetStationHandle(packet) ;
+  C2xGetStationName(stationHdl, elcount(stationName), stationName) ;
+
+  if ((dir == RX) &&
+      !strncmp(stationName, "DuT", elcount(stationName))) // received from DuT
+  {
+    pos2d.latitude  = C2xGetStationAttributeDouble("Latitude");
+    pos2d.longitude = C2xGetStationAttributeDouble("Longitude");;
+
+    if (API_PosCalcDistance(packet, pos2d) <= @sysVar::DUT::Horizont)
+    {
+      if(!C2xIsNodeStarted())
+      {
+        C2xStartNode();
+      }
+    }
+    else
+    {
+      if(C2xIsNodeStarted())
+      {
+        C2xStopNode();
+      }
+    }
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// EOF
+////////////////////////////////////////////////////////////////////////////////

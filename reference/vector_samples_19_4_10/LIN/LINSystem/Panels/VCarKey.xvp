@@ -1,0 +1,98 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Panel Type="Vector.CANalyzer.Panels.PanelSerializer, Vector.CANalyzer.Panels.Serializer, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null">
+  <Object Type="Vector.CANalyzer.Panels.Runtime.Panel, Vector.CANalyzer.Panels.Common, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Panel" ControlName="Remote Key">
+    <Object Type="Vector.CANalyzer.Panels.Design.SwitchControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="SwitchControl0" ControlName="SwitchControl0">
+      <Property Name="Name">SwitchControl0</Property>
+      <Property Name="Size">42, 28</Property>
+      <Property Name="Location">12, 139</Property>
+      <Property Name="SymbolConfiguration">8;16;RemoteKey;;;KeyPassenger;1;;;-1;;;Value;;;0</Property>
+      <Property Name="ImageFile">Bitmaps\Key\ID1_2.bmp</Property>
+      <Property Name="TabIndex">0</Property>
+      <Property Name="IsButton">True</Property>
+      <Property Name="Epsilon">0</Property>
+      <Property Name="Increment">1</Property>
+      <Property Name="StartValue">0</Property>
+      <Property Name="SwitchValuesVTXml">&lt;Version&gt;2&lt;/Version&gt;&lt;Count&gt;2&lt;/Count&gt;&lt;RxValue&gt;0&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;0&lt;/TxValue&gt;&lt;RxValue&gt;1&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;1&lt;/TxValue&gt;</Property>
+      <Property Name="SwitchValuesVT">1;2;0/Lower/0;1/Lower/1</Property>
+      <Property Name="SwitchValues">1;2;0;1</Property>
+      <Property Name="SwitchValuesRx">1;2;0;1</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.SwitchControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="SwitchControl1" ControlName="SwitchControl1">
+      <Property Name="Name">SwitchControl1</Property>
+      <Property Name="Size">32, 43</Property>
+      <Property Name="Location">56, 93</Property>
+      <Property Name="SymbolConfiguration">8;16;RemoteKey;;;KeyOpen;1;;;-1;;;Value;;;0</Property>
+      <Property Name="ImageFile">Bitmaps\Key\CarOpen_2.bmp</Property>
+      <Property Name="TabIndex">1</Property>
+      <Property Name="IsButton">True</Property>
+      <Property Name="Epsilon">0</Property>
+      <Property Name="Increment">1</Property>
+      <Property Name="StartValue">0</Property>
+      <Property Name="SwitchValuesVTXml">&lt;Version&gt;2&lt;/Version&gt;&lt;Count&gt;2&lt;/Count&gt;&lt;RxValue&gt;0&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;0&lt;/TxValue&gt;&lt;RxValue&gt;1&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;1&lt;/TxValue&gt;</Property>
+      <Property Name="SwitchValuesVT">1;2;0/Lower/0;1/Lower/1</Property>
+      <Property Name="SwitchValues">1;2;0;1</Property>
+      <Property Name="SwitchValuesRx">1;2;0;1</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.SwitchControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="SwitchControl2" ControlName="SwitchControl2">
+      <Property Name="Name">SwitchControl2</Property>
+      <Property Name="Size">29, 39</Property>
+      <Property Name="Location">26, 93</Property>
+      <Property Name="SymbolConfiguration">8;16;RemoteKey;;;KeyClose;1;;;-1;;;Value;;;0</Property>
+      <Property Name="ImageFile">Bitmaps\Key\CarClosed_2.bmp</Property>
+      <Property Name="TabIndex">2</Property>
+      <Property Name="IsButton">True</Property>
+      <Property Name="Epsilon">0</Property>
+      <Property Name="Increment">1</Property>
+      <Property Name="StartValue">0</Property>
+      <Property Name="SwitchValuesVTXml">&lt;Version&gt;2&lt;/Version&gt;&lt;Count&gt;2&lt;/Count&gt;&lt;RxValue&gt;0&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;0&lt;/TxValue&gt;&lt;RxValue&gt;1&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;1&lt;/TxValue&gt;</Property>
+      <Property Name="SwitchValuesVT">1;2;0/Lower/0;1/Lower/1</Property>
+      <Property Name="SwitchValues">1;2;0;1</Property>
+      <Property Name="SwitchValuesRx">1;2;0;1</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.SwitchControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="SwitchControl3" ControlName="SwitchControl3">
+      <Property Name="Name">SwitchControl3</Property>
+      <Property Name="Size">41, 27</Property>
+      <Property Name="Location">56, 140</Property>
+      <Property Name="SymbolConfiguration">8;16;RemoteKey;;;KeyPassenger;1;;;-1;;;Value;;;0</Property>
+      <Property Name="ImageFile">Bitmaps\Key\ID2_2.bmp</Property>
+      <Property Name="TabIndex">3</Property>
+      <Property Name="IsButton">True</Property>
+      <Property Name="Epsilon">0</Property>
+      <Property Name="Increment">1</Property>
+      <Property Name="StartValue">0</Property>
+      <Property Name="SwitchValuesVTXml">&lt;Version&gt;2&lt;/Version&gt;&lt;Count&gt;2&lt;/Count&gt;&lt;RxValue&gt;0&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;0&lt;/TxValue&gt;&lt;RxValue&gt;2&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;2&lt;/TxValue&gt;</Property>
+      <Property Name="SwitchValuesVT">1;2;0/Lower/0;2/Lower/2</Property>
+      <Property Name="SwitchValues">1;2;0;2</Property>
+      <Property Name="SwitchValuesRx">1;2;0;2</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.PictureBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="PictureBoxControl4" ControlName="PictureBoxControl4">
+      <Property Name="Name">PictureBoxControl4</Property>
+      <Property Name="Size">22, 21</Property>
+      <Property Name="Location">154, 15</Property>
+      <Property Name="ImageFile">Bitmaps\Key\blind.bmp</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.ComboBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="ComboBoxControl5" ControlName="ComboBoxControl5">
+      <Property Name="Name">ComboBoxControl5</Property>
+      <Property Name="Size">79, 19</Property>
+      <Property Name="Location">96, 15</Property>
+      <Property Name="DescriptionSize">67, 19</Property>
+      <Property Name="TextBackColor">White</Property>
+      <Property Name="ReadOnlyControl">True</Property>
+      <Property Name="TabIndex">5</Property>
+      <Property Name="TabStopActive">False</Property>
+      <Property Name="SymbolConfiguration">8;2;RCInterface;;RCR_01;RCR_CentralLockingSystem;0;;;-1;;;Value;;;0</Property>
+      <Property Name="DropDownWidth">88</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.PictureBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="PictureBoxControl6" ControlName="PictureBoxControl6">
+      <Property Name="Name">PictureBoxControl6</Property>
+      <Property Name="Size">109, 218</Property>
+      <Property Name="Location">3, 11</Property>
+      <Property Name="ImageFile">Bitmaps\Key\key.bmp</Property>
+    </Object>
+    <Property Name="Name">Panel</Property>
+    <Property Name="Size">176, 241</Property>
+    <Property Name="Location">0, 0</Property>
+    <Property Name="BackColor">White</Property>
+    <Property Name="Panel">Panel</Property>
+  </Object>
+</Panel>

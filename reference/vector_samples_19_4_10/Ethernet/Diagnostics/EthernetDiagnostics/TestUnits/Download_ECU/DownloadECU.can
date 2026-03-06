@@ -1,0 +1,18 @@
+/*@!Encoding:1252*/
+includes
+{
+  #include "../../Tester/Download.cin"
+}
+
+variables
+{
+}
+
+
+export testcase DownloadECU(){
+  strncpy( target, "ECU", elcount( target));
+  strncpy( tester, "Flash ECU", elcount( tester));
+  downloadSize = 0x00004000;
+  TCDownload();
+}
+

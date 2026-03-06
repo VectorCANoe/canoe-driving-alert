@@ -1,0 +1,62 @@
+/*@!Encoding:1252*/
+includes
+{
+  #include "include\PDU-NM-ASR_Eth.cin"
+  #include "include\VectorConceptCar_Grid.cin"
+}
+
+variables
+{
+  const double kMaxDistance = 200.0;
+}
+
+void SetSegment(byte n, double distance, byte reliability)
+{
+  $ObstacleDetectionPSI1.ObstacleDetection.Segment[n].Distance.phys = distance;
+  $ObstacleDetectionPSI1.ObstacleDetection.Segment[n].Reliability.phys = reliability;
+}
+void SetSegmentRaw(byte n, dword distance, byte reliability)
+{
+  $ObstacleDetectionPSI1.ObstacleDetection.Segment[n].Distance.raw = distance;
+  $ObstacleDetectionPSI1.ObstacleDetection.Segment[n].Reliability.phys = reliability;
+}
+
+int GetSegmentLength() {
+  return elcount($ObstacleDetectionCSI1.ObstacleDetection.Segment); // db: 5 elements
+}
+
+
+on sysvar sysvar::ConceptCar::Vehicle::Position
+{
+  int i;
+  long udpNmState;
+  
+  udpNmState = UdpNm_GetState();
+  
+  for(i=0; i < GetSegmentLength(); ++i) 
+  {
+    struct VCC_Object foundObjects[1];
+    double distance; 
+    byte reliability;
+    int foundObjectsCount;
+    
+    foundObjectsCount = 0;
+
+    if (udpNmState > 1) // find nearest object for each segment from left (0) to right (4)
+    { 
+      foundObjectsCount = VCC_FindNearestObjects( @sysvarMember::ConceptCar::Vehicle::Position.RelativeX, 
+                                                  @sysvarMember::ConceptCar::Vehicle::Position.RelativeY,
+                                                  @sysvarMember::ConceptCar::Vehicle::Position.Heading,
+                                                  -25+i*10, -15+i*10, kMaxDistance, foundObjects, elcount(foundObjects) );
+    }
+
+    if (foundObjectsCount > 0) 
+    {
+      SetSegment(i, foundObjects[0].distance, 100);
+    }
+    else 
+    {
+      SetSegmentRaw(i, 0, 0);
+    }
+  }
+}

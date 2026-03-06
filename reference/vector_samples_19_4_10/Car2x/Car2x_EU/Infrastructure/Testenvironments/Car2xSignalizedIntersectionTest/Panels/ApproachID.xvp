@@ -1,0 +1,44 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Panel Type="Vector.CANalyzer.Panels.PanelSerializer, Vector.CANalyzer.Panels.Serializer, Version=18.0.0.0, Culture=neutral, PublicKeyToken=null">
+  <Object Type="Vector.CANalyzer.Panels.Runtime.Panel, Vector.CANalyzer.Panels.Common, Version=18.0.0.0, Culture=neutral, PublicKeyToken=null" Name="Panel" ControlName="Approach ID">
+    <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.0.0, Culture=neutral, PublicKeyToken=null" Name="X18790b3ee2fbee4a8de88a2e2af99a2309d7" ControlName="Input/Output Box 1">
+      <Property Name="Name">X18790b3ee2fbee4a8de88a2e2af99a2309d7</Property>
+      <Property Name="Size">163, 21</Property>
+      <Property Name="Location">62, 26</Property>
+      <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+      <Property Name="AlarmLowerBkgColor">Salmon</Property>
+      <Property Name="AlarmLowerTextColor">Black</Property>
+      <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+      <Property Name="AlarmUpperTextColor">Black</Property>
+      <Property Name="BoxBorderStyle">FixedSingle</Property>
+      <Property Name="DisplayLabel">Left</Property>
+      <Property Name="TabIndex">0</Property>
+      <Property Name="TabStopActive">False</Property>
+      <Property Name="DescriptionText">ApproachID:</Property>
+      <Property Name="ValueDecimalPlaces">0</Property>
+      <Property Name="ValueDisplay">Decimal</Property>
+      <Property Name="UsedValueTable">PhysicalValue</Property>
+      <Property Name="DescriptionSize">67, 21</Property>
+      <Property Name="SymbolConfiguration">8;16;ApproachID;;;Value;1;;;-1;;;Value;;;0</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.0.0, Culture=neutral, PublicKeyToken=null" Name="X77f81201eb85ae4e6de9238e87c2f58493a2" ControlName="Static Text 2">
+      <Property Name="Name">X77f81201eb85ae4e6de9238e87c2f58493a2</Property>
+      <Property Name="Size">273, 15</Property>
+      <Property Name="Location">6, 5</Property>
+      <Property Name="TextAlign">TopCenter</Property>
+      <Property Name="Text">Please input an ApproachID to visualize the approach.</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.CheckBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.0.0, Culture=neutral, PublicKeyToken=null" Name="X31f7990cebf5de45c3eb015ebd83b9a654d2" ControlName="Check Box 1">
+      <Property Name="Name">X31f7990cebf5de45c3eb015ebd83b9a654d2</Property>
+      <Property Name="Size">209, 17</Property>
+      <Property Name="Location">38, 53</Property>
+      <Property Name="Text">Show All Approaches in Map Window</Property>
+      <Property Name="TabIndex">0</Property>
+      <Property Name="SymbolConfiguration">8;16;ApproachID;;;ShowAll;1;;;-1;;;Value;;;0</Property>
+    </Object>
+    <Property Name="Name">Panel</Property>
+    <Property Name="Size">285, 75</Property>
+    <Property Name="Location">0, 0</Property>
+    <Property Name="BackColor">White</Property>
+  </Object>
+</Panel>

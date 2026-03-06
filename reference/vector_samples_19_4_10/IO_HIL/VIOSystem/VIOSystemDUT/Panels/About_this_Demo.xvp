@@ -1,0 +1,88 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Panel Type="Vector.CANalyzer.Panels.PanelSerializer, Vector.CANalyzer.Panels.Serializer, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null">
+  <Object Type="Vector.CANalyzer.Panels.Runtime.Panel, Vector.CANalyzer.Panels.Common, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Panel" ControlName="General info about this demo">
+    <Object Type="Vector.CANalyzer.Panels.Design.PictureBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="PictureBoxControl3" ControlName="Picture Box 3">
+      <Property Name="Name">PictureBoxControl3</Property>
+      <Property Name="Size">456, 330</Property>
+      <Property Name="Location">490, 137</Property>
+      <Property Name="BorderStyle">FixedSingle</Property>
+      <Property Name="CacheImages">False</Property>
+      <Property Name="ImageFile">bmp\VIO System Alias Names.png</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.PictureBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="PictureBoxControl2" ControlName="Picture Box 1">
+      <Property Name="Name">PictureBoxControl2</Property>
+      <Property Name="Size">395, 329</Property>
+      <Property Name="Location">20, 137</Property>
+      <Property Name="BorderStyle">FixedSingle</Property>
+      <Property Name="CacheImages">False</Property>
+      <Property Name="ImageFile">bmp\VIOSystemDemo.png</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl8" ControlName="Static Text">
+      <Property Name="Name">StaticTextControl8</Property>
+      <Property Name="Size">320, 27</Property>
+      <Property Name="Location">20, 510</Property>
+      <Property Name="BackColor">White</Property>
+      <Property Name="Text">A detailed description of this sample configuration can be found 
+via the Help panel within the Help tab.</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl6" ControlName="Static Text">
+      <Property Name="Name">StaticTextControl6</Property>
+      <Property Name="Size">113, 15</Property>
+      <Property Name="Location">20, 490</Property>
+      <Property Name="BackColor">White</Property>
+      <Property Name="Font">Microsoft Sans Serif, 8.25pt, style=Bold</Property>
+      <Property Name="Text">Further information</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl2" ControlName="Static Text">
+      <Property Name="Name">StaticTextControl2</Property>
+      <Property Name="Size">467, 65</Property>
+      <Property Name="Location">490, 55</Property>
+      <Property Name="BackColor">White</Property>
+      <Property Name="Text">The System Variable Names used in this config were chosen to ease code readability.
+Instead of dealing with variables like 'VIO4028_Pos2/Channel 1/Out'
+the signal was named 'CANoeRunning_Ch01' with a meaning that is much more obvious.
+
+Any System Variable Name is possible as long as it starts with a letter (not a number).</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl5" ControlName="Static Text">
+      <Property Name="Name">StaticTextControl5</Property>
+      <Property Name="Size">110, 15</Property>
+      <Property Name="Location">490, 35</Property>
+      <Property Name="BackColor">White</Property>
+      <Property Name="Font">Microsoft Sans Serif, 8.25pt, style=Bold</Property>
+      <Property Name="Text">Used namespaces</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl4" ControlName="Static Text">
+      <Property Name="Name">StaticTextControl4</Property>
+      <Property Name="Size">118, 16</Property>
+      <Property Name="Location">7, 7</Property>
+      <Property Name="BackColor">White</Property>
+      <Property Name="Font">Microsoft Sans Serif, 9.25pt, style=Bold</Property>
+      <Property Name="Text">About this demo</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl3" ControlName="Static Text">
+      <Property Name="Name">StaticTextControl3</Property>
+      <Property Name="Size">75, 15</Property>
+      <Property Name="Location">20, 35</Property>
+      <Property Name="BackColor">White</Property>
+      <Property Name="Font">Microsoft Sans Serif, 8.25pt, style=Bold</Property>
+      <Property Name="Text">Introduction</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl1" ControlName="Static Text">
+      <Property Name="Name">StaticTextControl1</Property>
+      <Property Name="Size">439, 65</Property>
+      <Property Name="Location">20, 55</Property>
+      <Property Name="BackColor">HighlightText</Property>
+      <Property Name="Text">This configuration presents a typical use case in which the different VIO I/O cards 
+(VIO1008, VIO1804, VIO2004, VIO4028) stimulate and analyze an electronic circuit.
+
+A small demo hardware ('VIO System Sample DUT') is needed 
+to setup a complete test environment.</Property>
+    </Object>
+    <Property Name="Name">Panel</Property>
+    <Property Name="Size">1000, 672</Property>
+    <Property Name="Location">0, 0</Property>
+    <Property Name="BackColor">White</Property>
+    <Property Name="BorderStyle">FixedSingle</Property>
+  </Object>
+</Panel>

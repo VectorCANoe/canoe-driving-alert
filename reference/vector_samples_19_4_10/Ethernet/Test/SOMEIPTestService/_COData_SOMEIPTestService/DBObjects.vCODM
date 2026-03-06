@@ -1,0 +1,230 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<FunctionBusLibrary Version="23" FormatMajorVersion="3" FormatMinorVersion="5" FormatPatchVersion="1">
+  <Namespaces>
+    <Namespace IsDefinedAsHidden="False" IsSystemDefined="True" Name="VehicleNetwork">
+      <Subnamespaces>
+        <Namespace IsDefinedAsHidden="False" IsSystemDefined="True" Name="Interfaces">
+          <DOInterfaces>
+            <DOInterface IsAbstract="False" Name="Driving">
+              <AttributeValues>
+                <AttributeValue Definition="_SystemAttributes::Binding" InitialValue="SOMEIP" InitialValueType="String" />
+                <AttributeValue Definition="_SystemAttributes::CommunicationPattern" InitialValue="2" InitialValueType="Int32" />
+              </AttributeValues>
+              <MemberData>
+                <DOMemberDataHolder Name="MemberData" />
+              </MemberData>
+              <Events>
+                <DOIFEventMember Name="MotorState">
+                  <DataType DataType="VehicleNetwork::DataTypes::MotorState" />
+                </DOIFEventMember>
+              </Events>
+              <Fields>
+                <DOIFFieldMember Name="Mode">
+                  <DataType DataType="_SystemDataTypes::UInt8">
+                    <NumericProperties MinValue="1" MinValueType="UInt64" MaxValue="3" MaxValueType="UInt64" IsBoolean="False" IsTimespan="False">
+                      <ImplToPhysEncodings TextualEncodings="VehicleNetwork::Encodings::UInt8_UInt8" />
+                    </NumericProperties>
+                  </DataType>
+                  <Getter>
+                    <DOIFMethodMember Prototype="VehicleNetwork::DataTypes::UInt8_Getter_Prototype" Name="Get" />
+                  </Getter>
+                  <Setter>
+                    <DOIFMethodMember Prototype="VehicleNetwork::DataTypes::UInt8_Setter_Prototype" Name="Set" />
+                  </Setter>
+                  <Event>
+                    <DOIFEventMember Name="Notification">
+                      <DataType DataType="_SystemDataTypes::UInt8">
+                        <NumericProperties MinValue="1" MinValueType="UInt64" MaxValue="3" MaxValueType="UInt64" IsBoolean="False" IsTimespan="False">
+                          <ImplToPhysEncodings TextualEncodings="VehicleNetwork::Encodings::UInt8_UInt8" />
+                        </NumericProperties>
+                      </DataType>
+                    </DOIFEventMember>
+                  </Event>
+                </DOIFFieldMember>
+              </Fields>
+              <Methods>
+                <DOIFMethodMember Prototype="VehicleNetwork::DataTypes::PowerBoost_Prototype" Name="PowerBoost" />
+              </Methods>
+            </DOInterface>
+          </DOInterfaces>
+        </Namespace>
+        <Namespace IsDefinedAsHidden="False" IsSystemDefined="True" Name="DataTypes">
+          <DataTypes>
+            <StructDataType Bitcount="96" RawBitcount="96" HasFixedBinaryLayout="True" HasMotorolaByteOrder="False" Name="MotorState">
+              <Fields>
+                <DataTypeField RelativeBitOffset="32" IsOptional="False" IsHidden="False" Name="Temperature">
+                  <AttributeValues>
+                    <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="memberName:Temperature" InitialValueType="String" />
+                  </AttributeValues>
+                  <DataType DataType="_SystemDataTypes::UInt16">
+                    <NumericProperties MinValue="-272" MinValueType="Double" MaxValue="6281.5" MaxValueType="Double" IsBoolean="False" IsTimespan="False">
+                      <ImplToPhysEncodings LinearEncodings="VehicleNetwork::Encodings::UInt16_UInt16" />
+                    </NumericProperties>
+                  </DataType>
+                </DataTypeField>
+                <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="Speed">
+                  <AttributeValues>
+                    <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="memberName:Speed" InitialValueType="String" />
+                  </AttributeValues>
+                  <DataType DataType="_SystemDataTypes::UInt16">
+                    <NumericProperties MinValue="-100" MinValueType="Double" MaxValue="6453.5" MaxValueType="Double" IsBoolean="False" IsTimespan="False">
+                      <ImplToPhysEncodings LinearEncodings="VehicleNetwork::Encodings::UInt16_UInt16_2" />
+                    </NumericProperties>
+                  </DataType>
+                </DataTypeField>
+                <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="Torque">
+                  <AttributeValues>
+                    <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="memberName:Torque" InitialValueType="String" />
+                  </AttributeValues>
+                  <DataType DataType="_SystemDataTypes::UInt16">
+                    <NumericProperties MinValue="0" MinValueType="Double" MaxValue="6553.5" MaxValueType="Double" IsBoolean="False" IsTimespan="False">
+                      <ImplToPhysEncodings LinearEncodings="VehicleNetwork::Encodings::UInt16_UInt16_3" />
+                    </NumericProperties>
+                  </DataType>
+                </DataTypeField>
+                <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="Current">
+                  <AttributeValues>
+                    <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="memberName:Current" InitialValueType="String" />
+                  </AttributeValues>
+                  <DataType DataType="_SystemDataTypes::UInt16">
+                    <NumericProperties MinValue="0" MinValueType="Double" MaxValue="65.534999999999997" MaxValueType="Double" IsBoolean="False" IsTimespan="False">
+                      <ImplToPhysEncodings LinearEncodings="VehicleNetwork::Encodings::UInt16_UInt16_4" />
+                    </NumericProperties>
+                  </DataType>
+                </DataTypeField>
+              </Fields>
+            </StructDataType>
+            <FunctionPrototype IsOneWay="False" AllowSpecialCharactersInMemberNames="False" HasFixedBinaryLayout="False" HasMotorolaByteOrder="False" Name="PowerBoost_Prototype">
+              <Result DataType="_SystemDataTypes::Void" />
+              <Parameters>
+                <Parameter IsOptional="False" Name="Power">
+                  <DataType DataType="_SystemDataTypes::UInt16">
+                    <NumericProperties MinValue="0" MinValueType="Double" MaxValue="65.534999999999997" MaxValueType="Double" IsBoolean="False" IsTimespan="False">
+                      <ImplToPhysEncodings LinearEncodings="VehicleNetwork::Encodings::UInt16_UInt16_5" />
+                    </NumericProperties>
+                  </DataType>
+                </Parameter>
+                <Parameter IsOptional="False" Direction="Out" Name="ConfirmedPower">
+                  <DataType DataType="_SystemDataTypes::UInt16">
+                    <NumericProperties MinValue="0" MinValueType="Double" MaxValue="65.534999999999997" MaxValueType="Double" IsBoolean="False" IsTimespan="False">
+                      <ImplToPhysEncodings LinearEncodings="VehicleNetwork::Encodings::UInt16_UInt16_5" />
+                    </NumericProperties>
+                  </DataType>
+                </Parameter>
+              </Parameters>
+            </FunctionPrototype>
+            <FunctionPrototype IsOneWay="False" AllowSpecialCharactersInMemberNames="False" HasFixedBinaryLayout="False" HasMotorolaByteOrder="False" Name="UInt8_Getter_Prototype">
+              <Result DataType="_SystemDataTypes::UInt8">
+                <NumericProperties MinValue="1" MinValueType="UInt64" MaxValue="3" MaxValueType="UInt64" IsBoolean="False" IsTimespan="False">
+                  <ImplToPhysEncodings TextualEncodings="VehicleNetwork::Encodings::UInt8_UInt8" />
+                </NumericProperties>
+              </Result>
+            </FunctionPrototype>
+            <FunctionPrototype IsOneWay="False" AllowSpecialCharactersInMemberNames="False" HasFixedBinaryLayout="False" HasMotorolaByteOrder="False" Name="UInt8_Setter_Prototype">
+              <Result DataType="_SystemDataTypes::UInt8">
+                <NumericProperties MinValue="1" MinValueType="UInt64" MaxValue="3" MaxValueType="UInt64" IsBoolean="False" IsTimespan="False">
+                  <ImplToPhysEncodings TextualEncodings="VehicleNetwork::Encodings::UInt8_UInt8" />
+                </NumericProperties>
+              </Result>
+              <Parameters>
+                <Parameter IsOptional="False" Name="newValue">
+                  <DataType DataType="_SystemDataTypes::UInt8">
+                    <NumericProperties MinValue="1" MinValueType="UInt64" MaxValue="3" MaxValueType="UInt64" IsBoolean="False" IsTimespan="False">
+                      <ImplToPhysEncodings TextualEncodings="VehicleNetwork::Encodings::UInt8_UInt8" />
+                    </NumericProperties>
+                  </DataType>
+                </Parameter>
+              </Parameters>
+            </FunctionPrototype>
+          </DataTypes>
+        </Namespace>
+        <Namespace IsDefinedAsHidden="False" IsSystemDefined="True" Name="Encodings">
+          <LinearEncodings>
+            <LinearEncodings Name="UInt16_UInt16">
+              <LinearEncoding Factor="0.1" Offset="-272" Unit="°C" LowerBound="0" LowerBoundType="UInt32" UpperBound="65535" UpperBoundType="UInt32" />
+            </LinearEncodings>
+            <LinearEncodings Name="UInt16_UInt16_2">
+              <LinearEncoding Factor="0.1" Offset="-100" Unit="km/h" LowerBound="0" LowerBoundType="UInt32" UpperBound="65535" UpperBoundType="UInt32" />
+            </LinearEncodings>
+            <LinearEncodings Name="UInt16_UInt16_3">
+              <LinearEncoding Factor="0.1" Offset="0" Unit="Nm" LowerBound="0" LowerBoundType="UInt32" UpperBound="65535" UpperBoundType="UInt32" />
+            </LinearEncodings>
+            <LinearEncodings Name="UInt16_UInt16_4">
+              <LinearEncoding Factor="0.001" Offset="0" Unit="A" LowerBound="0" LowerBoundType="UInt32" UpperBound="65535" UpperBoundType="UInt32" />
+            </LinearEncodings>
+            <LinearEncodings Name="UInt16_UInt16_5">
+              <LinearEncoding Factor="0.001" Offset="0" Unit="W" LowerBound="0" LowerBoundType="UInt32" UpperBound="65535" UpperBoundType="UInt32" />
+            </LinearEncodings>
+          </LinearEncodings>
+          <TextualEncodings>
+            <TextualEncodings DefinesMinMax="False" IsEnum="False" Name="UInt8_UInt8">
+              <TextualEncoding TextualValue="Eco" DisplayValue="Eco" LowerBound="1" LowerBoundType="UInt32" UpperBound="1" UpperBoundType="UInt32" />
+              <TextualEncoding TextualValue="Comfort" DisplayValue="Comfort" LowerBound="2" LowerBoundType="UInt32" UpperBound="2" UpperBoundType="UInt32" />
+              <TextualEncoding TextualValue="Race" DisplayValue="Race" LowerBound="3" LowerBoundType="UInt32" UpperBound="3" UpperBoundType="UInt32" />
+            </TextualEncodings>
+          </TextualEncodings>
+        </Namespace>
+        <Namespace IsDefinedAsHidden="False" IsSystemDefined="True" Name="EDRV">
+          <DistributedObjects>
+            <DistributedObject GenerateDotNetAPI="True" Name="DrivingPSI1">
+              <DataType>
+                <ModifiedDOIF Reverse="False" IsDOReference="False" Interface="VehicleNetwork::Interfaces::Driving" />
+              </DataType>
+              <MemberData>
+                <DOMemberDataHolder Name="MemberData">
+                  <Data>
+                    <DOInstanceMemberData Name="MotorState">
+                      <AttributeValues>
+                        <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="cluster:VehicleNetwork,node:EDRV,serviceId:1003,majorVersion:1,instanceId:1,eventId:32769" InitialValueType="String" />
+                      </AttributeValues>
+                    </DOInstanceMemberData>
+                    <DOInstanceMemberData Name="PowerBoost">
+                      <AttributeValues>
+                        <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="cluster:VehicleNetwork,node:EDRV,serviceId:1003,majorVersion:1,instanceId:1,methodId:1,inParams:[Power],outParams:[ConfirmedPower]" InitialValueType="String" />
+                      </AttributeValues>
+                    </DOInstanceMemberData>
+                    <DOInstanceMemberData Name="Mode">
+                      <AttributeValues>
+                        <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="cluster:VehicleNetwork,node:EDRV,serviceId:1003,majorVersion:1,instanceId:1,notifierId:32770,getterId:2,setterId:3" InitialValueType="String" />
+                      </AttributeValues>
+                    </DOInstanceMemberData>
+                  </Data>
+                </DOMemberDataHolder>
+              </MemberData>
+            </DistributedObject>
+          </DistributedObjects>
+        </Namespace>
+        <Namespace IsDefinedAsHidden="False" IsSystemDefined="True" Name="HPCM">
+          <DistributedObjects>
+            <DistributedObject GenerateDotNetAPI="True" Name="DrivingCSI1">
+              <DataType>
+                <ModifiedDOIF Reverse="True" IsDOReference="False" Interface="VehicleNetwork::Interfaces::Driving" />
+              </DataType>
+              <MemberData>
+                <DOMemberDataHolder Name="MemberData">
+                  <Data>
+                    <DOInstanceMemberData Name="MotorState">
+                      <AttributeValues>
+                        <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="cluster:VehicleNetwork,node:HPCM,serviceId:1003,majorVersion:1,instanceId:1,shortName:DrivingCSI1,eventId:32769" InitialValueType="String" />
+                      </AttributeValues>
+                    </DOInstanceMemberData>
+                    <DOInstanceMemberData Name="PowerBoost">
+                      <AttributeValues>
+                        <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="cluster:VehicleNetwork,node:HPCM,serviceId:1003,majorVersion:1,instanceId:1,shortName:DrivingCSI1,methodId:1,inParams:[Power],outParams:[ConfirmedPower]" InitialValueType="String" />
+                      </AttributeValues>
+                    </DOInstanceMemberData>
+                    <DOInstanceMemberData Name="Mode">
+                      <AttributeValues>
+                        <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="cluster:VehicleNetwork,node:HPCM,serviceId:1003,majorVersion:1,instanceId:1,shortName:DrivingCSI1,notifierId:32770,getterId:2,setterId:3" InitialValueType="String" />
+                      </AttributeValues>
+                    </DOInstanceMemberData>
+                  </Data>
+                </DOMemberDataHolder>
+              </MemberData>
+            </DistributedObject>
+          </DistributedObjects>
+        </Namespace>
+      </Subnamespaces>
+    </Namespace>
+  </Namespaces>
+</FunctionBusLibrary>

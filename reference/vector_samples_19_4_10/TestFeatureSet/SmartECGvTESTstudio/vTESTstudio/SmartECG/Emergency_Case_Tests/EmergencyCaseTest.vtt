@@ -1,0 +1,100 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--Vector Test Table Editor-->
+<ttroot version="30" xmlns="http://www.vector-informatik.de/ITE/TestTable/1.0" minRequiredVersion="22" minRequiredCANoeVersion="CANoe 14.0">
+  <tt>
+    <tf navid="31844fb9-419e-4e2c-b328-72a16bf95d98">
+      <title>Test Local Alarms in Case of Sudden Emergency</title>
+      <preparation>
+        <title />
+        <caplfunction>
+          <title />
+          <name>StopSimulationEnviroment</name>
+        </caplfunction>
+        <caplfunction>
+          <title />
+          <name>InitializeTestEnvironment</name>
+        </caplfunction>
+      </preparation>
+      <tc>
+        <title>Test Local Alarms</title>
+        <tcid>6298c56a-0b9e-4b18-82aa-3238b57643a9</tcid>
+        <traceitems>
+          <traceitem>TraceItem_BEGIN_OF_OBJECT|1|a31342c143aea0ddc7780|END_OF_OBJECT_TraceItem|</traceitem>
+          <traceitem>TraceItem_BEGIN_OF_OBJECT|1|a31342c143aea0ddc7781|END_OF_OBJECT_TraceItem|</traceitem>
+        </traceitems>
+        <caplfunction>
+          <title />
+          <name>SendECGSignalWithoutArrhythmia</name>
+        </caplfunction>
+        <wait>
+          <title />
+          <time>
+            <value>
+              <const>10</const>
+            </value>
+            <unit>s</unit>
+          </time>
+        </wait>
+        <statecheck>
+          <title>Heart Rate Alarm should be OFF</title>
+          <expected>
+            <compare>
+              <value>
+                <dbobject>VE_BEGIN_OF_OBJECT|1|SmartECG::SmartECG_IO.heartRateAlarmOn|END_OF_OBJECT_VE|</dbobject>
+              </value>
+              <eq>
+                <const>0</const>
+              </eq>
+            </compare>
+          </expected>
+        </statecheck>
+        <caplfunction>
+          <title />
+          <name>StopECGSignalWithoutArrhythmia</name>
+        </caplfunction>
+        <caplfunction>
+          <title />
+          <name>StartSimulatingEmergencyCase</name>
+        </caplfunction>
+        <wait>
+          <title />
+          <time>
+            <value>
+              <const>10</const>
+            </value>
+            <unit>s</unit>
+          </time>
+        </wait>
+        <statecheck>
+          <title>Heart Rate Alarm should be ON</title>
+          <expected>
+            <compare>
+              <value>
+                <dbobject>VE_BEGIN_OF_OBJECT|1|SmartECG::SmartECG_IO.heartRateAlarmOn|END_OF_OBJECT_VE|</dbobject>
+              </value>
+              <eq>
+                <const>1</const>
+              </eq>
+            </compare>
+          </expected>
+        </statecheck>
+      </tc>
+      <completion>
+        <title />
+        <caplfunction>
+          <title />
+          <name>StopSimulatingEmergencyCase</name>
+        </caplfunction>
+        <caplfunction>
+          <title />
+          <name>StopECGSignalWithoutArrhythmia</name>
+        </caplfunction>
+      </completion>
+    </tf>
+  </tt>
+  <ttlib>
+    <ts_definitions />
+    <tc_definitions />
+    <function_definitions />
+  </ttlib>
+</ttroot>

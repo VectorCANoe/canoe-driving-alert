@@ -1,0 +1,130 @@
+/*@!Encoding:1252*/
+///////////////////////////////////////////////////////////////////
+// RSU.can CAPL node defines the C-V2X communication behavior of
+// "RSU" road side unit in addition to the behavior defined in the
+// scenario file for station "RSU" .
+///////////////////////////////////////////////////////////////////
+includes
+{
+  #include "..\DataSources_Templates\ASNV_Template_BaseDatatypes.cin"
+  #include "..\DataSources_Templates\ASNV_Template_RoadSideInformation.cin"
+}
+
+variables
+{
+  // Contains the value of rsiFrame.msgCnt token for the next
+  // RoadSideInformation transmit
+  byte rsiMsgCount = 0;
+  
+  // Map API definitions and handles for RSU and pedestrian P position visualisation
+  enum MapObjectTypes
+  {
+    Square = 1,
+    Rectangle = 2,
+    Ellipse = 3,
+    Cross = 4,
+    Triangle = 5,
+    Line = 6,
+    Bitmap = 7,
+    Text = 8
+  };
+  
+  long hRoadSignPosCross = 0;
+  long hRoadSignPosText = 0;
+  long hRSUPosCross = 0;
+  long hRSUPosText = 0;
+  
+  long RTSID = 1;
+  long RoadSignType = 1;
+}
+
+on start
+{
+  enum CallbackType{OnRx, PreTx};
+  // Register callback function "OnPreTxRoadSideInformation" 
+  C2xRegisterCallback(PreTx, "OnPreTxRoadSideInformation", "RoadSideInformation");
+  
+  // Create Map API visualisation objects
+  hRoadSignPosCross = CreateMapObject(Cross);
+  SetMapObjectLineColor(hRoadSignPosCross, makeRGB(0xFF,0,0));
+  SetMapObjectPenWidth(hRoadSignPosCross, 2);
+  SetMapObjectSize(hRoadSignPosCross, 10);
+  hRoadSignPosText = CreateMapObject(Text);
+  hRSUPosCross = CreateMapObject(Cross);
+  SetMapObjectLineColor(hRSUPosCross, makeRGB(0xFF,0,0));
+  SetMapObjectPenWidth(hRSUPosCross, 2);
+  SetMapObjectSize(hRSUPosCross, 10);
+  hRSUPosText = CreateMapObject(Text);
+  SetMapObjectText(hRSUPosText, "RSU");
+}
+
+// Called each time before sending the RoadSideInformation
+long OnPreTxRoadSideInformation(long packet)
+{
+  struct RoadSideInformation rsi;
+  double roadSignPosLat, roadSignPosLon, roadSignPosElev;
+  
+  // Get all RoadSideInformation data (was set by scenario) into temporary "rsi" variable
+  API_GetRoadSideInformationParams(packet, rsi);
+
+  rsi.rsiFrame.msgCnt = rsiMsgCount++;
+  rsiMsgCount = rsiMsgCount%128;
+
+  // Get RSU position from the scenario and apply it to this RoadSideInformation frame
+  rsi.rsiFrame.refPos.lat = C2xGetStationAttributeDouble("Latitude") * 1e7;
+  rsi.rsiFrame.refPos.lon = C2xGetStationAttributeDouble("Longitude") * 1e7;
+  rsi.rsiFrame.refPos.elevation.isValidFlag = 1;
+  rsi.rsiFrame.refPos.elevation.value = C2xGetStationAttributeDouble("Elevation") * 10;
+
+  // Get RSI road sign position from the scenario and apply it to this RoadSideInformation frame
+  roadSignPosLat = C2xGetStationAttributeDouble("RoadSign", "Latitude");
+  roadSignPosLon = C2xGetStationAttributeDouble("RoadSign", "Longitude");
+  roadSignPosElev = C2xGetStationAttributeDouble("RoadSign", "Elevation");
+  
+  rsi.rsiFrame.rtss.isValidFlag = 1;
+  rsi.rsiFrame.rtss.length = 1;
+  rsi.rsiFrame.rtss.arrayValue[0].rtsId = RTSID;
+  rsi.rsiFrame.rtss.arrayValue[0].signType = RoadSignType; // get road sign type from panel/sysvar
+  rsi.rsiFrame.rtss.arrayValue[0].signPos.isValidFlag = 1;
+  rsi.rsiFrame.rtss.arrayValue[0].signPos.offsetLL.choice = 6;
+  rsi.rsiFrame.rtss.arrayValue[0].signPos.offsetLL.position_LatLon.lat = roadSignPosLat * 1e7;
+  rsi.rsiFrame.rtss.arrayValue[0].signPos.offsetLL.position_LatLon.lon = roadSignPosLon * 1e7;
+  rsi.rsiFrame.rtss.arrayValue[0].signPos.offsetV.isValidFlag = 1;
+  rsi.rsiFrame.rtss.arrayValue[0].signPos.offsetV.choice = 6;
+  rsi.rsiFrame.rtss.arrayValue[0].signPos.offsetV.elevation = roadSignPosElev * 10;
+  
+  // Apply all changes to the packet
+  API_SetRoadSideInformationParams(packet, rsi);
+ 
+  // Draw RSU position and RoadSideInformation road sign data on the map
+  DrawRSUAndEvent(roadSignPosLat, roadSignPosLon);
+
+  return 1; // Allow sending this RoadSideInformation frame
+}
+
+// Draw RSU position and RoadSideInformation road sign data on the map
+void DrawRSUAndEvent(double roadSignPosLat, double roadSignPosLon)
+{
+  double rsuPosLat, rsuPosLon;
+  
+  char roadSignText[2000];
+
+  // RSU position from the scenario
+  rsuPosLat = C2xGetStationAttributeDouble("Latitude");
+  rsuPosLon = C2xGetStationAttributeDouble("Longitude");
+  
+  // Visualize RSI road sign data
+  SetMapObjectPosition(hRoadSignPosCross, roadSignPosLat, roadSignPosLon);
+  SetMapObjectPosition(hRoadSignPosText, roadSignPosLat + 0.0001, roadSignPosLon + 0.0002);
+  snprintf(roadSignText, elcount(roadSignText), "Road Sign Type: %d", RoadSignType);
+  SetMapObjectText(hRoadSignPosText, roadSignText);
+  
+  SetMapObjectPosition(hRSUPosCross, rsuPosLat, rsuPosLon);
+  SetMapObjectPosition(hRSUPosText, rsuPosLat, rsuPosLon+0.00015);
+  
+  DrawMapObject(hRoadSignPosCross);
+  DrawMapObject(hRoadSignPosText);
+
+  DrawMapObject(hRSUPosCross);
+  DrawMapObject(hRSUPosText);
+}

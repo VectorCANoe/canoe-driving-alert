@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<SensorConfiguration xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Psi5 />
+  <Lvds />
+  <Uart>
+    <UartChannel name="UartClient" baudrate="9600" numDataBits="8" numStopBits="1" parityMode="none" operationMode="custom" highLevelVoltageV="3.3" />
+    <UartChannel name="UartServer" baudrate="9600" numDataBits="8" numStopBits="1" parityMode="none" operationMode="custom" highLevelVoltageV="3.3" />
+  </Uart>
+  <Sent />
+  <I2C />
+  <Spi />
+  <Rs485 />
+</SensorConfiguration>

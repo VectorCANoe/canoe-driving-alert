@@ -1,0 +1,459 @@
+version: 19.0.0
+modules:
+  - type: 1004
+    interface: 5
+    vdid: d0a78c02aa4f3a163902d9d33e79beb500000000
+    module-channel:
+      name: VT1004
+      active-values:
+        - name: FromVT2816
+          cycle-time: 100ms
+        - name: IBCError
+          cycle-time: 100ms
+        - name: FromVT1104
+          cycle-time: 100ms
+        - name: FromVT2710
+          cycle-time: 100ms
+        - name: IBCActive
+          cycle-time: 100ms
+        - name: IBCReady
+          cycle-time: 100ms
+        - name: FromVT2004
+          cycle-time: 100ms
+        - name: FromVT2516
+          cycle-time: 100ms
+        - name: FromVT2848
+          cycle-time: 100ms
+    channels:
+      - name: VT1004_Ch1
+      - name: VT1004_Ch2
+      - name: VT1004_Ch3
+      - name: VT1004_Ch4
+  - type: 1104
+    interface: 1
+    vdid: b2ba9efaeb83d19cf8513a0da39f6b7500000000
+    module-channel:
+      name: VT1104
+      active-values:
+        - name: FromVT2816
+          cycle-time: 100ms
+        - name: IBCError
+          cycle-time: 100ms
+        - name: FromVT1004
+          cycle-time: 100ms
+        - name: FromVT2710
+          cycle-time: 100ms
+        - name: IBCActive
+          cycle-time: 100ms
+        - name: IBCReady
+          cycle-time: 100ms
+        - name: FromVT2004
+          cycle-time: 100ms
+        - name: FromVT2516
+          cycle-time: 100ms
+        - name: FromVT2848
+          cycle-time: 100ms
+    channels:
+      - name: VT1104_Ch1
+      - name: VT1104_Ch2
+      - name: VT1104_Ch3
+      - name: VT1104_Ch4
+  - type: 2004
+    interface: 7
+    vdid: 8f85b86c62379162410efb647eb9d7fd00000000
+    module-channel:
+      name: VT2004
+      active-values:
+        - name: IBCError
+          cycle-time: 100ms
+        - name: FromVT1004
+          cycle-time: 100ms
+        - name: FromVT2816
+          cycle-time: 100ms
+        - name: FromVT2710
+          cycle-time: 100ms
+        - name: IBCActive
+          cycle-time: 100ms
+        - name: IBCReady
+          cycle-time: 100ms
+        - name: FromVT1104
+          cycle-time: 100ms
+        - name: FromVT2516
+          cycle-time: 100ms
+        - name: FromVT2848
+          cycle-time: 100ms
+    channels:
+      - name: VT2004_Ch1
+      - name: VT2004_Ch2
+      - name: VT2004_Ch3
+      - name: VT2004_Ch4
+  - type: 2516
+    interface: 2
+    vdid: 7f191375e519620d240e3684825fb6e200000000
+    module-channel:
+      name: VT2516
+      active-values:
+        - name: IBCError
+          cycle-time: 100ms
+        - name: FromVT1004
+          cycle-time: 100ms
+        - name: FromVT2004
+          cycle-time: 100ms
+        - name: IBCActive
+          cycle-time: 100ms
+        - name: FromVT2816
+          cycle-time: 100ms
+        - name: FromVT2710
+          cycle-time: 100ms
+        - name: IBCReady
+          cycle-time: 100ms
+        - name: FromVT1104
+          cycle-time: 100ms
+        - name: FromVT2848
+          cycle-time: 100ms
+    channels:
+      - name: VT2516_Ch1
+      - name: VT2516_Ch2
+      - name: VT2516_Ch3
+      - name: VT2516_Ch4
+      - name: VT2516_Ch5
+      - name: VT2516_Ch6
+      - name: VT2516_Ch7
+      - name: VT2516_Ch8
+      - name: VT2516_Ch9
+      - name: VT2516_Ch10
+      - name: VT2516_Ch11
+      - name: VT2516_Ch12
+      - name: VT2516_Ch13
+      - name: VT2516_Ch14
+      - name: VT2516_Ch15
+      - name: VT2516_Ch16
+  - type: 2710
+    interface: 3
+    vdid: 78bdcb5609c201e822faae03a08cd61d00000000
+    module-channel:
+      name: VT2710
+      active-values:
+        - name: IBCError
+          cycle-time: 100ms
+        - name: FromVT2004
+          cycle-time: 100ms
+        - name: IBCActive
+          cycle-time: 100ms
+        - name: IBCReady
+          cycle-time: 100ms
+        - name: FromVT1004
+          cycle-time: 100ms
+        - name: FromVT1104
+          cycle-time: 100ms
+        - name: FromVT2516
+          cycle-time: 100ms
+        - name: FromVT2816
+          cycle-time: 100ms
+        - name: FromVT2848
+          cycle-time: 100ms
+    channels:
+      - name: VT2710_Piggy_Ch1
+        active-values:
+          - name: PSI5FifoSensorFrameCounter
+            cycle-time: 1ms
+          - name: Slave2SENTFifoSensorFrameCounter
+            cycle-time: 1ms
+          - name: Slave1SENTFifoSensorFrameCounter
+            cycle-time: 1ms
+          - name: Slave3SENTFifoSensorFrameCounter
+            cycle-time: 1ms
+          - name: Slave4SENTFifoSensorFrameCounter
+            cycle-time: 1ms
+      - name: VT2710_Piggy_Ch2
+        active-values:
+          - name: Slave3SENTFifoSensorFrameCounter
+            cycle-time: 1ms
+          - name: Slave4SENTFifoSensorFrameCounter
+            cycle-time: 1ms
+          - name: PSI5FifoSensorFrameCounter
+            cycle-time: 1ms
+          - name: Slave1SENTFifoSensorFrameCounter
+            cycle-time: 1ms
+          - name: Slave2SENTFifoSensorFrameCounter
+            cycle-time: 1ms
+      - name: VT2710_Piggy_Ch3
+        active-values:
+          - name: Slave2SENTFifoSensorFrameCounter
+            cycle-time: 1ms
+          - name: PSI5FifoSensorFrameCounter
+            cycle-time: 1ms
+          - name: Slave3SENTFifoSensorFrameCounter
+            cycle-time: 1ms
+          - name: Slave1SENTFifoSensorFrameCounter
+            cycle-time: 1ms
+          - name: Slave4SENTFifoSensorFrameCounter
+            cycle-time: 1ms
+      - name: VT2710_Piggy_Ch4
+        active-values:
+          - name: PSI5FifoSensorFrameCounter
+            cycle-time: 1ms
+          - name: Slave1SENTFifoSensorFrameCounter
+            cycle-time: 1ms
+          - name: Slave2SENTFifoSensorFrameCounter
+            cycle-time: 1ms
+          - name: Slave3SENTFifoSensorFrameCounter
+            cycle-time: 1ms
+          - name: Slave4SENTFifoSensorFrameCounter
+            cycle-time: 1ms
+      - name: VT2710_SPI_Ch1
+        active-values:
+          - name: SpiMasterSendFifo
+            cycle-time: 1ms
+          - name: SpiSlaveSendFifoSlave1
+            cycle-time: 1ms
+          - name: SpiSlaveSendFifoSlave2
+            cycle-time: 1ms
+          - name: SpiSlaveSendFifoSlave3
+            cycle-time: 1ms
+          - name: SpiSlaveSendFifoSlave4
+            cycle-time: 1ms
+          - name: SpiSlaveSendFifoSlave5
+            cycle-time: 1ms
+      - name: VT2710_SPI_Ch2
+        active-values:
+          - name: SpiMasterSendFifo
+            cycle-time: 1ms
+          - name: SpiSlaveSendFifoSlave1
+            cycle-time: 1ms
+          - name: SpiSlaveSendFifoSlave2
+            cycle-time: 1ms
+          - name: SpiSlaveSendFifoSlave3
+            cycle-time: 1ms
+          - name: SpiSlaveSendFifoSlave4
+            cycle-time: 1ms
+          - name: SpiSlaveSendFifoSlave5
+            cycle-time: 1ms
+      - name: VT2710_UART_Ch1
+        active-values:
+          - name: UartCom1Rs232_1SendFifo
+            cycle-time: 1ms
+          - name: UartCom5Rs485_1SendFifo
+            cycle-time: 1ms
+          - name: UartCom3Lvds1SendFifo
+            cycle-time: 1ms
+      - name: VT2710_UART_Ch2
+        active-values:
+          - name: UartCom1Rs232_1SendFifo
+            cycle-time: 1ms
+          - name: UartCom5Rs485_1SendFifo
+            cycle-time: 1ms
+          - name: UartCom3Lvds1SendFifo
+            cycle-time: 1ms
+      - name: VT2710_RS485_Ch1
+      - name: VT2710_RS485_Ch2
+      - name: VT2710_I2C_Ch1
+        active-values:
+          - name: I2cMasterSendFifoChannel
+            cycle-time: 1ms
+          - name: I2cSlaveSendFifoSlave1
+            cycle-time: 1ms
+          - name: I2cSlaveSendFifoSlave2
+            cycle-time: 1ms
+          - name: I2cSlaveSendFifoSlave3
+            cycle-time: 1ms
+          - name: I2cSlaveSendFifoSlave4
+            cycle-time: 1ms
+          - name: I2cSlaveSendFifoSlave5
+            cycle-time: 1ms
+      - name: VT2710_I2C_Ch2
+        active-values:
+          - name: I2cMasterSendFifoChannel
+            cycle-time: 1ms
+          - name: I2cSlaveSendFifoSlave1
+            cycle-time: 1ms
+          - name: I2cSlaveSendFifoSlave2
+            cycle-time: 1ms
+          - name: I2cSlaveSendFifoSlave3
+            cycle-time: 1ms
+          - name: I2cSlaveSendFifoSlave4
+            cycle-time: 1ms
+          - name: I2cSlaveSendFifoSlave5
+            cycle-time: 1ms
+      - name: VT2710_LVDS_Ch1
+      - name: VT2710_LVDS_Ch2
+      - name: VT2710_DIO_Ch1
+      - name: VT2710_DIO_Ch2
+    module-specific-settings:
+      supply-voltage: 3.2999999999999998
+      supply-voltage-lvds: 3.2999999999999998
+      supply-voltage-lvds-enabled: false
+      lvds-connector-usage-1: canoe
+      lvds-connector-usage-2: canoe
+      connectors:
+        - int-to-ext: false
+          supply-mode: internal
+          pins:
+            - dio-direction: input
+              used-for: spi
+              user-fpga-mode: din
+            - dio-direction: input
+              used-for: spi
+              user-fpga-mode: din
+            - dio-direction: input
+              used-for: spi
+              user-fpga-mode: din
+            - dio-direction: input
+              used-for: spi
+              user-fpga-mode: din
+            - dio-direction: input
+              used-for: spi
+              user-fpga-mode: din
+            - dio-direction: input
+              used-for: spi
+              user-fpga-mode: din
+            - dio-direction: input
+              used-for: spi
+              user-fpga-mode: din
+            - dio-direction: input
+              used-for: spi
+              user-fpga-mode: din
+        - int-to-ext: false
+          supply-mode: internal
+          pins:
+            - dio-direction: input
+              used-for: spi
+              user-fpga-mode: din
+            - dio-direction: input
+              used-for: spi
+              user-fpga-mode: din
+            - dio-direction: input
+              used-for: spi
+              user-fpga-mode: din
+            - dio-direction: input
+              used-for: spi
+              user-fpga-mode: din
+            - dio-direction: input
+              used-for: spi
+              user-fpga-mode: din
+            - dio-direction: input
+              used-for: spi
+              user-fpga-mode: din
+            - dio-direction: input
+              used-for: spi
+              user-fpga-mode: din
+            - dio-direction: input
+              used-for: spi
+              user-fpga-mode: din
+  - type: 2816
+    interface: 2
+    vdid: 16db00f57bf87e713a746abd79d0c12900000000
+    module-channel:
+      name: VT2816
+      active-values:
+        - name: IBCError
+          cycle-time: 100ms
+        - name: FromVT1004
+          cycle-time: 100ms
+        - name: IBCActive
+          cycle-time: 100ms
+        - name: IBCReady
+          cycle-time: 100ms
+        - name: FromVT2848
+          cycle-time: 100ms
+        - name: FromVT2710
+          cycle-time: 100ms
+        - name: FromVT2516
+          cycle-time: 100ms
+        - name: FromVT1104
+          cycle-time: 100ms
+        - name: FromVT2004
+          cycle-time: 100ms
+    channels:
+      - name: VT2816_Ch1
+      - name: VT2816_Ch2
+      - name: VT2816_Ch3
+      - name: VT2816_Ch4
+      - name: VT2816_Ch5
+      - name: VT2816_Ch6
+      - name: VT2816_Ch7
+      - name: VT2816_Ch8
+      - name: VT2816_Ch9
+      - name: VT2816_Ch10
+      - name: VT2816_Ch11
+      - name: VT2816_Ch12
+      - name: VT2816_Ch13
+      - name: VT2816_Ch14
+      - name: VT2816_Ch15
+      - name: VT2816_Ch16
+  - type: 2848
+    interface: 2
+    vdid: 937b3a43b633ca47c77f31cfd4ccdd0e00000000
+    module-channel:
+      name: VT2848
+      active-values:
+        - name: IBCError
+          cycle-time: 100ms
+        - name: FromVT2516
+          cycle-time: 100ms
+        - name: IBCActive
+          cycle-time: 100ms
+        - name: IBCReady
+          cycle-time: 100ms
+        - name: FromVT1004
+          cycle-time: 100ms
+        - name: FromVT1104
+          cycle-time: 100ms
+        - name: FromVT2004
+          cycle-time: 100ms
+        - name: FromVT2710
+          cycle-time: 100ms
+        - name: FromVT2816
+          cycle-time: 100ms
+    channels:
+      - name: VT2848_Ch1
+      - name: VT2848_Ch2
+      - name: VT2848_Ch3
+      - name: VT2848_Ch4
+      - name: VT2848_Ch5
+      - name: VT2848_Ch6
+      - name: VT2848_Ch7
+      - name: VT2848_Ch8
+      - name: VT2848_Ch9
+      - name: VT2848_Ch10
+      - name: VT2848_Ch11
+      - name: VT2848_Ch12
+      - name: VT2848_Ch13
+      - name: VT2848_Ch14
+      - name: VT2848_Ch15
+      - name: VT2848_Ch16
+      - name: VT2848_Ch17
+      - name: VT2848_Ch18
+      - name: VT2848_Ch19
+      - name: VT2848_Ch20
+      - name: VT2848_Ch21
+      - name: VT2848_Ch22
+      - name: VT2848_Ch23
+      - name: VT2848_Ch24
+      - name: VT2848_Ch25
+      - name: VT2848_Ch26
+      - name: VT2848_Ch27
+      - name: VT2848_Ch28
+      - name: VT2848_Ch29
+      - name: VT2848_Ch30
+      - name: VT2848_Ch31
+      - name: VT2848_Ch32
+      - name: VT2848_Ch33
+      - name: VT2848_Ch34
+      - name: VT2848_Ch35
+      - name: VT2848_Ch36
+      - name: VT2848_Ch37
+      - name: VT2848_Ch38
+      - name: VT2848_Ch39
+      - name: VT2848_Ch40
+      - name: VT2848_Ch41
+      - name: VT2848_Ch42
+      - name: VT2848_Ch43
+      - name: VT2848_Ch44
+      - name: VT2848_Ch45
+      - name: VT2848_Ch46
+      - name: VT2848_Ch47
+      - name: VT2848_Ch48
+vts-control-window:
+  flip-rack-order: false
+  serialized-config: rack[12];mapping[0,0,0];mapping[1,0,1];mapping[2,0,2];mapping[3,0,3];mapping[4,0,4];mapping[5,0,5];mapping[6,0,6];

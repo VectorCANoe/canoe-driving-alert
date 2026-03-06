@@ -1,0 +1,131 @@
+/*@!Encoding:1252*/
+variables
+{
+  int AutoFill_body = 0;
+}
+
+on sysvar Common::SysTLSEnabled
+{
+  setTLSAttribute();
+}
+
+on sysvar Common::SysUserAuthorizationMode
+{
+  setAuthorizationMode(); 
+}
+
+int IsEVSERolePassive()
+{
+  if((@sysVar::Test::SysTestControlledEntity != 0) && (@Test::SysTestApplyControlMode == 1))
+    return 1;
+  
+  return 0;
+}
+
+/**********************************************************************************************************************
+ *  ON METHODE
+ *********************************************************************************************************************/
+on fct_called EVSE.OnLastReceivedMessageIdChanged
+{
+  @Common::LastReceivedMessageId = $EVSE.OnLastReceivedMessageIdChanged.LatestCall.lastRxMessageId;
+  // Enable AutoBodyFill if it was previously disabeld at the Req/Resp loop
+  if (AutoFill_body == 0)
+  {
+    EVSE.EnableAutoBodyFill.Call(1);
+    AutoFill_body = 1;
+  }
+}
+
+void Reset_EVSE_Values()
+{
+  EVSE.SetAdHocSendingEnabled.Call(0);
+  @sysvar::Common::SysProtocolBar = 0; 
+  @sysvar::EVSE_Sim::Control::SysEVSE_WaitResume = 0;
+  @sysvar::EVSE_Sim::SysEVSE_SimState = 2;
+  sysSetVariableString(sysvar::EVSE_Sim::SysEVSE_StatusCode, "N/A"); 
+  
+  // Do not send PriceSchedule because ServiceDetailRes offers only Pricing = NoPricing 
+  ($EVSE.ISO20.ScheduleExchange_Response.SEResControlMode.Dynamic_SEResControlMode.PriceSchedule).SetInvalid();
+  
+  EVSE.ResetSimulation.Call();
+}
+
+reReadSharedAttributes()
+{
+  setTLSAttribute();
+  setAuthorizationMode();
+  setProcessingLoopAttribute();
+}
+
+setTLSAttribute()
+{
+  // Response TLS only when the "TLS" option is checked
+  // Set TLS
+  if (@sysVar::Common::SysTLSEnabled == @sysvar::Common::SysTLSEnabled::TLSEnabled){
+    setAttribute(CCS::Simulation::EVSE, CCSBinding::TLS, CCSBinding::TLSEnabled); 
+  }
+  else{
+    setAttribute(CCS::Simulation::EVSE, CCSBinding::TLS, CCSBinding::TLSDisabled); 
+  }
+}
+
+setAuthorizationMode()
+{
+  // Set AuthorizationMode
+  if (@sysvar::Common::SysUserAuthorizationMode == sysvar::Common::SysUserAuthorizationMode::EIM){
+      setAttribute(CCS::Simulation::EVSE, CCSBinding::EVSE::AuthorizationMode, 0);   
+  }
+  else{
+      setAttribute(CCS::Simulation::EVSE, CCSBinding::EVSE::AuthorizationMode, 1); //PnC
+  }
+}
+
+setProcessingLoopAttribute()
+{
+  // Set Processing    
+  if (@sysvar::Common::SysUseProcessing == 1){
+    setAttribute(CCS::Simulation::EVSE, CCSBinding::ProcessingLooping, CCSBinding::Enabled); 
+    SetControlForeColor(gPanelName, "TProcessing",  MakeRGB(0, 0, 255)); 
+  }
+  else{
+    setAttribute(CCS::Simulation::EVSE, CCSBinding::ProcessingLooping, CCSBinding::Disabled); 
+  }
+}
+
+void FUNC_Set_EVSEWPTLimits_ChargeParameterDiscoveryRes()
+{
+  // SDMinOutputPower
+  $CCS::Simulation::EVSE.ISO20.WPT_ChargeParameterDiscovery_Response.SDMinOutputPower.Exponent = 0;
+  $CCS::Simulation::EVSE.ISO20.WPT_ChargeParameterDiscovery_Response.SDMinOutputPower.Value = @sysvar::EVSE_Sim::SysEVSE_MinPower;
+  
+  // SDMaxOutputPower
+  $CCS::Simulation::EVSE.ISO20.WPT_ChargeParameterDiscovery_Response.SDMaxOutputPower.Exponent = 0;
+  $CCS::Simulation::EVSE.ISO20.WPT_ChargeParameterDiscovery_Response.SDMaxOutputPower.Value = @sysvar::EVSE_Sim::SysEVSE_MaxPower;
+  
+  // GroundClearanceSupport
+  $CCS::Simulation::EVSE.ISO20.WPT_ChargeParameterDiscovery_Response.SDMinGroundClearanceSupport = @sysvar::EVSE_Sim::SysEVSE_MinGroundClearance;
+  $CCS::Simulation::EVSE.ISO20.WPT_ChargeParameterDiscovery_Response.SDMaxGroundClearanceSupport = @sysvar::EVSE_Sim::SysEVSE_MaxGroundClearance;
+  
+  // PDMinCoilCurrent
+  $CCS::Simulation::EVSE.ISO20.WPT_ChargeParameterDiscovery_Response.PDMinCoilCurrent.Exponent = 0;
+  $CCS::Simulation::EVSE.ISO20.WPT_ChargeParameterDiscovery_Response.PDMinCoilCurrent.Value = @sysvar::EVSE_Sim::SysEVSE_MinCurrent;
+  
+  // PDMaxCoilCurrent
+  $CCS::Simulation::EVSE.ISO20.WPT_ChargeParameterDiscovery_Response.PDMaxCoilCurrent.Exponent = 0;
+  $CCS::Simulation::EVSE.ISO20.WPT_ChargeParameterDiscovery_Response.PDMaxCoilCurrent.Value = @sysvar::EVSE_Sim::SysEVSE_MaxCurrent;
+}
+
+void FUNC_Set_EVSEChargeLoopValues()
+{
+  // EVPCPowerRequest
+  $CCS::Simulation::EVSE.ISO20.WPT_ChargeLoop_Response.EVPCPowerRequest.Exponent = $CCS::Simulation::EVSE.ISO20.WPT_ChargeLoop_Request.EVPCPowerRequest.Exponent; 
+  $CCS::Simulation::EVSE.ISO20.WPT_ChargeLoop_Response.EVPCPowerRequest.Value = $CCS::Simulation::EVSE.ISO20.WPT_ChargeLoop_Request.EVPCPowerRequest.Value;
+  
+  // SPCMaxOutputPowerLimit
+  $CCS::Simulation::EVSE.ISO20.WPT_ChargeLoop_Response.SPCMaxOutputPowerLimit.Exponent = 0;
+  $CCS::Simulation::EVSE.ISO20.WPT_ChargeLoop_Response.SPCMaxOutputPowerLimit.Value = @sysvar::EVSE_Sim::SysEVSE_MaxPower;
+  
+  // SPCMinOutputPowerLimit
+  $CCS::Simulation::EVSE.ISO20.WPT_ChargeLoop_Response.SPCMinOutputPowerLimit.Exponent = 0;
+  $CCS::Simulation::EVSE.ISO20.WPT_ChargeLoop_Response.SPCMinOutputPowerLimit.Value = @sysvar::EVSE_Sim::SysEVSE_MinPower;
+}

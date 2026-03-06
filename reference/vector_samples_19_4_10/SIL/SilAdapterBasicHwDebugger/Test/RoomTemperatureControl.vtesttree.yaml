@@ -1,0 +1,37 @@
+version: "2.1.0"
+
+test-tree:
+  - test-fixture: Room Temperature Control (Test Fixture)
+    description: "Checks the functionality of our Room Temperature Control system."
+    dotnet-preparation: WaitForOnline
+    elements:
+      - dotnet-test-case: TestTemperatureControl
+        title: Check if Heater State == Heating (Medium cold)
+        params:  [10, 8, 12, 2]
+      - dotnet-test-case: TestTemperatureControl
+        title: Check if Heater State == Heating (Very cold)
+        params:  [-1, 0, 2, 2]
+      - dotnet-test-case: TestTemperatureControl
+        title: Check if Heater State == Cooling (Very hot)
+        params:  [42, 35, 62, 1]
+      - dotnet-test-case: TestTemperatureControl
+        title: Check if Heater State == OFF (Big differences in temperature)
+        params:  [-12, 45, 23, 0]
+      - dotnet-test-case: TestTemperatureControl
+        title: Check if Heater State == Cooling (Medium warm)
+        params:  [26, 24 , 28, 1]
+      - dotnet-test-case: TestTemperatureControl
+        title: Check if Heater State == OFF (No heating/cooling necessary)
+        params:  [20, 18 , 20, 0]
+      - dotnet-test-case: TestTemperatureControl
+        title: Check if Heater State == Cooling (Upper Threshold + 1)
+        params:  [23, 23, 24, 1]
+      - dotnet-test-case: TestTemperatureControl
+        title: Check if Heater State == Heating (Lower Threshold - 1)
+        params:  [18, 18, 17, 2]
+      - dotnet-test-case: TestTemperatureControl
+        title: Check if Heater State == OFF (On lower Threshold)
+        params:  [18, 18, 18, 0]
+      - dotnet-test-case: TestTemperatureControl
+        title: Check if Heater State == OFF (On upper Threshold)
+        params:  [23, 23, 23, 0]

@@ -1,0 +1,173 @@
+version 2.0;
+import module "HTTP";
+import module "MQTT";
+import module "SerializationService";
+
+namespace LightSimulation
+{
+  namespace SunriseSunset
+  {
+    struct ResultObject
+    {
+      string sunrise;
+      string sunset;
+      string solar_noon;
+    }
+
+    struct ResponseObject
+    {
+      ResultObject results;
+    }
+
+    struct sunriseSolarNoonSunset
+    {
+      string sunrise;
+      string solar_noon;
+      string sunset;
+    }
+
+    [Binding="HTTP"][HTTPBinding::Host="http://localhost:8123"][HTTPBinding::BasePath="json"]
+    interface SunriseSunsetObtainer
+    {
+      [HTTPBinding::Method=GET][HTTPBinding::Query="lat={{latitude}}&lng={{longitude}}&formatted=0&date={{date}}"]
+      consumed method ResponseObject getSunriseSunset(double latitude, double longitude, string date);
+    }
+
+    SunriseSunsetObtainer sunriseSunsetObtainer;
+    [Binding="MQTT"][MQTTBinding::ClientId="HTTPtoMQTT"][MQTTBinding::Topic="sunriseSunset"]
+    interface HTTPtoMQTT
+    {
+      provided data sunriseSolarNoonSunset sunriseSunsetData;
+    }
+
+    HTTPtoMQTT httptomqtt;
+  } // namespace SunriseSunset
+  
+  
+  namespace Control
+  {
+    enum buttonStateLight : int64
+    {
+      ON, AUTO, OFF,
+    }
+
+    enum buttonStateShades : int64
+    {
+      OPEN, AUTO, CLOSE,
+    }
+
+    [Binding="MQTT"][MQTTBinding::ClientId="mainControl"]
+    interface MainControl
+    {
+      [MQTTBinding::Topic="sunriseSunset"]
+      consumed data SunriseSunset::sunriseSolarNoonSunset sunriseSunsetData;
+      
+      [MQTTBinding::Topic="manualControl/button/light"]
+      consumed data buttonStateLight buttonLight;
+      
+      [MQTTBinding::Topic="manualControl/button/shades_west"]
+      consumed data buttonStateShades buttonShades_west;
+      
+      [MQTTBinding::Topic="manualControl/button/shades_east"]
+      consumed data buttonStateShades buttonShades_east;
+      
+      internal data bool lightAutomatic = true;
+      
+      internal data bool shades_westAutomatic = true;
+      
+      internal data bool shades_eastAutomatic = true;
+      
+      [MQTTBinding::Topic="room/lightAndShades/control"]
+      provided data RoomActions::RoomData roomData;
+    }
+
+    MainControl mainControl;
+    [Binding="MQTT"][MQTTBinding::ClientId="manualControl"]
+    interface ManualControl
+    {
+      [MQTTBinding::Topic="manualControl/button/light"]
+      provided data buttonStateLight buttonLight;
+      
+      [MQTTBinding::Topic="manualControl/button/shades_west"]
+      provided data buttonStateShades buttonShades_west;
+      
+      [MQTTBinding::Topic="manualControl/button/shades_east"]
+      provided data buttonStateShades buttonShades_east;
+    }
+
+    ManualControl manualControl;
+  }
+
+  namespace RoomActions
+  {
+    struct RoomData
+    {
+      bool lights;
+      bool shades_east;
+      bool shades_west;
+    }
+
+    [Binding="MQTT"][MQTTBinding::ClientId="Output"][MQTTBinding::Topic="room/lightAndShades/control"]
+    interface Output
+    {
+      consumed data RoomData roomData;
+      
+      internal data int32 shadesEastAnimationState = 0;
+      
+      internal data int32 shadesWestAnimationState = 0;
+    }
+
+    Output output;
+  } // namespace RoomActions
+  
+  
+  namespace GlobalTime
+  {
+    interface Time
+    {
+      internal data string currentTime;
+      internal data int32 hour;
+      internal data int32 minute;
+      internal data bool toggle;
+      internal data bool timeIsRunning = false;
+    }
+
+    Time timeObject;
+  } //namespace GlobalTime
+} // namespace LightSimulation
+
+namespace Datatypes {
+
+  struct SunriseResultItem
+  {
+        string sunrise;
+        string sunset;
+        string solar_noon;
+  }
+
+  struct SunriseResponseItem
+  {
+    SunriseResultItem results;
+  }
+
+  [Binding="SerializationService"]
+  [Serialization=JSON]
+  interface ISerializer
+  {
+    [SerializationService::Method=Serialize]
+    consumed method bytes Serialize(SunriseResponseItem item);
+    
+    [SerializationService::Method=Deserialize]
+    consumed method SunriseResponseItem Deserialize(bytes serializedData);
+  }
+  
+  ISerializer Serializer;
+} //namespace Datatypes
+
+namespace NHTTPServer {
+  
+  [HTTPBinding::Server::Port=8123]
+  HTTPBinding::Server::IHTTPServer httpServer; 
+  
+} //namespace NHTTPServer
+

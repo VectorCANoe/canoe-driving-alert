@@ -1,0 +1,290 @@
+/*@!Encoding:1252*/
+
+/*
+ *
+ * Copyright 2022 - Vector Informatik GmbH
+ *
+ * This CAPL programm cylic messages from and to Virtual Terminal, Task Controller and File Server
+ *
+ */
+
+variables
+{
+  // Virtual Terminal
+  qword lastWSMaintenance[256];       // Stores content of last Working Set Maintenance message (per address)
+  qword lastVTStatus[256];            // Stores content of last VT Status message (per address)
+  qword lastAuxInputMaintenance[256]; // Stores content of last Auxiliary Input Maintenance message (per address)
+  dword lastAuxInputStatus[long];     // Stores content of last Auxiliary Input Status message (per address / object ID)}
+  // Task Controller
+  qword lastTCStatus[256];            // Stores content of last File Server Status messages (per address)
+  qword lastClientTaskMsg[256];
+  // File Server
+  qword lastServerStatus[256];       // Stores content of last File Server Status messages (per address)
+  qword lastClientMaintenance[256];  // Stores content of last File Server Client Connecton Maintenance messages (per address)
+  // Tractor ECU
+  pg WBSD lastWbsd;       // Stores content of last Wheel Based Speed message
+  pg GBSD lastGbsd;       // Stores content of last Ground Based Speed message
+  pg EEC1 lastEEC1;       // Stores content of last Ground Based Speed message
+  pg FHS  lastFHS;        // Stores content of last Secondary or Front Hitch Status
+  pg RHS  lastRHS;        // Stores content of last Primary or Rear Hitch Status
+  pg AV00EF lastAV00EF;   // Stores content of last Esimated flow of auxiliary valve number 0 
+  pg AV00MF lastAV00MF;   // Stores content of last Measured flow of auxiliary valve number 0 
+}
+
+on preStart
+{
+  int position;
+  
+  // reset message buffers
+  for (position = 0; position < 256; position++)
+  {
+    lastWSMaintenance[position] = 0;
+    lastVTStatus[position] = 0;
+    lastAuxInputMaintenance[position] = 0;
+    lastTCStatus[position] = 0;
+    lastClientTaskMsg[position] = 0;
+    lastServerStatus[position] = 0xFFFFFFFFFFFFFFFFLL;
+    lastClientMaintenance[position] = 0xFFFFFFFFFFFFFFFFLL;
+  }
+}
+
+/// <Others>
+/*
+ * Forward all other messages
+*/
+on pg *
+{
+  output(this);
+}
+
+/// <VirtualTerminal>
+on pg VT21
+{
+  if (@TraceFilter::VTFilterIsActive > 0)
+  {
+    switch (this.byte(0)) 
+    {
+      case VT21.VTFunctionECUtoVT::AuxiliaryInputMaintenance:
+      {
+        // forward Auxiliary Input Mainenance message only if data is different
+        if(lastAuxInputMaintenance[this.sa] == this.qword(0))
+        {
+          return; // don't forward
+        }
+        lastAuxInputMaintenance[this.sa] = this.qword(0);
+      }
+      break;
+
+      case VT21.VTFunctionECUtoVT::WorkingSetMaintenance:
+      {
+        // forward Working Set Mainenance message only if data is different
+        if(lastWSMaintenance[this.sa] == this.qword(0))
+        {
+          return; // don't forward
+        }
+        lastWSMaintenance[this.sa] = this.qword(0);
+      }
+      break;
+    }
+  }
+  
+  output(this);
+}
+
+/// <VirtualTerminal>
+on pg VT12
+{
+  dword auxInputKey;
+
+  if (@TraceFilter::VTFilterIsActive > 0)
+  {
+    switch (this.VTFunctionVTtoECU) 
+    {
+      case VT12.VTFunctionVTtoECU::VTStatusMessage:
+      {
+        // don't forward VT Status message if content is equal
+        if(lastVTStatus[this.sa] == this.qword(0))
+        {
+          return;
+        }
+        lastVTStatus[this.sa] = this.qword(0);
+        break;
+      }
+      case VT12.VTFunctionVTtoECU::AuxiliaryInputStatus:
+      {
+        // forward Auxiliary Input Status message only if content is different
+        auxInputKey =  this.InputObjectId << 0 | this.sa << 16;
+        if((lastAuxInputStatus.containsKey(auxInputKey) > 0) &&
+          (lastAuxInputStatus[auxInputKey] == this.dword(3)))
+        {
+          return;
+        }
+        lastAuxInputStatus[auxInputKey] = this.dword(3);
+        break;
+      }
+    }
+  }
+
+  output(this);
+}
+
+/// <TaskController>
+on pg PD
+{
+  if (@TraceFilter::TCFilterIsActive > 0)
+  {
+    switch (this.Command) 
+    {
+      case PD.Command::TaskControllerStatus:
+      {
+        // forward Task Controller Status message only if content is different
+        if(lastTCStatus[this.sa] == this.QWord(0))
+        {
+          return;
+        }
+        lastTCStatus[this.sa] = this.QWord(0);
+        break;
+      }
+      case PD.Command::ClientTask:
+      {
+        // forward Client Task message only if content is different
+        if(lastClientTaskMsg[this.sa] == this.qword(0))
+        {
+          return;
+        }
+        lastClientTaskMsg[this.sa] = this.qword(0);
+        break;
+      }
+    }
+  }
+  
+  output(this);
+}
+
+/// <FileServer>
+on pg FSC
+{
+  if (@TraceFilter::FSFilterIsActive > 0)
+  {
+    if (this.FSServerCommand == FSC.FSServerCommand::FileServerStatus) 
+    {
+      // forward File Server Status message only if content is different
+      if (this.qword(0) == lastServerStatus[this.sa])
+      {
+        return;
+      }
+      lastServerStatus[this.sa] = this.qword(0);
+    }
+  }
+  
+  output( this );
+}
+
+/// <FileServer>
+on pg CFS
+{
+  if (@TraceFilter::FSFilterIsActive > 0)
+  {
+    if (this.FSClientCommand == CFS.FSClientCommand::ConnectionMaintenance) 
+    {
+      // forward Connection Maintenance message only if content is different
+      if (this.qword(0) == lastClientMaintenance[this.sa])
+      {
+        return;
+      }
+      lastClientMaintenance[this.sa] = this.qword(0);
+    }
+  }
+  
+  output( this );
+}
+
+/// <TECU>
+on pg WBSD
+{
+  if (@TraceFilter::TECUFilterIsActive > 0)
+  {
+    if (HasPayloadChanged(lastWbsd, this) == 0) return; 
+    lastWbsd = this;
+  } 
+  output(this);
+}
+
+/// <TECU>
+on pg GBSD
+{
+  if (@TraceFilter::TECUFilterIsActive > 0)
+  {
+    if (HasPayloadChanged(lastGbsd, this) == 0) return; 
+    lastGbsd = this;
+  } 
+  output(this);
+}
+
+/// <TECU>
+on pg EEC1
+{
+  if (@TraceFilter::TECUFilterIsActive > 0)
+  {
+    if (HasPayloadChanged(lastEEC1, this) == 0) return; 
+    lastEEC1 = this;
+  } 
+  output(this);
+}
+
+/// <TECU>
+on pg FHS
+{
+  if (@TraceFilter::TECUFilterIsActive > 0)
+  {
+    if (HasPayloadChanged(lastFHS, this) == 0) return; 
+    lastFHS = this;
+  } 
+  output(this);
+}
+
+/// <TECU>
+on pg RHS
+{
+  if (@TraceFilter::TECUFilterIsActive > 0)
+  {
+    if (HasPayloadChanged(lastRHS, this) == 0) return; 
+    lastRHS = this;
+  } 
+  output(this);
+}
+
+/// <TECU>
+on pg AV00EF
+{
+  if (@TraceFilter::TECUFilterIsActive > 0)
+  {
+    if (HasPayloadChanged(lastAV00EF, this) == 0) return; 
+    lastAV00EF = this;
+  } 
+  output(this);
+}
+
+/// <TECU>
+on pg AV00MF
+{
+  if (@TraceFilter::TECUFilterIsActive > 0)
+  {
+    if (HasPayloadChanged(lastAV00MF, this) == 0) return; 
+    lastAV00MF = this;
+  } 
+  output(this);
+}
+
+long HasPayloadChanged(pg * ref, pg * msg)
+{
+  long idx;
+  
+  if(ref.dlc != msg.dlc) return 1;
+  
+  for (idx = 0; idx < ref.dlc; idx++)
+  {
+    if (ref.byte(idx) != msg.byte(idx)) return 1;
+  }
+  return 0;
+}

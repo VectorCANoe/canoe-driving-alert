@@ -1,0 +1,187 @@
+/*@!Encoding:1252*/
+includes
+{
+}
+
+// Session Setup
+on any_monitored_value_change _CCS::DataTypes::IMonitoredChargePoint.DIN.SessionSetup_Request
+{
+  UpdateProgressBar(SessionSetupReq);
+}
+
+on any_monitored_value_change _CCS::DataTypes::IMonitoredVehicle.DIN.SessionSetup_Response
+{  
+  if($this.value.ResponseCode <= 2)
+    sysSetVariableString(sysvar::Common::ResponseCode, "OK");
+  else
+    sysSetVariableString(sysvar::Common::ResponseCode, "NOK");
+  
+  UpdateProgressBar(SessionSetupRes);
+}
+
+
+// Service Discovery
+on any_monitored_value_change _CCS::DataTypes::IMonitoredChargePoint.DIN.ServiceDiscovery_Request
+{
+  UpdateProgressBar(ServiceDiscoveryReq);
+}
+
+on any_monitored_value_change _CCS::DataTypes::IMonitoredVehicle.DIN.ServiceDiscovery_Response
+{
+  if($this.value.ResponseCode == 0)
+    sysSetVariableString(sysvar::Common::ResponseCode, "OK");
+  else
+    sysSetVariableString(sysvar::Common::ResponseCode, "NOK");
+  
+  UpdateProgressBar(ServiceDiscoveryRes);
+}
+
+// Service Payment Selection
+on any_monitored_value_change _CCS::DataTypes::IMonitoredChargePoint.DIN.ServicePaymentSelection_Request
+{
+  UpdateProgressBar(PaymentServiceSelectionReq);
+}
+
+on any_monitored_value_change _CCS::DataTypes::IMonitoredVehicle.DIN.ServicePaymentSelection_Response
+{
+  if($this.value.ResponseCode == 0)
+    sysSetVariableString(sysvar::Common::ResponseCode, "OK");
+  else
+    sysSetVariableString(sysvar::Common::ResponseCode, "NOK");
+  
+  UpdateProgressBar(PaymentServiceSelectionRes);
+}
+
+// Contract Authentication
+on any_monitored_value_change _CCS::DataTypes::IMonitoredChargePoint.DIN.ContractAuthentication_Request
+{
+  UpdateProgressBar(ContractAuthentiationReq);
+}
+
+on any_monitored_value_change _CCS::DataTypes::IMonitoredVehicle.DIN.ContractAuthentication_Response
+{
+  if($this.value.ResponseCode == 0)
+    sysSetVariableString(sysvar::Common::ResponseCode, "OK");
+  else
+    sysSetVariableString(sysvar::Common::ResponseCode, "NOK");
+  
+  UpdateProgressBar(ContractAuthentiationRes);
+}
+
+// Charge Parameter Discovery
+on any_monitored_value_change _CCS::DataTypes::IMonitoredChargePoint.DIN.ChargeParameterDiscovery_Request
+{
+  UpdateProgressBar(ChargeParameterDiscoveryReq);
+}
+
+on any_monitored_value_change _CCS::DataTypes::IMonitoredVehicle.DIN.ChargeParameterDiscovery_Response
+{
+  if($this.value.ResponseCode == 0)
+    sysSetVariableString(sysvar::Common::ResponseCode, "OK");
+  else
+    sysSetVariableString(sysvar::Common::ResponseCode, "NOK");
+  
+  UpdateProgressBar(ChargeParameterDiscoveryRes);
+}
+
+// Cable Check
+on any_monitored_value_change _CCS::DataTypes::IMonitoredChargePoint.DIN.CableCheck_Request
+{
+  UpdateProgressBar(CableCheckReq);
+}
+
+on any_monitored_value_change _CCS::DataTypes::IMonitoredVehicle.DIN.CableCheck_Response
+{
+  if($this.value.ResponseCode == 0)
+    sysSetVariableString(sysvar::Common::ResponseCode, "OK");
+  else
+    sysSetVariableString(sysvar::Common::ResponseCode, "NOK");
+  
+  UpdateProgressBar(CableCheckRes);
+}
+
+// PreCharge
+on any_monitored_value_change _CCS::DataTypes::IMonitoredChargePoint.DIN.PreCharge_Request
+{
+  UpdateProgressBar(PreChargeReq);
+}
+
+on any_monitored_value_change _CCS::DataTypes::IMonitoredVehicle.DIN.PreCharge_Response
+{
+  if($this.value.ResponseCode == 0)
+    sysSetVariableString(sysvar::Common::ResponseCode, "OK");
+  else
+    sysSetVariableString(sysvar::Common::ResponseCode, "NOK");
+  
+  UpdateProgressBar(PreChargeRes);
+}
+
+
+// CurrentDemand
+on any_monitored_value_change _CCS::DataTypes::IMonitoredChargePoint.DIN.CurrentDemand_Request
+{
+  UpdateProgressBar(CurrentDemandReq);
+}
+
+on any_monitored_value_change _CCS::DataTypes::IMonitoredVehicle.DIN.CurrentDemand_Response
+{
+  if($this.value.ResponseCode == 0)
+    sysSetVariableString(sysvar::Common::ResponseCode, "OK");
+  else
+    sysSetVariableString(sysvar::Common::ResponseCode, "NOK");
+  
+  UpdateProgressBar(CurrentDemandRes);
+}
+
+// PowerDelivery
+on any_monitored_value_change _CCS::DataTypes::IMonitoredChargePoint.DIN.PowerDelivery_Request
+{
+  if($this.value.ReadyToChargeState == 1)
+    sysSetVariableString(sysvar::Common::ChargeState, "Start");
+  else if($this.value.ReadyToChargeState == 0)
+    sysSetVariableString(sysvar::Common::ChargeState, "Stop");  
+  
+  UpdateProgressBar(PowerDeliveryReq);
+}
+
+on any_monitored_value_change _CCS::DataTypes::IMonitoredVehicle.DIN.PowerDelivery_Response
+{
+  if($this.value.ResponseCode == 0)
+    sysSetVariableString(sysvar::Common::ResponseCode, "OK");
+  else
+    sysSetVariableString(sysvar::Common::ResponseCode, "NOK");
+  
+  UpdateProgressBar(PowerDeliveryRes);
+}
+
+// Welding Detection
+on any_monitored_value_change _CCS::DataTypes::IMonitoredChargePoint.DIN.WeldingDetection_Request
+{
+  UpdateProgressBar(WeldingDetectionReq);
+}
+
+on any_monitored_value_change _CCS::DataTypes::IMonitoredVehicle.DIN.WeldingDetection_Response
+{
+  if($this.value.ResponseCode == 0)
+    sysSetVariableString(sysvar::Common::ResponseCode, "OK");
+  else
+    sysSetVariableString(sysvar::Common::ResponseCode, "NOK");
+  
+  UpdateProgressBar(WeldingDetectionRes);
+}
+
+// SessionStop
+on any_monitored_value_change _CCS::DataTypes::IMonitoredChargePoint.DIN.SessionStop_Request
+{
+  UpdateProgressBar(_CCS::DataTypes::SessionStopReq);
+}
+
+on any_monitored_value_change _CCS::DataTypes::IMonitoredVehicle.DIN.SessionStop_Response
+{
+  if($this.value.ResponseCode == 0)
+    sysSetVariableString(sysvar::Common::ResponseCode, "OK");
+  else
+    sysSetVariableString(sysvar::Common::ResponseCode, "NOK");
+  
+  UpdateProgressBar(_CCS::DataTypes::SessionStopRes);
+}

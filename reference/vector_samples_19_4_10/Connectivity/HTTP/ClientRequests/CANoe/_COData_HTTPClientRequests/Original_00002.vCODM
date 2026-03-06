@@ -1,0 +1,295 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<FunctionBusLibrary Version="30" FormatMajorVersion="3" FormatMinorVersion="1" FormatPatchVersion="2">
+  <Namespaces>
+    <Namespace IsDefinedAsHidden="False" IsSystemDefined="False" Name="Application">
+      <Subnamespaces>
+        <Namespace IsDefinedAsHidden="False" IsSystemDefined="False" Name="_Generated">
+          <DataTypes>
+            <FunctionPrototype IsOneWay="False" AllowSpecialCharactersInMemberNames="False" HasFixedBinaryLayout="False" HasMotorolaByteOrder="False" Name="Func_Bytes_I_Application_Datatypes_Local_UserInformation_userInformation">
+              <Result DataType="_SystemDataTypes::Bytes" />
+              <Parameters>
+                <Parameter IsOptional="False" Name="userInformation">
+                  <DataType DataType="Application::Datatypes::Local::UserInformation" />
+                </Parameter>
+              </Parameters>
+            </FunctionPrototype>
+            <FunctionPrototype IsOneWay="False" AllowSpecialCharactersInMemberNames="False" HasFixedBinaryLayout="False" HasMotorolaByteOrder="False" Name="Func_Application_Datatypes_Local_UserInformation_I_Bytes_serializedData">
+              <Result DataType="Application::Datatypes::Local::UserInformation" />
+              <Parameters>
+                <Parameter IsOptional="False" Name="serializedData">
+                  <DataType DataType="_SystemDataTypes::Bytes" />
+                </Parameter>
+              </Parameters>
+            </FunctionPrototype>
+            <FunctionPrototype IsOneWay="False" AllowSpecialCharactersInMemberNames="False" HasFixedBinaryLayout="False" HasMotorolaByteOrder="False" Name="Func_Application_Datatypes_Local_UserInformation_I_Int32_user_id">
+              <Result DataType="Application::Datatypes::Local::UserInformation" />
+              <Parameters>
+                <Parameter IsOptional="False" Name="user_id">
+                  <DataType DataType="_SystemDataTypes::Int32" />
+                </Parameter>
+              </Parameters>
+            </FunctionPrototype>
+            <FunctionPrototype IsOneWay="False" AllowSpecialCharactersInMemberNames="False" HasFixedBinaryLayout="False" HasMotorolaByteOrder="False" Name="Func_Application_Datatypes_Local_UserInformation_I_Application_Datatypes_Local_UserInformation_user">
+              <Result DataType="Application::Datatypes::Local::UserInformation" />
+              <Parameters>
+                <Parameter IsOptional="False" Name="user">
+                  <DataType DataType="Application::Datatypes::Local::UserInformation" />
+                </Parameter>
+              </Parameters>
+            </FunctionPrototype>
+            <FunctionPrototype IsOneWay="False" AllowSpecialCharactersInMemberNames="False" HasFixedBinaryLayout="False" HasMotorolaByteOrder="False" Name="Func_Void_I_Int32_user_id">
+              <Result DataType="_SystemDataTypes::Void" />
+              <Parameters>
+                <Parameter IsOptional="False" Name="user_id">
+                  <DataType DataType="_SystemDataTypes::Int32" />
+                </Parameter>
+              </Parameters>
+            </FunctionPrototype>
+          </DataTypes>
+        </Namespace>
+        <Namespace IsDefinedAsHidden="False" IsSystemDefined="False" Name="Datatypes">
+          <Subnamespaces>
+            <Namespace IsDefinedAsHidden="False" IsSystemDefined="False" Name="Local">
+              <DOInterfaces>
+                <DOInterface IsAbstract="False" Name="ISerializer">
+                  <AttributeValues>
+                    <AttributeValue Definition="_SystemAttributes::Binding" InitialValue="SerializationService" InitialValueType="String" />
+                    <AttributeValue Definition="_SystemAttributes::Serialization" InitialValue="1" InitialValueType="Int32" />
+                  </AttributeValues>
+                  <MemberData>
+                    <DOMemberDataHolder Name="MemberData">
+                      <Data>
+                        <DOIFMemberData Name="Serialize_UserInformation">
+                          <AttributeValues>
+                            <AttributeValue Definition="SerializationService::Method" InitialValue="1" InitialValueType="UInt32" />
+                          </AttributeValues>
+                        </DOIFMemberData>
+                        <DOIFMemberData Name="Deserialize_UserInformation">
+                          <AttributeValues>
+                            <AttributeValue Definition="SerializationService::Method" InitialValue="0" InitialValueType="UInt32" />
+                          </AttributeValues>
+                        </DOIFMemberData>
+                      </Data>
+                    </DOMemberDataHolder>
+                  </MemberData>
+                  <Methods>
+                    <DOIFMethodMember Prototype="Application::_Generated::Func_Bytes_I_Application_Datatypes_Local_UserInformation_userInformation" LocalDirection="Consumed" Name="Serialize_UserInformation" />
+                    <DOIFMethodMember Prototype="Application::_Generated::Func_Application_Datatypes_Local_UserInformation_I_Bytes_serializedData" LocalDirection="Consumed" Name="Deserialize_UserInformation" />
+                  </Methods>
+                </DOInterface>
+              </DOInterfaces>
+              <DistributedObjects>
+                <DistributedObject GenerateDotNetAPI="True" Name="Serializer">
+                  <DataType>
+                    <ModifiedDOIF Reverse="False" IsDOReference="False" Interface="Application::Datatypes::Local::ISerializer" />
+                  </DataType>
+                  <MemberData>
+                    <DOMemberDataHolder Name="MemberData" />
+                  </MemberData>
+                </DistributedObject>
+              </DistributedObjects>
+              <DataTypes>
+                <StructDataType Bitcount="0" RawBitcount="0" HasFixedBinaryLayout="False" HasMotorolaByteOrder="False" Name="UserInformation">
+                  <Fields>
+                    <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="user_id">
+                      <DataType DataType="_SystemDataTypes::Int32" />
+                    </DataTypeField>
+                    <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="name">
+                      <DataType DataType="_SystemDataTypes::UTF8String" />
+                    </DataTypeField>
+                  </Fields>
+                </StructDataType>
+              </DataTypes>
+            </Namespace>
+          </Subnamespaces>
+        </Namespace>
+        <Namespace IsDefinedAsHidden="False" IsSystemDefined="False" Name="HighLevel">
+          <Subnamespaces>
+            <Namespace IsDefinedAsHidden="False" IsSystemDefined="False" Name="Local">
+              <DOInterfaces>
+                <DOInterface IsAbstract="False" Name="IClient">
+                  <AttributeValues>
+                    <AttributeValue Definition="HTTPBinding::Host" InitialValue="http://localhost:8123" InitialValueType="String" />
+                  </AttributeValues>
+                  <MemberData>
+                    <DOMemberDataHolder Name="MemberData">
+                      <Data>
+                        <DOIFMemberData Name="GetUser">
+                          <AttributeValues>
+                            <AttributeValue Definition="HTTPBinding::Method" InitialValue="1" InitialValueType="Int32" />
+                            <AttributeValue Definition="HTTPBinding::Path" InitialValue="{{user_id}}" InitialValueType="String" />
+                          </AttributeValues>
+                        </DOIFMemberData>
+                        <DOIFMemberData Name="AddUser">
+                          <AttributeValues>
+                            <AttributeValue Definition="HTTPBinding::Method" InitialValue="0" InitialValueType="Int32" />
+                          </AttributeValues>
+                        </DOIFMemberData>
+                        <DOIFMemberData Name="DeleteUser">
+                          <AttributeValues>
+                            <AttributeValue Definition="HTTPBinding::Method" InitialValue="3" InitialValueType="Int32" />
+                            <AttributeValue Definition="HTTPBinding::Path" InitialValue="{{user_id}}" InitialValueType="String" />
+                          </AttributeValues>
+                        </DOIFMemberData>
+                      </Data>
+                    </DOMemberDataHolder>
+                  </MemberData>
+                  <Methods>
+                    <DOIFMethodMember Prototype="Application::_Generated::Func_Application_Datatypes_Local_UserInformation_I_Int32_user_id" LocalDirection="Consumed" Name="GetUser" />
+                    <DOIFMethodMember Prototype="Application::_Generated::Func_Application_Datatypes_Local_UserInformation_I_Application_Datatypes_Local_UserInformation_user" LocalDirection="Consumed" Name="AddUser" />
+                    <DOIFMethodMember Prototype="Application::_Generated::Func_Void_I_Int32_user_id" LocalDirection="Consumed" Name="DeleteUser" />
+                  </Methods>
+                </DOInterface>
+              </DOInterfaces>
+            </Namespace>
+          </Subnamespaces>
+          <DistributedObjects>
+            <DistributedObject GenerateDotNetAPI="True" Name="LocalClient">
+              <AttributeValues>
+                <AttributeValue Definition="_SystemAttributes::Binding" InitialValue="HTTP" InitialValueType="String" />
+              </AttributeValues>
+              <DataType>
+                <ModifiedDOIF Reverse="False" IsDOReference="False" Interface="Application::HighLevel::Local::IClient" />
+              </DataType>
+              <MemberData>
+                <DOMemberDataHolder Name="MemberData" />
+              </MemberData>
+            </DistributedObject>
+          </DistributedObjects>
+        </Namespace>
+        <Namespace IsDefinedAsHidden="False" IsSystemDefined="False" Name="Panels">
+          <Subnamespaces>
+            <Namespace IsDefinedAsHidden="False" IsSystemDefined="False" Name="Local">
+              <DOInterfaces>
+                <DOInterface IsAbstract="False" Name="IClientControlAddUser">
+                  <BaseInterfaces>
+                    <ModifiedDOIF Reverse="False" IsDOReference="False" Interface="Application::Panels::IControlButtons" />
+                  </BaseInterfaces>
+                  <MemberData>
+                    <DOMemberDataHolder Name="MemberData" />
+                  </MemberData>
+                  <DataMembers>
+                    <DOIFDataMember LocalDirection="Internal" Name="user_id">
+                      <DataType DataType="_SystemDataTypes::Int32" />
+                    </DOIFDataMember>
+                    <DOIFDataMember LocalDirection="Internal" Name="name">
+                      <DataType DataType="_SystemDataTypes::UTF8String" />
+                    </DOIFDataMember>
+                    <DOIFDataMember LocalDirection="Internal" Name="response">
+                      <DataType DataType="Application::Datatypes::Local::UserInformation" />
+                    </DOIFDataMember>
+                  </DataMembers>
+                </DOInterface>
+                <DOInterface IsAbstract="False" Name="IClientControlGetUser">
+                  <BaseInterfaces>
+                    <ModifiedDOIF Reverse="False" IsDOReference="False" Interface="Application::Panels::IControlButtons" />
+                  </BaseInterfaces>
+                  <MemberData>
+                    <DOMemberDataHolder Name="MemberData" />
+                  </MemberData>
+                  <DataMembers>
+                    <DOIFDataMember LocalDirection="Internal" Name="user_id">
+                      <DataType DataType="_SystemDataTypes::Int32" />
+                    </DOIFDataMember>
+                    <DOIFDataMember LocalDirection="Internal" Name="response">
+                      <DataType DataType="Application::Datatypes::Local::UserInformation" />
+                    </DOIFDataMember>
+                  </DataMembers>
+                </DOInterface>
+                <DOInterface IsAbstract="False" Name="IClientControlDeleteUser">
+                  <BaseInterfaces>
+                    <ModifiedDOIF Reverse="False" IsDOReference="False" Interface="Application::Panels::IControlButtons" />
+                  </BaseInterfaces>
+                  <MemberData>
+                    <DOMemberDataHolder Name="MemberData" />
+                  </MemberData>
+                  <DataMembers>
+                    <DOIFDataMember LocalDirection="Internal" Name="user_id">
+                      <DataType DataType="_SystemDataTypes::Int32" />
+                    </DOIFDataMember>
+                  </DataMembers>
+                </DOInterface>
+              </DOInterfaces>
+              <DistributedObjects>
+                <DistributedObject GenerateDotNetAPI="True" Name="ClientControlAddUser">
+                  <DataType>
+                    <ModifiedDOIF Reverse="False" IsDOReference="False" Interface="Application::Panels::Local::IClientControlAddUser" />
+                  </DataType>
+                  <MemberData>
+                    <DOMemberDataHolder Name="MemberData" />
+                  </MemberData>
+                </DistributedObject>
+                <DistributedObject GenerateDotNetAPI="True" Name="ClientControlGetUser">
+                  <DataType>
+                    <ModifiedDOIF Reverse="False" IsDOReference="False" Interface="Application::Panels::Local::IClientControlGetUser" />
+                  </DataType>
+                  <MemberData>
+                    <DOMemberDataHolder Name="MemberData" />
+                  </MemberData>
+                </DistributedObject>
+                <DistributedObject GenerateDotNetAPI="True" Name="ClientControlDeleteUser">
+                  <DataType>
+                    <ModifiedDOIF Reverse="False" IsDOReference="False" Interface="Application::Panels::Local::IClientControlDeleteUser" />
+                  </DataType>
+                  <MemberData>
+                    <DOMemberDataHolder Name="MemberData" />
+                  </MemberData>
+                </DistributedObject>
+              </DistributedObjects>
+            </Namespace>
+          </Subnamespaces>
+          <DOInterfaces>
+            <DOInterface IsAbstract="False" Name="IControlButtons">
+              <MemberData>
+                <DOMemberDataHolder Name="MemberData" />
+              </MemberData>
+              <DataMembers>
+                <DOIFDataMember LocalDirection="Internal" Name="mode">
+                  <DataType DataType="_SystemDataTypes::Int8">
+                    <NumericProperties MinValue="" MinValueType="Invalid" MaxValue="" MaxValueType="Invalid" IsBoolean="False" IsTimespan="False">
+                      <ImplToPhysEncodings TextualEncodings="Application::Panels::HTTPBindingMode" />
+                    </NumericProperties>
+                  </DataType>
+                </DOIFDataMember>
+                <DOIFDataMember LocalDirection="Internal" Name="execute">
+                  <DataType DataType="_SystemDataTypes::Int8" />
+                </DOIFDataMember>
+              </DataMembers>
+            </DOInterface>
+          </DOInterfaces>
+          <TextualEncodings>
+            <TextualEncodings DefinesMinMax="False" Name="HTTPBindingMode">
+              <TextualEncoding TextualValue="USE_HIGH_LEVEL" DisplayValue="USE_HIGH_LEVEL" LowerBound="0" LowerBoundType="Int32" UpperBound="0" UpperBoundType="Int32" />
+              <TextualEncoding TextualValue="USE_LOW_LEVEL" DisplayValue="USE_LOW_LEVEL" LowerBound="1" LowerBoundType="Int32" UpperBound="1" UpperBoundType="Int32" />
+            </TextualEncodings>
+          </TextualEncodings>
+        </Namespace>
+      </Subnamespaces>
+    </Namespace>
+    <Namespace IsDefinedAsHidden="False" IsSystemDefined="False" Name="HTTPServer">
+      <DistributedObjects>
+        <DistributedObject GenerateDotNetAPI="True" Name="httpServer">
+          <AttributeValues>
+            <AttributeValue Definition="HTTPBinding::Server::Port" InitialValue="8123" InitialValueType="UInt32" />
+          </AttributeValues>
+          <DataType>
+            <ModifiedDOIF Reverse="False" IsDOReference="False" Interface="HTTPBinding::Server::IHTTPServer" />
+          </DataType>
+          <MemberData>
+            <DOMemberDataHolder Name="MemberData" />
+          </MemberData>
+        </DistributedObject>
+      </DistributedObjects>
+    </Namespace>
+  </Namespaces>
+  <ModuleDependencies>
+    <ModuleDependency Module="_Internal" />
+    <ModuleDependency Module="_Internal" />
+    <ModuleDependency Module="_Internal" />
+    <ModuleDependency Module="_Internal" />
+    <ModuleDependency Module="_Internal" />
+    <ModuleDependency Module="_Internal" />
+    <ModuleDependency Module="HTTP" />
+    <ModuleDependency Module="SerializationService" />
+  </ModuleDependencies>
+</FunctionBusLibrary>

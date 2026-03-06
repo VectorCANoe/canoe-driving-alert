@@ -1,0 +1,76 @@
+/*@!Encoding:1252*/
+  // ------------------------------------------------
+  // File information
+  // Copyright         : 2024, Vector Informatik GmbH
+  // ------------------------------------------------
+
+
+
+variables
+{
+  int lastRqstdSpeed=0;
+  mstimer mytimer;
+}
+
+on start{
+  setTimer(mytimer,200);
+}
+
+//transfering information about the current gear of the transmission to CANopen
+on pg ETC2_TECU{
+ @sysvar::CANopen::CAN::TTGateway::CurrentGear::CurrentGearValue=this.TransCurrentGear.phys; 
+}
+
+//gets the parking brake request from EMS and checks if the supports are extended,
+//if the supports are not all the way up the parking brake cannot be losened
+on pg CCVS_EMS{
+  //transfers information about the state of the park brake to the CANopen network
+  if (getSignal(CCVS_EMS::ParkingBrakeSwitch)==1){
+    @sysvar::CANopen::CAN::TTGateway::ParkBrakeDemandValue::ParkBrakeDemandValue=this.ParkingBrakeSwitch.phys;
+  }
+  else{
+    @sysvar::CANopen::CAN::TTGateway::ParkBrakeDemandValue::ParkBrakeDemandValue=0;
+  }
+  
+  //SupportPositionGateIn checks the position of the supports in CANopen, if supports are not up prevents park brake frome beeing losened
+  if(SysGetVariableLong(sysvar::CANopen::CAN::TTGateway::EngineSpeed::SupportPositionGateIn)==0){
+    enableControl("EMS","Switch/Indicator 1",0); 
+    enableControl("TruckControl","Switch/Indicator 1",0);
+    if (@Powertrain::TECU::Gear<=0){
+    enableControl("TruckControl","Switch/Indicator 2",0);
+    }
+    enableControl("TruckControl","SwitchControl1",0);
+    enableControl("Control Panel","Switch/Indicator 2",0);
+  }
+  else{
+    enableControl("EMS","Switch/Indicator 1",1);
+    enableControl("TruckControl","Switch/Indicator 1",1);
+    if (@Powertrain::TECU::Gear<=0){
+    enableControl("TruckControl","Switch/Indicator 2",1);
+    }
+    enableControl("Control","SwitchControl1",1);
+    enableControl("Control Panel","Switch/Indicator 2",1);
+    
+  }
+}
+
+//Using the engine speed value the ladder drive requested too determine whether the engine should speed up or slow down
+on timer mytimer{
+  setSignal(TSC1_TECU_EMS::EngRqed_SpeedLimit,(SysGetVariableLong(sysvar::CANopen::CAN::TTGateway::ReqEngSpeed::requested_engine_speed_value)/2));
+  setTimer(mytimer,200);
+  
+  if(@Powertrain::IgnitionSwitch==0){
+    enableControl("Control Panel","Switch/Indicator 2",0);
+  }
+}
+
+
+//Sends signal on the bus when the PTO switch was changed
+on sysvar CANopen::CAN::TTGateway::EngineSpeed::PTOSwitch{
+  if(SysGetVariableLong(sysvar::CANopen::CAN::TTGateway::EngineSpeed::PTOSwitch)==1){
+    setSignal(CCVS_EMS::PTOState,1);
+  }
+  else{
+    setSignal(CCVS_EMS::PTOState,0);
+  }
+}

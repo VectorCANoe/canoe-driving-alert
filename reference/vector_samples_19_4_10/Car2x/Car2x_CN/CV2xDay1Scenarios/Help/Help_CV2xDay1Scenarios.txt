@@ -1,0 +1,36 @@
+CANoe CV2x Day1 Scenarios
+--------------------------------------------------------------------------
+
+This sample configuration contains different scenarios and can be used
+in simulated or real bus mode. Deactivate the node 'HV_Simulator' if the 
+measurement is performed on the real bus and the tested vehicle and its 
+Car2x communication behavior are real. 
+
+Each scenario can be started at the current position either relative or on 
+a specified route. Specify the route that the tested vehicle is driving on 
+by giving the filename and the name of the route.
+
+When the node 'HV_Simulator' is active, the ego vehicle is simulated 
+driving on an example route with adaptable speed.
+
+This sample configuration contains the following scenarios:
+AVW - Abnormal Vehicle Warning
+BCW (LCW) - Blind Spot (Lane Change) Warning
+CLW - Control Loss Warning
+DNPW - Do Not Pass Warning
+EBW - Emergency Brake Warning
+EVW - Emergency Vehicle Warning
+FCW - Forward Collision Warning
+HLW - Hazardous Location Warning
+ICW - Intersection Collision Warning
+IVS - In-Vehicle Signage
+LTA - Left Turn Assist
+SLW - Speed Limit Warning
+TJW - Traffic Jam Warning
+VRUCW - Vulnerable Road User Collision Warning
+
+The scenarios are in defined in T/CSAE 53-2017, Ch. 5.2
+
+--------------------------------------------------------------------------
+Copyright (c) by Vector Informatik GmbH
+--------------------------------------------------------------------------

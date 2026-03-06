@@ -1,0 +1,48 @@
+﻿/*@!Encoding:65001*/
+includes
+{
+  // declare common handlers for all counters in CommonCounter.cin
+  #include "CommonCounter.cin"
+}
+
+variables
+{
+  msTimer counterTimer;
+}
+
+on start
+{
+  @MultiCANoe::Counter::CounterAll = 0;
+}
+
+on sysvar MultiCANoe::Control::CountInAll
+{
+  programCounterTimer();
+}
+
+on sysvar MultiCANoe::Counter::CounterAll
+{
+  // React on each counter increase which can be either triggered by own increase or by the increase of the agent
+  programCounterTimer();
+}
+
+void programCounterTimer()
+{
+  if(@MultiCANoe::Control::StartSystem && @sysvar::MultiCANoe::Control::CountInAll)
+  {
+    // The coordinator should only increase the counter for even numbers
+    if ((@MultiCANoe::Counter::CounterAll % 2) == 0)
+    {
+      setTimer(counterTimer, @MultiCANoe::Control::CounterDelay);
+    }
+  }
+  else
+  {
+    cancelTimer(counterTimer);
+  }
+}
+
+on timer counterTimer
+{
+  @MultiCANoe::Counter::CounterAll++;
+}

@@ -1,0 +1,169 @@
+version 2.0;
+
+namespace VAS_FirePreventing
+{
+
+    struct VAS_FirePreventingSettingsType
+    {
+      string IPv6Addr[MaxChars=40];
+      uint16 Port;
+      uint32 ParameterSetID;
+    }
+
+    [Unit="V", Max=250, Impl2Phys=0.02*x] // Max 5 V
+    typedef parBatteryCellVoltage = uint8;
+
+    [Unit="°C", Max=255, Impl2Phys=x-40]
+    typedef parBatteryModuleTemperature = uint8; // Resolution 1 °C/bit Offset -40 °C 
+
+    enum parGroupASelectedElement : uint8
+    {
+      TransmitTimeStamp = 1,
+      TransmitSessionDuration = 2,
+      TransmitCounter = 3
+    }
+
+    union uGroupA_Type
+    {
+      [DiscriminatorValue=1]
+      uint32 TimeStamp; // uint32 range
+
+      [DiscriminatorValue=2, Unit="s"]
+      uint32 SessionDuration; // uint32 range
+
+      [DiscriminatorValue=3]
+      uint16 Counter; // uint32 range
+    }
+
+    enum parGroupBSelectedElement : uint8
+    {
+      TransmitVIN = 1,
+      TransmitBatteryID = 2,
+      TransmitEncryptedVIN = 3
+    }
+
+    union uGroupB_Type
+    {
+      [DiscriminatorValue=1]
+      string VIN [MaxChars=17];
+
+      [DiscriminatorValue=2]
+      string BatteryID [MaxChars=255];
+
+      [DiscriminatorValue=3]
+      list<uint8, 1, 255> EncryptedVIN;
+    }
+
+    enum parGroupGSelectedElement : uint8
+    {
+      TransmitAllBatteryCellVoltages = 1,
+      TransmitBatteryCellVoltageMaxMin = 2
+    }
+
+    union uGroupG_Type
+    {
+      [DiscriminatorValue=1]
+      list<parBatteryCellVoltage, 1, 65535> AllBatteryCellVoltages;
+
+      [DiscriminatorValue=2]
+      list<parBatteryCellVoltage, 2, 2> BatteryCellVoltageMaxMin;
+    }
+
+    enum parGroupHSelectedElement : uint8
+    {
+      TransmitAllBatteryModuleTemperatures = 1,
+      TransmitBatteryModuleTemperatureMaxMin = 2
+    }
+
+    union uGroupH_Type
+    {
+      [DiscriminatorValue=1]
+      list<parBatteryModuleTemperature, 1, 255> AllBatteryModuleTemperatures;
+
+      [DiscriminatorValue=2]
+      list<parBatteryModuleTemperature, 2, 2> BatteryModuleTemperatureMaxMin; 
+    }
+
+    struct BatteryDataFrame
+    {
+      // Group A (Select one)
+      parGroupASelectedElement GroupASelectedElement;
+      [Discriminator=GroupASelectedElement]
+      uGroupA_Type GroupA;
+      
+      // Group B (Select one)
+      parGroupBSelectedElement GroupBSelectedElement;
+      [Discriminator=GroupBSelectedElement]
+      uGroupB_Type GroupB;
+      
+      // Groups C - F
+      uint8 SoC [Unit="%", Max=200, Impl2Phys=0.5*x]; // Max 100 %
+      uint8 SoH [Unit="%", Max=100, Impl2Phys=1*x, Optional]; // Max 100 %
+      uint16 BatteryPackCurrent [Unit="A", Max=5000, Impl2Phys=0.1*x, Optional]; // Max 500 A
+      uint16 BatteryPackVoltage [Unit="V", Max=10000, Impl2Phys=0.1*x, Optional]; // Max 1000 V
+
+      // Group G (Select one)
+      parGroupGSelectedElement GroupGSelectedElement [Optional];
+      [Discriminator=GroupGSelectedElement, Optional]
+      uGroupG_Type GroupG;   
+
+      // Group H (Select one)
+      parGroupHSelectedElement GroupHSelectedElement [Optional];
+      [Discriminator=GroupHSelectedElement, Optional]
+      uGroupH_Type GroupH;
+    }
+    const BatteryDataFrame ConstBatteryData = {
+      TransmitTimeStamp,
+      {TimeStamp: 0xFF1AAE65},
+      TransmitVIN,
+      {
+        VIN: "R05ZJYEC8E02A1350"
+      },
+      0xA1/*SoC*/,
+      0x64/*SoH*/,
+      0x0C35/*BatteryPackCurrent*/,
+      0x1F44/*BatteryPackVoltage*/,
+      TransmitAllBatteryCellVoltages,
+      {
+        AllBatteryCellVoltages: {0xC8,0xC7,0xC9,0xC9,0xC7,0xC8,0xC9,0xC7,0xC8,0xC9,0xC7,0xC8}
+      },
+      TransmitAllBatteryModuleTemperatures,
+      {
+        AllBatteryModuleTemperatures: {0x3E,0x3B,0x3A,0x3E}
+      }
+    };
+  
+  [CommunicationPattern=SendReceive]
+  [Binding="CAPL"]
+  interface IFirePreventingServer
+  {
+    consumed data BatteryDataFrame BatteryData;
+    consumed data VAS_FirePreventingSettingsType VAS_FirePreventingSettings; // configure settings in CCS_Network_SCC_ChargePoint.xml
+  }
+
+  [CommunicationPattern=SendReceive]
+  [Binding="CAPL"]
+  interface IFirePreventingClient
+  {
+      consumed data VAS_FirePreventingSettingsType VAS_FirePreventingSettings; // transmitted by ServiceDetail Response
+      provided data BatteryDataFrame BatteryData = ConstBatteryData;
+      provided data uint32 BatteryDataSendInterval = 3000;
+  }
+
+  [CommunicationPattern=SendReceive]
+  [Binding="CAPL"]
+  [MonitoringSupport]
+  interface IMonitoredFirePreventingServer : IFirePreventingServer
+  {}
+
+  [CommunicationPattern=SendReceive]
+  [Binding="CAPL"]
+  [MonitoringSupport]
+  interface IMonitoredFirePreventingClient : IFirePreventingClient
+  {}
+
+  IFirePreventingClient FirePreventingClient;
+  IFirePreventingServer FirePreventingServer;
+  reverse<IFirePreventingClient> FirePreventingClientMonitor;
+  reverse<IFirePreventingServer> FirePreventingServerMonitor;
+}

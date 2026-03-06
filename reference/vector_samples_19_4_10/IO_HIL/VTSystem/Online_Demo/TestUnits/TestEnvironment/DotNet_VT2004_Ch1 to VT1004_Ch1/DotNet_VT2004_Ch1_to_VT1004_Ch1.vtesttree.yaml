@@ -1,0 +1,77 @@
+version: 2.2.0
+
+test-tree:
+  - test-fixture: Voltage Test Group
+    description: Tests voltage generation and measurement
+    elements:
+    - dotnet-test-case: VoltageGenerationAndMeasurementTest
+      title: Voltage transfer test at 1V
+      description: Testing voltage generation and measurement at 5 Volts.
+      params: [1]
+    - dotnet-test-case: VoltageGenerationAndMeasurementTest
+      title: Voltage transfer test at 2V
+      description: Testing voltage generation and measurement at 10 Volts.
+      params: [2]
+    - dotnet-test-case: VoltageGenerationAndMeasurementTest
+      title: Voltage transfer test at 3V
+      description: Testing voltage generation and measurement at 15 Volts.
+      params: [3]
+    - dotnet-test-case: VoltageGenerationAndMeasurementTest
+      title: Voltage transfer test at 4V
+      description: Testing voltage generation and measurement at 15 Volts.
+      params: [4]
+    - dotnet-test-case: VoltageGenerationAndMeasurementTest
+      title: Voltage transfer test at 5V
+      description: Testing voltage generation and measurement at 15 Volts.
+      params: [5]
+    - dotnet-test-case: VoltageGenerationAndMeasurementTest
+      title: Voltage transfer test at 6V
+      description: Testing voltage generation and measurement at 15 Volts.
+      params: [6]
+    - dotnet-test-case: VoltageGenerationAndMeasurementTest
+      title: Voltage transfer test at 7V
+      description: Testing voltage generation and measurement at 15 Volts.
+      params: [7]
+    - dotnet-test-case: VoltageGenerationAndMeasurementTest
+      title: Voltage transfer test at 8V
+      description: Testing voltage generation and measurement at 15 Volts.
+      params: [8]
+  - test-fixture: PWM Test Group
+    description: Tests PWM signal generation and measurement
+    elements:
+    - dotnet-test-case: PWMGenerationAndMeasurement
+      title: PWM generation and measurement test at 100 Hz.
+      description: Testing PWM generation and measurement at 100 Hz.
+      params: [100]
+    - dotnet-test-case: PWMGenerationAndMeasurement
+      title: PWM generation and measurement test at 200 Hz.
+      description: Testing PWM generation and measurement at 200 Hz.
+      params: [200]
+    - dotnet-test-case: PWMGenerationAndMeasurement
+      title: PWM generation and measurement test at 300 Hz.
+      description: Testing PWM generation and measurement at 300 Hz.
+      params: [300]
+    - dotnet-test-case: PWMGenerationAndMeasurement
+      title: PWM generation and measurement test at 400 Hz.
+      description: Testing PWM generation and measurement at 400 Hz.
+      params: [400]
+    - dotnet-test-case: PWMGenerationAndMeasurement
+      title: PWM generation and measurement test at 500 Hz.
+      description: Testing PWM generation and measurement at 500 Hz.
+      params: [500]
+    - dotnet-test-case: PWMGenerationAndMeasurement
+      title: PWM generation and measurement test at 600 Hz.
+      description: Testing PWM generation and measurement at 600 Hz.
+      params: [600]
+    - dotnet-test-case: PWMGenerationAndMeasurement
+      title: PWM generation and measurement test at 700 Hz.
+      description: Testing PWM generation and measurement at 700 Hz.
+      params: [700]
+    - dotnet-test-case: PWMGenerationAndMeasurement
+      title: PWM generation and measurement test at 800 Hz.
+      description: Testing PWM generation and measurement at 800 Hz.
+      params: [800]
+    - dotnet-test-case: PWMGenerationAndMeasurement
+      title: PWM generation and measurement test at 900 Hz.
+      description: Testing PWM generation and measurement at 900 Hz.
+      params: [900]

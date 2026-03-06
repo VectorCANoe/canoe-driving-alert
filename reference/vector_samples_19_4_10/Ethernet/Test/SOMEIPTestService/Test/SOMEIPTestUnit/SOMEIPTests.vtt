@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--Vector Test Table Editor-->
+<ttroot version="33" xmlns="http://www.vector-informatik.de/ITE/TestTable/1.0">
+  <tt>
+    <capltestcase>
+      <title>Trigger Event EDRV::DrivingPSI1.MotorState</title>
+      <name>EDRV_Event_DrivingPSI1_MotorState</name>
+      <tcid>dd7bb5ed-fb33-47bc-8e47-0776c58103ee</tcid>
+    </capltestcase>
+    <capltestcase>
+      <title>Trigger Field Notifier for HPCM::DrivingCSI1.Mode</title>
+      <name>EDRV_Field_DrivingPSI1_Mode_Notify</name>
+      <tcid>4866f0b3-1c15-4aa4-8652-bf70da867ceb</tcid>
+    </capltestcase>
+    <capltestcase>
+      <title>Call Field Getter HPCM::DrivingCSI1.Mode.Get</title>
+      <name>EDRV_Field_DrivingPSI1_Mode_Get</name>
+      <tcid>e5a12de0-0097-42f3-8748-c0c6503f6bdb</tcid>
+    </capltestcase>
+    <capltestcase>
+      <title>Call Field Setter HPCM::DrivingCSI1.Mode.Set</title>
+      <name>EDRV_Field_DrivingPSI1_Mode_Set</name>
+      <tcid>627d1229-8bec-4d91-9e29-6156c66f6c43</tcid>
+    </capltestcase>
+    <capltestcase>
+      <title>Call method HPCM::DrivingCSI1.PowerBoost</title>
+      <name>HPCM_Method_DrivingCSI1_PowerBoost</name>
+      <tcid>6314c014-2ff9-4f9b-8dc8-f4035389a230</tcid>
+    </capltestcase>
+    <capltestcase>
+      <title>Enable DrivingCSI1 and wait for Subscribe</title>
+      <name>HPCM_Service_DrivingCSI1_DisconnectAndConnect</name>
+      <tcid>eef93280-1f11-4e79-9e36-2aecd8084111</tcid>
+    </capltestcase>
+    <capltestcase>
+      <title>Enable DrivingPSI1 and wait for Offer-Service</title>
+      <name>EDRV_Service_DrivingPSI1_DisconnectAndConnect</name>
+      <tcid>df009540-9e3f-42bb-982b-028ecf70946d</tcid>
+    </capltestcase>
+  </tt>
+  <ttlib>
+    <ts_definitions />
+    <tc_definitions />
+    <function_definitions />
+  </ttlib>
+</ttroot>

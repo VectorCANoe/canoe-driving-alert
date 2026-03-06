@@ -1,0 +1,133 @@
+/*@!Encoding:1252*/
+/*
+ * Node1                                           Version 1.2
+ *
+ * This node demonstrates the usage of the J1939 transport
+ * protocols (BAM and CMDT) and J1939 Interaction Layer.
+ *
+ * Copyright 2005-2020, Vector Informatik GmbH - All right reserved
+ *
+ * History:
+ * 1.0 (Jr) Created 
+ * 1.1 Replace environment variables by system variables
+ * 1.2 (Rio) Replaced CAPL transport protocol implementation by J1939_IL.dll
+ */
+variables
+{
+  char gNodeName[32] = "Node1";
+  // Definition of debugging constants
+  const int kDbgInfo    = 10;
+  const int kDbgWarning = 5;
+  const int kDbgError   = 1;
+  const int kDbgQuiet   = 0;
+
+  // General global variables
+  int gDbgLevel         = kDbgWarning; // Set debug level for output to write window
+}
+
+on preStart
+{
+  setWriteDbgLevel( gDbgLevel );
+}
+
+on start
+{
+  J1939ILSetNodeProperty("Packets_Per_CTS", @Node1::sysvarRxCMDTPacketCount);
+}
+
+//Change the max number of receiving packets per sequence.
+on sysvar Node1::sysvarRxCMDTPacketCount
+{
+  J1939ILSetNodeProperty("Packets_Per_CTS", @this);
+}
+
+// Receiving event
+on pg ProprietaryB_Node2
+{  
+  @Node1::sysvarRxBAMDLC = this.dlc;
+}
+
+// Sending event
+on pg ProprietaryB_Node1
+{  
+  //PDU2 Format - enable BAM send button after trasmission
+  enableControl( gNodeName, "SendBAM", 1 );
+}
+
+
+///*
+// * Send parameter group with BAM transport protocol.
+// */
+on sysvar Node1::sysvarSendBAMClicked
+{
+  byte payload[1785];
+  int index;
+  
+  if(@this == 0)
+  {    
+    // disable send button during transmission
+    enableControl( gNodeName, "SendBAM", 0 );
+    //Reset the button variable
+    @Node1::sysvarSendBAMClicked = 0; 
+    
+    J1939ILSetNodeProperty("BAM_DT_Interval", @Node1::sysvarTxBAMInterval);
+    
+    //Create some payload
+    for(index = 0; index < 1785 && index < @Node1::sysvarTxBAMDLC; index++)
+    {
+      payload[index] = index;
+    }
+
+    //ProprietaryB_Node1 is a PDU2 (Broadcast) message.
+    J1939ILSetMsgRawData(Node1::ProprietaryB_Node1, @Node1::sysvarTxBAMDLC, payload);
+    J1939ILSetMsgEvent(Node1::ProprietaryB_Node1);
+  }
+}
+
+// Receivin event
+on pg ProprietaryA_Node2
+{  
+  @Node1::sysvarRxCMDTDLC = this.dlc;
+}
+
+// Sending event
+on pg ProprietaryA_Node1
+{  
+  //PDU1 Format - enable CMDT send button after trasmission
+  enableControl( gNodeName, "SendCMDT", 1 );
+}
+
+///*
+// * Send parameter group with CMDT transport protocol.
+// */
+on sysvar Node1::sysvarSendCMDTClicked
+{
+  byte payload[1785];
+  int index;
+  
+  if(@this == 0)
+  {
+    // disable send button during transmission
+    enableControl(gNodeName, "SendCMDT", 0);
+    //Reset the button variable
+    @Node1::sysvarSendCMDTClicked = 0; 
+    
+    J1939ILSetNodeProperty("Packets_Per_RTS", @Node1::sysvarTxRTSPacketCount);
+    
+    //Set TP.DT packet latency
+    J1939ILSetNodeProperty("TPDTLatency", @Node1::sysvarTxCMDTPacketDelay);
+
+    //Set destination address
+    J1939ILSetMsgDA(Node1::ProprietaryA_Node1, @Node1::sysvarTxCMDTDest);
+    
+    //Create some payload
+    for(index = 0; index < 1785 && index < @Node1::sysvarTxCMDTDLC; index++)
+    {
+      payload[index] = index; 
+    }
+    
+    //ProprietaryA_Node1 is a PDU1 (connection oriented) message.
+    J1939ILSetMsgRawData(Node1::ProprietaryA_Node1, @Node1::sysvarTxCMDTDLC, payload);
+    J1939ILSetMsgEvent(Node1::ProprietaryA_Node1);
+  }
+}

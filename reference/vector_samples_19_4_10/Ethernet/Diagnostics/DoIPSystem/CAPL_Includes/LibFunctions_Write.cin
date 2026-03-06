@@ -1,0 +1,83 @@
+/*@!Encoding:1252*/
+// ===================================================================================
+// Library defining utility functions for write window output
+// ===================================================================================
+
+variables
+{
+  char gTempStr[300]; // temporary string helpful for usage with writeDbgLvlPrefix
+}
+
+void writeDbgLvlPrefix(word DbgLvl, char outstr[])
+{
+  switch (DbgLvl) {
+    case 0:
+      writeLineEx(1, 3, "[%.6f] <%BASE_FILE_NAME%> (%s, 0x%x): %s", timeNowNS()/1000000000.0, gECU, getBusContext(), outstr);
+      break;
+    case 1:
+      writeLineEx(1, 2, "[%.6f] <%BASE_FILE_NAME%> (%s, 0x%x): %s", timeNowNS()/1000000000.0, gECU, getBusContext(), outstr);
+      break;
+    default:
+      if (strncmp("%BASE_FILE_NAME_NO_EXT%", gECU, elcount(gECU))) { // node name and ECU qualifier not equal
+        writeDbgLevel(DbgLvl, "[%.6f] <%BASE_FILE_NAME%> (%s, 0x%x): %s", timeNowNS()/1000000000.0, gECU, getBusContext(), outstr);
+      }
+      else {
+        writeDbgLevel(DbgLvl, "[%.6f] <%BASE_FILE_NAME%> (0x%x): %s", timeNowNS()/1000000000.0, getBusContext(), outstr);
+      }
+      break;
+  }
+}
+
+void writeDbgLvlPrefix(word DbgLvl, char formatstr[], char valuestr[])
+{
+   snprintf(gTempStr, elcount(gTempStr), formatstr, valuestr);
+   writeDbgLvlPrefix(DbgLvl, gTempStr);
+}
+
+void writeDbgLvlPrefix(word DbgLvl, char formatstr[], char valuestr[], long value)
+{
+   snprintf(gTempStr, elcount(gTempStr), formatstr, valuestr, value);
+   writeDbgLvlPrefix(DbgLvl, gTempStr);
+}
+
+void writeDbgLvlPrefix(word DbgLvl, char formatstr[], char valuestr[], long value1, long value2)
+{
+   snprintf(gTempStr, elcount(gTempStr), formatstr, valuestr, value1, value2);
+   writeDbgLvlPrefix(DbgLvl, gTempStr);
+}
+
+void writeDbgLvlPrefix(word DbgLvl, char formatstr[], long value)
+{
+   snprintf(gTempStr, elcount(gTempStr), formatstr, value);
+   writeDbgLvlPrefix(DbgLvl, gTempStr);
+}
+
+void writeDbgLvlPrefix(word DbgLvl, char formatstr[], long value1, long value2)
+{
+   snprintf(gTempStr, elcount(gTempStr), formatstr, value1, value2);
+   writeDbgLvlPrefix(DbgLvl, gTempStr);
+}
+
+void writeDbgLvlPrefix(word DbgLvl, char formatstr[], long value1, long value2, long value3)
+{
+   snprintf(gTempStr, elcount(gTempStr), formatstr, value1, value2, value3);
+   writeDbgLvlPrefix(DbgLvl, gTempStr);
+}
+
+void writeDbgLvlPrefix(word DbgLvl, char formatstr[], long value1, long value2, long value3, long value4)
+{
+   snprintf(gTempStr, elcount(gTempStr), formatstr, value1, value2, value3, value4);
+   writeDbgLvlPrefix(DbgLvl, gTempStr);
+}
+
+void writeDbgLvlPrefix(word DbgLvl, char formatstr[], long value1, long value2, long value3, long value4, long value5)
+{
+   snprintf(gTempStr, elcount(gTempStr), formatstr, value1, value2, value3, value4, value5);
+   writeDbgLvlPrefix(DbgLvl, gTempStr);
+}
+
+void writeDbgLvlPrefix(word DbgLvl, char formatstr[], long value1, long value2, long value3, long value4, long value5, long value6)
+{
+   snprintf(gTempStr, elcount(gTempStr), formatstr, value1, value2, value3, value4, value5, value6);
+   writeDbgLvlPrefix(DbgLvl, gTempStr);
+}

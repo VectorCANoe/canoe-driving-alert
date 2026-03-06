@@ -1,0 +1,2171 @@
+/*@!Encoding:1252*/
+/*
+//  (c) Vector Informatik GmbH. All rights reserved.
+//
+//  This file contains definitions of structs and methods that may be used
+//  to set and get the values of an ASN.1 defined packet's payload.
+//
+//  //This example demonstrates how to set a packet's payload:
+//  LONG packetHandle;
+//  struct SREM payload;
+//  //you need to set the values of the variable "payload" yourself
+//  packetHandle = API_InitSREMPacket();
+//  if (packetHandle!=0) {
+//    if (API_SetSREMParams(packetHandle, payload)==0) {
+//      if (C2xCompletePacket(packetHandle)==0) {
+//        C2xOutputPacket(packetHandle);
+//      }
+//    }
+//  }
+//                                                                             */
+includes
+{
+
+}
+variables
+{
+    struct SREMITS_Container_ItsPduHeader {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        BYTE protocolVersion;  // INTEGER, 0..255;
+        BYTE messageID;  // INTEGER, 0..255, denm(1), cam(2), poi(3), spatem(4), mapem(5), ivim(6), ev_rsr(7), tistpgtransaction(8), srem(9), ssem(10), evcsn(11), saem(12), rtcmem(13);
+        DWORD stationID;  // INTEGER, 0..4294967295;
+    };
+    
+    struct SREMDSRC_IntersectionReferenceID {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        struct OPT_WORD_ASN region;  // INTEGER, OPTIONAL, 0..65535;
+        WORD id;  // INTEGER, 0..65535;
+    };
+    
+    struct SREMDSRC_IntersectionAccessPoint {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        INT choice;
+        BYTE lane;  // INTEGER, 0..255;
+        BYTE approach;  // INTEGER, 0..15;
+        BYTE connection;  // INTEGER, 0..255;
+    };
+    
+    struct SREMReg_Empty {
+    };
+    
+    struct SREMDSRC_RegionalExtensionEmpty {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        BYTE regionId;  // INTEGER, 0..255, noRegion(0), addGrpA(1), addGrpB(2), addGrpC(3);
+        struct SREMReg_Empty regExtValue;  // TABLE;
+    };
+    
+    struct SREMDSRC_SignalRequest_regional {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        INT length;
+        struct SREMDSRC_RegionalExtensionEmpty arrayValue[4];  // SEQUENCE;
+    };
+    
+    struct SREMDSRC_SignalRequest {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        struct SREMDSRC_IntersectionReferenceID id;  // SEQUENCE;
+        BYTE requestID;  // INTEGER, 0..255;
+        INT requestType;  // ENUMERATED, priorityRequestTypeReserved(0), priorityRequest(1), priorityRequestUpdate(2), priorityCancellation(3);
+        struct SREMDSRC_IntersectionAccessPoint inBoundLane;  // CHOICE;
+        struct SREMDSRC_IntersectionAccessPoint outBoundLane;  // CHOICE, OPTIONAL;
+        struct SREMDSRC_SignalRequest_regional regional;  // SEQUENCEOF, OPTIONAL;
+    };
+    
+    struct SREMDSRC_SignalRequestPackage_regional {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        INT length;
+        struct SREMDSRC_RegionalExtensionEmpty arrayValue[4];  // SEQUENCE;
+    };
+    
+    struct SREMDSRC_SignalRequestPackage {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        struct SREMDSRC_SignalRequest request;  // SEQUENCE;
+        struct OPT_DWORD_ASN minute;  // INTEGER, OPTIONAL, 0..527040;
+        struct OPT_WORD_ASN second;  // INTEGER, OPTIONAL, 0..65535;
+        struct OPT_WORD_ASN duration;  // INTEGER, OPTIONAL, 0..65535;
+        struct SREMDSRC_SignalRequestPackage_regional regional;  // SEQUENCEOF, OPTIONAL;
+    };
+    
+    struct SREMDSRC_SignalRequestList {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        INT length;
+        struct SREMDSRC_SignalRequestPackage arrayValue[32];  // SEQUENCE;
+    };
+    
+    struct SREMDSRC_TemporaryID {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        CHAR string[5];
+        INT  stringLength;
+    };
+    
+    struct SREMDSRC_VehicleID {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        INT choice;
+        struct SREMDSRC_TemporaryID entityID;  // OCTETSTRING;
+        DWORD stationID;  // INTEGER, 0..4294967295;
+    };
+    
+    struct SREMDSRC_RequestorType {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        INT role;  // ENUMERATED, basicVehicle(0), publicTransport(1), specialTransport(2), dangerousGoods(3), roadWork(4), roadRescue(5), emergency(6), safetyCar(7), none_unknown(8), truck(9), motorcycle(10), roadSideSource(11), police(12), fire(13), ambulance(14), dot(15), transit(16), slowMoving(17), stopNgo(18), cyclist(19), pedestrian(20), nonMotorized(21), military(22);
+        struct OPT_ENUM_ASN subrole;  // ENUMERATED, OPTIONAL, requestSubRoleUnKnown(0), requestSubRole1(1), requestSubRole2(2), requestSubRole3(3), requestSubRole4(4), requestSubRole5(5), requestSubRole6(6), requestSubRole7(7), requestSubRole8(8), requestSubRole9(9), requestSubRole10(10), requestSubRole11(11), requestSubRole12(12), requestSubRole13(13), requestSubRole14(14), requestSubRoleReserved(15);
+        struct OPT_ENUM_ASN request;  // ENUMERATED, OPTIONAL, requestImportanceLevelUnKnown(0), requestImportanceLevel1(1), requestImportanceLevel2(2), requestImportanceLevel3(3), requestImportanceLevel4(4), requestImportanceLevel5(5), requestImportanceLevel6(6), requestImportanceLevel7(7), requestImportanceLevel8(8), requestImportanceLevel9(9), requestImportanceLevel10(10), requestImportanceLevel11(11), requestImportanceLevel12(12), requestImportanceLevel13(13), requestImportanceLevel14(14), requestImportanceReserved(15);
+        struct OPT_BYTE_ASN iso3883;  // INTEGER, OPTIONAL, 0..255, passengerCar(0), saloon(1), convertibleSaloon(2), pullmanSaloon(3), stationWagon(4), truckStationWagon(5), coupe(6), convertible(7), multipurposePassengerCar(8), forwardControlPassengerCar(9), specialPassengerCar(10), bus(11), minibus(12), urbanBus(13), interurbanCoach(14), longDistanceCoach(15), articulatedBus(16), trolleyBus(17), specialBus(18), commercialVehicle(19), specialCommercialVehicle(20), specialVehicle(21), trailingTowingVehicle(22), semiTrailerTowingVehicle(23), trailer(24), busTrailer(25), generalPurposeTrailer(26), caravan(27), specialTrailer(28), semiTrailer(29), busSemiTrailer(30), generalPurposeSemiTrailer(31), specialSemiTrailer(32), roadTrain(33), passengerRoadTrain(34), articulatedRoadTrain(35), doubleRoadTrain(36), compositeRoadTrain(37), specialRoadTrain(38), moped(39), motorCycle(40);
+        struct OPT_ENUM_ASN hpmsType;  // ENUMERATED, OPTIONAL, none(0), unknown(1), special(2), moto(3), car(4), carOther(5), bus(6), axleCnt2(7), axleCnt3(8), axleCnt4(9), axleCnt4Trailer(10), axleCnt5Trailer(11), axleCnt6Trailer(12), axleCnt5MultiTrailer(13), axleCnt6MultiTrailer(14), axleCnt7MultiTrailer(15);
+        struct SREMDSRC_RegionalExtensionEmpty regional;  // SEQUENCE, OPTIONAL;
+    };
+    
+    struct SREMITS_Container_Altitude {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        LONG altitudeValue;  // INTEGER, -100000..800001, referenceEllipsoidSurface(0), oneCentimeter(1), unavailable(800001);
+        INT altitudeConfidence;  // ENUMERATED, alt_000_01(0), alt_000_02(1), alt_000_05(2), alt_000_10(3), alt_000_20(4), alt_000_50(5), alt_001_00(6), alt_002_00(7), alt_005_00(8), alt_010_00(9), alt_020_00(10), alt_050_00(11), alt_100_00(12), alt_200_00(13), outOfRange(14), unavailable(15);
+    };
+    
+    struct SREMAddGrpC_Position3D_addGrpC {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        struct SREMITS_Container_Altitude altitude;  // SEQUENCE;
+    };
+    
+    struct SREMReg_Position3D {
+        struct SREMAddGrpC_Position3D_addGrpC addGrpC;  // SEQUENCE;
+    };
+    
+    struct SREMDSRC_RegionalExtensionPosition3D {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        BYTE regionId;  // INTEGER, 0..255, noRegion(0), addGrpA(1), addGrpB(2), addGrpC(3);
+        struct SREMReg_Position3D regExtValue;  // TABLE;
+    };
+    
+    struct SREMDSRC_Position3D_regional {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        INT length;
+        struct SREMDSRC_RegionalExtensionPosition3D arrayValue[4];  // SEQUENCE;
+    };
+    
+    struct SREMDSRC_Position3D {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        LONG lat;  // INTEGER, -900000000..900000001, unavailable(900000001);
+        LONG lon;  // INTEGER, -1800000000..1800000001, unavailable(1800000001);
+        struct OPT_LONG_ASN elevation;  // INTEGER, OPTIONAL, -4096..61439;
+        struct SREMDSRC_Position3D_regional regional;  // SEQUENCEOF, OPTIONAL;
+    };
+    
+    struct SREMDSRC_TransmissionAndSpeed {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        INT transmisson;  // ENUMERATED, neutral(0), park(1), forwardGears(2), reverseGears(3), reserved1(4), reserved2(5), reserved3(6), unavailable(7);
+        WORD speed;  // INTEGER, 0..8191;
+    };
+    
+    struct SREMDSRC_RequestorPositionVector {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        struct SREMDSRC_Position3D position;  // SEQUENCE;
+        struct OPT_WORD_ASN heading;  // INTEGER, OPTIONAL, 0..28800;
+        struct SREMDSRC_TransmissionAndSpeed speed;  // SEQUENCE, OPTIONAL;
+    };
+    
+    struct SREMDSRC_DescriptiveName {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        CHAR string[64];
+        INT  stringLength;
+    };
+    
+    struct SREMDSRC_TransitVehicleStatus {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        CHAR string[9];
+        INT  stringLength;
+    };
+    
+    struct SREMAddGrpC_RequestorDescription_addGrpC {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        struct OPT_BYTE_ASN fuel;  // INTEGER, OPTIONAL, 0..15, unknownFuel(0), gasoline(1), ethanol(2), diesel(3), electric(4), hybrid(5), hydrogen(6), natGasLiquid(7), natGasComp(8), propane(9);
+        struct OPT_ENUM_ASN batteryStatus;  // ENUMERATED, OPTIONAL, unknown(0), critical(1), low(2), good(3);
+    };
+    
+    struct SREMReg_RequestorDescription {
+        struct SREMAddGrpC_RequestorDescription_addGrpC addGrpC;  // SEQUENCE;
+    };
+    
+    struct SREMDSRC_RegionalExtensionRequestorDescription {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        BYTE regionId;  // INTEGER, 0..255, noRegion(0), addGrpA(1), addGrpB(2), addGrpC(3);
+        struct SREMReg_RequestorDescription regExtValue;  // TABLE;
+    };
+    
+    struct SREMDSRC_RequestorDescription_regional {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        INT length;
+        struct SREMDSRC_RegionalExtensionRequestorDescription arrayValue[4];  // SEQUENCE;
+    };
+    
+    struct SREMOcitRequestorDescriptionContainer {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        struct OPT_WORD_ASN reportingPoint;  // INTEGER, OPTIONAL, 0..65535;
+        struct OPT_BYTE_ASN priorityLevel;  // INTEGER, OPTIONAL, 0..255;
+        struct OPT_BYTE_ASN length;  // INTEGER, OPTIONAL, 0..7;
+        struct OPT_DWORD_ASN route;  // INTEGER, OPTIONAL, 0..4294967295;
+        struct OPT_DWORD_ASN line;  // INTEGER, OPTIONAL, 0..4294967295;
+        struct OPT_BYTE_ASN direction;  // INTEGER, OPTIONAL, 0..255;
+        struct OPT_DWORD_ASN tour;  // INTEGER, OPTIONAL, 0..4294967295;
+        struct OPT_DWORD_ASN version;  // INTEGER, OPTIONAL, 0..4294967295;
+    };
+    
+    struct SREMDSRC_RequestorDescription {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        struct SREMDSRC_VehicleID id;  // CHOICE;
+        struct SREMDSRC_RequestorType type;  // SEQUENCE, OPTIONAL;
+        struct SREMDSRC_RequestorPositionVector position;  // SEQUENCE, OPTIONAL;
+        struct SREMDSRC_DescriptiveName name;  // IA5STRING, OPTIONAL;
+        struct SREMDSRC_DescriptiveName routeName;  // IA5STRING, OPTIONAL;
+        struct SREMDSRC_TransitVehicleStatus transitStatus;  // BITSTRING, OPTIONAL;
+        struct OPT_ENUM_ASN transitOccupancy;  // ENUMERATED, OPTIONAL, occupancyUnknown(0), occupancyEmpty(1), occupancyVeryLow(2), occupancyLow(3), occupancyMed(4), occupancyHigh(5), occupancyNearlyFull(6), occupancyFull(7);
+        struct OPT_INT_ASN transitSchedule;  // INTEGER, OPTIONAL, -122..121;
+        struct SREMDSRC_RequestorDescription_regional regional;  // SEQUENCEOF, OPTIONAL;
+        struct SREMOcitRequestorDescriptionContainer ocit;  // SEQUENCE;
+    };
+    
+    struct SREMDSRC_SignalRequestMessage_regional {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        INT length;
+        struct SREMDSRC_RegionalExtensionEmpty arrayValue[4];  // SEQUENCE;
+    };
+    
+    struct SREMDSRC_SignalRequestMessage {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        struct OPT_DWORD_ASN timeStamp;  // INTEGER, OPTIONAL, 0..527040;
+        WORD second;  // INTEGER, 0..65535;
+        struct OPT_BYTE_ASN sequenceNumber;  // INTEGER, OPTIONAL, 0..127;
+        struct SREMDSRC_SignalRequestList requests;  // SEQUENCEOF, OPTIONAL;
+        struct SREMDSRC_RequestorDescription requestor;  // SEQUENCE;
+        struct SREMDSRC_SignalRequestMessage_regional regional;  // SEQUENCEOF, OPTIONAL;
+    };
+    
+    struct SREM {
+        INT isValidFlag;   // necessary if this struct is used as an optional field of a SEQUENCE
+        struct SREMITS_Container_ItsPduHeader header;  // SEQUENCE;
+        struct SREMDSRC_SignalRequestMessage srm;  // SEQUENCE;
+    };
+    
+}
+
+/*
+// init function to create a simple packet handle
+*/ 
+LONG API_InitSREMPacket()
+{
+  return C2xInitPacket("SREM"); 
+}
+
+/*
+// init function to create a simple packet handle and
+// initialize the struct with valid data
+*/ 
+LONG API_InitSREMPacket(struct SREM msgStruct)
+{
+  long pktHandle;
+
+  pktHandle = API_InitSREMPacket();
+
+  if (pktHandle != 0)
+  {
+    // create valid message and application data
+    if (C2xCompletePacket(pktHandle) == 0) 
+    {
+      API_GetSREMParams(pktHandle, msgStruct);
+    }
+  }
+  return pktHandle;
+}
+
+/*
+// init function to create a packet with security layer and
+// initialize the struct with valid data
+*/ 
+LONG API_InitSREMPacket(struct SREM msgStruct, char packetTypeDesignator[], char certificateName[])
+{
+  long pktHandle, certHdl;
+
+  // initialize the packet
+  pktHandle = C2xInitPacket("SREM", packetTypeDesignator);
+
+  if (pktHandle != 0)
+  {
+    certHdl = C2xSecCertificateGetHandle(certificateName);  // get the certificate handle for the cert with name "certificateName"
+    if (certHdl != 0) 
+    {
+      C2xSecPacketSetSignerHandle(pktHandle, certHdl); // set the certHdl to the packet
+    }
+
+    // create valid message and application data
+    if (C2xCompletePacket(pktHandle) == 0) 
+    {
+      // copy application data to the application structure
+      API_GetSREMParams(pktHandle, msgStruct);
+    }
+  }
+  return pktHandle;
+}
+    
+
+int GetSREMITS_Container_ItsPduHeaderParams(LONG packetHandle, struct SREMITS_Container_ItsPduHeader value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "protocolVersion");
+  value.protocolVersion = C2xGetTokenInt(packetHandle, "SREM", newPath);
+  result = CheckLastError("SREM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "messageID");
+  value.messageID = C2xGetTokenInt(packetHandle, "SREM", newPath);
+  result = CheckLastError("SREM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "stationID");
+  value.stationID = C2xGetTokenInt64(packetHandle, "SREM", newPath);
+  result = CheckLastError("SREM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int SetSREMITS_Container_ItsPduHeaderParams(LONG packetHandle, struct SREMITS_Container_ItsPduHeader value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "protocolVersion");
+  C2xSetTokenInt(packetHandle, "SREM", newPath, value.protocolVersion);
+  result = CheckLastError("SREM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "messageID");
+  C2xSetTokenInt(packetHandle, "SREM", newPath, value.messageID);
+  result = CheckLastError("SREM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "stationID");
+  C2xSetTokenInt64(packetHandle, "SREM", newPath, value.stationID);
+  result = CheckLastError("SREM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int GetSREMDSRC_IntersectionReferenceIDParams(LONG packetHandle, struct SREMDSRC_IntersectionReferenceID value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "region");
+  value.region.isValidFlag = C2xIsTokenAvailable(packetHandle, "SREM", newPath);
+  if(value.region.isValidFlag==1)
+  {
+    value.region.value = C2xGetTokenInt(packetHandle, "SREM", newPath);
+    result = CheckLastError("SREM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "id");
+  value.id = C2xGetTokenInt(packetHandle, "SREM", newPath);
+  result = CheckLastError("SREM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int SetSREMDSRC_IntersectionReferenceIDParams(LONG packetHandle, struct SREMDSRC_IntersectionReferenceID value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "region");
+  if(value.region.isValidFlag==1)
+  {
+    C2xSetTokenInt(packetHandle, "SREM", newPath, value.region.value);
+    result = CheckLastError("SREM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "SREM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "SREM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "id");
+  C2xSetTokenInt(packetHandle, "SREM", newPath, value.id);
+  result = CheckLastError("SREM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int GetSREMDSRC_IntersectionAccessPointParams(LONG packetHandle, struct SREMDSRC_IntersectionAccessPoint value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  value.choice = C2xGetTokenInt(packetHandle, "SREM", oldPath);
+
+  switch(value.choice)
+  {
+    case 0:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "lane");
+      value.lane = C2xGetTokenInt(packetHandle, "SREM", newPath);
+      result = CheckLastError("SREM", gkFuncRefGet, result);
+    }
+    break;
+    case 1:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "approach");
+      value.approach = C2xGetTokenInt(packetHandle, "SREM", newPath);
+      result = CheckLastError("SREM", gkFuncRefGet, result);
+    }
+    break;
+    case 2:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "connection");
+      value.connection = C2xGetTokenInt(packetHandle, "SREM", newPath);
+      result = CheckLastError("SREM", gkFuncRefGet, result);
+    }
+    break;
+  }
+  return result;
+}
+
+int SetSREMDSRC_IntersectionAccessPointParams(LONG packetHandle, struct SREMDSRC_IntersectionAccessPoint value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  switch(value.choice)
+  {
+    case 0:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "lane");
+      C2xSetTokenInt(packetHandle, "SREM", newPath, value.lane);
+      result = CheckLastError("SREM", gkFuncRefGet, result);
+    }
+    break;
+    case 1:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "approach");
+      C2xSetTokenInt(packetHandle, "SREM", newPath, value.approach);
+      result = CheckLastError("SREM", gkFuncRefGet, result);
+    }
+    break;
+    case 2:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "connection");
+      C2xSetTokenInt(packetHandle, "SREM", newPath, value.connection);
+      result = CheckLastError("SREM", gkFuncRefGet, result);
+    }
+    break;
+  }
+  return result;
+}
+
+int GetSREMDSRC_RegionalExtensionEmptyParams(LONG packetHandle, struct SREMDSRC_RegionalExtensionEmpty value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "regionId");
+  value.regionId = C2xGetTokenInt(packetHandle, "SREM", newPath);
+  result = CheckLastError("SREM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int SetSREMDSRC_RegionalExtensionEmptyParams(LONG packetHandle, struct SREMDSRC_RegionalExtensionEmpty value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+
+  return result;
+}
+
+int GetSREMDSRC_SignalRequest_regionalParams(LONG packetHandle, struct SREMDSRC_SignalRequest_regional value, char oldPath[])
+{
+  char newPath[300]; 
+  int i;
+  int result;
+
+  result = 0;
+
+  value.length = C2xGetTokenInt(packetHandle, "SREM", oldPath);
+  if((result = CheckLastError("SREM", gkFuncRefGet, result))==0)
+  {
+    for(i=0; i<value.length; i++)
+    {
+      snprintf(newPath, elcount(newPath), "%s[%d]", oldPath, i);
+      GetSREMDSRC_RegionalExtensionEmptyParams(packetHandle, value.arrayValue[i], newPath);
+      result = CheckLastError("SREM", gkFuncRefGet, result);
+    }
+  }
+  return result;
+}
+
+int SetSREMDSRC_SignalRequest_regionalParams(LONG packetHandle, struct SREMDSRC_SignalRequest_regional value, char oldPath[])
+{
+  char newPath[300]; 
+  int i;
+  int result;
+
+  result = 0;
+
+  C2xRemoveToken(packetHandle, "SREM", oldPath);
+  for(i=0; i<value.length; i++)
+  {
+    snprintf(newPath, elcount(newPath), "%s[%d]", oldPath, i);
+    SetSREMDSRC_RegionalExtensionEmptyParams(packetHandle, value.arrayValue[i], newPath);
+    result = CheckLastError("SREM", gkFuncRefGet, result);
+  }
+  return result;
+}
+
+int GetSREMDSRC_SignalRequestParams(LONG packetHandle, struct SREMDSRC_SignalRequest value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "id");
+  GetSREMDSRC_IntersectionReferenceIDParams(packetHandle, value.id, newPath);
+  result = CheckLastError("SREM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "requestID");
+  value.requestID = C2xGetTokenInt(packetHandle, "SREM", newPath);
+  result = CheckLastError("SREM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "requestType");
+  value.requestType = C2xGetTokenInt(packetHandle, "SREM", newPath);
+  result = CheckLastError("SREM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "inBoundLane");
+  GetSREMDSRC_IntersectionAccessPointParams(packetHandle, value.inBoundLane, newPath);
+  result = CheckLastError("SREM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "outBoundLane");
+  value.outBoundLane.isValidFlag = C2xIsTokenAvailable(packetHandle, "SREM", newPath);
+  if(value.outBoundLane.isValidFlag==1)
+  {
+    GetSREMDSRC_IntersectionAccessPointParams(packetHandle, value.outBoundLane, newPath);
+    result = CheckLastError("SREM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "regional");
+  value.regional.isValidFlag = C2xIsTokenAvailable(packetHandle, "SREM", newPath);
+  if(value.regional.isValidFlag==1)
+  {
+    GetSREMDSRC_SignalRequest_regionalParams(packetHandle, value.regional, newPath);
+    result = CheckLastError("SREM", gkFuncRefGet, result);
+  }
+  return result;
+}
+
+int SetSREMDSRC_SignalRequestParams(LONG packetHandle, struct SREMDSRC_SignalRequest value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "id");
+  SetSREMDSRC_IntersectionReferenceIDParams(packetHandle, value.id, newPath);
+  result = CheckLastError("SREM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "requestID");
+  C2xSetTokenInt(packetHandle, "SREM", newPath, value.requestID);
+  result = CheckLastError("SREM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "requestType");
+  C2xSetTokenInt(packetHandle, "SREM", newPath, value.requestType);
+  result = CheckLastError("SREM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "inBoundLane");
+  SetSREMDSRC_IntersectionAccessPointParams(packetHandle, value.inBoundLane, newPath);
+  result = CheckLastError("SREM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "outBoundLane");
+  if(value.outBoundLane.isValidFlag==1)
+  {
+    SetSREMDSRC_IntersectionAccessPointParams(packetHandle, value.outBoundLane, newPath);
+    result = CheckLastError("SREM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "SREM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "SREM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "regional");
+  if(value.regional.isValidFlag==1)
+  {
+    SetSREMDSRC_SignalRequest_regionalParams(packetHandle, value.regional, newPath);
+    result = CheckLastError("SREM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "SREM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "SREM", newPath);
+    }
+  }
+
+  return result;
+}
+
+int GetSREMDSRC_SignalRequestPackage_regionalParams(LONG packetHandle, struct SREMDSRC_SignalRequestPackage_regional value, char oldPath[])
+{
+  char newPath[300]; 
+  int i;
+  int result;
+
+  result = 0;
+
+  value.length = C2xGetTokenInt(packetHandle, "SREM", oldPath);
+  if((result = CheckLastError("SREM", gkFuncRefGet, result))==0)
+  {
+    for(i=0; i<value.length; i++)
+    {
+      snprintf(newPath, elcount(newPath), "%s[%d]", oldPath, i);
+      GetSREMDSRC_RegionalExtensionEmptyParams(packetHandle, value.arrayValue[i], newPath);
+      result = CheckLastError("SREM", gkFuncRefGet, result);
+    }
+  }
+  return result;
+}
+
+int SetSREMDSRC_SignalRequestPackage_regionalParams(LONG packetHandle, struct SREMDSRC_SignalRequestPackage_regional value, char oldPath[])
+{
+  char newPath[300]; 
+  int i;
+  int result;
+
+  result = 0;
+
+  C2xRemoveToken(packetHandle, "SREM", oldPath);
+  for(i=0; i<value.length; i++)
+  {
+    snprintf(newPath, elcount(newPath), "%s[%d]", oldPath, i);
+    SetSREMDSRC_RegionalExtensionEmptyParams(packetHandle, value.arrayValue[i], newPath);
+    result = CheckLastError("SREM", gkFuncRefGet, result);
+  }
+  return result;
+}
+
+int GetSREMDSRC_SignalRequestPackageParams(LONG packetHandle, struct SREMDSRC_SignalRequestPackage value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "request");
+  GetSREMDSRC_SignalRequestParams(packetHandle, value.request, newPath);
+  result = CheckLastError("SREM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "minute");
+  value.minute.isValidFlag = C2xIsTokenAvailable(packetHandle, "SREM", newPath);
+  if(value.minute.isValidFlag==1)
+  {
+    value.minute.value = C2xGetTokenInt(packetHandle, "SREM", newPath);
+    result = CheckLastError("SREM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "second");
+  value.second.isValidFlag = C2xIsTokenAvailable(packetHandle, "SREM", newPath);
+  if(value.second.isValidFlag==1)
+  {
+    value.second.value = C2xGetTokenInt(packetHandle, "SREM", newPath);
+    result = CheckLastError("SREM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "duration");
+  value.duration.isValidFlag = C2xIsTokenAvailable(packetHandle, "SREM", newPath);
+  if(value.duration.isValidFlag==1)
+  {
+    value.duration.value = C2xGetTokenInt(packetHandle, "SREM", newPath);
+    result = CheckLastError("SREM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "regional");
+  value.regional.isValidFlag = C2xIsTokenAvailable(packetHandle, "SREM", newPath);
+  if(value.regional.isValidFlag==1)
+  {
+    GetSREMDSRC_SignalRequestPackage_regionalParams(packetHandle, value.regional, newPath);
+    result = CheckLastError("SREM", gkFuncRefGet, result);
+  }
+  return result;
+}
+
+int SetSREMDSRC_SignalRequestPackageParams(LONG packetHandle, struct SREMDSRC_SignalRequestPackage value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "request");
+  SetSREMDSRC_SignalRequestParams(packetHandle, value.request, newPath);
+  result = CheckLastError("SREM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "minute");
+  if(value.minute.isValidFlag==1)
+  {
+    C2xSetTokenInt(packetHandle, "SREM", newPath, value.minute.value);
+    result = CheckLastError("SREM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "SREM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "SREM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "second");
+  if(value.second.isValidFlag==1)
+  {
+    C2xSetTokenInt(packetHandle, "SREM", newPath, value.second.value);
+    result = CheckLastError("SREM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "SREM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "SREM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "duration");
+  if(value.duration.isValidFlag==1)
+  {
+    C2xSetTokenInt(packetHandle, "SREM", newPath, value.duration.value);
+    result = CheckLastError("SREM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "SREM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "SREM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "regional");
+  if(value.regional.isValidFlag==1)
+  {
+    SetSREMDSRC_SignalRequestPackage_regionalParams(packetHandle, value.regional, newPath);
+    result = CheckLastError("SREM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "SREM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "SREM", newPath);
+    }
+  }
+
+  return result;
+}
+
+int GetSREMDSRC_SignalRequestListParams(LONG packetHandle, struct SREMDSRC_SignalRequestList value, char oldPath[])
+{
+  char newPath[300]; 
+  int i;
+  int result;
+
+  result = 0;
+
+  value.length = C2xGetTokenInt(packetHandle, "SREM", oldPath);
+  if((result = CheckLastError("SREM", gkFuncRefGet, result))==0)
+  {
+    for(i=0; i<value.length; i++)
+    {
+      snprintf(newPath, elcount(newPath), "%s[%d]", oldPath, i);
+      GetSREMDSRC_SignalRequestPackageParams(packetHandle, value.arrayValue[i], newPath);
+      result = CheckLastError("SREM", gkFuncRefGet, result);
+    }
+  }
+  return result;
+}
+
+int SetSREMDSRC_SignalRequestListParams(LONG packetHandle, struct SREMDSRC_SignalRequestList value, char oldPath[])
+{
+  char newPath[300]; 
+  int i;
+  int result;
+
+  result = 0;
+
+  C2xRemoveToken(packetHandle, "SREM", oldPath);
+  for(i=0; i<value.length; i++)
+  {
+    snprintf(newPath, elcount(newPath), "%s[%d]", oldPath, i);
+    SetSREMDSRC_SignalRequestPackageParams(packetHandle, value.arrayValue[i], newPath);
+    result = CheckLastError("SREM", gkFuncRefGet, result);
+  }
+  return result;
+}
+
+int GetSREMDSRC_VehicleIDParams(LONG packetHandle, struct SREMDSRC_VehicleID value, char oldPath[])
+{
+  char newPath[300];
+  char buffer[300];
+  int result;
+
+  result = 0;
+
+  value.choice = C2xGetTokenInt(packetHandle, "SREM", oldPath);
+
+  switch(value.choice)
+  {
+    case 0:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "entityID");
+      value.entityID.stringLength = C2xGetTokenData(packetHandle, "SREM", newPath, elcount(value.entityID.string), value.entityID.string);
+      result = CheckLastError("SREM", gkFuncRefGet, result);
+    }
+    break;
+    case 1:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "stationID");
+      value.stationID = C2xGetTokenInt64(packetHandle, "SREM", newPath);
+      result = CheckLastError("SREM", gkFuncRefGet, result);
+    }
+    break;
+  }
+  return result;
+}
+
+int SetSREMDSRC_VehicleIDParams(LONG packetHandle, struct SREMDSRC_VehicleID value, char oldPath[])
+{
+  char newPath[300];
+  char buffer[300];
+  int result;
+
+  result = 0;
+
+  switch(value.choice)
+  {
+    case 0:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "entityID");
+      C2xSetTokenData(packetHandle, "SREM", newPath, value.entityID.stringLength, value.entityID.string);
+      result = CheckLastError("SREM", gkFuncRefGet, result);
+    }
+    break;
+    case 1:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "stationID");
+      C2xSetTokenInt64(packetHandle, "SREM", newPath, value.stationID);
+      result = CheckLastError("SREM", gkFuncRefGet, result);
+    }
+    break;
+  }
+  return result;
+}
+
+int GetSREMDSRC_RequestorTypeParams(LONG packetHandle, struct SREMDSRC_RequestorType value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "role");
+  value.role = C2xGetTokenInt(packetHandle, "SREM", newPath);
+  result = CheckLastError("SREM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "subrole");
+  value.subrole.isValidFlag = C2xIsTokenAvailable(packetHandle, "SREM", newPath);
+  if(value.subrole.isValidFlag==1)
+  {
+    value.subrole.value = C2xGetTokenInt(packetHandle, "SREM", newPath);
+    result = CheckLastError("SREM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "request");
+  value.request.isValidFlag = C2xIsTokenAvailable(packetHandle, "SREM", newPath);
+  if(value.request.isValidFlag==1)
+  {
+    value.request.value = C2xGetTokenInt(packetHandle, "SREM", newPath);
+    result = CheckLastError("SREM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "iso3883");
+  value.iso3883.isValidFlag = C2xIsTokenAvailable(packetHandle, "SREM", newPath);
+  if(value.iso3883.isValidFlag==1)
+  {
+    value.iso3883.value = C2xGetTokenInt(packetHandle, "SREM", newPath);
+    result = CheckLastError("SREM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "hpmsType");
+  value.hpmsType.isValidFlag = C2xIsTokenAvailable(packetHandle, "SREM", newPath);
+  if(value.hpmsType.isValidFlag==1)
+  {
+    value.hpmsType.value = C2xGetTokenInt(packetHandle, "SREM", newPath);
+    result = CheckLastError("SREM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "regional");
+  value.regional.isValidFlag = C2xIsTokenAvailable(packetHandle, "SREM", newPath);
+  if(value.regional.isValidFlag==1)
+  {
+    GetSREMDSRC_RegionalExtensionEmptyParams(packetHandle, value.regional, newPath);
+    result = CheckLastError("SREM", gkFuncRefGet, result);
+  }
+  return result;
+}
+
+int SetSREMDSRC_RequestorTypeParams(LONG packetHandle, struct SREMDSRC_RequestorType value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "role");
+  C2xSetTokenInt(packetHandle, "SREM", newPath, value.role);
+  result = CheckLastError("SREM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "subrole");
+  if(value.subrole.isValidFlag==1)
+  {
+    C2xSetTokenInt(packetHandle, "SREM", newPath, value.subrole.value);
+    result = CheckLastError("SREM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "SREM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "SREM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "request");
+  if(value.request.isValidFlag==1)
+  {
+    C2xSetTokenInt(packetHandle, "SREM", newPath, value.request.value);
+    result = CheckLastError("SREM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "SREM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "SREM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "iso3883");
+  if(value.iso3883.isValidFlag==1)
+  {
+    C2xSetTokenInt(packetHandle, "SREM", newPath, value.iso3883.value);
+    result = CheckLastError("SREM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "SREM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "SREM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "hpmsType");
+  if(value.hpmsType.isValidFlag==1)
+  {
+    C2xSetTokenInt(packetHandle, "SREM", newPath, value.hpmsType.value);
+    result = CheckLastError("SREM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "SREM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "SREM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "regional");
+  if(value.regional.isValidFlag==1)
+  {
+    SetSREMDSRC_RegionalExtensionEmptyParams(packetHandle, value.regional, newPath);
+    result = CheckLastError("SREM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "SREM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "SREM", newPath);
+    }
+  }
+
+  return result;
+}
+
+int GetSREMITS_Container_AltitudeParams(LONG packetHandle, struct SREMITS_Container_Altitude value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "altitudeValue");
+  value.altitudeValue = C2xGetTokenInt(packetHandle, "SREM", newPath);
+  result = CheckLastError("SREM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "altitudeConfidence");
+  value.altitudeConfidence = C2xGetTokenInt(packetHandle, "SREM", newPath);
+  result = CheckLastError("SREM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int SetSREMITS_Container_AltitudeParams(LONG packetHandle, struct SREMITS_Container_Altitude value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "altitudeValue");
+  C2xSetTokenInt(packetHandle, "SREM", newPath, value.altitudeValue);
+  result = CheckLastError("SREM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "altitudeConfidence");
+  C2xSetTokenInt(packetHandle, "SREM", newPath, value.altitudeConfidence);
+  result = CheckLastError("SREM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int GetSREMAddGrpC_Position3D_addGrpCParams(LONG packetHandle, struct SREMAddGrpC_Position3D_addGrpC value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "altitude");
+  GetSREMITS_Container_AltitudeParams(packetHandle, value.altitude, newPath);
+  result = CheckLastError("SREM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int SetSREMAddGrpC_Position3D_addGrpCParams(LONG packetHandle, struct SREMAddGrpC_Position3D_addGrpC value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "altitude");
+  SetSREMITS_Container_AltitudeParams(packetHandle, value.altitude, newPath);
+  result = CheckLastError("SREM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int GetSREMReg_Position3DParams(LONG packetHandle, WORD tableKey, struct SREMReg_Position3D value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  switch(tableKey)
+  {
+    case 3:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "addGrpC");
+      GetSREMAddGrpC_Position3D_addGrpCParams(packetHandle, value.addGrpC, newPath);
+      result = CheckLastError("SREM", gkFuncRefGet, result);
+    }
+    break;
+  }
+  return result;
+}
+
+int SetSREMReg_Position3DParams(LONG packetHandle, WORD tableKey, struct SREMReg_Position3D value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  switch(tableKey)
+  {
+    case 3:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "addGrpC");
+      SetSREMAddGrpC_Position3D_addGrpCParams(packetHandle, value.addGrpC, newPath);
+      result = CheckLastError("SREM", gkFuncRefGet, result);
+    }
+    break;
+  }
+  return result;
+}
+
+int GetSREMDSRC_RegionalExtensionPosition3DParams(LONG packetHandle, struct SREMDSRC_RegionalExtensionPosition3D value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "regionId");
+  value.regionId = C2xGetTokenInt(packetHandle, "SREM", newPath);
+  result = CheckLastError("SREM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "regExtValue");
+  GetSREMReg_Position3DParams(packetHandle, value.regionId, value.regExtValue, newPath);
+  result = CheckLastError("SREM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int SetSREMDSRC_RegionalExtensionPosition3DParams(LONG packetHandle, struct SREMDSRC_RegionalExtensionPosition3D value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "regExtValue");
+  SetSREMReg_Position3DParams(packetHandle, value.regionId, value.regExtValue, newPath);
+  result = CheckLastError("SREM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int GetSREMDSRC_Position3D_regionalParams(LONG packetHandle, struct SREMDSRC_Position3D_regional value, char oldPath[])
+{
+  char newPath[300]; 
+  int i;
+  int result;
+
+  result = 0;
+
+  value.length = C2xGetTokenInt(packetHandle, "SREM", oldPath);
+  if((result = CheckLastError("SREM", gkFuncRefGet, result))==0)
+  {
+    for(i=0; i<value.length; i++)
+    {
+      snprintf(newPath, elcount(newPath), "%s[%d]", oldPath, i);
+      GetSREMDSRC_RegionalExtensionPosition3DParams(packetHandle, value.arrayValue[i], newPath);
+      result = CheckLastError("SREM", gkFuncRefGet, result);
+    }
+  }
+  return result;
+}
+
+int SetSREMDSRC_Position3D_regionalParams(LONG packetHandle, struct SREMDSRC_Position3D_regional value, char oldPath[])
+{
+  char newPath[300]; 
+  int i;
+  int result;
+
+  result = 0;
+
+  C2xRemoveToken(packetHandle, "SREM", oldPath);
+  for(i=0; i<value.length; i++)
+  {
+    snprintf(newPath, elcount(newPath), "%s[%d]", oldPath, i);
+    SetSREMDSRC_RegionalExtensionPosition3DParams(packetHandle, value.arrayValue[i], newPath);
+    result = CheckLastError("SREM", gkFuncRefGet, result);
+  }
+  return result;
+}
+
+int GetSREMDSRC_Position3DParams(LONG packetHandle, struct SREMDSRC_Position3D value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "lat");
+  value.lat = C2xGetTokenInt(packetHandle, "SREM", newPath);
+  result = CheckLastError("SREM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "lon");
+  value.lon = C2xGetTokenInt(packetHandle, "SREM", newPath);
+  result = CheckLastError("SREM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "elevation");
+  value.elevation.isValidFlag = C2xIsTokenAvailable(packetHandle, "SREM", newPath);
+  if(value.elevation.isValidFlag==1)
+  {
+    value.elevation.value = C2xGetTokenInt(packetHandle, "SREM", newPath);
+    result = CheckLastError("SREM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "regional");
+  value.regional.isValidFlag = C2xIsTokenAvailable(packetHandle, "SREM", newPath);
+  if(value.regional.isValidFlag==1)
+  {
+    GetSREMDSRC_Position3D_regionalParams(packetHandle, value.regional, newPath);
+    result = CheckLastError("SREM", gkFuncRefGet, result);
+  }
+  return result;
+}
+
+int SetSREMDSRC_Position3DParams(LONG packetHandle, struct SREMDSRC_Position3D value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "lat");
+  C2xSetTokenInt(packetHandle, "SREM", newPath, value.lat);
+  result = CheckLastError("SREM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "lon");
+  C2xSetTokenInt(packetHandle, "SREM", newPath, value.lon);
+  result = CheckLastError("SREM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "elevation");
+  if(value.elevation.isValidFlag==1)
+  {
+    C2xSetTokenInt(packetHandle, "SREM", newPath, value.elevation.value);
+    result = CheckLastError("SREM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "SREM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "SREM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "regional");
+  if(value.regional.isValidFlag==1)
+  {
+    SetSREMDSRC_Position3D_regionalParams(packetHandle, value.regional, newPath);
+    result = CheckLastError("SREM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "SREM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "SREM", newPath);
+    }
+  }
+
+  return result;
+}
+
+int GetSREMDSRC_TransmissionAndSpeedParams(LONG packetHandle, struct SREMDSRC_TransmissionAndSpeed value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "transmisson");
+  value.transmisson = C2xGetTokenInt(packetHandle, "SREM", newPath);
+  result = CheckLastError("SREM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "speed");
+  value.speed = C2xGetTokenInt(packetHandle, "SREM", newPath);
+  result = CheckLastError("SREM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int SetSREMDSRC_TransmissionAndSpeedParams(LONG packetHandle, struct SREMDSRC_TransmissionAndSpeed value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "transmisson");
+  C2xSetTokenInt(packetHandle, "SREM", newPath, value.transmisson);
+  result = CheckLastError("SREM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "speed");
+  C2xSetTokenInt(packetHandle, "SREM", newPath, value.speed);
+  result = CheckLastError("SREM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int GetSREMDSRC_RequestorPositionVectorParams(LONG packetHandle, struct SREMDSRC_RequestorPositionVector value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "position");
+  GetSREMDSRC_Position3DParams(packetHandle, value.position, newPath);
+  result = CheckLastError("SREM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "heading");
+  value.heading.isValidFlag = C2xIsTokenAvailable(packetHandle, "SREM", newPath);
+  if(value.heading.isValidFlag==1)
+  {
+    value.heading.value = C2xGetTokenInt(packetHandle, "SREM", newPath);
+    result = CheckLastError("SREM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "speed");
+  value.speed.isValidFlag = C2xIsTokenAvailable(packetHandle, "SREM", newPath);
+  if(value.speed.isValidFlag==1)
+  {
+    GetSREMDSRC_TransmissionAndSpeedParams(packetHandle, value.speed, newPath);
+    result = CheckLastError("SREM", gkFuncRefGet, result);
+  }
+  return result;
+}
+
+int SetSREMDSRC_RequestorPositionVectorParams(LONG packetHandle, struct SREMDSRC_RequestorPositionVector value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "position");
+  SetSREMDSRC_Position3DParams(packetHandle, value.position, newPath);
+  result = CheckLastError("SREM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "heading");
+  if(value.heading.isValidFlag==1)
+  {
+    C2xSetTokenInt(packetHandle, "SREM", newPath, value.heading.value);
+    result = CheckLastError("SREM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "SREM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "SREM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "speed");
+  if(value.speed.isValidFlag==1)
+  {
+    SetSREMDSRC_TransmissionAndSpeedParams(packetHandle, value.speed, newPath);
+    result = CheckLastError("SREM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "SREM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "SREM", newPath);
+    }
+  }
+
+  return result;
+}
+
+int GetSREMAddGrpC_RequestorDescription_addGrpCParams(LONG packetHandle, struct SREMAddGrpC_RequestorDescription_addGrpC value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "fuel");
+  value.fuel.isValidFlag = C2xIsTokenAvailable(packetHandle, "SREM", newPath);
+  if(value.fuel.isValidFlag==1)
+  {
+    value.fuel.value = C2xGetTokenInt(packetHandle, "SREM", newPath);
+    result = CheckLastError("SREM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "batteryStatus");
+  value.batteryStatus.isValidFlag = C2xIsTokenAvailable(packetHandle, "SREM", newPath);
+  if(value.batteryStatus.isValidFlag==1)
+  {
+    value.batteryStatus.value = C2xGetTokenInt(packetHandle, "SREM", newPath);
+    result = CheckLastError("SREM", gkFuncRefGet, result);
+  }
+  return result;
+}
+
+int SetSREMAddGrpC_RequestorDescription_addGrpCParams(LONG packetHandle, struct SREMAddGrpC_RequestorDescription_addGrpC value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "fuel");
+  if(value.fuel.isValidFlag==1)
+  {
+    C2xSetTokenInt(packetHandle, "SREM", newPath, value.fuel.value);
+    result = CheckLastError("SREM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "SREM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "SREM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "batteryStatus");
+  if(value.batteryStatus.isValidFlag==1)
+  {
+    C2xSetTokenInt(packetHandle, "SREM", newPath, value.batteryStatus.value);
+    result = CheckLastError("SREM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "SREM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "SREM", newPath);
+    }
+  }
+
+  return result;
+}
+
+int GetSREMReg_RequestorDescriptionParams(LONG packetHandle, WORD tableKey, struct SREMReg_RequestorDescription value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  switch(tableKey)
+  {
+    case 3:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "addGrpC");
+      GetSREMAddGrpC_RequestorDescription_addGrpCParams(packetHandle, value.addGrpC, newPath);
+      result = CheckLastError("SREM", gkFuncRefGet, result);
+    }
+    break;
+  }
+  return result;
+}
+
+int SetSREMReg_RequestorDescriptionParams(LONG packetHandle, WORD tableKey, struct SREMReg_RequestorDescription value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  switch(tableKey)
+  {
+    case 3:
+    {
+      snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "addGrpC");
+      SetSREMAddGrpC_RequestorDescription_addGrpCParams(packetHandle, value.addGrpC, newPath);
+      result = CheckLastError("SREM", gkFuncRefGet, result);
+    }
+    break;
+  }
+  return result;
+}
+
+int GetSREMDSRC_RegionalExtensionRequestorDescriptionParams(LONG packetHandle, struct SREMDSRC_RegionalExtensionRequestorDescription value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "regionId");
+  value.regionId = C2xGetTokenInt(packetHandle, "SREM", newPath);
+  result = CheckLastError("SREM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "regExtValue");
+  GetSREMReg_RequestorDescriptionParams(packetHandle, value.regionId, value.regExtValue, newPath);
+  result = CheckLastError("SREM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int SetSREMDSRC_RegionalExtensionRequestorDescriptionParams(LONG packetHandle, struct SREMDSRC_RegionalExtensionRequestorDescription value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "regExtValue");
+  SetSREMReg_RequestorDescriptionParams(packetHandle, value.regionId, value.regExtValue, newPath);
+  result = CheckLastError("SREM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int GetSREMDSRC_RequestorDescription_regionalParams(LONG packetHandle, struct SREMDSRC_RequestorDescription_regional value, char oldPath[])
+{
+  char newPath[300]; 
+  int i;
+  int result;
+
+  result = 0;
+
+  value.length = C2xGetTokenInt(packetHandle, "SREM", oldPath);
+  if((result = CheckLastError("SREM", gkFuncRefGet, result))==0)
+  {
+    for(i=0; i<value.length; i++)
+    {
+      snprintf(newPath, elcount(newPath), "%s[%d]", oldPath, i);
+      GetSREMDSRC_RegionalExtensionRequestorDescriptionParams(packetHandle, value.arrayValue[i], newPath);
+      result = CheckLastError("SREM", gkFuncRefGet, result);
+    }
+  }
+  return result;
+}
+
+int SetSREMDSRC_RequestorDescription_regionalParams(LONG packetHandle, struct SREMDSRC_RequestorDescription_regional value, char oldPath[])
+{
+  char newPath[300]; 
+  int i;
+  int result;
+
+  result = 0;
+
+  C2xRemoveToken(packetHandle, "SREM", oldPath);
+  for(i=0; i<value.length; i++)
+  {
+    snprintf(newPath, elcount(newPath), "%s[%d]", oldPath, i);
+    SetSREMDSRC_RegionalExtensionRequestorDescriptionParams(packetHandle, value.arrayValue[i], newPath);
+    result = CheckLastError("SREM", gkFuncRefGet, result);
+  }
+  return result;
+}
+
+int GetSREMOcitRequestorDescriptionContainerParams(LONG packetHandle, struct SREMOcitRequestorDescriptionContainer value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "reportingPoint");
+  value.reportingPoint.isValidFlag = C2xIsTokenAvailable(packetHandle, "SREM", newPath);
+  if(value.reportingPoint.isValidFlag==1)
+  {
+    value.reportingPoint.value = C2xGetTokenInt(packetHandle, "SREM", newPath);
+    result = CheckLastError("SREM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "priorityLevel");
+  value.priorityLevel.isValidFlag = C2xIsTokenAvailable(packetHandle, "SREM", newPath);
+  if(value.priorityLevel.isValidFlag==1)
+  {
+    value.priorityLevel.value = C2xGetTokenInt(packetHandle, "SREM", newPath);
+    result = CheckLastError("SREM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "length");
+  value.length.isValidFlag = C2xIsTokenAvailable(packetHandle, "SREM", newPath);
+  if(value.length.isValidFlag==1)
+  {
+    value.length.value = C2xGetTokenInt(packetHandle, "SREM", newPath);
+    result = CheckLastError("SREM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "route");
+  value.route.isValidFlag = C2xIsTokenAvailable(packetHandle, "SREM", newPath);
+  if(value.route.isValidFlag==1)
+  {
+    value.route.value = C2xGetTokenInt64(packetHandle, "SREM", newPath);
+    result = CheckLastError("SREM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "line");
+  value.line.isValidFlag = C2xIsTokenAvailable(packetHandle, "SREM", newPath);
+  if(value.line.isValidFlag==1)
+  {
+    value.line.value = C2xGetTokenInt64(packetHandle, "SREM", newPath);
+    result = CheckLastError("SREM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "direction");
+  value.direction.isValidFlag = C2xIsTokenAvailable(packetHandle, "SREM", newPath);
+  if(value.direction.isValidFlag==1)
+  {
+    value.direction.value = C2xGetTokenInt(packetHandle, "SREM", newPath);
+    result = CheckLastError("SREM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "tour");
+  value.tour.isValidFlag = C2xIsTokenAvailable(packetHandle, "SREM", newPath);
+  if(value.tour.isValidFlag==1)
+  {
+    value.tour.value = C2xGetTokenInt64(packetHandle, "SREM", newPath);
+    result = CheckLastError("SREM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "version");
+  value.version.isValidFlag = C2xIsTokenAvailable(packetHandle, "SREM", newPath);
+  if(value.version.isValidFlag==1)
+  {
+    value.version.value = C2xGetTokenInt64(packetHandle, "SREM", newPath);
+    result = CheckLastError("SREM", gkFuncRefGet, result);
+  }
+  return result;
+}
+
+int SetSREMOcitRequestorDescriptionContainerParams(LONG packetHandle, struct SREMOcitRequestorDescriptionContainer value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "reportingPoint");
+  if(value.reportingPoint.isValidFlag==1)
+  {
+    C2xSetTokenInt(packetHandle, "SREM", newPath, value.reportingPoint.value);
+    result = CheckLastError("SREM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "SREM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "SREM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "priorityLevel");
+  if(value.priorityLevel.isValidFlag==1)
+  {
+    C2xSetTokenInt(packetHandle, "SREM", newPath, value.priorityLevel.value);
+    result = CheckLastError("SREM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "SREM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "SREM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "length");
+  if(value.length.isValidFlag==1)
+  {
+    C2xSetTokenInt(packetHandle, "SREM", newPath, value.length.value);
+    result = CheckLastError("SREM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "SREM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "SREM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "route");
+  if(value.route.isValidFlag==1)
+  {
+    C2xSetTokenInt64(packetHandle, "SREM", newPath, value.route.value);
+    result = CheckLastError("SREM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "SREM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "SREM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "line");
+  if(value.line.isValidFlag==1)
+  {
+    C2xSetTokenInt64(packetHandle, "SREM", newPath, value.line.value);
+    result = CheckLastError("SREM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "SREM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "SREM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "direction");
+  if(value.direction.isValidFlag==1)
+  {
+    C2xSetTokenInt(packetHandle, "SREM", newPath, value.direction.value);
+    result = CheckLastError("SREM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "SREM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "SREM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "tour");
+  if(value.tour.isValidFlag==1)
+  {
+    C2xSetTokenInt64(packetHandle, "SREM", newPath, value.tour.value);
+    result = CheckLastError("SREM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "SREM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "SREM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "version");
+  if(value.version.isValidFlag==1)
+  {
+    C2xSetTokenInt64(packetHandle, "SREM", newPath, value.version.value);
+    result = CheckLastError("SREM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "SREM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "SREM", newPath);
+    }
+  }
+
+  return result;
+}
+
+int GetSREMDSRC_RequestorDescriptionParams(LONG packetHandle, struct SREMDSRC_RequestorDescription value, char oldPath[])
+{
+  char newPath[300]; 
+  int j; 
+  int k;
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "id");
+  GetSREMDSRC_VehicleIDParams(packetHandle, value.id, newPath);
+  result = CheckLastError("SREM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "type");
+  value.type.isValidFlag = C2xIsTokenAvailable(packetHandle, "SREM", newPath);
+  if(value.type.isValidFlag==1)
+  {
+    GetSREMDSRC_RequestorTypeParams(packetHandle, value.type, newPath);
+    result = CheckLastError("SREM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "position");
+  value.position.isValidFlag = C2xIsTokenAvailable(packetHandle, "SREM", newPath);
+  if(value.position.isValidFlag==1)
+  {
+    GetSREMDSRC_RequestorPositionVectorParams(packetHandle, value.position, newPath);
+    result = CheckLastError("SREM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "name");
+  value.name.isValidFlag = C2xIsTokenAvailable(packetHandle, "SREM", newPath);
+  if(value.name.isValidFlag==1)
+  {
+    value.name.stringLength = C2xGetTokenData(packetHandle, "SREM", newPath, elcount(value.name.string), value.name.string);
+    result = CheckLastError("SREM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "routeName");
+  value.routeName.isValidFlag = C2xIsTokenAvailable(packetHandle, "SREM", newPath);
+  if(value.routeName.isValidFlag==1)
+  {
+    value.routeName.stringLength = C2xGetTokenData(packetHandle, "SREM", newPath, elcount(value.routeName.string), value.routeName.string);
+    result = CheckLastError("SREM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "transitStatus");
+  value.transitStatus.isValidFlag = C2xIsTokenAvailable(packetHandle, "SREM", newPath);
+  if(value.transitStatus.isValidFlag==1)
+  {
+    value.transitStatus.isValidFlag = 1;
+    value.transitStatus.stringLength = C2xGetTokenLengthBit(packetHandle, "SREM", newPath);
+    if ((result = CheckLastError("SREM", gkFuncRefGet, result))==0)
+    {
+      if(value.transitStatus.stringLength > 0)
+      {
+        for(j=0; j<value.transitStatus.stringLength; j++)
+        {
+          if(C2xGetTokenBitOfBitString(packetHandle, "SREM", newPath, j) == 0)
+          {
+            value.transitStatus.string[j] = '0';
+          }
+          else if(C2xGetTokenBitOfBitString(packetHandle, "SREM", newPath, j) == 1)
+          {
+            value.transitStatus.string[j] = '1';
+          }
+
+          if(value.transitStatus.stringLength == 1)
+          {
+            value.transitStatus.string[1] = '0';
+          }
+          result = CheckLastError("SREM", gkFuncRefGet, result);
+        }
+      }
+      else
+      {
+        for(k = value.transitStatus.stringLength+1; k > -1; k--)
+        {
+          if(value.transitStatus.string[k] == '1')
+          {
+            value.transitStatus.string[k] = '0';
+          }
+        }
+      }
+    }
+
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "transitOccupancy");
+  value.transitOccupancy.isValidFlag = C2xIsTokenAvailable(packetHandle, "SREM", newPath);
+  if(value.transitOccupancy.isValidFlag==1)
+  {
+    value.transitOccupancy.value = C2xGetTokenInt(packetHandle, "SREM", newPath);
+    result = CheckLastError("SREM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "transitSchedule");
+  value.transitSchedule.isValidFlag = C2xIsTokenAvailable(packetHandle, "SREM", newPath);
+  if(value.transitSchedule.isValidFlag==1)
+  {
+    value.transitSchedule.value = C2xGetTokenInt(packetHandle, "SREM", newPath);
+    result = CheckLastError("SREM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "regional");
+  value.regional.isValidFlag = C2xIsTokenAvailable(packetHandle, "SREM", newPath);
+  if(value.regional.isValidFlag==1)
+  {
+    GetSREMDSRC_RequestorDescription_regionalParams(packetHandle, value.regional, newPath);
+    result = CheckLastError("SREM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "ocit");
+  GetSREMOcitRequestorDescriptionContainerParams(packetHandle, value.ocit, newPath);
+  result = CheckLastError("SREM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int SetSREMDSRC_RequestorDescriptionParams(LONG packetHandle, struct SREMDSRC_RequestorDescription value, char oldPath[])
+{
+  char newPath[300]; 
+  int j;
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "id");
+  SetSREMDSRC_VehicleIDParams(packetHandle, value.id, newPath);
+  result = CheckLastError("SREM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "type");
+  if(value.type.isValidFlag==1)
+  {
+    SetSREMDSRC_RequestorTypeParams(packetHandle, value.type, newPath);
+    result = CheckLastError("SREM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "SREM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "SREM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "position");
+  if(value.position.isValidFlag==1)
+  {
+    SetSREMDSRC_RequestorPositionVectorParams(packetHandle, value.position, newPath);
+    result = CheckLastError("SREM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "SREM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "SREM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "name");
+  if(value.name.isValidFlag==1)
+  {
+    C2xSetTokenData(packetHandle, "SREM", newPath, value.name.stringLength, value.name.string);
+    result = CheckLastError("SREM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "SREM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "SREM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "routeName");
+  if(value.routeName.isValidFlag==1)
+  {
+    C2xSetTokenData(packetHandle, "SREM", newPath, value.routeName.stringLength, value.routeName.string);
+    result = CheckLastError("SREM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "SREM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "SREM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "transitStatus");
+  if(value.transitStatus.isValidFlag==1)
+  {
+      for(j=0; j<value.transitStatus.stringLength; j++)
+      {
+        if(value.transitStatus.string[j] == '0')
+        {
+          C2xSetTokenBitOfBitString(packetHandle, "SREM", newPath, j, 0);
+        }
+        else
+        {
+          C2xSetTokenBitOfBitString(packetHandle, "SREM", newPath, j, 1);
+        }
+        result = CheckLastError("SREM", gkFuncRefGet, result);
+      }
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "SREM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "SREM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "transitOccupancy");
+  if(value.transitOccupancy.isValidFlag==1)
+  {
+    C2xSetTokenInt(packetHandle, "SREM", newPath, value.transitOccupancy.value);
+    result = CheckLastError("SREM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "SREM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "SREM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "transitSchedule");
+  if(value.transitSchedule.isValidFlag==1)
+  {
+    C2xSetTokenInt(packetHandle, "SREM", newPath, value.transitSchedule.value);
+    result = CheckLastError("SREM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "SREM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "SREM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "regional");
+  if(value.regional.isValidFlag==1)
+  {
+    SetSREMDSRC_RequestorDescription_regionalParams(packetHandle, value.regional, newPath);
+    result = CheckLastError("SREM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "SREM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "SREM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "ocit");
+  SetSREMOcitRequestorDescriptionContainerParams(packetHandle, value.ocit, newPath);
+  result = CheckLastError("SREM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int GetSREMDSRC_SignalRequestMessage_regionalParams(LONG packetHandle, struct SREMDSRC_SignalRequestMessage_regional value, char oldPath[])
+{
+  char newPath[300]; 
+  int i;
+  int result;
+
+  result = 0;
+
+  value.length = C2xGetTokenInt(packetHandle, "SREM", oldPath);
+  if((result = CheckLastError("SREM", gkFuncRefGet, result))==0)
+  {
+    for(i=0; i<value.length; i++)
+    {
+      snprintf(newPath, elcount(newPath), "%s[%d]", oldPath, i);
+      GetSREMDSRC_RegionalExtensionEmptyParams(packetHandle, value.arrayValue[i], newPath);
+      result = CheckLastError("SREM", gkFuncRefGet, result);
+    }
+  }
+  return result;
+}
+
+int SetSREMDSRC_SignalRequestMessage_regionalParams(LONG packetHandle, struct SREMDSRC_SignalRequestMessage_regional value, char oldPath[])
+{
+  char newPath[300]; 
+  int i;
+  int result;
+
+  result = 0;
+
+  C2xRemoveToken(packetHandle, "SREM", oldPath);
+  for(i=0; i<value.length; i++)
+  {
+    snprintf(newPath, elcount(newPath), "%s[%d]", oldPath, i);
+    SetSREMDSRC_RegionalExtensionEmptyParams(packetHandle, value.arrayValue[i], newPath);
+    result = CheckLastError("SREM", gkFuncRefGet, result);
+  }
+  return result;
+}
+
+int GetSREMDSRC_SignalRequestMessageParams(LONG packetHandle, struct SREMDSRC_SignalRequestMessage value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "timeStamp");
+  value.timeStamp.isValidFlag = C2xIsTokenAvailable(packetHandle, "SREM", newPath);
+  if(value.timeStamp.isValidFlag==1)
+  {
+    value.timeStamp.value = C2xGetTokenInt(packetHandle, "SREM", newPath);
+    result = CheckLastError("SREM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "second");
+  value.second = C2xGetTokenInt(packetHandle, "SREM", newPath);
+  result = CheckLastError("SREM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "sequenceNumber");
+  value.sequenceNumber.isValidFlag = C2xIsTokenAvailable(packetHandle, "SREM", newPath);
+  if(value.sequenceNumber.isValidFlag==1)
+  {
+    value.sequenceNumber.value = C2xGetTokenInt(packetHandle, "SREM", newPath);
+    result = CheckLastError("SREM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "requests");
+  value.requests.isValidFlag = C2xIsTokenAvailable(packetHandle, "SREM", newPath);
+  if(value.requests.isValidFlag==1)
+  {
+    GetSREMDSRC_SignalRequestListParams(packetHandle, value.requests, newPath);
+    result = CheckLastError("SREM", gkFuncRefGet, result);
+  }
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "requestor");
+  GetSREMDSRC_RequestorDescriptionParams(packetHandle, value.requestor, newPath);
+  result = CheckLastError("SREM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "regional");
+  value.regional.isValidFlag = C2xIsTokenAvailable(packetHandle, "SREM", newPath);
+  if(value.regional.isValidFlag==1)
+  {
+    GetSREMDSRC_SignalRequestMessage_regionalParams(packetHandle, value.regional, newPath);
+    result = CheckLastError("SREM", gkFuncRefGet, result);
+  }
+  return result;
+}
+
+int SetSREMDSRC_SignalRequestMessageParams(LONG packetHandle, struct SREMDSRC_SignalRequestMessage value, char oldPath[])
+{
+  char newPath[300];
+  int result;
+
+  result = 0;
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "timeStamp");
+  if(value.timeStamp.isValidFlag==1)
+  {
+    C2xSetTokenInt(packetHandle, "SREM", newPath, value.timeStamp.value);
+    result = CheckLastError("SREM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "SREM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "SREM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "second");
+  C2xSetTokenInt(packetHandle, "SREM", newPath, value.second);
+  result = CheckLastError("SREM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "sequenceNumber");
+  if(value.sequenceNumber.isValidFlag==1)
+  {
+    C2xSetTokenInt(packetHandle, "SREM", newPath, value.sequenceNumber.value);
+    result = CheckLastError("SREM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "SREM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "SREM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "requests");
+  if(value.requests.isValidFlag==1)
+  {
+    SetSREMDSRC_SignalRequestListParams(packetHandle, value.requests, newPath);
+    result = CheckLastError("SREM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "SREM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "SREM", newPath);
+    }
+  }
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "requestor");
+  SetSREMDSRC_RequestorDescriptionParams(packetHandle, value.requestor, newPath);
+  result = CheckLastError("SREM", gkFuncRefGet, result);
+
+  snprintf(newPath, elcount(newPath), "%s.%s", oldPath, "regional");
+  if(value.regional.isValidFlag==1)
+  {
+    SetSREMDSRC_SignalRequestMessage_regionalParams(packetHandle, value.regional, newPath);
+    result = CheckLastError("SREM", gkFuncRefGet, result);
+  }
+  else
+  {
+    if( C2xIsTokenAvailable(packetHandle, "SREM", newPath) )
+    {
+      C2xRemoveToken(packetHandle, "SREM", newPath);
+    }
+  }
+
+  return result;
+}
+
+int API_GetSREMParams(LONG packetHandle, struct SREM value)
+{
+  int result;
+  result = 0;
+
+  value.header.isValidFlag = 1;
+  GetSREMITS_Container_ItsPduHeaderParams(packetHandle, value.header, "header");
+  result = CheckLastError("SREM", gkFuncRefGet, result);
+
+  value.srm.isValidFlag = 1;
+  GetSREMDSRC_SignalRequestMessageParams(packetHandle, value.srm, "srm");
+  result = CheckLastError("SREM", gkFuncRefGet, result);
+
+  return result;
+}
+
+int API_SetSREMParams(LONG packetHandle, struct SREM value)
+{
+  int result;
+  result = 0;
+
+  SetSREMITS_Container_ItsPduHeaderParams(packetHandle, value.header, "header");
+  result = CheckLastError("SREM", gkFuncRefGet, result);
+
+  SetSREMDSRC_SignalRequestMessageParams(packetHandle, value.srm, "srm");
+  result = CheckLastError("SREM", gkFuncRefGet, result);
+
+  return result;
+}
+

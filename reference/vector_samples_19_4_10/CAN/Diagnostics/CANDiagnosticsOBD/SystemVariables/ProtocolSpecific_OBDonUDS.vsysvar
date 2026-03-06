@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<systemvariables version="4">
+  <namespace name="" comment="" interface="">
+    <namespace name="Vehicle" comment="" interface="">
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="OBD_Requirements" comment="" bitcount="32" isSigned="false" encoding="65001" type="int" startValue="21" minValue="0" minValuePhys="0" maxValue="22" maxValuePhys="22">
+        <valuetable name="OBDRequirements" definesMinMax="true">
+          <valuetableentry value="0" lowerBound="0" upperBound="0" description="SAE_reserved_0" displayString="SAE_reserved_0" />
+          <valuetableentry value="1" lowerBound="1" upperBound="1" description="OBD_II" displayString="OBD_II" />
+          <valuetableentry value="2" lowerBound="2" upperBound="2" description="OBD" displayString="OBD" />
+          <valuetableentry value="3" lowerBound="3" upperBound="3" description="OBD_and_OBD_II" displayString="OBD_and_OBD_II" />
+          <valuetableentry value="4" lowerBound="4" upperBound="4" description="OBD_I" displayString="OBD_I" />
+          <valuetableentry value="5" lowerBound="5" upperBound="5" description="No_OBD" displayString="No_OBD" />
+          <valuetableentry value="6" lowerBound="6" upperBound="6" description="EOBD" displayString="EOBD" />
+          <valuetableentry value="7" lowerBound="7" upperBound="7" description="EOBD_and_OBD_II" displayString="EOBD_and_OBD_II" />
+          <valuetableentry value="8" lowerBound="8" upperBound="8" description="EOBD_and_OBD" displayString="EOBD_and_OBD" />
+          <valuetableentry value="9" lowerBound="9" upperBound="9" description="EOBD_OBD_and_OBD_II" displayString="EOBD_OBD_and_OBD_II" />
+          <valuetableentry value="10" lowerBound="10" upperBound="10" description="JOBD" displayString="JOBD" />
+          <valuetableentry value="11" lowerBound="11" upperBound="11" description="JOBD_and_OBD_II" displayString="JOBD_and_OBD_II" />
+          <valuetableentry value="12" lowerBound="12" upperBound="12" description="JOBD_and_EOBD" displayString="JOBD_and_EOBD" />
+          <valuetableentry value="13" lowerBound="13" upperBound="13" description="JOBD_EOBD_and_OBD_II" displayString="JOBD_EOBD_and_OBD_II" />
+          <valuetableentry value="14" lowerBound="14" upperBound="14" description="OBD_EOBD_and_KOBD" displayString="OBD_EOBD_and_KOBD" />
+          <valuetableentry value="15" lowerBound="15" upperBound="15" description="OBD_OBD_II_EOBD_and_KOBD" displayString="OBD_OBD_II_EOBD_and_KOBD" />
+          <valuetableentry value="16" lowerBound="16" upperBound="16" description="SAE_reserved_16" displayString="SAE_reserved_16" />
+          <valuetableentry value="17" lowerBound="17" upperBound="17" description="EMD" displayString="EMD" />
+          <valuetableentry value="18" lowerBound="18" upperBound="18" description="EMDplus" displayString="EMDplus" />
+          <valuetableentry value="19" lowerBound="19" upperBound="19" description="HD_OBD_C" displayString="HD_OBD_C" />
+          <valuetableentry value="20" lowerBound="20" upperBound="20" description="HD_OBD" displayString="HD_OBD" />
+          <valuetableentry value="21" lowerBound="21" upperBound="21" description="WWH_OBD" displayString="WWH_OBD" />
+          <valuetableentry value="22" lowerBound="22" upperBound="22" description="SAE_reserved_22" displayString="SAE_reserved_22" />
+        </valuetable>
+      </variable>
+    </namespace>
+  </namespace>
+</systemvariables>

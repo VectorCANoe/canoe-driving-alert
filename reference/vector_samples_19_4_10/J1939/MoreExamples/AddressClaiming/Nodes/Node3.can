@@ -1,0 +1,37 @@
+/*@!Encoding:1252*/
+includes
+{
+  #include "Common.cin"
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// 
+// This node is using the extended address claimed support 
+//
+// It uses the the callback J1939ILOnAddressClaimConflict to report address conflicts
+//
+///////////////////////////////////////////////////////////////////////////////
+
+variables
+{
+}
+
+on preStart
+{
+  J1939ILSetNodeProperty("AddressClaimSupport", ExtendedAddressClaimSupport);
+}
+
+on sysvar svChangeAddress_Node3
+{
+  if(@this == 1)
+  {
+    @sysvar::J1939AddressClaimingDemo::Node3::ILAddress = @svNewAddress_Node3;
+  }
+}
+
+// this callback is called if an address claim confict happens
+dword J1939ILOnAddressClaimConflict(dword addressArbitrationIsLost, dword newAddress, dword& suppressAddressClaimed)
+{
+  ReportAddressClaimConflict("Node3", addressArbitrationIsLost, newAddress);
+  return newAddress;
+}

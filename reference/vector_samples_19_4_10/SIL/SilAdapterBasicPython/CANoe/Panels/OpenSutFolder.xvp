@@ -1,0 +1,52 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Panel Type="Vector.CANalyzer.Panels.PanelSerializer, Vector.CANalyzer.Panels.Serializer, Version=19.3.42.0, Culture=neutral, PublicKeyToken=null">
+  <Object Type="Vector.CANalyzer.Panels.Runtime.Panel, Vector.CANalyzer.Panels.Common, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Panel" ControlName="Open SUT Folder">
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xd7997b7ae1604e4345ea7f5e93a5ec6608aa" ControlName="Static Text 1">
+      <Property Name="Name">Xd7997b7ae1604e4345ea7f5e93a5ec6608aa</Property>
+      <Property Name="Size">255, 42</Property>
+      <Property Name="Location">66, 95</Property>
+      <Property Name="TextAlign">MiddleLeft</Property>
+      <Property Name="BackColor">255, 215, 228, 242</Property>
+      <Property Name="Text">Press the button to start the software under test written in Python. </Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.PanelHelpControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X0220f570ecbe5e45d0ebc47e4495c0f9a7eb" ControlName="File Button 1">
+      <Property Name="Name">X0220f570ecbe5e45d0ebc47e4495c0f9a7eb</Property>
+      <Property Name="Size">51, 42</Property>
+      <Property Name="Location">10, 95</Property>
+      <Property Name="ImageFile">Bitmaps\Play.png</Property>
+      <Property Name="TabIndex">4</Property>
+      <Property Name="Filename">..\StartSut.bat</Property>
+      <Property Name="WorkingDirectory"></Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl2" ControlName="Static Text 2">
+      <Property Name="Name">StaticTextControl2</Property>
+      <Property Name="Size">311, 31</Property>
+      <Property Name="Location">10, 10</Property>
+      <Property Name="TextAlign">MiddleLeft</Property>
+      <Property Name="BackColor">255, 215, 228, 242</Property>
+      <Property Name="Font">Microsoft Sans Serif, 8.25pt, style=Bold</Property>
+      <Property Name="Text">The software under test is not started automatically. Start the executable from the file system or via button.</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.PanelHelpControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="PanelHelpControl2" ControlName="File Button 2">
+      <Property Name="Name">PanelHelpControl2</Property>
+      <Property Name="Size">51, 42</Property>
+      <Property Name="Location">10, 47</Property>
+      <Property Name="ImageFile">Bitmaps\SUT.png</Property>
+      <Property Name="TabIndex">3</Property>
+      <Property Name="Filename">..\OpenSutFolder.bat</Property>
+      <Property Name="WorkingDirectory"></Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl3" ControlName="Static Text 3">
+      <Property Name="Name">StaticTextControl3</Property>
+      <Property Name="Size">255, 42</Property>
+      <Property Name="Location">66, 47</Property>
+      <Property Name="TextAlign">MiddleLeft</Property>
+      <Property Name="BackColor">255, 215, 228, 242</Property>
+      <Property Name="Text">Press the button to open the folder that contains the software under test written in Python. </Property>
+    </Object>
+    <Property Name="Name">Panel</Property>
+    <Property Name="Size">326, 146</Property>
+    <Property Name="Location">0, 0</Property>
+    <Property Name="BackColor">255, 215, 228, 242</Property>
+  </Object>
+</Panel>

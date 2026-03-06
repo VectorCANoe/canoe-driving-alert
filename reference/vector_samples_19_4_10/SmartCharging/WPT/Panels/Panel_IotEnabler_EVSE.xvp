@@ -1,0 +1,386 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Panel Type="Vector.CANalyzer.Panels.PanelSerializer, Vector.CANalyzer.Panels.Serializer, Version=19.2.76.0, Culture=neutral, PublicKeyToken=null">
+  <Object Type="Vector.CANalyzer.Panels.Runtime.Panel, Vector.CANalyzer.Panels.Common, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Panel" ControlName="IoTEnabler Settings">
+    <Object Type="Vector.CANalyzer.Panels.Design.VectorTabControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="VectorTabControl1" ControlName="Tab Control 1">
+      <Object Type="Vector.CANalyzer.Panels.Design.VectorTabPage, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="VectorTabPage1" ControlName="Tab Control 1">
+        <Object Type="Vector.CANalyzer.Panels.Design.GroupBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="GroupBoxControl3" ControlName="Group Box 3">
+          <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="TextBoxControl9" ControlName="Input/Output Box 9">
+            <Property Name="Name">TextBoxControl9</Property>
+            <Property Name="Size">283, 21</Property>
+            <Property Name="Location">5, 24</Property>
+            <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+            <Property Name="AlarmLowerBkgColor">Salmon</Property>
+            <Property Name="AlarmLowerTextColor">WindowText</Property>
+            <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+            <Property Name="AlarmUpperTextColor">WindowText</Property>
+            <Property Name="BoxBorderStyle">FixedSingle</Property>
+            <Property Name="DisplayLabel">Left</Property>
+            <Property Name="TabIndex">7</Property>
+            <Property Name="DescriptionText">EVSE MAC:</Property>
+            <Property Name="ValueDecimalPlaces">0</Property>
+            <Property Name="ValueDisplay">Text</Property>
+            <Property Name="UsedValueTable">PhysicalValue</Property>
+            <Property Name="DescriptionSize">65, 21</Property>
+            <Property Name="SymbolConfiguration">8;16;IoTEnabler;;;SysEVSE_MAC;4;;;-1;;;Value;;;0</Property>
+          </Object>
+          <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl3" ControlName="Static Text 3">
+            <Property Name="Name">StaticTextControl3</Property>
+            <Property Name="Size">225, 15</Property>
+            <Property Name="Location">5, 48</Property>
+            <Property Name="BackColor">White</Property>
+            <Property Name="ForeColor">Gray</Property>
+            <Property Name="Text">Must be the same as the MAC of the EVSE-DO</Property>
+          </Object>
+          <Property Name="Name">GroupBoxControl3</Property>
+          <Property Name="Size">293, 74</Property>
+          <Property Name="Location">5, 177</Property>
+          <Property Name="Text">Link Layer</Property>
+          <Property Name="TabIndex">18</Property>
+          <Property Name="UseWindowsStyle">False</Property>
+        </Object>
+        <Object Type="Vector.CANalyzer.Panels.Design.GroupBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="GroupBoxControl2" ControlName="Group Box 2">
+          <Object Type="Vector.CANalyzer.Panels.Design.CheckBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="CheckBoxControl1" ControlName="Check Box 1">
+            <Property Name="Name">CheckBoxControl1</Property>
+            <Property Name="Size">131, 17</Property>
+            <Property Name="Location">5, 17</Property>
+            <Property Name="Text">Open secure network</Property>
+            <Property Name="TabIndex">11</Property>
+            <Property Name="SymbolConfiguration">8;16;IoTEnabler;;;SysEVSE_OpenSecureNetwork;1;;;-1;;;Value;;;0</Property>
+          </Object>
+          <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="TextBoxControl12" ControlName="Input/Output Box 12">
+            <Property Name="Name">TextBoxControl12</Property>
+            <Property Name="Size">282, 21</Property>
+            <Property Name="Location">6, 38</Property>
+            <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+            <Property Name="AlarmLowerBkgColor">Salmon</Property>
+            <Property Name="AlarmLowerTextColor">WindowText</Property>
+            <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+            <Property Name="AlarmUpperTextColor">WindowText</Property>
+            <Property Name="BoxBorderStyle">FixedSingle</Property>
+            <Property Name="DisplayLabel">Left</Property>
+            <Property Name="TabIndex">15</Property>
+            <Property Name="DescriptionText">WPA2 Key:</Property>
+            <Property Name="ValueDecimalPlaces">0</Property>
+            <Property Name="ValueDisplay">Text</Property>
+            <Property Name="UsedValueTable">PhysicalValue</Property>
+            <Property Name="DescriptionSize">62, 21</Property>
+            <Property Name="SymbolConfiguration">8;16;IoTEnabler;;;SysEVSE_WPA2Key;4;;;-1;;;Value;;;0</Property>
+          </Object>
+          <Property Name="Name">GroupBoxControl2</Property>
+          <Property Name="Size">293, 67</Property>
+          <Property Name="Location">5, 101</Property>
+          <Property Name="Text">Security</Property>
+          <Property Name="TabIndex">17</Property>
+          <Property Name="UseWindowsStyle">False</Property>
+        </Object>
+        <Object Type="Vector.CANalyzer.Panels.Design.GroupBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="GroupBoxControl1" ControlName="Group Box 1">
+          <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="TextBoxControl7" ControlName="Input/Output Box 7">
+            <Property Name="Name">TextBoxControl7</Property>
+            <Property Name="Size">283, 21</Property>
+            <Property Name="Location">5, 46</Property>
+            <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+            <Property Name="AlarmLowerBkgColor">Salmon</Property>
+            <Property Name="AlarmLowerTextColor">WindowText</Property>
+            <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+            <Property Name="AlarmUpperTextColor">WindowText</Property>
+            <Property Name="BoxBorderStyle">FixedSingle</Property>
+            <Property Name="DisplayLabel">Left</Property>
+            <Property Name="TabIndex">10</Property>
+            <Property Name="DescriptionText">CountryCode:</Property>
+            <Property Name="ValueDecimalPlaces">0</Property>
+            <Property Name="ValueDisplay">Text</Property>
+            <Property Name="UsedValueTable">PhysicalValue</Property>
+            <Property Name="DescriptionSize">73, 21</Property>
+            <Property Name="SymbolConfiguration">8;16;IoTEnabler;;;SysEVSE_CountryCode;4;;;-1;;;Value;;;0</Property>
+          </Object>
+          <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="TextBoxControl8" ControlName="Input/Output Box 8">
+            <Property Name="Name">TextBoxControl8</Property>
+            <Property Name="Size">283, 21</Property>
+            <Property Name="Location">5, 22</Property>
+            <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+            <Property Name="AlarmLowerBkgColor">Salmon</Property>
+            <Property Name="AlarmLowerTextColor">WindowText</Property>
+            <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+            <Property Name="AlarmUpperTextColor">WindowText</Property>
+            <Property Name="BoxBorderStyle">FixedSingle</Property>
+            <Property Name="DisplayLabel">Left</Property>
+            <Property Name="TabIndex">5</Property>
+            <Property Name="DescriptionText">SSID:</Property>
+            <Property Name="ValueDecimalPlaces">0</Property>
+            <Property Name="ValueDisplay">Text</Property>
+            <Property Name="UsedValueTable">PhysicalValue</Property>
+            <Property Name="DescriptionSize">34, 21</Property>
+            <Property Name="SymbolConfiguration">8;16;IoTEnabler;;;SysEVSE_SSID;4;;;-1;;;Value;;;0</Property>
+          </Object>
+          <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="TextBoxControl11" ControlName="Input/Output Box 11">
+            <Property Name="Name">TextBoxControl11</Property>
+            <Property Name="Size">283, 21</Property>
+            <Property Name="Location">5, 69</Property>
+            <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+            <Property Name="AlarmLowerBkgColor">Salmon</Property>
+            <Property Name="AlarmLowerTextColor">WindowText</Property>
+            <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+            <Property Name="AlarmUpperTextColor">WindowText</Property>
+            <Property Name="BoxBorderStyle">FixedSingle</Property>
+            <Property Name="DisplayLabel">Left</Property>
+            <Property Name="TabIndex">12</Property>
+            <Property Name="DescriptionText">Channel to send on:</Property>
+            <Property Name="ValueDecimalPlaces">0</Property>
+            <Property Name="ValueDisplay">Decimal</Property>
+            <Property Name="UsedValueTable">PhysicalValue</Property>
+            <Property Name="DescriptionSize">104, 21</Property>
+            <Property Name="SymbolConfiguration">8;16;IoTEnabler;;;SysEVSE_ChannelToSendOn;1;;;-1;;;Value;;;0</Property>
+          </Object>
+          <Property Name="Name">GroupBoxControl1</Property>
+          <Property Name="Size">293, 96</Property>
+          <Property Name="Location">5, 5</Property>
+          <Property Name="Text">Wifi Access Point</Property>
+          <Property Name="TabIndex">16</Property>
+          <Property Name="UseWindowsStyle">False</Property>
+        </Object>
+        <Property Name="Name">VectorTabPage1</Property>
+        <Property Name="Size">306, 262</Property>
+        <Property Name="Location">2, 21</Property>
+        <Property Name="Text">General</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.VectorTabPage, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="VectorTabPage2" ControlName="Tab Control 1">
+        <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl2" ControlName="Static Text 2">
+          <Property Name="Name">StaticTextControl2</Property>
+          <Property Name="Size">137, 15</Property>
+          <Property Name="Location">14, 166</Property>
+          <Property Name="Text">Vendor Specific Elements:</Property>
+        </Object>
+        <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="TextBoxControl3" ControlName="Input/Output Box 3">
+          <Property Name="Name">TextBoxControl3</Property>
+          <Property Name="Size">283, 21</Property>
+          <Property Name="Location">3, 12</Property>
+          <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+          <Property Name="AlarmLowerBkgColor">Salmon</Property>
+          <Property Name="AlarmLowerTextColor">WindowText</Property>
+          <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+          <Property Name="AlarmUpperTextColor">WindowText</Property>
+          <Property Name="BoxBorderStyle">FixedSingle</Property>
+          <Property Name="DisplayLabel">Left</Property>
+          <Property Name="TabIndex">4</Property>
+          <Property Name="DescriptionText">Organizational ID:</Property>
+          <Property Name="ValueDecimalPlaces">0</Property>
+          <Property Name="ValueDisplay">Text</Property>
+          <Property Name="UsedValueTable">PhysicalValue</Property>
+          <Property Name="DescriptionSize">95, 21</Property>
+          <Property Name="SymbolConfiguration">8;16;IoTEnabler::VSE;;;SysEVSE_VSE_OrganizationalID;4;;;-1;;;Value;;;0</Property>
+        </Object>
+        <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="TextBoxControl6" ControlName="Input/Output Box 6">
+          <Property Name="Name">TextBoxControl6</Property>
+          <Property Name="Size">285, 19</Property>
+          <Property Name="Location">10, 183</Property>
+          <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+          <Property Name="AlarmLowerBkgColor">Salmon</Property>
+          <Property Name="AlarmLowerTextColor">WindowText</Property>
+          <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+          <Property Name="AlarmUpperTextColor">WindowText</Property>
+          <Property Name="BoxBorderStyle">FixedSingle</Property>
+          <Property Name="DisplayLabel">Hide</Property>
+          <Property Name="ReadOnlyControl">True</Property>
+          <Property Name="TabIndex">11</Property>
+          <Property Name="TabStopActive">False</Property>
+          <Property Name="DescriptionText"></Property>
+          <Property Name="ValueDecimalPlaces">0</Property>
+          <Property Name="ValueDisplay">Text</Property>
+          <Property Name="UsedValueTable">PhysicalValue</Property>
+          <Property Name="DescriptionSize">0, 0</Property>
+          <Property Name="SymbolConfiguration">8;16;IoTEnabler::VSE;;;SysEVSE_VSE;4;;;-1;;;Value;;;0</Property>
+        </Object>
+        <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="TextBoxControl1" ControlName="Input/Output Box 1">
+          <Property Name="Name">TextBoxControl1</Property>
+          <Property Name="Size">121, 21</Property>
+          <Property Name="Location">3, 91</Property>
+          <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+          <Property Name="AlarmLowerBkgColor">Salmon</Property>
+          <Property Name="AlarmLowerTextColor">WindowText</Property>
+          <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+          <Property Name="AlarmUpperTextColor">WindowText</Property>
+          <Property Name="BoxBorderStyle">FixedSingle</Property>
+          <Property Name="DisplayLabel">Left</Property>
+          <Property Name="TabIndex">7</Property>
+          <Property Name="DescriptionText">OperatorID:</Property>
+          <Property Name="ValueDecimalPlaces">0</Property>
+          <Property Name="ValueDisplay">Text</Property>
+          <Property Name="UsedValueTable">PhysicalValue</Property>
+          <Property Name="DescriptionSize">63, 21</Property>
+          <Property Name="SymbolConfiguration">8;16;IoTEnabler::VSE;;;SysEVSE_VSE_OperatorID;4;;;-1;;;Value;;;0</Property>
+        </Object>
+        <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="TextBoxControl5" ControlName="Input/Output Box 5">
+          <Property Name="Name">TextBoxControl5</Property>
+          <Property Name="Size">114, 21</Property>
+          <Property Name="Location">3, 65</Property>
+          <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+          <Property Name="AlarmLowerBkgColor">Salmon</Property>
+          <Property Name="AlarmLowerTextColor">WindowText</Property>
+          <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+          <Property Name="AlarmUpperTextColor">WindowText</Property>
+          <Property Name="BoxBorderStyle">FixedSingle</Property>
+          <Property Name="DisplayLabel">Left</Property>
+          <Property Name="ReadOnlyControl">True</Property>
+          <Property Name="TabIndex">6</Property>
+          <Property Name="TabStopActive">False</Property>
+          <Property Name="DescriptionText">CountryCode: </Property>
+          <Property Name="ValueDecimalPlaces">0</Property>
+          <Property Name="ValueDisplay">Text</Property>
+          <Property Name="UsedValueTable">PhysicalValue</Property>
+          <Property Name="DescriptionSize">76, 21</Property>
+          <Property Name="SymbolConfiguration">8;16;IoTEnabler::VSE;;;SysEVSE_VSE_CountryCode;4;;;-1;;;Value;;;0</Property>
+        </Object>
+        <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl1" ControlName="Static Text 1">
+          <Property Name="Name">StaticTextControl1</Property>
+          <Property Name="Size">118, 15</Property>
+          <Property Name="Location">14, 118</Property>
+          <Property Name="Text">Additional Information:</Property>
+        </Object>
+        <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="TextBoxControl4" ControlName="Input/Output Box 4">
+          <Property Name="Name">TextBoxControl4</Property>
+          <Property Name="Size">165, 21</Property>
+          <Property Name="Location">130, 91</Property>
+          <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+          <Property Name="AlarmLowerBkgColor">Salmon</Property>
+          <Property Name="AlarmLowerTextColor">WindowText</Property>
+          <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+          <Property Name="AlarmUpperTextColor">WindowText</Property>
+          <Property Name="BoxBorderStyle">FixedSingle</Property>
+          <Property Name="DisplayLabel">Left</Property>
+          <Property Name="TabIndex">8</Property>
+          <Property Name="DescriptionText">ChargingSiteID:</Property>
+          <Property Name="ValueDecimalPlaces">0</Property>
+          <Property Name="ValueDisplay">Text</Property>
+          <Property Name="UsedValueTable">PhysicalValue</Property>
+          <Property Name="DescriptionSize">84, 21</Property>
+          <Property Name="SymbolConfiguration">8;16;IoTEnabler::VSE;;;SysEVSE_VSE_ChargingSiteID;4;;;-1;;;Value;;;0</Property>
+        </Object>
+        <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="TextBoxControl2" ControlName="Input/Output Box 2">
+          <Property Name="Name">TextBoxControl2</Property>
+          <Property Name="Size">281, 19</Property>
+          <Property Name="Location">14, 136</Property>
+          <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+          <Property Name="AlarmLowerBkgColor">Salmon</Property>
+          <Property Name="AlarmLowerTextColor">WindowText</Property>
+          <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+          <Property Name="AlarmUpperTextColor">WindowText</Property>
+          <Property Name="BoxBorderStyle">FixedSingle</Property>
+          <Property Name="DisplayLabel">Hide</Property>
+          <Property Name="TabIndex">3</Property>
+          <Property Name="DescriptionText"></Property>
+          <Property Name="ValueDecimalPlaces">0</Property>
+          <Property Name="ValueDisplay">Text</Property>
+          <Property Name="UsedValueTable">PhysicalValue</Property>
+          <Property Name="DescriptionSize">0, 0</Property>
+          <Property Name="SymbolConfiguration">8;16;IoTEnabler::VSE;;;SysEVSE_VSE_AdditionalInformation;4;;;-1;;;Value;;;0</Property>
+        </Object>
+        <Object Type="Vector.CANalyzer.Panels.Design.ComboBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="ComboBoxControl2" ControlName="Combo Box 2">
+          <Property Name="Name">ComboBoxControl2</Property>
+          <Property Name="Size">283, 21</Property>
+          <Property Name="Location">3, 39</Property>
+          <Property Name="DisplayLabel">Left</Property>
+          <Property Name="DescriptionSize">111, 21</Property>
+          <Property Name="TextBackColor">White</Property>
+          <Property Name="TabIndex">5</Property>
+          <Property Name="DescriptionText">EnergyTransferType:</Property>
+          <Property Name="UsedValueTable">PhysicalValue</Property>
+          <Property Name="SymbolConfiguration">8;16;IoTEnabler::VSE;;;SysEVSE_VSE_EnergyTransferType;1;;;-1;;;Value;;;0</Property>
+          <Property Name="DropDownWidth">183</Property>
+        </Object>
+        <Object Type="Vector.CANalyzer.Panels.Design.ComboBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="ComboBoxControl1" ControlName="Combo Box 1">
+          <Property Name="Name">ComboBoxControl1</Property>
+          <Property Name="Size">173, 19</Property>
+          <Property Name="Location">122, 64</Property>
+          <Property Name="DescriptionSize">0, 19</Property>
+          <Property Name="TextBackColor">White</Property>
+          <Property Name="TabIndex">10</Property>
+          <Property Name="DescriptionText">SysEVSE_VSE_CountryCode_Index:</Property>
+          <Property Name="UsedValueTable">PhysicalValue</Property>
+          <Property Name="SymbolConfiguration">8;16;IoTEnabler::VSE;;;SysEVSE_VSE_CountryCode_Index;1;;;-1;;;Value;;;0</Property>
+          <Property Name="DropDownWidth">68</Property>
+        </Object>
+        <Property Name="Name">VectorTabPage2</Property>
+        <Property Name="Size">306, 262</Property>
+        <Property Name="Location">2, 21</Property>
+        <Property Name="Text">Vendor Specific Elements</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.VectorTabPage, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="VectorTabPage3" ControlName="Tab Control 1">
+        <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xd446ec82e7752e44e0ebce3e6441aaa737a8" ControlName="Static Text 5">
+          <Property Name="Name">Xd446ec82e7752e44e0ebce3e6441aaa737a8</Property>
+          <Property Name="Size">250, 27</Property>
+          <Property Name="Location">16, 122</Property>
+          <Property Name="ForeColor">Gray</Property>
+          <Property Name="Text">wlan0 must be used if this is the first device
+wlan1 must be used for simulation and monitoring</Property>
+        </Object>
+        <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X4bfd6c49e1506e4619e93ccee371780543c3" ControlName="Input/Output Box 13">
+          <Property Name="Name">X4bfd6c49e1506e4619e93ccee371780543c3</Property>
+          <Property Name="Size">199, 21</Property>
+          <Property Name="Location">16, 95</Property>
+          <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+          <Property Name="AlarmLowerBkgColor">Salmon</Property>
+          <Property Name="AlarmLowerTextColor">Black</Property>
+          <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+          <Property Name="AlarmUpperTextColor">Black</Property>
+          <Property Name="BoxBorderStyle">FixedSingle</Property>
+          <Property Name="DisplayLabel">Left</Property>
+          <Property Name="TabIndex">324</Property>
+          <Property Name="DescriptionText">Monitored Interface:</Property>
+          <Property Name="ValueDecimalPlaces">0</Property>
+          <Property Name="ValueDisplay">Text</Property>
+          <Property Name="UsedValueTable">PhysicalValue</Property>
+          <Property Name="DescriptionSize">103, 21</Property>
+          <Property Name="SymbolConfiguration">8;16;IoTEnabler::Monitoring;;;SysMonitoringWifiInterface;4;;;-1;;;Value;;;0</Property>
+        </Object>
+        <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="TextBoxControl10" ControlName="Input/Output Box 10">
+          <Property Name="Name">TextBoxControl10</Property>
+          <Property Name="Size">279, 21</Property>
+          <Property Name="Location">16, 68</Property>
+          <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+          <Property Name="AlarmLowerBkgColor">Salmon</Property>
+          <Property Name="AlarmLowerTextColor">WindowText</Property>
+          <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+          <Property Name="AlarmUpperTextColor">WindowText</Property>
+          <Property Name="BoxBorderStyle">FixedSingle</Property>
+          <Property Name="DisplayLabel">Left</Property>
+          <Property Name="TabIndex">323</Property>
+          <Property Name="DescriptionText">Monitored Channel</Property>
+          <Property Name="ValueDecimalPlaces">0</Property>
+          <Property Name="ValueDisplay">Decimal</Property>
+          <Property Name="UsedValueTable">PhysicalValue</Property>
+          <Property Name="DescriptionSize">98, 21</Property>
+          <Property Name="SymbolConfiguration">8;16;IoTEnabler::Monitoring;;;SysMonitoredChannel;1;;;-1;;;Value;;;0</Property>
+        </Object>
+        <Object Type="Vector.CANalyzer.Panels.Design.CheckBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="CheckBoxControl2" ControlName="Check Box 2">
+          <Property Name="Name">CheckBoxControl2</Property>
+          <Property Name="Size">128, 17</Property>
+          <Property Name="Location">16, 16</Property>
+          <Property Name="Text">Monitor WiFi Frames</Property>
+          <Property Name="TabIndex">321</Property>
+          <Property Name="SymbolConfiguration">8;16;IoTEnabler::Monitoring;;;SysWifiFrameMonitoring;1;;;-1;;;Value;;;0</Property>
+        </Object>
+        <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl4" ControlName="Static Text 4">
+          <Property Name="Name">StaticTextControl4</Property>
+          <Property Name="Size">244, 13</Property>
+          <Property Name="Location">16, 39</Property>
+          <Property Name="BackColor">White</Property>
+          <Property Name="ForeColor">Gray</Property>
+          <Property Name="Text">Monitoring WiFi frames requires second WiFi stick </Property>
+        </Object>
+        <Property Name="Name">VectorTabPage3</Property>
+        <Property Name="Size">306, 262</Property>
+        <Property Name="Location">2, 21</Property>
+        <Property Name="Text">Monitoring</Property>
+      </Object>
+      <Property Name="Name">VectorTabControl1</Property>
+      <Property Name="Size">306, 283</Property>
+      <Property Name="Location">2, 10</Property>
+      <Property Name="TabIndex">17</Property>
+      <Property Name="SymbolConfiguration"></Property>
+    </Object>
+    <Property Name="Name">Panel</Property>
+    <Property Name="Size">311, 301</Property>
+    <Property Name="Location">0, 0</Property>
+    <Property Name="BackColor">White</Property>
+  </Object>
+</Panel>

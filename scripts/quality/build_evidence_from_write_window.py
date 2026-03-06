@@ -4,6 +4,9 @@
 Expected CAPL log markers:
   [EVIDENCE_IN] scenario=<id> inputTsMs=<ms>
   [EVIDENCE_OUT] scenario=<id> outputTsMs=<ms> result=<0|1> ...
+
+`[EVIDENCE_OUT]` is parsed as key/value pairs to remain compatible when CAPL
+adds extra diagnostic fields (for example ADAS object metadata).
 """
 
 from __future__ import annotations
@@ -17,10 +20,29 @@ from typing import Dict, List
 
 
 IN_RE = re.compile(r"\[EVIDENCE_IN\]\s+scenario=(\d+)\s+inputTsMs=(\d+)")
-OUT_RE = re.compile(
-    r"\[EVIDENCE_OUT\]\s+scenario=(\d+)\s+outputTsMs=(\d+)\s+result=(\d+)\s+"
-    r"level=(\d+)\s+type=(\d+)\s+code=(\d+)\s+timeout=(\d+)\s+risk=(\d+)\s+"
-    r"decel=(\d+)\s+failSafe=(\d+)\s+renderType=(\d+)\s+renderCode=(\d+)"
+OUT_PREFIX_RE = re.compile(r"\[EVIDENCE_OUT\]\s+")
+KV_RE = re.compile(r"([A-Za-z][A-Za-z0-9_]*)=(-?\d+)")
+
+REQUIRED_OUT_KEYS = (
+    "scenario",
+    "outputTsMs",
+    "result",
+    "level",
+    "type",
+    "code",
+    "timeout",
+    "risk",
+    "decel",
+    "failSafe",
+    "renderType",
+    "renderCode",
+)
+
+OPTIONAL_OUT_KEYS = (
+    "objValid",
+    "objClass",
+    "objTtc",
+    "objEvent",
 )
 
 
@@ -32,6 +54,36 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--owner", default="", help="Owner value to fill when blank")
     parser.add_argument("--run-date", default=dt.date.today().isoformat(), help="Run date YYYY-MM-DD")
     return parser.parse_args()
+
+
+def parse_out_event(line: str) -> Dict[str, int] | None:
+    if not OUT_PREFIX_RE.search(line):
+        return None
+
+    kv = {key: int(value) for key, value in KV_RE.findall(line)}
+    if any(key not in kv for key in REQUIRED_OUT_KEYS):
+        return None
+
+    event: Dict[str, int] = {
+        "scenario": kv["scenario"],
+        "outputTsMs": kv["outputTsMs"],
+        "result": kv["result"],
+        "level": kv["level"],
+        "type": kv["type"],
+        "code": kv["code"],
+        "timeout": kv["timeout"],
+        "risk": kv["risk"],
+        "decel": kv["decel"],
+        "failSafe": kv["failSafe"],
+        "renderType": kv["renderType"],
+        "renderCode": kv["renderCode"],
+    }
+
+    for key in OPTIONAL_OUT_KEYS:
+        if key in kv:
+            event[key] = kv[key]
+
+    return event
 
 
 def parse_events(raw_text: str) -> tuple[Dict[int, List[int]], Dict[int, List[Dict[str, int]]]]:
@@ -46,24 +98,10 @@ def parse_events(raw_text: str) -> tuple[Dict[int, List[int]], Dict[int, List[Di
             in_events.setdefault(scn, []).append(ts)
             continue
 
-        m_out = OUT_RE.search(line)
-        if m_out:
-            scn = int(m_out.group(1))
-            out_events.setdefault(scn, []).append(
-                {
-                    "outputTsMs": int(m_out.group(2)),
-                    "result": int(m_out.group(3)),
-                    "level": int(m_out.group(4)),
-                    "type": int(m_out.group(5)),
-                    "code": int(m_out.group(6)),
-                    "timeout": int(m_out.group(7)),
-                    "risk": int(m_out.group(8)),
-                    "decel": int(m_out.group(9)),
-                    "failSafe": int(m_out.group(10)),
-                    "renderType": int(m_out.group(11)),
-                    "renderCode": int(m_out.group(12)),
-                }
-            )
+        event = parse_out_event(line)
+        if event is not None:
+            scn = event["scenario"]
+            out_events.setdefault(scn, []).append(event)
 
     return in_events, out_events
 
@@ -86,11 +124,15 @@ def pick_event_pair(scenario_id: int, in_events: Dict[int, List[int]], out_event
 
 
 def build_observed(event: Dict[str, int]) -> str:
-    return (
+    base = (
         f"level={event['level']},type={event['type']},code={event['code']},"
         f"timeout={event['timeout']},risk={event['risk']},decel={event['decel']},"
         f"failSafe={event['failSafe']},renderType={event['renderType']},renderCode={event['renderCode']}"
     )
+    optional = [f"{key}={event[key]}" for key in OPTIONAL_OUT_KEYS if key in event]
+    if optional:
+        return base + "," + ",".join(optional)
+    return base
 
 
 def derive_comm_verdict(event: Dict[str, int]) -> str:

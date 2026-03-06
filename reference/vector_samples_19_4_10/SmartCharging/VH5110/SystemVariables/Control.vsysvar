@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<systemvariables version="4">
+  <namespace name="" comment="" interface="">
+    <namespace name="Control" comment="" interface="">
+      <namespace name="MME" comment="" interface="">
+        <namespace name="PWM_Conf" comment="" interface="">
+          <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="%" name="sysvarDutyCycleChangeThreshold" comment="" bitcount="64" isSigned="true" encoding="65001" type="float" minValue="1" maxValue="100" />
+          <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="Hz" name="sysvarFrequencyChangeThreshold" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="65535" maxValuePhys="65535" />
+          <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="sysvarPwmMeasurementMethod" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="0" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1" />
+          <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="ms" name="sysvarPwmMeasurementPeriod" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" minValue="100" minValuePhys="100" maxValue="1000" maxValuePhys="1000" />
+          <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="mV" name="sysvarVoltageChangeThreshold" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="1000" maxValuePhys="1000" />
+        </namespace>
+        <namespace name="Version" comment="" interface="">
+          <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="sysvarApplicationName" comment="" bitcount="0" isSigned="true" encoding="65001" type="string" />
+          <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="sysvarApplicationVersion" comment="" bitcount="0" isSigned="true" encoding="65001" type="string" />
+          <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="sysvarAVStackVersion" comment="" bitcount="0" isSigned="true" encoding="65001" type="string" />
+          <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="sysvarBootloaderVersion" comment="" bitcount="0" isSigned="true" encoding="65001" type="string" />
+        </namespace>
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SendGetPwmConfReq" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="0" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1" />
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SendGetVersionReq" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="0" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1" />
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SendPwmStatsReq" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="0" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1" />
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SendResetReq" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="0" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1" />
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SendSetPwmConfReq" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="0" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1" />
+      </namespace>
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="sysvarCyclicPolling" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="0" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="ms" name="sysvarCyclicPollPeriod" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" separateTransmissions="true" name="sysvarMeasurementMethod" comment="1=pull, 0=push" bitcount="32" isSigned="true" encoding="65001" type="int" minValue="-1" minValuePhys="-1" maxValue="1" maxValuePhys="1" />
+    </namespace>
+  </namespace>
+</systemvariables>

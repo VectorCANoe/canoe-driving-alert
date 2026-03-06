@@ -1,0 +1,61 @@
+﻿/*@!Encoding:65001*/
+includes
+{
+  
+}
+
+variables
+{
+  msTimer sendTimer;
+  message 0x3 msg = {dlc = 8};
+  qword startTime, stopTime, delta;
+  
+  const long MAX_BUFFER_SIZE = 50;
+  int64 busAccessTime[MAX_BUFFER_SIZE];
+  int64 averageBusAccessTimeNs = 0;
+  double averageBusAccessTimeMs = 0;
+  int i = 0;
+}
+
+on start
+{
+  sendTimer.Set(100);  
+}
+
+on timer sendTimer
+{
+  output(msg);
+  startTime = timeNowInt64();
+}
+
+on message 0x3
+{
+  stopTime = timeNowInt64();
+  delta = stopTime - startTime;
+  
+  busAccessTime[i] = delta - this.frameLen;
+  i = i < (@sysvar::QoS::BufferSize - 1) ? i + 1 : 0;
+  
+  averageBusAccessTimeNs = GetMaxValue(busAccessTime, @sysvar::QoS::BufferSize);
+  
+  averageBusAccessTimeMs = ((double)(averageBusAccessTimeNs / 1000) / 1000);
+  @sysvar::QoS::MaxBusAccessTimeMs = averageBusAccessTimeMs;  
+
+  sendTimer.Set(100);
+}
+
+int64 GetMaxValue(int64 data[], long size)
+{
+  stack int j;
+  stack int64 localMax = 0;
+  
+  for (j = 0; j < size; j++)
+  {
+    if (data[j] > localMax)
+    {
+      localMax = data[j];
+    }
+  }
+  
+  return localMax;
+}

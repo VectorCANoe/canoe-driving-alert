@@ -1,0 +1,26 @@
+Scenario Management (Car2x)
+--------------------------------------------------------------------------
+
+This sample configuration contains different scenarios and can be used
+in simulated or real bus mode. It shows the possibility to have multiple
+scenarios running at the same time.
+
+You can start all included scenarios simultaneously. Additionally, you can 
+initiate three chosen scenarios by pressing their respective start buttons 
+either sequentially or at any time, allowing them to run concurrently.
+
+Each scenario can be started at the current position on a specified route.
+Specify the route that the tested vehicle is driving on 
+by giving the filename and the name of the route.
+
+This sample configuration contains the following scenarios:
+- 'Stationary Emergency Vehicle' (StatEV)
+- 'Emergency Vehicle Approaching Back/Front' (EVA)
+- 'Emergency Vehicle Collision Left/Right' (EVA)
+
+Deactivate the node 'DuT_Simulator' if the measurement is performed on the 
+real bus and the tested vehicle and its Car2x communication behavior are real. 
+
+--------------------------------------------------------------------------
+Copyright (c) by Vector Informatik GmbH
+--------------------------------------------------------------------------

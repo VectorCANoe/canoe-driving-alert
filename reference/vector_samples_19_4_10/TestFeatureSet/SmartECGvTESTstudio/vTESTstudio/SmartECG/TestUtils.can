@@ -1,0 +1,179 @@
+﻿/*@!Encoding:65001*/
+includes
+{
+  
+}
+
+variables
+{
+  int simulationModelActive = 0;
+  int ecg_sample_offset_without_arrhythmia = 0;
+  int ecg_emergency_sample_offset = 0;
+  long ecg_without_arrhytmia_recorded_samples_array[2000];
+  long ecg_emergency_sample_array[2000];
+  long ecg_without_arrhytmia_recorded_samples_count;
+  long ecg_emergency_sample_count;
+  
+  msTimer sampleTimerWithoutArrhythmia;
+  msTimer sampleTimerEmergency;
+  
+  int wasSimulationWithoutArrhytmiaRunning = 0;
+  int wasSimulationWithArrhythmiaRunning = 0;
+}
+
+export testfunction StopSimulationEnviroment()
+{
+  long res;
+ 
+  initTestUnit();
+
+  $SampleDataControl.isEmergencySimulationRunning = 0;
+  simulationModelActive = 0;
+}
+
+export testfunction InitializeTestEnvironment()
+{
+  char buffer[500];
+  ecg_sample_offset_without_arrhythmia = 0;
+  ecg_emergency_sample_offset = 0;
+  getTestDataPath(buffer, "/Input/SampleData_200_Hz/Record2.txt", 500);
+  readCsvToBuffer(buffer, ecg_without_arrhytmia_recorded_samples_array, ecg_without_arrhytmia_recorded_samples_count);
+  getTestDataPath(buffer, "/Input/Artificial_ECG_Data_200_Hz/Record13_Snippet.txt", 500);
+  readCsvToBuffer(buffer, ecg_emergency_sample_array, ecg_emergency_sample_count);
+}
+
+void getTestDataPath(char dest[], char subPath[], long resultLength) {
+  mbstrncpy(dest, $SampleDataControl::SampleDataControl.testDataDirectory, resultLength);
+  strncat(dest, subPath, resultLength);
+}
+
+export testfunction SendECGSignalWithoutArrhythmia()
+{
+  float msPerCycle;
+  //Start simulating ECG from patient data without arrhythmia
+  testCaseComment("Starting to send simulated ECG data from patient without arrhythmia.");
+  simulationModelActive = 1;
+  msPerCycle = 1000.0 / syspar::InputFrequency;
+  setTimer(sampleTimerWithoutArrhythmia, (int)(msPerCycle + 0.5));
+}
+
+export testfunction StopECGSignalWithoutArrhythmia()
+{
+  //Stop ECG signal without arrhythmia
+  cancelTimer(sampleTimerWithoutArrhythmia);
+  simulationModelActive = 0;
+}
+
+export testfunction StartSimulatingEmergencyCase()
+{
+  float msPerCycle;
+  //Start simulating emergency case
+  TestCaseComment("Starting to simulate emergency case...");
+  $SampleDataControl.isEmergencySimulationRunning = 1;
+  msPerCycle = 1000.0 / syspar::InputFrequency;
+  setTimer(sampleTimerEmergency, (int)(msPerCycle + 0.5));
+}
+
+export testfunction StopSimulatingEmergencyCase()
+{
+  //Stop simulating emergency case
+  $SampleDataControl.isEmergencySimulationRunning = 0;
+  cancelTimer(sampleTimerEmergency);
+}
+
+export testfunction initTestUnit()
+{
+    if (simulationModelActive)
+    {
+        simulationModelActive = 0;
+    }
+    else
+    {
+        cancelTimer(sampleTimerEmergency);
+        return;
+    }
+
+    wasSimulationWithArrhythmiaRunning = 0;
+    wasSimulationWithoutArrhytmiaRunning = 0;
+    cancelTimer(sampleTimerWithoutArrhythmia);
+    
+    $SampleDataControl.isEmergencySimulationRunning.impl = 0;
+    cancelTimer(sampleTimerEmergency);
+}
+
+testfunction readCsvToBuffer(char csvPath[], long targetBuffer[], long& elementCount) {
+  stack dword fileHandle;
+  stack char fileContent[10000];
+  stack long i, pos;
+  long res;
+  fileHandle = openFileRead(csvPath, 0);
+  
+  if (!fileHandle) {
+    testStepFail("Failed to open csv file");
+    return;
+  }
+  
+  if (!fileGetString(fileContent, elcount(fileContent), fileHandle)) {
+    testStepFail("Failed to read csv content");
+  }
+  
+  pos = mbstrstr(fileContent, ",");
+  str_replace(fileContent, ",", " ");
+  elementCount = 0;
+  for (i = 0; i < elcount(targetBuffer); i++) {
+    #pragma warning(disable: 2038)
+    pos = strtol(fileContent, pos, res);
+    #pragma warning(enable: 2038)
+    if (pos >= 0) {
+      targetBuffer[i] = res;
+      elementCount++;
+    }
+    else {
+      break;
+    }
+  }
+}
+
+    
+on timer sampleTimerWithoutArrhythmia
+{
+  float msPerCycle;
+  
+  if (!simulationModelActive) { return; }
+  if (ecg_sample_offset_without_arrhythmia < ecg_without_arrhytmia_recorded_samples_count)
+  {
+    //Sending ECG sample value
+    $SmartECG::SmartECG_IO.ecgAmplitude = ecg_without_arrhytmia_recorded_samples_array[ecg_sample_offset_without_arrhythmia];
+    ecg_sample_offset_without_arrhythmia++;
+  }
+  else
+  {
+    ecg_sample_offset_without_arrhythmia = 0;
+    $SmartECG::SmartECG_IO.ecgAmplitude = ecg_without_arrhytmia_recorded_samples_array[ecg_sample_offset_without_arrhythmia];
+    ecg_sample_offset_without_arrhythmia++;
+  }
+  
+  msPerCycle = 1000.0 / syspar::InputFrequency;
+  setTimer(sampleTimerWithoutArrhythmia, (int)(msPerCycle + 0.5));
+}
+
+on timer sampleTimerEmergency
+{
+  float msPerCycle;
+  
+  if (ecg_emergency_sample_offset < ecg_emergency_sample_count)
+  {
+    //Sending ECG sample value
+    $SmartECG::SmartECG_IO.ecgAmplitude = ecg_emergency_sample_array[ecg_emergency_sample_offset];
+    ecg_emergency_sample_offset++;
+  }
+  else
+  {
+    ecg_emergency_sample_offset = 0;
+    $SmartECG::SmartECG_IO.ecgAmplitude = ecg_emergency_sample_array[ecg_emergency_sample_offset];
+    ecg_emergency_sample_offset++;
+  }
+  
+  msPerCycle = 1000.0 / syspar::InputFrequency;
+  setTimer(sampleTimerEmergency, (int)(msPerCycle + 0.5));
+}

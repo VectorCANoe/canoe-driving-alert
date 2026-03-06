@@ -1,0 +1,74 @@
+version 2.0;
+import module "IoTEnabler";
+namespace NIoTEnabler
+{
+
+namespace NIVectorDemo
+{
+typedef boolList = list<bool>;
+
+struct inner_struct_type
+{
+    bytes member_1;
+    int32 member_2;
+}
+
+struct struct_type
+{
+    string member_1;
+    float member_2;
+    boolList member_3;
+    inner_struct_type member_4;
+}
+
+typedef struct_typeList = list<struct_type>;
+
+struct system_load_type
+{
+    float cpu_user;
+    float cpu_system;
+    float cpu_idle;
+    uint32 mem_total;
+    uint32 mem_free;
+    float disk_usage;
+}
+
+struct trigger_call_type
+{
+    string some_string;
+    bytes some_bytes;
+}
+
+enum return_code_enum { OK, ERROR }
+struct result
+{
+  return_code_enum return_code;
+  [Optional]
+  string additional_info;
+}
+
+
+interface IVectorDemo
+{
+    provided method result echo_canoe(string string_in, bytes bytes_in, out string string_out, out int32 number_out);
+
+    // !
+    // @brief Echo a given integer number
+    // @param[in] number_in Number to echo
+    // @param[out] number_out Echoed number
+    // @return Success
+    consumed method result echo_number(int32 number_in, out int32 number_out);
+
+    // !
+    // @brief Echo a complex datatype
+    // @param[in] complex_in Complex datatype to echo
+    // @param[out] complex_out Complex datatype number
+    // @return Success
+    consumed method result echo_complex_type(struct_typeList complex_in, out struct_typeList complex_out);
+
+    provided data trigger_call_type trigger_call;
+
+    consumed data system_load_type load_notification;
+
+}}
+}

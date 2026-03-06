@@ -1,0 +1,251 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Panel Type="Vector.CANalyzer.Panels.PanelSerializer, Vector.CANalyzer.Panels.Serializer, Version=19.0.88.0, Culture=neutral, PublicKeyToken=null">
+  <Object Type="Vector.CANalyzer.Panels.Runtime.Panel, Vector.CANalyzer.Panels.Common, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Panel" ControlName="MultiCANoePanel">
+    <Object Type="Vector.CANalyzer.Panels.Design.SwitchControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X9b9844f2e835ee4d2ae8199eeeda19d92850" ControlName="Switch / Indicator 3">
+      <Property Name="Name">X9b9844f2e835ee4d2ae8199eeeda19d92850</Property>
+      <Property Name="Size">23, 30</Property>
+      <Property Name="Location">581, 15</Property>
+      <Property Name="SymbolConfiguration">8;16;MultiCANoe::Control::Test;;;ExecuteTests;1;;;-1;;;Value;;;0</Property>
+      <Property Name="TabIndex">17</Property>
+      <Property Name="Activation">Left</Property>
+      <Property Name="Epsilon">0</Property>
+      <Property Name="Increment">1</Property>
+      <Property Name="StartValue">0</Property>
+      <Property Name="SwitchValuesVTXml">&lt;Version&gt;2&lt;/Version&gt;&lt;Count&gt;2&lt;/Count&gt;&lt;RxValue&gt;0&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;0&lt;/TxValue&gt;&lt;RxValue&gt;1&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;1&lt;/TxValue&gt;</Property>
+      <Property Name="SwitchValuesVT">1;2;0/Lower/0;1/Lower/1</Property>
+      <Property Name="SwitchValues">1;2;0;1</Property>
+      <Property Name="SwitchValuesRx">1;2;0;1</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.GroupBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X8c8074e0e7f0ae4165eb20eeb42ac33ea89e" ControlName="Group Box 1">
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X1b2eff53edce2e4473ebd8eed2ab6667c397" ControlName="Static Text 4">
+        <Property Name="Name">X1b2eff53edce2e4473ebd8eed2ab6667c397</Property>
+        <Property Name="Size">288, 59</Property>
+        <Property Name="Location">5, 68</Property>
+        <Property Name="Text">The system variable CounterCoordinator has Multi CANoe write access set to 'CANoe' and thus is only writable in the coordinator. The agent only has read access to this variable.</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X3a6b8aade6dd4e4d22ebff2e70bc4c41aab7" ControlName="Static Text 7">
+        <Property Name="Name">X3a6b8aade6dd4e4d22ebff2e70bc4c41aab7</Property>
+        <Property Name="Size">42, 15</Property>
+        <Property Name="Location">7, 28</Property>
+        <Property Name="Text">Active:</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X6d27522ae6bd9e46dde8deeea35270fc2a3b" ControlName="Input/Output Box 2">
+        <Property Name="Name">X6d27522ae6bd9e46dde8deeea35270fc2a3b</Property>
+        <Property Name="Size">100, 21</Property>
+        <Property Name="Location">117, 27</Property>
+        <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+        <Property Name="AlarmLowerBkgColor">Salmon</Property>
+        <Property Name="AlarmLowerTextColor">Black</Property>
+        <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+        <Property Name="AlarmUpperTextColor">Black</Property>
+        <Property Name="BoxBorderStyle">FixedSingle</Property>
+        <Property Name="DisplayLabel">Left</Property>
+        <Property Name="TabIndex">2</Property>
+        <Property Name="DescriptionText">Value:</Property>
+        <Property Name="ValueDecimalPlaces">0</Property>
+        <Property Name="ValueDisplay">Decimal</Property>
+        <Property Name="UsedValueTable">PhysicalValue</Property>
+        <Property Name="DescriptionSize">37, 21</Property>
+        <Property Name="SymbolConfiguration">8;16;MultiCANoe::Counter;;;CounterCoordinator;1;;;-1;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.CheckBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xea824566e2f5de43a2e9781e08189708f6ae" ControlName="Check Box 3">
+        <Property Name="Name">Xea824566e2f5de43a2e9781e08189708f6ae</Property>
+        <Property Name="Size">26, 16</Property>
+        <Property Name="Location">50, 27</Property>
+        <Property Name="Text"></Property>
+        <Property Name="TabIndex">1</Property>
+        <Property Name="SymbolConfiguration">8;16;MultiCANoe::Control;;;CountInCoordinator;1;;;-1;;;Value;;;0</Property>
+      </Object>
+      <Property Name="Name">X8c8074e0e7f0ae4165eb20eeb42ac33ea89e</Property>
+      <Property Name="Size">298, 127</Property>
+      <Property Name="Location">5, 71</Property>
+      <Property Name="Text">Counter in Coordinator</Property>
+      <Property Name="TabIndex">13</Property>
+      <Property Name="UseWindowsStyle">False</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xe9630a6be8637e4d2fe9bd8eb0069a0cd70a" ControlName="Static Text 10">
+      <Property Name="Name">Xe9630a6be8637e4d2fe9bd8eb0069a0cd70a</Property>
+      <Property Name="Size">448, 28</Property>
+      <Property Name="Location">176, 366</Property>
+      <Property Name="Text">Pushing this button sets a timer at the same absolute time in both the coordinator and the agent, so that an event can be triggered in both instances at the same time.</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.GroupBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xc9d48718eb56de42dce9731eb4d34748c6f4" ControlName="Group Box 4">
+      <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xbc5f301ee28b1e4b62ebb2ce76c3fa38c4e2" ControlName="Input/Output Box 4">
+        <Property Name="Name">Xbc5f301ee28b1e4b62ebb2ce76c3fa38c4e2</Property>
+        <Property Name="Size">51, 21</Property>
+        <Property Name="Location">223, 22</Property>
+        <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+        <Property Name="AlarmLowerBkgColor">Salmon</Property>
+        <Property Name="AlarmLowerTextColor">Black</Property>
+        <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+        <Property Name="AlarmUpperTextColor">Black</Property>
+        <Property Name="BoxBorderStyle">FixedSingle</Property>
+        <Property Name="DisplayLabel">Left</Property>
+        <Property Name="TabIndex">2</Property>
+        <Property Name="DescriptionText"></Property>
+        <Property Name="ValueDecimalPlaces">0</Property>
+        <Property Name="ValueDisplay">Decimal</Property>
+        <Property Name="UsedValueTable">PhysicalValue</Property>
+        <Property Name="DescriptionSize">5, 21</Property>
+        <Property Name="SymbolConfiguration">8;16;MultiCANoe::Control;;;CounterDelay;1;;;-1;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.TrackBarControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X965aba29ea16ae48a7e9027ec127736a02f1" ControlName="Track Bar 1">
+        <Property Name="Name">X965aba29ea16ae48a7e9027ec127736a02f1</Property>
+        <Property Name="Size">106, 30</Property>
+        <Property Name="Location">110, 20</Property>
+        <Property Name="TabIndex">1</Property>
+        <Property Name="MaximumDouble">1000</Property>
+        <Property Name="MinimumDouble">1</Property>
+        <Property Name="MaximumSize">100000, 30</Property>
+        <Property Name="Minimum">1</Property>
+        <Property Name="Maximum">1000</Property>
+        <Property Name="SymbolConfiguration">8;16;MultiCANoe::Control;;;CounterDelay;1;;;-1;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xd11b78a4e54d0e493dea420e964aa6aa0167" ControlName="Static Text 3">
+        <Property Name="Name">Xd11b78a4e54d0e493dea420e964aa6aa0167</Property>
+        <Property Name="Size">99, 15</Property>
+        <Property Name="Location">11, 26</Property>
+        <Property Name="Text">Count Delay [ms]: </Property>
+      </Object>
+      <Property Name="Name">Xc9d48718eb56de42dce9731eb4d34748c6f4</Property>
+      <Property Name="Size">323, 125</Property>
+      <Property Name="Location">309, 211</Property>
+      <Property Name="Text">Counter Settings</Property>
+      <Property Name="TabIndex">16</Property>
+      <Property Name="UseWindowsStyle">False</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.GroupBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X27005f6fe0bcae4513e83c3e89c0bc5511ef" ControlName="Group Box 3">
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xdae23c1ee39dae4621ebf34e1a2c01c09d53" ControlName="Static Text 5">
+        <Property Name="Name">Xdae23c1ee39dae4621ebf34e1a2c01c09d53</Property>
+        <Property Name="Size">286, 53</Property>
+        <Property Name="Location">7, 67</Property>
+        <Property Name="Text">The system variable CounterAll has a Multi CANoe write access set to 'All Instances'. The coordinator increments this variable if it is even, while the agent increments it up if it is odd.</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xf1dce0b9e3d39e4513ea684e2a7f5feccd28" ControlName="Static Text 6">
+        <Property Name="Name">Xf1dce0b9e3d39e4513ea684e2a7f5feccd28</Property>
+        <Property Name="Size">42, 15</Property>
+        <Property Name="Location">7, 28</Property>
+        <Property Name="Text">Active:</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X732e9ffbe50fde4368e906bee652a67f9e38" ControlName="Input/Output Box 3">
+        <Property Name="Name">X732e9ffbe50fde4368e906bee652a67f9e38</Property>
+        <Property Name="Size">100, 21</Property>
+        <Property Name="Location">117, 26</Property>
+        <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+        <Property Name="AlarmLowerBkgColor">Salmon</Property>
+        <Property Name="AlarmLowerTextColor">Black</Property>
+        <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+        <Property Name="AlarmUpperTextColor">Black</Property>
+        <Property Name="BoxBorderStyle">FixedSingle</Property>
+        <Property Name="DisplayLabel">Left</Property>
+        <Property Name="TabIndex">2</Property>
+        <Property Name="DescriptionText">Value:</Property>
+        <Property Name="ValueDecimalPlaces">0</Property>
+        <Property Name="ValueDisplay">Decimal</Property>
+        <Property Name="UsedValueTable">PhysicalValue</Property>
+        <Property Name="DescriptionSize">37, 21</Property>
+        <Property Name="SymbolConfiguration">8;16;MultiCANoe::Counter;;;CounterAll;1;;;-1;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.CheckBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xdec069a2ef716e411de9a9fe5c2a3b3d1fc5" ControlName="Check Box 4">
+        <Property Name="Name">Xdec069a2ef716e411de9a9fe5c2a3b3d1fc5</Property>
+        <Property Name="Size">26, 16</Property>
+        <Property Name="Location">50, 27</Property>
+        <Property Name="Text"></Property>
+        <Property Name="TabIndex">1</Property>
+        <Property Name="SymbolConfiguration">8;16;MultiCANoe::Control;;;CountInAll;1;;;-1;;;Value;;;0</Property>
+      </Object>
+      <Property Name="Name">X27005f6fe0bcae4513e83c3e89c0bc5511ef</Property>
+      <Property Name="Size">298, 125</Property>
+      <Property Name="Location">5, 211</Property>
+      <Property Name="Text">Shared Counter in Coordinator and Agent</Property>
+      <Property Name="TabIndex">15</Property>
+      <Property Name="UseWindowsStyle">False</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.GroupBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X44d2cb3ce7822e43c5eaa87eb63f67bede54" ControlName="Group Box 2">
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xd1205134e70b6e4786e8ccce3b8dda5a2507" ControlName="Static Text 9">
+        <Property Name="Name">Xd1205134e70b6e4786e8ccce3b8dda5a2507</Property>
+        <Property Name="Size">249, 53</Property>
+        <Property Name="Location">7, 68</Property>
+        <Property Name="Text">The system variable CounterAgent has Multi CANoe Write Access set to 'Agent1' and thus is only writable in the agent. The coordinator only has read access to this variable.</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xeacc2465e214ae4ea1ea66cea9084f98f9a2" ControlName="Static Text 8">
+        <Property Name="Name">Xeacc2465e214ae4ea1ea66cea9084f98f9a2</Property>
+        <Property Name="Size">42, 15</Property>
+        <Property Name="Location">7, 28</Property>
+        <Property Name="Text">Active:</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X2862e805e5cefe44ceebea6e82ccc8d65909" ControlName="Input/Output Box 1">
+        <Property Name="Name">X2862e805e5cefe44ceebea6e82ccc8d65909</Property>
+        <Property Name="Size">100, 21</Property>
+        <Property Name="Location">117, 20</Property>
+        <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+        <Property Name="AlarmLowerBkgColor">Salmon</Property>
+        <Property Name="AlarmLowerTextColor">Black</Property>
+        <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+        <Property Name="AlarmUpperTextColor">Black</Property>
+        <Property Name="BoxBorderStyle">FixedSingle</Property>
+        <Property Name="DisplayLabel">Left</Property>
+        <Property Name="TabIndex">2</Property>
+        <Property Name="DescriptionText">Value:</Property>
+        <Property Name="ValueDecimalPlaces">0</Property>
+        <Property Name="ValueDisplay">Decimal</Property>
+        <Property Name="UsedValueTable">PhysicalValue</Property>
+        <Property Name="DescriptionSize">37, 21</Property>
+        <Property Name="SymbolConfiguration">8;16;MultiCANoe::Counter;;;CounterAgent;1;;;-1;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.CheckBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xfd1b6cc9eff16e4110e9d78e5c86c64db382" ControlName="Check Box 2">
+        <Property Name="Name">Xfd1b6cc9eff16e4110e9d78e5c86c64db382</Property>
+        <Property Name="Size">26, 16</Property>
+        <Property Name="Location">50, 27</Property>
+        <Property Name="Text"></Property>
+        <Property Name="TabIndex">1</Property>
+        <Property Name="SymbolConfiguration">8;16;MultiCANoe::Control;;;CountInAgent;1;;;-1;;;Value;;;0</Property>
+      </Object>
+      <Property Name="Name">X44d2cb3ce7822e43c5eaa87eb63f67bede54</Property>
+      <Property Name="Size">323, 127</Property>
+      <Property Name="Location">309, 71</Property>
+      <Property Name="Text">Counter in Agent</Property>
+      <Property Name="TabIndex">14</Property>
+      <Property Name="UseWindowsStyle">False</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.ButtonControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X1bc27e28e5c56e46fbe961ce018b5754aca2" ControlName="Button 1">
+      <Property Name="Name">X1bc27e28e5c56e46fbe961ce018b5754aca2</Property>
+      <Property Name="Size">158, 23</Property>
+      <Property Name="Location">4, 366</Property>
+      <Property Name="TabIndex">12</Property>
+      <Property Name="Text">Send Simultaneous Events</Property>
+      <Property Name="SymbolConfiguration">8;16;MultiCANoe::Events;;;TriggerSimultaneousEvents;1;;;-1;;;Value;;;0</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X58749628effc2e43d2e9b45e5183867995f3" ControlName="Static Text 2">
+      <Property Name="Name">X58749628effc2e43d2e9b45e5183867995f3</Property>
+      <Property Name="Size">78, 15</Property>
+      <Property Name="Location">486, 22</Property>
+      <Property Name="Text">Execute Tests</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X964eebcaedf1ae4c0cebdd3e044f8e29f559" ControlName="Static Text 1">
+      <Property Name="Name">X964eebcaedf1ae4c0cebdd3e044f8e29f559</Property>
+      <Property Name="Size">71, 15</Property>
+      <Property Name="Location">20, 22</Property>
+      <Property Name="Text">Start System</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.SwitchControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X0d80ac6cec30de4d76ea857efbcb8ed30569" ControlName="Switch / Indicator 1">
+      <Property Name="Name">X0d80ac6cec30de4d76ea857efbcb8ed30569</Property>
+      <Property Name="Size">23, 30</Property>
+      <Property Name="Location">100, 15</Property>
+      <Property Name="SymbolConfiguration">8;16;MultiCANoe::Control;;;StartSystem;1;;;-1;;;Value;;;0</Property>
+      <Property Name="TabIndex">9</Property>
+      <Property Name="Activation">Left</Property>
+      <Property Name="Epsilon">0</Property>
+      <Property Name="Increment">1</Property>
+      <Property Name="StartValue">0</Property>
+      <Property Name="SwitchValuesVTXml">&lt;Version&gt;2&lt;/Version&gt;&lt;Count&gt;2&lt;/Count&gt;&lt;RxValue&gt;0&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;0&lt;/TxValue&gt;&lt;RxValue&gt;1&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;1&lt;/TxValue&gt;</Property>
+      <Property Name="SwitchValuesVT">1;2;0/Lower/0;1/Lower/1</Property>
+      <Property Name="SwitchValues">1;2;0;1</Property>
+      <Property Name="SwitchValuesRx">1;2;0;1</Property>
+    </Object>
+    <Property Name="Name">Panel</Property>
+    <Property Name="Size">637, 407</Property>
+    <Property Name="Location">0, 0</Property>
+    <Property Name="BackColor">255, 255, 255, 255</Property>
+  </Object>
+</Panel>

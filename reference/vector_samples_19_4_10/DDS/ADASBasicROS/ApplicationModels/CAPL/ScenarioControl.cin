@@ -1,0 +1,56 @@
+/*@!Encoding:1252*/
+/////////////////////////////////////////////////////////////////
+// ScenarioControl.cin includes functions to control the scenario
+/////////////////////////////////////////////////////////////////
+
+variables
+{
+  msTimer scenarioDurationTimer;
+  long    scenarioDurationTimeSeconds = 0;
+  
+  int     isScenarioStarted = 0;
+  int     isScenarioLoaded = -2;
+}
+
+on fct_called _ADAS::DataModel::ScenarioManager.OnScenarioStateChange
+{
+  switch(this.state)
+  {
+    case 0: // Loaded
+    {
+      write("Scenario loaded");      
+      break;
+    }
+    case 1: // Started
+    {
+      write("Scenario started");
+      break;
+    }
+    case 2: // Stopped
+    {
+      write("Scenario stopped");
+      break;
+    }
+  }
+}
+
+on timer scenarioDurationTimer
+{
+  scenarioDurationTimeSeconds++;
+  
+  // Stop scenario after 20 seconds
+  if(scenarioDurationTimeSeconds == 20)
+  {
+    _ADAS::DataModel::ScenarioManager.StopScenario.Call();
+  }
+  
+  isScenarioStarted = _ADAS::DataModel::ScenarioManager.IsScenarioStarted.Call();
+  
+  // Scenario has been stopped
+  if(isScenarioStarted == 0)
+  {
+    // Restart the scenario
+    _ADAS::DataModel::ScenarioManager.StartScenario.Call();
+    scenarioDurationTimeSeconds = 0;
+  }
+}

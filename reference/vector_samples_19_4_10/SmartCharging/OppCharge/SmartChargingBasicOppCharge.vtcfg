@@ -1,0 +1,106 @@
+version: 19.0.0
+modules:
+  - type: 2004
+    interface: 7
+    module-channel:
+      name: VT2004_1
+    channels:
+      - name: Outlet_PP
+      - name: VT2004_1_Ch2
+      - name: VT2004_1_Ch3
+      - name: VT2004_1_Ch4
+    gui-labels:
+      - name: EcuA_1
+        text: PP
+      - name: EcuB_1
+        text: PE
+  - type: 5201
+    interface: 1
+    module-channel:
+      name: VT_EV
+      active-values:
+        - name: MeasPPVoltage
+          cycle-time: 5ms
+        - name: MeasVoltageHigh
+          cycle-time: 5ms
+        - name: MeasVoltageLow
+          cycle-time: 5ms
+        - name: MeasFrequency
+          cycle-time: 5ms
+        - name: MeasDutyCycle
+          cycle-time: 5ms
+    gui-labels:
+      - name: IO_Left_16
+        text: CP
+      - name: IO_Left_15
+        text: PE
+      - name: IO_Left_14
+        text: CP_AUX
+      - name: IO_Left_13
+        text: PP_ID
+      - name: IO_Left_10
+        text: PLC+
+      - name: IO_Left_9
+        text: PLC-
+      - name: IO_Right_16
+        text: PWM_Stim
+      - name: IO_Right_15
+        text: PWM_Meas
+      - name: IO_Right_14
+        text: V_CP_Meas
+      - name: IO_Right_13
+        text: V_PP_Meas
+      - name: IO_Right_12
+        text: GND
+      - name: IO_Right_10
+        text: Sync+
+      - name: IO_Right_9
+        text: Sync-
+    module-specific-settings:
+      smart-charging-mode: legacy
+  - type: 5201
+    interface: 1
+    module-channel:
+      name: VT_EVSE
+      active-values:
+        - name: MeasPPVoltage
+          cycle-time: 5ms
+        - name: MeasVoltageHigh
+          cycle-time: 5ms
+        - name: MeasVoltageLow
+          cycle-time: 5ms
+        - name: MeasFrequency
+          cycle-time: 5ms
+        - name: MeasDutyCycle
+          cycle-time: 5ms
+    gui-labels:
+      - name: IO_Left_16
+        text: CP
+      - name: IO_Left_15
+        text: PE
+      - name: IO_Left_14
+        text: CP_AUX
+      - name: IO_Left_13
+        text: PP_ID
+      - name: IO_Left_10
+        text: PLC+
+      - name: IO_Left_9
+        text: PLC-
+      - name: IO_Right_16
+        text: PWM_Stim
+      - name: IO_Right_15
+        text: PWM_Meas
+      - name: IO_Right_14
+        text: V_CP_Meas
+      - name: IO_Right_13
+        text: V_PP_Meas
+      - name: IO_Right_12
+        text: GND
+      - name: IO_Right_10
+        text: Sync+
+      - name: IO_Right_9
+        text: Sync-
+    module-specific-settings:
+      smart-charging-mode: legacy
+vts-control-window:
+  serialized-config: rack[12];mapping[0,0,0];mapping[1,0,1];mapping[2,0,2];

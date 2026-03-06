@@ -1,0 +1,26 @@
+version: 2.2.0
+
+test-tree:
+  - test-fixture: Group 1
+    description: Tests Tests
+    elements:
+      - capl-test-case: ReadECUIDentification
+        title: Test ECU Identification
+      - capl-test-case: TestProcessorType
+        title: Test Processor Type
+      - capl-test-case: TestDiagnosticsVersion
+        title: Test Diagnostics Version
+      - capl-test-case: TestDevelopmentData
+        title: Test Development Data
+      - capl-test-case: TestSerialNumber
+        title: Test Serial Number
+  - test-fixture: Group 2
+    description: Tests Tests
+    elements:
+      - capl-test-case: SetSN
+        title: Set Serial Number
+      - capl-test-case: SetVariant
+        title: Set Variant Coding
+
+
+        

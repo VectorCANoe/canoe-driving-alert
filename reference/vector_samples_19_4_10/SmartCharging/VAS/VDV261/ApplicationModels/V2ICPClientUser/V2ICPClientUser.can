@@ -1,0 +1,51 @@
+﻿/*@!Encoding:65001*/
+includes
+{
+  
+}
+
+variables
+{
+  
+}
+
+on sysvar V2ICPClient::SysV2ICPSendRequest
+{
+  if(@this == 0)
+    return;
+  
+  if(@sysvar::V2ICPClient::SysV2ICPMethodVersion == sysvar::V2ICPClient::SysV2ICPMethodVersion::Version1)
+    SendV2ICPMethodV1();
+  else if (@sysvar::V2ICPClient::SysV2ICPMethodVersion == sysvar::V2ICPClient::SysV2ICPMethodVersion::Version2)
+    SendV2ICPMethodV2();
+}
+
+void SendV2ICPMethodV1()
+{
+  struct V2ICP::DataTypes::V1::V2ICPRequestContent reqContent;
+  reqContent.seq = 0;
+  reqContent.odo = 0;
+  reqContent.bat_reqtime = 0;
+  reqContent.bat_eamount = 0;
+  reqContent.prec_eamount = 0;
+  reqContent.prec_reqtime = 0;
+  reqContent.chrg_stat = V2ICP::DataTypes::V1::StateOfCharge::READY_TO_CHARGE;
+  
+  V2ICP::Endpoints::V2ICPClient.V2ICPMethodV1.CallAsync(reqContent);
+}
+
+void SendV2ICPMethodV2()
+{
+  struct V2ICP::DataTypes::V2::V2ICPRequestContent reqContent;
+  reqContent.seq = 0;
+  reqContent.odo = 0;
+  reqContent.bat_reqtime = 0;
+  reqContent.bat_eamount = 0;
+  reqContent.prec_eamount = 0;
+  reqContent.prec_reqtime = 0;
+  reqContent.chrg_stat = V2ICP::DataTypes::V1::StateOfCharge::READY_TO_CHARGE;
+  reqContent.h2_stat = V2ICP::DataTypes::V2::StateOfH2::WASSERSTOFFANLAGE_IN_ORDNUNG;
+  reqContent.bat_stat = V2ICP::DataTypes::V2::StateOfBattery::STATUS_OF_BATTERY_IS_OKAY;
+  
+  V2ICP::Endpoints::V2ICPClient.V2ICPMethodV2.CallAsync(reqContent);
+}

@@ -1,0 +1,215 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<systemvariables version="4">
+  <namespace name="" comment="" interface="">
+    <namespace name="GBT27930" comment="" interface="">
+      <namespace name="BMS" comment="" interface="">
+        <namespace name="DelayTransition" comment="" interface="">
+          <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="ms" name="svBCL_to_BCL_BCS" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="500" minValue="0" minValuePhys="0" maxValue="20000" maxValuePhys="20000" />
+          <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="ms" name="svBRO_not_ready_to_BRO_ready" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="500" minValue="0" minValuePhys="0" maxValue="20000" maxValuePhys="20000" />
+          <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="svBSD_to_End" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="500" minValue="0" minValuePhys="0" maxValue="20000" maxValuePhys="20000" />
+          <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="svBST_to_BSD" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="60" />
+          <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="ms" name="svCCS_to_BSM" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="500" minValue="0" minValuePhys="0" maxValue="20000" maxValuePhys="20000" />
+          <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="ms" name="svCHM_to_BHM" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="500" minValue="0" minValuePhys="0" maxValue="20000" maxValuePhys="20000" />
+          <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="ms" name="svCML_to_BRO_not_ready" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="500" minValue="0" minValuePhys="0" maxValue="20000" maxValuePhys="20000" />
+          <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="ms" name="svCRM_not_recognized_to_BRM" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="500" minValue="0" minValuePhys="0" maxValue="20000" maxValuePhys="20000" />
+          <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="ms" name="svCRM_recognized_to_BCP" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="500" minValue="0" minValuePhys="0" maxValue="20000" maxValuePhys="20000" />
+          <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="svCRO_ready_to_BCL" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="500" />
+          <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="svCST_to_BSD" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="500" minValue="0" minValuePhys="0" maxValue="20000" maxValuePhys="20000" />
+          <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="svCST_to_BST" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="500" minValue="0" minValuePhys="0" maxValue="20000" maxValuePhys="20000" />
+        </namespace>
+        <namespace name="MaxAllowedMissingTime" comment="" interface="">
+          <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="svCCS" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="1000" />
+          <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="svCHM" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="60000" />
+          <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="svCML" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="5000" />
+          <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="svCRM_NotRecognized" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="30000" />
+          <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="svCRM_Recognized" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="5000" />
+          <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="svCRO_NotReady" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="5000" />
+          <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="svCRO_Ready" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="60000" />
+          <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="svCSD" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="10000" />
+          <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="svCST" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="5000" />
+        </namespace>
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="svCauseOfSuspendingCharging" comment="" bitcount="32" isSigned="true" encoding="65001" type="int">
+          <valuetable name="Custom" definesMinMax="false">
+            <valuetableentry value="0" lowerBound="0" upperBound="0" description="NotDefined" displayString="NotDefined" />
+            <valuetableentry value="1" lowerBound="1" upperBound="1" description="AbnormalVoltageError" displayString="AbnormalVoltageError" />
+            <valuetableentry value="2" lowerBound="2" upperBound="2" description="ExcessiveCurrentError" displayString="ExcessiveCurrentError" />
+            <valuetableentry value="3" lowerBound="3" upperBound="3" description="OtherFaults" displayString="OtherFaults" />
+            <valuetableentry value="4" lowerBound="4" upperBound="4" description="BmsConnectorOverTemp" displayString="BmsConnectorOverTemp" />
+            <valuetableentry value="5" lowerBound="5" upperBound="5" description="VoltageDetectionFault" displayString="VoltageDetectionFault" />
+            <valuetableentry value="6" lowerBound="6" upperBound="6" description="HighVoltageRelayFault" displayString="HighVoltageRelayFault" />
+            <valuetableentry value="7" lowerBound="7" upperBound="7" description="BatterySetOverTemp" displayString="BatterySetOverTemp" />
+            <valuetableentry value="8" lowerBound="8" upperBound="8" description="ChargingConnectorFault" displayString="ChargingConnectorFault" />
+            <valuetableentry value="9" lowerBound="9" upperBound="9" description="OutputConnectorOverTemp" displayString="OutputConnectorOverTemp" />
+            <valuetableentry value="10" lowerBound="10" upperBound="10" description="InsulationFault" displayString="InsulationFault" />
+            <valuetableentry value="11" lowerBound="11" upperBound="11" description="ChargerSuspendsActively" displayString="ChargerSuspendsActively" />
+            <valuetableentry value="12" lowerBound="12" upperBound="12" description="SettingValueOfSingleVoltage" displayString="SettingValueOfSingleVoltage" />
+            <valuetableentry value="13" lowerBound="13" upperBound="13" description="SettingValueOfTotalVoltage" displayString="SettingValueOfTotalVoltage" />
+            <valuetableentry value="14" lowerBound="14" upperBound="14" description="RequiredSocTargetValue" displayString="RequiredSocTargetValue" />
+          </valuetable>
+        </variable>
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="svCommunicationState" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="-1" />
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="%" name="svEfficiency" comment="" bitcount="64" isSigned="true" encoding="65001" type="float" startValue="90" minValue="0" maxValue="1000" />
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="svInterruptBCL" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="0" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1" />
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="svInterruptBCS" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="0" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1" />
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="svInterruptBSM" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="0" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1" />
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="svManufacturerName" comment="" bitcount="0" isSigned="true" encoding="65001" type="string" />
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="svStopChargingWithError" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="0" minValue="0" minValuePhys="0" maxValue="2" maxValuePhys="2">
+          <valuetable name="On_Off" definesMinMax="true">
+            <valuetableentry value="0" lowerBound="0" upperBound="0" description="Off" displayString="Off" />
+            <valuetableentry value="1" lowerBound="1" upperBound="1" description="On" displayString="On" />
+            <valuetableentry value="2" lowerBound="2" upperBound="2" description="Invalid" displayString="Invalid" />
+          </valuetable>
+        </variable>
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="svStopChargingWithError2" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="0" minValue="0" minValuePhys="0" maxValue="2" maxValuePhys="2">
+          <valuetable name="On_Off" definesMinMax="true">
+            <valuetableentry value="0" lowerBound="0" upperBound="0" description="Off" displayString="Off" />
+            <valuetableentry value="1" lowerBound="1" upperBound="1" description="On" displayString="On" />
+            <valuetableentry value="2" lowerBound="2" upperBound="2" description="Invalid" displayString="Invalid" />
+          </valuetable>
+        </variable>
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="svStoreSettings" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="0" minValue="0" minValuePhys="0" maxValue="2" maxValuePhys="2">
+          <valuetable name="On_Off" definesMinMax="true">
+            <valuetableentry value="0" lowerBound="0" upperBound="0" description="Off" displayString="Off" />
+            <valuetableentry value="1" lowerBound="1" upperBound="1" description="On" displayString="On" />
+            <valuetableentry value="2" lowerBound="2" upperBound="2" description="Invalid" displayString="Invalid" />
+          </valuetable>
+        </variable>
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="svSuspendCharging" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="0" minValue="0" minValuePhys="0" maxValue="2" maxValuePhys="2">
+          <valuetable name="On_Off" definesMinMax="true">
+            <valuetableentry value="0" lowerBound="0" upperBound="0" description="Off" displayString="Off" />
+            <valuetableentry value="1" lowerBound="1" upperBound="1" description="On" displayString="On" />
+            <valuetableentry value="2" lowerBound="2" upperBound="2" description="Invalid" displayString="Invalid" />
+          </valuetable>
+        </variable>
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="svSuspendCharging2" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="0" minValue="0" minValuePhys="0" maxValue="2" maxValuePhys="2">
+          <valuetable name="On_Off" definesMinMax="true">
+            <valuetableentry value="0" lowerBound="0" upperBound="0" description="Off" displayString="Off" />
+            <valuetableentry value="1" lowerBound="1" upperBound="1" description="On" displayString="On" />
+            <valuetableentry value="2" lowerBound="2" upperBound="2" description="Invalid" displayString="Invalid" />
+          </valuetable>
+        </variable>
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="svTimeoutOfMsg" comment="" bitcount="32" isSigned="true" encoding="65001" type="int">
+          <valuetable name="Custom" definesMinMax="false">
+            <valuetableentry value="0" lowerBound="0" upperBound="0" description="NotDefined" displayString="NotDefined" />
+            <valuetableentry value="1" lowerBound="1" upperBound="1" description="CRM_NotRecognized" displayString="CRM_NotRecognized" />
+            <valuetableentry value="2" lowerBound="2" upperBound="2" description="CRM_Recognized" displayString="CRM_Recognized" />
+            <valuetableentry value="3" lowerBound="3" upperBound="3" description="CTS_CML" displayString="CTS_CML" />
+            <valuetableentry value="4" lowerBound="4" upperBound="4" description="CRO" displayString="CRO" />
+            <valuetableentry value="5" lowerBound="5" upperBound="5" description="CCS" displayString="CCS" />
+            <valuetableentry value="6" lowerBound="6" upperBound="6" description="CST" displayString="CST" />
+            <valuetableentry value="7" lowerBound="7" upperBound="7" description="CSD" displayString="CSD" />
+          </valuetable>
+        </variable>
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="svVIN" comment="" bitcount="0" isSigned="true" encoding="65001" type="string" />
+      </namespace>
+      <namespace name="Charger" comment="" interface="">
+        <namespace name="DelayTransition" comment="" interface="">
+          <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="ms" name="svBCP_to_CML" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="500" minValue="0" minValuePhys="0" maxValue="60000" maxValuePhys="60000" />
+          <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="ms" name="svBCS_to_CCS" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="500" minValue="0" minValuePhys="0" maxValue="60000" maxValuePhys="60000" />
+          <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="ms" name="svBHM_to_CRM_not_recognized" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="500" minValue="0" minValuePhys="0" maxValue="60000" maxValuePhys="60000" />
+          <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="ms" name="svBRM_to_CRMrecognized" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="500" minValue="0" minValuePhys="0" maxValue="60000" maxValuePhys="60000" />
+          <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="ms" name="svBRO_ready_to_CRO_not_ready" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="500" minValue="0" minValuePhys="0" maxValue="60000" maxValuePhys="60000" />
+          <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="ms" name="svBSD_to_CSD" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="500" minValue="0" minValuePhys="0" maxValue="60000" maxValuePhys="60000" />
+          <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="ms" name="svBST_to_CST" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="500" minValue="0" minValuePhys="0" maxValue="60000" maxValuePhys="60000" />
+          <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="ms" name="svCRO_not_ready_to_CRO_ready" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="500" minValue="0" minValuePhys="0" maxValue="60000" maxValuePhys="60000" />
+          <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="ms" name="svCSD_to_End" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="500" minValue="0" minValuePhys="0" maxValue="60000" maxValuePhys="60000" />
+          <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="svK3K4_to_CHM" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="500" minValue="0" minValuePhys="0" maxValue="60000" maxValuePhys="60000" />
+        </namespace>
+        <namespace name="MaxAllowedMissingTime" comment="" interface="">
+          <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="svBCL" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="1000" />
+          <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="svBCP" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="5000" />
+          <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="svBCS" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="5000" />
+          <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="svBRM" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="5000" />
+          <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="svBRO_NotReady" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="5000" />
+          <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="svBRO_Ready" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="60000" />
+          <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="svBSD" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="5000" />
+          <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="svBST" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="5000" />
+        </namespace>
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="svCalculatedOutputEnergy" comment="" bitcount="64" isSigned="true" encoding="65001" type="float" startValue="0" />
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="svCAN_channel" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" />
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="svCauseOfSuspendingCharging" comment="" bitcount="32" isSigned="true" encoding="65001" type="int">
+          <valuetable name="Custom" definesMinMax="false">
+            <valuetableentry value="0" lowerBound="0" upperBound="0" description="NotDefined" displayString="NotDefined" />
+            <valuetableentry value="1" lowerBound="1" upperBound="1" description="ConditionReached" displayString="ConditionReached" />
+            <valuetableentry value="2" lowerBound="2" upperBound="2" description="SuspendsArtificially" displayString="SuspendsArtifically" />
+            <valuetableentry value="3" lowerBound="3" upperBound="3" description="FaultSuspension" displayString="FaultSuspension" />
+            <valuetableentry value="4" lowerBound="4" upperBound="4" description="BmsActivelySuspends" displayString="BmsActivelySuspends" />
+            <valuetableentry value="5" lowerBound="5" upperBound="5" description="ChargerOverTemp" displayString="ChargerOverTemp" />
+            <valuetableentry value="6" lowerBound="6" upperBound="6" description="ChargingConnectorFault" displayString="ChargingConnectorFault" />
+            <valuetableentry value="7" lowerBound="7" upperBound="7" description="ChargerIntPartOverTemp" displayString="ChargerIntPartOverTemp" />
+            <valuetableentry value="8" lowerBound="8" upperBound="8" description="CannotSupplyReqElQuantity" displayString="CannotSupplyReqEiQuantity" />
+            <valuetableentry value="9" lowerBound="9" upperBound="9" description="SuddenStop" displayString="SuddenStop" />
+            <valuetableentry value="10" lowerBound="10" upperBound="10" description="OtherFault" displayString="OtherFault" />
+            <valuetableentry value="11" lowerBound="11" upperBound="11" description="CurrentMismatchError" displayString="CurrentMismatchError" />
+            <valuetableentry value="12" lowerBound="12" upperBound="12" description="AbnormalVoltageError" displayString="AbnormalVoltageError" />
+          </valuetable>
+        </variable>
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="svChargerLocation" comment="" bitcount="0" isSigned="true" encoding="65001" type="string" />
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="svCommunicationState" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="-1" />
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="svInterruptCCS" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="0" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1" />
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="svStopChargingWithError" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="0" minValue="0" minValuePhys="0" maxValue="2" maxValuePhys="2">
+          <valuetable name="On_Off" definesMinMax="true">
+            <valuetableentry value="0" lowerBound="0" upperBound="0" description="Off" displayString="Off" />
+            <valuetableentry value="1" lowerBound="1" upperBound="1" description="On" displayString="On" />
+            <valuetableentry value="2" lowerBound="2" upperBound="2" description="Invalid" displayString="Invalid" />
+          </valuetable>
+        </variable>
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="svStopChargingWithError2" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="0" minValue="0" minValuePhys="0" maxValue="2" maxValuePhys="2">
+          <valuetable name="On_Off" definesMinMax="true">
+            <valuetableentry value="0" lowerBound="0" upperBound="0" description="Off" displayString="Off" />
+            <valuetableentry value="1" lowerBound="1" upperBound="1" description="On" displayString="On" />
+            <valuetableentry value="2" lowerBound="2" upperBound="2" description="Invalid" displayString="Invalid" />
+          </valuetable>
+        </variable>
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="svStoreSettings" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="0" minValue="0" minValuePhys="0" maxValue="2" maxValuePhys="2">
+          <valuetable name="On_Off" definesMinMax="true">
+            <valuetableentry value="0" lowerBound="0" upperBound="0" description="Off" displayString="Off" />
+            <valuetableentry value="1" lowerBound="1" upperBound="1" description="On" displayString="On" />
+            <valuetableentry value="2" lowerBound="2" upperBound="2" description="Invalid" displayString="Invalid" />
+          </valuetable>
+        </variable>
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="svSuspendCharging" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="0" minValue="0" minValuePhys="0" maxValue="2" maxValuePhys="2">
+          <valuetable name="On_Off" definesMinMax="true">
+            <valuetableentry value="0" lowerBound="0" upperBound="0" description="Off" displayString="Off" />
+            <valuetableentry value="1" lowerBound="1" upperBound="1" description="On" displayString="On" />
+            <valuetableentry value="2" lowerBound="2" upperBound="2" description="Invalid" displayString="Invalid" />
+          </valuetable>
+        </variable>
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="svSuspendCharging2" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="0" minValue="0" minValuePhys="0" maxValue="2" maxValuePhys="2">
+          <valuetable name="On_Off" definesMinMax="true">
+            <valuetableentry value="0" lowerBound="0" upperBound="0" description="Off" displayString="Off" />
+            <valuetableentry value="1" lowerBound="1" upperBound="1" description="On" displayString="On" />
+            <valuetableentry value="2" lowerBound="2" upperBound="2" description="Invalid" displayString="Invalid" />
+          </valuetable>
+        </variable>
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="svTimeoutOfMsg" comment="" bitcount="32" isSigned="true" encoding="65001" type="int">
+          <valuetable name="Custom" definesMinMax="false">
+            <valuetableentry value="0" lowerBound="0" upperBound="0" description="NotDefined" displayString="NotDefined" />
+            <valuetableentry value="1" lowerBound="1" upperBound="1" description="BRM" displayString="BRM" />
+            <valuetableentry value="2" lowerBound="2" upperBound="2" description="BCP" displayString="BCP" />
+            <valuetableentry value="3" lowerBound="3" upperBound="3" description="BRO" displayString="BRO" />
+            <valuetableentry value="4" lowerBound="4" upperBound="4" description="BCS" displayString="BCS" />
+            <valuetableentry value="5" lowerBound="5" upperBound="5" description="BCL" displayString="BCL" />
+            <valuetableentry value="6" lowerBound="6" upperBound="6" description="BST" displayString="BST" />
+            <valuetableentry value="7" lowerBound="7" upperBound="7" description="BSD" displayString="BSD" />
+          </valuetable>
+        </variable>
+      </namespace>
+      <namespace name="Control" comment="" interface="">
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="auxiliary_voltage" comment="" bitcount="64" isSigned="true" encoding="65001" type="float" startValue="0" />
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="HV_DC_Current" comment="" bitcount="64" isSigned="true" encoding="65001" type="float" startValue="0" />
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="HV_DC_VeriVoltage" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" />
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="HV_DC_Voltage" comment="" bitcount="64" isSigned="true" encoding="65001" type="float" startValue="0" />
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="ind_monitor_events" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="0" />
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="StartSimulation" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" />
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="voltage_CP1" comment="" bitcount="64" isSigned="true" encoding="65001" type="float" startValue="0" />
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="voltage_CP2" comment="" bitcount="64" isSigned="true" encoding="65001" type="float" startValue="0" />
+      </namespace>
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="svStart" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="0" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1" />
+    </namespace>
+    <namespace name="RuntimeValues" comment="" interface="">
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="PresentOutputCurrent" comment="" bitcount="64" isSigned="true" encoding="65001" type="float" startValue="0" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="PresentOutputVoltage" comment="" bitcount="64" isSigned="true" encoding="65001" type="float" startValue="0" />
+    </namespace>
+  </namespace>
+</systemvariables>

@@ -1,0 +1,436 @@
+/*@!Encoding:1252*/
+includes
+{
+  
+}
+
+variables
+{
+  int inletLocked = 0, muteISO = 0;
+}
+
+
+/// <CharINInterface>
+ST_Init()
+{
+  @sysvar::VTS::VT_EV::Relay_K1 = 0;
+  @sysvar::VTS::VT_EV::Relay_K2 = 0;
+  @sysvar::VTS::VT_EV::Relay_K3 = 0;
+  @sysvar::VTS::VT_EV::Relay_K4 = 0;
+  @sysvar::VTS::VT_EV::Relay_K5 = 0;
+  @sysvar::VTS::VT_EV::Relay_K6 = 0;
+  @sysvar::VTS::VT_EV::Relay_K7 = 0;
+  @sysvar::VTS::VT_EV::Relay_K8 = 0;
+  @sysvar::VTS::VT_EV::Relay_K9 = 1; // Set required relays for CE functionality
+  @sysvar::VTS::VT_EV::Relay_K10 = 1; // Set required relays for CE functionality
+  @sysvar::VTS::VT_EV::Relay_K11 = 0;
+  @sysvar::VTS::VT_EV::Relay_K12 = 0;
+  @sysvar::VTS::VT_EV::Relay_K13 = 0;
+  @sysvar::VTS::VT_EV::Relay_K14 = 0;
+  @sysvar::VTS::VT_EV::Relay_K15 = 0;
+  @sysvar::VTS::VT_EV::Relay_K16 = 0;
+  @sysvar::VTS::VT_EV::Relay_K17 = 0;
+  @sysvar::VTS::VT_EV::Relay_K18 = 0;
+  @sysvar::VTS::VT_EV::Relay_K19 = 0;
+  @sysvar::VTS::VT_EV::Relay_K20 = 0;
+  @sysvar::VTS::VT_EV::Relay_K21 = 0;
+  @sysvar::VTS::VT_EV::Relay_K22 = 0;
+  @sysvar::VTS::VT_EV::Relay_K23 = 0;
+  @sysvar::VTS::VT_EV::Relay_K24 = 0;
+  @sysvar::VTS::VT_EV::Relay_K25 = 0;
+  @sysvar::VTS::VT_EV::Relay_K26 = 0;
+  @sysvar::VTS::VT_EV::Relay_K27 = 1; //Set bypass for voltage measurement Vv2
+  @sysvar::VTS::VT_EV::Relay_K28 = 0;
+  @sysvar::VTS::VT_EV::Relay_K29 = 1; //Set bypass for voltage measurement Vv2
+  @sysvar::VTS::VT_EV::Relay_K31 = 0;
+  @sysvar::VTS::VT_EV::Relay_K32 = 0;
+  @sysvar::VTS::VT_EV::Relay_K33 = 0;
+  @sysvar::VTS::VT_EV::Relay_K34 = 0;
+  @sysvar::VTS::VT_EV::Relay_K35 = 0;
+  @sysvar::VTS::VT_EV::Relay_K36 = 0;
+  @sysvar::VTS::VT_EV::Relay_K37 = 0;
+  @sysvar::VTS::VT_EV::Relay_K38 = 0;
+  @sysvar::VTS::VT_EV::Relay_K39 = 0;
+  @sysvar::VTS::VT_EV::Relay_K40 = 0;
+  @sysvar::VTS::VT_EV::Relay_K41 = 0;
+  @sysvar::VTS::VT_EV::Relay_K42 = 0;
+  @sysvar::VTS::VT_EV::Relay_K43 = 0;
+  @sysvar::VTS::VT_EV::Relay_K46 = 1; // Set required relays for CE functionality
+  @sysvar::VTS::VT_EV::Relay_K47 = 0; // Set required relays for CE functionality
+  @sysvar::VTS::VT_EV::Relay_K48 = 0;
+  @sysvar::VTS::VT_EV::Relay_K52 = 0;
+  @sysvar::VTS::VT_EV::Relay_K53 = 0;
+  @sysvar::VTS::VT_EV::Relay_K54 = 0;
+  @sysvar::VTS::VT_EV::Relay_K55 = 0;
+  @sysvar::VTS::VT_EV::Relay_K56 = 1;
+  @sysvar::VTS::VT_EV::Relay_K57 = 0;
+  @sysvar::VTS::VT_EV::Relay_K58 = 0;
+  @sysvar::VTS::VT_EV::Relay_K59 = 0;
+  @sysvar::VTS::VT_EV::Relay_K60 = 0;
+  @sysvar::VTS::VT_EV::Relay_K61 = 0;
+  @sysvar::VTS::VT_EV::Relay_K62 = 0;
+  @sysvar::VTS::VT_EV::Relay_K63 = 0;
+  @sysvar::VTS::VT_EV::Relay_K65 = 1; // Set required relays for CE functionality
+  @sysvar::VTS::VT_EV::Relay_K66 = 0; // Set required relays for CE functionality
+  @sysvar::VTS::VT_EV::Relay_K67 = 1; // Set required relays for ID functionality without real Inlet (10kOhm)
+  @sysvar::VTS::VT_EV::Relay_K68 = 0;
+  @sysvar::VTS::VT_EV::Relay_K69 = 1; // Set required relays for ID functionality
+  @sysvar::VTS::VT_EV::Relay_K82 = 0; // Set required relays for ID functionality with real Inlet (10kOhm)
+  @sysvar::VTS::VT_EV::Relay_K85 = 0;
+  
+  // Set required resistors and switches 
+  @sysvar::EVCC::IEC61851::Rv4 = 10; // Considered by 10 Ohm bypass of low pass filter (K65)
+  @sysvar::EVCC::IEC61851::Rv5 = 680;
+  @sysvar::EVCC::IEC61851::Rv6 = 75;
+  @sysvar::EVCC::IEC61851::Rv7 = 510;
+  @sysvar::EVCC::IEC61851::Sv3 = 0;
+  @sysvar::EVCC::IEC61851::Sv4 = 0;
+  
+  // open DC contactors
+  HV_source_set_output(0);
+  HV_PSU_DC_enable(0);
+  
+  //UnMute ISO
+  UnMute_ISO();
+}
+
+/// <CharINInterface>
+export long ST_Reset()
+{  
+  HV_source_set_output(0);
+  HV_PSU_DC_enable(0);
+    
+  return 0;
+}
+
+/// <CharINInterface>
+ST_PlugIn()
+{
+  @sysvar::VTS::VT_EV::Relay_K1 = 1;
+  @sysvar::VTS::VT_EV::Relay_K26 = 1;
+  @sysvar::VTS::VT_EV::Relay_K28 = 1;
+  expectedCEState = State_B;
+}
+
+/// <CharINInterface>
+ST_PlugOut()
+{
+  @sysvar::VTS::VT_EV::Relay_K1 = 0;
+  @sysvar::VTS::VT_EV::Relay_K26 = 0;
+  @sysvar::VTS::VT_EV::Relay_K28 = 0;
+  expectedCEState = _CCS::DataTypes::CPStateType::State_A; // or E
+}
+
+on sysvar_update VTS::VT_EV::MeasVoltageHigh
+{
+  @sysvar::EVCC::IEC61851::Vv2_CE_EV = @this;
+}
+
+on sysvar_update VTS::VT_EV::MeasPPVoltage
+{
+  @sysvar::EVCC::IEC61851::Vv1_ID_EV = @this;
+}
+
+on sysvar_update EVCC::IEC61851::Sv3
+{
+  CE_change();
+}
+
+on sysvar_update EVCC::IEC61851::Sv4
+{
+  CE_change();
+}
+
+
+on value_update EV.StimCPState
+{
+  switch ($EV.StimCPState)
+  {
+    case _CCS::DataTypes::CPStateType::State_B:
+      SetCPStateB();
+      break;
+    case _CCS::DataTypes::CPStateType::State_C:
+    case _CCS::DataTypes::CPStateType::State_D:
+      SetCPStateC();
+      break;
+    case _CCS::DataTypes::CPStateType::State_Undefined:
+      break; // Initial state
+    default:
+      // other states not allowed (set by EV)
+      WriteLineEx(0, 2, "EV: 'OnStimCPStateChanged' called wih invalid value %d!", $this);
+      break;
+  }
+}
+
+/// <CE_ID>
+void SetCPStateB()
+{
+  @EVCC::IEC61851::Sv3 = 0;
+  CE_change();
+  expectedCEState = State_B;
+}
+
+/// <CE_ID>
+void SetCPStateC()
+{
+  @EVCC::IEC61851::Sv3 = 1;
+  CE_change();
+  expectedCEState = State_C;
+}
+
+/// <CE_ID>
+void CE_change()
+{
+  // EV PT ready & EV AUX request
+  if(@EVCC::IEC61851::Sv3 == 1 && @EVCC::IEC61851::Sv4 == 1) //680||75||510 = 59,65 Ohm
+  {
+    @sysvar::VTS::VT_EV::Relay_K14 = 1; //270 Ohm
+    @sysvar::VTS::VT_EV::Relay_K15 = 1; //270 Ohm
+    @sysvar::VTS::VT_EV::Relay_K16 = 1; //270 Ohm
+    @sysvar::VTS::VT_EV::Resistance = 77; // 77||270 = 59,9 Ohm (approx equal: 680||75||510)
+  }
+  // EV PT ready & EV AUX not requested
+  if(@EVCC::IEC61851::Sv3 == 1 && @EVCC::IEC61851::Sv4 ==0) // 680||75 = 67,5 Ohm
+  {
+    @sysvar::VTS::VT_EV::Relay_K14 = 1; //270 Ohm
+    @sysvar::VTS::VT_EV::Relay_K15 = 1; //270 Ohm
+    @sysvar::VTS::VT_EV::Relay_K16 = 1; //270 Ohm
+    @sysvar::VTS::VT_EV::Resistance = 90; // 90||270 = 67,5 Ohm (equal: 680||75)
+  }
+  // EV PT not ready & EV AUX request
+  if(@EVCC::IEC61851::Sv3 == 0 && @EVCC::IEC61851::Sv4 ==1) // 680||510 = 291 Ohm
+  {
+    @sysvar::VTS::VT_EV::Relay_K14 = 0;
+    @sysvar::VTS::VT_EV::Relay_K15 = 0;
+    @sysvar::VTS::VT_EV::Relay_K16 = 0;
+    @sysvar::VTS::VT_EV::Resistance = 291;
+  }
+  // EV PT not ready & EV AUX not requested
+  if(@EVCC::IEC61851::Sv3 == 0 && @EVCC::IEC61851::Sv4 ==0)
+  {
+    @sysvar::VTS::VT_EV::Relay_K14 = 0;
+    @sysvar::VTS::VT_EV::Relay_K15 = 0;
+    @sysvar::VTS::VT_EV::Relay_K16 = 0;
+    @sysvar::VTS::VT_EV::Resistance = 680;
+  }
+}
+
+on sysvar VTS::VT_EV::MeasVoltageHigh
+{
+  //*_Aux states are ignored, because the card cannot measure them
+  if((@this >= -0.1) && (@this <= 0.1))
+  {
+    //state A or E
+    if((expectedCEState == State_A || expectedCEState == State_E || debounceCounter++ >= debounceLimit)
+      && simulationRunning == 1)
+    {
+      DebouncedCEStateDetection(State_A);
+      debounceCounter = 0;
+    }
+  }
+  else if((@this >= 2.38) && (@this <= 3.16))
+  {
+    //state B0
+    if((expectedCEState == State_B0) || debounceCounter++ >= debounceLimit)
+    {
+      DebouncedCEStateDetection(State_B0);
+      debounceCounter = 0; 
+      ReactToStateB0();
+    }
+  }
+  else if((@this >= 3.38) && (@this <= 4.04))
+  {
+    //state B
+    if((expectedCEState == State_B || debounceCounter++ >= debounceLimit))      
+    {
+      DebouncedCEStateDetection(State_B);
+      debounceCounter = 0; 
+      ReactToStateB();
+    }
+  }
+  else if((@this >= 1.02) && (@this <= 1.4))
+  {
+    //state C
+    if((expectedCEState == State_C || debounceCounter++ >= debounceLimit) 
+      && simulationRunning == 1)
+    {
+      DebouncedCEStateDetection(State_C);
+      debounceCounter = 0;
+    }
+      
+  }
+  else if((@this >= 0.53) && (@this <= 0.74))
+  {
+    //state EC
+    if((expectedCEState == State_EC || debounceCounter++ >= debounceLimit) 
+      && simulationRunning == 1)
+    {
+      DebouncedCEStateDetection(State_EC);
+      debounceCounter = 0;
+      ReactToStateEC();
+    }
+  }
+  else
+  {
+    //unexpected voltage measured during simulation
+    if(simulationRunning == 1)
+    {
+      if(debounceCounter++ >= debounceLimit)
+      {
+        debounceCounter = 0;
+        WriteLineEx(0, 3, "EV: Measured unexpected voltage not matching any defined CE state: %fV", @this);
+      }        
+    }
+  }
+}
+
+void DebouncedCEStateDetection(int ceState)
+{
+  if(ceState != expectedCEState 
+    && expectedCEState != State_Undefined 
+    && simulationRunning == 1)
+  {
+    WriteLineEx(0, 3, "EV: Unexpectedly measured CE state %d; Expected: %d", ceState, expectedCEState);
+  }
+}
+
+on sysvar VTS::VT_EV::MeasPPVoltage
+{
+  //*_Aux states are ignored, because the card cannot measure them
+  if(simulationRunning == 0)
+    return;
+  
+  if((@this >= 4.5) && (@this <= 5.5))
+  {
+    //Inlet not present
+  }
+  else if((@this >= 2.19) && (@this <= 2.75))
+  {
+    //Unmated
+    if(expectedCEState != State_A && inletLocked != 0)
+      WriteLineEx(0, 3, "EV: Unexpectedly measured ID state 'Unmated'");
+  }
+  else if((@this >= 1.43) && (@this <= 1.82))
+  {
+    //Mated_NoEVSE
+    if(expectedCEState != State_B && inletLocked != 1)
+      WriteLineEx(0, 3, "EV: Unexpectedly measured ID state 'Mated_NoEVSE'; State: %d", expectedCEState);
+  }
+  else if((@this >= 0.74) && (@this <= 1.37))
+  {
+    //Mated_EVSE
+    if(expectedCEState != State_B 
+      && expectedCEState != State_C
+      && expectedCEState != State_EC 
+      && inletLocked != 1)
+      WriteLineEx(0, 3, "EV: Unexpectedly measured ID state 'Mated_EVSE'; State: %d", expectedCEState);
+  }
+  else
+  {
+    WriteLineEx(0, 3, "EV: Measured unexpected voltage not matching any defined ID state: %fV", @this);
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////
+// general HW interface
+//////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/// <CharINInterface>
+export long HV_source_set_output(int enable)
+{
+  return 0;
+}
+
+/// <CharINInterfaceDC>
+export long HV_PSU_DC_enable(int enable)
+{
+  //enable DC power supply
+  
+  return 0;
+}
+
+/// <CharINInterface>
+export long HV_source_perform_welding()
+{
+  return 0;
+}
+
+
+
+export long HV_source_set_I_DC(double current)
+{
+  return 0;
+}
+
+export long HV_source_set_U_DC(double voltage)
+{
+  if(voltage > 10)  //sink voltage
+    voltage -= 10;
+  
+  return 0;
+}
+
+//function will receive positive voltage value within PreCharge and CurrentDemand
+export long HV_source_set_U_DC_PreCharge(double voltage)
+{
+  return 0;
+}
+
+/// <CharINInterfaceDC>
+double HV_measure_DC_U()
+{
+  if(@sysvar::EV_Sim::SysEV_State > 18)
+    return ($EV.ISO20.DC_ChargeLoop_Response.EVSEPresentVoltage.Value * _pow(10, $EV.ISO20.DC_ChargeLoop_Response.EVSEPresentVoltage.Exponent));
+  else
+    return ($EV.ISO20.DC_PreCharge_Response.EVSEPresentVoltage.Value * _pow(10, $EV.ISO20.DC_PreCharge_Response.EVSEPresentVoltage.Exponent));
+}
+
+/// <CharINInterfaceDC>
+export double HV_measure_DC_U_VeriVolt()
+{
+  return HV_measure_DC_U();
+}
+
+/// <CharINInterfaceDC>
+ double HV_measure_DC_I()
+{
+  return ($EV.ISO20.DC_ChargeLoop_Response.EVSEPresentCurrent.Value * _pow(10, $EV.ISO20.DC_ChargeLoop_Response.EVSEPresentCurrent.Exponent));
+}
+
+/// <CharInInterface>
+int GetLockState()
+{
+  return 0;
+}
+
+Mute_ISO()
+{
+  muteISO = 1;
+  return;
+}
+
+UnMute_ISO()
+{
+  muteISO = 0;
+  return;
+}
+
+int GetISOMonitoringMuted()
+{
+  return muteISO;
+}
+
+UnlockConnector()
+{
+  inletLocked = 0;
+}
+
+LockConnector()
+{
+  inletLocked = 1;
+}
+
+int GetConnectorLockState()
+{
+  return inletLocked;
+}

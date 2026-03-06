@@ -1,4 +1,4 @@
-﻿VERSION "Body_CAN_v1.0"
+VERSION "Body_CAN_v1.0"
 
 NS_ :
   NS_DESC_
@@ -29,7 +29,7 @@ NS_ :
 
 BS_:
 
-BU_: BODY_GW AMBIENT_CTRL HAZARD_CTRL WINDOW_CTRL DRV_STATE_MGR WARN_ARB_MGR DOMAIN_BOUNDARY_MGR VAL_SCENARIO_CTRL Vector__XXX
+BU_: BODY_GW AMBIENT_CTRL HAZARD_CTRL WINDOW_CTRL WARN_ARB_MGR DOMAIN_BOUNDARY_MGR VAL_SCENARIO_CTRL Vector__XXX
 
 BO_ 608 frmAmbientControlMsg: 1 BODY_GW
  SG_ AmbientMode    : 0|3@1+ (1,0) [0|7] "" AMBIENT_CTRL
@@ -47,10 +47,10 @@ BO_ 610 frmWindowControlMsg: 1 BODY_GW
  SG_ Reserved0        : 4|4@1+ (1,0) [0|0] "" Vector__XXX
 
 BO_ 612 frmDoorStateMsg: 2 BODY_GW
- SG_ DoorStateMask    : 0|8@1+ (1,0) [0|255] "" WINDOW_CTRL,DRV_STATE_MGR
- SG_ DoorLockState    : 8|2@1+ (1,0) [0|3] "" WINDOW_CTRL,DRV_STATE_MGR
- SG_ ChildLockState   : 10|1@1+ (1,0) [0|1] "" WINDOW_CTRL,DRV_STATE_MGR
- SG_ DoorOpenWarn     : 11|1@1+ (1,0) [0|1] "" WINDOW_CTRL,DRV_STATE_MGR
+ SG_ DoorStateMask    : 0|8@1+ (1,0) [0|255] "" WINDOW_CTRL,BODY_GW
+ SG_ DoorLockState    : 8|2@1+ (1,0) [0|3] "" WINDOW_CTRL,BODY_GW
+ SG_ ChildLockState   : 10|1@1+ (1,0) [0|1] "" WINDOW_CTRL,BODY_GW
+ SG_ DoorOpenWarn     : 11|1@1+ (1,0) [0|1] "" WINDOW_CTRL,BODY_GW
  SG_ Reserved0        : 12|4@1+ (1,0) [0|0] "" Vector__XXX
 
 BO_ 613 frmLampControlMsg: 1 BODY_GW
@@ -65,14 +65,14 @@ BO_ 614 frmWiperStateMsg: 1 BODY_GW
  SG_ RearWiperState   : 2|2@1+ (1,0) [0|3] "" AMBIENT_CTRL
  SG_ WiperInterval    : 4|4@1+ (1,0) [0|15] "" AMBIENT_CTRL
 
-BO_ 615 frmSeatBeltStateMsg: 1 DRV_STATE_MGR
+BO_ 615 frmSeatBeltStateMsg: 1 BODY_GW
  SG_ DriverSeatBelt   : 0|1@1+ (1,0) [0|1] "" BODY_GW,AMBIENT_CTRL
  SG_ PassengerSeatBelt : 1|1@1+ (1,0) [0|1] "" BODY_GW,AMBIENT_CTRL
  SG_ RearSeatBelt     : 2|2@1+ (1,0) [0|3] "" BODY_GW,AMBIENT_CTRL
  SG_ SeatBeltWarnLvl  : 4|2@1+ (1,0) [0|3] "" BODY_GW,AMBIENT_CTRL
  SG_ Reserved0        : 6|2@1+ (1,0) [0|0] "" Vector__XXX
 
-BO_ 616 frmCabinAirStateMsg: 2 DRV_STATE_MGR
+BO_ 616 frmCabinAirStateMsg: 2 BODY_GW
  SG_ CabinTemp        : 0|8@1+ (1,0) [0|100] "degC" BODY_GW
  SG_ AirQualityIndex  : 8|8@1+ (1,0) [0|255] "" BODY_GW
 
@@ -82,17 +82,17 @@ BO_ 617 frmBodyHealthMsg: 2 BODY_GW
  SG_ BodyFailCode     : 12|4@1+ (1,0) [0|15] "" VAL_SCENARIO_CTRL,DOMAIN_BOUNDARY_MGR
 
 BO_ 618 frmHvacStateMsg: 2 BODY_GW
- SG_ CabinSetTemp     : 0|8@1+ (1,0) [0|100] "degC" DRV_STATE_MGR
- SG_ BlowerLevel      : 8|4@1+ (1,0) [0|15] "" DRV_STATE_MGR
- SG_ AcCompressorOn   : 12|1@1+ (1,0) [0|1] "" DRV_STATE_MGR
+ SG_ CabinSetTemp     : 0|8@1+ (1,0) [0|100] "degC" BODY_GW
+ SG_ BlowerLevel      : 8|4@1+ (1,0) [0|15] "" BODY_GW
+ SG_ AcCompressorOn   : 12|1@1+ (1,0) [0|1] "" BODY_GW
  SG_ Reserved0        : 13|3@1+ (1,0) [0|0] "" Vector__XXX
 
 BO_ 619 frmHvacActuatorMsg: 2 BODY_GW
- SG_ VentMode         : 0|3@1+ (1,0) [0|7] "" DRV_STATE_MGR
- SG_ RecircMode       : 3|1@1+ (1,0) [0|1] "" DRV_STATE_MGR
- SG_ DefogMode        : 4|1@1+ (1,0) [0|1] "" DRV_STATE_MGR
+ SG_ VentMode         : 0|3@1+ (1,0) [0|7] "" BODY_GW
+ SG_ RecircMode       : 3|1@1+ (1,0) [0|1] "" BODY_GW
+ SG_ DefogMode        : 4|1@1+ (1,0) [0|1] "" BODY_GW
  SG_ Reserved0        : 5|3@1+ (1,0) [0|0] "" Vector__XXX
- SG_ FanRpmStep       : 8|8@1+ (1,0) [0|255] "" DRV_STATE_MGR
+ SG_ FanRpmStep       : 8|8@1+ (1,0) [0|255] "" BODY_GW
 
 BO_ 620 frmMirrorStateMsg: 1 BODY_GW
  SG_ MirrorFoldState  : 0|2@1+ (1,0) [0|3] "" WINDOW_CTRL
@@ -100,11 +100,11 @@ BO_ 620 frmMirrorStateMsg: 1 BODY_GW
  SG_ MirrorAdjustAxis : 3|2@1+ (1,0) [0|3] "" WINDOW_CTRL
  SG_ Reserved0        : 5|3@1+ (1,0) [0|0] "" Vector__XXX
 
-BO_ 621 frmSeatStateMsg: 2 DRV_STATE_MGR
+BO_ 621 frmSeatStateMsg: 2 BODY_GW
  SG_ DriverSeatPos    : 0|8@1+ (1,0) [0|255] "" BODY_GW
  SG_ PassengerSeatPos : 8|8@1+ (1,0) [0|255] "" BODY_GW
 
-BO_ 622 frmSeatControlMsg: 2 DRV_STATE_MGR
+BO_ 622 frmSeatControlMsg: 2 BODY_GW
  SG_ DriverSeatCmd    : 0|4@1+ (1,0) [0|15] "" BODY_GW
  SG_ PassengerSeatCmd : 4|4@1+ (1,0) [0|15] "" BODY_GW
  SG_ SeatHeatLevel    : 8|4@1+ (1,0) [0|15] "" BODY_GW
@@ -135,13 +135,13 @@ BO_ 627 frmBcmDiagResMsg: 3 AMBIENT_CTRL
  SG_ BcmDiagData1     : 16|8@1+ (1,0) [0|255] "" BODY_GW
 
 BO_ 628 frmImmobilizerStateMsg: 1 BODY_GW
- SG_ ImmobilizerState : 0|2@1+ (1,0) [0|3] "" DRV_STATE_MGR
- SG_ KeyAuthState     : 2|2@1+ (1,0) [0|3] "" DRV_STATE_MGR
+ SG_ ImmobilizerState : 0|2@1+ (1,0) [0|3] "" BODY_GW
+ SG_ KeyAuthState     : 2|2@1+ (1,0) [0|3] "" BODY_GW
  SG_ Reserved0        : 4|4@1+ (1,0) [0|0] "" Vector__XXX
 
 BO_ 629 frmAlarmStateMsg: 1 BODY_GW
- SG_ AlarmArmState    : 0|2@1+ (1,0) [0|3] "" DRV_STATE_MGR
- SG_ IntrusionDetect  : 2|1@1+ (1,0) [0|1] "" DRV_STATE_MGR
+ SG_ AlarmArmState    : 0|2@1+ (1,0) [0|3] "" BODY_GW
+ SG_ IntrusionDetect  : 2|1@1+ (1,0) [0|1] "" BODY_GW
  SG_ Reserved0        : 3|5@1+ (1,0) [0|0] "" Vector__XXX
 
 BO_ 630 frmBodyGatewayStateMsg: 2 BODY_GW
@@ -301,3 +301,4 @@ VAL_ 615 SeatBeltWarnLvl
   1 "Info"
   2 "Warn"
   3 "Critical" ;
+

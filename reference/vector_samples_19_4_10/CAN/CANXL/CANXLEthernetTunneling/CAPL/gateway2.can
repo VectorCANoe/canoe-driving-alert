@@ -1,0 +1,64 @@
+/*@!Encoding:1252*/
+
+includes
+{
+  #include "common.cin"
+  #include "tunneling.cin"
+  #include "fragmentation.cin"
+}
+variables
+{
+
+}
+
+on message *
+{
+  stack ethernetPacket packet;
+    
+  // do not process tx events
+  if (this.Dir == Tx)
+  {
+    return;
+  }
+  
+  // do not process CAN/CANFD
+  if (this.XLF != 1)
+  {
+    return;
+  }
+   
+  if (IsTunneledEthernetFrame(this))
+  {    
+    if (@sysvar::Gateway::UseFragmentation)
+    {
+      // Handle fragmented and unfragmented messages
+      OnProcessReceiveMessage(this);
+    }
+    else
+    {
+      // Get ethernet frame and forward
+      UnTunnelEthernetFrame(this, packet);
+      packet.CompletePacket();
+      packet.hwPort = ethernetport::ETH2::GatewayCanEth;
+      output(packet);
+    }
+
+  }
+  
+}
+
+/// <summary>
+/// Unpacks the ethernet frame from the de-fragmented CAN message 'completedMsg' and forwards it
+/// </summary>
+/// <remarks>
+/// If the sysvar 'OnFragmentationcomplete' is set, this handler-type function is executed
+/// </remarks>
+on sysvar OnFragmentationComplete
+{
+  stack ethernetPacket packet;
+  
+  UnTunnelEthernetFrame(completedMsg, packet);
+  packet.CompletePacket();
+  packet.hwPort = ethernetport::ETH2::GatewayCanEth;
+  output(packet);
+}

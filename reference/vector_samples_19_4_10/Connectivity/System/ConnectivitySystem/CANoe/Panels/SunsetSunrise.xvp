@@ -1,0 +1,65 @@
+<?xml version="1.0"?>
+<Panel Type="Vector.CANalyzer.Panels.PanelSerializer, Vector.CANalyzer.Panels.Serializer, Version=17.0.131.0, Culture=neutral, PublicKeyToken=null">
+  <Object Type="Vector.CANalyzer.Panels.Runtime.Panel, Vector.CANalyzer.Panels.Common, Version=17.0.131.0, Culture=neutral, PublicKeyToken=null" Name="Panel" Children="Controls" ControlName="SunsetSunrise">
+    <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=17.0.131.0, Culture=neutral, PublicKeyToken=null" Name="TextBoxControl3" Children="Controls" ControlName="SunsetBox">
+      <Property Name="Name">TextBoxControl3</Property>
+      <Property Name="Size">205, 37</Property>
+      <Property Name="Location">12, 105</Property>
+      <Property Name="AlarmUpperTextColor">WindowText</Property>
+      <Property Name="ValueDecimalPlaces">0</Property>
+      <Property Name="AlarmLowerBkgColor">Salmon</Property>
+      <Property Name="ValueDisplay">Text</Property>
+      <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+      <Property Name="AlarmLowerTextColor">WindowText</Property>
+      <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+      <Property Name="DisplayLabel">Top</Property>
+      <Property Name="DescriptionText">Sunset</Property>
+      <Property Name="DescriptionSize">205, 17</Property>
+      <Property Name="SymbolConfiguration">8;4096;LightSimulation::Control;mainControl.sunriseSunsetData;sunset;1;4;;;-1;;;;;;8</Property>
+      <Property Name="TabIndex">2</Property>
+      <Property Name="TabStopActive">False</Property>
+      <Property Name="ReadOnlyControl">True</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=17.0.131.0, Culture=neutral, PublicKeyToken=null" Name="TextBoxControl2" Children="Controls" ControlName="Solar_NoonBox">
+      <Property Name="Name">TextBoxControl2</Property>
+      <Property Name="Size">205, 37</Property>
+      <Property Name="Location">12, 60</Property>
+      <Property Name="AlarmUpperTextColor">WindowText</Property>
+      <Property Name="ValueDecimalPlaces">0</Property>
+      <Property Name="AlarmLowerBkgColor">Salmon</Property>
+      <Property Name="ValueDisplay">Text</Property>
+      <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+      <Property Name="AlarmLowerTextColor">WindowText</Property>
+      <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+      <Property Name="DisplayLabel">Top</Property>
+      <Property Name="DescriptionText">Solar Noon</Property>
+      <Property Name="DescriptionSize">205, 17</Property>
+      <Property Name="SymbolConfiguration">8;4096;LightSimulation::Control;mainControl.sunriseSunsetData;solar_noon;1;4;;;-1;;;;;;8</Property>
+      <Property Name="TabIndex">1</Property>
+      <Property Name="TabStopActive">False</Property>
+      <Property Name="ReadOnlyControl">True</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=17.0.131.0, Culture=neutral, PublicKeyToken=null" Name="TextBoxControl1" Children="Controls" ControlName="SunriseBox">
+      <Property Name="Name">TextBoxControl1</Property>
+      <Property Name="Size">205, 37</Property>
+      <Property Name="Location">12, 15</Property>
+      <Property Name="AlarmUpperTextColor">WindowText</Property>
+      <Property Name="ValueDecimalPlaces">0</Property>
+      <Property Name="AlarmLowerBkgColor">Salmon</Property>
+      <Property Name="ValueDisplay">Text</Property>
+      <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+      <Property Name="AlarmLowerTextColor">WindowText</Property>
+      <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+      <Property Name="DisplayLabel">Top</Property>
+      <Property Name="DescriptionText">Sunrise</Property>
+      <Property Name="DescriptionSize">205, 17</Property>
+      <Property Name="SymbolConfiguration">8;4096;LightSimulation::Control;mainControl.sunriseSunsetData;sunrise;1;4;;;-1;;;;;;8</Property>
+      <Property Name="TabIndex">0</Property>
+      <Property Name="TabStopActive">False</Property>
+      <Property Name="ReadOnlyControl">True</Property>
+    </Object>
+    <Property Name="Name">Panel</Property>
+    <Property Name="Size">230, 164</Property>
+    <Property Name="BackColor">White</Property>
+  </Object>
+</Panel>

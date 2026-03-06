@@ -1,0 +1,139 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<FunctionBusLibrary Version="27" FormatMajorVersion="3" FormatMinorVersion="5" FormatPatchVersion="1">
+  <Namespaces>
+    <Namespace IsDefinedAsHidden="False" IsSystemDefined="True" Name="Vehicle_Ethernet">
+      <Subnamespaces>
+        <Namespace IsDefinedAsHidden="False" IsSystemDefined="True" Name="Interfaces">
+          <DOInterfaces>
+            <DOInterface IsAbstract="False" Name="sif_1001">
+              <AttributeValues>
+                <AttributeValue Definition="_SystemAttributes::Binding" InitialValue="SOMEIP" InitialValueType="String" />
+                <AttributeValue Definition="_SystemAttributes::CommunicationPattern" InitialValue="2" InitialValueType="Int32" />
+              </AttributeValues>
+              <MemberData>
+                <DOMemberDataHolder Name="MemberData" />
+              </MemberData>
+            </DOInterface>
+            <DOInterface IsAbstract="False" Name="sif_1001_PDUs">
+              <BaseInterfaces>
+                <ModifiedDOIF Reverse="False" IsDOReference="False" Interface="Vehicle_Ethernet::Interfaces::sif_1001" />
+              </BaseInterfaces>
+              <MemberData>
+                <DOMemberDataHolder Name="MemberData" />
+              </MemberData>
+              <DataMembers>
+                <DOIFDataMember Name="EMotorStatus">
+                  <DataType DataType="Vehicle_Ethernet::DataTypes::EMotorStatus" />
+                </DOIFDataMember>
+              </DataMembers>
+            </DOInterface>
+          </DOInterfaces>
+        </Namespace>
+        <Namespace IsDefinedAsHidden="False" IsSystemDefined="True" Name="DataTypes">
+          <DataTypes>
+            <StructDataType Bitcount="96" RawBitcount="96" HasFixedBinaryLayout="True" HasMotorolaByteOrder="False" Name="EMotorStatus">
+              <Fields>
+                <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="EMotorSpeed">
+                  <AttributeValues>
+                    <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="memberName:EMotorSpeed" InitialValueType="String" />
+                  </AttributeValues>
+                  <DataType DataType="_SystemDataTypes::UInt16">
+                    <NumericProperties MinValue="0" MinValueType="Double" MaxValue="6553.5" MaxValueType="Double" IsBoolean="False" IsTimespan="False">
+                      <ImplToPhysEncodings LinearEncodings="Vehicle_Ethernet::Encodings::EMotorSpeed_UInt16" />
+                    </NumericProperties>
+                  </DataType>
+                </DataTypeField>
+                <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="EMotorTemperature">
+                  <AttributeValues>
+                    <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="memberName:EMotorTemperature" InitialValueType="String" />
+                  </AttributeValues>
+                  <DataType DataType="_SystemDataTypes::UInt16">
+                    <NumericProperties MinValue="-273" MinValueType="Double" MaxValue="6280.5" MaxValueType="Double" IsBoolean="False" IsTimespan="False">
+                      <ImplToPhysEncodings LinearEncodings="Vehicle_Ethernet::Encodings::EMotorTemperature_UInt16" />
+                    </NumericProperties>
+                  </DataType>
+                </DataTypeField>
+                <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="EMotorCurrent">
+                  <AttributeValues>
+                    <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="memberName:EMotorCurrent" InitialValueType="String" />
+                  </AttributeValues>
+                  <DataType DataType="_SystemDataTypes::UInt32">
+                    <NumericProperties MinValue="-1000" MinValueType="Double" MaxValue="4293967.2949999999" MaxValueType="Double" IsBoolean="False" IsTimespan="False">
+                      <ImplToPhysEncodings LinearEncodings="Vehicle_Ethernet::Encodings::EMotorCurrent_UInt32" />
+                    </NumericProperties>
+                  </DataType>
+                </DataTypeField>
+                <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="EMotorPower">
+                  <AttributeValues>
+                    <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="memberName:EMotorPower" InitialValueType="String" />
+                  </AttributeValues>
+                  <DataType DataType="_SystemDataTypes::UInt32">
+                    <NumericProperties MinValue="-1000" MinValueType="Double" MaxValue="4293967.2949999999" MaxValueType="Double" IsBoolean="False" IsTimespan="False">
+                      <ImplToPhysEncodings LinearEncodings="Vehicle_Ethernet::Encodings::EMotorPower_UInt32" />
+                    </NumericProperties>
+                  </DataType>
+                </DataTypeField>
+              </Fields>
+            </StructDataType>
+          </DataTypes>
+        </Namespace>
+        <Namespace IsDefinedAsHidden="False" IsSystemDefined="True" Name="Encodings">
+          <LinearEncodings>
+            <LinearEncodings Name="EMotorSpeed_UInt16">
+              <LinearEncoding Factor="0.1" Offset="0" Unit="rpm" LowerBound="0" LowerBoundType="UInt32" UpperBound="65535" UpperBoundType="UInt32" />
+            </LinearEncodings>
+            <LinearEncodings Name="EMotorTemperature_UInt16">
+              <LinearEncoding Factor="0.1" Offset="-273" Unit="°C" LowerBound="0" LowerBoundType="UInt32" UpperBound="65535" UpperBoundType="UInt32" />
+            </LinearEncodings>
+            <LinearEncodings Name="EMotorCurrent_UInt32">
+              <LinearEncoding Factor="0.001" Offset="-1000" Unit="A" LowerBound="0" LowerBoundType="UInt32" UpperBound="4294967295" UpperBoundType="UInt32" />
+            </LinearEncodings>
+            <LinearEncodings Name="EMotorPower_UInt32">
+              <LinearEncoding Factor="0.001" Offset="-1000" Unit="kW" LowerBound="0" LowerBoundType="UInt32" UpperBound="4294967295" UpperBoundType="UInt32" />
+            </LinearEncodings>
+          </LinearEncodings>
+        </Namespace>
+        <Namespace IsDefinedAsHidden="False" IsSystemDefined="True" Name="VGW">
+          <DistributedObjects>
+            <DistributedObject GenerateDotNetAPI="True" Name="EnginePSI1">
+              <DataType>
+                <ModifiedDOIF Reverse="False" IsDOReference="False" Interface="Vehicle_Ethernet::Interfaces::sif_1001_PDUs" />
+              </DataType>
+              <MemberData>
+                <DOMemberDataHolder Name="MemberData">
+                  <Data>
+                    <DOInstanceMemberData Name="EMotorStatus">
+                      <AttributeValues>
+                        <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="cluster:Vehicle_Ethernet,node:VGW,serviceId:1001,majorVersion:1,instanceId:1,pduName:EMotorStatus" InitialValueType="String" />
+                      </AttributeValues>
+                    </DOInstanceMemberData>
+                  </Data>
+                </DOMemberDataHolder>
+              </MemberData>
+            </DistributedObject>
+          </DistributedObjects>
+        </Namespace>
+        <Namespace IsDefinedAsHidden="False" IsSystemDefined="True" Name="IC">
+          <DistributedObjects>
+            <DistributedObject GenerateDotNetAPI="True" Name="EngineCSI1">
+              <DataType>
+                <ModifiedDOIF Reverse="True" IsDOReference="False" Interface="Vehicle_Ethernet::Interfaces::sif_1001_PDUs" />
+              </DataType>
+              <MemberData>
+                <DOMemberDataHolder Name="MemberData">
+                  <Data>
+                    <DOInstanceMemberData Name="EMotorStatus">
+                      <AttributeValues>
+                        <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="cluster:Vehicle_Ethernet,node:IC,serviceId:1001,majorVersion:1,instanceId:1,shortName:EngineCSI1,pduName:EMotorStatus" InitialValueType="String" />
+                      </AttributeValues>
+                    </DOInstanceMemberData>
+                  </Data>
+                </DOMemberDataHolder>
+              </MemberData>
+            </DistributedObject>
+          </DistributedObjects>
+        </Namespace>
+      </Subnamespaces>
+    </Namespace>
+  </Namespaces>
+</FunctionBusLibrary>

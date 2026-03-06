@@ -1,0 +1,58 @@
+//===============================================================================
+// Ressource file for DLL version information
+// Customize it to your needs!
+// Copyright (c) Vector Informatik GmbH. All rights reserved.
+//===============================================================================
+
+#include <windows.h>
+
+#define _QUOTE(x) #x
+#define QUOTE(x) _QUOTE(x)
+
+#define MAJOR 1
+#define MINOR 1
+#define PATCH 0
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+1 VERSIONINFO
+ FILEVERSION            MAJOR,MINOR,PATCH,0
+ PRODUCTVERSION         MAJOR,MINOR,PATCH,0
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x3L
+#else
+ FILEFLAGS 0x2L
+#endif
+ FILEOS 0x10004L
+ FILETYPE 0x2L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904e4"
+        BEGIN
+            VALUE "Comments",         "This DLL must be adapted to concrete system requirements!"
+            VALUE "CompanyName",      "Vector Informatik GmbH\0"
+            VALUE "FileDescription",  "Example for a 'Seed & Key' DLL using extended algorithm with option string (64bit)"
+            VALUE "FileVersion",      QUOTE(MAJOR) "." QUOTE(MINOR) "." QUOTE(PATCH)
+            VALUE "InternalName",     "GenerateKeyExOpt"
+            VALUE "LegalCopyright",   "© Copyright 2024 Vector Informatik GmbH\0"
+            VALUE "LegalTrademarks",  "\0"
+            VALUE "OriginalFilename", "SeednKeyOpt.dll"
+            VALUE "PrivateBuild",     "\0"
+            VALUE "ProductName",      "CANoe/CANalyzer"
+            VALUE "ProductVersion",   "18.2"
+            VALUE "SpecialBuild",     "\0"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x409, 1252
+    END
+END
+
+/////////////////////////////////////////////////////////////////////////////

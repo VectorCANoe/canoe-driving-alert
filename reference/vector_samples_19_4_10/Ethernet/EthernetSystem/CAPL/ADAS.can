@@ -1,0 +1,139 @@
+/*@!Encoding:1252*/
+includes
+{
+}
+
+variables
+{
+}
+
+
+on value_change ObstacleDetectionCSI1.ObstacleDetection.Segment[2].Distance
+{
+  $DetectionStatusPSI1.LaneInfo.CollisionWarning = $this.phys < 20 && $this.raw > 0 ? 1 : 0;
+}
+
+on value_change CameraObjectDetectionCSI1.LaneDetection.DetectedLaneBorder[0].ReliabilityLeft
+{
+  $DetectionStatusPSI1.LaneInfo.LaneReliabilityLeft = $this.phys;
+}
+on value_change CameraObjectDetectionCSI1.LaneDetection.DetectedLaneBorder[0].ReliabilityRight
+{
+  $DetectionStatusPSI1.LaneInfo.LaneReliabilityRight = $this.phys;
+}
+
+on value_change CameraObjectDetectionCSI1.LaneDetection.DetectedLaneBorder[0].BorderLeft
+{
+  if ($CameraObjectDetectionCSI1.LaneDetection.DetectedLaneBorder[0].ReliabilityLeft.phys > 80)
+  {
+    if ($this.phys > -1.0)
+    {
+      $DetectionStatusPSI1.LaneInfo.LaneDeparture.phys = 1;
+    }
+    else if ($CameraObjectDetectionCSI1.LaneDetection.DetectedLaneBorder[0].BorderRight.phys > 1.0)
+    {
+      $DetectionStatusPSI1.LaneInfo.LaneDeparture.phys = 0;
+    }
+  }
+}
+on value_change CameraObjectDetectionCSI1.LaneDetection.DetectedLaneBorder[0].BorderRight
+{
+  if ($CameraObjectDetectionCSI1.LaneDetection.DetectedLaneBorder[0].ReliabilityLeft.phys > 80)
+  {
+    if ($this.phys < 1.0)
+    {
+      $DetectionStatusPSI1.LaneInfo.LaneDeparture.phys = 2;
+    }
+    else if ($CameraObjectDetectionCSI1.LaneDetection.DetectedLaneBorder[0].BorderLeft.phys < -1.0)
+    {
+      $DetectionStatusPSI1.LaneInfo.LaneDeparture.phys = 0;
+    }
+  }
+}
+
+on value_change CameraObjectDetectionCSI1.TrafficSignDetection.DetectedTrafficSigns[0].DistanceToSign
+{
+  ProcessSigns(1,7);   // speedlimit signs
+  ProcessSigns(8,9);   // no passing signs
+  ProcessSigns(10,13); // warning signs
+}
+
+int GetDetectedTrafficSignsLength()
+{
+  return elcount($CameraObjectDetectionCSI1.TrafficSignDetection.DetectedTrafficSigns);
+}
+byte GetSignType(byte n)
+{
+  return $CameraObjectDetectionCSI1.TrafficSignDetection.DetectedTrafficSigns[n].SignType.phys;
+}
+double GetDistanceToSign(byte n)
+{
+  return $CameraObjectDetectionCSI1.TrafficSignDetection.DetectedTrafficSigns[n].DistanceToSign.phys;
+}
+void SetSpeedLimit(dword speed)
+{
+  $DetectionStatusPSI1.TrafficSignInfo.SpeedLimit.phys =  speed;
+}
+void SetNoPassingZone(byte state)
+{
+  $DetectionStatusPSI1.TrafficSignInfo.NoPassingZone.phys =  state;
+}
+void SetHazard(byte state)
+{
+  $DetectionStatusPSI1.TrafficSignInfo.Hazard.phys =  state;
+}
+void SetRoadWork(byte state)
+{
+  $DetectionStatusPSI1.TrafficSignInfo.RoadWork.phys =  state;
+}
+
+void SetTrafficSignInfo(byte signType) 
+{ 
+  switch(signType)
+  {
+    case  1: SetSpeedLimit( 30); break;
+    case  2: SetSpeedLimit( 50); break;
+    case  3: SetSpeedLimit( 60); break;
+    case  4: SetSpeedLimit( 70); break;
+    case  5: SetSpeedLimit( 80); break;
+    case  6: SetSpeedLimit(100); break;
+    case  7: SetSpeedLimit(  0); break;
+    case  8: SetNoPassingZone(1); break;
+    case  9: SetNoPassingZone(0); break;
+    case 10: SetHazard(1); break;
+    case 11: SetHazard(0); break;
+    case 12: SetRoadWork(1); break;
+    case 13: SetRoadWork(0); break;
+  }
+}
+
+void SetSignAndDistanceIfFullfilled(byte n, int minRange, int maxRange, byte& signType, double& distanceToSign)
+{
+  byte currentSignType;
+  double currentDistanceToSign;
+  
+  currentSignType = GetSignType(n);
+  if (minRange <= currentSignType && currentSignType <= maxRange)
+  {
+    currentDistanceToSign = GetDistanceToSign(n);
+    if (currentDistanceToSign < distanceToSign)
+    {
+      signType = currentSignType;
+      distanceToSign = currentDistanceToSign;
+    }
+  }
+}
+
+void ProcessSigns(int minRange, int maxRange)
+{
+  byte signType;               // out parameter
+  double distanceToSign = 150; // inout parameter
+  int i;
+  
+  for(i=0; i < GetDetectedTrafficSignsLength(); ++i)
+  {
+    SetSignAndDistanceIfFullfilled(0, minRange, maxRange, signType, distanceToSign); //ith sign
+  };
+  
+  SetTrafficSignInfo(signType);
+}

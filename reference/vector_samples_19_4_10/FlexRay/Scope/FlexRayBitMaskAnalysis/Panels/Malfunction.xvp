@@ -1,0 +1,100 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Panel Type="Vector.CANalyzer.Panels.PanelSerializer, Vector.CANalyzer.Panels.Serializer, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null">
+  <Object Type="Vector.CANalyzer.Panels.Runtime.Panel, Vector.CANalyzer.Panels.Common, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Panel" ControlName="Malfunctions">
+    <Object Type="Vector.CANalyzer.Panels.Design.GroupBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="GroupBoxControl16" ControlName="GroupBoxControl16">
+      <Object Type="Vector.CANalyzer.Panels.Design.GroupBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="GroupBoxControl15" ControlName="GroupBoxControl15">
+        <Object Type="Vector.CANalyzer.Panels.Design.CheckBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="CheckBoxControl6" ControlName="Check Box 6">
+          <Property Name="Name">CheckBoxControl6</Property>
+          <Property Name="Size">61, 17</Property>
+          <Property Name="Location">169, 16</Property>
+          <Property Name="BackColor">White</Property>
+          <Property Name="Text">Battery</Property>
+          <Property Name="TabIndex">22</Property>
+          <Property Name="SymbolConfiguration">8;16;Panel;;;BatteryError;1;;;-1;;;Value;;;0</Property>
+        </Object>
+        <Object Type="Vector.CANalyzer.Panels.Design.CheckBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="CheckBoxControl2" ControlName="Check Box 2">
+          <Property Name="Name">CheckBoxControl2</Property>
+          <Property Name="Size">56, 17</Property>
+          <Property Name="Location">9, 16</Property>
+          <Property Name="BackColor">White</Property>
+          <Property Name="Text">Water</Property>
+          <Property Name="TabIndex">18</Property>
+          <Property Name="SymbolConfiguration">8;16;Panel;;;WaterError;1;;;-1;;;Value;;;0</Property>
+        </Object>
+        <Object Type="Vector.CANalyzer.Panels.Design.CheckBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="CheckBoxControl5" ControlName="Check Box 5">
+          <Property Name="Name">CheckBoxControl5</Property>
+          <Property Name="Size">40, 17</Property>
+          <Property Name="Location">98, 16</Property>
+          <Property Name="BackColor">White</Property>
+          <Property Name="Text">Oil</Property>
+          <Property Name="TabIndex">21</Property>
+          <Property Name="SymbolConfiguration">8;16;Panel;;;OilError;1;;;-1;;;Value;;;0</Property>
+        </Object>
+        <Property Name="Name">GroupBoxControl15</Property>
+        <Property Name="Size">240, 39</Property>
+        <Property Name="Location">6, 67</Property>
+        <Property Name="BackColor">White</Property>
+        <Property Name="Text">Engine </Property>
+        <Property Name="TabIndex">15</Property>
+        <Property Name="UseWindowsStyle">False</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.GroupBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="GroupBoxControl14" ControlName="GroupBoxControl14">
+        <Object Type="Vector.CANalyzer.Panels.Design.CheckBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="CheckBoxControl1" ControlName="Check Box">
+          <Property Name="Name">CheckBoxControl1</Property>
+          <Property Name="Size">48, 17</Property>
+          <Property Name="Location">13, 17</Property>
+          <Property Name="BackColor">White</Property>
+          <Property Name="Text">ABS</Property>
+          <Property Name="TabIndex">17</Property>
+          <Property Name="SymbolConfiguration">8;16;Panel;;;ABSError;1;;;-1;;;Value;;;0</Property>
+        </Object>
+        <Object Type="Vector.CANalyzer.Panels.Design.CheckBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="CheckBoxControl7" ControlName="Check Box 7">
+          <Property Name="Name">CheckBoxControl7</Property>
+          <Property Name="Size">55, 17</Property>
+          <Property Name="Location">175, 18</Property>
+          <Property Name="BackColor">White</Property>
+          <Property Name="Text">Brake</Property>
+          <Property Name="TabIndex">23</Property>
+          <Property Name="SymbolConfiguration">8;16;Panel;;;BrakeError;1;;;-1;;;Value;;;0</Property>
+        </Object>
+        <Object Type="Vector.CANalyzer.Panels.Design.CheckBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="CheckBoxControl3" ControlName="Check Box 3">
+          <Property Name="Name">CheckBoxControl3</Property>
+          <Property Name="Size">48, 17</Property>
+          <Property Name="Location">66, 17</Property>
+          <Property Name="BackColor">White</Property>
+          <Property Name="Text">ESP</Property>
+          <Property Name="TabIndex">19</Property>
+          <Property Name="SymbolConfiguration">8;16;Panel;;;ESPError;1;;;-1;;;Value;;;0</Property>
+        </Object>
+        <Object Type="Vector.CANalyzer.Panels.Design.CheckBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="CheckBoxControl4" ControlName="Check Box 4">
+          <Property Name="Name">CheckBoxControl4</Property>
+          <Property Name="Size">49, 17</Property>
+          <Property Name="Location">118, 17</Property>
+          <Property Name="BackColor">White</Property>
+          <Property Name="Text">ASR</Property>
+          <Property Name="TabIndex">20</Property>
+          <Property Name="SymbolConfiguration">8;16;Panel;;;ASRError;1;;;-1;;;Value;;;0</Property>
+        </Object>
+        <Property Name="Name">GroupBoxControl14</Property>
+        <Property Name="Size">240, 42</Property>
+        <Property Name="Location">6, 19</Property>
+        <Property Name="BackColor">White</Property>
+        <Property Name="Text">BSC </Property>
+        <Property Name="TabIndex">14</Property>
+        <Property Name="UseWindowsStyle">False</Property>
+      </Object>
+      <Property Name="Name">GroupBoxControl16</Property>
+      <Property Name="Size">253, 114</Property>
+      <Property Name="Location">8, 3</Property>
+      <Property Name="BackColor">White</Property>
+      <Property Name="Text">Malfunctions</Property>
+      <Property Name="TabIndex">16</Property>
+      <Property Name="UseWindowsStyle">False</Property>
+    </Object>
+    <Property Name="Name">Panel</Property>
+    <Property Name="Size">268, 122</Property>
+    <Property Name="Location">0, 0</Property>
+    <Property Name="BackColor">White</Property>
+    <Property Name="Panel">Panel</Property>
+  </Object>
+</Panel>

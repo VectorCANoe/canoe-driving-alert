@@ -1,0 +1,138 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--Vector Test Table Editor-->
+<ttroot version="30" minRequiredVersion="16" xmlns="http://www.vector-informatik.de/ITE/TestTable/1.0">
+  <tt>
+    <tf navid="07d69e51-ec57-4a73-ba19-1bee75c3f5c0">
+      <title>Check messages</title>
+      <preparation>
+        <title />
+        <setvariable_bytester>
+          <title />
+          <query>
+            <const>Set the Test Duration Time in seconds.</const>
+          </query>
+          <userinput>
+            <dbobject>SysVar_BEGIN_OF_OBJECT|1|TestDuration||-1|0|END_OF_OBJECT_SysVar|</dbobject>
+          </userinput>
+          <timeout>
+            <value>
+              <const>15</const>
+            </value>
+            <unit>s</unit>
+          </timeout>
+          <default>
+            <const>300</const>
+          </default>
+        </setvariable_bytester>
+        <caplfunction>
+          <title />
+          <name>AddScreenshots</name>
+        </caplfunction>
+        <set>
+          <title />
+          <in>
+            <assignment>
+              <sink>
+                <dbobject>SysVar_BEGIN_OF_OBJECT|1|SignalGroupIDs|SPAT|-1|0|END_OF_OBJECT_SysVar|</dbobject>
+              </sink>
+              <source>
+                <const>0</const>
+              </source>
+            </assignment>
+            <assignment>
+              <sink>
+                <dbobject>SysVar_BEGIN_OF_OBJECT|1|cycleTimeError|SPAT|-1|0|END_OF_OBJECT_SysVar|</dbobject>
+              </sink>
+              <source>
+                <const>0</const>
+              </source>
+            </assignment>
+            <assignment>
+              <sink>
+                <dbobject>SysVar_BEGIN_OF_OBJECT|1|RunTests||-1|0|END_OF_OBJECT_SysVar|</dbobject>
+              </sink>
+              <source>
+                <const>1</const>
+              </source>
+            </assignment>
+            <assignment>
+              <sink>
+                <dbobject>SysVar_BEGIN_OF_OBJECT|1|originatorNode|MAP|-1|0|END_OF_OBJECT_SysVar|</dbobject>
+              </sink>
+              <source>
+                <const>
+                </const>
+              </source>
+            </assignment>
+            <assignment>
+              <sink>
+                <dbobject>SysVar_BEGIN_OF_OBJECT|1|originatorNode|SPAT|-1|0|END_OF_OBJECT_SysVar|</dbobject>
+              </sink>
+              <source>
+                <const />
+              </source>
+            </assignment>
+          </in>
+        </set>
+        <wait>
+          <title>Configured TestDuration</title>
+          <time>
+            <value>
+              <dbobject>SysVar_BEGIN_OF_OBJECT|1|TestDuration||-1|0|END_OF_OBJECT_SysVar|</dbobject>
+            </value>
+            <unit>s</unit>
+          </time>
+        </wait>
+        <set>
+          <title />
+          <in>
+            <assignment>
+              <sink>
+                <dbobject>SysVar_BEGIN_OF_OBJECT|1|RunTests||-1|0|END_OF_OBJECT_SysVar|</dbobject>
+              </sink>
+              <source>
+                <const>0</const>
+              </source>
+            </assignment>
+          </in>
+        </set>
+      </preparation>
+      <capltestcase>
+        <title>Check MAP values</title>
+        <name>TC_CheckMAP</name>
+        <tcid>acb38dcf-66e4-45b2-b260-d6779544e6dc</tcid>
+      </capltestcase>
+      <capltestcase>
+        <title>Check SPAT Values</title>
+        <name>TC_CheckSPAT</name>
+        <tcid>2b06fb30-68d4-4594-845c-3024f4e165cf</tcid>
+      </capltestcase>
+      <tc>
+        <title>Check Protocol Analyzer</title>
+        <tcid>f4ce5c3a-2020-4a71-9c39-a57f55eb7378</tcid>
+        <breakonfail>false</breakonfail>
+        <caplfunction>
+          <title />
+          <name>TestReportAddProtocolAnalyzerViolations</name>
+        </caplfunction>
+        <caplfunction>
+          <title />
+          <name>ConfigureProtocolAnalyzerOutput</name>
+        </caplfunction>
+      </tc>
+      <completion>
+        <title>
+        </title>
+        <caplfunction>
+          <title>Print out data</title>
+          <name>PrintData</name>
+        </caplfunction>
+      </completion>
+    </tf>
+  </tt>
+  <ttlib>
+    <ts_definitions />
+    <tc_definitions />
+    <function_definitions />
+  </ttlib>
+</ttroot>

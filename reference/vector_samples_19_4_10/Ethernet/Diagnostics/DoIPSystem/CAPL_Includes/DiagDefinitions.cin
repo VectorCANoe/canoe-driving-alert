@@ -1,0 +1,51 @@
+/*@!Encoding:1252*/
+// ===================================================================================
+// Useful definitions for diagnostics implementation
+// ===================================================================================
+
+variables
+{
+  enum bool {TRUE=1, FALSE=0};
+
+  // Common Negative Response Codes (NRCs)
+  const cNRC_GeneralReject=0x10;
+  const cNRC_ServiceNotSupported=0x11;
+  const cNRC_SubfunctionNotSupported=0x12;
+  const cNRC_IncorrectMessageLengthOrInvalidFormat=0x13;
+  const cNRC_BusyRepeatRequest=0x21;
+  const cNRC_ConditionsNotCorrectOrRequestSequenceError=0x22;
+  const cNRC_RequestSequenceError=0x24;
+  const cNRC_RequestOutOfRange=0x31;
+  const cNRC_SecurityAccessDenied=0x33;
+  const cNRC_InvalidKey=0x35;
+  const cNRC_RequestCorrectlyReceivedResponsePending=0x78;
+  
+  // Access modes for diagGetParameter
+  const cParamAccessNumerical = 0;
+  const cParamAccessPhysical = 1;
+  const cParamAccessCoded = 2;
+
+  // Session types
+  enum eSessionType {DefaultSession=1, ProgrammingSession=2, ExtendedSession=3, KWP_DefaultSession=0x81, KWP_ProgrammingSession=0x85, ExtendedSessionNoResponse=0x83, ProgrammingSessionNoResponse=0x82};
+  
+  // Fault Memory types
+  enum eFaultmemType {
+    ftUndefined=0, ftKWP=2, ftUDS=3        // Enum contains size of DTC as value
+  };
+
+  const cExampleFunctionalGroup=0x10;
+  // OBD definitions
+  const cEmissionsSystemsGroup=0x33;
+  const cSeverityMask_AllSeverities=0x1E;
+  const cStatusMask_Confirmed=0x08;
+  
+  // Send modes for UUDT
+  enum eDIDSendMode {Slow=0x01, Medium=0x02, Fast=0x03, Off=0x04, Once=0xF2};
+  
+  // This timeout is used just to force the test to continue, i.e. normally a TestWaitForDiag...
+  // function will return much earlier due to diagnostic level timing!
+  const cApplicationTimeoutMs = 5000; 
+  
+  // Max. payload length for transport protocol, determined by the TP with shortest possible length (LIN TP)
+  const cMaxTpPayloadLen = 4095;
+}

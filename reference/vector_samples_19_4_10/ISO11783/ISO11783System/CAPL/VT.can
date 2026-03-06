@@ -1,0 +1,36 @@
+﻿/*@!Encoding:65001*/
+includes
+{
+  
+}
+
+variables
+{
+  msTimer tmrStartSequence;
+  int gSequenceNumber;
+}
+
+on start
+{
+  gSequenceNumber = 0;
+  setTimer(tmrStartSequence, 3000);
+}
+
+on timer tmrStartSequence
+{
+  if(@Control::svAutoPlay == 1)
+  {
+    switch(gSequenceNumber)
+    {
+      case 0:
+        VTIL_PressSoftKey(153, 500); //Test
+        setTimer(tmrStartSequence, 7000);
+        gSequenceNumber = 1;
+        break;
+      case 1:
+        VTIL_PressSoftKey(151, 500); //On
+        break;
+    }
+  }
+}
+

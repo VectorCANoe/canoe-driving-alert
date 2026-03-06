@@ -1,0 +1,44 @@
+/*@!Encoding:1252*/
+includes
+{
+  
+}
+
+variables
+{ 
+  /*
+    Default name of reference point in scenario files (should be the same in all files).
+  */
+  char collisionPoint[50] = "CollisionPoint1";
+  /*
+    Desired offset to reference point (i.e. offset of the ego vehicle to reference point when this station crosses the reference point).
+    Can be set to positive or negative value. An offset of 0 means stations collide at reference point.
+  */
+  float offsetToRefPoint = 0;
+  
+  msTimer calculationTimer;
+}
+
+/*
+  On Timer (here: 1 second), the speed of the Station is adjusted to the current speed of the ego vehicle.
+  This ensures that the Station and the ego vehicle will collide at the specified reference point (here:
+  CollisionPoint1 defined in the scenario).
+*/
+ on timer calculationTimer
+{
+  double speed, latitude, longitude;
+  
+  if (C2xIsScenarioStarted())
+  {
+    C2xAdjustStationSpeedForCollision("Sender_EVA", collisionPoint, @GNSS::Ath1.Latitude, @GNSS::Ath1.Longitude, @GNSS::Ath1.Speed, offsetToRefPoint);
+  }
+}
+ 
+ void OnStationAttributeTrigger(char attrName[])
+{
+  if (strncmp(attrName,"Events_Vehicle_Events_DENM1",strlen(attrName)) == 0 
+      && C2xGetStationAttributeInt64("Events_Vehicle_Events_DENM1") == 1)
+  {
+    setTimerCyclic(calculationTimer,  1000);
+  }
+}

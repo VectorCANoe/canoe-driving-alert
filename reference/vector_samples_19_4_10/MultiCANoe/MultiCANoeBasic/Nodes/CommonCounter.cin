@@ -1,0 +1,23 @@
+﻿/*@!Encoding:65001*/
+includes
+{
+}
+
+variables
+{
+}
+
+on start
+{
+  programCounterTimer();
+}
+
+on sysvar MultiCANoe::Control::StartSystem
+{
+  programCounterTimer();
+}
+
+on sysvar MultiCANoe::Control::CounterDelay
+{
+  programCounterTimer();
+}

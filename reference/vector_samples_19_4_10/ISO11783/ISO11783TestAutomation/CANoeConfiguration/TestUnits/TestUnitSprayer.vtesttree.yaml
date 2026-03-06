@@ -1,0 +1,24 @@
+version: 2.2.0
+
+test-tree:
+  - test-fixture: Easy simulation of TC and VT
+    description: Easy simulation of TC and VT
+    elements:
+      - capl-test-case: WaitForInitiating
+        title: Wait for initialisation
+      - capl-test-case: StartTaskOnTC
+        title: Start Task on TC
+      - capl-test-case: DefineSetpointActivationRate
+        title: Define Setpoint Activation Rate
+      - capl-test-case: TurnOnSprayer
+        title: Turn ON Sprayer via VT
+      - capl-test-case: ActivateAdditionalSections
+        title: Activate additional sections
+      - capl-test-case: StartMoving
+        title: Start moving
+      - capl-test-case: CheckReportedFlowRate
+        title: Check reported FlowRate
+
+
+
+        

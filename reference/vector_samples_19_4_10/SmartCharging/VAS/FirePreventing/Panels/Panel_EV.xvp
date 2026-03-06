@@ -1,0 +1,680 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Panel Type="Vector.CANalyzer.Panels.PanelSerializer, Vector.CANalyzer.Panels.Serializer, Version=19.2.42.0, Culture=neutral, PublicKeyToken=null">
+  <Object Type="Vector.CANalyzer.Panels.Runtime.Panel, Vector.CANalyzer.Panels.Common, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Panel" ControlName="Vehicle">
+    <Object Type="Vector.CANalyzer.Panels.Design.CheckBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xa80b2bdbe46a7e4507e9897ec88869f26643" ControlName="Check Box 1">
+      <Property Name="Name">Xa80b2bdbe46a7e4507e9897ec88869f26643</Property>
+      <Property Name="Size">119, 16</Property>
+      <Property Name="Location">147, 209</Property>
+      <Property Name="Text">AC Basic Charging</Property>
+      <Property Name="TabIndex">7</Property>
+      <Property Name="CheckValueVTXml">&lt;Version&gt;2&lt;/Version&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;RxValue&gt;LLC&lt;/RxValue&gt;</Property>
+      <Property Name="CheckValueVT">1;Lower;LLC</Property>
+      <Property Name="CheckValue">0</Property>
+      <Property Name="UncheckValueVTXml">&lt;Version&gt;2&lt;/Version&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;RxValue&gt;HLC&lt;/RxValue&gt;</Property>
+      <Property Name="UncheckValueVT">1;Lower;HLC</Property>
+      <Property Name="UncheckValue">1</Property>
+      <Property Name="SymbolConfiguration">8;16;EV_Sim::Control;;;SysUserChargingCommunication;1;;;-1;;;Value;;;0</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.CheckBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="CheckBoxControl2" ControlName="CheckBoxEV1PnC">
+      <Property Name="Name">CheckBoxControl2</Property>
+      <Property Name="Size">58, 17</Property>
+      <Property Name="Location">284, 228</Property>
+      <Property Name="BackColor">White</Property>
+      <Property Name="Text">Active</Property>
+      <Property Name="TabIndex">141</Property>
+      <Property Name="SymbolConfiguration">8;16;EV_Sim::Control;;;SysEV_PnCEnabled;1;;;-1;;;Value;;;0</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.PictureBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X513e128aeebabe4cb1e8fdfe6a1473f13041" ControlName="LockSymbol">
+      <Property Name="Name">X513e128aeebabe4cb1e8fdfe6a1473f13041</Property>
+      <Property Name="Size">15, 14</Property>
+      <Property Name="Location">320, 184</Property>
+      <Property Name="IsVisibleByLoad">False</Property>
+      <Property Name="TransparentColor">White</Property>
+      <Property Name="IsProportional">False</Property>
+      <Property Name="ImageFile">BMP\ISO11783vtIconLock.png</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.SwitchControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="SwitchControl2" ControlName="PowerPlugSwitch">
+      <Property Name="Name">SwitchControl2</Property>
+      <Property Name="Size">55, 55</Property>
+      <Property Name="Location">286, 148</Property>
+      <Property Name="SymbolConfiguration">8;16;EV_Sim::Control;;;SysEV_Connected;1;;;-1;;;Value;;;0</Property>
+      <Property Name="ImageFile">bmp\ButtonQuadraticAdapter.bmp</Property>
+      <Property Name="TabIndex">27</Property>
+      <Property Name="Activation">Left</Property>
+      <Property Name="Epsilon">0</Property>
+      <Property Name="Increment">1</Property>
+      <Property Name="StartValue">0</Property>
+      <Property Name="SwitchValuesVTXml">&lt;Version&gt;2&lt;/Version&gt;&lt;Count&gt;2&lt;/Count&gt;&lt;RxValue&gt;0&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;0&lt;/TxValue&gt;&lt;RxValue&gt;1&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;1&lt;/TxValue&gt;</Property>
+      <Property Name="SwitchValuesVT">1;2;0/Lower/0;1/Lower/1</Property>
+      <Property Name="SwitchValues">1;2;0;1</Property>
+      <Property Name="SwitchValuesRx">1;2;0;1</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.SwitchControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="SwitchControl8" ControlName="indicatorEVLinkStatus">
+      <Property Name="Name">SwitchControl8</Property>
+      <Property Name="Size">14, 10</Property>
+      <Property Name="Location">177, 11</Property>
+      <Property Name="SymbolConfiguration">8;16;EV_Sim;;;SysEV_LinkStatus;1;;;-1;;;Value;;;0</Property>
+      <Property Name="ImageFile">bmp\ledBoxGreenTriState.bmp</Property>
+      <Property Name="ReadOnlyControl">True</Property>
+      <Property Name="TabIndex">218</Property>
+      <Property Name="Epsilon">0</Property>
+      <Property Name="Increment">1</Property>
+      <Property Name="StartValue">0</Property>
+      <Property Name="StateCnt">3</Property>
+      <Property Name="SwitchValuesVTXml">&lt;Version&gt;2&lt;/Version&gt;&lt;Count&gt;3&lt;/Count&gt;&lt;RxValue&gt;0&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;0&lt;/TxValue&gt;&lt;RxValue&gt;1&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;1&lt;/TxValue&gt;&lt;RxValue&gt;2&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;2&lt;/TxValue&gt;</Property>
+      <Property Name="SwitchValuesVT">1;3;0/Lower/0;1/Lower/1;2/Lower/2</Property>
+      <Property Name="SwitchValues">1;3;0;1;2</Property>
+      <Property Name="SwitchValuesRx">1;3;0;1;2</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.GroupBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="GroupBoxControl3" ControlName="gbEVLinkStatus">
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl10" ControlName="lblEVLinkStatus">
+        <Property Name="Name">StaticTextControl10</Property>
+        <Property Name="Size">29, 16</Property>
+        <Property Name="Location">1, 7</Property>
+        <Property Name="Text">Link</Property>
+      </Object>
+      <Property Name="Name">GroupBoxControl3</Property>
+      <Property Name="Size">46, 25</Property>
+      <Property Name="Location">149, 2</Property>
+      <Property Name="BackColor">White</Property>
+      <Property Name="Text"></Property>
+      <Property Name="TabIndex">335</Property>
+      <Property Name="UseWindowsStyle">False</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.PictureBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="PictureBoxControl2" ControlName="Verification">
+      <Property Name="Name">PictureBoxControl2</Property>
+      <Property Name="Size">16, 16</Property>
+      <Property Name="Location">220, 31</Property>
+      <Property Name="IsVisibleByLoad">False</Property>
+      <Property Name="ImageFile">bmp\CertificateUnknown2.png</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.SwitchControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="SwitchControl13" ControlName="Renegotiate Button">
+      <Property Name="Name">SwitchControl13</Property>
+      <Property Name="Size">26, 26</Property>
+      <Property Name="Location">173, 177</Property>
+      <Property Name="SymbolConfiguration">8;16;EV_Sim::Control;;;SysEV_Renegotiate;1;;;-1;;;Value;;;0</Property>
+      <Property Name="ImageFile">bmp\ButtonQuadraticRenegotiation.bmp</Property>
+      <Property Name="TabIndex">161</Property>
+      <Property Name="IsButton">True</Property>
+      <Property Name="Activation">Left</Property>
+      <Property Name="Epsilon">0</Property>
+      <Property Name="Increment">1</Property>
+      <Property Name="StartValue">0</Property>
+      <Property Name="SwitchValuesVTXml">&lt;Version&gt;2&lt;/Version&gt;&lt;Count&gt;2&lt;/Count&gt;&lt;RxValue&gt;0&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;0&lt;/TxValue&gt;&lt;RxValue&gt;1&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;1&lt;/TxValue&gt;</Property>
+      <Property Name="SwitchValuesVT">1;2;0/Lower/0;1/Lower/1</Property>
+      <Property Name="SwitchValues">1;2;0;1</Property>
+      <Property Name="SwitchValuesRx">1;2;0;1</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.VectorTabControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="VectorTabControl1" ControlName="Tab Control">
+      <Object Type="Vector.CANalyzer.Panels.Design.VectorTabPage, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="VectorTabPage1" ControlName="Tab Control">
+        <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl13" ControlName="Static Text 4">
+          <Property Name="Name">StaticTextControl13</Property>
+          <Property Name="Size">16, 15</Property>
+          <Property Name="Location">66, 112</Property>
+          <Property Name="BackColor">White</Property>
+          <Property Name="Text">A</Property>
+        </Object>
+        <Object Type="Vector.CANalyzer.Panels.Design.NumericUpDownControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="NumericUpDownControl7" ControlName="Numeric Up/Down 1">
+          <Property Name="Name">NumericUpDownControl7</Property>
+          <Property Name="Size">59, 18</Property>
+          <Property Name="Location">5, 109</Property>
+          <Property Name="TextAlign">Center</Property>
+          <Property Name="Maximum">16</Property>
+          <Property Name="TabIndex">125</Property>
+          <Property Name="SymbolConfiguration">8;16;EV_Sim;;;SysEV_TargetCurrent_AC;2;;;-1;;;Value;;;0</Property>
+        </Object>
+        <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl11" ControlName="Static Text 1">
+          <Property Name="Name">StaticTextControl11</Property>
+          <Property Name="Size">71, 15</Property>
+          <Property Name="Location">2, 93</Property>
+          <Property Name="BackColor">White</Property>
+          <Property Name="Text">AC Request:</Property>
+        </Object>
+        <Object Type="Vector.CANalyzer.Panels.Design.ComboBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="ComboBoxControl1" ControlName="Combo Box">
+          <Property Name="Name">ComboBoxControl1</Property>
+          <Property Name="Size">92, 19</Property>
+          <Property Name="Location">5, 6</Property>
+          <Property Name="DescriptionSize">0, 19</Property>
+          <Property Name="TabIndex">119</Property>
+          <Property Name="DescriptionText">SysEV_DCChargingMode:</Property>
+          <Property Name="UsedValueTable">PhysicalValue</Property>
+          <Property Name="SymbolConfiguration">8;16;EV_Sim::Control;;;SysEV_DCChargingMode;1;;;-1;;;Value;;;0</Property>
+          <Property Name="DropDownWidth">84</Property>
+        </Object>
+        <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="TextBoxControl1" ControlName="Input/Output Box">
+          <Property Name="Name">TextBoxControl1</Property>
+          <Property Name="Size">88, 39</Property>
+          <Property Name="Location">4, 127</Property>
+          <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+          <Property Name="AlarmLowerBkgColor">Salmon</Property>
+          <Property Name="AlarmLowerTextColor">WindowText</Property>
+          <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+          <Property Name="AlarmUpperTextColor">WindowText</Property>
+          <Property Name="BoxBorderStyle">FixedSingle</Property>
+          <Property Name="DisplayLabel">Top</Property>
+          <Property Name="TextBackColor">White</Property>
+          <Property Name="ReadOnlyControl">True</Property>
+          <Property Name="TabIndex">115</Property>
+          <Property Name="TabStopActive">False</Property>
+          <Property Name="DescriptionText">DC Status:</Property>
+          <Property Name="ValueDisplay">Text</Property>
+          <Property Name="UsedValueTable">PhysicalValue</Property>
+          <Property Name="DescriptionSize">88, 21</Property>
+          <Property Name="SymbolConfiguration">8;16;EV_Sim;;;SysEV_DCStatusCode;4;;;-1;;;Value;;;0</Property>
+        </Object>
+        <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl1" ControlName="Static Text">
+          <Property Name="Name">StaticTextControl1</Property>
+          <Property Name="Size">71, 15</Property>
+          <Property Name="Location">2, 30</Property>
+          <Property Name="BackColor">White</Property>
+          <Property Name="Text">DC Request:</Property>
+        </Object>
+        <Object Type="Vector.CANalyzer.Panels.Design.NumericUpDownControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="NumericUpDownControl5" ControlName="Numeric Up/Down">
+          <Property Name="Name">NumericUpDownControl5</Property>
+          <Property Name="Size">62, 18</Property>
+          <Property Name="Location">5, 70</Property>
+          <Property Name="TextAlign">Center</Property>
+          <Property Name="Maximum">40</Property>
+          <Property Name="TabIndex">12</Property>
+          <Property Name="SymbolConfiguration">8;16;EV_Sim;;;SysEV_TargetCurrent;2;;;-1;;;Value;;;0</Property>
+        </Object>
+        <Object Type="Vector.CANalyzer.Panels.Design.NumericUpDownControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="NumericUpDownControl4" ControlName="Numeric Up/Down">
+          <Property Name="Name">NumericUpDownControl4</Property>
+          <Property Name="Size">62, 18</Property>
+          <Property Name="Location">5, 48</Property>
+          <Property Name="TextAlign">Center</Property>
+          <Property Name="Increment">10</Property>
+          <Property Name="Maximum">1000</Property>
+          <Property Name="TabIndex">11</Property>
+          <Property Name="SymbolConfiguration">8;16;EV_Sim;;;SysEV_TargetVoltage;2;;;-1;;;Value;;;0</Property>
+        </Object>
+        <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl6" ControlName="Static Text 2">
+          <Property Name="Name">StaticTextControl6</Property>
+          <Property Name="Size">16, 15</Property>
+          <Property Name="Location">66, 72</Property>
+          <Property Name="BackColor">White</Property>
+          <Property Name="Text">A</Property>
+        </Object>
+        <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl7" ControlName="Static Text 2">
+          <Property Name="Name">StaticTextControl7</Property>
+          <Property Name="Size">16, 15</Property>
+          <Property Name="Location">66, 50</Property>
+          <Property Name="BackColor">White</Property>
+          <Property Name="Text">V</Property>
+        </Object>
+        <Property Name="Name">VectorTabPage1</Property>
+        <Property Name="Size">132, 171</Property>
+        <Property Name="Location">2, 26</Property>
+        <Property Name="Text">DC / AC</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.VectorTabPage, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="VectorTabPage2" ControlName="Tab Control">
+        <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl9" ControlName="Static Text 3">
+          <Property Name="Name">StaticTextControl9</Property>
+          <Property Name="Size">29, 15</Property>
+          <Property Name="Location">6, 110</Property>
+          <Property Name="BackColor">White</Property>
+          <Property Name="ForeColor">Gray</Property>
+          <Property Name="Text">max</Property>
+        </Object>
+        <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl12" ControlName="Static Text 3">
+          <Property Name="Name">StaticTextControl12</Property>
+          <Property Name="Size">26, 15</Property>
+          <Property Name="Location">6, 70</Property>
+          <Property Name="BackColor">White</Property>
+          <Property Name="ForeColor">Gray</Property>
+          <Property Name="Text">min</Property>
+        </Object>
+        <Object Type="Vector.CANalyzer.Panels.Design.NumericUpDownControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="NumericUpDownControl6" ControlName="Numeric Up/Down">
+          <Property Name="Name">NumericUpDownControl6</Property>
+          <Property Name="Size">47, 18</Property>
+          <Property Name="Location">6, 86</Property>
+          <Property Name="TextAlign">Center</Property>
+          <Property Name="Maximum">9999</Property>
+          <Property Name="TabIndex">15</Property>
+          <Property Name="SymbolConfiguration">8;16;EV_Sim;;;SysEV_MinCurrent;2;;;-1;;;Value;;;0</Property>
+        </Object>
+        <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl8" ControlName="Static Text 2">
+          <Property Name="Name">StaticTextControl8</Property>
+          <Property Name="Size">16, 15</Property>
+          <Property Name="Location">70, 92</Property>
+          <Property Name="BackColor">White</Property>
+          <Property Name="Text">A</Property>
+        </Object>
+        <Object Type="Vector.CANalyzer.Panels.Design.NumericUpDownControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="NumericUpDownControl3" ControlName="Numeric Up/Down">
+          <Property Name="Name">NumericUpDownControl3</Property>
+          <Property Name="Size">47, 18</Property>
+          <Property Name="Location">6, 126</Property>
+          <Property Name="TextAlign">Center</Property>
+          <Property Name="Increment">10</Property>
+          <Property Name="Maximum">40</Property>
+          <Property Name="TabIndex">11</Property>
+          <Property Name="SymbolConfiguration">8;16;EV_Sim;;;SysEV_MaxCurrent;2;;;-1;;;Value;;;0</Property>
+        </Object>
+        <Object Type="Vector.CANalyzer.Panels.Design.NumericUpDownControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="NumericUpDownControl2" ControlName="Numeric Up/Down">
+          <Property Name="Name">NumericUpDownControl2</Property>
+          <Property Name="Size">47, 18</Property>
+          <Property Name="Location">6, 38</Property>
+          <Property Name="TextAlign">Center</Property>
+          <Property Name="Increment">10</Property>
+          <Property Name="Maximum">1000</Property>
+          <Property Name="TabIndex">10</Property>
+          <Property Name="SymbolConfiguration">8;16;EV_Sim;;;SysEV_MaxVoltage;2;;;-1;;;Value;;;0</Property>
+        </Object>
+        <Object Type="Vector.CANalyzer.Panels.Design.NumericUpDownControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="NumericUpDownControl1" ControlName="Numeric Up/Down">
+          <Property Name="Name">NumericUpDownControl1</Property>
+          <Property Name="Size">46, 18</Property>
+          <Property Name="Location">7, 19</Property>
+          <Property Name="TextAlign">Center</Property>
+          <Property Name="Maximum">15</Property>
+          <Property Name="TabIndex">9</Property>
+          <Property Name="SymbolConfiguration">8;16;EV_Sim;;;SysEV_MaxPower;2;;;-1;;;Value;;;0</Property>
+        </Object>
+        <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl5" ControlName="Static Text 2">
+          <Property Name="Name">StaticTextControl5</Property>
+          <Property Name="Size">16, 15</Property>
+          <Property Name="Location">70, 132</Property>
+          <Property Name="BackColor">White</Property>
+          <Property Name="Text">A</Property>
+        </Object>
+        <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl4" ControlName="Static Text 2">
+          <Property Name="Name">StaticTextControl4</Property>
+          <Property Name="Size">16, 15</Property>
+          <Property Name="Location">71, 42</Property>
+          <Property Name="BackColor">White</Property>
+          <Property Name="Text">V</Property>
+        </Object>
+        <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl2" ControlName="Static Text 2">
+          <Property Name="Name">StaticTextControl2</Property>
+          <Property Name="Size">24, 15</Property>
+          <Property Name="Location">71, 22</Property>
+          <Property Name="BackColor">White</Property>
+          <Property Name="Text">kW</Property>
+        </Object>
+        <Property Name="Name">VectorTabPage2</Property>
+        <Property Name="Size">132, 171</Property>
+        <Property Name="Location">2, 26</Property>
+        <Property Name="Text">Limits</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.VectorTabPage, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="VectorTabPage3" ControlName="Tab Control">
+        <Object Type="Vector.CANalyzer.Panels.Design.CheckBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="CheckBoxControl3" ControlName="Check Box 2">
+          <Property Name="Name">CheckBoxControl3</Property>
+          <Property Name="Size">61, 17</Property>
+          <Property Name="Location">18, 109</Property>
+          <Property Name="Text">Jitter</Property>
+          <Property Name="TabIndex">338</Property>
+          <Property Name="SymbolConfiguration">8;16;EV_Sim::Control;;;SysEV_ChargeLoopIntervalJitter;1;;;-1;;;Value;;;0</Property>
+        </Object>
+        <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl16" ControlName="Static Text">
+          <Property Name="Name">StaticTextControl16</Property>
+          <Property Name="Size">45, 13</Property>
+          <Property Name="Location">82, 50</Property>
+          <Property Name="BackColor">White</Property>
+          <Property Name="Text">2.5 s</Property>
+        </Object>
+        <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl15" ControlName="Static Text">
+          <Property Name="Name">StaticTextControl15</Property>
+          <Property Name="Size">40, 13</Property>
+          <Property Name="Location">6, 50</Property>
+          <Property Name="BackColor">White</Property>
+          <Property Name="Text">5 ms</Property>
+        </Object>
+        <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl14" ControlName="Static Text">
+          <Property Name="Name">StaticTextControl14</Property>
+          <Property Name="Size">119, 13</Property>
+          <Property Name="Location">6, 21</Property>
+          <Property Name="BackColor">White</Property>
+          <Property Name="Text">Charge Loop Interval</Property>
+        </Object>
+        <Object Type="Vector.CANalyzer.Panels.Design.TrackBarControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="TrackBarControl1" ControlName="Track Bar">
+          <Property Name="Name">TrackBarControl1</Property>
+          <Property Name="Size">106, 47</Property>
+          <Property Name="Location">6, 68</Property>
+          <Property Name="BackColor">White</Property>
+          <Property Name="DisplayValue">True</Property>
+          <Property Name="TabIndex">334</Property>
+          <Property Name="MaximumDouble">2500</Property>
+          <Property Name="SmallChangeDouble">10</Property>
+          <Property Name="LargeChangeDouble">100</Property>
+          <Property Name="TickFrequencyDouble">10</Property>
+          <Property Name="MaximumSize">100000, 47</Property>
+          <Property Name="Maximum">2500</Property>
+          <Property Name="SmallChange">10</Property>
+          <Property Name="LargeChange">100</Property>
+          <Property Name="TickFrequency">10</Property>
+          <Property Name="SymbolConfiguration">8;16;EV_Sim::Control;;;SysEV_ChargeLoopInterval;1;;;-1;;;Value;;;0</Property>
+        </Object>
+        <Property Name="Name">VectorTabPage3</Property>
+        <Property Name="Size">132, 171</Property>
+        <Property Name="Location">2, 26</Property>
+        <Property Name="Text">Misc.</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.VectorTabPage, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X419e2c25e21a8e4fc0e85b0e4c0776e1c272" ControlName="Tab Page 1">
+        <Object Type="Vector.CANalyzer.Panels.Design.CheckBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xc5f54457e6653e4333e9851e566c22a13a96" ControlName="CheckBoxACPhaseN">
+          <Property Name="Name">Xc5f54457e6653e4333e9851e566c22a13a96</Property>
+          <Property Name="Size">34, 16</Property>
+          <Property Name="Location">19, 137</Property>
+          <Property Name="Text">N</Property>
+          <Property Name="TabIndex">0</Property>
+          <Property Name="SymbolConfiguration">8;16;EV_Sim::Control;;;SysEV_AC_Phases_N_Enabled;1;;;-1;;;Value;;;0</Property>
+        </Object>
+        <Object Type="Vector.CANalyzer.Panels.Design.CheckBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X67001433e2886e4024ebd9ae7b834374d6de" ControlName="CheckBoxACPhaseL3">
+          <Property Name="Name">X67001433e2886e4024ebd9ae7b834374d6de</Property>
+          <Property Name="Size">39, 16</Property>
+          <Property Name="Location">19, 118</Property>
+          <Property Name="Text">L3</Property>
+          <Property Name="TabIndex">0</Property>
+          <Property Name="SymbolConfiguration">8;16;EV_Sim::Control;;;SysEV_AC_Phases_L3_Enabled;1;;;-1;;;Value;;;0</Property>
+        </Object>
+        <Object Type="Vector.CANalyzer.Panels.Design.CheckBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xebcfd44debd48e46b6e95eae7f33f826d2b8" ControlName="CheckBoxACPhaseL2">
+          <Property Name="Name">Xebcfd44debd48e46b6e95eae7f33f826d2b8</Property>
+          <Property Name="Size">39, 16</Property>
+          <Property Name="Location">19, 100</Property>
+          <Property Name="Text">L2</Property>
+          <Property Name="TabIndex">0</Property>
+          <Property Name="SymbolConfiguration">8;16;EV_Sim::Control;;;SysEV_AC_Phases_L2_Enabled;1;;;-1;;;Value;;;0</Property>
+        </Object>
+        <Object Type="Vector.CANalyzer.Panels.Design.CheckBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X6953c6deeabd9e4cb8ead8be0edbc50eb847" ControlName="CheckBoxACPhaseL1">
+          <Property Name="Name">X6953c6deeabd9e4cb8ead8be0edbc50eb847</Property>
+          <Property Name="Size">39, 16</Property>
+          <Property Name="Location">19, 82</Property>
+          <Property Name="Text">L1</Property>
+          <Property Name="TabIndex">0</Property>
+          <Property Name="SymbolConfiguration">8;16;EV_Sim::Control;;;SysEV_AC_Phases_L1_Enabled;1;;;-1;;;Value;;;0</Property>
+        </Object>
+        <Object Type="Vector.CANalyzer.Panels.Design.CheckBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X453003d1eecd6e43cee95c7e2d9a8d7a0a3e" ControlName="CheckBoxACCustomPhase">
+          <Property Name="Name">X453003d1eecd6e43cee95c7e2d9a8d7a0a3e</Property>
+          <Property Name="Size">64, 16</Property>
+          <Property Name="Location">5, 65</Property>
+          <Property Name="Text">Custom</Property>
+          <Property Name="TabIndex">0</Property>
+          <Property Name="CheckValueVTXml">&lt;Version&gt;2&lt;/Version&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;RxValue&gt;2&lt;/RxValue&gt;</Property>
+          <Property Name="CheckValueVT">1;Lower;2</Property>
+          <Property Name="CheckValue">2</Property>
+          <Property Name="UncheckValueVTXml">&lt;Version&gt;2&lt;/Version&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;RxValue&gt;1&lt;/RxValue&gt;</Property>
+          <Property Name="UncheckValueVT">1;Lower;1</Property>
+          <Property Name="UncheckValue">1</Property>
+          <Property Name="SymbolConfiguration">8;16;EV_Sim::Control;;;SysEV_AC_Phases;1;;;-1;;;Value;;;0</Property>
+        </Object>
+        <Object Type="Vector.CANalyzer.Panels.Design.CheckBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xbbf88289e0a88e4497eaa2fece7de3d0005e" ControlName="CheckBoxACThreePhase">
+          <Property Name="Name">Xbbf88289e0a88e4497eaa2fece7de3d0005e</Property>
+          <Property Name="Size">108, 27</Property>
+          <Property Name="Location">5, 33</Property>
+          <Property Name="Text">AC Three Phase
+(L1 - L2 - L3 - N)</Property>
+          <Property Name="TabIndex">0</Property>
+          <Property Name="SymbolConfiguration">8;16;EV_Sim::Control;;;SysEV_AC_Phases;1;;;-1;;;Value;;;0</Property>
+        </Object>
+        <Object Type="Vector.CANalyzer.Panels.Design.CheckBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xb1428b2aea4a2e4f07e9652e1bcdf5d75029" ControlName="CheckBoxACSinglePhase">
+          <Property Name="Name">Xb1428b2aea4a2e4f07e9652e1bcdf5d75029</Property>
+          <Property Name="Size">109, 27</Property>
+          <Property Name="Location">4, 4</Property>
+          <Property Name="Text">AC Single Phase
+(L1 - N)</Property>
+          <Property Name="TabIndex">0</Property>
+          <Property Name="CheckValueVTXml">&lt;Version&gt;2&lt;/Version&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;RxValue&gt;0&lt;/RxValue&gt;</Property>
+          <Property Name="CheckValueVT">1;Lower;0</Property>
+          <Property Name="CheckValue">0</Property>
+          <Property Name="UncheckValueVTXml">&lt;Version&gt;2&lt;/Version&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;RxValue&gt;1&lt;/RxValue&gt;</Property>
+          <Property Name="UncheckValueVT">1;Lower;1</Property>
+          <Property Name="UncheckValue">1</Property>
+          <Property Name="SymbolConfiguration">8;16;EV_Sim::Control;;;SysEV_AC_Phases;1;;;-1;;;Value;;;0</Property>
+        </Object>
+        <Property Name="Name">X419e2c25e21a8e4fc0e85b0e4c0776e1c272</Property>
+        <Property Name="Size">132, 171</Property>
+        <Property Name="Location">2, 26</Property>
+        <Property Name="Text">AC Phases</Property>
+      </Object>
+      <Property Name="Name">VectorTabControl1</Property>
+      <Property Name="Size">132, 197</Property>
+      <Property Name="Location">7, 6</Property>
+      <Property Name="TabIndex">156</Property>
+      <Property Name="SymbolConfiguration"></Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.SwitchControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="SwitchControl12" ControlName="Stop Button">
+      <Property Name="Name">SwitchControl12</Property>
+      <Property Name="Size">55, 55</Property>
+      <Property Name="Location">224, 148</Property>
+      <Property Name="SymbolConfiguration">8;16;EV_Sim::Control;;;SysEV_Stop;1;;;-1;;;Value;;;0</Property>
+      <Property Name="ImageFile">BMP\ButtonQuadraticStop_2.png</Property>
+      <Property Name="TabIndex">151</Property>
+      <Property Name="IsButton">True</Property>
+      <Property Name="Activation">Left</Property>
+      <Property Name="Epsilon">0</Property>
+      <Property Name="Increment">1</Property>
+      <Property Name="StartValue">0</Property>
+      <Property Name="SwitchValuesVTXml">&lt;Version&gt;2&lt;/Version&gt;&lt;Count&gt;2&lt;/Count&gt;&lt;RxValue&gt;0&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;0&lt;/TxValue&gt;&lt;RxValue&gt;1&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;1&lt;/TxValue&gt;</Property>
+      <Property Name="SwitchValuesVT">1;2;0/Lower/0;1/Lower/1</Property>
+      <Property Name="SwitchValues">1;2;0;1</Property>
+      <Property Name="SwitchValuesRx">1;2;0;1</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.LEDControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="LEDControl3" ControlName="LED Control 3">
+      <Property Name="Name">LEDControl3</Property>
+      <Property Name="Size">11, 11</Property>
+      <Property Name="Location">256, 95</Property>
+      <Property Name="ReadOnlyControl">True</Property>
+      <Property Name="TabIndex">146</Property>
+      <Property Name="SwitchValuesVTXml">&lt;Version&gt;2&lt;/Version&gt;&lt;Count&gt;2&lt;/Count&gt;&lt;RxValue&gt;0&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;0&lt;/TxValue&gt;&lt;Color&gt;Gray&lt;/Color&gt;&lt;RxValue&gt;1&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;1&lt;/TxValue&gt;&lt;Color&gt;255, 0, 255, 64&lt;/Color&gt;</Property>
+      <Property Name="UsedLEDColorOff">Gray</Property>
+      <Property Name="UsedLEDColorOn">255, 0, 255, 64</Property>
+      <Property Name="SymbolConfiguration">8;16;EV_Sim;;;SysEV_MessageTx;1;;;-1;;;Value;;;0</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.PictureBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="PictureBoxControl1" ControlName="Picture Box">
+      <Property Name="Name">PictureBoxControl1</Property>
+      <Property Name="Size">16, 16</Property>
+      <Property Name="Location">269, 92</Property>
+      <Property Name="ImageFile">bmp\TXmessage.png</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.SwitchControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="SwitchControl11" ControlName="ButtonEVCertUpdate">
+      <Property Name="Name">SwitchControl11</Property>
+      <Property Name="Size">28, 28</Property>
+      <Property Name="Location">312, 249</Property>
+      <Property Name="SymbolConfiguration">8;16;EV_Sim::Control;;;SysEV_CertificateUpdate;1;;;-1;;;Value;;;0</Property>
+      <Property Name="ImageFile">bmp\ButtonQuadraticUpdateCertificate.bmp</Property>
+      <Property Name="TabIndex">137</Property>
+      <Property Name="Activation">Left</Property>
+      <Property Name="Epsilon">0</Property>
+      <Property Name="Increment">1</Property>
+      <Property Name="StartValue">0</Property>
+      <Property Name="SwitchValuesVTXml">&lt;Version&gt;2&lt;/Version&gt;&lt;Count&gt;2&lt;/Count&gt;&lt;RxValue&gt;0&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;0&lt;/TxValue&gt;&lt;RxValue&gt;1&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;1&lt;/TxValue&gt;</Property>
+      <Property Name="SwitchValuesVT">1;2;0/Lower/0;1/Lower/1</Property>
+      <Property Name="SwitchValues">1;2;0;1</Property>
+      <Property Name="SwitchValuesRx">1;2;0;1</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.SwitchControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="SwitchControl10" ControlName="ButtonEVCertInstall">
+      <Property Name="Name">SwitchControl10</Property>
+      <Property Name="Size">28, 28</Property>
+      <Property Name="Location">282, 249</Property>
+      <Property Name="SymbolConfiguration">8;16;EV_Sim::Control;;;SysEV_CertificateInstallation;1;;;-1;;;Value;;;0</Property>
+      <Property Name="ImageFile">bmp\ButtonQuadraticNewCertificate.bmp</Property>
+      <Property Name="TabIndex">136</Property>
+      <Property Name="Activation">Left</Property>
+      <Property Name="Epsilon">0</Property>
+      <Property Name="Increment">1</Property>
+      <Property Name="StartValue">0</Property>
+      <Property Name="SwitchValuesVTXml">&lt;Version&gt;2&lt;/Version&gt;&lt;Count&gt;2&lt;/Count&gt;&lt;RxValue&gt;0&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;0&lt;/TxValue&gt;&lt;RxValue&gt;1&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;1&lt;/TxValue&gt;</Property>
+      <Property Name="SwitchValuesVT">1;2;0/Lower/0;1/Lower/1</Property>
+      <Property Name="SwitchValues">1;2;0;1</Property>
+      <Property Name="SwitchValuesRx">1;2;0;1</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.SwitchControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="SwitchControl9" ControlName="Switch/Indicator 6">
+      <Property Name="Name">SwitchControl9</Property>
+      <Property Name="Size">56, 20</Property>
+      <Property Name="Location">285, 126</Property>
+      <Property Name="SymbolConfiguration">8;16;Common;;;SysUserChargingMode;1;;;-1;;;Value;;;0</Property>
+      <Property Name="ImageFile">bmp\ButtonAcDc.bmp</Property>
+      <Property Name="TransparentColor">LightPink</Property>
+      <Property Name="TabIndex">131</Property>
+      <Property Name="Activation">Left</Property>
+      <Property Name="Epsilon">0</Property>
+      <Property Name="Increment">1</Property>
+      <Property Name="StartValue">0</Property>
+      <Property Name="SwitchValuesVTXml">&lt;Version&gt;2&lt;/Version&gt;&lt;Count&gt;2&lt;/Count&gt;&lt;RxValue&gt;0&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;0&lt;/TxValue&gt;&lt;RxValue&gt;1&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;1&lt;/TxValue&gt;</Property>
+      <Property Name="SwitchValuesVT">1;2;0/Lower/0;1/Lower/1</Property>
+      <Property Name="SwitchValues">1;2;0;1</Property>
+      <Property Name="SwitchValuesRx">1;2;0;1</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.LEDControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="LEDControl2" ControlName="LED Control 2">
+      <Property Name="Name">LEDControl2</Property>
+      <Property Name="Size">11, 11</Property>
+      <Property Name="Location">278, 21</Property>
+      <Property Name="ReadOnlyControl">True</Property>
+      <Property Name="TabIndex">121</Property>
+      <Property Name="SwitchValuesVTXml">&lt;Version&gt;2&lt;/Version&gt;&lt;Count&gt;3&lt;/Count&gt;&lt;RxValue&gt;0&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;0&lt;/TxValue&gt;&lt;Color&gt;255, 0, 255, 64&lt;/Color&gt;&lt;RxValue&gt;1&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;1&lt;/TxValue&gt;&lt;Color&gt;255, 255, 242, 0&lt;/Color&gt;&lt;RxValue&gt;2&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;2&lt;/TxValue&gt;&lt;Color&gt;Red&lt;/Color&gt;</Property>
+      <Property Name="UsedLEDColorOff">255, 0, 255, 64</Property>
+      <Property Name="UsedLEDColorOn">255, 255, 242, 0</Property>
+      <Property Name="SymbolConfiguration">8;16;EV_Sim;;;SysEV_State;1;;;-1;;;Value;;;0</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.SwitchControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="SwitchControl6" ControlName="Reset Button">
+      <Property Name="Name">SwitchControl6</Property>
+      <Property Name="Size">26, 26</Property>
+      <Property Name="Location">146, 149</Property>
+      <Property Name="SymbolConfiguration">8;16;EV_Sim::Control;;;SysEV_Reset;1;;;-1;;;Value;;;0</Property>
+      <Property Name="ImageFile">bmp\AC_button_stop.bmp</Property>
+      <Property Name="TabIndex">116</Property>
+      <Property Name="IsButton">True</Property>
+      <Property Name="Activation">Left</Property>
+      <Property Name="Epsilon">0</Property>
+      <Property Name="Increment">1</Property>
+      <Property Name="StartValue">0</Property>
+      <Property Name="SwitchValuesVTXml">&lt;Version&gt;2&lt;/Version&gt;&lt;Count&gt;2&lt;/Count&gt;&lt;RxValue&gt;0&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;0&lt;/TxValue&gt;&lt;RxValue&gt;1&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;1&lt;/TxValue&gt;</Property>
+      <Property Name="SwitchValuesVT">1;2;0/Lower/0;1/Lower/1</Property>
+      <Property Name="SwitchValues">1;2;0;1</Property>
+      <Property Name="SwitchValuesRx">1;2;0;1</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl33" ControlName="Static Text 3">
+      <Property Name="Name">StaticTextControl33</Property>
+      <Property Name="Size">134, 80</Property>
+      <Property Name="Location">7, 209</Property>
+      <Property Name="BackColor">White</Property>
+      <Property Name="ForeColor">Gray</Property>
+      <Property Name="Text">Select the type of the charge session on the right. Not all combinations of energy transfer, schema and mode are supported.</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.SwitchControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="SwitchControl5" ControlName="Resume Button">
+      <Property Name="Name">SwitchControl5</Property>
+      <Property Name="Size">26, 26</Property>
+      <Property Name="Location">146, 177</Property>
+      <Property Name="SymbolConfiguration">8;16;EV_Sim::Control;;;SysEV_WaitResume;1;;;-1;;;Value;;;0</Property>
+      <Property Name="ImageFile">bmp\AC_button_play.bmp</Property>
+      <Property Name="TabIndex">94</Property>
+      <Property Name="Activation">Left</Property>
+      <Property Name="Epsilon">0</Property>
+      <Property Name="Increment">1</Property>
+      <Property Name="StartValue">0</Property>
+      <Property Name="SwitchValuesVTXml">&lt;Version&gt;2&lt;/Version&gt;&lt;Count&gt;2&lt;/Count&gt;&lt;RxValue&gt;1&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;1&lt;/TxValue&gt;&lt;RxValue&gt;0&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;0&lt;/TxValue&gt;</Property>
+      <Property Name="SwitchValuesVT">1;2;1/Lower/1;0/Lower/0</Property>
+      <Property Name="SwitchValues">1;2;1;0</Property>
+      <Property Name="SwitchValuesRx">1;2;1;0</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.SwitchControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="SwitchControl4" ControlName="Pause Button">
+      <Property Name="Name">SwitchControl4</Property>
+      <Property Name="Size">26, 26</Property>
+      <Property Name="Location">173, 149</Property>
+      <Property Name="SymbolConfiguration">8;16;EV_Sim::Control;;;SysEV_WaitResume;1;;;-1;;;Value;;;0</Property>
+      <Property Name="ImageFile">bmp\AC_button_pause.bmp</Property>
+      <Property Name="TabIndex">93</Property>
+      <Property Name="Activation">Left</Property>
+      <Property Name="Epsilon">0</Property>
+      <Property Name="Increment">1</Property>
+      <Property Name="StartValue">0</Property>
+      <Property Name="SwitchValuesVTXml">&lt;Version&gt;2&lt;/Version&gt;&lt;Count&gt;2&lt;/Count&gt;&lt;RxValue&gt;0&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;0&lt;/TxValue&gt;&lt;RxValue&gt;1&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;1&lt;/TxValue&gt;</Property>
+      <Property Name="SwitchValuesVT">1;2;0/Lower/0;1/Lower/1</Property>
+      <Property Name="SwitchValues">1;2;0;1</Property>
+      <Property Name="SwitchValuesRx">1;2;0;1</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.GroupBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="GroupBoxControl1" ControlName="Schema">
+      <Object Type="Vector.CANalyzer.Panels.Design.RadioButtonControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="RadioButtonControl5" ControlName="RadioButtonEV1Schema3">
+        <Property Name="Name">RadioButtonControl5</Property>
+        <Property Name="Size">78, 17</Property>
+        <Property Name="Location">13, 21</Property>
+        <Property Name="BackColor">White</Property>
+        <Property Name="Text">ISO 15118</Property>
+        <Property Name="TabIndex">2</Property>
+        <Property Name="SymbolConfiguration">8;16;EV_Sim::Control;;;SysEV_Schema;1;;;-1;;;Value;;;0</Property>
+      </Object>
+      <Property Name="Name">GroupBoxControl1</Property>
+      <Property Name="Size">126, 58</Property>
+      <Property Name="Location">145, 228</Property>
+      <Property Name="BackColor">White</Property>
+      <Property Name="Text">Schema</Property>
+      <Property Name="TabIndex">86</Property>
+      <Property Name="UseWindowsStyle">False</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="TextBoxControl2" ControlName="Input/Output Box 2">
+      <Property Name="Name">TextBoxControl2</Property>
+      <Property Name="Size">136, 19</Property>
+      <Property Name="Location">145, 127</Property>
+      <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+      <Property Name="AlarmLowerBkgColor">Salmon</Property>
+      <Property Name="AlarmLowerTextColor">WindowText</Property>
+      <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+      <Property Name="AlarmUpperTextColor">WindowText</Property>
+      <Property Name="BoxBorderStyle">FixedSingle</Property>
+      <Property Name="DisplayLabel">Hide</Property>
+      <Property Name="TextBackColor">White</Property>
+      <Property Name="ReadOnlyControl">True</Property>
+      <Property Name="TabIndex">82</Property>
+      <Property Name="TabStopActive">False</Property>
+      <Property Name="DescriptionText">SysEV_State:</Property>
+      <Property Name="ValueDecimalPlaces">0</Property>
+      <Property Name="ValueDisplay">Symbolic</Property>
+      <Property Name="UsedValueTable">PhysicalValue</Property>
+      <Property Name="DescriptionSize">0, 0</Property>
+      <Property Name="SymbolConfiguration">8;16;EV_Sim;;;SysEV_State;1;;;-1;;;Value;;;0</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl3" ControlName="EV1EXI">
+      <Property Name="Name">StaticTextControl3</Property>
+      <Property Name="Size">44, 15</Property>
+      <Property Name="Location">196, 2</Property>
+      <Property Name="BackColor">White</Property>
+      <Property Name="Text">Battery</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.SwitchControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="SwitchControl1" ControlName="Vehicle">
+      <Property Name="Name">SwitchControl1</Property>
+      <Property Name="Size">154, 117</Property>
+      <Property Name="Location">151, 3</Property>
+      <Property Name="SymbolConfiguration">8;16;EV_Sim;;;SysEV_Error;1;;;-1;;;Value;;;0</Property>
+      <Property Name="ImageFile">bmp\VCarSmall.bmp</Property>
+      <Property Name="ReadOnlyControl">True</Property>
+      <Property Name="TabIndex">17</Property>
+      <Property Name="Epsilon">0</Property>
+      <Property Name="Increment">1</Property>
+      <Property Name="StartValue">0</Property>
+      <Property Name="SwitchValuesVTXml">&lt;Version&gt;2&lt;/Version&gt;&lt;Count&gt;2&lt;/Count&gt;&lt;RxValue&gt;0&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;0&lt;/TxValue&gt;&lt;RxValue&gt;1&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;1&lt;/TxValue&gt;</Property>
+      <Property Name="SwitchValuesVT">1;2;0/Lower/0;1/Lower/1</Property>
+      <Property Name="SwitchValues">1;2;0;1</Property>
+      <Property Name="SwitchValuesRx">1;2;0;1</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.ButtonControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="ButtonControl1" ControlName="EV1EXI">
+      <Property Name="Name">ButtonControl1</Property>
+      <Property Name="Size">40, 20</Property>
+      <Property Name="Location">307, 17</Property>
+      <Property Name="TabIndex">12</Property>
+      <Property Name="Text">Clear</Property>
+      <Property Name="SymbolConfiguration">8;16;EV_Sim::Control;;;SysEV_ClearBattery;1;;;-1;;;Value;;;0</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.ProgressBarControl, Vector.CANalyzer.Panels.CommonControls, Version=19.2.23.0, Culture=neutral, PublicKeyToken=null" Name="ProgressBarControl1" ControlName="Progress Bar">
+      <Property Name="Name">ProgressBarControl1</Property>
+      <Property Name="Size">30, 83</Property>
+      <Property Name="Location">312, 39</Property>
+      <Property Name="Alignment">RightBottom</Property>
+      <Property Name="DecimalPlaces">0</Property>
+      <Property Name="Orientation">Vertical</Property>
+      <Property Name="ValueSize">0, 0</Property>
+      <Property Name="OriginValue">0</Property>
+      <Property Name="SymbolConfiguration">8;16;EV_Sim;;;SysEV_BatteryState;2;;;-1;;;Value;;;0</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.GroupBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="GroupBoxControl2" ControlName="PnC Mode">
+      <Property Name="Name">GroupBoxControl2</Property>
+      <Property Name="Size">71, 77</Property>
+      <Property Name="Location">274, 209</Property>
+      <Property Name="BackColor">White</Property>
+      <Property Name="Text">PnC Mode</Property>
+      <Property Name="TabIndex">142</Property>
+      <Property Name="UseWindowsStyle">False</Property>
+    </Object>
+    <Property Name="Name">Panel</Property>
+    <Property Name="Size">350, 289</Property>
+    <Property Name="Location">0, 0</Property>
+    <Property Name="BackColor">White</Property>
+  </Object>
+</Panel>

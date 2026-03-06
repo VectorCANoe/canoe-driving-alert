@@ -1,0 +1,24 @@
+version 1.4;
+
+import module "ADAS";
+
+namespace ADAS
+{
+  // User-defined interface
+  [Binding="ADAS"]
+  interface IOutputSimpleAlgorithm
+  {
+    provided data double timeToImpact;
+	  provided data double distanceToObject;
+    provided data int32  isWarningActive;
+    provided data double egoSpeed;
+  }
+  
+  // Sensor mit Sensor Id
+  [_ADAS::DataModel::SensorId=1]
+  object radar : _ADAS::DataModel::ISensor;
+  
+    
+  // User-defined DO
+  object OutputSimpleAlgorithm : IOutputSimpleAlgorithm;
+}

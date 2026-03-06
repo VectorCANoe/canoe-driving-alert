@@ -1,0 +1,91 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<systemvariables version="4">
+  <namespace name="" comment="" interface="">
+    <namespace name="EVSE_Sim" comment="" interface="">
+      <namespace name="Control" comment="" interface="">
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysEVSE_AbortConnection" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="0" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1" />
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysEVSE_ChargingMode" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="1" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1">
+          <valuetable name="Custom" definesMinMax="true">
+            <valuetableentry value="0" lowerBound="0" upperBound="0" description="AC" displayString="AC" />
+            <valuetableentry value="1" lowerBound="1" upperBound="1" description="DC" displayString="DC" />
+          </valuetable>
+        </variable>
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysEVSE_NewNMK" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="0" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1" />
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysEVSE_PaymentOptions" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="2" maxValuePhys="2">
+          <valuetable name="Custom" definesMinMax="true">
+            <valuetableentry value="0" lowerBound="0" upperBound="0" description="External" displayString="External" />
+            <valuetableentry value="1" lowerBound="1" upperBound="1" description="Contract" displayString="Contract" />
+            <valuetableentry value="2" lowerBound="2" upperBound="2" description="Both" displayString="Both" />
+          </valuetable>
+        </variable>
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysEVSE_Renegotiate" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="0" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1" />
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysEVSE_Reset" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="0" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1" />
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysEVSE_ReturnFailed" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="0" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1" />
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysEVSE_SchemaPreference" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="2" minValue="0" minValuePhys="0" maxValue="2" maxValuePhys="2">
+          <valuetable name="Custom" definesMinMax="true">
+            <valuetableentry value="0" lowerBound="0" upperBound="0" description="DIN70121" displayString="DIN70121" />
+            <valuetableentry value="1" lowerBound="1" upperBound="1" description="ISO15118" displayString="ISO15118" />
+            <valuetableentry value="2" lowerBound="2" upperBound="2" description="EVPriority" displayString="EVPriority" />
+          </valuetable>
+        </variable>
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysEVSE_WaitResume" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="0" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1" />
+      </namespace>
+      <namespace name="VT_Control" comment="" interface="">
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="EVSE_Connect" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" />
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="EVSE_Enable_PLC" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" />
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="EVSE_Enable_PWM" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" />
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="IEC61851_State_EVSE" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="0" minValue="0" minValuePhys="0" maxValue="6" maxValuePhys="6">
+          <valuetable name="Custom" definesMinMax="true">
+            <valuetableentry value="0" lowerBound="0" upperBound="0" description="None" displayString="None" />
+            <valuetableentry value="1" lowerBound="1" upperBound="1" description="State_A" displayString="State_A" />
+            <valuetableentry value="2" lowerBound="2" upperBound="2" description="State_B" displayString="State_B" />
+            <valuetableentry value="3" lowerBound="3" upperBound="3" description="State_C" displayString="State_C" />
+            <valuetableentry value="4" lowerBound="4" upperBound="4" description="State_D" displayString="State_D" />
+            <valuetableentry value="5" lowerBound="5" upperBound="5" description="State_E" displayString="State_E" />
+            <valuetableentry value="6" lowerBound="6" upperBound="6" description="State_F" displayString="State_F" />
+          </valuetable>
+        </variable>
+      </namespace>
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysEVSE_AC_Phases" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="2" maxValuePhys="2">
+        <valuetable name="Custom" definesMinMax="true">
+          <valuetableentry value="0" lowerBound="0" upperBound="0" description="SinglePhase" displayString="SinglePhase" />
+          <valuetableentry value="1" lowerBound="1" upperBound="1" description="ThreePhase" displayString="ThreePhase" />
+          <valuetableentry value="2" lowerBound="2" upperBound="2" description="Custom" displayString="Custom" />
+        </valuetable>
+      </variable>
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysEVSE_AC_Phases_L1_Enabled" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysEVSE_AC_Phases_L2_Enabled" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysEVSE_AC_Phases_L3_Enabled" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysEVSE_AC_Phases_N_Enabled" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysEVSE_AC_PWM_Activate" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1">
+        <valuetable name="Custom" definesMinMax="false">
+          <valuetableentry value="0" lowerBound="0" upperBound="0" description="HLC" displayString="HLC" />
+          <valuetableentry value="1" lowerBound="1" upperBound="1" description="BC" displayString="BC" />
+        </valuetable>
+      </variable>
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="A" name="SysEVSE_AC_PWM_MaxCurrent" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="80" maxValuePhys="80" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysEVSE_ConnectionCount" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="0" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysEVSE_Connections" comment="" bitcount="0" isSigned="true" encoding="65001" type="string" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="A" name="SysEVSE_CurrentRegulationTolerance" comment="" bitcount="64" isSigned="true" encoding="65001" type="float" startValue="50" minValue="0" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysEVSE_DCStatusCode" comment="" bitcount="0" isSigned="true" encoding="65001" type="string" startValue="N/A" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysEVSE_Enabled" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="0" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysEVSE_LinkStatus" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="2" minValue="0" minValuePhys="0" maxValue="2" maxValuePhys="2" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="A" name="SysEVSE_MaxCurrent" comment="" bitcount="64" isSigned="true" encoding="65001" type="float" minValue="0" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="A" name="SysEVSE_MaxCurrent_AC" comment="" bitcount="64" isSigned="true" encoding="65001" type="float" minValue="0" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="kW" name="SysEVSE_MaxPower" comment="" bitcount="64" isSigned="true" encoding="65001" type="float" minValue="0" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="V" name="SysEVSE_MaxVoltage" comment="" bitcount="64" isSigned="true" encoding="65001" type="float" minValue="0" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysEVSE_MessageTx" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="0" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="A" name="SysEVSE_MinCurrent" comment="" bitcount="64" isSigned="true" encoding="65001" type="float" minValue="0" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="V" name="SysEVSE_MinVoltage" comment="" bitcount="64" isSigned="true" encoding="65001" type="float" minValue="0" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysEVSE_MSound" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="0" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="V" name="SysEVSE_NominalVoltage" comment="" bitcount="64" isSigned="true" encoding="65001" type="float" minValue="0" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="A" name="SysEVSE_PeakCurrentRipple" comment="" bitcount="64" isSigned="true" encoding="65001" type="float" startValue="12" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysEVSE_PP_resistance" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysEVSE_PresentCurrent" comment="" bitcount="64" isSigned="true" encoding="65001" type="float" startValue="0" minValue="0" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysEVSE_PresentVoltage" comment="" bitcount="64" isSigned="true" encoding="65001" type="float" startValue="0" minValue="0" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysEVSE_Processing" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="0" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysEVSE_SimState" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="2" minValue="0" minValuePhys="0" maxValue="2" maxValuePhys="2" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysEVSE_StopCharging" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="0" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1" />
+    </namespace>
+  </namespace>
+</systemvariables>

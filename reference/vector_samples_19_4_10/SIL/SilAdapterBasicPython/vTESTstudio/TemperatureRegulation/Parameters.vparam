@@ -1,0 +1,25 @@
+Vector Parameter	1.0
+Group	Test Parameters
+
+StructListSingleRecord
+
+StructName	HeatingStateTestVectors
+ParameterName		TempSensor1	TempSensor2	TempSensor3	ExpHeaterState
+Type		Integer	Integer	Integer	Integer
+Info					
+Values		10	8	12	2
+		7	9	9	2
+		26	24	28	1
+		20	18	20	0
+		-1	0	2	2
+		23	23	24	1
+
+Group	Application Parameters
+
+ScalarSingleRecord
+
+Name	Type	Info	Value
+MaxReactionTime	Integer	Update frequency of application is 100ms.	150
+HeatingThreshold	Integer	Celsius	18
+CoolingThreshold	Integer	Celsius	23
+

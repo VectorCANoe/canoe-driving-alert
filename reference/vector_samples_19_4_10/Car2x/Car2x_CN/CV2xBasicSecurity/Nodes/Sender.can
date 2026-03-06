@@ -1,0 +1,42 @@
+/*@!Encoding:1252*/
+includes
+{
+  
+}
+
+variables
+{
+  long pktBsmHdl;      // BSM message
+  
+  long certValidHdl;   // valid certificate
+  long certInvalidHdl; // invalid certificate
+}
+
+on start
+{
+  // initialize BSM
+  pktBsmHdl = C2xInitPacket("BasicSafetyMessage", "CNSH");
+  
+  // get certificates
+  certValidHdl   = C2xSecCertificateGetHandle("OBU (1)");
+  certInvalidHdl = C2xSecCertificateGetHandle("Vector Demo ITS PC Invalid CN");
+}
+
+
+on sysvar BSM::Send
+{
+  long certHdl;
+  
+  if (@this)
+  {
+    // set signer certificate and signer type
+    certHdl = (@BSM::Certificate == @BSM::Certificate::Valid) ? certValidHdl : certInvalidHdl ;
+    C2xSecPacketSetSignerHandle(pktBsmHdl, certHdl);
+    C2xSetTokenInt(pktBsmHdl, "cnsh20", "signerType", @BSM::Type);
+    C2xSetTokenInt64(pktBsmHdl, "cnsh20", "generationTime", C2xConvertTimeToMSSinceUTC(C2xGetITSTimestamp(), 0)*1000);
+    
+    // encode, sign and output message
+    C2xCompletePacket(pktBsmHdl);
+    C2xOutputPacket(pktBsmHdl);
+  }
+}

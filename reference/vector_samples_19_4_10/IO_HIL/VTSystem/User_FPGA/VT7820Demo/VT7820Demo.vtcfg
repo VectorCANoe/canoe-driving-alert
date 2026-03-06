@@ -1,0 +1,15 @@
+version: 19.0.0
+modules:
+  - type: 7900
+    interface: 2
+    mdid: a13159c3134bd7d4e7372e3ac9ff295700000000
+    module-channel:
+      name: VT7820
+    channels:
+      - name: VT7820_Channel1
+      - name: VT7820_Channel2
+      - name: VT7820_Channel3
+      - name: VT7820_Channel4
+vts-control-window:
+  flip-rack-order: false
+  serialized-config: rack[12];mapping[0,0,0];

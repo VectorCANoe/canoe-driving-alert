@@ -1,0 +1,53 @@
+<scenario name="my scenario" simtime="29,3757649938801" simtimemax="1200" version="1" timelinezoom="1" hscrolloffset="0">
+  <routes>
+    <route name="ScenarioDefinitionRoute" color="0" width="3">
+      <points>
+        <point x="31,2128525656011" y="121,419552124492" />
+        <point x="31,2155147777955" y="121,419022550294" />
+      </points>
+      <stations>
+        <station name="HV" offset="6" color="0" trackingid="1" length="0" width="0" height="0" stationtype="Undefined" hostvehicle="False">
+          <attribute name="Speed" trigger="true" defaultvalue="0">
+            <keypoints>
+              <keypoint time="0" value="30" />
+            </keypoints>
+          </attribute>
+        </station>
+      </stations>
+      <refpoints>
+        <refpoint name="RefPoint" offset="220" color="14772545" id="0" />
+      </refpoints>
+    </route>
+    <route name="RefRoute1" color="32768" width="3">
+      <points>
+        <point x="31,2150984882195" y="121,420178181805" />
+        <point x="31,2148811612186" y="121,418510346142" />
+      </points>
+      <stations>
+        <station name="P" offset="45" color="32768" trackingid="1" length="0" width="0" height="0" stationtype="Undefined" hostvehicle="False">
+          <attribute name="Speed" trigger="true" defaultvalue="0">
+            <keypoints>
+              <keypoint time="0" value="5" />
+            </keypoints>
+          </attribute>
+        </station>
+      </stations>
+    </route>
+    <route name="RefRoute2" color="16711680" width="3">
+      <points>
+        <point x="31,2151163525464" y="121,419607762523" />
+        <point x="31,2151003795196" y="121,419475482587" />
+      </points>
+      <stations>
+        <station name="RSU_VRUCW" offset="0" color="16711680" trackingid="1" length="0" width="0" height="0" stationtype="Undefined" hostvehicle="False">
+          <attribute name="Speed" trigger="true" defaultvalue="0">
+            <keypoints>
+              <keypoint time="0" value="0" />
+            </keypoints>
+          </attribute>
+        </station>
+      </stations>
+    </route>
+  </routes>
+  <tapes />
+</scenario>

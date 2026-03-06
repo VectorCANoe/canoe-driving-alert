@@ -1,0 +1,69 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<FunctionBusLibrary Version="4" FormatMajorVersion="3" FormatMinorVersion="1" FormatPatchVersion="3">
+  <Namespaces>
+    <Namespace IsDefinedAsHidden="False" IsSystemDefined="False" Name="Internal">
+      <Subnamespaces>
+        <Namespace IsDefinedAsHidden="False" IsSystemDefined="False" Name="_Generated">
+          <DataTypes>
+            <IntegerDataType IsSigned="False" BitCount="1" HasFixedBinaryLayout="True" HasMotorolaByteOrder="False" Name="UInt1" />
+          </DataTypes>
+        </Namespace>
+      </Subnamespaces>
+      <DOInterfaces>
+        <DOInterface IsAbstract="False" Name="IPanel">
+          <MemberData>
+            <DOMemberDataHolder Name="MemberData">
+              <Data>
+                <DOIFMemberData Name="GenerateSensorValuesActive">
+                  <InitialValues>
+                    <InitialValue Value="0" ValueType="UInt32" />
+                  </InitialValues>
+                </DOIFMemberData>
+                <DOIFMemberData Name="ShowHeaterStateOnHW">
+                  <InitialValues>
+                    <InitialValue Value="0" ValueType="UInt32" />
+                  </InitialValues>
+                </DOIFMemberData>
+              </Data>
+            </DOMemberDataHolder>
+          </MemberData>
+          <DataMembers>
+            <DOIFDataMember LocalDirection="Internal" Name="GenerateSensorValuesActive">
+              <DataType DataType="Internal::_Generated::UInt1">
+                <NumericProperties MinValue="" MinValueType="Invalid" MaxValue="" MaxValueType="Invalid" IsBoolean="True" IsTimespan="False" />
+              </DataType>
+            </DOIFDataMember>
+            <DOIFDataMember LocalDirection="Internal" Name="ShowHeaterStateOnHW">
+              <DataType DataType="Internal::_Generated::UInt1">
+                <NumericProperties MinValue="" MinValueType="Invalid" MaxValue="" MaxValueType="Invalid" IsBoolean="True" IsTimespan="False" />
+              </DataType>
+            </DOIFDataMember>
+            <DOIFDataMember LocalDirection="Internal" Name="AverageTemperature">
+              <DataType DataType="_SystemDataTypes::Double" />
+            </DOIFDataMember>
+          </DataMembers>
+        </DOInterface>
+      </DOInterfaces>
+      <DistributedObjects>
+        <DistributedObject GenerateDotNetAPI="True" Name="Panel">
+          <DataType>
+            <ModifiedDOIF Reverse="False" IsDOReference="False" Interface="Internal::IPanel" />
+          </DataType>
+          <MemberData>
+            <DOMemberDataHolder Name="MemberData" />
+          </MemberData>
+        </DistributedObject>
+      </DistributedObjects>
+    </Namespace>
+  </Namespaces>
+  <ModuleDependencies>
+    <ModuleDependency Module="_Internal" />
+    <ModuleDependency Module="_Internal" />
+    <ModuleDependency Module="_Internal" />
+    <ModuleDependency Module="_Internal" />
+    <ModuleDependency Module="_Internal" />
+    <ModuleDependency Module="_Internal" />
+    <ModuleDependency Module="_Internal" />
+    <ModuleDependency Module="_Internal" />
+  </ModuleDependencies>
+</FunctionBusLibrary>

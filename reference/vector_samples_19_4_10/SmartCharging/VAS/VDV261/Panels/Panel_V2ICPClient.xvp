@@ -1,0 +1,115 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Panel Type="Vector.CANalyzer.Panels.PanelSerializer, Vector.CANalyzer.Panels.Serializer, Version=19.2.52.0, Culture=neutral, PublicKeyToken=null">
+  <Object Type="Vector.CANalyzer.Panels.Runtime.Panel, Vector.CANalyzer.Panels.Common, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Panel" ControlName="V2ICPClient">
+    <Object Type="Vector.CANalyzer.Panels.Design.GroupBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xdc98836ee9956e4b25ea184e9d28c5ba8b71" ControlName="Group Box 2">
+      <Object Type="Vector.CANalyzer.Panels.Design.ButtonControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xa308202cecc7ce4c7feb2b0e0939486d3b48" ControlName="btnV2ICPMethod">
+        <Property Name="Name">Xa308202cecc7ce4c7feb2b0e0939486d3b48</Property>
+        <Property Name="Size">121, 23</Property>
+        <Property Name="Location">5, 18</Property>
+        <Property Name="TabIndex">1</Property>
+        <Property Name="Text">V2ICPMethod</Property>
+        <Property Name="SymbolConfiguration">8;16;V2ICPClient;;;SysV2ICPSendRequest;1;;;-1;;;Value;;;0</Property>
+      </Object>
+      <Property Name="Name">Xdc98836ee9956e4b25ea184e9d28c5ba8b71</Property>
+      <Property Name="Size">142, 53</Property>
+      <Property Name="Location">5, 115</Property>
+      <Property Name="Text">Send request</Property>
+      <Property Name="TabIndex">7</Property>
+      <Property Name="UseWindowsStyle">False</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.GroupBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X06ee4f7de5c31e4f45e87b7e1bfc39a72944" ControlName="Group Box 1">
+      <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xe8aacee6e1c5fe426ceb56eed5e3770d6da1" ControlName="Input/Output Box 3">
+        <Property Name="Name">Xe8aacee6e1c5fe426ceb56eed5e3770d6da1</Property>
+        <Property Name="Size">217, 21</Property>
+        <Property Name="Location">12, 71</Property>
+        <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+        <Property Name="AlarmLowerBkgColor">Salmon</Property>
+        <Property Name="AlarmLowerTextColor">Black</Property>
+        <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+        <Property Name="AlarmUpperTextColor">Black</Property>
+        <Property Name="BoxBorderStyle">FixedSingle</Property>
+        <Property Name="DisplayLabel">Left</Property>
+        <Property Name="TabIndex">3</Property>
+        <Property Name="DescriptionText">ResponseTimeout:</Property>
+        <Property Name="ValueDecimalPlaces">0</Property>
+        <Property Name="ValueDisplay">Decimal</Property>
+        <Property Name="UsedValueTable">ImplValue</Property>
+        <Property Name="DescriptionSize">98, 21</Property>
+        <Property Name="SymbolConfiguration">8;4096;V2ICP::Endpoints;V2ICPClient.ResponseTimeout;;1;1;;;-1;;;Value;;;16</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xd1aee4caec390e404febd86e449f473c8403" ControlName="Input/Output Box 2">
+        <Property Name="Name">Xd1aee4caec390e404febd86e449f473c8403</Property>
+        <Property Name="Size">217, 21</Property>
+        <Property Name="Location">12, 44</Property>
+        <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+        <Property Name="AlarmLowerBkgColor">Salmon</Property>
+        <Property Name="AlarmLowerTextColor">Black</Property>
+        <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+        <Property Name="AlarmUpperTextColor">Black</Property>
+        <Property Name="BoxBorderStyle">FixedSingle</Property>
+        <Property Name="DisplayLabel">Left</Property>
+        <Property Name="TabIndex">2</Property>
+        <Property Name="DescriptionText">Password:</Property>
+        <Property Name="ValueDisplay">Text</Property>
+        <Property Name="UsedValueTable">ImplValue</Property>
+        <Property Name="DescriptionSize">57, 21</Property>
+        <Property Name="SymbolConfiguration">8;4096;V2ICP::Endpoints;V2ICPClient.BasicAuthPassword;;1;4;;;-1;;;Value;;;16</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X6975754ee7d8ce4ae1eacd8e98413176b985" ControlName="Input/Output Box 1">
+        <Property Name="Name">X6975754ee7d8ce4ae1eacd8e98413176b985</Property>
+        <Property Name="Size">217, 21</Property>
+        <Property Name="Location">12, 17</Property>
+        <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+        <Property Name="AlarmLowerBkgColor">Salmon</Property>
+        <Property Name="AlarmLowerTextColor">Black</Property>
+        <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+        <Property Name="AlarmUpperTextColor">Black</Property>
+        <Property Name="BoxBorderStyle">FixedSingle</Property>
+        <Property Name="DisplayLabel">Left</Property>
+        <Property Name="TabIndex">1</Property>
+        <Property Name="DescriptionText">Username:</Property>
+        <Property Name="ValueDisplay">Text</Property>
+        <Property Name="UsedValueTable">ImplValue</Property>
+        <Property Name="DescriptionSize">59, 21</Property>
+        <Property Name="SymbolConfiguration">8;4096;V2ICP::Endpoints;V2ICPClient.BasicAuthUsername;;1;4;;;-1;;;Value;;;16</Property>
+      </Object>
+      <Property Name="Name">X06ee4f7de5c31e4f45e87b7e1bfc39a72944</Property>
+      <Property Name="Size">242, 104</Property>
+      <Property Name="Location">5, 5</Property>
+      <Property Name="Text">Settings</Property>
+      <Property Name="TabIndex">4</Property>
+      <Property Name="UseWindowsStyle">False</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.GroupBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X3e96d844ecc03e4c11e8353ea9c3100427ed" ControlName="Group Box 3">
+      <Object Type="Vector.CANalyzer.Panels.Design.RadioButtonControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X62f628a3e36e5e4b4aeb7c2e9d2de75b5f34" ControlName="Radio Button 2">
+        <Property Name="Name">X62f628a3e36e5e4b4aeb7c2e9d2de75b5f34</Property>
+        <Property Name="Size">39, 17</Property>
+        <Property Name="Location">10, 32</Property>
+        <Property Name="Text">V2</Property>
+        <Property Name="TabIndex">2</Property>
+        <Property Name="SymbolConfiguration">8;16;V2ICPClient;;;SysV2ICPMethodVersion;1;;;-1;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.RadioButtonControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xf2745c74e1208e460feb30fe9796d2d10bf1" ControlName="Radio Button 1">
+        <Property Name="Name">Xf2745c74e1208e460feb30fe9796d2d10bf1</Property>
+        <Property Name="Size">39, 17</Property>
+        <Property Name="Location">10, 15</Property>
+        <Property Name="Text">V1</Property>
+        <Property Name="TabIndex">1</Property>
+        <Property Name="SwitchValueVTXml">&lt;Version&gt;2&lt;/Version&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;RxValue&gt;0&lt;/RxValue&gt;</Property>
+        <Property Name="SwitchValueVT">1;Lower;0</Property>
+        <Property Name="SwitchValue">0</Property>
+        <Property Name="SymbolConfiguration">8;16;V2ICPClient;;;SysV2ICPMethodVersion;1;;;-1;;;Value;;;0</Property>
+      </Object>
+      <Property Name="Name">X3e96d844ecc03e4c11e8353ea9c3100427ed</Property>
+      <Property Name="Size">70, 53</Property>
+      <Property Name="Location">153, 115</Property>
+      <Property Name="Text">Version</Property>
+      <Property Name="TabIndex">10</Property>
+      <Property Name="UseWindowsStyle">False</Property>
+    </Object>
+    <Property Name="Name">Panel</Property>
+    <Property Name="Size">264, 204</Property>
+    <Property Name="Location">0, 0</Property>
+    <Property Name="BackColor">White</Property>
+  </Object>
+</Panel>

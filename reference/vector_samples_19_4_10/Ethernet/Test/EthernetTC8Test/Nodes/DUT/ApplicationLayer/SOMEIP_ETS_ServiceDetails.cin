@@ -1,0 +1,180 @@
+/*@!Encoding:1252*/
+/***************************************************************************************
+ * Demo- and Example-Programs
+ *
+ * Please note: The demo and example programs only show special aspects of the software.
+ * With regard to the fact that these programs are meant for demonstration purposes only,
+ * Vector Informatik's liability shall be expressly excluded in cases of ordinary
+ * negligence, to the extent admissible by law or statute.
+ *
+ * Beta-Version
+ *
+ * These programs are fully operative programs. However, they are not thoroughly tested
+ * yet (beta-version). With regard to the fact that the programs are a beta-version only,
+ * Vector Informatik's liability shall be expressly excluded in cases of ordinary
+ * negligence, to the extent admissible by law or statute.
+ *
+ * DESCRIPTION:
+ *
+ * Demo test implementation of the 'OPEN Alliance Automotive Ethernet ECU Test
+ * Specification - TC8 ECU Test' (Document Version 3.0, May 7, 2020)
+ *
+ * Copyright (c) Vector Informatik GmbH. All rights reserved.
+ ***************************************************************************************/
+
+variables
+{
+  // Event argument names
+  char gEventArgumentName_TestEventUINT8_arg1[32]          = "uINT8Value";
+  char gEventArgumentName_TestEventUINT8Array_arg1[32]     = "uINT8Array";
+  char gEventArgumentName_TestEventUINT8Reliable_arg1[32]  = "uINT8Value";
+  char gEventArgumentName_TestEventUINT8Multicast_arg1[32] = "uINT8Value";
+  
+  // Field element names
+  char gFieldname_InterfaceVersion_majorVersion[32] = "MajorVersion";
+  char gFieldname_InterfaceVersion_minorVersion[32] = "MinorVersion"; 
+
+  // Method argument names
+  char gMethodArgumentName_checkByteOrder_REQ_arg1[16] = "ReqArg1";
+  char gMethodArgumentName_checkByteOrder_REQ_arg2[16] = "ReqArg2";
+  char gMethodArgumentName_checkByteOrder_RES_arg1[16] = "ResArg1";
+
+  char gMethodArgumentName_clientServiceActivate_REQ_arg1[16] = "ReqArg1";
+
+  char gMethodArgumentName_clientServiceDeactivate_REQ_arg1[16] = "ReqArg1";
+  
+  char gMethodArgumentName_clientServiceGetLastValueOfEventTCP_RES_arg1[16] = "ResArg1";
+
+  char gMethodArgumentName_clientServiceGetLastValueOfEventUDPMulticast_RES_arg1[16] = "ResArg1";
+  
+  char gMethodArgumentName_clientServiceGetLastValueOfEventUDPUnicast_RES_arg1[16] = "ResArg1";
+
+  char gMethodArgumentName_clientServiceSubscribeEventgroup_REQ_delay[16]    = "ReqArg1";
+  char gMethodArgumentName_clientServiceSubscribeEventgroup_REQ_duration[16] = "ReqArg2";
+
+  char gMethodArgumentName_echoBitfields_REQ_bitfield8[16]  = "ReqArg1";
+  char gMethodArgumentName_echoBitfields_REQ_bitfield16[16] = "ReqArg2";
+  char gMethodArgumentName_echoBitfields_REQ_bitfield32[16] = "ReqArg3";
+  char gMethodArgumentName_echoBitfields_RES_bitfield8[16]  = "ResArg1";
+  char gMethodArgumentName_echoBitfields_RES_bitfield16[16] = "ResArg2";
+  char gMethodArgumentName_echoBitfields_RES_bitfield32[16] = "ResArg3";
+
+  char gMethodArgumentName_echoCommonDatatypes_REQ_ARG1_BOOLEAN[16] = "ReqArg1";
+  char gMethodArgumentName_echoCommonDatatypes_REQ_ARG2_UINT8[16]   = "ReqArg2";
+  char gMethodArgumentName_echoCommonDatatypes_REQ_ARG3_UINT16[16]  = "ReqArg3";
+  char gMethodArgumentName_echoCommonDatatypes_REQ_ARG4_UINT32[16]  = "ReqArg4";
+  char gMethodArgumentName_echoCommonDatatypes_REQ_ARG5_INT8[16]    = "ReqArg5";
+  char gMethodArgumentName_echoCommonDatatypes_REQ_ARG6_INT16[16]   = "ReqArg6";
+  char gMethodArgumentName_echoCommonDatatypes_REQ_ARG7_INT32[16]   = "ReqArg7";
+  char gMethodArgumentName_echoCommonDatatypes_REQ_ARG8_FLOAT32[16] = "ReqArg8";
+  char gMethodArgumentName_echoCommonDatatypes_REQ_ARG9_FLOAT64[16] = "ReqArg9";
+  char gMethodArgumentName_echoCommonDatatypes_RES_ARG1_FLOAT64[16] = "ResArg1";
+  char gMethodArgumentName_echoCommonDatatypes_RES_ARG2_FLOAT32[16] = "ResArg2";
+  char gMethodArgumentName_echoCommonDatatypes_RES_ARG3_INT32[16]   = "ResArg3";
+  char gMethodArgumentName_echoCommonDatatypes_RES_ARG4_INT16[16]   = "ResArg4";
+  char gMethodArgumentName_echoCommonDatatypes_RES_ARG5_INT8[16]    = "ResArg5";
+  char gMethodArgumentName_echoCommonDatatypes_RES_ARG6_UINT32[16]  = "ResArg6";
+  char gMethodArgumentName_echoCommonDatatypes_RES_ARG7_UINT16[16]  = "ResArg7";
+  char gMethodArgumentName_echoCommonDatatypes_RES_ARG8_UINT8[16]   = "ResArg8";
+  char gMethodArgumentName_echoCommonDatatypes_RES_ARG9_BOOLEAN[16] = "ResArg9";
+  
+  char gMethodArgumentName_echoENUM_REQ_enumValue[16] = "ReqArg1";
+  char gMethodArgumentName_echoENUM_RES_enumValue[16] = "ResArg1";
+
+  char gMethodArgumentName_echoFLOAT64_REQ_FLOAT64Value[16] = "ReqArg1";
+  char gMethodArgumentName_echoFLOAT64_RES_FLOAT64Value[16] = "ResArg1";
+
+  char gMethodArgumentName_echoINT64_REQ_INT64Value[16] = "ReqArg1";
+  char gMethodArgumentName_echoINT64_RES_INT64Value[16] = "ResArg1";
+  
+  char gMethodArgumentName_echoINT8_REQ_INT8Value[16] = "ReqArg1";
+  char gMethodArgumentName_echoINT8_RES_INT8Value[16] = "ResArg1";
+ 
+  char gMethodArgumentName_echoStaticUINT8Array_REQ_UINT8Array[16] = "ReqArg1";
+  char gMethodArgumentName_echoStaticUINT8Array_RES_UINT8Array[16] = "ResArg1";
+  
+  char gMethodArgumentName_echoUINT64_REQ_UINT64Value[16] = "ReqArg1";
+  char gMethodArgumentName_echoUINT64_RES_UINT64Value[16] = "ResArg1";
+
+  char gMethodArgumentName_echoUINT8_REQ_UINT8Value[16] = "ReqArg1";
+  char gMethodArgumentName_echoUINT8_RES_UINT8Value[16] = "ResArg1";
+
+  char gMethodArgumentName_echoUINT8Reliable_REQ_UINT8Value[16] = "ReqArg1";
+  char gMethodArgumentName_echoUINT8Reliable_RES_UINT8Value[16] = "ResArg1";
+  
+  char gMethodArgumentName_echoUINT8Array_REQ_UINT8Array[16] = "ReqArg1";
+  char gMethodArgumentName_echoUINT8Array_RES_UINT8Array[16] = "ResArg1";
+
+  char gMethodArgumentName_echoUINT8Array8BitLength_REQ_UINT8Array[16] = "ReqArg1";
+  char gMethodArgumentName_echoUINT8Array8BitLength_RES_UINT8Array[16] = "ResArg1";
+
+  char gMethodArgumentName_echoUINT8Array16BitLength_REQ_UINT8Array[16] = "ReqArg1";
+  char gMethodArgumentName_echoUINT8Array16BitLength_RES_UINT8Array[16] = "ResArg1";
+
+  char gMethodArgumentName_echoUINT8Array2Dim_REQ_UINT8Array[16] = "ReqArg1";
+  char gMethodArgumentName_echoUINT8Array2Dim_RES_UINT8Array[16] = "ResArg1";
+
+  char gMethodArgumentName_echoUINT8ArrayMinSize_REQ_UINT8Array[16] = "ReqArg1";
+  char gMethodArgumentName_echoUINT8ArrayMinSize_RES_UINT8Array[16] = "ResArg1";
+
+  char gMethodArgumentName_echoUINT8RELIABLE_REQ_UINT8Value[16] = "ReqArg1";
+  char gMethodArgumentName_echoUINT8RELIABLE_RES_UINT8Value[16] = "ResArg1";
+
+  char gMethodArgumentName_echoUNION_REQ_unionElement[16] = "ReqArg1";
+  char gMethodArgumentName_echoUNION_REQ_unionMember1[32] = "ReqArg1.UnionBoolean";
+  char gMethodArgumentName_echoUNION_REQ_unionMember2[32] = "ReqArg1.UnionUINT8";
+  char gMethodArgumentName_echoUNION_REQ_unionMember3[32] = "ReqArg1.UnionUINT16";
+  char gMethodArgumentName_echoUNION_REQ_unionMember4[32] = "ReqArg1.UnionUINT32";
+  char gMethodArgumentName_echoUNION_REQ_unionMember5[32] = "ReqArg1.UnionINT8";
+  char gMethodArgumentName_echoUNION_REQ_unionMember6[32] = "ReqArg1.UnionINT16";
+  char gMethodArgumentName_echoUNION_REQ_unionMember7[32] = "ReqArg1.UnionINT32";
+  char gMethodArgumentName_echoUNION_REQ_unionMember8[32] = "ReqArg1.UnionFLOAT32";
+  char gMethodArgumentName_echoUNION_RES_unionElement[16] = "ResArg1";
+  char gMethodArgumentName_echoUNION_RES_unionMember1[32] = "ResArg1.UnionBoolean";
+  char gMethodArgumentName_echoUNION_RES_unionMember2[32] = "ResArg1.UnionUINT8";
+  char gMethodArgumentName_echoUNION_RES_unionMember3[32] = "ResArg1.UnionUINT16";
+  char gMethodArgumentName_echoUNION_RES_unionMember4[32] = "ResArg1.UnionUINT32";
+  char gMethodArgumentName_echoUNION_RES_unionMember5[32] = "ResArg1.UnionINT8";
+  char gMethodArgumentName_echoUNION_RES_unionMember6[32] = "ResArg1.UnionINT16";
+  char gMethodArgumentName_echoUNION_RES_unionMember7[32] = "ResArg1.UnionINT32";
+  char gMethodArgumentName_echoUNION_RES_unionMember8[32] = "ResArg1.UnionFLOAT32";
+
+  char gMethodArgumentName_echoUTF8DYNAMIC_REQ_UTF8String[16] = "ReqArg1";
+  char gMethodArgumentName_echoUTF8DYNAMIC_RES_UTF8String[16] = "ResArg1";
+
+  char gMethodArgumentName_echoUTF8FIXED_REQ_UTF8String[16] = "ReqArg1";
+  char gMethodArgumentName_echoUTF8FIXED_RES_UTF8String[16] = "ResArg1";
+
+  char gMethodArgumentName_echoUTF16DYNAMIC_REQ_UTF16String[16] = "ReqArg1";
+  char gMethodArgumentName_echoUTF16DYNAMIC_RES_UTF16String[16] = "ResArg1";
+
+  char gMethodArgumentName_echoUTF16FIXED_REQ_UTF16String[16] = "ReqArg1";
+  char gMethodArgumentName_echoUTF16FIXED_RES_UTF16String[16] = "ResArg1";
+  
+  char gMethodArgumentName_suspendInterface_REQ_delay[16]    = "ReqArg1";
+  char gMethodArgumentName_suspendInterface_REQ_duration[16] = "ReqArg2";
+  
+  char gMethodArgumentName_triggerEventUINT8_REQ_delay[16]        = "ReqArg1";
+  char gMethodArgumentName_triggerEventUINT8_REQ_duration[16]     = "ReqArg2";
+  char gMethodArgumentName_triggerEventUINT8_REQ_debounceTime[16] = "ReqArg3";
+
+  char gMethodArgumentName_triggerEventUINT8Array_REQ_delay[16]        = "ReqArg1";
+  char gMethodArgumentName_triggerEventUINT8Array_REQ_duration[16]     = "ReqArg2";
+  char gMethodArgumentName_triggerEventUINT8Array_REQ_debounceTime[16] = "ReqArg3";
+
+  char gMethodArgumentName_triggerEventUINT8Multicast_REQ_delay[16]        = "ReqArg1";
+  char gMethodArgumentName_triggerEventUINT8Multicast_REQ_duration[16]     = "ReqArg2";
+  char gMethodArgumentName_triggerEventUINT8Multicast_REQ_debounceTime[16] = "ReqArg3";
+
+  char gMethodArgumentName_triggerEventUINT8Unitcast_REQ_delay[16]        = "ReqArg1";
+  char gMethodArgumentName_triggerEventUINT8Unitcast_REQ_duration[16]     = "ReqArg2";
+  char gMethodArgumentName_triggerEventUINT8Unitcast_REQ_debounceTime[16] = "ReqArg3";
+
+  char gMethodArgumentName_triggerEventUINT8Reliable_REQ_delay[16]        = "ReqArg1";
+  char gMethodArgumentName_triggerEventUINT8Reliable_REQ_duration[16]     = "ReqArg2";
+  char gMethodArgumentName_triggerEventUINT8Reliable_REQ_debounceTime[16] = "ReqArg3";
+  
+  // Length restrictions as required by the TC8 spec
+  const byte gEchoUINT8ArrayMinSize_MinLength = 3;
+
+}

@@ -1,0 +1,108 @@
+version: 19.0.0
+modules:
+  - type: 2004
+    interface: 7
+    module-channel:
+      name: EV_VT2004_ChaoJi
+    channels:
+      - name: EV_VT2004_Ch1
+      - name: EV_VT2004_Ch2_CC2
+        active-values:
+          - name: CurVoltage
+            cycle-time: 10ms
+      - name: EV_VT2004_Ch3_CC1
+      - name: EV_VT2004_Ch4
+    gui-labels:
+      - name: EcuB_1
+        text: ""
+      - name: EcuA_2
+        text: ""
+      - name: EcuA_3
+        text: CC1
+      - name: EcuA_4
+        text: ""
+      - name: BB1a
+        text: 12 V
+      - name: BB1b
+        text: GND
+      - name: BB2a
+        text: PE
+      - name: BB2b
+        text: PE
+      - name: SensorB_3
+        text: ""
+      - name: SensorB_4
+        text: ""
+      - name: SensorB_2
+        text: CC2
+      - name: EcuB_2
+        text: CC2
+      - name: EcuB_3
+        text: ""
+      - name: EcuB_4
+        text: ""
+      - name: EcuA_1
+        text: ""
+      - name: SensorA_1
+        text: ""
+      - name: SensorA_4
+        text: ""
+      - name: SensorA_3
+        text: CC1
+  - type: 2816
+    interface: 3
+    module-channel:
+      name: EV_VT2816
+    channels:
+      - name: EV_VT2816_Ch1
+        active-values:
+          - name: AvgVoltage
+            cycle-time: 100ms
+            integration-time: 10ms
+      - name: EV_VT2816_Ch2
+        active-values:
+          - name: AvgVoltage
+            cycle-time: 100ms
+            integration-time: 10ms
+      - name: EV_VT2816_Ch3_CC1_PE
+        active-values:
+          - name: AvgVoltage
+            cycle-time: 100ms
+            integration-time: 10ms
+      - name: EV_VT2816_Ch4_CC2_PE
+        active-values:
+          - name: AvgVoltage
+            cycle-time: 100ms
+            integration-time: 10ms
+      - name: VT2816_1_Ch5
+      - name: VT2816_1_Ch6
+      - name: VT2816_1_Ch7
+      - name: VT2816_1_Ch8
+      - name: VT2816_1_Ch9
+      - name: VT2816_1_Ch10
+      - name: VT2816_1_Ch11
+      - name: VT2816_1_Ch12
+      - name: VT2816_1_Ch13
+      - name: VT2816_1_Ch14
+      - name: VT2816_1_Ch15
+      - name: VT2816_1_Ch16
+    gui-labels:
+      - name: vinb_1
+        text: ""
+      - name: vina_1
+        text: ""
+      - name: vina_2
+        text: ""
+      - name: vinb_2
+        text: ""
+      - name: vina_3
+        text: CC1
+      - name: vinb_3
+        text: PE
+      - name: vina_4
+        text: CC2
+      - name: vinb_4
+        text: PE
+vts-control-window:
+  flip-rack-order: false
+  serialized-config: rack[12];mapping[0,0,0];mapping[1,0,1];

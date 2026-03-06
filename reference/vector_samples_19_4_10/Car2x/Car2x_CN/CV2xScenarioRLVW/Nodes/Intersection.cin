@@ -1,0 +1,106 @@
+/*@!Encoding:1252*/
+////////////////////////////////////////////////////
+// Help routines for creating MapData lane geometry
+////////////////////////////////////////////////////
+
+variables
+{
+  enum TrafficLightState 
+  { 
+    TrafficLightUnavailable = 0, 
+    TrafficLightDark = 1, 
+    TrafficLightFlashingRed = 2, 
+    TrafficLightRed = 3, 
+    TrafficLightFlashingGreen = 4, 
+    TrafficLightGreen = 5, 
+    TrafficLightProtectedGreen = 6, 
+    TrafficLightYellow = 7, 
+    TrafficLightFlashingYellow = 8 
+  };
+}
+
+void CreateLane(struct MapDataLane lane, int laneId)
+{
+  lane.points.length = 0;
+  lane.laneID = laneId;
+  lane.laneAttributes.isValidFlag =1;
+  lane.laneAttributes.laneType.isValidFlag =1;
+  lane.laneAttributes.laneType.choice = 0;
+  lane.laneAttributes.isValidFlag =1;
+  lane.laneAttributes.laneType.isValidFlag =1;
+  lane.laneAttributes.laneType.choice = 0;
+  lane.laneAttributes.laneType.vehicle.isValidFlag =1;
+  lane.laneAttributes.laneType.vehicle.stringLength = 8;
+  memcpy(lane.laneAttributes.laneType.vehicle.string, "0000000", lane.laneAttributes.laneType.vehicle.stringLength);
+  
+}
+
+// Define next lane position as choice position_LL1
+void LaneAddNodeAsLL1(struct MapDataPointList nodes, int64 lat, int64 lon)
+{
+  nodes.isValidFlag = 1;
+  nodes.arrayValue[nodes.length].posOffset.offsetLL.choice = 0;
+  nodes.arrayValue[nodes.length].posOffset.offsetLL.position_LL1.lat = lat;
+  nodes.arrayValue[nodes.length].posOffset.offsetLL.position_LL1.lon = lon;
+  nodes.length++;
+}
+
+// Define next lane position as choice position_LL2
+void AddLaneNodeAsLL2(struct MapDataPointList nodes, int64 lat, int64 lon)
+{
+  nodes.isValidFlag = 1;
+  nodes.arrayValue[nodes.length].posOffset.offsetLL.choice = 1;
+  nodes.arrayValue[nodes.length].posOffset.offsetLL.position_LL2.lat = lat;
+  nodes.arrayValue[nodes.length].posOffset.offsetLL.position_LL2.lon = lon;
+  nodes.length++;
+}
+
+// Define next lane position as choice position_LL3
+void AddLaneNodeAsLL3(struct MapDataPointList nodes, int64 lat, int64 lon)
+{
+  nodes.isValidFlag = 1;
+  nodes.arrayValue[nodes.length].posOffset.offsetLL.choice = 2;
+  nodes.arrayValue[nodes.length].posOffset.offsetLL.position_LL3.lat = lat;
+  nodes.arrayValue[nodes.length].posOffset.offsetLL.position_LL3.lon = lon;
+  nodes.length++;
+}
+
+// Define next lane position as choice position_LL4
+void AddLaneNodeAsLL4(struct MapDataPointList nodes, int64 lat, int64 lon)
+{
+  nodes.isValidFlag = 1;
+  nodes.arrayValue[nodes.length].posOffset.offsetLL.choice = 3;
+  nodes.arrayValue[nodes.length].posOffset.offsetLL.position_LL4.lat = lat;
+  nodes.arrayValue[nodes.length].posOffset.offsetLL.position_LL4.lon = lon;
+  nodes.length++;
+}
+
+// Define next lane position as choice position_LL5
+void AddLaneNodeAsLL5(struct MapDataPointList nodes, int64 lat, int64 lon)
+{
+  nodes.isValidFlag = 1;
+  nodes.arrayValue[nodes.length].posOffset.offsetLL.choice = 4;
+  nodes.arrayValue[nodes.length].posOffset.offsetLL.position_LL5.lat = lat;
+  nodes.arrayValue[nodes.length].posOffset.offsetLL.position_LL5.lon = lon;
+  nodes.length++;
+}
+
+// Define next lane position as choice position_LL6
+void AddLaneNodeAsLL6(struct MapDataPointList nodes, int64 lat, int64 lon)
+{
+  nodes.isValidFlag = 1;
+  nodes.arrayValue[nodes.length].posOffset.offsetLL.choice = 5;
+  nodes.arrayValue[nodes.length].posOffset.offsetLL.position_LL6.lat = lat;
+  nodes.arrayValue[nodes.length].posOffset.offsetLL.position_LL6.lon = lon;
+  nodes.length++;
+}
+
+// Define next lane position as choice position_LatLon (absolute latitude and longitude
+void AddLaneNodeAbsoluteLatLon(struct MapDataPointList nodes, int64 lat, int64 lon)
+{
+  nodes.isValidFlag = 1;
+  nodes.arrayValue[nodes.length].posOffset.offsetLL.choice = 6;
+  nodes.arrayValue[nodes.length].posOffset.offsetLL.position_LatLon.lat = lat;
+  nodes.arrayValue[nodes.length].posOffset.offsetLL.position_LatLon.lon = lon;
+  nodes.length++;
+}

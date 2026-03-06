@@ -1,0 +1,47 @@
+/*@!Encoding:65001*/
+includes
+{
+}
+
+variables
+{
+}
+
+[traceitem("a31342c143aea0ddc7780")]
+[traceitem("a31342c143aea0ddc7781")]
+export testcase TestLocalAlarms()
+{
+    SendECGSignalWithoutArrhythmia();
+    testWaitForTimeout(10000);
+    if ($SmartECG::SmartECG_IO.heartRateAlarmOn == 0)
+    {
+        testStepPass("Heart rate alarm is off");
+    }
+    else
+    {
+        testStepFail("Heart rate alarm should be off");
+    }
+    StopECGSignalWithoutArrhythmia();
+    StartSimulatingEmergencyCase();
+    testWaitForTimeout(10000);
+    if ($SmartECG::SmartECG_IO.heartRateAlarmOn == 1)
+    {
+        testStepPass("Heart rate alarm is on");
+    }
+    else
+    {
+        testStepFail("Heart rate alarm should be on");
+    }
+}
+
+export testfunction SetupTestEnvironment()
+{
+  StopSimulationEnvironment();
+  InitializeTestEnvironment();
+}
+
+export testfunction StopTestEnvironmentSimulation()
+{
+  StopSimulatingEmergencyCase();
+  StopECGSignalWithoutArrhythmia();
+}

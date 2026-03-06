@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Panel Type="Vector.CANalyzer.Panels.PanelSerializer, Vector.CANalyzer.Panels.Serializer, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null">
+  <Object Type="Vector.CANalyzer.Panels.Runtime.Panel, Vector.CANalyzer.Panels.Common, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Panel" ControlName="SIL Kit Setup">
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl3" ControlName="Static Text 3">
+      <Property Name="Name">StaticTextControl3</Property>
+      <Property Name="Size">276, 15</Property>
+      <Property Name="Location">12, 12</Property>
+      <Property Name="Text">Start SIL Kit Participants (Engine, Lights)</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.PanelHelpControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="PanelHelpControl1" ControlName="Start SIL Kit Participants">
+      <Property Name="Name">PanelHelpControl1</Property>
+      <Property Name="Size">213, 42</Property>
+      <Property Name="Location">12, 30</Property>
+      <Property Name="ImageFile">Bitmaps\RunScript.png</Property>
+      <Property Name="TabIndex">1</Property>
+      <Property Name="Filename">..\Scripts\run_silkit_participants_async.bat</Property>
+      <Property Name="WorkingDirectory"></Property>
+    </Object>
+    <Property Name="Name">Panel</Property>
+    <Property Name="Size">238, 87</Property>
+    <Property Name="Location">0, 0</Property>
+    <Property Name="BackColor">White</Property>
+  </Object>
+</Panel>

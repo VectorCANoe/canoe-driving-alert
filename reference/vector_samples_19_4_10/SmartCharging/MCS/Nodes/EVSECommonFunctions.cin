@@ -1,0 +1,814 @@
+/*@!Encoding:1252*/
+
+variables
+{
+  int AutoFill_body = 0;
+  const int cDC_ServiceID = 2;
+  const int cDC_BPT_ServiceID = 6;
+  const int cMCS_ServiceID = 8;
+  const int cMCS_BPT_ServiceID = 9;
+  
+  int priceScheduleId = 0;
+}
+
+on fct_called EVSE.OnLastReceivedMessageIdChanged
+{
+  @Common::LastReceivedMessageId = $EVSE.OnLastReceivedMessageIdChanged.LatestCall.lastRxMessageId;
+  // Enable AutoBodyFill if it was previously disabeld at the Req/Resp loop
+  if (AutoFill_body == 0)
+  {
+    EVSE.EnableAutoBodyFill.Call(1);
+    AutoFill_body = 1;
+  }
+}
+
+/// <MCS_or_DC>
+// This function changes the EnergyTransferMode from DC to MCS, if called
+// Called from within EVSESimDO.can and commented out by default
+void FUNC_Set_ServiceDiscovery_MCSServiceID()
+{
+  int mcsServiceID;
+  EVSE.EnableAutoBodyFill.Call(0);
+  AutoFill_body = 0;
+  
+  if (@sysvar::Common::SysUserBPTMode == sysvar::Common::SysUserBPTMode::No_BPT && @sysvar::Common::SysMCSServiceAMD == sysvar::Common::SysMCSServiceAMD::MCS)
+  {    
+    mcsServiceID = cMCS_ServiceID; //MCS
+  }
+  else if (@sysvar::Common::SysUserBPTMode == sysvar::Common::SysUserBPTMode::BPT && @sysvar::Common::SysMCSServiceAMD == sysvar::Common::SysMCSServiceAMD::MCS)
+  {
+    mcsServiceID = cMCS_BPT_ServiceID; // MCS_BPT
+  }
+  else if (@sysvar::Common::SysUserBPTMode == sysvar::Common::SysUserBPTMode::No_BPT && @sysvar::Common::SysMCSServiceAMD == sysvar::Common::SysMCSServiceAMD::No_MCS)
+  {
+    mcsServiceID = cDC_ServiceID; // DC 
+  }
+  else 
+  {
+    mcsServiceID = cDC_BPT_ServiceID; // DC_BPT
+  }
+  
+  $EVSE.ISO20.ServiceDiscovery_Response.EnergyTransferServiceList.Service.Length = 1;
+  $EVSE.ISO20.ServiceDiscovery_Response.EnergyTransferServiceList.Service[0].ServiceID = mcsServiceID;
+}
+
+void FUNC_Set_DepartureTimeDefaults()
+{
+  const int DepartureTimeDefault = 900; //15 min
+
+  $CCS::Simulation::EVSE.ISO20.ScheduleExchange_Response.SEResControlMode.Dynamic_SEResControlMode.DepartureTime =  DepartureTimeDefault;
+
+  $CCS::Simulation::EVSE.ISO20.DC_ChargeLoop_Response.CLResControlMode.Dynamic_DC_CLResControlMode.DepartureTime =  DepartureTimeDefault;
+  $CCS::Simulation::EVSE.ISO20.DC_ChargeLoop_Response.CLResControlMode.BPT_Dynamic_DC_CLResControlMode.DepartureTime =  DepartureTimeDefault;
+  
+  $CCS::Simulation::EVSE.ISO20.AC_ChargeLoop_Response.CLResControlMode.Dynamic_AC_CLResControlMode.DepartureTime =  DepartureTimeDefault;
+  $CCS::Simulation::EVSE.ISO20.AC_ChargeLoop_Response.CLResControlMode.BPT_Dynamic_AC_CLResControlMode.DepartureTime =  DepartureTimeDefault;
+}
+
+void FUNC_Set_EVSEChargingMode()
+{
+  /* MCS */
+  if (@sysvar::Common::SysUserBPTMode == sysvar::Common::SysUserBPTMode::No_BPT)
+  {
+    /* No BPT */
+    setAttribute(CCS::Simulation::EVSE, CCSBinding::EnergyTransferService, CCSBinding::MCS);  
+  }
+  else
+  {
+    /* BPT */
+    setAttribute(CCS::Simulation::EVSE, CCSBinding::EnergyTransferService, CCSBinding::MCS_BPT);
+  }  
+}
+
+void FUNC_Set_ChargeDischargeValues()
+{
+  int leadingSign;
+  double current; 
+  leadingSign = 1;
+  
+  //If BPT enabled (ChargeDischarge button shown) and Discharge selected
+  if((@sysvar::Common::SysUserBPTMode == sysvar::Common::SysUserBPTMode::BPT) 
+    && (@sysvar::EVSE_Sim::Control::SysEVSE_ChargeDischarge == @sysvar::EVSE_Sim::Control::SysEVSE_ChargeDischarge::Discharge))
+  {
+    leadingSign = -1;
+  }
+  
+  /* DC_BPT */      
+  current = HV_measure_DC_I();
+  HV_source_set_I_DC( abs(current) * leadingSign );
+}
+
+void _SetAbsolutePriceSchedule(struct _CCS::DataTypes::AbsolutePriceSchedule_Type absolutePriceSchedule)
+{
+  // max elements
+  int taxRules;
+  int priceRuleStacks;
+  int priceRules;
+  int overstayRules;
+  int additionalSelectedServices;
+  // counters
+  int taxRulesCounter;
+  int priceRuleStacksCounter;
+  int priceRulesCounter;
+  int overstayRulesCounter;
+  int additionalSelectedServicesCounter;
+  char priceScheduleIDString[50];
+  char taxRuleNameString[50];
+  
+  taxRules = 2;
+  priceRuleStacks = 2;
+  priceRules = 2;
+  overstayRules = 2;
+  additionalSelectedServices = 2;
+  
+  priceScheduleId++;
+  snprintf(priceScheduleIDString, elcount(priceScheduleIDString), "ID%d", priceScheduleId);
+  absolutePriceSchedule.Id = priceScheduleIDString;
+  absolutePriceSchedule.TimeAnchor = 75;
+  absolutePriceSchedule.PriceScheduleID = priceScheduleId;
+  absolutePriceSchedule.PriceScheduleDescription = "PriceScheduleDescription";
+  absolutePriceSchedule.Currency = "EUR";
+  absolutePriceSchedule.Language = "FRA";
+  absolutePriceSchedule.PriceAlgorithm = "PriceAlgorithm";
+  absolutePriceSchedule.MinimumCost.Exponent = 1;
+  absolutePriceSchedule.MinimumCost.Value = 1;
+  absolutePriceSchedule.MaximumCost.Exponent = 1;
+  absolutePriceSchedule.MaximumCost.Value = 2;
+  
+  // TaxRules
+  absolutePriceSchedule.TaxRules.TaxRule.Length = taxRules;
+  for(taxRulesCounter = 0; taxRulesCounter < taxRules; taxRulesCounter++)
+  {
+    absolutePriceSchedule.TaxRules.TaxRule[taxRulesCounter].TaxRuleID = taxRulesCounter + 1;
+    snprintf(taxRuleNameString, elcount(taxRuleNameString), "TaxRule %d", (taxRulesCounter + 1));
+    absolutePriceSchedule.TaxRules.TaxRule[taxRulesCounter].TaxRuleName = taxRuleNameString;
+    absolutePriceSchedule.TaxRules.TaxRule[taxRulesCounter].TaxRate.Value = 10 * (taxRulesCounter + 1);
+    absolutePriceSchedule.TaxRules.TaxRule[taxRulesCounter].TaxRate.Exponent = 1;
+    absolutePriceSchedule.TaxRules.TaxRule[taxRulesCounter].TaxIncludedInPrice = 0;
+    absolutePriceSchedule.TaxRules.TaxRule[taxRulesCounter].AppliesToEnergyFee = taxRulesCounter % 2;
+    absolutePriceSchedule.TaxRules.TaxRule[taxRulesCounter].AppliesToParkingFee = taxRulesCounter % 2;
+    absolutePriceSchedule.TaxRules.TaxRule[taxRulesCounter].AppliesToOverstayFee = 0;
+    absolutePriceSchedule.TaxRules.TaxRule[taxRulesCounter].AppliesMinimumMaximumCost = 1; 
+  }
+  
+  // PriceRuleStacks
+  absolutePriceSchedule.PriceRuleStacks.PriceRuleStack.Length = priceRuleStacks;
+  for(priceRuleStacksCounter = 0; priceRuleStacksCounter < priceRuleStacks; priceRuleStacksCounter++)
+  {
+    absolutePriceSchedule.PriceRuleStacks.PriceRuleStack[priceRuleStacksCounter].Duration = 250 * (priceRuleStacksCounter + 1);
+    absolutePriceSchedule.PriceRuleStacks.PriceRuleStack[priceRuleStacksCounter].PriceRule.Length = priceRules;
+    for(priceRulesCounter = 0; priceRulesCounter < priceRules; priceRulesCounter++)
+    {
+      absolutePriceSchedule.PriceRuleStacks.PriceRuleStack[priceRuleStacksCounter].PriceRule[priceRulesCounter].EnergyFee.Value = 10;
+      absolutePriceSchedule.PriceRuleStacks.PriceRuleStack[priceRuleStacksCounter].PriceRule[priceRulesCounter].EnergyFee.Exponent = 1;
+      absolutePriceSchedule.PriceRuleStacks.PriceRuleStack[priceRuleStacksCounter].PriceRule[priceRulesCounter].ParkingFee.Value = 10;
+      absolutePriceSchedule.PriceRuleStacks.PriceRuleStack[priceRuleStacksCounter].PriceRule[priceRulesCounter].ParkingFee.Exponent = 1;
+      absolutePriceSchedule.PriceRuleStacks.PriceRuleStack[priceRuleStacksCounter].PriceRule[priceRulesCounter].ParkingFeePeriod = 500;
+      absolutePriceSchedule.PriceRuleStacks.PriceRuleStack[priceRuleStacksCounter].PriceRule[priceRulesCounter].CarbonDioxideEmission = 10 * (priceRulesCounter + 1);
+      absolutePriceSchedule.PriceRuleStacks.PriceRuleStack[priceRuleStacksCounter].PriceRule[priceRulesCounter].RenewableGenerationPercentage = 100 - 25 * (priceRulesCounter + 1);
+      absolutePriceSchedule.PriceRuleStacks.PriceRuleStack[priceRuleStacksCounter].PriceRule[priceRulesCounter].PowerRangeStart.Value = 10;
+      absolutePriceSchedule.PriceRuleStacks.PriceRuleStack[priceRuleStacksCounter].PriceRule[priceRulesCounter].PowerRangeStart.Exponent = 1;
+    }
+  }
+  
+  // OverstayRules
+  absolutePriceSchedule.OverstayRules.OverstayPowerThreshold.Value = 10;
+  absolutePriceSchedule.OverstayRules.OverstayPowerThreshold.Exponent = 1;
+  absolutePriceSchedule.OverstayRules.OverstayTimeThreshold = 100;
+  absolutePriceSchedule.OverstayRules.OverstayRule.Length = overstayRules;
+  for(overstayRulesCounter = 0; overstayRulesCounter < overstayRules; overstayRulesCounter++)
+  {
+    absolutePriceSchedule.OverstayRules.OverstayRule[overstayRulesCounter].OverstayRuleDescription = "OverstayRuleDescription";
+    absolutePriceSchedule.OverstayRules.OverstayRule[overstayRulesCounter].StartTime = 100 * overstayRulesCounter;
+    absolutePriceSchedule.OverstayRules.OverstayRule[overstayRulesCounter].OverstayFee.Value = 1;
+    absolutePriceSchedule.OverstayRules.OverstayRule[overstayRulesCounter].OverstayFee.Exponent = 1;
+    absolutePriceSchedule.OverstayRules.OverstayRule[overstayRulesCounter].OverstayFeePeriod = 100 * (overstayRules + 1) - 100 * (overstayRulesCounter + 1);
+  }
+  
+  // AdditionalSelectedServices
+  absolutePriceSchedule.AdditionalSelectedServices.AdditionalService.Length = additionalSelectedServices;
+  for(additionalSelectedServicesCounter = 0; additionalSelectedServicesCounter < additionalSelectedServices; additionalSelectedServicesCounter++)
+  {
+    absolutePriceSchedule.AdditionalSelectedServices.AdditionalService[additionalSelectedServicesCounter].ServiceName = "ServiceName";
+    absolutePriceSchedule.AdditionalSelectedServices.AdditionalService[additionalSelectedServicesCounter].ServiceFee.Value = 10 * (additionalSelectedServicesCounter + 1);
+    absolutePriceSchedule.AdditionalSelectedServices.AdditionalService[additionalSelectedServicesCounter].ServiceFee.Exponent = 1;
+  }
+}
+
+void _SetChargingSchedule(struct _CCS::DataTypes::ChargingSchedule_Type chargingSchedule)
+{
+  int scheduleEntryValue;
+  int powerScheduleEntries;
+  int scheduleTupleCounter;
+  int powerScheduleEntryCounter;
+  
+  powerScheduleEntries = 3;
+  
+  // 1. Available Energy
+  chargingSchedule.PowerSchedule.AvailableEnergy.Exponent = 2;
+  chargingSchedule.PowerSchedule.AvailableEnergy.Value = 33;
+  // 2. PowerTolerance
+  chargingSchedule.PowerSchedule.PowerTolerance.Exponent = -2;
+  chargingSchedule.PowerSchedule.PowerTolerance.Value = 10;
+  
+  // 3. PowerScheduleEntries
+  chargingSchedule.PowerSchedule.PowerScheduleEntries.PowerScheduleEntry.Length = powerScheduleEntries;
+  for(powerScheduleEntryCounter = 0; powerScheduleEntryCounter < powerScheduleEntries; powerScheduleEntryCounter++)
+  {
+    scheduleEntryValue = 10 * (powerScheduleEntryCounter + 1);
+    chargingSchedule.PowerSchedule.PowerScheduleEntries.PowerScheduleEntry[powerScheduleEntryCounter].Duration = 900;
+    chargingSchedule.PowerSchedule.PowerScheduleEntries.PowerScheduleEntry[powerScheduleEntryCounter].Power.Exponent = 2;
+    chargingSchedule.PowerSchedule.PowerScheduleEntries.PowerScheduleEntry[powerScheduleEntryCounter].Power.Value = scheduleEntryValue;
+    if(@sysvar::Common::SysUserChargingMode == @sysvar::Common::SysUserChargingMode::AC)
+    {
+      chargingSchedule.PowerSchedule.PowerScheduleEntries.PowerScheduleEntry[powerScheduleEntryCounter].Power_L2.Exponent = 2;
+      chargingSchedule.PowerSchedule.PowerScheduleEntries.PowerScheduleEntry[powerScheduleEntryCounter].Power_L2.Value = scheduleEntryValue;
+      chargingSchedule.PowerSchedule.PowerScheduleEntries.PowerScheduleEntry[powerScheduleEntryCounter].Power_L3.Exponent = 2;
+      chargingSchedule.PowerSchedule.PowerScheduleEntries.PowerScheduleEntry[powerScheduleEntryCounter].Power_L3.Value = 0; 
+    }
+    else
+    {
+      (chargingSchedule.PowerSchedule.PowerScheduleEntries.PowerScheduleEntry[powerScheduleEntryCounter].Power_L2).SetInvalid();
+      (chargingSchedule.PowerSchedule.PowerScheduleEntries.PowerScheduleEntry[powerScheduleEntryCounter].Power_L3).SetInvalid();
+    }
+  }      
+   
+  // The PriceSchedule is only shown when in PnC mode
+  if(@Common::SysUserAuthorizationMode == @Common::SysUserAuthorizationMode::PnC)
+  {
+    // General elements
+    chargingSchedule.PriceScheduleModeElementId = 0;
+    _SetAbsolutePriceSchedule(chargingSchedule.PriceSchedule.AbsolutePriceSchedule);
+  }
+}
+
+void FUNC_Set_ScheduleExchangeRes()
+{
+  int scheduleTuples;
+  int scheduleTupleCounter;
+  
+  // Disable AutoBodyFill for manual definition of the parameter set
+  EVSE.EnableAutoBodyFill.Call(0);
+  AutoFill_body = 0;
+  scheduleTuples = 3;
+  priceScheduleId = 0;
+
+  // Distinction between schedule and dynamic mode
+  if($CCS::Simulation::EVSE.ISO20.ServiceSelection_Request.SelectedEnergyTransferService.ParameterSetID == 1)
+  {
+    $CCS::Simulation::EVSE.ISO20.ScheduleExchange_Response.SEResControlMode.Scheduled_SEResControlMode.ScheduleTuple.Length = scheduleTuples;
+    for(scheduleTupleCounter = 0; scheduleTupleCounter < scheduleTuples; scheduleTupleCounter++)
+    {
+      // Tuple Id (1-255)
+      $CCS::Simulation::EVSE.ISO20.ScheduleExchange_Response.SEResControlMode.Scheduled_SEResControlMode.ScheduleTuple[scheduleTupleCounter].ScheduleTupleID = scheduleTupleCounter + 1;
+      _SetChargingSchedule($CCS::Simulation::EVSE.ISO20.ScheduleExchange_Response.SEResControlMode.Scheduled_SEResControlMode.ScheduleTuple[scheduleTupleCounter].ChargingSchedule);
+      _SetChargingSchedule($CCS::Simulation::EVSE.ISO20.ScheduleExchange_Response.SEResControlMode.Scheduled_SEResControlMode.ScheduleTuple[scheduleTupleCounter].DischargingSchedule);
+    }
+  }
+  else
+  {
+    // The PriceSchedule is only shown when in PnC mode
+    if(@Common::SysUserAuthorizationMode == @Common::SysUserAuthorizationMode::PnC)
+    {
+      // Definition of price schedule, can be extended 
+      $CCS::Simulation::EVSE.ISO20.ScheduleExchange_Response.SEResControlMode.Dynamic_SEResControlMode.PriceScheduleModeElementId = 0;
+      _SetAbsolutePriceSchedule($CCS::Simulation::EVSE.ISO20.ScheduleExchange_Response.SEResControlMode.Dynamic_SEResControlMode.PriceSchedule.AbsolutePriceSchedule);
+    }
+  }
+}
+
+void FUNC_Set_ServiceDetailRes()
+{
+  // Selection of ServiceID (e.g. DC_BPT)
+  if ($EVSE.ISO20.ServiceDetail_Request.ServiceID == cMCS_BPT_ServiceID)
+  {
+    // Disable AutoBodyFill for manual definition of the parameter set
+    if (AutoFill_body == 1)
+    {
+      EVSE.EnableAutoBodyFill.Call(0);
+      AutoFill_body = 0;
+    } 
+    
+    // Definition of required service ID (shall be equal to the if query)
+    $EVSE.ISO20.ServiceDetail_Response.ServiceID = $EVSE.ISO20.ServiceDetail_Request.ServiceID;
+    _ServiceDetail_PrepareResponseContent_MCS_BPT_List();
+  }
+  else if ($EVSE.ISO20.ServiceDetail_Request.ServiceID == cMCS_ServiceID)
+  {
+    // Disable AutoBodyFill for manual definition of the parameter set
+    if (AutoFill_body == 1)
+    {
+      EVSE.EnableAutoBodyFill.Call(0);
+      AutoFill_body = 0;
+    } 
+    
+    // Definition of required service ID (shall be equal to the if query)
+    $EVSE.ISO20.ServiceDetail_Response.ServiceID = $EVSE.ISO20.ServiceDetail_Request.ServiceID;
+    _ServiceDetail_PrepareResponseContent_MCS_List();
+  }
+  else if ($EVSE.ISO20.ServiceDetail_Request.ServiceID == cDC_BPT_ServiceID)
+  {
+    // Disable AutoBodyFill for manual definition of the parameter set
+    if (AutoFill_body == 1)
+    {
+      EVSE.EnableAutoBodyFill.Call(0);
+      AutoFill_body = 0;
+    } 
+    
+    // Definition of required service ID (shall be equal to the if query)
+    $EVSE.ISO20.ServiceDetail_Response.ServiceID = $EVSE.ISO20.ServiceDetail_Request.ServiceID;
+    _ServiceDetail_PrepareResponseContent_DC_BPT_List();
+  }
+  
+  else if ($EVSE.ISO20.ServiceDetail_Request.ServiceID == cDC_ServiceID)
+  {
+    // Disable AutoBodyFill for manual definition of the parameter set
+    if (AutoFill_body == 1)
+    {
+      EVSE.EnableAutoBodyFill.Call(0);
+      AutoFill_body = 0;
+    } 
+    
+    // Definition of required service ID (shall be equal to the if query)
+    $EVSE.ISO20.ServiceDetail_Response.ServiceID = $EVSE.ISO20.ServiceDetail_Request.ServiceID;
+    _ServiceDetail_PrepareResponseContent_DC_List();
+  }
+  
+  else
+  {
+    $EVSE.ISO20.ServiceDetail_Response.ServiceID = $EVSE.ISO20.ServiceDetail_Request.ServiceID;
+  }
+}
+
+void FUNC_Set_AuthorizationSetupRes()
+{
+  if(@sysvar::Common::SysUserAuthorizationMode == @sysvar::Common::SysUserAuthorizationMode::PnC)
+  {
+    // ensure PnC element is active and add a default value
+    $CCS::Simulation::EVSE.ISO20.AuthorizationSetup_Response.ASResAuthorizationModeElementId = _CCS::DataTypes::parISO20ASResAuthorizationMode::PnC_ASRes;
+    $CCS::Simulation::EVSE.ISO20.AuthorizationSetup_Response.ASResAuthorizationMode.PnC_ASResAuthorizationMode.SupportedProviders.ProviderID.Length = 1;
+    $CCS::Simulation::EVSE.ISO20.AuthorizationSetup_Response.ASResAuthorizationMode.PnC_ASResAuthorizationMode.SupportedProviders.ProviderID[0] = "Vector";
+  }
+}
+
+/// <ServiceDetail>
+_ServiceDetail_PrepareResponseContent_MCS_BPT_List()
+{
+  // Short or enlarge ParameterSet length if necessary
+  $EVSE.ISO20.ServiceDetail_Response.ServiceParameterList.ParameterSet.Length = 3;
+  
+  /* Entry[0] ParameterSet 1: Core, Scheduled, ProvidedByEVCC, NoPricing, Unified, GridFollowing  */
+  _ServiceDetail_PrepareResponseContent_MCS_BPT_Parameter(0, 1, _CCS::DataTypes::DCConnectorType::Core
+                                                             , _CCS::DataTypes::ControlModeType::Scheduled 
+                                                             , _CCS::DataTypes::MobilityNeedsModeType::ProvidedByEVCC
+                                                             , _CCS::DataTypes::PricingType::NoPricing
+                                                             , _CCS::DataTypes::BPTChannelType::Unified
+                                                             , _CCS::DataTypes::GeneratorModeType::GridFollowing); 
+  /* Entry[0] ParameterSet 2: Core, Dynamic, ProvidedByEVCC, NoPricing, Unified, GridFollowing */
+  _ServiceDetail_PrepareResponseContent_MCS_BPT_Parameter(1, 2, _CCS::DataTypes::DCConnectorType::Core
+                                                             , _CCS::DataTypes::ControlModeType::Dynamic
+                                                             , _CCS::DataTypes::MobilityNeedsModeType::ProvidedByEVCC
+                                                             , _CCS::DataTypes::PricingType::NoPricing
+                                                             , _CCS::DataTypes::BPTChannelType::Unified
+                                                             , _CCS::DataTypes::GeneratorModeType::GridFollowing); 
+  /* Entry[1] ParameterSet 3: Core, Dynamic, ProvidedBySECCAllowed, NoPricing, Separated, GridFollowing */
+  _ServiceDetail_PrepareResponseContent_MCS_BPT_Parameter(2, 3, _CCS::DataTypes::DCConnectorType::Core
+                                                             , _CCS::DataTypes::ControlModeType::Dynamic
+                                                             , _CCS::DataTypes::MobilityNeedsModeType::ProvidedBySECCAllowed
+                                                             , _CCS::DataTypes::PricingType::NoPricing
+                                                             , _CCS::DataTypes::BPTChannelType::Separated
+                                                             , _CCS::DataTypes::GeneratorModeType::GridFollowing); 
+}
+
+/// <ServiceDetail>
+_ServiceDetail_PrepareResponseContent_MCS_BPT_Parameter( long paramIndex
+                                                      , long paramSetID
+                                                      , enum _CCS::DataTypes::DCConnectorType       connector
+                                                      , enum _CCS::DataTypes::ControlModeType       controlMode
+                                                      , enum _CCS::DataTypes::MobilityNeedsModeType mobilityNeedsMode
+                                                      , enum _CCS::DataTypes::PricingType           pricing
+                                                      , enum _CCS::DataTypes::BPTChannelType        bptChannel
+                                                      , enum _CCS::DataTypes::GeneratorModeType     generatorMode )
+{
+  $EVSE.ISO20.ServiceDetail_Response.ServiceParameterList.ParameterSet[paramIndex].ParameterSetID = paramSetID;
+  $EVSE.ISO20.ServiceDetail_Response.ServiceParameterList.ParameterSet[paramIndex].UnionDiscriminator = 9; // MCS_BPT
+  $EVSE.ISO20.ServiceDetail_Response.ServiceParameterList.ParameterSet[paramIndex].Parameter.MCS_BPT.BPTChannel = bptChannel;
+  $EVSE.ISO20.ServiceDetail_Response.ServiceParameterList.ParameterSet[paramIndex].Parameter.MCS_BPT.Connector = connector;
+  $EVSE.ISO20.ServiceDetail_Response.ServiceParameterList.ParameterSet[paramIndex].Parameter.MCS_BPT.ControlMode = controlMode;
+  $EVSE.ISO20.ServiceDetail_Response.ServiceParameterList.ParameterSet[paramIndex].Parameter.MCS_BPT.GeneratorMode = generatorMode;
+  $EVSE.ISO20.ServiceDetail_Response.ServiceParameterList.ParameterSet[paramIndex].Parameter.MCS_BPT.MobilityNeedsMode = mobilityNeedsMode;
+  $EVSE.ISO20.ServiceDetail_Response.ServiceParameterList.ParameterSet[paramIndex].Parameter.MCS_BPT.Pricing = pricing;
+}
+
+
+/// <ServiceDetail>
+_ServiceDetail_PrepareResponseContent_MCS_List()
+{
+  // Short or enlarge ParameterSet length if necessary
+  $EVSE.ISO20.ServiceDetail_Response.ServiceParameterList.ParameterSet.Length = 3;
+  
+  /* Entry[0] ParameterSet 1: Extended, Scheduled, ProvidedByEVCC, NoPricing*/
+  _ServiceDetail_PrepareResponseContent_MCS_Parameter(0, 1, _CCS::DataTypes::DCConnectorType::Core
+                                                         , _CCS::DataTypes::ControlModeType::Scheduled
+                                                         , _CCS::DataTypes::MobilityNeedsModeType::ProvidedByEVCC       
+                                                         , _CCS::DataTypes::PricingType::NoPricing); 
+  /* Entry[1] ParameterSet 2: Extended, Dynamic, ProvidedByEVCC, NoPricing*/
+  _ServiceDetail_PrepareResponseContent_MCS_Parameter(1, 2, _CCS::DataTypes::DCConnectorType::Core
+                                                         , _CCS::DataTypes::ControlModeType::Dynamic
+                                                         , _CCS::DataTypes::MobilityNeedsModeType::ProvidedByEVCC
+                                                         , _CCS::DataTypes::PricingType::NoPricing); 
+  /* Entry[2] ParameterSet 3: Extended, Dynamic, ProvidedBySECCAllowed, NoPricing*/
+  _ServiceDetail_PrepareResponseContent_MCS_Parameter(2, 3, _CCS::DataTypes::DCConnectorType::Core
+                                                         , _CCS::DataTypes::ControlModeType::Dynamic
+                                                         , _CCS::DataTypes::MobilityNeedsModeType::ProvidedBySECCAllowed
+                                                         , _CCS::DataTypes::PricingType::NoPricing); 
+}
+
+/// <ServiceDetail>
+_ServiceDetail_PrepareResponseContent_MCS_Parameter( long paramIndex
+                                                  , long paramSetID
+                                                  , enum _CCS::DataTypes::DCConnectorType       connector
+                                                  , enum _CCS::DataTypes::ControlModeType       controlMode
+                                                  , enum _CCS::DataTypes::MobilityNeedsModeType mobilityNeedsMode
+                                                  , enum _CCS::DataTypes::PricingType           pricing )
+{
+  $EVSE.ISO20.ServiceDetail_Response.ServiceParameterList.ParameterSet[paramIndex].ParameterSetID = paramSetID;
+  $EVSE.ISO20.ServiceDetail_Response.ServiceParameterList.ParameterSet[paramIndex].UnionDiscriminator = 8; // DC
+  $EVSE.ISO20.ServiceDetail_Response.ServiceParameterList.ParameterSet[paramIndex].Parameter.MCS.Connector = connector;
+  $EVSE.ISO20.ServiceDetail_Response.ServiceParameterList.ParameterSet[paramIndex].Parameter.MCS.ControlMode = controlMode;
+  $EVSE.ISO20.ServiceDetail_Response.ServiceParameterList.ParameterSet[paramIndex].Parameter.MCS.MobilityNeedsMode = mobilityNeedsMode;
+  $EVSE.ISO20.ServiceDetail_Response.ServiceParameterList.ParameterSet[paramIndex].Parameter.MCS.Pricing = pricing;  
+}
+
+
+/// <ServiceDetail>
+_ServiceDetail_PrepareResponseContent_DC_BPT_List()
+{
+  // Short or enlarge ParameterSet length if necessary
+  $EVSE.ISO20.ServiceDetail_Response.ServiceParameterList.ParameterSet.Length = 3;
+  
+  /* Entry[0] ParameterSet 1: Extended, Scheduled, ProvidedByEVCC, NoPricing*/
+  _ServiceDetail_PrepareResponseContent_DC_BPT_Parameter(0, 1, _CCS::DataTypes::DCConnectorType::Extended
+                                                         , _CCS::DataTypes::ControlModeType::Scheduled
+                                                         , _CCS::DataTypes::MobilityNeedsModeType::ProvidedByEVCC       
+                                                         , _CCS::DataTypes::PricingType::NoPricing); 
+  /* Entry[1] ParameterSet 2: Extended, Dynamic, ProvidedByEVCC, NoPricing*/
+  _ServiceDetail_PrepareResponseContent_DC_BPT_Parameter(1, 2, _CCS::DataTypes::DCConnectorType::Extended
+                                                         , _CCS::DataTypes::ControlModeType::Dynamic
+                                                         , _CCS::DataTypes::MobilityNeedsModeType::ProvidedByEVCC
+                                                         , _CCS::DataTypes::PricingType::NoPricing); 
+  /* Entry[2] ParameterSet 3: Extended, Dynamic, ProvidedBySECCAllowed, NoPricing*/
+  _ServiceDetail_PrepareResponseContent_DC_BPT_Parameter(2, 3, _CCS::DataTypes::DCConnectorType::Extended
+                                                         , _CCS::DataTypes::ControlModeType::Dynamic
+                                                         , _CCS::DataTypes::MobilityNeedsModeType::ProvidedBySECCAllowed
+                                                         , _CCS::DataTypes::PricingType::NoPricing); 
+}
+
+/// <ServiceDetail>
+_ServiceDetail_PrepareResponseContent_DC_BPT_Parameter( long paramIndex
+                                                  , long paramSetID
+                                                  , enum _CCS::DataTypes::DCConnectorType       connector
+                                                  , enum _CCS::DataTypes::ControlModeType       controlMode
+                                                  , enum _CCS::DataTypes::MobilityNeedsModeType mobilityNeedsMode
+                                                  , enum _CCS::DataTypes::PricingType           pricing )
+{
+  $EVSE.ISO20.ServiceDetail_Response.ServiceParameterList.ParameterSet[paramIndex].ParameterSetID = paramSetID;
+  $EVSE.ISO20.ServiceDetail_Response.ServiceParameterList.ParameterSet[paramIndex].UnionDiscriminator = 6; // DC
+  $EVSE.ISO20.ServiceDetail_Response.ServiceParameterList.ParameterSet[paramIndex].Parameter.DC_BPT.Connector = connector;
+  $EVSE.ISO20.ServiceDetail_Response.ServiceParameterList.ParameterSet[paramIndex].Parameter.DC_BPT.ControlMode = controlMode;
+  $EVSE.ISO20.ServiceDetail_Response.ServiceParameterList.ParameterSet[paramIndex].Parameter.DC_BPT.MobilityNeedsMode = mobilityNeedsMode;
+  $EVSE.ISO20.ServiceDetail_Response.ServiceParameterList.ParameterSet[paramIndex].Parameter.DC_BPT.Pricing = pricing;  
+}
+
+/// <ServiceDetail>
+_ServiceDetail_PrepareResponseContent_DC_List()
+{
+  // Short or enlarge ParameterSet length if necessary
+  $EVSE.ISO20.ServiceDetail_Response.ServiceParameterList.ParameterSet.Length = 3;
+  
+  /* Entry[0] ParameterSet 1: Extended, Scheduled, ProvidedByEVCC, NoPricing*/
+  _ServiceDetail_PrepareResponseContent_DC_Parameter(0, 1, _CCS::DataTypes::DCConnectorType::Extended
+                                                         , _CCS::DataTypes::ControlModeType::Scheduled
+                                                         , _CCS::DataTypes::MobilityNeedsModeType::ProvidedByEVCC       
+                                                         , _CCS::DataTypes::PricingType::NoPricing); 
+  /* Entry[1] ParameterSet 2: Extended, Dynamic, ProvidedByEVCC, NoPricing*/
+  _ServiceDetail_PrepareResponseContent_DC_Parameter(1, 2, _CCS::DataTypes::DCConnectorType::Extended
+                                                         , _CCS::DataTypes::ControlModeType::Dynamic
+                                                         , _CCS::DataTypes::MobilityNeedsModeType::ProvidedByEVCC
+                                                         , _CCS::DataTypes::PricingType::NoPricing); 
+  /* Entry[2] ParameterSet 3: Extended, Dynamic, ProvidedBySECCAllowed, NoPricing*/
+  _ServiceDetail_PrepareResponseContent_DC_Parameter(2, 3, _CCS::DataTypes::DCConnectorType::Extended
+                                                         , _CCS::DataTypes::ControlModeType::Dynamic
+                                                         , _CCS::DataTypes::MobilityNeedsModeType::ProvidedBySECCAllowed
+                                                         , _CCS::DataTypes::PricingType::NoPricing); 
+}
+
+/// <ServiceDetail>
+_ServiceDetail_PrepareResponseContent_DC_Parameter( long paramIndex
+                                                  , long paramSetID
+                                                  , enum _CCS::DataTypes::DCConnectorType       connector
+                                                  , enum _CCS::DataTypes::ControlModeType       controlMode
+                                                  , enum _CCS::DataTypes::MobilityNeedsModeType mobilityNeedsMode
+                                                  , enum _CCS::DataTypes::PricingType           pricing )
+{
+  $EVSE.ISO20.ServiceDetail_Response.ServiceParameterList.ParameterSet[paramIndex].ParameterSetID = paramSetID;
+  $EVSE.ISO20.ServiceDetail_Response.ServiceParameterList.ParameterSet[paramIndex].UnionDiscriminator = 2; // DC
+  $EVSE.ISO20.ServiceDetail_Response.ServiceParameterList.ParameterSet[paramIndex].Parameter.DC.Connector = connector;
+  $EVSE.ISO20.ServiceDetail_Response.ServiceParameterList.ParameterSet[paramIndex].Parameter.DC.ControlMode = controlMode;
+  $EVSE.ISO20.ServiceDetail_Response.ServiceParameterList.ParameterSet[paramIndex].Parameter.DC.MobilityNeedsMode = mobilityNeedsMode;
+  $EVSE.ISO20.ServiceDetail_Response.ServiceParameterList.ParameterSet[paramIndex].Parameter.DC.Pricing = pricing;  
+}
+
+
+
+
+
+
+
+void FUNC_Set_EVSEDCLimits_ChargeParameterDiscoveryRes()
+{
+  /* EVSEMaximumChargePower */
+  $EVSE.ISO20.DC_ChargeParameterDiscovery_Response.CPDResEnergyTransferMode.DC_CPDResEnergyTransferMode.EVSEMaximumChargePower.Value = @sysvar::EVSE_Sim::SysEVSE_MaxPowerDC;
+  $EVSE.ISO20.DC_ChargeParameterDiscovery_Response.CPDResEnergyTransferMode.DC_CPDResEnergyTransferMode.EVSEMaximumChargePower.Exponent = 3; //Unit: kW
+  $EVSE.ISO20.DC_ChargeParameterDiscovery_Response.CPDResEnergyTransferMode.BPT_DC_CPDResEnergyTransferMode.EVSEMaximumChargePower.Value = @sysvar::EVSE_Sim::SysEVSE_MaxPowerDC;
+  $EVSE.ISO20.DC_ChargeParameterDiscovery_Response.CPDResEnergyTransferMode.BPT_DC_CPDResEnergyTransferMode.EVSEMaximumChargePower.Exponent = 3; //Unit: kW
+  
+  /* EVSEMinimumChargePower */
+  $EVSE.ISO20.DC_ChargeParameterDiscovery_Response.CPDResEnergyTransferMode.DC_CPDResEnergyTransferMode.EVSEMinimumChargePower.Value = @sysvar::EVSE_Sim::SysEVSE_MinPowerDC;
+  $EVSE.ISO20.DC_ChargeParameterDiscovery_Response.CPDResEnergyTransferMode.DC_CPDResEnergyTransferMode.EVSEMinimumChargePower.Exponent = 3; //Unit: kW
+  $EVSE.ISO20.DC_ChargeParameterDiscovery_Response.CPDResEnergyTransferMode.BPT_DC_CPDResEnergyTransferMode.EVSEMinimumChargePower.Value = @sysvar::EVSE_Sim::SysEVSE_MinPowerDC;
+  $EVSE.ISO20.DC_ChargeParameterDiscovery_Response.CPDResEnergyTransferMode.BPT_DC_CPDResEnergyTransferMode.EVSEMinimumChargePower.Exponent = 3; //Unit: kW
+  
+  /* EVSEMaximumChargeCurrent */
+  $EVSE.ISO20.DC_ChargeParameterDiscovery_Response.CPDResEnergyTransferMode.DC_CPDResEnergyTransferMode.EVSEMaximumChargeCurrent.Value = @sysvar::EVSE_Sim::SysEVSE_MaxCurrent;
+  $EVSE.ISO20.DC_ChargeParameterDiscovery_Response.CPDResEnergyTransferMode.DC_CPDResEnergyTransferMode.EVSEMaximumChargeCurrent.Exponent = 0;
+  $EVSE.ISO20.DC_ChargeParameterDiscovery_Response.CPDResEnergyTransferMode.BPT_DC_CPDResEnergyTransferMode.EVSEMaximumChargeCurrent.Value = @sysvar::EVSE_Sim::SysEVSE_MaxCurrent;
+  $EVSE.ISO20.DC_ChargeParameterDiscovery_Response.CPDResEnergyTransferMode.BPT_DC_CPDResEnergyTransferMode.EVSEMaximumChargeCurrent.Exponent = 0;
+  
+  /* EVSEMaximumVoltage */
+  $EVSE.ISO20.DC_ChargeParameterDiscovery_Response.CPDResEnergyTransferMode.DC_CPDResEnergyTransferMode.EVSEMaximumVoltage.Value = @sysvar::EVSE_Sim::SysEVSE_MaxVoltage;
+  $EVSE.ISO20.DC_ChargeParameterDiscovery_Response.CPDResEnergyTransferMode.DC_CPDResEnergyTransferMode.EVSEMaximumVoltage.Exponent = 0;
+  $EVSE.ISO20.DC_ChargeParameterDiscovery_Response.CPDResEnergyTransferMode.BPT_DC_CPDResEnergyTransferMode.EVSEMaximumVoltage.Value = @sysvar::EVSE_Sim::SysEVSE_MaxVoltage;
+  $EVSE.ISO20.DC_ChargeParameterDiscovery_Response.CPDResEnergyTransferMode.BPT_DC_CPDResEnergyTransferMode.EVSEMaximumVoltage.Exponent = 0;
+  
+  /* EVSEMinimumVoltage */
+  $EVSE.ISO20.DC_ChargeParameterDiscovery_Response.CPDResEnergyTransferMode.DC_CPDResEnergyTransferMode.EVSEMinimumVoltage.Value = @sysvar::EVSE_Sim::SysEVSE_MinVoltage;
+  $EVSE.ISO20.DC_ChargeParameterDiscovery_Response.CPDResEnergyTransferMode.DC_CPDResEnergyTransferMode.EVSEMinimumVoltage.Exponent = 0;
+  $EVSE.ISO20.DC_ChargeParameterDiscovery_Response.CPDResEnergyTransferMode.BPT_DC_CPDResEnergyTransferMode.EVSEMinimumVoltage.Value = @sysvar::EVSE_Sim::SysEVSE_MinVoltage;
+  $EVSE.ISO20.DC_ChargeParameterDiscovery_Response.CPDResEnergyTransferMode.BPT_DC_CPDResEnergyTransferMode.EVSEMinimumVoltage.Exponent = 0;
+  
+  /* EVSEMaximumDischargePower */
+  $EVSE.ISO20.DC_ChargeParameterDiscovery_Response.CPDResEnergyTransferMode.BPT_DC_CPDResEnergyTransferMode.EVSEMaximumDischargePower.Value = - abs(@sysvar::EVSE_Sim::SysEVSE_MaxPowerDC);
+  $EVSE.ISO20.DC_ChargeParameterDiscovery_Response.CPDResEnergyTransferMode.BPT_DC_CPDResEnergyTransferMode.EVSEMaximumDischargePower.Exponent = 3; //Unit: kW
+  
+  /* EVSEMinimumDischargePower */
+  $EVSE.ISO20.DC_ChargeParameterDiscovery_Response.CPDResEnergyTransferMode.BPT_DC_CPDResEnergyTransferMode.EVSEMinimumDischargePower.Value = - abs(@sysvar::EVSE_Sim::SysEVSE_MinPowerDC);
+  $EVSE.ISO20.DC_ChargeParameterDiscovery_Response.CPDResEnergyTransferMode.BPT_DC_CPDResEnergyTransferMode.EVSEMinimumDischargePower.Exponent = 3; //Unit: kW
+  
+  /* EVSEMaximumDischargeCurrent */
+  $EVSE.ISO20.DC_ChargeParameterDiscovery_Response.CPDResEnergyTransferMode.BPT_DC_CPDResEnergyTransferMode.EVSEMaximumDischargeCurrent.Value = - abs(@sysvar::EVSE_Sim::SysEVSE_MaxCurrent);
+  $EVSE.ISO20.DC_ChargeParameterDiscovery_Response.CPDResEnergyTransferMode.BPT_DC_CPDResEnergyTransferMode.EVSEMaximumDischargeCurrent.Exponent = 0;
+}
+
+void FUNC_Set_EVSEDCLimits_ScheduleRenegotiationChargeParameterDiscoveryRes()
+{
+  /* EVSEMaximumChargePower */
+  $EVSE.ScheduleRenegotiation.DC_ChargeParameterDiscovery_Response.CPDResEnergyTransferMode.DC_CPDResEnergyTransferMode.EVSEMaximumChargePower.Value = @sysvar::EVSE_Sim::SysEVSE_MaxPowerDC;
+  $EVSE.ScheduleRenegotiation.DC_ChargeParameterDiscovery_Response.CPDResEnergyTransferMode.DC_CPDResEnergyTransferMode.EVSEMaximumChargePower.Exponent = 3; //Unit: kW
+  $EVSE.ScheduleRenegotiation.DC_ChargeParameterDiscovery_Response.CPDResEnergyTransferMode.BPT_DC_CPDResEnergyTransferMode.EVSEMaximumChargePower.Value = @sysvar::EVSE_Sim::SysEVSE_MaxPowerDC;
+  $EVSE.ScheduleRenegotiation.DC_ChargeParameterDiscovery_Response.CPDResEnergyTransferMode.BPT_DC_CPDResEnergyTransferMode.EVSEMaximumChargePower.Exponent = 3; //Unit: kW
+  
+  /* EVSEMinimumChargePower */
+  $EVSE.ScheduleRenegotiation.DC_ChargeParameterDiscovery_Response.CPDResEnergyTransferMode.DC_CPDResEnergyTransferMode.EVSEMinimumChargePower.Value = @sysvar::EVSE_Sim::SysEVSE_MinPowerDC;
+  $EVSE.ScheduleRenegotiation.DC_ChargeParameterDiscovery_Response.CPDResEnergyTransferMode.DC_CPDResEnergyTransferMode.EVSEMinimumChargePower.Exponent = 3; //Unit: kW
+  $EVSE.ScheduleRenegotiation.DC_ChargeParameterDiscovery_Response.CPDResEnergyTransferMode.BPT_DC_CPDResEnergyTransferMode.EVSEMinimumChargePower.Value = @sysvar::EVSE_Sim::SysEVSE_MinPowerDC;
+  $EVSE.ScheduleRenegotiation.DC_ChargeParameterDiscovery_Response.CPDResEnergyTransferMode.BPT_DC_CPDResEnergyTransferMode.EVSEMinimumChargePower.Exponent = 3; //Unit: kW
+  
+  /* EVSEMaximumChargeCurrent */
+  $EVSE.ScheduleRenegotiation.DC_ChargeParameterDiscovery_Response.CPDResEnergyTransferMode.DC_CPDResEnergyTransferMode.EVSEMaximumChargeCurrent.Value = @sysvar::EVSE_Sim::SysEVSE_MaxCurrent;
+  $EVSE.ScheduleRenegotiation.DC_ChargeParameterDiscovery_Response.CPDResEnergyTransferMode.DC_CPDResEnergyTransferMode.EVSEMaximumChargeCurrent.Exponent = 0;
+  $EVSE.ScheduleRenegotiation.DC_ChargeParameterDiscovery_Response.CPDResEnergyTransferMode.BPT_DC_CPDResEnergyTransferMode.EVSEMaximumChargeCurrent.Value = @sysvar::EVSE_Sim::SysEVSE_MaxCurrent;
+  $EVSE.ScheduleRenegotiation.DC_ChargeParameterDiscovery_Response.CPDResEnergyTransferMode.BPT_DC_CPDResEnergyTransferMode.EVSEMaximumChargeCurrent.Exponent = 0;
+  
+  /* EVSEMaximumVoltage */
+  $EVSE.ScheduleRenegotiation.DC_ChargeParameterDiscovery_Response.CPDResEnergyTransferMode.DC_CPDResEnergyTransferMode.EVSEMaximumVoltage.Value = @sysvar::EVSE_Sim::SysEVSE_MaxVoltage;
+  $EVSE.ScheduleRenegotiation.DC_ChargeParameterDiscovery_Response.CPDResEnergyTransferMode.DC_CPDResEnergyTransferMode.EVSEMaximumVoltage.Exponent = 0;
+  $EVSE.ScheduleRenegotiation.DC_ChargeParameterDiscovery_Response.CPDResEnergyTransferMode.BPT_DC_CPDResEnergyTransferMode.EVSEMaximumVoltage.Value = @sysvar::EVSE_Sim::SysEVSE_MaxVoltage;
+  $EVSE.ScheduleRenegotiation.DC_ChargeParameterDiscovery_Response.CPDResEnergyTransferMode.BPT_DC_CPDResEnergyTransferMode.EVSEMaximumVoltage.Exponent = 0;
+  
+  /* EVSEMinimumVoltage */
+  $EVSE.ScheduleRenegotiation.DC_ChargeParameterDiscovery_Response.CPDResEnergyTransferMode.DC_CPDResEnergyTransferMode.EVSEMinimumVoltage.Value = @sysvar::EVSE_Sim::SysEVSE_MinVoltage;
+  $EVSE.ScheduleRenegotiation.DC_ChargeParameterDiscovery_Response.CPDResEnergyTransferMode.DC_CPDResEnergyTransferMode.EVSEMinimumVoltage.Exponent = 0;
+  $EVSE.ScheduleRenegotiation.DC_ChargeParameterDiscovery_Response.CPDResEnergyTransferMode.BPT_DC_CPDResEnergyTransferMode.EVSEMinimumVoltage.Value = @sysvar::EVSE_Sim::SysEVSE_MinVoltage;
+  $EVSE.ScheduleRenegotiation.DC_ChargeParameterDiscovery_Response.CPDResEnergyTransferMode.BPT_DC_CPDResEnergyTransferMode.EVSEMinimumVoltage.Exponent = 0;
+  
+  /* EVSEMaximumDischargePower */
+  $EVSE.ScheduleRenegotiation.DC_ChargeParameterDiscovery_Response.CPDResEnergyTransferMode.BPT_DC_CPDResEnergyTransferMode.EVSEMaximumDischargePower.Value = - abs(@sysvar::EVSE_Sim::SysEVSE_MaxPowerDC);
+  $EVSE.ScheduleRenegotiation.DC_ChargeParameterDiscovery_Response.CPDResEnergyTransferMode.BPT_DC_CPDResEnergyTransferMode.EVSEMaximumDischargePower.Exponent = 3; //Unit: kW
+  
+  /* EVSEMinimumDischargePower */
+  $EVSE.ScheduleRenegotiation.DC_ChargeParameterDiscovery_Response.CPDResEnergyTransferMode.BPT_DC_CPDResEnergyTransferMode.EVSEMinimumDischargePower.Value =  - abs(@sysvar::EVSE_Sim::SysEVSE_MinPowerDC);
+  $EVSE.ScheduleRenegotiation.DC_ChargeParameterDiscovery_Response.CPDResEnergyTransferMode.BPT_DC_CPDResEnergyTransferMode.EVSEMinimumDischargePower.Exponent = 3; //Unit: kW
+  
+  /* EVSEMaximumDischargeCurrent */
+  $EVSE.ScheduleRenegotiation.DC_ChargeParameterDiscovery_Response.CPDResEnergyTransferMode.BPT_DC_CPDResEnergyTransferMode.EVSEMaximumDischargeCurrent.Value =  - abs(@sysvar::EVSE_Sim::SysEVSE_MaxCurrent);
+  $EVSE.ScheduleRenegotiation.DC_ChargeParameterDiscovery_Response.CPDResEnergyTransferMode.BPT_DC_CPDResEnergyTransferMode.EVSEMaximumDischargeCurrent.Exponent = 0;
+}
+
+void FUNC_Set_PreChargeRes()
+{  
+  $EVSE.ISO20.DC_PreCharge_Response.EVSEPresentVoltage.Value = HV_measure_DC_U(); 
+  $EVSE.ISO20.DC_PreCharge_Response.EVSEPresentVoltage.Exponent = 0;
+}
+
+void FUNC_Get_EVSE_DCChargeLoopValues()
+{  
+  $EVSE.ISO20.DC_ChargeLoop_Response.EVSEPresentCurrent.Value = HV_measure_DC_I();
+  $EVSE.ISO20.DC_ChargeLoop_Response.EVSEPresentCurrent.Exponent = 0;
+  
+  $EVSE.ISO20.DC_ChargeLoop_Response.EVSEPresentVoltage.Value = HV_measure_DC_U();
+  $EVSE.ISO20.DC_ChargeLoop_Response.EVSEPresentVoltage.Exponent = 0;
+  
+  if($EVSE.ISO20.DC_ChargeLoop_Request.DisplayParameters.IsValid)
+  {
+    if($EVSE.ISO20.DC_ChargeLoop_Request.DisplayParameters.MinimumSOC.IsValid)
+    {
+      $EVSE.ISO20.DC_ChargeLoop_Response.CLResControlMode.BPT_Dynamic_DC_CLResControlMode.MinimumSOC = $EVSE.ISO20.DC_ChargeLoop_Request.DisplayParameters.MinimumSOC;
+      $EVSE.ISO20.DC_ChargeLoop_Response.CLResControlMode.Dynamic_DC_CLResControlMode.MinimumSOC = $EVSE.ISO20.DC_ChargeLoop_Request.DisplayParameters.MinimumSOC;
+    }
+    else
+    {
+      $EVSE.ISO20.DC_ChargeLoop_Response.CLResControlMode.BPT_Dynamic_DC_CLResControlMode.MinimumSOC.SetInvalid();
+      $EVSE.ISO20.DC_ChargeLoop_Response.CLResControlMode.Dynamic_DC_CLResControlMode.MinimumSOC.SetInvalid();
+    }
+     
+    if($EVSE.ISO20.DC_ChargeLoop_Request.DisplayParameters.TargetSOC.IsValid)
+    {
+      $EVSE.ISO20.DC_ChargeLoop_Response.CLResControlMode.BPT_Dynamic_DC_CLResControlMode.TargetSOC = $EVSE.ISO20.DC_ChargeLoop_Request.DisplayParameters.TargetSOC;
+      $EVSE.ISO20.DC_ChargeLoop_Response.CLResControlMode.Dynamic_DC_CLResControlMode.TargetSOC = $EVSE.ISO20.DC_ChargeLoop_Request.DisplayParameters.TargetSOC;
+    }    
+    else
+    {
+      $EVSE.ISO20.DC_ChargeLoop_Response.CLResControlMode.BPT_Dynamic_DC_CLResControlMode.TargetSOC.SetInvalid();
+      $EVSE.ISO20.DC_ChargeLoop_Response.CLResControlMode.Dynamic_DC_CLResControlMode.TargetSOC.SetInvalid();
+    }
+  }
+  else
+  {
+    $EVSE.ISO20.DC_ChargeLoop_Response.CLResControlMode.BPT_Dynamic_DC_CLResControlMode.MinimumSOC.SetInvalid();
+    $EVSE.ISO20.DC_ChargeLoop_Response.CLResControlMode.Dynamic_DC_CLResControlMode.MinimumSOC.SetInvalid();
+    $EVSE.ISO20.DC_ChargeLoop_Response.CLResControlMode.BPT_Dynamic_DC_CLResControlMode.TargetSOC.SetInvalid();
+    $EVSE.ISO20.DC_ChargeLoop_Response.CLResControlMode.Dynamic_DC_CLResControlMode.TargetSOC.SetInvalid();
+  }
+  
+  //EVSEMinimumChargePower
+  $EVSE.ISO20.DC_ChargeLoop_Response.CLResControlMode.BPT_Dynamic_DC_CLResControlMode.EVSEMinimumChargePower.Value = @sysvar::EVSE_Sim::SysEVSE_MinPowerDC;
+  $EVSE.ISO20.DC_ChargeLoop_Response.CLResControlMode.BPT_Dynamic_DC_CLResControlMode.EVSEMinimumChargePower.Exponent = 3; //Unit: kW
+  $EVSE.ISO20.DC_ChargeLoop_Response.CLResControlMode.Dynamic_DC_CLResControlMode.EVSEMinimumChargePower.Value = @sysvar::EVSE_Sim::SysEVSE_MinPowerDC;
+  $EVSE.ISO20.DC_ChargeLoop_Response.CLResControlMode.Dynamic_DC_CLResControlMode.EVSEMinimumChargePower.Exponent = 3; //Unit: kW
+  $EVSE.ISO20.DC_ChargeLoop_Response.CLResControlMode.BPT_Scheduled_DC_CLResControlMode.EVSEMinimumChargePower.Value = @sysvar::EVSE_Sim::SysEVSE_MinPowerDC;
+  $EVSE.ISO20.DC_ChargeLoop_Response.CLResControlMode.BPT_Scheduled_DC_CLResControlMode.EVSEMinimumChargePower.Exponent = 3; //Unit: kW
+  $EVSE.ISO20.DC_ChargeLoop_Response.CLResControlMode.Scheduled_DC_CLResControlMode.EVSEMinimumChargePower.Value = @sysvar::EVSE_Sim::SysEVSE_MinPowerDC;
+  $EVSE.ISO20.DC_ChargeLoop_Response.CLResControlMode.Scheduled_DC_CLResControlMode.EVSEMinimumChargePower.Exponent = 3; //Unit: kW
+  
+  //EVSEMaximumChargePower
+  $EVSE.ISO20.DC_ChargeLoop_Response.CLResControlMode.BPT_Dynamic_DC_CLResControlMode.EVSEMaximumChargePower.Value = @sysvar::EVSE_Sim::SysEVSE_MaxPowerDC;
+  $EVSE.ISO20.DC_ChargeLoop_Response.CLResControlMode.BPT_Dynamic_DC_CLResControlMode.EVSEMaximumChargePower.Exponent = 3; //Unit: kW
+  $EVSE.ISO20.DC_ChargeLoop_Response.CLResControlMode.Dynamic_DC_CLResControlMode.EVSEMaximumChargePower.Value = @sysvar::EVSE_Sim::SysEVSE_MaxPowerDC;
+  $EVSE.ISO20.DC_ChargeLoop_Response.CLResControlMode.Dynamic_DC_CLResControlMode.EVSEMaximumChargePower.Exponent = 3; //Unit: kW
+  $EVSE.ISO20.DC_ChargeLoop_Response.CLResControlMode.BPT_Scheduled_DC_CLResControlMode.EVSEMaximumChargePower.Value = @sysvar::EVSE_Sim::SysEVSE_MaxPowerDC;
+  $EVSE.ISO20.DC_ChargeLoop_Response.CLResControlMode.BPT_Scheduled_DC_CLResControlMode.EVSEMaximumChargePower.Exponent = 3; //Unit: kW
+  $EVSE.ISO20.DC_ChargeLoop_Response.CLResControlMode.Scheduled_DC_CLResControlMode.EVSEMaximumChargePower.Value = @sysvar::EVSE_Sim::SysEVSE_MaxPowerDC;
+  $EVSE.ISO20.DC_ChargeLoop_Response.CLResControlMode.Scheduled_DC_CLResControlMode.EVSEMaximumChargePower.Exponent = 3; //Unit: kW
+  
+  //EVSEMaximumVoltage
+  $EVSE.ISO20.DC_ChargeLoop_Response.CLResControlMode.BPT_Dynamic_DC_CLResControlMode.EVSEMaximumVoltage.Value = @sysvar::EVSE_Sim::SysEVSE_MaxVoltage;
+  $EVSE.ISO20.DC_ChargeLoop_Response.CLResControlMode.BPT_Dynamic_DC_CLResControlMode.EVSEMaximumVoltage.Exponent = 0;
+  $EVSE.ISO20.DC_ChargeLoop_Response.CLResControlMode.Dynamic_DC_CLResControlMode.EVSEMaximumVoltage.Value = @sysvar::EVSE_Sim::SysEVSE_MaxVoltage;
+  $EVSE.ISO20.DC_ChargeLoop_Response.CLResControlMode.Dynamic_DC_CLResControlMode.EVSEMaximumVoltage.Exponent = 0;
+  $EVSE.ISO20.DC_ChargeLoop_Response.CLResControlMode.BPT_Scheduled_DC_CLResControlMode.EVSEMaximumVoltage.Value = @sysvar::EVSE_Sim::SysEVSE_MaxVoltage;
+  $EVSE.ISO20.DC_ChargeLoop_Response.CLResControlMode.BPT_Scheduled_DC_CLResControlMode.EVSEMaximumVoltage.Exponent = 0;
+  $EVSE.ISO20.DC_ChargeLoop_Response.CLResControlMode.Scheduled_DC_CLResControlMode.EVSEMaximumVoltage.Value = @sysvar::EVSE_Sim::SysEVSE_MaxVoltage;
+  $EVSE.ISO20.DC_ChargeLoop_Response.CLResControlMode.Scheduled_DC_CLResControlMode.EVSEMaximumVoltage.Exponent = 0;
+  
+  //EVSEMaximumChargeCurrent
+  $EVSE.ISO20.DC_ChargeLoop_Response.CLResControlMode.BPT_Dynamic_DC_CLResControlMode.EVSEMaximumChargeCurrent.Value = @sysvar::EVSE_Sim::SysEVSE_MaxCurrent;
+  $EVSE.ISO20.DC_ChargeLoop_Response.CLResControlMode.BPT_Dynamic_DC_CLResControlMode.EVSEMaximumChargeCurrent.Exponent = 0;
+  $EVSE.ISO20.DC_ChargeLoop_Response.CLResControlMode.Dynamic_DC_CLResControlMode.EVSEMaximumChargeCurrent.Value = @sysvar::EVSE_Sim::SysEVSE_MaxCurrent;
+  $EVSE.ISO20.DC_ChargeLoop_Response.CLResControlMode.Dynamic_DC_CLResControlMode.EVSEMaximumChargeCurrent.Exponent = 0;
+  $EVSE.ISO20.DC_ChargeLoop_Response.CLResControlMode.BPT_Scheduled_DC_CLResControlMode.EVSEMaximumChargeCurrent.Value = @sysvar::EVSE_Sim::SysEVSE_MaxCurrent;
+  $EVSE.ISO20.DC_ChargeLoop_Response.CLResControlMode.BPT_Scheduled_DC_CLResControlMode.EVSEMaximumChargeCurrent.Exponent = 0;
+  $EVSE.ISO20.DC_ChargeLoop_Response.CLResControlMode.Scheduled_DC_CLResControlMode.EVSEMaximumChargeCurrent.Value = @sysvar::EVSE_Sim::SysEVSE_MaxCurrent;
+  $EVSE.ISO20.DC_ChargeLoop_Response.CLResControlMode.Scheduled_DC_CLResControlMode.EVSEMaximumChargeCurrent.Exponent = 0;
+  
+  //EVSEMaximumDischargePower
+  $EVSE.ISO20.DC_ChargeLoop_Response.CLResControlMode.BPT_Dynamic_DC_CLResControlMode.EVSEMaximumDischargePower.Value = - abs(@sysvar::EVSE_Sim::SysEVSE_MaxPowerDC);
+  $EVSE.ISO20.DC_ChargeLoop_Response.CLResControlMode.BPT_Dynamic_DC_CLResControlMode.EVSEMaximumDischargePower.Exponent = 3; //Unit: kW
+  $EVSE.ISO20.DC_ChargeLoop_Response.CLResControlMode.BPT_Scheduled_DC_CLResControlMode.EVSEMaximumDischargePower.Value = - abs(@sysvar::EVSE_Sim::SysEVSE_MaxPowerDC);
+  $EVSE.ISO20.DC_ChargeLoop_Response.CLResControlMode.BPT_Scheduled_DC_CLResControlMode.EVSEMaximumDischargePower.Exponent = 3; //Unit: kW
+  
+  //EVSEMinimumDischargePower
+  $EVSE.ISO20.DC_ChargeLoop_Response.CLResControlMode.BPT_Dynamic_DC_CLResControlMode.EVSEMinimumDischargePower.Value = - abs(@sysvar::EVSE_Sim::SysEVSE_MinPowerDC);
+  $EVSE.ISO20.DC_ChargeLoop_Response.CLResControlMode.BPT_Dynamic_DC_CLResControlMode.EVSEMinimumDischargePower.Exponent = 3; //Unit: kW
+  $EVSE.ISO20.DC_ChargeLoop_Response.CLResControlMode.BPT_Scheduled_DC_CLResControlMode.EVSEMinimumDischargePower.Value = - abs(@sysvar::EVSE_Sim::SysEVSE_MinPowerDC);
+  $EVSE.ISO20.DC_ChargeLoop_Response.CLResControlMode.BPT_Scheduled_DC_CLResControlMode.EVSEMinimumDischargePower.Exponent = 3; //Unit: kW
+  
+  //EVSEMaximumDischargeCurrent
+  $EVSE.ISO20.DC_ChargeLoop_Response.CLResControlMode.BPT_Dynamic_DC_CLResControlMode.EVSEMaximumDischargeCurrent.Value = - abs(@sysvar::EVSE_Sim::SysEVSE_MaxCurrent);
+  $EVSE.ISO20.DC_ChargeLoop_Response.CLResControlMode.BPT_Dynamic_DC_CLResControlMode.EVSEMaximumDischargeCurrent.Exponent = 0;
+  $EVSE.ISO20.DC_ChargeLoop_Response.CLResControlMode.BPT_Scheduled_DC_CLResControlMode.EVSEMaximumDischargeCurrent.Value = - abs(@sysvar::EVSE_Sim::SysEVSE_MaxCurrent);
+  $EVSE.ISO20.DC_ChargeLoop_Response.CLResControlMode.BPT_Scheduled_DC_CLResControlMode.EVSEMaximumDischargeCurrent.Exponent = 0;
+  
+  //EVSEMinimumVoltage
+  $EVSE.ISO20.DC_ChargeLoop_Response.CLResControlMode.BPT_Dynamic_DC_CLResControlMode.EVSEMinimumVoltage.Value = @sysvar::EVSE_Sim::SysEVSE_MinVoltage;
+  $EVSE.ISO20.DC_ChargeLoop_Response.CLResControlMode.BPT_Dynamic_DC_CLResControlMode.EVSEMinimumVoltage.Exponent = 0;
+  $EVSE.ISO20.DC_ChargeLoop_Response.CLResControlMode.BPT_Scheduled_DC_CLResControlMode.EVSEMinimumVoltage.Value = @sysvar::EVSE_Sim::SysEVSE_MinVoltage;
+  $EVSE.ISO20.DC_ChargeLoop_Response.CLResControlMode.BPT_Scheduled_DC_CLResControlMode.EVSEMinimumVoltage.Exponent = 0;
+}
+
+void FUNC_Set_EVSE_DCChargeLoopValues()
+{
+  if ($EVSE.ISO20.DC_ChargeLoop_Response.EVSEStatus.IsValid)
+  {
+    switch ($EVSE.ISO20.DC_ChargeLoop_Response.EVSEStatus.EVSENotification)
+    {
+      case _CCS::DataTypes::EVSENotificationType::Pause:
+        sysSetVariableString(sysvar::EVSE_Sim::SysEVSE_DCStatusCode, "Pause"); break;
+        
+      case _CCS::DataTypes::EVSENotificationType::ExitStandby:
+         sysSetVariableString(sysvar::EVSE_Sim::SysEVSE_DCStatusCode, "ExitStandby"); break;
+        
+      case _CCS::DataTypes::EVSENotificationType::Terminate:
+        sysSetVariableString(sysvar::EVSE_Sim::SysEVSE_DCStatusCode, "Terminate"); break;
+        
+      case _CCS::DataTypes::EVSENotificationType::ScheduleRenegotiation:
+        sysSetVariableString(sysvar::EVSE_Sim::SysEVSE_DCStatusCode, "ScheduleRenegotiation"); break;
+        
+      case _CCS::DataTypes::EVSENotificationType::ServiceRenegotiation:
+        sysSetVariableString(sysvar::EVSE_Sim::SysEVSE_DCStatusCode, "ServiceRenegotiation"); break;
+        
+      case _CCS::DataTypes::EVSENotificationType::MeteringConfirmation:
+        sysSetVariableString(sysvar::EVSE_Sim::SysEVSE_DCStatusCode, "MeteringConfirmation"); break;     
+      
+      default:
+        sysSetVariableString(sysvar::EVSE_Sim::SysEVSE_DCStatusCode, "unknown StatusCode"); 
+    }
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+// general helper
+//////////////////////////////////////////////////////////////////////////////////////////////
+
+void WriteHex(char outText[], byte data[])
+{
+  WriteHex(outText, data, elcount(data), "", 0);
+}
+
+void WriteHex(char outText[], byte data[], int length)
+{
+  WriteHex(outText, data, length, "", length);
+}
+
+void WriteHexMacId(char outText[], byte data[])
+{
+  if (elcount(data) < 6)
+    return;
+  
+  WriteHex(outText, data, 6, ":", 1);
+}
+
+void WriteHexIPv6(char outText[], byte data[])
+{
+  if (elcount(data) < 16) return;
+  
+  WriteHex(outText, data, 16, ":", 2);
+}
+
+void WriteHex(char outText[], byte data[], int dataLength, char sep[], int sepEveryXChars)
+{
+  int i, sepCnt;
+  
+  if (dataLength <= 0) return;
+  if (elcount(outText) <= 0) return;
+  
+  sepCnt = (sepEveryXChars < 1 ? 1 : sepEveryXChars);
+    
+  // Clear string
+  snprintf(outText, 1, "");
+  
+  for (i=0; i< dataLength; i++)
+  {
+    // Append Byte as Hex
+    snprintf(outText, elcount(outText), "%s%02X", outText, data[i]); 
+    
+    // Append Separator
+    if (i < dataLength-1)
+    {
+      if (((i+1)%sepCnt) == 0)
+      {
+        snprintf(outText, elcount(outText), "%s%s", outText, sep);
+      }
+    }
+  }       
+}

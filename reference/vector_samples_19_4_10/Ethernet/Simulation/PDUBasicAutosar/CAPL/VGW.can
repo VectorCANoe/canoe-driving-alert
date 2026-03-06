@@ -1,0 +1,27 @@
+/*@!Encoding:1252*/
+includes
+{
+  
+}
+
+variables
+{
+  
+}
+
+
+
+on sysvar sysvar::VGW::EnableService
+{
+    if (@this == 1)
+  {
+    // ensure that the node offers service "EnginePSI1"
+    Vehicle_Ethernet::VGW::EnginePSI1.Connect();
+  }
+  else
+  {
+    // ensure that the node stops offering service "EnginePSI1"
+    Vehicle_Ethernet::VGW::EnginePSI1.Disconnect();
+  }
+}
+

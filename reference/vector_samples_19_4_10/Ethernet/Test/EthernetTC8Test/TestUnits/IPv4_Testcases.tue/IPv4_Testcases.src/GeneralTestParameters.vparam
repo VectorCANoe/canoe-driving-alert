@@ -1,0 +1,94 @@
+Vector Parameter	1.0
+Group	DUT Configuration
+
+ScalarSingleRecord
+
+Name	Type	Info	Value
+DIface0MacAddr	String	<DIFACE_0_MAC_ADDR>	02:00:00:00:00:02
+DIface1MacAddr	Auto		02:00:00:00:00:69
+DIface0VLAN	Integer		-1
+DIface0Name	String		DIface-0
+DIface1Name	String		DIface-1
+
+
+ScalarMultiRecord
+
+Name	Type	Info	Value
+SelectorType	[IPVersion]		IPv4	IPv6
+DIface0Ip	String		192.168.2.32	2008::32
+
+Group	Testability Parameters
+
+ScalarMultiRecord
+
+Name	Type	Info	Value
+SelectorType	[IPVersion]		IPv4	IPv6
+TestabilityServicesIpAddress	String		192.168.2.32	2008::32
+
+
+ScalarSingleRecord
+
+Name	Type	Info	Value
+TestabilityServicesUdpPort	Integer		10000
+TestabilityServicesResponseTimeoutMs	Integer		5000
+RunTestabilityStartAndEndFunctions	Integer	0: Never; 1: Only when Testability Function is Used; 2: Always	1
+
+Group	Tester Configuration
+
+ScalarMultiRecord
+
+Name	Type	Info	Value
+SelectorType	[IPVersion]		IPv4	IPv6
+IpAddressUnused	String	<IP-First-UNUSED-ADDR-INTERFACE-1>	192.168.16.0	2008::FE
+IpAddressTester	String		192.168.2.84	2008::84
+Host1Ip	String		192.168.2.101	2008::98
+Host2Ip	String		192.168.2.102	2008::99
+Host1SubnetMask	String		255.255.0.0	FFFF:FFFF:FFFF:FFFF::0
+
+
+ScalarSingleRecord
+
+Name	Type	Info	Value
+MacAddressTester	Auto		02:00:00:00:00:84
+Host1Mac	String		02:00:00:00:01:01
+Host2Mac	String		02:00:00:00:01:02
+TesterUdpPort	String		0xABCD
+
+Group	Time Parameters
+
+ScalarSingleRecord
+
+Name	Type	Info	Value
+TestCompletionTimeMs	Integer		200
+ParamListenTimeMs	Integer	<ParamListenTime>	6000
+ParamToleranceTimeMilliseconds	Integer		1000
+InitialBootTimeMs	Integer		2000
+
+Group	Default Settings
+
+ScalarSingleRecord
+
+Name	Type	Info	Value
+IpAddressBroadcast	Auto		255.255.255.255
+
+
+ScalarMultiRecord
+
+Name	Type	Info	Value
+SelectorType	[IPVersion]		IPv4	IPv6
+AllZeroIPAddress	String		0.0.0.0	::
+
+
+ScalarSingleRecord
+
+Name	Type	Info	Value
+MacAddressZeros	Auto		00:00:00:00:00:00
+MacAddressBroadcast	String		FF:FF:FF:FF:FF:FF
+UdpPortOfDhcpClient	String	Default value: 68 (RFC 2131 p. 23)	68
+UdpPortOfDhcpServer	String	Default value: 67 (RFC 2131 p. 23)	67
+Wildcard	String		*
+Debug	Integer	0:No output, 1=Write window, 2=Write window + Test report	0
+DummyData	Data		00 00 00 00 00 00 00 00
+Timestamp	String	This value is used for the IP timestamp option	1531297319
+Ipv6MinimumPMTU	Integer	The minimum path maximum transmission unit for IPv6 routing.	1280
+

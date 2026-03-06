@@ -1,0 +1,325 @@
+/*@!Encoding:1252*/
+includes
+{
+
+}
+
+variables
+{
+}
+
+void UpdateTextColor(char panel[], char control[], int facilityRequired)
+{
+  long green, white, black, gray;
+  
+  green = MakeRGB(0, 156, 0);
+  black = MakeRGB(0, 0, 0);
+  gray = makeRGB(127, 127, 127);
+  
+  if(facilityRequired == 1)
+    setControlForeColor(panel, control, black);
+  else
+    setControlForeColor(panel, control, gray);
+}
+
+/*
+Color of the control is updated on both panels.
+Is only used for AuxValve controls because only AuxValve controls are displayed on two panels (“TIM Client X” and “TIM Client X Auxiliary valves”).
+*/
+void UpdateTextColor2(char panel1[], char panel2[], char control[], int facilityRequired)
+{
+  UpdateTextColor(panel1, control, facilityRequired);
+  UpdateTextColor(panel1, control, facilityRequired);
+}
+
+/*
+visibility of the control is updated on both panels.
+Is only used for AuxValve controls because only AuxValve controls are displayed on two panels (“TIM Client X” and “TIM Client X Auxiliary valves”).
+*/
+void SetControlVisibilityOnTwoPanels(char panel1[], char panel2[], char control[], int visible)
+{
+  SetControlVisibility(panel1, control, visible);
+  SetControlVisibility(panel2, control, visible);
+}
+
+/*
+control is enabled or disabled on both panels.
+Is only used for AuxValve controls because only AuxValve controls are displayed on two panels (“TIM Client X” and “TIM Client X Auxiliary valves”).
+*/
+void EnableControlOnTwoPanels(char panel1[], char panel2[], char control[], int enable)
+{
+  EnableControl(panel1, control, enable);
+  EnableControl(panel2, control, enable);
+}
+
+void ResetTextColor(char panel[], char control[])
+{
+  setDefaultControlColors(panel, control);
+}
+
+void ResetTextColor(char panel1[], char panel2[], char control[])
+{
+  setDefaultControlColors(panel1, control);
+  setDefaultControlColors(panel2, control);
+}
+
+void ActivateControlColors(char panel[], char control[])
+{
+  long green, white;
+  green = MakeRGB(0, 150, 0);
+  white = MakeRGB(255, 255, 255);
+  
+  setControlColors(panel, control, green, white);
+}
+
+void ActivateControlColors2(char panel1[], char panel2[], char control[])
+{
+  long green, white;
+  green = MakeRGB(0, 150, 0);
+  white = MakeRGB(255, 255, 255);
+  
+  setControlColors(panel1, control, green, white);
+  setControlColors(panel1, control, green, white);
+}
+
+void ResetControlColors(char panel[], char control[])
+{
+  setDefaultControlColors(panel, control);
+}
+
+void ResetControlColors2(char panel1[], char panel2[], char control[])
+{
+  setDefaultControlColors(panel1, control);
+  setDefaultControlColors(panel2, control);
+}
+
+void SendParametrizationRequest(byte functionId)
+{
+  // Add General Information request
+  Iso11783IL_TIMExtendParametrizationRequest(functionId, 0);
+  // Output request
+  Iso11783IL_TIMSendParametrizationRequest(functionId, @TIMClient1::svAddressOfTIMServer);
+  // Reset request content
+  Iso11783IL_TIMClearParametrizationRequest(functionId);
+}
+
+/*
+The entire group (AuxValve with the auxValeNum) is displayed if at least one facility is ‘required’.
+Texts for all facilities that are not ‘required’ are displayed in grey.
+*/
+void AdjustVilibility_AuxValveGroup_Client(char panel1[], char panel2[], byte auxValeNum, byte requiredState, byte requiredFlow)
+{
+  char control[100];
+  //the whole group
+  if(requiredState == 0 && requiredFlow == 0)
+  {
+    //Make the whole group unvisible
+    snprintf(control, elcount(control), "grpAuxValve%02d", auxValeNum);         SetControlVisibilityOnTwoPanels(panel1, panel2, control, 0);
+  }                                                                             
+  else                                                                          
+  {                                                                             
+    //Make the whole group visible                                              
+    snprintf(control, elcount(control), "grpAuxValve%02d", auxValeNum);         SetControlVisibilityOnTwoPanels(panel1, panel2, control, 1);
+    
+    // State                                                                    
+    snprintf(control, elcount(control), "txtAuxValve%02d_State", auxValeNum);   UpdateTextColor2(panel1, panel2, control, requiredState);
+    snprintf(control, elcount(control), "btnAuxValve%02d_FOE", auxValeNum);     UpdateTextColor2(panel1, panel2, control, requiredState);
+    snprintf(control, elcount(control), "btnAuxValve%02d_Block", auxValeNum);   UpdateTextColor2(panel1, panel2, control, requiredState);
+    snprintf(control, elcount(control), "btnAuxValve%02d_FOR", auxValeNum);     UpdateTextColor2(panel1, panel2, control, requiredState);
+    snprintf(control, elcount(control), "btnAuxValve%02d_Float", auxValeNum);   UpdateTextColor2(panel1, panel2, control, requiredState);
+    // Flow                                                                     
+    snprintf(control, elcount(control), "txtAuxValve%02d_Flow", auxValeNum);    UpdateTextColor2(panel1, panel2, control, requiredFlow);
+    snprintf(control, elcount(control), "tbAuxValve%02d_Flow", auxValeNum);     UpdateTextColor2(panel1, panel2, control, requiredFlow);
+    snprintf(control, elcount(control), "ioAuxValve%02d_Flow", auxValeNum);     UpdateTextColor2(panel1, panel2, control, requiredFlow);
+  }
+}
+
+/*
+The entire group (FrontPTO or RearPTO) is displayed if at least one facility is ‘required’.
+Texts for all facilities that are not ‘required’ are displayed in grey.
+*/
+void AdjustVisibility_PTOGroup_Client(char panel[], char ptoType[], byte requiredSpeedCCW, byte requiredSpeed, byte requiredEngagementCCW, byte requiredDisengagement, byte requiredEngagement)
+{
+  char control[100];
+  if(requiredSpeedCCW == 0 && requiredSpeed == 0 && requiredEngagementCCW == 0 && requiredDisengagement == 0 && requiredEngagement == 0)
+  {
+    //Make the whole group unvisible
+    snprintf(control, elcount(control), "grp%s", ptoType);              SetControlVisibility(panel, control, 0);
+  }
+  else
+  {
+    byte requiredByValue, requiredByState;    //Make the whole group visible
+    snprintf(control, elcount(control), "grp%s", ptoType);              SetControlVisibility(panel, control, 1);
+    //Engagement (by state)
+    if(requiredEngagementCCW == 1 || requiredDisengagement == 1 || requiredEngagement == 1)
+    {
+      requiredByState = 1;
+    }
+    else
+    {
+      requiredByState = 0;
+    }
+    snprintf(control, elcount(control), "txt%s_Engagement", ptoType);    UpdateTextColor(panel, control, requiredByState);
+    snprintf(control, elcount(control), "btn%s_EngagementCCW", ptoType); UpdateTextColor(panel, control, requiredEngagementCCW);
+    snprintf(control, elcount(control), "btn%s_Disengagement", ptoType); UpdateTextColor(panel, control, requiredDisengagement);
+    snprintf(control, elcount(control), "btn%s_Engagement", ptoType);    UpdateTextColor(panel, control, requiredEngagement);
+    //Speed (by value)
+    if(requiredSpeedCCW == 1 || requiredSpeed == 1)
+    {
+      requiredByValue = 1;
+    }
+    else
+    {
+      requiredByValue = 0;
+    }
+    snprintf(control, elcount(control), "txt%s_SpeedByValue", ptoType); UpdateTextColor(panel, control, requiredByValue);
+    snprintf(control, elcount(control), "io%s_SpeedByValue", ptoType);  UpdateTextColor(panel, control, requiredByValue);
+    snprintf(control, elcount(control), "tb%s_SpeedCCW", ptoType);      UpdateTextColor(panel, control, requiredSpeedCCW);
+    snprintf(control, elcount(control), "txt%s_SpeedCCW", ptoType);     UpdateTextColor(panel, control, requiredSpeedCCW);
+    snprintf(control, elcount(control), "tb%s_Speed", ptoType);         UpdateTextColor(panel, control, requiredSpeed);
+    snprintf(control, elcount(control), "txt%s_Speed", ptoType);        UpdateTextColor(panel, control, requiredSpeed);
+  }  
+}
+
+/*
+The entire group (FrontHitch or RearHitch) is displayed if at least one facility is ‘required’.
+Texts for all facilities that are not ‘required’ are displayed in grey.
+*/
+void AdjustVisibility_HitchGroup_Client(char panel[], char hitchType[], byte requiredMotion, byte requiredPosition)
+{
+  char control[100];
+  if(requiredMotion == 0 && requiredPosition == 0)
+  {
+    //Make the whole group unvisible
+    snprintf(control, elcount(control), "grp%s", hitchType);          SetControlVisibility(panel, control, 0);
+  }
+  else
+  {
+    //Make the whole group unvisible
+    snprintf(control, elcount(control), "grp%s", hitchType);          SetControlVisibility(panel, control, 1);
+    
+    //Motion
+    snprintf(control, elcount(control), "txt%s_Motion", hitchType);             UpdateTextColor(panel, control, requiredMotion);
+    snprintf(control, elcount(control), "btn%s_Float", hitchType);              UpdateTextColor(panel, control, requiredMotion);
+    snprintf(control, elcount(control), "btn%s_Stop", hitchType);               UpdateTextColor(panel, control, requiredMotion);
+    snprintf(control, elcount(control), "btn%s_LowerUntilStop", hitchType);     UpdateTextColor(panel, control, requiredMotion);
+    snprintf(control, elcount(control), "btn%s_RaiseUntilStop", hitchType);     UpdateTextColor(panel, control, requiredMotion);
+    //Position                                                                  
+    snprintf(control, elcount(control), "txt%s_Position", hitchType);           UpdateTextColor(panel, control, requiredPosition);
+    snprintf(control, elcount(control), "tb%s_Position", hitchType);            UpdateTextColor(panel, control, requiredPosition);
+    snprintf(control, elcount(control), "io%s_Position", hitchType);            UpdateTextColor(panel, control, requiredPosition);
+  }
+  
+}
+
+/*
+The entire group (VehicleSpeed) is displayed if at least one facility is ‘required’.
+Texts for all facilities that are not ‘required’ are displayed in grey.
+*/
+void AdjustVisibility_VehicleSpeed_Client(char panel[], byte requiredSpeedReverse, byte requiredSpeedForward, byte requiredStart, byte requiredStop, byte requiredStateReverse, byte requiredStateForward)
+{
+  if(requiredSpeedForward == 0 && requiredSpeedReverse == 0 && requiredStart == 0 && requiredStop == 0 && requiredStateForward == 0 && requiredStateReverse == 0)
+  {
+    //Make the whole group unvisible
+    SetControlVisibility(panel, "grpVehicleSpeed", 0);
+  }
+  else
+  {
+    byte visibleSpeedByValue, visibleSpeedByState;
+    //Make the whole group visible
+    SetControlVisibility(panel, "grpVehicleSpeed", 1);
+
+    //recent facilities
+    if(requiredSpeedForward == 1 || requiredSpeedReverse == 1)
+    {
+      visibleSpeedByValue = 1;
+    }
+    else
+    {
+      visibleSpeedByValue = 0;
+    }
+    UpdateTextColor(panel, "txtVehicleSpeed", visibleSpeedByValue);
+    UpdateTextColor(panel, "ioVehicleSpeed", visibleSpeedByValue);
+    //Speed Reverse
+    UpdateTextColor(panel, "tbVehicleSpeed_Reverse", requiredSpeedReverse);
+    UpdateTextColor(panel, "txtVehicleSpeed_Reverse", requiredSpeedReverse);
+    //Speed Forward
+    UpdateTextColor(panel, "tbVehicleSpeed_Forward", requiredSpeedForward);
+    UpdateTextColor(panel, "txtVehicleSpeed_Forward", requiredSpeedForward);
+    //Speed Reverse Button
+    UpdateTextColor(panel, "btnVehicleSpeed_Reverse", requiredStateReverse);
+    //Stop Button
+    UpdateTextColor(panel, "btnVehicleSpeed_Stop", requiredStop);
+    //Speed Forward Button
+    UpdateTextColor(panel, "btnVehicleSpeed_Forward", requiredStateForward);
+  }
+  
+}
+
+/*
+The entire group for External Guidance and all the controls it contains are made visible
+*/
+void AdjustVisibility_ExtGuidance_Client(char panel[], byte visible)
+{
+  SetControlVisibility(panel, "grpExtGuidance", visible);
+}
+
+/*
+The entire group (FrontTopLinkage or RearTopLinkage) is displayed if at least one facility is ‘required’.
+Texts for all facilities that are not ‘required’ are displayed in grey.
+*/
+void AdjustVisibility_TopLinkage_Client(char panel[], char topLinkageType[], byte requiredMotion, byte requiredPosition)
+{
+  char control[100];
+  if(requiredMotion == 0 && requiredPosition == 0)
+  {
+    //Make the whole group unvisible
+    snprintf(control, elcount(control), "grp%s", topLinkageType);     SetControlVisibility(panel, control, 0);
+  }
+  else
+  {
+    //Make the whole group unvisible
+    snprintf(control, elcount(control), "grp%s", topLinkageType);     SetControlVisibility(panel, control, 1);
+    
+    //Motion
+    snprintf(control, elcount(control), "txt%s_Motion", topLinkageType);            UpdateTextColor(panel, control, requiredMotion);
+    snprintf(control, elcount(control), "btn%s_Float", topLinkageType);             UpdateTextColor(panel, control, requiredMotion);
+    snprintf(control, elcount(control), "btn%s_Stop", topLinkageType);              UpdateTextColor(panel, control, requiredMotion);
+    snprintf(control, elcount(control), "btn%s_RetractUntilStop", topLinkageType);  UpdateTextColor(panel, control, requiredMotion);
+    snprintf(control, elcount(control), "btn%s_ExtendUntilStop", topLinkageType);   UpdateTextColor(panel, control, requiredMotion);
+    //Position                                                                      
+    snprintf(control, elcount(control), "txt%s_Position", topLinkageType);          UpdateTextColor(panel, control, requiredPosition);
+    snprintf(control, elcount(control), "tb%s_Position", topLinkageType);           UpdateTextColor(panel, control, requiredPosition);
+    snprintf(control, elcount(control), "io%s_Position", topLinkageType);           UpdateTextColor(panel, control, requiredPosition);
+  }
+  
+}
+
+/*
+*/
+void GetFunctionNameByFunctionId(byte functionId, char nameOfControlGroup[])
+{
+  if(elcount(nameOfControlGroup) < 64)
+  {
+    return;
+  }
+  if(functionId > 0 && functionId <= 32)
+  {
+    snprintf(nameOfControlGroup, elcount(nameOfControlGroup), "AuxValve%02d", functionId); 
+  }
+  else
+  {
+    switch(functionId)
+    {
+      case cFrontPTO:         snprintf(nameOfControlGroup, elcount(nameOfControlGroup), "FrontPTO");         break;
+      case cRearPTO:          snprintf(nameOfControlGroup, elcount(nameOfControlGroup), "RearPTO");          break;
+      case cFrontHitch:       snprintf(nameOfControlGroup, elcount(nameOfControlGroup), "FrontHitch");       break;
+      case cRearHitch:        snprintf(nameOfControlGroup, elcount(nameOfControlGroup), "RearHitch");        break;
+      case cVehicleSpeed:     snprintf(nameOfControlGroup, elcount(nameOfControlGroup), "VehicleSpeed");     break;
+      case cExternalGuidance: snprintf(nameOfControlGroup, elcount(nameOfControlGroup), "ExtGuidance"); break;
+      case cFrontTopLinkage:  snprintf(nameOfControlGroup, elcount(nameOfControlGroup), "FrontTopLinkage");  break;
+      case cRearTopLinkage:   snprintf(nameOfControlGroup, elcount(nameOfControlGroup), "RearTopLinkage");   break;
+    }
+  }
+}
+

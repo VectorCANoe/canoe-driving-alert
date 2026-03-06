@@ -1,0 +1,56 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<systemvariables version="4">
+  <namespace name="" comment="" interface="">
+    <namespace name="Graphical" comment="" interface="">
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="LeftChannel" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="RightChannel" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" />
+    </namespace>
+    <namespace name="MediaClient" comment="" interface="">
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="Status" comment="" bitcount="32" isSigned="true" encoding="65001" type="int">
+        <valuetable name="MediaClientStatus" definesMinMax="false">
+          <valuetableentry value="-3" lowerBound="-3" upperBound="-3" description="MediaWriteError" displayString="MediaWriteError" />
+          <valuetableentry value="-2" lowerBound="-2" upperBound="-2" description="SpeakerNotAvailable" displayString="SpeakerNotAvailable" />
+          <valuetableentry value="-1" lowerBound="-1" upperBound="-1" description="MediaTypeError" displayString="MediaTypeError" />
+          <valuetableentry value="0" lowerBound="0" upperBound="0" description="Not_Initialized" displayString="Not_Initialized" />
+          <valuetableentry value="1" lowerBound="1" upperBound="1" description="Initalized" displayString="Initalized" />
+          <valuetableentry value="2" lowerBound="2" upperBound="2" description="MediaStreaming" displayString="MediaStreaming" />
+          <valuetableentry value="3" lowerBound="3" upperBound="3" description="MediaStreamingFinished" displayString="MediaStreamingFinished" />
+        </valuetable>
+      </variable>
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="TransmissionTime" comment="" bitcount="64" isSigned="true" encoding="65001" type="float" startValue="0" />
+    </namespace>
+    <namespace name="MediaFileServer" comment="" interface="">
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="Format" comment="" bitcount="0" isSigned="true" encoding="65001" type="string" startValue="No Format" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="FrameDataLength" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="FrameFormat" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="0" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1">
+        <valuetable name="FrameFormat" definesMinMax="false">
+          <valuetableentry value="0" lowerBound="0" upperBound="0" description="CAN_XL" displayString="CAN_XL" />
+          <valuetableentry value="1" lowerBound="1" upperBound="1" description="CAN_FD" displayString="CAN_FD" />
+        </valuetable>
+      </variable>
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="FramePeriod" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SampleRate" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="Status" comment="" bitcount="32" isSigned="true" encoding="65001" type="int">
+        <valuetable name="ServerStatus" definesMinMax="false">
+          <valuetableentry value="0" lowerBound="0" upperBound="0" description="Not_Initalized" displayString="Not_Initalized" />
+          <valuetableentry value="1" lowerBound="1" upperBound="1" description="Initialized" displayString="Initialized" />
+          <valuetableentry value="2" lowerBound="2" upperBound="2" description="MediaTypeGatheringFailed" displayString="MediaTypeGatheringFailed" />
+          <valuetableentry value="3" lowerBound="3" upperBound="3" description="MediaTypesGathered" displayString="MediaTypesGathered" />
+          <valuetableentry value="4" lowerBound="4" upperBound="4" description="MediaSoruceAvailable" displayString="MediaSoruceAvailable" />
+          <valuetableentry value="5" lowerBound="5" upperBound="5" description="MediaSourceNotAvailable" displayString="MediaSourceNotAvailable" />
+          <valuetableentry value="6" lowerBound="6" upperBound="6" description="StreamingRunning" displayString="StreamingRunning" />
+          <valuetableentry value="7" lowerBound="7" upperBound="7" description="StreamingFinished" displayString="StreamingFinished" />
+        </valuetable>
+      </variable>
+    </namespace>
+    <namespace name="TransmissionControl" comment="" interface="">
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="EndPlayback" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="StartPlayback" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" />
+    </namespace>
+    <namespace name="TransmissionStatistic" comment="" interface="">
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="Bytes/s" name="BytesPerSecond" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="0" minValue="0" minValuePhys="0" maxValue="200000" maxValuePhys="200000" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="MB" name="BytesTransmitted" comment="" bitcount="64" isSigned="true" encoding="65001" type="float" startValue="0" />
+      <variable anlyzLocal="2" readOnly="true" valueSequence="false" unit="" name="MediaFile" comment="" bitcount="0" isSigned="true" encoding="65001" type="string" startValue="Data\\video1-racing.wav" />
+    </namespace>
+  </namespace>
+</systemvariables>

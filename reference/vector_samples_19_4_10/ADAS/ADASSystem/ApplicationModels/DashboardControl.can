@@ -1,0 +1,79 @@
+/*@!Encoding:1252*/
+
+//
+// Variables section
+//
+variables
+{
+  int StartTestOnlyOnce = 0;
+  int hasWarningBeenActivated = 0;
+  
+  msTimer timShowWarningForSomeSeconds;
+}
+
+//
+// Update the values for Speed and Rpm in the panel "Dashboard"
+//
+on value_update OutputSimpleAlgorithm.egoSpeed
+{
+  @sysvar::Dashboard::Speed = $OutputSimpleAlgorithm.egoSpeed * 3.6;
+  @sysvar::Dashboard::Rpm = ($OutputSimpleAlgorithm.egoSpeed * 3.6) * 50;
+  
+  if(StartTestOnlyOnce == 0)
+  {
+    setControlVisibility("Dashboard", "pbInformation", 0);
+    setControlVisibility("Dashboard", "tbInformation", 0);
+    
+    StartTestOnlyOnce = 1;
+  }
+}
+
+//
+// If a warning is active, set the specific pictures in the panel "Dashboard"
+//
+on value_update OutputSimpleAlgorithm.isWarningActive
+{
+  if($OutputSimpleAlgorithm.isWarningActive == 1)
+  {
+    if(hasWarningBeenActivated == 0)
+    {
+      hasWarningBeenActivated = 1;
+    }
+    
+    setControlVisibility("Dashboard", "pbInformation", 1);
+    setControlVisibility("Dashboard", "tbInformation", 1);
+  }
+  else
+  {
+    if(hasWarningBeenActivated == 1)
+    {
+      setTimer(timShowWarningForSomeSeconds, 4000);
+      hasWarningBeenActivated = 0;
+    }
+  }
+}
+
+//
+//  Show the warning for some seconds after it has been detected
+//
+on timer timShowWarningForSomeSeconds
+{
+  setControlVisibility("Dashboard", "pbInformation", 0);
+  setControlVisibility("Dashboard", "tbInformation", 0);
+}
+
+//
+// Reset the values after a reset / stop of the measurement
+//
+on sysvar SingleTrack_DriverAssistanceCANoe::Parameters::SimulationControl::DYNA4_Reset::Value
+{
+  if(@sysvar::SingleTrack_DriverAssistanceCANoe::Parameters::SimulationControl::DYNA4_Reset::Value == 1)
+  {
+    setControlVisibility("Dashboard", "pbInformation", 0);
+    setControlVisibility("Dashboard", "tbInformation", 0);
+  }
+  if(@sysvar::SingleTrack_DriverAssistanceCANoe::Parameters::SimulationControl::DYNA4_Reset::Value == 0)
+  {
+    @sysvar::Scenario::Start = 1;
+  }
+}

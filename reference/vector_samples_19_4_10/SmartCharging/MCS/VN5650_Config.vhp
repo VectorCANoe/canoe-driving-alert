@@ -1,0 +1,254 @@
+{
+  "Content": {
+    "Devices": [
+      {
+        "AppChannels": {
+          "ChannelConfigs": [
+            {
+              "ApplicationChannelIndex": 0,
+              "ApplicationName": "CANoe",
+              "BusType": 0,
+              "DeviceChannelIndex": 2
+            },
+            {
+              "ApplicationChannelIndex": 1,
+              "ApplicationName": "CANoe",
+              "BusType": 8,
+              "DeviceChannelIndex": 0
+            }
+          ]
+        },
+        "Characteristics": {
+          "HardwareIndex": 0,
+          "HardwareType": 101,
+          "IdentificationMethod": 2
+        },
+        "Id": "5cd2209a-f64d-4eba-a96c-364c2724e5f0",
+        "Info": {
+          "ConnectionType": 0,
+          "CustomChannels": [
+            {
+              "ApiIndex": 0,
+              "BusType": 8,
+              "ChannelIndex": 1
+            },
+            {
+              "ApiIndex": 2,
+              "BusType": 0,
+              "ChannelIndex": 3
+            }
+          ],
+          "IsArchived": true,
+          "Modules": {},
+          "Piggies": {}
+        }
+      },
+      {
+        "AppChannels": {
+          "ChannelConfigs": []
+        },
+        "Characteristics": {
+          "IdentificationMethod": 0,
+          "PartNumber": 7000,
+          "SerialNumber": 100
+        },
+        "Id": "611bfb87-6533-45ce-b088-bed5a6a31af7",
+        "Info": {
+          "ConnectionType": 0,
+          "CustomChannels": [],
+          "DriverVersion": "21.10.20",
+          "IsArchived": false,
+          "Modules": {},
+          "Piggies": {}
+        }
+      },
+      {
+        "AppChannels": {
+          "ChannelConfigs": []
+        },
+        "Characteristics": {
+          "IdentificationMethod": 0,
+          "PartNumber": 7210,
+          "SerialNumber": 13278
+        },
+        "GpbConfig": {
+          "Network": {
+            "FilterRules": [],
+            "Networks": [
+              {
+                "Name": "CCS_Network",
+                "Segments": [
+                  {
+                    "BypassRelayDelay": 200,
+                    "BypassRelayStatePowered": 0,
+                    "BypassRelayStateUnpowered": 0,
+                    "ForwardGptp": false,
+                    "FrameForwardType": 0,
+                    "IsPhyTap": false,
+                    "LinkTransparency": {
+                      "IsEnabled": false
+                    },
+                    "Name": "EVSE_Switch_10BASET1",
+                    "Ports": [
+                      {
+                        "AutoNegotiationFlags": 0,
+                        "ConfiguredName": "EVSE_Port_10BASET1",
+                        "ConnectorType": 0,
+                        "EgressUntag": false,
+                        "Id": "629ce198-a940-468c-9a7e-9531fc6fa2e7",
+                        "IngressAddTagMode": 0,
+                        "Is88Q2112LegacyEnabled": false,
+                        "MasterSlave": 0,
+                        "PhySpeed": 1,
+                        "PortNumber": 1,
+                        "T1SConfig": {
+                          "IsPLCAEnabled": true,
+                          "NodeCount": 8,
+                          "NodeId": 0,
+                          "TransmitOpportunity": 32
+                        },
+                        "VlanIds": []
+                      }
+                    ],
+                    "Type": 0,
+                    "VirtualPorts": []
+                  },
+                  {
+                    "BypassRelayDelay": 200,
+                    "BypassRelayStatePowered": 0,
+                    "BypassRelayStateUnpowered": 0,
+                    "ForwardGptp": false,
+                    "FrameForwardType": 0,
+                    "IsPhyTap": false,
+                    "LinkTransparency": {
+                      "IsEnabled": false
+                    },
+                    "Name": "EV_Switch_10BASET1",
+                    "Ports": [
+                      {
+                        "AutoNegotiationFlags": 0,
+                        "ConfiguredName": "EV_Port_10BASET1",
+                        "ConnectorType": 0,
+                        "EgressUntag": false,
+                        "Id": "9b97b989-bd8e-4f15-9a8d-b6db5e574849",
+                        "IngressAddTagMode": 0,
+                        "Is88Q2112LegacyEnabled": false,
+                        "MasterSlave": 0,
+                        "PhySpeed": 1,
+                        "PortNumber": 5,
+                        "T1SConfig": {
+                          "IsPLCAEnabled": true,
+                          "NodeCount": 8,
+                          "NodeId": 1,
+                          "TransmitOpportunity": 32
+                        },
+                        "VlanIds": []
+                      }
+                    ],
+                    "Type": 0,
+                    "VirtualPorts": []
+                  }
+                ],
+                "Vlans": []
+              }
+            ],
+            "StopUplinkPortNumbers": []
+          },
+          "Properties": {
+            "AdapterUplinks": [],
+            "AdvancedMirrorUplinks": [],
+            "EthernetUplinks": [
+              {
+                "ExtendedServicePorts": [
+                  {
+                    "Port": 4202,
+                    "PortId": 3,
+                    "Protocol": 1
+                  }
+                ],
+                "IPAddress": "192.168.0.1",
+                "LookupMethod": 0,
+                "PortNumber": 16,
+                "ServicePorts": [
+                  {
+                    "Port": 42600,
+                    "PortId": 0,
+                    "Protocol": 0
+                  },
+                  {
+                    "Port": 4200,
+                    "PortId": 1,
+                    "Protocol": 1
+                  },
+                  {
+                    "Port": 4201,
+                    "PortId": 2,
+                    "Protocol": 1
+                  }
+                ],
+                "SubnetPrefix": 24,
+                "Id": 1,
+                "IsEnabled": true,
+                "Name": "ETH16"
+              }
+            ],
+            "RawMirrorUplinks": [],
+            "TemperatureMonitor": {
+              "IsEnabled": true,
+              "MaximumTemperature": 96
+            },
+            "UsbUplinks": [
+              {
+                "Id": 0,
+                "IsEnabled": true,
+                "Name": "USB"
+              }
+            ],
+            "InfrastructureSwitch": {
+              "InfrastructureSwitchPortNumbers": [
+                16
+              ]
+            }
+          },
+          "TimeSync": {
+            "ProvideHwSync": false,
+            "ProvidePTP": false,
+            "ProvideSwSync": false,
+            "ReceiveFrom": 6
+          }
+        },
+        "Id": "c639305d-bc75-4d11-b352-357af2f698d2",
+        "Info": {
+          "ConnectionType": 1,
+          "CustomChannels": [],
+          "DriverVersion": "23.20.20",
+          "IsArchived": false,
+          "Modules": {
+            "MS_1": 1029,
+            "MS_2": 1029,
+            "MS_3": 1029
+          },
+          "Piggies": {}
+        }
+      }
+    ],
+    "HostConfig": {
+      "ApplicationNames": [
+        "CANalyzer",
+        "CANape",
+        "CANoe"
+      ],
+      "LegacyTimeSyncEnabled": true,
+      "PTPSlaveEnabled": false,
+      "ToolAccessConfigs": []
+    },
+    "MetaData": {
+      "Network": {
+        "VlanColors": {}
+      }
+    }
+  },
+  "Header": {
+    "ConfigVersion": "1.3"
+  }
+}

@@ -1,0 +1,97 @@
+/*@!Encoding:1252*/
+variables
+{
+  // CarMaker constants
+  const long ApoErrOk = 0;
+  const long ApoConnDown = 16;
+  
+  // from tSCState in CarMaker SimCore.h 
+  const long SCState_Idle = 2;              // idle
+
+  const long SCState_Start = 3;             // start test run parametrization
+  const long SCState_StartWait = 4;         // wait in main thread while start
+  const long SCState_StartWaitAnim = 5;     // wait until animation is ready
+  const long SCState_StartSim = 6;          // prepare test run start conditions
+  const long SCState_StartLastCycle = 7;    // last cycle before simulate
+
+  const long SCState_Simulate = 8;          // simulate
+
+  const long SCState_End = 9;               // start test run end
+  const long SCState_EndIdleGet = 10;       // get everything idle
+  const long SCState_EndIdleSet = 11;       // set everything to idle
+  const long SCState_EndClean = 12;         // free everything not needed
+  const long SCState_EndWait = 13;          // wait in main thread while end
+  const long SCState_EndLastCycle = 14;     // last cycle before idle
+    
+  const double Freq_Hz = 50.0;             // frequency used for quantity subscription
+  const long Max_TestRun = 12;              // number of test runs
+  
+  // variables
+  long gErrorState = ApoErrOk;              // ApoErrOk => currently no errors ocurred
+  long gConnectionState = ApoConnDown;      // ApoConnDown => initial start state
+}
+
+on start 
+{
+  // connect to CarMaker instance on local computer
+   CarMaker_Connect("localhost", "localuser");
+}
+
+on stopMeasurement
+{
+  
+  // stop test run if still running
+  CarMaker_StopSim();
+  
+  // disconnect from CarMaker
+  CarMaker_Disconnect();
+}
+
+on sysvar_update Scenario::StartCarMaker
+{
+  if(@Scenario::StartCarMaker == 1)
+  {
+    char testRunPath[300];
+    char egoSpeedString[10];
+    getAbsFilePath("CarMakerProject\\Data\\TestRun\\AutobahnScenario", testRunPath, elcount(testRunPath));
+  
+    // CarMaker prefers '/' over '\' as path separator
+    str_replace(testRunPath, "\\", "/");
+
+    // enclose the path in quotation marks
+    snprintf(testRunPath, elcount(testRunPath), "\"%s\"", testRunPath);
+
+    // load the test series into CarMaker
+    gErrorState = CarMaker_LoadTestRun(testRunPath);
+
+    // subscribe to quantities of CarMaker 
+    gErrorState = CarMaker_Subscribe("EgoVehicleAndSensors", Freq_Hz);
+  
+    // set CarMaker simulation to 1 x real time
+    gErrorState = CarMaker_StartCommand("SetSimTimeAcc 1");
+  
+    //Set NamedValue EgoSpeed in CarMaker 
+    ltoa(@Scenario::EgoSpeed, egoSpeedString, 10);
+    gErrorState = CarMaker_SetNamedValue("EgoSpeed", egoSpeedString);
+  
+    // start simulation in CarMaker
+    gErrorState = CarMaker_StartSim();
+  }
+}
+
+on sysvar_update Scenario::StopCarMaker
+{
+  if(@Scenario::StopCarMaker == 1)
+  {
+    CarMaker_StopSim();
+  }
+}
+//Closed  Loop /workaround set Brake to 100% for 2 secs
+on value_change OutputSimpleAlgorithm.isWarningActive
+{
+  char result[100];
+  if($OutputSimpleAlgorithm.isWarningActive == 1)
+  {
+    CarMaker_WriteAbs("DM.Brake", 5000, 1.0);
+  }
+}

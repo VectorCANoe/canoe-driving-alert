@@ -1,0 +1,403 @@
+/*@!Encoding:1252*/
+includes
+{
+  //Already included in EVSEsimDO.can, but might be needed if this file is used on its own
+  //#include "EVSECommonFunctions.cin"
+  //#include "CharIn_HW_Interface_EVSE.cin"
+  #include "StateUtilities.cin"
+}
+
+variables
+{
+}
+
+on prestart 
+{
+  @Test::SysTestApplyControlMode = 0;
+}
+
+on sysVar Test::SysTestApplyControlMode
+{
+  if (@this == 1)
+  {
+    reReadSharedAttributes();    
+    EVSE.StartSimulation.Call();
+    CP_EVSE_set_open_circuit(1);
+    PP_EVSE_set_open_circuit(1);
+  }
+  else
+  {
+    // PEVSE needs to close the connection in order to start again
+    Reset_EVSE_Values();
+  }
+}
+
+on value_update EVSE.SDP.SECC_Discovery_Request
+{
+  if(IsEVSERolePassive())
+  {
+    EVSE.StopSimulation.Call();
+    EVSE.SetAdHocSendingEnabled.Call(1);
+  }
+}
+
+on sysVar Test::SysSendSECCDiscoveryRes
+{
+  if (@this == 1 && IsEVSERolePassive())
+  {
+    if(@sysVar::Common::SysTLSEnabled == @Common::SysTLSEnabled::TLSDisabled)
+      $EVSE.SDP.SECC_Discovery_Response.SecurityType = 0x10;
+    else
+      $EVSE.SDP.SECC_Discovery_Response.SecurityType = 0x00;
+  }
+}
+
+on sysVar Test::SysSendSupportedAppProtocolRes
+{
+  if (@this == 1 && IsEVSERolePassive())
+  {
+    if (IsSchemaISO_20_Selected())
+    {
+      $EVSE.SAP.SupportedAppProtocol_Response.ResponseCode = $EVSE.SAP.SupportedAppProtocol_Response.ResponseCode;
+    }
+    if (IsSchemaISO_2_Selected())
+    {
+      $EVSE.SAP.SupportedAppProtocol_Response.ResponseCode = $EVSE.SAP.SupportedAppProtocol_Response.ResponseCode;
+      $EVSE.SAP.SupportedAppProtocol_Response.SchemaID = 2;
+    }
+  }
+}
+
+on sysVar Test::SysSendSessionSetupRes
+{  
+  if (@this == 1 && IsEVSERolePassive())
+  {
+    if (IsSchemaISO_20_Selected())
+    {
+      $EVSE.ISO20.SessionSetup_Response.ResponseCode = $EVSE.ISO20.SessionSetup_Response.ResponseCode;
+    }
+    if (IsSchemaISO_2_Selected())
+    {
+      $EVSE.ISO2.SessionSetup_Response.ResponseCode = $EVSE.ISO2.SessionSetup_Response.ResponseCode;
+    }
+  }
+}
+
+on sysVar Test::SysSendAuthorizationSetupRes
+{  
+  if (@this == 1 && IsEVSERolePassive())
+  {
+    if(@Common::SysUserAuthorizationMode == @Common::SysUserAuthorizationMode::PnC)
+    {
+      int i;
+      // ensure PnC element is active and add a default value
+      $CCS::Simulation::EVSE.ISO20.AuthorizationSetup_Response.ASResAuthorizationModeElementId = _CCS::DataTypes::parISO20ASResAuthorizationMode::PnC_ASRes;
+      $CCS::Simulation::EVSE.ISO20.AuthorizationSetup_Response.ASResAuthorizationMode.PnC_ASResAuthorizationMode.SupportedProviders.ProviderID.Length = 1;
+      $CCS::Simulation::EVSE.ISO20.AuthorizationSetup_Response.ASResAuthorizationMode.PnC_ASResAuthorizationMode.SupportedProviders.ProviderID[0] = "Vector";
+      for(i = 0; i < 16; i++)
+      {
+        $EVSE.ISO20.AuthorizationSetup_Response.ASResAuthorizationMode.PnC_ASResAuthorizationMode.GenChallenge[i] = i+1;
+      }
+    }
+    $EVSE.ISO20.AuthorizationSetup_Response.ResponseCode = $EVSE.ISO20.AuthorizationSetup_Response.ResponseCode;
+  }
+}
+
+on sysVar Test::SysSendServiceDiscoveryRes
+{
+  if (@this == 1 && IsEVSERolePassive())
+  {
+    if (IsSchemaISO_20_Selected())
+    {
+      if(@sysvar::Common::SysUserChargingMode == sysvar::Common::SysUserChargingMode::AC)
+      {
+        /* AC_BPT */
+        $EVSE.ISO20.ServiceDiscovery_Response.EnergyTransferServiceList.Service[0].ServiceID = _CCS::DataTypes::ServiceIDEncoding::AC_BPT;
+      }
+      else
+      {
+        /* DC_BPT */
+        $EVSE.ISO20.ServiceDiscovery_Response.EnergyTransferServiceList.Service[0].ServiceID = _CCS::DataTypes::ServiceIDEncoding::DC_BPT;
+      }
+    }
+
+    if (IsSchemaISO_2_Selected())
+    {
+      $EVSE.ISO2.ServiceDiscovery_Response;
+    }
+  }
+}
+
+on sysVar Test::SysSendServiceDetailRes
+{
+  if (@this == 1 && IsEVSERolePassive())
+  {
+    if (IsSchemaISO_20_Selected())
+    {
+      if ($EVSE.ISO20.ServiceDetail_Request.ServiceID == 6)
+        FUNC_Set_ServiceDetailRes();
+      else
+      {
+        // Definition of required service ID (shall be equal to the if query
+        $EVSE.ISO20.ServiceDetail_Response.ServiceID = $EVSE.ISO20.ServiceDetail_Request.ServiceID;
+      }
+    }
+    if (IsSchemaISO_2_Selected())
+    {
+      $EVSE.ISO2.ServiceDetail_Response;
+    }
+  }
+}
+
+on sysVar Test::SysSendPaymentServiceSelectionRes
+{
+  if (@this == 1 && IsEVSERolePassive())
+  {
+    if (IsSchemaISO_2_Selected())
+    {
+      $EVSE.ISO2.PaymentServiceSelection_Response;
+    }
+  }
+}
+
+on sysVar Test::SysSendPaymentDetailsRes
+{
+  if (@this == 1 && IsEVSERolePassive())
+  {
+    if (IsSchemaISO_2_Selected())
+    {
+      $EVSE.ISO2.PaymentDetails_Response;
+    }
+  }
+}
+
+on sysVar Test::SysSendServiceSelRes
+{
+  if (@this == 1 && IsEVSERolePassive())
+  {
+    $EVSE.ISO20.ServiceSelection_Response.ResponseCode = $EVSE.ISO20.ServiceSelection_Response.ResponseCode;
+  }
+}
+
+on sysVar Test::SysSendCertificateInstallationRes
+{
+  if (@this == 1 && IsEVSERolePassive())
+  {    
+    if (IsSchemaISO_20_Selected())
+    {
+      $EVSE.ISO20.CertificateInstallation_Response.ResponseCode = $EVSE.ISO20.CertificateInstallation_Response.ResponseCode;
+    }
+    if (IsSchemaISO_2_Selected())
+    {
+      $EVSE.ISO2.CertificateInstallation_Response;
+    }
+  }
+}
+
+on sysVar Test::SysSendCertificateUpdateRes
+{
+  if (@this == 1 && IsEVSERolePassive())
+  {    
+    if (IsSchemaISO_2_Selected())
+    {
+      $EVSE.ISO2.CertificateUpdate_Response;
+    }
+  }
+}
+
+
+on sysVar Test::SysSendAuthorizationRes
+{  
+  if (@this == 1 && IsEVSERolePassive())
+  {
+    if (IsSchemaISO_20_Selected())
+    {
+      $EVSE.ISO20.Authorization_Response.ResponseCode = $EVSE.ISO20.Authorization_Response.ResponseCode;
+    }
+    if (IsSchemaISO_2_Selected())
+    {
+      $EVSE.ISO2.Authorization_Response;
+    }
+  }
+}
+
+on sysVar Test::SysSendChargeParDiscoveryRes
+{
+  if (@this == 1 && IsEVSERolePassive())
+  {
+    if (IsSchemaISO_20_Selected())
+    {
+      if (@sysvar::Common::SysUserChargingMode == 0 /* AC */)
+      {
+        if(@sysvar::Common::SysUserACDERMode == 0)
+          FUNC_Set_EVSEACLimits_ChargeParameterDiscoveryRes();
+        else
+          FUNC_Set_EVSEACDERLimits_ChargeParameterDiscoveryRes();
+      }
+      else if (@sysvar::Common::SysUserChargingMode == 1 /* DC */)
+        FUNC_Set_EVSEDCLimits_ChargeParameterDiscoveryRes();
+    }
+    if (IsSchemaISO_2_Selected())
+    {
+      $EVSE.ISO2.ChargeParameterDiscovery_Response;
+    }
+  }
+}
+
+on sysVar Test::SysSendCableCheckRes
+{  
+  if (@this == 1 && IsEVSERolePassive())
+  {
+    if (IsSchemaISO_20_Selected())
+    {
+      $EVSE.ISO20.DC_CableCheck_Response.ResponseCode = $EVSE.ISO20.DC_CableCheck_Response.ResponseCode;
+    }
+    if (IsSchemaISO_2_Selected())
+    {
+      $EVSE.ISO2.CableCheck_Response;
+    }
+  }
+}
+
+on sysVar Test::SysSendPreChargeRes
+{  
+  if (@this == 1 && IsEVSERolePassive())
+  {
+    if (IsSchemaISO_20_Selected())
+    {
+      $EVSE.ISO20.DC_PreCharge_Response.EVSEPresentVoltage.Value = $EVSE.ISO20.DC_PreCharge_Response.EVSEPresentVoltage.Value;
+    }
+    if (IsSchemaISO_2_Selected())
+    {
+      $EVSE.ISO2.PreCharge_Response;
+    }
+  }
+}
+
+on sysVar Test::SysSendChargingStatusRes
+{  
+  if (@this == 1 && IsEVSERolePassive())
+  {
+    if (IsSchemaISO_2_Selected())
+    {
+      $EVSE.ISO2.ChargingStatus_Response.ReceiptRequired=1;
+    }
+  }
+}
+
+on sysVar Test::SysSendDCChargeLoopRes
+{  
+  if (@this == 1 && IsEVSERolePassive())
+  {
+    FUNC_Get_EVSE_DCChargeLoopValues();
+  }
+}
+
+on sysVar Test::SysSendACChargeLoopRes
+{  
+  if (@this == 1 && IsEVSERolePassive())
+  {    
+    FUNC_Get_EVSE_ACChargeLoopValues();
+  }
+}
+
+on sysVar Test::SysSendWeldingDetectionRes
+{  
+  if (@this == 1 && IsEVSERolePassive())
+  {
+    if (IsSchemaISO_20_Selected())
+    {
+      $EVSE.ISO20.DC_WeldingDetection_Response.ResponseCode = $EVSE.ISO20.DC_WeldingDetection_Response.ResponseCode;
+    }
+    if (IsSchemaISO_2_Selected())
+    {
+      $EVSE.ISO2.WeldingDetection_Response;
+    }
+  }
+}
+
+on sysVar Test::SysSendPowerDeliveryRes
+{
+  if (@this == 1 && IsEVSERolePassive())
+  {    
+    if (IsSchemaISO_20_Selected())
+    {
+      if (@sysvar::Common::SysUserChargingMode == 0 /* AC */)
+        SendPowerDeliveryResAC();
+      else if (@sysvar::Common::SysUserChargingMode == 1 /* DC */)
+        SendPowerDeliveryResDC();
+    }
+    if (IsSchemaISO_2_Selected())
+    {
+      $EVSE.ISO2.PowerDelivery_Response;
+    }
+  }  
+}
+
+on sysVar Test::SysSendCurrentDemandRes
+{
+  if (@this == 1 && IsEVSERolePassive())
+  {
+    if (IsSchemaISO_2_Selected())
+    {
+      $EVSE.ISO2.CurrentDemand_Response;
+    }
+  }
+}
+
+on sysVar Test::SysSendMeteringReceiptRes
+{
+  if (@this == 1 && IsEVSERolePassive())
+  {
+    if (IsSchemaISO_2_Selected())
+    {
+      $EVSE.ISO2.MeteringReceipt_Response;
+    }
+  }
+}
+  
+void SendPowerDeliveryResAC()
+{  
+  $EVSE.ISO20.PowerDelivery_Response.ResponseCode = $EVSE.ISO20.PowerDelivery_Response.ResponseCode;
+}
+
+void SendPowerDeliveryResDC()
+{  
+  $EVSE.ISO20.PowerDelivery_Response.ResponseCode = $EVSE.ISO20.PowerDelivery_Response.ResponseCode;
+}
+
+on sysVar Test::SysSendMeteringConfirmationRes
+{  
+  if (@this == 1 && IsEVSERolePassive())
+  {    
+    $EVSE.MeteringConfirmation.MeteringConfirmation_Response.ResponseCode = $EVSE.MeteringConfirmation.MeteringConfirmation_Response.ResponseCode;
+  }
+}
+
+on sysVar Test::SysSendScheduleExRes
+{  
+  if (@this == 1 && IsEVSERolePassive())
+  {
+    $EVSE.ISO20.ScheduleExchange_Response.ResponseCode = $EVSE.ISO20.ScheduleExchange_Response.ResponseCode;
+    if(@Common::SysUserAuthorizationMode == @Common::SysUserAuthorizationMode::PnC)
+    {
+      $CCS::Simulation::EVSE.ISO20.ScheduleExchange_Response.SEResControlMode.Dynamic_SEResControlMode.PriceSchedule.AbsolutePriceSchedule.TimeAnchor = 60;  
+    }      
+  }
+}
+
+on sysVar Test::SysSendSessionStopRes
+{  
+  if (@this == 1 && IsEVSERolePassive())
+  {
+    if (IsSchemaISO_20_Selected())
+    {
+      $EVSE.ISO20.SessionStop_Response.ResponseCode = $EVSE.ISO20.SessionStop_Response.ResponseCode;
+    }
+
+    if (IsSchemaISO_2_Selected())
+    {
+      $EVSE.ISO2.SessionStop_Response;
+    }
+  }
+}

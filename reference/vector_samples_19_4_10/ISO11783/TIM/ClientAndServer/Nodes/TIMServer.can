@@ -1,0 +1,229 @@
+/*@!Encoding:1252*/
+includes
+{
+  #include "Common.cin"
+}
+
+variables
+{
+  // Compliance Certification information
+  const dword cciTestProtocolPublicationYear = 2024;
+  const dword cciTestProtocolRevision = 0;
+  const dword cciLaboratoryType = 1;
+  const dword cciLaboratoryID = 1010;
+  const dword cciReferenceNumber = 41;
+}
+
+// 
+// Start TIM Server if measurement starts
+//
+on start
+{
+  if (@Server::Start > 0)
+  {
+    StartServer();
+  }
+}
+  
+
+// 
+// System variables
+//
+
+//
+// Start/stop TIM Server
+//
+on sysvar_update sysvar::Server::Start
+{
+  if(@this > 0)
+  {
+   StartServer();
+  }
+  else
+  {
+    StopServer();
+  }
+}
+
+// 
+// Acknowledge controlling of TIM functions
+//
+on sysvar_update sysvar::Server::ButtonOperatorAcknowledge
+{
+  if (@this == 1)
+  {
+    OperatorAcknowledge();
+    SetButtonOperatorAcknowlegeColor(0);
+  }
+}
+
+
+//
+// Functions
+//
+
+//
+// Enable/disable demonstration mode
+//
+void EnableDemoMode(word enable)
+{
+  Iso11783IL_TIMSetProperty("enableDemoMode", enable > 0 ? 1 : 0);
+}
+
+//
+// Initialization of TIM Server
+//
+// If you want to use the real mode then please modify the path for certificates, CRLs and keys. 
+// Also customize the variables for Compliance Certification information that are defined at the 
+// beginning of the file.
+//
+void InitializeServer()
+{
+  long result;
+
+  // Certificates
+  result = Iso11783IL_TIMAddCertificate(cCertificateType_AEFRoot,            "Certificates\\dummy_root_ca.der");
+  if (result != 0) write("<TIMServer> Failed to add AEF Root Certificate");
+  result = Iso11783IL_TIMAddCertificate(cCertificateType_Testlab,            "Certificates\\dummy_aef_testlab.der");
+  if (result != 0) write("<TIMServer> Failed to add Testlab Certificate");
+  result = Iso11783IL_TIMAddCertificate(cCertificateType_Manufacturer,       "Certificates\\dummy_manufacturer.der");
+  if (result != 0) write("<TIMServer> Failed to add Manufacturer Certificate");
+  result = Iso11783IL_TIMAddCertificate(cCertificateType_ManufacturerSeries, "Certificates\\dummy_manufacturer_series_server.der");
+  if (result != 0) write("<TIMServer> Failed to add Manufacturer Series Certificate");
+  result = Iso11783IL_TIMAddCertificate(cCertificateType_Device,             "Certificates\\dummy_server.der");
+  if (result != 0) write("<TIMServer> Failed to add Device Certificate");
+  result = Iso11783IL_TIMAddCertificate(cCertificateType_CRLSigning,         "Certificates\\dummy_crl_ca.der");
+  if (result != 0) write("<TIMServer> Failed to add CRLSigning");
+  
+  // CRLs
+  result = Iso11783IL_TIMSetCRL(cCRLType_CRL, "Certificates\\dummy_crl.crl");
+  if (result != 0) write("<TIMServer> Failed to add CRL");
+  result = Iso11783IL_TIMSetCRL(cCRLType_CRLSignCA, "Certificates\\dummy_crl_sub_ca.crl");
+  if (result != 0) write("<TIMServer> Failed to add CRLSignCA");
+
+  // Private key
+  result = Iso11783IL_TIMSetPrivateKey("Certificates\\dummy_server.key.hex");
+  if (result != 0) write("<TIMServer> Failed to add private key");
+  
+  // Compliance Certification information
+  result = Iso11783IL_TIMSetComplianceCertification(
+    cciTestProtocolPublicationYear, cciTestProtocolRevision, 
+    cciLaboratoryType, cciLaboratoryID, cciReferenceNumber);
+  if (result != 0) write("<TIMServer> Failed to set Compliance Certification");
+  
+  // Versions
+  result = Iso11783IL_TIMSetProperty("minimumVersion", 1);
+  if (result != 0) write("<TIMServer> Failed to set minimum version");
+  result = Iso11783IL_TIMSetProperty("implementedVersion", 2);
+  if (result != 0) write("<TIMServer> Failed to set implemented version");
+  result = Iso11783IL_TIMSetProperty("minimumAuthVersion", 2);
+  if (result != 0) write("<TIMServer> Failed to set minimum authenticaton version");
+  result = Iso11783IL_TIMSetProperty("implementedAuthVersion", 3);
+  if (result != 0) write("<TIMServer> Failed to set implemented authenticaton version");
+  
+  // Others
+  result = Iso11783IL_TIMSetProperty("isServerMaster", 1);
+  if (result != 0) write("<TIMServer> Failed to set Server Master flag");
+  result = Iso11783IL_TIMSetSystemOperationState(1); //	Requirements for normal operation are fulfilled
+  if (result != 0) write("<TIMServer> Failed to set system operation state");
+  
+  // Facilities
+  SetSupportedFunctionFacilities();
+}
+
+//
+// Set the supported TIM functions
+//
+void SetSupportedFunctionFacilities()
+{
+  long result;
+
+  Iso11783IL_TIMResetAllSupportedFunctions();
+  
+  // AuxValve01
+  result = Iso11783IL_TIMSetSupportedFacility("auxiliaryValve01State", 1);
+  if (result != 0) write("<TIMServer> Failed set supported facility 'auxiliaryValve01State'");
+  result = Iso11783IL_TIMSetSupportedFacility("auxiliaryValve01Flow", 1);
+  if (result != 0) write("<TIMServer> Failed set supported facility 'auxiliaryValve01Flow'");
+}
+
+//
+// Initialize and activate TIM Server
+//
+void StartServer()
+{
+  long result;
+  EnableDemoMode(@DemoMode);
+  InitializeServer();
+  result = Iso11783IL_TIMActivateServer();
+  if (result != 0) write("<TIMServer> Failed to activate TIM Server");  
+  @sysvar::Server::AuxValve1_Value = 0;
+}
+
+//
+// Deactivate TIM Server
+//
+void StopServer()
+{
+  long result;
+  byte useGracefulShutown = 1;
+  result = Iso11783IL_TIMDeactivateServer(useGracefulShutown);
+  if (result != 0) write("<TIMServer> Failed to deactivate TIM Server");  
+  SetButtonOperatorAcknowlegeColor(0);
+}
+
+//
+// Acknowldege controlling of a TIM function
+// 
+void OperatorAcknowledge()
+{
+  long result;
+  result = Iso11783IL_TIMOperatorAcknowledge();
+  if (result != 0) write("<TIMServer> Operator Acknowledge failed");
+}
+
+//
+// Set colour of acknowledgement button
+//
+void SetButtonOperatorAcknowlegeColor(word highlight)
+{
+  long green, white;
+  green = MakeRGB(0, 150, 0);
+  white = MakeRGB(255, 255, 255);
+  if (highlight > 0)
+  {
+    setControlColors("TIMServer", "ButtonOperatorAck", green, white);
+  }
+  else
+  {
+    setDefaultControlColors("TIMServer", "ButtonOperatorAck");
+  }
+}
+
+
+// 
+// Callbacks
+//
+
+//
+// This callback is called if a TIM function is ready to control
+//
+Iso11783IL_TIMOnClientReadyToControl(dword functionID, dword clientAddress) 
+{
+  write("<TIMServer> Please press button [Operator Acknowledge] to allow controlling of TIM functions");  
+  SetButtonOperatorAcknowlegeColor(1);
+}
+
+// 
+// This callback is called if a TIM function value has been changed
+// 
+void Iso11783IL_TIMOnFunctionValueChanged(dword functionID, dword newRawValue)
+{
+  float physicalValue;
+  if (functionID == cAuxValve01)
+  {
+    physicalValue = (newRawValue * 0.004) -128.512;
+    sysSetVariableFloat(sysvar::Server::AuxValve1_Value, physicalValue);
+  }
+}
+

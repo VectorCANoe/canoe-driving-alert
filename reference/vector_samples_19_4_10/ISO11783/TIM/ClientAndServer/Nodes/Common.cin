@@ -1,0 +1,154 @@
+﻿/*@!Encoding:65001*/
+ 
+variables
+{
+  enum Facility
+  {
+    kNotSupported = 0,
+    kSupported    = 1,
+    kError        = 2,
+    kNotAvailable = 3
+  };
+  
+  enum WriteVerbosity
+  {
+    kSeveritySilent          = 0,
+    kSeverityError           = 1,
+    kSeverityErrorAndWarning = 2,
+    kSeverityAll             = 3
+  };
+   
+  // Certifcate types
+  const int cCertificateType_AEFRoot            = 0;
+  const int cCertificateType_Testlab            = 1;
+  const int cCertificateType_Manufacturer       = 2;
+  const int cCertificateType_ManufacturerSeries = 3;
+  const int cCertificateType_Device             = 4;
+  const int cCertificateType_CRLSigning         = 5;
+  
+  // Constants for CRL Type
+  const int cCRLType_CRL        = 0;
+  const int cCRLType_CRLSignCA  = 1;
+ 
+  // Facility Suport
+  const int cFacilityNotSupported = 0;
+  const int cFacilitySupported    = 1;
+  
+  // Functions
+  const int cAuxValve01           = 01;
+  const int cAuxValve02           = 02;
+  const int cAuxValve03           = 03;
+  const int cAuxValve04           = 04;
+  const int cAuxValve05           = 05;
+  const int cAuxValve06           = 06;
+  const int cAuxValve07           = 07;
+  const int cAuxValve08           = 08;
+  const int cAuxValve09           = 09;
+  const int cAuxValve10           = 10;
+  const int cAuxValve11           = 11;
+  const int cAuxValve12           = 12;
+  const int cAuxValve13           = 13;
+  const int cAuxValve14           = 14;
+  const int cAuxValve15           = 15;
+  const int cAuxValve16           = 16;
+  const int cAuxValve17           = 17;
+  const int cAuxValve18           = 18;
+  const int cAuxValve19           = 19;
+  const int cAuxValve20           = 20;
+  const int cAuxValve21           = 21;
+  const int cAuxValve22           = 22;
+  const int cAuxValve23           = 23;
+  const int cAuxValve24           = 24;
+  const int cAuxValve25           = 25;
+  const int cAuxValve26           = 26;
+  const int cAuxValve27           = 27;
+  const int cAuxValve28           = 28;
+  const int cAuxValve29           = 29;
+  const int cAuxValve30           = 30;
+  const int cAuxValve31           = 31;
+  const int cAuxValve32           = 32;
+  const int cFrontPTO             = 64;
+  const int cRearPTO              = 65;
+  const int cFrontHitch           = 66;
+  const int cRearHitch            = 67;
+  const int cVehicleSpeed         = 68;
+  const int cExternalGuidance     = 70;
+  const int cFrontTopLinkage      = 71;
+  const int cRearTopLinkage       = 72;
+  
+  // TIM function automation status
+  const int cAutomationUnavailable    = 0;
+  const int cAutomationNotReady       = 1;
+  const int cAutomationReadyToEnable  = 2;
+  const int cAutomationEnabled        = 3;
+  const int cAutomationPending        = 4;
+  const int cActiveNotLimited         = 5;
+  const int cActiveLimitedHigh        = 6;
+  const int cActiveLimitedLow         = 7;
+  const int cNonRecoverableFault      = 14;
+  const int cNotAvailable             = 15;
+  
+  // TIM function 
+  const int cNoReasonAllClear                               = 0x00;
+  const int cReasonRquiredLevelOfOperatorPresencNotDetected = 0x01;
+  const int cReasonImplementReleasedControlOfFunction       = 0x02;
+  const int cReasonOperatorOverrideOfFunction               = 0x03;
+  const int cOperatorControlNotInValidPosition              = 0x04;
+  const int cReasonRemoteCommandTimeout                     = 0x05;
+  const int cReasonRemoteCommandOutOfRange                  = 0x06;
+  const int cReasonFunctionNotCalibrated                    = 0x07;
+  const int cReasonOperatorControlFault                     = 0x08;
+  const int cReasonFunctionFault                            = 0x09;
+  const int cError                                          = 0x1E;
+  const int cReasonNotAvailable                             = 0x1F;
+
+  // TIM function request value
+  const word cReleasedControlRequestingOperator             = 0xFBFD;
+  const word cReleasedControlAndAcceptFunctionValueIncrease = 0xFBFE;
+  const word cReadyToControl                                = 0xFBFF;
+}
+
+void Iso11783IL_TIMOnError(long errorCode, dword addParam )
+{
+  char buffer[256];
+  Iso11783IL_GetLastErrorText ( elCount(buffer), buffer);
+  write( "Iso11783IL_TIMOnError: Error %i (%f): %s", errorCode, timeNowFloat()/100000.0, buffer );
+}
+
+void GetTimFunctionStateString(dword state, char stateString[])
+{
+  switch (state)
+  {
+    case cAutomationUnavailable:
+      snprintf(stateString, elcount(stateString), "Automation unavailable");
+      break;
+    case cAutomationNotReady:
+      snprintf(stateString, elcount(stateString), "Automation not ready");
+      break;
+    case cAutomationReadyToEnable:
+      snprintf(stateString, elcount(stateString), "Automation ready to enable");
+      break;
+    case cAutomationEnabled:
+      snprintf(stateString, elcount(stateString), "Automation enabled");
+      break;
+    case cAutomationPending:
+      snprintf(stateString, elcount(stateString), "Automation pending");
+      break;
+    case cActiveNotLimited:
+      snprintf(stateString, elcount(stateString), "Active, not limited");
+      break;
+    case cActiveLimitedHigh:
+      snprintf(stateString, elcount(stateString), "Active, limited high");
+      break;
+    case cActiveLimitedLow:
+      snprintf(stateString, elcount(stateString), "Active, limited low");
+      break;
+    case cNonRecoverableFault:
+      snprintf(stateString, elcount(stateString), "Non-recoverable fault");
+      break;
+    case cNotAvailable:
+      snprintf(stateString, elcount(stateString), "Not available");
+      break;
+  }
+  
+}

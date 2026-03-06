@@ -1,0 +1,289 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Panel Type="Vector.CANalyzer.Panels.PanelSerializer, Vector.CANalyzer.Panels.Serializer, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null">
+  <Object Type="Vector.CANalyzer.Panels.Runtime.Panel, Vector.CANalyzer.Panels.Common, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Panel" ControlName="File Editor">
+    <Object Type="Vector.CANalyzer.Panels.Design.ButtonControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="ButtonControl4" ControlName="Button 2">
+      <Property Name="Name">ButtonControl4</Property>
+      <Property Name="Size">108, 23</Property>
+      <Property Name="Location">223, 111</Property>
+      <Property Name="TransparentColor">Transparent</Property>
+      <Property Name="UseTransparentColor">False</Property>
+      <Property Name="TabIndex">101</Property>
+      <Property Name="Text">Set Attributes</Property>
+      <Property Name="SymbolConfiguration">8;16;FileEditor;;;SysvarSetAttributes;1;;;-1;;;Value;;;0</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.ButtonControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="ButtonControl3" ControlName="Button 1">
+      <Property Name="Name">ButtonControl3</Property>
+      <Property Name="Size">108, 23</Property>
+      <Property Name="Location">223, 87</Property>
+      <Property Name="TransparentColor">Transparent</Property>
+      <Property Name="UseTransparentColor">False</Property>
+      <Property Name="TabIndex">90</Property>
+      <Property Name="Text">Get Attributes</Property>
+      <Property Name="SymbolConfiguration">8;16;FileEditor;;;SysvarGetAttributes;1;;;-1;;;Value;;;0</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="TextBoxControl4" ControlName="ErrorTextBox">
+      <Property Name="Name">TextBoxControl4</Property>
+      <Property Name="Size">278, 17</Property>
+      <Property Name="Location">57, 243</Property>
+      <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+      <Property Name="AlarmLowerBkgColor">Salmon</Property>
+      <Property Name="AlarmLowerTextColor">WindowText</Property>
+      <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+      <Property Name="AlarmUpperTextColor">WindowText</Property>
+      <Property Name="BoxBorderStyle">None</Property>
+      <Property Name="DisplayLabel">Hide</Property>
+      <Property Name="BoxForeColor">255, 255, 10, 10</Property>
+      <Property Name="TextBackColor">White</Property>
+      <Property Name="TabIndex">79</Property>
+      <Property Name="DescriptionText"></Property>
+      <Property Name="ValueDecimalPlaces">0</Property>
+      <Property Name="ValueDisplay">Text</Property>
+      <Property Name="UsedValueTable">PhysicalValue</Property>
+      <Property Name="DescriptionSize">0, 0</Property>
+      <Property Name="SymbolConfiguration">8;16;FileEditor;;;SysvarErrorText;4;;;-1;;;Value;;;0</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl7" ControlName="Static Text 7">
+      <Property Name="Name">StaticTextControl7</Property>
+      <Property Name="Size">66, 17</Property>
+      <Property Name="Location">1, 41</Property>
+      <Property Name="BackColor">White</Property>
+      <Property Name="Font">Microsoft Sans Serif, 8.25pt, style=Bold</Property>
+      <Property Name="Text">Path:</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl4" ControlName="Static Text 6">
+      <Property Name="Name">StaticTextControl4</Property>
+      <Property Name="Size">66, 17</Property>
+      <Property Name="Location">1, 65</Property>
+      <Property Name="Font">Microsoft Sans Serif, 8.25pt, style=Bold</Property>
+      <Property Name="Text">File:</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl6" ControlName="Static Text 5">
+      <Property Name="Name">StaticTextControl6</Property>
+      <Property Name="Size">66, 15</Property>
+      <Property Name="Location">1, 16</Property>
+      <Property Name="BackColor">White</Property>
+      <Property Name="Font">Microsoft Sans Serif, 8.25pt, style=Bold</Property>
+      <Property Name="Text">Directory:</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl5" ControlName="Static Text 4">
+      <Property Name="Name">StaticTextControl5</Property>
+      <Property Name="Size">63, 16</Property>
+      <Property Name="Location">336, 114</Property>
+      <Property Name="BackColor">White</Property>
+      <Property Name="Text">Hidden:</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.CheckBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="CheckBoxControl2" ControlName="Check Box 1">
+      <Property Name="Name">CheckBoxControl2</Property>
+      <Property Name="Size">15, 14</Property>
+      <Property Name="Location">405, 116</Property>
+      <Property Name="Text"></Property>
+      <Property Name="TabIndex">73</Property>
+      <Property Name="SymbolConfiguration">8;16;FileEditor;;;SysvarIsHidden;1;;;-1;;;Value;;;0</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl3" ControlName="Static Text 3">
+      <Property Name="Name">StaticTextControl3</Property>
+      <Property Name="Size">63, 15</Property>
+      <Property Name="Location">336, 93</Property>
+      <Property Name="BackColor">White</Property>
+      <Property Name="Text">Read Only:</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.CheckBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="CheckBoxControl1" ControlName="ReadOnly">
+      <Property Name="Name">CheckBoxControl1</Property>
+      <Property Name="Size">15, 14</Property>
+      <Property Name="Location">405, 93</Property>
+      <Property Name="Text"></Property>
+      <Property Name="TabIndex">69</Property>
+      <Property Name="SymbolConfiguration">8;16;FileEditor;;;SysvarIsReadOnly;1;;;-1;;;Value;;;0</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl2" ControlName="Static Text 2">
+      <Property Name="Name">StaticTextControl2</Property>
+      <Property Name="Size">49, 16</Property>
+      <Property Name="Location">84, 114</Property>
+      <Property Name="BackColor">White</Property>
+      <Property Name="Text">Length:</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="TextBoxControl1" ControlName="Input/Output Box 2">
+      <Property Name="Name">TextBoxControl1</Property>
+      <Property Name="Size">61, 19</Property>
+      <Property Name="Location">139, 112</Property>
+      <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+      <Property Name="AlarmLowerBkgColor">Salmon</Property>
+      <Property Name="AlarmLowerTextColor">WindowText</Property>
+      <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+      <Property Name="AlarmUpperTextColor">WindowText</Property>
+      <Property Name="BoxBorderStyle">FixedSingle</Property>
+      <Property Name="DisplayLabel">Hide</Property>
+      <Property Name="TabIndex">67</Property>
+      <Property Name="DescriptionText"></Property>
+      <Property Name="ValueDecimalPlaces">0</Property>
+      <Property Name="ValueDisplay">Decimal</Property>
+      <Property Name="UsedValueTable">PhysicalValue</Property>
+      <Property Name="DescriptionSize">0, 0</Property>
+      <Property Name="SymbolConfiguration">8;16;FileEditor;;;SysvarLength;1;;;-1;;;Value;;;0</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl1" ControlName="Static Text 1">
+      <Property Name="Name">StaticTextControl1</Property>
+      <Property Name="Size">49, 16</Property>
+      <Property Name="Location">84, 92</Property>
+      <Property Name="BackColor">White</Property>
+      <Property Name="Text">Offset:</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="TextBoxControl2" ControlName="Input/Output Box 1">
+      <Property Name="Name">TextBoxControl2</Property>
+      <Property Name="Size">61, 19</Property>
+      <Property Name="Location">139, 90</Property>
+      <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+      <Property Name="AlarmLowerBkgColor">Salmon</Property>
+      <Property Name="AlarmLowerTextColor">WindowText</Property>
+      <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+      <Property Name="AlarmUpperTextColor">WindowText</Property>
+      <Property Name="BoxBorderStyle">FixedSingle</Property>
+      <Property Name="DisplayLabel">Hide</Property>
+      <Property Name="TabIndex">60</Property>
+      <Property Name="DescriptionText"></Property>
+      <Property Name="ValueDecimalPlaces">0</Property>
+      <Property Name="ValueDisplay">Decimal</Property>
+      <Property Name="UsedValueTable">PhysicalValue</Property>
+      <Property Name="DescriptionSize">0, 0</Property>
+      <Property Name="SymbolConfiguration">8;16;FileEditor;;;SysvarOffset;1;;;-1;;;Value;;;0</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.SwitchControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="SwitchControlBSI9" ControlName="SwitchControlBSI9">
+      <Property Name="Name">SwitchControlBSI9</Property>
+      <Property Name="Size">48, 15</Property>
+      <Property Name="Location">5, 242</Property>
+      <Property Name="SymbolConfiguration">8;16;ISO11783FileServerDemo::FileEditor;;;ILEnable;1;;;-1;;;Value;;;0</Property>
+      <Property Name="ImageFile">BMP\Connector.bmp</Property>
+      <Property Name="TabIndex">9</Property>
+      <Property Name="Activation">Left</Property>
+      <Property Name="Epsilon">0</Property>
+      <Property Name="Increment">1</Property>
+      <Property Name="StartValue">0</Property>
+      <Property Name="SwitchValuesVTXml">&lt;Version&gt;2&lt;/Version&gt;&lt;Count&gt;2&lt;/Count&gt;&lt;RxValue&gt;0&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;0&lt;/TxValue&gt;&lt;RxValue&gt;1&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;1&lt;/TxValue&gt;</Property>
+      <Property Name="SwitchValuesVT">1;2;0/Lower/0;1/Lower/1</Property>
+      <Property Name="SwitchValues">1;2;0;1</Property>
+      <Property Name="SwitchValuesRx">1;2;0;1</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.HexEditorControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="HexEditorControl0" ControlName="HexEditorControl0">
+      <Property Name="Name">HexEditorControl0</Property>
+      <Property Name="Size">299, 99</Property>
+      <Property Name="Location">6, 137</Property>
+      <Property Name="ReadOnlyControl">False</Property>
+      <Property Name="TabIndex">6</Property>
+      <Property Name="SymbolConfiguration">8;16;FileEditor;;;SysvarFileData;8;;;-1;;;Value;;;0</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.ButtonControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="ButtonControl1" ControlName="WriteFileButton">
+      <Property Name="Name">ButtonControl1</Property>
+      <Property Name="Size">72, 23</Property>
+      <Property Name="Location">6, 111</Property>
+      <Property Name="TransparentColor">Transparent</Property>
+      <Property Name="UseTransparentColor">False</Property>
+      <Property Name="TabIndex">4</Property>
+      <Property Name="Text">Write</Property>
+      <Property Name="SymbolConfiguration">8;16;FileEditor;;;SysvarWriteFile;1;;;-1;;;Value;;;0</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.ButtonControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="ButtonControl2" ControlName="ReadFileButton">
+      <Property Name="Name">ButtonControl2</Property>
+      <Property Name="Size">72, 23</Property>
+      <Property Name="Location">6, 88</Property>
+      <Property Name="TransparentColor">Transparent</Property>
+      <Property Name="UseTransparentColor">False</Property>
+      <Property Name="TabIndex">3</Property>
+      <Property Name="Text">Read</Property>
+      <Property Name="SymbolConfiguration">8;16;FileEditor;;;SysvarReadFile;1;;;-1;;;Value;;;0</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="TextBoxControl3" ControlName="FilePathText">
+      <Property Name="Name">TextBoxControl3</Property>
+      <Property Name="Size">361, 19</Property>
+      <Property Name="Location">68, 63</Property>
+      <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+      <Property Name="AlarmLowerBkgColor">Blue</Property>
+      <Property Name="AlarmLowerTextColor">Black</Property>
+      <Property Name="AlarmUpperBkgColor">Red</Property>
+      <Property Name="AlarmUpperTextColor">Black</Property>
+      <Property Name="BoxBorderStyle">FixedSingle</Property>
+      <Property Name="DisplayLabel">Hide</Property>
+      <Property Name="TabIndex">5</Property>
+      <Property Name="DescriptionText">SysvarFilePath:</Property>
+      <Property Name="ValueDecimalPlaces">0</Property>
+      <Property Name="ValueDisplay">Text</Property>
+      <Property Name="UsedValueTable">PhysicalValue</Property>
+      <Property Name="DescriptionSize">0, 0</Property>
+      <Property Name="SymbolConfiguration">8;16;FileEditor;;;SysvarFilePath;4;;;-1;;;Value;;;0</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.ButtonControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="ButtonControl6" ControlName="SetDefaultDirButton">
+      <Property Name="Name">ButtonControl6</Property>
+      <Property Name="Size">180, 23</Property>
+      <Property Name="Location">249, 12</Property>
+      <Property Name="TransparentColor">Transparent</Property>
+      <Property Name="UseTransparentColor">False</Property>
+      <Property Name="TabIndex">1</Property>
+      <Property Name="Text">Change directory to:</Property>
+      <Property Name="SymbolConfiguration">8;16;FileEditor;;;SysvarSetCurrentDirectory;1;;;-1;;;Value;;;0</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.ButtonControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="ButtonControl7" ControlName="GetDefaultDirButton">
+      <Property Name="Name">ButtonControl7</Property>
+      <Property Name="Size">174, 23</Property>
+      <Property Name="Location">68, 12</Property>
+      <Property Name="TransparentColor">Transparent</Property>
+      <Property Name="UseTransparentColor">False</Property>
+      <Property Name="TabIndex">0</Property>
+      <Property Name="Text">Get current directory</Property>
+      <Property Name="SymbolConfiguration">8;16;FileEditor;;;SysvarGetCurrentDirectory;1;;;-1;;;Value;;;0</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="TextBoxControl8" ControlName="DefaultDirText">
+      <Property Name="Name">TextBoxControl8</Property>
+      <Property Name="Size">361, 19</Property>
+      <Property Name="Location">68, 39</Property>
+      <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+      <Property Name="AlarmLowerBkgColor">Blue</Property>
+      <Property Name="AlarmLowerTextColor">Black</Property>
+      <Property Name="AlarmUpperBkgColor">Red</Property>
+      <Property Name="AlarmUpperTextColor">Black</Property>
+      <Property Name="BoxBorderStyle">FixedSingle</Property>
+      <Property Name="DisplayLabel">Hide</Property>
+      <Property Name="TabIndex">2</Property>
+      <Property Name="DescriptionText">SysvarCurrentDirectory:</Property>
+      <Property Name="ValueDecimalPlaces">0</Property>
+      <Property Name="ValueDisplay">Text</Property>
+      <Property Name="UsedValueTable">PhysicalValue</Property>
+      <Property Name="DescriptionSize">0, 0</Property>
+      <Property Name="SymbolConfiguration">8;16;FileEditor;;;SysvarCurrentDirectory;4;;;-1;;;Value;;;0</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="TextBoxControl10" ControlName="TextBoxControl10">
+      <Property Name="Name">TextBoxControl10</Property>
+      <Property Name="Size">38, 17</Property>
+      <Property Name="Location">392, 243</Property>
+      <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+      <Property Name="AlarmLowerBkgColor">Blue</Property>
+      <Property Name="AlarmLowerTextColor">Black</Property>
+      <Property Name="AlarmUpperBkgColor">Red</Property>
+      <Property Name="AlarmUpperTextColor">Black</Property>
+      <Property Name="BoxBorderStyle">None</Property>
+      <Property Name="DisplayLabel">Hide</Property>
+      <Property Name="BoxTextAlign">Center</Property>
+      <Property Name="ReadOnlyControl">True</Property>
+      <Property Name="TabIndex">10</Property>
+      <Property Name="TabStopActive">False</Property>
+      <Property Name="DescriptionText">ILAddress:</Property>
+      <Property Name="ValueDecimalPlaces">0</Property>
+      <Property Name="ValueDisplay">Decimal</Property>
+      <Property Name="UsedValueTable">PhysicalValue</Property>
+      <Property Name="DescriptionSize">0, 0</Property>
+      <Property Name="SymbolConfiguration">8;16;ISO11783FileServerDemo::FileEditor;;;ILAddress;1;;;-1;;;Value;;;0</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl14" ControlName="Source">
+      <Property Name="Name">StaticTextControl14</Property>
+      <Property Name="Size">52, 15</Property>
+      <Property Name="Location">341, 243</Property>
+      <Property Name="TextAlign">TopRight</Property>
+      <Property Name="BackColor">White</Property>
+      <Property Name="ForeColor">Gray</Property>
+      <Property Name="Text">Address:</Property>
+    </Object>
+    <Property Name="Name">Panel</Property>
+    <Property Name="Size">432, 260</Property>
+    <Property Name="Location">0, 0</Property>
+    <Property Name="BackColor">White</Property>
+    <Property Name="Panel">Panel</Property>
+  </Object>
+</Panel>

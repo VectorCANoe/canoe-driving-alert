@@ -1,0 +1,82 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<systemvariables version="4">
+  <namespace name="" comment="" interface="">
+    <namespace name="SREM" comment="" interface="">
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="Active" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="0" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="InBoundLaneId" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="20" maxValuePhys="20" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="IntersectionId" comment="" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="65535" maxValuePhys="65535" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="OutBoundLaneId" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="20" maxValuePhys="20" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="RequesterRole" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="22" maxValuePhys="22">
+        <valuetable name="ReqRole" definesMinMax="false">
+          <valuetableentry value="0" lowerBound="0" upperBound="0" description="basicVehicle" displayString="basicVehicle" />
+          <valuetableentry value="1" lowerBound="1" upperBound="1" description="publicTransport" displayString="publicTransport" />
+          <valuetableentry value="2" lowerBound="2" upperBound="2" description="specialTransport" displayString="specialTransport" />
+          <valuetableentry value="3" lowerBound="3" upperBound="3" description="dangerousGoods" displayString="dangerousGoods" />
+          <valuetableentry value="4" lowerBound="4" upperBound="4" description="roadWork" displayString="roadWork" />
+          <valuetableentry value="5" lowerBound="5" upperBound="5" description="roadRescue" displayString="roadRescue" />
+          <valuetableentry value="6" lowerBound="6" upperBound="6" description="emergency" displayString="emergency" />
+          <valuetableentry value="7" lowerBound="7" upperBound="7" description="safetyCar" displayString="safetyCar" />
+          <valuetableentry value="8" lowerBound="8" upperBound="8" description="none_unknown" displayString="none_unknown" />
+          <valuetableentry value="9" lowerBound="9" upperBound="9" description="truck" displayString="truck" />
+          <valuetableentry value="10" lowerBound="10" upperBound="10" description="motorcycle" displayString="motorcycle" />
+          <valuetableentry value="11" lowerBound="11" upperBound="11" description="roadSideSource" displayString="roadSideSource" />
+          <valuetableentry value="12" lowerBound="12" upperBound="12" description="police" displayString="police" />
+          <valuetableentry value="13" lowerBound="13" upperBound="13" description="fire" displayString="fire" />
+          <valuetableentry value="14" lowerBound="14" upperBound="14" description="ambulance" displayString="ambulance" />
+          <valuetableentry value="15" lowerBound="15" upperBound="15" description="dot" displayString="dot" />
+          <valuetableentry value="16" lowerBound="16" upperBound="16" description="transit" displayString="transit" />
+          <valuetableentry value="17" lowerBound="17" upperBound="17" description="slowMoving" displayString="slowMoving" />
+          <valuetableentry value="18" lowerBound="18" upperBound="18" description="stopNgo" displayString="stopNgo" />
+          <valuetableentry value="19" lowerBound="19" upperBound="19" description="cyclist" displayString="cyclist" />
+          <valuetableentry value="20" lowerBound="20" upperBound="20" description="pedestrian" displayString="pedestrian" />
+          <valuetableentry value="21" lowerBound="21" upperBound="21" description="nonMotorized" displayString="nonMotorized" />
+          <valuetableentry value="22" lowerBound="22" upperBound="22" description="military" displayString="military" />
+        </valuetable>
+      </variable>
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="RequestId" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="255" maxValuePhys="255" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="RequestType" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="3" maxValuePhys="3">
+        <valuetable name="ReqType" definesMinMax="false">
+          <valuetableentry value="0" lowerBound="0" upperBound="0" description="Reserved" displayString="Reserved" />
+          <valuetableentry value="1" lowerBound="1" upperBound="1" description="Request" displayString="Request" />
+          <valuetableentry value="2" lowerBound="2" upperBound="2" description="RequestUpdate" displayString="RequestUpdate" />
+          <valuetableentry value="3" lowerBound="3" upperBound="3" description="Cancellation" displayString="Cancellation" />
+        </valuetable>
+      </variable>
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="StationId" comment="" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="transitOccupancy" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="7" maxValuePhys="7">
+        <valuetable name="TransitOccupancy" definesMinMax="false">
+          <valuetableentry value="0" lowerBound="0" upperBound="0" description="Unknown" displayString="Unknown" />
+          <valuetableentry value="1" lowerBound="1" upperBound="1" description="Empty" displayString="Empty" />
+          <valuetableentry value="2" lowerBound="2" upperBound="2" description="VeryLow" displayString="VeryLow" />
+          <valuetableentry value="3" lowerBound="3" upperBound="3" description="Low" displayString="Low" />
+          <valuetableentry value="4" lowerBound="4" upperBound="4" description="Med" displayString="Med" />
+          <valuetableentry value="5" lowerBound="5" upperBound="5" description="High" displayString="High" />
+          <valuetableentry value="6" lowerBound="6" upperBound="6" description="NearlyFull" displayString="NearlyFull" />
+          <valuetableentry value="7" lowerBound="7" upperBound="7" description="Full" displayString="Full" />
+        </valuetable>
+      </variable>
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="transitSchedule" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" minValue="-122" minValuePhys="-122" maxValue="121" maxValuePhys="121" />
+    </namespace>
+    <namespace name="SSEM_Simulation" comment="" interface="">
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="Active" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="0" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="OverrideStatus" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="0" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1">
+        <valuetable name="Custom" definesMinMax="true">
+          <valuetableentry value="0" lowerBound="0" upperBound="0" description="No" displayString="No" />
+          <valuetableentry value="1" lowerBound="1" upperBound="1" description="Yes" displayString="Yes" />
+        </valuetable>
+      </variable>
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="Status" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="4" minValue="0" minValuePhys="0" maxValue="7" maxValuePhys="7">
+        <valuetable name="Status" definesMinMax="false">
+          <valuetableentry value="0" lowerBound="0" upperBound="0" description="unknown" displayString="unknown" />
+          <valuetableentry value="1" lowerBound="1" upperBound="1" description="requested" displayString="requested" />
+          <valuetableentry value="2" lowerBound="2" upperBound="2" description="processing" displayString="processing" />
+          <valuetableentry value="3" lowerBound="3" upperBound="3" description="watchOtherTraffic" displayString="watchOtherTraffic" />
+          <valuetableentry value="4" lowerBound="4" upperBound="4" description="granted" displayString="granted" />
+          <valuetableentry value="5" lowerBound="5" upperBound="5" description="rejected" displayString="rejected" />
+          <valuetableentry value="6" lowerBound="6" upperBound="6" description="maxPresence" displayString="maxPresence" />
+          <valuetableentry value="7" lowerBound="7" upperBound="7" description="reserviceLocked" displayString="reserviceLocked" />
+        </valuetable>
+      </variable>
+    </namespace>
+  </namespace>
+</systemvariables>

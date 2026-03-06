@@ -1,0 +1,204 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<FunctionBusLibrary Version="57" FormatMajorVersion="3" FormatMinorVersion="5" FormatPatchVersion="1">
+  <Namespaces>
+    <Namespace IsDefinedAsHidden="False" IsSystemDefined="True" Name="EthernetCluster">
+      <Subnamespaces>
+        <Namespace IsDefinedAsHidden="False" IsSystemDefined="True" Name="Interfaces">
+          <DOInterfaces>
+            <DOInterface IsAbstract="False" Name="Calculator">
+              <AttributeValues>
+                <AttributeValue Definition="_SystemAttributes::Binding" InitialValue="SOMEIP" InitialValueType="String" />
+                <AttributeValue Definition="_SystemAttributes::CommunicationPattern" InitialValue="2" InitialValueType="Int32" />
+              </AttributeValues>
+              <MemberData>
+                <DOMemberDataHolder Name="MemberData" />
+              </MemberData>
+              <Events>
+                <DOIFEventMember Name="State">
+                  <DataType DataType="EthernetCluster::DataTypes::State" />
+                </DOIFEventMember>
+              </Events>
+              <Methods>
+                <DOIFMethodMember Prototype="EthernetCluster::DataTypes::Add_Prototype" Name="Add" />
+                <DOIFMethodMember Prototype="EthernetCluster::DataTypes::Subtract_Prototype" Name="Subtract" />
+                <DOIFMethodMember Prototype="EthernetCluster::DataTypes::Multiply_Prototype" Name="Multiply" />
+                <DOIFMethodMember Prototype="EthernetCluster::DataTypes::Divide_Prototype" Name="Divide" />
+              </Methods>
+            </DOInterface>
+          </DOInterfaces>
+        </Namespace>
+        <Namespace IsDefinedAsHidden="False" IsSystemDefined="True" Name="DataTypes">
+          <DataTypes>
+            <StructDataType Bitcount="128" RawBitcount="128" HasFixedBinaryLayout="True" HasMotorolaByteOrder="True" Name="State">
+              <Fields>
+                <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="AddCount">
+                  <AttributeValues>
+                    <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="memberName:AddCount" InitialValueType="String" />
+                  </AttributeValues>
+                  <DataType DataType="EthernetCluster::DataTypes::INTM32" />
+                </DataTypeField>
+                <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="SubtractCount">
+                  <AttributeValues>
+                    <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="memberName:SubtractCount" InitialValueType="String" />
+                  </AttributeValues>
+                  <DataType DataType="EthernetCluster::DataTypes::INTM32" />
+                </DataTypeField>
+                <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="MultiplyCount">
+                  <AttributeValues>
+                    <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="memberName:MultiplyCount" InitialValueType="String" />
+                  </AttributeValues>
+                  <DataType DataType="EthernetCluster::DataTypes::INTM32" />
+                </DataTypeField>
+                <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="DivideCount">
+                  <AttributeValues>
+                    <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="memberName:DivideCount" InitialValueType="String" />
+                  </AttributeValues>
+                  <DataType DataType="EthernetCluster::DataTypes::INTM32" />
+                </DataTypeField>
+              </Fields>
+            </StructDataType>
+            <IntegerDataType IsSigned="True" BitCount="32" HasFixedBinaryLayout="True" HasMotorolaByteOrder="True" Name="INTM32" />
+            <FloatDataType BitCount="32" HasFixedBinaryLayout="True" HasMotorolaByteOrder="True" Name="FloatM" />
+            <FunctionPrototype IsOneWay="False" AllowSpecialCharactersInMemberNames="False" HasFixedBinaryLayout="False" HasMotorolaByteOrder="False" Name="Add_Prototype">
+              <Result DataType="_SystemDataTypes::Void" />
+              <Parameters>
+                <Parameter IsOptional="False" Name="operand1">
+                  <DataType DataType="EthernetCluster::DataTypes::INTM32" />
+                </Parameter>
+                <Parameter IsOptional="False" Name="operand2">
+                  <DataType DataType="EthernetCluster::DataTypes::INTM32" />
+                </Parameter>
+                <Parameter IsOptional="False" Direction="Out" Name="result">
+                  <DataType DataType="EthernetCluster::DataTypes::FloatM" />
+                </Parameter>
+              </Parameters>
+            </FunctionPrototype>
+            <FunctionPrototype IsOneWay="False" AllowSpecialCharactersInMemberNames="False" HasFixedBinaryLayout="False" HasMotorolaByteOrder="False" Name="Subtract_Prototype">
+              <Result DataType="_SystemDataTypes::Void" />
+              <Parameters>
+                <Parameter IsOptional="False" Name="operand1">
+                  <DataType DataType="EthernetCluster::DataTypes::INTM32" />
+                </Parameter>
+                <Parameter IsOptional="False" Name="operand2">
+                  <DataType DataType="EthernetCluster::DataTypes::INTM32" />
+                </Parameter>
+                <Parameter IsOptional="False" Direction="Out" Name="result">
+                  <DataType DataType="EthernetCluster::DataTypes::FloatM" />
+                </Parameter>
+              </Parameters>
+            </FunctionPrototype>
+            <FunctionPrototype IsOneWay="False" AllowSpecialCharactersInMemberNames="False" HasFixedBinaryLayout="False" HasMotorolaByteOrder="False" Name="Multiply_Prototype">
+              <Result DataType="_SystemDataTypes::Void" />
+              <Parameters>
+                <Parameter IsOptional="False" Name="operand1">
+                  <DataType DataType="EthernetCluster::DataTypes::INTM32" />
+                </Parameter>
+                <Parameter IsOptional="False" Name="operand2">
+                  <DataType DataType="EthernetCluster::DataTypes::INTM32" />
+                </Parameter>
+                <Parameter IsOptional="False" Direction="Out" Name="result">
+                  <DataType DataType="EthernetCluster::DataTypes::FloatM" />
+                </Parameter>
+              </Parameters>
+            </FunctionPrototype>
+            <FunctionPrototype IsOneWay="False" AllowSpecialCharactersInMemberNames="False" HasFixedBinaryLayout="False" HasMotorolaByteOrder="False" Name="Divide_Prototype">
+              <Result DataType="_SystemDataTypes::Void" />
+              <Parameters>
+                <Parameter IsOptional="False" Name="operand1">
+                  <DataType DataType="EthernetCluster::DataTypes::INTM32" />
+                </Parameter>
+                <Parameter IsOptional="False" Name="operand2">
+                  <DataType DataType="EthernetCluster::DataTypes::INTM32" />
+                </Parameter>
+                <Parameter IsOptional="False" Direction="Out" Name="result">
+                  <DataType DataType="EthernetCluster::DataTypes::FloatM" />
+                </Parameter>
+              </Parameters>
+            </FunctionPrototype>
+          </DataTypes>
+        </Namespace>
+        <Namespace IsDefinedAsHidden="False" IsSystemDefined="True" Name="Encodings" />
+        <Namespace IsDefinedAsHidden="False" IsSystemDefined="True" Name="Provider">
+          <DistributedObjects>
+            <DistributedObject GenerateDotNetAPI="True" Name="Calculator">
+              <DataType>
+                <ModifiedDOIF Reverse="False" IsDOReference="False" Interface="EthernetCluster::Interfaces::Calculator" />
+              </DataType>
+              <MemberData>
+                <DOMemberDataHolder Name="MemberData">
+                  <Data>
+                    <DOInstanceMemberData Name="State">
+                      <AttributeValues>
+                        <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="cluster:EthernetCluster,node:Provider,serviceId:1666,majorVersion:0,instanceId:1,eventId:40769" InitialValueType="String" />
+                      </AttributeValues>
+                    </DOInstanceMemberData>
+                    <DOInstanceMemberData Name="Add">
+                      <AttributeValues>
+                        <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="cluster:EthernetCluster,node:Provider,serviceId:1666,majorVersion:0,instanceId:1,methodId:1,inParams:[operand1;operand2],outParams:[result]" InitialValueType="String" />
+                      </AttributeValues>
+                    </DOInstanceMemberData>
+                    <DOInstanceMemberData Name="Subtract">
+                      <AttributeValues>
+                        <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="cluster:EthernetCluster,node:Provider,serviceId:1666,majorVersion:0,instanceId:1,methodId:2,inParams:[operand1;operand2],outParams:[result]" InitialValueType="String" />
+                      </AttributeValues>
+                    </DOInstanceMemberData>
+                    <DOInstanceMemberData Name="Multiply">
+                      <AttributeValues>
+                        <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="cluster:EthernetCluster,node:Provider,serviceId:1666,majorVersion:0,instanceId:1,methodId:3,inParams:[operand1;operand2],outParams:[result]" InitialValueType="String" />
+                      </AttributeValues>
+                    </DOInstanceMemberData>
+                    <DOInstanceMemberData Name="Divide">
+                      <AttributeValues>
+                        <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="cluster:EthernetCluster,node:Provider,serviceId:1666,majorVersion:0,instanceId:1,methodId:4,inParams:[operand1;operand2],outParams:[result]" InitialValueType="String" />
+                      </AttributeValues>
+                    </DOInstanceMemberData>
+                  </Data>
+                </DOMemberDataHolder>
+              </MemberData>
+            </DistributedObject>
+          </DistributedObjects>
+        </Namespace>
+        <Namespace IsDefinedAsHidden="False" IsSystemDefined="True" Name="Consumer">
+          <DistributedObjects>
+            <DistributedObject GenerateDotNetAPI="True" Name="CalculatorConsumer">
+              <DataType>
+                <ModifiedDOIF Reverse="True" IsDOReference="False" Interface="EthernetCluster::Interfaces::Calculator" />
+              </DataType>
+              <MemberData>
+                <DOMemberDataHolder Name="MemberData">
+                  <Data>
+                    <DOInstanceMemberData Name="State">
+                      <AttributeValues>
+                        <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="cluster:EthernetCluster,node:Consumer,serviceId:1666,majorVersion:0,instanceId:1,shortName:CalculatorConsumer,eventId:40769" InitialValueType="String" />
+                      </AttributeValues>
+                    </DOInstanceMemberData>
+                    <DOInstanceMemberData Name="Add">
+                      <AttributeValues>
+                        <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="cluster:EthernetCluster,node:Consumer,serviceId:1666,majorVersion:0,instanceId:1,shortName:CalculatorConsumer,methodId:1,inParams:[operand1;operand2],outParams:[result]" InitialValueType="String" />
+                      </AttributeValues>
+                    </DOInstanceMemberData>
+                    <DOInstanceMemberData Name="Subtract">
+                      <AttributeValues>
+                        <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="cluster:EthernetCluster,node:Consumer,serviceId:1666,majorVersion:0,instanceId:1,shortName:CalculatorConsumer,methodId:2,inParams:[operand1;operand2],outParams:[result]" InitialValueType="String" />
+                      </AttributeValues>
+                    </DOInstanceMemberData>
+                    <DOInstanceMemberData Name="Multiply">
+                      <AttributeValues>
+                        <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="cluster:EthernetCluster,node:Consumer,serviceId:1666,majorVersion:0,instanceId:1,shortName:CalculatorConsumer,methodId:3,inParams:[operand1;operand2],outParams:[result]" InitialValueType="String" />
+                      </AttributeValues>
+                    </DOInstanceMemberData>
+                    <DOInstanceMemberData Name="Divide">
+                      <AttributeValues>
+                        <AttributeValue Definition="_SystemAttributes::Database::MetaInfo" InitialValue="cluster:EthernetCluster,node:Consumer,serviceId:1666,majorVersion:0,instanceId:1,shortName:CalculatorConsumer,methodId:4,inParams:[operand1;operand2],outParams:[result]" InitialValueType="String" />
+                      </AttributeValues>
+                    </DOInstanceMemberData>
+                  </Data>
+                </DOMemberDataHolder>
+              </MemberData>
+            </DistributedObject>
+          </DistributedObjects>
+        </Namespace>
+      </Subnamespaces>
+    </Namespace>
+  </Namespaces>
+</FunctionBusLibrary>

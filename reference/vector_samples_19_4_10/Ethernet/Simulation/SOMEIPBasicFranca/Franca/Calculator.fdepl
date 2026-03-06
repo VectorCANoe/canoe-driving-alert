@@ -1,0 +1,39 @@
+import "CommonAPI-SOMEIP_deployment_spec.fdepl"
+import "Calculator.fidl"
+import "Calculator_Server.json"
+import "Calculator_Client.json"
+
+define org.genivi.commonapi.someip.deployment for interface Test.Calculator {
+	SomeIpServiceID = 1666
+	
+	broadcast State {
+		SomeIpEventID = 8001
+		SomeIpReliable = false
+		SomeIpEventGroups = { 1 }
+		out {
+			State {
+			}
+		}
+	}
+	
+	method Add {
+		SomeIpMethodID = 1
+		SomeIpReliable = false
+	}
+	
+	method Subtract {
+		SomeIpMethodID = 2
+		SomeIpReliable = false
+	}
+	
+	method Multiply {
+		SomeIpMethodID = 3
+		SomeIpReliable = false
+	}
+	
+	method Divide {
+		SomeIpMethodID = 4
+		SomeIpReliable = false
+	}
+
+}

@@ -1,0 +1,22 @@
+/*@!Encoding:1252*/
+includes
+{
+  
+}
+
+variables
+{
+  
+}
+
+on preStart
+{
+  // configure Virtual Terminal
+  VTIL_SetNodeProperty("vtVersion", 4);
+  VTIL_SetNodeProperty("numberOfPhysicalSoftKeys", 4);
+  VTIL_SetNodeProperty("numberOfVirtualSoftKeys", 6);
+  VTIL_SetNodeProperty("dataMaskSize", 240);
+  VTIL_SetNodeProperty("softKeyMaskWidth", 60);
+  VTIL_SetNodeProperty("softKeyMaskHeight", 50);
+}
+

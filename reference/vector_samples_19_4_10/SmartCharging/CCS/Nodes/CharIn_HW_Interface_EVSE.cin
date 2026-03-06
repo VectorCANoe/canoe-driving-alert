@@ -1,0 +1,205 @@
+/*@!Encoding:1252*/
+includes
+{
+  
+}
+
+variables
+{
+}
+
+on sysvar VTS::VT_EVSE::MeasVoltageHigh
+{
+  $CCS::Simulation::EVSE.MeasVoltageHigh = @this;
+}
+
+on sysvar VTS::VT_EVSE::MeasDutyCycle
+{
+  $CCS::Simulation::EVSE.MeasDutyCycle = @this;
+}
+  
+/// <CharINInterface>
+void ST_Init()
+{
+  @sysvar::VTS::VT_EVSE::Relay_K1 = 0;   // PP open
+  @sysvar::VTS::VT_EVSE::Relay_K2 = 0;
+  @sysvar::VTS::VT_EVSE::Relay_K3 = 1;
+  @sysvar::VTS::VT_EVSE::Relay_K4 = 0;
+  @sysvar::VTS::VT_EVSE::Relay_K5 = 0;
+  @sysvar::VTS::VT_EVSE::Relay_K6 = 0;
+  @sysvar::VTS::VT_EVSE::Relay_K7 = 0;
+  @sysvar::VTS::VT_EVSE::Relay_K8 = 1;
+  @sysvar::VTS::VT_EVSE::Relay_K9 = 0;
+  @sysvar::VTS::VT_EVSE::Relay_K10 = 1;
+  @sysvar::VTS::VT_EVSE::Relay_K11 = 1;
+  @sysvar::VTS::VT_EVSE::Relay_K12 = 0;
+  @sysvar::VTS::VT_EVSE::Relay_K13 = 0;
+  @sysvar::VTS::VT_EVSE::Relay_K14 = 0;
+  @sysvar::VTS::VT_EVSE::Relay_K15 = 0;
+  @sysvar::VTS::VT_EVSE::Relay_K16 = 0;
+  @sysvar::VTS::VT_EVSE::Relay_K17 = 0;
+  @sysvar::VTS::VT_EVSE::Relay_K18 = 0;
+  @sysvar::VTS::VT_EVSE::Relay_K19 = 0;
+  @sysvar::VTS::VT_EVSE::Relay_K20 = 0;
+  @sysvar::VTS::VT_EVSE::Relay_K21 = 0;
+  @sysvar::VTS::VT_EVSE::Relay_K22 = 0;
+  @sysvar::VTS::VT_EVSE::Relay_K23 = 1;
+  @sysvar::VTS::VT_EVSE::Relay_K24 = 1;
+  @sysvar::VTS::VT_EVSE::Relay_K25 = 0;
+  @sysvar::VTS::VT_EVSE::Relay_K26 = 0;   // CP open
+  @sysvar::VTS::VT_EVSE::Relay_K27 = 0;
+  @sysvar::VTS::VT_EVSE::Relay_K28 = 1;
+  @sysvar::VTS::VT_EVSE::Relay_K29 = 0;
+  @sysvar::VTS::VT_EVSE::Relay_K31 = 0;
+  @sysvar::VTS::VT_EVSE::Relay_K32 = 0;
+  @sysvar::VTS::VT_EVSE::Relay_K33 = 0;
+  @sysvar::VTS::VT_EVSE::Relay_K34 = 0;
+  @sysvar::VTS::VT_EVSE::Relay_K35 = 0;
+  @sysvar::VTS::VT_EVSE::Relay_K36 = 0;
+  @sysvar::VTS::VT_EVSE::Relay_K37 = 0;
+                     
+  @sysvar::VTS::VT_EVSE::StimVoltageHigh = 0;
+  @sysvar::VTS::VT_EVSE::StimVoltageLow = 0;
+  @sysvar::VTS::VT_EVSE::StimFrequency = 1000;
+  @sysvar::VTS::VT_EVSE::StimDutyCycle = 0;
+}
+
+/// <CharINInterface>
+void ST_Reset()
+{
+  ST_Init();
+  CP_EVSE_set_open_circuit(0);
+  PP_EVSE_set_open_circuit(0);
+}
+
+/// <CharINInterface>
+void CP_EVSE_set_open_circuit(long closed)
+{
+  if (closed > 0)
+  {
+    @sysvar::VTS::VT_EVSE::Relay_K26 = 1;
+    @sysvar::VTS::VT_EVSE::Relay_K27 = 1;
+  }
+  else
+  {
+    @sysvar::VTS::VT_EVSE::Relay_K26 = 0;
+    @sysvar::VTS::VT_EVSE::Relay_K27 = 0;
+  }
+}
+
+/// <CharINInterface>
+void PP_EVSE_set_open_circuit(long closed)
+{
+  if (closed > 0)
+  {
+    sysvar::VTS::Outlet_PP.SetStimulationMode(eVTSStimulationModeResistanceGreater);
+    sysvar::VTS::Outlet_PP.SetCurveType(eVTSCurveTypeConstant);
+    sysvar::VTS::Outlet_PP.StartStimulation();
+    @sysvar::VTS::Outlet_PP::Resistor = @sysvar::EVSE_Sim::SysEVSE_PP_Resistor;
+  }
+  else
+  {
+    sysvar::VTS::Outlet_PP.SetStimulationMode(eVTSStimulationModeNone);
+  }
+}
+
+/// <CharINInterface>
+void PP_EVSE_set_resistance(double resistance)
+{  
+  if(! isSimulated())
+    @sysvar::VTS::Outlet_PP::Resistor = resistance;    
+}
+
+/// <CharINInterface>
+double CP_EVSE_get_Voltage_positive()
+{
+  //Defined for interoperability, might be needed in some configurations
+  return $CCS::Simulation::EVSE.MeasVoltageHigh;
+}
+
+/// <CharINInterface>
+double CP_EVSE_get_DutyCycle()
+{
+  //Defined for interoperability, might be needed in some configurations
+  return $CCS::Simulation::EVSE.MeasDutyCycle;
+}
+
+/// <CharINInterface>
+void CP_EVSE_set_Voltage(double voltage)
+{ 
+  @sysvar::VTS::VT_EVSE::StimVoltageHigh = voltage;
+  @sysvar::VTS::VT_EVSE::StimVoltageLow = - abs(voltage);
+}
+
+/// <CharINInterface>
+void CP_EVSE_set_Dutycycle(double dutyCycle)
+{
+  @sysvar::VTS::VT_EVSE::StimDutyCycle = dutyCycle; 
+}
+
+/// <CharINInterface>
+void CP_EVSE_set_Oscillator(long OnOff)
+{ 
+  // VT7870 cannot directly access oscillator
+}
+
+/// <CharINInterfaceDC>
+void HV_source_set_I_DC(double current)
+{  
+  @sysvar::EVSE_Sim::SysEVSE_PresentCurrent = current;
+}
+
+/// <CharINInterfaceDC>
+void HV_source_set_U_DC(double voltage)
+{
+  @sysvar::EVSE_Sim::SysEVSE_PresentVoltage = voltage;
+}
+
+/// <CharINInterfaceDC>
+double HV_measure_DC_U()
+{
+  return @sysvar::EVSE_Sim::SysEVSE_PresentVoltage;
+}
+
+/// <CharINInterfaceDC>
+export double HV_measure_DC_U_VeriVolt()
+{
+  return 0;
+}
+
+/// <CharINInterfaceDC>
+ double HV_measure_DC_I()
+{
+  return @sysvar::EVSE_Sim::SysEVSE_PresentCurrent;
+}
+
+/// <CharINInterfaceAC>
+void HV_set_AC_relays(long enableL1, long enableL2, long enableL3, long enableN)
+{
+}
+
+/// <CharINInterface>
+void HV_source_set_output(long enabled)
+{
+  if( enabled == 0)
+  {
+    HV_source_set_I_DC(0);
+    HV_source_set_U_DC(0);
+  }
+}
+
+/// <CharINInterface>
+void HV_source_perform_welding()
+{
+}
+
+/// <CharINInterface>
+long HV_get_isolation_state(long imdInstalled, long imdIntervalInMs, long imdDurationInMs)
+{
+  return 1;
+}
+
+export double getPPResistance()
+{
+  return @EVSE_Sim::SysEVSE_PP_Resistor;
+}

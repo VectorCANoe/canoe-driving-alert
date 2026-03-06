@@ -1,0 +1,43 @@
+/*@!Encoding:1252*/
+// ===================================================================================
+// Library defining utility functions for simulation nodes
+// ===================================================================================
+
+variables
+{
+  const cDurationIndicationLED_ms=1500;
+  msTimer tResetResponseSuppressedLED;
+  msTimer tResetResponseNegativeLED;
+}
+
+// Turn off LEDs when timer triggers this
+on timer tResetResponseSuppressedLED
+{
+  @Tester::ResponseSuppressed=0;
+}
+
+on timer tResetResponseNegativeLED
+{
+  @Tester::ResponseNegative=0;
+}
+
+// Two overloaded functions for diagRequest and diagResponse to indicate negative responses
+long sendNegativeResponse(diagRequest * req, dword nrc)
+{
+  long ret;
+  
+  ret=diagSendNegativeResponse(req, nrc);
+  @Tester::ResponseNegative=1;
+  setTimer(tResetResponseNegativeLED, cDurationIndicationLED_ms);
+  return ret;
+}
+
+long sendNegativeResponse(diagResponse * resp, dword nrc)
+{
+  long ret;
+  
+  ret=diagSendNegativeResponse(resp, nrc);
+  @Tester::ResponseNegative=1;
+  setTimer(tResetResponseNegativeLED, cDurationIndicationLED_ms);
+  return ret;
+}

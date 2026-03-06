@@ -1,0 +1,98 @@
+﻿/*@!Encoding:65001*/
+includes
+{
+  #define AGENT
+  #include "CommonTest.cin"
+}
+
+variables
+{
+}
+
+void MainTest()
+{
+  long waitResult;
+
+  @MultiCANoe::Control::Test::AgentTestRunning = 1;
+
+  if (@sysvar::MultiCANoe::Control::Test::CoordinatorTestRunning == 0)
+  {
+    StartTestFromAgent();
+  }
+  else
+  {
+    TestWaitForSysVar(sysvar::MultiCANoe::Control::Test::TestTrigger, 10000);
+  }
+
+  while (@sysvar::MultiCANoe::Control::Test::TestTrigger <= cTestCount)
+  {
+    switch (@sysvar::MultiCANoe::Control::Test::TestTrigger)
+    {
+      case 2:
+        Test2_VerifyCountInCoordinator();
+        @sysvar::MultiCANoe::Control::Test::TestTrigger++;
+        break;
+      case 3:
+        Test3_CountInAgentSlow();
+        @sysvar::MultiCANoe::Control::Test::TestTrigger++;
+        break;
+      case 6:
+        Test6_VerifyCountInCoordinator();
+        @sysvar::MultiCANoe::Control::Test::TestTrigger++;
+        break;
+      case 7:
+        Test7_CountInAgentFast();
+        @sysvar::MultiCANoe::Control::Test::TestTrigger++;
+        break;
+      case 9:
+        Test9_CountInAll();
+        @sysvar::MultiCANoe::Control::Test::TestTrigger++;
+        break;
+    }
+
+    waitResult = TestWaitForSysVar(sysvar::MultiCANoe::Control::Test::TestTrigger, cMaxTestExecutionTimeMs);
+    if (waitResult == 0) // timeout
+    {
+      TestCaseFail();
+      break;
+    }
+    TestWaitForTimeout(1);
+  }
+  EndDistributedTest();
+}
+
+testcase StartTestFromAgent()
+{
+  // This will start the test in the coordinator
+  @sysvar::MultiCANoe::Control::Test::ExecuteTestOnCoordinator = 1;
+  TestWaitForSysVar(sysvar::MultiCANoe::Control::Test::TestTrigger, 1000);
+}
+
+
+testcase Test2_VerifyCountInCoordinator()
+{
+  VerifyCount("Test_2", sysvar::MultiCANoe::Counter::CounterCoordinator, 100);
+}
+
+testcase Test3_CountInAgentSlow()
+{
+  @sysvar::MultiCANoe::Control::CounterDelay = 100;
+  CountingTest("Test_3", sysvar::MultiCANoe::Control::CountInAgent, sysvar::MultiCANoe::Counter::CounterAgent, 100);
+}
+
+testcase Test6_VerifyCountInCoordinator()
+{
+  VerifyCount("Test_6", sysvar::MultiCANoe::Counter::CounterCoordinator, 500);
+}
+
+testcase Test7_CountInAgentFast()
+{
+  @sysvar::MultiCANoe::Control::CounterDelay = 10;
+  CountingTest("Test_7", sysvar::MultiCANoe::Control::CountInAgent, sysvar::MultiCANoe::Counter::CounterAgent, 400);
+}
+
+testcase Test9_CountInAll()
+{
+  @sysvar::MultiCANoe::Control::CounterDelay = 100;
+  CountingTest("Test_9", sysvar::MultiCANoe::Control::CountInAll, sysvar::MultiCANoe::Counter::CounterAll, 100);
+}

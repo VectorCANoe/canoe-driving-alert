@@ -1,0 +1,247 @@
+/*@!Encoding:1252*/
+includes
+{
+  #include "Car2xAPI.cin"
+}
+
+variables
+{
+  int gSPATArrayIndex = -1;
+  char[40] statusCode[int64];
+  char panelName[100] = "State Visualization";
+}
+
+on start
+{
+  enum CallbackType { OnRx };
+  C2xRegisterCallback(OnRx,  "OnRxSPAT",    "SPAT");
+}
+
+on sysvar_update ExpectedValues::IntersectionID
+{  
+ gSPATArrayIndex = -1;
+}
+
+// Callback function on receiving SPAT messages
+void OnRxSPAT(long channel, long dir, long radioChannel, long signalStrength, long signalQuality, long packet)
+{
+  char pathIntersection[1000];
+  int idx;
+  int tokenExists;
+  long stationHandle;
+
+  if (C2xGetTokenInt64(packet, "geo_ch", "maximumHopLimit") != C2xGetTokenInt64(packet, "geo_bh", "remainingHopLimit"))
+  {
+    // skip hopped messages
+    return;
+  }
+  
+  idx=0;
+  snprintf(pathIntersection, elcount(pathIntersection), "spat.intersections.[%d].id.id", idx);
+  tokenExists =  C2xIsTokenAvailable(packet, "SPAT", pathIntersection);
+  gSPATArrayIndex = -1;
+  while (tokenExists == 1)
+  {
+    if (C2xGetTokenInt64(packet, "SPAT", pathIntersection) == @ExpectedValues::IntersectionID)
+    {
+      @SPATmessage::IntersectionID = @ExpectedValues::IntersectionID;
+      stationHandle = C2xGetStationHandle(packet);
+      C2xAssignNodeToStation(stationHandle, "EU_ApplMsg", "SIunderTest");
+      gSPATArrayIndex = idx;
+      @SPATmessage::ReceivedState = 1;
+      break;
+    }
+    
+    idx++;
+    snprintf(pathIntersection, elcount(pathIntersection), "spat.intersections.[%d].id.id", idx);
+    tokenExists =  C2xIsTokenAvailable(packet, "SPAT", pathIntersection);
+  }
+  
+  // check if SPAT with intersectionID found
+  if (gSPATArrayIndex != -1)
+  {
+    getSPATValues(packet);
+  }
+}
+
+void getSPATValues(long packet)
+{
+  char pathIntersection[1000];
+
+  // get Revision
+  snprintf(pathIntersection, elcount(pathIntersection), "spat.intersections.[%d].revision", gSPATArrayIndex);
+  @SPATmessage::Revision = C2xGetTokenInt64(packet, "SPAT", pathIntersection);
+  
+  countSPATSignalGroupIDs(packet);
+  getSPATstatus(packet);
+  getSPATMovementStates(packet);
+}
+
+void getSPATstatus(long packet)
+{
+  char buffer[1000];
+  char tokenName[1000];
+  int i, n;
+  int foundState;
+  int stateChange;
+  
+  foundState = 0;
+  stateChange = 0;
+  snprintf(tokenName, elcount(tokenName), "spat.intersections.[%d].status", gSPATArrayIndex);
+  n = C2xGetTokenLengthBit(packet, "SPAT", tokenName);
+  for (i = 0; i<n; i++)
+  {
+    // write bits of bitstring
+    if (C2xGetTokenBitOfBitString(packet, "SPAT", tokenName, i) == 1)
+    {
+      if (!@SPATmessage::Signalstate[i])
+      {
+        @SPATmessage::Signalstate[i] = 1;
+        stateChange = 1;
+      }
+    }
+    else
+    {
+      if (@SPATmessage::Signalstate[i])
+      {
+        @SPATmessage::Signalstate[i] = 0; 
+        stateChange = 1;
+      }
+    }
+  }
+  
+  // write changed state in panel
+  if (stateChange == 1)
+  {
+    DeleteControlContent(panelName, "SignalState");
+    for (i=0; i<n;i++)
+    {
+      if (@SPATmessage::Signalstate[i])
+      {
+        sysGetVariableDescriptionForValue(sysvar::SPATmessage::Signalstate, i, buffer, elcount(buffer));
+        putValueToControl(panelName, "SignalState", buffer);
+      }
+    }
+  }
+  
+   // error if 0,2,7,8,9,13 is set
+  if (@SPATmessage::Signalstate[0] || @SPATmessage::Signalstate[2] || @SPATmessage::Signalstate[7] || @SPATmessage::Signalstate[8] || @SPATmessage::Signalstate[9] || @SPATmessage::Signalstate[13])
+  {
+    SetControlBackColor(panelName, "SignalState", @Panel::Red);
+  }
+  // warning if 1,3,4,10,11 is set
+  else if (@SPATmessage::Signalstate[1] || @SPATmessage::Signalstate[3] || @SPATmessage::Signalstate[4]|| @SPATmessage::Signalstate[10] || @SPATmessage::Signalstate[11])
+  {
+     SetControlBackColor(panelName, "SignalState",  @Panel::Yellow);
+  }
+}
+
+void getSPATMovementStates(long packet)
+{
+  char buffer[1000];
+  int i,j;
+  int tokenExists;
+  int64 movementState[int64];
+  int num;
+  
+  // init values
+  num = 0;
+  i=0;
+  j=0;
+  movementState.clear();
+  
+  // get all eventState values
+  snprintf(buffer, elcount(buffer), "spat.intersections.[%d].states.[%d].state_time_speed.[%d].eventState", gSPATArrayIndex,i,j);
+  tokenExists =  C2xIsTokenAvailable(packet, "SPAT", buffer);
+  while (tokenExists == 1)
+  {
+    while (tokenExists == 1)
+    {
+      movementState[C2xGetTokenInt64(packet, "SPAT", buffer)] += 1;
+      j++;
+      snprintf(buffer, elcount(buffer),  "spat.intersections.[%d].states.[%d].state_time_speed.[%d].eventState", gSPATArrayIndex,i,j);
+      tokenExists =  C2xIsTokenAvailable(packet, "SPAT", buffer);  
+    }
+    
+    i++;
+    j = 0;
+    snprintf(buffer, elcount(buffer),  "spat.intersections.[%d].states.[%d].state_time_speed.[%d].eventState", gSPATArrayIndex,i,j);
+    tokenExists =  C2xIsTokenAvailable(packet, "SPAT", buffer);
+  }
+  
+  // Enumeration values for eventState: 
+  // -------------------------------------------------------------
+  // 0 : unavailable
+  // 1 : dark
+  // 2 : stop_Then_Proceed
+  // 3 : stop_And_Remain
+  // 4 : pre_Movement
+  // 5 : permissive_Movement_Allowed
+  // 6 : protected_Movement_Allowed
+  // 7 : permissive_clearance
+  // 8 : protected_clearance
+  // 9 : caution_Conflicting_Traffic
+  // -------------------------------------------------------------
+  @SPATmessage::MovementStates = 100;
+  
+  // check if all states are the same and only 0,1,3 or 9
+  if (movementState.size() == 1)
+  {
+    if (movementState.containsKey(0))
+    {
+      @SPATmessage::MovementStates = 0;
+    }
+    else if (movementState.containsKey(1))
+    {
+      @SPATmessage::MovementStates = 1;
+    }
+    else if (movementState.containsKey(9))
+    {
+      @SPATmessage::MovementStates = 9;
+    }
+    else if (movementState.containsKey(3))
+    {
+      @SPATmessage::MovementStates = 3;
+    }
+  }
+  
+  // count all movementStates
+  for (int64 keyV : movementState)
+  {
+    num += movementState[keyV];
+  }
+  // check if the only states are   
+  // 5 : permissive_Movement_Allowed
+  // 6 : protected_Movement_Allowed
+  // 7 : permissive_clearance
+  if (num == movementState[5] + movementState[6] + movementState[7] + movementState[8])
+  {
+    @SPATmessage::MovementStates = num;
+  }
+}
+
+
+void countSPATSignalGroupIDs(long packet)
+{
+  char pathIntersection[1000];
+  int idx;
+  int tokenExists;
+  int signalGroupID;
+  int signalGroupList[int64];
+  
+  signalGroupList.clear();
+  idx = 0;
+  snprintf(pathIntersection, elcount(pathIntersection), "spat.intersections.[%d].states.[%d].signalGroup", gSPATArrayIndex,idx);
+  tokenExists = C2xIsTokenAvailable(packet, "SPAT", pathIntersection);
+  while (tokenExists == 1)
+  {
+    signalGroupID = C2xGetTokenInt64(packet, "SPAT", pathIntersection);
+    signalGroupList[signalGroupID] += 1;
+    
+    idx++;
+    snprintf(pathIntersection, elcount(pathIntersection), "spat.intersections.[%d].states.[%d].signalGroup", gSPATArrayIndex,idx);
+    tokenExists = C2xIsTokenAvailable(packet, "SPAT", pathIntersection);
+  }
+  
+  @SPATmessage::NumberSignalGroupIDs = signalGroupList.size();
+}

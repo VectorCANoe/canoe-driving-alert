@@ -1,0 +1,171 @@
+version 2.0;
+import module "IoTEnabler";
+namespace NIoTEnabler
+{
+
+namespace NIBLEPeripheral
+{
+struct OptionType
+{
+    uint32 offset;
+    string write_type;
+    uint32 mtu;
+    string device;
+    string link;
+    bool prepare_authorize;
+}
+
+struct AccessType
+{
+    string characteristic;
+    string uuid;
+    OptionType options;
+    bytes value;
+}
+
+struct ServiceDataItem
+{
+    string uuid;
+    string value;
+}
+
+typedef ServiceDataItemList = list<ServiceDataItem>;
+
+typedef stringList = list<string>;
+
+struct AdvertisementConfigType
+{
+    string role;
+    string local_name;
+    string secondary_channel;
+    bool discoverable;
+    uint32 appearance;
+    uint32 discoverable_timeout;
+    uint32 duration;
+    uint32 timeout;
+    uint32 min_interval;
+    uint32 max_interval;
+    uint32 tx_power;
+    string manufacturer_data;
+    stringList service_uuids;
+    ServiceDataItemList service_data;
+}
+
+struct KeyInfoType
+{
+    string address;
+    string key;
+}
+
+struct ManufacturerDataType
+{
+    uint32 oui;
+    string company;
+    bytes data;
+}
+
+typedef ManufacturerDataTypeList = list<ManufacturerDataType>;
+
+struct ServiceDataType
+{
+    string uuid;
+    bytes data;
+}
+
+typedef ServiceDataTypeList = list<ServiceDataType>;
+
+struct DeviceInfoType
+{
+    string address;
+    string addresstype;
+    KeyInfoType rpainfo;
+    string alias;
+    string company;
+    string srvid;
+    bool paired;
+    bool trusted;
+    bool legacypairing;
+    bool connected;
+    stringList uuids;
+    string adapter;
+    bool servicesresolved;
+    ServiceDataTypeList servicedata;
+    ManufacturerDataTypeList manufacturerdata;
+    string name;
+    int32 rssi;
+}
+
+enum return_code_enum { OK, ERROR }
+struct result
+{
+  return_code_enum return_code;
+  [Optional]
+  string additional_info;
+}
+
+
+interface IBLEPeripheral
+{
+    // !
+    // @brief Configure which bluetooth adapter to use
+    // @param[in] adapter_id The HCI adapter ID of the bluetooth dongle
+    // @return Success
+    consumed method result configure(string adapter_id);
+
+    // !
+    // @brief Add a GATT service
+    // @param[in] name Symbolic name of the service (e.g. Weather)
+    // @param[in] uuid UUID of the service
+    // @param[in] primary Whether or not the service is primary
+    // @return Error if advertisement is already active, otherwise success
+    consumed method result add_service(string name, string uuid, bool primary);
+
+    // !
+    // @brief Add a GATT characteristic to a service
+    // @param[in] name Symbolic path of the characteristic, prefixed with the service name (e.g. Weather/Temperature)
+    // @param[in] uuid The UUID for the operation
+    // @param[in] options Access permission options for the characteristic ("read", "write", "notify")
+    // @param[in] value The initial characteristic value
+    // @return Error if advertisement is already active, otherwise success
+    consumed method result add_characteristic(string name, string uuid, stringList options, bytes value);
+
+    // !
+    // @brief Read value of a characteristic
+    // @param[in] name Symbolic name of the characteristic, prefixed with the service name (e.g. Weather/Temperature)
+    // @param[out] data Value of the characteristic as byte array
+    // @return Success
+    consumed method result read(string name, out bytes data);
+
+    // !
+    // @brief Write value of a characteristic
+    // @param[in] name Symbolic name of the characteristic, prefixed with the service name (e.g. Weather/Temperature)
+    // @param[in] data Value of the characteristic as byte array
+    // @return Success
+    consumed method result write(string name, bytes data);
+
+    // !
+    // @brief Set parameters for advertising service
+    // @param[in] config Configuration parameters
+    // @return Error if advertisement is already running, otherwise success
+    consumed method result advertisement_config(AdvertisementConfigType config);
+
+    // !
+    // @brief Start or stop advertising
+    // @param[in] enable Enable or disable advertising
+    // @return Error if \p enable is true and advertisement is already enabled, or error if \p enable is false and advertisement is already disabled, otherwise success
+    consumed method result advertise(bool enable);
+
+    consumed data AccessType read_request;
+
+    consumed data AccessType write_request;
+
+    consumed data AccessType notify_start;
+
+    consumed data AccessType notify_stop;
+
+    consumed data DeviceInfoType device_connect;
+
+    consumed data DeviceInfoType device_disconnect;
+
+}}
+}

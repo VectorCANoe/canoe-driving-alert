@@ -1,0 +1,309 @@
+/*@!Encoding:1252*/
+
+variables
+{
+  long char_dropdown_counter;
+  long toggle_status;
+  msTimer animation_timer;
+  msTimer rssi_timer;
+  msTimer notification_timer;
+  char zone_on_image[128];
+  char zone_off_image[128];
+  
+  long client_socket;
+}
+
+on start
+{
+  // Use second dongle for vehicle side
+  IoTEnabler::Vehicle_BLE.configure.CallAsync("hci1");
+  IoTEnabler::Vehicle_L2CAP.configure.CallAsync("hci1");
+  IoTEnabler::Vehicle_SYS.configure.CallAsync("hci1");
+  animation_timer.setCyclic(1000);
+  
+  strncpy(zone_on_image, "Bitmaps/car_off_closed.png", strlen("Bitmaps/car_off_closed.png")+1);
+  strncpy(zone_off_image, "Bitmaps/car_off_closed.png", strlen("Bitmaps/car_off_closed.png")+1);
+
+}
+
+on stopMeasurement
+{
+    int i;
+  
+    for (i=0; i <= char_dropdown_counter; i++)
+    {
+      sysSetVariableDescriptionForValue("PanelUtilSysVar", "CharDropDownList",i,""); 
+    }  
+}
+
+on timer animation_timer
+{
+  toggle_status = (toggle_status == 0);
+  
+  if (toggle_status && $PanelUtil::vehiclePanel.advertise_button)
+  {
+    SetPictureBoxImage("Vehicle", "Advertising_Icon", "Bitmaps/wireless_adv_green.png");
+    SetPictureBoxImage("Zones", "Zones_Image", zone_on_image);
+  }
+  else
+  {
+    SetPictureBoxImage("Vehicle", "Advertising_Icon", "Bitmaps/wireless_adv_grey.png");
+    SetPictureBoxImage("Zones", "Zones_Image", zone_off_image);
+  }
+}
+
+void log(char msg[], char arg[])
+{
+  char buffer[512];
+  double time;
+  
+  time = timeNowInt64() * 1.0 / (1000*1000*1000);
+  snprintf(buffer, elcount(buffer), "[%f]\t%s: %s\n", time, msg, arg);
+
+   putValueToControl("Vehicle","Log", buffer);
+
+}
+
+// Configure an example service with 2 characteristics
+on value_update PanelUtil::vehiclePanel.gatt_sample_button
+{
+
+  byte rssi_value[1] = {0x0};
+  byte rssi_disance[1] = {0x0};
+
+
+  array NIoTEnabler::NIBLEPeripheral::stringList options;
+  
+  if ($this == 1)
+  { 
+      options.Length = 2;
+      options[0] = "read";
+      options[1] = "notify";
+      
+      IoTEnabler::Vehicle_BLE.add_service.CallAsync("RSSI", "EF680100-1234-1234-1234-000000000000", 1, delegate (callContext IoTEnabler::Vehicle_BLE.add_service cco)
+        {    
+          log("Added service", "EF680100-1234-1234-1234-000000000000");
+
+          if(cco.Result.return_code == 0)
+          {
+            IoTEnabler::Vehicle_BLE.add_characteristic.CallAsync("RSSI/value", "EF680101-1234-1234-1234-000000000000", options, rssi_value);
+            log("Added characteristic", "EF680101-1234-1234-1234-000000000000");
+            IoTEnabler::Vehicle_BLE.add_characteristic.CallAsync("RSSI/distance", "EF680102-1234-1234-1234-000000000000", options,  rssi_disance); 
+            log("Added characteristic", "EF680102-1234-1234-1234-000000000000");
+          }
+        });
+      }
+}
+
+
+on value_update PanelUtil::vehiclePanel.rpa_mode_button
+{
+  if($this == 1)
+  {
+    IoTEnabler::Vehicle_SYS.rpa_set.CallAsync(1, "");
+  }
+  else
+  {
+    IoTEnabler::Vehicle_SYS.rpa_set.CallAsync(0, "");
+
+  }
+}
+
+// Configure advertisement parameters
+on value_update PanelUtil::vehiclePanel.advertise_button
+{
+
+
+  if ($this == 1)
+  {
+    struct NIoTEnabler::NIBLEPeripheral::AdvertisementConfigType config;
+    config.role = "peripheral";
+    config.local_name = $PanelUtil::vehiclePanel.name;
+    config.secondary_channel = "Coded";
+    //config.appearance = 65536 - 1;
+    config.discoverable_timeout = 0;
+    config.duration = 2;
+    config.discoverable = 1;
+    config.timeout = 0;
+    config.min_interval = $PanelUtil::vehiclePanel.interval;
+    config.max_interval = $PanelUtil::vehiclePanel.interval;
+    config.tx_power = 0;
+    config.service_uuids.length = 1;
+    config.service_uuids[0] = $PanelUtil::vehiclePanel.uuid;
+    config.service_data.length = 1;
+    config.service_data[0].uuid = "5810bbc0-b499-11e9-a2a3-2a2ae2dbcce4";
+    config.service_data[0].value = "0122";
+    IoTEnabler::Vehicle_BLE.advertisement_config.CallAsync(config);
+    IoTEnabler::Vehicle_BLE.advertise.CallAsync(1);
+
+    strncpy(zone_on_image, "Bitmaps/car_grey_closed.png", strlen("Bitmaps/car_grey_closed.png")+1);
+    strncpy(zone_off_image, "Bitmaps/car_off_closed.png", strlen("Bitmaps/car_off_closed.png")+1);
+    log("Advertising started", "");
+
+  }
+  else
+  {
+    IoTEnabler::Vehicle_BLE.advertise.CallAsync(0);
+    strncpy(zone_on_image, "Bitmaps/car_off_closed.png", strlen("Bitmaps/car_off_closed.png")+1);
+    strncpy(zone_off_image, "Bitmaps/car_off_closed.png", strlen("Bitmaps/car_off_closed.png")+1);
+    log("Advertising stopped", "");
+
+  }
+}
+
+on value_update PanelUtil::vehiclePanel.disconnect_button
+{
+  IoTEnabler::Vehicle_SYS.disconnect.CallAsync($PanelUtil::vehiclePanel.connected_mac);
+}
+
+
+// Called when subscription is made by client
+on value_update IoTEnabler::Vehicle_BLE.notify_start
+{
+  log("Notification started", $this.characteristic);
+  notification_timer.setCyclic(1000);
+
+}
+
+// Called when subscription is stopped by client
+on value_update IoTEnabler::Vehicle_BLE.notify_stop
+{
+  log("Notification stopped", $this.characteristic);
+  notification_timer.cancel();
+}
+
+// React to connection event
+on value_update IoTEnabler::Vehicle_SYS.hci_event_le_ext_conn_complete
+{
+ $PanelUtil::vehiclePanel.connected_mac = $this.peer_address;
+ $PanelUtil::vehiclePanel.address_type = $this.peer_address_type;
+ $PanelUtil::vehiclePanel.hci_handle =  $this.handle;
+ rssi_timer.setCyclic(1000);
+}
+
+// React to disconnect event
+on value_update IoTEnabler::Vehicle_SYS.disconnect_complete
+{
+
+   rssi_timer.cancel();
+    $PanelUtil::vehiclePanel.rssi = -127;
+    strncpy(zone_on_image, "Bitmaps/car_grey_closed.png", strlen("Bitmaps/car_grey_closed.png")+1);
+    strncpy(zone_off_image, "Bitmaps/car_off_closed.png", strlen("Bitmaps/car_off_closed.png")+1);  
+}
+
+// Initiate server socket on configured PSM
+on value_update PanelUtil::vehiclePanel.l2cap_listen_button
+{
+  int socket;
+  
+  if ($PanelUtil::vehiclePanel.l2cap_listen_button > 0)
+  {
+    IoTEnabler::Vehicle_L2CAP.create.CallAsync($PanelUtil::vehiclePanel.l2cap_psm);
+  }
+}
+
+// Put server socket in async mode to trigger events for incoming client connection
+on fct_returned IoTEnabler::Vehicle_L2CAP.create
+{
+        IoTEnabler::Vehicle_L2CAP.listen.CallAsync(this.socket);
+        IoTEnabler::Vehicle_L2CAP.async_mode.CallAsync(this.socket, 1);
+}
+
+
+on value_update IoTEnabler::Vehicle_L2CAP.client_connect
+{
+        client_socket = $this.socket;
+        IoTEnabler::Vehicle_L2CAP.async_mode.CallAsync(client_socket, 1);
+
+}
+
+on value_update PanelUtil::vehiclePanel.l2cap_write_button
+{
+  IoTEnabler::Vehicle_L2CAP.write.CallAsync(client_socket, $PanelUtil::vehiclePanel.l2cap_write_data);
+}
+
+on value_update PanelUtil::vehiclePanel.l2cap_read_button
+{
+  IoTEnabler::Vehicle_L2CAP.read.CallAsync(client_socket, 500);
+}
+
+on value_update IoTEnabler::Vehicle_L2CAP.data_receive
+{
+        // Handle incoming data
+}
+
+
+// Query RSSI value using raw HCI command
+on timer rssi_timer
+{
+  byte cmd[2];
+
+  
+  cmd[0] = $PanelUtil::vehiclePanel.hci_handle;
+  cmd[1] = 0x0;
+  
+
+  IoTEnabler::Vehicle_SYS.hci_command_transmit.CallAsync(0x5, 0x5, cmd);
+}
+  
+
+// Adjust image according to RSSI value
+on fct_returned IoTEnabler::Vehicle_SYS.hci_command_transmit
+{
+    byte rssi[1];
+    byte dummy[128];
+  
+    if (elcount(this.response) < 7)
+    {
+      return;
+    }
+    memcpy(dummy, this.response);
+    memcpy_off(rssi, 0, dummy, 6, 1);
+
+    $PanelUtil::vehiclePanel.rssi = rssi[0];
+    $PanelUtil::vehiclePanel.rssi_distance = abs(rssi[0]);
+
+    if ($PanelUtil::vehiclePanel.rssi > -45)
+    {
+      strncpy(zone_on_image, "Bitmaps/car_green_open.png", strlen("Bitmaps/car_green_open.png")+1);
+      strncpy(zone_off_image, "Bitmaps/car_grey_closed.png", strlen("Bitmaps/car_grey_closed.png")+1);          
+    }
+    else if ($PanelUtil::vehiclePanel.rssi > -55)
+    {
+      strncpy(zone_on_image, "Bitmaps/car_orange_closed.png", strlen("Bitmaps/car_orange_closed.png")+1);
+      strncpy(zone_off_image, "Bitmaps/car_grey_closed.png", strlen("Bitmaps/car_grey_closed.png")+1);          
+    }
+    else if ($PanelUtil::vehiclePanel.rssi > -70)
+    {
+      strncpy(zone_on_image, "Bitmaps/car_red_closed.png", strlen("Bitmaps/car_red_closed.png")+1);
+      strncpy(zone_off_image, "Bitmaps/car_grey_closed.png", strlen("Bitmaps/car_grey_closed.png")+1);          
+    }
+    else
+    {
+      strncpy(zone_on_image, "Bitmaps/car_grey_closed.png", strlen("Bitmaps/car_grey_closed.png")+1);
+      strncpy(zone_off_image, "Bitmaps/car_off_closed.png", strlen("Bitmaps/car_off_closed.png")+1);   
+    }
+}
+
+// Sent notification to client
+on timer notification_timer
+{
+  byte rssi[1];
+  rssi[0] = $PanelUtil::vehiclePanel.rssi;
+  IoTEnabler::Vehicle_BLE.write.CallAsync("RSSI/value",  rssi); 
+}
+
+  on fct_returned IoTEnabler::Vehicle_BLE.add_characteristic
+  {
+      char buffer[255];
+      long index;
+      int ret;
+      
+      snprintf(buffer, elcount(buffer), "%s", this.name);
+      ret = sysGetVariableValueForDescription(sysvar::PanelUtilSysVar::CharDropDownList, buffer, index);
+      
+      if (ret > 0)
+      {
+           sysSetVariableDescriptionForValue("PanelUtilSysVar", "CharDropDownList",char_dropdown_counter++,buffer); 
+      }
+  }

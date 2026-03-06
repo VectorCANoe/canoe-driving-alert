@@ -1,0 +1,337 @@
+/*@!Encoding:1252*/
+
+variables
+{
+  enum Connector
+  {
+    OPEN = 0,
+    CLOSE = 1
+  };   
+  const float cRes_R1 = 1000.0;
+  const float cRes_R2 = 1000.0;
+  const float cRes_R3 = 1000.0;
+  const float cAux_voltage = 12.0;
+  
+  msTimer tTimeoutReadyToOpen_K1_K2;
+  msTimer tCurrentMonitoring;
+  
+  // simulated power control
+  msTimer timer_outputPowerAdjustmentSim;
+
+  const long adjustmentInterval = 5;
+
+  double  presentOutputVoltageSim = 0;
+  double  presentOutputCurrentSim = 0;
+  double  presentOutputTargetVoltageSim = 0;
+  double  presentOutputTargetCurrentSim = 0;
+  int gK1K2State = OPEN;
+}
+
+on timer tCurrentMonitoring
+{
+  if(_CheckCanBeOpened_K1_K2_() == 1)
+  {
+    HV_open_close_K1K2(OPEN);
+    cancelTimer(tTimeoutReadyToOpen_K1_K2);
+    writeLineEx(-3, 3, "Current < 5A measured, opening K1_K2 now");
+  }
+  
+  if(isTimerActive(tTimeoutReadyToOpen_K1_K2))
+    tCurrentMonitoring.set(5); //Check again in 5ms
+}
+
+on timer tTimeoutReadyToOpen_K1_K2
+{
+  if( _CheckCanBeOpened_K1_K2_() ) 
+  HV_open_close_K1K2(OPEN);
+  else  
+    writeLineEx(-3, 3, "Current value >= 5A measured (value: %d), K1_K2 could not be opened within timeout.", abs(HV_measure_DC_I()));
+}
+
+void StartPowerAdjustmentTimer(long intervall)
+{
+  if( !timer_outputPowerAdjustmentSim.isRunning() )
+    timer_outputPowerAdjustmentSim.setCyclic(intervall);
+}
+void StopPowerAdjustmentTimer()
+{
+  if( timer_outputPowerAdjustmentSim.isRunning() )
+    timer_outputPowerAdjustmentSim.cancel();
+}
+on timer timer_outputPowerAdjustmentSim
+{
+  // 2% increment steps of difference
+  stack double voltageIncrement = (presentOutputTargetVoltageSim - @RuntimeValues::PresentOutputVoltage) * 0.02;
+  stack double currentIncrement = (presentOutputTargetCurrentSim - @RuntimeValues::PresentOutputCurrent) * 0.02;
+  @RuntimeValues::PresentOutputVoltage += voltageIncrement;
+  @RuntimeValues::PresentOutputCurrent += currentIncrement;
+}
+
+long _CheckCanBeOpened_K1_K2_()
+{
+  if(abs(HV_measure_DC_I()) < 5.0)
+    return 1;
+  
+  return 0;
+}
+
+export void StartTimerReadyToOpen_K1_K2(long timeoutMs)
+{
+  if(_CheckCanBeOpened_K1_K2_() == 1)
+  {
+    HV_open_close_K1K2(OPEN);
+    writeLineEx(-3, 3, "K1_K2 can be opened immediately");
+  }
+  else
+  {
+    if(!isTimerActive(tTimeoutReadyToOpen_K1_K2))
+      setTimer(tTimeoutReadyToOpen_K1_K2, timeoutMs);
+    setTimer(tCurrentMonitoring, 5);
+  }
+}
+
+//--------------------------------------------- functions of the GBT HW interface ----------------------------------------------------------------------
+
+export long ST_Init()
+{
+  presentOutputTargetVoltageSim = 0;
+  presentOutputTargetCurrentSim = 0;
+
+  // Init CC1 wiring
+
+  @sysvar::VTS::EVSE_VT2004_Ch3_CC1::RelayOrgSensor = 0;
+  @sysvar::VTS::EVSE_VT2004_Ch3_CC1::RelayShortCircuit = 0;
+  @sysvar::VTS::EVSE_VT2004_Ch3_CC1::RelayBusBar1A = 1; // U1
+  @sysvar::VTS::EVSE_VT2004_Ch3_CC1::RelayBusBar1B = 0;
+  @sysvar::VTS::EVSE_VT2004_Ch3_CC1::RelayBusBar2A = 0;
+  @sysvar::VTS::EVSE_VT2004_Ch3_CC1::RelayBusBar2B = 0;
+  sysvar::VTS::EVSE_VT2004_Ch3_CC1.SetStimulationMode(eVTSStimulationModeResistanceGreater);
+  @sysvar::VTS::EVSE_VT2004_Ch3_CC1::Resistor = cRes_R1;
+  
+  @sysvar::VTS::EVSE_VT2004_Ch4_CC1_::RelayOrgSensor = 0; // CC1 PlugIn - not connected at init
+  @sysvar::VTS::EVSE_VT2004_Ch4_CC1_::RelayShortCircuit = 0;
+  @sysvar::VTS::EVSE_VT2004_Ch4_CC1_::RelayBusBar1A = 0;
+  @sysvar::VTS::EVSE_VT2004_Ch4_CC1_::RelayBusBar1B = 0;
+  @sysvar::VTS::EVSE_VT2004_Ch4_CC1_::RelayBusBar2A = 0;
+  @sysvar::VTS::EVSE_VT2004_Ch4_CC1_::RelayBusBar2B = 1; // Switch S, normally closed
+  sysvar::VTS::EVSE_VT2004_Ch4_CC1_.SetStimulationMode(eVTSStimulationModeResistanceGreater);
+  @sysvar::VTS::EVSE_VT2004_Ch4_CC1_::Resistor = cRes_R2; 
+  // Init CC2 wiring
+  @sysvar::VTS::EVSE_VT2004_Ch1_CC2::RelayOrgSensor = 0; // CC2 PlugIn - not connected at init
+  @sysvar::VTS::EVSE_VT2004_Ch1_CC2::RelayShortCircuit = 0;
+  @sysvar::VTS::EVSE_VT2004_Ch1_CC2::RelayBusBar1A = 0;
+  @sysvar::VTS::EVSE_VT2004_Ch1_CC2::RelayBusBar1B = 0;
+  @sysvar::VTS::EVSE_VT2004_Ch1_CC2::RelayBusBar2A = 0;
+  @sysvar::VTS::EVSE_VT2004_Ch1_CC2::RelayBusBar2B = 1; // set PE: CC2 from Cable -> R3 -> PE
+  sysvar::VTS::EVSE_VT2004_Ch1_CC2.SetStimulationMode(eVTSStimulationModeResistanceGreater);
+  @sysvar::VTS::EVSE_VT2004_Ch1_CC2::Resistor = cRes_R3;
+  return 0;
+}
+
+
+export long ST_Reset()
+{
+  @sysvar::VTS::EVSE_VT2004_Ch4_CC1_::RelayOrgSensor = 0; // Reset CC1 PlugIn
+  @sysvar::VTS::EVSE_VT2004_Ch4_CC1_::RelayBusBar2B = 1; // Reset Switch S, normally closed
+  @sysvar::VTS::EVSE_VT2004_Ch1_CC2::RelayOrgSensor = 0; // CC2 PlugIn connects PE and R3: U2 -> R5 -> R3 -> PE
+  return 0;
+}
+
+export void open_close_lock (int openClose)
+{
+  writelineex(-4,1,"Lock status now: %d",openClose);
+}
+
+//--------------------------------------------- functions of the GBT HW interface ----------------------------------------------------------------------
+//Connects to the bus bar to provide 12 V; connects R1 to BMS via CC1
+export void Connect_CC1()
+{
+  @sysvar::VTS::EVSE_VT2004_Ch4_CC1_::RelayOrgSensor = 1; // CC1 PlugIn (sets R4 parallel to R2)
+}
+
+//Disconnects from the bus bar (no voltage at check point 1)
+export void Disconnect_CC1()
+{
+  
+  @sysvar::VTS::EVSE_VT2004_Ch4_CC1_::RelayOrgSensor = 0; // CC1 PlugOut (removes R4)
+}
+
+export void Connect_CC2()
+{
+  @sysvar::VTS::EVSE_VT2004_Ch1_CC2::RelayOrgSensor = 1; // CC2 PlugIn (connects PE and R3: U2 -> R5 -> R3 -> PE)
+}
+
+
+export void Disconnect_CC2()
+{
+  @sysvar::VTS::EVSE_VT2004_Ch1_CC2::RelayOrgSensor = 0;
+}
+
+export void CHA_set_voltage_CP1(double voltage)
+{
+  if(isSimulated())
+    @sysvar::GBT27930::Control::voltage_CP1 = voltage;
+  //else
+    // voltage is CP1 is set by Switch S and Connection of CC1 
+    // and is updated by sysvar::VTS::EVSE_VT2816_Ch2_CC1_PE::AvgVoltage
+} 
+
+export double CHA_measure_voltage_CP1()
+{
+  return @sysvar::GBT27930::Control::voltage_CP1;
+}
+
+on sysvar_update sysvar::VTS::EVSE_VT2816_Ch2_CC1_PE::AvgVoltage
+{
+  @sysvar::GBT27930::Control::voltage_CP1 = @sysvar::VTS::EVSE_VT2816_Ch2_CC1_PE::AvgVoltage;
+}
+
+export void CHA_set_resistance_R1(double resistance)
+{
+  if(resistance < 1)
+    sysvar::VTS::EVSE_VT2004_Ch3_CC1.SetStimulationMode(eVTSStimulationModeNone);
+  else
+  {
+    sysvar::VTS::EVSE_VT2004_Ch3_CC1.SetStimulationMode(eVTSStimulationModeResistanceGreater);
+  
+  @sysvar::VTS::EVSE_VT2004_Ch3_CC1::Resistor = resistance;
+  }
+}
+
+export void CHA_set_resistance_R2(double resistance)
+{
+  if(resistance < 1)
+    sysvar::VTS::EVSE_VT2004_Ch4_CC1_.SetStimulationMode(eVTSStimulationModeNone);
+  else
+  {
+    sysvar::VTS::EVSE_VT2004_Ch4_CC1_.SetStimulationMode(eVTSStimulationModeResistanceGreater);
+  
+  @sysvar::VTS::EVSE_VT2004_Ch4_CC1_::Resistor = resistance;
+  }
+}
+
+export void CHA_set_resistance_R3(double resistance)
+{
+  if(resistance < 1)
+    sysvar::VTS::EVSE_VT2004_Ch1_CC2.SetStimulationMode(eVTSStimulationModeNone);
+  else
+  {
+    sysvar::VTS::EVSE_VT2004_Ch1_CC2.SetStimulationMode(eVTSStimulationModeResistanceGreater);
+  
+  @sysvar::VTS::EVSE_VT2004_Ch1_CC2::Resistor = resistance;
+  }
+}
+ 
+export void disconnect_resistances()
+{
+  sysvar::VTS::EVSE_VT2004_Ch1_CC2.SetStimulationMode(eVTSStimulationModeNone);
+  sysvar::VTS::EVSE_VT2004_Ch2.SetStimulationMode(eVTSStimulationModeNone);
+  sysvar::VTS::EVSE_VT2004_Ch3_CC1.SetStimulationMode(eVTSStimulationModeNone);
+  sysvar::VTS::EVSE_VT2004_Ch4_CC1_.SetStimulationMode(eVTSStimulationModeNone);
+}
+
+export void Connect_CAN()
+{
+  //CAN connection handling is not needed for VT wiring
+}
+
+export void Disconnect_CAN()
+{
+  //CAN connection handling is not needed for VT wiring
+}
+
+export void CHA_open_close_S(int openClose)
+{
+
+  if (openClose == CLOSE)
+    @sysvar::VTS::EVSE_VT2004_Ch4_CC1_::RelayBusBar2B = 1;
+  else if (openClose == OPEN)
+    @sysvar::VTS::EVSE_VT2004_Ch4_CC1_::RelayBusBar2B = 0;
+
+}
+
+export void CHA_open_close_K3K4(int openClose)
+{  
+  writeEx(-3,3, "Test system: CHA_open_close_K3K4 called, openClose %d", openClose);
+}
+ 
+export void CHA_set_auxiliary_voltage(double voltage)
+{
+  writeEx(-3,3, "Test system: CHA_set_auxiliary_voltage called, voltage %f V", voltage);
+  @sysvar::GBT27930::Control::auxiliary_voltage = voltage;
+}
+ 
+//not part of communication tests
+export long HV_measure_DC_U()
+{
+  if( gK1K2State == OPEN )
+  {
+    return @RuntimeValues::PresentOutputVoltage;
+  }
+  else
+  {
+    // same as battery if contactors closed
+    return HV_measure_DC_U_VeriVolt();
+  }
+}
+
+export long HV_measure_DC_U_VeriVolt()
+{
+  return @RuntimeValues::PresentOutputVoltage;
+}
+
+//not part of communication tests
+export long HV_measure_DC_I()
+{
+  return @RuntimeValues::PresentOutputCurrent;
+}
+
+//not part of communication tests
+export long HV_measure_DC_P()
+{
+  return HV_measure_DC_U() * HV_measure_DC_I();
+}
+
+//not part of communication tests
+export long HV_source_set_U_DC(double voltage)
+{
+  presentOutputTargetVoltageSim = voltage;
+  StartPowerAdjustmentTimer(adjustmentInterval);
+  return 0;
+}
+
+//not part of communication tests
+export long HV_source_set_I_DC(double current)
+{
+  presentOutputTargetCurrentSim = current;
+  StartPowerAdjustmentTimer(adjustmentInterval);
+  return 0;
+}
+
+export void HV_source_reset()
+{
+  HV_source_set_U_DC(0.0);
+  HV_source_set_I_DC(0.0);
+  timer_outputPowerAdjustmentSim.cancel();
+  ST_Reset();
+}
+
+export void HV_open_close_K1K2 (int openClose)
+{
+  if(gK1K2State != openClose)
+    writeEx(-4,1, "Test system: HV_open_close_K1K2 called, openClose %d", openClose);
+  
+  gK1K2State = openClose;
+}
+
+export long HV_get_insulation_state(long imdInstalled)
+{
+  // return 1; // insulation OK
+  // return 2; // insulation NOK
+  return 0; // test ongoing
+}
+
+export long HV_enable_insulation_state(int enable)
+{
+  return 0;
+}

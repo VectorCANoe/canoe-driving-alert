@@ -1,0 +1,124 @@
+/*@!Encoding:1252*/
+///////////////////////////////////////////////////////////////////
+// RSU.can CAPL node defines the C-V2X communication behavior of
+// "RSU" road side unit in addition to the behavior defined in the
+// scenario file for station "RSU" .
+///////////////////////////////////////////////////////////////////
+includes
+{
+  #include "..\DataSources_Templates\ASNV_Template_BaseDatatypes.cin"
+  #include "..\DataSources_Templates\ASNV_Template_RoadsideSafetyMessage.cin"
+}
+
+variables
+{
+  // Contains the value of rsmFrame.msgCnt token for the next
+  // RoadsideSafetyMessage transmit
+  byte rsmMsgCount = 0;
+
+  // Map API definitions and handles for RSU and pedestrian P position visualisation
+  enum MapObjectTypes
+  {
+    Square = 1,
+    Rectangle = 2,
+    Ellipse = 3,
+    Cross = 4,
+    Triangle = 5,
+    Line = 6,
+    Bitmap = 7,
+    Text = 8
+  };
+  
+  long hPedestrianPosCross = 0;
+  long hPedestrianPosText = 0;
+  long hRSUPosCross = 0;
+  long hRSUPosText = 0;
+}
+
+// Called before the CANoe measurement starts
+on start
+{
+  enum CallbackType{OnRx, PreTx};
+  // Register callback function "OnPreTxRoadsideSafetyMessage" 
+  C2xRegisterCallback(PreTx, "OnPreTxRoadsideSafetyMessage", "RoadsideSafetyMessage");
+  
+  // Create Map API visualisation objects
+  hPedestrianPosCross = CreateMapObject(Cross);
+  SetMapObjectLineColor(hPedestrianPosCross, makeRGB(0xFF,0,0));
+  SetMapObjectPenWidth(hPedestrianPosCross, 2);
+  SetMapObjectSize(hPedestrianPosCross, 10);
+  hPedestrianPosText = CreateMapObject(Text);
+  hRSUPosCross = CreateMapObject(Cross);
+  SetMapObjectLineColor(hRSUPosCross, makeRGB(0xFF,0,0));
+  SetMapObjectPenWidth(hRSUPosCross, 2);
+  SetMapObjectSize(hRSUPosCross, 10);
+  hRSUPosText = CreateMapObject(Text);
+  SetMapObjectText(hRSUPosText, "RSU");
+}
+
+// Called each time before sending the RoadsideSafetyMessage
+long OnPreTxRoadsideSafetyMessage(long packet)
+{
+  struct RoadsideSafetyMessage rsm;
+  double pedestrianPosLat, pedestrianPosLon;
+  
+  if(@ScenarioCtrl::ScenarioNumber != 25)
+  {
+    return 0;
+  }
+  
+  // Get all RoadsideSafetyMessage data (was set by scenario) into temporary "rsm" variable
+  API_GetRoadsideSafetyMessageParams(packet, rsm);
+  
+  // Set the rsmFrame.msgCnt counter value
+  rsm.rsmFrame.msgCnt = rsmMsgCount++;
+  rsmMsgCount = rsmMsgCount%128;
+  
+  rsm.rsmFrame.refPos.lat = C2xGetStationAttributeDouble("Latitude") * 1e7;
+  rsm.rsmFrame.refPos.lon = C2xGetStationAttributeDouble("Longitude") * 1e7;
+  rsm.rsmFrame.refPos.elevation.isValidFlag = 1;
+  rsm.rsmFrame.refPos.elevation.value = C2xGetStationAttributeDouble("Elevation") * 10;
+
+  // Emulate the recognition of pedestrian P (see VRUCW scenario (c)) via RSU sensors
+  rsm.rsmFrame.participants.isValidFlag = 1;
+  rsm.rsmFrame.participants.length = 1;
+  rsm.rsmFrame.participants.arrayValue[0].ptcType = 3; // pedestrian
+  rsm.rsmFrame.participants.arrayValue[0].source = 4; // microwaveRadar
+  pedestrianPosLat = C2xGetStationAttributeDouble("P", "Latitude");
+  pedestrianPosLon = C2xGetStationAttributeDouble("P", "Longitude");
+  rsm.rsmFrame.participants.arrayValue[0].pos.offsetLL.choice = 6;
+  rsm.rsmFrame.participants.arrayValue[0].pos.offsetLL.position_LatLon.lat = pedestrianPosLat * 1e7;
+  rsm.rsmFrame.participants.arrayValue[0].pos.offsetLL.position_LatLon.lon = pedestrianPosLon * 1e7;
+  
+  // Apply all changes to the packet
+  API_SetRoadsideSafetyMessageParams(packet, rsm);
+  
+  // Draw RSU and pedestrian position visualisation
+  DrawRSUData(pedestrianPosLat, pedestrianPosLon);
+  
+  return 1;
+}
+
+// Draw RSU and pedestrian position visualisation
+void DrawRSUData(double pedestrianPosLat, double pedestrianPosLon)
+{
+  double rsuPosLat, rsuPosLon;
+
+  // RSU position in scenario 
+  rsuPosLat = C2xGetStationAttributeDouble("Latitude");
+  rsuPosLon = C2xGetStationAttributeDouble("Longitude");
+  
+  // Detected pedestrian position
+  SetMapObjectPosition(hPedestrianPosCross, pedestrianPosLat, pedestrianPosLon);
+  SetMapObjectPosition(hPedestrianPosText, pedestrianPosLat, pedestrianPosLon+0.00004);
+  SetMapObjectText(hPedestrianPosText, "P");
+  
+  SetMapObjectPosition(hRSUPosCross, rsuPosLat, rsuPosLon);
+  SetMapObjectPosition(hRSUPosText, rsuPosLat, rsuPosLon+0.00006);
+  
+  DrawMapObject(hPedestrianPosCross);
+  DrawMapObject(hPedestrianPosText);
+
+  DrawMapObject(hRSUPosCross);
+  DrawMapObject(hRSUPosText);
+}

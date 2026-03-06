@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<Panel Type="Vector.CANalyzer.Panels.PanelSerializer, Vector.CANalyzer.Panels.Serializer, Version=16.3.50.0, Culture=neutral, PublicKeyToken=null">
+  <Object Type="Vector.CANalyzer.Panels.Runtime.Panel, Vector.CANalyzer.Panels.Common, Version=16.3.50.0, Culture=neutral, PublicKeyToken=null" Name="Panel" Children="Controls" ControlName="PA Trigger Errors">
+    <Object Type="Vector.CANalyzer.Panels.Design.CheckBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=16.3.50.0, Culture=neutral, PublicKeyToken=null" Name="CheckBoxControl3" Children="Controls" ControlName="Check Box 3">
+      <Property Name="Name">CheckBoxControl3</Property>
+      <Property Name="Size">120, 20</Property>
+      <Property Name="Location">14, 106</Property>
+      <Property Name="Text">Traffic Class Id</Property>
+      <Property Name="SymbolConfiguration">8;16;ProtocolAnalyzer;;;TriggerTrafficClassId;1;;;-1;;;;;;0</Property>
+      <Property Name="TabIndex">8</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.CheckBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=16.3.50.0, Culture=neutral, PublicKeyToken=null" Name="CheckBoxControl2" Children="Controls" ControlName="Check Box 2">
+      <Property Name="Name">CheckBoxControl2</Property>
+      <Property Name="Size">120, 20</Property>
+      <Property Name="Location">14, 76</Property>
+      <Property Name="Text">Station Type</Property>
+      <Property Name="SymbolConfiguration">8;16;ProtocolAnalyzer;;;TriggerStationType;1;;;-1;;;;;;0</Property>
+      <Property Name="TabIndex">7</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.CheckBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=16.3.50.0, Culture=neutral, PublicKeyToken=null" Name="CheckBoxControl1" Children="Controls" ControlName="Check Box 1">
+      <Property Name="Name">CheckBoxControl1</Property>
+      <Property Name="Size">120, 20</Property>
+      <Property Name="Location">14, 46</Property>
+      <Property Name="Text">StationId</Property>
+      <Property Name="SymbolConfiguration">8;16;ProtocolAnalyzer;;;TriggerStationId;1;;;-1;;;;;;0</Property>
+      <Property Name="TabIndex">6</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=16.3.50.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl1" Children="Controls" ControlName="Text1">
+      <Property Name="Name">StaticTextControl1</Property>
+      <Property Name="Size">196, 13</Property>
+      <Property Name="Location">10, 17</Property>
+      <Property Name="Text">Trigger Protocol Analyzer Errors for DuT</Property>
+    </Object>
+    <Property Name="Name">Panel</Property>
+    <Property Name="Size">224, 147</Property>
+    <Property Name="BackColor">White</Property>
+  </Object>
+</Panel>

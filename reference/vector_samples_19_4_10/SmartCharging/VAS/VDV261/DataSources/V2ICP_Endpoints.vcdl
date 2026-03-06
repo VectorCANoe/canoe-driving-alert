@@ -1,0 +1,20 @@
+version 2.0;
+
+namespace V2ICP::Endpoints 
+{
+  [Binding="HTTP"]
+  [HTTPBinding::Host="https://[2001:DB8:CAFE::2]:443"]                            // Min. CANoe 18.3 / Min. CANoe 19.0 for https; no DNS when using CANoe Sockets
+  [HTTPBinding::IPConfig::TLSConfiguration="Initial TLS Configuration"]               // Min. CANoe 19.0
+  [HTTPBinding::IPConfig::Node="V2ICPClient"]                                         // Min. CANoe 19.0
+  [HTTPBinding::IPConfig::Network="V2ICPCluster"]                                     // Min. CANoe 19.0
+  V2ICP::Interfaces::IV2ICPClient V2ICPClient;
+
+
+  [AutoConnect=false]
+  [Binding="HTTP"]                                                                    // Min. CANoe 18.3
+  [HTTPBinding::Server::Port=443]                                                     // Min. CANoe 18.3
+  [HTTPBinding::IPConfig::TLSConfiguration="Initial TLS Configuration"]               // Min. CANoe 19.0
+  [HTTPBinding::IPConfig::Node="V2ICPServer"]                                         // Min. CANoe 19.0
+  [HTTPBinding::IPConfig::Network="V2ICPCluster"]                                     // Min. CANoe 19.0
+  V2ICP::Interfaces::IV2ICPServer V2ICPServer;
+}

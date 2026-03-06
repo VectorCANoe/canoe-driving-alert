@@ -1,0 +1,37 @@
+/*@!Encoding:65001*/
+includes
+{
+}
+
+variables
+{
+  msTimer timerCyclic;
+}
+
+on start
+{
+  @ctrl::Modifier = 1.0;
+  @ctrl::ToggleModel1 = 1;
+  @ctrl::ToggleModel2 = 1;
+  @ctrl::ToggleInteractionLayer = 1;
+  @ctrl::MsgCounter = 0;
+  setTimerCyclic(timerCyclic, 10);
+  
+  //Init Matlab models so we can control them via Capl
+  model1_init(0,0);
+  model2_init(0,0);
+}
+
+on timer timerCyclic
+{
+  if(@ctrl::ToggleModel1)
+  {
+    model1_step(); //Compute Ert::Sine
+  }
+  
+  if(@ctrl::ToggleModel2)
+  {
+    @Ert::InputModel2 = @Ert::SysvarSine * @ctrl::Modifier;
+    model2_step(); //Compute Ert::SineModified
+  } 
+}

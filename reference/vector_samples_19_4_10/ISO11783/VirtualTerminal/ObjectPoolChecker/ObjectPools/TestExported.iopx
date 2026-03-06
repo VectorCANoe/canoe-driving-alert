@@ -1,0 +1,52 @@
+<ISO11783OP fileVersion="1">
+  <workingSet id="0" backgroundColor="1" selectable="1" activeMask="1000">
+    <ref objectID="20000" x="0" y="0"/>
+  </workingSet>
+  <workingSetSpecialControls id="1" numOfBytesToFollow="21" colorMapId="10000" colorPaletteId="6000">
+    <languagePair languageCode="en" countryCode="US"/>
+    <languagePair languageCode="en" countryCode="GB"/>
+    <languagePair languageCode="de" countryCode="DE"/>
+    <languagePair languageCode="de" countryCode="AT"/>
+  </workingSetSpecialControls>
+  <macro id="100">af8c230101000000</macro>
+  <dataMask id="1000" backgroundColor="253" softKeyMask="4000">
+    <ref objectID="11000" x="0" y="0"/>
+    <ref objectID="9000" x="5" y="25"/>
+    <ref objectID="9001" x="30" y="25"/>
+    <ref objectID="14000" x="90" y="25"/>
+    <ref objectID="14000" x="100" y="36"/>
+    <ref objectID="11001" x="5" y="80"/>
+  </dataMask>
+  <softkeyMask id="4000" backgroundColor="1">
+    <ref objectID="5000"/>
+  </softkeyMask>
+  <key id="5000" backgroundColor="1" keyCode="1">
+    <ref objectID="9002" x="2" y="2"/>
+  </key>
+  <colorPalette id="6000" options="0">
+    <palette argb="FF0000FF"/>
+    <palette argb="FF00FF00"/>
+    <palette argb="FFFF0000"/>
+    <palette argb="2EFF0000"/>
+  </colorPalette>
+  <graphicData id="7000" format="0">89504e470d0a1a0a0000000d49484452000000100000001008060000001ff3ff61000002a749444154388d5d933d6f5c5510869f77ceb9f7eef57a374e7084900358428b41d9626952a5b0252a8852e40f44a2a5b00505a5e5261295d712ff800829458ad428c26508326c404a8c08923b9093d8ebfdf0ddec5ddf43b1d675cc48d38ce67dce3b4733e27fd1b8717751d22ab2e5f94bf556110287bdac23691bd9d6eefd5b7b6ff6ab147efefd1cd2fa7b0bf36b5797ae3029228e86135ee7271002c361c68bc31ec32c6b236d3cbb77b35b024ec53f5dbfb6d4aad6e678f2fc982c0fd4661c20faa30267903a1865437ac3830ed2cad31f3eebdad487d6af5f5b6a595ce7d1d321591e00f1e0cec73cb8f3113211641c0783b44e5abbdc92b975006bdcb8bbf8fec2fcda6c6d8e277f67534f1298ca19cd1bf2867907de1155eb4495ea5af3f6c3452f69f5ead2bbfcfafcf84c2c21273efde6cfe9eb66651d0909e2ea054e7aaf563db2e549f064e3fc5cd3e3ef9ae54f37bfdcc579614e08a100894b9073cb76f9ad7aeb68380141010c460507fd098d2ffe280171e2892b9e24f524339e782662b61651a9a42d5f0418e705e349e0703041664489c37b2b0151c5e1e3694d6648309b04867d8f1d1c1d77f2c9092f0f73420073c29ce12277ce4152f124331195ea342fce4564e3938e49da7e7530c03990e914209c2b770c9f38a28a2749a7e25a3dc659819cdf36645b478301976684344d33217736828f1c51e289534fa51af3e195887ff647c8dc96eddebfb537ce5fb72932524709e96c364ac08f5fbf8d73868f1d8d85887e6fccbf2fc7ed9dcde69e3fddc48dfca4bfecccb702b3007cf2d55f246954ce5dabc57c300fddfd013fef1c7464b6016000cfeeddec22ad48bdb60f5d54e4c401aa16b81807dea9062e28e3f7dff679f4f8459b10567ef9b671764c6f46f3f6c34599adcaf9e524495b3e768cf2a223e7b7656e6b67b379ee9cff037f13de1ba01eaf720000000049454e44ae426082</graphicData>
+  <scaledGraphic id="9000" width="40" height="40" scaleType="0" options="1" value="7000">
+    <macro macroID="50" eventID="255"/>
+    <macro macroID="117" eventID="9"/>
+  </scaledGraphic>
+  <scaledGraphic id="9001" width="100" height="80" scaleType="0" options="0" value="20000"/>
+  <scaledGraphic id="9002" width="60" height="36" scaleType="3" options="40" value="7000"/>
+  <colorMap id="10000">
+    <map index="1"/>
+    <map index="0"/>
+  </colorMap>
+  <outputString id="11000" width="240" height="20" backgroundColor="251" font="23000" options="0" variable="65535" justification="1" value="VT Version 6 Objects"/>
+  <outputString id="11001" width="230" height="100" backgroundColor="1" font="23001" options="2" variable="65535" justification="0" value="Working Set Special Control object (ID 2) references Colour Map object (ID 10000) which exchanges black and white. Color Palette object (ID 6000) exchange the first four colours."/>
+  <rectangle id="14000" line="24000" width="40" height="40" suppression="0" fill="25000"/>
+  <picture id="20000" width="50" options="0" transparentColor="1" actualWidth="50" actualHeight="50" format="0">ffffffffffffc0ffffffffffffc0ffffffffffffc0ffffffffffffc0ffffffffffffc0ffffffffffffc0ffffffffffffc0ffffffffffffc0ffffffc7ffffc0ffffff03ffffc0fff0e003ffffc0fff00007ffffc0fff00007ffffc0fff00003ffffc0ffe01f81ffffc0ffe07fe0ffffc0ffe0fff07fffc0ffe1fff83fffc0ffe3fffc1fffc0ffc3f0fc0fffc0ffc7e07e07ffc0ff87e07e07ffc0fe07e07e0fffc0fe07e07e3f9fc0fe07f0fe3f9fc0fe03fffc3f9fc0ff03fffc7f9fc0ffc1fff87f1fc0ffe0fff07f3fc0fff07fe07f3fc0fff81f80fe3fc0fffc0000fe7fc0fffc0000fc7fc0fffc0000f8ffc0fffc07f1f1ffc0fffc1ffbe3ffc0ffffffffc7ffc0ffffffff0fffc0fffffffc1fffc0ffffffe07fffc0fffffe01ffffc0fffffe0fffffc0ffffffffffffc0ffffffffffffc0ffffffffffffc0ffffffffffffc0ffffffffffffc0ffffffffffffc0ffffffffffffc0ffffffffffffc0</picture>
+  <fontAttribute id="23000" color="161" size="16" type="0" style="129"/>
+  <fontAttribute id="23001" color="0" size="16" type="0" style="129"/>
+  <lineAttribute id="24000" color="9" width="1" art="65535"/>
+  <fillAttribute id="25000" type="2" color="3" pattern="65535"/>
+  <macro id="30002">a1581b01ffffffff</macro>
+</ISO11783OP>

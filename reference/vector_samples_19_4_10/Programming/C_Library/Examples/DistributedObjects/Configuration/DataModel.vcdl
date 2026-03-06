@@ -1,0 +1,21 @@
+version 2.0;
+
+namespace DOSpace
+{
+    [Binding="Abstract"]
+    interface DO {
+        // Provided data member without initial value
+        provided data float DataMember;
+
+        // Consumed event with initial value
+        consumed event string Event = "Value";
+
+        // Internal fields with different accessors and optional initial values
+        internal field int32 Field1 = 4; 
+
+        provided method int32 Foo(in int32 inParam, out int32 outParam);
+    }
+
+    DO do1;
+    reverse<DO> do2;
+}

@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Panel Type="Vector.CANalyzer.Panels.PanelSerializer, Vector.CANalyzer.Panels.Serializer, Version=19.0.90.0, Culture=neutral, PublicKeyToken=null">
+  <Object Type="Vector.CANalyzer.Panels.Runtime.Panel, Vector.CANalyzer.Panels.Common, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Panel" ControlName="Help">
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl1" ControlName="Static Text">
+      <Property Name="Name">StaticTextControl1</Property>
+      <Property Name="Size">256, 33</Property>
+      <Property Name="Location">56, 17</Property>
+      <Property Name="BackColor">255, 215, 228, 242</Property>
+      <Property Name="Text">Press the button to open a detailed description of this sample configuration</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.PanelHelpControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="PanelHelpControl1" ControlName="File Button">
+      <Property Name="Name">PanelHelpControl1</Property>
+      <Property Name="Size">40, 40</Property>
+      <Property Name="Location">10, 10</Property>
+      <Property Name="ImageFile">BMP\Help_32.png</Property>
+      <Property Name="TabIndex">1</Property>
+      <Property Name="Arguments">CANDiagnosticsOBDonUDS.CFG</Property>
+      <Property Name="Filename">Choose file...</Property>
+      <Property Name="WorkingDirectory"></Property>
+    </Object>
+    <Property Name="Name">Panel</Property>
+    <Property Name="Size">326, 60</Property>
+    <Property Name="Location">0, 0</Property>
+    <Property Name="BackColor">255, 215, 228, 242</Property>
+  </Object>
+</Panel>

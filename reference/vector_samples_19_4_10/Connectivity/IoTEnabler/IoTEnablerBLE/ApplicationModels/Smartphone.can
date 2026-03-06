@@ -1,0 +1,369 @@
+/*@!Encoding:1252*/
+includes
+{
+  
+}
+
+
+
+variables
+{
+  long mac_dropdown_counter;
+  long uuid_dropdown_counter;
+  long scan_status;
+  msTimer stat_timer;
+  long client_socket;
+}
+
+on start
+{
+  
+  IoTEnabler::Smartphone_BLE.configure.CallAsync("hci0");
+  IoTEnabler::Smartphone_L2CAP.configure.CallAsync("hci0");
+  IoTEnabler::Smartphone_SYS.configure.CallAsync("hci0");
+
+  sysDefineVariableInt("PanelUtilSysVar", "MACDropDownList", 0); 
+  
+}
+
+on stopMeasurement
+{
+    int i;
+    for (i=0; i <= mac_dropdown_counter; i++)
+    {
+        sysSetVariableDescriptionForValue("PanelUtilSysVar", "MACDropDownList",i,""); 
+    }
+    for (i=0; i <= uuid_dropdown_counter; i++)
+    {
+      sysSetVariableDescriptionForValue("PanelUtilSysVar", "UUIDDropDownList",i,""); 
+    }  
+}
+
+void log(char msg[], char arg[])
+{
+  char buffer[512];
+  double time;
+  
+  time = timeNowInt64() * 1.0 / (1000*1000*1000);
+  snprintf(buffer, elcount(buffer), "[%f]\t%s: %s\n", time, msg, arg);
+
+   putValueToControl("Smartphone","Log", buffer);
+
+}
+
+// Process scan results
+on value_update IoTEnabler::Smartphone_BLE.devices
+{
+  long device_index;
+  char address[32];
+  char address_display[128];
+  long index;
+  int ret;
+  byte empty_data[1] = {0x0};
+
+  scan_status = (scan_status == 0);
+  
+  if (scan_status)
+  {
+    SetPictureBoxImage("Smartphone", "Scan_Icon", "Bitmaps/wireless_grey.png");
+  }
+  else
+  {
+    SetPictureBoxImage("Smartphone", "Scan_Icon", "Bitmaps/wireless_green.png");
+  }
+  
+    for (device_index = 0; device_index < $this.devices.Length; device_index++)
+    {  
+
+
+      snprintf(address_display, elcount(address_display), "%s %-20s %s", $this.devices[device_index].address,  $this.devices[device_index].alias, $this.devices[device_index].srvid);
+
+      ret = sysGetVariableValueForDescription(sysvar::PanelUtilSysVar::MACDropDownList, address_display, index);
+      if (ret > 0)
+      {
+           sysSetVariableDescriptionForValue("PanelUtilSysVar", "MACDropDownList",mac_dropdown_counter++,address_display); 
+      }
+
+        if (!strncmp($this.devices[device_index].address, $PanelUtil::smartphonePanel.selected_mac, strlen($PanelUtil::smartphonePanel.selected_mac)))
+        {
+              //write("%s - %s", $this.devices[device_index].address, $PanelUtil::smartphonePanel.selected_mac);
+              $PanelUtil::smartphonePanel.rssi = $this.devices[device_index].rssi;
+              $PanelUtil::smartphonePanel.address_type = $this.devices[device_index].addresstype;
+              $PanelUtil::smartphonePanel.company = $this.devices[device_index].company;
+              if ($this.devices[device_index].manufacturerdata.Length > 0)
+              {
+                $PanelUtil::smartphonePanel.manufacturer_oui_1 = $this.devices[device_index].manufacturerdata[0].oui;
+                memcpy($PanelUtil::smartphonePanel.manufacturer_data_1,  $this.devices[device_index].manufacturerdata[0].data);
+              }
+              else
+              {
+                $PanelUtil::smartphonePanel.manufacturer_oui_1 = 0x1;
+                memcpy($PanelUtil::smartphonePanel.manufacturer_data_1,  empty_data);
+              }
+        }
+    }
+}
+
+on sysvar_update PanelUtilSysVar::MACDropDownList
+{
+  char value[128];
+  char mac[18];
+  sysGetVariableDescriptionForValue(sysvar::PanelUtilSysVar::MACDropDownList, @this, value, elcount(value));
+  strncpy(mac, value, elcount(mac));
+  $PanelUtil::smartphonePanel.selected_mac = mac;
+}
+
+on value_update PanelUtil::smartphonePanel.scan_button
+
+{
+  if($this == 1)
+  {
+    IoTEnabler::Smartphone_BLE.scan.CallAsync(0);
+  }
+  else
+  {
+    IoTEnabler::Smartphone_BLE.scan.CallAsync(-1 );
+  }
+}
+
+on value_update PanelUtil::smartphonePanel.rpa_mode_button
+{
+  if($this == 1)
+  {
+    IoTEnabler::Smartphone_SYS.rpa_set.CallAsync(1, "");
+  }
+  else
+  {
+    IoTEnabler::Smartphone_SYS.rpa_set.CallAsync(0, "");
+
+  }
+}
+
+on value_update PanelUtil::smartphonePanel.hci_trace_button
+{
+  if($this == 1)
+  {
+    IoTEnabler::Smartphone_SYS.trace.CallAsync(1);
+  }
+  else
+  {
+    IoTEnabler::Smartphone_SYS.trace.CallAsync(0);
+
+  }
+}
+
+// Connect to the device
+on value_update PanelUtil::smartphonePanel.connect_button
+
+{
+  if($this == 1)
+  {
+  // Call 'connect' function
+    IoTEnabler::Smartphone_BLE.connect.CallAsync($PanelUtil::smartphonePanel.selected_mac);
+  }
+}
+
+
+// Connect to the device
+on value_update PanelUtil::smartphonePanel.discover_button
+
+{
+  int i;
+
+  if($this == 1)
+  {
+    IoTEnabler::Smartphone_BLE.discover.CallAsync();
+    for (i=0; i <= uuid_dropdown_counter; i++)
+    {
+      sysSetVariableDescriptionForValue("PanelUtilSysVar", "UUIDDropDownList",i,""); 
+    }  
+  }
+}
+
+on timer stat_timer
+{
+    IoTEnabler::Smartphone_SYS.stats.CallAsync(1);
+
+}
+
+on value_update PanelUtil::smartphonePanel.gatt_subscribe_button
+{
+  if ($this == 1)
+  {
+    IoTEnabler::Smartphone_BLE.subscribe.CallAsync("EF680101-1234-1234-1234-000000000000", "RSSI");
+  }
+}
+
+on value_update PanelUtil::smartphonePanel.gatt_unsubscribe_button
+{
+  if ($this == 1)
+  {
+    IoTEnabler::Smartphone_BLE.unsubscribe.CallAsync("EF680101-1234-1234-1234-000000000000");
+  }
+}
+
+on value_update PanelUtil::smartphonePanel.stat_mode_button
+{
+  if ($this == 1)
+  {
+    $PanelUtil::smartphonePanel.scan_button = 0;
+    setTimer(stat_timer, 1000); // Calling stats() directly would be too early (before stop of normal scan)
+  }
+  else
+  {
+    IoTEnabler::Smartphone_SYS.stats.CallAsync(0);
+  }
+}
+
+// Trigger service discovery after connect
+on fct_returned IoTEnabler::Smartphone_BLE.connect
+{
+  if (this.Result.return_code == NIoTEnabler::NIBLEPeripheral::return_code_enum::OK)
+  {
+    log("Connect successful to", $PanelUtil::smartphonePanel.selected_mac);
+    IoTEnabler::Smartphone_BLE.discover.CallAsync();
+  }
+  else
+  {
+   log("Connect failed", $PanelUtil::smartphonePanel.selected_mac);
+  }
+  
+}
+
+// Process result of service discovery
+on fct_returned IoTEnabler::Smartphone_BLE.discover
+{
+  int ret;
+  int service_index, uuid_index;
+  long index;
+  char uuid_display[128];
+  
+// Replace XXXX-XXXX with concrete UUID
+  log("Discover succesful", "");
+  
+  for (service_index = 0; service_index < this.services.Length; service_index++)
+  {
+    snprintf(uuid_display, elcount(uuid_display), "%s", this.services[service_index].uuid);
+    log("\tDiscovered", this.services[service_index].uuid);
+    ret = sysGetVariableValueForDescription(sysvar::PanelUtilSysVar::UUIDDropDownList, uuid_display, index);
+
+      if (ret > 0)
+      {
+           sysSetVariableDescriptionForValue("PanelUtilSysVar", "UUIDDropDownList",uuid_dropdown_counter++,uuid_display); 
+      }
+      for (uuid_index = 0; uuid_index < this.services[service_index].characteristics.Length; uuid_index++)
+      {
+          snprintf(uuid_display, elcount(uuid_display), "    %s", this.services[service_index].characteristics[uuid_index].uuid, uuid_index);
+          ret = sysGetVariableValueForDescription(sysvar::PanelUtilSysVar::UUIDDropDownList, uuid_display, index);
+     
+          if (ret > 0)
+          {
+               sysSetVariableDescriptionForValue("PanelUtilSysVar", "UUIDDropDownList",uuid_dropdown_counter++,uuid_display); 
+          }
+
+      }
+
+  }
+}
+
+on value_update PanelUtil::smartphonePanel.disconnect_button
+{
+  
+  if ($PanelUtil::smartphonePanel.disconnect_button > 0)
+  {
+    IoTEnabler::Smartphone_BLE.disconnect.CallAsync();
+
+  }
+}
+
+on value_update PanelUtil::smartphonePanel.update_phy_button
+{
+  byte cmd[7];
+
+  
+  if ($PanelUtil::smartphonePanel.update_phy_button > 0)
+  {
+    
+    cmd[0] = $PanelUtil::smartphonePanel.hci_handle;
+    cmd[1] = 0x0;
+    cmd[2] = 0x0;
+    cmd[3] = 0x2;
+    cmd[4] = 0x2;
+    cmd[5] = 0x0;
+    cmd[6] = 0x0;
+
+    IoTEnabler::Smartphone_SYS.hci_command_transmit.CallAsync(0x8, 0x32, cmd);
+
+  }
+}
+
+
+on value_update PanelUtil::smartphonePanel.l2cap_connect_button
+{
+  int socket;
+  
+  if ($PanelUtil::smartphonePanel.l2cap_connect_button > 0)
+  {
+    IoTEnabler::Smartphone_L2CAP.create.CallAsync(22);
+
+  }
+}
+
+
+
+on fct_returned IoTEnabler::Smartphone_L2CAP.create
+{
+        client_socket = this.socket;
+        $PanelUtil::smartphonePanel.l2cap_socket = client_socket;
+        IoTEnabler::Smartphone_L2CAP.connect.CallAsync(client_socket, $PanelUtil::smartphonePanel.selected_mac, $PanelUtil::smartphonePanel.l2cap_psm);
+        IoTEnabler::Smartphone_L2CAP.async_mode.CallAsync(client_socket, 1);
+
+}
+
+
+on value_update PanelUtil::smartphonePanel.l2cap_write_button
+{
+  IoTEnabler::Smartphone_L2CAP.write.CallAsync(client_socket, $PanelUtil::smartphonePanel.l2cap_write_data);
+}
+
+on value_update IoTEnabler::Smartphone_SYS.hci_event_le_ext_conn_complete
+{
+  $PanelUtil::smartphonePanel.hci_handle = $this.handle;
+}
+
+// Send connection update as raw HCI command
+on value_update PanelUtil::smartphonePanel.update_conn_button
+  {
+    byte cmd[14];
+    
+    cmd[0] = $PanelUtil::smartphonePanel.hci_handle;
+    cmd[2] = 0x6;
+    cmd[4] = 0x6;
+    cmd[6] = 0x0;
+    cmd[8] = 0x64;
+    cmd[10] = 0x1;
+    cmd[12] = 0x1;
+
+    IoTEnabler::Smartphone_SYS.hci_command_transmit.CallAsync(0x8, 0x13, cmd);
+  
+  }
+  
+  on value_update IoTEnabler::Smartphone_SYS.advertisement_stats
+  {
+    int i, j;
+   for (i=0; i < $this.devices.length; i++)
+    {
+     if (!strncmp($this.devices[i].mac, $PanelUtil::smartphonePanel.selected_mac, strlen($PanelUtil::smartphonePanel.selected_mac)))
+     {
+       for (j=0; j < $this.devices[i].samples.length; j++)
+       {
+         $PanelUtil::smartphonePanel.samples[j].value = $this.devices[i].samples[j].value;
+         $PanelUtil::smartphonePanel.samples[j].percentage = $this.devices[i].samples[j].percentage * 100;
+        
+      }
+     } 
+    }
+  }
+  
+
+

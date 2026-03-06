@@ -1,0 +1,9 @@
+version: 2.1.0
+
+test-unit-information:
+  caption: ABS Brake Tester
+  description: This test module shows the utilization of Simulink models for test purposes in a very simple way.\n\nVerdicts for the test cases can be derived in different ways:\na) Evaluate a (physical) result value directly in the test module. \nThe allowed range is specified within the test module, there is no need to provide the range to the Simulink model.\nb) Delegate the physical value evaluation to the Simulink model\nProvide the allowed range to Simulink and only consider a result variable (that will contain passed of failed) in the test module.\nWithin this test module, both approaches are shown.
+
+test-unit-implementation:
+  - source-file-path: ABSBrakeTest.vtesttree.yaml
+  - source-file-path: ABSBrakeTest.can

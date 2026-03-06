@@ -1,0 +1,63 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--Vector Test Table Editor-->
+<ttroot version="29" xmlns="http://www.vector-informatik.de/ITE/TestTable/1.0">
+  <tt>
+    <nettestcaselist>
+      <title />
+      <name>TestSubscription</name>
+      <class>MyTestClass</class>
+      <assembly />
+      <combinatorics>sequential</combinatorics>
+      <structlistparameter />
+      <param>
+        <type>UInt64</type>
+        <valuelist>
+          <value>
+            <dbobject>ChParScalar_BEGIN_OF_OBJECT|1|timeToWaitForSubscription|END_OF_OBJECT_ChParScalar|</dbobject>
+          </value>
+        </valuelist>
+      </param>
+      <tcid>b34f03f1-b4b9-400c-be60-b24c7c6403c1</tcid>
+    </nettestcaselist>
+    <nettestcase>
+      <title />
+      <name>JsonMirrorTestCase</name>
+      <class>JsonMirrorTest</class>
+      <assembly />
+      <tcid>79cbde58-3ec4-4443-9344-bb2a790171fe</tcid>
+    </nettestcase>
+    <nettestcase>
+      <title />
+      <name>GPBMirrorTestCase</name>
+      <class>GPBMirrorTest</class>
+      <assembly />
+      <tcid>4027961a-71e0-4c2e-95f1-a89cf5fb1e0b</tcid>
+    </nettestcase>
+    <nettestcase>
+      <title />
+      <name>JSONModifierTestCase</name>
+      <class>JSONModifierTest</class>
+      <assembly />
+      <tcid>4fd07dec-42af-4ba2-a5f4-433148f5daae</tcid>
+    </nettestcase>
+    <nettestcase>
+      <title />
+      <name>SerializationTestCaseIn</name>
+      <class>SerializationTestIn</class>
+      <assembly />
+      <tcid>23ff800e-c76d-4ff7-a70f-630cef06cf37</tcid>
+    </nettestcase>
+    <nettestcase>
+      <title />
+      <name>SerializationTestCaseOut</name>
+      <class>SerializationTestOut</class>
+      <assembly />
+      <tcid>5b7d9a02-8ad6-4b0f-86ae-c3ae6708a6d9</tcid>
+    </nettestcase>
+  </tt>
+  <ttlib>
+    <ts_definitions />
+    <tc_definitions />
+    <function_definitions />
+  </ttlib>
+</ttroot>

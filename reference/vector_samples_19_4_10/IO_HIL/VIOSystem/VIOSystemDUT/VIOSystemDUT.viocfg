@@ -1,0 +1,162 @@
+{
+ "Racks": [
+  {
+   "Cards": [
+    {
+     "InterfaceVersion": 0,
+     "Name": "VIO8904_Pos1",
+     "Type": 8904,
+     "Variant": 1
+    },
+    {
+     "InterfaceVersion": 54,
+     "Name": "VIO2004_Pos1",
+     "Type": 2004,
+     "Variant": 0
+    },
+    {
+     "InterfaceVersion": 64,
+     "Name": "VIO4028_Pos2",
+     "Settings": [
+      {
+       "ID": 10000,
+       "Value": "1"
+      },
+      {
+       "ID": 11001,
+       "Value": "1"
+      },
+      {
+       "ID": 11002,
+       "Value": "1"
+      },
+      {
+       "ID": 11016,
+       "Value": "1"
+      },
+      {
+       "ID": 12027,
+       "Value": "1"
+      },
+      {
+       "ID": 12028,
+       "Value": "1"
+      }
+     ],
+     "Type": 4028,
+     "Variant": 0
+    },
+    {
+     "InterfaceVersion": 64,
+     "Name": "VIO1008_Pos3",
+     "Settings": [
+      {
+       "ID": 10001,
+       "Value": "3"
+      },
+      {
+       "ID": 10002,
+       "Value": "3"
+      }
+     ],
+     "Type": 1008,
+     "Variant": 0
+    },
+    {
+     "InterfaceVersion": 50,
+     "Name": "VIO1804_Pos4",
+     "Settings": [
+      {
+       "ID": 10001,
+       "Value": "0"
+      },
+      {
+       "ID": 10002,
+       "Value": "0"
+      }
+     ],
+     "Type": 1804,
+     "Variant": 0
+    }
+   ],
+   "ConnectionString": "172.31.31.22",
+   "MeasurementTasks": [
+    {
+     "BlockSize": 0,
+     "FrequencyHz": 100,
+     "Mode": 0,
+     "Name": "VIO4028In",
+     "Signals": [
+      "StartButtonIn_Ch03:VIO4028_Pos2/20003",
+      "CounterBit3_Ch09:VIO4028_Pos2/20009",
+      "CounterBit2_Ch10:VIO4028_Pos2/20010",
+      "CounterBit1_Ch11:VIO4028_Pos2/20011",
+      "CounterBit0_Ch12:VIO4028_Pos2/20012",
+      "CounterBit0PwmFreqIn_Ch06:VIO4028_Pos2/21006",
+      "DistDutyCycleIn_Ch14:VIO4028_Pos2/22014",
+      "FanRpmIn_Ch15:VIO4028_Pos2/21015",
+      "PwmLedDutyCycleIn_Ch5:VIO4028_Pos2/22005"
+     ]
+    },
+    {
+     "BlockSize": 0,
+     "FrequencyHz": 100,
+     "Mode": 0,
+     "Name": "VIO1008In",
+     "Signals": [
+      "DimmLedPwmControlIn_Ch01:VIO1008_Pos3/20001",
+      "AmbientTempVolt_Ch02:VIO1008_Pos3/20002"
+     ]
+    },
+    {
+     "BlockSize": 0,
+     "FrequencyHz": 100,
+     "Mode": 0,
+     "Name": "VIO1804In",
+     "Signals": [
+      "DimmLedCurrentIn_Ch01:VIO1804_Pos4/20001",
+      "FanCurrentIn_Ch02:VIO1804_Pos4/20002"
+     ]
+    }
+   ],
+   "StimulationTasks": [
+    {
+     "BlockSize": 0,
+     "FrequencyHz": 0,
+     "Mode": 0,
+     "Name": "VIO2004Out",
+     "Signals": [
+      "OutputActive_Ch01:VIO2004_Pos1/30001",
+      "OutputActive_Ch02:VIO2004_Pos1/30002",
+      "DimmLedVoltageOut_Ch01:VIO2004_Pos1/31001",
+      "CounterSpeedVoltageOut_Ch02:VIO2004_Pos1/31002"
+     ]
+    },
+    {
+     "BlockSize": 0,
+     "FrequencyHz": 0,
+     "Mode": 0,
+     "Name": "VIO4028Out",
+     "Signals": [
+      "CanoeRunning_Ch01:VIO4028_Pos2/31001",
+      "VioRunning_Ch02:VIO4028_Pos2/31002",
+      "CounterBit0PwmTimeout_Ch06:VIO4028_Pos2/35006",
+      "FanPwmDutyCycleOut_Ch16:VIO4028_Pos2/32016",
+      "FanPwmOutputMode_Ch16:VIO4028_Pos2/34016",
+      "FanPwmFrequencyOut_Ch16:VIO4028_Pos2/33016"
+     ]
+    },
+    {
+     "BlockSize": 0,
+     "FrequencyHz": 0,
+     "Mode": 0,
+     "Name": "VIO1008Out",
+     "Signals": [
+      "VoltageRange_Ch01:VIO1008_Pos3/30001",
+      "VoltageRange_Ch02:VIO1008_Pos3/30002"
+     ]
+    }
+   ]
+  }
+ ]
+}

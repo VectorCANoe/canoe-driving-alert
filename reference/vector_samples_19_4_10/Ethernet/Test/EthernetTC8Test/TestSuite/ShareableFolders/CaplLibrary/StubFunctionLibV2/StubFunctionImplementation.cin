@@ -1,0 +1,1040 @@
+/*@!Encoding:1252*/
+/***************************************************************************************
+ * Demo- and Example-Programs
+ *
+ * Please note: The demo and example programs only show special aspects of the software.
+ * With regard to the fact that these programs are meant for demonstration purposes only,
+ * Vector Informatik's liability shall be expressly excluded in cases of ordinary
+ * negligence, to the extent admissible by law or statute.
+ *
+ * Beta-Version
+ *
+ * These programs are fully operative programs. However, they are not thoroughly tested
+ * yet (beta-version). With regard to the fact that the programs are a beta-version only,
+ * Vector Informatik's liability shall be expressly excluded in cases of ordinary
+ * negligence, to the extent admissible by law or statute.
+ *
+ * DESCRIPTION:
+ *
+ * Demo test implementation of the 'OPEN Alliance Automotive Ethernet ECU Test
+ * Specification - TC8 ECU Test' (Document Version 2.0, August 23, 2017)
+ *
+ * Copyright (c) Vector Informatik GmbH. All rights reserved.
+ ***************************************************************************************/
+ 
+includes
+{
+  #include "..\TestabilityProtocolLib\Interface_TestabilityServices.cin"
+}
+
+variables
+{
+  enum StubFunctionResult
+  {
+    kOk             = 0,
+    kNotImplemented = -99,
+    kError          = -100
+  };
+  
+  char[50] kStubErrorMessages[long, 20];
+}
+
+enum StubFunctionResult Convert(enum TestabilityMessageResultIds result)
+{
+  if(result != E_OK)
+  {
+    if(result == TIMEOUT)
+    {
+      testStepFail("", "Timeout: No Service Primitive Response received");
+    }
+    else if (kStubErrorMessages.containsKey(result))
+    {
+      testStepFail("", "Service Primitive returned code %s", kStubErrorMessages[result]);
+    }
+    else
+    {
+      testStepFail("", "Service Primitive returned code %d", result);
+    }
+  }
+  return (result == E_OK) ? kOk : kError;
+}
+
+enum StubFunctionResult Convert(char functionName[], enum TestabilityMessageResultIds result, enum TestabilityMessageResultIds expectedResult)
+{
+  if(result != expectedResult)
+  {
+    if (kStubErrorMessages.containsKey(result) && kStubErrorMessages.containsKey(expectedResult))
+      testStepFail(functionName, "%s: Service Primitive returned code %s, but expected code was %s", functionName, kStubErrorMessages[result], kStubErrorMessages[expectedResult]);
+    else
+      testStepFail(functionName, "%s: Service Primitive returned code %d, but expected code was %d", functionName, result, expectedResult);
+    return kError;
+  }
+  
+  if (kStubErrorMessages.containsKey(result) && kStubErrorMessages.containsKey(expectedResult))
+    testStepPass(functionName, "%s: Service Primitive returned code %s", functionName, kStubErrorMessages[result]);
+  else
+    testStepPass(functionName, "%s: Service Primitive returned code %d", functionName, result);
+  return (result == expectedResult) ? kOk : kError;
+}
+
+void InitStubErrorMessages()
+{
+
+ /* standard results */
+  strncpy(kStubErrorMessages[E_OK],  "The service primitive has performed successfully", 50);
+  strncpy(kStubErrorMessages[E_NOK], "General error", 50);
+
+  /* testability specific */
+  strncpy(kStubErrorMessages[E_NTF], "The requested service primitive was not found", 50);
+  strncpy(kStubErrorMessages[E_PEN], "The Upper Tester or a service primitive is pending", 50);
+  strncpy(kStubErrorMessages[E_ISB], "Insufficient buffer size", 50);
+  strncpy(kStubErrorMessages[E_INV], "Invalid Input or Parameter", 50);
+
+  /*  service primitve specific */
+  strncpy(kStubErrorMessages[E_ISD],     "Invalid socket ID", 50);
+  strncpy(kStubErrorMessages[E_UCS],     "Unable to create socket or no free socket", 50);
+  strncpy(kStubErrorMessages[E_UBS],     "Unable to bind socket, port taken", 50);
+  strncpy(kStubErrorMessages[E_IIF],     "Invalid network or virtual interface", 50);
+  strncpy(kStubErrorMessages[E_TCP_PNA], "TCP error: \"precedence not allowed\"", 50);
+  strncpy(kStubErrorMessages[E_TCP_FSU], "TCP error: \"foreign socket unspecified\"", 50);
+  strncpy(kStubErrorMessages[E_TCP_ILP], "TCP error: \"connection illegal for this process\"", 50);
+  strncpy(kStubErrorMessages[E_TCP_INR], "TCP error: \"insufficient resources\"", 50);
+  strncpy(kStubErrorMessages[E_TCP_CAE], "TCP error: \"connection already exists\"", 50);
+  strncpy(kStubErrorMessages[E_TCP_COC], "TCP error: \"connection closing\"", 50);
+  strncpy(kStubErrorMessages[E_TCP_CNE], "TCP error: \"connection does not exist\"", 50);
+  strncpy(kStubErrorMessages[E_TCP_CRE], "TCP error: \"connection reset\"", 50);
+  strncpy(kStubErrorMessages[E_TCP_CAT], "TCP error: \"connection aborted due to user timeout\"", 50);
+  strncpy(kStubErrorMessages[E_TCP_COR], "TCP Error: \"connection refused\"", 50);
+}
+
+/// <GeneralStubFunctions>
+enum StubFunctionResult StubInitializationImpl()
+{
+  InitStubErrorMessages();
+  InternalInitTestabilityServiceClient(syspar::TestabilityServicesResponseTimeoutMs);
+  return kOk;
+}
+
+/// <GeneralStubFunctions>
+enum StubFunctionResult StubCleanupImpl()
+{ 
+  InternalCleanupTestabilityServiceClient();
+  return kOk;
+}
+
+/// <GeneralStubFunctions>
+enum StubFunctionResult Stub_GeneralStartTestImpl()
+{
+  return Convert(SP_General_StartTest());
+}
+
+/// <GeneralStubFunctions>
+enum StubFunctionResult Stub_GeneralEndTestImpl(word testCaseId, char testCaseName[])
+{
+  return Convert(SP_General_EndTest(testCaseId, testCaseName));
+}
+
+/// <ArpStubFunctions>
+enum StubFunctionResult Stub_AddStaticArpTableEntryImpl(char ipAddr[], char macAddress[])
+{
+  return Convert(SP_Arp_AddStaticArpTableEntry(IpGetAddressAsNumber(ipAddr), ethGetMacAddressAsNumber(macAddress)));
+}
+
+/// <ArpStubFunctions>
+enum StubFunctionResult Stub_ClearArpTableImpl()
+{
+  return Convert(SP_Arp_ClearArpTable());
+}
+
+/// <ArpStubFunctions>
+enum StubFunctionResult Stub_ClearTimeoutForDynamicArpTableEntryImpl()
+{
+  return Convert(SP_Arp_ClearTimeoutForDynamicArpTableEntry());
+}
+
+/// <ArpStubFunctions>
+enum StubFunctionResult Stub_DeleteStaticArpTableEntryImpl(char ipAddr[], char macAddress[])
+{
+  return Convert(SP_Arp_DeleteStaticArpTableEntry(IpGetAddressAsNumber(ipAddr), ethGetMacAddressAsNumber(macAddress)));
+}
+
+/// <ArpStubFunctions>
+enum StubFunctionResult Stub_SetTimeoutForDynamicArpTableEntryImpl(dword timeout)
+{
+  return Convert(SP_Arp_SetTimeoutForDynamicArpTableEntry(timeout));
+}
+
+/// <DhcpStubFunctions>
+enum StubFunctionResult Stub_AdditionalOptionClientIdentifierImpl(char ifName[], char clientIdentifier[])
+{
+  byte data[255];  
+  word len;
+  
+  len = _min(strlen(clientIdentifier), elcount(data));
+  
+  memcpy(data, clientIdentifier, len);
+  return Convert(SP_Dhcp_Set_Option(ifName, 61, len, data));
+}
+
+/// <DhcpStubFunctions>
+enum StubFunctionResult Stub_AdditionalOptionLeaseTimeImpl(char ifName[], dword leaseTimeSeconds)
+{
+  byte data[4];
+  data.dword(0) = swapDWord(leaseTimeSeconds);
+  return Convert(SP_Dhcp_Set_Option(ifName, 51, elcount(data), data));
+}
+
+/// <DhcpStubFunctions>
+enum StubFunctionResult Stub_AdditionalOptionMaximumSizeImpl(char ifName[], word maximumSize)
+{
+  byte data[2];  
+  data.Word(0) = swapWord(maximumSize);
+  return Convert(SP_Dhcp_Set_Option(ifName, 57, elcount(data), data));
+}
+
+/// <DhcpStubFunctions>
+enum StubFunctionResult Stub_BringUpNetworkImpl(char ifName[])
+{
+  return Convert(SP_Eth_InterfaceUp(ifName));
+}
+
+/// <DhcpStubFunctions>
+enum StubFunctionResult Stub_ConfigureDhcpClientImpl(char ifName[])
+{
+  return Convert(SP_Dhcp_Init_Client(ifName));
+}
+
+/// <DhcpStubFunctions>
+enum StubFunctionResult Stub_RebootImpl(char ifName[])
+{
+  return kNotImplemented;
+}
+
+/// <DhcpStubFunctions>
+enum StubFunctionResult Stub_ReleaseNetworkImpl(char ifName[])
+{
+  return Convert(SP_Eth_InterfaceDown_DontWaitForResponse(ifName));
+}
+
+/// <DhcpStubFunctions>
+enum StubFunctionResult Stub_ResetAllClientConfigurationsImpl()
+{
+  return Convert(SP_Dhcp_Stop_Client(syspar::DIface0Name));
+}
+
+/// <DhcpStubFunctions>
+enum StubFunctionResult Stub_VerfiyDutHasLoggedFailingInitProcessImpl()
+{
+  return kNotImplemented;
+}
+
+/// <IcmpStubFunctions>
+enum StubFunctionResult Stub_IcmpEchoRequestImpl(char ifName[], char destAddr[], byte data[])
+{
+  return Convert(SP_Icmp_EchoRequest_DontWaitForResponse(ifName, ipGetAddressAsNumber(destAddr), data, elcount(data)));
+}
+
+/// <IcmpStubFunctions>
+enum StubFunctionResult Stub_IcmpReceiveAndForwardImpl()
+{
+  return Convert(SP_ICMP_ReceiveAndForward(0xFFFF, 0xFFFF));
+}
+
+byte Equals(int expected, int actual, char function[], char error[])
+{
+  if(expected == actual)
+    return 1;
+  
+  testStepFail(function, "%s. Expected %d but received %d", error, expected, actual);
+  return 0;    
+}
+
+byte Equals(char expected[], int actual, char function[], char error[])
+{
+  if(IsWildcard(expected))
+    return 1;  
+  return Equals(atol(expected), actual, function, error);
+}
+
+byte Equals(char payload[], byte actual[], int actualLen, char function[], char error[])
+{
+  int i;
+  
+  if(!isWildcard(payload))
+  {
+    if(strlen(payload) != actualLen)
+    {
+      testStepFail(function, "%s. Payload length %d doesn't match: expected %d", error, strlen(payload), actualLen);
+      return 0;
+    }
+    
+    for(i = 0; i < strlen(payload); i++)
+    {
+      if((byte)payload[i] != actual[i])
+      {
+        testStepFail(function, "Payload mismatch");
+        return 0;
+      }
+    }
+  }
+  return 1;
+}
+
+byte IpEquals(char expected[], byte actual[], int actualLen, char function[], char error[])
+{
+  ip_Address expectedIp, actualIp;
+  byte ipv4Buf[4];
+  byte ipv6Buf[16];
+  
+  if(IsWildcard(expected))
+    return 1;
+  
+  if(expectedIp.ParseAddressFromString(expected) != 0)
+  {
+    testStepFail(function, "Expected value %s is no valid IP address.", expected);
+    return 0;
+  }
+  
+  if(actualLen == 4)
+  {
+    memcpy(ipv4Buf, actual, 4);
+    actualIp.SetAddressAsArray(ipv4Buf);
+  }
+  else if(actualLen == 16)
+  {
+    memcpy(ipv6Buf, actual, 16);
+    actualIp.SetAddressAsArray(ipv6Buf);
+  }
+  else
+  {
+    testStepFail(function, "Actual value of length %d is no valid IP address.", actualLen);
+    return 0;
+  }
+  
+  if(expectedIp != actualIp)
+  {
+    testStepFail(function, error);
+    return 0;
+  }
+  
+  return 1;
+}
+
+/// <DhcpStubFunctions>
+enum StubFunctionResult Stub_ReceiveIcmpDestUnreachableImpl(long timeoutMilliseconds, char srcIpAddress[], char destIpAddress[], enum IcmpDestUnreachableCodes code, char checksum[])
+{  
+  long result;
+  
+  result = testWaitForTextEvent(kInternalEventReceiveAndForward, timeoutMilliseconds);
+  
+  if(result == 1) // event occured
+  {
+    //Check if received data matches expected values.
+    if(!IpEquals(srcIpAddress
+      , gInternalServicePrimitiveEventParameters.ReceiveAndForwardICMPEvent.bSrcIpAddress
+      , gInternalServicePrimitiveEventParameters.ReceiveAndForwardICMPEvent.ipAddressByteLength
+      , "Stub_IcmpReceiveAndForwardEvent"
+      , "Receive and check IPv4 data on DUT failed. Source IP mismatch."))
+      return kError;
+    
+    if(!IpEquals(destIpAddress
+      , gInternalServicePrimitiveEventParameters.ReceiveAndForwardICMPEvent.bDstIpAddress
+      , gInternalServicePrimitiveEventParameters.ReceiveAndForwardICMPEvent.ipAddressByteLength
+      , "Stub_IcmpReceiveAndForwardEvent"
+      , "Receive and check IPv4 data on DUT failed. Destination IP mismatch."))
+      return kError;
+    
+    if(!Equals(checksum, gInternalServicePrimitiveEventParameters.ReceiveAndForwardICMPEvent.wChecksum, "Stub_ReceiveIcmpDestUnreachable", "Receive and check IPv4 data on DUT failed. Checksum mismatch."))
+      return kError;
+    
+    if(gInternalServicePrimitiveEventParameters.ReceiveAndForwardICMPEvent.ipAddressByteLength == 4) // IPv4
+    {
+      if(!Equals(code, gInternalServicePrimitiveEventParameters.ReceiveAndForwardICMPEvent.bCode, "Stub_ReceiveIcmpDestUnreachable", "Receive and check IPv4 data on DUT failed. ICMP Code mismatch."))
+        return kError;
+      
+      if(!Equals(3 /* Destination Unreachable icmpv4 */, gInternalServicePrimitiveEventParameters.ReceiveAndForwardICMPEvent.bType, "Stub_ReceiveIcmpDestUnreachable", "Receive and check IPv4 data on DUT failed. ICMP Type mismatch."))
+        return kError;      
+    }
+    else // IPv6
+    {
+      if(!Equals(1 /* Destination Unreachable icmpv6 */, gInternalServicePrimitiveEventParameters.ReceiveAndForwardICMPEvent.bType, "Stub_ReceiveIcmpDestUnreachable", "Receive and check IPv4 data on DUT failed. ICMP Type mismatch."))
+        return kError;
+    }
+    
+    testStepPass("Stub_IcmpReceiveAndForwardEvent", "ICMP message have been received by DUT.");    
+    return kOk;
+  }
+  else //event didn't occur
+  {
+    testStepFail("Stub_IcmpReceiveAndForwardEvent", "No ICMP Destination Unreachable message was received");
+    return kError;
+  }
+}
+
+/// <Ipv4AutoconfStubFunctions>
+enum StubFunctionResult Stub_InitDhcpClientImpl(char ifName[])
+{
+  return Convert(SP_Dhcp_Init_Client(ifName));
+}
+
+/// <Ipv4AutoconfStubFunctions>
+enum StubFunctionResult Stub_InterfaceDownImpl(char ifName[])
+{
+  return Convert(SP_Eth_InterfaceDown_DontWaitForResponse(ifName));
+}
+
+/// <Ipv4AutoconfStubFunctions>
+enum StubFunctionResult Stub_InterfaceUpImpl(char ifName[])
+{
+  return Convert(SP_Eth_InterfaceUp(ifName));
+}
+
+/// <Ipv4AutoconfStubFunctions>
+enum StubFunctionResult Stub_IpRemoveStaticAddressImpl(char ifName[])
+{
+  return kNotImplemented;
+}
+
+/// <Ipv4AutoconfStubFunctions>
+enum StubFunctionResult Stub_IpRemoveStaticRouteImpl(char ifName[])
+{
+  return kNotImplemented;
+}
+
+/// <Ipv4AutoconfStubFunctions>
+enum StubFunctionResult Stub_IpAddStaticRouteImpl(char ifName[], char subNet[], char netMask[], char gateway[])
+{
+  ip_Address subNetIp;
+  ip_Address gatewayIp;
+  long       netMsk;
+  
+  if(subNetIp.ParseAddressFromString(subNet) != 0)
+  {
+    testStepFail("Stub_IpAddStaticRoute", "Invalid input parameter subNet: %s", subNet);
+    return kError;
+  }
+  
+  if(gatewayIp.ParseAddressFromString(gateway) != 0)
+  {
+    testStepFail("Stub_IpAddStaticRoute", "Invalid input parameter gateway: %s", gateway);
+    return kError;
+  }
+  
+  netMsk = atol(netMask);
+  
+  if(netMsk == 0 || netMsk > 31)
+  {
+    testStepFail("Stub_IpAddStaticRoute", "Invalid input parameter netMask: %s", netMask);
+    return kError;
+  }
+  
+  return Convert(SP_Ipv4_StaticRoute(ifName, subNetIp, netMsk, gatewayIp));  
+}
+
+/// <Ipv4AutoconfStubFunctions>
+enum StubFunctionResult Stub_StopDhcpClientImpl(char ifName[])
+{
+  return Convert(SP_Dhcp_Stop_Client(ifName));
+}
+
+/// <Ipv4StubFunctions>
+enum StubFunctionResult Stub_IpAddStaticAddressImpl(char ifName[], char ipAddr[], char subnetMask[])
+{
+  return kNotImplemented;
+}
+
+/// <Layer2StubFunctions>
+enum StubFunctionResult Stub_AddEntryToArlTableImpl(char channel[], char macAddress[])
+{
+  return kNotImplemented;
+}
+
+/// <Layer2StubFunctions>
+enum StubFunctionResult Stub_AuthenticatePortImpl(int channel)
+{
+  return kNotImplemented;
+}
+
+/// <Layer2StubFunctions>
+enum StubFunctionResult Stub_CheckMacSecImpl(long packetHandle)
+{
+  testStepInconclusive("Stub_CheckMacSec", "Function Stub_CheckMacSec is not implemented");
+  testCaseFail();
+  return kNotImplemented;
+}
+
+/// <Layer2StubFunctions>
+enum StubFunctionResult Stub_CheckTrafficCounterImpl(int channel, int expectedValue, enum Bool displayWarnings)
+{
+  return kNotImplemented;
+}
+
+/// <Layer2StubFunctions>
+enum StubFunctionResult Stub_ClearArlTableImpl()
+{
+  return kNotImplemented;
+}
+
+/// <Layer2StubFunctions>
+enum StubFunctionResult Stub_DisablePortImpl(int channel)
+{
+  return kNotImplemented;
+}
+
+/// <Layer2StubFunctions>
+enum StubFunctionResult Stub_ReadArlTableImpl(char outChannel[], char outMac[])
+{
+  return kNotImplemented;
+}
+
+/// <Layer2StubFunctions>
+enum StubFunctionResult Stub_ResetTrafficCounterImpl(int channel)
+{
+  return kNotImplemented;
+}
+
+/// <Layer2StubFunctions>
+enum StubFunctionResult Stub_TryToAuthenticatePortWithInvalidInformationImpl(int channel)
+{
+  return kNotImplemented;
+}
+
+/// <SOMEIPStubFunctions>
+enum StubFunctionResult Stub_StartSomeIpServiceImpl(word serviceId, word numInstances)
+{
+  return Convert(SP_SomeIp_Start_Service(serviceId, numInstances));
+}
+
+/// <SOMEIPStubFunctions>
+enum StubFunctionResult Stub_StopSomeIpServiceImpl(word serviceId)
+{
+  return Convert(SP_SomeIp_Stop_Service_DontWaitForResponse(serviceId));
+}
+
+/// <SOMEIPStubFunctions>
+enum StubFunctionResult Stub_TriggerSomeIpEventImpl(word serviceId, word eventGroupId, word eventId)
+{
+  return Convert(SP_SomeIp_Trigger_Event(serviceId, eventGroupId, eventId));
+}
+
+/// <TcpStubFunctions>
+enum StubFunctionResult Stub_GetTcpStateImpl(enum TcpStateId expectedTcpState, int socketHandle)
+{
+  enum TestabilityMessageResultIds stubResult;
+  byte actualTcpState;
+
+  if( gSocketId[socketHandle] < 0)
+  {
+    testStepFail("Stub_GetTcpState", "Invalid socket ID, please create socket first.");
+    return kError;
+  }
+  
+  stubResult = SP_Tcp_GetState(gSocketId[socketHandle]);
+  
+  if(stubResult != E_OK)
+    return Convert(stubResult);
+    
+  actualTcpState = gInternalServicePrimitiveResponseParameters.TcpGetStateResponse.tcpState;
+    
+  if (actualTcpState != expectedTcpState)
+  {
+    testStepFail("Stub_GetTcpState", "State missmatch. Expected=%s, Observed=%s", expectedTcpState.name(), ((enum TcpStateId)actualTcpState).name());
+    return kError;
+  }
+  else
+  {
+    testStepPass("Stub_GetTcpState", "Get the Tcp State on DUT succeeded.");
+    return kOk;
+  }
+}
+
+/// <TcpStubFunctions>
+enum StubFunctionResult Stub_TcpCheckUrgentSignalImpl()
+{
+  return kNotImplemented;
+}
+
+/// <TcpStubFunctions>
+enum StubFunctionResult Stub_TcpCloseSocketImpl(int socketId, enum Bool abort, enum TestabilityMessageResultIds expectedResult)
+{  
+  if( gSocketId[socketId] < 0)
+  {
+    testStepFail("Stub_TcpCloseSocket", "Invalid socket ID, please create socket first.");
+    return kError;
+  }
+  
+  return Convert("SP_Tcp_CloseSocket", SP_Tcp_CloseSocket(gSocketId[socketId], abort, expectedResult != Success), expectedResult);
+}
+
+/// <TcpStubFunctions>
+enum StubFunctionResult Stub_TcpConfigureSocketImpl(enum TcpParameterId paramId, word paramVal)
+{
+  byte data[2];
+  int  dataLen;
+  
+  switch(paramId)
+  {
+    case 0:
+    case 1:
+    case 2:
+    case 4:
+    case 6:
+    case 7:
+      dataLen = 1;
+      data[0] = paramVal & 0xFF;
+      break;
+    case 5:
+    case 65534:
+    case 65535:
+      dataLen = 2;
+      data[0] = paramVal >> 8 & 0xFF;
+      data[1] = paramVal & 0xFF;
+      break;
+    default:
+      testStepFail("Stub_TcpConfigureSocket", "Unexpected paramId.");
+      return kError;
+  }
+
+  return Convert(SP_Tcp_ConfigureSocket(gSocketId[0], paramId, data, dataLen));
+}
+
+/// <TcpStubFunctions>
+enum StubFunctionResult Stub_TcpConnectImpl(int socketId, char destIpAddr[], word destPort, enum TestabilityMessageResultIds expectedResult)
+{
+  enum TestabilityMessageResultIds stubResult;
+  ip_Address dstIp;
+  
+  if( gSocketId[socketId] < 0)
+  {
+    testStepFail("Stub_TcpConnect", "Invalid socket ID, please create socket first.");
+    return kError;
+  }
+  
+  if(dstIp.ParseAddressFromString(destIpAddr) != 0)
+  {
+    testStepFail("Stub_TcpConnect", "Invalid input parameter destIpAddr: %s", destIpAddr);
+    return kError;
+  }
+
+  stubResult = SP_Tcp_Connect(gSocketId[socketId], destPort, dstIp, expectedResult != Success);
+  
+  if(stubResult == E_OK)
+  {
+    gConnectedPort[socketId] = destPort;
+    strncpy(gConnectedIP[socketId], destIpAddr, elcount(destIpAddr));
+  }
+  
+  return Convert("SP_Tcp_Connect", stubResult, expectedResult);
+}
+
+/// <TcpStubFunctions>
+enum StubFunctionResult Stub_TcpCreateAndBindImpl(word socketIndex, word port, enum Bool doBind)
+{
+  enum       TestabilityMessageResultIds stubResult;
+  ip_Address ip;
+  
+  if(ip.ParseAddressFromString(syspar::DIface0Ip) != 0)
+  {
+    testStepFail("Stub_TcpCreateAndBind", "Invalid IP address: %s", syspar::DIface0Ip);
+    return kError;
+  }
+  
+  stubResult = SP_Tcp_CreateAndBind(doBind, port, ip);
+  
+  if(stubResult == E_OK)
+  {    
+    gSocketId[socketIndex]    = gInternalServicePrimitiveResponseParameters.CreateAndBindResponse.socketId;
+    gSocketState[socketIndex] = TcpStateIdEstablished;
+    gSocketPort[socketIndex]  = port;
+  }
+  
+  return Convert(stubResult);
+}
+
+/// <TcpStubFunctions>
+enum StubFunctionResult Stub_TcpListenAndAcceptImpl(word maxCon, int socketIndex)
+{
+  enum TestabilityMessageResultIds stubResult;
+  int i;
+  
+  if( gSocketId[socketIndex] < 0)
+  {
+    testStepFail("Stub_TcpListenAndAccept", "Invalid socket ID, please create socket first.");
+    return kError;
+  }
+  
+  //Move listen socket information to the end of the array
+  for(i = 9; i >= 0; i--)
+  {
+    if(gSocketId[i] < 0)
+    {
+      gSequenceNumber[i] = gSequenceNumber[socketIndex];
+      gSequenceNumber[socketIndex] = 0;
+      
+      gAcknowledgement[i] = gAcknowledgement[socketIndex];
+      gAcknowledgement[socketIndex] = 0;
+      
+      gSocketPort[i] = gSocketPort[socketIndex];
+      gSocketPort[socketIndex] = 0;
+      
+      gSocketState[i] = gSocketState[socketIndex];
+      gSocketState[socketIndex] = TcpStateIdInvalid;
+      
+      gConnectedPort[i] = gConnectedPort[socketIndex];
+      gConnectedPort[socketIndex] = 0;
+      
+      strncpy(gConnectedIP[i], gConnectedIP[socketIndex], elcount(gConnectedIP[socketIndex]));
+      strncpy(gConnectedIP[socketIndex], "0.0", elcount("0.0"));
+      
+      gSocketId[i] = gSocketId[socketIndex];
+      gSocketId[socketIndex] = -1;
+      break;
+    }
+  }
+  
+  return Convert(SP_Tcp_Listen_and_Accept(gSocketId[i], maxCon));
+}
+
+/// <TcpStubFunctions>
+enum StubFunctionResult Stub_TcpListenAndAcceptEventImpl(long timeoutMilliseconds)
+{
+  long result;
+  int i;  
+  
+  result = TmpWaitForServicePrimitiveEvent(kInternalEventListenAndAccept, timeoutMilliseconds);
+  
+  if(result != 1)
+  {
+    testStepFail("Stub_TcpListenAndAcceptEvent", "No TCP Listen and Accept Event received");
+    return kError;
+  }
+  
+  for(i = 0; i < 10; i++)
+  {
+    if(gSocketId[i] < 0)
+    {
+      gSocketId[i]    = gInternalServicePrimitiveEventParameters.ListenAndAcceptTcpEvent.newSocketId;
+      gSocketState[i] = TcpStateIdEstablished;
+      gSocketPort[i]  = gInternalServicePrimitiveEventParameters.ListenAndAcceptTcpEvent.port;
+      break;
+    }
+  }
+  
+  return kOk;
+}
+
+/// <TcpStubFunctions>
+enum StubFunctionResult Stub_TcpReceiveAndForwardImpl(enum TestabilityMessageResultIds expectedResult, char expectedDropCnt[])
+{
+  enum TestabilityMessageResultIds stubResult;
+  
+  if(gSocketId[0] < 0)
+  {
+    testStepFail("Stub_TcpReceiveAndForward", "Invalid socket ID, please create socket first.");
+    return kError;
+  }
+
+  stubResult = SP_Tcp_ReceiveAndForward(gSocketId[0], 0xFFFF, 0xFFFF);  
+  
+  if(stubResult == expectedResult )
+  {
+    if(expectedResult != Success)
+    {
+      testStepPass("Stub_TcpReceiveAndForward", "Receive and check TCP data on DUT succeeded.");
+    }
+    else if(isWildcard(expectedDropCnt))
+    {
+      testStepPass("Stub_TcpReceiveAndForward", "Receive and forward TCP data on DUT succeeded.");
+    }
+    else if(atol(expectedDropCnt) == gInternalServicePrimitiveResponseParameters.ReceiveAndForwardResponse.dropCnt)
+    {
+      testStepPass("Stub_TcpReceiveAndForward", "Receive and check TCP data on DUT succeeded.");
+    }
+    else
+    {
+      testStepFail("Stub_TcpReceiveAndForward", "Receive and check TCP data on DUT failed.");
+      return kError;
+    }
+  }
+  
+  return Convert("Stub_TcpReceiveAndForward", stubResult, expectedResult);
+}
+
+/// <TcpStubFunctions>
+enum StubFunctionResult Stub_TcpReceiveAndForwardEventImpl(long timeoutMilliseconds, char fullLen[], char payload[], enum Bool expectedMessage, enum TestabilityMessageResultIds expectedResult)
+{
+  long result;
+  enum TestabilityMessageResultIds stubResult;
+  int i;
+  
+  result = TmpWaitForServicePrimitiveEvent(kInternalEventReceiveAndForward, timeoutMilliseconds);
+  
+  if(result != 1) // event did not occur ...
+  {
+    if(expectedMessage) // ... but was expected -> test step failed
+    {
+      testStepFail("Stub_TcpReceiveAndForward", "No TCP Receive and Forward Event was received");
+      return kError;
+    }
+    else // ... and was not expected -> test step passed
+    {
+      testStepPass("Stub_TcpReceiveAndForward", "No TCP Receive and Forward Event was received (as expected)");
+      return kOk;
+    }
+  }
+  else if(expectedMessage == kFalse) // event did occur but was not expected -> test step failed
+  {
+    testStepFail("Stub_TcpReceiveAndForward", "TCP Receive and Forward Event was received unexpectedly");
+    return kError;
+  }
+  
+  stubResult = (enum TestabilityMessageResultIds)gInternalServicePrimitiveEventParameters.ReceiveAndForwardTcpEvent.resultId;    
+  
+  if(stubResult == E_OK && expectedResult == E_OK)
+  {
+    //Check if received data matches expected values.    
+    if(!Equals(fullLen, gInternalServicePrimitiveEventParameters.ReceiveAndForwardTcpEvent.fullLen, "Stub_TcpReceiveAndForwardEvent", "Receive and check TCP data on DUT failed. Full length mismatch."))
+      return kError;
+    
+    if(!Equals(payload
+      , gInternalServicePrimitiveEventParameters.ReceiveAndForwardTcpEvent.payload
+      , gInternalServicePrimitiveEventParameters.ReceiveAndForwardTcpEvent.payloadByteLength
+      , "Stub_TcpReceiveAndForwardEvent"
+      , "Receive and check TCP data on DUT failed. Payload mismatch."))
+      return kError;
+  }
+  
+  return Convert("Stub_TcpReceiveAndForward", stubResult, expectedResult);
+}
+
+/// <TcpStubFunctions>
+enum StubFunctionResult Stub_TcpReceiveAndForwardMaxLengthImpl(word maxLength)
+{
+  enum TestabilityMessageResultIds stubResult;
+  
+  if( gSocketId[0] < 0)
+  {
+    testStepFail("Stub_TcpReceiveAndForward", "Invalid socket ID, please create socket first.");
+    return kError;
+  }
+
+  stubResult = SP_Tcp_ReceiveAndForward(gSocketId[0], 0xFFFF, maxLength);
+  
+  if(stubResult == E_OK && maxLength != gInternalServicePrimitiveResponseParameters.ReceiveAndForwardResponse.dropCnt)
+    testStepFail("Stub_TcpReceiveAndForward", "The expected amount of bytes was not read");
+  
+  return Convert(stubResult);
+}
+
+/// <TcpStubFunctions>
+enum StubFunctionResult Stub_TcpSendDataImpl(enum TestabilityMessageResultIds expectedResult, word totalLength, enum TcpFlag flags, char data[], int socketId)
+{  
+  if(gSocketId[socketId] < 0)
+  {
+    testStepFail("Stub_TcpSendData", "Invalid socket ID, please create socket first.");
+    return kError;
+  }
+  
+  return Convert("SP_Tcp_SendData", SP_Tcp_SendData(gSocketId[socketId], totalLength, data, flags, expectedResult != Success), expectedResult);
+}
+
+/// <TcpStubFunctions>
+enum StubFunctionResult Stub_TcpShutdownImpl(enum TestabilityMessageResultIds expectedResult, enum TcpSocketShutdownType typeId)
+{ 
+  if( gSocketId[0] < 0)
+  {
+    testStepFail("Stub_TcpShutdown", "Invalid socket ID, please create socket first.");
+    return kError;
+  }
+  
+  return Convert("SP_Tcp_Shutdown", SP_Tcp_Shutdown(gSocketId[0], (byte)typeId), expectedResult);
+}
+
+/// <UdpStubFunctions>
+enum StubFunctionResult Stub_UdpCloseSocketImpl(int socketId)
+{
+  enum TestabilityMessageResultIds stubResult;
+  stubResult = SP_Udp_CloseSocket(gSocketId[socketId]);
+  gSocketId[socketId] = -1;
+  return Convert(stubResult);
+}
+
+/// <UdpStubFunctions>
+enum StubFunctionResult Stub_UdpConfigureSocketImpl(word paramId, word paramVal)
+{
+  byte data[2];
+  int  dataLen;
+  
+  switch(paramId)
+  {
+    case 0:
+    case 1:
+    case 2:
+    case 4:
+    case 6:
+    case 7:
+      dataLen = 1;
+      data[0] = paramVal & 0xFF;
+      break;
+    case 5:
+    case 65534:
+    case 65535:
+      dataLen = 2;
+      data[0] = paramVal >> 8 & 0xFF;
+      data[1] = paramVal & 0xFF;
+      break;
+    default:
+      testStepFail("Stub_UdpConfigureSocket", "Unexpected paramId.");
+      return kError;
+  }
+
+  return Convert(SP_Udp_ConfigureSocket(gSocketId[0], paramId, data, dataLen));
+}
+
+/// <UdpStubFunctions>
+enum StubFunctionResult Stub_UdpConfigureSocketImpl(word paramId, char paramVal[])
+{
+  char parameterTemp[5];
+  byte data[0xFFFF], i;
+  word dataLen;
+  
+  dataLen = strlen(paramVal);
+  
+  // Convert paramVal
+  strncpy(parameterTemp, "0x", 3);
+  
+  for (i = 0; (i * 2) < dataLen; i++)
+  {
+    substr_cpy_off(parameterTemp, 2, paramVal, i * 2, 2, 5);
+    data[i] = atol(parameterTemp);
+  }
+  
+   if(gSocketId[0] < 0)
+  {
+    testStepFail("Stub_UdpConfigureSocket", "Invailid socket ID, please create socket first.");
+    return kError;
+  }
+  
+  return Convert(SP_Udp_ConfigureSocket(gSocketId[0], paramId, data, dataLen));
+}
+
+/// <UdpStubFunctions>
+enum StubFunctionResult Stub_UdpCreateAndBindImpl(word localPort, char ipAddr[], enum Bool doBind, int socketIndex)
+{
+  enum TestabilityMessageResultIds stubResult;
+  ip_Address ip;
+  
+  if(ip.ParseAddressFromString(ipAddr) != 0)
+  {
+    testStepFail("Stub_UdpCreateAndBindImpl", "Invalid IP address: %s", ipAddr);
+    return kError;
+  }
+  
+  stubResult = SP_Udp_CreateAndBind(doBind, localPort, ip);
+  
+  if(stubResult == E_OK) 
+    gSocketId[socketIndex] = gInternalServicePrimitiveResponseParameters.CreateAndBindResponse.socketId;
+  
+  return Convert(stubResult);
+}
+
+/// <UdpStubFunctions>
+enum StubFunctionResult Stub_UdpReceiveAndForwardImpl(int socketIndex, word maxFwd)
+{
+  if(gSocketId[socketIndex] < 0)
+  {
+    testStepFail("Stub_UdpReceiveAndForward", "Invalid socket ID, please create socket first.");
+    return kError;
+  }
+
+  return Convert(SP_Udp_ReceiveAndForward(gSocketId[socketIndex], maxFwd, 0xFFFF));
+}
+
+/// <UdpStubFunctions>
+enum StubFunctionResult Stub_UdpReceiveAndForwardEventImpl(long timeoutMilliseconds, char fullLen[], char srcPort[], char srcIpAddress[], char payload[], enum Bool expectedMessage)
+{
+  long result;
+  enum TestabilityMessageResultIds stubResult;
+  int i;
+  
+  result = TmpWaitForServicePrimitiveEvent(kInternalEventReceiveAndForward, timeoutMilliseconds);
+  
+  if(result != 1) // event did not occur ...
+  {
+    if(expectedMessage) // ... but was expected -> test step failed
+    {
+      testStepFail("Stub_UdpReceiveAndForward", "No UDP Receive and Forward Event was received");
+      return kError;
+    }
+    else // ... and was not expected -> test step passed
+    {
+      testStepPass("Stub_UdpReceiveAndForward", "No UDP Receive and Forward Event was received (as expected)");
+      return kOk;
+    }
+  }
+  else if(expectedMessage == kFalse) // event did occur but was not expected -> test step failed
+  {
+    testStepFail("Stub_UdpReceiveAndForward", "UDP Receive and Forward Event was received unexpectedly");
+    return kError;
+  }
+  
+  stubResult = (enum TestabilityMessageResultIds)gInternalServicePrimitiveEventParameters.ReceiveAndForwardUdpEvent.resultId;
+  
+  if(stubResult == E_OK)
+  {
+    //Check if received data matches expected values  
+    if(!Equals(fullLen, gInternalServicePrimitiveEventParameters.ReceiveAndForwardUdpEvent.fullLen, "Stub_UdpReceiveAndForward", "Receive and check UDP data on DUT failed. Full length mismatch."))
+      return kError;
+    
+    if(!Equals(srcPort, gInternalServicePrimitiveEventParameters.ReceiveAndForwardUdpEvent.srcPort, "Stub_UdpReceiveAndForward", "Receive and check UDP data on DUT failed. Source Port mismatch."))
+      return kError;
+    
+    if(!IpEquals(srcIpAddress
+      , gInternalServicePrimitiveEventParameters.ReceiveAndForwardUdpEvent.srcIpAddress
+      , gInternalServicePrimitiveEventParameters.ReceiveAndForwardUdpEvent.ipAddressByteLength
+      ,"Stub_UdpReceiveAndForward"
+      , "Receive and check UDP data on DUT failed. Source IP mismatch."))
+      return kError;
+    
+    if(!Equals(payload
+      , gInternalServicePrimitiveEventParameters.ReceiveAndForwardUdpEvent.payload
+      , gInternalServicePrimitiveEventParameters.ReceiveAndForwardUdpEvent.payloadByteLength
+      , "Stub_UdpReceiveAndForward"
+      , "Receive and check UDP data on DUT failed. Payload mismatch."))
+      return kError;
+  }  
+  
+  return Convert(stubResult);
+}
+
+/// <UdpStubFunctions>
+enum StubFunctionResult Stub_UdpSendDataImpl(int socketId, char totalLength[], char destinationPort[], char destinationAddress[], char data[])
+{
+  ip_Address ip;
+  
+  if(gSocketId[socketId] < 0)
+  {
+    testStepFail("Stub_UdpSendData", "Invalid socket ID, please create socket first.");
+    return kError;
+  }
+  
+  if(ip.ParseAddressFromString(destinationAddress) != 0)
+  {
+    testStepFail("Stub_UdpSendData", "Invalid IP address: %s", destinationAddress);
+    return kError;
+  }
+  
+  return Convert(SP_Udp_SendData_DontWaitForResponse(gSocketId[socketId], atol(totalLength), atol(destinationPort), ip, data));
+}
+
+float Stub_DhcpCalculateT1InMillisecondsUsedByDutImpl(dword leaseTimeSeconds)
+{
+  float renewFuzzTimeMilliseconds = 750;
+  return 0.5 * leaseTimeSeconds * 1000.0 - renewFuzzTimeMilliseconds;
+}
+
+float Stub_DhcpCalculateT2InMillisecondsUsedByDutImpl(dword leaseTimeSeconds)
+{
+  float renewFuzzTimeMilliseconds = 0;
+  return 0.875 * leaseTimeSeconds * 1000.0 - renewFuzzTimeMilliseconds;
+}

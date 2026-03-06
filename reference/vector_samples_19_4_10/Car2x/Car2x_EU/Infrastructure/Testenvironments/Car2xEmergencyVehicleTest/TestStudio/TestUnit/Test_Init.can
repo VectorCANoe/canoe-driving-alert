@@ -1,0 +1,140 @@
+/*@!Encoding:1252*/
+includes
+{
+  
+}
+
+variables
+{
+  
+}
+
+export WaitForMessage()
+{
+  long returnValue;
+  long testStepStatus;
+  char errorText[100];
+  // wait for signal match for 5min
+  TestJoinSignalMatch (sysvar::DENM::Received, 1);
+  TestJoinSignalMatch (sysvar::CAMValues::LightBarInUse, 1);
+  TestJoinSignalMatch (sysvar::TestConfiguration::StopTest, 1);
+  returnValue = testWaitForAnyJoinedEvent(30000);
+  
+  // nothing received
+  if (returnValue <= 0)
+  {
+    testStepStatus = 0;
+    snprintf(errorText, elcount(errorText), "No suitable messages received.");
+  }
+  // correct signal received
+  else
+  {
+    // stop test was called
+    if (@TestConfiguration::StopTest_Called == 1)
+    {
+      testStepInconclusive("Stop Test was called.");
+      return;
+    }
+    
+    // correct CC received and CAM with lightBar on
+    if (returnValue == 2 && IsCorrectIncident())
+    {
+      testStepStatus = 1;
+      snprintf(errorText, elcount(errorText), "Correct DENM and CAM with lightBarInUse received.");
+    }
+    
+    // CAM with lightbar on was received
+    if (@CAMValues::LightBarInUse == 1)
+    {
+      WaitForDENM(elcount(errorText), errorText);
+    }
+    else if (@DENM::Received == 1)
+    {
+      WaitForLightBarCAM(elcount(errorText), errorText);
+      testStepPass(errorText);
+    }
+  }
+  
+  switch(testStepStatus)
+  {
+    case -1:
+      testStepInconclusive(errorText);
+      break;
+    case 0:
+      testStepFail(errorText);
+      break;
+    case 1:
+      testStepPass(errorText);
+      break;
+  }
+}
+
+int WaitForLightBarCAM(long bufferSize, char errorText[])
+{
+  long returnValue;
+  int64 startTime, timeDiff;
+  startTime = timeNow();
+  returnValue = TestWaitForSignalMatch (sysvar::CAMValues::LightBarInUse, 1, 500);
+  timeDiff = timeNow() - startTime;
+  if (returnValue > 0 && (IsCorrectIncident() || @CAMValues::VehicleRole == 5))
+  {
+    TestReportAddExtendedInfo("text", "Time Diff %i(ms): first DENM with correct CauseCode and CAM with LightBar.", timeDiff);
+    snprintf(errorText, bufferSize, "Correct DENM and CAM with lightBarInUse received.");
+    return 1;
+  }
+  else
+  {
+    returnValue = TestWaitForSignalMatch (sysvar::CAMValues::HasLFC, 1, 500);
+    timeDiff = timeNow() - startTime;
+    if (returnValue > 0  && (IsCorrectIncident() || @CAMValues::VehicleRole == 5))
+    {
+      snprintf(errorText, bufferSize, "DENM with correct CauseCode, CAM with LFC received, but no lightBar.");
+      return 0;
+    }
+  }
+  snprintf(errorText, bufferSize, "DENM with correct CauseCode, no CAM with LFC received.");
+  return 0;
+}
+
+int WaitForDENM(long bufferSize, char errorText[])
+{
+  long returnValue;
+  int64 startTime, timeDiff;
+  
+  TestJoinSignalMatch (sysvar::DENMvalues::CauseCode, 95);
+  TestJoinSignalMatch (sysvar::DENMvalues::CauseCode, 15);
+  startTime = timeNow();
+  returnValue = testWaitForAnyJoinedEvent(250);
+  timeDiff = timeNow()-startTime;
+  
+  if (returnValue > 0 && (IsCorrectIncident() || @CAMValues::VehicleRole == 5))
+  {
+    TestReportAddExtendedInfo("text", "Time Diff %i(ms): first CAM with LightBar and DENM with correct CauseCode.", timeDiff);
+    snprintf(errorText, bufferSize, "Correct DENM and CAM with lightBarInUse received.");
+    return 1;
+  }
+  else
+  {
+    snprintf(errorText, bufferSize, "CAM with lightBarInUse received, but no DENM with CauseCode 95 or 15.");
+    return 0;
+  }
+}
+
+int IsCorrectIncident()
+{
+  return @DENMvalues::CauseCode == @CAMValues::IncidentCC && @DENMvalues::SubCauseCode == @CAMValues::IncidentSCC;
+}
+
+export PrintInitialData()
+{
+  char time[1000];
+  @DENM::InitialCC = @DENMvalues::CauseCode;
+  @DENM::InitialSCC = @DENMvalues::SubCauseCode;
+  @DENM::lnitialVehicleRole = @CAMValues::VehicleRole;
+  TimeToString(timeNowInt64(), time);
+  
+  TestReportAddExtendedInfo("text", "TimeStamp of first received correct DENM/CAM %s", time);
+  TestReportAddExtendedInfo("text", "Initial CauseCode: %i", @DENM::InitialCC);
+  TestReportAddExtendedInfo("text", "Initial SubCauseCode: %i", @DENM::InitialSCC);
+  TestReportAddExtendedInfo("text", "Initial VehicleRole: %i", @DENM::lnitialVehicleRole);
+}

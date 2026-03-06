@@ -1,0 +1,344 @@
+/*@!Encoding:1252*/
+includes
+{
+  
+}
+
+variables
+{
+  char gProtocolPanelName[9] = "Protocol";
+  char gPanelName[5] = "EVSE";
+  char gEVPanelName[3] = "EV";
+  char gControlName[19] = "sw_ChargeDischarge";
+  char gDcCurrent[17]   = "upDown_dcCurrent";
+  
+  msTimer tReceivedBeaconFrame;
+}
+
+/**********************************************************************************************************************
+ *  ON START/STOP
+ *********************************************************************************************************************/
+
+on start
+{
+  ClearProtocolPanel();
+  @sysvar::Common::SysProtocolBar = @sysvar::Common::SysProtocolBar::Initial;
+}
+
+on timer tReceivedBeaconFrame
+{
+  @sysvar::Common::SysBeaconFrameReceived = 0;
+}
+
+/**********************************************************************************************************************
+ *  HELPER FUNCTIONS
+ *********************************************************************************************************************/
+
+on sysvar Common::LastReceivedMessageId
+{
+  switch (@this)
+  {
+    case _CCS::DataTypes::SECCDiscoveryWirelessReq:
+    case _CCS::DataTypes::SECCDiscoveryWirelessRes:
+      ClearProtocolPanel();
+      @sysvar::Common::SysProtocolBar = @sysvar::Common::SysProtocolBar::SeccDiscovery;
+      break;
+      
+    // V2G messages
+    case _CCS::DataTypes::SessionSetupReq:
+    case _CCS::DataTypes::SessionSetupRes:
+      @sysvar::Common::SysProtocolBar = @sysvar::Common::SysProtocolBar::SessionSetup;
+      break;
+      
+    case _CCS::DataTypes::WPTFinePositioningSetupReq:
+    case _CCS::DataTypes::WPTFinePositioningSetupRes:
+    case _CCS::DataTypes::WPTFinePositioningReq:
+    case _CCS::DataTypes::WPTFinePositioningRes:
+      @sysvar::Common::SysProtocolBar = @sysvar::Common::SysProtocolBar::FinePositioning;
+      break;
+      
+    case _CCS::DataTypes::WPTPairingReq:
+    case _CCS::DataTypes::WPTPairingRes:
+      @sysvar::Common::SysProtocolBar = @sysvar::Common::SysProtocolBar::Pairing;
+      break;
+      
+    case _CCS::DataTypes::AuthorizationSetupReq:
+    case _CCS::DataTypes::AuthorizationSetupRes:
+    case _CCS::DataTypes::AuthorizationReq:
+    case _CCS::DataTypes::AuthorizationRes:
+      @sysvar::Common::SysProtocolBar = @sysvar::Common::SysProtocolBar::Authorization;
+      break; 
+      
+    case _CCS::DataTypes::CertificateInstallationReq:
+    case _CCS::DataTypes::CertificateInstallationRes:
+      @sysvar::Common::SysProtocolBar = @sysvar::Common::SysProtocolBar::CertificateInstall;
+      break;  
+      
+    case _CCS::DataTypes::ServiceDiscoveryReq:
+    case _CCS::DataTypes::ServiceDiscoveryRes:
+      @sysvar::Common::SysProtocolBar = @sysvar::Common::SysProtocolBar::ServiceDiscovery;
+      break; 
+      
+    case _CCS::DataTypes::ServiceDetailReq:
+    case _CCS::DataTypes::ServiceDetailRes:
+    case _CCS::DataTypes::ServiceSelectionReq:
+    case _CCS::DataTypes::ServiceSelectionRes:
+      @sysvar::Common::SysProtocolBar = @sysvar::Common::SysProtocolBar::ServiceDetail;
+      break;    
+     
+    case _CCS::DataTypes::WPTChargeParameterDiscoveryReq:
+    case _CCS::DataTypes::WPTChargeParameterDiscoveryRes:
+      @sysvar::Common::SysProtocolBar = @sysvar::Common::SysProtocolBar::ChargeParameterDiscovery;
+      break;
+      
+    case _CCS::DataTypes::ScheduleExchangeReq:
+    case _CCS::DataTypes::ScheduleExchangeRes:
+      @sysvar::Common::SysProtocolBar = @sysvar::Common::SysProtocolBar::ScheduleExchange;
+      break;
+      
+    case _CCS::DataTypes::WPTAlignmentCheckReq:
+    case _CCS::DataTypes::WPTAlignmentCheckRes:
+      @sysvar::Common::SysProtocolBar = @sysvar::Common::SysProtocolBar::AlignmentCheck;
+      break;
+    
+    case _CCS::DataTypes::WPTChargeLoopReq:
+    case _CCS::DataTypes::WPTChargeLoopRes:
+      @sysvar::Common::SysProtocolBar = @sysvar::Common::SysProtocolBar::ChargeLoop;
+      break;  
+    case _CCS::DataTypes::SessionStopReq:
+    case _CCS::DataTypes::SessionStopRes:
+      @sysvar::Common::SysProtocolBar = @sysvar::Common::SysProtocolBar::StopCharging;
+      break;   
+    case _CCS::DataTypes::PowerDeliveryReq:
+    case _CCS::DataTypes::PowerDeliveryRes:
+      break;     
+ 
+    default:
+      // Ignore
+      break;
+  }
+}
+
+on any_monitored_value_change _CCS::DataTypes::IMonitoredChargePoint.SAP.SupportedAppProtocol_Request
+{
+  @Common::LastReceivedMessageId = _CCS::DataTypes::SupportedAppProtocolReq;
+}
+
+on any_monitored_value_change _CCS::DataTypes::IMonitoredVehicle.SAP.SupportedAppProtocol_Response
+{
+  @Common::LastReceivedMessageId = _CCS::DataTypes::SupportedAppProtocolRes;
+}
+
+on any_monitored_value_change _CCS::DataTypes::IMonitoredChargePoint.SDP.SECC_Discovery_Wireless_Request
+{
+  @Common::LastReceivedMessageId = _CCS::DataTypes::SECCDiscoveryWirelessReq;
+}
+
+on any_monitored_value_change _CCS::DataTypes::IMonitoredVehicle.SDP.SECC_Discovery_Wireless_Response
+{
+  @Common::LastReceivedMessageId = _CCS::DataTypes::SECCDiscoveryWirelessRes;
+}
+
+on any_monitored_value_change _CCS::DataTypes::IMonitoredChargePoint.ISO20.SessionSetup_Request
+{
+  @Common::LastReceivedMessageId = _CCS::DataTypes::SessionSetupReq;
+}
+
+on any_monitored_value_change _CCS::DataTypes::IMonitoredVehicle.ISO20.SessionSetup_Response
+{
+  @Common::LastReceivedMessageId = _CCS::DataTypes::SessionSetupRes;
+}
+
+on any_monitored_value_change _CCS::DataTypes::IMonitoredChargePoint.ISO20.WPT_FinePositioningSetup_Request
+{
+  @Common::LastReceivedMessageId = _CCS::DataTypes::WPTFinePositioningSetupReq;
+}
+
+on any_monitored_value_change _CCS::DataTypes::IMonitoredVehicle.ISO20.WPT_FinePositioningSetup_Response
+{
+  @Common::LastReceivedMessageId = _CCS::DataTypes::WPTFinePositioningSetupRes;
+}
+
+on any_monitored_value_change _CCS::DataTypes::IMonitoredChargePoint.ISO20.WPT_FinePositioning_Request
+{
+  @Common::LastReceivedMessageId = _CCS::DataTypes::WPTFinePositioningReq;
+}
+
+on any_monitored_value_change _CCS::DataTypes::IMonitoredVehicle.ISO20.WPT_FinePositioning_Response
+{
+  @Common::LastReceivedMessageId = _CCS::DataTypes::WPTFinePositioningRes;
+}
+
+on any_monitored_value_change _CCS::DataTypes::IMonitoredChargePoint.ISO20.AuthorizationSetup_Request
+{
+  @Common::LastReceivedMessageId = _CCS::DataTypes::AuthorizationSetupReq;
+}
+
+on any_monitored_value_change _CCS::DataTypes::IMonitoredVehicle.ISO20.AuthorizationSetup_Response
+{
+  @Common::LastReceivedMessageId = _CCS::DataTypes::AuthorizationSetupRes;
+}
+
+on any_monitored_value_change _CCS::DataTypes::IMonitoredChargePoint.ISO20.WPT_Pairing_Request
+{
+  @Common::LastReceivedMessageId = _CCS::DataTypes::WPTPairingReq;
+}
+
+on any_monitored_value_change _CCS::DataTypes::IMonitoredVehicle.ISO20.WPT_Pairing_Response
+{
+  @Common::LastReceivedMessageId = _CCS::DataTypes::WPTPairingRes;
+}
+
+on any_monitored_value_change _CCS::DataTypes::IMonitoredChargePoint.ISO20.Authorization_Request
+{
+  @Common::LastReceivedMessageId = _CCS::DataTypes::AuthorizationReq;
+}
+
+on any_monitored_value_change _CCS::DataTypes::IMonitoredVehicle.ISO20.Authorization_Response
+{
+  @Common::LastReceivedMessageId = _CCS::DataTypes::AuthorizationRes;
+}
+
+on any_monitored_value_change _CCS::DataTypes::IMonitoredChargePoint.ISO20.CertificateInstallation_Request
+{
+  @Common::LastReceivedMessageId = _CCS::DataTypes::CertificateInstallationReq;
+}
+
+on any_monitored_value_change _CCS::DataTypes::IMonitoredVehicle.ISO20.CertificateInstallation_Response
+{
+  @Common::LastReceivedMessageId = _CCS::DataTypes::CertificateInstallationRes;
+}
+
+on any_monitored_value_change _CCS::DataTypes::IMonitoredChargePoint.ISO20.ServiceDiscovery_Request
+{
+  @Common::LastReceivedMessageId = _CCS::DataTypes::ServiceDiscoveryReq;
+}
+
+on any_monitored_value_change _CCS::DataTypes::IMonitoredVehicle.ISO20.ServiceDiscovery_Response
+{
+  @Common::LastReceivedMessageId = _CCS::DataTypes::ServiceDiscoveryRes;
+}
+
+on any_monitored_value_change _CCS::DataTypes::IMonitoredChargePoint.ISO20.ServiceDetail_Request
+{
+  @Common::LastReceivedMessageId = _CCS::DataTypes::ServiceDetailReq;
+}
+
+on any_monitored_value_change _CCS::DataTypes::IMonitoredVehicle.ISO20.ServiceDetail_Response
+{
+  @Common::LastReceivedMessageId = _CCS::DataTypes::ServiceDetailRes;
+}
+
+on any_monitored_value_change _CCS::DataTypes::IMonitoredChargePoint.ISO20.ServiceSelection_Request
+{
+  @Common::LastReceivedMessageId = _CCS::DataTypes::ServiceSelectionReq;
+}
+
+on any_monitored_value_change _CCS::DataTypes::IMonitoredVehicle.ISO20.ServiceSelection_Response
+{
+  @Common::LastReceivedMessageId = _CCS::DataTypes::ServiceSelectionRes;
+}
+
+on any_monitored_value_change _CCS::DataTypes::IMonitoredChargePoint.ISO20.WPT_ChargeParameterDiscovery_Request
+{
+  @Common::LastReceivedMessageId = _CCS::DataTypes::WPTChargeParameterDiscoveryReq;
+}
+
+on any_monitored_value_change _CCS::DataTypes::IMonitoredVehicle.ISO20.WPT_ChargeParameterDiscovery_Response
+{
+  @Common::LastReceivedMessageId = _CCS::DataTypes::WPTChargeParameterDiscoveryRes;
+}
+
+on any_monitored_value_change _CCS::DataTypes::IMonitoredChargePoint.ISO20.ScheduleExchange_Request
+{
+  @Common::LastReceivedMessageId = _CCS::DataTypes::ScheduleExchangeReq;
+}
+
+on any_monitored_value_change _CCS::DataTypes::IMonitoredVehicle.ISO20.ScheduleExchange_Response
+{
+  @Common::LastReceivedMessageId = _CCS::DataTypes::ScheduleExchangeRes;
+}
+
+on any_monitored_value_change _CCS::DataTypes::IMonitoredChargePoint.ISO20.WPT_AlignmentCheck_Request
+{
+  @Common::LastReceivedMessageId = _CCS::DataTypes::WPTAlignmentCheckReq;
+}
+
+on any_monitored_value_change _CCS::DataTypes::IMonitoredVehicle.ISO20.WPT_AlignmentCheck_Response
+{
+  @Common::LastReceivedMessageId = _CCS::DataTypes::WPTAlignmentCheckRes;
+}
+
+on any_monitored_value_change _CCS::DataTypes::IMonitoredVehicle.ISO20.PowerDelivery_Request
+{
+  @Common::LastReceivedMessageId = _CCS::DataTypes::PowerDeliveryReq;
+}
+
+on any_monitored_value_change _CCS::DataTypes::IMonitoredChargePoint.ISO20.PowerDelivery_Response
+{
+  @Common::LastReceivedMessageId = _CCS::DataTypes::PowerDeliveryRes;
+}
+
+on any_monitored_value_change _CCS::DataTypes::IMonitoredChargePoint.ISO20.WPT_ChargeLoop_Request
+{
+  @Common::LastReceivedMessageId = _CCS::DataTypes::WPTChargeLoopReq;
+}
+
+on any_monitored_value_change _CCS::DataTypes::IMonitoredVehicle.ISO20.WPT_ChargeLoop_Response
+{
+  @Common::LastReceivedMessageId = _CCS::DataTypes::WPTChargeLoopRes;
+}
+
+on any_monitored_value_change _CCS::DataTypes::IMonitoredChargePoint.ISO20.SessionStop_Request
+{
+  @Common::LastReceivedMessageId = _CCS::DataTypes::SessionStopReq;
+}
+
+on any_monitored_value_change _CCS::DataTypes::IMonitoredVehicle.ISO20.SessionStop_Response
+{
+  @Common::LastReceivedMessageId = _CCS::DataTypes::SessionStopRes;
+}
+
+ClearProtocolPanel()
+{
+  SetControlVisibility(gProtocolPanelName, "TResult1OK",  0);
+  SetControlVisibility(gProtocolPanelName, "TResult1NOK", 0);
+  SetControlVisibility(gProtocolPanelName, "TResult2OK",  0);
+  SetControlVisibility(gProtocolPanelName, "TResult2NOK", 0);
+  SetControlVisibility(gProtocolPanelName, "TResult3OK",  0);
+  SetControlVisibility(gProtocolPanelName, "TResult3NOK", 0);
+  SetControlVisibility(gProtocolPanelName, "TResult4OK",  0);
+  SetControlVisibility(gProtocolPanelName, "TResult4NOK", 0);
+  SetControlVisibility(gProtocolPanelName, "TResult5OK",  0);
+  SetControlVisibility(gProtocolPanelName, "TResult5NOK", 0);
+  SetControlVisibility(gProtocolPanelName, "TResult6OK",  0);
+  SetControlVisibility(gProtocolPanelName, "TResult6NOK", 0);
+  SetControlVisibility(gProtocolPanelName, "TResult7OK",  0);
+  SetControlVisibility(gProtocolPanelName, "TResult7NOK", 0);
+  SetControlVisibility(gProtocolPanelName, "TResult8OK",  0);
+  SetControlVisibility(gProtocolPanelName, "TResult8NOK", 0);
+  SetControlVisibility(gProtocolPanelName, "TResult9OK",  0);
+  SetControlVisibility(gProtocolPanelName, "TResult9NOK", 0);
+  SetControlVisibility(gProtocolPanelName, "TResult10OK",  0);
+  SetControlVisibility(gProtocolPanelName, "TResult10NOK", 0);
+  SetControlVisibility(gProtocolPanelName, "TResult11OK",  0);
+  SetControlVisibility(gProtocolPanelName, "TResult11NOK", 0); 
+  SetControlVisibility(gProtocolPanelName, "TResult12OK",  0);
+  SetControlVisibility(gProtocolPanelName, "TResult12NOK", 0); 
+  SetControlVisibility(gProtocolPanelName, "TResult13OK",  0);
+  SetControlVisibility(gProtocolPanelName, "TResult13NOK", 0); 
+  
+  SetControlVisibility(gProtocolPanelName, "CertAuthOK", 0);
+  SetControlVisibility(gProtocolPanelName, "CertAuthNOK", 0);
+  SetControlVisibility(gProtocolPanelName, "CertUpdateOK", 0);
+  SetControlVisibility(gProtocolPanelName, "CertUpdateNOK", 0);
+  SetControlVisibility(gProtocolPanelName, "CertChargeParOK", 0);
+  SetControlVisibility(gProtocolPanelName, "CertChargeParNOK", 0);
+  SetControlVisibility(gProtocolPanelName, "CertChargeLoopOK", 0);
+  SetControlVisibility(gProtocolPanelName, "CertChargeLoopNOK", 0);
+}
+
+on sysvar_update sysvar::Common::SysBeaconFrameReceived
+{
+  setTimer(tReceivedBeaconFrame, 150); 
+}

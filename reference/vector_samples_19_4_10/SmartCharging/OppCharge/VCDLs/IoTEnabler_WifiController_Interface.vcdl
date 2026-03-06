@@ -1,0 +1,222 @@
+version 1.4;
+
+import "IotEnabler_General_Datatypes.vcdl";
+
+namespace IoTEnablerWifiController
+{
+  using ::IoTEnablerGeneral;
+ 
+  // State of the IoT Enabler device
+  enum device_state_enum
+  {
+    OFFLINE,
+    CONNECTING,
+    ONLINE,
+    DISCONNECTING
+  }
+ 
+  // Return value type all methods of the IoT Enabler interfaces
+  struct result
+  {
+    // Indicates whether the method call was succesful (OK) or unsuccesful (ERROR)
+    return_code_enum return_code;
+    // In case of an unsuccesful method call, an additional error information might be provided
+    [optional]
+    string additional_info;
+  }
+
+  // Monitoring definitions
+  enum OptionEnum : uint32
+  {
+    SSID = 0,
+    SUPPORTED_RATES = 1,
+    FH_SET = 2,
+    DS_SET = 3,
+    CF_SET = 4,
+    TIM = 5,
+    IBSS_SET = 6,
+    COUNTRY = 7,
+    HOPPING_PATTERN_PARAMS = 8,
+    HOPPING_PATTERN_TABLE = 9,
+    REQUEST_INFORMATION = 10,
+    BSS_LOAD = 11,
+    EDCA = 12,
+    TSPEC = 13,
+    TCLAS = 14,
+    SCHEDULE = 15,
+    CHALLENGE_TEXT = 16,
+    POWER_CONSTRAINT = 32,
+    POWER_CAPABILITY = 33,
+    TPC_REQUEST = 34,
+    TPC_REPORT = 35,
+    SUPPORTED_CHANNELS = 36,
+    CHANNEL_SWITCH = 37,
+    MEASUREMENT_REQUEST = 38,
+    MEASUREMENT_REPORT = 39,
+    QUIET = 40,
+    IBSS_DFS = 41,
+    ERP_INFORMATION = 42,
+    TS_DELAY = 43,
+    TCLAS_PROCESSING = 44,
+    QOS_CAPABILITY = 46,
+    RSN = 48,
+    EXT_SUPPORTED_RATES = 50,
+    VENDOR_SPECIFIC = 221
+  }
+
+  struct OptionType
+  {
+      OptionEnum option;
+      bytes data;
+  }
+
+  typedef OptionTypeList = list<OptionType>;
+
+  struct MacType
+  {
+      uint8 type;
+      uint8 subtype;
+      uint8 to_ds;
+      uint8 from_ds;
+      uint8 power_mgmgt;
+      string addr1;
+      OptionTypeList options;
+  }
+
+  struct VendorSpecificType
+  {
+      string oui;
+      bytes data;
+  }
+
+  typedef VendorSpecificTypeList = list<VendorSpecificType>;
+
+  enum ChannelTypeEnum : uint32
+  {
+    TURBO = 16,
+    CCK = 32,
+    OFDM = 64,
+    TWO_GZ = 128,
+    FIVE_GZ = 256,
+    PASSIVE = 512,
+    DYN_CCK_OFDM = 1024,
+    GFSK = 2048
+  }
+
+  typedef ChannelTypeEnumList = list<ChannelTypeEnum>;
+
+  struct PhyType
+  {
+      uint32 flags;
+      uint32 rate;
+      int32 dbm_signal;
+      uint32 channel_freq;
+      ChannelTypeEnumList channel_type;
+  }
+
+  struct WiFiProbeRequestType
+  {
+      PhyType phy;
+      MacType mac;
+      string src;
+      string src_oui;
+      string dst;
+      string dst_oui;
+      string ssid;
+      VendorSpecificTypeList vendor;
+  }
+
+  struct ChannelInfoType
+  {
+      uint32 channel;
+      uint32 frequency;
+  }
+
+  typedef ChannelInfoTypeList = list<ChannelInfoType>;
+
+  struct WiFiBeaconType
+  {
+      PhyType phy;
+      MacType mac;
+      string src;
+      string src_oui;
+      string dst;
+      string dst_oui;
+      string ssid;
+      VendorSpecificTypeList vendor;
+  }
+
+  struct WiFiProbeResponseType
+  {
+      PhyType phy;
+      MacType mac;
+      string src;
+      string src_oui;
+      string dst;
+      string dst_oui;
+      string ssid;
+      VendorSpecificTypeList vendor;
+  }
+
+  struct WiFiDataType
+  {
+      PhyType phy;
+      MacType mac;
+      string src;
+      string src_oui;
+      string dst;
+      string dst_oui;
+      string ssid;
+      string bssid;
+      uint32 eth_type;
+      bytes payload;
+  }
+
+  interface IWiFiController
+  {
+      // !
+      // @brief Configure which Wi-Fi interface to use
+      // @warning IWiFiController must be run on a separate interface to IWiFiAccessPoint or IWiFiClient if both are running on the same IoT Enabler. This requires a second Wi-Fi stick and its separate \p interface_name otherwise the interface will not work
+      // @param[in] interface_name The name of the Wi-Fi stick's interface
+      // @return Error if the named interface doesn't have a Wi-Fi stick connected. Otherwise success.
+      consumed method result configure(string interface_name);
+
+      // !
+      // @brief Activate or deactivate monitoring / trace
+      // @note Must be called after configure()
+      // @param[in] enable Activate / deactivate
+      // @return Error if \p enable is true and monitoring was already running, or if \p enable is false and monitoring was already stopped. Otherwise success
+      consumed method result trace(bool enable);
+
+      // !
+      // @brief Change the channel being monitored
+      // @note Must be called after configure()
+      // @param[in] channel The desired channel
+      // @return Success
+      consumed method result set_channel(uint32 channel);
+
+      // !
+      // @brief Retrieve channels available for monitoring
+      // @note Must be called after configure()
+      // @param[out] channels Available channels and their frequencies in GHz
+      // @return Success
+      consumed method result get_available_channels(out ChannelInfoTypeList channels);
+
+      // !
+      // @brief Add WPA2 key for a network on the channel being monitored
+      // @param[in] ssid Name of the network
+      // @param[in] key WPA2 key for the given network
+      // @return Success
+      consumed method result add_wpa2_key(string ssid, string key);
+
+      consumed data WiFiBeaconType wifi_beacon;
+
+      consumed data WiFiProbeRequestType wifi_probe_request;
+
+      consumed data WiFiProbeResponseType wifi_probe_response;
+
+      consumed data WiFiDataType wifi_data;
+
+  }
+
+}

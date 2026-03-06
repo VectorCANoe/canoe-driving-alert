@@ -1,0 +1,127 @@
+version: 19.0.0
+modules:
+  - type: 2816
+    interface: 3
+    module-channel:
+      name: EVSE_VT2816
+    channels:
+      - name: EVSE_VT2816_Ch1
+        active-values:
+          - name: AvgVoltage
+            cycle-time: 100ms
+            integration-time: 10ms
+      - name: EVSE_VT2816_Ch2
+        active-values:
+          - name: AvgVoltage
+            cycle-time: 100ms
+            integration-time: 10ms
+      - name: EVSE_VT2816_Ch3
+        active-values:
+          - name: AvgVoltage
+            cycle-time: 100ms
+            integration-time: 10ms
+      - name: EVSE_VT2816_Ch4
+        active-values:
+          - name: AvgVoltage
+            cycle-time: 100ms
+            integration-time: 10ms
+      - name: VT2816_2_Ch5
+      - name: VT2816_2_Ch6
+      - name: VT2816_2_Ch7
+      - name: VT2816_2_Ch8
+      - name: VT2816_2_Ch9
+      - name: VT2816_2_Ch10
+      - name: VT2816_2_Ch11
+      - name: VT2816_2_Ch12
+      - name: VT2816_2_Ch13
+      - name: VT2816_2_Ch14
+      - name: VT2816_2_Ch15
+      - name: VT2816_2_Ch16
+    gui-labels:
+      - name: vina_1
+        text: VCP
+      - name: vinb_1
+        text: PE
+      - name: vina_2
+        text: DP1
+      - name: vinb_2
+        text: PE
+      - name: vina_3
+        text: DP4
+      - name: vinb_3
+        text: PE
+      - name: vina_4
+        text: CPD
+      - name: vinb_4
+        text: PE
+  - type: 2004
+    interface: 7
+    module-channel:
+      name: EVSE_VT2004
+    channels:
+      - name: EVSE_VT2004_Ch1
+      - name: EVSE_VT2004_Ch2
+      - name: EVSE_VT2004_Ch3
+      - name: EVSE_VT2004_Ch4
+    gui-labels:
+      - name: EcuA_1
+        text: CSS1 / CP
+      - name: EcuB_1
+        text: CSS2 / CP1
+      - name: EcuA_2
+        text: CPD
+      - name: EcuA_3
+        text: ""
+      - name: EcuA_4
+        text: ""
+      - name: SensorB_4
+        text: ""
+      - name: EcuB_4
+        text: ""
+      - name: BB1a
+        text: 12 V
+      - name: BB1b
+        text: GND
+      - name: BB2a
+        text: PE
+      - name: BB2b
+        text: PE
+      - name: EcuB_2
+        text: ""
+      - name: EcuB_3
+        text: VCP
+      - name: SensorA_2
+        text: CPD
+      - name: SensorB_3
+        text: VCP
+  - type: 2004
+    interface: 7
+    module-channel:
+      name: EVSE_VT2004_ChaoJi
+    channels:
+      - name: EVSE_VT2004_ChaoJi_Ch1
+      - name: EVSE_VT2004_ChaoJi_Ch2
+      - name: EVSE_VT2004_ChaoJi_Ch3
+      - name: EVSE_VT2004_ChaoJi_Ch4
+    gui-labels:
+      - name: BB1a
+        text: 12 V
+      - name: BB1b
+        text: GND
+      - name: BB2a
+        text: PE
+      - name: BB2b
+        text: PE
+      - name: SensorA_4
+        text: CC1
+      - name: SensorA_1
+        text: CC2
+      - name: EcuA_4
+        text: CC1
+      - name: EcuB_3
+        text: CC1
+      - name: EcuA_1
+        text: CC2
+vts-control-window:
+  flip-rack-order: false
+  serialized-config: rack[12];mapping[0,0,0];mapping[1,0,1];mapping[2,0,2];

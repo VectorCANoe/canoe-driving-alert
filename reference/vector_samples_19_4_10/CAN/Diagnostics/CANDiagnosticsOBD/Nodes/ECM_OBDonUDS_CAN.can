@@ -1,0 +1,162 @@
+/*@!Encoding:1252*/
+includes
+{
+  #include "../CAPL_Includes/DiagDefinitions.cin"
+  #include "../CAPL_Includes/LibFunctions_Write.cin"
+  #include "../CAPL_Includes/LibFunctions_Node.cin"
+  #include "../CAPL_Includes/CommonDiagImplementation.cin"
+  #include "../CAPL_Includes/OBDonUDS_CommonImplementation.cin"
+#define OBDonUDS
+  #include "../CAPL_Includes/FaultMemory_Sim.cin"
+  #include "../CAPL_Includes/SessionHandler_Sim.cin"
+}
+
+variables
+{
+  char gECU[20]="ECM_OBDonUDS_CAN";
+  byte ecuAcronym[20]={'E','C','M', 0, '-', 'E','n','g','i','n','e','C','o','n','t','r','o','l',0, 0};
+  const cIsTester=0;
+  byte cSupportedPIDs[32]={0xC0, 0x18, 0x00, 0x11,  // PID 0x01: I/M Readiness Data
+                                                    // PID 0x02: DTC that Caused Freeze Frame Storage Request Freeze Frame
+                                                    // PID 0x0C: Engine RPM
+                                                    // PID 0x0D: Vehicle Speed Sensor
+                                                    // PID 0x1C: OBD requirements for vehicle or engine
+                                                    // PID 0x20: PID supported, $21 - $40 Read current
+                           0x80, 0x00, 0x80, 0x01,  // PID 0x21: Distance travelled while MIL is activated
+                                                    // PID 0x31: Distance traveled since DTCs cleard
+                                                    // PID 0x40: PID supported, $41 - $60 Read current
+                           0x80, 0x0C, 0x80, 0x00,  // PID 0x41: Monitor Status This Driving Cycle
+                                                    // PID 0x4D: Engine Run Time while MIL activated
+                                                    // PID 0x4E: Engine Run Time since DTCs cleared
+                                                    // PID 0x51: Type of fuel being utilized by the internal combustion engine
+                           0x00, 0x00, 0x00, 0x00,
+                           0x00, 0x00, 0x00, 0x00,
+                           0x00, 0x00, 0x00, 0x00,
+                           0x00, 0x00, 0x00, 0x00,
+                           0x00, 0x00, 0x00, 0x00};
+                           
+  byte cSupportedFreezeFramePIDs[32]=
+                          {0x40, 0x00, 0x00, 0x01,  // PID 0x02: DTC that Caused Freeze Frame Storage Request Freeze Frame
+                                                    // PID 0x20: PID supported, $21 - $40 Read current
+                           0x80, 0x00, 0x80, 0x00,  // PID 0x21: Distance travelled while MIL is activated
+                                                    // PID 0x31: Distance traveled since DTCs cleard
+                           0x00, 0x00, 0x00, 0x00,  
+                           0x00, 0x00, 0x00, 0x00,
+                           0x00, 0x00, 0x00, 0x00,
+                           0x00, 0x00, 0x00, 0x00,
+                           0x00, 0x00, 0x00, 0x00,
+                           0x00, 0x00, 0x00, 0x00};
+
+  byte cSupportedINFOTYPEs[32]={0x41, 0x41, 0x00, 0x00,  // INFOTYPE 0x02: VIN
+                                                         // INFOTYPE 0x08: In-use Performance Tracking for spark ignition engines (patched in sysvar handler for fuel type)
+                                                         // INFOTYPE 0x0A: ECUNAME
+                                                         // [INFOTYPE 0x0B: In-use Performance Tracking for compression ignition engines (patched in sysvar handler for fuel type)]
+                                                         // INFOTYPE 0x10: Protocol Identification
+                           0x00, 0x00, 0x00, 0x00,
+                           0x00, 0x00, 0x00, 0x00,
+                           0x00, 0x00, 0x00, 0x00,
+                           0x00, 0x00, 0x00, 0x00,
+                           0x00, 0x00, 0x00, 0x00,
+                           0x00, 0x00, 0x00, 0x00,
+                           0x00, 0x00, 0x00, 0x00};
+                         
+  byte cSupportedOBDMIDs[32]={0x01, 0x00, 0x00, 0x00, // OBDMID 0x08: Exhaust Gas Sensor Monitor Bank 2 Sensor 4
+                           0x00, 0x00, 0x00, 0x00,
+                           0x00, 0x00, 0x00, 0x00,
+                           0x00, 0x00, 0x00, 0x00,
+                           0x00, 0x00, 0x00, 0x00,
+                           0x00, 0x00, 0x00, 0x00,
+                           0x00, 0x00, 0x00, 0x00,
+                           0x00, 0x00, 0x00, 0x00};
+                         
+  byte cSupportedTIDs[32]={0x80, 0x00, 0x00, 0x00, // TID 0x01: Evaporative system leak test
+                           0x00, 0x00, 0x00, 0x00,
+                           0x00, 0x00, 0x00, 0x00,
+                           0x00, 0x00, 0x00, 0x00,
+                           0x00, 0x00, 0x00, 0x00,
+                           0x00, 0x00, 0x00, 0x00,
+                           0x00, 0x00, 0x00, 0x00,
+                           0x00, 0x00, 0x00, 0x00};
+                           
+// Following DTCs stored in OBDonUDS fault memory
+  const cDtcOBDonUDS_Cylinder1PressureTooHigh  = 0x09CE2D; 
+  const cDtcOBDonUDS_Cylinder2PressureTooHigh  = 0x09CF2D;
+  const cDtcOBDonUDS_Cylinder3PressureTooHigh  = 0x09D02D;
+  const cDtcOBDonUDS_Cylinder4PressureTooHigh  = 0x09D12D;
+                           
+  
+  const cNumberOfSupportedDTCs=4;
+  struct sSupportedDTCs SupportedDTC[cNumberOfSupportedDTCs] = {
+                                                // OBD fault memory
+                                                {cDtcOBDonUDS_Cylinder1PressureTooHigh,  fmtOBDonUDS},
+                                                {cDtcOBDonUDS_Cylinder2PressureTooHigh,  fmtOBDonUDS},
+                                                {cDtcOBDonUDS_Cylinder3PressureTooHigh,  fmtOBDonUDS},
+                                                {cDtcOBDonUDS_Cylinder4PressureTooHigh,  fmtOBDonUDS}
+                                               };
+
+}
+
+on key *
+{
+  switch (this)
+  {
+    case '1':
+      AddFault(cDtcOBDonUDS_Cylinder1PressureTooHigh, cStatusBit_TestFailed | cStatusBit_PendingDTC, cSeverityBit_Class0 | cSeverityBit_MaintenanceOnly);
+      break;
+    case '2':
+      AddFault(cDtcOBDonUDS_Cylinder2PressureTooHigh, cStatusBit_TestFailed | cStatusBit_ConfirmedDTC, cSeverityBit_Class0 | cSeverityBit_MaintenanceOnly);
+      break;
+    case '3':
+      AddFault(cDtcOBDonUDS_Cylinder3PressureTooHigh, cStatusBit_TestFailed | cStatusBit_TestFailedSinceLastClear, cSeverityBit_Class1 | cSeverityBit_CheckAtNextHalt);
+      break;
+    case '4':
+      AddFault(cDtcOBDonUDS_Cylinder4PressureTooHigh, cStatusBit_TestFailed | cStatusBit_TestFailedSinceLastClear | cStatusBit_WarningIndicatorRequested, cSeverityBit_Class1 | cSeverityBit_CheckAtNextHalt);
+      break;
+    default:
+      break;
+  }
+}
+
+setFuelTypeDependentSettings()
+{
+  if (@sysvar::Vehicle::Fuel_Type == 0x04) { // If Diesel engine
+    cSupportedINFOTYPEs[0]=cSupportedINFOTYPEs[0] & 0xFE; // Remove bit for spark ignition engines
+    cSupportedINFOTYPEs[1]=cSupportedINFOTYPEs[1] | 0x20; // Add bit for compression engines
+  }
+  else {
+    cSupportedINFOTYPEs[0]=cSupportedINFOTYPEs[0] | 0x01; // Add bit for spark ignition engines
+    cSupportedINFOTYPEs[1]=cSupportedINFOTYPEs[1] & 0xDF; // Remove bit for compression engines
+  }
+}
+
+on sysvar sysvar::Vehicle::Fuel_Type
+{
+  setFuelTypeDependentSettings();
+}
+
+on start
+{
+  @sysvarMember::ECM_OBDonUDS_CAN::FaultMemoryGui.DTC_ToStore=cDtcOBDonUDS_Cylinder1PressureTooHigh;
+  @Vehicle::DistanceTravelledWhileMILActivated=0;
+  @Vehicle::EngineRuntimeWhileMILActivated=0;
+  @Vehicle::DistanceTravelledSinceDTCsCleared=22025;
+  @Vehicle::EngineRuntimeSinceDTCsCleared=20189;
+  setFuelTypeDependentSettings();
+}
+
+void InitECU()
+{
+  InitFaultmem(SupportedDTC);  
+
+  gS3ServerTimeout=diagGetCommParameter("CANoe.S3ServerTime");
+  gP2ClientTimeout=150;
+  gP2extClientTimeout=2000;
+
+  ResetSession();
+  @sysvar::%BASE_FILE_NAME_NO_EXT%::TesterPresent=0;
+}
+
+void ResetMILStatus()
+{
+  @ECM_OBDonUDS_CAN::OBD.MIL_Status=0;
+}

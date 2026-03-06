@@ -1,0 +1,14 @@
+version 1.4;
+
+import module "ADAS";
+
+namespace ADAS
+{
+  // Sensors with Sensor Id
+  
+  [_ADAS::DataModel::SensorId=1]
+  object FrontRadar : _ADAS::DataModel::ISensor;
+  
+    [_ADAS::DataModel::SensorId=2]
+  object FrontCamera : _ADAS::DataModel::ISensor;
+}

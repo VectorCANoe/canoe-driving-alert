@@ -1,0 +1,39 @@
+version 1.4;
+
+
+namespace VSE
+{
+  
+  enum EnergyTransferType_Type
+  {
+    AC = 1,
+    DC = 2,
+    WPT = 4,
+    ACD = 8
+  }
+  
+  struct AccessPointVSE
+  {
+    uint8 ElementType;
+    list<EnergyTransferType_Type> energyTransferType;
+    array<uint8, 2>  countryCode;
+    array<uint8, 3>  operatorID;
+    array<uint8, 5> chargingSiteID;
+  }
+
+  struct ClientVSE
+  {
+    uint8 ElementType;
+    list<EnergyTransferType_Type> energyTransferType;
+  }
+
+  [Binding="Abstract"]
+  interface IVSE
+  {
+      internal data AccessPointVSE BeaconFrameVSE;
+      internal data AccessPointVSE ProbeResponseVSE; 
+      internal data ClientVSE ProbeRequestVSE;
+  }
+
+  object InterpretedVSE : IVSE {}
+}

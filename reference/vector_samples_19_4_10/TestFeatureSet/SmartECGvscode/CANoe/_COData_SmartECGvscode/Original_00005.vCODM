@@ -1,0 +1,86 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<FunctionBusLibrary Version="29" FormatMajorVersion="3" FormatMinorVersion="1" FormatPatchVersion="4">
+  <Namespaces>
+    <Namespace IsDefinedAsHidden="False" IsSystemDefined="False" Name="SampleDataControl">
+      <Subnamespaces>
+        <Namespace IsDefinedAsHidden="False" IsSystemDefined="False" Name="_Generated">
+          <DataTypes>
+            <StringDataType Encoding="UTF8" MaxLength="-1" IsFilesystemPathType="True" BitCount="0" HasFixedBinaryLayout="False" HasMotorolaByteOrder="False" Name="UTF8Path" />
+            <IntegerDataType IsSigned="False" BitCount="1" HasFixedBinaryLayout="True" HasMotorolaByteOrder="False" Name="UInt1" />
+          </DataTypes>
+        </Namespace>
+      </Subnamespaces>
+      <DOInterfaces>
+        <DOInterface IsAbstract="False" Name="ISampleDataControl">
+          <MemberData>
+            <DOMemberDataHolder Name="MemberData">
+              <Data>
+                <DOIFMemberData Name="testDataDirectory">
+                  <InitialValues>
+                    <InitialValue Value="TestData" ValueType="String" />
+                  </InitialValues>
+                </DOIFMemberData>
+              </Data>
+            </DOMemberDataHolder>
+          </MemberData>
+          <DataMembers>
+            <DOIFDataMember LocalDirection="Internal" Name="testDataDirectory">
+              <DataType DataType="SampleDataControl::_Generated::UTF8Path" />
+            </DOIFDataMember>
+            <DOIFDataMember LocalDirection="Internal" Name="startSendingSampleDataToSUT">
+              <DataType DataType="SampleDataControl::_Generated::UInt1">
+                <NumericProperties MinValue="" MinValueType="Invalid" MaxValue="" MaxValueType="Invalid" IsBoolean="True" IsTimespan="False" />
+              </DataType>
+            </DOIFDataMember>
+            <DOIFDataMember LocalDirection="Internal" Name="stopSendingSampleDataToSUT">
+              <DataType DataType="SampleDataControl::_Generated::UInt1">
+                <NumericProperties MinValue="" MinValueType="Invalid" MaxValue="" MaxValueType="Invalid" IsBoolean="True" IsTimespan="False" />
+              </DataType>
+            </DOIFDataMember>
+            <DOIFDataMember LocalDirection="Internal" Name="simulateEmergency">
+              <DataType DataType="SampleDataControl::_Generated::UInt1">
+                <NumericProperties MinValue="" MinValueType="Invalid" MaxValue="" MaxValueType="Invalid" IsBoolean="True" IsTimespan="False" />
+              </DataType>
+            </DOIFDataMember>
+            <DOIFDataMember LocalDirection="Internal" Name="stopSimulatingEmergency">
+              <DataType DataType="SampleDataControl::_Generated::UInt1">
+                <NumericProperties MinValue="" MinValueType="Invalid" MaxValue="" MaxValueType="Invalid" IsBoolean="True" IsTimespan="False" />
+              </DataType>
+            </DOIFDataMember>
+            <DOIFDataMember LocalDirection="Internal" Name="isEmergencySimulationRunning">
+              <DataType DataType="SampleDataControl::_Generated::UInt1">
+                <NumericProperties MinValue="" MinValueType="Invalid" MaxValue="" MaxValueType="Invalid" IsBoolean="True" IsTimespan="False" />
+              </DataType>
+            </DOIFDataMember>
+            <DOIFDataMember LocalDirection="Internal" Name="simulationECGType">
+              <DataType DataType="_SystemDataTypes::Int64">
+                <NumericProperties MinValue="" MinValueType="Invalid" MaxValue="" MaxValueType="Invalid" IsBoolean="False" IsTimespan="False">
+                  <ImplToPhysEncodings TextualEncodings="SampleDataControl::ECGType" />
+                </NumericProperties>
+              </DataType>
+            </DOIFDataMember>
+          </DataMembers>
+        </DOInterface>
+      </DOInterfaces>
+      <DistributedObjects>
+        <DistributedObject GenerateDotNetAPI="True" Name="SampleDataControl">
+          <DataType>
+            <ModifiedDOIF Reverse="False" IsDOReference="False" Interface="SampleDataControl::ISampleDataControl" />
+          </DataType>
+          <MemberData>
+            <DOMemberDataHolder Name="MemberData" />
+          </MemberData>
+        </DistributedObject>
+      </DistributedObjects>
+      <TextualEncodings>
+        <TextualEncodings DefinesMinMax="False" Name="ECGType">
+          <TextualEncoding TextualValue="Without_Arrhythmia" DisplayValue="Without_Arrhythmia" LowerBound="0" LowerBoundType="Int64" UpperBound="0" UpperBoundType="Int64" />
+          <TextualEncoding TextualValue="With_Arrhythmia" DisplayValue="With_Arrhythmia" LowerBound="1" LowerBoundType="Int64" UpperBound="1" UpperBoundType="Int64" />
+        </TextualEncodings>
+      </TextualEncodings>
+    </Namespace>
+  </Namespaces>
+  <ModuleDependencies>
+    <ModuleDependency Module="_Internal" />
+  </ModuleDependencies>
+</FunctionBusLibrary>

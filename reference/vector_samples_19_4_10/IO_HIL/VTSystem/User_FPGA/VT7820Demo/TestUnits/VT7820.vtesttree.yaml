@@ -1,0 +1,16 @@
+version: 2.2.0
+
+test-tree:
+  - test-fixture: Initialize Output
+    description: Initialize Output
+    elements:
+      - capl-test-case: OutputTest
+        title: Initialize Output
+  - test-fixture: Driving
+    description: Driving
+    elements:
+      - capl-test-case: DrivingTest
+        title: Driving
+
+
+        

@@ -1,0 +1,119 @@
+<scenario name="my scenario" simtime="4,52497551420176" simtimemax="35" version="1" timelinezoom="1" hscrolloffset="0">
+  <routes>
+    <route name="Route1" color="16711680" width="3">
+      <points>
+        <point x="48,8230148291455" y="9,0960138175884" />
+        <point x="48,8252125092769" y="9,09586220251313" />
+        <point x="48,8252752895116" y="9,09591184147284" />
+        <point x="48,8253190637745" y="9,09702175859421" />
+        <point x="48,8253735486775" y="9,0975394130402" />
+        <point x="48,8254918603795" y="9,0979725897961" />
+      </points>
+      <stations>
+        <station name="Sender_SREM" offset="0" color="16711680" trackingid="1" length="4" width="2" height="1,5" stationtype="Undefined" hostvehicle="False">
+          <attribute name="Speed" trigger="true" defaultvalue="0">
+            <keypoints>
+              <keypoint time="0" value="50" />
+              <keypoint time="13,7" value="50" />
+              <keypoint time="16,19" value="30" />
+              <keypoint time="20,16" value="30" />
+              <keypoint time="26" value="50" />
+            </keypoints>
+          </attribute>
+          <attribute name="SREM" datatype="I" interpolation="const" trigger="true" defaultvalue="0">
+            <keypoints>
+              <keypoint time="0" value="0" />
+              <keypoint time="6" value="1" />
+              <keypoint time="21,37" value="0" />
+              <keypoint time="48,44" value="0" />
+            </keypoints>
+            <attribute name="RequesterStationId" datatype="I" interpolation="const" trigger="true" defaultvalue="0">
+              <keypoints>
+                <keypoint time="0" value="0" />
+                <keypoint time="6" value="100" />
+              </keypoints>
+            </attribute>
+            <attribute name="TransitSchedule" datatype="I" interpolation="const" trigger="true" defaultvalue="0">
+              <keypoints>
+                <keypoint time="0" value="0" />
+                <keypoint time="6" value="5" />
+              </keypoints>
+            </attribute>
+            <attribute name="ReportingPointNo" datatype="I" interpolation="const" trigger="true" defaultvalue="0">
+              <keypoints>
+                <keypoint time="0" value="0" />
+                <keypoint time="6" value="1111" />
+                <keypoint time="10" value="2222" />
+                <keypoint time="19,06" value="3333" />
+              </keypoints>
+            </attribute>
+            <attribute name="Priority" datatype="I" interpolation="const" trigger="true" defaultvalue="0">
+              <keypoints>
+                <keypoint time="0" value="0" />
+                <keypoint time="6" value="3" />
+              </keypoints>
+            </attribute>
+            <attribute name="LineNo" datatype="I" interpolation="const" trigger="true" defaultvalue="0">
+              <keypoints>
+                <keypoint time="0" value="0" />
+                <keypoint time="6" value="120" />
+              </keypoints>
+            </attribute>
+            <attribute name="RouteNo" datatype="I" interpolation="const" trigger="true" defaultvalue="0">
+              <keypoints>
+                <keypoint time="0" value="0" />
+                <keypoint time="6" value="11" />
+              </keypoints>
+            </attribute>
+            <attribute name="DestinationNo" datatype="I" interpolation="const" trigger="true" defaultvalue="0">
+              <keypoints>
+                <keypoint time="0" value="0" />
+                <keypoint time="6" value="205" />
+              </keypoints>
+            </attribute>
+            <attribute name="PlatoonLength" datatype="I" interpolation="const" trigger="true" defaultvalue="0">
+              <keypoints>
+                <keypoint time="0" value="0" />
+                <keypoint time="6" value="1" />
+              </keypoints>
+            </attribute>
+            <attribute name="TransitDirection" datatype="I" interpolation="const" trigger="true" defaultvalue="0">
+              <keypoints>
+                <keypoint time="0" value="0" />
+                <keypoint time="6" value="0" />
+              </keypoints>
+            </attribute>
+            <attribute name="Version" datatype="I" interpolation="const" trigger="true" defaultvalue="0">
+              <keypoints>
+                <keypoint time="0" value="0" />
+                <keypoint time="6" value="1" />
+              </keypoints>
+            </attribute>
+          </attribute>
+        </station>
+        <station name="TL" offset="152" color="255" trackingid="2" length="30" width="15" height="20" stationtype="Undefined" hostvehicle="False">
+          <attribute name="Speed" trigger="true" defaultvalue="0">
+            <keypoints>
+              <keypoint time="0" value="0" />
+            </keypoints>
+          </attribute>
+          <attribute name="PriorState" datatype="I" interpolation="const" trigger="true" defaultvalue="0">
+            <keypoints>
+              <keypoint time="0" value="0" />
+              <keypoint time="6" value="1" />
+              <keypoint time="16" value="4" />
+            </keypoints>
+          </attribute>
+          <attribute name="Active" datatype="I" interpolation="const" trigger="true" defaultvalue="0">
+            <keypoints>
+              <keypoint time="0" value="0" />
+              <keypoint time="6" value="1" />
+              <keypoint time="23" value="0" />
+            </keypoints>
+          </attribute>
+        </station>
+      </stations>
+    </route>
+  </routes>
+  <tapes />
+</scenario>

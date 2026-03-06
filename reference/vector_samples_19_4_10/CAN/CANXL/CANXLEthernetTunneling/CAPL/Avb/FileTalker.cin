@@ -1,0 +1,759 @@
+/*@!Encoding:1252*/
+
+includes
+{
+  #include "General.cin"
+  #include "Avb.cin"
+  #include "Media.cin"
+}
+
+variables
+{
+  //
+  // Constants
+  //
+    
+  const long kFileTalker_BufferSize = 8 * 1024 * 1024;
+  
+  const long gCAMF_Mux_SendAheadTimeMs = 10;
+  
+  const long kH264NALUTypeSPS = 7;
+  
+  //
+  // Global variables
+  //
+  
+  char[256] gFileTalker_MediaFilePath[long]; // Filename of the file to replay
+  long gFileTalker_PlayingLoop[long];        // Flag for loop the file replay
+  
+  dword   gFileTalker_MediaReaderHandle[long]; // Handle for the media-reader, which reads the media file
+  byte[kFileTalker_BufferSize] gFileTalker_ReadBuffer[long];
+                                                  // reading data from the media-reader and
+                                                  // sending the AVB stream with the talker
+  long    gFileTalker_MediaIsVideo[long];
+    
+  dword   gFileTalker_TalkerHandleByReaderHandle[long]; // Handle of the AVB talker, which sends the AVB stream
+  
+  dword   gCAMF_Mux_MultiplexerHandle[long];  // Handle of the multiplexer, which combines elementary streams into multiplex stream
+  
+  dword   gCAMF_Mux_MuxLength[long];
+    
+  msTimer gCAMF_Mux_Timer;
+  int64   gCAMF_Mux_ReadStartTimeNs[long];
+  int64   gCAMF_Mux_ReadTimestamp[long];
+  
+  long gMediaStreamIndex[long];
+  
+  long gIsRawFile[long];
+  long gRawBufferSize[long];
+  long gRawFilePosRead[long];
+  long gRawFilePosWrite[long];
+  
+  long gReplayRequest[long];
+}
+
+/// <private>
+on timer gCAMF_Mux_Timer
+{
+  long result;
+  byte prolongTimer;
+  
+  prolongTimer = 0;
+        
+  for (long talker: gCAMF_Mux_MultiplexerHandle)
+  {
+    if ((gCAMF_Mux_ReadTimestamp[talker] + gCAMF_Mux_ReadStartTimeNs[talker]) < (timeNowNs() + (int64)1000000 * (int64)gCAMF_Mux_SendAheadTimeMs))
+    {
+      FileTalker_Send(talker, gFileTalker_ReadBuffer[talker], gCAMF_Mux_MuxLength[talker]);
+    }
+    else
+    {
+      prolongTimer = 1;
+    }
+  }
+  
+  if (prolongTimer)
+  {
+    setTimer(gCAMF_Mux_Timer, gCAMF_Mux_SendAheadTimeMs);
+  }
+}
+
+/// <private>
+void FileTalker_OnMediaRead( dword readerHandle, long result, dword streamIndex, dword streamFlags, int64 timestamp, byte buffer[], dword length )
+{    
+  if (Media_StopIfError(result, "CAMF_Mux_OnRead") != kMedia_OK)
+  {
+    return;
+  }
+  
+  gCAMF_Mux_ReadTimestamp[gFileTalker_TalkerHandleByReaderHandle[readerHandle]] = timestamp;
+  
+  // end of stream is reached, if stream-flag 2 is set
+  switch(streamFlags)
+  {
+    case kMedia_SourceReaderFlagError: // SOURCE_READERF_ERROR
+      break;
+    case kMedia_SourceReaderFlagEndOfStream: //SOURCE_READERF_ENDOFSTREAM
+      {
+        if (gFileTalker_PlayingLoop[gFileTalker_TalkerHandleByReaderHandle[readerHandle]])
+        {
+          // restart file
+          
+          FileTalker_Replay(gFileTalker_TalkerHandleByReaderHandle[readerHandle]);
+          return;
+        }
+        else
+        {
+          // Fill buffer with silence
+          
+          dword i;
+          
+          // stop playing. AVB stream will be continued to send, but with empty data.
+          FileTalker_Stop(gFileTalker_TalkerHandleByReaderHandle[readerHandle]);
+          
+          if (gFileTalker_MediaIsVideo[gFileTalker_TalkerHandleByReaderHandle[readerHandle]] != 0)
+          {
+            length = 0;
+          }
+          else
+          {
+            for( i = 0; i < kFileTalker_BufferSize; i++ )
+            {
+              buffer[i] = 0;
+            }
+            
+            length = kFileTalker_BufferSize;
+          }
+        }
+      }
+      break;
+    case kMedia_SourceReaderFlagNewStream: // SOURCE_READERF_NEWSTREAM
+    case kMedia_SourceReaderFlagNativeMediaTypeChanged: // SOURCE_READERF_NATIVEMEDIATYPECHANGED
+    case kMedia_SourceReaderFlagCurrentMediaTypeChanged: // SOURCE_READERF_CURRENTMEDIATYPECHANGED
+    case kMedia_SourceReaderFlagStreamTick: // MF_SOURCE_READERF_STREAMTICK
+    case kMedia_SourceReaderFlagAllEffectsRemoved: // SOURCE_READERF_ALLEFFECTSREMOVED
+      break;
+    default:
+      break;
+  }
+  
+  if (gCAMF_Mux_MultiplexerHandle[gFileTalker_TalkerHandleByReaderHandle[readerHandle]] != kMedia_InvalidHandle)
+  {
+    FileTalker_ProcessInput(gFileTalker_TalkerHandleByReaderHandle[readerHandle], timestamp, buffer, length);
+    FileTalker_ProcessOutput(gFileTalker_TalkerHandleByReaderHandle[readerHandle]);
+  }
+  else
+  {
+    //write ("Sending %d bytes", length);
+    FileTalker_Send(gFileTalker_TalkerHandleByReaderHandle[readerHandle], buffer, length);
+  }
+}
+
+/// <private>
+void FileTalker_OnAvbConnect(dword talkerHandle, dword result)
+{  
+  if (Avb_StopIfError(result, "FileTalker_OnAvbConnect") != kAvb_OK)
+  {
+    return;
+  }
+  
+  Assert(gCAMF_Mux_MuxLength[talkerHandle] == 0, "gCAMF_Mux_MuxSendTimer: gCAMF_Mux_MuxLength == 0,");
+  
+  if (gFileTalker_MediaReaderHandle[talkerHandle] != kMedia_InvalidHandle)
+  {
+    FileTalker_MediaRead(talkerHandle, gFileTalker_ReadBuffer[talkerHandle]);
+  }
+}
+
+/// <private>
+void FileTalker_OnAvbSend(dword talkerHandle, long result, byte buffer[], dword length)
+{  
+  if (Media_StopIfError(result, "FileTalker_OnAvbSend") != kAvb_OK)
+  {
+    return;
+  }
+    
+  gCAMF_Mux_MuxLength[talkerHandle] = 0;
+  
+  if (gCAMF_Mux_MultiplexerHandle[talkerHandle] != kMedia_InvalidHandle)
+  {
+    FileTalker_ProcessOutput(talkerHandle);
+    return;
+  }
+  
+  if (gFileTalker_MediaReaderHandle[talkerHandle] != kMedia_InvalidHandle)
+  {  
+    // if a media-reader is available, read more data.
+    FileTalker_MediaRead(talkerHandle, buffer);
+  }
+  else
+  {
+    if (gCAMF_Mux_MultiplexerHandle[talkerHandle] == kMedia_InvalidHandle)
+    {
+      // if no media-reader is available, repeat sending the (empty) buffer.
+      FileTalker_Send(talkerHandle, buffer, (gFileTalker_MediaIsVideo[talkerHandle]) ? 0 : kFileTalker_BufferSize);
+    }
+    else
+    {
+      FileTalker_ProcessInput(talkerHandle, 0, buffer, (gFileTalker_MediaIsVideo[talkerHandle]) ? 0 : kFileTalker_BufferSize);
+      FileTalker_ProcessOutput(talkerHandle);
+    }
+  }
+}
+
+/// <private>
+void FileTalker_MediaRead(dword talkerHandle, byte buffer[])
+{
+  long result;
+ 
+  if (gIsRawFile[talkerHandle] == 0)
+  {
+    result = MediaRead(gFileTalker_MediaReaderHandle[talkerHandle], gMediaStreamIndex[talkerHandle], buffer, kFileTalker_BufferSize, "FileTalker_OnMediaRead" );
+  
+    if (Media_StopIfError(result, "MediaRead") != kMedia_OK)
+    {
+      return;
+    }
+  }
+  else
+  {
+    long i;
+    dword length;
+    byte fileBuf[kFileTalker_BufferSize / 2];
+    byte readBuf[kFileTalker_BufferSize];
+    
+    do
+    {
+      for (i = gRawFilePosRead[talkerHandle]; i < (gRawBufferSize[talkerHandle] - 4); i++)
+      {
+        if (readBuf[i] == 0 &&
+          readBuf[i + 1] == 0 && 
+          readBuf[i + 2] == 0 && 
+          readBuf[i + 3] == 1 && 
+          (readBuf[i + 4] & kH264NALUTypeSPS) == kH264NALUTypeSPS)
+        {
+          length = i - gRawFilePosWrite[talkerHandle];
+                    
+          if (length > 0)
+          {
+            long j;
+            
+          #if TOOL_MAJOR_VERSION > 16
+            memcpy_off(gFileTalker_ReadBuffer[talkerHandle], 0, readBuf, i - length, length);
+          #else
+            for (j = i - length; j < i; j++)
+            {
+              gFileTalker_ReadBuffer[talkerHandle][j - i + length] = readBuf[j];
+            }
+          #endif
+            
+            gRawFilePosRead[talkerHandle] = i;
+            FileTalker_OnMediaRead(gFileTalker_MediaReaderHandle[talkerHandle], 0, 0, 0, 0, gFileTalker_ReadBuffer[talkerHandle], length);
+            gRawFilePosWrite[talkerHandle] += length;
+            return;
+          }
+        }
+      }
+      
+      length = gRawBufferSize[talkerHandle] - gRawFilePosRead[talkerHandle];
+      memcpy_off(readBuf, 0, readBuf, (dword)gRawFilePosRead[talkerHandle], length);
+      
+      gRawBufferSize[talkerHandle] = fileGetBinaryBlock(fileBuf, elCount(fileBuf), gFileTalker_MediaReaderHandle[talkerHandle]);
+      
+      if (gRawBufferSize[talkerHandle] == 0)
+      {
+        
+        FileTalker_OnMediaRead(gFileTalker_MediaReaderHandle[talkerHandle], 0, 0, kMedia_SourceReaderFlagEndOfStream, 0, gFileTalker_ReadBuffer[talkerHandle], 0);
+        return;
+      }
+                 
+      memcpy_off(readBuf, length, fileBuf, 0, (dword)gRawBufferSize[talkerHandle]);
+      
+      gRawBufferSize[talkerHandle] += length;
+      gRawFilePosRead[talkerHandle] = 0;
+      gRawFilePosWrite[talkerHandle] = 0;
+      
+    } while (1);
+  }
+}
+
+/// <private>
+void FileTalker_Finish(dword talkerHandle, dword result)
+{
+  if (result != 0 && result != 460609)
+  {
+    write( "<%BASE_FILE_NAME%> AvbConnect failed, result %d", AvbGetLastError() );
+    return;
+  }
+  
+  if (result != 460609)
+  {
+    // if result ist not operation-pending, we call FileTalker_OnAvbConnect directly
+    // to start sedning the AVB stream.
+    FileTalker_OnAvbConnect(talkerHandle, 0);
+  }
+}
+
+/// <private>
+dword FileTalker_Send(dword talkerHandle, byte buffer[], dword length)
+{  
+  dword result;
+    
+  result = AvbSend(talkerHandle, buffer, length, "FileTalker_OnAvbSend");
+    
+  if ((result != 0) && (result != 460609/* pending*/))
+  {
+    write( "<%BASE_FILE_NAME%> AvbSend failed, result %d %d", AvbGetLastError(), length );
+  }
+  else if (result == 0)
+  {
+    // if result is not operation-pending, we call OnTalkerSend directly
+    FileTalker_OnAvbSend(talkerHandle, 0, buffer, length);
+  }
+  
+  return result;
+}
+/// <private>
+dword FileTalker_LoadFile(dword talkerHandle)
+{  
+  dword mediaTypeHandle;
+  long length;
+  long result;
+  
+  //
+  // Load file
+  //
+  
+  length = strlen(gFileTalker_MediaFilePath[talkerHandle]);
+  
+  if (length < 4)
+  {
+    write("<%BASE_FILE_NAME%> length of file path is too small!");
+    return kAvb_InvalidHandle;
+  }
+  
+  if (gFileTalker_MediaFilePath[talkerHandle][length - 4] == 'h' &&
+    gFileTalker_MediaFilePath[talkerHandle][length - 3] == '2' &&
+    gFileTalker_MediaFilePath[talkerHandle][length - 2] == '6' &&
+    gFileTalker_MediaFilePath[talkerHandle][length - 1] == '4')
+  {
+    gFileTalker_MediaReaderHandle[talkerHandle] = openFileRead(gFileTalker_MediaFilePath[talkerHandle], 1);
+    
+    if (gFileTalker_MediaReaderHandle[talkerHandle] == 0)
+    {
+      return kMedia_InvalidHandle;
+    }
+    
+    mediaTypeHandle = MediaCreateMediaType();
+    
+    if (Media_CheckHandleAndStopIfError(mediaTypeHandle, "MediaCreateMediaType") != kMedia_OK)
+    {
+      return kMedia_InvalidHandle;
+    }
+    
+    result = MediaSetProperty(mediaTypeHandle, "MajorType", "MediaType_Video");
+    
+    if (Media_StopIfError(result, "MediaSetProperty[MajorType]") != kMedia_OK)
+    {
+      return kMedia_InvalidHandle;
+    }
+    
+    result = MediaSetProperty(mediaTypeHandle, "Subtype", "VideoFormat_H264");
+    
+    if (Media_StopIfError(result, "MediaSetProperty[Subtype]") != kMedia_OK)
+    {
+      return kMedia_InvalidHandle;
+    }
+    
+    result = MediaSetPropertySize(mediaTypeHandle, "FrameSize", 0, 0);
+    
+    if (Media_StopIfError(result, "MediaSetPropertySize") != kMedia_OK)
+    {
+      return kMedia_InvalidHandle;
+    }
+    
+    result = MediaSetPropertyRatio(mediaTypeHandle, "FrameRate", @sysvar::MMP::FrameRateNumerator, @sysvar::MMP::FrameRateDenominator);
+    
+    if (Media_StopIfError(result, "MediaSetPropertyRatio") != kMedia_OK)
+    {
+      return kMedia_InvalidHandle;
+    }
+        
+    gIsRawFile[talkerHandle] = 1;
+  }
+  else
+  {
+    gFileTalker_MediaReaderHandle[talkerHandle] = MediaCreateSourceReaderFromURL( gFileTalker_MediaFilePath[talkerHandle] );
+    
+    if (gFileTalker_MediaReaderHandle[talkerHandle] == 0)
+    {
+      write( "<%BASE_FILE_NAME%> MediaCreateSourceReaderFromURL failed, result %d", MediaGetLastError() );
+      return kMedia_InvalidHandle;
+    }
+      
+    //
+    // Get and set media type
+    //
+    
+    // get media type of first video stream in file
+    mediaTypeHandle = MediaGetMediaType(gFileTalker_MediaReaderHandle[talkerHandle], gMediaStreamIndex[talkerHandle]);
+    
+    Media_CheckHandleAndStopIfError(mediaTypeHandle, "MediaGetMediaType");
+  }
+  
+  gFileTalker_TalkerHandleByReaderHandle[gFileTalker_MediaReaderHandle[talkerHandle]] = talkerHandle;
+  
+  // check, if it is audio or video
+  {
+    char majorType[20];
+    
+    gFileTalker_MediaIsVideo[talkerHandle] = 0;
+    if (MediaGetProperty( mediaTypeHandle, "MajorType", elcount(majorType), majorType ) == 0)
+    {
+      gFileTalker_MediaIsVideo[talkerHandle] = (strncmp( majorType, "MediaType_Video", elcount(majorType)) == 0) ? 1 : 0;
+    }
+  }
+      
+  if (@sysvar::MMP::StreamType == 1) // 0: Elementary, 1: Multiplex
+  {
+    dword outMediaTypeHandle;
+    long result;
+    
+    outMediaTypeHandle = FileTalker_CreateMultiplexer(talkerHandle, mediaTypeHandle);
+    
+    Media_CheckHandleAndStopIfError(outMediaTypeHandle, "FileTalker_CreateMultiplexer");
+    
+    // release media type handle
+    result = MediaReleaseMediaType( mediaTypeHandle );    
+        
+    Media_StopIfError(result, "MediaReleaseMediaType");
+    
+    mediaTypeHandle = outMediaTypeHandle;
+  }
+  
+  gCAMF_Mux_ReadStartTimeNs[talkerHandle] = timeNowNs();
+  
+  return mediaTypeHandle;
+}
+
+/// <private>
+dword FileTalker_CreateMultiplexer(dword talkerHandle, dword inMediaTypeHandle)
+{
+  long result;
+  dword outMediaTypeHandle;
+  
+  #if TOOL_MAJOR_VERSION > 12  
+  // Release previously loaded file
+  Assert(gCAMF_Mux_MultiplexerHandle[talkerHandle] == kMedia_InvalidHandle, "gCAMF_Mux_MultiplexerHandle == kMedia_InvalidHandle");
+
+  //
+  // Setup the multiplexer
+  //
+  
+  gCAMF_Mux_MultiplexerHandle[talkerHandle] = MediaCreateMultiplexer("StreamFormat_MPEG2Transport");
+  
+  Media_CheckHandleAndStopIfError(gCAMF_Mux_MultiplexerHandle[talkerHandle], "MediaCreateMultiplexer");
+  
+  result = MediaSetInputType(gCAMF_Mux_MultiplexerHandle[talkerHandle], 0, inMediaTypeHandle);
+
+  Media_StopIfError(result, "MediaSetInputType");
+  
+  outMediaTypeHandle = MediaGetOutputType(gCAMF_Mux_MultiplexerHandle[talkerHandle], 0);
+  
+  Media_CheckHandleAndStopIfError(outMediaTypeHandle, "MediaGetOutputType");
+
+  #endif
+  return outMediaTypeHandle;
+}
+
+/// <private>
+void FileTalker_ReleaseMultiplexer(dword talkerHandle)
+{
+  #if TOOL_MAJOR_VERSION > 12
+  
+  long result;
+    
+  result = MediaReleaseMultiplexer(gCAMF_Mux_MultiplexerHandle[talkerHandle]);
+
+  if (Media_StopIfError(result, "MediaReleaseMultiplexer") != kMedia_OK)
+  {
+    return;
+  }
+
+  gCAMF_Mux_MultiplexerHandle[talkerHandle] = kMedia_InvalidHandle;
+  
+  gCAMF_Mux_MuxLength[talkerHandle] = 0;
+  
+  #endif
+}
+
+/// <private>
+void FileTalker_ProcessInput(dword talkerHandle, int64 timestamp, byte buffer[], dword length)
+{
+  #if TOOL_MAJOR_VERSION > 12
+  
+  dword result;
+  
+  result = MediaProcessInput(gCAMF_Mux_MultiplexerHandle[talkerHandle], 0, timestamp, buffer, length);
+
+  if (result != kMedia_OK)
+  {
+    Media_WriteErrorAndStop("MediaProcessInput", result);
+    return;
+  }
+  
+  #endif
+}
+
+/// <private>
+void FileTalker_ProcessOutput(dword talkerHandle)
+{
+  #if TOOL_MAJOR_VERSION > 12
+  
+  long result;
+  dword retStatus;
+  int64 outTimestamp;
+  
+  Assert(gCAMF_Mux_MuxLength[talkerHandle] == 0, "FileTalker_ProcessOutput: gCAMF_Mux_MuxLength == 0");
+  
+  do
+  {
+    gCAMF_Mux_MuxLength[talkerHandle] = elCount(gFileTalker_ReadBuffer[talkerHandle]);
+  
+    result = MediaProcessOutput(gCAMF_Mux_MultiplexerHandle[talkerHandle], 0, outTimestamp, gFileTalker_ReadBuffer[talkerHandle], gCAMF_Mux_MuxLength[talkerHandle], retStatus);
+      
+    if (result == kMedia_OK)
+    {      
+      if ((gCAMF_Mux_ReadTimestamp[talkerHandle] + gCAMF_Mux_ReadStartTimeNs[talkerHandle]) < (timeNowNs() + (int64)1000000 * (int64)gCAMF_Mux_SendAheadTimeMs))
+      {
+        if (FileTalker_Send(talkerHandle, gFileTalker_ReadBuffer[talkerHandle], gCAMF_Mux_MuxLength[talkerHandle]) != kAvb_OK)
+        {
+          break;
+        }
+      }
+      else
+      {
+        setTimer(gCAMF_Mux_Timer, gCAMF_Mux_SendAheadTimeMs);
+        break;
+      }
+    }
+    else
+    { 
+      gCAMF_Mux_MuxLength[talkerHandle] = 0;
+            
+      if (result == kMedia_TransformNeedsMoreInput)
+      {        
+        if (gFileTalker_MediaReaderHandle[talkerHandle])
+        {
+          // if a media-reader is available, read more data.
+          FileTalker_MediaRead(talkerHandle, gFileTalker_ReadBuffer[talkerHandle]);
+        }
+        else
+        {
+          FileTalker_ProcessInput(talkerHandle, 0, gFileTalker_ReadBuffer[talkerHandle], (gFileTalker_MediaIsVideo[talkerHandle]) ? 0 : kFileTalker_BufferSize);
+          result = kMedia_OK;
+        }
+      }
+      else
+      {
+        Media_WriteErrorAndStop("MediaProcessOutput", result);
+      }
+    }
+  } while (result == kMedia_OK);
+  
+  #endif
+}
+
+dword FileTalker_Open(word vlanId, byte streamId[], char filePath[], long mediaStreamIndex, long repeat)
+{
+  dword result;
+  dword mediaTypeHandle;
+  word streamUniqueId;
+  dword talkerHandle;
+  
+  // disable StreamReservation
+  result = AvbSetProperty( "StreamReservation", 0 );
+  
+  if (Avb_StopIfError(result, "AvbSetProperty") != kAvb_OK)
+  {
+    return kAvb_InvalidHandle;
+  }
+
+  //
+  // Create Talker
+  //
+  
+  streamUniqueId = (streamId[6] << 8) | streamId[7];
+  
+  talkerHandle = AvbOpenTalker( streamId, streamUniqueId );
+  
+  if (talkerHandle == kAvb_InvalidHandle)
+  {
+    write( "<%BASE_FILE_NAME%> AvbOpenTalker failed, result %d", AvbGetLastError() );
+    return kAvb_InvalidHandle;
+  }
+  
+  result = AvbSetProperty(talkerHandle, "VlanId", vlanId);
+  
+  if (Avb_StopIfError(result, "AvbSetProperty") != kAvb_OK)
+  {
+    return kAvb_InvalidHandle;
+  }
+    
+  FileTalker_SetFilePath(talkerHandle, filePath, mediaStreamIndex);
+  FileTalker_SetRepeat(talkerHandle, repeat);
+  
+  //
+  // Load file to replay
+  //
+  
+  mediaTypeHandle = FileTalker_LoadFile(talkerHandle);  
+  
+  // set the media type of the AVB talker stream to the
+  // format setting of the media file.
+  result = AvbSetMediaType( talkerHandle, mediaTypeHandle );
+  
+  if (Avb_StopIfError(result, "AvbSetProperty") != kAvb_OK)
+  {
+    return kAvb_InvalidHandle;
+  }
+    
+  // release media type handle
+  result = MediaReleaseMediaType( mediaTypeHandle );    
+  
+  if (Media_StopIfError(result, "MediaReleaseMediaType") != kMedia_OK)
+  {
+    return kAvb_InvalidHandle;
+  }
+  
+  return talkerHandle;
+}
+
+dword FileTalker_Close(dword talkerHandle)
+{
+  dword result;
+    
+  //
+  // Stop media-reader and release it
+  //
+  
+  if (gFileTalker_MediaReaderHandle[talkerHandle])
+  {
+    FileTalker_Stop(talkerHandle);
+  }
+
+  //
+  // Close AVB talker
+  //
+  
+  if (talkerHandle)
+  {
+    result = AvbCloseTalker( talkerHandle );
+
+    if (Avb_StopIfError(result, "AvbCloseTalker") != kAvb_OK)
+    {
+      return result;
+    }
+      
+    talkerHandle = 0;
+  }
+  
+  return kAvb_OK;
+}
+
+void FileTalker_Start(dword talkerHandle, byte remoteAddress[])
+{  
+  dword result;
+  
+  if (gCAMF_Mux_MultiplexerHandle[talkerHandle] != kMedia_InvalidHandle)
+  {
+    WriteAndStop("Cannot send a multiplex stream via AVTP. Consider sending an elementary stream or using RTP as transport.");
+    return;
+  }
+    
+  result = AvbConnect(talkerHandle, remoteAddress, "FileTalker_OnAvbConnect");
+
+  FileTalker_Finish(talkerHandle, result);
+}
+
+void FileTalker_Start(dword talkerHandle, dword ipV4Address, word port)
+{  
+  dword result;
+  
+  result = AvbConnect(talkerHandle, ipV4Address, port, "FileTalker_OnAvbConnect");
+
+  FileTalker_Finish(talkerHandle, result);
+}
+
+void FileTalker_Start(dword talkerHandle, byte ipV6Address[], word port)
+{  
+  dword result;
+    
+  result = AvbConnect(talkerHandle, ipV6Address, port, "FileTalker_OnAvbConnect");
+
+  FileTalker_Finish(talkerHandle, result);
+}
+
+void FileTalker_Stop(dword talkerHandle)
+{
+  dword result;
+  
+  if (gCAMF_Mux_MultiplexerHandle[talkerHandle] != kMedia_InvalidHandle)
+  {
+    FileTalker_ReleaseMultiplexer(talkerHandle);
+    
+    gCAMF_Mux_MuxLength[talkerHandle] = 0;
+  
+    cancelTimer(gCAMF_Mux_Timer);
+  }
+  
+  if (gIsRawFile[talkerHandle] == 0)
+  {
+    // release media source reader
+    
+    result = MediaReleaseSourceReader(gFileTalker_MediaReaderHandle[talkerHandle]);
+    
+    if (Media_StopIfError(result, "MediaReleaseSourceReader") != kMedia_OK)
+    {
+      return;
+    }
+  }
+  else
+  {
+    result = fileClose(gFileTalker_MediaReaderHandle[talkerHandle]);
+    
+    if (result == 0)
+    {
+      write( "<%BASE_FILE_NAME%> fileClose failed, result %d", result );
+    }
+    
+    gRawFilePosRead[talkerHandle] = 0;
+    gRawFilePosWrite[talkerHandle] = 0;
+    gRawBufferSize[talkerHandle] = 0;
+    gIsRawFile[talkerHandle] = 0;
+  }
+  
+  gFileTalker_MediaReaderHandle[talkerHandle] = kMedia_InvalidHandle;
+}
+
+void FileTalker_SetFilePath(dword talkerHandle, char filePath[], long mediaStreamIndex)
+{
+  strncpy(gFileTalker_MediaFilePath[talkerHandle], filePath, elCount(gFileTalker_MediaFilePath[talkerHandle]));
+  gMediaStreamIndex[talkerHandle] = mediaStreamIndex;
+}
+
+void FileTalker_SetRepeat(dword talkerHandle, long repeat)
+{
+  gFileTalker_PlayingLoop[talkerHandle] = repeat;
+}
+
+void FileTalker_Replay(dword talkerHandle)
+{
+  // restart file
+  
+  FileTalker_Stop(talkerHandle);
+
+  FileTalker_LoadFile(talkerHandle); 
+    
+  FileTalker_MediaRead(talkerHandle, gFileTalker_ReadBuffer[talkerHandle]);
+}

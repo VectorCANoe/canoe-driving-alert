@@ -1,0 +1,6 @@
+/*@!Encoding:1252*/
+
+double UTIL_TimeNowSeconds() 
+{
+  return timeNowNS() * 1.E-9;
+}

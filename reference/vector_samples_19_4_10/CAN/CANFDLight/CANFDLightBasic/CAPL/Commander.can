@@ -1,0 +1,91 @@
+﻿/*@!Encoding:65001*/
+includes
+{
+}
+
+variables
+{
+  long address;
+  byte data[64];
+  message TestUnicast uniCastMessage;
+}
+
+void updatePayload()
+{
+  int i;
+  for(i = 0; i < @PanelVariables::Length; i++)
+  {
+    data[i] = @PanelVariables::Payload[i];
+  }
+}
+
+//Triggers a CAN FD Light unicast message
+on sysvar PanelVariables::SendUnicastToggle
+{
+  if(@this == 1)
+  {
+    updatePayload();
+    address = @PanelVariables::UnicastAddress;
+    //Send a unicast message on channel 1 with the given address, data, and length
+    CANFDLightSendUnicast(1, address, data, @PanelVariables::Length);        
+  }
+}
+
+//Triggers a CAN FD Light broadcast message
+on sysvar PanelVariables::SendBroadcastToggle
+{
+  if(@this == 1)
+  {
+    updatePayload();
+    address = @PanelVariables::BroadcastAddress;
+    //Send a broadcast message on channel 1 with the given address, data and length
+    CANFDLightSendBroadcast(1, address, data, @PanelVariables::Length);        
+  }
+}
+
+//when the measurement is started, the CAN FD Light Commander must be activated
+on preStart
+{
+  int returnCode, i;
+  //Activate the CAN FD Light Commander on channel 1.
+  returnCode = CANFDLightActivateCommander(1, 1);
+  
+  if(returnCode != 1)
+  {
+    write("Could not create CAN FD Light Commander!");
+  }
+  for(i = 0; i < 64; i++)
+  {
+    data[i] = 0xFF;
+  }
+}
+
+//Triggers the CAN FD Light calibration pattern when the corresponding button is clicked
+on sysvar PanelVariables::SendCalibrationToggle
+{
+  if(@this == 1)
+  {
+    //Send a CAN FD Light calibration pattern on channel 1 with the length given in the panel.
+    CANFDLightSendCalibration(1, @PanelVariables::CalibrationLength);  
+  }
+}
+
+//Triggers the CAN FD Light wakeup command when the corresponding button is clicked
+on sysvar PanelVariables::SendWakeupToggle
+{
+  if(@this == 1)
+  {
+    //Send a CAN FD Light wakeup command on channel 1
+    CANFDLightSendWakeup(1);  
+  }
+}
+
+//Triggers the CAN FD Light Go-To-Sleep command when the corresponding button is clicked
+on sysvar PanelVariables::SendGoToSleepToggle
+{
+  if(@this == 1)
+  {
+    //Send a CAN FD Light Go-To-Sleep command on channel 1
+    CANFDLightSendGoToSleep(1);  
+  }
+}

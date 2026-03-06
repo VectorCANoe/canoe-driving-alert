@@ -1,0 +1,16 @@
+/*@!Encoding:1252*/
+
+on preStart
+{
+  // disables the automatic IL start
+  ILSetAutoStartParam(0);
+  
+  UdpNm_SetAutoStartParam(0);  
+  UdpNm_ConfigureILNotifications(0, 1);  
+}
+
+//void UdpNm_StateChangeNotification(long previousState, long currentState)
+//{
+//  Write( "Nm_StateChangeNotification: From %d to %d", previousState, currentState);
+//}
+

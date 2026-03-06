@@ -1,0 +1,12 @@
+version 1.4;
+
+import module "ADAS";
+
+namespace ADAS
+{
+ 
+  // Sensor mit Sensor Id
+  [_ADAS::DataModel::SensorId=1]
+  object VehicleSensor_1 : _ADAS::DataModel::ISensor;
+
+}

@@ -1,0 +1,67 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Panel Type="Vector.CANalyzer.Panels.PanelSerializer, Vector.CANalyzer.Panels.Serializer, Version=19.0.155.0, Culture=neutral, PublicKeyToken=null">
+  <Object Type="Vector.CANalyzer.Panels.Runtime.Panel, Vector.CANalyzer.Panels.Common, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Panel" ControlName="Settings">
+    <Object Type="Vector.CANalyzer.Panels.Design.CheckBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xe59ec473e55bfe4de6e9807e49b7c33964d7" ControlName="Check Box 2">
+      <Property Name="Name">Xe59ec473e55bfe4de6e9807e49b7c33964d7</Property>
+      <Property Name="Size">220, 16</Property>
+      <Property Name="Location">5, 36</Property>
+      <Property Name="Text">Activate Pricing Requirements Scenario</Property>
+      <Property Name="TabIndex">2</Property>
+      <Property Name="SymbolConfiguration">8;16;Common;;;SysPricingRequirementMode;1;;;-1;;;Value;;;0</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.GroupBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X05f8ff1be4ca8e4bb2eba80ed54da25ad30a" ControlName="Group Box 1">
+      <Object Type="Vector.CANalyzer.Panels.Design.RadioButtonControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xd5765903e2f12e454fe8df1e6f94ddd52d0b" ControlName="Radio Button 3">
+        <Property Name="Name">Xd5765903e2f12e454fe8df1e6f94ddd52d0b</Property>
+        <Property Name="Size">75, 17</Property>
+        <Property Name="Location">7, 61</Property>
+        <Property Name="Text">OCPP 2.1</Property>
+        <Property Name="TabIndex">2</Property>
+        <Property Name="SwitchValueVTXml">&lt;Version&gt;2&lt;/Version&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;RxValue&gt;3&lt;/RxValue&gt;</Property>
+        <Property Name="SwitchValueVT">1;Lower;3</Property>
+        <Property Name="SwitchValue">3</Property>
+        <Property Name="SymbolConfiguration">8;16;Common;;;SysSelectedProtocol;1;;;-1;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.RadioButtonControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X69bfd1fce2b39e47e2ea146ec7d042cdb177" ControlName="Radio Button 2">
+        <Property Name="Name">X69bfd1fce2b39e47e2ea146ec7d042cdb177</Property>
+        <Property Name="Size">84, 17</Property>
+        <Property Name="Location">7, 42</Property>
+        <Property Name="Text">OCPP 2.0.1</Property>
+        <Property Name="TabIndex">1</Property>
+        <Property Name="SwitchValueVTXml">&lt;Version&gt;2&lt;/Version&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;RxValue&gt;2&lt;/RxValue&gt;</Property>
+        <Property Name="SwitchValueVT">1;Lower;2</Property>
+        <Property Name="SwitchValue">2</Property>
+        <Property Name="SymbolConfiguration">8;16;Common;;;SysSelectedProtocol;1;;;-1;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.RadioButtonControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xfbc533b3e6678e43bbe93c1e8689fad9ec43" ControlName="Radio Button 1">
+        <Property Name="Name">Xfbc533b3e6678e43bbe93c1e8689fad9ec43</Property>
+        <Property Name="Size">75, 17</Property>
+        <Property Name="Location">7, 22</Property>
+        <Property Name="Text">OCPP 1.6</Property>
+        <Property Name="TabIndex">0</Property>
+        <Property Name="SwitchValueVTXml">&lt;Version&gt;2&lt;/Version&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;RxValue&gt;1&lt;/RxValue&gt;</Property>
+        <Property Name="SwitchValueVT">1;Lower;1</Property>
+        <Property Name="SwitchValue">1</Property>
+        <Property Name="SymbolConfiguration">8;16;Common;;;SysSelectedProtocol;1;;;-1;;;Value;;;0</Property>
+      </Object>
+      <Property Name="Name">X05f8ff1be4ca8e4bb2eba80ed54da25ad30a</Property>
+      <Property Name="Size">118, 83</Property>
+      <Property Name="Location">5, 58</Property>
+      <Property Name="BackColor">White</Property>
+      <Property Name="Text">Protocol Version</Property>
+      <Property Name="TabIndex">1</Property>
+      <Property Name="UseWindowsStyle">False</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.CheckBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X282579a5e22a4e4f83ea818e246d77c91d10" ControlName="Check Box 1">
+      <Property Name="Name">X282579a5e22a4e4f83ea818e246d77c91d10</Property>
+      <Property Name="Size">80, 16</Property>
+      <Property Name="Location">5, 14</Property>
+      <Property Name="Text">TLS Active</Property>
+      <Property Name="TabIndex">0</Property>
+      <Property Name="SymbolConfiguration">8;16;Common;;;SysTLSEnabled;1;;;-1;;;Value;;;0</Property>
+    </Object>
+    <Property Name="Name">Panel</Property>
+    <Property Name="Size">253, 156</Property>
+    <Property Name="Location">0, 0</Property>
+    <Property Name="BackColor">255, 255, 255, 255</Property>
+  </Object>
+</Panel>

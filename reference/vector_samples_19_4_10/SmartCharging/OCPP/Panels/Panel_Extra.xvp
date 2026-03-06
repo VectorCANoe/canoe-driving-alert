@@ -1,0 +1,177 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Panel Type="Vector.CANalyzer.Panels.PanelSerializer, Vector.CANalyzer.Panels.Serializer, Version=19.2.76.0, Culture=neutral, PublicKeyToken=null">
+  <Object Type="Vector.CANalyzer.Panels.Runtime.Panel, Vector.CANalyzer.Panels.Common, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Panel" ControlName="Security">
+    <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X5722e1ace5487e4b22ea5b0e7ebf1451ce8f" ControlName="Input/Output Box 2">
+      <Property Name="Name">X5722e1ace5487e4b22ea5b0e7ebf1451ce8f</Property>
+      <Property Name="Size">258, 21</Property>
+      <Property Name="Location">11, 16</Property>
+      <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+      <Property Name="AlarmLowerBkgColor">Salmon</Property>
+      <Property Name="AlarmLowerTextColor">Black</Property>
+      <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+      <Property Name="AlarmUpperTextColor">Black</Property>
+      <Property Name="BoxBorderStyle">FixedSingle</Property>
+      <Property Name="DisplayLabel">Left</Property>
+      <Property Name="TabIndex">7</Property>
+      <Property Name="DescriptionText">Certificate Name:</Property>
+      <Property Name="ValueDisplay">Text</Property>
+      <Property Name="UsedValueTable">PhysicalValue</Property>
+      <Property Name="DescriptionSize">90, 21</Property>
+      <Property Name="SymbolConfiguration">8;16;Security;;;SysInstallCertificateName;4;;;-1;;;Value;;;0</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.ButtonControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X524b0ce2e7517e48a8e8b9be8222dc23269c" ControlName="Button 3">
+      <Property Name="Name">X524b0ce2e7517e48a8e8b9be8222dc23269c</Property>
+      <Property Name="Size">184, 23</Property>
+      <Property Name="Location">201, 43</Property>
+      <Property Name="TabIndex">6</Property>
+      <Property Name="Text">Send DeleteCertificateRequest</Property>
+      <Property Name="SymbolConfiguration">8;16;Control::CSMS;;;SendDeleteCertificateRequest;1;;;-1;;;Value;;;0</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.ButtonControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xa25f84d7ea763e4528eaee3e1a7cd6e67ba0" ControlName="Button 2">
+      <Property Name="Name">Xa25f84d7ea763e4528eaee3e1a7cd6e67ba0</Property>
+      <Property Name="Size">184, 23</Property>
+      <Property Name="Location">11, 43</Property>
+      <Property Name="TabIndex">5</Property>
+      <Property Name="Text">Send InstallCertificateRequest</Property>
+      <Property Name="SymbolConfiguration">8;16;Control::CSMS;;;SendInstallCertificateRequest;1;;;-1;;;Value;;;0</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.ComboBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xa1a36247e7c42e4d4eeba27ebcbdcb0460c0" ControlName="Combo Box 1">
+      <Property Name="Name">Xa1a36247e7c42e4d4eeba27ebcbdcb0460c0</Property>
+      <Property Name="Size">177, 21</Property>
+      <Property Name="Location">11, 203</Property>
+      <Property Name="DisplayLabel">Left</Property>
+      <Property Name="DescriptionSize">90, 21</Property>
+      <Property Name="TabIndex">2</Property>
+      <Property Name="DescriptionText">Type Component</Property>
+      <Property Name="UsedValueTable">PhysicalValue</Property>
+      <Property Name="SymbolConfiguration">8;16;Control::CSMS;;;TypeComponent;1;;;-1;;;Value;;;0</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.GroupBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xd9995ee6ec7a6e4afce83a4e0d8f0cf4df13" ControlName="Group Box 1">
+      <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X6dc6e59ceac41e4266ea6cfe80ec61ccbd2f" ControlName="Input/Output Box 5">
+        <Property Name="Name">X6dc6e59ceac41e4266ea6cfe80ec61ccbd2f</Property>
+        <Property Name="Size">265, 21</Property>
+        <Property Name="Location">6, 42</Property>
+        <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+        <Property Name="AlarmLowerBkgColor">Salmon</Property>
+        <Property Name="AlarmLowerTextColor">Black</Property>
+        <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+        <Property Name="AlarmUpperTextColor">Black</Property>
+        <Property Name="BoxBorderStyle">FixedSingle</Property>
+        <Property Name="DisplayLabel">Left</Property>
+        <Property Name="TabIndex">5</Property>
+        <Property Name="DescriptionText">New Certificate Name:</Property>
+        <Property Name="ValueDisplay">Text</Property>
+        <Property Name="UsedValueTable">PhysicalValue</Property>
+        <Property Name="DescriptionSize">115, 21</Property>
+        <Property Name="SymbolConfiguration">8;16;Security::CSR;;;SysNewCertificateName;4;;;-1;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X1545ece3eb8d6e4dd9eb1b9e87aee2192570" ControlName="Input/Output Box 3">
+        <Property Name="Name">X1545ece3eb8d6e4dd9eb1b9e87aee2192570</Property>
+        <Property Name="Size">265, 21</Property>
+        <Property Name="Location">277, 15</Property>
+        <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+        <Property Name="AlarmLowerBkgColor">Salmon</Property>
+        <Property Name="AlarmLowerTextColor">Black</Property>
+        <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+        <Property Name="AlarmUpperTextColor">Black</Property>
+        <Property Name="BoxBorderStyle">FixedSingle</Property>
+        <Property Name="DisplayLabel">Left</Property>
+        <Property Name="TabIndex">4</Property>
+        <Property Name="DescriptionText">Sub1 Certificate Name:</Property>
+        <Property Name="ValueDisplay">Text</Property>
+        <Property Name="UsedValueTable">PhysicalValue</Property>
+        <Property Name="DescriptionSize">119, 21</Property>
+        <Property Name="SymbolConfiguration">8;16;Security::CSR;;;SysSub1CertName;4;;;-1;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X7c51d9dee771fe49c1eaa0fe18a725ad3b91" ControlName="Input/Output Box 1">
+        <Property Name="Name">X7c51d9dee771fe49c1eaa0fe18a725ad3b91</Property>
+        <Property Name="Size">265, 21</Property>
+        <Property Name="Location">6, 15</Property>
+        <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+        <Property Name="AlarmLowerBkgColor">Salmon</Property>
+        <Property Name="AlarmLowerTextColor">Black</Property>
+        <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+        <Property Name="AlarmUpperTextColor">Black</Property>
+        <Property Name="BoxBorderStyle">FixedSingle</Property>
+        <Property Name="DisplayLabel">Left</Property>
+        <Property Name="TabIndex">3</Property>
+        <Property Name="DescriptionText">Signer Certificate Name:</Property>
+        <Property Name="ValueDisplay">Text</Property>
+        <Property Name="UsedValueTable">PhysicalValue</Property>
+        <Property Name="DescriptionSize">125, 21</Property>
+        <Property Name="SymbolConfiguration">8;16;Security::CSR;;;SysSigningCertificateName;4;;;-1;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xc995c587e35fee4ca3e8479ee6d8e6c4566e" ControlName="Input/Output Box 4">
+        <Property Name="Name">Xc995c587e35fee4ca3e8479ee6d8e6c4566e</Property>
+        <Property Name="Size">265, 21</Property>
+        <Property Name="Location">277, 42</Property>
+        <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+        <Property Name="AlarmLowerBkgColor">Salmon</Property>
+        <Property Name="AlarmLowerTextColor">Black</Property>
+        <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+        <Property Name="AlarmUpperTextColor">Black</Property>
+        <Property Name="BoxBorderStyle">FixedSingle</Property>
+        <Property Name="DisplayLabel">Left</Property>
+        <Property Name="TabIndex">2</Property>
+        <Property Name="DescriptionText">Certificate Type:</Property>
+        <Property Name="ValueDisplay">Text</Property>
+        <Property Name="UsedValueTable">PhysicalValue</Property>
+        <Property Name="DescriptionSize">86, 21</Property>
+        <Property Name="SymbolConfiguration">8;16;Security::CSR;;;SysCertificateType;4;;;-1;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.ButtonControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xf1aa3b47e35cce479de9efdef7dac64c4d76" ControlName="Button 4">
+        <Property Name="Name">Xf1aa3b47e35cce479de9efdef7dac64c4d76</Property>
+        <Property Name="Size">184, 23</Property>
+        <Property Name="Location">6, 69</Property>
+        <Property Name="TabIndex">1</Property>
+        <Property Name="Text">Trigger V2G Sign Request</Property>
+        <Property Name="SymbolConfiguration">8;16;Control::CSMS;;;SysSendTriggerMessageReq;1;;;-1;;;Value;;;0</Property>
+      </Object>
+      <Property Name="Name">Xd9995ee6ec7a6e4afce83a4e0d8f0cf4df13</Property>
+      <Property Name="Size">548, 101</Property>
+      <Property Name="Location">5, 78</Property>
+      <Property Name="Text">Certificate Signing Request</Property>
+      <Property Name="TabIndex">12</Property>
+      <Property Name="UseWindowsStyle">False</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.GroupBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X9dacc77ee067ce4a79ea7a1e33d403a22e34" ControlName="Group Box 2">
+      <Property Name="Name">X9dacc77ee067ce4a79ea7a1e33d403a22e34</Property>
+      <Property Name="Size">548, 67</Property>
+      <Property Name="Location">5, 5</Property>
+      <Property Name="Text">Install or Delete Certificate</Property>
+      <Property Name="TabIndex">13</Property>
+      <Property Name="UseWindowsStyle">False</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.GroupBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X0591696ce446ee4871eb064ec3c632f021eb" ControlName="Group Box 3">
+      <Object Type="Vector.CANalyzer.Panels.Design.ButtonControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X7d5837f7eead5e42b1eb000e8051ccedf488" ControlName="Button 1">
+        <Property Name="Name">X7d5837f7eead5e42b1eb000e8051ccedf488</Property>
+        <Property Name="Size">184, 23</Property>
+        <Property Name="Location">6, 45</Property>
+        <Property Name="TabIndex">2</Property>
+        <Property Name="Text">Send SetVariableRequest</Property>
+        <Property Name="SymbolConfiguration">8;16;Control::CSMS;;;SendVariableRequest;1;;;-1;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.ComboBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X84c815e9e80d5e4f7feb377eba84277bfd8d" ControlName="Combo Box 2">
+        <Property Name="Name">X84c815e9e80d5e4f7feb377eba84277bfd8d</Property>
+        <Property Name="Size">158, 21</Property>
+        <Property Name="Location">189, 18</Property>
+        <Property Name="DisplayLabel">Left</Property>
+        <Property Name="DescriptionSize">37, 21</Property>
+        <Property Name="TabIndex">1</Property>
+        <Property Name="DescriptionText">Status</Property>
+        <Property Name="UsedValueTable">PhysicalValue</Property>
+        <Property Name="SymbolConfiguration">8;16;Control::CSMS;;;Status;1;;;-1;;;Value;;;0</Property>
+      </Object>
+      <Property Name="Name">X0591696ce446ee4871eb064ec3c632f021eb</Property>
+      <Property Name="Size">548, 75</Property>
+      <Property Name="Location">5, 185</Property>
+      <Property Name="Text">Set Variable</Property>
+      <Property Name="TabIndex">14</Property>
+      <Property Name="UseWindowsStyle">False</Property>
+    </Object>
+    <Property Name="Name">Panel</Property>
+    <Property Name="Size">556, 265</Property>
+    <Property Name="Location">0, 0</Property>
+    <Property Name="BackColor">White</Property>
+  </Object>
+</Panel>

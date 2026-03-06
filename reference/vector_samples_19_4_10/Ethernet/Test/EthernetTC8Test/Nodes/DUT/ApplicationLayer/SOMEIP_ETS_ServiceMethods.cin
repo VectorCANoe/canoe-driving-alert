@@ -1,0 +1,1256 @@
+/*@!Encoding:1252*/
+/***************************************************************************************
+ * Demo- and Example-Programs
+ *
+ * Please note: The demo and example programs only show special aspects of the software.
+ * With regard to the fact that these programs are meant for demonstration purposes only,
+ * Vector Informatik's liability shall be expressly excluded in cases of ordinary
+ * negligence, to the extent admissible by law or statute.
+ *
+ * Beta-Version
+ *
+ * These programs are fully operative programs. However, they are not thoroughly tested
+ * yet (beta-version). With regard to the fact that the programs are a beta-version only,
+ * Vector Informatik's liability shall be expressly excluded in cases of ordinary
+ * negligence, to the extent admissible by law or statute.
+ *
+ * DESCRIPTION:
+ *
+ * Demo test implementation of the 'OPEN Alliance Automotive Ethernet ECU Test
+ * Specification - TC8 ECU Test' (Document Version 3.0, May 7, 2020)
+ *
+ * Copyright (c) Vector Informatik GmbH. All rights reserved.
+ ***************************************************************************************/
+
+includes
+{
+  #include "SOMEIP_ETS_ServiceDetails.cin"
+}
+
+variables
+{
+  // These IDs are predefined in the TC8 specification
+  const dword EVENT_ID_TestEventUINT8          = 0x8001;
+  const dword EVENT_ID_TestEventUINT8Array     = 0x8002;
+  const dword EVENT_ID_TestEventUINT8Reliable  = 0x8003;
+  const dword EVENT_ID_TestEventUINT8Multicast = 0x800B;
+
+  const dword EVENTGROUP_ID_EvgAll            = 0x0002;
+  const dword EVENTGROUP_ID_EvgUnreliableOnly = 0x0005;
+  const dword EVENTGROUP_ID_EvgMulticast      = 0x0006;
+
+  const dword FIELD_ID_InterfaceVersion       = 0x8005;
+  const dword FIELD_ID_TestFieldUINT8         = 0x8006;
+  const dword FIELD_ID_TestFieldUINT8Array    = 0x8007;
+  const dword FIELD_ID_TestFieldUINT8Reliable = 0x8008;
+ 
+  dword gCsiHandleUDP=0, gCsiHandleTCP=0, gClientServiceAepHandleUDP=0, gClientServiceAepHandleTCP=0;
+    
+  dword gCegHandle1UDP=0, gCegHandle1TCP=0;
+  dword gCegHandle2UDP=0, gCegHandle2TCP=0;
+  dword gCegHandle3UDP=0, gCegHandle3TCP=0;
+
+  dword gCreatedConsumedServiceInstance[long];
+  
+  enum SomeIpTransportProtokol
+  {
+    TP_TCP = 6,
+    TP_UDP = 17
+  };
+  
+  enum SomeIpReturnCode
+  {
+    SOMEIP_RC_NOT_OK = 1,
+    SOMEIP_RC_MALFORMED_MESSAGE = 9
+  };
+  
+  struct _InterfaceVersion
+  {
+    byte  majorVersion;
+    dword minorVersion;
+  };
+
+  struct _TestFieldUINT8Array
+  {
+    byte length;
+    byte values[10];
+  };
+
+  struct _TestEventUINT8Array
+  {
+    byte length;
+    byte values[10];
+  };
+
+  struct _InterfaceVersion gInterfaceVersion_default = { 12 , 2 };
+  struct _InterfaceVersion gInterfaceVersion;
+
+  const byte gTestEventUINT8_default = 25;
+  byte gTestEventUINT8 = gTestEventUINT8_default;
+  
+  const byte gTestEventUINT8Multicast_default = 30;
+  byte gTestEventUINT8Multicast = gTestEventUINT8Multicast_default;
+  
+  const byte gTestEventUINT8Reliable_default = 35;
+  byte gTestEventUINT8Reliable = gTestEventUINT8Reliable_default;
+
+  struct _TestEventUINT8Array gTestEventUINT8Array_default = { 10 , { 2, 3, 4, 5, 0, 7, 0, 9, 0, 11} };
+  struct _TestEventUINT8Array gTestEventUINT8Array;
+
+  byte gLastEventUINT8 = 0, gLastEventUINT8Reliable = 0, gLastEventUINT8Multicast = 0;
+
+  byte gTestFieldUINT8_default = 4;
+  byte gTestFieldUINT8;
+  
+  byte gTestFieldUINT8Reliable_default = 5;
+  byte gTestFieldUINT8Reliable;
+
+  struct _TestFieldUINT8Array gTestFieldUINT8Array_default = { 3 , { 1, 2, 3, 0, 0, 0, 0, 0, 0, 0} };
+  struct _TestFieldUINT8Array gTestFieldUINT8Array;
+ 
+  struct _echoCommonDatatypesArgs
+  {
+    dword  booleanArg;
+    dword  unsignedArgs[3];
+    long   signedArgs[3];
+    float  float32Arg;
+    float  float64Arg;
+  };
+  
+  msTimer gClientServiceActivateTimer, gClientServiceDeactivateTimer, gSubscribeEventGroupTimer, gUnsubscribeEventGroupTimer,
+    gSuspendInterfaceDelayTimer, gSuspendInterfaceDurationTimer;
+    
+  IP_Endpoint gClientServiceEndpoint;
+
+  struct _debounceData
+  {
+    dword timeMs;
+    dword counter;
+  };
+  
+  msTimer gTriggerTestEventUINT8DelayTimer, gTriggerTestEventUINT8DebounceTimer;
+  struct _debounceData gTriggerTestEventUINT8Debounce;
+  
+  msTimer gTriggerTestEventUINT8ArrayDelayTimer, gTriggerTestEventUINT8ArrayDebounceTimer;
+  struct _debounceData gTriggerTestEventUINT8ArrayDebounce;
+
+  msTimer gTriggerTestEventUINT8ReliableDelayTimer, gTriggerTestEventUINT8ReliableDebounceTimer;
+  struct _debounceData gTriggerTestEventUINT8ReliableDebounce;
+
+  msTimer gTriggerTestEventUINT8MulticastDelayTimer, gTriggerTestEventUINT8MulticastDebounceTimer;
+  struct _debounceData gTriggerTestEventUINT8MulticastDebounce;
+ 
+  enum Bool gIsClientServiceActive = kFalse;
+  
+  dword gSuspendInterfaceDurationSeconds;
+}
+
+void StopAllEventTimer()
+{
+  gTriggerTestEventUINT8DelayTimer.cancel();
+  gTriggerTestEventUINT8DebounceTimer.cancel();
+  gTriggerTestEventUINT8ArrayDelayTimer.cancel();
+  gTriggerTestEventUINT8ArrayDebounceTimer.cancel();
+  gTriggerTestEventUINT8ReliableDelayTimer.cancel();
+  gTriggerTestEventUINT8ReliableDebounceTimer.cancel();
+  gTriggerTestEventUINT8MulticastDelayTimer.cancel();
+  gTriggerTestEventUINT8MulticastDebounceTimer.cancel();
+}
+
+/// <Helper functions>
+void HandleTriggerTestEventDelayTimer(dword eventHandle, struct _debounceData debounce, msTimer debounceTimer)
+{
+  if(SomeIpTriggerEvent(eventHandle)!=0)
+    ReportSomeIpError("Trigger event failed");
+  
+  if(debounce.counter>0)
+    setTimer(debounceTimer, debounce.timeMs);
+}
+
+/// <Helper functions>
+void HandleTriggerTestEventDebounceTimer(dword eventHandle, struct _debounceData debounce, msTimer debounceTimer)
+{
+  if(SomeIpTriggerEvent(eventHandle)!=0)
+    ReportSomeIpError("Trigger event failed");
+  
+  --debounce.counter;
+  if(debounce.counter>0)
+    setTimer(debounceTimer, debounce.timeMs);
+}
+
+on timer gTriggerTestEventUINT8DelayTimer
+{
+  HandleTriggerTestEventDelayTimer(gEventHandle_TestEventUINT8, gTriggerTestEventUINT8Debounce, gTriggerTestEventUINT8DebounceTimer);
+}
+
+on timer gTriggerTestEventUINT8DebounceTimer
+{
+  HandleTriggerTestEventDebounceTimer(gEventHandle_TestEventUINT8, gTriggerTestEventUINT8Debounce, gTriggerTestEventUINT8DebounceTimer);
+}
+
+on timer gTriggerTestEventUINT8ArrayDelayTimer
+{
+  HandleTriggerTestEventDelayTimer(gEventHandle_TestEventUINT8Array, gTriggerTestEventUINT8ArrayDebounce, gTriggerTestEventUINT8ArrayDebounceTimer);
+}
+
+on timer gTriggerTestEventUINT8ArrayDebounceTimer
+{
+  HandleTriggerTestEventDebounceTimer(gEventHandle_TestEventUINT8Array, gTriggerTestEventUINT8ArrayDebounce, gTriggerTestEventUINT8ArrayDebounceTimer);
+}
+
+on timer gTriggerTestEventUINT8ReliableDelayTimer
+{
+  HandleTriggerTestEventDelayTimer(gEventHandle_TestEventUINT8Reliable, gTriggerTestEventUINT8ReliableDebounce, gTriggerTestEventUINT8ReliableDebounceTimer);
+}
+
+on timer gTriggerTestEventUINT8ReliableDebounceTimer
+{
+  HandleTriggerTestEventDebounceTimer(gEventHandle_TestEventUINT8Reliable, gTriggerTestEventUINT8ReliableDebounce, gTriggerTestEventUINT8ReliableDebounceTimer);
+}
+
+on timer gTriggerTestEventUINT8MulticastDelayTimer
+{
+  HandleTriggerTestEventDelayTimer(gEventHandle_TestEventUINT8Multicast, gTriggerTestEventUINT8MulticastDebounce, gTriggerTestEventUINT8MulticastDebounceTimer);
+}
+
+on timer gTriggerTestEventUINT8MulticastDebounceTimer
+{
+  HandleTriggerTestEventDebounceTimer(gEventHandle_TestEventUINT8Multicast, gTriggerTestEventUINT8MulticastDebounce, gTriggerTestEventUINT8MulticastDebounceTimer);
+}
+
+/// <ServiceMethods>
+void OnService_ETS_MethodRequest_triggerEventUINT8(DWORD methodHandle, DWORD messageHandle)
+{
+  dword delaySeconds, durationSeconds, debounceTimeSeconds, errorCode;
+  cancelTimer(gTriggerTestEventUINT8DelayTimer);
+  cancelTimer(gTriggerTestEventUINT8DebounceTimer);
+  if(GetMethodArgumentDWord(messageHandle, gMethodArgumentName_triggerEventUINT8_REQ_delay, delaySeconds, errorCode)==kTrue &&
+     GetMethodArgumentDWord(messageHandle, gMethodArgumentName_triggerEventUINT8_REQ_duration, durationSeconds, errorCode)==kTrue &&
+     GetMethodArgumentDWord(messageHandle, gMethodArgumentName_triggerEventUINT8_REQ_debounceTime, debounceTimeSeconds, errorCode)==kTrue)
+  {
+    gTriggerTestEventUINT8Debounce.counter = debounceTimeSeconds>0 ? durationSeconds/debounceTimeSeconds : 0;
+    gTriggerTestEventUINT8Debounce.timeMs = debounceTimeSeconds*1000;
+    setTimer(gTriggerTestEventUINT8DelayTimer, delaySeconds*1000);
+  }
+}
+
+/// <ServiceMethods>
+void OnService_ETS_MethodRequest_triggerEventUINT8Array(DWORD methodHandle, DWORD messageHandle)
+{
+  dword delaySeconds, durationSeconds, debounceTimeSeconds, errorCode;
+  cancelTimer(gTriggerTestEventUINT8ArrayDelayTimer);
+  cancelTimer(gTriggerTestEventUINT8ArrayDebounceTimer);
+  if(GetMethodArgumentDWord(messageHandle, gMethodArgumentName_triggerEventUINT8Array_REQ_delay, delaySeconds, errorCode)==kTrue &&
+     GetMethodArgumentDWord(messageHandle, gMethodArgumentName_triggerEventUINT8Array_REQ_duration, durationSeconds, errorCode)==kTrue &&
+     GetMethodArgumentDWord(messageHandle, gMethodArgumentName_triggerEventUINT8Array_REQ_debounceTime, debounceTimeSeconds, errorCode)==kTrue)
+  {
+    gTriggerTestEventUINT8ArrayDebounce.counter = debounceTimeSeconds>0 ? durationSeconds/debounceTimeSeconds : 0;
+    gTriggerTestEventUINT8ArrayDebounce.timeMs = debounceTimeSeconds*1000;
+    setTimer(gTriggerTestEventUINT8ArrayDelayTimer, delaySeconds*1000);
+  }
+}
+
+/// <ServiceMethods>
+void OnService_ETS_MethodRequest_triggerEventUINT8Reliable(DWORD methodHandle, DWORD messageHandle)
+{
+  dword delaySeconds, durationSeconds, debounceTimeSeconds, errorCode;
+  cancelTimer(gTriggerTestEventUINT8ReliableDelayTimer);
+  cancelTimer(gTriggerTestEventUINT8ReliableDebounceTimer);
+  if(GetMethodArgumentDWord(messageHandle, gMethodArgumentName_triggerEventUINT8Reliable_REQ_delay, delaySeconds, errorCode)==kTrue &&
+     GetMethodArgumentDWord(messageHandle, gMethodArgumentName_triggerEventUINT8Reliable_REQ_duration, durationSeconds, errorCode)==kTrue &&
+     GetMethodArgumentDWord(messageHandle, gMethodArgumentName_triggerEventUINT8Reliable_REQ_debounceTime, debounceTimeSeconds, errorCode)==kTrue)
+  {
+    gTriggerTestEventUINT8ReliableDebounce.counter = debounceTimeSeconds>0 ? durationSeconds/debounceTimeSeconds : 0;
+    gTriggerTestEventUINT8ReliableDebounce.timeMs = debounceTimeSeconds*1000;
+    setTimer(gTriggerTestEventUINT8ReliableDelayTimer, delaySeconds*1000);
+  }
+}
+
+/// <ServiceMethods>
+void OnService_ETS_MethodRequest_triggerEventUINT8Multicast(DWORD methodHandle, DWORD messageHandle)
+{
+  dword delaySeconds, durationSeconds, debounceTimeSeconds, errorCode;
+  cancelTimer(gTriggerTestEventUINT8MulticastDelayTimer);
+  cancelTimer(gTriggerTestEventUINT8MulticastDebounceTimer);
+  if(GetMethodArgumentDWord(messageHandle, gMethodArgumentName_triggerEventUINT8Multicast_REQ_delay, delaySeconds, errorCode)==kTrue &&
+     GetMethodArgumentDWord(messageHandle, gMethodArgumentName_triggerEventUINT8Multicast_REQ_duration, durationSeconds, errorCode)==kTrue &&
+     GetMethodArgumentDWord(messageHandle, gMethodArgumentName_triggerEventUINT8Multicast_REQ_debounceTime, debounceTimeSeconds, errorCode)==kTrue)
+  {
+    gTriggerTestEventUINT8MulticastDebounce.counter = debounceTimeSeconds>0 ? durationSeconds/debounceTimeSeconds : 0;
+    gTriggerTestEventUINT8MulticastDebounce.timeMs = debounceTimeSeconds*1000;
+    setTimer(gTriggerTestEventUINT8MulticastDelayTimer, delaySeconds*1000);
+  }
+}
+
+/// <ServiceMethods>
+void OnService_ETS_MethodRequest_clientServiceGetLastValueOfEventTCP (DWORD methodHandle, DWORD messageHandle, DWORD responseMessageHandle)
+{
+  dword errorCode;
+  if(SetMethodArgumentDWord(responseMessageHandle, gMethodArgumentName_clientServiceGetLastValueOfEventTCP_RES_arg1, gLastEventUINT8Reliable, errorCode))
+    SomeIpSetReturnCode(responseMessageHandle, sysvar::TC8_ETS::ETS_MethodResult::OK);
+  else
+    SomeIpSetReturnCode(responseMessageHandle, errorCode);
+}
+
+/// <ServiceMethods>
+void OnService_ETS_MethodRequest_clientServiceGetLastValueOfEventUDPUnicast(DWORD methodHandle, DWORD messageHandle, DWORD responseMessageHandle)
+{
+  dword errorCode;
+  if(SetMethodArgumentDWord(responseMessageHandle, gMethodArgumentName_clientServiceGetLastValueOfEventUDPUnicast_RES_arg1, gLastEventUINT8, errorCode))
+    SomeIpSetReturnCode(responseMessageHandle, sysvar::TC8_ETS::ETS_MethodResult::OK);
+  else
+    SomeIpSetReturnCode(responseMessageHandle, errorCode);
+}
+
+/// <ServiceMethods>
+void OnService_ETS_MethodRequest_clientServiceGetLastValueOfEventUDPMulticast(DWORD methodHandle, DWORD messageHandle, DWORD responseMessageHandle)
+{
+  dword errorCode;
+  if(SetMethodArgumentDWord(responseMessageHandle, gMethodArgumentName_clientServiceGetLastValueOfEventUDPMulticast_RES_arg1, gLastEventUINT8Multicast, errorCode))
+    SomeIpSetReturnCode(responseMessageHandle, sysvar::TC8_ETS::ETS_MethodResult::OK);
+  else
+    SomeIpSetReturnCode(responseMessageHandle, errorCode);
+}
+
+// Functions required for field InterfaceVersion
+
+/// <DefaultSetter>
+enum Bool setFieldToDefault_InterfaceVersion()
+{
+  dword errorCode;
+  memcpy(gInterfaceVersion, gInterfaceVersion_default);
+  return (enum Bool)
+    (SetMethodArgumentLong(gFieldHandle_InterfaceVersion, gFieldname_InterfaceVersion_majorVersion, gInterfaceVersion.majorVersion, errorCode) &&
+     SetMethodArgumentLong(gFieldHandle_InterfaceVersion, gFieldname_InterfaceVersion_minorVersion, gInterfaceVersion.minorVersion, errorCode) &&
+     SomeIpCommitField(gFieldHandle_InterfaceVersion)==0);
+}
+
+/// <FieldFunctions>
+void OnService_ETS_FieldResponse_get_InterfaceVersion(dword methodCallHandle, dword messageHandle, dword messageResponseHandle)
+{
+  dword errorCode;
+  if(SetMethodArgumentInt64(messageResponseHandle, gFieldname_InterfaceVersion_majorVersion, gInterfaceVersion.majorVersion, errorCode)!=kTrue ||
+     SetMethodArgumentInt64(messageResponseHandle, gFieldname_InterfaceVersion_minorVersion, gInterfaceVersion.minorVersion, errorCode)!=kTrue)
+    SomeIpSetReturnCode(messageResponseHandle, errorCode);
+}
+
+/// <FieldFunctions>
+void OnService_ETS_FieldResponse_set_InterfaceVersion(dword methodCallHandle, dword messageHandle, dword messageResponseHandle)
+{
+  dword errorCode;
+  gInterfaceVersion.majorVersion = SomeIpGetValueDWord(messageHandle, gFieldname_InterfaceVersion_majorVersion);
+  gInterfaceVersion.minorVersion = SomeIpGetValueDWord(messageHandle, gFieldname_InterfaceVersion_minorVersion);
+  if(SetMethodArgumentInt64(messageResponseHandle, gFieldname_InterfaceVersion_majorVersion, gInterfaceVersion.majorVersion, errorCode)!=kTrue ||
+     SetMethodArgumentInt64(messageResponseHandle, gFieldname_InterfaceVersion_minorVersion, gInterfaceVersion.minorVersion, errorCode)!=kTrue)
+    SomeIpSetReturnCode(messageResponseHandle, errorCode);
+}
+
+// Functions required for field TestFieldUINT8
+
+/// <DefaultSetter>
+long setFieldToDefault_TestFieldUINT8()
+{
+  dword errorCode;
+  gTestFieldUINT8 = gTestFieldUINT8_default;
+  return SetMethodArgumentLong(gFieldHandle_TestFieldUINT8, "", gTestFieldUINT8, errorCode)==kTrue &&
+     SomeIpCommitField(gFieldHandle_TestFieldUINT8)==0;
+}
+
+/// <FieldFunctions>
+void OnService_ETS_FieldResponse_get_TestFieldUINT8(dword methodCallHandle, dword messageHandle, dword messageResponseHandle)
+{
+  dword errorCode;
+  if(SetMethodArgumentDWord(messageResponseHandle, "", gTestFieldUINT8, errorCode)!=kTrue)
+    SomeIpSetReturnCode(messageResponseHandle, errorCode);
+}
+
+/// <FieldFunctions>
+void OnService_ETS_FieldResponse_set_TestFieldUINT8(dword methodCallHandle, dword messageHandle, dword messageResponseHandle)
+{
+  dword errorCode;
+  gTestFieldUINT8 = SomeIpGetValueDWord(messageHandle, "");
+  if(SetMethodArgumentInt64(messageResponseHandle, "", gTestFieldUINT8, errorCode)!=kTrue)
+    SomeIpSetReturnCode(messageResponseHandle, errorCode);
+}
+
+// Functions required for field TestFieldUINT8Reliable
+
+/// <DefaultSetter>
+long setFieldToDefault_TestFieldUINT8Reliable()
+{
+  dword errorCode;
+  gTestFieldUINT8Reliable = gTestFieldUINT8Reliable_default;
+  return SetMethodArgumentLong(gFieldHandle_TestFieldUINT8Reliable, "", gTestFieldUINT8Reliable, errorCode)==kTrue &&
+     SomeIpCommitField(gFieldHandle_TestFieldUINT8Reliable)==0;
+}
+
+/// <FieldFunctions>
+void OnService_ETS_FieldResponse_get_TestFieldUINT8Reliable(dword methodCallHandle, dword messageHandle, dword messageResponseHandle)
+{
+  dword errorCode;
+  if(SetMethodArgumentDWord(messageResponseHandle, "", gTestFieldUINT8Reliable, errorCode)!=kTrue)
+    SomeIpSetReturnCode(messageResponseHandle, errorCode);
+}
+
+/// <FieldFunctions>
+void OnService_ETS_FieldResponse_set_TestFieldUINT8Reliable(dword methodCallHandle, dword messageHandle, dword messageResponseHandle)
+{
+  dword errorCode;
+  gTestFieldUINT8Reliable = SomeIpGetValueDWord(messageHandle, "");
+  if(SetMethodArgumentInt64(messageResponseHandle, "", gTestFieldUINT8Reliable, errorCode)!=kTrue)
+    SomeIpSetReturnCode(messageResponseHandle, errorCode);
+}
+
+// Functions required for field TestFieldUINT8Array
+
+/// <DefaultSetter>
+long setFieldToDefault_TestFieldUINT8Array()
+{
+  dword i, errorCode;
+  char buffer[32];
+  memcpy(gTestFieldUINT8Array, gTestFieldUINT8Array_default);
+  if(SetMethodArgumentDWord(gFieldHandle_TestFieldUINT8Array, "", gTestFieldUINT8Array.length, errorCode)!=kTrue)
+    return kFalse;
+  
+  for(i=0; i<gTestFieldUINT8Array.length; i++)
+  {
+    snprintf(buffer, elcount(buffer), "[%d]", i);
+    if(SetMethodArgumentDWord(gFieldHandle_TestFieldUINT8Array, buffer, gTestFieldUINT8Array.values[i], errorCode)!=kTrue)
+      return kFalse;
+  }
+  SomeIpCommitField(gFieldHandle_TestFieldUINT8Array);
+  return SomeIpGetLastError()==0;
+}
+
+/// <FieldFunctions>
+void OnService_ETS_FieldResponse_get_TestFieldUINT8Array(dword methodCallHandle, dword messageHandle, dword messageResponseHandle)
+{
+  dword i, errorCode;
+  char buffer[32];
+  if(SetMethodArgumentDWord(messageResponseHandle, "", gTestFieldUINT8Array.length, errorCode)!=kTrue)
+  {
+    SomeIpSetReturnCode(messageResponseHandle, errorCode);
+    return;
+  }
+
+  for(i=0; i<gTestFieldUINT8Array.length; i++)
+  {
+    snprintf(buffer, elcount(buffer), "[%d]", i);
+    if(SetMethodArgumentDWord(messageResponseHandle, buffer, gTestFieldUINT8Array.values[i], errorCode)!=kTrue)
+    {
+      SomeIpSetReturnCode(messageResponseHandle, errorCode);
+      return;
+    }
+  }
+}
+
+/// <FieldFunctions>
+void OnService_ETS_FieldResponse_set_TestFieldUINT8Array(dword methodCallHandle, dword messageHandle, dword messageResponseHandle)
+{
+  dword i, errorCode;
+  char buffer[32];
+  gTestFieldUINT8Array.length = SomeIpGetValueDWord(messageHandle, "");
+  if(SetMethodArgumentDWord(messageResponseHandle, "", gTestFieldUINT8Array.length, errorCode)!=kTrue)
+  {
+    SomeIpSetReturnCode(messageResponseHandle, errorCode);
+    return;
+  }
+  
+  for(i=0; i<gTestFieldUINT8Array.length; i++)
+  {
+    snprintf(buffer, elcount(buffer), "[%d]", i);
+    gTestFieldUINT8Array.values[i] = SomeIpGetValueDWord(messageHandle, buffer);
+    if(SetMethodArgumentDWord(messageResponseHandle, buffer, gTestFieldUINT8Array.values[i], errorCode)!=kTrue)
+    {
+      SomeIpSetReturnCode(messageResponseHandle, errorCode);
+      return;
+    }
+  }
+}
+
+//  ETS Service prepare event callbacks
+
+/// <EventFunctions>
+void OnService_ETS_PrepareEvent_TestEventUINT8(dword dwEventH, dword dwMsgH)
+{
+  dword errorCode;
+  SetMethodArgumentDWord(dwMsgH, gEventArgumentName_TestEventUINT8_arg1, gTestEventUINT8, errorCode);
+}
+
+/// <EventFunctions>
+void OnService_ETS_PrepareEvent_TestEventUINT8Array(dword eventHandle, dword messageHandle)
+{
+  dword i, errorCode;
+  char buffer[32];
+  if(SetMethodArgumentDWord(messageHandle, gEventArgumentName_TestEventUINT8Array_arg1, gTestEventUINT8Array.length, errorCode))
+  {
+    for(i=0; i<gTestEventUINT8Array.length; i++)
+    {
+      snprintf(buffer, elcount(buffer), "%s[%d]", gEventArgumentName_TestEventUINT8Array_arg1, i);
+      if(SetMethodArgumentDWord(messageHandle, buffer, gTestEventUINT8Array.values[i], errorCode)!=kTrue)
+        return;
+    }
+  }
+}
+
+/// <EventFunctions>
+void OnService_ETS_PrepareEvent_TestEventUINT8Reliable(dword dwEventH, dword dwMsgH)
+{
+  dword errorCode;
+  SetMethodArgumentDWord(dwMsgH, gEventArgumentName_TestEventUINT8Reliable_arg1, gTestEventUINT8Reliable, errorCode);
+}
+
+/// <EventFunctions>
+void OnService_ETS_PrepareEvent_TestEventUINT8Multicast(dword dwEventH, dword dwMsgH)
+{
+  dword errorCode;
+  SetMethodArgumentDWord(dwMsgH, gEventArgumentName_TestEventUINT8Multicast_arg1, gTestEventUINT8Multicast, errorCode);
+}
+
+// ETS Service methods -------------------------
+
+/// <ServiceMethods>
+void OnService_ETS_MethodRequest_echoBitfields(DWORD methodHandle, DWORD messageHandle, DWORD responseMessageHandle)
+{
+  dword arg1, arg2, arg3, errorCode;
+  if(GetMethodArgumentDWord(messageHandle, gMethodArgumentName_echoBitfields_REQ_bitfield8, arg1, errorCode)!=kTrue  ||
+     GetMethodArgumentDWord(messageHandle, gMethodArgumentName_echoBitfields_REQ_bitfield16, arg2, errorCode)!=kTrue ||
+     GetMethodArgumentDWord(messageHandle, gMethodArgumentName_echoBitfields_REQ_bitfield32, arg3, errorCode)!=kTrue ||
+     SetMethodArgumentDWord(responseMessageHandle, gMethodArgumentName_echoBitfields_RES_bitfield8, reverseBits(arg1, 8), errorCode)!=kTrue   ||
+     SetMethodArgumentDWord(responseMessageHandle, gMethodArgumentName_echoBitfields_RES_bitfield16, reverseBits(arg2, 16), errorCode)!=kTrue ||
+     SetMethodArgumentDWord(responseMessageHandle, gMethodArgumentName_echoBitfields_RES_bitfield32, reverseBits(arg3, 32), errorCode)!=kTrue )
+  {
+    SomeIpSetReturnCode(responseMessageHandle, errorCode);
+  }
+}
+
+/// <ServiceMethods>
+void OnService_ETS_MethodRequest_checkByteOrder(DWORD methodHandle, DWORD messageHandle, DWORD responseMessageHandle)
+{
+  dword arg1, arg2, errorCode;
+  
+  if(GetMethodArgumentDWord(messageHandle, gMethodArgumentName_checkByteOrder_REQ_arg1, arg1, errorCode)==kFalse ||
+     GetMethodArgumentDWord(messageHandle, gMethodArgumentName_checkByteOrder_REQ_arg2, arg2, errorCode)==kFalse ||
+     SetMethodArgumentDWord(responseMessageHandle, gMethodArgumentName_checkByteOrder_RES_arg1, arg1+arg2, errorCode)==kFalse)
+  {
+    SomeIpSetReturnCode(responseMessageHandle, errorCode);
+  }
+}
+
+/// <ServiceMethods>
+void OnService_ETS_MethodRequest_echoCommonDatatypes(DWORD methodHandle, DWORD messageHandle, DWORD responseMessageHandle)
+{
+  dword errorCode;
+  struct _echoCommonDatatypesArgs args;
+  if(GetMethodArgumentDWord(messageHandle,      gMethodArgumentName_echoCommonDatatypes_REQ_ARG1_BOOLEAN, args.booleanArg, errorCode)!=kTrue ||
+     GetMethodArgumentDWord(messageHandle,      gMethodArgumentName_echoCommonDatatypes_REQ_ARG2_UINT8,   args.unsignedArgs[0], errorCode)!=kTrue ||
+     GetMethodArgumentDWord(messageHandle,      gMethodArgumentName_echoCommonDatatypes_REQ_ARG3_UINT16,  args.unsignedArgs[1], errorCode)!=kTrue ||
+     GetMethodArgumentDWord(messageHandle,      gMethodArgumentName_echoCommonDatatypes_REQ_ARG4_UINT32,  args.unsignedArgs[2], errorCode)!=kTrue ||
+     GetMethodArgumentLong(messageHandle,       gMethodArgumentName_echoCommonDatatypes_REQ_ARG5_INT8,    args.signedArgs[0], errorCode)!=kTrue ||
+     GetMethodArgumentLong(messageHandle,       gMethodArgumentName_echoCommonDatatypes_REQ_ARG6_INT16,   args.signedArgs[1], errorCode)!=kTrue ||
+     GetMethodArgumentLong(messageHandle,       gMethodArgumentName_echoCommonDatatypes_REQ_ARG7_INT32,   args.signedArgs[2], errorCode)!=kTrue ||
+     GetMethodArgumentFloat(messageHandle,      gMethodArgumentName_echoCommonDatatypes_REQ_ARG8_FLOAT32, args.float32Arg, errorCode)!=kTrue  ||
+     GetMethodArgumentFloat(messageHandle,      gMethodArgumentName_echoCommonDatatypes_REQ_ARG9_FLOAT64, args.float64Arg, errorCode)!=kTrue  ||
+     SetMethodArgumentDWord(responseMessageHandle, gMethodArgumentName_echoCommonDatatypes_RES_ARG9_BOOLEAN, args.booleanArg, errorCode)!=kTrue ||
+     SetMethodArgumentDWord(responseMessageHandle, gMethodArgumentName_echoCommonDatatypes_RES_ARG8_UINT8,   args.unsignedArgs[0], errorCode)!=kTrue ||
+     SetMethodArgumentDWord(responseMessageHandle, gMethodArgumentName_echoCommonDatatypes_RES_ARG7_UINT16,  args.unsignedArgs[1], errorCode)!=kTrue ||
+     SetMethodArgumentDWord(responseMessageHandle, gMethodArgumentName_echoCommonDatatypes_RES_ARG6_UINT32,  args.unsignedArgs[2], errorCode)!=kTrue ||
+     SetMethodArgumentLong(responseMessageHandle,  gMethodArgumentName_echoCommonDatatypes_RES_ARG5_INT8,    args.signedArgs[0], errorCode)!=kTrue ||
+     SetMethodArgumentLong(responseMessageHandle,  gMethodArgumentName_echoCommonDatatypes_RES_ARG4_INT16,   args.signedArgs[1], errorCode)!=kTrue ||
+     SetMethodArgumentLong(responseMessageHandle,  gMethodArgumentName_echoCommonDatatypes_RES_ARG3_INT32,   args.signedArgs[2], errorCode)!=kTrue ||
+     SetMethodArgumentFloat(responseMessageHandle, gMethodArgumentName_echoCommonDatatypes_RES_ARG2_FLOAT32, args.float32Arg, errorCode)!=kTrue ||
+     SetMethodArgumentFloat(responseMessageHandle, gMethodArgumentName_echoCommonDatatypes_RES_ARG1_FLOAT64, args.float64Arg, errorCode)!=kTrue)
+  {
+    SomeIpSetReturnCode(responseMessageHandle, errorCode);
+  }    
+}
+
+/// <ServiceMethods>
+void OnService_ETS_MethodRequest_echoENUM(DWORD methodHandle, DWORD messageHandle, DWORD responseMessageHandle)
+{
+  dword arg, errorCode;
+  if(GetMethodArgumentDWord(messageHandle,   gMethodArgumentName_echoENUM_REQ_enumValue, arg, errorCode)!=kTrue ||
+     SetMethodArgumentDWord(responseMessageHandle, gMethodArgumentName_echoENUM_RES_enumValue, arg, errorCode)!=kTrue)
+  {
+    SomeIpSetReturnCode(responseMessageHandle, errorCode);
+  }  
+}
+
+/// <ServiceMethods>
+void OnService_ETS_MethodRequest_echoFLOAT64(DWORD methodHandle, DWORD messageHandle, DWORD responseMessageHandle)
+{
+  dword errorCode;
+  float arg;
+  if(GetMethodArgumentFloat(messageHandle,   gMethodArgumentName_echoFLOAT64_REQ_FLOAT64Value, arg, errorCode)!=kTrue ||
+     SetMethodArgumentFloat(responseMessageHandle, gMethodArgumentName_echoFLOAT64_RES_FLOAT64Value, arg, errorCode)!=kTrue)
+  {
+    SomeIpSetReturnCode(responseMessageHandle, SOMEIP_RC_NOT_OK);
+  }  
+}
+
+/// <ServiceMethods>
+void OnService_ETS_MethodRequest_echoInt64(DWORD methodHandle, DWORD messageHandle, DWORD responseMessageHandle)
+{
+  dword errorCode;
+  int64 arg1;
+  arg1 = SomeIpGetValueInt64(messageHandle, gMethodArgumentName_echoINT64_REQ_INT64Value);
+  if(SomeIpGetLastError()!=0)
+    SomeIpSetReturnCode(responseMessageHandle, sysvar::TC8_ETS::ETS_MethodResult::GeneralFailure);
+  else
+  {
+    if(SetMethodArgumentInt64(responseMessageHandle, gMethodArgumentName_echoINT64_RES_INT64Value, arg1, errorCode)!=kTrue)
+      SomeIpSetReturnCode(responseMessageHandle, errorCode);
+  }
+}
+
+/// <ServiceMethods>
+void OnService_ETS_MethodRequest_echoINT8(DWORD methodHandle, DWORD messageHandle, DWORD responseMessageHandle)
+{
+  dword errorCode;
+  long arg;
+  if(GetMethodArgumentLong(messageHandle,   gMethodArgumentName_echoINT8_REQ_INT8Value, arg, errorCode)!=kTrue ||
+     SetMethodArgumentLong(responseMessageHandle, gMethodArgumentName_echoINT8_RES_INT8Value, arg, errorCode)!=kTrue)
+  {
+    SomeIpSetReturnCode(responseMessageHandle, errorCode);
+  }  
+}
+
+/// <ServiceMethods>
+void OnService_ETS_MethodRequest_echoStaticUINT8Array(DWORD methodHandle, DWORD messageHandle, DWORD responseMessageHandle)
+{
+  dword arg, arrayLength, errorCode;
+  char reqBuffer[64], resBuffer[64];
+  int i;
+  if(GetMethodArgumentDWord(messageHandle, gMethodArgumentName_echoStaticUINT8Array_REQ_UINT8Array, arrayLength, errorCode)==kTrue)
+  {
+    for(i=0; i<arrayLength; ++i)
+    {
+      snprintf(reqBuffer, elCount(reqBuffer), "%s[%d]", gMethodArgumentName_echoStaticUINT8Array_REQ_UINT8Array, i);
+      snprintf(resBuffer, elCount(resBuffer), "%s[%d]", gMethodArgumentName_echoStaticUINT8Array_RES_UINT8Array, i);
+      if(GetMethodArgumentDWord(messageHandle,   reqBuffer, arg, errorCode)!=kTrue ||
+         SetMethodArgumentDWord(responseMessageHandle, resBuffer, arg, errorCode)!=kTrue)
+      {
+        SomeIpSetReturnCode(responseMessageHandle, errorCode);
+        break;
+      }
+    }
+  }
+  else
+  {
+    SomeIpSetReturnCode(responseMessageHandle, sysvar::TC8_ETS::ETS_MethodResult::GeneralFailure);
+  }
+}
+
+/// <ServiceMethods>
+void OnService_ETS_MethodRequest_echoUINT8(DWORD methodHandle, DWORD messageHandle, DWORD responseMessageHandle)
+{
+  dword arg, errorCode;
+  if(GetMethodArgumentDWord(messageHandle, gMethodArgumentName_echoUINT8_REQ_UINT8Value, arg, errorCode)!=kTrue ||
+     SetMethodArgumentDWord(responseMessageHandle, gMethodArgumentName_echoUINT8_RES_UINT8Value, arg, errorCode)!=kTrue)
+  {
+    SomeIpSetReturnCode(responseMessageHandle, errorCode);
+  }  
+}
+
+/// <ServiceMethods>
+void OnService_ETS_MethodRequest_echoUINT8RELIABLE(DWORD methodHandle, DWORD messageHandle, DWORD responseMessageHandle)
+{
+  dword arg1, errorCode;  
+  if(GetMethodArgumentDWord(messageHandle, gMethodArgumentName_echoUINT8RELIABLE_REQ_UINT8Value, arg1, errorCode)!=kTrue ||
+     SetMethodArgumentDWord(responseMessageHandle, gMethodArgumentName_echoUINT8RELIABLE_RES_UINT8Value, arg1, errorCode)!=kTrue)
+  {
+    SomeIpSetReturnCode(responseMessageHandle, errorCode);
+  }
+}
+
+/// <ServiceMethods>
+void OnService_ETS_MethodRequest_echoUINT8Array(DWORD methodHandle, DWORD messageHandle, DWORD responseMessageHandle)
+{
+  HandleMethodRequest_echoUINT8Array(methodHandle, messageHandle, responseMessageHandle, 0,
+    gMethodArgumentName_echoUINT8Array_REQ_UINT8Array, gMethodArgumentName_echoUINT8Array_RES_UINT8Array);
+}
+
+/// <ServiceMethods>
+void OnService_ETS_MethodRequest_echoUINT8Array8BitLength(DWORD methodHandle, DWORD messageHandle, DWORD responseMessageHandle)
+{
+  HandleMethodRequest_echoUINT8Array(methodHandle, messageHandle, responseMessageHandle, 0,
+    gMethodArgumentName_echoUINT8Array8BitLength_REQ_UINT8Array, gMethodArgumentName_echoUINT8Array8BitLength_RES_UINT8Array);
+}
+
+/// <ServiceMethods>
+void OnService_ETS_MethodRequest_echoUINT8Array16BitLength(DWORD methodHandle, DWORD messageHandle, DWORD responseMessageHandle)
+{
+  HandleMethodRequest_echoUINT8Array(methodHandle, messageHandle, responseMessageHandle, 0,
+    gMethodArgumentName_echoUINT8Array16BitLength_REQ_UINT8Array, gMethodArgumentName_echoUINT8Array16BitLength_RES_UINT8Array);
+}
+
+/// <ServiceMethods>
+void OnService_ETS_MethodRequest_echoUINT8ArrayMinSize(DWORD methodHandle, DWORD messageHandle, DWORD responseMessageHandle)
+{
+  HandleMethodRequest_echoUINT8Array(methodHandle, messageHandle, responseMessageHandle, gEchoUINT8ArrayMinSize_MinLength,
+    gMethodArgumentName_echoUINT8ArrayMinSize_REQ_UINT8Array, gMethodArgumentName_echoUINT8ArrayMinSize_RES_UINT8Array);
+}
+
+/// <ServiceMethods>
+void OnService_ETS_MethodRequest_echoUINT8Array2Dim(DWORD methodHandle, DWORD messageHandle, DWORD responseMessageHandle)
+{
+  dword row, col, countRows, countCols, errorCode;
+  char reqBuffer[64], resBuffer[64];
+  dword value;
+
+  if(GetMethodArgumentDWord(messageHandle, gMethodArgumentName_echoUINT8Array2Dim_REQ_UINT8Array, countRows, errorCode)!=kTrue)
+  {
+    SomeIpSetReturnCode(responseMessageHandle, errorCode);
+    return;
+  }
+  
+  for(row=0; row<countRows; ++row)
+  {
+    snprintf(reqBuffer, elCount(reqBuffer), "%s[%d]", gMethodArgumentName_echoUINT8Array2Dim_REQ_UINT8Array, row);
+    if(GetMethodArgumentDWord(messageHandle, reqBuffer, countCols, errorCode)!=kTrue)
+    {
+      SomeIpSetReturnCode(responseMessageHandle, errorCode);
+      return;
+    }
+    
+    for(col=0; col<countCols; ++col)
+    {
+      snprintf(reqBuffer, elCount(reqBuffer), "%s[%d][%d]", gMethodArgumentName_echoUINT8Array2Dim_REQ_UINT8Array, row, col);
+      snprintf(resBuffer, elCount(resBuffer), "%s[%d][%d]", gMethodArgumentName_echoUINT8Array2Dim_RES_UINT8Array, row, col);
+      if(GetMethodArgumentDWord(messageHandle, reqBuffer, value, errorCode)!=kTrue ||
+         SetMethodArgumentDWord(responseMessageHandle, resBuffer, value, errorCode)!=kTrue)
+      {
+        SomeIpSetReturnCode(responseMessageHandle, errorCode);
+        return;
+      }
+    }
+  }
+}
+
+/// <ServiceMethods>
+void OnService_ETS_MethodRequest_echoUNION(DWORD methodHandle, DWORD messageHandle, DWORD responseMessageHandle)
+{
+  dword value, validIndex, errorCode;
+  long sValue;
+  float fValue;
+  enum Bool success;
+  success = kFalse;
+  if(GetMethodArgumentDWord(messageHandle, gMethodArgumentName_echoUNION_REQ_unionElement, validIndex, errorCode))
+  {
+    switch(validIndex)
+    {
+      case 1:
+        success = (enum Bool)
+                  (GetMethodArgumentDWord(messageHandle, gMethodArgumentName_echoUNION_REQ_unionMember1, value, errorCode) &&
+                   SetMethodArgumentDWord(responseMessageHandle, gMethodArgumentName_echoUNION_RES_unionMember1, value, errorCode));
+        break;
+      case 2:
+        success = (enum Bool)
+                  (GetMethodArgumentDWord(messageHandle, gMethodArgumentName_echoUNION_REQ_unionMember2, value, errorCode) &&
+                   SetMethodArgumentDWord(responseMessageHandle, gMethodArgumentName_echoUNION_RES_unionMember2, value, errorCode));
+        break;
+      case 3:
+        success = (enum Bool)
+                  (GetMethodArgumentDWord(messageHandle, gMethodArgumentName_echoUNION_REQ_unionMember3, value, errorCode) &&
+                   SetMethodArgumentDWord(responseMessageHandle, gMethodArgumentName_echoUNION_RES_unionMember3, value, errorCode));
+        break;
+      case 4:
+        success = (enum Bool)
+                  (GetMethodArgumentDWord(messageHandle, gMethodArgumentName_echoUNION_REQ_unionMember4, value, errorCode) &&
+                   SetMethodArgumentDWord(responseMessageHandle, gMethodArgumentName_echoUNION_RES_unionMember4, value, errorCode));
+        break;
+      case 5:
+        success = (enum Bool)
+                  (GetMethodArgumentLong(messageHandle, gMethodArgumentName_echoUNION_REQ_unionMember5, sValue, errorCode) &&
+                   SetMethodArgumentLong(responseMessageHandle, gMethodArgumentName_echoUNION_RES_unionMember5, sValue, errorCode));
+        break;
+      case 6:
+        success = (enum Bool)
+                  (GetMethodArgumentLong(messageHandle, gMethodArgumentName_echoUNION_REQ_unionMember6, sValue, errorCode) &&
+                   SetMethodArgumentLong(responseMessageHandle, gMethodArgumentName_echoUNION_RES_unionMember6, sValue, errorCode));
+        break;
+      case 7:
+        success = (enum Bool)
+                  (GetMethodArgumentLong(messageHandle, gMethodArgumentName_echoUNION_REQ_unionMember7, sValue, errorCode) &&
+                   SetMethodArgumentLong(responseMessageHandle, gMethodArgumentName_echoUNION_RES_unionMember7, sValue, errorCode));
+        break;
+      case 8:
+        success = (enum Bool)
+                  (GetMethodArgumentFloat(messageHandle, gMethodArgumentName_echoUNION_REQ_unionMember8, fValue, errorCode) &&
+                   SetMethodArgumentFloat(responseMessageHandle, gMethodArgumentName_echoUNION_RES_unionMember8, fValue, errorCode));
+        break;
+    }
+    if(success==kFalse)
+      SomeIpSetReturnCode(responseMessageHandle, errorCode);
+  }
+  else
+    SomeIpSetReturnCode(responseMessageHandle, errorCode);
+}
+
+/// <ServiceMethods>
+void OnService_ETS_MethodRequest_echoUTF16DYNAMIC(DWORD methodHandle, DWORD messageHandle, DWORD responseMessageHandle)
+{
+  dword errorCode;
+  char buffer[256];
+  buffer[0] = '\0';
+
+  errorCode = SOMEIP_RC_NOT_OK;
+  if(GetMethodArgumentStringUTF16(messageHandle, gMethodArgumentName_echoUTF16DYNAMIC_REQ_UTF16String, elcount(buffer), buffer, errorCode)!=kTrue ||
+     SetMethodArgumentStringUTF16(responseMessageHandle, gMethodArgumentName_echoUTF16DYNAMIC_RES_UTF16String, buffer, errorCode)!=kTrue)
+    SomeIpSetReturnCode(responseMessageHandle, errorCode);
+}
+
+/// <ServiceMethods>
+void OnService_ETS_MethodRequest_echoUTF16FIXED(DWORD methodHandle, DWORD messageHandle, DWORD responseMessageHandle)
+{
+  dword errorCode;
+  char buffer[256];
+  buffer[0] = '\0';
+
+  if(GetMethodArgumentStringUTF16(messageHandle, gMethodArgumentName_echoUTF16FIXED_REQ_UTF16String, elcount(buffer), buffer, errorCode)!=kTrue)
+  {
+    SomeIpSetReturnCode(responseMessageHandle, errorCode);
+    return;
+  }
+
+  if(strlen(buffer)>30)
+  {
+    SomeIpSetReturnCode(responseMessageHandle, SOMEIP_RC_MALFORMED_MESSAGE);
+    return;
+  }
+  
+  if(SetMethodArgumentStringUTF16(responseMessageHandle, gMethodArgumentName_echoUTF16FIXED_RES_UTF16String, buffer, errorCode)!=kTrue)
+  {
+    SomeIpSetReturnCode(responseMessageHandle, errorCode);
+    return;
+  }
+}
+
+/// <ServiceMethods>
+void OnService_ETS_MethodRequest_echoUTF8DYNAMIC(DWORD methodHandle, DWORD messageHandle, DWORD responseMessageHandle)
+{
+  dword errorCode;
+  char buffer[256];
+  buffer[0] = '\0';
+  
+  if(GetMethodArgumentStringUTF8(messageHandle, gMethodArgumentName_echoUTF16FIXED_REQ_UTF16String, elcount(buffer), buffer, errorCode)!=kTrue ||
+     SetMethodArgumentStringUTF8(responseMessageHandle, gMethodArgumentName_echoUTF16FIXED_RES_UTF16String, buffer, errorCode)!=kTrue)
+    SomeIpSetReturnCode(responseMessageHandle, errorCode);
+}
+
+/// <ServiceMethods>
+void OnService_ETS_MethodRequest_echoUTF8FIXED(DWORD methodHandle, DWORD messageHandle, DWORD responseMessageHandle)
+{
+  dword errorCode;
+  char buffer[256];
+  buffer[0] = '\0';
+
+  if(GetMethodArgumentStringUTF8(messageHandle, gMethodArgumentName_echoUTF8FIXED_REQ_UTF8String, elcount(buffer), buffer, errorCode)!=kTrue)
+  {
+    SomeIpSetReturnCode(responseMessageHandle, errorCode);
+    return;
+  }
+
+  if(strlen(buffer)>60)
+  {
+    SomeIpSetReturnCode(responseMessageHandle, SOMEIP_RC_MALFORMED_MESSAGE);
+    return;
+  }
+  
+  if(SetMethodArgumentStringUTF8(responseMessageHandle, gMethodArgumentName_echoUTF8FIXED_RES_UTF8String, buffer, errorCode)!=kTrue)
+  {
+    SomeIpSetReturnCode(responseMessageHandle, errorCode);
+    return;
+  }  
+}
+
+/// <ServiceMethods>
+void OnService_ETS_MethodRequest_clientServiceActivate(DWORD methodHandle, DWORD messageHandle)
+{
+  dword delaySeconds, errorCode;
+  if(gIsClientServiceActive==kFalse &&
+     GetMethodArgumentDWord(messageHandle, gMethodArgumentName_clientServiceActivate_REQ_arg1, delaySeconds, errorCode))
+  {
+    char buffer[64];
+    sysGetVariableString(sysvar::Internal::DIface0Ip, buffer, elcount(buffer)); 
+    if(gClientServiceEndpoint.ParseEndpointFromString(buffer)!=0)
+      return;
+
+    setTimer(gClientServiceActivateTimer, delaySeconds*1000);
+  }
+}
+
+/// <ServiceMethods>
+void OnService_ETS_MethodRequest_clientServiceDeactivate(DWORD methodHandle, DWORD messageHandle)
+{
+  dword delaySeconds, errorCode;
+  if(isTimerActive(gClientServiceActivateTimer))
+    cancelTimer(gClientServiceActivateTimer);
+  if(gIsClientServiceActive==kTrue && 
+    GetMethodArgumentDWord(messageHandle, gMethodArgumentName_clientServiceActivate_REQ_arg1, delaySeconds, errorCode))
+  {
+    setTimer(gClientServiceDeactivateTimer, delaySeconds*1000);
+  }  
+}
+
+/// <ServiceMethods>
+void OnService_ETS_MethodRequest_clientServiceSubscribeEventgroup(DWORD methodHandle, DWORD messageHandle)
+{
+  dword delaySeconds, durationSeconds, errorCode;
+  long subscribeTimeMs;
+  
+  if(GetMethodArgumentDWord(messageHandle, gMethodArgumentName_clientServiceSubscribeEventgroup_REQ_delay, delaySeconds, errorCode)==kTrue &&
+     GetMethodArgumentDWord(messageHandle, gMethodArgumentName_clientServiceSubscribeEventgroup_REQ_duration, durationSeconds, errorCode)==kTrue)
+  {
+    if(durationSeconds>0)
+    {
+      subscribeTimeMs = delaySeconds*1000;
+      setTimer(gSubscribeEventGroupTimer, subscribeTimeMs);
+      setTimer(gUnsubscribeEventGroupTimer, subscribeTimeMs + durationSeconds*1000);
+    }
+    else
+    {
+      write("ERROR: subscribe event group duration is zero");
+    }
+  }
+  else
+  {
+    ReportSomeIpError("OnService_ETS_MethodRequest_clientServiceSubscribeEventgroup argument error");
+  }
+}
+
+/// <ServiceMethods>
+void OnService_ETS_MethodRequest_resetInterface(DWORD methodHandle, DWORD messageHandle)
+{
+  setDefaultValues();
+}
+
+/// <ServiceMethods>
+void OnService_ETS_MethodRequest_suspendInterface(DWORD methodHandle, DWORD messageHandle)
+{
+  dword delaySeconds, errorCode;
+  if(GetMethodArgumentDWord(messageHandle, gMethodArgumentName_suspendInterface_REQ_delay, delaySeconds, errorCode)==kTrue &&
+     GetMethodArgumentDWord(messageHandle, gMethodArgumentName_suspendInterface_REQ_duration, gSuspendInterfaceDurationSeconds, errorCode)==kTrue)
+  {
+    setTimer(gSuspendInterfaceDelayTimer, delaySeconds*1000);
+  }
+  else
+  {
+    ReportSomeIpError("OnService_ETS_MethodRequest_clientServiceSubscribeEventgroup argument error");
+  }
+}
+
+void CloseLocalApplicationEndPointsForETSClientService()
+{
+  if(gClientServiceAepHandleUDP)
+    SomeIpCloseLocalApplicationEndpoint(gClientServiceAepHandleUDP);
+  if(gClientServiceAepHandleTCP)
+    SomeIpCloseLocalApplicationEndpoint(gClientServiceAepHandleTCP);
+  
+  gClientServiceAepHandleUDP = 0;
+  gClientServiceAepHandleTCP = 0;
+}
+
+/// <Helper functions>
+void OpenLocalApplicationEndPointsForETSClientService(IP_Endpoint endpoint)
+{
+  if(gClientServiceAepHandleUDP==0)
+  {
+    endpoint.SetToUdp();
+    gClientServiceAepHandleUDP = ETSOpenLocalApplicationEndpoint(endpoint);
+    if(gClientServiceAepHandleUDP==0)
+    {
+      ReportSomeIpError("Creation of UDP local application endpoint failed");
+      return;
+    }
+  }
+ 
+  if(gClientServiceAepHandleTCP==0)
+  {
+    endpoint.SetToTcp();
+    gClientServiceAepHandleTCP = ETSOpenLocalApplicationEndpoint(endpoint);
+    if(gClientServiceAepHandleTCP==0)
+    {
+      ReportSomeIpError("Creation of TCP local application endpoint failed");
+      return;
+    }
+  }
+}
+
+/// <Helper functions>
+enum Bool HandleSomeIpCreateEventConsumer(dword csiHandle, dword eventId, char eventCallbackPrefix[], CHAR onEventCallback[], dword & eventHandle)
+{
+  char callbackName[128];
+  strncpy(callbackName, eventCallbackPrefix, elcount(callbackName));
+  strncpy_off(callbackName, strlen(callbackName), onEventCallback, elcount(callbackName));
+  
+  eventHandle = SomeIpCreateEventConsumer(csiHandle, eventId, callbackName);
+  if(eventHandle==0)
+  {
+    ReportSomeIpError("Creation of event consumer failed");
+    write("Creation of event consumer failed. Callback name: %s", callbackName);
+    return kFalse;
+  }
+  return kTrue;
+}
+
+/// <Helper functions>
+enum Bool ActivateClientService(char eventCallbackPrefix[], IP_Endpoint endpoint)
+{
+  dword eventHandle;
+
+  if(gCsiHandleUDP==0)
+  {
+    if(gClientServiceAepHandleUDP==0)
+      OpenLocalApplicationEndPointsForETSClientService(endpoint);
+    gCsiHandleUDP = ETS_SomeIpCreateConsumedServiceInstance(gClientServiceAepHandleUDP, @sysvar::TC8_ETS_Config::ETS_ServiceId, GetInstanceIdOfConsumedETS());
+    if(gCsiHandleUDP==0)
+    {
+      write("#### ActivateClientService: Creating UDP CSI failed");
+      return kFalse;
+    }
+  }
+
+  if(gCsiHandleTCP==0)
+  {
+    if(gClientServiceAepHandleTCP==0)
+      OpenLocalApplicationEndPointsForETSClientService(endpoint);
+    gCsiHandleTCP = ETS_SomeIpCreateConsumedServiceInstance(gClientServiceAepHandleTCP, @sysvar::TC8_ETS_Config::ETS_ServiceId, GetInstanceIdOfConsumedETS());
+    if(gCsiHandleTCP==0)
+    {
+      write("#### ActivateClientService: Creating TCP CSI failed");
+      return kFalse;
+    }
+  }
+ 
+
+  if(gCsiHandleTCP &&
+     HandleSomeIpCreateEventConsumer(gCsiHandleTCP, EVENT_ID_TestEventUINT8Reliable, eventCallbackPrefix, "EventReceived_TestEventUINT8Reliable", eventHandle)==kFalse ||
+     HandleSomeIpCreateEventConsumer(gCsiHandleTCP, EVENT_ID_TestEventUINT8, eventCallbackPrefix, "EventReceived_TestEventUINT8", eventHandle)==kFalse ||
+     HandleSomeIpCreateEventConsumer(gCsiHandleTCP, EVENT_ID_TestEventUINT8Array, eventCallbackPrefix, "EventReceived_TestEventUINT8Array", eventHandle)==kFalse)
+  {
+      write("#### ActivateClientService: creating of tcp event consumer failed");
+      return kFalse;
+  }
+  
+  
+  if(HandleSomeIpCreateEventConsumer(gCsiHandleUDP, EVENT_ID_TestEventUINT8, eventCallbackPrefix, "EventReceived_TestEventUINT8", eventHandle)==kFalse ||
+     HandleSomeIpCreateEventConsumer(gCsiHandleUDP, EVENT_ID_TestEventUINT8Array, eventCallbackPrefix, "EventReceived_TestEventUINT8Array", eventHandle)==kFalse ||
+     HandleSomeIpCreateEventConsumer(gCsiHandleUDP, EVENT_ID_TestEventUINT8Multicast, eventCallbackPrefix, "EventReceived_TestEventUINT8Multicast", eventHandle)==kFalse)
+  {
+      write("#### ActivateClientService: creating of udp event consumer failed");
+      return kFalse;
+  }
+  
+  
+  gIsClientServiceActive = kTrue;
+  return kTrue;
+}
+
+/// <Helper functions>
+void DeactivateClientService()
+{
+  cancelTimer(gClientServiceActivateTimer);
+  cancelTimer(gClientServiceDeactivateTimer);
+  cancelTimer(gSubscribeEventGroupTimer);
+  cancelTimer(gUnsubscribeEventGroupTimer);
+
+  RemoveEventGroupConsumers(gCegHandle1UDP, gCegHandle1TCP);
+  RemoveEventGroupConsumers(gCegHandle2UDP, gCegHandle2TCP);
+  RemoveEventGroupConsumers(gCegHandle3UDP, gCegHandle3TCP);
+
+  releaseAllCreatedCSIs();
+ 
+  gIsClientServiceActive = kFalse;
+}
+
+on timer gClientServiceActivateTimer
+{
+  ActivateClientService("ETSClient_", gClientServiceEndpoint);
+}
+
+on timer gClientServiceDeactivateTimer
+{
+  DeactivateClientService();
+  CloseLocalApplicationEndPointsForETSClientService();
+}
+
+on timer gSubscribeEventGroupTimer
+{
+  AddEventGroupConsumers(EVENTGROUP_ID_EvgAll, gCegHandle1UDP, gCegHandle1TCP);
+  
+  SubscribeEventGroup(EVENTGROUP_ID_EvgAll, gCegHandle1UDP, gCegHandle1TCP);
+}
+
+on timer gSuspendInterfaceDelayTimer
+{
+  SomeIpSDSetServiceStatus(gPsiUdp, 0);
+  SomeIpSDSetServiceStatus(gPsiTcp, 0);
+  setTimer(gSuspendInterfaceDurationTimer, gSuspendInterfaceDurationSeconds*1000);
+}
+
+on timer gSuspendInterfaceDurationTimer
+{
+  SomeIpSDSetServiceStatus(gPsiUdp, 1);
+  SomeIpSDSetServiceStatus(gPsiTcp, 1);  
+}
+
+/// <Helper functions>
+enum Bool SubscribeEventGroup(dword eventGroupId, dword & cegHandleUDP, dword & cegHandleTCP)
+{
+  long returnCode;
+  
+  if(gCsiHandleUDP==0 || gCsiHandleTCP==0)
+  {
+    write("ERROR: no consumer service instantiated");
+    return kFalse;
+  }
+
+  returnCode = 0;
+  if(eventGroupId==EVENTGROUP_ID_EvgAll)
+    returnCode = SomeIpSDSubscribeEventgroup(cegHandleTCP, eventGroupId);
+
+  if(returnCode==0)
+    returnCode = SomeIpSDSubscribeEventgroup(cegHandleUDP, eventGroupId);
+
+  return returnCode==0 ? kTrue : kFalse;
+}
+
+on timer gUnsubscribeEventGroupTimer
+{
+  RemoveEventGroupConsumers(gCegHandle1UDP, gCegHandle1TCP);
+  RemoveEventGroupConsumers(gCegHandle2UDP, gCegHandle2TCP);
+  RemoveEventGroupConsumers(gCegHandle3UDP, gCegHandle3TCP);
+}
+
+void AddEventGroupConsumers(int eventGroupId, dword & cegHandleUDP, dword & cegHandleTCP)
+{
+  if(eventGroupId==EVENTGROUP_ID_EvgAll)
+  {
+    cegHandleTCP = SomeIpAddConsumedEventGroup(gCsiHandleTCP, eventGroupId);
+  }
+  
+  cegHandleUDP = SomeIpAddConsumedEventGroup(gCsiHandleUDP, eventGroupId);
+}
+
+void RemoveEventGroupConsumers(dword & cegHandleUDP, dword & cegHandleTCP)
+{
+  if(cegHandleTCP)
+  {
+    if(SomeIpRemoveConsumedEventGroup(cegHandleTCP)!=0)
+    {
+      ReportSomeIpError("Unsubscribe of TCP event group failed");
+    }
+    cegHandleTCP = 0;
+  }
+
+  if(cegHandleUDP && cegHandleUDP!=cegHandleTCP)
+  {
+    if(SomeIpRemoveConsumedEventGroup(cegHandleUDP)!=0)
+    {
+      ReportSomeIpError("Unsubscribe of UDP event group failed");
+    }
+    cegHandleUDP = 0;
+  }
+  cegHandleUDP = 0;
+  cegHandleTCP = 0;
+}
+
+/// <EventFunctions>
+void ETSClient_EventReceived_TestEventUINT8Reliable(dword eventHandle, dword messageHandle)
+{
+  dword arg, errorCode;
+  if(GetMethodArgumentDWord(messageHandle, gEventArgumentName_TestEventUINT8Reliable_arg1, arg, errorCode)==kTrue)
+  {
+    gLastEventUINT8Reliable = arg;
+  }
+}
+
+/// <EventFunctions>
+void ETSClient_EventReceived_TestEventUINT8(dword eventHandle, dword messageHandle)
+{
+  dword arg, errorCode;
+  if(GetMethodArgumentDWord(messageHandle, gEventArgumentName_TestEventUINT8_arg1, arg, errorCode)==kTrue)
+  {
+    gLastEventUINT8 = arg;
+  }
+}
+
+/// <EventFunctions>
+void ETSClient_EventReceived_TestEventUINT8Array(dword eventHandle, dword messageHandle)
+{
+}
+
+/// <EventFunctions>
+void ETSClient_EventReceived_TestEventUINT8Multicast(dword eventHandle, dword messageHandle)
+{
+  dword arg, errorCode;
+  if(GetMethodArgumentDWord(messageHandle, gEventArgumentName_TestEventUINT8Multicast_arg1, arg, errorCode)==kTrue)
+  {
+    gLastEventUINT8Multicast = arg;
+  }
+}
+
+/// <DefaultSetter>
+long setEventToDefault_TestEventUINT()
+{
+  gTestEventUINT8 = gTestEventUINT8_default;
+  return kTrue;
+}
+
+/// <DefaultSetter>
+long setEventToDefault_TestEventUINT8Array()
+{
+  dword i;
+  char buffer[32];
+  memcpy(gTestEventUINT8Array, gTestEventUINT8Array_default);
+  return kTrue;
+}
+
+/// <DefaultSetter>
+long setEventToDefault_TestEventUINTReliable()
+{
+  gTestEventUINT8Reliable = gTestEventUINT8Reliable_default;
+  return kTrue;
+}
+
+/// <DefaultSetter>
+long setEventToDefault_TestEventUINTMulticast()
+{
+  gTestEventUINT8Multicast = gTestEventUINT8Multicast_default;
+  return kTrue;
+}
+
+dword ETS_SomeIpCreateConsumedServiceInstance(dword aepHandle, dword serviceId, dword instanceId)
+{
+  dword csiHandle;
+  csiHandle = SomeIpCreateConsumedServiceInstance(aepHandle, serviceId, instanceId);
+  if(SomeIpGetLastError()!=0)
+  {
+    ReportSomeIpError("Creation of consumed service instance failed");
+    return 0;
+  }
+
+  /****************** Unsubscribe these event groups because they might get "auto-subscribed" **********/
+  if(gCreatedConsumedServiceInstance[csiHandle] != 1)
+  {
+    SomeIpSDDesubscribeEventGroup(SomeIpAddConsumedEventGroup(csiHandle, EVENTGROUP_ID_EvgAll));
+    SomeIpSDDesubscribeEventGroup(SomeIpAddConsumedEventGroup(csiHandle, EVENTGROUP_ID_EvgUnreliableOnly));
+    SomeIpSDDesubscribeEventGroup(SomeIpAddConsumedEventGroup(csiHandle, EVENTGROUP_ID_EvgMulticast));
+  }
+  /*****************************************************************************************************/
+
+  gCreatedConsumedServiceInstance[csiHandle] = 1;
+
+  return csiHandle;
+}
+
+void releaseAllCreatedCSIs()
+{
+  for(long csiKey: gCreatedConsumedServiceInstance)
+  {
+    SomeIpReleaseConsumedServiceInstance(csiKey);
+  }
+  gCreatedConsumedServiceInstance.clear();
+  gCsiHandleTCP = gCsiHandleUDP = 0;
+}

@@ -1,0 +1,89 @@
+/*@!Encoding:1252*/
+includes
+{
+  
+}
+
+
+
+variables
+{
+      byte length = 0;
+      byte receive_buffer[255];
+}
+
+on start
+{
+}
+
+// encoding helper functions
+
+long decode_header(struct DK::MessageHeaderType header)
+{
+  header.message_type = receive_buffer[length++];
+  header.message_id = receive_buffer[length++];
+  header.length = decode_uint16();
+  return 0;
+}
+
+char decode_uint8(){
+  return receive_buffer[length++];
+}
+
+int decode_uint16()
+{
+  int value;
+  value = (receive_buffer[length++] << 8);
+  value |= receive_buffer[length++];
+  return value;
+}
+
+long decode_uint32(){
+  long value;
+  value |= (receive_buffer[length++] << 24);
+  value |= (receive_buffer[length++] << 16);
+  value |= (receive_buffer[length++] << 8);
+  value |= receive_buffer[length++];
+  return value; 
+}
+
+qword decode_uint64(){
+  qword value, k;
+  k= receive_buffer[length++];
+  value |= k << 56;
+  k= receive_buffer[length++];
+  value |= k << 48;
+  k= receive_buffer[length++];
+  value |= k << 40;
+  k= receive_buffer[length++];
+  value |= k << 32;
+  k= receive_buffer[length++];
+  value |= k << 24;
+  k= receive_buffer[length++];
+  value |= k << 16;
+  k= receive_buffer[length++];
+  value |= k << 8;
+  value |= receive_buffer[length++];
+  return value; 
+}
+
+
+on value_update IoTEnabler::Vehicle_L2CAP.data_receive
+{
+ int i;
+ memcpy(receive_buffer, $this.payload);
+  
+ if (receive_buffer[1] == DK::MessageIdEnum::RANGING_CAPABILITY_RQ)
+ {
+   decode_header($DK::Vehicle_Request.Capability.message_header);
+   $DK::Vehicle_Request.Capability.protocol_version_length = decode_uint8();
+   $DK::Vehicle_Request.Capability.protocol_version.length = $DK::Vehicle_Request.Capability.protocol_version_length;
+   
+   for (i=0; i < $DK::Vehicle_Request.Capability.protocol_version.length; i++)
+   {
+     $DK::Vehicle_Request.Capability.protocol_version[i].major = decode_uint8();
+     $DK::Vehicle_Request.Capability.protocol_version[i].minor = decode_uint8();
+   }
+
+ }
+}

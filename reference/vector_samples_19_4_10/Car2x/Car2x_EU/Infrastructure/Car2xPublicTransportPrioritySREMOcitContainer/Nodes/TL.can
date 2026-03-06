@@ -1,0 +1,135 @@
+/*@!Encoding:1252*/
+includes
+{
+  #include "..\DataSources_Templates\ASNV_Template_BaseDatatypes.cin"
+  #include "..\DataSources_Templates\ASNV_Template_MAP.cin"
+  #include "..\DataSources_Templates\ASNV_Template_SPAT.cin"
+
+  #include "Car2xAPI.cin"
+  #include "TL.cin"
+}
+
+variables
+{
+  byte gFirstMap = 1;
+  byte gFirstSpat = 1;
+  msTimer holdTimer;
+}
+
+on start
+{
+  C2xRegisterCallback(kPreTxIndication, "OnTxMAP" , "MAP" ) ;
+  C2xRegisterCallback(kPreTxIndication, "OnTxSPAT", "SPAT") ;
+}
+
+
+//Set SysVar on attribute Update
+void OnStationAttributeTrigger(char attributeName[])
+{
+  if(strncmp(attributeName,"Active", strlen(attributeName)) == 0)
+  {
+    @Priority::Active = C2xGetStationAttributeInt64("Active");
+  }
+}
+
+
+on sysvar_change Priority::PriorState
+{
+  //If PriorState is granted, extend Green Phase for Public Transport
+  if(@Priority::PriorState== 4) 
+  {
+    @Priority::HoldGreenForRequester = 1;
+    setTimer(holdTimer, 5000);
+  }
+}
+
+// Stop extended Green Phase
+on timer holdTimer
+{
+  @Priority::HoldGreenForRequester = 0;
+}
+
+//ReInit MAP /SPAT on Scenario Restart
+void OnScenarioStateChanged(long newState)
+{
+  if(newState == 3) // Completed
+  {
+    gFirstMap = 1;
+    gFirstSpat = 1;
+  }
+}
+
+void OnTxMAP(long packet)
+{
+  struct MAP mapPdu ;
+
+  if (gFirstMap)
+  {
+    gFirstMap = 0 ;
+    MapInit(packet, mapPdu) ;
+    API_SetMAPParams(packet, mapPdu) ;
+  }
+  else
+  {
+    // nothing
+  }
+
+  C2xSetTokenInt64(packet, "geo_bh", "version", 1);
+  C2xSetTokenInt64(packet, "geo_eh", "lpvTimeStamp", C2xConvertTimeToMSSinceUTC(C2xGetITSTimestamp(), 0));
+}
+
+void OnTxSPAT(long packet)
+{
+  struct SPAT spatPdu ;
+  
+  UpdateState();
+  
+  if (gFirstSpat)
+  {
+    gFirstSpat = 0 ;
+    SpatInit(packet, spatPdu) ;
+  }
+  else
+  {
+    API_GetSPATParams(packet, spatPdu) ;
+  }
+  
+  if(@Priority::Active == 1)
+  {
+    //Set PriorState
+    spatPdu.spat.intersections.arrayValue[0].regional.isValidFlag = 1;
+    spatPdu.spat.intersections.arrayValue[0].regional.length = 1;
+    spatPdu.spat.intersections.arrayValue[0].regional.arrayValue[0].regionId = 3;
+    spatPdu.spat.intersections.arrayValue[0].regional.arrayValue[0].isValidFlag = 1;
+    spatPdu.spat.intersections.arrayValue[0].regional.arrayValue[0].regExtValue.addGrpC.isValidFlag =1;
+    spatPdu.spat.intersections.arrayValue[0].regional.arrayValue[0].regExtValue.addGrpC.activePrioritizations.isValidFlag = 1;
+    spatPdu.spat.intersections.arrayValue[0].regional.arrayValue[0].regExtValue.addGrpC.activePrioritizations.length = 1;  
+    spatPdu.spat.intersections.arrayValue[0].regional.arrayValue[0].regExtValue.addGrpC.activePrioritizations.arrayValue[0].stationID = @Priority::RequesterStationId;
+    spatPdu.spat.intersections.arrayValue[0].regional.arrayValue[0].regExtValue.addGrpC.activePrioritizations.arrayValue[0].priorState= @Priority::PriorState;
+    spatPdu.spat.intersections.arrayValue[0].regional.arrayValue[0].regExtValue.addGrpC.activePrioritizations.arrayValue[0].signalGroup = 5;
+  }
+  else
+  {
+    spatPdu.spat.intersections.arrayValue[0].regional.arrayValue[0].regExtValue.addGrpC.activePrioritizations.isValidFlag = 0;
+  }
+
+ //Don't update SPAT if extended Green Phase for Public Transport is active
+  if(!(spatPdu.spat.intersections.arrayValue[0].states.arrayValue[4].state_time_speed.arrayValue[0].eventState == 5 && 
+      @Priority::HoldGreenForRequester == 1))
+  {
+    UpdateSpat(spatPdu, 5, 0, signalGroup_1);
+  }
+  
+  API_SetSPATParams(packet, spatPdu) ;
+  
+  C2xSetTokenInt64(packet, "geo_bh", "version", 1);
+}
+
+//Update PriorState SysVar
+void UpdateState()
+{
+  if(@Priority::OverrideState == 0)
+  {
+     @Priority::PriorState = C2xGetStationAttributeInt64("PriorState");
+  }
+}

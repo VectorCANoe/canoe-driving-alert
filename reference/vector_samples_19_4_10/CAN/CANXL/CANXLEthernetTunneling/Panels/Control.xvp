@@ -1,0 +1,158 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Panel Type="Vector.CANalyzer.Panels.PanelSerializer, Vector.CANalyzer.Panels.Serializer, Version=19.3.79.0, Culture=neutral, PublicKeyToken=null">
+  <Object Type="Vector.CANalyzer.Panels.Runtime.Panel, Vector.CANalyzer.Panels.Common, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Panel" ControlName="Control">
+    <Object Type="Vector.CANalyzer.Panels.Design.GroupBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X5df25d43eab51e41d4e825ae67dfd3fae9b1" ControlName="Group Box 2">
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X0fe2a32fe1d60e468cebec9eab11c7a63bf0" ControlName="Static Text 5">
+        <Property Name="Name">X0fe2a32fe1d60e468cebec9eab11c7a63bf0</Property>
+        <Property Name="Size">377, 34</Property>
+        <Property Name="Location">5, 42</Property>
+        <Property Name="ForeColor">255, 127, 127, 127</Property>
+        <Property Name="Font">Microsoft Sans Serif, 7pt</Property>
+        <Property Name="Text">The tunnel mode specifies wether the AF and VCID field of the CAN XL frame are used (CiA 611-1). The modes are distinguished by the SDT value.
+
+</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.ComboBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X40dfe89aeed12e433eeaa4bed738654851fb" ControlName="Combo Box 2">
+        <Property Name="Name">X40dfe89aeed12e433eeaa4bed738654851fb</Property>
+        <Property Name="Size">258, 21</Property>
+        <Property Name="Location">5, 19</Property>
+        <Property Name="DisplayLabel">Left</Property>
+        <Property Name="DescriptionSize">73, 21</Property>
+        <Property Name="TabIndex">5</Property>
+        <Property Name="DescriptionText">Tunnel mode:</Property>
+        <Property Name="UsedValueTable">PhysicalValue</Property>
+        <Property Name="SymbolConfiguration">8;16;Gateway;;;TunnelMode;1;;;-1;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X3d01cb1aebb68e49a6ea4dbea5098ad76bc7" ControlName="Static Text 4">
+        <Property Name="Name">X3d01cb1aebb68e49a6ea4dbea5098ad76bc7</Property>
+        <Property Name="Size">321, 13</Property>
+        <Property Name="Location">5, 158</Property>
+        <Property Name="ForeColor">255, 127, 127, 127</Property>
+        <Property Name="Font">Microsoft Sans Serif, 7pt</Property>
+        <Property Name="Text">The maximum payload size if fragmentation of CAN XL Frames is activated.</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.ComboBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X3d89785ee0025e44d2ebacaea28d19ec4a63" ControlName="Combo Box 1">
+        <Property Name="Name">X3d89785ee0025e44d2ebacaea28d19ec4a63</Property>
+        <Property Name="Size">166, 21</Property>
+        <Property Name="Location">5, 136</Property>
+        <Property Name="DisplayLabel">Left</Property>
+        <Property Name="DescriptionSize">80, 21</Property>
+        <Property Name="TabIndex">3</Property>
+        <Property Name="DescriptionText">Fragment Size:</Property>
+        <Property Name="UsedValueTable">PhysicalValue</Property>
+        <Property Name="SymbolConfiguration">8;16;Gateway;;;FragmentSize;1;;;-1;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X263018a2ed155e4ecee9831e13d84a3929c1" ControlName="Static Text 2">
+        <Property Name="Name">X263018a2ed155e4ecee9831e13d84a3929c1</Property>
+        <Property Name="Size">250, 13</Property>
+        <Property Name="Location">5, 204</Property>
+        <Property Name="ForeColor">255, 127, 127, 127</Property>
+        <Property Name="Font">Microsoft Sans Serif, 7pt</Property>
+        <Property Name="Text">The CAN priority identifier of the tunneled ethernet frames.</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X50a5d4d4ecd78e430deb415e37e844f1edc3" ControlName="Input/Output Box 2">
+        <Property Name="Name">X50a5d4d4ecd78e430deb415e37e844f1edc3</Property>
+        <Property Name="Size">118, 21</Property>
+        <Property Name="Location">5, 182</Property>
+        <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+        <Property Name="AlarmLowerBkgColor">Salmon</Property>
+        <Property Name="AlarmLowerTextColor">Black</Property>
+        <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+        <Property Name="AlarmUpperTextColor">Black</Property>
+        <Property Name="BoxBorderStyle">FixedSingle</Property>
+        <Property Name="DisplayLabel">Left</Property>
+        <Property Name="TabIndex">2</Property>
+        <Property Name="DescriptionText">CAN ID (hex):</Property>
+        <Property Name="ValueDecimalPlaces">0</Property>
+        <Property Name="ValueDisplay">Decimal</Property>
+        <Property Name="UsedValueTable">PhysicalValue</Property>
+        <Property Name="DescriptionSize">74, 21</Property>
+        <Property Name="SymbolConfiguration">8;16;Gateway;;;CanId;1;;;-1;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X3aa08077e68f3e4998ebf1fe01549ee3adef" ControlName="Static Text 1">
+        <Property Name="Name">X3aa08077e68f3e4998ebf1fe01549ee3adef</Property>
+        <Property Name="Size">372, 37</Property>
+        <Property Name="Location">5, 94</Property>
+        <Property Name="ForeColor">255, 127, 127, 127</Property>
+        <Property Name="Font">Microsoft Sans Serif, 7pt</Property>
+        <Property Name="Text">This option automatically reduces the size of CAN XL frames by dividing the payload into smaller frames to avoid long bus access times and improve Quality of Service (CiA 613-3). </Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.CheckBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xb49f88f0ef121e49f9eb0b3e3204c8d7d0f0" ControlName="Check Box 2">
+        <Property Name="Name">Xb49f88f0ef121e49f9eb0b3e3204c8d7d0f0</Property>
+        <Property Name="Size">192, 16</Property>
+        <Property Name="Location">5, 75</Property>
+        <Property Name="Text">Fragmentation of CAN XL Frames</Property>
+        <Property Name="TabIndex">1</Property>
+        <Property Name="SymbolConfiguration">8;16;Gateway;;;UseFragmentation;1;;;-1;;;Value;;;0</Property>
+      </Object>
+      <Property Name="Name">X5df25d43eab51e41d4e825ae67dfd3fae9b1</Property>
+      <Property Name="Size">382, 227</Property>
+      <Property Name="Location">5, 115</Property>
+      <Property Name="Text">Gateway Eth/CAN</Property>
+      <Property Name="TabIndex">2</Property>
+      <Property Name="UseWindowsStyle">False</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.GroupBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X6c92392bed60ee4b5fe9643e9af071a92f4f" ControlName="Group Box 1">
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xcbbaa2b7e99aee477febf38e445da17f369e" ControlName="Static Text 3">
+        <Property Name="Name">Xcbbaa2b7e99aee477febf38e445da17f369e</Property>
+        <Property Name="Size">281, 13</Property>
+        <Property Name="Location">5, 45</Property>
+        <Property Name="ForeColor">255, 127, 127, 127</Property>
+        <Property Name="Font">Microsoft Sans Serif, 7pt</Property>
+        <Property Name="Text">Relative path of the media file that shall be streamed by the demo.</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.CheckBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xf51a9e16e93afe4313e9830e07588d42a8f5" ControlName="Check Box 1">
+        <Property Name="Name">Xf51a9e16e93afe4313e9830e07588d42a8f5</Property>
+        <Property Name="Size">82, 16</Property>
+        <Property Name="Location">155, 77</Property>
+        <Property Name="Text">Loop Video</Property>
+        <Property Name="TabIndex">4</Property>
+        <Property Name="SymbolConfiguration">8;16;MMP;;;PlayingLoop;1;;;-1;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X083cbd55e9779e4f05ea884ed50d561b9d05" ControlName="Input/Output Box 1">
+        <Property Name="Name">X083cbd55e9779e4f05ea884ed50d561b9d05</Property>
+        <Property Name="Size">372, 21</Property>
+        <Property Name="Location">5, 18</Property>
+        <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+        <Property Name="AlarmLowerBkgColor">Salmon</Property>
+        <Property Name="AlarmLowerTextColor">Black</Property>
+        <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+        <Property Name="AlarmUpperTextColor">Black</Property>
+        <Property Name="BoxBorderStyle">FixedSingle</Property>
+        <Property Name="DisplayLabel">Left</Property>
+        <Property Name="TabIndex">3</Property>
+        <Property Name="DescriptionText">Media File:</Property>
+        <Property Name="ValueDisplay">Text</Property>
+        <Property Name="UsedValueTable">PhysicalValue</Property>
+        <Property Name="DescriptionSize">59, 21</Property>
+        <Property Name="SymbolConfiguration">8;16;MMP;;;FilePath;4;;;-1;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.ButtonControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xd6cba0ebeca91e4e0ae80d8e60e8ca61cc29" ControlName="Button 2">
+        <Property Name="Name">Xd6cba0ebeca91e4e0ae80d8e60e8ca61cc29</Property>
+        <Property Name="Size">60, 23</Property>
+        <Property Name="Location">71, 71</Property>
+        <Property Name="TabIndex">2</Property>
+        <Property Name="Text">Stop ⏹︎</Property>
+        <Property Name="SymbolConfiguration">8;16;Control;;;Stop;1;;;-1;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.ButtonControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xbaf2aaecefaa4e4435e9771ee9860758f136" ControlName="Button 1">
+        <Property Name="Name">Xbaf2aaecefaa4e4435e9771ee9860758f136</Property>
+        <Property Name="Size">60, 23</Property>
+        <Property Name="Location">5, 71</Property>
+        <Property Name="TabIndex">1</Property>
+        <Property Name="Text">Start ▶</Property>
+        <Property Name="SymbolConfiguration">8;16;Control;;;Play;1;;;-1;;;Value;;;0</Property>
+      </Object>
+      <Property Name="Name">X6c92392bed60ee4b5fe9643e9af071a92f4f</Property>
+      <Property Name="Size">382, 104</Property>
+      <Property Name="Location">5, 5</Property>
+      <Property Name="Text">Media Stream</Property>
+      <Property Name="TabIndex">1</Property>
+      <Property Name="UseWindowsStyle">False</Property>
+    </Object>
+    <Property Name="Name">Panel</Property>
+    <Property Name="Size">392, 350</Property>
+    <Property Name="Location">0, 0</Property>
+    <Property Name="BackColor">White</Property>
+  </Object>
+</Panel>

@@ -1,0 +1,128 @@
+/*@!Encoding:1252*/
+includes
+{
+  
+}
+
+variables
+{
+  enum VWaitThreshold
+  {
+    kUnderThreshold = 0,
+    kOverThreshold = 1
+  };
+  
+
+}
+
+export startCarMakerTestRun(long egoSpeed)
+{
+  @Scenario::EgoSpeed = egoSpeed;
+  @Scenario::StartCarMaker = 1;
+  testWaitForTimeOut(5000);
+  
+}
+
+export stopCarMakerTestRun()
+{
+  testWaitForTimeOut(5000);
+  @Scenario::StopCarMaker = 1;
+  testWaitForTimeOut(50);
+}
+
+
+
+//Check No Warning
+export testcase NoWarningWhenTTIIsAbove3000ms()
+{
+  double timeToImpact = 0;
+  int    isWarningActive = 0;
+  
+  if(TestWaitForADASDetectedObjectTimeToCollision(kOverThreshold, 3.0, 1, 10000))
+  {
+    timeToImpact = $OutputSimpleAlgorithm.timeToImpact.impl;
+    isWarningActive = $OutputSimpleAlgorithm.isWarningActive.impl;
+    
+    if(timeToImpact > 3000) //ok
+    {
+      testStepPass("Time To Impact (TTI) algoritm output is over 3000 ms.");
+    }
+    else// nok
+    {
+      testStepFail("Time To Impact (TTI) algoritm output is under 3000 ms.");
+    }
+   
+    if(isWarningActive == 0)  // ok
+    {
+      testStepPass("Success, no warning was provided as expected.");
+    }
+    else // nok
+    {
+      testStepFail("Fail, the TTI was too high, but a warning was provided anyways.");
+    }
+  }
+  else
+  {
+    testStepInconclusive("No TTI over 3 seconds for Detected Moving Object 103 was recognised");
+  }
+}
+
+//Check TTI
+export testcase IsTimeToImpactCalculationCorrectAndIsWarningProvided()
+{
+  double maxAcceptableTTI = 3000.0;
+  double timeToImpact = 0;
+  int    isWarningActive = 0;
+  
+  if(TestWaitForADASDetectedObjectTimeToCollision(kUnderThreshold, 3, 1, 30000))
+  {
+    timeToImpact = $OutputSimpleAlgorithm.timeToImpact.impl;
+    isWarningActive = $OutputSimpleAlgorithm.isWarningActive.impl;
+    
+    if(timeToImpact < maxAcceptableTTI)
+    {
+      testStepPass("Time To Impact (TTI) calculation is correct.");
+    }
+    else
+    {
+      testStepFail("Time To Impact (TTI) calculation is wrong.");
+    }
+    
+    if(isWarningActive)
+    {
+      testStepPass("Success, a warning was provided when necessary.");
+    }
+    else
+    {
+      testStepFail("Fail, the TTI indicates that a warning is necessary, but no warning was provided.");
+    }    
+  }
+  else
+  {
+    testStepInconclusive("No TTI under 3 seconds for Detected Moving Object 1 was recognised");
+  }
+}
+
+export testcase CheckDistanceOverScenarioRuntime()
+{
+  double minAcceptableDistance = 40.0;
+  double maxAcceptableDistance = 50.0;
+  double distance = 0;
+  
+  if(TestWaitForADASDetectedObjectDistance(kUnderThreshold, 50, 1, 30000))
+  {
+    distance = $OutputSimpleAlgorithm.distanceToObject.Impl;
+    if(distance > minAcceptableDistance && distance < maxAcceptableDistance)
+    {
+      testStepPass("Distance to object calculation is correct.");
+    }
+    else
+    {
+      testStepFail("Distance to object calculation is wrong.");
+    } 
+  }
+  
+  TestWaitForADASDetectedObjectSpeed(kOverThreshold, 5.0, 1, 5000); //wait until Detected Moving Object 103 starts driving again (relative speed over 5m/s)
+}
+
+

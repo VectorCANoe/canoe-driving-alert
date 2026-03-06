@@ -1,0 +1,469 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Panel Type="Vector.CANalyzer.Panels.PanelSerializer, Vector.CANalyzer.Panels.Serializer, Version=19.2.76.0, Culture=neutral, PublicKeyToken=null">
+  <Object Type="Vector.CANalyzer.Panels.Runtime.Panel, Vector.CANalyzer.Panels.Common, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Panel" ControlName="ChargingStation">
+    <Object Type="Vector.CANalyzer.Panels.Design.GroupBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="GroupBoxControl1" ControlName="Group Box 1">
+      <Object Type="Vector.CANalyzer.Panels.Design.GroupBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X948c74daec550e43ceea50fea33aa699c703" ControlName="Group Box 4">
+        <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X4d766fc0ed199e4abce94f1e5a65b3b3b868" ControlName="Input/Output Box 4">
+          <Property Name="Name">X4d766fc0ed199e4abce94f1e5a65b3b3b868</Property>
+          <Property Name="Size">246, 21</Property>
+          <Property Name="Location">0, 62</Property>
+          <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+          <Property Name="AlarmLowerBkgColor">Salmon</Property>
+          <Property Name="AlarmLowerTextColor">Black</Property>
+          <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+          <Property Name="AlarmUpperTextColor">Black</Property>
+          <Property Name="BoxBorderStyle">FixedSingle</Property>
+          <Property Name="DisplayLabel">Left</Property>
+          <Property Name="TabIndex">0</Property>
+          <Property Name="DescriptionText">Password</Property>
+          <Property Name="ValueDisplay">Text</Property>
+          <Property Name="UsedValueTable">PhysicalValue</Property>
+          <Property Name="DescriptionSize">57, 21</Property>
+          <Property Name="SymbolConfiguration">8;16;Control::ChargingStation;;;SysChargingStation_HTTPBasicAuthenticationPassword;4;;;-1;;;Value;;;0</Property>
+        </Object>
+        <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X4b23f25be1b32e4288e962ee774b0de0f339" ControlName="Input/Output Box 3">
+          <Property Name="Name">X4b23f25be1b32e4288e962ee774b0de0f339</Property>
+          <Property Name="Size">246, 21</Property>
+          <Property Name="Location">0, 38</Property>
+          <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+          <Property Name="AlarmLowerBkgColor">Salmon</Property>
+          <Property Name="AlarmLowerTextColor">Black</Property>
+          <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+          <Property Name="AlarmUpperTextColor">Black</Property>
+          <Property Name="BoxBorderStyle">FixedSingle</Property>
+          <Property Name="DisplayLabel">Left</Property>
+          <Property Name="TabIndex">0</Property>
+          <Property Name="DescriptionText">Username</Property>
+          <Property Name="ValueDisplay">Text</Property>
+          <Property Name="UsedValueTable">PhysicalValue</Property>
+          <Property Name="DescriptionSize">56, 21</Property>
+          <Property Name="SymbolConfiguration">8;16;Control::ChargingStation;;;SysChargingStation_HTTPBasicAuthenticationUsername;4;;;-1;;;Value;;;0</Property>
+        </Object>
+        <Object Type="Vector.CANalyzer.Panels.Design.CheckBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X81e47179e9f77e4547e9757e974e2e6ae0c3" ControlName="Check Box 1">
+          <Property Name="Name">X81e47179e9f77e4547e9757e974e2e6ae0c3</Property>
+          <Property Name="Size">67, 16</Property>
+          <Property Name="Location">0, 17</Property>
+          <Property Name="CheckAlign">MiddleRight</Property>
+          <Property Name="Text">Enabled</Property>
+          <Property Name="TabIndex">0</Property>
+          <Property Name="SymbolConfiguration">8;16;Control::ChargingStation;;;SysChargingStation_HTTPBasicAuthenticationEnabled;1;;;-1;;;Value;;;0</Property>
+        </Object>
+        <Property Name="Name">X948c74daec550e43ceea50fea33aa699c703</Property>
+        <Property Name="Size">251, 86</Property>
+        <Property Name="Location">5, 101</Property>
+        <Property Name="Text">HTTP Basic Authentication</Property>
+        <Property Name="TabIndex">0</Property>
+        <Property Name="UseWindowsStyle">False</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.GroupBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X696def6ceed36e4973eb4c5e0d808bb544a0" ControlName="Group Box 3">
+        <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xd5a339dce856be43bfea7e6e71b62f9115ae" ControlName="Input/Output Box 2">
+          <Property Name="Name">Xd5a339dce856be43bfea7e6e71b62f9115ae</Property>
+          <Property Name="Size">246, 21</Property>
+          <Property Name="Location">0, 45</Property>
+          <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+          <Property Name="AlarmLowerBkgColor">Salmon</Property>
+          <Property Name="AlarmLowerTextColor">Black</Property>
+          <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+          <Property Name="AlarmUpperTextColor">Black</Property>
+          <Property Name="BoxBorderStyle">FixedSingle</Property>
+          <Property Name="DisplayLabel">Left</Property>
+          <Property Name="TabIndex">0</Property>
+          <Property Name="DescriptionText">URL</Property>
+          <Property Name="ValueDisplay">Text</Property>
+          <Property Name="UsedValueTable">PhysicalValue</Property>
+          <Property Name="DescriptionSize">28, 21</Property>
+          <Property Name="SymbolConfiguration">8;16;Control::ChargingStation;;;SysChargingStation_ConnectionURL;4;;;-1;;;Value;;;0</Property>
+        </Object>
+        <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xfba1eea2ead63e4434e9091ec0ef622a0ac7" ControlName="Input/Output Box 1">
+          <Property Name="Name">Xfba1eea2ead63e4434e9091ec0ef622a0ac7</Property>
+          <Property Name="Size">246, 21</Property>
+          <Property Name="Location">0, 18</Property>
+          <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+          <Property Name="AlarmLowerBkgColor">Salmon</Property>
+          <Property Name="AlarmLowerTextColor">Black</Property>
+          <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+          <Property Name="AlarmUpperTextColor">Black</Property>
+          <Property Name="BoxBorderStyle">FixedSingle</Property>
+          <Property Name="DisplayLabel">Left</Property>
+          <Property Name="TabIndex">0</Property>
+          <Property Name="DescriptionText">Address</Property>
+          <Property Name="ValueDisplay">Text</Property>
+          <Property Name="UsedValueTable">PhysicalValue</Property>
+          <Property Name="DescriptionSize">46, 21</Property>
+          <Property Name="SymbolConfiguration">8;16;Control::ChargingStation;;;SysChargingStation_CSMSAddress;4;;;-1;;;Value;;;0</Property>
+        </Object>
+        <Property Name="Name">X696def6ceed36e4973eb4c5e0d808bb544a0</Property>
+        <Property Name="Size">251, 73</Property>
+        <Property Name="Location">4, 22</Property>
+        <Property Name="Text">Connection Parameters</Property>
+        <Property Name="TabIndex">0</Property>
+        <Property Name="UseWindowsStyle">False</Property>
+      </Object>
+      <Property Name="Name">GroupBoxControl1</Property>
+      <Property Name="Size">261, 194</Property>
+      <Property Name="Location">5, 5</Property>
+      <Property Name="Text">General</Property>
+      <Property Name="TabIndex">346</Property>
+      <Property Name="UseWindowsStyle">False</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.SwitchControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="SwitchControl1" ControlName="buttonChargingStationStart">
+      <Property Name="Name">SwitchControl1</Property>
+      <Property Name="Size">28, 28</Property>
+      <Property Name="Location">312, 199</Property>
+      <Property Name="SymbolConfiguration">8;16;Control::ChargingStation;;;SysChargingStation_Start;1;;;-1;;;Value;;;0</Property>
+      <Property Name="ImageFile">img\button_start.bmp</Property>
+      <Property Name="TabIndex">343</Property>
+      <Property Name="IsButton">True</Property>
+      <Property Name="Activation">Left</Property>
+      <Property Name="Epsilon">0</Property>
+      <Property Name="Increment">1</Property>
+      <Property Name="StartValue">0</Property>
+      <Property Name="SwitchValuesVTXml">&lt;Version&gt;2&lt;/Version&gt;&lt;Count&gt;2&lt;/Count&gt;&lt;RxValue&gt;0&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;0&lt;/TxValue&gt;&lt;RxValue&gt;1&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;1&lt;/TxValue&gt;</Property>
+      <Property Name="SwitchValuesVT">1;2;0/Lower/0;1/Lower/1</Property>
+      <Property Name="SwitchValues">1;2;0;1</Property>
+      <Property Name="SwitchValuesRx">1;2;0;1</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.SwitchControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="SwitchControl2" ControlName="buttonChargignStationStop">
+      <Property Name="Name">SwitchControl2</Property>
+      <Property Name="Size">28, 28</Property>
+      <Property Name="Location">352, 199</Property>
+      <Property Name="SymbolConfiguration">8;16;Control::ChargingStation;;;SysChargingStation_Stop;1;;;-1;;;Value;;;0</Property>
+      <Property Name="ImageFile">img\button_stop.bmp</Property>
+      <Property Name="TabIndex">338</Property>
+      <Property Name="IsButton">True</Property>
+      <Property Name="Activation">Left</Property>
+      <Property Name="Epsilon">0</Property>
+      <Property Name="Increment">1</Property>
+      <Property Name="StartValue">0</Property>
+      <Property Name="SwitchValuesVTXml">&lt;Version&gt;2&lt;/Version&gt;&lt;Count&gt;2&lt;/Count&gt;&lt;RxValue&gt;0&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;0&lt;/TxValue&gt;&lt;RxValue&gt;1&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;1&lt;/TxValue&gt;</Property>
+      <Property Name="SwitchValuesVT">1;2;0/Lower/0;1/Lower/1</Property>
+      <Property Name="SwitchValues">1;2;0;1</Property>
+      <Property Name="SwitchValuesRx">1;2;0;1</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.PictureBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="PictureBoxControl1" ControlName="pictureChargingStationDisconnected">
+      <Property Name="Name">PictureBoxControl1</Property>
+      <Property Name="Size">146, 193</Property>
+      <Property Name="Location">266, 37</Property>
+      <Property Name="ImageFile">img\chargingstation_grey.png</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.PictureBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="PictureBoxControl2" ControlName="pictureChargingStationConnected">
+      <Property Name="Name">PictureBoxControl2</Property>
+      <Property Name="Size">146, 193</Property>
+      <Property Name="Location">266, 37</Property>
+      <Property Name="IsVisibleByLoad">False</Property>
+      <Property Name="ImageFile">img\chargingstation_green.png</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.GroupBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X2e172e0fe8bffe4df6e8fb1e04360a970b0b" ControlName="Group Box 8">
+      <Object Type="Vector.CANalyzer.Panels.Design.VectorTabControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xe28832a6ef5b7e470be8617e3d6a00dd7308" ControlName="Tab Control 1">
+        <Object Type="Vector.CANalyzer.Panels.Design.VectorTabPage, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xc8e835d0e022be4c25eb6fae26ebd6210eac" ControlName="OCPP 1.6">
+          <Object Type="Vector.CANalyzer.Panels.Design.GroupBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X19913f7be4100e42cbe8117e1156ae028dc0" ControlName="Group Box 6">
+            <Object Type="Vector.CANalyzer.Panels.Design.ButtonControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X113b454ae92afe460cea559eda79c783b189" ControlName="Button 5">
+              <Property Name="Name">X113b454ae92afe460cea559eda79c783b189</Property>
+              <Property Name="Size">130, 23</Property>
+              <Property Name="Location">5, 75</Property>
+              <Property Name="TabIndex">5</Property>
+              <Property Name="Text">MeterValue</Property>
+              <Property Name="SymbolConfiguration">8;16;Control::ChargingStation::OCPP16;;;SysSendMeterValue;512;;;-1;;;Value;;;0</Property>
+            </Object>
+            <Object Type="Vector.CANalyzer.Panels.Design.ButtonControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X689bf09fe72dee4011ea01ae532a12d85661" ControlName="Button 4">
+              <Property Name="Name">X689bf09fe72dee4011ea01ae532a12d85661</Property>
+              <Property Name="Size">130, 23</Property>
+              <Property Name="Location">5, 46</Property>
+              <Property Name="TabIndex">3</Property>
+              <Property Name="Text">StartTransaction</Property>
+              <Property Name="SymbolConfiguration">8;16;Control::ChargingStation::OCPP16;;;SysStartTransaction;1;;;-1;;;Value;;;0</Property>
+            </Object>
+            <Object Type="Vector.CANalyzer.Panels.Design.ButtonControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xa0db6d32ea933e406eeb87ce0cd6705225b6" ControlName="Button 9">
+              <Property Name="Name">Xa0db6d32ea933e406eeb87ce0cd6705225b6</Property>
+              <Property Name="Size">130, 23</Property>
+              <Property Name="Location">5, 17</Property>
+              <Property Name="TabIndex">1</Property>
+              <Property Name="Text">Authorize</Property>
+              <Property Name="SymbolConfiguration">8;16;Control::ChargingStation::OCPP16;;;SysSendAuthorize;1;;;-1;;;Value;;;0</Property>
+            </Object>
+            <Property Name="Name">X19913f7be4100e42cbe8117e1156ae028dc0</Property>
+            <Property Name="Size">148, 108</Property>
+            <Property Name="Location">250, 5</Property>
+            <Property Name="Text">Send functions</Property>
+            <Property Name="TabIndex">11</Property>
+            <Property Name="UseWindowsStyle">False</Property>
+          </Object>
+          <Object Type="Vector.CANalyzer.Panels.Design.GroupBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X243245bce64ace4ea9e98dae7915edba74e3" ControlName="Group Box 2">
+            <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X76a8eb2ae127be488fe81ebe2f1518835065" ControlName="Input/Output Box 8">
+              <Property Name="Name">X76a8eb2ae127be488fe81ebe2f1518835065</Property>
+              <Property Name="Size">164, 21</Property>
+              <Property Name="Location">5, 44</Property>
+              <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+              <Property Name="AlarmLowerBkgColor">Salmon</Property>
+              <Property Name="AlarmLowerTextColor">Black</Property>
+              <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+              <Property Name="AlarmUpperTextColor">Black</Property>
+              <Property Name="BoxBorderStyle">FixedSingle</Property>
+              <Property Name="DisplayLabel">Left</Property>
+              <Property Name="TabIndex">3</Property>
+              <Property Name="DescriptionText">MeterValue:</Property>
+              <Property Name="ValueDecimalPlaces">0</Property>
+              <Property Name="ValueDisplay">Decimal</Property>
+              <Property Name="UsedValueTable">PhysicalValue</Property>
+              <Property Name="DescriptionSize">65, 21</Property>
+              <Property Name="SymbolConfiguration">8;16;Control::ChargingStation::OCPP16;;;SysMeterValue;512;;;-1;;;Value;;;0</Property>
+            </Object>
+            <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xb3f058bbe9fa2e436ae8047e6621f8eb1554" ControlName="Input/Output Box 7">
+              <Property Name="Name">Xb3f058bbe9fa2e436ae8047e6621f8eb1554</Property>
+              <Property Name="Size">213, 21</Property>
+              <Property Name="Location">5, 17</Property>
+              <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+              <Property Name="AlarmLowerBkgColor">Salmon</Property>
+              <Property Name="AlarmLowerTextColor">Black</Property>
+              <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+              <Property Name="AlarmUpperTextColor">Black</Property>
+              <Property Name="BoxBorderStyle">FixedSingle</Property>
+              <Property Name="DisplayLabel">Left</Property>
+              <Property Name="TabIndex">1</Property>
+              <Property Name="DescriptionText">IdToken:</Property>
+              <Property Name="ValueDisplay">Text</Property>
+              <Property Name="UsedValueTable">PhysicalValue</Property>
+              <Property Name="DescriptionSize">48, 21</Property>
+              <Property Name="SymbolConfiguration">8;16;Control::ChargingStation::OCPP16;;;SysIdToken;4;;;-1;;;Value;;;0</Property>
+            </Object>
+            <Property Name="Name">X243245bce64ace4ea9e98dae7915edba74e3</Property>
+            <Property Name="Size">239, 108</Property>
+            <Property Name="Location">5, 5</Property>
+            <Property Name="Text">Parameters</Property>
+            <Property Name="TabIndex">10</Property>
+            <Property Name="UseWindowsStyle">False</Property>
+          </Object>
+          <Property Name="Name">Xc8e835d0e022be4c25eb6fae26ebd6210eac</Property>
+          <Property Name="Size">415, 135</Property>
+          <Property Name="Location">2, 21</Property>
+          <Property Name="Text">OCPP 1.6</Property>
+        </Object>
+        <Object Type="Vector.CANalyzer.Panels.Design.VectorTabPage, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X74bf2e60e0bcfe4d91e8211e63a5fefd2bc2" ControlName="OCPP 2.0.1">
+          <Object Type="Vector.CANalyzer.Panels.Design.GroupBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xf7b12d3deceade43efeb6c9e4a561e2e29fe" ControlName="Group Box 5">
+            <Object Type="Vector.CANalyzer.Panels.Design.ButtonControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X1e6c9462e674ce4afae9ca5ed8d6b40e74d9" ControlName="Button 10">
+              <Property Name="Name">X1e6c9462e674ce4afae9ca5ed8d6b40e74d9</Property>
+              <Property Name="Size">130, 23</Property>
+              <Property Name="Location">5, 46</Property>
+              <Property Name="TabIndex">3</Property>
+              <Property Name="Text">TransactionEvent</Property>
+              <Property Name="SymbolConfiguration">8;16;Control::ChargingStation::OCPP201;;;SysSendTransactionEvent;1;;;-1;;;Value;;;0</Property>
+            </Object>
+            <Object Type="Vector.CANalyzer.Panels.Design.ButtonControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X66fdd5c2e2452e4879e93fbeb34bab92bfb2" ControlName="Button 8">
+              <Property Name="Name">X66fdd5c2e2452e4879e93fbeb34bab92bfb2</Property>
+              <Property Name="Size">130, 23</Property>
+              <Property Name="Location">5, 17</Property>
+              <Property Name="TabIndex">2</Property>
+              <Property Name="Text">Authorize</Property>
+              <Property Name="SymbolConfiguration">8;16;Control::ChargingStation::OCPP201;;;SysSendAuthorize;1;;;-1;;;Value;;;0</Property>
+            </Object>
+            <Property Name="Name">Xf7b12d3deceade43efeb6c9e4a561e2e29fe</Property>
+            <Property Name="Size">152, 79</Property>
+            <Property Name="Location">250, 5</Property>
+            <Property Name="Text">Send functions</Property>
+            <Property Name="TabIndex">10</Property>
+            <Property Name="UseWindowsStyle">False</Property>
+          </Object>
+          <Object Type="Vector.CANalyzer.Panels.Design.GroupBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xe6658793e46b2e4e19ea449e4d1943a9ab86" ControlName="Group Box 7">
+            <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X23d7cd6ae15b0e4357e84f0ebf354f5ce29b" ControlName="Input/Output Box 5">
+              <Property Name="Name">X23d7cd6ae15b0e4357e84f0ebf354f5ce29b</Property>
+              <Property Name="Size">174, 21</Property>
+              <Property Name="Location">5, 98</Property>
+              <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+              <Property Name="AlarmLowerBkgColor">Salmon</Property>
+              <Property Name="AlarmLowerTextColor">Black</Property>
+              <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+              <Property Name="AlarmUpperTextColor">Black</Property>
+              <Property Name="BoxBorderStyle">FixedSingle</Property>
+              <Property Name="DisplayLabel">Left</Property>
+              <Property Name="TabIndex">5</Property>
+              <Property Name="DescriptionText">TransactionId:</Property>
+              <Property Name="ValueDecimalPlaces">0</Property>
+              <Property Name="ValueDisplay">Text</Property>
+              <Property Name="UsedValueTable">PhysicalValue</Property>
+              <Property Name="DescriptionSize">75, 21</Property>
+              <Property Name="SymbolConfiguration">8;16;Control::ChargingStation::OCPP201;;;SysTransactionId;4;;;-1;;;Value;;;0</Property>
+            </Object>
+            <Object Type="Vector.CANalyzer.Panels.Design.ComboBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X357b859ae899ee43b3e9ecbe00969f67acb0" ControlName="Combo Box 1">
+              <Property Name="Name">X357b859ae899ee43b3e9ecbe00969f67acb0</Property>
+              <Property Name="Size">185, 21</Property>
+              <Property Name="Location">5, 71</Property>
+              <Property Name="DisplayLabel">Left</Property>
+              <Property Name="DescriptionSize">64, 21</Property>
+              <Property Name="TabIndex">4</Property>
+              <Property Name="DescriptionText">Event Type:</Property>
+              <Property Name="UsedValueTable">PhysicalValue</Property>
+              <Property Name="SymbolConfiguration">8;16;Control::ChargingStation::OCPP201;;;SysEventTypeTransaction;1;;;-1;;;Value;;;0</Property>
+            </Object>
+            <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X5b73af6be4d2ee4938eb0afe907d07f1293c" ControlName="Input/Output Box 10">
+              <Property Name="Name">X5b73af6be4d2ee4938eb0afe907d07f1293c</Property>
+              <Property Name="Size">164, 21</Property>
+              <Property Name="Location">5, 44</Property>
+              <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+              <Property Name="AlarmLowerBkgColor">Salmon</Property>
+              <Property Name="AlarmLowerTextColor">Black</Property>
+              <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+              <Property Name="AlarmUpperTextColor">Black</Property>
+              <Property Name="BoxBorderStyle">FixedSingle</Property>
+              <Property Name="DisplayLabel">Left</Property>
+              <Property Name="TabIndex">3</Property>
+              <Property Name="DescriptionText">MeterValue:</Property>
+              <Property Name="ValueDecimalPlaces">0</Property>
+              <Property Name="ValueDisplay">Decimal</Property>
+              <Property Name="UsedValueTable">PhysicalValue</Property>
+              <Property Name="DescriptionSize">65, 21</Property>
+              <Property Name="SymbolConfiguration">8;16;Control::ChargingStation::OCPP201;;;SysMeterValue;512;;;-1;;;Value;;;0</Property>
+            </Object>
+            <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X71aa681ae35b8e4aa3e97fce5e726e2a6b6f" ControlName="Input/Output Box 9">
+              <Property Name="Name">X71aa681ae35b8e4aa3e97fce5e726e2a6b6f</Property>
+              <Property Name="Size">213, 21</Property>
+              <Property Name="Location">5, 17</Property>
+              <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+              <Property Name="AlarmLowerBkgColor">Salmon</Property>
+              <Property Name="AlarmLowerTextColor">Black</Property>
+              <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+              <Property Name="AlarmUpperTextColor">Black</Property>
+              <Property Name="BoxBorderStyle">FixedSingle</Property>
+              <Property Name="DisplayLabel">Left</Property>
+              <Property Name="TabIndex">1</Property>
+              <Property Name="DescriptionText">IdToken:</Property>
+              <Property Name="ValueDisplay">Text</Property>
+              <Property Name="UsedValueTable">PhysicalValue</Property>
+              <Property Name="DescriptionSize">48, 21</Property>
+              <Property Name="SymbolConfiguration">8;16;Control::ChargingStation::OCPP201;;;SysIdToken;4;;;-1;;;Value;;;0</Property>
+            </Object>
+            <Property Name="Name">Xe6658793e46b2e4e19ea449e4d1943a9ab86</Property>
+            <Property Name="Size">239, 124</Property>
+            <Property Name="Location">5, 5</Property>
+            <Property Name="Text">Parameters</Property>
+            <Property Name="TabIndex">9</Property>
+            <Property Name="UseWindowsStyle">False</Property>
+          </Object>
+          <Property Name="Name">X74bf2e60e0bcfe4d91e8211e63a5fefd2bc2</Property>
+          <Property Name="Size">415, 135</Property>
+          <Property Name="Location">2, 21</Property>
+          <Property Name="Text">OCPP 2.0.1</Property>
+        </Object>
+        <Object Type="Vector.CANalyzer.Panels.Design.VectorTabPage, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X6169b5e5e96b9e4b12ea526e908cecde405b" ControlName="OCPP 2.1">
+          <Object Type="Vector.CANalyzer.Panels.Design.GroupBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X2bdb2dfdeed34e4358ea7d5e850c195f7c71" ControlName="Group Box 10">
+            <Object Type="Vector.CANalyzer.Panels.Design.ButtonControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X78fcce28e294de45d7e8cdded5bdb117c42c" ControlName="Button 2">
+              <Property Name="Name">X78fcce28e294de45d7e8cdded5bdb117c42c</Property>
+              <Property Name="Size">130, 23</Property>
+              <Property Name="Location">5, 46</Property>
+              <Property Name="TabIndex">3</Property>
+              <Property Name="Text">TransactionEvent</Property>
+              <Property Name="SymbolConfiguration">8;16;Control::ChargingStation::OCPP21;;;SysSendTransactionEvent;1;;;-1;;;Value;;;0</Property>
+            </Object>
+            <Object Type="Vector.CANalyzer.Panels.Design.ButtonControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X96c2da94e0b4de41b8ea30ae0a8987cada8a" ControlName="Button 1">
+              <Property Name="Name">X96c2da94e0b4de41b8ea30ae0a8987cada8a</Property>
+              <Property Name="Size">130, 23</Property>
+              <Property Name="Location">5, 17</Property>
+              <Property Name="TabIndex">2</Property>
+              <Property Name="Text">Authorize</Property>
+              <Property Name="SymbolConfiguration">8;16;Control::ChargingStation::OCPP21;;;SysSendAuthorize;1;;;-1;;;Value;;;0</Property>
+            </Object>
+            <Property Name="Name">X2bdb2dfdeed34e4358ea7d5e850c195f7c71</Property>
+            <Property Name="Size">152, 79</Property>
+            <Property Name="Location">250, 5</Property>
+            <Property Name="Text">Send functions</Property>
+            <Property Name="TabIndex">2</Property>
+            <Property Name="UseWindowsStyle">False</Property>
+          </Object>
+          <Object Type="Vector.CANalyzer.Panels.Design.GroupBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X75cf70a5eecafe492be8172ea3eef67e9eaa" ControlName="Group Box 9">
+            <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X2441974be5e70e4d7deaa38ee8c34882c458" ControlName="Input/Output Box 12">
+              <Property Name="Name">X2441974be5e70e4d7deaa38ee8c34882c458</Property>
+              <Property Name="Size">174, 21</Property>
+              <Property Name="Location">5, 98</Property>
+              <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+              <Property Name="AlarmLowerBkgColor">Salmon</Property>
+              <Property Name="AlarmLowerTextColor">Black</Property>
+              <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+              <Property Name="AlarmUpperTextColor">Black</Property>
+              <Property Name="BoxBorderStyle">FixedSingle</Property>
+              <Property Name="DisplayLabel">Left</Property>
+              <Property Name="TabIndex">5</Property>
+              <Property Name="DescriptionText">TransactionId:</Property>
+              <Property Name="ValueDecimalPlaces">0</Property>
+              <Property Name="ValueDisplay">Text</Property>
+              <Property Name="UsedValueTable">PhysicalValue</Property>
+              <Property Name="DescriptionSize">75, 21</Property>
+              <Property Name="SymbolConfiguration">8;16;Control::ChargingStation::OCPP21;;;SysTransactionId;4;;;-1;;;Value;;;0</Property>
+            </Object>
+            <Object Type="Vector.CANalyzer.Panels.Design.ComboBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xaa09bbf4e0019e4e27ea1f0e6dcff5b94935" ControlName="Combo Box 2">
+              <Property Name="Name">Xaa09bbf4e0019e4e27ea1f0e6dcff5b94935</Property>
+              <Property Name="Size">185, 21</Property>
+              <Property Name="Location">5, 71</Property>
+              <Property Name="DisplayLabel">Left</Property>
+              <Property Name="DescriptionSize">64, 21</Property>
+              <Property Name="TabIndex">4</Property>
+              <Property Name="DescriptionText">Event Type:</Property>
+              <Property Name="UsedValueTable">PhysicalValue</Property>
+              <Property Name="SymbolConfiguration">8;16;Control::ChargingStation::OCPP21;;;SysEventTypeTransaction;1;;;-1;;;Value;;;0</Property>
+            </Object>
+            <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xe0573cdfe565ee4903e9b51ef16d30a56195" ControlName="Input/Output Box 11">
+              <Property Name="Name">Xe0573cdfe565ee4903e9b51ef16d30a56195</Property>
+              <Property Name="Size">164, 21</Property>
+              <Property Name="Location">5, 44</Property>
+              <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+              <Property Name="AlarmLowerBkgColor">Salmon</Property>
+              <Property Name="AlarmLowerTextColor">Black</Property>
+              <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+              <Property Name="AlarmUpperTextColor">Black</Property>
+              <Property Name="BoxBorderStyle">FixedSingle</Property>
+              <Property Name="DisplayLabel">Left</Property>
+              <Property Name="TabIndex">3</Property>
+              <Property Name="DescriptionText">MeterValue:</Property>
+              <Property Name="ValueDecimalPlaces">0</Property>
+              <Property Name="ValueDisplay">Decimal</Property>
+              <Property Name="UsedValueTable">PhysicalValue</Property>
+              <Property Name="DescriptionSize">65, 21</Property>
+              <Property Name="SymbolConfiguration">8;16;Control::ChargingStation::OCPP21;;;SysMeterValue;512;;;-1;;;Value;;;0</Property>
+            </Object>
+            <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X34c80f92ebb23e4495eac5aeb9bfb6dbc2ee" ControlName="Input/Output Box 6">
+              <Property Name="Name">X34c80f92ebb23e4495eac5aeb9bfb6dbc2ee</Property>
+              <Property Name="Size">213, 21</Property>
+              <Property Name="Location">5, 17</Property>
+              <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+              <Property Name="AlarmLowerBkgColor">Salmon</Property>
+              <Property Name="AlarmLowerTextColor">Black</Property>
+              <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+              <Property Name="AlarmUpperTextColor">Black</Property>
+              <Property Name="BoxBorderStyle">FixedSingle</Property>
+              <Property Name="DisplayLabel">Left</Property>
+              <Property Name="TabIndex">1</Property>
+              <Property Name="DescriptionText">IdToken:</Property>
+              <Property Name="ValueDisplay">Text</Property>
+              <Property Name="UsedValueTable">PhysicalValue</Property>
+              <Property Name="DescriptionSize">48, 21</Property>
+              <Property Name="SymbolConfiguration">8;16;Control::ChargingStation::OCPP21;;;SysIdToken;4;;;-1;;;Value;;;0</Property>
+            </Object>
+            <Property Name="Name">X75cf70a5eecafe492be8172ea3eef67e9eaa</Property>
+            <Property Name="Size">239, 124</Property>
+            <Property Name="Location">5, 5</Property>
+            <Property Name="Text">Parameters</Property>
+            <Property Name="TabIndex">1</Property>
+            <Property Name="UseWindowsStyle">False</Property>
+          </Object>
+          <Property Name="Name">X6169b5e5e96b9e4b12ea526e908cecde405b</Property>
+          <Property Name="Size">415, 135</Property>
+          <Property Name="Location">2, 21</Property>
+          <Property Name="Text">OCPP 2.1</Property>
+        </Object>
+        <Property Name="Name">Xe28832a6ef5b7e470be8617e3d6a00dd7308</Property>
+        <Property Name="Size">415, 156</Property>
+        <Property Name="Location">5, 19</Property>
+        <Property Name="TabIndex">-39</Property>
+        <Property Name="SymbolConfiguration">8;16;Common;;;SysSelectedProtocol;1;;;-1;;;Value;;;0</Property>
+      </Object>
+      <Property Name="Name">X2e172e0fe8bffe4df6e8fb1e04360a970b0b</Property>
+      <Property Name="Size">428, 181</Property>
+      <Property Name="Location">5, 236</Property>
+      <Property Name="Text">Pricing requirements</Property>
+      <Property Name="TabIndex">348</Property>
+      <Property Name="UseWindowsStyle">False</Property>
+    </Object>
+    <Property Name="Name">Panel</Property>
+    <Property Name="Size">446, 456</Property>
+    <Property Name="Location">0, 0</Property>
+    <Property Name="BackColor">White</Property>
+  </Object>
+</Panel>

@@ -1,0 +1,17 @@
+/*@!Encoding:1252*/
+
+variables
+{   
+  msTimer tResetSendRequestValue;
+}
+
+on timer tResetSendRequestValue
+{
+  @sysvar::V2ICPClient::SysV2ICPSendRequest = 0;
+}
+
+void HandleOfferedInternetService()
+{
+  @sysvar::V2ICPClient::SysV2ICPSendRequest = 1;
+  setTimer(tResetSendRequestValue, 5);
+}

@@ -1,0 +1,55 @@
+/*@!Encoding:65001*/
+/**
+ * This CAPL program is used in both, an ERT and in a RT node. For this it gets compiled twice to different cbf files.
+ * The binary is executed in parallel once in ERT and once in RT.
+ */
+
+variables
+{
+  timer timerCyclic;
+}
+
+on start
+{      
+  // Init Matlab model so we can control them via Capl
+#if EXTENDED_REAL_TIME
+  ErtModel_init(0,0);
+  @DemoControl::EnableErtModel = 1;
+#else
+  RtkModel_init(0,0);
+  @DemoControl::EnableRtModel = 1;
+#endif
+  
+  // Initially set cyclic timer
+  setTimerCyclic(timerCyclic, @DemoControl::ModelCycleTimeUs * 1000);
+}
+
+on sysvar DemoControl::ModelCycleTimeUs
+{
+  // Reprogram cyclic timer if requested by user
+  cancelTimer(timerCyclic);
+  setTimerCyclic(timerCyclic, @this * 1000);
+}
+
+// This cyclic timer triggers the next Matlab step which updates the corresponding ErtSine or RtSine variable and also
+// calculate the StepTime and SampleTime variables that are used for comparison in the ComparePanel.
+on timer timerCyclic
+{
+#if EXTENDED_REAL_TIME
+  if(@DemoControl::EnableErtModel == 0)
+  {
+    return;
+  }
+  
+  // Execute one Matlab step of the ERT model.
+  ErtModel_step();
+#else
+  if (@DemoControl::EnableRtModel == 0)
+  {
+    return;
+  }
+  
+  // Execute one Matlab step of the RT model
+  RtkModel_step();
+#endif
+}

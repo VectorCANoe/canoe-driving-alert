@@ -1,0 +1,99 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Panel Type="Vector.CANalyzer.Panels.PanelSerializer, Vector.CANalyzer.Panels.Serializer, Version=19.0.70.0, Culture=neutral, PublicKeyToken=null">
+  <Object Type="Vector.CANalyzer.Panels.Runtime.Panel, Vector.CANalyzer.Panels.Common, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Panel" ControlName="Filter for &quot;Trace Filtered&quot;">
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xcfc13f3eeafd9e492fea64deb0921585f3fb" ControlName="Static Text 1">
+      <Property Name="Name">Xcfc13f3eeafd9e492fea64deb0921585f3fb</Property>
+      <Property Name="Size">140, 15</Property>
+      <Property Name="Location">5, 5</Property>
+      <Property Name="Font">Microsoft Sans Serif, 8.25pt, style=Bold</Property>
+      <Property Name="Text">Block identical messages:</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.CheckBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X02744de2e2c68e4a6fe8590e6efd34ab2d05" ControlName="Check Box 2">
+      <Property Name="Name">X02744de2e2c68e4a6fe8590e6efd34ab2d05</Property>
+      <Property Name="Size">168, 16</Property>
+      <Property Name="Location">5, 154</Property>
+      <Property Name="BackColor">White</Property>
+      <Property Name="Text">TIM21_CS Function Request</Property>
+      <Property Name="TabIndex">7</Property>
+      <Property Name="SymbolConfiguration">8;16;TraceFilter;;;svTIM21CS_FuncRequest;1;;;-1;;;Value;;;0</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.CheckBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X13073634e26d1e49b5ea2e9ee03ce221f3e2" ControlName="Check Box 1">
+      <Property Name="Name">X13073634e26d1e49b5ea2e9ee03ce221f3e2</Property>
+      <Property Name="Size">158, 16</Property>
+      <Property Name="Location">5, 139</Property>
+      <Property Name="BackColor">White</Property>
+      <Property Name="Text">TIM12_CS Function Status</Property>
+      <Property Name="TabIndex">6</Property>
+      <Property Name="SymbolConfiguration">8;16;TraceFilter;;;svTIM12CS_FuncStatus;1;;;-1;;;Value;;;0</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.CheckBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="CheckBoxControl6" ControlName="Check Box">
+      <Property Name="Name">CheckBoxControl6</Property>
+      <Property Name="Size">149, 20</Property>
+      <Property Name="Location">5, 114</Property>
+      <Property Name="BackColor">White</Property>
+      <Property Name="Text">TIM21 Function Request</Property>
+      <Property Name="TabIndex">5</Property>
+      <Property Name="SymbolConfiguration">8;16;TraceFilter;;;svTIM21_FuncRequest;1;;;-1;;;Value;;;0</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.CheckBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="CheckBoxControl3" ControlName="Check Box">
+      <Property Name="Name">CheckBoxControl3</Property>
+      <Property Name="Size">146, 20</Property>
+      <Property Name="Location">5, 97</Property>
+      <Property Name="BackColor">White</Property>
+      <Property Name="Text">TIM12 Function Status</Property>
+      <Property Name="TabIndex">2</Property>
+      <Property Name="SymbolConfiguration">8;16;TraceFilter;;;svTIM12_FuncStatus;1;;;-1;;;Value;;;0</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.CheckBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="CheckBoxControl5" ControlName="Check Box">
+      <Property Name="Name">CheckBoxControl5</Property>
+      <Property Name="Size">139, 17</Property>
+      <Property Name="Location">5, 38</Property>
+      <Property Name="BackColor">White</Property>
+      <Property Name="Text">AUTH21 Client Status</Property>
+      <Property Name="TabIndex">4</Property>
+      <Property Name="SymbolConfiguration">8;16;TraceFilter;;;svAUTH21_ClientStatus;1;;;-1;;;Value;;;0</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.CheckBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="CheckBoxControl4" ControlName="Check Box">
+      <Property Name="Name">CheckBoxControl4</Property>
+      <Property Name="Size">139, 17</Property>
+      <Property Name="Location">5, 22</Property>
+      <Property Name="BackColor">White</Property>
+      <Property Name="Text">AUTH12 Server Status</Property>
+      <Property Name="TabIndex">3</Property>
+      <Property Name="SymbolConfiguration">8;16;TraceFilter;;;svAUTH12_ServerStatus;1;;;-1;;;Value;;;0</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.CheckBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="CheckBoxControl2" ControlName="Check Box">
+      <Property Name="Name">CheckBoxControl2</Property>
+      <Property Name="Size">139, 17</Property>
+      <Property Name="Location">5, 75</Property>
+      <Property Name="BackColor">White</Property>
+      <Property Name="Text">TIM21 Client Status</Property>
+      <Property Name="TabIndex">1</Property>
+      <Property Name="SymbolConfiguration">8;16;TraceFilter;;;svTIM21_ClientStatus;1;;;-1;;;Value;;;0</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.CheckBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="CheckBoxControl1" ControlName="Check Box">
+      <Property Name="Name">CheckBoxControl1</Property>
+      <Property Name="Size">139, 17</Property>
+      <Property Name="Location">5, 59</Property>
+      <Property Name="BackColor">White</Property>
+      <Property Name="Text">TIM12 Server Status</Property>
+      <Property Name="TabIndex">0</Property>
+      <Property Name="SymbolConfiguration">8;16;TraceFilter;;;svTIM12_ServerStatus;1;;;-1;;;Value;;;0</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.CheckBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xd519d424e72f3e45f3e9deee356adb8a2cbb" ControlName="Check Box 3">
+      <Property Name="Name">Xd519d424e72f3e45f3e9deee356adb8a2cbb</Property>
+      <Property Name="Size">186, 42</Property>
+      <Property Name="Location">5, 157</Property>
+      <Property Name="BackColor">White</Property>
+      <Property Name="TextAlign">BottomLeft</Property>
+      <Property Name="Text">TIM21_CS Function Automation 
+                                   Status</Property>
+      <Property Name="TabIndex">8</Property>
+      <Property Name="SymbolConfiguration">8;16;TraceFilter;;;svTIM12CS_FuncAutomStatus;1;;;-1;;;Value;;;0</Property>
+    </Object>
+    <Property Name="Name">Panel</Property>
+    <Property Name="Size">209, 200</Property>
+    <Property Name="Location">0, 0</Property>
+    <Property Name="BackColor">White</Property>
+  </Object>
+</Panel>

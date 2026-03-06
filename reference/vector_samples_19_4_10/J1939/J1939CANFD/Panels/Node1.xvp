@@ -1,0 +1,192 @@
+<?xml version="1.0"?>
+<Panel Type="Vector.CANalyzer.Panels.PanelSerializer, Vector.CANalyzer.Panels.Serializer, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null">
+  <Object Type="Vector.CANalyzer.Panels.Runtime.Panel, Vector.CANalyzer.Panels.Common, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null" Name="Panel" Children="Controls" ControlName="Node1">
+    <Object Type="Vector.CANalyzer.Panels.Design.GroupBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null" Name="GroupBoxControl5" Children="Controls" ControlName="Group Box 5">
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl6" Children="Controls" ControlName="Static Text 6">
+        <Property Name="Name">StaticTextControl6</Property>
+        <Property Name="Size">32, 13</Property>
+        <Property Name="Location">175, 100</Property>
+        <Property Name="Text">bytes</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null" Name="TextBoxControl1" Children="Controls" ControlName="Input/Output Box 1">
+        <Property Name="Name">TextBoxControl1</Property>
+        <Property Name="Size">28, 20</Property>
+        <Property Name="Location">145, 96</Property>
+        <Property Name="AlarmUpperTextColor">WindowText</Property>
+        <Property Name="ValueDecimalPlaces">0</Property>
+        <Property Name="AlarmLowerBkgColor">Salmon</Property>
+        <Property Name="ValueDisplay">Decimal</Property>
+        <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+        <Property Name="AlarmLowerTextColor">WindowText</Property>
+        <Property Name="AlarmGeneralSettings">1;2;0;64</Property>
+        <Property Name="DisplayLabel">Hide</Property>
+        <Property Name="DescriptionText">MultiPgSizeThreshold:</Property>
+        <Property Name="BoxBorderStyle">FixedSingle</Property>
+        <Property Name="DescriptionSize">0, 0</Property>
+        <Property Name="UsedValueTable">PhysicalValue</Property>
+        <Property Name="SymbolConfiguration">8;16;Node1;;;MultiPgSizeThreshold;1;;;-1;;;;;;0</Property>
+        <Property Name="TabIndex">3</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.TrackBarControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null" Name="TrackBarControl3" Children="Controls" ControlName="Track Bar 3">
+        <Property Name="Name">TrackBarControl3</Property>
+        <Property Name="Size">139, 47</Property>
+        <Property Name="Location">7, 96</Property>
+        <Property Name="MaximumSize">100000, 47</Property>
+        <Property Name="Maximum">64</Property>
+        <Property Name="DisplayMinMax">True</Property>
+        <Property Name="TickFrequency">5</Property>
+        <Property Name="TickFrequencyDouble">5</Property>
+        <Property Name="MaximumDouble">64</Property>
+        <Property Name="SymbolConfiguration">8;16;Node1;;;MultiPgSizeThreshold;1;;;-1;;;;;;0</Property>
+        <Property Name="TabIndex">2</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl5" Children="Controls" ControlName="Static Text 5">
+        <Property Name="Name">StaticTextControl5</Property>
+        <Property Name="Size">176, 26</Property>
+        <Property Name="Location">6, 70</Property>
+        <Property Name="Text">Send Multi-PG if this payload size is 
+exceeded:</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl4" Children="Controls" ControlName="Static Text 4">
+        <Property Name="Name">StaticTextControl4</Property>
+        <Property Name="Size">195, 13</Property>
+        <Property Name="Location">6, 22</Property>
+        <Property Name="Text">Type of Multi-PG Broadcast Messages:</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.ComboBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null" Name="ComboBoxControl2" Children="Controls" ControlName="Combo Box 2">
+        <Property Name="Name">ComboBoxControl2</Property>
+        <Property Name="Size">61, 21</Property>
+        <Property Name="Location">7, 41</Property>
+        <Property Name="DropDownWidth">21</Property>
+        <Property Name="BackColor">Window</Property>
+        <Property Name="ForeColor">WindowText</Property>
+        <Property Name="TextBackColor">White</Property>
+        <Property Name="DisplayLabel">Hide</Property>
+        <Property Name="DescriptionText">MultiPgBroadcastType:</Property>
+        <Property Name="UsedValueTable">PhysicalValue</Property>
+        <Property Name="DescriptionSize">0, 0</Property>
+        <Property Name="SymbolConfiguration">8;16;Node1;;;MultiPgBroadcastType;1;;;-1;;;;;;0</Property>
+        <Property Name="TabIndex">1</Property>
+      </Object>
+      <Property Name="Name">GroupBoxControl5</Property>
+      <Property Name="Size">212, 146</Property>
+      <Property Name="Location">10, 4</Property>
+      <Property Name="BackColor">White</Property>
+      <Property Name="Text">Node Properties</Property>
+      <Property Name="TabIndex">9</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.GroupBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null" Name="GroupBoxControl4" Children="Controls" ControlName="Group Box 4">
+      <Object Type="Vector.CANalyzer.Panels.Design.ButtonControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null" Name="ButtonControl2" Children="Controls" ControlName="Button 2">
+        <Property Name="Name">ButtonControl2</Property>
+        <Property Name="Size">287, 23</Property>
+        <Property Name="Location">6, 48</Property>
+        <Property Name="Text">Request Address Claimed messages</Property>
+        <Property Name="SymbolConfiguration">8;16;Node1;;;RequestAddressClaimed;1;;;-1;;;;;;0</Property>
+        <Property Name="TabIndex">10</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.ButtonControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null" Name="ButtonControl1" Children="Controls" ControlName="Button 1">
+        <Property Name="Name">ButtonControl1</Property>
+        <Property Name="Size">287, 23</Property>
+        <Property Name="Location">6, 19</Property>
+        <Property Name="Text">Request CPg1 of Node 2</Property>
+        <Property Name="SymbolConfiguration">8;16;Node1;;;RequestCPG1OfNode2;1;;;-1;;;;;;0</Property>
+        <Property Name="TabIndex">9</Property>
+      </Object>
+      <Property Name="Name">GroupBoxControl4</Property>
+      <Property Name="Size">298, 77</Property>
+      <Property Name="Location">235, 156</Property>
+      <Property Name="BackColor">White</Property>
+      <Property Name="Text">Request</Property>
+      <Property Name="TabIndex">8</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.GroupBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null" Name="GroupBoxControl3" Children="Controls" ControlName="Group Box 3">
+      <Object Type="Vector.CANalyzer.Panels.Design.CheckBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null" Name="CheckBoxControl3" Children="Controls" ControlName="Check Box 3">
+        <Property Name="Name">CheckBoxControl3</Property>
+        <Property Name="Size">170, 17</Property>
+        <Property Name="Location">6, 25</Property>
+        <Property Name="Text">Activate Diagnostics Support</Property>
+        <Property Name="SymbolConfiguration">8;16;Node1;;;ActivateDiagnosticsSupport;1;;;-1;;;;;;0</Property>
+        <Property Name="TabIndex">4</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.CheckBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null" Name="CheckBoxControl2" Children="Controls" ControlName="Check Box Activate DTC">
+        <Property Name="Name">CheckBoxControl2</Property>
+        <Property Name="Size">185, 17</Property>
+        <Property Name="Location">6, 48</Property>
+        <Property Name="Text">Activate Diagnostic Trouble Code</Property>
+        <Property Name="SymbolConfiguration">8;16;Node1;;;ActivateDTC;1;;;-1;;;;;;0</Property>
+        <Property Name="TabIndex">5</Property>
+      </Object>
+      <Property Name="Name">GroupBoxControl3</Property>
+      <Property Name="Size">212, 77</Property>
+      <Property Name="Location">10, 156</Property>
+      <Property Name="BackColor">White</Property>
+      <Property Name="Text">Diagnostics</Property>
+      <Property Name="TabIndex">7</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.GroupBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null" Name="GroupBoxControl1" Children="Controls" ControlName="Group Box 1">
+      <Object Type="Vector.CANalyzer.Panels.Design.TrackBarControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null" Name="TrackBarControl2" Children="Controls" ControlName="Track Bar 2">
+        <Property Name="Name">TrackBarControl2</Property>
+        <Property Name="Size">154, 47</Property>
+        <Property Name="Location">139, 94</Property>
+        <Property Name="MaximumSize">100000, 47</Property>
+        <Property Name="Maximum">1000</Property>
+        <Property Name="DisplayMinMax">True</Property>
+        <Property Name="TickFrequency">50</Property>
+        <Property Name="Minimum">-1000</Property>
+        <Property Name="LargeChange">10</Property>
+        <Property Name="LargeChangeDouble">10</Property>
+        <Property Name="TickFrequencyDouble">50</Property>
+        <Property Name="MaximumDouble">1000</Property>
+        <Property Name="MinimumDouble">-1000</Property>
+        <Property Name="SymbolConfiguration">8;2;J1939CanFdDemo;Node1;CPgCyclic2000;CycleTime2000_Signal;1;J1939 (CAN1);;-1;;;;;;0</Property>
+        <Property Name="TabIndex">8</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl2" Children="Controls" ControlName="Static Text 2">
+        <Property Name="Name">StaticTextControl2</Property>
+        <Property Name="Size">128, 13</Property>
+        <Property Name="Location">6, 101</Property>
+        <Property Name="Text">CPgCyclic2000_Signal</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.CheckBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null" Name="CheckBoxControl1" Children="Controls" ControlName="Check Box 1">
+        <Property Name="Name">CheckBoxControl1</Property>
+        <Property Name="Size">65, 17</Property>
+        <Property Name="Location">6, 24</Property>
+        <Property Name="Text">Enable</Property>
+        <Property Name="SymbolConfiguration">8;16;Node1;;;EnableCyclicCPGs;1;;;-1;;;;;;0</Property>
+        <Property Name="TabIndex">6</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl1" Children="Controls" ControlName="Static Text 1">
+        <Property Name="Name">StaticTextControl1</Property>
+        <Property Name="Size">128, 13</Property>
+        <Property Name="Location">6, 48</Property>
+        <Property Name="Text">CPgCyclic1000_Signal</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.TrackBarControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null" Name="TrackBarControl1" Children="Controls" ControlName="Track Bar 1">
+        <Property Name="Name">TrackBarControl1</Property>
+        <Property Name="Size">154, 47</Property>
+        <Property Name="Location">139, 42</Property>
+        <Property Name="MaximumSize">100000, 47</Property>
+        <Property Name="Maximum">1000</Property>
+        <Property Name="DisplayMinMax">True</Property>
+        <Property Name="TickFrequency">50</Property>
+        <Property Name="Minimum">-1000</Property>
+        <Property Name="LargeChange">10</Property>
+        <Property Name="LargeChangeDouble">10</Property>
+        <Property Name="TickFrequencyDouble">50</Property>
+        <Property Name="MaximumDouble">1000</Property>
+        <Property Name="MinimumDouble">-1000</Property>
+        <Property Name="SymbolConfiguration">8;2;J1939CanFdDemo;Node1;CPgCyclic1000;CPgCyclic1000_Signal;1;J1939 (CAN1);;-1;;;;;;0</Property>
+        <Property Name="TabIndex">7</Property>
+      </Object>
+      <Property Name="Name">GroupBoxControl1</Property>
+      <Property Name="Size">298, 147</Property>
+      <Property Name="Location">235, 3</Property>
+      <Property Name="BackColor">White</Property>
+      <Property Name="Text">Cyclic C-PGs</Property>
+      <Property Name="TabIndex">5</Property>
+    </Object>
+    <Property Name="Name">Panel</Property>
+    <Property Name="Size">542, 240</Property>
+    <Property Name="BackColor">White</Property>
+  </Object>
+</Panel>

@@ -1,0 +1,996 @@
+﻿<TestSequenceDiagram version="1.3" breakOnFailure="true" tcAnUseId="false" tcId="4292af7b-c120-48a8-ac56-1e16173fca04" xmlns="http://www.vector-informatik.de/ITE/TDE/TestSequenceDiagram">
+  <Diagram>
+    <testdiagramnode version="33" xmlns="http://www.vector-informatik.de/ITE/TestTable/1.0">
+      <diagramcommand>
+        <diagramvariables>
+          <variables />
+        </diagramvariables>
+        <diagramattributes>
+          <attributes>
+            <attr>
+              <key>Lifecycle</key>
+              <value>in implementation</value>
+            </attr>
+            <attr>
+              <key>Note</key>
+              <value>almost done, final details to be completed only</value>
+            </attr>
+          </attributes>
+        </diagramattributes>
+      </diagramcommand>
+    </testdiagramnode>
+  </Diagram>
+  <Elements>
+    <Start id="f6887384-7bb6-4df2-804a-02c3c74740f6" x="816.9" y="48.6" />
+    <Multiplexer id="de051492-7f2b-418f-a132-93a7ba5508c2" x="517.9" y="225.6" width="749" />
+    <Check id="ae7d16a8-165c-458a-a82c-2cd3cee4889a" descr="Engine is running" x="534.9" y="280.6" width="114" height="24" fillColor="Green">
+      <testdiagramnode version="33" xmlns="http://www.vector-informatik.de/ITE/TestTable/1.0">
+        <sequencecommand>
+          <ttfunction>
+            <title />
+            <name>CheckEngine</name>
+            <param>
+              <type>int</type>
+              <value>
+                <const>1</const>
+              </value>
+            </param>
+          </ttfunction>
+        </sequencecommand>
+      </testdiagramnode>
+    </Check>
+    <Check id="f428627c-0c05-4671-8734-4ef2a7ccb66a" descr="Initialize" x="787.9" y="109.6" width="96" height="24" fillColor="Yellow">
+      <testdiagramnode version="33" xmlns="http://www.vector-informatik.de/ITE/TestTable/1.0" minRequiredVersion="16">
+        <sequencecommand>
+          <set>
+            <title />
+            <in>
+              <assignment>
+                <sink>
+                  <dbobject>DBSignal_BEGIN_OF_OBJECT|1|NodeOrFrameData_BEGIN_OF_OBJECT|1|1|CAN|1|comfort|SUT_Driver|END_OF_OBJECT_NodeOrFrameData|FrameData_BEGIN_OF_OBJECT|1|255|255|0|0|LockingRemoteControlRequest|1|False|END_OF_OBJECT_FrameData|LockRequest|1|END_OF_OBJECT_|</dbobject>
+                </sink>
+                <source>
+                  <valuetable_entry>Request_unlock</valuetable_entry>
+                </source>
+              </assignment>
+            </in>
+          </set>
+          <wait>
+            <title />
+            <time>
+              <value>
+                <const>500</const>
+              </value>
+              <unit>ms</unit>
+            </time>
+          </wait>
+          <set>
+            <title />
+            <in>
+              <assignment>
+                <sink>
+                  <dbobject>DBSignal_BEGIN_OF_OBJECT|1|NodeOrFrameData_BEGIN_OF_OBJECT|1|1|CAN|1|comfort|SUT_Driver|END_OF_OBJECT_NodeOrFrameData|FrameData_BEGIN_OF_OBJECT|1|255|255|0|0|VehicleMotion|50|False|END_OF_OBJECT_FrameData|Velocity|1|END_OF_OBJECT_|</dbobject>
+                </sink>
+                <source>
+                  <const>0</const>
+                </source>
+              </assignment>
+              <assignment>
+                <sink>
+                  <dbobject>DBSignal_BEGIN_OF_OBJECT|1|NodeOrFrameData_BEGIN_OF_OBJECT|1|1|CAN|1|comfort|SUT_Driver|END_OF_OBJECT_NodeOrFrameData|FrameData_BEGIN_OF_OBJECT|1|255|255|0|0|VehicleMotion|50|False|END_OF_OBJECT_FrameData|CrashDetected|1|END_OF_OBJECT_|</dbobject>
+                </sink>
+                <source>
+                  <const>0</const>
+                </source>
+              </assignment>
+              <assignment>
+                <sink>
+                  <dbobject>DBSignal_BEGIN_OF_OBJECT|1|NodeOrFrameData_BEGIN_OF_OBJECT|1|1|CAN|1|comfort|SUT_Driver|END_OF_OBJECT_NodeOrFrameData|FrameData_BEGIN_OF_OBJECT|1|255|255|0|0|LockingRemoteControlRequest|1|False|END_OF_OBJECT_FrameData|LockRequest|1|END_OF_OBJECT_|</dbobject>
+                </sink>
+                <source>
+                  <valuetable_entry>idle</valuetable_entry>
+                </source>
+              </assignment>
+              <assignment>
+                <sink>
+                  <dbobject>DBSignal_BEGIN_OF_OBJECT|1|NodeOrFrameData_BEGIN_OF_OBJECT|1|1|CAN|1|comfort|SUT_Driver|END_OF_OBJECT_NodeOrFrameData|FrameData_BEGIN_OF_OBJECT|1|255|255|0|0|VehicleMotion|50|False|END_OF_OBJECT_FrameData|EngineRunning|1|END_OF_OBJECT_|</dbobject>
+                </sink>
+                <source>
+                  <const>0</const>
+                </source>
+              </assignment>
+            </in>
+          </set>
+          <wait>
+            <title />
+            <time>
+              <value>
+                <const>500</const>
+              </value>
+              <unit>ms</unit>
+            </time>
+          </wait>
+        </sequencecommand>
+      </testdiagramnode>
+    </Check>
+    <Multiplexer id="208d3632-7330-4911-a2cc-57bad688fe55" x="305.9" y="404.6" width="629" />
+    <Check id="a6b6b37d-b064-46c9-8c1b-ee17dbae943a" descr="Doors are 'unlocked'" x="305.9" y="477.6" width="119" height="24">
+      <testdiagramnode version="33" xmlns="http://www.vector-informatik.de/ITE/TestTable/1.0">
+        <sequencecommand>
+          <ttfunction>
+            <title />
+            <name>CheckDoors</name>
+            <param>
+              <type>int</type>
+              <value>
+                <dbobject>VTE_BEGIN_OF_OBJECT|1|Unlocked|24|DBSignal_BEGIN_OF_OBJECT|1|NodeOrFrameData_BEGIN_OF_OBJECT|1|1|CAN|1|comfort|SUT|END_OF_OBJECT_NodeOrFrameData|FrameData_BEGIN_OF_OBJECT|1|255|255|0|0|CentralLockingSystemState|0|False|END_OF_OBJECT_FrameData|LockState|1|END_OF_OBJECT_||END_OF_OBJECT_VTE|</dbobject>
+              </value>
+            </param>
+          </ttfunction>
+        </sequencecommand>
+      </testdiagramnode>
+    </Check>
+    <Check id="3feedab1-30c1-4999-a0ee-0474529d913e" descr="Doors are 'locked'" x="643.7" y="478.8" width="178" height="24" traceItems="a31342c143aea0ddc86635">
+      <testdiagramnode version="33" xmlns="http://www.vector-informatik.de/ITE/TestTable/1.0">
+        <sequencecommand>
+          <ttfunction>
+            <title />
+            <name>CheckDoors</name>
+            <param>
+              <type>int</type>
+              <value>
+                <dbobject>VTE_BEGIN_OF_OBJECT|1|Locked|24|DBSignal_BEGIN_OF_OBJECT|1|NodeOrFrameData_BEGIN_OF_OBJECT|1|1|CAN|1|comfort|SUT|END_OF_OBJECT_NodeOrFrameData|FrameData_BEGIN_OF_OBJECT|1|255|255|0|0|CentralLockingSystemState|0|False|END_OF_OBJECT_FrameData|LockState|1|END_OF_OBJECT_||END_OF_OBJECT_VTE|</dbobject>
+              </value>
+            </param>
+          </ttfunction>
+        </sequencecommand>
+      </testdiagramnode>
+    </Check>
+    <Check id="46d8befd-b1f3-482c-8bfa-88bded19403b" descr="Doors are 'unlocked'" x="533.9" y="339.6" width="115" height="24">
+      <testdiagramnode version="33" xmlns="http://www.vector-informatik.de/ITE/TestTable/1.0">
+        <sequencecommand>
+          <ttfunction>
+            <title />
+            <name>CheckDoors</name>
+            <param>
+              <type>int</type>
+              <value>
+                <dbobject>VTE_BEGIN_OF_OBJECT|1|Unlocked|24|DBSignal_BEGIN_OF_OBJECT|1|NodeOrFrameData_BEGIN_OF_OBJECT|1|1|CAN|1|comfort|SUT|END_OF_OBJECT_NodeOrFrameData|FrameData_BEGIN_OF_OBJECT|1|255|255|0|0|CentralLockingSystemState|0|False|END_OF_OBJECT_FrameData|LockState|1|END_OF_OBJECT_||END_OF_OBJECT_VTE|</dbobject>
+              </value>
+            </param>
+          </ttfunction>
+        </sequencecommand>
+      </testdiagramnode>
+    </Check>
+    <Multiplexer id="323d8a64-ed01-4b82-86e8-0a90c6dd766e" x="524.9" y="529.6" width="517" />
+    <Check id="06b1ec72-dde2-4427-853c-7e13589add55" descr="Doors are 'unlocked'" x="873.9" y="585.6" width="128" height="24">
+      <testdiagramnode version="33" xmlns="http://www.vector-informatik.de/ITE/TestTable/1.0">
+        <sequencecommand>
+          <ttfunction>
+            <title />
+            <name>CheckDoors</name>
+            <param>
+              <type>int</type>
+              <value>
+                <dbobject>VTE_BEGIN_OF_OBJECT|1|Unlocked|24|DBSignal_BEGIN_OF_OBJECT|1|NodeOrFrameData_BEGIN_OF_OBJECT|1|1|CAN|1|comfort|SUT|END_OF_OBJECT_NodeOrFrameData|FrameData_BEGIN_OF_OBJECT|1|255|255|0|0|CentralLockingSystemState|0|False|END_OF_OBJECT_FrameData|LockState|1|END_OF_OBJECT_||END_OF_OBJECT_VTE|</dbobject>
+              </value>
+            </param>
+          </ttfunction>
+        </sequencecommand>
+      </testdiagramnode>
+    </Check>
+    <Check id="39c6d22b-2ce8-4bed-a746-71cbbc709795" descr="Doors are 'unlocked'" x="201.5" y="928.6" width="132" height="24">
+      <testdiagramnode version="33" xmlns="http://www.vector-informatik.de/ITE/TestTable/1.0">
+        <sequencecommand>
+          <ttfunction>
+            <title />
+            <name>CheckDoors</name>
+            <param>
+              <type>int</type>
+              <value>
+                <dbobject>VTE_BEGIN_OF_OBJECT|1|Unlocked|24|DBSignal_BEGIN_OF_OBJECT|1|NodeOrFrameData_BEGIN_OF_OBJECT|1|1|CAN|1|comfort|SUT|END_OF_OBJECT_NodeOrFrameData|FrameData_BEGIN_OF_OBJECT|1|255|255|0|0|CentralLockingSystemState|0|False|END_OF_OBJECT_FrameData|LockState|1|END_OF_OBJECT_||END_OF_OBJECT_VTE|</dbobject>
+              </value>
+            </param>
+          </ttfunction>
+        </sequencecommand>
+      </testdiagramnode>
+    </Check>
+    <Setup id="042145dd-fb5b-440a-ba2a-a4462e13e61b" descr="Establish diagnostic connection" x="37" y="32">
+      <testdiagramnode version="33" xmlns="http://www.vector-informatik.de/ITE/TestTable/1.0">
+        <sequencecommand>
+          <report>
+            <text>Establish diagnostic connection here</text>
+          </report>
+        </sequencecommand>
+      </testdiagramnode>
+    </Setup>
+    <Cleanup id="cb9b8f0a-7f9d-4cdf-9cf8-3488ebf8d47a" descr="Release diagnostic connection" x="37" y="82">
+      <testdiagramnode version="33" xmlns="http://www.vector-informatik.de/ITE/TestTable/1.0">
+        <sequencecommand>
+          <report>
+            <text>Release diagnostic connection here</text>
+          </report>
+        </sequencecommand>
+      </testdiagramnode>
+    </Cleanup>
+    <Multiplexer id="d7b42bae-fc4f-4c29-ab24-1ab9277b08a5" x="872.9" y="672.6" width="149" />
+    <Check id="64a3d9de-f153-44d1-872c-6b78f484b699" descr="Doors are 'unlocked'" x="858.9" y="746.6" width="168" height="24">
+      <testdiagramnode version="33" xmlns="http://www.vector-informatik.de/ITE/TestTable/1.0">
+        <sequencecommand>
+          <ttfunction>
+            <title />
+            <name>CheckDoors</name>
+            <param>
+              <type>int</type>
+              <value>
+                <dbobject>VTE_BEGIN_OF_OBJECT|1|Unlocked|24|DBSignal_BEGIN_OF_OBJECT|1|NodeOrFrameData_BEGIN_OF_OBJECT|1|1|CAN|1|comfort|SUT|END_OF_OBJECT_NodeOrFrameData|FrameData_BEGIN_OF_OBJECT|1|255|255|0|0|CentralLockingSystemState|0|False|END_OF_OBJECT_FrameData|LockState|1|END_OF_OBJECT_||END_OF_OBJECT_VTE|</dbobject>
+              </value>
+            </param>
+          </ttfunction>
+        </sequencecommand>
+      </testdiagramnode>
+    </Check>
+    <Check id="c9f44f8a-ac65-4190-aa75-82d80ac8f286" descr="Doors are 'locked'" x="543.9" y="584.6" width="130" height="24">
+      <testdiagramnode version="33" xmlns="http://www.vector-informatik.de/ITE/TestTable/1.0">
+        <sequencecommand>
+          <ttfunction>
+            <title />
+            <name>CheckDoors</name>
+            <param>
+              <type>int</type>
+              <value>
+                <dbobject>VTE_BEGIN_OF_OBJECT|1|Locked|24|DBSignal_BEGIN_OF_OBJECT|1|NodeOrFrameData_BEGIN_OF_OBJECT|1|1|CAN|1|comfort|SUT|END_OF_OBJECT_NodeOrFrameData|FrameData_BEGIN_OF_OBJECT|1|255|255|0|0|CentralLockingSystemState|0|False|END_OF_OBJECT_FrameData|LockState|1|END_OF_OBJECT_||END_OF_OBJECT_VTE|</dbobject>
+              </value>
+            </param>
+          </ttfunction>
+        </sequencecommand>
+      </testdiagramnode>
+    </Check>
+    <Multiplexer id="ad47abdc-3b4d-4dd0-a58d-83ebbe523903" x="535.9" y="674.6" width="152" />
+    <Check id="1fbc2f35-b93a-4e60-bd6c-861b3b19bf36" descr="Doors are 'locked'" x="518" y="740.4" width="170" height="23">
+      <testdiagramnode version="33" xmlns="http://www.vector-informatik.de/ITE/TestTable/1.0">
+        <sequencecommand>
+          <ttfunction>
+            <title />
+            <name>CheckDoors</name>
+            <param>
+              <type>int</type>
+              <value>
+                <dbobject>VTE_BEGIN_OF_OBJECT|1|Locked|24|DBSignal_BEGIN_OF_OBJECT|1|NodeOrFrameData_BEGIN_OF_OBJECT|1|1|CAN|1|comfort|SUT|END_OF_OBJECT_NodeOrFrameData|FrameData_BEGIN_OF_OBJECT|1|255|255|0|0|CentralLockingSystemState|0|False|END_OF_OBJECT_FrameData|LockState|1|END_OF_OBJECT_||END_OF_OBJECT_VTE|</dbobject>
+              </value>
+            </param>
+          </ttfunction>
+        </sequencecommand>
+      </testdiagramnode>
+    </Check>
+    <Check id="ae5cf800-5768-49af-8f2a-54ca2da2dd40" descr="Check empty fault memory" x="668.9" y="1097.6" width="156" height="24" fillColor="Orange">
+      <testdiagramnode version="33" xmlns="http://www.vector-informatik.de/ITE/TestTable/1.0">
+        <sequencecommand>
+          <faultmem_status>
+            <title>Check that fault memory is still empty since no errors provoked</title>
+            <ecu>DiaObj_BEGIN_OF_OBJECT|2|0|SUT|||||0||END_OF_OBJECT_DiaObj|</ecu>
+            <expected_dtccount>
+              <eq>
+                <const>0</const>
+              </eq>
+            </expected_dtccount>
+          </faultmem_status>
+        </sequencecommand>
+      </testdiagramnode>
+    </Check>
+    <Finalize id="5c636296-fb34-44e8-af6f-11eee0ff1df4" x="728.9" y="1143.6" />
+    <Multiplexer id="c319753e-4b55-44fb-9097-7abf3469be84" x="191.9" y="530.6" width="310" />
+    <Check id="6d28e78d-22c8-4ee5-a7c1-946e7eb141e4" descr="Doors are 'locked'" x="382" y="612" width="113" height="24" traceItems="a31342c143aea0ddc86623">
+      <testdiagramnode version="33" xmlns="http://www.vector-informatik.de/ITE/TestTable/1.0">
+        <sequencecommand>
+          <ttfunction>
+            <title />
+            <name>CheckDoors</name>
+            <param>
+              <type>int</type>
+              <value>
+                <dbobject>VTE_BEGIN_OF_OBJECT|1|Locked|24|DBSignal_BEGIN_OF_OBJECT|1|NodeOrFrameData_BEGIN_OF_OBJECT|1|1|CAN|1|comfort|SUT|END_OF_OBJECT_NodeOrFrameData|FrameData_BEGIN_OF_OBJECT|1|255|255|0|0|CentralLockingSystemState|0|False|END_OF_OBJECT_FrameData|LockState|1|END_OF_OBJECT_||END_OF_OBJECT_VTE|</dbobject>
+              </value>
+            </param>
+          </ttfunction>
+        </sequencecommand>
+      </testdiagramnode>
+    </Check>
+    <Check id="022c015a-0c0e-4865-bcd8-e89d325cb079" descr="Engine is not running" x="1105.9" y="280.6" width="151" height="24" fillColor="Green">
+      <testdiagramnode version="33" xmlns="http://www.vector-informatik.de/ITE/TestTable/1.0">
+        <sequencecommand>
+          <ttfunction>
+            <title />
+            <name>CheckEngine</name>
+            <param>
+              <type>int</type>
+              <value>
+                <const>0</const>
+              </value>
+            </param>
+          </ttfunction>
+        </sequencecommand>
+      </testdiagramnode>
+    </Check>
+    <Check id="5c4e7c03-3f1d-4eb0-a6df-de7357353490" descr="Doors are 'unlocked'" x="1108.9" y="346.6" width="149" height="24">
+      <testdiagramnode version="33" xmlns="http://www.vector-informatik.de/ITE/TestTable/1.0">
+        <sequencecommand>
+          <ttfunction>
+            <title />
+            <name>CheckDoors</name>
+            <param>
+              <type>int</type>
+              <value>
+                <dbobject>VTE_BEGIN_OF_OBJECT|1|Unlocked|24|DBSignal_BEGIN_OF_OBJECT|1|NodeOrFrameData_BEGIN_OF_OBJECT|1|1|CAN|1|comfort|SUT|END_OF_OBJECT_NodeOrFrameData|FrameData_BEGIN_OF_OBJECT|1|255|255|0|0|CentralLockingSystemState|0|False|END_OF_OBJECT_FrameData|LockState|1|END_OF_OBJECT_||END_OF_OBJECT_VTE|</dbobject>
+              </value>
+            </param>
+          </ttfunction>
+        </sequencecommand>
+      </testdiagramnode>
+    </Check>
+    <Join id="2eedbf08-6b81-49f7-9b91-9dd6a4dcf148" x="191.9" y="1046.6" width="1092" />
+    <Multiplexer id="e3703d52-0077-41ff-818e-d66c3f41cc2c" x="380.9" y="811.6" width="409" />
+    <Decision id="2985b604-6008-4ff4-aaec-27b736f808ae" x="526.9" y="878.6" width="257" />
+    <Check id="08c558c4-2c52-4da1-86eb-cfef13a9c4e0" descr="Doors are 'unlocked'" x="377.9" y="888.6" width="122" height="24" traceItems="a31342c143aea0ddc86641">
+      <testdiagramnode version="33" xmlns="http://www.vector-informatik.de/ITE/TestTable/1.0">
+        <sequencecommand>
+          <ttfunction>
+            <title />
+            <name>CheckDoors</name>
+            <param>
+              <type>int</type>
+              <value>
+                <dbobject>VTE_BEGIN_OF_OBJECT|1|Unlocked|24|DBSignal_BEGIN_OF_OBJECT|1|NodeOrFrameData_BEGIN_OF_OBJECT|1|1|CAN|1|comfort|SUT|END_OF_OBJECT_NodeOrFrameData|FrameData_BEGIN_OF_OBJECT|1|255|255|0|0|CentralLockingSystemState|0|False|END_OF_OBJECT_FrameData|LockState|1|END_OF_OBJECT_||END_OF_OBJECT_VTE|</dbobject>
+              </value>
+            </param>
+          </ttfunction>
+        </sequencecommand>
+      </testdiagramnode>
+    </Check>
+    <Check id="ab39034c-95d4-4f1e-a064-99e9951c5096" descr="Doors are 'unlocked'" x="857.9" y="986.6" width="173" height="24">
+      <testdiagramnode version="33" xmlns="http://www.vector-informatik.de/ITE/TestTable/1.0">
+        <sequencecommand>
+          <ttfunction>
+            <title />
+            <name>CheckDoors</name>
+            <param>
+              <type>int</type>
+              <value>
+                <dbobject>VTE_BEGIN_OF_OBJECT|1|Unlocked|24|DBSignal_BEGIN_OF_OBJECT|1|NodeOrFrameData_BEGIN_OF_OBJECT|1|1|CAN|1|comfort|SUT|END_OF_OBJECT_NodeOrFrameData|FrameData_BEGIN_OF_OBJECT|1|255|255|0|0|CentralLockingSystemState|0|False|END_OF_OBJECT_FrameData|LockState|1|END_OF_OBJECT_||END_OF_OBJECT_VTE|</dbobject>
+              </value>
+            </param>
+          </ttfunction>
+        </sequencecommand>
+      </testdiagramnode>
+    </Check>
+    <Check id="90fcd160-dc9f-4202-8cc1-b4c7e8c05224" descr="Doors are 'locked'" x="488.9" y="985.6" width="110" height="24">
+      <testdiagramnode version="33" xmlns="http://www.vector-informatik.de/ITE/TestTable/1.0">
+        <sequencecommand>
+          <ttfunction>
+            <title />
+            <name>CheckDoors</name>
+            <param>
+              <type>int</type>
+              <value>
+                <dbobject>VTE_BEGIN_OF_OBJECT|1|Locked|24|DBSignal_BEGIN_OF_OBJECT|1|NodeOrFrameData_BEGIN_OF_OBJECT|1|1|CAN|1|comfort|SUT|END_OF_OBJECT_NodeOrFrameData|FrameData_BEGIN_OF_OBJECT|1|255|255|0|0|CentralLockingSystemState|0|False|END_OF_OBJECT_FrameData|LockState|1|END_OF_OBJECT_||END_OF_OBJECT_VTE|</dbobject>
+              </value>
+            </param>
+          </ttfunction>
+        </sequencecommand>
+      </testdiagramnode>
+    </Check>
+    <Check id="952c0cee-fc47-4f47-9de9-3692a4054365" descr="Doors are 'unlocked'" x="668.9" y="984.9" width="120" height="24">
+      <testdiagramnode version="33" xmlns="http://www.vector-informatik.de/ITE/TestTable/1.0">
+        <sequencecommand>
+          <ttfunction>
+            <title />
+            <name>CheckDoors</name>
+            <param>
+              <type>int</type>
+              <value>
+                <dbobject>VTE_BEGIN_OF_OBJECT|1|Unlocked|24|DBSignal_BEGIN_OF_OBJECT|1|NodeOrFrameData_BEGIN_OF_OBJECT|1|1|CAN|1|comfort|SUT|END_OF_OBJECT_NodeOrFrameData|FrameData_BEGIN_OF_OBJECT|1|255|255|0|0|CentralLockingSystemState|0|False|END_OF_OBJECT_FrameData|LockState|1|END_OF_OBJECT_||END_OF_OBJECT_VTE|</dbobject>
+              </value>
+            </param>
+          </ttfunction>
+        </sequencecommand>
+      </testdiagramnode>
+    </Check>
+    <Comment id="fcb0f0cd-802a-404c-8313-7fd8afdf707f" descr="Initialize stimuli and state for each generated test case.&#xD;&#xA;&#xD;&#xA;Used Test-Code (commands) can be seen in the toolitp." x="922.9" y="111.6" width="144" height="111" />
+    <Comment id="956cdeb1-bad0-4128-a398-35e8608ea3ff" descr="&lt;b&gt;Stimuli: &lt;/b&gt;&#xA;   Velocity&#x9;[0, v &lt; Vt, v==Vt, v&gt;Vt]&#xA;   Engine&#x9;&#x9;[On, Off] &#xA;   Manual Locking [Lock/Unlock]&#xA;   Crash&#xA;&#xA;'&lt;i&gt;LockVelocity&lt;/i&gt;' is defined in the TestParameters file." x="33" y="136" width="231" height="125" fillColor="LightBlue" />
+    <Check id="465f9d39-e695-4a44-a7e1-41b54cd6331f" descr="Clear DTCs" x="788.9" y="168.6" width="96" height="24" fillColor="Orange">
+      <testdiagramnode version="33" xmlns="http://www.vector-informatik.de/ITE/TestTable/1.0">
+        <sequencecommand>
+          <faultmem_clear>
+            <title />
+            <ecu>DiaObj_BEGIN_OF_OBJECT|2|0|SUT|||||0||END_OF_OBJECT_DiaObj|</ecu>
+            <reportservicedetails>
+              <enum>onfail</enum>
+            </reportservicedetails>
+            <dtcs />
+          </faultmem_clear>
+        </sequencecommand>
+      </testdiagramnode>
+    </Check>
+    <Comment id="0e830c21-457b-4135-a264-a8cbfa5ca40f" descr="Variants are defined in the project variant property dialog.&#xD;&#xA;Variant dependent parameters are defined in the parameter file &quot;VariantSpecificParameterns&quot;." x="733" y="797.7" width="178" height="91" />
+    <Comment id="8802dd0e-df59-4d7b-a2e3-cff3a9ed937b" descr="Double-click on the function in the command/parameter editor to get the definition of the function." x="679.9" y="246.6" width="144" height="90" />
+    <Comment id="de430ac2-f1ad-49fa-abe7-a530aaddb995" descr="&lt;b&gt;Design of diagram:&lt;/b&gt;&#xA;Test-Code (commands) are mainly encapsulated in TTE functions &#xA;(see FunctionLibrary.vtt)" x="30" y="273" width="235" height="96" fillColor="LightBlue" />
+    <VisualGroup id="ced9b1ad-52b0-40fe-945c-b19c180ea718" descr="Lock/Unlock" x="1095.9" y="774.6" width="268" height="120">
+      <Check id="59d22dee-1e29-4a79-ba15-a1ba1eb1fefd" descr="Doors are 'locked'" x="1108.9" y="785.6" width="139" height="24" traceItems="a31342c143aea0ddc86623">
+        <testdiagramnode version="33" xmlns="http://www.vector-informatik.de/ITE/TestTable/1.0">
+          <sequencecommand>
+            <ttfunction>
+              <title />
+              <name>CheckDoors</name>
+              <param>
+                <type>int</type>
+                <value>
+                  <dbobject>VTE_BEGIN_OF_OBJECT|1|Locked|24|DBSignal_BEGIN_OF_OBJECT|1|NodeOrFrameData_BEGIN_OF_OBJECT|1|1|CAN|1|comfort|SUT|END_OF_OBJECT_NodeOrFrameData|FrameData_BEGIN_OF_OBJECT|1|255|255|0|0|CentralLockingSystemState|0|False|END_OF_OBJECT_FrameData|LockState|1|END_OF_OBJECT_||END_OF_OBJECT_VTE|</dbobject>
+                </value>
+              </param>
+            </ttfunction>
+          </sequencecommand>
+        </testdiagramnode>
+      </Check>
+      <Check id="f651dbdd-88bb-44cc-bda7-b00f1ac079a8" descr="Doors are 'unlocked'" x="1113.9" y="854.6" width="135" height="24" traceItems="a31342c143aea0ddc86629">
+        <testdiagramnode version="33" xmlns="http://www.vector-informatik.de/ITE/TestTable/1.0">
+          <sequencecommand>
+            <ttfunction>
+              <title />
+              <name>CheckDoors</name>
+              <param>
+                <type>int</type>
+                <value>
+                  <dbobject>VTE_BEGIN_OF_OBJECT|1|Unlocked|24|DBSignal_BEGIN_OF_OBJECT|1|NodeOrFrameData_BEGIN_OF_OBJECT|1|1|CAN|1|comfort|SUT|END_OF_OBJECT_NodeOrFrameData|FrameData_BEGIN_OF_OBJECT|1|255|255|0|0|CentralLockingSystemState|0|False|END_OF_OBJECT_FrameData|LockState|1|END_OF_OBJECT_||END_OF_OBJECT_VTE|</dbobject>
+                </value>
+              </param>
+            </ttfunction>
+          </sequencecommand>
+        </testdiagramnode>
+      </Check>
+    </VisualGroup>
+    <Check id="bd5193b2-4a0a-4c9b-99c8-9e41b8c5452b" descr="Doors are 'unlocked'" x="194.9" y="646.6" width="122" height="24">
+      <testdiagramnode version="33" xmlns="http://www.vector-informatik.de/ITE/TestTable/1.0">
+        <sequencecommand>
+          <ttfunction>
+            <title />
+            <name>CheckDoors</name>
+            <param>
+              <type>int</type>
+              <value>
+                <dbobject>VTE_BEGIN_OF_OBJECT|1|Unlocked|24|DBSignal_BEGIN_OF_OBJECT|1|NodeOrFrameData_BEGIN_OF_OBJECT|1|1|CAN|1|comfort|SUT|END_OF_OBJECT_NodeOrFrameData|FrameData_BEGIN_OF_OBJECT|1|255|255|0|0|CentralLockingSystemState|0|False|END_OF_OBJECT_FrameData|LockState|1|END_OF_OBJECT_||END_OF_OBJECT_VTE|</dbobject>
+              </value>
+            </param>
+          </ttfunction>
+        </sequencecommand>
+      </testdiagramnode>
+    </Check>
+    <Comment id="027000ce-dfc1-4bec-9bec-5bea33a3d68d" descr="A test case attribute is assigned to the left transition to indicate, that someone reviewed the left diagram branch of the multiplexer.&#xD;&#xA;The resulting test cases override the diagram default &quot;in implementation&quot;" x="304.3" y="247.1" width="198" height="91" />
+    <Comment id="31a3c50e-af67-40d4-b838-c559132d5b82" descr="A test case attribute is assigned here to indicate that someone reopended this sub diagram.&#xD;&#xA;The resulting attributes are merged with the attributes above. The priority of the Lifecycle enum ensures that each resulting test case is &quot;reopened&quot;, not &quot;finished&quot;" x="-11.8" y="814.5" width="233" height="104" />
+    <Comment id="2279accb-eb11-42cc-989b-d0a60959aeb5" descr="Looking for &lt;b&gt;traceability add-ons &lt;/b&gt;(e.g. DOORS, Polarion, ...)?&#xD;&#xA;See &lt;Hyperlink NavigateUri = &quot;http://www.vector.com/testunit-addons/&quot;&gt;http://www.vector.com/testunit-addons/&lt;/Hyperlink&gt;." x="1229" y="28" width="250" height="56" fillColor="LightGray" />
+  </Elements>
+  <Links>
+    <Transition id="bf05de1b-1151-4a03-92aa-cd40b56878a7" descr="Start engine" partialPathName="Engine=On" x="591.9" y="237.6" from="de051492-7f2b-418f-a132-93a7ba5508c2" to="ae7d16a8-165c-458a-a82c-2cd3cee4889a" fromPort="MultiplexerPort" toPort="CheckPort">
+      <testdiagramnode version="33" xmlns="http://www.vector-informatik.de/ITE/TestTable/1.0" minRequiredVersion="33" minRequiredCANoeVersion="CANoe 19">
+        <sequencecommand>
+          <transitionattributes>
+            <attributes>
+              <attr>
+                <key>Lifecycle</key>
+                <value>finished</value>
+              </attr>
+              <attr>
+                <key>Note</key>
+                <value>tested 02.12.2024</value>
+              </attr>
+            </attributes>
+          </transitionattributes>
+          <ttfunction>
+            <title />
+            <name>SetStimulus</name>
+            <param>
+              <type>signal</type>
+              <value>
+                <dbobject>DBSignal_BEGIN_OF_OBJECT|1|NodeOrFrameData_BEGIN_OF_OBJECT|1|1|CAN|1|comfort|SUT_Driver|END_OF_OBJECT_NodeOrFrameData|FrameData_BEGIN_OF_OBJECT|1|255|255|0|0|VehicleMotion|50|False|END_OF_OBJECT_FrameData|EngineRunning|1|END_OF_OBJECT_|</dbobject>
+              </value>
+            </param>
+            <param>
+              <type>int</type>
+              <value>
+                <const>1</const>
+              </value>
+            </param>
+          </ttfunction>
+        </sequencecommand>
+      </testdiagramnode>
+    </Transition>
+    <Transition id="6385998e-a695-4c8c-9814-8f8b80986518" x="836.4" y="133.6" from="f428627c-0c05-4671-8734-4ef2a7ccb66a" to="465f9d39-e695-4a44-a7e1-41b54cd6331f" fromPort="CheckPort" toPort="CheckPort" />
+    <Transition id="c7c8ab4a-7d86-4277-9cac-73845b478197" descr="Velocity = 0" partialPathName="V=0" x="321.6" y="416.6" from="208d3632-7330-4911-a2cc-57bad688fe55" to="a6b6b37d-b064-46c9-8c1b-ee17dbae943a" fromPort="MultiplexerPort" toPort="CheckPort" fromSpot="0.025 1 0 0">
+      <testdiagramnode version="33" xmlns="http://www.vector-informatik.de/ITE/TestTable/1.0">
+        <sequencecommand>
+          <ttfunction>
+            <title>SetStimulus (sSignal=Velocity, value=0 km/h)</title>
+            <name>SetStimulus</name>
+            <param>
+              <type>signal</type>
+              <value>
+                <dbobject>DBSignal_BEGIN_OF_OBJECT|1|NodeOrFrameData_BEGIN_OF_OBJECT|1|1|CAN|1|comfort|SUT_Driver|END_OF_OBJECT_NodeOrFrameData|FrameData_BEGIN_OF_OBJECT|1|255|255|0|0|VehicleMotion|50|False|END_OF_OBJECT_FrameData|Velocity|1|END_OF_OBJECT_|</dbobject>
+              </value>
+            </param>
+            <param>
+              <type>int</type>
+              <value>
+                <const>0</const>
+              </value>
+            </param>
+          </ttfunction>
+        </sequencecommand>
+      </testdiagramnode>
+    </Transition>
+    <Transition id="38ecaead-6ce8-4d50-808c-3959532b5bfb" descr="Velocity = LockVelocity" partialPathName="V=LockVel" x="680.8" y="416.6" from="208d3632-7330-4911-a2cc-57bad688fe55" to="3feedab1-30c1-4999-a0ee-0474529d913e" fromPort="MultiplexerPort" toPort="CheckPort" fromSpot="0.596 1 0 0">
+      <testdiagramnode version="33" xmlns="http://www.vector-informatik.de/ITE/TestTable/1.0">
+        <sequencecommand>
+          <ttfunction>
+            <title>SetStimulus (sSignal=Velocity, value=50 km/h)</title>
+            <name>SetStimulus</name>
+            <param>
+              <type>signal</type>
+              <value>
+                <dbobject>DBSignal_BEGIN_OF_OBJECT|1|NodeOrFrameData_BEGIN_OF_OBJECT|1|1|CAN|1|comfort|SUT_Driver|END_OF_OBJECT_NodeOrFrameData|FrameData_BEGIN_OF_OBJECT|1|255|255|0|0|VehicleMotion|50|False|END_OF_OBJECT_FrameData|Velocity|1|END_OF_OBJECT_|</dbobject>
+              </value>
+            </param>
+            <param>
+              <type>int</type>
+              <value>
+                <dbobject>ChParScalar_BEGIN_OF_OBJECT|1|LockingTests::LockVelocity|END_OF_OBJECT_ChParScalar|</dbobject>
+              </value>
+            </param>
+          </ttfunction>
+        </sequencecommand>
+      </testdiagramnode>
+    </Transition>
+    <Transition id="1a883e3a-f9b4-469a-8084-4909ea1a0ad9" descr="Velocity &gt; LockVelocity" partialPathName="V&gt;LockVel" x="816.6" y="416.6" from="208d3632-7330-4911-a2cc-57bad688fe55" to="3feedab1-30c1-4999-a0ee-0474529d913e" fromPort="MultiplexerPort" toPort="CheckPort" fromSpot="0.812 1 0 0">
+      <testdiagramnode version="33" xmlns="http://www.vector-informatik.de/ITE/TestTable/1.0">
+        <sequencecommand>
+          <ttfunction>
+            <title>SetStimulus (sSignal=Velocity, value=75 km/h)</title>
+            <name>SetStimulus</name>
+            <param>
+              <type>signal</type>
+              <value>
+                <dbobject>DBSignal_BEGIN_OF_OBJECT|1|NodeOrFrameData_BEGIN_OF_OBJECT|1|1|CAN|1|comfort|SUT_Driver|END_OF_OBJECT_NodeOrFrameData|FrameData_BEGIN_OF_OBJECT|1|255|255|0|0|VehicleMotion|50|False|END_OF_OBJECT_FrameData|Velocity|1|END_OF_OBJECT_|</dbobject>
+              </value>
+            </param>
+            <param>
+              <type>int</type>
+              <value>
+                <const>75</const>
+              </value>
+            </param>
+          </ttfunction>
+        </sequencecommand>
+      </testdiagramnode>
+    </Transition>
+    <Transition id="fb5639a6-b4fa-4a67-93fb-1052bf28176e" x="591.9" y="304.6" from="ae7d16a8-165c-458a-a82c-2cd3cee4889a" to="46d8befd-b1f3-482c-8bfa-88bded19403b" fromPort="CheckPort" toPort="CheckPort" />
+    <Transition id="59c84d82-9421-4082-93a7-4b9434d2a584" x="591.4" y="363.6" from="46d8befd-b1f3-482c-8bfa-88bded19403b" to="208d3632-7330-4911-a2cc-57bad688fe55" fromPort="CheckPort" toPort="MultiplexerPort" />
+    <Transition id="62da86ec-1048-4440-bd22-44031d25d5b0" descr="Velocity &lt; LockVelocity" partialPathName="V&lt;LockVel" x="409.7" y="416.6" from="208d3632-7330-4911-a2cc-57bad688fe55" to="a6b6b37d-b064-46c9-8c1b-ee17dbae943a" fromPort="MultiplexerPort" toPort="CheckPort" fromSpot="0.165 1 0 0">
+      <testdiagramnode version="33" xmlns="http://www.vector-informatik.de/ITE/TestTable/1.0">
+        <sequencecommand>
+          <ttfunction>
+            <title>SetStimulus (sSignal=Velocity, value=15km/h)</title>
+            <name>SetStimulus</name>
+            <param>
+              <type>signal</type>
+              <value>
+                <dbobject>DBSignal_BEGIN_OF_OBJECT|1|NodeOrFrameData_BEGIN_OF_OBJECT|1|1|CAN|1|comfort|SUT_Driver|END_OF_OBJECT_NodeOrFrameData|FrameData_BEGIN_OF_OBJECT|1|255|255|0|0|VehicleMotion|50|False|END_OF_OBJECT_FrameData|Velocity|1|END_OF_OBJECT_|</dbobject>
+              </value>
+            </param>
+            <param>
+              <type>int</type>
+              <value>
+                <const>15</const>
+              </value>
+            </param>
+          </ttfunction>
+        </sequencecommand>
+      </testdiagramnode>
+    </Transition>
+    <Transition id="366dbd81-7339-4ee5-98b7-0ee964e153b1" descr="Manual 'unlocked'" partialPathName="ManualUnlocked" conditionOffset="3.5 -3" x="936.9" y="541.6" from="323d8a64-ed01-4b82-86e8-0a90c6dd766e" to="06b1ec72-dde2-4427-853c-7e13589add55" fromPort="MultiplexerPort" toPort="CheckPort" fromSpot="0.797 1 0 0">
+      <testdiagramnode version="33" xmlns="http://www.vector-informatik.de/ITE/TestTable/1.0">
+        <sequencecommand>
+          <ttfunction>
+            <title />
+            <name>SetStimulus</name>
+            <param>
+              <type>signal</type>
+              <value>
+                <dbobject>DBSignal_BEGIN_OF_OBJECT|1|NodeOrFrameData_BEGIN_OF_OBJECT|1|1|CAN|1|comfort|SUT_Driver|END_OF_OBJECT_NodeOrFrameData|FrameData_BEGIN_OF_OBJECT|1|255|255|0|0|LockingRemoteControlRequest|1|False|END_OF_OBJECT_FrameData|LockRequest|1|END_OF_OBJECT_|</dbobject>
+              </value>
+            </param>
+            <param>
+              <type>int</type>
+              <value>
+                <dbobject>VTE_BEGIN_OF_OBJECT|1|Request_unlock|24|DBSignal_BEGIN_OF_OBJECT|1|NodeOrFrameData_BEGIN_OF_OBJECT|1|1|CAN|1|comfort|SUT_Driver|END_OF_OBJECT_NodeOrFrameData|FrameData_BEGIN_OF_OBJECT|1|255|255|0|0|LockingRemoteControlRequest|1|False|END_OF_OBJECT_FrameData|LockRequest|1|END_OF_OBJECT_||END_OF_OBJECT_VTE|</dbobject>
+              </value>
+            </param>
+          </ttfunction>
+        </sequencecommand>
+      </testdiagramnode>
+    </Transition>
+    <Transition id="54b13f41-49db-4d5d-ba6e-006080e13339" descr="Manual 'locked'" partialPathName="ManualLocked" x="610.7" y="541.6" from="323d8a64-ed01-4b82-86e8-0a90c6dd766e" to="c9f44f8a-ac65-4190-aa75-82d80ac8f286" fromPort="MultiplexerPort" toPort="CheckPort" fromSpot="0.166 1 0 0">
+      <testdiagramnode version="33" xmlns="http://www.vector-informatik.de/ITE/TestTable/1.0">
+        <sequencecommand>
+          <ttfunction>
+            <title />
+            <name>SetStimulus</name>
+            <param>
+              <type>signal</type>
+              <value>
+                <dbobject>DBSignal_BEGIN_OF_OBJECT|1|NodeOrFrameData_BEGIN_OF_OBJECT|1|1|CAN|1|comfort|SUT_Driver|END_OF_OBJECT_NodeOrFrameData|FrameData_BEGIN_OF_OBJECT|1|255|255|0|0|LockingRemoteControlRequest|1|False|END_OF_OBJECT_FrameData|LockRequest|1|END_OF_OBJECT_|</dbobject>
+              </value>
+            </param>
+            <param>
+              <type>int</type>
+              <value>
+                <dbobject>VTE_BEGIN_OF_OBJECT|1|Request_lock|24|DBSignal_BEGIN_OF_OBJECT|1|NodeOrFrameData_BEGIN_OF_OBJECT|1|1|CAN|1|comfort|SUT_Driver|END_OF_OBJECT_NodeOrFrameData|FrameData_BEGIN_OF_OBJECT|1|255|255|0|0|LockingRemoteControlRequest|1|False|END_OF_OBJECT_FrameData|LockRequest|1|END_OF_OBJECT_||END_OF_OBJECT_VTE|</dbobject>
+              </value>
+            </param>
+          </ttfunction>
+        </sequencecommand>
+      </testdiagramnode>
+    </Transition>
+    <Transition id="d823765e-66b9-4f31-88d0-13708a3b2c72" x="732.7" y="502.8" from="3feedab1-30c1-4999-a0ee-0474529d913e" to="323d8a64-ed01-4b82-86e8-0a90c6dd766e" fromPort="CheckPort" toPort="MultiplexerPort" />
+    <Transition id="87bd5a2b-518a-40f8-93da-bf43f9401eaa" x="937.9" y="609.6" from="06b1ec72-dde2-4427-853c-7e13589add55" to="d7b42bae-fc4f-4c29-ab24-1ab9277b08a5" fromPort="CheckPort" toPort="MultiplexerPort" />
+    <Transition id="98c3beab-9e12-4e31-8677-c3f107e8909c" descr="Velocity &lt; LockVelocity" partialPathName="V&lt;LockVel" x="1014.9" y="684.6" from="d7b42bae-fc4f-4c29-ab24-1ab9277b08a5" to="64a3d9de-f153-44d1-872c-6b78f484b699" fromPort="MultiplexerPort" toPort="CheckPort" fromSpot="0.953 1 0 0">
+      <testdiagramnode version="33" xmlns="http://www.vector-informatik.de/ITE/TestTable/1.0">
+        <sequencecommand>
+          <ttfunction>
+            <title>SetStimulus (sSignal=Velocity, value=15km/h)</title>
+            <name>SetStimulus</name>
+            <param>
+              <type>signal</type>
+              <value>
+                <dbobject>DBSignal_BEGIN_OF_OBJECT|1|NodeOrFrameData_BEGIN_OF_OBJECT|1|1|CAN|1|comfort|SUT_Driver|END_OF_OBJECT_NodeOrFrameData|FrameData_BEGIN_OF_OBJECT|1|255|255|0|0|VehicleMotion|50|False|END_OF_OBJECT_FrameData|Velocity|1|END_OF_OBJECT_|</dbobject>
+              </value>
+            </param>
+            <param>
+              <type>int</type>
+              <value>
+                <const>15</const>
+              </value>
+            </param>
+          </ttfunction>
+        </sequencecommand>
+      </testdiagramnode>
+    </Transition>
+    <Transition id="af4c8069-036b-47c1-a724-451d164bc9a9" x="608.9" y="608.6" from="c9f44f8a-ac65-4190-aa75-82d80ac8f286" to="ad47abdc-3b4d-4dd0-a58d-83ebbe523903" fromPort="CheckPort" toPort="MultiplexerPort" />
+    <Transition id="75cedacd-6a49-45dc-948d-54243a881450" descr="Velocity = LockVelocity" partialPathName="V=LockVel" x="544.9" y="686.6" from="ad47abdc-3b4d-4dd0-a58d-83ebbe523903" to="1fbc2f35-b93a-4e60-bd6c-861b3b19bf36" fromPort="MultiplexerPort" toPort="CheckPort" fromSpot="0.059 1 0 0">
+      <testdiagramnode version="33" xmlns="http://www.vector-informatik.de/ITE/TestTable/1.0">
+        <sequencecommand>
+          <ttfunction>
+            <title>SetStimulus (sSignal=Velocity, value=20km/h)</title>
+            <name>SetStimulus</name>
+            <param>
+              <type>signal</type>
+              <value>
+                <dbobject>DBSignal_BEGIN_OF_OBJECT|1|NodeOrFrameData_BEGIN_OF_OBJECT|1|1|CAN|1|comfort|SUT_Driver|END_OF_OBJECT_NodeOrFrameData|FrameData_BEGIN_OF_OBJECT|1|255|255|0|0|VehicleMotion|50|False|END_OF_OBJECT_FrameData|Velocity|1|END_OF_OBJECT_|</dbobject>
+              </value>
+            </param>
+            <param>
+              <type>int</type>
+              <value>
+                <dbobject>ChParScalar_BEGIN_OF_OBJECT|1|LockingTests::LockVelocity|END_OF_OBJECT_ChParScalar|</dbobject>
+              </value>
+            </param>
+          </ttfunction>
+        </sequencecommand>
+      </testdiagramnode>
+    </Transition>
+    <Transition id="18d33e9a-d1d3-4d04-a7c6-f133a5665bfe" descr="Velocity &lt; LockVelocity" partialPathName="V&lt;LockVel" x="677.9" y="686.6" from="ad47abdc-3b4d-4dd0-a58d-83ebbe523903" to="1fbc2f35-b93a-4e60-bd6c-861b3b19bf36" fromPort="MultiplexerPort" toPort="CheckPort" fromSpot="0.934 1 0 0">
+      <testdiagramnode version="33" xmlns="http://www.vector-informatik.de/ITE/TestTable/1.0">
+        <sequencecommand>
+          <ttfunction>
+            <title>SetStimulus (sSignal=Velocity, value=15km/h)</title>
+            <name>SetStimulus</name>
+            <param>
+              <type>signal</type>
+              <value>
+                <dbobject>DBSignal_BEGIN_OF_OBJECT|1|NodeOrFrameData_BEGIN_OF_OBJECT|1|1|CAN|1|comfort|SUT_Driver|END_OF_OBJECT_NodeOrFrameData|FrameData_BEGIN_OF_OBJECT|1|255|255|0|0|VehicleMotion|50|False|END_OF_OBJECT_FrameData|Velocity|1|END_OF_OBJECT_|</dbobject>
+              </value>
+            </param>
+            <param>
+              <type>int</type>
+              <value>
+                <const>15</const>
+              </value>
+            </param>
+          </ttfunction>
+        </sequencecommand>
+      </testdiagramnode>
+    </Transition>
+    <Transition id="9811f19c-97c6-4570-8d82-0adf3949852b" x="745.9" y="1121.6" from="ae5cf800-5768-49af-8f2a-54ca2da2dd40" to="5c636296-fb34-44e8-af6f-11eee0ff1df4" fromPort="CheckPort" toPort="FinishPort" />
+    <Transition id="e9b6ba51-a60e-4afd-a98b-5ee19b08999c" x="365.4" y="501.6" from="a6b6b37d-b064-46c9-8c1b-ee17dbae943a" to="c319753e-4b55-44fb-9097-7abf3469be84" fromPort="CheckPort" toPort="MultiplexerPort" />
+    <Transition id="3fecbe72-5871-49eb-a0b0-a4b48534772a" descr="Manual 'locked'" partialPathName="ManualLocked" conditionOffset="16.3 -3" x="438.7" y="542.6" from="c319753e-4b55-44fb-9097-7abf3469be84" to="6d28e78d-22c8-4ee5-a7c1-946e7eb141e4" fromPort="MultiplexerPort" toPort="CheckPort" fromSpot="0.796 1 0 0">
+      <testdiagramnode version="33" xmlns="http://www.vector-informatik.de/ITE/TestTable/1.0">
+        <sequencecommand>
+          <ttfunction>
+            <title />
+            <name>SetStimulus</name>
+            <param>
+              <type>signal</type>
+              <value>
+                <dbobject>DBSignal_BEGIN_OF_OBJECT|1|NodeOrFrameData_BEGIN_OF_OBJECT|1|1|CAN|1|comfort|SUT_Driver|END_OF_OBJECT_NodeOrFrameData|FrameData_BEGIN_OF_OBJECT|1|255|255|0|0|LockingRemoteControlRequest|1|False|END_OF_OBJECT_FrameData|LockRequest|1|END_OF_OBJECT_|</dbobject>
+              </value>
+            </param>
+            <param>
+              <type>int</type>
+              <value>
+                <dbobject>VTE_BEGIN_OF_OBJECT|1|Request_lock|24|DBSignal_BEGIN_OF_OBJECT|1|NodeOrFrameData_BEGIN_OF_OBJECT|1|1|CAN|1|comfort|SUT_Driver|END_OF_OBJECT_NodeOrFrameData|FrameData_BEGIN_OF_OBJECT|1|255|255|0|0|LockingRemoteControlRequest|1|False|END_OF_OBJECT_FrameData|LockRequest|1|END_OF_OBJECT_||END_OF_OBJECT_VTE|</dbobject>
+              </value>
+            </param>
+          </ttfunction>
+        </sequencecommand>
+      </testdiagramnode>
+    </Transition>
+    <Transition id="b569d132-5541-4304-bed5-fdba4b3affce" partialPathName="Engine=Off" x="1181.4" y="237.6" from="de051492-7f2b-418f-a132-93a7ba5508c2" to="022c015a-0c0e-4865-bcd8-e89d325cb079" fromPort="MultiplexerPort" toPort="CheckPort">
+      <testdiagramnode version="33" xmlns="http://www.vector-informatik.de/ITE/TestTable/1.0">
+        <sequencecommand>
+          <ttfunction>
+            <title />
+            <name>SetStimulus</name>
+            <param>
+              <type>signal</type>
+              <value>
+                <dbobject>DBSignal_BEGIN_OF_OBJECT|1|NodeOrFrameData_BEGIN_OF_OBJECT|1|1|CAN|1|comfort|SUT_Driver|END_OF_OBJECT_NodeOrFrameData|FrameData_BEGIN_OF_OBJECT|1|255|255|0|0|VehicleMotion|50|False|END_OF_OBJECT_FrameData|EngineRunning|1|END_OF_OBJECT_|</dbobject>
+              </value>
+            </param>
+            <param>
+              <type>int</type>
+              <value>
+                <const>0</const>
+              </value>
+            </param>
+          </ttfunction>
+        </sequencecommand>
+      </testdiagramnode>
+    </Transition>
+    <Transition id="2abbb763-577d-4dd6-afb9-7267bb6045af" x="1182.9" y="304.6" from="022c015a-0c0e-4865-bcd8-e89d325cb079" to="5c4e7c03-3f1d-4eb0-a6df-de7357353490" fromPort="CheckPort" toPort="CheckPort" />
+    <Transition id="c2e59d58-e156-45d5-87cf-cf609d391f4d" x="746.9" y="1058.6" from="2eedbf08-6b81-49f7-9b91-9dd6a4dcf148" to="ae5cf800-5768-49af-8f2a-54ca2da2dd40" fromPort="JoinPort" toPort="CheckPort" />
+    <Transition id="51dc1ef1-29e8-43ba-8a39-04963d3a48c6" x="264.5" y="952.6" from="39c6d22b-2ce8-4bed-a746-71cbbc709795" to="2eedbf08-6b81-49f7-9b91-9dd6a4dcf148" fromPort="CheckPort" toPort="JoinPort" fromSpot="0.477 1 0 0" />
+    <Transition id="03b8e151-9d71-439e-a94e-f33afcf81ebb" x="438.5" y="636" from="6d28e78d-22c8-4ee5-a7c1-946e7eb141e4" to="e3703d52-0077-41ff-818e-d66c3f41cc2c" fromPort="CheckPort" toPort="MultiplexerPort" />
+    <Transition id="06ff42b8-11d5-4899-965d-7483910db267" x="603" y="763.4" from="1fbc2f35-b93a-4e60-bd6c-861b3b19bf36" to="e3703d52-0077-41ff-818e-d66c3f41cc2c" fromPort="CheckPort" toPort="MultiplexerPort" />
+    <Transition id="19dd03d7-7fc2-4bde-838b-6f8a00c29bd8" descr="Stop Engine" partialPathName="Engine=Off" x="655.4" y="823.6" from="e3703d52-0077-41ff-818e-d66c3f41cc2c" to="2985b604-6008-4ff4-aaec-27b736f808ae" fromPort="MultiplexerPort" toPort="IncomingSwitchPort">
+      <testdiagramnode version="33" xmlns="http://www.vector-informatik.de/ITE/TestTable/1.0" minRequiredVersion="33" minRequiredCANoeVersion="CANoe 19">
+        <sequencecommand>
+          <transitionattributes>
+            <attributes>
+              <attr>
+                <key>Lifecycle</key>
+                <value>reopened</value>
+              </attr>
+              <attr>
+                <key>Note</key>
+                <value>reopend 29.01.2025</value>
+              </attr>
+            </attributes>
+          </transitionattributes>
+          <ttfunction>
+            <title />
+            <name>SetStimulus</name>
+            <param>
+              <type>signal</type>
+              <value>
+                <dbobject>DBSignal_BEGIN_OF_OBJECT|1|NodeOrFrameData_BEGIN_OF_OBJECT|1|1|CAN|1|comfort|SUT_Driver|END_OF_OBJECT_NodeOrFrameData|FrameData_BEGIN_OF_OBJECT|1|255|255|0|0|VehicleMotion|50|False|END_OF_OBJECT_FrameData|EngineRunning|1|END_OF_OBJECT_|</dbobject>
+              </value>
+            </param>
+            <param>
+              <type>int</type>
+              <value>
+                <const>0</const>
+              </value>
+            </param>
+          </ttfunction>
+        </sequencecommand>
+      </testdiagramnode>
+    </Transition>
+    <Transition id="5db0b13b-1968-478e-b4f2-20596078b213" descr="Stimulate crash" partialPathName="Crash" x="440.4" y="823.6" from="e3703d52-0077-41ff-818e-d66c3f41cc2c" to="08c558c4-2c52-4da1-86eb-cfef13a9c4e0" fromPort="MultiplexerPort" toPort="CheckPort" color="Red">
+      <testdiagramnode version="33" xmlns="http://www.vector-informatik.de/ITE/TestTable/1.0">
+        <sequencecommand>
+          <ttfunction>
+            <title />
+            <name>SetStimulus</name>
+            <param>
+              <type>signal</type>
+              <value>
+                <dbobject>DBSignal_BEGIN_OF_OBJECT|1|NodeOrFrameData_BEGIN_OF_OBJECT|1|1|CAN|1|comfort|SUT_Driver|END_OF_OBJECT_NodeOrFrameData|FrameData_BEGIN_OF_OBJECT|1|255|255|0|0|VehicleMotion|50|False|END_OF_OBJECT_FrameData|CrashDetected|1|END_OF_OBJECT_|</dbobject>
+              </value>
+            </param>
+            <param>
+              <type>int</type>
+              <value>
+                <const>1</const>
+              </value>
+            </param>
+          </ttfunction>
+        </sequencecommand>
+      </testdiagramnode>
+    </Transition>
+    <Transition id="e1340650-8834-460d-a17a-e8b518326843" x="440.9" y="912.6" from="08c558c4-2c52-4da1-86eb-cfef13a9c4e0" to="2eedbf08-6b81-49f7-9b91-9dd6a4dcf148" fromPort="CheckPort" toPort="JoinPort" fromSpot="0.516 1 0 0" />
+    <Transition id="80c0b580-dfb8-44a6-8ef3-f67f42daf11b" descr="Stimulate crash" x="942.9" y="770.6" from="64a3d9de-f153-44d1-872c-6b78f484b699" to="ab39034c-95d4-4f1e-a064-99e9951c5096" fromPort="CheckPort" toPort="CheckPort" color="Red">
+      <testdiagramnode version="33" xmlns="http://www.vector-informatik.de/ITE/TestTable/1.0">
+        <sequencecommand>
+          <ttfunction>
+            <title />
+            <name>SetStimulus</name>
+            <param>
+              <type>signal</type>
+              <value>
+                <dbobject>DBSignal_BEGIN_OF_OBJECT|1|NodeOrFrameData_BEGIN_OF_OBJECT|1|1|CAN|1|comfort|SUT_Driver|END_OF_OBJECT_NodeOrFrameData|FrameData_BEGIN_OF_OBJECT|1|255|255|0|0|VehicleMotion|50|False|END_OF_OBJECT_FrameData|CrashDetected|1|END_OF_OBJECT_|</dbobject>
+              </value>
+            </param>
+            <param>
+              <type>int</type>
+              <value>
+                <const>1</const>
+              </value>
+            </param>
+          </ttfunction>
+        </sequencecommand>
+      </testdiagramnode>
+    </Transition>
+    <Transition id="f4219a8b-c5b4-4ac7-8b68-0113a5e0cbdd" x="944.4" y="1010.6" from="ab39034c-95d4-4f1e-a064-99e9951c5096" to="2eedbf08-6b81-49f7-9b91-9dd6a4dcf148" fromPort="CheckPort" toPort="JoinPort" />
+    <Transition id="d2e6bfc3-166a-4795-b1f9-848b49974a64" descr="Variant for 'locked' doors" condition="( UnlockDoorOnEngineStop==0 )" x="542.8" y="903.6" from="2985b604-6008-4ff4-aaec-27b736f808ae" to="90fcd160-dc9f-4202-8cc1-b4c7e8c05224" fromPort="OutgoingSwitchPort" toPort="CheckPort" fromSpot="0.062 1 0 0">
+      <testdiagramnode version="33" xmlns="http://www.vector-informatik.de/ITE/TestTable/1.0">
+        <ifcommand>
+          <ifcondition>
+            <title />
+            <compare>
+              <value>
+                <dbobject>ChParScalar_BEGIN_OF_OBJECT|1|UnlockDoorOnEngineStop|END_OF_OBJECT_ChParScalar|</dbobject>
+              </value>
+              <eq>
+                <const>0</const>
+              </eq>
+            </compare>
+          </ifcondition>
+        </ifcommand>
+      </testdiagramnode>
+    </Transition>
+    <Transition id="fc27b4de-1b2f-434f-890e-00581aa72530" x="543.9" y="1009.6" from="90fcd160-dc9f-4202-8cc1-b4c7e8c05224" to="2eedbf08-6b81-49f7-9b91-9dd6a4dcf148" fromPort="CheckPort" toPort="JoinPort" />
+    <Transition id="d4866819-a573-4453-be10-752dc0fc60b9" descr="Variant for 'unlocked' doors" condition="( UnlockDoorOnEngineStop==1 )" x="725.8" y="903.6" from="2985b604-6008-4ff4-aaec-27b736f808ae" to="952c0cee-fc47-4f47-9de9-3692a4054365" fromPort="OutgoingSwitchPort" toPort="CheckPort" fromSpot="0.774 1 0 0">
+      <testdiagramnode version="33" xmlns="http://www.vector-informatik.de/ITE/TestTable/1.0">
+        <ifcommand>
+          <ifcondition>
+            <title />
+            <compare>
+              <value>
+                <dbobject>ChParScalar_BEGIN_OF_OBJECT|1|UnlockDoorOnEngineStop|END_OF_OBJECT_ChParScalar|</dbobject>
+              </value>
+              <eq>
+                <const>1</const>
+              </eq>
+            </compare>
+          </ifcondition>
+        </ifcommand>
+      </testdiagramnode>
+    </Transition>
+    <Transition id="81d1a1cb-d5ab-4a7d-8119-d6899657c8ae" x="728.9" y="1008.9" from="952c0cee-fc47-4f47-9de9-3692a4054365" to="2eedbf08-6b81-49f7-9b91-9dd6a4dcf148" fromPort="CheckPort" toPort="JoinPort" />
+    <CommentLink id="c87e48af-6c06-44ea-998b-5e0c832d2d6a" from="fcb0f0cd-802a-404c-8313-7fd8afdf707f" to="f428627c-0c05-4671-8734-4ef2a7ccb66a" fromPort="CommentPort" toPort="CheckPort" />
+    <Transition id="e1f94e0f-7ce7-49de-b0af-cb90a582f249" x="834.4" y="76.6" from="f6887384-7bb6-4df2-804a-02c3c74740f6" to="f428627c-0c05-4671-8734-4ef2a7ccb66a" fromPort="StartPort" toPort="CheckPort" />
+    <Transition id="2ad77f1a-c3d8-4735-b451-7a90ae7b4792" x="836.9" y="192.6" from="465f9d39-e695-4a44-a7e1-41b54cd6331f" to="de051492-7f2b-418f-a132-93a7ba5508c2" fromPort="CheckPort" toPort="MultiplexerPort" />
+    <CommentLink id="2b8a046a-d765-4681-9e6b-e434860e7373" from="0e830c21-457b-4135-a264-a8cbfa5ca40f" to="2985b604-6008-4ff4-aaec-27b736f808ae" fromPort="CommentPort" toPort="IncomingSwitchVariantPort" />
+    <CommentLink id="d4244b10-428d-4200-a0b3-d0e01bbbb435" from="8802dd0e-df59-4d7b-a2e3-cff3a9ed937b" to="ae7d16a8-165c-458a-a82c-2cd3cee4889a" fromPort="CommentPort" toPort="CheckPort" />
+    <Transition id="09866e10-55bf-4f44-9feb-08531baba2ba" x="1189.4" y="895.6" from="ced9b1ad-52b0-40fe-945c-b19c180ea718" to="2eedbf08-6b81-49f7-9b91-9dd6a4dcf148" fromPort="VisualGroupPort" toPort="JoinPort" />
+    <Transition id="8412a82c-cc5c-4d2a-8b48-272bd383daee" descr="Manual 'locked'" x="1183.4" y="370.6" from="5c4e7c03-3f1d-4eb0-a6df-de7357353490" to="ced9b1ad-52b0-40fe-945c-b19c180ea718" fromPort="CheckPort" toPort="VisualGroupPort">
+      <testdiagramnode version="33" xmlns="http://www.vector-informatik.de/ITE/TestTable/1.0">
+        <sequencecommand>
+          <ttfunction>
+            <title />
+            <name>SetStimulus</name>
+            <param>
+              <type>signal</type>
+              <value>
+                <dbobject>DBSignal_BEGIN_OF_OBJECT|1|NodeOrFrameData_BEGIN_OF_OBJECT|1|1|CAN|1|comfort|SUT_Driver|END_OF_OBJECT_NodeOrFrameData|FrameData_BEGIN_OF_OBJECT|1|255|255|0|0|LockingRemoteControlRequest|1|False|END_OF_OBJECT_FrameData|LockRequest|1|END_OF_OBJECT_|</dbobject>
+              </value>
+            </param>
+            <param>
+              <type>int</type>
+              <value>
+                <dbobject>VTE_BEGIN_OF_OBJECT|1|Request_lock|24|DBSignal_BEGIN_OF_OBJECT|1|NodeOrFrameData_BEGIN_OF_OBJECT|1|1|CAN|1|comfort|SUT_Driver|END_OF_OBJECT_NodeOrFrameData|FrameData_BEGIN_OF_OBJECT|1|255|255|0|0|LockingRemoteControlRequest|1|False|END_OF_OBJECT_FrameData|LockRequest|1|END_OF_OBJECT_||END_OF_OBJECT_VTE|</dbobject>
+              </value>
+            </param>
+          </ttfunction>
+        </sequencecommand>
+      </testdiagramnode>
+    </Transition>
+    <Transition id="3c299358-8974-40ae-aa13-48bd69f1c1ed" descr="Manual 'unlocked'" x="1180.9" y="809.6" from="59d22dee-1e29-4a79-ba15-a1ba1eb1fefd" to="f651dbdd-88bb-44cc-bda7-b00f1ac079a8" fromPort="CheckPort" toPort="CheckPort">
+      <testdiagramnode version="33" xmlns="http://www.vector-informatik.de/ITE/TestTable/1.0">
+        <sequencecommand>
+          <ttfunction>
+            <title />
+            <name>SetStimulus</name>
+            <param>
+              <type>signal</type>
+              <value>
+                <dbobject>DBSignal_BEGIN_OF_OBJECT|1|NodeOrFrameData_BEGIN_OF_OBJECT|1|1|CAN|1|comfort|SUT_Driver|END_OF_OBJECT_NodeOrFrameData|FrameData_BEGIN_OF_OBJECT|1|255|255|0|0|LockingRemoteControlRequest|1|False|END_OF_OBJECT_FrameData|LockRequest|1|END_OF_OBJECT_|</dbobject>
+              </value>
+            </param>
+            <param>
+              <type>int</type>
+              <value>
+                <dbobject>VTE_BEGIN_OF_OBJECT|1|Request_unlock|24|DBSignal_BEGIN_OF_OBJECT|1|NodeOrFrameData_BEGIN_OF_OBJECT|1|1|CAN|1|comfort|SUT_Driver|END_OF_OBJECT_NodeOrFrameData|FrameData_BEGIN_OF_OBJECT|1|255|255|0|0|LockingRemoteControlRequest|1|False|END_OF_OBJECT_FrameData|LockRequest|1|END_OF_OBJECT_||END_OF_OBJECT_VTE|</dbobject>
+              </value>
+            </param>
+          </ttfunction>
+        </sequencecommand>
+      </testdiagramnode>
+    </Transition>
+    <Transition id="bef2f450-392e-4b1b-b377-132ce7e207af" descr="Stimulate crash" conditionOffset="10.3 -3" x="265.8" y="670.6" from="bd5193b2-4a0a-4c9b-99c8-9e41b8c5452b" to="39c6d22b-2ce8-4bed-a746-71cbbc709795" fromPort="CheckPort" toPort="CheckPort" color="Red" fromSpot="0.581 1 0 0">
+      <testdiagramnode version="33" xmlns="http://www.vector-informatik.de/ITE/TestTable/1.0">
+        <sequencecommand>
+          <ttfunction>
+            <title />
+            <name>SetStimulus</name>
+            <param>
+              <type>signal</type>
+              <value>
+                <dbobject>DBSignal_BEGIN_OF_OBJECT|1|NodeOrFrameData_BEGIN_OF_OBJECT|1|1|CAN|1|comfort|SUT_Driver|END_OF_OBJECT_NodeOrFrameData|FrameData_BEGIN_OF_OBJECT|1|255|255|0|0|VehicleMotion|50|False|END_OF_OBJECT_FrameData|CrashDetected|1|END_OF_OBJECT_|</dbobject>
+              </value>
+            </param>
+            <param>
+              <type>int</type>
+              <value>
+                <const>1</const>
+              </value>
+            </param>
+          </ttfunction>
+        </sequencecommand>
+      </testdiagramnode>
+    </Transition>
+    <Transition id="217c8846-27c9-45da-8497-94976d4dde97" descr="Manual 'unlocked'" partialPathName="ManualUnlocked" x="261.7" y="542.6" from="c319753e-4b55-44fb-9097-7abf3469be84" to="bd5193b2-4a0a-4c9b-99c8-9e41b8c5452b" fromPort="MultiplexerPort" toPort="CheckPort" fromSpot="0.225 1 0 0">
+      <testdiagramnode version="33" xmlns="http://www.vector-informatik.de/ITE/TestTable/1.0">
+        <sequencecommand>
+          <ttfunction>
+            <title />
+            <name>SetStimulus</name>
+            <param>
+              <type>signal</type>
+              <value>
+                <dbobject>DBSignal_BEGIN_OF_OBJECT|1|NodeOrFrameData_BEGIN_OF_OBJECT|1|1|CAN|1|comfort|SUT_Driver|END_OF_OBJECT_NodeOrFrameData|FrameData_BEGIN_OF_OBJECT|1|255|255|0|0|LockingRemoteControlRequest|1|False|END_OF_OBJECT_FrameData|LockRequest|1|END_OF_OBJECT_|</dbobject>
+              </value>
+            </param>
+            <param>
+              <type>int</type>
+              <value>
+                <dbobject>VTE_BEGIN_OF_OBJECT|1|Request_unlock|24|DBSignal_BEGIN_OF_OBJECT|1|NodeOrFrameData_BEGIN_OF_OBJECT|1|1|CAN|1|comfort|SUT_Driver|END_OF_OBJECT_NodeOrFrameData|FrameData_BEGIN_OF_OBJECT|1|255|255|0|0|LockingRemoteControlRequest|1|False|END_OF_OBJECT_FrameData|LockRequest|1|END_OF_OBJECT_||END_OF_OBJECT_VTE|</dbobject>
+              </value>
+            </param>
+          </ttfunction>
+        </sequencecommand>
+      </testdiagramnode>
+    </Transition>
+    <Transition id="e17b7019-619a-44e7-865e-746b73f6c918" descr="Velocity = 0" partialPathName="V=0" conditionOffset="12.3 -3" x="878.9" y="684.6" from="d7b42bae-fc4f-4c29-ab24-1ab9277b08a5" to="64a3d9de-f153-44d1-872c-6b78f484b699" fromPort="MultiplexerPort" toPort="CheckPort" fromSpot="0.04 1 0 0">
+      <testdiagramnode version="33" xmlns="http://www.vector-informatik.de/ITE/TestTable/1.0">
+        <sequencecommand>
+          <ttfunction>
+            <title />
+            <name>SetStimulus</name>
+            <param>
+              <type>signal</type>
+              <value>
+                <dbobject>DBSignal_BEGIN_OF_OBJECT|1|NodeOrFrameData_BEGIN_OF_OBJECT|1|1|CAN|1|comfort|SUT_Driver|END_OF_OBJECT_NodeOrFrameData|FrameData_BEGIN_OF_OBJECT|1|255|255|0|0|VehicleMotion|50|False|END_OF_OBJECT_FrameData|Velocity|1|END_OF_OBJECT_|</dbobject>
+              </value>
+            </param>
+            <param>
+              <type>int</type>
+              <value>
+                <const>0</const>
+              </value>
+            </param>
+          </ttfunction>
+        </sequencecommand>
+      </testdiagramnode>
+    </Transition>
+    <CommentLink id="f498b8ee-e8ba-452f-b80e-6138df7c13d9" from="027000ce-dfc1-4bec-9bec-5bea33a3d68d" to="de051492-7f2b-418f-a132-93a7ba5508c2" fromPort="CommentPort" toPort="MultiplexerPort" toSpot="0.096 1 0 0" />
+    <CommentLink id="73852aec-5ac8-4e31-ac79-24d814c55da6" from="31a3c50e-af67-40d4-b838-c559132d5b82" to="e3703d52-0077-41ff-818e-d66c3f41cc2c" fromPort="CommentPort" toPort="MultiplexerPort" toSpot="0.675 1 0 0" />
+  </Links>
+</TestSequenceDiagram>

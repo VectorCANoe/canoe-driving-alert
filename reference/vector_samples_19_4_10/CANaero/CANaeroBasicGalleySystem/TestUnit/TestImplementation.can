@@ -1,0 +1,41 @@
+
+
+export testcase WaitUntilTheEndOfMeasurement() {
+   TestWaitForMeasurementEnd(0);
+}
+
+export void SetTestConditions(){
+
+    dword checkId;
+    checkId=ChkStart_MsgAbsCycleTimeViolation(STA_GAIN_FromCoffeeMaker,1900,2100);
+    testAddCondition(checkId);
+
+    checkId=ChkStart_MsgAbsCycleTimeViolation(STA_GAIN_FromSteamOven,1900,2100);
+    testAddCondition(checkId);
+
+    checkId=ChkStart_MsgAbsCycleTimeViolation(STA_GAIN_FromTrashCompactor,1900,2100);
+    testAddCondition(checkId);
+
+    checkId=ChkStart_MsgAbsCycleTimeViolation(STA_GAIN_FromDisplayPanel,1900,2100);
+    testAddCondition(checkId);
+
+    checkId=ChkStart_MsgAbsCycleTimeViolation(STA_MGCU_FromGalleyMaster,1900,2100);
+    testAddCondition(checkId);
+
+    checkId=ChkStart_InconsistentTxDlc(CoffeeMaker);
+    testAddCondition(checkId);
+
+    checkId=ChkStart_InconsistentTxDlc(SteamOven);
+    testAddCondition(checkId);
+
+    checkId=ChkStart_InconsistentTxDlc(TrashCompactor);
+    testAddCondition(checkId);
+
+    checkId=ChkStart_InconsistentTxDlc(DisplayPanel);
+    testAddCondition(checkId);
+
+    checkId=ChkStart_InconsistentTxDlc(GalleyMaster);
+    testAddCondition(checkId);
+
+
+}

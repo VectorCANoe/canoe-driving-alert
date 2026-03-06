@@ -1,0 +1,71 @@
+/*@!Encoding:1252*/
+includes
+{
+  
+}
+
+variables
+{
+  char panelName[100] = "Test Control";
+}
+
+on sysvar CAMValues::LightBarInUse
+{
+  if (@TestConfiguration::TestState != 2)
+  {
+    return;
+  }
+  if (@CAMValues::LightBarInUse == 0)
+  {
+    @TestConfiguration::StopTest_Called = 1;
+    @TestConfiguration::StopType = 1;
+  }
+}
+
+on key 's'
+{
+  @TestConfiguration::StopTest_Called = 1;
+  @TestConfiguration::StopType = 0;
+}
+
+on sysvar DENMvalues::CauseCode
+{
+  // check if in TestExecution Step
+  if (@TestConfiguration::TestState == 2)
+  {
+    // check if CC changed, then stop test
+    if ((@DENM::InitialCC == 95 && @DENMvalues::CauseCode == 15) || ((@DENM::InitialCC == 15 && @DENMvalues::CauseCode == 95)))
+    {
+      @TestConfiguration::StopTest_Called = 1;
+      @TestConfiguration::StopType = 2;
+    }
+  }
+}
+
+on sysvar TestConfiguration::StopTest
+{
+  @TestConfiguration::StopTest_Called = 1;
+  @TestConfiguration::StopType = 0;
+}
+
+on sysvar TestConfiguration::TestState
+{
+  char buffer[100];
+  sysGetVariableDescriptionForValue(sysvar::TestConfiguration::TestState, @TestConfiguration::TestState, buffer, elcount(buffer));
+  putValueToControl(panelName, "TestStateOutput", buffer);
+  putValueToControl(panelName, "TestStateOutput", "\n");
+}
+
+export CleanTestStateOutput()
+{
+  deleteControlContent(panelName, "TestStateOutput");
+}
+
+export PrintTestStopData()
+{
+  char sysvarDescription[1000];
+  
+  sysGetVariableDescriptionForValue(sysvar::TestConfiguration::StopType, @TestConfiguration::StopType, sysvarDescription, elcount(sysvarDescription));
+  
+  TestReportAddExtendedInfo("text", "Test ended due to: %s", sysvarDescription);
+}

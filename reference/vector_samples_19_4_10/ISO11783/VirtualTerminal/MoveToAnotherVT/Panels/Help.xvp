@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Panel Type="Vector.CANalyzer.Panels.PanelSerializer, Vector.CANalyzer.Panels.Serializer, Version=19.2.76.0, Culture=neutral, PublicKeyToken=null">
+  <Object Type="Vector.CANalyzer.Panels.Runtime.Panel, Vector.CANalyzer.Panels.Common, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Panel1" ControlName="Help">
+    <Object Type="Vector.CANalyzer.Panels.Design.PanelHelpControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="PanelHelpControl1" ControlName="File Button">
+      <Property Name="Name">PanelHelpControl1</Property>
+      <Property Name="Size">40, 40</Property>
+      <Property Name="Location">57, 5</Property>
+      <Property Name="ImageFile">BMP\PanelHelp.png</Property>
+      <Property Name="TabIndex">2</Property>
+      <Property Name="Arguments">ISO11783MoveToAnotherVT.cfg</Property>
+      <Property Name="Filename">Choose file...</Property>
+      <Property Name="WorkingDirectory"></Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl1" ControlName="Static Text">
+      <Property Name="Name">StaticTextControl1</Property>
+      <Property Name="Size">115, 55</Property>
+      <Property Name="Location">18, 51</Property>
+      <Property Name="TextAlign">TopCenter</Property>
+      <Property Name="BackColor">255, 215, 228, 242</Property>
+      <Property Name="Text">Press the button to open a detailed
+description of this sample configuration.</Property>
+    </Object>
+    <Property Name="Name">Panel1</Property>
+    <Property Name="Size">144, 113</Property>
+    <Property Name="Location">0, 0</Property>
+    <Property Name="BackColor">255, 215, 228, 242</Property>
+  </Object>
+</Panel>

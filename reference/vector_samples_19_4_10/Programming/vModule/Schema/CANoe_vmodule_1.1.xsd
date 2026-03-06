@@ -1,0 +1,304 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2017 rel. 3 sp1 (x64) (http://www.altova.com) by Vector employee (Vector Informatik GmbH) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:vc="http://www.w3.org/2007/XMLSchema-versioning" elementFormDefault="qualified" attributeFormDefault="unqualified" vc:minVersion="1.1">
+	<xs:element name="Module">
+		<xs:annotation>
+			<xs:documentation>Description for a CANoe or CANalyzer Module. For example a CAPL-DLL or a NodeLayer-DLL.</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="Name" type="xs:string" minOccurs="1" maxOccurs="1"/>
+				<xs:element name="Version" type="xs:string" minOccurs="1" maxOccurs="1"/>
+				<xs:element name="Description" type="xs:string" minOccurs="0" maxOccurs="1"/>
+				<xs:element name="Application" type="TApplication" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element name="ModuleType" type="TModuleType" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element name="SupportedArchitecture" minOccurs="0" maxOccurs="unbounded">
+					<xs:complexType>
+						<xs:attribute ref="arch" use="optional"/>
+						<xs:attribute ref="minAppVersion" use="optional"/>
+						<xs:attribute ref="maxAppVersion" use="optional"/>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="LibraryPath" minOccurs="0" maxOccurs="unbounded">
+					<xs:complexType>
+						<xs:simpleContent>
+							<xs:extension base="xs:string">
+								<xs:attribute ref="arch" use="optional"/>
+								<xs:attribute ref="minAppVersion" use="optional"/>
+								<xs:attribute ref="maxAppVersion" use="optional"/>
+								<xs:attribute ref="moduleType" use="optional"/>
+							</xs:extension>
+						</xs:simpleContent>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="AdditionalFile" minOccurs="0" maxOccurs="unbounded">
+					<xs:complexType>
+						<xs:simpleContent>
+							<xs:extension base="xs:string">
+								<xs:attribute ref="arch" use="optional"/>
+								<xs:attribute ref="minAppVersion" use="optional"/>
+								<xs:attribute ref="maxAppVersion" use="optional"/>
+							</xs:extension>
+						</xs:simpleContent>
+					</xs:complexType>
+				</xs:element>
+				<xs:element ref="CAPL-DLL" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="NodeLayer-DLL" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="FunctionBus-DataModel-Extension-DLL" minOccurs="0" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="CAPL-DLL">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="CDLL_VERSION" type="xs:unsignedByte" minOccurs="1" maxOccurs="1"/>
+				<xs:element name="CallingConvention" minOccurs="0" maxOccurs="1"/>
+				<xs:element name="CAN_MSG_VERSION" type="xs:unsignedByte" minOccurs="0" maxOccurs="1"/>
+				<xs:element name="LibraryVersion" type="xs:unsignedInt" minOccurs="0" maxOccurs="1"/>
+				<xs:element name="VersionCheckMessage" type="xs:string" minOccurs="0" maxOccurs="1"/>
+				<xs:element name="RequireVersionCheck" type="xs:boolean" minOccurs="0" maxOccurs="1"/>
+				<xs:element name="ExportTable" minOccurs="0" maxOccurs="1">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element ref="Function" minOccurs="0" maxOccurs="unbounded"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="CallbackTable">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element ref="Function" minOccurs="0" maxOccurs="unbounded"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+			<xs:attribute ref="arch" use="optional"/>
+			<xs:attribute ref="minAppVersion" use="optional"/>
+			<xs:attribute ref="maxAppVersion" use="optional"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="NodeLayer-DLL">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="NodeLayerConfig" minOccurs="0" maxOccurs="unbounded">
+					<xs:complexType>
+						<xs:simpleContent>
+							<xs:extension base="xs:string">
+								<xs:attribute ref="arch" use="optional"/>
+								<xs:attribute ref="minAppVersion" use="optional"/>
+								<xs:attribute ref="maxAppVersion" use="optional"/>
+							</xs:extension>
+						</xs:simpleContent>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="LoadOption" type="TLoadOption" minOccurs="0"/>
+			</xs:sequence>
+			<xs:attribute ref="arch"/>
+			<xs:attribute ref="minAppVersion" use="optional"/>
+			<xs:attribute ref="maxAppVersion" use="optional"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="FunctionBus-DataModel-Extension-DLL">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:choice minOccurs="0" maxOccurs="unbounded">
+					<xs:element name="ModelRequirements" minOccurs="1" maxOccurs="1">
+						<xs:complexType>
+							<xs:attribute type="xs:int" name="minimumVersion"/>
+						</xs:complexType>
+					</xs:element>
+					<xs:element name="ModelExtensions" minOccurs="0" maxOccurs="1">
+						<xs:complexType>
+							<xs:sequence>
+								<xs:choice minOccurs="0" maxOccurs="unbounded">
+									<xs:element name="Attribute" minOccurs="1" maxOccurs="unbounded">
+										<xs:complexType>
+										<xs:sequence>
+											<xs:choice minOccurs="0" maxOccurs="unbounded">
+												<xs:element name="Description" type="xs:string" minOccurs="1" maxOccurs="unbounded"/>
+												<xs:element name="Targets">
+													<xs:complexType>
+														<xs:sequence>
+															<xs:element name="Target">
+																<xs:complexType>
+																	<xs:attribute type="xs:string" name="dataType"/>
+																</xs:complexType>
+															</xs:element>
+														</xs:sequence>
+													</xs:complexType>
+												</xs:element>
+											</xs:choice>
+										</xs:sequence>
+										<xs:attribute name="name" type="xs:string"/>
+										<xs:attribute name="comment" type="xs:string"/>
+										<xs:attribute name="areValuesConstant" type="xs:string"/>
+										<xs:attribute name="modifiableAtRuntime" type="xs:string"/>
+										<xs:attribute name="defaultValue" type="xs:string"/>
+										<xs:attribute name="dataType" type="xs:string"/>
+										<xs:attribute name="namespacePath" type="xs:string"/>
+										</xs:complexType>
+									</xs:element>
+								</xs:choice>
+							</xs:sequence>
+						</xs:complexType>
+					</xs:element>
+				</xs:choice>
+			</xs:sequence>
+			<xs:attribute ref="arch" use="optional"/>
+			<xs:attribute ref="minAppVersion" use="optional"/>
+			<xs:attribute ref="maxAppVersion" use="optional"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="Function">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="FunctionName" type="xs:string"/>
+				<xs:element name="CategoryName" type="xs:string" minOccurs="0"/>
+				<xs:element name="HintText" type="xs:string" minOccurs="0"/>
+				<xs:element name="UsageContext" type="TUsageContext" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element name="FunctionFlag" type="TFunctionFlag" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element name="Parameter" minOccurs="0" maxOccurs="64">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="Name"/>
+							<xs:element name="Type">
+								<xs:complexType>
+									<xs:simpleContent>
+										<xs:extension base="TParameterType">
+											<xs:attribute name="rank" default="0">
+												<xs:simpleType>
+													<xs:restriction base="xs:unsignedByte">
+														<xs:minInclusive value="0"/>
+														<xs:maxInclusive value="2"/>
+													</xs:restriction>
+												</xs:simpleType>
+											</xs:attribute>
+										</xs:extension>
+									</xs:simpleContent>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="ParameterPassing" type="TParameterPassing" default="CallByValue" minOccurs="0"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="Result">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="Type" type="TParameterType"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="ExportSymbol" minOccurs="0" maxOccurs="unbounded">
+					<xs:complexType>
+						<xs:simpleContent>
+							<xs:extension base="xs:string">
+								<xs:attribute ref="arch" use="optional"/>
+								<xs:attribute ref="minAppVersion" use="optional"/>
+								<xs:attribute ref="maxAppVersion" use="optional"/>
+							</xs:extension>
+						</xs:simpleContent>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+			<xs:attribute ref="arch" use="optional"/>
+			<xs:attribute ref="minAppVersion" use="optional"/>
+			<xs:attribute ref="maxAppVersion" use="optional"/>
+		</xs:complexType>
+	</xs:element>	
+	<!-- If versioning is used, it must be applied consistently. With minimum versioning you can 
+	     always specify the minimum requirements for the respective CANoe version.	-->
+	<xs:attribute name="minAppVersion" type="xs:string"/>
+	<!-- The maximum version is only used to require newer versions of the module starting with 
+	     a specific CANoe version or to map Service Pack versions that will be released after the next major version. 
+	     There must always be a version of the module without a maximum version.	-->
+	<xs:attribute name="maxAppVersion" type="xs:string"/>
+	<xs:attribute name="arch" type="TArchList"/>
+	<xs:simpleType name="TArchList">
+		<xs:list itemType="TArchitecture"/>
+	</xs:simpleType>
+	<xs:attribute name="moduleType" type="TModuleTypeList"/>
+	<xs:simpleType name="TModuleTypeList">
+		<xs:list itemType="TModuleType"/>
+	</xs:simpleType>
+	<xs:simpleType name="TArchitecture">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Linux-x64"/>
+			<xs:enumeration value="Windows-x64"/>
+			<xs:enumeration value="Windows-x86"/>
+			<xs:enumeration value="CaplOnBoard-ARM32"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="TApplication">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="CANoe"/>
+			<xs:enumeration value="CANalyzer"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="TModuleType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="CAPL-DLL"/>
+			<xs:enumeration value="NodeLayer-DLL"/>
+			<xs:enumeration value="FunctionBus-DataModel-Extension-DLL"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="TLoadOption">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Default"/>
+			<xs:enumeration value="Permanent"/>
+			<xs:enumeration value="Defer"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="TCallingConvention">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="CDECL"/>
+			<xs:enumeration value="PASCAL"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="TUsageContext">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="RT"/>
+			<xs:enumeration value="ANALYSIS"/>
+			<xs:enumeration value="TEST"/>
+			<xs:enumeration value="CANOE"/>
+			<xs:enumeration value="TESTUNIT"/>
+			<xs:enumeration value="TESTUNITGEN"/>
+			<xs:enumeration value="SIMNODE"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="TFunctionFlag">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="HIDDEN"/>
+			<xs:enumeration value="DEPRECATED"/>
+			<xs:enumeration value="THREADSAFE"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="TParameterPassing">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="CallByValue"/>
+			<xs:enumeration value="CallByReference"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="TParameterType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="void"/>
+			<xs:enumeration value="char"/>
+			<xs:enumeration value="byte"/>
+			<xs:enumeration value="int"/>
+			<xs:enumeration value="word"/>
+			<xs:enumeration value="long"/>
+			<xs:enumeration value="dword"/>
+			<xs:enumeration value="int64"/>
+			<xs:enumeration value="qword"/>
+			<xs:enumeration value="float"/>
+			<xs:enumeration value="dbNetwork"/>
+			<xs:enumeration value="dbNode"/>
+			<xs:enumeration value="dbMessage"/>
+			<xs:enumeration value="dbSignal"/>
+			<xs:enumeration value="IP_Endpoint"/>
+			<xs:enumeration value="struct*"/>
+			<xs:enumeration value="char[]"/>
+			<xs:enumeration value="byte[]"/>
+			<xs:enumeration value="byte[][]"/>
+		</xs:restriction>
+	</xs:simpleType>
+</xs:schema>

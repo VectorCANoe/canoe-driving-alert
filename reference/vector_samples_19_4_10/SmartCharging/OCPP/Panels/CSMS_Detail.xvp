@@ -1,0 +1,104 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Panel Type="Vector.CANalyzer.Panels.PanelSerializer, Vector.CANalyzer.Panels.Serializer, Version=19.2.76.0, Culture=neutral, PublicKeyToken=null">
+  <Object Type="Vector.CANalyzer.Panels.Runtime.Panel, Vector.CANalyzer.Panels.Common, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Panel" ControlName="CSMS Detail">
+    <Object Type="Vector.CANalyzer.Panels.Design.GroupBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X216e4d61e3437e420ceb3d0e93226b3417c2" ControlName="Group Box 1">
+      <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xa5e93fa4e775ee415beb95de01834c78c9a9" ControlName="Input/Output Box 3">
+        <Property Name="Name">Xa5e93fa4e775ee415beb95de01834c78c9a9</Property>
+        <Property Name="Size">176, 21</Property>
+        <Property Name="Location">5, 22</Property>
+        <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+        <Property Name="AlarmLowerBkgColor">Salmon</Property>
+        <Property Name="AlarmLowerTextColor">Black</Property>
+        <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+        <Property Name="AlarmUpperTextColor">Black</Property>
+        <Property Name="BoxBorderStyle">FixedSingle</Property>
+        <Property Name="DisplayLabel">Left</Property>
+        <Property Name="TabIndex">0</Property>
+        <Property Name="DescriptionText">TransactionID:</Property>
+        <Property Name="ValueDisplay">Text</Property>
+        <Property Name="UsedValueTable">PhysicalValue</Property>
+        <Property Name="DescriptionSize">77, 21</Property>
+        <Property Name="SymbolConfiguration">8;16;Control::CSMS::ReceivedValues;;;Sys_TransactionID_21;4;;;-1;;;Value;;;0</Property>
+      </Object>
+      <Property Name="Name">X216e4d61e3437e420ceb3d0e93226b3417c2</Property>
+      <Property Name="Size">200, 48</Property>
+      <Property Name="Location">13, 121</Property>
+      <Property Name="Text">OCPP 2.1 Received Values</Property>
+      <Property Name="TabIndex">2</Property>
+      <Property Name="UseWindowsStyle">False</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.ButtonControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xa41802dbead4fe40d0ea0ecead6a05933964" ControlName="Button 3">
+      <Property Name="Name">Xa41802dbead4fe40d0ea0ecead6a05933964</Property>
+      <Property Name="Size">110, 22</Property>
+      <Property Name="Location">13, 175</Property>
+      <Property Name="TabIndex">1</Property>
+      <Property Name="Text">Start Transaction</Property>
+      <Property Name="SymbolConfiguration">8;16;Control::CSMS;;;Sys_StartTransaction;1;;;-1;;;Value;;;0</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.GroupBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X56e765c0ee812e45c0eb9d8e517f90d59ca6" ControlName="OCPP 2.0.1 Group">
+      <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X399c32dee2c3ce4b87eb5d0e753992a18352" ControlName="Input/Output Box 2">
+        <Property Name="Name">X399c32dee2c3ce4b87eb5d0e753992a18352</Property>
+        <Property Name="Size">176, 21</Property>
+        <Property Name="Location">5, 22</Property>
+        <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+        <Property Name="AlarmLowerBkgColor">Salmon</Property>
+        <Property Name="AlarmLowerTextColor">Black</Property>
+        <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+        <Property Name="AlarmUpperTextColor">Black</Property>
+        <Property Name="BoxBorderStyle">FixedSingle</Property>
+        <Property Name="DisplayLabel">Left</Property>
+        <Property Name="TabIndex">0</Property>
+        <Property Name="DescriptionText">TransactionID:</Property>
+        <Property Name="ValueDisplay">Text</Property>
+        <Property Name="UsedValueTable">PhysicalValue</Property>
+        <Property Name="DescriptionSize">77, 21</Property>
+        <Property Name="SymbolConfiguration">8;16;Control::CSMS::ReceivedValues;;;Sys_TransactionID_201;4;;;-1;;;Value;;;0</Property>
+      </Object>
+      <Property Name="Name">X56e765c0ee812e45c0eb9d8e517f90d59ca6</Property>
+      <Property Name="Size">200, 48</Property>
+      <Property Name="Location">13, 67</Property>
+      <Property Name="Text">OCPP 2.0.1 Received Values</Property>
+      <Property Name="TabIndex">0</Property>
+      <Property Name="UseWindowsStyle">False</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.GroupBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X9a221ad8e90d1e4bf1e9777e66bc97917caf" ControlName="OCPP 1.6 Group">
+      <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xce57b93eef4ece40b6e9559e1ce604a883b2" ControlName="Input/Output Box 1">
+        <Property Name="Name">Xce57b93eef4ece40b6e9559e1ce604a883b2</Property>
+        <Property Name="Size">176, 21</Property>
+        <Property Name="Location">5, 22</Property>
+        <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+        <Property Name="AlarmLowerBkgColor">Salmon</Property>
+        <Property Name="AlarmLowerTextColor">Black</Property>
+        <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+        <Property Name="AlarmUpperTextColor">Black</Property>
+        <Property Name="BoxBorderStyle">FixedSingle</Property>
+        <Property Name="DisplayLabel">Left</Property>
+        <Property Name="TabIndex">0</Property>
+        <Property Name="DescriptionText">TransactionID:</Property>
+        <Property Name="ValueDecimalPlaces">0</Property>
+        <Property Name="ValueDisplay">Decimal</Property>
+        <Property Name="UsedValueTable">PhysicalValue</Property>
+        <Property Name="DescriptionSize">77, 21</Property>
+        <Property Name="SymbolConfiguration">8;16;Control::CSMS::ReceivedValues;;;Sys_TransactionID_16;1;;;-1;;;Value;;;0</Property>
+      </Object>
+      <Property Name="Name">X9a221ad8e90d1e4bf1e9777e66bc97917caf</Property>
+      <Property Name="Size">200, 48</Property>
+      <Property Name="Location">13, 13</Property>
+      <Property Name="Text">OCPP 1.6 Received Values</Property>
+      <Property Name="TabIndex">0</Property>
+      <Property Name="UseWindowsStyle">False</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.ButtonControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xb91a9ea6ed028e46a1e91a1e181786c43615" ControlName="StopTransaction">
+      <Property Name="Name">Xb91a9ea6ed028e46a1e91a1e181786c43615</Property>
+      <Property Name="Size">110, 22</Property>
+      <Property Name="Location">13, 203</Property>
+      <Property Name="TabIndex">0</Property>
+      <Property Name="Text">Stop Transaction</Property>
+      <Property Name="SymbolConfiguration">8;16;Control::CSMS;;;Sys_StopTransaction;1;;;-1;;;Value;;;0</Property>
+    </Object>
+    <Property Name="Name">Panel</Property>
+    <Property Name="Size">216, 231</Property>
+    <Property Name="Location">0, 0</Property>
+    <Property Name="BackColor">255, 255, 255, 255</Property>
+  </Object>
+</Panel>

@@ -1,0 +1,1608 @@
+/*@!Encoding:1252*/
+includes
+{
+  #include "EVSE_MsgCallbacks.cin"
+  #include "CharIn_HW_InterfaceVTS_EVSE.cin"
+  #include "MessageIDs.cin"
+  #include "Util.cin"
+}
+
+variables
+{  
+  dword writeTab;  // Sink identifier
+  
+  long lTemp;
+  char strBuffer1[100], strBuffer2[100], strBuffer3[100];
+  char DCStatusCode[32];
+  
+  int isDIN = 0;
+  int isISO_IS = 0;
+  int isPncMode = 0;
+
+  byte SessionId2[8];
+
+  char gPanelName[5] = "EVSE";
+  char gProtocolPanelName[12] = "Protocol";
+  char gVASServerPanelName[24] = "VASFirePreventingServer";
+  long isSimulationStarted = 0;
+
+  char evseConnections[256];
+  long listenSocket = ~0;
+  long newSocket = ~0;
+  byte receiveBuffer[65*1024];
+   
+  msTimer tProcessingTime;
+  msTimer tPreCharge;
+  msTimer tMessageTx; 
+  msTimer tVerification;
+  msTimer tRestartAfterReset;
+  msTimer tDelayedStart;
+  msTimer tServerSideVasTcpClose; // [V2GBIP_M03_046]
+  
+  const int processingTimeForContractAuthentication = 3000;
+  const int processingTimeForCableCheck = 2500;
+  const int processingTimeForChargeParameterDiscovery = 4000;
+  const int processingTimeForPowerDelivery = 3000;
+  const int processingTimeMaxJitter = 2000;
+  
+  const cStartAfterEthernetLinkUp = 1000; //[ms]
+  
+  const int tPreChargeTime = 75;   // [ms]
+  float fPreChargeTargetVoltage = 0;
+  
+  const int tServerSideVasTcpCloseTimeout = 3000; // [ms] [V2GBIP_M03_046]
+  
+  enum eProcessing
+  {
+    ProcessingNone = 0,
+    ProcessingActive = 1,
+    ProcessingFinished = 2
+  };
+  
+  enum eProcessing processing = ProcessingNone;
+
+  int chargeLoopCount = 0;
+    
+  char errorCode[10] = "FAILED";
+  
+  enum eMode
+  {
+    Ready = 0,
+    Charging = 1,
+    Error = 2
+  };
+  
+  enum eMode Mode = Ready;
+
+  msTimer tDelayed_CP_PP;
+  const cCP_PP_Delay = 3000;
+
+  msTimer tOpenContactors;
+  const cOpenContactorsDelay = 500;
+  const cAdditionMeasurementStopDelay = 100;
+
+  msTimer tLinkStatusAvailable;
+  const int cLinkStatusAvailableMaxDelay = 10;
+}
+
+// ==========================================================================================
+//   Initialization
+// ==========================================================================================
+
+on preStart
+{
+  if (@sysVar::Common::SysVerboseWrite)
+    SCC_SetVerbosity(5);
+  else
+    SCC_SetVerbosity(2);
+
+  @sysVar::EVSE_Sim::Control::SysEVSE_WaitResume = 0;
+  
+  UpdateSimState();
+  
+  ST_Init();
+}
+
+on preStop
+{
+  ST_Init();
+  Reset_CP_PP();
+  SetChargingStationPicturesVisibility(Ready);
+  CloseVasConnections();
+  cancelTimer(tServerSideVasTcpClose);
+  
+  if(!isSimulated())
+  {
+    HV_reduce_VoltageAndCurrent();
+    deferStop(cOpenContactorsDelay + cAdditionMeasurementStopDelay);
+    setTimer(tOpenContactors, cOpenContactorsDelay);
+  }
+}
+
+on start
+{
+  writeTab = WriteCreate("SCC EVSE");    // same name as tab created by nodelayer
+  
+  PrintEthernetSettings("EVSE");
+  ReadEVSEStatus();
+  if(isSimulated())
+    @sysvar::Common::VT_Access::ChipPresent = 0;
+  else 
+    @sysvar::Common::VT_Access::ChipPresent = 1;
+  
+  if(@EVSE_Sim::SysEVSE_AC_PWM_Activate == sysvar::EVSE_Sim::SysEVSE_AC_PWM_Activate::BC)
+  {
+    StartBasicCharging();
+  }
+  else
+  {
+    // Apply "chip present" (which is off by default)
+    if(isSimulated())
+    {
+      @sysvar::Common::VT_Access::ChipPresent = 0;
+      StartSimulation();      
+    }
+    else
+    {
+      @sysvar::Common::VT_Access::ChipPresent = 1;
+      setTimer(tDelayedStart, cStartAfterEthernetLinkUp);  //start simulation after "cStartAfterEthernetLinkUp" to ensure ethernet link is up
+    }
+  }
+  
+  // Reset power
+  @sysVar::EVSE_Sim::SysEVSE_PresentVoltage = 0;
+  @sysVar::EVSE_Sim::SysEVSE_PresentCurrent = 0;
+}
+
+on timer tDelayedStart
+{
+  StartSimulation();
+}
+
+void StartSimulation()
+{  
+  SCC_StartSimulation();
+  isSimulationStarted = 1;
+  
+  @sysVar::EVSE_Sim::SysEVSE_LinkStatus = 0;
+  
+  ApplyMessageDelay();
+  
+  @sysvar::EVSE_Sim::SysEVSE_Processing = 0;
+  SetProcessing(0, 0);
+
+  SetControlForeColor(gPanelName, "TEnabled", MakeRGB(72, 72, 72));  
+
+  strncpy(evseConnections, "", 256);
+  SysSetVariableString(sysVar::EVSE_Sim::SysEVSE_Connections, evseConnections);
+  
+  UpdateSimState();
+  
+  setTimer(tDelayed_CP_PP, cCP_PP_Delay);
+
+  SetChargingStationPicturesVisibility(Ready);
+  
+  if(@Common::SysUserChargingMode == @Common::SysUserChargingMode::AC)
+    HV_source_set_AC_frequency();
+
+  SCC_SLAC_SetChipPresent(@sysvar::Common::VT_Access::ChipPresent);
+}
+
+on sysvar_change Common::SysUserChargingMode
+{
+  if(@this == @Common::SysUserChargingMode::AC)
+    HV_source_set_AC_frequency();
+}
+
+// ==========================================================================================
+//   Status callbacks from simulation DLL
+// ==========================================================================================
+
+// generic host indication for all supported PLCs
+/// <Callbacks_general>
+void SCC_Generic_VS_HostMessage_Ind( byte sourceMacAddess[], dword hostMessage )
+{
+  // Device is ready to communicate on power line but may not be a member of an AVLN yet. 
+  const byte PLC_READY_TO_JOIN_AVLN = 0x01;
+  // Device is ready to communicate on power line but may not be a member of an AVLN yet. 
+  const byte PLC_AVLN_JOINED = 0x02;
+  // Device is disconnected from  an AVLN and there are no peers available. 
+  const byte PLC_AVLN_DISCONNECTED = 0x03;  
+  
+  if (hostMessage == PLC_AVLN_JOINED)
+  {
+    @sysVar::EVSE_Sim::SysEVSE_LinkStatus = 1;
+    SCC_SLAC_SetLinkStatus(1);
+    cancelTimer(tLinkStatusAvailable);
+  }
+  else
+  {
+    @sysVar::EVSE_Sim::SysEVSE_LinkStatus = 0;
+    SCC_SLAC_SetLinkStatus(0);
+  } 
+
+  if((hostMessage == PLC_READY_TO_JOIN_AVLN) && isTimerActive(tDelayed_CP_PP))
+  {
+    cancelTimer(tDelayed_CP_PP);
+    ConnectAndApply_CP_PP();
+  }
+  
+  WriteLineEx(writeTab, 1, "EVSE: Link status changed to %i", @sysVar::EVSE_Sim::SysEVSE_LinkStatus);
+}
+
+void SCC_ProtocolFinishedInd( byte SessionId[])
+{
+  // [V2GBIP_M03_046] "Server closes connection after 3s if not closed by client"
+  WriteLineEx(writeTab, 1, "EVSE: Protocol finished, closing VAS connections in %d ms!", tServerSideVasTcpCloseTimeout);
+  setTimer(tServerSideVasTcpClose, tServerSideVasTcpCloseTimeout);
+}
+
+void SCC_ConnectionTimeoutInd( byte SessionId[])
+{  
+  CloseVasConnections();
+  WriteLineEx(writeTab, 2, "EVSE: Connection closed due to inactivity");
+}
+
+void SCC_MessageRxInd(byte SessionID[], dword MessageID)
+{
+  SetLastMessageID(MessageID);
+  if(MessageID == 101)
+    SetChargingStationPicturesVisibility(Charging);
+}
+
+void SCC_MessageTxInd( byte SessionID[], dword messageId, long error)
+{
+  /*
+  WriteHex(strBuffer, SessionID);
+  WriteLineEx(writeTab, 0, "EVSE: Message Tx: Session Id = %s, result = %i", strBuffer1, error);
+  */   
+  
+  @Sysvar::EVSE_Sim::SysEVSE_MessageTx = 1;
+  setTimer(tMessageTx, 150);
+  
+  if (error > 0){
+    WriteLineEx(writeTab, 2, "EVSE: Message sending of type %0x failed: %i", messageId, error); 
+    SetChargingStationPicturesVisibility(Error);
+  }
+  else
+  {
+    if(messageId == 34)
+     SetChargingStationPicturesVisibility(Ready);
+  }
+}
+
+void SCC_SLACFinishedInd( dword Result )
+{
+  if (Result)
+  {
+    WriteLineEx(writeTab, 1, "EVSE: SLAC finished, result : OK");
+
+    if(isSimulated())
+      setTimer(tLinkStatusAvailable, cLinkStatusAvailableMaxDelay);
+  }
+  else
+  {
+    WriteLineEx(writeTab, 1, "EVSE: SLAC finished, result : FAILED");
+  }
+
+  WriteLineEx(writeTab, 1, "EVSE: Waiting for link state = 1");
+}
+
+void SCC_PreSendInd( byte SessionId[], dword MessageId, char ResponseCode[] )
+{
+  if (ShallWrite())
+    WriteLineEx(writeTab, 0, "Pre Send Ind: Message ID = %i, Response Code = %s", MessageId, ResponseCode);  
+  
+  sysSetVariableString(sysvar::Common::LastReceivedResponseCode, ResponseCode);
+  SetChargingStationPictureError(ResponseCode);
+}
+
+void SCC_SchemaSelectionInd( char SchemaNamespace[], dword VersionMajor, dword VersionMinor)
+{
+  int targetConfig = 0;
+  
+  isDIN = 0;
+  isISO_IS = 0;
+  
+  WriteLineEx(writeTab, 1, "Schema Selected: %s, %i.%i", SchemaNamespace, VersionMajor, VersionMinor);
+  
+  // There is no session ID assigned yet so we cannot address the connection.
+  // Set the schema namespace for all active connections.
+
+  // Switch config dependent on protocol version
+  if (strncmp(SchemaNamespace, "urn:iso:15118:2:2013:MsgDef", strlen("urn:iso:15118:2:2013:MsgDef")) == 0
+    && VersionMajor == 2)
+  {
+    targetConfig = 0;
+    isISO_IS = 1;
+  }
+  else if (strncmp(SchemaNamespace, "urn:din:70121:2012:MsgDef", strlen("urn:din:70121:2012:MsgDef")) == 0)
+  {
+    targetConfig = 2;
+    isDIN = 1;
+  }  
+
+  if (SCC_LoadV2GConfig(targetConfig))     // session ID = 0
+    WriteLineEx(writeTab, 1, "Switching to config %i", targetConfig);  
+}
+
+void SCC_TCPConnectInd( dword Port, long isSender)
+{
+  if (isSender)    // cannot happen here
+    WriteLineEx(writeTab, 1, "EVSE: TCP connection established on port %i", Port);
+  else
+    WriteLineEx(writeTab, 1, "EVSE: TCP client connected to port %i", Port);
+}
+
+void SCC_TCPShutdownInd(dword Port, long isSender)
+{
+  if (isSender)
+    WriteLineEx(writeTab, 1, "EVSE: TCP connection on port %i closed", Port);
+  else
+    WriteLineEx(writeTab, 1, "EVSE: TCP connection on port %i was closed by remote station", Port);
+  
+  HV_reduce_VoltageAndCurrent();
+  setTimer(tOpenContactors, cOpenContactorsDelay);
+}
+
+void SCC_InvalidMessageInd ( long MessageType, long ErrorCode)
+{  
+  if (ErrorCode == 0)    
+    WriteLineEx(writeTab, 1, "EVSE: Invalid message received - wrong version number or format!");
+  else if (ErrorCode == 1)
+    WriteLineEx(writeTab, 1, "EVSE: Invalid message received - unknown payload type!");
+  else if (ErrorCode == 2)
+    WriteLineEx(writeTab, 1, "EVSE: Invalid message received - invalid payload length!");
+  else if (ErrorCode == 3)
+    WriteLineEx(writeTab, 1, "EVSE: Invalid message received - decoding error");
+  
+  SetChargingStationPicturesVisibility(Error);
+}  
+
+SCC_SignaturePreSendInd( byte SessionID[], dword messageId, byte Signature[], dword& SignatureLength)
+{  
+  WriteLineEx(writeTab, 1, "EVSE: Signature of length %i created for Message ID = %d", SignatureLength, messageId); 
+}
+
+SCC_SignatureVerificationInd( dword MessageID, dword Result)
+{
+  setControlVisibility(gPanelName, "Verification", 1);
+  setTimer(tVerification, 1000);
+}
+
+void SCC_CertChainVerificationInd( byte SessionId[], char chainName[], dword Result )
+{  
+  int i;
+  char certName[255];
+  dword errorCode;
+  
+  if (Result > 0)
+  {
+    WriteLineEx(writeTab, 1 /* info */, "%s verified, result: OK", chainName);
+  }
+  else
+  { 
+    WriteLineEx(writeTab, 2 /* warning */, "%s verified, result: FAILED", chainName);
+    
+    for (i = 0; i < SCC_GetCertChainVerificationErrorCount(); ++i)
+    {
+      SCC_GetCertChainVerificationError(i, certName, errorCode);      
+      WriteLineEx(writeTab, 2 /* warning */, "  Error %i was found in certificate %s", errorCode, certName );
+    }
+  }
+}
+
+// ==========================================================================================
+//   Helper functions
+// ==========================================================================================
+void ApplyChargingMode()
+{
+  if(isDIN)
+  {
+    SCC_SetEnergyTransferType("DC_extended");
+  }
+  else
+  {
+    if(@sysVar::Common::SysUserChargingMode == @Common::SysUserChargingMode::AC)
+      SCC_LoadV2GConfig(14); // only aC_Charging supported
+    else
+      SCC_LoadV2GConfig(13); // only dC_Charging supported
+  }
+}
+
+void GenerateNMK()
+{ 
+  byte nmk[16];
+  byte nid[7];
+  
+  SCC_SLAC_GetKeyData(nid, nmk);
+  
+  WriteHex(strBuffer1, nmk); 
+  WriteHex(strBuffer2, nid); 
+  
+  // read NMK and NID from chip, before new key is set
+  WriteLineEx(writeTab, 0, "Generating key, old key is: %s (NID: %s)", strBuffer1, strBuffer2);
+  
+  SCC_SLAC_GenerateApplyKey();  
+  SCC_SLAC_GetKeyData(nid, nmk);
+  
+  WriteHex(strBuffer1, nmk); 
+  WriteHex(strBuffer2, nid); 
+  
+  // read new NMK and NID from chip
+  WriteLineEx(writeTab, 0, "Generated new key: %s (NID: %s)", strBuffer1, strBuffer2);
+}
+
+void UpdateSimState()
+{
+  lTemp = SCC_GetSimulationState();
+    
+  if (lTemp == 2)
+    @sysvar::EVSE_Sim::SysEVSE_SimState = 0;
+  else if (lTemp == 3)
+    @sysvar::EVSE_Sim::SysEVSE_SimState = 1;
+  else
+    @sysvar::EVSE_Sim::SysEVSE_SimState = 2;    
+}
+
+void UpdateConnections()
+{  
+  long connectionCount;
+  byte sessionIdTemp[8];
+  char sessionIdTempChar[17];
+    
+  connectionCount = SCC_GetConnectionCount();
+  @sysVar::EVSE_Sim::SysEVSE_ConnectionCount = connectionCount;
+
+  if (connectionCount == 0)
+    SetControlForeColor(gPanelName, "TEnabled", MakeRGB(72, 72, 72));
+  else
+    SetControlForeColor(gPanelName, "TEnabled", MakeRGB(192, 0, 0));
+
+  strncpy(evseConnections, "", 256);
+  
+  for (lTemp = 0; lTemp < connectionCount; ++lTemp)
+  {
+    SCC_GetSessionId(lTemp, sessionIdTemp);
+
+    // Remember IDs of current sessions
+    //  (store only the newest connections, as sometimes old connections stay open)
+    if (lTemp == connectionCount - 2)
+      memcpy(SessionId2, sessionIdTemp, 8);      
+    else if (lTemp == connectionCount - 1)
+      memcpy(SessionId, sessionIdTemp, 8);
+    
+    WriteHex(sessionIdTempChar, sessionIdTemp);
+    sessionIdTempChar[16] = '\0';
+    strncat(evseConnections, sessionIdTempChar, 256);
+
+    SysSetVariableString(sysVar::EVSE_Sim::SysEVSE_Connections, evseConnections);
+  } 
+}
+
+void ReadEVSEStatus()
+{
+  // Print DC status code 
+  strncpy(DCStatusCode, "                                 ", 32);
+  SCC_GetDCStatusCode(DCStatusCode);
+  SysSetVariableString(sysVar::EVSE_Sim::SysEVSE_DCStatusCode, DCStatusCode);
+}
+
+void SetProcessing( int startProcessing, int avgTime)
+{  
+  dword jitterTime;  
+  jitterTime = random(processingTimeMaxJitter) - processingTimeMaxJitter/2;
+    
+  @sysvar::EVSE_Sim::SysEVSE_Processing = startProcessing;
+  
+  if (startProcessing && processing == ProcessingNone)
+  {
+    processing = ProcessingActive;
+    SCC_SetProcessing(1);
+    SetControlForeColor(gPanelName, "TProcessing",  MakeRGB(0, 0, 255)); 
+      
+    setTimer(tProcessingTime, _max(avgTime + jitterTime, 1)); 
+  }  
+  else
+  { 
+    SCC_SetProcessing(0);
+    SetControlForeColor(gPanelName, "TProcessing",  MakeRGB(255, 255, 255));  
+    
+    cancelTimer(tProcessingTime);
+  } 
+}
+
+void SetChargingStationPicturesVisibility(int Mode)
+{
+  If(Mode == Ready)
+  {
+   SetControlVisibility(gPanelName, "pictureChargingStationReady", 1);
+   SetControlVisibility(gPanelName, "pictureChargingStationCharging", 0);
+   SetControlVisibility(gPanelName, "pictureChargingStationError", 0);
+  }
+  else If(Mode == Charging)
+  {
+   SetControlVisibility(gPanelName, "pictureChargingStationReady", 0);
+   SetControlVisibility(gPanelName, "pictureChargingStationCharging", 1);
+   SetControlVisibility(gPanelName, "pictureChargingStationError", 0);
+  }
+  else If(Mode == Error)
+  {
+   SetControlVisibility(gPanelName, "pictureChargingStationReady", 0);
+   SetControlVisibility(gPanelName, "pictureChargingStationCharging", 0);
+   SetControlVisibility(gPanelName, "pictureChargingStationError", 1);
+  }
+}
+
+void SetChargingStationPictureError(char ResponseCode[])
+{
+  if (strncmp(ResponseCode, "OK", 2) != 0)
+      SetChargingStationPicturesVisibility(Error);
+}
+// ==========================================================================================
+//   Timers
+// ==========================================================================================
+
+on timer tLinkStatusAvailable
+{ 
+  SCC_SLAC_SetLinkStatus(1);
+  @sysVar::EVSE_Sim::SysEVSE_LinkStatus = SCC_SLAC_GetLinkStatus(); 
+  WriteLineEx(writeTab, 1, "EVSE: Set simulated link status = 1");
+}
+
+on timer tMessageTx
+{  
+  @Sysvar::EVSE_Sim::SysEVSE_MessageTx = 0;
+}
+
+on timer tVerification
+{
+  setControlVisibility(gPanelName, "Verification", 0);
+}
+
+on timer tPreCharge
+{	
+  // Adapt voltage until requested voltage is matched
+  if (fPreChargeTargetVoltage >= (@sysVar::EVSE_Sim::SysEVSE_PresentVoltage + 5))
+    @sysVar::EVSE_Sim::SysEVSE_PresentVoltage += 5;
+  else if (fPreChargeTargetVoltage <= (@sysVar::EVSE_Sim::SysEVSE_PresentVoltage - 5))
+    @sysVar::EVSE_Sim::SysEVSE_PresentVoltage -= 5;
+  
+  if (abs(fPreChargeTargetVoltage - @sysVar::EVSE_Sim::SysEVSE_PresentVoltage) >= 5)   // +=5 is not yet applied!
+    setTimer(tPreCharge, tPreChargeTime);
+}
+
+on timer tProcessingTime
+{ 
+  processing = ProcessingFinished;
+  SetProcessing(0, 0);
+}
+
+on timer tRestartAfterReset
+{
+  if(@EVSE_Sim::SysEVSE_AC_PWM_Activate == sysvar::EVSE_Sim::SysEVSE_AC_PWM_Activate::BC)
+    StartBasicCharging();
+  else
+    StartSimulation();
+ 
+  @sysVar::EVSE_Sim::Control::SysEVSE_WaitResume = 0;
+}
+
+on timer tOpenContactors
+{
+  HV_OpenContactors();
+}
+
+on timer tDelayed_CP_PP
+{
+  ConnectAndApply_CP_PP();
+}
+
+on timer tServerSideVasTcpClose
+{
+  WriteLineEx(writeTab, 1, "EVSE: Closing VAS connections!");
+  CloseVasConnections();
+}
+
+// ==========================================================================================
+//   System variable handlers (simulation <-> GUI)
+// ==========================================================================================
+
+on sysVar EVSE_Sim::SysEVSE_StopCharging
+{ 
+  SCC_SetShutdownRequest(@this);
+  
+  if (@this == 1)
+  {
+    SCC_SetDCStatusCode("EVSE_Shutdown");
+
+      if(@sysvar::EVSE_Sim::SysEVSE_AC_PWM_Activate == sysvar::EVSE_Sim::SysEVSE_AC_PWM_Activate::BC)
+    {
+      CP_EVSE_set_Dutycycle(0);
+    }
+  }
+}
+
+on sysVar EVSE_Sim::Control::SysEVSE_ReturnFailed
+{  
+  if (@this == 1)
+  {
+    SCC_SetResponseCode(errorCode);
+    SetChargingStationPicturesVisibility(Error);
+  }
+}
+
+on sysVar EVSE_Sim::Control::SysEVSE_AbortConnection
+{
+  if (@this == 1){
+    SCC_StopSession(1 /* close TCP */);
+    SetChargingStationPicturesVisibility(Error); 
+  }
+}
+
+on sysvar EVSE_Sim::Control::SysEVSE_NewNMK
+{
+  if (@this == 1)
+  {
+    GenerateNMK();
+    
+    @EVSE_Sim::Control::SysEVSE_NewNMK = 0;
+  }
+}
+
+on sysVar EVSE_Sim::Control::SysEVSE_WaitResume
+{
+  if(@this == 0)
+    SCC_SimulationResume();
+  else
+    SCC_SimulationWait();
+  
+  UpdateSimState();
+}
+
+on sysVar EVSE_Sim::SysEVSE_MinVoltage
+{
+  SCC_SetMinVoltage(@this);
+}
+
+on sysVar EVSE_Sim::SysEVSE_MaxVoltage
+{
+  SCC_SetMaxVoltage(@this);
+}
+
+on sysVar EVSE_Sim::SysEVSE_MinCurrent
+{
+  SCC_SetMinCurrent(@this);
+}
+
+on sysVar EVSE_Sim::SysEVSE_MaxCurrent
+{
+  if(@Common::SysUserChargingMode == @Common::SysUserChargingMode::DC)
+    SCC_SetMaxCurrent(@this);
+}
+
+on sysVar EVSE_Sim::SysEVSE_MaxCurrent_AC
+{
+  if(@Common::SysUserChargingMode == @Common::SysUserChargingMode::AC)
+    SCC_SetMaxCurrent(@this);
+}
+
+on sysVar EVSE_Sim::SysEVSE_MaxPower
+{
+  SCC_SetMaxPower(@this * 1000);    // variable in [kW]
+}
+
+on sysVar EVSE_Sim::SysEVSE_CurrentRegulationTolerance
+{
+  SCC_SetCurrentRegulationTolerance(@this);
+}
+
+on sysVar EVSE_Sim::SysEVSE_PeakCurrentRipple
+{
+  SCC_SetPeakCurrentRipple(@this);
+}
+
+on sysVar EVSE_Sim::SysEVSE_PresentCurrent
+{
+  SCC_SetPresentCurrent(@this);
+}
+
+on sysVar EVSE_Sim::SysEVSE_PresentVoltage
+{
+  SCC_SetPresentVoltage(@this);
+}
+
+on sysvar EVSE_Sim::Control::SysEVSE_Reset
+{
+  if (@this == 0)
+    return;
+  
+  ResetSimulation();
+}
+
+void ResetSimulation()
+{
+  SCC_SimulationReset();
+  Reset_CP_PP();
+  HV_source_set_output(0);
+  HV_set_AC_relays(0, 0, 0, 0); // Open switches of AC power supply
+  CloseVasConnections();
+  listenSocket = ~0;
+  newSocket = ~0;
+  cancelTimer(tServerSideVasTcpClose);
+
+  // allow TCP shutdown to take place before restarting and setting new key
+  setTimer(tRestartAfterReset, 100);
+}
+
+on sysvar PanelControl::switchDMSRunning
+{
+  if(@this == 0)
+  {
+    CloseVasConnections();
+  }
+}
+
+on sysvar PanelControl::SysDmsCloseTcpSocket
+{
+  if(@this == 1)
+  {
+    writelineex(-3,0,"Server: User closed TCP socket");
+    TcpClose(newSocket);
+    newSocket = ~0;
+  }
+}
+
+void CloseVasConnections()
+{
+  SetDMSPicturesVisibility(0);
+  if( newSocket != ~0) TcpClose(newSocket);
+  if( listenSocket != ~0) tcpClose(listenSocket);
+  cancelTimer(tServerSideVasTcpClose);
+}
+
+on sysvar EVSE_Sim::Control::SysEVSE_Renegotiate
+{
+  if (@this == 1)
+  {
+    SCC_LoadV2GConfig(17);
+    SCC_SetEVSENotification("ReNegotiation");
+  }
+}
+
+on sysVar Common::SysMessageDelay
+{
+  ApplyMessageDelay();
+}
+
+on sysVar Common::SysMessageDelayJitter
+{
+  ApplyMessageDelay();
+}
+
+
+on sysvar Common::SysVerboseWrite
+{  
+  if (@this)
+    SCC_SetVerbosity(5);
+  else
+    SCC_SetVerbosity(2);
+}
+
+on sysvar Common::VT_Access::ChipPresent
+{
+  // toggled from VT_EVSE node to disable simulated attenuation
+  SCC_SLAC_SetChipPresent(@this);
+}
+
+void FUNC_AC_PWM_Calculate_DutyCycle()
+{
+  /* Implementation according to Table A.8 from IEC 61851-1 */
+  double dutyCycle = 0;
+  if ((@sysvar::EVSE_Sim::SysEVSE_AC_PWM_MaxCurrent > 1) && (@sysvar::EVSE_Sim::SysEVSE_AC_PWM_MaxCurrent <= 6))
+  {
+    dutyCycle = 10;
+  }
+  else if ((@sysvar::EVSE_Sim::SysEVSE_AC_PWM_MaxCurrent > 6) && (@sysvar::EVSE_Sim::SysEVSE_AC_PWM_MaxCurrent <= 51))
+  {
+    dutyCycle = @sysvar::EVSE_Sim::SysEVSE_AC_PWM_MaxCurrent/0.6;
+  }
+   else if ((@sysvar::EVSE_Sim::SysEVSE_AC_PWM_MaxCurrent > 51) && (@sysvar::EVSE_Sim::SysEVSE_AC_PWM_MaxCurrent <= 80))
+  {
+    dutyCycle = (@sysvar::EVSE_Sim::SysEVSE_AC_PWM_MaxCurrent/2.5) + 64;
+  }
+  else
+  {
+    dutyCycle = 0;
+  }
+  
+  CP_EVSE_set_Dutycycle(dutyCycle);
+}
+
+on sysvar_update EVSE_Sim::SysEVSE_AC_PWM_MaxCurrent
+{
+  if (@sysvar::EVSE_Sim::SysEVSE_AC_PWM_Activate == sysvar::EVSE_Sim::SysEVSE_AC_PWM_Activate::BC)
+  {
+    FUNC_AC_PWM_Calculate_DutyCycle();
+  }
+}
+
+on sysvar_update EVSE_Sim::SysEVSE_AC_PWM_Activate
+{
+  ResetSimulation();
+}
+
+on sysvar_update EVSE_Sim::SysEVSE_AC_Phases
+{
+  ResetSimulation();
+}
+
+on sysvar_update EVSE_Sim::SysEVSE_AC_Phases_L1_Enabled
+{
+  if(@sysvar::EVSE_Sim::SysEVSE_AC_Phases == sysvar::EVSE_Sim::SysEVSE_AC_Phases::Custom)
+    ResetSimulation();
+}
+
+on sysvar_update EVSE_Sim::SysEVSE_AC_Phases_L2_Enabled
+{
+  if(@sysvar::EVSE_Sim::SysEVSE_AC_Phases == sysvar::EVSE_Sim::SysEVSE_AC_Phases::Custom)
+    ResetSimulation();
+}
+
+on sysvar_update EVSE_Sim::SysEVSE_AC_Phases_L3_Enabled
+{
+  if(@sysvar::EVSE_Sim::SysEVSE_AC_Phases == sysvar::EVSE_Sim::SysEVSE_AC_Phases::Custom)
+    ResetSimulation();
+}
+
+on sysvar_update EVSE_Sim::SysEVSE_AC_Phases_N_Enabled
+{
+  if(@sysvar::EVSE_Sim::SysEVSE_AC_Phases == sysvar::EVSE_Sim::SysEVSE_AC_Phases::Custom)
+    ResetSimulation();
+}
+
+void StartBasicCharging()
+{
+  ST_Init();
+  CP_EVSE_set_open_circuit(1);
+  CP_EVSE_set_Voltage(12);
+  FUNC_AC_PWM_Calculate_DutyCycle();
+  HV_source_set_AC_frequency();
+  if(@sysvar::EVSE_Sim::SysEVSE_AC_Phases == sysvar::EVSE_Sim::SysEVSE_AC_Phases::ThreePhase) // AC three phase
+  {
+    HV_source_set_U_L1_rms(@EVSE_Sim::SysEVSE_NominalVoltage);
+    HV_source_set_U_L2_rms(@EVSE_Sim::SysEVSE_NominalVoltage);
+    HV_source_set_U_L3_rms(@EVSE_Sim::SysEVSE_NominalVoltage);
+  }
+  else if(@sysvar::EVSE_Sim::SysEVSE_AC_Phases == sysvar::EVSE_Sim::SysEVSE_AC_Phases::SinglePhase) // AC single phase
+  {
+    HV_source_set_U_L1_rms(@EVSE_Sim::SysEVSE_NominalVoltage);
+    HV_source_set_U_L2_rms(0);
+    HV_source_set_U_L3_rms(0);
+  }
+  else // Custom AC phases
+  {
+    if(@sysvar::EVSE_Sim::SysEVSE_AC_Phases_L1_Enabled == 1)
+      HV_source_set_U_L1_rms(@EVSE_Sim::SysEVSE_NominalVoltage);
+    else
+      HV_source_set_U_L1_rms(0);
+    
+    if(@sysvar::EVSE_Sim::SysEVSE_AC_Phases_L2_Enabled == 1)
+      HV_source_set_U_L2_rms(@EVSE_Sim::SysEVSE_NominalVoltage);
+    else
+      HV_source_set_U_L2_rms(0);
+    
+    if(@sysvar::EVSE_Sim::SysEVSE_AC_Phases_L3_Enabled == 1)
+      HV_source_set_U_L3_rms(@EVSE_Sim::SysEVSE_NominalVoltage);
+    else
+      HV_source_set_U_L3_rms(0);
+  }
+  PP_EVSE_set_resistance(@EVSE_Sim::SysEVSE_PP_resistance);
+  PP_EVSE_set_open_circuit(1);
+}
+
+void ConnectAndApply_CP_PP()
+{
+  CP_EVSE_set_open_circuit(1);
+  PP_EVSE_set_open_circuit(1);
+  
+  CP_EVSE_set_Dutycycle(5);
+  CP_EVSE_set_Voltage(12);
+  CP_EVSE_set_Oscillator(1);
+  PP_EVSE_set_resistance(@EVSE_Sim::SysEVSE_PP_resistance);
+}
+
+void Reset_CP_PP()
+{
+  CP_EVSE_set_Voltage(0);
+  CP_EVSE_set_Oscillator(0);
+  CP_EVSE_set_open_circuit(0);
+  PP_EVSE_set_open_circuit(0);
+  CP_EVSE_set_Dutycycle(0);
+  PP_EVSE_set_open_circuit(0);
+  PP_EVSE_set_resistance(0);
+}
+
+void HV_reduce_VoltageAndCurrent()
+{
+  HV_source_set_I_DC(0);
+  HV_source_set_U_DC(0);
+  HV_source_set_U_L1_rms(0);
+  HV_source_set_U_L2_rms(0);
+  HV_source_set_U_L3_rms(0);
+}
+
+void HV_OpenContactors()
+{
+  HV_set_AC_relays(0, 0, 0, 0); // Open switches of AC power supply
+  HV_source_set_output(0);
+}
+
+/******************************************************************************************************************
+* FirePreveting VAS
+******************************************************************************************************************/
+
+// called in EVSE_MsgCallbacks.cin/SCC_ServiceDiscoveryReq()
+void _ServiceDiscoveryReq(byte SessionId[], char ServiceScope[], char ServiceCategory[])
+{
+  stack byte MacAddress[8];
+  stack byte IPv4Address[6];
+  stack dword IPv4Available;
+  stack byte IPv6Address[16];
+  stack char IPv6AddressStr[40];
+  stack dword IPv6Available;
+  stack dword UDPPort;
+  stack dword TCPPort;
+  stack char upperIPv6Addr[40];
+  int i;
+  long configToLoad;
+  configToLoad = 999; //1000 without contract, 999 with contract
+  
+  if(isDIN)
+  {
+    SCC_SetExternalPaymentAllowed(1);
+    SCC_SetContractPaymentAllowed(0);
+  }
+  else
+  {
+    if (@sysvar::EVSE_Sim::Control::SysEVSE_PaymentOptions == @EVSE_Sim::Control::SysEVSE_PaymentOptions::External)
+    {
+      SCC_SetExternalPaymentAllowed(1);
+      SCC_SetContractPaymentAllowed(0);
+    }
+    else if (@sysvar::EVSE_Sim::Control::SysEVSE_PaymentOptions == @EVSE_Sim::Control::SysEVSE_PaymentOptions::Contract)
+    {
+      configToLoad = 1000;
+      SCC_SetExternalPaymentAllowed(0);
+      SCC_SetContractPaymentAllowed(1);
+    }
+    else
+    {
+      configToLoad = 1000;
+      SCC_SetExternalPaymentAllowed(1);
+      SCC_SetContractPaymentAllowed(1);
+    }    
+  }
+  
+  SCC_GetEthernetSettings(MacAddress, IPv4Address, IPv4Available, IPv6Address, IPv6Available, UDPPort, TCPPort);
+  if( IPv6Available ) 
+  {
+    SCC_LoadV2GConfig(configToLoad); // add VAS FirePrevention Service to ServiceList (defined in CCS_Network_SCC_ChargePoint.xml)
+    GetFirePreventingSettingsFromXmlConfig();
+    IpGetAddressAsString(IPv6Address, IPv6AddressStr, 40);
+    
+    upperIPv6Addr = $VAS_FirePreventing::FirePreventingServer.VAS_FirePreventingSettings.IPv6Addr;
+    for (i = 0; i < 40; i++) {
+      upperIPv6Addr[i] = toupper(upperIPv6Addr[i]);
+    }
+
+    if(strncmp(IPv6AddressStr, upperIPv6Addr, 40))
+    {
+      writeLineEx(-3, 3, "Server: IPv6 Address '%s' for the FirePreventingServer does not match IP address in the TCP/IP Stack for the EVSE '%s'", $VAS_FirePreventing::FirePreventingServer.VAS_FirePreventingSettings.IPv6Addr, IPv6AddressStr);    
+    }
+  }
+}
+
+void _PaymentServiceSelectionReq(char SelectedPaymentOption[], long ServiceListCount )
+{
+  stack long Index;
+  
+  //called from callback
+  for(Index=0; Index < ServiceListCount; ++Index)
+  {
+    stack long ServiceId = SCC_GetSelectedServiceID(Index);
+    stack long ParameterSetId = SCC_GetSelectedParameterSetID(Index);
+        
+    if( ServiceId == 61000 && ParameterSetId == $VAS_FirePreventing::FirePreventingServer.VAS_FirePreventingSettings.ParameterSetID) 
+    {
+      StartVasServer($VAS_FirePreventing::FirePreventingServer.VAS_FirePreventingSettings.Port); 
+    }
+  }
+}
+
+void StartVasServer(long port)
+{
+  stack byte ipv6AddrArray[16];
+  IpGetAddressAsArray("::", ipv6AddrArray);
+  
+  listenSocket = TcpOpen(ipv6AddrArray, port);
+  if (listenSocket != ~0)
+  {
+   if (TcpListen( listenSocket ) == 0)
+   {
+      // success
+      SetDMSPicturesVisibility(1);
+      writeLineEx(-3,0,"Server: FirePreventing Service has been started...");
+    }
+    else
+    {
+      writelineex(-3,0,"Server: [ TcpListen: Error listening on socket. ]");
+      TcpClose(listenSocket);
+      listenSocket = ~0;
+    }
+  }
+  else
+  {
+    writelineex(-3,0,"Server:  [ TcpOpen: Error opening TCP Socket on port %d. (Error %d) ]", port, IpGetLastError() );
+  }
+}
+
+void SetDMSPicturesVisibility(int showConnected)
+{
+  SetControlVisibility(gVASServerPanelName, "pictureDMSDisconnected", !showConnected);
+  SetControlVisibility(gVASServerPanelName, "pictureDMSConnected", showConnected);
+  SetControlVisibility(gVASServerPanelName, "switchDMSStop", showConnected);
+  @PanelControl::switchDMSRunning = showConnected;
+}
+
+void VAS_ProcessData(int dataLen)
+{
+  stack long timeStamp, count, offset = 0;
+  int i;
+  char vin[18];
+  char charBuffer[255];
+  int bufferLength;
+  byte tag, soc, soh;
+  word packCurrent, packVoltage;
+  byte cellVolt[65535];
+  byte modTemp[255];
+  struct VAS_FirePreventing::BatteryDataFrame batteryData;
+  
+  // Not all elements need to be transmitted every time
+  batteryData.SoH.SetInvalid();
+  batteryData.BatteryPackCurrent.SetInvalid();
+  batteryData.BatteryPackVoltage.SetInvalid();
+  batteryData.GroupGSelectedElement.SetInvalid();
+  batteryData.GroupG.SetInvalid();
+  batteryData.GroupHSelectedElement.SetInvalid();
+  batteryData.GroupH.SetInvalid();
+  
+  while (offset < dataLen)
+  {
+    tag = receiveBuffer[offset];
+
+    switch (tag)
+    {
+      case 0xA1: // TimeStamp
+        if (ExtractTimeStamp(receiveBuffer, offset, timeStamp) >= 0) {       
+          batteryData.GroupA.TimeStamp.impl = timeStamp;
+          
+          offset += 6;
+        } else {
+          writeLineEx(-3, 1, "Server: Error ExtractTimeStamp");
+          return;
+        }
+        break;
+      case 0xB1: // SessionDuration
+        if (ExtractSessionDuration(receiveBuffer, offset, timeStamp) >= 0) {
+          batteryData.GroupA.SessionDuration.impl = timeStamp;
+          
+          offset += 6;
+        } else {
+          writeLineEx(-3, 1, "Server: Error ExtractSessionDuration");
+          return;
+        }
+        break;
+      case 0xC1: // Counter
+        if (ExtractCounter(receiveBuffer, offset, timeStamp) >= 0) {
+          batteryData.GroupA.Counter.impl = timeStamp;
+          
+          offset += 4;
+        } else {
+          writeLineEx(-3, 1, "Server: Error ExtractCounter");
+          return;
+        }
+        break;
+
+      case 0xA2: // VIN
+        if (ExtractVIN(receiveBuffer, offset, vin) > 0) {
+          batteryData.GroupB.VIN = vin;
+          offset += 19;
+        } else {
+          writeLineEx(-3, 1, "Server: Error ExtractVIN");
+          return;
+        }
+        break;
+      case 0xB2: // BatteryID
+        if (ExtractBatteryID(receiveBuffer, offset, charBuffer) > 0) {
+          batteryData.GroupB.BatteryID = charBuffer;
+          offset += receiveBuffer[offset + 1] + 2;
+        } else {
+          writeLineEx(-3, 1, "Server: Error ExtractBatteryID");
+          return;
+        }
+        break;        
+      case 0xC2: // EncryptedVIN
+        if (ExtractEncryptedVIN(receiveBuffer, offset, charBuffer) > 0) {
+          bufferLength = receiveBuffer[offset + 1];
+          batteryData.GroupB.EncryptedVIN.Length = bufferLength;
+          for(i = 0; i < bufferLength; i++)
+          {
+            batteryData.GroupB.EncryptedVIN[i] = charBuffer[i];
+          }
+          
+          offset += bufferLength + 2;
+        } else {
+          writeLineEx(-3, 1, "Server: Error ExtractEncryptedVIN");
+          return;
+        }
+        break;
+
+      case 0xA3: // SoC
+        soc = ExtractSoC(receiveBuffer, offset);
+        if (soc >= 0) {
+          batteryData.SoC.impl = soc;
+          offset += 3;
+        } else {
+          writeLineEx(-3, 1, "Server: Error ExtractSoC");
+          return;
+        }
+        break;
+
+      case 0xA4: // SoH
+        soh = ExtractSoH(receiveBuffer, offset);
+        if (soh >= 0) {
+          batteryData.SoH.impl = soh;
+          offset += 3;
+        } else {
+          writeLineEx(-3, 1, "Server: Error %d ExtractSoH", soh);
+          return;
+        }
+        break;
+
+      case 0xA5: // BatteryPackCurrent
+        packCurrent = ExtractBatteryPackCurrent(receiveBuffer, offset);
+        if (packCurrent >= 0) {
+          batteryData.BatteryPackCurrent.impl = packCurrent;
+          offset += 4;
+        } else {
+          writeLineEx(-3, 1, "Server: Error %d ExtractBatteryPackCurrent", packCurrent);
+          return;
+        }
+        break;
+
+      case 0xA6: // BatteryPackVoltage
+        packVoltage = ExtractBatteryPackVoltage(receiveBuffer, offset);
+        if (packVoltage >= 0) {
+          batteryData.BatteryPackVoltage.impl = packVoltage;
+          offset += 4;
+        } else {
+          writeLineEx(-3, 1, "Server: Error %d ExtractBatteryPackVoltage", packVoltage);
+          return;
+        }
+        break;
+
+      case 0xA7: // All BatteryCellVoltages
+        count = ExtractBatteryAllCellVoltages(receiveBuffer, offset, cellVolt, elcount(cellVolt));
+        if (count >= 0) {
+          batteryData.GroupG.AllBatteryCellVoltages.Length = count;
+          for (i = 0; i < count; i++) {
+            batteryData.GroupG.AllBatteryCellVoltages[i].impl = cellVolt[i];
+          }
+          offset += (3 + count);
+        } else {
+          writeLineEx(-3, 1, "Server: Error %d ExtractBatteryCellVoltage", count);
+          return;
+        }
+        break;
+      case 0xB7: // MaxMin BatteryCellVoltage
+        count = ExtractBatteryMaxMinCellVoltages(receiveBuffer, offset, cellVolt);
+        if (count >= 0) {
+          batteryData.GroupG.BatteryCellVoltageMaxMin.Length = count;
+          for (i = 0; i < count; i++) {
+            batteryData.GroupG.BatteryCellVoltageMaxMin[i].impl = cellVolt[i];
+          }
+          offset += (2 + count);
+        } else {
+          writeLineEx(-3, 1, "Server: Error %d ExtractBatteryMaxMinCellVoltages", count);
+          return;
+        }
+        break;
+
+      case 0xA8: // All BatteryModuleTemperatures
+        count = ExtractBatteryModuleAllTemperatures(receiveBuffer, offset, modTemp, elcount(modTemp));
+        if (count > 0) {
+          batteryData.GroupH.AllBatteryModuleTemperatures.Length = count;
+          for (i = 0; i < count; i++) {
+            batteryData.GroupH.AllBatteryModuleTemperatures[i].impl = modTemp[i];
+          }
+          offset += (2 + count);
+        } else {
+          writeLineEx(-3, 1, "Server: Error %d ExtractBatteryModuleTemperature", count);
+          return;
+        }
+        break;
+      case 0xB8: // MaxMin BatteryModuleTemperatures
+        count = ExtractBatteryMaxMinModuleTemperatures(receiveBuffer, offset, modTemp);
+        if (count >= 0) {
+          batteryData.GroupH.BatteryModuleTemperatureMaxMin.Length = count;
+          for (i = 0; i < count; i++) {
+            batteryData.GroupH.BatteryModuleTemperatureMaxMin[i].impl = modTemp[i];
+          }
+          offset += (2 + count);
+        } else {
+          writeLineEx(-3, 1, "Server: Error %d ExtractBatteryMaxMinModuleTemperatures", count);
+          return;
+        }
+        break;
+
+      default:
+        writeLineEx(-3, 1, "Server: Unknown Tag 0x%X at offset %d", tag, offset);
+        return;
+    }
+  }  
+  Binding::ValueReceived(VAS_FirePreventing::FirePreventingServer.BatteryData, batteryData);
+}
+
+int ExtractTimeValueFromBuffer(byte batteryData[], int offset, int dataLength, long& outTime)
+{
+  long time;
+  int i;
+  
+  time = 0;
+  for (i = 0; i < dataLength; i++) {
+    time |= (batteryData[offset + 2 + i] << i * 8);
+  }
+  outTime = time;
+  
+  return offset + dataLength + 2;
+}
+
+int ExtractTimeStamp(byte batteryData[], int offset, long& outTimestamp)
+{
+  if (batteryData[offset] != 0xA1) return -2; // Invalid tag
+  if (batteryData[offset + 1] != 4) return -3; // Invalid length
+
+  return ExtractTimeValueFromBuffer(batteryData, offset, 4, outTimestamp);
+}
+
+int ExtractSessionDuration(byte batteryData[], int offset, long& outSessionDuration)
+{
+  if (batteryData[offset] != 0xB1) return -2; // Invalid tag
+  if (batteryData[offset + 1] != 4) return -3; // Invalid length
+  
+  return ExtractTimeValueFromBuffer(batteryData, offset, 4, outSessionDuration);
+}
+
+int ExtractCounter(byte batteryData[], int offset, long& outCounter)
+{
+  if (batteryData[offset] != 0xC1) return -2; // Invalid tag
+  if (batteryData[offset + 1] != 2) return -3; // Invalid length
+  
+  return ExtractTimeValueFromBuffer(batteryData, offset, 2, outCounter);
+}
+
+int ExtractCharBuffer(byte data[], int offset, int bufferLength, char targetBuffer[])
+{
+  int i;
+  
+  for (i = 0; i < bufferLength; i++) {
+    targetBuffer[i] = data[offset + 2 + i];
+  }
+  
+  return offset + bufferLength + 2;
+}
+
+int ExtractVIN(byte data[], int offset, char vin[])
+{
+  int bufferLength;
+  
+  bufferLength = data[offset + 1];
+  
+  if (data[offset] != 0xA2) return -2; // Invalid tag
+  if (bufferLength != 17) return -3; // Invalid length
+    
+  return ExtractCharBuffer(data, offset, bufferLength, vin);
+}
+
+int ExtractBatteryID(byte data[], int offset, char batteryID[])
+{
+  int i;
+  int bufferLength;
+  
+  bufferLength = data[offset + 1];
+  
+  if (data[offset] != 0xB2) return -2; // Invalid tag
+  if (bufferLength < 1 || 255 < bufferLength) return -3; // Invalid length
+    
+  return ExtractCharBuffer(data, offset, bufferLength, batteryID);
+}
+
+int ExtractEncryptedVIN(byte data[], int offset, char encryptedVIN[])
+{
+  int i;
+  int bufferLength;
+  
+  bufferLength = data[offset + 1];
+  
+  if (data[offset] != 0xC2) return -2; // Invalid tag
+  if (bufferLength < 1 || 255 < bufferLength) return -3; // Invalid length
+    
+  return ExtractCharBuffer(data, offset, bufferLength, encryptedVIN);
+}
+
+int ExtractSoC(byte data[], int offset)
+{
+  if (data[offset] != 0xA3) return -2; // Invalid tag
+  if (data[offset + 1] != 1) return -3; // Invalid length
+
+  return data[offset + 2];
+}
+
+int ExtractSoH(byte data[], int offset)
+{
+  if (data[offset] != 0xA4) return -2; // Invalid tag
+  if (data[offset + 1] != 1) return -3; // Invalid length
+
+  return data[offset + 2];
+}
+
+word ExtractBatteryPackCurrent(byte data[], int offset)
+{
+  if (data[offset] != 0xA5) return -2; // Invalid tag
+  if (data[offset + 1] != 2) return -3; // Invalid lengt
+
+  return (data[offset + 2] << 8) | data[offset + 3];
+}
+
+word ExtractBatteryPackVoltage(byte data[], int offset)
+{
+  if (data[offset] != 0xA6) return -2; // Invalid tag
+  if (data[offset + 1] != 2) return -3; // Invalid length
+
+  return (data[offset + 2] << 8) | data[offset + 3];
+}
+
+int ExtractBatteryAllCellVoltages(byte data[], int offset, byte out[], long maxLen)
+{
+  stack word length;
+  int i;
+  if (data[offset] != 0xA7) return -2; // Invalid tag
+
+  length = (data[offset + 1] << 8) | data[offset + 2];
+  if (length > maxLen) return -3; // Invalid length
+
+  for (i = 0; i < length; i++) {
+    out[i] = data[offset + 3 + i];
+  }
+
+  return length; // number of values extracted
+}
+
+int ExtractBatteryMaxMinCellVoltages(byte data[], int offset, byte out[])
+{
+  stack word length;
+  int i;
+  if (data[offset] != 0xB7) return -2; // Invalid tag
+
+  length = data[offset + 1];
+  if (length != 2) return -3; // Invalid length
+
+  for (i = 0; i < length; i++) {
+    out[i] = data[offset + 2 + i];
+  }
+
+  return length; // number of values extracted
+}
+
+int ExtractBatteryModuleAllTemperatures(byte data[], int offset, byte out[], long maxLen)
+{
+  stack word length;
+  int i;
+  if (data[offset] != 0xA8) return -2; // Invalid tag
+
+  length = data[offset + 1];
+  if (length > maxLen) return -3; // Invalid length
+
+  for (i = 0; i < length; i++) {
+    out[i] = data[offset + 2 + i];
+  }
+
+  return length;
+}
+
+int ExtractBatteryMaxMinModuleTemperatures(byte data[], int offset, byte out[])
+{
+  stack word length;
+  int i;
+  if (data[offset] != 0xB8) return -2; // Invalid tag
+
+  length = data[offset + 1];
+  if (length != 2) return -3; // Invalid length
+
+  for (i = 0; i < length; i++) {
+    out[i] = data[offset + 2 + i];
+  }
+
+  return length;
+}
+
+// ---------------------------------------------------
+// Callback when client connects to server's listen socket.
+// ---------------------------------------------------
+void OnTcpListen( dword socket, long result)
+{
+  newSocket = TcpAccept( socket );
+  if (newSocket != ~0)
+  {
+    TcpReceive(newSocket, receiveBuffer, elcount(receiveBuffer));
+  }
+  else
+  {
+    writelineex(-3,0,"Server: TcpAccept: Socket error: %d", IpGetLastSocketError (socket) );
+  }
+}
+
+void OnTcpReceive( dword socket, long result, IP_Endpoint remoteEndpoint, byte buffer[], dword size)
+{ 
+  if (result==0)
+  {
+    if (size==0)
+    {
+      // Size of zero indicates that the socket was closed by the communication peer.
+      writelineex(-3,0,"Server: OnTcpReceive: socket closed by peer");
+      TCPClose(newSocket);
+      newSocket = ~0;
+    }
+    else
+    {
+      // Sucessfully received some bytes over the TCP/IP connection.
+      result = TcpReceive(newSocket, receiveBuffer, elcount(receiveBuffer));
+      writelineex(-3,0,"Server: Received VAS_FirePreventing BatteryData with %d bytes", size);
+      VAS_ProcessData(size);
+    }
+  }
+  else
+  {
+    writelineex(-3,0,"Server: OnTcpReceive: operation failed (result=%d error=%d)", result, IpGetLastSocketError(newSocket));
+    TCPClose(newSocket);
+    newSocket = ~0;
+  }
+}
+
+long OnIpSendPrepare( dword socket, ethernetPacket * packet)
+{
+  //When the VAS Server socket calls the callback and the blocking flag is on, block every message.
+  if(socket == newSocket && @sysvar::PanelControl::SysDmsTcpResponsesActive == @sysvar::PanelControl::SysDmsTcpResponsesActive::BlockTcpAcks)
+    return 0;
+  else
+    return 1;  
+}
+
+void GetFirePreventingSettingsFromXmlConfig()
+{
+  dword fileHandle;
+  char line[512];
+  char foundIPv6Str[40];
+  char fileName[64] = "CCS_Network_SCC_ChargePoint.xml";
+  char filePath[128] = "C:\\CANrtk\\Exec32\\SynchronizedFiles";
+  long strStart, strEnd, length;
+  char tempStr[64];
+  int i, insideTargetService, insideParameterSet;
+  struct VAS_FirePreventing::VAS_FirePreventingSettingsType firePreventingSettings;
+  
+  insideTargetService = 0;
+  insideParameterSet = 0;
+  foundIPv6Str[0] = 0;
+  
+  
+  strncat(filePath, "\\", strlen(filePath) + 2);
+  strncat(filePath, fileName, strlen(filePath) + strlen(fileName) + 1);
+  writeLineEx(-3,1,"searching for XML file with filePath = %s", filePath);
+  fileHandle = OpenFileRead(filePath, 0);
+  if (fileHandle == 0) 
+  {
+    writeLineEx(-3,1,".. not found, searching for fileName = %s", fileName);
+    fileHandle = OpenFileRead(fileName, 0); // Fallback if not running on CANrtk
+    if (fileHandle == 0) 
+    {
+      writeLineEx(1,3,"Failed to open XML file %s.", filePath);
+      return;
+    }
+  }
+
+  while (fileGetString(line, elcount(line), fileHandle) != 0) {
+    // Detect ServiceID
+    if (strstr(line, "<ServiceID>") != -1) {
+      strStart = strstr(line, "<ServiceID>") + strlen("<ServiceID>");
+      strEnd = strstr(line, "</ServiceID>");
+      if (strEnd > strStart) {
+        length = strEnd - strStart;
+        for (i = 0; i < length; i++) {
+          tempStr[i] = line[strStart + i];
+        }
+        tempStr[length] = 0;
+        if (atol(tempStr) == 61000) {
+          insideTargetService = 1;
+        } else {
+          insideTargetService = 0;
+        }
+      }
+    }
+
+    // Detect end of Service block
+    if (insideTargetService && strstr(line, "</Service>") != -1) {
+      insideTargetService = 0;
+    }
+
+    // Inside the correct Service block
+    if (insideTargetService) {
+      // Detect ParameterSetID
+      if (strstr(line, "<ParameterSetID>") != -1) {
+        strStart = strstr(line, "<ParameterSetID>") + strlen("<ParameterSetID>");
+        strEnd = strstr(line, "</ParameterSetID>");
+        if (strEnd > strStart) {
+          length = strEnd - strStart;
+          for (i = 0; i < length; i++) {
+            tempStr[i] = line[strStart + i];
+          }
+          tempStr[length] = 0;
+          firePreventingSettings.ParameterSetID = atol(tempStr);
+          insideParameterSet = 1;
+        }
+      }
+
+      // Detect end of ParameterSet block
+      if (insideParameterSet && strstr(line, "</ParameterSet>") != -1) {
+        insideParameterSet = 0;
+      }
+
+      // Extract Port
+      if (insideParameterSet && strstr(line, "<Parameter Name=\"Port\">") != -1) {
+        do {
+          if (fileGetString(line, elcount(line), fileHandle) == 0) break;
+        } while (strstr(line, "<!") != -1);
+
+        strStart = strstr(line, "<intValue>") + strlen("<intValue>");
+        strEnd = strstr(line, "</intValue>");
+        if (strEnd > strStart) {
+          length = strEnd - strStart;
+          for (i = 0; i < length; i++) {
+            tempStr[i] = line[strStart + i];
+          }
+          tempStr[length] = 0;
+          firePreventingSettings.Port = atol(tempStr);
+        }
+      }
+
+      // Extract IP
+      if (insideParameterSet && strstr(line, "<Parameter Name=\"IP\">") != -1) {
+        do {
+          if (fileGetString(line, elcount(line), fileHandle) == 0) break;
+        } while (strstr(line, "<!") != -1);
+
+        strStart = strstr(line, "<stringValue>") + strlen("<stringValue>");
+        strEnd = strstr(line, "</stringValue>");
+        if (strEnd > strStart) {
+          length = strEnd - strStart;
+          for (i = 0; i < length && i < elcount(foundIPv6Str) - 1; i++) {
+            foundIPv6Str[i] = line[strStart + i];
+          }
+          firePreventingSettings.IPv6Addr = foundIPv6Str;
+        }
+      }
+    }
+  }
+  Binding::ValueReceived(VAS_FirePreventing::FirePreventingServer.VAS_FirePreventingSettings, firePreventingSettings);
+  fileClose(fileHandle);
+}

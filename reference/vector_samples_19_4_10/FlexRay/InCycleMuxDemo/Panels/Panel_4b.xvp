@@ -1,0 +1,96 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Panel Type="Vector.CANalyzer.Panels.PanelSerializer, Vector.CANalyzer.Panels.Serializer, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null">
+  <Object Type="Vector.CANalyzer.Panels.Runtime.Panel, Vector.CANalyzer.Panels.Common, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Panel" ControlName="In-Cycle Responses with Simulated Bus">
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl0" ControlName="StaticTextControl0">
+      <Property Name="Name">StaticTextControl0</Property>
+      <Property Name="Size">427, 15</Property>
+      <Property Name="Location">149, 70</Property>
+      <Property Name="Text">Although the repeated signals look like their originals, in fact they are delayed!</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl1" ControlName="StaticTextControl1">
+      <Property Name="Name">StaticTextControl1</Property>
+      <Property Name="Size">74, 15</Property>
+      <Property Name="Location">911, 26</Property>
+      <Property Name="Text">(Ideal case!)</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl2" ControlName="StaticTextControl2">
+      <Property Name="Name">StaticTextControl2</Property>
+      <Property Name="Size">340, 15</Property>
+      <Property Name="Location">149, 45</Property>
+      <Property Name="Text">Signal Counter_BA_1_25_ms follows Counter_AB_1_25_ms:</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl3" ControlName="StaticTextControl3">
+      <Property Name="Name">StaticTextControl3</Property>
+      <Property Name="Size">340, 15</Property>
+      <Property Name="Location">149, 25</Property>
+      <Property Name="Text">Signal Counter_BA_2_5_ms follows Counter_AB_2_5_ms:</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl4" ControlName="StaticTextControl4">
+      <Property Name="Name">StaticTextControl4</Property>
+      <Property Name="Size">340, 15</Property>
+      <Property Name="Location">149, 5</Property>
+      <Property Name="Text">Signal Counter_BA_5_0_ms follows Counter_AB_5_0_ms:</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl5" ControlName="StaticTextControl5">
+      <Property Name="Name">StaticTextControl5</Property>
+      <Property Name="Size">394, 15</Property>
+      <Property Name="Location">542, 45</Property>
+      <Property Name="Text">Value of slot n is repeated in slot m: (2-&gt;30), (31-&gt;60), (61-&gt;90), (91-&gt;1)</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl6" ControlName="StaticTextControl6">
+      <Property Name="Name">StaticTextControl6</Property>
+      <Property Name="Size">288, 15</Property>
+      <Property Name="Location">542, 25</Property>
+      <Property Name="Text">Value of slot n is repeated in slot m: (3-&gt;4), (88-&gt;89)</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl7" ControlName="StaticTextControl7">
+      <Property Name="Name">StaticTextControl7</Property>
+      <Property Name="Size">289, 15</Property>
+      <Property Name="Location">541, 5</Property>
+      <Property Name="Text">Value of slot n is repeated in slot m: (20-&gt;40)</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl8" ControlName="StaticTextControl8">
+      <Property Name="Name">StaticTextControl8</Property>
+      <Property Name="Size">90, 15</Property>
+      <Property Name="Location">879, 232</Property>
+      <Property Name="Text">Simulated Bus.</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.PanelButtonControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="PanelButtonControl9" ControlName="PanelButtonControl9">
+      <Property Name="Name">PanelButtonControl9</Property>
+      <Property Name="Size">129, 23</Property>
+      <Property Name="Location">894, 131</Property>
+      <Property Name="TransparentColor">Transparent</Property>
+      <Property Name="UseTransparentColor">False</Property>
+      <Property Name="TabIndex">9</Property>
+      <Property Name="Text">Example for Real Bus</Property>
+      <Property Name="ApplicationList">1;0</Property>
+      <Property Name="NodeList">1;0</Property>
+      <Property Name="NetworkList">1;0</Property>
+      <Property Name="PanelList">1;1;PANEL_4C.xvp</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.PanelButtonControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="PanelButtonControl10" ControlName="PanelButtonControl10">
+      <Property Name="Name">PanelButtonControl10</Property>
+      <Property Name="Size">129, 23</Property>
+      <Property Name="Location">894, 98</Property>
+      <Property Name="TransparentColor">Transparent</Property>
+      <Property Name="UseTransparentColor">False</Property>
+      <Property Name="TabIndex">10</Property>
+      <Property Name="Text">Calculated Delays</Property>
+      <Property Name="ApplicationList">1;0</Property>
+      <Property Name="NodeList">1;0</Property>
+      <Property Name="NetworkList">1;0</Property>
+      <Property Name="PanelList">1;1;PANEL_4.xvp</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.PictureBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="PictureBoxControl11" ControlName="PictureBoxControl11">
+      <Property Name="Name">PictureBoxControl11</Property>
+      <Property Name="Size">710, 159</Property>
+      <Property Name="Location">148, 97</Property>
+      <Property Name="ImageFile">Bitmaps\Graphics_4_sim.bmp</Property>
+    </Object>
+    <Property Name="Name">Panel</Property>
+    <Property Name="Size">1270, 259</Property>
+    <Property Name="Location">0, 0</Property>
+    <Property Name="BackColor">White</Property>
+    <Property Name="Panel">Panel</Property>
+  </Object>
+</Panel>

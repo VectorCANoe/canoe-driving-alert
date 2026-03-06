@@ -1,0 +1,108 @@
+/*@!Encoding:1252*/
+// *************************************************************************************
+//
+//  Constants for the C2x API functions
+//
+// *************************************************************************************
+
+variables
+{
+  ////////////////////////////////////////
+  // Register Callback
+  ////////////////////////////////////////
+
+  enum VRegisterCallback
+  {
+    kRxIndication    = 0,
+    kPreTxIndication = 1
+  };
+
+  ////////////////////////////////////////
+  // Position Structs
+  ////////////////////////////////////////
+  struct Pos3D
+  {
+    float latitude;
+    float longitude;
+    float elevation;
+  };
+  struct Pos2D
+  {
+    float latitude;
+    float longitude;
+  };
+
+  ////////////////////////////////////////
+  // MAP API constants
+  ////////////////////////////////////////
+
+  // Figures of the CAPL-Map Drawining-API
+  enum VEnumFigures { kSquare = 1, kRectangle = 2, kEllipse = 3, kCross = 4, kTriangle = 5, kLine = 6, kBitmap = 7, kText = 8, kVehicle = 9 };
+
+  // RGB color codes
+  const double kWhite       = 0xFFFFFF;
+  const double kTurquoise   = 0x00FFFF;
+  const double kMagenta     = 0xFF00FF;
+  const double kRed         = 0x0000FF;
+  const double kGrey        = 0xC0C0C0;
+  const double kYellow      = 0xFFFF00;
+  const double kGreen       = 0x00FF00;
+  const double kBlue        = 0xFF0000;
+  const double kBlack       = 0x000000;
+  const double kTransparent = -1;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// Calc Distance
+////////////////////////////////////////////////////////////////////////////////
+
+float API_PosCalcDistance(float latPos1, float lonPos1, float latPos2, float lonPos2)
+{
+  float radiusEarth = 6371.0008; // km
+  
+  float lat1InRadian;
+  float lon1InRadian;
+  float lat2InRadian;
+  float lon2InRadian;
+  float dLat;
+  float dLon;
+  float a;
+  float c;
+  
+  lat1InRadian = (latPos1 * pi)/180;
+  lon1InRadian = (lonPos1 * pi)/180;
+  lat2InRadian = (latPos2 * pi)/180;
+  lon2InRadian = (lonPos2 * pi)/180;
+  
+  dLat = (lat2InRadian - lat1InRadian);
+  dLon = (lon2InRadian - lon1InRadian);
+  
+  a = ((sin(dLat/2) * sin(dLat/2)) + (cos(lat1InRadian) * cos(lat2InRadian) * sin(dLon/2) * sin(dLon/2)));
+  c = 2 * (arcsin(sqrt(a)));
+  
+  return radiusEarth * c * 1000;
+}
+
+float API_PosCalcDistance(dword packet, struct Pos2D pos2d)
+{
+  struct Pos2D packet2d;
+
+  packet2d.latitude  = C2xGetTokenInt(packet, "geo_eh", "lpvLatitude" ) / 1e7; if (C2xGetLastError()) return ~0;
+  packet2d.longitude = C2xGetTokenInt(packet, "geo_eh", "lpvLongitude") / 1e7; if (C2xGetLastError()) return ~0;
+
+  return API_PosCalcDistance(packet2d.latitude, packet2d.longitude, pos2d.latitude, pos2d.longitude);
+}
+
+float API_PosCalcDistance(dword packet, struct Pos3D pos3d)
+{
+  struct Pos2D packet2d;
+
+  packet2d.latitude  = C2xGetTokenInt(packet, "geo_eh", "lpvLatitude" ) / 1e7; if (C2xGetLastError()) return ~0;
+  packet2d.longitude = C2xGetTokenInt(packet, "geo_eh", "lpvLongitude") / 1e7; if (C2xGetLastError()) return ~0;
+
+  return API_PosCalcDistance(packet2d.latitude, packet2d.longitude, pos3d.latitude, pos3d.longitude);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// EOF
+////////////////////////////////////////////////////////////////////////////////

@@ -1,0 +1,77 @@
+version: 19.0.0
+modules:
+  - type: 2816
+    interface: 3
+    module-channel:
+      name: VT2816_EVSE
+    channels:
+      - name: VT2816_1_Ch1
+        active-values:
+          - name: CurVoltage
+            cycle-time: 10ms
+      - name: VT2816_1_Ch2
+        active-values:
+          - name: CurVoltage
+            cycle-time: 10ms
+      - name: VT2816_1_Ch3
+      - name: VT2816_1_Ch4
+      - name: VT2816_1_Ch5
+      - name: VT2816_1_Ch6
+      - name: VT2816_1_Ch7
+      - name: VT2816_1_Ch8
+      - name: VT2816_1_Ch9
+      - name: VT2816_1_Ch10
+      - name: VT2816_1_Ch11
+      - name: VT2816_1_Ch12
+      - name: VT2816_1_Ch13
+      - name: VT2816_1_Ch14
+      - name: VT2816_1_Ch15
+      - name: VT2816_1_Ch16
+  - type: 2004
+    interface: 7
+    module-channel:
+      name: VT2004_EVSE
+    channels:
+      - name: VT2004_1_Ch1
+      - name: VT2004_1_Ch2
+      - name: VT2004_1_Ch3
+      - name: VT2004_1_Ch4
+  - type: 2816
+    interface: 3
+    module-channel:
+      name: VT2816_EV
+    channels:
+      - name: VT2816_2_Ch1
+        active-values:
+          - name: CurVoltage
+            cycle-time: 10ms
+      - name: VT2816_2_Ch2
+        active-values:
+          - name: CurVoltage
+            cycle-time: 10ms
+      - name: VT2816_2_Ch3
+      - name: VT2816_2_Ch4
+      - name: VT2816_2_Ch5
+      - name: VT2816_2_Ch6
+      - name: VT2816_2_Ch7
+      - name: VT2816_2_Ch8
+      - name: VT2816_2_Ch9
+      - name: VT2816_2_Ch10
+      - name: VT2816_2_Ch11
+      - name: VT2816_2_Ch12
+      - name: VT2816_2_Ch13
+      - name: VT2816_2_Ch14
+      - name: VT2816_2_Ch15
+      - name: VT2816_2_Ch16
+  - type: 2004
+    interface: 7
+    module-channel:
+      name: VT2004_EV
+    channels:
+      - name: VT2004_2_Ch1
+      - name: VT2004_2_Ch2
+      - name: VT2004_2_Ch3
+      - name: VT2004_2_Ch4
+vts-control-window:
+  flip-rack-order: false
+  serialized-config: rack[12];mapping[0,0,0];mapping[1,0,1];mapping[2,0,2];mapping[3,0,3];

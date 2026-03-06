@@ -1,0 +1,433 @@
+/*@!Encoding:1252*/
+includes
+{
+  #include "DrawRouteUtils.cin"
+}
+
+variables
+{
+  /*
+    Default names of objects in scenario files (should be the same in all files).
+  */
+  char egoVehicle[50] = "HV";
+  char scenarioRoute[50] = "ScenarioDefinitionRoute";
+  
+  // Name of route and reference point for scenarios with multiple routes
+  char refRoute1[50] = "RefRoute1";
+  char refRoute2[50] = "RefRoute2";
+  char refPoint[50] = "RefPoint";
+  
+  /*
+    Default name of the route file and name. Values are given in the system variables.
+  */
+  char routeFile[255] = "";
+  char loadedRoute[50] = "";
+}
+
+on start
+{
+    // if route path is given relative, get it as absolute for Panel
+  char absPath[256], relPath[256];
+  sysGetVariableString(sysvar::RouteCtrl::FileName, relPath, elCount(relPath));
+  getAbsFilePath(relPath, absPath, 256);
+  sysSetVariableString(sysvar::RouteCtrl::FileName, absPath);  
+  loadScenario();
+}
+
+/********************************************************************************************************************************
+****************************************************Starting Scenario************************************************************
+*********************************************************************************************************************************/
+void startScenarioOnRoute()
+{
+  int status;
+  // If the Scenario is running, it's stopped.
+  if (C2xIsScenarioStarted())
+  {
+    C2xStopScenario();
+    write("Scenario stopped.");
+  }
+  // Try to start the scenario.
+  else
+  {    
+    // Check if scenario should be started relative
+    if (@sysvar::ScenarioCtrl::StartScenarioRelative == 1)
+    {
+      C2xResetScenario();
+      status = C2xStartScenario(egoVehicle, @GNSS::Ath1.Latitude, @GNSS::Ath1.Longitude, @GNSS::Ath1.Direction);
+      DrawReferencePointInMapWindow(refPoint);
+      if (status == 1)
+      {
+        write("Starting scenario relative using GNSS position.");  
+        return;
+      }
+      if (status == -1)
+      {
+        write("Starting scenario relative was not successful");  
+        return;
+      }
+      if (status == -2)
+      {
+        write("Starting scenario relative was not successful. Invalid parameter");  
+        return;
+      }
+      return;
+    }
+
+    write("Starting scenario on given route using GNSS position.");  
+    // get the given file and route name
+    sysGetVariableString(sysvar::RouteCtrl::FileName, routeFile, elCount(routeFile));
+    sysGetVariableString(sysvar::RouteCtrl::RouteName, loadedRoute, elCount(loadedRoute));
+    
+    // try to load route from file
+    if (strlen(routeFile) == 0 || strlen(loadedRoute) == 0)
+    {
+      write("No route given, cannot start scenario on loaded route.");
+      return;
+    }
+    
+    /****************************************************************
+     *********************Step 1: Load Route*************************
+     ****************************************************************/
+    status = C2xLoadRoute(routeFile, loadedRoute, @sysvar::RouteCtrl::LoopFlag);
+    if (status == -1)
+    {
+      write("Route File Path '%s' doesn't exist or file doesn't contain route by name '%s'", routeFile, loadedRoute);
+      return;
+    }
+    if (status == -2)
+    {
+      write("Route with name '%s' was already loaded, using existing route.", loadedRoute);
+    }
+    else
+    {    
+      write("Route '%s' loaded from file '%s'.", loadedRoute, routeFile);
+    }
+  
+    /****************************************************************
+     ************Step 2: Set Stations on new route*******************
+     ****************************************************************/
+    status = C2xSetStationsOnRoute(scenarioRoute, loadedRoute);
+    if (status == -1)
+    {
+      write("Stations couldn't be set from route '%s' to '%s', Route(s) and/or station do not exist in the loaded scenario.", scenarioRoute, loadedRoute);
+	    return;
+    }
+  	else if (status == -2)
+    {
+      write("Stations couldn't be set from route '%s' to '%s', scenario is still running.", scenarioRoute, loadedRoute);
+  	  return;
+    }
+  	else if (status == -3)
+  	{
+  		write("Stations couldn't be set from route '%s' to '%s', offset of the stations is larger than route length.", scenarioRoute, loadedRoute);
+  		return;
+  	}
+    
+    /****************************************************************
+     ******************Step 3: Shift Stations************************
+     ****************************************************************/
+    status = C2xSetRouteStartPoint(loadedRoute, egoVehicle, @GNSS::Ath1.Latitude, @GNSS::Ath1.Longitude, @GNSS::Ath1.Direction);
+    if (status == -1)
+    {
+      write("Start point of route '%s' couldn't be set, Route(s) and/or station do not exist in the loaded scenario.", loadedRoute);
+	    return;
+    }
+	  else if (status == -2)
+    {
+      write("Start point of route '%s' couldn't be set, scenario is still running.", loadedRoute);
+  	  return;
+      }
+  	else if (status == -3)
+  	{
+  		write("Start point of route '%s' couldn't be set. The configured position might be too far away, the heading differs too much or stations don't fit on the road.", loadedRoute);
+  		return;
+	  }
+	
+    /****************************************************************
+     *****Optional Step 4: Move Other Routes With RefPoints**********
+     ****************************************************************/
+     if (moveRouteRelative(refRoute1, refPoint, 0) != 1)
+     {
+       return;
+     }
+     if (moveRouteRelative(refRoute2, refPoint, 0) != 1)
+     {
+       return;
+     }
+    
+    /****************************************************************
+     ******************Step 5: Start Scenario************************
+     ****************************************************************/
+    write("Starting scenario on route '%s' from current GNSS position.", loadedRoute);
+  	C2xStartScenario();
+  }
+} 
+
+
+long moveRouteRelative(char refRouteName[] , char refPointName[], int drawInMapWindow)
+{
+  double refPointLat, refPointLng;
+  long status;
+
+  if (C2xGetReferencePoint(refPointName, refPointLat,refPointLng) == 0)
+  {
+    write("Moving route '%s' relative to '%s' using reference point '%s'.", refRouteName, loadedRoute, refPointName);
+    status = C2xMoveRouteRelativeToRefPoint(refRouteName, loadedRoute, refPointName);
+    if (status == -1)
+    {
+      write("Error, Route(s), RefPoint and/or station do not exist in the loaded scenario.");
+    }
+    else if (status == -2)
+    {
+      write("Error, scenario is still running.");
+      return 0;
+    }
+    else if (status == -3)
+    {
+     	write("Error, offset of the refPoint is larger than remaining route length.");
+    	return 0;
+    }
+    write("'%s' is now at %f, %f", refPointName, refPointLat, refPointLng);
+    
+    if (drawInMapWindow == 1)
+    {
+      DrawReferencePointInMapWindow(refPointName);
+      DrawTemporaryRouteInMapWindow(refRouteName);
+    }
+  }
+  else
+  {
+    if (C2xGetNumberOfRoutePoints(refRouteName) > 0)
+    {
+      write("Route '%s' exists in the scenario, but no reference point '%s'. Please check the naming in the scenario.", refRouteName, refPointName);      
+      return 0;
+    }
+  }
+  return 1;
+}
+/********************************************************************************************************************************
+****************************************************Control Buttons and Sysvar***************************************************
+*********************************************************************************************************************************/
+// Called when pressing/releasing the "Start Scenario" button
+// in the "Scenario Control" panel
+on sysvar ScenarioCtrl::StartBtnState
+{
+  if (@this == 1 /*button pressed*/)
+  {
+    startScenarioOnRoute();
+  }
+}
+// Called when pressing/releasing the "Stop Scenario" button
+// in the "Scenario Control" panel
+on sysvar ScenarioCtrl::StopBtnState
+{
+  if (@this == 1 /*button pressed*/)
+  {
+    C2xStopScenario();
+  }
+}
+
+on key 's'
+{
+  startScenarioOnRoute();
+}
+
+// Called when pressing/releasing the "Draw Route" button
+// in the "Scenario Control" panel
+on sysvar RouteCtrl::DrawRouteBtnState
+{
+  if (@this==1)
+  {
+    // get the given file and route name
+    sysGetVariableString(sysvar::RouteCtrl::FileName, routeFile, elCount(routeFile));
+    sysGetVariableString(sysvar::RouteCtrl::RouteName, loadedRoute, elCount(loadedRoute));
+    if (C2xLoadRoute(routeFile, loadedRoute, @RouteCtrl::LoopFlag) == -1)
+    {
+      write("Route File Path '%s' doesn't exist or file doesn't contain route by name '%s'", routeFile, loadedRoute);
+      return;
+    }
+    DrawRouteInMapWindow(loadedRoute);
+  }
+}
+/*************************************************************
+ ********************Load Scenarios******************************
+ ****************************************************************/
+
+on sysvar ScenarioCtrl::ScenarioNumber
+{
+  loadScenario();
+}
+
+//Load Scenario file
+void loadScenario()
+{
+  char folderName[500];
+  char fileName[500];
+  char scenarioFile[500];
+  char scenarioName[1000];
+  char slash = '/';
+  
+  /******CN Day1 specific*************/
+  setScenarioDescription();
+  /***********************************/
+  
+  // stop scenario if running
+  if (C2xIsScenarioStarted() == 1)
+  {
+    C2xStopScenario();
+  }
+  
+  // empty scenarioFile string
+  snprintf(scenarioFile, elcount(scenarioFile), "");
+    
+  // get general foldername
+  sysGetVariableString(sysvar::ScenarioCtrl::ScenarioFolderName, folderName, elcount(folderName));
+  // get scenario file for current scenario number
+  sysGetVariableDescriptionForValue(sysvar::ScenarioCtrl::ScenarioFileName, @ScenarioCtrl::ScenarioNumber, fileName, elcount(fileName));
+  sysGetVariableDescriptionForValue(sysvar::ScenarioCtrl::ScenarioNumber, @ScenarioCtrl::ScenarioNumber, scenarioName, elcount(scenarioName));
+
+  // concatenate string: <folderName>/<fileName>
+  strncat(folderName, "/", elcount(folderName));
+  strncat(scenarioFile, folderName, elcount(scenarioFile));
+  strncat(scenarioFile, fileName, elcount(scenarioFile));
+  // add .scn if not given
+  if (mbstrstr(scenarioFile, ".scn") == -1)
+  {
+    strncat(scenarioFile, ".scn", elcount(scenarioFile)); 
+  }
+  
+  // try to load scenario file for chosen scenario
+  if(C2xLoadScenario(scenarioFile) == 1)
+  {
+    Write("Scenario %s loaded from file '%s'", scenarioName, scenarioFile);
+  }
+  else
+  {
+    Write("Loading scenario %s from file '%s' failed", scenarioName, scenarioFile);
+  }
+}
+
+// Set description in Panel
+void setScenarioDescription()
+{
+  if (@ScenarioCtrl::ScenarioNumber == 0)
+  {
+        SetControlProperty("Scenario Control Panel", "ScenarioDescription", "Text", 
+        "Hazard warning lights \n\nWhile driving in front of vehicle under test (HV) in the same lane, the RV vehicle broadcasts hazard warning light flags via BasicSafetyMessage as well own location.");
+  }
+  if (@ScenarioCtrl::ScenarioNumber == 1)
+  {
+      SetControlProperty("Scenario Control Panel", "ScenarioDescription", "Text", 
+      "Hazard warning lights (slow speed) \n\nThe RV vehicle broadcasts hazard warning light flags via BasicSafetyMessage as well own location while driving ahead of vehicle under test (HV). The speed of RV vehicle is low or even zero (stationary).");
+  }
+  if (@ScenarioCtrl::ScenarioNumber == 2)
+  {
+      SetControlProperty("Scenario Control Panel", "ScenarioDescription", "Text", 
+      "RV vehicle drives in blind zone of HV vehicle \n\nRV  drives in left adjancent lane relative to the HV with the same speed. The relative position of RV to the HV is in the blind zone of the HV vehicle during the whole scenario.");
+  }
+  if (@ScenarioCtrl::ScenarioNumber == 3)
+  {
+      SetControlProperty("Scenario Control Panel", "ScenarioDescription", "Text", 
+      "RV vehicle enters the blind zone of HV vehicle \n\nRV drives in left adjancent lane relative to the HV  with a speed higher than the HV. The relative position of RV is behind the HV so RV will enter the blind zone of HV vehicle in a few seconds.");
+  }
+  if (@ScenarioCtrl::ScenarioNumber == 4)
+  {
+      SetControlProperty("Scenario Control Panel", "ScenarioDescription", "Text", 
+      "Same direction driving \n\nWhile driving in front of vehicle under test (HV), the RV vehicle issues following events: \n - anti-lock braking system (ABS) \n - body stability system (ESP) \n- traction control system (TCS)");
+  }
+  if (@ScenarioCtrl::ScenarioNumber == 5)
+  {
+      SetControlProperty("Scenario Control Panel", "ScenarioDescription", "Text", 
+      "Opposite directions driving \n\nRV vehicle issues the same vehicle events as in (a), while RV vehicle approaching the vehicle under test (HV) driving in opposite direction.");
+  }
+  if (@ScenarioCtrl::ScenarioNumber == 6)
+  {
+      SetControlProperty("Scenario Control Panel", "ScenarioDescription", "Text", 
+      "HV vehicle overtakes RV1 vehicle on opposite direction (RV2) lane \n\nThe HV follows the RV1 in the same line and overtakes RV1 over the lane of RV2. The RV2 vehicle is driving in opposite direction.");
+  }
+  if (@ScenarioCtrl::ScenarioNumber == 7)
+  {
+      SetControlProperty("Scenario Control Panel", "ScenarioDescription", "Text", 
+      "Emergency braking directly ahead \n\nThe RV1 vehicle is driving directly in front of vehicle under test (HV) and broadcasts the emergency brake event.");
+  }
+  if (@ScenarioCtrl::ScenarioNumber == 8)
+  {
+      SetControlProperty("Scenario Control Panel", "ScenarioDescription", "Text", 
+      "Emergency braking in the same lane \n\nRV1 is driving ahead of HV in the sameline but not immediately adjancent to HV. The sight of HV on RV1 is blockedby RV2 driving inbetween in the same line. RV1 broadcasts the emergency brake event.");
+  }
+  if (@ScenarioCtrl::ScenarioNumber == 9)
+  {
+      SetControlProperty("Scenario Control Panel", "ScenarioDescription", "Text", 
+      "Emergency RV vehicle is approaching HV vehicle \n\nThe RV vehicle (ambulance, police car, fire truck, ...) approaches the HV vehicle from behind.");
+  }
+  if (@ScenarioCtrl::ScenarioNumber == 10)
+  {
+      SetControlProperty("Scenario Control Panel", "ScenarioDescription", "Text", 
+      "RV vehicle stops in front of HV vehicle. \n\nBoth RV and HV vehicles drive in the same lane. RV stops directly in front of HV vehicle.");
+  }
+  if (@ScenarioCtrl::ScenarioNumber == 11)
+  {
+      SetControlProperty("Scenario Control Panel", "ScenarioDescription", "Text", 
+      "RV vehicle stops in the adjancent line in front of HV \n\nRV vehicle drives in the adjancent lane ahead of HV vehicle. RV vehicle stops in the adjancent lane. The FCW application must not warn the driver of the HV vehicle.");
+  }
+  if (@ScenarioCtrl::ScenarioNumber == 12)
+  {
+      SetControlProperty("Scenario Control Panel", "ScenarioDescription", "Text", 
+      "RV decelerates in front of HV vehicle \n\nBoth RV and HV vehicles drive in the same lane. While driving ahead of HV vehicle, the RV vehicle decelerates.");
+  }
+  if (@ScenarioCtrl::ScenarioNumber == 13)
+  {
+      SetControlProperty("Scenario Control Panel", "ScenarioDescription", "Text", 
+      "RV2 stops in front of HV, RV2 vehicle blocks the sight of HV \n\nHV follows RV2. RV drives in front of RV2.All three vehicles use the same lane, so the sight of HV on RV is blocked by RV2. RV stops and RV2 change the lane to avoid collision with RV.");
+  }
+  if (@ScenarioCtrl::ScenarioNumber == 15)
+  {
+      SetControlProperty("Scenario Control Panel", "ScenarioDescription", "Text", 
+      "RSU broadcasts road hazard information \n\nA RSU periodically broadcasts the road hazard warning information. The HV calculates the distance between own and the dangerous area location as well time to reach the dangerous area based on the current speed.");
+  }
+  if (@ScenarioCtrl::ScenarioNumber == 16)
+  {
+      SetControlProperty("Scenario Control Panel", "ScenarioDescription", "Text", 
+      "The HV vehicle starts at the intersection \n\nThe vehicle under test stops at the intersection. The RV1 vehicle drives to the intersection from the left side of HV. The sight of HV on RV1 is blocked by vehicle RV2, driving in the right adjancent lane from RV1.");
+  }
+  if (@ScenarioCtrl::ScenarioNumber == 17)
+  {
+      SetControlProperty("Scenario Control Panel", "ScenarioDescription", "Text", 
+      "HV and RV1 vehicles drive in the intersection at the same time\n\nThe vehicle under test (HV) is approaching the intersection, while RV1 vehicle is approaching from the right side of HV. Vehicle RV2 drives at the left adjancent lane related to RV1 vehicle.");
+  }
+  if (@ScenarioCtrl::ScenarioNumber == 18)
+  {
+      SetControlProperty("Scenario Control Panel", "ScenarioDescription", "Text", 
+      "RSU broacasts traffic signs information\n\nThe vehicle under test (HV) approaches the roadside unit (RSU) from a distance. The RSU broadcasts the local traffic signs information, if applicable.");
+  }
+  if (@ScenarioCtrl::ScenarioNumber == 19)
+  {
+      SetControlProperty("Scenario Control Panel", "ScenarioDescription", "Text", 
+      "HV vehicle turns left at the intersection. \n\nVehicle under test (HV) and RV vehicle drive towards the intersection fromopposite directions at the same time. HV indicates left turn and enters themiddle of intersection.");
+  }
+  if (@ScenarioCtrl::ScenarioNumber == 21)
+  {
+      SetControlProperty("Scenario Control Panel", "ScenarioDescription", "Text", 
+      "HV vehicle receives speed limit information from the RSU \n\nRSU periodically broadcasts the local speed limit information. The vehicle under test (HV) receives RSU speed limit data.");
+  }
+  if (@ScenarioCtrl::ScenarioNumber == 22)
+  {
+      SetControlProperty("Scenario Control Panel", "ScenarioDescription", "Text", 
+      "The HV vehicle receives traffic jam information from RSU \n\nThe roadside unit (RSU) detects traffic congestion/jam. RSU broadcasts traffic congestion position periodically. The vehicle under test (HV) approaches the RSU.");
+  }
+  if (@ScenarioCtrl::ScenarioNumber == 23)
+  {
+      SetControlProperty("Scenario Control Panel", "ScenarioDescription", "Text", 
+      "Pedestrian P appears in the front of HV vehicle \n\nThe vehicle under test (HV) drives in the left adjancent lane relative to the RV vehicle in the same direction. Pedestrian P starts crossing the lane of RV vehicle in front of it from the right lane side.");
+  }
+  if (@ScenarioCtrl::ScenarioNumber == 24)
+  {
+    SetControlProperty("Scenario Control Panel", "ScenarioDescription", "Text", 
+      "HV vehicle reversing (P appears behind) \n\nThe vehicle under test (HV) starts reversing, while the pedestrian P appears from behind of HV. When HV is close to P, the VRUCW application detects the risk of collision.");
+  }
+  if (@ScenarioCtrl::ScenarioNumber == 25)
+  {
+    SetControlProperty("Scenario Control Panel", "ScenarioDescription", "Text", 
+      "Roadside equipment detects the collision risk situation \n\nOn the basis of scenarios (a) and (b), the pedestrian P does not have V2Xcommunication capabilities. The RSU provides the position of P to other participants. ");
+  }
+}

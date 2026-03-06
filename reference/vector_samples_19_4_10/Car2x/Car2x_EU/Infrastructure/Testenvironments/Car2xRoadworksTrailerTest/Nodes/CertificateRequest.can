@@ -1,0 +1,133 @@
+/*@!Encoding:1252*/
+includes
+{
+  #include "..\DataSources_Templates\ASNV_Template_BaseDatatypes.cin"
+  #include "..\DataSources_Templates\ASNV_Template_DENM.cin"
+  #include "..\DataSources_Templates\ASNV_Template_CAM.cin"
+}
+
+ 
+
+variables
+{
+  char g_R_ITS_Tx[16] = "DuT";
+  long g_R_ITS_Tx_StationHandle;
+
+  int gCertReceived = 0;
+  int gCertRequested = 0;
+  byte gHashedId3[3];
+
+  timer t_stopNodeTimer;
+}
+
+ 
+
+on start
+{
+  enum CallbackType { OnRx, PreTx };
+
+  C2xRegisterCallback(OnRx,  "OnRxDENM",    "DENM");
+  C2xRegisterCallback(OnRx,  "OnRxCAM",    "CAM");
+  C2xRegisterCallback(PreTx, "OnPreTxCAM", "CAM");
+}
+
+ 
+
+on sysvar CertificateRequest::requestCertificate
+{
+  
+  if (@this == 1)
+  { 
+    C2xCreateStation("CertificateRequest");
+    C2xSetStationBaseAttributes("CertificateRequest", @GPS::GPS1.Latitude * 1e7, @GPS::GPS1.Longitude * 1e7, 0.0, @GPS::GPS1.Direction, 0.0);
+    C2xStartNode(); 
+    
+    g_R_ITS_Tx_StationHandle = C2xGetStationHandle(g_R_ITS_Tx);
+    @CertificateRequest::receivedCertificate = 0;
+    setTimer(t_stopNodeTimer, 5);
+  }
+}
+
+ 
+
+void OnRxDENM(long channel, long dir, long radioChannel, long signalStrength, long signalQuality, long packet)
+{
+  int i;
+  byte certificateHashedId8[8];
+  byte signerHashedId8[8];
+
+  // DENM packet from RSU (DuT / Tx)
+  if (C2xGetStationHandle(packet) == g_R_ITS_Tx_StationHandle)
+  {
+    // check for received packets (dir == 0)
+    if (gCertReceived == 0)
+    {
+      if (C2xSecPacketGetSignerType(packet) == 2)
+      {
+        C2xGetTokenData( packet, "wssv3", "signerHashedId", 8, certificateHashedId8);
+        C2xSecCertificateGetSignerHashedId8( C2xSecCertificateGetHandle(certificateHashedId8) , signerHashedId8);
+        for (i = 0; i < 3; i++)
+        {
+          gHashedId3[i] = signerHashedId8[i+5];
+        }
+
+        gCertReceived = 1;
+      }
+    }
+  }
+}
+
+void OnPreTxCAM(LONG packet)
+{
+  struct CAM cam;
+    
+  //Set Position in CAM
+  C2xSetTokenInt64(packet, "geo_eh", "lpvLatitude", @GPS::GPS1.Latitude * 1e7);
+  C2xSetTokenInt64(packet, "geo_eh", "lpvLongitude", @GPS::GPS1.Longitude * 1e7);
+
+  API_GetCAMParams(packet, cam);
+  cam.cam.camParameters.basicContainer.referencePosition.latitude = @GPS::GPS1.Latitude * 1e7;
+  cam.cam.camParameters.basicContainer.referencePosition.longitude =  @GPS::GPS1.Longitude * 1e7;
+  API_SetCAMParams(packet, cam);
+  
+  if (gCertReceived == 1) 
+  {
+    if (gCertRequested == 0) 
+    {
+// add Inline P2pcd Request
+      C2xSetTokenData( packet, "wssv3", "inlineCertRequest0", 3, gHashedId3);
+      @CertificateRequest::receivedCertificate = 1;
+    } 
+
+//    if (gCertRequested >= 50) 
+//    {
+//      // remove Inline P2pcd Request
+//      C2xRemoveToken(packet, "wssv3", "inlineCertRequest0");
+//    } 
+    gCertRequested++;
+  } 
+}
+
+void OnRxCAM(long channel, long dir, long radioChannel, long signalStrength, long signalQuality, long packet)
+{
+  // DENM packet from RSU (DuT / Tx)
+  if (C2xGetStationHandle(packet) == g_R_ITS_Tx_StationHandle)
+  {
+    if (gCertRequested == 1) 
+    {
+      if (C2xIsTokenAvailable(packet, "wssv3 ", "requestedCert"))
+      {
+        @CertificateRequest::receivedCertificate = 2;
+      }
+    }
+  }
+}
+
+on timer t_stopNodeTimer
+{
+  C2xStopNode();
+  if (@CertificateRequest::receivedCertificate != 2)
+  {
+    @CertificateRequest::receivedCertificate = 3;
+  }
+}

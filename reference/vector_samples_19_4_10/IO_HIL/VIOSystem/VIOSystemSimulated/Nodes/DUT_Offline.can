@@ -1,0 +1,147 @@
+﻿/*@!Encoding:65001*/
+// Replacing the Arduino by a CAPL simulation
+includes
+{
+}
+
+variables
+{
+  // Variables
+  mstimer counterTimer;
+  mstimer trafficLightTimer;
+  
+  int canoeWaiting_flag;
+  int dutIdle_flag;
+  int dutRunning_flag;
+  int counterCycleTime;
+}
+
+on start
+{
+  // initial counter frequency (Hz)
+  @sysvar::DUT_simulated::CounterInitialFreq = 2;
+  // timer for 4 bit counter (milliseconds)
+  setTimerCyclic(counterTimer, 1000 / @sysvar::DUT_simulated::CounterInitialFreq); 
+  // timer for status display
+  setTimerCyclic(trafficLightTimer, 100);
+  
+  // flags for display update
+  canoeWaiting_flag = 0;
+  dutIdle_flag = 0;
+  dutRunning_flag = 0;
+  // initial counter value
+  @sysvar::DUT_simulated::CounterVal = 0;
+  @sysvar::VIO_simulated::VIO2004Out::Ch02::CounterFreqSlider = @sysvar::DUT_simulated::CounterInitialFreq;
+  @sysvar::DUT_simulated::LedPwmSliderValue = 0;
+  @sysvar::DUT_simulated::LedPwmDimmVoltage = 0;
+  @sysvar::VIO_simulated::VIO1008In::Ch01::LedPwmDimmVoltage = 0;
+  // clear all write windows
+  writeClear(-1); 
+}
+
+// on timer 1
+on timer counterTimer
+{
+  if (@sysvar::VIO_simulated::VIO4028Out::Ch02::DutRunning == 1) // VioRunning
+  {
+    // modify counter speed depending on input: 1000ms / slider value (Hz)
+    counterCycleTime = 1000 / @sysvar::VIO_simulated::VIO2004Out::Ch02::CounterFreqSlider;
+    setTimerCyclic(counterTimer, counterCycleTime); 
+    
+    // calc. counter frequency in Hz
+    @sysvar::DUT_simulated::CounterFreq = @sysvar::VIO_simulated::VIO2004Out::Ch02::CounterFreqSlider;
+    // incr. counter
+    @sysvar::DUT_simulated::CounterVal += 1;
+    // counter modulo 16    
+    if (@sysvar::DUT_simulated::CounterVal == 16)
+    {
+      @sysvar::DUT_simulated::CounterVal = 0;
+    }
+    // map counter value to counter bits
+    @sysvar::DUT_simulated::CounterBit0 = @sysvar::DUT_simulated::CounterVal & 1;
+    @sysvar::DUT_simulated::CounterBit1 = @sysvar::DUT_simulated::CounterVal/2 & 1;
+    @sysvar::DUT_simulated::CounterBit2 = @sysvar::DUT_simulated::CounterVal/4 & 1;
+    @sysvar::DUT_simulated::CounterBit3 = @sysvar::DUT_simulated::CounterVal/8 & 1;
+  }
+  // if not running, reset counter
+  else 
+  {
+    @sysvar::DUT_simulated::CounterVal = 0;
+    @sysvar::DUT_simulated::CounterFreq = 0;
+    @sysvar::DUT_simulated::CounterBit0 = 0;
+    @sysvar::DUT_simulated::CounterBit1 = 0;
+    @sysvar::DUT_simulated::CounterBit2 = 0;
+    @sysvar::DUT_simulated::CounterBit3 = 0;
+  }
+  // finally, update VIO signals
+  @sysvar::VIO_simulated::VIO4028In::Ch06::CounterBit3 = @sysvar::DUT_simulated::CounterBit3;
+  @sysvar::VIO_simulated::VIO4028In::Ch05::CounterBit2 = @sysvar::DUT_simulated::CounterBit2;
+  @sysvar::VIO_simulated::VIO4028In::Ch04::CounterBit1 = @sysvar::DUT_simulated::CounterBit1;
+  @sysvar::VIO_simulated::VIO4028In::Ch03::CounterBit0 = @sysvar::DUT_simulated::CounterBit0;
+}
+
+//on PWM slider change
+on sysvar DUT_simulated::LedPwmSliderValue
+{
+  if ((@sysvar::VIO_simulated::VIO4028Out::Ch02::DutRunning == 1) && (@sysvar::VIO_simulated::VIO4028Out::Ch01::CANoeRunning == 1))
+  {
+    // PWM Slider shall be scaled 0..100 (duty cycle!), but voltage is 0..5V only
+    @sysvar::DUT_simulated::LedPwmDimmVoltage = @sysvar::DUT_simulated::LedPwmSliderValue / 20.0;
+    // Duty cycle is 0..100%, but voltage is 0..5V only
+    @sysvar::DUT_simulated::LedPwmDutyCycle = 20 * @sysvar::DUT_simulated::LedPwmDimmVoltage;
+  }
+  else
+  {
+    @sysvar::DUT_simulated::LedPwmDutyCycle = 0;
+  }
+  // update VIO signal
+  @sysvar::VIO_simulated::VIO1008In::Ch01::LedPwmDimmVoltage = @sysvar::DUT_simulated::LedPwmDimmVoltage;
+  @sysvar::VIO_simulated::VIO4028Out::Ch08::LedPwmDutyCycle = @sysvar::DUT_simulated::LedPwmDutyCycle;
+}  
+
+//on timer 2
+on timer trafficLightTimer
+{
+  // set traffic lights depending on CANoeRunning and VioRunning signals
+  if (@sysvar::VIO_simulated::VIO4028Out::Ch01::CANoeRunning == 0)
+  {
+    @sysvar::DUT_simulated::TrafficLightRed = 1;
+    @sysvar::DUT_simulated::TrafficLightYellow = 0;
+    @sysvar::DUT_simulated::TrafficLightGreen = 0;
+    if (canoeWaiting_flag == 0)
+    {
+      write ("Simulating that CANoe is stopped. Please press 'CANoe Start/Stop' button to start CANoe.");
+      canoeWaiting_flag = 1;
+      dutIdle_flag = 0;
+      dutRunning_flag = 0;
+    }
+  }
+  // CANoeRunning == 1 && VioRunning == 0
+  else if (@sysvar::VIO_simulated::VIO4028Out::Ch02::DutRunning == 0)
+  {
+    @sysvar::DUT_simulated::TrafficLightRed = 0;
+    @sysvar::DUT_simulated::TrafficLightYellow = 1;
+    @sysvar::DUT_simulated::TrafficLightGreen = 0;
+    if (dutIdle_flag == 0)
+    {
+      write ("CANoe running, DUT idle. Please press 'DUT Start/Stop' button to start VIO System and DUT.");
+      canoeWaiting_flag = 0;
+      dutIdle_flag = 1;
+      dutRunning_flag = 0;
+    }
+  }
+  // CANoeRunning == 1 && VioRunning == 1
+  else
+  {
+    @sysvar::DUT_simulated::TrafficLightRed = 0;
+    @sysvar::DUT_simulated::TrafficLightYellow = 0;
+    @sysvar::DUT_simulated::TrafficLightGreen = 1;
+    if (dutRunning_flag == 0)
+    {
+      write ("CANoe running, DUT running. Please press 'DUT Start/Stop' button to stop VIO System and DUT.");
+      canoeWaiting_flag = 0;
+      dutIdle_flag = 0;
+      dutRunning_flag = 1;
+    }
+  }
+}

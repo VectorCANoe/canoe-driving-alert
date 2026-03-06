@@ -1,0 +1,38 @@
+﻿/*@!Encoding:65001*/
+includes
+{
+  
+}
+
+variables
+{
+  
+}
+
+export testcase EnsurePrecondition()
+{
+  char tc[26] = "EnsurePrecondition";
+  long result;
+  
+  // wait for Subscribe Acknowledge
+  
+  result = testWaitForTextEvent("SubscribeACK", 2000);
+  
+  switch(result)
+  {
+    case 1:
+      testStepPass( tc );
+      break;
+    case 0:
+      testStepFail( tc, "Timeout, no Subscribe Acknodledgment received");
+      break;
+    default:
+      testStepErrorInTestSystem( tc, "testWaitForTextEvent failed with result %d", result );
+      break;
+  }
+}
+
+on someipSD SubscribeACK
+{
+  testSupplyTextEvent("SubscribeACK");
+}

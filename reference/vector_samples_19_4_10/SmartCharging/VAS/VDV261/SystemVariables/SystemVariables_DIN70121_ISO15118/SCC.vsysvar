@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<systemvariables version="4">
+  <namespace name="" comment="" interface="">
+    <namespace name="Common" comment="" interface="">
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysProtocolBar" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysSlacState" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="0" minValue="0" minValuePhys="0" maxValue="5" maxValuePhys="5" />
+      <namespace name="VT_Access" comment="" interface="">
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="ChipPresent" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="0" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1" />
+      </namespace>
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="ChargeProgress" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="-1" minValue="-1" minValuePhys="-1" maxValue="2" maxValuePhys="2">
+        <valuetable name="Custom" definesMinMax="true">
+          <valuetableentry value="-1" lowerBound="-1" upperBound="-1" description="Initial" displayString="Initial" />
+          <valuetableentry value="0" lowerBound="0" upperBound="0" description="Stop" displayString="Stop" />
+          <valuetableentry value="1" lowerBound="1" upperBound="1" description="Start" displayString="Start" />
+          <valuetableentry value="2" lowerBound="2" upperBound="2" description="ReNegotiation" displayString="ReNegotiation" />
+        </valuetable>
+      </variable>
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="LastReceivedMessageId" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="0" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="LastReceivedResponseCode" comment="" bitcount="0" isSigned="true" encoding="65001" type="string" startValue=" " />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysMessageDelay" comment="" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="1500" maxValuePhys="1500" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysMessageDelayJitter" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysTLSEnabled" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysUseProcessing" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysVerboseWrite" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysWriteMessageData" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1" />
+    </namespace>
+  </namespace>
+</systemvariables>

@@ -1,0 +1,47 @@
+{
+  "version": 3,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 21,
+    "patch": 0
+  },
+  "configurePresets": [
+    {
+      "name": "Base",
+      "hidden": true,
+      "description": "Base preset for all configurations",
+      "generator": "Ninja",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug"
+      }
+    },
+    {
+      "name": "Pico_QEMU",
+      "description": "Build application for Raspberry Pi Pico (QEMU)",
+      "inherits": "Base",
+      "cacheVariables": {
+        "TARGET_PLATFORM_PICO_QEMU": "ON"
+      },
+      "binaryDir": "${sourceDir}/build/pico-qemu"
+    },
+    {
+      "name": "Pico_HW",
+      "description": "Build application for Raspberry Pi Pico (Hardware)",
+      "inherits": "Base",
+      "cacheVariables": {
+        "TARGET_PLATFORM_PICO_HW": "ON"
+      },
+      "binaryDir": "${sourceDir}/build/pico-hw"
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "Pico_QEMU",
+      "configurePreset": "Pico_QEMU"
+    },
+    {
+      "name": "Pico_HW",
+      "configurePreset": "Pico_HW"
+    }
+  ]
+}

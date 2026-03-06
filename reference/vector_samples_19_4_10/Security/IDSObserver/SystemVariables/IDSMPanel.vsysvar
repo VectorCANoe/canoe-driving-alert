@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<systemvariables version="4">
+  <namespace name="" comment="" interface="">
+    <namespace name="IDSMPanel" comment="" interface="">
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="Bus_Protocol" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="2" maxValuePhys="2">
+        <valuetable name="Protocol" definesMinMax="false">
+          <valuetableentry value="0" lowerBound="0" upperBound="0" description="CAN" displayString="Description" />
+          <valuetableentry value="1" lowerBound="1" upperBound="1" description="CAN_FD" displayString="CAN_FD" />
+          <valuetableentry value="2" lowerBound="2" upperBound="2" description="CAN_TP" displayString="CAN_TP" />
+        </valuetable>
+      </variable>
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="Button_Send" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="CyclicTransmissionMode" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="1" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="EventID" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="51966" minValue="0" minValuePhys="0" maxValue="65535" maxValuePhys="65535" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SensorInstanceID" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="63" minValue="0" minValuePhys="0" maxValue="63" maxValuePhys="63" />
+    </namespace>
+  </namespace>
+</systemvariables>

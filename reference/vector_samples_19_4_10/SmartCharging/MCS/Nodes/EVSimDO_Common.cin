@@ -1,0 +1,883 @@
+/*@!Encoding:1252*/
+includes
+{  
+  #include "EVCommonFunctions.cin" 
+}
+
+variables
+{
+  char gPanelName[8] = "EV";
+  char gcontrolCharge[20] = "Progress Bar Charge";
+  char gcontrolDischarge[23] = "Progress Bar Discharge";
+  
+  char gProtocolPanelName[9] = "Protocol";
+  char labelNameOK[50];  
+  char labelNameNOK[50];
+  int stateResults[12];   // stores response codes
+  
+  int EVProcessingLoopCounter = 0;
+  int EVSRProcessingLoopCounter = 0;
+  const cProcessingLoopRepetitions = 10;
+  
+  int ChargeLoopDelay = 0;
+  const ChargeLoopDelayValue = 10;
+
+  enum eCEState
+  {
+    State_Undefined = 0,
+    State_A = 1,
+    State_B0 = 2,
+    State_B0_Aux = 3,
+    State_B = 4,
+    State_B_Aux = 5,
+    State_C = 6,
+    State_C_Aux = 7,
+    State_EC = 8,
+    State_EC_Aux = 9,
+    State_E = 10
+  };
+  
+  const cAllowedVoltageDeviation = 20; //according to IEC 61851-23-3
+  const cMinimumPreChargeCurrent = 0.5;
+  const cMaximumCurrentOnOutputCircuit = 5;
+  
+  msTimer tContactorOpenDelay;
+  const cEmergencyContactorOpenDelay = 1000;
+  const cStopChargingContactorOpenDelay = 5000;
+  const cRetryContactorOpenDelay = 100;
+  const cMaximumContactorRetryCounter = 10;
+
+  int tcpConnected = 0;
+  int simulationRunning = 0;
+  int expectedCEState = State_Undefined;
+  int debounceCounter = 0;
+  int debounceLimit = 15;
+}
+
+on preStart
+{
+  @sysvar::EV_Sim::Control::SysEV_Connected = 0;
+  EV.SetAdHocSendingEnabled.Call(0);
+  @sysvar::EV_Sim::SysEV_BatteryState = 30;
+}
+
+on start
+{
+  int i;
+  FUNC_Set_DepartureTimeDefaults();
+  FUNC_Set_EVChargingMode();
+  FUNC_CheckEV_TargetCurrent_Visibility();
+  ST_Init();
+  
+  for (i = 0; i < 12; ++i)  
+  {
+    stateResults[i] = -1;
+  }
+  simulationRunning = 0;
+  expectedCEState = State_Undefined;
+  debounceCounter = 0;
+}
+
+on preStop
+{
+  @sysvar::EV_Sim::Control::SysEV_Connected = 0;
+  ST_Reset();
+}
+
+on sysvar EV_Sim::Control::SysEV_Connected
+{
+  ResetVariables();
+  if (@this == 1)
+  {    
+    reReadAttributes();
+    
+    if(isSimulated())
+    {
+      EV.StartSimulation.Call();
+      simulationRunning = 1;
+    }
+      
+    @sysvar::EV_Sim::Control::SysEV_WaitResume = 0;
+    @sysvar::EV_Sim::SysEV_State = 0;    
+    @sysvar::EV_Sim::SysEV_Error = 0;
+    @sysvar::EV_Sim::SysEV_SimState = 0;
+    
+    ST_PlugIn();
+  }
+  else
+  {
+    EV.ResetSimulation.Call();
+    @sysvar::EV_Sim::SysEV_SimState = 2;
+    simulationRunning = 0;
+    
+    ST_PlugOut();
+    SetCPStateB();
+    OpenContactorsSafety();
+    
+    if(HV_measure_DC_U_VeriVolt() < 60)
+    {
+      UnlockConnector();
+      ST_Reset();
+    }
+  }
+}
+
+ReactToStateB0()
+{
+  if(GetConnectorLockState() != 1)
+    LockConnector();
+}
+
+ReactToStateB()
+{
+  if(GetISOMonitoringMuted() != 1)
+    Mute_ISO();
+  
+  if(GetConnectorLockState() != 1)
+    LockConnector();
+  
+  if(!isSimulated() && 0 == simulationRunning)
+  {
+    EV.StartSimulation.Call();
+    simulationRunning = 1;
+  }
+
+  // Initial switch to B
+  if(expectedCEState == State_A ||expectedCEState == State_Undefined) 
+  {
+    expectedCEState = State_B; 
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////
+// on sysvar
+//////////////////////////////////////////////////////////////////////////
+on sysvar EV_Sim::Control::SysEV_WaitResume
+{
+  if (@this == 1)
+  {
+    EV.StopSimulation.Call();
+    @sysvar::EV_Sim::SysEV_SimState = 2;
+    simulationRunning = 0;
+  }
+}
+
+on sysvar EV_Sim::Control::SysEV_Reset
+{
+  EV.ResetSimulation.Call();
+  @sysvar::EV_Sim::SysEV_SimState = 2;
+  simulationRunning = 0;
+  ResetVariables();
+}
+
+on sysvar EV_Sim::Control::SysEV_Stop
+{
+  CCS::Simulation::EV.StopChargeLoop.Call();
+  HV_StopChargingReaction();
+}
+
+on sysvar EV_Sim::Control::SysEV_ClearBattery
+{
+  @sysvar::EV_Sim::SysEV_BatteryState = 1;
+  $EV.ISO20.AC_ChargeLoop_Request.DisplayParameters.PresentSOC = 1;
+  $EV.ISO20.DC_ChargeLoop_Request.DisplayParameters.PresentSOC = 1;
+}
+
+on sysvar EV_Sim::Control::SysEV_ChargeLoopInterval
+{
+  setAttribute(CCS::Simulation::EV, CCSBinding::ChargeLoopMessageDelayMs, @this);
+}
+
+on sysvar EV_Sim::Control::SysEV_CertificateInstallation
+{
+  setCertHandlingAttribute();
+}
+
+on sysvar EV_Sim::Control::SysEV_ControlModeDynamic
+{
+  if (@sysvar::EV_Sim::Control::SysEV_ControlModeDynamic == @sysvar::EV_Sim::Control::SysEV_ControlModeDynamic::Dynamic)
+  {
+    setAttribute(CCS::Simulation::EV, CCSBinding::EV::ControlMode, CCSBinding::Dynamic);
+  }
+  else
+  {
+    setAttribute(CCS::Simulation::EV, CCSBinding::EV::ControlMode, CCSBinding::Scheduled);
+  }
+  
+  FUNC_CheckEV_TargetCurrent_Visibility();
+}
+
+on sysvar EV_Sim::Control::SysEV_TriggerScheduleRenegotiation
+{
+  FUNC_Set_EVDCLimits_ScheduleRenegotiationChargeParameterDiscoveryReq();    
+  
+  EV.ISO20.StartScheduleRenegotiation.Call(); //ScheduleRenegotiation starts as soon as this function is called
+}
+
+on sysvar EV_Sim::Control::SysEV_TriggerMeteringConfirmation
+{
+  EV.ISO20.RequestMeteringConfirmation.Call(); 
+}
+
+on sysVar Common::SysUserBPTMode
+{
+  FUNC_Set_EVChargingMode();
+}
+
+//////////////////////////////////////////////////////////////////////////
+// on v2g message
+//////////////////////////////////////////////////////////////////////////
+
+on value_change EV.ISO20.ServiceDetail_Response
+{  
+  ServiceSelection();  
+}
+
+on value_update CCS::Simulation::EV.ISO20.ServiceSelection_Response
+{
+  FUNC_Set_EVDCLimits_ChargeParameterDiscoveryReq();
+}
+
+on value_update CCS::Simulation::EV.ISO20.DC_ChargeParameterDiscovery_Response
+{ 
+  FUNC_Set_EVEnergyValues_ScheduleExchangeReq();
+}
+
+on value_update CCS::Simulation::EV.ISO20.DC_CableCheck_Response
+{
+  if(CheckRequirementsForCEStateC())
+  {
+    SetCPStateC();
+  }
+  if($this.EVSEProcessing == _CCS::DataTypes::parProcessingType::Finished)
+  {
+    FUNC_Set_EVDCLimits_PreChargeReq();
+  }
+  
+  if( (@sysvar::EV_Sim::SysEV_State == @sysvar::EV_Sim::SysEV_State::DCCableCheck) && ($this.EVSEProcessing == _CCS::DataTypes::parProcessingType::Finished))
+  {
+    //start to set voltage and current internally with opened contactors
+    HV_PSU_DC_enable(1);
+    HV_source_set_U_DC_PreCharge(@sysvar::EV_Sim::SysEV_TargetVoltage);
+    HV_source_set_I_DC(cMinimumPreChargeCurrent);
+  }
+}
+
+on value_update CCS::Simulation::EV.ISO20.DC_PreCharge_Request
+{
+  if((tcpConnected == 1) && (@sysvar::EV_Sim::SysEV_State == @sysvar::EV_Sim::SysEV_State::DCPreCharge))
+  {
+    double minimumVoltage, maximumVoltage;
+    minimumVoltage = @sysvar::EV_Sim::SysEV_TargetVoltage - cAllowedVoltageDeviation;
+    maximumVoltage = @sysvar::EV_Sim::SysEV_TargetVoltage + cAllowedVoltageDeviation;
+
+    HV_source_set_U_DC_PreCharge(@sysvar::EV_Sim::SysEV_TargetVoltage);
+    HV_source_set_I_DC(cMinimumPreChargeCurrent);
+
+    if ((HV_measure_DC_U_VeriVolt() >= minimumVoltage) 
+        && (HV_measure_DC_U_VeriVolt() <= maximumVoltage) 
+        && (getValueConsideringExponent($CCS::Simulation::EV.ISO20.DC_PreCharge_Response.EVSEPresentVoltage.Value, $CCS::Simulation::EV.ISO20.DC_PreCharge_Response.EVSEPresentVoltage.Exponent) >= minimumVoltage) 
+        && (getValueConsideringExponent($CCS::Simulation::EV.ISO20.DC_PreCharge_Response.EVSEPresentVoltage.Value, $CCS::Simulation::EV.ISO20.DC_PreCharge_Response.EVSEPresentVoltage.Exponent) <= maximumVoltage))
+    {
+      HV_source_set_output(1);
+      EV.ISO20.FinishProcessing.Call();
+    }
+  }
+}
+
+on value_update CCS::Simulation::EV.ISO20.PowerDelivery_Request
+{
+  if($this.ChargeProgress == _CCS::DataTypes::parChargeProgressType::Stop)
+  {
+    HV_StopChargingReaction();
+  }
+  
+  EVProcessingLoopCounter = 0;
+  EV.ISO20.FinishProcessing.Call();
+}
+
+on value_update EV.ISO20.PowerDelivery_Response
+{
+  FUNC_Set_EVDCLimits_ChargeLoopReq();
+  FUNC_Set_EVDCChargeLoopValues();
+}
+
+on value_update CCS::Simulation::EV.ISO20.DC_ChargeLoop_Response
+{
+  double chargeLoopEVSEPresentCurrent;
+  chargeLoopEVSEPresentCurrent = getValueConsideringExponent($EV.ISO20.DC_ChargeLoop_Response.EVSEPresentCurrent.Value, $EV.ISO20.DC_ChargeLoop_Response.EVSEPresentCurrent.Exponent);
+  if ((@sysvar::EV_Sim::Control::SysEV_ChargeDischarge == @sysvar::EV_Sim::Control::SysEV_ChargeDischarge::Discharge) 
+    && (@sysvar::Common::SysUserBPTMode == sysvar::Common::SysUserBPTMode::BPT)
+    && (@sysvar::EV_Sim::SysEV_BatteryState > $EV.ISO20.DC_ChargeLoop_Request.DisplayParameters.MinimumSOC))
+  {
+    // discharge
+    setControlVisibility(gPanelName, gcontrolCharge, 0);
+    setControlVisibility(gPanelName, gcontrolDischarge, 1); 
+    
+    // slow down discharging
+    if (ChargeLoopDelay > ChargeLoopDelayValue)
+    {
+      if ( (@sysvar::EV_Sim::SysEV_BatteryState + _round(chargeLoopEVSEPresentCurrent / 100)) > $EV.ISO20.DC_ChargeLoop_Request.DisplayParameters.MinimumSOC )
+      {
+        // Current value is negative, therefore you have to add the value
+        @sysvar::EV_Sim::SysEV_BatteryState = @sysvar::EV_Sim::SysEV_BatteryState + _round(chargeLoopEVSEPresentCurrent/100);
+      }
+      else
+      {
+        @sysvar::EV_Sim::SysEV_BatteryState = $EV.ISO20.DC_ChargeLoop_Request.DisplayParameters.MinimumSOC;
+      }
+      
+      FUNC_Set_EVDCChargeLoopValues();
+      
+      ChargeLoopDelay = 0;
+    }
+    else
+    {
+      ChargeLoopDelay++;
+    }
+  }
+  else if (((@sysvar::EV_Sim::Control::SysEV_ChargeDischarge == @sysvar::EV_Sim::Control::SysEV_ChargeDischarge::Charge) 
+         || (@sysvar::Common::SysUserBPTMode == sysvar::Common::SysUserBPTMode::No_BPT))
+         && (@sysvar::EV_Sim::SysEV_BatteryState < $EV.ISO20.DC_ChargeLoop_Request.DisplayParameters.MaximumSOC))
+  { 
+    // charge
+    setControlVisibility(gPanelName, gcontrolCharge, 1);
+    setControlVisibility(gPanelName, gcontrolDischarge, 0);
+    
+    // slow down charging
+    if (ChargeLoopDelay > ChargeLoopDelayValue)
+    {
+      if ((@sysvar::EV_Sim::SysEV_BatteryState + _round(chargeLoopEVSEPresentCurrent / 100)) < $EV.ISO20.DC_ChargeLoop_Request.DisplayParameters.MaximumSOC)
+      {
+        @sysvar::EV_Sim::SysEV_BatteryState = @sysvar::EV_Sim::SysEV_BatteryState + _round(chargeLoopEVSEPresentCurrent / 100);
+      }
+      else
+      {
+        @sysvar::EV_Sim::SysEV_BatteryState = $EV.ISO20.DC_ChargeLoop_Request.DisplayParameters.MaximumSOC;
+      }
+      
+      FUNC_Set_EVDCChargeLoopValues();
+      
+      ChargeLoopDelay = 0;
+    }
+    else
+    {
+      ChargeLoopDelay++;
+    }  
+    
+    if($EV.ISO20.DC_ChargeLoop_Response.EVSEStatus.IsValid && $EV.ISO20.DC_ChargeLoop_Response.EVSEStatus.EVSENotification == 3) //ScheduleRenegotiation
+    {
+      FUNC_Set_EVDCLimits_ScheduleRenegotiationChargeParameterDiscoveryReq();      
+    }
+  }  
+  else
+  {
+    CCS::Simulation::EV.StopChargeLoop.Call();
+  }
+  
+  if($this.EVSEStatus.IsValid && $this.EVSEStatus.EVSENotification == _CCS::DataTypes::EVSENotificationType::Terminate)
+  {
+    HV_StopChargingReaction();
+  }
+  else
+  {
+    if (@sysvar::EV_Sim::Control::SysEV_ControlModeDynamic == @sysvar::EV_Sim::Control::SysEV_ControlModeDynamic::Dynamic)
+      HV_source_set_I_DC(@sysvar::EV_Sim::SysEV_MaxCurrent);
+    else
+      HV_source_set_I_DC(@sysvar::EV_Sim::SysEV_TargetCurrent);
+    
+    HV_source_set_U_DC(@sysvar::EV_Sim::SysEV_TargetVoltage);
+  }
+  
+  $EV.ISO20.DC_ChargeLoop_Request.DisplayParameters.PresentSOC = @sysvar::EV_Sim::SysEV_BatteryState;
+}
+
+on value_update CCS::Simulation::EV.ISO20.DC_WeldingDetection_Request
+{  
+  if(@sysvar::EV_Sim::SysEV_State == @sysvar::EV_Sim::SysEV_State::DCWeldingDetection)
+  {
+    if(EVProcessingLoopCounter == 0)
+    {
+      SetCPStateB();
+      HV_source_perform_welding();
+      HV_source_set_I_DC(cMinimumPreChargeCurrent);
+    }
+    
+    if (EVProcessingLoopCounter < cProcessingLoopRepetitions)
+    {
+      HV_source_set_U_DC(HV_measure_DC_U_VeriVolt());
+      EVProcessingLoopCounter++; 
+    }
+    else
+    {
+      EVProcessingLoopCounter = 0;
+      OpenContactorsSafety();
+      EV.ISO20.FinishProcessing.Call();
+    }
+  }
+}
+
+on value_update EV.ScheduleRenegotiation.PowerDelivery_Response
+{
+ 	if (EVSRProcessingLoopCounter < cProcessingLoopRepetitions)
+ 	{
+ 	  EVSRProcessingLoopCounter++; 
+ 	}
+ 	else
+ 	{
+ 	  EVSRProcessingLoopCounter = 0;
+ 	  EV.ScheduleRenegotiation.FinishProcessing.Call();
+ 	}
+}
+
+on value_update CCS::Simulation::EV.ISO20.SessionStop_Request
+{
+  //in case welding detection is skipped
+  SetCPStateB();
+  OpenContactorsSafety();
+}
+
+on fct_called CCS::Simulation::EV.TransportLayerDisconnectInd
+{
+  tcpConnected = 0;
+  HV_EmergencyStopReaction();
+}
+
+on fct_called CCS::Simulation::EV.TransportLayerConnectInd
+{  
+  tcpConnected = 1;
+}
+
+//////////////////////////////////////////////////////////////////////////
+// on data
+//////////////////////////////////////////////////////////////////////////
+on value_update EV.CurrentLinkStatus
+{
+  if ($EV.CurrentLinkStatus == _CCS::DataTypes::Connected)
+  {
+    @sysvar::EV_Sim::SysEV_LinkStatus = 1;
+  }
+  else if ($EV.CurrentLinkStatus == _CCS::DataTypes::ReadyToJoin)
+  {
+    @sysvar::EV_Sim::SysEV_LinkStatus = 2;
+  }
+  else
+  {
+    @sysvar::EV_Sim::SysEV_LinkStatus = 0;
+  }
+}
+
+int CheckRequirementsForCEStateC()
+{
+  int result;
+  result = 0;
+  
+  if( (GetISOMonitoringMuted() == 1) && (GetLockState() == 1) )
+    result = 1;
+  else
+   result = 0;
+  
+  return result;
+}
+
+//////////////////////////////////////////////////////////////////////////
+// on method
+//////////////////////////////////////////////////////////////////////////
+
+on fct_called EV.OnLastReceivedMessageIdChanged
+{
+  @Common::LastReceivedMessageId = $EV.OnLastReceivedMessageIdChanged.LatestCall.lastRxMessageId;
+	ValidateProtocolPanel($EV.OnLastReceivedMessageIdChanged.LatestCall.lastRxMessageId);
+  
+  // Enable AutoBodyFill if it was previously disabeld at the Req/Resp loop
+  if (AutoFill_body == 0)
+  {
+    EV.EnableAutoBodyFill.Call(1);
+    AutoFill_body = 1;
+  }
+  
+  switch ($EV.OnLastReceivedMessageIdChanged.LatestCall.lastRxMessageId)
+  {
+    // SLAC Messages
+    case _CCS::DataTypes::CM_SLAC_PARM_CNF:
+      @sysvar::EV_Sim::SysEV_State = @sysvar::EV_Sim::SysEV_State::SLAC_PARM;
+      break;
+      
+    case _CCS::DataTypes::CM_ATTEN_CHAR_IND:
+      @sysvar::EV_Sim::SysEV_State = @sysvar::EV_Sim::SysEV_State::ATTEN_CHAR;  
+      break;
+      
+    case _CCS::DataTypes::CM_VALIDATE_CNF:
+      @sysvar::EV_Sim::SysEV_State = @sysvar::EV_Sim::SysEV_State::VALIDATE;  
+      break;
+      
+    case _CCS::DataTypes::SECCDiscoveryRes:
+      @sysvar::EV_Sim::SysEV_State = @sysvar::EV_Sim::SysEV_State::SECCDiscovery;
+      break;
+      
+    // V2G messages
+    case _CCS::DataTypes::SupportedAppProtocolRes: 
+      @sysvar::EV_Sim::SysEV_State = @sysvar::EV_Sim::SysEV_State::SupportedAppProtocol;
+      break;
+      
+    case _CCS::DataTypes::SessionSetupRes:
+      @sysvar::EV_Sim::SysEV_State = @sysvar::EV_Sim::SysEV_State::SessionSetup;
+      break;
+      
+    case _CCS::DataTypes::AuthorizationSetupRes:
+      @sysvar::EV_Sim::SysEV_State = @sysvar::EV_Sim::SysEV_State::AuthorizationSetup;
+      break;
+      
+    case _CCS::DataTypes::CertificateInstallationRes:
+      @sysvar::EV_Sim::SysEV_State = @sysvar::EV_Sim::SysEV_State::CertificateInstallation;
+      break;  
+      
+    case _CCS::DataTypes::AuthorizationRes:
+      @sysvar::EV_Sim::SysEV_State = @sysvar::EV_Sim::SysEV_State::Authorization;
+      break; 
+      
+    case _CCS::DataTypes::ServiceDiscoveryRes:    
+      @sysvar::EV_Sim::SysEV_State = @sysvar::EV_Sim::SysEV_State::ServiceDiscovery;
+      break; 
+      
+    case _CCS::DataTypes::ServiceDetailRes:
+      @sysvar::EV_Sim::SysEV_State = @sysvar::EV_Sim::SysEV_State::ServiceDetail;
+      break;
+      
+    case _CCS::DataTypes::ServiceSelectionRes:
+      @sysvar::EV_Sim::SysEV_State = @sysvar::EV_Sim::SysEV_State::ServiceSelection;
+      break;  
+     
+    case _CCS::DataTypes::ACChargeParameterDiscoveryRes:
+    case _CCS::DataTypes::DCChargeParameterDiscoveryRes:
+      @sysvar::EV_Sim::SysEV_State = @sysvar::EV_Sim::SysEV_State::ChargeParameterDiscovery;
+      break;
+      
+    case _CCS::DataTypes::ScheduleExchangeRes:
+      @sysvar::EV_Sim::SysEV_State = @sysvar::EV_Sim::SysEV_State::ScheduleExchange;
+      break;
+      
+    case _CCS::DataTypes::DCCableCheckRes:
+      @sysvar::EV_Sim::SysEV_State = @sysvar::EV_Sim::SysEV_State::DCCableCheck;
+      break; 
+    case _CCS::DataTypes::DCPreChargeRes:
+      @sysvar::EV_Sim::SysEV_State = @sysvar::EV_Sim::SysEV_State::DCPreCharge;
+      break;  
+      
+    case _CCS::DataTypes::PowerDeliveryRes:   
+      @sysvar::EV_Sim::SysEV_State = @sysvar::EV_Sim::SysEV_State::PowerDelivery;
+      break;  
+      
+    case _CCS::DataTypes::ACChargeLoopRes:
+    case _CCS::DataTypes::DCChargeLoopRes:
+      @sysvar::EV_Sim::SysEV_State = @sysvar::EV_Sim::SysEV_State::ChargeLoopReq;
+      break;  
+      
+    case _CCS::DataTypes::MeteringConfirmationRes:
+      @sysvar::EV_Sim::SysEV_State = @sysvar::EV_Sim::SysEV_State::MeteringConfirmation;
+      break; 
+      
+    case _CCS::DataTypes::DCWeldingDetectionRes:    
+      @sysvar::EV_Sim::SysEV_State = @sysvar::EV_Sim::SysEV_State::DCWeldingDetection;
+      break; 
+      
+    case _CCS::DataTypes::SessionStopRes:
+      @sysvar::EV_Sim::SysEV_State = @sysvar::EV_Sim::SysEV_State::SessionStop;
+      break;  
+
+    default:
+      // Ignore
+      break;
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////
+// Attributes
+//////////////////////////////////////////////////////////////////////////
+
+reReadAttributes()
+{
+  setControlMode();
+  setTLSAttribute();
+  setAuthorizationMode();
+  setCertHandlingAttribute();
+  setProcessingAttribute();
+}
+
+setControlMode()
+{
+  if (@sysvar::EV_Sim::Control::SysEV_ControlModeDynamic == @sysvar::EV_Sim::Control::SysEV_ControlModeDynamic::Dynamic){
+    setAttribute(CCS::Simulation::EV, CCSBinding::EV::ControlMode, CCSBinding::Dynamic);
+  }
+  else
+  {
+    setAttribute(CCS::Simulation::EV, CCSBinding::EV::ControlMode, CCSBinding::Scheduled);
+  }
+}
+
+setAuthorizationMode()
+{
+  if (@sysvar::Common::SysUserAuthorizationMode == sysvar::Common::SysUserAuthorizationMode::EIM){
+    setAttribute(CCS::Simulation::EV, CCSBinding::EV::AuthorizationMode, CCSBinding::attributeEnumEVAuthorizationMode::EIM);
+  }
+  else{
+    setAttribute(CCS::Simulation::EV, CCSBinding::EV::AuthorizationMode, CCSBinding::attributeEnumEVAuthorizationMode::PnC); //PnC
+  }
+}
+
+setTLSAttribute()
+{
+  if (@sysVar::Common::SysTLSEnabled == @sysvar::Common::SysTLSEnabled::TLSEnabled){
+    setAttribute(CCS::Simulation::EV, CCSBinding::TLS, CCSBinding::TLSEnabled); 
+  }
+  else{
+    setAttribute(CCS::Simulation::EV, CCSBinding::TLS, CCSBinding::TLSDisabled); 
+  }
+}
+
+setCertHandlingAttribute()
+{
+  if (@sysvar::EV_Sim::Control::SysEV_CertificateInstallation == 1){
+    setAttribute(CCS::Simulation::EV, CCSBinding::EV::CertificateHandling, CCSBinding::Installation);
+  }
+  else{
+    setAttribute(CCS::Simulation::EV, CCSBinding::EV::CertificateHandling, CCSBinding::None);
+  }
+}
+
+setProcessingAttribute()
+{
+  if (@sysvar::Common::SysUseProcessing == 1){
+    setAttribute(CCS::Simulation::EV, CCSBinding::ProcessingLooping, CCSBinding::Enabled); 
+    SetControlForeColor(gPanelName, "TProcessing",  MakeRGB(0, 0, 255)); 
+  }
+  else{
+    setAttribute(CCS::Simulation::EV, CCSBinding::ProcessingLooping, CCSBinding::Disabled); 
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////
+// helper functions
+//////////////////////////////////////////////////////////////////////////
+
+ValidateProtocolPanel(int lastRxMessageId)
+{
+  if (0 <= @sysvar::Common::SysProtocolBar)
+  {
+    // show/hide result labels
+    if (2 <= @sysvar::Common::SysProtocolBar)
+    {          
+      // update response code label
+      snprintf(labelNameOK, 50, "TResult%iOK", @sysvar::Common::SysProtocolBar); 
+      snprintf(labelNameNOK, 50, "TResult%iNOK", @sysvar::Common::SysProtocolBar);
+      
+      // check if a FAIL was already written, then do not overwrite
+      if (stateResults[@sysvar::Common::SysProtocolBar] != 0)
+      { 
+        if(
+            (lastRxMessageId == _CCS::DataTypes::SupportedAppProtocolRes && CheckSAPResponseCode(lastRxMessageId) == 0) || //Check response code for SAP response
+            (lastRxMessageId != _CCS::DataTypes::SupportedAppProtocolRes && CheckResponseCode(lastRxMessageId) == 0)       //Check response code for other messages
+          )
+        {
+          // Responscde = OK
+          setControlVisibility(gProtocolPanelName, labelNameNOK, 0);
+          setControlVisibility(gProtocolPanelName, labelNameOK, 1);     
+  
+          stateResults[@sysvar::Common::SysProtocolBar] = 1;
+        }
+        else 
+        {
+          // Responscde = Failed
+          setControlVisibility(gProtocolPanelName, labelNameOK, 0);
+          setControlVisibility(gProtocolPanelName, labelNameNOK, 1);       
+          
+          stateResults[@sysvar::Common::SysProtocolBar] = 0;
+        }   
+      }
+    }
+  }
+}
+
+int CheckSAPResponseCode(int lastRxMessageId)
+{
+  if (GetResponseCode(lastRxMessageId) != _CCS::DataTypes::SAPResponseCodeType::FAILED_NoNegotiation)
+  {
+    return 0;
+  }
+  
+  return 1;  
+}
+
+int CheckResponseCode(int lastRxMessageId)
+{
+  if ((GetResponseCode(lastRxMessageId) == _CCS::DataTypes::ISO20ResponseCodeType::OK)
+       || (GetResponseCode(lastRxMessageId) == _CCS::DataTypes::ISO20ResponseCodeType::OK_CertificateExpiresSoon)
+       || (GetResponseCode(lastRxMessageId) == _CCS::DataTypes::ISO20ResponseCodeType::OK_NewSessionEstablished)
+       || (GetResponseCode(lastRxMessageId) == _CCS::DataTypes::ISO20ResponseCodeType::OK_OldSessionJoined)
+       || (GetResponseCode(lastRxMessageId) == _CCS::DataTypes::ISO20ResponseCodeType::OK_PowerToleranceConfirmed))
+  {
+    return 0;
+  }
+  
+  return 1;  
+}
+
+int GetResponseCode(int lastEVRxMessageId)
+{  
+  int responseCode = 0;
+  
+  switch (lastEVRxMessageId)
+  {
+    case _CCS::DataTypes::SupportedAppProtocolRes: 
+      responseCode = $EV.SAP.SupportedAppProtocol_Response.ResponseCode;
+      break;
+      
+    case _CCS::DataTypes::SessionSetupRes:
+      responseCode = $EV.ISO20.SessionSetup_Response.ResponseCode;
+      break;
+      
+    case _CCS::DataTypes::AuthorizationSetupRes: 
+      responseCode = $EV.ISO20.AuthorizationSetup_Response.ResponseCode;
+      break;
+      
+    case _CCS::DataTypes::AuthorizationRes:
+      responseCode = $EV.ISO20.Authorization_Response.ResponseCode;
+      break; 
+      
+    case _CCS::DataTypes::ServiceDiscoveryRes:    
+      responseCode = $EV.ISO20.ServiceDiscovery_Response.ResponseCode;
+      break;
+      
+    case _CCS::DataTypes::ServiceDetailRes:
+      responseCode = $EV.ISO20.ServiceDetail_Response.ResponseCode;
+      break;
+      
+    case _CCS::DataTypes::ServiceSelectionRes:
+      responseCode = $EV.ISO20.ServiceSelection_Response.ResponseCode;
+      break;
+      
+    //Not supported yet
+    case _CCS::DataTypes::CertificateInstallationRes:      
+      //responseCode = $EV.ISO20.CertificateInstallation_Response.ResponseCode;
+      break;     
+     
+    case _CCS::DataTypes::ACChargeParameterDiscoveryRes:
+      responseCode = $EV.ISO20.AC_ChargeParameterDiscovery_Response.ResponseCode;
+      break;
+      
+    case _CCS::DataTypes::DCChargeParameterDiscoveryRes:
+      responseCode = $EV.ISO20.DC_ChargeParameterDiscovery_Response.ResponseCode;
+      break;
+      
+    case _CCS::DataTypes::ScheduleExchangeRes:
+      responseCode = $EV.ISO20.ScheduleExchange_Response.ResponseCode;
+      break;
+      
+    case _CCS::DataTypes::DCCableCheckRes:
+      responseCode = $EV.ISO20.DC_CableCheck_Response.ResponseCode;
+      break;
+      
+    case _CCS::DataTypes::DCPreChargeRes:
+      responseCode = $EV.ISO20.DC_PreCharge_Response.ResponseCode;
+      break;    
+      
+    //Not supported yet
+    case _CCS::DataTypes::MeteringConfirmationRes:
+      //responseCode = $EV.ISO20.MeteringConfirmation_Response.ResponseCode;
+      break;        
+              
+    case _CCS::DataTypes::PowerDeliveryRes:   
+      responseCode = $EV.ISO20.PowerDelivery_Response.ResponseCode;
+      break;
+      
+    case _CCS::DataTypes::ACChargeLoopRes:
+      responseCode = $EV.ISO20.AC_ChargeLoop_Response.ResponseCode;
+      break;
+      
+    case _CCS::DataTypes::DCChargeLoopRes:
+      responseCode = $EV.ISO20.DC_ChargeLoop_Response.ResponseCode;
+      break;
+      
+    case _CCS::DataTypes::DCWeldingDetectionRes:    
+      responseCode = $EV.ISO20.DC_WeldingDetection_Response.ResponseCode;
+      break;
+      
+    case _CCS::DataTypes::SessionStopRes:
+      responseCode = $EV.ISO20.SessionStop_Response.ResponseCode;
+      break;    
+
+    default:
+      /* Button was pressed during SLAC. Next message with ResponseCode is SupportedAppProtocol */
+      responseCode = $EV.SAP.SupportedAppProtocol_Response.ResponseCode;
+      break;
+  }
+  
+  return responseCode;
+}
+
+void HV_StopChargingReaction()
+{
+  @sysvar::EV_Sim::SysEV_TargetCurrent = cMinimumPreChargeCurrent;
+  HV_source_set_I_DC(cMinimumPreChargeCurrent);
+  HV_source_set_U_DC_PreCharge(HV_measure_DC_U_VeriVolt());
+  setTimer(tContactorOpenDelay, cStopChargingContactorOpenDelay);
+}
+
+void HV_EmergencyStopReaction()
+{
+  @sysvar::EV_Sim::SysEV_TargetCurrent = 0;
+  HV_source_set_I_DC(0);
+  HV_source_set_U_DC(0);
+  setTimer(tContactorOpenDelay, cEmergencyContactorOpenDelay);
+}
+
+on timer tContactorOpenDelay
+{
+  OpenContactorsSafety();
+}
+
+void ReactToStateEC()
+{
+  HV_EmergencyStopReaction();
+  EV.StopSimulation.Call();
+  simulationRunning = 0;
+}
+
+OpenContactorsSafety()
+{
+  int retryCounter = 0;
+  retryCounter++;
+  cancelTimer(tContactorOpenDelay);
+  
+  //do only open contactor if voltage in output circuit is equal to internal and current is reduced
+  if(
+      (HV_measure_DC_U() >= (HV_measure_DC_U_VeriVolt() - cAllowedVoltageDeviation)) &&
+      (HV_measure_DC_U() <= (HV_measure_DC_U_VeriVolt() + cAllowedVoltageDeviation)) &&
+      (HV_measure_DC_I() <= cMaximumCurrentOnOutputCircuit)
+    )
+  {
+    HV_source_set_output(0);
+    HV_source_set_U_DC(0);
+    HV_source_set_I_DC(0);
+  }
+  //trying for over 1s, open contactors
+  else if(retryCounter >= cMaximumContactorRetryCounter)
+  {
+    retryCounter = 0;
+    HV_source_set_output(0);
+    HV_source_set_U_DC(0);
+    HV_source_set_I_DC(0);
+    tContactorOpenDelay.set(cRetryContactorOpenDelay);
+  }
+  else
+  {
+    HV_source_set_U_DC(HV_measure_DC_U_VeriVolt());
+    HV_source_set_I_DC(cMinimumPreChargeCurrent);
+    tContactorOpenDelay.set(cRetryContactorOpenDelay);
+  }
+}
+
+double getValueConsideringExponent(int value, int exponent)
+{
+  return (value * _pow(10, exponent)); 
+}

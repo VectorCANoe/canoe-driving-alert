@@ -1,0 +1,68 @@
+﻿/*@!Encoding:65001*/
+includes
+{
+  
+}
+
+variables
+{
+  const bufferSize = 192000;
+  dword currIndex;
+  byte pduBuffer[2048];
+  byte buffer[bufferSize]; 
+  dword bufferIndex;
+  timer updateTimer;
+  dword dataSize;
+  dword BlockSize;
+  dword Channels;
+  dword timerPeriod;
+}
+
+void InitGraphicalRepresentation(dword bytePerSecond, dword ds, dword bs, dword chCount)
+{
+  dataSize = ds / 8;
+  BlockSize = bs;
+  Channels = chCount;
+  timerPeriod = 1000000 / bytePerSecond / BlockSize;
+}
+
+on PDU CAN2.AudioDataFilePayload
+{
+    memcpy(pduBuffer, this.Payload, this.PduLength);
+    memcpy_off(buffer, bufferIndex, pduBuffer, 0 , this.PduLength);
+    bufferIndex += this.PduLength; 
+  
+    if(currIndex == 0)
+    {
+      setTimerCyclic(updateTimer, timerPeriod);
+    }
+}
+
+
+on timer updateTimer
+{
+  int valueLeft;   
+  int valueRight;   
+  int index;
+  int dataIndex;
+  
+  for(dataIndex = 0; dataIndex < dataSize; ++dataIndex)
+  {
+    valueLeft <<= dataSize *8;
+    valueRight <<= dataSize *8;
+    valueLeft  |= buffer[currIndex];
+    valueRight |= buffer[currIndex+dataSize];
+  }
+  
+  @sysvar::Graphical::LeftChannel = valueLeft;
+  @sysvar::Graphical::RightChannel = valueRight;  
+  
+  currIndex = currIndex + BlockSize;
+  
+  if(currIndex >= bufferSize)
+  {
+    currIndex = 0;
+    cancelTimer(updateTimer);
+  }
+}
+

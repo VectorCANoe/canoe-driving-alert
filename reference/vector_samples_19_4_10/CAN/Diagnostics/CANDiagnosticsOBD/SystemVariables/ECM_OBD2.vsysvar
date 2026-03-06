@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<systemvariables version="4">
+  <namespace name="" comment="" interface="">
+    <namespace name="ECM_OBD2_CAN" comment="" interface="">
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="FaultMemoryGui" comment="" bitcount="32" isSigned="true" encoding="65001" type="struct" structDefinition="FaultMemory::FaultMemoryGuiStruct" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="FaultMemoryInternal" comment="" bitcount="32" isSigned="true" encoding="65001" type="struct" structDefinition="FaultMemory::FaultMemoryInternalStruct" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="IncompleteMonitors" comment="" bitcount="32" isSigned="true" encoding="65001" type="struct" structDefinition="ECM::IncompleteMonitorStruct" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="OBD" comment="" bitcount="32" isSigned="true" encoding="65001" type="struct" structDefinition="OBD_Struct" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="Session" comment="" bitcount="32" isSigned="true" encoding="65001" type="struct" structDefinition="SessionStruct" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SupportedMonitors" comment="" bitcount="32" isSigned="true" encoding="65001" type="struct" structDefinition="ECM::SupportedMonitorStruct" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="TesterPresent" comment="" bitcount="32" isSigned="false" encoding="65001" type="int" startValue="0" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1" />
+    </namespace>
+    <namespace name="TCM_OBD2_CAN" comment="" interface="">
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="FaultMemoryGui" comment="" bitcount="32" isSigned="true" encoding="65001" type="struct" structDefinition="FaultMemory::FaultMemoryGuiStruct" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="FaultMemoryInternal" comment="" bitcount="32" isSigned="true" encoding="65001" type="struct" structDefinition="FaultMemory::FaultMemoryInternalStruct" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="Session" comment="" bitcount="32" isSigned="true" encoding="65001" type="struct" structDefinition="SessionStruct" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="TesterPresent" comment="" bitcount="32" isSigned="false" encoding="65001" type="int" startValue="0" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1" />
+    </namespace>
+  </namespace>
+</systemvariables>

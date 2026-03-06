@@ -1,0 +1,675 @@
+/*@!Encoding:1252*/
+//=========================================================
+// Fault Memory Simulation for Example CDD ECUs
+// Expects following callback functions in simulation node:
+// long sendNegativeResponse(diagRequest * req, dword nrc)
+// long sendNegativeResponse(diagResponse * resp, dword nrc)
+// enum bool PreventAccessInsideDefaultSession(diagRequest * req, byte nrc)
+//
+// If OBDonUDS or OBD2_NO_GENERIC are defined additionally:
+// void ResetMILStatus()
+//=========================================================
+
+includes
+{
+#if OBD2_NO_GENERIC
+  #include "..\CAPL_Includes\FaultMemoryUDS_Sim.cin"
+  #include "..\CAPL_Includes\FaultMemoryOBD2_Sim.cin"
+#endif
+#if OBDonUDS
+  #include "..\CAPL_Includes\FaultMemoryUDS_Sim.cin"
+  #include "..\CAPL_Includes\FaultMemoryOBDonUDS_Sim.cin"
+#endif  
+}
+
+variables
+{
+  const cMaxNumberOfFaultMemoryTypes=4;
+  const cMaxNumberOfSupportedDTCs=12; // Overall supported DTCs (all fault memories together)
+  const cNoIndexFound=0xFFFF;
+  
+  enum eFaultMemoryType {
+    fmtPrimary=0,     // UDS Primary
+    fmtUserDefined=1, // UDS User Defined
+    fmtOBD_II=2,      // OBD-II (2 Byte DTCs)
+    fmtOBDonUDS=3,    // OBD on UDS / WWH-OBD (3 Byte DTCs)
+    fmtNoUserdefined,
+    fmtAll
+  };
+  
+  // Status bits
+  const cStatusBit_TestFailed=0x01;
+  const cStatusBit_TestFailedThisMonitoringCycle=0x02;
+  const cStatusBit_PendingDTC=0x04;
+  const cStatusBit_ConfirmedDTC=0x08;
+  const cStatusBit_TestNotCompletedSinceLastClear=0x10;
+  const cStatusBit_TestFailedSinceLastClear=0x20;
+  const cStatusBit_TestNotCompletedThisMonitoringCycle=0x40;
+  const cStatusBit_WarningIndicatorRequested=0x80;
+  
+  // Severity bits
+  const cSeverityBit_Class0=0x80;
+  const cSeverityBit_Class1=0x40;
+  const cSeverityBit_Class2=0x20;
+  const cSeverityBit_Class3=0x10;
+  const cSeverityBit_Class4=0x08;
+  const cSeverityBit_MaintenanceOnly=0x04;  
+  const cSeverityBit_CheckAtNextHalt=0x02;  
+  const cSeverityBit_CheckImmediately=0x01;  
+  
+  struct sSnapshot {
+    double supplyVoltage;
+    double internalVoltage;
+    dword odometerValue;
+  };
+  
+  struct sIUMPRData {
+    word numerator;
+    word denominator;
+  };
+  
+  struct sTestResults {
+    byte numberOfTestresult;
+    word unitAndScalingId;
+    word testValue;
+    word minTestLimit;
+    word maxTestLimit;
+  };
+  
+  struct sSupplementalMonitorActivityData {
+    byte monitorActivityNumeratorCounts;
+    byte storedMonitorActivityRatio;
+  };
+  
+  struct sExtDataRecord {
+    byte occurranceCounter;
+    byte agingCounter;
+#if OBDonUDS    
+    struct sIUMPRData IUMPR_Data;
+    struct sTestResults testResults;
+    struct sSupplementalMonitorActivityData supplementalMonitorActivityData;
+#endif
+    };  
+  
+  struct sFreezeFrame {
+    dword distanceTravelledWhileMILActivated;
+    dword distanceSinceDtcsCleared;
+  };
+  
+  struct sFault {
+    dword DTC;
+    char Description[100];
+    enum eFaultMemoryType fmType;   // Fault memory type in which the fault will show up (i.e. via which services this error will be reported)
+    byte status;
+    byte severity;
+    struct sSnapshot snapshot[2];   // Snapshot data of first and last fault occurrance
+    struct sExtDataRecord extDataRecord; // Extended data record of this DTC
+    struct sFreezeFrame freezeFrame; // OBD-II Freeze Frame
+  };
+  
+  struct sFaultMemory {
+    word storedFaults[cMaxNumberOfFaultMemoryTypes];
+    word numberOfSupportedDTCs[cMaxNumberOfFaultMemoryTypes];
+    struct sFault fault[cMaxNumberOfSupportedDTCs];
+  } gFM;
+  
+  // Stucture used to initialize fault memory structure
+  struct sSupportedDTCs {
+    dword DTC;
+    enum eFaultMemoryType fmType;
+  };
+}
+
+void InitFaultmem(struct sSupportedDTCs DTC[])
+{
+  InitSupportedDTCs(DTC);
+  ClearFaultMem(fmtAll);
+}
+
+InitSupportedDTCs(struct sSupportedDTCs DTC[])
+{
+  diagResponse %BASE_FILE_NAME_NO_EXT%.FaultMemory_ReadAllIdentified resp;
+  diagResponse %BASE_FILE_NAME_NO_EXT%.User_Defined_Fault_Memory_Read_by_Status_Mask resp_UD;
+#if OBD2_NO_GENERIC
+  diagResponse %BASE_FILE_NAME_NO_EXT%.OBD_II_DTCs_Read_Powertrain resp_OBD;
+#endif
+#if OBDonUDS
+  diagResponse %BASE_FILE_NAME_NO_EXT%.PrimaryFaultMemory_Read_OBDonUDS_DTCs resp_OBD;
+#endif
+  word k;
+  char DTC_Description[100];
+
+  diagResize(resp, 3+4);     // UDS primary fault memory: 3-byte Header plus (3-byte DTC plus Status Byte) = 4 Byte per DTC
+  diagResize(resp_UD, 4+4);  // UDS user defined fault memory: 4-byte Header plus (3-byte DTC plus Status Byte) = 4 Byte per DTC
+#if OBD2_NO_GENERIC
+  diagResize(resp_OBD, 2+2); // OBD-II fault memory: 2-byte Header plus (2-byte DTC, no Status Byte) = 2 Byte per DTC
+#endif
+#if OBDonUDS
+  diagResize(resp_OBD, 2+3); // WWH-OBD fault memory: 2-byte Header plus (2-byte DTC plus Status Byte) = 3 Byte per DTC
+#endif  
+  
+  for (k=0;k<cMaxNumberOfFaultMemoryTypes; k++) 
+  {
+    gFM.numberOfSupportedDTCs[DTC[k].fmType]=0;
+  }
+
+  if (cMaxNumberOfSupportedDTCs<elcount(DTC)) {
+    writeDbgLevel(0, "[%BASE_FILE_NAME_NO_EXT%/InitSupportedDTCs] FATAL ERROR: Number of DTC exceeds maximum number, aborting fault memory initialization!");
+    return;
+  }
+  
+  for (k=0; k<elcount(DTC); k++) {
+    gFM.Fault[k].DTC=DTC[k].DTC;
+    gFM.Fault[k].fmType=DTC[k].fmType;
+    gFM.numberOfSupportedDTCs[DTC[k].fmType]++;
+#if OBD2_NO_GENERIC
+    if (DTC[k].fmType==fmtPrimary) {
+      diagSetComplexParameter(resp, "ListOfDTC", 0, "DTC", (double)DTC[k].DTC);
+      diagGetComplexParameter(resp, "ListOfDTC", 0, "DTC", DTC_Description, elcount(DTC_Description));
+    }
+    else if (DTC[k].fmType==fmtUserDefined) { 
+      diagSetComplexParameter(resp_UD, "ListOfDTC", 0, "DTC", (double)DTC[k].DTC);
+      diagGetComplexParameter(resp_UD, "ListOfDTC", 0, "DTC", DTC_Description, elcount(DTC_Description));
+    }
+    else if (DTC[k].fmType==fmtOBD_II) {
+      diagSetComplexParameter(resp_OBD, "ListOfDTC", 0, "DTC", (double)DTC[k].DTC);
+      diagGetComplexParameter(resp_OBD, "ListOfDTC", 0, "DTC", DTC_Description, elcount(DTC_Description));
+    }
+#endif
+#if OBDonUDS
+    if (DTC[k].fmType==fmtPrimary) {
+      diagSetComplexParameter(resp, "ListOfDTC", 0, "DTC", (double)DTC[k].DTC);
+      diagGetComplexParameter(resp, "ListOfDTC", 0, "DTC", DTC_Description, elcount(DTC_Description));
+    }
+    else if (DTC[k].fmType==fmtUserDefined) { 
+      diagSetComplexParameter(resp_UD, "ListOfDTC", 0, "DTC", (double)DTC[k].DTC);
+      diagGetComplexParameter(resp_UD, "ListOfDTC", 0, "DTC", DTC_Description, elcount(DTC_Description));
+    }
+    else if (DTC[k].fmType==fmtOBDonUDS) {
+      diagSetComplexParameter(resp_OBD, "ListOfDTC", 0, "DTC", (double)DTC[k].DTC);
+      diagGetComplexParameter(resp_OBD, "ListOfDTC", 0, "DTC", DTC_Description, elcount(DTC_Description));
+    }
+#endif    
+    strncpy(gFM.Fault[k].Description, DTC_Description, elcount(gFM.Fault[k].Description));
+  }
+}
+
+void UpdatePanelFaultMemContents()
+{
+  char tempstr[480];
+  char DTCstr[80];
+  word k;
+  char fmtString[3][5]= {"", "[U] ", "[O] "};
+  
+  strncpy(tempstr, "", elcount(tempstr));
+  for (k=0; k<cMaxNumberOfSupportedDTCs; k++) {
+    if (gFM.Fault[k].extDataRecord.occurranceCounter>0) {
+      snprintf(DTCstr, elcount(DTCstr), "%dx %s%s, S=0x%02X/%02X\n", gFM.Fault[k].extDataRecord.occurranceCounter, fmtString[((gFM.Fault[k].fmType==fmtPrimary)?0:(gFM.Fault[k].fmType==fmtUserDefined)?1:2)], gFM.Fault[k].Description, gFM.Fault[k].status, gFM.Fault[k].severity);
+      strncat(tempstr,DTCstr,elCount(tempstr));
+    }
+  }
+  putValueToControl("%BASE_FILE_NAME_NO_EXT%_FaultMemory", "StoredDTCs", tempstr);
+}
+
+void UpdateFaultMemSysvars(enum eFaultMemoryType fmType)
+{
+  if (fmType == fmtPrimary || fmType == fmtAll ) {
+    @sysvarMember::%BASE_FILE_NAME_NO_EXT%::FaultMemoryInternal.NumberOfStoredDTCs=gFM.storedFaults[fmtPrimary];
+  }
+  if (fmType == fmtUserDefined || fmType == fmtAll ) {
+    @sysvarMember::%BASE_FILE_NAME_NO_EXT%::FaultMemoryInternal.NumberOfStoredUserDefinedDTCs=gFM.storedFaults[fmtUserDefined];
+  }
+  if (fmType == fmtOBD_II || fmType == fmtOBDonUDS || fmType == fmtAll ) {
+    @sysvarMember::%BASE_FILE_NAME_NO_EXT%::FaultMemoryInternal.NumberOfStoredEmissionRelatedDTCs=(gFM.storedFaults[fmtOBD_II] + gFM.storedFaults[fmtOBDonUDS]);
+  }        
+}
+
+void ClearFaultMem(enum eFaultMemoryType fmType)
+{
+  word k;
+  
+  for (k=0; k<cMaxNumberOfFaultMemoryTypes; k++) 
+  {
+    if (k==fmType || fmtAll==fmType) {
+      gFM.storedFaults[k]=0;
+    }
+  }
+#if OBDonUDS || OBD2_NO_GENERIC
+  if (fmtOBDonUDS==fmType || fmtOBD_II==fmType || fmtAll==fmType) {
+    ResetMILStatus();
+  }
+#endif
+  
+  
+  UpdateFaultMemSysvars(fmType);
+  
+  for (k=0; k<cMaxNumberOfSupportedDTCs; k++) {
+    if (gFM.fault[k].fmType == fmType || fmtAll == fmType)
+    {
+      gFM.fault[k].extDataRecord.occurranceCounter=0;
+      gFM.fault[k].extDataRecord.agingCounter=0xAC; // constant value to simplify the example
+    }
+  }
+  UpdatePanelFaultMemContents();
+}
+
+// Return Index of fault in list of DTCs
+word GetFaultIndex(dword DTC)
+{
+  word index;
+  
+  for (index=0; index<cMaxNumberOfSupportedDTCs; index++) {
+    if (gFM.fault[index].DTC==DTC) {
+      return(index);
+    }
+  }
+  return(cNoIndexFound);
+}
+
+SetSnapshotRecord(word faultIndex, word snapshotIndex)
+{
+  gFM.Fault[faultIndex].Snapshot[snapshotIndex].SupplyVoltage=@sysvar::ExternalSignals::SupplyVoltage;
+  gFM.Fault[faultIndex].Snapshot[snapshotIndex].InternalVoltage=(@sysvar::ExternalSignals::SupplyVoltage>5)?5:@sysvar::ExternalSignals::SupplyVoltage;
+  gFM.Fault[faultIndex].Snapshot[snapshotIndex].OdometerValue=@sysvar::ExternalSignals::OdometerValue;
+}
+
+void AddFault(dword DTC, byte status, byte severity)
+{
+  word index;
+  const cSnapshotIndexFirstOccurrance=0;
+  const cSnapshotIndexLastOccurrance=1;
+  byte testResults[5]={0x00, 0x02, 0x02, 01, 03};
+  
+  if (@sysvarMember::%BASE_FILE_NAME_NO_EXT%::FaultMemoryInternal.FaultMemoryActivated) { // Ignore setting DTC if this was disabled
+    index=GetFaultIndex(DTC);
+    if (index != cNoIndexFound) {  // DTC is supported
+      if (gFM.Fault[index].extDataRecord.occurranceCounter==0) { // DTC was not yet stored
+        gFM.storedFaults[gFM.Fault[index].fmType]++;
+        UpdateFaultMemSysvars(gFM.Fault[index].fmType);
+        SetSnapshotRecord(index, cSnapshotIndexFirstOccurrance);
+        SetSnapshotRecord(index, cSnapshotIndexLastOccurrance);
+      }
+      else {
+        SetSnapshotRecord(index, cSnapshotIndexLastOccurrance);
+      }
+      
+      gFM.Fault[index].extDataRecord.occurranceCounter++;
+#if OBDonUDS      
+      gFM.Fault[index].extDataRecord.IUMPR_Data.numerator=gFM.Fault[index].extDataRecord.occurranceCounter-1;
+      gFM.Fault[index].extDataRecord.IUMPR_Data.denominator=gFM.Fault[index].extDataRecord.occurranceCounter;
+      gFM.Fault[index].extDataRecord.testResults.numberOfTestresult=1;
+      gFM.Fault[index].extDataRecord.testResults.unitAndScalingId=0x0002;
+      gFM.Fault[index].extDataRecord.testResults.testValue=503;
+      gFM.Fault[index].extDataRecord.testResults.minTestLimit=200;
+      gFM.Fault[index].extDataRecord.testResults.maxTestLimit=600;
+      gFM.Fault[index].extDataRecord.supplementalMonitorActivityData.monitorActivityNumeratorCounts=1+gFM.Fault[index].extDataRecord.occurranceCounter;
+      gFM.Fault[index].extDataRecord.supplementalMonitorActivityData.storedMonitorActivityRatio=1;
+#endif
+      gFM.Fault[index].status=status;
+      gFM.Fault[index].severity=severity;
+      if (status & cStatusBit_WarningIndicatorRequested) {
+        @sysvarMember::%BASE_FILE_NAME_NO_EXT%::OBD.MIL_Status=1;
+      }
+      gFM.Fault[index].freezeFrame.distanceSinceDtcsCleared=@Vehicle::DistanceTravelledSinceDTCsCleared;
+      gFM.Fault[index].freezeFrame.distanceTravelledWhileMILActivated=@Vehicle::DistanceTravelledWhileMILActivated;
+      @sysvarMember::%BASE_FILE_NAME_NO_EXT%::FaultMemoryInternal.DtcThatCausedFreezeFrameStorage=DTC;
+      UpdatePanelFaultMemContents();
+    }
+    else {
+      writeDbgLevel(0, "[%BASE_FILE_NAME_NO_EXT%]: Did not store DTC 0x%06X because it is not supported by this ECU!", DTC);
+    }
+  }
+}
+
+void AddFaultByIndex(word DTC_Index)
+{
+  AddFault(gFM.Fault[DTC_Index].DTC, cStatusBit_TestFailed | cStatusBit_TestFailedSinceLastClear, cSeverityBit_Class1 | cSeverityBit_CheckAtNextHalt);
+}
+
+void RemoveFault(dword DTC)
+{
+  word k;
+  enum eFaultMemoryType fmType;
+  
+  for (k=0; k<cMaxNumberOfSupportedDTCs; k++) {
+    if (gFM.Fault[k].DTC == DTC) {
+      gFM.Fault[k].extDataRecord.occurranceCounter=0;
+      fmType=gFM.Fault[k].fmType;
+      gFM.storedFaults[fmType]=(gFM.storedFaults[fmType]>0) ? gFM.storedFaults[fmType]-1 : 0;
+      UpdateFaultMemSysvars(fmType);
+    }
+  }
+  UpdatePanelFaultMemContents();
+}
+
+ReadAllSupported(diagResponse * resp, enum eFaultMemoryType fmType, byte extDataRecord)
+{
+  resp.SetParameter("Record_Numbers", extDataRecord);
+  ReadAllSupported(resp, fmType);
+}
+
+ReadAllSupported(diagResponse * resp, enum eFaultMemoryType fmType)
+{
+  word k, faultIndex;
+  
+  refreshS3Timer();
+  faultIndex=0;
+  setDTCStatusAvailabilityMask(resp, "DTCStatusAvailabilityMask");
+
+  for (k=0; k<cNumberOfSupportedDTCs; k++) {
+    if (SupportedDTC[k].fmType == fmType || fmType==fmtAll || (fmType==fmtNoUserdefined && SupportedDTC[k].fmType!=fmtUserDefined)) {
+      diagSetComplexParameter(resp, "ListOfDTC", faultIndex, "DTC", gFM.Fault[k].DTC);
+      setStatusMask(resp, "ListOfDTC", faultIndex, "StatusOfDTC", gFM.Fault[k].status);
+      faultIndex++;
+    }
+  }
+  
+  diagSendPositiveResponse(resp);  
+}
+
+ReadAllIdentified(diagResponse * resp, byte statusMask, enum eFaultMemoryType fmType, byte readinessGroup)
+{
+  resp.SetParameter("ReadinessGroupIdentifier", readinessGroup);
+  ReadAllIdentified(resp, statusMask, fmType);
+}
+
+ReadAllIdentified(diagResponse * resp, byte statusMask, enum eFaultMemoryType fmType)
+{
+  word k;
+  word faultIndex;
+  char buffer[200];
+  
+  refreshS3Timer();
+  
+  if (fmType!=fmtOBD_II) setDTCStatusAvailabilityMask(resp, "DTCStatusAvailabilityMask");
+  
+  if (fmType == fmtUserDefined) {
+    resp.SetParameter("Memory_Selection", fmType);
+  }
+  
+  faultIndex=0;
+  
+#if OBDonUDS
+    resp.GetObjectName(buffer, elcount(buffer));
+    DiagSetParameter(resp, "FunctionalGroupID", cEmissionsSystemsGroup);
+    if (!strncmp(buffer, "Primary Fault Memory Read OBDonUDS DTCs", elcount(buffer))) {
+      setDTCSeverityAvailabilityMask(resp, "DTCSeverityAvailabilityMask");
+    }
+    resp.SetParameter("DTCFormatIdentifier", 4); // SAE_J2012-DA_WWHOBD_DTCFormat
+#endif
+  
+  for (k=0; k<cMaxNumberOfSupportedDTCs; k++) {
+    if (gFM.Fault[k].extDataRecord.occurranceCounter>0 && (gFM.Fault[k].status & statusMask) && 
+        ((gFM.Fault[k].fmType==fmType) || (fmType==fmtNoUserdefined && gFM.Fault[k].fmType!=fmtUserDefined))) {
+      
+#if OBD2_NO_GENERIC
+      diagSetComplexParameter(resp, "ListOfDTC", faultIndex, "DTC", gFM.Fault[k].DTC);
+#endif
+#if OBDonUDS
+      resp.GetObjectName(buffer, elcount(buffer));
+      if (!strncmp(buffer, "Primary Fault Memory Read OBDonUDS DTCs", elcount(buffer))) {
+        diagSetComplexParameter(resp, "ListOfDTC", faultIndex, "DTC_Severity", gFM.Fault[k].severity);
+      }
+      diagSetComplexParameter(resp, "ListOfDTC", faultIndex, "DTC", gFM.Fault[k].DTC);
+#endif      
+      
+      if (gFM.Fault[k].fmType!=fmtOBD_II) {
+        setStatusMask(resp, "ListOfDTC", faultIndex, "StatusOfDTC", gFM.Fault[k].status);
+      }
+      faultIndex++;
+    }
+  }
+  
+  diagSendPositiveResponse(resp);  
+}
+
+word AddExtendedDataRecord(diagResponse * resp, word faultIndex, word dataRecordIndex, word dataRecordNumber)
+{
+  word addedSize;
+  
+  diagSetComplexParameter(resp, "ListOfDTCExtendedDataRecord", dataRecordIndex, "Record_Numbers", dataRecordNumber);
+  if (!strncmp("%BASE_FILE_NAME_NO_EXT%", "DoorFR", 6)) {  // DoorFR ==> PDX
+    diagSetComplexParameter(resp, "ListOfDTCExtendedDataRecord", dataRecordIndex, "__SwitchKey__", dataRecordNumber);          
+  }
+  addedSize=1;
+  switch (dataRecordNumber) {
+    case 0x01:
+      diagSetComplexParameter(resp, cParamAccessPhysical, "ListOfDTCExtendedDataRecord", dataRecordIndex, "OccurrenceCounter", gFM.Fault[faultIndex].extDataRecord.occurranceCounter);
+      addedSize++;
+      break;
+    case 0x02:
+    default:
+      diagSetComplexParameter(resp, cParamAccessPhysical, "ListOfDTCExtendedDataRecord", dataRecordIndex, "Aging_Counter", gFM.Fault[faultIndex].extDataRecord.agingCounter); 
+      addedSize++;
+      break;
+#if OBDonUDS
+    case 0x91:
+      diagSetComplexParameter(resp, cParamAccessPhysical, "ListOfDTCExtendedDataRecord", dataRecordIndex, "Numerator", gFM.Fault[faultIndex].extDataRecord.IUMPR_Data.Numerator);
+      diagSetComplexParameter(resp, cParamAccessPhysical, "ListOfDTCExtendedDataRecord", dataRecordIndex, "Denominator", gFM.Fault[faultIndex].extDataRecord.IUMPR_Data.Denominator);
+      addedSize+=4;
+      break;
+    case 0x92:
+      diagSetComplexParameter(resp, cParamAccessPhysical, "ListOfDTCExtendedDataRecord", dataRecordIndex, "Number_of_Testresult", gFM.Fault[faultIndex].extDataRecord.testResults.numberOfTestresult);
+      //diagSetComplexParameterRaw(resp, "ListOfDTCExtendedDataRecord", dataRecordIndex, "Unit_And_Scaling_ID_and_Onboard_Monitoring_Test_Results", gFM.Fault[faultIndex].extDataRecord.testResults.unitAndScalingIdAndOnboardMonitoringTestResults, elcount(gFM.Fault[faultIndex].extDataRecord.testResults.unitAndScalingIdAndOnboardMonitoringTestResults));
+      diagSetComplexParameter(resp, cParamAccessPhysical, "ListOfDTCExtendedDataRecord", dataRecordIndex, "UnitAndScalingID", gFM.Fault[faultIndex].extDataRecord.testResults.unitAndScalingId);
+      diagSetComplexParameter(resp, cParamAccessPhysical, "ListOfDTCExtendedDataRecord", dataRecordIndex, "Test_Value", gFM.Fault[faultIndex].extDataRecord.testResults.testValue);
+      diagSetComplexParameter(resp, cParamAccessPhysical, "ListOfDTCExtendedDataRecord", dataRecordIndex, "Min_Test_Limit", gFM.Fault[faultIndex].extDataRecord.testResults.minTestLimit);
+      diagSetComplexParameter(resp, cParamAccessPhysical, "ListOfDTCExtendedDataRecord", dataRecordIndex, "Max_Test_Limit", gFM.Fault[faultIndex].extDataRecord.testResults.maxTestLimit);
+      addedSize+=9;
+      break;
+    case 0x93:
+      diagSetComplexParameter(resp, cParamAccessPhysical, "ListOfDTCExtendedDataRecord", dataRecordIndex, "Monitor_Activity_Numerator_Counts", gFM.Fault[faultIndex].extDataRecord.supplementalMonitorActivityData.monitorActivityNumeratorCounts);
+      diagSetComplexParameter(resp, cParamAccessPhysical, "ListOfDTCExtendedDataRecord", dataRecordIndex, "Stored_Monitor_Activity_Ratio", gFM.Fault[faultIndex].extDataRecord.supplementalMonitorActivityData.storedMonitorActivityRatio);
+      addedSize+=2;
+      break;
+#endif
+  }
+  return addedSize;
+}
+
+ReadExtendedDataRecords(diagResponse * resp, dword DTC, byte dataRecordNumber, enum eFaultMemoryType fmType)
+{
+  word faultIndex;
+  word dataRecordIndex;
+  dword size;
+  enum eFaultMemoryType fmTypeOfDTC;
+  
+  refreshS3Timer();
+  diagResize(resp, 12);
+  faultIndex=GetFaultIndex(DTC);
+  if (faultIndex != cNoIndexFound) {
+    if (gFM.Fault[faultIndex].extDataRecord.occurranceCounter>0) {
+      fmTypeOfDTC = gFM.Fault[faultIndex].fmType;
+      if ((fmTypeOfDTC == fmtPrimary || fmTypeOfDTC == fmtUserDefined) && (0x01==dataRecordNumber || 0x02==dataRecordNumber || 0xFF==dataRecordNumber) || 
+          (fmTypeOfDTC == fmtOBDonUDS && (0x91==dataRecordNumber || 0x92==dataRecordNumber || 0x93==dataRecordNumber || 0xFF==dataRecordNumber))) { // If there is at least one valid extended data record
+        diagSetParameter(resp, "DTC", DTC);
+        setStatusMask(resp, "StatusOfDTC", gFM.Fault[faultIndex].status);
+        size=6;
+        dataRecordIndex=0;
+        // Add each valid extended data record
+        if (fmTypeOfDTC == fmtPrimary || fmTypeOfDTC == fmtUserDefined) {
+          if (0x01==dataRecordNumber || 0xFF==dataRecordNumber) {
+            size+=AddExtendedDataRecord(resp, faultIndex, dataRecordIndex, 0x01);
+            dataRecordIndex++;
+          }
+          if (0x02==dataRecordNumber || 0xFF==dataRecordNumber) {
+            size+=AddExtendedDataRecord(resp, faultIndex, dataRecordIndex, 0x02);
+            dataRecordIndex++;
+          }      
+        }
+        if (fmTypeOfDTC == fmtOBDonUDS) {
+          if (0x91==dataRecordNumber || 0xFF==dataRecordNumber) {  // OBDonUDS IUMPR Data
+            size+=AddExtendedDataRecord(resp, faultIndex, dataRecordIndex, 0x91);
+            dataRecordIndex++;
+          }      
+          if (0x92==dataRecordNumber || 0xFF==dataRecordNumber) {  // OBDonUDS Test Results
+            size+=AddExtendedDataRecord(resp, faultIndex, dataRecordIndex, 0x92);
+            dataRecordIndex++;
+          }      
+          if (0x93==dataRecordNumber || 0xFF==dataRecordNumber) {  // OBDonUDS Supplemental Monitor Activity Data
+            size+=AddExtendedDataRecord(resp, faultIndex, dataRecordIndex, 0x93);
+            dataRecordIndex++;
+          }      
+        }
+        if (fmType == fmtUserDefined) {
+          size++; // add memory selection
+          diagSetParameter(resp, "Memory_Selection", 1);
+        }
+        diagResize(resp, size);  
+        diagSendPositiveResponse(resp);
+        return;
+      }
+    }
+  }
+  sendNegativeResponse(resp, cNRC_ConditionsNotCorrectOrRequestSequenceError);
+}
+
+setResponseSnapshotRecordStructure(diagResponse * resp, word faultIndex, word snapshotIndexInResponse, word snapshotIndex, enum eFaultMemoryType fmType, word snapshotRecordIdentifier)
+{
+  enum eFaultMemoryType dtcFaultMemoryType;
+  
+  diagSetComplexParameter(resp, "ListOfDTCSnapshotRecord", snapshotIndexInResponse, "Record_Numbers", snapshotRecordIdentifier);
+  
+  dtcFaultMemoryType=gFM.Fault[faultIndex].fmType;
+  if (fmType==fmtPrimary) {
+    diagSetComplexParameter(resp, "ListOfDTCSnapshotRecord", snapshotIndexInResponse, "DTCSnapshotRecordNumberOfIdentifiers", 2);
+    if (dtcFaultMemoryType==fmtOBDonUDS) {
+      diagSetComplexParameter(resp, cParamAccessPhysical, "ListOfDTCSnapshotRecord", snapshotIndexInResponse, "Distance_since_clear_DTC", 25); // PID_F431_Distance_since_DTCs_cleared
+    }
+    else {
+      diagSetComplexParameter(resp, cParamAccessPhysical, "ListOfDTCSnapshotRecord", snapshotIndexInResponse, "DID_Voltage_ID", 0x107);
+
+      diagSetComplexParameter(resp, cParamAccessPhysical, "ListOfDTCSnapshotRecord", snapshotIndexInResponse, "SupplyVoltage", gFM.Fault[faultIndex].snapshot[snapshotIndex].SupplyVoltage);
+      diagSetComplexParameter(resp, cParamAccessPhysical, "ListOfDTCSnapshotRecord", snapshotIndexInResponse, "InternalVoltage", gFM.Fault[faultIndex].snapshot[snapshotIndex].InternalVoltage);
+    }
+  }
+  else { // No Voltage in snapshot record of user-defined fault memory, only Odometer Value
+    diagSetComplexParameter(resp, "ListOfDTCSnapshotRecord", snapshotIndexInResponse, "DTCSnapshotRecordNumberOfIdentifiers", 1);
+  }
+
+  if (dtcFaultMemoryType==fmtOBDonUDS) {
+    diagSetComplexParameter(resp, cParamAccessPhysical, "ListOfDTCSnapshotRecord", snapshotIndexInResponse, "Clear_Time", 30); // PID_F44E_Time_Since_DTC_Cleared_Read
+  }
+  else {
+    diagSetComplexParameter(resp, cParamAccessPhysical, "ListOfDTCSnapshotRecord", snapshotIndexInResponse, "DID_OdometerValue_ID", 0x108);
+    diagSetComplexParameter(resp, cParamAccessPhysical, "ListOfDTCSnapshotRecord", snapshotIndexInResponse, "OdometerValue", gFM.Fault[faultIndex].snapshot[snapshotIndex].OdometerValue);
+  }
+}
+
+ReadSnapshotRecords(diagResponse * resp, dword DTC, byte recordNumber, enum eFaultMemoryType fmType)
+{
+  word faultIndex;
+  word snapshotIteration;
+  word snapshotIndex[2];
+  word responseRecordNumber[2];
+  word numberOfSnapshots;
+  dword size;
+  
+  refreshS3Timer();
+  if (DTC>0) {
+    faultIndex=GetfaultIndex(DTC);
+    if (faultIndex != cNoIndexFound) {
+      if (gFM.Fault[faultIndex].extDataRecord.occurranceCounter>0) {
+        switch(recordNumber) {
+          case 0: // OBDonUDS first occurrance
+          case 1: // example diagnostic description first occurrance
+            snapshotIndex[0]=0;
+            responseRecordNumber[0]=recordNumber;
+            numberOfSnapshots=1;
+            break;
+          case 2: // example diagnostic description last occurrance
+          case 0xF0: // OBDonUDS last occurrance
+            snapshotIndex[0]=1;
+            responseRecordNumber[0]=recordNumber;
+            numberOfSnapshots=1;            
+            break;
+          case 0xFF: // example diagnostic description both 
+            snapshotIndex[0]=0;
+            snapshotIndex[1]=1;
+            responseRecordNumber[0]=1;
+            responseRecordNumber[1]=2;
+            numberOfSnapshots=2;            
+            break;
+        }
+        size=1+1+3+1; // SID + LID + DTC + Status
+        if (fmType == fmtPrimary) {
+          size+=(numberOfSnapshots*12); // RecNo + NumberOfIdentifiers + Voltage (4 Byte) + OdometerValue (6 Byte) = 12
+        }
+        else { // No Voltage in snapshot record of user-defined fault memory, only Odometer Value
+          size+=(1+numberOfSnapshots*8); // RecNo + NumberOfIdentifiers + OdometerValue (6 Byte) = 8
+          diagSetParameter(resp, "Memory_Selection", 1);
+        }
+        diagResize(resp, size);   
+        diagSetParameter(resp, "DTC", DTC);
+        setStatusMask(resp, "StatusOfDTC", gFM.Fault[faultIndex].status);
+       
+        for (snapshotIteration=0;snapshotIteration<numberOfSnapshots;snapshotIteration++) {
+          setResponseSnapshotRecordStructure(resp, faultIndex, snapshotIteration, snapshotIndex[snapshotIteration], fmType, responseRecordNumber[snapshotIteration]);
+        }
+        diagSendPositiveResponse(resp);
+      }
+      else {
+        sendNegativeResponse(resp, cNRC_ConditionsNotCorrectOrRequestSequenceError);
+      }
+    }
+    else {
+      sendNegativeResponse(resp, cNRC_ConditionsNotCorrectOrRequestSequenceError);
+    }
+  }
+  else {
+    sendNegativeResponse(resp, cNRC_RequestOutOfRange); 
+  }
+}
+
+byte getStatusMask(diagRequest * req)
+{
+  byte statusMask;
+  
+  statusMask=((byte)diagGetParameter(req, "TestFailed") |
+              (byte)diagGetParameter(req, "TestFailedThisMonitoringCycle") << 1 |
+              (byte)diagGetParameter(req, "PendingDtc") << 2 |
+              (byte)diagGetParameter(req, "ConfirmedDtc") << 3 |
+              (byte)diagGetParameter(req, "TestNotCompletedSinceLastClear") << 4 |
+              (byte)diagGetParameter(req, "TestFailedSinceLastClear") << 5 |
+              (byte)diagGetParameter(req, "TestNotCompletedThisMonitoringCycle") << 6 |
+              (byte)diagGetParameter(req, "WarningIndicatorRequested") << 7);
+  
+  return statusMask;
+}
+
+void setStatusMask(diagResponse * resp, char parameterIdentifier[], byte statusMask)
+{
+  diagSetParameter(resp, parameterIdentifier, (double)statusMask);
+}
+
+void setStatusMask(diagResponse * resp, char complexParameterIdentifier[], word faultIndex, char parameterIdentifier[], byte statusMask)
+{
+  diagSetComplexParameter(resp, complexParameterIdentifier, faultIndex, parameterIdentifier, (double)statusMask);
+}
+
+void setDTCStatusAvailabilityMask(diagResponse * resp, char parameterIdentifier[])
+{
+  byte dtcStatusAvailabilityMask[1];
+  long copiedBytes;
+  
+  sysGetVariableData(sysvarMember::%BASE_FILE_NAME_NO_EXT%::FaultMemoryGui.DTCStatusAvailabilityMask, dtcStatusAvailabilityMask, copiedBytes);
+  setStatusMask(resp, parameterIdentifier, dtcStatusAvailabilityMask[0]);
+}
+
+void setDTCStatusAvailabilityMask(diagResponse * resp, char complexParameterIdentifier[], word faultIndex, char parameterIdentifier[])
+{
+  byte dtcStatusAvailabilityMask[1];
+  long copiedBytes;
+  
+  sysGetVariableData(sysvarMember::%BASE_FILE_NAME_NO_EXT%::FaultMemoryGui.DTCStatusAvailabilityMask, dtcStatusAvailabilityMask, copiedBytes);
+  setStatusMask(resp, complexParameterIdentifier, faultIndex, parameterIdentifier, dtcStatusAvailabilityMask[0]);
+}
+
+void setDTCSeverityAvailabilityMask(diagResponse * resp, char parameterIdentifier[])
+{
+  byte dtcSeverityAvailabilityMask[1];
+  long copiedBytes;
+  
+  sysGetVariableData(sysvarMember::%BASE_FILE_NAME_NO_EXT%::FaultMemoryGui.DTCSeverityAvailabilityMask, dtcSeverityAvailabilityMask, copiedBytes);
+  setStatusMask(resp, parameterIdentifier, dtcSeverityAvailabilityMask[0]);
+}

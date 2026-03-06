@@ -1,0 +1,208 @@
+/*@!Encoding:1252*/
+includes
+{
+  
+}
+
+variables
+{
+  char gProtocolPanelName[9] = "Protocol";
+  char gPanelName[5] = "EVSE";
+  char gEVPanelName[3] = "EV";
+}
+
+/**********************************************************************************************************************
+ *  ON START/STOP
+ *********************************************************************************************************************/
+
+on start
+{
+  ClearProtocolPanel();
+  ConfigureACMode();
+  @sysvar::Common::SysProtocolBar = 0;
+}
+
+on stopMeasurement
+{
+  setControlVisibility(gProtocolPanelName, "AC_DER_Switch", 1);
+}
+
+/**********************************************************************************************************************
+ *  HELPER FUNCTIONS
+ *********************************************************************************************************************/
+
+on sysvar Common::LastReceivedMessageId
+{
+  switch (@this)
+  {
+    case _CCS::DataTypes::SECCDiscoveryReq:
+    case _CCS::DataTypes::SECCDiscoveryRes:
+      @sysvar::Common::SysProtocolBar = 2;
+      break;
+      
+    // V2G messages
+    case _CCS::DataTypes::SupportedAppProtocolReq: 
+    case _CCS::DataTypes::SupportedAppProtocolRes: 
+    case _CCS::DataTypes::SessionSetupReq:
+    case _CCS::DataTypes::SessionSetupRes:
+      @sysvar::Common::SysProtocolBar = 3;
+      break;
+      
+    case _CCS::DataTypes::AuthorizationSetupReq:
+    case _CCS::DataTypes::AuthorizationSetupRes:
+    case _CCS::DataTypes::AuthorizationReq:
+    case _CCS::DataTypes::AuthorizationRes:
+      @sysvar::Common::SysProtocolBar = 4;
+      break; 
+      
+    case _CCS::DataTypes::CertificateInstallationReq:
+    case _CCS::DataTypes::CertificateInstallationRes:
+      @sysvar::Common::SysProtocolBar = 5;
+      break;  
+      
+    case _CCS::DataTypes::ServiceDiscoveryReq:
+    case _CCS::DataTypes::ServiceDiscoveryRes:
+      @sysvar::Common::SysProtocolBar = 6;
+      break; 
+      
+    case _CCS::DataTypes::ServiceDetailReq:
+    case _CCS::DataTypes::ServiceDetailRes:
+    case _CCS::DataTypes::ServiceSelectionReq:
+    case _CCS::DataTypes::ServiceSelectionRes:
+      @sysvar::Common::SysProtocolBar = 7;
+      break;    
+     
+    case _CCS::DataTypes::ACChargeParameterDiscoveryReq:
+    case _CCS::DataTypes::ACChargeParameterDiscoveryRes:    
+    case _CCS::DataTypes::ACDERChargeParameterDiscoveryReq:
+    case _CCS::DataTypes::ACDERChargeParameterDiscoveryRes:
+    case _CCS::DataTypes::DCChargeParameterDiscoveryReq:
+    case _CCS::DataTypes::DCChargeParameterDiscoveryRes:
+      @sysvar::Common::SysProtocolBar = 8;
+      break;
+      
+    case _CCS::DataTypes::ScheduleExchangeReq:
+    case _CCS::DataTypes::ScheduleExchangeRes:
+      @sysvar::Common::SysProtocolBar = 9;
+      break;
+    
+    //No matching element on the progress bar
+    case _CCS::DataTypes::DCCableCheckReq:
+    case _CCS::DataTypes::DCCableCheckRes:
+    case _CCS::DataTypes::DCPreChargeReq:
+    case _CCS::DataTypes::DCPreChargeRes:
+      //progressBarPosition = ;
+      break;
+      
+    case _CCS::DataTypes::MeteringConfirmationReq:
+    case _CCS::DataTypes::MeteringConfirmationRes:
+    case _CCS::DataTypes::ACChargeLoopReq:
+    case _CCS::DataTypes::ACChargeLoopRes:
+    case _CCS::DataTypes::DCChargeLoopReq:
+    case _CCS::DataTypes::DCChargeLoopRes:
+    case _CCS::DataTypes::ACDERChargeLoopReq:
+    case _CCS::DataTypes::ACDERChargeLoopRes:
+      @sysvar::Common::SysProtocolBar = 10;
+      break;  
+    case _CCS::DataTypes::SessionStopReq:
+    case _CCS::DataTypes::SessionStopRes:
+    case _CCS::DataTypes::DCWeldingDetectionReq:
+    case _CCS::DataTypes::DCWeldingDetectionRes:
+      @sysvar::Common::SysProtocolBar = 11;
+      break;   
+    case _CCS::DataTypes::PowerDeliveryReq:
+    case _CCS::DataTypes::PowerDeliveryRes:
+      break;
+      
+    // SLAC Messages
+    case _CCS::DataTypes::CM_SLAC_PARM_REQ:
+    case _CCS::DataTypes::CM_SLAC_PARM_CNF:
+      ClearProtocolPanel();
+      @sysvar::Common::SysProtocolBar = 1;
+      @sysVar::Common::SysSlacState = 1;  
+      break;
+    case _CCS::DataTypes::CM_START_ATTEN_CHAR_IND:
+      @sysVar::Common::SysSlacState = 2;  
+      break;
+    case _CCS::DataTypes::CM_ATTEN_CHAR_IND:
+      @sysVar::Common::SysSlacState = 3;  
+      break;
+    case _CCS::DataTypes::CM_VALIDATE_REQ:
+    case _CCS::DataTypes::CM_VALIDATE_CNF:
+      @sysVar::Common::SysSlacState = 4;  
+      break;
+    case _CCS::DataTypes::CM_SLAC_MATCH_REQ:
+    case _CCS::DataTypes::CM_SLAC_MATCH_CNF:
+      @sysVar::Common::SysSlacState = 5;  
+      break;  
+    default:
+      // Ignore
+      break;
+  }
+}
+
+ClearProtocolPanel()
+{
+  SetControlVisibility(gProtocolPanelName, "TResult1OK",  0);
+  SetControlVisibility(gProtocolPanelName, "TResult1NOK", 0);
+  SetControlVisibility(gProtocolPanelName, "TResult2OK",  0);
+  SetControlVisibility(gProtocolPanelName, "TResult2NOK", 0);
+  SetControlVisibility(gProtocolPanelName, "TResult3OK",  0);
+  SetControlVisibility(gProtocolPanelName, "TResult3NOK", 0);
+  SetControlVisibility(gProtocolPanelName, "TResult4OK",  0);
+  SetControlVisibility(gProtocolPanelName, "TResult4NOK", 0);
+  SetControlVisibility(gProtocolPanelName, "TResult5OK",  0);
+  SetControlVisibility(gProtocolPanelName, "TResult5NOK", 0);
+  SetControlVisibility(gProtocolPanelName, "TResult6OK",  0);
+  SetControlVisibility(gProtocolPanelName, "TResult6NOK", 0);
+  SetControlVisibility(gProtocolPanelName, "TResult7OK",  0);
+  SetControlVisibility(gProtocolPanelName, "TResult7NOK", 0);
+  SetControlVisibility(gProtocolPanelName, "TResult8OK",  0);
+  SetControlVisibility(gProtocolPanelName, "TResult8NOK", 0);
+  SetControlVisibility(gProtocolPanelName, "TResult9OK",  0);
+  SetControlVisibility(gProtocolPanelName, "TResult9NOK", 0);
+  SetControlVisibility(gProtocolPanelName, "TResult10OK",  0);
+  SetControlVisibility(gProtocolPanelName, "TResult10NOK", 0);
+  SetControlVisibility(gProtocolPanelName, "TResult11OK",  0);
+  SetControlVisibility(gProtocolPanelName, "TResult11NOK", 0); 
+  
+  SetControlVisibility(gProtocolPanelName, "CertAuthOK", 0);
+  SetControlVisibility(gProtocolPanelName, "CertAuthNOK", 0);
+  SetControlVisibility(gProtocolPanelName, "CertUpdateOK", 0);
+  SetControlVisibility(gProtocolPanelName, "CertUpdateNOK", 0);
+  SetControlVisibility(gProtocolPanelName, "CertChargeParOK", 0);
+  SetControlVisibility(gProtocolPanelName, "CertChargeParNOK", 0);
+  SetControlVisibility(gProtocolPanelName, "CertChargeLoopOK", 0);
+  SetControlVisibility(gProtocolPanelName, "CertChargeLoopNOK", 0);
+}
+
+on sysvar Common::SysUserChargingMode
+{
+  ConfigureACMode();
+}
+
+on sysvar Common::SysUserACDERMode
+{
+  if(@this == 1)
+    @Common::SysUserBPTMode = 0;
+}
+
+on sysvar Common::SysUserBPTMode
+{
+  if(@this == 1)
+    @Common::SysUserACDERMode = 0;
+}
+
+ConfigureACMode()
+{
+  if(@Common::SysUserChargingMode == @Common::SysUserChargingMode::AC)
+  {
+    if(@Common::SysUserBPTMode == 1)
+      @Common::SysUserACDERMode = 0;    
+    setControlVisibility(gProtocolPanelName, "AC_DER_Switch", 1);
+  }
+  else{
+    setControlVisibility(gProtocolPanelName, "AC_DER_Switch", 0);
+    @Common::SysUserACDERMode = 0;
+  }
+}

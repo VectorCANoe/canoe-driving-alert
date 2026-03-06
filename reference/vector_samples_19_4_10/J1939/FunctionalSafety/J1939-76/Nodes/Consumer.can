@@ -1,0 +1,148 @@
+/*@!Encoding:1252*/
+includes
+{
+}
+
+variables
+{
+  const byte  GlobalAddress             = 255;      // Global address of J1939
+  const int64 SRVT_Max_Message1         = 50000000; // Maximum Safety Relevant Validation Time for Message1 ois 50ms [ns]
+  const dword Message1TimeoutTime       = 2000;     // If for 2s no Message1 is detected we report a timeout [ms]
+  const byte SHMSequenceNumberMax       = 31;       // Maximum Safety Data Message (SHM) valid SHM sequence number        
+  const byte SHMSequenceNumberUndefined = 255;      // Value for undfined Safety Data Message (SHM) sequence number
+  
+  char TitelConsumerPanel[100] = "Consumer Safety Application"; // Titel of the consumer panel
+  char ConsumerOutputView[100] = "CAPL_Output_View_Consumer";   // Name of the CAPL output view of the consumer panel
+  
+  struct SafetyHeaderMessage
+  {
+    byte  SequenceNumber;
+    dword CRC;
+    int64 Time;
+  };
+  
+  struct  SafetyHeaderMessage ReceivedShmForMessage1; // Stores values of SHM which belongs to SafetyRelevantMessage1
+  msTimer ObserverTimer;                              // Timer to observe if Message1 is missing
+  int64   ObserverStartTime;                          // Start time of waiting for Message1 [ns]
+  char    TextBuffer[100];                            // Text buffer for output of strings
+}
+
+on preStart
+{
+  Reset();
+}
+
+on pg SHM
+{
+  long result;
+  dword sdmPgn, crc;
+  byte sdmSourceAddress, sdmDestinationAddress, sequenceNumber;
+  byte expectedSequenceNumber;
+  
+  result = J1939ParseSHM(this, sdmPgn, sdmSourceAddress, sdmDestinationAddress, sequenceNumber, crc);
+  if (result < 0)
+  {
+    snprintf( TextBuffer, elcount(TextBuffer), "%010.6f   Call of J1939ILParseSHM failed (error %i)\n", result);
+    putValueToControl( TitelConsumerPanel, ConsumerOutputView, TextBuffer);
+  }
+   
+  // check if SHM references Message1
+  if ((sdmPgn == Message1.pgn) 
+    && ((sdmDestinationAddress == GlobalAddress) || (sdmDestinationAddress == Consumer.NmStationAddress)) 
+    && (sdmSourceAddress == Producer.NmStationAddress))
+  {
+    // check sequence number of SHM
+    if (ReceivedShmForMessage1.SequenceNumber != SHMSequenceNumberUndefined)
+    {
+      expectedSequenceNumber = GetNextExpectedSequenceNumber(ReceivedShmForMessage1.SequenceNumber);
+      if (expectedSequenceNumber != sequenceNumber)
+      {
+        snprintf( TextBuffer, elcount(TextBuffer), "%010.6f   Sequence number %u of SHM is invalid (expected: %u)\n", this.time_ns/1000000000.0, this.SequenceNumberOfSDG, expectedSequenceNumber);
+        putValueToControl( TitelConsumerPanel, ConsumerOutputView, TextBuffer);
+        @sysvar::Consumer::Message1::SequenceNumberValidation = sysvar::Consumer::Message1::SequenceNumberValidation::Invalid;        
+      }
+      else
+      {
+        @sysvar::Consumer::Message1::SequenceNumberValidation = sysvar::Consumer::Message1::SequenceNumberValidation::Valid;
+      }       
+    }
+    
+    // store SHM values
+    ReceivedShmForMessage1.Time           = this.time_ns;
+    ReceivedShmForMessage1.SequenceNumber = sequenceNumber;
+    ReceivedShmForMessage1.CRC            = crc;      
+  }
+}
+
+on pg Message1
+{
+  long result;
+  dword crc;
+  int64 timeDiff_SDM_SHM;
+  
+  // check if a SHM is received within SRVT Maximum and if the CRC is valid
+  timeDiff_SDM_SHM = this.time_ns - ReceivedShmForMessage1.Time;
+  if (timeDiff_SDM_SHM > SRVT_Max_Message1)
+  {
+    snprintf( TextBuffer, elcount(TextBuffer), "%010.6f   SHM is missing or is delayed\n", this.time_ns/1000000000.0);
+    putValueToControl( TitelConsumerPanel, ConsumerOutputView, TextBuffer);
+    @Consumer::Message1::SHMReceived = sysvar::Consumer::Message1::SHMReceived::Invalid;
+    @Consumer::Message1::SequenceNumberValidation = sysvar::Consumer::Message1::SequenceNumberValidation::Undefinded;
+    @Consumer::Message1::CRCValidation = sysvar::Consumer::Message1::CRCValidation::Undefinded;
+  }
+  else
+  {
+    @sysvar::Consumer::Message1::SHMReceived = sysvar::Consumer::Message1::SHMReceived::Valid;
+    
+    crc = J1939CalculateCRCOfSDM(this.qword(0));
+    if (crc != ReceivedShmForMessage1.CRC)
+    {
+      snprintf( TextBuffer, elcount(TextBuffer), "%010.6f   Data of SDM does not match CRC of SHM\n", this.time_ns/1000000000.0);
+      putValueToControl( TitelConsumerPanel, ConsumerOutputView, TextBuffer);
+      @Consumer::Message1::CRCValidation = sysvar::Consumer::Message1::CRCValidation::Invalid;    
+    }
+    else
+    {
+      @Consumer::Message1::CRCValidation = sysvar::Consumer::Message1::CRCValidation::Valid;          
+    }
+    @Consumer::Message1::SequenceNumber = ReceivedShmForMessage1.sequenceNumber;
+  }
+  
+  cancelTimer(ObserverTimer);
+  setTimer(ObserverTimer, Message1TimeoutTime);
+  ObserverStartTime = this.time_ns;
+}
+
+on timer ObserverTimer
+{
+  snprintf( TextBuffer, elcount(TextBuffer), "%010.6f   Timeout of Message1 detected\n", (ObserverStartTime + (Message1TimeoutTime * 1000000)) / 1000000000.0 );
+  putValueToControl( TitelConsumerPanel, ConsumerOutputView, TextBuffer);
+  
+  Reset();  
+
+  ObserverStartTime = ObserverStartTime + (Message1TimeoutTime * 1000000);
+  setTimer(ObserverTimer, Message1TimeoutTime);
+}
+
+void Reset()
+{
+  ReceivedShmForMessage1.Time           = 0;
+  ReceivedShmForMessage1.SequenceNumber = SHMSequenceNumberUndefined;
+  ReceivedShmForMessage1.CRC            = 0;
+  
+  @Consumer::Message1::SHMReceived              = sysvar::Consumer::Message1::SHMReceived::Undefinded;
+  @Consumer::Message1::SequenceNumberValidation = sysvar::Consumer::Message1::SequenceNumberValidation::Undefinded;
+  @Consumer::Message1::CRCValidation            = sysvar::Consumer::Message1::CRCValidation::Undefinded;
+}
+
+byte GetNextExpectedSequenceNumber(byte currentSequenceNumber)
+{
+  if (currentSequenceNumber >= SHMSequenceNumberMax)
+  {
+    return 0;
+  }
+  else
+  {
+    return currentSequenceNumber + 1;
+  }
+}

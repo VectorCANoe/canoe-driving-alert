@@ -1,0 +1,111 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<systemvariables version="4">
+  <namespace name="" comment="" interface="">
+    <namespace name="RSU_RoadWorksWarning" comment="" interface="">
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="Active" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="1" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="AnimationState" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="0" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="EventLatitude" comment="" bitcount="64" isSigned="true" encoding="65001" type="float" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="EventLongitude" comment="" bitcount="64" isSigned="true" encoding="65001" type="float" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="Heading" comment="" bitcount="64" isSigned="true" encoding="65001" type="float" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="InformationQuality" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="isMobileFlag" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1">
+        <valuetable name="Custom" definesMinMax="false">
+          <valuetableentry value="0" lowerBound="0" upperBound="0" description="stationary" displayString="stationary" />
+          <valuetableentry value="1" lowerBound="1" upperBound="1" description="mobile" displayString="mobile" />
+        </valuetable>
+      </variable>
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="RelevanceDirection" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="3" maxValuePhys="3">
+        <valuetable name="Custom" definesMinMax="true">
+          <valuetableentry value="0" lowerBound="0" upperBound="0" description="allTrafficDirection" displayString="allTrafficDirection" />
+          <valuetableentry value="1" lowerBound="1" upperBound="1" description="upstreamTraffic" displayString="upstreamTraffic" />
+          <valuetableentry value="2" lowerBound="2" upperBound="2" description="downstreamTraffic" displayString="downstreamTraffic" />
+          <valuetableentry value="3" lowerBound="3" upperBound="3" description="oppositeTraffic" displayString="oppositeTraffic" />
+        </valuetable>
+      </variable>
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="RelevanceDistance" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="7" maxValuePhys="7">
+        <valuetable name="Custom" definesMinMax="false">
+          <valuetableentry value="0" lowerBound="0" upperBound="0" description="Less_Then_50_Meters" displayString="Less_Then_50_Meters" />
+          <valuetableentry value="1" lowerBound="1" upperBound="1" description="Less_Then_100_Meters" displayString="Less_Then_100_Meters" />
+          <valuetableentry value="2" lowerBound="2" upperBound="2" description="Less_Then_200_Meters" displayString="Less_Then_200_Meters" />
+          <valuetableentry value="3" lowerBound="3" upperBound="3" description="Less_Then_500_Meters" displayString="Less_Then_500_Meters" />
+          <valuetableentry value="4" lowerBound="4" upperBound="4" description="Less_Then_1000_Meters" displayString="Less_Then_1000_Meters" />
+          <valuetableentry value="5" lowerBound="5" upperBound="5" description="Less_Then_5km" displayString="Less_Then_5km" />
+          <valuetableentry value="6" lowerBound="6" upperBound="6" description="Less_Then_10km" displayString="Less_Then_10km" />
+          <valuetableentry value="7" lowerBound="7" upperBound="7" description="Over_10km" displayString="Over_10km" />
+        </valuetable>
+      </variable>
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="StationID" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="StationType" comment="" bitcount="32" isSigned="true" encoding="65001" type="int">
+        <valuetable name="Custom" definesMinMax="false">
+          <valuetableentry value="0" lowerBound="0" upperBound="0" description="unknown" displayString="unknown" />
+          <valuetableentry value="1" lowerBound="1" upperBound="1" description="Pedestrian" displayString="Pedestrian" />
+          <valuetableentry value="2" lowerBound="2" upperBound="2" description="Cyclist" displayString="Cyclist" />
+          <valuetableentry value="3" lowerBound="3" upperBound="3" description="Moped" displayString="Moped" />
+          <valuetableentry value="4" lowerBound="4" upperBound="4" description="Motorcycle" displayString="Motorcycle" />
+          <valuetableentry value="5" lowerBound="5" upperBound="5" description="PassengerCar" displayString="PassengerCar" />
+          <valuetableentry value="6" lowerBound="6" upperBound="6" description="Bus" displayString="Bus" />
+          <valuetableentry value="7" lowerBound="7" upperBound="7" description="LightTruck" displayString="LightTruck" />
+          <valuetableentry value="8" lowerBound="8" upperBound="8" description="HeavyTruck" displayString="HeavyTruck" />
+          <valuetableentry value="9" lowerBound="9" upperBound="9" description="Trailer" displayString="Trailer" />
+          <valuetableentry value="10" lowerBound="10" upperBound="10" description="SpecialVehicles" displayString="SpecialVehicles" />
+          <valuetableentry value="11" lowerBound="11" upperBound="11" description="Tram" displayString="Tram" />
+          <valuetableentry value="15" lowerBound="15" upperBound="15" description="RoadSideUnit" displayString="RoadSideUnit" />
+        </valuetable>
+      </variable>
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SubCauseCode" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="6" maxValuePhys="6">
+        <valuetable name="Custom" definesMinMax="true">
+          <valuetableentry value="0" lowerBound="0" upperBound="0" description="Reserved" displayString="Reserved" />
+          <valuetableentry value="1" lowerBound="1" upperBound="1" description="MajorRoadworks" displayString="MajorRoadworks" />
+          <valuetableentry value="2" lowerBound="2" upperBound="2" description="RoadMarkingWork" displayString="RoadMarkingWork" />
+          <valuetableentry value="3" lowerBound="3" upperBound="3" description="SlowMovingRoadMaintenance" displayString="SlowMovingRoadMaintenance" />
+          <valuetableentry value="4" lowerBound="4" upperBound="4" description="ShorttermStationaryRoadworks" displayString="ShorttermStationaryRoadworks" />
+          <valuetableentry value="5" lowerBound="5" upperBound="5" description="Streetcleaning" displayString="Streetcleaning" />
+          <valuetableentry value="6" lowerBound="6" upperBound="6" description="Winterservice" displayString="Winterservice" />
+        </valuetable>
+      </variable>
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="TrafficFlowRule" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="-1" minValue="0" minValuePhys="0" maxValue="3" maxValuePhys="3">
+        <valuetable name="Benutzerdefiniert" definesMinMax="true">
+          <valuetableentry value="0" lowerBound="0" upperBound="0" description="No_Passing" displayString="No_Passing" />
+          <valuetableentry value="1" lowerBound="1" upperBound="1" description="No_Passing_for_Trucks" displayString="No_Passing_for_Trucks" />
+          <valuetableentry value="2" lowerBound="2" upperBound="2" description="Pass_to_Right" displayString="Pass_to_Right" />
+          <valuetableentry value="3" lowerBound="3" upperBound="3" description="Pass_to_Left" displayString="Pass_to_Left" />
+        </valuetable>
+      </variable>
+    </namespace>
+    <namespace name="RWW_Configuration" comment="" interface="">
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="Expected_DENM_on" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="1" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1">
+        <valuetable name="Custom" definesMinMax="false">
+          <valuetableentry value="0" lowerBound="0" upperBound="0" description="On" displayString="On" />
+          <valuetableentry value="1" lowerBound="1" upperBound="1" description="Off" displayString="Off" />
+        </valuetable>
+      </variable>
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="Expected_InformationQuality" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="7" maxValuePhys="7" />
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="Expected_IsMobile" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="0" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1">
+        <valuetable name="Custom" definesMinMax="false">
+          <valuetableentry value="0" lowerBound="0" upperBound="0" description="is mobile" displayString="is mobile" />
+          <valuetableentry value="1" lowerBound="1" upperBound="1" description="is stationary" displayString="is stationary" />
+        </valuetable>
+      </variable>
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="Expected_TrafficFlow" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="-1" minValue="-1" minValuePhys="-1" maxValue="3" maxValuePhys="3">
+        <valuetable name="Benutzerdefiniert" definesMinMax="true">
+          <valuetableentry value="-1" lowerBound="-1" upperBound="-1" description="no condition" displayString="no condition" />
+          <valuetableentry value="0" lowerBound="0" upperBound="0" description="No_Passing" displayString="No_Passing" />
+          <valuetableentry value="1" lowerBound="1" upperBound="1" description="No_Passing_for_Trucks" displayString="No_Passing_for_Trucks" />
+          <valuetableentry value="2" lowerBound="2" upperBound="2" description="Pass_to_Right" displayString="Pass_to_Right" />
+          <valuetableentry value="3" lowerBound="3" upperBound="3" description="Pass_to_Left" displayString="Pass_to_Left" />
+        </valuetable>
+      </variable>
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="RWW_Usecase" comment="" bitcount="32" isSigned="true" encoding="65001" type="int" startValue="-1">
+        <valuetable name="Custom" definesMinMax="false">
+          <valuetableentry value="-1" lowerBound="-1" upperBound="-1" description="Undefined" displayString="Undefined" />
+          <valuetableentry value="0" lowerBound="0" upperBound="0" description="RWW_LC" displayString="RWW_LC" />
+          <valuetableentry value="1" lowerBound="1" upperBound="1" description="RWW_RC" displayString="RWW_RC" />
+          <valuetableentry value="2" lowerBound="2" upperBound="2" description="RWW_RM" displayString="RWW_RM" />
+        </valuetable>
+      </variable>
+    </namespace>
+    <namespace name="RWW_Display" comment="" interface="">
+      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="closedLanes" comment="" bitcount="0" isSigned="true" encoding="65001" type="string" />
+    </namespace>
+  </namespace>
+</systemvariables>

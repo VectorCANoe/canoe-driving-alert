@@ -1,0 +1,45 @@
+﻿/*@!Encoding:65001*/
+includes
+{
+  
+}
+
+// Adds variable for recording group.
+variables
+{
+  dword groupHandle;
+}
+
+// Creates recording group "Locking Signals".
+// Starts recording of locking signals for graphic chart in test report.
+export void startRecordingGroup_LockingSignals()
+{
+  groupHandle = testReportCreateRecordingGroup ("Locking Signals");
+  testReportAddToRecordingGroup (groupHandle, LockRequest);
+  testReportAddToRecordingGroup (groupHandle, LockState);
+  testReportStartRecordingGroup (groupHandle);
+}
+
+// Stops recording group "Locking Signals".
+export void stopRecordingGroup_LockingSignals()
+{
+  testReportStopRecordingGroup(groupHandle);
+}
+
+// Starts recording of signal.
+export void startRecording(signal* s)
+{
+  testReportStartRecording (s);
+}
+
+// Stops recording of signal
+export void stopRecording(signal* s)
+{
+  testReportStopRecording (s);
+}
+
+// Stops all recordings.
+export void stopAllRecordings()
+{
+  testReportStopAllRecordings ();
+}

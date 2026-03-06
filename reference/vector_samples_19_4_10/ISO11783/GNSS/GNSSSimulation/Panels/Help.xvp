@@ -1,0 +1,58 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Panel Type="Vector.CANalyzer.Panels.PanelSerializer, Vector.CANalyzer.Panels.Serializer, Version=19.0.111.0, Culture=neutral, PublicKeyToken=null">
+  <Object Type="Vector.CANalyzer.Panels.Runtime.Panel, Vector.CANalyzer.Panels.Common, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Panel" ControlName="Help">
+    <Object Type="Vector.CANalyzer.Panels.Design.CanvasControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X1348a1a4e93a1e4052e8d6be4fd87de07a0a" ControlName="Canvas 2">
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xf695101fee6afe49cbeab32e5a865b6a751f" ControlName="Static Text 1">
+        <Property Name="Name">Xf695101fee6afe49cbeab32e5a865b6a751f</Property>
+        <Property Name="Size">322, 139</Property>
+        <Property Name="Location">14, 14</Property>
+        <Property Name="Text">1. Start Measurement
+
+2. &lt;Ctrl&gt; + &lt;left-click&gt; on map: set Start Point
+
+3. &lt;Ctrl&gt; + &lt;left-click&gt; on map: add Bezier Curve
+    &lt;Ctrl&gt; + &lt;Shift&gt; + &lt;left-click&gt; on map: add Straight Line
+    &lt;Ctrl&gt; + &lt;Alt&gt; + &lt;left-click&gt; on map: delete last route segment
+
+4. Set vehicle speed in panel "GNSS IL Control"
+
+5. To leave the route: set curvature in panel "GNSS IL Control"</Property>
+      </Object>
+      <Property Name="Name">X1348a1a4e93a1e4052e8d6be4fd87de07a0a</Property>
+      <Property Name="Size">357, 171</Property>
+      <Property Name="Location">250, 0</Property>
+      <Property Name="BackColor">255, 218, 228, 242</Property>
+      <Property Name="TabIndex">2</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.CanvasControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xf4455102e5bd7e4313e8b00ebec8a3d3b49a" ControlName="Canvas 1">
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X35e96b00e6f05e4f38e9c41e43fed06057a1" ControlName="Static Text 2">
+        <Property Name="Name">X35e96b00e6f05e4f38e9c41e43fed06057a1</Property>
+        <Property Name="Size">145, 56</Property>
+        <Property Name="Location">69, 20</Property>
+        <Property Name="BackColor">255, 215, 228, 242</Property>
+        <Property Name="Text">Press the button to open 
+a detailed description 
+of this sample configuration.</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.PanelHelpControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X6df854d7ea4ece4f71ea823e9cb996bc4f8a" ControlName="File Button 1">
+        <Property Name="Name">X6df854d7ea4ece4f71ea823e9cb996bc4f8a</Property>
+        <Property Name="Size">40, 40</Property>
+        <Property Name="Location">23, 20</Property>
+        <Property Name="ImageFile">Image\PanelHelp.png</Property>
+        <Property Name="TabIndex">1</Property>
+        <Property Name="Arguments">GNSSSimulation.CFG</Property>
+        <Property Name="Filename">Choose file...</Property>
+        <Property Name="WorkingDirectory"></Property>
+      </Object>
+      <Property Name="Name">Xf4455102e5bd7e4313e8b00ebec8a3d3b49a</Property>
+      <Property Name="Size">229, 82</Property>
+      <Property Name="Location">0, 0</Property>
+      <Property Name="BackColor">255, 218, 228, 242</Property>
+      <Property Name="TabIndex">1</Property>
+    </Object>
+    <Property Name="Name">Panel</Property>
+    <Property Name="Size">607, 169</Property>
+    <Property Name="Location">0, 0</Property>
+    <Property Name="BackColor">White</Property>
+  </Object>
+</Panel>

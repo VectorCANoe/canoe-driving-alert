@@ -1,0 +1,25 @@
+version: 2.2.0
+
+test-tree:
+  - test-fixture: CAPLCANFD
+    description: CAN FD Test
+    elements:
+      - capl-test-case: TC1_1_WaitForEngineData
+        title: TC1_1_WaitForEngineData
+      - capl-test-case: TC1_2_WaitForEngineStatus
+        title: TC1_2_WaitForEngineStatus
+      - capl-test-case: TC1_3_WaitForIgnitionInfo
+        title: TC1_3_WaitForIgnitionInfo
+      - capl-test-case: TC2_1_1_CheckInvalidDLC
+        title: TC2_1_1_CheckInvalidDLC
+      - capl-test-case: TC2_1_2_CheckInvalidDLCByNodeTx
+        title: TC2_1_2_CheckInvalidDLCByNodeTx
+      - capl-test-case: TC2_1_3_CheckInvalidDLCByNodeTx
+        title: TC2_1_3_CheckInvalidDLCByNodeTx
+      - capl-test-case: TC3_ChangeSignalValues
+        title: TC3_ChangeSignalValues
+      - capl-test-case: TC4_SetMsgDLC
+        title: TC4_SetMsgDLC
+      - capl-test-case: TC5_CheckCycleTime
+        title: TC5_CheckCycleTime
+        

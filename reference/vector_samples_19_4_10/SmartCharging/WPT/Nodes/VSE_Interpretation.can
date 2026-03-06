@@ -1,0 +1,196 @@
+﻿/*@!Encoding:65001*/
+includes
+{
+  
+}
+
+variables
+{
+  const int AC_EnergyType = 1;
+  const int DC_EnergyType = 2;
+  const int WPT_EnergyType = 4;
+  const int ACD_EnergyType = 8;
+
+  int energyTransferTypes[4] = {AC_EnergyType, DC_EnergyType, WPT_EnergyType, ACD_EnergyType};
+}
+
+int Is_IEEE_Organization(byte input[])
+{
+  if (input[0] == 0x70 && input[1] == 0xb3 && input[2] == 0xd5 && input[3] == 0x31 && input[4] == 0x90)
+  {
+    return 1;
+  }
+
+  return 0;
+}
+
+void ParseToVCE_Beacon_EVSE(byte data_vendor_buffer[])
+{
+  byte energyTransferTypesByte;
+
+  // ElementType
+  $VSE::InterpretedVSE.BeaconFrameVSE.ElementType = data_vendor_buffer[5]; // oui (offset)
+
+  // energytransfer Type
+  energyTransferTypesByte = data_vendor_buffer[6];
+  ParseEnergyTransferType_Beacon(energyTransferTypesByte);
+
+  // country code 
+  $VSE::InterpretedVSE.BeaconFrameVSE.countryCode[0] = data_vendor_buffer[7];
+  $VSE::InterpretedVSE.BeaconFrameVSE.countryCode[1] = data_vendor_buffer[8];
+  
+  // operatorID
+  $VSE::InterpretedVSE.BeaconFrameVSE.operatorID[0] = data_vendor_buffer[9];
+  $VSE::InterpretedVSE.BeaconFrameVSE.operatorID[1] = data_vendor_buffer[10];
+  $VSE::InterpretedVSE.BeaconFrameVSE.operatorID[2] = data_vendor_buffer[11];
+  
+  // chargingSiteID
+  $VSE::InterpretedVSE.BeaconFrameVSE.chargingSiteID[0] = data_vendor_buffer[12];
+  $VSE::InterpretedVSE.BeaconFrameVSE.chargingSiteID[1] = data_vendor_buffer[13];
+  $VSE::InterpretedVSE.BeaconFrameVSE.chargingSiteID[2] = data_vendor_buffer[14];
+  $VSE::InterpretedVSE.BeaconFrameVSE.chargingSiteID[3] = data_vendor_buffer[15];
+  $VSE::InterpretedVSE.BeaconFrameVSE.chargingSiteID[4] = data_vendor_buffer[16];
+}
+
+void ParseToVCE_ProbeResponse_EVSE(byte data_vendor_buffer[])
+{
+  byte energyTransferTypesByte;
+
+  // ElementType
+  $VSE::InterpretedVSE.ProbeResponseVSE.ElementType = data_vendor_buffer[5]; // oui (offset)
+
+  // energytransfer Type
+  energyTransferTypesByte = data_vendor_buffer[6];
+  ParseEnergyTransferType_ProbeResponse(energyTransferTypesByte);
+
+  // country code 
+  $VSE::InterpretedVSE.ProbeResponseVSE.countryCode[0] = data_vendor_buffer[7];
+  $VSE::InterpretedVSE.ProbeResponseVSE.countryCode[1] = data_vendor_buffer[8];
+  
+  // operatorID
+  $VSE::InterpretedVSE.ProbeResponseVSE.operatorID[0] = data_vendor_buffer[9];
+  $VSE::InterpretedVSE.ProbeResponseVSE.operatorID[1] = data_vendor_buffer[10];
+  $VSE::InterpretedVSE.ProbeResponseVSE.operatorID[2] = data_vendor_buffer[11];
+  
+  // chargingSiteID
+  $VSE::InterpretedVSE.ProbeResponseVSE.chargingSiteID[0] = data_vendor_buffer[12];
+  $VSE::InterpretedVSE.ProbeResponseVSE.chargingSiteID[1] = data_vendor_buffer[13];
+  $VSE::InterpretedVSE.ProbeResponseVSE.chargingSiteID[2] = data_vendor_buffer[14];
+  $VSE::InterpretedVSE.ProbeResponseVSE.chargingSiteID[3] = data_vendor_buffer[15];
+  $VSE::InterpretedVSE.ProbeResponseVSE.chargingSiteID[4] = data_vendor_buffer[16];
+}
+
+void ParseToVCE_ProbeRequest_EV(byte data_vendor_buffer[])
+{
+  byte energyTransferTypesByte;
+
+  // ElementType
+  $VSE::InterpretedVSE.ProbeRequestVSE.ElementType = data_vendor_buffer[5]; // oui (offset)
+
+  // energytransfer Type
+  energyTransferTypesByte = data_vendor_buffer[6];
+  ParseEnergyTransferType_ProbeRequest(energyTransferTypesByte);
+}
+
+on value_update IoTEnabler::WiFiController.wifi_beacon.vendor
+{
+  byte data_vendor_buffer [50];
+  stack int i = 0;
+
+  for (i = 0; i < $IoTEnabler::WiFiController.wifi_beacon.vendor.Length; ++i)
+  {
+    memcpy(data_vendor_buffer, $IoTEnabler::WiFiController.wifi_beacon.vendor[i].data);
+
+    if (Is_IEEE_Organization(data_vendor_buffer))
+    {
+      ParseToVCE_Beacon_EVSE(data_vendor_buffer);
+    }
+  }
+}
+
+void ParseEnergyTransferType_Beacon(int energyTransferTypesByte)
+{
+  stack int i;
+  stack int energyTypesCount = 0;
+
+  for (i = 0; i < elCount(energyTransferTypes); ++i)
+  {
+     if (energyTransferTypesByte & energyTransferTypes[i])
+     {
+        energyTypesCount++;
+        $VSE::InterpretedVSE.BeaconFrameVSE.energyTransferType.Length = energyTypesCount;
+        $VSE::InterpretedVSE.BeaconFrameVSE.energyTransferType[energyTypesCount-1] = energyTransferTypes[i];
+     }
+  }
+}
+
+void ParseEnergyTransferType_ProbeResponse(int energyTransferTypesByte)
+{
+  stack int i;
+  stack int energyTypesCount = 0;
+
+  for (i = 0; i < elCount(energyTransferTypes); ++i)
+  {
+     if (energyTransferTypesByte & energyTransferTypes[i])
+     {
+        energyTypesCount++;
+        $VSE::InterpretedVSE.ProbeResponseVSE.energyTransferType.Length = energyTypesCount;
+        $VSE::InterpretedVSE.ProbeResponseVSE.energyTransferType[energyTypesCount-1] = energyTransferTypes[i];
+     }
+  }
+}
+
+void ParseEnergyTransferType_ProbeRequest(int energyTransferTypesByte)
+{
+  stack int i;
+  stack int energyTypesCount = 0;
+
+  for (i = 0; i < elCount(energyTransferTypes); ++i)
+  {
+     if (energyTransferTypesByte & energyTransferTypes[i])
+     {
+        energyTypesCount++;
+        $VSE::InterpretedVSE.ProbeRequestVSE.energyTransferType.Length = energyTypesCount;
+        $VSE::InterpretedVSE.ProbeRequestVSE.energyTransferType[energyTypesCount-1] = energyTransferTypes[i];
+     }
+  }
+}
+
+
+on value_update IoTEnabler::WiFiController.wifi_probe_response.vendor
+{
+  byte data_vendor_buffer [50];
+  byte energyTransferTypesByte;
+  stack int i = 0;
+
+  for (i = 0; i < $IoTEnabler::WiFiController.wifi_probe_response.vendor.Length; ++i)
+  {
+    memcpy(data_vendor_buffer, $IoTEnabler::WiFiController.wifi_probe_response.vendor[i].data);
+
+    if (Is_IEEE_Organization(data_vendor_buffer))
+    {
+      ParseToVCE_ProbeResponse_EVSE(data_vendor_buffer);
+    }
+  }
+}
+
+
+on value_update IoTEnabler::WiFiController.wifi_probe_request.vendor
+{
+  byte data_vendor_buffer[100];
+  byte energyTransferTypesByte;
+  stack int i = 0;
+
+  for (i = 0; i < $IoTEnabler::WiFiController.wifi_probe_request.vendor.Length; ++i)
+  {
+    if(elcount($IoTEnabler::WiFiController.wifi_probe_request.vendor[i].data) < elcount(data_vendor_buffer))
+      memcpy(data_vendor_buffer, $IoTEnabler::WiFiController.wifi_probe_request.vendor[i].data);
+    else
+      continue;
+
+    if (Is_IEEE_Organization(data_vendor_buffer))
+    {
+      ParseToVCE_ProbeRequest_EV(data_vendor_buffer);
+    }
+  }
+}

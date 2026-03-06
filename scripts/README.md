@@ -1,43 +1,40 @@
-# Scripts Layout
+# Scripts Guide
 
-This folder is organized by purpose.
+Use this folder through one entrypoint:
 
-## `scripts/quality/`
-- Quality gates and validation utilities.
-- Active CI gate:
-  - `scripts/quality/doc_code_sync_gate.py`
-- Push-time CANoe text hygiene gate:
-  - `scripts/quality/cfg_hygiene_gate.py`
-- DBC validation helpers:
-  - `scripts/quality/dbc/test_dbc_validation.py`
-- CAPL mirror sync gate:
-  - `scripts/quality/check_capl_sync.py`
-- Evidence score gate:
-  - `scripts/quality/evidence_score_gate.py`
-- Evidence run bootstrap:
-  - `scripts/quality/init_evidence_run.py`
-- Write-window evidence auto fill:
-  - `scripts/quality/build_evidence_from_write_window.py`
-- Development completeness smoke check:
-  - `scripts/quality/dev_completeness_smoke.py`
+- `python scripts/run.py <command>`
 
-## `scripts/canoe/`
-- CANoe configuration and CAPL linkage helpers.
-- Includes:
-  - `attach_capl.py`
-  - `check_nodes.py`
-  - `fix_nodes.py`
-  - `reload_cfg.py`
-  - `reload_wait.py`
-  - `setup_canoe_config.py`
+## Daily Commands
 
-## `scripts/docs/`
-- Document generation/refactor helpers used during writing iterations.
-- Includes completion/expand/fix/restructure utilities.
+### Verification
+- Prepare run folders:
+  - `python scripts/run.py verify-prepare --run-id 20260306_1930`
+- Smoke check (CANoe COM):
+  - `python scripts/run.py verify-smoke --owner DEV1`
+- Fill + score one tier:
+  - `python scripts/run.py verify-fill-score --tier UT --run-id 20260306_1930 --owner DEV1`
 
-## `scripts/report/`
-- Report conversion/export helpers.
+### Gates
+- Doc/code sync:
+  - `python scripts/run.py gate-doc-sync`
+- CANoe cfg hygiene:
+  - `python scripts/run.py gate-cfg-hygiene`
+- CAPL mirror sync (`src/capl` vs `cfg/channel_assign`):
+  - `python scripts/run.py gate-capl-sync`
+
+## Folder Roles
+
+- `scripts/quality/`: validation and evidence pipeline
+- `scripts/canoe/`: CANoe setup/reload helpers
+- `scripts/docs/`: doc-authoring helpers (not day-to-day dev runtime)
+- `scripts/report/`: report conversion/export helpers
+
+## Recommended Rule
+
+- Daily work: only use `scripts/run.py`
+- Low-level scripts: call directly only when debugging a specific tool
 
 ## Compatibility
-- `scripts/doc_code_sync_gate.py` is a wrapper kept for backward compatibility.
-- Preferred entrypoint is `scripts/quality/doc_code_sync_gate.py`.
+
+- `scripts/doc_code_sync_gate.py` is a backward-compat wrapper.
+- Preferred gate entrypoint remains `scripts/quality/doc_code_sync_gate.py`.

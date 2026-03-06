@@ -1,0 +1,217 @@
+/*@!Encoding:1252*/
+includes
+{
+  #include "MessageIDs.cin"
+}
+
+variables
+{
+  int stateResults[12];   // stores response codes
+  
+  char gProtocolPanelName[9] = "Protocol";
+  dword writeTab;  // Sink identifier
+}
+
+void UpdateProgressBar(long lastMessage)
+{
+  enum SmartChargingMessageIDs state;
+  int progressBarPosition;
+  
+  char labelNameOK[50];  
+  char labelNameNOK[50];
+  char responseCode[100];
+  
+  long chargeState;
+  
+  if (lastMessage <= 0)
+  {
+    state = InvalidMessage; 
+  }
+  else
+  {
+    state = (enum SmartChargingMessageIDs) lastMessage; 
+  }
+  
+  progressBarPosition = @sysvar::Common::SysProtocolBar;
+  
+  switch (state)
+  {
+    case InvalidMessage:
+      // Nothing
+      progressBarPosition = 0;
+      ClearProtocolPanel();
+      break;
+    case SECCDiscoveryReq:
+    case SECCDiscoveryRes:
+      progressBarPosition = 2;
+      break;
+      
+    // V2G messages
+    case SupportedAppProtocolReq:
+    case SupportedAppProtocolRes:
+    case SessionSetupReq:
+    case SessionSetupRes:
+      progressBarPosition = 3;
+      break;
+    case ServiceDiscoveryReq:
+    case ServiceDiscoveryRes:
+    case ServiceDetailReq:
+    case ServiceDetailRes:
+      progressBarPosition = 4;
+      break;      
+    case PaymentServiceSelectionReq:
+    case PaymentServiceSelectionRes:
+      progressBarPosition = 5;
+      break;      
+    case CertificateUpdateReq:
+    case CertificateUpdateRes:
+    case CertificateInstallationReq:
+    case CertificateInstallationRes:
+      progressBarPosition = 6;
+      break;      
+    case PaymentDetailsReq: 
+    case PaymentDetailsRes:
+    case ContractAuthentiationReq:
+    case ContractAuthentiationRes:
+      progressBarPosition = 7;
+      break;      
+    case ChargeParameterDiscoveryReq:
+    case ChargeParameterDiscoveryRes:
+      progressBarPosition = 8;
+      break;
+    case CableCheckReq:
+    case CableCheckRes:
+    case PreChargeReq:
+    case PreChargeRes:
+      progressBarPosition = 9;
+      break;        
+    case MeteringReceiptReq:
+    case MeteringReceiptRes:
+    case CurrentDemandReq:
+    case CurrentDemandRes:
+    case ChargingStatusReq:
+    case ChargingStatusRes:
+      progressBarPosition = 10;
+      break;  
+    case SessionStopReq:
+    case SessionStopRes:
+    case WeldingDetectionReq: 
+    case WeldingDetectionRes:
+      progressBarPosition = 11;
+      break;   
+    case PowerDeliveryReq:
+    case PowerDeliveryRes:
+      chargeState = GetChargeState();
+      if (chargeState == @sysvar::Common::ChargeProgress::`Start)
+      { 
+        progressBarPosition = 9;
+      }
+      else if (chargeState == @sysvar::Common::ChargeProgress::Stop)
+      { 
+        progressBarPosition = 11;
+      }
+      break;
+      
+    // SLAC Messages
+    case CmSLACParamReq:
+    case CmSLACParamCnf:
+      ClearProtocolPanel();
+      progressBarPosition = 1;
+      @sysVar::Common::SysSlacState = 1;  
+      break;
+    case CmStartAttenCharInd:
+    case CmMNBCSoundInd:
+      @sysVar::Common::SysSlacState = 2;  
+      break;
+    case CmAttenCharInd:
+    case CmAttenCharRsp:
+      @sysVar::Common::SysSlacState = 3;  
+      break;
+    case CmValidateReq:
+      @sysVar::Common::SysSlacState = 4;  
+      break;
+    case CmSLACMatchReq:
+    case CmSLACMatchCnf:
+      @sysVar::Common::SysSlacState = 5;  
+      break;  
+    default:
+      // Ignore
+      break;
+  }  
+  
+  if (0 <= progressBarPosition)
+  {
+    // set progress bar on panel
+    @sysvar::Common::SysProtocolBar = progressBarPosition; 
+    
+    // show/hide result labels
+    if ((3 <= progressBarPosition) && (state < 100) && ((state % 2) == 0))
+    {          
+      // update response code label
+      snprintf(labelNameOK, 50, "TResult%iOK", progressBarPosition); 
+      snprintf(labelNameNOK, 50, "TResult%iNOK", progressBarPosition);
+      
+      GetResponseCode(responseCode);
+  
+      // check if a FAIL was already written, then do not overwrite
+      if (stateResults[progressBarPosition] != 0)
+      {         
+        if (strncmp(responseCode, "OK", 2) == 0)
+        {    
+          setControlVisibility(gProtocolPanelName, labelNameNOK, 0);
+          setControlVisibility(gProtocolPanelName, labelNameOK, 1);     
+  
+          stateResults[progressBarPosition] = 1;
+        }
+        else
+        {
+          setControlVisibility(gProtocolPanelName, labelNameOK, 0);
+          setControlVisibility(gProtocolPanelName, labelNameNOK, 1);       
+          
+          stateResults[progressBarPosition] = 0;
+        }   
+      }
+    }
+  }  
+}
+
+ClearProtocolPanel()
+{
+  int i;
+  for (i = 0; i < 12; ++i)  
+  {
+    stateResults[i] = -1;
+  }
+  
+  SetControlVisibility(gProtocolPanelName, "TResult1OK",  0);
+  SetControlVisibility(gProtocolPanelName, "TResult1NOK", 0);
+  SetControlVisibility(gProtocolPanelName, "TResult2OK",  0);
+  SetControlVisibility(gProtocolPanelName, "TResult2NOK", 0);
+  SetControlVisibility(gProtocolPanelName, "TResult3OK",  0);
+  SetControlVisibility(gProtocolPanelName, "TResult3NOK", 0);
+  SetControlVisibility(gProtocolPanelName, "TResult4OK",  0);
+  SetControlVisibility(gProtocolPanelName, "TResult4NOK", 0);
+  SetControlVisibility(gProtocolPanelName, "TResult5OK",  0);
+  SetControlVisibility(gProtocolPanelName, "TResult5NOK", 0);
+  SetControlVisibility(gProtocolPanelName, "TResult6OK",  0);
+  SetControlVisibility(gProtocolPanelName, "TResult6NOK", 0);
+  SetControlVisibility(gProtocolPanelName, "TResult7OK",  0);
+  SetControlVisibility(gProtocolPanelName, "TResult7NOK", 0);
+  SetControlVisibility(gProtocolPanelName, "TResult8OK",  0);
+  SetControlVisibility(gProtocolPanelName, "TResult8NOK", 0);
+  SetControlVisibility(gProtocolPanelName, "TResult9OK",  0);
+  SetControlVisibility(gProtocolPanelName, "TResult9NOK", 0);
+  SetControlVisibility(gProtocolPanelName, "TResult10OK",  0);
+  SetControlVisibility(gProtocolPanelName, "TResult10NOK", 0);
+  SetControlVisibility(gProtocolPanelName, "TResult11OK",  0);
+  SetControlVisibility(gProtocolPanelName, "TResult11NOK", 0); 
+  
+  SetControlVisibility(gProtocolPanelName, "CertAuthOK", 0);
+  SetControlVisibility(gProtocolPanelName, "CertAuthNOK", 0);
+  SetControlVisibility(gProtocolPanelName, "CertUpdateOK", 0);
+  SetControlVisibility(gProtocolPanelName, "CertUpdateNOK", 0);
+  SetControlVisibility(gProtocolPanelName, "CertChargeParOK", 0);
+  SetControlVisibility(gProtocolPanelName, "CertChargeParNOK", 0);
+  SetControlVisibility(gProtocolPanelName, "CertChargeLoopOK", 0);
+  SetControlVisibility(gProtocolPanelName, "CertChargeLoopNOK", 0);
+}

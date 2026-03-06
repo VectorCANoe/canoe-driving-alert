@@ -1,0 +1,138 @@
+version 2.0;
+import module "MQTT"; 
+
+namespace ClimateSimulation
+{
+  
+  namespace Setting
+  {
+  	interface ISettings
+    {
+  		internal data int64 ThresholdTurnOnFan;
+  	}
+    
+	ISettings FanSettings;
+  
+  }
+  
+  namespace ClimateControl
+  {
+    [CommunicationPattern=PublishSubscribe]
+  	[MQTTBinding::ClientId="ClimateControl_CANoe"]
+  	[Binding="MQTT"]
+    [MQTTBinding::KeepAlive=60]
+    interface IClimateControl
+    {
+	  [MQTTBinding::Topic="rooms/living/devUpperLeft/temperature"]
+      consumed data int64 ConsumedTemperature1;
+	  
+	  [MQTTBinding::Topic="rooms/living/devLowerLeft/temperature"]
+      consumed data int64 ConsumedTemperature2;
+	  
+	  [MQTTBinding::Topic="rooms/living/devUpperRight/temperature"]
+      consumed data int64 ConsumedTemperature3;
+	  
+	  [MQTTBinding::Topic="rooms/living/devLowerRight/temperature"]
+      consumed data int64 ConsumedTemperature4;
+	  
+	  [MQTTBinding::Topic="rooms/living/devFan/Speed"]
+      consumed data int64 RotationSpeed;
+	  
+    }
+	
+    IClimateControl ClimateControl;
+	
+  }
+
+  namespace FanSimulation
+  {
+    [CommunicationPattern=PublishSubscribe]
+    [MQTTBinding::ClientId="Fan_CANoe"]
+    [MQTTBinding::KeepAlive=60]
+	  [Binding="MQTT"]
+    interface IFan
+    {
+	  [MQTTBinding::Topic="rooms/living/devUpperLeft/temperature"]
+      consumed data int64 ConsumedTemperature1;
+	  
+	  [MQTTBinding::Topic="rooms/living/devLowerLeft/temperature"]
+	  [ValueAssignmentEvents=All]
+      consumed data int64 ConsumedTemperature2;
+	  
+	  [MQTTBinding::Topic="rooms/living/devUpperRight/temperature"]
+      consumed data int64 ConsumedTemperature3;
+	  
+	  [MQTTBinding::Topic="rooms/living/devLowerRight/temperature"]
+      consumed data int64 ConsumedTemperature4;
+	  
+	  [MQTTBinding::Topic="rooms/living/devHumidityDetector/humidity"]
+      consumed data int64 ConsumedHumidity;
+	  
+	  [MQTTBinding::Topic="rooms/living/devFan/Speed"]
+      provided data int64 ProvidedRotationSpeed;
+	  
+	  [MQTTBinding::Topic="rooms/living/devFan/AvgTemperature"]
+      provided data int64 ProvidedAvgTemperature;
+    }
+	
+	
+    IFan Fan1;
+  }
+
+  namespace TemperatureSimulation
+  {
+    [Target=any]
+	  attribute string TempSensId;
+
+    [CommunicationPattern=PublishSubscribe]
+    [MQTTBinding::ClientId="TemperatureSensor_CANoe"]
+    [MQTTBinding::KeepAlive=60]
+    [Binding="MQTT"]
+    interface ITemperatureSensor
+    {
+	  [MQTTBinding::Topic="rooms/living/{::ClimateSimulation::TemperatureSimulation::TempSensId}/temperature"]
+      provided data int64 ProvidedTemperature;
+    }
+	
+	[ClimateSimulation::TemperatureSimulation::TempSensId="devUpperLeft"]    
+    ITemperatureSensor TemperatureSensorUpperLeft;
+    
+	[ClimateSimulation::TemperatureSimulation::TempSensId="devLowerLeft"]    
+    ITemperatureSensor TemperatureSensorLowerLeft;
+	
+	[ClimateSimulation::TemperatureSimulation::TempSensId="devUpperRight"]    
+    ITemperatureSensor TemperatureSensorUpperRight;
+	
+	[ClimateSimulation::TemperatureSimulation::TempSensId="devLowerRight"]    
+    ITemperatureSensor TemperatureSensorLowerRight;
+	
+  }
+  
+  namespace HumiditySimulation
+  {
+    _MQTT::ClientAPI::IClientAPI HumiditySensor;
+  }
+  
+  namespace PanelSettings
+  {
+	interface IPanelSetting
+	{
+		internal data int32 AutomaticMode;
+		internal data int32 FanState;
+		
+		internal data int32 TemperatureSensorPublishLoLeft;
+		internal data int32 TemperatureSensorPublishLoRight;
+		internal data int32 TemperatureSensorPublishUpLeft;
+		internal data int32 TemperatureSensorPublishUpRight;
+		
+		internal data int32 TemperatureStateUpLeft;
+		internal data int32 TemperatureStateLoLeft;
+		internal data int32 TemperatureStateLoRight;
+		internal data int32 TemperatureStateUpRight;
+		
+	  internal data int64 Humidity = 0;
+	}
+	
+	IPanelSetting PanelSetting;
+  }
+}

@@ -1,0 +1,429 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<FunctionBusLibrary Version="69" FormatMajorVersion="3" FormatMinorVersion="1" FormatPatchVersion="7">
+  <Namespaces>
+    <Namespace IsDefinedAsHidden="False" IsSystemDefined="False" Name="VAS_FirePreventing">
+      <Subnamespaces>
+        <Namespace IsDefinedAsHidden="False" IsSystemDefined="False" Name="_Generated">
+          <DataTypes>
+            <StringDataType Encoding="UTF8" MaxLength="160" IsFilesystemPathType="False" BitCount="1280" HasFixedBinaryLayout="True" HasMotorolaByteOrder="False" Name="UTF8String_160" />
+            <StringDataType Encoding="UTF8" MaxLength="68" IsFilesystemPathType="False" BitCount="544" HasFixedBinaryLayout="True" HasMotorolaByteOrder="False" Name="UTF8String_68" />
+            <StringDataType Encoding="UTF8" MaxLength="1020" IsFilesystemPathType="False" BitCount="8160" HasFixedBinaryLayout="True" HasMotorolaByteOrder="False" Name="UTF8String_1020" />
+            <ArrayDataType MaxLength="255" MinLength="1" HasMaxLength="True" HasFixedBinaryLayout="False" HasMotorolaByteOrder="False" Name="VarArray_1_255_UInt8">
+              <BaseType DataType="_SystemDataTypes::UInt8" />
+            </ArrayDataType>
+            <ArrayDataType MaxLength="65535" MinLength="1" HasMaxLength="True" HasFixedBinaryLayout="False" HasMotorolaByteOrder="False" Name="VarArray_1_65535_VAS_FirePreventing_parBatteryCellVoltage">
+              <BaseType DataType="VAS_FirePreventing::parBatteryCellVoltage">
+                <NumericProperties MinValue="" MinValueType="Invalid" MaxValue="250" MaxValueType="UInt64" IsBoolean="False" IsTimespan="False">
+                  <ImplToPhysEncodings LinearEncodings="VAS_FirePreventing::_Generated::LinearEncoding_UInt32_FP0_02_OP0_372029420" />
+                </NumericProperties>
+              </BaseType>
+            </ArrayDataType>
+            <ArrayDataType MaxLength="2" MinLength="2" HasMaxLength="True" HasFixedBinaryLayout="False" HasMotorolaByteOrder="False" Name="VarArray_2_2_VAS_FirePreventing_parBatteryCellVoltage">
+              <BaseType DataType="VAS_FirePreventing::parBatteryCellVoltage">
+                <NumericProperties MinValue="" MinValueType="Invalid" MaxValue="250" MaxValueType="UInt64" IsBoolean="False" IsTimespan="False">
+                  <ImplToPhysEncodings LinearEncodings="VAS_FirePreventing::_Generated::LinearEncoding_UInt32_FP0_02_OP0_372029420" />
+                </NumericProperties>
+              </BaseType>
+            </ArrayDataType>
+            <ArrayDataType MaxLength="255" MinLength="1" HasMaxLength="True" HasFixedBinaryLayout="False" HasMotorolaByteOrder="False" Name="VarArray_1_255_VAS_FirePreventing_parBatteryModuleTemperature">
+              <BaseType DataType="VAS_FirePreventing::parBatteryModuleTemperature">
+                <NumericProperties MinValue="" MinValueType="Invalid" MaxValue="255" MaxValueType="UInt64" IsBoolean="False" IsTimespan="False">
+                  <ImplToPhysEncodings LinearEncodings="VAS_FirePreventing::_Generated::LinearEncoding_UInt32_FP1_ON40_1897375021" />
+                </NumericProperties>
+              </BaseType>
+            </ArrayDataType>
+            <ArrayDataType MaxLength="2" MinLength="2" HasMaxLength="True" HasFixedBinaryLayout="False" HasMotorolaByteOrder="False" Name="VarArray_2_2_VAS_FirePreventing_parBatteryModuleTemperature">
+              <BaseType DataType="VAS_FirePreventing::parBatteryModuleTemperature">
+                <NumericProperties MinValue="" MinValueType="Invalid" MaxValue="255" MaxValueType="UInt64" IsBoolean="False" IsTimespan="False">
+                  <ImplToPhysEncodings LinearEncodings="VAS_FirePreventing::_Generated::LinearEncoding_UInt32_FP1_ON40_1897375021" />
+                </NumericProperties>
+              </BaseType>
+            </ArrayDataType>
+          </DataTypes>
+          <LinearEncodings>
+            <LinearEncodings Name="LinearEncoding_UInt32_FP0_5_OP0_372029305">
+              <LinearEncoding Factor="0.5" Offset="0" Unit="%" LowerBound="0" LowerBoundType="UInt32" UpperBound="4294967295" UpperBoundType="UInt32" />
+            </LinearEncodings>
+            <LinearEncodings Name="LinearEncoding_UInt32_FP1_OP0_372029305">
+              <LinearEncoding Factor="1" Offset="0" Unit="%" LowerBound="0" LowerBoundType="UInt32" UpperBound="4294967295" UpperBoundType="UInt32" />
+            </LinearEncodings>
+            <LinearEncodings Name="LinearEncoding_UInt32_FP0_1_OP0_372029405">
+              <LinearEncoding Factor="0.1" Offset="0" Unit="A" LowerBound="0" LowerBoundType="UInt32" UpperBound="4294967295" UpperBoundType="UInt32" />
+            </LinearEncodings>
+            <LinearEncodings Name="LinearEncoding_UInt32_FP0_1_OP0_372029420">
+              <LinearEncoding Factor="0.1" Offset="0" Unit="V" LowerBound="0" LowerBoundType="UInt32" UpperBound="4294967295" UpperBoundType="UInt32" />
+            </LinearEncodings>
+            <LinearEncodings Name="LinearEncoding_UInt32_FP0_02_OP0_372029420">
+              <LinearEncoding Factor="0.02" Offset="0" Unit="V" LowerBound="0" LowerBoundType="UInt32" UpperBound="4294967295" UpperBoundType="UInt32" />
+            </LinearEncodings>
+            <LinearEncodings Name="LinearEncoding_UInt32_FP1_ON40_1897375021">
+              <LinearEncoding Factor="1" Offset="-40" Unit="°C" LowerBound="0" LowerBoundType="UInt32" UpperBound="4294967295" UpperBoundType="UInt32" />
+            </LinearEncodings>
+          </LinearEncodings>
+        </Namespace>
+      </Subnamespaces>
+      <DOInterfaces>
+        <DOInterface IsAbstract="False" Name="IFirePreventingServer">
+          <AttributeValues>
+            <AttributeValue Definition="_SystemAttributes::CommunicationPattern" InitialValue="2" InitialValueType="Int32" />
+            <AttributeValue Definition="_SystemAttributes::Binding" InitialValue="CAPL" InitialValueType="String" />
+          </AttributeValues>
+          <MemberData>
+            <DOMemberDataHolder Name="MemberData" />
+          </MemberData>
+          <DataMembers>
+            <DOIFDataMember LocalDirection="Consumed" Name="BatteryData">
+              <DataType DataType="VAS_FirePreventing::BatteryDataFrame" />
+            </DOIFDataMember>
+            <DOIFDataMember LocalDirection="Consumed" Name="VAS_FirePreventingSettings">
+              <DataType DataType="VAS_FirePreventing::VAS_FirePreventingSettingsType" />
+            </DOIFDataMember>
+          </DataMembers>
+        </DOInterface>
+        <DOInterface IsAbstract="False" Name="IFirePreventingClient">
+          <AttributeValues>
+            <AttributeValue Definition="_SystemAttributes::CommunicationPattern" InitialValue="2" InitialValueType="Int32" />
+            <AttributeValue Definition="_SystemAttributes::Binding" InitialValue="CAPL" InitialValueType="String" />
+          </AttributeValues>
+          <MemberData>
+            <DOMemberDataHolder Name="MemberData">
+              <Data>
+                <DOIFMemberData Name="BatteryData">
+                  <InitialValues>
+                    <InitialValue MemberPath=".GroupASelectedElement" Value="1" ValueType="UInt32" />
+                    <InitialValue MemberPath=".GroupA.TimeStamp" Value="4279938661" ValueType="UInt32" />
+                    <InitialValue MemberPath=".GroupBSelectedElement" Value="1" ValueType="UInt32" />
+                    <InitialValue MemberPath=".GroupB.VIN" Value="R05ZJYEC8E02A1350" ValueType="String" />
+                    <InitialValue MemberPath=".SoC" Value="161" ValueType="UInt32" />
+                    <InitialValue MemberPath=".SoH" Value="100" ValueType="UInt32" />
+                    <InitialValue MemberPath=".BatteryPackCurrent" Value="3125" ValueType="UInt32" />
+                    <InitialValue MemberPath=".BatteryPackVoltage" Value="8004" ValueType="UInt32" />
+                    <InitialValue MemberPath=".GroupGSelectedElement" Value="1" ValueType="UInt32" />
+                    <InitialValue MemberPath=".GroupG.AllBatteryCellVoltages.Length" Value="12" ValueType="UInt32" />
+                    <InitialValue MemberPath=".GroupG.AllBatteryCellVoltages[0]" Value="200" ValueType="UInt32" />
+                    <InitialValue MemberPath=".GroupG.AllBatteryCellVoltages[1]" Value="199" ValueType="UInt32" />
+                    <InitialValue MemberPath=".GroupG.AllBatteryCellVoltages[2]" Value="201" ValueType="UInt32" />
+                    <InitialValue MemberPath=".GroupG.AllBatteryCellVoltages[3]" Value="201" ValueType="UInt32" />
+                    <InitialValue MemberPath=".GroupG.AllBatteryCellVoltages[4]" Value="199" ValueType="UInt32" />
+                    <InitialValue MemberPath=".GroupG.AllBatteryCellVoltages[5]" Value="200" ValueType="UInt32" />
+                    <InitialValue MemberPath=".GroupG.AllBatteryCellVoltages[6]" Value="201" ValueType="UInt32" />
+                    <InitialValue MemberPath=".GroupG.AllBatteryCellVoltages[7]" Value="199" ValueType="UInt32" />
+                    <InitialValue MemberPath=".GroupG.AllBatteryCellVoltages[8]" Value="200" ValueType="UInt32" />
+                    <InitialValue MemberPath=".GroupG.AllBatteryCellVoltages[9]" Value="201" ValueType="UInt32" />
+                    <InitialValue MemberPath=".GroupG.AllBatteryCellVoltages[10]" Value="199" ValueType="UInt32" />
+                    <InitialValue MemberPath=".GroupG.AllBatteryCellVoltages[11]" Value="200" ValueType="UInt32" />
+                    <InitialValue MemberPath=".GroupHSelectedElement" Value="1" ValueType="UInt32" />
+                    <InitialValue MemberPath=".GroupH.AllBatteryModuleTemperatures.Length" Value="4" ValueType="UInt32" />
+                    <InitialValue MemberPath=".GroupH.AllBatteryModuleTemperatures[0]" Value="62" ValueType="UInt32" />
+                    <InitialValue MemberPath=".GroupH.AllBatteryModuleTemperatures[1]" Value="59" ValueType="UInt32" />
+                    <InitialValue MemberPath=".GroupH.AllBatteryModuleTemperatures[2]" Value="58" ValueType="UInt32" />
+                    <InitialValue MemberPath=".GroupH.AllBatteryModuleTemperatures[3]" Value="62" ValueType="UInt32" />
+                  </InitialValues>
+                </DOIFMemberData>
+                <DOIFMemberData Name="BatteryDataSendInterval">
+                  <InitialValues>
+                    <InitialValue Value="3000" ValueType="UInt32" />
+                  </InitialValues>
+                </DOIFMemberData>
+              </Data>
+            </DOMemberDataHolder>
+          </MemberData>
+          <DataMembers>
+            <DOIFDataMember LocalDirection="Consumed" Name="VAS_FirePreventingSettings">
+              <DataType DataType="VAS_FirePreventing::VAS_FirePreventingSettingsType" />
+            </DOIFDataMember>
+            <DOIFDataMember Name="BatteryData">
+              <DataType DataType="VAS_FirePreventing::BatteryDataFrame" />
+            </DOIFDataMember>
+            <DOIFDataMember Name="BatteryDataSendInterval">
+              <DataType DataType="_SystemDataTypes::UInt32" />
+            </DOIFDataMember>
+          </DataMembers>
+        </DOInterface>
+        <DOInterface IsAbstract="False" Name="IMonitoredFirePreventingServer">
+          <AttributeValues>
+            <AttributeValue Definition="_SystemAttributes::CommunicationPattern" InitialValue="2" InitialValueType="Int32" />
+            <AttributeValue Definition="_SystemAttributes::Binding" InitialValue="CAPL" InitialValueType="String" />
+            <AttributeValue Definition="_SystemAttributes::MonitoringSupport" InitialValue="1" InitialValueType="UInt32" />
+          </AttributeValues>
+          <BaseInterfaces>
+            <ModifiedDOIF Reverse="False" IsDOReference="False" Interface="VAS_FirePreventing::IFirePreventingServer" />
+          </BaseInterfaces>
+          <MemberData>
+            <DOMemberDataHolder Name="MemberData" />
+          </MemberData>
+        </DOInterface>
+        <DOInterface IsAbstract="False" Name="IMonitoredFirePreventingClient">
+          <AttributeValues>
+            <AttributeValue Definition="_SystemAttributes::CommunicationPattern" InitialValue="2" InitialValueType="Int32" />
+            <AttributeValue Definition="_SystemAttributes::Binding" InitialValue="CAPL" InitialValueType="String" />
+            <AttributeValue Definition="_SystemAttributes::MonitoringSupport" InitialValue="1" InitialValueType="UInt32" />
+          </AttributeValues>
+          <BaseInterfaces>
+            <ModifiedDOIF Reverse="False" IsDOReference="False" Interface="VAS_FirePreventing::IFirePreventingClient" />
+          </BaseInterfaces>
+          <MemberData>
+            <DOMemberDataHolder Name="MemberData" />
+          </MemberData>
+        </DOInterface>
+      </DOInterfaces>
+      <DistributedObjects>
+        <DistributedObject GenerateDotNetAPI="True" Name="FirePreventingClient">
+          <DataType>
+            <ModifiedDOIF Reverse="False" IsDOReference="False" Interface="VAS_FirePreventing::IFirePreventingClient" />
+          </DataType>
+          <MemberData>
+            <DOMemberDataHolder Name="MemberData" />
+          </MemberData>
+        </DistributedObject>
+        <DistributedObject GenerateDotNetAPI="True" Name="FirePreventingServer">
+          <DataType>
+            <ModifiedDOIF Reverse="False" IsDOReference="False" Interface="VAS_FirePreventing::IFirePreventingServer" />
+          </DataType>
+          <MemberData>
+            <DOMemberDataHolder Name="MemberData" />
+          </MemberData>
+        </DistributedObject>
+        <DistributedObject GenerateDotNetAPI="True" Name="FirePreventingClientMonitor">
+          <DataType>
+            <ModifiedDOIF Reverse="True" IsDOReference="False" Interface="VAS_FirePreventing::IFirePreventingClient" />
+          </DataType>
+          <MemberData>
+            <DOMemberDataHolder Name="MemberData" />
+          </MemberData>
+        </DistributedObject>
+        <DistributedObject GenerateDotNetAPI="True" Name="FirePreventingServerMonitor">
+          <DataType>
+            <ModifiedDOIF Reverse="True" IsDOReference="False" Interface="VAS_FirePreventing::IFirePreventingServer" />
+          </DataType>
+          <MemberData>
+            <DOMemberDataHolder Name="MemberData" />
+          </MemberData>
+        </DistributedObject>
+      </DistributedObjects>
+      <DataTypes>
+        <IntegerDataType IsSigned="False" BitCount="8" HasFixedBinaryLayout="True" HasMotorolaByteOrder="False" Name="parBatteryCellVoltage" />
+        <IntegerDataType IsSigned="False" BitCount="8" HasFixedBinaryLayout="True" HasMotorolaByteOrder="False" Name="parBatteryModuleTemperature" />
+        <StructDataType Bitcount="0" RawBitcount="0" HasFixedBinaryLayout="False" HasMotorolaByteOrder="False" Name="VAS_FirePreventingSettingsType">
+          <Fields>
+            <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="IPv6Addr">
+              <DataType DataType="VAS_FirePreventing::_Generated::UTF8String_160" />
+            </DataTypeField>
+            <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="Port">
+              <DataType DataType="_SystemDataTypes::UInt16" />
+            </DataTypeField>
+            <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="ParameterSetID">
+              <DataType DataType="_SystemDataTypes::UInt32" />
+            </DataTypeField>
+          </Fields>
+        </StructDataType>
+        <StructDataType Bitcount="0" RawBitcount="0" HasFixedBinaryLayout="False" HasMotorolaByteOrder="False" Name="BatteryDataFrame">
+          <Fields>
+            <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="GroupASelectedElement">
+              <DataType DataType="_SystemDataTypes::UInt8">
+                <NumericProperties MinValue="1" MinValueType="UInt32" MaxValue="3" MaxValueType="UInt32" IsBoolean="False" IsTimespan="False">
+                  <ImplToPhysEncodings TextualEncodings="VAS_FirePreventing::parGroupASelectedElement" />
+                </NumericProperties>
+              </DataType>
+            </DataTypeField>
+            <DataTypeField RelativeBitOffset="0" IsOptional="False" Discriminator="GroupASelectedElement" IsHidden="False" Name="GroupA">
+              <DataType DataType="VAS_FirePreventing::uGroupA_Type" />
+            </DataTypeField>
+            <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="GroupBSelectedElement">
+              <DataType DataType="_SystemDataTypes::UInt8">
+                <NumericProperties MinValue="1" MinValueType="UInt32" MaxValue="3" MaxValueType="UInt32" IsBoolean="False" IsTimespan="False">
+                  <ImplToPhysEncodings TextualEncodings="VAS_FirePreventing::parGroupBSelectedElement" />
+                </NumericProperties>
+              </DataType>
+            </DataTypeField>
+            <DataTypeField RelativeBitOffset="0" IsOptional="False" Discriminator="GroupBSelectedElement" IsHidden="False" Name="GroupB">
+              <DataType DataType="VAS_FirePreventing::uGroupB_Type" />
+            </DataTypeField>
+            <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="SoC">
+              <DataType DataType="_SystemDataTypes::UInt8">
+                <NumericProperties MinValue="" MinValueType="Invalid" MaxValue="200" MaxValueType="UInt64" IsBoolean="False" IsTimespan="False">
+                  <ImplToPhysEncodings LinearEncodings="VAS_FirePreventing::_Generated::LinearEncoding_UInt32_FP0_5_OP0_372029305" />
+                </NumericProperties>
+              </DataType>
+            </DataTypeField>
+            <DataTypeField RelativeBitOffset="0" IsOptional="True" IsHidden="False" Name="SoH">
+              <DataType DataType="_SystemDataTypes::UInt8">
+                <NumericProperties MinValue="" MinValueType="Invalid" MaxValue="100" MaxValueType="UInt64" IsBoolean="False" IsTimespan="False">
+                  <ImplToPhysEncodings LinearEncodings="VAS_FirePreventing::_Generated::LinearEncoding_UInt32_FP1_OP0_372029305" />
+                </NumericProperties>
+              </DataType>
+            </DataTypeField>
+            <DataTypeField RelativeBitOffset="0" IsOptional="True" IsHidden="False" Name="BatteryPackCurrent">
+              <DataType DataType="_SystemDataTypes::UInt16">
+                <NumericProperties MinValue="" MinValueType="Invalid" MaxValue="5000" MaxValueType="UInt64" IsBoolean="False" IsTimespan="False">
+                  <ImplToPhysEncodings LinearEncodings="VAS_FirePreventing::_Generated::LinearEncoding_UInt32_FP0_1_OP0_372029405" />
+                </NumericProperties>
+              </DataType>
+            </DataTypeField>
+            <DataTypeField RelativeBitOffset="0" IsOptional="True" IsHidden="False" Name="BatteryPackVoltage">
+              <DataType DataType="_SystemDataTypes::UInt16">
+                <NumericProperties MinValue="" MinValueType="Invalid" MaxValue="10000" MaxValueType="UInt64" IsBoolean="False" IsTimespan="False">
+                  <ImplToPhysEncodings LinearEncodings="VAS_FirePreventing::_Generated::LinearEncoding_UInt32_FP0_1_OP0_372029420" />
+                </NumericProperties>
+              </DataType>
+            </DataTypeField>
+            <DataTypeField RelativeBitOffset="0" IsOptional="True" IsHidden="False" Name="GroupGSelectedElement">
+              <DataType DataType="_SystemDataTypes::UInt8">
+                <NumericProperties MinValue="1" MinValueType="UInt32" MaxValue="2" MaxValueType="UInt32" IsBoolean="False" IsTimespan="False">
+                  <ImplToPhysEncodings TextualEncodings="VAS_FirePreventing::parGroupGSelectedElement" />
+                </NumericProperties>
+              </DataType>
+            </DataTypeField>
+            <DataTypeField RelativeBitOffset="0" IsOptional="True" Discriminator="GroupGSelectedElement" IsHidden="False" Name="GroupG">
+              <DataType DataType="VAS_FirePreventing::uGroupG_Type" />
+            </DataTypeField>
+            <DataTypeField RelativeBitOffset="0" IsOptional="True" IsHidden="False" Name="GroupHSelectedElement">
+              <DataType DataType="_SystemDataTypes::UInt8">
+                <NumericProperties MinValue="1" MinValueType="UInt32" MaxValue="2" MaxValueType="UInt32" IsBoolean="False" IsTimespan="False">
+                  <ImplToPhysEncodings TextualEncodings="VAS_FirePreventing::parGroupHSelectedElement" />
+                </NumericProperties>
+              </DataType>
+            </DataTypeField>
+            <DataTypeField RelativeBitOffset="0" IsOptional="True" Discriminator="GroupHSelectedElement" IsHidden="False" Name="GroupH">
+              <DataType DataType="VAS_FirePreventing::uGroupH_Type" />
+            </DataTypeField>
+          </Fields>
+        </StructDataType>
+        <UnionDataType Bitcount="0" RawBitcount="0" HasFixedBinaryLayout="False" HasMotorolaByteOrder="False" Name="uGroupA_Type">
+          <Fields>
+            <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="TimeStamp">
+              <DataType DataType="_SystemDataTypes::UInt32" />
+              <DiscriminatorValueRanges>
+                <DiscriminatorValueRange LowerBound="1" UpperBound="1" />
+              </DiscriminatorValueRanges>
+            </DataTypeField>
+            <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="SessionDuration">
+              <DataType DataType="_SystemDataTypes::UInt32" />
+              <DiscriminatorValueRanges>
+                <DiscriminatorValueRange LowerBound="2" UpperBound="2" />
+              </DiscriminatorValueRanges>
+            </DataTypeField>
+            <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="Counter">
+              <DataType DataType="_SystemDataTypes::UInt16" />
+              <DiscriminatorValueRanges>
+                <DiscriminatorValueRange LowerBound="3" UpperBound="3" />
+              </DiscriminatorValueRanges>
+            </DataTypeField>
+          </Fields>
+        </UnionDataType>
+        <UnionDataType Bitcount="0" RawBitcount="0" HasFixedBinaryLayout="False" HasMotorolaByteOrder="False" Name="uGroupB_Type">
+          <Fields>
+            <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="VIN">
+              <DataType DataType="VAS_FirePreventing::_Generated::UTF8String_68" />
+              <DiscriminatorValueRanges>
+                <DiscriminatorValueRange LowerBound="1" UpperBound="1" />
+              </DiscriminatorValueRanges>
+            </DataTypeField>
+            <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="BatteryID">
+              <DataType DataType="VAS_FirePreventing::_Generated::UTF8String_1020" />
+              <DiscriminatorValueRanges>
+                <DiscriminatorValueRange LowerBound="2" UpperBound="2" />
+              </DiscriminatorValueRanges>
+            </DataTypeField>
+            <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="EncryptedVIN">
+              <DataType DataType="VAS_FirePreventing::_Generated::VarArray_1_255_UInt8" />
+              <DiscriminatorValueRanges>
+                <DiscriminatorValueRange LowerBound="3" UpperBound="3" />
+              </DiscriminatorValueRanges>
+            </DataTypeField>
+          </Fields>
+        </UnionDataType>
+        <UnionDataType Bitcount="0" RawBitcount="0" HasFixedBinaryLayout="False" HasMotorolaByteOrder="False" Name="uGroupG_Type">
+          <Fields>
+            <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="AllBatteryCellVoltages">
+              <DataType DataType="VAS_FirePreventing::_Generated::VarArray_1_65535_VAS_FirePreventing_parBatteryCellVoltage" />
+              <DiscriminatorValueRanges>
+                <DiscriminatorValueRange LowerBound="1" UpperBound="1" />
+              </DiscriminatorValueRanges>
+            </DataTypeField>
+            <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="BatteryCellVoltageMaxMin">
+              <DataType DataType="VAS_FirePreventing::_Generated::VarArray_2_2_VAS_FirePreventing_parBatteryCellVoltage" />
+              <DiscriminatorValueRanges>
+                <DiscriminatorValueRange LowerBound="2" UpperBound="2" />
+              </DiscriminatorValueRanges>
+            </DataTypeField>
+          </Fields>
+        </UnionDataType>
+        <UnionDataType Bitcount="0" RawBitcount="0" HasFixedBinaryLayout="False" HasMotorolaByteOrder="False" Name="uGroupH_Type">
+          <Fields>
+            <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="AllBatteryModuleTemperatures">
+              <DataType DataType="VAS_FirePreventing::_Generated::VarArray_1_255_VAS_FirePreventing_parBatteryModuleTemperature" />
+              <DiscriminatorValueRanges>
+                <DiscriminatorValueRange LowerBound="1" UpperBound="1" />
+              </DiscriminatorValueRanges>
+            </DataTypeField>
+            <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="BatteryModuleTemperatureMaxMin">
+              <DataType DataType="VAS_FirePreventing::_Generated::VarArray_2_2_VAS_FirePreventing_parBatteryModuleTemperature" />
+              <DiscriminatorValueRanges>
+                <DiscriminatorValueRange LowerBound="2" UpperBound="2" />
+              </DiscriminatorValueRanges>
+            </DataTypeField>
+          </Fields>
+        </UnionDataType>
+      </DataTypes>
+      <TextualEncodings>
+        <TextualEncodings DefinesMinMax="False" UnderlyingDataTypeHint="_SystemDataTypes::UInt8" IsEnum="True" Name="parGroupASelectedElement">
+          <TextualEncoding TextualValue="TransmitTimeStamp" DisplayValue="TransmitTimeStamp" LowerBound="1" LowerBoundType="UInt32" UpperBound="1" UpperBoundType="UInt32" />
+          <TextualEncoding TextualValue="TransmitSessionDuration" DisplayValue="TransmitSessionDuration" LowerBound="2" LowerBoundType="UInt32" UpperBound="2" UpperBoundType="UInt32" />
+          <TextualEncoding TextualValue="TransmitCounter" DisplayValue="TransmitCounter" LowerBound="3" LowerBoundType="UInt32" UpperBound="3" UpperBoundType="UInt32" />
+        </TextualEncodings>
+        <TextualEncodings DefinesMinMax="False" UnderlyingDataTypeHint="_SystemDataTypes::UInt8" IsEnum="True" Name="parGroupBSelectedElement">
+          <TextualEncoding TextualValue="TransmitVIN" DisplayValue="TransmitVIN" LowerBound="1" LowerBoundType="UInt32" UpperBound="1" UpperBoundType="UInt32" />
+          <TextualEncoding TextualValue="TransmitBatteryID" DisplayValue="TransmitBatteryID" LowerBound="2" LowerBoundType="UInt32" UpperBound="2" UpperBoundType="UInt32" />
+          <TextualEncoding TextualValue="TransmitEncryptedVIN" DisplayValue="TransmitEncryptedVIN" LowerBound="3" LowerBoundType="UInt32" UpperBound="3" UpperBoundType="UInt32" />
+        </TextualEncodings>
+        <TextualEncodings DefinesMinMax="False" UnderlyingDataTypeHint="_SystemDataTypes::UInt8" IsEnum="True" Name="parGroupGSelectedElement">
+          <TextualEncoding TextualValue="TransmitAllBatteryCellVoltages" DisplayValue="TransmitAllBatteryCellVoltages" LowerBound="1" LowerBoundType="UInt32" UpperBound="1" UpperBoundType="UInt32" />
+          <TextualEncoding TextualValue="TransmitBatteryCellVoltageMaxMin" DisplayValue="TransmitBatteryCellVoltageMaxMin" LowerBound="2" LowerBoundType="UInt32" UpperBound="2" UpperBoundType="UInt32" />
+        </TextualEncodings>
+        <TextualEncodings DefinesMinMax="False" UnderlyingDataTypeHint="_SystemDataTypes::UInt8" IsEnum="True" Name="parGroupHSelectedElement">
+          <TextualEncoding TextualValue="TransmitAllBatteryModuleTemperatures" DisplayValue="TransmitAllBatteryModuleTemperatures" LowerBound="1" LowerBoundType="UInt32" UpperBound="1" UpperBoundType="UInt32" />
+          <TextualEncoding TextualValue="TransmitBatteryModuleTemperatureMaxMin" DisplayValue="TransmitBatteryModuleTemperatureMaxMin" LowerBound="2" LowerBoundType="UInt32" UpperBound="2" UpperBoundType="UInt32" />
+        </TextualEncodings>
+      </TextualEncodings>
+      <NamedConstantValues>
+        <NamedConstantValue Name="ConstBatteryData">
+          <DataType DataType="VAS_FirePreventing::BatteryDataFrame" />
+          <ConstMemberValues>
+            <InitialValue MemberPath=".GroupASelectedElement" Value="1" ValueType="UInt32" />
+            <InitialValue MemberPath=".GroupA.TimeStamp" Value="4279938661" ValueType="UInt32" />
+            <InitialValue MemberPath=".GroupBSelectedElement" Value="1" ValueType="UInt32" />
+            <InitialValue MemberPath=".GroupB.VIN" Value="R05ZJYEC8E02A1350" ValueType="String" />
+            <InitialValue MemberPath=".SoC" Value="161" ValueType="UInt32" />
+            <InitialValue MemberPath=".SoH" Value="100" ValueType="UInt32" />
+            <InitialValue MemberPath=".BatteryPackCurrent" Value="3125" ValueType="UInt32" />
+            <InitialValue MemberPath=".BatteryPackVoltage" Value="8004" ValueType="UInt32" />
+            <InitialValue MemberPath=".GroupGSelectedElement" Value="1" ValueType="UInt32" />
+            <InitialValue MemberPath=".GroupG.AllBatteryCellVoltages.Length" Value="12" ValueType="UInt32" />
+            <InitialValue MemberPath=".GroupG.AllBatteryCellVoltages[0]" Value="200" ValueType="UInt32" />
+            <InitialValue MemberPath=".GroupG.AllBatteryCellVoltages[1]" Value="199" ValueType="UInt32" />
+            <InitialValue MemberPath=".GroupG.AllBatteryCellVoltages[2]" Value="201" ValueType="UInt32" />
+            <InitialValue MemberPath=".GroupG.AllBatteryCellVoltages[3]" Value="201" ValueType="UInt32" />
+            <InitialValue MemberPath=".GroupG.AllBatteryCellVoltages[4]" Value="199" ValueType="UInt32" />
+            <InitialValue MemberPath=".GroupG.AllBatteryCellVoltages[5]" Value="200" ValueType="UInt32" />
+            <InitialValue MemberPath=".GroupG.AllBatteryCellVoltages[6]" Value="201" ValueType="UInt32" />
+            <InitialValue MemberPath=".GroupG.AllBatteryCellVoltages[7]" Value="199" ValueType="UInt32" />
+            <InitialValue MemberPath=".GroupG.AllBatteryCellVoltages[8]" Value="200" ValueType="UInt32" />
+            <InitialValue MemberPath=".GroupG.AllBatteryCellVoltages[9]" Value="201" ValueType="UInt32" />
+            <InitialValue MemberPath=".GroupG.AllBatteryCellVoltages[10]" Value="199" ValueType="UInt32" />
+            <InitialValue MemberPath=".GroupG.AllBatteryCellVoltages[11]" Value="200" ValueType="UInt32" />
+            <InitialValue MemberPath=".GroupHSelectedElement" Value="1" ValueType="UInt32" />
+            <InitialValue MemberPath=".GroupH.AllBatteryModuleTemperatures.Length" Value="4" ValueType="UInt32" />
+            <InitialValue MemberPath=".GroupH.AllBatteryModuleTemperatures[0]" Value="62" ValueType="UInt32" />
+            <InitialValue MemberPath=".GroupH.AllBatteryModuleTemperatures[1]" Value="59" ValueType="UInt32" />
+            <InitialValue MemberPath=".GroupH.AllBatteryModuleTemperatures[2]" Value="58" ValueType="UInt32" />
+            <InitialValue MemberPath=".GroupH.AllBatteryModuleTemperatures[3]" Value="62" ValueType="UInt32" />
+          </ConstMemberValues>
+        </NamedConstantValue>
+      </NamedConstantValues>
+    </Namespace>
+  </Namespaces>
+  <ModuleDependencies>
+    <ModuleDependency Module="_Internal" />
+  </ModuleDependencies>
+</FunctionBusLibrary>

@@ -1,0 +1,39 @@
+/*@!Encoding:1252*/
+
+variables
+{
+    int i = 0;
+		msTimer echoTimer;
+}
+
+on start
+{
+	  setTimer(echoTimer, 200);
+}
+        
+
+on key 't'
+{
+     // Result can be observed in the Trace Window
+     IoTEnabler::DeviceControl.measure_temperature.CallAsync();
+}
+
+on key 'l'
+{
+     // Result can be observed in the Trace Window
+     IoTEnabler::DeviceControl.list_hardware.CallAsync();
+}
+
+
+
+on timer echoTimer
+{
+    // Call method as soon as device is online
+    if ($IoTEnabler::DeviceControl.device_state == IoTEnablerBinding::device_state_enum::ONLINE)
+    {
+        IoTEnabler::VectorDemoControl.echo_number.CallAsync((int) (Sin(i*0.3) * 50));
+        i++;
+    }
+	
+	  setTimer(echoTimer, 200);
+}

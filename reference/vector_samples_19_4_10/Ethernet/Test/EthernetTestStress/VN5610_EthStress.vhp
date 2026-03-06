@@ -1,0 +1,195 @@
+{
+  "Content": {
+    "Devices": [
+      {
+        "AppChannels": {
+          "ChannelConfigs": [
+            {
+              "ApplicationChannelIndex": 0,
+              "ApplicationName": "CANoe",
+              "BusType": 0,
+              "DeviceChannelIndex": 0
+            },
+            {
+              "ApplicationChannelIndex": 1,
+              "ApplicationName": "CANoe",
+              "BusType": 0,
+              "DeviceChannelIndex": 1
+            }
+          ]
+        },
+        "Characteristics": {
+          "IdentificationMethod": 0,
+          "PartNumber": 7000,
+          "SerialNumber": 100
+        },
+        "Id": "6fb3a3fd-c952-4487-a7db-9c884deff7aa",
+        "Info": {
+          "ConnectionType": 0,
+          "CustomChannels": [],
+          "DriverVersion": "21.10",
+          "IsArchived": false,
+          "Modules": {},
+          "Piggies": {}
+        }
+      },
+      {
+        "AppChannels": {
+          "ChannelConfigs": []
+        },
+        "Characteristics": {
+          "IdentificationMethod": 0,
+          "PartNumber": 7157,
+          "SerialNumber": 1954
+        },
+        "GpbConfig": {
+          "Network": {
+            "FilterRules": [],
+            "Networks": [
+              {
+                "Name": "Ethernet",
+                "Segments": [
+                  {
+                    "BypassRelayStatePowered": 0,
+                    "BypassRelayStateUnpowered": 0,
+                    "ForwardGptp": false,
+                    "FrameForwardType": 0,
+                    "LinkTransparency": {
+                      "IsEnabled": false
+                    },
+                    "Name": "Switch1",
+                    "Ports": [
+                      {
+                        "AutoNegotiationFlags": 0,
+                        "ConfiguredName": "Port1",
+                        "ConnectorType": 1,
+                        "EgressUntag": false,
+                        "Id": "4281ac6f-6e88-4f29-b993-5f45cad88624",
+                        "IngressAddTagMode": 0,
+                        "Is88Q2112LegacyEnabled": false,
+                        "MasterSlave": 2,
+                        "PhySpeed": 2,
+                        "PortNumber": 1,
+                        "VlanIds": []
+                      }
+                    ],
+                    "Type": 0,
+                    "VirtualPorts": []
+                  }
+                ],
+                "Vlans": []
+              },
+              {
+                "Name": "Ethernet2",
+                "Segments": [
+                  {
+                    "BypassRelayStatePowered": 0,
+                    "BypassRelayStateUnpowered": 0,
+                    "ForwardGptp": false,
+                    "FrameForwardType": 0,
+                    "LinkTransparency": {
+                      "IsEnabled": false
+                    },
+                    "Name": "Switch1",
+                    "Ports": [
+                      {
+                        "AutoNegotiationFlags": 0,
+                        "ConfiguredName": "Port2",
+                        "ConnectorType": 1,
+                        "EgressUntag": false,
+                        "Id": "b7075cfc-8e0f-4b6f-8e0a-b16d20569851",
+                        "IngressAddTagMode": 0,
+                        "Is88Q2112LegacyEnabled": false,
+                        "MasterSlave": 1,
+                        "PhySpeed": 2,
+                        "PortNumber": 2,
+                        "VlanIds": []
+                      }
+                    ],
+                    "Type": 0,
+                    "VirtualPorts": []
+                  }
+                ],
+                "Vlans": []
+              }
+            ],
+            "StopUplinkPortNumbers": []
+          },
+          "Properties": {
+            "AdapterUplinks": [],
+            "AdvancedMirrorUplinks": [],
+            "EthernetUplinks": [
+              {
+                "ExtendedServicePorts": [],
+                "IPAddress": "192.168.0.1",
+                "PortNumber": 3,
+                "LookupMethod": 0,
+                "ServicePorts": [
+                  {
+                    "Protocol": 0,
+                    "Port": 42600,
+                    "PortId": 0
+                  },
+                  {
+                    "Protocol": 1,
+                    "Port": 4200,
+                    "PortId": 1
+                  },
+                  {
+                    "Protocol": 1,
+                    "Port": 4201,
+                    "PortId": 2
+                  }
+                ],
+                "SubnetPrefix": 24,
+                "Id": 1,
+                "IsEnabled": true,
+                "Name": ""
+              }
+            ],
+            "RawMirrorUplinks": [],
+            "UsbUplinks": [
+              {
+                "Id": 0,
+                "IsEnabled": true,
+                "Name": ""
+              }
+            ]
+          },
+          "TimeSync": {
+            "ProvideHwSync": false,
+            "ProvidePTP": false,
+            "ProvideSwSync": false,
+            "ReceiveFrom": 0
+          }
+        },
+        "Id": "e8330af3-5fe5-475d-9479-6e5485e2d6af",
+        "Info": {
+          "ConnectionType": 1,
+          "CustomChannels": [],
+          "DriverVersion": "22.10",
+          "IsArchived": false,
+          "Modules": {},
+          "Piggies": {}
+        }
+      }
+    ],
+    "HostConfig": {
+      "ApplicationNames": [
+        "CANalyzer",
+        "CANape",
+        "CANoe"
+      ],
+      "LegacyTimeSyncEnabled": true,
+      "ToolAccessConfigs": []
+    },
+    "MetaData": {
+      "Network": {
+        "VlanColors": {}
+      }
+    }
+  },
+  "Header": {
+    "ConfigVersion": "1.0"
+  }
+}

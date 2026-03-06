@@ -1,0 +1,1615 @@
+/*@!Encoding:1252*/
+includes
+{
+  #include "EV_MsgCallbacks.cin"
+  #include "EV_ExtendedMessageHandling.cin"
+  #include "CharIn_HW_InterfaceVTS_EV.cin"
+  #include "MessageIDs.cin"
+  #include "EV_Sendfunctions.cin"
+  #include "Sendfunctions_Common.cin"
+  #include "Util.cin"
+}
+
+variables
+{
+  dword writeTab;  // Sink identifier
+  
+  int   iTemp1, iTemp2;
+  long  lTemp;
+  float fTemp;
+  
+  char strBuffer1[100];
+  
+  char gPanelName[32] = "Vehicle";
+  char gCheckboxActivateDeactivatePnC[15] = "CheckBoxEV1PnC";
+  char gCanvasInstallCert[20] = "ButtonEVCertInstall";
+  char gCanvasUpdateCert[20] = "ButtonEVCertUpdate";
+  char gCheckBoxDIN[22] = "RadioButtonEV1Schema4";
+  char gCheckBoxISO[22] = "RadioButtonEV1Schema3";
+  char gCanvasRenegotiate[19] = "Renegotiate Button";
+  char gCanvasReset[19] = "Reset Button";
+  char gCheckBoxACBasic[28] = "RadioButtonEV1SchemaACBasic";
+  
+  char gCheckBoxACPhaseL1[20] = "CheckBoxACPhaseL1";
+  char gCheckBoxACPhaseL2[20] = "CheckBoxACPhaseL2";
+  char gCheckBoxACPhaseL3[20] = "CheckBoxACPhaseL3";
+  char gCheckBoxACPhaseN[20] = "CheckBoxACPhaseN";
+  
+  int certificateServiceRequested = 0;    // 1 = installation, 2 = update
+  int serviceDetailRequests = 0;
+  
+  char gProtocolPanelName[9] = "Protocol";
+  char DCStatusCode[32];
+
+  int isConnected = 0;
+  int isPowerOn = 0;
+  int chargeLoopEntered = 0;
+  int isDCMode = 0;
+  int isPassiveMode = 0;
+  int reNegotiationRequested = 0;
+  int reNegotiationRunning = 0;
+  int isReset = 0;
+  
+  msTimer tMessageTx;
+  msTimer tVerification;
+  msTimer tProcessingTime;
+  msTimer tStartSimulationDelay; //Start Simulation Delay after Plug-In
+  msTimer tResume;
+  msTimer tSECCDiscoveryMaxDelay;  
+  
+  const int cSECCDiscoveryMaxDelay = 5000;
+    
+  int processing = 0;
+  int processingFinished = 0;
+  
+  // CableCheck loop
+  int cableCheckStep = 0;
+  
+  // PreCharge loop
+  int preChargeStep = 0; // to control connector close
+  
+  // VT access  
+  int MSGreaction = 0;
+  int nextStateChange_IECrelevant = 0;
+  
+  msTimer tOpenContactors;
+  const cOpenContactorsDelay = 500;
+  const cAdditionalMeasurementStopDelay = 100;
+  
+  msTimer tActionsAfterContactorOpen;
+  const dword cActionsAfterContactorOpenDelay = 100;
+  
+  const dword cDeferStopDelay = 7500; // Maximum time to reach connector unlatched acc. Table AA.18 in IEC 61851-23:2023
+  int deferStop_called = 0;
+  
+  msTimer tCurrentReduction;
+  const cCurrentReductionDelay = 100;
+  
+  msTimer tDisableACPowerSupply;
+  const cDisableACPowerSupplyDelay = 100; // must be less than 250ms
+  
+  msTimer tBasicChargingUpdate;
+  const cBasicChargingUpdateDelay = 200;
+  
+  msTimer tPhaseSelection;
+  const cPhaseSelectionDelay = 3000;
+  
+  int Protocol;
+  
+  msTimer tResetPhaseLoss_Step1;
+  msTimer tResetPhaseLoss_Step2;
+  
+  int StopChargingRunning = 0;
+  
+  int gEVBasicChargingEnabled = 0;
+  
+  const double cHVControlMinumumCurrent = 0.5;
+}
+
+on sysvar EV_Sim::Control::SysEV_Connected
+{
+  if (@this == 1)
+  {
+    // Set TLS state - request TLS only for ISO15118 when the "TLS" option is checked
+    if ((@sysVar::Common::SysTLSEnabled) && @sysvar::EV_Sim::Control::SysEV_Schema != sysvar::EV_Sim::Control::SysEV_Schema::DIN70121)
+    {
+      SCC_SetTLSEnabled(1);
+    }
+    else
+    {
+      SCC_SetTLSEnabled(0);
+    }
+    
+    setTimer(tStartSimulationDelay, 3000); // Instead of SCC_StartSimulation() immediately; can be increased if Duty Cycle is not detected within this timer
+    
+    @sysvar::EV_Sim::SysEV_State = 0;    
+    @sysvar::EV_Sim::SysEV_Error = 0;
+    
+    SCC_SLAC_SetLinkStatus(0);
+    @sysvar::EV_Sim::SysEV_LinkStatus = 0;      
+    
+    if (@sysvar::EV_Sim::Control::SysEV_CertificateInstallation)
+    {
+      certificateServiceRequested = 1;
+      @sysvar::EV_Sim::Control::SysEV_CertificateUpdate = 0;
+    }  
+    else if (@sysvar::EV_Sim::Control::SysEV_CertificateUpdate)
+    {
+      certificateServiceRequested = 2;
+      @sysvar::EV_Sim::Control::SysEV_CertificateInstallation = 0;      
+    }
+    
+    CP_EV_SetCPStateB();
+    CP_EV_set_Open_Circuit(1);
+    PP_EV_set_open_circuit(1);
+    
+    if(@sysvar::Common::SysUserChargingMode == sysvar::Common::SysUserChargingMode::AC &&
+       @sysvar::EV_Sim::Control::SysUserChargingCommunication == sysvar::EV_Sim::Control::SysUserChargingCommunication::LLC)
+      gEVBasicChargingEnabled = 1;
+  }
+  else
+  {    
+    SCC_StopSimulation();
+  
+    @sysvar::EV_Sim::Control::SysEV_CertificateInstallation = 0;
+    @sysvar::EV_Sim::Control::SysEV_CertificateUpdate = 0;    
+    @sysvar::EV_Sim::SysEV_LinkStatus = 2;
+    @sysvar::EV_Sim::SysEV_TargetCurrent = 1;
+    @sysvar::EV_Sim::SysEV_TargetCurrent_AC = 1;
+    certificateServiceRequested = 0;
+    
+    if(@sysvar::VT_Control::IEC61851_State_EV == sysvar::VT_Control::IEC61851_State_EV::State_C ||
+     @sysvar::VT_Control::IEC61851_State_EV == sysvar::VT_Control::IEC61851_State_EV::State_D)
+    {
+      StopCharging();
+    }
+    
+    if(StopChargingRunning == 0)
+    {
+      CP_EV_set_Open_Circuit(0); // open CP
+    
+      if(HV_ContactorsState() == 1)
+        setTimer(tOpenContactors, 1); // immediatly try to open contactors
+    }
+    
+    gEVBasicChargingEnabled = 0;
+  }
+    
+  EnableSchemaControls(!@this);
+  
+  @sysvar::EV_Sim::Control::SysEV_WaitResume = 0;
+    
+  ReadEVStatus();
+  UpdateSimState();
+  
+  // VT access
+  @sysvar::EV_Sim::VT_Access::SysEV_S2close = 0;
+}
+
+on sysvar EV_Sim::Control::SysEV_Reset
+{
+  if (@this == 0)
+    return;
+  
+  isReset = 1;
+  
+  StopCharging();
+}
+
+on sysvar EV_Sim::Control::SysEV_Stop
+{
+  if (@this == 1)
+  {
+    if((@sysvar::Common::SysUserChargingMode == sysvar::Common::SysUserChargingMode::AC && @sysvar::EV_Sim::Control::SysUserChargingCommunication == sysvar::EV_Sim::Control::SysUserChargingCommunication::HLC) ||
+       (@sysvar::Common::SysUserChargingMode == sysvar::Common::SysUserChargingMode::DC))
+    {
+      // Shutdown and send "Terminate"
+      if(chargeLoopEntered)
+        SCC_Shutdown(1); // only has an effect when in charge loop
+      else
+      {
+        StopCharging();
+        SCC_StopSimulation();
+      }
+    }
+    else if(@sysvar::Common::SysUserChargingMode == sysvar::Common::SysUserChargingMode::AC && @sysvar::EV_Sim::Control::SysUserChargingCommunication == sysvar::EV_Sim::Control::SysUserChargingCommunication::LLC)
+    {
+      StopBasicCharging();
+    }
+  }
+}
+
+void StopBasicCharging()
+{
+  gEVBasicChargingEnabled = 0;
+  StopCharging();
+}
+
+on sysvar EV_Sim::Control::SysEV_Renegotiate
+{
+  if (@this == 1)
+  {    
+    SCC_StartRenegotiation();
+    reNegotiationRequested = 1;
+  }
+}
+
+on sysvar EV_Sim::Control::SysEV_CertificateInstallation
+{
+  if (@this == 1)
+  {
+    certificateServiceRequested = 1;
+    @sysvar::EV_Sim::Control::SysEV_CertificateUpdate = 0;
+  }
+}
+
+on sysvar EV_Sim::Control::SysEV_CertificateUpdate 
+{
+  if (@this == 1)
+  {
+    certificateServiceRequested = 2;
+    @sysvar::EV_Sim::Control::SysEV_CertificateInstallation = 0;
+  }
+}
+
+on sysvar VT_Control::IEC61851_State_EV
+{
+  if(@sysvar::VT_Control::IEC61851_State_EV == sysvar::VT_Control::IEC61851_State_EV::State_C && @sysvar::EV_Sim::SysEV_State == 6 /*ChargeParameterDiscovery*/)
+   ResumeSimulation();
+}
+
+on start
+{
+  writeTab = WriteCreate("SCC EV");    // same name as tab created by nodelayer
+
+  EnableSchemaControls(!@sysvar::EV_Sim::Control::SysEV_Connected);
+  SetCertificateControlsVisible(@sysvar::EV_Sim::Control::SysEV_PnCEnabled);
+  
+  @sysvar::EV_Sim::SysEV_Error = 0;
+  
+  InitSimulation();
+  PrintEthernetSettings("EV");  
+  AdaptPanelToSchema();
+
+  iTemp1 = sysGetVariableInt(sysvar::EV_Sim::Control::SysEV_Connected);
+  
+  if (iTemp1 == 1)
+  {
+    SCC_StartSimulation(); 
+  }
+  else
+    SCC_StopSimulation();
+  
+  ST_Init();
+  CP_EV_set_Open_Circuit(0);
+  
+  HV_set_AC_relays(0);
+  HV_source_set_output(0);
+  PP_EV_set_open_circuit(0);
+  
+  OnStartPhaseControl();
+  
+  gEVBasicChargingEnabled = 0;
+  
+  SetControlElementVisibilityChargingMode();
+}
+
+void InitSimulation()
+{ 
+  UpdateSelectedSchema();    
+  ApplyMessageDelay();
+  UpdateSimState();
+  isReset = 0;
+}
+
+on preStart
+{
+  if (@sysVar::Common::SysVerboseWrite)
+    SCC_SetVerbosity(5);
+  else
+    SCC_SetVerbosity(2);
+
+  @sysvar::EV_Sim::Control::SysEV_WaitResume = 0;
+  
+  UpdateSimState();
+  deferStop_called = 0;
+}
+
+on sysvar_update EV_Sim::Control::SysEV_ClearBattery
+{
+  SCC_SetBatteryState(0.0);
+  @sysvar::EV_Sim::SysEV_BatteryState = 0.0;
+}
+
+on sysVar Common::SysUserChargingMode
+{
+  if(@sysvar::Common::SysUserChargingMode == sysvar::Common::SysUserChargingMode::AC && gEVBasicChargingEnabled == 1)
+    StopBasicCharging();
+  
+  SetChargingModeAndPaymentOption();
+}
+
+on sysvar EV_Sim::Control::SysEV_PnCEnabled
+{
+  SetChargingModeAndPaymentOption();  
+  SetCertificateControlsVisible(@this);
+}
+
+double Get_BatteryVoltage()
+{
+  return @sysvar::EV_Sim::SysEV_TargetVoltage; 
+}
+
+double Get_TargetCurrent()
+{
+  return @sysvar::EV_Sim::SysEV_TargetCurrent;
+}
+
+double Get_TargetCurrentAC()
+{
+  return @sysvar::EV_Sim::SysEV_TargetCurrent_AC;
+}
+
+void SCC_MessageRxInd(byte SessionID[], dword MessageID)
+{
+  stack double actualVoltage;
+  stack double allowedDeviationFromTargetVoltage;
+  stack double batteryVoltage;
+
+  char responseCodeString[50];
+  SCC_GetResponseCodeString(responseCodeString);
+  sysSetVariableString(sysvar::Common::LastReceivedResponseCode, responseCodeString);
+  
+  if( MessageID == PreChargeRes )
+  {
+    batteryVoltage = Get_BatteryVoltage();
+
+    // wait for voltage adjustment from EVSE
+    if( 2 == preChargeStep ) 
+    {
+      actualVoltage = HV_measure_DC_U_VeriVolt();
+      allowedDeviationFromTargetVoltage = 20;
+      if( (batteryVoltage - allowedDeviationFromTargetVoltage < actualVoltage) 
+          && (actualVoltage < batteryVoltage + allowedDeviationFromTargetVoltage))
+      {
+        // close contactors
+        HV_source_set_output(1);
+        preChargeStep = 3; // do not repeat
+      }      
+    }
+
+  }
+  
+  if( MessageID == ChargeParameterDiscoveryRes ) 
+  {
+    cableCheckStep = 0;
+  
+    if((@Common::SysUserChargingMode == @Common::SysUserChargingMode::DC) && (0 == SCC_GetProcessing()))
+    {
+        //[V2G2-912] change and wait for cp state c or d before sending cable check request
+        //simulation will be resumed after changing to c or d
+        SuspendSimulation();
+        CP_EV_SetCPStateC(); 
+      
+        if(isSimulated())
+          setTimer(tResume, 100);
+    }
+  }
+  
+  SetLastMessageID(MessageID);
+}
+
+
+void SCC_MessageTxInd( byte SessionID[], dword MessageId, long Error)
+{
+  stack double actualVoltage;
+  stack double allowedDeviationFromTargetVoltage;
+  stack double batteryVoltage;
+  
+  /*
+  WriteLineEx(writeTab, 0, "EV: Message Tx: Session Id = %0X%0X%0X%0X%0X%0X%0X%0X, result = %i",
+    SessionID[0], SessionID[1], SessionID[2], SessionID[3], SessionID[4], SessionID[5], SessionID[6], SessionID[7],
+    error
+  );
+  */
+  
+  // VT Access
+  // IEC61851 Synchronization (only relevant for AC charging, because for DC we react to the response)
+  //-------------------------------------------------------------------------------------------------------
+  if (MSGreaction) 
+  {
+    // AC charging and no ReNegotiation
+    if (@sysvar::Common::SysUserChargingMode == @Common::SysUserChargingMode::AC & @sysvar::EV_Sim::Control::SysEV_Renegotiate == 0)
+    {
+      // entering charge loop --> close S2
+      if (!isPowerOn)
+        @sysvar::EV_Sim::VT_Access::SysEV_S2close = 1;
+    }
+  }
+  MSGreaction = 0;
+  
+  //----------------------------------------------------------------------------------------------
+  
+  // set current before PSU is potentially enabled or disabled below
+  if(MessageId == ChargingStatusReq)
+  {
+    stack double targetCurrent, maxHVcurrent = 0;
+
+    targetCurrent = Get_TargetCurrentAC();
+    maxHVcurrent = HV_source_get_max_I_AC();
+    
+    targetCurrent = _min(targetCurrent, maxHVcurrent);
+    
+    HV_source_set_I_L1_rms(targetCurrent);
+    HV_source_set_I_L2_rms(targetCurrent);
+    HV_source_set_I_L3_rms(targetCurrent);
+  }
+
+  if(@Common::SysUserChargingMode == @Common::SysUserChargingMode::AC)
+  {
+    if(MessageId == PowerDeliveryReq)
+    {
+      // note: SCC_GetChargeProgress will only return 0 or 1 if a PowerDeliveryReq has been sent
+      if(SCC_GetChargeProgress() == 1 /*Start*/)
+      {
+        CP_EV_SetCPStateC();
+      }
+      else if(SCC_GetChargeProgress() == 0 /*Stop*/)
+      {
+        StopCharging();
+      }
+    }
+  }
+  else //dc charging
+  {
+    if(MessageId == CableCheckReq) 
+    {
+      if( 0 == cableCheckStep)
+      {
+        if( !CTS_EV_get_connector_lock_state() ) 
+        {  
+          // Terminate execution if plug not locked
+          @EV_Sim::Control::SysEV_Stop = 1;
+          WriteLineEx(writeTab, 3, "EV: Plug not locked!");
+          return;
+        }
+        
+        CP_EV_SetCPStateC(); //[V2G2-912] change and wait for cp state c or d before sending cable check request
+      }
+
+      cableCheckStep = 1;
+      preChargeStep = 0;
+    }
+  }
+
+  if(MessageId == PreChargeReq)
+  {
+    batteryVoltage = Get_BatteryVoltage();
+    
+    // enable PSU and set battery voltage
+    if( 0 == preChargeStep) 
+    {
+      HV_PSU_DC_enable(1);
+      HV_source_set_I_DC(1.0);
+      HV_source_set_U_DC(batteryVoltage);
+      preChargeStep = 1;
+    }
+    
+    // wait for battery voltage reached
+    if( 1 == preChargeStep ) 
+    {
+      actualVoltage = HV_measure_DC_U();
+      allowedDeviationFromTargetVoltage = 1;      
+      if( (batteryVoltage - allowedDeviationFromTargetVoltage < actualVoltage) 
+          && (actualVoltage < batteryVoltage + allowedDeviationFromTargetVoltage))
+      {
+        preChargeStep = 2;
+      }
+    }
+  }
+  else if(MessageId == CurrentDemandReq)
+  {
+    HV_source_set_I_DC(Get_TargetCurrent());
+    HV_source_set_U_DC(Get_BatteryVoltage());
+  }
+  
+  if(MessageId == WeldingDetectionReq)
+    HV_source_perform_welding();
+  
+  if(MessageId == PowerDeliveryReq)
+    @sysvar::Common::ChargeProgress = SCC_GetChargeProgress();
+  
+  if(MessageId == PowerDeliveryReq && SCC_GetChargeProgress() == 0 /*Stop*/ )
+  {
+    if( @sysvar::Common::SysUserChargingMode && abs(HV_measure_DC_I()) < 5 )
+    {
+      EnableIsolationMonitoring();
+    }
+  }
+
+  if( MessageId == WeldingDetectionReq || MessageId == SessionStopReq )
+  {
+    StopCharging();
+    
+    EnableIsolationMonitoring();
+  }
+  
+  if(MessageId == CmSLACParamReq && isSimulated())
+    SCC_SLAC_SetLinkStatus(0);  //avoid link status problem within restart
+  
+  @sysvar::EV_Sim::SysEV_MessageTx = 1;
+  setTimer(tMessageTx, 150);
+  
+  if (Error > 0)
+    WriteLineEx(writeTab, 2, "EV: Message sending of type %0x failed: %i", MessageId, Error); 
+}
+
+on timer tStartSimulationDelay
+{
+  if(gEVBasicChargingEnabled == 0)
+    SCC_StartSimulation();
+}
+
+on timer tMessageTx
+{  
+  @sysvar::EV_Sim::SysEV_MessageTx = 0;
+}
+
+on timer tVerification
+{
+  setControlVisibility(gPanelName, "Verification", 0);
+}
+
+on timer tSECCDiscoveryMaxDelay
+{ 
+  SCC_SLAC_SetLinkStatus(1);
+  @sysvar::EV_Sim::SysEV_LinkStatus = SCC_SLAC_GetLinkStatus(); 
+}
+
+on timer tProcessingTime
+{ 
+  processingFinished = 1;
+}
+
+on timer tResume
+{
+  SCC_SimulationResume();
+}
+
+SCC_ErrorStateInd( byte sessionId[], long errorState)
+{  
+  @sysvar::EV_Sim::SysEV_Error = errorState;
+}
+
+on timer tOpenContactors
+{
+  if(abs(HV_measure_DC_I()) > 5)
+  {
+    HV_source_set_U_DC(Get_BatteryVoltage());
+    HV_reduce_Current();
+    setTimer(tOpenContactors, cOpenContactorsDelay);
+  }
+  else if(abs(HV_measure_AC_I_L1_rms()) > 1 || abs(HV_measure_AC_I_L2_rms()) > 1 || abs(HV_measure_AC_I_L3_rms()) > 1)
+  {
+    HV_reduce_Current();
+    setTimer(tOpenContactors, cOpenContactorsDelay);
+  }
+  else
+  {
+    HV_OpenContactors();
+    setTimer(tActionsAfterContactorOpen, cActionsAfterContactorOpenDelay);
+  }
+}
+
+void HV_reduce_Current()
+{
+  HV_source_set_I_DC(cHVControlMinumumCurrent);
+  
+  HV_source_set_I_L1_rms(0);
+  HV_source_set_I_L2_rms(0);
+  HV_source_set_I_L3_rms(0);
+}
+
+void HV_OpenContactors()
+{    
+  HV_source_set_output(0); // contactors
+  HV_set_AC_relays(0);
+}
+
+void HV_ActionsAfterContactorOpen()
+{
+  HV_source_set_I_DC(0);
+  HV_source_set_U_DC(0);
+  
+  CP_EV_set_Open_Circuit(0);
+    
+  EnableIsolationMonitoring();
+    
+  PP_EV_set_open_circuit(0);
+  
+  ST_Reset();
+}
+
+on timer tActionsAfterContactorOpen
+{
+  HV_ActionsAfterContactorOpen();
+  
+  if(isReset)
+    OnReset();
+  
+  StopChargingRunning = 0;
+  
+  if(deferStop_called == 1 && CTS_EV_get_connector_lock_state() == 0)
+  {
+    CompleteStop();
+    deferStop_called = 0;
+  }
+}
+
+SCC_RestartInd( byte sessionID[] )
+{
+  WriteLineEx(writeTab, 1, "EV: Restarting protocol, retries left: %d", SCC_GetRetriesLeft());
+}
+
+SCC_LinkStatusChangeInd( dword oldStatus, dword newStatus)
+{
+  // Note: this indication is only received when polling is enabled
+  WriteLineEx(writeTab, 1, "EV: Link status changed from %i to %i", oldStatus, newStatus);
+  @sysvar::EV_Sim::SysEV_LinkStatus = newStatus;
+}
+
+// generic host indication for all supported PLCs
+void SCC_Generic_VS_HostMessage_Ind( byte sourceMacAddess[], dword hostMessage )
+{
+  // Device is ready to communicate on power line but may not be a member of an AVLN yet. 
+  const byte PLC_READY_TO_JOIN_AVLN = 0x01;
+  // Device is ready to communicate on power line but may not be a member of an AVLN yet. 
+  const byte PLC_AVLN_JOINED = 0x02;
+  // Device is disconnected from  an AVLN and there are no peers available. 
+  const byte PLC_AVLN_DISCONNECTED = 0x03;  
+  
+  if (hostMessage == PLC_AVLN_JOINED)
+  {
+    @sysvar::EV_Sim::SysEV_LinkStatus = 1;
+    SCC_SLAC_SetLinkStatus(1);
+    cancelTimer(tSECCDiscoveryMaxDelay);
+  }
+  else
+  {
+    @sysvar::EV_Sim::SysEV_LinkStatus = 0;
+    SCC_SLAC_SetLinkStatus(0);
+  } 
+  
+  WriteLineEx(writeTab, 1, "EV: Link status changed to %i", @sysvar::EV_Sim::SysEV_LinkStatus);
+}
+
+
+SCC_SLACFinishedInd( dword result)
+{
+  float resultBuffer[16];
+  long  resultCount = 0;
+  int i;
+  
+  if (result)
+    WriteLineEx(writeTab, 1, "EV: SLAC finished, result : OK");
+  else
+    WriteLineEx(writeTab, 1, "EV: SLAC finished, result : FAILED");
+  
+  if (result) // SLAC finished successfully
+  {
+    // Get and print attenuation values
+    SCC_SLAC_GetAttenResults(resultBuffer, resultCount);
+    
+    if (resultCount > 0)
+      WriteLineEx(writeTab, 1, "EV: %i EVSEs found, results sorted by attenuation are:", resultCount);
+    else
+      WriteLineEx(writeTab, 2, "EV: No EVSEs found");
+    
+    for (i = 0; i< resultCount; ++i)
+    {
+      WriteLineEx(writeTab, 1, "EVSE %i: %f db", i+1, resultBuffer[i]);
+    }
+
+    if (isSimulated())
+    {
+      SCC_SLAC_SetLinkStatus(1);
+      @sysvar::EV_Sim::SysEV_LinkStatus = SCC_SLAC_GetLinkStatus(); 
+      WriteLineEx(writeTab, 1, "EV: Set simulated link status = 1");
+    }
+    else
+    {
+      setTimer(tSECCDiscoveryMaxDelay, cSECCDiscoveryMaxDelay);
+      WriteLineEx(writeTab, 1, "EV: Waiting for link status from chip = 1");
+    }
+  }
+}
+
+SCC_StateTransitionInd( byte sessionId[], dword oldState, dword newState)
+{
+  SCC_GetStateName(newState, strBuffer1, 100);
+  
+  WriteLineEx(writeTab, 1, "EV: Entering state \"%s\"", strBuffer1);
+  
+  // Map state machine's state to protocol bar
+  // Note: For the definition of the state IDs, see appendix section of the manual
+  
+  // Special handling for charge loop init
+  if ( (newState == 8 && oldState < 8)
+    || (newState == 10 && oldState == 101)
+    || (newState == 100 && oldState == 7))
+  {
+    @sysvar::EV_Sim::SysEV_State = 7; 
+    return;
+  }
+  
+  switch (newState)
+  {
+    case 0:
+      // Nothing
+      @sysvar::EV_Sim::SysEV_State = 0; break;
+    case 1:
+      // Session Setup
+      @sysvar::EV_Sim::SysEV_State = 2; break;
+    case 2:
+    case 3:
+      // Service Discovery
+      @sysvar::EV_Sim::SysEV_State = 3; break;
+    case 4:
+      // Service Payment Sel
+      @sysvar::EV_Sim::SysEV_State = 4; break;
+    case 5:
+    case 6:
+    case 16:
+    case 17:
+      // Payment / Authorization
+      @sysvar::EV_Sim::SysEV_State = 5; break;
+    case 7:
+      // Charge Par Discovery / Renegotiation
+      @sysvar::EV_Sim::SysEV_State = 6; break;
+    case 11:
+    case 12:
+    case 101:
+      // Charge Loop Init
+      @sysvar::EV_Sim::SysEV_State = 7; break;
+    case 9:
+    case 10:
+    case 13:
+    case 102:
+    case 103:
+      // Charge Loop
+      chargeLoopEntered = 1;
+      @sysvar::EV_Sim::SysEV_State = 8; break;
+    case 14:
+    case 15:
+    case 104:
+      // Stop Charging
+      @sysvar::EV_Sim::SysEV_State = 9; break;   
+  }
+}
+
+SCC_TCPConnectInd( dword socket, long isSender)
+{
+  if (isSender)
+    WriteLineEx(writeTab, 1, "EV: TCP connection established on socket %i", socket);
+  else    // cannot happen here
+    WriteLineEx(writeTab, 1, "EV: TCP client connected to socket %i", socket);
+}
+
+SCC_TCPShutdownInd( dword socket, long isSender)
+{
+  if (isSender)
+    WriteLineEx(writeTab, 1, "EV: TCP connection on socket %i closed", socket);
+  else
+    WriteLineEx(writeTab, 1, "EV: TCP connection on socket %i was closed by remote station", socket);
+  
+  StopCharging();
+}
+
+SCC_InvalidMessageInd( long MessageType, long ErrorCode)
+{  
+  if (ErrorCode == 0)    
+    WriteLineEx(writeTab, 1, "EV: Invalid message received - wrong version number or format!");
+  else if (ErrorCode == 1)
+    WriteLineEx(writeTab, 1, "EV: Invalid message received - unknown payload type!");
+  else if (ErrorCode == 2)
+    WriteLineEx(writeTab, 1, "EV: Invalid message received - invalid payload length!");
+  else if (ErrorCode == 3)
+    WriteLineEx(writeTab, 1, "EV: Invalid message received - decoding error");
+}  
+
+SCC_SignaturePreSendInd( byte sessionID[], dword messageId, byte signature[], dword& signatureLength)
+{ 
+  WriteLineEx(writeTab, 1, "EV: Signature of length %i created for Message ID = %d", signatureLength, messageId);
+}
+
+SCC_SignatureVerificationInd( dword messageID, dword result)
+{
+  setControlVisibility(gPanelName, "Verification", 1);
+  setTimer(tVerification, 1000);
+}
+
+SCC_CertChainVerificationInd( byte SessionId[], char chainName[], dword Result )
+{  
+  int i;
+  char certName[255];
+  dword errorCode;
+  
+  if (Result > 0)
+  {
+    WriteLineEx(writeTab, 1 /* info */, "%s verified, result: OK", chainName);
+  }
+  else
+  { 
+    WriteLineEx(writeTab, 2 /* warning */, "%s verified, result: FAILED", chainName);
+    
+    for (i = 0; i < SCC_GetCertChainVerificationErrorCount(); ++i)
+    {
+      SCC_GetCertChainVerificationError(i, certName, errorCode);      
+      WriteLineEx(writeTab, 2 /* warning */, "  Error %i was found in certificate %s", errorCode, certName );
+    }
+  }
+}
+
+SCC_ConnectionTimeoutInd( byte sessionId[] )
+{  
+  WriteLineEx(writeTab, 2, "EV connection timeout");
+}
+
+SCC_V2G_EVCC_Msg_TimeoutInd( byte RunId[], dword MessageID)
+{
+  writeLineEx(writeTab, 0, "V2G_EVCC_Msg_TimeoutInd for message %i indication", MessageID);
+}
+
+SCC_V2G_EVCC_PreCharge_TimeoutInd( byte RunId[] )
+{
+  writeLineEx(writeTab, 0, "V2G_EVCC_PreCharge_Timeout indication");
+}
+
+SCC_V2G_EVCC_CableCheck_TimeoutInd( byte RunID[] )
+{
+  writeLineEx(writeTab, 0, "V2G_EVCC_CableCheck_Timeout indication");
+}
+
+SCC_ProtocolFinishedInd( byte sessionId[] )
+{
+  WriteLineEx(writeTab, 1, "EV: Protocol finished!");
+}
+
+on sysVar Test::SysTestApplyControlMode
+{
+  if (@this == 1)
+  {          
+    if (@sysVar::Test::SysTestControlledEntity != 1)
+    {      
+      isPassiveMode = 1;
+      SCC_StartPassive();
+    }
+    else
+    {
+      SCC_StartSimulation();
+    }
+    
+    // Request TLS only when the "TLS" option is checked
+    if (@sysVar::Common::SysTLSEnabled)
+      SCC_SetTLSEnabled(1);
+    else
+      SCC_SetTLSEnabled(0);
+        
+    if (isReset)
+    {
+      SCC_SLAC_SetLinkStatus(1);    // pretend link was not lost on reset
+      @sysvar::EV_Sim::SysEV_LinkStatus = 1;
+    }
+    else
+    {
+      SCC_SLAC_SetLinkStatus(0);
+      @sysvar::EV_Sim::SysEV_LinkStatus = 0;
+    }
+  }
+  else
+  {
+    // PEV needs to close the connection in order to start again
+    SCC_StopSimulation();
+  }
+}
+
+on sysVar SLAC_Test::SysStartSLACTest
+{  
+  if (@this == 1)
+  {    
+    SCC_SimulationReset();
+    isPassiveMode = 1;
+    SCC_StartPassive(0 /* start with manual SLAC */);    
+  }
+}
+
+void ReadEVStatus()
+{
+  @sysvar::EV_Sim::SysEV_BatteryState = SCC_GetBatterySoC();
+
+  // Print DC status code 
+  strncpy(DCStatusCode, "                                 ", 32);
+  SCC_GetDCStatusCode(DCStatusCode);
+  SysSetVariableString(sysvar::EV_Sim::SysEV_DCStatusCode, DCStatusCode);
+}
+
+void UpdateSimState()
+{
+  lTemp = SCC_GetSimulationState();
+    
+  if (lTemp == 2)
+    @sysvar::EV_Sim::SysEV_SimState = 0;
+  else if (lTemp == 3)
+    @sysvar::EV_Sim::SysEV_SimState = 1;
+  else
+    @sysvar::EV_Sim::SysEV_SimState = 2;    
+}
+
+
+void SetPlugLockedStatus(int status)
+{
+  enableControl(gPanelName, "PowerPlugSwitch", status);
+  setControlVisibility(gPanelName, "LockSymbol", !status);
+}
+
+export void SetPlugPresentState(int plugPresent)
+{
+  // Start Simulation
+  if(@sysvar::VT_Control::IgnorePP == 0)
+  {
+    @sysvar::EV_Sim::Control::SysEV_Connected = plugPresent;
+  }
+}
+
+
+export void ResumeSimulation()
+{
+  if ( (@EV_Sim::Control::SysEV_Connected == 1) && (SCC_GetSimulationState() == 3 /*waiting*/) )
+  {
+    SCC_SimulationResume();
+  }
+}
+
+export void SuspendSimulation()
+{
+  SCC_SimulationWait();
+}
+
+void ApplyChargeLoopInterval()
+{
+  dTemp1 = @sysvar::EV_Sim::Control::SysEV_ChargeLoopInterval;
+  lTemp2 = @sysvar::EV_Sim::Control::SysEV_ChargeLoopIntervalJitter;
+  
+  if (lTemp2 == 0)
+    SCC_SetChargeLoopInterval(dTemp1);  // jitter off
+  else
+    SCC_SetChargeLoopInterval(dTemp1, 5.0);  // jitter on with 5%
+}
+
+SetChargingModeAndPaymentOption()
+{
+  if (@sysVar::Common::SysUserChargingMode == @Common::SysUserChargingMode::AC)    // AC mode
+  { 
+    if(@sysvar::EV_Sim::Control::SysEV_Schema == sysvar::EV_Sim::Control::SysEV_Schema::ISO15118) 
+    {
+      SCC_SetEnergyTransferType("AC_single_phase_core", 0 /* not forced */);
+      
+      isDCMode = 0;
+    }
+    else
+    {
+      @sysVar::Common::SysUserChargingMode = @Common::SysUserChargingMode::DC;   
+    }
+  }
+  else  // DC mode
+  {
+    // DC_core and DC_extended can be switched using the panel    
+    if (@sysvar::EV_Sim::Control::SysEV_DCChargingMode == 1)
+      SCC_SetEnergyTransferType("DC_core", 0 /* not forced */);
+    else
+      SCC_SetEnergyTransferType("DC_extended", 0 /* not forced */);
+
+    isDCMode = 1;
+  }
+  
+  if(@sysvar::EV_Sim::Control::SysEV_Schema == sysvar::EV_Sim::Control::SysEV_Schema::ISO15118)
+  {
+    // Preferred Payment Option (hint: set second parameter to 1 for forced selection)
+    if(@sysvar::EV_Sim::Control::SysEV_PnCEnabled == 1)
+      SCC_SetPaymentOption("Contract", 0);
+    else
+      SCC_SetPaymentOption("ExternalPayment", 0);
+  }
+}
+
+HandleMessageGeneric( int responseCode)
+{    
+  long maxDelay;
+  
+  CheckFaultNotification();
+  
+  SCC_GetEVSENotification(strBuffer1, maxDelay);
+  
+  if (strncmp(strBuffer1, "ReNegotiation", strlen("ReNegotiation")) == 0)
+    reNegotiationRequested = 1;
+ 
+  
+  if (maxDelay > 0)
+    WriteLineEx(writeTab, 0, "  NotificationMaxDelay: %i", maxDelay);
+}
+
+EnableSchemaControls( int enabled)
+{
+  enableControl(gPanelName, "RadioButtonEV1Schema1", enabled);
+  enableControl(gPanelName, "RadioButtonEV1Schema2", enabled);
+  enableControl(gPanelName, "RadioButtonEV1Schema3", enabled);
+  enableControl(gPanelName, "RadioButtonEV1Schema4", enabled);
+  enableControl(gPanelName, "CheckBoxEV1PNC", enabled);
+  enableControl(gPanelName, "ButtonEVCertInstall", enabled);
+  enableControl(gPanelName, "ButtonEVCertUpdate", enabled);
+}
+
+SetCertificateControlsVisible( int visible)
+{
+  // show certificate buttons only for PnC
+  setControlVisibility(gPanelName, "ButtonEVCertInstall", visible);
+  setControlVisibility(gPanelName, "ButtonEVCertUpdate", visible);
+}
+
+on preStop
+{  
+  isReset = 1;
+  
+  SCC_StopSimulation();
+  
+  SetCertificateControlsVisible(1);
+
+  deferStop_called = 1;
+  deferStop(cDeferStopDelay);
+  
+  StopCharging();
+}
+
+on stopMeasurement
+{
+  if(abs(HV_measure_DC_I()>5))
+  {
+    write("Contactors not opened, current > 5A");
+  }
+}
+
+on sysvar EV_Sim::Control::SysEV_Schema
+{
+  UpdateSelectedSchema();
+  
+  // set valid options for the selected schema
+  if (@this == sysvar::EV_Sim::Control::SysEV_Schema::DIN70121)
+  {
+    @sysVar::Common::SysUserChargingMode = @Common::SysUserChargingMode::DC;
+    @sysvar::EV_Sim::Control::SysEV_PnCEnabled = 0;
+  }
+  
+  AdaptPanelToSchema();
+}
+
+UpdateSelectedSchema()
+{
+  switch (@EV_Sim::Control::SysEV_Schema)
+  {
+    case sysvar::EV_Sim::Control::SysEV_Schema::ISO15118:
+      SCC_SetSchema("urn:iso:15118:2:2013:MsgDef", 2, 0);
+      break;
+    case sysvar::EV_Sim::Control::SysEV_Schema::DIN70121:
+      SCC_SetSchema("urn:din:70121:2012:MsgDef", 2, 0);
+      break;
+  }
+}
+
+on sysvar EV_Sim::Control::SysEV_WaitResume
+{
+  if(@this == 0)
+  {
+    SCC_SimulationResume();
+    
+    if(@sysvar::Common::SysUserChargingMode == sysvar::Common::SysUserChargingMode::AC &&
+       @sysvar::EV_Sim::Control::SysUserChargingCommunication == sysvar::EV_Sim::Control::SysUserChargingCommunication::LLC)
+    {
+      gEVBasicChargingEnabled = 1;
+      ControlBasicCharging();
+    }
+  }
+  else
+  {
+    SCC_SimulationWait();
+    
+    if(@sysvar::Common::SysUserChargingMode == sysvar::Common::SysUserChargingMode::AC &&
+       @sysvar::EV_Sim::Control::SysUserChargingCommunication == sysvar::EV_Sim::Control::SysUserChargingCommunication::LLC)
+    {
+      gEVBasicChargingEnabled = 0;
+      HV_reduce_Current();
+      setTimer(tCurrentReduction, cCurrentReductionDelay);
+    }
+  }
+  
+  UpdateSimState();
+}
+
+on timer tCurrentReduction
+{
+  if(HV_measure_AC_I_L1_rms() > 1 || HV_measure_AC_I_L2_rms() > 1 || HV_measure_AC_I_L3_rms() > 1)
+  {
+    HV_reduce_Current();
+    setTimer(tCurrentReduction, cCurrentReductionDelay);
+  }
+  else
+  {
+    CP_EV_SetCPStateB();
+    HV_PSU_AC_enable(0);
+  }
+}
+
+on sysvar EV_Sim::SysEV_MaxPower
+{
+  SCC_SetMaxPower(@this * 1000);    // variable in [kW]
+}
+
+on sysvar EV_Sim::SysEV_MinCurrent
+{
+  SCC_SetMinCurrent(@this);
+}
+
+on sysvar EV_Sim::SysEV_MaxCurrent
+{
+  SCC_SetMaxCurrent(@this);
+}
+
+on sysvar EV_Sim::SysEV_MaxVoltage
+{
+  SCC_SetMaxVoltage(@this);
+}
+
+on sysvar EV_Sim::SysEV_TargetVoltage
+{
+  SCC_SetTargetVoltage(@this);
+}
+
+on sysvar EV_Sim::SysEV_TargetCurrent
+{
+  SCC_SetTargetCurrent(@this);
+}
+
+on sysVar Common::SysMessageDelay
+{
+  ApplyMessageDelay();
+}
+
+on sysvar Common::SysMessageDelayJitter
+{
+  ApplyMessageDelay();
+}
+
+on sysvar EV_Sim::Control::SysEV_ChargeLoopInterval
+{
+  ApplyChargeLoopInterval();
+}
+
+on sysvar EV_Sim::Control::SysEV_ChargeLoopIntervalJitter
+{
+  ApplyChargeLoopInterval();
+}
+
+on sysvar Common::SysVerboseWrite
+{  
+  if (@this)
+    SCC_SetVerbosity(5);
+  else
+    SCC_SetVerbosity(2);
+}
+
+void AdaptPanelToSchema()
+{
+  if(@sysvar::EV_Sim::Control::SysEV_Schema == sysvar::EV_Sim::Control::SysEV_Schema::ISO15118)
+  {
+    SetControlColors(gProtocolPanelName, "lblCertificate", MakeRGB(255,255,255), MakeRGB(0,0,0));
+  }
+  else if (@EV_Sim::Control::SysEV_Schema == sysvar::EV_Sim::Control::SysEV_Schema::DIN70121)
+  {
+    SetControlColors(gProtocolPanelName, "lblCertificate", MakeRGB(255,255,255), MakeRGB(150,150,150));
+  }
+}
+
+void StopCharging()
+{
+  if(StopChargingRunning == 1)
+    return;
+  
+  StopChargingRunning = 1;
+  
+  if(@sysvar::Common::SysUserChargingMode == sysvar::Common::SysUserChargingMode::AC || @EV_Sim::Control::SysUserChargingCommunication == @EV_Sim::Control::SysUserChargingCommunication::LLC)
+    StopACCharging();
+  else
+    StopDCCharging();
+}
+
+void StopDCCharging()
+{
+  @sysvar::EV_Sim::SysEV_TargetCurrent = 1;
+  
+  CP_EV_SetCPStateB();
+  
+  HV_source_set_U_DC(Get_BatteryVoltage());
+  HV_reduce_Current();
+  
+  setTimer(tOpenContactors, cOpenContactorsDelay);
+}
+
+void StopACCharging()
+{
+  @sysvar::EV_Sim::SysEV_TargetCurrent_AC = 1;
+  
+  HV_reduce_Current();
+  
+  setTimer(tDisableACPowerSupply, cDisableACPowerSupplyDelay);
+}
+
+on timer tDisableACPowerSupply
+{
+  HV_PSU_AC_enable(0);
+  CP_EV_SetCPStateB();
+  setTimer(tOpenContactors, cOpenContactorsDelay);
+}
+
+void OnIMDStatusTimeout()
+{
+  // inform about IMD wasn't not muted
+  WriteLineEx(writeTab, 3, "EV: Isolation monitor hasn't been muted!");
+  // simulation is kept on hold
+}
+
+void OnInsolationMonitorStatus(long status)
+{
+  if( 0 == status ) 
+  {
+    ResumeSimulation();
+  }
+}
+
+void OnDisconnect()
+{
+  @sysvar::EV_Sim::Control::SysEV_CertificateInstallation = 0;
+  @sysvar::EV_Sim::Control::SysEV_CertificateUpdate = 0;    
+  @sysvar::EV_Sim::SysEV_LinkStatus = 2;
+  @sysvar::EV_Sim::SysEV_TargetCurrent = 1;
+  @sysvar::EV_Sim::SysEV_TargetCurrent_AC = 1;
+  certificateServiceRequested = 0;
+  
+  EnableSchemaControls(1);
+    
+  @sysvar::EV_Sim::Control::SysEV_WaitResume = 0;
+      
+  ReadEVStatus();
+  UpdateSimState();
+  
+  if(@sysvar::VT_Control::IEC61851_State_EV == sysvar::VT_Control::IEC61851_State_EV::State_C ||
+     @sysvar::VT_Control::IEC61851_State_EV == sysvar::VT_Control::IEC61851_State_EV::State_D)
+  {
+    StopCharging();
+  }
+  
+  // VT access
+  @sysvar::EV_Sim::VT_Access::SysEV_S2close = 0;
+  
+  if(StopChargingRunning == 0)
+  {
+    if(CP_EV_get_Open_Circuit() == 1)
+      CP_EV_set_Open_Circuit(0); // open CP
+  
+    if(HV_ContactorsState() == 1)
+      setTimer(tOpenContactors, 1); // immediatly try to open contactors
+  }
+  
+  SCC_StopSimulation();
+}
+
+void OnLockedStatusChanged(int lockState)
+{
+  SetPlugLockedStatus(!lockState);
+  if((deferStop_called)&&(!lockState))
+  {
+    CompleteStop();
+    deferStop_called = 0;
+    SetPlugLockedStatus(0); // Enable button again
+  }
+}
+
+void OnReset()
+{
+  SCC_SimulationReset();
+  InitSimulation();
+ 
+  @sysvar::EV_Sim::Control::SysEV_WaitResume = 0;
+  @sysvar::EV_Sim::Control::SysEV_Connected = 0;
+  @sysvar::EV_Sim::Control::SysEV_CertificateInstallation = 0;
+  @sysvar::EV_Sim::Control::SysEV_CertificateUpdate = 0;
+
+  isReset = 0;
+}
+
+double GetInletPPResistance_Rv1()
+{
+  // VT7970 = 330
+  return 330;
+}
+
+on sysvar EV_Sim::Control::SysUserChargingCommunication
+{
+  SetControlElementVisibilityChargingMode();
+  
+  if(gEVBasicChargingEnabled == 1 &&
+     @sysvar::Common::SysUserChargingMode == sysvar::Common::SysUserChargingMode::AC &&
+     @sysvar::EV_Sim::Control::SysUserChargingCommunication != sysvar::EV_Sim::Control::SysUserChargingCommunication::LLC)
+    StopBasicCharging();
+}
+
+void SetControlElementVisibilityChargingMode()
+{
+  if(@sysvar::Common::SysUserChargingMode == sysvar::Common::SysUserChargingMode::AC &&
+     @sysvar::EV_Sim::Control::SysUserChargingCommunication == sysvar::EV_Sim::Control::SysUserChargingCommunication::LLC)
+  {
+    setControlVisibility(gPanelName, gCheckboxActivateDeactivatePnC, 0);
+    setControlVisibility(gPanelName, gCanvasInstallCert, 0);
+    setControlVisibility(gPanelName, gCanvasUpdateCert, 0);
+    setControlVisibility(gPanelName, gCheckBoxDIN, 0);
+    setControlVisibility(gPanelName, gCheckBoxISO, 0);
+    setControlVisibility(gPanelName, gCanvasRenegotiate, 0);
+    setControlVisibility(gPanelName, gCanvasReset, 0);
+  }
+  else if(@sysvar::Common::SysUserChargingMode == sysvar::Common::SysUserChargingMode::DC)
+  {
+    setControlVisibility(gPanelName, gCheckboxActivateDeactivatePnC, 1);
+    setControlVisibility(gPanelName, gCanvasInstallCert, 1);
+    setControlVisibility(gPanelName, gCanvasUpdateCert, 1);
+    setControlVisibility(gPanelName, gCheckBoxDIN, 1);
+    setControlVisibility(gPanelName, gCheckBoxISO, 1);
+    setControlVisibility(gPanelName, gCanvasRenegotiate, 1);
+    setControlVisibility(gPanelName, gCanvasReset, 1);
+    setControlVisibility(gPanelName, gCheckBoxACBasic, 0);
+  }
+  else
+  {
+    setControlVisibility(gPanelName, gCheckboxActivateDeactivatePnC, 1);
+    setControlVisibility(gPanelName, gCanvasInstallCert, 1);
+    setControlVisibility(gPanelName, gCanvasUpdateCert, 1);
+    setControlVisibility(gPanelName, gCheckBoxDIN, 1);
+    setControlVisibility(gPanelName, gCheckBoxISO, 1);
+    setControlVisibility(gPanelName, gCanvasRenegotiate, 1);
+    setControlVisibility(gPanelName, gCanvasReset, 1);
+    setControlVisibility(gPanelName, gCheckBoxACBasic, 1);
+  }
+}
+
+void OnStartPhaseControl()
+{
+  @sysvar::EV_Sim::Control::SysEV_AC_Phases = sysvar::EV_Sim::Control::SysEV_AC_Phases::ThreePhase;
+  @sysvar::EV_Sim::Control::SysEV_AC_Phases_L1_Enabled = 1;
+  @sysvar::EV_Sim::Control::SysEV_AC_Phases_L2_Enabled = 1;
+  @sysvar::EV_Sim::Control::SysEV_AC_Phases_L3_Enabled = 1;
+  @sysvar::EV_Sim::Control::SysEV_AC_Phases_N_Enabled = 1;
+  
+  enableControl(gPanelName, gCheckBoxACPhaseL1, 0);
+  enableControl(gPanelName, gCheckBoxACPhaseL2, 0);
+  enableControl(gPanelName, gCheckBoxACPhaseL3, 0);
+  enableControl(gPanelName, gCheckBoxACPhaseN, 0);
+  
+  setTimer(tResetPhaseLoss_Step1, 10);
+}
+
+on timer tResetPhaseLoss_Step1
+{
+  HV_source_set_L2_PhaseLoss(1);
+  HV_source_set_L3_PhaseLoss(1);
+  
+  setTimer(tResetPhaseLoss_Step2, 10);
+}
+
+on timer tResetPhaseLoss_Step2
+{
+  HV_source_set_L2_PhaseLoss(0);
+  HV_source_set_L3_PhaseLoss(0);
+}
+
+long GetACPhaseL1State()
+{
+  return @sysvar::EV_Sim::Control::SysEV_AC_Phases_L1_Enabled;
+}
+
+long GetACPhaseL2State()
+{
+  return @sysvar::EV_Sim::Control::SysEV_AC_Phases_L2_Enabled;
+}
+
+long GetACPhaseL3State()
+{
+  return @sysvar::EV_Sim::Control::SysEV_AC_Phases_L3_Enabled;
+}
+
+on sysvar sysvar::EV_Sim::Control::SysEV_AC_Phases
+{
+  if(@this == sysvar::EV_Sim::Control::SysEV_AC_Phases::CustomPhase)
+  {
+    enableControl(gPanelName, gCheckBoxACPhaseL2, 1);
+    enableControl(gPanelName, gCheckBoxACPhaseL3, 1);
+  }
+  else if(@this == sysvar::EV_Sim::Control::SysEV_AC_Phases::SinglePhase &&
+          (@sysvar::EV_Sim::Control::SysEV_AC_Phases_L2_Enabled == 0 && @sysvar::EV_Sim::Control::SysEV_AC_Phases_L3_Enabled == 0))
+  {
+    enableControl(gPanelName, gCheckBoxACPhaseL2, 0);
+    enableControl(gPanelName, gCheckBoxACPhaseL3, 0);
+  }
+  else if(@this == sysvar::EV_Sim::Control::SysEV_AC_Phases::SinglePhase &&
+         (@sysvar::EV_Sim::Control::SysEV_AC_Phases_L2_Enabled == 1 || @sysvar::EV_Sim::Control::SysEV_AC_Phases_L3_Enabled == 1))
+  {
+    @sysvar::EV_Sim::Control::SysEV_WaitResume = 1;
+    enableControl(gPanelName, gCheckBoxACPhaseL2, 1);
+    enableControl(gPanelName, gCheckBoxACPhaseL3, 1);
+    @sysvar::EV_Sim::Control::SysEV_AC_Phases_L2_Enabled == 0;
+    @sysvar::EV_Sim::Control::SysEV_AC_Phases_L3_Enabled == 0;
+    enableControl(gPanelName, gCheckBoxACPhaseL2, 0);
+    enableControl(gPanelName, gCheckBoxACPhaseL3, 0);
+  }
+  else if(@this == sysvar::EV_Sim::Control::SysEV_AC_Phases::ThreePhase &&
+          (@sysvar::EV_Sim::Control::SysEV_AC_Phases_L2_Enabled == 1 && @sysvar::EV_Sim::Control::SysEV_AC_Phases_L3_Enabled == 1))
+  {
+    enableControl(gPanelName, gCheckBoxACPhaseL2, 0);
+    enableControl(gPanelName, gCheckBoxACPhaseL3, 0);
+  }
+  else if(@this == sysvar::EV_Sim::Control::SysEV_AC_Phases::ThreePhase &&
+          (@sysvar::EV_Sim::Control::SysEV_AC_Phases_L2_Enabled == 0 || @sysvar::EV_Sim::Control::SysEV_AC_Phases_L3_Enabled == 0))
+  {
+    @sysvar::EV_Sim::Control::SysEV_WaitResume = 1;
+    enableControl(gPanelName, gCheckBoxACPhaseL2, 1);
+    enableControl(gPanelName, gCheckBoxACPhaseL3, 1);
+    @sysvar::EV_Sim::Control::SysEV_AC_Phases_L2_Enabled == 1;
+    @sysvar::EV_Sim::Control::SysEV_AC_Phases_L3_Enabled == 1;
+    enableControl(gPanelName, gCheckBoxACPhaseL2, 0);
+    enableControl(gPanelName, gCheckBoxACPhaseL3, 0);
+  }
+  
+  if(@sysvar::EV_Sim::Control::SysEV_Connected == sysvar::EV_Sim::Control::SysEV_Connected::Connected)
+  {
+    setTimer(tPhaseSelection, cPhaseSelectionDelay);
+  }
+  
+  setTimer(tPhaseSelection, 0);
+}
+
+on timer tPhaseSelection
+{
+  //set phases according to selection in the driver
+  if(@sysvar::EV_Sim::Control::SysEV_AC_Phases == sysvar::EV_Sim::Control::SysEV_AC_Phases::SinglePhase)
+  {
+    enableControl(gPanelName, gCheckBoxACPhaseL1, 0);
+    enableControl(gPanelName, gCheckBoxACPhaseL2, 0);
+    enableControl(gPanelName, gCheckBoxACPhaseL3, 0);
+    enableControl(gPanelName, gCheckBoxACPhaseN, 0);
+    @sysvar::EV_Sim::Control::SysEV_AC_Phases_L1_Enabled = 1;
+    @sysvar::EV_Sim::Control::SysEV_AC_Phases_L2_Enabled = 0;
+    @sysvar::EV_Sim::Control::SysEV_AC_Phases_L3_Enabled = 0;
+    @sysvar::EV_Sim::Control::SysEV_AC_Phases_N_Enabled = 1;
+  }
+  else if(@sysvar::EV_Sim::Control::SysEV_AC_Phases == sysvar::EV_Sim::Control::SysEV_AC_Phases::ThreePhase)
+  {
+    enableControl(gPanelName, gCheckBoxACPhaseL1, 0);
+    enableControl(gPanelName, gCheckBoxACPhaseL2, 0);
+    enableControl(gPanelName, gCheckBoxACPhaseL3, 0);
+    enableControl(gPanelName, gCheckBoxACPhaseN, 0);
+    @sysvar::EV_Sim::Control::SysEV_AC_Phases_L1_Enabled = 1;
+    @sysvar::EV_Sim::Control::SysEV_AC_Phases_L2_Enabled = 1;
+    @sysvar::EV_Sim::Control::SysEV_AC_Phases_L3_Enabled = 1;
+    @sysvar::EV_Sim::Control::SysEV_AC_Phases_N_Enabled = 1;
+  }
+  else
+  {
+    //enableControl(gPanelName, gCheckBoxACPhaseL1, 1);
+    enableControl(gPanelName, gCheckBoxACPhaseL2, 1);
+    enableControl(gPanelName, gCheckBoxACPhaseL3, 1);
+    //enableControl(gPanelName, gCheckBoxACPhaseN, 1);
+  }
+}
+
+void ControlBasicCharging()
+{
+  if(isTimerActive(tBasicChargingUpdate))
+    cancelTimer(tBasicChargingUpdate);
+  
+  if(gEVBasicChargingEnabled == 0)
+    return;
+  
+  if(StopChargingRunning == 1)
+    return;
+  
+  if(GetMaxCurrentFromDutyCycle() >= 0.0 && // basic charging active
+     @sysvar::EV_Sim::Control::SysEV_Stop == 0 && // stop button not pressed
+     @sysvar::EV_Sim::Control::SysEV_WaitResume == 0) // pause button not pressed
+  {
+    if(@sysvar::VT_Control::IEC61851_State_EV == sysvar::VT_Control::IEC61851_State_EV::State_B &&
+       HV_measure_AC_I_L1_rms() < 0.1 &&
+       HV_measure_AC_I_L2_rms() < 0.1 &&
+       HV_measure_AC_I_L3_rms() < 0.1)
+    {
+      HV_source_set_I_L1_rms(0.5);
+      HV_source_set_I_L2_rms(0.5);
+      HV_source_set_I_L3_rms(0.5);
+      CP_EV_SetCPStateC();
+      setTimer(tBasicChargingUpdate, cBasicChargingUpdateDelay);
+    }
+    else if(@sysvar::VT_Control::IEC61851_State_EV == sysvar::VT_Control::IEC61851_State_EV::State_C ||
+            @sysvar::VT_Control::IEC61851_State_EV == sysvar::VT_Control::IEC61851_State_EV::State_D)
+    {
+      HV_source_set_I_L1_rms(Get_TargetCurrentAC());
+      HV_source_set_I_L2_rms(Get_TargetCurrentAC());
+      HV_source_set_I_L3_rms(Get_TargetCurrentAC());
+    }
+  }
+}
+
+export OnDutyCycleChange()
+{
+  ControlBasicCharging();
+}
+
+on sysvar sysvar::EV_Sim::SysEV_TargetCurrent_AC
+{
+  ControlBasicCharging();
+}
+
+on timer tBasicChargingUpdate
+{
+  ControlBasicCharging();
+}
+
+on sysvar EV_Sim::Control::SysEV_AC_Phases_L1_Enabled
+{
+  //L1 cannot be switched off
+}
+
+on sysvar EV_Sim::Control::SysEV_AC_Phases_L2_Enabled
+{
+  if(@sysvar::EV_Sim::Control::SysEV_AC_Phases == sysvar::EV_Sim::Control::SysEV_AC_Phases::CustomPhase)
+  {
+    @sysvar::EV_Sim::Control::SysEV_WaitResume = 1;
+    HV_source_set_L2_PhaseLoss(!@this);
+    setTimer(tPhaseSelection, cPhaseSelectionDelay);
+  }
+  else if(@sysvar::EV_Sim::Control::SysEV_AC_Phases == sysvar::EV_Sim::Control::SysEV_AC_Phases::SinglePhase)
+  {
+    HV_source_set_L2_PhaseLoss(1);
+  }
+  else if(@sysvar::EV_Sim::Control::SysEV_AC_Phases == sysvar::EV_Sim::Control::SysEV_AC_Phases::ThreePhase)
+  {
+    HV_source_set_L2_PhaseLoss(0);
+  }
+}
+
+on sysvar EV_Sim::Control::SysEV_AC_Phases_L3_Enabled
+{
+  if(@sysvar::EV_Sim::Control::SysEV_AC_Phases == sysvar::EV_Sim::Control::SysEV_AC_Phases::CustomPhase)
+  {
+    @sysvar::EV_Sim::Control::SysEV_WaitResume = 1;
+    HV_source_set_L3_PhaseLoss(!@this);
+    setTimer(tPhaseSelection, cPhaseSelectionDelay);
+  }
+  else if(@sysvar::EV_Sim::Control::SysEV_AC_Phases == sysvar::EV_Sim::Control::SysEV_AC_Phases::SinglePhase)
+  {
+    HV_source_set_L3_PhaseLoss(1);
+  }
+  else if(@sysvar::EV_Sim::Control::SysEV_AC_Phases == sysvar::EV_Sim::Control::SysEV_AC_Phases::ThreePhase)
+  {
+    HV_source_set_L3_PhaseLoss(0);
+  }
+}
+
+on sysvar EV_Sim::Control::SysEV_AC_Phases_N_Enabled
+{
+  //N cannot be disabled in Y configuration
+}

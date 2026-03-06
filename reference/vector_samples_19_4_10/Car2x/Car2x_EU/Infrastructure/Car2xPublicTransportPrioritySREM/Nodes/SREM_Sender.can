@@ -1,0 +1,156 @@
+/*@!Encoding:1252*/
+includes
+{
+  #include "..\DataSources_Templates\ASNV_Template_BaseDatatypes.cin"
+  #include "..\DataSources_Templates\ASNV_Template_CAM.cin"
+  #include "..\DataSources_Templates\ASNV_Template_SREM.cin"
+}
+
+variables
+{
+  struct SREM  pktSREM;
+}
+
+on start
+{
+  enum CallbackType { OnRx, PreTx };
+  
+  C2xRegisterCallback(PreTx, "OnPreTxSREM", "SREM");
+}
+
+//Set SysVars on Attribute Update
+void OnStationAttributeTrigger(char attributeName[])
+{
+  if(strncmp(attributeName,"SREM", strlen(attributeName)) == 0)
+  {
+    @SREM::Active = C2xGetStationAttributeInt64("SREM");
+  }
+  
+  if(strncmp(attributeName,"SREM::RequesterStationId", strlen(attributeName)) == 0)
+  {
+    @SREM::StationId = C2xGetStationAttributeInt64("SREM::RequesterStationId");
+  }
+  
+  if(strncmp(attributeName,"SREM::RequestId", strlen(attributeName)) == 0)
+  {
+    @SREM::RequestId = C2xGetStationAttributeInt64("SREM::RequestId");
+  }
+  
+  if(strncmp(attributeName,"SREM::InBoundLaneId", strlen(attributeName)) == 0)
+  {
+    @SREM::InBoundLaneId = C2xGetStationAttributeInt64("SREM::InBoundLaneId");
+  }
+  
+  if(strncmp(attributeName,"SREM::OutBoundLaneId", strlen(attributeName)) == 0)
+  {
+    @SREM::OutBoundLaneId = C2xGetStationAttributeInt64("SREM::OutBoundLaneId");
+  }
+  
+  if(strncmp(attributeName,"SREM::IntersectionId", strlen(attributeName)) == 0)
+  {
+    @SREM::IntersectionId = C2xGetStationAttributeInt64("SREM::IntersectionId");
+  }
+  
+  if(strncmp(attributeName,"SREM::RequestType", strlen(attributeName)) == 0)
+  {
+    @SREM::RequestType = C2xGetStationAttributeInt64("SREM::RequestType");
+  }
+  
+  if(strncmp(attributeName,"SREM::RequesterRole", strlen(attributeName)) == 0)
+  {
+    @SREM::RequesterRole = C2xGetStationAttributeInt64("SREM::RequesterRole");
+  }
+  
+  if(strncmp(attributeName,"SREM::TransitSchedule", strlen(attributeName)) == 0)
+  {
+    @SREM::transitSchedule = C2xGetStationAttributeInt64("SREM::TransitSchedule");
+  }
+  
+  if(strncmp(attributeName,"SREM::TransitOccupancy", strlen(attributeName)) == 0)
+  {
+    @SREM::transitOccupancy = C2xGetStationAttributeInt64("SREM::TransitOccupancy");
+  }
+}
+
+on sysvar_update SREM::Active
+{
+  if(@SREM::Active == 1) 
+  {
+    C2xEnableMsg("SREM");
+  }
+  else
+  {
+    C2xDisableMsg("SREM");
+  }
+}
+
+// Callback function before sending SREM messages
+void OnPreTxSREM(LONG packet)
+{
+  C2xSetTokenInt64(packet, "geo_eh", "areaPosLatitude", C2xGetStationAttributeDouble("Latitude") * 1e7);
+  C2xSetTokenInt64(packet, "geo_eh", "areaPosLongitude", C2xGetStationAttributeDouble("Longitude") * 1e7);
+  C2xSetTokenInt64(packet, "geo_eh", "distanceA", 400);
+  
+  API_GetSREMParams(packet, pktSREM);
+  
+  pktSREM.srm.requests.isValidFlag = 1;
+  pktSREM.srm.requests.length = 1;
+  
+  //Set Intersection ID
+  pktSREM.srm.requests.arrayValue[0].request.id.id = @SREM::IntersectionId;
+
+  //Set RequestId
+  pktSREM.srm.requests.arrayValue[0].request.requestID = @SREM::RequestId;
+  
+  //Set Request Type
+  pktSREM.srm.requests.arrayValue[0].request.requestType = @SREM::RequestType;
+  
+  //Set Lanes
+  pktSREM.srm.requests.arrayValue[0].request.inBoundLane.choice = 0;
+  pktSREM.srm.requests.arrayValue[0].request.inBoundLane.isValidFlag = 1;
+  pktSREM.srm.requests.arrayValue[0].request.inBoundLane.lane = @SREM::InBoundLaneId;
+  
+  pktSREM.srm.requests.arrayValue[0].request.outBoundLane.choice = 0;
+  pktSREM.srm.requests.arrayValue[0].request.outBoundLane.isValidFlag = 1;
+  pktSREM.srm.requests.arrayValue[0].request.outBoundLane.lane = @SREM::OutBoundLaneId;
+
+  // Set Transit Schedule
+  pktSREM.srm.requestor.transitSchedule.value = @SREM::transitSchedule;
+  
+  //Set Transit Status
+  pktSREM.srm.requestor.transitStatus.isValidFlag = 1;
+  pktSREM.srm.requestor.transitStatus.stringLength = 8;
+  memcpy(pktSREM.srm.requestor.transitStatus.string, "00000000", pktSREM.srm.requestor.transitStatus.stringLength);
+
+  //Set Requester Role
+  pktSREM.srm.requestor.type.isValidFlag = 1;
+  pktSREM.srm.requestor.type.role = @SREM::RequesterRole;
+  
+  API_SetSREMParams(packet,pktSREM);
+}
+
+//Restart scenario
+void OnScenarioStateChanged(long newState)
+{
+  switch(newState)
+  {
+    case 0: // Loaded
+    {    
+      break;
+    }
+    case 1: // Started
+    {
+      break;
+    }
+    case 2: // Stopped
+    {
+      C2xStartScenario();
+      break;
+    }
+    case 3: // Completed
+    {
+      C2xStopScenario();
+      break;
+    }
+  }
+}

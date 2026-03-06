@@ -1,0 +1,58 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ttroot
+  version="26" xmlns="http://www.vector-informatik.de/ITE/TestTable/1.0">
+  <tt>
+    <tf>
+      <title>Message Cycle Time</title>
+      <description>Checks the differ message cycle time</description>
+      <preparation>
+        <title />
+        <caplfunction>
+          <title />
+          <name>car_preparation</name>
+        </caplfunction>
+      </preparation>
+      <capltestcase>
+        <title>Get ECU Information</title>
+        <name>DiagTestCase</name>
+      </capltestcase>
+      <capltestcase>
+        <title>Check cycle time of message ABSData</title>
+        <name>CheckMsgABSData</name>
+      </capltestcase>
+      <capltestcase>
+        <title>Check cycle time of message GearBoxInfo</title>
+        <name>CheckMsgGearBoxInfo</name>
+      </capltestcase>
+      <capltestcase>
+        <title>Check cycle time of message EngineData</title>
+        <name>CheckMsgEngineData</name>
+      </capltestcase>
+      <capltestcase>
+        <title>Check Power Train channel for undefined messages - this test will pass</title>
+        <name>CheckUndefinedMessage</name>
+        <param>
+          <type>int</type>
+          <value>
+            <const>0</const>
+          </value>
+        </param>
+      </capltestcase>
+      <capltestcase>
+        <title>Check Power Train channel for undefined messages - this test will fail</title>
+        <name>CheckUndefinedMessage</name>
+        <param>
+          <type>int</type>
+          <value>
+            <const>1</const>
+          </value>
+        </param>
+      </capltestcase>
+    </tf>
+  </tt>
+  <ttlib>
+    <ts_definitions />
+    <tc_definitions />
+    <function_definitions />
+  </ttlib>
+</ttroot>

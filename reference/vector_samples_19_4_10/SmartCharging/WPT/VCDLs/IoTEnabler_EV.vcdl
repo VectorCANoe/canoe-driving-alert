@@ -1,0 +1,41 @@
+version 1.4;
+
+import module "IoTEnabler";
+import "IotEnabler_General_Datatypes.vcdl";
+import "IotEnabler_WifiClient_Interface.vcdl";
+import "IoTEnabler_WifiController_Interface.vcdl";
+import "IotEnabler_General_Datatypes.vcdl";
+
+namespace IoTEnabler
+{
+  // Import attributes
+	using ::IoTEnablerBinding::Attributes;
+	
+	// Import datatypes and interfaces
+	using ::IoTEnablerBinding;
+
+	// Configuration of the attached IoT Enabler hardware device
+  [Binding="IoTEnabler", LogLevel=INFO]
+	virtualnetwork IoTEnabler_Network;
+  
+	// Instantiation of the interfaces
+	[virtualNetwork=IoTEnabler_Network]
+	object DeviceControl : IoTEnablerGeneral::Device;
+	  
+  [virtualNetwork=IoTEnabler_Network]
+  object WiFiClient : IoTEnablerWifiClient::IWiFiClient;
+
+  struct stNetwork
+  {
+     string SSID;
+     string BSSID;
+  }
+
+  interface IWiFiControllerExt : IoTEnablerWifiController::IWiFiController
+  {
+    internal data list<stNetwork> Networks = {};
+  }
+
+  [virtualNetwork=IoTEnabler_Network]
+	object WiFiController : IWiFiControllerExt;
+}

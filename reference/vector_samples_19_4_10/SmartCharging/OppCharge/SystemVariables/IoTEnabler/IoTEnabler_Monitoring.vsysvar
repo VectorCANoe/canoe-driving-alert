@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<systemvariables version="4">
+  <namespace name="" comment="" interface="">
+    <namespace name="IoTEnabler" comment="" interface="">
+      <namespace name="Monitoring" comment="" interface="">
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysMonitor_SSID" comment="" bitcount="0" isSigned="true" encoding="65001" type="string" />
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysMonitor_WPA2Key" comment="" bitcount="0" isSigned="true" encoding="65001" type="string" />
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysMonitorAdditionalInfo" comment="" bitcount="0" isSigned="true" encoding="65001" type="string" />
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysMonitoredChannel" comment="" bitcount="32" isSigned="false" encoding="65001" type="int" />
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysMonitoringState" comment="" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="99" maxValuePhys="99">
+          <valuetable name="Custom" definesMinMax="true">
+            <valuetableentry value="0" lowerBound="0" upperBound="0" description="Initial" displayString="Initial" />
+            <valuetableentry value="1" lowerBound="1" upperBound="1" description="Configuring" displayString="Configuring" />
+            <valuetableentry value="2" lowerBound="2" upperBound="2" description="SettingChannel" displayString="SettingChannel" />
+            <valuetableentry value="3" lowerBound="3" upperBound="3" description="SetWPA2Key" displayString="SetWPA2Key" />
+            <valuetableentry value="4" lowerBound="4" upperBound="4" description="Monitoring" displayString="Monitoring" />
+            <valuetableentry value="98" lowerBound="98" upperBound="98" description="NotEnabled" displayString="NotEnabled" />
+            <valuetableentry value="99" lowerBound="99" upperBound="99" description="Error" displayString="Error" />
+          </valuetable>
+        </variable>
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysMonitoringWifiInterface" comment="" bitcount="0" isSigned="true" encoding="65001" type="string" />
+        <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="SysWifiFrameMonitoring" comment="" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1">
+          <valuetable name="Custom" definesMinMax="true">
+            <valuetableentry value="0" lowerBound="0" upperBound="0" description="Disabled" displayString="Disabled" />
+            <valuetableentry value="1" lowerBound="1" upperBound="1" description="Enabled" displayString="Enabled" />
+          </valuetable>
+        </variable>
+      </namespace>
+    </namespace>
+  </namespace>
+</systemvariables>

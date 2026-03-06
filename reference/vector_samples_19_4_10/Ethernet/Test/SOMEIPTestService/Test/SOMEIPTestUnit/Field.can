@@ -1,0 +1,112 @@
+/*@!Encoding:1252*/
+variables
+{
+  const dword kSOMEIPDOField_TxTimeoutMs = 100;
+  const dword kSOMEIPDOField_RxTimeoutMs = 100;
+}
+
+// test field Mode notify
+export testcase EDRV_Field_DrivingPSI1_Mode_Notify()
+{
+  char tc[48] = "Field_EDRV_DrivingPSI1_Mode_Notify";
+  long result = 0;
+  
+  testCaseDescription("Trigger Field Notifier for HPCM::DrivingCSI1.Mode on provider-side and wait for reception on consumer-side");
+  
+  testStep( tc, "Trigger Field EDRV::DrivingPSI1.Mode from EDRV" );
+
+  $EDRV::DrivingPSI1.Mode.phys = 1;
+  
+  testStep( tc, "Wait for TX of Trigger EDRV::DrivingPSI1.Mode" );
+
+  result = testWaitForUpdate( EDRV::DrivingPSI1.Mode, kSOMEIPDOField_TxTimeoutMs );
+  
+  if ( result != 1 )
+  {
+    testStepFail( tc, "Error, testWaitForUpdate for Field EDRV::DrivingPSI1.Mode failed with result %d", result );
+  }
+
+  testStep( tc, "Wait for RX of HPCM::DrivingCSI1.Mode" );
+ 
+  result = testWaitForUpdate( HPCM::DrivingCSI1.Mode, kSOMEIPDOField_RxTimeoutMs );
+  
+  if ( result != 1 )
+  {
+    testStepFail( tc, "Error, testWaitForUpdate for Field HPCM::DrivingCSI1.Mode failed with result %d", result );
+  }
+
+  if ($HPCM::DrivingCSI1.Mode.phys != 1)
+  {
+    testStepFail( tc, "HPCM::DrivingCSI1.Mode is %f, but %s expected", $HPCM::DrivingCSI1.Mode.phys, "1" );
+    return;
+  }
+  
+  testStepPass( tc );
+}
+
+// test field Mode get
+export testcase EDRV_Field_DrivingPSI1_Mode_Get()
+{
+  char tc[45] = "Field_EDRV_DrivingPSI1_Mode_Get";
+  long result = 0;
+  callContext HPCM::DrivingCSI1.Mode.Get cco;
+  
+  testCaseDescription("Call Field Getter HPCM::DrivingCSI1.Mode.Get from consumer-side and wait for response");
+  
+  testStep( tc, "Get Field HPCM::DrivingCSI1.Mode.Get from EDRV" );
+
+  cco = HPCM::DrivingCSI1.Mode.Get.CallAsync();
+
+  testStep( tc, "Wait for Answer of HPCM::DrivingCSI1.Mode.Get" );
+ 
+  result = testWaitForAnswer( cco, kSOMEIPDOField_RxTimeoutMs );
+  
+  if ( result != 1 )
+  {
+    testStepFail( tc, "Error, testWaitForAnswer for Field HPCM::DrivingCSI1.Mode.Get failed with result %d", result );
+  }
+
+  if ($HPCM::DrivingCSI1.Mode.phys != cco.Result.phys )
+  {
+    testStepFail( tc, "HPCM::DrivingCSI1.Mode is %f, but %s expected", $HPCM::DrivingCSI1.Mode.phys, "1" );
+    return;
+  }
+
+  testStepPass( tc );
+}
+
+// test field Mode set
+export testcase EDRV_Field_DrivingPSI1_Mode_Set()
+{
+  char tc[45] = "Field_EDRV_DrivingPSI1_Mode_Set";
+  long result = 0;
+  callContext HPCM::DrivingCSI1.Mode.Set cco;
+  byte argMode;
+  
+  testCaseDescription("Call Field Setter HPCM::DrivingCSI1.Mode.Set from consumer-side and check that provider has new value");
+  
+  testStep( tc, "Set Field HPCM::DrivingCSI1.Mode.Set from EDRV" );
+
+  argMode = 2;
+
+  cco = HPCM::DrivingCSI1.Mode.Set.CallAsync_Phys( argMode );
+
+  testStep( tc, "Wait for Answer of HPCM::DrivingCSI1.Mode.Set" );
+
+  result = testWaitForAnswer( cco, kSOMEIPDOField_RxTimeoutMs );
+  
+  if ( result != 1 )
+  {
+    testStepFail( tc, "Error, testWaitForAnswer for Field HPCM::DrivingCSI1.Mode.Set failed with result %d", result );
+  }
+  
+  if ($HPCM::DrivingCSI1.Mode.phys != 2)
+  {
+    testStepFail( tc, "HPCM::DrivingCSI1.Mode is %f, but %s expected", $HPCM::DrivingCSI1.Mode.phys, "2" );
+    return;
+  }
+
+  testWaitForTimeoutSilent(1);
+
+  testStepPass( tc );
+}

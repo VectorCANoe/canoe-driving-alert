@@ -1,0 +1,425 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Panel Type="Vector.CANalyzer.Panels.PanelSerializer, Vector.CANalyzer.Panels.Serializer, Version=19.0.123.0, Culture=neutral, PublicKeyToken=null">
+  <Object Type="Vector.CANalyzer.Panels.Runtime.Panel, Vector.CANalyzer.Panels.Common, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Panel" ControlName="Protocol">
+    <Object Type="Vector.CANalyzer.Panels.Design.GroupBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xb5b9c534eb272e4895e81d8e91661d325863" ControlName="Group Box 2">
+      <Object Type="Vector.CANalyzer.Panels.Design.CheckBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X66c8548ae630ce42dbe98c7e0b65f56de1e3" ControlName="Check Box 3">
+        <Property Name="Name">X66c8548ae630ce42dbe98c7e0b65f56de1e3</Property>
+        <Property Name="Size">241, 16</Property>
+        <Property Name="Location">5, 236</Property>
+        <Property Name="Text">MCS ServiceID (ISO 15118-20:2022/AMD1)</Property>
+        <Property Name="TabIndex">374</Property>
+        <Property Name="SymbolConfiguration">8;16;Common;;;SysMCSServiceAMD;1;;;-1;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.CheckBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X8701345fe3f68e4cade8b30e7700235caf5a" ControlName="Check Box 1">
+        <Property Name="Name">X8701345fe3f68e4cade8b30e7700235caf5a</Property>
+        <Property Name="Size">81, 16</Property>
+        <Property Name="Location">5, 208</Property>
+        <Property Name="Text">BPT Active</Property>
+        <Property Name="TabIndex">373</Property>
+        <Property Name="SymbolConfiguration">8;16;Common;;;SysUserBPTMode;1;;;-1;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.CheckBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X6fb74524e63a0e4230eac78ee584609f01fe" ControlName="Check Box 2">
+        <Property Name="Name">X6fb74524e63a0e4230eac78ee584609f01fe</Property>
+        <Property Name="Size">81, 16</Property>
+        <Property Name="Location">5, 179</Property>
+        <Property Name="Text">PnC Active</Property>
+        <Property Name="TabIndex">373</Property>
+        <Property Name="SymbolConfiguration">8;16;Common;;;SysUserAuthorizationMode;1;;;-1;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.ComboBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="ComboBoxControl1" ControlName="Combo Box 1">
+        <Property Name="Name">ComboBoxControl1</Property>
+        <Property Name="Size">108, 19</Property>
+        <Property Name="Location">5, 121</Property>
+        <Property Name="DescriptionSize">0, 19</Property>
+        <Property Name="TextBackColor">White</Property>
+        <Property Name="TabIndex">316</Property>
+        <Property Name="DescriptionText">SysTLSEnabled:</Property>
+        <Property Name="UsedValueTable">PhysicalValue</Property>
+        <Property Name="SymbolConfiguration">8;16;Common;;;SysTLSEnabled;1;;;-1;;;Value;;;0</Property>
+        <Property Name="DropDownWidth">151</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl34" ControlName="Static Text 3">
+        <Property Name="Name">StaticTextControl34</Property>
+        <Property Name="Size">247, 16</Property>
+        <Property Name="Location">5, 151</Property>
+        <Property Name="BackColor">White</Property>
+        <Property Name="ForeColor">Gray</Property>
+        <Property Name="Text">TLS encryption for all supporting schemas.</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl13" ControlName="Static Text 3">
+        <Property Name="Name">StaticTextControl13</Property>
+        <Property Name="Size">247, 16</Property>
+        <Property Name="Location">5, 91</Property>
+        <Property Name="BackColor">White</Property>
+        <Property Name="ForeColor">Gray</Property>
+        <Property Name="Text">Activates message loops using 'Processing' flags</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.CheckBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="CheckBoxControl1" ControlName="Check Box">
+        <Property Name="Name">CheckBoxControl1</Property>
+        <Property Name="Size">232, 17</Property>
+        <Property Name="Location">5, 68</Property>
+        <Property Name="BackColor">White</Property>
+        <Property Name="Text">Processing Time</Property>
+        <Property Name="TabIndex">314</Property>
+        <Property Name="SymbolConfiguration">8;16;Common;;;SysUseProcessing;1;;;-1;;;Value;;;0</Property>
+      </Object>
+      <Property Name="Name">Xb5b9c534eb272e4895e81d8e91661d325863</Property>
+      <Property Name="Size">265, 291</Property>
+      <Property Name="Location">266, 5</Property>
+      <Property Name="Text">Simulation Settings</Property>
+      <Property Name="TabIndex">0</Property>
+      <Property Name="UseWindowsStyle">False</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.GroupBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X0ea64dffe6e3ae47d8e928fe36136f024862" ControlName="Group Box 1">
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl32" ControlName="Static Text">
+        <Property Name="Name">StaticTextControl32</Property>
+        <Property Name="Size">162, 16</Property>
+        <Property Name="Location">45, 44</Property>
+        <Property Name="Text">SECC Discovery</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.PictureBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="PictureBoxControl10" ControlName="CertUpdateNOK">
+        <Property Name="Name">PictureBoxControl10</Property>
+        <Property Name="Size">16, 16</Property>
+        <Property Name="Location">16, 134</Property>
+        <Property Name="IsVisibleByLoad">False</Property>
+        <Property Name="TransparentColor">LightGreen</Property>
+        <Property Name="ImageFile">bmp\CertificateUnvalidRed_16.png</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.PictureBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="PictureBoxControl11" ControlName="CertUpdateOK">
+        <Property Name="Name">PictureBoxControl11</Property>
+        <Property Name="Size">16, 16</Property>
+        <Property Name="Location">16, 134</Property>
+        <Property Name="IsVisibleByLoad">False</Property>
+        <Property Name="TransparentColor">LightGreen</Property>
+        <Property Name="ImageFile">bmp\CertificateValidRed_16.png</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl37" ControlName="TResult5OK">
+        <Property Name="Name">StaticTextControl37</Property>
+        <Property Name="Size">25, 17</Property>
+        <Property Name="Location">199, 137</Property>
+        <Property Name="IsVisibleByLoad">False</Property>
+        <Property Name="BackColor">White</Property>
+        <Property Name="ForeColor">Green</Property>
+        <Property Name="Font">Microsoft Sans Serif, 8.25pt, style=Bold</Property>
+        <Property Name="Text">OK</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl38" ControlName="TResult5NOK">
+        <Property Name="Name">StaticTextControl38</Property>
+        <Property Name="Size">50, 17</Property>
+        <Property Name="Location">199, 137</Property>
+        <Property Name="IsVisibleByLoad">False</Property>
+        <Property Name="BackColor">White</Property>
+        <Property Name="ForeColor">Red</Property>
+        <Property Name="Font">Microsoft Sans Serif, 8.25pt, style=Bold</Property>
+        <Property Name="Text">FAILED</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl36" ControlName="lblCertificate">
+        <Property Name="Name">StaticTextControl36</Property>
+        <Property Name="Size">162, 16</Property>
+        <Property Name="Location">45, 137</Property>
+        <Property Name="Text">Service Discovery</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.PictureBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="PictureBoxControl9" ControlName="CertChargeLoopNOK">
+        <Property Name="Name">PictureBoxControl9</Property>
+        <Property Name="Size">16, 16</Property>
+        <Property Name="Location">16, 226</Property>
+        <Property Name="IsVisibleByLoad">False</Property>
+        <Property Name="TransparentColor">LightGreen</Property>
+        <Property Name="ImageFile">bmp\CertificateUnvalidRed_16.png</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.PictureBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="PictureBoxControl8" ControlName="CertChargeParNOK">
+        <Property Name="Name">PictureBoxControl8</Property>
+        <Property Name="Size">16, 16</Property>
+        <Property Name="Location">16, 183</Property>
+        <Property Name="IsVisibleByLoad">False</Property>
+        <Property Name="TransparentColor">LightGreen</Property>
+        <Property Name="ImageFile">bmp\CertificateUnvalidRed_16.png</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.PictureBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="PictureBoxControl7" ControlName="CertAuthNOK">
+        <Property Name="Name">PictureBoxControl7</Property>
+        <Property Name="Size">16, 16</Property>
+        <Property Name="Location">16, 158</Property>
+        <Property Name="IsVisibleByLoad">False</Property>
+        <Property Name="TransparentColor">LightGreen</Property>
+        <Property Name="ImageFile">bmp\CertificateUnvalidRed_16.png</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.PictureBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="PictureBoxControl6" ControlName="CertChargeLoopOK">
+        <Property Name="Name">PictureBoxControl6</Property>
+        <Property Name="Size">16, 16</Property>
+        <Property Name="Location">16, 225</Property>
+        <Property Name="IsVisibleByLoad">False</Property>
+        <Property Name="TransparentColor">LightGreen</Property>
+        <Property Name="ImageFile">bmp\CertificateValidRed_16.png</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.PictureBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="PictureBoxControl5" ControlName="CertChargeParOK">
+        <Property Name="Name">PictureBoxControl5</Property>
+        <Property Name="Size">16, 16</Property>
+        <Property Name="Location">16, 183</Property>
+        <Property Name="IsVisibleByLoad">False</Property>
+        <Property Name="TransparentColor">LightGreen</Property>
+        <Property Name="ImageFile">bmp\CertificateValidRed_16.png</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.PictureBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="PictureBoxControl4" ControlName="CertAuthOK">
+        <Property Name="Name">PictureBoxControl4</Property>
+        <Property Name="Size">16, 16</Property>
+        <Property Name="Location">16, 158</Property>
+        <Property Name="IsVisibleByLoad">False</Property>
+        <Property Name="TransparentColor">LightGreen</Property>
+        <Property Name="ImageFile">bmp\CertificateValidRed_16.png</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl31" ControlName="TResult9OK">
+        <Property Name="Name">StaticTextControl31</Property>
+        <Property Name="Size">25, 17</Property>
+        <Property Name="Location">199, 226</Property>
+        <Property Name="IsVisibleByLoad">False</Property>
+        <Property Name="BackColor">White</Property>
+        <Property Name="ForeColor">Green</Property>
+        <Property Name="Font">Microsoft Sans Serif, 8.25pt, style=Bold</Property>
+        <Property Name="Text">OK</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl30" ControlName="TResult9NOK">
+        <Property Name="Name">StaticTextControl30</Property>
+        <Property Name="Size">50, 17</Property>
+        <Property Name="Location">199, 226</Property>
+        <Property Name="IsVisibleByLoad">False</Property>
+        <Property Name="BackColor">White</Property>
+        <Property Name="ForeColor">Red</Property>
+        <Property Name="Font">Microsoft Sans Serif, 8.25pt, style=Bold</Property>
+        <Property Name="Text">FAILED</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl21" ControlName="TResult10OK">
+        <Property Name="Name">StaticTextControl21</Property>
+        <Property Name="Size">25, 17</Property>
+        <Property Name="Location">199, 249</Property>
+        <Property Name="IsVisibleByLoad">False</Property>
+        <Property Name="BackColor">White</Property>
+        <Property Name="ForeColor">Green</Property>
+        <Property Name="Font">Microsoft Sans Serif, 8.25pt, style=Bold</Property>
+        <Property Name="Text">OK</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl20" ControlName="TResult8OK">
+        <Property Name="Name">StaticTextControl20</Property>
+        <Property Name="Size">25, 17</Property>
+        <Property Name="Location">199, 206</Property>
+        <Property Name="IsVisibleByLoad">False</Property>
+        <Property Name="BackColor">White</Property>
+        <Property Name="ForeColor">Green</Property>
+        <Property Name="Font">Microsoft Sans Serif, 8.25pt, style=Bold</Property>
+        <Property Name="Text">OK</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl19" ControlName="TResult7OK">
+        <Property Name="Name">StaticTextControl19</Property>
+        <Property Name="Size">25, 17</Property>
+        <Property Name="Location">199, 183</Property>
+        <Property Name="IsVisibleByLoad">False</Property>
+        <Property Name="BackColor">White</Property>
+        <Property Name="ForeColor">Green</Property>
+        <Property Name="Font">Microsoft Sans Serif, 8.25pt, style=Bold</Property>
+        <Property Name="Text">OK</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl18" ControlName="TResult6OK">
+        <Property Name="Name">StaticTextControl18</Property>
+        <Property Name="Size">25, 17</Property>
+        <Property Name="Location">199, 158</Property>
+        <Property Name="IsVisibleByLoad">False</Property>
+        <Property Name="BackColor">White</Property>
+        <Property Name="ForeColor">Green</Property>
+        <Property Name="Font">Microsoft Sans Serif, 8.25pt, style=Bold</Property>
+        <Property Name="Text">OK</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl11" ControlName="TResult4OK">
+        <Property Name="Name">StaticTextControl11</Property>
+        <Property Name="Size">25, 17</Property>
+        <Property Name="Location">199, 114</Property>
+        <Property Name="IsVisibleByLoad">False</Property>
+        <Property Name="BackColor">White</Property>
+        <Property Name="ForeColor">Green</Property>
+        <Property Name="Font">Microsoft Sans Serif, 8.25pt, style=Bold</Property>
+        <Property Name="Text">OK</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl10" ControlName="TResult3OK">
+        <Property Name="Name">StaticTextControl10</Property>
+        <Property Name="Size">25, 17</Property>
+        <Property Name="Location">199, 91</Property>
+        <Property Name="IsVisibleByLoad">False</Property>
+        <Property Name="BackColor">White</Property>
+        <Property Name="ForeColor">Green</Property>
+        <Property Name="Font">Microsoft Sans Serif, 8.25pt, style=Bold</Property>
+        <Property Name="Text">OK</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl9" ControlName="TResult2OK">
+        <Property Name="Name">StaticTextControl9</Property>
+        <Property Name="Size">25, 17</Property>
+        <Property Name="Location">199, 67</Property>
+        <Property Name="IsVisibleByLoad">False</Property>
+        <Property Name="BackColor">White</Property>
+        <Property Name="ForeColor">Green</Property>
+        <Property Name="Font">Microsoft Sans Serif, 8.25pt, style=Bold</Property>
+        <Property Name="Text">OK</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl1" ControlName="TResult1OK">
+        <Property Name="Name">StaticTextControl1</Property>
+        <Property Name="Size">25, 17</Property>
+        <Property Name="Location">199, 44</Property>
+        <Property Name="IsVisibleByLoad">False</Property>
+        <Property Name="BackColor">White</Property>
+        <Property Name="ForeColor">Green</Property>
+        <Property Name="Font">Microsoft Sans Serif, 8.25pt, style=Bold</Property>
+        <Property Name="Text">OK</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl17" ControlName="Static Text">
+        <Property Name="Name">StaticTextControl17</Property>
+        <Property Name="Size">162, 16</Property>
+        <Property Name="Location">45, 249</Property>
+        <Property Name="Text">Stop Charging</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl12" ControlName="Static Text">
+        <Property Name="Name">StaticTextControl12</Property>
+        <Property Name="Size">162, 16</Property>
+        <Property Name="Location">45, 227</Property>
+        <Property Name="Text">Charge Loop</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl8" ControlName="Static Text">
+        <Property Name="Name">StaticTextControl8</Property>
+        <Property Name="Size">162, 16</Property>
+        <Property Name="Location">45, 206</Property>
+        <Property Name="Text">ScheduleExchange</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl7" ControlName="Static Text">
+        <Property Name="Name">StaticTextControl7</Property>
+        <Property Name="Size">162, 16</Property>
+        <Property Name="Location">45, 160</Property>
+        <Property Name="Text">Service Detail</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl6" ControlName="Static Text">
+        <Property Name="Name">StaticTextControl6</Property>
+        <Property Name="Size">162, 16</Property>
+        <Property Name="Location">45, 183</Property>
+        <Property Name="Text">Charge Parameter Discovery</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl5" ControlName="Static Text">
+        <Property Name="Name">StaticTextControl5</Property>
+        <Property Name="Size">162, 16</Property>
+        <Property Name="Location">45, 114</Property>
+        <Property Name="Text">Certificate Installation</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl4" ControlName="Static Text">
+        <Property Name="Name">StaticTextControl4</Property>
+        <Property Name="Size">162, 16</Property>
+        <Property Name="Location">45, 91</Property>
+        <Property Name="Text">Authorization</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl3" ControlName="Static Text">
+        <Property Name="Name">StaticTextControl3</Property>
+        <Property Name="Size">162, 16</Property>
+        <Property Name="Location">45, 67</Property>
+        <Property Name="Text">Session Setup</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl22" ControlName="TResult1NOK">
+        <Property Name="Name">StaticTextControl22</Property>
+        <Property Name="Size">50, 17</Property>
+        <Property Name="Location">199, 44</Property>
+        <Property Name="IsVisibleByLoad">False</Property>
+        <Property Name="BackColor">White</Property>
+        <Property Name="ForeColor">Red</Property>
+        <Property Name="Font">Microsoft Sans Serif, 8.25pt, style=Bold</Property>
+        <Property Name="Text">FAILED</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl23" ControlName="TResult2NOK">
+        <Property Name="Name">StaticTextControl23</Property>
+        <Property Name="Size">50, 17</Property>
+        <Property Name="Location">199, 67</Property>
+        <Property Name="IsVisibleByLoad">False</Property>
+        <Property Name="BackColor">White</Property>
+        <Property Name="ForeColor">Red</Property>
+        <Property Name="Font">Microsoft Sans Serif, 8.25pt, style=Bold</Property>
+        <Property Name="Text">FAILED</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl24" ControlName="TResult3NOK">
+        <Property Name="Name">StaticTextControl24</Property>
+        <Property Name="Size">50, 17</Property>
+        <Property Name="Location">199, 91</Property>
+        <Property Name="IsVisibleByLoad">False</Property>
+        <Property Name="BackColor">White</Property>
+        <Property Name="ForeColor">Red</Property>
+        <Property Name="Font">Microsoft Sans Serif, 8.25pt, style=Bold</Property>
+        <Property Name="Text">FAILED</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl25" ControlName="TResult4NOK">
+        <Property Name="Name">StaticTextControl25</Property>
+        <Property Name="Size">50, 17</Property>
+        <Property Name="Location">199, 114</Property>
+        <Property Name="IsVisibleByLoad">False</Property>
+        <Property Name="BackColor">White</Property>
+        <Property Name="ForeColor">Red</Property>
+        <Property Name="Font">Microsoft Sans Serif, 8.25pt, style=Bold</Property>
+        <Property Name="Text">FAILED</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl26" ControlName="TResult6NOK">
+        <Property Name="Name">StaticTextControl26</Property>
+        <Property Name="Size">50, 17</Property>
+        <Property Name="Location">199, 158</Property>
+        <Property Name="IsVisibleByLoad">False</Property>
+        <Property Name="BackColor">White</Property>
+        <Property Name="ForeColor">Red</Property>
+        <Property Name="Font">Microsoft Sans Serif, 8.25pt, style=Bold</Property>
+        <Property Name="Text">FAILED</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl27" ControlName="TResult7NOK">
+        <Property Name="Name">StaticTextControl27</Property>
+        <Property Name="Size">50, 17</Property>
+        <Property Name="Location">199, 183</Property>
+        <Property Name="IsVisibleByLoad">False</Property>
+        <Property Name="BackColor">White</Property>
+        <Property Name="ForeColor">Red</Property>
+        <Property Name="Font">Microsoft Sans Serif, 8.25pt, style=Bold</Property>
+        <Property Name="Text">FAILED</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl28" ControlName="TResult8NOK">
+        <Property Name="Name">StaticTextControl28</Property>
+        <Property Name="Size">50, 17</Property>
+        <Property Name="Location">199, 206</Property>
+        <Property Name="IsVisibleByLoad">False</Property>
+        <Property Name="BackColor">White</Property>
+        <Property Name="ForeColor">Red</Property>
+        <Property Name="Font">Microsoft Sans Serif, 8.25pt, style=Bold</Property>
+        <Property Name="Text">FAILED</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl29" ControlName="TResult10NOK">
+        <Property Name="Name">StaticTextControl29</Property>
+        <Property Name="Size">50, 17</Property>
+        <Property Name="Location">199, 249</Property>
+        <Property Name="IsVisibleByLoad">False</Property>
+        <Property Name="BackColor">White</Property>
+        <Property Name="ForeColor">Red</Property>
+        <Property Name="Font">Microsoft Sans Serif, 8.25pt, style=Bold</Property>
+        <Property Name="Text">FAILED</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.ProgressBarControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="ProgressBarControl1" ControlName="Progress Bar">
+        <Property Name="Name">ProgressBarControl1</Property>
+        <Property Name="Size">29, 231</Property>
+        <Property Name="Location">11, 28</Property>
+        <Property Name="UseWindowsStyle">False</Property>
+        <Property Name="WithFrame">False</Property>
+        <Property Name="DecimalPlaces">0</Property>
+        <Property Name="Orientation">Vertical</Property>
+        <Property Name="BarForeColor">255, 34, 84, 144</Property>
+        <Property Name="AlarmUpperLimit">9</Property>
+        <Property Name="Maximum">10</Property>
+        <Property Name="ValueSize">18, 12</Property>
+        <Property Name="OriginValue">0</Property>
+        <Property Name="SymbolConfiguration">8;16;Common;;;SysProtocolBar;1;;;-1;;;Value;;;0</Property>
+      </Object>
+      <Property Name="Name">X0ea64dffe6e3ae47d8e928fe36136f024862</Property>
+      <Property Name="Size">255, 291</Property>
+      <Property Name="Location">5, 5</Property>
+      <Property Name="Text">Sequence View</Property>
+      <Property Name="TabIndex">0</Property>
+      <Property Name="UseWindowsStyle">False</Property>
+    </Object>
+    <Property Name="Name">Panel</Property>
+    <Property Name="Size">533, 301</Property>
+    <Property Name="Location">0, 0</Property>
+    <Property Name="BackColor">White</Property>
+  </Object>
+</Panel>

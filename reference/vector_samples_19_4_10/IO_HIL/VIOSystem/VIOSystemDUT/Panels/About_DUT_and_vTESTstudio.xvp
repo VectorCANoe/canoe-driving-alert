@@ -1,0 +1,258 @@
+<?xml version="1.0"?>
+<Panel Type="Vector.CANalyzer.Panels.PanelSerializer, Vector.CANalyzer.Panels.Serializer, Version=17.3.40.0, Culture=neutral, PublicKeyToken=null">
+  <Object Type="Vector.CANalyzer.Panels.Runtime.Panel, Vector.CANalyzer.Panels.Common, Version=17.3.40.0, Culture=neutral, PublicKeyToken=null" Name="Panel" Children="Controls" ControlName="About the DUT and the vTESTstudio in this demo">
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.40.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl27" Children="Controls" ControlName="Static Text 24">
+      <Property Name="Name">StaticTextControl27</Property>
+      <Property Name="Size">123, 13</Property>
+      <Property Name="Location">15, 292</Property>
+      <Property Name="BackColor">HighlightText</Property>
+      <Property Name="Font">Microsoft Sans Serif, 8.25pt, style=Bold</Property>
+      <Property Name="Text">PWM Dimmable LED</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.40.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl28" Children="Controls" ControlName="Static Text 25">
+      <Property Name="Name">StaticTextControl28</Property>
+      <Property Name="Size">521, 52</Property>
+      <Property Name="Location">22, 311</Property>
+      <Property Name="BackColor">HighlightText</Property>
+      <Property Name="Text">An LED that is dimmed by applying PWM duty cycles coming from the VIO System.
+- A slider within the DUT panel generates an analog voltage that is sent to a VIO1008 input.
+- A PWM duty cycle is calculated by the DUT and the result is sent to the LED via the VIO4028 PWM output.
+- The duty cycle to brightness characteristics is taken from a value table as no real LED exists here.</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.40.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl25" Children="Controls" ControlName="Static Text 22">
+      <Property Name="Name">StaticTextControl25</Property>
+      <Property Name="Size">132, 13</Property>
+      <Property Name="Location">20, 215</Property>
+      <Property Name="BackColor">HighlightText</Property>
+      <Property Name="Font">Microsoft Sans Serif, 8.25pt, style=Bold</Property>
+      <Property Name="Text">Analog Dimmable LED</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.40.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl26" Children="Controls" ControlName="Static Text 23">
+      <Property Name="Name">StaticTextControl26</Property>
+      <Property Name="Size">401, 52</Property>
+      <Property Name="Location">22, 234</Property>
+      <Property Name="BackColor">HighlightText</Property>
+      <Property Name="Text">An LED that is dimmed directly by a voltage coming from the VIO System (VIO2004).
+- The LED's voltage is controlled by the slider within the CANoe dashboard.
+- The LED's current is measured by the VIO System (VIO1804).
+- The current is taken from a value table as no real LED exists here.</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.40.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl23" Children="Controls" ControlName="Static Text 20">
+      <Property Name="Name">StaticTextControl23</Property>
+      <Property Name="Size">80, 13</Property>
+      <Property Name="Location">18, 151</Property>
+      <Property Name="BackColor">HighlightText</Property>
+      <Property Name="Font">Microsoft Sans Serif, 8.25pt, style=Bold</Property>
+      <Property Name="Text">4-bit Counter</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.40.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl24" Children="Controls" ControlName="Static Text 21">
+      <Property Name="Name">StaticTextControl24</Property>
+      <Property Name="Size">445, 39</Property>
+      <Property Name="Location">20, 170</Property>
+      <Property Name="BackColor">HighlightText</Property>
+      <Property Name="Text">A counter whose speed can be controlled by an analog voltage coming from the VIO System.
+- Input voltage range 1..10 V
+- Counter speed range 2..20 Hz</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.40.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl21" Children="Controls" ControlName="Static Text 18">
+      <Property Name="Name">StaticTextControl21</Property>
+      <Property Name="Size">548, 52</Property>
+      <Property Name="Location">20, 93</Property>
+      <Property Name="BackColor">HighlightText</Property>
+      <Property Name="Text">A 3-LED 'traffic light' that indicates the status of the test system including CANoe.
+- RED: CANoe is stopped, please press the 'CANoe Start' button within the CANoe panel.
+- YELLOW: CANoe is started but the DUT is still in idle state. To start the DUT, please press the 'DUT Start' button.
+- GREEN: CANoe is started and so is the DUT. The counter starts and the LEDs can be dimmed.</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.40.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl22" Children="Controls" ControlName="Static Text 19">
+      <Property Name="Name">StaticTextControl22</Property>
+      <Property Name="Size">73, 13</Property>
+      <Property Name="Location">20, 74</Property>
+      <Property Name="BackColor">HighlightText</Property>
+      <Property Name="Font">Microsoft Sans Serif, 8.25pt, style=Bold</Property>
+      <Property Name="Text">DUT Status</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.40.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl20" Children="Controls" ControlName="Static Text 17">
+      <Property Name="Name">StaticTextControl20</Property>
+      <Property Name="Size">296, 16</Property>
+      <Property Name="Location">7, 407</Property>
+      <Property Name="BackColor">HighlightText</Property>
+      <Property Name="Font">Microsoft Sans Serif, 9.25pt, style=Bold</Property>
+      <Property Name="Text">About the vTESTstudio panel in this demo</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.40.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl2" Children="Controls" ControlName="Static Text 1">
+      <Property Name="Name">StaticTextControl2</Property>
+      <Property Name="Size">375, 26</Property>
+      <Property Name="Location">20, 816</Property>
+      <Property Name="BackColor">HighlightText</Property>
+      <Property Name="Text">A vTestStudio license is only needed to modify these tests but not to run them!
+Please ask your Vector sales representative for details.
+</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.40.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl5" Children="Controls" ControlName="Static Text 2">
+      <Property Name="Name">StaticTextControl5</Property>
+      <Property Name="Size">298, 26</Property>
+      <Property Name="Location">20, 548</Property>
+      <Property Name="BackColor">HighlightText</Property>
+      <Property Name="Text">This test sweeps through the Analog Dimmable LED voltages.
+It checks whether the LED currents are correct.</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.40.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl6" Children="Controls" ControlName="Static Text 3">
+      <Property Name="Name">StaticTextControl6</Property>
+      <Property Name="Size">127, 13</Property>
+      <Property Name="Location">20, 799</Property>
+      <Property Name="BackColor">HighlightText</Property>
+      <Property Name="Font">Microsoft Sans Serif, 8.25pt, style=Bold</Property>
+      <Property Name="Text">License requirements</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.40.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl7" Children="Controls" ControlName="Static Text 4">
+      <Property Name="Name">StaticTextControl7</Property>
+      <Property Name="Size">432, 26</Property>
+      <Property Name="Location">20, 452</Property>
+      <Property Name="BackColor">HighlightText</Property>
+      <Property Name="Text">This panel represents the vTESTstudio GUI used for running automated tests in this demo.
+It consists of a list of preconfigured tests that perform the following:</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.40.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl8" Children="Controls" ControlName="Static Text 5">
+      <Property Name="Name">StaticTextControl8</Property>
+      <Property Name="Size">172, 13</Property>
+      <Property Name="Location">20, 531</Property>
+      <Property Name="BackColor">HighlightText</Property>
+      <Property Name="Font">Microsoft Sans Serif, 8.25pt, style=Bold</Property>
+      <Property Name="Text">Analog Dimmable LED Check</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.40.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl9" Children="Controls" ControlName="Static Text 6">
+      <Property Name="Name">StaticTextControl9</Property>
+      <Property Name="Size">63, 13</Property>
+      <Property Name="Location">20, 723</Property>
+      <Property Name="BackColor">HighlightText</Property>
+      <Property Name="Font">Microsoft Sans Serif, 8.25pt, style=Bold</Property>
+      <Property Name="Text">Execution</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.40.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl10" Children="Controls" ControlName="Static Text 7">
+      <Property Name="Name">StaticTextControl10</Property>
+      <Property Name="Size">154, 13</Property>
+      <Property Name="Location">20, 580</Property>
+      <Property Name="BackColor">HighlightText</Property>
+      <Property Name="Font">Microsoft Sans Serif, 8.25pt, style=Bold</Property>
+      <Property Name="Text">Counter Frequency Check</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.40.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl11" Children="Controls" ControlName="Static Text 8">
+      <Property Name="Name">StaticTextControl11</Property>
+      <Property Name="Size">385, 26</Property>
+      <Property Name="Location">20, 499</Property>
+      <Property Name="BackColor">HighlightText</Property>
+      <Property Name="Text">To start, this test triggers the CANoe Start button and then the DUT Start button.
+It checks whether the signals CANoeRunning and DutRunning are set correctly.</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.40.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl12" Children="Controls" ControlName="Static Text 9">
+      <Property Name="Name">StaticTextControl12</Property>
+      <Property Name="Size">62, 13</Property>
+      <Property Name="Location">20, 676</Property>
+      <Property Name="BackColor">HighlightText</Property>
+      <Property Name="Font">Microsoft Sans Serif, 8.25pt, style=Bold</Property>
+      <Property Name="Text">Stop Test</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.40.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl13" Children="Controls" ControlName="Static Text 10">
+      <Property Name="Name">StaticTextControl13</Property>
+      <Property Name="Size">381, 52</Property>
+      <Property Name="Location">20, 740</Property>
+      <Property Name="BackColor">HighlightText</Property>
+      <Property Name="Text">To run a set of tests, simply click on the red triangle in the uppermost menu bar.
+You will see the tests being executed sequentially.
+A success is shown by a white hook on green, a failure by a white cross on red.
+With the rightmost button, a test report can be opened.</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.40.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl14" Children="Controls" ControlName="Static Text 11">
+      <Property Name="Name">StaticTextControl14</Property>
+      <Property Name="Size">75, 13</Property>
+      <Property Name="Location">20, 435</Property>
+      <Property Name="BackColor">HighlightText</Property>
+      <Property Name="Font">Microsoft Sans Serif, 8.25pt, style=Bold</Property>
+      <Property Name="Text">Introduction</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.40.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl15" Children="Controls" ControlName="Static Text 12">
+      <Property Name="Name">StaticTextControl15</Property>
+      <Property Name="Size">327, 26</Property>
+      <Property Name="Location">20, 646</Property>
+      <Property Name="BackColor">HighlightText</Property>
+      <Property Name="Text">This test sweeps through the PWM Dimmable LED control voltages.
+It checks whether the returned PWM duty cycles are correct.</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.40.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl16" Children="Controls" ControlName="Static Text 13">
+      <Property Name="Name">StaticTextControl16</Property>
+      <Property Name="Size">163, 13</Property>
+      <Property Name="Location">20, 629</Property>
+      <Property Name="BackColor">HighlightText</Property>
+      <Property Name="Font">Microsoft Sans Serif, 8.25pt, style=Bold</Property>
+      <Property Name="Text">PWM Dimmable LED Check</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.40.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl17" Children="Controls" ControlName="Static Text 14">
+      <Property Name="Name">StaticTextControl17</Property>
+      <Property Name="Size">393, 26</Property>
+      <Property Name="Location">20, 693</Property>
+      <Property Name="BackColor">HighlightText</Property>
+      <Property Name="Text">To stop, this test triggers the CANoe Start button.
+It checks whether the signals CANoeRunning and DutRunning are reset correctly.</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.40.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl18" Children="Controls" ControlName="Static Text 15">
+      <Property Name="Name">StaticTextControl18</Property>
+      <Property Name="Size">419, 26</Property>
+      <Property Name="Location">20, 597</Property>
+      <Property Name="BackColor">HighlightText</Property>
+      <Property Name="Text">This test starts the 4-bit counter and sweeps through its possible speed range (2..20Hz).
+It checks whether the measured counter frequencies are correct.</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.40.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl19" Children="Controls" ControlName="Static Text 16">
+      <Property Name="Name">StaticTextControl19</Property>
+      <Property Name="Size">63, 13</Property>
+      <Property Name="Location">20, 482</Property>
+      <Property Name="BackColor">HighlightText</Property>
+      <Property Name="Font">Microsoft Sans Serif, 8.25pt, style=Bold</Property>
+      <Property Name="Text">Start Test</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.PictureBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.40.0, Culture=neutral, PublicKeyToken=null" Name="PictureBoxControl2" ControlName="Picture Box 2">
+      <Property Name="Name">PictureBoxControl2</Property>
+      <Property Name="Size">462, 407</Property>
+      <Property Name="Location">511, 435</Property>
+      <Property Name="BorderStyle">FixedSingle</Property>
+      <Property Name="ImageFile">bmp\vTESTstudio.png</Property>
+      <Property Name="CacheImages">False</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.PictureBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.40.0, Culture=neutral, PublicKeyToken=null" Name="PictureBoxControl1" ControlName="Picture Box 1">
+      <Property Name="Name">PictureBoxControl1</Property>
+      <Property Name="Size">367, 260</Property>
+      <Property Name="Location">606, 24</Property>
+      <Property Name="BorderStyle">FixedSingle</Property>
+      <Property Name="ImageFile">bmp\DUT_Panel.png</Property>
+      <Property Name="CacheImages">False</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.40.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl4" Children="Controls" ControlName="Static Text">
+      <Property Name="Name">StaticTextControl4</Property>
+      <Property Name="Size">499, 16</Property>
+      <Property Name="Location">7, 9</Property>
+      <Property Name="BackColor">HighlightText</Property>
+      <Property Name="Font">Microsoft Sans Serif, 9.25pt, style=Bold</Property>
+      <Property Name="Text">Rework this page! About the DUT (device under test) panel in this demo</Property>
+      <Property Name="ForeColor">Red</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.40.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl3" Children="Controls" ControlName="Static Text">
+      <Property Name="Name">StaticTextControl3</Property>
+      <Property Name="Size">75, 13</Property>
+      <Property Name="Location">20, 36</Property>
+      <Property Name="BackColor">HighlightText</Property>
+      <Property Name="Font">Microsoft Sans Serif, 8.25pt, style=Bold</Property>
+      <Property Name="Text">Introduction</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.40.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl1" Children="Controls" ControlName="Static Text">
+      <Property Name="Name">StaticTextControl1</Property>
+      <Property Name="Size">542, 13</Property>
+      <Property Name="Location">20, 55</Property>
+      <Property Name="BackColor">HighlightText</Property>
+      <Property Name="Text">This DUT represents a PCB with some basic functions like a counter, a slider, a start/stop button and some LEDs.</Property>
+    </Object>
+    <Property Name="Name">Panel</Property>
+    <Property Name="Size">1000, 900</Property>
+    <Property Name="BackColor">HighlightText</Property>
+  </Object>
+</Panel>

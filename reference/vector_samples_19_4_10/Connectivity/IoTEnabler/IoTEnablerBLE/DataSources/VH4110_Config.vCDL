@@ -1,0 +1,53 @@
+version 2.0;
+
+import "./device.vcdl";
+import "./iblecentral.vcdl";
+import "./ibtcontroller.vcdl";
+import "./il2capsocket.vcdl";
+import "./ibleperipheral.vcdl";
+import module "IoTEnabler";
+
+
+
+namespace IoTEnabler
+{
+
+	// Import attributes
+	using ::IoTEnablerBinding::Attributes;
+	
+	using ::IoTEnablerTypes;
+  using ::NIBLECentral;
+	// Configuration of the attached IoT Enabler hardware device
+	//[Binding="IoTEnabler", LogLevel=INFO, ConnectionType=IP, IPv4Address="127.0.0.1", AutoConnect=false]
+	[Binding="IoTEnabler", LogLevel=INFO]
+	virtualnetwork IoTEnabler;
+
+	// Instantiation of the device interface
+	[VirtualNetwork=IoTEnabler]
+	IoTEnabler::NDevice::Device DeviceControl;
+  
+	// Instantiation of further interfaces as required, for example:
+	[VirtualNetwork=IoTEnabler]
+	NIoTEnabler::NIBLECentral::IBLECentral Smartphone_BLE;
+  [VirtualNetwork=IoTEnabler]
+	NIoTEnabler::NIL2CAPSocket::IL2CAPSocket Smartphone_L2CAP;
+
+  [VirtualNetwork=IoTEnabler]
+	NIoTEnabler::NIBTController::IBTController Smartphone_SYS;
+  
+
+//	[virtualNetwork=IoTEnabler]
+//  list<reference<IBLECentral>, 2> do_ref_array;
+/*	
+    */
+  [VirtualNetwork=IoTEnabler]
+	NIoTEnabler::NIBLEPeripheral::IBLEPeripheral Vehicle_BLE;
+
+  [VirtualNetwork=IoTEnabler]
+	NIoTEnabler::NIL2CAPSocket::IL2CAPSocket Vehicle_L2CAP;
+
+  
+  [VirtualNetwork=IoTEnabler]
+	NIoTEnabler::NIBTController::IBTController Vehicle_SYS;
+}
+

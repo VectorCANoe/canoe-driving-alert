@@ -1,0 +1,65 @@
+/*@!Encoding:1252*/
+variables
+{
+  //
+  // Structure for MAC ID
+  //
+  _align(1) struct EthMacId
+  {
+    BYTE part[6]; // part of MAC ID
+  };
+  
+  dword gIfIndex = 1;
+}
+
+int EthMacId2Str( BYTE part[], DWORD offset, char macId[] )
+{
+  snprintf( macId, elCount(macId), "%.2X:%.2X:%.2X:%.2X:%.2X:%.2X", part[offset+0], part[offset+1], part[offset+2], part[offset+3], part[offset+4], part[offset+5] );
+
+  return 0;
+}
+
+qword macToQWord(byte mac[])
+{
+  int i;
+  qword result;
+  result = 0;
+  for(i=5; i>=0; --i)
+    result = result << 8 | mac[i];
+  return result;
+}
+
+DWORD htonl(DWORD hostlong)
+{
+  return ((hostlong & 0xff)<<24) | ((hostlong & 0xff00)<<8) | ((hostlong & 0xff0000)>>8) | ((hostlong & 0xff000000)>>24);
+}
+
+DWORD ntohl(DWORD netlong)
+{
+  return ((netlong & 0xff)<<24) | ((netlong & 0xff00)<<8) | ((netlong & 0xff0000)>>8) | ((netlong & 0xff000000)>>24);
+}
+
+void SetSysvarsForVlan(sysvarInt * isVlanConfigured, sysvarInt * vlanTag)
+{
+  const dword AF_INET = 2;   // IPv4 adapter family
+  dword ifIdx;
+  long result, ipv4AdrCount;
+  word vlanTagValue;
+  
+  @isVlanConfigured = 0;
+  for (ifIdx = 1; ifIdx <= IpGetAdapterCount(); ifIdx++)
+  {
+    ipv4AdrCount = IpGetAdapterAddressCount( ifIdx, AF_INET );
+    if (ipv4AdrCount>0 || 1)
+    {
+      result = IpGetAdapterVlanId(ifIdx, vlanTagValue);
+      if(result==0)
+      {
+        gIfIndex = ifIdx;
+        @isVlanConfigured = 1;
+        @vlanTag = vlanTagValue;
+        break;
+      }
+    }
+  }
+}

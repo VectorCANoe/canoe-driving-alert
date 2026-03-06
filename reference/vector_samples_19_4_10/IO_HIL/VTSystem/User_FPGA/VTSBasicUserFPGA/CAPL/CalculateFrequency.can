@@ -1,0 +1,55 @@
+/*@!Encoding:1252*/
+includes
+{
+}
+
+variables
+{ 
+}
+
+/* 
+VT1004
+VT1104
+VT2004
+VT2516
+VT2710
+VT2808
+VT2816
+VT2848
+
+Calculation of the frequency:
+F [Hz] = 1 / (2 * 100 ns * 2^n)
+*/
+
+
+double CalculateFrequency(dword ToggleBitSelect)
+{
+  double Frequency;
+  
+  Frequency = 1 / (2 * 0.0000001 * _pow(2.0, ToggleBitSelect)); // 2 ^ ToggleBitSelect
+  
+  return Frequency;
+}
+
+
+on sysvar sysvar::VTS::VT1004::var_Toggle_Bit_Select { @sysvarMember::Control::VT1004.Frequency = CalculateFrequency(@this); }
+// VT1104
+on sysvar sysvar::VTS::VT2004::var_Toggle_Bit_Select { @sysvarMember::Control::VT2004.Frequency = CalculateFrequency(@this); }
+on sysvar sysvar::VTS::VT2516::var_Toggle_Bit_Select { @sysvarMember::Control::VT2516.Frequency = CalculateFrequency(@this); }
+// VT2710
+// VT2808
+on sysvar sysvar::VTS::VT2816::var_Toggle_Bit_Select { @sysvarMember::Control::VT2816.Frequency = CalculateFrequency(@this); }
+on sysvar sysvar::VTS::VT2848::var_Toggle_Bit_Select { @sysvarMember::Control::VT2848.Frequency = CalculateFrequency(@this); }
+
+
+on start
+{
+	@sysvarMember::Control::VT1004.Frequency = CalculateFrequency(@sysvar::VTS::VT1004::var_Toggle_Bit_Select);
+  // VT1104
+  @sysvarMember::Control::VT2004.Frequency = CalculateFrequency(@sysvar::VTS::VT2004::var_Toggle_Bit_Select);
+  @sysvarMember::Control::VT2516.Frequency = CalculateFrequency(@sysvar::VTS::VT2516::var_Toggle_Bit_Select);
+  // VT2710
+  // VT2808
+  @sysvarMember::Control::VT2816.Frequency = CalculateFrequency(@sysvar::VTS::VT2816::var_Toggle_Bit_Select);
+  @sysvarMember::Control::VT2848.Frequency = CalculateFrequency(@sysvar::VTS::VT2848::var_Toggle_Bit_Select);
+}

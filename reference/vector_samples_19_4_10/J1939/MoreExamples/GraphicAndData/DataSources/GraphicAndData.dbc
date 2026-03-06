@@ -1,0 +1,540 @@
+VERSION ""
+
+
+NS_ : 
+	NS_DESC_
+	CM_
+	BA_DEF_
+	BA_
+	VAL_
+	CAT_DEF_
+	CAT_
+	FILTER
+	BA_DEF_DEF_
+	EV_DATA_
+	ENVVAR_DATA_
+	SGTYPE_
+	SGTYPE_VAL_
+	BA_DEF_SGTYPE_
+	BA_SGTYPE_
+	SIG_TYPE_REF_
+	VAL_TABLE_
+	SIG_GROUP_
+	SIG_VALTYPE_
+	SIGTYPE_VALTYPE_
+	BO_TX_BU_
+	BA_DEF_REL_
+	BA_REL_
+	BA_DEF_DEF_REL_
+	BU_SG_REL_
+	BU_EV_REL_
+	BU_BO_REL_
+	SG_MUL_VAL_
+
+BS_:
+
+BU_:
+VAL_TABLE_ FMI 0 "Above normal (most severe)" 1 "Below normal (most severe)" 2 "Data erratic" 3 "Voltage above normal" 4 "Voltage below normal" 5 "Current below normal" 6 "Current above normal" 7 "Mechanical system not responding" 8 "Abnormal frequency" 9 "Abnormal update rate" 10 "Abnormal rate of change" 11 "Root cause not known" 12 "Bad intelligent device" 13 "Out of calibration" 14 "Special intstructions" 15 "Above normal (least severe)" 16 "Above normal (moderately severe)" 17 "Below normal (least severe)" 18 "Below normal (moderately severe)" 19 "Received network data in error" 20 "Data drifted high" 21 "Data drifted low" 31 "Condition exists" ;
+VAL_TABLE_ InvertedBit 1 "orig: 0x0" 0 "orig: 0x1" ;
+VAL_TABLE_ InvertedByte 129 "orig: 126 / 0x7E" 255 "orig: 0 / 0x0" 254 "orig: 1 / 0x1" 253 "orig: 2 / 0x2" 252 "orig: 3 / 0x3" 251 "orig: 4 / 0x4" 250 "orig: 5 / 0x5" 249 "orig: 6 / 0x6" 248 "orig: 7 / 0x7" 247 "orig: 8 / 0x8" 246 "orig: 9 / 0x9" 245 "orig: 10 / 0xA" 244 "orig: 11 / 0xB" 243 "orig: 12 / 0xC" 242 "orig: 13 / 0xD" 241 "orig: 14 / 0xE" 240 "orig: 15 / 0xF" 239 "orig: 16 / 0x10" 238 "orig: 17 / 0x11" 237 "orig: 17 / 0x12" 236 "orig: 19 / 0x13" 235 "orig: 20 / 0x14" 234 "orig: 21 / 0x15" 233 "orig: 22 / 0x16" 232 "orig: 23 / 0x17" 231 "orig: 24 / 0x18" 230 "orig: 25 / 0x19" 229 "orig: 26 / 0x1A" 228 "orig: 27 / 0x1B" 227 "orig: 28 / 0x1C" 226 "orig: 29 / 0x1D" 225 "orig: 30 / 0x1E" 224 "orig: 31 / 0x1F" 223 "orig: 32 / 0x20" 222 "orig: 33 / 0x21" 221 "orig: 34 / 0x22" 220 "orig: 35 / 0x23" 219 "orig: 36 / 0x24" 218 "orig: 37 / 0x25" 217 "orig: 38 / 0x26" 216 "orig: 39 / 0x27" 215 "orig: 40 / 0x28" 214 "orig: 41 / 0x29" 213 "orig: 42 / 0x2A" 212 "orig: 43 / 0x2B" 211 "orig: 44 / 0x2C" 210 "orig: 45 / 0x2D" 209 "orig: 46 / 0x2E" 208 "orig: 47 / 0x2F" 207 "orig: 48 / 0x30" 206 "orig: 49 / 0x31" 205 "orig: 50 / 0x32" 204 "orig: 51 / 0x33" 203 "orig: 52 / 0x34" 202 "orig: 53 / 0x35" 201 "orig: 54 / 0x36" 200 "orig: 55 / 0x37" 199 "orig: 56 / 0x38" 198 "orig: 57 / 0x39" 197 "orig: 58 / 0x3A" 196 "orig: 59 / 0x3B" 195 "orig: 60 / 0x3C" 194 "orig: 61 / 0x3D" 193 "orig: 62 / 0x3E" 192 "orig: 63 / 0x3F" 191 "orig: 64 / 0x40" 190 "orig: 65 / 0x41" 189 "orig: 66 / 0x42" 188 "orig: 67 / 0x43" 187 "orig: 68 / 0x44" 186 "orig: 69 / 0x45" 185 "orig: 70 / 0x46" 184 "orig: 71 / 0x47" 183 "orig: 72 / 0x48" 182 "orig: 73 / 0x49" 181 "orig: 74 / 0x4A" 180 "orig: 75 / 0x4B" 179 "orig: 76 / 0x4C" 178 "orig: 77 / 0x4D" 177 "orig: 78 / 0x4E" 176 "orig: 79 / 0x4F" 175 "orig: 80 / 0x50" 174 "orig: 81 / 0x51" 173 "orig: 82 / 0x52" 172 "orig: 83 / 0x53" 171 "orig: 84 / 0x54" 170 "orig: 85 / 0x55" 169 "orig: 86 / 0x56" 168 "orig: 87 / 0x57" 167 "orig: 88 / 0x58" 166 "orig: 89 / 0x59" 165 "orig: 90 / 0x5A" 164 "orig: 91 / 0x5B" 163 "orig: 92 / 0x5C" 162 "orig: 93 / 0x5D" 161 "orig: 94 / 0x5E" 160 "orig: 95 / 0x5F" 159 "orig: 96 / 0x60" 158 "orig: 97 / 0x61" 157 "orig: 98 / 0x62" 156 "orig: 99 / 0x63" 155 "orig: 100 / 0x64" 154 "orig: 101 / 0x65" 153 "orig: 102 / 0x66" 152 "orig: 103 / 0x67" 151 "orig: 104 / 0x68" 150 "orig: 105 / 0x69" 149 "orig: 106 / 0x6A" 148 "orig: 107 / 0x6B" 147 "orig: 108 / 0x6C" 146 "orig: 109 / 0x6D" 145 "orig: 110 / 0x6E" 144 "orig: 111 / 0x6F" 143 "orig: 112 / 0x70" 142 "orig: 113 / 0x71" 141 "orig: 114 / 0x72" 140 "orig: 115 / 0x73" 139 "orig: 116 / 0x74" 138 "orig: 117 / 0x75" 137 "orig: 118 / 0x76" 136 "orig: 119 / 0x77" 135 "orig: 120 / 0x78" 134 "orig: 121 / 0x79" 133 "orig: 122 / 0x7A" 132 "orig: 123 / 0x7B" 131 "orig: 124 / 0x7C" 130 "orig: 125 / 0x7D" 128 "orig: 127 / 0x7F" 127 "orig: 128 / 0x80" 126 "orig: 129 / 0x81" 125 "orig: 130 / 0x82" 124 "orig: 131 / 0x83" 123 "orig: 132 / 0x84" 122 "orig: 133 / 0x85" 121 "orig: 134 / 0x86" 120 "orig: 135 / 0x87" 119 "orig: 136 / 0x88" 118 "orig: 137 / 0x89" 117 "orig: 138 / 0x8A" 116 "orig: 139 / 0x8B" 115 "orig: 140 / 0x8C" 114 "orig: 141 / 0x8D" 113 "orig: 142 / 0x8E" 112 "orig: 143 / 0x8F" 111 "orig: 144 / 0x90" 110 "orig: 145 / 0x91" 109 "orig: 146 / 0x92" 108 "orig: 147 / 0x93" 107 "orig: 148 / 0x94" 106 "orig: 149 / 0x95" 105 "orig: 150 / 0x96" 104 "orig: 151 / 0x97" 103 "orig: 152 / 0x98" 102 "orig: 153 / 0x99" 101 "orig: 154 / 0x9A" 100 "orig: 155 / 0x9B" 99 "orig: 156 / 0x9C" 98 "orig: 157 / 0x9D" 97 "orig: 158 / 0x9E" 96 "orig: 159 / 0x9F" 95 "orig: 160 / 0xA0" 94 "orig: 161 / 0xA1" 93 "orig: 162 / 0xA2" 92 "orig: 163 / 0xA3" 91 "orig: 164 / 0xA4" 90 "orig: 165 / 0xA5" 89 "orig: 166 / 0xA6" 88 "orig: 167 / 0xA7" 87 "orig: 168 / 0xA8" 86 "orig: 169 / 0xA9" 85 "orig: 170 / 0xAA" 84 "orig: 171 / 0xAB" 83 "orig: 172 / 0xAC" 82 "orig: 173 / 0xAD" 81 "orig: 174 / 0xAE" 80 "orig: 175 / 0xAF" 79 "orig: 176 / 0xB0" 78 "orig: 177 / 0xB1" 77 "orig: 178 / 0xB2" 76 "orig: 179 / 0xB3" 75 "orig: 180 / 0xB4" 74 "orig: 181 / 0xB5" 73 "orig: 182 / 0xB6" 72 "orig: 183 / 0xB7" 71 "orig: 184 / 0xB8" 70 "orig: 185 / 0xB9" 69 "orig: 186 / 0xBA" 68 "orig: 187 / 0xBB" 67 "orig: 188 / 0xBC" 66 "orig: 189 / 0xBD" 65 "orig: 190 / 0xBE" 64 "orig: 191 / 0xBF" 63 "orig: 192 / 0xC0" 62 "orig: 193 / 0xC1" 61 "orig: 194 / 0xC2" 60 "orig: 195 / 0xC3" 59 "orig: 196 / 0xC4" 58 "orig: 197 / 0xC5" 57 "orig: 198 / 0xC6" 56 "orig: 199 / 0xC7" 55 "orig: 200 / 0xC8" 54 "orig: 201 / 0xC9" 53 "orig: 202 / 0xCA" 52 "orig: 203 / 0xCB" 51 "orig: 204 / 0xCC" 50 "orig: 205 / 0xCD" 49 "orig: 206 / 0xCE" 48 "orig: 207 / 0xCF" 47 "orig: 208 / 0xD0" 46 "orig: 209 / 0xD1" 45 "orig: 210 / 0xD2" 44 "orig: 211 / 0xD3" 43 "orig: 212 / 0xD4" 42 "orig: 213 / 0xD5" 41 "orig: 214 / 0xD6" 40 "orig: 215 / 0xD7" 39 "orig: 216 / 0xD8" 38 "orig: 217 / 0xD9" 37 "orig: 218 / 0xDA" 36 "orig: 219 / 0xDB" 35 "orig: 220 / 0xDC" 34 "orig: 221 / 0xDD" 33 "orig: 222 / 0xDE" 32 "orig: 223 / 0xDF" 31 "orig: 224 / 0xE0" 30 "orig: 225 / 0xE1" 29 "orig: 226 / 0xE2" 28 "orig: 227 / 0xE3" 27 "orig: 228 / 0xE4" 26 "orig: 229 / 0xE5" 25 "orig: 230 / 0xE6" 24 "orig: 231 / 0xE7" 23 "orig: 232 / 0xE8" 22 "orig: 233 / 0xE9" 21 "orig: 234 / 0xEA" 20 "orig: 235 / 0xEB" 19 "orig: 236 / 0xEC" 18 "orig: 237 / 0xED" 17 "orig: 238 / 0xEE" 16 "orig: 239 / 0xEF" 15 "orig: 240 / 0xF0" 14 "orig: 241 / 0xF1" 13 "orig: 242 / 0xF2" 12 "orig: 243 / 0xF3" 11 "orig: 244 / 0xF4" 10 "orig: 245 / 0xF5" 9 "orig: 246 / 0xF6" 8 "orig: 247 / 0xF7" 7 "orig: 248 / 0xF8" 6 "orig: 249 / 0xF9" 5 "orig: 250 / 0xFA" 4 "orig: 251 / 0xFB" 3 "orig: 252 / 0xFC" 2 "orig: 253 / 0xFD" 1 "orig: 254 / 0xFE" 0 "orig: 255 / 0xFF" ;
+
+
+BO_ 2566843646 VI: 8 Vector__XXX
+ SG_ VehicleIdentificationNumber : 0|8@1+ (1,0) [0|255] "" Vector__XXX
+
+BO_ 2348875518 TSC1: 8 Vector__XXX
+ SG_ MessageChecksum : 60|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ MessageCounter : 56|4@1+ (1,0) [0|7] "" Vector__XXX
+ SG_ EngRequestedTorqueHighResolution : 40|4@1+ (0.125,0) [0|0.875] "%" Vector__XXX
+ SG_ TSC1CtrlPurpose : 35|5@1+ (1,0) [0|31] "" Vector__XXX
+ SG_ TSC1TransRate : 32|3@1+ (1,0) [0|7] "" Vector__XXX
+ SG_ EngRequestedTorque_TorqueLimit : 24|8@1+ (1,-125) [-125|125] "%" Vector__XXX
+ SG_ EngRequestedSpeed_SpeedLimit : 8|16@1+ (0.125,0) [0|8031.875] "rpm" Vector__XXX
+ SG_ OverrideCtrlModePriority : 4|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ EngRequestedSpeedCtrlConditions : 2|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ EngOverrideCtrlMode : 0|2@1+ (1,0) [0|3] "" Vector__XXX
+
+BO_ 2364540158 EEC1: 8 Vector__XXX
+ SG_ EngDemandPercentTorque : 56|8@1+ (1,-125) [-125|125] "%" Vector__XXX
+ SG_ EngStarterMode : 48|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ SrcAddrssOfCntrllngDvcForEngCtrl : 40|8@1+ (1,0) [0|253] "" Vector__XXX
+ SG_ EngSpeed : 24|16@1+ (0.125,0) [0|8031.875] "rpm" Vector__XXX
+ SG_ ActualEngPercentTorque : 16|8@1+ (1,-125) [0|125] "%" Vector__XXX
+ SG_ DriversDemandEngPercentTorque : 8|8@1+ (1,-125) [0|125] "%" Vector__XXX
+ SG_ ActlEngPrcntTorqueHighResolution : 4|4@1+ (0.125,0) [0|0.875] "%" Vector__XXX
+ SG_ EngTorqueMode : 0|4@1+ (1,0) [0|15] "" Vector__XXX
+
+BO_ 2432593918 ACC1: 8 Vector__XXX
+ SG_ ForwardCollisionWarning : 54|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ ACCDistanceAlertSignal : 52|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ ACCSystemShutoffWarning : 50|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ ACCTargetDetected : 48|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ RoadCurvature : 32|16@1+ (0.0078125,-250) [-250|251.9921875] "1/km" Vector__XXX
+ SG_ AdptiveCruiseCtrlSetDistanceMode : 27|3@1+ (1,0) [0|7] "" Vector__XXX
+ SG_ AdaptiveCruiseCtrlMode : 24|3@1+ (1,0) [0|7] "" Vector__XXX
+ SG_ AdaptiveCruiseCtrlSetSpeed : 16|8@1+ (1,0) [0|120] "km/h" Vector__XXX
+ SG_ DistanceToForwardVehicle : 8|8@1+ (1,0) [0|250] "m" Vector__XXX
+ SG_ SpeedOfForwardVehicle : 0|8@1+ (1,0) [0|250] "km/h" Vector__XXX
+
+
+
+CM_ "J1939 messages without part -7x";
+CM_ BO_ 2566843646 "Vehicle Identification
+Byte: 1-n Vehicle Identification Number
+Delimiter (ASCII “*”)";
+CM_ SG_ 2566843646 VehicleIdentificationNumber "Vehicle Identification Number (VIN) as assigned by the vehicle manufacturer.
+
+NOTE The ASCII character “*” is reserved as a delimiter.";
+CM_ BO_ 2348875518 "Torque/Speed Control 1
+NOTE - Retarder may be disabled by commanding a torque limit of 0%.  Use of the limit mode allows the use of the retarder only up to the limit specified in the request.  This can be used to permit retarding of up to 50%, for ...";
+CM_ SG_ 2348875518 MessageChecksum "The message checksum is used to verify the signal path from the transmitting device to the receiving device.
+The message checksum is calculated using the first 7 data bytes, the message counter and the bytes of the message identifier. It is ...";
+CM_ SG_ 2348875518 MessageCounter "The message counter is used to detect situations where the transmitting ECU malfunction repeats the same frame all the time.  The receiver of the information may use the counter parameter to detect this situation.  The transmitting device will ...";
+CM_ SG_ 2348875518 EngRequestedTorqueHighResolution "This parameter displays an additional torque in percent of the reference engine torque.
+When the MSB is set to 1, this parameter is not available.  When the MSB is set to 0, bits 1 to 3 indicate the desired torque with resolution of 0.125%/bit  ...";
+CM_ SG_ 2348875518 TSC1CtrlPurpose "State signal which indicates which control mode the sending device is using to generate the TSC1 command.  Note that the modes are not in prioritized order. Not all modes may be relevant for a given device. Some devices may not implement all ...";
+CM_ SG_ 2348875518 TSC1TransRate "This parameter indicates the transmission rate at which the sending device will transmit the TSC1 message.  The engine shall adjust its timeout for TSC1 messages accordingly. Variable TSC1 transmission rates shall only apply to messages sent to the ...";
+CM_ SG_ 2348875518 EngRequestedTorque_TorqueLimit "Parameter provided to the engine or retarder in the torque/speed control message for controlling or limiting the output torque.
+Requested torque to the engine is measured in indicated torque as a percentage of reference engine torque (see the ...";
+CM_ SG_ 2348875518 EngRequestedSpeed_SpeedLimit "Parameter provided to the engine from external sources in the torque/speed control message.  This is the engine speed which the engine is expected to operate at if the speed control mode is active or the engine speed which the engine is not expected ...";
+CM_ SG_ 2348875518 OverrideCtrlModePriority "This field is used as an input to the engine or retarder to determine the priority of the Override Control Mode received in the Torque/Speed Control message (see PGN 0).  The default is 11b (Low priority).  It is not required to use the same ...";
+CM_ SG_ 2348875518 EngRequestedSpeedCtrlConditions "This mode tells the engine control system the governor characteristics that are desired during speed control.  The four characteristics defined are:
+00b = Transient Optimized for driveline disengaged and non-lockup conditions
+01b = Stability ...";
+CM_ SG_ 2348875518 EngOverrideCtrlMode "The override control mode defines which sort of command is used:
+00b = Override disabled - Disable any existing control commanded by the source of this command.
+01b = Speed control - Govern speed to the included \"desired speed\" value.
+10b = ...";
+CM_ BO_ 2364540158 "Electronic Engine Controller 1
+Engine related parameters";
+CM_ SG_ 2364540158 EngDemandPercentTorque "The requested torque output of the engine by all dynamic internal inputs, including smoke control, noise control and low and high speed governing.";
+CM_ SG_ 2364540158 EngStarterMode "There are several phases in a starting action and different reasons why a start cannot take place.
+0000b = start not requested
+0001b = starter active but not engaged
+0010b = starter active and engaged
+0011b = start finished; starter not active ...";
+CM_ SG_ 2364540158 SrcAddrssOfCntrllngDvcForEngCtrl "The source address of the SAE J1939 device currently controlling the engine.  It is used to expand the torque mode parameter (see SPN 899) in cases where control is in response to an ECU that is not listed in Table SPN899_A.  Its value may be the ...";
+CM_ SG_ 2364540158 EngSpeed "Actual engine speed which is calculated over a minimum crankshaft angle of 720 degrees divided by the number of cylinders.";
+CM_ SG_ 2364540158 ActualEngPercentTorque "The calculated output torque of the engine.  The data is transmitted in indicated torque as a percent of reference engine torque (see the engine configuration message, PGN 65251).  The engine percent torque value will not be less than zero and it ...";
+CM_ SG_ 2364540158 DriversDemandEngPercentTorque "The requested torque output of the engine by the driver. It is based on input from the following requestors external to the powertrain: operator (via the accelerator pedal), cruise control and/or road speed limit governor. Dynamic commands from ...";
+CM_ SG_ 2364540158 ActlEngPrcntTorqueHighResolution "This parameter displays an additional torque in percent of the reference engine torque.
+When the MSB is set to 1, this parameter is not available.  When the MSB is set to 0, bits 1 to 3 indicate the desired torque with resolution of 0.125%/bit  ...";
+CM_ SG_ 2364540158 EngTorqueMode "State signal which indicates which engine torque mode is currently generating, limiting, or controlling the torque.  Note that the modes are not in prioritized order. Not all modes may be relevant for a given device.  Some devices may not implement ...";
+CM_ BO_ 2432593918 "Adaptive Cruise Control 1
+NOTE—The ACC1 message is required whenever the engine is running and ACC is powered on and not
+faulted. The timeout for ACC1 message will be between 2.5 times to 5 times the update rate.
+The ACC1 message is intended ...";
+CM_ SG_ 2432593918 ForwardCollisionWarning "This parameter indicates if a collision is imminent and strong driver reaction either by braking hard or by an avoidance maneuver are imperative to prevent a collision.
+00b = No warning
+01b = Collision is imminent
+10b = Error indicator
+11b = not ...";
+CM_ SG_ 2432593918 ACCDistanceAlertSignal "Signal to indicate to the operator that the ACC system is not able to maintain the distance to the target. Example: Target stopping rapidly. This signal may be used to activate warning sounds or indicators.
+00b = ACC DAS Not Active
+01b = ACC DAS ...";
+CM_ SG_ 2432593918 ACCSystemShutoffWarning "Signal to warn the driver of system deactivation due to non-driver actions. Example: Attempting to control vehicle speed below or above limits of ACC. This signal may be used to activate warning sounds or indicators.
+00b = ACC SSOW Not Active
+01b ...";
+CM_ SG_ 2432593918 ACCTargetDetected "Signal to indicate to the driver that the ACC system has detected a target. 
+
+00b = No targets detected
+01b = Target detected
+10b = Reserved
+11b = Take no action";
+CM_ SG_ 2432593918 RoadCurvature "Estimated value of the current road curvature for use by the adaptive cruise control system.  Positive values are used for left curves.  Curvature is the inverse of the radius and is zero for straight roads.";
+CM_ SG_ 2432593918 AdptiveCruiseCtrlSetDistanceMode "Selected distance mode for adaptive cruise control.
+000b = ACC Distance mode #1 (largest distance)
+001b = ACC Distance mode #2
+010b = ACC Distance mode #3
+011b = ACC Distance mode #4
+100b = ACC Distance mode #5 (shortest distance)
+101b = ...";
+CM_ SG_ 2432593918 AdaptiveCruiseCtrlMode "This parameter is used to indicate the current state, or mode, of operation by the Adaptive Cruise Control (ACC) device. The states characterize independent system states (e.g., it is not possible to express distance control active and overtake mode ...";
+CM_ SG_ 2432593918 AdaptiveCruiseCtrlSetSpeed "Value of the desired (chosen) velocity of the adaptive cruise control system.";
+CM_ SG_ 2432593918 DistanceToForwardVehicle "Distance to the preceding vehicle situated within 250 m in the same lane and moving in the same direction.
+
+The value of FFh indicates that no vehicle is detected.";
+CM_ SG_ 2432593918 SpeedOfForwardVehicle "Absolute velocity of the preceding vehicle situated within 250 m in the same lane and moving in the same direction.
+
+The value of FFh indicates that no vehicle is detected.";
+BA_DEF_  "SAE_J1939_71_SpecVersion" STRING ;
+BA_DEF_  "SAE_J1939_73_SpecVersion" STRING ;
+BA_DEF_  "SAE_J1939_75_SpecVersion" STRING ;
+BA_DEF_ BO_  "J1939FdTpADT" INT 0 255;
+BA_DEF_ BO_  "J1939FdTpADS" INT 0 52;
+BA_DEF_ SG_  "GenSigInactiveValue" INT 0 0;
+BA_DEF_ SG_  "SigType" ENUM  "Default","Range","RangeSigned","ASCII","Discrete","Control","ReferencePGN","DTC","StringDelimiter","StringLength","StringLengthControl","MessageCounter","MessageChecksum";
+BA_DEF_ SG_  "GenSigStartValue" INT 0 2147483647;
+BA_DEF_ SG_  "GenSigSendType" ENUM  "Cyclic","OnWrite","OnWriteWithRepetition","OnChange","OnChangeWithRepetition","IfActive","IfActiveWithRepetition","NoSigSendType";
+BA_DEF_ SG_  "GenSigILSupport" ENUM  "No","Yes";
+BA_DEF_ SG_  "SPN" INT 0 524287;
+BA_DEF_  "SAE_J1939_22_SpecVersion" STRING ;
+BA_DEF_ BO_  "J1939CPgSendTimeout" INT -1 3600000;
+BA_DEF_ BO_  "J1939CPgTOS" INT 0 7;
+BA_DEF_ BO_  "J1939CPgTF" INT 0 7;
+BA_DEF_ BO_  "J1939PgAppearanceOnBus" ENUM  "Default","CAN_Extended","CANFD_Extended";
+BA_DEF_ BO_  "FsJ1939UseCrcAndCounter" STRING ;
+BA_DEF_ BO_  "FsJ1939Delay" INT 0 1000;
+BA_DEF_ BO_  "FsJ1939NeedsSHM" ENUM  "No","Yes";
+BA_DEF_ BO_  "TpJ1939VarDlc" ENUM  "No","Yes";
+BA_DEF_ BO_  "GenMsgNrOfRepetition" INT 0 1000000;
+BA_DEF_ BO_  "GenMsgCycleTimeFast" INT 0 3600000;
+BA_DEF_ BO_  "GenMsgFastOnStart" INT 0 100000;
+BA_DEF_ BO_  "GenMsgStartDelayTime" INT 0 100000;
+BA_DEF_ BO_  "GenMsgILSupport" ENUM  "No","Yes";
+BA_DEF_ BO_  "GenMsgDelayTime" INT 0 1000;
+BA_DEF_ BO_  "GenMsgRequestable" INT 0 1;
+BA_DEF_ BO_  "GenMsgSendType" ENUM  "cyclic","NotUsed","NotUsed","NotUsed","NotUsed","NotUsed","NotUsed","IfActive","noMsgSendType";
+BA_DEF_ BO_  "VFrameFormat" ENUM  "StandardCAN","ExtendedCAN","reserved","J1939PG","reserved","reserved","reserved","reserved","reserved","reserved","reserved","reserved","reserved","reserved","StandardCAN_FD","ExtendedCAN_FD";
+BA_DEF_ BO_  "GenMsgCycleTime" INT 0 3600000;
+BA_DEF_ BU_  "J1939MultiPgSendTimeout" INT 0 3600000;
+BA_DEF_ BU_  "J1939MultiPgSizeThreshold" INT 0 64;
+BA_DEF_ BU_  "J1939MultiPgBroadcastType" ENUM  "FBFF","FEFF";
+BA_DEF_ BU_  "NodeLayerModules" STRING ;
+BA_DEF_ BU_  "NmStationAddress" INT 0 255;
+BA_DEF_ BU_  "NmJ1939AAC" INT 0 1;
+BA_DEF_ BU_  "NmJ1939IndustryGroup" INT 0 7;
+BA_DEF_ BU_  "NmJ1939System" INT 0 127;
+BA_DEF_ BU_  "NmJ1939SystemInstance" INT 0 15;
+BA_DEF_ BU_  "NmJ1939Function" INT 0 255;
+BA_DEF_ BU_  "NmJ1939FunctionInstance" INT 0 7;
+BA_DEF_ BU_  "NmJ1939ECUInstance" INT 0 7;
+BA_DEF_ BU_  "NmJ1939ManufacturerCode" INT 0 2047;
+BA_DEF_ BU_  "NmJ1939IdentityNumber" INT 0 2097151;
+BA_DEF_ BU_  "ECU" STRING ;
+BA_DEF_  "SAE_J1939_76_SpecVersion" STRING ;
+BA_DEF_  "SAE_J1939_DA_SpecVersion" STRING ;
+BA_DEF_  "SAE_J1939_81_SpecVersion" STRING ;
+BA_DEF_  "DatabaseVersion" STRING ;
+BA_DEF_  "BusType" STRING ;
+BA_DEF_  "ProtocolType" STRING ;
+BA_DEF_  "SAE_J1939_21_SpecVersion" STRING ;
+BA_DEF_DEF_  "SAE_J1939_71_SpecVersion" "";
+BA_DEF_DEF_  "SAE_J1939_73_SpecVersion" "";
+BA_DEF_DEF_  "SAE_J1939_75_SpecVersion" "";
+BA_DEF_DEF_  "J1939FdTpADT" 0;
+BA_DEF_DEF_  "J1939FdTpADS" 0;
+BA_DEF_DEF_  "GenSigInactiveValue" 0;
+BA_DEF_DEF_  "SigType" "Default";
+BA_DEF_DEF_  "GenSigStartValue" 0;
+BA_DEF_DEF_  "GenSigSendType" "NoSigSendType";
+BA_DEF_DEF_  "GenSigILSupport" "Yes";
+BA_DEF_DEF_  "SPN" 0;
+BA_DEF_DEF_  "SAE_J1939_22_SpecVersion" "";
+BA_DEF_DEF_  "J1939CPgSendTimeout" -1;
+BA_DEF_DEF_  "J1939CPgTOS" 2;
+BA_DEF_DEF_  "J1939CPgTF" 0;
+BA_DEF_DEF_  "J1939PgAppearanceOnBus" "Default";
+BA_DEF_DEF_  "FsJ1939UseCrcAndCounter" "";
+BA_DEF_DEF_  "FsJ1939Delay" 0;
+BA_DEF_DEF_  "FsJ1939NeedsSHM" "No";
+BA_DEF_DEF_  "TpJ1939VarDlc" "No";
+BA_DEF_DEF_  "GenMsgNrOfRepetition" 0;
+BA_DEF_DEF_  "GenMsgCycleTimeFast" 0;
+BA_DEF_DEF_  "GenMsgFastOnStart" 0;
+BA_DEF_DEF_  "GenMsgStartDelayTime" 0;
+BA_DEF_DEF_  "GenMsgILSupport" "Yes";
+BA_DEF_DEF_  "GenMsgDelayTime" 0;
+BA_DEF_DEF_  "GenMsgRequestable" 1;
+BA_DEF_DEF_  "GenMsgSendType" "noMsgSendType";
+BA_DEF_DEF_  "VFrameFormat" "J1939PG";
+BA_DEF_DEF_  "GenMsgCycleTime" 0;
+BA_DEF_DEF_  "J1939MultiPgSendTimeout" 2;
+BA_DEF_DEF_  "J1939MultiPgSizeThreshold" 56;
+BA_DEF_DEF_  "J1939MultiPgBroadcastType" "FBFF";
+BA_DEF_DEF_  "NodeLayerModules" "";
+BA_DEF_DEF_  "NmStationAddress" 254;
+BA_DEF_DEF_  "NmJ1939AAC" 0;
+BA_DEF_DEF_  "NmJ1939IndustryGroup" 0;
+BA_DEF_DEF_  "NmJ1939System" 0;
+BA_DEF_DEF_  "NmJ1939SystemInstance" 0;
+BA_DEF_DEF_  "NmJ1939Function" 0;
+BA_DEF_DEF_  "NmJ1939FunctionInstance" 0;
+BA_DEF_DEF_  "NmJ1939ECUInstance" 0;
+BA_DEF_DEF_  "NmJ1939ManufacturerCode" 0;
+BA_DEF_DEF_  "NmJ1939IdentityNumber" 0;
+BA_DEF_DEF_  "ECU" "";
+BA_DEF_DEF_  "SAE_J1939_76_SpecVersion" "";
+BA_DEF_DEF_  "SAE_J1939_DA_SpecVersion" "";
+BA_DEF_DEF_  "SAE_J1939_81_SpecVersion" "";
+BA_DEF_DEF_  "DatabaseVersion" "";
+BA_DEF_DEF_  "BusType" "";
+BA_DEF_DEF_  "ProtocolType" "";
+BA_DEF_DEF_  "SAE_J1939_21_SpecVersion" "";
+BA_ "SAE_J1939_21_SpecVersion" "2018-10";
+BA_ "ProtocolType" "J1939";
+BA_ "BusType" "CAN";
+BA_ "DatabaseVersion" "16.0";
+BA_ "SAE_J1939_81_SpecVersion" "2017-03";
+BA_ "SAE_J1939_DA_SpecVersion" "2022-01";
+BA_ "SAE_J1939_76_SpecVersion" "2018-11";
+BA_ "SAE_J1939_22_SpecVersion" "2021-03";
+BA_ "GenMsgCycleTime" BO_ 2566843646 0;
+BA_ "GenMsgSendType" BO_ 2566843646 8;
+BA_ "GenMsgRequestable" BO_ 2566843646 1;
+BA_ "GenMsgDelayTime" BO_ 2566843646 0;
+BA_ "GenMsgILSupport" BO_ 2566843646 1;
+BA_ "GenMsgStartDelayTime" BO_ 2566843646 0;
+BA_ "GenMsgFastOnStart" BO_ 2566843646 0;
+BA_ "GenMsgCycleTimeFast" BO_ 2566843646 0;
+BA_ "GenMsgNrOfRepetition" BO_ 2566843646 0;
+BA_ "FsJ1939NeedsSHM" BO_ 2566843646 0;
+BA_ "FsJ1939Delay" BO_ 2566843646 0;
+BA_ "FsJ1939UseCrcAndCounter" BO_ 2566843646 "";
+BA_ "J1939PgAppearanceOnBus" BO_ 2566843646 0;
+BA_ "J1939CPgTF" BO_ 2566843646 0;
+BA_ "J1939CPgTOS" BO_ 2566843646 2;
+BA_ "J1939CPgSendTimeout" BO_ 2566843646 -1;
+BA_ "J1939FdTpADS" BO_ 2566843646 0;
+BA_ "J1939FdTpADT" BO_ 2566843646 0;
+BA_ "TpJ1939VarDlc" BO_ 2566843646 1;
+BA_ "VFrameFormat" BO_ 2566843646 3;
+BA_ "GenMsgRequestable" BO_ 2348875518 1;
+BA_ "GenMsgDelayTime" BO_ 2348875518 0;
+BA_ "GenMsgILSupport" BO_ 2348875518 1;
+BA_ "GenMsgStartDelayTime" BO_ 2348875518 0;
+BA_ "GenMsgFastOnStart" BO_ 2348875518 0;
+BA_ "GenMsgCycleTimeFast" BO_ 2348875518 0;
+BA_ "GenMsgNrOfRepetition" BO_ 2348875518 0;
+BA_ "TpJ1939VarDlc" BO_ 2348875518 0;
+BA_ "FsJ1939NeedsSHM" BO_ 2348875518 0;
+BA_ "FsJ1939Delay" BO_ 2348875518 0;
+BA_ "J1939PgAppearanceOnBus" BO_ 2348875518 0;
+BA_ "J1939CPgTF" BO_ 2348875518 0;
+BA_ "J1939CPgTOS" BO_ 2348875518 2;
+BA_ "J1939CPgSendTimeout" BO_ 2348875518 -1;
+BA_ "J1939FdTpADS" BO_ 2348875518 0;
+BA_ "J1939FdTpADT" BO_ 2348875518 0;
+BA_ "GenMsgCycleTime" BO_ 2348875518 10;
+BA_ "GenMsgSendType" BO_ 2348875518 0;
+BA_ "FsJ1939UseCrcAndCounter" BO_ 2348875518 "Ef";
+BA_ "VFrameFormat" BO_ 2348875518 3;
+BA_ "GenMsgRequestable" BO_ 2364540158 1;
+BA_ "GenMsgDelayTime" BO_ 2364540158 0;
+BA_ "GenMsgILSupport" BO_ 2364540158 1;
+BA_ "GenMsgStartDelayTime" BO_ 2364540158 0;
+BA_ "GenMsgFastOnStart" BO_ 2364540158 0;
+BA_ "GenMsgCycleTimeFast" BO_ 2364540158 0;
+BA_ "GenMsgNrOfRepetition" BO_ 2364540158 0;
+BA_ "TpJ1939VarDlc" BO_ 2364540158 0;
+BA_ "FsJ1939NeedsSHM" BO_ 2364540158 0;
+BA_ "FsJ1939Delay" BO_ 2364540158 0;
+BA_ "FsJ1939UseCrcAndCounter" BO_ 2364540158 "";
+BA_ "J1939PgAppearanceOnBus" BO_ 2364540158 0;
+BA_ "J1939CPgTF" BO_ 2364540158 0;
+BA_ "J1939CPgTOS" BO_ 2364540158 2;
+BA_ "J1939CPgSendTimeout" BO_ 2364540158 -1;
+BA_ "J1939FdTpADS" BO_ 2364540158 0;
+BA_ "J1939FdTpADT" BO_ 2364540158 0;
+BA_ "GenMsgCycleTime" BO_ 2364540158 50;
+BA_ "GenMsgSendType" BO_ 2364540158 0;
+BA_ "VFrameFormat" BO_ 2364540158 3;
+BA_ "GenMsgRequestable" BO_ 2432593918 1;
+BA_ "GenMsgILSupport" BO_ 2432593918 1;
+BA_ "GenMsgStartDelayTime" BO_ 2432593918 0;
+BA_ "GenMsgFastOnStart" BO_ 2432593918 0;
+BA_ "GenMsgCycleTimeFast" BO_ 2432593918 0;
+BA_ "GenMsgNrOfRepetition" BO_ 2432593918 0;
+BA_ "TpJ1939VarDlc" BO_ 2432593918 0;
+BA_ "FsJ1939NeedsSHM" BO_ 2432593918 0;
+BA_ "FsJ1939Delay" BO_ 2432593918 0;
+BA_ "FsJ1939UseCrcAndCounter" BO_ 2432593918 "";
+BA_ "J1939PgAppearanceOnBus" BO_ 2432593918 0;
+BA_ "J1939CPgTF" BO_ 2432593918 0;
+BA_ "J1939CPgTOS" BO_ 2432593918 2;
+BA_ "J1939CPgSendTimeout" BO_ 2432593918 -1;
+BA_ "J1939FdTpADS" BO_ 2432593918 0;
+BA_ "J1939FdTpADT" BO_ 2432593918 0;
+BA_ "GenMsgCycleTime" BO_ 2432593918 100;
+BA_ "GenMsgSendType" BO_ 2432593918 0;
+BA_ "GenMsgDelayTime" BO_ 2432593918 20;
+BA_ "VFrameFormat" BO_ 2432593918 3;
+BA_ "GenSigILSupport" SG_ 2566843646 VehicleIdentificationNumber 1;
+BA_ "GenSigSendType" SG_ 2566843646 VehicleIdentificationNumber 7;
+BA_ "GenSigStartValue" SG_ 2566843646 VehicleIdentificationNumber 0;
+BA_ "GenSigInactiveValue" SG_ 2566843646 VehicleIdentificationNumber 0;
+BA_ "SPN" SG_ 2566843646 VehicleIdentificationNumber 237;
+BA_ "SigType" SG_ 2566843646 VehicleIdentificationNumber 8;
+BA_ "GenSigILSupport" SG_ 2348875518 MessageChecksum 1;
+BA_ "GenSigSendType" SG_ 2348875518 MessageChecksum 7;
+BA_ "GenSigStartValue" SG_ 2348875518 MessageChecksum 0;
+BA_ "GenSigInactiveValue" SG_ 2348875518 MessageChecksum 0;
+BA_ "SPN" SG_ 2348875518 MessageChecksum 4207;
+BA_ "SigType" SG_ 2348875518 MessageChecksum 12;
+BA_ "GenSigILSupport" SG_ 2348875518 MessageCounter 1;
+BA_ "GenSigSendType" SG_ 2348875518 MessageCounter 7;
+BA_ "GenSigStartValue" SG_ 2348875518 MessageCounter 0;
+BA_ "GenSigInactiveValue" SG_ 2348875518 MessageCounter 0;
+BA_ "SPN" SG_ 2348875518 MessageCounter 4206;
+BA_ "SigType" SG_ 2348875518 MessageCounter 11;
+BA_ "GenSigILSupport" SG_ 2348875518 EngRequestedTorqueHighResolution 1;
+BA_ "GenSigSendType" SG_ 2348875518 EngRequestedTorqueHighResolution 7;
+BA_ "GenSigStartValue" SG_ 2348875518 EngRequestedTorqueHighResolution 0;
+BA_ "GenSigInactiveValue" SG_ 2348875518 EngRequestedTorqueHighResolution 0;
+BA_ "SPN" SG_ 2348875518 EngRequestedTorqueHighResolution 4191;
+BA_ "SigType" SG_ 2348875518 EngRequestedTorqueHighResolution 0;
+BA_ "GenSigILSupport" SG_ 2348875518 TSC1CtrlPurpose 1;
+BA_ "GenSigSendType" SG_ 2348875518 TSC1CtrlPurpose 7;
+BA_ "GenSigStartValue" SG_ 2348875518 TSC1CtrlPurpose 0;
+BA_ "GenSigInactiveValue" SG_ 2348875518 TSC1CtrlPurpose 0;
+BA_ "SPN" SG_ 2348875518 TSC1CtrlPurpose 3350;
+BA_ "SigType" SG_ 2348875518 TSC1CtrlPurpose 0;
+BA_ "GenSigILSupport" SG_ 2348875518 TSC1TransRate 1;
+BA_ "GenSigSendType" SG_ 2348875518 TSC1TransRate 7;
+BA_ "GenSigStartValue" SG_ 2348875518 TSC1TransRate 0;
+BA_ "GenSigInactiveValue" SG_ 2348875518 TSC1TransRate 0;
+BA_ "SPN" SG_ 2348875518 TSC1TransRate 3349;
+BA_ "SigType" SG_ 2348875518 TSC1TransRate 0;
+BA_ "GenSigILSupport" SG_ 2348875518 EngRequestedTorque_TorqueLimit 1;
+BA_ "GenSigSendType" SG_ 2348875518 EngRequestedTorque_TorqueLimit 7;
+BA_ "GenSigStartValue" SG_ 2348875518 EngRequestedTorque_TorqueLimit 0;
+BA_ "GenSigInactiveValue" SG_ 2348875518 EngRequestedTorque_TorqueLimit 0;
+BA_ "SPN" SG_ 2348875518 EngRequestedTorque_TorqueLimit 518;
+BA_ "SigType" SG_ 2348875518 EngRequestedTorque_TorqueLimit 1;
+BA_ "GenSigILSupport" SG_ 2348875518 EngRequestedSpeed_SpeedLimit 1;
+BA_ "GenSigSendType" SG_ 2348875518 EngRequestedSpeed_SpeedLimit 7;
+BA_ "GenSigStartValue" SG_ 2348875518 EngRequestedSpeed_SpeedLimit 0;
+BA_ "GenSigInactiveValue" SG_ 2348875518 EngRequestedSpeed_SpeedLimit 0;
+BA_ "SPN" SG_ 2348875518 EngRequestedSpeed_SpeedLimit 898;
+BA_ "SigType" SG_ 2348875518 EngRequestedSpeed_SpeedLimit 1;
+BA_ "GenSigILSupport" SG_ 2348875518 OverrideCtrlModePriority 1;
+BA_ "GenSigSendType" SG_ 2348875518 OverrideCtrlModePriority 7;
+BA_ "GenSigStartValue" SG_ 2348875518 OverrideCtrlModePriority 0;
+BA_ "GenSigInactiveValue" SG_ 2348875518 OverrideCtrlModePriority 0;
+BA_ "SPN" SG_ 2348875518 OverrideCtrlModePriority 897;
+BA_ "SigType" SG_ 2348875518 OverrideCtrlModePriority 5;
+BA_ "GenSigILSupport" SG_ 2348875518 EngRequestedSpeedCtrlConditions 1;
+BA_ "GenSigSendType" SG_ 2348875518 EngRequestedSpeedCtrlConditions 7;
+BA_ "GenSigStartValue" SG_ 2348875518 EngRequestedSpeedCtrlConditions 0;
+BA_ "GenSigInactiveValue" SG_ 2348875518 EngRequestedSpeedCtrlConditions 0;
+BA_ "SPN" SG_ 2348875518 EngRequestedSpeedCtrlConditions 696;
+BA_ "SigType" SG_ 2348875518 EngRequestedSpeedCtrlConditions 5;
+BA_ "GenSigILSupport" SG_ 2348875518 EngOverrideCtrlMode 1;
+BA_ "GenSigSendType" SG_ 2348875518 EngOverrideCtrlMode 7;
+BA_ "GenSigStartValue" SG_ 2348875518 EngOverrideCtrlMode 0;
+BA_ "GenSigInactiveValue" SG_ 2348875518 EngOverrideCtrlMode 0;
+BA_ "SPN" SG_ 2348875518 EngOverrideCtrlMode 695;
+BA_ "SigType" SG_ 2348875518 EngOverrideCtrlMode 5;
+BA_ "GenSigILSupport" SG_ 2364540158 EngDemandPercentTorque 1;
+BA_ "GenSigSendType" SG_ 2364540158 EngDemandPercentTorque 7;
+BA_ "GenSigStartValue" SG_ 2364540158 EngDemandPercentTorque 0;
+BA_ "GenSigInactiveValue" SG_ 2364540158 EngDemandPercentTorque 0;
+BA_ "SPN" SG_ 2364540158 EngDemandPercentTorque 2432;
+BA_ "SigType" SG_ 2364540158 EngDemandPercentTorque 1;
+BA_ "GenSigILSupport" SG_ 2364540158 EngStarterMode 1;
+BA_ "GenSigSendType" SG_ 2364540158 EngStarterMode 7;
+BA_ "GenSigStartValue" SG_ 2364540158 EngStarterMode 0;
+BA_ "GenSigInactiveValue" SG_ 2364540158 EngStarterMode 0;
+BA_ "SPN" SG_ 2364540158 EngStarterMode 1675;
+BA_ "SigType" SG_ 2364540158 EngStarterMode 0;
+BA_ "GenSigILSupport" SG_ 2364540158 SrcAddrssOfCntrllngDvcForEngCtrl 1;
+BA_ "GenSigSendType" SG_ 2364540158 SrcAddrssOfCntrllngDvcForEngCtrl 7;
+BA_ "GenSigStartValue" SG_ 2364540158 SrcAddrssOfCntrllngDvcForEngCtrl 0;
+BA_ "GenSigInactiveValue" SG_ 2364540158 SrcAddrssOfCntrllngDvcForEngCtrl 0;
+BA_ "SPN" SG_ 2364540158 SrcAddrssOfCntrllngDvcForEngCtrl 1483;
+BA_ "SigType" SG_ 2364540158 SrcAddrssOfCntrllngDvcForEngCtrl 0;
+BA_ "GenSigILSupport" SG_ 2364540158 EngSpeed 1;
+BA_ "GenSigSendType" SG_ 2364540158 EngSpeed 7;
+BA_ "GenSigStartValue" SG_ 2364540158 EngSpeed 0;
+BA_ "GenSigInactiveValue" SG_ 2364540158 EngSpeed 0;
+BA_ "SPN" SG_ 2364540158 EngSpeed 190;
+BA_ "SigType" SG_ 2364540158 EngSpeed 1;
+BA_ "GenSigILSupport" SG_ 2364540158 ActualEngPercentTorque 1;
+BA_ "GenSigSendType" SG_ 2364540158 ActualEngPercentTorque 7;
+BA_ "GenSigInactiveValue" SG_ 2364540158 ActualEngPercentTorque 0;
+BA_ "SPN" SG_ 2364540158 ActualEngPercentTorque 513;
+BA_ "GenSigStartValue" SG_ 2364540158 ActualEngPercentTorque 125;
+BA_ "SigType" SG_ 2364540158 ActualEngPercentTorque 1;
+BA_ "GenSigILSupport" SG_ 2364540158 DriversDemandEngPercentTorque 1;
+BA_ "GenSigSendType" SG_ 2364540158 DriversDemandEngPercentTorque 7;
+BA_ "GenSigInactiveValue" SG_ 2364540158 DriversDemandEngPercentTorque 0;
+BA_ "SPN" SG_ 2364540158 DriversDemandEngPercentTorque 512;
+BA_ "GenSigStartValue" SG_ 2364540158 DriversDemandEngPercentTorque 125;
+BA_ "SigType" SG_ 2364540158 DriversDemandEngPercentTorque 1;
+BA_ "GenSigILSupport" SG_ 2364540158 ActlEngPrcntTorqueHighResolution 1;
+BA_ "GenSigSendType" SG_ 2364540158 ActlEngPrcntTorqueHighResolution 7;
+BA_ "GenSigStartValue" SG_ 2364540158 ActlEngPrcntTorqueHighResolution 0;
+BA_ "GenSigInactiveValue" SG_ 2364540158 ActlEngPrcntTorqueHighResolution 0;
+BA_ "SPN" SG_ 2364540158 ActlEngPrcntTorqueHighResolution 4154;
+BA_ "SigType" SG_ 2364540158 ActlEngPrcntTorqueHighResolution 0;
+BA_ "GenSigILSupport" SG_ 2364540158 EngTorqueMode 1;
+BA_ "GenSigSendType" SG_ 2364540158 EngTorqueMode 7;
+BA_ "GenSigStartValue" SG_ 2364540158 EngTorqueMode 0;
+BA_ "GenSigInactiveValue" SG_ 2364540158 EngTorqueMode 0;
+BA_ "SPN" SG_ 2364540158 EngTorqueMode 899;
+BA_ "SigType" SG_ 2364540158 EngTorqueMode 0;
+BA_ "GenSigILSupport" SG_ 2432593918 ForwardCollisionWarning 1;
+BA_ "GenSigSendType" SG_ 2432593918 ForwardCollisionWarning 7;
+BA_ "GenSigStartValue" SG_ 2432593918 ForwardCollisionWarning 0;
+BA_ "GenSigInactiveValue" SG_ 2432593918 ForwardCollisionWarning 0;
+BA_ "SPN" SG_ 2432593918 ForwardCollisionWarning 5022;
+BA_ "SigType" SG_ 2432593918 ForwardCollisionWarning 5;
+BA_ "GenSigILSupport" SG_ 2432593918 ACCDistanceAlertSignal 1;
+BA_ "GenSigSendType" SG_ 2432593918 ACCDistanceAlertSignal 7;
+BA_ "GenSigStartValue" SG_ 2432593918 ACCDistanceAlertSignal 0;
+BA_ "GenSigInactiveValue" SG_ 2432593918 ACCDistanceAlertSignal 0;
+BA_ "SPN" SG_ 2432593918 ACCDistanceAlertSignal 1796;
+BA_ "SigType" SG_ 2432593918 ACCDistanceAlertSignal 5;
+BA_ "GenSigILSupport" SG_ 2432593918 ACCSystemShutoffWarning 1;
+BA_ "GenSigSendType" SG_ 2432593918 ACCSystemShutoffWarning 7;
+BA_ "GenSigStartValue" SG_ 2432593918 ACCSystemShutoffWarning 0;
+BA_ "GenSigInactiveValue" SG_ 2432593918 ACCSystemShutoffWarning 0;
+BA_ "SPN" SG_ 2432593918 ACCSystemShutoffWarning 1797;
+BA_ "SigType" SG_ 2432593918 ACCSystemShutoffWarning 5;
+BA_ "GenSigILSupport" SG_ 2432593918 ACCTargetDetected 1;
+BA_ "GenSigSendType" SG_ 2432593918 ACCTargetDetected 7;
+BA_ "GenSigStartValue" SG_ 2432593918 ACCTargetDetected 0;
+BA_ "GenSigInactiveValue" SG_ 2432593918 ACCTargetDetected 0;
+BA_ "SPN" SG_ 2432593918 ACCTargetDetected 1798;
+BA_ "SigType" SG_ 2432593918 ACCTargetDetected 5;
+BA_ "GenSigILSupport" SG_ 2432593918 RoadCurvature 1;
+BA_ "GenSigSendType" SG_ 2432593918 RoadCurvature 7;
+BA_ "GenSigStartValue" SG_ 2432593918 RoadCurvature 0;
+BA_ "GenSigInactiveValue" SG_ 2432593918 RoadCurvature 0;
+BA_ "SPN" SG_ 2432593918 RoadCurvature 1591;
+BA_ "SigType" SG_ 2432593918 RoadCurvature 1;
+BA_ "GenSigILSupport" SG_ 2432593918 AdptiveCruiseCtrlSetDistanceMode 1;
+BA_ "GenSigSendType" SG_ 2432593918 AdptiveCruiseCtrlSetDistanceMode 7;
+BA_ "GenSigStartValue" SG_ 2432593918 AdptiveCruiseCtrlSetDistanceMode 0;
+BA_ "GenSigInactiveValue" SG_ 2432593918 AdptiveCruiseCtrlSetDistanceMode 0;
+BA_ "SPN" SG_ 2432593918 AdptiveCruiseCtrlSetDistanceMode 1589;
+BA_ "SigType" SG_ 2432593918 AdptiveCruiseCtrlSetDistanceMode 0;
+BA_ "GenSigILSupport" SG_ 2432593918 AdaptiveCruiseCtrlMode 1;
+BA_ "GenSigSendType" SG_ 2432593918 AdaptiveCruiseCtrlMode 7;
+BA_ "GenSigStartValue" SG_ 2432593918 AdaptiveCruiseCtrlMode 0;
+BA_ "GenSigInactiveValue" SG_ 2432593918 AdaptiveCruiseCtrlMode 0;
+BA_ "SPN" SG_ 2432593918 AdaptiveCruiseCtrlMode 1590;
+BA_ "SigType" SG_ 2432593918 AdaptiveCruiseCtrlMode 0;
+BA_ "GenSigILSupport" SG_ 2432593918 AdaptiveCruiseCtrlSetSpeed 1;
+BA_ "GenSigSendType" SG_ 2432593918 AdaptiveCruiseCtrlSetSpeed 7;
+BA_ "GenSigStartValue" SG_ 2432593918 AdaptiveCruiseCtrlSetSpeed 0;
+BA_ "GenSigInactiveValue" SG_ 2432593918 AdaptiveCruiseCtrlSetSpeed 0;
+BA_ "SPN" SG_ 2432593918 AdaptiveCruiseCtrlSetSpeed 1588;
+BA_ "SigType" SG_ 2432593918 AdaptiveCruiseCtrlSetSpeed 1;
+BA_ "GenSigILSupport" SG_ 2432593918 DistanceToForwardVehicle 1;
+BA_ "GenSigSendType" SG_ 2432593918 DistanceToForwardVehicle 7;
+BA_ "GenSigStartValue" SG_ 2432593918 DistanceToForwardVehicle 0;
+BA_ "GenSigInactiveValue" SG_ 2432593918 DistanceToForwardVehicle 0;
+BA_ "SPN" SG_ 2432593918 DistanceToForwardVehicle 1587;
+BA_ "SigType" SG_ 2432593918 DistanceToForwardVehicle 1;
+BA_ "GenSigILSupport" SG_ 2432593918 SpeedOfForwardVehicle 1;
+BA_ "GenSigSendType" SG_ 2432593918 SpeedOfForwardVehicle 7;
+BA_ "GenSigStartValue" SG_ 2432593918 SpeedOfForwardVehicle 0;
+BA_ "GenSigInactiveValue" SG_ 2432593918 SpeedOfForwardVehicle 0;
+BA_ "SPN" SG_ 2432593918 SpeedOfForwardVehicle 1586;
+BA_ "SigType" SG_ 2432593918 SpeedOfForwardVehicle 1;
+VAL_ 2348875518 EngRequestedTorqueHighResolution 7 "+0.875%" 1 "+0.125%" 0 "+0.000%" ;
+VAL_ 2348875518 TSC1CtrlPurpose 6 "P7 = Automated Driving System Input" 31 "P32 = Temporary Powertrain Control" 5 "P6 = Transient-Optimized Torque Limit" 4 "P5 = Engine Protection" 3 "P4 = Road Speed Governor" 2 "P3 = PTO Governor" 1 "P2 = Cruise Control" 0 "P1 = Accelerator Pedal/Operator Selection" ;
+VAL_ 2348875518 TSC1TransRate 4 "100 ms transmission rate" 3 "250 ms transmission rate" 2 "500 ms transmission rate" 1 "750 ms transmission rate" 0 "1000 ms transmission rate" 7 "Use standard TSC1 transmission rates of 10 ms to engine" 6 "20 ms transmission rate" 5 "50 ms transmission rate" ;
+VAL_ 2348875518 OverrideCtrlModePriority 3 "Low priority" 2 "Medium priority" 1 "High priority" 0 "Highest priority" ;
+VAL_ 2348875518 EngRequestedSpeedCtrlConditions 3 "Stability Optimized for driveline engaged and/or in lockup condition 2" 2 "Stability Optimized for driveline engaged and/or in lockup condition 1" 1 "Stability Optimized for driveline disengaged and non-lockup conditions" 0 "Transient Optimized for driveline disengaged and non-lockup conditions" ;
+VAL_ 2348875518 EngOverrideCtrlMode 3 "Speed/torque limit control" 2 "Torque control" 1 "Speed control" 0 "Override disabled" ;
+VAL_ 2364540158 EngStarterMode 15 "not available" 14 "error" 13 "error, legacy implementation only" 12 "starter inhibited" 11 "starter inhibited due to ignition key cycle required" 10 "starter inhibited due to active emissions control system condition" 9 "starter inhibited due to intake air shutoff valve being active" 8 "starter inhibited due to starter over-temp" 7 "starter inhibited due to active immobilizer" 6 "starter inhibited due to driveline engaged or other transmission inhibit" 5 "starter inhibited due to engine not ready for start" 4 "starter inhibited due to engine already running" 3 "start finished" 2 "starter active and engaged" 1 "starter active but not engaged" 0 "start not requested" ;
+VAL_ 2364540158 ActlEngPrcntTorqueHighResolution 7 "+0.875%" 1 "+0.125%" 0 "+0.000%" ;
+VAL_ 2432593918 ForwardCollisionWarning 3 "not available" 2 "Error indicator" 1 "Collision is imminent" 0 "No warning" ;
+VAL_ 2432593918 ACCDistanceAlertSignal 3 "Take no action" 2 "Reserved" 1 "ACC DAS Active" 0 "ACC DAS Not Active" ;
+VAL_ 2432593918 ACCSystemShutoffWarning 3 "Take no action" 2 "Reserved" 1 "ACC SSOW Active" 0 "ACC SSOW Not Active" ;
+VAL_ 2432593918 ACCTargetDetected 3 "Take no action" 2 "Reserved" 1 "Target detected" 0 "No targets detected" ;
+VAL_ 2432593918 AdptiveCruiseCtrlSetDistanceMode 7 "Not available/not valid" 6 "Error condition" 5 "Conventional cruise control mode" 4 "ACC Distance mode #5" 3 "ACC Distance mode #4" 2 "ACC Distance mode #3" 1 "ACC Distance mode #2" 0 "ACC Distance mode #1" ;
+VAL_ 2432593918 AdaptiveCruiseCtrlMode 7 "Not available/not valid" 6 "Disabled or error condition" 5 "Finish mode" 4 "Hold mode" 3 "Overtake mode" 2 "Distance control active" 1 "Speed control active" 0 "Off" ;
+

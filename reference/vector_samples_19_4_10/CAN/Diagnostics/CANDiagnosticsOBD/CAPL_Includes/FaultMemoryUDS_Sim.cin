@@ -1,0 +1,159 @@
+/*@!Encoding:1252*/
+
+on diagRequest %BASE_FILE_NAME_NO_EXT%.ControlDTCSetting_Off
+{
+  diagResponse this resp;
+
+  if (PreventAccessInsideDefaultSession(this, cNRC_ConditionsNotCorrectOrRequestSequenceError)) return;
+
+  refreshS3Timer();
+  @sysvarMember::%BASE_FILE_NAME_NO_EXT%::FaultMemoryInternal.FaultMemoryActivated=0;
+  diagSendPositiveResponse(resp);
+}
+
+on diagRequest %BASE_FILE_NAME_NO_EXT%.ControlDTCSetting_On
+{
+  diagResponse this resp;
+
+  if (PreventAccessInsideDefaultSession(this, cNRC_ConditionsNotCorrectOrRequestSequenceError)) return;
+
+  refreshS3Timer();
+  @sysvarMember::%BASE_FILE_NAME_NO_EXT%::FaultMemoryInternal.FaultMemoryActivated=1;
+  diagSendPositiveResponse(resp);
+}
+
+on diagRequest %BASE_FILE_NAME_NO_EXT%.FaultMemory_Clear
+{
+  diagResponse this resp;
+  long toBeClearedDTC;
+  
+  refreshS3Timer();
+  toBeClearedDTC=diagGetParameter(this, "GroupOfDtc");
+  if (0xFFFFFF == toBeClearedDTC) {
+    ClearFaultmem(fmtAll);
+  }
+  else {
+    if (0x000000 == toBeClearedDTC || 0xFFFF33 == toBeClearedDTC){ // Emission-related DTCs
+      ClearFaultmem(fmtOBDonUDS);
+    }
+    else {
+      RemoveFault(toBeClearedDTC);
+    }
+  }
+  diagSendPositiveResponse(resp);
+}
+
+on diagRequest %BASE_FILE_NAME_NO_EXT%.FaultMemory_ReadNumber
+{
+  diagResponse this resp;
+  byte statusMask;
+  word k;
+  double DTC_count;
+  
+  refreshS3Timer();
+  DTC_count=0;
+  statusMask=getStatusMask(this);
+  
+  for (k=0; k<cMaxNumberOfSupportedDTCs; k++) {
+    if ((gFM.Fault[k].status & statusMask) && (gFM.Fault[k].extDataRecord.occurranceCounter>0) && (gFM.Fault[k].fmType==fmtPrimary)) {
+      DTC_count++;
+    }
+  }
+  setDTCStatusAvailabilityMask(resp, "DTCStatusAvailabilityMask");
+  diagSetParameter(resp, "DTCCount", DTC_count);
+  diagSendPositiveResponse(resp);
+}
+
+on diagRequest %BASE_FILE_NAME_NO_EXT%.FaultMemory_Read_fault_detection_counter
+{
+  diagResponse this resp;
+  word k;
+  word recordCounter;
+
+  refreshS3Timer();
+  
+  recordCounter=0;
+  for (k=0; k<cMaxNumberOfSupportedDTCs; k++) {
+    if ((gFM.Fault[k].extDataRecord.occurranceCounter>0) && (gFM.Fault[k].extDataRecord.occurranceCounter<0x7F) && (gFM.Fault[k].fmType==fmtPrimary)) {
+      diagSetComplexParameter(resp, "DTCFaultDetectionCounterRecord", recordCounter, "DTC", gFM.Fault[k].DTC);
+      diagSetComplexParameter(resp, "DTCFaultDetectionCounterRecord", recordCounter, "DTCFaultDetectionCounter", 127); // report fix fault detection counter to simplify this example
+      recordCounter++;
+    }
+  }
+  diagSendPositiveResponse(resp);
+}
+
+on diagRequest %BASE_FILE_NAME_NO_EXT%.FaultMemory_ReadAllSupported
+{
+  diagResponse this resp;
+
+  ReadAllSupported(resp, fmtAll);
+}
+
+on diagRequest %BASE_FILE_NAME_NO_EXT%.FaultMemory_ReadAllIdentified
+{
+  byte statusMask;
+  diagResponse this resp;
+  
+  statusMask=getStatusMask(this);
+
+  ReadAllIdentified(resp, statusMask, fmtNoUserdefined);
+}
+
+on diagRequest %BASE_FILE_NAME_NO_EXT%.User_Defined_Fault_Memory_Read_by_Status_Mask
+{
+  byte statusMask;
+  diagResponse this resp;
+  
+  statusMask=getStatusMask(this);
+  
+  ReadAllIdentified(resp, statusMask, fmtUserDefined);
+}
+
+on diagRequest %BASE_FILE_NAME_NO_EXT%.FaultMemory_Read_extended_data_record
+{
+  diagResponse this resp;
+  dword DTC;
+  byte dataRecordNumber;
+  
+  DTC=diagGetParameter(this, "DTC");
+  dataRecordNumber=(byte)diagGetParameter(this, "DTCExtendedDataRecordNumber.Record_Numbers");
+  
+  ReadExtendedDataRecords(resp, DTC, dataRecordNumber, fmtPrimary);
+}
+
+on diagRequest %BASE_FILE_NAME_NO_EXT%.User_Defined_Fault_Memory_Read_Extended_Data_Records
+{
+  diagResponse this resp;
+  dword DTC;
+  byte dataRecordNumber;
+  
+  DTC=diagGetParameter(this, "DTC");
+  dataRecordNumber=(byte)diagGetParameter(this, "DTCExtendedDataRecordNumber.Record_Numbers");
+  
+  ReadExtendedDataRecords(resp, DTC, dataRecordNumber, fmtUserDefined);
+}
+
+on diagRequest %BASE_FILE_NAME_NO_EXT%.FaultMemory_Read_snapshot_record
+{
+  diagResponse this resp;
+  dword DTC;
+  byte recordNumbers;
+  
+  DTC=diagGetParameter(this, "DTC");
+  recordNumbers=(byte)diagGetParameter(this, "Record_Numbers");
+
+  ReadSnapshotRecords(resp, DTC, recordNumbers, fmtPrimary);
+}
+
+on diagRequest %BASE_FILE_NAME_NO_EXT%.User_Defined_Fault_Memory_Read_Snapshots
+{
+  diagResponse this resp;
+  dword DTC;
+  byte recordNumbers;
+  
+  DTC=diagGetParameter(this, "DTC");
+  recordNumbers=(byte)diagGetParameter(this, "Record_Numbers");
+
+  ReadSnapshotRecords(resp, DTC, recordNumbers, fmtUserDefined);
+}

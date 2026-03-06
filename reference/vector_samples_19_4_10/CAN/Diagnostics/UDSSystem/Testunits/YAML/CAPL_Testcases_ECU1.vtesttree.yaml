@@ -1,0 +1,39 @@
+version: 2.2.0
+
+test-tree:
+    - capl-test-case: TCSendDiagnosticRequest
+      title: 01 Create and send a diagnostic request
+      params: [01]
+    - capl-test-case: TCSetDoorContacts
+      title: 02 Set parameter of a request
+      params: [02]
+    - capl-test-case: TCReadSerialNumber
+      title: 03 Send a request, receive a response and check the response parameter values
+      params: [03]
+    - capl-test-case: TCReadSerialNumberFGR
+      title: 03.1 Send a FGR request, receive responses and check the response parameter values
+      params: [03.1]
+    - capl-test-case: TCReadFaultMemory
+      title: 04 Read fault memory via CAPL
+      params: [04]
+    - capl-test-case: TCReadExtendedData
+      title: 05 Read extended data via CAPL
+      params: [05]
+    - capl-test-case: TCReadSnapshotData
+      title: 06 Read snapshot data via CAPL
+      params: [06]
+    - test-fixture: Variant Specific Data
+      description: Variant Specific Data
+      elements:
+      - capl-test-case: TCDetermineVariant
+        title: 07 Determine and set variant
+        params: [07]
+      - capl-test-case: TCWriteAndReadVariantSpecificData
+        title: 08 Write and Read Variant Specific Data
+        params: [8]
+    - capl-test-case: TCDownload
+      title: 09 Download
+      params: [9,DoorFL]
+    - capl-test-case: TCDefineAndReadDDDIDs
+      title: 10 Define and read DDDIDs
+      params: [10]

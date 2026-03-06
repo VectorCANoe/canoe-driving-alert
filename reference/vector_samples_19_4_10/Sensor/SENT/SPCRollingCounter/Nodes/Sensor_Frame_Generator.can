@@ -1,0 +1,150 @@
+/*@!Encoding:1252*/
+includes
+{
+  
+}
+
+variables
+{
+  const dword cNumSensorsPerChannel = 4;
+  const dword cQueueFillThreshold = 20;
+  dword cSignalDataNibbles[cNumSensorsPerChannel] = { 4, 3, 2, 1 };
+  
+  dword gSensorQueueFillLevel[cNumSensorsPerChannel] = { 0, 0, 0, 0 };
+  byte gRollingCtrValues[cNumSensorsPerChannel] = { 1, 1, 1, 1 };
+}
+
+on preStart
+{
+  // Start with pre-filled queues.
+  FillSensorQueue(0);
+  FillSensorQueue(1);
+  FillSensorQueue(2);
+  FillSensorQueue(3);
+}
+
+on sysvar SENSOR::SENT::SENSORSIM::Sensor1::SensorFrame
+{
+  NotifySensorFrameTransmission(0);
+}
+
+on sysvar SENSOR::SENT::SENSORSIM::Sensor2::SensorFrame
+{
+  NotifySensorFrameTransmission(1);
+}
+
+on sysvar SENSOR::SENT::SENSORSIM::Sensor3::SensorFrame
+{
+  NotifySensorFrameTransmission(2);
+}
+
+on sysvar SENSOR::SENT::SENSORSIM::Sensor4::SensorFrame
+{
+  NotifySensorFrameTransmission(3);
+}
+
+dword GetSensorSignal(dword sensorIdx)
+{
+  dword signalValue;
+  dword signalMask;
+  
+  switch (sensorIdx)
+  {
+    case 0:
+      signalValue = @SensorData::Sensor1Signal;
+      break;
+      
+    case 1:
+      signalValue = @SensorData::Sensor2Signal;
+      break;
+      
+    case 2:
+      signalValue = @SensorData::Sensor3Signal;
+      break;
+      
+    case 3:
+      signalValue = @SensorData::Sensor4Signal;
+      break;
+      
+    default:
+      return 0;
+  }
+  
+  // Mask the transferred signal value according to the configured number of data nibbles.
+  signalMask = (1 << (cSignalDataNibbles[sensorIdx] * 4)) - 1;
+  return signalValue & signalMask;
+}
+
+void AssembleSentFrame(dword sensorIdx, SentSensorFrameStruct frm)
+{
+  frm.CrcMode = eSentAutoCrc;
+  frm.StatusBits = 0;
+  frm.DataBits = 0;
+  
+  if (sensorIdx >= cNumSensorsPerChannel) return;
+  
+  // Assemble the frame from the current rolling counter and signal value.
+  frm.DataBits = GetSensorSignal(sensorIdx) << 8;
+  frm.DataBits |= gRollingCtrValues[sensorIdx];
+}
+
+enum sensorErrorCode QueueNextSentFrame(dword sensorIdx)
+{
+  SentSensorFrameStruct frm;
+  enum sensorErrorCode result;
+  
+  if (sensorIdx >= cNumSensorsPerChannel)
+    return eSensorInvalidArgument;
+  
+  AssembleSentFrame(sensorIdx, frm);
+  
+  // Enqueue assembled frame into the specified sensor's queue.
+  switch (sensorIdx)
+  {
+    case 0:
+      result = sysvar::SENSOR::SENT::SENSORSIM::Sensor1.QueueSentFrame(frm);
+      break;
+      
+    case 1:
+      result = sysvar::SENSOR::SENT::SENSORSIM::Sensor2.QueueSentFrame(frm);;
+      break;
+      
+    case 2:
+      result = sysvar::SENSOR::SENT::SENSORSIM::Sensor3.QueueSentFrame(frm);
+      break;
+      
+    case 3:
+      result = sysvar::SENSOR::SENT::SENSORSIM::Sensor4.QueueSentFrame(frm);
+      break;
+  }
+  
+  if (result == eSensorNoError)
+  {
+    // On success, increment queue fill level and rolling counter value.
+    gSensorQueueFillLevel[sensorIdx]++;
+    gRollingCtrValues[sensorIdx]++;
+  }
+  
+  return result;
+}
+
+void FillSensorQueue(dword sensorIdx)
+{
+  if (sensorIdx < cNumSensorsPerChannel)
+  {
+    // Enqueue values until the desired fill level is reached or an error is reported.
+    while (QueueNextSentFrame(sensorIdx) == eSensorNoError 
+      && gSensorQueueFillLevel[sensorIdx] < cQueueFillThreshold);
+  }  
+}
+
+void NotifySensorFrameTransmission(dword sensorIdx)
+{
+  if (gSensorQueueFillLevel[sensorIdx] > 0)
+  {
+    // Decrement queue fill level.
+    gSensorQueueFillLevel[sensorIdx]--;
+  }
+  // Ensure uninterrupted value transmission.
+  FillSensorQueue(sensorIdx);
+}

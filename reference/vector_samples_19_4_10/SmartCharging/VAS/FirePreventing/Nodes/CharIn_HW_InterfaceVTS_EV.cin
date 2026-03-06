@@ -1,0 +1,647 @@
+/*@!Encoding:1252*/
+/*
+This document provides an implementation of the CharIn hardware interface for the VT system. 
+The names are according to the CharIn Function List.
+In addition it implements a simulation of hardware related signals for the simulated mode to be used in the sample configuration.
+*/
+
+includes
+{
+}
+
+variables
+{ 
+  int contactorState = 0;
+  
+  // inlet locking
+  int inletLockedState = 0;
+  
+  mstimer TswitchS2;  
+  msTimer T2switchS2;
+  
+  const int cDelay_S2 = 100;
+  const int oDelay_S2 = 3000; // Dealy for opening the S2 switch (transistion from state C to B), if no PowerDeliveryReq/Res was sent (e.g., Nodelayer inaktive)
+}
+
+on start
+{
+}
+
+/// <CharINInterface>
+export long ST_Init()
+{
+  @sysvar::VTS::VT_EV::Relay_K1 = 0;   // PP open
+  @sysvar::VTS::VT_EV::Relay_K2 = 0;
+  @sysvar::VTS::VT_EV::Relay_K3 = 0;
+  @sysvar::VTS::VT_EV::Relay_K4 = 0;
+  @sysvar::VTS::VT_EV::Relay_K5 = 0;
+  @sysvar::VTS::VT_EV::Relay_K6 = 0;
+  @sysvar::VTS::VT_EV::Relay_K7 = 0;
+  @sysvar::VTS::VT_EV::Relay_K8 = 0;
+  @sysvar::VTS::VT_EV::Relay_K9 = 0;
+  @sysvar::VTS::VT_EV::Relay_K10 = 0;
+  @sysvar::VTS::VT_EV::Relay_K11 = 0;
+  @sysvar::VTS::VT_EV::Relay_K12 = 0;
+  @sysvar::VTS::VT_EV::Relay_K13 = 0;
+  @sysvar::VTS::VT_EV::Relay_K14 = 0;
+  @sysvar::VTS::VT_EV::Relay_K15 = 0;
+  @sysvar::VTS::VT_EV::Relay_K16 = 0;
+  @sysvar::VTS::VT_EV::Relay_K17 = 0;
+  @sysvar::VTS::VT_EV::Relay_K18 = 0;
+  @sysvar::VTS::VT_EV::Relay_K19 = 0;
+  @sysvar::VTS::VT_EV::Relay_K20 = 0;
+  @sysvar::VTS::VT_EV::Relay_K21 = 0;
+  @sysvar::VTS::VT_EV::Relay_K22 = 0;
+  @sysvar::VTS::VT_EV::Relay_K23 = 1;
+  @sysvar::VTS::VT_EV::Relay_K24 = 1;
+  @sysvar::VTS::VT_EV::Relay_K25 = 0;
+  @sysvar::VTS::VT_EV::Relay_K26 = 0;   // CP open
+  @sysvar::VTS::VT_EV::Relay_K27 = 0;
+  @sysvar::VTS::VT_EV::Relay_K28 = 1;
+  @sysvar::VTS::VT_EV::Relay_K29 = 0;
+  @sysvar::VTS::VT_EV::Relay_K31 = 0;
+  @sysvar::VTS::VT_EV::Relay_K32 = 0;
+  @sysvar::VTS::VT_EV::Relay_K33 = 0;
+  @sysvar::VTS::VT_EV::Relay_K34 = 0;
+  @sysvar::VTS::VT_EV::Relay_K35 = 0;
+  @sysvar::VTS::VT_EV::Relay_K36 = 0;
+  @sysvar::VTS::VT_EV::Relay_K37 = 0;
+
+  @sysvar::VTS::VT_EV::StimVoltageHigh = 0;
+  @sysvar::VTS::VT_EV::StimVoltageLow = 0;
+  @sysvar::VTS::VT_EV::StimFrequency = 0;
+  @sysvar::VTS::VT_EV::StimDutyCycle = 0;  
+  
+  inletLockedState = 0; // open
+  contactorState = 0; // "open"
+  
+  return 0;
+}
+
+/// <CharINInterface>
+export long ST_Reset()
+{
+  HV_PSU_AC_enable(0);
+  HV_set_AC_relays(0,0,0,0);
+  
+  HV_source_set_output(0);
+  HV_PSU_DC_enable(0);
+  
+  return 0;
+}
+
+/// <CP_PP>
+export double CP_EV_get_Voltage_positive()
+{
+  return @VTS::VT_EV::MeasVoltageHigh;
+  
+  return 0;
+}
+
+on sysvar_update VTS::VT_EV::MeasVoltageHigh
+{
+  int State_old = 0;  
+  
+  if (11 < @this && @this < 13)
+  {
+    //write("State A");
+    @VT_Control::IEC61851_State_EV = 1;    
+  }
+  else if (8 < @this && @this < 10)
+  {
+    //write("State B");
+    @VT_Control::IEC61851_State_EV = 2;
+  }
+  else if (5 < @this && @this < 7)
+  {
+    //write("State C");
+    @VT_Control::IEC61851_State_EV = 3;
+  }
+  else if (2 < @this && @this < 4)
+  {
+    //write("State D");
+    @VT_Control::IEC61851_State_EV = 4;
+  }
+  else if (-1 < @this && @this  <1)
+  {
+    //write("State E");
+    @VT_Control::IEC61851_State_EV = 5;
+  }
+  else if (-13 < @this && @this < -11)
+  {
+    //write("State F");
+    @VT_Control::IEC61851_State_EV = 6;
+  }
+  else
+  {
+    @VT_Control::IEC61851_State_EV = 0;
+  }
+  
+  if (@VT_Control::IEC61851_State_EV != State_old)
+  {
+    write("VT_EV::IEC61851: State changed to: %d", @VT_Control::IEC61851_State_EV);
+        
+    State_old = @VT_Control::IEC61851_State_EV;
+  }
+}
+
+on sysvar_update VTS::VT_EV::MeasPPVoltage
+{
+  /*  extended voltage values for plug present detection
+  without plug          4,46V
+  13 A coding           3,73V
+  20 A coding           3,11V
+  32 A coding           1,91V
+  63 / 70 A coding      1,13V
+  SAE J1772
+  Switch S3 closed      1,51V
+  Switch S3 open        2,76V
+  */
+  
+  int plugPresent_old = 0;  // output only on change!
+  int plugPresent = 0;
+    
+  if (@this > 4)
+  {
+    plugPresent = 0;
+    
+    if (plugPresent != plugPresent_old)
+      write("No plug present");
+    
+    plugPresent_old = plugPresent;
+  }
+  else if (3.9 > @this & @this > 3.5)
+  {
+    plugPresent = 1;
+    
+    if (plugPresent != plugPresent_old)
+      write("[%6.3f] Plug present: 13A", (timeNow()/100000.0));
+    
+    plugPresent_old = plugPresent;
+  }
+  else if (3.3 > @this & @this > 2.9)
+  {
+    plugPresent = 1;
+    
+    if (plugPresent != plugPresent_old)
+      write("Plug present: 20A");
+    
+    plugPresent_old = plugPresent;
+  }
+  else if (2.1 > @this & @this > 1.7)
+  {
+    plugPresent = 1;
+    
+    if (plugPresent != plugPresent_old)
+      write("Plug present: 32A");
+    
+    plugPresent_old = plugPresent;
+  }
+  else if (1.3 > @this & @this > 0.9)
+  {
+    plugPresent = 1;
+
+    
+    if (plugPresent != plugPresent_old)
+      write("Plug present: 63A");
+    
+    plugPresent_old = plugPresent;
+  }
+  else
+  {
+    plugPresent = 1;
+    
+    if (plugPresent != plugPresent_old)
+      write("Plug present: But undefined resistance!");
+    
+    plugPresent_old = plugPresent;
+  }
+  
+  // Start Simulation
+  if (@sysvar::VT_Control::IgnorePP == 0)
+  {
+    @sysvar::EV_Sim::Control::SysEV_Connected =  plugPresent;
+  }
+}
+
+on sysvar_update VT_Control::IEC61851_State_EV
+{
+  if((@sysvar::EV_Sim::Control::SysEV_Connected == 1)  && @sysvar::Common::SysUserChargingMode == sysvar::Common::SysUserChargingMode::AC)
+  {
+    if(@sysvar::EV_Sim::Control::SysUserChargingCommunication == sysvar::EV_Sim::Control::SysUserChargingCommunication::HLC) // HLC
+    {
+      if(@this == sysvar::VT_Control::IEC61851_State_EV::State_C || @this == sysvar::VT_Control::IEC61851_State_EV::State_D)
+      {
+        HV_set_AC_relays(1, 1, 1, 1); // Close contactors of AC power supply; three phase mode implemented here!
+      }
+      else
+      {
+        if(StopChargingRunning == 0)
+          HV_set_AC_relays(0, 0, 0, 0); // Open contactors of AC power supply
+      }
+    }
+    else // LLC
+    {
+      if(GetMaxCurrentFromDutyCycle() >= 0) // Basic charging active
+      {
+        if(@this == sysvar::VT_Control::IEC61851_State_EV::State_B)
+        {
+          ControlBasicCharging();
+        }
+        else if(@this == sysvar::VT_Control::IEC61851_State_EV::State_C || @this == sysvar::VT_Control::IEC61851_State_EV::State_D)
+        {
+          if(@sysvar::EV_Sim::Control::SysEV_AC_Phases == sysvar::EV_Sim::Control::SysEV_AC_Phases::ThreePhase)
+            HV_set_AC_relays(1, 1, 1, 1); // Close all contactors of AC power supply
+          else if(@sysvar::EV_Sim::Control::SysEV_AC_Phases == sysvar::EV_Sim::Control::SysEV_AC_Phases::SinglePhase)
+            HV_set_AC_relays(1, 0, 0, 1); // Close L1 and N contactors of AC power supply
+          else if(@sysvar::EV_Sim::Control::SysEV_AC_Phases == sysvar::EV_Sim::Control::SysEV_AC_Phases::CustomPhase)
+            HV_set_AC_relays(@sysvar::EV_Sim::Control::SysEV_AC_Phases_L1_Enabled, @sysvar::EV_Sim::Control::SysEV_AC_Phases_L2_Enabled, @sysvar::EV_Sim::Control::SysEV_AC_Phases_L3_Enabled, @sysvar::EV_Sim::Control::SysEV_AC_Phases_N_Enabled); // Close selected contactors of AC power supply
+        }
+      }
+      else
+      {
+        if(StopChargingRunning == 0)
+          HV_set_AC_relays(0, 0, 0, 0); // Open contactors of AC power supply
+      }
+    }
+  }
+}
+
+/// <Helper>
+double GetMaxCurrentFromDutyCycle()
+{
+  double dutyCycle;
+  
+  dutyCycle = CP_EV_get_DutyCycle();
+  
+  if(dutyCycle >= 3.0  && dutyCycle <= 7.0)
+    return -1; // defined by HLC
+  else if(dutyCycle >= 8.0 && dutyCycle < 10.0)
+    return 6;
+  else if(dutyCycle >= 10.0 && dutyCycle <= 85.0)
+    return dutyCycle * 0.6;
+  else if(dutyCycle > 85.0 && dutyCycle <= 96.0)
+    return (dutyCycle - 64) * 2.5;
+  else if(dutyCycle > 96.0 && dutyCycle <= 97.0)
+    return 80;
+  else
+    return 0;
+}
+
+void Open_S2()
+{ 
+  @VTS::VT_EV::Relay_K14 = 0;
+  write("%d VT_Control: S2 opening!", TimeNow());
+	cancelTimer(T2switchS2);
+}
+
+void Close_S2()
+{
+  // this functions sets the s2 switch (EV emulation), when the cable is plugged and PWM duty cycle is < 96%
+  
+  if (@sysvar::EV_Sim::Control::SysEV_Connected && @VTS::VT_EV::MeasDutyCycle < 96) // 
+  {
+    @VTS::VT_EV::Relay_K14 = 1;
+    write("%d VT_Control: S2 closing!", TimeNow());    
+  }
+  else
+  {
+    write("%d VT_Control: Error closing S2! Cable not plugged or EVSE not ready!", TimeNow() / 10000);
+  }
+}
+  
+// Synchronization  
+ReactOnEVStop()
+{
+  setTimer(T2switchS2, oDelay_S2);
+}
+
+// Timer for S2 open (transition state C to B) if no PowerDeliveryReq/Res was sent (e.g., Nodelayer inaktive)
+on timer T2switchS2
+{
+  Open_S2();
+}
+
+on sysvar EV_Sim::SysEV_Error
+{
+  Open_S2();
+}
+
+on timer TswitchS2
+{
+  if (@sysvar::EV_Sim::VT_Access::SysEV_S2close)
+  {
+    Close_S2();
+  }
+  else
+  {
+    Open_S2();
+  }
+}
+
+on sysvar EV_Sim::VT_Access::SysEV_S2close
+{
+  settimer(TswitchS2, cDelay_S2);
+}
+
+
+/// <CP_PP>
+export double CP_EV_get_DutyCycle()
+{
+  return @sysvar::VTS::VT_EV::MeasDutyCycle;
+  
+  return 0;
+}
+
+/// <CP_PP>
+export CP_EV_SetCPStateB()
+{
+  @sysvar::VTS::VT_EV::Relay_K9 = 1; 
+  @sysvar::VTS::VT_EV::Relay_K11 = 1;
+  @sysvar::VTS::VT_EV::Relay_K14 = 0;
+  @sysvar::VTS::VT_EV::Relay_K15 = 0;
+  @sysvar::VTS::VT_EV::Relay_K16 = 0;
+  @sysvar::VTS::VT_EV::Relay_K19 = 0;
+}
+
+/// <CP_PP>
+export CP_EV_SetCPStateC()
+{
+  @sysvar::VTS::VT_EV::Relay_K9 = 1; 
+  @sysvar::VTS::VT_EV::Relay_K11 = 1;
+  @sysvar::VTS::VT_EV::Relay_K14 = 1;
+  @sysvar::VTS::VT_EV::Relay_K15 = 0;
+  @sysvar::VTS::VT_EV::Relay_K16 = 0;
+  @sysvar::VTS::VT_EV::Relay_K19 = 1;
+}
+
+/// <CP_PP>
+export CP_EV_SetCPStateD()
+{
+  @sysvar::VTS::VT_EV::Relay_K9 = 1; 
+  @sysvar::VTS::VT_EV::Relay_K11 = 1;
+  @sysvar::VTS::VT_EV::Relay_K14 = 1; 
+  @sysvar::VTS::VT_EV::Relay_K15 = 1; 
+  @sysvar::VTS::VT_EV::Relay_K16 = 1;
+  @sysvar::VTS::VT_EV::Relay_K19 = 0;
+}
+
+/// <CP_PP>
+export double CP_EV_get_Frequency()
+{ 
+  return @sysvar::VTS::VT_EV::MeasFrequency;
+  
+  return 0;
+}
+
+/// <CP_PP>
+export void CP_EV_set_Open_Circuit(long closed)
+{
+  if (closed > 0)
+  {
+    @sysvar::VTS::VT_EV::Relay_K26 = 1;
+    @sysvar::VTS::VT_EV::Relay_K27 = 1;
+    
+    inletLockedState = 1;
+  }
+  else
+  {
+    @sysvar::VTS::VT_EV::Relay_K26 = 0;
+    @sysvar::VTS::VT_EV::Relay_K27 = 0;
+    
+    inletLockedState = 0;
+  }
+  OnLockedStatusChanged(inletLockedState);
+}
+
+/// <CP_PP>
+export int CP_EV_get_Open_Circuit()
+{
+  if(@sysvar::VTS::VT_EV::Relay_K26 == 1 || @sysvar::VTS::VT_EV::Relay_K27 == 1)
+    return 1;
+  else
+    return 0;
+}
+
+/// <CP_PP>
+void PP_EV_set_open_circuit(long closed)
+{
+  if(closed > 0)
+  {
+    @sysvar::VTS::VT_EV::Relay_K1 = 1;
+    @sysvar::VTS::VT_EV::Relay_K52 = 1; //close to apply 5V
+  }
+  else
+  {
+    @sysvar::VTS::VT_EV::Relay_K1 = 0;
+    @sysvar::VTS::VT_EV::Relay_K52 = 0;
+  }
+}
+
+/// <CP_PP>
+export double PP_EV_get_Voltage_positive()
+{
+  return @VTS::VT_EV::MeasPPVoltage;
+}
+
+/// <CharINInterfaceAC>
+export double HV_source_get_max_I_AC()
+{
+  return 0;
+}
+
+/// <CharINInterfaceAC>
+export long HV_source_set_I_L1_rms(double current)
+{
+  return 0;
+}
+
+/// <CharINInterfaceAC>
+export long HV_source_set_I_L2_rms(double current)
+{
+  return 0;
+}
+
+/// <CharINInterfaceAC>
+export long HV_source_set_I_L3_rms(double current)
+{
+  return 0;
+}
+
+/// <CharINInterfaceDC>
+//function will receive positive current value within PreCharge and CurrentDemand
+export long HV_source_set_I_DC(double current)
+{
+  return 0;
+}
+
+/// <CharINInterfaceDC>
+//function will receive positive voltage value within PreCharge and CurrentDemand
+export long HV_source_set_U_DC(double voltage)
+{
+  return 0;
+}
+
+export double HV_measure_DC_U_VeriVolt()
+{
+  return 0;
+}
+
+/// <CharINInterfaceDC>
+export double HV_measure_DC_U()
+{
+  return 0;
+}
+
+/// <CharINInterfaceDC>
+export double HV_measure_DC_I()
+{
+  return 0;
+}
+
+/// <CharINInterfaceAC>
+export void HV_set_AC_relays(long enabled)
+{
+}
+
+/// <CharINInterfaceAC>
+export void HV_set_AC_relays(long enableL1, long enableL2, long enableL3, long enableN)
+{
+}
+
+/// <CharINInterfaceDC>
+export double HV_source_get_max_I_DC()
+{
+  return @sysvar::EV_Sim::SysEV_TargetCurrent;
+}
+
+/// <CharINInterfaceDC>
+export double HV_source_get_max_U_DC()
+{
+  return @sysvar::EV_Sim::SysEV_TargetVoltage;
+}
+
+/// <CharINInterfaceAC>
+export double HV_set_AC_I(double current)
+{
+  @sysvar::EV_Sim::SysEV_TargetCurrent_AC = current;
+  return 0;
+}
+
+/// <CharINInterfaceAC>
+export double HV_measure_AC_I_L1_rms()
+{
+  return 0;
+}
+
+/// <CharINInterfaceAC>
+export double HV_measure_AC_I_L2_rms()
+{
+  return 0;
+}
+
+/// <CharINInterfaceAC>
+export double HV_measure_AC_I_L3_rms()
+{
+  return 0;
+}
+/// <CharINInterface>
+export long HV_source_perform_welding()
+{
+  return 0;
+}
+
+/// <CharINInterface>
+export long HV_source_set_output(int enable)
+{
+  contactorState = enable;
+  return 0;
+}
+
+/// <CharINInterface>
+export long HV_PSU_AC_enable(int enable)
+{
+  return 0;
+}
+
+/// <CharINInterface>
+export long HV_PSU_DC_enable(int enable)
+{
+  return 0;
+}
+
+/// <CharINInterfaceDC>
+int HV_get_DC_Plus_relay()
+{
+  return contactorState;
+}
+
+/// <CharINInterfaceDC>
+int HV_get_DC_Minus_relay()
+{
+  return contactorState;
+}
+
+/// <CharINInterfaceAC>
+long HV_source_set_L1_PhaseLoss(int enable)
+{
+  return 0;
+}
+
+/// <CharINInterfaceAC>
+long HV_source_set_L2_PhaseLoss(int enable)
+{
+  return 0;
+}
+
+/// <CharINInterfaceAC>
+long HV_source_set_L3_PhaseLoss(int enable)
+{
+  return 0;
+}
+
+/// <CharINInterfaceAC>
+long HV_get_AC_relay_L1()
+{
+  return 0;
+}
+
+/// <CharINInterfaceAC>
+long HV_get_AC_relay_L2()
+{
+  return 0;
+}
+
+/// <CharINInterfaceAC>
+long HV_get_AC_relay_L3()
+{
+  return 0;
+}
+
+/// <CharINInterfaceAC>
+long HV_get_AC_relay_N()
+{
+  return 0;
+}
+
+int HV_ContactorsState()
+{
+  if(HV_get_DC_Plus_relay() == 1 ||
+     HV_get_DC_Minus_relay() == 1 ||
+     HV_get_AC_relay_L1() == 1 ||
+     HV_get_AC_relay_L2() == 1 ||
+     HV_get_AC_relay_L3() == 1 ||
+     HV_get_AC_relay_N() == 1)
+    return 1;
+  else
+    return 0;
+}
+
+int CTS_EV_get_connector_lock_state()
+{
+  return inletLockedState;
+}
+
+void EnableIsolationMonitoring()
+{
+}

@@ -1,0 +1,66 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Panel Type="Vector.CANalyzer.Panels.PanelSerializer, Vector.CANalyzer.Panels.Serializer, Version=19.0.70.0, Culture=neutral, PublicKeyToken=null">
+  <Object Type="Vector.CANalyzer.Panels.Runtime.Panel, Vector.CANalyzer.Panels.Common, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Panel" ControlName="Temperature Control Panel">
+    <Object Type="Vector.CANalyzer.Panels.Design.MeterControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X5146f129e1d2ee40eae9c31e3971500c81e3" ControlName="Meter 1">
+      <Property Name="Name">X5146f129e1d2ee40eae9c31e3971500c81e3</Property>
+      <Property Name="Size">270, 270</Property>
+      <Property Name="Location">20, 98</Property>
+      <Property Name="CustomToolTipText">temperature</Property>
+      <Property Name="SymbolConfiguration">8;16;;;;ThermostatSetting;2;;;-1;;;Value;;;0</Property>
+      <Property Name="AlarmUpperLimit">30</Property>
+      <Property Name="NeedleShape">TriangleWithPoint</Property>
+      <Property Name="ScaleMax">30</Property>
+      <Property Name="ScaleMin">15</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X03a47cfce450be4db8e8e41efbc854b39e91" ControlName="Static Text 2">
+      <Property Name="Name">X03a47cfce450be4db8e8e41efbc854b39e91</Property>
+      <Property Name="Size">32, 27</Property>
+      <Property Name="Location">281, 5</Property>
+      <Property Name="Font">Microsoft Sans Serif, 16pt</Property>
+      <Property Name="Text">°C</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.LCDControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xa66f9707e5d92e4704ea268e431aba493b39" ControlName="LCD Control 1">
+      <Property Name="Name">Xa66f9707e5d92e4704ea268e431aba493b39</Property>
+      <Property Name="Size">85, 30</Property>
+      <Property Name="Location">212, 5</Property>
+      <Property Name="BackColor">White</Property>
+      <Property Name="ColorOff">255, 238, 236, 225</Property>
+      <Property Name="ColorOn">Black</Property>
+      <Property Name="NumberIntDigits">2</Property>
+      <Property Name="SymbolConfiguration">8;16;;;;ThermostatSetting;2;;;-1;;;Value;;;0</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xf1c0fae2ec202e4070eae35ed24bd16adee4" ControlName="Static Text 1">
+      <Property Name="Name">Xf1c0fae2ec202e4070eae35ed24bd16adee4</Property>
+      <Property Name="Size">209, 27</Property>
+      <Property Name="Location">5, 5</Property>
+      <Property Name="Font">Microsoft Sans Serif, 16pt</Property>
+      <Property Name="Text">Temperature Setting:</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.TrackBarControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X8912f7cde36cfe4772ea760e84bc560e629b" ControlName="Track Bar 1">
+      <Property Name="Name">X8912f7cde36cfe4772ea760e84bc560e629b</Property>
+      <Property Name="Size">300, 30</Property>
+      <Property Name="Location">5, 47</Property>
+      <Property Name="TabIndex">1</Property>
+      <Property Name="MaximumDouble">30</Property>
+      <Property Name="MinimumDouble">15</Property>
+      <Property Name="SmallChangeDouble">0.2</Property>
+      <Property Name="LargeChangeDouble">1</Property>
+      <Property Name="MaximumSize">100000, 30</Property>
+      <Property Name="Minimum">15</Property>
+      <Property Name="Maximum">30</Property>
+      <Property Name="LargeChange">1</Property>
+      <Property Name="SymbolConfiguration">8;16;;;;ThermostatSetting;2;;;-1;;;Value;;;0</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.PictureBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xf8873ff6e0321e4f15e90e3e305f48a63f9e" ControlName="Picture Box 1">
+      <Property Name="Name">Xf8873ff6e0321e4f15e90e3e305f48a63f9e</Property>
+      <Property Name="Size">300, 300</Property>
+      <Property Name="Location">5, 83</Property>
+      <Property Name="CacheImages">False</Property>
+      <Property Name="ImageFile">Bitmaps\Thermometer.png</Property>
+    </Object>
+    <Property Name="Name">Panel</Property>
+    <Property Name="Size">312, 390</Property>
+    <Property Name="Location">0, 0</Property>
+    <Property Name="BackColor">255, 255, 255, 255</Property>
+  </Object>
+</Panel>

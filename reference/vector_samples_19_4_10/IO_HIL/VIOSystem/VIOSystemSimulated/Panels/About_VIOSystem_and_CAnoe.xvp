@@ -1,0 +1,220 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Panel Type="Vector.CANalyzer.Panels.PanelSerializer, Vector.CANalyzer.Panels.Serializer, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null">
+  <Object Type="Vector.CANalyzer.Panels.Runtime.Panel, Vector.CANalyzer.Panels.Common, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Panel" ControlName="About the CANoe Dashboard and the VIO System in this sample configuration">
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl16" ControlName="Static Text 13">
+      <Property Name="Name">StaticTextControl16</Property>
+      <Property Name="Size">348, 16</Property>
+      <Property Name="Location">7, 334</Property>
+      <Property Name="BackColor">HighlightText</Property>
+      <Property Name="Font">Microsoft Sans Serif, 9.25pt, style=Bold</Property>
+      <Property Name="Text">About the VIO System in this sample configuration</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl15" ControlName="Static Text 12">
+      <Property Name="Name">StaticTextControl15</Property>
+      <Property Name="Size">82, 15</Property>
+      <Property Name="Location">66, 657</Property>
+      <Property Name="BackColor">HighlightText</Property>
+      <Property Name="Font">Microsoft Sans Serif, 8.25pt, style=Bold</Property>
+      <Property Name="Text">The VIO4028</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl13" ControlName="Static Text 10">
+      <Property Name="Name">StaticTextControl13</Property>
+      <Property Name="Size">82, 15</Property>
+      <Property Name="Location">66, 583</Property>
+      <Property Name="BackColor">HighlightText</Property>
+      <Property Name="Font">Microsoft Sans Serif, 8.25pt, style=Bold</Property>
+      <Property Name="Text">The VIO2004</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl10" ControlName="Static Text 7">
+      <Property Name="Name">StaticTextControl10</Property>
+      <Property Name="Size">82, 15</Property>
+      <Property Name="Location">66, 500</Property>
+      <Property Name="BackColor">HighlightText</Property>
+      <Property Name="Font">Microsoft Sans Serif, 8.25pt, style=Bold</Property>
+      <Property Name="Text">The VIO1804</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl9" ControlName="Static Text 6">
+      <Property Name="Name">StaticTextControl9</Property>
+      <Property Name="Size">82, 15</Property>
+      <Property Name="Location">66, 421</Property>
+      <Property Name="BackColor">HighlightText</Property>
+      <Property Name="Font">Microsoft Sans Serif, 8.25pt, style=Bold</Property>
+      <Property Name="Text">The VIO1008</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl2" ControlName="Static Text 1">
+      <Property Name="Name">StaticTextControl2</Property>
+      <Property Name="Size">61, 16</Property>
+      <Property Name="Location">7, 747</Property>
+      <Property Name="BackColor">HighlightText</Property>
+      <Property Name="Font">Microsoft Sans Serif, 9.25pt, style=Bold</Property>
+      <Property Name="Text">Remark</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl5" ControlName="Static Text 2">
+      <Property Name="Name">StaticTextControl5</Property>
+      <Property Name="Size">656, 65</Property>
+      <Property Name="Location">20, 769</Property>
+      <Property Name="BackColor">HighlightText</Property>
+      <Property Name="Text">It is obvious that CANoe has to run in order to run a simulation!
+But in a real measurement environment with real HW, there might be the need of a signal indicating that CANoe is running.
+The DUT might check such a signal in order to remind the user to start CANoe before measuring.
+To simulate this behavior, it is helpful to mimic a halted CANoe by using the state CANoe Running = OFF.
+'CANoe running' is realized as a static output of the VIO System's VIO4028 card.</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl6" ControlName="Static Text 3">
+      <Property Name="Name">StaticTextControl6</Property>
+      <Property Name="Size">554, 276</Property>
+      <Property Name="Location">20, 34</Property>
+      <Property Name="BackColor">HighlightText</Property>
+      <Property Name="Text">The CANoe Dashboard consists of...
+
+A CANoe start button to virtually start/stop CANoe (see remark below).
+
+A slider to set the counter speed.
+-This slider generates an analog voltage that is read by the DUT in order to set the 4-bit counter speed.
+- Voltage range 0..10V
+- Speed range 2..20 Hz
+
+Two indicators showing the counter value and the counter frequency.
+- The frequency is calculated by doubling the input frequency of bit 0 of the counter.
+
+A slider to control the analog dimmable LED on the DUT.
+- This slider generates an analog voltage that directyl goes to the analog dimmable LED.
+
+Two indicators showing the analog LED voltage and current.
+- The current is taken from a value table as no real LED exists.
+
+Two indicators showing the PWM dimmable LED's control voltage and duty cycle.
+- The voltage comes from the slider on the DUT.
+- The duty cycle is calculated and sent to the LED via the VIO4028 PWM output.
+</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.PanelButtonControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="PanelButtonControl4" ControlName="Panel Control Button 4">
+      <Property Name="Name">PanelButtonControl4</Property>
+      <Property Name="Size">40, 40</Property>
+      <Property Name="Location">20, 673</Property>
+      <Property Name="FlatStyle">Popup</Property>
+      <Property Name="ImageFile">bmp\PanelHelp.png</Property>
+      <Property Name="TabIndex">132</Property>
+      <Property Name="Text"></Property>
+      <Property Name="ClosePanels">False</Property>
+      <Property Name="ApplicationList">1;0</Property>
+      <Property Name="NodeList">1;0</Property>
+      <Property Name="NetworkList">1;0</Property>
+      <Property Name="PanelList">1;1;About_VIO4028.xvp</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.PanelButtonControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="PanelButtonControl3" ControlName="Panel Control Button 3">
+      <Property Name="Name">PanelButtonControl3</Property>
+      <Property Name="Size">40, 40</Property>
+      <Property Name="Location">20, 599</Property>
+      <Property Name="FlatStyle">Popup</Property>
+      <Property Name="ImageFile">bmp\PanelHelp.png</Property>
+      <Property Name="TabIndex">131</Property>
+      <Property Name="Text"></Property>
+      <Property Name="ClosePanels">False</Property>
+      <Property Name="ApplicationList">1;0</Property>
+      <Property Name="NodeList">1;0</Property>
+      <Property Name="NetworkList">1;0</Property>
+      <Property Name="PanelList">1;1;About_VIO2004.xvp</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.PanelButtonControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="PanelButtonControl2" ControlName="Panel Control Button 2">
+      <Property Name="Name">PanelButtonControl2</Property>
+      <Property Name="Size">40, 40</Property>
+      <Property Name="Location">20, 517</Property>
+      <Property Name="FlatStyle">Popup</Property>
+      <Property Name="ImageFile">bmp\PanelHelp.png</Property>
+      <Property Name="TabIndex">130</Property>
+      <Property Name="Text"></Property>
+      <Property Name="ClosePanels">False</Property>
+      <Property Name="ApplicationList">1;0</Property>
+      <Property Name="NodeList">1;0</Property>
+      <Property Name="NetworkList">1;0</Property>
+      <Property Name="PanelList">1;1;About_VIO1804.xvp</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.PanelButtonControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="PanelButtonControl1" ControlName="Panel Control Button 1">
+      <Property Name="Name">PanelButtonControl1</Property>
+      <Property Name="Size">40, 40</Property>
+      <Property Name="Location">20, 439</Property>
+      <Property Name="FlatStyle">Popup</Property>
+      <Property Name="ImageFile">bmp\PanelHelp.png</Property>
+      <Property Name="TabIndex">129</Property>
+      <Property Name="Text"></Property>
+      <Property Name="ClosePanels">False</Property>
+      <Property Name="ApplicationList">1;0</Property>
+      <Property Name="NodeList">1;0</Property>
+      <Property Name="NetworkList">1;0</Property>
+      <Property Name="PanelList">1;1;About_VIO1008.xvp</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl4" ControlName="Static Text">
+      <Property Name="Name">StaticTextControl4</Property>
+      <Property Name="Size">398, 16</Property>
+      <Property Name="Location">7, 10</Property>
+      <Property Name="BackColor">HighlightText</Property>
+      <Property Name="Font">Microsoft Sans Serif, 9.25pt, style=Bold</Property>
+      <Property Name="Text">About the CANoe Dashboard in this sample configuration</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl3" ControlName="Static Text">
+      <Property Name="Name">StaticTextControl3</Property>
+      <Property Name="Size">98, 15</Property>
+      <Property Name="Location">20, 358</Property>
+      <Property Name="BackColor">HighlightText</Property>
+      <Property Name="Font">Microsoft Sans Serif, 8.25pt, style=Bold</Property>
+      <Property Name="Text">The VIO System</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl1" ControlName="Static Text">
+      <Property Name="Name">StaticTextControl1</Property>
+      <Property Name="Size">535, 27</Property>
+      <Property Name="Location">20, 379</Property>
+      <Property Name="BackColor">HighlightText</Property>
+      <Property Name="Text">This config simulates a VIO System that is configured with the I/O cards described below.
+For more details about the I/O cards and their signals, click on the question mark next to each card.</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.PictureBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="PictureBoxControl2" ControlName="Picture Box 2">
+      <Property Name="Name">PictureBoxControl2</Property>
+      <Property Name="Size">386, 420</Property>
+      <Property Name="Location">594, 20</Property>
+      <Property Name="BorderStyle">FixedSingle</Property>
+      <Property Name="CacheImages">False</Property>
+      <Property Name="ImageFile">bmp\VIOSystemSimulatedPanel.png</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl8" ControlName="Static Text 5">
+      <Property Name="Name">StaticTextControl8</Property>
+      <Property Name="Size">385, 40</Property>
+      <Property Name="Location">66, 439</Property>
+      <Property Name="BackColor">HighlightText</Property>
+      <Property Name="Text">8-channel analog voltage measurement card.
+This card offers 8 channels for voltage measurements.
+The differential voltage range is +/-60V, the sampling rate is 200kS/s.</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl11" ControlName="Static Text 8">
+      <Property Name="Name">StaticTextControl11</Property>
+      <Property Name="Size">385, 40</Property>
+      <Property Name="Location">66, 517</Property>
+      <Property Name="BackColor">HighlightText</Property>
+      <Property Name="Text">4-channel analog current measurement card.
+This card offers 4 channels for current measurements.
+The differential current range is +/-5A, the sampling rate is 500kS/s.</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl12" ControlName="Static Text 9">
+      <Property Name="Name">StaticTextControl12</Property>
+      <Property Name="Size">447, 40</Property>
+      <Property Name="Location">66, 599</Property>
+      <Property Name="BackColor">HighlightText</Property>
+      <Property Name="Text">4-channel analog stimulation card.
+This card offers 4 channels for voltage or current stimulation.
+The output voltage/current range is +-10V/0-20mA, the settling time is 200us/240us.</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl14" ControlName="Static Text 11">
+      <Property Name="Name">StaticTextControl14</Property>
+      <Property Name="Size">466, 40</Property>
+      <Property Name="Location">66, 673</Property>
+      <Property Name="BackColor">HighlightText</Property>
+      <Property Name="Text">28-channel digital I/O card with PWM feature.
+This card offers 28 channels for digital and PWM I/Os (28 PWM inputs, 16 PWM outputs).
+The input/output voltage range is TTL/LVTTL, the sampling rate is 20MS/s.</Property>
+    </Object>
+    <Property Name="Name">Panel</Property>
+    <Property Name="Size">1000, 900</Property>
+    <Property Name="Location">0, 0</Property>
+    <Property Name="BackColor">HighlightText</Property>
+  </Object>
+</Panel>

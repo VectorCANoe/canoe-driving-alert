@@ -1,0 +1,274 @@
+/*@!Encoding:1252*/
+includes
+{
+  
+}
+
+variables
+{
+}
+
+on sysvar VTS::VT_EV::MeasVoltageHigh
+{
+  $CCS::Simulation::EV.MeasVoltageHigh = @this;
+}
+
+on sysvar VTS::VT_EV::MeasDutyCycle
+{
+  $CCS::Simulation::EV.MeasDutyCycle = @this;
+}
+
+/// <CharINInterface>
+void ST_Init()
+{
+  WriteLineEx(-3, 1, "EV: 'ST_Init' called");
+
+  @sysvar::VTS::VT_EV::Relay_K1 = 1;
+  @sysvar::VTS::VT_EV::Relay_K2 = 0;
+  @sysvar::VTS::VT_EV::Relay_K3 = 0;
+  @sysvar::VTS::VT_EV::Relay_K4 = 0;
+  @sysvar::VTS::VT_EV::Relay_K5 = 0;
+  @sysvar::VTS::VT_EV::Relay_K6 = 0;
+  @sysvar::VTS::VT_EV::Relay_K7 = 0;
+  @sysvar::VTS::VT_EV::Relay_K8 = 0;
+  @sysvar::VTS::VT_EV::Relay_K9 = 1;
+  @sysvar::VTS::VT_EV::Relay_K10 = 0;
+  @sysvar::VTS::VT_EV::Relay_K11 = 1;
+  @sysvar::VTS::VT_EV::Relay_K12 = 0;
+  @sysvar::VTS::VT_EV::Relay_K13 = 0;
+  @sysvar::VTS::VT_EV::Relay_K14 = 0;
+  @sysvar::VTS::VT_EV::Relay_K15 = 0;
+  @sysvar::VTS::VT_EV::Relay_K16 = 0;
+  @sysvar::VTS::VT_EV::Relay_K17 = 0;
+  @sysvar::VTS::VT_EV::Relay_K18 = 0;
+  @sysvar::VTS::VT_EV::Relay_K19 = 0;
+  @sysvar::VTS::VT_EV::Relay_K20 = 0;
+  @sysvar::VTS::VT_EV::Relay_K21 = 0;
+  @sysvar::VTS::VT_EV::Relay_K22 = 0;
+  @sysvar::VTS::VT_EV::Relay_K23 = 1;
+  @sysvar::VTS::VT_EV::Relay_K24 = 1;
+  @sysvar::VTS::VT_EV::Relay_K25 = 0;
+  @sysvar::VTS::VT_EV::Relay_K26 = 0;
+  @sysvar::VTS::VT_EV::Relay_K27 = 0;
+  @sysvar::VTS::VT_EV::Relay_K28 = 1;
+  @sysvar::VTS::VT_EV::Relay_K29 = 0;
+  @sysvar::VTS::VT_EV::Relay_K31 = 0;
+  @sysvar::VTS::VT_EV::Relay_K32 = 0;
+  @sysvar::VTS::VT_EV::Relay_K33 = 0;
+  @sysvar::VTS::VT_EV::Relay_K34 = 0;
+  @sysvar::VTS::VT_EV::Relay_K35 = 0;
+  @sysvar::VTS::VT_EV::Relay_K36 = 0;
+  @sysvar::VTS::VT_EV::Relay_K37 = 0;
+
+  @sysvar::VTS::VT_EV::StimVoltageHigh = 0;
+  @sysvar::VTS::VT_EV::StimVoltageLow = 0;
+  @sysvar::VTS::VT_EV::StimFrequency = 0;
+  @sysvar::VTS::VT_EV::StimDutyCycle = 0;
+}
+
+/// <CharINInterface>
+void ST_Reset()
+{
+  ST_Init();
+  CP_EV_set_open_circuit(0);
+}
+
+/// <CharINInterface>
+void CP_EV_set_open_circuit(long closed)
+{
+  if (closed > 0)
+  {
+    @sysvar::VTS::VT_EV::Relay_K26 = 1;
+    @sysvar::VTS::VT_EV::Relay_K27 = 1;
+    @sysvar::VTS::VT_EV::Relay_K1 = 1;
+  }
+  else
+  {
+    @sysvar::VTS::VT_EV::Relay_K26 = 0;
+    @sysvar::VTS::VT_EV::Relay_K27 = 0;
+    @sysvar::VTS::VT_EV::Relay_K1 = 0;
+  }
+}
+
+/// <CP_PP>
+void PP_EV_set_open_circuit(long closed)
+{
+  if(closed > 0)
+  {
+    @sysvar::VTS::VT_EV::Relay_K1 = 1;
+    @sysvar::VTS::VT_EV::Relay_K52 = 1; //close to apply 5V
+  }
+  else
+  {
+    @sysvar::VTS::VT_EV::Relay_K1 = 0;
+    @sysvar::VTS::VT_EV::Relay_K52 = 0;
+  }
+}
+
+/// <CP_PP>
+void SetCPStateB()
+{
+ @sysvar::VTS::VT_EV::Relay_K9 = 1;
+ @sysvar::VTS::VT_EV::Relay_K11 = 1;
+ @sysvar::VTS::VT_EV::Relay_K14 = 0;
+ @sysvar::VTS::VT_EV::Relay_K15 = 0;
+ @sysvar::VTS::VT_EV::Relay_K16 = 0;
+ @sysvar::VTS::VT_EV::Relay_K19 = 0;
+}
+
+/// <CP_PP>
+void SetCPStateC()
+{
+ @sysvar::VTS::VT_EV::Relay_K9 = 1;
+ @sysvar::VTS::VT_EV::Relay_K11 = 1;
+ @sysvar::VTS::VT_EV::Relay_K14 = 1;
+ @sysvar::VTS::VT_EV::Relay_K15 = 0;
+ @sysvar::VTS::VT_EV::Relay_K16 = 0;
+ @sysvar::VTS::VT_EV::Relay_K19 = 1;
+}
+
+/// <CP_PP>
+void SetCPStateD()
+{
+ @sysvar::VTS::VT_EV::Relay_K9 = 1;
+ @sysvar::VTS::VT_EV::Relay_K11 = 1;
+ @sysvar::VTS::VT_EV::Relay_K14 = 1;
+ @sysvar::VTS::VT_EV::Relay_K15 = 1;
+ @sysvar::VTS::VT_EV::Relay_K16 = 1;
+ @sysvar::VTS::VT_EV::Relay_K19 = 0;
+}
+
+on value_update EV.StimCPState
+{
+  switch ($EV.StimCPState)
+  {
+    case _CCS::DataTypes::CPStateType::State_B:
+      SetCPStateB();
+      break;
+    case _CCS::DataTypes::CPStateType::State_C:
+      SetCPStateC();
+      break;
+    case _CCS::DataTypes::CPStateType::State_D:
+      SetCPStateD();
+      break;
+    default:
+      // other states not allowed (set by EVSE)
+      break;
+  }
+}
+
+/// <CP_PP>
+double CP_EV_get_Voltage_positive()
+{
+  return $CCS::Simulation::EV.MeasVoltageHigh;
+}
+
+/// <CP_PP>
+double CP_EV_get_DutyCycle()
+{
+  return $CCS::Simulation::EV.MeasDutyCycle;
+}
+
+/// <CP_PP>
+double CP_EV_get_Frequency()
+{ 
+  if(isSimulated())
+    return 0;
+  else
+    return @sysvar::VTS::VT_EV::MeasFrequency;  
+}
+
+/// <CharINInterfaceAC>
+void HV_set_AC_relays(long enableL1, long enableL2, long enableL3, long enableN)
+{
+}
+
+/// <CharINInterfaceAC>
+double HV_measure_AC_I_L1_rms()
+{
+  return 0;
+}
+
+/// <CharINInterfaceAC>
+double HV_measure_AC_I_L2_rms()
+{
+  return 0;
+}
+
+/// <CharINInterfaceAC>
+double HV_measure_AC_I_L3_rms()
+{
+  return 0;
+}
+
+/// <CharINInterface>
+export long HV_source_perform_welding()
+{
+  return 0;
+}
+
+/// <CharINInterface>
+export long HV_source_set_output(int enable)
+{
+  return 0;
+}
+
+/// <CharINInterfaceAC>
+void HV_source_set_U_L1_rms(double voltage)
+{
+}
+
+/// <CharINInterfaceAC>
+void HV_source_set_U_L2_rms(double voltage)
+{
+}
+
+/// <CharINInterfaceAC>
+void HV_source_set_U_L3_rms(double voltage)
+{
+}
+
+/// <CharINInterfaceAC>
+void HV_source_set_AC_frequency()
+{
+  //if(UsingPlugType_1() == 1)
+  //{
+  //  //PlugType 1, set frequency for US
+  //}
+  //else
+  //{
+  //  //PlugType 2, set frequency for Europe
+  //}
+}
+
+/// <CharINInterfaceDC>
+double HV_measure_DC_U()
+{
+  double presentVoltage;
+  if($EV.OnLastReceivedMessageIdChanged.LatestCall.lastRxMessageId == _CCS::DataTypes::MessageIdType::DCChargeLoopRes)
+    presentVoltage = ($EV.ISO20.DC_ChargeLoop_Response.EVSEPresentVoltage.Value * _pow(10, $EV.ISO20.DC_ChargeLoop_Response.EVSEPresentVoltage.Exponent));
+  else
+    presentVoltage = ($EV.ISO20.DC_PreCharge_Response.EVSEPresentVoltage.Value * _pow(10, $EV.ISO20.DC_PreCharge_Response.EVSEPresentVoltage.Exponent));
+  
+  return presentVoltage;
+}
+
+/// <CharINInterfaceDC>
+//function will receive positive voltage value within PreCharge and CurrentDemand
+export long HV_source_set_U_DC(double voltage)
+{
+  return 0;
+}
+
+/// <CharINInterfaceDC>
+//function will receive positive current value within PreCharge and CurrentDemand
+export long HV_source_set_I_DC(double current)
+{
+  return 0;
+}
+
+/// <CharINInterfaceDC>
+ double HV_measure_DC_I()
+{
+  return ($EV.ISO20.DC_ChargeLoop_Response.EVSEPresentCurrent.Value * _pow(10, $EV.ISO20.DC_ChargeLoop_Response.EVSEPresentCurrent.Exponent));
+}

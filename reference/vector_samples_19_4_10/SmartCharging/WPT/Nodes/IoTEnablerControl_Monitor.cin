@@ -1,0 +1,99 @@
+/*@!Encoding:1252*/
+includes
+{
+
+}
+
+variables
+{
+}
+
+on start 
+{
+  //only possible at measurement start
+  StartMonitoring();
+}
+
+void StartMonitoring()
+{
+  sysSetVariableString(sysvar::IoTEnabler::Monitoring::SysMonitorAdditionalInfo, "");
+  
+  if(@sysvar::IoTEnabler::Monitoring::SysWifiFrameMonitoring == sysvar::IoTEnabler::Monitoring::SysWifiFrameMonitoring::Enabled)
+  {
+    @sysvar::IoTEnabler::Monitoring::SysMonitoringState = sysvar::IoTEnabler::Monitoring::SysMonitoringState::Initial;
+    ConfigureMonitoring();
+  } 
+  else 
+  {
+    @sysvar::IoTEnabler::Monitoring::SysMonitoringState = sysvar::IoTEnabler::Monitoring::SysMonitoringState::NotEnabled;
+  }
+}
+  
+void ConfigureMonitoring()
+{
+  stack char interfaceWifiController[30];
+  sysGetVariableString(sysvar::IoTEnabler::Monitoring::SysMonitoringWifiInterface, interfaceWifiController, elcount(interfaceWifiController));
+  
+  @sysvar::IoTEnabler::Monitoring::SysMonitoringState = sysvar::IoTEnabler::Monitoring::SysMonitoringState::Configuring;
+  
+  IoTEnabler::WiFiController.configure.CallAsync(
+    interfaceWifiController,
+    delegate (callContext IoTEnabler::WiFiController.configure cco) 
+    {
+      sysSetVariableString(sysvar::IoTEnabler::Monitoring::SysMonitorAdditionalInfo, cco.Result.additional_info);
+      
+      if (cco.Result.return_code == 0)
+      {
+        SetChannel();
+      }
+      else
+      {
+        @sysvar::IoTEnabler::Monitoring::SysMonitoringState = sysvar::IoTEnabler::Monitoring::SysMonitoringState::Error;
+      }
+  });
+}
+
+void SetChannel()
+{
+  @sysvar::IoTEnabler::Monitoring::SysMonitoringState = sysvar::IoTEnabler::Monitoring::SysMonitoringState::SettingChannel;
+  
+  IoTEnabler::WiFiController.set_channel.CallAsync(
+    @sysvar::IoTEnabler::Monitoring::SysMonitoredChannel,
+    delegate (callContext IoTEnabler::WiFiController.set_channel cco) 
+    {
+      sysSetVariableString(sysvar::IoTEnabler::Monitoring::SysMonitorAdditionalInfo, cco.Result.additional_info);
+      
+      if (cco.Result.return_code == 0)
+      {
+        SetWPA2Key();
+      }
+      else
+      {
+        @sysvar::IoTEnabler::Monitoring::SysMonitoringState = sysvar::IoTEnabler::Monitoring::SysMonitoringState::Error;
+      }
+  }); 
+}
+
+void SetWPA2Key()
+{
+  char ssid[200], wpa2key[200];
+  @sysvar::IoTEnabler::Monitoring::SysMonitoringState = sysvar::IoTEnabler::Monitoring::SysMonitoringState::SetWPA2Key;
+  
+  sysGetVariableString(sysvar::IoTEnabler::Monitoring::SysMonitor_SSID, ssid, elcount(ssid));
+  sysGetVariableString(sysvar::IoTEnabler::Monitoring::SysMonitor_WPA2Key, wpa2key, elcount(wpa2key));
+  
+  IoTEnabler::WiFiController.add_wpa2_key.CallAsync(
+    ssid,
+    wpa2key,
+    delegate (callContext IoTEnabler::WiFiController.add_wpa2_key cco) 
+    {      
+      if (cco.Result.return_code == 0)
+      {
+        @sysvar::IoTEnabler::Monitoring::SysMonitoringState = sysvar::IoTEnabler::Monitoring::SysMonitoringState::Monitoring;
+      }
+      else
+      {
+        @sysvar::IoTEnabler::Monitoring::SysMonitoringState = sysvar::IoTEnabler::Monitoring::SysMonitoringState::Error;
+      }
+  }); 
+}

@@ -1,0 +1,296 @@
+/*@!Encoding:1252*/
+variables
+{
+  // ------------------------------------------------
+  // File information
+  // Copyright         : 2025, Vector Informatik GmbH
+  // ------------------------------------------------
+
+  // Globals for "NMTMaster" device
+  BYTE gNodeId          = 1;                   // Node ID
+  char gNodeLabel[256] = "Master";             // Label for debug output
+
+  // Definition of debugging constants
+  const int kDbgInfo    = 10;
+  const int kDbgWarning = 5;
+  const int kDbgError   = 1;
+  const int kDbgQuiet   = 0;
+
+  msTimer   gSystemTimer;
+  const int kSystemTime = 100;
+
+  // control word bits for drives
+  const int kSwitchOn        = 0x01;
+  const int kDisableVoltage  = 0x02;
+  const int kQuickStop       = 0x04;
+  const int kEnableOperation = 0x08;
+  const int kResetFault      = 0x80;
+
+  // status word bits for drives
+  const int kBitReadyToSwitchOn     = 0x0001;
+  const int kBitSwitchedOn          = 0x0002;
+  const int kBitOperationEnable     = 0x0004;
+  const int kBitFault               = 0x0008;
+  const int kBitVoltageDisabled     = 0x0010;
+  const int kBitQuickStop           = 0x0020;
+  const int kBitSwitchOnDisabled    = 0x0040;
+}
+
+//functions
+void CalcAndSetGetPower()
+{
+  int rqPower,powerScale;
+  rqPower = abs(@sysvar::CANopen::CAN::Master::NetVarInt16Out::velocity_demand_ladder);
+  powerScale =1;        // scale factor
+  @sysvar::CANopen::CAN::Master::NetVarInt16In::requested_engine_speed = rqPower; // request EngSpeed 
+}
+
+on sysvar CANopen::CAN::Master::Control::CommunicationState
+{
+  switch(@this)
+  {
+    case 0: // Not active
+      writeDbgLevel(kDbgInfo, "<%s>: Changed state to 'Not active'", gNodeLabel);
+      @sysvar::GUIControls::NMTMaster_CommState = 3;
+      break;
+    case 4: // Stopped
+      writeDbgLevel(kDbgInfo, "<%s>: Changed state to 'Stopped'", gNodeLabel);
+      @sysvar::GUIControls::NMTMaster_CommState = 3;
+      break;
+    case 5: // Operational
+      writeDbgLevel(kDbgInfo, "<%s>: Changed state to 'Operational'", gNodeLabel);
+      setTimer( gSystemTimer, kSystemTime );
+      @sysvar::GUIControls::NMTMaster_CommState = 1;
+      break;
+    case 6: // Reset Node
+      writeDbgLevel(kDbgInfo, "<%s>: 'Reset Node' command received", gNodeLabel);
+      @sysvar::GUIControls::NMTMaster_CommState = 3;
+      break;
+    case 7: // Reset Communication
+      writeDbgLevel(kDbgInfo, "<%s>: 'Reset Communication' command received", gNodeLabel);
+      @sysvar::GUIControls::NMTMaster_CommState = 3;
+      break;
+    case 127: // Preoperational
+      writeDbgLevel(kDbgInfo, "<%s>: Changed state to 'Preoperational'", gNodeLabel);
+      @sysvar::GUIControls::NMTMaster_CommState = 2;
+      break;
+    default:
+      writeDbgLevel(kDbgInfo, "<%s>: Changed state (?)", gNodeLabel);
+      break;
+  }
+}
+
+void SetInfo(char text[])
+{
+  sysSetVariableString(sysvar::GUIControls::Information, text);
+}
+
+on timer gSystemTimer
+{
+  // lock mechanism for ladder
+  int lock, parkBrake, curGearValue, PTOSwitch;
+  int supFrontPos, supRearPos;
+  supFrontPos= @sysvar::CANopen::CAN::Master::NetVarInt32Out::pos_act_val_sup_front;
+  supRearPos = @sysvar::CANopen::CAN::Master::NetVarInt32Out::pos_act_val_sup_rear;
+  lock = (supFrontPos > 0) && (supRearPos > 0);
+  
+  @sysvar::CANopen::CAN::Master::NetVarUInt8In::LadderLock = lock;
+
+  setTimer( gSystemTimer, kSystemTime );
+  
+  CalcAndSetGetPower();
+  
+  //reads positions of the supports, then set variable to 1 when park brake can be deactivated (supports are up), else to 0 (supports are down)
+  @sysvar::CANopen::CAN::Master::NetVarUInt8In::Supportposvalue= (supFrontPos==100 && supRearPos==100) ? 1 : 0; 
+
+  parkBrake = SysGetVariableLong(sysvar::CANopen::CAN::Master::NetVarUInt8Out::ParkBrakeDemandValue);
+  curGearValue = SysGetVariableLong(sysvar::CANopen::CAN::Master::MyGateway::CurrentGearValue);
+  PTOSwitch = SysGetVariableLong(sysvar::CANopen::CAN::Master::NetVarUInt8Out::PTO_Switch);
+  
+  //Locks the support if the conditions for lowering the supports aren't fullfilled (parkbrake not set, PTO not activated, Gear not in 0)
+  if(parkBrake==0 || curGearValue>0 || PTOSwitch==0 || SysGetVariableLong(sysvar::Powertrain::IgnitionSwitch)<1)
+  {   
+    @sysvar::CANopen::CAN::Master::NetVarUInt8In::SupportLock=1;
+  }
+  else
+  {
+    if(SysGetVariableLong(sysvar::CANopen::CAN::Master::NetVarInt32Out::pos_act_val_ladder)==0)
+    {
+      @sysvar::CANopen::CAN::Master::NetVarUInt8In::SupportLock=0;
+      SetInfo("Information: Support lock not active (Lower Supports via Down Button)");
+    }
+  }
+
+  //tests given conditions and displays information to the control panel
+  if(@sysvar::Powertrain::IC::EngineSpeed!=0)
+  {
+    if(parkBrake==0)
+    {
+      SetInfo("Support Locked: Activate Park Brake");
+    }
+    if(PTOSwitch==0)
+    {
+      SetInfo("Support Locked: Activate PTO");
+    }
+    if(curGearValue>0)
+    {
+      SetInfo("Support Locked: Put engine into neutral");
+    }
+    if(parkBrake==0 && PTOSwitch==0)
+    {
+      SetInfo("Support Locked: Activate Park Brake");
+    }
+    if(parkBrake==0 && curGearValue>0)
+    {
+      SetInfo("Support Locked: Put engine into neutral");
+    }
+    if(curGearValue>0 && PTOSwitch==0)
+    {
+      SetInfo("Support Locked: Put engine into neutral");
+    }
+    if(parkBrake==0 && curGearValue>0 && PTOSwitch==0)
+    {
+      SetInfo("Support Locked: Put engine into neutral");
+    }
+    if (lock == 0)
+    {
+      SetInfo("Ladder unlocked: Extend ladder via Ladder Up Button");
+    }
+  }
+  else
+  {
+    SetInfo("Start engine (2 x Right Mouse Button on Ignition Switch)");
+  }
+
+  //checks whether the transmision is in gear 0, assigns variables accordingly and sends them to the controlpanel,
+  if(curGearValue>0)
+  {
+    enableControl("Control Panel", "Switch/Indicator 2",0);
+  }
+  else
+  {
+    if(SysGetVariableLong(sysvar::CANopen::CAN::TTGateway::EngineSpeed::SupportPositionGateIn)!=0)
+    {
+      enableControl("Control Panel", "Switch/Indicator 2",1);
+    }
+  }
+  
+}
+
+//Reacts to a change of the PTO switch, reads PTO state the master received into a variable for value transmission to gateway
+on sysvar CANopen::CAN::Master::NetVarUInt8Out::PTO_Switch{
+ if(SysGetVariableLong(sysvar::CANopen::CAN::Master::NetVarUInt8Out::PTO_Switch)==1){
+    @sysvar::CANopen::CAN::Master::NetVarUInt8In::PTO_Switch_State=1;
+    enableControl("TruckControl","Switch/Indicator 2",0);
+  }
+  else{
+    @sysvar::CANopen::CAN::Master::NetVarUInt8In::PTO_Switch_State=0;
+    enableControl("TruckControl","Switch/Indicator 2",1);
+  }
+}
+
+void TrySetVelocity(sysvarInt* sysVarStatus, sysvarInt* sysVelocity, int velocity, char text[])
+{
+  // set target velocity of drive only, if it is on state 'operation enable'
+  if (@sysVarStatus & kBitOperationEnable)
+  {
+    @sysVelocity = velocity;
+  }
+  else
+  {
+    writeDbgLevel( kDbgError, "<%s> ERROR: %s is not 'Operation enable'", gNodeLabel, text); 
+  }
+}
+
+void SetLadderVelocity(int val, int velocity)
+{
+  if (@sysvar::CANopen::CAN::Master::NetVarUInt8In::LadderLock == 0)
+  {
+    TrySetVelocity(sysvar::CANopen::CAN::Master::NetVarUInt16Out::statusword_ladder,
+                   sysvar::CANopen::CAN::Master::NetVarInt16In::vl_target_velocity_ladder,
+                   val == 1 ? velocity : 0,
+                   "ladder");
+  }
+}
+
+void SetSupportVelocity(int val, int velocity)
+{
+  if (@sysvar::CANopen::CAN::Master::NetVarUInt8In::SupportLock == 0)
+  {
+    TrySetVelocity(sysvar::CANopen::CAN::Master::NetVarUInt16Out::statusword_support_front,
+                   sysvar::CANopen::CAN::Master::NetVarInt16In::vl_target_velocity_sup_front,
+                   val == 1 ? velocity : 0,
+                   "front support");
+
+    TrySetVelocity(sysvar::CANopen::CAN::Master::NetVarUInt16Out::statusword_support_rear,
+                   sysvar::CANopen::CAN::Master::NetVarInt16In::vl_target_velocity_sup_rear,
+                   val == 1 ? velocity : 0,
+                   "rear support");
+  }
+}
+
+on sysvar CANopen::CAN::Master::NetVarUInt8Out::Ladder_Up
+{
+  SetLadderVelocity(@this, 1000);
+}
+
+on sysvar CANopen::CAN::Master::NetVarUInt8Out::Ladder_Down
+{
+  SetLadderVelocity(@this, -1000);
+}
+
+on sysvar CANopen::CAN::Master::NetVarInt32Out::pos_act_val_ladder
+{
+  // lock mechanism for support 
+  @sysvar::CANopen::CAN::Master::NetVarUInt8In::SupportLock = @this > 0 ? 1 : 0;
+  if(SysGetVariableLong(sysvar::CANopen::CAN::Master::NetVarUInt8In::SupportLock)==1){
+    SetInfo("Information: Support Locked");
+  }
+}
+
+void SetControlWord(dword status, sysvarInt* sysVarControlWord)
+{
+  if ((status & kBitSwitchOnDisabled) && !(status & kBitReadyToSwitchOn))
+    {
+    // the drive is in state 'switch on disabled' -> shutdown command
+    @sysVarControlWord = kBitQuickStop|kDisableVoltage;
+  }
+  else if ((status & kBitReadyToSwitchOn) && !(status & kBitSwitchedOn))
+    {
+    // the drive is in state 'ready to switch on' -> switch on command
+    @sysVarControlWord = kBitQuickStop|kDisableVoltage|kSwitchOn;
+  }
+  else if ((status & kBitSwitchedOn) && !(status & kBitOperationEnable))
+    {
+    // the drive is in state 'switched on' ->  enable operation command
+    @sysVarControlWord = kBitQuickStop|kDisableVoltage|kSwitchOn|kEnableOperation;
+  }
+}
+
+// Received status word of ladder drive
+on sysvar CANopen::CAN::Master::NetVarUInt16Out::statusword_ladder
+{
+  SetControlWord(@this, sysvar::CANopen::CAN::Master::NetVarUInt16In::controlword_ladder);
+}
+
+// Received status word of rear support drive
+on sysvar CANopen::CAN::Master::NetVarUInt16Out::statusword_support_rear
+{
+  SetControlWord(@this, sysvar::CANopen::CAN::Master::NetVarUInt16In::controlword_sup_rear);
+}
+
+// Received status word of front support drive
+on sysvar CANopen::CAN::Master::NetVarUInt16Out::statusword_support_front
+{
+  SetControlWord(@this, sysvar::CANopen::CAN::Master::NetVarUInt16In::controlword_sup_front);
+}
+
+on sysvar CANopen::CAN::Master::NetVarUInt8Out::Support_Down
+{
+  SetSupportVelocity(@this, 500);
+}
+
+on sysvar CANopen::CAN::Master::NetVarUInt8Out::Support_Up
+{
+  SetSupportVelocity(@this, -500);
+}

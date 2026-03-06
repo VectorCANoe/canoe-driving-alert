@@ -1,0 +1,67 @@
+/*@!Encoding:1252*/
+includes
+{
+}
+
+variables
+{
+  
+}
+
+// responder address set in the 'Protocol Configuration'
+on start 
+{
+  @sysvar::VTS::VT2710_1_I2C_Ch1::I2CResponderAddress = 0x49;
+  @sysvar::VTS::VT2710_1_I2C_Ch1::I2CByteMode = 1; // 2 bytes (16 bit data)
+  @sysvar::VTS::VT2710_1_I2C_Ch1::I2CResponderActivate = 1;
+}
+
+
+on sysvar sysvar::I2CDemo::ResponderAddress
+{
+  @sysvar::VTS::VT2710_1_I2C_Ch1::I2CResponderAddress = @this;
+}
+
+
+// used to send a message only if the the trigger is used
+// otherwise a message would already be send if either RegisterAddress ir Data changed
+// responder 1 - ID: 0x49
+on sysvar sysvarMember::I2CDemo::Responder1_WriteMessage.Trigger
+{
+  if(@this)
+  {
+    @sysvarMember::SENSOR::I2C::Channel2::Responder1::WriteFrame_Stim.TxTrigger = @this;
+    @sysvarMember::SENSOR::I2C::Channel2::Responder1::WriteFrame_Stim.WriteSequence.RegisterAddress = @sysvarMember::I2CDemo::Responder1_WriteMessage.Address;
+    @sysvarMember::SENSOR::I2C::Channel2::Responder1::WriteFrame_Stim.WriteSequence.Data = @sysvarMember::I2CDemo::Responder1_WriteMessage.Data;
+  }
+}
+
+on sysvar sysvarMember::I2CDemo::Responder1_ReadMessage.Trigger
+{
+  if(@this)
+  {
+    @sysvarMember::SENSOR::I2C::Channel2::Responder1::ReadFrame_Stim.TxTrigger = @this;
+    @sysvarMember::SENSOR::I2C::Channel2::Responder1::ReadFrame_Stim.WriteSequence.RegisterAddress = @sysvarMember::I2CDemo::Responder1_ReadMessage.Address;
+  }
+}
+
+
+// responder 2 - ID: 0x1A
+on sysvar sysvarMember::I2CDemo::Responder2_WriteMessage.Trigger
+{
+  if(@this)
+  {
+    @sysvarMember::SENSOR::I2C::Channel2::Responder2::WriteFrame_Stim.TxTrigger = @this;
+    @sysvarMember::SENSOR::I2C::Channel2::Responder2::WriteFrame_Stim.WriteSequence.RegisterAddress = @sysvarMember::I2CDemo::Responder2_WriteMessage.Address;
+    @sysvarMember::SENSOR::I2C::Channel2::Responder2::WriteFrame_Stim.WriteSequence.Data = @sysvarMember::I2CDemo::Responder2_WriteMessage.Data;
+  }
+}
+
+on sysvar sysvarMember::I2CDemo::Responder2_ReadMessage.Trigger
+{
+  if(@this)
+  {
+    @sysvarMember::SENSOR::I2C::Channel2::Responder2::ReadFrame_Stim.TxTrigger = @this;
+    @sysvarMember::SENSOR::I2C::Channel2::Responder2::ReadFrame_Stim.WriteSequence.RegisterAddress = @sysvarMember::I2CDemo::Responder2_ReadMessage.Address;
+  }
+}

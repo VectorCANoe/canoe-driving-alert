@@ -1,0 +1,165 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<FunctionBusLibrary Version="15" FormatMajorVersion="3" FormatMinorVersion="1" FormatPatchVersion="1">
+  <Namespaces>
+    <Namespace IsDefinedAsHidden="False" IsSystemDefined="False" Name="ADAS">
+      <DOInterfaces>
+        <DOInterface IsAbstract="False" Name="IInputROS">
+          <AttributeValues>
+            <AttributeValue Definition="_SystemAttributes::Binding" InitialValue="DDS" InitialValueType="String" />
+            <AttributeValue Definition="_SystemAttributes::CommunicationPattern" InitialValue="2" InitialValueType="Int32" />
+            <AttributeValue Definition="DDS::Domain::ID" InitialValue="0" InitialValueType="Int64" />
+            <AttributeValue Definition="DDS::Domain::Config" InitialValue="DDSConfiguration\DDSConfig.xml" InitialValueType="String" />
+            <AttributeValue Definition="DDS::Topic::Typename" InitialValue="adas_msgs::msg::dds_::InputRos_" InitialValueType="String" />
+          </AttributeValues>
+          <MemberData>
+            <DOMemberDataHolder Name="MemberData" />
+          </MemberData>
+          <DataMembers>
+            <DOIFDataMember Name="input">
+              <DataType DataType="adas_msgs::msg::dds_::InputRos_" />
+            </DOIFDataMember>
+          </DataMembers>
+        </DOInterface>
+        <DOInterface IsAbstract="False" Name="IOutputROS">
+          <AttributeValues>
+            <AttributeValue Definition="_SystemAttributes::Binding" InitialValue="DDS" InitialValueType="String" />
+            <AttributeValue Definition="_SystemAttributes::CommunicationPattern" InitialValue="2" InitialValueType="Int32" />
+            <AttributeValue Definition="DDS::Domain::ID" InitialValue="0" InitialValueType="Int64" />
+            <AttributeValue Definition="DDS::Domain::Config" InitialValue="DDSConfiguration\DDSConfig.xml" InitialValueType="String" />
+            <AttributeValue Definition="DDS::Topic::Typename" InitialValue="adas_msgs::msg::dds_::OutputRos_" InitialValueType="String" />
+          </AttributeValues>
+          <MemberData>
+            <DOMemberDataHolder Name="MemberData" />
+          </MemberData>
+          <DataMembers>
+            <DOIFDataMember LocalDirection="Consumed" Name="output">
+              <DataType DataType="adas_msgs::msg::dds_::OutputRos_" />
+            </DOIFDataMember>
+          </DataMembers>
+        </DOInterface>
+      </DOInterfaces>
+      <DistributedObjects>
+        <DistributedObject GenerateDotNetAPI="True" Name="FrontRadar">
+          <AttributeValues>
+            <AttributeValue Definition="_ADAS::DataModel::SensorId" InitialValue="1" InitialValueType="UInt64" />
+          </AttributeValues>
+          <DataType>
+            <ModifiedDOIF Reverse="False" IsDOReference="False" Interface="_ADAS::DataModel::ISensor" />
+          </DataType>
+          <MemberData>
+            <DOMemberDataHolder Name="MemberData" />
+          </MemberData>
+        </DistributedObject>
+        <DistributedObject GenerateDotNetAPI="True" Name="EgoVehicle">
+          <DataType>
+            <ModifiedDOIF Reverse="False" IsDOReference="False" Interface="_ADAS::DataModel::IGeoObject" />
+          </DataType>
+          <MemberData>
+            <DOMemberDataHolder Name="MemberData" />
+          </MemberData>
+        </DistributedObject>
+        <DistributedObject GenerateDotNetAPI="True" Name="BrakingVehicle">
+          <DataType>
+            <ModifiedDOIF Reverse="False" IsDOReference="False" Interface="_ADAS::DataModel::IGeoObject" />
+          </DataType>
+          <MemberData>
+            <DOMemberDataHolder Name="MemberData" />
+          </MemberData>
+        </DistributedObject>
+        <DistributedObject GenerateDotNetAPI="True" Name="EmergencyVehicle">
+          <DataType>
+            <ModifiedDOIF Reverse="False" IsDOReference="False" Interface="_ADAS::DataModel::IGeoObject" />
+          </DataType>
+          <MemberData>
+            <DOMemberDataHolder Name="MemberData" />
+          </MemberData>
+        </DistributedObject>
+        <DistributedObject GenerateDotNetAPI="True" Name="InputROS">
+          <AttributeValues>
+            <AttributeValue Definition="_SystemAttributes::Binding" InitialValue="DDS" InitialValueType="String" />
+            <AttributeValue Definition="DDS::Topic::Name" InitialValue="rt/adas_ros_input" InitialValueType="String" />
+          </AttributeValues>
+          <DataType>
+            <ModifiedDOIF Reverse="False" IsDOReference="False" Interface="ADAS::IInputROS" />
+          </DataType>
+          <MemberData>
+            <DOMemberDataHolder Name="MemberData" />
+          </MemberData>
+        </DistributedObject>
+        <DistributedObject GenerateDotNetAPI="True" Name="OutputROS">
+          <AttributeValues>
+            <AttributeValue Definition="_SystemAttributes::Binding" InitialValue="DDS" InitialValueType="String" />
+            <AttributeValue Definition="DDS::Topic::Name" InitialValue="rt/adas_ros_output" InitialValueType="String" />
+          </AttributeValues>
+          <DataType>
+            <ModifiedDOIF Reverse="False" IsDOReference="False" Interface="ADAS::IOutputROS" />
+          </DataType>
+          <MemberData>
+            <DOMemberDataHolder Name="MemberData" />
+          </MemberData>
+        </DistributedObject>
+      </DistributedObjects>
+    </Namespace>
+    <Namespace IsDefinedAsHidden="False" IsSystemDefined="False" Name="adas_msgs">
+      <Subnamespaces>
+        <Namespace IsDefinedAsHidden="False" IsSystemDefined="False" Name="msg">
+          <Subnamespaces>
+            <Namespace IsDefinedAsHidden="False" IsSystemDefined="False" Name="dds_">
+              <DataTypes>
+                <StructDataType Bitcount="0" RawBitcount="0" HasFixedBinaryLayout="False" HasMotorolaByteOrder="False" Name="InputRos_">
+                  <Fields>
+                    <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="radarObject">
+                      <DataType DataType="adas_msgs::msg::dds_::RadarObject_" />
+                    </DataTypeField>
+                  </Fields>
+                </StructDataType>
+                <StructDataType Bitcount="0" RawBitcount="0" HasFixedBinaryLayout="False" HasMotorolaByteOrder="False" Name="RadarObject_">
+                  <Fields>
+                    <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="trackingId">
+                      <DataType DataType="_SystemDataTypes::UInt64" />
+                    </DataTypeField>
+                    <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="measurementStatus">
+                      <DataType DataType="_SystemDataTypes::UInt64" />
+                    </DataTypeField>
+                    <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="posX">
+                      <DataType DataType="_SystemDataTypes::Double" />
+                    </DataTypeField>
+                    <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="posY">
+                      <DataType DataType="_SystemDataTypes::Double" />
+                    </DataTypeField>
+                    <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="posZ">
+                      <DataType DataType="_SystemDataTypes::Double" />
+                    </DataTypeField>
+                    <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="speed">
+                      <DataType DataType="_SystemDataTypes::Double" />
+                    </DataTypeField>
+                  </Fields>
+                </StructDataType>
+                <StructDataType Bitcount="0" RawBitcount="0" HasFixedBinaryLayout="False" HasMotorolaByteOrder="False" Name="OutputRos_">
+                  <Fields>
+                    <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="results">
+                      <DataType DataType="adas_msgs::msg::dds_::ResultsAlgorithm_" />
+                    </DataTypeField>
+                  </Fields>
+                </StructDataType>
+                <StructDataType Bitcount="0" RawBitcount="0" HasFixedBinaryLayout="False" HasMotorolaByteOrder="False" Name="ResultsAlgorithm_">
+                  <Fields>
+                    <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="timeToImpact">
+                      <DataType DataType="_SystemDataTypes::Double" />
+                    </DataTypeField>
+                    <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="isWarningActive">
+                      <DataType DataType="_SystemDataTypes::Int32" />
+                    </DataTypeField>
+                  </Fields>
+                </StructDataType>
+              </DataTypes>
+            </Namespace>
+          </Subnamespaces>
+        </Namespace>
+      </Subnamespaces>
+    </Namespace>
+  </Namespaces>
+  <ModuleDependencies>
+    <ModuleDependency Module="ADAS" />
+  </ModuleDependencies>
+</FunctionBusLibrary>
