@@ -49,6 +49,15 @@ void runArbiter()
   int objectWarningActive;
   int decelRiskOnThreshold;
   int decelRiskOffThreshold;
+  int turnLampState;
+  int driveMode;
+  int ecoMode;
+  int sportMode;
+  int driverSeatBelt;
+  int passengerSeatBelt;
+  int seatBeltWarnLvl;
+  int preAdjustAlertLevel;
+  int preAdjustAlertType;
   int prevDecelAssistReq;
   int decelAssistReq;
   int driverReleaseReason;
@@ -88,6 +97,13 @@ void runArbiter()
   {
     objectWarningActive = 1;
   }
+  turnLampState = clampRange((int)@CoreState::turnLampState, 0, 3);
+  driveMode = clampRange((int)@CoreState::driveMode, 0, 7);
+  ecoMode = clampRange((int)@CoreState::ecoMode, 0, 1);
+  sportMode = clampRange((int)@CoreState::sportMode, 0, 1);
+  driverSeatBelt = clampRange((int)@CoreState::driverSeatBelt, 0, 1);
+  passengerSeatBelt = clampRange((int)@CoreState::passengerSeatBelt, 0, 1);
+  seatBeltWarnLvl = clampRange((int)@CoreState::seatBeltWarnLvl, 0, 3);
 
   prevDecelAssistReq = (((int)@Core::decelAssistReq) == 1) ? 1 : 0;
   baseAlertLevel = 0;
@@ -257,6 +273,58 @@ void runArbiter()
         selectedAlertType = 4;
       }
     }
+  }
+
+  preAdjustAlertLevel = selectedAlertLevel;
+  preAdjustAlertType = selectedAlertType;
+
+  /* Req_140: turn-lamp context correction for non-emergency guidance alerts. */
+  if (emergencyContext == 0 && objectWarningActive == 0 && selectedAlertLevel > 0)
+  {
+    if (turnLampState == 1)
+    {
+      selectedAlertType = 5;
+    }
+    else if (turnLampState == 2)
+    {
+      selectedAlertType = 6;
+    }
+  }
+
+  /* Req_141: mode-sensitive warning profile (sport: stricter, eco: softer). */
+  if (emergencyContext == 0 && selectedAlertLevel > 0)
+  {
+    if (sportMode == 1 || driveMode >= 4)
+    {
+      selectedAlertLevel = clampRange(selectedAlertLevel + 1, 0, 7);
+    }
+    else if (ecoMode == 1 && selectedAlertLevel > 1)
+    {
+      selectedAlertLevel = selectedAlertLevel - 1;
+    }
+  }
+
+  /* Req_142: seat-belt based emphasis on active warnings. */
+  if (selectedAlertLevel > 0 &&
+      (driverSeatBelt == 0 || passengerSeatBelt == 0 || seatBeltWarnLvl >= 2))
+  {
+    if (selectedAlertLevel < 5)
+    {
+      selectedAlertLevel = 5;
+    }
+    if (selectedAlertType == 0)
+    {
+      selectedAlertType = 3;
+    }
+  }
+
+  if (selectedAlertLevel != preAdjustAlertLevel || selectedAlertType != preAdjustAlertType)
+  {
+    write("[WARN_ARB_MGR] context adjust lvl=%d->%d type=%d->%d turn=%d mode=%d eco=%d sport=%d beltD=%d beltP=%d beltLvl=%d",
+          preAdjustAlertLevel, selectedAlertLevel,
+          preAdjustAlertType, selectedAlertType,
+          turnLampState, driveMode, ecoMode, sportMode,
+          driverSeatBelt, passengerSeatBelt, seatBeltWarnLvl);
   }
 
   @Core::decelAssistReq = decelAssistReq;

@@ -150,6 +150,10 @@ void applyScenarioPreset(int scenarioId)
   gLockIntersectionConflictFlag = 0;
   gLockMergeCutInFlag = 0;
   gLockObjectAlertHoldMs = 300;
+  @Test::displayModeSetting = 0;
+  @Test::alertVolumeSetting = 0;
+  @Test::seatBeltOverride = 0;
+  @Test::historyQueryOffset = 0;
 
   if (scenarioId == 1)
   {
@@ -818,6 +822,11 @@ on start
   @Test::testScenario = 0;
   @Test::scenarioResult = 0;
   @Test::forceFailSafe = 0;
+  @Test::displayModeSetting = 0;
+  @Test::alertVolumeSetting = 0;
+  @Test::seatBeltOverride = 0;
+  @Test::historyQueryOffset = 0;
+  @Test::historyQueryCode = 0;
   @Core::objectTrackValid = 0;
   @Core::objectRange = 0;
   @Core::objectRelSpeed = 0;

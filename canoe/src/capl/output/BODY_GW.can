@@ -135,7 +135,19 @@ on timer tBodyBase100
   message frmBodyGatewayStateMsg mBodyGwState;
   message frmBodyComfortStateMsg mComfort;
   int hazardActive;
+  int navDirection;
+  int seatBeltOverride;
   hazardActive = ((int)@Core::selectedAlertLevel >= 6) ? 1 : 0;
+  navDirection = (int)@Infotainment::navDirection;
+  seatBeltOverride = (int)@Test::seatBeltOverride;
+  if (navDirection < 0 || navDirection > 3)
+  {
+    navDirection = 0;
+  }
+  if (seatBeltOverride < 0 || seatBeltOverride > 3)
+  {
+    seatBeltOverride = 0;
+  }
 
   mHazard.HazardSwitch = hazardActive;
   mHazard.HazardState = hazardActive;
@@ -153,7 +165,22 @@ on timer tBodyBase100
 
   mLamp.HeadLampState = (hazardActive == 1) ? 2 : 1;
   mLamp.TailLampState = 1;
-  mLamp.TurnLampState = 0;
+  if (hazardActive == 1)
+  {
+    mLamp.TurnLampState = 3;
+  }
+  else if (navDirection == 1)
+  {
+    mLamp.TurnLampState = 1;
+  }
+  else if (navDirection == 2)
+  {
+    mLamp.TurnLampState = 2;
+  }
+  else
+  {
+    mLamp.TurnLampState = 0;
+  }
   mLamp.HazardLampReq = hazardActive;
   output(mLamp);
 
@@ -164,9 +191,30 @@ on timer tBodyBase100
 
   mSeatBelt.DriverSeatBelt = 1;
   mSeatBelt.PassengerSeatBelt = 1;
+  if (seatBeltOverride == 1 || seatBeltOverride == 3)
+  {
+    mSeatBelt.DriverSeatBelt = 0;
+  }
+  if (seatBeltOverride == 2 || seatBeltOverride == 3)
+  {
+    mSeatBelt.PassengerSeatBelt = 0;
+  }
   mSeatBelt.RearSeatBelt = 3;
-  mSeatBelt.SeatBeltWarnLvl = (hazardActive == 1) ? 1 : 0;
+  mSeatBelt.SeatBeltWarnLvl = 0;
+  if (mSeatBelt.DriverSeatBelt == 0 || mSeatBelt.PassengerSeatBelt == 0)
+  {
+    mSeatBelt.SeatBeltWarnLvl = 2;
+  }
+  else if (hazardActive == 1)
+  {
+    mSeatBelt.SeatBeltWarnLvl = 1;
+  }
   output(mSeatBelt);
+
+  @CoreState::turnLampState = mLamp.TurnLampState;
+  @CoreState::driverSeatBelt = mSeatBelt.DriverSeatBelt;
+  @CoreState::passengerSeatBelt = mSeatBelt.PassengerSeatBelt;
+  @CoreState::seatBeltWarnLvl = mSeatBelt.SeatBeltWarnLvl;
 
   mCabinAir.CabinTemp = 24;
   mCabinAir.AirQualityIndex = 90;

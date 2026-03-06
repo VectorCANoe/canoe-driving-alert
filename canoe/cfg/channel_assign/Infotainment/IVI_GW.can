@@ -28,6 +28,26 @@ int clampRange(int value, int minValue, int maxValue)
   return value;
 }
 
+int calcEmergencyDistanceM(int etaSec, int speedKph)
+{
+  long distanceM;
+
+  if (etaSec <= 0 || speedKph <= 0)
+  {
+    return 0;
+  }
+  distanceM = ((long)etaSec * (long)speedKph * 10) / 36;
+  if (distanceM < 0)
+  {
+    distanceM = 0;
+  }
+  if (distanceM > 10000)
+  {
+    distanceM = 10000;
+  }
+  return (int)distanceM;
+}
+
 on start
 {
   gLastWarningTextCode = -1;
@@ -50,6 +70,9 @@ on timer tIviCycle
   int emergencyType;
   int emergencyDirection;
   int warningTextCode;
+  int emergencyDistanceM;
+  int emergencyDistanceBand;
+  int baseCode;
   message frmClusterWarningMsg mCluster;
 
   alertLevel = (int)@Core::selectedAlertLevel;
@@ -74,6 +97,24 @@ on timer tIviCycle
     emergencyDirection = 0;
   }
   timeoutClear = (timeoutClear == 1) ? 1 : 0;
+  emergencyDistanceM = calcEmergencyDistanceM((int)@V2X::eta, speed);
+  emergencyDistanceBand = 0;
+  if (emergencyDistanceM > 0)
+  {
+    if (emergencyDistanceM <= 80)
+    {
+      emergencyDistanceBand = 1;
+    }
+    else if (emergencyDistanceM <= 180)
+    {
+      emergencyDistanceBand = 2;
+    }
+    else
+    {
+      emergencyDistanceBand = 3;
+    }
+  }
+  @CoreState::emergencyDistanceM = emergencyDistanceM;
 
   if (timeoutClear == 1 || alertLevel == 0)
   {
@@ -81,9 +122,17 @@ on timer tIviCycle
   }
   else if (alertLevel >= 6)
   {
-    if (emergencyType == 2)
+    if (emergencyType == 2 || emergencyType == 1)
     {
-      warningTextCode = 200 + emergencyDirection;
+      baseCode = (emergencyType == 2) ? 200 : 100;
+      if (emergencyDistanceBand > 0)
+      {
+        warningTextCode = baseCode + (emergencyDistanceBand * 10) + emergencyDirection;
+      }
+      else
+      {
+        warningTextCode = baseCode + emergencyDirection;
+      }
     }
     else
     {
@@ -141,6 +190,9 @@ on timer tIviBase50
   int renderTextCode;
   int renderDirection;
   int vehicleMotionStep;
+  int displayModeSetting;
+  int alertVolumeSetting;
+  int effectiveVolume;
 
   speed = clampRange((int)@Core::vehicleSpeedNorm, 0, 255);
   driveState = clampRange((int)@Core::driveStateNorm, 0, 3);
@@ -151,24 +203,54 @@ on timer tIviBase50
   renderColor = clampRange((int)@Body::ambientColor, 0, 15);
   renderPattern = clampRange((int)@Body::ambientPattern, 0, 15);
   renderTextCode = clampRange((int)@Cluster::warningTextCode, 0, 65535);
+  displayModeSetting = clampRange((int)@Test::displayModeSetting, 0, 3);
+  alertVolumeSetting = clampRange((int)@Test::alertVolumeSetting, 0, 100);
+  effectiveVolume = (alertVolumeSetting > 0) ? alertVolumeSetting : ((alertLevel > 0) ? 30 : 20);
 
   mBase.ClusterSpeed = speed;
   mBase.ClusterGear = driveState;
   mBase.ClusterStatus = alertLevel;
   output(mBase);
 
-  mTheme.ThemeMode = (alertLevel > 0) ? 1 : 0;
+  mTheme.ThemeMode = (displayModeSetting == 1) ? 2 : ((alertLevel > 0) ? 1 : 0);
   mTheme.ClusterBrightness = (alertLevel > 0) ? 28 : 20;
   output(mTheme);
+  @CoreState::themeMode = mTheme.ThemeMode;
 
   mPopup.PopupType = alertType;
   mPopup.PopupPriority = clampRange(alertLevel, 0, 7);
   mPopup.PopupActive = (alertLevel > 0) ? 1 : 0;
+  if (displayModeSetting == 1)
+  {
+    mPopup.PopupActive = 1;
+    mPopup.PopupPriority = 1;
+  }
+  else if (displayModeSetting == 2)
+  {
+    mPopup.PopupActive = 0;
+  }
+  else if (displayModeSetting == 3)
+  {
+    mPopup.PopupActive = (alertLevel > 0) ? 1 : 0;
+    mPopup.PopupPriority = clampRange(alertLevel + 1, 0, 7);
+  }
   output(mPopup);
+  @CoreState::popupType = mPopup.PopupType;
+  @CoreState::popupPriority = mPopup.PopupPriority;
+  @CoreState::popupActive = mPopup.PopupActive;
 
   mAudio.AudioFocusOwner = (alertLevel > 0) ? 1 : 0;
+  if (displayModeSetting == 1)
+  {
+    mAudio.AudioFocusOwner = 0;
+  }
+  else if (displayModeSetting == 2 || displayModeSetting == 3)
+  {
+    mAudio.AudioFocusOwner = (alertLevel > 0) ? 1 : 0;
+  }
   mAudio.AudioDuckingLvl = (alertLevel > 0) ? 4 : 1;
   output(mAudio);
+  @CoreState::audioFocusOwner = mAudio.AudioFocusOwner;
 
   mVoice.VoiceAssistState = 1;
   mVoice.WakeWordState = 1;
@@ -177,8 +259,9 @@ on timer tIviBase50
   mMediaState.MediaSource = 1;
   mMediaState.MediaState = 1;
   mMediaState.MuteState = 0;
-  mMediaState.VolumeLevel = 30;
+  mMediaState.VolumeLevel = effectiveVolume;
   output(mMediaState);
+  @CoreState::volumeLevel = mMediaState.VolumeLevel;
 
   mCallState.CallState = 0;
   mCallState.MicMute = 0;
@@ -193,6 +276,8 @@ on timer tIviBase50
   mNotif.ClusterNotifType = alertType;
   mNotif.ClusterNotifArg = alertLevel;
   output(mNotif);
+  @CoreState::clusterNotifType = mNotif.ClusterNotifType;
+  @CoreState::clusterNotifPrio = mNotif.ClusterNotifArg;
 
   mMedia.MediaTrackType = 1;
   mMedia.MediaRepeatMode = 0;

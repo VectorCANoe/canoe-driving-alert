@@ -135,6 +135,9 @@ on timer tRoute100
   mVehMode.SnowMode = (gDriveMode == 0 && gSpeedNorm < 20) ? 1 : 0;
   mVehMode.PowertrainState = gEngineState;
   output(mVehMode);
+  @CoreState::driveMode = mVehMode.DriveMode;
+  @CoreState::ecoMode = mVehMode.EcoMode;
+  @CoreState::sportMode = mVehMode.SportMode;
 
   mPowerLimit.TorqueLimit = clampRange(gSpeedNorm * 2, 0, 255);
   mPowerLimit.SpeedLimit = gSpeedLimitNorm;

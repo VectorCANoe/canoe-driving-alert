@@ -7,24 +7,204 @@ variables
   msTimer tDuplicateGuard;
   int gLastDisplayedCode;
   dword gLastDisplayMs;
+  int gThemeMode;
+  int gPopupType;
+  int gPopupPriority;
+  int gPopupActive;
+  int gVolumeLevel;
+  int gAudioFocusOwner;
+  int gNotifType;
+  int gNotifArg;
+  int gHistoryCodes[16];
+  int gHistorySnaps[16];
+  int gHistoryWriteIdx;
+  int gHistoryCount;
+}
+
+int clampRange(int value, int minValue, int maxValue)
+{
+  if (value < minValue)
+  {
+    return minValue;
+  }
+  if (value > maxValue)
+  {
+    return maxValue;
+  }
+  return value;
+}
+
+int applyDisplayPolicy(int code)
+{
+  int modeSetting;
+  int volumeSetting;
+  int effectiveVolume;
+  int coded;
+
+  if (code <= 0)
+  {
+    return 0;
+  }
+
+  modeSetting = clampRange((int)@Test::displayModeSetting, 0, 3);
+  volumeSetting = clampRange((int)@Test::alertVolumeSetting, 0, 100);
+  effectiveVolume = (volumeSetting > 0) ? volumeSetting : gVolumeLevel;
+  coded = code;
+
+  if (modeSetting == 2)
+  {
+    coded = clampRange(code + 40, 0, 255);
+  }
+  else if (modeSetting == 3)
+  {
+    coded = clampRange(code + 80, 0, 255);
+  }
+
+  if (modeSetting != 1)
+  {
+    if (gAudioFocusOwner == 0 || effectiveVolume < 15)
+    {
+      coded = code;
+    }
+    else if (effectiveVolume >= 70)
+    {
+      coded = clampRange(coded + 5, 0, 255);
+    }
+  }
+
+  return coded;
+}
+
+void pushHistory(int code)
+{
+  int snap;
+
+  if (code <= 0)
+  {
+    return;
+  }
+
+  snap = clampRange((int)@CoreState::arbitrationSnapshotId, 0, 65535);
+  gHistoryCodes[gHistoryWriteIdx] = code;
+  gHistorySnaps[gHistoryWriteIdx] = snap;
+  gHistoryWriteIdx = (gHistoryWriteIdx + 1) & 15;
+  if (gHistoryCount < 16)
+  {
+    gHistoryCount = gHistoryCount + 1;
+  }
+
+  @CoreState::alertHistoryCount = ((int)@CoreState::alertHistoryCount + 1) & 0xFFFF;
+}
+
+void respondHistoryQuery()
+{
+  int queryOffset;
+  int idx;
+  int pos;
+  int response;
+
+  queryOffset = clampRange((int)@Test::historyQueryOffset, 0, 15);
+  response = 0;
+
+  if (gHistoryCount > 0)
+  {
+    idx = queryOffset;
+    if (idx >= gHistoryCount)
+    {
+      idx = gHistoryCount - 1;
+    }
+    pos = gHistoryWriteIdx - 1 - idx;
+    if (pos < 0)
+    {
+      pos = pos + 16;
+    }
+    response = gHistoryCodes[pos];
+  }
+
+  @Test::historyQueryCode = response;
 }
 
 on start
 {
+  int i;
+
   gLastDisplayedCode = 0;
   gLastDisplayMs = 0;
+  gThemeMode = 0;
+  gPopupType = 0;
+  gPopupPriority = 0;
+  gPopupActive = 0;
+  gVolumeLevel = 30;
+  gAudioFocusOwner = 0;
+  gNotifType = 0;
+  gNotifArg = 0;
+  gHistoryWriteIdx = 0;
+  gHistoryCount = 0;
+  for (i = 0; i < 16; i = i + 1)
+  {
+    gHistoryCodes[i] = 0;
+    gHistorySnaps[i] = 0;
+  }
   @CoreState::duplicatePopupGuard = 0;
+  @CoreState::themeMode = 0;
+  @CoreState::popupType = 0;
+  @CoreState::popupPriority = 0;
+  @CoreState::popupActive = 0;
+  @CoreState::volumeLevel = 30;
+  @CoreState::audioFocusOwner = 0;
+  @CoreState::clusterNotifType = 0;
+  @CoreState::clusterNotifPrio = 0;
+  @CoreState::alertHistoryCount = 0;
+  @Test::historyQueryCode = 0;
   write("[CLU_HMI_CTRL] start");
+}
+
+on message frmClusterThemeMsg
+{
+  gThemeMode = clampRange((int)this.ThemeMode, 0, 7);
+  @CoreState::themeMode = gThemeMode;
+}
+
+on message frmHmiPopupStateMsg
+{
+  gPopupType = clampRange((int)this.PopupType, 0, 15);
+  gPopupPriority = clampRange((int)this.PopupPriority, 0, 7);
+  gPopupActive = clampRange((int)this.PopupActive, 0, 1);
+  @CoreState::popupType = gPopupType;
+  @CoreState::popupPriority = gPopupPriority;
+  @CoreState::popupActive = gPopupActive;
+}
+
+on message frmMediaStateMsg
+{
+  gVolumeLevel = clampRange((int)this.VolumeLevel, 0, 100);
+  @CoreState::volumeLevel = gVolumeLevel;
+}
+
+on message frmAudioFocusMsg
+{
+  gAudioFocusOwner = clampRange((int)this.AudioFocusOwner, 0, 7);
+  @CoreState::audioFocusOwner = gAudioFocusOwner;
+}
+
+on message frmClusterNotifMsg
+{
+  gNotifType = clampRange((int)this.ClusterNotifType, 0, 255);
+  gNotifArg = clampRange((int)this.ClusterNotifArg, 0, 255);
+  @CoreState::clusterNotifType = gNotifType;
+  @CoreState::clusterNotifPrio = gNotifArg;
 }
 
 on message frmClusterWarningMsg
 {
   int code;
+  int prevCode;
   int guardRemainMs;
   dword nowMs;
   dword elapsedMs;
 
-  code = this.WarningTextCode;
+  prevCode = gLastDisplayedCode;
+  code = applyDisplayPolicy((int)this.WarningTextCode);
   nowMs = timeNow();
   guardRemainMs = 0;
 
@@ -66,8 +246,21 @@ on message frmClusterWarningMsg
       setTimer(tDuplicateGuard, 100);
     }
 
+    if (code != prevCode)
+    {
+      pushHistory(code);
+      respondHistoryQuery();
+    }
+
     write("[CLU] warning code=%d", code);
   }
+}
+
+on sysvar Test::historyQueryOffset
+{
+  respondHistoryQuery();
+  write("[CLU_HMI_CTRL] history query offset=%d code=%d",
+        (int)@Test::historyQueryOffset, (int)@Test::historyQueryCode);
 }
 
 on timer tDuplicateGuard
