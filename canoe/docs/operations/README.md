@@ -3,6 +3,7 @@
 This folder contains process and execution documents used by CANoe development/verification.
 
 ## Core SoT / Governance
+- `DEV_DOC_ENTRYPOINT.md`
 - `ETH_INTERFACE_CONTRACT.md`
 - `CAN_MESSAGE_OWNERSHIP_MATRIX.md`
 - `V2_BRANCH_GUARDRAIL.md`
