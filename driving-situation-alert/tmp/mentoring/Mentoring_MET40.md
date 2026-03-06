@@ -54,16 +54,17 @@
 | M40-12 | CAN ID 설계 근거 | ID 배정 룰(도메인/충돌회피/확장성/예약영역) 문서화 | [x] | `driving-situation-alert/0303_Communication_Specification.md` |
 | M40-13 | Ethernet DBC 경계 명시 | “Ethernet에는 CAN DBC 직접 적용하지 않음” 문구 고정 | [x] | `driving-situation-alert/0302_NWflowDef.md`, `driving-situation-alert/0303_Communication_Specification.md` |
 | M40-14 | DBC ID 충돌/예약영역 대응 | UDS 예약영역/ID 충돌 대응 원칙과 디펜스 문구 준비 | [x] | `driving-situation-alert/0303_Communication_Specification.md`, 본 문서 `4) ID 디펜스 Q&A 메모` |
-| M40-16 | 기능 다양화 증설(상태전송 편중 해소) | 신규 기능축을 체인에 추가해 `Req -> Func -> Flow -> Comm -> Var -> Code -> UT/IT/ST` 폐쇄를 확보 | [ ] | `01`, `03`, `0302`, `0303`, `0304`, `04`, `05`, `06`, `07` |
-| M40-17 | 요구사항 통폐합 리밸런싱 | 신규/기존 Req를 통합 단위 기준으로 재정렬하고 변경 매핑(Old->New)을 유지 | [ ] | `driving-situation-alert/01_Requirements.md`, 변경 매핑표(팀 운영 산출물) |
+| M40-16 | 기능 다양화 증설(상태전송 편중 해소) | 신규 기능축을 체인에 추가해 `Req -> Func -> Flow -> Comm -> Var -> Code -> UT/IT/ST` 폐쇄를 확보 | [x] | `driving-situation-alert/01_Requirements.md`, `driving-situation-alert/03_Function_definition.md`, `driving-situation-alert/0301_SysFuncAnalysis.md`, `driving-situation-alert/0302_NWflowDef.md`, `driving-situation-alert/0303_Communication_Specification.md`, `driving-situation-alert/0304_System_Variables.md`, `driving-situation-alert/04_SW_Implementation.md`, `driving-situation-alert/05_Unit_Test.md`, `driving-situation-alert/06_Integration_Test.md`, `driving-situation-alert/07_System_Test.md`, `driving-situation-alert/tmp/reports/Doc_Code_Sync_Report.md` |
+| M40-17 | 요구사항 통폐합 리밸런싱 | 신규/기존 Req를 통합 단위 기준으로 재정렬하고 변경 매핑(Old->New)을 유지 | [x] | `driving-situation-alert/01_Requirements.md`(C-1~C-4), `driving-situation-alert/03_Function_definition.md`(Legacy 전환 매핑), `driving-situation-alert/0301_SysFuncAnalysis.md`(Legacy Req 상속), `driving-situation-alert/0302_NWflowDef.md`(Legacy Req 상속), `driving-situation-alert/0303_Communication_Specification.md`(Legacy Req 상속), `driving-situation-alert/0304_System_Variables.md`(Legacy Req 상속), `driving-situation-alert/tmp/reports/Doc_Code_Sync_Report.md` |
+| M40-18 | Pre-Activation 실행 증빙 폐쇄 | `Req_130~Req_155` 활성 전환 항목에 대해 실제 구현/실행 결과(`Pass/Fail`, owner/date, log/capture)를 05/06/07에 채워 G4 재개 기준을 충족 | [ ] | `driving-situation-alert/04_SW_Implementation.md`, `driving-situation-alert/05_Unit_Test.md`, `driving-situation-alert/06_Integration_Test.md`, `driving-situation-alert/07_System_Test.md`, `canoe/src/*`, `canoe/logging/evidence/ST/*` |
 
 ## 3) 즉시 실행 To-do (다음 사이클)
 
-1. `M40-16` 착수: 상태전송 편중을 줄이기 위한 신규 기능축(예: 교차로/합류 객체 위험 경고, 고속도로 무조향 주의저하 경보 고도화)을 2개 이상 확정한다.
-2. 기능 증설은 `01 -> 03 -> 0302 -> 0303 -> 0304 -> 04 -> 05/06/07`을 동일 변경세트로 동기화한다.
-3. `M40-17` 착수: 요구사항을 과세분화하지 않고 통합 단위로 재구성하며, Old/New 매핑표를 유지한다.
+1. `M40-18` 착수: `Req_130~Req_155` Pre-Activation 항목의 활성 전환 범위를 개발팀과 확정한다(대상 Req, 일정, 롤백 지점 포함).
+2. 활성 전환 대상은 `04 -> Code -> 05/06/07` 순서로 실제 실행증빙(`Pass/Fail`, owner/date, log/capture 링크)을 채운다.
+3. 증빙 누적 후 `driving-situation-alert/tmp/reports/Doc_Code_Sync_Report.md` 재실행으로 체인 정합을 재확인한다.
 4. 제출 직전 `TMP_MID_AUDIT_MAIN.md`의 lock anchor를 최종 제출 커밋으로 1회 재동기화한다.
-5. `canoe/logging/evidence/ST/` 경로에 실측 캡처/로그를 누적하고 `M40_EVIDENCE_INDEX.md` 링크를 갱신한다.
+5. `canoe/logging/evidence/ST/` 경로 실측 캡처/로그와 `M40_EVIDENCE_INDEX.md` 링크를 동일 커밋으로 갱신한다.
 
 ## 4) ID 디펜스 Q&A 메모 (발표용)
 
@@ -78,7 +79,8 @@
 
 - 이 문서는 회의록 분석 기반 내부 실행 메모다.
 - 회의록 원문 발화(시간대)는 `1)` 표를 기준으로 추적한다.
-- 현재 Must 항목은 문서 기준 완료이며, 핵심 잔여는 기능 다양화 증설(`M40-16`)과 요구사항 통폐합 리밸런싱(`M40-17`)이다.
+- 현재 Must 항목은 문서 기준 완료 상태다.
+- 핵심 잔여는 실행증빙 폐쇄(`M40-18`)이며, 개발팀 구현 완료 시점에 맞춰 `04/05/06/07` 실증 데이터로 닫는다.
 ---
 # 회의록 (2026.03.03)
 
