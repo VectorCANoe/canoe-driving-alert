@@ -1,29 +1,29 @@
 # Doc-Code Sync Report
 
-- Generated At: 2026-03-06 10:26:24 UTC
+- Generated At: 2026-03-06 14:04:46 UTC
 - Branch: main
-- Commit: 7058f0c
-- Gate Result: FAIL
+- Commit: 6178ef5
+- Gate Result: PASS
 
 ## Req Coverage
 | Doc | Covered | Total | Status |
 | --- | --- | --- | --- |
-| 03 | 73 | 82 | FAIL |
-| 0301 | 73 | 82 | FAIL |
-| 0302 | 72 | 82 | FAIL |
-| 0303 | 73 | 82 | FAIL |
-| 0304 | 73 | 82 | FAIL |
-| 05 | 72 | 82 | FAIL |
-| 07 | 72 | 82 | FAIL |
-| 06 | 72 | 82 | WARN |
+| 03 | 98 | 98 | PASS |
+| 0301 | 98 | 98 | PASS |
+| 0302 | 98 | 98 | PASS |
+| 0303 | 98 | 98 | PASS |
+| 0304 | 98 | 98 | PASS |
+| 05 | 98 | 98 | PASS |
+| 07 | 98 | 98 | PASS |
+| 06 | 98 | 98 | PASS |
 
 ## Func Coverage
 | Doc | Covered | Total | Status |
 | --- | --- | --- | --- |
-| 0301 | 80 | 80 | PASS |
-| 0302 | 80 | 80 | PASS |
-| 0303 | 80 | 80 | PASS |
-| 0304 | 80 | 80 | PASS |
+| 0301 | 96 | 96 | PASS |
+| 0302 | 96 | 96 | PASS |
+| 0303 | 96 | 96 | PASS |
+| 0304 | 96 | 96 | PASS |
 
 ## Implementation Summary
 | Item | Coverage | Status |
@@ -34,13 +34,4 @@
 | CFG absolute path hygiene | 0 forbidden path | PASS |
 
 ## Issues
-### FAIL
-- 03: missing Req Req_018, Req_036, Req_038, Req_039, Req_114, Req_115
-- 0301: missing Req Req_018, Req_036, Req_038, Req_039, Req_114, Req_115
-- 0302: missing Req Req_018, Req_036, Req_038, Req_039, Req_108, Req_114
-- 0303: missing Req Req_018, Req_036, Req_038, Req_039, Req_114, Req_115
-- 0304: missing Req Req_018, Req_036, Req_038, Req_039, Req_114, Req_115
-- 05: missing Req Req_018, Req_036, Req_038, Req_039, Req_108, Req_114
-- 07: missing Req Req_018, Req_036, Req_038, Req_039, Req_108, Req_114
-### WARN
-- 06: missing Req Req_018, Req_036, Req_038, Req_039, Req_108, Req_114 (Lean IT advisory)
+- 없음

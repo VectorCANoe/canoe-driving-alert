@@ -19,5 +19,15 @@
 ## 3) Mid-Report Package Lock (M40-01, M40-15)
 
 - Package lock doc: `driving-situation-alert/TMP_MID_AUDIT_MAIN.md`
-- Lock anchor: `main@3ef849a`
+- Lock anchor: `main@6178ef5`
 - Excel gate: first-sheet project overview + comparable tab/column format PASS
+
+## 4) Pre-Activation Evidence Closure Status (M40-18)
+
+- Target range: `Req_130~Req_155`
+- Document readiness:
+  - `04/05/06/07` 추적 체인 및 테스트 항목 정의 완료
+  - 상태값은 Pre-Activation(`Planned`) 기준으로 유지
+- Runtime evidence readiness:
+  - `canoe/logging/evidence/UT/`, `IT/`, `ST/` 폴더 구조만 생성됨(`.gitkeep`)
+  - 실측 로그/캡처 파일 반영 후 `Pass/Fail`, 담당자, 일자 기입으로 폐쇄

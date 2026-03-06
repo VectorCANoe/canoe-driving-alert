@@ -56,13 +56,13 @@
 | M40-14 | DBC ID 충돌/예약영역 대응 | UDS 예약영역/ID 충돌 대응 원칙과 디펜스 문구 준비 | [x] | `driving-situation-alert/0303_Communication_Specification.md`, 본 문서 `4) ID 디펜스 Q&A 메모` |
 | M40-16 | 기능 다양화 증설(상태전송 편중 해소) | 신규 기능축을 체인에 추가해 `Req -> Func -> Flow -> Comm -> Var -> Code -> UT/IT/ST` 폐쇄를 확보 | [x] | `driving-situation-alert/01_Requirements.md`, `driving-situation-alert/03_Function_definition.md`, `driving-situation-alert/0301_SysFuncAnalysis.md`, `driving-situation-alert/0302_NWflowDef.md`, `driving-situation-alert/0303_Communication_Specification.md`, `driving-situation-alert/0304_System_Variables.md`, `driving-situation-alert/04_SW_Implementation.md`, `driving-situation-alert/05_Unit_Test.md`, `driving-situation-alert/06_Integration_Test.md`, `driving-situation-alert/07_System_Test.md`, `driving-situation-alert/tmp/reports/Doc_Code_Sync_Report.md` |
 | M40-17 | 요구사항 통폐합 리밸런싱 | 신규/기존 Req를 통합 단위 기준으로 재정렬하고 변경 매핑(Old->New)을 유지 | [x] | `driving-situation-alert/01_Requirements.md`(C-1~C-4), `driving-situation-alert/03_Function_definition.md`(Legacy 전환 매핑), `driving-situation-alert/0301_SysFuncAnalysis.md`(Legacy Req 상속), `driving-situation-alert/0302_NWflowDef.md`(Legacy Req 상속), `driving-situation-alert/0303_Communication_Specification.md`(Legacy Req 상속), `driving-situation-alert/0304_System_Variables.md`(Legacy Req 상속), `driving-situation-alert/tmp/reports/Doc_Code_Sync_Report.md` |
-| M40-18 | Pre-Activation 실행 증빙 폐쇄 | `Req_130~Req_155` 활성 전환 항목에 대해 실제 구현/실행 결과(`Pass/Fail`, owner/date, log/capture)를 05/06/07에 채워 G4 재개 기준을 충족 | [ ] | `driving-situation-alert/04_SW_Implementation.md`, `driving-situation-alert/05_Unit_Test.md`, `driving-situation-alert/06_Integration_Test.md`, `driving-situation-alert/07_System_Test.md`, `canoe/src/*`, `canoe/logging/evidence/ST/*` |
+| M40-18 | Pre-Activation 실행 증빙 폐쇄 | `Req_130~Req_155` 활성 전환 항목에 대해 실제 구현/실행 결과(`Pass/Fail`, owner/date, log/capture)를 05/06/07에 채워 G4 재개 기준을 충족 | [~] | `driving-situation-alert/04_SW_Implementation.md`, `driving-situation-alert/05_Unit_Test.md`, `driving-situation-alert/06_Integration_Test.md`, `driving-situation-alert/07_System_Test.md`, `canoe/src/*`, `canoe/logging/evidence/ST/*`, `driving-situation-alert/tmp/reports/M40_EVIDENCE_INDEX.md` |
 
 ## 3) 즉시 실행 To-do (다음 사이클)
 
-1. `M40-18` 착수: `Req_130~Req_155` Pre-Activation 항목의 활성 전환 범위를 개발팀과 확정한다(대상 Req, 일정, 롤백 지점 포함).
-2. 활성 전환 대상은 `04 -> Code -> 05/06/07` 순서로 실제 실행증빙(`Pass/Fail`, owner/date, log/capture 링크)을 채운다.
-3. 증빙 누적 후 `driving-situation-alert/tmp/reports/Doc_Code_Sync_Report.md` 재실행으로 체인 정합을 재확인한다.
+1. `M40-18` 잔여: `Req_130~Req_155` Pre-Activation 항목에 대해 실측 로그/캡처를 수집한다.
+2. 수집 완료 후 `05/06/07`의 `Pass/Fail`, 담당자, 일자를 실제 실행 결과로 갱신한다.
+3. 증빙 반영 후 `driving-situation-alert/tmp/reports/Doc_Code_Sync_Report.md` 재실행으로 체인 정합을 재확인한다.
 4. 제출 직전 `TMP_MID_AUDIT_MAIN.md`의 lock anchor를 최종 제출 커밋으로 1회 재동기화한다.
 5. `canoe/logging/evidence/ST/` 경로 실측 캡처/로그와 `M40_EVIDENCE_INDEX.md` 링크를 동일 커밋으로 갱신한다.
 
@@ -80,7 +80,7 @@
 - 이 문서는 회의록 분석 기반 내부 실행 메모다.
 - 회의록 원문 발화(시간대)는 `1)` 표를 기준으로 추적한다.
 - 현재 Must 항목은 문서 기준 완료 상태다.
-- 핵심 잔여는 실행증빙 폐쇄(`M40-18`)이며, 개발팀 구현 완료 시점에 맞춰 `04/05/06/07` 실증 데이터로 닫는다.
+- 핵심 잔여는 실행증빙 실측 데이터 반영(`M40-18`)이며, 현재 문서/추적 정의는 완료([~]) 상태다.
 ---
 # 회의록 (2026.03.03)
 

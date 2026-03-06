@@ -77,12 +77,12 @@
 - 00_VModel_Mapping.md: Version 4.3 (Released)
 - 00a_Audit_Readiness_Checklist.md: Version 1.12 (Draft)
 - 00b_Project_Scope.md: Version 2.8 (Released)
-- 00c_Req_Classification_and_Safety_Profile.md: Version 1.5 (Draft, Internal Baseline Locked)
-- 00d_HARA_Worksheet.md: Version 1.3 (Draft, Internal Baseline Approved)
-- 00e_ECU_Naming_Standard.md: Version 2.0 (Released, SoT Fixed)
+- 00c_Req_Classification_and_Safety_Profile.md: Version 1.6 (Draft, Internal Baseline Locked)
+- 00d_HARA_Worksheet.md: Version 1.4 (Draft, Internal Baseline Approved)
+- 00e_ECU_Naming_Standard.md: Version 2.7 (Released, SoT Fixed)
 - 00f_CAN_ID_Allocation_Standard.md: Version 3.5 (Draft, Policy SoT)
-- 01_Requirements.md: Version 5.29 (Draft)
-- 02_Concept_design.md: Version 2.6 (In Progress, Figure Build)
+- 01_Requirements.md: Version 5.30 (Draft)
+- 02_Concept_design.md: Version 2.7 (Draft, Figure Finalized)
 - 03_Function_definition.md: Version 4.31 (Draft)
 - 0301_SysFuncAnalysis.md: Version 3.27 (Draft)
 - 0302_NWflowDef.md: Version 3.23 (Draft)
@@ -92,15 +92,14 @@
 - 05_Unit_Test.md: Version 2.21 (Draft)
 - 06_Integration_Test.md: Version 4.19 (Draft)
 - 07_System_Test.md: Version 5.19 (Draft)
-- Development Baseline Commit: `d7e2a70` (G3 CLOSED + G4 HOLD, 2026-03-06)
+- Development Baseline Commit: `6178ef5` (mentoring checklist sync + vector sample ref sync, 2026-03-06)
 
 ## 7) Immediate Next Steps
-1. Finalize `02_Concept_design.md` figure evidence and keep star topology consistency.
-2. Fill execution evidence in `05/06/07` (`Pass/Fail`, owner, date, trace/log refs, panel capture links).
-3. Complete DBC naming/ownership alignment:
-   - Validation path: remove `test_can` dependency in active path
-   - Validation ECU naming: legacy validation labels -> `VAL_*`
-   - ADAS domain directive: apply `adas_can.dbc` creation and ownership split via dev change order
+1. Keep `02_Concept_design.md` figure baseline fixed and ensure PPT sync consistency (star topology).
+2. Close `M40-18`: fill Pre-Activation execution evidence in `05/06/07` (`Pass/Fail`, owner, date, trace/log refs, panel capture links) and sync with `04`.
+3. Refresh submission lock anchors to current baseline:
+   - `TMP_MID_AUDIT_MAIN.md` lock anchor
+   - `tmp/reports/M40_EVIDENCE_INDEX.md` lock anchor
 4. Apply naming/ID SoT:
    - Use `00e_ECU_Naming_Standard.md` as canonical ECU naming policy
    - Use `00f_CAN_ID_Allocation_Standard.md` as canonical CAN-ID policy
@@ -111,7 +110,7 @@
    - Domain CAN DBC (`*_can.dbc`) + Ethernet contract (`ETH_INTERFACE_CONTRACT.md`) -> `0302/0303/0304`
    - `Comm_130~Comm_133`는 `ETH_INTERFACE_CONTRACT.md v1.2`에 `E213~E216`이 반영되기 전까지 Pre-Activation/Pending 상태로 유지
 6. Reflect Mentoring MET40 open items in docs/evidence:
-   - `M40-01`, `M40-02`, `M40-04`, `M40-05`, `M40-06`, `M40-11`, `M40-14`
+   - `M40-18`
 
 ## 8) Do Not Do
 - Do not change file encoding away from UTF-8.
