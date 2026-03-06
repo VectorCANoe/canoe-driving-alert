@@ -19,22 +19,11 @@
 
 ## 작성 원칙
 
-- 본 문서는 운전자 관점 E2E 시나리오로 요구사항 충족을 검증한다.
-- 상단 표는 샘플 형식(`Scene ID/설명/Pass/담당자/일자`)을 유지한다.
-- ST는 사용자/운전자 시나리오 중심으로 유지하고, 미세 경계값 판정은 UT/IT 근거를 참조한다.
-- ST는 블랙박스 관점(입력 이벤트 -> 사용자 관찰 결과)으로 작성하며, 내부 구현 세부는 05/06 참조로 분리한다.
-- 상세 추적은 하단 ST 추적표에서 `Req/VC/Func/Flow/Comm/Var/IT`로 연결한다.
-- 검증 환경은 CANoe SIL, CAN+Ethernet으로 고정한다.
-- 임시 주석(실행 제약): 현재 CANoe.CAN 라이선스 환경에서는 SIL 실행 시 Ethernet 구간을 CAN 대체 백본으로 검증하며, Ethernet 라이선스 확보 후 동일 ST 케이스로 재검증한다.
-- 본 문서는 `FZ_001~FZ_012` 결과 반영 전 Baseline Draft이며, 측정값 확정 시 Pass/Fail를 기입한다.
-- `ST_SIL_001`, `ST_SIL_002`, `ST_RESULT_001`, `ST_BASE_DIAG_001`은 Validation Harness 기반 검증 시나리오(검증 전용)다.
-- ST 증적(로그/캡처/리포트)은 `canoe/logging/evidence/ST/` 경로 규칙으로 관리한다.
-- ST 증적 포맷/채점 규칙은 `canoe/docs/operations/VERIFICATION_EVIDENCE_LOG_STANDARD.md`를 따른다.
-- V2 확장 요구(`Req_120~Req_121, Req_123, Req_125~Req_129`)는 구현 활성 상태로 ST 항목을 분리 관리하며, SIL 시나리오 15~19와 연계해 검증한다.
-- ADAS 객체 인지 확장(`Req_130~Req_139`)은 Pre-Activation(설계 선반영) ST 항목(`ST_ADAS_OBJ_001`)으로 분리 관리한다.
-- 차량 경보 편의 확장(`Req_140~Req_147`)은 Pre-Activation(설계 선반영) ST 항목(`ST_BASE_ALERT_EXT_001`)으로 분리 관리한다.
-- 경고 강건성·인지성 확장(`Req_148~Req_155`)은 Pre-Activation(설계 선반영) ST 항목(`ST_BASE_ROBUST_EXT_001`)으로 분리 관리한다.
-- Panel 검증은 `차량 화면 -> 제어 패널 -> 상태 모니터` 순서로 수행하고, 시스템 동작 확인은 차량 화면 기준으로 판정한다.
+- 본 문서는 운전자 관점 E2E 시스템 시나리오(ST)를 정리한다.
+- 제출본은 상단 공식 ST 표를 유지하고, 상세 추적은 대표 항목만 유지한다.
+- 전수 ST/증빙 상세는 원문 07에서 관리한다.
+- 판정 기준은 사용자 관찰 결과 중심으로 유지한다.
+- Pre-Activation 라벨은 원문과 동일하게 유지한다.
 
 ---
 

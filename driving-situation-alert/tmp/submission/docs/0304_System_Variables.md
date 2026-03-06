@@ -19,22 +19,11 @@
 
 ## 작성 원칙
 
-- 상단 표는 공식 샘플(`0304.md`)과 동일하게 `ID/Namespace/Name/Data type/Min/Max/Initial Value/Description` 열만 사용한다.
-- 상단 표의 `Namespace`는 도메인명(`Chassis/Infotainment/V2X/Core/Body/Cluster/Test`)을 사용하고, `Name`은 순수 기능 변수명으로 유지한다.
-- 통신 계층/버스 경로/구현 식별자(`*_CAN_IN`, `*_ETH_CORE`, `*_CAN_OUT`)는 하단 매핑 표와 추적표에서 관리한다.
-- 하단 추적표에서 `Var -> Comm -> Flow -> Func -> Req` 추적 연결을 명시하고, 누락 없는 커버리지 기준으로 N:M 매핑을 허용한다.
-- DBC 신호명이 OEM 관례(`gVehicleSpeed`, `gRoadZone`)를 사용하더라도, 상단 표준 Name은 기능 중심 이름(`vehicleSpeed`, `roadZone`)으로 유지한다.
-- 제출 전 현대/기아 및 OEM 기준 명칭으로 일괄 대체하되, Var ID/추적 ID 체계는 유지한다.
-- `Namespace=Test` 변수는 Validation Harness 전용(Non-Production)으로 관리하며, 사용자 기능/양산 기능 변수와 구분한다.
-- EMS 관련 변수는 상위 문서 계층에서 논리 단말 `EMS_ALERT` 기준으로 관리하고, 내부 TX/RX 모듈 분해는 하단 보강 매핑에서만 관리한다.
-- 약어 충돌 방지 규칙: `EMS_AMB_TX`의 `AMB`는 `Ambulance` 의미의 구현 literal이며, `Ambient`는 항상 `AMBIENT` 풀토큰으로 표기한다.
-- V2 확장 변수(`Req_120~Req_121, Req_123, Req_125~Req_129`)는 구현 활성 상태로 추적하며, 0302/0303/05~07과 코드/DBC를 동일 커밋에서 동기화한다.
-- ADAS 객체 인지 확장 변수(`Req_130~Req_139`)는 `Var_330~Var_339` Pre-Activation(설계 선반영) 상태로 추적하며, 구현 착수 시 0302/0303/04/05/06/07과 동일 커밋에서 동기화한다.
-- 차량 경보 편의 확장 변수(`Req_140~Req_147`)는 `Var_009/012/024/029/133/138~141/155/164/166~168/191~193/268/281/282` Pre-Activation 매핑으로 추적하며, 구현 착수 시 0302/0303/04/05/06/07과 동일 커밋에서 동기화한다.
-- 경고 강건성·인지성 확장 변수(`Req_148~Req_155`)는 `Var_330/333/334`, `Var_016/020/021/024/027/028`, `Var_180/326/327/328`, `Var_166/167/168/268/269/289/296/297` Pre-Activation 매핑으로 추적하며, 구현 착수 시 0302/0303/04/05/06/07과 동일 커밋에서 동기화한다.
-- `Req_108`은 Legacy 참조 요구로 관리하며 `Var_238~Var_267` 통합 결과를 상속 추적한다.
-- 목표 설계는 옵션1(ETH 백본) 고정이며, CANoe.CAN 라이선스 제약 구간의 SIL 검증은 임시로 CAN 대체 백본을 사용하고 Ethernet 라이선스 확보 후 동일 케이스로 재검증한다.
-- SoT 계층은 분리 관리한다: CAN 실프레임은 도메인 DBC(`chassis_can.dbc`/`powertrain_can.dbc`/`body_can.dbc`/`infotainment_can.dbc`/`adas_can.dbc` + `eth_backbone_can_stub.dbc`)를 따르고, Validation 결과 프레임(`0x2A5`,`0x2A6`)은 `chassis_can.dbc`에 통합 관리한다. Ethernet 논리 계약은 `ETH_INTERFACE_CONTRACT.md`를 따른다.
+- 본 문서는 시스템 변수 사전 및 추적 관계를 정의한다.
+- 제출본은 상단 공식 변수 표를 유지하고, 하단 추적은 대표 행만 유지한다.
+- 전체 변수 전수 매핑은 원문 0304에서 관리한다.
+- Var-Comm-Flow 추적 키는 원문과 동일하게 유지한다.
+- Pre-Activation/Legacy 라벨은 원문과 동일하게 유지한다.
 
 ---
 

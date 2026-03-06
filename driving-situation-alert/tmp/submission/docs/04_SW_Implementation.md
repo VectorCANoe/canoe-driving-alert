@@ -19,25 +19,11 @@
 
 ## 작성 원칙
 
-- 본 문서는 03/0301/0302/0303/0304 설계를 구현 단위(모듈/타이밍/예외처리)로 연결한다.
-- 구현 상세는 코드 문법이 아니라 `입력/처리/출력/타이밍/예외` 계약으로 기록한다.
-- 추적 체인은 `Req -> Func -> Flow -> Comm -> Var -> Code -> UT/IT/ST`를 유지한다.
-- 네트워크는 옵션1 아키텍처를 고정한다: `ETH_SW + CHS_GW/INFOTAINMENT_GW/BODY_GW/IVI_GW + 도메인 CAN`.
-- 통신 원본은 분리 관리한다: CAN=`canoe/databases/chassis_can.dbc` + `canoe/databases/powertrain_can.dbc` + `canoe/databases/body_can.dbc` + `canoe/databases/infotainment_can.dbc` + `canoe/databases/adas_can.dbc` + `canoe/databases/eth_backbone_can_stub.dbc` (Validation frame `0x2A5/0x2A6`은 `chassis_can.dbc` 통합), Ethernet(논리 계약)=`canoe/docs/operations/ETH_INTERFACE_CONTRACT.md`.
-- 범위 외 항목(OTA/UDS/DoIP)은 구현 대상에서 제외한다.
-- ASPICE SWE.3 BP1~BP8 관점에서 `상세 설계/인터페이스/동적행위/대안평가/추적성/합의/구현규칙`을 명시한다.
-- SIL 단계에서는 Panel/sysvar 경유 자극을 허용하며, 통신 계약(0302/0303/0304)은 유지한 채 ETH `UdpSocket` 기반 입력으로 점진 전환한다.
-- `VAL_SCENARIO_CTRL`/`VAL_BASELINE_CTRL`는 Validation Harness이며, `ETH_SW`/도메인 게이트웨이의 통신 변환 역할과 분리한다.
-- ECU 명명 규칙은 `00e`를 SoT로 고정하고, RTE 생성명 규칙은 `00g_RTE_Name_Mapping_Standard.md`를 SoT로 고정한다.
-- 본 문서는 `00e/00g` 정책의 구현 적용 참조 문서로 관리한다.
-- 약어 충돌 방지 규칙: `EMS_AMB_TX`의 `AMB`는 `Ambulance` 의미의 구현 literal이며, `Ambient`는 항상 `AMBIENT` 풀토큰으로 표기한다.
-- `project.sysvars`의 `UiRender/*`, `Test/*`, `V2X/policeDispatch`, `V2X/ambulanceDispatch`는 Verification-Harness 입력/렌더 변수로 관리하며 제품 Req 체인(01/03/05~07)과 분리한다.
-- CANoe.CAN 환경에서는 Ethernet 일부 경로(E100/E200 모니터링 및 V2 확장)가 CAN-stub(0x1C0/0x1C1/0x1C2/0x1C3/0x1C4/0x111)로 대체 운반되며, 서비스 해석은 Ethernet 논리 계약 SoT를 우선한다.
-- ADAS 객체 인지 확장(`Req_130~Req_139`)은 `Func_130~Func_139`, `Flow_130~Flow_133`, `Comm_130~Comm_133`, `Var_330~Var_339` Pre-Activation(설계 선반영) 상태로 유지하고 구현 착수 시 0302/0303/0304/05/06/07을 동일 커밋으로 동기화한다.
-- 차량 경보 편의 확장(`Req_140~Req_147`)은 `Func_140~Func_147`, `Flow_103/104/105/203 + Flow_006/008`, `Comm_103/104/105/203 + Comm_006/008`, `Var_133/138~141/155/164/166~168/191~193/268/281/282` Pre-Activation(설계 선반영) 상태로 유지하고 구현 착수 시 0302/0303/0304/05/06/07을 동일 커밋으로 동기화한다.
-- 경고 강건성·인지성 확장(`Req_148~Req_155`)은 `Func_148~Func_155`, `Flow_130/133 + Flow_006/007/008 + Flow_104/105/124/203`, `Comm_130/133 + Comm_006/007/008 + Comm_104/105/124/203`, `Var_330/333/334 + Var_016/020/021/024/027/028 + Var_180/326/327/328 + Var_166/167/168/268/269/289/296/297` Pre-Activation(설계 선반영) 상태로 유지하고 구현 착수 시 0302/0303/0304/05/06/07을 동일 커밋으로 동기화한다.
-- Legacy 요구(`Req_018`, `Req_036`, `Req_038`, `Req_039`, `Req_108`, `Req_114`, `Req_115`, `Req_117`, `Req_122`, `Req_124`)는 구현 신규 개발 대상이 아니며, `Req_017`, `Req_035`, `Req_037`, `Req_113`, `Req_116`, `Req_118`, `Req_125`, `Req_127`, `Req_128`, `Req_129` 통합 결과를 상속 추적한다.
-- Panel 구성은 `차량 화면 -> 제어 패널 -> 상태 모니터` 우선순위를 적용하고, UI는 표시/자극 전용 계층으로 유지한다.
+- 본 문서는 구현 구조/모듈/인터페이스를 요약한다.
+- 제출본은 상단 공식 모듈 표를 유지하고, 하단은 대표 추적만 유지한다.
+- 전수 Func-Code-UT/IT/ST 매핑은 원문 04에서 관리한다.
+- 05/06/07 문서와 추적 키 일관성을 유지한다.
+- Pre-Activation 라벨은 원문과 동일하게 유지한다.
 
 ---
 

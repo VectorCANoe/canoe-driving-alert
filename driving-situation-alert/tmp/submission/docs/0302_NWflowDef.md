@@ -19,28 +19,11 @@
 
 ## 작성 원칙
 
-- 상단 표는 공식 표준 양식(`Channel/ID hex/Symbolic Name/Byte/Function/Bit/signal/노드 TxRx`) 구조를 유지한다.
-- 상단 표의 `Bit no.`는 가독성을 위해 범위 표기(예: `0~7`, `8~15`)를 사용하되, 상단 열 구성은 공식 샘플 구조를 유지한다.
-- 상단 표의 `signal name`은 0304 표준 변수명(`vehicleSpeed` 등) 기준으로 작성하고, 코드/런타임 별칭(`g*`)은 하단 보강표에서만 관리한다.
-- 0304에 아직 등재되지 않은 Vehicle Baseline 확장 신호는 DBC 원본 신호명(`AccelPedal`, `DriveMode` 등)으로 표기한다.
-- 옵션1 아키텍처를 고정한다: `중앙 경고코어 + Ethernet 백본(ETH_SW) + 도메인 게이트웨이 + 도메인 CAN`.
-- 상세 추적 정보(`Flow/Func/Req/주기/활성/해제`)는 하단 표에 분리한다.
-- CAN 신호 원본은 계층 분리로 관리한다: 도메인 프로파일은 `canoe/databases/chassis_can.dbc`, `canoe/databases/powertrain_can.dbc`, `canoe/databases/body_can.dbc`, `canoe/databases/infotainment_can.dbc`, `canoe/databases/adas_can.dbc`, `canoe/databases/eth_backbone_can_stub.dbc`를 사용하고, Validation 결과 프레임(`0x2A5`,`0x2A6`)은 `chassis_can.dbc`에 통합 관리한다. Ethernet 논리 계약은 `canoe/docs/operations/ETH_INTERFACE_CONTRACT.md`를 사용한다.
-- 검증 범위는 CANoe SIL, CAN + Ethernet(UDP)만 사용한다.
-- 목표 설계는 옵션1(ETH 백본) 고정이며, CANoe.CAN 라이선스 제약 구간의 SIL 검증은 임시로 CAN 대체 백본을 사용하고 Ethernet 라이선스 확보 후 동일 케이스로 재검증한다.
-- CANoe.CAN 환경에서는 E100/E200 모니터링 경로와 V2 확장 경로 일부를 `eth_backbone_can_stub.dbc`(0x1C0/0x1C2/0x1C4/0x111)와 `adas_can.dbc`(0x1C1/0x1C3)로 분리 대체 운반한다.
-- OTA/UDS/DoIP 관련 플로우는 본 문서 범위에서 제외한다.
-- `Flow_009`, `Flow_106`, `Flow_205`는 Validation Harness 경로(검증 전용)이며 양산 서비스 플로우와 구분한다.
-- 제출 전 현대/기아 및 OEM 기준으로 설명/별칭은 정리하되, Flow/Comm/ID/signal 식별자는 SoT 기준으로 고정 유지한다.
-- ID notation rule (fixed): document primary references use Logical IDs (0xE210/0xE211/0xE212); CANoe SIL execution uses Stub IDs (0x1C3/0x1C4/0x111) per canoe/docs/operations/ETH_INTERFACE_CONTRACT.md.
-
-- Vehicle Baseline(Req_101~Req_107, Req_109~Req_119) 플로우(`Flow_101~Flow_106`, `Flow_201~Flow_205`)는 본 문서에서 확정 정의하고, DBC는 이 정의를 구현 대상으로 사용한다.
-- V2 확장 요구(`Req_120~Req_121`, `Req_123`, `Req_125~Req_129`) 플로우(`Flow_120~Flow_124`)는 구현 활성 상태로 관리하며, 관련 DBC/코드/테스트를 동일 커밋에서 동기화한다.
-- ADAS 객체 인지 확장 요구(`Req_130~Req_139`) 플로우(`Flow_130~Flow_133`)는 Pre-Activation(설계 선반영) 상태로 관리하며, 구현 착수 시 0303/0304/04/05/06/07을 동일 커밋에서 동기화한다.
-- `Flow_130~Flow_133` 활성 SoT 승격 조건은 `ETH_INTERFACE_CONTRACT.md v1.2`에 `E213~E216` 계약이 반영되는 것이다.
-- EMS는 상위 문서 레벨에서 논리 단말 `EMS_ALERT`로 표기하고, 상단 표의 `EMS_POLICE_TX/EMS_AMB_TX/EMS_ALERT_RX` 열은 내부 구현 모듈 분해 관점으로만 해석한다.
-- 약어 충돌 방지 규칙: `EMS_AMB_TX`의 `AMB`는 `Ambulance` 의미의 구현 literal이며, `Ambient`는 항상 `AMBIENT` 풀토큰으로 표기한다.
-- `Req_108`은 Legacy 참조 요구로 관리하며 `Flow_202/Flow_105` 통합 결과를 상속 추적한다.
+- 본 문서는 네트워크 흐름(Flow) 중심으로 정리한다.
+- 제출본은 상단 공식 Flow 표를 유지하고, 도메인/확장 설명은 요약한다.
+- 상세 Flow-Comm 매핑은 원문 0302에서 관리한다.
+- 0303/0304와의 동시 동기화 원칙을 유지한다.
+- Pre-Activation 라벨은 원문과 동일하게 유지한다.
 
 ---
 

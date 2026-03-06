@@ -19,32 +19,11 @@
 
 ## 작성 원칙
 
-- 상단 표는 공식 샘플(`0303.md`)과 동일하게 `Message/Identifier/DLC/Signal/signal bit position/Data 설명/Data 범위/Data 사용` 열만 사용한다.
-- `Identifier`는 순수 ID 값만 기재한다(예: `0x2A0`, `0xE100`).
-- `DLC`는 순수 숫자만 기재한다.
-- 상단 표의 `Signal`은 0304 표준 변수명(`vehicleSpeed` 등) 기준으로 작성하고, 코드/런타임 별칭(`g*`)은 하단 보강표에서만 관리한다.
-- 0304에 아직 등재되지 않은 Vehicle Baseline 확장 신호는 DBC 원본 신호명(`AccelPedal`, `DriveMode` 등)으로 표기한다.
-- CAN 통신 원본은 계층 분리로 관리한다: 도메인 프로파일은 `canoe/databases/chassis_can.dbc`, `canoe/databases/powertrain_can.dbc`, `canoe/databases/body_can.dbc`, `canoe/databases/infotainment_can.dbc`, `canoe/databases/adas_can.dbc`, `canoe/databases/eth_backbone_can_stub.dbc`를 사용하고, Validation 결과 프레임(`0x2A5`,`0x2A6`)은 `chassis_can.dbc`에 통합 관리한다. Ethernet 논리 계약은 `canoe/docs/operations/ETH_INTERFACE_CONTRACT.md`를 사용한다.
-- 본 설계는 Ethernet 백본(`ETH_SW`) + 도메인 게이트웨이(`CHS_GW`, `INFOTAINMENT_GW`, `BODY_GW`, `IVI_GW`) + 도메인 CAN 분배 구조를 사용한다.
-- 하단 추적표는 `Comm ID -> Flow ID -> Func ID -> Req ID`를 유지한다.
-- 제출 전 현대/기아 및 OEM 기준으로 설명/별칭은 정리하되, Message ID/DLC/Bit Position/Signal 식별자는 SoT 기준으로 고정 유지한다.
-- Message ID notation rule (fixed): architecture references use Logical IDs (0xE210/0xE211/0xE212) as primary; CANoe SIL implementation/test uses Stub IDs (0x1C3/0x1C4/0x111) per canoe/docs/operations/ETH_INTERFACE_CONTRACT.md.
-
-- 검증 범위는 CANoe SIL, CAN + Ethernet(UDP)로 고정한다.
-- 목표 설계는 옵션1(ETH 백본) 고정이며, CANoe.CAN 라이선스 제약 구간의 SIL 검증은 임시로 CAN 대체 백본을 사용하고 Ethernet 라이선스 확보 후 동일 케이스로 재검증한다.
-- CANoe.CAN 환경에서는 Ethernet 일부 경로(E100/E200 모니터링 및 V2 확장)를 `eth_backbone_can_stub.dbc`(0x1C0/0x1C2/0x1C4/0x111)와 `adas_can.dbc`(0x1C1/0x1C3)로 분리 대체 운반한다.
-- `Comm_009`, `Comm_106`, `Comm_205`는 Validation Harness 통신(검증 전용)이며 양산 통신과 구분한다.
-- Vehicle Baseline(Req_101~Req_107, Req_109~Req_119) 통신(`Comm_101~Comm_106`, `Comm_201~Comm_205`)은 본 문서에서 확정 정의하고, 도메인 DBC는 이 정의를 구현 대상으로 사용한다.
-- V2 확장 요구(`Req_120~Req_121`, `Req_123`, `Req_125~Req_129`) 통신(`Comm_120~Comm_124`)은 구현 활성 상태로 관리하며, DBC/코드/테스트를 동일 커밋에서 동기화한다.
-- ADAS 객체 인지 확장 요구(`Req_130~Req_139`) 통신(`Comm_130~Comm_133`)은 Pre-Activation(설계 선반영) 상태로 관리하며, 구현 착수 시 0302/0304/04/05/06/07을 동일 커밋에서 동기화한다.
-- `Comm_130~Comm_133` 활성 SoT 승격 조건은 `ETH_INTERFACE_CONTRACT.md v1.2`에 `E213~E216` 계약이 반영되는 것이다.
-- 차량 경보 편의 확장 요구(`Req_140~Req_147`) 통신은 `Comm_103/104/105/203`과 `Comm_006/008` Pre-Activation 매핑으로 관리하며, 구현 착수 시 0302/0304/04/05/06/07을 동일 커밋에서 동기화한다.
-- 경고 강건성·인지성 확장 요구(`Req_148~Req_155`) 통신은 `Comm_130/133`, `Comm_006/007/008`, `Comm_104/105/124/203` Pre-Activation 매핑으로 관리하며, 구현 착수 시 0302/0304/04/05/06/07을 동일 커밋에서 동기화한다.
-- EMS는 상위 문서 레벨에서 논리 단말 `EMS_ALERT`로 표기하고, 내부 구현 모듈(`EMS_POLICE_TX`, `EMS_AMB_TX`, `EMS_ALERT_RX`)은 하단 보강표에서만 분리 관리한다.
-- 약어 충돌 방지 규칙: `EMS_AMB_TX`의 `AMB`는 `Ambulance` 의미의 구현 literal이며, `Ambient`는 항상 `AMBIENT` 풀토큰으로 표기한다.
-- `Req_108`은 Legacy 참조 요구로 관리하며 `Comm_202/Comm_105` 통합 결과를 상속 추적한다.
-- Validation Harness 공통 프레임(`0x2A5`, `0x2A6`)은 독립 `test_can`이 아니라 `chassis_can.dbc`에 통합 관리한다.
-- 제출 설명 시 `0x2A5/0x2A6`은 “Validation frame(Chassis 통합)”으로 명시해 도메인 오해를 방지한다.
+- 본 문서는 통신 계약(Comm) 중심으로 정리한다.
+- 제출본은 상단 공식 Comm 표를 유지하고, 하단은 대표 행만 유지한다.
+- ID/ETH 계약 상세는 원문 0303 및 00f/ETH 계약 문서를 참조한다.
+- Comm-Flow 추적 키는 원문과 동일하게 유지한다.
+- Pre-Activation 라벨은 원문과 동일하게 유지한다.
 
 ---
 

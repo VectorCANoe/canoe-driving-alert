@@ -15,26 +15,11 @@
 
 ## 작성 원칙
 
-- 본 문서는 요구사항(01)의 What을 노드 기능(How)으로 분해한다.
-- 상단 표는 표준 양식 구조만 유지하고, 상세 추적 정보는 하단 표에 분리한다.
-- Panel은 테스트 자극/관측 인터페이스이며 기능 주체 ECU로 보지 않는다.
-- 통합 기본요구사항 구간은 기능 ID `Func_001~Func_043`을 기준으로 요구사항 ID(`Req_001~Req_043`)와 누락 없는 추적 커버리지(N:M 허용)를 유지한다.
-- 차량 기본 기능 확장 요구(`Req_101~Req_107`, `Req_109~Req_119`)는 `Func_101~Func_107`, `Func_109~Func_119`로 별도 관리한다.
-- V2 확장 요구(`Req_120~Req_121`, `Req_123`, `Req_125~Req_129`)는 `Func_120~Func_121`, `Func_123`, `Func_125~Func_129`로 별도 관리하며, 본 문서에서는 구현 활성 상태로 유지한다.
-- ADAS 객체 인지 확장 요구(`Req_130~Req_139`)는 `Func_130~Func_139`로 별도 관리하며, 본 문서에서는 Pre-Activation(설계 선반영) 상태로 유지한다.
-- 차량 경보 편의 확장 요구(`Req_140~Req_147`)는 `Func_140~Func_147`로 별도 관리하며, 본 문서에서는 Pre-Activation(설계 선반영) 상태로 유지한다.
-- 경고 강건성·인지성 확장 요구(`Req_148~Req_155`)는 `Func_148~Func_155`로 별도 관리하며, 본 문서에서는 Pre-Activation(설계 선반영) 상태로 유지한다.
-- 제출 전 현대/기아 및 OEM 기준 명칭으로 일괄 대체하되, 기능 ID/추적 ID는 유지한다.
-- ID 규칙 SoT는 `00f_CAN_ID_Allocation_Standard.md`를 따르며, 적용 참조는 `0303_Communication_Specification.md`를 사용한다.
-- ECU 명칭은 Canonical(`UPPER_SNAKE_CASE`)만 사용하며, 명명 규칙은 `00e`를 단일 SoT로 하고 본 문서는 ECU 적용 참조 문서로 유지한다.
-- RTE 생성명 규칙은 `00g_RTE_Name_Mapping_Standard.md`를 SoT로 하고, 본 문서가 아닌 `04`에서 적용한다.
-- 네트워크 구현은 옵션1 아키텍처를 고정 적용한다: `ETH_SW + CHS_GW/INFOTAINMENT_GW/BODY_GW/IVI_GW + 도메인 CAN`.
-- 목표 설계는 옵션1(ETH 백본) 고정이며, CANoe.CAN 라이선스 제약 구간의 SIL 검증은 임시로 CAN 대체 백본을 사용하고 Ethernet 라이선스 확보 후 동일 케이스로 재검증한다.
-- `WARN_ARB_MGR`의 기능은 경보 우선순위 판정이며, CAN 비트 레벨 arbitration과 구분해 해석한다.
-- EMS는 문서 상위 계층에서 단일 논리 단말 `EMS_ALERT`로 정의하고, 내부 구현 모듈(`EMS_POLICE_TX`, `EMS_AMB_TX`, `EMS_ALERT_RX`)은 하단 매핑표에서만 분리 관리한다.
-- 약어 충돌 방지 규칙: `EMS_AMB_TX`의 `AMB`는 `Ambulance` 의미의 구현 literal이며, `Ambient`는 항상 `AMBIENT` 풀토큰으로 표기한다.
-- 본 사이클의 기능-요구 추적 범위는 `Req_001~043`, `Req_101~107`, `Req_109~121`, `Req_123`, `Req_125~129`를 활성 범위로 유지하고, `Req_130~Req_155`는 확장 요구(Pre-Activation) 범위로 관리한다.
-- `Req_108`은 Legacy 참조 요구로 관리하며 `Req_113/Req_116/Req_118` 통합 결과를 상속 추적한다.
+- 본 문서는 01 요구사항을 기능(How)으로 분해한다.
+- 제출본은 상단 공식 기능 표를 유지하고, 하단은 대표 매핑만 남긴다.
+- ECU/ID/RTE 정책은 00e/00f/00g SoT를 참조한다.
+- 전수 Func 추적은 원문 03에서 관리한다.
+- Pre-Activation/Legacy 라벨은 원문과 동일하게 유지한다.
 
 ---
 

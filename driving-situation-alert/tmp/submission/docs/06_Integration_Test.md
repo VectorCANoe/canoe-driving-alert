@@ -19,21 +19,11 @@
 
 ## 작성 원칙
 
-- 본 문서는 모듈 간 인터페이스/흐름(Flow, Comm) 연동 검증을 수행한다.
-- 상단 표는 샘플 형식(`테스트 ID/요구사항 ID/테스트 목적/예상 결과/...`)을 유지한다.
-- 상세 추적은 하단 IT-Flow/Comm 연계 표로 분리하며 Req-VC-IT 추적을 유지한다.
-- 범위는 CANoe SIL, CAN+Ethernet으로 고정한다.
-- 임시 주석(실행 제약): 현재 CANoe.CAN 라이선스 환경에서는 SIL 실행 시 Ethernet 구간을 CAN 대체 백본으로 검증하며, Ethernet 라이선스 확보 후 동일 IT 케이스로 재검증한다.
-- 본 문서는 `FZ_001~FZ_012` 결과 반영 전 Baseline Draft이며, 측정값 확정 시 수행결과를 기입한다.
-- IT는 인터페이스/흐름 중심의 핵심 체인만 유지한다(Lean IT).
-- 세부 경계값/미세 분기는 원칙적으로 UT(05)와 ST(07)에서 검증하고, 인터페이스 리스크가 큰 항목은 IT 보강 케이스로 선별 검증한다.
-- `IT_SIL_001`, `IT_BASE_DIAG_001`은 Validation Harness 경로 검증(검증 전용) 항목이다.
-- IT 증적(로그/캡처/리포트)은 `canoe/logging/evidence/IT/` 경로 규칙으로 관리한다.
-- IT 증적 포맷/채점 규칙은 `canoe/docs/operations/VERIFICATION_EVIDENCE_LOG_STANDARD.md`를 따른다.
-- V2 확장 요구(`Req_120~Req_121, Req_123, Req_125~Req_129`)는 구현 활성 상태로 IT 항목을 관리하며, SIL 시나리오 15~19와 연계해 검증한다.
-- ADAS 객체 인지 확장(`Req_130~Req_139`)은 Pre-Activation(설계 선반영) IT 항목(`IT_ADAS_OBJ_001`)으로 관리한다.
-- 차량 경보 편의 확장(`Req_140~Req_147`)은 Pre-Activation(설계 선반영) IT 항목(`IT_BASE_ALERT_EXT_001`)으로 관리한다.
-- 경고 강건성·인지성 확장(`Req_148~Req_155`)은 Pre-Activation(설계 선반영) IT 항목(`IT_BASE_ROBUST_EXT_001`)으로 관리한다.
+- 본 문서는 모듈 간 인터페이스/흐름(IT) 검증을 정리한다.
+- 제출본은 상단 공식 IT 표를 유지하고, 하단은 핵심 체인만 유지한다.
+- 전수 IT 추적은 원문 06에서 관리한다.
+- 검증 환경 표기는 CANoe SIL(CAN+Ethernet, 필요 시 stub) 기준으로 유지한다.
+- Pre-Activation 라벨은 원문과 동일하게 유지한다.
 
 ---
 

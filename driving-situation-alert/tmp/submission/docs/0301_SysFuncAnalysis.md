@@ -19,24 +19,11 @@
 
 ## 작성 원칙
 
-- 본 문서는 03_Function_definition.md의 Func_001~Func_121, Func_123, Func_125~Func_155를 노드 내부 동작 관점으로 분해한다.
-- V2 확장 요구(`Req_120~Req_121`, `Req_123`, `Req_125~Req_129`)는 `Func_120~Func_121`, `Func_123`, `Func_125~Func_129`로 구현 활성 상태에서 관리한다.
-- ADAS 객체 인지 확장 요구(`Req_130~Req_139`)는 `Func_130~Func_139`로 Pre-Activation(설계 선반영) 상태에서 관리한다.
-- 차량 경보 편의 확장 요구(`Req_140~Req_147`)는 `Func_140~Func_147`로 Pre-Activation(설계 선반영) 상태에서 관리한다.
-- 경고 강건성·인지성 확장 요구(`Req_148~Req_155`)는 `Func_148~Func_155`로 Pre-Activation(설계 선반영) 상태에서 관리한다.
-- 각 노드의 입력-처리-출력을 명확히 정의해 0302의 Tx/Rx 흐름 설계로 연결한다.
-- 요구사항(What) 문장을 반복하지 않고, 시스템 동작 로직(How)만 기술한다.
-- 상단 표는 공식 표준 양식의 열 구성(노드/기능 상세/비고)을 유지한다.
-- 상세 추적 정보(Func/Req/실제 입출력)는 하단 표에 분리한다.
-- 옵션1 아키텍처를 고정한다: 중앙 경고코어 + Ethernet 백본(ETH_SW) + 도메인 게이트웨이 + 도메인 CAN.
-- 목표 설계는 옵션1(ETH 백본) 고정이며, CANoe.CAN 라이선스 제약 구간의 SIL 검증은 임시로 CAN 대체 백본을 사용하고 Ethernet 라이선스 확보 후 동일 케이스로 재검증한다.
-- `VAL_SCENARIO_CTRL`/`VAL_BASELINE_CTRL`는 Validation Harness(검증 전용)이며, Gateway/도메인 통신 경로의 기능 노드로 해석하지 않는다.
-- 변수명은 0304 표준 Name(`vehicleSpeed`, `roadZone`, `speedLimit`) 기준으로 작성하고, 코드 별칭(`g*`)은 구현 문서에서만 사용한다.
-- ECU 노드명은 ISO 기능 분리 원칙(센싱/판단/중재/출력/게이트웨이)을 따르고, OEM 레퍼런스는 `reference/dbc/level3_communication/reference/*.dbc`를 참고한다.
-- 제출 전 현대/기아 및 OEM 기준 명칭으로 일괄 대체하되, 추적 ID 체계는 유지한다.
-- EMS는 상위 문서 계층에서 단일 논리 단말 `EMS_ALERT`로 관리하고, 내부 구현 모듈(TX/RX)은 하단 보강표에서만 분리한다.
-- 약어 충돌 방지 규칙: `EMS_AMB_TX`의 `AMB`는 `Ambulance` 의미의 구현 literal이며, `Ambient`는 항상 `AMBIENT` 풀토큰으로 표기한다.
-- `Req_108`은 Legacy 참조 요구로 관리하며 `Req_113/Req_116/Req_118` 통합 결과를 상속 추적한다.
+- 본 문서는 기능을 노드 입력/처리/출력 관점으로 정리한다.
+- 제출본은 상단 공식 노드 표를 유지하고, 하단은 대표 매핑만 유지한다.
+- 전수 Req-Func 추적은 원문 0301에서 관리한다.
+- ECU 명칭은 Canonical만 사용한다.
+- Pre-Activation/Legacy 라벨은 원문과 동일하게 유지한다.
 
 ---
 

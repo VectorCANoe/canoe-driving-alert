@@ -19,33 +19,11 @@
 
 ## 작성 원칙
 
-- 본 문서는 모듈 단위 검증(유닛 단위) 결과를 정의한다.
-- 공식 상단 표는 샘플 형식(`노드/분류/기능명/기능 설명/Pass/담당자/일자`)을 유지한다.
-- 상단 공식 표는 감사 일관성을 위해 `EMS_ALERT` 논리 단말 기준으로 표기한다.
-- 상세 추적(UT ID, Req/VC/Func/Flow/Comm/Var)은 하단 표로 분리한다.
-- 범위 외 항목(OTA/UDS/DoIP)은 포함하지 않는다.
-- 본 문서는 `FZ_001~FZ_012` 결과 반영 전 Baseline Draft이며, 측정값 확정 시 Pass/Fail를 기입한다.
-- 임시 주석(실행 제약): 현재 CANoe.CAN 라이선스 환경에서는 SIL 실행 시 Ethernet 구간을 CAN 대체 백본으로 검증하며, Ethernet 라이선스 확보 후 동일 케이스로 재검증한다.
-- `VAL_SCENARIO_CTRL`/`VAL_BASELINE_CTRL` 관련 항목은 Validation Harness(검증 전용)이며 양산 사용자 기능으로 해석하지 않는다.
-- UT 증적(로그/캡처/리포트)은 `canoe/logging/evidence/UT/` 경로 규칙으로 관리한다.
-- UT 증적 포맷/채점 규칙은 `canoe/docs/operations/VERIFICATION_EVIDENCE_LOG_STANDARD.md`를 따른다.
-- V2 확장 요구(`Req_120~Req_121, Req_123, Req_125~Req_129`)는 구현 활성 상태로 UT 항목을 관리하며, SIL 시나리오 15~19를 기준 케이스로 운영한다.
-- ADAS 객체 인지 확장(`Req_130~Req_139`)은 Pre-Activation(설계 선반영) UT 항목(`UT_ADAS_OBJ_RISK_001`, `UT_ADAS_OBJ_SAFETY_001`)으로 관리한다.
-- 차량 경보 편의 확장(`Req_140~Req_147`)은 Pre-Activation(설계 선반영) UT 항목(`UT_BASE_ALERT_EXT_001`)으로 관리한다.
-- 경고 강건성·인지성 확장(`Req_148~Req_155`)은 Pre-Activation(설계 선반영) UT 항목(`UT_BASE_ROBUST_EXT_001`)으로 관리한다.
-
-### 수치화 기준 (Req/Flow 파생)
-
-- `즉시` 요구는 기본적으로 `100ms 입력 주기 + 50ms 출력 주기`를 합산한 `150ms 이내` 반영으로 판정한다.
-- 타임아웃 요구는 `Req_024`에 따라 `1000ms`를 절대 기준으로 판정한다.
-- 주기 정합은 입력 `100ms`, 출력 `50ms`를 기준으로 판정한다.
-
-### 현업 기준 최소 설계 규칙 (ASPICE SWE.4 반영)
-
-- UT는 `Positive / Negative / Boundary` 3분류를 최소 유지한다.
-- `UT 개수 >= Func 개수`는 필수 조건이 아니다. 필수 조건은 `Req/VC 추적 커버리지 100%`다.
-- UT 사양에는 최소 `입력 조건`, `예상 결과`, `판정 기준(수치/조건)`을 포함한다.
-- 추적성은 `소프트웨어 상세설계(03) -> UT 사양(05) -> UT 결과(실행 로그)` 양방향으로 유지한다.
+- 본 문서는 단위 테스트(UT) 관점의 검증 항목을 정리한다.
+- 제출본은 상단 공식 UT 표를 유지하고, 상세 분기는 축소한다.
+- 경계값/세부 케이스 전수는 원문 05에서 관리한다.
+- Req/VC 추적 키는 원문과 동일하게 유지한다.
+- Pre-Activation 라벨은 원문과 동일하게 유지한다.
 
 ---
 
