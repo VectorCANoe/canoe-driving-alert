@@ -19,9 +19,13 @@ from pathlib import Path
 
 
 DOC_SPECS = {
-    "UT": ("05_Unit_Test.md", re.compile(r"\bUT_[A-Z0-9_]+\b")),
-    "IT": ("06_Integration_Test.md", re.compile(r"\bIT_[A-Z0-9_]+\b")),
-    "ST": ("07_System_Test.md", re.compile(r"\bST_[A-Z0-9_]+\b")),
+    # Accept canonical test IDs only:
+    # - *_NNN   (e.g. UT_ADAS_001, ST_BASE_PT_001)
+    # - *_A/B/C (boundary suffix, e.g. UT_BND_024_A)
+    # This intentionally excludes prose-level shorthand tokens like UT_BASE_PT.
+    "UT": ("05_Unit_Test.md", re.compile(r"\bUT_[A-Z0-9_]+_(?:\d{3}|[A-Z])\b")),
+    "IT": ("06_Integration_Test.md", re.compile(r"\bIT_[A-Z0-9_]+_(?:\d{3}|[A-Z])\b")),
+    "ST": ("07_System_Test.md", re.compile(r"\bST_[A-Z0-9_]+_(?:\d{3}|[A-Z])\b")),
 }
 
 
