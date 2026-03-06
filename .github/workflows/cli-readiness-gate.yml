@@ -5,7 +5,7 @@ on:
   push:
     paths:
       - "scripts/run.py"
-      - "scripts/quality/cli_readiness_gate.py"
+      - "scripts/gates/cli_readiness_gate.py"
       - "pyproject.toml"
       - ".github/workflows/cli-readiness-gate.yml"
 

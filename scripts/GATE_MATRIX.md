@@ -6,26 +6,26 @@ This document is the single quick reference for gate ownership, scope, and trigg
 
 Current policy:
 
-- Keep gate implementations in `scripts/quality/`.
+- Keep gate implementations in `scripts/gates/`.
 - Keep CI wiring in `.github/workflows/`.
 - Keep one command entrypoint in `scripts/run.py`.
 
 Reason:
 
 - avoids breaking existing CI/script references
-- keeps gate logic with other quality checks
+- gives a single, explicit gate folder
 - minimizes migration risk during active GUI/CAPL work
 
-Do not move gate files to a new folder until a dedicated refactor window is opened.
+Legacy references were updated to the new path in runbook docs and CI workflows.
 
 ## 2) Gate Inventory
 
 | Gate | Local Command | Main Script | Primary Scope |
 |---|---|---|---|
-| CFG Hygiene | `python scripts/run.py gate cfg-hygiene` | `scripts/quality/cfg_hygiene_gate.py` | CANoe text hygiene (absolute path, mojibake) |
-| CAPL Sync | `python scripts/run.py gate capl-sync` | `scripts/quality/check_capl_sync.py` | `src/capl` and `cfg/channel_assign` 1:1 sync |
-| Doc-Code Sync | `python scripts/run.py gate doc-sync` | `scripts/quality/doc_code_sync_gate.py` | `01/03/0301/0302/0303/0304/05/06/07` traceability + runtime linkage checks |
-| CLI Readiness | `python scripts/run.py gate cli-readiness` | `scripts/quality/cli_readiness_gate.py` | CLI contract, entrypoint, command help/contract stability |
+| CFG Hygiene | `python scripts/run.py gate cfg-hygiene` | `scripts/gates/cfg_hygiene_gate.py` | CANoe text hygiene (absolute path, mojibake) |
+| CAPL Sync | `python scripts/run.py gate capl-sync` | `scripts/gates/check_capl_sync.py` | `src/capl` and `cfg/channel_assign` 1:1 sync |
+| Doc-Code Sync | `python scripts/run.py gate doc-sync` | `scripts/gates/doc_code_sync_gate.py` | `01/03/0301/0302/0303/0304/05/06/07` traceability + runtime linkage checks |
+| CLI Readiness | `python scripts/run.py gate cli-readiness` | `scripts/gates/cli_readiness_gate.py` | CLI contract, entrypoint, command help/contract stability |
 
 ## 3) CI Mapping
 
@@ -53,7 +53,6 @@ Before commit/push in development:
 
 Recommended now:
 
-- Keep gates under `scripts/quality` (no folder split migration now).
-- Maintain compatibility wrapper `scripts/doc_code_sync_gate.py`.
-- If future split is required, do it as a planned migration with wrapper aliases and CI updates in one commit.
-
+- Keep all gate files under `scripts/gates` only.
+- Keep non-gate verification/evidence scripts under `scripts/quality`.
+- Route local/CI calls through `python scripts/run.py gate ...`.

@@ -27,7 +27,7 @@
   - same file set (`*.can`, excluding `v1_legacy`)
   - same content hash for each same-name file
 - Validate before commit:
-  - `python scripts/quality/check_capl_sync.py`
+  - `python scripts/run.py gate capl-sync`
 - If mismatch exists, stop and sync both trees before GUI save.
 
 ## CANoe GUI 노드 추가 절차

@@ -7,7 +7,7 @@ This file documents domain-oriented CAPL ownership for the v2 runtime profile.
 - v2 runtime CAPL source: `canoe/cfg/channel_assign/**`
 - shared sysvars: `canoe/project/sysvars/project.sysvars`
 - mirrored CAPL tree: `canoe/src/capl/**` (must remain 1:1 synchronized)
-- sync gate command: `python scripts/quality/check_capl_sync.py`
+- sync gate command: `python scripts/run.py gate capl-sync`
 
 ## Domain -> CAPL Files
 
@@ -54,4 +54,3 @@ This file documents domain-oriented CAPL ownership for the v2 runtime profile.
 - `logic`: arbitration and warning logic modules
 - `network`: backbone switch/transport monitoring module
 - `output`: HMI/IVI/body output adapter modules
-

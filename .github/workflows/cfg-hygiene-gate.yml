@@ -5,8 +5,8 @@ on:
   push:
     paths:
       - "canoe/**"
-      - "scripts/quality/cfg_hygiene_gate.py"
-      - "scripts/quality/check_capl_sync.py"
+      - "scripts/gates/cfg_hygiene_gate.py"
+      - "scripts/gates/check_capl_sync.py"
       - "scripts/run.py"
       - ".github/workflows/cfg-hygiene-gate.yml"
 

@@ -77,8 +77,9 @@ Implication:
 - `scripts/`: quality gates, verification pipeline, CANoe maintenance, doc/report helpers
 - `canoe/scripts/`: unity bridge, panel tooling, navigation simulator, cfg fix helpers
 - CI currently calls:
-  - `scripts/quality/doc_code_sync_gate.py`
-  - `scripts/quality/cfg_hygiene_gate.py`
+  - `python scripts/run.py gate doc-sync`
+  - `python scripts/run.py gate cfg-hygiene`
+  - `python scripts/run.py gate capl-sync`
 
 See inventory:
 

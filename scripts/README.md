@@ -52,6 +52,7 @@ Then you can use:
 
 ## Folder Roles
 
+- `scripts/gates/`: official quality gate implementations
 - `scripts/quality/`: validation and evidence pipeline
 - `scripts/canoe/`: CANoe setup/reload helpers
 - `scripts/docs/`: doc-authoring helpers (not day-to-day dev runtime)
@@ -67,7 +68,6 @@ Then you can use:
 
 ## Compatibility
 
-- `scripts/doc_code_sync_gate.py` is a backward-compat wrapper.
-- Preferred gate entrypoint remains `scripts/quality/doc_code_sync_gate.py`.
+- Preferred gate script paths are under `scripts/gates/`.
 - Legacy flat commands are still accepted (`verify-prepare`, `gate-doc-sync`, ...).
 - Print canonical contract: `python scripts/run.py contract`

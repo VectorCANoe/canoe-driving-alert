@@ -110,19 +110,19 @@ def cmd_verify_fill_score(args: argparse.Namespace) -> int:
 
 
 def cmd_gate_doc_sync(_: argparse.Namespace) -> int:
-    return run_cmd([sys.executable, str(SCRIPTS / "quality" / "doc_code_sync_gate.py")])
+    return run_cmd([sys.executable, str(SCRIPTS / "gates" / "doc_code_sync_gate.py")])
 
 
 def cmd_gate_cfg_hygiene(_: argparse.Namespace) -> int:
-    return run_cmd([sys.executable, str(SCRIPTS / "quality" / "cfg_hygiene_gate.py")])
+    return run_cmd([sys.executable, str(SCRIPTS / "gates" / "cfg_hygiene_gate.py")])
 
 
 def cmd_gate_capl_sync(_: argparse.Namespace) -> int:
-    return run_cmd([sys.executable, str(SCRIPTS / "quality" / "check_capl_sync.py")])
+    return run_cmd([sys.executable, str(SCRIPTS / "gates" / "check_capl_sync.py")])
 
 
 def cmd_gate_cli_readiness(_: argparse.Namespace) -> int:
-    return run_cmd([sys.executable, str(SCRIPTS / "quality" / "cli_readiness_gate.py")])
+    return run_cmd([sys.executable, str(SCRIPTS / "gates" / "cli_readiness_gate.py")])
 
 
 def cmd_contract(args: argparse.Namespace) -> int:

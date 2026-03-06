@@ -6,13 +6,10 @@ Main tools:
   - `prepare`
   - `smoke`
   - `fill-score`
-- `doc_code_sync_gate.py`
-- `cfg_hygiene_gate.py`
-- `check_capl_sync.py`
-- `cli_readiness_gate.py`
 - `evidence_score_gate.py`
 - `build_evidence_from_write_window.py`
 - `init_evidence_run.py`
+- Gate scripts moved to: `scripts/gates/`
 
 Note:
 

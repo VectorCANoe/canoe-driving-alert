@@ -28,11 +28,10 @@ This file defines how current script assets are classified before CLI productiza
 - `scripts/quality/build_evidence_from_write_window.py`
 - `scripts/quality/evidence_score_gate.py`
 - `scripts/quality/dev_completeness_smoke.py`
-- `scripts/quality/doc_code_sync_gate.py`
-- `scripts/quality/cfg_hygiene_gate.py`
-- `scripts/quality/check_capl_sync.py`
-- `scripts/quality/cli_readiness_gate.py`
-- `scripts/doc_code_sync_gate.py` (compatibility wrapper)
+- `scripts/gates/doc_code_sync_gate.py`
+- `scripts/gates/cfg_hygiene_gate.py`
+- `scripts/gates/check_capl_sync.py`
+- `scripts/gates/cli_readiness_gate.py`
 
 ### B-OPS (Advanced group in CLI, hidden from basic quick-start)
 
@@ -74,10 +73,11 @@ This file defines how current script assets are classified before CLI productiza
 
 ## 5) CI Usage Snapshot
 
-Current GitHub workflows call scripts directly:
+Current GitHub workflows call `scripts/run.py`:
 
-- `.github/workflows/doc-code-sync-gate.yml` -> `python scripts/quality/doc_code_sync_gate.py`
-- `.github/workflows/cfg-hygiene-gate.yml` -> `python scripts/quality/cfg_hygiene_gate.py`
+- `.github/workflows/doc-code-sync-gate.yml` -> `python scripts/run.py gate doc-sync`
+- `.github/workflows/cfg-hygiene-gate.yml` -> `python scripts/run.py gate cfg-hygiene` + `python scripts/run.py gate capl-sync`
+- `.github/workflows/cli-readiness-gate.yml` -> `python scripts/run.py gate cli-readiness`
 
 Target direction:
 
