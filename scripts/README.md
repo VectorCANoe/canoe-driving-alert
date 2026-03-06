@@ -29,6 +29,11 @@ Then you can use:
 - Fill + score one tier:
   - `python scripts/run.py verify fill-score --tier UT --run-id 20260306_1930 --owner DEV1`
   - `sdv verify fill-score --tier UT --run-id 20260306_1930 --owner DEV1`
+  - (optional baseline) `python scripts/run.py verify fill-score --tier UT --run-id 20260306_1930 --owner DEV1 --baseline-csv canoe/logging/evidence/UT/20260305_1800/verification_log_scored.csv`
+- Build run-level insight report (UT/IT/ST merge):
+  - `python scripts/run.py verify insight --run-id 20260306_1930`
+  - `sdv verify insight --run-id 20260306_1930`
+  - (optional baseline run) `python scripts/run.py verify insight --run-id 20260306_1930 --baseline-run-id 20260305_1800`
 
 ### Gates
 - Doc/code sync:

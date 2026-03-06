@@ -47,6 +47,7 @@ def cmd_fill_score(args: argparse.Namespace) -> int:
     filled_csv = run_dir / "verification_log_filled.csv"
     scored_csv = run_dir / "verification_log_scored.csv"
     scored_md = run_dir / "verification_report.md"
+    scored_json = run_dir / "verification_report.json"
 
     fill_cmd = [
         sys.executable,
@@ -75,7 +76,11 @@ def cmd_fill_score(args: argparse.Namespace) -> int:
         str(scored_csv),
         "--output-md",
         str(scored_md),
+        "--output-json",
+        str(scored_json),
     ]
+    if args.baseline_csv:
+        score_cmd.extend(["--baseline-csv", str(args.baseline_csv)])
     if args.no_strict_metadata:
         score_cmd.append("--no-strict-metadata")
     if args.no_strict_axis:
@@ -99,6 +104,24 @@ def cmd_smoke(args: argparse.Namespace) -> int:
     return run_cmd(cmd)
 
 
+def cmd_insight(args: argparse.Namespace) -> int:
+    cmd = [
+        sys.executable,
+        str(SCRIPT_DIR / "build_run_insight_report.py"),
+        "--run-id",
+        args.run_id,
+        "--evidence-root",
+        str(args.evidence_root),
+        "--output-md",
+        str(args.output_md),
+        "--output-json",
+        str(args.output_json),
+    ]
+    if args.baseline_run_id:
+        cmd.extend(["--baseline-run-id", args.baseline_run_id])
+    return run_cmd(cmd)
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Run simplified verification evidence workflow")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -114,6 +137,12 @@ def build_parser() -> argparse.ArgumentParser:
     p_fill.add_argument("--owner", default="TBD")
     p_fill.add_argument("--run-date", default=dt.date.today().isoformat())
     p_fill.add_argument("--evidence-root", type=Path, default=DEFAULT_EVIDENCE_ROOT)
+    p_fill.add_argument(
+        "--baseline-csv",
+        type=Path,
+        default=None,
+        help="Optional baseline scored CSV for regression comparison",
+    )
     p_fill.add_argument("--no-strict-metadata", action="store_true")
     p_fill.add_argument("--no-strict-axis", action="store_true")
     p_fill.set_defaults(func=cmd_fill_score)
@@ -132,6 +161,22 @@ def build_parser() -> argparse.ArgumentParser:
         default=REPO_ROOT / "canoe" / "tmp" / "reports" / "verification" / "dev_completeness_smoke.md",
     )
     p_smoke.set_defaults(func=cmd_smoke)
+
+    p_insight = sub.add_parser("insight", help="Build run-level insight report from scored UT/IT/ST logs")
+    p_insight.add_argument("--run-id", required=True, help="Run ID, e.g. 20260306_1930")
+    p_insight.add_argument("--baseline-run-id", default="", help="Optional baseline run ID for trend comparison")
+    p_insight.add_argument("--evidence-root", type=Path, default=DEFAULT_EVIDENCE_ROOT)
+    p_insight.add_argument(
+        "--output-md",
+        type=Path,
+        default=REPO_ROOT / "canoe" / "tmp" / "reports" / "verification" / "run_insight_report.md",
+    )
+    p_insight.add_argument(
+        "--output-json",
+        type=Path,
+        default=REPO_ROOT / "canoe" / "tmp" / "reports" / "verification" / "run_insight_report.json",
+    )
+    p_insight.set_defaults(func=cmd_insight)
 
     return parser
 

@@ -93,7 +93,7 @@ See inventory:
 - single public entrypoint (`sdv` or `python scripts/run.py`)
 
 2. Application Services
-- `verify` (prepare/smoke/fill/score)
+- `verify` (prepare/smoke/fill/score/insight)
 - `gate` (doc/cfg/capl sync)
 - `unity` (bridge/mock/sync/check)
 - `ops` (CANoe maintenance helpers)
@@ -137,6 +137,7 @@ Minimum commands:
 - `verify-prepare`
 - `verify-smoke`
 - `verify-fill-score`
+- `verify-insight`
 - `gate-doc-sync`
 - `gate-cfg-hygiene`
 - `gate-capl-sync`
