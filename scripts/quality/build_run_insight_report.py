@@ -238,6 +238,28 @@ def main() -> int:
     gate_result = "PASS" if overall_verdict["FAIL"] == 0 else "FAIL"
     now = dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
+    recommendations: list[str] = []
+    if overall_verdict["FAIL"] > 0:
+        recommendations.append(
+            "FAIL row exists: close failed rows in verification_log_scored.csv first, then re-run score and insight."
+        )
+    if near_limit_top:
+        recommendations.append(
+            "Near-limit PASS detected: review scheduler/period jitter for listed tests before release freeze."
+        )
+    if baseline_counter["REGRESSED"] > 0:
+        recommendations.append(
+            "Regression against baseline detected: prioritize top regression cases and verify CAPL change impact."
+        )
+    if gate_result == "PASS" and not near_limit_top and baseline_counter["REGRESSED"] == 0:
+        recommendations.append(
+            "Stable run: proceed to evidence binding in 05/06/07 and prepare G4 audit packet."
+        )
+    if missing_tiers:
+        recommendations.append(
+            "Missing tier data found: complete scored outputs for missing tiers to ensure UT/IT/ST coverage."
+        )
+
     payload = {
         "generated_at": now,
         "run_id": args.run_id,
@@ -278,6 +300,7 @@ def main() -> int:
                 for tier, test_id, base, cur, delta in top_regressions
             ],
         },
+        "recommendations": recommendations,
     }
 
     args.output_md.parent.mkdir(parents=True, exist_ok=True)
@@ -348,6 +371,10 @@ def main() -> int:
                 f"- {tier}:{test_id} baseline={base:.3f}ms current={cur:.3f}ms delta=+{delta:.3f}ms"
                 for tier, test_id, base, cur, delta in top_regressions
             ]
+
+    if recommendations:
+        lines += ["", "## Recommended Actions"]
+        lines += [f"- {item}" for item in recommendations]
 
     lines += ["", "## Output", f"- JSON: `{args.output_json}`"]
     args.output_md.write_text("\n".join(lines) + "\n", encoding="utf-8")

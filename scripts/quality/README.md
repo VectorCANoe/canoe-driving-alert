@@ -20,6 +20,10 @@ Note:
   - near-limit PASS detection
   - failure reason distribution
   - optional baseline regression comparison
+- `build_run_insight_report.py` outputs run-level UT/IT/ST merged insight:
+  - tier coverage and hotspot scenarios
+  - timing budget utilization ranking
+  - recommendation section for next actions
 - CLI readiness gate report output:
   - `canoe/tmp/reports/verification/cli_readiness_gate.json`
   - `canoe/tmp/reports/verification/cli_readiness_gate.md`
