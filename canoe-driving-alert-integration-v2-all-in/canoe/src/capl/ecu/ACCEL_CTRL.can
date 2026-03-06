@@ -1,0 +1,56 @@
+includes
+{
+}
+
+variables
+{
+  msTimer tAccelCycle;
+  int gSpeed;
+  int gAccelPedal;
+  int gBrakePedal;
+}
+
+on start
+{
+  gSpeed = 0;
+  gAccelPedal = 0;
+  gBrakePedal = 0;
+  setTimer(tAccelCycle, 100);
+  write("[ACCEL_CTRL] start");
+}
+
+on message frmPedalInputCanMsg
+{
+  gAccelPedal = this.AccelPedal;
+  gBrakePedal = this.BrakePedal;
+}
+
+on timer tAccelCycle
+{
+  message frmVehicleStateCanMsg mState;
+  int targetSpeed;
+  int delta;
+
+  /* AccelPedal 0-100% -> target speed 0-200 km/h */
+  targetSpeed = gAccelPedal * 2;
+  if (targetSpeed > 200) targetSpeed = 200;
+
+  /* brake above 20% overrides accel */
+  if (gBrakePedal > 20) targetSpeed = 0;
+
+  /* ramp: +5 km/h per 100ms accel, -15 km/h per 100ms brake */
+  delta = targetSpeed - gSpeed;
+  if (delta > 5)   delta = 5;
+  if (delta < -15) delta = -15;
+  gSpeed = gSpeed + delta;
+  if (gSpeed < 0)   gSpeed = 0;
+  if (gSpeed > 255) gSpeed = 255;
+
+  mState.gVehicleSpeed = gSpeed;
+  mState.gDriveState   = (gSpeed == 0) ? 0 : 3;
+  output(mState);
+
+  @Chassis::vehicleSpeed = gSpeed;
+
+  setTimer(tAccelCycle, 100);
+}

@@ -1,0 +1,92 @@
+@startuml
+!theme materia-outline
+
+title REQ_IVI_012: UDS 0x14 - Clear DTC (ASIL-B)
+
+actor "Diagnostic Tester\n(CANoe)" as Tester
+participant "CAN Bus" as CAN
+box "vECU (Target)" #f9f9f9
+    participant "DCM\n(Diagnostic Communication Manager)" as DCM
+    participant "DEM\n(Diagnostic Event Manager)" as DEM
+    participant "NvM\n(Non-volatile Memory)" as NVM
+end box
+
+== Extended Diagnostic Session ==
+
+Tester -> CAN : 0x10 03\n(Extended Diagnostic Session)
+activate CAN
+CAN -> DCM : Session Request
+activate DCM
+DCM -> DCM : Validate Session Request
+DCM --> CAN : 0x50 03\n(Positive Response)
+CAN --> Tester : Session Active
+deactivate DCM
+deactivate CAN
+
+note right of DCM
+    **Session Established**
+    • Extended Diagnostic Mode
+    • Security Access Required
+end note
+
+== Clear DTC Request ==
+
+Tester -> CAN : 0x14 FF FF FF\n(Clear All DTCs)
+activate CAN
+note right: REQ_IVI_012\nSuccess Rate: >99%
+
+CAN -> DCM : Clear DTC Service
+activate DCM
+
+DCM -> DEM : Request Clear All DTCs
+activate DEM
+
+DEM -> DEM : Validate Request\n(Check Session State)
+
+alt Clear DTC Successful
+    DEM -> NVM : Erase DTC Storage
+    activate NVM
+    NVM -> NVM : Clear Flash Memory\n(DTC Area: 0x8000-0x8FFF)
+    NVM --> DEM : Erase Complete
+    deactivate NVM
+
+    DEM -> DEM : Reset DTC Counters\nReset Freeze Frames
+    DEM --> DCM : Clear Successful
+    deactivate DEM
+
+    DCM --> CAN : 0x54\n(Positive Response)
+    CAN --> Tester : DTCs Cleared
+    deactivate DCM
+    deactivate CAN
+
+else Clear DTC Failed
+    DEM --> DCM : Clear Failed\n(Memory Error)
+    deactivate DEM
+
+    DCM --> CAN : 0x7F 14 22\n(Conditions Not Correct)
+    CAN --> Tester : Clear Failed
+    deactivate DCM
+    deactivate CAN
+end
+
+== Verification ==
+
+Tester -> CAN : 0x19 02 FF\n(Read DTC by Status Mask)
+CAN -> DCM : Read DTC Request
+activate DCM
+DCM -> DEM : Get Stored DTCs
+activate DEM
+DEM --> DCM : No DTCs Found
+deactivate DEM
+DCM --> CAN : 0x59 02\n(No DTC Available)
+CAN --> Tester : Verification Complete
+deactivate DCM
+
+note over Tester
+    **REQ_IVI_012 Verified**
+    • All DTCs cleared
+    • Re-query returns empty
+    • Success rate: >99%
+end note
+
+@enduml

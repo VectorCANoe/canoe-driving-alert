@@ -1,0 +1,178 @@
+@startuml
+title E2E 시나리오: LIN Fault Detection → CAN Routing → UDS Diagnostics → OTA Update
+
+skinparam sequenceMessageAlign center
+skinparam shadowing false
+
+skinparam participant {
+    BackgroundColor White
+    BorderColor Black
+    FontSize 12
+    FontStyle bold
+}
+
+skinparam sequence {
+    ArrowColor Black
+    LifeLineBorderColor Gray
+    GroupBorderColor DimGray
+    GroupBackgroundColor #F5F5F5
+    DividerBorderColor DimGray
+    DividerBackgroundColor #EEEEEE
+}
+
+' ─── Participants ─────────────────────────────────────────────
+participant "WindowMotorECU\n<color:DarkOrange>(LIN Slave 0x21)</color>" as WM   #NavajoWhite
+participant "DoorModule FL~RR\n<color:DarkOrange>(LIN Slave 0x22~0x25)</color>" as DOOR #NavajoWhite
+participant "BCM\n<color:DarkBlue>(LIN Master)</color>"                          as BCM  #LightYellow
+participant "Gateway\n<color:DimGray>(CGW)</color>"                              as GW   #LightGray
+participant "Cluster\n<color:FireBrick>(HMI)</color>"                           as CLU  #MistyRose
+participant "Tester\n<color:DarkGreen>(CANoe)</color>"                          as TEST #LightCyan
+participant "OTA Server\n<color:DarkGreen>(DoIP)</color>"                       as OTA  #LightCyan
+
+' ─── Phase 0: LIN 정상 동작 ────────────────────────────────────
+== <color:DimGray>Phase 0: LIN 정상 동작 (Normal Operation)</color> ==
+
+note over WM, BCM #NavajoWhite
+  LIN 2.2A, 19.2 kbps
+  WindowMotorECU: 10ms 주기 전송
+  DoorModule ×4:  50ms 주기 전송
+end note
+
+loop LIN 정상 주기 (Normal)
+    WM   -> BCM : <color:DarkOrange>LIN 0x21</color> — Motor_Current=10A\nMotor_Status=RUNNING, Motor_Direction=UP
+    DOOR -> BCM : <color:DarkOrange>LIN 0x22~0x25</color> — Door_Position=CLOSED\nLock_Status=LOCKED, Window_Position=50%
+end
+
+note over BCM : Motor_Current ≤ 50A → 정상 (DTC 없음)
+
+' ─── Phase 1: Fault Detection ──────────────────────────────────
+== <color:FireBrick>Phase 1: 고장 감지 및 경고등 점등 (Fault Detection)</color> ==
+
+note right of WM #LightSalmon
+  **[Fault Injection]**
+  Panel SysVar:
+  LIN::motorCurrent = 55A
+end note
+
+WM -> WM : LIN::motorCurrent 갱신\n(gMotorCurrent = 55.0A)
+
+WM -> BCM : <color:DarkOrange>LIN 0x21</color> (10ms)\n[Motor_Current = 55A, Motor_Status=RUNNING]
+activate BCM #LightYellow
+
+    BCM -> BCM : Motor_Current(55A) > Threshold(50A)\n→ 과전류 감지!\n→ DTC B1234 생성 (gFaultActive=1, gDTC_Code=0xB234)
+
+    BCM -> WM : <color:DarkOrange>LIN Control</color> — Motor_Stop 명령
+
+    BCM -> GW : <color:Purple>CAN-LS 0x500</color> (10ms)\nBCM_FaultStatus [WindowMotorOvercurrent=1, DTC=0xB234]
+    activate GW #LightGray
+        GW -> CLU : <color:Red>CAN-HS 0x500</color> (Routed ≤5ms)\nBCM_FaultStatus [WindowMotorOvercurrent=1]
+        activate CLU #MistyRose
+            CLU -> CLU : WARNING_TYPE=OVERCURRENT\n→ <color:FireBrick>RED 경고등 점등</color> (FTTI < 50ms)
+        deactivate CLU
+    deactivate GW
+
+deactivate BCM
+
+note over BCM #LightSalmon
+  DTC U0100 감시:
+  LIN 프레임 미수신 >50ms → LIN 통신 이상 DTC 추가 생성
+end note
+
+' ─── Phase 2: UDS Diagnostics ──────────────────────────────────
+== <color:DarkGoldenRod>Phase 2: UDS 진단 및 DTC 처리 (Diagnostics)</color> ==
+
+TEST -> GW : <color:Purple>CAN-LS 0x7DF</color> — UDS 0x10 0x03\n(Extended Diagnostic Session)
+activate GW #LightGray
+    GW -> BCM : Forward
+    activate BCM #LightYellow
+        BCM --> GW : Response 0x50 0x03 (Positive)
+    deactivate BCM
+    GW --> TEST : Forward
+deactivate GW
+
+TEST -> GW : <color:Purple>CAN-LS 0x7DF</color> — UDS 0x19 0x02\n(Read DTC by Status Mask)
+activate GW #LightGray
+    GW -> BCM : Forward
+    activate BCM #LightYellow
+        BCM --> GW : Response 0x59 — DTC B1234 Active\n(Status=0x08, Confirmed & Failed)
+    deactivate BCM
+    GW --> TEST : Forward
+deactivate GW
+
+note right of TEST : DTC B1234 수신 확인 ✓
+
+TEST -> GW : <color:Purple>CAN-LS 0x7DF</color> — UDS 0x14\n(Clear Diagnostic Information)
+activate GW #LightGray
+    GW -> BCM : Forward
+    activate BCM #LightYellow
+        BCM -> BCM : DTC B1234 삭제\ngFaultActive = 0, gDTC_Code = 0x0000
+
+        BCM -> GW : <color:Purple>CAN-LS 0x500</color>\nBCM_FaultStatus [WindowMotorOvercurrent=0]
+        activate GW #LightGray
+            GW -> CLU : <color:Red>CAN-HS 0x500</color> (Routed)\n[WindowMotorOvercurrent=0]
+            activate CLU #MistyRose
+                CLU -> CLU : WarnLampRed = 0\n<color:DimGray>경고등 소등</color>
+            deactivate CLU
+        deactivate GW
+
+        BCM --> GW : Response 0x54 (Positive — DTC Cleared)
+    deactivate BCM
+    GW --> TEST : Forward
+deactivate GW
+
+' ─── Phase 3: OTA Update ───────────────────────────────────────
+== <color:DarkGreen>Phase 3: OTA 펌웨어 업데이트 (OTA Update)</color> ==
+
+OTA -> GW : <color:Blue>Ethernet/DoIP</color> — Routing Activation (0xE001)
+activate GW #LightGray
+    GW -> GW  : DoIP 세션 확립 (192.168.1.100 ↔ 192.168.1.10)
+    GW --> OTA : Response 0xE001 (Success)
+deactivate GW
+
+OTA -> GW : <color:Blue>DoIP</color> — UDS 0x10 0x02\n(Programming Session)
+activate GW #LightGray
+    GW -> BCM : Forward (DoIP → CAN-LS Bridge)
+    activate BCM #LightYellow
+        BCM --> GW : Response 0x50 0x02
+    deactivate BCM
+    GW --> OTA : Forward (CAN-LS → DoIP Bridge)
+deactivate GW
+
+OTA -> GW : <color:Blue>DoIP</color> — UDS 0x34\n(Request Download — memoryAddress, memorySize)
+activate GW #LightGray
+    GW -> BCM : Forward
+    activate BCM #LightYellow
+        BCM --> GW : Response 0x74 (MaxBlockLength = 0x0400)
+    deactivate BCM
+    GW --> OTA : Forward
+deactivate GW
+
+loop 펌웨어 전송 (N Blocks, 각 1KB)
+    OTA -> GW : <color:Blue>DoIP</color> — UDS 0x36 (Transfer Data, BlockSequence++)
+    activate GW #LightGray
+        GW -> BCM : Forward
+        activate BCM #LightYellow
+            BCM --> GW : Response 0x76 (Positive)
+        deactivate BCM
+        GW --> OTA : Forward
+    deactivate GW
+end
+
+OTA -> GW : <color:Blue>DoIP</color> — UDS 0x37\n(Request Transfer Exit)
+activate GW #LightGray
+    GW -> BCM : Forward
+    activate BCM #LightYellow
+        BCM -> BCM : CRC-32 검증\n→ 일치: Flash 완료, BCM 재시작
+        BCM --> GW : Response 0x77 (Positive — Transfer Complete)
+    deactivate BCM
+    GW --> OTA : Forward
+deactivate GW
+
+note over WM, OTA #LightGreen
+  **[검증 완료]**
+  BCM 재시작 후 LIN Slave 재동작 확인
+  DTC B1234 소거 상태 유지
+  Cluster 경고등 소등 상태 유지
+end note
+
+@enduml

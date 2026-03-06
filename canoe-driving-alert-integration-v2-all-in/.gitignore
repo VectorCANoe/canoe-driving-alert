@@ -1,0 +1,144 @@
+# .gitignore
+
+# CANoe specific files
+*.cfg~
+*.can~
+*.log
+*.blf
+*.asc
+*.txt~
+*.cfg.bak
+Logging/
+*.logging
+
+# CANoe generated files
+*.canalyzer
+*.canoe
+*.candb++
+*.dbc~
+*.cbf
+*.stcfg
+*.cfg.ini
+*.vtcfg.local
+canoe/tmp/*.cfg.bak*
+canoe/tmp/*.png
+canoe/tmp/*.sysvars
+
+# Temporary files
+*.tmp
+*.bak
+*~
+*.swp
+*.swo
+~$*.xlsx
+**/~$*.xlsx
+
+# OS specific
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE
+.vscode/
+.idea/
+*.iml
+*.sublime-project
+*.sublime-workspace
+
+# Build artifacts
+build/
+dist/
+*.o
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Documentation build
+docs/_build/
+*.pdf~
+*.docx~
+
+# Test results
+test-results/
+*.result
+*.xml
+coverage/
+
+# Vector CANoe
+*.cfg.bak
+Logging/
+*.logging
+*.blf
+*.asc
+
+# CANoe outputs (canoe/ 구조로 이전)
+canoe/logging/*.blf
+canoe/logging/*.asc
+canoe/logging/*.mf4
+canoe/logging/test-results/
+canoe/tmp/dbc_compare/
+canoe/tmp/image.png
+canoe/.claude/
+canoe/reference/vector_samples_19_4_10/
+canoe/reference/oss/
+canoe/reference/vector_code_sample/
+canoe/reference/oss_panels/
+reference/samples/vector_samples_19_4_10/
+
+# OTA packages (binary files)
+*.bin
+*.hex
+*.elf
+src/Diagnostics/OTA/update-packages/*.bin
+
+# Safety and requirements (keep templates, ignore filled)
+**/FMEA_filled.xlsx
+**/HARA_filled.xlsx
+**/requirements_filled.xlsx
+
+# Sensitive data
+*.key
+*.pem
+*.p12
+certificates/
+secrets/
+
+# Large data files
+*.csv
+*.dat
+*.raw
+
+# Python (if using Python tools)
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+ENV/
+
+# Node.js (if using Node tools)
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Compiled documentation
+*.aux
+*.out
+*.toc
+
+# Backup files
+*.backup
+*.old
+
+# Configuration management
+**/baseline-records/*.lock
+**/change-requests/*.pending
+
+# Project local stash (do not commit)
+driving-situation-alert/tmp/_pending_cleanup/
+driving-situation-alert/tmp/reports/
+tmp_rm/
+
+nul

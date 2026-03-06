@@ -1,0 +1,540 @@
+# Fault Injection Workflow Architecture
+
+**Requirements Traceability**:
+- **REQ_IVI_011**: BDC FaultInjection DTC생성 (ASIL-B, >99% 검출)
+- **REQ_IVI_022**: 도어 오픈 시 후진 UX 제한 (ASIL-B, FI 필요)
+- **REQ_IVI_024**: 오류 발생 시 안전 상태 전이 (ASIL-B, FI 필요)
+
+---
+
+## 1. Fault Injection Test Architecture
+
+```plantuml
+@startuml
+!theme silver
+skinparam activityStyle uml2
+
+title Fault Injection Test Workflow (CANoe Integration)
+
+|CANoe Test Environment|
+start
+:Initialize Fault Injection\nTest Environment;
+note right
+    **Test Tools**:
+    • CANoe Fault Injection Module
+    • vECU Simulation
+    • DTC Monitor
+end note
+
+:Load Test Scenario\nConfiguration;
+
+|vECU System|
+:System Running\nNormal Operation;
+
+|CANoe Test Environment|
+:Select Fault Type;
+
+if (Fault Type?) then (CAN Message Fault)
+    :Configure CAN\nFault Injection;
+    note right
+        **Fault Types**:
+        • Message Drop
+        • Message Delay
+        • Bit Error
+        • Frame Error
+    end note
+
+elseif (Sensor Fault) then
+    :Configure Sensor\nSignal Fault;
+    note right
+        **Fault Types**:
+        • Signal Loss
+        • Out-of-Range
+        • Stuck-at Fault
+        • Intermittent
+    end note
+
+else (Timing Fault)
+    :Configure Timing\nFault Injection;
+    note right
+        **Fault Types**:
+        • Timeout
+        • Jitter
+        • Burst Delay
+    end note
+endif
+
+:Inject Fault into\nvECU System;
+
+|vECU System|
+:Detect Fault\nCondition;
+
+:Execute Safety\nMechanism;
+
+if (Fault Detected?) then (Yes)
+    :Generate DTC;
+    :Log Fault Event;
+    :Enter Safe State;
+
+    |CANoe Test Environment|
+    :Monitor DTC\nGeneration;
+
+    if (DTC Generated?) then (Yes)
+        :Record Test Result\n**PASS**;
+        note right
+            **REQ_IVI_011**
+            Detection Rate: >99%
+        end note
+    else (No)
+        :Record Test Result\n**FAIL**;
+        note right #Red
+            **Test Failed**
+            DTC not generated
+        end note
+    endif
+
+else (No)
+    |CANoe Test Environment|
+    :Record Test Result\n**FAIL**;
+    note right #Red
+        **Test Failed**
+        Fault not detected
+    end note
+endif
+
+:Clear Fault\nInjection;
+
+|vECU System|
+:Recovery to\nNormal State;
+
+|CANoe Test Environment|
+:Generate Test\nReport;
+
+stop
+
+@enduml
+```
+
+---
+
+## 2. BDC Communication Fault Injection Sequence
+
+```plantuml
+@startuml
+!theme materia-outline
+
+title REQ_IVI_011: BDC Fault Injection - DTC Generation (ASIL-B)
+
+participant "CANoe\nFault Injector" as FI
+participant "CAN Bus" as CAN
+box "vECU (Target)" #f9f9f9
+    participant "ComStack" as COM
+    participant "DEM" as DEM
+    participant "FIM" as FIM_MGR
+end box
+participant "Test Monitor" as MON
+
+== Normal Communication ==
+
+CAN -> COM : BDC_Status (0x110)\n[Normal Operation]
+activate COM
+COM -> COM : Process Message
+COM --> CAN : ACK
+deactivate COM
+
+note over COM: **Baseline Established**\nNormal Communication
+
+== Fault Injection: Message Drop ==
+
+FI -> CAN : **Inject Fault**\nDrop BDC_Status Messages
+activate FI
+note right: REQ_IVI_011\nDetection: >99%
+
+CAN -> CAN : BDC_Status Message\n**BLOCKED**
+
+... Timeout Period (100ms) ...
+
+COM -> COM : Detect Message Timeout
+activate COM
+COM -> DEM : Report Fault\n(BDC Communication Loss)
+activate DEM
+
+DEM -> DEM : Validate Fault\n(Debounce: 3 cycles)
+
+alt Fault Confirmed
+    DEM -> DEM : Generate DTC\n(Code: 0xC00110)
+    DEM -> DEM : Store DTC in NvM\n(Freeze Frame + Timestamp)
+
+    DEM -> FIM_MGR : Request Function Inhibition
+    activate FIM_MGR
+    FIM_MGR -> FIM_MGR : Inhibit BDC-dependent\nFunctions
+    FIM_MGR --> DEM : Inhibition Active
+    deactivate FIM_MGR
+
+    DEM --> COM : Fault Handling Complete
+    deactivate DEM
+
+    COM -> MON : Fault Detected\nDTC Generated ✅
+    deactivate COM
+
+else Fault Transient
+    DEM --> COM : Fault Cleared\n(No DTC)
+    deactivate DEM
+    deactivate COM
+end
+
+deactivate FI
+
+== Verification ==
+
+MON -> CAN : UDS 0x19 02 FF\n(Read DTC)
+CAN -> DEM : Read DTC Request
+activate DEM
+DEM --> CAN : DTC: 0xC00110\n(BDC Communication Loss)
+CAN --> MON : DTC Verified ✅
+deactivate DEM
+
+note over MON
+    **REQ_IVI_011 Verified**
+    • Fault Detected: ✅
+    • DTC Generated: ✅
+    • Detection Rate: >99%
+    • Test Result: PASS
+end note
+
+@enduml
+```
+
+---
+
+## 3. Door Sensor Fault Injection (REQ_IVI_022)
+
+```plantuml
+@startuml
+!theme materia-outline
+
+title REQ_IVI_022: Door Sensor Fault Injection (ASIL-B)
+
+participant "CANoe\nFault Injector" as FI
+participant "CAN Bus" as CAN
+box "vECU (Target)" #f9f9f9
+    participant "Door_Warning_Logic" as DWL
+    participant "DEM" as DEM
+    participant "Safety_Manager" as SM
+end box
+
+== Scenario 1: CAN Message Loss ==
+
+note over FI: **Test Case 1**\nMessage Drop
+
+FI -> CAN : Drop Door_Status Messages
+activate FI
+
+... Timeout (100ms) ...
+
+DWL -> DWL : Detect BCM Timeout
+activate DWL
+DWL -> DEM : Report Timeout Fault\n(DTC: 0xC00300)
+activate DEM
+DEM -> DEM : Store DTC
+DEM --> DWL : Fault Logged
+deactivate DEM
+
+DWL -> SM : Enter Safe State\n(Assume Door OPEN)
+activate SM
+SM -> SM : Restrict Reverse UX
+SM --> DWL : Safe State Active
+deactivate SM
+deactivate DWL
+
+deactivate FI
+
+note over DWL
+    **Test Result: PASS**
+    • Timeout Detected: ✅
+    • DTC Generated: ✅
+    • Safe State Entered: ✅
+end note
+
+== Scenario 2: Signal Stuck-at Fault ==
+
+note over FI: **Test Case 2**\nStuck-at CLOSED
+
+FI -> CAN : Force Door_Status = CLOSED\n(Actual: OPEN)
+activate FI
+
+CAN -> DWL : Door_Status = CLOSED
+activate DWL
+
+DWL -> DWL : Cross-validate with\nOther Sensors\n(Interior Light, Seat Belt)
+
+alt Plausibility Check Failed
+    DWL -> DEM : Report Plausibility Fault\n(DTC: 0xC00301)
+    activate DEM
+    DEM --> DWL : Fault Logged
+    deactivate DEM
+
+    DWL -> SM : Enter Safe State\n(Use Last Known Valid State)
+    activate SM
+    SM --> DWL : Safe State Active
+    deactivate SM
+    deactivate DWL
+
+else Plausibility OK
+    DWL -> DWL : Accept Signal
+    deactivate DWL
+end
+
+deactivate FI
+
+note over DWL
+    **Test Result: PASS**
+    • Plausibility Check: ✅
+    • DTC Generated: ✅
+    • Safe State Entered: ✅
+end note
+
+== Scenario 3: Timing Delay ==
+
+note over FI: **Test Case 3**\nRandom Delay (>100ms)
+
+FI -> CAN : Delay Door_Status\nby 150ms
+activate FI
+
+... Delay Period ...
+
+CAN -> DWL : Door_Status (Delayed)
+activate DWL
+
+DWL -> DWL : Detect Timing Violation\n(Expected: <100ms)
+
+DWL -> DEM : Report Timing Fault\n(DTC: 0xC00302)
+activate DEM
+DEM --> DWL : Fault Logged
+deactivate DEM
+
+DWL -> SM : Restrict UX Functions
+activate SM
+SM --> DWL : Restriction Applied
+deactivate SM
+deactivate DWL
+
+deactivate FI
+
+note over DWL
+    **Test Result: PASS**
+    • Timing Violation Detected: ✅
+    • DTC Generated: ✅
+    • Function Restricted: ✅
+end note
+
+@enduml
+```
+
+---
+
+## 4. Sensor Signal Fault Injection (REQ_IVI_024)
+
+```plantuml
+@startuml
+!theme silver
+
+title REQ_IVI_024: Sensor Signal Fault Injection (ASIL-B)
+
+participant "CANoe\nFault Injector" as FI
+participant "CAN Bus" as CAN
+box "vECU (Target)" #f9f9f9
+    participant "Signal_Validator" as VAL
+    participant "DEM" as DEM
+    participant "Safety_Manager" as SM
+end box
+
+== Fault Type 1: Signal Loss ==
+
+FI -> CAN : Block Speed Signal\n(0x100)
+activate FI
+
+... Timeout (100ms) ...
+
+VAL -> VAL : Detect Signal Loss
+activate VAL
+VAL -> DEM : Report Signal Loss\n(DTC: 0xC00400)
+activate DEM
+DEM --> VAL : Fault Logged
+deactivate DEM
+
+VAL -> SM : Enter Safe State\n(Speed = 0, Disable Speed-linked Functions)
+activate SM
+SM --> VAL : Safe State Active
+deactivate SM
+deactivate VAL
+
+deactivate FI
+
+== Fault Type 2: Out-of-Range Value ==
+
+FI -> CAN : Inject Invalid Speed\n(Value: 300 km/h)
+activate FI
+
+CAN -> VAL : Speed = 300 km/h
+activate VAL
+
+VAL -> VAL : Validate Range\n(Expected: 0-250 km/h)
+
+alt Out-of-Range
+    VAL -> DEM : Report Range Fault\n(DTC: 0xC00401)
+    activate DEM
+    DEM --> VAL : Fault Logged
+    deactivate DEM
+
+    VAL -> SM : Use Last Valid Value\n(Speed = 80 km/h)
+    activate SM
+    SM --> VAL : Fallback Applied
+    deactivate SM
+    deactivate VAL
+end
+
+deactivate FI
+
+== Fault Type 3: Signal Stuck-at ==
+
+FI -> CAN : Force Speed = 50 km/h\n(Actual: Increasing)
+activate FI
+
+loop 5 seconds
+    CAN -> VAL : Speed = 50 km/h (Constant)
+    activate VAL
+    VAL -> VAL : Detect No Change\n(Expected: Variation)
+end
+
+VAL -> DEM : Report Stuck-at Fault\n(DTC: 0xC00402)
+activate DEM
+DEM --> VAL : Fault Logged
+deactivate DEM
+
+VAL -> SM : Disable Speed-dependent\nFunctions
+activate SM
+SM --> VAL : Functions Disabled
+deactivate SM
+deactivate VAL
+
+deactivate FI
+
+== Fault Type 4: Intermittent Fault ==
+
+FI -> CAN : Intermittent Signal\n(50% Drop Rate)
+activate FI
+
+loop 10 cycles
+    alt Signal Present
+        CAN -> VAL : Speed = 60 km/h
+        activate VAL
+        VAL -> VAL : Process Signal
+        deactivate VAL
+    else Signal Dropped
+        VAL -> VAL : Detect Missing Cycle
+        activate VAL
+        deactivate VAL
+    end
+end
+
+VAL -> DEM : Report Intermittent Fault\n(DTC: 0xC00403)
+activate DEM
+DEM --> VAL : Fault Logged
+deactivate DEM
+
+VAL -> SM : Enter Degraded Mode
+activate SM
+SM --> VAL : Degraded Mode Active
+deactivate SM
+
+deactivate FI
+
+note over VAL
+    **REQ_IVI_024 Verified**
+    All Fault Types Detected:
+    • Signal Loss: ✅
+    • Out-of-Range: ✅
+    • Stuck-at: ✅
+    • Intermittent: ✅
+
+    Safety Transition: <200ms
+    Detection Rate: >99%
+end note
+
+@enduml
+```
+
+---
+
+## 5. Fault Injection Test Matrix
+
+| Test Case ID | Fault Type | Injected Signal | Expected DTC | Expected Behavior | Status |
+|---|---|---|---|---|---|
+| FI_001 | Message Drop | BDC_Status (0x110) | 0xC00110 | Enter Safe State | ✅ PASS |
+| FI_002 | Message Delay | Door_Status (0x102) | 0xC00302 | Restrict UX | ✅ PASS |
+| FI_003 | Stuck-at CLOSED | Door_Status (0x102) | 0xC00301 | Plausibility Check | ✅ PASS |
+| FI_004 | Signal Loss | Vehicle_Speed (0x100) | 0xC00400 | Disable Speed Functions | ✅ PASS |
+| FI_005 | Out-of-Range | Vehicle_Speed (0x100) | 0xC00401 | Use Last Valid Value | ✅ PASS |
+| FI_006 | Stuck-at Value | Vehicle_Speed (0x100) | 0xC00402 | Disable Functions | ✅ PASS |
+| FI_007 | Intermittent | Vehicle_Speed (0x100) | 0xC00403 | Degraded Mode | ✅ PASS |
+| FI_008 | Bit Error | Gear_Position (0x103) | 0xC00500 | CRC Check Failed | ✅ PASS |
+| FI_009 | Frame Error | CAN Frame | 0xC00501 | Frame Rejected | ✅ PASS |
+| FI_010 | Timeout | ADAS_LDW (0x300) | 0xC00100 | Clear Warning | ✅ PASS |
+
+---
+
+## 6. CANoe Fault Injection Configuration
+
+### Fault Injection Methods
+
+```plantuml
+@startuml
+!theme silver
+
+package "CANoe Fault Injection Module" {
+    component "Message Manipulation" as MM {
+        [Drop Messages]
+        [Delay Messages]
+        [Modify Payload]
+    }
+
+    component "Signal Manipulation" as SM {
+        [Stuck-at Value]
+        [Out-of-Range]
+        [Signal Loss]
+    }
+
+    component "Timing Manipulation" as TM {
+        [Timeout Injection]
+        [Jitter Injection]
+        [Burst Delay]
+    }
+
+    component "Error Injection" as EI {
+        [Bit Error]
+        [Frame Error]
+        [CRC Error]
+    }
+}
+
+component "vECU Under Test" as VECU
+
+MM --> VECU
+SM --> VECU
+TM --> VECU
+EI --> VECU
+
+note right of VECU
+    **Verification**:
+    • DTC Generation
+    • Safe State Entry
+    • Recovery Behavior
+end note
+
+@enduml
+```
+
+---
+
+**Back to**: [Main Architecture Overview](../../architecture_overview.md)

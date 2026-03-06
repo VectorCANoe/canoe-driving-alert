@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Panel Type="Vector.CANalyzer.Panels.PanelSerializer, Vector.CANalyzer.Panels.Serializer, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null">
+  <Object Type="Vector.CANalyzer.Panels.Runtime.Panel, Vector.CANalyzer.Panels.Common, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Panel" ControlName="SDV Navigation View">
+    <Object Type="Vector.CANalyzer.Panels.Design.SwitchControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="SwZoneBadge" ControlName="ZoneBadge">
+      <Property Name="Name">SwZoneBadge</Property>
+      <Property Name="Size">180, 26</Property>
+      <Property Name="Location">20, 20</Property>
+      <Property Name="StateCnt">4</Property>
+      <Property Name="ReadOnlyControl">True</Property>
+      <Property Name="SwitchValues">1;4;0;1;2;3</Property>
+      <Property Name="SwitchValuesRx">1;4;0;1;2;3</Property>
+      <Property Name="SwitchValuesVT">1;4;0/Lower/0;1/Lower/1;2/Lower/2;3/Lower/3</Property>
+      <Property Name="ImageFile">Bitmaps\ZoneBadge4.png</Property>
+      <Property Name="SymbolConfiguration">8;16;UiRender;;;roadZoneColorCode;2;;;-1;;;Value;;;0</Property>
+    </Object>
+
+    <Object Type="Vector.CANalyzer.Panels.Design.SwitchControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="SwFlowBadge" ControlName="FlowBadge">
+      <Property Name="Name">SwFlowBadge</Property>
+      <Property Name="Size">200, 26</Property>
+      <Property Name="Location">210, 20</Property>
+      <Property Name="StateCnt">3</Property>
+      <Property Name="ReadOnlyControl">True</Property>
+      <Property Name="SwitchValues">1;3;0;1;2</Property>
+      <Property Name="SwitchValuesRx">1;3;0;1;2</Property>
+      <Property Name="SwitchValuesVT">1;3;0/Lower/0;1/Lower/1;2/Lower/2</Property>
+      <Property Name="ImageFile">Bitmaps\reference_pack_v1\EXT_FlowBadge3.png</Property>
+      <Property Name="SymbolConfiguration">8;16;UiRender;;;roadFlowDirection;2;;;-1;;;Value;;;0</Property>
+    </Object>
+
+    <Object Type="Vector.CANalyzer.Panels.Design.MeterControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="MeterRouteProgress" ControlName="RouteProgress">
+      <Property Name="Name">MeterRouteProgress</Property>
+      <Property Name="Size">158, 154</Property>
+      <Property Name="Location">288, 136</Property>
+      <Property Name="ScaleMax">100</Property>
+      <Property Name="SweepAngleFrom">-132</Property>
+      <Property Name="SweepAngleTo">132</Property>
+      <Property Name="PivotDistance">48</Property>
+      <Property Name="NeedleShape">TriangleSlimFilled</Property>
+      <Property Name="SymbolConfiguration">8;16;UiRender;;;vehicleObjectPos;2;;;-1;;;Value;;;0</Property>
+    </Object>
+
+    <Object Type="Vector.CANalyzer.Panels.Design.SwitchControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="SwVehicleStrip" ControlName="VehicleStrip">
+      <Property Name="Name">SwVehicleStrip</Property>
+      <Property Name="Size">460, 70</Property>
+      <Property Name="Location">137, 298</Property>
+      <Property Name="StateCnt">11</Property>
+      <Property Name="ReadOnlyControl">True</Property>
+      <Property Name="SwitchValues">1;11;0;1;2;3;4;5;6;7;8;9;10</Property>
+      <Property Name="SwitchValuesRx">1;11;0;10;20;30;40;50;60;70;80;90;100</Property>
+      <Property Name="SwitchValuesVT">1;11;0/Lower/0;10/Lower/1;20/Lower/2;30/Lower/3;40/Lower/4;50/Lower/5;60/Lower/6;70/Lower/7;80/Lower/8;90/Lower/9;100/Lower/10</Property>
+      <Property Name="ImageFile">Bitmaps\reference_pack_v1\EXT_VehicleMove11.png</Property>
+      <Property Name="TransparentColor">Black</Property>
+      <Property Name="IsProportional">False</Property>
+      <Property Name="SymbolConfiguration">8;16;UiRender;;;vehicleObjectPos;2;;;-1;;;Value;;;0</Property>
+    </Object>
+
+    <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="TxtVehiclePos" ControlName="VehiclePos">
+      <Property Name="Name">TxtVehiclePos</Property>
+      <Property Name="Size">86, 24</Property>
+      <Property Name="Location">320, 192</Property>
+      <Property Name="BoxBackColor">Black</Property>
+      <Property Name="BoxForeColor">255, 255, 230, 80</Property>
+      <Property Name="TextBackColor">Black</Property>
+      <Property Name="TextForeColor">255, 255, 230, 80</Property>
+      <Property Name="DisplayLabel">Hide</Property>
+      <Property Name="BoxTextAlign">Center</Property>
+      <Property Name="ReadOnlyControl">True</Property>
+      <Property Name="ValueDisplay">Double</Property>
+      <Property Name="ValueDecimalPlaces">0</Property>
+      <Property Name="SymbolConfiguration">8;16;UiRender;;;vehicleObjectPos;2;;;-1;;;Value;;;0</Property>
+    </Object>
+
+    <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="TxtFlowPhase" ControlName="FlowPhase">
+      <Property Name="Name">TxtFlowPhase</Property>
+      <Property Name="Size">62, 20</Property>
+      <Property Name="Location">474, 22</Property>
+      <Property Name="BoxBackColor">Black</Property>
+      <Property Name="BoxForeColor">255, 130, 180, 255</Property>
+      <Property Name="TextBackColor">Black</Property>
+      <Property Name="TextForeColor">255, 130, 180, 255</Property>
+      <Property Name="DisplayLabel">Hide</Property>
+      <Property Name="BoxTextAlign">Center</Property>
+      <Property Name="ReadOnlyControl">True</Property>
+      <Property Name="ValueDisplay">Double</Property>
+      <Property Name="ValueDecimalPlaces">0</Property>
+      <Property Name="SymbolConfiguration">8;16;UiRender;;;icFlowPhase;2;;;-1;;;Value;;;0</Property>
+    </Object>
+
+    <Property Name="Name">Panel</Property>
+    <Property Name="Size">734, 396</Property>
+    <Property Name="BackColor">Black</Property>
+    <Property Name="ImageFileName">Bitmaps\reference_pack_v1\NAV_Background.png</Property>
+    <Property Name="IsProportional">True</Property>
+  </Object>
+</Panel>

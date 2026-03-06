@@ -1,0 +1,76 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Panel Type="Vector.CANalyzer.Panels.PanelSerializer, Vector.CANalyzer.Panels.Serializer, Version=19.4.10.0, Culture=neutral, PublicKeyToken=null">
+  <Object Type="Vector.CANalyzer.Panels.Runtime.Panel, Vector.CANalyzer.Panels.Common, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Panel" ControlName="Window Position">
+    <Object Type="Vector.CANalyzer.Panels.Design.GroupBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="GroupBoxControl2" ControlName="Group Box 2">
+      <Object Type="Vector.CANalyzer.Panels.Design.SwitchControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="SwitchControl2" ControlName="Switch/Indicator 2">
+        <Property Name="Name">SwitchControl2</Property>
+        <Property Name="Size">60, 60</Property>
+        <Property Name="Location">30, 19</Property>
+        <Property Name="SymbolConfiguration">8;2;Comfort;Console;Console_1;WN_left_up;0;Comfort;;-1;;;Value;;;0</Property>
+        <Property Name="ImageFile">..\..\..\..\..\..\..\Public\Documents\Vector\CANoe\Sample Configurations 19.4.10\CAN\CANSystem\CANoe\Panels\Bitmaps\WindowUpLeft.bmp</Property>
+        <Property Name="TabIndex">2</Property>
+        <Property Name="IsButton">True</Property>
+        <Property Name="Epsilon">0</Property>
+        <Property Name="Increment">1</Property>
+        <Property Name="StartValue">0</Property>
+        <Property Name="SwitchValuesVTXml">&lt;Version&gt;2&lt;/Version&gt;&lt;Count&gt;2&lt;/Count&gt;&lt;RxValue&gt;0&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;0&lt;/TxValue&gt;&lt;RxValue&gt;1&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;1&lt;/TxValue&gt;</Property>
+        <Property Name="SwitchValuesVT">1;2;0/Lower/0;1/Lower/1</Property>
+        <Property Name="SwitchValues">1;2;0;1</Property>
+        <Property Name="SwitchValuesRx">1;2;0;1</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.SwitchControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="SwitchControl3" ControlName="Switch/Indicator 3">
+        <Property Name="Name">SwitchControl3</Property>
+        <Property Name="Size">60, 60</Property>
+        <Property Name="Location">30, 78</Property>
+        <Property Name="SymbolConfiguration">8;2;Comfort;Console;Console_1;WN_left_down;0;Comfort;;-1;;;Value;;;0</Property>
+        <Property Name="ImageFile">..\..\..\..\..\..\..\Public\Documents\Vector\CANoe\Sample Configurations 19.4.10\CAN\CANSystem\CANoe\Panels\Bitmaps\WindowDownLeft.bmp</Property>
+        <Property Name="TabIndex">7</Property>
+        <Property Name="IsButton">True</Property>
+        <Property Name="Epsilon">0</Property>
+        <Property Name="Increment">1</Property>
+        <Property Name="StartValue">0</Property>
+        <Property Name="SwitchValuesVTXml">&lt;Version&gt;2&lt;/Version&gt;&lt;Count&gt;2&lt;/Count&gt;&lt;RxValue&gt;0&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;0&lt;/TxValue&gt;&lt;RxValue&gt;1&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;1&lt;/TxValue&gt;</Property>
+        <Property Name="SwitchValuesVT">1;2;0/Lower/0;1/Lower/1</Property>
+        <Property Name="SwitchValues">1;2;0;1</Property>
+        <Property Name="SwitchValuesRx">1;2;0;1</Property>
+      </Object>
+      <Property Name="Name">GroupBoxControl2</Property>
+      <Property Name="Size">118, 150</Property>
+      <Property Name="Location">347, 3</Property>
+      <Property Name="BackColor">Window</Property>
+      <Property Name="Text">Window Switch</Property>
+      <Property Name="TabIndex">1</Property>
+      <Property Name="UseWindowsStyle">False</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.GroupBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="GroupBoxControl1" ControlName="Group Box">
+      <Object Type="Vector.CANalyzer.Panels.Design.SwitchControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="SwitchControl1" ControlName="Switch/Indicator">
+        <Property Name="Name">SwitchControl1</Property>
+        <Property Name="Size">327, 119</Property>
+        <Property Name="Location">5, 19</Property>
+        <Property Name="SymbolConfiguration">8;2;Comfort;DOOR_le;DOOR_l;WN_Position;0;Comfort;;-1;;;Value;;;0</Property>
+        <Property Name="ImageFile">..\..\..\..\..\..\..\Public\Documents\Vector\CANoe\Sample Configurations 19.4.10\CAN\CANSystem\CANoe\Panels\Bitmaps\DoorWindow.bmp</Property>
+        <Property Name="ReadOnlyControl">True</Property>
+        <Property Name="TabIndex">1</Property>
+        <Property Name="Epsilon">0</Property>
+        <Property Name="Increment">1</Property>
+        <Property Name="StartValue">0</Property>
+        <Property Name="StateCnt">17</Property>
+        <Property Name="SwitchValuesVTXml">&lt;Version&gt;2&lt;/Version&gt;&lt;Count&gt;17&lt;/Count&gt;&lt;RxValue&gt;16&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;16&lt;/TxValue&gt;&lt;RxValue&gt;16&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;16&lt;/TxValue&gt;&lt;RxValue&gt;14&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;14&lt;/TxValue&gt;&lt;RxValue&gt;13&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;13&lt;/TxValue&gt;&lt;RxValue&gt;12&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;12&lt;/TxValue&gt;&lt;RxValue&gt;11&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;11&lt;/TxValue&gt;&lt;RxValue&gt;10&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;10&lt;/TxValue&gt;&lt;RxValue&gt;9&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;9&lt;/TxValue&gt;&lt;RxValue&gt;8&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;8&lt;/TxValue&gt;&lt;RxValue&gt;7&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;7&lt;/TxValue&gt;&lt;RxValue&gt;6&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;6&lt;/TxValue&gt;&lt;RxValue&gt;5&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;5&lt;/TxValue&gt;&lt;RxValue&gt;4&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;4&lt;/TxValue&gt;&lt;RxValue&gt;3&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;3&lt;/TxValue&gt;&lt;RxValue&gt;2&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;2&lt;/TxValue&gt;&lt;RxValue&gt;1&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;1&lt;/TxValue&gt;&lt;RxValue&gt;0&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;0&lt;/TxValue&gt;</Property>
+        <Property Name="SwitchValuesVT">1;17;16/Lower/16;16/Lower/16;14/Lower/14;13/Lower/13;12/Lower/12;11/Lower/11;10/Lower/10;9/Lower/9;8/Lower/8;7/Lower/7;6/Lower/6;5/Lower/5;4/Lower/4;3/Lower/3;2/Lower/2;1/Lower/1;0/Lower/0</Property>
+        <Property Name="SwitchValues">1;17;16;16;14;13;12;11;10;9;8;7;6;5;4;3;2;1;0</Property>
+        <Property Name="SwitchValuesRx">1;17;16;16;14;13;12;11;10;9;8;7;6;5;4;3;2;1;0</Property>
+      </Object>
+      <Property Name="Name">GroupBoxControl1</Property>
+      <Property Name="Size">337, 150</Property>
+      <Property Name="Location">5, 3</Property>
+      <Property Name="BackColor">Window</Property>
+      <Property Name="Text">Electric Window</Property>
+      <Property Name="TabIndex">2</Property>
+      <Property Name="UseWindowsStyle">False</Property>
+    </Object>
+    <Property Name="Name">Panel</Property>
+    <Property Name="Size">473, 156</Property>
+    <Property Name="Location">0, 0</Property>
+    <Property Name="BackColor">Window</Property>
+  </Object>
+</Panel>

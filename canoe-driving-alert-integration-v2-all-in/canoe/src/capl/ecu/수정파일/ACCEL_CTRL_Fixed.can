@@ -1,0 +1,184 @@
+/*@!Encoding:949*/
+// ACCEL_CTRL_Fixed.can
+// Accel + Speed Control + Cruise Control
+// Chassis namespace
+
+includes
+{
+}
+
+variables
+{
+  msTimer tAccelCycle;
+  double gSpeed;
+  double gThrottlePos;
+  int gCCActive;
+  double gCCTargetSpeed;
+}
+
+on start
+{
+  gSpeed = 0.0;
+  gThrottlePos = 0.0;
+  gCCActive = 0;
+  gCCTargetSpeed = 0.0;
+  setTimer(tAccelCycle, 100);
+  write("[ACCEL] start");
+}
+
+on sysvar Chassis::ignitionState
+{
+  if (@Chassis::ignitionState == 0)
+  {
+    gSpeed = 0.0;
+    gThrottlePos = 0.0;
+    gCCActive = 0;
+    @Chassis::ccActive = 0;
+    write("[ACCEL] ignition OFF - reset");
+  }
+}
+
+on sysvar Chassis::throttlePosition
+{
+  // Block throttle input when ignition is OFF
+  if (@Chassis::ignitionState == 0)
+    @Chassis::throttlePosition = 0;
+}
+
+on sysvar Chassis::brakePressure
+{
+  // Block brake input when ignition is OFF
+  if (@Chassis::ignitionState == 0)
+    @Chassis::brakePressure = 0;
+}
+
+on sysvar Chassis::ccActive
+{
+  // CC cancelled when button toggled OFF
+  if (@Chassis::ccActive == 0)
+  {
+    gCCActive = 0;
+    write("[CC] Cruise Control OFF");
+  }
+  else
+  {
+    // Only activate in D gear
+    if ((int)@Chassis::driveMode == 3)
+    {
+      gCCActive = 1;
+      gCCTargetSpeed = @Chassis::ccTargetSpeed;
+      write("[CC] Cruise Control ON - target=%.1f", gCCTargetSpeed);
+    }
+    else
+    {
+      // Not in D gear, cancel activation
+      @Chassis::ccActive = 0;
+      gCCActive = 0;
+      write("[CC] Cruise Control REJECTED - not in D gear");
+    }
+  }
+}
+
+on timer tAccelCycle
+{
+  int ignition;
+  int driveMode;
+  double brakePressure;
+  double targetThrottle;
+  double speedChange;
+  double ccTarget;
+
+  ignition       = (int)@Chassis::ignitionState;
+  driveMode      = (int)@Chassis::driveMode;
+  brakePressure  = @Chassis::brakePressure;
+  targetThrottle = @Chassis::throttlePosition;
+  ccTarget       = @Chassis::ccTargetSpeed;
+
+  // If ignition is OFF, reset all values and skip
+  if (ignition == 0)
+  {
+    gSpeed = 0.0;
+    gThrottlePos = 0.0;
+    gCCActive = 0;
+    @Chassis::vehicleSpeed = 0;
+    @Chassis::ccActive = 0;
+    setTimer(tAccelCycle, 100);
+    return;
+  }
+
+  // Cancel cruise if brake is pressed
+  if (brakePressure > 10 && gCCActive == 1)
+  {
+    gCCActive = 0;
+    @Chassis::ccActive = 0;
+    write("[CC] Cruise Control CANCELLED - brake pressed");
+  }
+
+  // Cancel cruise if gear changed from D
+  if (driveMode != 3 && gCCActive == 1)
+  {
+    gCCActive = 0;
+    @Chassis::ccActive = 0;
+    write("[CC] Cruise Control CANCELLED - gear changed");
+  }
+
+  // Throttle ramp: 0.005% per 100ms
+  if (targetThrottle > gThrottlePos)
+  {
+    gThrottlePos = gThrottlePos + 0.005;
+    if (gThrottlePos > targetThrottle) gThrottlePos = targetThrottle;
+  }
+  else if (targetThrottle < gThrottlePos)
+  {
+    gThrottlePos = gThrottlePos - 0.005;
+    if (gThrottlePos < targetThrottle) gThrottlePos = targetThrottle;
+  }
+
+  // Speed calculation
+  if (brakePressure > 10)
+  {
+    // Brake: -15 km/h per sec
+    speedChange = 15.0 * 0.1;
+    gSpeed = gSpeed - speedChange;
+    if (gSpeed < 0.0) gSpeed = 0.0;
+  }
+  else if (gCCActive == 1)
+  {
+    // Cruise Control: maintain target speed
+    if (gSpeed < ccTarget - 0.5)
+    {
+      // Accelerate toward target
+      speedChange = 0.3 * 0.1;
+      gSpeed = gSpeed + speedChange;
+    }
+    else if (gSpeed > ccTarget + 0.5)
+    {
+      // Decelerate toward target
+      speedChange = 0.3 * 0.1;
+      gSpeed = gSpeed - speedChange;
+    }
+    // else: hold current speed
+  }
+  else if (targetThrottle > 0 && (driveMode == 3 || driveMode == 1))
+  {
+    // Accelerate only while pedal is pressed
+    speedChange = (gThrottlePos / 100.0) * 0.3 * 0.1;
+    gSpeed = gSpeed + speedChange;
+    if (driveMode == 1 && gSpeed > 30.0)  gSpeed = 30.0;
+    if (driveMode == 3 && gSpeed > 200.0) gSpeed = 200.0;
+  }
+  else
+  {
+    // Coast: 0.003 km/h per 100ms
+    speedChange = 0.003;
+    gSpeed = gSpeed - speedChange;
+    if (gSpeed < 0.0) gSpeed = 0.0;
+  }
+
+  @Chassis::vehicleSpeed = (int)gSpeed;
+
+  write("[ACCEL] ign=%d gear=%d thr=%.1f spd=%.1f brk=%.1f cc=%d tgt=%.1f",
+        ignition, driveMode, gThrottlePos, gSpeed, brakePressure, gCCActive, ccTarget);
+
+  setTimer(tAccelCycle, 100);
+}

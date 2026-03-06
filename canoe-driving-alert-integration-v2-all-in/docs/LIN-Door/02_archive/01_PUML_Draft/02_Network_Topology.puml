@@ -1,0 +1,36 @@
+@startuml
+title 네트워크 토폴로지 (Network Topology) - Sample Project
+
+skinparam componentStyle rectangle
+skinparam BackgroundColor White
+
+' Bus Definitions
+queue "Ethernet (DoIP)" as ETH
+queue "CAN-LS (125kbps)" as CAN_LS
+queue "CAN-HS (500kbps)" as CAN_HS
+
+' Nodes
+component "OTA_Server" as OTA
+component "Central Gateway\n(CGW)" as GW
+component "Tester" as TEST
+component "BCM" as BCM
+component "Cluster" as CLU
+
+' Connections
+OTA -down- ETH
+ETH -down- GW
+
+GW -left- CAN_LS
+TEST -up- CAN_LS
+BCM -up- CAN_LS
+
+GW -right- CAN_HS
+CLU -up- CAN_HS
+
+' Notes
+note bottom of OTA : IP: 192.168.1.100\nPort: 13400
+note top of GW : Routing Table:\nCreate map for 0x500 (BCM->Cluster)\nForward UDS (0x7DF/0x7E8)
+note bottom of BCM : ID: 0x500 (10ms)\nID: 0x7E8 (Event)
+note bottom of CLU : Rx: 0x500
+
+@enduml

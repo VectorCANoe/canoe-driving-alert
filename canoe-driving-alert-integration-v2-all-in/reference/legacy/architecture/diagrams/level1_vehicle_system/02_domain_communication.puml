@@ -1,0 +1,173 @@
+@startuml 02_domain_communication
+!theme plain
+
+title Level 1: Domain Communication Architecture\nHyundai/Mobis Standard Network Topology
+
+skinparam packageStyle rectangle
+skinparam component {
+    BackgroundColor LightBlue
+    BorderColor DarkBlue
+    ArrowColor DarkGreen
+}
+
+package "Powertrain Domain" as PT #LightYellow {
+    [EMS] as EMS
+    [TCU] as TCU
+    [OPI] as OPI
+    [LPI] as LPI
+    [FPCM] as FPCM
+}
+
+package "Chassis Domain" as CH #LightGreen {
+    [ESP] as ESP
+    [ABS] as ABS
+    [MDPS] as MDPS
+    [SAS] as SAS
+    [EPB] as EPB
+    [ECS] as ECS
+}
+
+package "ADAS Domain" as AD #LightCyan {
+    [F_CAMERA] as CAM
+    [R_CAMERA] as RCAM
+    [BSD_RADAR] as BSD
+    [SCC] as SCC
+    [SPAS] as SPAS
+    [AVM] as AVM
+}
+
+package "Body Domain" as BD #LightPink {
+    [BCM] as BCM
+    [DATC] as DATC
+    [FATC] as FATC
+    [TPMS] as TPMS
+    [SMK] as SMK
+}
+
+package "Climate Domain" as CL #LightGoldenRodYellow {
+    [HVAC] as HVAC
+}
+
+package "Infotainment Domain" as IT #LightSalmon {
+    [IVI] as IVI
+    [CLU] as CLU
+    [HUD] as HUD
+    [TMU] as TMU
+}
+
+package "Safety Domain" as SF #Tomato {
+    [ACU] as ACU
+    [ODS] as ODS
+}
+
+component "Central Gateway\n(CGW)" as CGW #Gold
+
+' CAN-HS #1 Network (Powertrain + Chassis + Safety)
+cloud "CAN-HS #1\n500 kbps" as CAN1 #LightGray
+
+EMS --> CAN1 : Vehicle Speed\nEngine RPM\nTorque
+TCU --> CAN1 : Gear Position\nShift Request
+ESP --> CAN1 : Stability Status\nBrake Request
+ABS --> CAN1 : Wheel Speed\nBrake Pressure
+MDPS --> CAN1 : Steering Angle\nSteering Torque
+ACU --> CAN1 : Airbag Status\nCrash Detection
+
+CAN1 --> CGW : Route to\nother networks
+
+' CAN-HS #2 Network (ADAS + Infotainment)
+cloud "CAN-HS #2\n500 kbps" as CAN2 #LightGray
+
+CAM --> CAN2 : LDW Warning\nLKA Status\nLane Detection
+RCAM --> CAN2 : Rear Objects ⭐\nCollision Risk
+BSD --> CAN2 : Blind Spot\nWarning
+SCC --> CAN2 : Cruise Control\nSpeed Target
+HVAC --> CAN2 : Cabin Temp ⭐\nHVAC Status
+IVI --> CAN2 : Media Info\nAmbient Light ⭐
+CLU --> CAN2 : Display Data\nWarning Lights
+HUD --> CAN2 : Speed Display\nNavigation
+
+CAN2 --> CGW : Route to\nother networks
+
+' CAN-LS Network (Body)
+cloud "CAN-LS\n125 kbps" as CAN3 #LightGray
+
+BCM --> CAN3 : Door Status\nLight Status\nAmbient Feedback ⭐
+DATC --> CAN3 : Climate Control\nTemperature
+TPMS --> CAN3 : Tire Pressure\nWarning
+SMK --> CAN3 : Key Status\nImmobilizer
+
+CAN3 --> CGW : Route to\nother networks
+
+' Gateway Routing
+CGW --> CAN1 : Filtered\nMessages
+CGW --> CAN2 : Filtered\nMessages
+CGW --> CAN3 : Filtered\nMessages
+
+note right of CGW
+  **Gateway Routing Rules**
+
+  CAN-HS #1 → CAN-HS #2:
+  • Vehicle Speed (EMS → CLU)
+  • Engine Status (EMS → IVI)
+
+  CAN-HS #2 → CAN-LS:
+  • Ambient Light (IVI → BCM) ⭐
+  • User Settings (IVI → BCM)
+
+  CAN-HS #2 → IVI:
+  • Cabin Temp (HVAC → IVI) ⭐
+  • Rear Objects (RCAM → IVI) ⭐
+
+  CAN-HS #1 → CAN-LS:
+  • ESP Status (ESP → BCM)
+  • Safety Warnings (ACU → BCM)
+
+  **Security**:
+  • Message filtering
+  • Authentication
+  • Firewall rules
+end note
+
+note bottom of PT
+  **Powertrain Domain**
+  • Real-time critical (10-100ms)
+  • ASIL-D safety level
+  • High-priority messages
+end note
+
+note bottom of AD
+  **ADAS Domain**
+  • Sensor fusion
+  • High bandwidth
+  • ASIL-B/C safety level
+end note
+
+note bottom of BD
+  **Body Domain**
+  • Comfort features
+  • Lower priority
+  • Event-driven messages
+end note
+
+legend right
+  **Network Characteristics**
+
+  CAN-HS #1 (500 kbps):
+  • Powertrain + Chassis + Safety
+  • Safety-critical messages
+  • High-speed, low-latency
+
+  CAN-HS #2 (500 kbps):
+  • ADAS + Infotainment
+  • User interface
+  • Sensor data
+
+  CAN-LS (125 kbps):
+  • Body + Comfort
+  • Non-critical messages
+  • Event-driven
+
+  ⭐ = Project-specific feature
+endlegend
+
+@enduml

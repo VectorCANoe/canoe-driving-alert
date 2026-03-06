@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Panel Type="Vector.CANalyzer.Panels.PanelSerializer, Vector.CANalyzer.Panels.Serializer, Version=19.4.10.0, Culture=neutral, PublicKeyToken=null">
+  <Object Type="Vector.CANalyzer.Panels.Runtime.Panel, Vector.CANalyzer.Panels.Common, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Panel" ControlName="rpm&amp;speed">
+    <Object Type="Vector.CANalyzer.Panels.Design.MeterControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xfd20e957e96f4e4af4e9168e7b559a7f54ef" ControlName="Meter 2">
+      <Property Name="Name">Xfd20e957e96f4e4af4e9168e7b559a7f54ef</Property>
+      <Property Name="Size">225, 180</Property>
+      <Property Name="Location">124, 192</Property>
+      <Property Name="SymbolConfiguration">8;2;powertrain_can;ENGINE_CTRL;frmEngineSpeedTempMsg;EngineRpm;1;ETH_Backbone;;-1;;;Value;;;0</Property>
+      <Property Name="NeedleColor">WhiteSmoke</Property>
+      <Property Name="NeedleShape">FineLine</Property>
+      <Property Name="ScaleMax">8000</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.MeterControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X89aaa33fe6e12e4121ebf5ce1b8736ddac2b" ControlName="Meter 1">
+      <Property Name="Name">X89aaa33fe6e12e4121ebf5ce1b8736ddac2b</Property>
+      <Property Name="Size">225, 180</Property>
+      <Property Name="Location">539, 192</Property>
+      <Property Name="SymbolConfiguration">8;16;Chassis;;;vehicleSpeed;1;;;-1;;;Value;;;0</Property>
+      <Property Name="NeedleColor">Red</Property>
+      <Property Name="NeedleShape">FineLine</Property>
+      <Property Name="ScaleMax">240</Property>
+    </Object>
+    <Property Name="Name">Panel</Property>
+    <Property Name="Size">887, 479</Property>
+    <Property Name="Location">0, 0</Property>
+    <Property Name="BackColor">White</Property>
+    <Property Name="ImageFileName">..\project\panel\Bitmaps\DashboardCombi.png</Property>
+    <Property Name="IsProportional">True</Property>
+  </Object>
+</Panel>

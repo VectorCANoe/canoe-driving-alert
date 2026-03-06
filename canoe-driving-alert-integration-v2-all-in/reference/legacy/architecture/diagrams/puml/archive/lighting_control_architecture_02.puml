@@ -1,0 +1,50 @@
+@startuml
+!theme materia-outline
+
+title REQ_IVI_001: Sport Mode Speed-Linked Ambient Lighting
+
+[*] --> Idle
+
+state "Idle" as Idle {
+    Idle : Sport Mode = OFF
+    Idle : Color = Default
+}
+
+state "Sport Mode Active" as Sport {
+    state "Speed_0_50" as S1 {
+        S1 : Speed: 0~50 km/h
+        S1 : Color: GREEN
+        S1 : Transition: <500ms
+    }
+
+    state "Speed_50_100" as S2 {
+        S2 : Speed: 50~100 km/h
+        S2 : Color: BLUE
+        S2 : Transition: <500ms
+    }
+
+    state "Speed_100_Plus" as S3 {
+        S3 : Speed: 100+ km/h
+        S3 : Color: RED
+        S3 : Transition: <500ms
+    }
+
+    [*] --> S1
+    S1 --> S2 : Speed >= 50
+    S2 --> S3 : Speed >= 100
+    S3 --> S2 : Speed < 100
+    S2 --> S1 : Speed < 50
+}
+
+Idle --> Sport : Sport Mode ON
+Sport --> Idle : Sport Mode OFF
+
+note right of Sport
+    **ASIL-B Requirement**
+    • Color transition must complete
+      within 500ms of speed change
+    • CAN signal update rate: 100ms
+    • RGB command latency budget: 400ms
+end note
+
+@enduml

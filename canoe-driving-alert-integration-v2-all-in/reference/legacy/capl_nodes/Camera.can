@@ -1,0 +1,105 @@
+/*@@=================================================================
+ * CANoe CAPL Node: Camera (Front Camera ECU)
+ *==================================================================@@*/
+
+includes {}
+
+variables
+{
+  // LDW (Lane Departure Warning)
+  int gLDW_Status = 0;          // 0=OFF, 1=STANDBY, 2=ACTIVE, 3=WARNING
+  float gLanePosition = 0.0;     // -2.0 to +2.0 meters
+
+  // AEB (Automatic Emergency Braking)
+  int gAEB_Event = 0;            // 0=NONE, 1=PRE_WARNING, 2=WARNING, 3=BRAKING
+  int gCollisionRisk = 0;        // 0-100%
+
+  // Object detection
+  float gObjectDistance = 200.0; // meters
+  float gObjectVelocity = 0.0;   // km/h
+  int gObjectType = 0;           // 0=NONE, 1=CAR, etc.
+
+  byte gAliveCounter_LDW = 0;
+  byte gAliveCounter_Objects = 0;
+
+  msTimer tLDW;
+  msTimer tObjects;
+}
+
+on start
+{
+  write("Camera (Front Camera ECU) Started - LDW/AEB");
+
+  gLDW_Status = 1; // STANDBY
+  gAEB_Event = 0;  // NONE
+
+  setTimer(tLDW, 50);      // 50ms
+  setTimer(tObjects, 50);  // 50ms
+}
+
+on timer tLDW
+{
+  message Camera_LDW msg;
+
+  msg.LDW_Status = gLDW_Status;
+  msg.Lane_Position = gLanePosition;
+  msg.AEB_Event = gAEB_Event;
+  msg.Collision_Risk = gCollisionRisk;
+
+  output(msg);
+
+  setEnvironmentVariable("ADAS_LDW_Active", (gLDW_Status == 3) ? 1 : 0);
+  setEnvironmentVariable("ADAS_AEB_Active", (gAEB_Event >= 2) ? 1 : 0);
+
+  setTimer(tLDW, 50);
+}
+
+on timer tObjects
+{
+  message Camera_Objects msg;
+
+  msg.Object_Distance = gObjectDistance;
+  msg.Object_Velocity = gObjectVelocity;
+  msg.Object_Type = gObjectType;
+  msg.AliveCounter = gAliveCounter_Objects;
+  msg.Checksum = 0;
+
+  gAliveCounter_Objects = (gAliveCounter_Objects + 1) & 0x0F;
+
+  output(msg);
+  setTimer(tObjects, 50);
+}
+
+// Simulate LDW warning
+on key 'L'
+{
+  gLDW_Status = 3; // WARNING
+  gLanePosition = -0.8;
+  write("⚠️ Lane Departure Warning - Drifting left");
+}
+
+// Simulate AEB event
+on key 'B'
+{
+  gAEB_Event = 3; // BRAKING
+  gCollisionRisk = 95;
+  gObjectDistance = 15.0;
+  write("⚠️ Emergency Braking - Collision imminent!");
+}
+
+// Clear warnings
+on key 'K'
+{
+  gLDW_Status = 2; // ACTIVE
+  gAEB_Event = 0;  // NONE
+  gCollisionRisk = 0;
+  gLanePosition = 0.0;
+  gObjectDistance = 200.0;
+  write("✅ ADAS warnings cleared");
+}
+
+on stopMeasurement
+{
+  cancelTimer(tLDW);
+  cancelTimer(tObjects);
+}

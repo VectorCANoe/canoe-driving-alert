@@ -1,0 +1,220 @@
+VERSION "Chassis_CAN_v1.0"
+
+NS_ :
+  NS_DESC_
+  CM_
+  BA_DEF_
+  BA_
+  VAL_
+  CAT_DEF_
+  CAT_
+  FILTER
+  BA_DEF_DEF_
+  EV_DATA_
+  ENVVAR_DATA_
+  SGTYPE_
+  SGTYPE_VAL_
+  BA_DEF_SGTYPE_
+  BA_SGTYPE_
+  SIG_TYPE_REF_
+  VAL_TABLE_
+  SIG_GROUP_
+  SIG_VALTYPE_
+  SIGTYPE_VALTYPE_
+  BO_TX_BU_
+  BA_DEF_REL_
+  BA_REL_
+  BA_SGTYPE_REL_
+  SG_MUL_VAL_
+
+BS_:
+
+BU_: SIL_TEST_CTRL CHASSIS_GW ACCEL_CTRL BRAKE_CTRL STEERING_CTRL ADAS_WARN_CTRL DOMAIN_BOUNDARY_MGR Vector__XXX VEHICLE_BASE_TEST_CTRL
+
+BO_ 256 frmVehicleStateCanMsg: 2 SIL_TEST_CTRL
+ SG_ gVehicleSpeed : 0|8@1+ (1,0) [0|255] "km/h" CHASSIS_GW,ADAS_WARN_CTRL
+ SG_ gDriveState   : 8|2@1+ (1,0) [0|3]   ""     CHASSIS_GW,ADAS_WARN_CTRL
+ SG_ Reserved0     : 10|6@1+ (1,0) [0|0]  ""     Vector__XXX
+
+BO_ 257 frmSteeringCanMsg: 1 SIL_TEST_CTRL
+ SG_ SteeringInput : 0|1@1+ (1,0) [0|1] "" CHASSIS_GW,STEERING_CTRL
+ SG_ Reserved0     : 1|7@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 258 frmPedalInputCanMsg: 2 SIL_TEST_CTRL
+ SG_ AccelPedal       : 0|8@1+ (1,0) [0|100] "%" ACCEL_CTRL
+ SG_ BrakePedal       : 8|8@1+ (1,0) [0|100] "%" BRAKE_CTRL
+
+BO_ 259 frmSteeringStateCanMsg: 1 CHASSIS_GW
+ SG_ SteeringState    : 0|2@1+ (1,0) [0|3] "" STEERING_CTRL
+ SG_ Reserved0        : 2|6@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 260 frmWheelSpeedMsg: 4 CHASSIS_GW
+ SG_ WheelSpdFL       : 0|8@1+ (1,0) [0|255] "km/h" ACCEL_CTRL,BRAKE_CTRL,STEERING_CTRL
+ SG_ WheelSpdFR       : 8|8@1+ (1,0) [0|255] "km/h" ACCEL_CTRL,BRAKE_CTRL,STEERING_CTRL
+ SG_ WheelSpdRL       : 16|8@1+ (1,0) [0|255] "km/h" ACCEL_CTRL,BRAKE_CTRL,STEERING_CTRL
+ SG_ WheelSpdRR       : 24|8@1+ (1,0) [0|255] "km/h" ACCEL_CTRL,BRAKE_CTRL,STEERING_CTRL
+
+BO_ 261 frmYawAccelMsg: 4 CHASSIS_GW
+ SG_ YawRate          : 0|16@1+ (1,0) [0|65535] "deg/s" BRAKE_CTRL,STEERING_CTRL
+ SG_ LatAccel         : 16|16@1+ (1,0) [0|65535] "0.01m/s2" BRAKE_CTRL,STEERING_CTRL
+
+BO_ 262 frmBrakeStatusMsg: 2 BRAKE_CTRL
+ SG_ BrakePressure    : 0|8@1+ (1,0) [0|255] "%" CHASSIS_GW
+ SG_ BrakeMode        : 8|2@1+ (1,0) [0|3] "" CHASSIS_GW
+ SG_ AbsActive        : 10|1@1+ (1,0) [0|1] "" CHASSIS_GW
+ SG_ EspActive        : 11|1@1+ (1,0) [0|1] "" CHASSIS_GW
+ SG_ Reserved0        : 12|4@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 263 frmAccelStatusMsg: 2 ACCEL_CTRL
+ SG_ AccelRequest     : 0|8@1+ (1,0) [0|100] "%" CHASSIS_GW
+ SG_ TorqueRequest    : 8|8@1+ (1,0) [0|255] "Nm" CHASSIS_GW
+
+BO_ 264 frmSteeringTorqueMsg: 2 STEERING_CTRL
+ SG_ SteeringTorque   : 0|12@1+ (1,0) [0|4095] "0.1Nm" CHASSIS_GW
+ SG_ SteeringAssistLv : 12|4@1+ (1,0) [0|15] "" CHASSIS_GW
+
+BO_ 265 frmChassisHealthMsg: 2 CHASSIS_GW
+ SG_ ChassisAliveCnt  : 0|8@1+ (1,0) [0|255] "" SIL_TEST_CTRL,DOMAIN_BOUNDARY_MGR
+ SG_ ChassisDiagState : 8|4@1+ (1,0) [0|15] "" SIL_TEST_CTRL,DOMAIN_BOUNDARY_MGR
+ SG_ ChassisFailCode  : 12|4@1+ (1,0) [0|15] "" SIL_TEST_CTRL,DOMAIN_BOUNDARY_MGR
+
+BO_ 266 frmEpsStateMsg: 2 STEERING_CTRL
+ SG_ EpsAssistState   : 0|3@1+ (1,0) [0|7] "" CHASSIS_GW,ADAS_WARN_CTRL
+ SG_ EpsFaultState    : 3|1@1+ (1,0) [0|1] "" CHASSIS_GW,ADAS_WARN_CTRL
+ SG_ Reserved0        : 4|4@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ EpsTemp          : 8|8@1+ (1,0) [0|255] "degC" CHASSIS_GW,ADAS_WARN_CTRL
+
+BO_ 267 frmAbsStateMsg: 2 BRAKE_CTRL
+ SG_ AbsCtrlState     : 0|2@1+ (1,0) [0|3] "" CHASSIS_GW,ADAS_WARN_CTRL
+ SG_ AbsSlipLevel     : 2|6@1+ (1,0) [0|63] "" CHASSIS_GW,ADAS_WARN_CTRL
+ SG_ AbsPressureCmd   : 8|8@1+ (1,0) [0|255] "" CHASSIS_GW,ADAS_WARN_CTRL
+
+BO_ 268 frmEscStateMsg: 2 BRAKE_CTRL
+ SG_ EscCtrlState     : 0|2@1+ (1,0) [0|3] "" CHASSIS_GW,ADAS_WARN_CTRL
+ SG_ EscIntervention  : 2|6@1+ (1,0) [0|63] "" CHASSIS_GW,ADAS_WARN_CTRL
+ SG_ EscYawTarget     : 8|8@1+ (1,0) [0|255] "" CHASSIS_GW,ADAS_WARN_CTRL
+
+BO_ 269 frmTcsStateMsg: 2 ACCEL_CTRL
+ SG_ TcsCtrlState     : 0|2@1+ (1,0) [0|3] "" CHASSIS_GW,ADAS_WARN_CTRL
+ SG_ TcsTorqueCut     : 2|6@1+ (1,0) [0|63] "" CHASSIS_GW,ADAS_WARN_CTRL
+ SG_ TcsSlipRatio     : 8|8@1+ (1,0) [0|255] "" CHASSIS_GW,ADAS_WARN_CTRL
+
+BO_ 270 frmBrakeTempMsg: 2 BRAKE_CTRL
+ SG_ BrakeTempFL      : 0|8@1+ (1,0) [0|255] "degC" CHASSIS_GW,ADAS_WARN_CTRL
+ SG_ BrakeTempFR      : 8|8@1+ (1,0) [0|255] "degC" CHASSIS_GW,ADAS_WARN_CTRL
+
+BO_ 271 frmSteeringAngleMsg: 2 STEERING_CTRL
+ SG_ SteeringAngleRaw : 0|16@1+ (1,0) [0|65535] "0.1deg" CHASSIS_GW,ADAS_WARN_CTRL
+
+BO_ 282 frmWheelPulseMsg: 2 CHASSIS_GW
+ SG_ WheelPulseFront  : 0|8@1+ (1,0) [0|255] "" ADAS_WARN_CTRL
+ SG_ WheelPulseRear   : 8|8@1+ (1,0) [0|255] "" ADAS_WARN_CTRL
+
+BO_ 283 frmSuspensionStateMsg: 2 CHASSIS_GW
+ SG_ SuspensionMode   : 0|3@1+ (1,0) [0|7] "" ADAS_WARN_CTRL
+ SG_ SuspensionLevel  : 3|5@1+ (1,0) [0|31] "" ADAS_WARN_CTRL
+ SG_ DampingLevel     : 8|8@1+ (1,0) [0|255] "" ADAS_WARN_CTRL
+
+BO_ 284 frmTirePressureMsg: 4 CHASSIS_GW
+ SG_ TirePressFL      : 0|8@1+ (1,0) [0|255] "kPa" ADAS_WARN_CTRL
+ SG_ TirePressFR      : 8|8@1+ (1,0) [0|255] "kPa" ADAS_WARN_CTRL
+ SG_ TirePressRL      : 16|8@1+ (1,0) [0|255] "kPa" ADAS_WARN_CTRL
+ SG_ TirePressRR      : 24|8@1+ (1,0) [0|255] "kPa" ADAS_WARN_CTRL
+
+BO_ 285 frmChassisDiagReqMsg: 3 SIL_TEST_CTRL
+ SG_ ChsDiagServiceId : 0|8@1+ (1,0) [0|255] "" CHASSIS_GW
+ SG_ ChsDiagDidHigh   : 8|8@1+ (1,0) [0|255] "" CHASSIS_GW
+ SG_ ChsDiagDidLow    : 16|8@1+ (1,0) [0|255] "" CHASSIS_GW
+
+BO_ 286 frmChassisDiagResMsg: 3 CHASSIS_GW
+ SG_ ChsDiagRespCode  : 0|8@1+ (1,0) [0|255] "" SIL_TEST_CTRL
+ SG_ ChsDiagData0     : 8|8@1+ (1,0) [0|255] "" SIL_TEST_CTRL
+ SG_ ChsDiagData1     : 16|8@1+ (1,0) [0|255] "" SIL_TEST_CTRL
+
+BO_ 288 frmBrakeWearMsg: 1 BRAKE_CTRL
+ SG_ BrakePadWearLvl  : 0|8@1+ (1,0) [0|255] "%" CHASSIS_GW
+
+BO_ 289 frmRoadFrictionMsg: 1 CHASSIS_GW
+ SG_ RoadFrictionCoef : 0|8@1+ (1,0) [0|255] "0.01" ADAS_WARN_CTRL
+
+CM_ BO_ 256 "Flow_001 core vehicle state input.";
+CM_ BO_ 257 "Flow_002 steering input.";
+CM_ BO_ 258 "Chassis baseline: acceleration pedal and brake pedal input.";
+CM_ BO_ 259 "Chassis baseline: steering state produced from normalized steering input.";
+CM_ BO_ 260 "Chassis baseline: per-wheel speed distribution.";
+CM_ BO_ 261 "Chassis baseline: yaw rate and lateral acceleration.";
+CM_ BO_ 262 "Chassis baseline: brake pressure and ESC/ABS status.";
+CM_ BO_ 263 "Chassis baseline: acceleration request and torque request.";
+CM_ BO_ 264 "Chassis baseline: steering torque and assist level.";
+CM_ BO_ 265 "Chassis health/diagnostic state.";
+CM_ BO_ 266 "Comm_201: EPS state extension.";
+CM_ BO_ 267 "Comm_201: ABS state extension.";
+CM_ BO_ 268 "Comm_201: ESC state extension.";
+CM_ BO_ 269 "Comm_201: TCS state extension.";
+CM_ BO_ 270 "Comm_201: brake thermal state.";
+CM_ BO_ 271 "Comm_201: steering angle extension.";
+CM_ BO_ 282 "Comm_201: wheel pulse extension.";
+CM_ BO_ 283 "Comm_201: suspension state extension.";
+CM_ BO_ 284 "Comm_201: tire pressure extension.";
+CM_ BO_ 285 "Comm_201: chassis diagnostic request.";
+CM_ BO_ 286 "Comm_201: chassis diagnostic response.";
+CM_ BO_ 288 "Comm_201: brake wear extension.";
+CM_ BO_ 289 "Comm_201: road friction extension.";
+
+BA_DEF_ BO_ "GenMsgCycleTime" INT 0 10000;
+BA_DEF_DEF_ "GenMsgCycleTime" 0;
+BA_ "GenMsgCycleTime" BO_ 256 100;
+BA_ "GenMsgCycleTime" BO_ 257 100;
+BA_ "GenMsgCycleTime" BO_ 258 100;
+BA_ "GenMsgCycleTime" BO_ 259 100;
+BA_ "GenMsgCycleTime" BO_ 260 100;
+BA_ "GenMsgCycleTime" BO_ 261 100;
+BA_ "GenMsgCycleTime" BO_ 262 100;
+BA_ "GenMsgCycleTime" BO_ 263 100;
+BA_ "GenMsgCycleTime" BO_ 264 100;
+BA_ "GenMsgCycleTime" BO_ 265 100;
+BA_ "GenMsgCycleTime" BO_ 266 100;
+BA_ "GenMsgCycleTime" BO_ 267 100;
+BA_ "GenMsgCycleTime" BO_ 268 100;
+BA_ "GenMsgCycleTime" BO_ 269 100;
+BA_ "GenMsgCycleTime" BO_ 270 100;
+BA_ "GenMsgCycleTime" BO_ 271 100;
+BA_ "GenMsgCycleTime" BO_ 282 100;
+BA_ "GenMsgCycleTime" BO_ 283 100;
+BA_ "GenMsgCycleTime" BO_ 284 100;
+BA_ "GenMsgCycleTime" BO_ 285 0;
+BA_ "GenMsgCycleTime" BO_ 286 0;
+BA_ "GenMsgCycleTime" BO_ 288 100;
+BA_ "GenMsgCycleTime" BO_ 289 100;
+
+VAL_ 256 gDriveState
+  0 "P"
+  1 "R"
+  2 "N"
+  3 "D" ;
+
+VAL_ 257 SteeringInput
+  0 "NoInput"
+  1 "Input" ;
+
+
+VAL_ 259 SteeringState
+  0 "Stable"
+  1 "LeftTurn"
+  2 "RightTurn"
+  3 "Fault" ;
+
+VAL_ 262 BrakeMode
+  0 "Normal"
+  1 "Assist"
+  2 "Emergency"
+  3 "Fault" ;
+
+VAL_ 262 AbsActive
+  0 "Inactive"
+  1 "Active" ;
+
+VAL_ 262 EspActive
+  0 "Inactive"
+  1 "Active" ;
+

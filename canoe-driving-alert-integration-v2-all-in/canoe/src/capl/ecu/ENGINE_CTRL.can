@@ -1,0 +1,137 @@
+/*@!Encoding:949*/
+// ENGINE_CTRL_ManualIgnition.can
+// ?œë™ ë²„íŠ¼?¼ë¡œ ?˜ë™ ?œì–´
+
+includes
+{
+}
+
+variables
+{
+  msTimer tEngineCycle;
+  int gIgnitionState;
+  int gEngineState;
+  int gLastEngineState;
+  int gFuelLevel;
+  int gBatterySoc;
+}
+
+on start
+{
+  gIgnitionState   = 0;     // ?œë™ êº¼ì§„ ?íƒœë¡??œì‘
+  gEngineState     = 0;
+  gLastEngineState = -1;
+  gFuelLevel       = 80;
+  gBatterySoc      = 95;
+  setTimer(tEngineCycle, 100);
+  write("[ENGINE_CTRL] start - Manual ignition control");
+}
+
+on message frmIgnitionEngineMsg
+{
+  gIgnitionState = this.IgnitionState;
+  gEngineState   = this.EngineState;
+  if (gIgnitionState < 0 || gIgnitionState > 1) gIgnitionState = 0;
+  if (gEngineState   < 0 || gEngineState   > 3) gEngineState   = 0;
+}
+
+on timer tEngineCycle
+{
+  message frmEngineSpeedTempMsg  mSpeedTemp;
+  message frmFuelBatteryStateMsg mFuelBat;
+  message frmThrottleStateMsg    mThrottle;
+  message frmEngineTorqueMsg     mTorque;
+  message frmEngineLoadMsg       mLoad;
+  message frmThermalMgmtStateMsg mThermal;
+  int rpm;
+  int throttlePos;
+  int engineLoad;
+  int torque;
+  int speed;
+  int ignitionPanel;
+
+  // ==========================================
+  // ?œë™ ë²„íŠ¼ ?íƒœ ?½ê¸°
+  // ==========================================
+  ignitionPanel = (int)@Chassis::ignitionState;
+  
+  // ?ë„ ?½ê¸°
+  speed = (int)@Chassis::vehicleSpeed;
+  
+  // ==========================================
+  // ?œë™ ë²„íŠ¼???°ë¥¸ ?”ì§„ ?íƒœ ?¤ì •
+  // ==========================================
+  if (ignitionPanel == 0)
+  {
+    // ?œë™ OFF
+    gIgnitionState = 0;
+    gEngineState = 0;
+  }
+  else if (ignitionPanel == 1)
+  {
+    // ?œë™ ON
+    gIgnitionState = 1;
+    
+    if (speed > 0)
+    {
+      // ì£¼í–‰ ì¤?      gEngineState = 3;
+    }
+    else
+    {
+      // ?•ì? ì¤?(ê³µíšŒ??
+      gEngineState = 2;
+    }
+  }
+  
+  // ==========================================
+  // RPM ê³„ì‚°
+  // ==========================================
+  if      (gEngineState == 0) { rpm = 0; }        // ?”ì§„ êº¼ì§
+  else if (gEngineState == 1) { rpm = 400; }      // ?œë™ ê±¸ë¦¼ ì¤?  else if (gEngineState == 2) { rpm = 800; }      // ê³µíšŒ??  else
+  {
+    // ì£¼í–‰ ì¤? RPM = 800 + (?ë„ Ã— 25)
+    rpm = 800 + (speed * 25);
+    if (rpm > 6500) rpm = 6500;
+  }
+
+  throttlePos = (gEngineState == 3) ? speed : 0;
+  if (throttlePos > 100) throttlePos = 100;
+  engineLoad  = (gEngineState == 3) ? (throttlePos * 8 / 10) : 0;
+  if (engineLoad > 100) engineLoad = 100;
+  torque      = (gEngineState == 3) ? (engineLoad * 3) : 0;
+  if (torque > 300) torque = 300;
+
+  mSpeedTemp.EngineRpm   = rpm & 0xFFFF;
+  mSpeedTemp.CoolantTemp = (gEngineState > 0) ? 85 : 20;
+  mSpeedTemp.OilTemp     = (gEngineState > 0) ? 90 : 20;
+  output(mSpeedTemp);
+
+  mFuelBat.FuelLevel     = gFuelLevel;
+  mFuelBat.BatterySoc    = gBatterySoc;
+  mFuelBat.ChargingState = 0;
+  output(mFuelBat);
+
+  mThrottle.ThrottlePos = throttlePos;
+  mThrottle.ThrottleReq = throttlePos;
+  output(mThrottle);
+
+  mTorque.EngineTorqueAct = torque & 0xFFFF;
+  output(mTorque);
+
+  mLoad.EngineLoad = engineLoad;
+  output(mLoad);
+
+  mThermal.ThermalMode   = (gEngineState > 0) ? 1 : 0;
+  mThermal.FanDuty       = (gEngineState == 3) ? 8 : 0;
+  mThermal.CoolantTarget = 90;
+  output(mThermal);
+
+  if (gEngineState != gLastEngineState)
+  {
+    write("[ENGINE_CTRL] ignition=%d engine=%d rpm=%d speed=%d",
+          gIgnitionState, gEngineState, rpm, speed);
+    gLastEngineState = gEngineState;
+  }
+
+  setTimer(tEngineCycle, 100);
+}

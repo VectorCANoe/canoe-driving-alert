@@ -1,0 +1,55 @@
+/*@@=================================================================
+ * CANoe CAPL Node: Cluster (Instrument Cluster)
+ *==================================================================@@*/
+
+includes {}
+
+variables
+{
+  float gSpeedDisplay = 0.0;
+  int gRPMDisplay = 0;
+  int gGearDisplay = 0;
+  word gWarningLights = 0;
+
+  byte gAliveCounter = 0;
+  msTimer tDisplay;
+}
+
+on start
+{
+  write("Cluster (Instrument Cluster) Started");
+  setTimer(tDisplay, 50);  // 50ms
+}
+
+on timer tDisplay
+{
+  message Cluster_Display msg;
+
+  msg.Speed_Display = gSpeedDisplay;
+  msg.RPM_Display = gRPMDisplay;
+  msg.Gear_Display = gGearDisplay;
+  msg.Warning_Lights = gWarningLights;
+  msg.AliveCounter = gAliveCounter;
+  msg.Checksum = 0;
+
+  gAliveCounter = (gAliveCounter + 1) & 0x0F;
+
+  output(msg);
+  setTimer(tDisplay, 50);
+}
+
+on message EMS_EngineStatus
+{
+  gSpeedDisplay = this.Vehicle_Speed;
+  gRPMDisplay = this.Engine_RPM;
+}
+
+on message TCU_GearStatus
+{
+  gGearDisplay = this.Gear_Position;
+}
+
+on stopMeasurement
+{
+  cancelTimer(tDisplay);
+}

@@ -1,0 +1,167 @@
+/*
+ * Gateway.can — Central Gateway (CGW)
+ *
+ * 역할: CAN-LS(0x500) → CAN-HS 라우팅, DoIP Routing Activation 처리,
+ *       UDS 메시지 포워딩, Bus Off 감지
+ * 채널: CAN-LS (수신) / CAN-HS (송신) / Ethernet (DoIP)
+ * DBC: vehicle_system.dbc — BCM_FaultStatus(0x500), CGW_Status(0x700)
+ *
+ * V-Model: SWE.3/SWE.6 (구현) → SWE.4 (05_Unit_Test.md 단위 테스트로 검증)
+ * ISO 26262: Part 6, Clause 8
+ */
+
+includes
+{
+}
+
+variables
+{
+  msTimer tGatewayStatus;        // 100ms 주기 CGW_Status 전송
+
+  int gRoutingActive    = 0;     // CAN-LS → CAN-HS 라우팅 활성화
+  int gDoipSessionActive = 0;    // DoIP 세션 활성화 여부
+  int gBusOffDetected   = 0;     // Bus Off 감지 여부
+  int gDiagnosticActive = 0;     // UDS 진단 세션 활성화
+  int gOtaActive        = 0;     // OTA 세션 활성화
+
+  /* 라우팅 지연 측정용 */
+  dword gRoutingStartTime = 0;
+}
+
+/*============================================================
+ * 초기화
+ *============================================================*/
+on start
+{
+  write("[Gateway] 노드 시작 — CAN 라우팅 대기 중");
+  gRoutingActive = 1;
+  @Gateway::routingActive = 1;
+  setTimer(tGatewayStatus, 100);
+}
+
+/*============================================================
+ * BCM_FaultStatus 수신 (CAN-LS) → CAN-HS 라우팅
+ * - 지연 ≤ 5ms 요구사항 (Req_005, Req_006)
+ *============================================================*/
+on message BCM_FaultStatus
+{
+  message BCM_FaultStatus fwdMsg;
+  dword routingDelay;
+
+  gRoutingStartTime = timeNow();
+
+  /* 메시지 내용 그대로 복사하여 CAN-HS로 전송 */
+  fwdMsg.WindowMotorOvercurrent = this.WindowMotorOvercurrent;
+  fwdMsg.DTC_Code               = this.DTC_Code;
+  fwdMsg.FaultSeverity          = this.FaultSeverity;
+  fwdMsg.AliveCounter           = this.AliveCounter;
+  fwdMsg.Checksum               = this.Checksum;
+
+  output(fwdMsg);   /* CAN-HS 채널로 출력 */
+
+  routingDelay = (timeNow() - gRoutingStartTime) / 10;   /* µs → ms 환산 */
+  @Gateway::routingDelayMs = (double)routingDelay;
+
+  if (routingDelay > 5)
+    write("[Gateway] ⚠ 라우팅 지연 초과: %d ms (기준: ≤5ms)", routingDelay);
+  else
+    write("[Gateway] ✅ CAN-LS→CAN-HS 라우팅 완료 (%d ms)", routingDelay);
+}
+
+/*============================================================
+ * UDS_Request 수신 (CAN-HS) → CAN-LS 포워딩 (Tester → BCM)
+ *============================================================*/
+on message UDS_Request
+{
+  message UDS_Request fwdMsg;
+  byte serviceID;
+  serviceID = this.byte(0);
+
+  /* 진단/OTA 세션 상태 업데이트 */
+  if (serviceID == 0x10)
+  {
+    byte subFunc;
+    subFunc = this.byte(1);
+    if (subFunc == 0x02)   /* Programming Session */
+    {
+      gOtaActive = 1;
+      @Gateway::doipSessionActive = 1;
+      @CGW_Status::OTA_Active = 1;
+    }
+    gDiagnosticActive = 1;
+    @CGW_Status::Diagnostic_Active = 1;
+  }
+
+  /* CAN-LS로 포워딩 */
+  fwdMsg.byte(0) = this.byte(0);
+  fwdMsg.byte(1) = this.byte(1);
+  fwdMsg.byte(2) = this.byte(2);
+  fwdMsg.byte(3) = this.byte(3);
+  output(fwdMsg);
+
+  write("[Gateway] UDS 포워딩: ServiceID=0x%02X", serviceID);
+}
+
+/*============================================================
+ * UDS_Response 수신 (CAN-LS) → CAN-HS 포워딩 (BCM → Tester)
+ *============================================================*/
+on message UDS_Response
+{
+  message UDS_Response fwdMsg;
+  byte responseCode;
+  responseCode = this.byte(0);
+
+  fwdMsg.byte(0) = this.byte(0);
+  fwdMsg.byte(1) = this.byte(1);
+  fwdMsg.byte(2) = this.byte(2);
+  fwdMsg.byte(3) = this.byte(3);
+  output(fwdMsg);
+
+  /* DTC 클리어 완료 시 진단 세션 종료 */
+  if (responseCode == 0x54)
+  {
+    gDiagnosticActive = 0;
+    @CGW_Status::Diagnostic_Active = 0;
+  }
+
+  write("[Gateway] UDS 응답 포워딩: ResponseCode=0x%02X", responseCode);
+}
+
+/*============================================================
+ * DoIP Routing Activation 수신 (Ethernet)
+ * - OTA Server → Gateway 경로 요청 (0xE001)
+ *============================================================*/
+on message DoIP_RoutingActivation
+{
+  gDoipSessionActive = 1;
+  @Gateway::doipSessionActive = 1;
+  write("[Gateway] ✅ DoIP Routing Activation 완료 — OTA 경로 활성화");
+}
+
+/*============================================================
+ * CGW_Status 전송 (100ms 주기)
+ *============================================================*/
+on timer tGatewayStatus
+{
+  message CGW_Status statusMsg;
+
+  statusMsg.Gateway_Status      = gRoutingActive;
+  statusMsg.Diagnostic_Active   = gDiagnosticActive;
+  statusMsg.OTA_Active          = gOtaActive;
+
+  output(statusMsg);
+  setTimer(tGatewayStatus, 100);
+}
+
+/*============================================================
+ * Bus Off 감지 → 세션 안전 중단
+ *============================================================*/
+on busOff
+{
+  gBusOffDetected = 1;
+  gOtaActive      = 0;
+  gDiagnosticActive = 0;
+  @Gateway::busOffDetected = 1;
+  @Gateway::doipSessionActive = 0;
+  write("[Gateway] ❌ Bus Off 감지 — OTA/진단 세션 강제 중단");
+}

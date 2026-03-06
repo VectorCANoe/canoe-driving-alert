@@ -1,0 +1,120 @@
+VERSION "ETH_Backbone_CAN_STUB_v2.1"
+
+
+NS_ :
+  NS_DESC_
+  CM_
+  BA_DEF_
+  BA_
+  VAL_
+  CAT_DEF_
+  CAT_
+  FILTER
+  BA_DEF_DEF_
+  EV_DATA_
+  ENVVAR_DATA_
+  SGTYPE_
+  SGTYPE_VAL_
+  BA_DEF_SGTYPE_
+  BA_SGTYPE_
+  SIG_TYPE_REF_
+  VAL_TABLE_
+  SIG_GROUP_
+  SIG_VALTYPE_
+  SIGTYPE_VALTYPE_
+  BO_TX_BU_
+  BA_DEF_REL_
+  BA_REL_
+  BA_SGTYPE_REL_
+  SG_MUL_VAL_
+
+BS_:
+
+BU_: EMS_POLICE_TX EMS_AMB_TX EMS_ALERT_RX ETH_SWITCH WARN_ARB_MGR ADAS_WARN_CTRL NAV_CONTEXT_MGR IVI_GW CHASSIS_GW SIL_TEST_CTRL DOMAIN_BOUNDARY_MGR Vector__XXX
+
+BO_ 100 frmEmergencyBroadcastMsg: 4 Vector__XXX
+ SG_ VehicleType  : 0|4@1+  (1,0) [0|15]  ""    EMS_ALERT_RX
+ SG_ Status       : 4|2@1+  (1,0) [0|3]   ""    EMS_ALERT_RX
+ SG_ Reserved0    : 6|2@1+  (1,0) [0|0]   ""    Vector__XXX
+ SG_ SourceId     : 8|8@1+  (1,0) [0|255] ""    EMS_ALERT_RX
+ SG_ EtaSeconds   : 16|8@1+ (1,0) [0|255] "s"   EMS_ALERT_RX
+ SG_ Direction    : 24|4@1+ (1,0) [0|15]  ""    EMS_ALERT_RX
+ SG_ Reserved1    : 28|4@1+ (1,0) [0|0]   ""    Vector__XXX
+
+BO_ 287 frmAdasChassisStatusMsg: 2 ADAS_WARN_CTRL
+ SG_ AdasChassisState : 0|8@1+ (1,0) [0|255] "" CHASSIS_GW
+ SG_ AdasHealthLevel  : 8|8@1+ (1,0) [0|255] "" CHASSIS_GW
+
+BO_ 562 frmEmergencyMonitorMsg: 2 EMS_ALERT_RX
+ SG_ EmergencyContext : 0|8@1+ (1,0) [0|255] "" SIL_TEST_CTRL,CHASSIS_GW
+ SG_ TimeoutClearMon  : 8|1@1+ (1,0) [0|1]   "" SIL_TEST_CTRL,CHASSIS_GW
+ SG_ Reserved0        : 9|7@1+ (1,0) [0|0]   "" Vector__XXX
+
+BO_ 787 ethEmergencyRiskMsg: 5 ADAS_WARN_CTRL
+ SG_ RiskLevel          : 0|8@1+  (1,0) [0|100] "" WARN_ARB_MGR,SIL_TEST_CTRL
+ SG_ EtaSeconds         : 8|8@1+  (1,0) [0|255] "s" WARN_ARB_MGR,SIL_TEST_CTRL
+ SG_ VehicleSpeed       : 16|8@1+ (1,0) [0|255] "km/h" WARN_ARB_MGR,SIL_TEST_CTRL
+ SG_ EmergencyDirection : 24|2@1+ (1,0) [0|3] "" WARN_ARB_MGR,SIL_TEST_CTRL
+ SG_ EmergencyType      : 26|2@1+ (1,0) [0|2] "" WARN_ARB_MGR,SIL_TEST_CTRL
+ SG_ Reserved0          : 28|12@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 788 ethDecelAssistReqMsg: 4 WARN_ARB_MGR
+ SG_ DecelAssistReq      : 0|1@1+ (1,0) [0|1] "" SIL_TEST_CTRL,CHASSIS_GW
+ SG_ FailSafeMode        : 1|2@1+ (1,0) [0|2] "" SIL_TEST_CTRL,CHASSIS_GW
+ SG_ DriverReleaseReason : 3|2@1+ (1,0) [0|3] "" SIL_TEST_CTRL,CHASSIS_GW
+ SG_ EmergencyContext    : 5|2@1+ (1,0) [0|2] "" SIL_TEST_CTRL,CHASSIS_GW
+ SG_ RiskLevel           : 8|8@1+ (1,0) [0|100] "" SIL_TEST_CTRL,CHASSIS_GW
+ SG_ Reserved0           : 16|16@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 789 ethFailSafeStateMsg: 2 DOMAIN_BOUNDARY_MGR
+ SG_ DomainPathStatus : 0|2@1+ (1,0) [0|2] "" WARN_ARB_MGR,SIL_TEST_CTRL
+ SG_ E2eHealthState   : 2|2@1+ (1,0) [0|2] "" WARN_ARB_MGR,SIL_TEST_CTRL
+ SG_ FailSafeMode     : 4|2@1+ (1,0) [0|2] "" WARN_ARB_MGR,SIL_TEST_CTRL
+ SG_ BoundaryAlive    : 6|1@1+ (1,0) [0|1] "" WARN_ARB_MGR,SIL_TEST_CTRL
+ SG_ Reserved0        : 7|9@1+ (1,0) [0|0] "" Vector__XXX
+
+CM_ BO_ 100 "E100: Emergency vehicle broadcast. Sent by EMS_POLICE_TX (type=1) or EMS_AMB_TX (type=2) on ETH backbone (ch5). Received by EMS_ALERT_RX for priority arbitration. STUB: This file substitutes CANoe.Ethernet backbone using CAN ch5. Delete this file and replace with Ethernet network when CANoe.Ethernet license is available. Interface spec: 0303_Communication_Specification.md E100.";
+CM_ SG_ 100 VehicleType  "1=POLICE 2=AMBULANCE";
+CM_ SG_ 100 Status       "0=CLEAR 1=ACTIVE";
+CM_ SG_ 100 SourceId     "Unique vehicle source ID for tiebreaker.";
+CM_ SG_ 100 EtaSeconds   "Estimated time of arrival in seconds. Lower = higher priority.";
+CM_ SG_ 100 Direction    "0=UNKNOWN 1=FRONT 2=REAR 3=SIDE";
+CM_ BO_ 287 "E287: ADAS chassis status output. Produced by ADAS_WARN_CTRL on ETH backbone. Moved from chassis_can v2 architecture refactor.";
+CM_ SG_ 287 AdasChassisState "Computed ADAS warning level (0=none).";
+CM_ SG_ 287 AdasHealthLevel  "ADAS node health (0=fault 1=ok).";
+CM_ BO_ 562 "E562: Emergency monitor shadow. Produced by EMS_ALERT_RX on ETH backbone. Moved from chassis_can v2 architecture refactor.";
+CM_ SG_ 562 EmergencyContext "Active emergency type mirrored from Core sysvar.";
+CM_ SG_ 562 TimeoutClearMon  "1=timeout clear pulse active.";
+CM_ BO_ 787 "E787: Emergency proximity risk frame. Produced by ADAS_WARN_CTRL (Req_120).";
+CM_ SG_ 787 RiskLevel "0..100 emergency proximity risk score.";
+CM_ SG_ 787 EtaSeconds "Emergency ETA seconds used by risk model.";
+CM_ SG_ 787 VehicleSpeed "Vehicle speed input used by risk model.";
+CM_ SG_ 787 EmergencyDirection "0=front 1=left 2=right 3=rear.";
+CM_ SG_ 787 EmergencyType "0=none 1=police 2=ambulance.";
+CM_ BO_ 788 "E788: Deceleration assist request frame. Produced by WARN_ARB_MGR (Req_121~123).";
+CM_ SG_ 788 DecelAssistReq "0=off 1=active.";
+CM_ SG_ 788 FailSafeMode "0=normal 1=degraded 2=blocked.";
+CM_ SG_ 788 DriverReleaseReason "0=none 1=steering 2=brake 3=failsafe.";
+CM_ BO_ 789 "E789: Fail-safe state frame. Produced by DOMAIN_BOUNDARY_MGR (Req_124).";
+CM_ SG_ 789 DomainPathStatus "0=normal 1=degraded 2=failed.";
+CM_ SG_ 789 E2eHealthState "0=failed 1=degraded 2=healthy.";
+CM_ SG_ 789 FailSafeMode "0=normal 1=degraded 2=blocked.";
+
+BA_DEF_ BO_ "GenMsgCycleTime" INT 0 10000;
+BA_DEF_DEF_ "GenMsgCycleTime" 0;
+BA_ "GenMsgCycleTime" BO_ 100 0;
+BA_ "GenMsgCycleTime" BO_ 287 100;
+BA_ "GenMsgCycleTime" BO_ 562 100;
+BA_ "GenMsgCycleTime" BO_ 787 100;
+BA_ "GenMsgCycleTime" BO_ 788 50;
+BA_ "GenMsgCycleTime" BO_ 789 300;
+
+VAL_ 100 VehicleType 0 "NONE" 1 "POLICE" 2 "AMBULANCE";
+VAL_ 100 Status 0 "CLEAR" 1 "ACTIVE";
+VAL_ 100 Direction 0 "UNKNOWN" 1 "FRONT" 2 "REAR" 3 "SIDE";
+VAL_ 562 TimeoutClearMon 0 "NoClear" 1 "Clear";
+VAL_ 788 DecelAssistReq 0 "OFF" 1 "ON";
+VAL_ 788 DriverReleaseReason 0 "NONE" 1 "STEER" 2 "BRAKE" 3 "FAILSAFE";
+VAL_ 789 DomainPathStatus 0 "NORMAL" 1 "DEGRADED" 2 "FAILED";
+VAL_ 789 E2eHealthState 0 "FAILED" 1 "DEGRADED" 2 "HEALTHY";
+VAL_ 789 FailSafeMode 0 "NORMAL" 1 "DEGRADED" 2 "BLOCKED";

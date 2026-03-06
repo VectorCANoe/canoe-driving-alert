@@ -1,0 +1,78 @@
+// PEDAL_BUTTON_CTRL.can
+// 패널 버튼으로 페달 제어
+
+includes
+{
+}
+
+variables
+{
+  msTimer tPedalUpdate;
+  int gAccelPedal;
+  int gBrakePedal;
+}
+
+on start
+{
+  gAccelPedal = 0;
+  gBrakePedal = 0;
+  
+  // System Variables 초기화
+  @Pedal::AccelButton = 0;
+  @Pedal::BrakeButton = 0;
+  
+  setTimer(tPedalUpdate, 50);
+  write("[PEDAL_BUTTON] start - Use panel buttons");
+}
+
+on timer tPedalUpdate
+{
+  message frmPedalInputCanMsg mPedal;
+  int accelBtn;
+  int brakeBtn;
+  
+  // 패널 버튼 상태 읽기
+  accelBtn = (int)@Pedal::AccelButton;
+  brakeBtn = (int)@Pedal::BrakeButton;
+  
+  // ==========================================
+  // 액셀 페달
+  // ==========================================
+  if (accelBtn == 1)
+  {
+    // 버튼 눌림: 증가 (+10% per 50ms = 초당 200%)
+    gAccelPedal = gAccelPedal + 10;
+    if (gAccelPedal > 100) gAccelPedal = 100;
+  }
+  else
+  {
+    // 버튼 안 눌림: 감소 (-5% per 50ms = 초당 100%)
+    gAccelPedal = gAccelPedal - 5;
+    if (gAccelPedal < 0) gAccelPedal = 0;
+  }
+  
+  // ==========================================
+  // 브레이크 페달
+  // ==========================================
+  if (brakeBtn == 1)
+  {
+    // 버튼 눌림: 빠르게 증가
+    gBrakePedal = gBrakePedal + 15;
+    if (gBrakePedal > 100) gBrakePedal = 100;
+  }
+  else
+  {
+    // 버튼 안 눌림: 빠르게 감소
+    gBrakePedal = gBrakePedal - 15;
+    if (gBrakePedal < 0) gBrakePedal = 0;
+  }
+  
+  // ==========================================
+  // CAN 메시지 전송
+  // ==========================================
+  mPedal.AccelPedal = gAccelPedal;
+  mPedal.BrakePedal = gBrakePedal;
+  output(mPedal);
+  
+  setTimer(tPedalUpdate, 50);
+}

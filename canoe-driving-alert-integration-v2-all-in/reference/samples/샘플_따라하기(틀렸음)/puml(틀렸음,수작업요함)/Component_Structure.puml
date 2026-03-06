@@ -1,0 +1,66 @@
+@startuml Component_Structure
+!theme plain
+
+title 컴포넌트 구성도\n(서비스 목록 및 구성 요소)
+
+package "vECU (IVI vECU) 내부 구조" {
+
+  component "조명 제어 서비스" as LightSvc {
+    portin "속도 정보" as SpeedIn
+    portin "온도 정보" as TempIn
+    portin "IVI 명령" as IVIIn
+    portout "조명 제어 명령" as LightOut
+  }
+
+  component "ADAS 연계 경고 서비스" as ADASSvc {
+    portin "LDW 이벤트" as LDWIn
+    portin "AEB 이벤트" as AEBIn
+    portin "후방 장애물" as ObstacleIn
+    portout "경고 UI 명령" as WarnOut
+    portout "경고 조명 명령" as WarnLightOut
+  }
+
+  component "진단/OTA 서비스" as DiagSvc {
+    portin "UDS 요청" as UDSIn
+    portout "UDS 응답" as UDSOut
+    portout "DTC 정보" as DTCOut
+    portout "OTA 진행률" as OTAOut
+  }
+
+  component "Fail-Safe 관리 서비스" as FailSafeSvc {
+    portin "오류 감지" as FaultIn
+    portout "Fail-Safe 상태" as FailSafeOut
+    portout "기본 조명 명령" as DefaultLightOut
+  }
+
+  database "프로필 저장소" as ProfileDB
+  database "조명 테마 저장소" as ThemeDB
+  database "DTC 저장소" as DTCDB
+
+  LightSvc --> ThemeDB : 읽기/쓰기
+  LightSvc --> ProfileDB : 읽기/쓰기
+  DiagSvc --> DTCDB : 읽기/쓰기
+
+  note right of LightSvc
+    - 속도 기반 조명 제어
+    - 온도 기반 조명 제어
+    - 프로필 관리
+    - 조명 테마 적용
+  end note
+
+  note right of ADASSvc
+    - LDW 경고 UI
+    - AEB 경고 UI
+    - 후방 장애물 경고
+    - 우선순위 관리
+  end note
+
+  note right of DiagSvc
+    - UDS 서비스 처리
+    - DTC 생성/삭제
+    - OTA 다운로드
+    - 자동 롤백
+  end note
+}
+
+@enduml

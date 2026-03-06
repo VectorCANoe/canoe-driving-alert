@@ -1,0 +1,44 @@
+@startuml
+title 시스템 구성도 (System Architecture) - Fault & OTA Scenario
+
+skinparam componentStyle uml2
+skinparam BackgroundColor White
+skinparam packageBackgroundColor White
+
+package "Testing & Diagnostics" {
+    [Tester Equipment] as TEST
+    note right of TEST: UDS Client\n(Service 0x10, 0x19, 0x14)
+    
+    [OTA Server] as OTA
+    note right of OTA: Firmware Provider\n(Service 0x34, 0x36, 0x37)
+}
+
+package "Vehicle E/E Network" {
+    package "Gateway Domain" {
+        [Central Gateway\n(CGW)] as GW
+    }
+    
+    package "Body Domain" {
+        [Body Control Module\n(BCM)] as BCM
+        component "Window Motor" as MOTOR
+        component "DTC Memory" as MEM
+    }
+    
+    package "Infotainment Domain" {
+        [Instrument Cluster] as CLU
+        component "Warning Lamp" as LAMP
+    }
+}
+
+' Connections
+TEST <--> GW : CAN-LS (Diag Req/Res)
+OTA <--> GW : Ethernet (DoIP)
+
+GW <--> BCM : CAN-LS (Routing)
+GW <--> CLU : CAN-HS (Routing)
+
+BCM --> MOTOR : Control & Monitor\n(Current Sensing)
+BCM --> MEM : Store DTC B1234
+CLU --> LAMP : Activate RED Lamp
+
+@enduml

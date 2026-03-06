@@ -1,0 +1,48 @@
+// TRANSMISSION_CTRL_Fixed.can
+// 자동 변속 (1~4단)
+
+includes
+{
+}
+
+variables
+{
+  msTimer tTransCycle;
+  int gGear;
+}
+
+on start
+{
+  gGear = 1;
+  setTimer(tTransCycle, 100);
+  write("[TRANSMISSION] start");
+}
+
+on timer tTransCycle
+{
+  int speed;
+  int driveMode;
+  
+  speed = (int)@Chassis::vehicleSpeed;
+  driveMode = (int)@Chassis::driveMode;
+  
+  if (driveMode != 3)
+  {
+    gGear = 1;
+  }
+  else
+  {
+    if (speed < 40)
+      gGear = 1;
+    else if (speed < 80)
+      gGear = 2;
+    else if (speed < 120)
+      gGear = 3;
+    else
+      gGear = 4;
+  }
+  
+  @Chassis::gearPosition = gGear;
+  
+  setTimer(tTransCycle, 100);
+}

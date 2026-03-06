@@ -1,0 +1,140 @@
+@startuml
+!theme materia-outline
+
+title REQ_IVI_028, 030, 031: ADAS Multi-Event Priority Handling (ASIL-C/D)
+
+actor "ADAS Sensors" as SENSORS
+participant "CAN Bus" as CAN
+box "vECU ADAS Subsystem" #f9f9f9
+    participant "LDW_Handler" as LDW
+    participant "AEB_Handler" as AEB
+    participant "BSD_Handler" as BSD
+    participant "Priority_Arbitrator" as PA
+    participant "Dashboard_UI" as DASH
+    participant "Ambient_Light" as AMBIENT
+end box
+
+== Scenario: Multiple ADAS Events Occur Simultaneously ==
+
+note over SENSORS
+    **Test Scenario**:
+    • Lane Departure (ASIL-C)
+    • Emergency Braking (ASIL-D)
+    • Blind Spot Detection (ASIL-B)
+
+    All events triggered within 10ms
+end note
+
+group Parallel Event Detection [t=0ms]
+    SENSORS -> CAN : 0x300: LDW_Status = ACTIVE
+    activate CAN
+    SENSORS -> CAN : 0x302: AEB_Event = EMERGENCY
+    SENSORS -> CAN : 0x304: BSD_Object_Left = DETECTED
+end group
+
+group Event Reception [t=10ms]
+    CAN -> LDW : LDW Event Received
+    activate LDW
+    CAN -> AEB : AEB Event Received
+    activate AEB
+    CAN -> BSD : BSD Event Received
+    activate BSD
+    deactivate CAN
+end group
+
+group Individual Handler Processing [t=10-40ms]
+    LDW -> LDW : Validate LDW Signal\\nCheck Lane Position
+    note right: Processing: 15ms
+
+    AEB -> AEB : Validate AEB Signal\\nCheck Collision Risk
+    note right: Processing: 10ms\\n**HIGHEST PRIORITY**
+
+    BSD -> BSD : Validate BSD Signal\\nCheck Door Status
+    note right: Processing: 20ms
+end group
+
+group Send to Priority Arbitrator [t=40ms]
+    LDW -> PA : LDW Warning Request\\n(Priority: 2, ASIL-C)
+    deactivate LDW
+
+    AEB -> PA : AEB Emergency Request\\n(Priority: 1, ASIL-D)
+    deactivate AEB
+
+    BSD -> PA : BSD Warning Request\\n(Priority: 3, ASIL-B)
+    deactivate BSD
+
+    activate PA
+end group
+
+== Priority Arbitration [t=40-60ms] ==
+
+PA -> PA : Sort Events by Priority\\n1. AEB (ASIL-D)\\n2. LDW (ASIL-C)\\n3. BSD (ASIL-B)
+
+note right of PA
+    **REQ_IVI_038 (ASIL-B)**
+    Priority Decision: <20ms
+    Total Response: <120ms
+end note
+
+alt Primary Display: AEB Emergency (Highest Priority)
+    PA -> DASH : Display AEB Emergency UI\\n(Full Screen, Red)
+    activate DASH
+    DASH -> DASH : Render Emergency Warning
+    note right: Response: <50ms\\nREQ_IVI_030 (ASIL-D)
+    DASH --> PA : UI Displayed
+    deactivate DASH
+
+    PA -> AMBIENT : Activate Red Pulsing Light
+    activate AMBIENT
+    AMBIENT -> AMBIENT : Set RGB(255,0,0)\\nPulse: 200ms interval
+    AMBIENT --> PA : Light Activated
+    deactivate AMBIENT
+
+else Secondary Display: LDW + BSD (Summary Icons)
+    PA -> DASH : Display LDW Icon (Top-Right)
+    activate DASH
+    DASH -> DASH : Render Lane Warning Icon
+    DASH --> PA : Icon Displayed
+    deactivate DASH
+
+    PA -> DASH : Display BSD Icon (Side Mirror)
+    activate DASH
+    DASH -> DASH : Render Blind Spot Icon
+    DASH --> PA : Icon Displayed
+    deactivate DASH
+end
+
+deactivate PA
+
+note over DASH
+    **Total Response Time**:
+    • AEB Primary: 60ms (< 50ms ✗ FAIL)
+    • LDW Secondary: 70ms (< 80ms ✓ PASS)
+    • BSD Secondary: 75ms (< 70ms ✗ FAIL)
+
+    **Optimization Needed**:
+    Reduce arbitration time to <10ms
+end note
+
+== Event Resolution [t=5000ms] ==
+
+SENSORS -> CAN : 0x302: AEB_Event = RESOLVED
+CAN -> AEB : AEB Resolved
+activate AEB
+AEB -> PA : Clear AEB Warning
+activate PA
+PA -> DASH : Restore Normal UI
+activate DASH
+DASH -> DASH : Clear Emergency Screen
+DASH --> PA : UI Restored
+deactivate DASH
+deactivate PA
+deactivate AEB
+
+note over SENSORS
+    **REQ_IVI_008 (ASIL-C)**
+    Auto Recovery: <1s
+    Return to Normal Mode
+end note
+
+@enduml

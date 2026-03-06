@@ -1,0 +1,181 @@
+@startuml
+!theme silver
+skinparam componentStyle uml2
+
+package "ADAS Integration Subsystem" #FFEEEE {
+
+    ' Application Layer - ADAS Safety Critical
+    package "Application Software (ASW)" #LightCoral {
+        component "ADAS_Safety_Coordinator" as ASC #Red {
+            portin "LDW_Event_In" as ASC_LDW
+            portin "AEB_Event_In" as ASC_AEB
+            portin "BSD_Event_In" as ASC_BSD
+            portout "Priority_Event_Out" as ASC_PRIORITY
+
+            note right of ASC
+                **REQ_IVI_038 (ASIL-B)**
+                Multi-ADAS Event Priority
+                • Response: <120ms
+                • Risk-based Arbitration
+                • Prevent Driver Confusion
+            end note
+        }
+
+        component "LDW_Handler" as LDW #LightCoral {
+            portin "LDW_Status_In\\n[CAN 0x300]" as LDW_IN
+            portin "Lane_Position_In\\n[CAN 0x301]" as LANE_IN
+            portout "Visual_Warning_Out" as LDW_OUT
+
+            note right of LDW
+                **REQ_IVI_028 (ASIL-C)**
+                Lane Departure Warning
+                • Response: <80ms
+                • Dashboard + Ambient Light
+                • Warning until resolved
+            end note
+        }
+
+        component "AEB_Handler" as AEB #DarkRed {
+            portin "AEB_Event_In\\n[CAN 0x302]" as AEB_IN
+            portin "Collision_Risk_In\\n[CAN 0x303]" as RISK_IN
+            portout "Emergency_UI_Out" as AEB_OUT
+
+            note right of AEB
+                **REQ_IVI_030 (ASIL-D)**
+                Emergency Braking Alert
+                • Response: <50ms
+                • High-Risk Visual Warning
+                • Highest Priority
+            end note
+        }
+
+        component "BSD_Handler" as BSD #Orange {
+            portin "BSD_Object_In\\n[CAN 0x304]" as BSD_IN
+            portin "Door_Status_In\\n[CAN 0x102]" as BSD_DOOR
+            portout "Blind_Spot_Warning_Out" as BSD_OUT
+
+            note right of BSD
+                **REQ_IVI_031 (ASIL-B)**
+                Blind Spot Detection
+                • Response: <70ms
+                • Door Open Integration
+                • Side Mirror Warning
+            end note
+        }
+
+        component "Priority_Arbitrator" as PA #Orange {
+            portin "Multi_Event_In" as PA_IN
+            portout "Primary_Warning_Out" as PA_PRIMARY
+            portout "Secondary_Warning_Out" as PA_SECONDARY
+
+            note right of PA
+                **Priority Levels**:
+                1. AEB (ASIL-D) - Emergency
+                2. LDW (ASIL-C) - Critical
+                3. BSD (ASIL-B) - Warning
+
+                **Display Strategy**:
+                • Primary: Main Dashboard
+                • Secondary: Summary/Icon
+            end note
+        }
+
+        component "ADAS_UI_Fallback_Manager" as UFM #Pink {
+            portin "UI_Status_In" as UFM_STATUS
+            portin "ADAS_Event_In" as UFM_EVENT
+            portout "Alternative_Warning_Out" as UFM_OUT
+
+            note right of UFM
+                **REQ_IVI_035 (ASIL-B)**
+                UI Output Failure Fallback
+                • Response: <200ms
+                • Alternative Visual Guidance
+                • Simplified Warning Icon
+            end note
+        }
+
+        component "Non_Critical_UI_Limiter" as NCUL #LightYellow {
+            portin "High_Risk_Event_In" as NCUL_EVENT
+            portout "UI_Restriction_Cmd" as NCUL_CMD
+
+            note right of NCUL
+                **REQ_IVI_036 (ASIL-B)**
+                Non-Critical UI Restriction
+                • Response: <100ms
+                • Minimize Driver Distraction
+                • Auto-restore on Safe State
+            end note
+        }
+
+        ' Connections within ASW
+        LDW_OUT --> ASC_LDW
+        AEB_OUT --> ASC_AEB
+        BSD_OUT --> ASC_BSD
+        ASC_PRIORITY --> PA_IN
+        PA_PRIMARY --> UFM_EVENT
+    }
+
+    ' RTE Layer
+    package "Runtime Environment (RTE)" #line.dashed {
+        interface "ADAS_Signal_Port" as ADAS_SP
+        interface "Warning_Output_Port" as WARN_OP
+        interface "UI_Control_Port" as UI_CP
+
+        ADAS_SP --> LDW_IN
+        ADAS_SP --> LANE_IN
+        ADAS_SP --> AEB_IN
+        ADAS_SP --> RISK_IN
+        ADAS_SP --> BSD_IN
+        ADAS_SP --> BSD_DOOR
+
+        PA_PRIMARY --> WARN_OP
+        PA_SECONDARY --> WARN_OP
+        UFM_OUT --> WARN_OP
+        NCUL_CMD --> UI_CP
+    }
+
+    ' BSW Layer
+    package "Basic Software (BSW)" #LightGray {
+        component "COM Stack" as COM
+        component "FIM\\n(Function Inhibition)\" as FIM #Orange
+        component "DEM\\n(Diagnostic Event Manager)" as DEM #Orange
+
+        ADAS_SP --> COM
+        WARN_OP --> FIM
+        FIM --> DEM
+
+        note bottom of FIM
+            **Safety Mechanisms**:
+            • ADAS Signal Timeout Detection
+            • Plausibility Check
+            • DTC Generation (0xC00500-0xC005FF)
+        end note
+    }
+
+    ' Virtual Hardware
+    package "Virtual Hardware (CANoe)" #LightYellow {
+        component "CAN Bus (ADAS Critical)" as CAN_ADAS
+        component "Fault Injection Interface" as FI
+
+        COM --> CAN_ADAS
+        FI ..> CAN_ADAS : Inject ADAS Faults
+
+        note bottom of CAN_ADAS
+            **ADAS CAN Signals**:
+            • 0x300: LDW_Status [uint8, 10ms]
+            • 0x301: Lane_Position [int16, 20ms]
+            • 0x302: AEB_Event [uint8, 10ms]
+            • 0x303: Collision_Risk [uint8, 10ms]
+            • 0x304: BSD_Object_Left [uint8, 50ms]
+            • 0x305: BSD_Object_Right [uint8, 50ms]
+
+            **ASIL Levels**:
+            • AEB: ASIL-D
+            • LDW: ASIL-C
+            • BSD: ASIL-B
+        end note
+    }
+}
+
+caption ADAS Integration Architecture - ISO 26262 ASIL-D Compliant
+@enduml

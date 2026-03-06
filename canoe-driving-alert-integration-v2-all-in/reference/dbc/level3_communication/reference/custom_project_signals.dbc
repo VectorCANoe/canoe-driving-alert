@@ -1,0 +1,70 @@
+VERSION ""
+
+
+NS_ : 
+	NS_DESC_
+	CM_
+	BA_DEF_
+	BA_
+	VAL_
+	CAT_DEF_
+	CAT_
+	FILTER
+	BA_DEF_DEF_
+	EV_DATA_
+	ENVVAR_DATA_
+	SGTYPE_
+	SGTYPE_VAL_
+	BA_DEF_SGREL_
+	BA_SGREL_
+	BA_DEF_BOREL_
+	BA_BOREL_
+	BA_DEF_REL_
+	BA_REL_
+	BA_DEF_DEF_REL_
+	BU_SG_REL_
+	BU_EV_REL_
+	BU_BO_REL_
+	SG_MUL_VAL_
+
+BS_:
+
+BU_:
+
+
+BO_ 800 AMBIENT_LIGHT_DATA: 8 IVI
+ SG_ Ambient_Light_Color : 7|8@0+ (1,0) [0|255] ""  BCM
+ SG_ Ambient_Light_Brightness : 15|8@0+ (1,0) [0|100] "%"  BCM
+ SG_ Ambient_Light_Mode : 23|8@0+ (1,0) [0|10] ""  BCM
+
+BO_ 801 IVI_STATUS: 8 IVI
+ SG_ IVI_Ready : 7|1@0+ (1,0) [0|1] ""  BCM
+ SG_ IVI_Error_Code : 15|8@0+ (1,0) [0|255] ""  BCM
+
+BO_ 802 THEME_REQUEST: 8 IVI
+ SG_ Theme_ID : 7|8@0+ (1,0) [0|255] ""  BCM
+ SG_ Transition_Time : 15|8@0+ (0.1,0) [0|10] "s"  BCM
+
+CM_ BO_ 800 "Ambient lighting control message from IVI to BCM";
+CM_ SG_ 800 Ambient_Light_Color "0: Off, 1: White, 2: Blue, 3: Red, 4: Green";
+CM_ BO_ 801 "General status monitoring for IVI unit";
+CM_ BO_ 802 "Request to change system theme and mood lighting";
+
+BA_DEF_  "BusType" STRING ;
+BA_DEF_ BU_  "NodeLayerModules" STRING ;
+BA_DEF_ BU_  "ECU" STRING ;
+BA_DEF_ BO_  "GenMsgCycleTime" INT 0 10000;
+BA_DEF_ BO_  "GenMsgSendType" ENUM  "Cyclic","NoMsgSendType","CyclicIfActive","CyclicAndSpontaneous","NA","Spontaneous","OnWrite";
+
+BA_DEF_DEF_  "BusType" "CAN";
+BA_DEF_DEF_  "NodeLayerModules" "";
+BA_DEF_DEF_  "ECU" "";
+BA_DEF_DEF_  "GenMsgCycleTime" 0;
+BA_DEF_DEF_  "GenMsgSendType" "NoMsgSendType";
+
+BA_ "GenMsgCycleTime" BO_ 800 100;
+BA_ "GenMsgCycleTime" BO_ 801 1000;
+BA_ "GenMsgSendType" BO_ 802 5;
+
+VAL_ 800 Ambient_Light_Color 0 "OFF" 1 "WHITE" 2 "BLUE" 3 "RED" 4 "GREEN" 5 "PURPLE" 6 "YELLOW" ;
+VAL_ 801 IVI_Ready 0 "NOT_READY" 1 "READY" ;

@@ -1,0 +1,112 @@
+/*
+ * WindowMotorECU.can — Window Motor ECU (LIN Slave 0x21)
+ *
+ * 역할: Window Motor의 전류(Motor_Current) / 상태(Motor_Status) / 방향(Motor_Direction)을
+ *       LIN ID 0x21로 BCM(LIN Master)에 10ms 주기 보고.
+ *       Motor_Current > 50A 조건이 BCM에서 감지되면 DTC B1234 생성 (Req_016).
+ *
+ * LIN: 2.2A (ISO 17987), 19.2 kbps, Slave ID: 0x21
+ * 프레임 구조 (2 bytes):
+ *   Byte0     [bit 7:0] : Motor_Current Low  (10bit 중 하위 8bit)
+ *   Byte1     [bit 1:0] : Motor_Current High (10bit 중 상위 2bit)
+ *   Byte1     [bit 3:2] : Motor_Status       (2bit: IDLE/RUNNING/STALL/ERROR)
+ *   Byte1     [bit 4]   : Motor_Direction    (1bit: 0=UP, 1=DOWN)
+ *   Byte1     [bit 7:5] : (Reserved)
+ *
+ * V-Model: SWE.3/SWE.6 → SWE.4 (05_Unit_Test.md)
+ * 추적성: Req_016 → In_Test_13 → Scene.2b, Scene.3
+ */
+
+includes
+{
+}
+
+variables
+{
+  msTimer tLIN_Motor;        // 10ms 주기 LIN 프레임 전송 타이머
+
+  /* Motor 상태 (Panel TrackBar/Switch로 제어) */
+  double  gMotorCurrent   = 10.0;   // 전류값 (A). 초기값: 정상 구동 10A
+  int     gMotorStatus    = 1;      // 0:IDLE / 1:RUNNING / 2:STALL / 3:ERROR
+  int     gMotorDirection = 0;      // 0:UP / 1:DOWN
+
+  /* LIN 프레임 인코딩 상수 */
+  const double RESOLUTION = 0.1;    // Motor_Current 분해능 (0.1A)
+}
+
+/*============================================================
+ * 초기화
+ *============================================================*/
+on start
+{
+  write("[WindowMotorECU] LIN Slave 0x21 시작 — Motor_Current 10ms 주기 보고");
+  @LIN::motorCurrent   = gMotorCurrent;
+  @LIN::motorStatus    = gMotorStatus;
+  @LIN::motorDirection = gMotorDirection;
+  setTimer(tLIN_Motor, 10);
+}
+
+/*============================================================
+ * LIN Frame 전송 타이머 (10ms 주기)
+ * — LIN ID 0x21, 2 bytes
+ *============================================================*/
+on timer tLIN_Motor
+{
+  sendLIN_MotorStatus();
+  setTimer(tLIN_Motor, 10);
+}
+
+/*============================================================
+ * LIN_MotorStatus 프레임 조립 및 전송
+ *============================================================*/
+void sendLIN_MotorStatus()
+{
+  linFrame 0x21 frame;
+  word rawCurrent;
+
+  /* Motor_Current 인코딩: 분해능 0.1A, 10bit (0~1023 → 0~102.3A) */
+  rawCurrent = (word)(gMotorCurrent / RESOLUTION);
+  if (rawCurrent > 1023) rawCurrent = 1023;
+
+  frame.byte(0) = rawCurrent & 0xFF;                             // 하위 8bit
+  frame.byte(1) = ((rawCurrent >> 8) & 0x03)                    // 상위 2bit [bit1:0]
+                | ((gMotorStatus    & 0x03) << 2)               // Motor_Status [bit3:2]
+                | ((gMotorDirection & 0x01) << 4);              // Motor_Direction [bit4]
+
+  output(frame);
+}
+
+/*============================================================
+ * Panel — Motor_Current 값 변경 (TrackBar 또는 직접 입력)
+ * Fault Injection: 55A로 설정 → BCM에서 DTC B1234 생성
+ *============================================================*/
+on sysvar LIN::motorCurrent
+{
+  gMotorCurrent = @LIN::motorCurrent;
+  write("[WindowMotorECU] Motor_Current 변경: %.1f A %s",
+        gMotorCurrent,
+        (gMotorCurrent > 50.0) ? "— OVERCURRENT! BCM DTC B1234 트리거 예상" : "(정상 범위)");
+}
+
+/*============================================================
+ * Panel — Motor_Status 변경
+ *============================================================*/
+on sysvar LIN::motorStatus
+{
+  gMotorStatus = @LIN::motorStatus;
+  write("[WindowMotorECU] Motor_Status 변경: %d (%s)",
+        gMotorStatus,
+        (gMotorStatus == 0) ? "IDLE" :
+        (gMotorStatus == 1) ? "RUNNING" :
+        (gMotorStatus == 2) ? "STALL" : "ERROR");
+}
+
+/*============================================================
+ * Panel — Motor_Direction 변경
+ *============================================================*/
+on sysvar LIN::motorDirection
+{
+  gMotorDirection = @LIN::motorDirection;
+  write("[WindowMotorECU] Motor_Direction: %s",
+        (gMotorDirection == 0) ? "UP" : "DOWN");
+}

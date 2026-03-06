@@ -1,0 +1,46 @@
+/*@@=================================================================
+ * CANoe CAPL Node: SCC (Smart Cruise Control)
+ *==================================================================@@*/
+
+includes {}
+
+variables
+{
+  int gSCC_Active = 0;
+  int gSetSpeed = 100;
+  float gFollowingDistance = 50.0;
+  int gTargetSpeed = 100;
+  int gSCC_Mode = 0;  // 0=OFF, 1=STANDBY, 2=ACTIVE
+
+  byte gAliveCounter = 0;
+  msTimer tSCC;
+}
+
+on start
+{
+  write("SCC (Smart Cruise Control) Started");
+  setTimer(tSCC, 50);  // 50ms
+}
+
+on timer tSCC
+{
+  message SCC_Status msg;
+
+  msg.SCC_Active = gSCC_Active;
+  msg.Set_Speed = gSetSpeed;
+  msg.Following_Distance = gFollowingDistance;
+  msg.Target_Speed = gTargetSpeed;
+  msg.SCC_Mode = gSCC_Mode;
+  msg.AliveCounter = gAliveCounter;
+  msg.Checksum = 0;
+
+  gAliveCounter = (gAliveCounter + 1) & 0x0F;
+
+  output(msg);
+  setTimer(tSCC, 50);
+}
+
+on stopMeasurement
+{
+  cancelTimer(tSCC);
+}
