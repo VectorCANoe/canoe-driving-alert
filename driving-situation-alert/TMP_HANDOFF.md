@@ -122,3 +122,33 @@
 ## 9) Temporary Note
 - This handoff is temporary and must be refreshed continuously.
 - Once stale causes are resolved, keep handoff as SoT (`FRESH`) for the next session.
+
+## 10) Expansion Freeze + Review-First Mode (Added)
+
+### 10.1 Expansion Freeze Rule
+- 문서 확장(신규 Req/Func/Flow/Comm/Var 추가)은 기본적으로 종료한다.
+- 아래 조건 중 하나를 만족할 때만 확장 재개:
+  - `M40-18` 실행증빙 폐쇄 완료
+  - 멘토/리뷰어의 명시적 확장 지시
+
+### 10.2 Current Working Mode
+- 현재 모드는 `체크 중심 점검 모드`로 고정한다.
+- 목표는 “새 내용 추가”가 아니라 “기존 논리의 오류/불일치 제거”다.
+
+### 10.3 Review Checklist (문서팀 우선순위)
+1. 체인 정합 점검:
+   - `Req -> Func -> Flow -> Comm -> Var -> Code -> UT/IT/ST` 링크 단절/역참조 오류 확인
+2. 표현/수준 점검:
+   - `01=What`, `03+=How` 분리 위반 문장 제거
+   - 모호어(즉시/적절히/충분히) 대비 수치/조건 근거 확인
+3. 정책 일관성 점검:
+   - ECU 명칭(`00e`), CAN ID(`00f`), RTE 이름(`00g`)과 본문 불일치 확인
+4. 표준 대조 점검:
+   - `reference/standards/ISO26262*`, `ASPICE*`, `Project Result_Sample*` 대비 누락/과잉 확인
+5. 증빙 링크 점검:
+   - `05/06/07`의 VC/테스트 ID, 로그 경로, 캡처 참조의 유효성 확인
+
+### 10.4 Change Policy in This Mode
+- 허용: 오탈자 수정, 용어 통일, 추적 링크 보정, 근거/참조 정합화
+- 제한: 기능 축 추가, 새로운 요구군 신설, 정책 체계 재설계
+- 원칙: “noise 감소” 우선, “신규 내용 추가” 최소화
