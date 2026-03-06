@@ -7,7 +7,7 @@
   - `driving-situation-alert/00~07` (no modification)
 - Repository boundary applied:
   - `driving-situation-alert` is read-only per `canoe/AGENTS.md`
-  - Report is written to `canoe/tmp/dbc_split_report.md`
+- Report is written to `canoe/tmp/reports/dbc/dbc_split_report.md`
 
 ## 2) Output Files (Domain Split)
 - `canoe/network/dbc/emergency_system_chassis.dbc`
