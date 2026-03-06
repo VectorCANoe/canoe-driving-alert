@@ -1,4 +1,4 @@
-name: CFG Hygiene Gate
+name: CFG Hygiene + CAPL Sync Gate
 
 on:
   workflow_dispatch:
@@ -6,6 +6,7 @@ on:
     paths:
       - "canoe/**"
       - "scripts/quality/cfg_hygiene_gate.py"
+      - "scripts/quality/check_capl_sync.py"
       - "scripts/run.py"
       - ".github/workflows/cfg-hygiene-gate.yml"
 
@@ -26,3 +27,6 @@ jobs:
 
       - name: Run CANoe text hygiene gate
         run: python scripts/run.py gate cfg-hygiene
+
+      - name: Run CAPL src-cfg sync gate
+        run: python scripts/run.py gate capl-sync
