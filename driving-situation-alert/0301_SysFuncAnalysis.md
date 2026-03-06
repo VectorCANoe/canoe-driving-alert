@@ -3,8 +3,8 @@
 **Document ID**: PROJ-0301-SFA
 **ISO 26262 Reference**: Part 4, Cl.7 (System Design)
 **ASPICE Reference**: SYS.3 (System Architectural Design)
-**Version**: 3.22
-**Date**: 2026-03-05
+**Version**: 3.23
+**Date**: 2026-03-06
 **Status**: Draft
 **Project Title**: 주행 상황 실시간 경고 시스템
 **Subtitle**: 구간 정보 및 긴급차량 접근 기반 앰비언트·클러스터 경보
@@ -97,7 +97,6 @@
 | Func_105 | Req_105 | STEER_CTRL | steeringInput | 조향 입력 반영 | SteeringState | 입력: steeringInput / 출력: SteeringState |
 | Func_106 | Req_106 | HAZARD_CTRL | HazardSwitch | 비상등 기본 제어 | HazardState | 입력: HazardSwitch / 출력: HazardState |
 | Func_107 | Req_107 | WINDOW_CTRL | WindowCommand | 창문 기본 제어 | WindowState | 입력: WindowCommand / 출력: WindowState |
-| Func_108 | Req_108 | DRV_STATE_MGR | DriverStateLevel | 운전자 상태 전달 | DriverStateInfo | 입력: DriverStateLevel / 출력: DriverStateInfo |
 | Func_109 | Req_109 | CLU_BASE_CTRL | ClusterSpeed, ClusterGear, warningTextCode | 클러스터 기본 표시 | ClusterStatus | 입력: ClusterSpeed, ClusterGear, warningTextCode / 출력: ClusterStatus |
 | Func_110 | Req_110 | DOMAIN_ROUTER | RoutingPolicy | 도메인 게이트웨이 전달 | BodyGatewayRoute | 입력: RoutingPolicy / 출력: BodyGatewayRoute |
 | Func_111 | Req_111 | DOMAIN_BOUNDARY_MGR | RoutingPolicy | 도메인 경계 유지 | BoundaryStatus | 입력: RoutingPolicy / 출력: BoundaryStatus |
@@ -169,7 +168,6 @@
 | Req_105 | Func_105 | STEER_CTRL | 조향 입력 반영 |
 | Req_106 | Func_106 | HAZARD_CTRL | 비상등 기본 제어 |
 | Req_107 | Func_107 | WINDOW_CTRL | 창문 기본 제어 |
-| Req_108 | Func_108 | DRV_STATE_MGR | 운전자 상태 전달 |
 | Req_109 | Func_109 | CLU_BASE_CTRL | 클러스터 기본 표시 |
 | Req_110 | Func_110 | DOMAIN_ROUTER | 도메인 게이트웨이 전달 |
 | Req_111 | Func_111 | DOMAIN_BOUNDARY_MGR | 도메인 경계 유지 |
@@ -262,6 +260,7 @@
 
 | 버전 | 날짜 | 변경 사항 |
 |---|---|---|
+| 3.23 | 2026-03-06 | 미사용 체인 정리: `Req_108/Func_108`(운전자 상태 전달) 매핑 행을 삭제하고 01/03/0303/0304/04/05/06/07 기준과 동기화. |
 | 3.22 | 2026-03-05 | ECU 명명 거버넌스를 `00e(SoT)+03(ECU 참조)`로 정리하고, RTE 규칙은 `00g`/`04` 적용 체계로 분리. |
 | 3.20 | 2026-03-05 | Validation Harness 노드 명칭을 `VAL_SCENARIO_CTRL`/`VAL_BASELINE_CTRL`로 정리하고 `VAL_*` 접두 규칙으로 표기 통일. |
 | 3.19 | 2026-03-03 | ETH_SW 역할을 시스템 관점으로 명확화하고, 구현 관점(헬스 모니터링)은 04 문서에서 분리 관리하도록 정합화. |

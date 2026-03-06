@@ -3,8 +3,8 @@
 **Document ID**: PROJ-07-ST
 **ISO 26262 Reference**: Part 4, Cl.10 (System Integration and System Qualification Test)
 **ASPICE Reference**: SYS.5 (System Qualification Test)
-**Version**: 5.14
-**Date**: 2026-03-03
+**Version**: 5.15
+**Date**: 2026-03-06
 **Status**: Draft
 **Project Title**: 주행 상황 실시간 경고 시스템
 **Subtitle**: 구간 정보 및 긴급차량 접근 기반 앰비언트·클러스터 경보
@@ -54,7 +54,7 @@
 | ST_RESULT_001 | 시나리오별 합격/불합격 결과가 일관되게 기록·추적되는지 확인한다. |  |  |  |
 | ST_BASE_PT_001 | 시동/기어/동력계 상태가 Powertrain 시나리오에서 안정적으로 연동되는지 확인한다. |  |  |  |
 | ST_BASE_CH_001 | 가감속/조향/제동 입력이 Chassis 시나리오에서 안전 규칙대로 반영되는지 확인한다. |  |  |  |
-| ST_BASE_BODY_001 | 비상등/창문/운전자상태 등 Body 시나리오가 의도한 동작으로 유지되는지 확인한다. |  |  |  |
+| ST_BASE_BODY_001 | 비상등/창문 등 Body 시나리오가 의도한 동작으로 유지되는지 확인한다. |  |  |  |
 | ST_BASE_IVI_001 | 클러스터 기본표시/안내/UI 상태가 Infotainment 시나리오에서 일관되게 유지되는지 확인한다. |  |  |  |
 | ST_BASE_EXT_BODY_001 | HVAC/Seat/Mirror/Door/Wiper-Rain/Security 상태가 Body 확장 시나리오에서 일관되게 반영되는지 확인한다. |  |  |  |
 | ST_BASE_EXT_IVI_001 | Audio Focus/Voice/TTS 상태가 Infotainment 확장 시나리오에서 일관되게 반영되는지 확인한다. |  |  |  |
@@ -87,14 +87,14 @@
 | ST_RESULT_001 | Req_043 | VC_043 | Func_043 | Flow_009 / Comm_009 | Var_026 | IT_SIL_001 | 결과 판정 로그와 요약 상태가 일치 |
 | ST_BASE_PT_001 | Req_101,Req_102,Req_110 | VC_101,VC_102,VC_110 | Func_101,Func_102,Func_110 | Flow_101,Flow_204,Flow_105 / Comm_101,Comm_204,Comm_105 | Var_175~Var_182,Var_298~Var_304,Var_309~Var_314 | IT_BASE_PT_001 | 시동/기어 전환 후 동력계 상태가 `150ms` 이내 반영되고 도메인 경계 연동이 유지 |
 | ST_BASE_CH_001 | Req_103,Req_104,Req_105,Req_110 | VC_103,VC_104,VC_105,VC_110 | Func_103,Func_104,Func_105,Func_110 | Flow_102,Flow_201,Flow_105 / Comm_102,Comm_201,Comm_105 | Var_101~Var_120,Var_204~Var_237 | IT_BASE_CH_001 | 가감속/조향/제동 입력 이벤트가 안전 규칙대로 반영되고 상태 연동이 유지 |
-| ST_BASE_BODY_001 | Req_106,Req_107,Req_108,Req_111 | VC_106,VC_107,VC_108,VC_111 | Func_106,Func_107,Func_108,Func_111 | Flow_103,Flow_202,Flow_105 / Comm_103,Comm_202,Comm_105 | Var_121~Var_146,Var_238~Var_267 | IT_BASE_BODY_001 | 비상등/창문/운전자상태 시나리오에서 출력과 상태가 기대값으로 유지 |
+| ST_BASE_BODY_001 | Req_106,Req_107,Req_111 | VC_106,VC_107,VC_111 | Func_106,Func_107,Func_111 | Flow_103,Flow_202,Flow_105 / Comm_103,Comm_202,Comm_105 | Var_121~Var_146,Var_238~Var_267 | IT_BASE_BODY_001 | 비상등/창문 시나리오에서 출력과 상태가 기대값으로 유지 |
 | ST_BASE_IVI_001 | Req_109,Req_111 | VC_109,VC_111 | Func_109,Func_111 | Flow_104,Flow_203,Flow_105 / Comm_104,Comm_203,Comm_105 | Var_147~Var_171,Var_268~Var_297 | IT_BASE_IVI_001 | 표시/UI 이벤트가 누락 없이 반영되고 50/100ms 주기 규칙을 만족 |
 | ST_BASE_EXT_BODY_001 | Req_113,Req_114,Req_115,Req_116,Req_117,Req_118 | VC_113,VC_114,VC_115,VC_116,VC_117,VC_118 | Func_113,Func_114,Func_115,Func_116,Func_117,Func_118 | Flow_202,Flow_105 / Comm_202,Comm_105 | Var_238~Var_267 | IT_BASE_EXT_BODY_001 | HVAC/Seat/Mirror/Door/Wiper-Rain/Security 상태가 `150ms` 이내 반영되고 범위/매핑 규칙을 만족 |
 | ST_BASE_EXT_IVI_001 | Req_119 | VC_119 | Func_119 | Flow_203,Flow_105 / Comm_203,Comm_105 | Var_268~Var_271,Var_289~Var_290 | IT_BASE_EXT_IVI_001 | Audio Focus/Voice/TTS 상태가 `150ms` 이내 HMI 정책으로 반영되고 50/100ms 주기 규칙을 만족 |
 | ST_BASE_DIAG_001 | Req_112 | VC_112 | Func_112 | Flow_106,Flow_205 / Comm_106,Comm_205 | Var_172~Var_174 | IT_BASE_DIAG_001 | 진단 요청-응답 및 결과 로그가 시나리오 단위로 추적 가능하게 기록 |
 | ST_V2_RISK_001 | Req_120,Req_121,Req_122,Req_123 | VC_120,VC_121,VC_122,VC_123 | Func_120,Func_121,Func_122,Func_123 | Flow_120,Flow_121,Flow_122,Flow_123 / Comm_120,Comm_121,Comm_122,Comm_123 | Var_320,Var_321,Var_322,Var_323,Var_324,Var_325 | IT_V2_RISK_001 | 위험도 산정 주기 `100ms`, 감속 보조 요청 생성/해제 `150ms` 이내, Ambient/Cluster 동기 오프셋 `<=50ms` (SIL Scenario 15/16/17/19) |
 | ST_V2_FAILSAFE_001 | Req_124 | VC_124 | Func_124 | Flow_124 / Comm_124 | Var_326,Var_327,Var_328,Var_329 | IT_V2_FAILSAFE_001 | 단절 감지 후 `150ms` 이내 failSafeMode 전환, 자동 감속 보조 0건, 최소 경고 채널 유지 (SIL Scenario 18) |
-| ST_BASE_001 | Req_101~Req_119 | VC_101~VC_119 | Func_101~Func_119 | Flow_101~Flow_106,Flow_201~Flow_205 / Comm_101~Comm_106,Comm_201~Comm_205 | Var_101~Var_314 | IT_BASE_001, IT_BASE_PT_001, IT_BASE_CH_001, IT_BASE_BODY_001, IT_BASE_IVI_001, IT_BASE_EXT_BODY_001, IT_BASE_EXT_IVI_001, IT_BASE_DIAG_001 | 차량 기본 기능 E2E 시나리오에서 입력/상태/표시/경계/판정 체인이 일관되게 유지 |
+| ST_BASE_001 | Req_101~Req_107,Req_109~Req_119 | VC_101~VC_107,VC_109~VC_119 | Func_101~Func_107,Func_109~Func_119 | Flow_101~Flow_106,Flow_201~Flow_205 / Comm_101~Comm_106,Comm_201~Comm_205 | Var_101~Var_314 | IT_BASE_001, IT_BASE_PT_001, IT_BASE_CH_001, IT_BASE_BODY_001, IT_BASE_IVI_001, IT_BASE_EXT_BODY_001, IT_BASE_EXT_IVI_001, IT_BASE_DIAG_001 | 차량 기본 기능 E2E 시나리오에서 입력/상태/표시/경계/판정 체인이 일관되게 유지 |
 
 ---
 
@@ -102,6 +102,7 @@
 
 | 버전 | 날짜 | 변경 사항 |
 |---|---|---|
+| 5.15 | 2026-03-06 | 미사용 체인 정리: `Req/VC/Func_108`을 `ST_BASE_BODY_001/ST_BASE_001`에서 제거하고 Baseline 범위를 `108 제외`로 동기화. |
 | 5.14 | 2026-03-04 | 멘토링 체크리스트 반영: ST 작성 원칙에 Panel 검증 우선순위(`차량 화면 -> 제어 패널 -> 상태 모니터`)를 추가. |
 | 5.13 | 2026-03-03 | V2 ST를 구현 활성 상태로 전환하고 `ST_V2_RISK_001`, `ST_V2_FAILSAFE_001` 상태를 Ready로 갱신. |
 | 5.12 | 2026-03-02 | V2 확장(Pre-Activation) ST 반영: `ST_V2_RISK_001`, `ST_V2_FAILSAFE_001` 추가 및 `Req_120~Req_124` 추적 체인(`IT_V2_RISK_001`, `IT_V2_FAILSAFE_001`) 연결. |

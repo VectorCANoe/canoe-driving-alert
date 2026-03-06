@@ -3,7 +3,7 @@
 **Document ID**: PROJ-00D-HARA  
 **ISO 26262 Reference**: Part 3 (Concept Phase, Hazard Analysis and Risk Assessment)  
 **ASPICE Reference**: SYS.2 (요구 근거), SUP.10 (추적성)  
-**Version**: 1.3  
+**Version**: 1.4  
 **Date**: 2026-03-04  
 **Status**: Draft (Internal Baseline Approved)  
 **Project Title**: 주행 상황 실시간 경고 시스템  
@@ -32,7 +32,7 @@
 | HARA ID | 관련 Req | Hazardous Event (요약) | Operational Situation | S | E | C | ASIL Candidate | Safety Goal ID | Safety Goal (안전 목표) | FTTI/Timing 가정 |
 |---|---|---|---|---|---|---|---|---|---|---|
 | HC-01 | Req_010 | 스쿨존 과속 경고 누락/지연으로 운전자 감속 타이밍 상실 | 도심 스쿨존(고빈도), 제한속도 초과 진입 | S2 | E4 | C2 | B (Locked) | SG-01 | 스쿨존에서 `vehicleSpeed > speedLimit` 성립 시 경고가 지연 없이 표시되어야 한다. | 150ms 이내 경고 반영 |
-| HC-02 | Req_011, Req_012 | 고속 구간 무조향 경고 미발생/해제 실패로 주의저하 상태 지속 | 고속도로 장시간 주행, 조향 입력 부재/복귀 | S3 | E3 | C3 | C (Locked) | SG-02 | 무조향 경고는 조건 성립 시 발생하고, 조향 복귀 시 즉시 해제되어야 한다. | 150ms 이내 발생/해제 |
+| HC-02 | Req_011, Req_012 | 고속 구간 무조향 의심 경고 미발생/해제 실패로 주의저하 의심 상태 관리 실패 | 고속도로 장시간 주행, 조향 입력 부재/복귀 | S3 | E3 | C3 | C (Locked) | SG-02 | 무조향 의심 경고는 조건 성립 시 발생하고, 조향 복귀 시 즉시 해제되어야 한다. | 150ms 이내 발생/해제 |
 | HC-03 | Req_022, Req_027~Req_031 | 중재 규칙 오류로 긴급경고 미우선/오선택 표시 | 긴급차량 경고와 구간경고 동시 발생, 다중 긴급 충돌 | S3 | E3 | C2 | C (Locked) | SG-03 | 중재는 Emergency>Zone, Ambulance>Police, ETA, SourceID 순으로 결정론적으로 동작해야 한다. | 150ms 이내 중재 결정 |
 | HC-04 | Req_024, Req_033, Req_034 | 타임아웃/복귀/전환 불안정으로 경고 반복 깜빡임 및 운전자 혼란 | 긴급 신호 무갱신, 긴급->구간 전환 구간 | S2 | E4 | C2 | B (Locked) | SG-04 | `1000ms` 무갱신 시 안전 해제 후 안정 복귀하고 반복 점멸 없이 전환되어야 한다. | 1000ms timeout + 150ms 복귀 |
 | HC-05 | Req_110, Req_111, Req_124 | 도메인 경계/게이트웨이 전달 오류로 경고 체인 단절 또는 강등 정책 미동작 | 도메인 CAN/ETH 경계 라우팅, Gateway 부하/오류 상황 | S3 | E3 | C2 | C (Locked) | SG-05 | 도메인 경계 정책을 유지하며 입력/출력 라우팅 체인이 단절되지 않아야 하고, 단절 시 fail-safe 강등이 즉시 적용되어야 한다. | 주기 100ms/50ms 연속성 + 150ms 강등 전환 |
@@ -75,6 +75,7 @@
 
 | 버전 | 날짜 | 변경 사항 |
 |---|---|---|
+| 1.4 | 2026-03-06 | 용어 정리: HC-02/SG-02 문구를 `고속 무조향 기반 주의저하 의심 경고` 기준으로 통일하고 비제품 기능 오해 여지를 제거. |
 | 1.3 | 2026-03-04 | HARA 승인 게이트 4개 항목을 내부 Baseline 승인 상태로 전환하고 승인일을 기록. 상태 문구를 `초안`에서 `내부 승인 baseline`으로 갱신. |
 | 1.2 | 2026-03-02 | 중간감사 운영 반영: HARA 승인 게이트 상태를 `TODO`에서 `Planned(중간감사 후 확정/증적 잠금)`으로 갱신. |
 | 1.1 | 2026-03-02 | 01~07 착수 전 HARA 승인 게이트(담당/기준/상태/승인일) 표 추가. |

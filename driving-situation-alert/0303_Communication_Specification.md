@@ -3,7 +3,7 @@
 **Document ID**: PROJ-0303-CS
 **ISO 26262 Reference**: Part 6, Cl.7 (Software Architectural Design)
 **ASPICE Reference**: SWE.2 (Software Architectural Design)
-**Version**: 3.20
+**Version**: 3.21
 **Date**: 2026-03-06
 **Status**: Draft
 **Project Title**: 주행 상황 실시간 경고 시스템
@@ -32,7 +32,7 @@
 - 목표 설계는 옵션1(ETH 백본) 고정이며, CANoe.CAN 라이선스 제약 구간의 SIL 검증은 임시로 CAN 대체 백본을 사용하고 Ethernet 라이선스 확보 후 동일 케이스로 재검증한다.
 - CANoe.CAN 환경에서는 Ethernet 일부 경로(E100/E200 모니터링 및 V2 확장)를 `eth_backbone_can_stub.dbc`(0x1C0/0x1C2/0x1C4/0x111)와 `adas_can.dbc`(0x1C1/0x1C3)로 분리 대체 운반한다.
 - `Comm_009`, `Comm_106`, `Comm_205`는 Validation Harness 통신(검증 전용)이며 양산 통신과 구분한다.
-- Vehicle Baseline(Req_101~Req_119) 통신(`Comm_101~Comm_106`, `Comm_201~Comm_205`)은 본 문서에서 확정 정의하고, 도메인 DBC는 이 정의를 구현 대상으로 사용한다.
+- Vehicle Baseline(Req_101~Req_107, Req_109~Req_119) 통신(`Comm_101~Comm_106`, `Comm_201~Comm_205`)은 본 문서에서 확정 정의하고, 도메인 DBC는 이 정의를 구현 대상으로 사용한다.
 - V2 확장 요구(`Req_120~Req_124`) 통신(`Comm_120~Comm_124`)은 구현 활성 상태로 관리하며, DBC/코드/테스트를 동일 커밋에서 동기화한다.
 - EMS는 상위 문서 레벨에서 논리 단말 `EMS_ALERT`로 표기하고, 내부 구현 모듈(`EMS_POLICE_TX`, `EMS_AMB_TX`, `EMS_ALERT_RX`)은 하단 보강표에서만 분리 관리한다.
 - 약어 충돌 방지 규칙: `EMS_AMB_TX`의 `AMB`는 `Ambulance` 의미의 구현 literal이며, `Ambient`는 항상 `AMBIENT` 풀토큰으로 표기한다.
@@ -96,8 +96,6 @@
 |  |  |  | HazardState | 1 | 비상등 상태 | 0~1 | BODY_GW -> HAZARD_CTRL 전달 |
 | frmWindowControlMsg | 0x262 | 1 | WindowCommand | 0~1 | 창문 제어 명령 | 0~3 | BODY_GW -> WINDOW_CTRL 전달 |
 |  |  |  | WindowState | 2~3 | 창문 상태 | 0~3 | BODY_GW -> WINDOW_CTRL 전달 |
-| frmDriverStateMsg | 0x263 | 1 | DriverStateLevel | 0~2 | 운전자 상태 레벨 | 0~7 | BODY_GW -> DRV_STATE_MGR 전달 |
-|  |  |  | DriverStateInfo | 3~5 | 운전자 상태 정보 | 0~7 | BODY_GW -> DRV_STATE_MGR 전달 |
 | frmDoorStateMsg | 0x264 | 2 | DoorStateMask | 0~7 | 도어 상태 비트맵 | 0~255 | BODY_GW -> WINDOW_CTRL, DRV_STATE_MGR 전달 |
 |  |  |  | DoorLockState | 8~9 | 도어 잠금 상태 | 0~3 | BODY_GW -> WINDOW_CTRL, DRV_STATE_MGR 전달 |
 |  |  |  | ChildLockState | 10 | 아동 잠금 상태 | 0~1 | BODY_GW -> WINDOW_CTRL, DRV_STATE_MGR 전달 |
@@ -390,7 +388,7 @@
 | ADAS CAN | `canoe/databases/adas_can.dbc` | Comm_120, Comm_201(일부) | frmAdasChassisStatusMsg, ethEmergencyRiskMsg |
 | ETH Backbone CAN Stub | `canoe/databases/eth_backbone_can_stub.dbc` | Comm_004, Comm_005, Comm_006, Comm_121, Comm_124 | frmEmergencyBroadcastMsg, frmEmergencyMonitorMsg, ethDecelAssistReqMsg, ethFailSafeStateMsg |
 | Powertrain CAN | `canoe/databases/powertrain_can.dbc` | Comm_101, Comm_105, Comm_204 | frmIgnitionEngineMsg, frmGearStateMsg, frmPowertrainGatewayMsg, frmEngineSpeedTempMsg, frmPowerLimitMsg, frmCruiseStateMsg, frmEngineTorqueMsg, frmEngineLoadMsg |
-| Body CAN | `canoe/databases/body_can.dbc` | Comm_007, Comm_103, Comm_105, Comm_202 | frmAmbientControlMsg, frmHazardControlMsg, frmWindowControlMsg, frmDriverStateMsg, frmBodyHealthMsg, frmHvacStateMsg, frmMirrorStateMsg |
+| Body CAN | `canoe/databases/body_can.dbc` | Comm_007, Comm_103, Comm_105, Comm_202 | frmAmbientControlMsg, frmHazardControlMsg, frmWindowControlMsg, frmBodyHealthMsg, frmHvacStateMsg, frmMirrorStateMsg |
 | Infotainment CAN | `canoe/databases/infotainment_can.dbc` | Comm_003, Comm_008, Comm_104, Comm_105, Comm_203, Comm_205 | frmNavContextCanMsg, frmClusterWarningMsg, frmClusterBaseStateMsg, frmClusterThemeMsg, frmHmiPopupStateMsg, frmInfotainmentHealthMsg, frmAudioFocusMsg, frmMapRenderStateMsg |
 | Ethernet UDP | `canoe/docs/operations/ETH_INTERFACE_CONTRACT.md` | Comm_004, Comm_005, Comm_006, Comm_120, Comm_121, Comm_124 | ethVehicleStateMsg, ethSteeringMsg, ethNavContextMsg, ETH_EmergencyAlert, ethSelectedAlertMsg, ethEmergencyRiskMsg, ethDecelAssistReqMsg, ethFailSafeStateMsg |
 
@@ -402,7 +400,7 @@
 |---|---|---|---|---|---|---|
 | Comm_101 | Flow_101 | Func_101, Func_102 | Req_101, Req_102 | frmIgnitionEngineMsg(0x2A8), frmGearStateMsg(0x2A9), frmEngineSpeedTempMsg(0x12A), frmTransmissionTempMsg(0x12D) | CAN(Powertrain) | 100ms |
 | Comm_102 | Flow_102 | Func_103, Func_104, Func_105 | Req_103, Req_104, Req_105 | frmPedalInputCanMsg(0x2A2), frmSteeringStateCanMsg(0x100), frmBrakeStatusMsg(0x120), frmAccelStatusMsg(0x121), frmSteeringTorqueMsg(0x122) | CAN(Chassis) | 100ms |
-| Comm_103 | Flow_103 | Func_106, Func_107, Func_108 | Req_106, Req_107, Req_108 | frmHazardControlMsg(0x261), frmWindowControlMsg(0x262), frmDriverStateMsg(0x263), frmSeatBeltStateMsg(0x267), frmCabinAirStateMsg(0x268) | CAN(Body) | 100ms |
+| Comm_103 | Flow_103 | Func_106, Func_107 | Req_106, Req_107 | frmHazardControlMsg(0x261), frmWindowControlMsg(0x262), frmSeatBeltStateMsg(0x267), frmCabinAirStateMsg(0x268) | CAN(Body) | 100ms |
 | Comm_104 | Flow_104 | Func_109 | Req_109 | frmClusterBaseStateMsg(0x281), frmClusterThemeMsg(0x286), frmHmiPopupStateMsg(0x287) | CAN(Infotainment) | 50ms |
 | Comm_105 | Flow_105 | Func_110, Func_111 | Req_110, Req_111 | frmPowertrainGatewayMsg(0x109), frmVehicleModeMsg(0x10A), frmPowerLimitMsg(0x10B), frmCruiseStateMsg(0x10C), frmChassisHealthMsg(0x103), frmBodyHealthMsg(0x269), frmInfotainmentHealthMsg(0x288) | CAN(도메인 경계/라우팅) | 100ms |
 | Comm_106 | Flow_106 | Func_112 | Req_112 | frmBaseTestResultMsg(0x2A6), frmTestResultMsg(0x2A5) | CAN(Chassis Validation frame) | Event |
@@ -414,7 +412,7 @@
 | Comm ID | Flow ID(0302 연계) | Func ID | Req ID | Message(ID) | Protocol | 주기 |
 |---|---|---|---|---|---|---|
 | Comm_201 | Flow_201 | Func_103, Func_104, Func_110 | Req_103, Req_104, Req_110 | frmEpsStateMsg(0x123), frmAbsStateMsg(0x124), frmEscStateMsg(0x125), frmTcsStateMsg(0x126), frmBrakeTempMsg(0x127), frmSteeringAngleMsg(0x128), frmWheelPulseMsg(0x104), frmSuspensionStateMsg(0x105), frmTirePressureMsg(0x106), frmChassisDiagReqMsg(0x2A4), frmChassisDiagResMsg(0x107), frmAdasChassisStatusMsg(0x1C1), frmBrakeWearMsg(0x129), frmRoadFrictionMsg(0x108) | CAN(Chassis + ETH Backbone CAN Stub) | 100ms + Event |
-| Comm_202 | Flow_202 | Func_106, Func_107, Func_108, Func_111, Func_113, Func_114, Func_115, Func_116, Func_117, Func_118 | Req_106, Req_107, Req_108, Req_111, Req_113, Req_114, Req_115, Req_116, Req_117, Req_118 | frmHvacStateMsg(0x26A), frmHvacActuatorMsg(0x26B), frmMirrorStateMsg(0x26C), frmSeatStateMsg(0x26D), frmSeatControlMsg(0x26E), frmDoorControlMsg(0x26F), frmInteriorLightMsg(0x270), frmRainLightAutoMsg(0x271), frmBcmDiagReqMsg(0x272), frmBcmDiagResMsg(0x273), frmImmobilizerStateMsg(0x274), frmAlarmStateMsg(0x275), frmBodyGatewayStateMsg(0x276), frmBodyComfortStateMsg(0x277) | CAN(Body) | 100ms + Event |
+| Comm_202 | Flow_202 | Func_106, Func_107, Func_111, Func_113, Func_114, Func_115, Func_116, Func_117, Func_118 | Req_106, Req_107, Req_111, Req_113, Req_114, Req_115, Req_116, Req_117, Req_118 | frmHvacStateMsg(0x26A), frmHvacActuatorMsg(0x26B), frmMirrorStateMsg(0x26C), frmSeatStateMsg(0x26D), frmSeatControlMsg(0x26E), frmDoorControlMsg(0x26F), frmInteriorLightMsg(0x270), frmRainLightAutoMsg(0x271), frmBcmDiagReqMsg(0x272), frmBcmDiagResMsg(0x273), frmImmobilizerStateMsg(0x274), frmAlarmStateMsg(0x275), frmBodyGatewayStateMsg(0x276), frmBodyComfortStateMsg(0x277) | CAN(Body) | 100ms + Event |
 | Comm_203 | Flow_203 | Func_109, Func_111, Func_119 | Req_109, Req_111, Req_119 | frmAudioFocusMsg(0x289), frmVoiceAssistStateMsg(0x28A), frmMapRenderStateMsg(0x28B), frmRouteAlertMsg(0x28C), frmTrafficEventMsg(0x28D), frmPhoneProjectionMsg(0x28E), frmClusterNotifMsg(0x28F), frmMediaMetaMsg(0x291), frmSpeechTtsStateMsg(0x292), frmConnectivityStateMsg(0x293), frmClusterSyncStateMsg(0x295) | CAN(Infotainment) | 50/100ms |
 | Comm_204 | Flow_204 | Func_101, Func_102, Func_110 | Req_101, Req_102, Req_110 | frmEngineTorqueMsg(0x12E), frmEngineLoadMsg(0x12F), frmTransShiftStateMsg(0x130), frmThermalMgmtStateMsg(0x131), frmEnergyFlowStateMsg(0x10F), frmPowertrainCtrlAuthMsg(0x110) | CAN(Powertrain) | 100ms |
 | Comm_205 | Flow_205 | Func_112 | Req_112 | frmIviDiagReqMsg(0x2A7), frmIviDiagResMsg(0x290), frmIviHealthDetailMsg(0x294), frmPtDiagReqMsg(0x2AA), frmPtDiagResMsg(0x10E) | CAN(Validation/Diag) | Event + 100ms |
@@ -460,7 +458,7 @@
 - `selectedAlertLevel/selectedAlertType` 기반 Ambient/Cluster 출력 Comm이 모두 존재해야 한다.
 - `ETH_SW` 경유 Ethernet 신호가 각 도메인 게이트웨이에서 CAN 메시지로 정상 변환되어야 한다.
 - `speedLimit` 신호는 Comm_003에서 NAV_CTX_MGR와 ADAS_WARN_CTRL까지 연계되어야 한다.
-- `Req_101~Req_119`는 Comm_101~Comm_106, Comm_201~Comm_205에서 누락 없이 연결되어야 한다.
+- `Req_101~Req_107`, `Req_109~Req_119`는 Comm_101~Comm_106, Comm_201~Comm_205에서 누락 없이 연결되어야 한다.
 - `Req_120~Req_124`는 Comm_120~Comm_124 구현 체인으로 추적하고, 변경 시 0302/0304/05~07을 동일 커밋으로 동기화한다.
 
 ---
@@ -481,6 +479,7 @@
 
 | 버전 | 날짜 | 변경 사항 |
 |---|---|---|
+| 3.21 | 2026-03-06 | 미사용 체인 정리: `Req_108/Func_108` 및 `frmDriverStateMsg(0x263)`를 Baseline Comm(103/202)·도메인 원본 표에서 제거하고 범위 문구를 `108 제외`로 동기화. |
 | 3.20 | 2026-03-06 | 감사 해석 보강: 긴급 우선 요구의 기본 판정 축(기능중재)과 `Diag` 명칭/Group 7 비강제 규칙을 CAN ID 정책 요약표에 명시. |
 | 3.19 | 2026-03-05 | 통신 문서 경계 정리: 본 문서에서는 CAN ID/메시지 규칙만 명시하고 ECU 명명은 `00e` SoT + `03`/`04` 참조 체계를 따르도록 정리. |
 | 3.18 | 2026-03-05 | Validation 결과 프레임(`0x2A5`,`0x2A6`)의 관리 기준을 `chassis_can.dbc` 통합으로 전환하고 Validation 노드 명칭(`VAL_*`) 및 Comm 매체 표기를 정합화. |

@@ -3,8 +3,8 @@
 **Document ID**: PROJ-04-SI
 **ISO 26262 Reference**: Part 6, Cl.8 (Software Unit Design and Implementation)
 **ASPICE Reference**: SWE.3 (Software Detailed Design and Unit Construction)
-**Version**: 2.17
-**Date**: 2026-03-05
+**Version**: 2.19
+**Date**: 2026-03-06
 **Status**: Draft
 **Project Title**: 주행 상황 실시간 경고 시스템
 **Subtitle**: 구간 정보 및 긴급차량 접근 기반 앰비언트·클러스터 경보
@@ -29,7 +29,7 @@
 - ECU 명명 규칙은 `00e`를 SoT로 고정하고, RTE 생성명 규칙은 `00g_RTE_Name_Mapping_Standard.md`를 SoT로 고정한다.
 - 본 문서는 `00e/00g` 정책의 구현 적용 참조 문서로 관리한다.
 - 약어 충돌 방지 규칙: `EMS_AMB_TX`의 `AMB`는 `Ambulance` 의미의 구현 literal이며, `Ambient`는 항상 `AMBIENT` 풀토큰으로 표기한다.
-- `project.sysvars`의 `UiRender/*`, `Driver/gazeActive`, `V2X/policeDispatch`, `V2X/ambulanceDispatch`는 Verification-Harness 입력/렌더 변수로 관리하며 제품 Req 체인(01/03/05~07)과 분리한다.
+- `project.sysvars`의 `UiRender/*`, `Test/*`, `V2X/policeDispatch`, `V2X/ambulanceDispatch`는 Verification-Harness 입력/렌더 변수로 관리하며 제품 Req 체인(01/03/05~07)과 분리한다.
 - CANoe.CAN 환경에서는 Ethernet 일부 경로(E100/E200 모니터링 및 V2 확장)가 CAN-stub(0x1C0/0x1C1/0x1C2/0x1C3/0x1C4/0x111)로 대체 운반되며, 서비스 해석은 Ethernet 논리 계약 SoT를 우선한다.
 - Panel 구성은 `차량 화면 -> 제어 패널 -> 상태 모니터` 우선순위를 적용하고, UI는 표시/자극 전용 계층으로 유지한다.
 
@@ -177,7 +177,6 @@ Emergency Source (logical terminal)
 | Func_105 | Req_105 | STEER_CTRL | Flow_102 / Comm_102 / steeringInput, SteeringTorque | Flow_102 / SteeringState, SteeringAssistLv | `STEER_CTRL.F105` | UT_BASE_CH_001 / IT_BASE_CH_001 |
 | Func_106 | Req_106 | HAZARD_CTRL | Flow_103 / Comm_103 / HazardSwitch | Flow_103 / HazardState, HazardLampReq | `HAZARD_CTRL.F106` | UT_BASE_BODY_001 / IT_BASE_BODY_001 |
 | Func_107 | Req_107 | WINDOW_CTRL | Flow_103 / Comm_103 / WindowCommand | Flow_103 / WindowState | `WINDOW_CTRL.F107` | UT_BASE_BODY_001 / IT_BASE_BODY_001 |
-| Func_108 | Req_108 | DRV_STATE_MGR | Flow_103 / Comm_103 / DriverStateLevel | Flow_103 / DriverStateInfo | `DRV_STATE_MGR.F108` | UT_BASE_BODY_001 / IT_BASE_BODY_001 |
 | Func_109 | Req_109 | CLU_BASE_CTRL | Flow_104 / Comm_104 / ClusterSpeed, ClusterGear, warningTextCode | Flow_104 / ClusterStatus | `CLU_BASE_CTRL.F109` | UT_BASE_IVI_001 / IT_BASE_IVI_001 |
 | Func_110 | Req_110 | DOMAIN_ROUTER | Flow_105 / Comm_105 / RoutingPolicy, ChassisAliveCnt, BodyAliveCnt, InfoAliveCnt | Flow_105 / BodyGatewayRoute | `DOMAIN_ROUTER.F110` | UT_BASE_GW_001 / IT_BASE_GW_001 |
 | Func_111 | Req_111 | DOMAIN_BOUNDARY_MGR | Flow_105 / Comm_105 / RoutingPolicy, BoundaryStatus | Flow_105 / BoundaryStatus | `MOD_15.F111` | UT_BASE_GW_001 / IT_BASE_GW_001 |
@@ -250,7 +249,6 @@ Emergency Source (logical terminal)
 | 항목 | Namespace/Name | 용도 | 구현 모듈 | 제품 Req 체인 연결 |
 |---|---|---|---|---|
 | EMS 수동 디스패치 입력 | `V2X/policeDispatch`, `V2X/ambulanceDispatch` | Panel 버튼 기반 긴급 이벤트 주입(송신 트리거) | `EMS_POLICE_TX.can`, `EMS_AMB_TX.can` | 없음(검증 자극 전용) |
-| 운전자 시선 복귀 자극 | `Driver/gazeActive` | SIL 데모에서 경고 해제 경계 동작 자극 | `DRV_STATE_MGR.can` | 없음(검증 자극 전용) |
 | 렌더 출력 버스 | `UiRender/*` (`renderMode`, `renderColor`, `renderPattern`, `renderTextCode`, `renderDirection`, `roadZoneColorCode`, `roadFlowDirection`, `vehicleObjectPos`, `emsBlinkPhase`, `ambientPulsePhase`, `icFlowPhase`, `activeAlertType`) | 패널 시각화 전용 파생 값 | `IVI_GW.can` | 없음(렌더 전용) |
 
 - 본 표 항목은 `00c`의 `Verification-Harness` 분류를 따르며, 감사 시 제품 기능 요구 미연결 항목으로 해석하지 않는다.
@@ -367,6 +365,8 @@ Emergency Source (logical terminal)
 
 | 버전 | 날짜 | 변경 사항 |
 |---|---|---|
+| 2.19 | 2026-03-06 | 용어/범위 정리: Verification-Harness에서 Driver 네임스페이스 자극 문구/행을 제거하고 `고속 무조향 기반 경고` 제품 체인과 분리 경계를 명확화. |
+| 2.18 | 2026-03-06 | 미사용 체인 정리: `Req_108/Func_108` 구현 추적 행을 제거하고 Body Baseline 경로를 `106/107/111` 기준으로 동기화. |
 | 2.17 | 2026-03-05 | ECU/RTE 거버넌스를 `00e(ECU SoT)+00g(RTE SoT)+04(구현 참조)` 체계로 정리하고, 구현 단계 RTE 샘플 점검/승인 경로 규칙(12장)을 추가. |
 | 2.16 | 2026-03-05 | Validation 노드 명칭(`VAL_SCENARIO_CTRL`/`VAL_BASELINE_CTRL`)과 DBC 통합 정책(`0x2A5/0x2A6 -> chassis_can.dbc`)을 구현 추적 표/원칙에 반영. |
 | 2.15 | 2026-03-04 | 멘토링 체크리스트 반영: Panel 구성 우선순위(`차량 화면 -> 제어 패널 -> 상태 모니터`)와 UI-로직 분리 원칙을 작성 원칙에 명시. |
@@ -374,7 +374,7 @@ Emergency Source (logical terminal)
 | 2.13 | 2026-03-03 | 감사 추적성 보강: `Func_101~119` / `Req_101~119` 기능-구현 상세 행을 추가하고, UT/IT 링크(`UT_BASE_*`, `IT_BASE_*`)를 1:1로 연결. |
 | 2.12 | 2026-03-03 | ETH_SW 역할을 구현 기준(경로 상태 모니터링)으로 명확화하고, 코드 아티팩트 경로를 `canoe/src/capl/*` 실제 경로로 정합화. |
 | 2.11 | 2026-03-03 | Req_120~124 추적/타이밍 정합 반영: `Func_120~124` 및 `Var_320~329` 추적 항목 추가, `TASK_003`를 100ms 주기로 정합화, `DOMAIN_BOUNDARY_MGR`를 `MOD_15`로 반영. |
-| 2.10 | 2026-03-02 | ISO26262/ASPICE 운영 경계 반영: SIL 전용 `Verification-Harness` 변수(`V2X/policeDispatch`, `V2X/ambulanceDispatch`, `Driver/gazeActive`, `UiRender/*`)의 비제품 체인 분류를 작성 원칙/4.2 표로 명시. |
+| 2.10 | 2026-03-02 | ISO26262/ASPICE 운영 경계 반영: SIL 전용 `Verification-Harness` 변수(`V2X/policeDispatch`, `V2X/ambulanceDispatch`, `Test/*`, `UiRender/*`)의 비제품 체인 분류를 작성 원칙/4.2 표로 명시. |
 | 2.9 | 2026-03-01 | 상단 공식 표와 아키텍처 요약의 EMS 표기를 `EMS_ALERT` 논리 단말 기준으로 통일하고, 내부 TX/RX 모듈은 상세 추적표에서만 분리 관리. |
 | 1.0 | 2026-02-23 | 초기 생성(구 스코프 기반) |
 | 2.0 | 2026-02-26 | 옵션1 아키텍처 기준으로 전면 재작성. 구버전 OTA/UDS/DoIP 구현 항목 제거, Func_001~043 구현 추적 표 및 타이밍/예외 처리 규칙 정립 |

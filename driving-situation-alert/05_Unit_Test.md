@@ -3,8 +3,8 @@
 **Document ID**: PROJ-05-UT
 **ISO 26262 Reference**: Part 6, Cl.9 (Software Unit Verification)
 **ASPICE Reference**: SWE.4 (Software Unit Verification)
-**Version**: 2.16
-**Date**: 2026-03-05
+**Version**: 2.17
+**Date**: 2026-03-06
 **Status**: Draft
 **Project Title**: 주행 상황 실시간 경고 시스템
 **Subtitle**: 구간 정보 및 긴급차량 접근 기반 앰비언트·클러스터 경보
@@ -84,10 +84,10 @@
 | UT_GW_001 | CHS_GW, INFOTAINMENT_GW | 게이트웨이 변환 검증 | Req_007,Req_010,Req_011,Req_012 | VC_007,VC_010,VC_011,VC_012 | Func_007,Func_010,Func_011,Func_012 | Flow_001,Flow_002,Flow_003 / Comm_001,Comm_002,Comm_003 | Var_001~Var_006,Var_012~Var_015,Var_030,Var_031 | CAN 입력 대비 ETH 변환값 일치, 송신 주기 `100ms` 유지 |
 | UT_OUT_GW_001 | BODY_GW, IVI_GW | ETH->CAN 출력 변환 검증 | Req_033,Req_034,Req_040 | VC_033,VC_034,VC_040 | Func_033,Func_034,Func_040 | Flow_007,Flow_008 / Comm_007,Comm_008 | Var_021~Var_024 | ETH 결과를 CAN 프레임으로 정확히 변환, CAN 출력 주기 `50ms` 유지 |
 | UT_SIL_001 | VAL_SCENARIO_CTRL | SIL 실행/판정 유닛 검증 | Req_041,Req_042,Req_043 | VC_041,VC_042,VC_043 | Func_041,Func_042,Func_043 | Flow_009 / Comm_009 | Var_025,Var_026 | 시나리오 실행/통신 조건 검증/결과 기록 로직 정상 |
-| UT_BASE_001 | ENG_CTRL,TCM,ACCEL_CTRL,BRK_CTRL,STEER_CTRL,HAZARD_CTRL,WINDOW_CTRL,DRV_STATE_MGR,CLU_BASE_CTRL,DOMAIN_ROUTER,DOMAIN_BOUNDARY_MGR,VAL_BASELINE_CTRL | 차량 기본 기능(시동/기어/입력/표시/도메인경계/SIL판정 + Body/IVI 확장 상태) 유닛 커버리지 총괄 검증 | Req_101~Req_119 | VC_101~VC_119 | Func_101~Func_119 | Flow_101~Flow_106,Flow_201~Flow_205 / Comm_101~Comm_106,Comm_201~Comm_205 | Var_101~Var_314 | 기본 기능 입력/표시/도메인경계/판정 동작이 요구 규칙과 일치 |
+| UT_BASE_001 | ENG_CTRL,TCM,ACCEL_CTRL,BRK_CTRL,STEER_CTRL,HAZARD_CTRL,WINDOW_CTRL,DRV_STATE_MGR,CLU_BASE_CTRL,DOMAIN_ROUTER,DOMAIN_BOUNDARY_MGR,VAL_BASELINE_CTRL | 차량 기본 기능(시동/기어/입력/표시/도메인경계/SIL판정 + Body/IVI 확장 상태) 유닛 커버리지 총괄 검증 | Req_101~Req_107,Req_109~Req_119 | VC_101~VC_107,VC_109~VC_119 | Func_101~Func_107,Func_109~Func_119 | Flow_101~Flow_106,Flow_201~Flow_205 / Comm_101~Comm_106,Comm_201~Comm_205 | Var_101~Var_314 | 기본 기능 입력/표시/도메인경계/판정 동작이 요구 규칙과 일치 |
 | UT_BASE_PT_001 | ENG_CTRL, TCM | 시동/기어/엔진/변속 기본 동작 검증 | Req_101,Req_102 | VC_101,VC_102 | Func_101,Func_102 | Flow_101,Flow_204 / Comm_101,Comm_204 | Var_175~Var_178,Var_181~Var_182,Var_189~Var_190,Var_298~Var_304,Var_309~Var_314 | 입력 반영 후 `150ms` 이내 상태/표시 일치, 주기 `100ms` 유지 |
 | UT_BASE_CH_001 | ACCEL_CTRL, BRK_CTRL, STEER_CTRL, CHS_GW | 가감속/조향 입력 및 Chassis 상태 확장 동작 검증 | Req_103,Req_104,Req_105,Req_110 | VC_103,VC_104,VC_105,VC_110 | Func_103,Func_104,Func_105,Func_110 | Flow_102,Flow_201 / Comm_102,Comm_201 | Var_101~Var_120,Var_204~Var_237 | 입력 반영 후 `150ms` 이내 상태값 일치, 주기 `100ms` 유지 |
-| UT_BASE_BODY_001 | HAZARD_CTRL, WINDOW_CTRL, DRV_STATE_MGR, BODY_GW | 차체 입력/출력(비상등/창문/운전자상태) 및 Body 확장 동작 검증 | Req_106,Req_107,Req_108,Req_111 | VC_106,VC_107,VC_108,VC_111 | Func_106,Func_107,Func_108,Func_111 | Flow_103,Flow_202 / Comm_103,Comm_202 | Var_121~Var_146,Var_238~Var_267 | 상태 전이 규칙과 출력이 기대값 일치, 주기 `100ms` 유지 |
+| UT_BASE_BODY_001 | HAZARD_CTRL, WINDOW_CTRL, DRV_STATE_MGR, BODY_GW | 차체 입력/출력(비상등/창문) 및 Body 확장 동작 검증 | Req_106,Req_107,Req_111 | VC_106,VC_107,VC_111 | Func_106,Func_107,Func_111 | Flow_103,Flow_202 / Comm_103,Comm_202 | Var_121~Var_146,Var_238~Var_267 | 상태 전이 규칙과 출력이 기대값 일치, 주기 `100ms` 유지 |
 | UT_BASE_IVI_001 | CLU_BASE_CTRL, INFOTAINMENT_GW, IVI_GW | 클러스터 기본 표시 및 IVI 확장 동작 검증 | Req_109,Req_111 | VC_109,VC_111 | Func_109,Func_111 | Flow_104,Flow_203 / Comm_104,Comm_203 | Var_147~Var_171,Var_268~Var_297 | 표시 항목 누락 없음, `50/100ms` 주기 규칙 충족 |
 | UT_BASE_EXT_BODY_001 | BODY_GW, DRV_STATE_MGR, WINDOW_CTRL, AMBIENT_CTRL | Body 확장 기능(HVAC/Seat/Mirror/Door/Wiper-Rain/Security) 유닛 검증 | Req_113,Req_114,Req_115,Req_116,Req_117,Req_118 | VC_113,VC_114,VC_115,VC_116,VC_117,VC_118 | Func_113,Func_114,Func_115,Func_116,Func_117,Func_118 | Flow_202 / Comm_202 | Var_238~Var_267 | 확장 상태/제어 프레임 수신 후 `150ms` 이내 정책 반영, 범위/매핑 규칙 일치 |
 | UT_BASE_EXT_IVI_001 | CLU_HMI_CTRL, INFOTAINMENT_GW, IVI_GW | IVI 확장 기능(Audio Focus/Voice/TTS 상태) 유닛 검증 | Req_119 | VC_119 | Func_119 | Flow_203 / Comm_203 | Var_268~Var_271,Var_289~Var_290 | 오디오/음성 상태 수신 후 `150ms` 이내 HMI 정책 매핑 반영 |
@@ -123,6 +123,7 @@
 
 | 버전 | 날짜 | 변경 사항 |
 |---|---|---|
+| 2.17 | 2026-03-06 | 미사용 체인 정리: `Req/VC/Func_108`을 `UT_BASE_001/UT_BASE_BODY_001` 추적 범위에서 제거하고 Baseline 범위를 `108 제외`로 동기화. |
 | 2.16 | 2026-03-05 | Validation 노드 명칭을 `VAL_SCENARIO_CTRL`/`VAL_BASELINE_CTRL`로 정리해 Req_041~043, Req_112 검증 체인 표기와 정합화. |
 | 2.15 | 2026-03-03 | V2 UT를 구현 기준으로 전환: 대상 모듈을 `WARN_ARB_MGR` 중심으로 정정하고 SIL 시나리오 15~19 운용 기준을 반영. |
 | 2.14 | 2026-03-03 | V2 추적 누락 보강: `UT_V2_RISK_001`에 `Req_122/VC_122/Func_122/Flow_122/Comm_122/Var_322~323`를 포함해 05 문서 Req 커버리지를 닫음. |

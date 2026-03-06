@@ -3,8 +3,8 @@
 **Document ID**: PROJ-03-FD
 **ISO 26262 Reference**: Part 4, Cl.7 (System Design)
 **ASPICE Reference**: SYS.3 (System Architectural Design)
-**Version**: 4.24
-**Date**: 2026-03-05
+**Version**: 4.27
+**Date**: 2026-03-06
 **Status**: Draft
 **Project Title**: 주행 상황 실시간 경고 시스템
 **Subtitle**: 구간 정보 및 긴급차량 접근 기반 앰비언트·클러스터 경보
@@ -17,7 +17,7 @@
 - 상단 표는 표준 양식 구조만 유지하고, 상세 추적 정보는 하단 표에 분리한다.
 - Panel은 테스트 자극/관측 인터페이스이며 기능 주체 ECU로 보지 않는다.
 - 통합 기본요구사항 구간은 기능 ID `Func_001~Func_043`으로 요구사항 ID(`Req_001~Req_043`)와 1:1 대응한다.
-- 차량 기본 기능 확장 요구(`Req_101~Req_119`)는 `Func_101~Func_119`로 별도 관리한다.
+- 차량 기본 기능 확장 요구(`Req_101~Req_107`, `Req_109~Req_119`)는 `Func_101~Func_107`, `Func_109~Func_119`로 별도 관리한다.
 - V2 확장 요구(`Req_120~Req_124`)는 `Func_120~Func_124`로 별도 관리하며, 본 문서에서는 구현 활성 상태로 유지한다.
 - 제출 전 현대/기아 및 OEM 기준 명칭으로 일괄 대체하되, 기능 ID/추적 ID는 유지한다.
 - ID 규칙 SoT는 `00f_CAN_ID_Allocation_Standard.md`를 따르며, 적용 참조는 `0303_Communication_Specification.md`를 사용한다.
@@ -28,7 +28,7 @@
 - `WARN_ARB_MGR`의 기능은 경보 우선순위 판정이며, CAN 비트 레벨 arbitration과 구분해 해석한다.
 - EMS는 문서 상위 계층에서 단일 논리 단말 `EMS_ALERT`로 정의하고, 내부 구현 모듈(`EMS_POLICE_TX`, `EMS_AMB_TX`, `EMS_ALERT_RX`)은 하단 매핑표에서만 분리 관리한다.
 - 약어 충돌 방지 규칙: `EMS_AMB_TX`의 `AMB`는 `Ambulance` 의미의 구현 literal이며, `Ambient`는 항상 `AMBIENT` 풀토큰으로 표기한다.
-- 본 사이클의 기능-요구 추적 범위는 `Req_001~043`, `Req_101~124`를 활성 범위로 유지한다.
+- 본 사이클의 기능-요구 추적 범위는 `Req_001~043`, `Req_101~107`, `Req_109~124`를 활성 범위로 유지한다.
 
 ---
 
@@ -70,7 +70,6 @@
 | ECU 동작 | 조향 기본 제어 | 조향 입력 상태 반영 | Vehicle Baseline | Req_105 / Func_105 / ST_BASE_CH_001 |
 | ECU 동작 | 비상등 기본 제어 | 비상등 On/Off 상태 반영 | Vehicle Baseline | Req_106 / Func_106 / ST_BASE_BODY_001 |
 | ECU 동작 | 창문 기본 제어 | 창문 개폐 상태 반영 | Vehicle Baseline | Req_107 / Func_107 / ST_BASE_BODY_001 |
-| ECU 동작 | 운전자 상태 입력 처리 | 운전자 상태 입력 전달 | Vehicle Baseline | Req_108 / Func_108 / ST_BASE_BODY_001 |
 | ECU 동작 | 클러스터 기본 표시 | 속도/기어/경고 기본 표시 반영 | Vehicle Baseline | Req_109 / Func_109 / ST_BASE_IVI_001 |
 | ECU 동작 | 도메인 게이트웨이 전달 | 도메인 경계 기반 메시지 전달 | Vehicle Baseline | Req_110 / Func_110 / IT_BASE_GW_001 |
 | ECU 동작 | 도메인 경계 유지 | 도메인 통신 경계/정책 유지 | Vehicle Baseline | Req_111 / Func_111 / IT_BASE_GW_001 |
@@ -104,7 +103,7 @@
 | Func_009 | Req_009 | AMBIENT_CTRL | 스쿨존 강화 경고 | 스쿨존 전용 강화 패턴 적용 | 입력: selectedAlertLevel / 출력: ambientMode |
 | Func_010 | Req_010 | ADAS_WARN_CTRL | 스쿨존 과속 경고 | 스쿨존 속도 초과 이벤트 판정 | 입력: vehicleSpeedNorm, speedLimitNorm, baseZoneContext / 출력: warningState |
 | Func_011 | Req_011 | ADAS_WARN_CTRL | 고속 장시간 무조향 감지 | 고속 구간 무조향 타이머 경고 | 입력: steeringInputNorm, baseZoneContext / 출력: warningState |
-| Func_012 | Req_012 | ADAS_WARN_CTRL | 무조향 경고 해제 | 고속도로 주의 경고 활성 상태에서 조향 입력 검출 시 경고 해제 | 입력: steeringInputNorm / 출력: warningState |
+| Func_012 | Req_012 | ADAS_WARN_CTRL | 무조향 경고 해제 | 고속도로 무조향 의심 경고 활성 상태에서 조향 입력 검출 시 경고 해제 | 입력: steeringInputNorm / 출력: warningState |
 | Func_013 | Req_013 | AMBIENT_CTRL | 유도구간 진입 전환 | 유도구간 진입 시 방향안내 모드 전환 | 입력: selectedAlertType, navDirection / 출력: ambientMode |
 | Func_014 | Req_014 | AMBIENT_CTRL | 좌우 방향 구분 표시 | navDirection 기준 좌/우 패턴 분기 | 입력: navDirection / 출력: ambientPattern |
 | Func_015 | Req_015 | AMBIENT_CTRL | 구간 전환 완화 | 전환 중 점멸 튐 현상 완화 | 입력: selectedAlertLevel / 출력: ambientPattern |
@@ -150,7 +149,6 @@
 | Func_105 | Req_105 | STEER_CTRL | 조향 입력 반영 | 조향 입력을 차량 상태/주의 판단 입력으로 전달 | 입력: steeringInput / 출력: SteeringState |
 | Func_106 | Req_106 | HAZARD_CTRL | 비상등 기본 제어 | 비상등 On/Off 입력을 상태 출력으로 반영 | 입력: HazardSwitch / 출력: HazardState |
 | Func_107 | Req_107 | WINDOW_CTRL | 창문 기본 제어 | 창문 개폐 입력을 창문 상태로 반영 | 입력: WindowCommand / 출력: WindowState |
-| Func_108 | Req_108 | DRV_STATE_MGR | 운전자 상태 반영 | 운전자 상태 입력(예: 졸음 단계)을 관련 도메인으로 전달 | 입력: DriverStateLevel / 출력: DriverStateInfo |
 | Func_109 | Req_109 | CLU_BASE_CTRL | 클러스터 기본 표시 | 속도/기어/경고 기본 상태를 클러스터에 표시 | 입력: ClusterSpeed, ClusterGear, warningTextCode / 출력: ClusterStatus |
 | Func_110 | Req_110 | DOMAIN_ROUTER | 도메인 게이트웨이 전달 | 도메인 간 입력/출력 메시지 라우팅 수행 | 입력: RoutingPolicy / 출력: BodyGatewayRoute |
 | Func_111 | Req_111 | DOMAIN_BOUNDARY_MGR | 도메인 경계 유지 | 도메인별 통신 경계/역할 분리를 유지 | 입력: RoutingPolicy / 출력: BoundaryStatus |
@@ -183,7 +181,7 @@
 - 하단 표는 `Func/Req/노드/입출력` 기준으로 추적성을 보강한다.
 - 추적 체인: `Req -> Func -> Flow -> Comm -> Var -> Code -> UT/IT/ST`.
 - 옵션1 네트워크 전달 경로 고정: `입력 CAN -> 도메인 GW 정규화 -> ETH_SW -> 중앙 경고코어 -> 도메인 GW -> 출력 CAN`.
-- `Func_101~Func_119`는 차량 기본 기능 확장 체인으로, 0302/0303/0304의 Flow/Comm/Var와 최신 도메인 DBC 기준으로 동기화되어야 한다.
+- `Func_101~Func_107`, `Func_109~Func_119`는 차량 기본 기능 확장 체인으로, 0302/0303/0304의 Flow/Comm/Var와 최신 도메인 DBC 기준으로 동기화되어야 한다.
 - `Func_120~Func_124`는 V2 확장 활성 체인으로 관리하며, 코드/DBC/05/06/07 변경을 동일 커밋 단위로 동기화한다.
 
 ## EMS 논리 단말-내부 모듈 매핑
@@ -210,6 +208,9 @@
 
 | 버전 | 날짜 | 변경 사항 |
 |---|---|---|
+| 4.27 | 2026-03-06 | 용어 정리: `Func_012` 설명을 `고속도로 무조향 의심 경고` 기준으로 통일해 비제품 기능 기반 해석 여지를 제거. |
+| 4.26 | 2026-03-06 | 미사용 체인 정리: `Req_108/Func_108` 항목을 Vehicle Baseline 활성 범위에서 제거하고 범위 문구를 `108 제외` 기준으로 동기화. |
+| 4.25 | 2026-03-06 | `Func_108` 설명의 특정 상태 예시 표현을 제거하고 운전자 상태 레벨 코드 전달으로 일반화. |
 | 4.24 | 2026-03-05 | ECU 명칭 관리 경계를 정리해 03 문서를 ECU 적용 참조로 유지하고, 명명 규칙 SoT를 `00e`로 고정. |
 | 4.23 | 2026-03-05 | Validation Harness 노드 명칭을 `VAL_SCENARIO_CTRL`/`VAL_BASELINE_CTRL`로 정리해 Req_041~043, Req_112 추적 표기 일관성을 강화. |
 | 4.22 | 2026-03-03 | 중간감사 대응 보강: 추적 체인을 `Req -> Func -> Flow -> Comm -> Var -> Code -> UT/IT/ST`로 통일하고, Vehicle Baseline `Req_101~Req_112` 검증 ID를 도메인 단위(`ST_BASE_PT/CH/BODY/IVI`, `IT_BASE_GW`, `ST_BASE_DIAG`)로 세분화. |

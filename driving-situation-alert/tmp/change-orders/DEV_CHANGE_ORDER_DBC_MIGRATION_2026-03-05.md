@@ -1,117 +1,72 @@
-# 개발팀 변경지시서: Validation DBC 통합 이관 + ADAS 도메인 신설
+# 개발팀 전달서 (잔여 항목): 제품 스코프 정합 정리
 
-문서 ID: DEV-CO-DBC-20260305  
-작성일: 2026-03-05  
+문서 ID: DEV-CO-DBC-20260305-R2  
+작성일: 2026-03-06  
 작성 주체: 문서작성팀  
 대상: CANoe 개발팀
 
-## 1. 목적
+## 0. 문서 목적
 
-- `test_can.dbc` 기반 Validation 프레임 운용을 도메인 DBC 구조로 통합해 명명 혼선을 제거한다.
-- 검증 하네스 성격은 유지하되, 제출/설명 시 교과서적 도메인 구조로 정렬한다.
-- ADAS 기능 소유 신호/메시지를 ADAS 도메인 DBC로 분리해 도메인 경계와 책임을 명확히 한다.
+- 본 문서는 기존 DBC/명명 정리 작업의 **완료 항목을 제외**하고, 현재 남아 있는 개발팀 반영 필요사항만 전달한다.
+- 핵심 목적은 제품 체인(무조향 경고)과 비제품 하네스 항목(과거 DriverState/gaze 흔적)의 경계를 런타임 아티팩트까지 일치시키는 것이다.
 
-## 2. 배경
+## 1. 현재 문서팀 결정(고정)
 
-- 현재 `frmTestResultMsg(0x230)`, `frmBaseTestResultMsg(0x231)`는 `test_can.dbc`에 존재한다.
-- 해당 구조는 실행상 유효하나, 명칭 오해 가능성이 높아 개발/감사 설명 일관성 개선이 필요하다.
-- 현재 ADAS 소유 메시지는 `chassis_can.dbc`/`eth_backbone_can_stub.dbc`에 분산되어 있어 도메인 소유 경계가 불명확하다.
-- 본 변경은 기능 추가가 아니라 DBC 구조/명명/소유 경계 정리다.
+- 제품 기능 체인: `고속도로 무조향 기반 주의저하 의심 경고` (`Req_011/012/038`)
+- 비제품 하네스: `Test/*`, `V2X/*`, `UiRender/*`만 허용
+- 제품 기능처럼 보이는 `DriverState/gaze` 계열 표현은 문서체인(00c/00d/01/03/04/0304)에서 제거 완료
 
-## 2-1. 준수 표준 (필수)
+## 2. 개발팀 잔여 반영 항목 (In Scope)
 
-- 명명 상위 SoT: `driving-situation-alert/00e_ECU_Naming_Standard.md`
-- ID 상위 SoT: `driving-situation-alert/00f_CAN_ID_Allocation_Standard.md`
-- ECU 명칭 상세 매핑 기준: `00e_ECU_Naming_Standard.md`의 `4. ECU 명명표 (Canonical Matrix)`
-- 공식 노드명은 Canonical 명칭 유지:
-  - `VAL_SCENARIO_CTRL`, `VAL_BASELINE_CTRL`
-  - `ACCEL_CTRL`, `BRK_CTRL`, `STEER_CTRL`, `ENG_CTRL`, `NAV_CTX_MGR`, `AMBIENT_CTRL`
-- 비권장 alias(`SIL_TST`, `VEH_BASE_TST`, `ACCL_CTRL`, `STRG_CTRL`, `BRAKE_CTRL`, `STEERING_CTRL`, `ENGINE_CTRL`, `NAV_CONTEXT_MGR`, `BCM_AMBIENT_CTRL`)은 산출물 반영 금지.
-- ADAS 신규 CAN ID는 예약 블록(`0x330~0x34F`)에서 우선 할당하고, 기존 ID와 충돌 0건을 증빙한다.
+1. 활성 런타임 경로에서 DriverState/gaze 잔여 제거
+- 대상(활성 경로):
+  - `canoe/src/capl/ecu/DRV_STATE_MGR.can`
+  - `canoe/src/capl/output/BODY_GW.can`
+  - `canoe/cfg/channel_assign/Body/DRV_STATE_MGR.can`
+  - `canoe/cfg/channel_assign/Body/BODY_GW.can`
+  - `canoe/project/sysvars/project.sysvars`
+  - `canoe/databases/body_can.dbc` 내 `frmDriverStateMsg` 계열
+  - `canoe/docs/operations/CAN_MESSAGE_OWNERSHIP_MATRIX.md` 관련 행
 
-## 3. 변경 범위 (In Scope)
+2. 통신/DB 정합
+- `frmDriverStateMsg`를 활성 제품 경로에서 제거하거나, 불가피 시 별도 하네스 전용으로 분리(제품 Req 체인 미연계 명시).
+- 문서 SoT 기준(01/03/0302/0303/0304/04)과 DBC/CAPL 간 불일치 0건 보장.
 
-1. DBC 구조 변경
-- `canoe/databases/test_can.dbc`의 Validation 프레임(`0x230`, `0x231`)을 도메인 DBC로 이관한다.
-- 기본 권장 대상: `canoe/databases/chassis_can.dbc`
-- 결과적으로 활성 DBC 집합에서 `test_can.dbc` 의존을 제거한다.
+3. cfg/생성물 동기화
+- GUI-first 원칙으로 cfg 재저장 후 관련 생성물(`*.cfg.ini`, `*.stcfg`) 포함 정합 점검.
 
-2. 노드(ECU) 명칭 정리
-- 기존 Validation 전용 노드명:
-  - `SIL_TEST_CTRL`
-  - `VEHICLE_BASE_TEST_CTRL`
-- 신규 명칭(권장):
-  - `VAL_SCENARIO_CTRL`
-  - `VAL_BASELINE_CTRL`
-- CAPL, DBC, 문서, 매트릭스에서 동일 명칭으로 일괄 정합한다.
+## 3. 변경 제외 (Out of Scope)
 
-3. 참조 정리
-- CANoe 설정(`cfg`)의 `test_can.dbc` 참조 제거 및 이관 DBC 참조 반영
-- CAPL 송수신 메시지 타입/노드명 참조 일괄 반영
-- 운영 문서의 DBC Ownership/SoT 표기 정합
+- 무조향 경고 로직 자체 변경
+- TTC/위험도/Fail-safe 임계값 변경
+- 신규 기능 추가(후진/주차 신규 시나리오 포함)
 
-4. ADAS 도메인 신설
-- 신규 도메인 DBC `canoe/databases/adas_can.dbc`를 생성한다.
-- ADAS 소유 메시지(`ADAS_WARN_CTRL` 송신/소유 프레임)를 `adas_can.dbc` 기준으로 이관한다.
-- 이관 후 기존 DBC의 중복 정의는 제거해 ID/소유 충돌을 방지한다.
-- 도메인 분리 원칙(Chassis/Body/Infotainment/Powertrain/ADAS)을 문서와 설정에 동일 반영한다.
+## 4. 수용 기준 (Acceptance)
 
-## 4. 변경 제외 (Out of Scope)
+1. 스코프 정합
+- 활성 경로에서 `DriverState/gaze` 제품 기능 해석 요소 0건
+- 제품 기능 설명이 `무조향 경고` 체인과 1:1 일치
 
-- 경고 로직/우선순위 정책/ETA 규칙 등 기능 동작 변경
-- Ethernet 계약 체계 변경
-- 시나리오 정의 자체(케이스 추가/삭제)
-- ADAS 위험도 산정 알고리즘/임계값 변경
-
-## 5. 구현 지시 상세
-
-1. 메시지 이관
-- `frmTestResultMsg` (`0x230`, DLC=1)
-- `frmBaseTestResultMsg` (`0x231`, DLC=8)
-- 기존 Signal 정의/bit layout/값 범위/VAL table 불변 유지
-
-2. CAPL 연계 유지
-- 시나리오 결과 출력 경로 유지
-- 베이스 시나리오 집계 출력 경로 유지
-- 송신 Trigger(Event) 및 로그 포맷 의미 변경 금지
-
-3. 설정/운영 파일 정합
-- DBC ownership 문서의 소유 DBC명 업데이트
-- `test_can.dbc` 참조 남아있는 경로 0건 보장
-
-4. ADAS 도메인 이관 상세
-- `adas_can.dbc`에 ADAS 소유 프레임과 시그널을 등록하고 송수신 ECU를 명시한다.
-- 기존 `chassis_can.dbc`/`eth_backbone_can_stub.dbc`의 ADAS 소유 항목은 ownership 기준으로 정리한다.
-- 신규/이관 ID는 기존 활성 ID 및 예약 구간(진단/검증 예약 포함)과 충돌하지 않도록 검증한다.
-- 0302/0303/0304 및 DBC ownership 표를 동일 커밋으로 동기화한다.
-
-## 6. 수용 기준 (Acceptance Criteria)
-
-1. 동작 동일성
-- 기존 SIL 시나리오 실행 결과(Pass/Fail)가 변경 전과 동일
-- `0x230`, `0x231` 출력 타이밍/값 의미 동일
-
-2. 정합성
-- 활성 경로 기준 `test_can.dbc` 참조 0건
-- DBC/CFG/CAPL/문서 간 노드명 불일치 0건
-- 활성 DBC 집합에 `adas_can.dbc` 포함
-- ADAS 소유 프레임의 도메인 소유자(owner)가 `adas_can.dbc` 기준으로 일관
+2. 실행 동등성
+- 기존 핵심 시나리오 결과 유지:
+  - 무조향 경고 발생/해제
+  - 긴급 경고/중재
+  - V2 위험도/Fail-safe
 
 3. 추적성
-- Req/Func/Flow/Comm/Var/Test 체인에서 Validation 항목 참조 끊김 0건
-- Req/Func/Flow/Comm/Var/Test 체인에서 ADAS 도메인 항목 참조 끊김 0건
+- `Req -> Func -> Flow -> Comm -> Var -> Code -> UT/IT/ST` 단절 0건
 
-## 7. 현재 확인 체크리스트 (문서팀 -> 개발팀)
+## 5. 개발팀 제출물
 
-1. 활성 cfg/운영 문서에서 `test_can.dbc` 참조가 0건인지 확인한다.
-2. 활성 경로(CAPL/DBC/cfg) 기준 ECU 명칭이 `00e` Canonical과 일치하는지 확인한다.
-3. `ACCEL_CTRL`/`STEER_CTRL` 전환이 적용되었는지 확인한다 (`ACCL_CTRL`/`STRG_CTRL`는 legacy-only).
-4. Legacy 명칭/파일은 `v1_legacy` 경로로 한정되어 있는지 확인한다.
-5. Validation 프레임(`0x230`, `0x231`)의 의미/타이밍이 변경 전과 동일한지 회귀 결과를 제출한다.
-6. ADAS ownership(`0x11F`, `0x313`)과 CAN ID 충돌 0건 증빙을 제출한다.
+1. 변경 파일 목록(DBC/CAPL/sysvars/cfg)
+2. 잔여 문자열 스캔 결과:
+- `DriverState`
+- `gaze`
+- `frmDriverStateMsg`
+3. 핵심 회귀 결과 요약(무조향/긴급/V2)
+4. 최종 기준 커밋 해시
 
-## 8. 전달 메모
+## 6. 전달 메모
 
-- 본 지시는 "Validation-only 경로를 제거"하는 지시가 아니다.
-- 본 지시는 "Validation 프레임을 도메인 DBC 체계로 통합 정리"하는 지시다.
-- 본 지시는 "ADAS 기능 신설"이 아니라 "ADAS 도메인 소유 경계 명확화" 지시다.
+- 본 전달은 기능 추가 지시가 아니라 **제품 스코프 정합 마감 지시**다.
+- 필요 시 하네스 보조 코드는 별도 브랜치/별도 네임스페이스로만 유지하고, 메인 제품 경로와 혼합하지 않는다.
