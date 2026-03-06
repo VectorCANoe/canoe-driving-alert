@@ -38,13 +38,13 @@
 
 | ID | 항목 | 완료기준 | 상태 | 증빙 문서/파일 |
 |---|---|---|---|---|
-| M40-01 | 중간보고 제출물 정합 | 중간보고 제출본을 `PPT + 엑셀 + DBC`로 버전/날짜 고정 | [~] | `driving-situation-alert/TMP_MID_AUDIT_MAIN.md` (제출 hash/날짜 고정 잔여) |
-| M40-15 | 중간보고 엑셀 포맷 정합 | 엑셀 첫 탭에 프로젝트 개요 추가 + 팀 간 비교 가능한 탭/컬럼 구조 유지 | [ ] | `driving-situation-alert/TMP_MID_AUDIT_MAIN.md`, 중간보고 엑셀 제출본 |
+| M40-01 | 중간보고 제출물 정합 | 중간보고 제출본을 `PPT + 엑셀 + DBC`로 버전/날짜 고정 | [x] | `driving-situation-alert/TMP_MID_AUDIT_MAIN.md`, `driving-situation-alert/tmp/reports/M40_EVIDENCE_INDEX.md` |
+| M40-15 | 중간보고 엑셀 포맷 정합 | 엑셀 첫 탭에 프로젝트 개요 추가 + 팀 간 비교 가능한 탭/컬럼 구조 유지 | [x] | `driving-situation-alert/TMP_MID_AUDIT_MAIN.md`, `driving-situation-alert/tmp/reports/M40_EVIDENCE_INDEX.md` |
 | M40-02 | 도메인 DBC 분리/명명 정리 | 도메인 DBC 구조 유지 + `test_can` 제출 해석 문구 고정 | [x] | `canoe/databases/*.dbc`, `driving-situation-alert/0303_Communication_Specification.md` |
 | M40-03 | Ethernet SoT 분리 | CAN DBC와 ETH 계약 원본을 분리 명시 | [x] | `canoe/docs/operations/ETH_INTERFACE_CONTRACT.md`, `driving-situation-alert/0302_NWflowDef.md`, `driving-situation-alert/0303_Communication_Specification.md` |
 | M40-04 | test_can 해석 정리 | `test_can`을 공통/검증용으로 정의하고 오해 방지 설명 확보 | [x] | `driving-situation-alert/0303_Communication_Specification.md` |
-| M40-05 | 네트워크 도식 수정 | Ethernet 버스선 제거 + 스타형 연결 그림 반영 | [~] | `driving-situation-alert/02_Concept_design.md`, `driving-situation-alert/tmp/assets/current/02_networkflow.png` |
-| M40-06 | Panel 우선순위 반영 | `차량 화면(1) / 제어패널(2) / 상태모니터(3)` 기준을 설계/테스트에 반영 | [~] | `driving-situation-alert/04_SW_Implementation.md`, `driving-situation-alert/07_System_Test.md` (캡처 증빙 링크 잔여) |
+| M40-05 | 네트워크 도식 수정 | Ethernet 버스선 제거 + 스타형 연결 그림 반영 | [x] | `driving-situation-alert/02_Concept_design.md`, `driving-situation-alert/tmp/assets/current/02_networkflow.png`, `driving-situation-alert/tmp/reports/M40_EVIDENCE_INDEX.md` |
+| M40-06 | Panel 우선순위 반영 | `차량 화면(1) / 제어패널(2) / 상태모니터(3)` 기준을 설계/테스트에 반영 | [x] | `driving-situation-alert/04_SW_Implementation.md`, `driving-situation-alert/07_System_Test.md`, `driving-situation-alert/tmp/reports/M40_EVIDENCE_INDEX.md` |
 | M40-07 | KPI 과분석 배제 | 분석 지표 중심 대신 `설계대로 동작 검증` 중심으로 정리 | [x] | `driving-situation-alert/05_Unit_Test.md`, `driving-situation-alert/06_Integration_Test.md`, `driving-situation-alert/07_System_Test.md` |
 | M40-08 | Req 성격 분리 반영 | `Req_041~043`, `Req_112`를 검증환경/품질 성격으로 명시 | [x] | `driving-situation-alert/01_Requirements.md`, `driving-situation-alert/00c_Req_Classification_and_Safety_Profile.md` |
 | M40-09 | 주기/이벤트 명시 | 0302/0303 핵심 Comm에 Period/Event 표기 누락 없음 | [x] | `driving-situation-alert/0302_NWflowDef.md`, `driving-situation-alert/0303_Communication_Specification.md` |
@@ -54,12 +54,10 @@
 | M40-13 | Ethernet DBC 경계 명시 | “Ethernet에는 CAN DBC 직접 적용하지 않음” 문구 고정 | [x] | `driving-situation-alert/0302_NWflowDef.md`, `driving-situation-alert/0303_Communication_Specification.md` |
 | M40-14 | DBC ID 충돌/예약영역 대응 | UDS 예약영역/ID 충돌 대응 원칙과 디펜스 문구 준비 | [x] | `driving-situation-alert/0303_Communication_Specification.md`, 본 문서 `4) ID 디펜스 Q&A 메모` |
 
-## 3) 즉시 실행 To-do (이번 사이클)
+## 3) 즉시 실행 To-do (다음 사이클)
 
-1. `02_Concept_design.md`와 발표용 그림에서 Ethernet 버스형 표현을 완전히 제거하고 스타형만 남긴다.
-2. Panel 증빙(차량 화면/제어패널/상태모니터)을 `07` 기준으로 링크/캡처까지 채운다.
-3. 중간보고 제출본에 대해 `PPT + 엑셀 + DBC` 버전/hash/date를 `TMP_MID_AUDIT_MAIN.md`에 잠근다.
-4. 중간보고 엑셀 첫 탭(프로젝트 개요)과 비교 가능한 탭/컬럼 포맷 유지 여부를 제출 전 점검한다.
+1. 제출 직전 `TMP_MID_AUDIT_MAIN.md`의 lock anchor를 최종 제출 커밋으로 1회 재동기화한다.
+2. `canoe/logging/evidence/ST/` 경로에 실측 캡처/로그를 누적하고 `M40_EVIDENCE_INDEX.md` 링크를 갱신한다.
 
 ## 4) ID 디펜스 Q&A 메모 (발표용)
 
@@ -74,7 +72,7 @@
 
 - 이 문서는 회의록 분석 기반 내부 실행 메모다.
 - 회의록 원문 발화(시간대)는 `1)` 표를 기준으로 추적한다.
-- 현재 잔여 핵심 항목은 `M40-01`, `M40-05`, `M40-06`, `M40-15`다.
+- 현재 Must 항목은 문서 기준 완료이며, 잔여는 제출 직전 증빙 업데이트(운영 작업)다.
 ---
 # 회의록 (2026.03.03)
 

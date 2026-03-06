@@ -1,9 +1,26 @@
 # TMP Mid-Audit Pack (main)
 
 - Baseline branch: `main`
-- Baseline commit: `0a469f15aaef44e6e7ad5516b4e5b575265a63ac`
-- Baseline date: `2026-03-03 19:03:57 +0900`
+- Baseline commit: `3ef849a`
+- Baseline date: `2026-03-06 18:29:14 +0900`
 - Purpose: Mid-audit frozen reference + one-page answer + random rehearsal set
+
+## 0) Mid-Report Submission Lock (M40-01, M40-15)
+
+- Lock timestamp: `2026-03-06`
+- Lock anchor: `main@3ef849a`
+- Scope lock:
+  - `PPT`: `driving-situation-alert/02_Concept_design.md`, `driving-situation-alert/tmp/assets/current/02_concept.png`, `driving-situation-alert/tmp/assets/current/02_networkflow.png`
+  - `Excel`: 제출본 원본은 외부 저장소(비Git) 관리, 본 문서에서 점검 결과와 포맷 기준을 잠금
+  - `DBC`: `canoe/databases/*.dbc` (도메인 분리 제출 기준)
+
+### Excel format gate (submission checklist)
+
+| Check ID | 점검 항목 | 기준 | 결과 | 비고 |
+|---|---|---|---|---|
+| XL-01 | 첫 탭 프로젝트 개요 | 첫 탭에 프로젝트 개요 존재 | PASS | 멘토 지시 반영 항목 잠금 |
+| XL-02 | 팀 간 비교 가능한 탭/컬럼 구조 | 요구/기능/통신/검증 탭 구조 일관성 | PASS | 비교 평가 가능 형태 유지 |
+| XL-03 | 주기/이벤트 명시 | Comm 항목에 Period/Event 누락 없음 | PASS | `0302/0303` SoT 기반 점검 |
 
 ## 1) Mid-Audit Baseline Freeze (03/0301/0302/0303/0304)
 
@@ -74,4 +91,3 @@
    - Var (`0304`)
    - Code file (`canoe/src/capl/...`)
    - UT/IT/ST (`05`,`06`,`07`)
-
