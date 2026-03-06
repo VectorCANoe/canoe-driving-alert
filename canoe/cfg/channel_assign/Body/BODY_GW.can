@@ -59,8 +59,8 @@ on timer tBodyCycle
     ambientPattern = 0;
     if (alertLevel >= 6)
     {
-      /* Req_035: emergency color distinct from zone colors
-         Req_036: emergency pattern distinct from zone patterns
+      /* Req_035: emergency color/pattern distinct from zone policies
+         Legacy Req_036 merged into Req_035
          6=RED/BLUE(police)  7=RED/WHITE(ambulance) */
       ambientColor   = (alertType == 2) ? 7 : 6;
       ambientPattern = (alertType == 2) ? 7 : 6;
@@ -72,18 +72,18 @@ on timer tBodyCycle
     }
     else if (alertType == 4)
     {
-      ambientColor   = 4; /* orange - Req_038 highway fixed color */
-      ambientPattern = 4; /* pulse  - Req_038 highway fixed pattern */
+      ambientColor   = 4; /* orange - Req_037 highway fixed color (Legacy Req_038) */
+      ambientPattern = 4; /* pulse  - Req_037 highway fixed pattern (Legacy Req_038) */
     }
     else if (alertType == 5)
     {
-      ambientColor   = 5; /* cyan      - Req_039 guide left */
-      ambientPattern = 2; /* flow-left - Req_039 guide left fixed pattern */
+      ambientColor   = 5; /* cyan      - Req_037 guide left (Legacy Req_039) */
+      ambientPattern = 2; /* flow-left - Req_037 guide left fixed pattern (Legacy Req_039) */
     }
     else if (alertType == 6)
     {
-      ambientColor   = 5; /* cyan       - Req_039 guide right */
-      ambientPattern = 3; /* flow-right - Req_039 guide right fixed pattern */
+      ambientColor   = 5; /* cyan       - Req_037 guide right (Legacy Req_039) */
+      ambientPattern = 3; /* flow-right - Req_037 guide right fixed pattern (Legacy Req_039) */
     }
     else if (alertLevel > 0)
     {

@@ -292,7 +292,7 @@ void applyScenarioPreset(int scenarioId)
   }
   else if (scenarioId == 18)
   {
-    /* Req_124: forced fail-safe gating */
+    /* Req_127 + Req_128 + Req_129 (Legacy Req_124): forced fail-safe gating */
     gLockVehicleSpeed = 70;
     gLockAlertState = 1;
     gLockEmergencyType = 1;
@@ -302,7 +302,7 @@ void applyScenarioPreset(int scenarioId)
   }
   else if (scenarioId == 19)
   {
-    /* Req_122: decel assist + emergency warning sync */
+    /* Req_125 + Req_126 (Legacy Req_122): decel assist + emergency warning sync */
     gLockRoadZone = 1;
     gLockSpeedLimit = 30;
     gLockVehicleSpeed = 75;
@@ -413,18 +413,18 @@ void evaluateScenarioResult()
   }
   else if (gCurrentScenarioId == 3)
   {
-    /* Req_011 + Req_038: highway no-steer, fixed orange pulse pattern */
+    /* Req_011 + Req_037 (Legacy Req_038): highway no-steer, fixed orange pulse pattern */
     result = (level == 2 && type == 4 && ambientColor == 4 && ambientPattern == 4) ? 1 : 0;
   }
   else if (gCurrentScenarioId == 4)
   {
-    /* Req_017 + Req_035 + Req_036: police emergency, distinct red-blue color+pattern */
+    /* Req_017 + Req_035 (Legacy Req_036): police emergency, distinct red-blue color+pattern */
     result = (level == 6 && type == 1 && code == 101 && duplicatePopupGuard > 0 &&
               ambientColor == 6 && ambientPattern == 6) ? 1 : 0;
   }
   else if (gCurrentScenarioId == 5)
   {
-    /* Req_018 + Req_035 + Req_036: ambulance emergency, distinct red-white color+pattern */
+    /* Req_017 + Req_035 (Legacy Req_018/036): ambulance emergency, distinct red-white color+pattern */
     result = (level == 7 && type == 2 && code == 202 && duplicatePopupGuard > 0 &&
               ambientColor == 7 && ambientPattern == 7) ? 1 : 0;
   }
@@ -434,12 +434,12 @@ void evaluateScenarioResult()
   }
   else if (gCurrentScenarioId == 7)
   {
-    /* Req_013 + Req_039: guide left, cyan flow-left pattern */
+    /* Req_013 + Req_037 (Legacy Req_039): guide left, cyan flow-left pattern */
     result = (level == 2 && type == 5 && ambientColor == 5 && ambientPattern == 2 && code == 31) ? 1 : 0;
   }
   else if (gCurrentScenarioId == 8)
   {
-    /* Req_014 + Req_039: guide right, cyan flow-right pattern */
+    /* Req_014 + Req_037 (Legacy Req_039): guide right, cyan flow-right pattern */
     result = (level == 2 && type == 6 && ambientColor == 5 && ambientPattern == 3 && code == 32) ? 1 : 0;
   }
   else if (gCurrentScenarioId == 9)
@@ -495,13 +495,13 @@ void evaluateScenarioResult()
   }
   else if (gCurrentScenarioId == 18)
   {
-    /* Req_124: fail-safe blocks decel assist but keeps minimum warning path */
+    /* Req_127 + Req_128 + Req_129 (Legacy Req_124): fail-safe blocks decel assist but keeps minimum warning path */
     result = (failSafeMode >= 1 && decelAssistReq == 0 &&
               level >= 6 && code >= 100) ? 1 : 0;
   }
   else if (gCurrentScenarioId == 19)
   {
-    /* Req_122: decel assist active with emergency-priority sync to renderer */
+    /* Req_125 + Req_126 (Legacy Req_122): decel assist active with emergency-priority sync to renderer */
     result = (decelAssistReq == 1 && level == 7 && type == 2 &&
               uiRenderAlertType == 2 && uiRenderTextCode >= 200 &&
               ambientColor == 7 && code >= 200) ? 1 : 0;
