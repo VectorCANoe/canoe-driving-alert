@@ -2,6 +2,24 @@ name: Doc-Code Sync Gate
 
 on:
   workflow_dispatch:
+  push:
+    paths:
+      - "driving-situation-alert/**"
+      - "canoe/src/**"
+      - "canoe/project/sysvars/**"
+      - "canoe/databases/**"
+      - "scripts/gates/doc_code_sync_gate.py"
+      - "scripts/run.py"
+      - ".github/workflows/doc-code-sync-gate.yml"
+  pull_request:
+    paths:
+      - "driving-situation-alert/**"
+      - "canoe/src/**"
+      - "canoe/project/sysvars/**"
+      - "canoe/databases/**"
+      - "scripts/gates/doc_code_sync_gate.py"
+      - "scripts/run.py"
+      - ".github/workflows/doc-code-sync-gate.yml"
   schedule:
     - cron: "0 0 * * *"
 

@@ -8,6 +8,12 @@ on:
       - "scripts/gates/cli_readiness_gate.py"
       - "pyproject.toml"
       - ".github/workflows/cli-readiness-gate.yml"
+  pull_request:
+    paths:
+      - "scripts/run.py"
+      - "scripts/gates/cli_readiness_gate.py"
+      - "pyproject.toml"
+      - ".github/workflows/cli-readiness-gate.yml"
 
 jobs:
   gate:

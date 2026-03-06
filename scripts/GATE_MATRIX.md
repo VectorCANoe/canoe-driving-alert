@@ -31,13 +31,12 @@ Legacy references were updated to the new path in runbook docs and CI workflows.
 
 | Workflow | Runs Which Gate | Trigger |
 |---|---|---|
-| `.github/workflows/cfg-hygiene-gate.yml` | `cfg-hygiene`, `capl-sync` | `push` (selected paths), `workflow_dispatch` |
-| `.github/workflows/doc-code-sync-gate.yml` | `doc-sync` | `schedule` (daily), `workflow_dispatch` |
-| `.github/workflows/cli-readiness-gate.yml` | `cli-readiness` | `push` (CLI-related paths), `workflow_dispatch` |
+| `.github/workflows/cfg-hygiene-gate.yml` | `cfg-hygiene`, `capl-sync` | `push`, `pull_request` (selected paths), `workflow_dispatch` |
+| `.github/workflows/doc-code-sync-gate.yml` | `doc-sync` | `push`, `pull_request` (doc/code selected paths), `schedule` (daily), `workflow_dispatch` |
+| `.github/workflows/cli-readiness-gate.yml` | `cli-readiness` | `push`, `pull_request` (CLI-related paths), `workflow_dispatch` |
 
 Notes:
 
-- `doc-sync` is currently not on generic `push`; it is scheduled + manual.
 - `cfg-hygiene` includes mojibake checks for `.can/.dbc/.sysvars` (strict fail class).
 - `capl-sync` is a file-name + content-hash equality gate, not an encoding gate.
 

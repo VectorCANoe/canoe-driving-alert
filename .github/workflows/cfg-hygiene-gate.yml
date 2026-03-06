@@ -9,6 +9,13 @@ on:
       - "scripts/gates/check_capl_sync.py"
       - "scripts/run.py"
       - ".github/workflows/cfg-hygiene-gate.yml"
+  pull_request:
+    paths:
+      - "canoe/**"
+      - "scripts/gates/cfg_hygiene_gate.py"
+      - "scripts/gates/check_capl_sync.py"
+      - "scripts/run.py"
+      - ".github/workflows/cfg-hygiene-gate.yml"
 
 jobs:
   gate:
