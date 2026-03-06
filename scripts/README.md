@@ -63,6 +63,7 @@ Then you can use:
 - Daily work: only use `scripts/run.py`
 - Low-level scripts: call directly only when debugging a specific tool
 - Script governance/inventory: `scripts/SCRIPT_INVENTORY.md`
+- Gate overview/mapping: `scripts/GATE_MATRIX.md`
 
 ## Compatibility
 

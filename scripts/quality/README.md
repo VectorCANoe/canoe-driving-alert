@@ -21,3 +21,4 @@ Note:
   - `canoe/tmp/reports/verification/cli_readiness_gate.json`
   - `canoe/tmp/reports/verification/cli_readiness_gate.md`
 - This allows CAPL evidence lines to add fields without breaking parsing.
+- Gate purpose/CI mapping reference: `scripts/GATE_MATRIX.md`
