@@ -76,13 +76,13 @@
 - 00c_Req_Classification_and_Safety_Profile.md: Version 1.5 (Draft, Internal Baseline Locked)
 - 00d_HARA_Worksheet.md: Version 1.3 (Draft, Internal Baseline Approved)
 - 00e_ECU_Naming_Standard.md: Version 2.0 (Released, SoT Fixed)
-- 00f_CAN_ID_Allocation_Standard.md: Version 3.3 (Draft, Policy SoT)
+- 00f_CAN_ID_Allocation_Standard.md: Version 3.5 (Draft, Policy SoT)
 - 01_Requirements.md: Version 5.27 (Draft)
 - 02_Concept_design.md: Version 2.6 (In Progress, Figure Build)
 - 03_Function_definition.md: Version 4.28 (Draft)
 - 0301_SysFuncAnalysis.md: Version 3.24 (Draft)
-- 0302_NWflowDef.md: Version 3.19 (Draft)
-- 0303_Communication_Specification.md: Version 3.22 (Draft)
+- 0302_NWflowDef.md: Version 3.20 (Draft)
+- 0303_Communication_Specification.md: Version 3.23 (Draft)
 - 0304_System_Variables.md: Version 2.21 (Draft)
 - 04_SW_Implementation.md: Version 2.20 (Draft)
 - 05_Unit_Test.md: Version 2.18 (Draft)
@@ -105,6 +105,7 @@
    - Keep Canonical node names in trace docs; do not introduce unofficial abbreviations
 5. Keep SoT sync rule active:
    - Domain CAN DBC (`*_can.dbc`) + Ethernet contract (`ETH_INTERFACE_CONTRACT.md`) -> `0302/0303/0304`
+   - `Comm_130~Comm_133`는 `ETH_INTERFACE_CONTRACT.md v1.2`에 `E213~E216`이 반영되기 전까지 Pre-Activation/Pending 상태로 유지
 6. Reflect Mentoring MET40 open items in docs/evidence:
    - `M40-01`, `M40-02`, `M40-04`, `M40-05`, `M40-06`, `M40-11`, `M40-14`
 

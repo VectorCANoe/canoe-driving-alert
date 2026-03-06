@@ -3,7 +3,7 @@
 **Document ID**: PROJ-0302-NFD
 **ISO 26262 Reference**: Part 4, Cl.7 (System Design)
 **ASPICE Reference**: SYS.3 (System Architectural Design)
-**Version**: 3.19
+**Version**: 3.20
 **Date**: 2026-03-06
 **Status**: Draft
 **Project Title**: 주행 상황 실시간 경고 시스템
@@ -35,6 +35,7 @@
 - Vehicle Baseline(Req_101~Req_107, Req_109~Req_119) 플로우(`Flow_101~Flow_106`, `Flow_201~Flow_205`)는 본 문서에서 확정 정의하고, DBC는 이 정의를 구현 대상으로 사용한다.
 - V2 확장 요구(`Req_120~Req_121`, `Req_123`, `Req_125~Req_129`) 플로우(`Flow_120~Flow_124`)는 구현 활성 상태로 관리하며, 관련 DBC/코드/테스트를 동일 커밋에서 동기화한다.
 - ADAS 객체 인지 확장 요구(`Req_130~Req_139`) 플로우(`Flow_130~Flow_133`)는 Pre-Activation(설계 선반영) 상태로 관리하며, 구현 착수 시 0303/0304/04/05/06/07을 동일 커밋에서 동기화한다.
+- `Flow_130~Flow_133` 활성 SoT 승격 조건은 `ETH_INTERFACE_CONTRACT.md v1.2`에 `E213~E216` 계약이 반영되는 것이다.
 - EMS는 상위 문서 레벨에서 논리 단말 `EMS_ALERT`로 표기하고, 상단 표의 `EMS_POLICE_TX/EMS_AMB_TX/EMS_ALERT_RX` 열은 내부 구현 모듈 분해 관점으로만 해석한다.
 - 약어 충돌 방지 규칙: `EMS_AMB_TX`의 `AMB`는 `Ambulance` 의미의 구현 literal이며, `Ambient`는 항상 `AMBIENT` 풀토큰으로 표기한다.
 
@@ -306,7 +307,7 @@
 | Chassis Domain Profile | Flow_102, Flow_106(일부), Flow_105(헬스 연계), Flow_201 | `canoe/databases/chassis_can.dbc` | 0x122~0x2A0(0x1C1 제외) 범위 준수 |
 | ADAS Domain CAN Profile | Flow_120, Flow_201(일부) | `canoe/databases/adas_can.dbc` | 0x1C1/0x1C3 범위 준수 (ADAS 소유 프레임) |
 | ETH Backbone CAN Stub Profile | Flow_004, Flow_005, Flow_006, Flow_121, Flow_124 | `canoe/databases/eth_backbone_can_stub.dbc` | 0x1C0/0x1C2/0x1C4/0x111 범위 준수 |
-| ADAS Object Extension Profile | Flow_130~Flow_133 | `canoe/docs/operations/ETH_INTERFACE_CONTRACT.md` | Pre-Activation, 객체 기반 위험/강등/이벤트 계약 |
+| ADAS Object Extension Profile (Pending) | Flow_130~Flow_133 | `canoe/docs/operations/ETH_INTERFACE_CONTRACT.md` (v1.2 예정) | Pre-Activation, `E213~E216` 계약 반영 전에는 활성 SoT로 사용하지 않음 |
 | Powertrain Domain Profile | Flow_101, Flow_105, Flow_204 | `canoe/databases/powertrain_can.dbc` | 0x110~0x2A8 범위 준수 |
 | Body Domain Profile | Flow_103, Flow_105, Flow_202 | `canoe/databases/body_can.dbc` | 0x289~0x291, 0x277~0x292 범위 준수 |
 | Infotainment Domain Profile | Flow_104, Flow_105, Flow_203, Flow_205 | `canoe/databases/infotainment_can.dbc` | 0x2A3, 0x280~0x288, 0x289~0x295 범위 준수 |
@@ -487,6 +488,7 @@
 
 | 버전 | 날짜 | 변경 사항 |
 |---|---|---|
+| 3.20 | 2026-03-06 | SoT 정합 보강: `Flow_130~Flow_133`를 Pending 계약(`ETH_INTERFACE_CONTRACT.md v1.2`, `E213~E216`)으로 명시해 Pre-Activation과 활성 SoT를 분리. |
 | 3.19 | 2026-03-06 | ADAS 객체 인지 확장(Pre-Activation) 반영: `Flow_130~Flow_133` 및 `Req_130~Req_139` 추적 행을 추가하고 SoT/연계 체크포인트를 동기화. |
 | 3.18 | 2026-03-06 | 미사용 체인 정리: `Req/Func_108` 및 `frmDriverStateMsg(0x263)`를 Baseline Flow(103/202)와 상단 메시지 표에서 제거하고 범위 문구를 `108 제외`로 동기화. |
 | 3.17 | 2026-03-05 | Validation 결과 프레임(`0x2A5`,`0x2A6`)의 SoT를 `test_can` 분리에서 `chassis_can.dbc` 통합 기준으로 전환하고 Validation 노드 명칭을 `VAL_*`로 정리. |

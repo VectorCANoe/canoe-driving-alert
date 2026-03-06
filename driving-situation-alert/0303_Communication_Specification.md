@@ -3,7 +3,7 @@
 **Document ID**: PROJ-0303-CS
 **ISO 26262 Reference**: Part 6, Cl.7 (Software Architectural Design)
 **ASPICE Reference**: SWE.2 (Software Architectural Design)
-**Version**: 3.22
+**Version**: 3.23
 **Date**: 2026-03-06
 **Status**: Draft
 **Project Title**: 주행 상황 실시간 경고 시스템
@@ -35,6 +35,7 @@
 - Vehicle Baseline(Req_101~Req_107, Req_109~Req_119) 통신(`Comm_101~Comm_106`, `Comm_201~Comm_205`)은 본 문서에서 확정 정의하고, 도메인 DBC는 이 정의를 구현 대상으로 사용한다.
 - V2 확장 요구(`Req_120~Req_121`, `Req_123`, `Req_125~Req_129`) 통신(`Comm_120~Comm_124`)은 구현 활성 상태로 관리하며, DBC/코드/테스트를 동일 커밋에서 동기화한다.
 - ADAS 객체 인지 확장 요구(`Req_130~Req_139`) 통신(`Comm_130~Comm_133`)은 Pre-Activation(설계 선반영) 상태로 관리하며, 구현 착수 시 0302/0304/04/05/06/07을 동일 커밋에서 동기화한다.
+- `Comm_130~Comm_133` 활성 SoT 승격 조건은 `ETH_INTERFACE_CONTRACT.md v1.2`에 `E213~E216` 계약이 반영되는 것이다.
 - EMS는 상위 문서 레벨에서 논리 단말 `EMS_ALERT`로 표기하고, 내부 구현 모듈(`EMS_POLICE_TX`, `EMS_AMB_TX`, `EMS_ALERT_RX`)은 하단 보강표에서만 분리 관리한다.
 - 약어 충돌 방지 규칙: `EMS_AMB_TX`의 `AMB`는 `Ambulance` 의미의 구현 literal이며, `Ambient`는 항상 `AMBIENT` 풀토큰으로 표기한다.
 - Validation Harness 공통 프레임(`0x2A5`, `0x2A6`)은 독립 `test_can`이 아니라 `chassis_can.dbc`에 통합 관리한다.
@@ -324,7 +325,8 @@
 | Domain CAN Profile | Comm_101~Comm_106, Comm_201~Comm_205 | `canoe/databases/chassis_can.dbc` + `canoe/databases/powertrain_can.dbc` + `canoe/databases/body_can.dbc` + `canoe/databases/infotainment_can.dbc` + `canoe/databases/adas_can.dbc` + `canoe/databases/eth_backbone_can_stub.dbc` | 차량 기본 기능/도메인 분리 원본(CAN-stub 포함) |
 | ADAS CAN Profile | Comm_120, Comm_201(일부) | `canoe/databases/adas_can.dbc` | ADAS 소유 프레임 원본 |
 | ETH Stub Transport Profile | Comm_004, Comm_005, Comm_006, Comm_121, Comm_124 | `canoe/databases/eth_backbone_can_stub.dbc` | CANoe.CAN 환경 대체 운반 원본 |
-| Ethernet Profile (Logical Contract) | Comm_004, Comm_005, Comm_006, Comm_120, Comm_121, Comm_124, Comm_130~Comm_133 (및 Comm_001~003/007~008의 ETH 구간) | `canoe/docs/operations/ETH_INTERFACE_CONTRACT.md` | UDP 계약 단일 원본 |
+| Ethernet Profile (Logical Contract) | Comm_004, Comm_005, Comm_006, Comm_120, Comm_121, Comm_124 (및 Comm_001~003/007~008의 ETH 구간) | `canoe/docs/operations/ETH_INTERFACE_CONTRACT.md` | UDP 활성 계약 단일 원본 |
+| Ethernet Profile (Pending-PreActivation) | Comm_130~Comm_133 | `canoe/docs/operations/ETH_INTERFACE_CONTRACT.md` (v1.2 예정) | `E213~E216` 계약 반영 전에는 참조 전용(활성 SoT 아님) |
 
 ---
 
@@ -346,10 +348,10 @@
 | Comm_122 | Flow_122 | Func_125, Func_126 | Req_125, Req_126 | ethSelectedAlertMsg(0xE200), frmAmbientControlMsg(0x260), frmClusterWarningMsg(0x280) | WARN_ARB_MGR | BODY_GW, IVI_GW, AMBIENT_CTRL, CLU_HMI_CTRL | Ethernet(UDP) + CAN | 50ms | 감속 보조 활성 경고 동기화 |
 | Comm_123 | Flow_123 | Func_123 | Req_123 | frmPedalInputCanMsg(0x2A2), frmSteeringCanMsg(0x2A1), ethDecelAssistReqMsg(0x1C4) | CHS_GW, WARN_ARB_MGR | WARN_ARB_MGR, DOMAIN_ROUTER, BRK_CTRL | CAN + Ethernet(UDP) | Event + 100ms | 운전자 개입 시 보조 해제 |
 | Comm_124 | Flow_124 | Func_127, Func_128, Func_129 | Req_127, Req_128, Req_129 | frmChassisHealthMsg(0x103), frmBodyHealthMsg(0x269), frmInfotainmentHealthMsg(0x288), ethFailSafeStateMsg(0x111) | CHS_GW, BODY_GW, INFOTAINMENT_GW, DOMAIN_BOUNDARY_MGR | DOMAIN_BOUNDARY_MGR, DOMAIN_ROUTER, WARN_ARB_MGR, BODY_GW, IVI_GW, VAL_SCENARIO_CTRL | CAN + Ethernet(UDP) | 100ms + Event | 경로 단절 강등/보조 금지 |
-| Comm_130 | Flow_130 | Func_130, Func_131 | Req_130, Req_131 | ethObjectRiskInputMsg(0xE213) | CHS_GW, INFOTAINMENT_GW | ADAS_WARN_CTRL | Ethernet(UDP) | 100ms | 객체 목록/대표 위험 후보 입력 |
-| Comm_131 | Flow_131 | Func_132, Func_133, Func_136 | Req_132, Req_133, Req_136 | ethObjectRiskStateMsg(0xE214) | ADAS_WARN_CTRL | WARN_ARB_MGR, VAL_SCENARIO_CTRL | Ethernet(UDP) | 100ms + Event | TTC/상대속도/거리 기반 위험 상태 |
-| Comm_132 | Flow_132 | Func_134, Func_135, Func_139 | Req_134, Req_135, Req_139 | ethObjectScenarioAlertMsg(0xE215), frmAmbientControlMsg(0x260), frmClusterWarningMsg(0x280) | WARN_ARB_MGR | BODY_GW, IVI_GW, AMBIENT_CTRL, CLU_HMI_CTRL | Ethernet(UDP) + CAN | Event + 50ms | 교차로/합류 객체 경고 및 우선순위 정합 |
-| Comm_133 | Flow_133 | Func_137, Func_138 | Req_137, Req_138 | ethObjectSafetyStateMsg(0xE216) | DOMAIN_BOUNDARY_MGR, EMS_ALERT | WARN_ARB_MGR, VAL_SCENARIO_CTRL | Ethernet(UDP) | Event | 신뢰도 강등 및 객체 이벤트 기록 |
+| Comm_130 | Flow_130 | Func_130, Func_131 | Req_130, Req_131 | ethObjectRiskInputMsg(0xE213) | CHS_GW, INFOTAINMENT_GW | ADAS_WARN_CTRL | Ethernet(UDP) | 100ms | 객체 목록/대표 위험 후보 입력 (Pre-Activation, ETH 계약 v1.2 대기) |
+| Comm_131 | Flow_131 | Func_132, Func_133, Func_136 | Req_132, Req_133, Req_136 | ethObjectRiskStateMsg(0xE214) | ADAS_WARN_CTRL | WARN_ARB_MGR, VAL_SCENARIO_CTRL | Ethernet(UDP) | 100ms + Event | TTC/상대속도/거리 기반 위험 상태 (Pre-Activation, ETH 계약 v1.2 대기) |
+| Comm_132 | Flow_132 | Func_134, Func_135, Func_139 | Req_134, Req_135, Req_139 | ethObjectScenarioAlertMsg(0xE215), frmAmbientControlMsg(0x260), frmClusterWarningMsg(0x280) | WARN_ARB_MGR | BODY_GW, IVI_GW, AMBIENT_CTRL, CLU_HMI_CTRL | Ethernet(UDP) + CAN | Event + 50ms | 교차로/합류 객체 경고 및 우선순위 정합 (Pre-Activation, ETH 계약 v1.2 대기) |
+| Comm_133 | Flow_133 | Func_137, Func_138 | Req_137, Req_138 | ethObjectSafetyStateMsg(0xE216) | DOMAIN_BOUNDARY_MGR, EMS_ALERT | WARN_ARB_MGR, VAL_SCENARIO_CTRL | Ethernet(UDP) | Event | 신뢰도 강등 및 객체 이벤트 기록 (Pre-Activation, ETH 계약 v1.2 대기) |
 
 ---
 
@@ -446,6 +448,7 @@
 | Comm_133 | Flow_133 | Func_137, Func_138 | Req_137, Req_138 | ethObjectSafetyStateMsg(0xE216) | Ethernet(UDP) | Event |
 
 - 주의: `Comm_130~Comm_133`는 ADAS 객체 인지 확장 Pre-Activation Comm 세트다. 구현 착수 시 0302/0304/04/05/06/07을 동일 커밋으로 동기화한다.
+- 활성 SoT 승격 조건: `ETH_INTERFACE_CONTRACT.md v1.2`에 `E213~E216` 계약 반영 완료.
 
 ---
 
@@ -496,6 +499,7 @@
 
 | 버전 | 날짜 | 변경 사항 |
 |---|---|---|
+| 3.23 | 2026-03-06 | SoT 정합 보강: `Comm_130~Comm_133`를 Pending Ethernet 계약(`ETH_INTERFACE_CONTRACT.md v1.2`, `E213~E216`)으로 분리하고 활성 SoT 범위를 명확화. |
 | 3.22 | 2026-03-06 | ADAS 객체 인지 확장(Pre-Activation) 반영: `Comm_130~Comm_133`와 `Req_130~Req_139` 추적을 추가하고 Ethernet SoT/체크포인트를 동기화. |
 | 3.21 | 2026-03-06 | 미사용 체인 정리: `Req_108/Func_108` 및 `frmDriverStateMsg(0x263)`를 Baseline Comm(103/202)·도메인 원본 표에서 제거하고 범위 문구를 `108 제외`로 동기화. |
 | 3.20 | 2026-03-06 | 감사 해석 보강: 긴급 우선 요구의 기본 판정 축(기능중재)과 `Diag` 명칭/Group 7 비강제 규칙을 CAN ID 정책 요약표에 명시. |
