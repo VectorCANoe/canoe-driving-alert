@@ -3,7 +3,7 @@
 **Document ID**: PROJ-03-FD
 **ISO 26262 Reference**: Part 4, Cl.7 (System Design)
 **ASPICE Reference**: SYS.3 (System Architectural Design)
-**Version**: 4.27
+**Version**: 4.28
 **Date**: 2026-03-06
 **Status**: Draft
 **Project Title**: 주행 상황 실시간 경고 시스템
@@ -19,6 +19,7 @@
 - 통합 기본요구사항 구간은 기능 ID `Func_001~Func_043`으로 요구사항 ID(`Req_001~Req_043`)와 1:1 대응한다.
 - 차량 기본 기능 확장 요구(`Req_101~Req_107`, `Req_109~Req_119`)는 `Func_101~Func_107`, `Func_109~Func_119`로 별도 관리한다.
 - V2 확장 요구(`Req_120~Req_121`, `Req_123`, `Req_125~Req_129`)는 `Func_120~Func_121`, `Func_123`, `Func_125~Func_129`로 별도 관리하며, 본 문서에서는 구현 활성 상태로 유지한다.
+- ADAS 객체 인지 확장 요구(`Req_130~Req_139`)는 `Func_130~Func_139`로 별도 관리하며, 본 문서에서는 Pre-Activation(설계 선반영) 상태로 유지한다.
 - 제출 전 현대/기아 및 OEM 기준 명칭으로 일괄 대체하되, 기능 ID/추적 ID는 유지한다.
 - ID 규칙 SoT는 `00f_CAN_ID_Allocation_Standard.md`를 따르며, 적용 참조는 `0303_Communication_Specification.md`를 사용한다.
 - ECU 명칭은 Canonical(`UPPER_SNAKE_CASE`)만 사용하며, 명명 규칙은 `00e`를 단일 SoT로 하고 본 문서는 ECU 적용 참조 문서로 유지한다.
@@ -28,7 +29,7 @@
 - `WARN_ARB_MGR`의 기능은 경보 우선순위 판정이며, CAN 비트 레벨 arbitration과 구분해 해석한다.
 - EMS는 문서 상위 계층에서 단일 논리 단말 `EMS_ALERT`로 정의하고, 내부 구현 모듈(`EMS_POLICE_TX`, `EMS_AMB_TX`, `EMS_ALERT_RX`)은 하단 매핑표에서만 분리 관리한다.
 - 약어 충돌 방지 규칙: `EMS_AMB_TX`의 `AMB`는 `Ambulance` 의미의 구현 literal이며, `Ambient`는 항상 `AMBIENT` 풀토큰으로 표기한다.
-- 본 사이클의 기능-요구 추적 범위는 `Req_001~043`, `Req_101~107`, `Req_109~121`, `Req_123`, `Req_125~129`를 활성 범위로 유지한다.
+- 본 사이클의 기능-요구 추적 범위는 `Req_001~043`, `Req_101~107`, `Req_109~121`, `Req_123`, `Req_125~129`를 활성 범위로 유지하고, `Req_130~Req_139`는 ADAS 객체 인지 확장(Pre-Activation) 범위로 관리한다.
 
 ---
 
@@ -89,6 +90,10 @@
 | ECU 동작 | 도메인 단절 시 자동감속 금지 | 도메인 경로 단절 시 자동 감속 보조 요청 생성 금지 | V2 확장(Implemented) | Req_127 / Flow_124 / Comm_124 / ST_V2_FAILSAFE_001 |
 | ECU 동작 | 도메인 단절 시 최소 경고 유지 | 도메인 경로 단절 시 최소 경고 채널 유지 | V2 확장(Implemented) | Req_128 / Flow_124 / Comm_124 / ST_V2_FAILSAFE_001 |
 | ECU 동작 | 도메인 단절 시 안전 강등 전환 | 도메인 경로 단절 시 failSafeMode 전환 | V2 확장(Implemented) | Req_129 / Flow_124 / Comm_124 / ST_V2_FAILSAFE_001 |
+| ECU 동작 | 객체 목록 수용/위험 객체 선정 | 주변 객체 목록 수신 후 대표 위험 객체를 선정 | ADAS 객체 인지 확장(Planned) | Req_130,Req_131 / Flow_130 / Comm_130 / ST_ADAS_OBJ_001 |
+| ECU 동작 | TTC/상대속도 기반 위험 단계화 | TTC/상대속도/거리 기반으로 위험 단계를 산정하고 보수 유지시간을 적용 | ADAS 객체 인지 확장(Planned) | Req_132,Req_133,Req_136 / Flow_131 / Comm_131 / ST_ADAS_OBJ_001 |
+| ECU 동작 | 교차로/합류 위험 경고 판정 | 교차로 측방 접근 및 합류/끼어들기 위험 경고를 생성하고 기존 경고와 정합 판정 | ADAS 객체 인지 확장(Planned) | Req_134,Req_135,Req_139 / Flow_132 / Comm_132 / ST_ADAS_OBJ_001 |
+| ECU 동작 | 신뢰도 기반 강등 및 이벤트 기록 | 객체 신뢰도 저하 시 자동감속 보조 차단/강등 및 이벤트 로깅 | ADAS 객체 인지 확장(Planned) | Req_137,Req_138 / Flow_133 / Comm_133 / ST_ADAS_OBJ_001 |
 
 ---
 
@@ -181,6 +186,23 @@
 
 ---
 
+## ADAS 객체 인지 확장 기능 상세 표 (Planned, Phase-3)
+
+| Func ID | Req ID | 실제 노드명 | 기능명 | 기능 설명 | 실제값 정의(입력/출력) |
+|---|---|---|---|---|---|
+| Func_130 | Req_130 | ADAS_WARN_CTRL | 객체 목록 수용 | 주변 객체 목록을 수신해 위험 판단 입력으로 정규화 | 입력: objectTrackValid, objectRange, objectRelSpeed, objectConfidence / 출력: objectTrackValid, objectRange, objectRelSpeed |
+| Func_131 | Req_131 | ADAS_WARN_CTRL | 대표 위험 객체 선정 | 자차 경로 기준 대표 위험 객체 선정 | 입력: objectTrackValid, objectRange, objectRelSpeed / 출력: objectRiskClass, objectTtcMin |
+| Func_132 | Req_132 | ADAS_WARN_CTRL | TTC 기반 전방 충돌 경고 | TTC 임계 이하 객체에 대해 전방 충돌 경고 트리거 | 입력: objectTtcMin, objectRiskClass / 출력: objectRiskClass, selectedAlertLevel |
+| Func_133 | Req_133 | ADAS_WARN_CTRL | 상대속도/거리 기반 단계화 | 상대속도/거리 변화 기반 경고 단계 상하향 | 입력: objectRelSpeed, objectRange, objectRiskClass / 출력: objectRiskClass, selectedAlertLevel |
+| Func_134 | Req_134 | WARN_ARB_MGR | 교차로 측방 위험 경고 | 교차로 진입 맥락에서 측방 접근 객체 경고 생성 | 입력: intersectionConflictFlag, objectRiskClass / 출력: selectedAlertType, selectedAlertLevel |
+| Func_135 | Req_135 | WARN_ARB_MGR | 합류/끼어들기 위험 경고 | 합류/끼어들기 급간섭 객체 경고 생성 | 입력: mergeCutInFlag, objectRiskClass / 출력: selectedAlertType, selectedAlertLevel |
+| Func_136 | Req_136 | ADAS_WARN_CTRL | 추적 손실 보수 유지 | 추적 손실 시 경고 유지시간 적용 후 해제 | 입력: objectTrackValid, objectAlertHoldMs / 출력: objectRiskClass, selectedAlertLevel |
+| Func_137 | Req_137 | DOMAIN_BOUNDARY_MGR | 신뢰도 저하 강등 | 객체 신뢰도 저하 시 자동감속 보조 차단 및 경고 강등 | 입력: objectConfidence, decelAssistReq / 출력: decelAssistReq, failSafeMode, selectedAlertLevel |
+| Func_138 | Req_138 | EMS_ALERT | 객체 경고 이벤트 기록 | 객체 기반 경보 발생/해제/강등 이벤트 기록 | 입력: objectRiskClass, selectedAlertType, selectedAlertLevel / 출력: objectEventCode |
+| Func_139 | Req_139 | WARN_ARB_MGR | 객체 경고 우선순위 정합 | 객체 경고와 기존 구간/긴급 경고의 최종 우선순위 일관성 보장 | 입력: objectRiskClass, emergencyContext, baseZoneContext / 출력: selectedAlertType, selectedAlertLevel |
+
+---
+
 ## 상세 설명 및 추가 사항
 
 - 상단 표는 공식 표준 양식의 열 구성(분류/기능명/기능설명/비고/검증)을 유지한다.
@@ -189,6 +211,7 @@
 - 옵션1 네트워크 전달 경로 고정: `입력 CAN -> 도메인 GW 정규화 -> ETH_SW -> 중앙 경고코어 -> 도메인 GW -> 출력 CAN`.
 - `Func_101~Func_107`, `Func_109~Func_119`는 차량 기본 기능 확장 체인으로, 0302/0303/0304의 Flow/Comm/Var와 최신 도메인 DBC 기준으로 동기화되어야 한다.
 - `Func_120~Func_121`, `Func_123`, `Func_125~Func_129`는 V2 확장 활성 체인으로 관리하며, 코드/DBC/05/06/07 변경을 동일 커밋 단위로 동기화한다.
+- `Func_130~Func_139`는 ADAS 객체 인지 확장 Pre-Activation 체인으로 관리하며, 구현 착수 시 0302/0303/0304/04/05/06/07을 동일 커밋 단위로 동기화한다.
 
 ## EMS 논리 단말-내부 모듈 매핑
 
@@ -214,6 +237,7 @@
 
 | 버전 | 날짜 | 변경 사항 |
 |---|---|---|
+| 4.28 | 2026-03-06 | ADAS 객체 인지 확장(Pre-Activation) 반영: `Func_130~Func_139` 상세표와 상단 기능요약을 추가하고 `Req_130~Req_139` 추적 범위를 문서 원칙에 반영. |
 | 4.27 | 2026-03-06 | 용어 정리: `Func_012` 설명을 `고속도로 무조향 의심 경고` 기준으로 통일해 비제품 기능 기반 해석 여지를 제거. |
 | 4.26 | 2026-03-06 | 미사용 체인 정리: `Req_108/Func_108` 항목을 Vehicle Baseline 활성 범위에서 제거하고 범위 문구를 `108 제외` 기준으로 동기화. |
 | 4.25 | 2026-03-06 | `Func_108` 설명의 특정 상태 예시 표현을 제거하고 운전자 상태 레벨 코드 전달으로 일반화. |

@@ -3,7 +3,7 @@
 **Document ID**: PROJ-07-ST
 **ISO 26262 Reference**: Part 4, Cl.10 (System Integration and System Qualification Test)
 **ASPICE Reference**: SYS.5 (System Qualification Test)
-**Version**: 5.15
+**Version**: 5.16
 **Date**: 2026-03-06
 **Status**: Draft
 **Project Title**: 주행 상황 실시간 경고 시스템
@@ -29,6 +29,7 @@
 - ST 증적(로그/캡처/리포트)은 `canoe/logging/evidence/ST/` 경로 규칙으로 관리한다.
 - ST 증적 포맷/채점 규칙은 `canoe/docs/operations/VERIFICATION_EVIDENCE_LOG_STANDARD.md`를 따른다.
 - V2 확장 요구(`Req_120~Req_121, Req_123, Req_125~Req_129`)는 구현 활성 상태로 ST 항목을 분리 관리하며, SIL 시나리오 15~19와 연계해 검증한다.
+- ADAS 객체 인지 확장(`Req_130~Req_139`)은 Pre-Activation(설계 선반영) ST 항목(`ST_ADAS_OBJ_001`)으로 분리 관리한다.
 - Panel 검증은 `차량 화면 -> 제어 패널 -> 상태 모니터` 순서로 수행하고, 시스템 동작 확인은 차량 화면 기준으로 판정한다.
 
 ---
@@ -62,6 +63,7 @@
 | ST_BASE_DIAG_001 | 테스트/진단 요청-응답 및 결과 기록이 시나리오 종료까지 추적 가능하게 유지되는지 확인한다. |  |  |  |
 | ST_V2_RISK_001 | 긴급차량 근접 위험도 기반 감속 보조 요청과 경고 출력 동기화가 일관되게 동작하는지 확인한다. (SIL Scenario 15/16/17/19) | Ready |  |  |
 | ST_V2_FAILSAFE_001 | 도메인 경로 단절 시 자동 감속 보조 금지와 최소 경고 채널 유지 강등이 동작하는지 확인한다. (SIL Scenario 18) | Ready |  |  |
+| ST_ADAS_OBJ_001 | 객체 목록 기반 TTC/교차로/합류 위험 경고와 신뢰도 저하 강등/이벤트 기록이 일관되게 동작하는지 확인한다. (Pre-Activation) | Planned |  |  |
 | ST_BASE_001 | 차량 기본 기능(시동/기어/가감속/조향/비상등/창문/기본표시/도메인경계)이 시스템 수준에서 일관되게 동작하는지 확인한다. |  |  |  |
 
 ---
@@ -95,6 +97,7 @@
 | ST_BASE_DIAG_001 | Req_112 | VC_112 | Func_112 | Flow_106,Flow_205 / Comm_106,Comm_205 | Var_172~Var_174 | IT_BASE_DIAG_001 | 진단 요청-응답 및 결과 로그가 시나리오 단위로 추적 가능하게 기록 |
 | ST_V2_RISK_001 | Req_120,Req_121,Req_125,Req_126,Req_123 | VC_120,VC_121,VC_125,VC_126,VC_123 | Func_120,Func_121,Func_125,Func_126,Func_123 | Flow_120,Flow_121,Flow_122,Flow_123 / Comm_120,Comm_121,Comm_122,Comm_123 | Var_320,Var_321,Var_322,Var_323,Var_324,Var_325 | IT_V2_RISK_001 | 위험도 산정 주기 `100ms`, 감속 보조 요청 생성/해제 `150ms` 이내, Ambient/Cluster 동기 오프셋 `<=50ms` (SIL Scenario 15/16/17/19) |
 | ST_V2_FAILSAFE_001 | Req_127,Req_128,Req_129 | VC_127,VC_128,VC_129 | Func_127,Func_128,Func_129 | Flow_124 / Comm_124 | Var_326,Var_327,Var_328,Var_329 | IT_V2_FAILSAFE_001 | 단절 감지 후 `150ms` 이내 failSafeMode 전환, 자동 감속 보조 0건, 최소 경고 채널 유지 (SIL Scenario 18) |
+| ST_ADAS_OBJ_001 | Req_130,Req_131,Req_132,Req_133,Req_134,Req_135,Req_136,Req_137,Req_138,Req_139 | VC_130,VC_131,VC_132,VC_133,VC_134,VC_135,VC_136,VC_137,VC_138,VC_139 | Func_130,Func_131,Func_132,Func_133,Func_134,Func_135,Func_136,Func_137,Func_138,Func_139 | Flow_130,Flow_131,Flow_132,Flow_133 / Comm_130,Comm_131,Comm_132,Comm_133 | Var_330,Var_331,Var_332,Var_333,Var_334,Var_335,Var_336,Var_337,Var_338,Var_339 | IT_ADAS_OBJ_001 | 객체 입력 반영 `100ms`, 경고/강등 반영 `150ms`, 이벤트 기록 누락 0건 및 우선순위 결정론 유지(Pre-Activation) |
 | ST_BASE_001 | Req_101~Req_107,Req_109~Req_119 | VC_101~VC_107,VC_109~VC_119 | Func_101~Func_107,Func_109~Func_119 | Flow_101~Flow_106,Flow_201~Flow_205 / Comm_101~Comm_106,Comm_201~Comm_205 | Var_101~Var_314 | IT_BASE_001, IT_BASE_PT_001, IT_BASE_CH_001, IT_BASE_BODY_001, IT_BASE_IVI_001, IT_BASE_EXT_BODY_001, IT_BASE_EXT_IVI_001, IT_BASE_DIAG_001 | 차량 기본 기능 E2E 시나리오에서 입력/상태/표시/경계/판정 체인이 일관되게 유지 |
 
 ---
@@ -103,6 +106,7 @@
 
 | 버전 | 날짜 | 변경 사항 |
 |---|---|---|
+| 5.16 | 2026-03-06 | ADAS 객체 인지 확장(Pre-Activation) 반영: `ST_ADAS_OBJ_001`을 추가하고 `Req_130~Req_139`/`Flow_130~133`/`Comm_130~133`/`Var_330~339` 추적을 동기화. |
 | 5.15 | 2026-03-06 | 미사용 체인 정리: `Req/VC/Func_108`을 `ST_BASE_BODY_001/ST_BASE_001`에서 제거하고 Baseline 범위를 `108 제외`로 동기화. |
 | 5.14 | 2026-03-04 | 멘토링 체크리스트 반영: ST 작성 원칙에 Panel 검증 우선순위(`차량 화면 -> 제어 패널 -> 상태 모니터`)를 추가. |
 | 5.13 | 2026-03-03 | V2 ST를 구현 활성 상태로 전환하고 `ST_V2_RISK_001`, `ST_V2_FAILSAFE_001` 상태를 Ready로 갱신. |

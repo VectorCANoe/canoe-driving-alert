@@ -1,7 +1,7 @@
 # TMP Handoff (Next Codex Session)
 
 ## 0) Freshness Control
-- Last Updated: 2026-03-05
+- Last Updated: 2026-03-06
 - Freshness Status: FRESH
 - Validity Window: 7 days
 - Stale Criteria (any one = stale):
@@ -21,7 +21,8 @@
   - Navigation zone recognition (school zone, highway, guide lane)
   - V2V emergency alerts (police, ambulance)
   - Ambient/alert-priority decision
-  - Vehicle baseline functions (`Req_101~119`) and V2 extension (`Req_120~124`)
+  - Vehicle baseline functions (`Req_101~119`) and V2 extension (`Req_120~121`, `Req_123`, `Req_125~129`)
+  - ADAS object-risk extension (`Req_130~139`, Pre-Activation)
 - Scope Out:
   - OTA/UDS subscription
   - platooning/logistics OTA
@@ -37,7 +38,8 @@
 - Mandatory 1:1 traceability:
   - `Req -> Func -> Flow -> Comm -> Var -> Code -> UT/IT/ST`
 - Active Req range in this cycle:
-  - `Req_001~043`, `Req_101~124`
+  - `Req_001~043`, `Req_101~107`, `Req_109~113`, `Req_116`, `Req_118~121`, `Req_123`, `Req_125~129`
+  - `Req_130~139` (Pre-Activation)
 - Keep separation:
   - `01 = What`
   - `03+ = How`
@@ -75,17 +77,17 @@
 - 00d_HARA_Worksheet.md: Version 1.3 (Draft, Internal Baseline Approved)
 - 00e_ECU_Naming_Standard.md: Version 2.0 (Released, SoT Fixed)
 - 00f_CAN_ID_Allocation_Standard.md: Version 3.3 (Draft, Policy SoT)
-- 01_Requirements.md: Version 5.18 (Draft)
+- 01_Requirements.md: Version 5.27 (Draft)
 - 02_Concept_design.md: Version 2.6 (In Progress, Figure Build)
-- 03_Function_definition.md: Version 4.24 (Draft)
-- 0301_SysFuncAnalysis.md: Version 3.22 (Draft)
-- 0302_NWflowDef.md: Version 3.17 (Draft)
-- 0303_Communication_Specification.md: Version 3.19 (Draft)
-- 0304_System_Variables.md: Version 2.18 (Draft)
-- 04_SW_Implementation.md: Version 2.17 (Draft)
-- 05_Unit_Test.md: Version 2.16 (Draft)
-- 06_Integration_Test.md: Version 4.14 (Draft)
-- 07_System_Test.md: Version 5.14 (Draft)
+- 03_Function_definition.md: Version 4.28 (Draft)
+- 0301_SysFuncAnalysis.md: Version 3.24 (Draft)
+- 0302_NWflowDef.md: Version 3.19 (Draft)
+- 0303_Communication_Specification.md: Version 3.22 (Draft)
+- 0304_System_Variables.md: Version 2.21 (Draft)
+- 04_SW_Implementation.md: Version 2.20 (Draft)
+- 05_Unit_Test.md: Version 2.18 (Draft)
+- 06_Integration_Test.md: Version 4.16 (Draft)
+- 07_System_Test.md: Version 5.16 (Draft)
 - Development Baseline Commit: `d7e2a70` (G3 CLOSED + G4 HOLD, 2026-03-06)
 
 ## 7) Immediate Next Steps

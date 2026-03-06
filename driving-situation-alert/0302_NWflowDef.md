@@ -3,7 +3,7 @@
 **Document ID**: PROJ-0302-NFD
 **ISO 26262 Reference**: Part 4, Cl.7 (System Design)
 **ASPICE Reference**: SYS.3 (System Architectural Design)
-**Version**: 3.18
+**Version**: 3.19
 **Date**: 2026-03-06
 **Status**: Draft
 **Project Title**: 주행 상황 실시간 경고 시스템
@@ -34,6 +34,7 @@
 
 - Vehicle Baseline(Req_101~Req_107, Req_109~Req_119) 플로우(`Flow_101~Flow_106`, `Flow_201~Flow_205`)는 본 문서에서 확정 정의하고, DBC는 이 정의를 구현 대상으로 사용한다.
 - V2 확장 요구(`Req_120~Req_121`, `Req_123`, `Req_125~Req_129`) 플로우(`Flow_120~Flow_124`)는 구현 활성 상태로 관리하며, 관련 DBC/코드/테스트를 동일 커밋에서 동기화한다.
+- ADAS 객체 인지 확장 요구(`Req_130~Req_139`) 플로우(`Flow_130~Flow_133`)는 Pre-Activation(설계 선반영) 상태로 관리하며, 구현 착수 시 0303/0304/04/05/06/07을 동일 커밋에서 동기화한다.
 - EMS는 상위 문서 레벨에서 논리 단말 `EMS_ALERT`로 표기하고, 상단 표의 `EMS_POLICE_TX/EMS_AMB_TX/EMS_ALERT_RX` 열은 내부 구현 모듈 분해 관점으로만 해석한다.
 - 약어 충돌 방지 규칙: `EMS_AMB_TX`의 `AMB`는 `Ambulance` 의미의 구현 literal이며, `Ambient`는 항상 `AMBIENT` 풀토큰으로 표기한다.
 
@@ -305,6 +306,7 @@
 | Chassis Domain Profile | Flow_102, Flow_106(일부), Flow_105(헬스 연계), Flow_201 | `canoe/databases/chassis_can.dbc` | 0x122~0x2A0(0x1C1 제외) 범위 준수 |
 | ADAS Domain CAN Profile | Flow_120, Flow_201(일부) | `canoe/databases/adas_can.dbc` | 0x1C1/0x1C3 범위 준수 (ADAS 소유 프레임) |
 | ETH Backbone CAN Stub Profile | Flow_004, Flow_005, Flow_006, Flow_121, Flow_124 | `canoe/databases/eth_backbone_can_stub.dbc` | 0x1C0/0x1C2/0x1C4/0x111 범위 준수 |
+| ADAS Object Extension Profile | Flow_130~Flow_133 | `canoe/docs/operations/ETH_INTERFACE_CONTRACT.md` | Pre-Activation, 객체 기반 위험/강등/이벤트 계약 |
 | Powertrain Domain Profile | Flow_101, Flow_105, Flow_204 | `canoe/databases/powertrain_can.dbc` | 0x110~0x2A8 범위 준수 |
 | Body Domain Profile | Flow_103, Flow_105, Flow_202 | `canoe/databases/body_can.dbc` | 0x289~0x291, 0x277~0x292 범위 준수 |
 | Infotainment Domain Profile | Flow_104, Flow_105, Flow_203, Flow_205 | `canoe/databases/infotainment_can.dbc` | 0x2A3, 0x280~0x288, 0x289~0x295 범위 준수 |
@@ -329,6 +331,10 @@
 | Flow_122 | Comm_122 | Func_125,Func_126 | Req_125,Req_126 | ethSelectedAlertMsg(0xE200), frmAmbientControlMsg(0x260), frmClusterWarningMsg(0x280) | WARN_ARB_MGR | BODY_GW, IVI_GW, AMBIENT_CTRL, CLU_HMI_CTRL | Ethernet(UDP) + CAN | 50ms | decelAssistReq=1 | decelAssistReq=0 또는 긴급 해제 |
 | Flow_123 | Comm_123 | Func_123 | Req_123 | frmPedalInputCanMsg(0x2A2), frmSteeringCanMsg(0x2A1), ethDecelAssistReqMsg(0x1C4) | CHS_GW, WARN_ARB_MGR | WARN_ARB_MGR, DOMAIN_ROUTER, BRK_CTRL | CAN + Ethernet(UDP) | Event + 100ms | 운전자 제동/조향 회피 입력 검출 | decelAssistReq=0 전환 완료 |
 | Flow_124 | Comm_124 | Func_127,Func_128,Func_129 | Req_127,Req_128,Req_129 | frmChassisHealthMsg(0x103), frmBodyHealthMsg(0x269), frmInfotainmentHealthMsg(0x288), ethFailSafeStateMsg(0x111) | CHS_GW, BODY_GW, INFOTAINMENT_GW, DOMAIN_BOUNDARY_MGR | DOMAIN_BOUNDARY_MGR, DOMAIN_ROUTER, WARN_ARB_MGR, BODY_GW, IVI_GW, VAL_SCENARIO_CTRL | CAN + Ethernet(UDP) | 100ms + Event | domainPathStatus=FAILED 또는 forceFailSafe=1 | 경로 복구 + Health 정상화 |
+| Flow_130 | Comm_130 | Func_130,Func_131 | Req_130,Req_131 | ethObjectRiskInputMsg(0xE213) | CHS_GW, INFOTAINMENT_GW | ADAS_WARN_CTRL | Ethernet(UDP) | 100ms | 객체 목록/자차 상태 갱신 | 객체 입력 무효 또는 유효 객체 0건 |
+| Flow_131 | Comm_131 | Func_132,Func_133,Func_136 | Req_132,Req_133,Req_136 | ethObjectRiskStateMsg(0xE214) | ADAS_WARN_CTRL | WARN_ARB_MGR, VAL_SCENARIO_CTRL | Ethernet(UDP) | 100ms + Event | TTC/상대속도/거리 기반 위험도 갱신 | TTC 임계 해제 + 유지시간 만료 |
+| Flow_132 | Comm_132 | Func_134,Func_135,Func_139 | Req_134,Req_135,Req_139 | ethObjectScenarioAlertMsg(0xE215), frmAmbientControlMsg(0x260), frmClusterWarningMsg(0x280) | WARN_ARB_MGR | BODY_GW, IVI_GW, AMBIENT_CTRL, CLU_HMI_CTRL | Ethernet(UDP) + CAN | Event + 50ms | 교차로/합류 위험 조건 성립 | 조건 해제 또는 긴급 우선 경고 전환 |
+| Flow_133 | Comm_133 | Func_137,Func_138 | Req_137,Req_138 | ethObjectSafetyStateMsg(0xE216) | DOMAIN_BOUNDARY_MGR, EMS_ALERT | WARN_ARB_MGR, VAL_SCENARIO_CTRL | Ethernet(UDP) | Event | 객체 신뢰도 저하 또는 이벤트 발생 | 신뢰도 회복 + 이벤트 기록 완료 |
 
 ---
 
@@ -415,6 +421,17 @@
 
 - 주의: `Flow_120~Flow_124`는 V2 확장 구현 플로우다. 변경 시 0303/0304/05~07과 코드/DBC를 동일 커밋에서 동기화한다.
 
+## ADAS 객체 인지 확장 Flow (Planned, Flow_130~Flow_133)
+
+| Flow ID | Comm ID(0303 연계) | Func ID | Req ID | 관련 메시지(ID) | 주 경로 | Period | 상태 |
+|---|---|---|---|---|---|---|---|
+| Flow_130 | Comm_130 | Func_130, Func_131 | Req_130, Req_131 | ethObjectRiskInputMsg(0xE213) | CHS_GW/INFOTAINMENT_GW -> ADAS_WARN_CTRL | 100ms | Planned |
+| Flow_131 | Comm_131 | Func_132, Func_133, Func_136 | Req_132, Req_133, Req_136 | ethObjectRiskStateMsg(0xE214) | ADAS_WARN_CTRL -> WARN_ARB_MGR | 100ms + Event | Planned |
+| Flow_132 | Comm_132 | Func_134, Func_135, Func_139 | Req_134, Req_135, Req_139 | ethObjectScenarioAlertMsg(0xE215), frmAmbientControlMsg(0x260), frmClusterWarningMsg(0x280) | WARN_ARB_MGR -> BODY_GW/IVI_GW -> AMBIENT_CTRL/CLU_HMI_CTRL | Event + 50ms | Planned |
+| Flow_133 | Comm_133 | Func_137, Func_138 | Req_137, Req_138 | ethObjectSafetyStateMsg(0xE216) | DOMAIN_BOUNDARY_MGR/EMS_ALERT -> WARN_ARB_MGR/VAL_SCENARIO_CTRL | Event | Planned |
+
+- 주의: `Flow_130~Flow_133`는 ADAS 객체 인지 확장 Pre-Activation 플로우다. 구현 착수 시 0303/0304/04/05/06/07을 동일 커밋으로 동기화한다.
+
 ---
 
 ## 메시지/플로우 규모 목표 (현업 BP 기준)
@@ -450,6 +467,7 @@
 - `speedLimit` 신호가 `Flow_003/Comm_003`에서 `NAV_CTX_MGR`와 `ADAS_WARN_CTRL`로 전달되어야 한다.
 - `Req_101~Req_107`, `Req_109~Req_119`는 `Flow_101~Flow_106`, `Flow_201~Flow_205`에서 누락 없이 연결되어야 한다.
 - `Req_120~Req_121`, `Req_123`, `Req_125~Req_129`는 `Flow_120~Flow_124`로 구현 추적을 유지하고, 변경 시 0303/0304/05~07을 동일 커밋으로 동기화한다.
+- `Req_130~Req_139`는 `Flow_130~Flow_133` Pre-Activation 체인으로 추적하고, 구현 착수 시 0303/0304/04/05/06/07을 동일 커밋으로 동기화한다.
 
 ---
 
@@ -469,6 +487,7 @@
 
 | 버전 | 날짜 | 변경 사항 |
 |---|---|---|
+| 3.19 | 2026-03-06 | ADAS 객체 인지 확장(Pre-Activation) 반영: `Flow_130~Flow_133` 및 `Req_130~Req_139` 추적 행을 추가하고 SoT/연계 체크포인트를 동기화. |
 | 3.18 | 2026-03-06 | 미사용 체인 정리: `Req/Func_108` 및 `frmDriverStateMsg(0x263)`를 Baseline Flow(103/202)와 상단 메시지 표에서 제거하고 범위 문구를 `108 제외`로 동기화. |
 | 3.17 | 2026-03-05 | Validation 결과 프레임(`0x2A5`,`0x2A6`)의 SoT를 `test_can` 분리에서 `chassis_can.dbc` 통합 기준으로 전환하고 Validation 노드 명칭을 `VAL_*`로 정리. |
 | 3.16 | 2026-03-04 | DBC SoT 정합 보강: `eth_backbone_can_stub.dbc`를 원본 매핑에 반영하고 0x1C0/0x1C1/0x1C2(및 0x1C3/0x1C4/0x111) CAN-stub 경로를 상단표/도메인표/규모표에 동기화. |

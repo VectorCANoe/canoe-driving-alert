@@ -3,7 +3,7 @@
 **Document ID**: PROJ-0304-SV
 **ISO 26262 Reference**: Part 6, Cl.7 (Software Architectural Design)
 **ASPICE Reference**: SWE.2 / SWE.3
-**Version**: 2.20
+**Version**: 2.21
 **Date**: 2026-03-06
 **Status**: Draft
 **Project Title**: 주행 상황 실시간 경고 시스템
@@ -27,6 +27,7 @@
 - EMS 관련 변수는 상위 문서 계층에서 논리 단말 `EMS_ALERT` 기준으로 관리하고, 내부 TX/RX 모듈 분해는 하단 보강 매핑에서만 관리한다.
 - 약어 충돌 방지 규칙: `EMS_AMB_TX`의 `AMB`는 `Ambulance` 의미의 구현 literal이며, `Ambient`는 항상 `AMBIENT` 풀토큰으로 표기한다.
 - V2 확장 변수(`Req_120~Req_121, Req_123, Req_125~Req_129`)는 구현 활성 상태로 추적하며, 0302/0303/05~07과 코드/DBC를 동일 커밋에서 동기화한다.
+- ADAS 객체 인지 확장 변수(`Req_130~Req_139`)는 `Var_330~Var_339` Pre-Activation(설계 선반영) 상태로 추적하며, 구현 착수 시 0302/0303/04/05/06/07과 동일 커밋에서 동기화한다.
 - 목표 설계는 옵션1(ETH 백본) 고정이며, CANoe.CAN 라이선스 제약 구간의 SIL 검증은 임시로 CAN 대체 백본을 사용하고 Ethernet 라이선스 확보 후 동일 케이스로 재검증한다.
 - SoT 계층은 분리 관리한다: CAN 실프레임은 도메인 DBC(`chassis_can.dbc`/`powertrain_can.dbc`/`body_can.dbc`/`infotainment_can.dbc`/`adas_can.dbc` + `eth_backbone_can_stub.dbc`)를 따르고, Validation 결과 프레임(`0x2A5`,`0x2A6`)은 `chassis_can.dbc`에 통합 관리한다. Ethernet 논리 계약은 `ETH_INTERFACE_CONTRACT.md`를 따른다.
 
@@ -59,6 +60,16 @@
 | 36 | CoreState | e2eHealthState | uint32 | 0 | 2 | 0 | E2E 경로 헬스 상태 |
 | 37 | Core | brakePedalNorm | uint32 | 0 | 100 | 0 | CHS_GW에서 정규화한 브레이크 입력 |
 | 38 | Test | forceFailSafe | uint32 | 0 | 1 | 0 | Fail-safe 강제 주입(Validation-only) |
+| 39 | Core | objectTrackValid | uint32 | 0 | 1 | 0 | 객체 추적 유효 플래그 |
+| 40 | Core | objectRange | uint32 | 0 | 500 | 0 | 대표 위험 객체 상대 거리(m) |
+| 41 | Core | objectRelSpeed | int32 | -200 | 200 | 0 | 대표 위험 객체 상대 속도(km/h) |
+| 42 | Core | objectConfidence | uint32 | 0 | 100 | 0 | 객체 인지 신뢰도(%) |
+| 43 | Core | objectRiskClass | uint32 | 0 | 7 | 0 | 객체 위험 분류 코드 |
+| 44 | Core | objectTtcMin | uint32 | 0 | 10000 | 10000 | 대표 위험 객체 최소 TTC(ms) |
+| 45 | Core | intersectionConflictFlag | uint32 | 0 | 1 | 0 | 교차로 측방 접근 충돌 플래그 |
+| 46 | Core | mergeCutInFlag | uint32 | 0 | 1 | 0 | 합류/끼어들기 급간섭 플래그 |
+| 47 | Core | objectAlertHoldMs | uint32 | 0 | 5000 | 300 | 객체 추적 손실 시 경고 유지시간(ms) |
+| 48 | Core | objectEventCode | uint32 | 0 | 65535 | 0 | 객체 기반 경고 이벤트 코드 |
 | 15 | Core | baseZoneContext | uint32 | 0 | 255 | 0 | 구간 컨텍스트 계산 결과 |
 | 16 | Core | warningState | uint32 | 0 | 255 | 0 | 경고 조건 판정 상태 |
 | 17 | Core | emergencyContext | uint32 | 0 | 255 | 0 | 긴급 수신 컨텍스트 상태 |
@@ -645,6 +656,16 @@
 | Var_327 | e2eHealthState | e2eHealthState_V2_FAILSAFE | CAN_V2 | DOMAIN_BOUNDARY_MGR | Comm_124 | Flow_124 | Func_127, Func_128, Func_129 | Req_127, Req_128, Req_129 | 100ms 주기 헬스상태 수신 시 갱신 |
 | Var_328 | failSafeMode | failSafeMode_V2_FAILSAFE | ETH_V2 | DOMAIN_BOUNDARY_MGR | Comm_124 | Flow_124 | Func_127, Func_128, Func_129 | Req_127, Req_128, Req_129 | 단절 감지 시 즉시 갱신 |
 | Var_329 | decelAssistReq | decelAssistReq_V2_BLOCK | ETH_V2 | DOMAIN_BOUNDARY_MGR | Comm_124 | Flow_124 | Func_127, Func_128, Func_129 | Req_127, Req_128, Req_129 | failSafeMode=1 전환 시 0 강제 갱신 |
+| Var_330 | objectTrackValid | objectTrackValid_ETH_ADAS | ETH_ADAS | ADAS_WARN_CTRL | Comm_130 | Flow_130 | Func_130, Func_131, Func_136 | Req_130, Req_131, Req_136 | 객체 목록 수신 시 유효성 갱신 |
+| Var_331 | objectRange | objectRange_ETH_ADAS | ETH_ADAS | ADAS_WARN_CTRL | Comm_130 | Flow_130 | Func_130, Func_131, Func_133 | Req_130, Req_131, Req_133 | 100ms 주기 객체 거리 갱신 |
+| Var_332 | objectRelSpeed | objectRelSpeed_ETH_ADAS | ETH_ADAS | ADAS_WARN_CTRL | Comm_130 | Flow_130 | Func_130, Func_131, Func_133 | Req_130, Req_131, Req_133 | 100ms 주기 상대속도 갱신 |
+| Var_333 | objectConfidence | objectConfidence_ETH_ADAS | ETH_ADAS | ADAS_WARN_CTRL, DOMAIN_BOUNDARY_MGR | Comm_130, Comm_133 | Flow_130, Flow_133 | Func_130, Func_137 | Req_130, Req_137 | 객체 신뢰도 갱신 및 강등 판정 입력 |
+| Var_334 | objectRiskClass | objectRiskClass_ETH_ADAS | ETH_ADAS | ADAS_WARN_CTRL, WARN_ARB_MGR | Comm_131, Comm_132, Comm_133 | Flow_131, Flow_132, Flow_133 | Func_131, Func_132, Func_133, Func_134, Func_135, Func_136, Func_138, Func_139 | Req_131, Req_132, Req_133, Req_134, Req_135, Req_136, Req_138, Req_139 | 위험 분류 갱신 시 즉시 반영 |
+| Var_335 | objectTtcMin | objectTtcMin_ETH_ADAS | ETH_ADAS | ADAS_WARN_CTRL | Comm_131 | Flow_131 | Func_131, Func_132 | Req_131, Req_132 | TTC 계산 주기(100ms) 갱신 |
+| Var_336 | intersectionConflictFlag | intersectionConflictFlag_ETH_ADAS | ETH_ADAS | WARN_ARB_MGR | Comm_132 | Flow_132 | Func_134 | Req_134 | 교차로 위험 조건 성립 시 Event 갱신 |
+| Var_337 | mergeCutInFlag | mergeCutInFlag_ETH_ADAS | ETH_ADAS | WARN_ARB_MGR | Comm_132 | Flow_132 | Func_135 | Req_135 | 합류/끼어들기 위험 조건 성립 시 Event 갱신 |
+| Var_338 | objectAlertHoldMs | objectAlertHoldMs_ETH_ADAS | ETH_ADAS | ADAS_WARN_CTRL | Comm_131 | Flow_131 | Func_136 | Req_136 | 추적 손실 보수 유지시간 갱신 |
+| Var_339 | objectEventCode | objectEventCode_ETH_ADAS | ETH_ADAS | EMS_ALERT | Comm_133 | Flow_133 | Func_138 | Req_138 | 객체 경고 발생/해제/강등 이벤트 기록 시 갱신 |
 
 ---
 
@@ -652,6 +673,7 @@
 
 - `0303`의 모든 Signal은 본 문서 변수와 1개 이상 매핑되어야 하며, `Comm_101~Comm_106`, `Comm_201~Comm_205` 확장 신호도 Var 추적표에 동기화되어야 한다.
 - `Comm_120~Comm_124`는 `Var_320~Var_329`와 구현 추적을 유지하고, 변경 시 0302/0303/05~07을 동일 커밋으로 동기화한다.
+- `Comm_130~Comm_133`는 `Var_330~Var_339` Pre-Activation 추적을 유지하고, 구현 착수 시 0302/0303/04/05/06/07을 동일 커밋으로 동기화한다.
 - `Comm_004~Comm_006`, `Comm_120~Comm_124`, `Comm_201(0x1C1)` 구간은 CANoe.CAN 환경에서 `adas_can.dbc`(0x1C1/0x1C3) + `eth_backbone_can_stub.dbc`(0x1C0/0x1C2/0x1C4/0x111) 운반 경로와 논리 Ethernet 계약(`ETH_INTERFACE_CONTRACT.md`)을 동시에 만족해야 한다.
 - `timeoutClear`(내부 구현: `timeoutClear_ETH_CORE`)는 `Req_024(1000ms)` 검증 로직과 직접 연결되어야 한다.
 - `selectedAlertLevel`, `selectedAlertType`(내부 구현: `selectedAlertLevel_ETH_CORE`, `selectedAlertType_ETH_CORE`)는 `WARN_ARB_MGR` 출력의 단일 소스로 유지한다.
@@ -673,6 +695,7 @@
 
 | 버전 | 날짜 | 변경 사항 |
 |---|---|---|
+| 2.21 | 2026-03-06 | ADAS 객체 인지 확장(Pre-Activation) 반영: 상단 변수(`ID 39~48`)와 추적 변수(`Var_330~Var_339`), `Comm_130~Comm_133` 체크포인트를 추가해 `Req_130~Req_139` 체인을 선반영. |
 | 2.20 | 2026-03-06 | 용어/범위 정리: Verification-Harness 운영 메모에서 Driver 네임스페이스 자극 항목을 제거하고 제품 체인을 `고속 무조향 의심 경고` 중심으로 정렬. |
 | 2.19 | 2026-03-06 | 미사용 체인 정리: `Req_108/Func_108` 연계 변수(`Var_125/Var_126`, `DriverStateLevel/DriverStateInfo` 전달 경로)를 삭제하고 Baseline 추적 범위를 `108 제외` 기준으로 동기화. |
 | 2.18 | 2026-03-05 | Validation 결과 프레임(`0x2A5`,`0x2A6`)의 SoT를 `chassis_can.dbc` 통합 기준으로 갱신하고 Validation 노드 명칭을 `VAL_*`로 정리. |

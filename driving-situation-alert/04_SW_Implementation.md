@@ -3,7 +3,7 @@
 **Document ID**: PROJ-04-SI
 **ISO 26262 Reference**: Part 6, Cl.8 (Software Unit Design and Implementation)
 **ASPICE Reference**: SWE.3 (Software Detailed Design and Unit Construction)
-**Version**: 2.19
+**Version**: 2.20
 **Date**: 2026-03-06
 **Status**: Draft
 **Project Title**: 주행 상황 실시간 경고 시스템
@@ -31,6 +31,7 @@
 - 약어 충돌 방지 규칙: `EMS_AMB_TX`의 `AMB`는 `Ambulance` 의미의 구현 literal이며, `Ambient`는 항상 `AMBIENT` 풀토큰으로 표기한다.
 - `project.sysvars`의 `UiRender/*`, `Test/*`, `V2X/policeDispatch`, `V2X/ambulanceDispatch`는 Verification-Harness 입력/렌더 변수로 관리하며 제품 Req 체인(01/03/05~07)과 분리한다.
 - CANoe.CAN 환경에서는 Ethernet 일부 경로(E100/E200 모니터링 및 V2 확장)가 CAN-stub(0x1C0/0x1C1/0x1C2/0x1C3/0x1C4/0x111)로 대체 운반되며, 서비스 해석은 Ethernet 논리 계약 SoT를 우선한다.
+- ADAS 객체 인지 확장(`Req_130~Req_139`)은 `Func_130~Func_139`, `Flow_130~Flow_133`, `Comm_130~Comm_133`, `Var_330~Var_339` Pre-Activation(설계 선반영) 상태로 유지하고 구현 착수 시 0302/0303/0304/05/06/07을 동일 커밋으로 동기화한다.
 - Panel 구성은 `차량 화면 -> 제어 패널 -> 상태 모니터` 우선순위를 적용하고, UI는 표시/자극 전용 계층으로 유지한다.
 
 ---
@@ -193,6 +194,16 @@ Emergency Source (logical terminal)
 | Func_125,Func_126 | Req_125,Req_126 | WARN_ARB_MGR | Flow_122 / Comm_122 / decelAssistReq, selectedAlertType/Level | Flow_122 / selectedAlertType/Level | `MOD_06.F122` | UT_V2_RISK_001 / IT_V2_RISK_001 |
 | Func_123 | Req_123 | WARN_ARB_MGR | Flow_123 / Comm_123 / steeringInputNorm, brakePedalNorm | Flow_123 / decelAssistReq | `MOD_06.F123` | UT_V2_RELEASE_001 / IT_V2_RISK_001 |
 | Func_127,Func_128,Func_129 | Req_127,Req_128,Req_129 | DOMAIN_BOUNDARY_MGR | Flow_124 / Comm_124 / domainPathStatus, e2eHealthState | Flow_124 / decelAssistReq, failSafeMode | `MOD_15.F124` | UT_V2_FAILSAFE_001 / IT_V2_FAILSAFE_001 |
+| Func_130 | Req_130 | ADAS_WARN_CTRL | Flow_130 / Comm_130 / objectTrackValid, objectRange, objectRelSpeed, objectConfidence | Flow_130 / objectTrackValid, objectRange, objectRelSpeed | `MOD_01.F130` | UT_ADAS_OBJ_RISK_001 / IT_ADAS_OBJ_001 |
+| Func_131 | Req_131 | ADAS_WARN_CTRL | Flow_130 / Comm_130 / objectTrackValid, objectRange, objectRelSpeed | Flow_130 / objectRiskClass, objectTtcMin | `MOD_01.F131` | UT_ADAS_OBJ_RISK_001 / IT_ADAS_OBJ_001 |
+| Func_132 | Req_132 | ADAS_WARN_CTRL | Flow_131 / Comm_131 / objectTtcMin, objectRiskClass | Flow_131 / selectedAlertLevel, objectRiskClass | `MOD_01.F132` | UT_ADAS_OBJ_RISK_001 / IT_ADAS_OBJ_001 |
+| Func_133 | Req_133 | ADAS_WARN_CTRL | Flow_131 / Comm_131 / objectRelSpeed, objectRange, objectRiskClass | Flow_131 / selectedAlertLevel, objectRiskClass | `MOD_01.F133` | UT_ADAS_OBJ_RISK_001 / IT_ADAS_OBJ_001 |
+| Func_134 | Req_134 | WARN_ARB_MGR | Flow_132 / Comm_132 / intersectionConflictFlag, objectRiskClass | Flow_132 / selectedAlertType, selectedAlertLevel | `MOD_06.F134` | UT_ADAS_OBJ_RISK_001 / IT_ADAS_OBJ_001 |
+| Func_135 | Req_135 | WARN_ARB_MGR | Flow_132 / Comm_132 / mergeCutInFlag, objectRiskClass | Flow_132 / selectedAlertType, selectedAlertLevel | `MOD_06.F135` | UT_ADAS_OBJ_RISK_001 / IT_ADAS_OBJ_001 |
+| Func_136 | Req_136 | ADAS_WARN_CTRL | Flow_131 / Comm_131 / objectTrackValid, objectAlertHoldMs, objectRiskClass | Flow_131 / selectedAlertLevel, objectRiskClass | `MOD_01.F136` | UT_ADAS_OBJ_RISK_001 / IT_ADAS_OBJ_001 |
+| Func_137 | Req_137 | DOMAIN_BOUNDARY_MGR | Flow_133 / Comm_133 / objectConfidence, decelAssistReq | Flow_133 / decelAssistReq, selectedAlertLevel, failSafeMode | `MOD_15.F137` | UT_ADAS_OBJ_SAFETY_001 / IT_ADAS_OBJ_001 |
+| Func_138 | Req_138 | EMS_ALERT | Flow_133 / Comm_133 / objectRiskClass, selectedAlertType, selectedAlertLevel | Flow_133 / objectEventCode | `MOD_05.F138` | UT_ADAS_OBJ_SAFETY_001 / IT_ADAS_OBJ_001 |
+| Func_139 | Req_139 | WARN_ARB_MGR | Flow_132 / Comm_132 / objectRiskClass, emergencyContext, baseZoneContext | Flow_132 / selectedAlertType, selectedAlertLevel | `MOD_06.F139` | UT_ADAS_OBJ_RISK_001 / IT_ADAS_OBJ_001 |
 
 ---
 
@@ -241,6 +252,16 @@ Emergency Source (logical terminal)
 | Var_327 | e2eHealthState | DOMAIN_BOUNDARY_MGR | Flow_124 / Comm_124 |
 | Var_328 | failSafeMode | DOMAIN_BOUNDARY_MGR | Flow_124 / Comm_124 |
 | Var_329 | decelAssistReq | DOMAIN_BOUNDARY_MGR | Flow_124 / Comm_124 |
+| Var_330 | objectTrackValid | ADAS_WARN_CTRL | Flow_130 / Comm_130 |
+| Var_331 | objectRange | ADAS_WARN_CTRL | Flow_130 / Comm_130 |
+| Var_332 | objectRelSpeed | ADAS_WARN_CTRL | Flow_130 / Comm_130 |
+| Var_333 | objectConfidence | ADAS_WARN_CTRL, DOMAIN_BOUNDARY_MGR | Flow_130,Flow_133 / Comm_130,Comm_133 |
+| Var_334 | objectRiskClass | ADAS_WARN_CTRL, WARN_ARB_MGR, EMS_ALERT | Flow_131,Flow_132,Flow_133 / Comm_131,Comm_132,Comm_133 |
+| Var_335 | objectTtcMin | ADAS_WARN_CTRL | Flow_131 / Comm_131 |
+| Var_336 | intersectionConflictFlag | WARN_ARB_MGR | Flow_132 / Comm_132 |
+| Var_337 | mergeCutInFlag | WARN_ARB_MGR | Flow_132 / Comm_132 |
+| Var_338 | objectAlertHoldMs | ADAS_WARN_CTRL | Flow_131 / Comm_131 |
+| Var_339 | objectEventCode | EMS_ALERT | Flow_133 / Comm_133 |
 
 ---
 
@@ -365,6 +386,7 @@ Emergency Source (logical terminal)
 
 | 버전 | 날짜 | 변경 사항 |
 |---|---|---|
+| 2.20 | 2026-03-06 | ADAS 객체 인지 확장(Pre-Activation) 반영: `Func_130~Func_139` 구현 추적과 `Var_330~Var_339` 보강표를 추가하고 체인 동기화 규칙을 작성 원칙에 명시. |
 | 2.19 | 2026-03-06 | 용어/범위 정리: Verification-Harness에서 Driver 네임스페이스 자극 문구/행을 제거하고 `고속 무조향 기반 경고` 제품 체인과 분리 경계를 명확화. |
 | 2.18 | 2026-03-06 | 미사용 체인 정리: `Req_108/Func_108` 구현 추적 행을 제거하고 Body Baseline 경로를 `106/107/111` 기준으로 동기화. |
 | 2.17 | 2026-03-05 | ECU/RTE 거버넌스를 `00e(ECU SoT)+00g(RTE SoT)+04(구현 참조)` 체계로 정리하고, 구현 단계 RTE 샘플 점검/승인 경로 규칙(12장)을 추가. |
