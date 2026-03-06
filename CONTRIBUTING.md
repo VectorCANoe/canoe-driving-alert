@@ -1,162 +1,110 @@
-# Contributing to canoe-driving-alert
+# Contributing
 
-Thank you for your interest in contributing to the canoe-driving-alert project! This document provides guidelines for contributing to this Hyundai Mobis Bootcamp project in collaboration with Vector Korea.
+This repository is operated as a CANoe SIL development project with strict document-to-code traceability.
 
-## Table of Contents
+## 1) Mandatory Read Order
 
-1. [Code of Conduct](#code-of-conduct)
-2. [Getting Started](#getting-started)
-3. [Development Process](#development-process)
-4. [Coding Standards](#coding-standards)
-5. [Testing Requirements](#testing-requirements)
-6. [Documentation](#documentation)
-7. [Commit Guidelines](#commit-guidelines)
-8. [Pull Request Process](#pull-request-process)
-9. [Review Process](#review-process)
+Before any change, read in this order:
 
----
+1. `AGENTS.md`
+2. `driving-situation-alert/TMP_HANDOFF.md`
 
-## Code of Conduct
+Apply the handoff freshness rule:
 
-This project adheres to professional automotive industry standards. All contributors are expected to:
+- `FRESH`: follow handoff-first.
+- `STALE`: use canonical docs (`01 -> 03 -> 0301/0302/0303/0304 -> 04 -> 05/06/07`) until handoff is refreshed.
 
-- Respect ISO 26262 and ASPICE processes
-- Follow Vector CANoe best practices
-- Maintain professional communication
-- Prioritize safety and quality
-- Collaborate constructively
+## 2) Scope and Traceability
 
----
+- `01` documents requirements (**What**).
+- `03+` documents design/implementation mapping (**How**).
+- Always preserve:
+  - `Req -> Func -> Flow -> Comm -> Var -> Code -> UT/IT/ST`
 
-## Getting Started
+Do not remove template columns from requirement/function tables.
 
-### Prerequisites
+## 3) CAPL / DBC / CFG Rules
 
-- **Vector CANoe** (Version 17+ recommended)
-- **Git** for version control
-- Understanding of **CAN / CAN-FD / DoIP** protocols
-- Familiarity with **CAPL** programming
-- Knowledge of automotive diagnostics (**UDS ISO 14229**)
+### CAPL mirror sync (required)
 
-### Setting Up Development Environment
+The following trees must remain synchronized:
 
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/VectorCANoe/canoe-driving-alert.git
-   cd canoe-driving-alert
-   ```
+- `canoe/src/capl/**`
+- `canoe/cfg/channel_assign/**`
 
-2. Open the CANoe configuration:
-   - `canoe/cfg/IVI_OTA_Project.cfg`
+Run:
 
-3. Load the DBC database:
-   - `canoe/databases/vehicle_system.dbc`
-
----
-
-## Development Process
-
-### Workflow
-
-1. **Planning**: Review SRS (REQ-F/G/D/O/A/N) and HARA documents.
-2. **Implementation**: Develop CAPL nodes in `canoe/nodes/`.
-3. **Verification**: Run CANoe simulation and verify DTC generation.
-4. **Validation**: Execute E2E scenario (Fault -> Diagnostics -> OTA).
-
-### Branch Strategy
-
-```
-main (Stable — Production/Mentor Submission)
-├── develop (Integration branch)
-│   ├── feature/bcm-fault-sim      (Window Motor Fault logic)
-│   ├── feature/cgw-routing         (CAN-LS to HS2/HS1 routing)
-│   ├── feature/uds-diagnostic     (Tester node development)
-│   └── feature/ota-rollback       (OTA safety mechanism)
-└── hotfix/critical-signal-fix
+```bash
+python scripts/run.py gate capl-sync
 ```
 
-### Branch Naming Convention
+### GUI-first for CANoe config
 
-- `feature/xxx`: New signal/node implementation
-- `bugfix/xxx`: Fix for existing CAPL/DBC errors
-- `docs/xxx`: Documentation updates (V-Model, Guides)
-- `test/xxx`: Test script/module improvements
+Treat these as GUI-managed:
 
----
+- `canoe/cfg/*.cfg`
+- `canoe/cfg/*.cfg.ini`
+- `canoe/cfg/*.stcfg`
 
-## Coding Standards
+Do not patch these files directly by script unless explicitly asked for recovery work.
 
-### CAPL (Communication Access Programming Language)
+### DBC ownership and ID policy
 
-#### Naming Conventions
+- follow `driving-situation-alert/00f_CAN_ID_Allocation_Standard.md`
+- keep active split DBC set consistent with runtime profile
 
-```capl
-// Global variables: g prefix + CamelCase
-int gIsDiagnosticActive = 0;
-float gMotorCurrentValue = 0.0;
+## 4) Required Local Gates
 
-// Constants: ALL_CAPS with underscores
-const int MOTOR_THRESHOLD_AMPS = 50;
-const int DTC_WINDOW_OVERCURRENT = 0xB1234;
+Run before commit (at minimum):
 
-// Message variables: message + Name (from DBC)
-message BCM_FaultStatus mFaultMsg;
-
-// Functions: CamelCase, start with Verb
-void SendDiagnosticResponse(byte sid) { ... }
+```bash
+python scripts/run.py gate cfg-hygiene
+python scripts/run.py gate capl-sync
 ```
 
-#### Documentation Standard
+Also run when relevant:
 
-Every CAPL node must have a header:
-
-```capl
-/*
- * Node: BCM_Sim.can
- * Requirement: REQ-F01, REQ-N01
- * ASIL: B
- * Description: Simulates window motor overcurrent and generates DTC B1234.
- */
+```bash
+python scripts/run.py gate doc-sync         # docs/trace/code chain changes
+python scripts/run.py gate cli-readiness    # CLI/scripts packaging changes
 ```
 
----
+Gate reference: `scripts/GATE_MATRIX.md`
 
-## Testing Requirements
+## 5) CI and Ownership
 
-We use the V-Model approach for testing:
+Gate workflows are in `.github/workflows/`:
 
-1. **Unit Test (SWE.4)**: Individual CAPL node logic verification.
-2. **Integration Test (SWE.5)**: Routing latency between nodes (≤ 5ms).
-3. **System Test (SYS.5)**: Complete E2E Scenario verify (Fault to OTA).
+- `cfg-hygiene-gate.yml`
+- `doc-code-sync-gate.yml`
+- `cli-readiness-gate.yml`
 
----
+Gate policy/code ownership is defined in `.github/CODEOWNERS`.
+Current gate owner:
 
-## Commit Guidelines
+- `@junexi0828` for `scripts/gates/*` and `*gate*.yml`.
 
-Follow the Conventional Commits format:
+## 6) Commit and PR Policy
 
-`type(scope): subject`
+- Prefer small, scoped commits.
+- Keep generated temporary reports out of commits unless intentionally required as evidence.
+- Use clear commit messages (Conventional Commits style is recommended):
+  - `feat: ...`, `fix: ...`, `docs: ...`, `test: ...`, `chore: ...`
 
-- **feat**: New feature (e.g., `feat(cgw): add DoIP bridge`)
-- **fix**: Bug fix (e.g., `fix(dbc): correct 0x500 cycle time`)
-- **docs**: Documentation only
-- **test**: Adding or correcting tests
+For PRs:
 
----
+- explain scope and impacted trace chain (`Req/Func/Flow/Comm/Var/Code/Test` as applicable),
+- include gate results or links to CI run,
+- call out any GUI-only operations performed in CANoe.
 
-## Pull Request Process
+## 7) Language Policy
 
-1. Create a branch from `develop`.
-2. Ensure CAPL code compiles without errors/warnings.
-3. Update relevant documentation (e.g., `CHANGELOG.md`).
-4. Submit PR to `develop` for review.
-5. Once approved, merge using Squash and Merge.
+- `driving-situation-alert/` (formal project docs): Korean-centered.
+- code/CI/automation (`scripts/`, `.github/`, technical ops docs): English-centered.
+- Keep one language per file; avoid mixed-language paragraphs.
 
----
+## 8) Encoding and Safety
 
-## Review Process
+- Keep text files UTF-8.
+- Do not use destructive git actions (`reset --hard`, forced file rollback of unrelated changes) unless explicitly approved.
 
-All code and documentation must undergo peer review focusing on:
-- **ASIL Compliance**: Safety mechanisms correctly implemented.
-- **Protocol Adherence**: UDS/CAN timing within requirements.
-- **Traceability**: All changes linked to a Requirement ID.
