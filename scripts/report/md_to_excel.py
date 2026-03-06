@@ -31,18 +31,9 @@ def parse_markdown_table(lines):
 
     return table_lines
 
-def convert_md_to_excel(md_file, excel_file):
-    """Convert Markdown file to Excel"""
-    print(f"Converting: {md_file.name} -> {excel_file.name}")
-
-    with open(md_file, 'r', encoding='utf-8') as f:
-        content = f.read()
-
+def write_content_to_sheet(content, ws):
+    """Write markdown content to a worksheet."""
     lines = content.split('\n')
-
-    wb = Workbook()
-    ws = wb.active
-    ws.title = "Content"
 
     # Styles
     header_font = Font(bold=True, size=12, color="FFFFFF")
@@ -57,7 +48,6 @@ def convert_md_to_excel(md_file, excel_file):
 
     current_row = 1
     in_table = False
-    table_start = 0
 
     i = 0
     while i < len(lines):
@@ -152,9 +142,56 @@ def convert_md_to_excel(md_file, excel_file):
         adjusted_width = min(max_length + 2, 80)
         ws.column_dimensions[column].width = adjusted_width
 
-    # Save
+
+def sanitize_sheet_name(raw_name, used_names):
+    """Return a unique worksheet name within Excel 31-char constraints."""
+    # Excel forbidden chars: : \ / ? * [ ]
+    cleaned = re.sub(r'[:\\\\/?*\\[\\]]', '_', raw_name).strip()
+    if not cleaned:
+        cleaned = "Sheet"
+    base = cleaned[:31]
+    name = base
+    suffix = 1
+    while name in used_names:
+        tail = f"_{suffix}"
+        name = f"{base[:31 - len(tail)]}{tail}"
+        suffix += 1
+    used_names.add(name)
+    return name
+
+
+def convert_md_to_excel(md_file, excel_file):
+    """Convert one markdown file into one Excel file."""
+    print(f"Converting: {md_file.name} -> {excel_file.name}")
+
+    with open(md_file, 'r', encoding='utf-8') as f:
+        content = f.read()
+
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Content"
+    write_content_to_sheet(content, ws)
     wb.save(excel_file)
     print(f"✓ Created: {excel_file}")
+
+
+def convert_md_dir_to_single_workbook(md_files, workbook_file):
+    """Convert multiple markdown files into a single workbook (one sheet per file)."""
+    wb = Workbook()
+    wb.remove(wb.active)
+    used_names = set()
+
+    for md_file in md_files:
+        with open(md_file, 'r', encoding='utf-8') as f:
+            content = f.read()
+        sheet_name = sanitize_sheet_name(md_file.stem, used_names)
+        ws = wb.create_sheet(title=sheet_name)
+        write_content_to_sheet(content, ws)
+        print(f"Added sheet: {sheet_name} ({md_file.name})")
+
+    workbook_file.parent.mkdir(parents=True, exist_ok=True)
+    wb.save(workbook_file)
+    print(f"\n✅ Single workbook created: {workbook_file}")
 
 def main():
     parser = argparse.ArgumentParser(
@@ -170,6 +207,12 @@ def main():
         default=None,
         help="Output directory for xlsx files (default: <source_dir>/excel).",
     )
+    parser.add_argument(
+        "--single-workbook",
+        dest="single_workbook",
+        default=None,
+        help="Create one workbook with multiple sheets (path to output xlsx).",
+    )
     args = parser.parse_args()
 
     source_dir = Path(args.source_dir).expanduser().resolve()
@@ -183,8 +226,6 @@ def main():
         print(f"Source directory not found or not a directory: {source_dir}")
         sys.exit(1)
 
-    output_dir.mkdir(parents=True, exist_ok=True)
-
     # Find all MD files
     md_files = sorted(source_dir.glob("*.md"))
 
@@ -196,8 +237,14 @@ def main():
         print("No markdown files found!")
         return
 
-    print("\nConverting...\n")
+    if args.single_workbook:
+        workbook_file = Path(args.single_workbook).expanduser().resolve()
+        print("\nConverting to single workbook...\n")
+        convert_md_dir_to_single_workbook(md_files, workbook_file)
+        return
 
+    output_dir.mkdir(parents=True, exist_ok=True)
+    print("\nConverting...\n")
     for md_file in md_files:
         excel_file = output_dir / f"{md_file.stem}.xlsx"
         try:
