@@ -70,6 +70,7 @@ Then you can use:
 - Low-level scripts: call directly only when debugging a specific tool
 - Script governance/inventory: `scripts/SCRIPT_INVENTORY.md`
 - Gate overview/mapping: `scripts/GATE_MATRIX.md`
+- End-to-end operational playbook: `canoe/docs/operations/VERIFICATION_INSIGHT_PLAYBOOK.md`
 
 ## Compatibility
 
