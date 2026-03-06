@@ -3,7 +3,7 @@
 **Document ID**: PROJ-07-ST
 **ISO 26262 Reference**: Part 4, Cl.10 (System Integration and System Qualification Test)
 **ASPICE Reference**: SYS.5 (System Qualification Test)
-**Version**: 5.16
+**Version**: 5.17
 **Date**: 2026-03-06
 **Status**: Draft
 **Project Title**: 주행 상황 실시간 경고 시스템
@@ -30,6 +30,7 @@
 - ST 증적 포맷/채점 규칙은 `canoe/docs/operations/VERIFICATION_EVIDENCE_LOG_STANDARD.md`를 따른다.
 - V2 확장 요구(`Req_120~Req_121, Req_123, Req_125~Req_129`)는 구현 활성 상태로 ST 항목을 분리 관리하며, SIL 시나리오 15~19와 연계해 검증한다.
 - ADAS 객체 인지 확장(`Req_130~Req_139`)은 Pre-Activation(설계 선반영) ST 항목(`ST_ADAS_OBJ_001`)으로 분리 관리한다.
+- 차량 경보 편의 확장(`Req_140~Req_147`)은 Pre-Activation(설계 선반영) ST 항목(`ST_BASE_ALERT_EXT_001`)으로 분리 관리한다.
 - Panel 검증은 `차량 화면 -> 제어 패널 -> 상태 모니터` 순서로 수행하고, 시스템 동작 확인은 차량 화면 기준으로 판정한다.
 
 ---
@@ -64,6 +65,7 @@
 | ST_V2_RISK_001 | 긴급차량 근접 위험도 기반 감속 보조 요청과 경고 출력 동기화가 일관되게 동작하는지 확인한다. (SIL Scenario 15/16/17/19) | Ready |  |  |
 | ST_V2_FAILSAFE_001 | 도메인 경로 단절 시 자동 감속 보조 금지와 최소 경고 채널 유지 강등이 동작하는지 확인한다. (SIL Scenario 18) | Ready |  |  |
 | ST_ADAS_OBJ_001 | 객체 목록 기반 TTC/교차로/합류 위험 경고와 신뢰도 저하 강등/이벤트 기록이 일관되게 동작하는지 확인한다. (Pre-Activation) | Planned |  |  |
+| ST_BASE_ALERT_EXT_001 | 방향지시등/주행모드/안전벨트 입력 기반 경보 보정, 접근거리 표시, 이벤트 기록·조회, 표시/음량 설정 반영이 E2E로 일관되게 동작하는지 확인한다. (Pre-Activation) | Planned |  |  |
 | ST_BASE_001 | 차량 기본 기능(시동/기어/가감속/조향/비상등/창문/기본표시/도메인경계)이 시스템 수준에서 일관되게 동작하는지 확인한다. |  |  |  |
 
 ---
@@ -98,6 +100,7 @@
 | ST_V2_RISK_001 | Req_120,Req_121,Req_125,Req_126,Req_123 | VC_120,VC_121,VC_125,VC_126,VC_123 | Func_120,Func_121,Func_125,Func_126,Func_123 | Flow_120,Flow_121,Flow_122,Flow_123 / Comm_120,Comm_121,Comm_122,Comm_123 | Var_320,Var_321,Var_322,Var_323,Var_324,Var_325 | IT_V2_RISK_001 | 위험도 산정 주기 `100ms`, 감속 보조 요청 생성/해제 `150ms` 이내, Ambient/Cluster 동기 오프셋 `<=50ms` (SIL Scenario 15/16/17/19) |
 | ST_V2_FAILSAFE_001 | Req_127,Req_128,Req_129 | VC_127,VC_128,VC_129 | Func_127,Func_128,Func_129 | Flow_124 / Comm_124 | Var_326,Var_327,Var_328,Var_329 | IT_V2_FAILSAFE_001 | 단절 감지 후 `150ms` 이내 failSafeMode 전환, 자동 감속 보조 0건, 최소 경고 채널 유지 (SIL Scenario 18) |
 | ST_ADAS_OBJ_001 | Req_130,Req_131,Req_132,Req_133,Req_134,Req_135,Req_136,Req_137,Req_138,Req_139 | VC_130,VC_131,VC_132,VC_133,VC_134,VC_135,VC_136,VC_137,VC_138,VC_139 | Func_130,Func_131,Func_132,Func_133,Func_134,Func_135,Func_136,Func_137,Func_138,Func_139 | Flow_130,Flow_131,Flow_132,Flow_133 / Comm_130,Comm_131,Comm_132,Comm_133 | Var_330,Var_331,Var_332,Var_333,Var_334,Var_335,Var_336,Var_337,Var_338,Var_339 | IT_ADAS_OBJ_001 | 객체 입력 반영 `100ms`, 경고/강등 반영 `150ms`, 이벤트 기록 누락 0건 및 우선순위 결정론 유지(Pre-Activation) |
+| ST_BASE_ALERT_EXT_001 | Req_140,Req_141,Req_142,Req_143,Req_144,Req_145,Req_146,Req_147 | VC_140,VC_141,VC_142,VC_143,VC_144,VC_145,VC_146,VC_147 | Func_140,Func_141,Func_142,Func_143,Func_144,Func_145,Func_146,Func_147 | Flow_103,Flow_104,Flow_105,Flow_203,Flow_006,Flow_008 / Comm_103,Comm_104,Comm_105,Comm_203,Comm_006,Comm_008 | Var_009,Var_012,Var_024,Var_029,Var_133,Var_138,Var_139,Var_141,Var_155,Var_164,Var_166,Var_167,Var_168,Var_191,Var_192,Var_193,Var_268,Var_281,Var_282 | IT_BASE_ALERT_EXT_001 | 맥락 보정/거리 표시/이력 조회/설정 반영 체인이 E2E에서 수치 기준(`150ms`,`200ms`)과 기록 기준(누락 0건)을 충족(Pre-Activation) |
 | ST_BASE_001 | Req_101~Req_107,Req_109~Req_119 | VC_101~VC_107,VC_109~VC_119 | Func_101~Func_107,Func_109~Func_119 | Flow_101~Flow_106,Flow_201~Flow_205 / Comm_101~Comm_106,Comm_201~Comm_205 | Var_101~Var_314 | IT_BASE_001, IT_BASE_PT_001, IT_BASE_CH_001, IT_BASE_BODY_001, IT_BASE_IVI_001, IT_BASE_EXT_BODY_001, IT_BASE_EXT_IVI_001, IT_BASE_DIAG_001 | 차량 기본 기능 E2E 시나리오에서 입력/상태/표시/경계/판정 체인이 일관되게 유지 |
 
 ---
@@ -106,6 +109,7 @@
 
 | 버전 | 날짜 | 변경 사항 |
 |---|---|---|
+| 5.17 | 2026-03-06 | 차량 경보 편의 확장(Pre-Activation) 반영: `ST_BASE_ALERT_EXT_001` 추가, `Req_140~Req_147`/`Flow·Comm_103·104·105·203·006·008`/`Var_133...282` 추적을 동기화. |
 | 5.16 | 2026-03-06 | ADAS 객체 인지 확장(Pre-Activation) 반영: `ST_ADAS_OBJ_001`을 추가하고 `Req_130~Req_139`/`Flow_130~133`/`Comm_130~133`/`Var_330~339` 추적을 동기화. |
 | 5.15 | 2026-03-06 | 미사용 체인 정리: `Req/VC/Func_108`을 `ST_BASE_BODY_001/ST_BASE_001`에서 제거하고 Baseline 범위를 `108 제외`로 동기화. |
 | 5.14 | 2026-03-04 | 멘토링 체크리스트 반영: ST 작성 원칙에 Panel 검증 우선순위(`차량 화면 -> 제어 패널 -> 상태 모니터`)를 추가. |

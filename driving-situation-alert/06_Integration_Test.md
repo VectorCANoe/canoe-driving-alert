@@ -3,7 +3,7 @@
 **Document ID**: PROJ-06-IT
 **ISO 26262 Reference**: Part 6, Cl.10 (Software Integration and Integration Test)
 **ASPICE Reference**: SWE.5 (Software Integration and Integration Test)
-**Version**: 4.16
+**Version**: 4.17
 **Date**: 2026-03-06
 **Status**: Draft
 **Project Title**: 주행 상황 실시간 경고 시스템
@@ -30,6 +30,7 @@
 - IT 증적 포맷/채점 규칙은 `canoe/docs/operations/VERIFICATION_EVIDENCE_LOG_STANDARD.md`를 따른다.
 - V2 확장 요구(`Req_120~Req_121, Req_123, Req_125~Req_129`)는 구현 활성 상태로 IT 항목을 관리하며, SIL 시나리오 15~19와 연계해 검증한다.
 - ADAS 객체 인지 확장(`Req_130~Req_139`)은 Pre-Activation(설계 선반영) IT 항목(`IT_ADAS_OBJ_001`)으로 관리한다.
+- 차량 경보 편의 확장(`Req_140~Req_147`)은 Pre-Activation(설계 선반영) IT 항목(`IT_BASE_ALERT_EXT_001`)으로 관리한다.
 
 ---
 
@@ -45,6 +46,7 @@
 | IT_V2_RISK_001 | Req_120,Req_121,Req_125,Req_126,Req_123 | VC_120,VC_121,VC_125,VC_126,VC_123 | 긴급차량 근접 위험도 기반 감속 보조 요청/경고 동기화 체인 통합 검증 | 위험도 임계 초과 시 `150ms` 이내 감속 보조 요청 생성, 활성 상태에서 Ambient/Cluster 동기 오프셋 `<=50ms`, 운전자 개입 시 `150ms` 이내 해제 (SIL Scenario 15/16/17/19) | Ready |  |  |
 | IT_V2_FAILSAFE_001 | Req_127,Req_128,Req_129 | VC_127,VC_128,VC_129 | 도메인 경로 단절 강등(Fail-safe) 체인 통합 검증 | 단절 감지 후 `150ms` 이내 failSafeMode 전환, 자동 감속 보조 0건 유지, 최소 경고 채널 유지 (SIL Scenario 18) | Ready |  |  |
 | IT_ADAS_OBJ_001 | Req_130,Req_131,Req_132,Req_133,Req_134,Req_135,Req_136,Req_137,Req_138,Req_139 | VC_130,VC_131,VC_132,VC_133,VC_134,VC_135,VC_136,VC_137,VC_138,VC_139 | 객체 목록 입력부터 TTC/상대속도 단계화, 교차로/합류 위험 경고, 신뢰도 강등 및 이벤트 기록 체인 통합 검증 | 객체 입력 반영 `100ms`, 위험 경고 반영 `150ms`, 신뢰도 저하 시 자동감속 차단/강등 `150ms`, 이벤트 기록 누락 0건 | Planned |  |  |
+| IT_BASE_ALERT_EXT_001 | Req_140,Req_141,Req_142,Req_143,Req_144,Req_145,Req_146,Req_147 | VC_140,VC_141,VC_142,VC_143,VC_144,VC_145,VC_146,VC_147 | 차량 경보 편의 확장(입력 맥락 보정/접근거리 표시/이벤트 기록·조회/표시·음량 설정) 체인 통합 검증 | 입력 보정 반영 `150ms`, 접근거리 표시 갱신 `200ms`, 이벤트 기록 누락 0건, 표시·음량 설정 반영 `150ms` | Planned |  |  |
 | IT_SIL_001 | Req_041,Req_042,Req_043 | VC_041,VC_042,VC_043 | CANoe SIL 실행/판정 경로(TestScenario->ScenarioResult) 통합 검증 | CAN+Ethernet(또는 CAN 대체 백본) 조건에서도 시나리오 실행/결과 기록/로그 요약이 일관되게 유지된다 |  |  |  |
 | IT_BASE_001 | Req_101~Req_107,Req_109~Req_119 | VC_101~VC_107,VC_109~VC_119 | 차량 기본 기능(시동/기어/가감속/조향/비상등/창문/표시/도메인 경계 + Body/IVI 확장 상태) 통합 검증 | Flow_101~106, Flow_201~205 경로에서 기본 차량 기능 체인이 성립하고 기본 상태/표시가 일관되게 유지된다 |  |  |  |
 | IT_BASE_PT_001 | Req_101,Req_102,Req_110 | VC_101,VC_102,VC_110 | Powertrain 도메인 기본 동력/변속/상태 경로 통합 검증 | Comm_101/204/105 경로에서 엔진/변속/동력 상태가 `100ms` 주기로 일관되게 연계된다 |  |  |  |
@@ -69,6 +71,7 @@
 | IT_V2_RISK_001 | Flow_120,Flow_121,Flow_122,Flow_123 | Comm_120,Comm_121,Comm_122,Comm_123 | Func_120,Func_121,Func_125,Func_126,Func_123 | Req_120,Req_121,Req_125,Req_126,Req_123 | VC_120,VC_121,VC_125,VC_126,VC_123 | UT_V2_RISK_001, UT_V2_RELEASE_001 | 위험도 기반 보조 요청 생성/경고 동기화/운전자 개입 해제가 수치 기준(`100ms`,`150ms`,`<=50ms`) 충족 (SIL Scenario 15/16/17/19) |
 | IT_V2_FAILSAFE_001 | Flow_124 | Comm_124 | Func_127,Func_128,Func_129 | Req_127,Req_128,Req_129 | VC_127,VC_128,VC_129 | UT_V2_FAILSAFE_001 | 경로 단절 감지 후 `150ms` 이내 강등 전환, 자동 감속 보조 0건, 최소 경고 채널 유지 (SIL Scenario 18) |
 | IT_ADAS_OBJ_001 | Flow_130,Flow_131,Flow_132,Flow_133 | Comm_130,Comm_131,Comm_132,Comm_133 | Func_130,Func_131,Func_132,Func_133,Func_134,Func_135,Func_136,Func_137,Func_138,Func_139 | Req_130,Req_131,Req_132,Req_133,Req_134,Req_135,Req_136,Req_137,Req_138,Req_139 | VC_130,VC_131,VC_132,VC_133,VC_134,VC_135,VC_136,VC_137,VC_138,VC_139 | UT_ADAS_OBJ_RISK_001, UT_ADAS_OBJ_SAFETY_001 | 객체 기반 위험 경고/강등/이벤트 체인이 수치 기준(`100ms`,`150ms`)과 정책 일관성 기준을 충족(Pre-Activation) |
+| IT_BASE_ALERT_EXT_001 | Flow_103,Flow_104,Flow_105,Flow_203,Flow_006,Flow_008 | Comm_103,Comm_104,Comm_105,Comm_203,Comm_006,Comm_008 | Func_140,Func_141,Func_142,Func_143,Func_144,Func_145,Func_146,Func_147 | Req_140,Req_141,Req_142,Req_143,Req_144,Req_145,Req_146,Req_147 | VC_140,VC_141,VC_142,VC_143,VC_144,VC_145,VC_146,VC_147 | UT_BASE_ALERT_EXT_001 | 입력 맥락 보정 `150ms`, 거리 표시 `200ms`, 이벤트 기록 누락 0건, 표시/음량 설정 반영 `150ms` 기준 충족(Pre-Activation) |
 | IT_SIL_001 | Flow_009 | Comm_009 | Func_041,Func_042,Func_043 | Req_041,Req_042,Req_043 | VC_041,VC_042,VC_043 | UT_SIL_001 | 시나리오 실행/결과 기록/로그 연동 완료 |
 | IT_BASE_001 | Flow_101~Flow_106, Flow_201~Flow_205 | Comm_101~Comm_106, Comm_201~Comm_205 | Func_101~Func_107,Func_109~Func_119 | Req_101~Req_107,Req_109~Req_119 | VC_101~VC_107,VC_109~VC_119 | UT_BASE_001, UT_BASE_PT_001, UT_BASE_CH_001, UT_BASE_BODY_001, UT_BASE_IVI_001, UT_BASE_EXT_BODY_001, UT_BASE_EXT_IVI_001, UT_BASE_GW_001, UT_BASE_TEST_001 | 차량 기본 기능 입력/상태/표시/도메인 경계/SIL 판정 연동이 일관되게 유지 |
 | IT_BASE_PT_001 | Flow_101,Flow_204,Flow_105 | Comm_101,Comm_204,Comm_105 | Func_101,Func_102,Func_110 | Req_101,Req_102,Req_110 | VC_101,VC_102,VC_110 | UT_BASE_PT_001, UT_BASE_GW_001 | 엔진/변속/동력 상태 연계가 `100ms` 기준으로 유지 |
@@ -95,9 +98,10 @@
 ## 07 연계 체크포인트
 
 - `IT_*`의 E2E 결과는 `07_System_Test.md`의 `ST_*` 수용 판단 근거로 사용한다.
-- `IT_CORE_001`, `IT_EMS_001`, `IT_ARB_001`, `IT_OUT_001`, `IT_TIMEOUT_001`, `IT_SIL_001`, `IT_BASE_001`, `IT_BASE_PT_001`, `IT_BASE_CH_001`, `IT_BASE_BODY_001`, `IT_BASE_IVI_001`, `IT_BASE_DIAG_001`는 03/04 문서의 검증 참조 ID와 일치해야 한다.
+- `IT_CORE_001`, `IT_EMS_001`, `IT_ARB_001`, `IT_OUT_001`, `IT_TIMEOUT_001`, `IT_SIL_001`, `IT_BASE_001`, `IT_BASE_PT_001`, `IT_BASE_CH_001`, `IT_BASE_BODY_001`, `IT_BASE_IVI_001`, `IT_BASE_DIAG_001`, `IT_BASE_ALERT_EXT_001`는 03/04 문서의 검증 참조 ID와 일치해야 한다.
 - `IT_V2_RISK_001`, `IT_V2_FAILSAFE_001`은 `Req_120~Req_121, Req_123, Req_125~Req_129` 활성 체인의 ST 연계 근거로 유지한다.
 - `IT_ADAS_OBJ_001`은 `Req_130~Req_139` Pre-Activation 체인의 ST 연계 근거(`ST_ADAS_OBJ_001`)로 유지한다.
+- `IT_BASE_ALERT_EXT_001`은 `Req_140~Req_147` Pre-Activation 체인의 ST 연계 근거(`ST_BASE_ALERT_EXT_001`)로 유지한다.
 
 ---
 
@@ -105,6 +109,7 @@
 
 | 버전 | 날짜 | 변경 사항 |
 |---|---|---|
+| 4.17 | 2026-03-06 | 차량 경보 편의 확장(Pre-Activation) 반영: `IT_BASE_ALERT_EXT_001` 추가, `Req_140~Req_147`/`Flow·Comm_103·104·105·203·006·008` 추적 및 07 연계 체크포인트를 동기화. |
 | 4.16 | 2026-03-06 | ADAS 객체 인지 확장(Pre-Activation) 반영: `IT_ADAS_OBJ_001`을 추가하고 `Req_130~Req_139`/`Flow_130~133`/`Comm_130~133` 추적 및 07 연계 체크포인트를 동기화. |
 | 4.15 | 2026-03-06 | 미사용 체인 정리: `Req/VC/Func_108`을 `IT_BASE_001/IT_BASE_BODY_001`에서 제거하고 Baseline 범위를 `108 제외`로 동기화. |
 | 4.14 | 2026-03-03 | V2 IT를 구현 활성 상태로 전환하고 `IT_V2_RISK_001`, `IT_V2_FAILSAFE_001` 수행 상태를 Ready로 갱신. |

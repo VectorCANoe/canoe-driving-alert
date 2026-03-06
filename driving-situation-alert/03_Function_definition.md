@@ -3,7 +3,7 @@
 **Document ID**: PROJ-03-FD
 **ISO 26262 Reference**: Part 4, Cl.7 (System Design)
 **ASPICE Reference**: SYS.3 (System Architectural Design)
-**Version**: 4.28
+**Version**: 4.29
 **Date**: 2026-03-06
 **Status**: Draft
 **Project Title**: 주행 상황 실시간 경고 시스템
@@ -20,6 +20,7 @@
 - 차량 기본 기능 확장 요구(`Req_101~Req_107`, `Req_109~Req_119`)는 `Func_101~Func_107`, `Func_109~Func_119`로 별도 관리한다.
 - V2 확장 요구(`Req_120~Req_121`, `Req_123`, `Req_125~Req_129`)는 `Func_120~Func_121`, `Func_123`, `Func_125~Func_129`로 별도 관리하며, 본 문서에서는 구현 활성 상태로 유지한다.
 - ADAS 객체 인지 확장 요구(`Req_130~Req_139`)는 `Func_130~Func_139`로 별도 관리하며, 본 문서에서는 Pre-Activation(설계 선반영) 상태로 유지한다.
+- 차량 경보 편의 확장 요구(`Req_140~Req_147`)는 `Func_140~Func_147`로 별도 관리하며, 본 문서에서는 Pre-Activation(설계 선반영) 상태로 유지한다.
 - 제출 전 현대/기아 및 OEM 기준 명칭으로 일괄 대체하되, 기능 ID/추적 ID는 유지한다.
 - ID 규칙 SoT는 `00f_CAN_ID_Allocation_Standard.md`를 따르며, 적용 참조는 `0303_Communication_Specification.md`를 사용한다.
 - ECU 명칭은 Canonical(`UPPER_SNAKE_CASE`)만 사용하며, 명명 규칙은 `00e`를 단일 SoT로 하고 본 문서는 ECU 적용 참조 문서로 유지한다.
@@ -29,7 +30,7 @@
 - `WARN_ARB_MGR`의 기능은 경보 우선순위 판정이며, CAN 비트 레벨 arbitration과 구분해 해석한다.
 - EMS는 문서 상위 계층에서 단일 논리 단말 `EMS_ALERT`로 정의하고, 내부 구현 모듈(`EMS_POLICE_TX`, `EMS_AMB_TX`, `EMS_ALERT_RX`)은 하단 매핑표에서만 분리 관리한다.
 - 약어 충돌 방지 규칙: `EMS_AMB_TX`의 `AMB`는 `Ambulance` 의미의 구현 literal이며, `Ambient`는 항상 `AMBIENT` 풀토큰으로 표기한다.
-- 본 사이클의 기능-요구 추적 범위는 `Req_001~043`, `Req_101~107`, `Req_109~121`, `Req_123`, `Req_125~129`를 활성 범위로 유지하고, `Req_130~Req_139`는 ADAS 객체 인지 확장(Pre-Activation) 범위로 관리한다.
+- 본 사이클의 기능-요구 추적 범위는 `Req_001~043`, `Req_101~107`, `Req_109~121`, `Req_123`, `Req_125~129`를 활성 범위로 유지하고, `Req_130~Req_147`는 확장 요구(Pre-Activation) 범위로 관리한다.
 
 ---
 
@@ -94,6 +95,10 @@
 | ECU 동작 | TTC/상대속도 기반 위험 단계화 | TTC/상대속도/거리 기반으로 위험 단계를 산정하고 보수 유지시간을 적용 | ADAS 객체 인지 확장(Planned) | Req_132,Req_133,Req_136 / Flow_131 / Comm_131 / ST_ADAS_OBJ_001 |
 | ECU 동작 | 교차로/합류 위험 경고 판정 | 교차로 측방 접근 및 합류/끼어들기 위험 경고를 생성하고 기존 경고와 정합 판정 | ADAS 객체 인지 확장(Planned) | Req_134,Req_135,Req_139 / Flow_132 / Comm_132 / ST_ADAS_OBJ_001 |
 | ECU 동작 | 신뢰도 기반 강등 및 이벤트 기록 | 객체 신뢰도 저하 시 자동감속 보조 차단/강등 및 이벤트 로깅 | ADAS 객체 인지 확장(Planned) | Req_137,Req_138 / Flow_133 / Comm_133 / ST_ADAS_OBJ_001 |
+| ECU 동작 | 방향지시등/안전벨트 기반 경보 맥락 반영 | 방향지시등/안전벨트 상태를 경보 맥락 및 강조 정책에 반영 | 차량 경보 편의 확장(Planned) | Req_140,Req_142 / Flow_103 / Comm_103 / ST_BASE_ALERT_EXT_001 |
+| ECU 동작 | 주행모드 기반 경보 민감도 반영 | 주행 모드에 따라 경보 민감도 프로파일을 보정 | 차량 경보 편의 확장(Planned) | Req_141 / Flow_105 / Comm_105 / ST_BASE_ALERT_EXT_001 |
+| ECU 동작 | 접근거리 표시/이벤트 이력 관리 | 긴급차량 접근 거리 표시와 경보 이벤트 기록·이력 조회를 제공 | 차량 경보 편의 확장(Planned) | Req_143,Req_144,Req_145 / Flow_006,Flow_008,Flow_203 / Comm_006,Comm_008,Comm_203 / ST_BASE_ALERT_EXT_001 |
+| ECU 동작 | 표시 방식/음량 설정 반영 | 경보 표시 방식/음량 설정을 HMI 출력 정책에 반영 | 차량 경보 편의 확장(Planned) | Req_146,Req_147 / Flow_104,Flow_203 / Comm_104,Comm_203 / ST_BASE_ALERT_EXT_001 |
 
 ---
 
@@ -203,6 +208,21 @@
 
 ---
 
+## 차량 경보 편의 확장 기능 상세 표 (Planned, Phase-3B)
+
+| Func ID | Req ID | 실제 노드명 | 기능명 | 기능 설명 | 실제값 정의(입력/출력) |
+|---|---|---|---|---|---|
+| Func_140 | Req_140 | WARN_ARB_MGR | 방향지시등 기반 경보 맥락 보정 | 방향지시등 상태를 활용해 경보 방향/문구 맥락 보정 | 입력: TurnLampState, selectedAlertType / 출력: selectedAlertType, warningTextCode |
+| Func_141 | Req_141 | WARN_ARB_MGR | 주행모드 기반 경보 민감도 프로파일 | DriveMode/Eco/Sport 상태에 따른 경보 민감도 보정 | 입력: DriveMode, EcoMode, SportMode, selectedAlertLevel / 출력: selectedAlertLevel |
+| Func_142 | Req_142 | WARN_ARB_MGR | 안전벨트 상태 기반 경보 강조 | 안전벨트 상태/경고레벨 기반 경보 강조 적용 | 입력: DriverSeatBelt, PassengerSeatBelt, SeatBeltWarnLvl, selectedAlertLevel / 출력: selectedAlertLevel, selectedAlertType |
+| Func_143 | Req_143 | CLU_HMI_CTRL | 긴급차량 접근 거리 표시 | ETA와 자차 속도 기반 접근 거리 등급/문구 표시 | 입력: eta, vehicleSpeedNorm, selectedAlertType / 출력: warningTextCode |
+| Func_144 | Req_144 | EMS_ALERT | 경보 이벤트 공통 기록 | 긴급/구간/객체 경보 이벤트를 공통 포맷으로 기록 | 입력: selectedAlertType, selectedAlertLevel, warningTextCode / 출력: arbitrationSnapshotId |
+| Func_145 | Req_145 | CLU_HMI_CTRL | 경보 이벤트 이력 조회 | 최근 경보 이벤트 이력을 HMI에서 조회/표시 | 입력: arbitrationSnapshotId, ClusterNotifType, ClusterNotifPrio / 출력: warningTextCode |
+| Func_146 | Req_146 | CLU_HMI_CTRL | 경보 표시 방식 설정 반영 | 테마/팝업 설정을 경보 표시 정책에 반영 | 입력: ThemeMode, PopupType, PopupPriority, PopupActive / 출력: warningTextCode, ClusterNotifPrio |
+| Func_147 | Req_147 | CLU_HMI_CTRL | 경보 음량 설정 반영 | 음량/오디오 포커스 상태를 반영해 경보 음량 정책 적용 | 입력: VolumeLevel, AudioFocusOwner / 출력: warningTextCode, ClusterNotifPrio |
+
+---
+
 ## 상세 설명 및 추가 사항
 
 - 상단 표는 공식 표준 양식의 열 구성(분류/기능명/기능설명/비고/검증)을 유지한다.
@@ -212,6 +232,7 @@
 - `Func_101~Func_107`, `Func_109~Func_119`는 차량 기본 기능 확장 체인으로, 0302/0303/0304의 Flow/Comm/Var와 최신 도메인 DBC 기준으로 동기화되어야 한다.
 - `Func_120~Func_121`, `Func_123`, `Func_125~Func_129`는 V2 확장 활성 체인으로 관리하며, 코드/DBC/05/06/07 변경을 동일 커밋 단위로 동기화한다.
 - `Func_130~Func_139`는 ADAS 객체 인지 확장 Pre-Activation 체인으로 관리하며, 구현 착수 시 0302/0303/0304/04/05/06/07을 동일 커밋 단위로 동기화한다.
+- `Func_140~Func_147`는 차량 경보 편의 확장 Pre-Activation 체인으로 관리하며, 구현 착수 시 0302/0303/0304/04/05/06/07을 동일 커밋 단위로 동기화한다.
 
 ## EMS 논리 단말-내부 모듈 매핑
 
@@ -237,6 +258,7 @@
 
 | 버전 | 날짜 | 변경 사항 |
 |---|---|---|
+| 4.29 | 2026-03-06 | 차량 경보 편의 확장(Pre-Activation) 반영: `Func_140~Func_147` 상세표와 상단 기능요약을 추가하고 `Req_140~Req_147` 추적 범위를 문서 원칙에 반영. |
 | 4.28 | 2026-03-06 | ADAS 객체 인지 확장(Pre-Activation) 반영: `Func_130~Func_139` 상세표와 상단 기능요약을 추가하고 `Req_130~Req_139` 추적 범위를 문서 원칙에 반영. |
 | 4.27 | 2026-03-06 | 용어 정리: `Func_012` 설명을 `고속도로 무조향 의심 경고` 기준으로 통일해 비제품 기능 기반 해석 여지를 제거. |
 | 4.26 | 2026-03-06 | 미사용 체인 정리: `Req_108/Func_108` 항목을 Vehicle Baseline 활성 범위에서 제거하고 범위 문구를 `108 제외` 기준으로 동기화. |

@@ -3,7 +3,7 @@
 **Document ID**: PROJ-0301-SFA
 **ISO 26262 Reference**: Part 4, Cl.7 (System Design)
 **ASPICE Reference**: SYS.3 (System Architectural Design)
-**Version**: 3.24
+**Version**: 3.25
 **Date**: 2026-03-06
 **Status**: Draft
 **Project Title**: 주행 상황 실시간 경고 시스템
@@ -17,9 +17,10 @@
 
 ## 작성 원칙
 
-- 본 문서는 03_Function_definition.md의 Func_001~Func_121, Func_123, Func_125~Func_139를 노드 내부 동작 관점으로 분해한다.
+- 본 문서는 03_Function_definition.md의 Func_001~Func_121, Func_123, Func_125~Func_147를 노드 내부 동작 관점으로 분해한다.
 - V2 확장 요구(`Req_120~Req_121`, `Req_123`, `Req_125~Req_129`)는 `Func_120~Func_121`, `Func_123`, `Func_125~Func_129`로 구현 활성 상태에서 관리한다.
 - ADAS 객체 인지 확장 요구(`Req_130~Req_139`)는 `Func_130~Func_139`로 Pre-Activation(설계 선반영) 상태에서 관리한다.
+- 차량 경보 편의 확장 요구(`Req_140~Req_147`)는 `Func_140~Func_147`로 Pre-Activation(설계 선반영) 상태에서 관리한다.
 - 각 노드의 입력-처리-출력을 명확히 정의해 0302의 Tx/Rx 흐름 설계로 연결한다.
 - 요구사항(What) 문장을 반복하지 않고, 시스템 동작 로직(How)만 기술한다.
 - 상단 표는 공식 표준 양식의 열 구성(노드/기능 상세/비고)을 유지한다.
@@ -127,6 +128,14 @@
 | Func_137 | Req_137 | DOMAIN_BOUNDARY_MGR | objectConfidence, decelAssistReq | 객체 신뢰도 저하 시 자동 감속 보조 차단 및 경고 강등 | decelAssistReq, selectedAlertLevel, failSafeMode | 입력: objectConfidence, decelAssistReq / 출력: decelAssistReq, selectedAlertLevel, failSafeMode |
 | Func_138 | Req_138 | EMS_ALERT | objectRiskClass, selectedAlertType, selectedAlertLevel | 객체 기반 경고 이벤트 코드 생성/기록 | objectEventCode | 입력: objectRiskClass, selectedAlertType, selectedAlertLevel / 출력: objectEventCode |
 | Func_139 | Req_139 | WARN_ARB_MGR | objectRiskClass, emergencyContext, baseZoneContext | 객체 경고와 기존 경고의 우선순위 정합 판정 | selectedAlertType, selectedAlertLevel | 입력: objectRiskClass, emergencyContext, baseZoneContext / 출력: selectedAlertType, selectedAlertLevel |
+| Func_140 | Req_140 | WARN_ARB_MGR | TurnLampState, selectedAlertType | 방향지시등 상태 기반 경보 맥락 보정 | selectedAlertType, warningTextCode | 입력: TurnLampState, selectedAlertType / 출력: selectedAlertType, warningTextCode |
+| Func_141 | Req_141 | WARN_ARB_MGR | DriveMode, EcoMode, SportMode, selectedAlertLevel | 주행모드 기반 경보 민감도 프로파일 보정 | selectedAlertLevel | 입력: DriveMode, EcoMode, SportMode, selectedAlertLevel / 출력: selectedAlertLevel |
+| Func_142 | Req_142 | WARN_ARB_MGR | DriverSeatBelt, PassengerSeatBelt, SeatBeltWarnLvl, selectedAlertLevel | 안전벨트 상태 기반 경보 강조 레벨 보정 | selectedAlertLevel, selectedAlertType | 입력: DriverSeatBelt, PassengerSeatBelt, SeatBeltWarnLvl, selectedAlertLevel / 출력: selectedAlertLevel, selectedAlertType |
+| Func_143 | Req_143 | CLU_HMI_CTRL | eta, vehicleSpeedNorm, selectedAlertType | 긴급차량 접근 거리 등급/문구 표시 | warningTextCode | 입력: eta, vehicleSpeedNorm, selectedAlertType / 출력: warningTextCode |
+| Func_144 | Req_144 | EMS_ALERT | selectedAlertType, selectedAlertLevel, warningTextCode | 경보 이벤트 공통 포맷 기록 | arbitrationSnapshotId | 입력: selectedAlertType, selectedAlertLevel, warningTextCode / 출력: arbitrationSnapshotId |
+| Func_145 | Req_145 | CLU_HMI_CTRL | arbitrationSnapshotId, ClusterNotifType, ClusterNotifPrio | 경보 이벤트 이력 조회/표시 | warningTextCode | 입력: arbitrationSnapshotId, ClusterNotifType, ClusterNotifPrio / 출력: warningTextCode |
+| Func_146 | Req_146 | CLU_HMI_CTRL | ThemeMode, PopupType, PopupPriority, PopupActive | 경보 표시 방식 설정 반영 | warningTextCode, ClusterNotifPrio | 입력: ThemeMode, PopupType, PopupPriority, PopupActive / 출력: warningTextCode, ClusterNotifPrio |
+| Func_147 | Req_147 | CLU_HMI_CTRL | VolumeLevel, AudioFocusOwner | 경보 음량 설정 반영 | warningTextCode, ClusterNotifPrio | 입력: VolumeLevel, AudioFocusOwner / 출력: warningTextCode, ClusterNotifPrio |
 
 ## 2-1. Req-Func 1:1 감사 매핑 표
 
@@ -211,6 +220,14 @@
 | Req_137 | Func_137 | DOMAIN_BOUNDARY_MGR | 신뢰도 저하 시 경고 강등 |
 | Req_138 | Func_138 | EMS_ALERT | 객체 기반 경고 이벤트 기록 |
 | Req_139 | Func_139 | WARN_ARB_MGR | 객체 경고 우선순위 정합 |
+| Req_140 | Func_140 | WARN_ARB_MGR | 방향지시등 기반 경보 맥락 반영 |
+| Req_141 | Func_141 | WARN_ARB_MGR | 주행모드 기반 경보 민감도 반영 |
+| Req_142 | Func_142 | WARN_ARB_MGR | 안전벨트 상태 기반 경보 강조 반영 |
+| Req_143 | Func_143 | CLU_HMI_CTRL | 긴급차량 접근 거리 표시 |
+| Req_144 | Func_144 | EMS_ALERT | 경보 이벤트 공통 기록 |
+| Req_145 | Func_145 | CLU_HMI_CTRL | 경보 이벤트 이력 조회 |
+| Req_146 | Func_146 | CLU_HMI_CTRL | 경보 표시 방식 설정 반영 |
+| Req_147 | Func_147 | CLU_HMI_CTRL | 경보 음량 설정 반영 |
 
 ---
 
@@ -228,6 +245,7 @@
 | 교차로/합류구간 근접위험 감속 보조 | EMS_ALERT(Rx) + ADAS_WARN_CTRL(위험도 산정) + WARN_ARB_MGR(보조요청/해제+경고 동기화) -> BRK_CTRL + AMBIENT_CTRL + CLU_HMI_CTRL | Func_120, Func_121, Func_125, Func_126, Func_123 |
 | 도메인 경로 단절 강등 | DOMAIN_BOUNDARY_MGR(경로 단절 감지) -> DOMAIN_ROUTER -> WARN_ARB_MGR/출력노드 | Func_127, Func_128, Func_129 |
 | 객체 기반 교차로/합류 위험 경고 | ADAS_WARN_CTRL(객체 정규화/TTC/단계화) + WARN_ARB_MGR(교차로/합류 판정 및 우선순위 정합) + DOMAIN_BOUNDARY_MGR(신뢰도 강등) + EMS_ALERT(이벤트 기록) -> AMBIENT_CTRL + CLU_HMI_CTRL | Func_130, Func_131, Func_132, Func_133, Func_134, Func_135, Func_136, Func_137, Func_138, Func_139 |
+| 차량 경보 편의 확장 | BODY_GW/DOMAIN_ROUTER(방향지시등/주행모드/안전벨트 입력) + WARN_ARB_MGR(맥락/민감도/강조 보정) + EMS_ALERT(이벤트 기록) + CLU_HMI_CTRL(거리표시/이력/설정 반영) | Func_140, Func_141, Func_142, Func_143, Func_144, Func_145, Func_146, Func_147 |
 
 ---
 
@@ -288,6 +306,7 @@
 
 | 버전 | 날짜 | 변경 사항 |
 |---|---|---|
+| 3.25 | 2026-03-06 | 차량 경보 편의 확장(Pre-Activation) 반영: `Func_140~Func_147`를 상세표/Req-Func 매핑/핵심 시나리오 체인에 추가하고 `Req_140~Req_147` 추적 경로를 고정. |
 | 3.24 | 2026-03-06 | ADAS 객체 인지 확장(Pre-Activation) 반영: `Func_130~Func_139`를 상세표/Req-Func 매핑/핵심 시나리오 체인에 추가하고 `Req_130~Req_139` 추적 경로를 고정. |
 | 3.23 | 2026-03-06 | 미사용 체인 정리: `Req_108/Func_108`(운전자 상태 전달) 매핑 행을 삭제하고 01/03/0303/0304/04/05/06/07 기준과 동기화. |
 | 3.22 | 2026-03-05 | ECU 명명 거버넌스를 `00e(SoT)+03(ECU 참조)`로 정리하고, RTE 규칙은 `00g`/`04` 적용 체계로 분리. |
