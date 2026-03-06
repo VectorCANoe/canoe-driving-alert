@@ -353,68 +353,18 @@
 
 ---
 
-## 도메인별 통신 원본 확장 정의 (DBC 동기화 기준)
+## 하단 확장표 축소 (제출본)
 
-| Domain | 원본 파일(정의) | Comm 범위 | 핵심 Message |
-|---|---|---|---|
-| Core Integration CAN | `canoe/databases/chassis_can.dbc` + `canoe/databases/infotainment_can.dbc` + `canoe/databases/body_can.dbc` + `canoe/databases/adas_can.dbc` + `canoe/databases/eth_backbone_can_stub.dbc` | Comm_001, Comm_002, Comm_003, Comm_007, Comm_008, Comm_009 | frmVehicleStateCanMsg, frmSteeringCanMsg, frmNavContextCanMsg, frmAmbientControlMsg, frmClusterWarningMsg, frmTestResultMsg, frmEmergencyBroadcastMsg |
-| Chassis CAN | `canoe/databases/chassis_can.dbc` | Comm_001, Comm_002, Comm_102, Comm_105(헬스), Comm_201 | frmVehicleStateCanMsg, frmSteeringCanMsg, frmPedalInputCanMsg, frmBrakeStatusMsg, frmAccelStatusMsg, frmSteeringTorqueMsg, frmEpsStateMsg, frmAbsStateMsg |
-| ADAS CAN | `canoe/databases/adas_can.dbc` | Comm_120, Comm_201(일부) | frmAdasChassisStatusMsg, ethEmergencyRiskMsg |
-| ETH Backbone CAN Stub | `canoe/databases/eth_backbone_can_stub.dbc` | Comm_004, Comm_005, Comm_006, Comm_121, Comm_124 | frmEmergencyBroadcastMsg, frmEmergencyMonitorMsg, ethDecelAssistReqMsg, ethFailSafeStateMsg |
-| Powertrain CAN | `canoe/databases/powertrain_can.dbc` | Comm_101, Comm_105, Comm_204 | frmIgnitionEngineMsg, frmGearStateMsg, frmPowertrainGatewayMsg, frmEngineSpeedTempMsg, frmPowerLimitMsg, frmCruiseStateMsg, frmEngineTorqueMsg, frmEngineLoadMsg |
-| Body CAN | `canoe/databases/body_can.dbc` | Comm_007, Comm_103, Comm_105, Comm_202 | frmAmbientControlMsg, frmHazardControlMsg, frmWindowControlMsg, frmBodyHealthMsg, frmHvacStateMsg, frmMirrorStateMsg |
-| Infotainment CAN | `canoe/databases/infotainment_can.dbc` | Comm_003, Comm_008, Comm_104, Comm_105, Comm_203, Comm_205 | frmNavContextCanMsg, frmClusterWarningMsg, frmClusterBaseStateMsg, frmClusterThemeMsg, frmHmiPopupStateMsg, frmInfotainmentHealthMsg, frmAudioFocusMsg, frmMapRenderStateMsg |
-| Ethernet UDP | `canoe/docs/operations/ETH_INTERFACE_CONTRACT.md` | Comm_004, Comm_005, Comm_006, Comm_120, Comm_121, Comm_124 | ethVehicleStateMsg, ethSteeringMsg, ethNavContextMsg, ETH_EmergencyAlert, ethSelectedAlertMsg, ethEmergencyRiskMsg, ethDecelAssistReqMsg, ethFailSafeStateMsg |
+- 상단 공식 통신 표와 `통신 상세 추적 표`를 제출 기준 본표로 유지한다.
+- 도메인별 Comm 확장 전수표는 중복을 줄이기 위해 요약만 유지한다.
+- 상세 전수 매핑은 원문 SoT(`driving-situation-alert/0303_Communication_Specification.md`)를 기준으로 관리한다.
 
----
-
-## Vehicle Baseline 확장 Comm 정의 (Comm_101~Comm_106)
-
-| Comm ID | Flow ID(0302 연계) | Func ID | Req ID | Message(ID) | Protocol | 주기 |
-|---|---|---|---|---|---|---|
-| Comm_101 | Flow_101 | Func_101, Func_102 | Req_101, Req_102 | frmIgnitionEngineMsg(0x2A8), frmGearStateMsg(0x2A9), frmEngineSpeedTempMsg(0x12A), frmTransmissionTempMsg(0x12D) | CAN(Powertrain) | 100ms |
-| Comm_102 | Flow_102 | Func_103, Func_104, Func_105 | Req_103, Req_104, Req_105 | frmPedalInputCanMsg(0x2A2), frmSteeringStateCanMsg(0x100), frmBrakeStatusMsg(0x120), frmAccelStatusMsg(0x121), frmSteeringTorqueMsg(0x122) | CAN(Chassis) | 100ms |
-| Comm_103 | Flow_103 | Func_106, Func_107, Func_140, Func_142 | Req_106, Req_107, Req_140, Req_142 | frmHazardControlMsg(0x261), frmWindowControlMsg(0x262), frmSeatBeltStateMsg(0x267), frmCabinAirStateMsg(0x268) | CAN(Body) | 100ms |
-| Comm_104 | Flow_104 | Func_109, Func_146, Func_154 | Req_109, Req_146, Req_154 | frmClusterBaseStateMsg(0x281), frmClusterThemeMsg(0x286), frmHmiPopupStateMsg(0x287) | CAN(Infotainment) | 50ms |
-| Comm_105 | Flow_105 | Func_110, Func_111, Func_141, Func_149, Func_151 | Req_110, Req_111, Req_141, Req_149, Req_151 | frmPowertrainGatewayMsg(0x109), frmVehicleModeMsg(0x10A), frmPowerLimitMsg(0x10B), frmCruiseStateMsg(0x10C), frmChassisHealthMsg(0x103), frmBodyHealthMsg(0x269), frmInfotainmentHealthMsg(0x288) | CAN(도메인 경계/라우팅) | 100ms |
-| Comm_106 | Flow_106 | Func_112 | Req_112 | frmBaseTestResultMsg(0x2A6), frmTestResultMsg(0x2A5) | CAN(Chassis Validation frame) | Event |
-
-- 주의: `Comm_101~Comm_106`은 도메인 분리 DBC(`*_can.dbc`)와 동기화된 확정 Comm 세트다. 라우팅 동작 변경 시 0302/0304와 함께 갱신한다.
-
-## Vehicle Baseline Phase-B Comm 확장 정의 (Comm_201~Comm_205)
-
-| Comm ID | Flow ID(0302 연계) | Func ID | Req ID | Message(ID) | Protocol | 주기 |
-|---|---|---|---|---|---|---|
-| Comm_201 | Flow_201 | Func_103, Func_104, Func_110 | Req_103, Req_104, Req_110 | frmEpsStateMsg(0x123), frmAbsStateMsg(0x124), frmEscStateMsg(0x125), frmTcsStateMsg(0x126), frmBrakeTempMsg(0x127), frmSteeringAngleMsg(0x128), frmWheelPulseMsg(0x104), frmSuspensionStateMsg(0x105), frmTirePressureMsg(0x106), frmChassisDiagReqMsg(0x2A4), frmChassisDiagResMsg(0x107), frmAdasChassisStatusMsg(0x1C1), frmBrakeWearMsg(0x129), frmRoadFrictionMsg(0x108) | CAN(Chassis + ETH Backbone CAN Stub) | 100ms + Event |
-| Comm_202 | Flow_202 | Func_106, Func_107, Func_111, Func_113, Func_114, Func_115, Func_116, Func_117, Func_118 | Req_106, Req_107, Req_111, Req_113, Req_116, Req_118 | frmHvacStateMsg(0x26A), frmHvacActuatorMsg(0x26B), frmMirrorStateMsg(0x26C), frmSeatStateMsg(0x26D), frmSeatControlMsg(0x26E), frmDoorControlMsg(0x26F), frmInteriorLightMsg(0x270), frmRainLightAutoMsg(0x271), frmBcmDiagReqMsg(0x272), frmBcmDiagResMsg(0x273), frmImmobilizerStateMsg(0x274), frmAlarmStateMsg(0x275), frmBodyGatewayStateMsg(0x276), frmBodyComfortStateMsg(0x277) | CAN(Body) | 100ms + Event |
-| Comm_203 | Flow_203 | Func_109, Func_111, Func_119, Func_145, Func_147, Func_153, Func_154, Func_155 | Req_109, Req_111, Req_119, Req_145, Req_147, Req_153, Req_154, Req_155 | frmAudioFocusMsg(0x289), frmVoiceAssistStateMsg(0x28A), frmMapRenderStateMsg(0x28B), frmRouteAlertMsg(0x28C), frmTrafficEventMsg(0x28D), frmPhoneProjectionMsg(0x28E), frmClusterNotifMsg(0x28F), frmMediaMetaMsg(0x291), frmSpeechTtsStateMsg(0x292), frmConnectivityStateMsg(0x293), frmClusterSyncStateMsg(0x295) | CAN(Infotainment) | 50/100ms |
-| Comm_204 | Flow_204 | Func_101, Func_102, Func_110 | Req_101, Req_102, Req_110 | frmEngineTorqueMsg(0x12E), frmEngineLoadMsg(0x12F), frmTransShiftStateMsg(0x130), frmThermalMgmtStateMsg(0x131), frmEnergyFlowStateMsg(0x10F), frmPowertrainCtrlAuthMsg(0x110) | CAN(Powertrain) | 100ms |
-| Comm_205 | Flow_205 | Func_112 | Req_112 | frmIviDiagReqMsg(0x2A7), frmIviDiagResMsg(0x290), frmIviHealthDetailMsg(0x294), frmPtDiagReqMsg(0x2AA), frmPtDiagResMsg(0x10E) | CAN(Validation/Diag) | Event + 100ms |
-
-- 주의: `Comm_201~Comm_205`는 도메인 분리 DBC(`*_can.dbc`)와 동기화된 확정 Comm 세트이며, 변경 시 0302/0304를 동일 커밋에서 함께 갱신한다.
-
-## V2 확장 Comm 정의 (Implemented, Comm_120~Comm_124)
-
-| Comm ID | Flow ID(0302 연계) | Func ID | Req ID | Message(ID) | Protocol | 주기 |
-|---|---|---|---|---|---|---|
-| Comm_120 | Flow_120 | Func_120 | Req_120 | ethEmergencyRiskMsg(0x1C3) | Ethernet(UDP) | 100ms |
-| Comm_121 | Flow_121 | Func_121 | Req_121 | ethDecelAssistReqMsg(0x1C4) | Ethernet(UDP) + CAN | Event + 50ms |
-| Comm_122 | Flow_122 | Func_125, Func_126 | Req_125, Req_126 | ethSelectedAlertMsg(0xE200), frmAmbientControlMsg(0x260), frmClusterWarningMsg(0x280) | Ethernet(UDP) + CAN | 50ms |
-| Comm_123 | Flow_123 | Func_123 | Req_123 | frmPedalInputCanMsg(0x2A2), frmSteeringCanMsg(0x2A1), ethDecelAssistReqMsg(0x1C4) | CAN + Ethernet(UDP) | Event + 100ms |
-| Comm_124 | Flow_124 | Func_127, Func_128, Func_129, Func_151, Func_152 | Req_127, Req_128, Req_129, Req_151, Req_152 | frmChassisHealthMsg(0x103), frmBodyHealthMsg(0x269), frmInfotainmentHealthMsg(0x288), ethFailSafeStateMsg(0x111) | CAN + Ethernet(UDP) | 100ms + Event |
-
-- 주의: `Comm_120~Comm_124`는 V2 확장 구현 Comm 세트다. 변경 시 0302/0304/05~07과 동일 커밋으로 동기화한다.
-
-## ADAS 객체 인지 확장 Comm 정의 (Planned, Comm_130~Comm_133)
-
-| Comm ID | Flow ID(0302 연계) | Func ID | Req ID | Message(ID) | Protocol | 주기 |
-|---|---|---|---|---|---|---|
-| Comm_130 | Flow_130 | Func_130, Func_131, Func_148 | Req_130, Req_131, Req_148 | ethObjectRiskInputMsg(0xE213) | Ethernet(UDP) | 100ms |
-| Comm_131 | Flow_131 | Func_132, Func_133, Func_136 | Req_132, Req_133, Req_136 | ethObjectRiskStateMsg(0xE214) | Ethernet(UDP) | 100ms + Event |
-| Comm_132 | Flow_132 | Func_134, Func_135, Func_139 | Req_134, Req_135, Req_139 | ethObjectScenarioAlertMsg(0xE215), frmAmbientControlMsg(0x260), frmClusterWarningMsg(0x280) | Ethernet(UDP) + CAN | Event + 50ms |
-| Comm_133 | Flow_133 | Func_137, Func_138, Func_148 | Req_137, Req_138, Req_148 | ethObjectSafetyStateMsg(0xE216) | Ethernet(UDP) | Event |
-
-- 주의: `Comm_130~Comm_133`는 ADAS 객체 인지 확장 Pre-Activation Comm 세트다. 구현 착수 시 0302/0304/04/05/06/07을 동일 커밋으로 동기화한다.
-- 활성 SoT 승격 조건: `ETH_INTERFACE_CONTRACT.md v1.2`에 `E213~E216` 계약 반영 완료.
+| 구분 | 제출본 유지 내용 | 원문 SoT 참조 |
+|---|---|---|
+| 도메인별 통신 원본 | Domain CAN/ETH 논리 계약 분리 원칙 요약 | 0303 원문 `도메인별 통신 원본 확장 정의` |
+| Vehicle Baseline 확장 | Comm_101~106, Comm_201~205 `Defined` 상태 유지 | 0303 원문 Baseline/Phase-B 확장 표 |
+| V2 확장 | Comm_120~124 `Implemented` 상태 유지 | 0303 원문 V2 확장 표 |
+| ADAS 객체 인지 확장 | Comm_130~133 `Planned(Pre-Activation)` 유지 | 0303 원문 ADAS 확장 표 |
+| 활성 승격 조건 | `ETH_INTERFACE_CONTRACT.md v1.2`의 `E213~E216` 반영 시 활성 | 0303 원문 ADAS 확장 섹션 |
 
 ---

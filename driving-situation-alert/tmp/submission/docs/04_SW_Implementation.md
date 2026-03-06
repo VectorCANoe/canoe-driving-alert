@@ -85,138 +85,29 @@ Emergency Source (logical terminal)
 
 ---
 
-## 3. 코드 아티팩트 계획
+## 구현 추적 요약 (제출본)
 
-| Module ID | Node | 구현 파일(계획) | 역할 |
-|---|---|---|---|
-| MOD_01 | ADAS_WARN_CTRL | `canoe/src/capl/logic/ADAS_WARN_CTRL.can` | 조건 판정/디바운스/트리거 |
-| MOD_02 | NAV_CTX_MGR | `canoe/src/capl/logic/NAV_CTX_MGR.can` | 구간 컨텍스트 계산 |
-| MOD_03 | EMS_POLICE_TX | `canoe/src/capl/ems/EMS_POLICE_TX.can` | 경찰 긴급 송신 |
-| MOD_04 | EMS_AMB_TX | `canoe/src/capl/ems/EMS_AMB_TX.can` | 구급 긴급 송신 |
-| MOD_05 | EMS_ALERT_RX | `canoe/src/capl/logic/EMS_ALERT_RX.can` | 긴급 수신/해제/타임아웃 |
-| MOD_06 | WARN_ARB_MGR | `canoe/src/capl/logic/WARN_ARB_MGR.can` | 경보 우선순위 판정 |
-| MOD_07 | CHS_GW | `canoe/src/capl/input/CHS_GW.can` | CAN->ETH 변환 |
-| MOD_08 | INFOTAINMENT_GW | `canoe/src/capl/input/INFOTAINMENT_GW.can` | CAN->ETH 변환 |
-| MOD_09 | BODY_GW | `canoe/src/capl/output/BODY_GW.can` | ETH->CAN 변환(Ambient) |
-| MOD_10 | IVI_GW | `canoe/src/capl/output/IVI_GW.can` | ETH->CAN 변환(Cluster) |
-| MOD_11 | AMBIENT_CTRL | `canoe/src/capl/output/AMBIENT_CTRL.can` | Ambient 출력 제어 |
-| MOD_12 | CLU_HMI_CTRL | `canoe/src/capl/output/CLU_HMI_CTRL.can` | Cluster 경고 출력 |
-| MOD_13 | VAL_SCENARIO_CTRL | `canoe/src/capl/input/` (Validation scenario controller module, canonical=`VAL_SCENARIO_CTRL`) | 테스트 실행/판정 |
-| MOD_14 | ETH_SW | `canoe/src/capl/network/ETH_SW.can` | ETH 경로 상태 모니터(Validation/Fail-safe 지원) |
-| MOD_15 | DOMAIN_BOUNDARY_MGR | `canoe/src/capl/ecu/DOMAIN_BOUNDARY_MGR.can` | 도메인 경로 헬스/Fail-safe 게이트 |
+- 제출본은 상단 구현 모듈 명세를 기준으로 하단 상세 추적표를 대표행 중심으로 축소한다.
+- 전수 `Func -> Code -> UT/IT/ST` 매핑은 원문 SoT(`driving-situation-alert/04_SW_Implementation.md`)를 기준으로 관리한다.
 
----
+| 구분 | Func 범위 | 핵심 구현 모듈 | 주요 입출력 | 테스트 연결 |
+|---|---|---|---|---|
+| Core 경고 판정 | Func_001~Func_012 | ADAS_WARN_CTRL | vehicleSpeedNorm, steeringInputNorm -> warningState | UT_ADAS_001 / IT_CORE_001 |
+| 긴급 수신/우선 판정 | Func_017~Func_032 | EMS_ALERT, WARN_ARB_MGR | emergencyType, eta -> selectedAlertLevel/Type | UT_EMS_RX_001 / IT_ARB_001 |
+| 표시 출력 | Func_033~Func_040 | AMBIENT_CTRL, CLU_HMI_CTRL | selectedAlertType -> ambientPattern/warningTextCode | UT_BCM_001 / IT_OUT_001 |
+| Baseline 확장 | Func_101~Func_119 | ENG_CTRL, TCM, HAZARD_CTRL, WINDOW_CTRL, CLU_BASE_CTRL | 차량 기본 입력/상태 -> 기본 표시/제어 | UT_BASE_EXT_001 / IT_BASE_EXT_001 |
+| V2 확장(활성) | Func_120,121,123,125~129 | ADAS_WARN_CTRL, WARN_ARB_MGR, DOMAIN_BOUNDARY_MGR | proximityRiskLevel, failSafeMode -> decelAssistReq/경고 유지 | UT_V2_001 / IT_V2_001 / ST_V2_001 |
+| ADAS 객체 인지(계획) | Func_130~Func_139 | ADAS_WARN_CTRL, WARN_ARB_MGR | objectTrackValid, objectTtcMin -> objectRiskClass/경고 출력 | UT_ADAS_OBJ_RISK_001(Planned) |
+| 경보 편의(계획) | Func_140~Func_147 | WARN_ARB_MGR, CLU_HMI_CTRL | TurnLampState, VolumeLevel -> 경보 정책/표시 반영 | UT_BASE_ALERT_EXT_001(Planned) |
+| 강건성·인지성(계획) | Func_148~Func_155 | ADAS_WARN_CTRL, DOMAIN_BOUNDARY_MGR, CLU_HMI_CTRL | objectConfidence, failSafeMode -> 대체 출력/동기 복원 | UT_BASE_ROBUST_EXT_001(Planned) |
 
-## 4. 기능-구현 추적 상세 표
+## 인터페이스 요약 (SWE.3 BP2 축소본)
 
-| Func ID | Req ID | 구현 모듈 | 입력 (Flow/Comm/Var) | 출력 (Flow/Comm/Var) | Code Ref | 검증 링크 |
-|---|---|---|---|---|---|---|
-| Func_001 | Req_001 | ADAS_WARN_CTRL | Flow_001 / Comm_001 / vehicleSpeedNorm, driveStateNorm | Flow_006 / warningState | `MOD_01.F001` | UT_ADAS_001 |
-| Func_002 | Req_002 | ADAS_WARN_CTRL | Flow_001 / Comm_001 / driveStateNorm | Flow_006 / warningState | `MOD_01.F002` | UT_ADAS_001 |
-| Func_003 | Req_003 | ADAS_WARN_CTRL | Flow_001 / Comm_001 / vehicleSpeedNorm, baseZoneContext | Flow_006 / warningState | `MOD_01.F003` | UT_ADAS_001 |
-| Func_004 | Req_004 | ADAS_WARN_CTRL | Flow_001 / Comm_001 / warningState | Flow_006 / warningState | `MOD_01.F004` | UT_ADAS_001 |
-| Func_005 | Req_005 | CLU_HMI_CTRL | Flow_008 / Comm_008 / selectedAlertType | Flow_008 / warningTextCode | `MOD_12.F005` | UT_CLU_001 |
-| Func_006 | Req_006 | ADAS_WARN_CTRL | Flow_001 / Comm_001 / warningState | Flow_006 / warningState | `MOD_01.F006` | UT_ADAS_001 |
-| Func_007 | Req_007 | NAV_CTX_MGR | Flow_003 / Comm_003 / roadZone, navDirection, zoneDistance, speedLimit | Flow_003 / baseZoneContext, speedLimitNorm | `MOD_02.F007` | UT_NAV_001 |
-| Func_008 | Req_008 | AMBIENT_CTRL | Flow_007 / Comm_007 / selectedAlertLevel | Flow_007 / ambientMode | `MOD_11.F008` | UT_BCM_001 |
-| Func_009 | Req_009 | AMBIENT_CTRL | Flow_007 / Comm_007 / selectedAlertLevel | Flow_007 / ambientMode | `MOD_11.F009` | UT_BCM_001 |
-| Func_010 | Req_010 | ADAS_WARN_CTRL | Flow_001,Flow_003 / Comm_001,Comm_003 / vehicleSpeedNorm, speedLimitNorm, baseZoneContext | Flow_006 / warningState | `MOD_01.F010` | UT_ADAS_001 |
-| Func_011 | Req_011 | ADAS_WARN_CTRL | Flow_002 / Comm_002 / steeringInputNorm, baseZoneContext | Flow_006 / warningState | `MOD_01.F011` | UT_ADAS_001 |
-| Func_012 | Req_012 | ADAS_WARN_CTRL | Flow_002 / Comm_002 / steeringInputNorm | Flow_006 / warningState | `MOD_01.F012` | UT_ADAS_001 |
-| Func_013 | Req_013 | AMBIENT_CTRL | Flow_007 / Comm_007 / selectedAlertType, navDirection | Flow_007 / ambientMode | `MOD_11.F013` | UT_BCM_001 |
-| Func_014 | Req_014 | AMBIENT_CTRL | Flow_007 / Comm_007 / navDirection | Flow_007 / ambientPattern | `MOD_11.F014` | UT_BCM_001 |
-| Func_015 | Req_015 | AMBIENT_CTRL | Flow_007 / Comm_007 / selectedAlertLevel | Flow_007 / ambientPattern | `MOD_11.F015` | UT_BCM_001 |
-| Func_016 | Req_016 | AMBIENT_CTRL | Flow_007 / Comm_007 / timeoutClear | Flow_007 / ambientMode | `MOD_11.F016` | UT_BCM_001 |
-| Func_017 | Req_017 | EMS_POLICE_TX | SIL 입력 / emergencyType, eta, emergencyDirection | Flow_004 / Comm_004 / ETH_EmergencyAlert | `MOD_03.F017` | UT_EMS_POL_001 |
-| Func_018 | Req_017 | EMS_AMB_TX | SIL 입력 / emergencyType, eta, emergencyDirection | Flow_005 / Comm_005 / ETH_EmergencyAlert | `MOD_04.F018` | UT_EMS_AMB_001 |
-| Func_019 | Req_019 | CLU_HMI_CTRL | Flow_008 / Comm_008 / selectedAlertType | Flow_008 / warningTextCode | `MOD_12.F019` | UT_CLU_001 |
-| Func_020 | Req_020 | CLU_HMI_CTRL | Flow_008 / Comm_008 / emergencyDirection | Flow_008 / warningTextCode | `MOD_12.F020` | UT_CLU_001 |
-| Func_021 | Req_021 | CLU_HMI_CTRL | Flow_008 / Comm_008 / selectedAlertType | Flow_008 / warningTextCode | `MOD_12.F021` | UT_CLU_001 |
-| Func_022 | Req_022 | WARN_ARB_MGR | Flow_006 / Comm_006 / emergencyContext, warningState, baseZoneContext | Flow_006,007,008 / selectedAlertLevel, selectedAlertType | `MOD_06.F022` | UT_ARB_001 |
-| Func_023 | Req_023 | EMS_ALERT_RX | Flow_006 / Comm_006 / alertState, emergencyType | Flow_006 / emergencyContext | `MOD_05.F023` | UT_EMS_RX_001 |
-| Func_024 | Req_024 | EMS_ALERT_RX | Flow_006 / Comm_006 / lastEmergencyRxMs | Flow_006 / timeoutClear | `MOD_05.F024` | UT_EMS_RX_001 |
-| Func_025 | Req_025 | WARN_ARB_MGR | Flow_006 / Comm_006 / emergencyContext | Flow_006 / selectedAlertType | `MOD_06.F025` | UT_ARB_001 |
-| Func_026 | Req_026 | CLU_HMI_CTRL | Flow_008 / Comm_008 / selectedAlertType, duplicatePopupGuard | Flow_008 / warningTextCode | `MOD_12.F026` | UT_CLU_001 |
-| Func_027 | Req_027 | WARN_ARB_MGR | Flow_006 / Comm_006 / emergencyContext, warningState | Flow_006 / selectedAlertLevel | `MOD_06.F027` | UT_ARB_001 |
-| Func_028 | Req_028 | WARN_ARB_MGR | Flow_006 / Comm_006 / emergencyContext | Flow_006 / selectedAlertLevel | `MOD_06.F028` | UT_ARB_001 |
-| Func_029 | Req_029 | WARN_ARB_MGR | Flow_006 / Comm_006 / emergencyType | Flow_006 / selectedAlertType | `MOD_06.F029` | UT_ARB_001 |
-| Func_030 | Req_030 | WARN_ARB_MGR | Flow_006 / Comm_006 / eta | Flow_006 / selectedAlertType | `MOD_06.F030` | UT_ARB_001 |
-| Func_031 | Req_031 | WARN_ARB_MGR | Flow_006 / Comm_006 / sourceId | Flow_006 / selectedAlertType | `MOD_06.F031` | UT_ARB_001 |
-| Func_032 | Req_032 | WARN_ARB_MGR | Flow_006 / Comm_006 / arbitrationSnapshotId | Flow_006 / selectedAlertLevel, selectedAlertType | `MOD_06.F032` | UT_ARB_001 |
-| Func_033 | Req_033 | AMBIENT_CTRL | Flow_007 / Comm_007 / timeoutClear, baseZoneContext | Flow_007 / ambientMode | `MOD_11.F033` | UT_BCM_001 |
-| Func_034 | Req_034 | AMBIENT_CTRL | Flow_007 / Comm_007 / selectedAlertLevel | Flow_007 / ambientPattern | `MOD_11.F034` | UT_BCM_001 |
-| Func_035 | Req_035 | AMBIENT_CTRL | Flow_007 / Comm_007 / selectedAlertType | Flow_007 / ambientColor | `MOD_11.F035` | UT_BCM_001 |
-| Func_036 | Req_035 | AMBIENT_CTRL | Flow_007 / Comm_007 / selectedAlertLevel | Flow_007 / ambientPattern | `MOD_11.F036` | UT_BCM_001 |
-| Func_037 | Req_037 | AMBIENT_CTRL | Flow_007 / Comm_007 / baseZoneContext | Flow_007 / ambientColor, ambientPattern | `MOD_11.F037` | UT_BCM_001 |
-| Func_038 | Req_037 | AMBIENT_CTRL | Flow_007 / Comm_007 / baseZoneContext | Flow_007 / ambientColor, ambientPattern | `MOD_11.F038` | UT_BCM_001 |
-| Func_039 | Req_037 | AMBIENT_CTRL | Flow_007 / Comm_007 / navDirection, baseZoneContext | Flow_007 / ambientColor, ambientPattern | `MOD_11.F039` | UT_BCM_001 |
-| Func_040 | Req_040 | CLU_HMI_CTRL | Flow_008 / Comm_008 / warningTextCode | Flow_008 / warningTextCode | `MOD_12.F040` | UT_CLU_001 |
-| Func_041 | Req_041 | VAL_SCENARIO_CTRL | Flow_009 / Comm_009 / testScenario | Flow_009 / scenarioResult | `MOD_13.F041` | ST_SIL_001 |
-| Func_042 | Req_042 | VAL_SCENARIO_CTRL | Flow_009 / Comm_009 / testScenario | Flow_009 / scenarioResult | `MOD_13.F042` | ST_SIL_002 |
-| Func_043 | Req_043 | VAL_SCENARIO_CTRL | Flow_009 / Comm_009 / scenarioResult | Flow_009 / scenarioResult | `MOD_13.F043` | ST_RESULT_001 |
-| Func_101 | Req_101 | ENG_CTRL | Flow_101 / Comm_101 / IgnitionState, GearInput | Flow_101 / EngineState, EngineRpm | `ENG_CTRL.F101` | UT_BASE_PT_001 / IT_BASE_PT_001 |
-| Func_102 | Req_102 | TCM | Flow_101 / Comm_101 / IgnitionState, GearInput | Flow_101 / GearState | `TCM.F102` | UT_BASE_PT_001 / IT_BASE_PT_001 |
-| Func_103 | Req_103 | ACCEL_CTRL | Flow_102 / Comm_102 / AccelPedal | Flow_102 / AccelRequest, TorqueRequest | `ACCEL_CTRL.F103` | UT_BASE_CH_001 / IT_BASE_CH_001 |
-| Func_104 | Req_104 | BRK_CTRL | Flow_102 / Comm_102 / BrakePedal | Flow_102 / BrakePressure, BrakeMode, AbsActive, EspActive | `BRK_CTRL.F104` | UT_BASE_CH_001 / IT_BASE_CH_001 |
-| Func_105 | Req_105 | STEER_CTRL | Flow_102 / Comm_102 / steeringInput, SteeringTorque | Flow_102 / SteeringState, SteeringAssistLv | `STEER_CTRL.F105` | UT_BASE_CH_001 / IT_BASE_CH_001 |
-| Func_106 | Req_106 | HAZARD_CTRL | Flow_103 / Comm_103 / HazardSwitch | Flow_103 / HazardState, HazardLampReq | `HAZARD_CTRL.F106` | UT_BASE_BODY_001 / IT_BASE_BODY_001 |
-| Func_107 | Req_107 | WINDOW_CTRL | Flow_103 / Comm_103 / WindowCommand | Flow_103 / WindowState | `WINDOW_CTRL.F107` | UT_BASE_BODY_001 / IT_BASE_BODY_001 |
-| Func_109 | Req_109 | CLU_BASE_CTRL | Flow_104 / Comm_104 / ClusterSpeed, ClusterGear, warningTextCode | Flow_104 / ClusterStatus | `CLU_BASE_CTRL.F109` | UT_BASE_IVI_001 / IT_BASE_IVI_001 |
-| Func_110 | Req_110 | DOMAIN_ROUTER | Flow_105 / Comm_105 / RoutingPolicy, ChassisAliveCnt, BodyAliveCnt, InfoAliveCnt | Flow_105 / BodyGatewayRoute | `DOMAIN_ROUTER.F110` | UT_BASE_GW_001 / IT_BASE_GW_001 |
-| Func_111 | Req_111 | DOMAIN_BOUNDARY_MGR | Flow_105 / Comm_105 / RoutingPolicy, BoundaryStatus | Flow_105 / BoundaryStatus | `MOD_15.F111` | UT_BASE_GW_001 / IT_BASE_GW_001 |
-| Func_112 | Req_112 | VAL_BASELINE_CTRL | Flow_106 / Comm_106 / BaseScenarioId | Flow_106 / BaseScenarioResult | `VAL_BASELINE_CTRL.F112` | UT_BASE_TEST_001 / IT_BASE_DIAG_001 |
-| Func_113 | Req_113 | BODY_GW | Flow_202 / Comm_202 / CabinSetTemp, BlowerLevel, AcCompressorReq, VentMode | Flow_202 / CabinTemp | `MOD_09.F113` | UT_BASE_EXT_BODY_001 / IT_BASE_EXT_BODY_001 |
-| Func_114 | Req_113 | DRV_STATE_MGR | Flow_202 / Comm_202 / DriverSeatPos, PassengerSeatPos, SeatHeatLevel, SeatVentLevel | Flow_202 / DriverStateInfo | `DRV_STATE_MGR.F114` | UT_BASE_EXT_BODY_001 / IT_BASE_EXT_BODY_001 |
-| Func_115 | Req_113 | WINDOW_CTRL | Flow_202 / Comm_202 / MirrorFoldState, MirrorHeatState, MirrorAdjAxis | Flow_202 / WindowState | `WINDOW_CTRL.F115` | UT_BASE_EXT_BODY_001 / IT_BASE_EXT_BODY_001 |
-| Func_116 | Req_116 | WINDOW_CTRL | Flow_202 / Comm_202 / DoorUnlockCmd, DoorLockState, DoorOpenWarn | Flow_202 / DoorStateMask | `WINDOW_CTRL.F116` | UT_BASE_EXT_BODY_001 / IT_BASE_EXT_BODY_001 |
-| Func_117 | Req_116 | AMBIENT_CTRL | Flow_202 / Comm_202 / FrontWiperState, RearWiperState, RainSensorLevel, AutoHeadlampReq | Flow_202 / WiperInterval | `MOD_11.F117` | UT_BASE_EXT_BODY_001 / IT_BASE_EXT_BODY_001 |
-| Func_118 | Req_118 | DRV_STATE_MGR | Flow_202 / Comm_202 / ImmoState, AlarmArmed, AlarmTrigger, AlarmZone | Flow_202 / DriverStateInfo | `DRV_STATE_MGR.F118` | UT_BASE_EXT_BODY_001 / IT_BASE_EXT_BODY_001 |
-| Func_119 | Req_119 | CLU_HMI_CTRL | Flow_203 / Comm_203 / AudioFocusOwner, VoiceAssistState, TtsState, TtsLangId | Flow_203 / warningTextCode | `MOD_12.F119` | UT_BASE_EXT_IVI_001 / IT_BASE_EXT_IVI_001 |
-| Func_120 | Req_120 | ADAS_WARN_CTRL | Flow_120 / Comm_120 / emergencyDirection, eta, vehicleSpeedNorm | Flow_120 / proximityRiskLevel | `MOD_01.F120` | UT_V2_RISK_001 / IT_V2_RISK_001 |
-| Func_121 | Req_121 | WARN_ARB_MGR | Flow_120 / Flow_121 / proximityRiskLevel, failSafeMode, driveStateNorm | Flow_121 / decelAssistReq | `MOD_06.F121` | UT_V2_RISK_001 / UT_V2_RELEASE_001 / IT_V2_RISK_001 |
-| Func_125,Func_126 | Req_125,Req_126 | WARN_ARB_MGR | Flow_122 / Comm_122 / decelAssistReq, selectedAlertType/Level | Flow_122 / selectedAlertType/Level | `MOD_06.F122` | UT_V2_RISK_001 / IT_V2_RISK_001 |
-| Func_123 | Req_123 | WARN_ARB_MGR | Flow_123 / Comm_123 / steeringInputNorm, brakePedalNorm | Flow_123 / decelAssistReq | `MOD_06.F123` | UT_V2_RELEASE_001 / IT_V2_RISK_001 |
-| Func_127,Func_128,Func_129 | Req_127,Req_128,Req_129 | DOMAIN_BOUNDARY_MGR | Flow_124 / Comm_124 / domainPathStatus, e2eHealthState | Flow_124 / decelAssistReq, failSafeMode | `MOD_15.F124` | UT_V2_FAILSAFE_001 / IT_V2_FAILSAFE_001 |
-| Func_130 | Req_130 | ADAS_WARN_CTRL | Flow_130 / Comm_130 / objectTrackValid, objectRange, objectRelSpeed, objectConfidence | Flow_130 / objectTrackValid, objectRange, objectRelSpeed | `MOD_01.F130` | UT_ADAS_OBJ_RISK_001 / IT_ADAS_OBJ_001 |
-| Func_131 | Req_131 | ADAS_WARN_CTRL | Flow_130 / Comm_130 / objectTrackValid, objectRange, objectRelSpeed | Flow_130 / objectRiskClass, objectTtcMin | `MOD_01.F131` | UT_ADAS_OBJ_RISK_001 / IT_ADAS_OBJ_001 |
-| Func_132 | Req_132 | ADAS_WARN_CTRL | Flow_131 / Comm_131 / objectTtcMin, objectRiskClass | Flow_131 / selectedAlertLevel, objectRiskClass | `MOD_01.F132` | UT_ADAS_OBJ_RISK_001 / IT_ADAS_OBJ_001 |
-| Func_133 | Req_133 | ADAS_WARN_CTRL | Flow_131 / Comm_131 / objectRelSpeed, objectRange, objectRiskClass | Flow_131 / selectedAlertLevel, objectRiskClass | `MOD_01.F133` | UT_ADAS_OBJ_RISK_001 / IT_ADAS_OBJ_001 |
-| Func_134 | Req_134 | WARN_ARB_MGR | Flow_132 / Comm_132 / intersectionConflictFlag, objectRiskClass | Flow_132 / selectedAlertType, selectedAlertLevel | `MOD_06.F134` | UT_ADAS_OBJ_RISK_001 / IT_ADAS_OBJ_001 |
-| Func_135 | Req_135 | WARN_ARB_MGR | Flow_132 / Comm_132 / mergeCutInFlag, objectRiskClass | Flow_132 / selectedAlertType, selectedAlertLevel | `MOD_06.F135` | UT_ADAS_OBJ_RISK_001 / IT_ADAS_OBJ_001 |
-| Func_136 | Req_136 | ADAS_WARN_CTRL | Flow_131 / Comm_131 / objectTrackValid, objectAlertHoldMs, objectRiskClass | Flow_131 / selectedAlertLevel, objectRiskClass | `MOD_01.F136` | UT_ADAS_OBJ_RISK_001 / IT_ADAS_OBJ_001 |
-| Func_137 | Req_137 | DOMAIN_BOUNDARY_MGR | Flow_133 / Comm_133 / objectConfidence, decelAssistReq | Flow_133 / decelAssistReq, selectedAlertLevel, failSafeMode | `MOD_15.F137` | UT_ADAS_OBJ_SAFETY_001 / IT_ADAS_OBJ_001 |
-| Func_138 | Req_138 | EMS_ALERT | Flow_133 / Comm_133 / objectRiskClass, selectedAlertType, selectedAlertLevel | Flow_133 / objectEventCode | `MOD_05.F138` | UT_ADAS_OBJ_SAFETY_001 / IT_ADAS_OBJ_001 |
-| Func_139 | Req_139 | WARN_ARB_MGR | Flow_132 / Comm_132 / objectRiskClass, emergencyContext, baseZoneContext | Flow_132 / selectedAlertType, selectedAlertLevel | `MOD_06.F139` | UT_ADAS_OBJ_RISK_001 / IT_ADAS_OBJ_001 |
-| Func_140 | Req_140 | WARN_ARB_MGR | Flow_103 / Comm_103 / TurnLampState, selectedAlertType | Flow_006,Flow_008 / Comm_006,Comm_008 / selectedAlertType, warningTextCode | `MOD_06.F140` | UT_BASE_ALERT_EXT_001 / IT_BASE_ALERT_EXT_001 |
-| Func_141 | Req_141 | WARN_ARB_MGR | Flow_105 / Comm_105 / DriveMode, EcoMode, SportMode, selectedAlertLevel | Flow_006 / Comm_006 / selectedAlertLevel | `MOD_06.F141` | UT_BASE_ALERT_EXT_001 / IT_BASE_ALERT_EXT_001 |
-| Func_142 | Req_142 | WARN_ARB_MGR | Flow_103 / Comm_103 / DriverSeatBelt, PassengerSeatBelt, SeatBeltWarnLvl, selectedAlertLevel | Flow_006 / Comm_006 / selectedAlertLevel, selectedAlertType | `MOD_06.F142` | UT_BASE_ALERT_EXT_001 / IT_BASE_ALERT_EXT_001 |
-| Func_143 | Req_143 | CLU_HMI_CTRL | Flow_008 / Comm_008 / eta, vehicleSpeedNorm, selectedAlertType | Flow_008 / Comm_008 / warningTextCode | `MOD_12.F143` | UT_BASE_ALERT_EXT_001 / IT_BASE_ALERT_EXT_001 |
-| Func_144 | Req_144 | EMS_ALERT | Flow_006 / Comm_006 / selectedAlertType, selectedAlertLevel, warningTextCode | Flow_006 / Comm_006 / arbitrationSnapshotId | `MOD_05.F144` | UT_BASE_ALERT_EXT_001 / IT_BASE_ALERT_EXT_001 |
-| Func_145 | Req_145 | CLU_HMI_CTRL | Flow_203 / Comm_203 / arbitrationSnapshotId, ClusterNotifType, ClusterNotifPrio | Flow_203 / Comm_203 / warningTextCode | `MOD_12.F145` | UT_BASE_ALERT_EXT_001 / IT_BASE_ALERT_EXT_001 |
-| Func_146 | Req_146 | CLU_HMI_CTRL | Flow_104,Flow_203 / Comm_104,Comm_203 / ThemeMode, PopupType, PopupPriority, PopupActive | Flow_203 / Comm_203 / warningTextCode, ClusterNotifPrio | `MOD_12.F146` | UT_BASE_ALERT_EXT_001 / IT_BASE_ALERT_EXT_001 |
-| Func_147 | Req_147 | CLU_HMI_CTRL | Flow_104,Flow_203 / Comm_104,Comm_203 / VolumeLevel, AudioFocusOwner | Flow_203 / Comm_203 / warningTextCode, ClusterNotifPrio | `MOD_12.F147` | UT_BASE_ALERT_EXT_001 / IT_BASE_ALERT_EXT_001 |
-| Func_148 | Req_148 | ADAS_WARN_CTRL | Flow_130,Flow_133 / Comm_130,Comm_133 / objectTrackValid, objectConfidence, objectRiskClass | Flow_130,Flow_133 / Comm_130,Comm_133 / objectRiskClass, selectedAlertLevel | `MOD_01.F148` | UT_BASE_ROBUST_EXT_001 / IT_BASE_ROBUST_EXT_001 |
-| Func_149 | Req_149 | WARN_ARB_MGR | Flow_006,Flow_105 / Comm_006,Comm_105 / lastEmergencyRxMs, timeoutClear, warningState, BoundaryStatus | Flow_006 / Comm_006 / warningState, selectedAlertLevel | `MOD_06.F149` | UT_BASE_ROBUST_EXT_001 / IT_BASE_ROBUST_EXT_001 |
-| Func_150 | Req_150 | WARN_ARB_MGR | Flow_006 / Comm_006 / warningState, selectedAlertLevel, duplicatePopupGuard | Flow_006 / Comm_006 / selectedAlertLevel, selectedAlertType | `MOD_06.F150` | UT_BASE_ROBUST_EXT_001 / IT_BASE_ROBUST_EXT_001 |
-| Func_151 | Req_151 | DOMAIN_BOUNDARY_MGR | Flow_105,Flow_124 / Comm_105,Comm_124 / domainPathStatus, e2eHealthState, BoundaryStatus | Flow_124 / Comm_124 / domainPathStatus, failSafeMode | `MOD_15.F151` | UT_BASE_ROBUST_EXT_001 / IT_BASE_ROBUST_EXT_001 |
-| Func_152 | Req_152 | WARN_ARB_MGR | Flow_006,Flow_124 / Comm_006,Comm_124 / failSafeMode, selectedAlertType, selectedAlertLevel | Flow_007,Flow_008 / Comm_007,Comm_008 / ambientMode, warningTextCode | `MOD_06.F152` | UT_BASE_ROBUST_EXT_001 / IT_BASE_ROBUST_EXT_001 |
-| Func_153 | Req_153 | CLU_HMI_CTRL | Flow_203 / Comm_203 / AudioFocusOwner, AudioDuckLevel, TtsState | Flow_008,Flow_203 / Comm_008,Comm_203 / warningTextCode, ClusterNotifPrio | `MOD_12.F153` | UT_BASE_ROBUST_EXT_001 / IT_BASE_ROBUST_EXT_001 |
-| Func_154 | Req_154 | CLU_HMI_CTRL | Flow_104,Flow_203 / Comm_104,Comm_203 / PopupType, PopupPriority, PopupActive, duplicatePopupGuard | Flow_008,Flow_203 / Comm_008,Comm_203 / warningTextCode, ClusterNotifPrio | `MOD_12.F154` | UT_BASE_ROBUST_EXT_001 / IT_BASE_ROBUST_EXT_001 |
-| Func_155 | Req_155 | CLU_HMI_CTRL | Flow_008,Flow_203 / Comm_008,Comm_203 / ClusterSyncState, ClusterSyncSeq, selectedAlertType, selectedAlertLevel | Flow_008,Flow_203 / Comm_008,Comm_203 / warningTextCode, ClusterNotifPrio | `MOD_12.F155` | UT_BASE_ROBUST_EXT_001 / IT_BASE_ROBUST_EXT_001 |
-
----
-
-## 6. 유닛 인터페이스 명세 (SWE.3 BP2)
-
-| Interface ID | 제공 모듈 | 소비 모듈 | 데이터 | 연계 Flow/Comm | 제약 |
-|---|---|---|---|---|---|
-| IF_001 | CHS_GW | ADAS_WARN_CTRL | vehicleSpeedNorm, driveStateNorm | Flow_001 / Comm_001 | 100ms 주기, 값 invalid 시 기본값 처리 |
-| IF_002 | CHS_GW | ADAS_WARN_CTRL | steeringInputNorm | Flow_002 / Comm_002 | 100ms 주기 |
-| IF_003 | INFOTAINMENT_GW | NAV_CTX_MGR, ADAS_WARN_CTRL, WARN_ARB_MGR | roadZone, navDirection, zoneDistance, speedLimit | Flow_003 / Comm_003 | 100ms 주기 |
-| IF_004 | EMS_POLICE_TX, EMS_AMB_TX | EMS_ALERT_RX | EmergencyType, EmergencyDirection, ETA, SourceID, AlertState | Flow_004~006 / Comm_004~006 | 100ms 송신, 1000ms 타임아웃 감시 |
-| IF_005 | WARN_ARB_MGR | BODY_GW, IVI_GW | selectedAlertLevel, selectedAlertType, timeoutClear | Flow_006~008 / Comm_006~008 | 50ms 출력 |
-| IF_006 | BODY_GW | AMBIENT_CTRL | ambientMode, ambientColor, ambientPattern | Flow_007 / Comm_007 | CAN ACK 실패 시 Fail-safe 적용 |
-| IF_007 | IVI_GW | CLU_HMI_CTRL | warningTextCode | Flow_008 / Comm_008 | CAN ACK 실패 시 최소 안내 코드 |
-| IF_008 | VAL_SCENARIO_CTRL | VAL_SCENARIO_CTRL(Log/Panel) | testScenario, scenarioResult | Flow_009 / Comm_009 | Event 기반 기록 |
+| 인터페이스 | 입력 | 출력 | 타이밍 | 예외 |
+|---|---|---|---|---|
+| CAN Ingestion | 도메인 CAN 프레임 | 정규화 Core 변수 | 100ms | invalid 값 필터링 |
+| ETH Core Link | ETH 논리 계약(E100/E200/E213~E216) | 중재/상태 변수 | 50~100ms + Event | CANoe.CAN 환경은 stub 대체 |
+| Output Dispatch | selectedAlertLevel/Type | Ambient/Cluster CAN 출력 | 50ms | timeoutClear/failSafeMode 반영 |
+| Validation Harness | testScenario/sysvar 입력 | scenarioResult/log | Event | 양산 경로와 분리 |
 
 ---

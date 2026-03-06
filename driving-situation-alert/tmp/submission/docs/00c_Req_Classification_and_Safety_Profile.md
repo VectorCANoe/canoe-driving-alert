@@ -1,19 +1,19 @@
 # 요구사항 분류 및 안전 프로파일 운영 기준 (Requirement Classification and Safety Profile)
 
-**Document ID**: PROJ-00C-RCSP  
-**ISO 26262 Reference**: Part 3 (Concept), Part 4 (System), Part 8 (Supporting Process)  
-**ASPICE Reference**: SYS.2, SYS.3, SWE.3, SUP.1, SUP.10  
-**Version**: 1.6  
-**Date**: 2026-03-04  
-**Status**: Draft (Internal Baseline Locked)  
-**Project Title**: 주행 상황 실시간 경고 시스템  
+**Document ID**: PROJ-00C-RCSP
+**ISO 26262 Reference**: Part 3 (Concept), Part 4 (System), Part 8 (Supporting Process)
+**ASPICE Reference**: SYS.2, SYS.3, SWE.3, SUP.1, SUP.10
+**Version**: 1.6
+**Date**: 2026-03-04
+**Status**: Draft (Internal Baseline Locked)
+**Project Title**: 주행 상황 실시간 경고 시스템
 **Subtitle**: 구간 정보 및 긴급차량 접근 기반 앰비언트·클러스터 경보
 
 ---
 
 > 제출용 축소본: 원본 SoT에서 제출 핵심만 발췌한 문서입니다.
 
-## 2. 적용 수준 선언 (중요)
+## 2. 적용 수준 선언
 - 본 프로젝트는 **학습/시연 목적의 CANoe SIL 프로젝트**이며, ISO 26262/ASPICE **인증 주장 문서가 아니다**.
 - 다만 문서 구조와 추적성 운영은 ISO 26262/ASPICE 관점의 실무형 규칙을 따른다.
 - 따라서 본 문서의 목적은 "인증"이 아니라 "감사 대응 가능한 근거 구조" 확보다.

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Markdown to Excel Converter for Extra Documents
-Converts specific Markdown files (00_VModel_Mapping.md, 일정표.md) to Excel format
+Converts specific Markdown files for the current driving-situation-alert baseline.
 """
 
 import re
@@ -140,12 +140,12 @@ def convert_md_to_excel(md_file, excel_file):
     print(f"✓ Created: {excel_file}")
 
 def main():
-    source_dir = Path("/Users/juns/code/work/mobis/PBL/docs/sample")
-    output_dir = source_dir / "excel"
-    output_dir.mkdir(exist_ok=True)
+    source_dir = Path("/Users/juns/code/work/mobis/PBL/driving-situation-alert")
+    output_dir = Path("/Users/juns/code/work/mobis/PBL/driving-situation-alert/tmp/submission/excel_extra")
+    output_dir.mkdir(parents=True, exist_ok=True)
 
     # Specific files to convert
-    target_files = ["00_VModel_Mapping.md", "일정표.md"]
+    target_files = ["00_VModel_Mapping.md", "Schedule_calender.md"]
 
     print(f"\nProcessing specific files: {', '.join(target_files)}\n")
 

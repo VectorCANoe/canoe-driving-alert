@@ -335,67 +335,18 @@
 
 ---
 
-## 도메인 네트워크 분리 기준 (확정)
+## 하단 확장표 축소 (제출본)
 
-| Domain Network | Gateway(경계 노드) | 대상 ECU/노드 | DBC 파일(정의) | ID 범위 | 연계 Flow |
-|---|---|---|---|---|---|
-| Core Integration CAN | CHS_GW, INFOTAINMENT_GW, BODY_GW, IVI_GW, ETH_SW | 경고 코어 체인 연계 노드 집합 | `canoe/databases/chassis_can.dbc` + `canoe/databases/infotainment_can.dbc` + `canoe/databases/body_can.dbc` + `canoe/databases/adas_can.dbc` + `canoe/databases/eth_backbone_can_stub.dbc` | 0x2A0/0x2A1/0x2A3/0x289/0x280/0x2A5/0x1C0/0x1C2 | Flow_001~Flow_009 |
-| Chassis CAN | CHS_GW | ACCEL_CTRL, BRK_CTRL, STEER_CTRL, ADAS_WARN_CTRL 입력 경로 | `canoe/databases/chassis_can.dbc` | 0x122~0x2A0(0x1C1 제외) | Flow_001, Flow_002, Flow_102, Flow_106, Flow_201, Flow_121, Flow_123 |
-| Powertrain CAN | DOMAIN_ROUTER | ENG_CTRL, TCM | `canoe/databases/powertrain_can.dbc` | 0x110~0x2A8 | Flow_101, Flow_105, Flow_204 |
-| Body CAN | BODY_GW | AMBIENT_CTRL, HAZARD_CTRL, WINDOW_CTRL, DRV_STATE_MGR | `canoe/databases/body_can.dbc` | 0x289~0x291, 0x277~0x292 | Flow_007, Flow_103, Flow_105, Flow_202 |
-| Infotainment CAN | INFOTAINMENT_GW, IVI_GW | NAV_CTX_MGR, CLU_HMI_CTRL, CLU_BASE_CTRL | `canoe/databases/infotainment_can.dbc` | 0x2A3, 0x280~0x288, 0x289~0x295 | Flow_003, Flow_008, Flow_104, Flow_105, Flow_203, Flow_205 |
-| ADAS Domain CAN | ETH_SW | ADAS 소유 상태/위험도 프레임 운반 | `canoe/databases/adas_can.dbc` | 0x1C1, 0x1C3 | Flow_120, Flow_201(일부) |
-| ETH Backbone CAN Stub | ETH_SW | EMS/경계/중재 프레임 대체 운반(라이선스 제약 대응) | `canoe/databases/eth_backbone_can_stub.dbc` | 0x1C0, 0x1C2, 0x1C4, 0x111 | Flow_004, Flow_005, Flow_006, Flow_121, Flow_124 |
-| Ethernet UDP | ETH_SW | EMS_ALERT(내부: EMS_POLICE_TX/EMS_AMB_TX/EMS_ALERT_RX), WARN_ARB_MGR, GW 집합 | `canoe/docs/operations/ETH_INTERFACE_CONTRACT.md` | 0x510/0x511/0x512/0xE100/0xE200 | Flow_004, Flow_005, Flow_006 |
+- 상단 공식 플로우 표와 `플로우 상세 추적 표`를 제출 기준 본표로 유지한다.
+- 도메인별/단계별 확장 분해표는 중복을 줄이기 위해 요약만 남긴다.
+- 상세 전수 매핑은 원문 SoT(`driving-situation-alert/0302_NWflowDef.md`)를 기준으로 관리한다.
 
----
-
-## Vehicle Baseline 확장 Flow (확정)
-
-| Flow ID | Comm ID(0303 연계) | Func ID | Req ID | 관련 메시지(ID) | 주 경로 | Period | 상태 |
-|---|---|---|---|---|---|---|---|
-| Flow_101 | Comm_101 | Func_101, Func_102 | Req_101, Req_102 | frmIgnitionEngineMsg(0x2A8), frmGearStateMsg(0x2A9), frmEngineSpeedTempMsg(0x12A), frmTransmissionTempMsg(0x12D) | Powertrain CAN(VAL_SCENARIO_CTRL/ENG_CTRL/TCM) -> DOMAIN_ROUTER | 100ms | Defined |
-| Flow_102 | Comm_102 | Func_103, Func_104, Func_105 | Req_103, Req_104, Req_105 | frmPedalInputCanMsg(0x2A2), frmSteeringStateCanMsg(0x100), frmBrakeStatusMsg(0x120), frmAccelStatusMsg(0x121), frmSteeringTorqueMsg(0x122) | Chassis CAN(VAL_SCENARIO_CTRL/CHS_GW/각 제어 ECU) | 100ms | Defined |
-| Flow_103 | Comm_103 | Func_106, Func_107, Func_140, Func_142 | Req_106, Req_107, Req_140, Req_142 | frmHazardControlMsg(0x261), frmWindowControlMsg(0x262), frmSeatBeltStateMsg(0x267), frmCabinAirStateMsg(0x268) | Body CAN(BODY_GW/HAZARD_CTRL/WINDOW_CTRL/DRV_STATE_MGR) | 100ms | Defined |
-| Flow_104 | Comm_104 | Func_109, Func_146, Func_154 | Req_109, Req_146, Req_154 | frmClusterBaseStateMsg(0x281), frmClusterThemeMsg(0x286), frmHmiPopupStateMsg(0x287) | Infotainment CAN(IVI_GW/CLU_BASE_CTRL/CLU_HMI_CTRL) | 50ms | Defined |
-| Flow_105 | Comm_105 | Func_110, Func_111, Func_141, Func_149, Func_151 | Req_110, Req_111, Req_141, Req_149, Req_151 | frmPowertrainGatewayMsg(0x109), frmVehicleModeMsg(0x10A), frmPowerLimitMsg(0x10B), frmCruiseStateMsg(0x10C), frmChassisHealthMsg(0x103), frmBodyHealthMsg(0x269), frmInfotainmentHealthMsg(0x288) | Domain GW/Boundary 경로 상태 및 헬스 모니터 | 100ms | Defined |
-| Flow_106 | Comm_106 | Func_112 | Req_112 | frmBaseTestResultMsg(0x2A6), frmTestResultMsg(0x2A5) | VAL_BASELINE_CTRL/VAL_SCENARIO_CTRL -> Chassis CAN(Validation frame) 결과 기록 | Event | Defined (Validation-only) |
-
----
-
-## Vehicle Baseline Phase-B 확장 Flow (Flow_201~Flow_205)
-
-| Flow ID | Comm ID(0303 연계) | Func ID | Req ID | 관련 메시지(ID) | 주 경로 | Period | 상태 |
-|---|---|---|---|---|---|---|---|
-| Flow_201 | Comm_201 | Func_103, Func_104, Func_110 | Req_103, Req_104, Req_110 | frmEpsStateMsg(0x123), frmAbsStateMsg(0x124), frmEscStateMsg(0x125), frmTcsStateMsg(0x126), frmBrakeTempMsg(0x127), frmSteeringAngleMsg(0x128), frmWheelPulseMsg(0x104), frmSuspensionStateMsg(0x105), frmTirePressureMsg(0x106), frmChassisDiagReqMsg(0x2A4), frmChassisDiagResMsg(0x107), frmAdasChassisStatusMsg(0x1C1), frmBrakeWearMsg(0x129), frmRoadFrictionMsg(0x108) | Chassis CAN + ETH Backbone CAN Stub(0x1C1) -> CHS_GW -> 도메인 연계 노드 | 100ms + Event | Defined |
-| Flow_202 | Comm_202 | Func_106, Func_107, Func_111, Func_113, Func_114, Func_115, Func_116, Func_117, Func_118 | Req_106, Req_107, Req_111, Req_113, Req_116, Req_118 | frmHvacStateMsg(0x26A), frmHvacActuatorMsg(0x26B), frmMirrorStateMsg(0x26C), frmSeatStateMsg(0x26D), frmSeatControlMsg(0x26E), frmDoorControlMsg(0x26F), frmInteriorLightMsg(0x270), frmRainLightAutoMsg(0x271), frmBcmDiagReqMsg(0x272), frmBcmDiagResMsg(0x273), frmImmobilizerStateMsg(0x274), frmAlarmStateMsg(0x275), frmBodyGatewayStateMsg(0x276), frmBodyComfortStateMsg(0x277) | Body CAN(차체편의/실내환경/진단) -> BODY_GW -> 출력/상태 노드 | 100ms + Event | Defined |
-| Flow_203 | Comm_203 | Func_109, Func_111, Func_119, Func_145, Func_147, Func_153, Func_154, Func_155 | Req_109, Req_111, Req_119, Req_145, Req_147, Req_153, Req_154, Req_155 | frmAudioFocusMsg(0x289), frmVoiceAssistStateMsg(0x28A), frmMapRenderStateMsg(0x28B), frmRouteAlertMsg(0x28C), frmTrafficEventMsg(0x28D), frmPhoneProjectionMsg(0x28E), frmClusterNotifMsg(0x28F), frmMediaMetaMsg(0x291), frmSpeechTtsStateMsg(0x292), frmConnectivityStateMsg(0x293), frmClusterSyncStateMsg(0x295) | Infotainment CAN(안내/UI/연결상태) -> INFOTAINMENT_GW/IVI_GW -> NAV/HMI | 50/100ms | Defined |
-| Flow_204 | Comm_204 | Func_101, Func_102, Func_110 | Req_101, Req_102, Req_110 | frmEngineTorqueMsg(0x12E), frmEngineLoadMsg(0x12F), frmTransShiftStateMsg(0x130), frmThermalMgmtStateMsg(0x131), frmEnergyFlowStateMsg(0x10F), frmPowertrainCtrlAuthMsg(0x110) | Powertrain CAN(토크/열관리/변속상태) -> DOMAIN_ROUTER -> 엔진/변속 노드 | 100ms | Defined |
-| Flow_205 | Comm_205 | Func_112 | Req_112 | frmIviDiagReqMsg(0x2A7), frmIviDiagResMsg(0x290), frmIviHealthDetailMsg(0x294), frmPtDiagReqMsg(0x2AA), frmPtDiagResMsg(0x10E) | Test/Diag 경로(VAL_SCENARIO_CTRL <-> 각 도메인 GW) | Event + 100ms | Defined (Validation-only) |
-
-- 주의: `Flow_201~Flow_205`는 도메인 분리 DBC(`*_can.dbc`)와 동기화된 확정 플로우이며, 변경 시 0303/0304를 동일 커밋에서 함께 갱신한다.
-
-## V2 확장 Flow (Implemented, Flow_120~Flow_124)
-
-| Flow ID | Comm ID(0303 연계) | Func ID | Req ID | 관련 메시지(ID) | 주 경로 | Period | 상태 |
-|---|---|---|---|---|---|---|---|
-| Flow_120 | Comm_120 | Func_120 | Req_120 | ethEmergencyRiskMsg(0x1C3) | EMS_ALERT(Rx)/ADAS_WARN_CTRL -> WARN_ARB_MGR | 100ms | Implemented |
-| Flow_121 | Comm_121 | Func_121 | Req_121 | ethDecelAssistReqMsg(0x1C4) | WARN_ARB_MGR -> CHS_GW -> BRK_CTRL | Event + 50ms | Implemented |
-| Flow_122 | Comm_122 | Func_125, Func_126 | Req_125, Req_126 | ethSelectedAlertMsg(0xE200), frmAmbientControlMsg(0x260), frmClusterWarningMsg(0x280) | WARN_ARB_MGR -> BODY_GW/IVI_GW -> AMBIENT_CTRL/CLU_HMI_CTRL | 50ms | Implemented |
-| Flow_123 | Comm_123 | Func_123 | Req_123 | frmPedalInputCanMsg(0x2A2), frmSteeringCanMsg(0x2A1), ethDecelAssistReqMsg(0x1C4) | CHS_GW -> WARN_ARB_MGR -> DOMAIN_ROUTER/BRK_CTRL | Event + 100ms | Implemented |
-| Flow_124 | Comm_124 | Func_127, Func_128, Func_129, Func_151, Func_152 | Req_127, Req_128, Req_129, Req_151, Req_152 | frmChassisHealthMsg(0x103), frmBodyHealthMsg(0x269), frmInfotainmentHealthMsg(0x288), ethFailSafeStateMsg(0x111) | DOMAIN_BOUNDARY_MGR -> DOMAIN_ROUTER -> WARN_ARB_MGR/BODY_GW/IVI_GW | 100ms + Event | Implemented |
-
-- 주의: `Flow_120~Flow_124`는 V2 확장 구현 플로우다. 변경 시 0303/0304/05~07과 코드/DBC를 동일 커밋에서 동기화한다.
-
-## ADAS 객체 인지 확장 Flow (Planned, Flow_130~Flow_133)
-
-| Flow ID | Comm ID(0303 연계) | Func ID | Req ID | 관련 메시지(ID) | 주 경로 | Period | 상태 |
-|---|---|---|---|---|---|---|---|
-| Flow_130 | Comm_130 | Func_130, Func_131, Func_148 | Req_130, Req_131, Req_148 | ethObjectRiskInputMsg(0xE213) | CHS_GW/INFOTAINMENT_GW -> ADAS_WARN_CTRL | 100ms | Planned |
-| Flow_131 | Comm_131 | Func_132, Func_133, Func_136 | Req_132, Req_133, Req_136 | ethObjectRiskStateMsg(0xE214) | ADAS_WARN_CTRL -> WARN_ARB_MGR | 100ms + Event | Planned |
-| Flow_132 | Comm_132 | Func_134, Func_135, Func_139 | Req_134, Req_135, Req_139 | ethObjectScenarioAlertMsg(0xE215), frmAmbientControlMsg(0x260), frmClusterWarningMsg(0x280) | WARN_ARB_MGR -> BODY_GW/IVI_GW -> AMBIENT_CTRL/CLU_HMI_CTRL | Event + 50ms | Planned |
-| Flow_133 | Comm_133 | Func_137, Func_138, Func_148 | Req_137, Req_138, Req_148 | ethObjectSafetyStateMsg(0xE216) | DOMAIN_BOUNDARY_MGR/EMS_ALERT -> WARN_ARB_MGR/VAL_SCENARIO_CTRL | Event | Planned |
-
-- 주의: `Flow_130~Flow_133`는 ADAS 객체 인지 확장 Pre-Activation 플로우다. 구현 착수 시 0303/0304/04/05/06/07을 동일 커밋으로 동기화한다.
+| 구분 | 제출본 유지 내용 | 원문 SoT 참조 |
+|---|---|---|
+| 도메인 네트워크 분리 | Core/Domain 분리 원칙 + 주요 경로 요약 | 0302 원문 `도메인 네트워크 분리 기준` |
+| Vehicle Baseline 확장 | Flow_101~106, Flow_201~205는 `Defined` 상태로 유지 | 0302 원문 Baseline/Phase-B 확장 표 |
+| V2 확장 | Flow_120~124는 `Implemented` 상태로 유지 | 0302 원문 V2 확장 표 |
+| ADAS 객체 인지 확장 | Flow_130~133는 `Planned(Pre-Activation)` 상태로 유지 | 0302 원문 ADAS 확장 표 |
+| 동기화 규칙 | 변경 시 0303/0304/04/05/06/07 동시 반영 | TMP_HANDOFF + 원문 체인 |
 
 ---

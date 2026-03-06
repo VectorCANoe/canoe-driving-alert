@@ -6,6 +6,7 @@ Converts Markdown files to Excel format, preserving tables and structure
 
 import re
 import sys
+import argparse
 from pathlib import Path
 from openpyxl import Workbook
 from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
@@ -156,17 +157,31 @@ def convert_md_to_excel(md_file, excel_file):
     print(f"✓ Created: {excel_file}")
 
 def main():
-    import sys
+    parser = argparse.ArgumentParser(
+        description="Convert markdown files in a directory to Excel files."
+    )
+    parser.add_argument(
+        "source_dir",
+        help="Directory containing markdown files (*.md).",
+    )
+    parser.add_argument(
+        "output_dir",
+        nargs="?",
+        default=None,
+        help="Output directory for xlsx files (default: <source_dir>/excel).",
+    )
+    args = parser.parse_args()
 
-    if len(sys.argv) > 1:
-        source_dir = Path(sys.argv[1])
-    else:
-        source_dir = Path("/Users/juns/code/work/mobis/PBL/docs/sample")
+    source_dir = Path(args.source_dir).expanduser().resolve()
+    output_dir = (
+        Path(args.output_dir).expanduser().resolve()
+        if args.output_dir
+        else source_dir / "excel"
+    )
 
-    if len(sys.argv) > 2:
-        output_dir = Path(sys.argv[2])
-    else:
-        output_dir = source_dir / "excel"
+    if not source_dir.exists() or not source_dir.is_dir():
+        print(f"Source directory not found or not a directory: {source_dir}")
+        sys.exit(1)
 
     output_dir.mkdir(parents=True, exist_ok=True)
 
