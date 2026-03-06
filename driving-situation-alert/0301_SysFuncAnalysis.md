@@ -17,8 +17,8 @@
 
 ## 작성 원칙
 
-- 본 문서는 03_Function_definition.md의 Func_001~Func_124를 노드 내부 동작 관점으로 분해한다.
-- V2 확장 요구(`Req_120~Req_124`)는 `Func_120~Func_124`로 구현 활성 상태에서 관리한다.
+- 본 문서는 03_Function_definition.md의 Func_001~Func_121, Func_123, Func_125~Func_129를 노드 내부 동작 관점으로 분해한다.
+- V2 확장 요구(`Req_120~Req_121`, `Req_123`, `Req_125~Req_129`)는 `Func_120~Func_121`, `Func_123`, `Func_125~Func_129`로 구현 활성 상태에서 관리한다.
 - 각 노드의 입력-처리-출력을 명확히 정의해 0302의 Tx/Rx 흐름 설계로 연결한다.
 - 요구사항(What) 문장을 반복하지 않고, 시스템 동작 로직(How)만 기술한다.
 - 상단 표는 공식 표준 양식의 열 구성(노드/기능 상세/비고)을 유지한다.
@@ -84,10 +84,10 @@
 | Func_001~004,006,010~012 | Req_001~004,006,010~012 | ADAS_WARN_CTRL | vehicleSpeedNorm, speedLimitNorm, driveStateNorm, steeringInputNorm, baseZoneContext | 스쿨존 과속/고속 무조향 조건 판정, 경고 트리거 생성, 디바운스 | warningState | 입력: vehicleSpeedNorm, speedLimitNorm, driveStateNorm, steeringInputNorm, baseZoneContext |
 | Func_013~016 | Req_013~Req_016 | AMBIENT_CTRL | selectedAlertType, selectedAlertLevel, navDirection, timeoutClear | 유도구간 진입 전환/방향 분기/전환 완화/종료 복귀 처리 | ambientMode, ambientPattern | 입력: selectedAlertType, selectedAlertLevel, navDirection, timeoutClear |
 | Func_017 | Req_017 | EMS_ALERT | testScenario | 경찰 긴급 알림 패킷 생성 및 송신 관리(내부 Tx 모듈) | emergencyType, emergencyDirection, eta, sourceId, alertState, ETH_EmergencyAlert | 출력: ETH_EmergencyAlert(UDP) |
-| Func_018 | Req_018 | EMS_ALERT | testScenario | 구급 긴급 알림 패킷 생성 및 송신 관리(내부 Tx 모듈) | emergencyType, emergencyDirection, eta, sourceId, alertState, ETH_EmergencyAlert | 출력: ETH_EmergencyAlert(UDP) |
+| Func_018 | Req_017 | EMS_ALERT | testScenario | 구급 긴급 알림 패킷 생성 및 송신 관리(내부 Tx 모듈) | emergencyType, emergencyDirection, eta, sourceId, alertState, ETH_EmergencyAlert | 출력: ETH_EmergencyAlert(UDP) |
 | Func_023,024 | Req_023,024 | EMS_ALERT | alertState, emergencyType, lastEmergencyRxMs | 수신/해제 상태 관리, 1000ms 타임아웃 처리(내부 Rx 모듈) | emergencyContext, timeoutClear | 입력: alertState, emergencyType, lastEmergencyRxMs |
 | Func_022,025~032 | Req_022,025~032 | WARN_ARB_MGR | emergencyContext, warningState, baseZoneContext, emergencyType, eta, sourceId, arbitrationSnapshotId | 경보 우선순위 판정 수행 | selectedAlertLevel, selectedAlertType | 입력: emergencyContext, warningState, baseZoneContext, emergencyType, eta, sourceId, arbitrationSnapshotId |
-| Func_008,009,033~039 | Req_008,009,033~039 | AMBIENT_CTRL | selectedAlertLevel, selectedAlertType, navDirection, baseZoneContext, timeoutClear | 경고 등급별 색상/패턴 적용, 전환 완화, 복원 | ambientMode, ambientColor, ambientPattern | 출력: ambientMode, ambientColor, ambientPattern |
+| Func_008,009,033~039 | Req_008,009,033,034,035,037 | AMBIENT_CTRL | selectedAlertLevel, selectedAlertType, navDirection, baseZoneContext, timeoutClear | 경고 등급별 색상/패턴 적용, 전환 완화, 복원 | ambientMode, ambientColor, ambientPattern | 출력: ambientMode, ambientColor, ambientPattern |
 | Func_005,019~021,026,040 | Req_005,019~021,026,040 | CLU_HMI_CTRL | selectedAlertType, emergencyDirection, duplicatePopupGuard, warningTextCode | 경고 문구/종류/방향/양보 메시지 표시 | warningTextCode | 출력: warningTextCode |
 | Func_041, Func_042, Func_043 | Req_041, Req_042, Req_043 | VAL_SCENARIO_CTRL | testScenario | 시나리오 실행, CAN+ETH 검증, 판정 기록 | scenarioResult | 출력: scenarioResult |
 | Func_101 | Req_101 | ENG_CTRL | IgnitionState | 시동 상태 반영 | EngineState | 입력: IgnitionState / 출력: EngineState |
@@ -102,17 +102,20 @@
 | Func_111 | Req_111 | DOMAIN_BOUNDARY_MGR | RoutingPolicy | 도메인 경계 유지 | BoundaryStatus | 입력: RoutingPolicy / 출력: BoundaryStatus |
 | Func_112 | Req_112 | VAL_BASELINE_CTRL | BaseScenarioId | 차량 기본 기능 SIL 검증 | BaseScenarioResult | 입력: BaseScenarioId / 출력: BaseScenarioResult |
 | Func_113 | Req_113 | BODY_GW | CabinSetTemp, BlowerLevel, AcCompressorReq, VentMode | HVAC 상태/제어 프레임 반영 | CabinTemp | 입력: CabinSetTemp, BlowerLevel, AcCompressorReq, VentMode / 출력: CabinTemp |
-| Func_114 | Req_114 | DRV_STATE_MGR | DriverSeatPos, PassengerSeatPos, SeatHeatLevel, SeatVentLevel | 시트 상태/제어 프레임 반영 | DriverStateInfo | 입력: DriverSeatPos, PassengerSeatPos, SeatHeatLevel, SeatVentLevel / 출력: DriverStateInfo |
-| Func_115 | Req_115 | WINDOW_CTRL | MirrorFoldState, MirrorHeatState, MirrorAdjAxis | 미러 상태 프레임 반영 | WindowState | 입력: MirrorFoldState, MirrorHeatState, MirrorAdjAxis / 출력: WindowState |
+| Func_114 | Req_113 | DRV_STATE_MGR | DriverSeatPos, PassengerSeatPos, SeatHeatLevel, SeatVentLevel | 시트 상태/제어 프레임 반영 | DriverStateInfo | 입력: DriverSeatPos, PassengerSeatPos, SeatHeatLevel, SeatVentLevel / 출력: DriverStateInfo |
+| Func_115 | Req_113 | WINDOW_CTRL | MirrorFoldState, MirrorHeatState, MirrorAdjAxis | 미러 상태 프레임 반영 | WindowState | 입력: MirrorFoldState, MirrorHeatState, MirrorAdjAxis / 출력: WindowState |
 | Func_116 | Req_116 | WINDOW_CTRL | DoorUnlockCmd, DoorLockState, DoorOpenWarn | 도어 제어/잠금/열림 상태 반영 | DoorStateMask | 입력: DoorUnlockCmd, DoorLockState, DoorOpenWarn / 출력: DoorStateMask |
-| Func_117 | Req_117 | AMBIENT_CTRL | FrontWiperState, RearWiperState, RainSensorLevel, AutoHeadlampReq | 와이퍼/우적 연동 상태 반영 | WiperInterval | 입력: FrontWiperState, RearWiperState, RainSensorLevel, AutoHeadlampReq / 출력: WiperInterval |
+| Func_117 | Req_116 | AMBIENT_CTRL | FrontWiperState, RearWiperState, RainSensorLevel, AutoHeadlampReq | 와이퍼/우적 연동 상태 반영 | WiperInterval | 입력: FrontWiperState, RearWiperState, RainSensorLevel, AutoHeadlampReq / 출력: WiperInterval |
 | Func_118 | Req_118 | DRV_STATE_MGR | ImmoState, AlarmArmed, AlarmTrigger, AlarmZone | 이모빌라이저/경보 상태 반영 | DriverStateInfo | 입력: ImmoState, AlarmArmed, AlarmTrigger, AlarmZone / 출력: DriverStateInfo |
 | Func_119 | Req_119 | CLU_HMI_CTRL | AudioFocusOwner, VoiceAssistState, TtsState, TtsLangId | 오디오 포커스/음성비서/TTS 상태 반영 | warningTextCode | 입력: AudioFocusOwner, VoiceAssistState, TtsState, TtsLangId / 출력: warningTextCode |
 | Func_120 | Req_120 | ADAS_WARN_CTRL | emergencyDirection, eta, vehicleSpeedNorm | 긴급차량 방향/ETA/자차속도 결합 기반 근접 위험도 산정 | proximityRiskLevel | 입력: emergencyDirection, eta, vehicleSpeedNorm / 출력: proximityRiskLevel |
 | Func_121 | Req_121 | WARN_ARB_MGR | proximityRiskLevel, failSafeMode, driveStateNorm | 위험도 임계 초과 시 감속 보조 요청 생성 | decelAssistReq | 입력: proximityRiskLevel, failSafeMode, driveStateNorm / 출력: decelAssistReq |
-| Func_122 | Req_122 | WARN_ARB_MGR | decelAssistReq, selectedAlertType, selectedAlertLevel | 감속 보조 활성 시 긴급 경고 우선 및 Ambient/Cluster 동기화 유지 | selectedAlertLevel, selectedAlertType | 입력: decelAssistReq, selectedAlertType, selectedAlertLevel / 출력: selectedAlertLevel, selectedAlertType |
+| Func_125 | Req_125 | WARN_ARB_MGR | decelAssistReq, selectedAlertType, selectedAlertLevel | 감속 보조 활성 시 긴급 경고 우선 유지 | selectedAlertLevel, selectedAlertType | 입력: decelAssistReq, selectedAlertType, selectedAlertLevel / 출력: selectedAlertLevel, selectedAlertType |
+| Func_126 | Req_126 | WARN_ARB_MGR | decelAssistReq, selectedAlertType, selectedAlertLevel | 감속 보조 활성 시 Ambient/Cluster 동기화 유지 | selectedAlertLevel, selectedAlertType | 입력: decelAssistReq, selectedAlertType, selectedAlertLevel / 출력: selectedAlertLevel, selectedAlertType |
 | Func_123 | Req_123 | WARN_ARB_MGR | steeringInputNorm, brakePedalNorm | 운전자 제동/조향 회피 입력 시 감속 보조 요청 해제 | decelAssistReq | 입력: steeringInputNorm, brakePedalNorm / 출력: decelAssistReq |
-| Func_124 | Req_124 | DOMAIN_BOUNDARY_MGR | domainPathStatus, e2eHealthState | 도메인 경로 단절 감지 시 자동 감속 보조 금지 + 최소 경고 채널 유지 | failSafeMode, decelAssistReq | 입력: domainPathStatus, e2eHealthState / 출력: failSafeMode, decelAssistReq |
+| Func_127 | Req_127 | DOMAIN_BOUNDARY_MGR | domainPathStatus, e2eHealthState | 도메인 경로 단절 감지 시 자동 감속 보조 금지 | decelAssistReq | 입력: domainPathStatus, e2eHealthState / 출력: decelAssistReq |
+| Func_128 | Req_128 | DOMAIN_BOUNDARY_MGR | domainPathStatus, e2eHealthState | 도메인 경로 단절 감지 시 최소 경고 채널 유지 | selectedAlertLevel, selectedAlertType | 입력: domainPathStatus, e2eHealthState / 출력: selectedAlertLevel, selectedAlertType |
+| Func_129 | Req_129 | DOMAIN_BOUNDARY_MGR | domainPathStatus, e2eHealthState | 도메인 경로 단절 감지 시 안전 강등 모드 전환 | failSafeMode | 입력: domainPathStatus, e2eHealthState / 출력: failSafeMode |
 
 ## 2-1. Req-Func 1:1 감사 매핑 표
 
@@ -135,7 +138,7 @@
 | Req_015 | Func_015 | AMBIENT_CTRL | 구간 전환 완화 |
 | Req_016 | Func_016 | AMBIENT_CTRL | 구간경고 종료 복귀 |
 | Req_017 | Func_017 | EMS_ALERT | 경찰 접근 경고 송신 |
-| Req_018 | Func_018 | EMS_ALERT | 구급 접근 경고 송신 |
+| Req_017 | Func_018 | EMS_ALERT | 구급 접근 경고 송신 |
 | Req_019 | Func_019 | CLU_HMI_CTRL | 긴급차량 종류 표시 |
 | Req_020 | Func_020 | CLU_HMI_CTRL | 긴급차량 방향 표시 |
 | Req_021 | Func_021 | CLU_HMI_CTRL | 양보 유도 메시지 |
@@ -153,10 +156,10 @@
 | Req_033 | Func_033 | AMBIENT_CTRL | 종료후 이전상태 복원 |
 | Req_034 | Func_034 | AMBIENT_CTRL | 전환 깜빡임 완화 |
 | Req_035 | Func_035 | AMBIENT_CTRL | 긴급 색상 정책 |
-| Req_036 | Func_036 | AMBIENT_CTRL | 긴급 패턴 정책 |
+| Req_035 | Func_036 | AMBIENT_CTRL | 긴급 패턴 정책 |
 | Req_037 | Func_037 | AMBIENT_CTRL | 스쿨존 패턴 정책 |
-| Req_038 | Func_038 | AMBIENT_CTRL | 고속도로 패턴 정책 |
-| Req_039 | Func_039 | AMBIENT_CTRL | 유도선 패턴 정책 |
+| Req_037 | Func_038 | AMBIENT_CTRL | 고속도로 패턴 정책 |
+| Req_037 | Func_039 | AMBIENT_CTRL | 유도선 패턴 정책 |
 | Req_040 | Func_040 | CLU_HMI_CTRL | 문구 길이 제한 |
 | Req_041 | Func_041 | VAL_SCENARIO_CTRL | SIL 시나리오 실행 |
 | Req_042 | Func_042 | VAL_SCENARIO_CTRL | CAN+ETH 동시 검증 |
@@ -173,17 +176,20 @@
 | Req_111 | Func_111 | DOMAIN_BOUNDARY_MGR | 도메인 경계 유지 |
 | Req_112 | Func_112 | VAL_BASELINE_CTRL | 차량 기본 기능 SIL 검증 |
 | Req_113 | Func_113 | BODY_GW | 공조 상태 반영 |
-| Req_114 | Func_114 | DRV_STATE_MGR | 시트 상태 반영 |
-| Req_115 | Func_115 | WINDOW_CTRL | 미러 상태 반영 |
+| Req_113 | Func_114 | DRV_STATE_MGR | 시트 상태 반영 |
+| Req_113 | Func_115 | WINDOW_CTRL | 미러 상태 반영 |
 | Req_116 | Func_116 | WINDOW_CTRL | 도어 제어 상태 반영 |
-| Req_117 | Func_117 | AMBIENT_CTRL | 와이퍼/우적 연동 반영 |
+| Req_116 | Func_117 | AMBIENT_CTRL | 와이퍼/우적 연동 반영 |
 | Req_118 | Func_118 | DRV_STATE_MGR | 보안 상태 반영 |
 | Req_119 | Func_119 | CLU_HMI_CTRL | 오디오 상태 반영 |
 | Req_120 | Func_120 | ADAS_WARN_CTRL | 긴급차량 근접 위험 판단 |
 | Req_121 | Func_121 | WARN_ARB_MGR | 위험도 기반 감속 보조 요청 |
-| Req_122 | Func_122 | WARN_ARB_MGR | 감속 보조-경고 동기화 |
+| Req_125 | Func_125 | WARN_ARB_MGR | 감속 보조 시 긴급경고 최우선 유지 |
+| Req_126 | Func_126 | WARN_ARB_MGR | 감속 보조 시 경고 채널 동기화 |
 | Req_123 | Func_123 | WARN_ARB_MGR | 운전자 개입 우선 해제 |
-| Req_124 | Func_124 | DOMAIN_BOUNDARY_MGR | 도메인 경로 단절 강등(Fail-safe) |
+| Req_127 | Func_127 | DOMAIN_BOUNDARY_MGR | 도메인 단절 시 자동감속 금지 |
+| Req_128 | Func_128 | DOMAIN_BOUNDARY_MGR | 도메인 단절 시 최소 경고 유지 |
+| Req_129 | Func_129 | DOMAIN_BOUNDARY_MGR | 도메인 단절 시 안전 강등 전환 |
 
 ---
 
@@ -198,8 +204,8 @@
 | 구급 긴급차량 접근 | EMS_ALERT(Ambulance Tx) -> EMS_ALERT(Rx) -> WARN_ARB_MGR -> AMBIENT_CTRL + CLU_HMI_CTRL | Func_018, Func_023, Func_022, Func_035, Func_019 |
 | 경찰+구급 동시 충돌 | EMS_ALERT(Police Tx + Ambulance Tx) -> EMS_ALERT(Rx) -> WARN_ARB_MGR(우선순위/동률처리) -> 출력 노드 | Func_025~Func_031 |
 | 긴급 해제 후 복귀 | EMS_ALERT(Rx 해제/타임아웃) -> WARN_ARB_MGR -> AMBIENT_CTRL/CLU_HMI_CTRL | Func_024, Func_033, Func_034 |
-| 교차로/합류구간 근접위험 감속 보조 | EMS_ALERT(Rx) + ADAS_WARN_CTRL(위험도 산정) + WARN_ARB_MGR(보조요청/해제+경고 동기화) -> BRK_CTRL + AMBIENT_CTRL + CLU_HMI_CTRL | Func_120, Func_121, Func_122, Func_123 |
-| 도메인 경로 단절 강등 | DOMAIN_BOUNDARY_MGR(경로 단절 감지) -> DOMAIN_ROUTER -> WARN_ARB_MGR/출력노드 | Func_124 |
+| 교차로/합류구간 근접위험 감속 보조 | EMS_ALERT(Rx) + ADAS_WARN_CTRL(위험도 산정) + WARN_ARB_MGR(보조요청/해제+경고 동기화) -> BRK_CTRL + AMBIENT_CTRL + CLU_HMI_CTRL | Func_120, Func_121, Func_125, Func_126, Func_123 |
+| 도메인 경로 단절 강등 | DOMAIN_BOUNDARY_MGR(경로 단절 감지) -> DOMAIN_ROUTER -> WARN_ARB_MGR/출력노드 | Func_127, Func_128, Func_129 |
 
 ---
 
@@ -265,9 +271,9 @@
 | 3.20 | 2026-03-05 | Validation Harness 노드 명칭을 `VAL_SCENARIO_CTRL`/`VAL_BASELINE_CTRL`로 정리하고 `VAL_*` 접두 규칙으로 표기 통일. |
 | 3.19 | 2026-03-03 | ETH_SW 역할을 시스템 관점으로 명확화하고, 구현 관점(헬스 모니터링)은 04 문서에서 분리 관리하도록 정합화. |
 | 3.18 | 2026-03-03 | V2 확장 `Func_121/Func_123` 노드 소유를 `WARN_ARB_MGR`로 정정하고, 노드 표/Req-Func/시나리오 체인을 코드 구현 기준으로 동기화. |
-| 3.17 | 2026-03-02 | 감사 정합 보강: 문서 범위를 `Func_001~Func_124`로 명확화하고 옵션1 설계 vs SIL 임시 CAN 대체 백본 검증 경계 문구를 추가. |
+| 3.17 | 2026-03-02 | 감사 정합 보강: 문서 범위를 `Func_001~Func_127,Func_128,Func_129`로 명확화하고 옵션1 설계 vs SIL 임시 CAN 대체 백본 검증 경계 문구를 추가. |
 | 3.16 | 2026-03-02 | V2 확장 제어 책임 분리: `DECEL_ASSIST_CTRL` 노드를 Chassis에 추가하고 `Func_121/Func_123` 실제 노드/시나리오 체인을 갱신. |
-| 3.15 | 2026-03-02 | V2 확장(Pre-Activation) 반영: `Func_120~Func_124`(근접위험/감속보조/동기화/운전자개입해제/도메인단절강등) 상세표, Req-Func 매핑, 시나리오 체인 추가. |
+| 3.15 | 2026-03-02 | V2 확장(Pre-Activation) 반영: `Func_120~Func_121, Func_123, Func_125~Func_129`(근접위험/감속보조/동기화/운전자개입해제/도메인단절강등) 상세표, Req-Func 매핑, 시나리오 체인 추가. |
 | 3.14 | 2026-03-02 | `Func_101~Func_119` 상세표의 입출력 변수를 0304 표준 Name으로 정합화(`BaseScenarioId/BaseScenarioResult`, `AcCompressorReq`, `DoorUnlockCmd`, `ImmoState`, `TtsLangId` 등)하고 누락 변수명을 제거. |
 | 3.13 | 2026-03-02 | V2 추적 밀도 보강 1차: `Req_113~Req_119`에 대응하는 `Func_113~Func_119`(HVAC/Seat/Mirror/Door/Wiper-Rain/Security/Audio)를 하단 상세표 및 1:1 감사 매핑에 추가. 상단 노드 설명도 기본 기능 확장 범위로 정합화. |
 | 2.0 | 2026-02-25 | 프로젝트 최신 스코프 기준 전면 재작성. 노드별 Input-Processing-Output 구조, Func/Req 연결, 핵심 시나리오 체인, 0302 연계 체크포인트 추가 |

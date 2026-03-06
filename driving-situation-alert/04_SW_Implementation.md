@@ -144,7 +144,7 @@ Emergency Source (logical terminal)
 | Func_015 | Req_015 | AMBIENT_CTRL | Flow_007 / Comm_007 / selectedAlertLevel | Flow_007 / ambientPattern | `MOD_11.F015` | UT_BCM_001 |
 | Func_016 | Req_016 | AMBIENT_CTRL | Flow_007 / Comm_007 / timeoutClear | Flow_007 / ambientMode | `MOD_11.F016` | UT_BCM_001 |
 | Func_017 | Req_017 | EMS_POLICE_TX | SIL 입력 / emergencyType, eta, emergencyDirection | Flow_004 / Comm_004 / ETH_EmergencyAlert | `MOD_03.F017` | UT_EMS_POL_001 |
-| Func_018 | Req_018 | EMS_AMB_TX | SIL 입력 / emergencyType, eta, emergencyDirection | Flow_005 / Comm_005 / ETH_EmergencyAlert | `MOD_04.F018` | UT_EMS_AMB_001 |
+| Func_018 | Req_017 | EMS_AMB_TX | SIL 입력 / emergencyType, eta, emergencyDirection | Flow_005 / Comm_005 / ETH_EmergencyAlert | `MOD_04.F018` | UT_EMS_AMB_001 |
 | Func_019 | Req_019 | CLU_HMI_CTRL | Flow_008 / Comm_008 / selectedAlertType | Flow_008 / warningTextCode | `MOD_12.F019` | UT_CLU_001 |
 | Func_020 | Req_020 | CLU_HMI_CTRL | Flow_008 / Comm_008 / emergencyDirection | Flow_008 / warningTextCode | `MOD_12.F020` | UT_CLU_001 |
 | Func_021 | Req_021 | CLU_HMI_CTRL | Flow_008 / Comm_008 / selectedAlertType | Flow_008 / warningTextCode | `MOD_12.F021` | UT_CLU_001 |
@@ -162,10 +162,10 @@ Emergency Source (logical terminal)
 | Func_033 | Req_033 | AMBIENT_CTRL | Flow_007 / Comm_007 / timeoutClear, baseZoneContext | Flow_007 / ambientMode | `MOD_11.F033` | UT_BCM_001 |
 | Func_034 | Req_034 | AMBIENT_CTRL | Flow_007 / Comm_007 / selectedAlertLevel | Flow_007 / ambientPattern | `MOD_11.F034` | UT_BCM_001 |
 | Func_035 | Req_035 | AMBIENT_CTRL | Flow_007 / Comm_007 / selectedAlertType | Flow_007 / ambientColor | `MOD_11.F035` | UT_BCM_001 |
-| Func_036 | Req_036 | AMBIENT_CTRL | Flow_007 / Comm_007 / selectedAlertLevel | Flow_007 / ambientPattern | `MOD_11.F036` | UT_BCM_001 |
+| Func_036 | Req_035 | AMBIENT_CTRL | Flow_007 / Comm_007 / selectedAlertLevel | Flow_007 / ambientPattern | `MOD_11.F036` | UT_BCM_001 |
 | Func_037 | Req_037 | AMBIENT_CTRL | Flow_007 / Comm_007 / baseZoneContext | Flow_007 / ambientColor, ambientPattern | `MOD_11.F037` | UT_BCM_001 |
-| Func_038 | Req_038 | AMBIENT_CTRL | Flow_007 / Comm_007 / baseZoneContext | Flow_007 / ambientColor, ambientPattern | `MOD_11.F038` | UT_BCM_001 |
-| Func_039 | Req_039 | AMBIENT_CTRL | Flow_007 / Comm_007 / navDirection, baseZoneContext | Flow_007 / ambientColor, ambientPattern | `MOD_11.F039` | UT_BCM_001 |
+| Func_038 | Req_037 | AMBIENT_CTRL | Flow_007 / Comm_007 / baseZoneContext | Flow_007 / ambientColor, ambientPattern | `MOD_11.F038` | UT_BCM_001 |
+| Func_039 | Req_037 | AMBIENT_CTRL | Flow_007 / Comm_007 / navDirection, baseZoneContext | Flow_007 / ambientColor, ambientPattern | `MOD_11.F039` | UT_BCM_001 |
 | Func_040 | Req_040 | CLU_HMI_CTRL | Flow_008 / Comm_008 / warningTextCode | Flow_008 / warningTextCode | `MOD_12.F040` | UT_CLU_001 |
 | Func_041 | Req_041 | VAL_SCENARIO_CTRL | Flow_009 / Comm_009 / testScenario | Flow_009 / scenarioResult | `MOD_13.F041` | ST_SIL_001 |
 | Func_042 | Req_042 | VAL_SCENARIO_CTRL | Flow_009 / Comm_009 / testScenario | Flow_009 / scenarioResult | `MOD_13.F042` | ST_SIL_002 |
@@ -182,17 +182,17 @@ Emergency Source (logical terminal)
 | Func_111 | Req_111 | DOMAIN_BOUNDARY_MGR | Flow_105 / Comm_105 / RoutingPolicy, BoundaryStatus | Flow_105 / BoundaryStatus | `MOD_15.F111` | UT_BASE_GW_001 / IT_BASE_GW_001 |
 | Func_112 | Req_112 | VAL_BASELINE_CTRL | Flow_106 / Comm_106 / BaseScenarioId | Flow_106 / BaseScenarioResult | `VAL_BASELINE_CTRL.F112` | UT_BASE_TEST_001 / IT_BASE_DIAG_001 |
 | Func_113 | Req_113 | BODY_GW | Flow_202 / Comm_202 / CabinSetTemp, BlowerLevel, AcCompressorReq, VentMode | Flow_202 / CabinTemp | `MOD_09.F113` | UT_BASE_EXT_BODY_001 / IT_BASE_EXT_BODY_001 |
-| Func_114 | Req_114 | DRV_STATE_MGR | Flow_202 / Comm_202 / DriverSeatPos, PassengerSeatPos, SeatHeatLevel, SeatVentLevel | Flow_202 / DriverStateInfo | `DRV_STATE_MGR.F114` | UT_BASE_EXT_BODY_001 / IT_BASE_EXT_BODY_001 |
-| Func_115 | Req_115 | WINDOW_CTRL | Flow_202 / Comm_202 / MirrorFoldState, MirrorHeatState, MirrorAdjAxis | Flow_202 / WindowState | `WINDOW_CTRL.F115` | UT_BASE_EXT_BODY_001 / IT_BASE_EXT_BODY_001 |
+| Func_114 | Req_113 | DRV_STATE_MGR | Flow_202 / Comm_202 / DriverSeatPos, PassengerSeatPos, SeatHeatLevel, SeatVentLevel | Flow_202 / DriverStateInfo | `DRV_STATE_MGR.F114` | UT_BASE_EXT_BODY_001 / IT_BASE_EXT_BODY_001 |
+| Func_115 | Req_113 | WINDOW_CTRL | Flow_202 / Comm_202 / MirrorFoldState, MirrorHeatState, MirrorAdjAxis | Flow_202 / WindowState | `WINDOW_CTRL.F115` | UT_BASE_EXT_BODY_001 / IT_BASE_EXT_BODY_001 |
 | Func_116 | Req_116 | WINDOW_CTRL | Flow_202 / Comm_202 / DoorUnlockCmd, DoorLockState, DoorOpenWarn | Flow_202 / DoorStateMask | `WINDOW_CTRL.F116` | UT_BASE_EXT_BODY_001 / IT_BASE_EXT_BODY_001 |
-| Func_117 | Req_117 | AMBIENT_CTRL | Flow_202 / Comm_202 / FrontWiperState, RearWiperState, RainSensorLevel, AutoHeadlampReq | Flow_202 / WiperInterval | `MOD_11.F117` | UT_BASE_EXT_BODY_001 / IT_BASE_EXT_BODY_001 |
+| Func_117 | Req_116 | AMBIENT_CTRL | Flow_202 / Comm_202 / FrontWiperState, RearWiperState, RainSensorLevel, AutoHeadlampReq | Flow_202 / WiperInterval | `MOD_11.F117` | UT_BASE_EXT_BODY_001 / IT_BASE_EXT_BODY_001 |
 | Func_118 | Req_118 | DRV_STATE_MGR | Flow_202 / Comm_202 / ImmoState, AlarmArmed, AlarmTrigger, AlarmZone | Flow_202 / DriverStateInfo | `DRV_STATE_MGR.F118` | UT_BASE_EXT_BODY_001 / IT_BASE_EXT_BODY_001 |
 | Func_119 | Req_119 | CLU_HMI_CTRL | Flow_203 / Comm_203 / AudioFocusOwner, VoiceAssistState, TtsState, TtsLangId | Flow_203 / warningTextCode | `MOD_12.F119` | UT_BASE_EXT_IVI_001 / IT_BASE_EXT_IVI_001 |
 | Func_120 | Req_120 | ADAS_WARN_CTRL | Flow_120 / Comm_120 / emergencyDirection, eta, vehicleSpeedNorm | Flow_120 / proximityRiskLevel | `MOD_01.F120` | UT_V2_RISK_001 / IT_V2_RISK_001 |
 | Func_121 | Req_121 | WARN_ARB_MGR | Flow_120 / Flow_121 / proximityRiskLevel, failSafeMode, driveStateNorm | Flow_121 / decelAssistReq | `MOD_06.F121` | UT_V2_RISK_001 / UT_V2_RELEASE_001 / IT_V2_RISK_001 |
-| Func_122 | Req_122 | WARN_ARB_MGR | Flow_122 / Comm_122 / decelAssistReq, selectedAlertType/Level | Flow_122 / selectedAlertType/Level | `MOD_06.F122` | UT_V2_RISK_001 / IT_V2_RISK_001 |
+| Func_125,Func_126 | Req_125,Req_126 | WARN_ARB_MGR | Flow_122 / Comm_122 / decelAssistReq, selectedAlertType/Level | Flow_122 / selectedAlertType/Level | `MOD_06.F122` | UT_V2_RISK_001 / IT_V2_RISK_001 |
 | Func_123 | Req_123 | WARN_ARB_MGR | Flow_123 / Comm_123 / steeringInputNorm, brakePedalNorm | Flow_123 / decelAssistReq | `MOD_06.F123` | UT_V2_RELEASE_001 / IT_V2_RISK_001 |
-| Func_124 | Req_124 | DOMAIN_BOUNDARY_MGR | Flow_124 / Comm_124 / domainPathStatus, e2eHealthState | Flow_124 / decelAssistReq, failSafeMode | `MOD_15.F124` | UT_V2_FAILSAFE_001 / IT_V2_FAILSAFE_001 |
+| Func_127,Func_128,Func_129 | Req_127,Req_128,Req_129 | DOMAIN_BOUNDARY_MGR | Flow_124 / Comm_124 / domainPathStatus, e2eHealthState | Flow_124 / decelAssistReq, failSafeMode | `MOD_15.F124` | UT_V2_FAILSAFE_001 / IT_V2_FAILSAFE_001 |
 
 ---
 
