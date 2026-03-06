@@ -3,8 +3,8 @@
 **Document ID**: PROJ-0302-NFD
 **ISO 26262 Reference**: Part 4, Cl.7 (System Design)
 **ASPICE Reference**: SYS.3 (System Architectural Design)
-**Version**: 3.23
-**Date**: 2026-03-06
+**Version**: 3.24
+**Date**: 2026-03-07
 **Status**: Draft
 **Project Title**: 주행 상황 실시간 경고 시스템
 **Subtitle**: 구간 정보 및 긴급차량 접근 기반 앰비언트·클러스터 경보
@@ -26,16 +26,16 @@
 - CAN 신호 원본은 계층 분리로 관리한다: 도메인 프로파일은 `canoe/databases/chassis_can.dbc`, `canoe/databases/powertrain_can.dbc`, `canoe/databases/body_can.dbc`, `canoe/databases/infotainment_can.dbc`, `canoe/databases/adas_can.dbc`, `canoe/databases/eth_backbone_can_stub.dbc`를 사용하고, Validation 결과 프레임(`0x2A5`,`0x2A6`)은 `chassis_can.dbc`에 통합 관리한다. Ethernet 논리 계약은 `canoe/docs/operations/ETH_INTERFACE_CONTRACT.md`를 사용한다.
 - 검증 범위는 CANoe SIL, CAN + Ethernet(UDP)만 사용한다.
 - 목표 설계는 옵션1(ETH 백본) 고정이며, CANoe.CAN 라이선스 제약 구간의 SIL 검증은 임시로 CAN 대체 백본을 사용하고 Ethernet 라이선스 확보 후 동일 케이스로 재검증한다.
-- CANoe.CAN 환경에서는 E100/E200 모니터링 경로와 V2 확장 경로 일부를 `eth_backbone_can_stub.dbc`(0x1C0/0x1C2/0x1C4/0x111)와 `adas_can.dbc`(0x1C1/0x1C3)로 분리 대체 운반한다.
+- CANoe.CAN 환경에서는 E100/E200 모니터링 경로와 V2/객체확장 경로 일부를 `eth_backbone_can_stub.dbc`(0x1C0/0x1C2/0x111/0x1C8)와 `adas_can.dbc`(0x1C1/0x1C3~0x1C7)로 분리 대체 운반한다.
 - OTA/UDS/DoIP 관련 플로우는 본 문서 범위에서 제외한다.
 - `Flow_009`, `Flow_106`, `Flow_205`는 Validation Harness 경로(검증 전용)이며 양산 서비스 플로우와 구분한다.
 - 제출 전 현대/기아 및 OEM 기준으로 설명/별칭은 정리하되, Flow/Comm/ID/signal 식별자는 SoT 기준으로 고정 유지한다.
-- ID notation rule (fixed): document primary references use Logical IDs (0xE210/0xE211/0xE212); CANoe SIL execution uses Stub IDs (0x1C3/0x1C4/0x111) per canoe/docs/operations/ETH_INTERFACE_CONTRACT.md.
+- ID notation rule (fixed): document primary references use Logical IDs (0xE210~0xE216); CANoe SIL execution uses Stub IDs (0x1C3/0x1C4/0x111/0x1C5~0x1C8) per canoe/docs/operations/ETH_INTERFACE_CONTRACT.md.
 
 - Vehicle Baseline(Req_101~Req_107, Req_109~Req_119) 플로우(`Flow_101~Flow_106`, `Flow_201~Flow_205`)는 본 문서에서 확정 정의하고, DBC는 이 정의를 구현 대상으로 사용한다.
 - V2 확장 요구(`Req_120~Req_121`, `Req_123`, `Req_125~Req_129`) 플로우(`Flow_120~Flow_124`)는 구현 활성 상태로 관리하며, 관련 DBC/코드/테스트를 동일 커밋에서 동기화한다.
 - ADAS 객체 인지 확장 요구(`Req_130~Req_139`) 플로우(`Flow_130~Flow_133`)는 Pre-Activation(설계 선반영) 상태로 관리하며, 구현 착수 시 0303/0304/04/05/06/07을 동일 커밋에서 동기화한다.
-- `Flow_130~Flow_133` 활성 SoT 승격 조건은 `ETH_INTERFACE_CONTRACT.md v1.2`에 `E213~E216` 계약이 반영되는 것이다.
+- `Flow_130~Flow_133`의 Ethernet 계약 SoT는 `ETH_INTERFACE_CONTRACT.md v1.2`(`E213~E216`)로 고정하며, 구현 상태는 Pre-Activation으로 관리한다.
 - EMS는 상위 문서 레벨에서 논리 단말 `EMS_ALERT`로 표기하고, 상단 표의 `EMS_POLICE_TX/EMS_AMB_TX/EMS_ALERT_RX` 열은 내부 구현 모듈 분해 관점으로만 해석한다.
 - 약어 충돌 방지 규칙: `EMS_AMB_TX`의 `AMB`는 `Ambulance` 의미의 구현 literal이며, `Ambient`는 항상 `AMBIENT` 풀토큰으로 표기한다.
 
@@ -305,9 +305,9 @@
 | Core CAN Profile | Flow_001, Flow_002, Flow_003(CAN), Flow_007(CAN 0x289), Flow_008(CAN 0x280), Flow_009(CAN 0x2A5) | `canoe/databases/chassis_can.dbc` + `canoe/databases/infotainment_can.dbc` + `canoe/databases/body_can.dbc` + `canoe/databases/adas_can.dbc` + `canoe/databases/eth_backbone_can_stub.dbc` | 상단 공식표와 동일 ID/Signal 유지(CAN-stub 포함) |
 | Core Ethernet Profile | Flow_001~Flow_008(Ethernet 구간) | `canoe/docs/operations/ETH_INTERFACE_CONTRACT.md` | E100/E200, 0x510/0x511/0x512 계약 우선 |
 | Chassis Domain Profile | Flow_102, Flow_106(일부), Flow_105(헬스 연계), Flow_201 | `canoe/databases/chassis_can.dbc` | 0x122~0x2A0(0x1C1 제외) 범위 준수 |
-| ADAS Domain CAN Profile | Flow_120, Flow_201(일부) | `canoe/databases/adas_can.dbc` | 0x1C1/0x1C3 범위 준수 (ADAS 소유 프레임) |
-| ETH Backbone CAN Stub Profile | Flow_004, Flow_005, Flow_006, Flow_121, Flow_124 | `canoe/databases/eth_backbone_can_stub.dbc` | 0x1C0/0x1C2/0x1C4/0x111 범위 준수 |
-| ADAS Object Extension Profile (Pending) | Flow_130~Flow_133 | `canoe/docs/operations/ETH_INTERFACE_CONTRACT.md` (v1.2 예정) | Pre-Activation, `E213~E216` 계약 반영 전에는 활성 SoT로 사용하지 않음 |
+| ADAS Domain CAN Profile | Flow_120, Flow_121, Flow_130~Flow_132, Flow_201(일부) | `canoe/databases/adas_can.dbc` | 0x1C1/0x1C3~0x1C7 범위 준수 (ADAS 소유 프레임) |
+| ETH Backbone CAN Stub Profile | Flow_004, Flow_005, Flow_006, Flow_124, Flow_133 | `canoe/databases/eth_backbone_can_stub.dbc` | 0x1C0/0x1C2/0x111/0x1C8 범위 준수 |
+| ADAS Object Extension Profile (Pre-Activation) | Flow_130~Flow_133 | `canoe/databases/adas_can.dbc` + `canoe/databases/eth_backbone_can_stub.dbc` + `canoe/docs/operations/ETH_INTERFACE_CONTRACT.md` (v1.2) | `Flow_130~132`는 ADAS CAN Stub(0x1C5~0x1C7), `Flow_133`은 ETH Stub(0x1C8) 운반 기준. 계약 SoT는 활성, 구현/시험은 Pre-Activation으로 관리 |
 | Powertrain Domain Profile | Flow_101, Flow_105, Flow_204 | `canoe/databases/powertrain_can.dbc` | 0x110~0x2A8 범위 준수 |
 | Body Domain Profile | Flow_103, Flow_105, Flow_202 | `canoe/databases/body_can.dbc` | 0x289~0x291, 0x277~0x292 범위 준수 |
 | Infotainment Domain Profile | Flow_104, Flow_105, Flow_203, Flow_205 | `canoe/databases/infotainment_can.dbc` | 0x2A3, 0x280~0x288, 0x289~0x295 범위 준수 |
@@ -396,8 +396,8 @@
 | Powertrain CAN | DOMAIN_ROUTER | ENG_CTRL, TCM | `canoe/databases/powertrain_can.dbc` | 0x110~0x2A8 | Flow_101, Flow_105, Flow_204 |
 | Body CAN | BODY_GW | AMBIENT_CTRL, HAZARD_CTRL, WINDOW_CTRL, DRV_STATE_MGR | `canoe/databases/body_can.dbc` | 0x289~0x291, 0x277~0x292 | Flow_007, Flow_103, Flow_105, Flow_202 |
 | Infotainment CAN | INFOTAINMENT_GW, IVI_GW | NAV_CTX_MGR, CLU_HMI_CTRL, CLU_BASE_CTRL | `canoe/databases/infotainment_can.dbc` | 0x2A3, 0x280~0x288, 0x289~0x295 | Flow_003, Flow_008, Flow_104, Flow_105, Flow_203, Flow_205 |
-| ADAS Domain CAN | ETH_SW | ADAS 소유 상태/위험도 프레임 운반 | `canoe/databases/adas_can.dbc` | 0x1C1, 0x1C3 | Flow_120, Flow_201(일부) |
-| ETH Backbone CAN Stub | ETH_SW | EMS/경계/중재 프레임 대체 운반(라이선스 제약 대응) | `canoe/databases/eth_backbone_can_stub.dbc` | 0x1C0, 0x1C2, 0x1C4, 0x111 | Flow_004, Flow_005, Flow_006, Flow_121, Flow_124 |
+| ADAS Domain CAN | ETH_SW | ADAS 소유 상태/위험도/객체 확장 프레임 운반 | `canoe/databases/adas_can.dbc` | 0x1C1, 0x1C3~0x1C7 | Flow_120, Flow_121, Flow_130~Flow_132, Flow_201(일부) |
+| ETH Backbone CAN Stub | ETH_SW | EMS/경계/객체안전 프레임 대체 운반(라이선스 제약 대응) | `canoe/databases/eth_backbone_can_stub.dbc` | 0x1C0, 0x1C2, 0x111, 0x1C8 | Flow_004, Flow_005, Flow_006, Flow_124, Flow_133 |
 | Ethernet UDP | ETH_SW | EMS_ALERT(내부: EMS_POLICE_TX/EMS_AMB_TX/EMS_ALERT_RX), WARN_ARB_MGR, GW 집합 | `canoe/docs/operations/ETH_INTERFACE_CONTRACT.md` | 0x510/0x511/0x512/0xE100/0xE200 | Flow_004, Flow_005, Flow_006 |
 
 ---
@@ -461,14 +461,14 @@
 | Body Domain CAN | `body_can.dbc` | 24 | 0x289~0x291, 0x277~0x292 |
 | Infotainment Domain CAN | `infotainment_can.dbc` | 24 | 0x2A3, 0x280~0x288, 0x289~0x295 |
 | Validation CAN (Chassis 통합) | `chassis_can.dbc` | 2 | 0x2A5~0x2A6 |
-| ADAS Domain CAN | `adas_can.dbc` | 2 | 0x1C1, 0x1C3 |
-| ETH Backbone CAN Stub | `eth_backbone_can_stub.dbc` | 4 | 0x1C0, 0x1C2, 0x1C4, 0x111 |
-| Ethernet Contract | `ETH_INTERFACE_CONTRACT.md` | 8 타입 | 0x510/0x511/0x512/0xE100/0xE200/0x1C3/0x1C4/0x111 |
+| ADAS Domain CAN | `adas_can.dbc` | 6 | 0x1C1, 0x1C3~0x1C7 |
+| ETH Backbone CAN Stub | `eth_backbone_can_stub.dbc` | 4 | 0x1C0, 0x1C2, 0x111, 0x1C8 |
+| Ethernet Contract | `ETH_INTERFACE_CONTRACT.md` | 12 타입 | 0x510/0x511/0x512/0xE100/0xE200/0xE210~0xE216 (SIL Stub: 0x1C3/0x1C4/0x111/0x1C5~0x1C8) |
 
 | 항목 | 현재 정의(문서/원본) | 확장 목표(Phase-B) | 비고 |
 |---|---|---|---|
 | CAN Message | 98(도메인 확장 설계 + CAN-stub 포함) | 90~130 | 메시지 세분화 + 건강상태/진단 채널 확장 |
-| Ethernet Message Type | 8 | 8~12 | UDP 계약 유지, 리스크/감속요청/Fail-safe 이벤트 포함 |
+| Ethernet Message Type | 12 | 12~16 | UDP 계약 유지, 리스크/감속요청/Fail-safe/객체확장 이벤트 포함 |
 | Flow ID | 20(Flow_001~009,101~106,201~205) | 20+ | 서비스/기본기능 분리 유지 |
 | ECU/노드 | 20+ | 24~32 | OEM 명칭 전환 시 식별자 유지 |
 
@@ -507,6 +507,7 @@
 
 | 버전 | 날짜 | 변경 사항 |
 |---|---|---|
+| 3.24 | 2026-03-07 | DBC SoT 정합 2차: ADAS/ETH-stub 프레임 소유 범위를 1C3~1C8 기준으로 재동기화하고(`Flow_121`,`Flow_130~133`), `ETH_INTERFACE_CONTRACT.md v1.2` 활성 계약 상태를 반영. |
 | 3.23 | 2026-03-06 | Legacy 누락군 보강: `Req_018/036/038/039/108/114/115/117/122/124` 상속 관계를 `Legacy Req 상속 매핑` 섹션으로 추가해 Flow 추적 누락을 해소. |
 | 3.22 | 2026-03-06 | 경고 강건성·인지성 확장(Pre-Activation) 반영: `Req_148~Req_155`를 `Flow_130/133`, `Flow_006/007/008`, `Flow_104/105/124/203`에 매핑하고 연계 체크포인트를 동기화. |
 | 3.21 | 2026-03-06 | 차량 경보 편의 확장(Pre-Activation) 반영: `Req_140~Req_147`를 `Flow_103/104/105/203` 및 `Flow_006/008`에 매핑하고 연계 체크포인트를 동기화. |
