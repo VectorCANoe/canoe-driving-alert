@@ -7,6 +7,7 @@ This folder contains process and execution documents used by CANoe development/v
 - `CAN_MESSAGE_OWNERSHIP_MATRIX.md`
 - `V2_BRANCH_GUARDRAIL.md`
 - `SIL_PASS_CRITERIA.md`
+- `VERIFICATION_EVIDENCE_LOG_STANDARD.md`
 - `CAPL_coding_guideline.md`
 
 ## Panel / XVP

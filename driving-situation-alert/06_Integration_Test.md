@@ -27,6 +27,7 @@
 - 세부 경계값/미세 분기는 원칙적으로 UT(05)와 ST(07)에서 검증하고, 인터페이스 리스크가 큰 항목은 IT 보강 케이스로 선별 검증한다.
 - `IT_SIL_001`, `IT_BASE_DIAG_001`은 Validation Harness 경로 검증(검증 전용) 항목이다.
 - IT 증적(로그/캡처/리포트)은 `canoe/logging/evidence/IT/` 경로 규칙으로 관리한다.
+- IT 증적 포맷/채점 규칙은 `canoe/docs/operations/VERIFICATION_EVIDENCE_LOG_STANDARD.md`를 따른다.
 - V2 확장 요구(`Req_120~Req_124`)는 구현 활성 상태로 IT 항목을 관리하며, SIL 시나리오 15~19와 연계해 검증한다.
 
 ---

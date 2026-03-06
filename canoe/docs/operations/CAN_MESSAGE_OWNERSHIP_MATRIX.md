@@ -34,7 +34,6 @@
 | frmAmbientControlMsg | 0x210 | 1 | BODY_GW | body_can.dbc | 3 |
 | frmHazardControlMsg | 0x211 | 1 | BODY_GW | body_can.dbc | 3 |
 | frmWindowControlMsg | 0x212 | 1 | BODY_GW | body_can.dbc | 3 |
-| frmDriverStateMsg | 0x213 | 1 | BODY_GW | body_can.dbc | 3 |
 | frmDoorStateMsg | 0x214 | 2 | BODY_GW | body_can.dbc | 5 |
 | frmLampControlMsg | 0x215 | 1 | BODY_GW | body_can.dbc | 5 |
 | frmWiperStateMsg | 0x216 | 1 | BODY_GW | body_can.dbc | 3 |

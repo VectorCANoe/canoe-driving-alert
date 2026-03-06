@@ -12,6 +12,14 @@ This folder is organized by purpose.
   - `scripts/quality/dbc/test_dbc_validation.py`
 - CAPL mirror sync gate:
   - `scripts/quality/check_capl_sync.py`
+- Evidence score gate:
+  - `scripts/quality/evidence_score_gate.py`
+- Evidence run bootstrap:
+  - `scripts/quality/init_evidence_run.py`
+- Write-window evidence auto fill:
+  - `scripts/quality/build_evidence_from_write_window.py`
+- Development completeness smoke check:
+  - `scripts/quality/dev_completeness_smoke.py`
 
 ## `scripts/canoe/`
 - CANoe configuration and CAPL linkage helpers.

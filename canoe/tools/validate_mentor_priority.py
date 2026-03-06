@@ -42,7 +42,6 @@ MANDATORY_MESSAGE_IDS: Dict[str, int] = {
     "frmAmbientControlMsg": 0x210,
     "frmHazardControlMsg": 0x211,
     "frmWindowControlMsg": 0x212,
-    "frmDriverStateMsg": 0x213,
     "frmDoorStateMsg": 0x214,
     "frmLampControlMsg": 0x215,
     "frmWiperStateMsg": 0x216,

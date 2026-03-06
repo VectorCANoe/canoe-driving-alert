@@ -117,7 +117,6 @@ on timer tBodyBase100
 {
   message frmHazardControlMsg mHazard;
   message frmWindowControlMsg mWindow;
-  message frmDriverStateMsg mDriver;
   message frmDoorStateMsg mDoorState;
   message frmLampControlMsg mLamp;
   message frmWiperStateMsg mWiper;
@@ -135,22 +134,8 @@ on timer tBodyBase100
   message frmAlarmStateMsg mAlarm;
   message frmBodyGatewayStateMsg mBodyGwState;
   message frmBodyComfortStateMsg mComfort;
-  int warningState;
   int hazardActive;
-  int driverStateLevel;
-
-  warningState = (int)@Core::warningState;
   hazardActive = ((int)@Core::selectedAlertLevel >= 6) ? 1 : 0;
-
-  if (warningState < 0)
-  {
-    warningState = 0;
-  }
-  if (warningState > 2)
-  {
-    warningState = 2;
-  }
-  driverStateLevel = warningState;
 
   mHazard.HazardSwitch = hazardActive;
   mHazard.HazardState = hazardActive;
@@ -159,10 +144,6 @@ on timer tBodyBase100
   mWindow.WindowCommand = 0;
   mWindow.WindowState = 0;
   output(mWindow);
-
-  mDriver.DriverStateLevel = driverStateLevel;
-  mDriver.DriverStateInfo = driverStateLevel;
-  output(mDriver);
 
   mDoorState.DoorStateMask = 0;
   mDoorState.DoorLockState = 1;

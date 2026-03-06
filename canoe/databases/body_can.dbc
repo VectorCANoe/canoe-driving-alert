@@ -46,11 +46,6 @@ BO_ 610 frmWindowControlMsg: 1 BODY_GW
  SG_ WindowState      : 2|2@1+ (1,0) [0|3] "" WINDOW_CTRL
  SG_ Reserved0        : 4|4@1+ (1,0) [0|0] "" Vector__XXX
 
-BO_ 611 frmDriverStateMsg: 1 BODY_GW
- SG_ DriverStateLevel : 0|3@1+ (1,0) [0|7] "" DRV_STATE_MGR
- SG_ DriverStateInfo  : 3|3@1+ (1,0) [0|7] "" DRV_STATE_MGR
- SG_ Reserved0        : 6|2@1+ (1,0) [0|0] "" Vector__XXX
-
 BO_ 612 frmDoorStateMsg: 2 BODY_GW
  SG_ DoorStateMask    : 0|8@1+ (1,0) [0|255] "" WINDOW_CTRL,DRV_STATE_MGR
  SG_ DoorLockState    : 8|2@1+ (1,0) [0|3] "" WINDOW_CTRL,DRV_STATE_MGR
@@ -161,7 +156,6 @@ BO_ 631 frmBodyComfortStateMsg: 2 BODY_GW
 CM_ BO_ 608 "Flow_007 ambient output.";
 CM_ BO_ 609 "Body baseline: hazard switch and hazard state.";
 CM_ BO_ 610 "Body baseline: window command and window state.";
-CM_ BO_ 611 "Body baseline: driver state level and state info.";
 CM_ BO_ 612 "Body baseline: door mask/lock/child-lock/open-warning state.";
 CM_ BO_ 613 "Body baseline: lamp and hazard request state.";
 CM_ BO_ 614 "Body baseline: front/rear wiper state and interval.";
@@ -188,7 +182,6 @@ BA_DEF_DEF_ "GenMsgCycleTime" 0;
 BA_ "GenMsgCycleTime" BO_ 608 50;
 BA_ "GenMsgCycleTime" BO_ 609 100;
 BA_ "GenMsgCycleTime" BO_ 610 100;
-BA_ "GenMsgCycleTime" BO_ 611 100;
 BA_ "GenMsgCycleTime" BO_ 612 100;
 BA_ "GenMsgCycleTime" BO_ 613 100;
 BA_ "GenMsgCycleTime" BO_ 614 100;
@@ -240,16 +233,6 @@ VAL_ 610 WindowState
   1 "Opened"
   2 "Closed"
   3 "Moving" ;
-
-VAL_ 611 DriverStateLevel
-  0 "Normal"
-  1 "MildDrowsy"
-  2 "Drowsy"
-  3 "Distracted"
-  4 "Critical"
-  5 "Reserved5"
-  6 "Reserved6"
-  7 "Reserved7" ;
 
 VAL_ 612 DoorLockState
   0 "Unlocked"
