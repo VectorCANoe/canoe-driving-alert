@@ -1,116 +1,254 @@
 # canoe-driving-alert
 
-CANoe SIL project for driving-situation warning logic with V-model traceability.
+**CAN Communication Project in Hyundai Mobis Bootcamp with Vector Korea**
 
-## Overview
+## 🚗 Project Overview
 
-This repository implements and verifies:
+This project focuses on a **real-time driving situation warning system** implemented with **Vector CANoe SIL simulation**.  
+The current scope is centered on:
+- navigation-context warnings (school zone, highway, guide section),
+- emergency vehicle approach alerts (police/ambulance),
+- stable warning arbitration and transition control,
+- synchronized outputs to ambient lighting and cluster HMI.
 
-- navigation-context warning behavior (school zone, highway, guide lane),
-- emergency-vehicle warning flow (police/ambulance),
-- warning arbitration and fail-safe handling,
-- synchronized outputs to ambient and cluster channels.
+### Organization
+- **Organization Name**: VectorCANoe
+- **Repository**: canoe-driving-alert
+- **Partner**: Vector Korea Co., Ltd.
+- **Program**: Hyundai Mobis Bootcamp
 
-Verification scope is fixed to **CANoe SIL** with **CAN + Ethernet** transport.
+---
 
-## Repository Layout
+## 🎯 Project Objectives
 
-```text
+### Phase 1: Driving Situation Warning Design
+1. **Navigation Context Recognition**
+   - Detect road-zone context and driving-state conditions
+   - Reflect context transitions in warning policy
+   - Handle direction guidance scenarios for driver awareness
+
+2. **Emergency Alert Integration**
+   - Receive and process emergency approach events (Police/Ambulance)
+   - Distinguish vehicle type/direction and expose unified alert context
+   - Guarantee safe clear behavior with timeout handling
+
+3. **Warning Arbitration Policy**
+   - Resolve concurrent warning conflicts by fixed priority rules
+   - Ensure deterministic selection results for identical inputs
+   - Minimize transition flicker and maintain driver readability
+
+### Phase 2: SIL Validation and Evidence
+1. **CAN + Ethernet Domain Integration in CANoe SIL**
+   - Simulate domain gateways and ECU interactions
+   - Route context and warning data across CAN and Ethernet boundaries
+   - Verify end-to-end warning chain behavior
+
+2. **V-Model Traceability and Test Closure**
+   - Maintain full chain: `Req -> Func -> Flow -> Comm -> Var -> Code -> UT/IT/ST`
+   - Execute unit/integration/system tests in SIL scope
+   - Record pass/fail evidence and trace logs
+
+---
+
+## 🚀 V-Model Reference Artifacts
+
+A complete V-Model documentation set is maintained under `driving-situation-alert/` and supporting standards under `reference/standards/`.
+
+- **Documentation**: 00~07 lifecycle documents (requirements, architecture, communication, implementation, and tests)
+- **CANoe Project**: Simulation assets under `canoe/` (CFG, CAPL, DBC, SysVars, test modules)
+- **Traceability**: Audit-ready mapping across requirements, communication design, variables, and verification artifacts
+
+👉 **Primary working set**: `driving-situation-alert/` and `canoe/`
+
+---
+
+## 🛠️ Core Technologies & Skills
+
+### Primary Skills
+1. **Driving Situation Warning Architecture**
+   - Context-aware warning design
+   - Priority arbitration policy
+   - Multi-domain warning output coordination
+
+2. **Vector CANoe**
+   - CAPL scripting
+   - Network simulation
+   - SIL-based ECU behavior validation
+   - Measurement/trace analysis
+
+3. **CAN + Ethernet Communication**
+   - CAN message/database (DBC) design
+   - Ethernet alert contract handling (UDP in SIL scope)
+   - Gateway-based routing between domains
+
+### Technical Stack
+- **Simulation Platform**: Vector CANoe
+- **Programming**: CAPL (CAN Access Programming Language)
+- **Protocols**: CAN, Ethernet (UDP)
+- **Verification Scope**: CANoe SIL
+- **Quality Basis**: ASPICE/ISO 26262-aligned documentation discipline
+
+---
+
+## 📁 Project Structure
+
+```
 canoe-driving-alert/
-├─ canoe/                      # CANoe runtime assets (cfg, CAPL, DBC, sysvars, ops docs)
-│  ├─ cfg/
-│  ├─ src/capl/
-│  ├─ databases/
-│  ├─ project/sysvars/
-│  └─ docs/operations/
-├─ driving-situation-alert/    # 00~07 V-model document chain (project SoT docs)
-├─ scripts/                    # CLI entrypoint and automation
-│  ├─ gates/                   # quality gates
-│  ├─ quality/                 # verification/evidence tooling (non-gate)
-│  ├─ canoe/
-│  ├─ report/
-│  └─ run.py
-├─ .github/workflows/          # CI gates/workflows
-└─ reference/                  # standards and reference materials
+├── README.md
+├── AGENTS.md
+├── canoe/
+│   ├── cfg/                  # CANoe configuration files
+│   ├── src/capl/             # CAPL node implementations
+│   ├── databases/            # Domain CAN DBC files
+│   ├── project/sysvars/      # System variable definitions
+│   ├── test_modules/         # CANoe test modules
+│   └── docs/                 # CANoe operation/architecture notes
+├── driving-situation-alert/
+│   ├── 00_VModel_Mapping.md
+│   ├── 01_Requirements.md
+│   ├── 02_Concept_design.md
+│   ├── 03_Function_definition.md
+│   ├── 0301_SysFuncAnalysis.md
+│   ├── 0302_NWflowDef.md
+│   ├── 0303_Communication_Specification.md
+│   ├── 0304_System_Variables.md
+│   ├── 04_SW_Implementation.md
+│   ├── 05_Unit_Test.md
+│   ├── 06_Integration_Test.md
+│   ├── 07_System_Test.md
+│   └── tmp/                  # Working notes/reports/templates
+├── docs/
+│   ├── meeting-notes/        # Meeting records
+│   └── mentoring/            # Mentoring feedback logs
+├── reference/
+│   ├── standards/            # ASPICE / ISO26262 / sample standards
+│   └── dbc/                  # Reference DBC collections
+└── scripts/
+    ├── quality/              # CI gates and validation scripts
+    ├── canoe/                # CANoe utility scripts
+    ├── docs/                 # Document support scripts
+    └── report/               # Report conversion utilities
 ```
 
-## Source of Truth
+---
 
-At session start and during implementation decisions:
-
-1. `AGENTS.md`
-2. `driving-situation-alert/TMP_HANDOFF.md` (respect `FRESH/STALE` rule in section `0) Freshness Control`)
-
-When handoff is stale, fallback order is the canonical 01/03/030x/04/05/06/07 chain.
-
-## Quick Start
+## 🚀 Getting Started
 
 ### Prerequisites
+- Vector CANoe (SIL environment)
+- Basic understanding of CAN/Ethernet communication
+- Familiarity with automotive ECU interaction
+- CAPL programming knowledge
 
-- Windows + Vector CANoe SIL environment
-- Python 3.11+
-- Git
+### Installation
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/VectorCANoe/canoe-driving-alert.git
+   cd canoe-driving-alert
+   ```
 
-### Clone
+2. Open CANoe and load configuration files from `canoe/cfg/`
 
-```bash
-git clone https://github.com/VectorCANoe/canoe-driving-alert.git
-cd canoe-driving-alert
-```
+3. Import CAN databases from `canoe/databases/`
 
-### Optional CLI install
+### Running Simulations
+1. Open the target `.cfg` in CANoe
+2. Confirm CAPL node bindings from `canoe/src/capl/`
+3. Start measurement and monitor trace/result panels
+4. Validate message flow and warning output behavior
 
-```bash
-python -m pip install -e .
-```
+---
 
-After install, both forms are supported:
+## 📊 Key Features
 
-- `python scripts/run.py <command>`
-- `sdv <command>`
+### ✅ Implemented Features
+- Navigation-zone context handling (school zone / highway / guide section)
+- Emergency approach alert handling (police / ambulance)
+- Deterministic warning arbitration:
+  - `Emergency > Navigation`
+  - `Ambulance > Police`
+  - `ETA tie -> SourceID ascending`
+- Timeout-based clear policy (`1000ms`) and transition stabilization
+- Ambient + Cluster synchronized warning output
+- V-model traceability document chain (00~07)
 
-### Common commands
+### 🔄 Development Workflow
+1. **Design**: Define requirements and warning policy
+2. **Implementation**: Develop CAPL logic and communication mapping
+3. **Simulation**: Verify behavior in CANoe SIL
+4. **Validation**: Execute UT/IT/ST and check traceability closure
+5. **Documentation**: Update evidence and maintain audit-ready chain
 
-```bash
-python scripts/run.py gate cfg-hygiene
-python scripts/run.py gate capl-sync
-python scripts/run.py gate doc-sync
-python scripts/run.py gate cli-readiness
-```
+---
 
-Full gate matrix: `scripts/GATE_MATRIX.md`
+## 🧪 Testing & Validation
 
-## CI Gates
+### Simulation Testing
+- Unit tests for node-level functional behavior (`05`)
+- Integration tests for inter-node/domain behavior (`06`)
+- System scenario tests for end-to-end warning chain (`07`)
 
-Current GitHub Actions gate workflows:
+### Traceability Verification
+- Document chain validation from requirements to test evidence
+- Communication consistency checks across `0302/0303/0304` and CANoe assets
+- CI quality gates for path hygiene and doc/code sync
 
-- `CFG Hygiene + CAPL Sync Gate`
-- `Doc-Code Sync Gate`
-- `CLI Readiness Gate`
+---
 
-Gate implementations are under `scripts/gates/`.
+## 📝 Documentation
 
-## Core Working Rules
+All project documentation is maintained under:
+- `driving-situation-alert/` for V-model documents (00~07)
+- `docs/` for meeting/mentoring records
+- `canoe/docs/` for implementation/operation guidance
 
-- Keep `01` as **What**, keep `03+` as **How**.
-- Preserve traceability chain:
-  - `Req -> Func -> Flow -> Comm -> Var -> Code -> UT/IT/ST`
-- Maintain CAPL mirror sync:
-  - `canoe/src/capl/**` and `canoe/cfg/channel_assign/**` must remain 1:1.
-- Keep text files UTF-8.
-- Treat CANoe config as GUI-first:
-  - do not script-patch `canoe/cfg/*.cfg`, `*.cfg.ini`, `*.stcfg` unless recovery is explicitly requested.
+---
 
-## Language Policy
+## 👥 Contributors
 
-- `driving-situation-alert/` (formal project document assets): Korean-centered.
-- code/CI/automation docs (`scripts/`, `.github/`, most `canoe/docs/operations`): English-centered.
-- Avoid mixed-language writing inside a single file.
+This project is developed as part of the Hyundai Mobis Bootcamp in collaboration with Vector Korea Co., Ltd.
 
-## Contributing
+---
 
-Contribution rules and review flow:
+## 📄 License
 
-- `CONTRIBUTING.md`
-- gate/path policy owner: `.github/CODEOWNERS`
+This project is part of the Hyundai Mobis Bootcamp educational program.
 
+---
+
+## 🔗 Resources
+
+- [Vector CANoe Documentation](https://www.vector.com/int/en/products/products-a-z/software/canoe/)
+- [CAN in Automation (CiA)](https://www.can-cia.org/)
+- [Hyundai Mobis](https://www.mobis.co.kr/)
+- [Vector Korea](https://www.vector.com/kr/ko/)
+
+### OSS Reference Sources
+
+CAN Protocol / Utilities
+- [can-utils](https://github.com/linux-can/can-utils) — Linux CAN utilities (candump, cansend, etc.)
+- [can-isotp](https://github.com/hartkopp/can-isotp) — ISO 15765-2 (CAN TP) Linux kernel module
+- [ICSim](https://github.com/zombieCraig/ICSim) — Instrument Cluster CAN simulator (vcan-based)
+
+DBC / Signal Parsing
+- [cantools](https://github.com/eerimoq/cantools) — DBC parser + signal encode/decode (Python)
+- [canmatrix](https://github.com/ebroecker/canmatrix) — DBC / ARXML / KCD / SYM format converter
+- [opendbc](https://github.com/commaai/opendbc) — Real-world DBC collection (Hyundai/Kia/Toyota, etc.)
+- [CANpy](https://github.com/stefanhoelzl/CANpy) — Python CAN node simulator
+- [atkv](https://github.com/atkv/atkv) — Lightweight CAN frame parser
+
+Python CAN / Diagnostics
+- [python-can](https://github.com/hardbyte/python-can) — Python CAN bus interface library
+- [python-can-isotp](https://github.com/pylessard/python-can-isotp) — ISO-TP layer over python-can
+- [python-udsoncan](https://github.com/pylessard/python-udsoncan) — UDS (ISO 14229) Python implementation
+- [python-uds](https://github.com/StephanHCB/python-uds) — Lightweight UDS Python (ECU simulator pattern)
+- [iso14229](https://github.com/driftregion/iso14229) — UDS ISO 14229 implementation in C (embedded ECU)
+
+Vehicle Network Middleware
+- [sil-kit](https://github.com/vectorgrp/sil-kit) — Vector SIL Kit source (CANoe SIL integration)
+- [sil-kit-docs](https://github.com/vectorgrp/sil-kit-docs) — SIL Kit official documentation
+- [vsomeip](https://github.com/COVESA/vsomeip) — AUTOSAR SOME/IP implementation (Ethernet ECU)
+
+---
+
+**Last Updated**: March 2026
