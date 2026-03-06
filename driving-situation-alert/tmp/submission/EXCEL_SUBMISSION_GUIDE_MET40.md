@@ -26,18 +26,20 @@
 
 샘플 구조를 유지하되 내용은 프로젝트 기준으로 교체:
 1. `일정표` (첫 탭: 프로젝트 개요 + 일정 + 현재 진행률)
-2. `01_Requirements`
-3. `02_Concept_design`
-4. `03_Function definition`
-5. `0301_SysFuncAnalysis`
-6. `0302_NWflowDef`
-7. `0303_Communication Specification`
-8. `0304_System Variables`
-9. `04_System implementation`
-10. `05_Unit Test`
-11. `06_Integration Test`
-12. `07_System Test`
-13. `messages` (선택: DBC 요약표)
+2. `00_MASTER_Project_Framework`
+3. `00_MASTER_Governance_Summary`
+4. `01_Requirements`
+5. `02_Concept_design`
+6. `03_Function definition`
+7. `0301_SysFuncAnalysis`
+8. `0302_NWflowDef`
+9. `0303_Communication Specification`
+10. `0304_System Variables`
+11. `04_System implementation`
+12. `05_Unit Test`
+13. `06_Integration Test`
+14. `07_System Test`
+15. `messages` (선택: DBC 요약표)
 
 ---
 
@@ -69,16 +71,23 @@
 
 ---
 
-## 4) 00 계열 문서 반영 방식
+## 4) 00 계열 문서 반영 방식 (2문서 통합 제출 확정)
 
-`00e/00f/00g`를 별도 상세 탭으로 풀어쓰기보다 첫 탭 요약에 반영:
-- ECU Naming SoT: `00e`
-- CAN ID SoT: `00f`
-- RTE Name Mapping SoT: `00g`
-- 운영 규칙: 문서 체인 우선순위, Pre-Activation 처리 원칙
+원칙:
+- 00 문서는 통합본 2개만 본편 제출한다.
+- 상세 원문은 부록/요청 시 추가 제출한다.
 
-권장:
-- 첫 탭 하단에 "정책 SoT 참조 경로"만 짧게 표기
+제출 본편(00 문서):
+1. `00_MASTER_Project_Framework.md` (`00 + 00b` 통합)
+2. `00_MASTER_Governance_Summary.md` (`00c + 00d + 00e + 00f + 00g` 통합)
+
+부록/요청 시 추가:
+- `00_VModel_Mapping.md`, `00b_Project_Scope.md`
+- `00c`, `00d`, `00e`, `00f`, `00g` 원문 축소본
+
+제외:
+- `00a_Audit_Readiness_Checklist.md` (내부 운영)
+- `00e_ID_Naming_and_CAN_ID_Standard.md` (인덱스 성격)
 
 ---
 
