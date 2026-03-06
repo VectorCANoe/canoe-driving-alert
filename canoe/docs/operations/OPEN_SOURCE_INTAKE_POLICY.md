@@ -43,7 +43,7 @@ Before merging any adaptation from external reference:
 
 ## 6. Current Intake Sources
 - Vector samples: `canoe/reference/vector_samples_19_4_10`
-- Legacy internal references: `reference/legacy/capl_nodes`
+- Legacy internal references: `legacy_projects/reference/legacy/capl_nodes`
 - OSS references: `canoe/reference/oss/*`
 
 ## 7. Enforcement
