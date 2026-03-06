@@ -82,8 +82,9 @@
 2. `00_MASTER_Governance_Summary.md` (`00c + 00d + 00e + 00f + 00g` 통합)
 
 부록/요청 시 추가:
-- `00_VModel_Mapping.md`, `00b_Project_Scope.md`
-- `00c`, `00d`, `00e`, `00f`, `00g` 원문 축소본
+- `tmp/submission/docs/governance/00_VModel_Mapping.md`
+- `tmp/submission/docs/governance/00b_Project_Scope.md`
+- `tmp/submission/docs/governance/00c~00g` 원문 축소본
 
 제외:
 - `00a_Audit_Readiness_Checklist.md` (내부 운영)

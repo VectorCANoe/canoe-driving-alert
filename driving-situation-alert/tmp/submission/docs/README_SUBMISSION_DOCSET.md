@@ -21,14 +21,16 @@
 
 ## 2) 부록/내부 참조 (요청 시 추가)
 
-- `00_VModel_Mapping.md`
-- `00b_Project_Scope.md`
+- 위치: `tmp/submission/docs/governance/`
 
-- `00c_Req_Classification_and_Safety_Profile.md`
-- `00d_HARA_Worksheet.md`
-- `00e_ECU_Naming_Standard.md`
-- `00f_CAN_ID_Allocation_Standard.md`
-- `00g_RTE_Name_Mapping_Standard.md`
+- `governance/00_VModel_Mapping.md`
+- `governance/00b_Project_Scope.md`
+
+- `governance/00c_Req_Classification_and_Safety_Profile.md`
+- `governance/00d_HARA_Worksheet.md`
+- `governance/00e_ECU_Naming_Standard.md`
+- `governance/00f_CAN_ID_Allocation_Standard.md`
+- `governance/00g_RTE_Name_Mapping_Standard.md`
 
 ## 3) 제출 제외
 
