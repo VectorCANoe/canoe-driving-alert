@@ -124,10 +124,12 @@ canoe-driving-alert/
 │   ├── standards/            # ASPICE / ISO26262 / sample standards
 │   └── dbc/                  # Reference DBC collections
 └── scripts/
-    ├── quality/              # CI gates and validation scripts
+    ├── gates/                # Quality gate scripts (cfg/doc/capl/cli)
+    ├── quality/              # Verification/evidence scripts (non-gate)
     ├── canoe/                # CANoe utility scripts
     ├── docs/                 # Document support scripts
-    └── report/               # Report conversion utilities
+    ├── report/               # Report conversion utilities
+    └── run.py                # Unified local command entrypoint
 ```
 
 ---
@@ -156,6 +158,12 @@ canoe-driving-alert/
 2. Confirm CAPL node bindings from `canoe/src/capl/`
 3. Start measurement and monitor trace/result panels
 4. Validate message flow and warning output behavior
+
+### Local Gate Commands (Recommended)
+- `python scripts/run.py gate cfg-hygiene`
+- `python scripts/run.py gate capl-sync`
+- `python scripts/run.py gate doc-sync`
+- `python scripts/run.py gate cli-readiness`
 
 ---
 
@@ -191,7 +199,7 @@ canoe-driving-alert/
 ### Traceability Verification
 - Document chain validation from requirements to test evidence
 - Communication consistency checks across `0302/0303/0304` and CANoe assets
-- CI quality gates for path hygiene and doc/code sync
+- CI quality gates for cfg hygiene, CAPL sync, doc/code sync, and CLI readiness
 
 ---
 
@@ -213,6 +221,13 @@ This project is developed as part of the Hyundai Mobis Bootcamp in collaboration
 ## 📄 License
 
 This project is part of the Hyundai Mobis Bootcamp educational program.
+
+License and reference handling:
+- Vendor tool dependency (Vector CANoe) is commercial/EULA-based and not redistributed by this repository.
+- Vendor sample bundles are treated as reference-only assets unless redistribution permission is explicitly confirmed.
+- Operational license reference:
+  - `canoe/docs/operations/LICENSE_REFERENCE_REPORT.md`
+  - `canoe/docs/operations/OPEN_SOURCE_INTAKE_POLICY.md`
 
 ---
 

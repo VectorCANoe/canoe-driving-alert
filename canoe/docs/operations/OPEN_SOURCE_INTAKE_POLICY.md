@@ -4,15 +4,16 @@ Document ID: CANOE-OSS-POLICY
 Version: 1.0
 Date: 2026-03-01
 Status: Active
-Scope: `canoe/` implementation and reference intake
+Scope: repository implementation and reference intake
 
 ## 1. Purpose
 This policy defines how external open-source references are evaluated and used in this project.
 Goal is to accelerate implementation while preserving traceability, license compliance, and rollback safety.
 
 ## 2. Storage Rules
-- External references must be stored under `canoe/reference/oss/`.
-- Vendor sample bundles must be stored under `canoe/reference/vector_samples_19_4_10/` (or versioned sibling folder).
+- External references must be stored under `canoe/reference/oss/` (or explicitly documented equivalent path).
+- Vendor sample bundles must be stored under `reference/vector_samples_19_4_10/` (or versioned sibling folder).
+- Vendor sample bundles are reference-only and should be excluded from Git by default unless redistribution permission is explicitly documented.
 - Reference folders are read-only for development decisions unless explicitly curated into project code.
 
 ## 3. License Gate (Mandatory)
@@ -24,6 +25,9 @@ Goal is to accelerate implementation while preserving traceability, license comp
 - Red: GPL-family (without explicit exception) or unknown/mixed unresolved license
   - No direct code copy into project runtime code.
   - Reference-only usage is allowed.
+- Vendor/Commercial: Tool vendor EULA assets (e.g., CANoe samples, binaries, generated tool artifacts)
+  - No direct redistribution in public/shared remotes without explicit contractual permission.
+  - Use as local/internal reference and document provenance path.
 
 ## 4. Adoption Principles (Non-negotiable)
 - No wholesale overwrite from references.
@@ -42,7 +46,7 @@ Before merging any adaptation from external reference:
 5. Verify test evidence trace hook exists (05/06/07 chain target).
 
 ## 6. Current Intake Sources
-- Vector samples: `canoe/reference/vector_samples_19_4_10`
+- Vector samples: `reference/vector_samples_19_4_10`
 - Legacy internal references: `legacy_projects/reference/legacy/capl_nodes`
 - OSS references: `canoe/reference/oss/*`
 

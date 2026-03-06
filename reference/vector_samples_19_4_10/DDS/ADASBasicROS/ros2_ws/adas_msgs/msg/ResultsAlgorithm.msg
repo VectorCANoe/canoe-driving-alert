@@ -1,2 +1,0 @@
-float64 time_to_impact
-int32 is_warning_active

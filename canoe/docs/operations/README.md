@@ -6,6 +6,7 @@ This folder contains process and execution documents used by CANoe development/v
 - `DEV_DOC_ENTRYPOINT.md`
 - `ETH_INTERFACE_CONTRACT.md`
 - `CAN_MESSAGE_OWNERSHIP_MATRIX.md`
+- `LICENSE_REFERENCE_REPORT.md`
 - `V2_BRANCH_GUARDRAIL.md`
 - `SIL_PASS_CRITERIA.md`
 - `VERIFICATION_EVIDENCE_LOG_STANDARD.md`

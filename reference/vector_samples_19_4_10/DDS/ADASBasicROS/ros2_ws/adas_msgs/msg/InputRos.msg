@@ -1,1 +1,0 @@
-adas_msgs/RadarObject radar_object
