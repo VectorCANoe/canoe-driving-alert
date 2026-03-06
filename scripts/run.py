@@ -38,6 +38,7 @@ CONTRACT_CANONICAL = [
     "python scripts/run.py verify smoke --owner <OWNER>",
     "python scripts/run.py verify fill-score --tier <UT|IT|ST> --run-id <YYYYMMDD_HHMM> --owner <OWNER>",
     "python scripts/run.py verify insight --run-id <YYYYMMDD_HHMM>",
+    "python scripts/run.py verify bind-doc --run-id <YYYYMMDD_HHMM>",
     "python scripts/run.py gate doc-sync",
     "python scripts/run.py gate cfg-hygiene",
     "python scripts/run.py gate capl-sync",
@@ -50,6 +51,7 @@ CONTRACT_LEGACY = [
     "verify-smoke",
     "verify-fill-score",
     "verify-insight",
+    "verify-bind-doc",
     "gate-doc-sync",
     "gate-cfg-hygiene",
     "gate-capl-sync",
@@ -129,6 +131,27 @@ def cmd_verify_insight(args: argparse.Namespace) -> int:
         cmd.extend(["--baseline-run-id", args.baseline_run_id])
     if args.evidence_root:
         cmd.extend(["--evidence-root", str(args.evidence_root)])
+    return run_cmd(cmd)
+
+
+def cmd_verify_bind_doc(args: argparse.Namespace) -> int:
+    cmd = [
+        sys.executable,
+        str(SCRIPTS / "quality" / "run_verification_pipeline.py"),
+        "bind-doc",
+        "--run-id",
+        args.run_id,
+        "--output-csv",
+        str(args.output_csv),
+        "--output-json",
+        str(args.output_json),
+        "--output-md",
+        str(args.output_md),
+    ]
+    if args.evidence_root:
+        cmd.extend(["--evidence-root", str(args.evidence_root)])
+    if args.docs_root:
+        cmd.extend(["--docs-root", str(args.docs_root)])
     return run_cmd(cmd)
 
 
@@ -215,6 +238,36 @@ def add_verify_insight_args(p: argparse.ArgumentParser) -> None:
     p.set_defaults(func=cmd_verify_insight)
 
 
+def add_verify_bind_doc_args(p: argparse.ArgumentParser) -> None:
+    p.add_argument("--run-id", required=True, help="Run ID, e.g. 20260306_1930")
+    p.add_argument(
+        "--evidence-root",
+        default="",
+        help="Optional evidence root path (default pipeline root is used when omitted)",
+    )
+    p.add_argument(
+        "--docs-root",
+        default="",
+        help="Optional docs root path (default: driving-situation-alert)",
+    )
+    p.add_argument(
+        "--output-csv",
+        default="canoe/tmp/reports/verification/doc_binding_bundle.csv",
+        help="05/06/07 doc binding CSV output path",
+    )
+    p.add_argument(
+        "--output-json",
+        default="canoe/tmp/reports/verification/doc_binding_bundle.json",
+        help="05/06/07 doc binding JSON output path",
+    )
+    p.add_argument(
+        "--output-md",
+        default="canoe/tmp/reports/verification/doc_binding_bundle.md",
+        help="05/06/07 doc binding markdown output path",
+    )
+    p.set_defaults(func=cmd_verify_bind_doc)
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Unified script launcher")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -225,6 +278,7 @@ def build_parser() -> argparse.ArgumentParser:
     add_verify_smoke_args(verify_sub.add_parser("smoke", help="Run CANoe COM smoke checks"))
     add_verify_fill_args(verify_sub.add_parser("fill-score", help="Fill and score one tier"))
     add_verify_insight_args(verify_sub.add_parser("insight", help="Build run-level insight report"))
+    add_verify_bind_doc_args(verify_sub.add_parser("bind-doc", help="Build 05/06/07 doc binding bundle"))
 
     gate = sub.add_parser("gate", help="Quality gate commands")
     gate_sub = gate.add_subparsers(dest="gate_command", required=True)
@@ -249,6 +303,7 @@ def build_parser() -> argparse.ArgumentParser:
     add_verify_smoke_args(sub.add_parser("verify-smoke", help="Legacy alias: verify smoke"))
     add_verify_fill_args(sub.add_parser("verify-fill-score", help="Legacy alias: verify fill-score"))
     add_verify_insight_args(sub.add_parser("verify-insight", help="Legacy alias: verify insight"))
+    add_verify_bind_doc_args(sub.add_parser("verify-bind-doc", help="Legacy alias: verify bind-doc"))
     sub.add_parser("gate-doc-sync", help="Legacy alias: gate doc-sync").set_defaults(func=cmd_gate_doc_sync)
     sub.add_parser("gate-cfg-hygiene", help="Legacy alias: gate cfg-hygiene").set_defaults(func=cmd_gate_cfg_hygiene)
     sub.add_parser("gate-capl-sync", help="Legacy alias: gate capl-sync").set_defaults(func=cmd_gate_capl_sync)

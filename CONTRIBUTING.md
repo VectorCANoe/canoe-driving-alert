@@ -34,9 +34,9 @@ This project adheres to professional automotive industry standards. All contribu
 
 - **Vector CANoe** (Version 17+ recommended)
 - **Git** for version control
-- Understanding of **CAN / CAN-FD / DoIP** protocols
+- Understanding of **CAN / Ethernet(UDP)** communication
 - Familiarity with **CAPL** programming
-- Knowledge of automotive diagnostics (**UDS ISO 14229**)
+- **Python 3.11+** for local gate scripts
 
 ### Setting Up Development Environment
 
@@ -47,10 +47,15 @@ This project adheres to professional automotive industry standards. All contribu
    ```
 
 2. Open the CANoe configuration:
-   - `canoe/cfg/IVI_OTA_Project.cfg`
+   - `canoe/cfg/CAN_v2_topology_wip.cfg` (active working profile)
 
-3. Load the DBC database:
-   - `canoe/databases/vehicle_system.dbc`
+3. Load split DBC set:
+   - `canoe/databases/chassis_can.dbc`
+   - `canoe/databases/powertrain_can.dbc`
+   - `canoe/databases/body_can.dbc`
+   - `canoe/databases/infotainment_can.dbc`
+   - `canoe/databases/adas_can.dbc`
+   - `canoe/databases/eth_backbone_can_stub.dbc`
 
 ---
 
@@ -58,21 +63,19 @@ This project adheres to professional automotive industry standards. All contribu
 
 ### Workflow
 
-1. **Planning**: Review SRS (REQ-F/G/D/O/A/N) and HARA documents.
-2. **Implementation**: Develop CAPL nodes in `canoe/nodes/`.
-3. **Verification**: Run CANoe simulation and verify DTC generation.
-4. **Validation**: Execute E2E scenario (Fault -> Diagnostics -> OTA).
+1. **Planning**: Review `AGENTS.md` and `driving-situation-alert/TMP_HANDOFF.md` (`FRESH/STALE` policy).
+2. **Implementation**: Update CAPL in `canoe/src/capl/` and keep `canoe/cfg/channel_assign/` synchronized.
+3. **Verification**: Run local gates (`cfg-hygiene`, `capl-sync`, and relevant `doc-sync`/`cli-readiness`).
+4. **Validation**: Execute CANoe SIL UT/IT/ST chain and update evidence/docs as needed.
 
 ### Branch Strategy
 
 ```
-main (Stable — Production/Mentor Submission)
-├── develop (Integration branch)
-│   ├── feature/bcm-fault-sim      (Window Motor Fault logic)
-│   ├── feature/cgw-routing         (CAN-LS to HS2/HS1 routing)
-│   ├── feature/uds-diagnostic     (Tester node development)
-│   └── feature/ota-rollback       (OTA safety mechanism)
-└── hotfix/critical-signal-fix
+main (protected baseline)
+├── feature/<topic>
+├── bugfix/<topic>
+├── docs/<topic>
+└── hotfix/<topic>
 ```
 
 ### Branch Naming Convention
@@ -129,6 +132,13 @@ We use the V-Model approach for testing:
 2. **Integration Test (SWE.5)**: Routing latency between nodes (≤ 5ms).
 3. **System Test (SYS.5)**: Complete E2E Scenario verify (Fault to OTA).
 
+Minimum local gate checks before PR:
+
+- `python scripts/run.py gate cfg-hygiene`
+- `python scripts/run.py gate capl-sync`
+- `python scripts/run.py gate doc-sync` (when doc/trace chain changes)
+- `python scripts/run.py gate cli-readiness` (when CLI/scripts packaging changes)
+
 ---
 
 ## Commit Guidelines
@@ -146,11 +156,13 @@ Follow the Conventional Commits format:
 
 ## Pull Request Process
 
-1. Create a branch from `develop`.
+1. Create a branch from `main`.
 2. Ensure CAPL code compiles without errors/warnings.
-3. Update relevant documentation (e.g., `CHANGELOG.md`).
-4. Submit PR to `develop` for review.
-5. Once approved, merge using Squash and Merge.
+3. Run required local gates and confirm PASS.
+4. Keep `canoe/src/capl` and `canoe/cfg/channel_assign` synchronized.
+5. Update relevant documentation (e.g., trace chain docs, operation notes) when scope requires.
+6. Submit PR to `main` for review.
+7. Once approved, merge using Squash and Merge.
 
 ---
 

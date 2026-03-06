@@ -7,6 +7,7 @@ Main tools:
   - `smoke`
   - `fill-score`
   - `insight`
+  - `bind-doc`
 - `evidence_score_gate.py`
 - `build_evidence_from_write_window.py`
 - `init_evidence_run.py`
@@ -24,6 +25,10 @@ Note:
   - tier coverage and hotspot scenarios
   - timing budget utilization ranking
   - recommendation section for next actions
+- `build_doc_binding_bundle.py` outputs 05/06/07 binding matrix:
+  - READY / DOC_ONLY / EVIDENCE_ONLY status
+  - doc ID and scored evidence row alignment
+  - csv/json/md bundle for document team handoff
 - CLI readiness gate report output:
   - `canoe/tmp/reports/verification/cli_readiness_gate.json`
   - `canoe/tmp/reports/verification/cli_readiness_gate.md`

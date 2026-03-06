@@ -122,6 +122,26 @@ def cmd_insight(args: argparse.Namespace) -> int:
     return run_cmd(cmd)
 
 
+def cmd_bind_doc(args: argparse.Namespace) -> int:
+    cmd = [
+        sys.executable,
+        str(SCRIPT_DIR / "build_doc_binding_bundle.py"),
+        "--run-id",
+        args.run_id,
+        "--evidence-root",
+        str(args.evidence_root),
+        "--docs-root",
+        str(args.docs_root),
+        "--output-csv",
+        str(args.output_csv),
+        "--output-json",
+        str(args.output_json),
+        "--output-md",
+        str(args.output_md),
+    ]
+    return run_cmd(cmd)
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Run simplified verification evidence workflow")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -177,6 +197,27 @@ def build_parser() -> argparse.ArgumentParser:
         default=REPO_ROOT / "canoe" / "tmp" / "reports" / "verification" / "run_insight_report.json",
     )
     p_insight.set_defaults(func=cmd_insight)
+
+    p_bind = sub.add_parser("bind-doc", help="Build 05/06/07 evidence binding bundle from scored logs")
+    p_bind.add_argument("--run-id", required=True, help="Run ID, e.g. 20260306_1930")
+    p_bind.add_argument("--evidence-root", type=Path, default=DEFAULT_EVIDENCE_ROOT)
+    p_bind.add_argument("--docs-root", type=Path, default=REPO_ROOT / "driving-situation-alert")
+    p_bind.add_argument(
+        "--output-csv",
+        type=Path,
+        default=REPO_ROOT / "canoe" / "tmp" / "reports" / "verification" / "doc_binding_bundle.csv",
+    )
+    p_bind.add_argument(
+        "--output-json",
+        type=Path,
+        default=REPO_ROOT / "canoe" / "tmp" / "reports" / "verification" / "doc_binding_bundle.json",
+    )
+    p_bind.add_argument(
+        "--output-md",
+        type=Path,
+        default=REPO_ROOT / "canoe" / "tmp" / "reports" / "verification" / "doc_binding_bundle.md",
+    )
+    p_bind.set_defaults(func=cmd_bind_doc)
 
     return parser
 

@@ -34,6 +34,9 @@ Then you can use:
   - `python scripts/run.py verify insight --run-id 20260306_1930`
   - `sdv verify insight --run-id 20260306_1930`
   - (optional baseline run) `python scripts/run.py verify insight --run-id 20260306_1930 --baseline-run-id 20260305_1800`
+- Build 05/06/07 doc binding bundle:
+  - `python scripts/run.py verify bind-doc --run-id 20260306_1930`
+  - `sdv verify bind-doc --run-id 20260306_1930`
 
 ### Gates
 - Doc/code sync:

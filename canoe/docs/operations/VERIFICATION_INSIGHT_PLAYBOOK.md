@@ -36,7 +36,12 @@ python scripts/run.py verify fill-score --tier ST --run-id 20260307_1030 --owner
 python scripts/run.py verify insight --run-id 20260307_1030
 ```
 
-5. Optional baseline comparison
+5. Build 05/06/07 doc binding bundle
+```powershell
+python scripts/run.py verify bind-doc --run-id 20260307_1030
+```
+
+6. Optional baseline comparison
 ```powershell
 python scripts/run.py verify insight --run-id 20260307_1030 --baseline-run-id 20260306_qa
 ```
@@ -54,6 +59,9 @@ Run-level:
 
 - `canoe/tmp/reports/verification/run_insight_report.md`
 - `canoe/tmp/reports/verification/run_insight_report.json`
+- `canoe/tmp/reports/verification/doc_binding_bundle.csv`
+- `canoe/tmp/reports/verification/doc_binding_bundle.md`
+- `canoe/tmp/reports/verification/doc_binding_bundle.json`
 
 ## 5) Insight Interpretation Rules
 
@@ -90,4 +98,3 @@ Bind scored outputs by test ID:
 - `verify insight` requires scored CSV per tier; run `fill-score` first.
 - Keep strict metadata/axis checks enabled unless explicitly waived.
 - Do not edit CANoe `*.cfg` by script (GUI-first rule).
-

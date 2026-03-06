@@ -1,6 +1,6 @@
 # CLI Readiness Gate Report
 
-- Generated: 2026-03-06T23:46:43
+- Generated: 2026-03-07T01:43:19
 - Result: `PASS`
 - Passed: 7
 - Failed: 0
