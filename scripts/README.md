@@ -40,6 +40,9 @@ Then you can use:
 - Build 05/06/07 doc fill template:
   - `python scripts/run.py verify fill-template --run-id 20260306_1930 --owner-fallback DEV1`
   - `sdv verify fill-template --run-id 20260306_1930 --owner-fallback DEV1`
+- One-shot finalize (fill-score UT/IT/ST + insight + fill-template):
+  - `python scripts/run.py verify finalize --run-id 20260306_1930 --owner DEV1`
+  - `sdv verify finalize --run-id 20260306_1930 --owner DEV1`
 
 ### Gates
 - Doc/code sync:

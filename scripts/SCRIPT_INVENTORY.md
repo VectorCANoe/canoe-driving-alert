@@ -96,6 +96,7 @@ Canonical:
 - `python scripts/run.py verify insight --run-id <RUN_ID> [--baseline-run-id <RUN_ID>]`
 - `python scripts/run.py verify bind-doc --run-id <RUN_ID>`
 - `python scripts/run.py verify fill-template --run-id <RUN_ID>`
+- `python scripts/run.py verify finalize --run-id <RUN_ID> --owner <OWNER>`
 - `python scripts/run.py gate doc-sync`
 - `python scripts/run.py gate cfg-hygiene`
 - `python scripts/run.py gate capl-sync`
@@ -106,6 +107,7 @@ Compatibility aliases remain enabled during transition:
 
 - `verify-prepare`, `verify-smoke`, `verify-fill-score`, `verify-insight`, `verify-bind-doc`
 - `verify-fill-template`
+- `verify-finalize`
 - `gate-doc-sync`, `gate-cfg-hygiene`, `gate-capl-sync`
 
 ## 7) Packaging Baseline (F3)

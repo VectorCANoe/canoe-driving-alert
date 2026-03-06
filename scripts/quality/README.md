@@ -8,6 +8,8 @@ Main tools:
   - `fill-score`
   - `insight`
   - `bind-doc`
+  - `fill-template`
+  - `finalize`
 - `evidence_score_gate.py`
 - `build_evidence_from_write_window.py`
 - `init_evidence_run.py`

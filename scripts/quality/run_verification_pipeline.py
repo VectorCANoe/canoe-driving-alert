@@ -183,6 +183,135 @@ def cmd_fill_template(args: argparse.Namespace) -> int:
     return run_cmd(fill_cmd)
 
 
+def _precheck_finalize_inputs(evidence_root: Path, run_id: str, tiers: list[str]) -> list[str]:
+    missing: list[str] = []
+    required = ("verification_log.csv", "raw_write_window.txt")
+    for tier in tiers:
+        run_dir = evidence_root / tier / run_id
+        for name in required:
+            path = run_dir / name
+            if not path.exists():
+                missing.append(str(path))
+    return missing
+
+
+def _raw_log_has_evidence_marker(raw_log_path: Path) -> bool:
+    if not raw_log_path.exists():
+        return False
+    try:
+        text = raw_log_path.read_text(encoding="utf-8", errors="ignore")
+    except OSError:
+        return False
+    return "[EVIDENCE_OUT]" in text
+
+
+def cmd_finalize(args: argparse.Namespace) -> int:
+    tiers = [item.strip().upper() for item in args.tiers if item.strip()]
+    if not tiers:
+        print("[FINALIZE] no tiers selected. use --tiers UT IT ST")
+        return 2
+
+    missing = _precheck_finalize_inputs(args.evidence_root, args.run_id, tiers)
+    if missing:
+        print("[FINALIZE] missing required inputs (run verify prepare + save raw_write_window.txt first):")
+        for item in missing:
+            print(f"- {item}")
+        return 2
+
+    empty_markers: list[str] = []
+    for tier in tiers:
+        raw_log = args.evidence_root / tier / args.run_id / "raw_write_window.txt"
+        if not _raw_log_has_evidence_marker(raw_log):
+            empty_markers.append(str(raw_log))
+    if empty_markers:
+        print("[FINALIZE] raw logs exist but no [EVIDENCE_OUT] markers found:")
+        for item in empty_markers:
+            print(f"- {item}")
+        print("[FINALIZE] run CANoe scenarios and export Write Window evidence lines before finalize.")
+        return 2
+
+    for tier in tiers:
+        fill_cmd = [
+            sys.executable,
+            str(SCRIPT_DIR / "run_verification_pipeline.py"),
+            "fill-score",
+            "--run-id",
+            args.run_id,
+            "--tier",
+            tier,
+            "--owner",
+            args.owner,
+            "--run-date",
+            args.run_date,
+            "--evidence-root",
+            str(args.evidence_root),
+        ]
+        if args.no_strict_metadata:
+            fill_cmd.append("--no-strict-metadata")
+        if args.no_strict_axis:
+            fill_cmd.append("--no-strict-axis")
+        rc = run_cmd(fill_cmd)
+        if rc != 0:
+            print(f"[FINALIZE] fill-score failed for tier={tier}")
+            return rc
+
+    insight_cmd = [
+        sys.executable,
+        str(SCRIPT_DIR / "run_verification_pipeline.py"),
+        "insight",
+        "--run-id",
+        args.run_id,
+        "--evidence-root",
+        str(args.evidence_root),
+        "--output-md",
+        str(args.insight_md),
+        "--output-json",
+        str(args.insight_json),
+    ]
+    if args.baseline_run_id:
+        insight_cmd.extend(["--baseline-run-id", args.baseline_run_id])
+    rc = run_cmd(insight_cmd)
+    if rc != 0:
+        print("[FINALIZE] insight step failed")
+        return rc
+
+    fill_template_cmd = [
+        sys.executable,
+        str(SCRIPT_DIR / "run_verification_pipeline.py"),
+        "fill-template",
+        "--run-id",
+        args.run_id,
+        "--evidence-root",
+        str(args.evidence_root),
+        "--docs-root",
+        str(args.docs_root),
+        "--owner-fallback",
+        args.owner_fallback or args.owner,
+        "--date-fallback",
+        args.date_fallback or args.run_date,
+        "--binding-csv",
+        str(args.binding_csv),
+        "--binding-json",
+        str(args.binding_json),
+        "--binding-md",
+        str(args.binding_md),
+        "--output-csv",
+        str(args.fill_csv),
+        "--output-md",
+        str(args.fill_md),
+    ]
+    rc = run_cmd(fill_template_cmd)
+    if rc != 0:
+        print("[FINALIZE] fill-template step failed")
+        return rc
+
+    print(
+        f"[FINALIZE] completed run_id={args.run_id} tiers={tiers} "
+        f"insight={args.insight_md} fill={args.fill_csv}"
+    )
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Run simplified verification evidence workflow")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -295,6 +424,58 @@ def build_parser() -> argparse.ArgumentParser:
         default=REPO_ROOT / "canoe" / "tmp" / "reports" / "verification" / "doc_fill_template.md",
     )
     p_fill.set_defaults(func=cmd_fill_template)
+
+    p_finalize = sub.add_parser(
+        "finalize",
+        help="Run fill-score(UT/IT/ST), insight, and fill-template in one command",
+    )
+    p_finalize.add_argument("--run-id", required=True, help="Run ID, e.g. 20260307_1030")
+    p_finalize.add_argument("--tiers", nargs="+", default=["UT", "IT", "ST"], choices=["UT", "IT", "ST"])
+    p_finalize.add_argument("--owner", default="TBD")
+    p_finalize.add_argument("--run-date", default=dt.date.today().isoformat())
+    p_finalize.add_argument("--owner-fallback", default="")
+    p_finalize.add_argument("--date-fallback", default="")
+    p_finalize.add_argument("--baseline-run-id", default="", help="Optional baseline run ID for insight comparison")
+    p_finalize.add_argument("--no-strict-metadata", action="store_true")
+    p_finalize.add_argument("--no-strict-axis", action="store_true")
+    p_finalize.add_argument("--evidence-root", type=Path, default=DEFAULT_EVIDENCE_ROOT)
+    p_finalize.add_argument("--docs-root", type=Path, default=REPO_ROOT / "driving-situation-alert")
+    p_finalize.add_argument(
+        "--insight-md",
+        type=Path,
+        default=REPO_ROOT / "canoe" / "tmp" / "reports" / "verification" / "run_insight_report.md",
+    )
+    p_finalize.add_argument(
+        "--insight-json",
+        type=Path,
+        default=REPO_ROOT / "canoe" / "tmp" / "reports" / "verification" / "run_insight_report.json",
+    )
+    p_finalize.add_argument(
+        "--binding-csv",
+        type=Path,
+        default=REPO_ROOT / "canoe" / "tmp" / "reports" / "verification" / "doc_binding_bundle.csv",
+    )
+    p_finalize.add_argument(
+        "--binding-json",
+        type=Path,
+        default=REPO_ROOT / "canoe" / "tmp" / "reports" / "verification" / "doc_binding_bundle.json",
+    )
+    p_finalize.add_argument(
+        "--binding-md",
+        type=Path,
+        default=REPO_ROOT / "canoe" / "tmp" / "reports" / "verification" / "doc_binding_bundle.md",
+    )
+    p_finalize.add_argument(
+        "--fill-csv",
+        type=Path,
+        default=REPO_ROOT / "canoe" / "tmp" / "reports" / "verification" / "doc_fill_template.csv",
+    )
+    p_finalize.add_argument(
+        "--fill-md",
+        type=Path,
+        default=REPO_ROOT / "canoe" / "tmp" / "reports" / "verification" / "doc_fill_template.md",
+    )
+    p_finalize.set_defaults(func=cmd_finalize)
 
     return parser
 

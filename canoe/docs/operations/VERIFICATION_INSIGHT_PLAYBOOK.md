@@ -46,7 +46,12 @@ python scripts/run.py verify bind-doc --run-id 20260307_1030
 python scripts/run.py verify fill-template --run-id 20260307_1030 --owner-fallback DEV1
 ```
 
-7. Optional baseline comparison
+7. Fast path (one-shot after raw logs are prepared)
+```powershell
+python scripts/run.py verify finalize --run-id 20260307_1030 --owner DEV1
+```
+
+8. Optional baseline comparison
 ```powershell
 python scripts/run.py verify insight --run-id 20260307_1030 --baseline-run-id 20260306_qa
 ```
