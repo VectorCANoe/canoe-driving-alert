@@ -6,6 +6,7 @@ This wrapper keeps day-to-day execution simple while preserving existing tools:
   2) build_evidence_from_write_window.py
   3) evidence_score_gate.py
   4) dev_completeness_smoke.py
+  5) build_doc_binding_bundle.py / build_doc_fill_template.py
 """
 
 from __future__ import annotations
@@ -142,6 +143,46 @@ def cmd_bind_doc(args: argparse.Namespace) -> int:
     return run_cmd(cmd)
 
 
+def cmd_fill_template(args: argparse.Namespace) -> int:
+    bind_cmd = [
+        sys.executable,
+        str(SCRIPT_DIR / "build_doc_binding_bundle.py"),
+        "--run-id",
+        args.run_id,
+        "--evidence-root",
+        str(args.evidence_root),
+        "--docs-root",
+        str(args.docs_root),
+        "--output-csv",
+        str(args.binding_csv),
+        "--output-json",
+        str(args.binding_json),
+        "--output-md",
+        str(args.binding_md),
+    ]
+    rc = run_cmd(bind_cmd)
+    if rc != 0:
+        return rc
+
+    fill_cmd = [
+        sys.executable,
+        str(SCRIPT_DIR / "build_doc_fill_template.py"),
+        "--binding-csv",
+        str(args.binding_csv),
+        "--run-id",
+        args.run_id,
+        "--owner-fallback",
+        args.owner_fallback,
+        "--date-fallback",
+        args.date_fallback,
+        "--output-csv",
+        str(args.output_csv),
+        "--output-md",
+        str(args.output_md),
+    ]
+    return run_cmd(fill_cmd)
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Run simplified verification evidence workflow")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -218,6 +259,42 @@ def build_parser() -> argparse.ArgumentParser:
         default=REPO_ROOT / "canoe" / "tmp" / "reports" / "verification" / "doc_binding_bundle.md",
     )
     p_bind.set_defaults(func=cmd_bind_doc)
+
+    p_fill = sub.add_parser(
+        "fill-template",
+        help="Build doc fill template for 05/06/07 (Pass/Fail/owner/date/evidence links)",
+    )
+    p_fill.add_argument("--run-id", required=True, help="Run ID, e.g. 20260306_1930")
+    p_fill.add_argument("--evidence-root", type=Path, default=DEFAULT_EVIDENCE_ROOT)
+    p_fill.add_argument("--docs-root", type=Path, default=REPO_ROOT / "driving-situation-alert")
+    p_fill.add_argument(
+        "--binding-csv",
+        type=Path,
+        default=REPO_ROOT / "canoe" / "tmp" / "reports" / "verification" / "doc_binding_bundle.csv",
+    )
+    p_fill.add_argument(
+        "--binding-json",
+        type=Path,
+        default=REPO_ROOT / "canoe" / "tmp" / "reports" / "verification" / "doc_binding_bundle.json",
+    )
+    p_fill.add_argument(
+        "--binding-md",
+        type=Path,
+        default=REPO_ROOT / "canoe" / "tmp" / "reports" / "verification" / "doc_binding_bundle.md",
+    )
+    p_fill.add_argument("--owner-fallback", default="TBD")
+    p_fill.add_argument("--date-fallback", default=dt.date.today().isoformat())
+    p_fill.add_argument(
+        "--output-csv",
+        type=Path,
+        default=REPO_ROOT / "canoe" / "tmp" / "reports" / "verification" / "doc_fill_template.csv",
+    )
+    p_fill.add_argument(
+        "--output-md",
+        type=Path,
+        default=REPO_ROOT / "canoe" / "tmp" / "reports" / "verification" / "doc_fill_template.md",
+    )
+    p_fill.set_defaults(func=cmd_fill_template)
 
     return parser
 

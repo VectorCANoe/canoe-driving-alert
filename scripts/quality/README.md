@@ -29,6 +29,10 @@ Note:
   - READY / DOC_ONLY / EVIDENCE_ONLY status
   - doc ID and scored evidence row alignment
   - csv/json/md bundle for document team handoff
+- `build_doc_fill_template.py` outputs 05/06/07 doc fill template:
+  - Pass/Fail, owner, date, evidence links per test ID
+  - action-required flag for missing evidence or missing doc IDs
+  - csv/md bundle for direct document update work
 - CLI readiness gate report output:
   - `canoe/tmp/reports/verification/cli_readiness_gate.json`
   - `canoe/tmp/reports/verification/cli_readiness_gate.md`

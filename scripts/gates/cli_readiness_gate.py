@@ -73,6 +73,7 @@ def main() -> int:
                 "python scripts/run.py verify prepare --run-id <YYYYMMDD_HHMM>",
                 "python scripts/run.py verify insight --run-id <YYYYMMDD_HHMM>",
                 "python scripts/run.py verify bind-doc --run-id <YYYYMMDD_HHMM>",
+                "python scripts/run.py verify fill-template --run-id <YYYYMMDD_HHMM>",
                 "python scripts/run.py gate doc-sync",
                 "python scripts/run.py gate cli-readiness",
                 "python scripts/run.py package build-exe --mode onefolder",

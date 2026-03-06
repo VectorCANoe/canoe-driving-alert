@@ -37,6 +37,9 @@ Then you can use:
 - Build 05/06/07 doc binding bundle:
   - `python scripts/run.py verify bind-doc --run-id 20260306_1930`
   - `sdv verify bind-doc --run-id 20260306_1930`
+- Build 05/06/07 doc fill template:
+  - `python scripts/run.py verify fill-template --run-id 20260306_1930 --owner-fallback DEV1`
+  - `sdv verify fill-template --run-id 20260306_1930 --owner-fallback DEV1`
 
 ### Gates
 - Doc/code sync:

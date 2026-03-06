@@ -8,12 +8,14 @@ Canonical command contract:
   - gate doc-sync
   - gate cfg-hygiene
   - gate capl-sync
+  - verify fill-template
   - package build-exe
 
 Legacy aliases are kept for compatibility:
   - verify-prepare
   - verify-smoke
   - verify-fill-score
+  - verify-fill-template
   - gate-doc-sync
   - gate-cfg-hygiene
   - gate-capl-sync
@@ -39,6 +41,7 @@ CONTRACT_CANONICAL = [
     "python scripts/run.py verify fill-score --tier <UT|IT|ST> --run-id <YYYYMMDD_HHMM> --owner <OWNER>",
     "python scripts/run.py verify insight --run-id <YYYYMMDD_HHMM>",
     "python scripts/run.py verify bind-doc --run-id <YYYYMMDD_HHMM>",
+    "python scripts/run.py verify fill-template --run-id <YYYYMMDD_HHMM>",
     "python scripts/run.py gate doc-sync",
     "python scripts/run.py gate cfg-hygiene",
     "python scripts/run.py gate capl-sync",
@@ -52,6 +55,7 @@ CONTRACT_LEGACY = [
     "verify-fill-score",
     "verify-insight",
     "verify-bind-doc",
+    "verify-fill-template",
     "gate-doc-sync",
     "gate-cfg-hygiene",
     "gate-capl-sync",
@@ -145,6 +149,35 @@ def cmd_verify_bind_doc(args: argparse.Namespace) -> int:
         str(args.output_csv),
         "--output-json",
         str(args.output_json),
+        "--output-md",
+        str(args.output_md),
+    ]
+    if args.evidence_root:
+        cmd.extend(["--evidence-root", str(args.evidence_root)])
+    if args.docs_root:
+        cmd.extend(["--docs-root", str(args.docs_root)])
+    return run_cmd(cmd)
+
+
+def cmd_verify_fill_template(args: argparse.Namespace) -> int:
+    cmd = [
+        sys.executable,
+        str(SCRIPTS / "quality" / "run_verification_pipeline.py"),
+        "fill-template",
+        "--run-id",
+        args.run_id,
+        "--owner-fallback",
+        args.owner_fallback,
+        "--date-fallback",
+        args.date_fallback,
+        "--binding-csv",
+        str(args.binding_csv),
+        "--binding-json",
+        str(args.binding_json),
+        "--binding-md",
+        str(args.binding_md),
+        "--output-csv",
+        str(args.output_csv),
         "--output-md",
         str(args.output_md),
     ]
@@ -268,6 +301,48 @@ def add_verify_bind_doc_args(p: argparse.ArgumentParser) -> None:
     p.set_defaults(func=cmd_verify_bind_doc)
 
 
+def add_verify_fill_template_args(p: argparse.ArgumentParser) -> None:
+    p.add_argument("--run-id", required=True, help="Run ID, e.g. 20260306_1930")
+    p.add_argument(
+        "--evidence-root",
+        default="",
+        help="Optional evidence root path (default pipeline root is used when omitted)",
+    )
+    p.add_argument(
+        "--docs-root",
+        default="",
+        help="Optional docs root path (default: driving-situation-alert)",
+    )
+    p.add_argument("--owner-fallback", default="TBD", help="Fallback owner for READY rows")
+    p.add_argument("--date-fallback", default=dt.date.today().isoformat(), help="Fallback date for READY rows")
+    p.add_argument(
+        "--binding-csv",
+        default="canoe/tmp/reports/verification/doc_binding_bundle.csv",
+        help="Binding CSV output path",
+    )
+    p.add_argument(
+        "--binding-json",
+        default="canoe/tmp/reports/verification/doc_binding_bundle.json",
+        help="Binding JSON output path",
+    )
+    p.add_argument(
+        "--binding-md",
+        default="canoe/tmp/reports/verification/doc_binding_bundle.md",
+        help="Binding markdown output path",
+    )
+    p.add_argument(
+        "--output-csv",
+        default="canoe/tmp/reports/verification/doc_fill_template.csv",
+        help="Doc fill template CSV output path",
+    )
+    p.add_argument(
+        "--output-md",
+        default="canoe/tmp/reports/verification/doc_fill_template.md",
+        help="Doc fill template markdown output path",
+    )
+    p.set_defaults(func=cmd_verify_fill_template)
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Unified script launcher")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -279,6 +354,7 @@ def build_parser() -> argparse.ArgumentParser:
     add_verify_fill_args(verify_sub.add_parser("fill-score", help="Fill and score one tier"))
     add_verify_insight_args(verify_sub.add_parser("insight", help="Build run-level insight report"))
     add_verify_bind_doc_args(verify_sub.add_parser("bind-doc", help="Build 05/06/07 doc binding bundle"))
+    add_verify_fill_template_args(verify_sub.add_parser("fill-template", help="Build 05/06/07 doc fill template"))
 
     gate = sub.add_parser("gate", help="Quality gate commands")
     gate_sub = gate.add_subparsers(dest="gate_command", required=True)
@@ -304,6 +380,7 @@ def build_parser() -> argparse.ArgumentParser:
     add_verify_fill_args(sub.add_parser("verify-fill-score", help="Legacy alias: verify fill-score"))
     add_verify_insight_args(sub.add_parser("verify-insight", help="Legacy alias: verify insight"))
     add_verify_bind_doc_args(sub.add_parser("verify-bind-doc", help="Legacy alias: verify bind-doc"))
+    add_verify_fill_template_args(sub.add_parser("verify-fill-template", help="Legacy alias: verify fill-template"))
     sub.add_parser("gate-doc-sync", help="Legacy alias: gate doc-sync").set_defaults(func=cmd_gate_doc_sync)
     sub.add_parser("gate-cfg-hygiene", help="Legacy alias: gate cfg-hygiene").set_defaults(func=cmd_gate_cfg_hygiene)
     sub.add_parser("gate-capl-sync", help="Legacy alias: gate capl-sync").set_defaults(func=cmd_gate_capl_sync)
