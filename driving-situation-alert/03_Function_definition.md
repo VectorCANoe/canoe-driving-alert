@@ -235,6 +235,33 @@
 
 ---
 
+## 경고 표시 정책표 (Req_008, Req_035, Req_037 기준)
+
+| selectedAlertType | 의미 | ambientMode | ambientColor | ambientPattern | 정책 요약 |
+|---|---|---:|---:|---:|---|
+| 0 | Off | 0 | 0 | 0 | 경고 없음 |
+| 1 | Police | 2 | 1/5 교차 | 2 | Red/Blue 교차 점멸 |
+| 2 | Ambulance | 2 | 1/6 교차 | 2 | Red/White 교차 점멸 |
+| 3 | School Zone | 2 | 1 | 3 | Red 빠른 점멸 |
+| 4 | Highway (무조향 의심) | 2 | 2 | 1 | Orange 계열 정책 |
+| 5 | Guide Left | 1 | 4 | 1 | Green 계열 좌측 유도 |
+| 6 | Guide Right | 1 | 4 | 2 | Green 계열 우측 유도 |
+
+### 코드값 사전
+- `ambientColor`: `0=off, 1=red, 2=orange, 3=amber, 4=green, 5=blue, 6=white`
+- `ambientPattern`: `0=off, 1=steady, 2=slow-flash, 3=fast-flash`
+- `ambientMode`: `0=off, 1=steady, 2=flash/wave`
+
+### Cluster 표시 코드 정책
+- `timeoutClear == 0` 이고 `selectedAlertLevel > 0`일 때:
+  - `warningTextCode = (selectedAlertType * 10) + selectedAlertLevel`
+- 그 외(`timeoutClear == 1` 또는 `selectedAlertLevel == 0`)는 `warningTextCode = 0`
+
+### 정합 기준
+- 본 표와 CAPL 구현(`AMBIENT_CTRL`, `CLU_HMI_CTRL`)이 불일치하면 CAPL 구현을 우선 기준으로 보고, 본 문서를 동일 커밋에서 갱신한다.
+
+---
+
 ## Legacy 전환 매핑 (Req 상속 추적)
 
 | Legacy Req ID | Active Req ID | Func ID | 상속 규칙 |

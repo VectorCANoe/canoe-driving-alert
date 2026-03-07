@@ -125,6 +125,21 @@
 | Req_140 | Func_140 | WARN_ARB_MGR | 방향지시등 연동 경보(Pre-Activation) |
 | Req_148 | Func_148 | ADAS_WARN_CTRL | 입력 유효성/신뢰도 필터링(Pre-Activation) |
 
+## 경고 표시 정책표 요약 (Req_008, Req_035, Req_037)
+
+| selectedAlertType | 의미 | ambientMode | ambientColor | ambientPattern |
+|---|---|---:|---:|---:|
+| 0 | Off | 0 | 0 | 0 |
+| 1 | Police | 2 | 1/5 교차 | 2 |
+| 2 | Ambulance | 2 | 1/6 교차 | 2 |
+| 3 | School Zone | 2 | 1 | 3 |
+| 4 | Highway (무조향 의심) | 2 | 2 | 1 |
+| 5 | Guide Left | 1 | 4 | 1 |
+| 6 | Guide Right | 1 | 4 | 2 |
+
+- `warningTextCode` 정책: `timeoutClear == 0` 이고 `selectedAlertLevel > 0`이면 `selectedAlertType*10 + selectedAlertLevel`, 그 외는 `0`.
+- 상세 코드 사전(`ambientColor`, `ambientPattern`, `ambientMode`)은 원문 SoT `03_Function_definition.md`를 기준으로 한다.
+
 ## EMS 논리 단말-내부 모듈 매핑
 
 | 논리 단말(문서 표준) | 내부 구현 모듈(코드/통신) | 역할 |
