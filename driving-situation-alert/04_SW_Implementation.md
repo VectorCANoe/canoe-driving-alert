@@ -26,6 +26,7 @@
 - ASPICE SWE.3 BP1~BP8 관점에서 `상세 설계/인터페이스/동적행위/대안평가/추적성/합의/구현규칙`을 명시한다.
 - SIL 단계에서는 Panel/sysvar 경유 자극을 허용하며, 통신 계약(0302/0303/0304)은 유지한 채 ETH `UdpSocket` 기반 입력으로 점진 전환한다.
 - `VAL_SCENARIO_CTRL`/`VAL_BASELINE_CTRL`는 Validation Harness이며, `ETH_SW`/도메인 게이트웨이의 통신 변환 역할과 분리한다.
+- 시간 계산 규칙: CAPL 경과시간 판정은 overflow-safe 패턴(`timeNowInt64()` 기반, ms 단위 signed 64-bit 계산)을 구현 기준으로 사용한다.
 - ECU 명명 규칙은 `00e`를 SoT로 고정하고, RTE 생성명 규칙은 `00g_RTE_Name_Mapping_Standard.md`를 SoT로 고정한다.
 - 본 문서는 `00e/00g` 정책의 구현 적용 참조 문서로 관리한다.
 - 약어 충돌 방지 규칙: `EMS_AMB_TX`의 `AMB`는 `Ambulance` 의미의 구현 literal이며, `Ambient`는 항상 `AMBIENT` 풀토큰으로 표기한다.

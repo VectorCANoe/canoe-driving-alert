@@ -32,6 +32,7 @@
 - 검증 범위는 CANoe SIL, CAN + Ethernet(UDP)로 고정한다.
 - 목표 설계는 옵션1(ETH 백본) 고정이며, CANoe.CAN 라이선스 제약 구간의 SIL 검증은 임시로 CAN 대체 백본을 사용하고 Ethernet 라이선스 확보 후 동일 케이스로 재검증한다.
 - CANoe.CAN 환경에서는 Ethernet 일부 경로(E100/E200 모니터링 및 V2/객체확장)를 `eth_backbone_can_stub.dbc`(0x1C0/0x1C2/0x111/0x1C8)와 `adas_can.dbc`(0x1C1/0x1C3~0x1C7)로 분리 대체 운반한다.
+- ETH Backbone stub 보강 프레임(`ethVehicleStateMsg`, `ethSteeringMsg`, `ethNavContextMsg`)은 SIL 운반 경로로 관리하며, 소유권 해석은 도메인 GW 정규화 경계를 따른다.
 - `Comm_009`, `Comm_106`, `Comm_205`는 Validation Harness 통신(검증 전용)이며 양산 통신과 구분한다.
 - Vehicle Baseline(Req_101~Req_107, Req_109~Req_119) 통신(`Comm_101~Comm_106`, `Comm_201~Comm_205`)은 본 문서에서 확정 정의하고, 도메인 DBC는 이 정의를 구현 대상으로 사용한다.
 - V2 확장 요구(`Req_120~Req_121`, `Req_123`, `Req_125~Req_129`) 통신(`Comm_120~Comm_124`)은 구현 활성 상태로 관리하며, DBC/코드/테스트를 동일 커밋에서 동기화한다.

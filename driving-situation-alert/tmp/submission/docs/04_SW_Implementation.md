@@ -24,6 +24,7 @@
 - 전수 Func-Code-UT/IT/ST 매핑은 원문 04에서 관리한다.
 - 05/06/07 문서와 추적 키 일관성을 유지한다.
 - Pre-Activation 라벨은 원문과 동일하게 유지한다.
+- 시간 계산 구현 규칙은 원문 SoT와 동일하게 유지한다(`timeNowInt64()` 기반 overflow-safe 경과시간 판정).
 
 ---
 

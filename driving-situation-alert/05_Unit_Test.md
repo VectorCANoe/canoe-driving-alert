@@ -28,6 +28,7 @@
 - `VAL_SCENARIO_CTRL`/`VAL_BASELINE_CTRL` 관련 항목은 Validation Harness(검증 전용)이며 양산 사용자 기능으로 해석하지 않는다.
 - UT 증적(로그/캡처/리포트)은 `canoe/logging/evidence/UT/` 경로 규칙으로 관리한다.
 - UT 증적 포맷/채점 규칙은 `canoe/docs/operations/VERIFICATION_EVIDENCE_LOG_STANDARD.md`를 따른다.
+- 검증 배치 실행/리포트 생성은 `scripts/run.py verify batch`를 사용하고, 출력 포맷은 기본 `json,md`(옵션 `--report-formats csv`)를 적용한다.
 - V2 확장 요구(`Req_120~Req_121, Req_123, Req_125~Req_129`)는 구현 활성 상태로 UT 항목을 관리하며, SIL 시나리오 15~19를 기준 케이스로 운영한다.
 - ADAS 객체 인지 확장(`Req_130~Req_139`)은 Pre-Activation(설계 선반영) UT 항목(`UT_ADAS_OBJ_RISK_001`, `UT_ADAS_OBJ_SAFETY_001`)으로 관리한다.
 - 차량 경보 편의 확장(`Req_140~Req_147`)은 Pre-Activation(설계 선반영) UT 항목(`UT_BASE_ALERT_EXT_001`)으로 관리한다.

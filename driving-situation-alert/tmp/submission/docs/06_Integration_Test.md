@@ -25,6 +25,7 @@
 - 검증 환경 표기는 CANoe SIL(CAN+Ethernet, 필요 시 stub) 기준으로 유지한다.
 - Pre-Activation 라벨은 원문과 동일하게 유지한다.
 - 대조군/우수성 비교 실험은 제출본 범위 밖으로 두고 Pass/Fail 중심으로 제시한다.
+- 검증 배치 실행/리포트 생성은 `scripts/run.py verify batch` 기준(기본 `json,md`, 옵션 `csv`)으로 운영한다.
 
 ---
 

@@ -13,6 +13,7 @@
 ## 2. 핵심 원칙 (고정)
 
 - 본 프로젝트는 `도메인 분리 구조`와 `3/3/5 ID 인코딩`을 **병행**한다.
+- `ethVehicleStateMsg`/`ethSteeringMsg`/`ethNavContextMsg`는 `eth_backbone_can_stub.dbc`의 SIL 운반 프레임으로 관리하고, 기능 소유권은 도메인 GW 경계 기준으로 해석한다.
 - 정의:
   - 도메인 분리 = 네트워크/소유 경계(어느 DBC가 어떤 메시지를 소유하는가)
   - 3/3/5 = 11-bit CAN ID 번호체계(어떤 비트 의미로 ID를 배정하는가)

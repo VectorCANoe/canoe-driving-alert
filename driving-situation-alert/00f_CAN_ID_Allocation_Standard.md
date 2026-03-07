@@ -52,6 +52,7 @@
   - `eth_backbone_can_stub.dbc`
 - 정책:
   - 메시지 owner는 도메인 DBC 기준으로 유지한다.
+  - `ethVehicleStateMsg`/`ethSteeringMsg`/`ethNavContextMsg`는 `eth_backbone_can_stub.dbc`의 SIL 운반 프레임으로 관리하고, 기능 소유권은 도메인 GW 경계 기준으로 해석한다.
   - 3/3/5 전환은 owner/도메인 파일 구조를 변경하는 작업이 아니다.
 
 ### 4.2 Layer-B: ID 인코딩(Governance)

@@ -25,6 +25,7 @@
 - Comm-Flow 추적 키는 원문과 동일하게 유지한다.
 - Pre-Activation 라벨은 원문과 동일하게 유지한다.
 - 멀티버스 원칙은 원문 SoT와 동일하게 유지한다: 일반 노드는 단일 버스 원칙, 도메인 간 전달은 GW 경유, 테스터/검증 노드는 예외적 멀티버스 허용.
+- ETH Backbone stub 보강 프레임(`ethVehicleStateMsg`, `ethSteeringMsg`, `ethNavContextMsg`) 해석은 원문 SoT와 동일하게 GW 경계 기준으로 유지한다.
 
 ---
 
