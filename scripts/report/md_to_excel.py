@@ -12,6 +12,14 @@ from openpyxl import Workbook
 from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
 from openpyxl.utils import get_column_letter
 
+SEPARATOR_ROW_RE = re.compile(r'^\|(?:\s*:?-{3,}:?\s*\|)+\s*$')
+
+
+def is_separator_row(line: str) -> bool:
+    """Return True only for markdown table separator rows like |---|:---:|."""
+    return bool(SEPARATOR_ROW_RE.match(line.strip()))
+
+
 def parse_markdown_table(lines):
     """Parse markdown table into list of rows"""
     table_lines = []
@@ -21,7 +29,7 @@ def parse_markdown_table(lines):
         line = line.strip()
         if line.startswith('|') and line.endswith('|'):
             # Skip separator lines (e.g., |---|---|)
-            if not re.match(r'\|[\s\-:]+\|', line):
+            if not is_separator_row(line):
                 # Remove leading/trailing pipes and split
                 cells = [cell.strip() for cell in line[1:-1].split('|')]
                 table_lines.append(cells)
@@ -80,7 +88,7 @@ def write_content_to_sheet(content, ws):
                 tline = lines[j].strip()
                 if tline.startswith('|') and tline.endswith('|'):
                     # Skip separator line
-                    if not re.match(r'\|[\s\-:]+\|', tline):
+                    if not is_separator_row(tline):
                         cells = [cell.strip() for cell in tline[1:-1].split('|')]
                         table_lines.append(cells)
                     j += 1
