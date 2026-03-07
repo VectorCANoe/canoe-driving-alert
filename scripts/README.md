@@ -4,12 +4,12 @@ Use this folder through one entrypoint:
 
 - `python scripts/run.py <command>`
 - `sdv <command>` (after local install)
-- `python scripts/run.py` (no args -> shell + palette)
+- `python scripts/run.py` (no args -> Textual TUI on interactive terminal, shell fallback otherwise)
 
 ## Runtime Policy
 
 - Common on Windows/macOS/Linux:
-  - shell/palette UX
+  - shell/TUI UX
   - gates
   - verification reports and evidence formatting
   - packaging helpers
@@ -39,7 +39,12 @@ Then you can use:
 ### Quick Entry (New)
 - Single default entry:
   - `python scripts/run.py`
-  - Starts shell mode and uses palette as the primary command surface.
+  - Starts the Textual operator console when running in an interactive terminal.
+  - Falls back to the plain shell when TUI is unavailable.
+- Product operator console:
+  - `python scripts/run.py tui`
+  - `sdv tui`
+  - Designed for daily operation with categories, command details, and live execution log.
 - Menu-style guided flow (recommended for operators):
   - `python scripts/run.py start guided`
   - `python scripts/run.py go`
@@ -77,12 +82,15 @@ Then you can use:
   - `python scripts/run.py mstatus|mstart|mstop`
 
 ### Interactive UX Backbone
-- UX benchmark base: `questionary` (single open-source prompt library).
-- CLI visual UX: `rich` (banner/panel/status spinner).
+- Product UI: `Textual` (category layout, detail pane, live execution log).
+- CLI visual UX: `rich` (banner/panel/status spinner in fallback shell/guided mode).
+- Guided prompt UX: `questionary` (select/text forms only, not the main shell REPL).
+- Input model:
+  - default: Textual operator console
+  - guided/forms: questionary-enhanced prompts when available
+  - fallback: plain `sdv>` prompt + numeric selection for stability in PowerShell/CANoe environments
 - Install (recommended):
-  - `python -m pip install questionary>=2.1.1`
-  - `python -m pip install rich>=13.7.1`
-- If not installed, CLI falls back to plain `input()` prompts automatically.
+  - `python -m pip install \"questionary>=2.1.1,<3\" \"rich>=14,<15\" \"textual>=8,<9\"`
 
 ### Interactive Shell (Recommended)
 - Slash-command shell (no command memorization):
@@ -90,11 +98,17 @@ Then you can use:
   - `sdv shell`
 - Default mode:
   - `python scripts/run.py`
-  - Same runtime as `shell`; this is the main entrypoint now.
-- Searchable command palette:
-  - `/palette` (or press Enter on empty line in interactive mode)
+  - Opens TUI first; use `shell` explicitly when you want the conservative REPL fallback.
+- Textual flow:
+  - left: categories (`Operate / Verify / Inspect / Package`)
+  - center: curated commands
+  - right: operator details / runtime notes
+  - bottom: live execution log
+  - keys: `r` run, `g` focus categories, `c` focus commands, `l` focus log, `q` quit
+- Grouped command palette:
+  - `/palette`
   - First choose group: `Operate / Verify / Inspect / Package / Session`
-  - Then type part of command text and select (questionary autocomplete)
+  - Then choose command by number
 - Command history and replay:
   - `/history` or `/history 20`
   - `/repeat` (last command), `/repeat 2` (second latest)

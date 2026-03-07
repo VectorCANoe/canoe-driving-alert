@@ -47,6 +47,7 @@ import sys
 from pathlib import Path
 
 from cliops.canoe_com import CanoeComBridge, CanoeComError
+from cliops.command_catalog import build_shell_palette_groups
 from cliops.platform_caps import canoe_runtime_check, platform_label, require_canoe_runtime
 
 try:
@@ -69,6 +70,7 @@ SHELL_HISTORY_FILE = ROOT / "canoe" / "tmp" / "reports" / "verification" / "cli_
 
 CONTRACT_CANONICAL = [
     "python scripts/run.py",
+    "python scripts/run.py tui",
     "python scripts/run.py shell",
     "python scripts/run.py start demo --id <0..255>",
     "python scripts/run.py start precheck --run-id <YYYYMMDD_HHMM> --owner <OWNER>",
@@ -132,6 +134,7 @@ TOPLEVEL_COMMANDS = [
     "capl",
     "canoe",
     "shell",
+    "tui",
     "wizard",
     "scenario",
     "verify",
@@ -167,36 +170,7 @@ TOPLEVEL_COMMANDS = [
     "mstatus",
 ]
 
-SHELL_PALETTE_GROUPS: dict[str, list[tuple[str, str]]] = {
-    "Operate": [
-        ("/start guided", "Open guided operator menu"),
-        ("/scenario 4", "Trigger default scenarioCommand=4"),
-        ("/canoe measure status", "Check CANoe measurement status"),
-        ("/canoe measure start", "Start CANoe measurement"),
-        ("/canoe measure stop", "Stop CANoe measurement"),
-    ],
-    "Verify": [
-        ("/start precheck", "Run gate+prepare+smoke+status precheck flow"),
-        ("/verify quick", "Run verify prepare+smoke+status"),
-        ("/verify status", "Check evidence readiness report"),
-        ("/gate all", "Run full gate set"),
-    ],
-    "Inspect": [
-        ("/doctor", "Run CANoe COM and sysvar readiness checks"),
-        ("/capl get Core failSafeMode", "Read one sysvar via COM"),
-        ("/capl set Test scenarioCommand 4 int", "Write one sysvar via COM"),
-        ("/contract", "Print canonical command contract"),
-        ("/history", "Show recent shell command history"),
-        ("/repeat 1", "Repeat last executed command"),
-    ],
-    "Package": [
-        ("/package portable onefolder", "Build portable bundle"),
-        ("/package exe onefolder", "Build Windows exe bundle"),
-    ],
-    "Session": [
-        ("/exit", "Exit shell"),
-    ],
-}
+SHELL_PALETTE_GROUPS: dict[str, list[tuple[str, str]]] = build_shell_palette_groups()
 
 
 def run_cmd(args: list[str]) -> int:
@@ -781,13 +755,12 @@ def cmd_package_bundle_portable(args: argparse.Namespace) -> int:
 
 
 def _prompt_with_default(label: str, default: str) -> str:
-    if questionary is not None and sys.stdin.isatty() and sys.stdout.isatty():
-        answer = questionary.text(f"{label}", default=default).ask()
+    if questionary is not None and _is_interactive_tty():
+        answer = questionary.text(label, default=default).ask()
         if answer is None:
             return default
         answer = answer.strip()
         return answer or default
-
     raw = input(f"{label} [{default}]: ").strip()
     return raw or default
 
@@ -844,7 +817,6 @@ def _prompt_menu_choice(default: int = 1, minimum: int = 1, maximum: int = 11) -
         if answer is None:
             return 11
         return int(answer)
-
     while True:
         raw = input(f"select [{minimum}-{maximum}] (default {default}, q=silent-exit): ").strip()
 
@@ -868,7 +840,7 @@ def _prompt_menu_choice(default: int = 1, minimum: int = 1, maximum: int = 11) -
 
 def _prompt_int(label: str, default: int, minimum: int, maximum: int) -> int:
     while True:
-        if questionary is not None and sys.stdin.isatty() and sys.stdout.isatty():
+        if questionary is not None and _is_interactive_tty():
             answer = questionary.text(label, default=str(default)).ask()
             raw = "" if answer is None else answer.strip()
         else:
@@ -921,7 +893,8 @@ def _print_shell_help() -> None:
     print("Slash commands:")
     print("  /help")
     print("  /exit")
-    print("  /palette  # command palette (or press Enter on empty line in interactive mode)")
+    print("  /palette  # grouped command palette")
+    print("  /tui      # launch the Textual operator console")
     print("  /history [N]  # recent command history (default 10)")
     print("  /repeat [N]   # repeat Nth latest command (default 1)")
     print("  /scenario [run] <id> [scenarioCommand|testScenario]")
@@ -977,29 +950,6 @@ def _print_shell_history(session_commands: list[str], limit: int = 10) -> None:
 
 def _prompt_shell_palette_command() -> str | None:
     group_names = list(SHELL_PALETTE_GROUPS.keys())
-    if questionary is not None and _is_interactive_tty():
-        group_choice = questionary.select("Command group", choices=group_names).ask()
-        if group_choice is None:
-            return None
-
-        items = SHELL_PALETTE_GROUPS[group_choice]
-        catalog = [f"{cmd}  |  {desc}" for cmd, desc in items]
-        answer = questionary.autocomplete(
-            f"{group_choice} command",
-            choices=catalog,
-            ignore_case=True,
-            match_middle=True,
-        ).ask()
-        if answer is None:
-            return None
-        answer = answer.strip()
-        if not answer:
-            return None
-        for cmd, desc in items:
-            if answer == f"{cmd}  |  {desc}":
-                return cmd
-        return answer
-
     print("[SHELL] palette")
     for idx, group_name in enumerate(group_names, start=1):
         print(f"  {idx}) {group_name}")
@@ -1128,10 +1078,36 @@ def _run_skill(skill_name: str) -> int:
     return 0
 
 
+def _can_launch_tui() -> tuple[bool, str]:
+    if not sys.stdin.isatty() or not sys.stdout.isatty():
+        return False, "non-interactive terminal"
+    try:
+        import textual  # noqa: F401
+    except Exception as ex:
+        return False, f"Textual import failed: {ex}"
+    return True, ""
+
+
+def cmd_tui(_: argparse.Namespace) -> int:
+    ok, reason = _can_launch_tui()
+    if not ok:
+        print(f"[TUI] unavailable: {reason}")
+        print("[TUI] fallback: use `python scripts/run.py shell`")
+        return 2
+    try:
+        from tui_app import launch_tui
+    except Exception as ex:
+        print(f"[TUI] startup failed: {ex}")
+        print("[TUI] fallback: use `python scripts/run.py shell`")
+        return 2
+    return launch_tui()
+
+
 def cmd_shell(_: argparse.Namespace) -> int:
     print("SDV Shell (slash mode)")
     print("Type /help, /exit")
-    print("Tip: /palette for searchable command palette")
+    print("Tip: /palette for grouped command palette")
+    print("Tip: /tui for the Textual operator console")
     print("Tip: keep CANoe measurement running before scenario/verify commands")
     print(f"Host: {platform_label()}")
     runtime_cap = canoe_runtime_check()
@@ -1139,22 +1115,9 @@ def cmd_shell(_: argparse.Namespace) -> int:
         print(f"Note: {runtime_cap.detail}")
     session_commands: list[str] = []
     while True:
-        if questionary is not None and _is_interactive_tty():
-            answer = questionary.text("sdv").ask()
-            if answer is None:
-                return 0
-            line = answer.strip()
-        else:
-            line = input("sdv> ").strip()
-
+        line = input("sdv> ").strip()
         if not line:
-            if questionary is not None and _is_interactive_tty():
-                selected = _prompt_shell_palette_command()
-                if not selected:
-                    continue
-                line = selected
-            else:
-                continue
+            continue
 
         if line.lower() in {"/palette", "palette", "/p", "p", "/"}:
             selected = _prompt_shell_palette_command()
@@ -1180,6 +1143,8 @@ def cmd_shell(_: argparse.Namespace) -> int:
         if cmd in {"exit", "quit", "q"}:
             print("[SHELL] bye")
             return 0
+        if cmd == "tui":
+            return cmd_tui(argparse.Namespace())
         if cmd == "go":
             return cmd_start_guided(argparse.Namespace())
         if cmd == "history":
@@ -1222,8 +1187,24 @@ def cmd_shell(_: argparse.Namespace) -> int:
             args = tokens[1:]
             if args and args[0].lower() == "run":
                 args = args[1:]
-            scenario_id = int(args[0]) if args else _prompt_int("Scenario ID", default=4, minimum=0, maximum=255)
-            var_name = args[1] if len(args) > 1 else "scenarioCommand"
+            scenario_id = 4
+            var_name = "scenarioCommand"
+            if args:
+                if args[0] in {"--id", "-i"} and len(args) > 1:
+                    scenario_id = int(args[1])
+                    args = args[2:]
+                elif not args[0].startswith("-"):
+                    scenario_id = int(args[0])
+                    args = args[1:]
+                else:
+                    scenario_id = _prompt_int("Scenario ID", default=4, minimum=0, maximum=255)
+                if args:
+                    if args[0] == "--var" and len(args) > 1:
+                        var_name = args[1]
+                    elif not args[0].startswith("-"):
+                        var_name = args[0]
+            else:
+                scenario_id = _prompt_int("Scenario ID", default=4, minimum=0, maximum=255)
             ns = argparse.Namespace(
                 id=scenario_id,
                 namespace="Test",
@@ -1374,11 +1355,17 @@ def cmd_shell(_: argparse.Namespace) -> int:
                 print("[SHELL] usage: /package <portable|exe> [onefolder|onefile]")
                 continue
             sub = tokens[1].lower()
-            mode = tokens[2].lower() if len(tokens) > 2 else "onefolder"
+            mode = "onefolder"
+            if "--mode" in tokens:
+                mode_index = tokens.index("--mode")
+                if mode_index + 1 < len(tokens):
+                    mode = tokens[mode_index + 1].lower()
+            elif len(tokens) > 2:
+                mode = tokens[2].lower()
             if mode not in {"onefolder", "onefile"}:
                 print("[SHELL] mode must be onefolder|onefile")
                 continue
-            if sub == "portable":
+            if sub in {"portable", "bundle-portable"}:
                 rc = cmd_package_bundle_portable(argparse.Namespace(
                     mode=mode,
                     clean=False,
@@ -1387,10 +1374,10 @@ def cmd_shell(_: argparse.Namespace) -> int:
                     bundle_name="",
                     zip_name="",
                 ))
-            elif sub == "exe":
+            elif sub in {"exe", "build-exe"}:
                 rc = cmd_package_build_exe(argparse.Namespace(mode=mode, clean=False))
             else:
-                suggestion = _suggest_choice(sub, ["portable", "exe"])
+                suggestion = _suggest_choice(sub, ["portable", "bundle-portable", "exe", "build-exe"])
                 if suggestion:
                     print(f"[SHELL] unknown package subcommand: {sub} (did you mean '{suggestion}'?)")
                 else:
@@ -1407,45 +1394,73 @@ def cmd_shell(_: argparse.Namespace) -> int:
             )
         elif cmd == "capl":
             if len(tokens) < 2:
-                print("[SHELL] usage: /capl <get|set> ...")
+                print("[SHELL] usage: /capl <get|set|sysvar-get|sysvar-set> ...")
                 continue
             sub = tokens[1].lower()
-            if sub == "get":
-                if len(tokens) < 4:
+            if sub in {"get", "sysvar-get"}:
+                if "--namespace" in tokens and "--var" in tokens:
+                    namespace = tokens[tokens.index("--namespace") + 1]
+                    var_name = tokens[tokens.index("--var") + 1]
+                elif len(tokens) >= 4:
+                    namespace = tokens[2]
+                    var_name = tokens[3]
+                else:
                     print("[SHELL] usage: /capl get <Namespace> <Variable>")
                     continue
                 rc = cmd_capl_sysvar_get(
                     argparse.Namespace(
-                        namespace=tokens[2],
-                        var=tokens[3],
+                        namespace=namespace,
+                        var=var_name,
                     )
                 )
-            elif sub == "set":
-                if len(tokens) < 5:
+            elif sub in {"set", "sysvar-set"}:
+                if "--namespace" in tokens and "--var" in tokens and "--value" in tokens:
+                    namespace = tokens[tokens.index("--namespace") + 1]
+                    var_name = tokens[tokens.index("--var") + 1]
+                    value = tokens[tokens.index("--value") + 1]
+                    value_type = tokens[tokens.index("--value-type") + 1].lower() if "--value-type" in tokens else "int"
+                elif len(tokens) >= 5:
+                    namespace = tokens[2]
+                    var_name = tokens[3]
+                    value = tokens[4]
+                    value_type = tokens[5].lower() if len(tokens) > 5 else "int"
+                else:
                     print("[SHELL] usage: /capl set <Namespace> <Variable> <Value> [int|float|bool|string]")
                     continue
-                value_type = tokens[5].lower() if len(tokens) > 5 else "int"
                 rc = cmd_capl_sysvar_set(
                     argparse.Namespace(
-                        namespace=tokens[2],
-                        var=tokens[3],
-                        value=tokens[4],
+                        namespace=namespace,
+                        var=var_name,
+                        value=value,
                         value_type=value_type,
                     )
                 )
             else:
-                suggestion = _suggest_choice(sub, ["get", "set"])
+                suggestion = _suggest_choice(sub, ["get", "set", "sysvar-get", "sysvar-set"])
                 if suggestion:
                     print(f"[SHELL] unknown capl subcommand: {sub} (did you mean '{suggestion}'?)")
                 else:
                     print(f"[SHELL] unknown capl subcommand: {sub}")
                 continue
         elif cmd == "canoe":
-            if len(tokens) < 3:
+            if len(tokens) < 2:
                 print("[SHELL] usage: /canoe measure <status|start|stop|reset> | /canoe capl-call <FunctionName> [args...]")
                 continue
             sub = tokens[1].lower()
-            if sub == "measure":
+            if sub in {"measure-status", "measure-start", "measure-stop", "measure-reset"}:
+                action = sub.split("-", 1)[1]
+                if action == "status":
+                    rc = cmd_canoe_measure_status(argparse.Namespace())
+                elif action == "start":
+                    rc = cmd_canoe_measure_start(argparse.Namespace())
+                elif action == "stop":
+                    rc = cmd_canoe_measure_stop(argparse.Namespace())
+                else:
+                    rc = cmd_canoe_measure_reset(argparse.Namespace())
+            elif sub == "measure":
+                if len(tokens) < 3:
+                    print("[SHELL] usage: /canoe measure <status|start|stop|reset>")
+                    continue
                 action = tokens[2].lower()
                 if action == "status":
                     rc = cmd_canoe_measure_status(argparse.Namespace())
@@ -1479,7 +1494,7 @@ def cmd_shell(_: argparse.Namespace) -> int:
                     )
                 )
             else:
-                suggestion = _suggest_choice(sub, ["measure", "capl-call"])
+                suggestion = _suggest_choice(sub, ["measure", "measure-status", "measure-start", "measure-stop", "measure-reset", "capl-call"])
                 if suggestion:
                     print(f"[SHELL] unknown canoe subcommand: {sub} (did you mean '{suggestion}'?)")
                 else:
@@ -1776,24 +1791,23 @@ def cmd_start_guided(_: argparse.Namespace) -> int:
     if not runtime_cap.available:
         _ui_info(f"[GUIDED] note: {runtime_cap.detail}")
     if questionary is None:
-        _ui_info("[GUIDED] tip: install questionary for richer prompts -> python -m pip install questionary>=2.1.1")
+        _ui_info("[GUIDED] tip: install questionary for richer prompt UX -> python -m pip install questionary>=2.1.1")
     if _RICH_CONSOLE is None:
-        _ui_info("[GUIDED] tip: install rich for spinner/banner UX -> python -m pip install rich>=13.7.1")
+        _ui_info("[GUIDED] tip: install rich for spinner/banner UX -> python -m pip install rich>=14")
 
     while True:
-        if not (questionary is not None and _is_interactive_tty()):
-            print("")
-            print("1) doctor (CANoe COM + measurement + sysvar check)")
-            print("2) precheck (gates+prepare+smoke+status)")
-            print("3) trigger scenario (scenarioCommand/testScenario)")
-            print("4) evidence status (readiness report)")
-            print("5) measurement start")
-            print("6) measurement stop")
-            print("7) measurement status")
-            print("8) open slash shell")
-            print("9) quick flow (doctor -> scenario -> status)")
-            print("10) exit")
-            print("11) silent exit")
+        print("")
+        print("1) doctor (CANoe COM + measurement + sysvar check)")
+        print("2) precheck (gates+prepare+smoke+status)")
+        print("3) trigger scenario (scenarioCommand/testScenario)")
+        print("4) evidence status (readiness report)")
+        print("5) measurement start")
+        print("6) measurement stop")
+        print("7) measurement status")
+        print("8) open slash shell")
+        print("9) quick flow (doctor -> scenario -> status)")
+        print("10) exit")
+        print("11) silent exit")
 
         choice = _prompt_menu_choice(default=1, minimum=1, maximum=11)
 
@@ -2289,6 +2303,7 @@ def build_parser() -> argparse.ArgumentParser:
     canoe_sub.add_parser("measure-reset", help="Reset measurement (stop/start)").set_defaults(func=cmd_canoe_measure_reset)
     add_canoe_capl_call_args(canoe_sub.add_parser("capl-call", help="Call CAPL function"))
 
+    sub.add_parser("tui", help="Product-style Textual operator console").set_defaults(func=cmd_tui)
     sub.add_parser("shell", help="Interactive slash-command shell").set_defaults(func=cmd_shell)
     sub.add_parser("wizard", help="Legacy alias: shell").set_defaults(func=cmd_wizard)
 
@@ -2412,6 +2427,9 @@ def build_parser() -> argparse.ArgumentParser:
 def main() -> int:
     argv = sys.argv[1:]
     if not argv:
+        can_tui, _ = _can_launch_tui()
+        if can_tui:
+            return cmd_tui(argparse.Namespace())
         return cmd_shell(argparse.Namespace())
     if argv and argv[0] not in {"-h", "--help"} and argv[0] not in TOPLEVEL_COMMANDS:
         suggestion = _suggest_choice(argv[0], TOPLEVEL_COMMANDS)
@@ -2419,7 +2437,8 @@ def main() -> int:
             print(f"[CLI] unknown command: {argv[0]} (did you mean '{suggestion}'?)")
         else:
             print(f"[CLI] unknown command: {argv[0]}")
-        print("[CLI] tip: run `python scripts/run.py` for shell + palette")
+        print("[CLI] tip: run `python scripts/run.py` for the default operator console")
+        print("[CLI] tip: run `python scripts/run.py shell` for the plain fallback shell")
         print("[CLI] tip: run `python scripts/run.py go` for guided mode")
         return 2
 
