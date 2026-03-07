@@ -25,7 +25,8 @@ Then you can use:
   - `python scripts/run.py start guided`
   - `python scripts/run.py go`
   - `sdv start guided`
-  - Menu supports numeric selection (`1..10`) and typed inputs (`run-id`, `owner`, `scenario id`).
+  - Menu supports numeric selection (`1..11`) and typed inputs (`run-id`, `owner`, `scenario id`).
+  - Includes startup banner + action loading spinner + silent exit option.
 - Operator-first demo trigger:
   - `python scripts/run.py start demo --id 4`
   - `python scripts/run.py demo --id 4`
@@ -58,8 +59,10 @@ Then you can use:
 
 ### Interactive UX Backbone
 - UX benchmark base: `questionary` (single open-source prompt library).
+- CLI visual UX: `rich` (banner/panel/status spinner).
 - Install (recommended):
   - `python -m pip install questionary>=2.1.1`
+  - `python -m pip install rich>=13.7.1`
 - If not installed, CLI falls back to plain `input()` prompts automatically.
 
 ### Interactive Shell (Recommended)

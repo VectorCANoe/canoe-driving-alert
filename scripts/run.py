@@ -53,9 +53,17 @@ try:
 except Exception:  # optional dependency
     questionary = None
 
+try:
+    from rich.console import Console
+    from rich.panel import Panel
+except Exception:  # optional dependency
+    Console = None
+    Panel = None
+
 
 ROOT = Path(__file__).resolve().parent.parent
 SCRIPTS = ROOT / "scripts"
+_RICH_CONSOLE = Console() if Console is not None else None
 
 CONTRACT_CANONICAL = [
     "python scripts/run.py",
@@ -739,13 +747,64 @@ def _prompt_with_default(label: str, default: str) -> str:
     return raw or default
 
 
-def _prompt_menu_choice(default: int = 1, minimum: int = 1, maximum: int = 10) -> int:
+def _is_interactive_tty() -> bool:
+    return sys.stdin.isatty() and sys.stdout.isatty()
+
+
+def _ui_info(msg: str) -> None:
+    if _RICH_CONSOLE is not None and _is_interactive_tty():
+        _RICH_CONSOLE.print(msg)
+    else:
+        print(msg)
+
+
+def _ui_welcome_banner() -> None:
+    title = "SDV CLI"
+    body = (
+        "CANoe Verification Operator Console\n"
+        "Menu-driven UX | Scenario trigger | Evidence status | Measurement control"
+    )
+    if _RICH_CONSOLE is not None and Panel is not None and _is_interactive_tty():
+        _RICH_CONSOLE.print(Panel(body, title=title, border_style="cyan"))
+    else:
+        print("=" * 56)
+        print(f"{title} - CANoe Verification Operator Console")
+        print("=" * 56)
+
+
+def _run_with_loading(label: str, func) -> int:
+    if _RICH_CONSOLE is not None and _is_interactive_tty():
+        with _RICH_CONSOLE.status(f"[bold cyan]{label}[/]"):
+            return func()
+    _ui_info(f"[GUIDED] running: {label}")
+    return func()
+
+
+def _prompt_menu_choice(default: int = 1, minimum: int = 1, maximum: int = 11) -> int:
+    if questionary is not None and _is_interactive_tty():
+        choices = [
+            questionary.Choice("1) doctor (CANoe COM + measurement + sysvar check)", value=1),
+            questionary.Choice("2) precheck (gates+prepare+smoke+status)", value=2),
+            questionary.Choice("3) trigger scenario (scenarioCommand/testScenario)", value=3),
+            questionary.Choice("4) evidence status (readiness report)", value=4),
+            questionary.Choice("5) measurement start", value=5),
+            questionary.Choice("6) measurement stop", value=6),
+            questionary.Choice("7) measurement status", value=7),
+            questionary.Choice("8) open slash shell", value=8),
+            questionary.Choice("9) quick flow (doctor -> scenario -> status)", value=9),
+            questionary.Choice("10) exit", value=10),
+            questionary.Choice("11) silent exit", value=11),
+        ]
+        answer = questionary.select("Choose action", choices=choices, default=choices[default - 1]).ask()
+        if answer is None:
+            return 11
+        return int(answer)
+
     while True:
-        if questionary is not None and sys.stdin.isatty() and sys.stdout.isatty():
-            answer = questionary.text("Menu number", default=str(default)).ask()
-            raw = "" if answer is None else answer.strip()
-        else:
-            raw = input(f"select [{minimum}-{maximum}] (default {default}): ").strip()
+        raw = input(f"select [{minimum}-{maximum}] (default {default}, q=silent-exit): ").strip()
+
+        if raw.lower() in {"q", "quit", "x"}:
+            return 11
 
         if not raw:
             return default
@@ -1477,117 +1536,146 @@ def cmd_start_shell(args: argparse.Namespace) -> int:
 
 
 def cmd_start_guided(_: argparse.Namespace) -> int:
-    print("SDV Guided Menu")
-    print("Focus: operator workflow (number select + input prompts)")
+    _ui_welcome_banner()
+    _ui_info("SDV Guided Menu")
+    _ui_info("Focus: operator workflow (number select + input prompts)")
     if questionary is None:
-        print("[GUIDED] tip: install questionary for richer prompts -> python -m pip install questionary>=2.1.1")
+        _ui_info("[GUIDED] tip: install questionary for richer prompts -> python -m pip install questionary>=2.1.1")
+    if _RICH_CONSOLE is None:
+        _ui_info("[GUIDED] tip: install rich for spinner/banner UX -> python -m pip install rich>=13.7.1")
 
     while True:
-        print("")
-        print("1) doctor (CANoe COM + measurement + sysvar check)")
-        print("2) precheck (gates+prepare+smoke+status)")
-        print("3) trigger scenario (scenarioCommand/testScenario)")
-        print("4) evidence status (readiness report)")
-        print("5) measurement start")
-        print("6) measurement stop")
-        print("7) measurement status")
-        print("8) open slash shell")
-        print("9) quick flow (doctor -> scenario -> status)")
-        print("10) exit")
-        choice = _prompt_menu_choice(default=1, minimum=1, maximum=10)
+        if not (questionary is not None and _is_interactive_tty()):
+            print("")
+            print("1) doctor (CANoe COM + measurement + sysvar check)")
+            print("2) precheck (gates+prepare+smoke+status)")
+            print("3) trigger scenario (scenarioCommand/testScenario)")
+            print("4) evidence status (readiness report)")
+            print("5) measurement start")
+            print("6) measurement stop")
+            print("7) measurement status")
+            print("8) open slash shell")
+            print("9) quick flow (doctor -> scenario -> status)")
+            print("10) exit")
+            print("11) silent exit")
+
+        choice = _prompt_menu_choice(default=1, minimum=1, maximum=11)
 
         if choice == 1:
-            rc = cmd_doctor(
-                argparse.Namespace(
-                    ensure_running=False,
-                    output_json=Path("canoe/tmp/reports/verification/doctor_report.json"),
-                    output_md=Path("canoe/tmp/reports/verification/doctor_report.md"),
+            rc = _run_with_loading(
+                "doctor check",
+                lambda: cmd_doctor(
+                    argparse.Namespace(
+                        ensure_running=False,
+                        output_json=Path("canoe/tmp/reports/verification/doctor_report.json"),
+                        output_md=Path("canoe/tmp/reports/verification/doctor_report.md"),
+                    )
                 )
             )
         elif choice == 2:
             run_id = _prompt_with_default("Run ID", _default_run_id())
             owner = _prompt_with_default("Owner", "DEV2")
-            rc = cmd_start_precheck(
-                argparse.Namespace(
-                    run_id=run_id,
-                    owner=owner,
-                    run_date=dt.date.today().isoformat(),
-                    skip_gates=False,
-                    stop_on_fail=False,
-                    report_formats="json,md",
+            rc = _run_with_loading(
+                "precheck batch",
+                lambda: cmd_start_precheck(
+                    argparse.Namespace(
+                        run_id=run_id,
+                        owner=owner,
+                        run_date=dt.date.today().isoformat(),
+                        skip_gates=False,
+                        stop_on_fail=False,
+                        report_formats="json,md",
+                    )
                 )
             )
         elif choice == 3:
             sid = _prompt_int("Scenario ID", default=4, minimum=0, maximum=255)
             var = _prompt_with_default("Scenario variable", "scenarioCommand")
-            rc = cmd_start_demo(
-                argparse.Namespace(
-                    id=sid,
-                    var=var,
-                    wait_ack_ms=1200,
-                    poll_ms=20,
-                    no_ensure_running=False,
+            rc = _run_with_loading(
+                f"trigger scenario {sid}",
+                lambda: cmd_start_demo(
+                    argparse.Namespace(
+                        id=sid,
+                        var=var,
+                        wait_ack_ms=1200,
+                        poll_ms=20,
+                        no_ensure_running=False,
+                    )
                 )
             )
         elif choice == 4:
             run_id = _prompt_with_default("Run ID", _default_run_id())
-            rc = cmd_evidence_status(
-                argparse.Namespace(
-                    run_id=run_id,
-                    evidence_root="",
-                    output_json="canoe/tmp/reports/verification/run_readiness.json",
-                    output_md="canoe/tmp/reports/verification/run_readiness.md",
+            rc = _run_with_loading(
+                f"evidence status {run_id}",
+                lambda: cmd_evidence_status(
+                    argparse.Namespace(
+                        run_id=run_id,
+                        evidence_root="",
+                        output_json="canoe/tmp/reports/verification/run_readiness.json",
+                        output_md="canoe/tmp/reports/verification/run_readiness.md",
+                    )
                 )
             )
         elif choice == 5:
-            rc = cmd_canoe_measure_start(argparse.Namespace())
+            rc = _run_with_loading("measurement start", lambda: cmd_canoe_measure_start(argparse.Namespace()))
         elif choice == 6:
-            rc = cmd_canoe_measure_stop(argparse.Namespace())
+            rc = _run_with_loading("measurement stop", lambda: cmd_canoe_measure_stop(argparse.Namespace()))
         elif choice == 7:
-            rc = cmd_canoe_measure_status(argparse.Namespace())
+            rc = _run_with_loading("measurement status", lambda: cmd_canoe_measure_status(argparse.Namespace()))
         elif choice == 8:
             return cmd_shell(argparse.Namespace())
         elif choice == 9:
             sid = _prompt_int("Scenario ID", default=4, minimum=0, maximum=255)
             owner = _prompt_with_default("Owner", "DEV2")
             run_id = _prompt_with_default("Run ID", _default_run_id())
-            rc1 = cmd_doctor(
-                argparse.Namespace(
-                    ensure_running=False,
-                    output_json=Path("canoe/tmp/reports/verification/doctor_report.json"),
-                    output_md=Path("canoe/tmp/reports/verification/doctor_report.md"),
+            rc1 = _run_with_loading(
+                "quick-flow: doctor",
+                lambda: cmd_doctor(
+                    argparse.Namespace(
+                        ensure_running=False,
+                        output_json=Path("canoe/tmp/reports/verification/doctor_report.json"),
+                        output_md=Path("canoe/tmp/reports/verification/doctor_report.md"),
+                    )
                 )
             )
-            rc2 = cmd_start_demo(
-                argparse.Namespace(
-                    id=sid,
-                    var="scenarioCommand",
-                    wait_ack_ms=1200,
-                    poll_ms=20,
-                    no_ensure_running=False,
+            rc2 = _run_with_loading(
+                f"quick-flow: scenario {sid}",
+                lambda: cmd_start_demo(
+                    argparse.Namespace(
+                        id=sid,
+                        var="scenarioCommand",
+                        wait_ack_ms=1200,
+                        poll_ms=20,
+                        no_ensure_running=False,
+                    )
                 )
             )
-            rc3 = cmd_evidence_status(
-                argparse.Namespace(
-                    run_id=run_id,
-                    evidence_root="",
-                    output_json="canoe/tmp/reports/verification/run_readiness.json",
-                    output_md="canoe/tmp/reports/verification/run_readiness.md",
+            rc3 = _run_with_loading(
+                f"quick-flow: evidence {run_id}",
+                lambda: cmd_evidence_status(
+                    argparse.Namespace(
+                        run_id=run_id,
+                        evidence_root="",
+                        output_json="canoe/tmp/reports/verification/run_readiness.json",
+                        output_md="canoe/tmp/reports/verification/run_readiness.md",
+                    )
                 )
             )
             _ = owner  # reserved for future ownership tagging in quick-flow reports
             rc = 0 if rc1 == 0 and rc2 == 0 and rc3 == 0 else 2
         elif choice == 10:
-            print("[GUIDED] bye")
+            _ui_info("[GUIDED] bye")
+            return 0
+        elif choice == 11:
             return 0
         else:
-            print("[GUIDED] invalid selection")
+            _ui_info("[GUIDED] invalid selection")
             continue
 
         if rc == 0:
-            print("[GUIDED] PASS")
+            _ui_info("[GUIDED] PASS")
         else:
-            print(f"[GUIDED] FAIL (rc={rc})")
+            _ui_info(f"[GUIDED] FAIL (rc={rc})")
 
 
 def cmd_evidence_status(args: argparse.Namespace) -> int:
@@ -2104,4 +2192,8 @@ def main() -> int:
 
 
 if __name__ == "__main__":
-    raise SystemExit(main())
+    try:
+        raise SystemExit(main())
+    except KeyboardInterrupt:
+        # Quiet close on Ctrl+C without stack trace.
+        raise SystemExit(130)
