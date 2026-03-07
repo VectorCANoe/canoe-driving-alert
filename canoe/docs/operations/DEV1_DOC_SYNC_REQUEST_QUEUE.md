@@ -1,0 +1,36 @@
+# Dev1 Doc Sync Request Queue
+
+**Document ID**: CANOE-OPS-DEV1-DOCSYNC-QUEUE  
+**Version**: 1.0  
+**Date**: 2026-03-08  
+**Status**: Working  
+**Owner**: Dev1
+
+---
+
+## 1. Purpose
+
+This queue stores docs-team handoff items discovered during Dev1 audit work.
+
+- Record first
+- batch handoff later
+- do not treat this file as product SoT
+
+---
+
+## 2. Current Queue
+
+| ID | Priority | Target Doc | Topic | Request | Source |
+|---|---|---|---|---|---|
+| DSR-001 | High | `0303_Communication_Specification.md` | `Comm_106` | Fix residual `frmBaseTestResultMsg` wording to match active chain: `VAL_SCENARIO_CTRL -> frmTestResultMsg(0x2A5) -> VAL_BASELINE_CTRL -> frmBaseTestResultMsg(0x2A6)` | `DEV1_INTERFACE_AUDIT_REPORT_2026-03-08.md` |
+| DSR-002 | High | `0304_System_Variables.md` | `Test::*` coverage | Add active `Test::*` rows used by runtime: `displayModeSetting`, `alertVolumeSetting`, `seatBeltOverride`, `historyQueryOffset`, `historyQueryCode` | `DEV1_INTERFACE_AUDIT_REPORT_2026-03-08.md` |
+| DSR-003 | Medium | `0302_NWflowDef.md`, `0303_Communication_Specification.md` | `ETH_SW` role wording | Clarify that `ETH_SW` is a SIL health/freshness monitor in the active profile, not a forwarding Ethernet switch | `DEV1_INTERFACE_AUDIT_REPORT_2026-03-08.md` |
+
+---
+
+## 3. Working Rule
+
+- Add new items only when evidence exists.
+- Close items only after:
+  - docs are updated, or
+  - Dev1 explicitly decides no docs action is needed.

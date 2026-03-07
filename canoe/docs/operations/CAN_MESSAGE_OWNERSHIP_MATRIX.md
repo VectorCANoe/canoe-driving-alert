@@ -4,6 +4,16 @@
 - Scope: Active split CAN DBC set only
 - Rule: Each message must have one clear sender in active runtime profile.
 
+## Special-case interpretation
+
+- `frmEmergencyBroadcastMsg (0x1C0)` is a SIL stub exception.
+  - Logical contract owner is `EMS_ALERT`.
+  - Active implementation producers are `EMS_POLICE_TX` and `EMS_AMB_TX`.
+  - The DBC sender field remains `Vector__XXX` because the SIL stub collapses a logical Ethernet dual-source contract into one CAN-stub frame.
+- `ethSelectedAlertMsg` has a correct active producer (`WARN_ARB_MGR`), but downstream gateways still consume the mirrored `Core::*` state in the current SIL profile.
+  - Treat this as an active SIL shortcut, not as a missing producer.
+  - Track it as a cleanup item before real Ethernet cutover.
+
 | Message | ID (hex) | DLC | Sender | DBC | Signals |
 |---|---|---|---|---|---|
 | frmSteeringStateCanMsg | 0x100 | 1 | CHS_GW | chassis_can.dbc | 2 |

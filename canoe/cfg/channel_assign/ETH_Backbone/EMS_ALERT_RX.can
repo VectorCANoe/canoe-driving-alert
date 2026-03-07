@@ -126,7 +126,6 @@ void recordAlertEvent()
     @CoreState::lastAlertEventLevel = alertLevel;
     @CoreState::lastAlertEventCode = warningCode;
     @CoreState::lastAlertEventPhase = eventPhase;
-    @CoreState::alertHistoryCount = (((int)@CoreState::alertHistoryCount) + 1) & 0xFFFF;
     write("[EMS_ALERT] event phase=%d type=%d level=%d code=%d snap=%d",
           eventPhase, alertType, alertLevel, warningCode,
           (int)@CoreState::arbitrationSnapshotId);

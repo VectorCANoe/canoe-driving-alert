@@ -114,6 +114,25 @@ void pushLockedScenarioInputs()
   @Core::objectAlertHoldMs = clampRange(gLockObjectAlertHoldMs, 0, 5000);
 }
 
+void cancelScenarioTransientTimers()
+{
+  cancelTimer(tScenarioEval);
+  cancelTimer(tScenarioPhase2);
+  cancelTimer(tScenarioPhase3);
+}
+
+void stopScenarioExecution()
+{
+  gDemoRunning = 0;
+  gScenarioInputLock = 0;
+  gCurrentScenarioId = 0;
+  gArbitrationSnapshotBaseline = 0;
+  cancelTimer(tDemoStep);
+  cancelScenarioTransientTimers();
+  @Test::forceFailSafe = 0;
+  @Test::scenarioResult = 0;
+}
+
 void applyScenarioPreset(int scenarioId)
 {
   gScenarioInputLock = 1;
@@ -652,6 +671,7 @@ void evaluateScenarioResult()
 
 void runDemoStep()
 {
+  cancelScenarioTransientTimers();
   gDemoStepIndex = gDemoStepIndex + 1;
   if (gDemoStepIndex > 8)
   {
@@ -979,6 +999,7 @@ on sysvar Test::scenarioCommand
 
   if (scenarioId == 100)
   {
+    cancelScenarioTransientTimers();
     gDemoRunning = 1;
     gDemoStepIndex = 0;
     runDemoStep();
@@ -986,16 +1007,15 @@ on sysvar Test::scenarioCommand
   }
   else if (scenarioId == 0)
   {
-    gDemoRunning = 0;
-    gScenarioInputLock = 0;
-    cancelTimer(tDemoStep);
-    @Test::forceFailSafe = 0;
+    stopScenarioExecution();
     write("[VAL_SCENARIO_CTRL] command: auto demo stop");
   }
   else if (scenarioId >= 1 && scenarioId <= 25)
   {
     gDemoRunning = 0;
     cancelTimer(tDemoStep);
+    cancelScenarioTransientTimers();
+    @Test::scenarioResult = 0;
     applyScenarioPreset(scenarioId);
     gCurrentScenarioId = scenarioId;
     scheduleScenarioEvaluation(scenarioId);
@@ -1003,9 +1023,7 @@ on sysvar Test::scenarioCommand
   }
   else if (scenarioId >= 200 && scenarioId <= 255)
   {
-    gDemoRunning = 0;
-    gScenarioInputLock = 0;
-    cancelTimer(tDemoStep);
+    stopScenarioExecution();
     gCurrentScenarioId = scenarioId;
     sendBaselineDiagRequest(scenarioId);
     write("[VAL_SCENARIO_CTRL] command send baseline diag scenario=%d", scenarioId);
@@ -1040,6 +1058,7 @@ on sysvar Test::testScenario
 
   if (scenarioId == 100)
   {
+    cancelScenarioTransientTimers();
     gDemoRunning = 1;
     gDemoStepIndex = 0;
     runDemoStep();
@@ -1047,16 +1066,15 @@ on sysvar Test::testScenario
   }
   else if (scenarioId == 0)
   {
-    gDemoRunning = 0;
-    gScenarioInputLock = 0;
-    cancelTimer(tDemoStep);
-    @Test::forceFailSafe = 0;
+    stopScenarioExecution();
     write("[VAL_SCENARIO_CTRL] auto demo stop");
   }
   else if (scenarioId >= 1 && scenarioId <= 25)
   {
     gDemoRunning = 0;
     cancelTimer(tDemoStep);
+    cancelScenarioTransientTimers();
+    @Test::scenarioResult = 0;
     applyScenarioPreset(scenarioId);
     gCurrentScenarioId = scenarioId;
     scheduleScenarioEvaluation(scenarioId);
@@ -1064,9 +1082,7 @@ on sysvar Test::testScenario
   }
   else if (scenarioId >= 200 && scenarioId <= 255)
   {
-    gDemoRunning = 0;
-    gScenarioInputLock = 0;
-    cancelTimer(tDemoStep);
+    stopScenarioExecution();
     gCurrentScenarioId = scenarioId;
     sendBaselineDiagRequest(scenarioId);
     write("[VAL_SCENARIO_CTRL] send baseline diag request scenario=%d", scenarioId);
@@ -1123,6 +1139,5 @@ on timer tScenarioEval
         objectTtcMin, objectEventCode, renderAlertType, renderTextCode);
 
 }
-
 
 
