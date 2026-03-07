@@ -72,6 +72,7 @@
 | TSB-008 | Dev2 검증 일괄 CLI + 저장포맷 옵션(기본 JSON/MD, CSV 선택) | Dev2 | Dev2 | Docs Updated | `scripts/run.py` (`verify batch`, `shell /verify batch`), `scripts/README.md`, `canoe/tmp/onboarding/VERIFY_EXECUTION_RUNBOOK.md` | `05/06/07` 실행 증빙 작성 가이드에 연결 | 반영완료 | pre/post/full 배치 + `--report-formats` (`json,md` 기본 / `csv` 옵션) |
 | TSB-006 | CAPL `timeNow()` overflow-safe 정리 | Dev1 | Dev1 | Docs Updated | `src/capl/*`, `cfg/channel_assign/*`의 `timeNowInt64()` 전환 + `check_capl_sync` PASS | 필요 시 `0304`, `04` 구현 노트 | 반영완료 | 컴파일 경고 `08-0041` 사전 제거 목적 |
 | TSB-007 | ETH Backbone DBC 누락 3건 보완 | Dev1 | Dev1 | Docs Updated | `canoe/databases/eth_backbone_can_stub.dbc` + `multibus-dbc` PASS | `0303`, `00f`(소유권/ID 운영 근거) | 반영완료 | `ethVehicleStateMsg`, `ethSteeringMsg`, `ethNavContextMsg` 추가 |
+| TSB-009 | 인터페이스/멀티버스/CLI 운영 해석 정렬 | Docs | Docs + Dev2 | Docs Updated | `scripts/run.py`, `scripts/README.md`, `scripts/gates/multibus_cfg_dbc_gate.py` | `tmp/change-orders/TEAM_SYNC_BOARD.md` | 반영완료 | 인터페이스는 메시지 계약 단위로 해석, 도메인 테스트 분리 + E2E 예외 멀티버스 정책 명확화 |
 
 ## 업데이트 템플릿
 
@@ -82,6 +83,7 @@
 | TSB-006 | 2026-03-08 | CAPL 시간 계산 overflow-safe 구현 기준(`timeNowInt64`)을 SI 문서에 반영 | `driving-situation-alert/04_SW_Implementation.md` | Ready for Docs -> Docs Updated | Docs | (this commit) |
 | TSB-007 | 2026-03-08 | ETH Backbone 보강 프레임 3건의 소유권/운반 해석 근거를 통신·ID 정책 문서에 반영 | `driving-situation-alert/0303_Communication_Specification.md`, `driving-situation-alert/00f_CAN_ID_Allocation_Standard.md` | Ready for Docs -> Docs Updated | Docs | (this commit) |
 | TSB-008 | 2026-03-08 | Dev2 검증 배치 실행/리포트 포맷 정책을 05/06/07 작성 원칙에 연결 | `driving-situation-alert/05_Unit_Test.md`, `driving-situation-alert/06_Integration_Test.md`, `driving-situation-alert/07_System_Test.md` | Ready for Docs -> Docs Updated | Docs | (this commit) |
+| TSB-009 | 2026-03-08 | 인터페이스/멀티버스/CLI 운영 해석을 공통 언어로 정리하고 예외 범위를 명시 | `driving-situation-alert/tmp/change-orders/TEAM_SYNC_BOARD.md` | Ready for Docs -> Docs Updated | Docs | (this commit) |
 | TSB-XXX | YYYY-MM-DD |  |  | Proposed -> In Progress -> Ready for Docs -> Docs Updated -> Done |  |  |
 
 ## 합의 메모
@@ -114,3 +116,17 @@
 
 ### 적용 판정
 - 본 결정안은 구현 강제 전, 문서팀 반영 후 `TSB-001`/`TSB-005` 체인에 따라 단계 적용한다.
+
+### 용어/구조 해석 정렬 (2026-03-08 확정)
+- 인터페이스는 도메인 이름 자체가 아니라 노드/도메인 사이의 메시지 계약 단위로 해석한다.
+- 메시지 계약 항목은 최소 `Message Name`, `ID`, `DLC`, `주기/이벤트`, `Timeout`, `Owner`를 포함한다.
+- 멀티버스 기본 정책은 유지한다: 일반 노드 단일 버스, GW/경계 노드 다중 버스 허용, 테스트 노드는 예외 허용.
+- 테스트 구조는 2계층으로 고정한다: 도메인 검증은 버스별 분리 기본, E2E 통합 검증만 `VAL_SCENARIO_CTRL` 멀티버스 예외를 사용한다.
+- 도메인 간 전달 판정은 GW 경유 경로에서만 수행하며 직결 판정은 금지한다.
+
+### Dev2 CLI 구조 정리 (현재 기준)
+1. 단일 엔트리: `python scripts/run.py` (`sdv` 별칭 포함).
+2. `verify batch --phase pre`: 게이트 실행 + `verify prepare/smoke/status`.
+3. `verify batch --phase post`: `verify finalize` + `verify status`.
+4. 리포트 정책: `JSON+MD` 기본, `CSV` 선택 출력.
+5. CLI 역할은 검증 오케스트레이션/증빙 수집이며, 네트워크 토폴로지 변경 자체는 범위 밖이다.
