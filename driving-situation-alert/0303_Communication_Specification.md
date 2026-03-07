@@ -323,9 +323,9 @@
 
 | 구분 | 범위 | 원본 파일 | 비고 |
 |---|---|---|---|
-| Core CAN Profile | Comm_001, Comm_002, Comm_003, Comm_007, Comm_008, Comm_009 | `canoe/databases/chassis_can.dbc` + `canoe/databases/infotainment_can.dbc` + `canoe/databases/body_can.dbc` + `canoe/databases/adas_can.dbc` + `canoe/databases/eth_backbone_can_stub.dbc` | 경고 코어 체인 단일 원본(CAN-stub 포함) |
+| Core CAN Profile | Comm_001, Comm_002, Comm_003, Comm_006, Comm_007, Comm_008, Comm_009 | `canoe/databases/chassis_can.dbc` + `canoe/databases/infotainment_can.dbc` + `canoe/databases/body_can.dbc` + `canoe/databases/adas_can.dbc` + `canoe/databases/eth_backbone_can_stub.dbc` | 경고 코어 체인 단일 원본(CAN-stub 포함) |
 | Domain CAN Profile | Comm_101~Comm_106, Comm_201~Comm_205 | `canoe/databases/chassis_can.dbc` + `canoe/databases/powertrain_can.dbc` + `canoe/databases/body_can.dbc` + `canoe/databases/infotainment_can.dbc` + `canoe/databases/adas_can.dbc` + `canoe/databases/eth_backbone_can_stub.dbc` | 차량 기본 기능/도메인 분리 원본(CAN-stub 포함) |
-| ADAS CAN Profile | Comm_120, Comm_121, Comm_130~Comm_132, Comm_201(일부) | `canoe/databases/adas_can.dbc` | ADAS 소유 프레임 원본 |
+| ADAS CAN Profile | Comm_006, Comm_007, Comm_008, Comm_120, Comm_121, Comm_122, Comm_130~Comm_132, Comm_201(일부) | `canoe/databases/adas_can.dbc` | ADAS 소유 프레임 원본 |
 | ETH Stub Transport Profile | Comm_004, Comm_005, Comm_006, Comm_124, Comm_133 | `canoe/databases/eth_backbone_can_stub.dbc` | CANoe.CAN 환경 대체 운반 원본 |
 | Ethernet Profile (Logical Contract) | Comm_004, Comm_005, Comm_006, Comm_120, Comm_121, Comm_124, Comm_130~Comm_133 (및 Comm_001~003/007~008의 ETH 구간) | `canoe/docs/operations/ETH_INTERFACE_CONTRACT.md` | UDP 활성 계약 단일 원본(v1.2) |
 | Ethernet Profile (Pre-Activation Scope) | Comm_130~Comm_133 | `canoe/docs/operations/ETH_INTERFACE_CONTRACT.md` (v1.2) | 계약 SoT는 활성, 구현/시험 상태는 Pre-Activation 유지 |
@@ -403,15 +403,25 @@
 | zoneDistance | gZoneDistance |
 | speedLimit | gSpeedLimit |
 
+### ETH 표준명-실구현(SIL CAN-stub) 메시지 alias 매핑 (임시 운영)
+
+| 표준 메시지(문서 SoT) | SIL 구현 메시지(DBC) | 상태 | 비고 |
+|---|---|---|---|
+| ETH_EmergencyAlert(0xE100) | frmEmergencyBroadcastMsg(0x1C0) | Alias 운영 중 | ETH 라이선스 전환 후 UDP 원명칭으로 통합 |
+| ethVehicleStateMsg(0x510) | frmVehicleStateCanMsg(0x2A0) | Alias 운영 중 | CHS_GW 정규화 입력 경로 |
+| ethSteeringMsg(0x511) | frmSteeringCanMsg(0x2A1) | Alias 운영 중 | CHS_GW 정규화 입력 경로 |
+| ethNavContextMsg(0x512) | frmNavContextCanMsg(0x2A3) | Alias 운영 중 | INFOTAINMENT_GW 정규화 입력 경로 |
+| ethSelectedAlertMsg(0xE200) | ethSelectedAlertMsg(0x206) | Direct(이름 일치) | SIL CAN 11-bit 제약으로 ID만 매핑 |
+
 ---
 
 ## 도메인별 통신 원본 확장 정의 (DBC 동기화 기준)
 
 | Domain | 원본 파일(정의) | Comm 범위 | 핵심 Message |
 |---|---|---|---|
-| Core Integration CAN | `canoe/databases/chassis_can.dbc` + `canoe/databases/infotainment_can.dbc` + `canoe/databases/body_can.dbc` + `canoe/databases/adas_can.dbc` + `canoe/databases/eth_backbone_can_stub.dbc` | Comm_001, Comm_002, Comm_003, Comm_007, Comm_008, Comm_009 | frmVehicleStateCanMsg, frmSteeringCanMsg, frmNavContextCanMsg, frmAmbientControlMsg, frmClusterWarningMsg, frmTestResultMsg, frmEmergencyBroadcastMsg |
+| Core Integration CAN | `canoe/databases/chassis_can.dbc` + `canoe/databases/infotainment_can.dbc` + `canoe/databases/body_can.dbc` + `canoe/databases/adas_can.dbc` + `canoe/databases/eth_backbone_can_stub.dbc` | Comm_001, Comm_002, Comm_003, Comm_006, Comm_007, Comm_008, Comm_009 | frmVehicleStateCanMsg, frmSteeringCanMsg, frmNavContextCanMsg, frmAmbientControlMsg, frmClusterWarningMsg, frmTestResultMsg, frmEmergencyBroadcastMsg, ethSelectedAlertMsg |
 | Chassis CAN | `canoe/databases/chassis_can.dbc` | Comm_001, Comm_002, Comm_102, Comm_105(헬스), Comm_201 | frmVehicleStateCanMsg, frmSteeringCanMsg, frmPedalInputCanMsg, frmBrakeStatusMsg, frmAccelStatusMsg, frmSteeringTorqueMsg, frmEpsStateMsg, frmAbsStateMsg |
-| ADAS CAN | `canoe/databases/adas_can.dbc` | Comm_120, Comm_121, Comm_130~Comm_132, Comm_201(일부) | frmAdasChassisStatusMsg, ethEmergencyRiskMsg, ethDecelAssistReqMsg, ethObjectRiskInputMsg, ethObjectRiskStateMsg, ethObjectScenarioAlertMsg |
+| ADAS CAN | `canoe/databases/adas_can.dbc` | Comm_006, Comm_007, Comm_008, Comm_120, Comm_121, Comm_122, Comm_130~Comm_132, Comm_201(일부) | frmAdasChassisStatusMsg, ethEmergencyRiskMsg, ethDecelAssistReqMsg, ethSelectedAlertMsg, ethObjectRiskInputMsg, ethObjectRiskStateMsg, ethObjectScenarioAlertMsg |
 | ETH Backbone CAN Stub | `canoe/databases/eth_backbone_can_stub.dbc` | Comm_004, Comm_005, Comm_006, Comm_124, Comm_133 | frmEmergencyBroadcastMsg, frmEmergencyMonitorMsg, ethFailSafeStateMsg, ethObjectSafetyStateMsg |
 | Powertrain CAN | `canoe/databases/powertrain_can.dbc` | Comm_101, Comm_105, Comm_204 | frmIgnitionEngineMsg, frmGearStateMsg, frmPowertrainGatewayMsg, frmEngineSpeedTempMsg, frmPowerLimitMsg, frmCruiseStateMsg, frmEngineTorqueMsg, frmEngineLoadMsg |
 | Body CAN | `canoe/databases/body_can.dbc` | Comm_007, Comm_103, Comm_105, Comm_202 | frmAmbientControlMsg, frmHazardControlMsg, frmWindowControlMsg, frmBodyHealthMsg, frmHvacStateMsg, frmMirrorStateMsg |
@@ -481,9 +491,9 @@
 | Infotainment CAN | 24 | 0x2A3, 0x280~0x288, 0x289~0x295 | 24~30 |
 | Powertrain CAN | 19 | 0x110~0x2A8 | 19~25 |
 | Validation CAN (Chassis 통합) | 2 | 0x2A5~0x2A6 | 3~6 |
-| ADAS CAN | 6 | 0x1C1, 0x1C3~0x1C7 | 6~10 |
+| ADAS CAN | 7 | 0x1C1, 0x206, 0x1C3~0x1C7 | 7~11 |
 | ETH Backbone CAN Stub | 4 | 0x1C0, 0x1C2, 0x111, 0x1C8 | 4~8 |
-| Ethernet UDP | 12 타입 | 0x510/0x511/0x512/0xE100/0xE200/0xE210~0xE216 (SIL Stub: 0x1C3/0x1C4/0x111/0x1C5~0x1C8) | 12~16 타입 |
+| Ethernet UDP | 12 타입 | 0x510/0x511/0x512/0xE100/0xE200/0xE210~0xE216 (SIL Stub: 0x2A0/0x2A1/0x2A3/0x1C0/0x206/0x1C3/0x1C4/0x111/0x1C5~0x1C8) | 12~16 타입 |
 
 - 통합 목표: CAN 메시지 `90~130`(CAN-stub 포함), Ethernet 메시지 타입 `12~16`, 전체 통신 항목 `100+`.
 
