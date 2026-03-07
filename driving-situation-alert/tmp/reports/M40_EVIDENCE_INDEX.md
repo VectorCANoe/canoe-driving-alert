@@ -19,7 +19,7 @@
 ## 3) Mid-Report Package Lock (M40-01, M40-15)
 
 - Package lock doc: `driving-situation-alert/TMP_MID_AUDIT_MAIN.md`
-- Lock anchor: `main@6178ef5`
+- Lock anchor: `main@8eb020e`
 - Excel gate: first-sheet project overview + comparable tab/column format PASS
 
 ## 4) Pre-Activation Evidence Closure Status (M40-18)

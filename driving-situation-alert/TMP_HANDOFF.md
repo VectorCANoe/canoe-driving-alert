@@ -92,7 +92,7 @@
 - 05_Unit_Test.md: Version 2.21 (Draft)
 - 06_Integration_Test.md: Version 4.19 (Draft)
 - 07_System_Test.md: Version 5.19 (Draft)
-- Development Baseline Commit: `2678c58` (review-first freeze guidance added, 2026-03-07)
+- Development Baseline Commit: `8eb020e` (Flow_106/Comm_106 baseline chain 문구 정합, 2026-03-08)
 
 ## 7) Immediate Next Steps
 1. Keep `02_Concept_design.md` figure baseline fixed and ensure PPT sync consistency (star topology).

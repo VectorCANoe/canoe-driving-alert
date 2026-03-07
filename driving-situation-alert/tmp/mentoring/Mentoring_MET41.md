@@ -72,7 +72,7 @@
 | M41-13 | Req_017 표현 정리(권고) | `일반차` 등 모호 표현 제거 후 단문 기준으로 정리 | [x] | `driving-situation-alert/01_Requirements.md` |
 | M41-14 | Req_139/VC_139 문구 정밀화(권고) | “정책 일관성” 문구를 판정 규칙/결정론 기준 문장으로 명확화 | [x] | `driving-situation-alert/01_Requirements.md` |
 | M41-15 | 비교실험 범위 정리 | 대조군/우수성 비교 배제, Pass/Fail 중심으로 검증 범위 고정 | [x] | `driving-situation-alert/05_Unit_Test.md`, `driving-situation-alert/06_Integration_Test.md`, `driving-situation-alert/07_System_Test.md` |
-| M41-16 | 오프라인 시연 준비 | 인터넷 없이 시연 가능한 로컬 실행 자산/장비 체크리스트 확보 | [~] | `driving-situation-alert/tmp/mentoring/Mentoring_MET41.md`(하단 5.3), 시연 패키지 |
+| M41-16 | 오프라인 시연 준비 | 인터넷 없이 시연 가능한 로컬 실행 자산/장비 체크리스트 확보 | [x] | `driving-situation-alert/tmp/mentoring/Mentoring_MET41.md`(하단 5.3), 시연 패키지 |
 
 ## 2.1) 실측 대기 항목 (폐쇄 보류)
 
@@ -102,6 +102,7 @@
 
 - 이 문서는 회의록 분석 기반 내부 실행 메모다.
 - 회의록 원문 발화(시간대)는 `1)` 표를 기준으로 추적한다.
+- 비실측 항목(문서/정책/체인 정합)은 폐쇄 완료했고, 실측/시연 증빙 항목만 대기 상태로 유지한다.
 - MET41 핵심 잔여 리스크는 `실측 증빙 폐쇄(M40-18)`와 `공식 Test Unit PoC(M41-10)`다.
 - 다음 회차 전 우선순위는 `구현/시연 완성 -> 문서 후행 동기화`다.
 - 팀 간 전달 단일 창구는 `tmp/change-orders/TEAM_SYNC_BOARD.md`로 운영한다.

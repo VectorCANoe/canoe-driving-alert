@@ -1,14 +1,14 @@
 # TMP Mid-Audit Pack (main)
 
 - Baseline branch: `main`
-- Baseline commit: `6178ef5`
-- Baseline date: `2026-03-06 22:42:17 +0900`
+- Baseline commit: `8eb020e`
+- Baseline date: `2026-03-08 01:48:18 +0900`
 - Purpose: Mid-audit frozen reference + one-page answer + random rehearsal set
 
 ## 0) Mid-Report Submission Lock (M40-01, M40-15)
 
-- Lock timestamp: `2026-03-06`
-- Lock anchor: `main@6178ef5`
+- Lock timestamp: `2026-03-08`
+- Lock anchor: `main@8eb020e`
 - Scope lock:
   - `PPT`: `driving-situation-alert/02_Concept_design.md`, `driving-situation-alert/tmp/assets/current/02_concept.png`, `driving-situation-alert/tmp/assets/current/02_networkflow.png`
   - `Excel`: 제출본 원본은 외부 저장소(비Git) 관리, 본 문서에서 점검 결과와 포맷 기준을 잠금
