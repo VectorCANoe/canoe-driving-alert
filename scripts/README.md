@@ -25,6 +25,7 @@ Then you can use:
   - `python scripts/run.py start guided`
   - `python scripts/run.py go`
   - `sdv start guided`
+  - Menu supports numeric selection (`1..10`) and typed inputs (`run-id`, `owner`, `scenario id`).
 - Operator-first demo trigger:
   - `python scripts/run.py start demo --id 4`
   - `python scripts/run.py demo --id 4`
@@ -54,6 +55,12 @@ Then you can use:
   - `sdv release exe --mode onefolder --clean`
   - `sdv release portable --mode onefolder --clean --rebuild-exe`
   - `python scripts/run.py mstatus|mstart|mstop`
+
+### Interactive UX Backbone
+- UX benchmark base: `questionary` (single open-source prompt library).
+- Install (recommended):
+  - `python -m pip install questionary>=2.1.1`
+- If not installed, CLI falls back to plain `input()` prompts automatically.
 
 ### Interactive Shell (Recommended)
 - Slash-command shell (no command memorization):

@@ -19,6 +19,9 @@ classifiers = [
   "Operating System :: Microsoft :: Windows",
   "Environment :: Console",
 ]
+dependencies = [
+  "questionary>=2.1.1,<3",
+]
 
 [project.scripts]
 sdv = "sdv_cli:main"

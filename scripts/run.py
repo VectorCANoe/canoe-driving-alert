@@ -48,6 +48,11 @@ from pathlib import Path
 
 from cliops.canoe_com import CanoeComBridge, CanoeComError
 
+try:
+    import questionary
+except Exception:  # optional dependency
+    questionary = None
+
 
 ROOT = Path(__file__).resolve().parent.parent
 SCRIPTS = ROOT / "scripts"
@@ -723,13 +728,48 @@ def cmd_package_bundle_portable(args: argparse.Namespace) -> int:
 
 
 def _prompt_with_default(label: str, default: str) -> str:
+    if questionary is not None and sys.stdin.isatty() and sys.stdout.isatty():
+        answer = questionary.text(f"{label}", default=default).ask()
+        if answer is None:
+            return default
+        answer = answer.strip()
+        return answer or default
+
     raw = input(f"{label} [{default}]: ").strip()
     return raw or default
 
 
+def _prompt_menu_choice(default: int = 1, minimum: int = 1, maximum: int = 10) -> int:
+    while True:
+        if questionary is not None and sys.stdin.isatty() and sys.stdout.isatty():
+            answer = questionary.text("Menu number", default=str(default)).ask()
+            raw = "" if answer is None else answer.strip()
+        else:
+            raw = input(f"select [{minimum}-{maximum}] (default {default}): ").strip()
+
+        if not raw:
+            return default
+
+        try:
+            value = int(raw)
+        except ValueError:
+            print("[GUIDED] enter a number.")
+            continue
+
+        if value < minimum or value > maximum:
+            print(f"[GUIDED] value must be in range {minimum}..{maximum}.")
+            continue
+        return value
+
+
 def _prompt_int(label: str, default: int, minimum: int, maximum: int) -> int:
     while True:
-        raw = input(f"{label} [{default}]: ").strip()
+        if questionary is not None and sys.stdin.isatty() and sys.stdout.isatty():
+            answer = questionary.text(label, default=str(default)).ask()
+            raw = "" if answer is None else answer.strip()
+        else:
+            raw = input(f"{label} [{default}]: ").strip()
+
         if not raw:
             return default
         try:
@@ -1438,21 +1478,25 @@ def cmd_start_shell(args: argparse.Namespace) -> int:
 
 def cmd_start_guided(_: argparse.Namespace) -> int:
     print("SDV Guided Menu")
-    print("Focus: day-to-day operator flow for CANoe verification")
+    print("Focus: operator workflow (number select + input prompts)")
+    if questionary is None:
+        print("[GUIDED] tip: install questionary for richer prompts -> python -m pip install questionary>=2.1.1")
+
     while True:
         print("")
-        print("1) doctor")
+        print("1) doctor (CANoe COM + measurement + sysvar check)")
         print("2) precheck (gates+prepare+smoke+status)")
-        print("3) trigger scenario")
-        print("4) evidence status")
+        print("3) trigger scenario (scenarioCommand/testScenario)")
+        print("4) evidence status (readiness report)")
         print("5) measurement start")
         print("6) measurement stop")
         print("7) measurement status")
-        print("8) open shell")
-        print("9) exit")
-        choice = input("select [1-9]: ").strip()
+        print("8) open slash shell")
+        print("9) quick flow (doctor -> scenario -> status)")
+        print("10) exit")
+        choice = _prompt_menu_choice(default=1, minimum=1, maximum=10)
 
-        if choice == "1":
+        if choice == 1:
             rc = cmd_doctor(
                 argparse.Namespace(
                     ensure_running=False,
@@ -1460,7 +1504,7 @@ def cmd_start_guided(_: argparse.Namespace) -> int:
                     output_md=Path("canoe/tmp/reports/verification/doctor_report.md"),
                 )
             )
-        elif choice == "2":
+        elif choice == 2:
             run_id = _prompt_with_default("Run ID", _default_run_id())
             owner = _prompt_with_default("Owner", "DEV2")
             rc = cmd_start_precheck(
@@ -1473,18 +1517,19 @@ def cmd_start_guided(_: argparse.Namespace) -> int:
                     report_formats="json,md",
                 )
             )
-        elif choice == "3":
+        elif choice == 3:
             sid = _prompt_int("Scenario ID", default=4, minimum=0, maximum=255)
+            var = _prompt_with_default("Scenario variable", "scenarioCommand")
             rc = cmd_start_demo(
                 argparse.Namespace(
                     id=sid,
-                    var="scenarioCommand",
+                    var=var,
                     wait_ack_ms=1200,
                     poll_ms=20,
                     no_ensure_running=False,
                 )
             )
-        elif choice == "4":
+        elif choice == 4:
             run_id = _prompt_with_default("Run ID", _default_run_id())
             rc = cmd_evidence_status(
                 argparse.Namespace(
@@ -1494,15 +1539,45 @@ def cmd_start_guided(_: argparse.Namespace) -> int:
                     output_md="canoe/tmp/reports/verification/run_readiness.md",
                 )
             )
-        elif choice == "5":
+        elif choice == 5:
             rc = cmd_canoe_measure_start(argparse.Namespace())
-        elif choice == "6":
+        elif choice == 6:
             rc = cmd_canoe_measure_stop(argparse.Namespace())
-        elif choice == "7":
+        elif choice == 7:
             rc = cmd_canoe_measure_status(argparse.Namespace())
-        elif choice == "8":
+        elif choice == 8:
             return cmd_shell(argparse.Namespace())
-        elif choice == "9":
+        elif choice == 9:
+            sid = _prompt_int("Scenario ID", default=4, minimum=0, maximum=255)
+            owner = _prompt_with_default("Owner", "DEV2")
+            run_id = _prompt_with_default("Run ID", _default_run_id())
+            rc1 = cmd_doctor(
+                argparse.Namespace(
+                    ensure_running=False,
+                    output_json=Path("canoe/tmp/reports/verification/doctor_report.json"),
+                    output_md=Path("canoe/tmp/reports/verification/doctor_report.md"),
+                )
+            )
+            rc2 = cmd_start_demo(
+                argparse.Namespace(
+                    id=sid,
+                    var="scenarioCommand",
+                    wait_ack_ms=1200,
+                    poll_ms=20,
+                    no_ensure_running=False,
+                )
+            )
+            rc3 = cmd_evidence_status(
+                argparse.Namespace(
+                    run_id=run_id,
+                    evidence_root="",
+                    output_json="canoe/tmp/reports/verification/run_readiness.json",
+                    output_md="canoe/tmp/reports/verification/run_readiness.md",
+                )
+            )
+            _ = owner  # reserved for future ownership tagging in quick-flow reports
+            rc = 0 if rc1 == 0 and rc2 == 0 and rc3 == 0 else 2
+        elif choice == 10:
             print("[GUIDED] bye")
             return 0
         else:
