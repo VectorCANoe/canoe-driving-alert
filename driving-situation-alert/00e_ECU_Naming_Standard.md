@@ -1,8 +1,8 @@
 # ECU 명명 및 약어 표준
 
 **Document ID**: PROJ-00E-ECU-NAMING
-**Version**: 2.7
-**Date**: 2026-03-05
+**Version**: 2.8
+**Date**: 2026-03-08
 **Status**: Released (SoT Fixed)
 **Scope**: `01 -> 03 -> 0301 -> 0302 -> 0303 -> 0304 -> 04 -> 05/06/07`
 
@@ -129,6 +129,7 @@
 - ECU 명명 규칙의 명시적 관리 문서는 `00e`로 고정하고, 참조 문서는 `03`(ECU 적용)으로 한정한다.
 - RTE 생성명 정책은 `00g_RTE_Name_Mapping_Standard.md`를 SoT로 하고, 참조 문서는 `04`로 한정한다.
 - `01/0301/0302/0303/0304/05/06/07`은 Canonical 명칭만 사용하고, 규칙 본문은 중복 정의하지 않는다.
+- `_TX/_RX` 접미사는 구현/하위 매핑(`04`, CAPL, 채널 할당)에서만 사용하고, 상위 체인 문서 표면 표기(`01~03xx`)는 논리명(`EMS_ALERT`) 우선으로 유지한다.
 - 개발팀 수용 기준:
   - cfg/channel_assign/CAPL/문서에서 legacy 표기 0건
   - `VAL_*` 명칭 일관성 100%
@@ -147,12 +148,47 @@
 | 운영 경계 | 명시 관리 `00e`, 참조 `03(ECU)` 한정 | Locked |
 | 추적 가능성 | 신규 ECU 시 Canonical+shortName 등록 | Locked |
 
----
+## 7. 팀 운영 메모 (3-글자 Quick Tag)
 
-## 7. 개정 이력
+- 목적: 팀 내부 개발 편의/회의 커뮤니케이션 속도를 높이기 위한 `3-글자 요약 태그`를 병행 운영한다.
+- 경계: Quick Tag는 `회의/메모/발표 보조` 전용이며, SoT 식별자(Canonical/shortName/DBC/CAPL)로는 사용하지 않는다.
+- 원칙: `Req -> Func -> Flow -> Comm -> Var -> Code -> Test` 추적 체인에는 Canonical 명칭만 사용한다.
+
+| Canonical ECU | 3-글자 Quick Tag | 비고 |
+|---|---|---|
+| ADAS_WARN_CTRL | AWC | 팀 내부 요약 태그 |
+| NAV_CTX_MGR | NCM | 팀 내부 요약 태그 |
+| WARN_ARB_MGR | WAM | 팀 내부 요약 태그 |
+| EMS_ALERT | EAL | 팀 내부 요약 태그 |
+| EMS_POLICE_TX | EPT | 구현 내부 모듈 |
+| EMS_AMB_TX | EAT | 구현 내부 모듈 |
+| EMS_ALERT_RX | EAR | 구현 내부 모듈 |
+| VAL_SCENARIO_CTRL | VSC | 팀 내부 요약 태그 |
+| VAL_BASELINE_CTRL | VBC | 팀 내부 요약 태그 |
+| CHS_GW | CGW | 팀 내부 요약 태그 |
+| INFOTAINMENT_GW | IFG | 팀 내부 요약 태그 |
+| BODY_GW | BGW | 팀 내부 요약 태그 |
+| IVI_GW | IVG | 팀 내부 요약 태그 |
+| ETH_SW | ESW | 팀 내부 요약 태그 |
+| DOMAIN_ROUTER | DRT | 팀 내부 요약 태그 |
+| DOMAIN_BOUNDARY_MGR | DBM | 팀 내부 요약 태그 |
+| ACCEL_CTRL | ACL | 팀 내부 요약 태그 |
+| BRK_CTRL | BRC | 팀 내부 요약 태그 |
+| STEER_CTRL | STC | 팀 내부 요약 태그 |
+| AMBIENT_CTRL | AMC | 팀 내부 요약 태그 |
+| HAZARD_CTRL | HZD | 팀 내부 요약 태그 |
+| WINDOW_CTRL | WDC | 팀 내부 요약 태그 |
+| DRV_STATE_MGR | DSM | 팀 내부 요약 태그 |
+| CLU_HMI_CTRL | CHC | 팀 내부 요약 태그 |
+| CLU_BASE_CTRL | CBC | 팀 내부 요약 태그 |
+| ENG_CTRL | EGC | 팀 내부 요약 태그 |
+| TCM | TCM | Canonical과 동일 |
+
+## 8. 개정 이력
 
 | 버전 | 날짜 | 변경 사항 |
 |---|---|---|
+| 2.8 | 2026-03-08 | 멘토 D11 해석 반영: `_TX/_RX` 사용 경계를 상위 체인/구현 계층으로 분리 명시. 팀 내부 개발 편의용 `3-글자 Quick Tag` 섹션(보조 식별자)을 추가. |
 | 2.7 | 2026-03-05 | Chassis Canonical 명칭을 `ACCEL_CTRL`, `STEER_CTRL`로 확정하고 기존 `ACCL_CTRL`, `STRG_CTRL`를 Legacy alias로 강등. |
 | 2.6 | 2026-03-05 | 4.1을 간략 등록 표로 축약하고 근거 아티팩트 열을 제거(요약형 유지). |
 | 2.5 | 2026-03-05 | `canoe/src·databases·docs` 근거를 사용한 `Project-Specific ECU Registry`(4.1) 추가. |
