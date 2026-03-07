@@ -74,19 +74,19 @@
 - Timeout clear: 1000 ms
 
 ## 6) Current Status Snapshot
-- 00_VModel_Mapping.md: Version 4.3 (Released)
-- 00a_Audit_Readiness_Checklist.md: Version 1.12 (Draft)
-- 00b_Project_Scope.md: Version 2.8 (Released)
-- 00c_Req_Classification_and_Safety_Profile.md: Version 1.6 (Draft, Internal Baseline Locked)
-- 00d_HARA_Worksheet.md: Version 1.4 (Draft, Internal Baseline Approved)
+- 00_VModel_Mapping.md: Version 4.5 (Released)
+- 00a_Audit_Readiness_Checklist.md: Version 1.13 (Draft)
+- 00b_Project_Scope.md: Version 2.9 (Released)
+- 00c_Req_Classification_and_Safety_Profile.md: Version 1.7 (Draft, Active Baseline Locked + Pre-Activation Open)
+- 00d_HARA_Worksheet.md: Version 1.5 (Draft, Active Baseline Approved + Pre-Activation In Progress)
 - 00e_ECU_Naming_Standard.md: Version 2.7 (Released, SoT Fixed)
-- 00f_CAN_ID_Allocation_Standard.md: Version 3.5 (Draft, Policy SoT)
+- 00f_CAN_ID_Allocation_Standard.md: Version 3.6 (Draft, Policy SoT)
 - 01_Requirements.md: Version 5.30 (Draft)
 - 02_Concept_design.md: Version 2.7 (Draft, Figure Finalized)
 - 03_Function_definition.md: Version 4.31 (Draft)
 - 0301_SysFuncAnalysis.md: Version 3.27 (Draft)
-- 0302_NWflowDef.md: Version 3.23 (Draft)
-- 0303_Communication_Specification.md: Version 3.26 (Draft)
+- 0302_NWflowDef.md: Version 3.24 (Draft)
+- 0303_Communication_Specification.md: Version 3.27 (Draft)
 - 0304_System_Variables.md: Version 2.24 (Draft)
 - 04_SW_Implementation.md: Version 2.22 (Draft)
 - 05_Unit_Test.md: Version 2.21 (Draft)
@@ -108,7 +108,7 @@
    - Keep Canonical node names in trace docs; do not introduce unofficial abbreviations
 5. Keep SoT sync rule active:
    - Domain CAN DBC (`*_can.dbc`) + Ethernet contract (`ETH_INTERFACE_CONTRACT.md`) -> `0302/0303/0304`
-   - `Comm_130~Comm_133`는 `ETH_INTERFACE_CONTRACT.md v1.2`에 `E213~E216`이 반영되기 전까지 Pre-Activation/Pending 상태로 유지
+   - `Comm_130~Comm_133`는 `ETH_INTERFACE_CONTRACT.md v1.2`의 `E213~E216` 계약을 기준으로 문서 SoT를 유지하고, 코드 구현은 Pre-Activation 상태로 관리
 6. Reflect Mentoring MET40 open items in docs/evidence:
    - `M40-18`
 

@@ -1,8 +1,8 @@
 # CAN ID 배정 표준
 
 **Document ID**: PROJ-00F-CAN-ID  
-**Version**: 3.5  
-**Date**: 2026-03-06  
+**Version**: 3.6  
+**Date**: 2026-03-07  
 **Status**: Draft (Policy SoT)  
 **Scope**: `0302 -> 0303 -> 0304 -> DBC -> 04 -> 05/06/07`
 
@@ -136,7 +136,7 @@
 - 전환 전 베이스라인의 저대역 ID(`0x064` 포함)는 `Old ID`로만 인정하며 Cutover 대상에 포함한다.
 - 전환 완료 후 `0x000~0x0FF` 활성 운영 ID는 0건이어야 한다.
 - 논리 Ethernet ID(`0xE1xx/0xE2xx`)는 CAN 11-bit 3/3/5 대상이 아니다.
-- `E213~E216`(`Comm_130~Comm_133`)은 Pre-Activation Ethernet 논리 ID이며, `ETH_INTERFACE_CONTRACT.md v1.2` 반영 전에는 활성 계약으로 취급하지 않는다.
+- `E213~E216`(`Comm_130~Comm_133`)은 Pre-Activation Ethernet 논리 ID이며, 계약 SoT(`ETH_INTERFACE_CONTRACT.md`)에는 활성 반영하되 코드 구현은 Pre-Activation 단계로 관리한다.
 
 ---
 
@@ -160,7 +160,7 @@
 ## 7. 현행 베이스라인 (전환 전 스냅샷)
 
 - 현행 구조: 도메인 블록 대역형
-- 메시지 수: `98`
+- 메시지 수: `101`
 - ID 범위(신규 3/3/5 배치 결과): `0x100 ~ 0x2AA`
 - Old baseline 참고 범위(전환 전): `0x064 ~ 0x315`
 - 중복: `0건`
@@ -169,7 +169,7 @@
   - `0x260~0x277` Body
   - `0x280~0x2A7` Infotainment
   - `0x109~0x2AA` Powertrain
-  - `0x111~0x1C4` ADAS + ETH Stub
+  - `0x111~0x1C8` ADAS + ETH Stub
 
 ---
 
@@ -183,9 +183,10 @@
 
 ---
 
-## 9. Annex A (98개 전수 매핑)
+## 9. Annex A (98+확장 매핑 운영)
 
 - 파일: `driving-situation-alert/tmp/ID_335_AnnexA_Mapping_98_Template.csv`
+- 운영 메모: 현재 실운영 메시지 수는 101건이며, Annex A 템플릿(98건)에 확장분을 추가해 단일 테이블로 운영한다.
 - 목적: `Old ID -> New ID` 전수 매핑의 단일 근거 파일
 - 운영 원칙: 실제 할당 상태(`status/approver/approved_date`)는 Annex A CSV를 단일 운영 테이블로 사용한다.
 - 필수 컬럼:
@@ -212,6 +213,7 @@ rg -n "0x[0-9A-Fa-f]{2,3}" driving-situation-alert/{0302_NWflowDef.md,0303_Commu
 
 | 버전 | 날짜 | 변경 사항 |
 |---|---|---|
+| 3.6 | 2026-03-07 | 베이스라인 정합 보강: 실측 메시지 수를 `101`로 갱신하고 ADAS+ETH Stub 대역을 `0x111~0x1C8`로 수정. `E213~E216`은 계약 SoT 활성 + 구현 Pre-Activation 분리 운영 규칙으로 명확화. |
 | 3.5 | 2026-03-06 | Ethernet 계약 정합 보강: `E213~E216`(`Comm_130~Comm_133`)을 Pre-Activation 논리 ID로 명시하고 `ETH_INTERFACE_CONTRACT.md v1.2` 반영 전 비활성 규칙을 추가. |
 | 3.4 | 2026-03-06 | 감사/운영 해석 보강: 긴급 우선 요구의 기본 판정 축을 기능중재로 명시하고, `Diag` 명칭과 Group 7 강제 배정을 분리하는 규칙을 추가. |
 | 3.3 | 2026-03-06 | 정책 문서 슬림화: 실행 절차(Cutover/Rollback/Gate/Acceptance)는 변경지시서 SoT로 이관하고 00f는 정책 원문 중심으로 재구성. |

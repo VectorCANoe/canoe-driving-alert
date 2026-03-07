@@ -1,8 +1,8 @@
 # 프로젝트 범위 및 검증 전략 (Project Scope and Verification Strategy)
 
 **Document ID**: PROJ-00b-PS
-**Version**: 2.8
-**Date**: 2026-03-05
+**Version**: 2.9
+**Date**: 2026-03-07
 **Status**: Released
 **Project Title**: 주행 상황 실시간 경고 시스템
 **Subtitle**: 구간 정보 및 긴급차량 접근 기반 앰비언트·클러스터 경보
@@ -21,11 +21,13 @@
 - 공통 베이스: 경고 표시/중재/복귀 로직
 - Validation Harness(`VAL_SCENARIO_CTRL`, `VAL_BASELINE_CTRL`)는 SIL 검증 전용 계층이며 양산 기능/사용자 기능 범위에 포함하지 않는다.
 
-본 프로젝트는 `CANoe SIL` 환경에서 아래 3개 기능군을 통합 검증한다.
+본 프로젝트는 `CANoe SIL` 환경에서 아래 5개 기능군을 통합 검증한다.
 
 1. Vehicle Baseline: **기본 차량 기능(시동/기어/입력/표시)**
-2. OTA 프로젝트 유산: **내비게이션 활용 구간 인식 컨텍스트**
-3. V2V 프로젝트 유산: **경찰/구급차 V2V 긴급차량 알림 + 앰비언트 중재(우선순위/충돌해결)**
+2. Core Scenario: **내비게이션 구간 인식 컨텍스트 + 긴급차량 경고/중재**
+3. V2 Extension: **근접 위험 산정 + 감속 보조 요청 + Fail-safe 강등 (`Req_120~121`, `Req_123`, `Req_125~129`)**
+4. ADAS Extension (Pre-Activation): **객체 기반 위험 인지/경고 (`Req_130~139`)**
+5. Alert UX/Robustness Extension (Pre-Activation): **경보 편의/강건성 확장 (`Req_140~155`)**
 
 ### 제외 범위 (명시적 Out of Scope)
 
@@ -41,24 +43,24 @@
 ```text
 Navigation Context (gRoadZone, gNavDirection, gZoneDistance, gSpeedLimit)
   -> INFOTAINMENT_GW (CAN->ETH 정규화)
-  -> ETH_SWITCH
-  -> NAV_CONTEXT_MGR (구간 컨텍스트 활성)
+  -> ETH_SW
+  -> NAV_CTX_MGR (구간 컨텍스트 활성)
   -> WARN_ARB_MGR
 
 Vehicle State (gVehicleSpeed, gDriveState, SteeringInput)
-  -> CHASSIS_GW (CAN->ETH 정규화)
-  -> ETH_SWITCH
+  -> CHS_GW (CAN->ETH 정규화)
+  -> ETH_SW
   -> ADAS_WARN_CTRL
   -> WARN_ARB_MGR
 
 EMS_ALERT (internal: EMS_POLICE_TX / EMS_AMB_TX, `AMB`=Ambulance)
-  -> ETH_SWITCH (ETH_EmergencyAlert 브로드캐스트)
+  -> ETH_SW (ETH_EmergencyAlert 브로드캐스트)
   -> EMS_ALERT (internal: EMS_ALERT_RX, 수신 차량)
   -> WARN_ARB_MGR
 
 SelectedAlertContext
-  -> ETH_SWITCH
-  -> BODY_GW -> BCM_AMBIENT_CTRL (Body CAN 출력, 0x210)
+  -> ETH_SW
+  -> BODY_GW -> AMBIENT_CTRL (Body CAN 출력, 0x210)
   -> IVI_GW -> CLU_HMI_CTRL (Infotainment CAN 출력, 0x220)
 
 WARN_ARB_MGR
@@ -82,8 +84,8 @@ WARN_ARB_MGR
 - Tool: Vector CANoe 19 SP4
 - Network: Ethernet UDP 백본 + Domain CAN-HS
 - Domain CAN 역할 분리: Body CAN(앰비언트, 0x210), Infotainment CAN(클러스터, 0x220)
-- 아키텍처 고정: `ETH_SWITCH + CHASSIS_GW/INFOTAINMENT_GW/BODY_GW/IVI_GW + 중앙 경고코어(ADAS_WARN_CTRL/NAV_CONTEXT_MGR/EMS_ALERT/WARN_ARB_MGR)`
-- 주요 노드: `VAL_SCENARIO_CTRL`, `CHASSIS_GW`, `INFOTAINMENT_GW`, `ETH_SWITCH`, `ADAS_WARN_CTRL`, `NAV_CONTEXT_MGR`, `EMS_ALERT`, `WARN_ARB_MGR`, `BODY_GW`, `IVI_GW`, `BCM_AMBIENT_CTRL`, `CLU_HMI_CTRL`
+- 아키텍처 고정: `ETH_SW + CHS_GW/INFOTAINMENT_GW/BODY_GW/IVI_GW + 중앙 경고코어(ADAS_WARN_CTRL/NAV_CTX_MGR/EMS_ALERT/WARN_ARB_MGR)`
+- 주요 노드: `VAL_SCENARIO_CTRL`, `CHS_GW`, `INFOTAINMENT_GW`, `ETH_SW`, `ADAS_WARN_CTRL`, `NAV_CTX_MGR`, `EMS_ALERT`, `WARN_ARB_MGR`, `BODY_GW`, `IVI_GW`, `AMBIENT_CTRL`, `CLU_HMI_CTRL`
 - EMS 내부 구현 모듈(`EMS_POLICE_TX`, `EMS_AMB_TX`, `EMS_ALERT_RX`)은 03/0301/0302/0303/0304 하단 보강표에서 분리 관리하며, `Ambient`는 항상 `AMBIENT` 풀토큰을 사용한다.
 - Panel 입력: `gRoadZone`, `gNavDirection`, `gZoneDistance`, `gSpeedLimit`, 긴급차량 ON/OFF, ETA, 우선순위 테스트 토글
 
@@ -108,6 +110,7 @@ WARN_ARB_MGR
 
 ## 개정 이력
 
+- 2.9 (2026-03-07): 00e Canonical 정합 반영으로 Scope/Red Thread/검증환경의 노드 표기를 `CHS_GW/ETH_SW/NAV_CTX_MGR/AMBIENT_CTRL` 기준으로 통일하고, 확장 기능군(`Req_120~129`, `Req_130~155`)을 현재 범위에 반영.
 - 2.8 (2026-03-05): Validation Harness 노드 명칭을 `VAL_SCENARIO_CTRL`/`VAL_BASELINE_CTRL`로 정리하고 범위 표기의 검증 전용 성격을 명확화.
 - 2.7 (2026-03-04): HARA 내부 승인 기준 반영으로 안전등급 운영 문구를 `Provisional` 단계에서 `QM/ASIL Candidate 잠금` 단계로 갱신.
 - 2.6 (2026-03-02): 요구 분류/안전 프로파일 운영 기준 섹션에 HARA 워크시트(`00d_HARA_Worksheet.md`) 연계 규칙을 추가.

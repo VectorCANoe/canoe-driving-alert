@@ -3,9 +3,9 @@
 **Document ID**: PROJ-00C-RCSP  
 **ISO 26262 Reference**: Part 3 (Concept), Part 4 (System), Part 8 (Supporting Process)  
 **ASPICE Reference**: SYS.2, SYS.3, SWE.3, SUP.1, SUP.10  
-**Version**: 1.6  
-**Date**: 2026-03-04  
-**Status**: Draft (Internal Baseline Locked)  
+**Version**: 1.7  
+**Date**: 2026-03-07  
+**Status**: Draft (Active Baseline Locked + Pre-Activation Open)  
 **Project Title**: 주행 상황 실시간 경고 시스템  
 **Subtitle**: 구간 정보 및 긴급차량 접근 기반 앰비언트·클러스터 경보
 
@@ -27,13 +27,13 @@
 |---|---|---|---|
 | Req Type | Functional | 사용자/시스템이 수행해야 하는 기능 요구 | Req_010, Req_022, Req_033 |
 | Req Type | Non-Functional | 시간/안정성/반복억제/결정론 등 품질 속성 | Req_006, Req_024, Req_032, Req_034 |
-| Req Type | Interface | 도메인 경계, 메시지 전달, 상태 반영 인터페이스 요구 | Req_007, Req_110, Req_111, Req_113~119 |
+| Req Type | Interface | 도메인 경계, 메시지 전달, 상태 반영 인터페이스 요구 | Req_007, Req_110, Req_111, Req_113~119, Req_125~129, Req_130~155 |
 | Req Type | Verification-Acceptance | 고객 요구 검증을 수행/판정/기록하기 위한 인수 조건 | Req_041~043 |
 | Req Type | Verification-Harness | SIL 검증 편의를 위한 자극/렌더/진단 보조 항목(제품 기능 요구와 분리) | `project.sysvars`의 `Test/*`, `UiRender/*`, `V2X/policeDispatch` |
 | Safety Class | QM | 위해도 분석상 안전 무결성 등급이 필요하지 않은 항목 | 일부 표시 품질/운영 요구 |
 | Safety Class | Provisional-QM | HARA 완료 전 임시 분류 | 현재 기본 운영값 |
 | Safety Class | ASIL-A/B/C/D | HARA(S/E/C)로 확정된 안전 무결성 등급 | HARA 완료 후 확정 |
-| HARA Status | Not Started / In Progress / Completed | HARA 진행 상태 | 현재 Completed (Internal Baseline) |
+| HARA Status | Not Started / In Progress / Completed | HARA 진행 상태 | 현재 In Progress (Active Locked + Pre-Activation Open) |
 
 ## 4. 분류 판정 규칙 (실행 규칙)
 
@@ -69,7 +69,10 @@
 | HC-02 | Req_011, Req_012 | 무조향 경고 오동작 또는 해제 실패 | ASIL Candidate-C (Locked) | HARA 워크시트 승인 완료(00d) |
 | HC-03 | Req_022, Req_027~031 | 중재 규칙 오류로 잘못된 우선 경고 출력 | ASIL Candidate-C (Locked) | HARA 워크시트 승인 완료(00d) |
 | HC-04 | Req_024, Req_033, Req_034 | 타임아웃/복귀/전환 불안정으로 운전자 혼란 유발 | ASIL Candidate-B (Locked) | HARA 워크시트 승인 완료(00d) |
-| HC-05 | Req_110, Req_111, Req_124 | 도메인 경계/전달 오류로 경고 체인 단절 | ASIL Candidate-C (Locked) | 인터페이스 FMEA + HARA 승인 완료(00d) |
+| HC-05 | Req_110, Req_111, Req_125~Req_129 | 도메인 경계/전달 오류로 경고 체인 단절 및 Fail-safe 강등 실패 | ASIL Candidate-C (Locked) | 인터페이스 FMEA + HARA 승인 완료(00d) |
+| HC-06 | Req_130~Req_139 | 객체 기반 위험 인지/경고 누락으로 충돌 회피 타이밍 상실 | ASIL Candidate-C (Pre-Activation) | 00d에서 S/E/C 및 SG-06 상세화 후 잠금 |
+| HC-07 | Req_148~Req_152 | 입력 신선도/채널 가용성 저하 시 경고 안전성 저하 | ASIL Candidate-C (Pre-Activation) | 00d에서 S/E/C 및 SG-07 상세화 후 잠금 |
+| HC-08 | Req_153~Req_155 | 오디오 경합/팝업 과밀/채널 불일치로 경고 인지 실패 | ASIL Candidate-B (Pre-Activation) | 00d에서 S/E/C 및 SG-08 상세화 후 잠금 |
 
 ## 6. ASPICE 운영 매핑 (프로세스 근거)
 
@@ -90,9 +93,12 @@
 | Req_011~012 | Functional | Non-Functional | ASIL Candidate-C (Locked) | Completed (Internal) | 00d(HC-02), 01, 03, 07 |
 | Req_022, Req_027~031 | Functional | Non-Functional | ASIL Candidate-C (Locked) | Completed (Internal) | 00d(HC-03), 01, 03, 06, 07 |
 | Req_024, Req_033, Req_034 | Non-Functional | Functional | ASIL Candidate-B (Locked) | Completed (Internal) | 00d(HC-04), 01, 03, 06, 07 |
-| Req_101~109, Req_112~118, Req_120~123 | Functional / Interface | Non-Functional | QM (Locked) | Completed (Internal) | 01, 03, 0302~0304 |
-| Req_110~111, Req_124 | Interface | Functional / Non-Functional | ASIL Candidate-C (Locked) | Completed (Internal) | 00d(HC-05), 01, 03, 0302~0304, 06, 07 |
-| Req_119 | Interface | Functional | QM (Locked) | Completed (Internal) | 01, 03, 0303, 0304, 06, 07 |
+| Req_101~107, Req_109, Req_113, Req_116, Req_118~119 | Functional / Interface | Non-Functional | QM (Locked) | Completed (Internal) | 01, 03, 0302~0304 |
+| Req_110~111, Req_125~129 | Interface | Functional / Non-Functional | ASIL Candidate-C (Locked) | Completed (Internal) | 00d(HC-05), 01, 03, 0302~0304, 06, 07 |
+| Req_130~139 | Functional / Interface | Non-Functional | ASIL Candidate-C (Pre-Activation) | In Progress | 00d(HC-06), 01, 03, 0302~0304, 05~07 |
+| Req_140~147 | Functional | Interface | QM (Pre-Activation) | In Progress | 01, 03, 0302~0304, 05~07 |
+| Req_148~155 | Non-Functional / Functional | Interface | ASIL Candidate-B/C (Pre-Activation) | In Progress | 00d(HC-07,HC-08), 01, 03, 0302~0304, 05~07 |
+| Req_018, Req_036, Req_038, Req_039, Req_108, Req_114, Req_115, Req_117, Req_122, Req_124 | Legacy-Transition | Functional / Interface | Legacy (Shadow) | Managed in Part 8 | 01 Part 8, 03~07 Legacy 상속표 |
 | N/A (Harness Vars) | Verification-Harness | Interface | QM | N/A | 04, 0304, `canoe/project/sysvars/project.sysvars` |
 
 ## 8. 문서 반영 규칙 (01~07)
@@ -119,10 +125,11 @@
 
 | 작업 | 산출물 | 목표일 |
 |---|---|---|
-| HARA 상세 시트 작성 | `00d_HARA_Worksheet.md` | 완료(2026-03-04, v1.3) |
+| HARA 상세 시트 작성 | `00d_HARA_Worksheet.md` | 완료(2026-03-07, v1.5) |
 | Req별 분류 메타(Primary/Secondary) 잠금 | `01_Requirements.md` 부록 표 | 중간감사 이후 반영 (Planned) |
-| Safety Class 확정 반영 | 00a/00b/00c/01 동기화 | 완료(2026-03-04, 내부 Baseline) |
+| Safety Class 확정 반영 | 00a/00b/00c/01 동기화 | 활성범위 완료(2026-03-04), Pre-Activation 보강 진행중 |
 | VC-테스트 증적 100% 연결 | 05/06/07 상단 Pass/Fail 포함 | 2026-03-12 |
+| HC-06~HC-08 내부 잠금 | 00d + 00a 동시 반영 | 2026-03-12 |
 
 ---
 
@@ -130,6 +137,7 @@
 
 | 버전 | 날짜 | 변경 사항 |
 |---|---|---|
+| 1.7 | 2026-03-07 | 요구사항 확장 반영: HARA 후보군을 `HC-01~HC-08`로 확장하고 Req 그룹 프로파일에 `Req_125~129`, `Req_130~155`, Legacy 전환군을 분리 반영. 활성/Pre-Activation 이중 운영 상태(`Active Locked + Pre-Activation Open`)를 명시. |
 | 1.6 | 2026-03-06 | 용어/범위 정리: Verification-Harness 예시에서 Driver 네임스페이스 자극 변수를 제거하고 제품 체인은 `고속 무조향 의심 경고` 중심으로 유지하도록 문구를 정리. |
 | 1.5 | 2026-03-04 | Safety Class 내부 Baseline 잠금 반영: Req 그룹을 QM/ASIL Candidate로 확정하고 HARA 상태를 `Completed (Internal)`로 갱신. 활성 범위를 `Req_001~043`, `Req_101~124`로 동기화. |
 | 1.4 | 2026-03-02 | 중간감사 운영 반영: 후속 작업 항목 `Req별 분류 메타 잠금` 상태를 `중간감사 이후 반영 (Planned)`으로 명확화. |

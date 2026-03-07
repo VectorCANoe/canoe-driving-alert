@@ -1,8 +1,8 @@
 ﻿# V-Model 문서 매핑표 (V-Model Document Mapping)
 
 **Document ID**: PROJ-00-VMM
-**Version**: 4.3
-**Date**: 2026-02-28
+**Version**: 4.5
+**Date**: 2026-03-07
 **Status**: Released
 **Project Title**: 주행 상황 실시간 경고 시스템
 **Subtitle**: 구간 정보 및 긴급차량 접근 기반 앰비언트·클러스터 경보
@@ -22,11 +22,11 @@
 
 ## 2. 현재 프로젝트 범위
 
-- 포함: 내비게이션 구간 인식 컨텍스트(roadZone/navDirection/zoneDistance/speedLimit) + 경찰/구급차 V2V 긴급알림 + 앰비언트 중재
+- 포함: 내비게이션 구간 인식 컨텍스트(roadZone/navDirection/zoneDistance/speedLimit) + 경찰/구급차 V2V 긴급알림 + 앰비언트 중재 + V2 확장(`Req_120~121`, `Req_123`, `Req_125~129`) + ADAS/경보 확장(`Req_130~155`, Pre-Activation)
 - 환경: CANoe SIL only (하드웨어 미사용)
 - 네트워크: CAN + Ethernet(UDP) only
 - 도메인 CAN 분리: Ambient=`Body CAN(0x210)`, Cluster=`Infotainment CAN(0x220)`
-- 아키텍처 고정: `ETH_SWITCH + CHASSIS_GW/INFOTAINMENT_GW/BODY_GW/IVI_GW + 중앙 경고코어`
+- 아키텍처 고정: `ETH_SW + CHS_GW/INFOTAINMENT_GW/BODY_GW/IVI_GW + 중앙 경고코어(ADAS_WARN_CTRL/NAV_CTX_MGR/EMS_ALERT/WARN_ARB_MGR)`
 - 제외: 군집 위협 대응, 물류 OTA 임무전환, UDS OTA 구독, 위험운전 레벨 경고
 
 ---
@@ -141,6 +141,7 @@
 
 | 버전 | 날짜 | 변경 사항 |
 |------|------|---------|
+| 4.5 | 2026-03-07 | 00e Canonical 정합 반영: 상위 아키텍처 표기를 `ETH_SW/CHS_GW/NAV_CTX_MGR` 기준으로 통일하고 현재 확장 범위(`Req_130~155`, Pre-Activation)를 범위 섹션에 반영. |
 | 4.4 | 2026-03-01 | 상위 문서 네이밍 정합 반영: 요구사항 예시 노드명을 내부 모듈(`EMS_ALERT_RX`)이 아닌 논리 단말(`EMS_ALERT`) 기준으로 정리. |
 | 4.3 | 2026-02-28 | Nav 제한속도(`speedLimit`)를 범위 정의에 반영하고 01/03/0302/0303/0304/04/05/06/07 추적 체인과 정합화. |
 | 4.2 | 2026-02-26 | 도메인 CAN 분리 규칙(Body 0x210 / Infotainment 0x220) 명시, 0302/0303 감사 포인트에 Flow_006·Comm_006 단계 분해 기준 추가 |
