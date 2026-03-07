@@ -34,6 +34,12 @@ Then you can use:
   - `python scripts/run.py capl sysvar-get --namespace Core --var failSafeMode`
   - `python scripts/run.py capl sysvar-set --namespace Test --var scenarioCommand --value 4 --value-type int`
   - `sdv capl sysvar-get --namespace Test --var scenarioCommandAck`
+- CANoe control plane:
+  - `python scripts/run.py canoe measure-status`
+  - `python scripts/run.py canoe measure-start`
+  - `python scripts/run.py canoe measure-stop`
+  - `python scripts/run.py canoe measure-reset`
+  - `python scripts/run.py canoe capl-call --function-name MyFunction --args 1 2 --arg-type int`
 - Evidence shortcuts:
   - `sdv evidence status --run-id 20260308_1900`
   - `sdv evidence insight --run-id 20260308_1900`
@@ -141,7 +147,7 @@ Then you can use:
 ## CLI Architecture (Practical BP)
 
 - Command layer: `scripts/run.py` (`start/doctor/evidence/release/...`)
-- Adapter layer: CANoe COM + sysvar contract (`scripts/canoe/*`, `capl sysvar-*`)
+- Adapter layer: CANoe COM + sysvar contract (`scripts/cliops/canoe_com.py`, `capl sysvar-*`, `canoe measure-*`)
 - Evidence layer: JSON canonical + MD review + optional CSV
 - Runtime truth: CAPL nodes consume/produce sysvars in CANoe measurement; CLI triggers and observes via COM
 

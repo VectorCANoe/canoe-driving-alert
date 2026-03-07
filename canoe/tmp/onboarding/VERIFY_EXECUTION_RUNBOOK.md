@@ -88,6 +88,15 @@ python scripts/run.py capl sysvar-get --namespace Core --var failSafeMode
 python scripts/run.py capl sysvar-set --namespace Test --var scenarioCommand --value 4 --value-type int
 ```
 
+### CANoe control plane (measurement)
+
+```powershell
+python scripts/run.py canoe measure-status
+python scripts/run.py canoe measure-start
+python scripts/run.py canoe measure-stop
+python scripts/run.py canoe measure-reset
+```
+
 ### Full batch
 
 Only use when raw evidence logs are already prepared.

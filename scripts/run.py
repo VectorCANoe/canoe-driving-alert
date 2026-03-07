@@ -45,6 +45,8 @@ import subprocess
 import sys
 from pathlib import Path
 
+from cliops.canoe_com import CanoeComBridge, CanoeComError
+
 
 ROOT = Path(__file__).resolve().parent.parent
 SCRIPTS = ROOT / "scripts"
@@ -55,6 +57,8 @@ CONTRACT_CANONICAL = [
     "python scripts/run.py doctor",
     "python scripts/run.py capl sysvar-get --namespace <NS> --var <NAME>",
     "python scripts/run.py capl sysvar-set --namespace <NS> --var <NAME> --value <V> --value-type int",
+    "python scripts/run.py canoe measure-status",
+    "python scripts/run.py canoe capl-call --function-name <CAPL_FN> --args <A1> <A2>",
     "python scripts/run.py evidence status --run-id <YYYYMMDD_HHMM>",
     "python scripts/run.py release portable",
     "python scripts/run.py shell",
@@ -736,6 +740,8 @@ def _print_shell_help() -> None:
     print("  /doctor [ensure-running]")
     print("  /capl get <Namespace> <Variable>")
     print("  /capl set <Namespace> <Variable> <Value>")
+    print("  /canoe measure <status|start|stop|reset>")
+    print("  /canoe capl-call <FunctionName> [arg1 arg2 ...] [--int|--float|--bool]")
     print("  /skill list")
     print("  /skill run quickstart|verify-pack|portable-release")
     print("  /contract")
@@ -1032,6 +1038,47 @@ def cmd_shell(_: argparse.Namespace) -> int:
             else:
                 print(f"[SHELL] unknown capl subcommand: {sub}")
                 continue
+        elif cmd == "canoe":
+            if len(tokens) < 3:
+                print("[SHELL] usage: /canoe measure <status|start|stop|reset> | /canoe capl-call <FunctionName> [args...]")
+                continue
+            sub = tokens[1].lower()
+            if sub == "measure":
+                action = tokens[2].lower()
+                if action == "status":
+                    rc = cmd_canoe_measure_status(argparse.Namespace())
+                elif action == "start":
+                    rc = cmd_canoe_measure_start(argparse.Namespace())
+                elif action == "stop":
+                    rc = cmd_canoe_measure_stop(argparse.Namespace())
+                elif action == "reset":
+                    rc = cmd_canoe_measure_reset(argparse.Namespace())
+                else:
+                    print("[SHELL] measure action must be status|start|stop|reset")
+                    continue
+            elif sub in {"capl-call", "caplcall"}:
+                function_name = tokens[2]
+                arg_type = "string"
+                call_args: list[str] = []
+                for item in tokens[3:]:
+                    if item == "--int":
+                        arg_type = "int"
+                    elif item == "--float":
+                        arg_type = "float"
+                    elif item == "--bool":
+                        arg_type = "bool"
+                    else:
+                        call_args.append(item)
+                rc = cmd_canoe_capl_call(
+                    argparse.Namespace(
+                        function_name=function_name,
+                        args=call_args,
+                        arg_type=arg_type,
+                    )
+                )
+            else:
+                print(f"[SHELL] unknown canoe subcommand: {sub}")
+                continue
         elif cmd == "skill":
             if len(tokens) < 2:
                 print("[SHELL] usage: /skill list | /skill run <name>")
@@ -1068,32 +1115,18 @@ def cmd_wizard(args: argparse.Namespace) -> int:
     return cmd_shell(args)
 
 
-def _resolve_canoe_var(app, namespace: str, variable: str):
-    attempts = [
-        lambda: app.System.Namespaces(namespace).Variables(variable),
-        lambda: app.System.Namespaces(namespace).Variables.Item(variable),
-        lambda: app.System.Namespaces.Item(namespace).Variables(variable),
-        lambda: app.System.Namespaces.Item(namespace).Variables.Item(variable),
-        lambda: app.Configuration.SystemVariables.Namespaces(namespace).Variables(variable),
-        lambda: app.Configuration.SystemVariables.Namespaces(namespace).Variables.Item(variable),
-    ]
-    for attempt in attempts:
-        try:
-            return attempt()
-        except Exception:
-            continue
-    raise RuntimeError(f"System variable not found: {namespace}::{variable}")
+def _get_canoe_bridge() -> CanoeComBridge:
+    return CanoeComBridge.connect()
 
 
-def _attach_canoe_app():
-    try:
-        import win32com.client as win32com_client  # type: ignore
-    except Exception as ex:
-        raise RuntimeError(f"pywin32 import failed: {ex}") from ex
-    try:
-        return win32com_client.Dispatch("CANoe.Application")
-    except Exception as ex:
-        raise RuntimeError(f"CANoe COM attach failed: {ex}") from ex
+def _coerce_cli_value(raw_value: str, value_type: str) -> object:
+    if value_type == "int":
+        return int(raw_value)
+    if value_type == "float":
+        return float(raw_value)
+    if value_type == "bool":
+        return 1 if raw_value.lower() in {"1", "true", "yes", "on"} else 0
+    return raw_value
 
 
 def _write_doctor_reports(
@@ -1131,51 +1164,25 @@ def _write_doctor_reports(
 
 def cmd_doctor(args: argparse.Namespace) -> int:
     checks: list[tuple[str, bool, str]] = []
-    win32com_client = None
     ensure_running = bool(getattr(args, "ensure_running", False))
     output_json = getattr(args, "output_json", None)
     output_md = getattr(args, "output_md", None)
 
+    required_vars = [
+        ("Test", "scenarioCommand"),
+        ("Test", "scenarioCommandAck"),
+        ("Test", "testScenario"),
+        ("Core", "decelAssistReq"),
+        ("Core", "proximityRiskLevel"),
+        ("Core", "failSafeMode"),
+    ]
     try:
-        import win32com.client as win32com_client  # type: ignore
-    except Exception as ex:
-        checks.append(("pywin32 import", False, str(ex)))
-    else:
+        bridge = _get_canoe_bridge()
         checks.append(("pywin32 import", True, "ok"))
-
-    app = None
-    if win32com_client is not None:
-        try:
-            app = win32com_client.Dispatch("CANoe.Application")
-            checks.append(("CANoe COM attach", True, "ok"))
-        except Exception as ex:
-            checks.append(("CANoe COM attach", False, str(ex)))
-
-    if app is not None:
-        try:
-            running = bool(app.Measurement.Running)
-            checks.append(("Measurement running", running, "running" if running else "stopped"))
-            if ensure_running and not running:
-                app.Measurement.Start()
-                checks.append(("Measurement auto-start", True, "started"))
-        except Exception as ex:
-            checks.append(("Measurement status", False, str(ex)))
-
-        required_vars = [
-            ("Test", "scenarioCommand"),
-            ("Test", "scenarioCommandAck"),
-            ("Test", "testScenario"),
-            ("Core", "decelAssistReq"),
-            ("Core", "proximityRiskLevel"),
-            ("Core", "failSafeMode"),
-        ]
-        for ns_name, var_name in required_vars:
-            try:
-                sv = _resolve_canoe_var(app, ns_name, var_name)
-                _ = sv.Value
-                checks.append((f"SysVar {ns_name}::{var_name}", True, "ok"))
-            except Exception as ex:
-                checks.append((f"SysVar {ns_name}::{var_name}", False, str(ex)))
+        checks.extend([(row.name, row.ok, row.detail) for row in bridge.run_doctor(required_vars, ensure_running=ensure_running)])
+    except CanoeComError as ex:
+        err = str(ex)
+        checks.append(("CANoe COM attach" if "attach failed" in err else "pywin32 import", False, err))
 
     failed = [row for row in checks if not row[1]]
     print("[DOCTOR] SDV CLI environment checks")
@@ -1198,9 +1205,8 @@ def cmd_doctor(args: argparse.Namespace) -> int:
 
 def cmd_capl_sysvar_get(args: argparse.Namespace) -> int:
     try:
-        app = _attach_canoe_app()
-        sv = _resolve_canoe_var(app, args.namespace, args.var)
-        value = sv.Value
+        bridge = _get_canoe_bridge()
+        value = bridge.get_sysvar(args.namespace, args.var)
     except Exception as ex:
         print(f"[CAPL] FAIL: {ex}")
         return 2
@@ -1210,22 +1216,68 @@ def cmd_capl_sysvar_get(args: argparse.Namespace) -> int:
 
 def cmd_capl_sysvar_set(args: argparse.Namespace) -> int:
     try:
-        app = _attach_canoe_app()
-        sv = _resolve_canoe_var(app, args.namespace, args.var)
-        if args.value_type == "int":
-            value_obj = int(args.value)
-        elif args.value_type == "float":
-            value_obj = float(args.value)
-        elif args.value_type == "bool":
-            value_obj = 1 if args.value.lower() in {"1", "true", "yes", "on"} else 0
-        else:
-            value_obj = args.value
-        sv.Value = value_obj
-        readback = sv.Value
+        bridge = _get_canoe_bridge()
+        readback = bridge.set_sysvar(args.namespace, args.var, _coerce_cli_value(args.value, args.value_type))
     except Exception as ex:
         print(f"[CAPL] FAIL: {ex}")
         return 2
     print(f"[CAPL] set {args.namespace}::{args.var}={readback} (ok)")
+    return 0
+
+
+def cmd_canoe_measure_status(_: argparse.Namespace) -> int:
+    try:
+        bridge = _get_canoe_bridge()
+        running = bridge.measurement_running()
+    except Exception as ex:
+        print(f"[CANOE] FAIL: {ex}")
+        return 2
+    print(f"[CANOE] measurement={'running' if running else 'stopped'}")
+    return 0
+
+
+def cmd_canoe_measure_start(_: argparse.Namespace) -> int:
+    try:
+        bridge = _get_canoe_bridge()
+        bridge.measurement_start()
+    except Exception as ex:
+        print(f"[CANOE] FAIL: {ex}")
+        return 2
+    print("[CANOE] measurement started")
+    return 0
+
+
+def cmd_canoe_measure_stop(_: argparse.Namespace) -> int:
+    try:
+        bridge = _get_canoe_bridge()
+        bridge.measurement_stop()
+    except Exception as ex:
+        print(f"[CANOE] FAIL: {ex}")
+        return 2
+    print("[CANOE] measurement stopped")
+    return 0
+
+
+def cmd_canoe_measure_reset(_: argparse.Namespace) -> int:
+    try:
+        bridge = _get_canoe_bridge()
+        bridge.measurement_reset()
+    except Exception as ex:
+        print(f"[CANOE] FAIL: {ex}")
+        return 2
+    print("[CANOE] measurement reset")
+    return 0
+
+
+def cmd_canoe_capl_call(args: argparse.Namespace) -> int:
+    try:
+        bridge = _get_canoe_bridge()
+        call_args = [_coerce_cli_value(item, args.arg_type) for item in args.args]
+        result = bridge.call_capl_function(args.function_name, call_args)
+    except Exception as ex:
+        print(f"[CANOE] FAIL: {ex}")
+        return 2
+    print(f"[CANOE] capl-call {args.function_name} result={result}")
     return 0
 
 
@@ -1603,6 +1655,18 @@ def add_capl_sysvar_set_args(p: argparse.ArgumentParser) -> None:
     p.set_defaults(func=cmd_capl_sysvar_set)
 
 
+def add_canoe_capl_call_args(p: argparse.ArgumentParser) -> None:
+    p.add_argument("--function-name", required=True, help="CAPL function name")
+    p.add_argument("--args", nargs="*", default=[], help="CAPL call args")
+    p.add_argument(
+        "--arg-type",
+        default="string",
+        choices=["int", "float", "bool", "string"],
+        help="Single coercion type for all --args values",
+    )
+    p.set_defaults(func=cmd_canoe_capl_call)
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Unified script launcher")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -1620,6 +1684,14 @@ def build_parser() -> argparse.ArgumentParser:
     capl_sub = capl.add_subparsers(dest="capl_command", required=True)
     add_capl_sysvar_get_args(capl_sub.add_parser("sysvar-get", help="Read one system variable value"))
     add_capl_sysvar_set_args(capl_sub.add_parser("sysvar-set", help="Write one system variable value"))
+
+    canoe_cmd = sub.add_parser("canoe", help="CANoe COM control plane")
+    canoe_sub = canoe_cmd.add_subparsers(dest="canoe_command", required=True)
+    canoe_sub.add_parser("measure-status", help="Read measurement status").set_defaults(func=cmd_canoe_measure_status)
+    canoe_sub.add_parser("measure-start", help="Start measurement").set_defaults(func=cmd_canoe_measure_start)
+    canoe_sub.add_parser("measure-stop", help="Stop measurement").set_defaults(func=cmd_canoe_measure_stop)
+    canoe_sub.add_parser("measure-reset", help="Reset measurement (stop/start)").set_defaults(func=cmd_canoe_measure_reset)
+    add_canoe_capl_call_args(canoe_sub.add_parser("capl-call", help="Call CAPL function"))
 
     sub.add_parser("shell", help="Interactive slash-command shell").set_defaults(func=cmd_shell)
     sub.add_parser("wizard", help="Legacy alias: shell").set_defaults(func=cmd_wizard)
