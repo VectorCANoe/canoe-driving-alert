@@ -57,6 +57,7 @@ This file defines how current script assets are classified before CLI productiza
 - `canoe/scripts/build_unity_skin_pack.py`
 - `canoe/scripts/generate_macro_skin_assets.py`
 - `scripts/release/build_sdv_exe.py`
+- `scripts/release/build_portable_bundle.py`
 
 ### C-EXPERIMENT (Direct only, no official CLI surface yet)
 
@@ -106,6 +107,7 @@ Canonical:
 - `python scripts/run.py gate capl-sync`
 - `python scripts/run.py gate cli-readiness`
 - `python scripts/run.py package build-exe --mode <onefolder|onefile>`
+- `python scripts/run.py package bundle-portable [--rebuild-exe]`
 
 Compatibility aliases remain enabled during transition:
 

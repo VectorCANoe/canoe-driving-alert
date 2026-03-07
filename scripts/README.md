@@ -66,6 +66,9 @@ Then you can use:
 - CAPL mirror sync (`src/capl` vs `cfg/channel_assign`):
   - `python scripts/run.py gate capl-sync`
   - `sdv gate capl-sync`
+- Multi-bus cfg + DBC domain policy:
+  - `python scripts/run.py gate multibus-dbc`
+  - `sdv gate multibus-dbc`
 - CLI readiness (before GUI phase):
   - `python scripts/run.py gate cli-readiness`
   - `sdv gate cli-readiness`
@@ -75,6 +78,9 @@ Then you can use:
   - `python scripts/run.py package build-exe --mode onefolder --clean`
 - Build exe one-file:
   - `python scripts/run.py package build-exe --mode onefile --clean`
+- Build portable ZIP (team handoff):
+  - `python scripts/run.py package bundle-portable --mode onefolder --clean --rebuild-exe`
+  - output: `dist/portable/sdv_portable.zip`
 
 ## Folder Roles
 

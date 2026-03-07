@@ -13,6 +13,7 @@ Canonical command contract:
   - verify status
   - verify finalize
   - package build-exe
+  - package bundle-portable
 
 Legacy aliases are kept for compatibility:
   - scenario-run
@@ -26,6 +27,7 @@ Legacy aliases are kept for compatibility:
   - gate-cfg-hygiene
   - gate-capl-sync
   - package-build-exe
+  - package-bundle-portable
 """
 
 from __future__ import annotations
@@ -54,8 +56,10 @@ CONTRACT_CANONICAL = [
     "python scripts/run.py gate doc-sync",
     "python scripts/run.py gate cfg-hygiene",
     "python scripts/run.py gate capl-sync",
+    "python scripts/run.py gate multibus-dbc",
     "python scripts/run.py gate cli-readiness",
     "python scripts/run.py package build-exe --mode onefolder",
+    "python scripts/run.py package bundle-portable",
 ]
 
 CONTRACT_LEGACY = [
@@ -71,8 +75,10 @@ CONTRACT_LEGACY = [
     "gate-doc-sync",
     "gate-cfg-hygiene",
     "gate-capl-sync",
+    "gate-multibus-dbc",
     "gate-cli-readiness",
     "package-build-exe",
+    "package-bundle-portable",
 ]
 
 
@@ -296,6 +302,10 @@ def cmd_gate_capl_sync(_: argparse.Namespace) -> int:
     return run_cmd([sys.executable, str(SCRIPTS / "gates" / "check_capl_sync.py")])
 
 
+def cmd_gate_multibus_dbc(_: argparse.Namespace) -> int:
+    return run_cmd([sys.executable, str(SCRIPTS / "gates" / "multibus_cfg_dbc_gate.py")])
+
+
 def cmd_gate_cli_readiness(_: argparse.Namespace) -> int:
     return run_cmd([sys.executable, str(SCRIPTS / "gates" / "cli_readiness_gate.py")])
 
@@ -321,6 +331,26 @@ def cmd_package_build_exe(args: argparse.Namespace) -> int:
     ]
     if args.clean:
         cmd.append("--clean")
+    return run_cmd(cmd)
+
+
+def cmd_package_bundle_portable(args: argparse.Namespace) -> int:
+    cmd = [
+        sys.executable,
+        str(SCRIPTS / "release" / "build_portable_bundle.py"),
+    ]
+    if args.clean:
+        cmd.append("--clean")
+    if args.rebuild_exe:
+        cmd.append("--rebuild-exe")
+    if args.mode:
+        cmd.extend(["--mode", args.mode])
+    if args.output_dir:
+        cmd.extend(["--output-dir", args.output_dir])
+    if args.bundle_name:
+        cmd.extend(["--bundle-name", args.bundle_name])
+    if args.zip_name:
+        cmd.extend(["--zip-name", args.zip_name])
     return run_cmd(cmd)
 
 
@@ -557,6 +587,7 @@ def build_parser() -> argparse.ArgumentParser:
     gate_sub.add_parser("doc-sync", help="Run Req-Doc-Code sync gate").set_defaults(func=cmd_gate_doc_sync)
     gate_sub.add_parser("cfg-hygiene", help="Run cfg text hygiene gate").set_defaults(func=cmd_gate_cfg_hygiene)
     gate_sub.add_parser("capl-sync", help="Run src/capl vs cfg/channel_assign sync gate").set_defaults(func=cmd_gate_capl_sync)
+    gate_sub.add_parser("multibus-dbc", help="Run multi-bus cfg + DBC domain policy gate").set_defaults(func=cmd_gate_multibus_dbc)
     gate_sub.add_parser("cli-readiness", help="Run CLI readiness gate before GUI phase").set_defaults(func=cmd_gate_cli_readiness)
 
     package = sub.add_parser("package", help="Build/distribution commands")
@@ -565,6 +596,18 @@ def build_parser() -> argparse.ArgumentParser:
     pkg_build.add_argument("--mode", default="onefolder", choices=["onefolder", "onefile"])
     pkg_build.add_argument("--clean", action="store_true")
     pkg_build.set_defaults(func=cmd_package_build_exe)
+
+    pkg_portable = package_sub.add_parser(
+        "bundle-portable",
+        help="Create portable ZIP (exe + required runtime files)",
+    )
+    pkg_portable.add_argument("--mode", default="onefolder", choices=["onefolder", "onefile"])
+    pkg_portable.add_argument("--clean", action="store_true")
+    pkg_portable.add_argument("--rebuild-exe", action="store_true")
+    pkg_portable.add_argument("--output-dir", default="")
+    pkg_portable.add_argument("--bundle-name", default="")
+    pkg_portable.add_argument("--zip-name", default="")
+    pkg_portable.set_defaults(func=cmd_package_bundle_portable)
 
     contract = sub.add_parser("contract", help="Show canonical command contract")
     contract.add_argument("--json", action="store_true", help="Output machine-readable JSON")
@@ -584,11 +627,20 @@ def build_parser() -> argparse.ArgumentParser:
     sub.add_parser("gate-doc-sync", help="Legacy alias: gate doc-sync").set_defaults(func=cmd_gate_doc_sync)
     sub.add_parser("gate-cfg-hygiene", help="Legacy alias: gate cfg-hygiene").set_defaults(func=cmd_gate_cfg_hygiene)
     sub.add_parser("gate-capl-sync", help="Legacy alias: gate capl-sync").set_defaults(func=cmd_gate_capl_sync)
+    sub.add_parser("gate-multibus-dbc", help="Legacy alias: gate multibus-dbc").set_defaults(func=cmd_gate_multibus_dbc)
     sub.add_parser("gate-cli-readiness", help="Legacy alias: gate cli-readiness").set_defaults(func=cmd_gate_cli_readiness)
     pkg_build_legacy = sub.add_parser("package-build-exe", help="Legacy alias: package build-exe")
     pkg_build_legacy.add_argument("--mode", default="onefolder", choices=["onefolder", "onefile"])
     pkg_build_legacy.add_argument("--clean", action="store_true")
     pkg_build_legacy.set_defaults(func=cmd_package_build_exe)
+    pkg_portable_legacy = sub.add_parser("package-bundle-portable", help="Legacy alias: package bundle-portable")
+    pkg_portable_legacy.add_argument("--mode", default="onefolder", choices=["onefolder", "onefile"])
+    pkg_portable_legacy.add_argument("--clean", action="store_true")
+    pkg_portable_legacy.add_argument("--rebuild-exe", action="store_true")
+    pkg_portable_legacy.add_argument("--output-dir", default="")
+    pkg_portable_legacy.add_argument("--bundle-name", default="")
+    pkg_portable_legacy.add_argument("--zip-name", default="")
+    pkg_portable_legacy.set_defaults(func=cmd_package_bundle_portable)
 
     return parser
 
