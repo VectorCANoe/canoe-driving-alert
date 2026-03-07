@@ -1,5 +1,6 @@
-﻿includes
+includes
 {
+  #include "..\\common\\CAPL_COMMON.cin"
 }
 
 variables
@@ -18,18 +19,6 @@ variables
   int gLastDiagDidLow;
 }
 
-int clampRange(int value, int minValue, int maxValue)
-{
-  if (value < minValue)
-  {
-    return minValue;
-  }
-  if (value > maxValue)
-  {
-    return maxValue;
-  }
-  return value;
-}
 
 on start
 {
@@ -174,3 +163,6 @@ on timer tRoute100
 
   setTimer(tRoute100, 100);
 }
+
+
+

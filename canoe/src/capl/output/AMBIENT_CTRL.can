@@ -1,5 +1,6 @@
-﻿includes
+includes
 {
+  #include "..\\common\\CAPL_COMMON.cin"
 }
 
 variables
@@ -10,6 +11,16 @@ variables
   int gLastBcmDiagReqDidLow;
   int gLastAlertType;
   int gFlashToggle;
+}
+
+void sendBcmDiagResponse()
+{
+  message frmBcmDiagResMsg mDiagRes;
+
+  mDiagRes.BcmDiagRespCode = (gLastBcmDiagReqSid + 0x40) & 0xFF;
+  mDiagRes.BcmDiagData0    = gLastBcmDiagReqDidHigh & 0xFF;
+  mDiagRes.BcmDiagData1    = gLastBcmDiagReqDidLow  & 0xFF;
+  output(mDiagRes);
 }
 
 on start
@@ -28,41 +39,28 @@ on message frmBcmDiagReqMsg
   gLastBcmDiagReqSid     = this.BcmDiagServiceId;
   gLastBcmDiagReqDidHigh = this.BcmDiagDidHigh;
   gLastBcmDiagReqDidLow  = this.BcmDiagDidLow;
+  sendBcmDiagResponse();
 }
 
 on timer tBcmExt100
 {
   message frmInteriorLightMsg mLight;
   message frmRainLightAutoMsg mRain;
-  message frmBcmDiagResMsg    mDiagRes;
   int alertType;
   int ambientMode;
   int ambientColor;
   int ambientPattern;
   int flashColor;
 
-  alertType = (int)@Core::selectedAlertType;
-  if (alertType < 0 || alertType > 6) alertType = 0;
+  alertType = clampRange((int)@Core::selectedAlertType, 0, 6);
 
-  /* 100ms flash toggle for alternating color patterns */
+  /* 100ms flash toggle for alternating color patterns. */
   gFlashToggle = 1 - gFlashToggle;
 
   ambientMode    = 0;
   ambientColor   = 0;
   ambientPattern = 0;
   flashColor     = 0;
-
-  /* alertType:
-     0 = off
-     1 = Police      RED/BLUE alternate flash
-     2 = Ambulance   RED/WHITE alternate flash
-     3 = School zone RED fast flash
-     4 = Highway     ORANGE wave
-     5 = IC left     GREEN steady
-     6 = IC right    GREEN steady
-     Color: 0=off 1=red 2=orange 3=amber 4=green 5=blue 6=white
-     Pattern: 0=off 1=steady 2=slow-flash 3=fast-flash
-     Mode: 0=off 1=steady 2=flash/wave */
 
   if (alertType == 1)
   {
@@ -118,14 +116,10 @@ on timer tBcmExt100
   mLight.DomeLightLevel = (ambientMode > 0) ? 20 : 4;
   output(mLight);
 
-  mRain.RainSenseLevel = ambientPattern & 0xF;
-  mRain.AutoLightState = (ambientMode > 0) ? 1 : 0;
+  /* Keep Comm_202 extension alive without tunneling ambient semantics through rain/light fields. */
+  mRain.RainSenseLevel = 0;
+  mRain.AutoLightState = 0;
   output(mRain);
-
-  mDiagRes.BcmDiagRespCode = 0x62;
-  mDiagRes.BcmDiagData0    = gLastBcmDiagReqDidHigh & 0xFF;
-  mDiagRes.BcmDiagData1    = gLastBcmDiagReqDidLow  & 0xFF;
-  output(mDiagRes);
 
   setTimer(tBcmExt100, 100);
 }

@@ -1,5 +1,6 @@
 includes
 {
+  #include "..\\common\\CAPL_COMMON.cin"
 }
 
 variables
@@ -37,18 +38,6 @@ variables
   int gScenarioCmdInternalClear;
 }
 
-int clampRange(int value, int minValue, int maxValue)
-{
-  if (value < minValue)
-  {
-    return minValue;
-  }
-  if (value > maxValue)
-  {
-    return maxValue;
-  }
-  return value;
-}
 
 int calcBaselineGearState(int driveState)
 {
@@ -1134,3 +1123,6 @@ on timer tScenarioEval
         objectTtcMin, objectEventCode, renderAlertType, renderTextCode);
 
 }
+
+
+

@@ -129,7 +129,6 @@ on timer tBodyBase100
   message frmSeatStateMsg mSeatState;
   message frmSeatControlMsg mSeatCtrl;
   message frmDoorControlMsg mDoorCtrl;
-  message frmBcmDiagReqMsg mBcmDiagReq;
   message frmImmobilizerStateMsg mImmobilizer;
   message frmAlarmStateMsg mAlarm;
   message frmBodyGatewayStateMsg mBodyGwState;
@@ -255,10 +254,7 @@ on timer tBodyBase100
   mDoorCtrl.ChildLockCmd = 0;
   output(mDoorCtrl);
 
-  mBcmDiagReq.BcmDiagServiceId = 0x22;
-  mBcmDiagReq.BcmDiagDidHigh = 0xF1;
-  mBcmDiagReq.BcmDiagDidLow = 0x90;
-  output(mBcmDiagReq);
+  /* BCM diagnostic request is validation/event-driven, not a cyclic comfort broadcast. */
 
   mImmobilizer.ImmobilizerState = 1;
   mImmobilizer.KeyAuthState = 1;

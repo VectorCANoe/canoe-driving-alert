@@ -1,5 +1,6 @@
 includes
 {
+  #include "..\\common\\CAPL_COMMON.cin"
 }
 
 variables
@@ -15,18 +16,6 @@ variables
   int gVehicleObjectPos;
 }
 
-int clampRange(int value, int minValue, int maxValue)
-{
-  if (value < minValue)
-  {
-    return minValue;
-  }
-  if (value > maxValue)
-  {
-    return maxValue;
-  }
-  return value;
-}
 
 int calcEmergencyDistanceM(int etaSec, int speedKph)
 {
@@ -432,3 +421,6 @@ on timer tIviBase50
 
   setTimer(tIviBase50, 50);
 }
+
+
+

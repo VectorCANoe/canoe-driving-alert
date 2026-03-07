@@ -1,5 +1,6 @@
 includes
 {
+  #include "..\\common\\CAPL_COMMON.cin"
 }
 
 variables
@@ -17,18 +18,6 @@ variables
   int gLastFailSafeMode;
 }
 
-int clampRange(int value, int minValue, int maxValue)
-{
-  if (value < minValue)
-  {
-    return minValue;
-  }
-  if (value > maxValue)
-  {
-    return maxValue;
-  }
-  return value;
-}
 
 on start
 {
@@ -200,3 +189,6 @@ on timer tBoundaryCheck
 
   setTimer(tBoundaryCheck, 100);
 }
+
+
+

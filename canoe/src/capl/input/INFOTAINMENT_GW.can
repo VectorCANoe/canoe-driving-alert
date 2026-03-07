@@ -1,5 +1,6 @@
 includes
 {
+  #include "..\\common\\CAPL_COMMON.cin"
 }
 
 variables
@@ -10,18 +11,6 @@ variables
   int gLastIviDiagDidLow;
 }
 
-int clampRange(int value, int minValue, int maxValue)
-{
-  if (value < minValue)
-  {
-    return minValue;
-  }
-  if (value > maxValue)
-  {
-    return maxValue;
-  }
-  return value;
-}
 
 on start
 {
@@ -118,3 +107,6 @@ on timer tInfoExt100
 
   setTimer(tInfoExt100, 100);
 }
+
+
+

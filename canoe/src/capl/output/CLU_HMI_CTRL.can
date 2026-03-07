@@ -1,5 +1,6 @@
 includes
 {
+  #include "..\\common\\CAPL_COMMON.cin"
 }
 
 variables
@@ -25,18 +26,6 @@ variables
   int gHistoryCount;
 }
 
-int clampRange(int value, int minValue, int maxValue)
-{
-  if (value < minValue)
-  {
-    return minValue;
-  }
-  if (value > maxValue)
-  {
-    return maxValue;
-  }
-  return value;
-}
 
 int applyDisplayPolicy(int code)
 {
@@ -380,3 +369,6 @@ on timer tDuplicateGuard
     setTimer(tDuplicateGuard, 100);
   }
 }
+
+
+

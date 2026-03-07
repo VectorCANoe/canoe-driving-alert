@@ -1,33 +1,23 @@
-﻿includes
+includes
 {
+  #include "..\\common\\CAPL_COMMON.cin"
 }
 
 variables
 {
-  msTimer tNavCycle;
 }
 
-on start
-{
-  setTimer(tNavCycle, 10);
-  write("[NAV_CTX_MGR] start");
-}
-
-on timer tNavCycle
+void publishNavContext()
 {
   int roadZone;
   int navDirection;
   int speedLimit;
   int baseZoneContext;
 
-  roadZone = (int)@Infotainment::roadZone;
-  navDirection = (int)@Infotainment::navDirection;
-  speedLimit = (int)@Infotainment::speedLimit;
+  roadZone = clampRange((int)@Infotainment::roadZone, 0, 3);
+  navDirection = clampRange((int)@Infotainment::navDirection, 0, 3);
+  speedLimit = clampRange((int)@Infotainment::speedLimit, 0, 255);
 
-  if (speedLimit < 0 || speedLimit > 255)
-  {
-    speedLimit = 30;
-  }
   if (speedLimit == 0)
   {
     speedLimit = 30;
@@ -44,11 +34,7 @@ on timer tNavCycle
   }
   else if (roadZone == 3)
   {
-    if (navDirection == 1)
-    {
-      baseZoneContext = 3;
-    }
-    else if (navDirection == 2)
+    if (navDirection == 2)
     {
       baseZoneContext = 4;
     }
@@ -57,13 +43,28 @@ on timer tNavCycle
       baseZoneContext = 3;
     }
   }
-  else
-  {
-    baseZoneContext = 0;
-  }
 
   @Core::baseZoneContext = baseZoneContext;
   @Core::speedLimitNorm = speedLimit;
+}
 
-  setTimer(tNavCycle, 10);
+on start
+{
+  publishNavContext();
+  write("[NAV_CTX_MGR] start");
+}
+
+on sysvar Infotainment::roadZone
+{
+  publishNavContext();
+}
+
+on sysvar Infotainment::navDirection
+{
+  publishNavContext();
+}
+
+on sysvar Infotainment::speedLimit
+{
+  publishNavContext();
 }

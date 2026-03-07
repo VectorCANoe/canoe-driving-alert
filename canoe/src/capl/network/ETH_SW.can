@@ -1,5 +1,6 @@
-﻿includes
+includes
 {
+  #include "..\\common\\CAPL_COMMON.cin"
 }
 
 variables
@@ -14,18 +15,6 @@ variables
   int gLastEthPathHealthy;
 }
 
-int clampRange(int value, int minValue, int maxValue)
-{
-  if (value < minValue)
-  {
-    return minValue;
-  }
-  if (value > maxValue)
-  {
-    return maxValue;
-  }
-  return value;
-}
 
 on start
 {
@@ -85,3 +74,6 @@ on timer tEthMonitor100
 
   setTimer(tEthMonitor100, 100);
 }
+
+
+

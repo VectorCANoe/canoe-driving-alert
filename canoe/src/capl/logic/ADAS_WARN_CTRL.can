@@ -1,5 +1,6 @@
 includes
 {
+  #include "..\\common\\CAPL_COMMON.cin"
 }
 
 variables
@@ -14,19 +15,6 @@ variables
   int gLastObjectRiskClass;
   int gLastObjectEventCode;
   int gLastInputFilterState;
-}
-
-int clampRange(int value, int minValue, int maxValue)
-{
-  if (value < minValue)
-  {
-    return minValue;
-  }
-  if (value > maxValue)
-  {
-    return maxValue;
-  }
-  return value;
 }
 
 int calcProximityRisk(int emergencyContext, int etaSec, int speed, int emergencyDirection, int driveState)
@@ -251,7 +239,7 @@ void updateWarningState()
     baseZoneContext = 0;
   }
 
-  nowMs = timeNowInt64();
+  nowMs = (dword)timeNowInt64();
   objectHoldActive = 0;
   objectInputValid = 0;
 
@@ -458,7 +446,7 @@ on message ethObjectRiskInputMsg
   @Core::objectAlertHoldMs = alertHoldMs;
   if (trackValid == 1)
   {
-    gLastObjectTrackRxMs = timeNowInt64();
+    gLastObjectTrackRxMs = (dword)timeNowInt64();
   }
 }
 

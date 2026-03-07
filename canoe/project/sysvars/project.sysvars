@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <systemvariables version="4">
   <namespace name="Chassis" comment="" interface="">
     <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="km/h" name="vehicleSpeed" comment="Panel input speed" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="255" maxValuePhys="255"/>
@@ -74,7 +74,7 @@
   </namespace>
 
   <namespace name="CoreState" comment="" interface="">
-    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="ms" name="lastEmergencyRxMs" comment="Last E100 receive timestamp" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="60000" maxValuePhys="60000"/>
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="ms" name="lastEmergencyRxMs" comment="Last E100 receive timestamp mirror (32-bit wrap-tolerant tick)" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="4294967295" maxValuePhys="4294967295"/>
     <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="ms" name="duplicatePopupGuard" comment="Duplicate popup suppression timer" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="5000" maxValuePhys="5000"/>
     <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="arbitrationSnapshotId" comment="Arbitration snapshot sequence" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="65535" maxValuePhys="65535"/>
     <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="turnLampState" comment="Turn lamp state mirror: 0=off 1=left 2=right 3=hazard" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="3" maxValuePhys="3"/>

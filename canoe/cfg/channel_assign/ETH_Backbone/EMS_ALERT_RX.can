@@ -1,5 +1,6 @@
 includes
 {
+  #include "..\\common\\CAPL_COMMON.cin"
 }
 
 variables
@@ -20,17 +21,16 @@ variables
   int gLastRecordedWarningCode;
 }
 
-int clampRange(int value, int minValue, int maxValue)
+
+dword getCurrentTick32()
 {
-  if (value < minValue)
-  {
-    return minValue;
-  }
-  if (value > maxValue)
-  {
-    return maxValue;
-  }
-  return value;
+  return (dword)timeNowInt64();
+}
+
+void mirrorLastEmergencyRx(dword tickValue)
+{
+  gActiveLastRxMs = tickValue;
+  @CoreState::lastEmergencyRxMs = tickValue;
 }
 
 int isHigherPriority(int newType, int newEta, int newSourceId,
@@ -140,6 +140,7 @@ on start
 {
   clearEmergencyState();
   gActiveLastRxMs = 0;
+  @CoreState::lastEmergencyRxMs = 0;
   gLastEmergencyContext = -1;
   gLastTimeoutClear = -1;
   gLastRecordedAlertType = -1;
@@ -153,7 +154,7 @@ on start
   write("[EMS_ALERT_RX] start");
 }
 
-/* v2: primary path — receive broadcast frame from ETH backbone ch5 */
+/* v2: primary path - receive broadcast frame from ETH backbone ch5 */
 on message frmEmergencyBroadcastMsg
 {
   message frmEmergencyMonitorMsg mMon;
@@ -191,8 +192,7 @@ on message frmEmergencyBroadcastMsg
 
     if (accepted == 1)
     {
-      gActiveLastRxMs = timeNowInt64();
-      @CoreState::lastEmergencyRxMs = (int)gActiveLastRxMs;
+      mirrorLastEmergencyRx(getCurrentTick32());
       publishActiveEmergencyToV2X();
       setTimeoutClear(0);
       setTimer(tWatchdog, 1000);
@@ -213,7 +213,7 @@ on message frmEmergencyBroadcastMsg
   output(mMon);
 }
 
-/* v1 fallback: sysvar polling (panel/legacy compat — kept for backward compat) */
+/* v1 fallback: sysvar polling (panel/legacy compat, kept for backward compat) */
 on timer tRxCycle
 {
   message frmEmergencyMonitorMsg mMon;
@@ -230,7 +230,7 @@ on timer tRxCycle
   eta                = clampRange((int)@V2X::eta, 0, 255);
   sourceId           = clampRange((int)@V2X::sourceId, 0, 255);
   alertState         = (((int)@V2X::alertState) == 1) ? 1 : 0;
-  nowMs              = timeNowInt64();
+  nowMs              = getCurrentTick32();
   accepted           = 0;
 
   if (alertState == 1 && (emergencyType == 1 || emergencyType == 2))
@@ -254,8 +254,7 @@ on timer tRxCycle
 
     if (accepted == 1)
     {
-      gActiveLastRxMs = nowMs;
-      @CoreState::lastEmergencyRxMs = (int)nowMs;
+      mirrorLastEmergencyRx(nowMs);
       publishActiveEmergencyToV2X();
       setTimeoutClear(0);
       setTimer(tWatchdog, 1000);
@@ -283,7 +282,7 @@ on timer tWatchdog
 {
   dword nowMs;
 
-  nowMs = timeNowInt64();
+  nowMs = getCurrentTick32();
   if (gActiveEmergencyType != 0 && (nowMs - gActiveLastRxMs) >= 1000)
   {
     clearEmergencyState();
