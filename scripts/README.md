@@ -25,7 +25,7 @@ Then you can use:
   - `sdv shell`
 - Example session:
   - `/scenario 4`
-  - `/verify quick 20260307_2100 DEV1`
+  - `/verify batch 20260308_0900 DEV2 pre`
   - `/gate all`
   - `/skill list`
   - `/exit`
@@ -43,6 +43,17 @@ Then you can use:
 - Prepare run folders:
   - `python scripts/run.py verify prepare --run-id 20260306_1930`
   - `sdv verify prepare --run-id 20260306_1930`
+- Dev2 batch workflow (recommended):
+  - pre-check batch (gates + prepare + smoke + status):
+    - `python scripts/run.py verify batch --run-id 20260308_0900 --owner DEV2 --phase pre`
+  - post-run batch (finalize + status):
+    - `python scripts/run.py verify batch --run-id 20260308_0900 --owner DEV2 --phase post`
+  - full batch (pre + post, only when raw evidence is ready):
+    - `python scripts/run.py verify batch --run-id 20260308_0900 --owner DEV2 --phase full`
+  - standard outputs:
+    - canonical machine: `canoe/tmp/reports/verification/dev2_batch_report.json`
+    - human review: `canoe/tmp/reports/verification/run_readiness.md`
+    - optional interchange: `canoe/tmp/reports/verification/dev2_batch_report.csv`
 - Smoke check (CANoe COM):
   - `python scripts/run.py verify smoke --owner DEV1`
   - `sdv verify smoke --owner DEV1`

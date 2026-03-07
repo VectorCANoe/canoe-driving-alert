@@ -96,6 +96,7 @@ Canonical:
 - `python scripts/run.py shell`
 - `python scripts/run.py scenario run --id <0..255>`
 - `python scripts/run.py verify prepare --run-id <RUN_ID>`
+- `python scripts/run.py verify batch --run-id <RUN_ID> --owner <OWNER> --phase <pre|post|full>`
 - `python scripts/run.py verify smoke --owner <OWNER>`
 - `python scripts/run.py verify fill-score --tier <UT|IT|ST> --run-id <RUN_ID> --owner <OWNER>`
 - `python scripts/run.py verify insight --run-id <RUN_ID> [--baseline-run-id <RUN_ID>]`
@@ -116,6 +117,7 @@ Compatibility aliases remain enabled during transition:
 - `wizard`, `interactive`
 - `scenario-run`
 - `verify-prepare`, `verify-smoke`, `verify-fill-score`, `verify-insight`, `verify-bind-doc`
+- `verify-batch`
 - `verify-fill-template`
 - `verify-status`
 - `verify-finalize`

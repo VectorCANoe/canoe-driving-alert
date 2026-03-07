@@ -60,6 +60,27 @@ BO_ 273 ethFailSafeStateMsg: 2 DOMAIN_BOUNDARY_MGR
  SG_ BoundaryAlive    : 6|1@1+ (1,0) [0|1] "" WARN_ARB_MGR,VAL_SCENARIO_CTRL
  SG_ Reserved0        : 7|9@1+ (1,0) [0|0] "" Vector__XXX
 
+BO_ 1296 ethVehicleStateMsg: 6 ETH_SW
+ SG_ DriveState       : 0|2@1+  (1,0) [0|3]   ""    WARN_ARB_MGR,VAL_SCENARIO_CTRL,ADAS_WARN_CTRL
+ SG_ VehicleSpeed     : 8|8@1+  (1,0) [0|255] "km/h" WARN_ARB_MGR,VAL_SCENARIO_CTRL,ADAS_WARN_CTRL
+ SG_ BrakePedalNorm   : 16|7@1+ (1,0) [0|100] "%"   WARN_ARB_MGR,VAL_SCENARIO_CTRL
+ SG_ TurnLampState    : 23|2@1+ (1,0) [0|3]   ""    WARN_ARB_MGR,VAL_SCENARIO_CTRL
+ SG_ SeatBeltWarnLvl  : 25|2@1+ (1,0) [0|3]   ""    WARN_ARB_MGR,VAL_SCENARIO_CTRL
+ SG_ Reserved0        : 27|21@1+ (1,0) [0|0]  ""    Vector__XXX
+
+BO_ 1297 ethSteeringMsg: 4 ETH_SW
+ SG_ SteeringInput    : 0|1@1+   (1,0) [0|1]    ""    WARN_ARB_MGR,VAL_SCENARIO_CTRL,ADAS_WARN_CTRL
+ SG_ SteeringAngleDeg : 8|12@1-  (1,0) [-720|720] "deg" WARN_ARB_MGR,VAL_SCENARIO_CTRL
+ SG_ SteeringQuality  : 20|2@1+  (1,0) [0|3]    ""    WARN_ARB_MGR,VAL_SCENARIO_CTRL
+ SG_ Reserved0        : 22|10@1+ (1,0) [0|0]    ""    Vector__XXX
+
+BO_ 1298 ethNavContextMsg: 6 ETH_SW
+ SG_ RoadZone         : 0|3@1+   (1,0) [0|7]    ""    WARN_ARB_MGR,VAL_SCENARIO_CTRL,NAV_CTX_MGR
+ SG_ NavDirection     : 3|3@1+   (1,0) [0|7]    ""    WARN_ARB_MGR,VAL_SCENARIO_CTRL,NAV_CTX_MGR
+ SG_ ZoneDistance     : 8|8@1+   (1,0) [0|255]  "m"   WARN_ARB_MGR,VAL_SCENARIO_CTRL,NAV_CTX_MGR
+ SG_ SpeedLimit       : 16|8@1+  (1,0) [0|255]  "km/h" WARN_ARB_MGR,VAL_SCENARIO_CTRL,NAV_CTX_MGR
+ SG_ Reserved0        : 24|24@1+ (1,0) [0|0]    ""    Vector__XXX
+
 CM_ BO_ 448 "E100: Emergency vehicle broadcast. Sent by EMS_POLICE_TX (type=1) or EMS_AMB_TX (type=2) on ETH backbone (ch5). Received by EMS_ALERT_RX for priority arbitration. STUB: This file substitutes CANoe.Ethernet backbone using CAN ch5. Delete this file and replace with Ethernet network when CANoe.Ethernet license is available. Interface spec: 0303_Communication_Specification.md E100.";
 CM_ SG_ 448 VehicleType  "1=POLICE 2=AMBULANCE";
 CM_ SG_ 448 Status       "0=CLEAR 1=ACTIVE";
@@ -76,6 +97,16 @@ CM_ BO_ 273 "E789: Fail-safe state frame. Produced by DOMAIN_BOUNDARY_MGR (Req_1
 CM_ SG_ 273 DomainPathStatus "0=normal 1=degraded 2=failed.";
 CM_ SG_ 273 E2eHealthState "0=failed 1=degraded 2=healthy.";
 CM_ SG_ 273 FailSafeMode "0=normal 1=degraded 2=blocked.";
+CM_ BO_ 1296 "Normalized vehicle state frame on ETH backbone stub for domain arbitration.";
+CM_ SG_ 1296 DriveState "0=P 1=R 2=N 3=D.";
+CM_ SG_ 1296 BrakePedalNorm "Driver brake pedal normalized percentage.";
+CM_ SG_ 1296 TurnLampState "0=Off 1=Left 2=Right 3=Hazard.";
+CM_ BO_ 1297 "Normalized steering context frame on ETH backbone stub.";
+CM_ SG_ 1297 SteeringInput "1 when driver steering intervention is detected.";
+CM_ SG_ 1297 SteeringQuality "Steering signal quality indicator.";
+CM_ BO_ 1298 "Normalized navigation context frame on ETH backbone stub.";
+CM_ SG_ 1298 RoadZone "0=None 1=School 2=Highway 3=Guide.";
+CM_ SG_ 1298 NavDirection "0=None 1=Left 2=Right 3=Straight.";
 
 BA_DEF_ BO_ "GenMsgCycleTime" INT 0 10000;
 BA_DEF_DEF_ "GenMsgCycleTime" 0;
@@ -83,6 +114,9 @@ BA_ "GenMsgCycleTime" BO_ 448 0;
 BA_ "GenMsgCycleTime" BO_ 450 100;
 BA_ "GenMsgCycleTime" BO_ 456 100;
 BA_ "GenMsgCycleTime" BO_ 273 300;
+BA_ "GenMsgCycleTime" BO_ 1296 100;
+BA_ "GenMsgCycleTime" BO_ 1297 100;
+BA_ "GenMsgCycleTime" BO_ 1298 100;
 
 VAL_ 448 VehicleType 0 "NONE" 1 "POLICE" 2 "AMBULANCE";
 VAL_ 448 Status 0 "CLEAR" 1 "ACTIVE";
@@ -93,3 +127,8 @@ VAL_ 456 ObjectTrackValid 0 "INVALID" 1 "VALID";
 VAL_ 273 DomainPathStatus 0 "NORMAL" 1 "DEGRADED" 2 "FAILED";
 VAL_ 273 E2eHealthState 0 "FAILED" 1 "DEGRADED" 2 "HEALTHY";
 VAL_ 273 FailSafeMode 0 "NORMAL" 1 "DEGRADED" 2 "BLOCKED";
+VAL_ 1296 DriveState 0 "P" 1 "R" 2 "N" 3 "D";
+VAL_ 1296 TurnLampState 0 "OFF" 1 "LEFT" 2 "RIGHT" 3 "HAZARD";
+VAL_ 1297 SteeringInput 0 "NO" 1 "YES";
+VAL_ 1298 RoadZone 0 "NONE" 1 "SCHOOL" 2 "HIGHWAY" 3 "GUIDE";
+VAL_ 1298 NavDirection 0 "NONE" 1 "LEFT" 2 "RIGHT" 3 "STRAIGHT";

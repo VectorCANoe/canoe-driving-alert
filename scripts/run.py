@@ -5,6 +5,7 @@ Canonical command contract:
   - shell
   - scenario run
   - verify prepare
+  - verify batch
   - verify smoke
   - verify fill-score
   - gate doc-sync
@@ -36,6 +37,7 @@ Legacy aliases are kept for compatibility:
 from __future__ import annotations
 
 import argparse
+import csv
 import datetime as dt
 import json
 import shlex
@@ -51,6 +53,7 @@ CONTRACT_CANONICAL = [
     "python scripts/run.py shell",
     "python scripts/run.py scenario run --id <0..255>",
     "python scripts/run.py verify prepare --run-id <YYYYMMDD_HHMM>",
+    "python scripts/run.py verify batch --run-id <YYYYMMDD_HHMM> --owner <OWNER>",
     "python scripts/run.py verify smoke --owner <OWNER>",
     "python scripts/run.py verify fill-score --tier <UT|IT|ST> --run-id <YYYYMMDD_HHMM> --owner <OWNER>",
     "python scripts/run.py verify insight --run-id <YYYYMMDD_HHMM>",
@@ -72,6 +75,7 @@ CONTRACT_LEGACY = [
     "interactive",
     "scenario-run",
     "verify-prepare",
+    "verify-batch",
     "verify-smoke",
     "verify-fill-score",
     "verify-insight",
@@ -275,6 +279,243 @@ def cmd_verify_status(args: argparse.Namespace) -> int:
     return run_cmd(cmd)
 
 
+def _batch_artifact_rows(run_id: str) -> list[dict[str, object]]:
+    paths = [
+        f"canoe/logging/evidence/UT/{run_id}/verification_log.csv",
+        f"canoe/logging/evidence/UT/{run_id}/verification_log_scored.csv",
+        f"canoe/logging/evidence/IT/{run_id}/verification_log.csv",
+        f"canoe/logging/evidence/IT/{run_id}/verification_log_scored.csv",
+        f"canoe/logging/evidence/ST/{run_id}/verification_log.csv",
+        f"canoe/logging/evidence/ST/{run_id}/verification_log_scored.csv",
+        "canoe/tmp/reports/verification/dev_completeness_smoke.csv",
+        "canoe/tmp/reports/verification/dev_completeness_smoke.md",
+        "canoe/tmp/reports/verification/run_readiness.json",
+        "canoe/tmp/reports/verification/run_readiness.md",
+        "canoe/tmp/reports/verification/run_insight_report.json",
+        "canoe/tmp/reports/verification/run_insight_report.md",
+        "canoe/tmp/reports/verification/doc_binding_bundle.json",
+        "canoe/tmp/reports/verification/doc_binding_bundle.md",
+        "canoe/tmp/reports/verification/doc_fill_template.csv",
+        "canoe/tmp/reports/verification/doc_fill_template.md",
+    ]
+    rows: list[dict[str, object]] = []
+    for rel in paths:
+        p = ROOT / rel
+        exists = p.exists()
+        size = p.stat().st_size if exists and p.is_file() else 0
+        mtime = dt.datetime.fromtimestamp(p.stat().st_mtime).isoformat() if exists else ""
+        rows.append(
+            {
+                "path": rel,
+                "exists": exists,
+                "size_bytes": size,
+                "last_modified": mtime,
+            }
+        )
+    return rows
+
+
+def _write_batch_report(
+    *,
+    run_id: str,
+    owner: str,
+    run_date: str,
+    phase: str,
+    steps: list[dict[str, object]],
+    output_json: Path,
+    output_csv: Path,
+) -> None:
+    output_json.parent.mkdir(parents=True, exist_ok=True)
+    output_csv.parent.mkdir(parents=True, exist_ok=True)
+
+    pass_count = sum(1 for s in steps if s.get("rc") == 0)
+    fail_count = len(steps) - pass_count
+    status = "PASS" if fail_count == 0 else "FAIL"
+    artifacts = _batch_artifact_rows(run_id)
+
+    payload = {
+        "run_id": run_id,
+        "owner": owner,
+        "run_date": run_date,
+        "phase": phase,
+        "status": status,
+        "pass_count": pass_count,
+        "fail_count": fail_count,
+        "steps": steps,
+        "artifacts": artifacts,
+        "generated_at": dt.datetime.now().isoformat(),
+    }
+    output_json.write_text(json.dumps(payload, indent=2), encoding="utf-8")
+    with output_csv.open("w", encoding="utf-8", newline="") as fp:
+        writer = csv.DictWriter(
+            fp,
+            fieldnames=[
+                "row_type",
+                "run_id",
+                "phase",
+                "owner",
+                "run_date",
+                "status",
+                "step_name",
+                "step_rc",
+                "artifact_path",
+                "artifact_exists",
+                "artifact_size_bytes",
+                "artifact_last_modified",
+            ],
+        )
+        writer.writeheader()
+        for step in steps:
+            writer.writerow(
+                {
+                    "row_type": "step",
+                    "run_id": run_id,
+                    "phase": phase,
+                    "owner": owner,
+                    "run_date": run_date,
+                    "status": status,
+                    "step_name": step["name"],
+                    "step_rc": step["rc"],
+                    "artifact_path": "",
+                    "artifact_exists": "",
+                    "artifact_size_bytes": "",
+                    "artifact_last_modified": "",
+                }
+            )
+        for row in artifacts:
+            writer.writerow(
+                {
+                    "row_type": "artifact",
+                    "run_id": run_id,
+                    "phase": phase,
+                    "owner": owner,
+                    "run_date": run_date,
+                    "status": status,
+                    "step_name": "",
+                    "step_rc": "",
+                    "artifact_path": row["path"],
+                    "artifact_exists": str(row["exists"]).lower(),
+                    "artifact_size_bytes": row["size_bytes"],
+                    "artifact_last_modified": row["last_modified"],
+                }
+            )
+
+
+def cmd_verify_batch(args: argparse.Namespace) -> int:
+    steps: list[dict[str, object]] = []
+
+    def run_step(name: str, fn) -> int:
+        rc = fn()
+        steps.append({"name": name, "rc": rc})
+        return rc
+
+    if args.phase in {"pre", "full"}:
+        if not args.skip_gates:
+            gate_steps = [
+                ("gate doc-sync", lambda: cmd_gate_doc_sync(argparse.Namespace())),
+                ("gate cfg-hygiene", lambda: cmd_gate_cfg_hygiene(argparse.Namespace())),
+                ("gate capl-sync", lambda: cmd_gate_capl_sync(argparse.Namespace())),
+                ("gate multibus-dbc", lambda: cmd_gate_multibus_dbc(argparse.Namespace())),
+                ("gate cli-readiness", lambda: cmd_gate_cli_readiness(argparse.Namespace())),
+            ]
+            for name, fn in gate_steps:
+                if run_step(name, fn) != 0 and args.stop_on_fail:
+                    _write_batch_report(
+                        run_id=args.run_id,
+                        owner=args.owner,
+                        run_date=args.run_date,
+                        phase=args.phase,
+                        steps=steps,
+                        output_json=args.output_json,
+                        output_csv=args.output_csv,
+                    )
+                    return 2
+
+        pre_steps = [
+            ("verify prepare", lambda: cmd_verify_prepare(argparse.Namespace(run_id=args.run_id))),
+            ("verify smoke", lambda: cmd_verify_smoke(argparse.Namespace(owner=args.owner, run_date=args.run_date))),
+            (
+                "verify status",
+                lambda: cmd_verify_status(
+                    argparse.Namespace(
+                        run_id=args.run_id,
+                        evidence_root="",
+                        output_json="canoe/tmp/reports/verification/run_readiness.json",
+                        output_md="canoe/tmp/reports/verification/run_readiness.md",
+                    )
+                ),
+            ),
+        ]
+        for name, fn in pre_steps:
+            if run_step(name, fn) != 0 and args.stop_on_fail:
+                _write_batch_report(
+                    run_id=args.run_id,
+                    owner=args.owner,
+                    run_date=args.run_date,
+                    phase=args.phase,
+                    steps=steps,
+                    output_json=args.output_json,
+                    output_csv=args.output_csv,
+                )
+                return 2
+
+    if args.phase in {"post", "full"}:
+        finalize_ns = argparse.Namespace(
+            run_id=args.run_id,
+            tiers=["UT", "IT", "ST"],
+            owner=args.owner,
+            run_date=args.run_date,
+            owner_fallback=args.owner,
+            date_fallback=args.run_date,
+            baseline_run_id="",
+            no_strict_metadata=False,
+            no_strict_axis=False,
+            evidence_root="",
+            docs_root="",
+            insight_md="canoe/tmp/reports/verification/run_insight_report.md",
+            insight_json="canoe/tmp/reports/verification/run_insight_report.json",
+            binding_csv="canoe/tmp/reports/verification/doc_binding_bundle.csv",
+            binding_json="canoe/tmp/reports/verification/doc_binding_bundle.json",
+            binding_md="canoe/tmp/reports/verification/doc_binding_bundle.md",
+            fill_csv="canoe/tmp/reports/verification/doc_fill_template.csv",
+            fill_md="canoe/tmp/reports/verification/doc_fill_template.md",
+        )
+        if run_step("verify finalize", lambda: cmd_verify_finalize(finalize_ns)) != 0 and args.stop_on_fail:
+            _write_batch_report(
+                run_id=args.run_id,
+                owner=args.owner,
+                run_date=args.run_date,
+                phase=args.phase,
+                steps=steps,
+                output_json=args.output_json,
+                output_csv=args.output_csv,
+            )
+            return 2
+        run_step(
+            "verify status",
+            lambda: cmd_verify_status(
+                argparse.Namespace(
+                    run_id=args.run_id,
+                    evidence_root="",
+                    output_json="canoe/tmp/reports/verification/run_readiness.json",
+                    output_md="canoe/tmp/reports/verification/run_readiness.md",
+                )
+            ),
+        )
+
+    _write_batch_report(
+        run_id=args.run_id,
+        owner=args.owner,
+        run_date=args.run_date,
+        phase=args.phase,
+        steps=steps,
+        output_json=args.output_json,
+        output_csv=args.output_csv,
+    )
+    failed = sum(1 for s in steps if s["rc"] != 0)
+    return 0 if failed == 0 else 2
+
+
 def cmd_scenario_run(args: argparse.Namespace) -> int:
     cmd = [
         sys.executable,
@@ -413,6 +654,7 @@ def _print_shell_help() -> None:
     print("  /exit")
     print("  /scenario [run] <id> [scenarioCommand|testScenario]")
     print("  /verify prepare [run_id]")
+    print("  /verify batch [run_id] [owner] [pre|post|full]")
     print("  /verify smoke [owner] [run_date]")
     print("  /verify status [run_id]")
     print("  /verify finalize [run_id] [owner] [run_date]")
@@ -559,12 +801,31 @@ def cmd_shell(_: argparse.Namespace) -> int:
             rc = cmd_scenario_run(ns)
         elif cmd == "verify":
             if len(tokens) < 2:
-                print("[SHELL] usage: /verify <prepare|smoke|status|finalize|quick> ...")
+                print("[SHELL] usage: /verify <prepare|batch|smoke|status|finalize|quick> ...")
                 continue
             sub = tokens[1].lower()
             if sub == "prepare":
                 run_id = tokens[2] if len(tokens) > 2 else _prompt_with_default("Run ID", _default_run_id())
                 rc = cmd_verify_prepare(argparse.Namespace(run_id=run_id))
+            elif sub == "batch":
+                run_id = tokens[2] if len(tokens) > 2 else _prompt_with_default("Run ID", _default_run_id())
+                owner = tokens[3] if len(tokens) > 3 else _prompt_with_default("Owner", "TBD")
+                phase = tokens[4] if len(tokens) > 4 else "pre"
+                if phase not in {"pre", "post", "full"}:
+                    print("[SHELL] phase must be pre|post|full")
+                    continue
+                rc = cmd_verify_batch(
+                    argparse.Namespace(
+                        run_id=run_id,
+                        owner=owner,
+                        run_date=dt.date.today().isoformat(),
+                        phase=phase,
+                        skip_gates=False,
+                        stop_on_fail=False,
+                        output_json=Path("canoe/tmp/reports/verification/dev2_batch_report.json"),
+                        output_csv=Path("canoe/tmp/reports/verification/dev2_batch_report.csv"),
+                    )
+                )
             elif sub == "smoke":
                 owner = tokens[2] if len(tokens) > 2 else _prompt_with_default("Owner", "TBD")
                 run_date = tokens[3] if len(tokens) > 3 else _prompt_with_default("Run date", dt.date.today().isoformat())
@@ -693,6 +954,28 @@ def cmd_wizard(args: argparse.Namespace) -> int:
 def add_verify_prepare_args(p: argparse.ArgumentParser) -> None:
     p.add_argument("--run-id", required=True, help="Run ID, e.g. 20260306_1930")
     p.set_defaults(func=cmd_verify_prepare)
+
+
+def add_verify_batch_args(p: argparse.ArgumentParser) -> None:
+    p.add_argument("--run-id", required=True, help="Run ID, e.g. 20260306_1930")
+    p.add_argument("--owner", default="TBD")
+    p.add_argument("--run-date", default=dt.date.today().isoformat())
+    p.add_argument("--phase", choices=["pre", "post", "full"], default="pre")
+    p.add_argument("--skip-gates", action="store_true", help="Skip all gate steps in pre/full phase")
+    p.add_argument("--stop-on-fail", action="store_true", help="Stop immediately at first failed step")
+    p.add_argument(
+        "--output-json",
+        type=Path,
+        default=Path("canoe/tmp/reports/verification/dev2_batch_report.json"),
+        help="Batch summary JSON output path",
+    )
+    p.add_argument(
+        "--output-csv",
+        type=Path,
+        default=Path("canoe/tmp/reports/verification/dev2_batch_report.csv"),
+        help="Batch summary CSV output path",
+    )
+    p.set_defaults(func=cmd_verify_batch)
 
 
 def add_verify_smoke_args(p: argparse.ArgumentParser) -> None:
@@ -913,6 +1196,7 @@ def build_parser() -> argparse.ArgumentParser:
     verify = sub.add_parser("verify", help="Verification pipeline commands")
     verify_sub = verify.add_subparsers(dest="verify_command", required=True)
     add_verify_prepare_args(verify_sub.add_parser("prepare", help="Create UT/IT/ST evidence run folders"))
+    add_verify_batch_args(verify_sub.add_parser("batch", help="Run Dev2 pre/post/full batch workflow"))
     add_verify_smoke_args(verify_sub.add_parser("smoke", help="Run CANoe COM smoke checks"))
     add_verify_fill_args(verify_sub.add_parser("fill-score", help="Fill and score one tier"))
     add_verify_insight_args(verify_sub.add_parser("insight", help="Build run-level insight report"))
@@ -957,6 +1241,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     # Legacy aliases (kept for compatibility during migration)
     add_verify_prepare_args(sub.add_parser("verify-prepare", help="Legacy alias: verify prepare"))
+    add_verify_batch_args(sub.add_parser("verify-batch", help="Legacy alias: verify batch"))
     add_verify_smoke_args(sub.add_parser("verify-smoke", help="Legacy alias: verify smoke"))
     add_verify_fill_args(sub.add_parser("verify-fill-score", help="Legacy alias: verify fill-score"))
     add_verify_insight_args(sub.add_parser("verify-insight", help="Legacy alias: verify insight"))

@@ -291,7 +291,7 @@ on message frmClusterWarningMsg
   rawCode = clampRange((int)this.WarningTextCode, 0, 255);
   code = applyDisplayPolicy(rawCode);
   code = applyRobustPolicy(code);
-  nowMs = timeNow();
+  nowMs = timeNowInt64();
   guardRemainMs = 0;
 
   if (code == 0)
@@ -363,7 +363,7 @@ on timer tDuplicateGuard
     return;
   }
 
-  nowMs = timeNow();
+  nowMs = timeNowInt64();
   elapsedMs = nowMs - gLastDisplayMs;
   if (elapsedMs >= 1000)
   {

@@ -109,7 +109,7 @@ void runArbiter()
   boundaryStatus = clampRange((int)@CoreState::domainBoundaryStatus, 0, 1);
   duplicatePopupGuard = clampRange((int)@CoreState::duplicatePopupGuard, 0, 5000);
   lastEmergencyRxMs = (dword)clampRange((int)@CoreState::lastEmergencyRxMs, 0, 2147483647);
-  nowMs = timeNow();
+  nowMs = timeNowInt64();
   staleInput = 0;
   fallbackApplied = 0;
   objectWarningActive = 0;

@@ -1,13 +1,13 @@
 # Verification Run Readiness
 
-- Generated: 2026-03-07T02:29:01
-- Run ID: `20260307_0207`
+- Generated: 2026-03-08T00:08:28
+- Run ID: `20260308_1200`
 - Overall: `PREPARED_PARTIAL`
 
 ## Tier Status
 | Tier | Template | Raw Log | Marker Count | Filled | Scored | Scored Rows |
 |---|---|---|---:|---|---|---:|
-| UT | True | True | 0 | True | True | 6 |
+| UT | True | True | 0 | False | False | 0 |
 | IT | True | True | 0 | False | False | 0 |
 | ST | True | True | 0 | False | False | 0 |
 

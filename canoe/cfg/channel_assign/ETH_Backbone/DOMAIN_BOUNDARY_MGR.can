@@ -54,19 +54,19 @@ on start
 on message frmChassisHealthMsg
 {
   gChassisAlive = this.ChassisAliveCnt;
-  gChassisTsMs  = (dword)(timeNow() / 100000);
+  gChassisTsMs  = (dword)(timeNowInt64() / 100000);
 }
 
 on message frmBodyHealthMsg
 {
   gBodyAlive  = this.BodyAliveCnt;
-  gBodyTsMs   = (dword)(timeNow() / 100000);
+  gBodyTsMs   = (dword)(timeNowInt64() / 100000);
 }
 
 on message frmInfotainmentHealthMsg
 {
   gInfoAlive  = this.InfoAliveCnt;
-  gInfoTsMs   = (dword)(timeNow() / 100000);
+  gInfoTsMs   = (dword)(timeNowInt64() / 100000);
 }
 
 on timer tBoundaryCheck
@@ -89,7 +89,7 @@ on timer tBoundaryCheck
   int e2eHealthState;
   int failSafeMode;
 
-  nowMs    = (dword)(timeNow() / 100000);
+  nowMs    = (dword)(timeNowInt64() / 100000);
   allAlive = 0;
   aliveCount = 0;
   routingPolicy = (int)@CoreState::routingPolicy;

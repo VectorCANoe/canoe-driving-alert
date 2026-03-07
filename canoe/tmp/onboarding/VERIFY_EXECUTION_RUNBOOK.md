@@ -1,51 +1,108 @@
-# Verify Execution Runbook (Dev Team)
+# Verify Execution Runbook (Dev2)
 
-## 1) One-Time
+This runbook reflects the Dev2 scope in `TEAM_SYNC_BOARD.md`:
 
-- Prepare run folder:
-```powershell
-python scripts/run.py verify prepare --run-id <RUN_ID>
-```
+- gate + test batch CLI
+- UT/IT/ST result collection in `JSON + MD` standard (`CSV` optional)
+- offline/portable execution path
 
-## 2) CANoe Execution (Manual)
+## 1) Fast Start (Recommended)
 
-- Run UT/IT/ST scenarios in CANoe.
-- No-panel trigger (recommended):
-```powershell
-python scripts/run.py scenario run --id <SCENARIO_ID>
-```
-- Save Write Window logs to:
-  - `canoe/logging/evidence/UT/<RUN_ID>/raw_write_window.txt`
-  - `canoe/logging/evidence/IT/<RUN_ID>/raw_write_window.txt`
-  - `canoe/logging/evidence/ST/<RUN_ID>/raw_write_window.txt`
-- Ensure logs include `[EVIDENCE_OUT]` lines.
-
-## 3) Preflight Check
+### A. Pre phase (before scenario run)
 
 ```powershell
-python scripts/run.py verify status --run-id <RUN_ID>
+python scripts/run.py verify batch --run-id <RUN_ID> --owner <OWNER> --phase pre
 ```
 
-- Expected before finalize:
-  - `Overall: READY_FOR_FINALIZE` or `SCORED_READY`
-  - No missing marker warning
+What it does:
 
-## 4) One-Shot Finalize
+1. gates (`doc-sync`, `cfg-hygiene`, `capl-sync`, `multibus-dbc`, `cli-readiness`)
+2. `verify prepare`
+3. `verify smoke`
+4. `verify status`
+
+### B. Manual CANoe execution
+
+1. Run UT/IT/ST scenarios in CANoe.
+2. Save Write Window logs to:
+   - `canoe/logging/evidence/UT/<RUN_ID>/raw_write_window.txt`
+   - `canoe/logging/evidence/IT/<RUN_ID>/raw_write_window.txt`
+   - `canoe/logging/evidence/ST/<RUN_ID>/raw_write_window.txt`
+3. Ensure logs include `[EVIDENCE_OUT]` markers.
+
+### C. Post phase (after evidence logs are ready)
 
 ```powershell
-python scripts/run.py verify finalize --run-id <RUN_ID> --owner DEV1
+python scripts/run.py verify batch --run-id <RUN_ID> --owner <OWNER> --phase post
 ```
 
-Outputs:
-- tier scored logs: `canoe/logging/evidence/<UT|IT|ST>/<RUN_ID>/verification_log_scored.csv`
-- run insight: `canoe/tmp/reports/verification/run_insight_report.md`
-- doc fill template: `canoe/tmp/reports/verification/doc_fill_template.csv`
+What it does:
 
-## 5) Apply to 05/06/07
+1. `verify finalize` (UT/IT/ST fill-score + insight + doc-fill)
+2. `verify status`
 
-- Use `doc_fill_template.csv`:
-  - `pass_fail` -> Pass/Fail
-  - `owner` -> 담당자
-  - `run_date` -> 일자
-  - `evidence_*` -> 증빙 링크
-- Rows with `action_required != APPLY_TO_DOC` are unresolved.
+## 2) Fixed Report Outputs (Dev2 Standard)
+
+Recommended policy (final):
+
+- Canonical machine format: `JSON`
+- Human review format: `MD`
+- Optional interchange format: `CSV` (only when needed for Excel/import)
+
+Primary outputs:
+
+- `canoe/tmp/reports/verification/dev2_batch_report.json` (canonical)
+- `canoe/tmp/reports/verification/run_readiness.md` (human review)
+
+Optional output:
+
+- `canoe/tmp/reports/verification/dev2_batch_report.csv`
+
+Batch CSV schema (optional export) is fixed:
+
+- `row_type` (`step` or `artifact`)
+- `run_id`, `phase`, `owner`, `run_date`, `status`
+- `step_name`, `step_rc`
+- `artifact_path`, `artifact_exists`, `artifact_size_bytes`, `artifact_last_modified`
+
+## 3) One-Command Variants
+
+### Full batch
+
+Only use when raw evidence logs are already prepared.
+
+```powershell
+python scripts/run.py verify batch --run-id <RUN_ID> --owner <OWNER> --phase full
+```
+
+### Shell mode (slash commands)
+
+```powershell
+python scripts/run.py shell
+```
+
+Then:
+
+1. `/verify batch <RUN_ID> <OWNER> pre`
+2. `/verify batch <RUN_ID> <OWNER> post`
+3. `/exit`
+
+## 4) Offline/Portable Execution
+
+Build portable ZIP:
+
+```powershell
+python scripts/run.py package bundle-portable --mode onefolder --clean --rebuild-exe
+```
+
+Use portable shell:
+
+```powershell
+.\dist\portable\sdv_portable\run-sdv.bat shell
+```
+
+## 5) Troubleshooting
+
+1. If scenario command ACK fails: align terminal/CANoe privilege level.
+2. If finalize fails: check `[EVIDENCE_OUT]` marker exists in all UT/IT/ST raw logs.
+3. If multibus gate fails: sync `CAN_v2_topology_wip.cfg` and domain DBC ownership first.

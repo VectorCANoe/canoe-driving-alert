@@ -251,7 +251,7 @@ void updateWarningState()
     baseZoneContext = 0;
   }
 
-  nowMs = timeNow();
+  nowMs = timeNowInt64();
   objectHoldActive = 0;
   objectInputValid = 0;
 
@@ -458,7 +458,7 @@ on message ethObjectRiskInputMsg
   @Core::objectAlertHoldMs = alertHoldMs;
   if (trackValid == 1)
   {
-    gLastObjectTrackRxMs = timeNow();
+    gLastObjectTrackRxMs = timeNowInt64();
   }
 }
 

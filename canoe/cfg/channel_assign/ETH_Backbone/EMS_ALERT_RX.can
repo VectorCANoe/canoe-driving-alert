@@ -191,7 +191,7 @@ on message frmEmergencyBroadcastMsg
 
     if (accepted == 1)
     {
-      gActiveLastRxMs = timeNow();
+      gActiveLastRxMs = timeNowInt64();
       @CoreState::lastEmergencyRxMs = (int)gActiveLastRxMs;
       publishActiveEmergencyToV2X();
       setTimeoutClear(0);
@@ -230,7 +230,7 @@ on timer tRxCycle
   eta                = clampRange((int)@V2X::eta, 0, 255);
   sourceId           = clampRange((int)@V2X::sourceId, 0, 255);
   alertState         = (((int)@V2X::alertState) == 1) ? 1 : 0;
-  nowMs              = timeNow();
+  nowMs              = timeNowInt64();
   accepted           = 0;
 
   if (alertState == 1 && (emergencyType == 1 || emergencyType == 2))
@@ -283,7 +283,7 @@ on timer tWatchdog
 {
   dword nowMs;
 
-  nowMs = timeNow();
+  nowMs = timeNowInt64();
   if (gActiveEmergencyType != 0 && (nowMs - gActiveLastRxMs) >= 1000)
   {
     clearEmergencyState();

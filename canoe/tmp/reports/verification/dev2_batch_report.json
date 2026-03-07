@@ -1,0 +1,142 @@
+{
+  "run_id": "20260308_1200",
+  "owner": "DEV2",
+  "run_date": "2026-03-08",
+  "phase": "pre",
+  "status": "PASS",
+  "pass_count": 8,
+  "fail_count": 0,
+  "steps": [
+    {
+      "name": "gate doc-sync",
+      "rc": 0
+    },
+    {
+      "name": "gate cfg-hygiene",
+      "rc": 0
+    },
+    {
+      "name": "gate capl-sync",
+      "rc": 0
+    },
+    {
+      "name": "gate multibus-dbc",
+      "rc": 0
+    },
+    {
+      "name": "gate cli-readiness",
+      "rc": 0
+    },
+    {
+      "name": "verify prepare",
+      "rc": 0
+    },
+    {
+      "name": "verify smoke",
+      "rc": 0
+    },
+    {
+      "name": "verify status",
+      "rc": 0
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "canoe/logging/evidence/UT/20260308_1200/verification_log.csv",
+      "exists": true,
+      "size_bytes": 1803,
+      "last_modified": "2026-03-08T00:07:51.308114"
+    },
+    {
+      "path": "canoe/logging/evidence/UT/20260308_1200/verification_log_scored.csv",
+      "exists": false,
+      "size_bytes": 0,
+      "last_modified": ""
+    },
+    {
+      "path": "canoe/logging/evidence/IT/20260308_1200/verification_log.csv",
+      "exists": true,
+      "size_bytes": 1803,
+      "last_modified": "2026-03-08T00:07:51.318224"
+    },
+    {
+      "path": "canoe/logging/evidence/IT/20260308_1200/verification_log_scored.csv",
+      "exists": false,
+      "size_bytes": 0,
+      "last_modified": ""
+    },
+    {
+      "path": "canoe/logging/evidence/ST/20260308_1200/verification_log.csv",
+      "exists": true,
+      "size_bytes": 1803,
+      "last_modified": "2026-03-08T00:07:51.321225"
+    },
+    {
+      "path": "canoe/logging/evidence/ST/20260308_1200/verification_log_scored.csv",
+      "exists": false,
+      "size_bytes": 0,
+      "last_modified": ""
+    },
+    {
+      "path": "canoe/tmp/reports/verification/dev_completeness_smoke.csv",
+      "exists": true,
+      "size_bytes": 1299,
+      "last_modified": "2026-03-08T00:08:28.144807"
+    },
+    {
+      "path": "canoe/tmp/reports/verification/dev_completeness_smoke.md",
+      "exists": true,
+      "size_bytes": 410,
+      "last_modified": "2026-03-08T00:08:28.144807"
+    },
+    {
+      "path": "canoe/tmp/reports/verification/run_readiness.json",
+      "exists": true,
+      "size_bytes": 1464,
+      "last_modified": "2026-03-08T00:08:28.654006"
+    },
+    {
+      "path": "canoe/tmp/reports/verification/run_readiness.md",
+      "exists": true,
+      "size_bytes": 720,
+      "last_modified": "2026-03-08T00:08:28.655005"
+    },
+    {
+      "path": "canoe/tmp/reports/verification/run_insight_report.json",
+      "exists": false,
+      "size_bytes": 0,
+      "last_modified": ""
+    },
+    {
+      "path": "canoe/tmp/reports/verification/run_insight_report.md",
+      "exists": false,
+      "size_bytes": 0,
+      "last_modified": ""
+    },
+    {
+      "path": "canoe/tmp/reports/verification/doc_binding_bundle.json",
+      "exists": true,
+      "size_bytes": 861,
+      "last_modified": "2026-03-07T04:32:50.722535"
+    },
+    {
+      "path": "canoe/tmp/reports/verification/doc_binding_bundle.md",
+      "exists": true,
+      "size_bytes": 500,
+      "last_modified": "2026-03-07T04:32:50.723535"
+    },
+    {
+      "path": "canoe/tmp/reports/verification/doc_fill_template.csv",
+      "exists": true,
+      "size_bytes": 6971,
+      "last_modified": "2026-03-07T04:32:50.723535"
+    },
+    {
+      "path": "canoe/tmp/reports/verification/doc_fill_template.md",
+      "exists": true,
+      "size_bytes": 1641,
+      "last_modified": "2026-03-07T04:32:50.724535"
+    }
+  ],
+  "generated_at": "2026-03-08T00:08:28.677092"
+}

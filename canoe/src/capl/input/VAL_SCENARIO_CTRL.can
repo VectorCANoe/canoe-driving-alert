@@ -1,4 +1,4 @@
-﻿includes
+includes
 {
 }
 
@@ -408,7 +408,7 @@ void applyScenarioPreset(int scenarioId)
 
   pushLockedScenarioInputs();
   write("[EVIDENCE_IN] scenario=%d inputTsMs=%lu",
-        scenarioId, (dword)(timeNow() / 100000));
+        scenarioId, (dword)(timeNowInt64() / 100000));
 }
 
 void scheduleScenarioEvaluation(int scenarioId)
@@ -1133,7 +1133,7 @@ on timer tScenarioEval
   clusterCode = (int)@Cluster::warningTextCode;
 
   write("[EVIDENCE_OUT] scenario=%d outputTsMs=%lu result=%d level=%d type=%d code=%d timeout=%d risk=%d decel=%d failSafe=%d objValid=%d objClass=%d objTtc=%d objEvent=%d renderType=%d renderCode=%d",
-        gCurrentScenarioId, (dword)(timeNow() / 100000), (int)@Test::scenarioResult,
+        gCurrentScenarioId, (dword)(timeNowInt64() / 100000), (int)@Test::scenarioResult,
         coreLevel, coreType, clusterCode, timeoutClear, proximityRiskLevel,
         decelAssistReq, failSafeMode, objectTrackValid, objectRiskClass,
         objectTtcMin, objectEventCode, renderAlertType, renderTextCode);
