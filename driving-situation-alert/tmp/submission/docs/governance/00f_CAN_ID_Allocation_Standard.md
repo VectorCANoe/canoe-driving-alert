@@ -1,8 +1,8 @@
 # CAN ID 배정 표준
 
 **Document ID**: PROJ-00F-CAN-ID  
-**Version**: 3.5  
-**Date**: 2026-03-06  
+**Version**: 3.7  
+**Date**: 2026-03-07  
 **Status**: Draft (Policy SoT)  
 **Scope**: `0302 -> 0303 -> 0304 -> DBC -> 04 -> 05/06/07`
 
@@ -62,6 +62,22 @@
 - 논리 Ethernet ID(`0xE1xx/0xE2xx`)는 CAN 11-bit 3/3/5 대상이 아니다.
 - `E213~E216`(`Comm_130~Comm_133`)은 Pre-Activation Ethernet 논리 ID이며, `ETH_INTERFACE_CONTRACT.md v1.2` 반영 전에는 활성 계약으로 취급하지 않는다.
 
+### 5.5 11-bit 유지/29-bit 전환 기준 (운영 디펜스)
+
+- 현재 정책:
+  - 본 프로젝트는 CAN ID를 11-bit 3/3/5 체계로 운영한다.
+  - 29-bit(Extended)는 현재 단계에서 필수 전환 항목이 아니다.
+- 11-bit 유지 조건:
+  - Tier/Group 내 Index 충돌 없이 신규 배정이 가능하다.
+  - 도메인 분리/우선순위 정책 설명이 11-bit 체계에서 충분히 가능하다.
+- 29-bit 전환 트리거(권고):
+  - 특정 Tier/Group 슬롯 점유율이 높아 신규 배정 여유가 부족할 때
+  - 11-bit 공간에서 진단/확장 기능 충돌을 해소하기 어려울 때
+  - 외부 인터페이스 요구로 Extended ID가 필요해질 때
+- 전환 원칙:
+  - 정책(00f) -> 매핑표(Annex A) -> DBC/코드 -> 테스트 문서 순으로 단계 적용한다.
+  - 전환 전까지는 11-bit 운영을 유지하고, 29-bit는 확장 대응 옵션으로 관리한다.
+
 ---
 
 ## 7. 현행 베이스라인 (전환 전 스냅샷)
@@ -79,4 +95,3 @@
   - `0x111~0x1C4` ADAS + ETH Stub
 
 ---
-

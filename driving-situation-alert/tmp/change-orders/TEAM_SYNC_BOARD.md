@@ -65,8 +65,8 @@
 | ID | 주제 | 요청팀 | 담당팀 | 상태 | 코드/구현 증빙 | 문서 반영 대상 | 문서 상태 | 비고 |
 |---|---|---|---|---|---|---|---|---|
 | TSB-001 | 역할 분리 타당성 점검(멀티버스/GW/테스터) | Dev1 | Dev1 + Docs | In Progress | `canoe/docs/operations/CAN_MESSAGE_OWNERSHIP_MATRIX.md` | `tmp/mentoring/Mentoring_MET41.md`, 필요 시 `0302/0303` | 진행중 | 멘토 권고: 가능/권고 분리 기록 |
-| TSB-002 | Req_151 문구 명확화 (`도메인 헬스/경로 상태`) | Docs | Docs | Proposed | - | `01_Requirements.md` + VC 문구 | 미반영 | 측정 가능한 통신 상태 기준으로 수정 필요 |
-| TSB-003 | Req_017/Req_139 표현 정밀화 | Docs | Docs | Proposed | - | `01_Requirements.md` | 미반영 | `일반차` 표현/정책 일관성 문구 정리 |
+| TSB-002 | Req_151 문구 명확화 (`도메인 헬스/경로 상태`) | Docs | Docs | Docs Updated | `01_Requirements.md` (`Req_151`,`VC_151`) | `01_Requirements.md` + VC 문구 | 반영완료 | 도메인 경계 통신 상태(주기/타임아웃/유효플래그) 기준으로 수정 |
+| TSB-003 | Req_017/Req_139 표현 정밀화 | Docs | Docs | Docs Updated | `01_Requirements.md` (`Req_017`,`Req_139`,`VC_139`) | `01_Requirements.md` | 반영완료 | `일반차` 표현 정리 + 우선순위 규칙 문장 명확화 |
 | TSB-004 | CANoe 공식 Test Unit PoC 1건 | Dev2 | Dev2 | Proposed | Test Unit 실행 캡처/리포트 | `tmp/mentoring/Mentoring_MET41.md` 체크 갱신 | 대기 | CAPL 하네스는 유지 |
 | TSB-005 | M40-18 실행 증빙 폐쇄 | Dev1 + Dev2 | Dev1 + Dev2 + Docs | In Progress | 로그/캡처/리포트 | `05/06/07`, `TMP_HANDOFF.md` | 진행중 | G4 재개 조건 |
 

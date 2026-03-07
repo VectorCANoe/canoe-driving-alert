@@ -58,19 +58,19 @@
 | ID | 항목 | 완료기준 | 상태 | 증빙 문서/파일 |
 |---|---|---|---|---|
 | M41-01 | 요구사항 통폐합 정합 | 과분해 Req 통합 후 의미 손실 없이 유지 | [x] | `driving-situation-alert/01_Requirements.md` |
-| M41-02 | Req_151 워딩 명확화 | `도메인 헬스/경로 상태` 표현 제거 또는 구체화 | [ ] | `driving-situation-alert/01_Requirements.md` |
+| M41-02 | Req_151 워딩 명확화 | `도메인 헬스/경로 상태` 표현 제거 또는 구체화 | [x] | `driving-situation-alert/01_Requirements.md` |
 | M41-03 | 제출 양식 정렬 | 제출본이 멘토 양식 기준으로 가독성 우선 정렬 | [~] | `driving-situation-alert/tmp/submission/docs/*` |
 | M41-04 | 구현 우선 운영 | 문서 작업이 구현 일정 저해하지 않도록 운영 | [~] | `driving-situation-alert/TMP_HANDOFF.md` |
 | M41-05 | 3/3/5 정책 고정 | 도메인 구조 + 3/3/5 병행 정책 유지 | [x] | `driving-situation-alert/00f_CAN_ID_Allocation_Standard.md` |
-| M41-06 | 11-bit/29-bit 디펜스 정리 | 확장 ID 전환 기준(트리거/조건) 명문화 | [ ] | `driving-situation-alert/00f_CAN_ID_Allocation_Standard.md` |
+| M41-06 | 11-bit/29-bit 디펜스 정리 | 확장 ID 전환 기준(트리거/조건) 명문화 | [x] | `driving-situation-alert/00f_CAN_ID_Allocation_Standard.md` |
 | M41-07 | ETH 전환 경계 유지 | CAN-stub 임시 운용 + ETH 전환 경계 문서화 | [x] | `driving-situation-alert/0302_NWflowDef.md`, `driving-situation-alert/0303_Communication_Specification.md`, `canoe/docs/operations/ETH_INTERFACE_CONTRACT.md` |
 | M41-08 | 검증 Pass/Fail 중심화 | 05/06/07이 케이스 기반 Pass/Fail 중심으로 운영 | [x] | `driving-situation-alert/05_Unit_Test.md`, `driving-situation-alert/06_Integration_Test.md`, `driving-situation-alert/07_System_Test.md` |
 | M41-09 | CI/CD 범위 최소화 | 자동화는 경험 수준으로 제한, 리포트 산출 우선 | [~] | `scripts/gates/*`, `driving-situation-alert/tmp/reports/*` |
 | M41-10 | 공식 Test Unit PoC(권고) | CANoe 테스트 메뉴 기반 Test Unit 1건 이상 수행 증빙 | [ ] | `canoe` 테스트 산출물, 실행 캡처 |
 | M41-11 | 패널/시연 산출 강화 | 결과 동영상/패널 완성도 반영 | [~] | `driving-situation-alert/07_System_Test.md`, 시연 자산 |
 | M41-12 | 멀티버스/GW 디펜스 정합(권고) | 일반 노드/GW/테스터 역할 분리 설명 확정 | [~] | `driving-situation-alert/0302_NWflowDef.md`, `driving-situation-alert/0303_Communication_Specification.md` |
-| M41-13 | Req_017 표현 정리(권고) | `일반차` 등 모호 표현 제거 후 단문 기준으로 정리 | [ ] | `driving-situation-alert/01_Requirements.md` |
-| M41-14 | Req_139/VC_139 문구 정밀화(권고) | “정책 일관성” 문구를 판정 규칙/결정론 기준 문장으로 명확화 | [ ] | `driving-situation-alert/01_Requirements.md` |
+| M41-13 | Req_017 표현 정리(권고) | `일반차` 등 모호 표현 제거 후 단문 기준으로 정리 | [x] | `driving-situation-alert/01_Requirements.md` |
+| M41-14 | Req_139/VC_139 문구 정밀화(권고) | “정책 일관성” 문구를 판정 규칙/결정론 기준 문장으로 명확화 | [x] | `driving-situation-alert/01_Requirements.md` |
 | M41-15 | 비교실험 범위 정리 | 대조군/우수성 비교 배제, Pass/Fail 중심으로 검증 범위 고정 | [~] | `driving-situation-alert/05_Unit_Test.md`, `driving-situation-alert/06_Integration_Test.md`, `driving-situation-alert/07_System_Test.md` |
 | M41-16 | 오프라인 시연 준비 | 인터넷 없이 시연 가능한 로컬 실행 자산/장비 체크리스트 확보 | [~] | `driving-situation-alert/tmp/mentoring/Mentoring_MET41.md`(하단 5.3), 시연 패키지 |
 
