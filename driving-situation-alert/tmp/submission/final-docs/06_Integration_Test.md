@@ -55,28 +55,21 @@
 
 ---
 
-## 통합 테스트 추적 상세 표
+## 통합 테스트 대표 추적 표 (축소본)
 
-| IT ID | 관련 Flow | 관련 Comm | 관련 Func | 관련 Req | 관련 VC | 선행 UT | 합격 기준 |
-|---|---|---|---|---|---|---|---|
-| IT_CORE_001 | Flow_001,Flow_002,Flow_003 | Comm_001,Comm_002,Comm_003 | Func_001~Func_012 | Req_001,Req_002,Req_003,Req_004,Req_005,Req_006,Req_007,Req_008,Req_009,Req_010,Req_011,Req_012 | VC_001~VC_012 | UT_ADAS_001, UT_NAV_001, UT_GW_001 | 입력 `100ms` + 출력 `50ms` 기준 `150ms` 이내 반영 |
-| IT_EMS_001 | Flow_004,Flow_005,Flow_006 | Comm_004,Comm_005,Comm_006 | Func_017,Func_018,Func_023 | Req_017,Req_023 | VC_017,VC_023 | UT_EMS_POL_001, UT_EMS_AMB_001, UT_EMS_RX_001 | Active/Clear 송수신 상태 일치, 송신주기 `100ms` 유지 |
-| IT_ARB_001 | Flow_006 | Comm_006 | Func_022,Func_025,Func_027~Func_032 | Req_022,Req_025,Req_027,Req_028,Req_029,Req_030,Req_031,Req_032 | VC_022,VC_025,VC_027~VC_032 | UT_ARB_001 | 우선순위/동률 규칙 결과가 기대값과 일치 |
-| IT_OUT_001 | Flow_007,Flow_008 | Comm_007,Comm_008 | Func_005,Func_008,Func_009,Func_013~Func_016,Func_019~Func_021,Func_026,Func_033~Func_040 | Req_005,Req_008,Req_009,Req_013,Req_014,Req_015,Req_016,Req_019,Req_020,Req_021,Req_026,Req_033,Req_034,Req_035,Req_037,Req_040 | VC_005,VC_008,VC_009,VC_013~VC_016,VC_019~VC_021,VC_026,VC_033~VC_040 | UT_BCM_001, UT_CLU_001, UT_OUT_GW_001 | Ambient/Cluster 출력이 정책표와 일치, 출력 주기 `50ms` 유지 |
-| IT_TIMEOUT_001 | Flow_006,Flow_007,Flow_008 | Comm_006,Comm_007,Comm_008 | Func_024,Func_033,Func_034 | Req_024,Req_033,Req_034 | VC_024,VC_033,VC_034 | UT_EMS_RX_001, UT_BCM_001 | `1000ms` 무갱신 후 timeoutClear=1, `150ms` 이내 복귀 완료 |
-| IT_V2_RISK_001 | Flow_120,Flow_121,Flow_122,Flow_123 | Comm_120,Comm_121,Comm_122,Comm_123 | Func_120,Func_121,Func_125,Func_126,Func_123 | Req_120,Req_121,Req_125,Req_126,Req_123 | VC_120,VC_121,VC_125,VC_126,VC_123 | UT_V2_RISK_001, UT_V2_RELEASE_001 | 위험도 기반 보조 요청 생성/경고 동기화/운전자 개입 해제가 수치 기준(`100ms`,`150ms`,`<=50ms`) 충족 (SIL Scenario 15/16/17/19) |
-| IT_V2_FAILSAFE_001 | Flow_124 | Comm_124 | Func_127,Func_128,Func_129 | Req_127,Req_128,Req_129 | VC_127,VC_128,VC_129 | UT_V2_FAILSAFE_001 | 경로 단절 감지 후 `150ms` 이내 강등 전환, 자동 감속 보조 0건, 최소 경고 채널 유지 (SIL Scenario 18) |
-| IT_ADAS_OBJ_001 | Flow_130,Flow_131,Flow_132,Flow_133 | Comm_130,Comm_131,Comm_132,Comm_133 | Func_130,Func_131,Func_132,Func_133,Func_134,Func_135,Func_136,Func_137,Func_138,Func_139 | Req_130,Req_131,Req_132,Req_133,Req_134,Req_135,Req_136,Req_137,Req_138,Req_139 | VC_130,VC_131,VC_132,VC_133,VC_134,VC_135,VC_136,VC_137,VC_138,VC_139 | UT_ADAS_OBJ_RISK_001, UT_ADAS_OBJ_SAFETY_001 | 객체 기반 위험 경고/강등/이벤트 체인이 수치 기준(`100ms`,`150ms`)과 정책 일관성 기준을 충족(Pre-Activation) |
-| IT_BASE_ALERT_EXT_001 | Flow_103,Flow_104,Flow_105,Flow_203,Flow_006,Flow_008 | Comm_103,Comm_104,Comm_105,Comm_203,Comm_006,Comm_008 | Func_140,Func_141,Func_142,Func_143,Func_144,Func_145,Func_146,Func_147 | Req_140,Req_141,Req_142,Req_143,Req_144,Req_145,Req_146,Req_147 | VC_140,VC_141,VC_142,VC_143,VC_144,VC_145,VC_146,VC_147 | UT_BASE_ALERT_EXT_001 | 입력 맥락 보정 `150ms`, 거리 표시 `200ms`, 이벤트 기록 누락 0건, 표시/음량 설정 반영 `150ms` 기준 충족(Pre-Activation) |
-| IT_BASE_ROBUST_EXT_001 | Flow_130,Flow_133,Flow_006,Flow_007,Flow_008,Flow_104,Flow_105,Flow_124,Flow_203 | Comm_130,Comm_133,Comm_006,Comm_007,Comm_008,Comm_104,Comm_105,Comm_124,Comm_203 | Func_148,Func_149,Func_150,Func_151,Func_152,Func_153,Func_154,Func_155 | Req_148,Req_149,Req_150,Req_151,Req_152,Req_153,Req_154,Req_155 | VC_148,VC_149,VC_150,VC_151,VC_152,VC_153,VC_154,VC_155 | UT_BASE_ROBUST_EXT_001 | 입력 유효성/신선도 보호, 전이 안정화, 채널 가용성·대체, 오디오 경합·팝업 과밀·채널 동기 복원 체인이 수치 기준(`100ms`,`150ms`)을 충족(Pre-Activation) |
-| IT_SIL_001 | Flow_009 | Comm_009 | Func_041,Func_042,Func_043 | Req_041,Req_042,Req_043 | VC_041,VC_042,VC_043 | UT_SIL_001 | 시나리오 실행/결과 기록/로그 연동 완료 |
-| IT_BASE_001 | Flow_101~Flow_106, Flow_201~Flow_205 | Comm_101~Comm_106, Comm_201~Comm_205 | Func_101~Func_107,Func_109~Func_119 | Req_101~Req_107,Req_109~Req_119 | VC_101~VC_107,VC_109~VC_119 | UT_BASE_001, UT_BASE_PT_001, UT_BASE_CH_001, UT_BASE_BODY_001, UT_BASE_IVI_001, UT_BASE_EXT_BODY_001, UT_BASE_EXT_IVI_001, UT_BASE_GW_001, UT_BASE_TEST_001 | 차량 기본 기능 입력/상태/표시/도메인 경계/SIL 판정 연동이 일관되게 유지 |
-| IT_BASE_PT_001 | Flow_101,Flow_204,Flow_105 | Comm_101,Comm_204,Comm_105 | Func_101,Func_102,Func_110 | Req_101,Req_102,Req_110 | VC_101,VC_102,VC_110 | UT_BASE_PT_001, UT_BASE_GW_001 | 엔진/변속/동력 상태 연계가 `100ms` 기준으로 유지 |
-| IT_BASE_CH_001 | Flow_102,Flow_201,Flow_105 | Comm_102,Comm_201,Comm_105 | Func_103,Func_104,Func_105,Func_110 | Req_103,Req_104,Req_105,Req_110 | VC_103,VC_104,VC_105,VC_110 | UT_BASE_CH_001, UT_BASE_GW_001 | 가감속/제동/조향/차체상태 연계가 `100ms` 기준으로 유지 |
-| IT_BASE_BODY_001 | Flow_103,Flow_202,Flow_105 | Comm_103,Comm_202,Comm_105 | Func_106,Func_107,Func_111 | Req_106,Req_107,Req_111 | VC_106,VC_107,VC_111 | UT_BASE_BODY_001, UT_BASE_GW_001 | 차체 제어/편의/상태 경로가 일관되게 유지 |
-| IT_BASE_IVI_001 | Flow_104,Flow_203,Flow_105 | Comm_104,Comm_203,Comm_105 | Func_109,Func_111 | Req_109,Req_111 | VC_109,VC_111 | UT_BASE_IVI_001, UT_BASE_GW_001 | 기본 표시/UI/연계 이벤트가 50/100ms 기준으로 유지 |
-| IT_BASE_EXT_BODY_001 | Flow_202,Flow_105 | Comm_202,Comm_105 | Func_113,Func_114,Func_115,Func_116,Func_117,Func_118 | Req_113,Req_116,Req_118 | VC_113,VC_116,VC_118 | UT_BASE_EXT_BODY_001, UT_BASE_GW_001 | HVAC/Seat/Mirror/Door/Wiper-Rain/Security 확장 상태가 `100ms` 주기로 연계되고 `150ms` 이내 반영 |
-| IT_BASE_EXT_IVI_001 | Flow_203,Flow_105 | Comm_203,Comm_105 | Func_119 | Req_119 | VC_119 | UT_BASE_EXT_IVI_001, UT_BASE_GW_001 | Audio Focus/Voice/TTS 상태가 50/100ms 주기 규칙과 `150ms` 반영 기준을 만족 |
-| IT_BASE_DIAG_001 | Flow_106,Flow_205 | Comm_106,Comm_205 | Func_112 | Req_112 | VC_112 | UT_BASE_TEST_001 | 진단 요청-응답 및 결과 기록이 Event+100ms 기준으로 유지 |
+- 제출본은 대표 IT만 유지하고, 전수 IT 추적은 원문 SoT(`driving-situation-alert/06_Integration_Test.md`)에서 관리한다.
 
----
+| IT ID | Req/VC(대표) | 체인 범위 | 판정 기준(요약) | 상태 |
+|---|---|---|---|---|
+| IT_CORE_001 | Req_001~012 / VC_001~012 | Flow_001~003 -> Comm_001~003 | 입력->경고코어 `150ms` 반영 | Active |
+| IT_EMS_001 | Req_017, Req_023 / VC_017, VC_023 | Flow_004~006 -> Comm_004~006 | 긴급 송수신/중재 입력 일치 | Active |
+| IT_ARB_001 | Req_022, Req_025~032 | Flow_006 -> Comm_006 | 중재 규칙 결정론 | Active |
+| IT_OUT_001 | Req_005, Req_008~009, Req_033~040 | Flow_007~008 -> Comm_007~008 | Ambient/Cluster 출력 정책 일치 | Active |
+| IT_TIMEOUT_001 | Req_024, Req_033, Req_034 | Flow_006~008 -> Comm_006~008 | 1000ms timeout + 150ms 복귀 | Active |
+| IT_SIL_001 | Req_041~043 | Flow_009 -> Comm_009 | SIL 실행/결과 기록 유지 | Active |
+| IT_BASE_001 | Req_101~119 | Flow_101~106,201~205 | 기본 차량 체인 일관성 | Active |
+| IT_V2_RISK_001 | Req_120, Req_121, Req_123, Req_125, Req_126 | Flow_120~123 -> Comm_120~123 | 위험도/보조요청/해제/동기화 | Ready |
+| IT_V2_FAILSAFE_001 | Req_127~129 | Flow_124 -> Comm_124 | 경로 단절 강등/최소 채널 유지 | Ready |
+| IT_ADAS_OBJ_001 | Req_130~139 | Flow_130~133 -> Comm_130~133 | 객체 위험경고/신뢰도 강등 | Planned |
+| IT_BASE_ALERT_EXT_001 | Req_140~147 | Flow_103~105,203,006,008 | 경보 편의 확장 E2E | Planned |
+| IT_BASE_ROBUST_EXT_001 | Req_148~155 | Flow_130,133,006~008,104~105,124,203 | 강건성/인지성 확장 E2E | Planned |

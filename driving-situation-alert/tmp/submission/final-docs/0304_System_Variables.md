@@ -292,40 +292,21 @@
 | 314 | Powertrain | PtCtrlSource | uint32 | 0 | 15 | 0 | 파워트레인 제어 출처 |
 ---
 
-## 변수 추적 상세 표 (Var/Comm/Flow/Func/Req)
+## 변수 대표 추적 표 (축소본)
 
-- 제출본은 상단 공식 변수표를 기준으로 하단 추적표를 대표행 중심으로 축소한다.
-- 전수 변수 추적은 원문 SoT(`driving-situation-alert/0304_System_Variables.md`)에서 관리한다.
+- 제출본은 대표 Var만 유지하고, 전수 Var 추적은 원문 SoT(`driving-situation-alert/0304_System_Variables.md`)에서 관리한다.
 
-| Var ID | 표준 Name | Internal Name | 계층 | Owner Node | Comm ID | Flow ID | Func ID | Req ID | 갱신 규칙 |
-|---|---|---|---|---|---|---|---|---|---|
-| Var_001 | vehicleSpeed | vehicleSpeed_CAN_IN | CAN_IN | CHS_GW | Comm_001 | Flow_001 | Func_001, Func_010 | Req_001, Req_010 | 100ms CAN 수신 시 갱신 |
-| Var_003 | steeringInput | steeringInput_CAN_IN | CAN_IN | CHS_GW | Comm_002 | Flow_002 | Func_011, Func_012 | Req_011, Req_012 | 100ms CAN 수신 시 갱신 |
-| Var_004 | roadZone | roadZone_CAN_IN | CAN_IN | INFOTAINMENT_GW | Comm_003 | Flow_003 | Func_007 | Req_007 | 100ms CAN 수신 시 갱신 |
-| Var_007 | emergencyType | emergencyType_ETH_IN | ETH_IN | EMS_ALERT | Comm_004, Comm_005, Comm_006 | Flow_004, Flow_005, Flow_006 | Func_017, Func_018, Func_023, Func_025, Func_029 | Req_017, Req_023, Req_025, Req_029 | E100 수신 시 즉시 갱신 |
-| Var_009 | eta | eta_ETH_IN | ETH_IN | EMS_ALERT | Comm_004, Comm_005, Comm_006 | Flow_004, Flow_005, Flow_006 | Func_017, Func_018, Func_023, Func_030, Func_143 | Req_017, Req_023, Req_030, Req_143 | E100 수신 시 즉시 갱신 |
-| Var_012 | vehicleSpeedNorm | vehicleSpeed_ETH_CORE | ETH_CORE | ADAS_WARN_CTRL | Comm_001 | Flow_001 | Func_001, Func_003, Func_004, Func_006, Func_010, Func_143 | Req_001, Req_003, Req_004, Req_006, Req_010, Req_143 | CHS_GW 변환 메시지 수신 시 갱신 |
-| Var_015 | baseZoneContext | baseZoneContext_ETH_CORE | ETH_CORE | NAV_CTX_MGR | Comm_003 | Flow_003 | Func_007 | Req_007 | NAV 컨텍스트 계산 후 갱신 |
-| Var_016 | warningState | warningState_ETH_CORE | ETH_CORE | ADAS_WARN_CTRL | Comm_001, Comm_002, Comm_006 | Flow_001, Flow_002, Flow_006 | Func_003, Func_004, Func_006, Func_010, Func_011, Func_012, Func_027, Func_149, Func_150 | Req_003, Req_004, Req_006, Req_010, Req_011, Req_012, Req_027, Req_149, Req_150 | 경고 조건/신선도/전이 안정화 시 갱신 |
-| Var_018 | selectedAlertLevel | selectedAlertLevel_ETH_CORE | ETH_CORE | WARN_ARB_MGR | Comm_006 | Flow_006 | Func_022, Func_025, Func_026, Func_027, Func_028, Func_029, Func_030, Func_031, Func_032, Func_150, Func_152 | Req_022, Req_025, Req_026, Req_027, Req_028, Req_029, Req_030, Req_031, Req_032, Req_150, Req_152 | 중재 결과 생성 시 갱신 |
-| Var_021 | ambientMode | ambientMode_CAN_OUT | CAN_OUT | BODY_GW/AMBIENT_CTRL | Comm_007 | Flow_007 | Func_008, Func_009, Func_013, Func_014, Func_015, Func_016, Func_033, Func_034, Func_035, Func_036, Func_037, Func_038, Func_039, Func_152 | Req_008, Req_009, Req_013, Req_014, Req_015, Req_016, Req_033, Req_034, Req_035, Req_037, Req_152 | 50ms 출력 갱신 |
-| Var_024 | warningTextCode | warningTextCode_CAN_OUT | CAN_OUT | IVI_GW/CLU_HMI_CTRL | Comm_008 | Flow_008 | Func_005, Func_019~Func_021, Func_026, Func_040, Func_143, Func_145, Func_146, Func_147, Func_152, Func_153, Func_154, Func_155 | Req_005, Req_019~Req_021, Req_026, Req_040, Req_143, Req_145, Req_146, Req_147, Req_152, Req_153, Req_154, Req_155 | 50ms 출력 갱신 |
-| Var_027 | lastEmergencyRxMs | lastEmergencyRxMs | CORE_STATE | EMS_ALERT | Comm_004, Comm_005, Comm_006 | Flow_004, Flow_005, Flow_006 | Func_023, Func_024, Func_149 | Req_023, Req_024, Req_149 | E100 수신 시각(ms) 기록 |
-| Var_029 | arbitrationSnapshotId | arbitrationSnapshotId | CORE_STATE | WARN_ARB_MGR | Comm_006 | Flow_006 | Func_032, Func_144, Func_145 | Req_032, Req_144, Req_145 | 중재 수행 시 증가 |
-| Var_133 | TurnLampState | turnLampState_CAN_BASE | CAN_BASE | BODY_GW | Comm_103 | Flow_103 | Func_106, Func_107, Func_140 | Req_106, Req_107, Req_140 | 100ms 수신 시 갱신 |
-| Var_155 | VolumeLevel | volumeLevel_CAN_BASE | CAN_BASE | INFOTAINMENT_GW/IVI_GW | Comm_104 | Flow_104 | Func_109, Func_147 | Req_109, Req_147 | 50ms 수신 시 갱신 |
-| Var_166 | PopupType | popupType_CAN_BASE | CAN_BASE | INFOTAINMENT_GW/IVI_GW | Comm_104 | Flow_104 | Func_109, Func_146, Func_154 | Req_109, Req_146, Req_154 | 50ms 수신 시 갱신 |
-| Var_180 | BoundaryStatus | boundaryStatus_CAN_BASE | CAN_BASE | DOMAIN_ROUTER | Comm_105 | Flow_105 | Func_110, Func_111, Func_151 | Req_110, Req_111, Req_151 | 100ms 수신 시 갱신 |
-| Var_191 | DriveMode | driveMode_CAN_BASE | CAN_BASE | DOMAIN_ROUTER | Comm_105 | Flow_105 | Func_110, Func_111, Func_141 | Req_110, Req_111, Req_141 | 100ms 수신 시 갱신 |
-| Var_268 | AudioFocusOwner | audioFocusOwner_CAN_EXT | CAN_EXT | INFOTAINMENT_GW/IVI_GW | Comm_203 | Flow_203 | Func_109, Func_111, Func_119, Func_147, Func_153 | Req_109, Req_111, Req_119, Req_147, Req_153 | 50/100ms 수신 시 갱신 |
-| Var_282 | ClusterNotifPrio | clusterNotifPrio_CAN_EXT | CAN_EXT | INFOTAINMENT_GW/IVI_GW | Comm_203 | Flow_203 | Func_109, Func_111, Func_145, Func_146, Func_147, Func_153, Func_154, Func_155 | Req_109, Req_111, Req_145, Req_146, Req_147, Req_153, Req_154, Req_155 | 50/100ms 수신 시 갱신 |
-| Var_320 | proximityRiskLevel | proximityRiskLevel_ETH_V2 | ETH_V2 | ADAS_WARN_CTRL | Comm_120 | Flow_120 | Func_120 | Req_120 | 100ms 위험도 산정 시 갱신 |
-| Var_321 | decelAssistReq | decelAssistReq_ETH_V2 | ETH_V2 | WARN_ARB_MGR | Comm_121 | Flow_121 | Func_121, Func_123 | Req_121, Req_123 | Event + 50ms 요청/해제 |
-| Var_326 | domainPathStatus | domainPathStatus_V2_FAILSAFE | CAN_V2 | DOMAIN_BOUNDARY_MGR | Comm_124 | Flow_124 | Func_127, Func_128, Func_129, Func_151 | Req_127, Req_128, Req_129, Req_151 | 100ms 수신 시 갱신 |
-| Var_328 | failSafeMode | failSafeMode_V2_FAILSAFE | ETH_V2 | DOMAIN_BOUNDARY_MGR | Comm_124 | Flow_124 | Func_127, Func_128, Func_129, Func_151, Func_152 | Req_127, Req_128, Req_129, Req_151, Req_152 | 단절 감지 시 즉시 갱신 |
-| Var_330 | objectTrackValid | objectTrackValid_ETH_ADAS | ETH_ADAS | ADAS_WARN_CTRL | Comm_130 | Flow_130 | Func_130, Func_131, Func_136, Func_148 | Req_130, Req_131, Req_136, Req_148 | 객체 입력 수신 시 갱신 |
-| Var_333 | objectConfidence | objectConfidence_ETH_ADAS | ETH_ADAS | ADAS_WARN_CTRL, DOMAIN_BOUNDARY_MGR | Comm_130, Comm_133 | Flow_130, Flow_133 | Func_130, Func_137, Func_148 | Req_130, Req_137, Req_148 | 신뢰도 갱신 시 갱신 |
-| Var_334 | objectRiskClass | objectRiskClass_ETH_ADAS | ETH_ADAS | ADAS_WARN_CTRL, WARN_ARB_MGR | Comm_131, Comm_132, Comm_133 | Flow_131, Flow_132, Flow_133 | Func_131, Func_132, Func_133, Func_134, Func_135, Func_136, Func_138, Func_139, Func_148 | Req_131, Req_132, Req_133, Req_134, Req_135, Req_136, Req_138, Req_139, Req_148 | 위험 분류 갱신 시 반영 |
-| Var_339 | objectEventCode | objectEventCode_ETH_ADAS | ETH_ADAS | EMS_ALERT | Comm_133 | Flow_133 | Func_138 | Req_138 | 이벤트 기록 시 갱신 |
-
----
+| Var ID | 표준 Name | Owner | Comm/Flow | Func/Req(대표) | 갱신 규칙 |
+|---|---|---|---|---|---|
+| Var_001 | vehicleSpeed | CHS_GW | Comm_001 / Flow_001 | Func_001, Func_010 / Req_001, Req_010 | 100ms CAN 수신 |
+| Var_012 | vehicleSpeedNorm | ADAS_WARN_CTRL | Comm_001 / Flow_001 | Func_001, Func_006 / Req_001, Req_006 | GW 정규화 수신 시 |
+| Var_018 | selectedAlertLevel | WARN_ARB_MGR | Comm_006 / Flow_006 | Func_022, Func_027 / Req_022, Req_027 | 중재 결과 생성 시 |
+| Var_021 | ambientMode | BODY_GW, AMBIENT_CTRL | Comm_007 / Flow_007 | Func_035 / Req_035 | 50ms 출력 갱신 |
+| Var_024 | warningTextCode | IVI_GW, CLU_HMI_CTRL | Comm_008 / Flow_008 | Func_040, Func_155 / Req_040, Req_155 | 50ms 출력 갱신 |
+| Var_027 | lastEmergencyRxMs | EMS_ALERT | Comm_004~006 / Flow_004~006 | Func_023, Func_024 / Req_023, Req_024 | E100 수신 시각 기록 |
+| Var_133 | TurnLampState | BODY_GW | Comm_103 / Flow_103 | Func_140 / Req_140 | 100ms 수신 |
+| Var_191 | DriveMode | DOMAIN_ROUTER | Comm_105 / Flow_105 | Func_141 / Req_141 | 100ms 수신 |
+| Var_320 | proximityRiskLevel | ADAS_WARN_CTRL | Comm_120 / Flow_120 | Func_120 / Req_120 | 100ms 위험도 산정 |
+| Var_328 | failSafeMode | DOMAIN_BOUNDARY_MGR | Comm_124 / Flow_124 | Func_127, Func_129 / Req_127, Req_129 | 단절 감지 즉시 |
+| Var_330 | objectTrackValid | ADAS_WARN_CTRL | Comm_130 / Flow_130 | Func_130, Func_148 / Req_130, Req_148 | 객체 입력 수신 시 |
+| Var_339 | objectEventCode | EMS_ALERT | Comm_133 / Flow_133 | Func_138 / Req_138 | 이벤트 기록 시 |

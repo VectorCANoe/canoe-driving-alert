@@ -305,36 +305,25 @@
 
 ---
 
-## 통신 상세 추적 표 (Comm/Flow/Func/Req)
+## 통신 대표 추적 표 (축소본)
 
-| Comm ID | Flow ID | Func ID | Req ID | Message(ID) | Tx Node | Rx Node | Protocol | Period | Clear/비고 |
-|---|---|---|---|---|---|---|---|---|---|
-| Comm_001 | Flow_001 | Func_001, Func_002, Func_003, Func_004, Func_006, Func_010 | Req_001, Req_002, Req_003, Req_004, Req_006, Req_010 | frmVehicleStateCanMsg(0x2A0), ethVehicleStateMsg(0x510) | VAL_SCENARIO_CTRL, CHS_GW | CHS_GW, ADAS_WARN_CTRL | CAN + Ethernet(UDP) | 100ms | 속도/주행상태 입력 갱신 |
-| Comm_002 | Flow_002 | Func_011, Func_012 | Req_011, Req_012 | frmSteeringCanMsg(0x2A1), ethSteeringMsg(0x511) | VAL_SCENARIO_CTRL, CHS_GW | CHS_GW, ADAS_WARN_CTRL | CAN + Ethernet(UDP) | 100ms | 조향 입력 갱신 |
-| Comm_003 | Flow_003 | Func_007, Func_010 | Req_007, Req_010 | frmNavContextCanMsg(0x2A3), ethNavContextMsg(0x512) | VAL_SCENARIO_CTRL, INFOTAINMENT_GW | INFOTAINMENT_GW, NAV_CTX_MGR, ADAS_WARN_CTRL, WARN_ARB_MGR | CAN + Ethernet(UDP) | 100ms | 구간/방향/거리/제한속도 입력 갱신 |
-| Comm_004 | Flow_004 | Func_017 | Req_017 | ETH_EmergencyAlert(0xE100) | EMS_ALERT(Tx:Police) | EMS_ALERT(Rx) | Ethernet(UDP) | 100ms | alertState=Clear 또는 송신 중지 |
-| Comm_005 | Flow_005 | Func_018 | Req_017 | ETH_EmergencyAlert(0xE100) | EMS_ALERT(Tx:Ambulance) | EMS_ALERT(Rx) | Ethernet(UDP) | 100ms | alertState=Clear 또는 송신 중지 |
-| Comm_006 | Flow_006 | Func_022, Func_023, Func_024, Func_025, Func_027, Func_028, Func_029, Func_030, Func_031, Func_032, Func_144, Func_149, Func_150, Func_152 | Req_022, Req_023, Req_024, Req_025, Req_027, Req_028, Req_029, Req_030, Req_031, Req_032, Req_144, Req_149, Req_150, Req_152 | ETH_EmergencyAlert(0xE100), ethSelectedAlertMsg(0xE200) | EMS_ALERT(Rx), WARN_ARB_MGR | WARN_ARB_MGR, BODY_GW, IVI_GW | Ethernet(UDP) | Event + 50ms | 1000ms 무갱신 시 timeoutClear=1 |
-| Comm_007 | Flow_007 | Func_008, Func_009, Func_013, Func_014, Func_015, Func_016, Func_033, Func_034, Func_035, Func_036, Func_037, Func_038, Func_039, Func_152 | Req_008, Req_009, Req_013, Req_014, Req_015, Req_016, Req_033, Req_034, Req_035, Req_037, Req_152 | ethSelectedAlertMsg(0xE200), frmAmbientControlMsg(0x260) | WARN_ARB_MGR, BODY_GW | BODY_GW, AMBIENT_CTRL | Ethernet(UDP) + CAN | 50ms | selectedAlertLevel/selectedAlertType 수신 |
-| Comm_008 | Flow_008 | Func_005, Func_019, Func_020, Func_021, Func_026, Func_040, Func_143, Func_152, Func_155 | Req_005, Req_019, Req_020, Req_021, Req_026, Req_040, Req_143, Req_152, Req_155 | ethSelectedAlertMsg(0xE200), frmClusterWarningMsg(0x280) | WARN_ARB_MGR, IVI_GW | IVI_GW, CLU_HMI_CTRL | Ethernet(UDP) + CAN | 50ms | selectedAlertLevel/selectedAlertType 수신 |
-| Comm_009 | Flow_009 | Func_041, Func_042, Func_043 | Req_041, Req_042, Req_043 | frmTestResultMsg(0x2A5) | VAL_SCENARIO_CTRL | VAL_SCENARIO_CTRL(Log/Panel) | CAN | Event | 판정 결과 기록 완료 시 종료 |
-| Comm_120 | Flow_120 | Func_120 | Req_120 | ethEmergencyRiskMsg(0x1C3) | ADAS_WARN_CTRL | WARN_ARB_MGR, VAL_SCENARIO_CTRL | Ethernet(UDP) | 100ms | 근접위험 산정 프레임 |
-| Comm_121 | Flow_121 | Func_121 | Req_121 | ethDecelAssistReqMsg(0x1C4) | WARN_ARB_MGR | CHS_GW, BRK_CTRL, VAL_SCENARIO_CTRL | Ethernet(UDP) + CAN | Event + 50ms | 감속 보조 요청 프레임 |
-| Comm_122 | Flow_122 | Func_125, Func_126 | Req_125, Req_126 | ethSelectedAlertMsg(0xE200), frmAmbientControlMsg(0x260), frmClusterWarningMsg(0x280) | WARN_ARB_MGR | BODY_GW, IVI_GW, AMBIENT_CTRL, CLU_HMI_CTRL | Ethernet(UDP) + CAN | 50ms | 감속 보조 활성 경고 동기화 |
-| Comm_123 | Flow_123 | Func_123 | Req_123 | frmPedalInputCanMsg(0x2A2), frmSteeringCanMsg(0x2A1), ethDecelAssistReqMsg(0x1C4) | CHS_GW, WARN_ARB_MGR | WARN_ARB_MGR, DOMAIN_ROUTER, BRK_CTRL | CAN + Ethernet(UDP) | Event + 100ms | 운전자 개입 시 보조 해제 |
-| Comm_124 | Flow_124 | Func_127, Func_128, Func_129, Func_151, Func_152 | Req_127, Req_128, Req_129, Req_151, Req_152 | frmChassisHealthMsg(0x103), frmBodyHealthMsg(0x269), frmInfotainmentHealthMsg(0x288), ethFailSafeStateMsg(0x111) | CHS_GW, BODY_GW, INFOTAINMENT_GW, DOMAIN_BOUNDARY_MGR | DOMAIN_BOUNDARY_MGR, DOMAIN_ROUTER, WARN_ARB_MGR, BODY_GW, IVI_GW, VAL_SCENARIO_CTRL | CAN + Ethernet(UDP) | 100ms + Event | 경로 단절 강등/보조 금지 |
-| Comm_130 | Flow_130 | Func_130, Func_131, Func_148 | Req_130, Req_131, Req_148 | ethObjectRiskInputMsg(0xE213) | CHS_GW, INFOTAINMENT_GW | ADAS_WARN_CTRL | Ethernet(UDP) | 100ms | 객체 목록/대표 위험 후보 입력 (Pre-Activation) |
-| Comm_131 | Flow_131 | Func_132, Func_133, Func_136 | Req_132, Req_133, Req_136 | ethObjectRiskStateMsg(0xE214) | ADAS_WARN_CTRL | WARN_ARB_MGR, VAL_SCENARIO_CTRL | Ethernet(UDP) | 100ms + Event | TTC/상대속도/거리 기반 위험 상태 (Pre-Activation) |
-| Comm_132 | Flow_132 | Func_134, Func_135, Func_139 | Req_134, Req_135, Req_139 | ethObjectScenarioAlertMsg(0xE215), frmAmbientControlMsg(0x260), frmClusterWarningMsg(0x280) | WARN_ARB_MGR | BODY_GW, IVI_GW, AMBIENT_CTRL, CLU_HMI_CTRL | Ethernet(UDP) + CAN | Event + 50ms | 교차로/합류 객체 경고 및 우선순위 정합 (Pre-Activation) |
-| Comm_133 | Flow_133 | Func_137, Func_138, Func_148 | Req_137, Req_138, Req_148 | ethObjectSafetyStateMsg(0xE216) | DOMAIN_BOUNDARY_MGR, EMS_ALERT | WARN_ARB_MGR, VAL_SCENARIO_CTRL | Ethernet(UDP) | Event | 신뢰도 강등 및 객체 이벤트 기록 (Pre-Activation) |
+- 제출본은 대표 Comm만 유지하고, 전수 Comm 추적은 원문 SoT(`driving-situation-alert/0303_Communication_Specification.md`)에서 관리한다.
 
----
+| Comm ID | Flow ID | Req ID(대표) | 핵심 메시지(ID) | 핵심 노드(Tx->Rx) | 프로토콜/주기 | 상태 |
+|---|---|---|---|---|---|---|
+| Comm_001 | Flow_001 | Req_001, Req_010 | frmVehicleStateCanMsg(0x2A0), ethVehicleStateMsg(0x510) | CHS_GW -> ADAS_WARN_CTRL | CAN+ETH / 100ms | Active |
+| Comm_003 | Flow_003 | Req_007, Req_010 | frmNavContextCanMsg(0x2A3), ethNavContextMsg(0x512) | INFOTAINMENT_GW -> NAV_CTX_MGR | CAN+ETH / 100ms | Active |
+| Comm_006 | Flow_006 | Req_022, Req_024, Req_152 | ETH_EmergencyAlert(0xE100), ethSelectedAlertMsg(0xE200) | EMS_ALERT/WARN_ARB_MGR -> BODY_GW, IVI_GW | ETH / Event+50ms | Active |
+| Comm_007 | Flow_007 | Req_035, Req_037 | ethSelectedAlertMsg(0xE200), frmAmbientControlMsg(0x260) | BODY_GW -> AMBIENT_CTRL | ETH+CAN / 50ms | Active |
+| Comm_008 | Flow_008 | Req_040, Req_155 | ethSelectedAlertMsg(0xE200), frmClusterWarningMsg(0x280) | IVI_GW -> CLU_HMI_CTRL | ETH+CAN / 50ms | Active |
+| Comm_120 | Flow_120 | Req_120 | ethEmergencyRiskMsg(0x1C3) | ADAS_WARN_CTRL -> WARN_ARB_MGR | ETH / 100ms | Implemented |
+| Comm_124 | Flow_124 | Req_127, Req_129, Req_151 | frmChassisHealthMsg(0x103), ethFailSafeStateMsg(0x111) | DOMAIN_BOUNDARY_MGR -> WARN_ARB_MGR | CAN+ETH / 100ms+Event | Implemented |
+| Comm_130 | Flow_130 | Req_130, Req_148 | ethObjectRiskInputMsg(0xE213) | CHS_GW/INFOTAINMENT_GW -> ADAS_WARN_CTRL | ETH / 100ms | Planned |
+| Comm_132 | Flow_132 | Req_134, Req_139 | ethObjectScenarioAlertMsg(0xE215), frmAmbientControlMsg(0x260), frmClusterWarningMsg(0x280) | WARN_ARB_MGR -> AMBIENT_CTRL/CLU_HMI_CTRL | ETH+CAN / Event+50ms | Planned |
 
 ## 제출본 운용 메모
 
-- 상단 공식 통신 표와 `통신 상세 추적 표`를 제출 기준 본표로 유지한다.
+- 상단 공식 통신 표는 유지하고, 하단은 대표 추적만 유지한다.
 - Baseline(`Comm_101~106, 201~205`)은 `Defined`, V2(`Comm_120~124`)는 `Implemented` 상태로 관리한다.
 - ADAS 객체 확장(`Comm_130~133`)은 `Planned(Pre-Activation)` 상태로 유지한다.
 - 상세 전수 매핑과 도메인 분해표는 원문 SoT(`driving-situation-alert/0303_Communication_Specification.md`)를 기준으로 관리한다.
-
----
