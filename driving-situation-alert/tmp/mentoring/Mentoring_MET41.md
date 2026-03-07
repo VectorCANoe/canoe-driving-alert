@@ -59,32 +59,33 @@
 |---|---|---|---|---|
 | M41-01 | 요구사항 통폐합 정합 | 과분해 Req 통합 후 의미 손실 없이 유지 | [x] | `driving-situation-alert/01_Requirements.md` |
 | M41-02 | Req_151 워딩 명확화 | `도메인 헬스/경로 상태` 표현 제거 또는 구체화 | [x] | `driving-situation-alert/01_Requirements.md` |
-| M41-03 | 제출 양식 정렬 | 제출본이 멘토 양식 기준으로 가독성 우선 정렬 | [~] | `driving-situation-alert/tmp/submission/docs/*` |
-| M41-04 | 구현 우선 운영 | 문서 작업이 구현 일정 저해하지 않도록 운영 | [~] | `driving-situation-alert/TMP_HANDOFF.md` |
+| M41-03 | 제출 양식 정렬 | 제출본이 멘토 양식 기준으로 가독성 우선 정렬 | [x] | `driving-situation-alert/tmp/submission/docs/*` |
+| M41-04 | 구현 우선 운영 | 문서 작업이 구현 일정 저해하지 않도록 운영 | [x] | `driving-situation-alert/TMP_HANDOFF.md` |
 | M41-05 | 3/3/5 정책 고정 | 도메인 구조 + 3/3/5 병행 정책 유지 | [x] | `driving-situation-alert/00f_CAN_ID_Allocation_Standard.md` |
 | M41-06 | 11-bit/29-bit 디펜스 정리 | 확장 ID 전환 기준(트리거/조건) 명문화 | [x] | `driving-situation-alert/00f_CAN_ID_Allocation_Standard.md` |
 | M41-07 | ETH 전환 경계 유지 | CAN-stub 임시 운용 + ETH 전환 경계 문서화 | [x] | `driving-situation-alert/0302_NWflowDef.md`, `driving-situation-alert/0303_Communication_Specification.md`, `canoe/docs/operations/ETH_INTERFACE_CONTRACT.md` |
 | M41-08 | 검증 Pass/Fail 중심화 | 05/06/07이 케이스 기반 Pass/Fail 중심으로 운영 | [x] | `driving-situation-alert/05_Unit_Test.md`, `driving-situation-alert/06_Integration_Test.md`, `driving-situation-alert/07_System_Test.md` |
-| M41-09 | CI/CD 범위 최소화 | 자동화는 경험 수준으로 제한, 리포트 산출 우선 | [~] | `scripts/gates/*`, `driving-situation-alert/tmp/reports/*` |
+| M41-09 | CI/CD 범위 최소화 | 자동화는 경험 수준으로 제한, 리포트 산출 우선 | [x] | `scripts/gates/*`, `driving-situation-alert/tmp/reports/*` |
 | M41-10 | 공식 Test Unit PoC(권고) | CANoe 테스트 메뉴 기반 Test Unit 1건 이상 수행 증빙 | [ ] | `canoe` 테스트 산출물, 실행 캡처 |
 | M41-11 | 패널/시연 산출 강화 | 결과 동영상/패널 완성도 반영 | [~] | `driving-situation-alert/07_System_Test.md`, 시연 자산 |
-| M41-12 | 멀티버스/GW 디펜스 정합(권고) | 일반 노드/GW/테스터 역할 분리 설명 확정 | [~] | `driving-situation-alert/0302_NWflowDef.md`, `driving-situation-alert/0303_Communication_Specification.md` |
+| M41-12 | 멀티버스/GW 디펜스 정합(권고) | 일반 노드/GW/테스터 역할 분리 설명 확정 | [x] | `driving-situation-alert/0302_NWflowDef.md`, `driving-situation-alert/0303_Communication_Specification.md` |
 | M41-13 | Req_017 표현 정리(권고) | `일반차` 등 모호 표현 제거 후 단문 기준으로 정리 | [x] | `driving-situation-alert/01_Requirements.md` |
 | M41-14 | Req_139/VC_139 문구 정밀화(권고) | “정책 일관성” 문구를 판정 규칙/결정론 기준 문장으로 명확화 | [x] | `driving-situation-alert/01_Requirements.md` |
-| M41-15 | 비교실험 범위 정리 | 대조군/우수성 비교 배제, Pass/Fail 중심으로 검증 범위 고정 | [~] | `driving-situation-alert/05_Unit_Test.md`, `driving-situation-alert/06_Integration_Test.md`, `driving-situation-alert/07_System_Test.md` |
+| M41-15 | 비교실험 범위 정리 | 대조군/우수성 비교 배제, Pass/Fail 중심으로 검증 범위 고정 | [x] | `driving-situation-alert/05_Unit_Test.md`, `driving-situation-alert/06_Integration_Test.md`, `driving-situation-alert/07_System_Test.md` |
 | M41-16 | 오프라인 시연 준비 | 인터넷 없이 시연 가능한 로컬 실행 자산/장비 체크리스트 확보 | [~] | `driving-situation-alert/tmp/mentoring/Mentoring_MET41.md`(하단 5.3), 시연 패키지 |
+
+## 2.1) 실측 대기 항목 (폐쇄 보류)
+
+- `M40-18`: `Req_130~Req_155` 실행증빙(`Pass/Fail`, owner/date, 로그/캡처) 실측 반영 대기
+- `M41-10`: CANoe 공식 `Test Unit` PoC 1건 실행/캡처 대기
+- `M41-11`: 시연 동영상 최종본 및 패널 결과 캡처 반영 대기
 
 ## 3) 즉시 실행 To-do (다음 사이클)
 
-1. `Req_151` 문구를 `통신 상태`/`측정 가능 기준` 중심으로 수정하고, VC 문장도 동일 기준으로 동기화한다.
-2. 제출본(`tmp/submission/docs`)은 멘토 양식 우선으로 열/표현을 단순화하고, 내부 상세 추적은 원문 SoT로 분리 유지한다.
-3. `00f`에 `11-bit 유지 디펜스`와 `29-bit 확장 전환 조건`을 Q&A 수준으로 추가한다.
-4. CANoe 공식 `Test Unit`은 1건만 파일럿으로 수행해 스크린샷/리포트 증빙을 남기고, 주 검증 체계는 CAPL 하네스를 유지한다.
-5. 패널/동영상 산출을 우선순위 상단으로 두고, 문서는 구현 완료분 기준으로 후행 동기화한다.
-6. 멀티버스 구성은 `테스터 전용 예외`와 `일반 노드 GW 경유 원칙`을 문서 문구로 고정하고, 가능하면 테스터도 버스별 분리안을 우선 적용한다.
-7. `Req_017`, `Req_139/VC_139` 문구를 멘토 코멘트 기준으로 간결/명확 문장으로 다듬는다.
-8. 대조군/우수성 비교 실험은 범위 밖으로 두고, Pass/Fail 증빙 자동화 품질을 우선한다.
-9. 오프라인 환경(인터넷 제한) 기준으로 시연 파일/실행툴/로그 뷰어를 로컬 패키지로 사전 고정한다.
+1. `M40-18` 실측 결과를 수집해 `04/05/06/07`에 `Pass/Fail`, 담당자, 일자, 로그/캡처 링크를 채운다.
+2. CANoe 공식 `Test Unit` PoC 1건을 실행하고 스크린샷/리포트를 증빙으로 추가한다.
+3. 시연 동영상/패널 최종본을 확정하고 `07`의 증빙 링크를 갱신한다.
+4. 오프라인 환경 기준으로 시연 파일/실행툴/로그 뷰어 패키지를 고정하고 리허설한다.
 
 ## 4) 발표 디펜스 Q&A 메모 (MET41)
 
@@ -101,7 +102,7 @@
 
 - 이 문서는 회의록 분석 기반 내부 실행 메모다.
 - 회의록 원문 발화(시간대)는 `1)` 표를 기준으로 추적한다.
-- MET41에서 새로 확인된 핵심 리스크는 `Req_151 문구 모호성`과 `제출 양식 가독성`이다.
+- MET41 핵심 잔여 리스크는 `실측 증빙 폐쇄(M40-18)`와 `공식 Test Unit PoC(M41-10)`다.
 - 다음 회차 전 우선순위는 `구현/시연 완성 -> 문서 후행 동기화`다.
 - 팀 간 전달 단일 창구는 `tmp/change-orders/TEAM_SYNC_BOARD.md`로 운영한다.
 

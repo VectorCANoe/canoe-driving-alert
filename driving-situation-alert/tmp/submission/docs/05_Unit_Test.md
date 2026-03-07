@@ -24,6 +24,7 @@
 - 경계값/세부 케이스 전수는 원문 05에서 관리한다.
 - Req/VC 추적 키는 원문과 동일하게 유지한다.
 - Pre-Activation 라벨은 원문과 동일하게 유지한다.
+- 대조군/우수성 비교 실험은 제출본 범위 밖으로 두고 Pass/Fail 중심으로 제시한다.
 
 ---
 
@@ -89,4 +90,3 @@
 | UT_BASE_ROBUST_EXT_001 | ADAS_WARN_CTRL, WARN_ARB_MGR, DOMAIN_BOUNDARY_MGR, CLU_HMI_CTRL | 경고 강건성·인지성 확장(입력 유효성/신선도 보호, 전이 안정화, 채널 가용성·대체, 오디오 경합/팝업 과밀/채널 동기 복원) 유닛 검증 | Req_148,Req_149,Req_150,Req_151,Req_152,Req_153,Req_154,Req_155 | VC_148,VC_149,VC_150,VC_151,VC_152,VC_153,VC_154,VC_155 | Func_148,Func_149,Func_150,Func_151,Func_152,Func_153,Func_154,Func_155 | Flow_130,Flow_133,Flow_006,Flow_007,Flow_008,Flow_104,Flow_105,Flow_124,Flow_203 / Comm_130,Comm_133,Comm_006,Comm_007,Comm_008,Comm_104,Comm_105,Comm_124,Comm_203 | Var_330,Var_333,Var_334,Var_016,Var_020,Var_021,Var_024,Var_027,Var_028,Var_166,Var_167,Var_168,Var_180,Var_268,Var_269,Var_289,Var_296,Var_297,Var_326,Var_327,Var_328,Var_282 | 입력 유효성 필터링 `100ms`, stale/전이 안정화 `150ms`, 채널 가용성 판정/대체 출력 전환 `150ms`, 오디오 경합/팝업 과밀/동기 복원 `150ms` 기준 충족(Pre-Activation) |
 
 ---
-

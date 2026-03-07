@@ -24,6 +24,7 @@
 - 전수 IT 추적은 원문 06에서 관리한다.
 - 검증 환경 표기는 CANoe SIL(CAN+Ethernet, 필요 시 stub) 기준으로 유지한다.
 - Pre-Activation 라벨은 원문과 동일하게 유지한다.
+- 대조군/우수성 비교 실험은 제출본 범위 밖으로 두고 Pass/Fail 중심으로 제시한다.
 
 ---
 
@@ -78,4 +79,3 @@
 | IT_BASE_DIAG_001 | Flow_106,Flow_205 | Comm_106,Comm_205 | Func_112 | Req_112 | VC_112 | UT_BASE_TEST_001 | 진단 요청-응답 및 결과 기록이 Event+100ms 기준으로 유지 |
 
 ---
-

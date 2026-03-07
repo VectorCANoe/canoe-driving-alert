@@ -23,6 +23,7 @@
 - 상세 추적(UT ID, Req/VC/Func/Flow/Comm/Var)은 하단 표로 분리한다.
 - 범위 외 항목(OTA/UDS/DoIP)은 포함하지 않는다.
 - 본 문서는 `FZ_001~FZ_012` 결과 반영 전 Baseline Draft이며, 측정값 확정 시 Pass/Fail를 기입한다.
+- 대조군/우수성 비교 실험은 본 문서 범위 밖으로 두며, 요구사항 충족 Pass/Fail 증빙을 우선한다.
 - 임시 주석(실행 제약): 현재 CANoe.CAN 라이선스 환경에서는 SIL 실행 시 Ethernet 구간을 CAN 대체 백본으로 검증하며, Ethernet 라이선스 확보 후 동일 케이스로 재검증한다.
 - `VAL_SCENARIO_CTRL`/`VAL_BASELINE_CTRL` 관련 항목은 Validation Harness(검증 전용)이며 양산 사용자 기능으로 해석하지 않는다.
 - UT 증적(로그/캡처/리포트)은 `canoe/logging/evidence/UT/` 경로 규칙으로 관리한다.

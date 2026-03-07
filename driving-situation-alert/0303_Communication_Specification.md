@@ -24,6 +24,7 @@
 - 0304에 아직 등재되지 않은 Vehicle Baseline 확장 신호는 DBC 원본 신호명(`AccelPedal`, `DriveMode` 등)으로 표기한다.
 - CAN 통신 원본은 계층 분리로 관리한다: 도메인 프로파일은 `canoe/databases/chassis_can.dbc`, `canoe/databases/powertrain_can.dbc`, `canoe/databases/body_can.dbc`, `canoe/databases/infotainment_can.dbc`, `canoe/databases/adas_can.dbc`, `canoe/databases/eth_backbone_can_stub.dbc`를 사용하고, Validation 결과 프레임(`0x2A5`,`0x2A6`)은 `chassis_can.dbc`에 통합 관리한다. Ethernet 논리 계약은 `canoe/docs/operations/ETH_INTERFACE_CONTRACT.md`를 사용한다.
 - 본 설계는 Ethernet 백본(`ETH_SW`) + 도메인 게이트웨이(`CHS_GW`, `INFOTAINMENT_GW`, `BODY_GW`, `IVI_GW`) + 도메인 CAN 분배 구조를 사용한다.
+- 멀티버스 운영 원칙: 일반 기능 노드는 단일 버스 소속을 원칙으로 하며 도메인 간 전달은 게이트웨이 경유를 기본으로 한다. 테스터/검증 노드는 예외적으로 멀티버스 연결을 허용하되 가능하면 버스별 분리 운용을 우선한다.
 - 하단 추적표는 `Comm ID -> Flow ID -> Func ID -> Req ID`를 유지한다.
 - 제출 전 현대/기아 및 OEM 기준으로 설명/별칭은 정리하되, Message ID/DLC/Bit Position/Signal 식별자는 SoT 기준으로 고정 유지한다.
 - Message ID notation rule (fixed): architecture references use Logical IDs (0xE210~0xE216) as primary; CANoe SIL implementation/test uses Stub IDs (0x1C3/0x1C4/0x111/0x1C5~0x1C8) per canoe/docs/operations/ETH_INTERFACE_CONTRACT.md.
