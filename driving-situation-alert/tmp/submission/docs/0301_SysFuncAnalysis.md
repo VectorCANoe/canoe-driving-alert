@@ -106,4 +106,15 @@
 | Req_130 | Func_130, Func_131 | ADAS_WARN_CTRL | 객체 위험 입력/판정(Pre-Activation) |
 | Req_148 | Func_148 | ADAS_WARN_CTRL | 경고 입력 유효성/신뢰도 보호(Pre-Activation) |
 
+## 대표 체인 샘플 (제출 보강)
+
+| Req ID | Func ID | Flow ID | Comm ID | Var ID(핵심) | Code Ref | Test Link |
+|---|---|---|---|---|---|---|
+| Req_001 | Func_001 | Flow_001 | Comm_001 | Var_012(vehicleSpeedNorm), Var_013(driveStateNorm) | MOD_01.F001 | UT_ADAS_001 |
+| Req_017 | Func_017 | Flow_004 | Comm_004 | Var_007(emergencyType), Var_009(eta) | MOD_03.F017 | UT_EMS_POL_001 |
+| Req_022 | Func_022 | Flow_006 | Comm_006 | Var_017(emergencyContext), Var_018(selectedAlertLevel) | MOD_06.F022 | UT_ARB_001 |
+| Req_035 | Func_035 | Flow_007 | Comm_007 | Var_019(selectedAlertType), Var_022(ambientColor) | MOD_11.F035 | UT_BCM_001 |
+| Req_120 | Func_120 | Flow_120 | Comm_120 | Var_320(proximityRiskLevel) | MOD_01.F120 | UT_V2_RISK_001 |
+| Req_130 | Func_130 | Flow_130 | Comm_130 | Var_330(objectTrackValid), Var_331(objectRange) | MOD_01.F130 | UT_ADAS_OBJ_RISK_001 (Planned) |
+
 ---

@@ -277,19 +277,12 @@
 |  |  |  | 1 | Powertrain Control Auth | 8~11 | PtCtrlSource |  |  |  | Tx |  |  |  |  |  |  |  |  |  |  |  | Rx | Rx |  |  |  |  |  |  |  |  |  |
 ---
 
-## Flow 원본(Source of Truth) 매핑
+## Flow SoT 요약 (제출본)
 
-| 계층 | 적용 Flow ID | 원본 파일(SoT) | 유지 규칙 |
-|---|---|---|---|
-| Core CAN Profile | Flow_001, Flow_002, Flow_003(CAN), Flow_007(CAN 0x289), Flow_008(CAN 0x280), Flow_009(CAN 0x2A5) | `canoe/databases/chassis_can.dbc` + `canoe/databases/infotainment_can.dbc` + `canoe/databases/body_can.dbc` + `canoe/databases/adas_can.dbc` + `canoe/databases/eth_backbone_can_stub.dbc` | 상단 공식표와 동일 ID/Signal 유지(CAN-stub 포함) |
-| Core Ethernet Profile | Flow_001~Flow_008(Ethernet 구간) | `canoe/docs/operations/ETH_INTERFACE_CONTRACT.md` | E100/E200, 0x510/0x511/0x512 계약 우선 |
-| Chassis Domain Profile | Flow_102, Flow_106(일부), Flow_105(헬스 연계), Flow_201 | `canoe/databases/chassis_can.dbc` | 0x122~0x2A0(0x1C1 제외) 범위 준수 |
-| ADAS Domain CAN Profile | Flow_006(egress), Flow_007, Flow_008, Flow_120, Flow_121, Flow_122, Flow_130~Flow_132, Flow_201(일부) | `canoe/databases/adas_can.dbc` | 0x1C1/0x206/0x1C3~0x1C7 범위 준수 (ADAS 소유 프레임) |
-| ETH Backbone CAN Stub Profile | Flow_004, Flow_005, Flow_006, Flow_124, Flow_133 | `canoe/databases/eth_backbone_can_stub.dbc` | 0x1C0/0x1C2/0x111/0x1C8 범위 준수 |
-| ADAS Object Extension Profile (Pre-Activation) | Flow_130~Flow_133 | `canoe/databases/adas_can.dbc` + `canoe/databases/eth_backbone_can_stub.dbc` + `canoe/docs/operations/ETH_INTERFACE_CONTRACT.md` (v1.2) | `Flow_130~132`는 ADAS CAN Stub(0x1C5~0x1C7), `Flow_133`은 ETH Stub(0x1C8) 운반 기준. 계약 SoT는 활성, 구현/시험은 Pre-Activation으로 관리 |
-| Powertrain Domain Profile | Flow_101, Flow_105, Flow_204 | `canoe/databases/powertrain_can.dbc` | 0x110~0x2A8 범위 준수 |
-| Body Domain Profile | Flow_103, Flow_105, Flow_202 | `canoe/databases/body_can.dbc` | 0x289~0x291, 0x277~0x292 범위 준수 |
-| Infotainment Domain Profile | Flow_104, Flow_105, Flow_203, Flow_205 | `canoe/databases/infotainment_can.dbc` | 0x2A3, 0x280~0x288, 0x289~0x295 범위 준수 |
+- CAN Flow 원본: `canoe/databases/*.dbc`
+- Ethernet 논리 계약 원본: `canoe/docs/operations/ETH_INTERFACE_CONTRACT.md` (v1.2)
+- ADAS 객체 확장(`Flow_130~133`)은 계약 SoT 활성 + 구현/시험 Pre-Activation 상태로 유지한다.
+- Flow 변경 시 `0303/0304/04/05/06/07` 동시 동기화를 적용한다.
 
 ---
 
@@ -318,18 +311,11 @@
 
 ---
 
-## 하단 확장표 축소 (제출본)
+## 제출본 운용 메모
 
 - 상단 공식 플로우 표와 `플로우 상세 추적 표`를 제출 기준 본표로 유지한다.
-- 도메인별/단계별 확장 분해표는 중복을 줄이기 위해 요약만 남긴다.
-- 상세 전수 매핑은 원문 SoT(`driving-situation-alert/0302_NWflowDef.md`)를 기준으로 관리한다.
-
-| 구분 | 제출본 유지 내용 | 원문 SoT 참조 |
-|---|---|---|
-| 도메인 네트워크 분리 | Core/Domain 분리 원칙 + 주요 경로 요약 | 0302 원문 `도메인 네트워크 분리 기준` |
-| Vehicle Baseline 확장 | Flow_101~106, Flow_201~205는 `Defined` 상태로 유지 | 0302 원문 Baseline/Phase-B 확장 표 |
-| V2 확장 | Flow_120~124는 `Implemented` 상태로 유지 | 0302 원문 V2 확장 표 |
-| ADAS 객체 인지 확장 | Flow_130~133는 `Planned(Pre-Activation)` 상태로 유지 | 0302 원문 ADAS 확장 표 |
-| 동기화 규칙 | 변경 시 0303/0304/04/05/06/07 동시 반영 | TMP_HANDOFF + 원문 체인 |
+- Baseline(`Flow_101~106, 201~205`)은 `Defined`, V2(`Flow_120~124`)는 `Implemented` 상태로 관리한다.
+- ADAS 객체 확장(`Flow_130~133`)은 `Planned(Pre-Activation)` 상태로 유지한다.
+- 상세 전수 매핑과 도메인 분해표는 원문 SoT(`driving-situation-alert/0302_NWflowDef.md`)를 기준으로 관리한다.
 
 ---

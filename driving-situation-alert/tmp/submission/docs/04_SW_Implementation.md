@@ -87,6 +87,17 @@ Emergency Source (logical terminal)
 | 경보 편의(계획) | Func_140~Func_147 | WARN_ARB_MGR, CLU_HMI_CTRL | TurnLampState, VolumeLevel -> 경보 정책/표시 반영 | UT_BASE_ALERT_EXT_001(Planned) |
 | 강건성·인지성(계획) | Func_148~Func_155 | ADAS_WARN_CTRL, DOMAIN_BOUNDARY_MGR, CLU_HMI_CTRL | objectConfidence, failSafeMode -> 대체 출력/동기 복원 | UT_BASE_ROBUST_EXT_001(Planned) |
 
+## 대표 구현 추적 (제출 보강)
+
+| Req ID | Func ID | Flow/Comm | 핵심 Var | 구현 파일 | Code Ref | 검증 링크 |
+|---|---|---|---|---|---|---|
+| Req_001 | Func_001 | Flow_001 / Comm_001 | vehicleSpeedNorm, driveStateNorm | `canoe/src/capl/logic/ADAS_WARN_CTRL.can` | MOD_01.F001 | UT_ADAS_001 |
+| Req_017 | Func_017 | Flow_004 / Comm_004 | emergencyType, eta, emergencyDirection | `canoe/src/capl/ems/EMS_POLICE_TX.can` | MOD_03.F017 | UT_EMS_POL_001 |
+| Req_022 | Func_022 | Flow_006 / Comm_006 | emergencyContext, selectedAlertLevel | `canoe/src/capl/logic/WARN_ARB_MGR.can` | MOD_06.F022 | UT_ARB_001 |
+| Req_035 | Func_035 | Flow_007 / Comm_007 | selectedAlertType, ambientColor | `canoe/src/capl/output/AMBIENT_CTRL.can` | MOD_11.F035 | UT_BCM_001 |
+| Req_120 | Func_120 | Flow_120 / Comm_120 | proximityRiskLevel | `canoe/src/capl/logic/ADAS_WARN_CTRL.can` | MOD_01.F120 | UT_V2_RISK_001 / IT_V2_RISK_001 |
+| Req_130 | Func_130 | Flow_130 / Comm_130 | objectTrackValid, objectRange, objectRelSpeed | `canoe/src/capl/logic/ADAS_WARN_CTRL.can` | MOD_01.F130 | UT_ADAS_OBJ_RISK_001 (Planned) |
+
 ## 인터페이스 요약 (SWE.3 BP2 축소본)
 
 | 인터페이스 | 입력 | 출력 | 타이밍 | 예외 |

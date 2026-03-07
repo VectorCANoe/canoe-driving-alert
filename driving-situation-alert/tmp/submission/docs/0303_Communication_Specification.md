@@ -294,16 +294,12 @@
 |  |  |  | PtCtrlSource | 8~11 | 파워트레인 제어 출처 | 0~15 | DOMAIN_ROUTER -> ENG_CTRL, TCM 전달 |
 ---
 
-## 통신 원본(Source of Truth) 매핑
+## Comm SoT 요약 (제출본)
 
-| 구분 | 범위 | 원본 파일 | 비고 |
-|---|---|---|---|
-| Core CAN Profile | Comm_001, Comm_002, Comm_003, Comm_006, Comm_007, Comm_008, Comm_009 | `canoe/databases/chassis_can.dbc` + `canoe/databases/infotainment_can.dbc` + `canoe/databases/body_can.dbc` + `canoe/databases/adas_can.dbc` + `canoe/databases/eth_backbone_can_stub.dbc` | 경고 코어 체인 단일 원본(CAN-stub 포함) |
-| Domain CAN Profile | Comm_101~Comm_106, Comm_201~Comm_205 | `canoe/databases/chassis_can.dbc` + `canoe/databases/powertrain_can.dbc` + `canoe/databases/body_can.dbc` + `canoe/databases/infotainment_can.dbc` + `canoe/databases/adas_can.dbc` + `canoe/databases/eth_backbone_can_stub.dbc` | 차량 기본 기능/도메인 분리 원본(CAN-stub 포함) |
-| ADAS CAN Profile | Comm_006, Comm_007, Comm_008, Comm_120, Comm_121, Comm_122, Comm_130~Comm_132, Comm_201(일부) | `canoe/databases/adas_can.dbc` | ADAS 소유 프레임 원본 |
-| ETH Stub Transport Profile | Comm_004, Comm_005, Comm_006, Comm_124, Comm_133 | `canoe/databases/eth_backbone_can_stub.dbc` | CANoe.CAN 환경 대체 운반 원본 |
-| Ethernet Profile (Logical Contract) | Comm_004, Comm_005, Comm_006, Comm_120, Comm_121, Comm_124, Comm_130~Comm_133 (및 Comm_001~003/007~008의 ETH 구간) | `canoe/docs/operations/ETH_INTERFACE_CONTRACT.md` | UDP 활성 계약 단일 원본(v1.2) |
-| Ethernet Profile (Pre-Activation Scope) | Comm_130~Comm_133 | `canoe/docs/operations/ETH_INTERFACE_CONTRACT.md` (v1.2) | 계약 SoT는 활성, 구현/시험 상태는 Pre-Activation 유지 |
+- CAN Comm 원본: `canoe/databases/*.dbc`
+- Ethernet 논리 계약 원본: `canoe/docs/operations/ETH_INTERFACE_CONTRACT.md` (v1.2)
+- ADAS 객체 확장(`Comm_130~133`)은 계약 SoT 활성 + 구현/시험 Pre-Activation 상태로 유지한다.
+- Comm 변경 시 `0302/0304/04/05/06/07` 동시 동기화를 적용한다.
 
 ---
 
@@ -332,18 +328,11 @@
 
 ---
 
-## 하단 확장표 축소 (제출본)
+## 제출본 운용 메모
 
 - 상단 공식 통신 표와 `통신 상세 추적 표`를 제출 기준 본표로 유지한다.
-- 도메인별 Comm 확장 전수표는 중복을 줄이기 위해 요약만 유지한다.
-- 상세 전수 매핑은 원문 SoT(`driving-situation-alert/0303_Communication_Specification.md`)를 기준으로 관리한다.
-
-| 구분 | 제출본 유지 내용 | 원문 SoT 참조 |
-|---|---|---|
-| 도메인별 통신 원본 | Domain CAN/ETH 논리 계약 분리 원칙 요약 | 0303 원문 `도메인별 통신 원본 확장 정의` |
-| Vehicle Baseline 확장 | Comm_101~106, Comm_201~205 `Defined` 상태 유지 | 0303 원문 Baseline/Phase-B 확장 표 |
-| V2 확장 | Comm_120~124 `Implemented` 상태 유지 | 0303 원문 V2 확장 표 |
-| ADAS 객체 인지 확장 | Comm_130~133 `Planned(Pre-Activation)` 유지 | 0303 원문 ADAS 확장 표 |
-| 계약/구현 상태 | `ETH_INTERFACE_CONTRACT.md v1.2` 계약 SoT 활성, 코드/시험은 `Pre-Activation` 유지 | 0303 원문 ADAS 확장 섹션 |
+- Baseline(`Comm_101~106, 201~205`)은 `Defined`, V2(`Comm_120~124`)는 `Implemented` 상태로 관리한다.
+- ADAS 객체 확장(`Comm_130~133`)은 `Planned(Pre-Activation)` 상태로 유지한다.
+- 상세 전수 매핑과 도메인 분해표는 원문 SoT(`driving-situation-alert/0303_Communication_Specification.md`)를 기준으로 관리한다.
 
 ---
