@@ -12,7 +12,6 @@ variables
   int gDemoStepIndex;
   int gDemoRunning;
   int gCurrentScenarioId;
-  int gBaseTraceSnapshotId;
   int gArbitrationSnapshotBaseline;
   int gScenarioInputLock;
   int gLockDriveState;
@@ -774,7 +773,6 @@ on start
   gDemoStepIndex = 0;
   gDemoRunning = 0;
   gCurrentScenarioId = 0;
-  gBaseTraceSnapshotId = 0;
   gArbitrationSnapshotBaseline = 0;
   gScenarioInputLock = 0;
   gLockDriveState = 3;
@@ -1100,7 +1098,6 @@ on timer tDemoStep
 
 on timer tScenarioEval
 {
-  message frmBaseTestResultMsg mBase;
   int coreLevel;
   int coreType;
   int timeoutClear;
@@ -1116,8 +1113,6 @@ on timer tScenarioEval
   int clusterCode;
 
   evaluateScenarioResult();
-  gBaseTraceSnapshotId = (gBaseTraceSnapshotId + 1) & 0xFFFF;
-
   coreLevel = (int)@Core::selectedAlertLevel;
   coreType = (int)@Core::selectedAlertType;
   timeoutClear = (int)@Core::timeoutClear;
@@ -1138,11 +1133,4 @@ on timer tScenarioEval
         decelAssistReq, failSafeMode, objectTrackValid, objectRiskClass,
         objectTtcMin, objectEventCode, renderAlertType, renderTextCode);
 
-  /* Comm_106 baseline aggregate result frame */
-  mBase.BaseScenarioId = clampRange(gCurrentScenarioId, 0, 255);
-  mBase.BaseScenarioResult = ((int)@Test::scenarioResult == 1) ? 1 : 0;
-  mBase.FlowCoverageMask = 0x007F; /* Flow_101~Flow_106 coverage */
-  mBase.TraceSnapshotId = gBaseTraceSnapshotId;
-  mBase.TestHealth = 0;
-  output(mBase);
 }

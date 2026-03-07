@@ -131,3 +131,9 @@
 3. `verify batch --phase post`: `verify finalize` + `verify status`.
 4. 리포트 정책: `JSON+MD` 기본, `CSV` 선택 출력.
 5. CLI 역할은 검증 오케스트레이션/증빙 수집이며, 네트워크 토폴로지 변경 자체는 범위 밖이다.
+
+## Dev1 Follow-up (2026-03-08)
+- TSB-010: Comm_106/Flow_106 baseline result owner 단일화 완료.
+- Code decision: `frmTestResultMsg (0x2A5)` owner는 `VAL_SCENARIO_CTRL`, `frmBaseTestResultMsg (0x2A6)` owner는 `VAL_BASELINE_CTRL`로 고정.
+- Docs request: `0302_NWflowDef.md`, `0303_Communication_Specification.md`에서 `Comm_106`/`Flow_106` 문구를 `VAL_SCENARIO_CTRL -> frmTestResultMsg(0x2A5) -> VAL_BASELINE_CTRL -> frmBaseTestResultMsg(0x2A6)` 체인으로 수정.
+- Evidence: `canoe/src/capl/input/VAL_SCENARIO_CTRL.can`, `canoe/cfg/channel_assign/ETH_Backbone/VAL_SCENARIO_CTRL.can`, `canoe/src/capl/ecu/VAL_BASELINE_CTRL.can`, `python scripts/gates/check_capl_sync.py` PASS.
