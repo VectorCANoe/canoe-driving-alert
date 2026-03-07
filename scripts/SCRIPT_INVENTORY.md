@@ -93,6 +93,7 @@ Target direction:
 
 Canonical:
 
+- `python scripts/run.py shell`
 - `python scripts/run.py scenario run --id <0..255>`
 - `python scripts/run.py verify prepare --run-id <RUN_ID>`
 - `python scripts/run.py verify smoke --owner <OWNER>`
@@ -105,18 +106,20 @@ Canonical:
 - `python scripts/run.py gate doc-sync`
 - `python scripts/run.py gate cfg-hygiene`
 - `python scripts/run.py gate capl-sync`
+- `python scripts/run.py gate multibus-dbc`
 - `python scripts/run.py gate cli-readiness`
 - `python scripts/run.py package build-exe --mode <onefolder|onefile>`
 - `python scripts/run.py package bundle-portable [--rebuild-exe]`
 
 Compatibility aliases remain enabled during transition:
 
+- `wizard`, `interactive`
 - `scenario-run`
 - `verify-prepare`, `verify-smoke`, `verify-fill-score`, `verify-insight`, `verify-bind-doc`
 - `verify-fill-template`
 - `verify-status`
 - `verify-finalize`
-- `gate-doc-sync`, `gate-cfg-hygiene`, `gate-capl-sync`
+- `gate-doc-sync`, `gate-cfg-hygiene`, `gate-capl-sync`, `gate-multibus-dbc`
 
 ## 7) Packaging Baseline (F3)
 

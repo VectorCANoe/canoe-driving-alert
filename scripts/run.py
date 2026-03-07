@@ -2,6 +2,7 @@
 """Unified script launcher.
 
 Canonical command contract:
+  - shell
   - scenario run
   - verify prepare
   - verify smoke
@@ -16,6 +17,8 @@ Canonical command contract:
   - package bundle-portable
 
 Legacy aliases are kept for compatibility:
+  - wizard
+  - interactive
   - scenario-run
   - verify-prepare
   - verify-smoke
@@ -35,6 +38,7 @@ from __future__ import annotations
 import argparse
 import datetime as dt
 import json
+import shlex
 import subprocess
 import sys
 from pathlib import Path
@@ -44,6 +48,7 @@ ROOT = Path(__file__).resolve().parent.parent
 SCRIPTS = ROOT / "scripts"
 
 CONTRACT_CANONICAL = [
+    "python scripts/run.py shell",
     "python scripts/run.py scenario run --id <0..255>",
     "python scripts/run.py verify prepare --run-id <YYYYMMDD_HHMM>",
     "python scripts/run.py verify smoke --owner <OWNER>",
@@ -63,6 +68,8 @@ CONTRACT_CANONICAL = [
 ]
 
 CONTRACT_LEGACY = [
+    "wizard",
+    "interactive",
     "scenario-run",
     "verify-prepare",
     "verify-smoke",
@@ -354,6 +361,335 @@ def cmd_package_bundle_portable(args: argparse.Namespace) -> int:
     return run_cmd(cmd)
 
 
+def _prompt_with_default(label: str, default: str) -> str:
+    raw = input(f"{label} [{default}]: ").strip()
+    return raw or default
+
+
+def _prompt_int(label: str, default: int, minimum: int, maximum: int) -> int:
+    while True:
+        raw = input(f"{label} [{default}]: ").strip()
+        if not raw:
+            return default
+        try:
+            value = int(raw)
+        except ValueError:
+            print("[WIZARD] enter a valid integer.")
+            continue
+        if value < minimum or value > maximum:
+            print(f"[WIZARD] value must be in range {minimum}..{maximum}.")
+            continue
+        return value
+
+
+def _default_run_id() -> str:
+    return dt.datetime.now().strftime("%Y%m%d_%H%M")
+
+
+def _run_gate_all() -> int:
+    gates = [
+        ("doc-sync", cmd_gate_doc_sync),
+        ("cfg-hygiene", cmd_gate_cfg_hygiene),
+        ("capl-sync", cmd_gate_capl_sync),
+        ("multibus-dbc", cmd_gate_multibus_dbc),
+        ("cli-readiness", cmd_gate_cli_readiness),
+    ]
+    failed = 0
+    for gate_name, gate_fn in gates:
+        print(f"[WIZARD] gate -> {gate_name}")
+        rc = gate_fn(argparse.Namespace())
+        if rc != 0:
+            failed += 1
+    if failed:
+        print(f"[WIZARD] gate summary: FAIL ({failed}/{len(gates)} failed)")
+        return 2
+    print(f"[WIZARD] gate summary: PASS ({len(gates)}/{len(gates)})")
+    return 0
+
+
+def _print_shell_help() -> None:
+    print("Slash commands:")
+    print("  /help")
+    print("  /exit")
+    print("  /scenario [run] <id> [scenarioCommand|testScenario]")
+    print("  /verify prepare [run_id]")
+    print("  /verify smoke [owner] [run_date]")
+    print("  /verify status [run_id]")
+    print("  /verify finalize [run_id] [owner] [run_date]")
+    print("  /verify quick [run_id] [owner]  # prepare + smoke + status")
+    print("  /gate all|doc-sync|cfg-hygiene|capl-sync|multibus-dbc|cli-readiness")
+    print("  /package portable [onefolder|onefile]")
+    print("  /package exe [onefolder|onefile]")
+    print("  /skill list")
+    print("  /skill run quickstart|verify-pack|portable-release")
+    print("  /contract")
+
+
+def _run_named_gate(gate_name: str) -> int:
+    mapping = {
+        "doc-sync": cmd_gate_doc_sync,
+        "cfg-hygiene": cmd_gate_cfg_hygiene,
+        "capl-sync": cmd_gate_capl_sync,
+        "multibus-dbc": cmd_gate_multibus_dbc,
+        "cli-readiness": cmd_gate_cli_readiness,
+    }
+    fn = mapping.get(gate_name)
+    if fn is None:
+        print(f"[SHELL] unknown gate: {gate_name}")
+        return 2
+    return fn(argparse.Namespace())
+
+
+def _run_skill(skill_name: str) -> int:
+    if skill_name == "quickstart":
+        run_id = _prompt_with_default("Run ID", _default_run_id())
+        owner = _prompt_with_default("Owner", "TBD")
+        steps = [
+            ("scenario run 4", lambda: cmd_scenario_run(argparse.Namespace(
+                id=4,
+                namespace="Test",
+                var="scenarioCommand",
+                ack_var="scenarioCommandAck",
+                wait_ack_ms=1200,
+                poll_ms=20,
+                no_ensure_running=False,
+            ))),
+            (f"verify prepare {run_id}", lambda: cmd_verify_prepare(argparse.Namespace(run_id=run_id))),
+            (f"verify smoke {owner}", lambda: cmd_verify_smoke(argparse.Namespace(owner=owner, run_date=dt.date.today().isoformat()))),
+            (f"verify status {run_id}", lambda: cmd_verify_status(argparse.Namespace(
+                run_id=run_id,
+                evidence_root="",
+                output_json="canoe/tmp/reports/verification/run_readiness.json",
+                output_md="canoe/tmp/reports/verification/run_readiness.md",
+            ))),
+        ]
+    elif skill_name == "verify-pack":
+        run_id = _prompt_with_default("Run ID", _default_run_id())
+        owner = _prompt_with_default("Owner", "TBD")
+        run_date = _prompt_with_default("Run date", dt.date.today().isoformat())
+        steps = [
+            (f"verify finalize {run_id} {owner}", lambda: cmd_verify_finalize(argparse.Namespace(
+                run_id=run_id,
+                tiers=["UT", "IT", "ST"],
+                owner=owner,
+                run_date=run_date,
+                owner_fallback=owner,
+                date_fallback=run_date,
+                baseline_run_id="",
+                no_strict_metadata=False,
+                no_strict_axis=False,
+                evidence_root="",
+                docs_root="",
+                insight_md="canoe/tmp/reports/verification/run_insight_report.md",
+                insight_json="canoe/tmp/reports/verification/run_insight_report.json",
+                binding_csv="canoe/tmp/reports/verification/doc_binding_bundle.csv",
+                binding_json="canoe/tmp/reports/verification/doc_binding_bundle.json",
+                binding_md="canoe/tmp/reports/verification/doc_binding_bundle.md",
+                fill_csv="canoe/tmp/reports/verification/doc_fill_template.csv",
+                fill_md="canoe/tmp/reports/verification/doc_fill_template.md",
+            ))),
+        ]
+    elif skill_name == "portable-release":
+        steps = [
+            ("package bundle-portable --mode onefolder --clean --rebuild-exe", lambda: cmd_package_bundle_portable(argparse.Namespace(
+                mode="onefolder",
+                clean=True,
+                rebuild_exe=True,
+                output_dir="",
+                bundle_name="",
+                zip_name="",
+            ))),
+        ]
+    else:
+        print(f"[SHELL] unknown skill: {skill_name}")
+        return 2
+
+    for step_name, step_fn in steps:
+        print(f"[SHELL][SKILL] {step_name}")
+        rc = step_fn()
+        if rc != 0:
+            print(f"[SHELL][SKILL] FAIL at step: {step_name}")
+            return rc
+    print("[SHELL][SKILL] PASS")
+    return 0
+
+
+def cmd_shell(_: argparse.Namespace) -> int:
+    print("SDV Shell (slash mode)")
+    print("Type /help, /exit")
+    print("Tip: keep CANoe measurement running before scenario/verify commands")
+    while True:
+        line = input("sdv> ").strip()
+        if not line:
+            continue
+        if line.startswith("/"):
+            line = line[1:].strip()
+        if not line:
+            continue
+        try:
+            tokens = shlex.split(line)
+        except ValueError as ex:
+            print(f"[SHELL] parse error: {ex}")
+            continue
+        if not tokens:
+            continue
+        cmd = tokens[0].lower()
+        rc = 0
+        if cmd in {"exit", "quit", "q"}:
+            print("[SHELL] bye")
+            return 0
+        if cmd in {"help", "h", "?"}:
+            _print_shell_help()
+            continue
+        if cmd == "scenario":
+            args = tokens[1:]
+            if args and args[0].lower() == "run":
+                args = args[1:]
+            scenario_id = int(args[0]) if args else _prompt_int("Scenario ID", default=4, minimum=0, maximum=255)
+            var_name = args[1] if len(args) > 1 else "scenarioCommand"
+            ns = argparse.Namespace(
+                id=scenario_id,
+                namespace="Test",
+                var=var_name,
+                ack_var="scenarioCommandAck",
+                wait_ack_ms=1200,
+                poll_ms=20,
+                no_ensure_running=False,
+            )
+            rc = cmd_scenario_run(ns)
+        elif cmd == "verify":
+            if len(tokens) < 2:
+                print("[SHELL] usage: /verify <prepare|smoke|status|finalize|quick> ...")
+                continue
+            sub = tokens[1].lower()
+            if sub == "prepare":
+                run_id = tokens[2] if len(tokens) > 2 else _prompt_with_default("Run ID", _default_run_id())
+                rc = cmd_verify_prepare(argparse.Namespace(run_id=run_id))
+            elif sub == "smoke":
+                owner = tokens[2] if len(tokens) > 2 else _prompt_with_default("Owner", "TBD")
+                run_date = tokens[3] if len(tokens) > 3 else _prompt_with_default("Run date", dt.date.today().isoformat())
+                rc = cmd_verify_smoke(argparse.Namespace(owner=owner, run_date=run_date))
+            elif sub == "status":
+                run_id = tokens[2] if len(tokens) > 2 else _prompt_with_default("Run ID", _default_run_id())
+                rc = cmd_verify_status(argparse.Namespace(
+                    run_id=run_id,
+                    evidence_root="",
+                    output_json="canoe/tmp/reports/verification/run_readiness.json",
+                    output_md="canoe/tmp/reports/verification/run_readiness.md",
+                ))
+            elif sub in {"finalize", "full"}:
+                run_id = tokens[2] if len(tokens) > 2 else _prompt_with_default("Run ID", _default_run_id())
+                owner = tokens[3] if len(tokens) > 3 else _prompt_with_default("Owner", "TBD")
+                run_date = tokens[4] if len(tokens) > 4 else _prompt_with_default("Run date", dt.date.today().isoformat())
+                rc = cmd_verify_finalize(argparse.Namespace(
+                    run_id=run_id,
+                    tiers=["UT", "IT", "ST"],
+                    owner=owner,
+                    run_date=run_date,
+                    owner_fallback=owner,
+                    date_fallback=run_date,
+                    baseline_run_id="",
+                    no_strict_metadata=False,
+                    no_strict_axis=False,
+                    evidence_root="",
+                    docs_root="",
+                    insight_md="canoe/tmp/reports/verification/run_insight_report.md",
+                    insight_json="canoe/tmp/reports/verification/run_insight_report.json",
+                    binding_csv="canoe/tmp/reports/verification/doc_binding_bundle.csv",
+                    binding_json="canoe/tmp/reports/verification/doc_binding_bundle.json",
+                    binding_md="canoe/tmp/reports/verification/doc_binding_bundle.md",
+                    fill_csv="canoe/tmp/reports/verification/doc_fill_template.csv",
+                    fill_md="canoe/tmp/reports/verification/doc_fill_template.md",
+                ))
+            elif sub == "quick":
+                run_id = tokens[2] if len(tokens) > 2 else _prompt_with_default("Run ID", _default_run_id())
+                owner = tokens[3] if len(tokens) > 3 else _prompt_with_default("Owner", "TBD")
+                steps = [
+                    ("verify prepare", lambda: cmd_verify_prepare(argparse.Namespace(run_id=run_id))),
+                    ("verify smoke", lambda: cmd_verify_smoke(argparse.Namespace(owner=owner, run_date=dt.date.today().isoformat()))),
+                    ("verify status", lambda: cmd_verify_status(argparse.Namespace(
+                        run_id=run_id,
+                        evidence_root="",
+                        output_json="canoe/tmp/reports/verification/run_readiness.json",
+                        output_md="canoe/tmp/reports/verification/run_readiness.md",
+                    ))),
+                ]
+                for step_name, step_fn in steps:
+                    print(f"[SHELL] {step_name}")
+                    rc = step_fn()
+                    if rc != 0:
+                        break
+            else:
+                print(f"[SHELL] unknown verify subcommand: {sub}")
+                continue
+        elif cmd == "gate":
+            if len(tokens) < 2:
+                print("[SHELL] usage: /gate all|doc-sync|cfg-hygiene|capl-sync|multibus-dbc|cli-readiness")
+                continue
+            sub = tokens[1].lower()
+            if sub == "all":
+                rc = _run_gate_all()
+            else:
+                rc = _run_named_gate(sub)
+        elif cmd == "package":
+            if len(tokens) < 2:
+                print("[SHELL] usage: /package <portable|exe> [onefolder|onefile]")
+                continue
+            sub = tokens[1].lower()
+            mode = tokens[2].lower() if len(tokens) > 2 else "onefolder"
+            if mode not in {"onefolder", "onefile"}:
+                print("[SHELL] mode must be onefolder|onefile")
+                continue
+            if sub == "portable":
+                rc = cmd_package_bundle_portable(argparse.Namespace(
+                    mode=mode,
+                    clean=False,
+                    rebuild_exe=False,
+                    output_dir="",
+                    bundle_name="",
+                    zip_name="",
+                ))
+            elif sub == "exe":
+                rc = cmd_package_build_exe(argparse.Namespace(mode=mode, clean=False))
+            else:
+                print(f"[SHELL] unknown package subcommand: {sub}")
+                continue
+        elif cmd == "skill":
+            if len(tokens) < 2:
+                print("[SHELL] usage: /skill list | /skill run <name>")
+                continue
+            sub = tokens[1].lower()
+            if sub == "list":
+                print("Skills:")
+                print("  - quickstart")
+                print("  - verify-pack")
+                print("  - portable-release")
+            elif sub == "run":
+                if len(tokens) < 3:
+                    print("[SHELL] usage: /skill run <quickstart|verify-pack|portable-release>")
+                    continue
+                rc = _run_skill(tokens[2].lower())
+            else:
+                print(f"[SHELL] unknown skill subcommand: {sub}")
+                continue
+        elif cmd == "contract":
+            rc = cmd_contract(argparse.Namespace(json=False))
+        else:
+            print(f"[SHELL] unknown command: {cmd}")
+            print("[SHELL] type /help")
+            continue
+
+        if rc == 0:
+            print("[SHELL] PASS")
+        else:
+            print(f"[SHELL] FAIL (rc={rc})")
+
+
+def cmd_wizard(args: argparse.Namespace) -> int:
+    # Legacy alias: keep old entrypoint name but use shell behavior.
+    return cmd_shell(args)
+
+
 def add_verify_prepare_args(p: argparse.ArgumentParser) -> None:
     p.add_argument("--run-id", required=True, help="Run ID, e.g. 20260306_1930")
     p.set_defaults(func=cmd_verify_prepare)
@@ -567,6 +903,9 @@ def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Unified script launcher")
     sub = parser.add_subparsers(dest="command", required=True)
 
+    sub.add_parser("shell", help="Interactive slash-command shell").set_defaults(func=cmd_shell)
+    sub.add_parser("wizard", help="Legacy alias: shell").set_defaults(func=cmd_wizard)
+
     scenario = sub.add_parser("scenario", help="Manual scenario trigger commands (no panel)")
     scenario_sub = scenario.add_subparsers(dest="scenario_command", required=True)
     add_scenario_run_args(scenario_sub.add_parser("run", help="Send scenario command via CANoe COM"))
@@ -614,6 +953,7 @@ def build_parser() -> argparse.ArgumentParser:
     contract.set_defaults(func=cmd_contract)
 
     add_scenario_run_args(sub.add_parser("scenario-run", help="Legacy alias: scenario run"))
+    sub.add_parser("interactive", help="Legacy alias: shell").set_defaults(func=cmd_shell)
 
     # Legacy aliases (kept for compatibility during migration)
     add_verify_prepare_args(sub.add_parser("verify-prepare", help="Legacy alias: verify prepare"))

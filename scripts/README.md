@@ -19,6 +19,17 @@ Then you can use:
 
 ## Daily Commands
 
+### Interactive Shell (Recommended)
+- Slash-command shell (no command memorization):
+  - `python scripts/run.py shell`
+  - `sdv shell`
+- Example session:
+  - `/scenario 4`
+  - `/verify quick 20260307_2100 DEV1`
+  - `/gate all`
+  - `/skill list`
+  - `/exit`
+
 ### Scenario Trigger (No Panel)
 - Send one scenario command to running CANoe via COM:
   - `python scripts/run.py scenario run --id 4`
