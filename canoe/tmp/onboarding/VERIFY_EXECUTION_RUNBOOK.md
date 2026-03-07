@@ -11,7 +11,7 @@ This runbook reflects the Dev2 scope in `TEAM_SYNC_BOARD.md`:
 ### A. Pre phase (before scenario run)
 
 ```powershell
-python scripts/run.py verify batch --run-id <RUN_ID> --owner <OWNER> --phase pre
+python scripts/run.py start precheck --run-id <RUN_ID> --owner <OWNER>
 ```
 
 What it does:
@@ -74,6 +74,20 @@ Batch CSV schema (optional export) is fixed:
 
 ## 3) One-Command Variants
 
+### Doctor (before first run)
+
+```powershell
+python scripts/run.py doctor
+python scripts/run.py doctor --ensure-running
+```
+
+### CAPL-linked sysvar check (no panel)
+
+```powershell
+python scripts/run.py capl sysvar-get --namespace Core --var failSafeMode
+python scripts/run.py capl sysvar-set --namespace Test --var scenarioCommand --value 4 --value-type int
+```
+
 ### Full batch
 
 Only use when raw evidence logs are already prepared.
@@ -94,12 +108,19 @@ Then:
 2. `/verify batch <RUN_ID> <OWNER> post`
 3. `/exit`
 
+### Evidence shortcuts
+
+```powershell
+python scripts/run.py evidence status --run-id <RUN_ID>
+python scripts/run.py evidence insight --run-id <RUN_ID>
+```
+
 ## 4) Offline/Portable Execution
 
 Build portable ZIP:
 
 ```powershell
-python scripts/run.py package bundle-portable --mode onefolder --clean --rebuild-exe
+python scripts/run.py release portable --mode onefolder --clean --rebuild-exe
 ```
 
 Use portable shell:

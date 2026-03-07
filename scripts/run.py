@@ -50,6 +50,13 @@ ROOT = Path(__file__).resolve().parent.parent
 SCRIPTS = ROOT / "scripts"
 
 CONTRACT_CANONICAL = [
+    "python scripts/run.py start demo --id <0..255>",
+    "python scripts/run.py start precheck --run-id <YYYYMMDD_HHMM> --owner <OWNER>",
+    "python scripts/run.py doctor",
+    "python scripts/run.py capl sysvar-get --namespace <NS> --var <NAME>",
+    "python scripts/run.py capl sysvar-set --namespace <NS> --var <NAME> --value <V> --value-type int",
+    "python scripts/run.py evidence status --run-id <YYYYMMDD_HHMM>",
+    "python scripts/run.py release portable",
     "python scripts/run.py shell",
     "python scripts/run.py scenario run --id <0..255>",
     "python scripts/run.py verify prepare --run-id <YYYYMMDD_HHMM>",
@@ -73,6 +80,10 @@ CONTRACT_CANONICAL = [
 CONTRACT_LEGACY = [
     "wizard",
     "interactive",
+    "start",
+    "doctor",
+    "evidence",
+    "release",
     "scenario-run",
     "verify-prepare",
     "verify-batch",
@@ -722,6 +733,9 @@ def _print_shell_help() -> None:
     print("  /gate all|doc-sync|cfg-hygiene|capl-sync|multibus-dbc|cli-readiness")
     print("  /package portable [onefolder|onefile]")
     print("  /package exe [onefolder|onefile]")
+    print("  /doctor [ensure-running]")
+    print("  /capl get <Namespace> <Variable>")
+    print("  /capl set <Namespace> <Variable> <Value>")
     print("  /skill list")
     print("  /skill run quickstart|verify-pack|portable-release")
     print("  /contract")
@@ -978,6 +992,46 @@ def cmd_shell(_: argparse.Namespace) -> int:
             else:
                 print(f"[SHELL] unknown package subcommand: {sub}")
                 continue
+        elif cmd == "doctor":
+            ensure_running = len(tokens) > 1 and tokens[1].lower() in {"ensure-running", "--ensure-running"}
+            rc = cmd_doctor(
+                argparse.Namespace(
+                    ensure_running=ensure_running,
+                    output_json=Path("canoe/tmp/reports/verification/doctor_report.json"),
+                    output_md=Path("canoe/tmp/reports/verification/doctor_report.md"),
+                )
+            )
+        elif cmd == "capl":
+            if len(tokens) < 2:
+                print("[SHELL] usage: /capl <get|set> ...")
+                continue
+            sub = tokens[1].lower()
+            if sub == "get":
+                if len(tokens) < 4:
+                    print("[SHELL] usage: /capl get <Namespace> <Variable>")
+                    continue
+                rc = cmd_capl_sysvar_get(
+                    argparse.Namespace(
+                        namespace=tokens[2],
+                        var=tokens[3],
+                    )
+                )
+            elif sub == "set":
+                if len(tokens) < 5:
+                    print("[SHELL] usage: /capl set <Namespace> <Variable> <Value> [int|float|bool|string]")
+                    continue
+                value_type = tokens[5].lower() if len(tokens) > 5 else "int"
+                rc = cmd_capl_sysvar_set(
+                    argparse.Namespace(
+                        namespace=tokens[2],
+                        var=tokens[3],
+                        value=tokens[4],
+                        value_type=value_type,
+                    )
+                )
+            else:
+                print(f"[SHELL] unknown capl subcommand: {sub}")
+                continue
         elif cmd == "skill":
             if len(tokens) < 2:
                 print("[SHELL] usage: /skill list | /skill run <name>")
@@ -1012,6 +1066,226 @@ def cmd_shell(_: argparse.Namespace) -> int:
 def cmd_wizard(args: argparse.Namespace) -> int:
     # Legacy alias: keep old entrypoint name but use shell behavior.
     return cmd_shell(args)
+
+
+def _resolve_canoe_var(app, namespace: str, variable: str):
+    attempts = [
+        lambda: app.System.Namespaces(namespace).Variables(variable),
+        lambda: app.System.Namespaces(namespace).Variables.Item(variable),
+        lambda: app.System.Namespaces.Item(namespace).Variables(variable),
+        lambda: app.System.Namespaces.Item(namespace).Variables.Item(variable),
+        lambda: app.Configuration.SystemVariables.Namespaces(namespace).Variables(variable),
+        lambda: app.Configuration.SystemVariables.Namespaces(namespace).Variables.Item(variable),
+    ]
+    for attempt in attempts:
+        try:
+            return attempt()
+        except Exception:
+            continue
+    raise RuntimeError(f"System variable not found: {namespace}::{variable}")
+
+
+def _attach_canoe_app():
+    try:
+        import win32com.client as win32com_client  # type: ignore
+    except Exception as ex:
+        raise RuntimeError(f"pywin32 import failed: {ex}") from ex
+    try:
+        return win32com_client.Dispatch("CANoe.Application")
+    except Exception as ex:
+        raise RuntimeError(f"CANoe COM attach failed: {ex}") from ex
+
+
+def _write_doctor_reports(
+    checks: list[tuple[str, bool, str]],
+    *,
+    output_json: Path | None,
+    output_md: Path | None,
+) -> None:
+    payload = {
+        "status": "PASS" if all(ok for _, ok, _ in checks) else "FAIL",
+        "generated_at": dt.datetime.now().isoformat(),
+        "checks": [
+            {"name": name, "status": "PASS" if ok else "FAIL", "detail": detail}
+            for name, ok, detail in checks
+        ],
+    }
+    if output_json:
+        output_json.parent.mkdir(parents=True, exist_ok=True)
+        output_json.write_text(json.dumps(payload, indent=2), encoding="utf-8")
+    if output_md:
+        output_md.parent.mkdir(parents=True, exist_ok=True)
+        lines = [
+            "# SDV Doctor Report",
+            "",
+            f"- status: `{payload['status']}`",
+            f"- generated_at: `{payload['generated_at']}`",
+            "",
+            "| check | status | detail |",
+            "|---|---|---|",
+        ]
+        for row in payload["checks"]:
+            lines.append(f"| `{row['name']}` | `{row['status']}` | `{row['detail']}` |")
+        output_md.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+
+def cmd_doctor(args: argparse.Namespace) -> int:
+    checks: list[tuple[str, bool, str]] = []
+    win32com_client = None
+    ensure_running = bool(getattr(args, "ensure_running", False))
+    output_json = getattr(args, "output_json", None)
+    output_md = getattr(args, "output_md", None)
+
+    try:
+        import win32com.client as win32com_client  # type: ignore
+    except Exception as ex:
+        checks.append(("pywin32 import", False, str(ex)))
+    else:
+        checks.append(("pywin32 import", True, "ok"))
+
+    app = None
+    if win32com_client is not None:
+        try:
+            app = win32com_client.Dispatch("CANoe.Application")
+            checks.append(("CANoe COM attach", True, "ok"))
+        except Exception as ex:
+            checks.append(("CANoe COM attach", False, str(ex)))
+
+    if app is not None:
+        try:
+            running = bool(app.Measurement.Running)
+            checks.append(("Measurement running", running, "running" if running else "stopped"))
+            if ensure_running and not running:
+                app.Measurement.Start()
+                checks.append(("Measurement auto-start", True, "started"))
+        except Exception as ex:
+            checks.append(("Measurement status", False, str(ex)))
+
+        required_vars = [
+            ("Test", "scenarioCommand"),
+            ("Test", "scenarioCommandAck"),
+            ("Test", "testScenario"),
+            ("Core", "decelAssistReq"),
+            ("Core", "proximityRiskLevel"),
+            ("Core", "failSafeMode"),
+        ]
+        for ns_name, var_name in required_vars:
+            try:
+                sv = _resolve_canoe_var(app, ns_name, var_name)
+                _ = sv.Value
+                checks.append((f"SysVar {ns_name}::{var_name}", True, "ok"))
+            except Exception as ex:
+                checks.append((f"SysVar {ns_name}::{var_name}", False, str(ex)))
+
+    failed = [row for row in checks if not row[1]]
+    print("[DOCTOR] SDV CLI environment checks")
+    for name, ok, detail in checks:
+        status = "PASS" if ok else "FAIL"
+        print(f"- {status:4} | {name} | {detail}")
+
+    _write_doctor_reports(
+        checks,
+        output_json=output_json,
+        output_md=output_md,
+    )
+
+    if failed:
+        print(f"[DOCTOR] FAIL ({len(failed)}/{len(checks)} failed)")
+        return 2
+    print(f"[DOCTOR] PASS ({len(checks)}/{len(checks)})")
+    return 0
+
+
+def cmd_capl_sysvar_get(args: argparse.Namespace) -> int:
+    try:
+        app = _attach_canoe_app()
+        sv = _resolve_canoe_var(app, args.namespace, args.var)
+        value = sv.Value
+    except Exception as ex:
+        print(f"[CAPL] FAIL: {ex}")
+        return 2
+    print(f"[CAPL] {args.namespace}::{args.var}={value}")
+    return 0
+
+
+def cmd_capl_sysvar_set(args: argparse.Namespace) -> int:
+    try:
+        app = _attach_canoe_app()
+        sv = _resolve_canoe_var(app, args.namespace, args.var)
+        if args.value_type == "int":
+            value_obj = int(args.value)
+        elif args.value_type == "float":
+            value_obj = float(args.value)
+        elif args.value_type == "bool":
+            value_obj = 1 if args.value.lower() in {"1", "true", "yes", "on"} else 0
+        else:
+            value_obj = args.value
+        sv.Value = value_obj
+        readback = sv.Value
+    except Exception as ex:
+        print(f"[CAPL] FAIL: {ex}")
+        return 2
+    print(f"[CAPL] set {args.namespace}::{args.var}={readback} (ok)")
+    return 0
+
+
+def cmd_start_demo(args: argparse.Namespace) -> int:
+    return cmd_scenario_run(
+        argparse.Namespace(
+            id=args.id,
+            namespace="Test",
+            var=args.var,
+            ack_var="scenarioCommandAck",
+            wait_ack_ms=args.wait_ack_ms,
+            poll_ms=args.poll_ms,
+            no_ensure_running=args.no_ensure_running,
+        )
+    )
+
+
+def cmd_start_precheck(args: argparse.Namespace) -> int:
+    return cmd_verify_batch(
+        argparse.Namespace(
+            run_id=args.run_id,
+            owner=args.owner,
+            run_date=args.run_date,
+            phase="pre",
+            skip_gates=args.skip_gates,
+            stop_on_fail=args.stop_on_fail,
+            report_formats=args.report_formats,
+            output_json=Path("canoe/tmp/reports/verification/dev2_batch_report.json"),
+            output_md=Path("canoe/tmp/reports/verification/dev2_batch_report.md"),
+            output_csv=Path("canoe/tmp/reports/verification/dev2_batch_report.csv"),
+        )
+    )
+
+
+def cmd_start_preset(args: argparse.Namespace) -> int:
+    return _run_skill(args.name)
+
+
+def cmd_start_shell(args: argparse.Namespace) -> int:
+    return cmd_shell(args)
+
+
+def cmd_evidence_status(args: argparse.Namespace) -> int:
+    return cmd_verify_status(args)
+
+
+def cmd_evidence_insight(args: argparse.Namespace) -> int:
+    return cmd_verify_insight(args)
+
+
+def cmd_evidence_finalize(args: argparse.Namespace) -> int:
+    return cmd_verify_finalize(args)
+
+
+def cmd_release_exe(args: argparse.Namespace) -> int:
+    return cmd_package_build_exe(args)
+
+
+def cmd_release_portable(args: argparse.Namespace) -> int:
+    return cmd_package_bundle_portable(args)
 
 
 def add_verify_prepare_args(p: argparse.ArgumentParser) -> None:
@@ -1256,9 +1530,96 @@ def add_scenario_run_args(p: argparse.ArgumentParser) -> None:
     p.set_defaults(func=cmd_scenario_run)
 
 
+def add_start_demo_args(p: argparse.ArgumentParser) -> None:
+    p.add_argument("--id", type=int, default=4, help="Scenario ID (0..255), default=4")
+    p.add_argument(
+        "--var",
+        default="scenarioCommand",
+        choices=["scenarioCommand", "testScenario"],
+        help="Target sysvar name",
+    )
+    p.add_argument("--wait-ack-ms", type=int, default=1200, help="Ack wait timeout in ms")
+    p.add_argument("--poll-ms", type=int, default=20, help="Ack poll interval in ms")
+    p.add_argument("--no-ensure-running", action="store_true", help="Do not auto-start measurement")
+    p.set_defaults(func=cmd_start_demo)
+
+
+def add_start_precheck_args(p: argparse.ArgumentParser) -> None:
+    p.add_argument("--run-id", required=True, help="Run ID, e.g. 20260308_1900")
+    p.add_argument("--owner", default="TBD")
+    p.add_argument("--run-date", default=dt.date.today().isoformat())
+    p.add_argument("--skip-gates", action="store_true", help="Skip all gates in precheck")
+    p.add_argument("--stop-on-fail", action="store_true", help="Stop at first failed step")
+    p.add_argument(
+        "--report-formats",
+        default="json,md",
+        help="Comma-separated formats: json,md,csv (default: json,md)",
+    )
+    p.set_defaults(func=cmd_start_precheck)
+
+
+def add_start_preset_args(p: argparse.ArgumentParser) -> None:
+    p.add_argument(
+        "name",
+        choices=["quickstart", "verify-pack", "portable-release"],
+        help="Preset workflow name",
+    )
+    p.set_defaults(func=cmd_start_preset)
+
+
+def add_doctor_args(p: argparse.ArgumentParser) -> None:
+    p.add_argument("--ensure-running", action="store_true", help="Auto-start measurement if stopped")
+    p.add_argument(
+        "--output-json",
+        type=Path,
+        default=Path("canoe/tmp/reports/verification/doctor_report.json"),
+        help="Doctor report JSON output path",
+    )
+    p.add_argument(
+        "--output-md",
+        type=Path,
+        default=Path("canoe/tmp/reports/verification/doctor_report.md"),
+        help="Doctor report markdown output path",
+    )
+    p.set_defaults(func=cmd_doctor)
+
+
+def add_capl_sysvar_get_args(p: argparse.ArgumentParser) -> None:
+    p.add_argument("--namespace", required=True, help="System variable namespace")
+    p.add_argument("--var", required=True, help="System variable name")
+    p.set_defaults(func=cmd_capl_sysvar_get)
+
+
+def add_capl_sysvar_set_args(p: argparse.ArgumentParser) -> None:
+    p.add_argument("--namespace", required=True, help="System variable namespace")
+    p.add_argument("--var", required=True, help="System variable name")
+    p.add_argument("--value", required=True, help="Target value")
+    p.add_argument(
+        "--value-type",
+        default="int",
+        choices=["int", "float", "bool", "string"],
+        help="Input value type",
+    )
+    p.set_defaults(func=cmd_capl_sysvar_set)
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Unified script launcher")
     sub = parser.add_subparsers(dest="command", required=True)
+
+    start = sub.add_parser("start", help="Operator-first quick entrypoints")
+    start_sub = start.add_subparsers(dest="start_command", required=True)
+    add_start_demo_args(start_sub.add_parser("demo", help="Trigger default demo scenario (no panel)"))
+    add_start_precheck_args(start_sub.add_parser("precheck", help="Run precheck batch (gates+prepare+smoke+status)"))
+    add_start_preset_args(start_sub.add_parser("preset", help="Run named preset workflow"))
+    start_sub.add_parser("shell", help="Open interactive slash shell").set_defaults(func=cmd_start_shell)
+
+    add_doctor_args(sub.add_parser("doctor", help="Check CANoe COM + measurement + required sysvars"))
+
+    capl = sub.add_parser("capl", help="CAPL-linked sysvar access via CANoe COM")
+    capl_sub = capl.add_subparsers(dest="capl_command", required=True)
+    add_capl_sysvar_get_args(capl_sub.add_parser("sysvar-get", help="Read one system variable value"))
+    add_capl_sysvar_set_args(capl_sub.add_parser("sysvar-set", help="Write one system variable value"))
 
     sub.add_parser("shell", help="Interactive slash-command shell").set_defaults(func=cmd_shell)
     sub.add_parser("wizard", help="Legacy alias: shell").set_defaults(func=cmd_wizard)
@@ -1278,6 +1639,18 @@ def build_parser() -> argparse.ArgumentParser:
     add_verify_fill_template_args(verify_sub.add_parser("fill-template", help="Build 05/06/07 doc fill template"))
     add_verify_status_args(verify_sub.add_parser("status", help="Check run readiness before finalize"))
     add_verify_finalize_args(verify_sub.add_parser("finalize", help="Run full post-run verification bundle"))
+
+    evidence = sub.add_parser("evidence", help="Evidence/readout focused commands")
+    evidence_sub = evidence.add_subparsers(dest="evidence_command", required=True)
+    ev_status = evidence_sub.add_parser("status", help="Alias of verify status")
+    add_verify_status_args(ev_status)
+    ev_status.set_defaults(func=cmd_evidence_status)
+    ev_insight = evidence_sub.add_parser("insight", help="Alias of verify insight")
+    add_verify_insight_args(ev_insight)
+    ev_insight.set_defaults(func=cmd_evidence_insight)
+    ev_finalize = evidence_sub.add_parser("finalize", help="Alias of verify finalize")
+    add_verify_finalize_args(ev_finalize)
+    ev_finalize.set_defaults(func=cmd_evidence_finalize)
 
     gate = sub.add_parser("gate", help="Quality gate commands")
     gate_sub = gate.add_subparsers(dest="gate_command", required=True)
@@ -1305,6 +1678,22 @@ def build_parser() -> argparse.ArgumentParser:
     pkg_portable.add_argument("--bundle-name", default="")
     pkg_portable.add_argument("--zip-name", default="")
     pkg_portable.set_defaults(func=cmd_package_bundle_portable)
+
+    release = sub.add_parser("release", help="Distribution-focused wrappers")
+    release_sub = release.add_subparsers(dest="release_command", required=True)
+    rel_exe = release_sub.add_parser("exe", help="Alias of package build-exe")
+    rel_exe.add_argument("--mode", default="onefolder", choices=["onefolder", "onefile"])
+    rel_exe.add_argument("--clean", action="store_true")
+    rel_exe.set_defaults(func=cmd_release_exe)
+
+    rel_portable = release_sub.add_parser("portable", help="Alias of package bundle-portable")
+    rel_portable.add_argument("--mode", default="onefolder", choices=["onefolder", "onefile"])
+    rel_portable.add_argument("--clean", action="store_true")
+    rel_portable.add_argument("--rebuild-exe", action="store_true")
+    rel_portable.add_argument("--output-dir", default="")
+    rel_portable.add_argument("--bundle-name", default="")
+    rel_portable.add_argument("--zip-name", default="")
+    rel_portable.set_defaults(func=cmd_release_portable)
 
     contract = sub.add_parser("contract", help="Show canonical command contract")
     contract.add_argument("--json", action="store_true", help="Output machine-readable JSON")

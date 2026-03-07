@@ -19,6 +19,28 @@ Then you can use:
 
 ## Daily Commands
 
+### Quick Entry (New)
+- Operator-first demo trigger:
+  - `python scripts/run.py start demo --id 4`
+  - `sdv start demo --id 4`
+- Precheck batch (gates + prepare + smoke + status):
+  - `python scripts/run.py start precheck --run-id 20260308_1900 --owner DEV2`
+  - `sdv start precheck --run-id 20260308_1900 --owner DEV2`
+- Environment doctor:
+  - `python scripts/run.py doctor`
+  - `python scripts/run.py doctor --ensure-running`
+  - `sdv doctor`
+- CAPL-linked sysvar access:
+  - `python scripts/run.py capl sysvar-get --namespace Core --var failSafeMode`
+  - `python scripts/run.py capl sysvar-set --namespace Test --var scenarioCommand --value 4 --value-type int`
+  - `sdv capl sysvar-get --namespace Test --var scenarioCommandAck`
+- Evidence shortcuts:
+  - `sdv evidence status --run-id 20260308_1900`
+  - `sdv evidence insight --run-id 20260308_1900`
+- Release shortcuts:
+  - `sdv release exe --mode onefolder --clean`
+  - `sdv release portable --mode onefolder --clean --rebuild-exe`
+
 ### Interactive Shell (Recommended)
 - Slash-command shell (no command memorization):
   - `python scripts/run.py shell`
@@ -116,6 +138,13 @@ Then you can use:
 - `scripts/report/`: report conversion/export helpers
 - `scripts/release/`: CLI packaging/distribution scripts
 
+## CLI Architecture (Practical BP)
+
+- Command layer: `scripts/run.py` (`start/doctor/evidence/release/...`)
+- Adapter layer: CANoe COM + sysvar contract (`scripts/canoe/*`, `capl sysvar-*`)
+- Evidence layer: JSON canonical + MD review + optional CSV
+- Runtime truth: CAPL nodes consume/produce sysvars in CANoe measurement; CLI triggers and observes via COM
+
 ## Recommended Rule
 
 - Daily work: only use `scripts/run.py`
@@ -128,5 +157,6 @@ Then you can use:
 ## Compatibility
 
 - Preferred gate script paths are under `scripts/gates/`.
+- New preferred entrypoints: `start`, `doctor`, `evidence`, `release`.
 - Legacy flat commands are still accepted (`verify-prepare`, `gate-doc-sync`, ...).
 - Print canonical contract: `python scripts/run.py contract`
