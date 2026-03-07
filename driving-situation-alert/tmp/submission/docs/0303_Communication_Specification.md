@@ -3,8 +3,8 @@
 **Document ID**: PROJ-0303-CS
 **ISO 26262 Reference**: Part 6, Cl.7 (Software Architectural Design)
 **ASPICE Reference**: SWE.2 (Software Architectural Design)
-**Version**: 3.26
-**Date**: 2026-03-06
+**Version**: 3.27
+**Date**: 2026-03-07
 **Status**: Draft
 **Project Title**: 주행 상황 실시간 경고 시스템
 **Subtitle**: 구간 정보 및 긴급차량 접근 기반 앰비언트·클러스터 경보
@@ -35,7 +35,7 @@
 | 규칙 | 정책 |
 |---|---|
 | 도메인 우선 분리 | CAN ID는 도메인별 블록(Chassis/Body/Infotainment/Powertrain/ADAS reserved)으로 우선 배정한다. |
-| 논리 ID와 SIL Stub 분리 | Ethernet 논리 ID(`0xE100/0xE200/0xE210~0xE212`)와 CANoe SIL Stub ID(`0x1C3/0x1C4/0x111`)를 분리 표기한다. |
+| 논리 ID와 SIL Stub 분리 | Ethernet 논리 ID(`0xE100/0xE200/0xE210~0xE216`)와 CANoe SIL Stub ID(`0x1C3/0x1C4/0x111/0x1C5~0x1C8`)를 분리 표기한다. |
 | 긴급 우선 해석 레벨 | `Req_022/028/029/030/031`의 기본 판정 축은 기능중재(`WARN_ARB_MGR`)이며, 버스 중재는 CAN ID 값으로만 결정한다. |
 | Diag 명칭 해석 | 메시지명에 `Diag`가 포함되어도 Group 7 강제 배정 사유가 아니며, Owner/도메인 경계와 안전 경로를 우선 적용한다. |
 | 충돌 회피 | 신규 ID 추가 시 기존 DBC ID와 중복 금지, 진단/검증 예약 구간과 충돌 금지 원칙을 따른다. |
@@ -298,12 +298,12 @@
 
 | 구분 | 범위 | 원본 파일 | 비고 |
 |---|---|---|---|
-| Core CAN Profile | Comm_001, Comm_002, Comm_003, Comm_007, Comm_008, Comm_009 | `canoe/databases/chassis_can.dbc` + `canoe/databases/infotainment_can.dbc` + `canoe/databases/body_can.dbc` + `canoe/databases/adas_can.dbc` + `canoe/databases/eth_backbone_can_stub.dbc` | 경고 코어 체인 단일 원본(CAN-stub 포함) |
+| Core CAN Profile | Comm_001, Comm_002, Comm_003, Comm_006, Comm_007, Comm_008, Comm_009 | `canoe/databases/chassis_can.dbc` + `canoe/databases/infotainment_can.dbc` + `canoe/databases/body_can.dbc` + `canoe/databases/adas_can.dbc` + `canoe/databases/eth_backbone_can_stub.dbc` | 경고 코어 체인 단일 원본(CAN-stub 포함) |
 | Domain CAN Profile | Comm_101~Comm_106, Comm_201~Comm_205 | `canoe/databases/chassis_can.dbc` + `canoe/databases/powertrain_can.dbc` + `canoe/databases/body_can.dbc` + `canoe/databases/infotainment_can.dbc` + `canoe/databases/adas_can.dbc` + `canoe/databases/eth_backbone_can_stub.dbc` | 차량 기본 기능/도메인 분리 원본(CAN-stub 포함) |
-| ADAS CAN Profile | Comm_120, Comm_201(일부) | `canoe/databases/adas_can.dbc` | ADAS 소유 프레임 원본 |
-| ETH Stub Transport Profile | Comm_004, Comm_005, Comm_006, Comm_121, Comm_124 | `canoe/databases/eth_backbone_can_stub.dbc` | CANoe.CAN 환경 대체 운반 원본 |
-| Ethernet Profile (Logical Contract) | Comm_004, Comm_005, Comm_006, Comm_120, Comm_121, Comm_124 (및 Comm_001~003/007~008의 ETH 구간) | `canoe/docs/operations/ETH_INTERFACE_CONTRACT.md` | UDP 활성 계약 단일 원본 |
-| Ethernet Profile (Pending-PreActivation) | Comm_130~Comm_133 | `canoe/docs/operations/ETH_INTERFACE_CONTRACT.md` (v1.2 예정) | `E213~E216` 계약 반영 전에는 참조 전용(활성 SoT 아님) |
+| ADAS CAN Profile | Comm_006, Comm_007, Comm_008, Comm_120, Comm_121, Comm_122, Comm_130~Comm_132, Comm_201(일부) | `canoe/databases/adas_can.dbc` | ADAS 소유 프레임 원본 |
+| ETH Stub Transport Profile | Comm_004, Comm_005, Comm_006, Comm_124, Comm_133 | `canoe/databases/eth_backbone_can_stub.dbc` | CANoe.CAN 환경 대체 운반 원본 |
+| Ethernet Profile (Logical Contract) | Comm_004, Comm_005, Comm_006, Comm_120, Comm_121, Comm_124, Comm_130~Comm_133 (및 Comm_001~003/007~008의 ETH 구간) | `canoe/docs/operations/ETH_INTERFACE_CONTRACT.md` | UDP 활성 계약 단일 원본(v1.2) |
+| Ethernet Profile (Pre-Activation Scope) | Comm_130~Comm_133 | `canoe/docs/operations/ETH_INTERFACE_CONTRACT.md` (v1.2) | 계약 SoT는 활성, 구현/시험 상태는 Pre-Activation 유지 |
 
 ---
 
@@ -325,10 +325,10 @@
 | Comm_122 | Flow_122 | Func_125, Func_126 | Req_125, Req_126 | ethSelectedAlertMsg(0xE200), frmAmbientControlMsg(0x260), frmClusterWarningMsg(0x280) | WARN_ARB_MGR | BODY_GW, IVI_GW, AMBIENT_CTRL, CLU_HMI_CTRL | Ethernet(UDP) + CAN | 50ms | 감속 보조 활성 경고 동기화 |
 | Comm_123 | Flow_123 | Func_123 | Req_123 | frmPedalInputCanMsg(0x2A2), frmSteeringCanMsg(0x2A1), ethDecelAssistReqMsg(0x1C4) | CHS_GW, WARN_ARB_MGR | WARN_ARB_MGR, DOMAIN_ROUTER, BRK_CTRL | CAN + Ethernet(UDP) | Event + 100ms | 운전자 개입 시 보조 해제 |
 | Comm_124 | Flow_124 | Func_127, Func_128, Func_129, Func_151, Func_152 | Req_127, Req_128, Req_129, Req_151, Req_152 | frmChassisHealthMsg(0x103), frmBodyHealthMsg(0x269), frmInfotainmentHealthMsg(0x288), ethFailSafeStateMsg(0x111) | CHS_GW, BODY_GW, INFOTAINMENT_GW, DOMAIN_BOUNDARY_MGR | DOMAIN_BOUNDARY_MGR, DOMAIN_ROUTER, WARN_ARB_MGR, BODY_GW, IVI_GW, VAL_SCENARIO_CTRL | CAN + Ethernet(UDP) | 100ms + Event | 경로 단절 강등/보조 금지 |
-| Comm_130 | Flow_130 | Func_130, Func_131, Func_148 | Req_130, Req_131, Req_148 | ethObjectRiskInputMsg(0xE213) | CHS_GW, INFOTAINMENT_GW | ADAS_WARN_CTRL | Ethernet(UDP) | 100ms | 객체 목록/대표 위험 후보 입력 (Pre-Activation, ETH 계약 v1.2 대기) |
-| Comm_131 | Flow_131 | Func_132, Func_133, Func_136 | Req_132, Req_133, Req_136 | ethObjectRiskStateMsg(0xE214) | ADAS_WARN_CTRL | WARN_ARB_MGR, VAL_SCENARIO_CTRL | Ethernet(UDP) | 100ms + Event | TTC/상대속도/거리 기반 위험 상태 (Pre-Activation, ETH 계약 v1.2 대기) |
-| Comm_132 | Flow_132 | Func_134, Func_135, Func_139 | Req_134, Req_135, Req_139 | ethObjectScenarioAlertMsg(0xE215), frmAmbientControlMsg(0x260), frmClusterWarningMsg(0x280) | WARN_ARB_MGR | BODY_GW, IVI_GW, AMBIENT_CTRL, CLU_HMI_CTRL | Ethernet(UDP) + CAN | Event + 50ms | 교차로/합류 객체 경고 및 우선순위 정합 (Pre-Activation, ETH 계약 v1.2 대기) |
-| Comm_133 | Flow_133 | Func_137, Func_138, Func_148 | Req_137, Req_138, Req_148 | ethObjectSafetyStateMsg(0xE216) | DOMAIN_BOUNDARY_MGR, EMS_ALERT | WARN_ARB_MGR, VAL_SCENARIO_CTRL | Ethernet(UDP) | Event | 신뢰도 강등 및 객체 이벤트 기록 (Pre-Activation, ETH 계약 v1.2 대기) |
+| Comm_130 | Flow_130 | Func_130, Func_131, Func_148 | Req_130, Req_131, Req_148 | ethObjectRiskInputMsg(0xE213) | CHS_GW, INFOTAINMENT_GW | ADAS_WARN_CTRL | Ethernet(UDP) | 100ms | 객체 목록/대표 위험 후보 입력 (Pre-Activation) |
+| Comm_131 | Flow_131 | Func_132, Func_133, Func_136 | Req_132, Req_133, Req_136 | ethObjectRiskStateMsg(0xE214) | ADAS_WARN_CTRL | WARN_ARB_MGR, VAL_SCENARIO_CTRL | Ethernet(UDP) | 100ms + Event | TTC/상대속도/거리 기반 위험 상태 (Pre-Activation) |
+| Comm_132 | Flow_132 | Func_134, Func_135, Func_139 | Req_134, Req_135, Req_139 | ethObjectScenarioAlertMsg(0xE215), frmAmbientControlMsg(0x260), frmClusterWarningMsg(0x280) | WARN_ARB_MGR | BODY_GW, IVI_GW, AMBIENT_CTRL, CLU_HMI_CTRL | Ethernet(UDP) + CAN | Event + 50ms | 교차로/합류 객체 경고 및 우선순위 정합 (Pre-Activation) |
+| Comm_133 | Flow_133 | Func_137, Func_138, Func_148 | Req_137, Req_138, Req_148 | ethObjectSafetyStateMsg(0xE216) | DOMAIN_BOUNDARY_MGR, EMS_ALERT | WARN_ARB_MGR, VAL_SCENARIO_CTRL | Ethernet(UDP) | Event | 신뢰도 강등 및 객체 이벤트 기록 (Pre-Activation) |
 
 ---
 
@@ -344,6 +344,6 @@
 | Vehicle Baseline 확장 | Comm_101~106, Comm_201~205 `Defined` 상태 유지 | 0303 원문 Baseline/Phase-B 확장 표 |
 | V2 확장 | Comm_120~124 `Implemented` 상태 유지 | 0303 원문 V2 확장 표 |
 | ADAS 객체 인지 확장 | Comm_130~133 `Planned(Pre-Activation)` 유지 | 0303 원문 ADAS 확장 표 |
-| 활성 승격 조건 | `ETH_INTERFACE_CONTRACT.md v1.2`의 `E213~E216` 반영 시 활성 | 0303 원문 ADAS 확장 섹션 |
+| 계약/구현 상태 | `ETH_INTERFACE_CONTRACT.md v1.2` 계약 SoT 활성, 코드/시험은 `Pre-Activation` 유지 | 0303 원문 ADAS 확장 섹션 |
 
 ---

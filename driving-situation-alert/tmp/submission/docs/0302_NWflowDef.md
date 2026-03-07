@@ -3,8 +3,8 @@
 **Document ID**: PROJ-0302-NFD
 **ISO 26262 Reference**: Part 4, Cl.7 (System Design)
 **ASPICE Reference**: SYS.3 (System Architectural Design)
-**Version**: 3.23
-**Date**: 2026-03-06
+**Version**: 3.24
+**Date**: 2026-03-07
 **Status**: Draft
 **Project Title**: 주행 상황 실시간 경고 시스템
 **Subtitle**: 구간 정보 및 긴급차량 접근 기반 앰비언트·클러스터 경보
@@ -284,9 +284,9 @@
 | Core CAN Profile | Flow_001, Flow_002, Flow_003(CAN), Flow_007(CAN 0x289), Flow_008(CAN 0x280), Flow_009(CAN 0x2A5) | `canoe/databases/chassis_can.dbc` + `canoe/databases/infotainment_can.dbc` + `canoe/databases/body_can.dbc` + `canoe/databases/adas_can.dbc` + `canoe/databases/eth_backbone_can_stub.dbc` | 상단 공식표와 동일 ID/Signal 유지(CAN-stub 포함) |
 | Core Ethernet Profile | Flow_001~Flow_008(Ethernet 구간) | `canoe/docs/operations/ETH_INTERFACE_CONTRACT.md` | E100/E200, 0x510/0x511/0x512 계약 우선 |
 | Chassis Domain Profile | Flow_102, Flow_106(일부), Flow_105(헬스 연계), Flow_201 | `canoe/databases/chassis_can.dbc` | 0x122~0x2A0(0x1C1 제외) 범위 준수 |
-| ADAS Domain CAN Profile | Flow_120, Flow_201(일부) | `canoe/databases/adas_can.dbc` | 0x1C1/0x1C3 범위 준수 (ADAS 소유 프레임) |
-| ETH Backbone CAN Stub Profile | Flow_004, Flow_005, Flow_006, Flow_121, Flow_124 | `canoe/databases/eth_backbone_can_stub.dbc` | 0x1C0/0x1C2/0x1C4/0x111 범위 준수 |
-| ADAS Object Extension Profile (Pending) | Flow_130~Flow_133 | `canoe/docs/operations/ETH_INTERFACE_CONTRACT.md` (v1.2 예정) | Pre-Activation, `E213~E216` 계약 반영 전에는 활성 SoT로 사용하지 않음 |
+| ADAS Domain CAN Profile | Flow_006(egress), Flow_007, Flow_008, Flow_120, Flow_121, Flow_122, Flow_130~Flow_132, Flow_201(일부) | `canoe/databases/adas_can.dbc` | 0x1C1/0x206/0x1C3~0x1C7 범위 준수 (ADAS 소유 프레임) |
+| ETH Backbone CAN Stub Profile | Flow_004, Flow_005, Flow_006, Flow_124, Flow_133 | `canoe/databases/eth_backbone_can_stub.dbc` | 0x1C0/0x1C2/0x111/0x1C8 범위 준수 |
+| ADAS Object Extension Profile (Pre-Activation) | Flow_130~Flow_133 | `canoe/databases/adas_can.dbc` + `canoe/databases/eth_backbone_can_stub.dbc` + `canoe/docs/operations/ETH_INTERFACE_CONTRACT.md` (v1.2) | `Flow_130~132`는 ADAS CAN Stub(0x1C5~0x1C7), `Flow_133`은 ETH Stub(0x1C8) 운반 기준. 계약 SoT는 활성, 구현/시험은 Pre-Activation으로 관리 |
 | Powertrain Domain Profile | Flow_101, Flow_105, Flow_204 | `canoe/databases/powertrain_can.dbc` | 0x110~0x2A8 범위 준수 |
 | Body Domain Profile | Flow_103, Flow_105, Flow_202 | `canoe/databases/body_can.dbc` | 0x289~0x291, 0x277~0x292 범위 준수 |
 | Infotainment Domain Profile | Flow_104, Flow_105, Flow_203, Flow_205 | `canoe/databases/infotainment_can.dbc` | 0x2A3, 0x280~0x288, 0x289~0x295 범위 준수 |
