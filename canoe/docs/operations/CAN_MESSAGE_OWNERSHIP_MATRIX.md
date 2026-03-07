@@ -1,6 +1,6 @@
 # CAN Message Ownership Matrix
 
-- Generated: 2026-03-06 23:16:03
+- Generated: 2026-03-07 17:38:00
 - Scope: Active split CAN DBC set only
 - Rule: Each message must have one clear sender in active runtime profile.
 
@@ -46,11 +46,12 @@
 | frmAdasChassisStatusMsg | 0x1C1 | 2 | ADAS_WARN_CTRL | adas_can.dbc | 2 |
 | frmEmergencyMonitorMsg | 0x1C2 | 2 | EMS_ALERT_RX | eth_backbone_can_stub.dbc | 3 |
 | ethEmergencyRiskMsg | 0x1C3 | 5 | ADAS_WARN_CTRL | adas_can.dbc | 6 |
-| ethDecelAssistReqMsg | 0x1C4 | 4 | WARN_ARB_MGR | eth_backbone_can_stub.dbc | 6 |
-| ethObjectRiskInputMsg | 0x1C5 | 8 | VAL_SCENARIO_CTRL | eth_backbone_can_stub.dbc | 8 |
-| ethObjectRiskStateMsg | 0x1C6 | 6 | ADAS_WARN_CTRL | eth_backbone_can_stub.dbc | 5 |
-| ethObjectScenarioAlertMsg | 0x1C7 | 4 | WARN_ARB_MGR | eth_backbone_can_stub.dbc | 6 |
+| ethDecelAssistReqMsg | 0x1C4 | 4 | WARN_ARB_MGR | adas_can.dbc | 6 |
+| ethObjectRiskInputMsg | 0x1C5 | 8 | VAL_SCENARIO_CTRL | adas_can.dbc | 8 |
+| ethObjectRiskStateMsg | 0x1C6 | 6 | ADAS_WARN_CTRL | adas_can.dbc | 5 |
+| ethObjectScenarioAlertMsg | 0x1C7 | 4 | WARN_ARB_MGR | adas_can.dbc | 6 |
 | ethObjectSafetyStateMsg | 0x1C8 | 4 | DOMAIN_BOUNDARY_MGR | eth_backbone_can_stub.dbc | 5 |
+| ethSelectedAlertMsg | 0x206 | 2 | WARN_ARB_MGR | adas_can.dbc | 4 |
 | frmAmbientControlMsg | 0x260 | 1 | BODY_GW | body_can.dbc | 3 |
 | frmHazardControlMsg | 0x261 | 1 | BODY_GW | body_can.dbc | 3 |
 | frmWindowControlMsg | 0x262 | 1 | BODY_GW | body_can.dbc | 3 |
