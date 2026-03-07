@@ -73,6 +73,7 @@
 | TSB-006 | CAPL `timeNow()` overflow-safe 정리 | Dev1 | Dev1 | Docs Updated | `src/capl/*`, `cfg/channel_assign/*`의 `timeNowInt64()` 전환 + `check_capl_sync` PASS | 필요 시 `0304`, `04` 구현 노트 | 반영완료 | 컴파일 경고 `08-0041` 사전 제거 목적 |
 | TSB-007 | ETH Backbone DBC 누락 3건 보완 | Dev1 | Dev1 | Docs Updated | `canoe/databases/eth_backbone_can_stub.dbc` + `multibus-dbc` PASS | `0303`, `00f`(소유권/ID 운영 근거) | 반영완료 | `ethVehicleStateMsg`, `ethSteeringMsg`, `ethNavContextMsg` 추가 |
 | TSB-009 | 인터페이스/멀티버스/CLI 운영 해석 정렬 | Docs | Docs + Dev2 | Docs Updated | `scripts/run.py`, `scripts/README.md`, `scripts/gates/multibus_cfg_dbc_gate.py` | `tmp/change-orders/TEAM_SYNC_BOARD.md` | 반영완료 | 인터페이스는 메시지 계약 단위로 해석, 도메인 테스트 분리 + E2E 예외 멀티버스 정책 명확화 |
+| TSB-011 | ECU 명명/약어 정책 재확인 (멘토 D11 + `_TX/_RX` 해석) | Dev1 | Dev1 + Docs | Ready for Docs | `docs/meeting-notes/MET_41_2026.03.07.txt`, `driving-situation-alert/00e_ECU_Naming_Standard.md`, `reference/standards/AUTOSAR_CP_TR_SWCModelingGuide.pdf` 교차검증 | `00e`, `0302`, `0303` | 대기 | 결론: 3글자 강제 아님, 짧은 약어 권장. 상위 체인 문서는 논리명 우선(`EMS_ALERT`), 구현/하위 매핑표만 내부 모듈명(`EMS_*_TX/RX`) 허용 |
 
 ## 업데이트 템플릿
 
@@ -84,6 +85,7 @@
 | TSB-007 | 2026-03-08 | ETH Backbone 보강 프레임 3건의 소유권/운반 해석 근거를 통신·ID 정책 문서에 반영 | `driving-situation-alert/0303_Communication_Specification.md`, `driving-situation-alert/00f_CAN_ID_Allocation_Standard.md` | Ready for Docs -> Docs Updated | Docs | (this commit) |
 | TSB-008 | 2026-03-08 | Dev2 검증 배치 실행/리포트 포맷 정책을 05/06/07 작성 원칙에 연결 | `driving-situation-alert/05_Unit_Test.md`, `driving-situation-alert/06_Integration_Test.md`, `driving-situation-alert/07_System_Test.md` | Ready for Docs -> Docs Updated | Docs | (this commit) |
 | TSB-009 | 2026-03-08 | 인터페이스/멀티버스/CLI 운영 해석을 공통 언어로 정리하고 예외 범위를 명시 | `driving-situation-alert/tmp/change-orders/TEAM_SYNC_BOARD.md` | Ready for Docs -> Docs Updated | Docs | (this commit) |
+| TSB-011 | 2026-03-08 | 멘토 D11 원문과 AUTOSAR/00e 기준을 교차검증해 ECU 명명 운영 결론을 확정 | `docs/meeting-notes/MET_41_2026.03.07.txt`, `driving-situation-alert/00e_ECU_Naming_Standard.md`, `reference/standards/AUTOSAR_CP_TR_SWCModelingGuide.pdf` | Proposed -> Ready for Docs | Dev1 | working note |
 | TSB-XXX | YYYY-MM-DD |  |  | Proposed -> In Progress -> Ready for Docs -> Docs Updated -> Done |  |  |
 
 ## 합의 메모
@@ -95,6 +97,19 @@
 1. 일반 노드는 단일 버스 상주를 기본으로 한다.
 2. 게이트웨이 노드는 다중 버스 상주를 허용한다.
 3. 테스터 노드는 예외적으로 멀티버스 구성이 가능하나, 기본 권고는 버스별 분리다.
+4. ECU 명명은 `3글자 강제`가 아니라 `짧고 눈에 잘 띄는 약어 권장`으로 해석한다.
+5. `_TX/_RX` 접미사는 구현/하위 매핑표에서는 허용하되, 상위 체인 문서 본문/표면 표기에서는 논리명(`EMS_ALERT`) 우선으로 정리한다.
+6. `00e`는 Canonical(`UPPER_SNAKE_CASE`)과 AUTOSAR shortName(`UpperCamelCase`)를 분리 유지하고, shortName 제약(영문, 1..128, namespace unique, underscore 금지)은 유지한다.
+
+## ECU 명명 정책 메모 (2026-03-08)
+- 멘토 D11 원문: `가급적이면 영어 세 자`, `너무 길게 쓰지 말고`, `상관은 없는데 세자가 눈에 잘 띈다`.
+- 해석: 하드 룰이 아니라 가독성 중심 `Should` 권고다.
+- AUTOSAR 근거: shortName은 영문 기반, 1..128자, namespace unique이며 underscore를 쓰지 않는다. `3글자` 요구는 없다.
+- 현재 SoT(`00e`)는 유지 가능하다. Canonical은 약어형 `UPPER_SNAKE_CASE`, AUTOSAR 모델명은 별도 shortName으로 분리한다.
+- 문서 후속 요청:
+  1. `0302_NWflowDef.md` 상단 노드 열/주석에서 `EMS_POLICE_TX`, `EMS_AMB_TX`, `EMS_ALERT_RX`의 전면 노출을 줄이고 `EMS_ALERT` 논리명 우선으로 정리
+  2. `0303_Communication_Specification.md` Comm 설명의 `EMS_ALERT(Tx:Police/Ambulance) -> EMS_ALERT(Rx)` 표현을 논리 단말 중심으로 축약
+  3. `00e_ECU_Naming_Standard.md`는 현행 유지. 다만 `상위 체인 문서=논리명`, `04/보강표/코드=내부 모듈명 허용` 경계를 한 줄 더 명시하면 좋음
 
 ## 확장 설계 의사결정안 v1 (Dev1/Dev2/Docs 공통)
 
