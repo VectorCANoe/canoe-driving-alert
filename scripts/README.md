@@ -44,7 +44,9 @@ Then you can use:
 - Product operator console:
   - `python scripts/run.py tui`
   - `sdv tui`
-  - Designed for daily operation with categories, command details, and live execution log.
+  - Designed for daily operation with categories, command details, quick form input, and live execution log.
+  - Users choose a task first, then fill only the required values on the right panel.
+  - `run-id`, 날짜 같은 반복 입력은 기본값이 자동 채워집니다.
 - Menu-style guided flow (recommended for operators):
   - `python scripts/run.py start guided`
   - `python scripts/run.py go`
@@ -102,9 +104,9 @@ Then you can use:
 - Textual flow:
   - left: categories (`Operate / Verify / Inspect / Package`)
   - center: curated commands
-  - right: operator details / runtime notes
+  - right: operator details / runtime notes / quick form
   - bottom: live execution log
-  - keys: `r` run, `g` focus categories, `c` focus commands, `l` focus log, `q` quit
+  - keys: `r` run, `g` focus categories, `c` focus commands, `f` focus form, `l` focus log, `q` quit
 - Grouped command palette:
   - `/palette`
   - First choose group: `Operate / Verify / Inspect / Package / Session`

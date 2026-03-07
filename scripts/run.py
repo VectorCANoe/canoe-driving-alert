@@ -86,6 +86,7 @@ CONTRACT_CANONICAL = [
     "python scripts/run.py verify prepare --run-id <YYYYMMDD_HHMM>",
     "python scripts/run.py verify batch --run-id <YYYYMMDD_HHMM> --owner <OWNER>",
     "python scripts/run.py verify smoke --owner <OWNER>",
+    "python scripts/run.py verify quick --run-id <YYYYMMDD_HHMM> --owner <OWNER>",
     "python scripts/run.py verify fill-score --tier <UT|IT|ST> --run-id <YYYYMMDD_HHMM> --owner <OWNER>",
     "python scripts/run.py verify insight --run-id <YYYYMMDD_HHMM>",
     "python scripts/run.py verify bind-doc --run-id <YYYYMMDD_HHMM>",
@@ -93,6 +94,7 @@ CONTRACT_CANONICAL = [
     "python scripts/run.py verify status --run-id <YYYYMMDD_HHMM>",
     "python scripts/run.py verify finalize --run-id <YYYYMMDD_HHMM> --owner <OWNER>",
     "python scripts/run.py gate doc-sync",
+    "python scripts/run.py gate all",
     "python scripts/run.py gate cfg-hygiene",
     "python scripts/run.py gate capl-sync",
     "python scripts/run.py gate multibus-dbc",
@@ -349,6 +351,30 @@ def cmd_verify_finalize(args: argparse.Namespace) -> int:
     if args.no_strict_axis:
         cmd.append("--no-strict-axis")
     return run_cmd(cmd)
+
+
+def cmd_verify_quick(args: argparse.Namespace) -> int:
+    steps = [
+        ("verify prepare", lambda: cmd_verify_prepare(argparse.Namespace(run_id=args.run_id))),
+        ("verify smoke", lambda: cmd_verify_smoke(argparse.Namespace(owner=args.owner, run_date=args.run_date))),
+        (
+            "verify status",
+            lambda: cmd_verify_status(
+                argparse.Namespace(
+                    run_id=args.run_id,
+                    evidence_root="",
+                    output_json="canoe/tmp/reports/verification/run_readiness.json",
+                    output_md="canoe/tmp/reports/verification/run_readiness.md",
+                )
+            ),
+        ),
+    ]
+    for step_name, step_fn in steps:
+        print(f"[VERIFY_QUICK] {step_name}")
+        rc = step_fn()
+        if rc != 0:
+            return rc
+    return 0
 
 
 def cmd_verify_status(args: argparse.Namespace) -> int:
@@ -708,6 +734,10 @@ def cmd_gate_multibus_dbc(_: argparse.Namespace) -> int:
 
 def cmd_gate_cli_readiness(_: argparse.Namespace) -> int:
     return run_cmd([sys.executable, str(SCRIPTS / "gates" / "cli_readiness_gate.py")])
+
+
+def cmd_gate_all(_: argparse.Namespace) -> int:
+    return _run_gate_all()
 
 
 def cmd_contract(args: argparse.Namespace) -> int:
@@ -1992,6 +2022,13 @@ def add_verify_smoke_args(p: argparse.ArgumentParser) -> None:
     p.set_defaults(func=cmd_verify_smoke)
 
 
+def add_verify_quick_args(p: argparse.ArgumentParser) -> None:
+    p.add_argument("--run-id", required=True, help="Run ID, e.g. 20260306_1930")
+    p.add_argument("--owner", default="TBD")
+    p.add_argument("--run-date", default=dt.date.today().isoformat())
+    p.set_defaults(func=cmd_verify_quick)
+
+
 def add_verify_fill_args(p: argparse.ArgumentParser) -> None:
     p.add_argument("--tier", required=True, choices=["UT", "IT", "ST"])
     p.add_argument("--run-id", required=True, help="Run ID, e.g. 20260306_1930")
@@ -2316,6 +2353,7 @@ def build_parser() -> argparse.ArgumentParser:
     add_verify_prepare_args(verify_sub.add_parser("prepare", help="Create UT/IT/ST evidence run folders"))
     add_verify_batch_args(verify_sub.add_parser("batch", help="Run Dev2 pre/post/full batch workflow"))
     add_verify_smoke_args(verify_sub.add_parser("smoke", help="Run CANoe COM smoke checks"))
+    add_verify_quick_args(verify_sub.add_parser("quick", help="Run prepare + smoke + status in one flow"))
     add_verify_fill_args(verify_sub.add_parser("fill-score", help="Fill and score one tier"))
     add_verify_insight_args(verify_sub.add_parser("insight", help="Build run-level insight report"))
     add_verify_bind_doc_args(verify_sub.add_parser("bind-doc", help="Build 05/06/07 doc binding bundle"))
@@ -2337,6 +2375,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     gate = sub.add_parser("gate", help="Quality gate commands")
     gate_sub = gate.add_subparsers(dest="gate_command", required=True)
+    gate_sub.add_parser("all", help="Run the full gate bundle").set_defaults(func=cmd_gate_all)
     gate_sub.add_parser("doc-sync", help="Run Req-Doc-Code sync gate").set_defaults(func=cmd_gate_doc_sync)
     gate_sub.add_parser("cfg-hygiene", help="Run cfg text hygiene gate").set_defaults(func=cmd_gate_cfg_hygiene)
     gate_sub.add_parser("capl-sync", help="Run src/capl vs cfg/channel_assign sync gate").set_defaults(func=cmd_gate_capl_sync)
