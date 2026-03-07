@@ -20,6 +20,7 @@
 - 시나리오 B: 긴급차량 접근 기반 경고 패턴 동작
 - 공통 베이스: 경고 표시/중재/복귀 로직
 - Validation Harness(`VAL_SCENARIO_CTRL`, `VAL_BASELINE_CTRL`)는 SIL 검증 전용 계층이며 양산 기능/사용자 기능 범위에 포함하지 않는다.
+- 역할 고정: `VAL_SCENARIO_CTRL`는 E2E 주입/관찰용 멀티버스 예외 노드, `VAL_BASELINE_CTRL`는 Chassis 단일버스 기반 결과 집계 노드로 운영한다.
 
 본 프로젝트는 `CANoe SIL` 환경에서 아래 5개 기능군을 통합 검증한다.
 
