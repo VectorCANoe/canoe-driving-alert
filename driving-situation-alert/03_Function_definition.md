@@ -3,8 +3,8 @@
 **Document ID**: PROJ-03-FD
 **ISO 26262 Reference**: Part 4, Cl.7 (System Design)
 **ASPICE Reference**: SYS.3 (System Architectural Design)
-**Version**: 4.31
-**Date**: 2026-03-06
+**Version**: 4.32
+**Date**: 2026-03-07
 **Status**: Draft
 **Project Title**: 주행 상황 실시간 경고 시스템
 **Subtitle**: 구간 정보 및 긴급차량 접근 기반 앰비언트·클러스터 경보
@@ -227,7 +227,7 @@
 | Func_148 | Req_148 | ADAS_WARN_CTRL | 경고 입력 유효성 필터링 | 객체/상태 입력의 유효성·신뢰도 기준을 점검해 판정 입력을 필터링 | 입력: objectTrackValid, objectConfidence, objectRiskClass / 출력: objectRiskClass, selectedAlertLevel |
 | Func_149 | Req_149 | WARN_ARB_MGR | 경고 입력 신선도 보호 | 핵심 입력 무갱신 상태(stale)를 감지해 보수 경고 정책으로 전환 | 입력: lastEmergencyRxMs, timeoutClear, warningState / 출력: warningState, selectedAlertLevel |
 | Func_150 | Req_150 | WARN_ARB_MGR | 경고 상태 전이 안정화 | 동일 원인 경고 상태의 반복 진동을 억제하도록 전이 안정화 처리 | 입력: warningState, selectedAlertLevel, duplicatePopupGuard / 출력: selectedAlertLevel, selectedAlertType |
-| Func_151 | Req_151 | DOMAIN_BOUNDARY_MGR | 출력 채널 가용성 판정 | 도메인 헬스/경로 상태 기반 출력 채널 가용성 판정 | 입력: domainPathStatus, e2eHealthState, BoundaryStatus / 출력: domainPathStatus, failSafeMode |
+| Func_151 | Req_151 | DOMAIN_BOUNDARY_MGR | 출력 채널 가용성 판정 | 도메인 경계 통신 상태(헬스/타임아웃/유효 플래그) 기반 출력 채널 가용성 판정 | 입력: domainPathStatus, e2eHealthState, BoundaryStatus / 출력: domainPathStatus, failSafeMode |
 | Func_152 | Req_152 | WARN_ARB_MGR | 출력 채널 장애 대체 정책 | 주 출력 채널 장애 시 대체 채널 기반 경고 지속 정책 적용 | 입력: failSafeMode, selectedAlertType, selectedAlertLevel / 출력: selectedAlertType, selectedAlertLevel, warningTextCode |
 | Func_153 | Req_153 | CLU_HMI_CTRL | 오디오 경합 인지성 보호 | 오디오/음성 경합 상태를 반영해 경고 인지성 보호 정책 적용 | 입력: AudioFocusOwner, AudioDuckLevel, TtsState / 출력: warningTextCode, ClusterNotifPrio |
 | Func_154 | Req_154 | CLU_HMI_CTRL | 팝업 과밀 억제 및 우선 표시 | 복수 경고 동시 상황에서 비긴급 팝업 과밀을 억제하고 우선 경고를 선표시 | 입력: PopupType, PopupPriority, PopupActive, duplicatePopupGuard / 출력: warningTextCode, ClusterNotifPrio |
@@ -314,6 +314,7 @@
 
 | 버전 | 날짜 | 변경 사항 |
 |---|---|---|
+| 4.32 | 2026-03-07 | Req_151 정합 보강: `Func_151` 설명을 `도메인 경계 통신 상태(헬스/타임아웃/유효 플래그)` 기준으로 명확화해 01 요구 문구와 동기화. |
 | 4.31 | 2026-03-06 | Legacy 누락군 보강: `Req_018/036/038/039/114/115/117/122/124` 상속 관계를 `Legacy 전환 매핑` 섹션으로 명시해 통폐합 이후 추적 경로를 고정. |
 | 4.30 | 2026-03-06 | 경고 강건성·인지성 확장(Pre-Activation) 반영: `Func_148~Func_155` 상세표와 상단 기능요약을 추가하고 `Req_148~Req_155` 추적 범위를 문서 원칙에 반영. |
 | 4.29 | 2026-03-06 | 차량 경보 편의 확장(Pre-Activation) 반영: `Func_140~Func_147` 상세표와 상단 기능요약을 추가하고 `Req_140~Req_147` 추적 범위를 문서 원칙에 반영. |

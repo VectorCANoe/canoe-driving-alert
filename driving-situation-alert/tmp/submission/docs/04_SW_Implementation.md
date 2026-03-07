@@ -3,8 +3,8 @@
 **Document ID**: PROJ-04-SI
 **ISO 26262 Reference**: Part 6, Cl.8 (Software Unit Design and Implementation)
 **ASPICE Reference**: SWE.3 (Software Detailed Design and Unit Construction)
-**Version**: 2.22
-**Date**: 2026-03-06
+**Version**: 2.23
+**Date**: 2026-03-07
 **Status**: Draft
 **Project Title**: 주행 상황 실시간 경고 시스템
 **Subtitle**: 구간 정보 및 긴급차량 접근 기반 앰비언트·클러스터 경보
@@ -67,7 +67,7 @@ Emergency Source (logical terminal)
 
 - 상단 공식표는 감사 일관성을 위해 `EMS_ALERT` 논리 단말 기준으로 표기한다.
 - 내부 구현 모듈(`EMS_POLICE_TX`, `EMS_AMB_TX`, `EMS_ALERT_RX`) 분해는 본문 상세 추적표(3장, 4장)에서 관리한다.
-- 프레임 포워딩은 Ethernet 스위칭 인프라(실차 스위치 또는 SIL 네트워크 스택)가 담당하고, `ETH_SW` CAPL은 경로 상태 모니터링/진단 로직을 담당한다.
+- 프레임 포워딩은 Ethernet 스위칭 인프라(실차 스위치 또는 SIL 네트워크 스택)가 담당하고, `ETH_SW` CAPL은 도메인 경계 통신 상태 모니터링/진단 로직을 담당한다.
 
 ---
 

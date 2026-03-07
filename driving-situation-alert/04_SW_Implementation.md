@@ -3,8 +3,8 @@
 **Document ID**: PROJ-04-SI
 **ISO 26262 Reference**: Part 6, Cl.8 (Software Unit Design and Implementation)
 **ASPICE Reference**: SWE.3 (Software Detailed Design and Unit Construction)
-**Version**: 2.22
-**Date**: 2026-03-06
+**Version**: 2.23
+**Date**: 2026-03-07
 **Status**: Draft
 **Project Title**: 주행 상황 실시간 경고 시스템
 **Subtitle**: 구간 정보 및 긴급차량 접근 기반 앰비언트·클러스터 경보
@@ -101,7 +101,7 @@ Emergency Source (logical terminal)
 
 - 상단 공식표는 감사 일관성을 위해 `EMS_ALERT` 논리 단말 기준으로 표기한다.
 - 내부 구현 모듈(`EMS_POLICE_TX`, `EMS_AMB_TX`, `EMS_ALERT_RX`) 분해는 본문 상세 추적표(3장, 4장)에서 관리한다.
-- 프레임 포워딩은 Ethernet 스위칭 인프라(실차 스위치 또는 SIL 네트워크 스택)가 담당하고, `ETH_SW` CAPL은 경로 상태 모니터링/진단 로직을 담당한다.
+- 프레임 포워딩은 Ethernet 스위칭 인프라(실차 스위치 또는 SIL 네트워크 스택)가 담당하고, `ETH_SW` CAPL은 도메인 경계 통신 상태 모니터링/진단 로직을 담당한다.
 
 ---
 
@@ -122,7 +122,7 @@ Emergency Source (logical terminal)
 | MOD_11 | AMBIENT_CTRL | `canoe/src/capl/output/AMBIENT_CTRL.can` | Ambient 출력 제어 |
 | MOD_12 | CLU_HMI_CTRL | `canoe/src/capl/output/CLU_HMI_CTRL.can` | Cluster 경고 출력 |
 | MOD_13 | VAL_SCENARIO_CTRL | `canoe/src/capl/input/` (Validation scenario controller module, canonical=`VAL_SCENARIO_CTRL`) | 테스트 실행/판정 |
-| MOD_14 | ETH_SW | `canoe/src/capl/network/ETH_SW.can` | ETH 경로 상태 모니터(Validation/Fail-safe 지원) |
+| MOD_14 | ETH_SW | `canoe/src/capl/network/ETH_SW.can` | ETH 도메인 경계 통신 상태 모니터(Validation/Fail-safe 지원) |
 | MOD_15 | DOMAIN_BOUNDARY_MGR | `canoe/src/capl/ecu/DOMAIN_BOUNDARY_MGR.can` | 도메인 경로 헬스/Fail-safe 게이트 |
 
 ---
@@ -426,6 +426,7 @@ Emergency Source (logical terminal)
 
 | 버전 | 날짜 | 변경 사항 |
 |---|---|---|
+| 2.23 | 2026-03-07 | Req_151 정합 보강: `ETH_SW` 관련 설명/모듈 역할 문구를 `도메인 경계 통신 상태 모니터링` 기준으로 정제해 요구 문구와 용어를 동기화. |
 | 2.22 | 2026-03-06 | 경고 강건성·인지성 확장(Pre-Activation) 반영: `Func_148~Func_155` 구현 추적과 `Var_016/020/021/024/027/028/166/167/168/180/268/269/289/296/297/326/327/328/330/333/334` 보강표를 추가하고 05/06/07 연계 동기화 규칙을 작성 원칙에 반영. |
 | 2.21 | 2026-03-06 | 차량 경보 편의 확장(Pre-Activation) 반영: `Func_140~Func_147` 구현 추적, `Var_133/138~141/155/164/166~168/191~193/268/281/282` 보강표 추가, 05/06/07 연계 동기화 규칙을 작성 원칙에 반영. |
 | 2.20 | 2026-03-06 | ADAS 객체 인지 확장(Pre-Activation) 반영: `Func_130~Func_139` 구현 추적과 `Var_330~Var_339` 보강표를 추가하고 체인 동기화 규칙을 작성 원칙에 명시. |
@@ -436,7 +437,7 @@ Emergency Source (logical terminal)
 | 2.15 | 2026-03-04 | 멘토링 체크리스트 반영: Panel 구성 우선순위(`차량 화면 -> 제어 패널 -> 상태 모니터`)와 UI-로직 분리 원칙을 작성 원칙에 명시. |
 | 2.14 | 2026-03-04 | 구현 원칙 정합 보강: 통신 SoT에 `eth_backbone_can_stub.dbc`를 추가하고, CANoe.CAN 환경의 CAN-stub 대체 운반 규칙(0x1C0/0x1C1/0x1C2/0x1C3/0x1C4/0x111)과 Ethernet 논리 계약 우선 해석 원칙을 명시. |
 | 2.13 | 2026-03-03 | 감사 추적성 보강: `Func_101~119` / `Req_101~119` 기능-구현 상세 행을 추가하고, UT/IT 링크(`UT_BASE_*`, `IT_BASE_*`)를 1:1로 연결. |
-| 2.12 | 2026-03-03 | ETH_SW 역할을 구현 기준(경로 상태 모니터링)으로 명확화하고, 코드 아티팩트 경로를 `canoe/src/capl/*` 실제 경로로 정합화. |
+| 2.12 | 2026-03-03 | ETH_SW 역할을 구현 기준(도메인 경계 통신 상태 모니터링)으로 명확화하고, 코드 아티팩트 경로를 `canoe/src/capl/*` 실제 경로로 정합화. |
 | 2.11 | 2026-03-03 | Req_120~124 추적/타이밍 정합 반영: `Func_120~124` 및 `Var_320~329` 추적 항목 추가, `TASK_003`를 100ms 주기로 정합화, `DOMAIN_BOUNDARY_MGR`를 `MOD_15`로 반영. |
 | 2.10 | 2026-03-02 | ISO26262/ASPICE 운영 경계 반영: SIL 전용 `Verification-Harness` 변수(`V2X/policeDispatch`, `V2X/ambulanceDispatch`, `Test/*`, `UiRender/*`)의 비제품 체인 분류를 작성 원칙/4.2 표로 명시. |
 | 2.9 | 2026-03-01 | 상단 공식 표와 아키텍처 요약의 EMS 표기를 `EMS_ALERT` 논리 단말 기준으로 통일하고, 내부 TX/RX 모듈은 상세 추적표에서만 분리 관리. |

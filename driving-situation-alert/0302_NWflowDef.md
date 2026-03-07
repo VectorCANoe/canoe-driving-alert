@@ -3,7 +3,7 @@
 **Document ID**: PROJ-0302-NFD
 **ISO 26262 Reference**: Part 4, Cl.7 (System Design)
 **ASPICE Reference**: SYS.3 (System Architectural Design)
-**Version**: 3.24
+**Version**: 3.25
 **Date**: 2026-03-07
 **Status**: Draft
 **Project Title**: 주행 상황 실시간 경고 시스템
@@ -420,7 +420,7 @@
 | Flow_102 | Comm_102 | Func_103, Func_104, Func_105 | Req_103, Req_104, Req_105 | frmPedalInputCanMsg(0x2A2), frmSteeringStateCanMsg(0x100), frmBrakeStatusMsg(0x120), frmAccelStatusMsg(0x121), frmSteeringTorqueMsg(0x122) | Chassis CAN(VAL_SCENARIO_CTRL/CHS_GW/각 제어 ECU) | 100ms | Defined |
 | Flow_103 | Comm_103 | Func_106, Func_107, Func_140, Func_142 | Req_106, Req_107, Req_140, Req_142 | frmHazardControlMsg(0x261), frmWindowControlMsg(0x262), frmSeatBeltStateMsg(0x267), frmCabinAirStateMsg(0x268) | Body CAN(BODY_GW/HAZARD_CTRL/WINDOW_CTRL/DRV_STATE_MGR) | 100ms | Defined |
 | Flow_104 | Comm_104 | Func_109, Func_146, Func_154 | Req_109, Req_146, Req_154 | frmClusterBaseStateMsg(0x281), frmClusterThemeMsg(0x286), frmHmiPopupStateMsg(0x287) | Infotainment CAN(IVI_GW/CLU_BASE_CTRL/CLU_HMI_CTRL) | 50ms | Defined |
-| Flow_105 | Comm_105 | Func_110, Func_111, Func_141, Func_149, Func_151 | Req_110, Req_111, Req_141, Req_149, Req_151 | frmPowertrainGatewayMsg(0x109), frmVehicleModeMsg(0x10A), frmPowerLimitMsg(0x10B), frmCruiseStateMsg(0x10C), frmChassisHealthMsg(0x103), frmBodyHealthMsg(0x269), frmInfotainmentHealthMsg(0x288) | Domain GW/Boundary 경로 상태 및 헬스 모니터 | 100ms | Defined |
+| Flow_105 | Comm_105 | Func_110, Func_111, Func_141, Func_149, Func_151 | Req_110, Req_111, Req_141, Req_149, Req_151 | frmPowertrainGatewayMsg(0x109), frmVehicleModeMsg(0x10A), frmPowerLimitMsg(0x10B), frmCruiseStateMsg(0x10C), frmChassisHealthMsg(0x103), frmBodyHealthMsg(0x269), frmInfotainmentHealthMsg(0x288) | Domain GW/Boundary 통신 상태 및 헬스 모니터 | 100ms | Defined |
 | Flow_106 | Comm_106 | Func_112 | Req_112 | frmBaseTestResultMsg(0x2A6), frmTestResultMsg(0x2A5) | VAL_BASELINE_CTRL/VAL_SCENARIO_CTRL -> Chassis CAN(Validation frame) 결과 기록 | Event | Defined (Validation-only) |
 
 ---
@@ -517,6 +517,7 @@
 
 | 버전 | 날짜 | 변경 사항 |
 |---|---|---|
+| 3.25 | 2026-03-07 | Req_151 정합 보강: `Flow_105` 경로 설명을 `경로 상태` 표현에서 `도메인 경계 통신 상태/헬스 모니터` 기준으로 명확화. |
 | 3.24 | 2026-03-07 | DBC SoT 정합 2차: ADAS/ETH-stub 프레임 소유 범위를 1C3~1C8 기준으로 재동기화하고(`Flow_121`,`Flow_130~133`), `ETH_INTERFACE_CONTRACT.md v1.2` 활성 계약 상태를 반영. |
 | 3.23 | 2026-03-06 | Legacy 누락군 보강: `Req_018/036/038/039/108/114/115/117/122/124` 상속 관계를 `Legacy Req 상속 매핑` 섹션으로 추가해 Flow 추적 누락을 해소. |
 | 3.22 | 2026-03-06 | 경고 강건성·인지성 확장(Pre-Activation) 반영: `Req_148~Req_155`를 `Flow_130/133`, `Flow_006/007/008`, `Flow_104/105/124/203`에 매핑하고 연계 체크포인트를 동기화. |
