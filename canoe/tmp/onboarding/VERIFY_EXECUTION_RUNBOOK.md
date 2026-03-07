@@ -10,6 +10,10 @@ python scripts/run.py verify prepare --run-id <RUN_ID>
 ## 2) CANoe Execution (Manual)
 
 - Run UT/IT/ST scenarios in CANoe.
+- No-panel trigger (recommended):
+```powershell
+python scripts/run.py scenario run --id <SCENARIO_ID>
+```
 - Save Write Window logs to:
   - `canoe/logging/evidence/UT/<RUN_ID>/raw_write_window.txt`
   - `canoe/logging/evidence/IT/<RUN_ID>/raw_write_window.txt`
@@ -45,4 +49,3 @@ Outputs:
   - `run_date` -> 일자
   - `evidence_*` -> 증빙 링크
 - Rows with `action_required != APPLY_TO_DOC` are unresolved.
-

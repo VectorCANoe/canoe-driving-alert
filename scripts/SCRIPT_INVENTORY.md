@@ -45,6 +45,7 @@ This file defines how current script assets are classified before CLI productiza
 - `scripts/canoe/reload_cfg.py`
 - `scripts/canoe/reload_wait.py`
 - `scripts/canoe/setup_canoe_config.py`
+- `scripts/canoe/send_scenario_command.py`
 - `canoe/scripts/navigation_simulator.py`
 - `canoe/scripts/audit_panel_bindings.py`
 - `canoe/scripts/check_panel_split_status.py`
@@ -91,6 +92,7 @@ Target direction:
 
 Canonical:
 
+- `python scripts/run.py scenario run --id <0..255>`
 - `python scripts/run.py verify prepare --run-id <RUN_ID>`
 - `python scripts/run.py verify smoke --owner <OWNER>`
 - `python scripts/run.py verify fill-score --tier <UT|IT|ST> --run-id <RUN_ID> --owner <OWNER>`
@@ -107,6 +109,7 @@ Canonical:
 
 Compatibility aliases remain enabled during transition:
 
+- `scenario-run`
 - `verify-prepare`, `verify-smoke`, `verify-fill-score`, `verify-insight`, `verify-bind-doc`
 - `verify-fill-template`
 - `verify-status`

@@ -55,6 +55,7 @@ def main() -> int:
     py = sys.executable
 
     checks.append(run_check([py, str(RUN_PY), "--help"], "run.py help"))
+    checks.append(run_check([py, str(RUN_PY), "scenario", "--help"], "scenario group help"))
     checks.append(run_check([py, str(RUN_PY), "verify", "--help"], "verify group help"))
     checks.append(run_check([py, str(RUN_PY), "gate", "--help"], "gate group help"))
     checks.append(run_check([py, str(RUN_PY), "package", "--help"], "package group help"))
@@ -70,6 +71,7 @@ def main() -> int:
             data = json.loads(proc.stdout)
             canonical = data.get("canonical", [])
             required = [
+                "python scripts/run.py scenario run --id <0..255>",
                 "python scripts/run.py verify prepare --run-id <YYYYMMDD_HHMM>",
                 "python scripts/run.py verify insight --run-id <YYYYMMDD_HHMM>",
                 "python scripts/run.py verify bind-doc --run-id <YYYYMMDD_HHMM>",

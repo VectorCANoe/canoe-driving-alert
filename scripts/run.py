@@ -2,6 +2,7 @@
 """Unified script launcher.
 
 Canonical command contract:
+  - scenario run
   - verify prepare
   - verify smoke
   - verify fill-score
@@ -14,6 +15,7 @@ Canonical command contract:
   - package build-exe
 
 Legacy aliases are kept for compatibility:
+  - scenario-run
   - verify-prepare
   - verify-smoke
   - verify-fill-score
@@ -40,6 +42,7 @@ ROOT = Path(__file__).resolve().parent.parent
 SCRIPTS = ROOT / "scripts"
 
 CONTRACT_CANONICAL = [
+    "python scripts/run.py scenario run --id <0..255>",
     "python scripts/run.py verify prepare --run-id <YYYYMMDD_HHMM>",
     "python scripts/run.py verify smoke --owner <OWNER>",
     "python scripts/run.py verify fill-score --tier <UT|IT|ST> --run-id <YYYYMMDD_HHMM> --owner <OWNER>",
@@ -56,6 +59,7 @@ CONTRACT_CANONICAL = [
 ]
 
 CONTRACT_LEGACY = [
+    "scenario-run",
     "verify-prepare",
     "verify-smoke",
     "verify-fill-score",
@@ -255,6 +259,28 @@ def cmd_verify_status(args: argparse.Namespace) -> int:
     ]
     if args.evidence_root:
         cmd.extend(["--evidence-root", str(args.evidence_root)])
+    return run_cmd(cmd)
+
+
+def cmd_scenario_run(args: argparse.Namespace) -> int:
+    cmd = [
+        sys.executable,
+        str(SCRIPTS / "canoe" / "send_scenario_command.py"),
+        "--id",
+        str(args.id),
+        "--namespace",
+        args.namespace,
+        "--var",
+        args.var,
+        "--ack-var",
+        args.ack_var,
+        "--wait-ack-ms",
+        str(args.wait_ack_ms),
+        "--poll-ms",
+        str(args.poll_ms),
+    ]
+    if args.no_ensure_running:
+        cmd.append("--no-ensure-running")
     return run_cmd(cmd)
 
 
@@ -491,9 +517,29 @@ def add_verify_status_args(p: argparse.ArgumentParser) -> None:
     p.set_defaults(func=cmd_verify_status)
 
 
+def add_scenario_run_args(p: argparse.ArgumentParser) -> None:
+    p.add_argument("--id", type=int, required=True, help="Scenario ID (0..255)")
+    p.add_argument("--namespace", default="Test", help="System variable namespace")
+    p.add_argument(
+        "--var",
+        default="scenarioCommand",
+        choices=["scenarioCommand", "testScenario"],
+        help="Target sysvar name",
+    )
+    p.add_argument("--ack-var", default="scenarioCommandAck", help="Ack sysvar name")
+    p.add_argument("--wait-ack-ms", type=int, default=1200, help="Ack wait timeout in ms")
+    p.add_argument("--poll-ms", type=int, default=20, help="Ack poll interval in ms")
+    p.add_argument("--no-ensure-running", action="store_true", help="Do not auto-start measurement")
+    p.set_defaults(func=cmd_scenario_run)
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Unified script launcher")
     sub = parser.add_subparsers(dest="command", required=True)
+
+    scenario = sub.add_parser("scenario", help="Manual scenario trigger commands (no panel)")
+    scenario_sub = scenario.add_subparsers(dest="scenario_command", required=True)
+    add_scenario_run_args(scenario_sub.add_parser("run", help="Send scenario command via CANoe COM"))
 
     verify = sub.add_parser("verify", help="Verification pipeline commands")
     verify_sub = verify.add_subparsers(dest="verify_command", required=True)
@@ -523,6 +569,8 @@ def build_parser() -> argparse.ArgumentParser:
     contract = sub.add_parser("contract", help="Show canonical command contract")
     contract.add_argument("--json", action="store_true", help="Output machine-readable JSON")
     contract.set_defaults(func=cmd_contract)
+
+    add_scenario_run_args(sub.add_parser("scenario-run", help="Legacy alias: scenario run"))
 
     # Legacy aliases (kept for compatibility during migration)
     add_verify_prepare_args(sub.add_parser("verify-prepare", help="Legacy alias: verify prepare"))

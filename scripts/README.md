@@ -19,6 +19,15 @@ Then you can use:
 
 ## Daily Commands
 
+### Scenario Trigger (No Panel)
+- Send one scenario command to running CANoe via COM:
+  - `python scripts/run.py scenario run --id 4`
+  - `sdv scenario run --id 4`
+- Optional options:
+  - `--var scenarioCommand|testScenario` (default: `scenarioCommand`)
+  - `--wait-ack-ms 1200` (ack timeout)
+  - `--no-ensure-running` (do not auto-start measurement)
+
 ### Verification
 - Prepare run folders:
   - `python scripts/run.py verify prepare --run-id 20260306_1930`
