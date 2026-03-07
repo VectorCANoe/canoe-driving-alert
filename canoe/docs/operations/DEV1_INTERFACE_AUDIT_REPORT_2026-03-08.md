@@ -35,7 +35,7 @@ This report records the first-pass Dev1 audit decisions for the active CANoe SIL
 | A-006 | `Test::*` controls in product-facing nodes | Active usage is validation-only and acceptable, but `0304` does not currently document the matching variables. | Docs Request |
 | A-007 | `domainBoundaryStatus` writer duplication | Redundant mirror write in `DOMAIN_ROUTER` removed. `DOMAIN_BOUNDARY_MGR` is now the sole active owner. | Closed |
 | A-008 | `alertHistoryCount` semantic collision | `EMS_ALERT_RX` counter increment removed. `CLU_HMI_CTRL` remains the active owner for query/display history count. | Closed |
-| A-009 | output mirror duplication (`IVI_GW` vs `CLU_HMI_CTRL`) | Multiple `CoreState::*` mirrors are written in both producer and consumer nodes. Not a current functional defect, but should be narrowed later if strict single-writer policy is enforced. | Open |
+| A-009 | output mirror duplication (`IVI_GW` vs `CLU_HMI_CTRL`) | `IVI_GW` now remains the cluster/HMI frame producer, while `CLU_HMI_CTRL` is the sole active writer for mirrored `CoreState::*` and final `Cluster::warningTextCode` display state. | Closed |
 | A-010 | guarded override / validation exception writers | Some duplicate writers are intentional: fail-safe override and harness object injection. Treat as controlled exceptions, not immediate defects. | Closed |
 | A-011 | `VAL_SCENARIO_CTRL` delayed timer residue | Scenario stop/switch paths did not cancel `tScenarioEval`, `tScenarioPhase2`, `tScenarioPhase3`, so delayed callbacks could still fire after reset or mode switch. Fixed in code. | Closed |
 | A-012 | timeout/reset/fail-safe control paths | `EMS_ALERT_RX`, `ADAS_WARN_CTRL`, `CLU_HMI_CTRL`, `DOMAIN_BOUNDARY_MGR` are structurally deterministic in the active profile after reviewing watchdog clear, hold-time, duplicate-popup guard, and fail-safe recompute paths. | Closed |
@@ -257,15 +257,32 @@ This report records the first-pass Dev1 audit decisions for the active CANoe SIL
   - `clusterNotifPrio`
   - `clusterSyncState`
   - `clusterSyncSeq`
+- `Cluster::warningTextCode` was also written in both nodes:
+  - raw cluster warning output in `IVI_GW`
+  - final display/guarded code in `CLU_HMI_CTRL`
 
 **Decision**
-- This is a real single-writer policy violation for mirror variables.
-- It is not yet a confirmed runtime defect because both paths write equivalent values in the active profile.
-- Keep as an open cleanup item rather than refactoring during the current closure cycle.
+- This was a real single-writer policy violation for output-side mirrors.
+- Active runtime ownership is now narrowed to:
+  - `IVI_GW` as message producer only
+  - `CLU_HMI_CTRL` as the sole mirror/display-state writer
 
 **Action**
-- No code change in this cycle.
-- Revisit when the team wants stricter mirror ownership hygiene.
+- Removed duplicate mirror writes from `IVI_GW`:
+  - `themeMode`
+  - `popupType`
+  - `popupPriority`
+  - `popupActive`
+  - `volumeLevel`
+  - `audioFocusOwner`
+  - `audioDuckingLvl`
+  - `ttsState`
+  - `clusterNotifType`
+  - `clusterNotifPrio`
+  - `clusterSyncState`
+  - `clusterSyncSeq`
+- Removed raw `@Cluster::warningTextCode` write from `IVI_GW`.
+- `CLU_HMI_CTRL` remains the active owner of mirrored HMI/cluster state after message consumption.
 
 ---
 
