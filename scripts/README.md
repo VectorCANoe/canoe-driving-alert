@@ -104,9 +104,10 @@ Then you can use:
 - Textual flow:
   - left: categories (`Operate / Verify / Inspect / Package`)
   - center: curated commands
+  - top summary: pinned tasks / recent runs / last result
   - right: operator details / runtime notes / quick form
   - bottom: live execution log
-  - keys: `r` run, `g` focus categories, `c` focus commands, `f` focus form, `l` focus log, `q` quit
+  - keys: `r` run, `p` pin current task, `g` focus categories, `c` focus commands, `f` focus form, `l` focus log, `q` quit
 - Grouped command palette:
   - `/palette`
   - First choose group: `Operate / Verify / Inspect / Package / Session`

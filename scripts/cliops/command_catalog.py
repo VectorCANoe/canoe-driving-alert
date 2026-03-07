@@ -22,6 +22,7 @@ class CommandParam:
 
 @dataclass(frozen=True)
 class PaletteCommand:
+    command_id: str
     title: str
     command: str
     summary: str
@@ -68,15 +69,25 @@ def resolve_command_defaults(command: PaletteCommand) -> dict[str, str]:
     return {param.key: resolve_default_value(param.default) for param in command.params}
 
 
+def build_command_index() -> dict[str, PaletteCommand]:
+    return {
+        command.command_id: command
+        for commands in PRODUCT_COMMAND_GROUPS.values()
+        for command in commands
+    }
+
+
 PRODUCT_COMMAND_GROUPS: dict[str, list[PaletteCommand]] = {
     "Operate": [
         PaletteCommand(
+            command_id="operate.guided",
             title="Guided operator flow",
             command="start guided",
             summary="Open the stable numeric guided flow for operators.",
             notes="Use this when you want the conservative fallback without the full dashboard.",
         ),
         PaletteCommand(
+            command_id="operate.scenario_trigger",
             title="Scenario trigger",
             command="scenario run --id 4",
             base_command="scenario run",
@@ -97,18 +108,21 @@ PRODUCT_COMMAND_GROUPS: dict[str, list[PaletteCommand]] = {
             ),
         ),
         PaletteCommand(
+            command_id="operate.measure_status",
             title="Measurement status",
             command="canoe measure-status",
             summary="Read the current CANoe measurement state.",
             windows_only=True,
         ),
         PaletteCommand(
+            command_id="operate.measure_start",
             title="Measurement start",
             command="canoe measure-start",
             summary="Start CANoe measurement through COM.",
             windows_only=True,
         ),
         PaletteCommand(
+            command_id="operate.measure_stop",
             title="Measurement stop",
             command="canoe measure-stop",
             summary="Stop CANoe measurement through COM.",
@@ -117,6 +131,7 @@ PRODUCT_COMMAND_GROUPS: dict[str, list[PaletteCommand]] = {
     ],
     "Verify": [
         PaletteCommand(
+            command_id="verify.precheck_batch",
             title="Precheck batch",
             command="start precheck",
             summary="Run gates + prepare + smoke + readiness status in one operator flow.",
@@ -144,6 +159,7 @@ PRODUCT_COMMAND_GROUPS: dict[str, list[PaletteCommand]] = {
             ),
         ),
         PaletteCommand(
+            command_id="verify.quick_verify",
             title="Quick verify",
             command="verify quick",
             summary="Prepare, smoke, and summarize one run quickly.",
@@ -170,6 +186,7 @@ PRODUCT_COMMAND_GROUPS: dict[str, list[PaletteCommand]] = {
             ),
         ),
         PaletteCommand(
+            command_id="verify.run_readiness_status",
             title="Run readiness status",
             command="verify status --run-id 20260308_0900",
             base_command="verify status",
@@ -187,6 +204,7 @@ PRODUCT_COMMAND_GROUPS: dict[str, list[PaletteCommand]] = {
             ),
         ),
         PaletteCommand(
+            command_id="verify.all_gates",
             title="All gates",
             command="gate all",
             summary="Run doc-sync, cfg-hygiene, capl-sync, multibus-dbc, and cli-readiness gates.",
@@ -194,12 +212,14 @@ PRODUCT_COMMAND_GROUPS: dict[str, list[PaletteCommand]] = {
     ],
     "Inspect": [
         PaletteCommand(
+            command_id="inspect.environment_doctor",
             title="Environment doctor",
             command="doctor",
             summary="Check CANoe COM attach, measurement state, and required sysvars.",
             windows_only=True,
         ),
         PaletteCommand(
+            command_id="inspect.read_system_variable",
             title="Read system variable",
             command="capl sysvar-get --namespace Core --var failSafeMode",
             base_command="capl sysvar-get",
@@ -227,6 +247,7 @@ PRODUCT_COMMAND_GROUPS: dict[str, list[PaletteCommand]] = {
             ),
         ),
         PaletteCommand(
+            command_id="inspect.write_system_variable",
             title="Write system variable",
             command="capl sysvar-set --namespace Test --var scenarioCommand --value 4 --value-type int",
             base_command="capl sysvar-set",
@@ -273,6 +294,7 @@ PRODUCT_COMMAND_GROUPS: dict[str, list[PaletteCommand]] = {
             ),
         ),
         PaletteCommand(
+            command_id="inspect.command_contract",
             title="Command contract",
             command="contract",
             summary="Print canonical and legacy command surfaces for operators and automation.",
@@ -280,6 +302,7 @@ PRODUCT_COMMAND_GROUPS: dict[str, list[PaletteCommand]] = {
     ],
     "Package": [
         PaletteCommand(
+            command_id="package.portable_bundle",
             title="Portable bundle",
             command="package bundle-portable --mode onefolder",
             base_command="package bundle-portable",
@@ -298,6 +321,7 @@ PRODUCT_COMMAND_GROUPS: dict[str, list[PaletteCommand]] = {
             ),
         ),
         PaletteCommand(
+            command_id="package.windows_exe",
             title="Windows exe",
             command="package build-exe --mode onefolder",
             base_command="package build-exe",

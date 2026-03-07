@@ -2,13 +2,16 @@
 
 from __future__ import annotations
 
+import json
 import subprocess
 import sys
+import time
 from pathlib import Path
 
 from cliops.command_catalog import (
     PRODUCT_COMMAND_GROUPS,
     PaletteCommand,
+    build_command_index,
     build_command_tokens,
     resolve_command_defaults,
 )
@@ -23,6 +26,9 @@ from textual.widgets.option_list import Option
 ROOT = Path(__file__).resolve().parent.parent
 RUNNER = ROOT / "scripts" / "run.py"
 FORM_SLOTS = 4
+STATE_FILE = ROOT / "canoe" / "tmp" / "reports" / "verification" / "tui_operator_state.json"
+BASE_GROUP_NAMES = list(PRODUCT_COMMAND_GROUPS.keys())
+COMMAND_INDEX = build_command_index()
 
 
 class SdvTuiApp(App[None]):
@@ -49,6 +55,37 @@ class SdvTuiApp(App[None]):
         background: #17202b;
         border: round #33536f;
         color: #a9bed1;
+    }
+
+    #summary-strip {
+        height: 7;
+        margin: 0 1 1 1;
+    }
+
+    .summary-card {
+        padding: 1;
+        margin-right: 1;
+        background: #121920;
+        border: round #2d3e50;
+    }
+
+    #favorites-card {
+        width: 34;
+    }
+
+    #recent-card {
+        width: 1fr;
+    }
+
+    #result-card {
+        width: 34;
+        margin-right: 0;
+    }
+
+    .summary-title {
+        color: #f6c177;
+        text-style: bold;
+        margin-bottom: 1;
     }
 
     #workspace {
@@ -144,6 +181,7 @@ class SdvTuiApp(App[None]):
     BINDINGS = [
         ("q", "quit", "Quit"),
         ("r", "run_selected", "Run"),
+        ("p", "toggle_pin", "Pin"),
         ("g", "focus_groups", "Groups"),
         ("c", "focus_commands", "Commands"),
         ("f", "focus_form", "Form"),
@@ -152,7 +190,8 @@ class SdvTuiApp(App[None]):
 
     def __init__(self) -> None:
         super().__init__()
-        self.group_names = list(PRODUCT_COMMAND_GROUPS.keys())
+        self.state = self._load_state()
+        self.group_names = self._build_group_names()
         self.active_group_index = 0
         self.active_command_index = 0
 
@@ -171,6 +210,16 @@ class SdvTuiApp(App[None]):
         if not runtime.available:
             runtime_text += f"\nConstraint: {runtime.detail}"
         yield Static(runtime_text, id="runtime")
+        with Horizontal(id="summary-strip"):
+            with Vertical(id="favorites-card", classes="summary-card"):
+                yield Static("Pinned Tasks", classes="summary-title")
+                yield Static(id="favorites-body")
+            with Vertical(id="recent-card", classes="summary-card"):
+                yield Static("Recent Runs", classes="summary-title")
+                yield Static(id="recent-body")
+            with Vertical(id="result-card", classes="summary-card"):
+                yield Static("Last Result", classes="summary-title")
+                yield Static(id="result-body")
         with Horizontal(id="workspace"):
             with Vertical(id="groups-pane", classes="pane"):
                 yield Static("1) What do you want to do?", classes="pane-title")
@@ -191,6 +240,7 @@ class SdvTuiApp(App[None]):
                 yield Static(id="preview-body")
                 with Horizontal(id="actions"):
                     yield Button("Run now", id="run-button", variant="success")
+                    yield Button("Pin task", id="pin-button")
                     yield Button("Reset defaults", id="reset-button")
         with Vertical(id="log-pane"):
             yield Static("Execution Log", classes="pane-title")
@@ -205,7 +255,98 @@ class SdvTuiApp(App[None]):
         groups.highlighted = 0
         self._refresh_commands(0)
         self.query_one("#commands", OptionList).focus()
+        self._refresh_summary_cards()
         self._write_log("[bold cyan]TUI ready[/]  Select a task, fill required values, then press [bold]r[/].")
+
+    def _load_state(self) -> dict[str, object]:
+        default_state: dict[str, object] = {
+            "pinned": [],
+            "recent": [],
+            "last_result": {
+                "status": "IDLE",
+                "title": "No task executed yet",
+                "detail": "Select a task and run it to populate this card.",
+                "ts": "",
+            },
+        }
+        if not STATE_FILE.exists():
+            return default_state
+        try:
+            data = json.loads(STATE_FILE.read_text(encoding="utf-8"))
+        except Exception:
+            return default_state
+        if not isinstance(data, dict):
+            return default_state
+        default_state.update({k: v for k, v in data.items() if k in default_state})
+        return default_state
+
+    def _save_state(self) -> None:
+        try:
+            STATE_FILE.parent.mkdir(parents=True, exist_ok=True)
+            STATE_FILE.write_text(json.dumps(self.state, indent=2, ensure_ascii=False), encoding="utf-8")
+        except Exception:
+            pass
+
+    def _build_group_names(self) -> list[str]:
+        names = list(BASE_GROUP_NAMES)
+        if self._favorite_commands():
+            return ["Favorites", *names]
+        return names
+
+    def _favorite_commands(self) -> list[PaletteCommand]:
+        favorite_ids = [item for item in self.state.get("pinned", []) if isinstance(item, str)]
+        return [COMMAND_INDEX[item] for item in favorite_ids if item in COMMAND_INDEX]
+
+    def _current_command_is_pinned(self) -> bool:
+        command = self._selected_command()
+        if command is None:
+            return False
+        return command.command_id in self.state.get("pinned", [])
+
+    def _rebuild_groups(self, preferred_group: str | None = None) -> None:
+        self.group_names = self._build_group_names()
+        groups = self.query_one("#groups", OptionList)
+        groups.clear_options()
+        groups.add_options([Option(group_name) for group_name in self.group_names])
+        target_group = preferred_group if preferred_group in self.group_names else self.group_names[0]
+        target_index = self.group_names.index(target_group)
+        groups.highlighted = target_index
+        self._refresh_commands(target_index)
+
+    def _refresh_summary_cards(self) -> None:
+        favorites = self._favorite_commands()
+        if favorites:
+            favorite_lines = [f"{idx + 1}. {command.title}" for idx, command in enumerate(favorites[:5])]
+        else:
+            favorite_lines = ["No pinned tasks yet.", "Select a task and press p to pin it."]
+        self.query_one("#favorites-body", Static).update("\n".join(favorite_lines))
+
+        recent_rows = self.state.get("recent", [])
+        recent_lines: list[str] = []
+        if isinstance(recent_rows, list):
+            for item in recent_rows[:5]:
+                if not isinstance(item, dict):
+                    continue
+                status = str(item.get("status", ""))
+                title = str(item.get("title", ""))
+                ts = str(item.get("ts", ""))
+                recent_lines.append(f"{status}  {title}  {ts}")
+        if not recent_lines:
+            recent_lines = ["No recent executions yet.", "Your last 5 runs will appear here."]
+        self.query_one("#recent-body", Static).update("\n".join(recent_lines))
+
+        last_result = self.state.get("last_result", {})
+        if isinstance(last_result, dict):
+            status = str(last_result.get("status", "IDLE"))
+            title = str(last_result.get("title", "No task executed yet"))
+            detail = str(last_result.get("detail", "Select a task and run it to populate this card."))
+            ts = str(last_result.get("ts", ""))
+        else:
+            status, title, detail, ts = "IDLE", "No task executed yet", "Select a task and run it to populate this card.", ""
+        result_lines = [status, title, detail]
+        if ts:
+            result_lines.append(ts)
+        self.query_one("#result-body", Static).update("\n".join(result_lines))
 
     def _refresh_commands(self, group_index: int) -> None:
         self.active_group_index = group_index
@@ -225,6 +366,8 @@ class SdvTuiApp(App[None]):
         return self.group_names[self.active_group_index]
 
     def _active_group_commands(self) -> list[PaletteCommand]:
+        if self._active_group_name() == "Favorites":
+            return self._favorite_commands()
         return PRODUCT_COMMAND_GROUPS[self._active_group_name()]
 
     def _selected_command(self) -> PaletteCommand | None:
@@ -245,6 +388,7 @@ class SdvTuiApp(App[None]):
     def _update_command_view(self, command: PaletteCommand) -> None:
         badges = ["Windows-only" if command.windows_only else "Cross-platform"]
         recommended = self._recommended_next(command)
+        pin_text = "Pinned" if self._current_command_is_pinned() else "Not pinned"
         body = [
             f"[bold]{command.title}[/bold]",
             "",
@@ -252,11 +396,14 @@ class SdvTuiApp(App[None]):
             "",
             f"[cyan]Default command[/cyan]: python scripts/run.py {command.command}",
             f"[cyan]Runtime[/cyan]: {', '.join(badges)}",
+            f"[cyan]Favorite[/cyan]: {pin_text}",
             f"[cyan]Recommended next[/cyan]: {recommended}",
         ]
         if command.notes:
             body.extend(["", f"[cyan]Operator note[/cyan]: {command.notes}"])
         self.query_one("#details-body", Static).update("\n".join(body))
+        pin_button = self.query_one("#pin-button", Button)
+        pin_button.label = "Unpin task" if self._current_command_is_pinned() else "Pin task"
         self._populate_form(command)
         self._update_preview()
 
@@ -366,6 +513,8 @@ class SdvTuiApp(App[None]):
     def on_button_pressed(self, event: Button.Pressed) -> None:
         if event.button.id == "run-button":
             self.action_run_selected()
+        elif event.button.id == "pin-button":
+            self.action_toggle_pin()
         elif event.button.id == "reset-button":
             command = self._selected_command()
             if command is not None:
@@ -389,6 +538,25 @@ class SdvTuiApp(App[None]):
     def action_focus_log(self) -> None:
         self.query_one("#log", RichLog).focus()
 
+    def action_toggle_pin(self) -> None:
+        command = self._selected_command()
+        if command is None:
+            self._write_log("[yellow]No task selected for pinning.[/]")
+            return
+        pinned = [item for item in self.state.get("pinned", []) if isinstance(item, str)]
+        if command.command_id in pinned:
+            pinned = [item for item in pinned if item != command.command_id]
+            self._write_log(f"[yellow]Unpinned[/] {command.title}")
+        else:
+            pinned.insert(0, command.command_id)
+            pinned = pinned[:8]
+            self._write_log(f"[green]Pinned[/] {command.title}")
+        self.state["pinned"] = pinned
+        self._save_state()
+        preferred_group = self._active_group_name()
+        self._rebuild_groups(preferred_group=preferred_group)
+        self._refresh_summary_cards()
+
     def action_run_selected(self) -> None:
         command = self._selected_command()
         if command is None:
@@ -401,11 +569,13 @@ class SdvTuiApp(App[None]):
             self._update_preview()
             return
         self._write_log(f"[bold green]$[/] python scripts/run.py {' '.join(tokens)}")
-        self._run_command(tokens)
+        self._run_command(command, tokens)
 
     @work(thread=True, exclusive=True)
-    def _run_command(self, tokens: list[str]) -> None:
+    def _run_command(self, command: PaletteCommand, tokens: list[str]) -> None:
         argv = [sys.executable, str(RUNNER), *tokens]
+        lines: list[str] = []
+        started_ts = time.strftime("%H:%M:%S")
         try:
             proc = subprocess.Popen(
                 argv,
@@ -418,14 +588,71 @@ class SdvTuiApp(App[None]):
             )
         except Exception as ex:
             self.call_from_thread(self._write_log, f"[bold red]Launch failed[/]: {ex}")
+            self.call_from_thread(
+                self._record_execution_result,
+                command.title,
+                command.command_id,
+                "FAIL",
+                f"Launch failed: {ex}",
+                started_ts,
+            )
             return
 
         assert proc.stdout is not None
         for line in proc.stdout:
+            lines.append(line.rstrip())
             self.call_from_thread(self._write_log, line.rstrip())
         rc = proc.wait()
         style = "green" if rc == 0 else "red"
         self.call_from_thread(self._write_log, f"[bold {style}]rc={rc}[/]")
+        status, detail = self._classify_result(rc, lines)
+        self.call_from_thread(
+            self._record_execution_result,
+            command.title,
+            command.command_id,
+            status,
+            detail,
+            started_ts,
+        )
+
+    def _classify_result(self, rc: int, lines: list[str]) -> tuple[str, str]:
+        joined = "\n".join(lines).lower()
+        if rc != 0:
+            return "FAIL", "The command returned a non-zero exit code."
+        if "[warn" in joined or "warning" in joined or "limited" in joined or "stopped" in joined:
+            return "WARN", "Command completed but reported a warning or limited runtime state."
+        return "PASS", "Command completed successfully."
+
+    def _record_execution_result(
+        self,
+        title: str,
+        command_id: str,
+        status: str,
+        detail: str,
+        started_ts: str,
+    ) -> None:
+        recent = self.state.get("recent", [])
+        if not isinstance(recent, list):
+            recent = []
+        recent.insert(
+            0,
+            {
+                "title": title,
+                "command_id": command_id,
+                "status": status,
+                "detail": detail,
+                "ts": started_ts,
+            },
+        )
+        self.state["recent"] = recent[:5]
+        self.state["last_result"] = {
+            "status": status,
+            "title": title,
+            "detail": detail,
+            "ts": started_ts,
+        }
+        self._save_state()
+        self._refresh_summary_cards()
 
 
 def launch_tui() -> int:
