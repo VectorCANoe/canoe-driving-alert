@@ -24,7 +24,7 @@ variables
 
 dword getCurrentTick32()
 {
-  return (dword)timeNowInt64();
+  return getSimulationTimeMs();
 }
 
 void mirrorLastEmergencyRx(dword tickValue)

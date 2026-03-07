@@ -1,4 +1,4 @@
-includes
+﻿includes
 {
   #include "..\\common\\CAPL_COMMON.cin"
 }
@@ -280,7 +280,7 @@ on message frmClusterWarningMsg
   rawCode = clampRange((int)this.WarningTextCode, 0, 255);
   code = applyDisplayPolicy(rawCode);
   code = applyRobustPolicy(code);
-  nowMs = timeNowInt64();
+  nowMs = getSimulationTimeMs();
   guardRemainMs = 0;
 
   if (code == 0)
@@ -352,7 +352,7 @@ on timer tDuplicateGuard
     return;
   }
 
-  nowMs = timeNowInt64();
+  nowMs = getSimulationTimeMs();
   elapsedMs = nowMs - gLastDisplayMs;
   if (elapsedMs >= 1000)
   {
@@ -369,6 +369,7 @@ on timer tDuplicateGuard
     setTimer(tDuplicateGuard, 100);
   }
 }
+
 
 
 

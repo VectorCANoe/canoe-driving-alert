@@ -1,4 +1,4 @@
-includes
+﻿includes
 {
   #include "..\\common\\CAPL_COMMON.cin"
 }
@@ -239,7 +239,7 @@ void updateWarningState()
     baseZoneContext = 0;
   }
 
-  nowMs = (dword)timeNowInt64();
+  nowMs = getSimulationTimeMs();
   objectHoldActive = 0;
   objectInputValid = 0;
 
@@ -446,7 +446,7 @@ on message ethObjectRiskInputMsg
   @Core::objectAlertHoldMs = alertHoldMs;
   if (trackValid == 1)
   {
-    gLastObjectTrackRxMs = (dword)timeNowInt64();
+    gLastObjectTrackRxMs = getSimulationTimeMs();
   }
 }
 
@@ -481,3 +481,4 @@ on timer tAdasCycle
   updateWarningState();
   setTimer(tAdasCycle, 10);
 }
+

@@ -10,3 +10,8 @@
   }
   return value;
 }
+
+dword getSimulationTimeMs()
+{
+  return (dword)(timeNowInt64() / 1000000);
+}

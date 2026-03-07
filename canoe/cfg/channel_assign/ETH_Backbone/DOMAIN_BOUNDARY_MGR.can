@@ -1,4 +1,4 @@
-includes
+﻿includes
 {
   #include "..\\common\\CAPL_COMMON.cin"
 }
@@ -43,19 +43,19 @@ on start
 on message frmChassisHealthMsg
 {
   gChassisAlive = this.ChassisAliveCnt;
-  gChassisTsMs  = (dword)(timeNowInt64() / 100000);
+  gChassisTsMs  = getSimulationTimeMs();
 }
 
 on message frmBodyHealthMsg
 {
   gBodyAlive  = this.BodyAliveCnt;
-  gBodyTsMs   = (dword)(timeNowInt64() / 100000);
+  gBodyTsMs   = getSimulationTimeMs();
 }
 
 on message frmInfotainmentHealthMsg
 {
   gInfoAlive  = this.InfoAliveCnt;
-  gInfoTsMs   = (dword)(timeNowInt64() / 100000);
+  gInfoTsMs   = getSimulationTimeMs();
 }
 
 on timer tBoundaryCheck
@@ -78,7 +78,7 @@ on timer tBoundaryCheck
   int e2eHealthState;
   int failSafeMode;
 
-  nowMs    = (dword)(timeNowInt64() / 100000);
+  nowMs    = getSimulationTimeMs();
   allAlive = 0;
   aliveCount = 0;
   routingPolicy = (int)@CoreState::routingPolicy;
@@ -189,6 +189,7 @@ on timer tBoundaryCheck
 
   setTimer(tBoundaryCheck, 100);
 }
+
 
 
 

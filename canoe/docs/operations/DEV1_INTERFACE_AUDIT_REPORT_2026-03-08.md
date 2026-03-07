@@ -39,7 +39,8 @@ This report records the first-pass Dev1 audit decisions for the active CANoe SIL
 | A-010 | guarded override / validation exception writers | Some duplicate writers are intentional: fail-safe override and harness object injection. Treat as controlled exceptions, not immediate defects. | Closed |
 | A-011 | `VAL_SCENARIO_CTRL` delayed timer residue | Scenario stop/switch paths did not cancel `tScenarioEval`, `tScenarioPhase2`, `tScenarioPhase3`, so delayed callbacks could still fire after reset or mode switch. Fixed in code. | Closed |
 | A-012 | timeout/reset/fail-safe control paths | `EMS_ALERT_RX`, `ADAS_WARN_CTRL`, `CLU_HMI_CTRL`, `DOMAIN_BOUNDARY_MGR` are structurally deterministic in the active profile after reviewing watchdog clear, hold-time, duplicate-popup guard, and fail-safe recompute paths. | Closed |
-| A-013 | `timeNowInt64()` time-base consistency | Active CAPL files mix raw `timeNowInt64()` comparisons with `/100000` conversions under variables named `*Ms`. This needs Vector-reference confirmation before any wide fix. | Open |
+| A-013 | `timeNowInt64()` time-base consistency | Vector local help confirms `timeNowInt64()` returns nanoseconds and `timeNow()` returns 10 microseconds. Active profile was normalized to `getSimulationTimeMs()` for all ms-based thresholds. | Closed |
+| A-014 | observability baseline for Dev2 evidence | Active runtime already exposes enough state-change logging to explain scenario verdicts without adding broad debug noise. | Closed |
 
 ---
 
@@ -349,28 +350,82 @@ This report records the first-pass Dev1 audit decisions for the active CANoe SIL
 ### A-013. `timeNowInt64()` time-base consistency
 
 **Evidence**
-- Raw comparisons exist in active files:
-  - `WARN_ARB_MGR`
-  - `ADAS_WARN_CTRL`
-  - `EMS_ALERT_RX`
-  - `CLU_HMI_CTRL`
-- `/100000` conversion exists in active files:
-  - `DOMAIN_BOUNDARY_MGR`
-  - `VAL_SCENARIO_CTRL`
-- Variable naming currently implies millisecond semantics in both styles.
+- Vector local help:
+  - `C:\Program Files\Vector\Help\Vector CANoe Help 19.4.10\en\Content\Topics\CAPLFunctions\Other\Functions\CAPLfunctionTimeNow.htm`
+    - return value: simulation time in `10 microseconds`
+  - `C:\Program Files\Vector\Help\Vector CANoe Help 19.4.10\en\Content\Topics\CAPLFunctions\Other\Functions\CAPLfunctionTimeNowNS.htm`
+    - return value: simulation time in `nanoseconds`
+- Active profile had mixed assumptions:
+  - raw `timeNowInt64()` comparisons in:
+    - `WARN_ARB_MGR`
+    - `ADAS_WARN_CTRL`
+    - `EMS_ALERT_RX`
+    - `CLU_HMI_CTRL`
+  - `/100000` conversion in:
+    - `DOMAIN_BOUNDARY_MGR`
+    - `VAL_SCENARIO_CTRL`
 
 **Decision**
-- There is a project-level time-base consistency risk.
-- This audit does not yet have a Vector primary-source citation confirming the exact unit expected from `timeNowInt64()`.
-- Do not perform a wide time-base rewrite until that reference is confirmed.
+- This was a real active-profile defect, not just a naming issue.
+- Millisecond thresholds such as:
+  - `1000 ms`
+  - `10000 ms`
+  - `objectAlertHoldMs`
+  - boundary alive windows
+  were being compared against nanosecond timestamps or against values converted with the wrong divisor.
 
 **Action**
-- Keep this item open.
-- Confirm the official unit from Vector documentation or runtime proof before changing:
-  - watchdog thresholds
-  - duplicate-popup guard windows
-  - hold-time logic
-  - boundary health age logic
+- Added common helper:
+  - `getSimulationTimeMs()`
+- Normalized active CAPL time usage to millisecond units in:
+  - `EMS_ALERT_RX`
+  - `ADAS_WARN_CTRL`
+  - `WARN_ARB_MGR`
+  - `CLU_HMI_CTRL`
+  - `DOMAIN_BOUNDARY_MGR`
+  - `VAL_SCENARIO_CTRL`
+- Left `v1_legacy` untouched.
+
+---
+
+### A-014. observability baseline for Dev2 evidence
+
+**Evidence**
+- Scenario harness evidence:
+  - `VAL_SCENARIO_CTRL` logs `EVIDENCE_IN` and `EVIDENCE_OUT`
+- Runtime decision logs:
+  - `ADAS_WARN_CTRL`
+    - input filter validity
+    - object event / TTC / confidence / hold
+  - `WARN_ARB_MGR`
+    - context adjustment
+    - stale/fallback state
+    - decel-assist decision and release reason
+  - `DOMAIN_BOUNDARY_MGR`
+    - boundary alive transition
+    - path / E2E / fail-safe transition
+  - `EMS_ALERT_RX`
+    - alert event phase
+    - watchdog clear
+  - `CLU_HMI_CTRL`
+    - rendered warning clear / code / history query
+
+**Decision**
+- Active observability is sufficient for the current SIL verification phase.
+- Dev2 can reconstruct:
+  - scenario input
+  - arbitration decision
+  - fail-safe entry
+  - renderer-visible result
+  without adding broad continuous logging.
+- `BODY_GW` and `IVI_GW` remain low-verbosity by design; this is acceptable because they are output/mirror nodes and their externally visible state is already reflected elsewhere.
+
+**Action**
+- No code change required for P5 in this cycle.
+- Keep current log policy:
+  - state-change oriented
+  - evidence-focused
+  - low-noise
 
 ---
 
@@ -411,7 +466,7 @@ This is the planned swap boundary at real Ethernet cutover.
 | `WARN_ARB_MGR -> Core::decelAssistReq` and `DOMAIN_BOUNDARY_MGR -> Core::decelAssistReq` | arbitration + fail-safe override | controlled exception | Keep |
 | `ADAS_WARN_CTRL -> Core::object*` and `VAL_SCENARIO_CTRL -> Core::object*` | runtime object state + harness injection/reset | controlled validation exception | Keep |
 | `IVI_GW -> CoreState::*` and `CLU_HMI_CTRL -> CoreState::*` | output mirror duplication | open cleanup target | Track |
-| `timeNowInt64()` raw vs `/100000` conversion | mixed time-base assumption across active files | open audit risk | Track |
+| `timeNowInt64()` raw vs `/100000` conversion | corrected to `getSimulationTimeMs()` in active profile | closed implementation item | Closed |
 
 Current conclusion:
 - No invalid hidden dependency has been confirmed yet in the active profile.
@@ -436,7 +491,7 @@ These items should be recorded now and handed to the docs team together later.
 
 1. Keep `A-002` and `A-005` visible as cutover cleanup items.
 2. Send docs-only requests for `A-003` and `A-006`.
-3. Resolve `A-013` only after Vector time-base reference is confirmed.
+3. Keep `A-009` visible as future mirror-ownership cleanup.
 4. Do not start broad message-routing refactor during the current SIL closure cycle.
 5. Continue SysVar boundary audit with this classification rule:
    - acceptable SIL mirror/state

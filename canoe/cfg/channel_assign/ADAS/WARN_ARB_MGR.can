@@ -1,4 +1,4 @@
-includes
+﻿includes
 {
   #include "..\\common\\CAPL_COMMON.cin"
 }
@@ -224,7 +224,7 @@ void runArbiter()
   boundaryStatus = clampRange((int)@CoreState::domainBoundaryStatus, 0, 1);
   duplicatePopupGuard = clampRange((int)@CoreState::duplicatePopupGuard, 0, 5000);
   lastEmergencyRxMs = (dword)@CoreState::lastEmergencyRxMs;
-  nowMs = (dword)timeNowInt64();
+  nowMs = getSimulationTimeMs();
   staleInput = 0;
   fallbackApplied = 0;
   objectWarningActive = isObjectWarningActive(objectTrackValid, objectConfidence, objectRiskClass);
@@ -544,3 +544,4 @@ on timer tArbiter50
   runArbiter();
   setTimer(tArbiter50, 50);
 }
+
