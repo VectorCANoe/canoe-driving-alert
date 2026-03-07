@@ -64,7 +64,7 @@
 
 | ID | 주제 | 요청팀 | 담당팀 | 상태 | 코드/구현 증빙 | 문서 반영 대상 | 문서 상태 | 비고 |
 |---|---|---|---|---|---|---|---|---|
-| TSB-001 | 역할 분리 타당성 점검(멀티버스/GW/테스터) | Dev1 | Dev1 + Docs | In Progress | `canoe/docs/operations/CAN_MESSAGE_OWNERSHIP_MATRIX.md` | `tmp/mentoring/Mentoring_MET41.md`, 필요 시 `0302/0303` | 진행중 | 멘토 권고: 가능/권고 분리 기록 |
+| TSB-001 | 역할 분리 타당성 점검(멀티버스/GW/테스터) | Dev1 | Dev1 + Docs | Ready for Docs | `canoe/docs/operations/CAN_MESSAGE_OWNERSHIP_MATRIX.md`, `scripts/gates/multibus_cfg_dbc_gate.py` PASS | `tmp/mentoring/Mentoring_MET41.md`, `0302/0303` | 미반영 | Dev1 구조 고정 완료: 일반 노드 단일버스, GW 다중버스, 테스터 예외 운영 |
 | TSB-002 | Req_151 문구 명확화 (`도메인 헬스/경로 상태`) | Docs | Docs | Docs Updated | `01_Requirements.md` (`Req_151`,`VC_151`) | `01_Requirements.md` + VC 문구 | 반영완료 | 도메인 경계 통신 상태(주기/타임아웃/유효플래그) 기준으로 수정 |
 | TSB-003 | Req_017/Req_139 표현 정밀화 | Docs | Docs | Docs Updated | `01_Requirements.md` (`Req_017`,`Req_139`,`VC_139`) | `01_Requirements.md` | 반영완료 | `일반차` 표현 정리 + 우선순위 규칙 문장 명확화 |
 | TSB-004 | CANoe 공식 Test Unit PoC 1건 | Dev2 | Dev2 | Proposed | Test Unit 실행 캡처/리포트 | `tmp/mentoring/Mentoring_MET41.md` 체크 갱신 | 대기 | CAPL 하네스는 유지 |
@@ -77,8 +77,15 @@
 
 | ID | 날짜 | 변경 요약 | 변경 파일 | 상태 전환 | 담당 | 증빙 링크/커밋 |
 |---|---|---|---|---|---|---|
+| TSB-001 | 2026-03-08 | 역할 분리 운영정책을 Dev1 기준으로 확정하고 문서 반영 대기 전환 | `canoe/docs/operations/CAN_MESSAGE_OWNERSHIP_MATRIX.md`, `driving-situation-alert/0302_NWflowDef.md`, `driving-situation-alert/0303_Communication_Specification.md` | In Progress -> Ready for Docs | Dev1 | `79c0b98`, `137a69e` |
 | TSB-XXX | YYYY-MM-DD |  |  | Proposed -> In Progress -> Ready for Docs -> Docs Updated -> Done |  |  |
 
 ## 합의 메모
 - 본 보드는 전달용 단일 창구다.
 - 상세 설계/정책 SoT는 기존 정식 문서(00~07, 운영 계약서)를 따른다.
+
+## 문서팀 전달사항 (2026-03-08)
+- TSB-001 문서 반영 요청: `0302/0303`에 아래 3가지 운영정책을 명시하고 반영 후 `Docs Updated`로 전환한다.
+1. 일반 노드는 단일 버스 상주를 기본으로 한다.
+2. 게이트웨이 노드는 다중 버스 상주를 허용한다.
+3. 테스터 노드는 예외적으로 멀티버스 구성이 가능하나, 기본 권고는 버스별 분리다.
