@@ -63,7 +63,7 @@
 |---|---|---|---|---|
 | M41-01 | 요구사항 통폐합 정합 | 과분해 Req 통합 후 의미 손실 없이 유지 | [x] | `driving-situation-alert/01_Requirements.md` |
 | M41-02 | Req_151 워딩 명확화 | `도메인 헬스/경로 상태` 표현 제거 또는 구체화 | [x] | `driving-situation-alert/01_Requirements.md` |
-| M41-03 | 제출 양식 정렬 | 제출본이 멘토 양식 기준으로 가독성 우선 정렬 | [x] | `driving-situation-alert/tmp/submission/docs/*` |
+| M41-03 | 제출 양식 정렬 | 제출본이 멘토 양식 기준으로 가독성 우선 정렬 | [x] | `driving-situation-alert/tmp/submission/final-docs/*` |
 | M41-04 | 구현 우선 운영 | 문서 작업이 구현 일정 저해하지 않도록 운영 | [x] | `driving-situation-alert/TMP_HANDOFF.md` |
 | M41-05 | 3/3/5 정책 고정 | 도메인 구조 + 3/3/5 병행 정책 유지 | [x] | `driving-situation-alert/00f_CAN_ID_Allocation_Standard.md` |
 | M41-06 | 11-bit/29-bit 디펜스 정리 | 확장 ID 전환 기준(트리거/조건) 명문화 | [x] | `driving-situation-alert/00f_CAN_ID_Allocation_Standard.md` |

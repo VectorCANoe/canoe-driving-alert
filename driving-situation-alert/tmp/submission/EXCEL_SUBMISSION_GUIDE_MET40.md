@@ -3,6 +3,7 @@
 기준:
 - 회의록 `docs/meeting-notes/MET_40_2026.03.03.txt`
 - 현재 문서 SoT `01/03/0301/0302/0303/0304/04/05/06/07`
+- 제출 편집본 고정 경로 `tmp/submission/final-docs`
 
 적용 목적:
 - `00~07` 원문을 그대로 제출하지 않고, 중간 제출용 엑셀 포맷으로 재구성한다.
@@ -82,9 +83,9 @@
 2. `00_MASTER_Governance_Summary.md` (`00c + 00d + 00e + 00f + 00g` 통합)
 
 부록/요청 시 추가:
-- `tmp/submission/docs/governance/00_VModel_Mapping.md`
-- `tmp/submission/docs/governance/00b_Project_Scope.md`
-- `tmp/submission/docs/governance/00c~00g` 원문 축소본
+- `tmp/submission/final-docs/governance/00_VModel_Mapping.md`
+- `tmp/submission/final-docs/governance/00b_Project_Scope.md`
+- `tmp/submission/final-docs/governance/00c~00g` 원문 축소본
 
 제외:
 - `00a_Audit_Readiness_Checklist.md` (내부 운영)
@@ -119,3 +120,11 @@
 - 엑셀은 비교 평가 목적에 맞춰 샘플 탭 구조를 유지하고, 내용은 프로젝트 SoT(01~07) 기준으로 재구성하였다.
 - `Req_130~Req_155`는 Pre-Activation 범위로 관리하며, 실측 증빙 반영 전까지 테스트 상태는 `Planned/Ready`로 유지한다.
 - Ethernet 통신은 DBC 직접 적용이 아닌 계약/매트릭스 기준으로 관리한다.
+
+---
+
+## 8) 제출 편집본 운영 규칙 (고정)
+
+1. 편집은 `tmp/submission/final-docs`에서만 수행한다.
+2. `tmp/submission/docs`는 레거시 스냅샷으로 유지한다.
+3. 엑셀 변환 입력 경로도 `final-docs`를 기준으로 사용한다.
