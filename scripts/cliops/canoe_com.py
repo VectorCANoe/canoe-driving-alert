@@ -8,6 +8,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any
 
+from .platform_caps import require_canoe_runtime
+
 
 class CanoeComError(RuntimeError):
     """Raised for CANoe COM interaction failures."""
@@ -28,6 +30,9 @@ class CanoeComBridge:
 
     @classmethod
     def connect(cls) -> "CanoeComBridge":
+        platform_error = require_canoe_runtime("CANoe COM attach")
+        if platform_error:
+            raise CanoeComError(platform_error)
         try:
             import win32com.client as win32com_client  # type: ignore
         except Exception as ex:  # pragma: no cover - depends on host env
@@ -114,4 +119,3 @@ class CanoeComBridge:
             except Exception as ex:
                 checks.append(DoctorCheck(f"SysVar {ns_name}::{var_name}", False, str(ex)))
         return checks
-

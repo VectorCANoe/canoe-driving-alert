@@ -4,7 +4,23 @@ Use this folder through one entrypoint:
 
 - `python scripts/run.py <command>`
 - `sdv <command>` (after local install)
-- `python scripts/run.py` (no args -> guided menu)
+- `python scripts/run.py` (no args -> shell + palette)
+
+## Runtime Policy
+
+- Common on Windows/macOS/Linux:
+  - shell/palette UX
+  - gates
+  - verification reports and evidence formatting
+  - packaging helpers
+- Windows-only:
+  - `doctor`
+  - `scenario run`
+  - `capl sysvar-*`
+  - `canoe measure-*`
+  - `canoe capl-call`
+- Reason:
+  - CANoe COM automation is Windows-only. The CLI UX is cross-platform, but CANoe execution is not.
 
 ## Local CLI Install (F3 Baseline)
 
@@ -21,6 +37,9 @@ Then you can use:
 ## Daily Commands
 
 ### Quick Entry (New)
+- Single default entry:
+  - `python scripts/run.py`
+  - Starts shell mode and uses palette as the primary command surface.
 - Menu-style guided flow (recommended for operators):
   - `python scripts/run.py start guided`
   - `python scripts/run.py go`
@@ -69,8 +88,19 @@ Then you can use:
 - Slash-command shell (no command memorization):
   - `python scripts/run.py shell`
   - `sdv shell`
+- Default mode:
+  - `python scripts/run.py`
+  - Same runtime as `shell`; this is the main entrypoint now.
+- Searchable command palette:
+  - `/palette` (or press Enter on empty line in interactive mode)
+  - First choose group: `Operate / Verify / Inspect / Package / Session`
+  - Then type part of command text and select (questionary autocomplete)
+- Command history and replay:
+  - `/history` or `/history 20`
+  - `/repeat` (last command), `/repeat 2` (second latest)
 - Example session:
   - `/start guided`
+  - `/palette`
   - `/start precheck`
   - `/scenario 4`
   - `/verify batch 20260308_0900 DEV2 pre`

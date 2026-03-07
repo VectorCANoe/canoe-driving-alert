@@ -47,6 +47,7 @@ import sys
 from pathlib import Path
 
 from cliops.canoe_com import CanoeComBridge, CanoeComError
+from cliops.platform_caps import canoe_runtime_check, platform_label, require_canoe_runtime
 
 try:
     import questionary
@@ -64,10 +65,11 @@ except Exception:  # optional dependency
 ROOT = Path(__file__).resolve().parent.parent
 SCRIPTS = ROOT / "scripts"
 _RICH_CONSOLE = Console() if Console is not None else None
+SHELL_HISTORY_FILE = ROOT / "canoe" / "tmp" / "reports" / "verification" / "cli_shell_history.jsonl"
 
 CONTRACT_CANONICAL = [
     "python scripts/run.py",
-    "python scripts/run.py start guided",
+    "python scripts/run.py shell",
     "python scripts/run.py start demo --id <0..255>",
     "python scripts/run.py start precheck --run-id <YYYYMMDD_HHMM> --owner <OWNER>",
     "python scripts/run.py doctor",
@@ -165,11 +167,51 @@ TOPLEVEL_COMMANDS = [
     "mstatus",
 ]
 
+SHELL_PALETTE_GROUPS: dict[str, list[tuple[str, str]]] = {
+    "Operate": [
+        ("/start guided", "Open guided operator menu"),
+        ("/scenario 4", "Trigger default scenarioCommand=4"),
+        ("/canoe measure status", "Check CANoe measurement status"),
+        ("/canoe measure start", "Start CANoe measurement"),
+        ("/canoe measure stop", "Stop CANoe measurement"),
+    ],
+    "Verify": [
+        ("/start precheck", "Run gate+prepare+smoke+status precheck flow"),
+        ("/verify quick", "Run verify prepare+smoke+status"),
+        ("/verify status", "Check evidence readiness report"),
+        ("/gate all", "Run full gate set"),
+    ],
+    "Inspect": [
+        ("/doctor", "Run CANoe COM and sysvar readiness checks"),
+        ("/capl get Core failSafeMode", "Read one sysvar via COM"),
+        ("/capl set Test scenarioCommand 4 int", "Write one sysvar via COM"),
+        ("/contract", "Print canonical command contract"),
+        ("/history", "Show recent shell command history"),
+        ("/repeat 1", "Repeat last executed command"),
+    ],
+    "Package": [
+        ("/package portable onefolder", "Build portable bundle"),
+        ("/package exe onefolder", "Build Windows exe bundle"),
+    ],
+    "Session": [
+        ("/exit", "Exit shell"),
+    ],
+}
+
 
 def run_cmd(args: list[str]) -> int:
     print("[RUN]", " ".join(args))
     proc = subprocess.run(args, cwd=ROOT)
     return proc.returncode
+
+
+def _fail_unavailable(action_name: str) -> int:
+    message = require_canoe_runtime(action_name)
+    if message:
+        print(f"[PLATFORM] {message}")
+        print("[PLATFORM] available everywhere: gate/verify/evidence/package/report commands")
+        return 2
+    return 0
 
 
 def cmd_verify_prepare(args: argparse.Namespace) -> int:
@@ -650,6 +692,9 @@ def cmd_verify_batch(args: argparse.Namespace) -> int:
 
 
 def cmd_scenario_run(args: argparse.Namespace) -> int:
+    platform_rc = _fail_unavailable("scenario run")
+    if platform_rc != 0:
+        return platform_rc
     cmd = [
         sys.executable,
         str(SCRIPTS / "canoe" / "send_scenario_command.py"),
@@ -876,6 +921,9 @@ def _print_shell_help() -> None:
     print("Slash commands:")
     print("  /help")
     print("  /exit")
+    print("  /palette  # command palette (or press Enter on empty line in interactive mode)")
+    print("  /history [N]  # recent command history (default 10)")
+    print("  /repeat [N]   # repeat Nth latest command (default 1)")
     print("  /scenario [run] <id> [scenarioCommand|testScenario]")
     print("  /start guided|demo [id]|precheck [run_id] [owner]")
     print("  /go  # alias of /start guided")
@@ -896,6 +944,99 @@ def _print_shell_help() -> None:
     print("  /skill list")
     print("  /skill run quickstart|verify-pack|portable-release")
     print("  /contract")
+
+
+def _append_shell_history(command: str, rc: int, duration_ms: int) -> None:
+    try:
+        SHELL_HISTORY_FILE.parent.mkdir(parents=True, exist_ok=True)
+        payload = {
+            "ts": dt.datetime.now().isoformat(timespec="seconds"),
+            "command": command,
+            "rc": rc,
+            "duration_ms": duration_ms,
+        }
+        with SHELL_HISTORY_FILE.open("a", encoding="utf-8") as fp:
+            fp.write(json.dumps(payload, ensure_ascii=False) + "\n")
+    except Exception:
+        # History logging must never break command execution.
+        pass
+
+
+def _print_shell_history(session_commands: list[str], limit: int = 10) -> None:
+    if limit < 1:
+        limit = 1
+    recent = session_commands[-limit:]
+    if not recent:
+        print("[SHELL] history is empty")
+        return
+    print("[SHELL] recent commands")
+    start_idx = len(session_commands) - len(recent) + 1
+    for i, item in enumerate(recent, start=start_idx):
+        print(f"  {i}) {item}")
+
+
+def _prompt_shell_palette_command() -> str | None:
+    group_names = list(SHELL_PALETTE_GROUPS.keys())
+    if questionary is not None and _is_interactive_tty():
+        group_choice = questionary.select("Command group", choices=group_names).ask()
+        if group_choice is None:
+            return None
+
+        items = SHELL_PALETTE_GROUPS[group_choice]
+        catalog = [f"{cmd}  |  {desc}" for cmd, desc in items]
+        answer = questionary.autocomplete(
+            f"{group_choice} command",
+            choices=catalog,
+            ignore_case=True,
+            match_middle=True,
+        ).ask()
+        if answer is None:
+            return None
+        answer = answer.strip()
+        if not answer:
+            return None
+        for cmd, desc in items:
+            if answer == f"{cmd}  |  {desc}":
+                return cmd
+        return answer
+
+    print("[SHELL] palette")
+    for idx, group_name in enumerate(group_names, start=1):
+        print(f"  {idx}) {group_name}")
+
+    while True:
+        raw_group = input("group number (Enter=cancel): ").strip()
+        if not raw_group:
+            return None
+        try:
+            group_value = int(raw_group)
+        except ValueError:
+            print("[SHELL] enter a valid number.")
+            continue
+        if group_value < 1 or group_value > len(group_names):
+            print(f"[SHELL] number must be 1..{len(group_names)}.")
+            continue
+        break
+
+    selected_group = group_names[group_value - 1]
+    items = SHELL_PALETTE_GROUPS[selected_group]
+    print(f"[SHELL] {selected_group}")
+    for idx, (cmd, desc) in enumerate(items, start=1):
+        print(f"  {idx}) {cmd:<34} - {desc}")
+
+    while True:
+        raw = input("command number (Enter=cancel): ").strip()
+        if not raw:
+            return None
+        try:
+            value = int(raw)
+        except ValueError:
+            print("[SHELL] enter a valid number.")
+            continue
+        if value < 1 or value > len(items):
+            print(f"[SHELL] number must be 1..{len(items)}.")
+            continue
+        return items[value - 1][0]
 
 
 def _run_named_gate(gate_name: str) -> int:
@@ -990,11 +1131,37 @@ def _run_skill(skill_name: str) -> int:
 def cmd_shell(_: argparse.Namespace) -> int:
     print("SDV Shell (slash mode)")
     print("Type /help, /exit")
+    print("Tip: /palette for searchable command palette")
     print("Tip: keep CANoe measurement running before scenario/verify commands")
+    print(f"Host: {platform_label()}")
+    runtime_cap = canoe_runtime_check()
+    if not runtime_cap.available:
+        print(f"Note: {runtime_cap.detail}")
+    session_commands: list[str] = []
     while True:
-        line = input("sdv> ").strip()
+        if questionary is not None and _is_interactive_tty():
+            answer = questionary.text("sdv").ask()
+            if answer is None:
+                return 0
+            line = answer.strip()
+        else:
+            line = input("sdv> ").strip()
+
         if not line:
-            continue
+            if questionary is not None and _is_interactive_tty():
+                selected = _prompt_shell_palette_command()
+                if not selected:
+                    continue
+                line = selected
+            else:
+                continue
+
+        if line.lower() in {"/palette", "palette", "/p", "p", "/"}:
+            selected = _prompt_shell_palette_command()
+            if not selected:
+                continue
+            line = selected
+
         if line.startswith("/"):
             line = line[1:].strip()
         if not line:
@@ -1008,11 +1175,46 @@ def cmd_shell(_: argparse.Namespace) -> int:
             continue
         cmd = tokens[0].lower()
         rc = 0
+        started = dt.datetime.now()
+
         if cmd in {"exit", "quit", "q"}:
             print("[SHELL] bye")
             return 0
         if cmd == "go":
             return cmd_start_guided(argparse.Namespace())
+        if cmd == "history":
+            limit = 10
+            if len(tokens) > 1:
+                try:
+                    limit = int(tokens[1])
+                except ValueError:
+                    print("[SHELL] usage: /history [N]")
+                    continue
+            _print_shell_history(session_commands, limit=limit)
+            continue
+        if cmd == "repeat":
+            nth = 1
+            if len(tokens) > 1:
+                try:
+                    nth = int(tokens[1])
+                except ValueError:
+                    print("[SHELL] usage: /repeat [N]")
+                    continue
+            if nth < 1 or nth > len(session_commands):
+                print(f"[SHELL] repeat range: 1..{len(session_commands)}")
+                continue
+            replay = session_commands[-nth]
+            print(f"[SHELL] repeat -> {replay}")
+            line = replay[1:] if replay.startswith("/") else replay
+            try:
+                tokens = shlex.split(line)
+            except ValueError as ex:
+                print(f"[SHELL] parse error: {ex}")
+                continue
+            if not tokens:
+                continue
+            cmd = tokens[0].lower()
+
         if cmd in {"help", "h", "?"}:
             _print_shell_help()
             continue
@@ -1310,7 +1512,7 @@ def cmd_shell(_: argparse.Namespace) -> int:
         else:
             suggestion = _suggest_choice(
                 cmd,
-                ["scenario", "verify", "gate", "package", "doctor", "capl", "canoe", "skill", "contract", "help", "exit"],
+                ["palette", "scenario", "verify", "gate", "package", "doctor", "capl", "canoe", "skill", "contract", "help", "exit"],
             )
             if suggestion:
                 print(f"[SHELL] unknown command: {cmd} (did you mean '{suggestion}'?)")
@@ -1318,6 +1520,12 @@ def cmd_shell(_: argparse.Namespace) -> int:
                 print(f"[SHELL] unknown command: {cmd}")
             print("[SHELL] type /help")
             continue
+
+        command_for_history = f"/{line}"
+        if cmd not in {"history", "repeat"}:
+            session_commands.append(command_for_history)
+            duration_ms = int((dt.datetime.now() - started).total_seconds() * 1000)
+            _append_shell_history(command_for_history, rc, duration_ms)
 
         if rc == 0:
             print("[SHELL] PASS")
@@ -1378,6 +1586,9 @@ def _write_doctor_reports(
 
 
 def cmd_doctor(args: argparse.Namespace) -> int:
+    platform_rc = _fail_unavailable("doctor")
+    if platform_rc != 0:
+        return platform_rc
     checks: list[tuple[str, bool, str]] = []
     ensure_running = bool(getattr(args, "ensure_running", False))
     output_json = getattr(args, "output_json", None)
@@ -1419,6 +1630,9 @@ def cmd_doctor(args: argparse.Namespace) -> int:
 
 
 def cmd_capl_sysvar_get(args: argparse.Namespace) -> int:
+    platform_rc = _fail_unavailable("capl sysvar-get")
+    if platform_rc != 0:
+        return platform_rc
     try:
         bridge = _get_canoe_bridge()
         value = bridge.get_sysvar(args.namespace, args.var)
@@ -1430,6 +1644,9 @@ def cmd_capl_sysvar_get(args: argparse.Namespace) -> int:
 
 
 def cmd_capl_sysvar_set(args: argparse.Namespace) -> int:
+    platform_rc = _fail_unavailable("capl sysvar-set")
+    if platform_rc != 0:
+        return platform_rc
     try:
         bridge = _get_canoe_bridge()
         readback = bridge.set_sysvar(args.namespace, args.var, _coerce_cli_value(args.value, args.value_type))
@@ -1441,6 +1658,9 @@ def cmd_capl_sysvar_set(args: argparse.Namespace) -> int:
 
 
 def cmd_canoe_measure_status(_: argparse.Namespace) -> int:
+    platform_rc = _fail_unavailable("canoe measure-status")
+    if platform_rc != 0:
+        return platform_rc
     try:
         bridge = _get_canoe_bridge()
         running = bridge.measurement_running()
@@ -1452,6 +1672,9 @@ def cmd_canoe_measure_status(_: argparse.Namespace) -> int:
 
 
 def cmd_canoe_measure_start(_: argparse.Namespace) -> int:
+    platform_rc = _fail_unavailable("canoe measure-start")
+    if platform_rc != 0:
+        return platform_rc
     try:
         bridge = _get_canoe_bridge()
         bridge.measurement_start()
@@ -1463,6 +1686,9 @@ def cmd_canoe_measure_start(_: argparse.Namespace) -> int:
 
 
 def cmd_canoe_measure_stop(_: argparse.Namespace) -> int:
+    platform_rc = _fail_unavailable("canoe measure-stop")
+    if platform_rc != 0:
+        return platform_rc
     try:
         bridge = _get_canoe_bridge()
         bridge.measurement_stop()
@@ -1474,6 +1700,9 @@ def cmd_canoe_measure_stop(_: argparse.Namespace) -> int:
 
 
 def cmd_canoe_measure_reset(_: argparse.Namespace) -> int:
+    platform_rc = _fail_unavailable("canoe measure-reset")
+    if platform_rc != 0:
+        return platform_rc
     try:
         bridge = _get_canoe_bridge()
         bridge.measurement_reset()
@@ -1485,6 +1714,9 @@ def cmd_canoe_measure_reset(_: argparse.Namespace) -> int:
 
 
 def cmd_canoe_capl_call(args: argparse.Namespace) -> int:
+    platform_rc = _fail_unavailable("canoe capl-call")
+    if platform_rc != 0:
+        return platform_rc
     try:
         bridge = _get_canoe_bridge()
         call_args = [_coerce_cli_value(item, args.arg_type) for item in args.args]
@@ -1539,6 +1771,10 @@ def cmd_start_guided(_: argparse.Namespace) -> int:
     _ui_welcome_banner()
     _ui_info("SDV Guided Menu")
     _ui_info("Focus: operator workflow (number select + input prompts)")
+    _ui_info(f"[GUIDED] host={platform_label()}")
+    runtime_cap = canoe_runtime_check()
+    if not runtime_cap.available:
+        _ui_info(f"[GUIDED] note: {runtime_cap.detail}")
     if questionary is None:
         _ui_info("[GUIDED] tip: install questionary for richer prompts -> python -m pip install questionary>=2.1.1")
     if _RICH_CONSOLE is None:
@@ -2176,13 +2412,14 @@ def build_parser() -> argparse.ArgumentParser:
 def main() -> int:
     argv = sys.argv[1:]
     if not argv:
-        return cmd_start_guided(argparse.Namespace())
+        return cmd_shell(argparse.Namespace())
     if argv and argv[0] not in {"-h", "--help"} and argv[0] not in TOPLEVEL_COMMANDS:
         suggestion = _suggest_choice(argv[0], TOPLEVEL_COMMANDS)
         if suggestion:
             print(f"[CLI] unknown command: {argv[0]} (did you mean '{suggestion}'?)")
         else:
             print(f"[CLI] unknown command: {argv[0]}")
+        print("[CLI] tip: run `python scripts/run.py` for shell + palette")
         print("[CLI] tip: run `python scripts/run.py go` for guided mode")
         return 2
 
