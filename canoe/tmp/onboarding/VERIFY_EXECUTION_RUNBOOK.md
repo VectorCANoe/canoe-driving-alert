@@ -52,11 +52,18 @@ Recommended policy (final):
 Primary outputs:
 
 - `canoe/tmp/reports/verification/dev2_batch_report.json` (canonical)
-- `canoe/tmp/reports/verification/run_readiness.md` (human review)
+- `canoe/tmp/reports/verification/dev2_batch_report.md` (human review)
 
 Optional output:
 
 - `canoe/tmp/reports/verification/dev2_batch_report.csv`
+
+Format option examples:
+
+```powershell
+python scripts/run.py verify batch --run-id <RUN_ID> --owner <OWNER> --phase pre --report-formats json,md
+python scripts/run.py verify batch --run-id <RUN_ID> --owner <OWNER> --phase pre --report-formats json,md,csv
+```
 
 Batch CSV schema (optional export) is fixed:
 

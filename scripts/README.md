@@ -50,9 +50,12 @@ Then you can use:
     - `python scripts/run.py verify batch --run-id 20260308_0900 --owner DEV2 --phase post`
   - full batch (pre + post, only when raw evidence is ready):
     - `python scripts/run.py verify batch --run-id 20260308_0900 --owner DEV2 --phase full`
+  - report format selection (default `json,md`, optional `csv`):
+    - `python scripts/run.py verify batch --run-id 20260308_0900 --owner DEV2 --phase pre --report-formats json,md`
+    - `python scripts/run.py verify batch --run-id 20260308_0900 --owner DEV2 --phase pre --report-formats json,md,csv`
   - standard outputs:
     - canonical machine: `canoe/tmp/reports/verification/dev2_batch_report.json`
-    - human review: `canoe/tmp/reports/verification/run_readiness.md`
+    - human review: `canoe/tmp/reports/verification/dev2_batch_report.md`
     - optional interchange: `canoe/tmp/reports/verification/dev2_batch_report.csv`
 - Smoke check (CANoe COM):
   - `python scripts/run.py verify smoke --owner DEV1`

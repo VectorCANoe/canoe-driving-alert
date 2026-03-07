@@ -315,6 +315,20 @@ def _batch_artifact_rows(run_id: str) -> list[dict[str, object]]:
     return rows
 
 
+def _normalize_report_formats(raw: str) -> list[str]:
+    allowed = {"json", "md", "csv"}
+    parts = [item.strip().lower() for item in raw.split(",") if item.strip()]
+    if not parts:
+        return ["json", "md"]
+    out: list[str] = []
+    for item in parts:
+        if item not in allowed:
+            raise ValueError(f"invalid report format: {item} (allowed: json,md,csv)")
+        if item not in out:
+            out.append(item)
+    return out
+
+
 def _write_batch_report(
     *,
     run_id: str,
@@ -322,11 +336,17 @@ def _write_batch_report(
     run_date: str,
     phase: str,
     steps: list[dict[str, object]],
+    report_formats: list[str],
     output_json: Path,
+    output_md: Path,
     output_csv: Path,
 ) -> None:
-    output_json.parent.mkdir(parents=True, exist_ok=True)
-    output_csv.parent.mkdir(parents=True, exist_ok=True)
+    if "json" in report_formats:
+        output_json.parent.mkdir(parents=True, exist_ok=True)
+    if "md" in report_formats:
+        output_md.parent.mkdir(parents=True, exist_ok=True)
+    if "csv" in report_formats:
+        output_csv.parent.mkdir(parents=True, exist_ok=True)
 
     pass_count = sum(1 for s in steps if s.get("rc") == 0)
     fail_count = len(steps) - pass_count
@@ -345,63 +365,95 @@ def _write_batch_report(
         "artifacts": artifacts,
         "generated_at": dt.datetime.now().isoformat(),
     }
-    output_json.write_text(json.dumps(payload, indent=2), encoding="utf-8")
-    with output_csv.open("w", encoding="utf-8", newline="") as fp:
-        writer = csv.DictWriter(
-            fp,
-            fieldnames=[
-                "row_type",
-                "run_id",
-                "phase",
-                "owner",
-                "run_date",
-                "status",
-                "step_name",
-                "step_rc",
-                "artifact_path",
-                "artifact_exists",
-                "artifact_size_bytes",
-                "artifact_last_modified",
-            ],
-        )
-        writer.writeheader()
+    if "json" in report_formats:
+        output_json.write_text(json.dumps(payload, indent=2), encoding="utf-8")
+
+    if "md" in report_formats:
+        lines = [
+            "# Dev2 Batch Verification Report",
+            "",
+            f"- run_id: `{run_id}`",
+            f"- owner: `{owner}`",
+            f"- run_date: `{run_date}`",
+            f"- phase: `{phase}`",
+            f"- status: `{status}`",
+            f"- pass/fail: `{pass_count}/{fail_count}`",
+            "",
+            "## Step Results",
+            "",
+            "| step | rc |",
+            "|---|---|",
+        ]
         for step in steps:
-            writer.writerow(
-                {
-                    "row_type": "step",
-                    "run_id": run_id,
-                    "phase": phase,
-                    "owner": owner,
-                    "run_date": run_date,
-                    "status": status,
-                    "step_name": step["name"],
-                    "step_rc": step["rc"],
-                    "artifact_path": "",
-                    "artifact_exists": "",
-                    "artifact_size_bytes": "",
-                    "artifact_last_modified": "",
-                }
-            )
+            lines.append(f"| `{step['name']}` | `{step['rc']}` |")
+        lines.extend(["", "## Artifact Snapshot", "", "| path | exists | size_bytes |", "|---|---:|---:|"])
         for row in artifacts:
-            writer.writerow(
-                {
-                    "row_type": "artifact",
-                    "run_id": run_id,
-                    "phase": phase,
-                    "owner": owner,
-                    "run_date": run_date,
-                    "status": status,
-                    "step_name": "",
-                    "step_rc": "",
-                    "artifact_path": row["path"],
-                    "artifact_exists": str(row["exists"]).lower(),
-                    "artifact_size_bytes": row["size_bytes"],
-                    "artifact_last_modified": row["last_modified"],
-                }
+            lines.append(f"| `{row['path']}` | `{str(row['exists']).lower()}` | `{row['size_bytes']}` |")
+        output_md.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+    if "csv" in report_formats:
+        with output_csv.open("w", encoding="utf-8", newline="") as fp:
+            writer = csv.DictWriter(
+                fp,
+                fieldnames=[
+                    "row_type",
+                    "run_id",
+                    "phase",
+                    "owner",
+                    "run_date",
+                    "status",
+                    "step_name",
+                    "step_rc",
+                    "artifact_path",
+                    "artifact_exists",
+                    "artifact_size_bytes",
+                    "artifact_last_modified",
+                ],
             )
+            writer.writeheader()
+            for step in steps:
+                writer.writerow(
+                    {
+                        "row_type": "step",
+                        "run_id": run_id,
+                        "phase": phase,
+                        "owner": owner,
+                        "run_date": run_date,
+                        "status": status,
+                        "step_name": step["name"],
+                        "step_rc": step["rc"],
+                        "artifact_path": "",
+                        "artifact_exists": "",
+                        "artifact_size_bytes": "",
+                        "artifact_last_modified": "",
+                    }
+                )
+            for row in artifacts:
+                writer.writerow(
+                    {
+                        "row_type": "artifact",
+                        "run_id": run_id,
+                        "phase": phase,
+                        "owner": owner,
+                        "run_date": run_date,
+                        "status": status,
+                        "step_name": "",
+                        "step_rc": "",
+                        "artifact_path": row["path"],
+                        "artifact_exists": str(row["exists"]).lower(),
+                        "artifact_size_bytes": row["size_bytes"],
+                        "artifact_last_modified": row["last_modified"],
+                    }
+                )
 
 
 def cmd_verify_batch(args: argparse.Namespace) -> int:
+    try:
+        report_formats = _normalize_report_formats(args.report_formats)
+    except ValueError as ex:
+        print(f"[VERIFY_BATCH] FAIL: {ex}")
+        return 2
+
     steps: list[dict[str, object]] = []
 
     def run_step(name: str, fn) -> int:
@@ -426,7 +478,9 @@ def cmd_verify_batch(args: argparse.Namespace) -> int:
                         run_date=args.run_date,
                         phase=args.phase,
                         steps=steps,
+                        report_formats=report_formats,
                         output_json=args.output_json,
+                        output_md=args.output_md,
                         output_csv=args.output_csv,
                     )
                     return 2
@@ -454,7 +508,9 @@ def cmd_verify_batch(args: argparse.Namespace) -> int:
                     run_date=args.run_date,
                     phase=args.phase,
                     steps=steps,
+                    report_formats=report_formats,
                     output_json=args.output_json,
+                    output_md=args.output_md,
                     output_csv=args.output_csv,
                 )
                 return 2
@@ -487,7 +543,9 @@ def cmd_verify_batch(args: argparse.Namespace) -> int:
                 run_date=args.run_date,
                 phase=args.phase,
                 steps=steps,
+                report_formats=report_formats,
                 output_json=args.output_json,
+                output_md=args.output_md,
                 output_csv=args.output_csv,
             )
             return 2
@@ -509,7 +567,9 @@ def cmd_verify_batch(args: argparse.Namespace) -> int:
         run_date=args.run_date,
         phase=args.phase,
         steps=steps,
+        report_formats=report_formats,
         output_json=args.output_json,
+        output_md=args.output_md,
         output_csv=args.output_csv,
     )
     failed = sum(1 for s in steps if s["rc"] != 0)
@@ -654,7 +714,7 @@ def _print_shell_help() -> None:
     print("  /exit")
     print("  /scenario [run] <id> [scenarioCommand|testScenario]")
     print("  /verify prepare [run_id]")
-    print("  /verify batch [run_id] [owner] [pre|post|full]")
+    print("  /verify batch [run_id] [owner] [pre|post|full] [json,md|json,md,csv|...]")
     print("  /verify smoke [owner] [run_date]")
     print("  /verify status [run_id]")
     print("  /verify finalize [run_id] [owner] [run_date]")
@@ -811,6 +871,7 @@ def cmd_shell(_: argparse.Namespace) -> int:
                 run_id = tokens[2] if len(tokens) > 2 else _prompt_with_default("Run ID", _default_run_id())
                 owner = tokens[3] if len(tokens) > 3 else _prompt_with_default("Owner", "TBD")
                 phase = tokens[4] if len(tokens) > 4 else "pre"
+                report_formats = tokens[5] if len(tokens) > 5 else "json,md"
                 if phase not in {"pre", "post", "full"}:
                     print("[SHELL] phase must be pre|post|full")
                     continue
@@ -822,7 +883,9 @@ def cmd_shell(_: argparse.Namespace) -> int:
                         phase=phase,
                         skip_gates=False,
                         stop_on_fail=False,
+                        report_formats=report_formats,
                         output_json=Path("canoe/tmp/reports/verification/dev2_batch_report.json"),
+                        output_md=Path("canoe/tmp/reports/verification/dev2_batch_report.md"),
                         output_csv=Path("canoe/tmp/reports/verification/dev2_batch_report.csv"),
                     )
                 )
@@ -964,16 +1027,27 @@ def add_verify_batch_args(p: argparse.ArgumentParser) -> None:
     p.add_argument("--skip-gates", action="store_true", help="Skip all gate steps in pre/full phase")
     p.add_argument("--stop-on-fail", action="store_true", help="Stop immediately at first failed step")
     p.add_argument(
+        "--report-formats",
+        default="json,md",
+        help="Comma-separated report formats: json,md,csv (default: json,md)",
+    )
+    p.add_argument(
         "--output-json",
         type=Path,
         default=Path("canoe/tmp/reports/verification/dev2_batch_report.json"),
         help="Batch summary JSON output path",
     )
     p.add_argument(
+        "--output-md",
+        type=Path,
+        default=Path("canoe/tmp/reports/verification/dev2_batch_report.md"),
+        help="Batch summary markdown output path",
+    )
+    p.add_argument(
         "--output-csv",
         type=Path,
         default=Path("canoe/tmp/reports/verification/dev2_batch_report.csv"),
-        help="Batch summary CSV output path",
+        help="Batch summary CSV output path (optional format)",
     )
     p.set_defaults(func=cmd_verify_batch)
 

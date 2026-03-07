@@ -69,7 +69,7 @@
 | TSB-003 | Req_017/Req_139 표현 정밀화 | Docs | Docs | Docs Updated | `01_Requirements.md` (`Req_017`,`Req_139`,`VC_139`) | `01_Requirements.md` | 반영완료 | `일반차` 표현 정리 + 우선순위 규칙 문장 명확화 |
 | TSB-004 | CANoe 공식 Test Unit PoC 1건 | Dev2 | Dev2 | Proposed | Test Unit 실행 캡처/리포트 | `tmp/mentoring/Mentoring_MET41.md` 체크 갱신 | 대기 | CAPL 하네스는 유지 |
 | TSB-005 | M40-18 실행 증빙 폐쇄 | Dev1 + Dev2 | Dev1 + Dev2 + Docs | In Progress | 로그/캡처/리포트 | `05/06/07`, `TMP_HANDOFF.md` | 진행중 | G4 재개 조건 |
-| TSB-008 | Dev2 검증 일괄 CLI + JSON/CSV 고정 | Dev2 | Dev2 | Ready for Docs | `scripts/run.py` (`verify batch`, `shell /verify batch`), `scripts/README.md`, `canoe/tmp/onboarding/VERIFY_EXECUTION_RUNBOOK.md` | `05/06/07` 실행 증빙 작성 가이드에 연결 | 미반영 | pre/post/full 배치 + `dev2_batch_report.json/csv` 표준화 |
+| TSB-008 | Dev2 검증 일괄 CLI + 저장포맷 옵션(기본 JSON/MD, CSV 선택) | Dev2 | Dev2 | Ready for Docs | `scripts/run.py` (`verify batch`, `shell /verify batch`), `scripts/README.md`, `canoe/tmp/onboarding/VERIFY_EXECUTION_RUNBOOK.md` | `05/06/07` 실행 증빙 작성 가이드에 연결 | 미반영 | pre/post/full 배치 + `--report-formats` (`json,md` 기본 / `csv` 옵션) |
 | TSB-006 | CAPL `timeNow()` overflow-safe 정리 | Dev1 | Dev1 | Ready for Docs | `src/capl/*`, `cfg/channel_assign/*`의 `timeNowInt64()` 전환 + `check_capl_sync` PASS | 필요 시 `0304`, `04` 구현 노트 | 미반영 | 컴파일 경고 `08-0041` 사전 제거 목적 |
 | TSB-007 | ETH Backbone DBC 누락 3건 보완 | Dev1 | Dev1 | Ready for Docs | `canoe/databases/eth_backbone_can_stub.dbc` + `multibus-dbc` PASS | `0303`, `00f`(소유권/ID 운영 근거) | 미반영 | `ethVehicleStateMsg`, `ethSteeringMsg`, `ethNavContextMsg` 추가 |
 
