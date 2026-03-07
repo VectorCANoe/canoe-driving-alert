@@ -36,6 +36,7 @@ int clampRange(int value, int minValue, int maxValue)
 void runArbiter()
 {
   message ethDecelAssistReqMsg mDecel;
+  message ethSelectedAlertMsg mSelected;
   message ethObjectScenarioAlertMsg mObjAlert;
   int emergencyContext;
   int warningState;
@@ -445,6 +446,11 @@ void runArbiter()
   mDecel.DriverReleaseReason = driverReleaseReason;
   mDecel.EmergencyContext = emergencyContext;
   output(mDecel);
+
+  mSelected.selectedAlertLevel = clampRange(selectedAlertLevel, 0, 7);
+  mSelected.selectedAlertType = clampRange(selectedAlertType, 0, 7);
+  mSelected.timeoutClear = timeoutClear;
+  output(mSelected);
 
   mObjAlert.ObjectAlertLevel = clampRange(selectedAlertLevel, 0, 7);
   mObjAlert.ObjectAlertType = clampRange(selectedAlertType, 0, 7);

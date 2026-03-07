@@ -52,6 +52,12 @@ BO_ 452 ethDecelAssistReqMsg: 4 WARN_ARB_MGR
  SG_ RiskLevel           : 8|8@1+ (1,0) [0|100] "" VAL_SCENARIO_CTRL,CHS_GW
  SG_ Reserved0           : 16|16@1+ (1,0) [0|0] "" Vector__XXX
 
+BO_ 518 ethSelectedAlertMsg: 2 WARN_ARB_MGR
+ SG_ selectedAlertLevel  : 0|3@1+ (1,0) [0|7] "" BODY_GW,IVI_GW,VAL_SCENARIO_CTRL
+ SG_ selectedAlertType   : 3|3@1+ (1,0) [0|7] "" BODY_GW,IVI_GW,VAL_SCENARIO_CTRL
+ SG_ timeoutClear        : 6|1@1+ (1,0) [0|1] "" BODY_GW,IVI_GW,VAL_SCENARIO_CTRL
+ SG_ Reserved0           : 7|9@1+ (1,0) [0|0] "" Vector__XXX
+
 BO_ 453 ethObjectRiskInputMsg: 8 VAL_SCENARIO_CTRL
  SG_ ObjectTrackValid      : 0|1@1+  (1,0) [0|1] "" ADAS_WARN_CTRL
  SG_ ObjectRangeM          : 1|9@1+  (1,0) [0|500] "m" ADAS_WARN_CTRL
@@ -91,6 +97,10 @@ CM_ BO_ 452 "Comm_121: Deceleration assist request frame. Produced by WARN_ARB_M
 CM_ SG_ 452 DecelAssistReq "0=off 1=active.";
 CM_ SG_ 452 FailSafeMode "0=normal 1=degraded 2=blocked.";
 CM_ SG_ 452 DriverReleaseReason "0=none 1=steering 2=brake 3=failsafe.";
+CM_ BO_ 518 "Comm_006/007/008/122: Selected alert distribution frame. Produced by WARN_ARB_MGR for BODY_GW/IVI_GW sync.";
+CM_ SG_ 518 selectedAlertLevel "Final selected alert level (0..7).";
+CM_ SG_ 518 selectedAlertType "Final selected alert type (0..7).";
+CM_ SG_ 518 timeoutClear "Timeout clear pulse for deterministic reset path.";
 CM_ BO_ 453 "Comm_130: Object risk input frame (SIL harness path). Produced by VAL_SCENARIO_CTRL and consumed by ADAS_WARN_CTRL.";
 CM_ SG_ 453 ObjectTrackValid "Object track validity.";
 CM_ SG_ 453 ObjectRangeM "Representative object range in meters.";
@@ -112,16 +122,17 @@ BA_DEF_DEF_ "GenMsgCycleTime" 0;
 BA_ "GenMsgCycleTime" BO_ 449 100;
 BA_ "GenMsgCycleTime" BO_ 451 100;
 BA_ "GenMsgCycleTime" BO_ 452 50;
+BA_ "GenMsgCycleTime" BO_ 518 50;
 BA_ "GenMsgCycleTime" BO_ 453 100;
 BA_ "GenMsgCycleTime" BO_ 454 100;
 BA_ "GenMsgCycleTime" BO_ 455 50;
 
 VAL_ 452 DecelAssistReq 0 "OFF" 1 "ON";
 VAL_ 452 DriverReleaseReason 0 "NONE" 1 "STEER" 2 "BRAKE" 3 "FAILSAFE";
+VAL_ 518 timeoutClear 0 "NoClear" 1 "Clear";
 VAL_ 453 ObjectTrackValid 0 "INVALID" 1 "VALID";
 VAL_ 453 IntersectionConflict 0 "NO" 1 "YES";
 VAL_ 453 MergeCutIn 0 "NO" 1 "YES";
 VAL_ 454 ObjectTrackValid 0 "INVALID" 1 "VALID";
 VAL_ 455 IntersectionConflict 0 "NO" 1 "YES";
 VAL_ 455 MergeCutIn 0 "NO" 1 "YES";
-
