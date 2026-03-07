@@ -1,8 +1,8 @@
 # Doc-Code Sync Report
 
-- Generated At: 2026-03-06 19:26:18 UTC
+- Generated At: 2026-03-07 08:36:43 UTC
 - Branch: main
-- Commit: 6e018d5
+- Commit: 36d57f6
 - Gate Result: PASS
 
 ## Req Coverage

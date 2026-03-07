@@ -108,3 +108,6 @@
 | frmIgnitionEngineMsg | 0x2A8 | 1 | VAL_SCENARIO_CTRL | powertrain_can.dbc | 3 |
 | frmGearStateMsg | 0x2A9 | 1 | VAL_SCENARIO_CTRL | powertrain_can.dbc | 3 |
 | frmPtDiagReqMsg | 0x2AA | 3 | VAL_SCENARIO_CTRL | powertrain_can.dbc | 3 |
+| ethVehicleStateMsg | 0x510 | 2 | CHS_GW | eth_backbone_can_stub.dbc | 3 |
+| ethSteeringMsg | 0x511 | 1 | CHS_GW | eth_backbone_can_stub.dbc | 2 |
+| ethNavContextMsg | 0x512 | 3 | INFOTAINMENT_GW | eth_backbone_can_stub.dbc | 5 |

@@ -1,12 +1,13 @@
 # CLI Readiness Gate Report
 
-- Generated: 2026-03-07T02:27:05
+- Generated: 2026-03-07T18:40:24
 - Result: `PASS`
-- Passed: 7
+- Passed: 8
 - Failed: 0
 
 ## Checks
 - [PASS] run.py help: PASS (rc=0)
+- [PASS] scenario group help: PASS (rc=0)
 - [PASS] verify group help: PASS (rc=0)
 - [PASS] gate group help: PASS (rc=0)
 - [PASS] package group help: PASS (rc=0)

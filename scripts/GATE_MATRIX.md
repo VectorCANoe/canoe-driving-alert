@@ -24,6 +24,7 @@ Legacy references were updated to the new path in runbook docs and CI workflows.
 |---|---|---|---|
 | CFG Hygiene | `python scripts/run.py gate cfg-hygiene` | `scripts/gates/cfg_hygiene_gate.py` | CANoe text hygiene (absolute path, mojibake) |
 | CAPL Sync | `python scripts/run.py gate capl-sync` | `scripts/gates/check_capl_sync.py` | `src/capl` and `cfg/channel_assign` 1:1 sync |
+| MultiBus + DBC Policy | `python scripts/run.py gate multibus-dbc` | `scripts/gates/multibus_cfg_dbc_gate.py` | `CAN_v2_topology_wip.cfg` 멀티버스 할당 + 도메인 DBC 소유권 정책 |
 | Doc-Code Sync | `python scripts/run.py gate doc-sync` | `scripts/gates/doc_code_sync_gate.py` | `01/03/0301/0302/0303/0304/05/06/07` traceability + runtime linkage checks |
 | CLI Readiness | `python scripts/run.py gate cli-readiness` | `scripts/gates/cli_readiness_gate.py` | CLI contract, entrypoint, command help/contract stability |
 
@@ -31,7 +32,7 @@ Legacy references were updated to the new path in runbook docs and CI workflows.
 
 | Workflow | Runs Which Gate | Trigger |
 |---|---|---|
-| `.github/workflows/cfg-hygiene-gate.yml` | `cfg-hygiene`, `capl-sync` | `push`, `pull_request` (selected paths), `workflow_dispatch` |
+| `.github/workflows/cfg-hygiene-gate.yml` | `cfg-hygiene`, `capl-sync`, `multibus-dbc` | `push`, `pull_request` (selected paths), `workflow_dispatch` |
 | `.github/workflows/doc-code-sync-gate.yml` | `doc-sync` | `push`, `pull_request` (doc/code selected paths), `schedule` (daily), `workflow_dispatch` |
 | `.github/workflows/cli-readiness-gate.yml` | `cli-readiness` | `push`, `pull_request` (CLI-related paths), `workflow_dispatch` |
 
@@ -46,7 +47,8 @@ Before commit/push in development:
 
 1. `python scripts/run.py gate cfg-hygiene`
 2. `python scripts/run.py gate capl-sync`
-3. `python scripts/run.py gate doc-sync` (when doc/trace/code chain changed)
+3. `python scripts/run.py gate multibus-dbc` (when cfg/dbc/bus-policy changed)
+4. `python scripts/run.py gate doc-sync` (when doc/trace/code chain changed)
 
 ## 5) Folder Policy
 

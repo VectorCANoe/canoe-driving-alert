@@ -27,7 +27,7 @@ ACTIVE_DBC_FILES = [
 ]
 
 PRIMARY_NODE_FOR_BUS = {
-    "ETH_BACKBONE": "DOMAIN_BOUNDARY_MGR",
+    "ETH_BACKBONE": "ETH_SW",
     "INFOTAINMENT": "INFOTAINMENT_GW",
     "BODY": "BODY_GW",
     "POWERTRAIN": "DOMAIN_ROUTER",
@@ -252,4 +252,3 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-
