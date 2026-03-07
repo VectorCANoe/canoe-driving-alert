@@ -20,12 +20,15 @@ Then you can use:
 ## Daily Commands
 
 ### Quick Entry (New)
+- Menu-style guided flow (recommended for operators):
+  - `python scripts/run.py start guided`
+  - `sdv start guided`
 - Operator-first demo trigger:
   - `python scripts/run.py start demo --id 4`
   - `sdv start demo --id 4`
 - Precheck batch (gates + prepare + smoke + status):
-  - `python scripts/run.py start precheck --run-id 20260308_1900 --owner DEV2`
-  - `sdv start precheck --run-id 20260308_1900 --owner DEV2`
+  - `python scripts/run.py start precheck`  (auto run-id + default owner)
+  - `sdv start precheck --owner DEV2`
 - Environment doctor:
   - `python scripts/run.py doctor`
   - `python scripts/run.py doctor --ensure-running`
@@ -52,8 +55,11 @@ Then you can use:
   - `python scripts/run.py shell`
   - `sdv shell`
 - Example session:
+  - `/start guided`
+  - `/start precheck`
   - `/scenario 4`
   - `/verify batch 20260308_0900 DEV2 pre`
+  - `/canoe measure status`
   - `/gate all`
   - `/skill list`
   - `/exit`

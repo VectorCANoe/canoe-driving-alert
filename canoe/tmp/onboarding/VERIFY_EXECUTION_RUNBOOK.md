@@ -8,6 +8,12 @@ This runbook reflects the Dev2 scope in `TEAM_SYNC_BOARD.md`:
 
 ## 1) Fast Start (Recommended)
 
+### 0) Guided menu (new, easiest)
+
+```powershell
+python scripts/run.py start guided
+```
+
 ### A. Pre phase (before scenario run)
 
 ```powershell

@@ -39,6 +39,7 @@ from __future__ import annotations
 import argparse
 import csv
 import datetime as dt
+import difflib
 import json
 import shlex
 import subprocess
@@ -52,6 +53,7 @@ ROOT = Path(__file__).resolve().parent.parent
 SCRIPTS = ROOT / "scripts"
 
 CONTRACT_CANONICAL = [
+    "python scripts/run.py start guided",
     "python scripts/run.py start demo --id <0..255>",
     "python scripts/run.py start precheck --run-id <YYYYMMDD_HHMM> --owner <OWNER>",
     "python scripts/run.py doctor",
@@ -702,6 +704,11 @@ def _default_run_id() -> str:
     return dt.datetime.now().strftime("%Y%m%d_%H%M")
 
 
+def _suggest_choice(value: str, choices: list[str]) -> str | None:
+    matches = difflib.get_close_matches(value, choices, n=1, cutoff=0.5)
+    return matches[0] if matches else None
+
+
 def _run_gate_all() -> int:
     gates = [
         ("doc-sync", cmd_gate_doc_sync),
@@ -728,6 +735,7 @@ def _print_shell_help() -> None:
     print("  /help")
     print("  /exit")
     print("  /scenario [run] <id> [scenarioCommand|testScenario]")
+    print("  /start guided|demo [id]|precheck [run_id] [owner]")
     print("  /verify prepare [run_id]")
     print("  /verify batch [run_id] [owner] [pre|post|full] [json,md|json,md,csv|...]")
     print("  /verify smoke [owner] [run_date]")
@@ -879,6 +887,41 @@ def cmd_shell(_: argparse.Namespace) -> int:
                 no_ensure_running=False,
             )
             rc = cmd_scenario_run(ns)
+        elif cmd == "start":
+            sub = tokens[1].lower() if len(tokens) > 1 else "guided"
+            if sub == "guided":
+                return cmd_start_guided(argparse.Namespace())
+            if sub == "demo":
+                sid = int(tokens[2]) if len(tokens) > 2 else _prompt_int("Scenario ID", default=4, minimum=0, maximum=255)
+                rc = cmd_start_demo(
+                    argparse.Namespace(
+                        id=sid,
+                        var="scenarioCommand",
+                        wait_ack_ms=1200,
+                        poll_ms=20,
+                        no_ensure_running=False,
+                    )
+                )
+            elif sub == "precheck":
+                run_id = tokens[2] if len(tokens) > 2 else _prompt_with_default("Run ID", _default_run_id())
+                owner = tokens[3] if len(tokens) > 3 else _prompt_with_default("Owner", "DEV2")
+                rc = cmd_start_precheck(
+                    argparse.Namespace(
+                        run_id=run_id,
+                        owner=owner,
+                        run_date=dt.date.today().isoformat(),
+                        skip_gates=False,
+                        stop_on_fail=False,
+                        report_formats="json,md",
+                    )
+                )
+            else:
+                suggestion = _suggest_choice(sub, ["guided", "demo", "precheck"])
+                if suggestion:
+                    print(f"[SHELL] unknown start subcommand: {sub} (did you mean '{suggestion}'?)")
+                else:
+                    print(f"[SHELL] unknown start subcommand: {sub}")
+                continue
         elif cmd == "verify":
             if len(tokens) < 2:
                 print("[SHELL] usage: /verify <prepare|batch|smoke|status|finalize|quick> ...")
@@ -964,7 +1007,11 @@ def cmd_shell(_: argparse.Namespace) -> int:
                     if rc != 0:
                         break
             else:
-                print(f"[SHELL] unknown verify subcommand: {sub}")
+                suggestion = _suggest_choice(sub, ["prepare", "batch", "smoke", "status", "finalize", "quick"])
+                if suggestion:
+                    print(f"[SHELL] unknown verify subcommand: {sub} (did you mean '{suggestion}'?)")
+                else:
+                    print(f"[SHELL] unknown verify subcommand: {sub}")
                 continue
         elif cmd == "gate":
             if len(tokens) < 2:
@@ -996,7 +1043,11 @@ def cmd_shell(_: argparse.Namespace) -> int:
             elif sub == "exe":
                 rc = cmd_package_build_exe(argparse.Namespace(mode=mode, clean=False))
             else:
-                print(f"[SHELL] unknown package subcommand: {sub}")
+                suggestion = _suggest_choice(sub, ["portable", "exe"])
+                if suggestion:
+                    print(f"[SHELL] unknown package subcommand: {sub} (did you mean '{suggestion}'?)")
+                else:
+                    print(f"[SHELL] unknown package subcommand: {sub}")
                 continue
         elif cmd == "doctor":
             ensure_running = len(tokens) > 1 and tokens[1].lower() in {"ensure-running", "--ensure-running"}
@@ -1036,7 +1087,11 @@ def cmd_shell(_: argparse.Namespace) -> int:
                     )
                 )
             else:
-                print(f"[SHELL] unknown capl subcommand: {sub}")
+                suggestion = _suggest_choice(sub, ["get", "set"])
+                if suggestion:
+                    print(f"[SHELL] unknown capl subcommand: {sub} (did you mean '{suggestion}'?)")
+                else:
+                    print(f"[SHELL] unknown capl subcommand: {sub}")
                 continue
         elif cmd == "canoe":
             if len(tokens) < 3:
@@ -1077,7 +1132,11 @@ def cmd_shell(_: argparse.Namespace) -> int:
                     )
                 )
             else:
-                print(f"[SHELL] unknown canoe subcommand: {sub}")
+                suggestion = _suggest_choice(sub, ["measure", "capl-call"])
+                if suggestion:
+                    print(f"[SHELL] unknown canoe subcommand: {sub} (did you mean '{suggestion}'?)")
+                else:
+                    print(f"[SHELL] unknown canoe subcommand: {sub}")
                 continue
         elif cmd == "skill":
             if len(tokens) < 2:
@@ -1095,12 +1154,23 @@ def cmd_shell(_: argparse.Namespace) -> int:
                     continue
                 rc = _run_skill(tokens[2].lower())
             else:
-                print(f"[SHELL] unknown skill subcommand: {sub}")
+                suggestion = _suggest_choice(sub, ["list", "run"])
+                if suggestion:
+                    print(f"[SHELL] unknown skill subcommand: {sub} (did you mean '{suggestion}'?)")
+                else:
+                    print(f"[SHELL] unknown skill subcommand: {sub}")
                 continue
         elif cmd == "contract":
             rc = cmd_contract(argparse.Namespace(json=False))
         else:
-            print(f"[SHELL] unknown command: {cmd}")
+            suggestion = _suggest_choice(
+                cmd,
+                ["scenario", "verify", "gate", "package", "doctor", "capl", "canoe", "skill", "contract", "help", "exit"],
+            )
+            if suggestion:
+                print(f"[SHELL] unknown command: {cmd} (did you mean '{suggestion}'?)")
+            else:
+                print(f"[SHELL] unknown command: {cmd}")
             print("[SHELL] type /help")
             continue
 
@@ -1318,6 +1388,85 @@ def cmd_start_preset(args: argparse.Namespace) -> int:
 
 def cmd_start_shell(args: argparse.Namespace) -> int:
     return cmd_shell(args)
+
+
+def cmd_start_guided(_: argparse.Namespace) -> int:
+    print("SDV Guided Menu")
+    print("Focus: day-to-day operator flow for CANoe verification")
+    while True:
+        print("")
+        print("1) doctor")
+        print("2) precheck (gates+prepare+smoke+status)")
+        print("3) trigger scenario")
+        print("4) evidence status")
+        print("5) measurement start")
+        print("6) measurement stop")
+        print("7) measurement status")
+        print("8) open shell")
+        print("9) exit")
+        choice = input("select [1-9]: ").strip()
+
+        if choice == "1":
+            rc = cmd_doctor(
+                argparse.Namespace(
+                    ensure_running=False,
+                    output_json=Path("canoe/tmp/reports/verification/doctor_report.json"),
+                    output_md=Path("canoe/tmp/reports/verification/doctor_report.md"),
+                )
+            )
+        elif choice == "2":
+            run_id = _prompt_with_default("Run ID", _default_run_id())
+            owner = _prompt_with_default("Owner", "DEV2")
+            rc = cmd_start_precheck(
+                argparse.Namespace(
+                    run_id=run_id,
+                    owner=owner,
+                    run_date=dt.date.today().isoformat(),
+                    skip_gates=False,
+                    stop_on_fail=False,
+                    report_formats="json,md",
+                )
+            )
+        elif choice == "3":
+            sid = _prompt_int("Scenario ID", default=4, minimum=0, maximum=255)
+            rc = cmd_start_demo(
+                argparse.Namespace(
+                    id=sid,
+                    var="scenarioCommand",
+                    wait_ack_ms=1200,
+                    poll_ms=20,
+                    no_ensure_running=False,
+                )
+            )
+        elif choice == "4":
+            run_id = _prompt_with_default("Run ID", _default_run_id())
+            rc = cmd_evidence_status(
+                argparse.Namespace(
+                    run_id=run_id,
+                    evidence_root="",
+                    output_json="canoe/tmp/reports/verification/run_readiness.json",
+                    output_md="canoe/tmp/reports/verification/run_readiness.md",
+                )
+            )
+        elif choice == "5":
+            rc = cmd_canoe_measure_start(argparse.Namespace())
+        elif choice == "6":
+            rc = cmd_canoe_measure_stop(argparse.Namespace())
+        elif choice == "7":
+            rc = cmd_canoe_measure_status(argparse.Namespace())
+        elif choice == "8":
+            return cmd_shell(argparse.Namespace())
+        elif choice == "9":
+            print("[GUIDED] bye")
+            return 0
+        else:
+            print("[GUIDED] invalid selection")
+            continue
+
+        if rc == 0:
+            print("[GUIDED] PASS")
+        else:
+            print(f"[GUIDED] FAIL (rc={rc})")
 
 
 def cmd_evidence_status(args: argparse.Namespace) -> int:
@@ -1597,8 +1746,8 @@ def add_start_demo_args(p: argparse.ArgumentParser) -> None:
 
 
 def add_start_precheck_args(p: argparse.ArgumentParser) -> None:
-    p.add_argument("--run-id", required=True, help="Run ID, e.g. 20260308_1900")
-    p.add_argument("--owner", default="TBD")
+    p.add_argument("--run-id", default=_default_run_id(), help="Run ID, e.g. 20260308_1900")
+    p.add_argument("--owner", default="DEV2")
     p.add_argument("--run-date", default=dt.date.today().isoformat())
     p.add_argument("--skip-gates", action="store_true", help="Skip all gates in precheck")
     p.add_argument("--stop-on-fail", action="store_true", help="Stop at first failed step")
@@ -1677,6 +1826,7 @@ def build_parser() -> argparse.ArgumentParser:
     add_start_precheck_args(start_sub.add_parser("precheck", help="Run precheck batch (gates+prepare+smoke+status)"))
     add_start_preset_args(start_sub.add_parser("preset", help="Run named preset workflow"))
     start_sub.add_parser("shell", help="Open interactive slash shell").set_defaults(func=cmd_start_shell)
+    start_sub.add_parser("guided", help="Open menu-style guided operator flow").set_defaults(func=cmd_start_guided)
 
     add_doctor_args(sub.add_parser("doctor", help="Check CANoe COM + measurement + required sysvars"))
 
