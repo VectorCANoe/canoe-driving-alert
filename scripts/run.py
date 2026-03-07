@@ -53,6 +53,7 @@ ROOT = Path(__file__).resolve().parent.parent
 SCRIPTS = ROOT / "scripts"
 
 CONTRACT_CANONICAL = [
+    "python scripts/run.py",
     "python scripts/run.py start guided",
     "python scripts/run.py start demo --id <0..255>",
     "python scripts/run.py start precheck --run-id <YYYYMMDD_HHMM> --owner <OWNER>",
@@ -107,6 +108,48 @@ CONTRACT_LEGACY = [
     "gate-cli-readiness",
     "package-build-exe",
     "package-bundle-portable",
+]
+
+
+TOPLEVEL_COMMANDS = [
+    "start",
+    "doctor",
+    "capl",
+    "canoe",
+    "shell",
+    "wizard",
+    "scenario",
+    "verify",
+    "evidence",
+    "gate",
+    "package",
+    "release",
+    "contract",
+    "scenario-run",
+    "interactive",
+    "verify-prepare",
+    "verify-batch",
+    "verify-smoke",
+    "verify-fill-score",
+    "verify-insight",
+    "verify-bind-doc",
+    "verify-fill-template",
+    "verify-status",
+    "verify-finalize",
+    "gate-doc-sync",
+    "gate-cfg-hygiene",
+    "gate-capl-sync",
+    "gate-multibus-dbc",
+    "gate-cli-readiness",
+    "package-build-exe",
+    "package-bundle-portable",
+    # Short aliases
+    "go",
+    "demo",
+    "precheck",
+    "mstart",
+    "mstop",
+    "mstatus",
 ]
 
 
@@ -736,6 +779,7 @@ def _print_shell_help() -> None:
     print("  /exit")
     print("  /scenario [run] <id> [scenarioCommand|testScenario]")
     print("  /start guided|demo [id]|precheck [run_id] [owner]")
+    print("  /go  # alias of /start guided")
     print("  /verify prepare [run_id]")
     print("  /verify batch [run_id] [owner] [pre|post|full] [json,md|json,md,csv|...]")
     print("  /verify smoke [owner] [run_date]")
@@ -868,6 +912,8 @@ def cmd_shell(_: argparse.Namespace) -> int:
         if cmd in {"exit", "quit", "q"}:
             print("[SHELL] bye")
             return 0
+        if cmd == "go":
+            return cmd_start_guided(argparse.Namespace())
         if cmd in {"help", "h", "?"}:
             _print_shell_help()
             continue
@@ -1821,12 +1867,13 @@ def build_parser() -> argparse.ArgumentParser:
     sub = parser.add_subparsers(dest="command", required=True)
 
     start = sub.add_parser("start", help="Operator-first quick entrypoints")
-    start_sub = start.add_subparsers(dest="start_command", required=True)
+    start_sub = start.add_subparsers(dest="start_command")
     add_start_demo_args(start_sub.add_parser("demo", help="Trigger default demo scenario (no panel)"))
     add_start_precheck_args(start_sub.add_parser("precheck", help="Run precheck batch (gates+prepare+smoke+status)"))
     add_start_preset_args(start_sub.add_parser("preset", help="Run named preset workflow"))
     start_sub.add_parser("shell", help="Open interactive slash shell").set_defaults(func=cmd_start_shell)
     start_sub.add_parser("guided", help="Open menu-style guided operator flow").set_defaults(func=cmd_start_guided)
+    start.set_defaults(func=cmd_start_guided)
 
     add_doctor_args(sub.add_parser("doctor", help="Check CANoe COM + measurement + required sysvars"))
 
@@ -1952,10 +1999,30 @@ def build_parser() -> argparse.ArgumentParser:
     pkg_portable_legacy.add_argument("--zip-name", default="")
     pkg_portable_legacy.set_defaults(func=cmd_package_bundle_portable)
 
+    # User-friendly short aliases
+    sub.add_parser("go", help="Short alias: start guided").set_defaults(func=cmd_start_guided)
+    add_start_demo_args(sub.add_parser("demo", help="Short alias: start demo"))
+    add_start_precheck_args(sub.add_parser("precheck", help="Short alias: start precheck"))
+    sub.add_parser("mstart", help="Short alias: canoe measure-start").set_defaults(func=cmd_canoe_measure_start)
+    sub.add_parser("mstop", help="Short alias: canoe measure-stop").set_defaults(func=cmd_canoe_measure_stop)
+    sub.add_parser("mstatus", help="Short alias: canoe measure-status").set_defaults(func=cmd_canoe_measure_status)
+
     return parser
 
 
 def main() -> int:
+    argv = sys.argv[1:]
+    if not argv:
+        return cmd_start_guided(argparse.Namespace())
+    if argv and argv[0] not in {"-h", "--help"} and argv[0] not in TOPLEVEL_COMMANDS:
+        suggestion = _suggest_choice(argv[0], TOPLEVEL_COMMANDS)
+        if suggestion:
+            print(f"[CLI] unknown command: {argv[0]} (did you mean '{suggestion}'?)")
+        else:
+            print(f"[CLI] unknown command: {argv[0]}")
+        print("[CLI] tip: run `python scripts/run.py go` for guided mode")
+        return 2
+
     parser = build_parser()
     args = parser.parse_args()
     return args.func(args)

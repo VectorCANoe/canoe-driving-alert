@@ -4,6 +4,7 @@ Use this folder through one entrypoint:
 
 - `python scripts/run.py <command>`
 - `sdv <command>` (after local install)
+- `python scripts/run.py` (no args -> guided menu)
 
 ## Local CLI Install (F3 Baseline)
 
@@ -22,12 +23,15 @@ Then you can use:
 ### Quick Entry (New)
 - Menu-style guided flow (recommended for operators):
   - `python scripts/run.py start guided`
+  - `python scripts/run.py go`
   - `sdv start guided`
 - Operator-first demo trigger:
   - `python scripts/run.py start demo --id 4`
+  - `python scripts/run.py demo --id 4`
   - `sdv start demo --id 4`
 - Precheck batch (gates + prepare + smoke + status):
   - `python scripts/run.py start precheck`  (auto run-id + default owner)
+  - `python scripts/run.py precheck`
   - `sdv start precheck --owner DEV2`
 - Environment doctor:
   - `python scripts/run.py doctor`
@@ -49,6 +53,7 @@ Then you can use:
 - Release shortcuts:
   - `sdv release exe --mode onefolder --clean`
   - `sdv release portable --mode onefolder --clean --rebuild-exe`
+  - `python scripts/run.py mstatus|mstart|mstop`
 
 ### Interactive Shell (Recommended)
 - Slash-command shell (no command memorization):
