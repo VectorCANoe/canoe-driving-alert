@@ -21,7 +21,7 @@
 - 상단 표의 `Bit no.`는 가독성을 위해 범위 표기(예: `0~7`, `8~15`)를 사용하되, 상단 열 구성은 공식 샘플 구조를 유지한다.
 - 상단 표의 `signal name`은 0304 표준 변수명(`vehicleSpeed` 등) 기준으로 작성하고, 코드/런타임 별칭(`g*`)은 하단 보강표에서만 관리한다.
 - 0304에 아직 등재되지 않은 Vehicle Baseline 확장 신호는 DBC 원본 신호명(`AccelPedal`, `DriveMode` 등)으로 표기한다.
-- 옵션1 아키텍처를 고정한다: `중앙 경고코어 + Ethernet 백본(ETH_SW) + 도메인 게이트웨이 + 도메인 CAN`.
+- 옵션1 아키텍처를 고정한다: `중앙 경고코어 + Ethernet 논리 백본(실제 forwarding은 SIL 네트워크 스택/실차 스위치, ETH_SW는 health/freshness monitor) + 도메인 게이트웨이 + 도메인 CAN`.
 - 멀티버스 운영 원칙: 일반 기능 노드는 단일 버스 소속을 원칙으로 하며 도메인 경계 전달은 GW/Router가 담당한다. 테스터/검증 노드는 예외적으로 멀티버스 연결을 허용하되 가능하면 버스별 분리 운용을 우선한다.
 - Validation Harness 역할 분리: `VAL_SCENARIO_CTRL`는 E2E 통합 주입/관찰을 위한 멀티버스 예외 노드, `VAL_BASELINE_CTRL`는 Chassis 단일버스 baseline 결과 집계 노드로 고정한다.
 - 인터페이스 정의 단위는 도메인명이 아니라 메시지 계약 단위이며 최소 계약 항목은 `Message Name/ID/DLC/주기(또는 Event)/Timeout/Owner`로 관리한다.
@@ -411,7 +411,7 @@
 | Infotainment CAN | INFOTAINMENT_GW, IVI_GW | NAV_CTX_MGR, CLU_HMI_CTRL, CLU_BASE_CTRL | `canoe/databases/infotainment_can.dbc` | 0x2A3, 0x280~0x288, 0x289~0x295 | Flow_003, Flow_008, Flow_104, Flow_105, Flow_203, Flow_205 |
 | ADAS Domain CAN | ETH_SW | ADAS 소유 상태/위험도/객체 확장 프레임 운반(중재 결과 포함) | `canoe/databases/adas_can.dbc` | 0x1C1, 0x206, 0x1C3~0x1C7 | Flow_120, Flow_121, Flow_130~Flow_132, Flow_201(일부) |
 | ETH Backbone CAN Stub | ETH_SW | EMS/경계/객체안전 프레임 대체 운반(라이선스 제약 대응) | `canoe/databases/eth_backbone_can_stub.dbc` | 0x1C0, 0x1C2, 0x111, 0x1C8 | Flow_004, Flow_005, Flow_006, Flow_124, Flow_133 |
-| Ethernet UDP | ETH_SW | EMS_ALERT(내부: EMS_POLICE_TX/EMS_AMB_TX/EMS_ALERT_RX), WARN_ARB_MGR, GW 집합 | `canoe/docs/operations/ETH_INTERFACE_CONTRACT.md` | 0x510/0x511/0x512/0xE100/0xE200 | Flow_004, Flow_005, Flow_006 |
+| Ethernet UDP | ETH_SW(health/freshness monitor) | EMS_ALERT(내부: EMS_POLICE_TX/EMS_AMB_TX/EMS_ALERT_RX), WARN_ARB_MGR, GW 집합(실제 forwarding은 SIL 네트워크 스택/실차 스위치) | `canoe/docs/operations/ETH_INTERFACE_CONTRACT.md` | 0x510/0x511/0x512/0xE100/0xE200 | Flow_004, Flow_005, Flow_006 |
 
 ---
 
@@ -494,7 +494,7 @@
 - `selectedAlertLevel/selectedAlertType -> frmClusterWarningMsg(0x280)` 송신 Flow가 존재해야 한다.
 - `ETH_EmergencyAlert(0xE100)` 송신/수신/해제 Flow가 존재해야 한다.
 - 타임아웃(1000ms) 해제 Flow가 존재해야 한다.
-- `ETH_SW` 경유 신호가 `BODY_GW/IVI_GW`에서 CAN으로 분배되는 Flow가 존재해야 한다.
+- `ETH_SW` health/freshness 모니터 상태가 정상일 때 `BODY_GW/IVI_GW`에서 CAN 분배 Flow가 성립해야 한다.
 - `speedLimit` 신호가 `Flow_003/Comm_003`에서 `NAV_CTX_MGR`와 `ADAS_WARN_CTRL`로 전달되어야 한다.
 - `Req_101~Req_107`, `Req_109~Req_119`는 `Flow_101~Flow_106`, `Flow_201~Flow_205`에서 누락 없이 연결되어야 한다.
 - `Req_120~Req_121`, `Req_123`, `Req_125~Req_129`는 `Flow_120~Flow_124`로 구현 추적을 유지하고, 변경 시 0303/0304/05~07을 동일 커밋으로 동기화한다.

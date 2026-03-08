@@ -23,7 +23,7 @@
 - 상단 표의 `Signal`은 0304 표준 변수명(`vehicleSpeed` 등) 기준으로 작성하고, 코드/런타임 별칭(`g*`)은 하단 보강표에서만 관리한다.
 - 0304에 아직 등재되지 않은 Vehicle Baseline 확장 신호는 DBC 원본 신호명(`AccelPedal`, `DriveMode` 등)으로 표기한다.
 - CAN 통신 원본은 계층 분리로 관리한다: 도메인 프로파일은 `canoe/databases/chassis_can.dbc`, `canoe/databases/powertrain_can.dbc`, `canoe/databases/body_can.dbc`, `canoe/databases/infotainment_can.dbc`, `canoe/databases/adas_can.dbc`, `canoe/databases/eth_backbone_can_stub.dbc`를 사용하고, Validation 결과 프레임(`0x2A5`,`0x2A6`)은 `chassis_can.dbc`에 통합 관리한다. Ethernet 논리 계약은 `canoe/docs/operations/ETH_INTERFACE_CONTRACT.md`를 사용한다.
-- 본 설계는 Ethernet 백본(`ETH_SW`) + 도메인 게이트웨이(`CHS_GW`, `INFOTAINMENT_GW`, `BODY_GW`, `IVI_GW`) + 도메인 CAN 분배 구조를 사용한다.
+- 본 설계는 Ethernet 논리 백본 + 도메인 게이트웨이(`CHS_GW`, `INFOTAINMENT_GW`, `BODY_GW`, `IVI_GW`) + 도메인 CAN 분배 구조를 사용하며, active SIL profile에서 `ETH_SW`는 forwarding switch가 아니라 health/freshness monitor로 동작한다.
 - 멀티버스 운영 원칙: 일반 기능 노드는 단일 버스 소속을 원칙으로 하며 도메인 간 전달은 게이트웨이 경유를 기본으로 한다. 테스터/검증 노드는 예외적으로 멀티버스 연결을 허용하되 가능하면 버스별 분리 운용을 우선한다.
 - Validation Harness 역할 분리: `VAL_SCENARIO_CTRL`는 E2E 통합 주입/관찰을 위한 멀티버스 예외 노드, `VAL_BASELINE_CTRL`는 Chassis 단일버스 baseline 결과 집계 노드로 고정한다.
 - 인터페이스 정의 단위는 도메인명이 아니라 메시지 계약 단위이며 최소 계약 항목은 `Message/Identifier/DLC/주기(또는 Event)/Timeout/Owner`로 관리한다.
@@ -443,7 +443,7 @@
 | Comm_103 | Flow_103 | Func_106, Func_107, Func_140, Func_142 | Req_106, Req_107, Req_140, Req_142 | frmHazardControlMsg(0x261), frmWindowControlMsg(0x262), frmSeatBeltStateMsg(0x267), frmCabinAirStateMsg(0x268) | CAN(Body) | 100ms |
 | Comm_104 | Flow_104 | Func_109, Func_146, Func_154 | Req_109, Req_146, Req_154 | frmClusterBaseStateMsg(0x281), frmClusterThemeMsg(0x286), frmHmiPopupStateMsg(0x287) | CAN(Infotainment) | 50ms |
 | Comm_105 | Flow_105 | Func_110, Func_111, Func_141, Func_149, Func_151 | Req_110, Req_111, Req_141, Req_149, Req_151 | frmPowertrainGatewayMsg(0x109), frmVehicleModeMsg(0x10A), frmPowerLimitMsg(0x10B), frmCruiseStateMsg(0x10C), frmChassisHealthMsg(0x103), frmBodyHealthMsg(0x269), frmInfotainmentHealthMsg(0x288) | CAN(도메인 경계/라우팅) | 100ms |
-| Comm_106 | Flow_106 | Func_112 | Req_112 | frmTestResultMsg(0x2A5) -> frmBaseTestResultMsg(0x2A6) | CAN(Chassis Validation frame, VAL_SCENARIO_CTRL -> VAL_BASELINE_CTRL) | Event |
+| Comm_106 | Flow_106 | Func_112 | Req_112 | VAL_SCENARIO_CTRL -> frmTestResultMsg(0x2A5) -> VAL_BASELINE_CTRL -> frmBaseTestResultMsg(0x2A6) | CAN(Chassis Validation frame, VAL_SCENARIO_CTRL -> VAL_BASELINE_CTRL) | Event |
 
 - 주의: `Comm_101~Comm_106`은 도메인 분리 DBC(`*_can.dbc`)와 동기화된 확정 Comm 세트다. 라우팅 동작 변경 시 0302/0304와 함께 갱신한다.
 
@@ -509,7 +509,7 @@
 - `Comm_001~Comm_009`, `Comm_101~Comm_106`, `Comm_201~Comm_205`는 `0304_System_Variables.md` Var 추적표와 동기화되어야 한다.
 - `EmergencyAlert` Active/Clear 신호가 1000ms 타임아웃 규칙과 일치해야 한다.
 - `selectedAlertLevel/selectedAlertType` 기반 Ambient/Cluster 출력 Comm이 모두 존재해야 한다.
-- `ETH_SW` 경유 Ethernet 신호가 각 도메인 게이트웨이에서 CAN 메시지로 정상 변환되어야 한다.
+- `ETH_SW` health/freshness 모니터 상태가 정상일 때 Ethernet 신호가 각 도메인 게이트웨이에서 CAN 메시지로 정상 변환되어야 한다.
 - `speedLimit` 신호는 Comm_003에서 NAV_CTX_MGR와 ADAS_WARN_CTRL까지 연계되어야 한다.
 - `Req_101~Req_107`, `Req_109~Req_119`는 Comm_101~Comm_106, Comm_201~Comm_205에서 누락 없이 연결되어야 한다.
 - `Req_120~Req_121`, `Req_123`, `Req_125~Req_129`는 Comm_120~Comm_124 구현 체인으로 추적하고, 변경 시 0302/0304/05~07을 동일 커밋으로 동기화한다.

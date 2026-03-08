@@ -62,6 +62,11 @@
 | 36 | CoreState | e2eHealthState | uint32 | 0 | 2 | 0 | E2E 경로 헬스 상태 |
 | 37 | Core | brakePedalNorm | uint32 | 0 | 100 | 0 | CHS_GW에서 정규화한 브레이크 입력 |
 | 38 | Test | forceFailSafe | uint32 | 0 | 1 | 0 | Fail-safe 강제 주입(Validation-only) |
+| 49 | Test | displayModeSetting | uint32 | 0 | 2 | 0 | 표시 모드 수동 설정 입력(Validation-only) |
+| 50 | Test | alertVolumeSetting | uint32 | 0 | 100 | 50 | 경고 음량 수동 설정 입력(Validation-only) |
+| 51 | Test | seatBeltOverride | uint32 | 0 | 2 | 0 | 안전벨트 상태 오버라이드 입력(Validation-only) |
+| 52 | Test | historyQueryOffset | uint32 | 0 | 255 | 0 | 경고 이력 조회 오프셋 입력(Validation-only) |
+| 53 | Test | historyQueryCode | uint32 | 0 | 65535 | 0 | 경고 이력 조회 코드 입력(Validation-only) |
 | 39 | Core | objectTrackValid | uint32 | 0 | 1 | 0 | 객체 추적 유효 플래그 |
 | 40 | Core | objectRange | uint32 | 0 | 500 | 0 | 대표 위험 객체 상대 거리(m) |
 | 41 | Core | objectRelSpeed | int32 | -200 | 200 | 0 | 대표 위험 객체 상대 속도(km/h) |
@@ -332,6 +337,11 @@
 | 24 | Cluster | warningTextCode | warningTextCode_CAN_OUT | CAN_OUT | WARN_ARB_MGR -> ETH_SW -> IVI_GW -> CLU_HMI_CTRL |
 | 25 | Test | testScenario | testScenario_INPUT | TEST | VAL_SCENARIO_CTRL Panel Input (Validation-only) |
 | 26 | Test | scenarioResult | scenarioResult_OUTPUT | TEST | VAL_SCENARIO_CTRL Test Result Output (Validation-only) |
+| 49 | Test | displayModeSetting | displayModeSetting_TEST_INPUT | TEST | Panel/Test 입력 -> BODY_GW, IVI_GW, CLU_HMI_CTRL(Validation-only) |
+| 50 | Test | alertVolumeSetting | alertVolumeSetting_TEST_INPUT | TEST | Panel/Test 입력 -> BODY_GW, IVI_GW, CLU_HMI_CTRL(Validation-only) |
+| 51 | Test | seatBeltOverride | seatBeltOverride_TEST_INPUT | TEST | Panel/Test 입력 -> BODY_GW, WARN_ARB_MGR(Validation-only) |
+| 52 | Test | historyQueryOffset | historyQueryOffset_TEST_INPUT | TEST | Panel/Test 입력 -> CLU_HMI_CTRL(Validation-only) |
+| 53 | Test | historyQueryCode | historyQueryCode_TEST_INPUT | TEST | Panel/Test 입력 -> CLU_HMI_CTRL(Validation-only) |
 | 27 | CoreState | lastEmergencyRxMs | lastEmergencyRxMs | CORE_STATE | EMS_ALERT 내부 상태 |
 | 28 | CoreState | duplicatePopupGuard | duplicatePopupGuard | CORE_STATE | CLU_HMI_CTRL 내부 상태 |
 | 29 | CoreState | arbitrationSnapshotId | arbitrationSnapshotId | CORE_STATE | WARN_ARB_MGR 내부 상태 |
@@ -429,7 +439,7 @@
 | Var_021 | ambientMode | ambientMode_CAN_OUT | CAN_OUT | BODY_GW/AMBIENT_CTRL | Comm_007 | Flow_007 | Func_008, Func_009, Func_013, Func_014, Func_015, Func_016, Func_033, Func_034, Func_035, Func_036, Func_037, Func_038, Func_039, Func_152 | Req_008, Req_009, Req_013, Req_014, Req_015, Req_016, Req_033, Req_034, Req_035, Req_037, Req_152 | 50ms 출력 주기 갱신(채널 대체 정책 반영 포함) |
 | Var_022 | ambientColor | ambientColor_CAN_OUT | CAN_OUT | BODY_GW/AMBIENT_CTRL | Comm_007 | Flow_007 | Func_014, Func_035, Func_037, Func_038, Func_039 | Req_014, Req_035, Req_037 | 50ms 출력 주기 갱신 |
 | Var_023 | ambientPattern | ambientPattern_CAN_OUT | CAN_OUT | BODY_GW/AMBIENT_CTRL | Comm_007 | Flow_007 | Func_014, Func_015, Func_036, Func_037, Func_038, Func_039 | Req_014, Req_015, Req_035, Req_037 | 50ms 출력 주기 갱신 |
-| Var_024 | warningTextCode | warningTextCode_CAN_OUT | CAN_OUT | IVI_GW/CLU_HMI_CTRL | Comm_008 | Flow_008 | Func_005, Func_019~Func_021, Func_026, Func_040, Func_143, Func_145, Func_146, Func_147, Func_152, Func_153, Func_154, Func_155 | Req_005, Req_019~Req_021, Req_026, Req_040, Req_143, Req_145, Req_146, Req_147, Req_152, Req_153, Req_154, Req_155 | 50ms 출력 주기 갱신(대체 출력/인지성 보호/과밀 억제/동기 복원 포함) |
+| Var_024 | warningTextCode | warningTextCode_CAN_OUT | CAN_OUT | WARN_ARB_MGR(원천), IVI_GW(프레임 생성), CLU_HMI_CTRL(미러/표시 상태) | Comm_008 | Flow_008 | Func_005, Func_019~Func_021, Func_026, Func_040, Func_143, Func_145, Func_146, Func_147, Func_152, Func_153, Func_154, Func_155 | Req_005, Req_019~Req_021, Req_026, Req_040, Req_143, Req_145, Req_146, Req_147, Req_152, Req_153, Req_154, Req_155 | 50ms 출력 주기 갱신(대체 출력/인지성 보호/과밀 억제/동기 복원 포함) |
 | Var_025 | testScenario | testScenario_INPUT | TEST | VAL_SCENARIO_CTRL | Comm_009 | Flow_009 | Func_041, Func_042 | Req_041, Req_042 | 시나리오 시작 시 설정 |
 | Var_026 | scenarioResult | scenarioResult_OUTPUT | TEST | VAL_SCENARIO_CTRL | Comm_009 | Flow_009 | Func_043 | Req_043 | 시나리오 종료 시 판정 기록 |
 | Var_027 | lastEmergencyRxMs | lastEmergencyRxMs | CORE_STATE | EMS_ALERT | Comm_004, Comm_005, Comm_006 | Flow_004, Flow_005, Flow_006 | Func_023, Func_024, Func_149 | Req_023, Req_024, Req_149 | E100 수신 시각(ms) 기록, 1000ms 타임아웃 기준 및 입력 신선도 보호 기준 |
@@ -488,7 +498,7 @@
 | Var_152 | MediaSource | mediaSource_CAN_BASE | CAN_BASE | INFOTAINMENT_GW/IVI_GW | Comm_104 | Flow_104 | Func_109 | Req_109 | 50ms 주기 수신 시 갱신 |
 | Var_153 | MediaState | mediaState_CAN_BASE | CAN_BASE | INFOTAINMENT_GW/IVI_GW | Comm_104 | Flow_104 | Func_109 | Req_109 | 50ms 주기 수신 시 갱신 |
 | Var_154 | MuteState | muteState_CAN_BASE | CAN_BASE | INFOTAINMENT_GW/IVI_GW | Comm_104 | Flow_104 | Func_109 | Req_109 | 50ms 주기 수신 시 갱신 |
-| Var_155 | VolumeLevel | volumeLevel_CAN_BASE | CAN_BASE | INFOTAINMENT_GW/IVI_GW | Comm_104 | Flow_104 | Func_109, Func_147 | Req_109, Req_147 | 50ms 주기 수신 시 갱신 |
+| Var_155 | VolumeLevel | volumeLevel_CAN_BASE | CAN_BASE | IVI_GW(프레임 생성), CLU_HMI_CTRL(미러/표시 상태) | Comm_104 | Flow_104 | Func_109, Func_147 | Req_109, Req_147 | 50ms 주기 수신 시 갱신 |
 | Var_156 | CallState | callState_CAN_BASE | CAN_BASE | INFOTAINMENT_GW/IVI_GW | Comm_104 | Flow_104 | Func_109 | Req_109 | 50ms 주기 수신 시 갱신 |
 | Var_157 | MicMute | micMute_CAN_BASE | CAN_BASE | INFOTAINMENT_GW/IVI_GW | Comm_104 | Flow_104 | Func_109 | Req_109 | 50ms 주기 수신 시 갱신 |
 | Var_158 | SignalQuality | signalQuality_CAN_BASE | CAN_BASE | INFOTAINMENT_GW/IVI_GW | Comm_104 | Flow_104 | Func_109 | Req_109 | 50ms 주기 수신 시 갱신 |
@@ -497,11 +507,11 @@
 | Var_161 | GuideType | guideType_CAN_BASE | CAN_BASE | INFOTAINMENT_GW/IVI_GW | Comm_104 | Flow_104 | Func_109 | Req_109 | 50ms 주기 수신 시 갱신 |
 | Var_162 | RouteProgress | routeProgress_CAN_BASE | CAN_BASE | INFOTAINMENT_GW/IVI_GW | Comm_104 | Flow_104 | Func_109 | Req_109 | 50ms 주기 수신 시 갱신 |
 | Var_163 | EtaMinutes | etaMinutes_CAN_BASE | CAN_BASE | INFOTAINMENT_GW/IVI_GW | Comm_104 | Flow_104 | Func_109 | Req_109 | 50ms 주기 수신 시 갱신 |
-| Var_164 | ThemeMode | themeMode_CAN_BASE | CAN_BASE | INFOTAINMENT_GW/IVI_GW | Comm_104 | Flow_104 | Func_109, Func_146 | Req_109, Req_146 | 50ms 주기 수신 시 갱신 |
+| Var_164 | ThemeMode | themeMode_CAN_BASE | CAN_BASE | IVI_GW(프레임 생성), CLU_HMI_CTRL(미러/표시 상태) | Comm_104 | Flow_104 | Func_109, Func_146 | Req_109, Req_146 | 50ms 주기 수신 시 갱신 |
 | Var_165 | ClusterBrightness | clusterBrightness_CAN_BASE | CAN_BASE | INFOTAINMENT_GW/IVI_GW | Comm_104 | Flow_104 | Func_109 | Req_109 | 50ms 주기 수신 시 갱신 |
-| Var_166 | PopupType | popupType_CAN_BASE | CAN_BASE | INFOTAINMENT_GW/IVI_GW | Comm_104 | Flow_104 | Func_109, Func_146, Func_154 | Req_109, Req_146, Req_154 | 50ms 주기 수신 시 갱신(팝업 과밀 억제 입력 포함) |
-| Var_167 | PopupPriority | popupPriority_CAN_BASE | CAN_BASE | INFOTAINMENT_GW/IVI_GW | Comm_104 | Flow_104 | Func_109, Func_146, Func_154 | Req_109, Req_146, Req_154 | 50ms 주기 수신 시 갱신(팝업 과밀 억제 입력 포함) |
-| Var_168 | PopupActive | popupActive_CAN_BASE | CAN_BASE | INFOTAINMENT_GW/IVI_GW | Comm_104 | Flow_104 | Func_109, Func_146, Func_154 | Req_109, Req_146, Req_154 | 50ms 주기 수신 시 갱신(팝업 과밀 억제 입력 포함) |
+| Var_166 | PopupType | popupType_CAN_BASE | CAN_BASE | IVI_GW(프레임 생성), CLU_HMI_CTRL(미러/표시 상태) | Comm_104 | Flow_104 | Func_109, Func_146, Func_154 | Req_109, Req_146, Req_154 | 50ms 주기 수신 시 갱신(팝업 과밀 억제 입력 포함) |
+| Var_167 | PopupPriority | popupPriority_CAN_BASE | CAN_BASE | IVI_GW(프레임 생성), CLU_HMI_CTRL(미러/표시 상태) | Comm_104 | Flow_104 | Func_109, Func_146, Func_154 | Req_109, Req_146, Req_154 | 50ms 주기 수신 시 갱신(팝업 과밀 억제 입력 포함) |
+| Var_168 | PopupActive | popupActive_CAN_BASE | CAN_BASE | IVI_GW(프레임 생성), CLU_HMI_CTRL(미러/표시 상태) | Comm_104 | Flow_104 | Func_109, Func_146, Func_154 | Req_109, Req_146, Req_154 | 50ms 주기 수신 시 갱신(팝업 과밀 억제 입력 포함) |
 | Var_169 | InfoAliveCnt | infoAliveCnt_CAN_BASE | CAN_BASE | DOMAIN_ROUTER | Comm_105 | Flow_105 | Func_110, Func_111 | Req_110, Req_111 | 100ms 주기 수신 시 갱신 |
 | Var_170 | InfoDiagState | infoDiagState_CAN_BASE | CAN_BASE | DOMAIN_ROUTER | Comm_105 | Flow_105 | Func_110, Func_111 | Req_110, Req_111 | 100ms 주기 수신 시 갱신 |
 | Var_171 | InfoFailCode | infoFailCode_CAN_BASE | CAN_BASE | DOMAIN_ROUTER | Comm_105 | Flow_105 | Func_110, Func_111 | Req_110, Req_111 | 100ms 주기 수신 시 갱신 |
@@ -601,8 +611,8 @@
 | Var_265 | BodyGatewayRoute | bodyGatewayRoute_CAN_EXT | CAN_EXT | BODY_GW | Comm_202 | Flow_202 | Func_106, Func_107, Func_111, Func_113, Func_114, Func_115, Func_116, Func_117, Func_118 | Req_106, Req_107, Req_111, Req_113, Req_116, Req_118 | 100ms 주기 수신 + Event 발생 시 갱신 |
 | Var_266 | ComfortMode | comfortMode_CAN_EXT | CAN_EXT | BODY_GW | Comm_202 | Flow_202 | Func_106, Func_107, Func_111, Func_113, Func_114, Func_115, Func_116, Func_117, Func_118 | Req_106, Req_107, Req_111, Req_113, Req_116, Req_118 | 100ms 주기 수신 + Event 발생 시 갱신 |
 | Var_267 | ChildSafetyState | childSafetyState_CAN_EXT | CAN_EXT | BODY_GW | Comm_202 | Flow_202 | Func_106, Func_107, Func_111, Func_113, Func_114, Func_115, Func_116, Func_117, Func_118 | Req_106, Req_107, Req_111, Req_113, Req_116, Req_118 | 100ms 주기 수신 + Event 발생 시 갱신 |
-| Var_268 | AudioFocusOwner | audioFocusOwner_CAN_EXT | CAN_EXT | INFOTAINMENT_GW/IVI_GW | Comm_203 | Flow_203 | Func_109, Func_111, Func_119, Func_147, Func_153 | Req_109, Req_111, Req_119, Req_147, Req_153 | 50/100ms 주기 수신 시 갱신(오디오 경합 인지성 보호 입력 포함) |
-| Var_269 | AudioDuckLevel | audioDuckLevel_CAN_EXT | CAN_EXT | INFOTAINMENT_GW/IVI_GW | Comm_203 | Flow_203 | Func_109, Func_111, Func_119, Func_153 | Req_109, Req_111, Req_119, Req_153 | 50/100ms 주기 수신 시 갱신(오디오 경합 인지성 보호 입력 포함) |
+| Var_268 | AudioFocusOwner | audioFocusOwner_CAN_EXT | CAN_EXT | IVI_GW(프레임 생성), CLU_HMI_CTRL(미러/표시 상태) | Comm_203 | Flow_203 | Func_109, Func_111, Func_119, Func_147, Func_153 | Req_109, Req_111, Req_119, Req_147, Req_153 | 50/100ms 주기 수신 시 갱신(오디오 경합 인지성 보호 입력 포함) |
+| Var_269 | AudioDuckLevel | audioDuckLevel_CAN_EXT | CAN_EXT | IVI_GW(프레임 생성), CLU_HMI_CTRL(미러/표시 상태) | Comm_203 | Flow_203 | Func_109, Func_111, Func_119, Func_153 | Req_109, Req_111, Req_119, Req_153 | 50/100ms 주기 수신 시 갱신(오디오 경합 인지성 보호 입력 포함) |
 | Var_270 | VoiceAssistState | voiceAssistState_CAN_EXT | CAN_EXT | INFOTAINMENT_GW/IVI_GW | Comm_203 | Flow_203 | Func_109, Func_111, Func_119 | Req_109, Req_111, Req_119 | 50/100ms 주기 수신 시 갱신 |
 | Var_271 | VoiceWakeSource | voiceWakeSource_CAN_EXT | CAN_EXT | INFOTAINMENT_GW/IVI_GW | Comm_203 | Flow_203 | Func_109, Func_111, Func_119 | Req_109, Req_111, Req_119 | 50/100ms 주기 수신 시 갱신 |
 | Var_272 | MapZoomLevel | mapZoomLevel_CAN_EXT | CAN_EXT | INFOTAINMENT_GW/IVI_GW | Comm_203 | Flow_203 | Func_109, Func_111 | Req_109, Req_111 | 50/100ms 주기 수신 시 갱신 |
@@ -614,23 +624,23 @@
 | Var_278 | TrafficDist | trafficDist_CAN_EXT | CAN_EXT | INFOTAINMENT_GW/IVI_GW | Comm_203 | Flow_203 | Func_109, Func_111 | Req_109, Req_111 | 50/100ms 주기 수신 시 갱신 |
 | Var_279 | ProjectionType | projectionType_CAN_EXT | CAN_EXT | INFOTAINMENT_GW/IVI_GW | Comm_203 | Flow_203 | Func_109, Func_111 | Req_109, Req_111 | 50/100ms 주기 수신 시 갱신 |
 | Var_280 | ProjectionState | projectionState_CAN_EXT | CAN_EXT | INFOTAINMENT_GW/IVI_GW | Comm_203 | Flow_203 | Func_109, Func_111 | Req_109, Req_111 | 50/100ms 주기 수신 시 갱신 |
-| Var_281 | ClusterNotifType | clusterNotifType_CAN_EXT | CAN_EXT | INFOTAINMENT_GW/IVI_GW | Comm_203 | Flow_203 | Func_109, Func_111, Func_145 | Req_109, Req_111, Req_145 | 50/100ms 주기 수신 시 갱신 |
-| Var_282 | ClusterNotifPrio | clusterNotifPrio_CAN_EXT | CAN_EXT | INFOTAINMENT_GW/IVI_GW | Comm_203 | Flow_203 | Func_109, Func_111, Func_145, Func_146, Func_147, Func_153, Func_154, Func_155 | Req_109, Req_111, Req_145, Req_146, Req_147, Req_153, Req_154, Req_155 | 50/100ms 주기 수신 시 갱신(인지성 보호/과밀 억제/채널 동기 출력 포함) |
+| Var_281 | ClusterNotifType | clusterNotifType_CAN_EXT | CAN_EXT | IVI_GW(프레임 생성), CLU_HMI_CTRL(미러/표시 상태) | Comm_203 | Flow_203 | Func_109, Func_111, Func_145 | Req_109, Req_111, Req_145 | 50/100ms 주기 수신 시 갱신 |
+| Var_282 | ClusterNotifPrio | clusterNotifPrio_CAN_EXT | CAN_EXT | IVI_GW(프레임 생성), CLU_HMI_CTRL(미러/표시 상태) | Comm_203 | Flow_203 | Func_109, Func_111, Func_145, Func_146, Func_147, Func_153, Func_154, Func_155 | Req_109, Req_111, Req_145, Req_146, Req_147, Req_153, Req_154, Req_155 | 50/100ms 주기 수신 시 갱신(인지성 보호/과밀 억제/채널 동기 출력 포함) |
 | Var_283 | IviDiagReqId | iviDiagReqId_CAN_EXT | CAN_EXT | VAL_SCENARIO_CTRL | Comm_205 | Flow_205 | Func_112 | Req_112 | Event + 100ms 진단 프레임 수신/송신 시 갱신 |
 | Var_284 | IviDiagReqAct | iviDiagReqAct_CAN_EXT | CAN_EXT | VAL_SCENARIO_CTRL | Comm_205 | Flow_205 | Func_112 | Req_112 | Event + 100ms 진단 프레임 수신/송신 시 갱신 |
 | Var_285 | IviDiagResId | iviDiagResId_CAN_EXT | CAN_EXT | VAL_SCENARIO_CTRL | Comm_205 | Flow_205 | Func_112 | Req_112 | Event + 100ms 진단 프레임 수신/송신 시 갱신 |
 | Var_286 | IviDiagStatus | iviDiagStatus_CAN_EXT | CAN_EXT | VAL_SCENARIO_CTRL | Comm_205 | Flow_205 | Func_112 | Req_112 | Event + 100ms 진단 프레임 수신/송신 시 갱신 |
 | Var_287 | MediaGenre | mediaGenre_CAN_EXT | CAN_EXT | INFOTAINMENT_GW/IVI_GW | Comm_203 | Flow_203 | Func_109, Func_111 | Req_109, Req_111 | 50/100ms 주기 수신 시 갱신 |
 | Var_288 | TrackProgress | trackProgress_CAN_EXT | CAN_EXT | INFOTAINMENT_GW/IVI_GW | Comm_203 | Flow_203 | Func_109, Func_111 | Req_109, Req_111 | 50/100ms 주기 수신 시 갱신 |
-| Var_289 | TtsState | ttsState_CAN_EXT | CAN_EXT | INFOTAINMENT_GW/IVI_GW | Comm_203 | Flow_203 | Func_109, Func_111, Func_119, Func_153 | Req_109, Req_111, Req_119, Req_153 | 50/100ms 주기 수신 시 갱신(오디오 경합 인지성 보호 입력 포함) |
+| Var_289 | TtsState | ttsState_CAN_EXT | CAN_EXT | IVI_GW(프레임 생성), CLU_HMI_CTRL(미러/표시 상태) | Comm_203 | Flow_203 | Func_109, Func_111, Func_119, Func_153 | Req_109, Req_111, Req_119, Req_153 | 50/100ms 주기 수신 시 갱신(오디오 경합 인지성 보호 입력 포함) |
 | Var_290 | TtsLangId | ttsLangId_CAN_EXT | CAN_EXT | INFOTAINMENT_GW/IVI_GW | Comm_203 | Flow_203 | Func_109, Func_111, Func_119 | Req_109, Req_111, Req_119 | 50/100ms 주기 수신 시 갱신 |
 | Var_291 | LteState | lteState_CAN_EXT | CAN_EXT | INFOTAINMENT_GW/IVI_GW | Comm_203 | Flow_203 | Func_109, Func_111 | Req_109, Req_111 | 50/100ms 주기 수신 시 갱신 |
 | Var_292 | WifiState | wifiState_CAN_EXT | CAN_EXT | INFOTAINMENT_GW/IVI_GW | Comm_203 | Flow_203 | Func_109, Func_111 | Req_109, Req_111 | 50/100ms 주기 수신 시 갱신 |
 | Var_293 | BtState | btState_CAN_EXT | CAN_EXT | INFOTAINMENT_GW/IVI_GW | Comm_203 | Flow_203 | Func_109, Func_111 | Req_109, Req_111 | 50/100ms 주기 수신 시 갱신 |
 | Var_294 | CpuLoad | cpuLoad_CAN_EXT | CAN_EXT | INFOTAINMENT_GW/IVI_GW | Comm_203 | Flow_203 | Func_109, Func_111 | Req_109, Req_111 | 50/100ms 주기 수신 시 갱신 |
 | Var_295 | MemLoad | memLoad_CAN_EXT | CAN_EXT | INFOTAINMENT_GW/IVI_GW | Comm_203 | Flow_203 | Func_109, Func_111 | Req_109, Req_111 | 50/100ms 주기 수신 시 갱신 |
-| Var_296 | ClusterSyncState | clusterSyncState_CAN_EXT | CAN_EXT | INFOTAINMENT_GW/IVI_GW | Comm_203 | Flow_203 | Func_109, Func_111, Func_155 | Req_109, Req_111, Req_155 | 50/100ms 주기 수신 시 갱신(채널 동기 복원 입력 포함) |
-| Var_297 | ClusterSyncSeq | clusterSyncSeq_CAN_EXT | CAN_EXT | INFOTAINMENT_GW/IVI_GW | Comm_203 | Flow_203 | Func_109, Func_111, Func_155 | Req_109, Req_111, Req_155 | 50/100ms 주기 수신 시 갱신(채널 동기 복원 입력 포함) |
+| Var_296 | ClusterSyncState | clusterSyncState_CAN_EXT | CAN_EXT | IVI_GW(프레임 생성), CLU_HMI_CTRL(미러/표시 상태) | Comm_203 | Flow_203 | Func_109, Func_111, Func_155 | Req_109, Req_111, Req_155 | 50/100ms 주기 수신 시 갱신(채널 동기 복원 입력 포함) |
+| Var_297 | ClusterSyncSeq | clusterSyncSeq_CAN_EXT | CAN_EXT | IVI_GW(프레임 생성), CLU_HMI_CTRL(미러/표시 상태) | Comm_203 | Flow_203 | Func_109, Func_111, Func_155 | Req_109, Req_111, Req_155 | 50/100ms 주기 수신 시 갱신(채널 동기 복원 입력 포함) |
 | Var_298 | EngineTorqueAct | engineTorqueAct_CAN_EXT | CAN_EXT | DOMAIN_ROUTER | Comm_204 | Flow_204 | Func_101, Func_102, Func_110 | Req_101, Req_102, Req_110 | 100ms 주기 수신 시 갱신 |
 | Var_299 | EngineTorqueReq | engineTorqueReq_CAN_EXT | CAN_EXT | DOMAIN_ROUTER | Comm_204 | Flow_204 | Func_101, Func_102, Func_110 | Req_101, Req_102, Req_110 | 100ms 주기 수신 시 갱신 |
 | Var_300 | EngineLoad | engineLoad_CAN_EXT | CAN_EXT | DOMAIN_ROUTER | Comm_204 | Flow_204 | Func_101, Func_102, Func_110 | Req_101, Req_102, Req_110 | 100ms 주기 수신 시 갱신 |
@@ -706,6 +716,8 @@
 | Namespace/Name | 용도 | 코드 기준 위치 | 관리 원칙 |
 |---|---|---|---|
 | `V2X/policeDispatch`, `V2X/ambulanceDispatch` | SIL Panel 수동 긴급 이벤트 주입 | `EMS_POLICE_TX.can`, `EMS_AMB_TX.can` | 제품 Req 체인 미연계(검증 자극 전용) |
+| `Test/displayModeSetting`, `Test/alertVolumeSetting`, `Test/seatBeltOverride` | 표시/음량/안전벨트 검증 시나리오 제어 입력 | `BODY_GW.can`, `IVI_GW.can`, `CLU_HMI_CTRL.can` | 제품 Req 체인 미연계(Validation-only runtime control) |
+| `Test/historyQueryOffset`, `Test/historyQueryCode` | 경고 이력 조회 오프셋/코드 필터 제어 입력 | `CLU_HMI_CTRL.can` | 제품 Req 체인 미연계(Validation-only runtime control) |
 | `UiRender/*` | 패널 렌더링 파생 상태 전달 | `IVI_GW.can` | 제품 Req 체인 미연계(렌더 전용) |
 
 - 본 표 항목은 `00c`의 `Verification-Harness` 분류를 따르며, 01/03의 제품 기능 요구 누락으로 판정하지 않는다.

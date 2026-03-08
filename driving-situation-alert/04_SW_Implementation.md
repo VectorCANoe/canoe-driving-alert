@@ -32,6 +32,7 @@
 - 약어 충돌 방지 규칙: `EMS_AMB_TX`의 `AMB`는 `Ambulance` 의미의 구현 literal이며, `Ambient`는 항상 `AMBIENT` 풀토큰으로 표기한다.
 - `project.sysvars`의 `UiRender/*`, `Test/*`, `V2X/policeDispatch`, `V2X/ambulanceDispatch`는 Verification-Harness 입력/렌더 변수로 관리하며 제품 Req 체인(01/03/05~07)과 분리한다.
 - CANoe.CAN 환경에서는 Ethernet 일부 경로(E100/E200 모니터링 및 V2 확장)가 CAN-stub(0x1C0/0x1C1/0x1C2/0x1C3/0x1C4/0x111)로 대체 운반되며, 서비스 해석은 Ethernet 논리 계약 SoT를 우선한다.
+- active SIL runtime은 Ethernet cutover 이전 호환 운용을 위해 일부 shortcut 경로(`BODY_GW/IVI_GW`의 `Core::*` 기반 `selectedAlert` 소비, `EMS_ALERT_RX`의 `@V2X::*` fallback)를 유지하며, 본 항목은 현 사이클 결함이 아니라 cutover backlog로 관리한다.
 - ADAS 객체 인지 확장(`Req_130~Req_139`)은 `Func_130~Func_139`, `Flow_130~Flow_133`, `Comm_130~Comm_133`, `Var_330~Var_339` Pre-Activation(설계 선반영) 상태로 유지하고 구현 착수 시 0302/0303/0304/05/06/07을 동일 커밋으로 동기화한다.
 - 차량 경보 편의 확장(`Req_140~Req_147`)은 `Func_140~Func_147`, `Flow_103/104/105/203 + Flow_006/008`, `Comm_103/104/105/203 + Comm_006/008`, `Var_133/138~141/155/164/166~168/191~193/268/281/282` Pre-Activation(설계 선반영) 상태로 유지하고 구현 착수 시 0302/0303/0304/05/06/07을 동일 커밋으로 동기화한다.
 - 경고 강건성·인지성 확장(`Req_148~Req_155`)은 `Func_148~Func_155`, `Flow_130/133 + Flow_006/007/008 + Flow_104/105/124/203`, `Comm_130/133 + Comm_006/007/008 + Comm_104/105/124/203`, `Var_330/333/334 + Var_016/020/021/024/027/028 + Var_180/326/327/328 + Var_166/167/168/268/269/289/296/297` Pre-Activation(설계 선반영) 상태로 유지하고 구현 착수 시 0302/0303/0304/05/06/07을 동일 커밋으로 동기화한다.
@@ -76,6 +77,14 @@ Emergency Source (logical terminal)
 | 현재 프로젝트 범위 적합성 | 높음 | 과설계 위험 | Option 1 유지 |
 
 - 결론: 현재 스코프(멘토링/포트폴리오/SIL 검증)에서는 **Option 1이 최적안**이며, 장애 허용성 강화가 필요해지는 시점(예: HIL/실차 이전)에만 Option 1A를 도입한다.
+
+---
+
+## 1.3 SIL Shortcut Disclosure (Ethernet Cutover Backlog)
+
+- `BODY_GW`/`IVI_GW`는 하위 출력 경로에서 `selectedAlert`를 `Core::*`로 직접 소비하는 shortcut을 일부 유지한다.
+- `EMS_ALERT_RX`는 `on message frmEmergencyBroadcastMsg`를 primary로 사용하며 `@V2X::*` timer polling fallback을 호환 경로로 유지한다.
+- 위 두 항목은 active SIL 운용 호환성 확보 목적의 임시 경로이며, 현 사이클 결함(defect)이 아니라 Ethernet cutover backlog로 분류한다.
 
 ---
 
@@ -256,7 +265,7 @@ Emergency Source (logical terminal)
 | Var_021 | ambientMode | WARN_ARB_MGR, BODY_GW, AMBIENT_CTRL | Flow_007 / Comm_007 |
 | Var_022 | ambientColor | BODY_GW, AMBIENT_CTRL | Flow_007 / Comm_007 |
 | Var_023 | ambientPattern | BODY_GW, AMBIENT_CTRL | Flow_007 / Comm_007 |
-| Var_024 | warningTextCode | WARN_ARB_MGR, IVI_GW, CLU_HMI_CTRL | Flow_008 / Comm_008 |
+| Var_024 | warningTextCode | WARN_ARB_MGR(원천), IVI_GW(프레임 생성), CLU_HMI_CTRL(미러/표시 상태) | Flow_008 / Comm_008 |
 | Var_025 | testScenario | VAL_SCENARIO_CTRL | Flow_009 / Comm_009 |
 | Var_026 | scenarioResult | VAL_SCENARIO_CTRL | Flow_009 / Comm_009 |
 | Var_027 | lastEmergencyRxMs | EMS_ALERT_RX, WARN_ARB_MGR | Flow_006 / Comm_006 |
@@ -267,22 +276,22 @@ Emergency Source (logical terminal)
 | Var_139 | PassengerSeatBelt | BODY_GW, WARN_ARB_MGR | Flow_103 / Comm_103 |
 | Var_140 | RearSeatBelt | BODY_GW | Flow_103 / Comm_103 |
 | Var_141 | SeatBeltWarnLvl | BODY_GW, WARN_ARB_MGR | Flow_103 / Comm_103 |
-| Var_155 | VolumeLevel | INFOTAINMENT_GW, CLU_HMI_CTRL | Flow_104 / Comm_104 |
-| Var_164 | ThemeMode | INFOTAINMENT_GW, CLU_HMI_CTRL | Flow_104 / Comm_104 |
-| Var_166 | PopupType | INFOTAINMENT_GW, CLU_HMI_CTRL | Flow_104 / Comm_104 |
-| Var_167 | PopupPriority | INFOTAINMENT_GW, CLU_HMI_CTRL | Flow_104 / Comm_104 |
-| Var_168 | PopupActive | INFOTAINMENT_GW, CLU_HMI_CTRL | Flow_104 / Comm_104 |
+| Var_155 | VolumeLevel | IVI_GW(프레임 생성), CLU_HMI_CTRL(미러/표시 상태) | Flow_104 / Comm_104 |
+| Var_164 | ThemeMode | IVI_GW(프레임 생성), CLU_HMI_CTRL(미러/표시 상태) | Flow_104 / Comm_104 |
+| Var_166 | PopupType | IVI_GW(프레임 생성), CLU_HMI_CTRL(미러/표시 상태) | Flow_104 / Comm_104 |
+| Var_167 | PopupPriority | IVI_GW(프레임 생성), CLU_HMI_CTRL(미러/표시 상태) | Flow_104 / Comm_104 |
+| Var_168 | PopupActive | IVI_GW(프레임 생성), CLU_HMI_CTRL(미러/표시 상태) | Flow_104 / Comm_104 |
 | Var_180 | BoundaryStatus | DOMAIN_ROUTER, DOMAIN_BOUNDARY_MGR | Flow_105,Flow_124 / Comm_105,Comm_124 |
 | Var_191 | DriveMode | DOMAIN_ROUTER, WARN_ARB_MGR | Flow_105 / Comm_105 |
 | Var_192 | EcoMode | DOMAIN_ROUTER, WARN_ARB_MGR | Flow_105 / Comm_105 |
 | Var_193 | SportMode | DOMAIN_ROUTER, WARN_ARB_MGR | Flow_105 / Comm_105 |
-| Var_268 | AudioFocusOwner | INFOTAINMENT_GW, CLU_HMI_CTRL | Flow_203 / Comm_203 |
-| Var_269 | AudioDuckLevel | INFOTAINMENT_GW, CLU_HMI_CTRL | Flow_203 / Comm_203 |
-| Var_281 | ClusterNotifType | INFOTAINMENT_GW, CLU_HMI_CTRL | Flow_203 / Comm_203 |
-| Var_282 | ClusterNotifPrio | INFOTAINMENT_GW, CLU_HMI_CTRL | Flow_203 / Comm_203 |
-| Var_289 | TtsState | INFOTAINMENT_GW, CLU_HMI_CTRL | Flow_203 / Comm_203 |
-| Var_296 | ClusterSyncState | INFOTAINMENT_GW, CLU_HMI_CTRL | Flow_203 / Comm_203 |
-| Var_297 | ClusterSyncSeq | INFOTAINMENT_GW, CLU_HMI_CTRL | Flow_203 / Comm_203 |
+| Var_268 | AudioFocusOwner | IVI_GW(프레임 생성), CLU_HMI_CTRL(미러/표시 상태) | Flow_203 / Comm_203 |
+| Var_269 | AudioDuckLevel | IVI_GW(프레임 생성), CLU_HMI_CTRL(미러/표시 상태) | Flow_203 / Comm_203 |
+| Var_281 | ClusterNotifType | IVI_GW(프레임 생성), CLU_HMI_CTRL(미러/표시 상태) | Flow_203 / Comm_203 |
+| Var_282 | ClusterNotifPrio | IVI_GW(프레임 생성), CLU_HMI_CTRL(미러/표시 상태) | Flow_203 / Comm_203 |
+| Var_289 | TtsState | IVI_GW(프레임 생성), CLU_HMI_CTRL(미러/표시 상태) | Flow_203 / Comm_203 |
+| Var_296 | ClusterSyncState | IVI_GW(프레임 생성), CLU_HMI_CTRL(미러/표시 상태) | Flow_203 / Comm_203 |
+| Var_297 | ClusterSyncSeq | IVI_GW(프레임 생성), CLU_HMI_CTRL(미러/표시 상태) | Flow_203 / Comm_203 |
 | Var_320 | proximityRiskLevel | ADAS_WARN_CTRL | Flow_120 / Comm_120 |
 | Var_321 | decelAssistReq | WARN_ARB_MGR | Flow_121 / Comm_121 |
 | Var_322 | selectedAlertLevel | WARN_ARB_MGR | Flow_122 / Comm_122 |
