@@ -45,10 +45,10 @@ They are retained because they carry a distinct runtime responsibility.
 
 | Runtime Node | Surface ECU | Why It Stays Split |
 | --- | --- | --- |
-| `CHS_GW` | `CGW` | input normalization and chassis gateway boundary |
-| `DOMAIN_ROUTER` | `CGW` | routing policy and cross-domain powertrain relay |
-| `DOMAIN_BOUNDARY_MGR` | `CGW` | domain health, e2e state, fail-safe authority |
-| `ETH_SW` | `ETH_BACKBONE` | Ethernet-path freshness/health monitor |
+| `CHS_GW` | `CHASSIS_DOMAIN_CTRL` | chassis-domain normalization, state synthesis, and chassis diagnostic boundary |
+| `DOMAIN_ROUTER` | `PT_DOMAIN_CTRL` | powertrain-domain routing policy, drive mode, and powertrain relay |
+| `DOMAIN_BOUNDARY_MGR` | `DOMAIN_BOUNDARY_CTRL` | cross-domain health, e2e state, and fail-safe authority |
+| `ETH_SW` | `ETH_PATH_MONITOR` | Ethernet-path freshness and health monitor |
 | `ENG_CTRL` | `ECM` | powertrain owner runtime |
 | `TCM` | `TCM` | transmission owner runtime |
 | `ACCEL_CTRL` | `VCU` | acceleration command owner |
