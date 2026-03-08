@@ -34,6 +34,7 @@ Verification-specific runbooks and pass criteria.
 Current closeout anchor:
 
 - `verification/FINAL_PHASE_EXECUTION_FLOW.md`
+- `verification/README.md`
 
 ### `audit/`
 Audit, runtime review, sync queue, and dated review snapshots.
