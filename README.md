@@ -28,6 +28,7 @@ python scripts/run.py verify quick --run-id 20260308_0900 --owner DEV2
 - `product/sdv_operator/`: Dev2 public-facing verification product surface
 - `canoe/`: Dev1 CANoe runtime project (`cfg`, `CAPL`, `DBC`, `SysVar`, panel)
 - `driving-situation-alert/`: V-model 문서와 추적성 정본
+- `legacy_projects/`: archived past topics and non-active experiments
 
 ## Scope
 
@@ -73,6 +74,7 @@ python -m mkdocs build -f product/sdv_operator/mkdocs.yml --strict
 - `docs/meeting-notes/`
 - `reference/README.md`
 - `.claude/README.md`
+- `legacy_projects/README.md`
 
 </details>
 
