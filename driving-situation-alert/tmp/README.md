@@ -30,8 +30,9 @@
 - `mentoring`: 멘토링 분석 및 체크리스트
 - `reports`: 현재 사이클 실행/증빙 인덱스
 - `quality`: 템플릿/품질 점검 기록(운영 참고)
-- `work-notes`: 내부 메모/검토 초안
+- `work-notes`: 내부 메모 인덱스(활성은 `id`만 유지)
 - `work-notes/id`: CAN ID 설계 초안/매핑 템플릿
+- `work-notes/archive`: 종료된 내부 메모 보관
 - `archive`: 과거 산출물 보관
 
 ## 4) 금지/주의

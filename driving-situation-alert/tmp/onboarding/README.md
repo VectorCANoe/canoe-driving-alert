@@ -21,4 +21,4 @@
 ## 공식 기준 문서
 - `driving-situation-alert/00f_CAN_ID_Allocation_Standard.md`
 - `driving-situation-alert/0303_Communication_Specification.md`
-- `driving-situation-alert/tmp/change-orders/DEV_CHANGE_ORDER_CAN_ID_335_FULL_RENUMBERING_2026-03-05.md`
+- `driving-situation-alert/tmp/change-orders/archive/2026-03/DEV_CHANGE_ORDER_CAN_ID_335_FULL_RENUMBERING_2026-03-05.md`

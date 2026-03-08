@@ -195,7 +195,7 @@
 
 - 본 문서는 ID 정책(원칙/분류/우선순위/용어)의 SoT다.
 - 실행 항목(Cutover/Rollback/승인 게이트/수용 기준/제출물)은 변경지시서 SoT를 따른다:
-  - `driving-situation-alert/tmp/change-orders/DEV_CHANGE_ORDER_CAN_ID_335_FULL_RENUMBERING_2026-03-05.md`
+  - `driving-situation-alert/tmp/change-orders/archive/2026-03/DEV_CHANGE_ORDER_CAN_ID_335_FULL_RENUMBERING_2026-03-05.md`
 - 정책 변경 없이 실행 절차만 조정하는 경우, 변경지시서만 개정한다.
 - 정책 자체(Tier/Group/Index, 중재 경계, SoT 우선순위)를 변경하는 경우에만 00f를 개정한다.
 
