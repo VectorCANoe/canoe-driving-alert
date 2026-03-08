@@ -13,17 +13,12 @@
 |---|---|---|---|
 | 좌측 하단 (SWE.2/SWE.3) | `0304_System_Variables.md` | `0303_Communication_Specification.md` | `04_SW_Implementation.md` |
 
----
-
-> 제출용 축소본: 원본 SoT에서 제출 핵심만 발췌한 문서입니다.
-
 ## 작성 원칙
 
 - 본 문서는 시스템 변수 사전 및 추적 관계를 정의한다.
-- 제출본은 상단 공식 변수 표를 유지하고, 하단 추적은 대표 행만 유지한다.
-- 전체 변수 전수 매핑은 원문 0304에서 관리한다.
-- Var-Comm-Flow 추적 키는 원문과 동일하게 유지한다.
-- Pre-Activation/Legacy 라벨은 원문과 동일하게 유지한다.
+- 변수 의미, 범위, 초기값을 표준 형태로 명확히 제시한다.
+- 심사자가 신호 해석과 경계값을 빠르게 확인할 수 있게 구성한다.
+- 세부 운영 메모보다 변수 정의 자체의 명료성을 우선한다.
 
 ---
 
@@ -40,7 +35,7 @@
 | 30 | Infotainment | speedLimit | uint32 | 0 | 255 | 30 | 구간 제한속도(km/h) |
 | 7 | V2X | emergencyType | uint32 | 0 | 3 | 0 | 긴급차량 종류 |
 | 8 | V2X | emergencyDirection | uint32 | 0 | 3 | 0 | 긴급차량 접근 방향 |
-| 9 | V2X | eta | uint32 | 0 | 255 | 0 | 긴급차량 ETA(유효값 0~255, 내부 invalid sentinel 65535) |
+| 9 | V2X | eta | uint32 | 0 | 255 | 0 | 긴급차량 ETA(유효값 0~255, sentinel 65535는 구현 내부 보호값) |
 | 10 | V2X | sourceId | uint32 | 0 | 255 | 0 | 긴급 메시지 Source ID |
 | 11 | V2X | alertState | uint32 | 0 | 1 | 0 | 긴급 메시지 Active/Clear 상태 |
 | 12 | Core | vehicleSpeedNorm | uint32 | 0 | 255 | 0 | 게이트웨이 정규화 후 차량 속도 |
@@ -291,22 +286,3 @@
 | 313 | Powertrain | PtCtrlAuthState | uint32 | 0 | 3 | 0 | 파워트레인 제어 권한 상태 |
 | 314 | Powertrain | PtCtrlSource | uint32 | 0 | 15 | 0 | 파워트레인 제어 출처 |
 ---
-
-## 변수 대표 추적 표 (축소본)
-
-- 제출본은 대표 Var만 유지하고, 전수 Var 추적은 원문 SoT(`driving-situation-alert/0304_System_Variables.md`)에서 관리한다.
-
-| Var ID | 표준 Name | Owner | Comm/Flow | Func/Req(대표) | 갱신 규칙 |
-|---|---|---|---|---|---|
-| Var_001 | vehicleSpeed | CHS_GW | Comm_001 / Flow_001 | Func_001, Func_010 / Req_001, Req_010 | 100ms CAN 수신 |
-| Var_012 | vehicleSpeedNorm | ADAS_WARN_CTRL | Comm_001 / Flow_001 | Func_001, Func_006 / Req_001, Req_006 | GW 정규화 수신 시 |
-| Var_018 | selectedAlertLevel | WARN_ARB_MGR | Comm_006 / Flow_006 | Func_022, Func_027 / Req_022, Req_027 | 중재 결과 생성 시 |
-| Var_021 | ambientMode | BODY_GW, AMBIENT_CTRL | Comm_007 / Flow_007 | Func_035 / Req_035 | 50ms 출력 갱신 |
-| Var_024 | warningTextCode | IVI_GW, CLU_HMI_CTRL | Comm_008 / Flow_008 | Func_040, Func_155 / Req_040, Req_155 | 50ms 출력 갱신 |
-| Var_027 | lastEmergencyRxMs | EMS_ALERT | Comm_004~006 / Flow_004~006 | Func_023, Func_024 / Req_023, Req_024 | E100 수신 시각 기록 |
-| Var_133 | TurnLampState | BODY_GW | Comm_103 / Flow_103 | Func_140 / Req_140 | 100ms 수신 |
-| Var_191 | DriveMode | DOMAIN_ROUTER | Comm_105 / Flow_105 | Func_141 / Req_141 | 100ms 수신 |
-| Var_320 | proximityRiskLevel | ADAS_WARN_CTRL | Comm_120 / Flow_120 | Func_120 / Req_120 | 100ms 위험도 산정 |
-| Var_328 | failSafeMode | DOMAIN_BOUNDARY_MGR | Comm_124 / Flow_124 | Func_127, Func_129 / Req_127, Req_129 | 단절 감지 즉시 |
-| Var_330 | objectTrackValid | ADAS_WARN_CTRL | Comm_130 / Flow_130 | Func_130, Func_148 / Req_130, Req_148 | 객체 입력 수신 시 |
-| Var_339 | objectEventCode | EMS_ALERT | Comm_133 / Flow_133 | Func_138 / Req_138 | 이벤트 기록 시 |

@@ -9,17 +9,12 @@
 **Project Title**: 주행 상황 실시간 경고 시스템
 **Subtitle**: 구간 정보 및 긴급차량 접근 기반 앰비언트·클러스터 경보
 
----
-
-> 제출용 축소본: 원본 SoT에서 제출 핵심만 발췌한 문서입니다.
-
 ## 작성 원칙
 
-- 본 문서는 01 요구사항을 기능(How)으로 분해한다.
-- 제출본은 상단 공식 기능 표를 유지하고, 하단은 대표 매핑만 남긴다.
-- ECU/ID/RTE 정책은 00e/00f/00g SoT를 참조한다.
-- 전수 Func 추적은 원문 03에서 관리한다.
-- Pre-Activation/Legacy 라벨은 원문과 동일하게 유지한다.
+- 본 문서는 요구사항을 실제 시스템 기능 단위로 분해해 설명한다.
+- 기능의 입력, 처리, 출력이 한눈에 보이도록 표 구조를 유지한다.
+- 심사자가 기능 범위와 책임 노드를 빠르게 파악할 수 있게 간결하게 작성한다.
+- 정책 문서는 별도 문서로 관리하고 본문은 기능 설명에 집중한다.
 
 ---
 
@@ -91,42 +86,21 @@
 | ECU 동작 | 경고 입력 유효성/신선도 보호 | 경고 판정 입력의 유효성/신선도를 검사하고 stale·저신뢰 입력에 보수 정책을 적용 | 경고 강건성·인지성 확장(Planned) | Req_148,Req_149 |
 | ECU 동작 | 경고 안정화/채널 가용성·대체·인지성/동기 관리 | 상태전이 안정화, 출력 채널 가용성 판정, 대체 출력 유지, 오디오 경합/팝업 과밀 제어, 채널 동기 일관성 관리 | 경고 강건성·인지성 확장(Planned) | Req_150,Req_151,Req_152,Req_153,Req_154,Req_155 |
 
-- 제출본 상단표의 `검증` 열은 가독성을 위해 `Req 기준`으로 축약한다.
-- 대표 Test ID/상세 추적은 본 문서 하단 요약표와 `05/06/07` 원문에서 확인한다.
+- 상단 공식표의 `검증` 열은 요구사항 식별자 기준으로 유지한다.
 
 ---
 
-## 기능 상세 요약 (제출본)
+## 기능군 요약
 
-- 제출본은 상단 공식 기능 정의 표를 기준으로 하단 상세표를 대표행 중심으로 축소한다.
-- 전수 Func 매핑/확장 상세는 원문 SoT(`driving-situation-alert/03_Function_definition.md`)를 기준으로 관리한다.
-
-| 분류 | 포함 범위 | 핵심 Func ID | 상태 | 비고 |
-|---|---|---|---|---|
-| 통합 기본 기능 | 공통 경고 판단/표시/중재 | Func_001~Func_040 | Active | Req_001~040 대응 |
-| Validation Harness | SIL 실행/판정 기록 | Func_041~Func_043 | Active(Validation-only) | 양산 기능과 분리 |
-| 차량 기본 기능 확장 | Baseline 입력/표시/도메인 경계 | Func_101~Func_107, Func_109, Func_113, Func_116, Func_118, Func_119 | Active | Req_101~107, 109, 113, 116, 118, 119 |
-| V2 확장 | 위험도/감속 보조/Fail-safe | Func_120, Func_121, Func_123, Func_125~Func_129 | Implemented | Req_120,121,123,125~129 |
-| ADAS 객체 인지 확장 | 객체 기반 위험/교차로/합류 | Func_130~Func_139 | Planned(Pre-Activation) | Req_130~139 |
-| 경보 편의 확장 | 표시/음량/이벤트 기록/조회 | Func_140~Func_147 | Planned(Pre-Activation) | Req_140~147 |
-| 강건성·인지성 확장 | 유효성/전이안정/대체출력 | Func_148~Func_155 | Planned(Pre-Activation) | Req_148~155 |
-
-## Req-Func 대표 매핑 (축소본)
-
-| Req ID | Func ID | 실제 노드명 | 기능명 |
-|---|---|---|---|
-| Req_001 | Func_001 | ADAS_WARN_CTRL | 주행시 경고엔진 활성 |
-| Req_007 | Func_007 | NAV_CTX_MGR | 구간 컨텍스트 갱신 |
-| Req_017 | Func_017, Func_018 | EMS_ALERT | 긴급차량 접근 경고 송신 |
-| Req_027 | Func_027 | WARN_ARB_MGR | 충돌 중재 적용 |
-| Req_035 | Func_035, Func_036 | AMBIENT_CTRL | 긴급 시각표현 정책 |
-| Req_101 | Func_101 | ENG_CTRL | 시동 상태 반영 |
-| Req_109 | Func_109 | CLU_BASE_CTRL | 클러스터 기본 표시 |
-| Req_120 | Func_120 | ADAS_WARN_CTRL | 근접 위험도 산정 |
-| Req_125 | Func_125 | WARN_ARB_MGR | 긴급경고 최우선 유지 |
-| Req_130 | Func_130 | ADAS_WARN_CTRL | 객체 위험 입력 반영(Pre-Activation) |
-| Req_140 | Func_140 | WARN_ARB_MGR | 방향지시등 연동 경보(Pre-Activation) |
-| Req_148 | Func_148 | ADAS_WARN_CTRL | 입력 유효성/신뢰도 필터링(Pre-Activation) |
+| 기능군 | 상태 | 설명 |
+|---|---|---|
+| 통합 기본 기능 | Active | 주행/구간/긴급 입력을 경보로 판정하고 Amb/Cluster로 출력 |
+| 검증 하네스 기능 | Active | SIL 시나리오 실행, 판정, 결과 기록 |
+| 차량 기본 기능 확장 | Active | 기본 차량 상태(시동/기어/가감속/조향/차체/표시) 연동 |
+| V2 확장 | Implemented | 위험도 기반 감속 보조 및 fail-safe 정책 |
+| ADAS 객체 인지 확장 | Planned | 객체 목록 기반 TTC/교차로/합류 위험 경고 |
+| 차량 경보 편의 확장 | Planned | 표시/음량 설정, 접근거리 표시, 이벤트 이력 |
+| 경고 강건성/인지성 확장 | Planned | 입력 유효성, 채널 대체, 경고 인지성 보호 |
 
 ## 경고 표시 정책표 요약 (Req_008, Req_035, Req_037)
 
@@ -141,14 +115,6 @@
 | 6 | Guide Right | 1 | 4 | 2 |
 
 - `warningTextCode` 정책: `timeoutClear == 0` 이고 `selectedAlertLevel > 0`이면 `selectedAlertType*10 + selectedAlertLevel`, 그 외는 `0`.
-- 상세 코드 사전(`ambientColor`, `ambientPattern`, `ambientMode`)은 원문 SoT `03_Function_definition.md`를 기준으로 한다.
-
-## EMS 논리 단말-내부 모듈 매핑
-
-| 논리 단말(문서 표준) | 내부 구현 모듈(코드/통신) | 역할 |
-|---|---|---|
-| EMS_ALERT | EMS_POLICE_TX | 경찰 긴급 알림 송신 |
-| EMS_ALERT | EMS_AMB_TX | 구급 긴급 알림 송신 |
-| EMS_ALERT | EMS_ALERT_RX | 긴급 알림 수신/해제/타임아웃 처리 |
+- 상세 코드 사전(`ambientColor`, `ambientPattern`, `ambientMode`)은 통신/변수 문서와 동일 규칙으로 유지한다.
 
 ---

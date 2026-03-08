@@ -13,18 +13,12 @@
 |---|---|---|---|
 | 좌측 중단 (SYS.3) | `0302_NWflowDef.md` | `0301_SysFuncAnalysis.md` | `0303_Communication_Specification.md` |
 
----
-
-> 제출용 축소본: 원본 SoT에서 제출 핵심만 발췌한 문서입니다.
-
 ## 작성 원칙
 
 - 본 문서는 네트워크 흐름(Flow) 중심으로 정리한다.
-- 제출본은 상단 공식 Flow 표를 유지하고, 도메인/확장 설명은 요약한다.
-- 상세 Flow-Comm 매핑은 원문 0302에서 관리한다.
-- 0303/0304와의 동시 동기화 원칙을 유지한다.
-- Pre-Activation 라벨은 원문과 동일하게 유지한다.
-- 멀티버스 원칙은 원문 SoT와 동일하게 유지한다: 일반 노드는 단일 버스 원칙, 도메인 경계 전달은 GW 경유, 테스터/검증 노드는 예외적 멀티버스 허용.
+- 상단 공식 Flow 표를 기준으로 전체 데이터 경로를 이해할 수 있게 구성한다.
+- 도메인 간 전달 경계(GW 중심)와 운영 원칙을 명확히 보여준다.
+- 상세 추적보다 네트워크 동작 흐름과 검증 가능성을 우선 제시한다.
 
 ---
 
@@ -277,35 +271,3 @@
 | Powertrain CAN | 0x110 | frmPowertrainCtrlAuthMsg | 0 | Powertrain Control Auth | 0~1 | PtCtrlAuthState |  |  |  | Tx |  |  |  |  |  |  |  |  |  |  |  | Rx | Rx |  |  |  |  |  |  |  |  | CAN, 100ms |
 |  |  |  | 1 | Powertrain Control Auth | 8~11 | PtCtrlSource |  |  |  | Tx |  |  |  |  |  |  |  |  |  |  |  | Rx | Rx |  |  |  |  |  |  |  |  |  |
 ---
-
-## Flow SoT 요약 (제출본)
-
-- CAN Flow 원본: `canoe/databases/*.dbc`
-- Ethernet 논리 계약 원본: `canoe/docs/operations/ETH_INTERFACE_CONTRACT.md` (v1.2)
-- ADAS 객체 확장(`Flow_130~133`)은 계약 SoT 활성 + 구현/시험 Pre-Activation 상태로 유지한다.
-- Flow 변경 시 `0303/0304/04/05/06/07` 동시 동기화를 적용한다.
-
----
-
-## 플로우 대표 추적 표 (축소본)
-
-- 제출본은 대표 Flow만 유지하고, 전수 Flow 추적은 원문 SoT(`driving-situation-alert/0302_NWflowDef.md`)에서 관리한다.
-
-| Flow ID | Comm ID | Req ID(대표) | 핵심 메시지 | 핵심 노드(Tx->Rx) | 채널/주기 | 상태 |
-|---|---|---|---|---|---|---|
-| Flow_001 | Comm_001 | Req_001, Req_010 | frmVehicleStateCanMsg(0x2A0), ethVehicleStateMsg(0x510) | CHS_GW -> ADAS_WARN_CTRL | CAN+ETH / 100ms | Active |
-| Flow_003 | Comm_003 | Req_007, Req_010 | frmNavContextCanMsg(0x2A3), ethNavContextMsg(0x512) | INFOTAINMENT_GW -> NAV_CTX_MGR | CAN+ETH / 100ms | Active |
-| Flow_006 | Comm_006 | Req_022, Req_024 | ETH_EmergencyAlert(0xE100), ethSelectedAlertMsg(0xE200) | EMS_ALERT -> WARN_ARB_MGR | ETH / Event+50ms | Active |
-| Flow_007 | Comm_007 | Req_035, Req_037 | ethSelectedAlertMsg(0xE200), frmAmbientControlMsg(0x260) | WARN_ARB_MGR -> AMBIENT_CTRL | ETH+CAN / 50ms | Active |
-| Flow_008 | Comm_008 | Req_040, Req_155 | ethSelectedAlertMsg(0xE200), frmClusterWarningMsg(0x280) | WARN_ARB_MGR -> CLU_HMI_CTRL | ETH+CAN / 50ms | Active |
-| Flow_120 | Comm_120 | Req_120 | ethEmergencyRiskMsg(0x1C3) | ADAS_WARN_CTRL -> WARN_ARB_MGR | ETH / 100ms | Implemented |
-| Flow_124 | Comm_124 | Req_127, Req_129, Req_151 | frmChassisHealthMsg(0x103), ethFailSafeStateMsg(0x111) | DOMAIN_BOUNDARY_MGR -> WARN_ARB_MGR | CAN+ETH / 100ms+Event | Implemented |
-| Flow_130 | Comm_130 | Req_130, Req_148 | ethObjectRiskInputMsg(0xE213) | CHS_GW/INFOTAINMENT_GW -> ADAS_WARN_CTRL | ETH / 100ms | Planned |
-| Flow_132 | Comm_132 | Req_134, Req_139 | ethObjectScenarioAlertMsg(0xE215), frmAmbientControlMsg(0x260) | WARN_ARB_MGR -> AMBIENT_CTRL/CLU_HMI_CTRL | ETH+CAN / Event+50ms | Planned |
-
-## 제출본 운용 메모
-
-- 상단 공식 플로우 표는 유지하고, 하단은 대표 추적만 유지한다.
-- Baseline(`Flow_101~106, 201~205`)은 `Defined`, V2(`Flow_120~124`)는 `Implemented` 상태로 관리한다.
-- ADAS 객체 확장(`Flow_130~133`)은 `Planned(Pre-Activation)` 상태로 유지한다.
-- 상세 전수 매핑과 도메인 분해표는 원문 SoT(`driving-situation-alert/0302_NWflowDef.md`)를 기준으로 관리한다.

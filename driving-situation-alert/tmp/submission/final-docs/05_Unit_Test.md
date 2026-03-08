@@ -13,19 +13,12 @@
 |---|---|---|---|
 | 우측 하단 (SWE.4) | `05_Unit_Test.md` | `04_SW_Implementation.md` | `06_Integration_Test.md` |
 
----
-
-> 제출용 축소본: 원본 SoT에서 제출 핵심만 발췌한 문서입니다.
-
 ## 작성 원칙
 
 - 본 문서는 단위 테스트(UT) 관점의 검증 항목을 정리한다.
-- 제출본은 상단 공식 UT 표를 유지하고, 상세 분기는 축소한다.
-- 경계값/세부 케이스 전수는 원문 05에서 관리한다.
-- Req/VC 추적 키는 원문과 동일하게 유지한다.
-- Pre-Activation 라벨은 원문과 동일하게 유지한다.
-- 대조군/우수성 비교 실험은 제출본 범위 밖으로 두고 Pass/Fail 중심으로 제시한다.
-- 검증 배치 실행/리포트 생성은 `scripts/run.py verify batch` 기준(기본 `json,md`, 옵션 `csv`)으로 운영한다.
+- 단위 모듈별 검증 목표와 합격 기준을 명확히 제시한다.
+- 판정은 Pass/Fail 중심으로 단순하게 기록한다.
+- 심사자가 테스트 의도와 기대결과를 빠르게 이해할 수 있도록 작성한다.
 
 ---
 
@@ -57,22 +50,3 @@
 |  |  | Scenario Result | `ScenarioResult` 및 로그 결과 확인 |  |  |  |
 
 ---
-
-## 단위 테스트 대표 추적 표 (축소본)
-
-- 제출본은 대표 UT만 유지하고, 전수 UT 추적은 원문 SoT(`driving-situation-alert/05_Unit_Test.md`)에서 관리한다.
-
-| UT ID | 대상 모듈 | Req/VC(대표) | 검증 포인트 | 상태 |
-|---|---|---|---|---|
-| UT_ADAS_001 | ADAS_WARN_CTRL | Req_001~012 / VC_001~012 | 경고 시작/해제/디바운스 (`150ms`) | Active |
-| UT_EMS_RX_001 | EMS_ALERT_RX | Req_023, Req_024 / VC_023, VC_024 | 긴급 수신/해제/타임아웃(`1000ms`) | Active |
-| UT_ARB_001 | WARN_ARB_MGR | Req_022, Req_025~032 / VC_022, VC_025~032 | 경보 우선순위 판정 결정론 | Active |
-| UT_BCM_001 | AMBIENT_CTRL | Req_008~009, Req_033~037 / VC_008~009, VC_033~037 | 패턴/색상/복귀 정책 | Active |
-| UT_CLU_001 | CLU_HMI_CTRL | Req_005, Req_019~021, Req_040 / VC_005, VC_019~021, VC_040 | 문구/중복억제 정책 | Active |
-| UT_GW_001 | CHS_GW, INFOTAINMENT_GW | Req_007, Req_010~012 / VC_007, VC_010~012 | CAN->ETH 변환 정확성 | Active |
-| UT_SIL_001 | VAL_SCENARIO_CTRL | Req_041~043 / VC_041~043 | SIL 실행/판정/기록 | Active |
-| UT_BASE_001 | Baseline 노드군 | Req_101~119 / VC_101~119 | 기본 차량 기능 총괄 커버리지 | Active |
-| UT_V2_RISK_001 | ADAS_WARN_CTRL, WARN_ARB_MGR | Req_120, Req_121, Req_123, Req_125, Req_126 | 위험도-보조요청-해제-동기화 | Ready |
-| UT_V2_FAILSAFE_001 | DOMAIN_BOUNDARY_MGR | Req_127~129 | 단절 강등/자동감속 금지 | Ready |
-| UT_ADAS_OBJ_RISK_001 | ADAS_WARN_CTRL | Req_130~139 / VC_130~139 | 객체기반 위험 경고/강등 | Planned |
-| UT_BASE_ROBUST_EXT_001 | WARN_ARB_MGR, CLU_HMI_CTRL | Req_148~155 / VC_148~155 | 강건성/인지성 정책 | Planned |

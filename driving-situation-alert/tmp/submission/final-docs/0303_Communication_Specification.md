@@ -13,26 +13,19 @@
 |---|---|---|---|
 | 좌측 하단 (SWE.2) | `0303_Communication_Specification.md` | `0302_NWflowDef.md` | `0304_System_Variables.md` |
 
----
-
-> 제출용 축소본: 원본 SoT에서 제출 핵심만 발췌한 문서입니다.
-
 ## 작성 원칙
 
 - 본 문서는 통신 계약(Comm) 중심으로 정리한다.
-- 제출본은 상단 공식 Comm 표를 유지하고, 하단은 대표 행만 유지한다.
-- ID/ETH 계약 상세는 원문 0303 및 00f/ETH 계약 문서를 참조한다.
-- Comm-Flow 추적 키는 원문과 동일하게 유지한다.
-- Pre-Activation 라벨은 원문과 동일하게 유지한다.
-- 멀티버스 원칙은 원문 SoT와 동일하게 유지한다: 일반 노드는 단일 버스 원칙, 도메인 간 전달은 GW 경유, 테스터/검증 노드는 예외적 멀티버스 허용.
-- ETH Backbone stub 보강 프레임(`ethVehicleStateMsg`, `ethSteeringMsg`, `ethNavContextMsg`) 해석은 원문 SoT와 동일하게 GW 경계 기준으로 유지한다.
+- 통신 표만으로 송신자/수신자/주기/경계 규칙을 이해할 수 있게 구성한다.
+- CAN과 Ethernet 경계에서 발생하는 역할 분리를 명확히 제시한다.
+- 상세 내부 매핑보다 인터페이스 계약과 검증 기준을 우선 설명한다.
 
 ---
 
-## CAN ID 배정 정책 (Project SoT)
+## CAN ID 배정 정책 요약
 
-- ID 상위 SoT는 `governance/00f_CAN_ID_Allocation_Standard.md`를 따른다.
-- 본 장은 통신 스펙 관점의 실행 규칙만 요약한다.
+- ID 정책 기준 문서는 `governance/00f_CAN_ID_Allocation_Standard.md`를 따른다.
+- 본 장은 통신 스펙 관점의 실행 규칙을 요약한다.
 
 | 규칙 | 정책 |
 |---|---|
@@ -42,7 +35,7 @@
 | Diag 명칭 해석 | 메시지명에 `Diag`가 포함되어도 Group 7 강제 배정 사유가 아니며, Owner/도메인 경계와 안전 경로를 우선 적용한다. |
 | 충돌 회피 | 신규 ID 추가 시 기존 DBC ID와 중복 금지, 진단/검증 예약 구간과 충돌 금지 원칙을 따른다. |
 | 확장성 | 기존 Flow/Comm 체인을 깨지 않도록 Comm 단위로 확장하고, 동일 변경에서 0302/0304/04/05~07 동시 갱신한다. |
-| SoT 고정 | CAN ID SoT는 `canoe/databases/*.dbc`, Ethernet 계약 SoT는 `canoe/docs/operations/ETH_INTERFACE_CONTRACT.md`로 고정한다. |
+| 기준 문서 고정 | CAN ID 기준은 `canoe/databases/*.dbc`, Ethernet 계약 기준은 `canoe/docs/operations/ETH_INTERFACE_CONTRACT.md`로 고정한다. |
 
 ---
 
@@ -295,35 +288,3 @@
 | frmPowertrainCtrlAuthMsg | 0x110 | 1 | PtCtrlAuthState | 0~1 | 파워트레인 제어 권한 상태 | 0~3 | DOMAIN_ROUTER -> ENG_CTRL, TCM 전달 |
 |  |  |  | PtCtrlSource | 8~11 | 파워트레인 제어 출처 | 0~15 | DOMAIN_ROUTER -> ENG_CTRL, TCM 전달 |
 ---
-
-## Comm SoT 요약 (제출본)
-
-- CAN Comm 원본: `canoe/databases/*.dbc`
-- Ethernet 논리 계약 원본: `canoe/docs/operations/ETH_INTERFACE_CONTRACT.md` (v1.2)
-- ADAS 객체 확장(`Comm_130~133`)은 계약 SoT 활성 + 구현/시험 Pre-Activation 상태로 유지한다.
-- Comm 변경 시 `0302/0304/04/05/06/07` 동시 동기화를 적용한다.
-
----
-
-## 통신 대표 추적 표 (축소본)
-
-- 제출본은 대표 Comm만 유지하고, 전수 Comm 추적은 원문 SoT(`driving-situation-alert/0303_Communication_Specification.md`)에서 관리한다.
-
-| Comm ID | Flow ID | Req ID(대표) | 핵심 메시지(ID) | 핵심 노드(Tx->Rx) | 프로토콜/주기 | 상태 |
-|---|---|---|---|---|---|---|
-| Comm_001 | Flow_001 | Req_001, Req_010 | frmVehicleStateCanMsg(0x2A0), ethVehicleStateMsg(0x510) | CHS_GW -> ADAS_WARN_CTRL | CAN+ETH / 100ms | Active |
-| Comm_003 | Flow_003 | Req_007, Req_010 | frmNavContextCanMsg(0x2A3), ethNavContextMsg(0x512) | INFOTAINMENT_GW -> NAV_CTX_MGR | CAN+ETH / 100ms | Active |
-| Comm_006 | Flow_006 | Req_022, Req_024, Req_152 | ETH_EmergencyAlert(0xE100), ethSelectedAlertMsg(0xE200) | EMS_ALERT/WARN_ARB_MGR -> BODY_GW, IVI_GW | ETH / Event+50ms | Active |
-| Comm_007 | Flow_007 | Req_035, Req_037 | ethSelectedAlertMsg(0xE200), frmAmbientControlMsg(0x260) | BODY_GW -> AMBIENT_CTRL | ETH+CAN / 50ms | Active |
-| Comm_008 | Flow_008 | Req_040, Req_155 | ethSelectedAlertMsg(0xE200), frmClusterWarningMsg(0x280) | IVI_GW -> CLU_HMI_CTRL | ETH+CAN / 50ms | Active |
-| Comm_120 | Flow_120 | Req_120 | ethEmergencyRiskMsg(0x1C3) | ADAS_WARN_CTRL -> WARN_ARB_MGR | ETH / 100ms | Implemented |
-| Comm_124 | Flow_124 | Req_127, Req_129, Req_151 | frmChassisHealthMsg(0x103), ethFailSafeStateMsg(0x111) | DOMAIN_BOUNDARY_MGR -> WARN_ARB_MGR | CAN+ETH / 100ms+Event | Implemented |
-| Comm_130 | Flow_130 | Req_130, Req_148 | ethObjectRiskInputMsg(0xE213) | CHS_GW/INFOTAINMENT_GW -> ADAS_WARN_CTRL | ETH / 100ms | Planned |
-| Comm_132 | Flow_132 | Req_134, Req_139 | ethObjectScenarioAlertMsg(0xE215), frmAmbientControlMsg(0x260), frmClusterWarningMsg(0x280) | WARN_ARB_MGR -> AMBIENT_CTRL/CLU_HMI_CTRL | ETH+CAN / Event+50ms | Planned |
-
-## 제출본 운용 메모
-
-- 상단 공식 통신 표는 유지하고, 하단은 대표 추적만 유지한다.
-- Baseline(`Comm_101~106, 201~205`)은 `Defined`, V2(`Comm_120~124`)는 `Implemented` 상태로 관리한다.
-- ADAS 객체 확장(`Comm_130~133`)은 `Planned(Pre-Activation)` 상태로 유지한다.
-- 상세 전수 매핑과 도메인 분해표는 원문 SoT(`driving-situation-alert/0303_Communication_Specification.md`)를 기준으로 관리한다.
