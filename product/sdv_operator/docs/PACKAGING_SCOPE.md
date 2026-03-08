@@ -49,6 +49,15 @@ Reason:
 - `canoe/cfg/.run/`
 - `dist/` previous outputs
 
+## Fixed Artifact Paths
+
+- one-folder exe: `dist/sdv_cli/sdv/`
+- one-file exe: `dist/sdv_cli/sdv.exe`
+- portable folder: `dist/portable/sdv_portable/`
+- portable zip: `dist/portable/sdv_portable.zip`
+- PyInstaller work: `build/pyinstaller/`
+- PyInstaller spec: `build/spec/`
+
 ## Distribution Principle
 
 The packaged product should be:

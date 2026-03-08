@@ -14,8 +14,13 @@ import subprocess
 import sys
 from pathlib import Path
 
-
-ROOT = Path(__file__).resolve().parents[2]
+from scripts.release.layout import (
+    EXE_ONEFILE_PATH,
+    EXE_ONEFOLDER_DIR,
+    PORTABLE_BUNDLE_NAME,
+    PORTABLE_DIST_ROOT,
+    ROOT,
+)
 
 
 def parse_args() -> argparse.Namespace:
@@ -23,8 +28,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--mode", choices=["onefolder", "onefile"], default="onefolder")
     parser.add_argument("--clean", action="store_true", help="Remove previous bundle folder/zip before build")
     parser.add_argument("--rebuild-exe", action="store_true", help="Rebuild exe before bundling")
-    parser.add_argument("--output-dir", default=str(ROOT / "dist" / "portable"))
-    parser.add_argument("--bundle-name", default="sdv_portable")
+    parser.add_argument("--output-dir", default=str(PORTABLE_DIST_ROOT))
+    parser.add_argument("--bundle-name", default=PORTABLE_BUNDLE_NAME)
     parser.add_argument("--zip-name", default="", help="Default: <bundle-name>.zip")
     return parser.parse_args()
 
@@ -118,8 +123,8 @@ def main() -> int:
         if rc != 0:
             return rc
 
-    exe_dir = ROOT / "dist" / "sdv_cli" / "sdv"
-    exe_file = ROOT / "dist" / "sdv_cli" / "sdv.exe"
+    exe_dir = EXE_ONEFOLDER_DIR
+    exe_file = EXE_ONEFILE_PATH
     if args.mode == "onefolder" and not exe_dir.exists():
         print(f"[FAIL] exe folder not found: {exe_dir}")
         print("hint: run --rebuild-exe or build exe first")

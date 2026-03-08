@@ -12,10 +12,15 @@ import argparse
 import shutil
 import subprocess
 import sys
-from pathlib import Path
 
-
-ROOT = Path(__file__).resolve().parents[2]
+from scripts.release.layout import (
+    EXE_DIST_ROOT,
+    EXE_ONEFILE_PATH,
+    EXE_ONEFOLDER_DIR,
+    PYINSTALLER_SPEC_ROOT,
+    PYINSTALLER_WORK_ROOT,
+    ROOT,
+)
 
 
 def parse_args() -> argparse.Namespace:
@@ -55,9 +60,9 @@ def main() -> int:
         print("[FAIL] pyinstaller not found. Install with: python -m pip install pyinstaller")
         return 2
 
-    dist_root = ROOT / "dist" / "sdv_cli"
-    work_root = ROOT / "build" / "pyinstaller"
-    spec_root = ROOT / "build" / "spec"
+    dist_root = EXE_DIST_ROOT
+    work_root = PYINSTALLER_WORK_ROOT
+    spec_root = PYINSTALLER_SPEC_ROOT
 
     if args.clean:
         shutil.rmtree(dist_root, ignore_errors=True)
@@ -91,7 +96,7 @@ def main() -> int:
     if rc != 0:
         return rc
 
-    mode_path = dist_root / ("sdv.exe" if args.mode == "onefile" else "sdv")
+    mode_path = EXE_ONEFILE_PATH if args.mode == "onefile" else EXE_ONEFOLDER_DIR
     print(f"[OK] build completed: {mode_path}")
     return 0
 
