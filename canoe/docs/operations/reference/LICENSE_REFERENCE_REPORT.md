@@ -28,7 +28,7 @@ This file is a project process reference, not legal advice.
 - Open source intake policy:
   - `canoe/docs/operations/reference/OPEN_SOURCE_INTAKE_POLICY.md`
 - Gate matrix:
-  - `scripts/GATE_MATRIX.md`
+  - `product/sdv_operator/docs-src/maintenance.md`
 - Git ownership of gate/workflow policy:
   - `.github/CODEOWNERS`
 - Local vendor sample-included notice path:

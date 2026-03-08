@@ -1,6 +1,6 @@
-﻿# 명령 체계
+# ?? ??
 
-## 핵심 4개
+## ?? 4?
 
 ### Gate all
 
@@ -8,48 +8,160 @@
 python scripts/run.py gate all
 ```
 
-용도:
-- 사전 정합 점검
-- 문서/코드/구성 드리프트 탐지
+??:
+- ?? ?? ??
+- ??/??/?? ???? ??
 
 ### Scenario run
 
 ```powershell
 python scripts/run.py scenario run --id 4
+python scripts/run.py scenario run --id 4 --var testScenario
 ```
 
-용도:
-- CANoe COM으로 시나리오 주입
-- 수동 패널 없이 검증 경로 트리거
+??:
+- CANoe COM?? ???? ??
+- ?? ?? ?? ?? ?? ???
 
 ### Verify quick
 
 ```powershell
+python scripts/run.py verify quick
 python scripts/run.py verify quick --run-id 20260308_0900 --owner DEV2
 ```
 
-용도:
-- 준비/상태/기본 검증 경로를 한 번에 수행
+??:
+- ??/??/?? ?? ??? ? ?? ??
 
 ### Doctor
 
 ```powershell
 python scripts/run.py doctor
+python scripts/run.py doctor --ensure-running
 ```
 
-용도:
-- CANoe COM 연결
-- measurement 상태
-- 기본 sysvar 가시성
+??:
+- CANoe COM ??
+- measurement ??
+- ?? sysvar ???
 
-## 보조 명령
+## ?? ??
 
-상세 명령은 아래 문서를 기준으로 본다.
+### TUI
 
-- `scripts/COMMAND_REFERENCE.md`
+```powershell
+python scripts/run.py
+python scripts/run.py tui
+```
 
-## 원칙
+### Plain shell
 
-- 운영 문서는 canonical 명령만 사용
-- hidden alias는 기존 습관 보호용
-- 사용자에게는 최소 표면만 보여줌
+```powershell
+python scripts/run.py shell
+```
+
+### Guided flow
+
+```powershell
+python scripts/run.py start guided
+python scripts/run.py start demo --id 4
+python scripts/run.py start precheck --owner DEV2
+```
+
+## ?? ?? ??
+
+### Prepare
+
+```powershell
+python scripts/run.py verify prepare --run-id 20260306_1930
+```
+
+### Batch
+
+```powershell
+python scripts/run.py verify batch --run-id 20260308_0900 --owner DEV2 --phase pre
+python scripts/run.py verify batch --run-id 20260308_0900 --owner DEV2 --phase post
+python scripts/run.py verify batch --run-id 20260308_0900 --owner DEV2 --phase full
+```
+
+### Smoke
+
+```powershell
+python scripts/run.py verify smoke --owner DEV1
+```
+
+### Fill and score
+
+```powershell
+python scripts/run.py verify fill-score --tier UT --run-id 20260306_1930 --owner DEV1
+```
+
+### Insight
+
+```powershell
+python scripts/run.py verify insight --run-id 20260306_1930
+python scripts/run.py verify insight --run-id 20260306_1930 --baseline-run-id 20260305_1800
+```
+
+### Bind documentation
+
+```powershell
+python scripts/run.py verify bind-doc --run-id 20260306_1930
+python scripts/run.py verify fill-template --run-id 20260306_1930 --owner-fallback DEV1
+```
+
+### Status and finalize
+
+```powershell
+python scripts/run.py verify status --run-id 20260306_1930
+python scripts/run.py verify finalize --run-id 20260306_1930 --owner DEV1
+```
+
+## Gate ??
+
+```powershell
+python scripts/run.py gate doc-sync
+python scripts/run.py gate cfg-hygiene
+python scripts/run.py gate capl-sync
+python scripts/run.py gate multibus-dbc
+python scripts/run.py gate cli-readiness
+```
+
+## CAPL / CANoe COM
+
+### SysVar access
+
+```powershell
+python scripts/run.py capl sysvar-get --namespace Core --var failSafeMode
+python scripts/run.py capl sysvar-set --namespace Test --var scenarioCommand --value 4 --value-type int
+```
+
+### Measurement control
+
+```powershell
+python scripts/run.py canoe measure-status
+python scripts/run.py canoe measure-start
+python scripts/run.py canoe measure-stop
+python scripts/run.py canoe measure-reset
+```
+
+### CAPL function call
+
+```powershell
+python scripts/run.py canoe capl-call --function-name MyFunction --args 1 2 --arg-type int
+```
+
+## Packaging
+
+```powershell
+python scripts/run.py package build-exe --mode onefolder --clean
+python scripts/run.py package build-exe --mode onefile --clean
+python scripts/run.py package bundle-portable --mode onefolder --clean --rebuild-exe
+```
+
+## ??
+
+- ?? ??? canonical ??? ??
+- hidden alias? ?? ?? ???
+- ?????? ?? ??? ???
+- detailed examples are kept here, not in `scripts/` root

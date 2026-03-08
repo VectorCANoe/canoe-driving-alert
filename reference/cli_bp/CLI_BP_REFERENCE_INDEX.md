@@ -42,5 +42,5 @@ This folder stores source links used to define the CLI productization baseline.
 
 ## E) Internal Linkage
 
-- `scripts/SCRIPT_INVENTORY.md`
+- `product/sdv_operator/docs-src/maintenance.md`
 - `canoe/docs/operations/CLI_PRODUCTIZATION_BP.md`

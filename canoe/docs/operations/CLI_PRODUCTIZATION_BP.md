@@ -81,9 +81,9 @@ Implication:
   - `python scripts/run.py gate cfg-hygiene`
   - `python scripts/run.py gate capl-sync`
 
-See inventory:
+See inventory and maintenance boundary:
 
-- `scripts/SCRIPT_INVENTORY.md`
+- `product/sdv_operator/docs-src/maintenance.md`
 
 ## 4) Target Architecture
 
@@ -120,7 +120,7 @@ Each command should standardize:
 
 ### Phase F0: Inventory Freeze
 
-- complete and lock `scripts/SCRIPT_INVENTORY.md`
+- complete and lock product maintenance/inventory baseline in `product/sdv_operator/docs-src/maintenance.md`
 - classify every script into A/B/C/D
 
 Done status:
@@ -198,7 +198,7 @@ Done status:
 ## 6) Documentation Set to Maintain
 
 - `scripts/README.md` (daily command quick-start)
-- `scripts/SCRIPT_INVENTORY.md` (asset governance)
+- `product/sdv_operator/docs-src/maintenance.md` (asset governance)
 - `canoe/docs/operations/CLI_PRODUCTIZATION_BP.md` (this document)
 - `canoe/docs/operations/VERIFICATION_EVIDENCE_LOG_STANDARD.md` (verification evidence standard)
 

@@ -16,10 +16,10 @@ Use one entrypoint only:
 
 If you need orientation, read these in order:
 
-1. `scripts/MAINTENANCE_MAP.md`
-2. `scripts/COMMAND_REFERENCE.md`
-3. `scripts/SCRIPT_INVENTORY.md`
-4. `product/sdv_operator/README.md`
+1. `product/sdv_operator/README.md`
+2. `product/sdv_operator/docs-src/quickstart.md`
+3. `product/sdv_operator/docs-src/commands.md`
+4. `product/sdv_operator/docs-src/maintenance.md`
 
 ## Canonical Daily Surface
 Ordinary operators should stay on these workflows:

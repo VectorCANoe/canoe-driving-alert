@@ -71,8 +71,8 @@ This product is **not**:
 - `scripts/run.py`
 - `scripts/tui_app.py`
 - `scripts/README.md`
-- `scripts/COMMAND_REFERENCE.md`
-- `scripts/MAINTENANCE_MAP.md`
+- `product/sdv_operator/docs-src/commands.md`
+- `product/sdv_operator/docs-src/maintenance.md`
 
 ### Product runtime layer
 - `scripts/cliops/`

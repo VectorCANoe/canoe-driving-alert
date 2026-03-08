@@ -1,6 +1,6 @@
-﻿# 유지보수 경계
+# ???? ??
 
-## Dev1과 Dev2 경계
+## Dev1? Dev2 ??
 
 ### Dev1
 - `canoe/`
@@ -12,33 +12,80 @@
 - CANoe runtime behavior
 
 ### Dev2
-- SDV Operator 제품 표면
+- SDV Operator ?? ??
 - CLI/TUI
-- gate 실행
-- verification/evidence 실행 진입점
+- gate ??
+- verification/evidence ?? ???
 - packaging
 
-## 현재 제품 경계
+## ?? ?? ??
 
-참조 문서:
+?? ??:
 
 - `product/sdv_operator/README.md`
 - `product/sdv_operator/manifest.json`
-- `scripts/MAINTENANCE_MAP.md`
 
-## 리팩터링 원칙
+## ??? ??
 
-지금은 물리 이동보다 논리 경계가 우선이다.
+### Public operator surface
+- `scripts/run.py`
+- `scripts/tui_app.py`
+- `scripts/README.md`
 
-1. 제품 경계 먼저 고정
-2. 호환 경로 유지
-3. 실제 제품 소유 코드만 점진적으로 승격
-4. helper/legacy는 필요할 때만 이동
+### Internal command/runtime layer
+- `scripts/cliops/*`
 
-## 복잡도 규칙
+### Verification engines
+- `scripts/quality/*`
+- `scripts/gates/*`
 
-질문이 길어지면 구조가 잘못된 것이다.
-운영자가 기억해야 할 것은 아래면 충분해야 한다.
+### Advanced CANoe operations
+- `scripts/canoe/*`
+- `canoe/scripts/*`
+
+### Legacy / one-off helpers
+- `scripts/docs/*`
+- `scripts/report/*`
+
+## ???? ?? ??
+
+### A-CORE
+- ?? ?? ???? ???? ?? ??
+- ?: `run.py`, `verify`, `gate`, `doctor`
+
+### B-OPS
+- ?? ???? ??? ?? ?? ?? ??
+- ?: CANoe low-level helper, packaging helper, unity helper
+
+### C-EXPERIMENT
+- ?? ??? ?? ???? ???? ?? ?? ??
+- ?: cfg ?? patch ??? ?? ????
+
+### D-LEGACY
+- ?? ?? ??/??? ??
+- ?: `scripts/docs/*`, `scripts/report/*`
+
+## Gate ????
+
+| Gate | Local Command | Main Script | Primary Scope |
+|---|---|---|---|
+| CFG Hygiene | `python scripts/run.py gate cfg-hygiene` | `scripts/gates/cfg_hygiene_gate.py` | CANoe text hygiene |
+| CAPL Sync | `python scripts/run.py gate capl-sync` | `scripts/gates/check_capl_sync.py` | `src/capl` vs `cfg/channel_assign` sync |
+| MultiBus + DBC Policy | `python scripts/run.py gate multibus-dbc` | `scripts/gates/multibus_cfg_dbc_gate.py` | multi-bus cfg + DBC ownership |
+| Doc-Code Sync | `python scripts/run.py gate doc-sync` | `scripts/gates/doc_code_sync_gate.py` | traceability + runtime linkage checks |
+| CLI Readiness | `python scripts/run.py gate cli-readiness` | `scripts/gates/cli_readiness_gate.py` | CLI contract and help stability |
+
+## ???? ??
+
+1. ?? ?? ?? ??
+2. ?? ?? ??
+3. ?? ?? ?? ??? ????? ??
+4. helper/legacy? ??? ?? ??
+5. root?? ?? ??? ?? README? ??
+
+## ??? ??
+
+???? ???? ? ?? ??? ???? ??.
 
 - `python scripts/run.py`
 - `gate all`
