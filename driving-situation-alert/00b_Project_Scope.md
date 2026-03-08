@@ -1,7 +1,7 @@
 # 프로젝트 범위 및 검증 전략 (Project Scope and Verification Strategy)
 
 **Document ID**: PROJ-00b-PS
-**Version**: 2.10
+**Version**: 2.11
 **Date**: 2026-03-09
 **Status**: Released
 **Project Title**: 주행 상황 실시간 경고 시스템
@@ -15,13 +15,21 @@
 
 본 프로젝트는 단일 데모 시나리오가 아니라, 완성차 시스템의 핵심 통신/판정/출력 체인을 SIL 환경에서 축약 구현하는 것을 목표로 한다.
 
+- 컨셉 스케일: Surface ECU 프로그램 뱅크 `100`(Primary `56` / Secondary `28` / Premium `16`)
+- 구현 스케일: 활성 Runtime `26`(제품 경로 `24` + 검증 하네스 `2`)
 - 차량 베이스: 시동/기어/가감속/조향/비상등/창문/클러스터 기본 기능
 - 상태 입력 체인: 차량/내비/외부(V2X) 입력을 도메인 경계에서 정규화
 - 판정 체인: 위험/경보 우선순위 판정과 fail-safe 전환
 - 출력 체인: 클러스터/앰비언트/HMI 동기 출력 및 복귀
 - 운영 원칙: 단일 시나리오 최적화보다 차량 전체 시스템 타당성을 우선
+- 표기 원칙: 대외/심사 설명은 Surface ECU 기준, 구현/디버깅은 Runtime Module 기준
 - Validation Harness(`VAL_SCENARIO_CTRL`, `VAL_BASELINE_CTRL`)는 SIL 검증 전용 계층이며 양산 기능/사용자 기능 범위에 포함하지 않는다.
 - 역할 고정: `VAL_SCENARIO_CTRL`는 E2E 주입/관찰용 멀티버스 예외 노드, `VAL_BASELINE_CTRL`는 Chassis 단일버스 기반 결과 집계 노드로 운영한다.
+
+핵심 가치 시나리오 축:
+- 시나리오 A: 구간 인식 기반 경고 패턴 동작
+- 시나리오 B: 긴급차량 접근 기반 경보 동작
+- 공통 베이스: 경보 우선순위 판정 + 출력 동기화 + timeout/fail-safe 복귀
 
 본 프로젝트는 `CANoe SIL` 환경에서 아래 5개 기능군을 통합 검증한다.
 
@@ -44,26 +52,24 @@
 
 ```text
 Navigation Context (gRoadZone, gNavDirection, gZoneDistance, gSpeedLimit)
-  -> INFOTAINMENT_GW (CAN->ETH 정규화)
-  -> ETH_SW
-  -> NAV_CTX_MGR (구간 컨텍스트 활성)
-  -> WARN_ARB_MGR
+  -> CGW (runtime: INFOTAINMENT_GW, CAN->ETH 정규화)
+  -> ETH_BACKBONE (runtime: ETH_SW)
+  -> IVI/ADAS 판단 체인 (runtime: NAV_CTX_MGR -> WARN_ARB_MGR)
 
 Vehicle State (gVehicleSpeed, gDriveState, SteeringInput)
-  -> CHS_GW (CAN->ETH 정규화)
-  -> ETH_SW
-  -> ADAS_WARN_CTRL
-  -> WARN_ARB_MGR
+  -> CGW (runtime: CHS_GW, CAN->ETH 정규화)
+  -> ETH_BACKBONE (runtime: ETH_SW)
+  -> ADAS 판단 체인 (runtime: ADAS_WARN_CTRL -> WARN_ARB_MGR)
 
-EMS_ALERT (internal: EMS_POLICE_TX / EMS_AMB_TX, `AMB`=Ambulance)
-  -> ETH_SW (ETH_EmergencyAlert 브로드캐스트)
-  -> EMS_ALERT (internal: EMS_ALERT_RX, 수신 차량)
-  -> WARN_ARB_MGR
+Emergency Input (Surface: V2X)
+  -> ETH_BACKBONE (runtime: ETH_SW, ETH_EmergencyAlert 브로드캐스트)
+  -> V2X 수신/감시 (runtime: EMS_ALERT_RX)
+  -> ADAS 중재 (runtime: WARN_ARB_MGR)
 
 SelectedAlertContext
-  -> ETH_SW
-  -> BODY_GW -> AMBIENT_CTRL (Body CAN 출력, 0x210)
-  -> IVI_GW -> CLU_HMI_CTRL (Infotainment CAN 출력, 0x220)
+  -> ETH_BACKBONE (runtime: ETH_SW)
+  -> BCM 출력 체인 (runtime: BODY_GW -> AMBIENT_CTRL, Body CAN 0x210)
+  -> CLUSTER 출력 체인 (runtime: IVI_GW -> CLU_HMI_CTRL, Infotainment CAN 0x220)
 
 WARN_ARB_MGR
   -> 우선순위 규칙에 따라 Ambient/Cluster/HMI 패턴 단일 결정
@@ -86,8 +92,9 @@ WARN_ARB_MGR
 - Tool: Vector CANoe 19 SP4
 - Network: Ethernet UDP 백본 + Domain CAN-HS
 - Domain CAN 역할 분리: Body CAN(앰비언트, 0x210), Infotainment CAN(클러스터, 0x220)
-- 아키텍처 고정: `ETH_SW + CHS_GW/INFOTAINMENT_GW/BODY_GW/IVI_GW + 중앙 경고코어(ADAS_WARN_CTRL/NAV_CTX_MGR/EMS_ALERT/WARN_ARB_MGR)`
-- 주요 노드: `VAL_SCENARIO_CTRL`, `CHS_GW`, `INFOTAINMENT_GW`, `ETH_SW`, `ADAS_WARN_CTRL`, `NAV_CTX_MGR`, `EMS_ALERT`, `WARN_ARB_MGR`, `BODY_GW`, `IVI_GW`, `AMBIENT_CTRL`, `CLU_HMI_CTRL`
+- 아키텍처 고정(표면): `ETH_BACKBONE + CGW + ADAS/V2X/IVI 판단 + BCM/CLUSTER 출력`
+- 주요 Surface ECU: `CGW`, `ETH_BACKBONE`, `ADAS`, `V2X`, `IVI`, `BCM`, `CLUSTER`, `VALIDATION_HARNESS`
+- 주요 Runtime Anchor: `CHS_GW`, `INFOTAINMENT_GW`, `ETH_SW`, `ADAS_WARN_CTRL`, `NAV_CTX_MGR`, `WARN_ARB_MGR`, `EMS_ALERT_RX`, `BODY_GW`, `IVI_GW`, `AMBIENT_CTRL`, `CLU_HMI_CTRL`
 - EMS 내부 구현 모듈(`EMS_POLICE_TX`, `EMS_AMB_TX`, `EMS_ALERT_RX`)은 03/0301/0302/0303/0304 하단 보강표에서 분리 관리하며, `Ambient`는 항상 `AMBIENT` 풀토큰을 사용한다.
 - Panel 입력: `gRoadZone`, `gNavDirection`, `gZoneDistance`, `gSpeedLimit`, 긴급차량 ON/OFF, ETA, 우선순위 테스트 토글
 
@@ -113,6 +120,7 @@ WARN_ARB_MGR
 
 ## 개정 이력
 
+- 2.11 (2026-03-09): 컨셉 정합 업데이트. `Surface 100(56/28/16) + Runtime 26` 운영 스케일, Surface/Runtime 표기 원칙, 핵심 가치 시나리오 축(A/B+공통 베이스)을 명시하고 Red Thread를 Surface 우선 표현으로 정리.
 - 2.10 (2026-03-09): 프로젝트 컨셉 설명을 시나리오 중심 표현에서 OEM 시스템 체인(입력/판정/출력/복귀) 중심으로 부분 개편하고, 운영 원칙에 `단일 시나리오 최적화 금지`를 명시.
 - 2.9 (2026-03-07): 00e Canonical 정합 반영으로 Scope/Red Thread/검증환경의 노드 표기를 `CHS_GW/ETH_SW/NAV_CTX_MGR/AMBIENT_CTRL` 기준으로 통일하고, 확장 기능군(`Req_120~129`, `Req_130~155`)을 현재 범위에 반영.
 - 2.8 (2026-03-05): Validation Harness 노드 명칭을 `VAL_SCENARIO_CTRL`/`VAL_BASELINE_CTRL`로 정리하고 범위 표기의 검증 전용 성격을 명확화.
