@@ -178,6 +178,7 @@ python scripts/run.py canoe capl-call --function-name MyFunction --args 1 2 --ar
 ### Packaging
 
 ```powershell
+python scripts/run.py package validate-contract
 python scripts/run.py package build-exe --mode onefolder --clean
 python scripts/run.py package build-exe --mode onefile --clean
 python scripts/run.py package bundle-portable --mode onefolder --clean --rebuild-exe

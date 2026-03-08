@@ -55,7 +55,7 @@ from cliops.gate_ops import (
     run_gate_all as _run_gate_all,
     run_named_gate as _run_named_gate,
 )
-from cliops.package_ops import cmd_package_build_exe, cmd_package_bundle_portable
+from cliops.package_ops import cmd_package_build_exe, cmd_package_bundle_portable, cmd_package_validate_contract
 from cliops.operator_result import build_operator_result, clear_last_operator_result, write_last_operator_result
 from cliops.parser_factory import TOPLEVEL_COMMANDS, build_parser
 from cliops.platform_caps import canoe_runtime_check, platform_label
@@ -133,6 +133,7 @@ CONTRACT_CANONICAL = [
     "python scripts/run.py gate cli-readiness",
     "python scripts/run.py package build-exe --mode onefolder",
     "python scripts/run.py package bundle-portable",
+    "python scripts/run.py package validate-contract",
 ]
 
 CONTRACT_LEGACY = [
@@ -159,6 +160,7 @@ CONTRACT_LEGACY = [
     "gate-cli-readiness",
     "package-build-exe",
     "package-bundle-portable",
+    "package-validate-contract",
 ]
 
 
@@ -514,9 +516,12 @@ def cmd_shell(_: argparse.Namespace) -> int:
                 rc = _run_named_gate(sub)
         elif cmd == "package":
             if len(tokens) < 2:
-                print("[SHELL] usage: /package <portable|exe> [onefolder|onefile]")
+                print("[SHELL] usage: /package <portable|exe|validate-contract> [onefolder|onefile]")
                 continue
             sub = tokens[1].lower()
+            if sub == "validate-contract":
+                rc = cmd_package_validate_contract(argparse.Namespace())
+                continue
             mode = "onefolder"
             if "--mode" in tokens:
                 mode_index = tokens.index("--mode")
@@ -539,7 +544,7 @@ def cmd_shell(_: argparse.Namespace) -> int:
             elif sub in {"exe", "build-exe"}:
                 rc = cmd_package_build_exe(argparse.Namespace(mode=mode, clean=False))
             else:
-                suggestion = _suggest_choice(sub, ["portable", "bundle-portable", "exe", "build-exe"])
+                suggestion = _suggest_choice(sub, ["portable", "bundle-portable", "exe", "build-exe", "validate-contract"])
                 if suggestion:
                     print(f"[SHELL] unknown package subcommand: {sub} (did you mean '{suggestion}'?)")
                 else:
@@ -930,6 +935,7 @@ PARSER_HANDLERS = {
     "cmd_gate_cli_readiness": cmd_gate_cli_readiness,
     "cmd_package_build_exe": cmd_package_build_exe,
     "cmd_package_bundle_portable": cmd_package_bundle_portable,
+    "cmd_package_validate_contract": cmd_package_validate_contract,
     "cmd_release_exe": cmd_release_exe,
     "cmd_release_portable": cmd_release_portable,
     "cmd_contract": cmd_contract,

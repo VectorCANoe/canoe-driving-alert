@@ -6,6 +6,14 @@ Dev2 제품 표면은 나중에 portable ZIP 또는 Windows executable로 전달
 
 ## 기본 명령
 
+### Packaging contract check
+
+```powershell
+python scripts/run.py package validate-contract
+```
+
+manifest와 release layout 상수가 drift 없이 맞는지 먼저 확인합니다.
+
 ### Portable bundle
 
 ```powershell
@@ -34,3 +42,4 @@ python scripts/run.py package build-exe --mode onefolder
 - public surface는 `product/sdv_operator` 기준으로 묶습니다.
 - 구현 전체를 제품으로 보지 않습니다.
 - 패키징은 manifest 기준 범위만 포함합니다.
+- 배포 전에는 `validate-contract -> build-exe -> bundle-portable` 순서로 진행합니다.

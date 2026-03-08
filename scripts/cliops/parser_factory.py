@@ -500,6 +500,9 @@ def build_parser(handlers: HandlerMap, default_run_id: Callable[[], str]) -> arg
     pkg_portable.add_argument("--zip-name", default="")
     pkg_portable.set_defaults(func=handlers["cmd_package_bundle_portable"], operator_command_id="package.portable_bundle")
 
+    pkg_validate = package_sub.add_parser("validate-contract", help="Validate manifest/layout packaging contract")
+    pkg_validate.set_defaults(func=handlers["cmd_package_validate_contract"], operator_command_id="package.validate_contract")
+
     release = sub.add_parser("release", help="Distribution-focused wrappers")
     release_sub = release.add_subparsers(dest="release_command", required=True)
     rel_exe = release_sub.add_parser("exe", help="Alias of package build-exe")
@@ -549,6 +552,10 @@ def build_parser(handlers: HandlerMap, default_run_id: Callable[[], str]) -> arg
     pkg_portable_legacy.add_argument("--bundle-name", default="")
     pkg_portable_legacy.add_argument("--zip-name", default="")
     pkg_portable_legacy.set_defaults(func=handlers["cmd_package_bundle_portable"], operator_command_id="package.portable_bundle")
+    _add_hidden_parser(sub, "package-validate-contract").set_defaults(
+        func=handlers["cmd_package_validate_contract"],
+        operator_command_id="package.validate_contract",
+    )
 
     _add_hidden_parser(sub, "go").set_defaults(func=handlers["cmd_start_guided"])
     add_start_demo_args(_add_hidden_parser(sub, "demo"), handlers)

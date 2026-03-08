@@ -19,6 +19,8 @@ SCENARIO_SUMMARY_JSON = VERIFICATION_ROOT / "scenario_run_summary.json"
 SCENARIO_SUMMARY_MD = VERIFICATION_ROOT / "scenario_run_summary.md"
 GATE_ALL_SUMMARY_JSON = VERIFICATION_ROOT / "gate_all_summary.json"
 GATE_ALL_SUMMARY_MD = VERIFICATION_ROOT / "gate_all_summary.md"
+RELEASE_CONTRACT_JSON = VERIFICATION_ROOT / "release_contract_report.json"
+RELEASE_CONTRACT_MD = VERIFICATION_ROOT / "release_contract_report.md"
 
 
 @dataclass
@@ -94,6 +96,8 @@ def _artifact_candidates(command_id: str, args: argparse.Namespace) -> list[Path
         paths.extend([PORTABLE_FOLDER_PATH, PORTABLE_ZIP_PATH])
     elif command_id == "package.windows_exe":
         paths.extend([EXE_ONEFOLDER_DIR, EXE_ONEFILE_PATH])
+    elif command_id == "package.validate_contract":
+        paths.extend([RELEASE_CONTRACT_JSON, RELEASE_CONTRACT_MD])
     return paths
 
 
@@ -287,6 +291,45 @@ def _scenario_result(command_id: str, title: str, rc: int, args: argparse.Namesp
     )
 
 
+def _release_contract_result(command_id: str, title: str, rc: int) -> OperatorResult:
+    data = _load_json(RELEASE_CONTRACT_JSON)
+    artifacts = _existing_artifacts([RELEASE_CONTRACT_JSON, RELEASE_CONTRACT_MD])
+    if not data:
+        status = "PASS" if rc == 0 else "FAIL"
+        detail = "Release contract validation completed." if rc == 0 else "Release contract validation failed."
+        next_action = "PASS면 build-exe 또는 bundle-portable로 넘어가십시오." if rc == 0 else "manifest와 layout drift를 먼저 수정하십시오."
+        return OperatorResult(
+            command_id=command_id,
+            title=title,
+            status=status,
+            detail=detail,
+            next_action=next_action,
+            rc=rc,
+            artifacts=artifacts,
+            insight={"stage": "Packaging", "bottleneck": detail, "next_action": next_action},
+        )
+
+    status = str(data.get("status", "FAIL")).upper()
+    detail = str(data.get("detail", "release contract result unavailable"))
+    failed_checks = [
+        item for item in data.get("checks", [])
+        if isinstance(item, dict) and str(item.get("status", "")).upper() != "PASS"
+    ]
+    related_logs = [f"{item.get('name', 'check')}: {item.get('detail', '-')}" for item in failed_checks[:3]]
+    next_action = "PASS면 build-exe 또는 bundle-portable로 넘어가십시오." if status == "PASS" else "manifest public surface와 release_artifacts drift를 먼저 수정하십시오."
+    return OperatorResult(
+        command_id=command_id,
+        title=title,
+        status="PASS" if status == "PASS" else "FAIL",
+        detail=detail,
+        next_action=next_action,
+        rc=rc,
+        artifacts=artifacts,
+        related_logs=related_logs,
+        insight={"stage": "Packaging", "bottleneck": detail, "next_action": next_action},
+    )
+
+
 def _generic_result(command_id: str, title: str, rc: int, args: argparse.Namespace) -> OperatorResult:
     artifacts = _existing_artifacts(_artifact_candidates(command_id, args))
     status = "PASS" if rc == 0 else "FAIL"
@@ -320,6 +363,8 @@ def build_operator_result(args: argparse.Namespace, rc: int) -> OperatorResult |
         return _gate_all_result(command_id, title, rc)
     if command_id == "operate.scenario_trigger":
         return _scenario_result(command_id, title, rc, args)
+    if command_id == "package.validate_contract":
+        return _release_contract_result(command_id, title, rc)
     return _generic_result(command_id, title, rc, args)
 
 

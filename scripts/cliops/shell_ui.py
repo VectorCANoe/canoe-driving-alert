@@ -157,6 +157,7 @@ def print_shell_help() -> None:
     print('  /gate all|doc-sync|text-integrity|cfg-hygiene|capl-sync|multibus-dbc|cli-readiness')
     print('  /package portable [onefolder|onefile]')
     print('  /package exe [onefolder|onefile]')
+    print('  /package validate-contract')
     print('  /doctor [ensure-running]')
     print('  /capl get <Namespace> <Variable>')
     print('  /capl set <Namespace> <Variable> <Value>')

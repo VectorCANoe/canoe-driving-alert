@@ -425,6 +425,28 @@ PRODUCT_COMMAND_GROUPS: dict[str, list[PaletteCommand]] = {
     ],
     "Packaging": [
         PaletteCommand(
+            command_id="package.validate_contract",
+            title="패키징 계약 점검",
+            command="package validate-contract",
+            summary="manifest와 release layout 상수가 일치하는지 점검합니다.",
+            use_when=(
+                "배포 전에 현재 제품 경계와 산출물 계약이 깨지지 않았는지 확인할 때",
+            ),
+            success_signals=(
+                "release_contract_report status가 PASS",
+                "manifest public surface와 release_artifacts가 모두 일치함",
+            ),
+            expected_outputs=(
+                "canoe/tmp/reports/verification/release_contract_report.json",
+                "canoe/tmp/reports/verification/release_contract_report.md",
+            ),
+            failure_focus=(
+                "manifest public_surface 누락",
+                "release_artifacts 경로 drift",
+            ),
+            next_step="PASS면 build-exe 또는 bundle-portable로 넘어가십시오.",
+        ),
+        PaletteCommand(
             command_id="package.portable_bundle",
             title="포터블 번들",
             command="package bundle-portable --mode onefolder",

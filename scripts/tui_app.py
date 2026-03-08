@@ -722,14 +722,28 @@ class SdvTuiApp(App[None]):
             recent_list.highlighted = 0
 
         last_insight = self.state.get("last_insight", {})
+        timeline = self.state.get("timeline", {})
         if isinstance(last_insight, dict):
             stage = str(last_insight.get("stage", "대기"))
             bottleneck = str(last_insight.get("bottleneck", "아직 실행 인사이트가 없습니다."))
             next_action = str(last_insight.get("next_action", "먼저 Gate all을 실행하십시오."))
         else:
             stage, bottleneck, next_action = "대기", "아직 실행 인사이트가 없습니다.", "먼저 Gate all을 실행하십시오."
+        if isinstance(timeline, dict):
+            gate_state = str(timeline.get("gate", "IDLE"))
+            scenario_state = str(timeline.get("scenario", "IDLE"))
+            verify_state = str(timeline.get("verify", "IDLE"))
+        else:
+            gate_state = scenario_state = verify_state = "IDLE"
         self.query_one("#insight-body", Static).update(
-            f"단계: {stage}\n병목: {bottleneck}\n다음 액션: {next_action}"
+            "\n".join(
+                [
+                    f"현재 단계: {stage}",
+                    f"3단계 흐름: Gate={gate_state} / Scenario={scenario_state} / Verify={verify_state}",
+                    f"직접 근거: {bottleneck}",
+                    f"다음 단계: {next_action}",
+                ]
+            )
         )
         self.query_one("#readiness-body", Static).update(self._summarize_tier_readiness())
         self.query_one("#batch-body", Static).update(self._summarize_batch_snapshot())
@@ -753,14 +767,19 @@ class SdvTuiApp(App[None]):
                 [],
                 [],
             )
-        result_lines = [status, title, detail]
+        result_lines = [
+            f"판정: {status}",
+            f"작업: {title}",
+            f"직접 사유: {detail}",
+            f"다음 단계: {next_action}",
+        ]
         if isinstance(related_logs, list) and related_logs:
             result_lines.append("")
-            result_lines.append("관련 로그:")
+            result_lines.append("근거 로그:")
             result_lines.extend(str(item) for item in related_logs[:3])
         if isinstance(artifacts, list) and artifacts:
             result_lines.append("")
-            result_lines.append("증빙:")
+            result_lines.append("증빙 경로:")
             result_lines.extend(str(item) for item in artifacts[:3])
             result_lines.append("동작: Ctrl+O=열기, Ctrl+Y=첫 경로 복사")
         if ts:

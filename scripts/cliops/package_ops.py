@@ -28,3 +28,8 @@ def cmd_package_bundle_portable(args: argparse.Namespace) -> int:
     if args.zip_name:
         cmd.extend(['--zip-name', args.zip_name])
     return run_cmd(cmd)
+
+
+def cmd_package_validate_contract(args: argparse.Namespace) -> int:
+    cmd = [sys.executable, str(SCRIPTS / 'release' / 'validate_release_contract.py')]
+    return run_cmd(cmd)
