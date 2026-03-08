@@ -7,7 +7,7 @@
 - 문서 편집: `tmp/submission/final-docs/`
 - 엑셀 산출: `tmp/submission/excel/`
   - 활성 파일: `submission_final_all_in_one.xlsx`
-- 한글 작성 원칙: `tmp/submission/00_사람용_문서_운영원칙.md`
+- 한글 작성 원칙: `tmp/00_문서_언어_운영원칙.md`
 
 ## 운영 규칙
 
