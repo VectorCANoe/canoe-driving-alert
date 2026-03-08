@@ -18,6 +18,8 @@ Open these only when the active task needs background support:
   - mentor-driven priority interpretation
 - `CAPL_coding_guideline.md`
   - coding guidance reference
+- `OEM_SURFACE_ECU_EXPANSION_PLAN_2026-03-09.md`
+  - Dev1 vehicle-program surface ECU expansion baseline using local OEM/OpenDBC references
 - `LICENSE_REFERENCE_REPORT.md`
   - license/reference inventory
 - `OPEN_SOURCE_INTAKE_POLICY.md`
