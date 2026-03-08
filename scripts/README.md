@@ -1,103 +1,38 @@
 ﻿# Scripts Guide
 
-This folder is the automation surface for the project.
+`scripts/`는 구현 위치입니다.
 
-Important:
-
-- not everything under `scripts/` is the product
-- the packaged product boundary is defined in:
-  - `product/sdv_operator/README.md`
+하지만 사용자는 이 폴더 전체를 알 필요가 없습니다.
 
 ## Start Here
-Use one entrypoint only:
 
-- `python scripts/run.py`
-- `sdv <command>` after local install
+하나의 진입점만 사용하십시오.
 
-If you need orientation, read these in order:
+```powershell
+python scripts/run.py
+```
+
+제품 설명과 상세 문서는 여기서 봅니다.
 
 1. `product/sdv_operator/README.md`
 2. `product/sdv_operator/docs-src/quickstart.md`
 3. `product/sdv_operator/docs-src/commands.md`
 4. `product/sdv_operator/docs-src/maintenance.md`
 
-## Canonical Daily Surface
-Ordinary operators should stay on these workflows:
+## Daily Surface
 
-1. `python scripts/run.py gate all`
-2. `python scripts/run.py scenario run --id <n>`
-3. `python scripts/run.py verify quick --run-id <RUN_ID> --owner <OWNER>`
-4. `python scripts/run.py doctor`
+일반 사용자는 아래 네 개만 기억하면 됩니다.
 
-Interpretation:
+```powershell
+python scripts/run.py gate all
+python scripts/run.py scenario run --id <n>
+python scripts/run.py verify quick --run-id <RUN_ID> --owner <OWNER>
+python scripts/run.py doctor
+```
 
-- `run.py` is the single public launcher
-- `tui_app.py` is the review console behind that launcher
-- `cliops/*`, `quality/*`, and `gates/*` are internal implementation layers
-- compatibility aliases still work, but are hidden from normal help
+## Interpretation
 
-## Runtime Policy
-
-Cross-platform:
-
-- shell/TUI UX
-- gates
-- verification report generation
-- packaging helpers
-
-Windows-only:
-
-- `doctor`
-- `scenario run`
-- `capl sysvar-*`
-- `canoe measure-*`
-- `canoe capl-call`
-
-Reason:
-
-- CANoe COM automation is Windows-only
-
-## Main Working Modes
-
-### 1. Operator TUI
-- `python scripts/run.py`
-- default path for daily operation and review
-
-### 2. Plain shell fallback
-- `python scripts/run.py shell`
-- conservative fallback when TUI is not desired
-
-### 3. Guided mode
-- `python scripts/run.py start guided`
-- menu-driven fallback for operators
-
-## Packaging
-
-Local editable install:
-
-- `python -m pip install -e .`
-
-Portable packaging:
-
-- `python scripts/run.py package build-exe --mode onefolder --clean`
-- `python scripts/run.py package bundle-portable --mode onefolder --clean --rebuild-exe`
-
-## Folder Roles
-
-- `scripts/cliops/`: command parsing and runtime implementation
-- `scripts/gates/`: quality gates
-- `scripts/quality/`: verification/evidence engines
-- `scripts/canoe/`: advanced CANoe maintenance helpers
-- `scripts/release/`: packaging helpers
-- `scripts/docs/`, `scripts/report/`: legacy/maintenance scripts, not daily operator surface
-
-## Complexity Rule
-
-If a teammate asks "What do I run?", the answer should remain:
-
-1. `python scripts/run.py`
-2. `gate all`
-3. `scenario run`
-4. `verify quick`
-
-If the answer requires explaining many subfolders, the public surface is too large.
+- `run.py` = 단일 공개 런처
+- `tui_app.py` = 검토 콘솔
+- `cliops/*`, `quality/*`, `gates/*` = 내부 구현 계층
+- hidden alias는 호환성 유지용이며 일반 운영 표면이 아닙니다.
