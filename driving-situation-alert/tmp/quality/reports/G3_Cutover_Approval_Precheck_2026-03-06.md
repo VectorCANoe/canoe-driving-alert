@@ -42,7 +42,7 @@
 - Closed date: `2026-03-06`
 - Rollback reference baseline commit: `d7e2a70fa3cf40351a252e28d12cca4d288869c0` (`2026-03-06T03:12:02+09:00`)
 - G4(Post-Cutover Audit) 진행 전 제출 패키지:
-  1. Annex A freeze CSV (`ID_335_AnnexA_Mapping_98_Template.csv`)
+  1. Annex A freeze CSV (`tmp/work-notes/id/ID_335_AnnexA_Mapping_98_Template.csv`)
   2. Gate 결과 로그 (`doc_code_sync_gate`, `check_capl_sync`, `cfg_hygiene_gate`)
   3. 런타임 증적(본 보고서 + GUI 캡처)
 

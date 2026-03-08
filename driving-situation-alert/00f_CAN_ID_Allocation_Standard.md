@@ -203,7 +203,7 @@
 
 ## 9. Annex A (98+확장 매핑 운영)
 
-- 파일: `driving-situation-alert/tmp/ID_335_AnnexA_Mapping_98_Template.csv`
+- 파일: `driving-situation-alert/tmp/work-notes/id/ID_335_AnnexA_Mapping_98_Template.csv`
 - 운영 메모: 현재 실운영 메시지 수는 101건이며, Annex A 템플릿(98건)에 확장분을 추가해 단일 테이블로 운영한다.
 - 목적: `Old ID -> New ID` 전수 매핑의 단일 근거 파일
 - 운영 원칙: 실제 할당 상태(`status/approver/approved_date`)는 Annex A CSV를 단일 운영 테이블로 사용한다.
