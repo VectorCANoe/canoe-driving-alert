@@ -117,7 +117,7 @@ Everything else in this folder exists to support those three actions.
     - `Execute`
     - `Results`
     - `Logs`
-  - `Home`: daily 3-step path and quick jump buttons
+  - `Home`: only the 3 core actions (`Gate all -> Scenario run -> Verify quick`) plus latest result and recent runs
   - `Execute`: one operator workspace; switch task groups inside the page (`Primary / Runtime / Inspect / Package`)
   - command selection does not run immediately; pick a task, adjust inputs, then press `Run now` or `r`
   - `Results`: pinned tasks / recent runs / run insight / last result / readiness / batch / COM runtime / timeline

@@ -92,24 +92,59 @@ class SdvTuiApp(App[None]):
     }
 
     #home-body {
-        height: 1fr;
+        padding: 1 1 0 1;
+        background: #17202b;
+        border: round #33536f;
+        min-height: 6;
     }
 
     #home-summary {
         padding: 1;
+        margin-top: 1;
         background: #17202b;
         border: round #33536f;
-        min-height: 8;
+        min-height: 7;
     }
 
-    #home-actions {
-        height: 5;
+    #home-core-flow {
+        height: 12;
         margin-top: 1;
     }
 
-    .quick-button {
-        margin-right: 1;
+    .home-task-card {
         width: 1fr;
+        padding: 1;
+        margin-right: 1;
+        background: #162130;
+        border: round #33536f;
+    }
+
+    .home-task-card:last-child {
+        margin-right: 0;
+    }
+
+    .home-task-title {
+        color: #f6c177;
+        text-style: bold;
+        margin-bottom: 1;
+    }
+
+    .home-task-copy {
+        color: #d7e7f2;
+        height: 1fr;
+    }
+
+    .quick-button {
+        margin-top: 1;
+        width: 1fr;
+    }
+
+    #home-recent {
+        padding: 1;
+        margin-top: 1;
+        background: #17202b;
+        border: round #33536f;
+        min-height: 8;
     }
 
     #summary-strip {
@@ -334,6 +369,7 @@ class SdvTuiApp(App[None]):
         self.log_filter = "ALL"
         self.log_buffer: list[dict[str, str]] = []
         self.current_page = "home"
+        self._suspend_option_events = False
 
     def compose(self) -> ComposeResult:
         yield Header(show_clock=True)
@@ -358,21 +394,36 @@ class SdvTuiApp(App[None]):
             with Vertical(id="content"):
                 with Vertical(id="page-home", classes="page"):
                     yield Static(
-                        "Daily path\n\n"
-                        "1. Gate all\n"
-                        "2. Scenario run\n"
-                        "3. Verify quick\n\n"
-                        "This console is for execution and evidence review.\n"
-                        "CANoe panel remains the operator UI for product behavior.",
+                        "Verification Console\n\n"
+                        "Simple operator surface, complex verification engine.\n"
+                        "Use three core actions in order: Gate all -> Scenario run -> Verify quick.\n"
+                        "CANoe Panel remains the product-operation UI. This console owns execution, evidence, and review.",
                         id="home-body",
                     )
                     yield Static(id="home-summary")
-                    with Horizontal(id="home-actions"):
-                        yield Button("Gate all", id="home-gate", classes="quick-button", variant="success")
-                        yield Button("Scenario run", id="home-scenario", classes="quick-button")
-                        yield Button("Verify quick", id="home-verify", classes="quick-button")
-                        yield Button("Results", id="home-results", classes="quick-button")
-                        yield Button("Logs", id="home-logs", classes="quick-button")
+                    with Horizontal(id="home-core-flow"):
+                        with Vertical(classes="home-task-card"):
+                            yield Static("1) Gate all", classes="home-task-title")
+                            yield Static(
+                                "Run DBC/CAPL/document readiness checks before any scenario or evidence run.",
+                                classes="home-task-copy",
+                            )
+                            yield Button("Open Gate all", id="home-gate", classes="quick-button", variant="success")
+                        with Vertical(classes="home-task-card"):
+                            yield Static("2) Scenario run", classes="home-task-title")
+                            yield Static(
+                                "Send a scenario command through CANoe COM and verify that ack returns from Test sysvars.",
+                                classes="home-task-copy",
+                            )
+                            yield Button("Open Scenario run", id="home-scenario", classes="quick-button")
+                        with Vertical(classes="home-task-card"):
+                            yield Static("3) Verify quick", classes="home-task-title")
+                            yield Static(
+                                "Generate readiness and evidence status, then review PASS/WARN/FAIL with artifact paths.",
+                                classes="home-task-copy",
+                            )
+                            yield Button("Open Verify quick", id="home-verify", classes="quick-button", variant="primary")
+                    yield Static(id="home-recent")
                 with Horizontal(id="page-execute", classes="page hidden"):
                     with Vertical(id="commands-pane", classes="pane"):
                         yield Static("1) What do you want to do?", classes="pane-title")
@@ -453,6 +504,105 @@ class SdvTuiApp(App[None]):
         self._refresh_log_summary()
         self._write_log("[bold cyan]TUI ready[/]  Select a task, fill required values, then press [bold]Ctrl+R[/].")
 
+    def _show_page(self, page_name: str) -> None:
+        self.current_page = page_name
+        pages = ("home", "execute", "results", "logs")
+        for item in pages:
+            page = self.query_one(f"#page-{item}")
+            if item == page_name:
+                page.remove_class("hidden")
+            else:
+                page.add_class("hidden")
+        active_nav = {
+            "home": "nav-home",
+            "execute": "nav-execute",
+            "results": "nav-results",
+            "logs": "nav-logs",
+        }[page_name]
+        for button_id in ("nav-home", "nav-execute", "nav-results", "nav-logs"):
+            button = self.query_one(f"#{button_id}", Button)
+            button.variant = "primary" if button_id == active_nav else "default"
+        self._refresh_execute_group_buttons()
+
+    def _set_command_group(self, group_name: str) -> None:
+        if group_name not in self.group_names:
+            return
+        self.active_group_index = self.group_names.index(group_name)
+        self._refresh_commands(self.active_group_index)
+        self.query_one("#commands-title", Static).update(f"2) Pick one task  |  {group_name}")
+        self._show_page("execute")
+        self._refresh_execute_group_buttons()
+        self.query_one("#commands", OptionList).focus()
+
+    def _refresh_execute_group_buttons(self) -> None:
+        mapping = {
+            "Primary Workflow": "group-primary",
+            "Runtime Support": "group-runtime",
+            "System Access": "group-inspect",
+            "Packaging": "group-package",
+        }
+        active = mapping.get(self._active_group_name(), "group-primary")
+        for button_id in mapping.values():
+            try:
+                button = self.query_one(f"#{button_id}", Button)
+            except Exception:
+                continue
+            button.variant = "primary" if button_id == active else "default"
+
+    def _select_command_by_id(self, command_id: str) -> None:
+        commands = self._active_group_commands()
+        for index, command in enumerate(commands):
+            if command.command_id == command_id:
+                self.active_command_index = index
+                command_list = self.query_one("#commands", OptionList)
+                self._suspend_option_events = True
+                command_list.highlighted = index
+                self._suspend_option_events = False
+                self._update_command_view(command)
+                return
+
+    def _open_core_task(self, command_id: str, *, focus: str) -> None:
+        self._set_command_group("Primary Workflow")
+        self._select_command_by_id(command_id)
+        self._show_page("execute")
+        self._refresh_execute_group_buttons()
+        if focus == "form":
+            self.action_focus_form()
+        else:
+            self.query_one("#run-button", Button).focus()
+
+    def _refresh_home_summary(self) -> None:
+        last_result = self.state.get("last_result", {})
+        insight = self.state.get("last_insight", {})
+        timeline = self.state.get("timeline", {})
+        status = str(last_result.get("status", "IDLE")) if isinstance(last_result, dict) else "IDLE"
+        title = str(last_result.get("title", "No task executed yet")) if isinstance(last_result, dict) else "No task executed yet"
+        detail = str(last_result.get("detail", "Select a task and run it to populate this card.")) if isinstance(last_result, dict) else "Select a task and run it to populate this card."
+        bottleneck = str(insight.get("bottleneck", "No execution insight yet.")) if isinstance(insight, dict) else "No execution insight yet."
+        next_action = str(insight.get("next_action", "Run Gate all first.")) if isinstance(insight, dict) else "Run Gate all first."
+        stage = str(insight.get("stage", "Idle")) if isinstance(insight, dict) else "Idle"
+        gate = str(timeline.get("gate", "IDLE")) if isinstance(timeline, dict) else "IDLE"
+        scenario = str(timeline.get("scenario", "IDLE")) if isinstance(timeline, dict) else "IDLE"
+        verify = str(timeline.get("verify", "IDLE")) if isinstance(timeline, dict) else "IDLE"
+        recent = self._recent_rows()
+        self.query_one(
+            "#home-summary", Static
+        ).update(
+            f"Stage: {stage}\n"
+            f"Last result: {status} | {title}\n"
+            f"Timeline: Gate={gate} / Scenario={scenario} / Verify={verify}\n"
+            f"Bottleneck: {bottleneck}\n"
+            f"Next: {next_action}"
+        )
+        recent_lines = ["Recent results"]
+        if recent:
+            for item in recent[:3]:
+                recent_lines.append(f"- {self._recent_entry_label(item)}")
+        else:
+            recent_lines.append("- No runs yet. Start with Gate all.")
+        recent_lines.extend(["", f"Latest detail: {detail}", "", "Use Results for full verdict, evidence, and COM drill-down."])
+        self.query_one("#home-recent", Static).update("\n".join(recent_lines))
+
     def _load_state(self) -> dict[str, object]:
         default_state: dict[str, object] = {
             "pinned": [],
@@ -521,89 +671,14 @@ class SdvTuiApp(App[None]):
         target_index = self.group_names.index(target_group)
         self._refresh_commands(target_index)
 
-    def _show_page(self, page_name: str) -> None:
-        self.current_page = page_name
-        pages = ("home", "execute", "results", "logs")
-        for item in pages:
-            page = self.query_one(f"#page-{item}")
-            if item == page_name:
-                page.remove_class("hidden")
-            else:
-                page.add_class("hidden")
-        active_nav = {
-            "home": "nav-home",
-            "execute": "nav-execute",
-            "results": "nav-results",
-            "logs": "nav-logs",
-        }[page_name]
-        for button_id in ("nav-home", "nav-execute", "nav-results", "nav-logs"):
-            button = self.query_one(f"#{button_id}", Button)
-            button.variant = "primary" if button_id == active_nav else "default"
-        self._refresh_execute_group_buttons()
-
-    def _set_command_group(self, group_name: str) -> None:
-        if group_name not in self.group_names:
-            return
-        self.active_group_index = self.group_names.index(group_name)
-        self._refresh_commands(self.active_group_index)
-        self.query_one("#commands-title", Static).update(f"2) Pick one task  |  {group_name}")
-        self._show_page("execute")
-        self._refresh_execute_group_buttons()
-        self.query_one("#commands", OptionList).focus()
-
-    def _refresh_execute_group_buttons(self) -> None:
-        mapping = {
-            "Primary Workflow": "group-primary",
-            "Runtime Support": "group-runtime",
-            "System Access": "group-inspect",
-            "Packaging": "group-package",
-        }
-        active = mapping.get(self._active_group_name(), "group-primary")
-        for button_id in mapping.values():
-            try:
-                button = self.query_one(f"#{button_id}", Button)
-            except Exception:
-                continue
-            button.variant = "primary" if button_id == active else "default"
-
-    def _select_command_by_id(self, command_id: str) -> None:
-        commands = self._active_group_commands()
-        for index, command in enumerate(commands):
-            if command.command_id == command_id:
-                self.active_command_index = index
-                command_list = self.query_one("#commands", OptionList)
-                command_list.highlighted = index
-                self._update_command_view(command)
-                return
-
-    def _refresh_home_summary(self) -> None:
-        last_result = self.state.get("last_result", {})
-        insight = self.state.get("last_insight", {})
-        timeline = self.state.get("timeline", {})
-        status = str(last_result.get("status", "IDLE")) if isinstance(last_result, dict) else "IDLE"
-        title = str(last_result.get("title", "No task executed yet")) if isinstance(last_result, dict) else "No task executed yet"
-        bottleneck = str(insight.get("bottleneck", "No execution insight yet.")) if isinstance(insight, dict) else "No execution insight yet."
-        next_action = str(insight.get("next_action", "Run Gate all first.")) if isinstance(insight, dict) else "Run Gate all first."
-        gate = str(timeline.get("gate", "IDLE")) if isinstance(timeline, dict) else "IDLE"
-        scenario = str(timeline.get("scenario", "IDLE")) if isinstance(timeline, dict) else "IDLE"
-        verify = str(timeline.get("verify", "IDLE")) if isinstance(timeline, dict) else "IDLE"
-        self.query_one(
-            "#home-summary", Static
-        ).update(
-            f"Last result: {status} | {title}\n"
-            f"Timeline: Gate={gate} / Scenario={scenario} / Verify={verify}\n"
-            f"Bottleneck: {bottleneck}\n"
-            f"Next: {next_action}"
-        )
-
     def _refresh_summary_cards(self) -> None:
         favorites = self._favorite_commands()
         if favorites:
             favorite_lines = [f"{idx + 1}. {command.title}" for idx, command in enumerate(favorites[:5])]
             favorite_lines.append("")
-            favorite_lines.append("Press v to jump to Favorites.")
+            favorite_lines.append("Press Ctrl+P to pin or unpin the selected task.")
         else:
-            favorite_lines = ["No pinned tasks yet.", "Select a task and press p to pin it."]
+            favorite_lines = ["No pinned tasks yet.", "Select a task and press Ctrl+P to pin it."]
         self.query_one("#favorites-body", Static).update("\n".join(favorite_lines))
 
         recent_rows = self._recent_rows()
@@ -624,9 +699,9 @@ class SdvTuiApp(App[None]):
             next_action = str(last_insight.get("next_action", "Run Gate all first."))
         else:
             stage, bottleneck, next_action = "Idle", "No execution insight yet.", "Run Gate all first."
-        self.query_one(
-            "#insight-body", Static
-        ).update(f"Stage: {stage}\nBottleneck: {bottleneck}\nNext: {next_action}")
+        self.query_one("#insight-body", Static).update(
+            f"Stage: {stage}\nBottleneck: {bottleneck}\nNext: {next_action}"
+        )
         self.query_one("#readiness-body", Static).update(self._summarize_tier_readiness())
         self.query_one("#batch-body", Static).update(self._summarize_batch_snapshot())
         self.query_one("#com-body", Static).update(self._summarize_com_snapshot())
@@ -641,7 +716,14 @@ class SdvTuiApp(App[None]):
             artifacts = last_result.get("artifacts", [])
             related_logs = last_result.get("related_logs", [])
         else:
-            status, title, detail, ts, artifacts, related_logs = "IDLE", "No task executed yet", "Select a task and run it to populate this card.", "", [], []
+            status, title, detail, ts, artifacts, related_logs = (
+                "IDLE",
+                "No task executed yet",
+                "Select a task and run it to populate this card.",
+                "",
+                [],
+                [],
+            )
         result_lines = [status, title, detail]
         if isinstance(related_logs, list) and related_logs:
             result_lines.append("")
@@ -651,102 +733,12 @@ class SdvTuiApp(App[None]):
             result_lines.append("")
             result_lines.append("Evidence:")
             result_lines.extend(str(item) for item in artifacts[:3])
-            result_lines.append("Actions: o=open, y=copy first path")
+            result_lines.append("Actions: Ctrl+O=open, Ctrl+Y=copy first path")
         if ts:
             result_lines.append(ts)
         self.query_one("#result-body", Static).update("\n".join(result_lines))
         self._refresh_log_controls()
         self._refresh_home_summary()
-
-    def _load_state(self) -> dict[str, object]:
-        default_state: dict[str, object] = {
-            "pinned": [],
-            "recent": [],
-            "last_result": {
-                "status": "IDLE",
-                "title": "No task executed yet",
-                "detail": "Select a task and run it to populate this card.",
-                "ts": "",
-            },
-        }
-        if not STATE_FILE.exists():
-            return default_state
-        try:
-            data = json.loads(STATE_FILE.read_text(encoding="utf-8"))
-        except Exception:
-            return default_state
-        if not isinstance(data, dict):
-            return default_state
-        default_state.update({k: v for k, v in data.items() if k in default_state})
-        return default_state
-
-    def _save_state(self) -> None:
-        try:
-            STATE_FILE.parent.mkdir(parents=True, exist_ok=True)
-            STATE_FILE.write_text(json.dumps(self.state, indent=2, ensure_ascii=False), encoding="utf-8")
-        except Exception:
-            pass
-
-    def _build_group_names(self) -> list[str]:
-        names = list(BASE_GROUP_NAMES)
-        if self._favorite_commands():
-            return ["Favorites", *names]
-        return names
-
-    def _favorite_commands(self) -> list[PaletteCommand]:
-        favorite_ids = [item for item in self.state.get("pinned", []) if isinstance(item, str)]
-        return [COMMAND_INDEX[item] for item in favorite_ids if item in COMMAND_INDEX]
-
-    def _current_command_is_pinned(self) -> bool:
-        command = self._selected_command()
-        if command is None:
-            return False
-        return command.command_id in self.state.get("pinned", [])
-
-    def _rebuild_groups(self, preferred_group: str | None = None) -> None:
-        self.group_names = self._build_group_names()
-        groups = self.query_one("#groups", OptionList)
-        groups.clear_options()
-        groups.add_options([Option(group_name) for group_name in self.group_names])
-        target_group = preferred_group if preferred_group in self.group_names else self.group_names[0]
-        target_index = self.group_names.index(target_group)
-        groups.highlighted = target_index
-        self._refresh_commands(target_index)
-
-    def _refresh_summary_cards(self) -> None:
-        favorites = self._favorite_commands()
-        if favorites:
-            favorite_lines = [f"{idx + 1}. {command.title}" for idx, command in enumerate(favorites[:5])]
-        else:
-            favorite_lines = ["No pinned tasks yet.", "Select a task and press p to pin it."]
-        self.query_one("#favorites-body", Static).update("\n".join(favorite_lines))
-
-        recent_rows = self.state.get("recent", [])
-        recent_lines: list[str] = []
-        if isinstance(recent_rows, list):
-            for item in recent_rows[:5]:
-                if not isinstance(item, dict):
-                    continue
-                status = str(item.get("status", ""))
-                title = str(item.get("title", ""))
-                ts = str(item.get("ts", ""))
-                recent_lines.append(f"{status}  {title}  {ts}")
-        if not recent_lines:
-            recent_lines = ["No recent executions yet.", "Your last 5 runs will appear here."]
-        self.query_one("#recent-body", Static).update("\n".join(recent_lines))
-
-        last_result = self.state.get("last_result", {})
-        if isinstance(last_result, dict):
-            status = str(last_result.get("status", "IDLE"))
-            title = str(last_result.get("title", "No task executed yet"))
-            detail = str(last_result.get("detail", "Select a task and run it to populate this card."))
-            ts = str(last_result.get("ts", ""))
-        else:
-            status, title, detail, ts = "IDLE", "No task executed yet", "Select a task and run it to populate this card.", ""
-        result_lines = [status, title, detail]
-        if ts:
-            result_lines.append(ts)
-        self.query_one("#result-body", Static).update("\n".join(result_lines))
 
     def _refresh_commands(self, group_index: int) -> None:
         self.active_group_index = group_index
@@ -754,12 +746,16 @@ class SdvTuiApp(App[None]):
         commands = self._active_group_commands()
         self.query_one("#commands-title", Static).update(f"{self._active_group_name()} Tasks")
         command_list = self.query_one("#commands", OptionList)
+        self._suspend_option_events = True
         command_list.clear_options()
         command_list.add_options([Option(cmd.title) for cmd in commands])
         if commands:
             command_list.highlighted = 0
+        self._suspend_option_events = False
+        if commands:
             self._update_command_view(commands[0])
         else:
+            self._suspend_option_events = False
             self.query_one("#details-body", Static).update("No commands in this category.")
             self._clear_form()
 
@@ -1515,6 +1511,8 @@ class SdvTuiApp(App[None]):
         return 0 if highlighted is None else int(highlighted)
 
     def on_option_list_option_highlighted(self, event: OptionList.OptionHighlighted) -> None:
+        if self._suspend_option_events:
+            return
         if event.option_list.id == "commands":
             self.active_command_index = self._selected_option_index(event.option_list)
             command = self._selected_command()
@@ -1576,21 +1574,11 @@ class SdvTuiApp(App[None]):
         elif event.button.id == "nav-logs":
             self._show_page("logs")
         elif event.button.id == "home-gate":
-            self._set_command_group("Primary Workflow")
-            self._select_command_by_id("verify.all_gates")
-            self.query_one("#run-button", Button).focus()
+            self._open_core_task("verify.all_gates", focus="run")
         elif event.button.id == "home-scenario":
-            self._set_command_group("Primary Workflow")
-            self._select_command_by_id("operate.scenario_trigger")
-            self.action_focus_form()
+            self._open_core_task("operate.scenario_trigger", focus="form")
         elif event.button.id == "home-verify":
-            self._set_command_group("Primary Workflow")
-            self._select_command_by_id("verify.quick_verify")
-            self.action_focus_form()
-        elif event.button.id == "home-results":
-            self._show_page("results")
-        elif event.button.id == "home-logs":
-            self._show_page("logs")
+            self._open_core_task("verify.quick_verify", focus="form")
         elif event.button.id == "group-primary":
             self._set_command_group("Primary Workflow")
         elif event.button.id == "group-runtime":
@@ -1627,6 +1615,7 @@ class SdvTuiApp(App[None]):
         self.query_one("#commands", OptionList).focus()
 
     def action_focus_form(self) -> None:
+        self._show_page("execute")
         command = self._selected_command()
         if command is None or not command.params:
             self.query_one("#commands", OptionList).focus()
