@@ -78,34 +78,72 @@ def build_command_index() -> dict[str, PaletteCommand]:
 
 
 PRODUCT_COMMAND_GROUPS: dict[str, list[PaletteCommand]] = {
-    "Operate": [
+    "Primary Workflow": [
         PaletteCommand(
-            command_id="operate.guided",
-            title="Guided operator flow",
-            command="start guided",
-            summary="Open the stable numeric guided flow for operators.",
-            notes="Use this when you want the conservative fallback without the full dashboard.",
+            command_id="verify.all_gates",
+            title="1) Gate all",
+            command="gate all",
+            summary="Run the full preflight gate bundle before touching runtime.",
+            notes="This is the first daily step. If this fails, stop and fix consistency issues first.",
         ),
         PaletteCommand(
             command_id="operate.scenario_trigger",
-            title="Scenario trigger",
+            title="2) Scenario run",
             command="scenario run --id 4",
             base_command="scenario run",
-            summary="Send one SIL scenario command and wait for ack.",
+            summary="Inject one SIL scenario into CANoe and wait for the ack path.",
             windows_only=True,
-            notes="Use the scenario ID only. The CLI keeps namespace and ack wiring consistent.",
+            notes="Use this after gates are clean and measurement is running.",
             params=(
                 CommandParam(
                     key="scenario_id",
                     flag="--id",
                     label="Scenario ID",
                     default="4",
-                    help="0 stops, 1..25 scenario runs, 100 auto-demo, 200..255 baseline diag.",
+                    help="0 stops, 1..25 runs a scenario, 100 auto-demo, 200..255 baseline diagnostic.",
                     placeholder="4",
                     kind="int",
                     required=True,
                 ),
             ),
+        ),
+        PaletteCommand(
+            command_id="verify.quick_verify",
+            title="3) Verify quick",
+            command="verify quick",
+            summary="Create evidence folders, run smoke checks, and score run readiness in one pass.",
+            windows_only=True,
+            notes="Use this immediately after scenario execution to collect the first validation evidence.",
+            params=(
+                CommandParam(
+                    key="run_id",
+                    flag="--run-id",
+                    label="Run ID",
+                    default="{run_id}",
+                    help="Evidence run identifier.",
+                    placeholder="20260308_0900",
+                    required=True,
+                ),
+                CommandParam(
+                    key="owner",
+                    flag="--owner",
+                    label="Owner",
+                    default="DEV2",
+                    help="Owner tag used by smoke/status reports.",
+                    placeholder="DEV2",
+                    required=True,
+                ),
+            ),
+        ),
+    ],
+    "Runtime Support": [
+        PaletteCommand(
+            command_id="inspect.environment_doctor",
+            title="Environment doctor",
+            command="doctor",
+            summary="Check CANoe COM attach, measurement state, and required sysvars.",
+            windows_only=True,
+            notes="Use this when runtime attach or measurement state is unclear.",
         ),
         PaletteCommand(
             command_id="operate.measure_status",
@@ -128,15 +166,13 @@ PRODUCT_COMMAND_GROUPS: dict[str, list[PaletteCommand]] = {
             summary="Stop CANoe measurement through COM.",
             windows_only=True,
         ),
-    ],
-    "Verify": [
         PaletteCommand(
             command_id="verify.precheck_batch",
             title="Precheck batch",
             command="start precheck",
             summary="Run gates + prepare + smoke + readiness status in one operator flow.",
             windows_only=True,
-            notes="Best first step before collecting evidence or screenshots.",
+            notes="Use this when you want a stricter guided bundle before screenshots/evidence capture.",
             params=(
                 CommandParam(
                     key="run_id",
@@ -153,33 +189,6 @@ PRODUCT_COMMAND_GROUPS: dict[str, list[PaletteCommand]] = {
                     label="Owner",
                     default="DEV2",
                     help="Operator/owner tag written into reports.",
-                    placeholder="DEV2",
-                    required=True,
-                ),
-            ),
-        ),
-        PaletteCommand(
-            command_id="verify.quick_verify",
-            title="Quick verify",
-            command="verify quick",
-            summary="Prepare, smoke, and summarize one run quickly.",
-            windows_only=True,
-            params=(
-                CommandParam(
-                    key="run_id",
-                    flag="--run-id",
-                    label="Run ID",
-                    default="{run_id}",
-                    help="Evidence run identifier.",
-                    placeholder="20260308_0900",
-                    required=True,
-                ),
-                CommandParam(
-                    key="owner",
-                    flag="--owner",
-                    label="Owner",
-                    default="DEV2",
-                    help="Owner tag used by smoke/status reports.",
                     placeholder="DEV2",
                     required=True,
                 ),
@@ -204,20 +213,14 @@ PRODUCT_COMMAND_GROUPS: dict[str, list[PaletteCommand]] = {
             ),
         ),
         PaletteCommand(
-            command_id="verify.all_gates",
-            title="All gates",
-            command="gate all",
-            summary="Run doc-sync, cfg-hygiene, capl-sync, multibus-dbc, and cli-readiness gates.",
+            command_id="operate.guided",
+            title="Guided operator flow",
+            command="start guided",
+            summary="Open the conservative numeric fallback flow for operators.",
+            notes="Use this only when you do not want the full Textual dashboard.",
         ),
     ],
-    "Inspect": [
-        PaletteCommand(
-            command_id="inspect.environment_doctor",
-            title="Environment doctor",
-            command="doctor",
-            summary="Check CANoe COM attach, measurement state, and required sysvars.",
-            windows_only=True,
-        ),
+    "System Access": [
         PaletteCommand(
             command_id="inspect.read_system_variable",
             title="Read system variable",
@@ -300,7 +303,7 @@ PRODUCT_COMMAND_GROUPS: dict[str, list[PaletteCommand]] = {
             summary="Print canonical and legacy command surfaces for operators and automation.",
         ),
     ],
-    "Package": [
+    "Packaging": [
         PaletteCommand(
             command_id="package.portable_bundle",
             title="Portable bundle",

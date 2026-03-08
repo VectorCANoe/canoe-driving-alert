@@ -1,0 +1,542 @@
+from __future__ import annotations
+
+import argparse
+import datetime as dt
+from pathlib import Path
+from typing import Callable, Mapping
+
+
+HandlerMap = Mapping[str, Callable]
+
+
+TOPLEVEL_COMMANDS = [
+    "start",
+    "doctor",
+    "capl",
+    "canoe",
+    "shell",
+    "tui",
+    "wizard",
+    "scenario",
+    "verify",
+    "evidence",
+    "gate",
+    "package",
+    "release",
+    "contract",
+    "scenario-run",
+    "interactive",
+    "verify-prepare",
+    "verify-batch",
+    "verify-smoke",
+    "verify-fill-score",
+    "verify-insight",
+    "verify-bind-doc",
+    "verify-fill-template",
+    "verify-status",
+    "verify-finalize",
+    "gate-doc-sync",
+    "gate-cfg-hygiene",
+    "gate-capl-sync",
+    "gate-multibus-dbc",
+    "gate-cli-readiness",
+    "package-build-exe",
+    "package-bundle-portable",
+    "go",
+    "demo",
+    "precheck",
+    "mstart",
+    "mstop",
+    "mstatus",
+]
+
+
+def add_verify_prepare_args(p: argparse.ArgumentParser, handlers: HandlerMap) -> None:
+    p.add_argument("--run-id", required=True, help="Run ID, e.g. 20260306_1930")
+    p.set_defaults(func=handlers["cmd_verify_prepare"])
+
+
+def add_verify_batch_args(p: argparse.ArgumentParser, handlers: HandlerMap) -> None:
+    p.add_argument("--run-id", required=True, help="Run ID, e.g. 20260306_1930")
+    p.add_argument("--owner", default="TBD")
+    p.add_argument("--run-date", default=dt.date.today().isoformat())
+    p.add_argument("--phase", choices=["pre", "post", "full"], default="pre")
+    p.add_argument("--skip-gates", action="store_true", help="Skip all gate steps in pre/full phase")
+    p.add_argument("--stop-on-fail", action="store_true", help="Stop immediately at first failed step")
+    p.add_argument(
+        "--report-formats",
+        default="json,md",
+        help="Comma-separated report formats: json,md,csv (default: json,md)",
+    )
+    p.add_argument(
+        "--output-json",
+        type=Path,
+        default=Path("canoe/tmp/reports/verification/dev2_batch_report.json"),
+        help="Batch summary JSON output path",
+    )
+    p.add_argument(
+        "--output-md",
+        type=Path,
+        default=Path("canoe/tmp/reports/verification/dev2_batch_report.md"),
+        help="Batch summary markdown output path",
+    )
+    p.add_argument(
+        "--output-csv",
+        type=Path,
+        default=Path("canoe/tmp/reports/verification/dev2_batch_report.csv"),
+        help="Batch summary CSV output path (optional format)",
+    )
+    p.set_defaults(func=handlers["cmd_verify_batch"])
+
+
+def add_verify_smoke_args(p: argparse.ArgumentParser, handlers: HandlerMap) -> None:
+    p.add_argument("--owner", default="TBD")
+    p.add_argument("--run-date", default=dt.date.today().isoformat())
+    p.set_defaults(func=handlers["cmd_verify_smoke"])
+
+
+def add_verify_quick_args(
+    p: argparse.ArgumentParser,
+    handlers: HandlerMap,
+    default_run_id: Callable[[], str],
+) -> None:
+    p.add_argument("--run-id", default=default_run_id(), help="Run ID, e.g. 20260306_1930")
+    p.add_argument("--owner", default="DEV2")
+    p.add_argument("--run-date", default=dt.date.today().isoformat())
+    p.set_defaults(func=handlers["cmd_verify_quick"])
+
+
+def add_verify_fill_args(p: argparse.ArgumentParser, handlers: HandlerMap) -> None:
+    p.add_argument("--tier", required=True, choices=["UT", "IT", "ST"])
+    p.add_argument("--run-id", required=True, help="Run ID, e.g. 20260306_1930")
+    p.add_argument("--owner", default="TBD")
+    p.add_argument("--run-date", default=dt.date.today().isoformat())
+    p.add_argument("--baseline-csv", default="", help="Optional baseline scored CSV for regression comparison")
+    p.add_argument("--no-strict-metadata", action="store_true")
+    p.add_argument("--no-strict-axis", action="store_true")
+    p.set_defaults(func=handlers["cmd_verify_fill_score"])
+
+
+def add_verify_insight_args(p: argparse.ArgumentParser, handlers: HandlerMap) -> None:
+    p.add_argument("--run-id", required=True, help="Run ID, e.g. 20260306_1930")
+    p.add_argument("--baseline-run-id", default="", help="Optional baseline run ID for trend comparison")
+    p.add_argument(
+        "--evidence-root",
+        default="",
+        help="Optional evidence root path (default pipeline root is used when omitted)",
+    )
+    p.add_argument(
+        "--output-md",
+        default="canoe/tmp/reports/verification/run_insight_report.md",
+        help="Run-level insight markdown output path",
+    )
+    p.add_argument(
+        "--output-json",
+        default="canoe/tmp/reports/verification/run_insight_report.json",
+        help="Run-level insight JSON output path",
+    )
+    p.set_defaults(func=handlers["cmd_verify_insight"])
+
+
+def add_verify_bind_doc_args(p: argparse.ArgumentParser, handlers: HandlerMap) -> None:
+    p.add_argument("--run-id", required=True, help="Run ID, e.g. 20260306_1930")
+    p.add_argument(
+        "--evidence-root",
+        default="",
+        help="Optional evidence root path (default pipeline root is used when omitted)",
+    )
+    p.add_argument(
+        "--docs-root",
+        default="",
+        help="Optional docs root path (default: driving-situation-alert)",
+    )
+    p.add_argument(
+        "--output-csv",
+        default="canoe/tmp/reports/verification/doc_binding_bundle.csv",
+        help="05/06/07 doc binding CSV output path",
+    )
+    p.add_argument(
+        "--output-json",
+        default="canoe/tmp/reports/verification/doc_binding_bundle.json",
+        help="05/06/07 doc binding JSON output path",
+    )
+    p.add_argument(
+        "--output-md",
+        default="canoe/tmp/reports/verification/doc_binding_bundle.md",
+        help="05/06/07 doc binding markdown output path",
+    )
+    p.set_defaults(func=handlers["cmd_verify_bind_doc"])
+
+
+def add_verify_fill_template_args(p: argparse.ArgumentParser, handlers: HandlerMap) -> None:
+    p.add_argument("--run-id", required=True, help="Run ID, e.g. 20260306_1930")
+    p.add_argument(
+        "--evidence-root",
+        default="",
+        help="Optional evidence root path (default pipeline root is used when omitted)",
+    )
+    p.add_argument(
+        "--docs-root",
+        default="",
+        help="Optional docs root path (default: driving-situation-alert)",
+    )
+    p.add_argument("--owner-fallback", default="TBD", help="Fallback owner for READY rows")
+    p.add_argument("--date-fallback", default=dt.date.today().isoformat(), help="Fallback date for READY rows")
+    p.add_argument(
+        "--binding-csv",
+        default="canoe/tmp/reports/verification/doc_binding_bundle.csv",
+        help="Binding CSV output path",
+    )
+    p.add_argument(
+        "--binding-json",
+        default="canoe/tmp/reports/verification/doc_binding_bundle.json",
+        help="Binding JSON output path",
+    )
+    p.add_argument(
+        "--binding-md",
+        default="canoe/tmp/reports/verification/doc_binding_bundle.md",
+        help="Binding markdown output path",
+    )
+    p.add_argument(
+        "--output-csv",
+        default="canoe/tmp/reports/verification/doc_fill_template.csv",
+        help="Doc fill template CSV output path",
+    )
+    p.add_argument(
+        "--output-md",
+        default="canoe/tmp/reports/verification/doc_fill_template.md",
+        help="Doc fill template markdown output path",
+    )
+    p.set_defaults(func=handlers["cmd_verify_fill_template"])
+
+
+def add_verify_finalize_args(p: argparse.ArgumentParser, handlers: HandlerMap) -> None:
+    p.add_argument("--run-id", required=True, help="Run ID, e.g. 20260306_1930")
+    p.add_argument("--tiers", nargs="+", default=["UT", "IT", "ST"], choices=["UT", "IT", "ST"])
+    p.add_argument("--owner", default="TBD")
+    p.add_argument("--run-date", default=dt.date.today().isoformat())
+    p.add_argument("--owner-fallback", default="")
+    p.add_argument("--date-fallback", default="")
+    p.add_argument("--baseline-run-id", default="", help="Optional baseline run ID for insight comparison")
+    p.add_argument("--no-strict-metadata", action="store_true")
+    p.add_argument("--no-strict-axis", action="store_true")
+    p.add_argument(
+        "--evidence-root",
+        default="",
+        help="Optional evidence root path (default pipeline root is used when omitted)",
+    )
+    p.add_argument(
+        "--docs-root",
+        default="",
+        help="Optional docs root path (default: driving-situation-alert)",
+    )
+    p.add_argument(
+        "--insight-md",
+        default="canoe/tmp/reports/verification/run_insight_report.md",
+        help="Run-level insight markdown output path",
+    )
+    p.add_argument(
+        "--insight-json",
+        default="canoe/tmp/reports/verification/run_insight_report.json",
+        help="Run-level insight JSON output path",
+    )
+    p.add_argument(
+        "--binding-csv",
+        default="canoe/tmp/reports/verification/doc_binding_bundle.csv",
+        help="Doc binding CSV output path",
+    )
+    p.add_argument(
+        "--binding-json",
+        default="canoe/tmp/reports/verification/doc_binding_bundle.json",
+        help="Doc binding JSON output path",
+    )
+    p.add_argument(
+        "--binding-md",
+        default="canoe/tmp/reports/verification/doc_binding_bundle.md",
+        help="Doc binding markdown output path",
+    )
+    p.add_argument(
+        "--fill-csv",
+        default="canoe/tmp/reports/verification/doc_fill_template.csv",
+        help="Doc fill template CSV output path",
+    )
+    p.add_argument(
+        "--fill-md",
+        default="canoe/tmp/reports/verification/doc_fill_template.md",
+        help="Doc fill template markdown output path",
+    )
+    p.set_defaults(func=handlers["cmd_verify_finalize"])
+
+
+def add_verify_status_args(p: argparse.ArgumentParser, handlers: HandlerMap) -> None:
+    p.add_argument("--run-id", required=True, help="Run ID, e.g. 20260306_1930")
+    p.add_argument(
+        "--evidence-root",
+        default="",
+        help="Optional evidence root path (default pipeline root is used when omitted)",
+    )
+    p.add_argument(
+        "--output-json",
+        default="canoe/tmp/reports/verification/run_readiness.json",
+        help="Run readiness JSON output path",
+    )
+    p.add_argument(
+        "--output-md",
+        default="canoe/tmp/reports/verification/run_readiness.md",
+        help="Run readiness markdown output path",
+    )
+    p.set_defaults(func=handlers["cmd_verify_status"])
+
+
+def add_scenario_run_args(p: argparse.ArgumentParser, handlers: HandlerMap) -> None:
+    p.add_argument("--id", type=int, required=True, help="Scenario ID (0..255)")
+    p.add_argument("--namespace", default="Test", help="System variable namespace")
+    p.add_argument(
+        "--var",
+        default="scenarioCommand",
+        choices=["scenarioCommand", "testScenario"],
+        help="Target sysvar name",
+    )
+    p.add_argument("--ack-var", default="scenarioCommandAck", help="Ack sysvar name")
+    p.add_argument("--wait-ack-ms", type=int, default=1200, help="Ack wait timeout in ms")
+    p.add_argument("--poll-ms", type=int, default=20, help="Ack poll interval in ms")
+    p.add_argument("--no-ensure-running", action="store_true", help="Do not auto-start measurement")
+    p.set_defaults(func=handlers["cmd_scenario_run"])
+
+
+def add_start_demo_args(p: argparse.ArgumentParser, handlers: HandlerMap) -> None:
+    p.add_argument("--id", type=int, default=4, help="Scenario ID (0..255), default=4")
+    p.add_argument(
+        "--var",
+        default="scenarioCommand",
+        choices=["scenarioCommand", "testScenario"],
+        help="Target sysvar name",
+    )
+    p.add_argument("--wait-ack-ms", type=int, default=1200, help="Ack wait timeout in ms")
+    p.add_argument("--poll-ms", type=int, default=20, help="Ack poll interval in ms")
+    p.add_argument("--no-ensure-running", action="store_true", help="Do not auto-start measurement")
+    p.set_defaults(func=handlers["cmd_start_demo"])
+
+
+def add_start_precheck_args(
+    p: argparse.ArgumentParser,
+    handlers: HandlerMap,
+    default_run_id: Callable[[], str],
+) -> None:
+    p.add_argument("--run-id", default=default_run_id(), help="Run ID, e.g. 20260308_1900")
+    p.add_argument("--owner", default="DEV2")
+    p.add_argument("--run-date", default=dt.date.today().isoformat())
+    p.add_argument("--skip-gates", action="store_true", help="Skip all gates in precheck")
+    p.add_argument("--stop-on-fail", action="store_true", help="Stop at first failed step")
+    p.add_argument(
+        "--report-formats",
+        default="json,md",
+        help="Comma-separated formats: json,md,csv (default: json,md)",
+    )
+    p.set_defaults(func=handlers["cmd_start_precheck"])
+
+
+def add_start_preset_args(p: argparse.ArgumentParser, handlers: HandlerMap) -> None:
+    p.add_argument(
+        "name",
+        choices=["quickstart", "verify-pack", "portable-release"],
+        help="Preset workflow name",
+    )
+    p.set_defaults(func=handlers["cmd_start_preset"])
+
+
+def add_doctor_args(p: argparse.ArgumentParser, handlers: HandlerMap) -> None:
+    p.add_argument("--ensure-running", action="store_true", help="Auto-start measurement if stopped")
+    p.add_argument(
+        "--output-json",
+        type=Path,
+        default=Path("canoe/tmp/reports/verification/doctor_report.json"),
+        help="Doctor report JSON output path",
+    )
+    p.add_argument(
+        "--output-md",
+        type=Path,
+        default=Path("canoe/tmp/reports/verification/doctor_report.md"),
+        help="Doctor report markdown output path",
+    )
+    p.set_defaults(func=handlers["cmd_doctor"])
+
+
+def add_capl_sysvar_get_args(p: argparse.ArgumentParser, handlers: HandlerMap) -> None:
+    p.add_argument("--namespace", required=True, help="System variable namespace")
+    p.add_argument("--var", required=True, help="System variable name")
+    p.set_defaults(func=handlers["cmd_capl_sysvar_get"])
+
+
+def add_capl_sysvar_set_args(p: argparse.ArgumentParser, handlers: HandlerMap) -> None:
+    p.add_argument("--namespace", required=True, help="System variable namespace")
+    p.add_argument("--var", required=True, help="System variable name")
+    p.add_argument("--value", required=True, help="Target value")
+    p.add_argument(
+        "--value-type",
+        default="int",
+        choices=["int", "float", "bool", "string"],
+        help="Input value type",
+    )
+    p.set_defaults(func=handlers["cmd_capl_sysvar_set"])
+
+
+def add_canoe_capl_call_args(p: argparse.ArgumentParser, handlers: HandlerMap) -> None:
+    p.add_argument("--function-name", required=True, help="CAPL function name")
+    p.add_argument("--args", nargs="*", default=[], help="CAPL call args")
+    p.add_argument(
+        "--arg-type",
+        default="string",
+        choices=["int", "float", "bool", "string"],
+        help="Single coercion type for all --args values",
+    )
+    p.set_defaults(func=handlers["cmd_canoe_capl_call"])
+
+
+def build_parser(handlers: HandlerMap, default_run_id: Callable[[], str]) -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(description="Unified script launcher")
+    sub = parser.add_subparsers(dest="command", required=True)
+
+    start = sub.add_parser("start", help="Operator-first quick entrypoints")
+    start_sub = start.add_subparsers(dest="start_command")
+    add_start_demo_args(start_sub.add_parser("demo", help="Trigger default demo scenario (no panel)"), handlers)
+    add_start_precheck_args(start_sub.add_parser("precheck", help="Run precheck batch (gates+prepare+smoke+status)"), handlers, default_run_id)
+    add_start_preset_args(start_sub.add_parser("preset", help="Run named preset workflow"), handlers)
+    start_sub.add_parser("shell", help="Open interactive slash shell").set_defaults(func=handlers["cmd_start_shell"])
+    start_sub.add_parser("guided", help="Open menu-style guided operator flow").set_defaults(func=handlers["cmd_start_guided"])
+    start.set_defaults(func=handlers["cmd_start_guided"])
+
+    add_doctor_args(sub.add_parser("doctor", help="Check CANoe COM + measurement + required sysvars"), handlers)
+
+    capl = sub.add_parser("capl", help="CAPL-linked sysvar access via CANoe COM")
+    capl_sub = capl.add_subparsers(dest="capl_command", required=True)
+    add_capl_sysvar_get_args(capl_sub.add_parser("sysvar-get", help="Read one system variable value"), handlers)
+    add_capl_sysvar_set_args(capl_sub.add_parser("sysvar-set", help="Write one system variable value"), handlers)
+
+    canoe_cmd = sub.add_parser("canoe", help="CANoe COM control plane")
+    canoe_sub = canoe_cmd.add_subparsers(dest="canoe_command", required=True)
+    canoe_sub.add_parser("measure-status", help="Read measurement status").set_defaults(func=handlers["cmd_canoe_measure_status"])
+    canoe_sub.add_parser("measure-start", help="Start measurement").set_defaults(func=handlers["cmd_canoe_measure_start"])
+    canoe_sub.add_parser("measure-stop", help="Stop measurement").set_defaults(func=handlers["cmd_canoe_measure_stop"])
+    canoe_sub.add_parser("measure-reset", help="Reset measurement (stop/start)").set_defaults(func=handlers["cmd_canoe_measure_reset"])
+    add_canoe_capl_call_args(canoe_sub.add_parser("capl-call", help="Call CAPL function"), handlers)
+
+    sub.add_parser("tui", help="Product-style Textual operator console").set_defaults(func=handlers["cmd_tui"])
+    sub.add_parser("shell", help="Interactive slash-command shell").set_defaults(func=handlers["cmd_shell"])
+    sub.add_parser("wizard", help="Legacy alias: shell").set_defaults(func=handlers["cmd_wizard"])
+
+    scenario = sub.add_parser("scenario", help="Manual scenario trigger commands (no panel)")
+    scenario_sub = scenario.add_subparsers(dest="scenario_command", required=True)
+    add_scenario_run_args(scenario_sub.add_parser("run", help="Send scenario command via CANoe COM"), handlers)
+
+    verify = sub.add_parser("verify", help="Verification pipeline commands")
+    verify_sub = verify.add_subparsers(dest="verify_command", required=True)
+    add_verify_prepare_args(verify_sub.add_parser("prepare", help="Create UT/IT/ST evidence run folders"), handlers)
+    add_verify_batch_args(verify_sub.add_parser("batch", help="Run Dev2 pre/post/full batch workflow"), handlers)
+    add_verify_smoke_args(verify_sub.add_parser("smoke", help="Run CANoe COM smoke checks"), handlers)
+    add_verify_quick_args(verify_sub.add_parser("quick", help="Run prepare + smoke + status in one flow"), handlers, default_run_id)
+    add_verify_fill_args(verify_sub.add_parser("fill-score", help="Fill and score one tier"), handlers)
+    add_verify_insight_args(verify_sub.add_parser("insight", help="Build run-level insight report"), handlers)
+    add_verify_bind_doc_args(verify_sub.add_parser("bind-doc", help="Build 05/06/07 doc binding bundle"), handlers)
+    add_verify_fill_template_args(verify_sub.add_parser("fill-template", help="Build 05/06/07 doc fill template"), handlers)
+    add_verify_status_args(verify_sub.add_parser("status", help="Check run readiness before finalize"), handlers)
+    add_verify_finalize_args(verify_sub.add_parser("finalize", help="Run full post-run verification bundle"), handlers)
+
+    evidence = sub.add_parser("evidence", help="Evidence/readout focused commands")
+    evidence_sub = evidence.add_subparsers(dest="evidence_command", required=True)
+    ev_status = evidence_sub.add_parser("status", help="Alias of verify status")
+    add_verify_status_args(ev_status, handlers)
+    ev_status.set_defaults(func=handlers["cmd_evidence_status"])
+    ev_insight = evidence_sub.add_parser("insight", help="Alias of verify insight")
+    add_verify_insight_args(ev_insight, handlers)
+    ev_insight.set_defaults(func=handlers["cmd_evidence_insight"])
+    ev_finalize = evidence_sub.add_parser("finalize", help="Alias of verify finalize")
+    add_verify_finalize_args(ev_finalize, handlers)
+    ev_finalize.set_defaults(func=handlers["cmd_evidence_finalize"])
+
+    gate = sub.add_parser("gate", help="Quality gate commands")
+    gate_sub = gate.add_subparsers(dest="gate_command", required=True)
+    gate_sub.add_parser("all", help="Run the full gate bundle").set_defaults(func=handlers["cmd_gate_all"])
+    gate_sub.add_parser("doc-sync", help="Run Req-Doc-Code sync gate").set_defaults(func=handlers["cmd_gate_doc_sync"])
+    gate_sub.add_parser("cfg-hygiene", help="Run cfg text hygiene gate").set_defaults(func=handlers["cmd_gate_cfg_hygiene"])
+    gate_sub.add_parser("capl-sync", help="Run src/capl vs cfg/channel_assign sync gate").set_defaults(func=handlers["cmd_gate_capl_sync"])
+    gate_sub.add_parser("multibus-dbc", help="Run multi-bus cfg + DBC domain policy gate").set_defaults(func=handlers["cmd_gate_multibus_dbc"])
+    gate_sub.add_parser("cli-readiness", help="Run CLI readiness gate before GUI phase").set_defaults(func=handlers["cmd_gate_cli_readiness"])
+
+    package = sub.add_parser("package", help="Build/distribution commands")
+    package_sub = package.add_subparsers(dest="package_command", required=True)
+    pkg_build = package_sub.add_parser("build-exe", help="Build Windows exe bundle via PyInstaller")
+    pkg_build.add_argument("--mode", default="onefolder", choices=["onefolder", "onefile"])
+    pkg_build.add_argument("--clean", action="store_true")
+    pkg_build.set_defaults(func=handlers["cmd_package_build_exe"])
+
+    pkg_portable = package_sub.add_parser(
+        "bundle-portable",
+        help="Create portable ZIP (exe + required runtime files)",
+    )
+    pkg_portable.add_argument("--mode", default="onefolder", choices=["onefolder", "onefile"])
+    pkg_portable.add_argument("--clean", action="store_true")
+    pkg_portable.add_argument("--rebuild-exe", action="store_true")
+    pkg_portable.add_argument("--output-dir", default="")
+    pkg_portable.add_argument("--bundle-name", default="")
+    pkg_portable.add_argument("--zip-name", default="")
+    pkg_portable.set_defaults(func=handlers["cmd_package_bundle_portable"])
+
+    release = sub.add_parser("release", help="Distribution-focused wrappers")
+    release_sub = release.add_subparsers(dest="release_command", required=True)
+    rel_exe = release_sub.add_parser("exe", help="Alias of package build-exe")
+    rel_exe.add_argument("--mode", default="onefolder", choices=["onefolder", "onefile"])
+    rel_exe.add_argument("--clean", action="store_true")
+    rel_exe.set_defaults(func=handlers["cmd_release_exe"])
+
+    rel_portable = release_sub.add_parser("portable", help="Alias of package bundle-portable")
+    rel_portable.add_argument("--mode", default="onefolder", choices=["onefolder", "onefile"])
+    rel_portable.add_argument("--clean", action="store_true")
+    rel_portable.add_argument("--rebuild-exe", action="store_true")
+    rel_portable.add_argument("--output-dir", default="")
+    rel_portable.add_argument("--bundle-name", default="")
+    rel_portable.add_argument("--zip-name", default="")
+    rel_portable.set_defaults(func=handlers["cmd_release_portable"])
+
+    contract = sub.add_parser("contract", help="Show canonical command contract")
+    contract.add_argument("--json", action="store_true", help="Output machine-readable JSON")
+    contract.set_defaults(func=handlers["cmd_contract"])
+
+    add_scenario_run_args(sub.add_parser("scenario-run", help="Legacy alias: scenario run"), handlers)
+    sub.add_parser("interactive", help="Legacy alias: shell").set_defaults(func=handlers["cmd_shell"])
+
+    add_verify_prepare_args(sub.add_parser("verify-prepare", help="Legacy alias: verify prepare"), handlers)
+    add_verify_batch_args(sub.add_parser("verify-batch", help="Legacy alias: verify batch"), handlers)
+    add_verify_smoke_args(sub.add_parser("verify-smoke", help="Legacy alias: verify smoke"), handlers)
+    add_verify_fill_args(sub.add_parser("verify-fill-score", help="Legacy alias: verify fill-score"), handlers)
+    add_verify_insight_args(sub.add_parser("verify-insight", help="Legacy alias: verify insight"), handlers)
+    add_verify_bind_doc_args(sub.add_parser("verify-bind-doc", help="Legacy alias: verify bind-doc"), handlers)
+    add_verify_fill_template_args(sub.add_parser("verify-fill-template", help="Legacy alias: verify fill-template"), handlers)
+    add_verify_status_args(sub.add_parser("verify-status", help="Legacy alias: verify status"), handlers)
+    add_verify_finalize_args(sub.add_parser("verify-finalize", help="Legacy alias: verify finalize"), handlers)
+    sub.add_parser("gate-doc-sync", help="Legacy alias: gate doc-sync").set_defaults(func=handlers["cmd_gate_doc_sync"])
+    sub.add_parser("gate-cfg-hygiene", help="Legacy alias: gate cfg-hygiene").set_defaults(func=handlers["cmd_gate_cfg_hygiene"])
+    sub.add_parser("gate-capl-sync", help="Legacy alias: gate capl-sync").set_defaults(func=handlers["cmd_gate_capl_sync"])
+    sub.add_parser("gate-multibus-dbc", help="Legacy alias: gate multibus-dbc").set_defaults(func=handlers["cmd_gate_multibus_dbc"])
+    sub.add_parser("gate-cli-readiness", help="Legacy alias: gate cli-readiness").set_defaults(func=handlers["cmd_gate_cli_readiness"])
+    pkg_build_legacy = sub.add_parser("package-build-exe", help="Legacy alias: package build-exe")
+    pkg_build_legacy.add_argument("--mode", default="onefolder", choices=["onefolder", "onefile"])
+    pkg_build_legacy.add_argument("--clean", action="store_true")
+    pkg_build_legacy.set_defaults(func=handlers["cmd_package_build_exe"])
+    pkg_portable_legacy = sub.add_parser("package-bundle-portable", help="Legacy alias: package bundle-portable")
+    pkg_portable_legacy.add_argument("--mode", default="onefolder", choices=["onefolder", "onefile"])
+    pkg_portable_legacy.add_argument("--clean", action="store_true")
+    pkg_portable_legacy.add_argument("--rebuild-exe", action="store_true")
+    pkg_portable_legacy.add_argument("--output-dir", default="")
+    pkg_portable_legacy.add_argument("--bundle-name", default="")
+    pkg_portable_legacy.add_argument("--zip-name", default="")
+    pkg_portable_legacy.set_defaults(func=handlers["cmd_package_bundle_portable"])
+
+    sub.add_parser("go", help="Short alias: start guided").set_defaults(func=handlers["cmd_start_guided"])
+    add_start_demo_args(sub.add_parser("demo", help="Short alias: start demo"), handlers)
+    add_start_precheck_args(sub.add_parser("precheck", help="Short alias: start precheck"), handlers, default_run_id)
+    sub.add_parser("mstart", help="Short alias: canoe measure-start").set_defaults(func=handlers["cmd_canoe_measure_start"])
+    sub.add_parser("mstop", help="Short alias: canoe measure-stop").set_defaults(func=handlers["cmd_canoe_measure_stop"])
+    sub.add_parser("mstatus", help="Short alias: canoe measure-status").set_defaults(func=handlers["cmd_canoe_measure_status"])
+
+    return parser

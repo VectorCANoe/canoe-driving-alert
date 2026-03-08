@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import os
 import subprocess
 import sys
 import time
@@ -21,6 +22,7 @@ from textual.app import App, ComposeResult
 from textual.containers import Horizontal, Vertical
 from textual.widgets import Button, Footer, Header, Input, OptionList, RichLog, Static
 from textual.widgets.option_list import Option
+from rich.markup import escape
 
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -39,7 +41,7 @@ class SdvTuiApp(App[None]):
     }
 
     #hero {
-        height: 4;
+        height: 3;
         padding: 1 2;
         margin: 1 1 0 1;
         background: #1b2635;
@@ -57,9 +59,67 @@ class SdvTuiApp(App[None]):
         color: #a9bed1;
     }
 
-    #summary-strip {
-        height: 7;
+    #shell-main {
+        height: 1fr;
         margin: 0 1 1 1;
+    }
+
+    #sidebar {
+        width: 22;
+        padding: 1;
+        margin-right: 1;
+        background: #121920;
+        border: round #2d3e50;
+    }
+
+    .nav-button {
+        width: 1fr;
+        margin-bottom: 1;
+    }
+
+    #content {
+        width: 1fr;
+    }
+
+    .page {
+        height: 1fr;
+    }
+
+    #page-home {
+        padding: 1;
+        background: #121920;
+        border: round #2d3e50;
+    }
+
+    #home-body {
+        height: 1fr;
+    }
+
+    #home-summary {
+        padding: 1;
+        background: #17202b;
+        border: round #33536f;
+        min-height: 8;
+    }
+
+    #home-actions {
+        height: 5;
+        margin-top: 1;
+    }
+
+    .quick-button {
+        margin-right: 1;
+        width: 1fr;
+    }
+
+    #summary-strip {
+        height: 11;
+        margin-bottom: 1;
+    }
+
+    #status-strip {
+        height: 9;
+        margin-bottom: 1;
     }
 
     .summary-card {
@@ -70,15 +130,40 @@ class SdvTuiApp(App[None]):
     }
 
     #favorites-card {
-        width: 34;
+        width: 28;
     }
 
     #recent-card {
         width: 1fr;
     }
 
+    #insight-card {
+        width: 1fr;
+    }
+
     #result-card {
-        width: 34;
+        width: 1fr;
+        margin-right: 0;
+    }
+
+    #recent-list {
+        height: 1fr;
+    }
+
+    #readiness-card {
+        width: 1fr;
+    }
+
+    #batch-card {
+        width: 1fr;
+    }
+
+    #com-card {
+        width: 40;
+    }
+
+    #timeline-card {
+        width: 1fr;
         margin-right: 0;
     }
 
@@ -90,7 +175,16 @@ class SdvTuiApp(App[None]):
 
     #workspace {
         height: 1fr;
-        margin: 0 1;
+    }
+
+    #execute-group-strip {
+        height: 3;
+        margin-bottom: 1;
+    }
+
+    .group-button {
+        margin-right: 1;
+        width: 1fr;
     }
 
     .pane {
@@ -111,7 +205,7 @@ class SdvTuiApp(App[None]):
     }
 
     #commands-pane {
-        width: 34;
+        width: 32;
     }
 
     #details-pane {
@@ -156,6 +250,15 @@ class SdvTuiApp(App[None]):
         height: 4;
     }
 
+    #execute-hint {
+        margin-top: 1;
+        padding: 1;
+        color: #8ba4b8;
+        background: #17202b;
+        border: round #33536f;
+        height: 3;
+    }
+
     #actions {
         margin-top: 1;
         height: 3;
@@ -166,11 +269,35 @@ class SdvTuiApp(App[None]):
     }
 
     #log-pane {
-        height: 14;
-        margin: 1;
+        height: 1fr;
         padding: 1;
         background: #0f151b;
         border: round #2d3e50;
+    }
+
+    #log-controls {
+        height: 3;
+        margin-bottom: 1;
+    }
+
+    #log-summary {
+        margin-bottom: 1;
+        padding: 1;
+        background: #17202b;
+        border: round #33536f;
+        color: #d7e7f2;
+        height: 5;
+    }
+
+    .filter-button {
+        margin-right: 1;
+        min-width: 9;
+    }
+
+    #log-filter-status {
+        width: 1fr;
+        padding-top: 1;
+        color: #8ba4b8;
     }
 
     #log {
@@ -180,12 +307,22 @@ class SdvTuiApp(App[None]):
 
     BINDINGS = [
         ("q", "quit", "Quit"),
-        ("r", "run_selected", "Run"),
-        ("p", "toggle_pin", "Pin"),
-        ("g", "focus_groups", "Groups"),
-        ("c", "focus_commands", "Commands"),
-        ("f", "focus_form", "Form"),
-        ("l", "focus_log", "Log"),
+        ("ctrl+r", "run_selected", "Run"),
+        ("ctrl+p", "toggle_pin", "Pin"),
+        ("ctrl+x", "rerun_latest", "Rerun latest"),
+        ("ctrl+b", "focus_favorites", "Favorites"),
+        ("ctrl+n", "focus_recent", "Recent"),
+        ("ctrl+g", "focus_navigation", "Navigation"),
+        ("ctrl+t", "focus_commands", "Commands"),
+        ("ctrl+f", "focus_form", "Form"),
+        ("ctrl+l", "focus_log", "Log"),
+        ("f1", "set_log_filter_all", "Log all"),
+        ("f2", "set_log_filter_warn", "Log warn"),
+        ("f3", "set_log_filter_fail", "Log fail"),
+        ("f4", "set_log_filter_verify", "Log verify"),
+        ("f5", "set_log_filter_canoe", "Log canoe"),
+        ("ctrl+o", "open_artifact", "Open artifact"),
+        ("ctrl+y", "copy_artifact", "Copy artifact"),
     ]
 
     def __init__(self) -> None:
@@ -194,69 +331,332 @@ class SdvTuiApp(App[None]):
         self.group_names = self._build_group_names()
         self.active_group_index = 0
         self.active_command_index = 0
+        self.log_filter = "ALL"
+        self.log_buffer: list[dict[str, str]] = []
+        self.current_page = "home"
 
     def compose(self) -> ComposeResult:
         yield Header(show_clock=True)
         yield Static(
-            "SDV Operator Console\n"
-            "Pick a task, adjust only the required values, then run it.",
+            "SDV Operator Console",
             id="hero",
         )
         runtime = canoe_runtime_check()
         runtime_text = (
             f"Host: {platform_label()} | CANoe runtime: {'ready' if runtime.available else 'limited'} | "
-            "Focus: g/c/f/l | Run: Enter or r | Quit: q"
+            "Run: Ctrl+R | Recent: Ctrl+N | Logs: Ctrl+L | Filter: F1..F5 | Artifact: Ctrl+O/Ctrl+Y | Quit: q"
         )
         if not runtime.available:
             runtime_text += f"\nConstraint: {runtime.detail}"
         yield Static(runtime_text, id="runtime")
-        with Horizontal(id="summary-strip"):
-            with Vertical(id="favorites-card", classes="summary-card"):
-                yield Static("Pinned Tasks", classes="summary-title")
-                yield Static(id="favorites-body")
-            with Vertical(id="recent-card", classes="summary-card"):
-                yield Static("Recent Runs", classes="summary-title")
-                yield Static(id="recent-body")
-            with Vertical(id="result-card", classes="summary-card"):
-                yield Static("Last Result", classes="summary-title")
-                yield Static(id="result-body")
-        with Horizontal(id="workspace"):
-            with Vertical(id="groups-pane", classes="pane"):
-                yield Static("1) What do you want to do?", classes="pane-title")
-                yield OptionList(id="groups")
-            with Vertical(id="commands-pane", classes="pane"):
-                yield Static("2) Pick one task", classes="pane-title")
-                yield OptionList(id="commands")
-            with Vertical(id="details-pane", classes="pane"):
-                yield Static("3) Review and run", classes="pane-title")
-                yield Static(id="details-body")
-                yield Static("Quick Form", classes="pane-title")
-                with Vertical(id="form-body"):
-                    for index in range(FORM_SLOTS):
-                        with Vertical(id=f"field-row-{index}", classes="form-row hidden"):
-                            yield Static(id=f"field-label-{index}", classes="field-label")
-                            yield Input(id=f"field-input-{index}")
-                            yield Static(id=f"field-help-{index}", classes="field-help")
-                yield Static(id="preview-body")
-                with Horizontal(id="actions"):
-                    yield Button("Run now", id="run-button", variant="success")
-                    yield Button("Pin task", id="pin-button")
-                    yield Button("Reset defaults", id="reset-button")
-        with Vertical(id="log-pane"):
-            yield Static("Execution Log", classes="pane-title")
-            yield RichLog(id="log", wrap=True, highlight=True, markup=True)
+        with Horizontal(id="shell-main"):
+            with Vertical(id="sidebar"):
+                yield Button("Home", id="nav-home", classes="nav-button", variant="primary")
+                yield Button("Execute", id="nav-execute", classes="nav-button")
+                yield Button("Results", id="nav-results", classes="nav-button")
+                yield Button("Logs", id="nav-logs", classes="nav-button")
+            with Vertical(id="content"):
+                with Vertical(id="page-home", classes="page"):
+                    yield Static(
+                        "Daily path\n\n"
+                        "1. Gate all\n"
+                        "2. Scenario run\n"
+                        "3. Verify quick\n\n"
+                        "This console is for execution and evidence review.\n"
+                        "CANoe panel remains the operator UI for product behavior.",
+                        id="home-body",
+                    )
+                    yield Static(id="home-summary")
+                    with Horizontal(id="home-actions"):
+                        yield Button("Gate all", id="home-gate", classes="quick-button", variant="success")
+                        yield Button("Scenario run", id="home-scenario", classes="quick-button")
+                        yield Button("Verify quick", id="home-verify", classes="quick-button")
+                        yield Button("Results", id="home-results", classes="quick-button")
+                        yield Button("Logs", id="home-logs", classes="quick-button")
+                with Horizontal(id="page-execute", classes="page hidden"):
+                    with Vertical(id="commands-pane", classes="pane"):
+                        yield Static("1) What do you want to do?", classes="pane-title")
+                        with Horizontal(id="execute-group-strip"):
+                            yield Button("Primary", id="group-primary", classes="group-button", variant="primary")
+                            yield Button("Runtime", id="group-runtime", classes="group-button")
+                            yield Button("Inspect", id="group-inspect", classes="group-button")
+                            yield Button("Package", id="group-package", classes="group-button")
+                        yield Static(id="commands-title", classes="pane-title")
+                        yield OptionList(id="commands")
+                    with Vertical(id="details-pane", classes="pane"):
+                        yield Static("Review and run", classes="pane-title")
+                        yield Static(id="details-body")
+                        yield Static("Quick Form", classes="pane-title")
+                        with Vertical(id="form-body"):
+                            for index in range(FORM_SLOTS):
+                                with Vertical(id=f"field-row-{index}", classes="form-row hidden"):
+                                    yield Static(id=f"field-label-{index}", classes="field-label")
+                                    yield Input(id=f"field-input-{index}")
+                                    yield Static(id=f"field-help-{index}", classes="field-help")
+                        yield Static(id="preview-body")
+                    with Horizontal(id="actions"):
+                        yield Button("Run now", id="run-button", variant="success")
+                        yield Button("Pin task", id="pin-button")
+                        yield Button("Reset defaults", id="reset-button")
+                    yield Static(
+                        "Run starts in Logs screen automatically. After completion, open Results to inspect verdict and evidence.",
+                        id="execute-hint",
+                    )
+                with Vertical(id="page-results", classes="page hidden"):
+                    with Horizontal(id="summary-strip"):
+                        with Vertical(id="favorites-card", classes="summary-card"):
+                            yield Static("Pinned Tasks", classes="summary-title")
+                            yield Static(id="favorites-body")
+                        with Vertical(id="recent-card", classes="summary-card"):
+                            yield Static("Recent Runs", classes="summary-title")
+                            yield OptionList(id="recent-list")
+                        with Vertical(id="insight-card", classes="summary-card"):
+                            yield Static("Run Insight", classes="summary-title")
+                            yield Static(id="insight-body")
+                        with Vertical(id="result-card", classes="summary-card"):
+                            yield Static("Last Result", classes="summary-title")
+                            yield Static(id="result-body")
+                    with Horizontal(id="status-strip"):
+                        with Vertical(id="readiness-card", classes="summary-card"):
+                            yield Static("Tier Readiness", classes="summary-title")
+                            yield Static(id="readiness-body")
+                        with Vertical(id="batch-card", classes="summary-card"):
+                            yield Static("Batch Snapshot", classes="summary-title")
+                            yield Static(id="batch-body")
+                        with Vertical(id="com-card", classes="summary-card"):
+                            yield Static("COM Runtime", classes="summary-title")
+                            yield Static(id="com-body")
+                        with Vertical(id="timeline-card", classes="summary-card"):
+                            yield Static("Execution Timeline", classes="summary-title")
+                            yield Static(id="timeline-body")
+                with Vertical(id="page-logs", classes="page hidden"):
+                    with Vertical(id="log-pane"):
+                        yield Static("Execution Log", classes="pane-title")
+                        yield Static(id="log-summary")
+                        with Horizontal(id="log-controls"):
+                            yield Button("F1 All", id="log-filter-all", classes="filter-button")
+                            yield Button("F2 Warn", id="log-filter-warn", classes="filter-button")
+                            yield Button("F3 Fail", id="log-filter-fail", classes="filter-button")
+                            yield Button("F4 Verify", id="log-filter-verify", classes="filter-button")
+                            yield Button("F5 CANoe", id="log-filter-canoe", classes="filter-button")
+                            yield Static(id="log-filter-status")
+                        yield RichLog(id="log", wrap=True, highlight=True, markup=True)
         yield Footer()
 
     def on_mount(self) -> None:
         self.title = "SDV Operator Console"
         self.sub_title = "Textual TUI"
-        groups = self.query_one("#groups", OptionList)
-        groups.add_options([Option(group_name) for group_name in self.group_names])
-        groups.highlighted = 0
-        self._refresh_commands(0)
-        self.query_one("#commands", OptionList).focus()
+        self.active_group_index = self.group_names.index("Primary Workflow")
+        self._refresh_commands(self.active_group_index)
+        self._show_page("home")
         self._refresh_summary_cards()
-        self._write_log("[bold cyan]TUI ready[/]  Select a task, fill required values, then press [bold]r[/].")
+        self._refresh_log_summary()
+        self._write_log("[bold cyan]TUI ready[/]  Select a task, fill required values, then press [bold]Ctrl+R[/].")
+
+    def _load_state(self) -> dict[str, object]:
+        default_state: dict[str, object] = {
+            "pinned": [],
+            "recent": [],
+            "last_insight": {
+                "stage": "Idle",
+                "bottleneck": "No execution insight yet.",
+                "next_action": "Run Gate all first.",
+            },
+            "last_result": {
+                "status": "IDLE",
+                "title": "No task executed yet",
+                "detail": "Select a task and run it to populate this card.",
+                "ts": "",
+                "related_logs": [],
+            },
+            "timeline": {
+                "gate": "IDLE",
+                "scenario": "IDLE",
+                "verify": "IDLE",
+                "current": "Idle",
+                "gate_ms": 0,
+                "scenario_ms": 0,
+                "verify_ms": 0,
+            },
+            "live_runtime": {
+                "stage": "Idle",
+                "last_line": "No execution running.",
+                "outputs": [],
+            },
+        }
+        if not STATE_FILE.exists():
+            return default_state
+        try:
+            data = json.loads(STATE_FILE.read_text(encoding="utf-8"))
+        except Exception:
+            return default_state
+        if not isinstance(data, dict):
+            return default_state
+        default_state.update({k: v for k, v in data.items() if k in default_state})
+        return default_state
+
+    def _save_state(self) -> None:
+        try:
+            STATE_FILE.parent.mkdir(parents=True, exist_ok=True)
+            STATE_FILE.write_text(json.dumps(self.state, indent=2, ensure_ascii=False), encoding="utf-8")
+        except Exception:
+            pass
+
+    def _build_group_names(self) -> list[str]:
+        return list(BASE_GROUP_NAMES)
+
+    def _favorite_commands(self) -> list[PaletteCommand]:
+        favorite_ids = [item for item in self.state.get("pinned", []) if isinstance(item, str)]
+        return [COMMAND_INDEX[item] for item in favorite_ids if item in COMMAND_INDEX]
+
+    def _current_command_is_pinned(self) -> bool:
+        command = self._selected_command()
+        if command is None:
+            return False
+        return command.command_id in self.state.get("pinned", [])
+
+    def _rebuild_groups(self, preferred_group: str | None = None) -> None:
+        self.group_names = self._build_group_names()
+        target_group = preferred_group if preferred_group in self.group_names else "Primary Workflow"
+        target_index = self.group_names.index(target_group)
+        self._refresh_commands(target_index)
+
+    def _show_page(self, page_name: str) -> None:
+        self.current_page = page_name
+        pages = ("home", "execute", "results", "logs")
+        for item in pages:
+            page = self.query_one(f"#page-{item}")
+            if item == page_name:
+                page.remove_class("hidden")
+            else:
+                page.add_class("hidden")
+        active_nav = {
+            "home": "nav-home",
+            "execute": "nav-execute",
+            "results": "nav-results",
+            "logs": "nav-logs",
+        }[page_name]
+        for button_id in ("nav-home", "nav-execute", "nav-results", "nav-logs"):
+            button = self.query_one(f"#{button_id}", Button)
+            button.variant = "primary" if button_id == active_nav else "default"
+        self._refresh_execute_group_buttons()
+
+    def _set_command_group(self, group_name: str) -> None:
+        if group_name not in self.group_names:
+            return
+        self.active_group_index = self.group_names.index(group_name)
+        self._refresh_commands(self.active_group_index)
+        self.query_one("#commands-title", Static).update(f"2) Pick one task  |  {group_name}")
+        self._show_page("execute")
+        self._refresh_execute_group_buttons()
+        self.query_one("#commands", OptionList).focus()
+
+    def _refresh_execute_group_buttons(self) -> None:
+        mapping = {
+            "Primary Workflow": "group-primary",
+            "Runtime Support": "group-runtime",
+            "System Access": "group-inspect",
+            "Packaging": "group-package",
+        }
+        active = mapping.get(self._active_group_name(), "group-primary")
+        for button_id in mapping.values():
+            try:
+                button = self.query_one(f"#{button_id}", Button)
+            except Exception:
+                continue
+            button.variant = "primary" if button_id == active else "default"
+
+    def _select_command_by_id(self, command_id: str) -> None:
+        commands = self._active_group_commands()
+        for index, command in enumerate(commands):
+            if command.command_id == command_id:
+                self.active_command_index = index
+                command_list = self.query_one("#commands", OptionList)
+                command_list.highlighted = index
+                self._update_command_view(command)
+                return
+
+    def _refresh_home_summary(self) -> None:
+        last_result = self.state.get("last_result", {})
+        insight = self.state.get("last_insight", {})
+        timeline = self.state.get("timeline", {})
+        status = str(last_result.get("status", "IDLE")) if isinstance(last_result, dict) else "IDLE"
+        title = str(last_result.get("title", "No task executed yet")) if isinstance(last_result, dict) else "No task executed yet"
+        bottleneck = str(insight.get("bottleneck", "No execution insight yet.")) if isinstance(insight, dict) else "No execution insight yet."
+        next_action = str(insight.get("next_action", "Run Gate all first.")) if isinstance(insight, dict) else "Run Gate all first."
+        gate = str(timeline.get("gate", "IDLE")) if isinstance(timeline, dict) else "IDLE"
+        scenario = str(timeline.get("scenario", "IDLE")) if isinstance(timeline, dict) else "IDLE"
+        verify = str(timeline.get("verify", "IDLE")) if isinstance(timeline, dict) else "IDLE"
+        self.query_one(
+            "#home-summary", Static
+        ).update(
+            f"Last result: {status} | {title}\n"
+            f"Timeline: Gate={gate} / Scenario={scenario} / Verify={verify}\n"
+            f"Bottleneck: {bottleneck}\n"
+            f"Next: {next_action}"
+        )
+
+    def _refresh_summary_cards(self) -> None:
+        favorites = self._favorite_commands()
+        if favorites:
+            favorite_lines = [f"{idx + 1}. {command.title}" for idx, command in enumerate(favorites[:5])]
+            favorite_lines.append("")
+            favorite_lines.append("Press v to jump to Favorites.")
+        else:
+            favorite_lines = ["No pinned tasks yet.", "Select a task and press p to pin it."]
+        self.query_one("#favorites-body", Static).update("\n".join(favorite_lines))
+
+        recent_rows = self._recent_rows()
+        recent_list = self.query_one("#recent-list", OptionList)
+        previous_index = self._selected_option_index(recent_list)
+        recent_list.clear_options()
+        if recent_rows:
+            recent_list.add_options([Option(self._recent_entry_label(item)) for item in recent_rows])
+            recent_list.highlighted = min(previous_index, len(recent_rows) - 1)
+        else:
+            recent_list.add_options([Option("No recent executions yet.")])
+            recent_list.highlighted = 0
+
+        last_insight = self.state.get("last_insight", {})
+        if isinstance(last_insight, dict):
+            stage = str(last_insight.get("stage", "Idle"))
+            bottleneck = str(last_insight.get("bottleneck", "No execution insight yet."))
+            next_action = str(last_insight.get("next_action", "Run Gate all first."))
+        else:
+            stage, bottleneck, next_action = "Idle", "No execution insight yet.", "Run Gate all first."
+        self.query_one(
+            "#insight-body", Static
+        ).update(f"Stage: {stage}\nBottleneck: {bottleneck}\nNext: {next_action}")
+        self.query_one("#readiness-body", Static).update(self._summarize_tier_readiness())
+        self.query_one("#batch-body", Static).update(self._summarize_batch_snapshot())
+        self.query_one("#com-body", Static).update(self._summarize_com_snapshot())
+        self.query_one("#timeline-body", Static).update(self._summarize_timeline())
+
+        last_result = self.state.get("last_result", {})
+        if isinstance(last_result, dict):
+            status = str(last_result.get("status", "IDLE"))
+            title = str(last_result.get("title", "No task executed yet"))
+            detail = str(last_result.get("detail", "Select a task and run it to populate this card."))
+            ts = str(last_result.get("ts", ""))
+            artifacts = last_result.get("artifacts", [])
+            related_logs = last_result.get("related_logs", [])
+        else:
+            status, title, detail, ts, artifacts, related_logs = "IDLE", "No task executed yet", "Select a task and run it to populate this card.", "", [], []
+        result_lines = [status, title, detail]
+        if isinstance(related_logs, list) and related_logs:
+            result_lines.append("")
+            result_lines.append("Related log:")
+            result_lines.extend(str(item) for item in related_logs[:3])
+        if isinstance(artifacts, list) and artifacts:
+            result_lines.append("")
+            result_lines.append("Evidence:")
+            result_lines.extend(str(item) for item in artifacts[:3])
+            result_lines.append("Actions: o=open, y=copy first path")
+        if ts:
+            result_lines.append(ts)
+        self.query_one("#result-body", Static).update("\n".join(result_lines))
+        self._refresh_log_controls()
+        self._refresh_home_summary()
 
     def _load_state(self) -> dict[str, object]:
         default_state: dict[str, object] = {
@@ -352,6 +752,7 @@ class SdvTuiApp(App[None]):
         self.active_group_index = group_index
         self.active_command_index = 0
         commands = self._active_group_commands()
+        self.query_one("#commands-title", Static).update(f"{self._active_group_name()} Tasks")
         command_list = self.query_one("#commands", OptionList)
         command_list.clear_options()
         command_list.add_options([Option(cmd.title) for cmd in commands])
@@ -369,6 +770,20 @@ class SdvTuiApp(App[None]):
         if self._active_group_name() == "Favorites":
             return self._favorite_commands()
         return PRODUCT_COMMAND_GROUPS[self._active_group_name()]
+
+    def _recent_rows(self) -> list[dict[str, object]]:
+        recent = self.state.get("recent", [])
+        if not isinstance(recent, list):
+            return []
+        return [item for item in recent[:5] if isinstance(item, dict)]
+
+    def _recent_entry_label(self, item: dict[str, object]) -> str:
+        status = str(item.get("status", ""))
+        title = str(item.get("title", ""))
+        ts = str(item.get("ts", ""))
+        duration_ms = int(item.get("duration_ms", 0) or 0)
+        duration_text = f"{duration_ms}ms" if duration_ms > 0 else "-"
+        return f"{status} | {title} | {duration_text} | {ts}"
 
     def _selected_command(self) -> PaletteCommand | None:
         commands = self._active_group_commands()
@@ -406,6 +821,14 @@ class SdvTuiApp(App[None]):
         pin_button.label = "Unpin task" if self._current_command_is_pinned() else "Pin task"
         self._populate_form(command)
         self._update_preview()
+        if command.params:
+            self.query_one(
+                "#execute-hint", Static
+            ).update("Select a task, edit the highlighted input field, then press Run now or Ctrl+R. Running moves to Logs automatically.")
+        else:
+            self.query_one(
+                "#execute-hint", Static
+            ).update("This task has no required inputs. Press Run now or Ctrl+R. Running moves to Logs automatically.")
 
     def _clear_form(self) -> None:
         for index in range(FORM_SLOTS):
@@ -446,6 +869,12 @@ class SdvTuiApp(App[None]):
         return values
 
     def _recommended_next(self, command: PaletteCommand) -> str:
+        if command.command_id == "verify.all_gates":
+            return "If PASS, move directly to Scenario run."
+        if command.command_id == "operate.scenario_trigger":
+            return "If ack is received, move directly to Verify quick."
+        if command.command_id == "verify.quick_verify":
+            return "If PASS, attach the generated evidence paths into 05/06/07."
         if command.title == "Measurement status":
             return "If stopped, run Measurement start next."
         if command.title == "Measurement start":
@@ -462,6 +891,110 @@ class SdvTuiApp(App[None]):
             return "Use this only after operator flow and reports are stable."
         return "Run this, review the log below, then move to the next verification step."
 
+    def _extract_flag(self, tokens: list[str], flag: str) -> str:
+        for index, token in enumerate(tokens):
+            if token == flag and index + 1 < len(tokens):
+                return tokens[index + 1]
+        return ""
+
+    def _artifact_paths(self, command: PaletteCommand, tokens: list[str]) -> list[str]:
+        run_id = self._extract_flag(tokens, "--run-id")
+        if command.command_id == "inspect.environment_doctor":
+            return [
+                "canoe/tmp/reports/verification/doctor_report.json",
+                "canoe/tmp/reports/verification/doctor_report.md",
+            ]
+        if command.command_id == "verify.all_gates":
+            return [
+                "canoe/tmp/reports/verification/cli_readiness_gate.json",
+                "canoe/tmp/reports/verification/cli_readiness_gate.md",
+            ]
+        if command.command_id == "verify.precheck_batch":
+            return [
+                "canoe/tmp/reports/verification/dev2_batch_report.json",
+                "canoe/tmp/reports/verification/dev2_batch_report.md",
+            ]
+        if command.command_id in {"verify.quick_verify", "verify.run_readiness_status"}:
+            paths = [
+                "canoe/tmp/reports/verification/run_readiness.json",
+                "canoe/tmp/reports/verification/run_readiness.md",
+            ]
+            if run_id:
+                paths.extend(
+                    [
+                        f"canoe/logging/evidence/UT/{run_id}",
+                        f"canoe/logging/evidence/IT/{run_id}",
+                        f"canoe/logging/evidence/ST/{run_id}",
+                    ]
+                )
+            return paths
+        if command.command_id == "package.portable_bundle":
+            return ["dist/portable/sdv_portable.zip"]
+        if command.command_id == "package.windows_exe":
+            return ["dist/sdv_cli"]
+        return []
+
+    def _extract_output_paths_from_lines(self, lines: list[str]) -> list[str]:
+        outputs: list[str] = []
+        for line in lines:
+            stripped = line.strip()
+            if stripped.startswith("[OUT]"):
+                value = stripped.removeprefix("[OUT]").strip()
+                if value:
+                    outputs.append(value)
+        return outputs
+
+    def _merge_artifact_paths(self, command: PaletteCommand, tokens: list[str], lines: list[str]) -> list[str]:
+        merged: list[str] = []
+        for item in self._artifact_paths(command, tokens) + self._extract_output_paths_from_lines(lines):
+            if item and item not in merged:
+                merged.append(item)
+        return merged
+
+    def _set_live_runtime(self, *, stage: str, last_line: str, outputs: list[str] | None = None) -> None:
+        live = self.state.get("live_runtime", {})
+        if not isinstance(live, dict):
+            live = {}
+        live["stage"] = stage
+        live["last_line"] = last_line
+        live["outputs"] = outputs or list(live.get("outputs", []))
+        self.state["live_runtime"] = live
+        self._refresh_log_summary()
+
+    def _update_live_runtime_from_line(self, command: PaletteCommand, line: str) -> None:
+        stripped = line.strip()
+        if not stripped:
+            return
+        live = self.state.get("live_runtime", {})
+        if not isinstance(live, dict):
+            live = {"stage": command.title, "last_line": "", "outputs": []}
+        outputs = live.get("outputs", [])
+        if not isinstance(outputs, list):
+            outputs = []
+        stage = str(live.get("stage", command.title))
+        if stripped.startswith("[VERIFY_QUICK]"):
+            stage = stripped.removeprefix("[VERIFY_QUICK]").strip() or command.title
+        elif stripped.startswith("[SCENARIO]"):
+            stage = "Scenario run"
+        elif stripped.startswith("[DOCTOR]"):
+            stage = "Doctor"
+        elif stripped.startswith("[RUN_STATUS]"):
+            stage = "Run readiness status"
+        elif stripped.startswith("[SMOKE]"):
+            stage = "Smoke verification"
+        elif stripped.startswith("[CANOE]"):
+            stage = "CANoe runtime"
+        if stripped.startswith("[OUT]"):
+            output_path = stripped.removeprefix("[OUT]").strip()
+            if output_path and output_path not in outputs:
+                outputs.append(output_path)
+        self.state["live_runtime"] = {
+            "stage": stage,
+            "last_line": stripped,
+            "outputs": outputs,
+        }
+        self._refresh_log_summary()
+
     def _update_preview(self) -> None:
         command = self._selected_command()
         if command is None:
@@ -475,32 +1008,553 @@ class SdvTuiApp(App[None]):
         self.query_one("#preview-body", Static).update(preview)
 
     def _write_log(self, message: str) -> None:
-        self.query_one("#log", RichLog).write(message)
+        self._append_log_entry(message, rendered=message, category="APP")
+
+    def _format_log_line(self, line: str) -> str:
+        stripped = line.rstrip()
+        lowered = stripped.lower()
+        safe = escape(stripped)
+
+        if not stripped:
+            return ""
+        if stripped.startswith("[RUN]"):
+            return f"[bold cyan]{safe}[/]"
+        if stripped.startswith("[OUT]"):
+            return f"[cyan]{safe}[/]"
+        if stripped.startswith("[VERIFY_QUICK]") or stripped.startswith("[SCENARIO]"):
+            return f"[bold green]{safe}[/]"
+        if stripped.startswith("[RUN_STATUS]") or stripped.startswith("[SMOKE]"):
+            return f"[green]{safe}[/]"
+        if stripped.startswith("[CANOE]") or stripped.startswith("[DOCTOR]") or stripped.startswith("[WIZARD]"):
+            return f"[bold blue]{safe}[/]"
+        if any(keyword in lowered for keyword in ("error", "failed", "traceback", "exception")):
+            return f"[bold red]{safe}[/]"
+        if any(keyword in lowered for keyword in ("warning", "warn", "limited", "missing", "deferred", "stopped")):
+            return f"[bold yellow]{safe}[/]"
+        if any(keyword in lowered for keyword in ("pass", "ready", "ack", "ok")):
+            return f"[green]{safe}[/]"
+        return safe
+
+    def _classify_log_entry(self, raw: str, category: str | None = None) -> tuple[str, str]:
+        stripped = raw.strip()
+        lowered = stripped.lower()
+        resolved_category = category or "GENERAL"
+        level = "INFO"
+
+        if resolved_category == "GENERAL":
+            if stripped.startswith("[VERIFY") or "verify" in lowered or "evidence" in lowered:
+                resolved_category = "VERIFY"
+            elif stripped.startswith("[OUT]") or stripped.startswith("[RUN_STATUS]") or stripped.startswith("[SMOKE]"):
+                resolved_category = "VERIFY"
+            elif stripped.startswith("[CANOE]") or "measurement" in lowered or "canoe" in lowered:
+                resolved_category = "CANOE"
+            elif stripped.startswith("[SCENARIO]"):
+                resolved_category = "VERIFY"
+            elif stripped.startswith("[DOCTOR]"):
+                resolved_category = "CANOE"
+
+        if any(keyword in lowered for keyword in ("error", "failed", "traceback", "exception", "rc=1", "rc=2", "rc=3")):
+            level = "FAIL"
+        elif any(keyword in lowered for keyword in ("warning", "warn", "limited", "missing", "deferred", "stopped")):
+            level = "WARN"
+        elif any(keyword in lowered for keyword in ("pass", "ready", "ack", "ok", "rc=0")):
+            level = "PASS"
+
+        return resolved_category, level
+
+    def _log_entry_visible(self, entry: dict[str, str]) -> bool:
+        filter_name = self.log_filter
+        if filter_name == "ALL":
+            return True
+        if filter_name == "WARN":
+            return entry.get("level") == "WARN"
+        if filter_name == "FAIL":
+            return entry.get("level") == "FAIL"
+        if filter_name == "VERIFY":
+            return entry.get("category") == "VERIFY"
+        if filter_name == "CANOE":
+            return entry.get("category") == "CANOE"
+        return True
+
+    def _append_log_entry(self, raw: str, rendered: str | None = None, category: str | None = None) -> None:
+        resolved_category, level = self._classify_log_entry(raw, category)
+        entry = {
+            "raw": raw,
+            "rendered": rendered or self._format_log_line(raw),
+            "category": resolved_category,
+            "level": level,
+        }
+        self.log_buffer.append(entry)
+        if self._log_entry_visible(entry):
+            self.query_one("#log", RichLog).write(entry["rendered"])
+        self._refresh_log_controls()
+        self._refresh_log_summary()
+
+    def _rerender_log(self) -> None:
+        log_widget = self.query_one("#log", RichLog)
+        log_widget.clear()
+        for entry in self.log_buffer:
+            if self._log_entry_visible(entry):
+                log_widget.write(entry["rendered"])
+        self._refresh_log_controls()
+
+    def _refresh_log_controls(self) -> None:
+        visible = sum(1 for entry in self.log_buffer if self._log_entry_visible(entry))
+        total = len(self.log_buffer)
+        button_map = {
+            "ALL": ("log-filter-all", "F1 All"),
+            "WARN": ("log-filter-warn", "F2 Warn"),
+            "FAIL": ("log-filter-fail", "F3 Fail"),
+            "VERIFY": ("log-filter-verify", "F4 Verify"),
+            "CANOE": ("log-filter-canoe", "F5 CANoe"),
+        }
+        for filter_name, (button_id, base_label) in button_map.items():
+            button = self.query_one(f"#{button_id}", Button)
+            button.label = f"[{base_label}]" if self.log_filter == filter_name else base_label
+        self.query_one(
+            "#log-filter-status", Static
+        ).update(f"Filter: {self.log_filter} | visible {visible}/{total} | Ctrl+O=open evidence | Ctrl+Y=copy path")
+
+    def _set_log_filter(self, filter_name: str) -> None:
+        self.log_filter = filter_name
+        self._rerender_log()
+
+    def _refresh_log_summary(self) -> None:
+        live = self.state.get("live_runtime", {})
+        if not isinstance(live, dict):
+            live = {}
+        stage = str(live.get("stage", "Idle"))
+        last_line = str(live.get("last_line", "No execution running."))
+        outputs = live.get("outputs", [])
+        if not isinstance(outputs, list):
+            outputs = []
+        lines = [
+            f"Stage: {stage}",
+            f"Latest: {last_line[:120]}",
+        ]
+        if outputs:
+            lines.append(f"Output: {str(outputs[-1])[:120]}")
+        else:
+            lines.append("Output: none discovered yet")
+        self.query_one("#log-summary", Static).update("\n".join(lines))
+
+    def _timeline_stage_for_command(self, command_id: str) -> str | None:
+        if command_id == "verify.all_gates":
+            return "gate"
+        if command_id == "operate.scenario_trigger":
+            return "scenario"
+        if command_id in {"verify.quick_verify", "verify.run_readiness_status", "verify.precheck_batch"}:
+            return "verify"
+        return None
+
+    def _update_timeline_state(self, command_id: str, status: str, title: str, duration_ms: int = 0) -> None:
+        timeline = self.state.get("timeline", {})
+        if not isinstance(timeline, dict):
+            timeline = {}
+        stage = self._timeline_stage_for_command(command_id)
+        if stage is not None:
+            timeline[stage] = status
+            timeline[f"{stage}_ms"] = int(duration_ms)
+        timeline["current"] = title
+        self.state["timeline"] = {
+            "gate": str(timeline.get("gate", "IDLE")),
+            "scenario": str(timeline.get("scenario", "IDLE")),
+            "verify": str(timeline.get("verify", "IDLE")),
+            "current": str(timeline.get("current", "Idle")),
+            "gate_ms": int(timeline.get("gate_ms", 0) or 0),
+            "scenario_ms": int(timeline.get("scenario_ms", 0) or 0),
+            "verify_ms": int(timeline.get("verify_ms", 0) or 0),
+        }
+
+    def _summarize_timeline(self) -> str:
+        timeline = self.state.get("timeline", {})
+        if not isinstance(timeline, dict):
+            timeline = {}
+        gate = str(timeline.get("gate", "IDLE"))
+        scenario = str(timeline.get("scenario", "IDLE"))
+        verify = str(timeline.get("verify", "IDLE"))
+        current = str(timeline.get("current", "Idle"))
+        gate_ms = int(timeline.get("gate_ms", 0) or 0)
+        scenario_ms = int(timeline.get("scenario_ms", 0) or 0)
+        verify_ms = int(timeline.get("verify_ms", 0) or 0)
+        gate_line = f"Gate: {gate}" + (f" ({gate_ms}ms)" if gate_ms > 0 else "")
+        scenario_line = f"Scenario: {scenario}" + (f" ({scenario_ms}ms)" if scenario_ms > 0 else "")
+        verify_line = f"Verify: {verify}" + (f" ({verify_ms}ms)" if verify_ms > 0 else "")
+        return "\n".join(
+            [
+                gate_line,
+                scenario_line,
+                verify_line,
+                f"Current: {current}",
+            ]
+        )
+
+    def _resolve_artifact_target(self) -> Path | None:
+        last_result = self.state.get("last_result", {})
+        if not isinstance(last_result, dict):
+            return None
+        artifacts = last_result.get("artifacts", [])
+        if not isinstance(artifacts, list) or not artifacts:
+            return None
+        candidate = Path(str(artifacts[0]))
+        if not candidate.is_absolute():
+            candidate = ROOT / candidate
+        if candidate.exists():
+            return candidate
+        if candidate.parent.exists():
+            return candidate.parent
+        return None
+
+    def _copy_text_to_clipboard(self, text: str) -> bool:
+        try:
+            if sys.platform.startswith("win"):
+                subprocess.run("clip", input=text, text=True, check=True, shell=True)
+                return True
+            if sys.platform == "darwin":
+                subprocess.run(["pbcopy"], input=text, text=True, check=True)
+                return True
+            for program in ("wl-copy", "xclip"):
+                try:
+                    args = [program] if program == "wl-copy" else [program, "-selection", "clipboard"]
+                    subprocess.run(args, input=text, text=True, check=True)
+                    return True
+                except Exception:
+                    continue
+        except Exception:
+            return False
+        return False
+
+    def action_set_log_filter_all(self) -> None:
+        self._set_log_filter("ALL")
+
+    def action_set_log_filter_warn(self) -> None:
+        self._set_log_filter("WARN")
+
+    def action_set_log_filter_fail(self) -> None:
+        self._set_log_filter("FAIL")
+
+    def action_set_log_filter_verify(self) -> None:
+        self._set_log_filter("VERIFY")
+
+    def action_set_log_filter_canoe(self) -> None:
+        self._set_log_filter("CANOE")
+
+    def action_open_artifact(self) -> None:
+        target = self._resolve_artifact_target()
+        if target is None:
+            self._write_log("[yellow]No evidence path is available in the last result.[/]")
+            return
+        try:
+            if sys.platform.startswith("win"):
+                os.startfile(str(target))  # type: ignore[attr-defined]
+            elif sys.platform == "darwin":
+                subprocess.Popen(["open", str(target)])
+            else:
+                subprocess.Popen(["xdg-open", str(target)])
+            self._write_log(f"[green]Opened artifact[/] {target}")
+        except Exception as ex:
+            self._write_log(f"[bold red]Artifact open failed[/]: {ex}")
+
+    def action_copy_artifact(self) -> None:
+        target = self._resolve_artifact_target()
+        if target is None:
+            self._write_log("[yellow]No evidence path is available in the last result.[/]")
+            return
+        if self._copy_text_to_clipboard(str(target)):
+            self._write_log(f"[green]Copied artifact path[/] {target}")
+            return
+        self._write_log(f"[bold yellow]Clipboard copy unavailable[/] {target}")
+
+    def _load_json_file(self, path: Path) -> dict[str, object] | None:
+        try:
+            if not path.exists():
+                return None
+            data = json.loads(path.read_text(encoding="utf-8"))
+            if isinstance(data, dict):
+                return data
+        except Exception:
+            return None
+        return None
+
+    def _build_execution_insight(
+        self,
+        command: PaletteCommand,
+        status: str,
+        detail: str,
+        tokens: list[str],
+        artifacts: list[str],
+    ) -> dict[str, str]:
+        insight = {
+            "stage": command.title,
+            "bottleneck": detail,
+            "next_action": self._recommended_next(command),
+        }
+
+        if command.command_id == "verify.quick_verify":
+            readiness = self._load_json_file(ROOT / "canoe" / "tmp" / "reports" / "verification" / "run_readiness.json")
+            if readiness:
+                overall_status = str(readiness.get("overall_status", "")).strip() or status
+                missing_items = readiness.get("missing_items", [])
+                tiers = readiness.get("tiers", {})
+                insight["stage"] = f"{command.title} -> {overall_status}"
+                if isinstance(missing_items, list) and missing_items:
+                    insight["bottleneck"] = str(missing_items[0])
+                    if isinstance(tiers, dict):
+                        missing_tiers = []
+                        for tier_name, tier_data in tiers.items():
+                            if isinstance(tier_data, dict) and int(tier_data.get("marker_count", 0)) == 0:
+                                missing_tiers.append(str(tier_name))
+                        if missing_tiers:
+                            insight["bottleneck"] += f" | marker missing tiers: {', '.join(missing_tiers)}"
+                    insight["next_action"] = "Capture [EVIDENCE_OUT] markers and rerun Verify quick."
+                else:
+                    insight["bottleneck"] = "No missing evidence markers detected."
+                    insight["next_action"] = "Attach run_readiness artifacts into 05/06/07."
+                return insight
+
+        if command.command_id == "verify.precheck_batch":
+            batch = self._load_json_file(ROOT / "canoe" / "tmp" / "reports" / "verification" / "dev2_batch_report.json")
+            if batch:
+                phase = str(batch.get("phase", "pre")).upper()
+                status_value = str(batch.get("status", status))
+                steps = batch.get("steps", [])
+                failed_steps = [item for item in steps if isinstance(item, dict) and int(item.get("rc", 1)) != 0]
+                insight["stage"] = f"Precheck {phase} -> {status_value}"
+                if failed_steps:
+                    failed = failed_steps[0]
+                    insight["bottleneck"] = f"{failed.get('name', 'unknown step')} rc={failed.get('rc', '?')}"
+                    insight["next_action"] = "Fix the failed precheck step before runtime execution."
+                else:
+                    insight["bottleneck"] = f"{int(batch.get('pass_count', 0))} steps passed"
+                    insight["next_action"] = "Proceed to scenario run or evidence capture."
+                return insight
+
+        if command.command_id == "inspect.environment_doctor":
+            doctor = self._load_json_file(ROOT / "canoe" / "tmp" / "reports" / "verification" / "doctor_report.json")
+            if doctor:
+                failed_checks = []
+                for item in doctor.get("checks", []):
+                    if isinstance(item, dict) and str(item.get("status", "")) != "PASS":
+                        failed_checks.append(item)
+                insight["stage"] = f"Doctor -> {doctor.get('status', status)}"
+                if failed_checks:
+                    first = failed_checks[0]
+                    insight["bottleneck"] = f"{first.get('name', 'check')} = {first.get('detail', '-')}"
+                    if str(first.get("name", "")) == "Measurement running":
+                        insight["next_action"] = "Start CANoe measurement, then rerun doctor or scenario."
+                    elif str(first.get("name", "")).startswith("SysVar "):
+                        insight["next_action"] = "Load the right CANoe config/sysvars and rerun doctor."
+                    else:
+                        insight["next_action"] = "Check CANoe COM attach/session privilege and rerun doctor."
+                else:
+                    insight["bottleneck"] = "COM attach, measurement, and required sysvars are ready."
+                    insight["next_action"] = "Proceed to Scenario run."
+                return insight
+
+        if command.command_id == "verify.all_gates":
+            insight["stage"] = "Gate bundle PASS" if status == "PASS" else "Gate bundle review"
+            insight["bottleneck"] = "No gate failures detected." if status == "PASS" else detail
+            insight["next_action"] = "Start runtime path with Scenario run." if status == "PASS" else "Fix the failing gate before runtime."
+            return insight
+
+        if command.command_id == "operate.scenario_trigger":
+            scenario_id = self._extract_flag(tokens, "--id") or "?"
+            if status == "PASS":
+                insight["stage"] = f"Scenario {scenario_id} acknowledged"
+                insight["bottleneck"] = "Ack path responded within the wait window."
+                insight["next_action"] = "Run Verify quick immediately."
+            elif "ack timeout" in detail.lower():
+                insight["stage"] = f"Scenario {scenario_id} ack timeout"
+                insight["bottleneck"] = detail
+                insight["next_action"] = "Check measurement state, scenarioCommandAck, and active scenario CAPL path."
+            elif "attach" in detail.lower() or "privilege/session" in detail.lower():
+                insight["stage"] = f"Scenario {scenario_id} COM attach issue"
+                insight["bottleneck"] = detail
+                insight["next_action"] = "Run doctor and relaunch terminal in the same CANoe user session."
+            else:
+                insight["stage"] = f"Scenario {scenario_id} review"
+                insight["bottleneck"] = detail
+                insight["next_action"] = "Check measurement state and scenario ack variable."
+            return insight
+
+        if artifacts:
+            insight["next_action"] = f"Review evidence: {artifacts[0]}"
+        return insight
+
+    def _summarize_tier_readiness(self) -> str:
+        readiness = self._load_json_file(ROOT / "canoe" / "tmp" / "reports" / "verification" / "run_readiness.json")
+        if not readiness:
+            return "No run_readiness.json yet.\nRun Verify quick to populate tier readiness."
+
+        lines = [
+            f"Run: {readiness.get('run_id', '-')}",
+            f"Overall: {readiness.get('overall_status', '-')}",
+        ]
+        tiers = readiness.get("tiers", {})
+        if isinstance(tiers, dict):
+            for tier_name in ("UT", "IT", "ST"):
+                tier = tiers.get(tier_name, {})
+                if not isinstance(tier, dict):
+                    continue
+                marker_count = int(tier.get("marker_count", 0))
+                scored_exists = bool(tier.get("scored_exists", False))
+                filled_exists = bool(tier.get("filled_exists", False))
+                tier_status = "PASS" if marker_count > 0 else "WARN"
+                lines.append(
+                    f"{tier_name}: {tier_status} marker={marker_count} filled={'Y' if filled_exists else 'N'} scored={'Y' if scored_exists else 'N'}"
+                )
+        return "\n".join(lines)
+
+    def _summarize_batch_snapshot(self) -> str:
+        batch = self._load_json_file(ROOT / "canoe" / "tmp" / "reports" / "verification" / "dev2_batch_report.json")
+        if not batch:
+            return "No dev2_batch_report.json yet.\nRun Precheck batch or Verify quick to populate batch status."
+
+        phase = str(batch.get("phase", "-")).upper()
+        status = str(batch.get("status", "-"))
+        pass_count = int(batch.get("pass_count", 0))
+        fail_count = int(batch.get("fail_count", 0))
+        steps = batch.get("steps", [])
+        total_steps = len(steps) if isinstance(steps, list) else 0
+        last_step = "-"
+        first_fail = "-"
+        if isinstance(steps, list) and steps:
+            last = steps[-1]
+            if isinstance(last, dict):
+                last_step = str(last.get("name", "-"))
+            failed_steps = [item for item in steps if isinstance(item, dict) and int(item.get("rc", 1)) != 0]
+            if failed_steps:
+                first_fail = str(failed_steps[0].get("name", "-"))
+        lines = [
+            f"Run: {batch.get('run_id', '-')}",
+            f"Phase/Status: {phase} / {status}",
+            f"Steps: {pass_count}/{total_steps} pass, fail={fail_count}",
+            f"Last step: {last_step}",
+            f"First fail: {first_fail}",
+        ]
+        return "\n".join(lines)
+
+    def _last_scenario_recent(self) -> dict[str, object] | None:
+        for item in self._recent_rows():
+            if str(item.get("command_id", "")) == "operate.scenario_trigger":
+                return item
+        return None
+
+    def _summarize_com_snapshot(self) -> str:
+        doctor = self._load_json_file(ROOT / "canoe" / "tmp" / "reports" / "verification" / "doctor_report.json")
+        if not doctor:
+            lines = [
+                "Doctor: no snapshot yet",
+                "Attach/measurement/sysvar state unknown",
+            ]
+        else:
+            checks = doctor.get("checks", [])
+            attach = "-"
+            measurement = "-"
+            sysvar_pass = 0
+            sysvar_total = 0
+            if isinstance(checks, list):
+                for item in checks:
+                    if not isinstance(item, dict):
+                        continue
+                    name = str(item.get("name", ""))
+                    status = str(item.get("status", "-"))
+                    detail = str(item.get("detail", ""))
+                    if name == "CANoe COM attach":
+                        attach = status
+                    elif name == "Measurement running":
+                        measurement = detail.upper()
+                    elif name.startswith("SysVar "):
+                        sysvar_total += 1
+                        if status == "PASS":
+                            sysvar_pass += 1
+            lines = [
+                f"Doctor: {doctor.get('status', '-')}",
+                f"COM attach: {attach}",
+                f"Measurement: {measurement}",
+                f"SysVar: {sysvar_pass}/{sysvar_total} pass",
+            ]
+
+        scenario = self._last_scenario_recent()
+        if scenario is not None:
+            status = str(scenario.get("status", "-"))
+            detail = str(scenario.get("detail", "-"))
+            lines.append(f"Scenario ack: {status}")
+            lines.append(detail[:72])
+        else:
+            lines.append("Scenario ack: no recent run")
+        return "\n".join(lines)
+
+    def _set_running_state(self, command: PaletteCommand, started_ts: str, tokens: list[str]) -> None:
+        self._update_timeline_state(command.command_id, "RUNNING", command.title, 0)
+        self.state["live_runtime"] = {
+            "stage": command.title,
+            "last_line": "Process started. Waiting for runtime output...",
+            "outputs": [],
+        }
+        self.state["last_insight"] = {
+            "stage": f"Running: {command.title}",
+            "bottleneck": "Process started. Watch the live log below.",
+            "next_action": "Wait for completion, then review the result and evidence cards.",
+        }
+        self.state["last_result"] = {
+            "status": "RUNNING",
+            "title": command.title,
+            "detail": "Execution in progress.",
+            "ts": started_ts,
+            "argv": tokens,
+            "artifacts": self._artifact_paths(command, tokens),
+            "related_logs": [],
+        }
+        self._save_state()
+        self._refresh_summary_cards()
+        self._refresh_log_summary()
 
     def _selected_option_index(self, option_list: OptionList) -> int:
         highlighted = option_list.highlighted
         return 0 if highlighted is None else int(highlighted)
 
     def on_option_list_option_highlighted(self, event: OptionList.OptionHighlighted) -> None:
-        if event.option_list.id == "groups":
-            group_index = self._selected_option_index(event.option_list)
-            self._refresh_commands(group_index)
-            return
         if event.option_list.id == "commands":
             self.active_command_index = self._selected_option_index(event.option_list)
             command = self._selected_command()
             if command is not None:
                 self._update_command_view(command)
+            return
+        if event.option_list.id == "recent-list":
+            recent = self._recent_rows()
+            index = self._selected_option_index(event.option_list)
+            if 0 <= index < len(recent):
+                item = recent[index]
+                title = str(item.get("title", ""))
+                status = str(item.get("status", ""))
+                duration_ms = int(item.get("duration_ms", 0) or 0)
+                detail = str(item.get("detail", ""))
+                self.query_one(
+                    "#insight-body", Static
+                ).update(
+                    f"Stage: Recent selection\n"
+                    f"Bottleneck: {title} [{status}] {duration_ms}ms\n"
+                    f"Next: Press Enter on the recent list to rerun this task.\n"
+                    f"Detail: {detail}"
+                )
 
     def on_option_list_option_selected(self, event: OptionList.OptionSelected) -> None:
-        if event.option_list.id == "groups":
-            group_index = self._selected_option_index(event.option_list)
-            self._refresh_commands(group_index)
-            self.query_one("#commands", OptionList).focus()
-            return
         if event.option_list.id == "commands":
             self.active_command_index = self._selected_option_index(event.option_list)
-            self.action_run_selected()
+            command = self._selected_command()
+            if command is not None:
+                self._update_command_view(command)
+                if command.params:
+                    self.action_focus_form()
+                else:
+                    self.query_one("#run-button", Button).focus()
+            return
+        if event.option_list.id == "recent-list":
+            recent = self._recent_rows()
+            index = self._selected_option_index(event.option_list)
+            if 0 <= index < len(recent):
+                self._rerun_recent_item(recent[index])
 
     def on_input_changed(self, event: Input.Changed) -> None:
         if event.input.id and event.input.id.startswith("field-input-"):
@@ -511,7 +1565,41 @@ class SdvTuiApp(App[None]):
             self.action_run_selected()
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
-        if event.button.id == "run-button":
+        if event.button.id == "nav-home":
+            self._show_page("home")
+        elif event.button.id == "nav-execute":
+            self._show_page("execute")
+            self._refresh_execute_group_buttons()
+            self.query_one("#commands", OptionList).focus()
+        elif event.button.id == "nav-results":
+            self._show_page("results")
+        elif event.button.id == "nav-logs":
+            self._show_page("logs")
+        elif event.button.id == "home-gate":
+            self._set_command_group("Primary Workflow")
+            self._select_command_by_id("verify.all_gates")
+            self.query_one("#run-button", Button).focus()
+        elif event.button.id == "home-scenario":
+            self._set_command_group("Primary Workflow")
+            self._select_command_by_id("operate.scenario_trigger")
+            self.action_focus_form()
+        elif event.button.id == "home-verify":
+            self._set_command_group("Primary Workflow")
+            self._select_command_by_id("verify.quick_verify")
+            self.action_focus_form()
+        elif event.button.id == "home-results":
+            self._show_page("results")
+        elif event.button.id == "home-logs":
+            self._show_page("logs")
+        elif event.button.id == "group-primary":
+            self._set_command_group("Primary Workflow")
+        elif event.button.id == "group-runtime":
+            self._set_command_group("Runtime Support")
+        elif event.button.id == "group-inspect":
+            self._set_command_group("System Access")
+        elif event.button.id == "group-package":
+            self._set_command_group("Packaging")
+        elif event.button.id == "run-button":
             self.action_run_selected()
         elif event.button.id == "pin-button":
             self.action_toggle_pin()
@@ -520,11 +1608,22 @@ class SdvTuiApp(App[None]):
             if command is not None:
                 self._populate_form(command)
                 self._update_preview()
+        elif event.button.id == "log-filter-all":
+            self.action_set_log_filter_all()
+        elif event.button.id == "log-filter-warn":
+            self.action_set_log_filter_warn()
+        elif event.button.id == "log-filter-fail":
+            self.action_set_log_filter_fail()
+        elif event.button.id == "log-filter-verify":
+            self.action_set_log_filter_verify()
+        elif event.button.id == "log-filter-canoe":
+            self.action_set_log_filter_canoe()
 
-    def action_focus_groups(self) -> None:
-        self.query_one("#groups", OptionList).focus()
+    def action_focus_navigation(self) -> None:
+        self.query_one("#nav-home", Button).focus()
 
     def action_focus_commands(self) -> None:
+        self._show_page("execute")
         self.query_one("#commands", OptionList).focus()
 
     def action_focus_form(self) -> None:
@@ -536,7 +1635,15 @@ class SdvTuiApp(App[None]):
         input_widget.focus()
 
     def action_focus_log(self) -> None:
+        self._show_page("logs")
         self.query_one("#log", RichLog).focus()
+
+    def action_focus_favorites(self) -> None:
+        self._show_page("results")
+
+    def action_focus_recent(self) -> None:
+        self._show_page("results")
+        self.query_one("#recent-list", OptionList).focus()
 
     def action_toggle_pin(self) -> None:
         command = self._selected_command()
@@ -557,18 +1664,38 @@ class SdvTuiApp(App[None]):
         self._rebuild_groups(preferred_group=preferred_group)
         self._refresh_summary_cards()
 
+    def action_rerun_latest(self) -> None:
+        recent = self._recent_rows()
+        if not recent:
+            self._write_log("[yellow]No recent task to rerun.[/]")
+            return
+        self._rerun_recent_item(recent[0])
+
+    def _rerun_recent_item(self, item: dict[str, object]) -> None:
+        command_id = str(item.get("command_id", ""))
+        argv = item.get("argv", [])
+        command = COMMAND_INDEX.get(command_id)
+        if command is None or not isinstance(argv, list) or not argv:
+            self._write_log("[yellow]Selected recent task cannot be rerun because its command metadata is missing.[/]")
+            return
+        tokens = [str(item) for item in argv]
+        self._write_log(f"[bold green]$[/] python scripts/run.py {' '.join(tokens)}")
+        self._run_command(command, tokens)
+
     def action_run_selected(self) -> None:
         command = self._selected_command()
         if command is None:
             self._write_log("[yellow]No command selected.[/]")
             return
+        values = self._form_values()
         try:
-            tokens = build_command_tokens(command, self._form_values())
+            tokens = build_command_tokens(command, values)
         except ValueError as ex:
             self._write_log(f"[bold red]Input error[/]: {ex}")
             self._update_preview()
             return
         self._write_log(f"[bold green]$[/] python scripts/run.py {' '.join(tokens)}")
+        self._show_page("logs")
         self._run_command(command, tokens)
 
     @work(thread=True, exclusive=True)
@@ -576,6 +1703,8 @@ class SdvTuiApp(App[None]):
         argv = [sys.executable, str(RUNNER), *tokens]
         lines: list[str] = []
         started_ts = time.strftime("%H:%M:%S")
+        started_perf = time.perf_counter()
+        self.call_from_thread(self._set_running_state, command, started_ts, tokens)
         try:
             proc = subprocess.Popen(
                 argv,
@@ -588,6 +1717,9 @@ class SdvTuiApp(App[None]):
             )
         except Exception as ex:
             self.call_from_thread(self._write_log, f"[bold red]Launch failed[/]: {ex}")
+            artifacts = self._artifact_paths(command, tokens)
+            insight = self._build_execution_insight(command, "FAIL", f"Launch failed: {ex}", tokens, artifacts)
+            duration_ms = int((time.perf_counter() - started_perf) * 1000)
             self.call_from_thread(
                 self._record_execution_result,
                 command.title,
@@ -595,17 +1727,28 @@ class SdvTuiApp(App[None]):
                 "FAIL",
                 f"Launch failed: {ex}",
                 started_ts,
+                duration_ms,
+                tokens,
+                artifacts,
+                [f"Launch failed: {ex}"],
+                insight,
             )
             return
 
         assert proc.stdout is not None
+        self.call_from_thread(self._write_log, "[dim]------------------------------------------------------------[/]")
         for line in proc.stdout:
             lines.append(line.rstrip())
-            self.call_from_thread(self._write_log, line.rstrip())
+            self.call_from_thread(self._update_live_runtime_from_line, command, line.rstrip())
+            self.call_from_thread(self._append_log_entry, line.rstrip())
         rc = proc.wait()
+        duration_ms = int((time.perf_counter() - started_perf) * 1000)
         style = "green" if rc == 0 else "red"
         self.call_from_thread(self._write_log, f"[bold {style}]rc={rc}[/]")
-        status, detail = self._classify_result(rc, lines)
+        status, detail = self._classify_result(command, rc, lines)
+        artifacts = self._merge_artifact_paths(command, tokens, lines)
+        insight = self._build_execution_insight(command, status, detail, tokens, artifacts)
+        related_logs = self._collect_related_logs(lines, status, detail)
         self.call_from_thread(
             self._record_execution_result,
             command.title,
@@ -613,14 +1756,149 @@ class SdvTuiApp(App[None]):
             status,
             detail,
             started_ts,
+            duration_ms,
+            tokens,
+            artifacts,
+            related_logs,
+            insight,
         )
+        next_hint = "Open Results to inspect verdict, evidence, and COM status."
+        if status == "FAIL":
+            next_hint = "Execution failed. Open Results first, then inspect Logs and COM Runtime."
+        elif status == "WARN":
+            next_hint = "Execution finished with warnings. Open Results to see bottleneck and next action."
+        self.call_from_thread(self._write_log, f"[bold cyan]Next[/] {next_hint}")
 
-    def _classify_result(self, rc: int, lines: list[str]) -> tuple[str, str]:
+    def _first_matching_line(self, lines: list[str], keywords: tuple[str, ...]) -> str:
+        for line in lines:
+            lowered = line.lower()
+            if any(keyword in lowered for keyword in keywords):
+                return line.strip()
+        return ""
+
+    def _collect_related_logs(self, lines: list[str], status: str, detail: str) -> list[str]:
+        if status not in {"FAIL", "WARN"}:
+            return []
+
+        buckets: list[str] = []
+        detail_token = detail.lower().strip()
+        if detail_token:
+            for line in lines:
+                stripped = line.strip()
+                lowered = stripped.lower()
+                if not stripped:
+                    continue
+                if detail_token in lowered:
+                    buckets.append(stripped)
+            if buckets:
+                return buckets[:3]
+
+        keywords = ("error", "failed", "traceback", "exception") if status == "FAIL" else (
+            "warning",
+            "warn",
+            "limited",
+            "missing",
+            "deferred",
+            "stopped",
+        )
+        seen: set[str] = set()
+        for line in lines:
+            stripped = line.strip()
+            lowered = stripped.lower()
+            if not stripped:
+                continue
+            if any(keyword in lowered for keyword in keywords) and stripped not in seen:
+                seen.add(stripped)
+                buckets.append(stripped)
+            if len(buckets) >= 3:
+                break
+        return buckets[:3]
+
+    def _classify_result(self, command: PaletteCommand, rc: int, lines: list[str]) -> tuple[str, str]:
         joined = "\n".join(lines).lower()
+        error_line = self._first_matching_line(lines, ("error", "failed", "traceback", "exception"))
+        warn_line = self._first_matching_line(lines, ("warning", "warn", "limited", "stopped", "missing", "deferred"))
+        pass_line = self._first_matching_line(lines, ("pass", "ok", "ready", "ack"))
+        scenario_timeout = self._first_matching_line(lines, ("ack timeout",))
+        scenario_attach = self._first_matching_line(lines, ("cannot attach canoe com", "same privilege/session"))
+
+        if command.command_id == "inspect.environment_doctor":
+            doctor = self._load_json_file(ROOT / "canoe" / "tmp" / "reports" / "verification" / "doctor_report.json")
+            if doctor:
+                failed_checks = [
+                    item
+                    for item in doctor.get("checks", [])
+                    if isinstance(item, dict) and str(item.get("status", "")) != "PASS"
+                ]
+                if failed_checks:
+                    first = failed_checks[0]
+                    detail = f"{first.get('name', 'check')}: {first.get('detail', '-')}"
+                    if len(failed_checks) == 1 and str(first.get("name", "")) == "Measurement running":
+                        return "WARN", detail
+                    return "FAIL", detail
+                return "PASS", "Doctor checks passed."
+
+        if command.command_id == "operate.scenario_trigger":
+            if scenario_timeout:
+                return "WARN", scenario_timeout
+            if scenario_attach:
+                return "FAIL", scenario_attach
+
+        if command.command_id == "operate.measure_status":
+            if "measurement=running" in joined:
+                return "PASS", "CANoe measurement is running."
+            if "measurement=stopped" in joined:
+                return "WARN", "CANoe measurement is stopped. Start measurement before scenario or verify tasks."
+
         if rc != 0:
+            if error_line:
+                return "FAIL", error_line
+            if warn_line:
+                return "WARN", warn_line
             return "FAIL", "The command returned a non-zero exit code."
-        if "[warn" in joined or "warning" in joined or "limited" in joined or "stopped" in joined:
-            return "WARN", "Command completed but reported a warning or limited runtime state."
+
+        if command.command_id == "operate.measure_start":
+            if "measurement started" in joined or "measurement=start" in joined or "running" in joined:
+                return "PASS", "Measurement start request completed."
+
+        if command.command_id == "operate.measure_stop":
+            if "measurement stopped" in joined or "measurement=stopped" in joined or "stopped" in joined:
+                return "WARN", "Measurement is stopped now. This is expected only if you intended to halt runtime."
+
+        if command.command_id == "operate.scenario_trigger":
+            ack_line = self._first_matching_line(lines, ("ack",))
+            if ack_line:
+                return "PASS", ack_line
+
+        if command.command_id == "verify.run_readiness_status":
+            if "ready" in joined and "missing" not in joined:
+                return "PASS", "Evidence run is ready for finalize."
+            if warn_line:
+                return "WARN", warn_line
+
+        if command.command_id == "verify.precheck_batch":
+            if "gate summary: pass" in joined or "[guided] pass" in joined:
+                return "PASS", "Precheck flow passed and the operator can move to evidence capture."
+
+        if command.command_id == "verify.quick_verify":
+            if "[verify_quick] verify status" in joined and "missing" not in joined:
+                return "PASS", "Quick verify completed through readiness status."
+
+        if command.command_id == "verify.all_gates":
+            if "gate summary: pass" in joined:
+                return "PASS", "All configured gates passed."
+            if warn_line:
+                return "WARN", warn_line
+
+        if command.command_id in {"package.portable_bundle", "package.windows_exe"}:
+            ok_line = self._first_matching_line(lines, ("[ok]", "portable zip", "portable folder", "dist\\", "dist/"))
+            if ok_line:
+                return "PASS", ok_line
+
+        if warn_line:
+            return "WARN", warn_line
+        if pass_line:
+            return "PASS", pass_line
         return "PASS", "Command completed successfully."
 
     def _record_execution_result(
@@ -630,7 +1908,21 @@ class SdvTuiApp(App[None]):
         status: str,
         detail: str,
         started_ts: str,
+        duration_ms: int,
+        argv: list[str],
+        artifacts: list[str],
+        related_logs: list[str],
+        insight: dict[str, str],
     ) -> None:
+        self._update_timeline_state(command_id, status, title, duration_ms)
+        live = self.state.get("live_runtime", {})
+        if not isinstance(live, dict):
+            live = {}
+        self.state["live_runtime"] = {
+            "stage": f"{title} -> {status}",
+            "last_line": detail,
+            "outputs": artifacts,
+        }
         recent = self.state.get("recent", [])
         if not isinstance(recent, list):
             recent = []
@@ -642,14 +1934,24 @@ class SdvTuiApp(App[None]):
                 "status": status,
                 "detail": detail,
                 "ts": started_ts,
+                "duration_ms": duration_ms,
+                "argv": argv,
+                "artifacts": artifacts,
+                "related_logs": related_logs,
+                "insight": insight,
             },
         )
         self.state["recent"] = recent[:5]
+        self.state["last_insight"] = insight
         self.state["last_result"] = {
             "status": status,
             "title": title,
             "detail": detail,
             "ts": started_ts,
+            "duration_ms": duration_ms,
+            "argv": argv,
+            "artifacts": artifacts,
+            "related_logs": related_logs,
         }
         self._save_state()
         self._refresh_summary_cards()

@@ -37,39 +37,73 @@ Legacy aliases are kept for compatibility:
 from __future__ import annotations
 
 import argparse
-import csv
 import datetime as dt
-import difflib
 import json
 import shlex
-import subprocess
 import sys
 from pathlib import Path
 
-from cliops.canoe_com import CanoeComBridge, CanoeComError
-from cliops.command_catalog import build_shell_palette_groups
-from cliops.platform_caps import canoe_runtime_check, platform_label, require_canoe_runtime
-
-try:
-    import questionary
-except Exception:  # optional dependency
-    questionary = None
-
-try:
-    from rich.console import Console
-    from rich.panel import Panel
-except Exception:  # optional dependency
-    Console = None
-    Panel = None
-
-
-ROOT = Path(__file__).resolve().parent.parent
-SCRIPTS = ROOT / "scripts"
-_RICH_CONSOLE = Console() if Console is not None else None
-SHELL_HISTORY_FILE = ROOT / "canoe" / "tmp" / "reports" / "verification" / "cli_shell_history.jsonl"
+from cliops.common import ROOT, SCRIPTS, default_run_id as _default_run_id
+from cliops.gate_ops import (
+    cmd_gate_all,
+    cmd_gate_capl_sync,
+    cmd_gate_cfg_hygiene,
+    cmd_gate_cli_readiness,
+    cmd_gate_doc_sync,
+    cmd_gate_multibus_dbc,
+    run_gate_all as _run_gate_all,
+    run_named_gate as _run_named_gate,
+)
+from cliops.package_ops import cmd_package_build_exe, cmd_package_bundle_portable
+from cliops.parser_factory import TOPLEVEL_COMMANDS, build_parser
+from cliops.platform_caps import canoe_runtime_check, platform_label
+from cliops.runtime_ops import (
+    cmd_canoe_capl_call,
+    cmd_canoe_measure_reset,
+    cmd_canoe_measure_start,
+    cmd_canoe_measure_status,
+    cmd_canoe_measure_stop,
+    cmd_capl_sysvar_get,
+    cmd_capl_sysvar_set,
+    cmd_doctor,
+    cmd_scenario_run,
+    cmd_start_demo,
+    cmd_start_precheck,
+)
+from cliops.shell_ui import (
+    append_shell_history as _append_shell_history,
+    can_launch_tui as _can_launch_tui,
+    has_questionary_support as _has_questionary_support,
+    has_rich_support as _has_rich_support,
+    print_shell_help as _print_shell_help,
+    print_shell_history as _print_shell_history,
+    prompt_int as _prompt_int,
+    prompt_menu_choice as _prompt_menu_choice,
+    prompt_shell_palette_command as _prompt_shell_palette_command,
+    prompt_with_default as _prompt_with_default,
+    run_with_loading as _run_with_loading,
+    suggest_choice as _suggest_choice,
+    ui_info as _ui_info,
+    ui_welcome_banner as _ui_welcome_banner,
+)
+from cliops.verify_ops import (
+    cmd_verify_batch,
+    cmd_verify_bind_doc,
+    cmd_verify_fill_score,
+    cmd_verify_fill_template,
+    cmd_verify_finalize,
+    cmd_verify_insight,
+    cmd_verify_prepare,
+    cmd_verify_quick,
+    cmd_verify_smoke,
+    cmd_verify_status,
+)
 
 CONTRACT_CANONICAL = [
     "python scripts/run.py",
+    "python scripts/run.py gate all",
+    "python scripts/run.py scenario run --id <0..255>",
+    "python scripts/run.py verify quick --run-id <YYYYMMDD_HHMM> --owner <OWNER>",
     "python scripts/run.py tui",
     "python scripts/run.py shell",
     "python scripts/run.py start demo --id <0..255>",
@@ -81,12 +115,9 @@ CONTRACT_CANONICAL = [
     "python scripts/run.py canoe capl-call --function-name <CAPL_FN> --args <A1> <A2>",
     "python scripts/run.py evidence status --run-id <YYYYMMDD_HHMM>",
     "python scripts/run.py release portable",
-    "python scripts/run.py shell",
-    "python scripts/run.py scenario run --id <0..255>",
     "python scripts/run.py verify prepare --run-id <YYYYMMDD_HHMM>",
     "python scripts/run.py verify batch --run-id <YYYYMMDD_HHMM> --owner <OWNER>",
     "python scripts/run.py verify smoke --owner <OWNER>",
-    "python scripts/run.py verify quick --run-id <YYYYMMDD_HHMM> --owner <OWNER>",
     "python scripts/run.py verify fill-score --tier <UT|IT|ST> --run-id <YYYYMMDD_HHMM> --owner <OWNER>",
     "python scripts/run.py verify insight --run-id <YYYYMMDD_HHMM>",
     "python scripts/run.py verify bind-doc --run-id <YYYYMMDD_HHMM>",
@@ -94,7 +125,6 @@ CONTRACT_CANONICAL = [
     "python scripts/run.py verify status --run-id <YYYYMMDD_HHMM>",
     "python scripts/run.py verify finalize --run-id <YYYYMMDD_HHMM> --owner <OWNER>",
     "python scripts/run.py gate doc-sync",
-    "python scripts/run.py gate all",
     "python scripts/run.py gate cfg-hygiene",
     "python scripts/run.py gate capl-sync",
     "python scripts/run.py gate multibus-dbc",
@@ -130,615 +160,6 @@ CONTRACT_LEGACY = [
 ]
 
 
-TOPLEVEL_COMMANDS = [
-    "start",
-    "doctor",
-    "capl",
-    "canoe",
-    "shell",
-    "tui",
-    "wizard",
-    "scenario",
-    "verify",
-    "evidence",
-    "gate",
-    "package",
-    "release",
-    "contract",
-    "scenario-run",
-    "interactive",
-    "verify-prepare",
-    "verify-batch",
-    "verify-smoke",
-    "verify-fill-score",
-    "verify-insight",
-    "verify-bind-doc",
-    "verify-fill-template",
-    "verify-status",
-    "verify-finalize",
-    "gate-doc-sync",
-    "gate-cfg-hygiene",
-    "gate-capl-sync",
-    "gate-multibus-dbc",
-    "gate-cli-readiness",
-    "package-build-exe",
-    "package-bundle-portable",
-    # Short aliases
-    "go",
-    "demo",
-    "precheck",
-    "mstart",
-    "mstop",
-    "mstatus",
-]
-
-SHELL_PALETTE_GROUPS: dict[str, list[tuple[str, str]]] = build_shell_palette_groups()
-
-
-def run_cmd(args: list[str]) -> int:
-    print("[RUN]", " ".join(args))
-    proc = subprocess.run(args, cwd=ROOT)
-    return proc.returncode
-
-
-def _fail_unavailable(action_name: str) -> int:
-    message = require_canoe_runtime(action_name)
-    if message:
-        print(f"[PLATFORM] {message}")
-        print("[PLATFORM] available everywhere: gate/verify/evidence/package/report commands")
-        return 2
-    return 0
-
-
-def cmd_verify_prepare(args: argparse.Namespace) -> int:
-    return run_cmd(
-        [
-            sys.executable,
-            str(SCRIPTS / "quality" / "run_verification_pipeline.py"),
-            "prepare",
-            "--run-id",
-            args.run_id,
-        ]
-    )
-
-
-def cmd_verify_smoke(args: argparse.Namespace) -> int:
-    return run_cmd(
-        [
-            sys.executable,
-            str(SCRIPTS / "quality" / "run_verification_pipeline.py"),
-            "smoke",
-            "--owner",
-            args.owner,
-            "--run-date",
-            args.run_date,
-        ]
-    )
-
-
-def cmd_verify_fill_score(args: argparse.Namespace) -> int:
-    cmd = [
-        sys.executable,
-        str(SCRIPTS / "quality" / "run_verification_pipeline.py"),
-        "fill-score",
-        "--tier",
-        args.tier,
-        "--run-id",
-        args.run_id,
-        "--owner",
-        args.owner,
-        "--run-date",
-        args.run_date,
-    ]
-    if args.no_strict_metadata:
-        cmd.append("--no-strict-metadata")
-    if args.no_strict_axis:
-        cmd.append("--no-strict-axis")
-    if args.baseline_csv:
-        cmd.extend(["--baseline-csv", str(args.baseline_csv)])
-    return run_cmd(cmd)
-
-
-def cmd_verify_insight(args: argparse.Namespace) -> int:
-    cmd = [
-        sys.executable,
-        str(SCRIPTS / "quality" / "run_verification_pipeline.py"),
-        "insight",
-        "--run-id",
-        args.run_id,
-        "--output-md",
-        str(args.output_md),
-        "--output-json",
-        str(args.output_json),
-    ]
-    if args.baseline_run_id:
-        cmd.extend(["--baseline-run-id", args.baseline_run_id])
-    if args.evidence_root:
-        cmd.extend(["--evidence-root", str(args.evidence_root)])
-    return run_cmd(cmd)
-
-
-def cmd_verify_bind_doc(args: argparse.Namespace) -> int:
-    cmd = [
-        sys.executable,
-        str(SCRIPTS / "quality" / "run_verification_pipeline.py"),
-        "bind-doc",
-        "--run-id",
-        args.run_id,
-        "--output-csv",
-        str(args.output_csv),
-        "--output-json",
-        str(args.output_json),
-        "--output-md",
-        str(args.output_md),
-    ]
-    if args.evidence_root:
-        cmd.extend(["--evidence-root", str(args.evidence_root)])
-    if args.docs_root:
-        cmd.extend(["--docs-root", str(args.docs_root)])
-    return run_cmd(cmd)
-
-
-def cmd_verify_fill_template(args: argparse.Namespace) -> int:
-    cmd = [
-        sys.executable,
-        str(SCRIPTS / "quality" / "run_verification_pipeline.py"),
-        "fill-template",
-        "--run-id",
-        args.run_id,
-        "--owner-fallback",
-        args.owner_fallback,
-        "--date-fallback",
-        args.date_fallback,
-        "--binding-csv",
-        str(args.binding_csv),
-        "--binding-json",
-        str(args.binding_json),
-        "--binding-md",
-        str(args.binding_md),
-        "--output-csv",
-        str(args.output_csv),
-        "--output-md",
-        str(args.output_md),
-    ]
-    if args.evidence_root:
-        cmd.extend(["--evidence-root", str(args.evidence_root)])
-    if args.docs_root:
-        cmd.extend(["--docs-root", str(args.docs_root)])
-    return run_cmd(cmd)
-
-
-def cmd_verify_finalize(args: argparse.Namespace) -> int:
-    cmd = [
-        sys.executable,
-        str(SCRIPTS / "quality" / "run_verification_pipeline.py"),
-        "finalize",
-        "--run-id",
-        args.run_id,
-        "--tiers",
-        *args.tiers,
-        "--owner",
-        args.owner,
-        "--run-date",
-        args.run_date,
-        "--owner-fallback",
-        args.owner_fallback,
-        "--date-fallback",
-        args.date_fallback,
-        "--insight-md",
-        str(args.insight_md),
-        "--insight-json",
-        str(args.insight_json),
-        "--binding-csv",
-        str(args.binding_csv),
-        "--binding-json",
-        str(args.binding_json),
-        "--binding-md",
-        str(args.binding_md),
-        "--fill-csv",
-        str(args.fill_csv),
-        "--fill-md",
-        str(args.fill_md),
-    ]
-    if args.evidence_root:
-        cmd.extend(["--evidence-root", str(args.evidence_root)])
-    if args.docs_root:
-        cmd.extend(["--docs-root", str(args.docs_root)])
-    if args.baseline_run_id:
-        cmd.extend(["--baseline-run-id", args.baseline_run_id])
-    if args.no_strict_metadata:
-        cmd.append("--no-strict-metadata")
-    if args.no_strict_axis:
-        cmd.append("--no-strict-axis")
-    return run_cmd(cmd)
-
-
-def cmd_verify_quick(args: argparse.Namespace) -> int:
-    steps = [
-        ("verify prepare", lambda: cmd_verify_prepare(argparse.Namespace(run_id=args.run_id))),
-        ("verify smoke", lambda: cmd_verify_smoke(argparse.Namespace(owner=args.owner, run_date=args.run_date))),
-        (
-            "verify status",
-            lambda: cmd_verify_status(
-                argparse.Namespace(
-                    run_id=args.run_id,
-                    evidence_root="",
-                    output_json="canoe/tmp/reports/verification/run_readiness.json",
-                    output_md="canoe/tmp/reports/verification/run_readiness.md",
-                )
-            ),
-        ),
-    ]
-    for step_name, step_fn in steps:
-        print(f"[VERIFY_QUICK] {step_name}")
-        rc = step_fn()
-        if rc != 0:
-            return rc
-    return 0
-
-
-def cmd_verify_status(args: argparse.Namespace) -> int:
-    cmd = [
-        sys.executable,
-        str(SCRIPTS / "quality" / "run_verification_pipeline.py"),
-        "status",
-        "--run-id",
-        args.run_id,
-        "--output-json",
-        str(args.output_json),
-        "--output-md",
-        str(args.output_md),
-    ]
-    if args.evidence_root:
-        cmd.extend(["--evidence-root", str(args.evidence_root)])
-    return run_cmd(cmd)
-
-
-def _batch_artifact_rows(run_id: str) -> list[dict[str, object]]:
-    paths = [
-        f"canoe/logging/evidence/UT/{run_id}/verification_log.csv",
-        f"canoe/logging/evidence/UT/{run_id}/verification_log_scored.csv",
-        f"canoe/logging/evidence/IT/{run_id}/verification_log.csv",
-        f"canoe/logging/evidence/IT/{run_id}/verification_log_scored.csv",
-        f"canoe/logging/evidence/ST/{run_id}/verification_log.csv",
-        f"canoe/logging/evidence/ST/{run_id}/verification_log_scored.csv",
-        "canoe/tmp/reports/verification/dev_completeness_smoke.csv",
-        "canoe/tmp/reports/verification/dev_completeness_smoke.md",
-        "canoe/tmp/reports/verification/run_readiness.json",
-        "canoe/tmp/reports/verification/run_readiness.md",
-        "canoe/tmp/reports/verification/run_insight_report.json",
-        "canoe/tmp/reports/verification/run_insight_report.md",
-        "canoe/tmp/reports/verification/doc_binding_bundle.json",
-        "canoe/tmp/reports/verification/doc_binding_bundle.md",
-        "canoe/tmp/reports/verification/doc_fill_template.csv",
-        "canoe/tmp/reports/verification/doc_fill_template.md",
-    ]
-    rows: list[dict[str, object]] = []
-    for rel in paths:
-        p = ROOT / rel
-        exists = p.exists()
-        size = p.stat().st_size if exists and p.is_file() else 0
-        mtime = dt.datetime.fromtimestamp(p.stat().st_mtime).isoformat() if exists else ""
-        rows.append(
-            {
-                "path": rel,
-                "exists": exists,
-                "size_bytes": size,
-                "last_modified": mtime,
-            }
-        )
-    return rows
-
-
-def _normalize_report_formats(raw: str) -> list[str]:
-    allowed = {"json", "md", "csv"}
-    parts = [item.strip().lower() for item in raw.split(",") if item.strip()]
-    if not parts:
-        return ["json", "md"]
-    out: list[str] = []
-    for item in parts:
-        if item not in allowed:
-            raise ValueError(f"invalid report format: {item} (allowed: json,md,csv)")
-        if item not in out:
-            out.append(item)
-    return out
-
-
-def _write_batch_report(
-    *,
-    run_id: str,
-    owner: str,
-    run_date: str,
-    phase: str,
-    steps: list[dict[str, object]],
-    report_formats: list[str],
-    output_json: Path,
-    output_md: Path,
-    output_csv: Path,
-) -> None:
-    if "json" in report_formats:
-        output_json.parent.mkdir(parents=True, exist_ok=True)
-    if "md" in report_formats:
-        output_md.parent.mkdir(parents=True, exist_ok=True)
-    if "csv" in report_formats:
-        output_csv.parent.mkdir(parents=True, exist_ok=True)
-
-    pass_count = sum(1 for s in steps if s.get("rc") == 0)
-    fail_count = len(steps) - pass_count
-    status = "PASS" if fail_count == 0 else "FAIL"
-    artifacts = _batch_artifact_rows(run_id)
-
-    payload = {
-        "run_id": run_id,
-        "owner": owner,
-        "run_date": run_date,
-        "phase": phase,
-        "status": status,
-        "pass_count": pass_count,
-        "fail_count": fail_count,
-        "steps": steps,
-        "artifacts": artifacts,
-        "generated_at": dt.datetime.now().isoformat(),
-    }
-    if "json" in report_formats:
-        output_json.write_text(json.dumps(payload, indent=2), encoding="utf-8")
-
-    if "md" in report_formats:
-        lines = [
-            "# Dev2 Batch Verification Report",
-            "",
-            f"- run_id: `{run_id}`",
-            f"- owner: `{owner}`",
-            f"- run_date: `{run_date}`",
-            f"- phase: `{phase}`",
-            f"- status: `{status}`",
-            f"- pass/fail: `{pass_count}/{fail_count}`",
-            "",
-            "## Step Results",
-            "",
-            "| step | rc |",
-            "|---|---|",
-        ]
-        for step in steps:
-            lines.append(f"| `{step['name']}` | `{step['rc']}` |")
-        lines.extend(["", "## Artifact Snapshot", "", "| path | exists | size_bytes |", "|---|---:|---:|"])
-        for row in artifacts:
-            lines.append(f"| `{row['path']}` | `{str(row['exists']).lower()}` | `{row['size_bytes']}` |")
-        output_md.write_text("\n".join(lines) + "\n", encoding="utf-8")
-
-    if "csv" in report_formats:
-        with output_csv.open("w", encoding="utf-8", newline="") as fp:
-            writer = csv.DictWriter(
-                fp,
-                fieldnames=[
-                    "row_type",
-                    "run_id",
-                    "phase",
-                    "owner",
-                    "run_date",
-                    "status",
-                    "step_name",
-                    "step_rc",
-                    "artifact_path",
-                    "artifact_exists",
-                    "artifact_size_bytes",
-                    "artifact_last_modified",
-                ],
-            )
-            writer.writeheader()
-            for step in steps:
-                writer.writerow(
-                    {
-                        "row_type": "step",
-                        "run_id": run_id,
-                        "phase": phase,
-                        "owner": owner,
-                        "run_date": run_date,
-                        "status": status,
-                        "step_name": step["name"],
-                        "step_rc": step["rc"],
-                        "artifact_path": "",
-                        "artifact_exists": "",
-                        "artifact_size_bytes": "",
-                        "artifact_last_modified": "",
-                    }
-                )
-            for row in artifacts:
-                writer.writerow(
-                    {
-                        "row_type": "artifact",
-                        "run_id": run_id,
-                        "phase": phase,
-                        "owner": owner,
-                        "run_date": run_date,
-                        "status": status,
-                        "step_name": "",
-                        "step_rc": "",
-                        "artifact_path": row["path"],
-                        "artifact_exists": str(row["exists"]).lower(),
-                        "artifact_size_bytes": row["size_bytes"],
-                        "artifact_last_modified": row["last_modified"],
-                    }
-                )
-
-
-def cmd_verify_batch(args: argparse.Namespace) -> int:
-    try:
-        report_formats = _normalize_report_formats(args.report_formats)
-    except ValueError as ex:
-        print(f"[VERIFY_BATCH] FAIL: {ex}")
-        return 2
-
-    steps: list[dict[str, object]] = []
-
-    def run_step(name: str, fn) -> int:
-        rc = fn()
-        steps.append({"name": name, "rc": rc})
-        return rc
-
-    if args.phase in {"pre", "full"}:
-        if not args.skip_gates:
-            gate_steps = [
-                ("gate doc-sync", lambda: cmd_gate_doc_sync(argparse.Namespace())),
-                ("gate cfg-hygiene", lambda: cmd_gate_cfg_hygiene(argparse.Namespace())),
-                ("gate capl-sync", lambda: cmd_gate_capl_sync(argparse.Namespace())),
-                ("gate multibus-dbc", lambda: cmd_gate_multibus_dbc(argparse.Namespace())),
-                ("gate cli-readiness", lambda: cmd_gate_cli_readiness(argparse.Namespace())),
-            ]
-            for name, fn in gate_steps:
-                if run_step(name, fn) != 0 and args.stop_on_fail:
-                    _write_batch_report(
-                        run_id=args.run_id,
-                        owner=args.owner,
-                        run_date=args.run_date,
-                        phase=args.phase,
-                        steps=steps,
-                        report_formats=report_formats,
-                        output_json=args.output_json,
-                        output_md=args.output_md,
-                        output_csv=args.output_csv,
-                    )
-                    return 2
-
-        pre_steps = [
-            ("verify prepare", lambda: cmd_verify_prepare(argparse.Namespace(run_id=args.run_id))),
-            ("verify smoke", lambda: cmd_verify_smoke(argparse.Namespace(owner=args.owner, run_date=args.run_date))),
-            (
-                "verify status",
-                lambda: cmd_verify_status(
-                    argparse.Namespace(
-                        run_id=args.run_id,
-                        evidence_root="",
-                        output_json="canoe/tmp/reports/verification/run_readiness.json",
-                        output_md="canoe/tmp/reports/verification/run_readiness.md",
-                    )
-                ),
-            ),
-        ]
-        for name, fn in pre_steps:
-            if run_step(name, fn) != 0 and args.stop_on_fail:
-                _write_batch_report(
-                    run_id=args.run_id,
-                    owner=args.owner,
-                    run_date=args.run_date,
-                    phase=args.phase,
-                    steps=steps,
-                    report_formats=report_formats,
-                    output_json=args.output_json,
-                    output_md=args.output_md,
-                    output_csv=args.output_csv,
-                )
-                return 2
-
-    if args.phase in {"post", "full"}:
-        finalize_ns = argparse.Namespace(
-            run_id=args.run_id,
-            tiers=["UT", "IT", "ST"],
-            owner=args.owner,
-            run_date=args.run_date,
-            owner_fallback=args.owner,
-            date_fallback=args.run_date,
-            baseline_run_id="",
-            no_strict_metadata=False,
-            no_strict_axis=False,
-            evidence_root="",
-            docs_root="",
-            insight_md="canoe/tmp/reports/verification/run_insight_report.md",
-            insight_json="canoe/tmp/reports/verification/run_insight_report.json",
-            binding_csv="canoe/tmp/reports/verification/doc_binding_bundle.csv",
-            binding_json="canoe/tmp/reports/verification/doc_binding_bundle.json",
-            binding_md="canoe/tmp/reports/verification/doc_binding_bundle.md",
-            fill_csv="canoe/tmp/reports/verification/doc_fill_template.csv",
-            fill_md="canoe/tmp/reports/verification/doc_fill_template.md",
-        )
-        if run_step("verify finalize", lambda: cmd_verify_finalize(finalize_ns)) != 0 and args.stop_on_fail:
-            _write_batch_report(
-                run_id=args.run_id,
-                owner=args.owner,
-                run_date=args.run_date,
-                phase=args.phase,
-                steps=steps,
-                report_formats=report_formats,
-                output_json=args.output_json,
-                output_md=args.output_md,
-                output_csv=args.output_csv,
-            )
-            return 2
-        run_step(
-            "verify status",
-            lambda: cmd_verify_status(
-                argparse.Namespace(
-                    run_id=args.run_id,
-                    evidence_root="",
-                    output_json="canoe/tmp/reports/verification/run_readiness.json",
-                    output_md="canoe/tmp/reports/verification/run_readiness.md",
-                )
-            ),
-        )
-
-    _write_batch_report(
-        run_id=args.run_id,
-        owner=args.owner,
-        run_date=args.run_date,
-        phase=args.phase,
-        steps=steps,
-        report_formats=report_formats,
-        output_json=args.output_json,
-        output_md=args.output_md,
-        output_csv=args.output_csv,
-    )
-    failed = sum(1 for s in steps if s["rc"] != 0)
-    return 0 if failed == 0 else 2
-
-
-def cmd_scenario_run(args: argparse.Namespace) -> int:
-    platform_rc = _fail_unavailable("scenario run")
-    if platform_rc != 0:
-        return platform_rc
-    cmd = [
-        sys.executable,
-        str(SCRIPTS / "canoe" / "send_scenario_command.py"),
-        "--id",
-        str(args.id),
-        "--namespace",
-        args.namespace,
-        "--var",
-        args.var,
-        "--ack-var",
-        args.ack_var,
-        "--wait-ack-ms",
-        str(args.wait_ack_ms),
-        "--poll-ms",
-        str(args.poll_ms),
-    ]
-    if args.no_ensure_running:
-        cmd.append("--no-ensure-running")
-    return run_cmd(cmd)
-
-
-def cmd_gate_doc_sync(_: argparse.Namespace) -> int:
-    return run_cmd([sys.executable, str(SCRIPTS / "gates" / "doc_code_sync_gate.py")])
-
-
-def cmd_gate_cfg_hygiene(_: argparse.Namespace) -> int:
-    return run_cmd([sys.executable, str(SCRIPTS / "gates" / "cfg_hygiene_gate.py")])
-
-
-def cmd_gate_capl_sync(_: argparse.Namespace) -> int:
-    return run_cmd([sys.executable, str(SCRIPTS / "gates" / "check_capl_sync.py")])
-
-
-def cmd_gate_multibus_dbc(_: argparse.Namespace) -> int:
-    return run_cmd([sys.executable, str(SCRIPTS / "gates" / "multibus_cfg_dbc_gate.py")])
-
-
-def cmd_gate_cli_readiness(_: argparse.Namespace) -> int:
-    return run_cmd([sys.executable, str(SCRIPTS / "gates" / "cli_readiness_gate.py")])
-
-
-def cmd_gate_all(_: argparse.Namespace) -> int:
-    return _run_gate_all()
-
 
 def cmd_contract(args: argparse.Namespace) -> int:
     if args.json:
@@ -751,287 +172,6 @@ def cmd_contract(args: argparse.Namespace) -> int:
         print(f"  {item}")
     return 0
 
-
-def cmd_package_build_exe(args: argparse.Namespace) -> int:
-    cmd = [
-        sys.executable,
-        str(SCRIPTS / "release" / "build_sdv_exe.py"),
-        "--mode",
-        args.mode,
-    ]
-    if args.clean:
-        cmd.append("--clean")
-    return run_cmd(cmd)
-
-
-def cmd_package_bundle_portable(args: argparse.Namespace) -> int:
-    cmd = [
-        sys.executable,
-        str(SCRIPTS / "release" / "build_portable_bundle.py"),
-    ]
-    if args.clean:
-        cmd.append("--clean")
-    if args.rebuild_exe:
-        cmd.append("--rebuild-exe")
-    if args.mode:
-        cmd.extend(["--mode", args.mode])
-    if args.output_dir:
-        cmd.extend(["--output-dir", args.output_dir])
-    if args.bundle_name:
-        cmd.extend(["--bundle-name", args.bundle_name])
-    if args.zip_name:
-        cmd.extend(["--zip-name", args.zip_name])
-    return run_cmd(cmd)
-
-
-def _prompt_with_default(label: str, default: str) -> str:
-    if questionary is not None and _is_interactive_tty():
-        answer = questionary.text(label, default=default).ask()
-        if answer is None:
-            return default
-        answer = answer.strip()
-        return answer or default
-    raw = input(f"{label} [{default}]: ").strip()
-    return raw or default
-
-
-def _is_interactive_tty() -> bool:
-    return sys.stdin.isatty() and sys.stdout.isatty()
-
-
-def _ui_info(msg: str) -> None:
-    if _RICH_CONSOLE is not None and _is_interactive_tty():
-        _RICH_CONSOLE.print(msg)
-    else:
-        print(msg)
-
-
-def _ui_welcome_banner() -> None:
-    title = "SDV CLI"
-    body = (
-        "CANoe Verification Operator Console\n"
-        "Menu-driven UX | Scenario trigger | Evidence status | Measurement control"
-    )
-    if _RICH_CONSOLE is not None and Panel is not None and _is_interactive_tty():
-        _RICH_CONSOLE.print(Panel(body, title=title, border_style="cyan"))
-    else:
-        print("=" * 56)
-        print(f"{title} - CANoe Verification Operator Console")
-        print("=" * 56)
-
-
-def _run_with_loading(label: str, func) -> int:
-    if _RICH_CONSOLE is not None and _is_interactive_tty():
-        with _RICH_CONSOLE.status(f"[bold cyan]{label}[/]"):
-            return func()
-    _ui_info(f"[GUIDED] running: {label}")
-    return func()
-
-
-def _prompt_menu_choice(default: int = 1, minimum: int = 1, maximum: int = 11) -> int:
-    if questionary is not None and _is_interactive_tty():
-        choices = [
-            questionary.Choice("1) doctor (CANoe COM + measurement + sysvar check)", value=1),
-            questionary.Choice("2) precheck (gates+prepare+smoke+status)", value=2),
-            questionary.Choice("3) trigger scenario (scenarioCommand/testScenario)", value=3),
-            questionary.Choice("4) evidence status (readiness report)", value=4),
-            questionary.Choice("5) measurement start", value=5),
-            questionary.Choice("6) measurement stop", value=6),
-            questionary.Choice("7) measurement status", value=7),
-            questionary.Choice("8) open slash shell", value=8),
-            questionary.Choice("9) quick flow (doctor -> scenario -> status)", value=9),
-            questionary.Choice("10) exit", value=10),
-            questionary.Choice("11) silent exit", value=11),
-        ]
-        answer = questionary.select("Choose action", choices=choices, default=choices[default - 1]).ask()
-        if answer is None:
-            return 11
-        return int(answer)
-    while True:
-        raw = input(f"select [{minimum}-{maximum}] (default {default}, q=silent-exit): ").strip()
-
-        if raw.lower() in {"q", "quit", "x"}:
-            return 11
-
-        if not raw:
-            return default
-
-        try:
-            value = int(raw)
-        except ValueError:
-            print("[GUIDED] enter a number.")
-            continue
-
-        if value < minimum or value > maximum:
-            print(f"[GUIDED] value must be in range {minimum}..{maximum}.")
-            continue
-        return value
-
-
-def _prompt_int(label: str, default: int, minimum: int, maximum: int) -> int:
-    while True:
-        if questionary is not None and _is_interactive_tty():
-            answer = questionary.text(label, default=str(default)).ask()
-            raw = "" if answer is None else answer.strip()
-        else:
-            raw = input(f"{label} [{default}]: ").strip()
-
-        if not raw:
-            return default
-        try:
-            value = int(raw)
-        except ValueError:
-            print("[WIZARD] enter a valid integer.")
-            continue
-        if value < minimum or value > maximum:
-            print(f"[WIZARD] value must be in range {minimum}..{maximum}.")
-            continue
-        return value
-
-
-def _default_run_id() -> str:
-    return dt.datetime.now().strftime("%Y%m%d_%H%M")
-
-
-def _suggest_choice(value: str, choices: list[str]) -> str | None:
-    matches = difflib.get_close_matches(value, choices, n=1, cutoff=0.5)
-    return matches[0] if matches else None
-
-
-def _run_gate_all() -> int:
-    gates = [
-        ("doc-sync", cmd_gate_doc_sync),
-        ("cfg-hygiene", cmd_gate_cfg_hygiene),
-        ("capl-sync", cmd_gate_capl_sync),
-        ("multibus-dbc", cmd_gate_multibus_dbc),
-        ("cli-readiness", cmd_gate_cli_readiness),
-    ]
-    failed = 0
-    for gate_name, gate_fn in gates:
-        print(f"[WIZARD] gate -> {gate_name}")
-        rc = gate_fn(argparse.Namespace())
-        if rc != 0:
-            failed += 1
-    if failed:
-        print(f"[WIZARD] gate summary: FAIL ({failed}/{len(gates)} failed)")
-        return 2
-    print(f"[WIZARD] gate summary: PASS ({len(gates)}/{len(gates)})")
-    return 0
-
-
-def _print_shell_help() -> None:
-    print("Slash commands:")
-    print("  /help")
-    print("  /exit")
-    print("  /palette  # grouped command palette")
-    print("  /tui      # launch the Textual operator console")
-    print("  /history [N]  # recent command history (default 10)")
-    print("  /repeat [N]   # repeat Nth latest command (default 1)")
-    print("  /scenario [run] <id> [scenarioCommand|testScenario]")
-    print("  /start guided|demo [id]|precheck [run_id] [owner]")
-    print("  /go  # alias of /start guided")
-    print("  /verify prepare [run_id]")
-    print("  /verify batch [run_id] [owner] [pre|post|full] [json,md|json,md,csv|...]")
-    print("  /verify smoke [owner] [run_date]")
-    print("  /verify status [run_id]")
-    print("  /verify finalize [run_id] [owner] [run_date]")
-    print("  /verify quick [run_id] [owner]  # prepare + smoke + status")
-    print("  /gate all|doc-sync|cfg-hygiene|capl-sync|multibus-dbc|cli-readiness")
-    print("  /package portable [onefolder|onefile]")
-    print("  /package exe [onefolder|onefile]")
-    print("  /doctor [ensure-running]")
-    print("  /capl get <Namespace> <Variable>")
-    print("  /capl set <Namespace> <Variable> <Value>")
-    print("  /canoe measure <status|start|stop|reset>")
-    print("  /canoe capl-call <FunctionName> [arg1 arg2 ...] [--int|--float|--bool]")
-    print("  /skill list")
-    print("  /skill run quickstart|verify-pack|portable-release")
-    print("  /contract")
-
-
-def _append_shell_history(command: str, rc: int, duration_ms: int) -> None:
-    try:
-        SHELL_HISTORY_FILE.parent.mkdir(parents=True, exist_ok=True)
-        payload = {
-            "ts": dt.datetime.now().isoformat(timespec="seconds"),
-            "command": command,
-            "rc": rc,
-            "duration_ms": duration_ms,
-        }
-        with SHELL_HISTORY_FILE.open("a", encoding="utf-8") as fp:
-            fp.write(json.dumps(payload, ensure_ascii=False) + "\n")
-    except Exception:
-        # History logging must never break command execution.
-        pass
-
-
-def _print_shell_history(session_commands: list[str], limit: int = 10) -> None:
-    if limit < 1:
-        limit = 1
-    recent = session_commands[-limit:]
-    if not recent:
-        print("[SHELL] history is empty")
-        return
-    print("[SHELL] recent commands")
-    start_idx = len(session_commands) - len(recent) + 1
-    for i, item in enumerate(recent, start=start_idx):
-        print(f"  {i}) {item}")
-
-
-def _prompt_shell_palette_command() -> str | None:
-    group_names = list(SHELL_PALETTE_GROUPS.keys())
-    print("[SHELL] palette")
-    for idx, group_name in enumerate(group_names, start=1):
-        print(f"  {idx}) {group_name}")
-
-    while True:
-        raw_group = input("group number (Enter=cancel): ").strip()
-        if not raw_group:
-            return None
-        try:
-            group_value = int(raw_group)
-        except ValueError:
-            print("[SHELL] enter a valid number.")
-            continue
-        if group_value < 1 or group_value > len(group_names):
-            print(f"[SHELL] number must be 1..{len(group_names)}.")
-            continue
-        break
-
-    selected_group = group_names[group_value - 1]
-    items = SHELL_PALETTE_GROUPS[selected_group]
-    print(f"[SHELL] {selected_group}")
-    for idx, (cmd, desc) in enumerate(items, start=1):
-        print(f"  {idx}) {cmd:<34} - {desc}")
-
-    while True:
-        raw = input("command number (Enter=cancel): ").strip()
-        if not raw:
-            return None
-        try:
-            value = int(raw)
-        except ValueError:
-            print("[SHELL] enter a valid number.")
-            continue
-        if value < 1 or value > len(items):
-            print(f"[SHELL] number must be 1..{len(items)}.")
-            continue
-        return items[value - 1][0]
-
-
-def _run_named_gate(gate_name: str) -> int:
-    mapping = {
-        "doc-sync": cmd_gate_doc_sync,
-        "cfg-hygiene": cmd_gate_cfg_hygiene,
-        "capl-sync": cmd_gate_capl_sync,
-        "multibus-dbc": cmd_gate_multibus_dbc,
-        "cli-readiness": cmd_gate_cli_readiness,
-    }
-    fn = mapping.get(gate_name)
-    if fn is None:
-        print(f"[SHELL] unknown gate: {gate_name}")
-        return 2
-    return fn(argparse.Namespace())
 
 
 def _run_skill(skill_name: str) -> int:
@@ -1106,16 +246,6 @@ def _run_skill(skill_name: str) -> int:
             return rc
     print("[SHELL][SKILL] PASS")
     return 0
-
-
-def _can_launch_tui() -> tuple[bool, str]:
-    if not sys.stdin.isatty() or not sys.stdout.isatty():
-        return False, "non-interactive terminal"
-    try:
-        import textual  # noqa: F401
-    except Exception as ex:
-        return False, f"Textual import failed: {ex}"
-    return True, ""
 
 
 def cmd_tui(_: argparse.Namespace) -> int:
@@ -1583,226 +713,6 @@ def cmd_wizard(args: argparse.Namespace) -> int:
     return cmd_shell(args)
 
 
-def _get_canoe_bridge() -> CanoeComBridge:
-    return CanoeComBridge.connect()
-
-
-def _coerce_cli_value(raw_value: str, value_type: str) -> object:
-    if value_type == "int":
-        return int(raw_value)
-    if value_type == "float":
-        return float(raw_value)
-    if value_type == "bool":
-        return 1 if raw_value.lower() in {"1", "true", "yes", "on"} else 0
-    return raw_value
-
-
-def _write_doctor_reports(
-    checks: list[tuple[str, bool, str]],
-    *,
-    output_json: Path | None,
-    output_md: Path | None,
-) -> None:
-    payload = {
-        "status": "PASS" if all(ok for _, ok, _ in checks) else "FAIL",
-        "generated_at": dt.datetime.now().isoformat(),
-        "checks": [
-            {"name": name, "status": "PASS" if ok else "FAIL", "detail": detail}
-            for name, ok, detail in checks
-        ],
-    }
-    if output_json:
-        output_json.parent.mkdir(parents=True, exist_ok=True)
-        output_json.write_text(json.dumps(payload, indent=2), encoding="utf-8")
-    if output_md:
-        output_md.parent.mkdir(parents=True, exist_ok=True)
-        lines = [
-            "# SDV Doctor Report",
-            "",
-            f"- status: `{payload['status']}`",
-            f"- generated_at: `{payload['generated_at']}`",
-            "",
-            "| check | status | detail |",
-            "|---|---|---|",
-        ]
-        for row in payload["checks"]:
-            lines.append(f"| `{row['name']}` | `{row['status']}` | `{row['detail']}` |")
-        output_md.write_text("\n".join(lines) + "\n", encoding="utf-8")
-
-
-def cmd_doctor(args: argparse.Namespace) -> int:
-    platform_rc = _fail_unavailable("doctor")
-    if platform_rc != 0:
-        return platform_rc
-    checks: list[tuple[str, bool, str]] = []
-    ensure_running = bool(getattr(args, "ensure_running", False))
-    output_json = getattr(args, "output_json", None)
-    output_md = getattr(args, "output_md", None)
-
-    required_vars = [
-        ("Test", "scenarioCommand"),
-        ("Test", "scenarioCommandAck"),
-        ("Test", "testScenario"),
-        ("Core", "decelAssistReq"),
-        ("Core", "proximityRiskLevel"),
-        ("Core", "failSafeMode"),
-    ]
-    try:
-        bridge = _get_canoe_bridge()
-        checks.append(("pywin32 import", True, "ok"))
-        checks.extend([(row.name, row.ok, row.detail) for row in bridge.run_doctor(required_vars, ensure_running=ensure_running)])
-    except CanoeComError as ex:
-        err = str(ex)
-        checks.append(("CANoe COM attach" if "attach failed" in err else "pywin32 import", False, err))
-
-    failed = [row for row in checks if not row[1]]
-    print("[DOCTOR] SDV CLI environment checks")
-    for name, ok, detail in checks:
-        status = "PASS" if ok else "FAIL"
-        print(f"- {status:4} | {name} | {detail}")
-
-    _write_doctor_reports(
-        checks,
-        output_json=output_json,
-        output_md=output_md,
-    )
-
-    if failed:
-        print(f"[DOCTOR] FAIL ({len(failed)}/{len(checks)} failed)")
-        return 2
-    print(f"[DOCTOR] PASS ({len(checks)}/{len(checks)})")
-    return 0
-
-
-def cmd_capl_sysvar_get(args: argparse.Namespace) -> int:
-    platform_rc = _fail_unavailable("capl sysvar-get")
-    if platform_rc != 0:
-        return platform_rc
-    try:
-        bridge = _get_canoe_bridge()
-        value = bridge.get_sysvar(args.namespace, args.var)
-    except Exception as ex:
-        print(f"[CAPL] FAIL: {ex}")
-        return 2
-    print(f"[CAPL] {args.namespace}::{args.var}={value}")
-    return 0
-
-
-def cmd_capl_sysvar_set(args: argparse.Namespace) -> int:
-    platform_rc = _fail_unavailable("capl sysvar-set")
-    if platform_rc != 0:
-        return platform_rc
-    try:
-        bridge = _get_canoe_bridge()
-        readback = bridge.set_sysvar(args.namespace, args.var, _coerce_cli_value(args.value, args.value_type))
-    except Exception as ex:
-        print(f"[CAPL] FAIL: {ex}")
-        return 2
-    print(f"[CAPL] set {args.namespace}::{args.var}={readback} (ok)")
-    return 0
-
-
-def cmd_canoe_measure_status(_: argparse.Namespace) -> int:
-    platform_rc = _fail_unavailable("canoe measure-status")
-    if platform_rc != 0:
-        return platform_rc
-    try:
-        bridge = _get_canoe_bridge()
-        running = bridge.measurement_running()
-    except Exception as ex:
-        print(f"[CANOE] FAIL: {ex}")
-        return 2
-    print(f"[CANOE] measurement={'running' if running else 'stopped'}")
-    return 0
-
-
-def cmd_canoe_measure_start(_: argparse.Namespace) -> int:
-    platform_rc = _fail_unavailable("canoe measure-start")
-    if platform_rc != 0:
-        return platform_rc
-    try:
-        bridge = _get_canoe_bridge()
-        bridge.measurement_start()
-    except Exception as ex:
-        print(f"[CANOE] FAIL: {ex}")
-        return 2
-    print("[CANOE] measurement started")
-    return 0
-
-
-def cmd_canoe_measure_stop(_: argparse.Namespace) -> int:
-    platform_rc = _fail_unavailable("canoe measure-stop")
-    if platform_rc != 0:
-        return platform_rc
-    try:
-        bridge = _get_canoe_bridge()
-        bridge.measurement_stop()
-    except Exception as ex:
-        print(f"[CANOE] FAIL: {ex}")
-        return 2
-    print("[CANOE] measurement stopped")
-    return 0
-
-
-def cmd_canoe_measure_reset(_: argparse.Namespace) -> int:
-    platform_rc = _fail_unavailable("canoe measure-reset")
-    if platform_rc != 0:
-        return platform_rc
-    try:
-        bridge = _get_canoe_bridge()
-        bridge.measurement_reset()
-    except Exception as ex:
-        print(f"[CANOE] FAIL: {ex}")
-        return 2
-    print("[CANOE] measurement reset")
-    return 0
-
-
-def cmd_canoe_capl_call(args: argparse.Namespace) -> int:
-    platform_rc = _fail_unavailable("canoe capl-call")
-    if platform_rc != 0:
-        return platform_rc
-    try:
-        bridge = _get_canoe_bridge()
-        call_args = [_coerce_cli_value(item, args.arg_type) for item in args.args]
-        result = bridge.call_capl_function(args.function_name, call_args)
-    except Exception as ex:
-        print(f"[CANOE] FAIL: {ex}")
-        return 2
-    print(f"[CANOE] capl-call {args.function_name} result={result}")
-    return 0
-
-
-def cmd_start_demo(args: argparse.Namespace) -> int:
-    return cmd_scenario_run(
-        argparse.Namespace(
-            id=args.id,
-            namespace="Test",
-            var=args.var,
-            ack_var="scenarioCommandAck",
-            wait_ack_ms=args.wait_ack_ms,
-            poll_ms=args.poll_ms,
-            no_ensure_running=args.no_ensure_running,
-        )
-    )
-
-
-def cmd_start_precheck(args: argparse.Namespace) -> int:
-    return cmd_verify_batch(
-        argparse.Namespace(
-            run_id=args.run_id,
-            owner=args.owner,
-            run_date=args.run_date,
-            phase="pre",
-            skip_gates=args.skip_gates,
-            stop_on_fail=args.stop_on_fail,
-            report_formats=args.report_formats,
-            output_json=Path("canoe/tmp/reports/verification/dev2_batch_report.json"),
-            output_md=Path("canoe/tmp/reports/verification/dev2_batch_report.md"),
-            output_csv=Path("canoe/tmp/reports/verification/dev2_batch_report.csv"),
-        )
-    )
-
 
 def cmd_start_preset(args: argparse.Namespace) -> int:
     return _run_skill(args.name)
@@ -1820,9 +730,9 @@ def cmd_start_guided(_: argparse.Namespace) -> int:
     runtime_cap = canoe_runtime_check()
     if not runtime_cap.available:
         _ui_info(f"[GUIDED] note: {runtime_cap.detail}")
-    if questionary is None:
+    if not _has_questionary_support():
         _ui_info("[GUIDED] tip: install questionary for richer prompt UX -> python -m pip install questionary>=2.1.1")
-    if _RICH_CONSOLE is None:
+    if not _has_rich_support():
         _ui_info("[GUIDED] tip: install rich for spinner/banner UX -> python -m pip install rich>=14")
 
     while True:
@@ -1978,489 +888,49 @@ def cmd_release_portable(args: argparse.Namespace) -> int:
     return cmd_package_bundle_portable(args)
 
 
-def add_verify_prepare_args(p: argparse.ArgumentParser) -> None:
-    p.add_argument("--run-id", required=True, help="Run ID, e.g. 20260306_1930")
-    p.set_defaults(func=cmd_verify_prepare)
-
-
-def add_verify_batch_args(p: argparse.ArgumentParser) -> None:
-    p.add_argument("--run-id", required=True, help="Run ID, e.g. 20260306_1930")
-    p.add_argument("--owner", default="TBD")
-    p.add_argument("--run-date", default=dt.date.today().isoformat())
-    p.add_argument("--phase", choices=["pre", "post", "full"], default="pre")
-    p.add_argument("--skip-gates", action="store_true", help="Skip all gate steps in pre/full phase")
-    p.add_argument("--stop-on-fail", action="store_true", help="Stop immediately at first failed step")
-    p.add_argument(
-        "--report-formats",
-        default="json,md",
-        help="Comma-separated report formats: json,md,csv (default: json,md)",
-    )
-    p.add_argument(
-        "--output-json",
-        type=Path,
-        default=Path("canoe/tmp/reports/verification/dev2_batch_report.json"),
-        help="Batch summary JSON output path",
-    )
-    p.add_argument(
-        "--output-md",
-        type=Path,
-        default=Path("canoe/tmp/reports/verification/dev2_batch_report.md"),
-        help="Batch summary markdown output path",
-    )
-    p.add_argument(
-        "--output-csv",
-        type=Path,
-        default=Path("canoe/tmp/reports/verification/dev2_batch_report.csv"),
-        help="Batch summary CSV output path (optional format)",
-    )
-    p.set_defaults(func=cmd_verify_batch)
-
-
-def add_verify_smoke_args(p: argparse.ArgumentParser) -> None:
-    p.add_argument("--owner", default="TBD")
-    p.add_argument("--run-date", default=dt.date.today().isoformat())
-    p.set_defaults(func=cmd_verify_smoke)
-
-
-def add_verify_quick_args(p: argparse.ArgumentParser) -> None:
-    p.add_argument("--run-id", required=True, help="Run ID, e.g. 20260306_1930")
-    p.add_argument("--owner", default="TBD")
-    p.add_argument("--run-date", default=dt.date.today().isoformat())
-    p.set_defaults(func=cmd_verify_quick)
-
-
-def add_verify_fill_args(p: argparse.ArgumentParser) -> None:
-    p.add_argument("--tier", required=True, choices=["UT", "IT", "ST"])
-    p.add_argument("--run-id", required=True, help="Run ID, e.g. 20260306_1930")
-    p.add_argument("--owner", default="TBD")
-    p.add_argument("--run-date", default=dt.date.today().isoformat())
-    p.add_argument("--baseline-csv", default="", help="Optional baseline scored CSV for regression comparison")
-    p.add_argument("--no-strict-metadata", action="store_true")
-    p.add_argument("--no-strict-axis", action="store_true")
-    p.set_defaults(func=cmd_verify_fill_score)
-
-
-def add_verify_insight_args(p: argparse.ArgumentParser) -> None:
-    p.add_argument("--run-id", required=True, help="Run ID, e.g. 20260306_1930")
-    p.add_argument("--baseline-run-id", default="", help="Optional baseline run ID for trend comparison")
-    p.add_argument(
-        "--evidence-root",
-        default="",
-        help="Optional evidence root path (default pipeline root is used when omitted)",
-    )
-    p.add_argument(
-        "--output-md",
-        default="canoe/tmp/reports/verification/run_insight_report.md",
-        help="Run-level insight markdown output path",
-    )
-    p.add_argument(
-        "--output-json",
-        default="canoe/tmp/reports/verification/run_insight_report.json",
-        help="Run-level insight JSON output path",
-    )
-    p.set_defaults(func=cmd_verify_insight)
-
-
-def add_verify_bind_doc_args(p: argparse.ArgumentParser) -> None:
-    p.add_argument("--run-id", required=True, help="Run ID, e.g. 20260306_1930")
-    p.add_argument(
-        "--evidence-root",
-        default="",
-        help="Optional evidence root path (default pipeline root is used when omitted)",
-    )
-    p.add_argument(
-        "--docs-root",
-        default="",
-        help="Optional docs root path (default: driving-situation-alert)",
-    )
-    p.add_argument(
-        "--output-csv",
-        default="canoe/tmp/reports/verification/doc_binding_bundle.csv",
-        help="05/06/07 doc binding CSV output path",
-    )
-    p.add_argument(
-        "--output-json",
-        default="canoe/tmp/reports/verification/doc_binding_bundle.json",
-        help="05/06/07 doc binding JSON output path",
-    )
-    p.add_argument(
-        "--output-md",
-        default="canoe/tmp/reports/verification/doc_binding_bundle.md",
-        help="05/06/07 doc binding markdown output path",
-    )
-    p.set_defaults(func=cmd_verify_bind_doc)
-
-
-def add_verify_fill_template_args(p: argparse.ArgumentParser) -> None:
-    p.add_argument("--run-id", required=True, help="Run ID, e.g. 20260306_1930")
-    p.add_argument(
-        "--evidence-root",
-        default="",
-        help="Optional evidence root path (default pipeline root is used when omitted)",
-    )
-    p.add_argument(
-        "--docs-root",
-        default="",
-        help="Optional docs root path (default: driving-situation-alert)",
-    )
-    p.add_argument("--owner-fallback", default="TBD", help="Fallback owner for READY rows")
-    p.add_argument("--date-fallback", default=dt.date.today().isoformat(), help="Fallback date for READY rows")
-    p.add_argument(
-        "--binding-csv",
-        default="canoe/tmp/reports/verification/doc_binding_bundle.csv",
-        help="Binding CSV output path",
-    )
-    p.add_argument(
-        "--binding-json",
-        default="canoe/tmp/reports/verification/doc_binding_bundle.json",
-        help="Binding JSON output path",
-    )
-    p.add_argument(
-        "--binding-md",
-        default="canoe/tmp/reports/verification/doc_binding_bundle.md",
-        help="Binding markdown output path",
-    )
-    p.add_argument(
-        "--output-csv",
-        default="canoe/tmp/reports/verification/doc_fill_template.csv",
-        help="Doc fill template CSV output path",
-    )
-    p.add_argument(
-        "--output-md",
-        default="canoe/tmp/reports/verification/doc_fill_template.md",
-        help="Doc fill template markdown output path",
-    )
-    p.set_defaults(func=cmd_verify_fill_template)
-
-
-def add_verify_finalize_args(p: argparse.ArgumentParser) -> None:
-    p.add_argument("--run-id", required=True, help="Run ID, e.g. 20260306_1930")
-    p.add_argument("--tiers", nargs="+", default=["UT", "IT", "ST"], choices=["UT", "IT", "ST"])
-    p.add_argument("--owner", default="TBD")
-    p.add_argument("--run-date", default=dt.date.today().isoformat())
-    p.add_argument("--owner-fallback", default="")
-    p.add_argument("--date-fallback", default="")
-    p.add_argument("--baseline-run-id", default="", help="Optional baseline run ID for insight comparison")
-    p.add_argument("--no-strict-metadata", action="store_true")
-    p.add_argument("--no-strict-axis", action="store_true")
-    p.add_argument(
-        "--evidence-root",
-        default="",
-        help="Optional evidence root path (default pipeline root is used when omitted)",
-    )
-    p.add_argument(
-        "--docs-root",
-        default="",
-        help="Optional docs root path (default: driving-situation-alert)",
-    )
-    p.add_argument(
-        "--insight-md",
-        default="canoe/tmp/reports/verification/run_insight_report.md",
-        help="Run-level insight markdown output path",
-    )
-    p.add_argument(
-        "--insight-json",
-        default="canoe/tmp/reports/verification/run_insight_report.json",
-        help="Run-level insight JSON output path",
-    )
-    p.add_argument(
-        "--binding-csv",
-        default="canoe/tmp/reports/verification/doc_binding_bundle.csv",
-        help="Doc binding CSV output path",
-    )
-    p.add_argument(
-        "--binding-json",
-        default="canoe/tmp/reports/verification/doc_binding_bundle.json",
-        help="Doc binding JSON output path",
-    )
-    p.add_argument(
-        "--binding-md",
-        default="canoe/tmp/reports/verification/doc_binding_bundle.md",
-        help="Doc binding markdown output path",
-    )
-    p.add_argument(
-        "--fill-csv",
-        default="canoe/tmp/reports/verification/doc_fill_template.csv",
-        help="Doc fill template CSV output path",
-    )
-    p.add_argument(
-        "--fill-md",
-        default="canoe/tmp/reports/verification/doc_fill_template.md",
-        help="Doc fill template markdown output path",
-    )
-    p.set_defaults(func=cmd_verify_finalize)
-
-
-def add_verify_status_args(p: argparse.ArgumentParser) -> None:
-    p.add_argument("--run-id", required=True, help="Run ID, e.g. 20260306_1930")
-    p.add_argument(
-        "--evidence-root",
-        default="",
-        help="Optional evidence root path (default pipeline root is used when omitted)",
-    )
-    p.add_argument(
-        "--output-json",
-        default="canoe/tmp/reports/verification/run_readiness.json",
-        help="Run readiness JSON output path",
-    )
-    p.add_argument(
-        "--output-md",
-        default="canoe/tmp/reports/verification/run_readiness.md",
-        help="Run readiness markdown output path",
-    )
-    p.set_defaults(func=cmd_verify_status)
-
-
-def add_scenario_run_args(p: argparse.ArgumentParser) -> None:
-    p.add_argument("--id", type=int, required=True, help="Scenario ID (0..255)")
-    p.add_argument("--namespace", default="Test", help="System variable namespace")
-    p.add_argument(
-        "--var",
-        default="scenarioCommand",
-        choices=["scenarioCommand", "testScenario"],
-        help="Target sysvar name",
-    )
-    p.add_argument("--ack-var", default="scenarioCommandAck", help="Ack sysvar name")
-    p.add_argument("--wait-ack-ms", type=int, default=1200, help="Ack wait timeout in ms")
-    p.add_argument("--poll-ms", type=int, default=20, help="Ack poll interval in ms")
-    p.add_argument("--no-ensure-running", action="store_true", help="Do not auto-start measurement")
-    p.set_defaults(func=cmd_scenario_run)
-
-
-def add_start_demo_args(p: argparse.ArgumentParser) -> None:
-    p.add_argument("--id", type=int, default=4, help="Scenario ID (0..255), default=4")
-    p.add_argument(
-        "--var",
-        default="scenarioCommand",
-        choices=["scenarioCommand", "testScenario"],
-        help="Target sysvar name",
-    )
-    p.add_argument("--wait-ack-ms", type=int, default=1200, help="Ack wait timeout in ms")
-    p.add_argument("--poll-ms", type=int, default=20, help="Ack poll interval in ms")
-    p.add_argument("--no-ensure-running", action="store_true", help="Do not auto-start measurement")
-    p.set_defaults(func=cmd_start_demo)
-
-
-def add_start_precheck_args(p: argparse.ArgumentParser) -> None:
-    p.add_argument("--run-id", default=_default_run_id(), help="Run ID, e.g. 20260308_1900")
-    p.add_argument("--owner", default="DEV2")
-    p.add_argument("--run-date", default=dt.date.today().isoformat())
-    p.add_argument("--skip-gates", action="store_true", help="Skip all gates in precheck")
-    p.add_argument("--stop-on-fail", action="store_true", help="Stop at first failed step")
-    p.add_argument(
-        "--report-formats",
-        default="json,md",
-        help="Comma-separated formats: json,md,csv (default: json,md)",
-    )
-    p.set_defaults(func=cmd_start_precheck)
-
-
-def add_start_preset_args(p: argparse.ArgumentParser) -> None:
-    p.add_argument(
-        "name",
-        choices=["quickstart", "verify-pack", "portable-release"],
-        help="Preset workflow name",
-    )
-    p.set_defaults(func=cmd_start_preset)
-
-
-def add_doctor_args(p: argparse.ArgumentParser) -> None:
-    p.add_argument("--ensure-running", action="store_true", help="Auto-start measurement if stopped")
-    p.add_argument(
-        "--output-json",
-        type=Path,
-        default=Path("canoe/tmp/reports/verification/doctor_report.json"),
-        help="Doctor report JSON output path",
-    )
-    p.add_argument(
-        "--output-md",
-        type=Path,
-        default=Path("canoe/tmp/reports/verification/doctor_report.md"),
-        help="Doctor report markdown output path",
-    )
-    p.set_defaults(func=cmd_doctor)
-
-
-def add_capl_sysvar_get_args(p: argparse.ArgumentParser) -> None:
-    p.add_argument("--namespace", required=True, help="System variable namespace")
-    p.add_argument("--var", required=True, help="System variable name")
-    p.set_defaults(func=cmd_capl_sysvar_get)
-
-
-def add_capl_sysvar_set_args(p: argparse.ArgumentParser) -> None:
-    p.add_argument("--namespace", required=True, help="System variable namespace")
-    p.add_argument("--var", required=True, help="System variable name")
-    p.add_argument("--value", required=True, help="Target value")
-    p.add_argument(
-        "--value-type",
-        default="int",
-        choices=["int", "float", "bool", "string"],
-        help="Input value type",
-    )
-    p.set_defaults(func=cmd_capl_sysvar_set)
-
-
-def add_canoe_capl_call_args(p: argparse.ArgumentParser) -> None:
-    p.add_argument("--function-name", required=True, help="CAPL function name")
-    p.add_argument("--args", nargs="*", default=[], help="CAPL call args")
-    p.add_argument(
-        "--arg-type",
-        default="string",
-        choices=["int", "float", "bool", "string"],
-        help="Single coercion type for all --args values",
-    )
-    p.set_defaults(func=cmd_canoe_capl_call)
-
-
-def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(description="Unified script launcher")
-    sub = parser.add_subparsers(dest="command", required=True)
-
-    start = sub.add_parser("start", help="Operator-first quick entrypoints")
-    start_sub = start.add_subparsers(dest="start_command")
-    add_start_demo_args(start_sub.add_parser("demo", help="Trigger default demo scenario (no panel)"))
-    add_start_precheck_args(start_sub.add_parser("precheck", help="Run precheck batch (gates+prepare+smoke+status)"))
-    add_start_preset_args(start_sub.add_parser("preset", help="Run named preset workflow"))
-    start_sub.add_parser("shell", help="Open interactive slash shell").set_defaults(func=cmd_start_shell)
-    start_sub.add_parser("guided", help="Open menu-style guided operator flow").set_defaults(func=cmd_start_guided)
-    start.set_defaults(func=cmd_start_guided)
-
-    add_doctor_args(sub.add_parser("doctor", help="Check CANoe COM + measurement + required sysvars"))
-
-    capl = sub.add_parser("capl", help="CAPL-linked sysvar access via CANoe COM")
-    capl_sub = capl.add_subparsers(dest="capl_command", required=True)
-    add_capl_sysvar_get_args(capl_sub.add_parser("sysvar-get", help="Read one system variable value"))
-    add_capl_sysvar_set_args(capl_sub.add_parser("sysvar-set", help="Write one system variable value"))
-
-    canoe_cmd = sub.add_parser("canoe", help="CANoe COM control plane")
-    canoe_sub = canoe_cmd.add_subparsers(dest="canoe_command", required=True)
-    canoe_sub.add_parser("measure-status", help="Read measurement status").set_defaults(func=cmd_canoe_measure_status)
-    canoe_sub.add_parser("measure-start", help="Start measurement").set_defaults(func=cmd_canoe_measure_start)
-    canoe_sub.add_parser("measure-stop", help="Stop measurement").set_defaults(func=cmd_canoe_measure_stop)
-    canoe_sub.add_parser("measure-reset", help="Reset measurement (stop/start)").set_defaults(func=cmd_canoe_measure_reset)
-    add_canoe_capl_call_args(canoe_sub.add_parser("capl-call", help="Call CAPL function"))
-
-    sub.add_parser("tui", help="Product-style Textual operator console").set_defaults(func=cmd_tui)
-    sub.add_parser("shell", help="Interactive slash-command shell").set_defaults(func=cmd_shell)
-    sub.add_parser("wizard", help="Legacy alias: shell").set_defaults(func=cmd_wizard)
-
-    scenario = sub.add_parser("scenario", help="Manual scenario trigger commands (no panel)")
-    scenario_sub = scenario.add_subparsers(dest="scenario_command", required=True)
-    add_scenario_run_args(scenario_sub.add_parser("run", help="Send scenario command via CANoe COM"))
-
-    verify = sub.add_parser("verify", help="Verification pipeline commands")
-    verify_sub = verify.add_subparsers(dest="verify_command", required=True)
-    add_verify_prepare_args(verify_sub.add_parser("prepare", help="Create UT/IT/ST evidence run folders"))
-    add_verify_batch_args(verify_sub.add_parser("batch", help="Run Dev2 pre/post/full batch workflow"))
-    add_verify_smoke_args(verify_sub.add_parser("smoke", help="Run CANoe COM smoke checks"))
-    add_verify_quick_args(verify_sub.add_parser("quick", help="Run prepare + smoke + status in one flow"))
-    add_verify_fill_args(verify_sub.add_parser("fill-score", help="Fill and score one tier"))
-    add_verify_insight_args(verify_sub.add_parser("insight", help="Build run-level insight report"))
-    add_verify_bind_doc_args(verify_sub.add_parser("bind-doc", help="Build 05/06/07 doc binding bundle"))
-    add_verify_fill_template_args(verify_sub.add_parser("fill-template", help="Build 05/06/07 doc fill template"))
-    add_verify_status_args(verify_sub.add_parser("status", help="Check run readiness before finalize"))
-    add_verify_finalize_args(verify_sub.add_parser("finalize", help="Run full post-run verification bundle"))
-
-    evidence = sub.add_parser("evidence", help="Evidence/readout focused commands")
-    evidence_sub = evidence.add_subparsers(dest="evidence_command", required=True)
-    ev_status = evidence_sub.add_parser("status", help="Alias of verify status")
-    add_verify_status_args(ev_status)
-    ev_status.set_defaults(func=cmd_evidence_status)
-    ev_insight = evidence_sub.add_parser("insight", help="Alias of verify insight")
-    add_verify_insight_args(ev_insight)
-    ev_insight.set_defaults(func=cmd_evidence_insight)
-    ev_finalize = evidence_sub.add_parser("finalize", help="Alias of verify finalize")
-    add_verify_finalize_args(ev_finalize)
-    ev_finalize.set_defaults(func=cmd_evidence_finalize)
-
-    gate = sub.add_parser("gate", help="Quality gate commands")
-    gate_sub = gate.add_subparsers(dest="gate_command", required=True)
-    gate_sub.add_parser("all", help="Run the full gate bundle").set_defaults(func=cmd_gate_all)
-    gate_sub.add_parser("doc-sync", help="Run Req-Doc-Code sync gate").set_defaults(func=cmd_gate_doc_sync)
-    gate_sub.add_parser("cfg-hygiene", help="Run cfg text hygiene gate").set_defaults(func=cmd_gate_cfg_hygiene)
-    gate_sub.add_parser("capl-sync", help="Run src/capl vs cfg/channel_assign sync gate").set_defaults(func=cmd_gate_capl_sync)
-    gate_sub.add_parser("multibus-dbc", help="Run multi-bus cfg + DBC domain policy gate").set_defaults(func=cmd_gate_multibus_dbc)
-    gate_sub.add_parser("cli-readiness", help="Run CLI readiness gate before GUI phase").set_defaults(func=cmd_gate_cli_readiness)
-
-    package = sub.add_parser("package", help="Build/distribution commands")
-    package_sub = package.add_subparsers(dest="package_command", required=True)
-    pkg_build = package_sub.add_parser("build-exe", help="Build Windows exe bundle via PyInstaller")
-    pkg_build.add_argument("--mode", default="onefolder", choices=["onefolder", "onefile"])
-    pkg_build.add_argument("--clean", action="store_true")
-    pkg_build.set_defaults(func=cmd_package_build_exe)
-
-    pkg_portable = package_sub.add_parser(
-        "bundle-portable",
-        help="Create portable ZIP (exe + required runtime files)",
-    )
-    pkg_portable.add_argument("--mode", default="onefolder", choices=["onefolder", "onefile"])
-    pkg_portable.add_argument("--clean", action="store_true")
-    pkg_portable.add_argument("--rebuild-exe", action="store_true")
-    pkg_portable.add_argument("--output-dir", default="")
-    pkg_portable.add_argument("--bundle-name", default="")
-    pkg_portable.add_argument("--zip-name", default="")
-    pkg_portable.set_defaults(func=cmd_package_bundle_portable)
-
-    release = sub.add_parser("release", help="Distribution-focused wrappers")
-    release_sub = release.add_subparsers(dest="release_command", required=True)
-    rel_exe = release_sub.add_parser("exe", help="Alias of package build-exe")
-    rel_exe.add_argument("--mode", default="onefolder", choices=["onefolder", "onefile"])
-    rel_exe.add_argument("--clean", action="store_true")
-    rel_exe.set_defaults(func=cmd_release_exe)
-
-    rel_portable = release_sub.add_parser("portable", help="Alias of package bundle-portable")
-    rel_portable.add_argument("--mode", default="onefolder", choices=["onefolder", "onefile"])
-    rel_portable.add_argument("--clean", action="store_true")
-    rel_portable.add_argument("--rebuild-exe", action="store_true")
-    rel_portable.add_argument("--output-dir", default="")
-    rel_portable.add_argument("--bundle-name", default="")
-    rel_portable.add_argument("--zip-name", default="")
-    rel_portable.set_defaults(func=cmd_release_portable)
-
-    contract = sub.add_parser("contract", help="Show canonical command contract")
-    contract.add_argument("--json", action="store_true", help="Output machine-readable JSON")
-    contract.set_defaults(func=cmd_contract)
-
-    add_scenario_run_args(sub.add_parser("scenario-run", help="Legacy alias: scenario run"))
-    sub.add_parser("interactive", help="Legacy alias: shell").set_defaults(func=cmd_shell)
-
-    # Legacy aliases (kept for compatibility during migration)
-    add_verify_prepare_args(sub.add_parser("verify-prepare", help="Legacy alias: verify prepare"))
-    add_verify_batch_args(sub.add_parser("verify-batch", help="Legacy alias: verify batch"))
-    add_verify_smoke_args(sub.add_parser("verify-smoke", help="Legacy alias: verify smoke"))
-    add_verify_fill_args(sub.add_parser("verify-fill-score", help="Legacy alias: verify fill-score"))
-    add_verify_insight_args(sub.add_parser("verify-insight", help="Legacy alias: verify insight"))
-    add_verify_bind_doc_args(sub.add_parser("verify-bind-doc", help="Legacy alias: verify bind-doc"))
-    add_verify_fill_template_args(sub.add_parser("verify-fill-template", help="Legacy alias: verify fill-template"))
-    add_verify_status_args(sub.add_parser("verify-status", help="Legacy alias: verify status"))
-    add_verify_finalize_args(sub.add_parser("verify-finalize", help="Legacy alias: verify finalize"))
-    sub.add_parser("gate-doc-sync", help="Legacy alias: gate doc-sync").set_defaults(func=cmd_gate_doc_sync)
-    sub.add_parser("gate-cfg-hygiene", help="Legacy alias: gate cfg-hygiene").set_defaults(func=cmd_gate_cfg_hygiene)
-    sub.add_parser("gate-capl-sync", help="Legacy alias: gate capl-sync").set_defaults(func=cmd_gate_capl_sync)
-    sub.add_parser("gate-multibus-dbc", help="Legacy alias: gate multibus-dbc").set_defaults(func=cmd_gate_multibus_dbc)
-    sub.add_parser("gate-cli-readiness", help="Legacy alias: gate cli-readiness").set_defaults(func=cmd_gate_cli_readiness)
-    pkg_build_legacy = sub.add_parser("package-build-exe", help="Legacy alias: package build-exe")
-    pkg_build_legacy.add_argument("--mode", default="onefolder", choices=["onefolder", "onefile"])
-    pkg_build_legacy.add_argument("--clean", action="store_true")
-    pkg_build_legacy.set_defaults(func=cmd_package_build_exe)
-    pkg_portable_legacy = sub.add_parser("package-bundle-portable", help="Legacy alias: package bundle-portable")
-    pkg_portable_legacy.add_argument("--mode", default="onefolder", choices=["onefolder", "onefile"])
-    pkg_portable_legacy.add_argument("--clean", action="store_true")
-    pkg_portable_legacy.add_argument("--rebuild-exe", action="store_true")
-    pkg_portable_legacy.add_argument("--output-dir", default="")
-    pkg_portable_legacy.add_argument("--bundle-name", default="")
-    pkg_portable_legacy.add_argument("--zip-name", default="")
-    pkg_portable_legacy.set_defaults(func=cmd_package_bundle_portable)
-
-    # User-friendly short aliases
-    sub.add_parser("go", help="Short alias: start guided").set_defaults(func=cmd_start_guided)
-    add_start_demo_args(sub.add_parser("demo", help="Short alias: start demo"))
-    add_start_precheck_args(sub.add_parser("precheck", help="Short alias: start precheck"))
-    sub.add_parser("mstart", help="Short alias: canoe measure-start").set_defaults(func=cmd_canoe_measure_start)
-    sub.add_parser("mstop", help="Short alias: canoe measure-stop").set_defaults(func=cmd_canoe_measure_stop)
-    sub.add_parser("mstatus", help="Short alias: canoe measure-status").set_defaults(func=cmd_canoe_measure_status)
-
-    return parser
+PARSER_HANDLERS = {
+    "cmd_start_guided": cmd_start_guided,
+    "cmd_start_shell": cmd_start_shell,
+    "cmd_start_demo": cmd_start_demo,
+    "cmd_start_precheck": cmd_start_precheck,
+    "cmd_start_preset": cmd_start_preset,
+    "cmd_doctor": cmd_doctor,
+    "cmd_capl_sysvar_get": cmd_capl_sysvar_get,
+    "cmd_capl_sysvar_set": cmd_capl_sysvar_set,
+    "cmd_canoe_measure_status": cmd_canoe_measure_status,
+    "cmd_canoe_measure_start": cmd_canoe_measure_start,
+    "cmd_canoe_measure_stop": cmd_canoe_measure_stop,
+    "cmd_canoe_measure_reset": cmd_canoe_measure_reset,
+    "cmd_canoe_capl_call": cmd_canoe_capl_call,
+    "cmd_tui": cmd_tui,
+    "cmd_shell": cmd_shell,
+    "cmd_wizard": cmd_wizard,
+    "cmd_scenario_run": cmd_scenario_run,
+    "cmd_verify_prepare": cmd_verify_prepare,
+    "cmd_verify_batch": cmd_verify_batch,
+    "cmd_verify_smoke": cmd_verify_smoke,
+    "cmd_verify_quick": cmd_verify_quick,
+    "cmd_verify_fill_score": cmd_verify_fill_score,
+    "cmd_verify_insight": cmd_verify_insight,
+    "cmd_verify_bind_doc": cmd_verify_bind_doc,
+    "cmd_verify_fill_template": cmd_verify_fill_template,
+    "cmd_verify_status": cmd_verify_status,
+    "cmd_verify_finalize": cmd_verify_finalize,
+    "cmd_evidence_status": cmd_evidence_status,
+    "cmd_evidence_insight": cmd_evidence_insight,
+    "cmd_evidence_finalize": cmd_evidence_finalize,
+    "cmd_gate_all": cmd_gate_all,
+    "cmd_gate_doc_sync": cmd_gate_doc_sync,
+    "cmd_gate_cfg_hygiene": cmd_gate_cfg_hygiene,
+    "cmd_gate_capl_sync": cmd_gate_capl_sync,
+    "cmd_gate_multibus_dbc": cmd_gate_multibus_dbc,
+    "cmd_gate_cli_readiness": cmd_gate_cli_readiness,
+    "cmd_package_build_exe": cmd_package_build_exe,
+    "cmd_package_bundle_portable": cmd_package_bundle_portable,
+    "cmd_release_exe": cmd_release_exe,
+    "cmd_release_portable": cmd_release_portable,
+    "cmd_contract": cmd_contract,
+}
 
 
 def main() -> int:
@@ -2481,7 +951,7 @@ def main() -> int:
         print("[CLI] tip: run `python scripts/run.py go` for guided mode")
         return 2
 
-    parser = build_parser()
+    parser = build_parser(PARSER_HANDLERS, _default_run_id)
     args = parser.parse_args()
     return args.func(args)
 

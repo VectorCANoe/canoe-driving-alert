@@ -34,6 +34,16 @@ Then you can use:
 - `sdv verify prepare --run-id 20260306_1930`
 - `sdv gate doc-sync`
 
+## Primary Daily Commands
+
+The operator surface is intentionally centered on three workflows:
+
+1. `python scripts/run.py gate all`
+2. `python scripts/run.py scenario run --id 4`
+3. `python scripts/run.py verify quick --run-id 20260308_0900 --owner DEV2`
+
+Everything else in this folder exists to support those three actions.
+
 ## Daily Commands
 
 ### Quick Entry (New)
@@ -44,9 +54,9 @@ Then you can use:
 - Product operator console:
   - `python scripts/run.py tui`
   - `sdv tui`
-  - Designed for daily operation with categories, command details, quick form input, and live execution log.
+  - Designed as a thin launcher for the three daily workflows: `Gate all -> Scenario run -> Verify quick`.
   - Users choose a task first, then fill only the required values on the right panel.
-  - `run-id`, 날짜 같은 반복 입력은 기본값이 자동 채워집니다.
+  - `run-id` is auto-filled with the current timestamp, and repeated values remain visible in the form.
 - Menu-style guided flow (recommended for operators):
   - `python scripts/run.py start guided`
   - `python scripts/run.py go`
@@ -102,28 +112,34 @@ Then you can use:
   - `python scripts/run.py`
   - Opens TUI first; use `shell` explicitly when you want the conservative REPL fallback.
 - Textual flow:
-  - left: categories (`Operate / Verify / Inspect / Package`)
-  - center: curated commands
-  - top summary: pinned tasks / recent runs / last result
-  - right: operator details / runtime notes / quick form
-  - bottom: live execution log
-  - keys: `r` run, `p` pin current task, `g` focus categories, `c` focus commands, `f` focus form, `l` focus log, `q` quit
+  - left sidebar screens:
+    - `Home`
+    - `Execute`
+    - `Results`
+    - `Logs`
+  - `Home`: daily 3-step path and quick jump buttons
+  - `Execute`: one operator workspace; switch task groups inside the page (`Primary / Runtime / Inspect / Package`)
+  - command selection does not run immediately; pick a task, adjust inputs, then press `Run now` or `r`
+  - `Results`: pinned tasks / recent runs / run insight / last result / readiness / batch / COM runtime / timeline
+  - `Logs`: full-width live execution log with filter buttons and live stage/output summary
+  - run behavior: pressing `Run` moves to `Logs` automatically; after completion, inspect `Results`
+  - `COM runtime` card: use it first when scenario/verify fails to see whether the break is at attach, measurement, sysvar, or ack
+  - `recent runs` list: selectable; press `Enter` on a recent task to rerun it
+  - log filters: `F1 All`, `F2 Warn`, `F3 Fail`, `F4 Verify`, `F5 CANoe`
+  - artifact shortcuts: `Ctrl+O` open first evidence path, `Ctrl+Y` copy first evidence path
+  - keys: `Ctrl+R` run, `Ctrl+P` pin current task, `Ctrl+X` rerun latest, `Ctrl+B` jump to results, `Ctrl+N` focus recent list, `Ctrl+G` focus navigation, `Ctrl+T` focus commands, `Ctrl+F` focus form, `Ctrl+L` focus log, `q` quit
 - Grouped command palette:
   - `/palette`
-  - First choose group: `Operate / Verify / Inspect / Package / Session`
+  - First choose group: `Primary Workflow / Runtime Support / System Access / Packaging / Session`
   - Then choose command by number
 - Command history and replay:
   - `/history` or `/history 20`
   - `/repeat` (last command), `/repeat 2` (second latest)
 - Example session:
-  - `/start guided`
-  - `/palette`
-  - `/start precheck`
-  - `/scenario 4`
-  - `/verify batch 20260308_0900 DEV2 pre`
-  - `/canoe measure status`
   - `/gate all`
-  - `/skill list`
+  - `/scenario 4`
+  - `/verify quick 20260308_0900 DEV2`
+  - `/canoe measure status`
   - `/exit`
 
 ### Scenario Trigger (No Panel)
@@ -139,6 +155,13 @@ Then you can use:
 - Prepare run folders:
   - `python scripts/run.py verify prepare --run-id 20260306_1930`
   - `sdv verify prepare --run-id 20260306_1930`
+- Quick operator pass (recommended daily verification path):
+  - `python scripts/run.py verify quick`
+  - `python scripts/run.py verify quick --run-id 20260308_0900 --owner DEV2`
+  - `sdv verify quick --run-id 20260308_0900 --owner DEV2`
+  - defaults:
+    - `run-id`: current timestamp (`YYYYMMDD_HHMM`)
+    - `owner`: `DEV2`
 - Dev2 batch workflow (recommended):
   - pre-check batch (gates + prepare + smoke + status):
     - `python scripts/run.py verify batch --run-id 20260308_0900 --owner DEV2 --phase pre`

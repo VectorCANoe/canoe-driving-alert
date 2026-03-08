@@ -1,0 +1,30 @@
+﻿from __future__ import annotations
+
+import argparse
+import sys
+
+from cliops.common import SCRIPTS, run_cmd
+
+
+def cmd_package_build_exe(args: argparse.Namespace) -> int:
+    cmd = [sys.executable, str(SCRIPTS / 'release' / 'build_sdv_exe.py'), '--mode', args.mode]
+    if args.clean:
+        cmd.append('--clean')
+    return run_cmd(cmd)
+
+
+def cmd_package_bundle_portable(args: argparse.Namespace) -> int:
+    cmd = [sys.executable, str(SCRIPTS / 'release' / 'build_portable_bundle.py')]
+    if args.clean:
+        cmd.append('--clean')
+    if args.rebuild_exe:
+        cmd.append('--rebuild-exe')
+    if args.mode:
+        cmd.extend(['--mode', args.mode])
+    if args.output_dir:
+        cmd.extend(['--output-dir', args.output_dir])
+    if args.bundle_name:
+        cmd.extend(['--bundle-name', args.bundle_name])
+    if args.zip_name:
+        cmd.extend(['--zip-name', args.zip_name])
+    return run_cmd(cmd)

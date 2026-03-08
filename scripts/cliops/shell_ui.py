@@ -1,0 +1,238 @@
+﻿from __future__ import annotations
+
+import datetime as dt
+import difflib
+import json
+import sys
+
+try:
+    import questionary
+except Exception:
+    questionary = None
+
+try:
+    from rich.console import Console
+    from rich.panel import Panel
+except Exception:
+    Console = None
+    Panel = None
+
+from cliops.command_catalog import build_shell_palette_groups
+from cliops.common import SHELL_HISTORY_FILE
+
+_RICH_CONSOLE = Console() if Console is not None else None
+SHELL_PALETTE_GROUPS: dict[str, list[tuple[str, str]]] = build_shell_palette_groups()
+
+
+def is_interactive_tty() -> bool:
+    return sys.stdin.isatty() and sys.stdout.isatty()
+
+
+def has_questionary_support() -> bool:
+    return questionary is not None and is_interactive_tty()
+
+
+def has_rich_support() -> bool:
+    return _RICH_CONSOLE is not None and is_interactive_tty()
+
+
+def prompt_with_default(label: str, default: str) -> str:
+    if has_questionary_support():
+        answer = questionary.text(label, default=default).ask()
+        if answer is None:
+            return default
+        answer = answer.strip()
+        return answer or default
+    raw = input(f'{label} [{default}]: ').strip()
+    return raw or default
+
+
+def ui_info(msg: str) -> None:
+    if has_rich_support():
+        _RICH_CONSOLE.print(msg)
+    else:
+        print(msg)
+
+
+def ui_welcome_banner() -> None:
+    title = 'SDV CLI'
+    body = 'CANoe Verification Operator Console\nMenu-driven UX | Scenario trigger | Evidence status | Measurement control'
+    if has_rich_support() and Panel is not None:
+        _RICH_CONSOLE.print(Panel(body, title=title, border_style='cyan'))
+    else:
+        print('=' * 56)
+        print(f'{title} - CANoe Verification Operator Console')
+        print('=' * 56)
+
+
+def run_with_loading(label: str, func) -> int:
+    if has_rich_support():
+        with _RICH_CONSOLE.status(f'[bold cyan]{label}[/]'):
+            return func()
+    ui_info(f'[GUIDED] running: {label}')
+    return func()
+
+
+def prompt_menu_choice(default: int = 1, minimum: int = 1, maximum: int = 11) -> int:
+    if has_questionary_support():
+        choices = [
+            questionary.Choice('1) doctor (CANoe COM + measurement + sysvar check)', value=1),
+            questionary.Choice('2) precheck (gates+prepare+smoke+status)', value=2),
+            questionary.Choice('3) trigger scenario (scenarioCommand/testScenario)', value=3),
+            questionary.Choice('4) evidence status (readiness report)', value=4),
+            questionary.Choice('5) measurement start', value=5),
+            questionary.Choice('6) measurement stop', value=6),
+            questionary.Choice('7) measurement status', value=7),
+            questionary.Choice('8) open slash shell', value=8),
+            questionary.Choice('9) quick flow (doctor -> scenario -> status)', value=9),
+            questionary.Choice('10) exit', value=10),
+            questionary.Choice('11) silent exit', value=11),
+        ]
+        answer = questionary.select('Choose action', choices=choices, default=choices[default - 1]).ask()
+        if answer is None:
+            return 11
+        return int(answer)
+    while True:
+        raw = input(f'select [{minimum}-{maximum}] (default {default}, q=silent-exit): ').strip()
+        if raw.lower() in {'q', 'quit', 'x'}:
+            return 11
+        if not raw:
+            return default
+        try:
+            value = int(raw)
+        except ValueError:
+            print('[GUIDED] enter a number.')
+            continue
+        if value < minimum or value > maximum:
+            print(f'[GUIDED] value must be in range {minimum}..{maximum}.')
+            continue
+        return value
+
+
+def prompt_int(label: str, default: int, minimum: int, maximum: int) -> int:
+    while True:
+        if has_questionary_support():
+            answer = questionary.text(label, default=str(default)).ask()
+            raw = '' if answer is None else answer.strip()
+        else:
+            raw = input(f'{label} [{default}]: ').strip()
+        if not raw:
+            return default
+        try:
+            value = int(raw)
+        except ValueError:
+            print('[WIZARD] enter a valid integer.')
+            continue
+        if value < minimum or value > maximum:
+            print(f'[WIZARD] value must be in range {minimum}..{maximum}.')
+            continue
+        return value
+
+
+def suggest_choice(value: str, choices: list[str]) -> str | None:
+    matches = difflib.get_close_matches(value, choices, n=1, cutoff=0.5)
+    return matches[0] if matches else None
+
+
+def print_shell_help() -> None:
+    print('Slash commands:')
+    print('  /help')
+    print('  /exit')
+    print('  /gate all            # daily step 1: run all gates')
+    print('  /scenario run <id>   # daily step 2: inject one scenario')
+    print('  /verify quick [run_id] [owner]  # daily step 3: collect quick evidence')
+    print('  /palette  # grouped command palette')
+    print('  /tui      # launch the Textual operator console')
+    print('  /history [N]  # recent command history (default 10)')
+    print('  /repeat [N]   # repeat Nth latest command (default 1)')
+    print('  /scenario [run] <id> [scenarioCommand|testScenario]')
+    print('  /start guided|demo [id]|precheck [run_id] [owner]')
+    print('  /go  # alias of /start guided')
+    print('  /verify prepare [run_id]')
+    print('  /verify batch [run_id] [owner] [pre|post|full] [json,md|json,md,csv|...]')
+    print('  /verify smoke [owner] [run_date]')
+    print('  /verify status [run_id]')
+    print('  /verify finalize [run_id] [owner] [run_date]')
+    print('  /verify quick [run_id] [owner]  # prepare + smoke + readiness status')
+    print('  /gate all|doc-sync|cfg-hygiene|capl-sync|multibus-dbc|cli-readiness')
+    print('  /package portable [onefolder|onefile]')
+    print('  /package exe [onefolder|onefile]')
+    print('  /doctor [ensure-running]')
+    print('  /capl get <Namespace> <Variable>')
+    print('  /capl set <Namespace> <Variable> <Value>')
+    print('  /canoe measure <status|start|stop|reset>')
+    print('  /canoe capl-call <FunctionName> [arg1 arg2 ...] [--int|--float|--bool]')
+    print('  /skill list')
+    print('  /skill run quickstart|verify-pack|portable-release')
+    print('  /contract')
+
+
+def append_shell_history(command: str, rc: int, duration_ms: int) -> None:
+    try:
+        SHELL_HISTORY_FILE.parent.mkdir(parents=True, exist_ok=True)
+        payload = {'ts': dt.datetime.now().isoformat(timespec='seconds'), 'command': command, 'rc': rc, 'duration_ms': duration_ms}
+        with SHELL_HISTORY_FILE.open('a', encoding='utf-8') as fp:
+            fp.write(json.dumps(payload, ensure_ascii=False) + '\n')
+    except Exception:
+        pass
+
+
+def print_shell_history(session_commands: list[str], limit: int = 10) -> None:
+    if limit < 1:
+        limit = 1
+    recent = session_commands[-limit:]
+    if not recent:
+        print('[SHELL] history is empty')
+        return
+    print('[SHELL] recent commands')
+    start_idx = len(session_commands) - len(recent) + 1
+    for i, item in enumerate(recent, start=start_idx):
+        print(f'  {i}) {item}')
+
+
+def prompt_shell_palette_command() -> str | None:
+    group_names = list(SHELL_PALETTE_GROUPS.keys())
+    print('[SHELL] palette')
+    for idx, group_name in enumerate(group_names, start=1):
+        print(f'  {idx}) {group_name}')
+    while True:
+        raw_group = input('group number (Enter=cancel): ').strip()
+        if not raw_group:
+            return None
+        try:
+            group_value = int(raw_group)
+        except ValueError:
+            print('[SHELL] enter a valid number.')
+            continue
+        if group_value < 1 or group_value > len(group_names):
+            print(f'[SHELL] number must be 1..{len(group_names)}.')
+            continue
+        break
+    selected_group = group_names[group_value - 1]
+    items = SHELL_PALETTE_GROUPS[selected_group]
+    print(f'[SHELL] {selected_group}')
+    for idx, (cmd, desc) in enumerate(items, start=1):
+        print(f'  {idx}) {cmd:<34} - {desc}')
+    while True:
+        raw = input('command number (Enter=cancel): ').strip()
+        if not raw:
+            return None
+        try:
+            value = int(raw)
+        except ValueError:
+            print('[SHELL] enter a valid number.')
+            continue
+        if value < 1 or value > len(items):
+            print(f'[SHELL] number must be 1..{len(items)}.')
+            continue
+        return items[value - 1][0]
+
+
+def can_launch_tui() -> tuple[bool, str]:
+    if not sys.stdin.isatty() or not sys.stdout.isatty():
+        return False, 'non-interactive terminal'
+    try:
+        import textual  # noqa: F401
+    except Exception as ex:
+        return False, f'Textual import failed: {ex}'
+    return True, ''
