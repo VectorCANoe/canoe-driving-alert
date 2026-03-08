@@ -97,63 +97,34 @@
 | `ACCEL_CTRL` | `ecu/ACCEL_CTRL.can` | `VCU` | Primary-56 | Keep split | rename surface first |
 | `BRK_CTRL` | `ecu/BRK_CTRL.can` | `ESP` | Primary-56 | Keep split | brake/stability nucleus |
 | `STEER_CTRL` | `ecu/STEER_CTRL.can` | `EPS` | Primary-56 | Keep split | steering nucleus |
-| `CHS_GW` | `input/CHS_GW.can` | `CGW` | Primary-56 | Keep split | chassis ingress gateway |
-| `INFOTAINMENT_GW` | `input/INFOTAINMENT_GW.can` | `CGW` | Primary-56 | Keep split | IVI ingress gateway |
-| `DOMAIN_ROUTER` | `ecu/DOMAIN_ROUTER.can` | `CGW` | Primary-56 | Keep split | cross-domain routing owner |
+| `CHS_GW` | `input/CHS_GW.can` | `CHASSIS_DOMAIN_CTRL` | Primary-56 | Keep split | chassis-domain normalization, synthesis, and diag anchor |
+| `INFOTAINMENT_GW` | `input/INFOTAINMENT_GW.can` | `IVI` | Primary-56 | GUI-hide wrapper | absorbed into `IVI_GW`; wrapper only |
+| `DOMAIN_ROUTER` | `ecu/DOMAIN_ROUTER.can` | `PT_DOMAIN_CTRL` | Primary-56 | Keep split | powertrain-domain routing and drive-mode owner |
 | `DOMAIN_BOUNDARY_MGR` | `ecu/DOMAIN_BOUNDARY_MGR.can` | `SECURITY_GATEWAY` | Primary-56 | Keep split | best fit for boundary/security role |
 | `ETH_SW` | `network/ETH_SW.can` | `ETH_BACKBONE` | Primary-56 | Keep split | backbone health/freshness monitor |
 | `BODY_GW` | `output/BODY_GW.can` | `BCM` | Primary-56 | Keep split | internal BCM output module |
-| `AMBIENT_CTRL` | `output/AMBIENT_CTRL.can` | `BCM` | Primary-56 | Keep split | internal BCM ambient module |
-| `HAZARD_CTRL` | `ecu/HAZARD_CTRL.can` | `BCM` | Primary-56 | Merge candidate | absorb later into BCM runtime |
-| `WINDOW_CTRL` | `ecu/WINDOW_CTRL.can` | `BCM` | Primary-56 | Merge candidate | absorb later into BCM runtime |
-| `DRV_STATE_MGR` | `ecu/DRV_STATE_MGR.can` | `BCM` | Primary-56 | Merge candidate | placeholder-level body state runtime |
+| `AMBIENT_CTRL` | `output/AMBIENT_CTRL.can` | `BCM` | Primary-56 | GUI-hide wrapper | absorbed into `BODY_GW`; wrapper only |
+| `HAZARD_CTRL` | `ecu/HAZARD_CTRL.can` | `BCM` | Primary-56 | GUI-hide wrapper | absorbed into `BODY_GW`; wrapper only |
+| `WINDOW_CTRL` | `ecu/WINDOW_CTRL.can` | `BCM` | Primary-56 | GUI-hide wrapper | absorbed into `BODY_GW`; wrapper only |
+| `DRV_STATE_MGR` | `ecu/DRV_STATE_MGR.can` | `BCM` | Primary-56 | GUI-hide wrapper | absorbed into `BODY_GW`; wrapper only |
 | `IVI_GW` | `output/IVI_GW.can` | `IVI` | Primary-56 | Keep split | internal IVI frame producer |
-| `NAV_CTX_MGR` | `logic/NAV_CTX_MGR.can` | `IVI` | Primary-56 | Merge candidate | absorb later into IVI runtime |
+| `NAV_CTX_MGR` | `logic/NAV_CTX_MGR.can` | `IVI` | Primary-56 | GUI-hide wrapper | absorbed into `IVI_GW`; wrapper only |
 | `CLU_HMI_CTRL` | `output/CLU_HMI_CTRL.can` | `CLUSTER` | Primary-56 | Keep split | main cluster runtime owner |
-| `CLU_BASE_CTRL` | `ecu/CLU_BASE_CTRL.can` | `CLUSTER` | Primary-56 | Merge candidate | absorb later into cluster runtime |
+| `CLU_BASE_CTRL` | `ecu/CLU_BASE_CTRL.can` | `CLUSTER` | Primary-56 | GUI-hide wrapper | absorbed into `CLU_HMI_CTRL`; wrapper only |
 | `ADAS_WARN_CTRL` | `logic/ADAS_WARN_CTRL.can` | `ADAS` | Primary-56 | Keep split | risk/trigger stage |
-| `WARN_ARB_MGR` | `logic/WARN_ARB_MGR.can` | `ADAS` | Primary-56 | Keep split | arbitration stage |
-| `EMS_POLICE_TX` | `ems/EMS_POLICE_TX.can` | `V2X` | Primary-56 | Merge candidate | fold into V2X producer stack |
-| `EMS_AMB_TX` | `ems/EMS_AMB_TX.can` | `V2X` | Primary-56 | Merge candidate | fold into V2X producer stack |
+| `WARN_ARB_MGR` | `logic/WARN_ARB_MGR.can` | `ADAS` | Primary-56 | GUI-hide wrapper | absorbed into `ADAS_WARN_CTRL`; wrapper only |
+| `EMS_POLICE_TX` | `ems/EMS_POLICE_TX.can` | `V2X` | Primary-56 | GUI-hide wrapper | absorbed into `EMS_ALERT_RX`; wrapper only |
+| `EMS_AMB_TX` | `ems/EMS_AMB_TX.can` | `V2X` | Primary-56 | GUI-hide wrapper | absorbed into `EMS_ALERT_RX`; wrapper only |
 | `EMS_ALERT_RX` | `logic/EMS_ALERT_RX.can` | `V2X` | Primary-56 | Keep split / merge base | nucleus for future single V2X runtime |
 | `VAL_SCENARIO_CTRL` | `input/VAL_SCENARIO_CTRL.can` | `VALIDATION_HARNESS` | Secondary Validation | Keep split | non-production harness only |
 | `VAL_BASELINE_CTRL` | `ecu/VAL_BASELINE_CTRL.can` | `VALIDATION_HARNESS` | Secondary Validation | Keep split | non-production harness only |
 
-## C. Immediate Refactor Order
+## C. Post-Absorption Rename Order
 
-1. `BCM`
-- absorb:
-  - `HAZARD_CTRL`
-  - `WINDOW_CTRL`
-  - `DRV_STATE_MGR`
-- keep split first:
-  - `BODY_GW`
-  - `AMBIENT_CTRL`
-
-2. `IVI`
-- absorb:
-  - `NAV_CTX_MGR`
-- keep split first:
-  - `IVI_GW`
-
-3. `CLUSTER`
-- absorb:
-  - `CLU_BASE_CTRL`
-- keep split first:
-  - `CLU_HMI_CTRL`
-
-4. `V2X`
-- absorb:
-  - `EMS_POLICE_TX`
-  - `EMS_AMB_TX`
-- keep split first:
-  - `EMS_ALERT_RX`
-
-5. `ADAS`
-- keep split first:
-  - `ADAS_WARN_CTRL`
-  - `WARN_ARB_MGR`
-- do not merge before other folds stabilize
+1. hide wrapper-only nodes from the reviewer-facing GUI surface
+2. rename runtime anchors that remain real execution units
+3. keep validation harness names explicit
+4. defer all CANoe GUI node label edits until the runtime/source rename wave is fixed
 
 ## D. Decision Rule
 
