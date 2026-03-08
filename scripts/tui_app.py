@@ -17,6 +17,32 @@ from cliops.command_catalog import (
     resolve_command_defaults,
 )
 from cliops.platform_caps import canoe_runtime_check, platform_label
+from cliops.tui_text import (
+    artifact_copied,
+    artifact_open_failed,
+    artifact_opened,
+    execute_hint,
+    followup_hint,
+    group_surface_label,
+    live_runtime_default_line,
+    live_runtime_default_stage,
+    live_runtime_summary,
+    log_filter_label,
+    log_filter_status,
+    no_artifact_path,
+    no_pin_target,
+    no_recent_rerun,
+    no_selected_command,
+    no_visible_command,
+    pin_added,
+    pin_button_label,
+    pin_removed,
+    pin_status,
+    preview_empty,
+    recent_selection_insight,
+    recommended_next,
+    runtime_badge,
+)
 from textual import work
 from textual.app import App, ComposeResult
 from textual.containers import Horizontal, Vertical
@@ -379,25 +405,25 @@ class SdvTuiApp(App[None]):
         )
         runtime = canoe_runtime_check()
         runtime_text = (
-            f"Host: {platform_label()} | CANoe runtime: {'ready' if runtime.available else 'limited'} | "
-            "Run: Ctrl+R | Recent: Ctrl+N | Logs: Ctrl+L | Filter: F1..F5 | Artifact: Ctrl+O/Ctrl+Y | Quit: q"
+            f"호스트: {platform_label()} | CANoe 런타임: {'ready' if runtime.available else 'limited'} | "
+            "실행: Ctrl+R | 최근 실행: Ctrl+N | 로그: Ctrl+L | 필터: F1..F5 | 증빙: Ctrl+O/Ctrl+Y | 종료: q"
         )
         if not runtime.available:
-            runtime_text += f"\nConstraint: {runtime.detail}"
+            runtime_text += f"\n제약: {runtime.detail}"
         yield Static(runtime_text, id="runtime")
         with Horizontal(id="shell-main"):
             with Vertical(id="sidebar"):
-                yield Button("Home", id="nav-home", classes="nav-button", variant="primary")
-                yield Button("Execute", id="nav-execute", classes="nav-button")
-                yield Button("Results", id="nav-results", classes="nav-button")
-                yield Button("Logs", id="nav-logs", classes="nav-button")
+                yield Button("홈", id="nav-home", classes="nav-button", variant="primary")
+                yield Button("실행", id="nav-execute", classes="nav-button")
+                yield Button("결과", id="nav-results", classes="nav-button")
+                yield Button("로그", id="nav-logs", classes="nav-button")
             with Vertical(id="content"):
                 with Vertical(id="page-home", classes="page"):
                     yield Static(
                         "Verification Console\n\n"
-                        "Simple operator surface, complex verification engine.\n"
-                        "Use three core actions in order: Gate all -> Scenario run -> Verify quick.\n"
-                        "CANoe Panel remains the product-operation UI. This console owns execution, evidence, and review.",
+                        "사용자 표면은 단순하게, 검증 엔진은 내부에서 복잡하게 유지합니다.\n"
+                        "핵심 흐름은 Gate all -> Scenario run -> Verify quick 순서입니다.\n"
+                        "CANoe Panel은 제품 조작 UI이고, 이 콘솔은 실행·증빙·검토를 담당합니다.",
                         id="home-body",
                     )
                     yield Static(id="home-summary")
@@ -405,39 +431,39 @@ class SdvTuiApp(App[None]):
                         with Vertical(classes="home-task-card"):
                             yield Static("1) Gate all", classes="home-task-title")
                             yield Static(
-                                "Run DBC/CAPL/document readiness checks before any scenario or evidence run.",
+                                "시나리오 실행이나 증빙 수집 전에 DBC/CAPL/문서 준비 상태를 먼저 점검합니다.",
                                 classes="home-task-copy",
                             )
-                            yield Button("Open Gate all", id="home-gate", classes="quick-button", variant="success")
+                            yield Button("Gate all 열기", id="home-gate", classes="quick-button", variant="success")
                         with Vertical(classes="home-task-card"):
                             yield Static("2) Scenario run", classes="home-task-title")
                             yield Static(
-                                "Send a scenario command through CANoe COM and verify that ack returns from Test sysvars.",
+                                "CANoe COM으로 시나리오를 주입하고 Test sysvar ack가 돌아오는지 확인합니다.",
                                 classes="home-task-copy",
                             )
-                            yield Button("Open Scenario run", id="home-scenario", classes="quick-button")
+                            yield Button("Scenario run 열기", id="home-scenario", classes="quick-button")
                         with Vertical(classes="home-task-card"):
                             yield Static("3) Verify quick", classes="home-task-title")
                             yield Static(
-                                "Generate readiness and evidence status, then review PASS/WARN/FAIL with artifact paths.",
+                                "준비 상태와 증빙 상태를 생성한 뒤 PASS/WARN/FAIL과 증빙 경로를 함께 검토합니다.",
                                 classes="home-task-copy",
                             )
-                            yield Button("Open Verify quick", id="home-verify", classes="quick-button", variant="primary")
+                            yield Button("Verify quick 열기", id="home-verify", classes="quick-button", variant="primary")
                     yield Static(id="home-recent")
                 with Horizontal(id="page-execute", classes="page hidden"):
                     with Vertical(id="commands-pane", classes="pane"):
-                        yield Static("1) What do you want to do?", classes="pane-title")
+                        yield Static("1) 작업 범주 선택", classes="pane-title")
                         with Horizontal(id="execute-group-strip"):
-                            yield Button("Primary", id="group-primary", classes="group-button", variant="primary")
-                            yield Button("Runtime", id="group-runtime", classes="group-button")
-                            yield Button("Inspect", id="group-inspect", classes="group-button")
-                            yield Button("Package", id="group-package", classes="group-button")
+                            yield Button("핵심", id="group-primary", classes="group-button", variant="primary")
+                            yield Button("런타임", id="group-runtime", classes="group-button")
+                            yield Button("점검", id="group-inspect", classes="group-button")
+                            yield Button("패키징", id="group-package", classes="group-button")
                         yield Static(id="commands-title", classes="pane-title")
                         yield OptionList(id="commands")
                     with Vertical(id="details-pane", classes="pane"):
-                        yield Static("Review and run", classes="pane-title")
+                        yield Static("3) 검토 및 실행", classes="pane-title")
                         yield Static(id="details-body")
-                        yield Static("Quick Form", classes="pane-title")
+                        yield Static("빠른 입력", classes="pane-title")
                         with Vertical(id="form-body"):
                             for index in range(FORM_SLOTS):
                                 with Vertical(id=f"field-row-{index}", classes="form-row hidden"):
@@ -446,48 +472,48 @@ class SdvTuiApp(App[None]):
                                     yield Static(id=f"field-help-{index}", classes="field-help")
                         yield Static(id="preview-body")
                     with Horizontal(id="actions"):
-                        yield Button("Run now", id="run-button", variant="success")
-                        yield Button("Pin task", id="pin-button")
-                        yield Button("Reset defaults", id="reset-button")
+                        yield Button("지금 실행", id="run-button", variant="success")
+                        yield Button("작업 고정", id="pin-button")
+                        yield Button("기본값 복원", id="reset-button")
                     yield Static(
-                        "Run starts in Logs screen automatically. After completion, open Results to inspect verdict and evidence.",
+                        "실행을 시작하면 자동으로 로그 화면으로 이동합니다. 종료 후 결과 화면에서 판정과 증빙을 확인하십시오.",
                         id="execute-hint",
                     )
                 with Vertical(id="page-results", classes="page hidden"):
                     with Horizontal(id="summary-strip"):
                         with Vertical(id="favorites-card", classes="summary-card"):
-                            yield Static("Pinned Tasks", classes="summary-title")
+                            yield Static("고정 작업", classes="summary-title")
                             yield Static(id="favorites-body")
                         with Vertical(id="recent-card", classes="summary-card"):
-                            yield Static("Recent Runs", classes="summary-title")
+                            yield Static("최근 실행", classes="summary-title")
                             yield OptionList(id="recent-list")
                         with Vertical(id="insight-card", classes="summary-card"):
-                            yield Static("Run Insight", classes="summary-title")
+                            yield Static("실행 인사이트", classes="summary-title")
                             yield Static(id="insight-body")
                         with Vertical(id="result-card", classes="summary-card"):
-                            yield Static("Last Result", classes="summary-title")
+                            yield Static("최근 결과", classes="summary-title")
                             yield Static(id="result-body")
                     with Horizontal(id="status-strip"):
                         with Vertical(id="readiness-card", classes="summary-card"):
-                            yield Static("Tier Readiness", classes="summary-title")
+                            yield Static("계층 준비 상태", classes="summary-title")
                             yield Static(id="readiness-body")
                         with Vertical(id="batch-card", classes="summary-card"):
-                            yield Static("Batch Snapshot", classes="summary-title")
+                            yield Static("배치 스냅샷", classes="summary-title")
                             yield Static(id="batch-body")
                         with Vertical(id="com-card", classes="summary-card"):
-                            yield Static("COM Runtime", classes="summary-title")
+                            yield Static("COM 런타임", classes="summary-title")
                             yield Static(id="com-body")
                         with Vertical(id="timeline-card", classes="summary-card"):
-                            yield Static("Execution Timeline", classes="summary-title")
+                            yield Static("실행 타임라인", classes="summary-title")
                             yield Static(id="timeline-body")
                 with Vertical(id="page-logs", classes="page hidden"):
                     with Vertical(id="log-pane"):
-                        yield Static("Execution Log", classes="pane-title")
+                        yield Static("실행 로그", classes="pane-title")
                         yield Static(id="log-summary")
                         with Horizontal(id="log-controls"):
-                            yield Button("F1 All", id="log-filter-all", classes="filter-button")
-                            yield Button("F2 Warn", id="log-filter-warn", classes="filter-button")
-                            yield Button("F3 Fail", id="log-filter-fail", classes="filter-button")
+                            yield Button("F1 전체", id="log-filter-all", classes="filter-button")
+                            yield Button("F2 경고", id="log-filter-warn", classes="filter-button")
+                            yield Button("F3 실패", id="log-filter-fail", classes="filter-button")
                             yield Button("F4 Verify", id="log-filter-verify", classes="filter-button")
                             yield Button("F5 CANoe", id="log-filter-canoe", classes="filter-button")
                             yield Static(id="log-filter-status")
@@ -496,13 +522,13 @@ class SdvTuiApp(App[None]):
 
     def on_mount(self) -> None:
         self.title = "SDV Operator Console"
-        self.sub_title = "Textual TUI"
+        self.sub_title = "검증 운영 콘솔"
         self.active_group_index = self.group_names.index("Primary Workflow")
         self._refresh_commands(self.active_group_index)
         self._show_page("home")
         self._refresh_summary_cards()
         self._refresh_log_summary()
-        self._write_log("[bold cyan]TUI ready[/]  Select a task, fill required values, then press [bold]Ctrl+R[/].")
+        self._write_log("[bold cyan]TUI 준비 완료[/]  작업을 고르고 필요한 값을 입력한 뒤 [bold]Ctrl+R[/]로 실행하십시오.")
 
     def _show_page(self, page_name: str) -> None:
         self.current_page = page_name
@@ -529,7 +555,7 @@ class SdvTuiApp(App[None]):
             return
         self.active_group_index = self.group_names.index(group_name)
         self._refresh_commands(self.active_group_index)
-        self.query_one("#commands-title", Static).update(f"2) Pick one task  |  {group_name}")
+        self.query_one("#commands-title", Static).update(f"2) 작업 선택  |  {group_name}")
         self._show_page("execute")
         self._refresh_execute_group_buttons()
         self.query_one("#commands", OptionList).focus()
@@ -576,11 +602,11 @@ class SdvTuiApp(App[None]):
         insight = self.state.get("last_insight", {})
         timeline = self.state.get("timeline", {})
         status = str(last_result.get("status", "IDLE")) if isinstance(last_result, dict) else "IDLE"
-        title = str(last_result.get("title", "No task executed yet")) if isinstance(last_result, dict) else "No task executed yet"
-        detail = str(last_result.get("detail", "Select a task and run it to populate this card.")) if isinstance(last_result, dict) else "Select a task and run it to populate this card."
-        bottleneck = str(insight.get("bottleneck", "No execution insight yet.")) if isinstance(insight, dict) else "No execution insight yet."
-        next_action = str(insight.get("next_action", "Run Gate all first.")) if isinstance(insight, dict) else "Run Gate all first."
-        stage = str(insight.get("stage", "Idle")) if isinstance(insight, dict) else "Idle"
+        title = str(last_result.get("title", "아직 실행 기록이 없습니다")) if isinstance(last_result, dict) else "아직 실행 기록이 없습니다"
+        detail = str(last_result.get("detail", "작업을 선택하고 실행하면 이 카드가 채워집니다.")) if isinstance(last_result, dict) else "작업을 선택하고 실행하면 이 카드가 채워집니다."
+        bottleneck = str(insight.get("bottleneck", "아직 실행 인사이트가 없습니다.")) if isinstance(insight, dict) else "아직 실행 인사이트가 없습니다."
+        next_action = str(insight.get("next_action", "먼저 Gate all을 실행하십시오.")) if isinstance(insight, dict) else "먼저 Gate all을 실행하십시오."
+        stage = str(insight.get("stage", "대기")) if isinstance(insight, dict) else "대기"
         gate = str(timeline.get("gate", "IDLE")) if isinstance(timeline, dict) else "IDLE"
         scenario = str(timeline.get("scenario", "IDLE")) if isinstance(timeline, dict) else "IDLE"
         verify = str(timeline.get("verify", "IDLE")) if isinstance(timeline, dict) else "IDLE"
@@ -588,19 +614,19 @@ class SdvTuiApp(App[None]):
         self.query_one(
             "#home-summary", Static
         ).update(
-            f"Stage: {stage}\n"
-            f"Last result: {status} | {title}\n"
-            f"Timeline: Gate={gate} / Scenario={scenario} / Verify={verify}\n"
-            f"Bottleneck: {bottleneck}\n"
-            f"Next: {next_action}"
+            f"단계: {stage}\n"
+            f"최근 결과: {status} | {title}\n"
+            f"타임라인: Gate={gate} / Scenario={scenario} / Verify={verify}\n"
+            f"병목: {bottleneck}\n"
+            f"다음 액션: {next_action}"
         )
-        recent_lines = ["Recent results"]
+        recent_lines = ["최근 실행 요약"]
         if recent:
             for item in recent[:3]:
                 recent_lines.append(f"- {self._recent_entry_label(item)}")
         else:
-            recent_lines.append("- No runs yet. Start with Gate all.")
-        recent_lines.extend(["", f"Latest detail: {detail}", "", "Use Results for full verdict, evidence, and COM drill-down."])
+            recent_lines.append("- 아직 실행 기록이 없습니다. Gate all부터 시작하십시오.")
+        recent_lines.extend(["", f"최근 상세: {detail}", "", "자세한 판정·증빙·COM 상태는 결과 화면에서 확인하십시오."])
         self.query_one("#home-recent", Static).update("\n".join(recent_lines))
 
     def _load_state(self) -> dict[str, object]:
@@ -608,14 +634,14 @@ class SdvTuiApp(App[None]):
             "pinned": [],
             "recent": [],
             "last_insight": {
-                "stage": "Idle",
-                "bottleneck": "No execution insight yet.",
-                "next_action": "Run Gate all first.",
+                "stage": "대기",
+                "bottleneck": "아직 실행 인사이트가 없습니다.",
+                "next_action": "먼저 Gate all을 실행하십시오.",
             },
             "last_result": {
                 "status": "IDLE",
-                "title": "No task executed yet",
-                "detail": "Select a task and run it to populate this card.",
+                "title": "아직 실행 기록이 없습니다",
+                "detail": "작업을 선택하고 실행하면 이 카드가 채워집니다.",
                 "ts": "",
                 "related_logs": [],
             },
@@ -623,14 +649,14 @@ class SdvTuiApp(App[None]):
                 "gate": "IDLE",
                 "scenario": "IDLE",
                 "verify": "IDLE",
-                "current": "Idle",
+                "current": "대기",
                 "gate_ms": 0,
                 "scenario_ms": 0,
                 "verify_ms": 0,
             },
             "live_runtime": {
-                "stage": "Idle",
-                "last_line": "No execution running.",
+                "stage": "대기",
+                "last_line": "현재 실행 중인 작업이 없습니다.",
                 "outputs": [],
             },
         }
@@ -676,9 +702,9 @@ class SdvTuiApp(App[None]):
         if favorites:
             favorite_lines = [f"{idx + 1}. {command.title}" for idx, command in enumerate(favorites[:5])]
             favorite_lines.append("")
-            favorite_lines.append("Press Ctrl+P to pin or unpin the selected task.")
+            favorite_lines.append("선택한 작업에서 Ctrl+P로 고정/해제를 전환하십시오.")
         else:
-            favorite_lines = ["No pinned tasks yet.", "Select a task and press Ctrl+P to pin it."]
+            favorite_lines = ["아직 고정된 작업이 없습니다.", "작업을 선택한 뒤 Ctrl+P로 고정하십시오."]
         self.query_one("#favorites-body", Static).update("\n".join(favorite_lines))
 
         recent_rows = self._recent_rows()
@@ -689,18 +715,18 @@ class SdvTuiApp(App[None]):
             recent_list.add_options([Option(self._recent_entry_label(item)) for item in recent_rows])
             recent_list.highlighted = min(previous_index, len(recent_rows) - 1)
         else:
-            recent_list.add_options([Option("No recent executions yet.")])
+            recent_list.add_options([Option("아직 최근 실행 기록이 없습니다.")])
             recent_list.highlighted = 0
 
         last_insight = self.state.get("last_insight", {})
         if isinstance(last_insight, dict):
-            stage = str(last_insight.get("stage", "Idle"))
-            bottleneck = str(last_insight.get("bottleneck", "No execution insight yet."))
-            next_action = str(last_insight.get("next_action", "Run Gate all first."))
+            stage = str(last_insight.get("stage", "대기"))
+            bottleneck = str(last_insight.get("bottleneck", "아직 실행 인사이트가 없습니다."))
+            next_action = str(last_insight.get("next_action", "먼저 Gate all을 실행하십시오."))
         else:
-            stage, bottleneck, next_action = "Idle", "No execution insight yet.", "Run Gate all first."
+            stage, bottleneck, next_action = "대기", "아직 실행 인사이트가 없습니다.", "먼저 Gate all을 실행하십시오."
         self.query_one("#insight-body", Static).update(
-            f"Stage: {stage}\nBottleneck: {bottleneck}\nNext: {next_action}"
+            f"단계: {stage}\n병목: {bottleneck}\n다음 액션: {next_action}"
         )
         self.query_one("#readiness-body", Static).update(self._summarize_tier_readiness())
         self.query_one("#batch-body", Static).update(self._summarize_batch_snapshot())
@@ -710,16 +736,16 @@ class SdvTuiApp(App[None]):
         last_result = self.state.get("last_result", {})
         if isinstance(last_result, dict):
             status = str(last_result.get("status", "IDLE"))
-            title = str(last_result.get("title", "No task executed yet"))
-            detail = str(last_result.get("detail", "Select a task and run it to populate this card."))
+            title = str(last_result.get("title", "아직 실행 기록이 없습니다"))
+            detail = str(last_result.get("detail", "작업을 선택하고 실행하면 이 카드가 채워집니다."))
             ts = str(last_result.get("ts", ""))
             artifacts = last_result.get("artifacts", [])
             related_logs = last_result.get("related_logs", [])
         else:
             status, title, detail, ts, artifacts, related_logs = (
                 "IDLE",
-                "No task executed yet",
-                "Select a task and run it to populate this card.",
+                "아직 실행 기록이 없습니다",
+                "작업을 선택하고 실행하면 이 카드가 채워집니다.",
                 "",
                 [],
                 [],
@@ -727,13 +753,13 @@ class SdvTuiApp(App[None]):
         result_lines = [status, title, detail]
         if isinstance(related_logs, list) and related_logs:
             result_lines.append("")
-            result_lines.append("Related log:")
+            result_lines.append("관련 로그:")
             result_lines.extend(str(item) for item in related_logs[:3])
         if isinstance(artifacts, list) and artifacts:
             result_lines.append("")
-            result_lines.append("Evidence:")
+            result_lines.append("증빙:")
             result_lines.extend(str(item) for item in artifacts[:3])
-            result_lines.append("Actions: Ctrl+O=open, Ctrl+Y=copy first path")
+            result_lines.append("동작: Ctrl+O=열기, Ctrl+Y=첫 경로 복사")
         if ts:
             result_lines.append(ts)
         self.query_one("#result-body", Static).update("\n".join(result_lines))
@@ -744,7 +770,8 @@ class SdvTuiApp(App[None]):
         self.active_group_index = group_index
         self.active_command_index = 0
         commands = self._active_group_commands()
-        self.query_one("#commands-title", Static).update(f"{self._active_group_name()} Tasks")
+        group_label = group_surface_label(self._active_group_name())
+        self.query_one("#commands-title", Static).update(f"2) 작업 선택  |  {group_label}")
         command_list = self.query_one("#commands", OptionList)
         self._suspend_option_events = True
         command_list.clear_options()
@@ -756,7 +783,7 @@ class SdvTuiApp(App[None]):
             self._update_command_view(commands[0])
         else:
             self._suspend_option_events = False
-            self.query_one("#details-body", Static).update("No commands in this category.")
+            self.query_one("#details-body", Static).update(no_visible_command())
             self._clear_form()
 
     def _active_group_name(self) -> str:
@@ -797,35 +824,30 @@ class SdvTuiApp(App[None]):
         return row, label, input_widget, help_widget
 
     def _update_command_view(self, command: PaletteCommand) -> None:
-        badges = ["Windows-only" if command.windows_only else "Cross-platform"]
+        badges = [runtime_badge(command)]
         recommended = self._recommended_next(command)
-        pin_text = "Pinned" if self._current_command_is_pinned() else "Not pinned"
+        pin_text = pin_status(self._current_command_is_pinned())
         body = [
             f"[bold]{command.title}[/bold]",
             "",
             command.summary,
             "",
-            f"[cyan]Default command[/cyan]: python scripts/run.py {command.command}",
-            f"[cyan]Runtime[/cyan]: {', '.join(badges)}",
-            f"[cyan]Favorite[/cyan]: {pin_text}",
-            f"[cyan]Recommended next[/cyan]: {recommended}",
+            f"[cyan]기본 명령[/cyan]: python scripts/run.py {command.command}",
+            f"[cyan]실행 환경[/cyan]: {', '.join(badges)}",
+            f"[cyan]고정 상태[/cyan]: {pin_text}",
+            f"[cyan]추천 다음 단계[/cyan]: {recommended}",
         ]
         if command.notes:
-            body.extend(["", f"[cyan]Operator note[/cyan]: {command.notes}"])
+            body.extend(["", f"[cyan]운영 메모[/cyan]: {command.notes}"])
         self.query_one("#details-body", Static).update("\n".join(body))
         pin_button = self.query_one("#pin-button", Button)
-        pin_button.label = "Unpin task" if self._current_command_is_pinned() else "Pin task"
+        pin_button.label = pin_button_label(self._current_command_is_pinned())
         self._populate_form(command)
         self._update_preview()
         if command.params:
-            self.query_one(
-                "#execute-hint", Static
-            ).update("Select a task, edit the highlighted input field, then press Run now or Ctrl+R. Running moves to Logs automatically.")
+            self.query_one("#execute-hint", Static).update(execute_hint(True))
         else:
-            self.query_one(
-                "#execute-hint", Static
-            ).update("This task has no required inputs. Press Run now or Ctrl+R. Running moves to Logs automatically.")
-
+            self.query_one("#execute-hint", Static).update(execute_hint(False))
     def _clear_form(self) -> None:
         for index in range(FORM_SLOTS):
             row, _, input_widget, help_widget = self._field_widgets(index)
@@ -833,8 +855,7 @@ class SdvTuiApp(App[None]):
             input_widget.value = ""
             input_widget.placeholder = ""
             help_widget.update("")
-        self.query_one("#preview-body", Static).update("No parameters required.")
-
+        self.query_one("#preview-body", Static).update(preview_empty())
     def _populate_form(self, command: PaletteCommand) -> None:
         params = list(command.params)
         defaults = resolve_command_defaults(command)
@@ -865,28 +886,7 @@ class SdvTuiApp(App[None]):
         return values
 
     def _recommended_next(self, command: PaletteCommand) -> str:
-        if command.command_id == "verify.all_gates":
-            return "If PASS, move directly to Scenario run."
-        if command.command_id == "operate.scenario_trigger":
-            return "If ack is received, move directly to Verify quick."
-        if command.command_id == "verify.quick_verify":
-            return "If PASS, attach the generated evidence paths into 05/06/07."
-        if command.title == "Measurement status":
-            return "If stopped, run Measurement start next."
-        if command.title == "Measurement start":
-            return "After start, trigger a scenario or run Precheck batch."
-        if command.title == "Scenario trigger":
-            return "After scenario ack, run Run readiness status or Quick verify."
-        if command.title == "Precheck batch":
-            return "If PASS, move to screenshots/evidence capture."
-        if command.title == "Quick verify":
-            return "If PASS, bind results into 05/06/07 evidence."
-        if command.title == "Environment doctor":
-            return "If all checks are green, move to measurement or scenario."
-        if command.title == "Portable bundle":
-            return "Use this only after operator flow and reports are stable."
-        return "Run this, review the log below, then move to the next verification step."
-
+        return recommended_next(command)
     def _extract_flag(self, tokens: list[str], flag: str) -> str:
         for index, token in enumerate(tokens):
             if token == flag and index + 1 < len(tokens):
@@ -994,7 +994,7 @@ class SdvTuiApp(App[None]):
     def _update_preview(self) -> None:
         command = self._selected_command()
         if command is None:
-            self.query_one("#preview-body", Static).update("No command selected.")
+            self.query_one("#preview-body", Static).update(no_selected_command())
             return
         try:
             tokens = build_command_tokens(command, self._form_values())
@@ -1098,19 +1098,16 @@ class SdvTuiApp(App[None]):
         visible = sum(1 for entry in self.log_buffer if self._log_entry_visible(entry))
         total = len(self.log_buffer)
         button_map = {
-            "ALL": ("log-filter-all", "F1 All"),
-            "WARN": ("log-filter-warn", "F2 Warn"),
-            "FAIL": ("log-filter-fail", "F3 Fail"),
-            "VERIFY": ("log-filter-verify", "F4 Verify"),
-            "CANOE": ("log-filter-canoe", "F5 CANoe"),
+            "ALL": ("log-filter-all", log_filter_label("ALL")),
+            "WARN": ("log-filter-warn", log_filter_label("WARN")),
+            "FAIL": ("log-filter-fail", log_filter_label("FAIL")),
+            "VERIFY": ("log-filter-verify", log_filter_label("VERIFY")),
+            "CANOE": ("log-filter-canoe", log_filter_label("CANOE")),
         }
         for filter_name, (button_id, base_label) in button_map.items():
             button = self.query_one(f"#{button_id}", Button)
             button.label = f"[{base_label}]" if self.log_filter == filter_name else base_label
-        self.query_one(
-            "#log-filter-status", Static
-        ).update(f"Filter: {self.log_filter} | visible {visible}/{total} | Ctrl+O=open evidence | Ctrl+Y=copy path")
-
+        self.query_one("#log-filter-status", Static).update(log_filter_status(self.log_filter, visible, total))
     def _set_log_filter(self, filter_name: str) -> None:
         self.log_filter = filter_name
         self._rerender_log()
@@ -1119,21 +1116,13 @@ class SdvTuiApp(App[None]):
         live = self.state.get("live_runtime", {})
         if not isinstance(live, dict):
             live = {}
-        stage = str(live.get("stage", "Idle"))
-        last_line = str(live.get("last_line", "No execution running."))
+        stage = str(live.get("stage", live_runtime_default_stage()))
+        last_line = str(live.get("last_line", live_runtime_default_line()))
         outputs = live.get("outputs", [])
         if not isinstance(outputs, list):
             outputs = []
-        lines = [
-            f"Stage: {stage}",
-            f"Latest: {last_line[:120]}",
-        ]
-        if outputs:
-            lines.append(f"Output: {str(outputs[-1])[:120]}")
-        else:
-            lines.append("Output: none discovered yet")
-        self.query_one("#log-summary", Static).update("\n".join(lines))
-
+        last_output = str(outputs[-1]) if outputs else None
+        self.query_one("#log-summary", Static).update(live_runtime_summary(stage, last_line, last_output))
     def _timeline_stage_for_command(self, command_id: str) -> str | None:
         if command_id == "verify.all_gates":
             return "gate"
@@ -1156,12 +1145,11 @@ class SdvTuiApp(App[None]):
             "gate": str(timeline.get("gate", "IDLE")),
             "scenario": str(timeline.get("scenario", "IDLE")),
             "verify": str(timeline.get("verify", "IDLE")),
-            "current": str(timeline.get("current", "Idle")),
+            "current": str(timeline.get("current", "대기")),
             "gate_ms": int(timeline.get("gate_ms", 0) or 0),
             "scenario_ms": int(timeline.get("scenario_ms", 0) or 0),
             "verify_ms": int(timeline.get("verify_ms", 0) or 0),
         }
-
     def _summarize_timeline(self) -> str:
         timeline = self.state.get("timeline", {})
         if not isinstance(timeline, dict):
@@ -1169,22 +1157,19 @@ class SdvTuiApp(App[None]):
         gate = str(timeline.get("gate", "IDLE"))
         scenario = str(timeline.get("scenario", "IDLE"))
         verify = str(timeline.get("verify", "IDLE"))
-        current = str(timeline.get("current", "Idle"))
+        current = str(timeline.get("current", "대기"))
         gate_ms = int(timeline.get("gate_ms", 0) or 0)
         scenario_ms = int(timeline.get("scenario_ms", 0) or 0)
         verify_ms = int(timeline.get("verify_ms", 0) or 0)
         gate_line = f"Gate: {gate}" + (f" ({gate_ms}ms)" if gate_ms > 0 else "")
         scenario_line = f"Scenario: {scenario}" + (f" ({scenario_ms}ms)" if scenario_ms > 0 else "")
         verify_line = f"Verify: {verify}" + (f" ({verify_ms}ms)" if verify_ms > 0 else "")
-        return "\n".join(
-            [
-                gate_line,
-                scenario_line,
-                verify_line,
-                f"Current: {current}",
-            ]
-        )
-
+        return "\n".join([
+            gate_line,
+            scenario_line,
+            verify_line,
+            f"현재 단계: {current}",
+        ])
     def _resolve_artifact_target(self) -> Path | None:
         last_result = self.state.get("last_result", {})
         if not isinstance(last_result, dict):
@@ -1238,7 +1223,7 @@ class SdvTuiApp(App[None]):
     def action_open_artifact(self) -> None:
         target = self._resolve_artifact_target()
         if target is None:
-            self._write_log("[yellow]No evidence path is available in the last result.[/]")
+            self._write_log(f"[yellow]{no_artifact_path()}[/]")
             return
         try:
             if sys.platform.startswith("win"):
@@ -1247,17 +1232,17 @@ class SdvTuiApp(App[None]):
                 subprocess.Popen(["open", str(target)])
             else:
                 subprocess.Popen(["xdg-open", str(target)])
-            self._write_log(f"[green]Opened artifact[/] {target}")
+            self._write_log(artifact_opened(str(target)))
         except Exception as ex:
-            self._write_log(f"[bold red]Artifact open failed[/]: {ex}")
+            self._write_log(artifact_open_failed(ex))
 
     def action_copy_artifact(self) -> None:
         target = self._resolve_artifact_target()
         if target is None:
-            self._write_log("[yellow]No evidence path is available in the last result.[/]")
+            self._write_log(f"[yellow]{no_artifact_path()}[/]")
             return
         if self._copy_text_to_clipboard(str(target)):
-            self._write_log(f"[green]Copied artifact path[/] {target}")
+            self._write_log(artifact_copied(str(target)))
             return
         self._write_log(f"[bold yellow]Clipboard copy unavailable[/] {target}")
 
@@ -1304,7 +1289,7 @@ class SdvTuiApp(App[None]):
                             insight["bottleneck"] += f" | marker missing tiers: {', '.join(missing_tiers)}"
                     insight["next_action"] = "Capture [EVIDENCE_OUT] markers and rerun Verify quick."
                 else:
-                    insight["bottleneck"] = "No missing evidence markers detected."
+                    insight["bottleneck"] = "누락된 증빙 마커가 없습니다."
                     insight["next_action"] = "Attach run_readiness artifacts into 05/06/07."
                 return insight
 
@@ -1343,7 +1328,7 @@ class SdvTuiApp(App[None]):
                     else:
                         insight["next_action"] = "Check CANoe COM attach/session privilege and rerun doctor."
                 else:
-                    insight["bottleneck"] = "COM attach, measurement, and required sysvars are ready."
+                    insight["bottleneck"] = "COM attach, measurement, 필수 sysvar가 모두 준비되었습니다."
                     insight["next_action"] = "Proceed to Scenario run."
                 return insight
 
@@ -1358,7 +1343,7 @@ class SdvTuiApp(App[None]):
             if status == "PASS":
                 insight["stage"] = f"Scenario {scenario_id} acknowledged"
                 insight["bottleneck"] = "Ack path responded within the wait window."
-                insight["next_action"] = "Run Verify quick immediately."
+                insight["next_action"] = "바로 Verify quick을 실행하십시오."
             elif "ack timeout" in detail.lower():
                 insight["stage"] = f"Scenario {scenario_id} ack timeout"
                 insight["bottleneck"] = detail
@@ -1366,7 +1351,7 @@ class SdvTuiApp(App[None]):
             elif "attach" in detail.lower() or "privilege/session" in detail.lower():
                 insight["stage"] = f"Scenario {scenario_id} COM attach issue"
                 insight["bottleneck"] = detail
-                insight["next_action"] = "Run doctor and relaunch terminal in the same CANoe user session."
+                insight["next_action"] = "같은 CANoe 사용자 세션에서 doctor를 다시 실행하십시오."
             else:
                 insight["stage"] = f"Scenario {scenario_id} review"
                 insight["bottleneck"] = detail
@@ -1380,7 +1365,7 @@ class SdvTuiApp(App[None]):
     def _summarize_tier_readiness(self) -> str:
         readiness = self._load_json_file(ROOT / "canoe" / "tmp" / "reports" / "verification" / "run_readiness.json")
         if not readiness:
-            return "No run_readiness.json yet.\nRun Verify quick to populate tier readiness."
+            return "아직 run_readiness.json이 없습니다.\nVerify quick을 실행하면 계층 준비 상태가 채워집니다."
 
         lines = [
             f"Run: {readiness.get('run_id', '-')}",
@@ -1404,7 +1389,7 @@ class SdvTuiApp(App[None]):
     def _summarize_batch_snapshot(self) -> str:
         batch = self._load_json_file(ROOT / "canoe" / "tmp" / "reports" / "verification" / "dev2_batch_report.json")
         if not batch:
-            return "No dev2_batch_report.json yet.\nRun Precheck batch or Verify quick to populate batch status."
+            return "아직 dev2_batch_report.json이 없습니다.\nPrecheck batch 또는 Verify quick을 실행하면 배치 상태가 채워집니다."
 
         phase = str(batch.get("phase", "-")).upper()
         status = str(batch.get("status", "-"))
@@ -1530,12 +1515,7 @@ class SdvTuiApp(App[None]):
                 detail = str(item.get("detail", ""))
                 self.query_one(
                     "#insight-body", Static
-                ).update(
-                    f"Stage: Recent selection\n"
-                    f"Bottleneck: {title} [{status}] {duration_ms}ms\n"
-                    f"Next: Press Enter on the recent list to rerun this task.\n"
-                    f"Detail: {detail}"
-                )
+                ).update(recent_selection_insight(title, status, duration_ms, detail))
 
     def on_option_list_option_selected(self, event: OptionList.OptionSelected) -> None:
         if event.option_list.id == "commands":
@@ -1637,16 +1617,16 @@ class SdvTuiApp(App[None]):
     def action_toggle_pin(self) -> None:
         command = self._selected_command()
         if command is None:
-            self._write_log("[yellow]No task selected for pinning.[/]")
+            self._write_log(f"[yellow]{no_pin_target()}[/]")
             return
         pinned = [item for item in self.state.get("pinned", []) if isinstance(item, str)]
         if command.command_id in pinned:
             pinned = [item for item in pinned if item != command.command_id]
-            self._write_log(f"[yellow]Unpinned[/] {command.title}")
+            self._write_log(pin_removed(command.title))
         else:
             pinned.insert(0, command.command_id)
             pinned = pinned[:8]
-            self._write_log(f"[green]Pinned[/] {command.title}")
+            self._write_log(pin_added(command.title))
         self.state["pinned"] = pinned
         self._save_state()
         preferred_group = self._active_group_name()
@@ -1656,7 +1636,7 @@ class SdvTuiApp(App[None]):
     def action_rerun_latest(self) -> None:
         recent = self._recent_rows()
         if not recent:
-            self._write_log("[yellow]No recent task to rerun.[/]")
+            self._write_log(f"[yellow]{no_recent_rerun()}[/]")
             return
         self._rerun_recent_item(recent[0])
 
@@ -1674,7 +1654,7 @@ class SdvTuiApp(App[None]):
     def action_run_selected(self) -> None:
         command = self._selected_command()
         if command is None:
-            self._write_log("[yellow]No command selected.[/]")
+            self._write_log(f"[yellow]{no_selected_command()}[/]")
             return
         values = self._form_values()
         try:
@@ -1751,11 +1731,7 @@ class SdvTuiApp(App[None]):
             related_logs,
             insight,
         )
-        next_hint = "Open Results to inspect verdict, evidence, and COM status."
-        if status == "FAIL":
-            next_hint = "Execution failed. Open Results first, then inspect Logs and COM Runtime."
-        elif status == "WARN":
-            next_hint = "Execution finished with warnings. Open Results to see bottleneck and next action."
+        next_hint = followup_hint(status)
         self.call_from_thread(self._write_log, f"[bold cyan]Next[/] {next_hint}")
 
     def _first_matching_line(self, lines: list[str], keywords: tuple[str, ...]) -> str:
