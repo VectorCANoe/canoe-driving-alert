@@ -166,3 +166,4 @@
 - team split reference: `driving-situation-alert/tmp/change-orders/FINAL_PHASE_TEAM_SPLIT_2026-03-08.md`
 - Dev1 / Dev2 / Docs closeout flow reference: `canoe/docs/operations/verification/FINAL_PHASE_EXECUTION_FLOW.md`
 - Dev2 product boundary reference: `product/sdv_operator/README.md`
+- team closeout checklist: `driving-situation-alert/tmp/submission/FINAL_CLOSEOUT_CHECKLIST.md`
