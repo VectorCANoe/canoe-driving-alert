@@ -39,6 +39,10 @@ Current closeout anchor:
 ### `audit/`
 Audit, runtime review, sync queue, and dated review snapshots.
 
+Primary index:
+
+- `audit/README.md`
+
 ### `panel/`
 Panel/XVP guidance, reference matrix, and panel-specific checklists.
 
