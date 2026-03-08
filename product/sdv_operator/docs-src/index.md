@@ -1,31 +1,24 @@
 ﻿# SDV Operator
 
-`SDV Operator`는 CANoe를 대체하는 도구가 아닙니다.
+`SDV Operator`는 CANoe SIL 검증을 위한 실행 런처이자 결과 검토 콘솔입니다.
 
-역할은 세 가지입니다.
+이 문서 세트는 제품 표면만 다룹니다. 내부 handoff, mentoring, submission workspace는 여기서 직접 설명하지 않습니다.
 
-1. 검증 실행 진입점 제공
-2. CANoe COM 상태와 검증 결과를 빠르게 읽게 함
-3. 증빙 경로와 병목을 한 화면에서 확인하게 함
+## What It Does
 
-## 제품 범위
-
-이 제품은 다음을 담당합니다.
-
-- `gate all`
-- `scenario run`
-- `verify quick`
-- TUI/CLI 실행 표면
-- 검증 증빙 생성/확인 진입점
+- `gate all` 실행
+- `scenario run` 주입
+- `verify quick` 기반 증빙/준비 상태 확인
+- `PASS / WARN / FAIL`, COM 상태, 증빙 경로, 병목 검토
 - portable ZIP / exe 패키징
 
-이 제품이 하지 않는 일:
+## What It Does Not Do
 
-- CANoe 패널 재구현
-- CAPL/DBC/sysvar 자체 소유
+- CANoe panel 대체
+- CAPL / DBC / SysVar 자체 소유
 - CANoe cfg 운영 대체
 
-## 기본 사용 흐름
+## Core Flow
 
 1. `python scripts/run.py`
 2. `Gate all`
@@ -33,9 +26,17 @@
 4. `Verify quick`
 5. `Results / Logs` 확인
 
-## 원칙
+## Read Next
 
-- 내부 구현은 복잡해도 됨
-- 사용자 표면은 단순해야 함
-- 문서 정본은 Markdown
-- HTML은 생성물
+- [빠른 시작](quickstart.md)
+- [명령 참고](commands.md)
+- [결과 해석](results.md)
+- [패키징](packaging.md)
+- [유지보수](maintenance.md)
+
+## Documentation Policy
+
+- Markdown이 정본입니다.
+- HTML은 generated site입니다.
+- 사용자 표면은 단순하게 유지합니다.
+- 내부 구현과 작업 문서는 제품 표면에서 직접 노출하지 않습니다.

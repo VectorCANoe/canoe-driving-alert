@@ -1,142 +1,91 @@
-# SDV Operator Product Boundary
+﻿# SDV Operator
 
-This folder defines the product boundary for the Dev2 verification console.
+`SDV Operator`는 CANoe SIL 검증을 위한 실행 런처이자 결과 검토 콘솔입니다.
 
-It does **not** mean all source code has already moved here.
-It means the team now treats one subset of the repository as a product with its own ownership and packaging target.
+이 제품은 CANoe를 대체하지 않습니다.
 
-Machine-readable boundary:
+- 실행: `gate all`, `scenario run`, `verify quick`
+- 검토: `PASS / WARN / FAIL`, COM 상태, 증빙 경로, 병목
+- 배포: portable ZIP / exe
 
-- `product/sdv_operator/manifest.json`
+## Quick Start
 
-Documentation source:
+설치:
+
+```powershell
+python -m pip install -e .
+```
+
+문서 사이트까지 빌드하려면:
+
+```powershell
+python -m pip install -e .[docs]
+```
+
+실행:
+
+```powershell
+python scripts/run.py
+```
+
+핵심 운영 흐름:
+
+1. `Gate all`
+2. `Scenario run`
+3. `Verify quick`
+4. `Results / Logs` 확인
+
+## Product Boundary
+
+이 제품이 담당하는 것:
+
+- TUI / CLI 실행 표면
+- CANoe COM 기반 검증 실행 진입점
+- 증빙 수집 및 결과 검토 표면
+- portable ZIP / exe 패키징
+
+이 제품이 담당하지 않는 것:
+
+- CANoe cfg 자체 운영
+- CAPL / DBC / SysVar 자체 소유
+- CANoe panel 재구현
+
+즉:
+
+- Dev1: `canoe/`
+- Dev2: `product/sdv_operator` + verification automation surface
+
+## Documentation
+
+문서 정본:
 
 - `product/sdv_operator/docs-src/`
 - `product/sdv_operator/mkdocs.yml`
 
-Generated site output (do not treat as source):
+생성물:
 
 - `product/sdv_operator/site/`
 
-Build locally:
+빌드:
 
 ```powershell
-python -m pip install -e .[docs]
 python -m mkdocs build -f product/sdv_operator/mkdocs.yml --strict
 ```
 
-## Product Definition
+## Read Next
 
-Product name:
-
-- `SDV Operator`
-
-Product role:
-
-- CANoe verification automation launcher
-- operator TUI / CLI surface
-- evidence and gate execution frontend
-- packaging target for portable ZIP / exe distribution
-
-This product is **not**:
-
-- the CANoe runtime project itself
-- CAPL/DBC/sysvar ownership
-- CANoe panel replacement
-- generic repository script dumping ground
-
-## Ownership Split
-
-### Dev1 owns
-- `canoe/`
-  - cfg
-  - panel
-  - sysvars
-  - DBC
-  - CAPL
-  - CANoe runtime behavior
-
-### Dev2 owns
-- verification automation product surface
-- CLI/TUI launcher
-- gate execution surface
-- evidence/report execution surface
-- portable packaging flow
-
-## Current Product-Owned Files
-
-### Public product surface
-- `pyproject.toml`
-- `sdv_cli.py`
-- `scripts/run.py`
-- `scripts/tui_app.py`
-- `scripts/README.md`
-- `product/sdv_operator/docs-src/commands.md`
-- `product/sdv_operator/docs-src/maintenance.md`
-
-### Product runtime layer
-- `scripts/cliops/`
-- `scripts/release/`
-
-### Product backend engines
-- `scripts/gates/`
-- `scripts/quality/`
-
-## Explicitly Not Product Surface
-
-These may still support the repo, but they are not part of the daily SDV Operator product contract:
-
-- `scripts/docs/`
-- `scripts/report/`
-- `scripts/canoe/`
-- `canoe/scripts/`
-- `canoe/tmp/`
-
-These remain helper, advanced, generated, or legacy territory unless explicitly promoted later.
+1. [`docs-src/index.md`](docs-src/index.md)
+2. [`docs-src/quickstart.md`](docs-src/quickstart.md)
+3. [`docs-src/commands.md`](docs-src/commands.md)
+4. [`docs-src/results.md`](docs-src/results.md)
+5. [`docs-src/packaging.md`](docs-src/packaging.md)
+6. [`docs-src/maintenance.md`](docs-src/maintenance.md)
 
 ## Packaging Rule
 
-When building a ZIP/exe, the packaging target is the `SDV Operator` product surface, not the entire repository.
+ZIP/exe를 만들 때는 저장소 전체가 아니라 `SDV Operator` 제품 범위만 패키징합니다.
 
-Practical interpretation:
+상세 범위는 다음을 기준으로 봅니다.
 
-- entrypoint: `sdv`
-- launcher source: `sdv_cli.py` + `scripts/run.py`
-- UI: `scripts/tui_app.py`
-- command/runtime logic: `scripts/cliops/*`
-- packaging helpers: `scripts/release/*`
-- required backend execution modules: `scripts/gates/*`, `scripts/quality/*`
-
-## Migration Policy
-
-Do **not** physically move the whole `scripts/` tree during active development just to make it look cleaner.
-
-Do this instead:
-
-1. Freeze the product boundary first
-2. Keep compatibility paths stable
-3. Promote only product-owned modules over time
-4. Move helper/legacy tooling only when references are fully updated
-
-This avoids breaking:
-
-- CI workflows
-- docs
-- local operator habits
-- packaging scripts
-
-## End State
-
-Long-term, the repository may physically separate:
-
-- product surface
-- internal helper scripts
-- repo maintenance scripts
-
-But that is a later migration.
-
-For now, the correct model is:
-
-- `canoe/` = runtime project
-- `product/sdv_operator/` = product boundary and ownership reference
-- `scripts/` = implementation location, with only part of it belonging to the SDV Operator product
+- `product/sdv_operator/manifest.json`
+- `product/sdv_operator/docs/PACKAGING_SCOPE.md`
