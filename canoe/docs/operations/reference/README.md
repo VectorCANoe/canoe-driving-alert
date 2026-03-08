@@ -22,6 +22,8 @@ Open these only when the active task needs background support:
   - Dev1 vehicle-program surface ECU expansion baseline using local OEM/OpenDBC references
 - `OEM_ECU_CANDIDATE_BANK_2026-03-09.md`
   - expanded OEM ECU candidate screening table from local reference DBC and legacy samples
+- `OEM_WIDE_SURFACE_ECU_INVENTORY_V1_2026-03-09.md`
+  - widened 30+ surface ECU inventory for OEM-scale vehicle-program framing
 - `LICENSE_REFERENCE_REPORT.md`
   - license/reference inventory
 - `OPEN_SOURCE_INTAKE_POLICY.md`
