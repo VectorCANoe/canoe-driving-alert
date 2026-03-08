@@ -152,6 +152,7 @@ def print_shell_help() -> None:
     print('  /verify batch [run_id] [owner] [pre|post|full] [json,md|json,md,csv|json,md,junit|...]')
     print('  /verify smoke [owner] [run_date]')
     print('  /verify status [run_id]')
+    print('  /verify surface-bundle   # build reviewer-facing surface ECU bundle')
     print('  /verify finalize [run_id] [owner] [run_date]')
     print('  /verify quick [run_id] [owner]  # prepare + smoke + readiness status')
     print('  /gate all|doc-sync|text-integrity|cfg-hygiene|capl-sync|multibus-dbc|cli-readiness')

@@ -1,0 +1,138 @@
+{
+  "schema": "sdv.surface.inventory.v1",
+  "owner": "Dev2",
+  "source_doc": "driving-situation-alert/tmp/change-orders/ECU_RESET_CLASSIFICATION_MATRIX_2026-03-09.md",
+  "policy": "surface-first runtime-second evidence-last",
+  "surfaces": [
+    {
+      "surface_id": "ECM",
+      "display_name": "ECM",
+      "bundle_key": "ecm",
+      "surface_type": "Production ECU",
+      "report_order": 10,
+      "runtime_modules": ["ENG_CTRL"],
+      "evidence_scope": "surface-rollup",
+      "jenkins_bundle_key": "surface-ecm"
+    },
+    {
+      "surface_id": "TCM",
+      "display_name": "TCM",
+      "bundle_key": "tcm",
+      "surface_type": "Production ECU",
+      "report_order": 20,
+      "runtime_modules": ["TCM"],
+      "evidence_scope": "surface-rollup",
+      "jenkins_bundle_key": "surface-tcm"
+    },
+    {
+      "surface_id": "VCU",
+      "display_name": "VCU",
+      "bundle_key": "vcu",
+      "surface_type": "Production ECU",
+      "report_order": 30,
+      "runtime_modules": ["ACCEL_CTRL"],
+      "evidence_scope": "surface-rollup",
+      "jenkins_bundle_key": "surface-vcu"
+    },
+    {
+      "surface_id": "ESP",
+      "display_name": "ESP",
+      "bundle_key": "esp",
+      "surface_type": "Production ECU",
+      "report_order": 40,
+      "runtime_modules": ["BRK_CTRL"],
+      "evidence_scope": "surface-rollup",
+      "jenkins_bundle_key": "surface-esp"
+    },
+    {
+      "surface_id": "EPS",
+      "display_name": "EPS",
+      "bundle_key": "eps",
+      "surface_type": "Production ECU",
+      "report_order": 50,
+      "runtime_modules": ["STEER_CTRL"],
+      "evidence_scope": "surface-rollup",
+      "jenkins_bundle_key": "surface-eps"
+    },
+    {
+      "surface_id": "BCM",
+      "display_name": "BCM",
+      "bundle_key": "bcm",
+      "surface_type": "Production ECU",
+      "report_order": 60,
+      "runtime_modules": ["BODY_GW", "AMBIENT_CTRL", "HAZARD_CTRL", "WINDOW_CTRL", "DRV_STATE_MGR"],
+      "evidence_scope": "surface-rollup",
+      "jenkins_bundle_key": "surface-bcm"
+    },
+    {
+      "surface_id": "IVI",
+      "display_name": "IVI",
+      "bundle_key": "ivi",
+      "surface_type": "Production ECU",
+      "report_order": 70,
+      "runtime_modules": ["IVI_GW", "NAV_CTX_MGR"],
+      "evidence_scope": "surface-rollup",
+      "jenkins_bundle_key": "surface-ivi"
+    },
+    {
+      "surface_id": "CLUSTER",
+      "display_name": "CLUSTER",
+      "bundle_key": "cluster",
+      "surface_type": "Production ECU",
+      "report_order": 80,
+      "runtime_modules": ["CLU_HMI_CTRL", "CLU_BASE_CTRL"],
+      "evidence_scope": "surface-rollup",
+      "jenkins_bundle_key": "surface-cluster"
+    },
+    {
+      "surface_id": "ADAS",
+      "display_name": "ADAS",
+      "bundle_key": "adas",
+      "surface_type": "Core Feature ECU",
+      "report_order": 90,
+      "runtime_modules": ["ADAS_WARN_CTRL", "WARN_ARB_MGR"],
+      "evidence_scope": "surface-rollup",
+      "jenkins_bundle_key": "surface-adas"
+    },
+    {
+      "surface_id": "V2X",
+      "display_name": "V2X",
+      "bundle_key": "v2x",
+      "surface_type": "Core Feature ECU",
+      "report_order": 100,
+      "runtime_modules": ["EMS_POLICE_TX", "EMS_AMB_TX", "EMS_ALERT_RX"],
+      "evidence_scope": "surface-rollup",
+      "jenkins_bundle_key": "surface-v2x"
+    },
+    {
+      "surface_id": "CGW",
+      "display_name": "CGW",
+      "bundle_key": "cgw",
+      "surface_type": "Infrastructure ECU",
+      "report_order": 110,
+      "runtime_modules": ["CHS_GW", "INFOTAINMENT_GW", "DOMAIN_ROUTER", "DOMAIN_BOUNDARY_MGR"],
+      "evidence_scope": "shared-infra",
+      "jenkins_bundle_key": "surface-cgw"
+    },
+    {
+      "surface_id": "ETH_BACKBONE",
+      "display_name": "ETH_BACKBONE",
+      "bundle_key": "eth_backbone",
+      "surface_type": "Infrastructure ECU",
+      "report_order": 120,
+      "runtime_modules": ["ETH_SW"],
+      "evidence_scope": "shared-infra",
+      "jenkins_bundle_key": "surface-eth-backbone"
+    },
+    {
+      "surface_id": "VALIDATION_HARNESS",
+      "display_name": "VALIDATION_HARNESS",
+      "bundle_key": "validation_harness",
+      "surface_type": "Validation Only",
+      "report_order": 130,
+      "runtime_modules": ["VAL_SCENARIO_CTRL", "VAL_BASELINE_CTRL"],
+      "evidence_scope": "validation-direct",
+      "jenkins_bundle_key": "surface-validation-harness"
+    }
+  ]
+}

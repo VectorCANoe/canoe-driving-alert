@@ -1,0 +1,278 @@
+{
+  "schema": "sdv.surface.traceability.profile.v1",
+  "owner": "Dev2",
+  "policy": {
+    "stable_identifiers": [
+      "surface_id",
+      "req_ids",
+      "test_case_ids",
+      "scenario_ids",
+      "native_test_assets"
+    ],
+    "execution_identifiers": [
+      "run_id",
+      "phase",
+      "owner",
+      "run_date"
+    ],
+    "rule": "confirmed mappings only; unknown coverage remains partial or planned"
+  },
+  "source_docs": [
+    "driving-situation-alert/00e_ECU_Naming_Standard.md",
+    "driving-situation-alert/04_SW_Implementation.md",
+    "driving-situation-alert/05_Unit_Test.md",
+    "driving-situation-alert/06_Integration_Test.md",
+    "driving-situation-alert/07_System_Test.md",
+    "canoe/docs/operations/verification/CANOE_TEST_POC_SCOPE_2026-03-08.md"
+  ],
+  "surfaces": [
+    {
+      "surface_id": "ECM",
+      "mapping_status": "reviewed",
+      "req_ids": ["Req_101"],
+      "test_case_ids": {
+        "ut": ["UT_BASE_PT_001"],
+        "it": ["IT_BASE_PT_001"],
+        "st": ["ST_BASE_PT_001"]
+      },
+      "scenario_ids": [],
+      "native_test_assets": [],
+      "doc_refs": [
+        "driving-situation-alert/04_SW_Implementation.md:187",
+        "driving-situation-alert/06_Integration_Test.md:56",
+        "driving-situation-alert/07_System_Test.md:97"
+      ],
+      "notes": "Req_110 gateway coupling is owned by CGW and is not attributed to ECM."
+    },
+    {
+      "surface_id": "TCM",
+      "mapping_status": "reviewed",
+      "req_ids": ["Req_102"],
+      "test_case_ids": {
+        "ut": ["UT_BASE_PT_001"],
+        "it": ["IT_BASE_PT_001"],
+        "st": ["ST_BASE_PT_001"]
+      },
+      "scenario_ids": [],
+      "native_test_assets": [],
+      "doc_refs": [
+        "driving-situation-alert/04_SW_Implementation.md:188",
+        "driving-situation-alert/06_Integration_Test.md:56",
+        "driving-situation-alert/07_System_Test.md:97"
+      ],
+      "notes": "Transmission baseline is verified through shared powertrain baseline tests."
+    },
+    {
+      "surface_id": "VCU",
+      "mapping_status": "reviewed",
+      "req_ids": ["Req_103"],
+      "test_case_ids": {
+        "ut": ["UT_BASE_CH_001"],
+        "it": ["IT_BASE_CH_001"],
+        "st": ["ST_BASE_CH_001"]
+      },
+      "scenario_ids": [],
+      "native_test_assets": [],
+      "doc_refs": [
+        "driving-situation-alert/04_SW_Implementation.md:189",
+        "driving-situation-alert/06_Integration_Test.md:57",
+        "driving-situation-alert/07_System_Test.md:98"
+      ],
+      "notes": "Longitudinal vehicle control coverage is shared with chassis baseline tests."
+    },
+    {
+      "surface_id": "ESP",
+      "mapping_status": "reviewed",
+      "req_ids": ["Req_104"],
+      "test_case_ids": {
+        "ut": ["UT_BASE_CH_001"],
+        "it": ["IT_BASE_CH_001"],
+        "st": ["ST_BASE_CH_001"]
+      },
+      "scenario_ids": [],
+      "native_test_assets": [],
+      "doc_refs": [
+        "driving-situation-alert/04_SW_Implementation.md:190",
+        "driving-situation-alert/06_Integration_Test.md:57",
+        "driving-situation-alert/07_System_Test.md:98"
+      ],
+      "notes": "Brake/stability coverage is anchored through shared chassis baseline tests."
+    },
+    {
+      "surface_id": "EPS",
+      "mapping_status": "reviewed",
+      "req_ids": ["Req_105"],
+      "test_case_ids": {
+        "ut": ["UT_BASE_CH_001"],
+        "it": ["IT_BASE_CH_001"],
+        "st": ["ST_BASE_CH_001"]
+      },
+      "scenario_ids": [],
+      "native_test_assets": [],
+      "doc_refs": [
+        "driving-situation-alert/04_SW_Implementation.md:191",
+        "driving-situation-alert/06_Integration_Test.md:57",
+        "driving-situation-alert/07_System_Test.md:98"
+      ],
+      "notes": "Steering coverage is anchored through shared chassis baseline tests."
+    },
+    {
+      "surface_id": "BCM",
+      "mapping_status": "partial",
+      "req_ids": ["Req_106", "Req_107", "Req_111"],
+      "test_case_ids": {
+        "ut": ["UT_BASE_BODY_001"],
+        "it": ["IT_BASE_BODY_001", "IT_OUT_001"],
+        "st": ["ST_BASE_BODY_001"]
+      },
+      "scenario_ids": [],
+      "native_test_assets": [],
+      "doc_refs": [
+        "driving-situation-alert/04_SW_Implementation.md:192",
+        "driving-situation-alert/04_SW_Implementation.md:193",
+        "driving-situation-alert/06_Integration_Test.md:58",
+        "driving-situation-alert/06_Integration_Test.md:73",
+        "driving-situation-alert/07_System_Test.md:99"
+      ],
+      "notes": "Ambient/output behavior is shared with CLUSTER through IT_OUT_001, so output coverage remains partial."
+    },
+    {
+      "surface_id": "IVI",
+      "mapping_status": "partial",
+      "req_ids": ["Req_109", "Req_111"],
+      "test_case_ids": {
+        "ut": ["UT_BASE_IVI_001"],
+        "it": ["IT_BASE_IVI_001"],
+        "st": ["ST_BASE_IVI_001"]
+      },
+      "scenario_ids": [],
+      "native_test_assets": [],
+      "doc_refs": [
+        "driving-situation-alert/04_SW_Implementation.md:194",
+        "driving-situation-alert/06_Integration_Test.md:59",
+        "driving-situation-alert/07_System_Test.md:100"
+      ],
+      "notes": "Navigation/output behavior is split between IVI and CLUSTER, so reviewer-facing coverage remains partial."
+    },
+    {
+      "surface_id": "CLUSTER",
+      "mapping_status": "partial",
+      "req_ids": ["Req_019", "Req_020", "Req_035", "Req_037"],
+      "test_case_ids": {
+        "ut": ["UT_CLU_001"],
+        "it": ["IT_OUT_001"],
+        "st": ["ST_HMI_DIR_001", "ST_HMI_DIR_002", "ST_GUIDE_001", "ST_GUIDE_002"]
+      },
+      "scenario_ids": [],
+      "native_test_assets": [],
+      "doc_refs": [
+        "driving-situation-alert/06_Integration_Test.md:73",
+        "driving-situation-alert/07_System_Test.md:83",
+        "driving-situation-alert/07_System_Test.md:84",
+        "driving-situation-alert/07_System_Test.md:88",
+        "driving-situation-alert/07_System_Test.md:89"
+      ],
+      "notes": "Cluster is reviewer-facing output surface; most coverage is shared with BCM via IT_OUT_001."
+    },
+    {
+      "surface_id": "ADAS",
+      "mapping_status": "reviewed",
+      "req_ids": ["Req_001", "Req_002", "Req_003", "Req_004", "Req_006", "Req_010", "Req_011", "Req_012"],
+      "test_case_ids": {
+        "ut": ["UT_ADAS_001"],
+        "it": ["IT_CORE_001"],
+        "st": ["ST_SPEED_001", "ST_STEER_001"]
+      },
+      "scenario_ids": [4],
+      "native_test_assets": ["TC_CANOE_UT_CORE_001_SCHOOLZONE_OVERSPEED"],
+      "doc_refs": [
+        "canoe/docs/operations/verification/CANOE_TEST_POC_SCOPE_2026-03-08.md:40",
+        "driving-situation-alert/05_Unit_Test.md:85",
+        "driving-situation-alert/06_Integration_Test.md:44",
+        "driving-situation-alert/07_System_Test.md:81",
+        "driving-situation-alert/07_System_Test.md:85"
+      ],
+      "notes": "Primary safety path; native CANoe PoC and external smoke both anchor this surface."
+    },
+    {
+      "surface_id": "V2X",
+      "mapping_status": "reviewed",
+      "req_ids": ["Req_017", "Req_023", "Req_127", "Req_128", "Req_129"],
+      "test_case_ids": {
+        "ut": ["UT_EMS_POL_001", "UT_EMS_AMB_001", "UT_EMS_RX_001", "UT_V2_FAILSAFE_001"],
+        "it": ["IT_EMS_001", "IT_V2_FAILSAFE_001"],
+        "st": ["ST_EMS_001", "ST_EMS_002", "ST_V2_FAILSAFE_001"]
+      },
+      "scenario_ids": [18],
+      "native_test_assets": ["TC_CANOE_IT_V2_FAILSAFE_001_DOMAIN_BOUNDARY"],
+      "doc_refs": [
+        "canoe/docs/operations/verification/CANOE_TEST_POC_SCOPE_2026-03-08.md:41",
+        "driving-situation-alert/06_Integration_Test.md:45",
+        "driving-situation-alert/06_Integration_Test.md:76",
+        "driving-situation-alert/07_System_Test.md:86",
+        "driving-situation-alert/07_System_Test.md:87",
+        "driving-situation-alert/07_System_Test.md:105"
+      ],
+      "notes": "Emergency receive/timeout/fail-safe path is fully reviewer-facing and tied to native PoC plus scenario 18."
+    },
+    {
+      "surface_id": "CGW",
+      "mapping_status": "reviewed",
+      "req_ids": ["Req_110", "Req_111", "Req_127", "Req_128", "Req_129"],
+      "test_case_ids": {
+        "ut": ["UT_BASE_GW_001", "UT_V2_FAILSAFE_001"],
+        "it": ["IT_BASE_001", "IT_BASE_PT_001", "IT_BASE_CH_001", "IT_BASE_BODY_001", "IT_BASE_IVI_001", "IT_V2_FAILSAFE_001"],
+        "st": ["ST_BASE_001", "ST_BASE_PT_001", "ST_BASE_CH_001", "ST_BASE_BODY_001", "ST_BASE_IVI_001", "ST_V2_FAILSAFE_001"]
+      },
+      "scenario_ids": [18],
+      "native_test_assets": ["TC_CANOE_IT_V2_FAILSAFE_001_DOMAIN_BOUNDARY"],
+      "doc_refs": [
+        "driving-situation-alert/05_Unit_Test.md:103",
+        "driving-situation-alert/05_Unit_Test.md:107",
+        "driving-situation-alert/06_Integration_Test.md:55",
+        "driving-situation-alert/06_Integration_Test.md:76",
+        "driving-situation-alert/07_System_Test.md:109",
+        "driving-situation-alert/07_System_Test.md:105"
+      ],
+      "notes": "Gateway/domain-boundary coverage is shared across baseline and fail-safe chains."
+    },
+    {
+      "surface_id": "ETH_BACKBONE",
+      "mapping_status": "planned",
+      "req_ids": [],
+      "test_case_ids": {
+        "ut": [],
+        "it": [],
+        "st": []
+      },
+      "scenario_ids": [],
+      "native_test_assets": [],
+      "doc_refs": [
+        "driving-situation-alert/00e_ECU_Naming_Standard.md:91",
+        "driving-situation-alert/tmp/change-orders/TARGET_SURFACE_ECU_INVENTORY_V2_2026-03-09.md:39"
+      ],
+      "notes": "Current coverage is runtime doctor/health oriented. Dedicated native or 05/06/07 testcase is not anchored yet."
+    },
+    {
+      "surface_id": "VALIDATION_HARNESS",
+      "mapping_status": "reviewed",
+      "req_ids": [],
+      "test_case_ids": {
+        "ut": [],
+        "it": [],
+        "st": []
+      },
+      "scenario_ids": [4, 6, 18],
+      "native_test_assets": [
+        "TC_CANOE_UT_CORE_001_SCHOOLZONE_OVERSPEED",
+        "TC_CANOE_IT_V2_FAILSAFE_001_DOMAIN_BOUNDARY"
+      ],
+      "doc_refs": [
+        "canoe/docs/operations/verification/CANOE_TEST_POC_SCOPE_2026-03-08.md:55",
+        "canoe/docs/operations/verification/CANOE_TEST_POC_SCOPE_2026-03-08.md:72",
+        "driving-situation-alert/TMP_HANDOFF.md:82"
+      ],
+      "notes": "Non-production harness for scenario injection, baseline aggregation, and evidence orchestration."
+    }
+  ]
+}

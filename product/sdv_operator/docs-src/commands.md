@@ -121,6 +121,34 @@ python scripts/run.py verify batch --run-id 20260308_0900 --owner DEV2 --phase p
 참고:
 - `verify batch --phase pre/full`은 pre 단계 시작 전에 `doctor(auto-start)`를 같이 실행합니다.
 - 현재 CANoe 세션에 validation harness sysvar가 없으면 `doctor` 단계에서 먼저 드러나고, pre batch는 그 지점에서 종료됩니다.
+- batch가 끝나면 staging 산출물은 `artifacts/verification_runs/<run_id>/<phase>/`로 다시 materialize됩니다.
+
+#### Surface bundle
+
+```powershell
+python scripts/run.py verify surface-bundle
+```
+
+사용 시점:
+- reviewer-facing 결과를 runtime module이 아니라 surface ECU 기준으로 다시 묶을 때
+- Jenkins archive를 `BCM / IVI / CLUSTER / ADAS / V2X ...` 번들로 정리할 때
+
+참고:
+- `verify batch`는 내부적으로 이 단계를 자동 수행합니다.
+- 단독 실행은 기존 staging 결과만 다시 rollup하고 싶을 때 사용합니다.
+- 기본 입력:
+  - `product/sdv_operator/config/surface_ecu_inventory.json`
+  - `product/sdv_operator/config/surface_traceability_profile.json`
+  - `canoe/tmp/reports/verification/dev_completeness_smoke.csv`
+- 핵심 출력:
+  - `canoe/tmp/reports/verification/surface_evidence_bundle.json`
+  - `canoe/tmp/reports/verification/surface_evidence_bundle.md`
+  - `canoe/tmp/reports/verification/surface/<bundle_key>/bundle.json`
+  - `canoe/tmp/reports/verification/surface/<bundle_key>/bundle.md`
+- 의미:
+  - `run_id / phase / owner / run_date`는 이번 실행을 식별하는 execution key입니다.
+  - `Req ID / Test Case ID / Scenario ID / Surface ECU`는 reviewer가 계속 추적하는 stable key입니다.
+  - surface bundle은 이 두 층을 하나의 reviewer-facing 결과로 합칩니다.
 
 #### Smoke
 

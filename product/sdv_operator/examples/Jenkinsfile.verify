@@ -23,7 +23,7 @@
   post {
     always {
       junit allowEmptyResults: true, testResults: 'canoe/tmp/reports/verification/dev2_batch_report.junit.xml'
-      archiveArtifacts artifacts: 'canoe/tmp/reports/verification/*.json, canoe/tmp/reports/verification/*.md, canoe/tmp/reports/verification/*.xml, canoe/**/*.vtestreport', fingerprint: true
+      archiveArtifacts artifacts: 'artifacts/verification_runs/%RUN_ID%/**/*', fingerprint: true
     }
   }
 }

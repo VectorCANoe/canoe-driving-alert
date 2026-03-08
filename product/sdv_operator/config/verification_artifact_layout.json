@@ -1,0 +1,38 @@
+{
+  "schema": "sdv.verification.artifact.layout.v1",
+  "owner": "Dev2",
+  "policy": "raw staging first, reviewer package second",
+  "root": "artifacts/verification_runs",
+  "staging_root": "canoe/tmp/reports/verification",
+  "evidence_root": "canoe/logging/evidence",
+  "structure": {
+    "run_root": "{run_id}/{phase}",
+    "reports_dir": "{run_id}/{phase}/reports",
+    "surface_dir": "{run_id}/{phase}/surface",
+    "native_reports_dir": "{run_id}/{phase}/native_reports",
+    "evidence_dir": "{run_id}/{phase}/evidence",
+    "manifests_dir": "{run_id}/{phase}/manifests"
+  },
+  "copied_reports": [
+    "doctor_report.json",
+    "doctor_report.md",
+    "run_readiness.json",
+    "run_readiness.md",
+    "dev2_batch_report.json",
+    "dev2_batch_report.md",
+    "dev2_batch_report.csv",
+    "dev2_batch_report.junit.xml",
+    "surface_evidence_bundle.json",
+    "surface_evidence_bundle.md",
+    "run_insight_report.json",
+    "run_insight_report.md",
+    "doc_binding_bundle.csv",
+    "doc_binding_bundle.json",
+    "doc_binding_bundle.md",
+    "doc_fill_template.csv",
+    "doc_fill_template.md"
+  ],
+  "native_report_glob": "canoe/**/*.vtestreport",
+  "surface_bundle_glob": "canoe/tmp/reports/verification/surface/**/*",
+  "tier_evidence_glob": "canoe/logging/evidence/<UT|IT|ST>/<run_id>/**/*"
+}

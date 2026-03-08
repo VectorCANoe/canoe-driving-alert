@@ -40,15 +40,51 @@
 - `dev2_batch_report.json` 기준
 - phase / status / pass-fail 요약
 
+### Surface Evidence Bundle
+
+- reviewer-facing 결과 묶음
+- runtime module 이름이 아니라 `BCM / IVI / CLUSTER / ADAS / V2X / ...` 기준으로 표시
+- `surface_evidence_bundle.json/md`와 `surface/<bundle_key>/bundle.*`를 기준으로 해석
+- 각 surface bundle에는 다음이 함께 들어갑니다.
+  - `mapping_status`
+  - `req_ids`
+  - `test_case_ids`
+  - `scenario_ids`
+  - `native_test_assets`
+  - `doc_refs`
+
+### Execution Manifest
+
+- 실행 인스턴스 식별자와 reviewer-facing 식별자를 함께 묶는 최종 manifest입니다.
+- `run_id`는 이번 한 번의 실행 묶음을 식별합니다.
+- `Req / TestCase / Surface ECU / Scenario`는 고정 traceability 키입니다.
+- 즉 OEM식으로 보면:
+  - `run_id` = execution key
+  - `Req/TestCase/Surface/Scenario` = stable review key
+
 ## 증빙 경로
 
 주요 산출물은 아래 경로에 생성됩니다.
 
+- staging:
+  - `canoe/tmp/reports/verification/*`
 - `canoe/tmp/reports/verification/doctor_report.json`
 - `canoe/tmp/reports/verification/run_readiness.json`
 - `canoe/tmp/reports/verification/dev2_batch_report.json`
 - `canoe/tmp/reports/verification/dev2_batch_report.junit.xml`
+- `canoe/tmp/reports/verification/surface_evidence_bundle.json`
+- `canoe/tmp/reports/verification/surface_evidence_bundle.md`
+- `canoe/tmp/reports/verification/surface/<bundle_key>/bundle.json`
+- `canoe/tmp/reports/verification/surface/<bundle_key>/bundle.md`
 - `canoe/logging/evidence/<UT|IT|ST>/<run-id>/...`
+
+- final archive:
+  - `artifacts/verification_runs/<run-id>/<phase>/reports/*`
+  - `artifacts/verification_runs/<run-id>/<phase>/surface/<bundle_key>/*`
+  - `artifacts/verification_runs/<run-id>/<phase>/native_reports/**/*`
+  - `artifacts/verification_runs/<run-id>/<phase>/evidence/<UT|IT|ST>/**/*`
+  - `artifacts/verification_runs/<run-id>/<phase>/manifests/artifact_manifest.json`
+  - `artifacts/verification_runs/<run-id>/<phase>/manifests/execution_manifest.json`
 
 `dev2_batch_report.junit.xml`은 Jenkins 수집용 ingress 포맷입니다.
 

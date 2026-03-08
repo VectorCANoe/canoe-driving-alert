@@ -98,6 +98,7 @@ from cliops.verify_ops import (
     cmd_verify_prepare,
     cmd_verify_quick,
     cmd_verify_smoke,
+    cmd_verify_surface_bundle,
     cmd_verify_status,
 )
 
@@ -125,6 +126,7 @@ CONTRACT_CANONICAL = [
     "python scripts/run.py verify bind-doc --run-id <YYYYMMDD_HHMM>",
     "python scripts/run.py verify fill-template --run-id <YYYYMMDD_HHMM>",
     "python scripts/run.py verify status --run-id <YYYYMMDD_HHMM>",
+    "python scripts/run.py verify surface-bundle",
     "python scripts/run.py verify finalize --run-id <YYYYMMDD_HHMM> --owner <OWNER>",
     "python scripts/run.py gate doc-sync",
     "python scripts/run.py gate cfg-hygiene",
@@ -152,6 +154,7 @@ CONTRACT_LEGACY = [
     "verify-bind-doc",
     "verify-fill-template",
     "verify-status",
+    "verify-surface-bundle",
     "verify-finalize",
     "gate-doc-sync",
     "gate-cfg-hygiene",
@@ -416,7 +419,7 @@ def cmd_shell(_: argparse.Namespace) -> int:
                 continue
         elif cmd == "verify":
             if len(tokens) < 2:
-                print("[SHELL] usage: /verify <prepare|batch|smoke|status|finalize|quick> ...")
+                print("[SHELL] usage: /verify <prepare|batch|smoke|status|surface-bundle|finalize|quick> ...")
                 continue
             sub = tokens[1].lower()
             if sub == "prepare":
@@ -456,6 +459,16 @@ def cmd_shell(_: argparse.Namespace) -> int:
                     evidence_root="",
                     output_json="canoe/tmp/reports/verification/run_readiness.json",
                     output_md="canoe/tmp/reports/verification/run_readiness.md",
+                ))
+            elif sub in {"surface-bundle", "surface_bundle"}:
+                rc = cmd_verify_surface_bundle(argparse.Namespace(
+                    inventory_json=Path("product/sdv_operator/config/surface_ecu_inventory.json"),
+                    doctor_json=Path("canoe/tmp/reports/verification/doctor_report.json"),
+                    readiness_json=Path("canoe/tmp/reports/verification/run_readiness.json"),
+                    batch_json=Path("canoe/tmp/reports/verification/dev2_batch_report.json"),
+                    output_json=Path("canoe/tmp/reports/verification/surface_evidence_bundle.json"),
+                    output_md=Path("canoe/tmp/reports/verification/surface_evidence_bundle.md"),
+                    surface_dir=Path("canoe/tmp/reports/verification/surface"),
                 ))
             elif sub in {"finalize", "full"}:
                 run_id = tokens[2] if len(tokens) > 2 else _prompt_with_default("Run ID", _default_run_id())
@@ -500,7 +513,7 @@ def cmd_shell(_: argparse.Namespace) -> int:
                     if rc != 0:
                         break
             else:
-                suggestion = _suggest_choice(sub, ["prepare", "batch", "smoke", "status", "finalize", "quick"])
+                suggestion = _suggest_choice(sub, ["prepare", "batch", "smoke", "status", "surface-bundle", "finalize", "quick"])
                 if suggestion:
                     print(f"[SHELL] unknown verify subcommand: {sub} (did you mean '{suggestion}'?)")
                 else:
@@ -923,6 +936,7 @@ PARSER_HANDLERS = {
     "cmd_verify_bind_doc": cmd_verify_bind_doc,
     "cmd_verify_fill_template": cmd_verify_fill_template,
     "cmd_verify_status": cmd_verify_status,
+    "cmd_verify_surface_bundle": cmd_verify_surface_bundle,
     "cmd_verify_finalize": cmd_verify_finalize,
     "cmd_evidence_status": cmd_evidence_status,
     "cmd_evidence_insight": cmd_evidence_insight,

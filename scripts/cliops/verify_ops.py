@@ -229,7 +229,53 @@ def cmd_verify_status(args: argparse.Namespace) -> int:
     return run_cmd(cmd)
 
 
-def _batch_artifact_rows(run_id: str) -> list[dict[str, object]]:
+def cmd_verify_surface_bundle(args: argparse.Namespace) -> int:
+    cmd = [
+        sys.executable,
+        str(SCRIPTS / 'quality' / 'build_surface_evidence_bundle.py'),
+        '--inventory-json',
+        str(args.inventory_json),
+        '--traceability-json',
+        str(args.traceability_json),
+        '--doctor-json',
+        str(args.doctor_json),
+        '--readiness-json',
+        str(args.readiness_json),
+        '--batch-json',
+        str(args.batch_json),
+        '--smoke-csv',
+        str(args.smoke_csv),
+        '--output-json',
+        str(args.output_json),
+        '--output-md',
+        str(args.output_md),
+        '--surface-dir',
+        str(args.surface_dir),
+    ]
+    return run_cmd(cmd)
+
+
+def _materialize_verification_artifacts(*, run_id: str, phase: str) -> int:
+    cmd = [
+        sys.executable,
+        str(SCRIPTS / 'quality' / 'materialize_verification_artifacts.py'),
+        '--layout-json',
+        'product/sdv_operator/config/verification_artifact_layout.json',
+        '--run-id',
+        run_id,
+        '--phase',
+        phase,
+        '--staging-root',
+        'canoe/tmp/reports/verification',
+        '--evidence-root',
+        'canoe/logging/evidence',
+        '--surface-root',
+        'canoe/tmp/reports/verification/surface',
+    ]
+    return run_cmd(cmd)
+
+
+def _batch_artifact_rows(run_id: str, phase: str) -> list[dict[str, object]]:
     paths = [
         f'canoe/logging/evidence/UT/{run_id}/verification_log.csv',
         f'canoe/logging/evidence/UT/{run_id}/verification_log_scored.csv',
@@ -242,12 +288,19 @@ def _batch_artifact_rows(run_id: str) -> list[dict[str, object]]:
         'canoe/tmp/reports/verification/run_readiness.json',
         'canoe/tmp/reports/verification/run_readiness.md',
         'canoe/tmp/reports/verification/dev2_batch_report.junit.xml',
+        'canoe/tmp/reports/verification/surface_evidence_bundle.json',
+        'canoe/tmp/reports/verification/surface_evidence_bundle.md',
         'canoe/tmp/reports/verification/run_insight_report.json',
         'canoe/tmp/reports/verification/run_insight_report.md',
         'canoe/tmp/reports/verification/doc_binding_bundle.json',
         'canoe/tmp/reports/verification/doc_binding_bundle.md',
         'canoe/tmp/reports/verification/doc_fill_template.csv',
         'canoe/tmp/reports/verification/doc_fill_template.md',
+        f'artifacts/verification_runs/{run_id}/{phase}',
+        f'artifacts/verification_runs/{run_id}/{phase}/manifests/artifact_manifest.json',
+        f'artifacts/verification_runs/{run_id}/{phase}/manifests/artifact_manifest.md',
+        f'artifacts/verification_runs/{run_id}/{phase}/manifests/execution_manifest.json',
+        f'artifacts/verification_runs/{run_id}/{phase}/manifests/execution_manifest.md',
     ]
     rows: list[dict[str, object]] = []
     for rel in paths:
@@ -285,7 +338,7 @@ def _write_batch_report(*, run_id: str, owner: str, run_date: str, phase: str, s
     pass_count = sum(1 for s in steps if s.get('rc') == 0)
     fail_count = len(steps) - pass_count
     status = 'PASS' if fail_count == 0 else 'FAIL'
-    artifacts = _batch_artifact_rows(run_id)
+    artifacts = _batch_artifact_rows(run_id, phase)
     payload = {
         'run_id': run_id,
         'owner': owner,
@@ -369,18 +422,35 @@ def _finalize_batch_reports(*, args: argparse.Namespace, report_formats: list[st
     )
     if junit_rc != 0:
         return junit_rc
-    if 'junit' in report_formats:
-        _write_batch_report(
-            run_id=args.run_id,
-            owner=args.owner,
-            run_date=args.run_date,
-            phase=args.phase,
-            steps=steps,
-            report_formats=report_formats,
-            output_json=args.output_json,
-            output_md=args.output_md,
-            output_csv=args.output_csv,
+    surface_rc = cmd_verify_surface_bundle(
+        argparse.Namespace(
+            inventory_json=Path('product/sdv_operator/config/surface_ecu_inventory.json'),
+            traceability_json=Path('product/sdv_operator/config/surface_traceability_profile.json'),
+            doctor_json=Path('canoe/tmp/reports/verification/doctor_report.json'),
+            readiness_json=Path('canoe/tmp/reports/verification/run_readiness.json'),
+            batch_json=args.output_json,
+            smoke_csv=Path('canoe/tmp/reports/verification/dev_completeness_smoke.csv'),
+            output_json=Path('canoe/tmp/reports/verification/surface_evidence_bundle.json'),
+            output_md=Path('canoe/tmp/reports/verification/surface_evidence_bundle.md'),
+            surface_dir=Path('canoe/tmp/reports/verification/surface'),
         )
+    )
+    if surface_rc != 0:
+        return surface_rc
+    materialize_rc = _materialize_verification_artifacts(run_id=args.run_id, phase=args.phase)
+    if materialize_rc != 0:
+        return materialize_rc
+    _write_batch_report(
+        run_id=args.run_id,
+        owner=args.owner,
+        run_date=args.run_date,
+        phase=args.phase,
+        steps=steps,
+        report_formats=report_formats,
+        output_json=args.output_json,
+        output_md=args.output_md,
+        output_csv=args.output_csv,
+    )
     return exit_code
 
 

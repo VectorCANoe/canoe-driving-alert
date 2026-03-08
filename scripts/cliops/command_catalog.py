@@ -395,6 +395,32 @@ PRODUCT_COMMAND_GROUPS: dict[str, list[PaletteCommand]] = {
             ),
         ),
         PaletteCommand(
+            command_id="verify.surface_bundle",
+            title="표면 ECU 묶음",
+            command="verify surface-bundle",
+            base_command="verify surface-bundle",
+            summary="배치/doctor/readiness 결과를 BCM·IVI·CLUSTER·ADAS·V2X 같은 surface ECU 기준으로 다시 묶습니다.",
+            notes="reviewer-facing 결과와 Jenkins archive 구조를 runtime module이 아니라 surface ECU 기준으로 고정할 때 사용합니다.",
+            use_when=(
+                "배치 결과를 OEM reviewer가 읽는 표면 ECU 기준으로 재정렬해야 할 때",
+                "Jenkins archive를 surface ECU 번들 단위로 나눠야 할 때",
+            ),
+            success_signals=(
+                "surface_evidence_bundle.json/md 생성",
+                "surface/<bundle_key>/bundle.json|md 생성",
+            ),
+            expected_outputs=(
+                "canoe/tmp/reports/verification/surface_evidence_bundle.json",
+                "canoe/tmp/reports/verification/surface_evidence_bundle.md",
+                "canoe/tmp/reports/verification/surface/**/*",
+            ),
+            failure_focus=(
+                "surface inventory 누락 또는 drift",
+                "doctor/readiness/batch 산출물 미생성",
+            ),
+            next_step="Jenkins archive와 reviewer package를 surface ECU 기준으로 묶으십시오.",
+        ),
+        PaletteCommand(
             command_id="operate.guided",
             title="가이드 모드",
             command="start guided",

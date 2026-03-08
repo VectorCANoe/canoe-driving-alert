@@ -21,6 +21,8 @@ GATE_ALL_SUMMARY_JSON = VERIFICATION_ROOT / "gate_all_summary.json"
 GATE_ALL_SUMMARY_MD = VERIFICATION_ROOT / "gate_all_summary.md"
 RELEASE_CONTRACT_JSON = VERIFICATION_ROOT / "release_contract_report.json"
 RELEASE_CONTRACT_MD = VERIFICATION_ROOT / "release_contract_report.md"
+SURFACE_BUNDLE_JSON = VERIFICATION_ROOT / "surface_evidence_bundle.json"
+SURFACE_BUNDLE_MD = VERIFICATION_ROOT / "surface_evidence_bundle.md"
 
 
 @dataclass
@@ -72,6 +74,7 @@ def _title_for_command(command_id: str) -> str:
 
 def _artifact_candidates(command_id: str, args: argparse.Namespace) -> list[Path]:
     run_id = _run_id_from_args(args)
+    phase = str(getattr(args, "phase", "pre")).lower()
     paths: list[Path] = []
     if command_id == "inspect.environment_doctor":
         paths.extend([VERIFICATION_ROOT / "doctor_report.json", VERIFICATION_ROOT / "doctor_report.md"])
@@ -84,8 +87,20 @@ def _artifact_candidates(command_id: str, args: argparse.Namespace) -> list[Path
                 VERIFICATION_ROOT / "dev2_batch_report.md",
                 VERIFICATION_ROOT / "dev2_batch_report.csv",
                 VERIFICATION_ROOT / "dev2_batch_report.junit.xml",
+                SURFACE_BUNDLE_JSON,
+                SURFACE_BUNDLE_MD,
             ]
         )
+        if run_id:
+            paths.append(ROOT / "artifacts" / "verification_runs" / run_id / phase)
+            paths.append(ROOT / "artifacts" / "verification_runs" / run_id / phase / "manifests" / "execution_manifest.json")
+            paths.append(ROOT / "artifacts" / "verification_runs" / run_id / phase / "manifests" / "execution_manifest.md")
+    elif command_id == "verify.surface_bundle":
+        paths.extend([SURFACE_BUNDLE_JSON, SURFACE_BUNDLE_MD])
+        if run_id:
+            paths.append(ROOT / "artifacts" / "verification_runs" / run_id / phase)
+            paths.append(ROOT / "artifacts" / "verification_runs" / run_id / phase / "manifests" / "execution_manifest.json")
+            paths.append(ROOT / "artifacts" / "verification_runs" / run_id / phase / "manifests" / "execution_manifest.md")
     elif command_id in {"verify.quick_verify", "verify.run_readiness_status"}:
         paths.extend([VERIFICATION_ROOT / "run_readiness.json", VERIFICATION_ROOT / "run_readiness.md"])
         if run_id:
@@ -199,6 +214,7 @@ def _readiness_result(command_id: str, title: str, rc: int, args: argparse.Names
 
 def _batch_result(command_id: str, title: str, rc: int, args: argparse.Namespace) -> OperatorResult:
     data = _load_json(VERIFICATION_ROOT / "dev2_batch_report.json")
+    surface_data = _load_json(SURFACE_BUNDLE_JSON)
     artifacts = _existing_artifacts(_artifact_candidates(command_id, args))
     if not data:
         status = "PASS" if rc == 0 else "FAIL"
@@ -218,6 +234,9 @@ def _batch_result(command_id: str, title: str, rc: int, args: argparse.Namespace
     phase = str(data.get("phase", "pre")).upper()
     status = str(data.get("status", "FAIL")).upper()
     detail = f"{phase}: {data.get('pass_count', 0)} pass / {data.get('fail_count', 0)} fail"
+    if surface_data:
+        bundle_status = str(surface_data.get("overall_status", "UNKNOWN")).upper()
+        detail = f"{detail} | surface={bundle_status}"
     next_action = "PASS면 본 검증 시나리오로 넘어가십시오." if status == "PASS" else "실패한 step과 gate를 먼저 수정하십시오."
     return OperatorResult(
         command_id=command_id,
@@ -229,6 +248,59 @@ def _batch_result(command_id: str, title: str, rc: int, args: argparse.Namespace
         artifacts=artifacts,
         insight={"stage": "Verify Batch", "bottleneck": detail, "next_action": next_action},
         context={"run_id": data.get("run_id", _run_id_from_args(args)), "phase": phase},
+    )
+
+
+def _surface_bundle_result(command_id: str, title: str, rc: int, args: argparse.Namespace) -> OperatorResult:
+    data = _load_json(SURFACE_BUNDLE_JSON)
+    artifacts = _existing_artifacts(_artifact_candidates(command_id, args))
+    if not data:
+        status = "PASS" if rc == 0 else "FAIL"
+        detail = "Surface ECU evidence bundle completed." if rc == 0 else "Surface ECU evidence bundle failed."
+        next_action = "bundle 산출물 생성 여부를 확인하십시오."
+        return OperatorResult(
+            command_id=command_id,
+            title=title,
+            status=status,
+            detail=detail,
+            next_action=next_action,
+            rc=rc,
+            artifacts=artifacts,
+            insight={"stage": "Surface Bundle", "bottleneck": detail, "next_action": next_action},
+            context={"run_id": _run_id_from_args(args)},
+        )
+
+    overall = str(data.get("overall_status", "UNKNOWN")).upper()
+    summary = data.get("summary", {}) if isinstance(data.get("summary", {}), dict) else {}
+    detail = (
+        f"surface={overall} | "
+        f"PASS/WARN/FAIL={summary.get('pass_count', 0)}/{summary.get('warn_count', 0)}/{summary.get('fail_count', 0)}"
+    )
+    next_action = "surface ECU 기준 묶음을 Jenkins archive와 reviewer package에 연결하십시오." if overall == "PASS" else "WARN/FAIL surface ECU의 reason과 native evidence 연결 상태를 먼저 보강하십시오."
+    related_logs: list[str] = []
+    surfaces = data.get("surfaces", [])
+    if isinstance(surfaces, list):
+        for item in surfaces:
+            if not isinstance(item, dict):
+                continue
+            status = str(item.get("status", "")).upper()
+            if status in {"WARN", "FAIL"}:
+                trace_state = item.get("traceability", {}).get("mapping_status", "")
+                related_logs.append(f"{item.get('surface_id', 'SURFACE')}: {item.get('summary', '-')} (trace={trace_state or '-'})")
+            if len(related_logs) >= 3:
+                break
+    mapped_status = "PASS" if overall == "PASS" else "WARN" if overall == "WARN" else "FAIL"
+    return OperatorResult(
+        command_id=command_id,
+        title=title,
+        status=mapped_status,
+        detail=detail,
+        next_action=next_action,
+        rc=rc,
+        artifacts=artifacts,
+        related_logs=related_logs,
+        insight={"stage": "Surface Bundle", "bottleneck": detail, "next_action": next_action},
+        context={"run_id": _run_id_from_args(args), "overall_status": overall},
     )
 
 
@@ -366,6 +438,8 @@ def build_operator_result(args: argparse.Namespace, rc: int) -> OperatorResult |
         return _scenario_result(command_id, title, rc, args)
     if command_id == "package.validate_contract":
         return _release_contract_result(command_id, title, rc)
+    if command_id == "verify.surface_bundle":
+        return _surface_bundle_result(command_id, title, rc, args)
     return _generic_result(command_id, title, rc, args)
 
 

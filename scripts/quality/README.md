@@ -12,6 +12,8 @@ Main tools:
   - `status`
   - `finalize`
 - `export_junit_from_batch.py`
+- `build_surface_evidence_bundle.py`
+- `materialize_verification_artifacts.py`
 - `evidence_score_gate.py`
 - `build_evidence_from_write_window.py`
 - `init_evidence_run.py`
@@ -46,5 +48,24 @@ Note:
   - `canoe/tmp/reports/verification/cli_readiness_gate.md`
 - `export_junit_from_batch.py` outputs Jenkins-ingestible JUnit XML:
   - `canoe/tmp/reports/verification/dev2_batch_report.junit.xml`
+- `build_surface_evidence_bundle.py` outputs reviewer-facing surface ECU rollups:
+  - `canoe/tmp/reports/verification/surface_evidence_bundle.json`
+  - `canoe/tmp/reports/verification/surface_evidence_bundle.md`
+  - `canoe/tmp/reports/verification/surface/<bundle_key>/bundle.json`
+  - `canoe/tmp/reports/verification/surface/<bundle_key>/bundle.md`
+  - input SoT:
+    - `product/sdv_operator/config/surface_ecu_inventory.json`
+    - `product/sdv_operator/config/surface_traceability_profile.json`
+    - `canoe/tmp/reports/verification/dev_completeness_smoke.csv`
+  - output meaning:
+    - execution key: `run_id / phase / owner / run_date`
+    - stable review key: `Req ID / Test Case ID / Scenario ID / Surface ECU`
+- `materialize_verification_artifacts.py` re-packs staging outputs into stable archive layout:
+  - `artifacts/verification_runs/<run_id>/<phase>/reports/*`
+  - `artifacts/verification_runs/<run_id>/<phase>/surface/<bundle_key>/*`
+  - `artifacts/verification_runs/<run_id>/<phase>/native_reports/**/*`
+  - `artifacts/verification_runs/<run_id>/<phase>/evidence/<UT|IT|ST>/**/*`
+  - `artifacts/verification_runs/<run_id>/<phase>/manifests/artifact_manifest.json`
+  - `artifacts/verification_runs/<run_id>/<phase>/manifests/execution_manifest.json`
 - This allows CAPL evidence lines to add fields without breaking parsing.
 - Gate purpose/CI mapping reference: `product/sdv_operator/docs-src/maintenance.md`

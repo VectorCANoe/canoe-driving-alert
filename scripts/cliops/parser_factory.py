@@ -37,6 +37,7 @@ COMPAT_TOPLEVEL_COMMANDS = [
     "verify-bind-doc",
     "verify-fill-template",
     "verify-status",
+    "verify-surface-bundle",
     "verify-finalize",
     "gate-doc-sync",
     "gate-cfg-hygiene",
@@ -307,6 +308,64 @@ def add_verify_status_args(p: argparse.ArgumentParser, handlers: HandlerMap) -> 
     p.set_defaults(func=handlers["cmd_verify_status"], operator_command_id="verify.run_readiness_status")
 
 
+def add_verify_surface_bundle_args(p: argparse.ArgumentParser, handlers: HandlerMap) -> None:
+    p.add_argument(
+        "--inventory-json",
+        type=Path,
+        default=Path("product/sdv_operator/config/surface_ecu_inventory.json"),
+        help="Surface ECU inventory JSON path",
+    )
+    p.add_argument(
+        "--traceability-json",
+        type=Path,
+        default=Path("product/sdv_operator/config/surface_traceability_profile.json"),
+        help="Surface ECU traceability profile JSON path",
+    )
+    p.add_argument(
+        "--doctor-json",
+        type=Path,
+        default=Path("canoe/tmp/reports/verification/doctor_report.json"),
+        help="Doctor report JSON path",
+    )
+    p.add_argument(
+        "--readiness-json",
+        type=Path,
+        default=Path("canoe/tmp/reports/verification/run_readiness.json"),
+        help="Run readiness JSON path",
+    )
+    p.add_argument(
+        "--batch-json",
+        type=Path,
+        default=Path("canoe/tmp/reports/verification/dev2_batch_report.json"),
+        help="Batch report JSON path",
+    )
+    p.add_argument(
+        "--smoke-csv",
+        type=Path,
+        default=Path("canoe/tmp/reports/verification/dev_completeness_smoke.csv"),
+        help="Smoke CSV path used to collect executed scenario IDs",
+    )
+    p.add_argument(
+        "--output-json",
+        type=Path,
+        default=Path("canoe/tmp/reports/verification/surface_evidence_bundle.json"),
+        help="Surface evidence bundle JSON output path",
+    )
+    p.add_argument(
+        "--output-md",
+        type=Path,
+        default=Path("canoe/tmp/reports/verification/surface_evidence_bundle.md"),
+        help="Surface evidence bundle Markdown output path",
+    )
+    p.add_argument(
+        "--surface-dir",
+        type=Path,
+        default=Path("canoe/tmp/reports/verification/surface"),
+        help="Per-surface bundle output root",
+    )
+    p.set_defaults(func=handlers["cmd_verify_surface_bundle"], operator_command_id="verify.surface_bundle")
+
+
 def add_scenario_run_args(p: argparse.ArgumentParser, handlers: HandlerMap) -> None:
     p.add_argument("--id", type=int, required=True, help="Scenario ID (0..255)")
     p.add_argument("--namespace", default="Test", help="System variable namespace")
@@ -463,6 +522,7 @@ def build_parser(handlers: HandlerMap, default_run_id: Callable[[], str]) -> arg
     add_verify_bind_doc_args(verify_sub.add_parser("bind-doc", help="Build 05/06/07 doc binding bundle"), handlers)
     add_verify_fill_template_args(verify_sub.add_parser("fill-template", help="Build 05/06/07 doc fill template"), handlers)
     add_verify_status_args(verify_sub.add_parser("status", help="Check run readiness before finalize"), handlers)
+    add_verify_surface_bundle_args(verify_sub.add_parser("surface-bundle", help="Build reviewer-facing surface ECU evidence bundle"), handlers)
     add_verify_finalize_args(verify_sub.add_parser("finalize", help="Run full post-run verification bundle"), handlers)
 
     evidence = sub.add_parser("evidence", help="Evidence/readout focused commands")
@@ -540,6 +600,7 @@ def build_parser(handlers: HandlerMap, default_run_id: Callable[[], str]) -> arg
     add_verify_bind_doc_args(_add_hidden_parser(sub, "verify-bind-doc"), handlers)
     add_verify_fill_template_args(_add_hidden_parser(sub, "verify-fill-template"), handlers)
     add_verify_status_args(_add_hidden_parser(sub, "verify-status"), handlers)
+    add_verify_surface_bundle_args(_add_hidden_parser(sub, "verify-surface-bundle"), handlers)
     add_verify_finalize_args(_add_hidden_parser(sub, "verify-finalize"), handlers)
     _add_hidden_parser(sub, "gate-doc-sync").set_defaults(func=handlers["cmd_gate_doc_sync"])
     _add_hidden_parser(sub, "gate-cfg-hygiene").set_defaults(func=handlers["cmd_gate_cfg_hygiene"])
