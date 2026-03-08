@@ -126,5 +126,5 @@
 ## 8) 제출 편집본 운영 규칙 (고정)
 
 1. 편집은 `tmp/submission/final-docs`에서만 수행한다.
-2. `tmp/submission/docs`는 레거시 스냅샷으로 유지한다.
+2. `tmp/submission/archive/docs_snapshot`은 레거시 스냅샷으로 유지한다.
 3. 엑셀 변환 입력 경로도 `final-docs`를 기준으로 사용한다.

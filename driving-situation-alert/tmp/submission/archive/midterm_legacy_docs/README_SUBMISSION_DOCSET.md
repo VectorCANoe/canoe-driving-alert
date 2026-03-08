@@ -1,6 +1,6 @@
 # 제출용 축소본 인덱스 (중간보고 레거시 복제본)
 
-- 생성 위치: `driving-situation-alert/tmp/submission/midterm_legacy_docs/`
+- 생성 위치: `driving-situation-alert/tmp/submission/archive/midterm_legacy_docs/`
 - 생성 기준: `tmp/submission/REDUCTION_SCOPE_00_TO_07_FOR_EXCEL.md`
 
 ## 1) 상태
@@ -26,7 +26,7 @@
 
 ## 3) 부록/내부 참조 (요청 시 추가)
 
-- 위치: `tmp/submission/midterm_legacy_docs/governance/`
+- 위치: `tmp/submission/archive/midterm_legacy_docs/governance/`
 
 - `governance/00_VModel_Mapping.md`
 - `governance/00b_Project_Scope.md`

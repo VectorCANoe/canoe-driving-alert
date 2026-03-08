@@ -127,7 +127,7 @@
 ## 6) 운영 결정
 
 - `tmp/submission/final-docs`를 최종 제출 편집본 기준 폴더로 고정한다.
-- `tmp/submission/docs`는 이전 제출본 기준(레거시)으로 남기되, 신규 편집은 `final-docs`에서만 수행한다.
+- `tmp/submission/archive/docs_snapshot`은 이전 제출본 기준(레거시)으로 남기되, 신규 편집은 `final-docs`에서만 수행한다.
 - 원문 SoT 수정이 발생하면 동일 변경을 `final-docs`에 동기화하고, 동기화 이력은 `README_SUBMISSION_DOCSET.md`에 기록한다.
 
 ---

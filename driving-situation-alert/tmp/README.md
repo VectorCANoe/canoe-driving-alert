@@ -18,7 +18,7 @@
 ## 2) Submission 운영 규칙
 
 - 편집은 `tmp/submission/final-docs/`에서만 수행
-- `tmp/submission/docs/`, `tmp/submission/midterm_legacy_docs/`는 조회용 스냅샷
+- `tmp/submission/archive/docs_snapshot/`, `tmp/submission/archive/midterm_legacy_docs/`는 조회용 스냅샷
 - 제출 패키징 기준은 `tmp/submission/README.md`를 따른다
 
 ## 3) 폴더 역할
