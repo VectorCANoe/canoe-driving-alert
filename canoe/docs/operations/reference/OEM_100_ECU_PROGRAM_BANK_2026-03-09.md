@@ -11,7 +11,7 @@ Use this model:
 - `Premium option bank`: `27`
 - `Grand total inventory bank`: `100`
 
-This is an architecture/program-shaping bank.
+This is now the active surface architecture bank.
 It is **not** a commitment to deeply implement 100 runtimes.
 
 ## Why This Is Reasonable
@@ -32,6 +32,14 @@ Recommended implementation depth remains:
 
 - deep runtime surfaces: `13~15`
 - core custom feature surfaces: `6~8`
+
+## Activation Rule
+
+- Treat this document as the active surface inventory bank for the reset cycle.
+- Use [OEM_ACTIVE_TARGET_PROFILE_2026-03-09.md](C:\Users\이준영\CANoe-IVI-OTA\canoe\docs\operations\reference\OEM_ACTIVE_TARGET_PROFILE_2026-03-09.md) to decide:
+  - which `100` surfaces are primary reviewer-facing
+  - which remain placeholder-first
+  - which are promoted to deep runtime
 
 ## A. Base Vehicle Inventory (`72`)
 
@@ -254,7 +262,7 @@ Use these in category views, domain trees, and optional system maps:
 
 ### Layer 3. Premium Option Bank (`27`)
 
-Keep these as premium/next-release architecture reserve.
+Keep these active in the surface bank, but placeholder-first unless promoted.
 
 ## E. Deep Runtime Commitment
 
@@ -294,5 +302,5 @@ Keep deep runtime scope controlled even with 100-bank breadth.
 ## Short Conclusion
 
 - Yes, `50` is still small if the goal is to look like a complete OEM vehicle program.
-- Use `72 + 1 + 27 = 100` as the architecture bank.
-- But keep actual deep implementation narrow.
+- Use `72 + 1 + 27 = 100` as the active surface bank.
+- Keep actual deep implementation narrow and status-controlled.
