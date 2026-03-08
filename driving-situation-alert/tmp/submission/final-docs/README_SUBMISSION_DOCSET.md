@@ -19,6 +19,12 @@
 - `06_Integration_Test.md`
 - `07_System_Test.md`
 
+## 1-1) 권장 읽기 순서
+
+- 10분 빠른 파악: `00_MASTER_Project_Framework -> 02_Concept_design -> 07_System_Test`
+- 30분 기술 파악: 위 3개 + `01_Requirements -> 03_Function_definition -> 06_Integration_Test`
+- 심화 검토: `0301 -> 0302 -> 0303 -> 0304 -> 04 -> 05`
+
 ## 2) 부록/요청 시 첨부
 
 - 위치: `tmp/submission/final-docs/governance/`
