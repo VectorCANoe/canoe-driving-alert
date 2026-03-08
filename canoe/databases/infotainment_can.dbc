@@ -1,4 +1,4 @@
-﻿VERSION "Infotainment_CAN_v1.0"
+VERSION "Infotainment_CAN_v1.0"
 
 NS_ :
   NS_DESC_
@@ -29,133 +29,133 @@ NS_ :
 
 BS_:
 
-BU_: VAL_SCENARIO_CTRL INFOTAINMENT_GW IVI_GW NAV_CTX_MGR CLU_HMI_CTRL CLU_BASE_CTRL DOMAIN_BOUNDARY_MGR Vector__XXX
+BU_: VAL_SCENARIO_CTRL IVI IVI IVI CLU CLU CGW Vector__XXX
 
 BO_ 675 frmNavContextCanMsg: 3 VAL_SCENARIO_CTRL
- SG_ gRoadZone     : 0|2@1+ (1,0) [0|3]    "" INFOTAINMENT_GW,NAV_CTX_MGR
- SG_ gNavDirection : 2|2@1+ (1,0) [0|3]    "" INFOTAINMENT_GW,NAV_CTX_MGR
+ SG_ gRoadZone     : 0|2@1+ (1,0) [0|3]    "" IVI,IVI
+ SG_ gNavDirection : 2|2@1+ (1,0) [0|3]    "" IVI,IVI
  SG_ Reserved0     : 4|4@1+ (1,0) [0|0]    "" Vector__XXX
- SG_ gZoneDistance : 8|8@1+ (1,0) [0|255]  "m" INFOTAINMENT_GW,NAV_CTX_MGR
- SG_ gSpeedLimit   : 16|8@1+ (1,0) [0|255] "km/h" INFOTAINMENT_GW,NAV_CTX_MGR
+ SG_ gZoneDistance : 8|8@1+ (1,0) [0|255]  "m" IVI,IVI
+ SG_ gSpeedLimit   : 16|8@1+ (1,0) [0|255] "km/h" IVI,IVI
 
-BO_ 640 frmClusterWarningMsg: 1 IVI_GW
- SG_ WarningTextCode : 0|8@1+ (1,0) [0|255] "" CLU_HMI_CTRL
+BO_ 640 frmClusterWarningMsg: 1 IVI
+ SG_ WarningTextCode : 0|8@1+ (1,0) [0|255] "" CLU
 
-BO_ 641 frmClusterBaseStateMsg: 2 IVI_GW
- SG_ ClusterSpeed     : 0|8@1+ (1,0) [0|255] "km/h" CLU_BASE_CTRL
- SG_ ClusterGear      : 8|3@1+ (1,0) [0|7] "" CLU_BASE_CTRL
- SG_ ClusterStatus    : 11|5@1+ (1,0) [0|31] "" CLU_BASE_CTRL
+BO_ 641 frmClusterBaseStateMsg: 2 IVI
+ SG_ ClusterSpeed     : 0|8@1+ (1,0) [0|255] "km/h" CLU
+ SG_ ClusterGear      : 8|3@1+ (1,0) [0|7] "" CLU
+ SG_ ClusterStatus    : 11|5@1+ (1,0) [0|31] "" CLU
 
-BO_ 642 frmNaviGuideStateMsg: 1 INFOTAINMENT_GW
- SG_ GuideLaneState   : 0|2@1+ (1,0) [0|3] "" NAV_CTX_MGR
- SG_ GuideConfidence  : 2|6@1+ (1,0) [0|63] "" NAV_CTX_MGR
+BO_ 642 frmNaviGuideStateMsg: 1 IVI
+ SG_ GuideLaneState   : 0|2@1+ (1,0) [0|3] "" IVI
+ SG_ GuideConfidence  : 2|6@1+ (1,0) [0|63] "" IVI
 
-BO_ 643 frmMediaStateMsg: 2 IVI_GW
- SG_ MediaSource      : 0|3@1+ (1,0) [0|7] "" CLU_HMI_CTRL
- SG_ MediaState       : 3|3@1+ (1,0) [0|7] "" CLU_HMI_CTRL
- SG_ MuteState        : 6|1@1+ (1,0) [0|1] "" CLU_HMI_CTRL
+BO_ 643 frmMediaStateMsg: 2 IVI
+ SG_ MediaSource      : 0|3@1+ (1,0) [0|7] "" CLU
+ SG_ MediaState       : 3|3@1+ (1,0) [0|7] "" CLU
+ SG_ MuteState        : 6|1@1+ (1,0) [0|1] "" CLU
  SG_ Reserved0        : 7|1@1+ (1,0) [0|0] "" Vector__XXX
- SG_ VolumeLevel      : 8|8@1+ (1,0) [0|100] "%" CLU_HMI_CTRL
+ SG_ VolumeLevel      : 8|8@1+ (1,0) [0|100] "%" CLU
 
-BO_ 644 frmCallStateMsg: 2 IVI_GW
- SG_ CallState        : 0|3@1+ (1,0) [0|7] "" CLU_HMI_CTRL
- SG_ MicMute          : 3|1@1+ (1,0) [0|1] "" CLU_HMI_CTRL
- SG_ SignalQuality    : 4|4@1+ (1,0) [0|15] "" CLU_HMI_CTRL
- SG_ BtDeviceCount    : 8|4@1+ (1,0) [0|15] "" CLU_HMI_CTRL
+BO_ 644 frmCallStateMsg: 2 IVI
+ SG_ CallState        : 0|3@1+ (1,0) [0|7] "" CLU
+ SG_ MicMute          : 3|1@1+ (1,0) [0|1] "" CLU
+ SG_ SignalQuality    : 4|4@1+ (1,0) [0|15] "" CLU
+ SG_ BtDeviceCount    : 8|4@1+ (1,0) [0|15] "" CLU
  SG_ Reserved0        : 12|4@1+ (1,0) [0|0] "" Vector__XXX
 
-BO_ 645 frmNavigationRouteMsg: 3 INFOTAINMENT_GW
- SG_ RouteClass       : 0|2@1+ (1,0) [0|3] "" NAV_CTX_MGR
- SG_ GuideType        : 2|2@1+ (1,0) [0|3] "" NAV_CTX_MGR
+BO_ 645 frmNavigationRouteMsg: 3 IVI
+ SG_ RouteClass       : 0|2@1+ (1,0) [0|3] "" IVI
+ SG_ GuideType        : 2|2@1+ (1,0) [0|3] "" IVI
  SG_ Reserved0        : 4|4@1+ (1,0) [0|0] "" Vector__XXX
- SG_ RouteProgress    : 8|8@1+ (1,0) [0|100] "%" NAV_CTX_MGR
- SG_ EtaMinutes       : 16|8@1+ (1,0) [0|255] "min" NAV_CTX_MGR
+ SG_ RouteProgress    : 8|8@1+ (1,0) [0|100] "%" IVI
+ SG_ EtaMinutes       : 16|8@1+ (1,0) [0|255] "min" IVI
 
-BO_ 646 frmClusterThemeMsg: 1 IVI_GW
- SG_ ThemeMode        : 0|3@1+ (1,0) [0|7] "" CLU_BASE_CTRL
- SG_ ClusterBrightness : 3|5@1+ (1,0) [0|31] "" CLU_BASE_CTRL
+BO_ 646 frmClusterThemeMsg: 1 IVI
+ SG_ ThemeMode        : 0|3@1+ (1,0) [0|7] "" CLU
+ SG_ ClusterBrightness : 3|5@1+ (1,0) [0|31] "" CLU
 
-BO_ 647 frmHmiPopupStateMsg: 1 IVI_GW
- SG_ PopupType        : 0|4@1+ (1,0) [0|15] "" CLU_HMI_CTRL
- SG_ PopupPriority    : 4|3@1+ (1,0) [0|7] "" CLU_HMI_CTRL
- SG_ PopupActive      : 7|1@1+ (1,0) [0|1] "" CLU_HMI_CTRL
+BO_ 647 frmHmiPopupStateMsg: 1 IVI
+ SG_ PopupType        : 0|4@1+ (1,0) [0|15] "" CLU
+ SG_ PopupPriority    : 4|3@1+ (1,0) [0|7] "" CLU
+ SG_ PopupActive      : 7|1@1+ (1,0) [0|1] "" CLU
 
-BO_ 648 frmInfotainmentHealthMsg: 2 INFOTAINMENT_GW
- SG_ InfoAliveCnt     : 0|8@1+ (1,0) [0|255] "" VAL_SCENARIO_CTRL,DOMAIN_BOUNDARY_MGR
- SG_ InfoDiagState    : 8|4@1+ (1,0) [0|15] "" VAL_SCENARIO_CTRL,DOMAIN_BOUNDARY_MGR
- SG_ InfoFailCode     : 12|4@1+ (1,0) [0|15] "" VAL_SCENARIO_CTRL,DOMAIN_BOUNDARY_MGR
+BO_ 648 frmInfotainmentHealthMsg: 2 IVI
+ SG_ InfoAliveCnt     : 0|8@1+ (1,0) [0|255] "" VAL_SCENARIO_CTRL,CGW
+ SG_ InfoDiagState    : 8|4@1+ (1,0) [0|15] "" VAL_SCENARIO_CTRL,CGW
+ SG_ InfoFailCode     : 12|4@1+ (1,0) [0|15] "" VAL_SCENARIO_CTRL,CGW
 
-BO_ 649 frmAudioFocusMsg: 1 IVI_GW
- SG_ AudioFocusOwner  : 0|3@1+ (1,0) [0|7] "" CLU_HMI_CTRL
- SG_ AudioDuckingLvl  : 3|3@1+ (1,0) [0|7] "" CLU_HMI_CTRL
+BO_ 649 frmAudioFocusMsg: 1 IVI
+ SG_ AudioFocusOwner  : 0|3@1+ (1,0) [0|7] "" CLU
+ SG_ AudioDuckingLvl  : 3|3@1+ (1,0) [0|7] "" CLU
  SG_ Reserved0        : 6|2@1+ (1,0) [0|0] "" Vector__XXX
 
-BO_ 650 frmVoiceAssistStateMsg: 1 IVI_GW
- SG_ VoiceAssistState : 0|3@1+ (1,0) [0|7] "" CLU_HMI_CTRL
- SG_ WakeWordState    : 3|1@1+ (1,0) [0|1] "" CLU_HMI_CTRL
+BO_ 650 frmVoiceAssistStateMsg: 1 IVI
+ SG_ VoiceAssistState : 0|3@1+ (1,0) [0|7] "" CLU
+ SG_ WakeWordState    : 3|1@1+ (1,0) [0|1] "" CLU
  SG_ Reserved0        : 4|4@1+ (1,0) [0|0] "" Vector__XXX
 
-BO_ 651 frmMapRenderStateMsg: 2 INFOTAINMENT_GW
- SG_ MapRenderState   : 0|3@1+ (1,0) [0|7] "" NAV_CTX_MGR
- SG_ ZoomLevel        : 3|5@1+ (1,0) [0|31] "" NAV_CTX_MGR
- SG_ TileLoadPercent  : 8|8@1+ (1,0) [0|100] "%" NAV_CTX_MGR
+BO_ 651 frmMapRenderStateMsg: 2 IVI
+ SG_ MapRenderState   : 0|3@1+ (1,0) [0|7] "" IVI
+ SG_ ZoomLevel        : 3|5@1+ (1,0) [0|31] "" IVI
+ SG_ TileLoadPercent  : 8|8@1+ (1,0) [0|100] "%" IVI
 
-BO_ 652 frmRouteAlertMsg: 2 INFOTAINMENT_GW
- SG_ RouteAlertType   : 0|4@1+ (1,0) [0|15] "" NAV_CTX_MGR
- SG_ RouteAlertPrio   : 4|3@1+ (1,0) [0|7] "" NAV_CTX_MGR
- SG_ RouteAlertActive : 7|1@1+ (1,0) [0|1] "" NAV_CTX_MGR
- SG_ RouteAlertEta    : 8|8@1+ (1,0) [0|255] "s" NAV_CTX_MGR
+BO_ 652 frmRouteAlertMsg: 2 IVI
+ SG_ RouteAlertType   : 0|4@1+ (1,0) [0|15] "" IVI
+ SG_ RouteAlertPrio   : 4|3@1+ (1,0) [0|7] "" IVI
+ SG_ RouteAlertActive : 7|1@1+ (1,0) [0|1] "" IVI
+ SG_ RouteAlertEta    : 8|8@1+ (1,0) [0|255] "s" IVI
 
-BO_ 653 frmTrafficEventMsg: 3 INFOTAINMENT_GW
- SG_ TrafficEventType : 0|8@1+ (1,0) [0|255] "" NAV_CTX_MGR
- SG_ TrafficSeverity  : 8|8@1+ (1,0) [0|255] "" NAV_CTX_MGR
- SG_ TrafficDistance  : 16|8@1+ (1,0) [0|255] "m" NAV_CTX_MGR
+BO_ 653 frmTrafficEventMsg: 3 IVI
+ SG_ TrafficEventType : 0|8@1+ (1,0) [0|255] "" IVI
+ SG_ TrafficSeverity  : 8|8@1+ (1,0) [0|255] "" IVI
+ SG_ TrafficDistance  : 16|8@1+ (1,0) [0|255] "m" IVI
 
-BO_ 654 frmPhoneProjectionMsg: 1 IVI_GW
- SG_ ProjectionType   : 0|2@1+ (1,0) [0|3] "" CLU_HMI_CTRL
- SG_ ProjectionState  : 2|2@1+ (1,0) [0|3] "" CLU_HMI_CTRL
+BO_ 654 frmPhoneProjectionMsg: 1 IVI
+ SG_ ProjectionType   : 0|2@1+ (1,0) [0|3] "" CLU
+ SG_ ProjectionState  : 2|2@1+ (1,0) [0|3] "" CLU
  SG_ Reserved0        : 4|4@1+ (1,0) [0|0] "" Vector__XXX
 
-BO_ 655 frmClusterNotifMsg: 2 IVI_GW
- SG_ ClusterNotifType : 0|8@1+ (1,0) [0|255] "" CLU_HMI_CTRL
- SG_ ClusterNotifArg  : 8|8@1+ (1,0) [0|255] "" CLU_HMI_CTRL
+BO_ 655 frmClusterNotifMsg: 2 IVI
+ SG_ ClusterNotifType : 0|8@1+ (1,0) [0|255] "" CLU
+ SG_ ClusterNotifArg  : 8|8@1+ (1,0) [0|255] "" CLU
 
 BO_ 679 frmIviDiagReqMsg: 3 VAL_SCENARIO_CTRL
- SG_ IviDiagServiceId : 0|8@1+ (1,0) [0|255] "" INFOTAINMENT_GW
- SG_ IviDiagDidHigh   : 8|8@1+ (1,0) [0|255] "" INFOTAINMENT_GW
- SG_ IviDiagDidLow    : 16|8@1+ (1,0) [0|255] "" INFOTAINMENT_GW
+ SG_ IviDiagServiceId : 0|8@1+ (1,0) [0|255] "" IVI
+ SG_ IviDiagDidHigh   : 8|8@1+ (1,0) [0|255] "" IVI
+ SG_ IviDiagDidLow    : 16|8@1+ (1,0) [0|255] "" IVI
 
-BO_ 656 frmIviDiagResMsg: 3 INFOTAINMENT_GW
+BO_ 656 frmIviDiagResMsg: 3 IVI
  SG_ IviDiagRespCode  : 0|8@1+ (1,0) [0|255] "" VAL_SCENARIO_CTRL
  SG_ IviDiagData0     : 8|8@1+ (1,0) [0|255] "" VAL_SCENARIO_CTRL
  SG_ IviDiagData1     : 16|8@1+ (1,0) [0|255] "" VAL_SCENARIO_CTRL
 
-BO_ 657 frmMediaMetaMsg: 2 IVI_GW
- SG_ MediaTrackType   : 0|4@1+ (1,0) [0|15] "" CLU_HMI_CTRL
- SG_ MediaRepeatMode  : 4|2@1+ (1,0) [0|3] "" CLU_HMI_CTRL
- SG_ MediaShuffleMode : 6|2@1+ (1,0) [0|3] "" CLU_HMI_CTRL
- SG_ MediaRemainTime  : 8|8@1+ (1,0) [0|255] "s" CLU_HMI_CTRL
+BO_ 657 frmMediaMetaMsg: 2 IVI
+ SG_ MediaTrackType   : 0|4@1+ (1,0) [0|15] "" CLU
+ SG_ MediaRepeatMode  : 4|2@1+ (1,0) [0|3] "" CLU
+ SG_ MediaShuffleMode : 6|2@1+ (1,0) [0|3] "" CLU
+ SG_ MediaRemainTime  : 8|8@1+ (1,0) [0|255] "s" CLU
 
-BO_ 658 frmSpeechTtsStateMsg: 2 IVI_GW
- SG_ TtsState         : 0|3@1+ (1,0) [0|7] "" CLU_HMI_CTRL
- SG_ TtsPriority      : 3|3@1+ (1,0) [0|7] "" CLU_HMI_CTRL
+BO_ 658 frmSpeechTtsStateMsg: 2 IVI
+ SG_ TtsState         : 0|3@1+ (1,0) [0|7] "" CLU
+ SG_ TtsPriority      : 3|3@1+ (1,0) [0|7] "" CLU
  SG_ Reserved0        : 6|2@1+ (1,0) [0|0] "" Vector__XXX
- SG_ TtsQueueDepth    : 8|8@1+ (1,0) [0|255] "" CLU_HMI_CTRL
+ SG_ TtsQueueDepth    : 8|8@1+ (1,0) [0|255] "" CLU
 
-BO_ 659 frmConnectivityStateMsg: 2 INFOTAINMENT_GW
- SG_ ConnectivityType : 0|3@1+ (1,0) [0|7] "" NAV_CTX_MGR
- SG_ ConnectivityState: 3|3@1+ (1,0) [0|7] "" NAV_CTX_MGR
- SG_ SignalBars       : 8|4@1+ (1,0) [0|15] "" NAV_CTX_MGR
+BO_ 659 frmConnectivityStateMsg: 2 IVI
+ SG_ ConnectivityType : 0|3@1+ (1,0) [0|7] "" IVI
+ SG_ ConnectivityState: 3|3@1+ (1,0) [0|7] "" IVI
+ SG_ SignalBars       : 8|4@1+ (1,0) [0|15] "" IVI
  SG_ Reserved0        : 12|4@1+ (1,0) [0|0] "" Vector__XXX
 
-BO_ 660 frmIviHealthDetailMsg: 2 INFOTAINMENT_GW
+BO_ 660 frmIviHealthDetailMsg: 2 IVI
  SG_ IviCpuLoad       : 0|8@1+ (1,0) [0|100] "%" VAL_SCENARIO_CTRL
  SG_ IviMemLoad       : 8|8@1+ (1,0) [0|100] "%" VAL_SCENARIO_CTRL
 
-BO_ 661 frmClusterSyncStateMsg: 2 IVI_GW
- SG_ ClusterSyncState : 0|4@1+ (1,0) [0|15] "" CLU_BASE_CTRL
- SG_ ClusterSyncError : 4|4@1+ (1,0) [0|15] "" CLU_BASE_CTRL
- SG_ ClusterSyncAge   : 8|8@1+ (1,0) [0|255] "ms" CLU_BASE_CTRL
+BO_ 661 frmClusterSyncStateMsg: 2 IVI
+ SG_ ClusterSyncState : 0|4@1+ (1,0) [0|15] "" CLU
+ SG_ ClusterSyncError : 4|4@1+ (1,0) [0|15] "" CLU
+ SG_ ClusterSyncAge   : 8|8@1+ (1,0) [0|255] "ms" CLU
 
 CM_ BO_ 675 "Flow_003 navigation context input.";
 CM_ BO_ 640 "Flow_008 cluster warning output.";

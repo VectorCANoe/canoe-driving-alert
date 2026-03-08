@@ -1,85 +1,51 @@
-﻿# Runtime Absorption Status (2026-03-09)
+# Runtime Absorption Status (2026-03-09)
 
-## Purpose
-This note fixes the Dev1 runtime absorption boundary after the first OEM ECU consolidation wave.
-It exists to prevent unnecessary merges in the `CGW/Infra` layer and to separate:
-- absorbed implementation modules
-- runtime anchors that must remain split
-- GUI cleanup items that require CANoe GUI work later
+## Final status
 
-## Absorption Completed
+Wrapper absorption for the current runtime wave is complete.
 
-### BCM
-- runtime anchor: `BODY_GW`
-- absorbed modules:
-  - `HAZARD_CTRL`
-  - `WINDOW_CTRL`
-  - `DRV_STATE_MGR`
-  - `AMBIENT_CTRL`
+### Absorbed into `BCM`
+- hazard handling
+- window command handling
+- driver-state forwarding
+- ambient output handling
 
-### IVI
-- runtime anchor: `IVI_GW`
-- absorbed modules:
-  - `NAV_CTX_MGR`
-  - `INFOTAINMENT_GW`
+### Absorbed into `IVI`
+- infotainment gateway ingress
+- navigation context handling
 
-### CLUSTER
-- runtime anchor: `CLU_HMI_CTRL`
-- absorbed modules:
-  - `CLU_BASE_CTRL`
+### Absorbed into `CLU`
+- baseline cluster display helper
 
-### V2X
-- runtime anchor: `EMS_ALERT_RX`
-- absorbed modules:
-  - `EMS_POLICE_TX`
-  - `EMS_AMB_TX`
+### Absorbed into `V2X`
+- police dispatch producer
+- ambulance dispatch producer
 
-### ADAS
-- runtime anchor: `ADAS_WARN_CTRL`
-- absorbed modules:
-  - `WARN_ARB_MGR`
+### Absorbed into `ADAS`
+- warning arbitration helper
 
-## Runtime Anchors To Keep Split
-The following nodes are not merge targets in the current wave.
-They are retained because they carry a distinct runtime responsibility.
+## Active runtime anchors to keep split
 
-| Runtime Node | Surface ECU | Why It Stays Split |
-| --- | --- | --- |
-| `CHS_GW` | `CHASSIS_DOMAIN_CTRL` | chassis-domain normalization, state synthesis, and chassis diagnostic boundary |
-| `DOMAIN_ROUTER` | `PT_DOMAIN_CTRL` | powertrain-domain routing policy, drive mode, and powertrain relay |
-| `DOMAIN_BOUNDARY_MGR` | `DOMAIN_BOUNDARY_CTRL` | cross-domain health, e2e state, and fail-safe authority |
-| `ETH_SW` | `ETH_PATH_MONITOR` | Ethernet-path freshness and health monitor |
-| `ENG_CTRL` | `ECM` | powertrain owner runtime |
-| `TCM` | `TCM` | transmission owner runtime |
-| `ACCEL_CTRL` | `VCU` | acceleration command owner |
-| `BRK_CTRL` | `ESP` | brake command owner |
-| `STEER_CTRL` | `EPS` | steering command owner |
-| `VAL_SCENARIO_CTRL` | `VALIDATION_HARNESS` | scenario orchestration harness |
-| `VAL_BASELINE_CTRL` | `VALIDATION_HARNESS` | baseline result aggregation harness |
+| Runtime anchor | Reason |
+| --- | --- |
+| `EMS` | engine management owner |
+| `TCU` | transmission owner |
+| `VCU` | propulsion / accel command owner |
+| `ESC` | brake / stability owner |
+| `MDPS` | steering owner |
+| `CHGW` | chassis ingress normalization, synthesis, and chassis diag boundary |
+| `PTGW` | powertrain routing policy and drive-mode boundary |
+| `CGW` | cross-domain health, fail-safe, and boundary authority |
+| `ETHM` | backbone freshness monitor |
+| `BCM` | body output owner |
+| `IVI` | infotainment output owner |
+| `CLU` | cluster output owner |
+| `ADAS` | integrated risk / warning / assist decision owner |
+| `V2X` | integrated V2X ingress / emergency context owner |
+| `VAL_SCENARIO_CTRL` | validation orchestrator |
+| `VAL_BASELINE_CTRL` | validation result aggregator |
 
-## GUI Cleanup Queue
-These wrappers remain in runtime only because Dev1 must not patch CANoe `.cfg` directly.
-They should be removed or hidden from the GUI surface after logical ECU grouping is finalized.
-
-- `HAZARD_CTRL`
-- `WINDOW_CTRL`
-- `DRV_STATE_MGR`
-- `AMBIENT_CTRL`
-- `INFOTAINMENT_GW`
-- `NAV_CTX_MGR`
-- `CLU_BASE_CTRL`
-- `EMS_POLICE_TX`
-- `EMS_AMB_TX`
-- `WARN_ARB_MGR`
-
-## Next Dev1 Step
-Move from absorption to expansion.
-
-1. Keep the runtime anchors above intact.
-2. Add new placeholder/light ECU nodes only where the OEM surface inventory needs breadth.
-3. Implement deep logic only in the fixed active runtime set.
-
-## Non-Overlap Rule With Dev2
-- Dev1: `canoe/` runtime absorption, new ECU runtime anchors, native CANoe tests
-- Dev2: `scripts/`, `product/sdv_operator/`, evidence packaging, CI/Jenkins integration
-- Docs: `driving-situation-alert/`
+## Current policy
+- absorb helper/runtime-wrapper nodes
+- keep ECU anchors and infrastructure anchors split
+- do not add new ECUs until this anchor set is stable in GUI and compile flow

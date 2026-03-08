@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <systemvariables version="4">
   <namespace name="Chassis" comment="" interface="">
     <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="km/h" name="vehicleSpeed" comment="Panel input speed" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="255" maxValuePhys="255"/>
@@ -24,20 +24,20 @@
   </namespace>
 
   <namespace name="Core" comment="" interface="">
-    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="km/h" name="vehicleSpeedNorm" comment="Normalized speed from CHS_GW" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="255" maxValuePhys="255"/>
-    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="driveStateNorm" comment="Normalized drive state from CHS_GW" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="3" maxValuePhys="3"/>
-    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="steeringInputNorm" comment="Normalized steering from CHS_GW" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1"/>
-    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="km/h" name="speedLimitNorm" comment="Normalized speed limit from NAV_CTX_MGR" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="255" maxValuePhys="255"/>
-    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="baseZoneContext" comment="Computed zone context from NAV_CTX_MGR" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="255" maxValuePhys="255"/>
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="km/h" name="vehicleSpeedNorm" comment="Normalized speed from CHGW" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="255" maxValuePhys="255"/>
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="driveStateNorm" comment="Normalized drive state from CHGW" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="3" maxValuePhys="3"/>
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="steeringInputNorm" comment="Normalized steering from CHGW" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1"/>
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="km/h" name="speedLimitNorm" comment="Normalized speed limit from IVI" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="255" maxValuePhys="255"/>
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="baseZoneContext" comment="Computed zone context from IVI" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="255" maxValuePhys="255"/>
     <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="warningState" comment="ADAS warning state" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="255" maxValuePhys="255"/>
-    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="emergencyContext" comment="Emergency context from EMS_ALERT_RX" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="255" maxValuePhys="255"/>
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="emergencyContext" comment="Emergency context from V2X" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="255" maxValuePhys="255"/>
     <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="selectedAlertLevel" comment="Arbiter selected alert level" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="7" maxValuePhys="7"/>
     <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="selectedAlertType" comment="Arbiter selected alert type" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="7" maxValuePhys="7"/>
     <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="timeoutClear" comment="Timeout clear flag" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1"/>
     <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="proximityRiskLevel" comment="Emergency proximity risk level (0..100)" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="100" maxValuePhys="100"/>
     <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="decelAssistReq" comment="Deceleration assist request: 0=off 1=active" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1"/>
     <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="failSafeMode" comment="Fail-safe mode: 0=normal 1=degraded 2=blocked" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="2" maxValuePhys="2"/>
-    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="%" name="brakePedalNorm" comment="Normalized brake pedal input from CHS_GW" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="100" maxValuePhys="100"/>
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="%" name="brakePedalNorm" comment="Normalized brake pedal input from CHGW" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="100" maxValuePhys="100"/>
     <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="objectTrackValid" comment="Object track valid flag (Req_130/131/136)" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1"/>
     <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="m" name="objectRange" comment="Representative risk object relative range (Req_130)" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="500" maxValuePhys="500"/>
     <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="km/h" name="objectRelSpeed" comment="Representative risk object relative speed (Req_130/133)" bitcount="32" isSigned="true" encoding="65001" type="int" minValue="-200" minValuePhys="-200" maxValue="200" maxValuePhys="200"/>
@@ -123,3 +123,4 @@
     <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="activeAlertType" comment="Mirrored selected alert type for renderer" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="7" maxValuePhys="7"/>
   </namespace>
 </systemvariables>
+

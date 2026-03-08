@@ -1,4 +1,4 @@
-﻿# B-PLAN POC (After A Complete)
+# B-PLAN POC (After A Complete)
 
 ## A안 현황 요약 (현재 기준)
 - 상태: A안 핵심 체인(입력→판단→중재→출력) 동작/시연 가능

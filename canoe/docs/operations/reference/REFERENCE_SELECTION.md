@@ -37,7 +37,7 @@ Rule:
 - `canoe/reference/oss_panels/*` full-project migration is out of scope.
 - Keep project architecture unchanged:
   - CAPL = decision/arbitration
-  - IVI_GW/Panel/Unity = renderer adapter only
+  - IVI/Panel/Unity = renderer adapter only
 
 ## 5) CLI/Verification Link
 

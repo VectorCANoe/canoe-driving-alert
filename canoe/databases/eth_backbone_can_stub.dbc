@@ -30,70 +30,70 @@ NS_ :
 
 BS_:
 
-BU_: EMS_POLICE_TX EMS_AMB_TX EMS_ALERT_RX ETH_SW WARN_ARB_MGR ADAS_WARN_CTRL NAV_CTX_MGR IVI_GW CHS_GW VAL_SCENARIO_CTRL DOMAIN_BOUNDARY_MGR Vector__XXX
+BU_: V2X V2X V2X ETHM ADAS ADAS IVI IVI CHGW VAL_SCENARIO_CTRL CGW Vector__XXX
 
 BO_ 448 frmEmergencyBroadcastMsg: 4 Vector__XXX
- SG_ VehicleType  : 0|4@1+  (1,0) [0|15]  ""    EMS_ALERT_RX
- SG_ Status       : 4|2@1+  (1,0) [0|3]   ""    EMS_ALERT_RX
+ SG_ VehicleType  : 0|4@1+  (1,0) [0|15]  ""    V2X
+ SG_ Status       : 4|2@1+  (1,0) [0|3]   ""    V2X
  SG_ Reserved0    : 6|2@1+  (1,0) [0|0]   ""    Vector__XXX
- SG_ SourceId     : 8|8@1+  (1,0) [0|255] ""    EMS_ALERT_RX
- SG_ EtaSeconds   : 16|8@1+ (1,0) [0|255] "s"   EMS_ALERT_RX
- SG_ Direction    : 24|4@1+ (1,0) [0|15]  ""    EMS_ALERT_RX
+ SG_ SourceId     : 8|8@1+  (1,0) [0|255] ""    V2X
+ SG_ EtaSeconds   : 16|8@1+ (1,0) [0|255] "s"   V2X
+ SG_ Direction    : 24|4@1+ (1,0) [0|15]  ""    V2X
  SG_ Reserved1    : 28|4@1+ (1,0) [0|0]   ""    Vector__XXX
 
-BO_ 450 frmEmergencyMonitorMsg: 2 EMS_ALERT_RX
- SG_ EmergencyContext : 0|8@1+ (1,0) [0|255] "" VAL_SCENARIO_CTRL,CHS_GW
- SG_ TimeoutClearMon  : 8|1@1+ (1,0) [0|1]   "" VAL_SCENARIO_CTRL,CHS_GW
+BO_ 450 frmEmergencyMonitorMsg: 2 V2X
+ SG_ EmergencyContext : 0|8@1+ (1,0) [0|255] "" VAL_SCENARIO_CTRL,CHGW
+ SG_ TimeoutClearMon  : 8|1@1+ (1,0) [0|1]   "" VAL_SCENARIO_CTRL,CHGW
  SG_ Reserved0        : 9|7@1+ (1,0) [0|0]   "" Vector__XXX
 
-BO_ 456 ethObjectSafetyStateMsg: 4 DOMAIN_BOUNDARY_MGR
- SG_ ObjectConfidence      : 0|7@1+   (1,0) [0|100] "%" WARN_ARB_MGR,VAL_SCENARIO_CTRL,EMS_ALERT_RX
- SG_ ObjectEventCode       : 7|16@1+  (1,0) [0|65535] "" WARN_ARB_MGR,VAL_SCENARIO_CTRL,EMS_ALERT_RX
- SG_ ObjectFailSafeMode    : 23|2@1+  (1,0) [0|2] "" WARN_ARB_MGR,VAL_SCENARIO_CTRL,EMS_ALERT_RX
- SG_ ObjectTrackValid      : 25|1@1+  (1,0) [0|1] "" WARN_ARB_MGR,VAL_SCENARIO_CTRL,EMS_ALERT_RX
+BO_ 456 ethObjectSafetyStateMsg: 4 CGW
+ SG_ ObjectConfidence      : 0|7@1+   (1,0) [0|100] "%" ADAS,VAL_SCENARIO_CTRL,V2X
+ SG_ ObjectEventCode       : 7|16@1+  (1,0) [0|65535] "" ADAS,VAL_SCENARIO_CTRL,V2X
+ SG_ ObjectFailSafeMode    : 23|2@1+  (1,0) [0|2] "" ADAS,VAL_SCENARIO_CTRL,V2X
+ SG_ ObjectTrackValid      : 25|1@1+  (1,0) [0|1] "" ADAS,VAL_SCENARIO_CTRL,V2X
  SG_ Reserved0             : 26|6@1+  (1,0) [0|0] "" Vector__XXX
 
-BO_ 273 ethFailSafeStateMsg: 2 DOMAIN_BOUNDARY_MGR
- SG_ DomainPathStatus : 0|2@1+ (1,0) [0|2] "" WARN_ARB_MGR,VAL_SCENARIO_CTRL
- SG_ E2eHealthState   : 2|2@1+ (1,0) [0|2] "" WARN_ARB_MGR,VAL_SCENARIO_CTRL
- SG_ FailSafeMode     : 4|2@1+ (1,0) [0|2] "" WARN_ARB_MGR,VAL_SCENARIO_CTRL
- SG_ BoundaryAlive    : 6|1@1+ (1,0) [0|1] "" WARN_ARB_MGR,VAL_SCENARIO_CTRL
+BO_ 273 ethFailSafeStateMsg: 2 CGW
+ SG_ DomainPathStatus : 0|2@1+ (1,0) [0|2] "" ADAS,VAL_SCENARIO_CTRL
+ SG_ E2eHealthState   : 2|2@1+ (1,0) [0|2] "" ADAS,VAL_SCENARIO_CTRL
+ SG_ FailSafeMode     : 4|2@1+ (1,0) [0|2] "" ADAS,VAL_SCENARIO_CTRL
+ SG_ BoundaryAlive    : 6|1@1+ (1,0) [0|1] "" ADAS,VAL_SCENARIO_CTRL
  SG_ Reserved0        : 7|9@1+ (1,0) [0|0] "" Vector__XXX
 
-BO_ 1296 ethVehicleStateMsg: 6 ETH_SW
- SG_ DriveState       : 0|2@1+  (1,0) [0|3]   ""    WARN_ARB_MGR,VAL_SCENARIO_CTRL,ADAS_WARN_CTRL
- SG_ VehicleSpeed     : 8|8@1+  (1,0) [0|255] "km/h" WARN_ARB_MGR,VAL_SCENARIO_CTRL,ADAS_WARN_CTRL
- SG_ BrakePedalNorm   : 16|7@1+ (1,0) [0|100] "%"   WARN_ARB_MGR,VAL_SCENARIO_CTRL
- SG_ TurnLampState    : 23|2@1+ (1,0) [0|3]   ""    WARN_ARB_MGR,VAL_SCENARIO_CTRL
- SG_ SeatBeltWarnLvl  : 25|2@1+ (1,0) [0|3]   ""    WARN_ARB_MGR,VAL_SCENARIO_CTRL
+BO_ 1296 ethVehicleStateMsg: 6 ETHM
+ SG_ DriveState       : 0|2@1+  (1,0) [0|3]   ""    ADAS,VAL_SCENARIO_CTRL,ADAS
+ SG_ VehicleSpeed     : 8|8@1+  (1,0) [0|255] "km/h" ADAS,VAL_SCENARIO_CTRL,ADAS
+ SG_ BrakePedalNorm   : 16|7@1+ (1,0) [0|100] "%"   ADAS,VAL_SCENARIO_CTRL
+ SG_ TurnLampState    : 23|2@1+ (1,0) [0|3]   ""    ADAS,VAL_SCENARIO_CTRL
+ SG_ SeatBeltWarnLvl  : 25|2@1+ (1,0) [0|3]   ""    ADAS,VAL_SCENARIO_CTRL
  SG_ Reserved0        : 27|21@1+ (1,0) [0|0]  ""    Vector__XXX
 
-BO_ 1297 ethSteeringMsg: 4 ETH_SW
- SG_ SteeringInput    : 0|1@1+   (1,0) [0|1]    ""    WARN_ARB_MGR,VAL_SCENARIO_CTRL,ADAS_WARN_CTRL
- SG_ SteeringAngleDeg : 8|12@1-  (1,0) [-720|720] "deg" WARN_ARB_MGR,VAL_SCENARIO_CTRL
- SG_ SteeringQuality  : 20|2@1+  (1,0) [0|3]    ""    WARN_ARB_MGR,VAL_SCENARIO_CTRL
+BO_ 1297 ethSteeringMsg: 4 ETHM
+ SG_ SteeringInput    : 0|1@1+   (1,0) [0|1]    ""    ADAS,VAL_SCENARIO_CTRL,ADAS
+ SG_ SteeringAngleDeg : 8|12@1-  (1,0) [-720|720] "deg" ADAS,VAL_SCENARIO_CTRL
+ SG_ SteeringQuality  : 20|2@1+  (1,0) [0|3]    ""    ADAS,VAL_SCENARIO_CTRL
  SG_ Reserved0        : 22|10@1+ (1,0) [0|0]    ""    Vector__XXX
 
-BO_ 1298 ethNavContextMsg: 6 ETH_SW
- SG_ RoadZone         : 0|3@1+   (1,0) [0|7]    ""    WARN_ARB_MGR,VAL_SCENARIO_CTRL,NAV_CTX_MGR
- SG_ NavDirection     : 3|3@1+   (1,0) [0|7]    ""    WARN_ARB_MGR,VAL_SCENARIO_CTRL,NAV_CTX_MGR
- SG_ ZoneDistance     : 8|8@1+   (1,0) [0|255]  "m"   WARN_ARB_MGR,VAL_SCENARIO_CTRL,NAV_CTX_MGR
- SG_ SpeedLimit       : 16|8@1+  (1,0) [0|255]  "km/h" WARN_ARB_MGR,VAL_SCENARIO_CTRL,NAV_CTX_MGR
+BO_ 1298 ethNavContextMsg: 6 ETHM
+ SG_ RoadZone         : 0|3@1+   (1,0) [0|7]    ""    ADAS,VAL_SCENARIO_CTRL,IVI
+ SG_ NavDirection     : 3|3@1+   (1,0) [0|7]    ""    ADAS,VAL_SCENARIO_CTRL,IVI
+ SG_ ZoneDistance     : 8|8@1+   (1,0) [0|255]  "m"   ADAS,VAL_SCENARIO_CTRL,IVI
+ SG_ SpeedLimit       : 16|8@1+  (1,0) [0|255]  "km/h" ADAS,VAL_SCENARIO_CTRL,IVI
  SG_ Reserved0        : 24|24@1+ (1,0) [0|0]    ""    Vector__XXX
 
-CM_ BO_ 448 "E100: Emergency vehicle broadcast. Sent by EMS_POLICE_TX (type=1) or EMS_AMB_TX (type=2) on ETH backbone (ch5). Received by EMS_ALERT_RX for priority arbitration. STUB: This file substitutes CANoe.Ethernet backbone using CAN ch5. Delete this file and replace with Ethernet network when CANoe.Ethernet license is available. Interface spec: 0303_Communication_Specification.md E100.";
+CM_ BO_ 448 "E100: Emergency vehicle broadcast. Sent by V2X (type=1) or V2X (type=2) on ETH backbone (ch5). Received by V2X for priority arbitration. STUB: This file substitutes CANoe.Ethernet backbone using CAN ch5. Delete this file and replace with Ethernet network when CANoe.Ethernet license is available. Interface spec: 0303_Communication_Specification.md E100.";
 CM_ SG_ 448 VehicleType  "1=POLICE 2=AMBULANCE";
 CM_ SG_ 448 Status       "0=CLEAR 1=ACTIVE";
 CM_ SG_ 448 SourceId     "Unique vehicle source ID for tiebreaker.";
 CM_ SG_ 448 EtaSeconds   "Estimated time of arrival in seconds. Lower = higher priority.";
 CM_ SG_ 448 Direction    "0=UNKNOWN 1=FRONT 2=REAR 3=SIDE";
-CM_ BO_ 450 "E562: Emergency monitor shadow. Produced by EMS_ALERT_RX on ETH backbone. Moved from chassis_can v2 architecture refactor.";
+CM_ BO_ 450 "E562: Emergency monitor shadow. Produced by V2X on ETH backbone. Moved from chassis_can v2 architecture refactor.";
 CM_ SG_ 450 EmergencyContext "Active emergency type mirrored from Core sysvar.";
 CM_ SG_ 450 TimeoutClearMon  "1=timeout clear pulse active.";
-CM_ BO_ 456 "E216: Object safety state frame. Produced by DOMAIN_BOUNDARY_MGR for confidence/failsafe/event trace.";
+CM_ BO_ 456 "E216: Object safety state frame. Produced by CGW for confidence/failsafe/event trace.";
 CM_ SG_ 456 ObjectEventCode "Object alert event code (Req_138 traceability).";
 CM_ SG_ 456 ObjectFailSafeMode "Object path fail-safe mode mirror.";
-CM_ BO_ 273 "E789: Fail-safe state frame. Produced by DOMAIN_BOUNDARY_MGR (Req_124).";
+CM_ BO_ 273 "E789: Fail-safe state frame. Produced by CGW (Req_124).";
 CM_ SG_ 273 DomainPathStatus "0=normal 1=degraded 2=failed.";
 CM_ SG_ 273 E2eHealthState "0=failed 1=degraded 2=healthy.";
 CM_ SG_ 273 FailSafeMode "0=normal 1=degraded 2=blocked.";

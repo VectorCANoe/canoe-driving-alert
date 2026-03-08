@@ -9,7 +9,7 @@
 - ETH 포트: **5000 고정**
 - ETH 프레임: **실제 UdpSocket 사용**, sysvar 경유 금지
   - 대상: `0x510`, `0x511`, `0x512`, `E100`, `E200`
-- `BODY_GW`, `IVI_GW`: **udpReceive(5000) -> CAN 송신** (sysvar 브리지 금지)
+- `BCM`, `IVI`: **udpReceive(5000) -> CAN 송신** (sysvar 브리지 금지)
 
 ## 1) 메시지 페이로드 규격 (고정)
 - `E100` DLC=4
@@ -41,8 +41,8 @@
 
 예시:
 ```c
-write("[EMS_ALERT_RX] rx E100 type=%d dir=%d eta=%d", type, dir, eta);
-write("[WARN_ARB_MGR] selected level=%d type=%d", level, alertType);
+write("[V2X] rx E100 type=%d dir=%d eta=%d", type, dir, eta);
+write("[ADAS] selected level=%d type=%d", level, alertType);
 ```
 
 ## 5) UdpSocket 사용 패턴
@@ -55,9 +55,9 @@ write("[WARN_ARB_MGR] selected level=%d type=%d", level, alertType);
 - [ ] UDP 포트 5000 하드코딩 반영
 - [ ] E100/E200 packing 규격 일치
 - [ ] ETH 경로에서 sysvar 경유 없음
-- [ ] BODY_GW/IVI_GW가 udpReceive 기반
+- [ ] BCM/IVI가 udpReceive 기반
 - [ ] watchdog 1000ms 동작
-- [ ] WARN_ARB_MGR 우선순위(Ambulance > Police > Zone > Idle)
+- [ ] ADAS 우선순위(Ambulance > Police > Zone > Idle)
 - [ ] FZ_001~007 시나리오 재현 가능
 
 ## 7) 검증 기준

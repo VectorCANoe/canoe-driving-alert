@@ -7,7 +7,7 @@
 - Retire `SDV_Demo_Stage.xvp` from active feature development
 
 ## Non-Negotiable Boundaries
-- Decision and arbitration remain in CAPL (`WARN_ARB_MGR`, `ADAS_WARN_CTRL`)
+- Decision and arbitration remain in CAPL (`ADAS`, `ADAS`)
 - XVP renderer uses derived outputs only (`UiRender::*`)
 - Do not add priority/timeout logic in panels
 - Perform panel edits in CANoe GUI only
@@ -99,3 +99,4 @@
 ## Note on Encoding
 - Keep code/script content in English ASCII where possible
 - Use UTF-8 for all text files
+

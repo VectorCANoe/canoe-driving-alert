@@ -30,15 +30,15 @@ This report records the first-pass Dev1 audit decisions for the active CANoe SIL
 | A-001 | `frmEmergencyBroadcastMsg (0x1C0)` ownership | Treat as logical dual-source emergency contract in SIL stub. Do not force a fake single runtime owner into the stub DBC. | Closed |
 | A-002 | `ethSelectedAlertMsg` downstream distribution | Active path still bypasses the logical Ethernet contract and reads `Core::*` directly in output gateways. Keep as an accepted SIL shortcut now, but track it as cleanup work before real Ethernet cutover. | Backlog |
 | A-003 | `Comm_106 / frmBaseTestResultMsg` | Runtime is already single-owner correct. Residual mismatch is docs-only. | Docs Request |
-| A-004 | `ETH_SW` role | `ETH_SW` is currently a health/freshness monitor, not a forwarding router. Keep this explicit in reviews and cutover planning. | Closed |
-| A-005 | `EMS_ALERT_RX` fallback path | `on message frmEmergencyBroadcastMsg` is the active primary path. `V2X::*` polling remains as compatibility fallback and should be retired before or at Ethernet cutover. | Backlog |
+| A-004 | `ETHM` role | `ETHM` is currently a health/freshness monitor, not a forwarding router. Keep this explicit in reviews and cutover planning. | Closed |
+| A-005 | `V2X` fallback path | `on message frmEmergencyBroadcastMsg` is the active primary path. `V2X::*` polling remains as compatibility fallback and should be retired before or at Ethernet cutover. | Backlog |
 | A-006 | `Test::*` controls in product-facing nodes | Active usage is validation-only and acceptable, but `0304` does not currently document the matching variables. | Docs Request |
-| A-007 | `domainBoundaryStatus` writer duplication | Redundant mirror write in `DOMAIN_ROUTER` removed. `DOMAIN_BOUNDARY_MGR` is now the sole active owner. | Closed |
-| A-008 | `alertHistoryCount` semantic collision | `EMS_ALERT_RX` counter increment removed. `CLU_HMI_CTRL` remains the active owner for query/display history count. | Closed |
-| A-009 | output mirror duplication (`IVI_GW` vs `CLU_HMI_CTRL`) | `IVI_GW` now remains the cluster/HMI frame producer, while `CLU_HMI_CTRL` is the sole active writer for mirrored `CoreState::*` and final `Cluster::warningTextCode` display state. | Closed |
+| A-007 | `domainBoundaryStatus` writer duplication | Redundant mirror write in `PTGW` removed. `CGW` is now the sole active owner. | Closed |
+| A-008 | `alertHistoryCount` semantic collision | `V2X` counter increment removed. `CLU` remains the active owner for query/display history count. | Closed |
+| A-009 | output mirror duplication (`IVI` vs `CLU`) | `IVI` now remains the cluster/HMI frame producer, while `CLU` is the sole active writer for mirrored `CoreState::*` and final `Cluster::warningTextCode` display state. | Closed |
 | A-010 | guarded override / validation exception writers | Some duplicate writers are intentional: fail-safe override and harness object injection. Treat as controlled exceptions, not immediate defects. | Closed |
 | A-011 | `VAL_SCENARIO_CTRL` delayed timer residue | Scenario stop/switch paths did not cancel `tScenarioEval`, `tScenarioPhase2`, `tScenarioPhase3`, so delayed callbacks could still fire after reset or mode switch. Fixed in code. | Closed |
-| A-012 | timeout/reset/fail-safe control paths | `EMS_ALERT_RX`, `ADAS_WARN_CTRL`, `CLU_HMI_CTRL`, `DOMAIN_BOUNDARY_MGR` are structurally deterministic in the active profile after reviewing watchdog clear, hold-time, duplicate-popup guard, and fail-safe recompute paths. | Closed |
+| A-012 | timeout/reset/fail-safe control paths | `V2X`, `ADAS`, `CLU`, `CGW` are structurally deterministic in the active profile after reviewing watchdog clear, hold-time, duplicate-popup guard, and fail-safe recompute paths. | Closed |
 | A-013 | `timeNowInt64()` time-base consistency | Vector local help confirms `timeNowInt64()` returns nanoseconds and `timeNow()` returns 10 microseconds. Active profile was normalized to `getSimulationTimeMs()` for all ms-based thresholds. | Closed |
 | A-014 | observability baseline for Dev2 evidence | Active runtime already exposes enough state-change logging to explain scenario verdicts without adding broad debug noise. | Closed |
 
@@ -52,16 +52,16 @@ This report records the first-pass Dev1 audit decisions for the active CANoe SIL
 - DBC sender field is still `Vector__XXX`:
   - `canoe/databases/eth_backbone_can_stub.dbc`
 - Active runtime producers are:
-  - `canoe/src/capl/ems/EMS_POLICE_TX.can`
-  - `canoe/src/capl/ems/EMS_AMB_TX.can`
+  - `canoe/src/capl/ems/V2X.can`
+  - `canoe/src/capl/ems/V2X.can`
 - Logical Ethernet contract already defines dual-source Tx:
   - `canoe/docs/operations/ETH_INTERFACE_CONTRACT.md`
 
 **Decision**
 - This is not a normal single-owner message in the SIL stub.
 - The logical contract owner is `EMS_ALERT` with two implementation producers:
-  - `EMS_POLICE_TX`
-  - `EMS_AMB_TX`
+  - `V2X`
+  - `V2X`
 - Forcing one fake sender into the stub DBC would hide the real architecture.
 
 **Action**
@@ -75,17 +75,17 @@ This report records the first-pass Dev1 audit decisions for the active CANoe SIL
 
 **Evidence**
 - Active producer:
-  - `canoe/src/capl/logic/WARN_ARB_MGR.can`
+  - `canoe/src/capl/logic/ADAS.can`
   - `output(mSelected);`
 - Contract receiver path in docs:
-  - `BODY_GW, IVI_GW`
+  - `BCM, IVI`
   - `driving-situation-alert/0302_NWflowDef.md`
   - `driving-situation-alert/0303_Communication_Specification.md`
 - Active downstream consumers still read:
   - `@Core::selectedAlertLevel`
   - `@Core::selectedAlertType`
-  - `canoe/src/capl/output/BODY_GW.can`
-  - `canoe/src/capl/output/IVI_GW.can`
+  - `canoe/src/capl/output/BCM.can`
+  - `canoe/src/capl/output/IVI.can`
 
 **Decision**
 - This is not a current SIL defect.
@@ -121,19 +121,19 @@ This report records the first-pass Dev1 audit decisions for the active CANoe SIL
 
 ---
 
-### A-004. `ETH_SW` role
+### A-004. `ETHM` role
 
 **Evidence**
-- `ETH_SW` tracks age/freshness:
+- `ETHM` tracks age/freshness:
   - `frmVehicleStateCanMsg`
   - `frmNavContextCanMsg`
   - `frmSteeringCanMsg`
   - `frmEmergencyMonitorMsg`
 - No forwarding output exists in the active file:
-  - `canoe/src/capl/network/ETH_SW.can`
+  - `canoe/src/capl/network/ETHM.can`
 
 **Decision**
-- `ETH_SW` is a SIL health monitor for the logical Ethernet path, not a true forwarding switch in the current runtime.
+- `ETHM` is a SIL health monitor for the logical Ethernet path, not a true forwarding switch in the current runtime.
 
 **Action**
 - Keep this explicit in:
@@ -143,7 +143,7 @@ This report records the first-pass Dev1 audit decisions for the active CANoe SIL
 
 ---
 
-### A-005. `EMS_ALERT_RX` fallback path
+### A-005. `V2X` fallback path
 
 **Evidence**
 - Primary path:
@@ -151,7 +151,7 @@ This report records the first-pass Dev1 audit decisions for the active CANoe SIL
 - Compatibility fallback:
   - `on timer tRxCycle`
   - polls `@V2X::*`
-  - `canoe/src/capl/logic/EMS_ALERT_RX.can`
+  - `canoe/src/capl/logic/V2X.can`
 
 **Decision**
 - Primary active path is already message-driven.
@@ -175,9 +175,9 @@ This report records the first-pass Dev1 audit decisions for the active CANoe SIL
   - `@Test::historyQueryOffset`
   - `@Test::historyQueryCode`
 - Active files:
-  - `canoe/src/capl/output/BODY_GW.can`
-  - `canoe/src/capl/output/IVI_GW.can`
-  - `canoe/src/capl/output/CLU_HMI_CTRL.can`
+  - `canoe/src/capl/output/BCM.can`
+  - `canoe/src/capl/output/IVI.can`
+  - `canoe/src/capl/output/CLU.can`
 - Matching variables exist in:
   - `canoe/project/sysvars/project.sysvars`
 - Current search found no matching rows in:
@@ -190,9 +190,9 @@ This report records the first-pass Dev1 audit decisions for the active CANoe SIL
 
 **Action**
 - Request `0304` update for the active `Test::*` variables used by:
-  - `BODY_GW`
-  - `IVI_GW`
-  - `CLU_HMI_CTRL`
+  - `BCM`
+  - `IVI`
+  - `CLU`
 
 ---
 
@@ -200,50 +200,50 @@ This report records the first-pass Dev1 audit decisions for the active CANoe SIL
 
 **Evidence**
 - Original active writers:
-  - `DOMAIN_BOUNDARY_MGR`
-  - `DOMAIN_ROUTER`
-- `DOMAIN_ROUTER` only read `domainBoundaryStatus`, copied it into a local variable, then wrote the same value back.
+  - `CGW`
+  - `PTGW`
+- `PTGW` only read `domainBoundaryStatus`, copied it into a local variable, then wrote the same value back.
 
 **Decision**
 - This was redundant and unnecessary.
-- `DOMAIN_BOUNDARY_MGR` must remain the sole active owner.
+- `CGW` must remain the sole active owner.
 
 **Action**
 - Removed the redundant `@CoreState::domainBoundaryStatus` write from:
-  - `canoe/src/capl/ecu/DOMAIN_ROUTER.can`
-  - `canoe/cfg/channel_assign/Powertrain/DOMAIN_ROUTER.can`
+  - `canoe/src/capl/ecu/PTGW.can`
+  - `canoe/cfg/channel_assign/Powertrain/PTGW.can`
 
 ---
 
 ### A-008. `alertHistoryCount` semantic collision
 
 **Evidence**
-- `EMS_ALERT_RX` incremented `CoreState::alertHistoryCount` on alert event trace.
-- `CLU_HMI_CTRL` incremented the same variable on display/query history push.
+- `V2X` incremented `CoreState::alertHistoryCount` on alert event trace.
+- `CLU` incremented the same variable on display/query history push.
 - The variable meaning in `project.sysvars` is query/history oriented.
 
 **Decision**
 - `alertHistoryCount` should belong to the display/query history owner.
-- `EMS_ALERT_RX` already has dedicated trace fields:
+- `V2X` already has dedicated trace fields:
   - `lastAlertEventType`
   - `lastAlertEventLevel`
   - `lastAlertEventCode`
   - `lastAlertEventPhase`
-- The extra count increment in `EMS_ALERT_RX` created a semantic collision.
+- The extra count increment in `V2X` created a semantic collision.
 
 **Action**
 - Removed the `alertHistoryCount` increment from:
-  - `canoe/src/capl/logic/EMS_ALERT_RX.can`
-  - `canoe/cfg/channel_assign/ETH_Backbone/EMS_ALERT_RX.can`
-- `CLU_HMI_CTRL` remains the active owner of `alertHistoryCount`.
+  - `canoe/src/capl/logic/V2X.can`
+  - `canoe/cfg/channel_assign/ETH_Backbone/V2X.can`
+- `CLU` remains the active owner of `alertHistoryCount`.
 
 ---
 
-### A-009. output mirror duplication (`IVI_GW` vs `CLU_HMI_CTRL`)
+### A-009. output mirror duplication (`IVI` vs `CLU`)
 
 **Evidence**
-- `IVI_GW` writes output-side `CoreState::*` mirrors at transmit time.
-- `CLU_HMI_CTRL` writes the same mirrors again on received cluster/HMI messages.
+- `IVI` writes output-side `CoreState::*` mirrors at transmit time.
+- `CLU` writes the same mirrors again on received cluster/HMI messages.
 - Affected mirrors include:
   - `themeMode`
   - `popupType`
@@ -258,17 +258,17 @@ This report records the first-pass Dev1 audit decisions for the active CANoe SIL
   - `clusterSyncState`
   - `clusterSyncSeq`
 - `Cluster::warningTextCode` was also written in both nodes:
-  - raw cluster warning output in `IVI_GW`
-  - final display/guarded code in `CLU_HMI_CTRL`
+  - raw cluster warning output in `IVI`
+  - final display/guarded code in `CLU`
 
 **Decision**
 - This was a real single-writer policy violation for output-side mirrors.
 - Active runtime ownership is now narrowed to:
-  - `IVI_GW` as message producer only
-  - `CLU_HMI_CTRL` as the sole mirror/display-state writer
+  - `IVI` as message producer only
+  - `CLU` as the sole mirror/display-state writer
 
 **Action**
-- Removed duplicate mirror writes from `IVI_GW`:
+- Removed duplicate mirror writes from `IVI`:
   - `themeMode`
   - `popupType`
   - `popupPriority`
@@ -281,8 +281,8 @@ This report records the first-pass Dev1 audit decisions for the active CANoe SIL
   - `clusterNotifPrio`
   - `clusterSyncState`
   - `clusterSyncSeq`
-- Removed raw `@Cluster::warningTextCode` write from `IVI_GW`.
-- `CLU_HMI_CTRL` remains the active owner of mirrored HMI/cluster state after message consumption.
+- Removed raw `@Cluster::warningTextCode` write from `IVI`.
+- `CLU` remains the active owner of mirrored HMI/cluster state after message consumption.
 
 ---
 
@@ -290,10 +290,10 @@ This report records the first-pass Dev1 audit decisions for the active CANoe SIL
 
 **Evidence**
 - `Core::decelAssistReq`
-  - `WARN_ARB_MGR` writes the normal decision
-  - `DOMAIN_BOUNDARY_MGR` forces clear under degraded/fail-safe conditions
+  - `ADAS` writes the normal decision
+  - `CGW` forces clear under degraded/fail-safe conditions
 - `Core::object*`
-  - `ADAS_WARN_CTRL` writes runtime object state
+  - `ADAS` writes runtime object state
   - `VAL_SCENARIO_CTRL` injects/reset test inputs for SIL harness scenarios
 
 **Decision**
@@ -343,14 +343,14 @@ This report records the first-pass Dev1 audit decisions for the active CANoe SIL
 ### A-012. timeout/reset/fail-safe control paths
 
 **Evidence**
-- `EMS_ALERT_RX`
+- `V2X`
   - watchdog clear sets `timeoutClear=1`, pulses `tTimeoutClearPulse`, and auto-clears back to `0`
-- `ADAS_WARN_CTRL`
+- `ADAS`
   - object hold-time uses `gLastObjectTrackRxMs` and `objectAlertHoldMs`
   - startup resets object-risk state
-- `CLU_HMI_CTRL`
+- `CLU`
   - duplicate-popup guard cancels on clear and recomputes on timer
-- `DOMAIN_BOUNDARY_MGR`
+- `CGW`
   - fail-safe recomputes every `100 ms`
   - degraded/force-fail-safe clears `decelAssistReq`
 
@@ -374,12 +374,12 @@ This report records the first-pass Dev1 audit decisions for the active CANoe SIL
     - return value: simulation time in `nanoseconds`
 - Active profile had mixed assumptions:
   - raw `timeNowInt64()` comparisons in:
-    - `WARN_ARB_MGR`
-    - `ADAS_WARN_CTRL`
-    - `EMS_ALERT_RX`
-    - `CLU_HMI_CTRL`
+    - `ADAS`
+    - `ADAS`
+    - `V2X`
+    - `CLU`
   - `/100000` conversion in:
-    - `DOMAIN_BOUNDARY_MGR`
+    - `CGW`
     - `VAL_SCENARIO_CTRL`
 
 **Decision**
@@ -395,11 +395,11 @@ This report records the first-pass Dev1 audit decisions for the active CANoe SIL
 - Added common helper:
   - `getSimulationTimeMs()`
 - Normalized active CAPL time usage to millisecond units in:
-  - `EMS_ALERT_RX`
-  - `ADAS_WARN_CTRL`
-  - `WARN_ARB_MGR`
-  - `CLU_HMI_CTRL`
-  - `DOMAIN_BOUNDARY_MGR`
+  - `V2X`
+  - `ADAS`
+  - `ADAS`
+  - `CLU`
+  - `CGW`
   - `VAL_SCENARIO_CTRL`
 - Left `v1_legacy` untouched.
 
@@ -411,20 +411,20 @@ This report records the first-pass Dev1 audit decisions for the active CANoe SIL
 - Scenario harness evidence:
   - `VAL_SCENARIO_CTRL` logs `EVIDENCE_IN` and `EVIDENCE_OUT`
 - Runtime decision logs:
-  - `ADAS_WARN_CTRL`
+  - `ADAS`
     - input filter validity
     - object event / TTC / confidence / hold
-  - `WARN_ARB_MGR`
+  - `ADAS`
     - context adjustment
     - stale/fallback state
     - decel-assist decision and release reason
-  - `DOMAIN_BOUNDARY_MGR`
+  - `CGW`
     - boundary alive transition
     - path / E2E / fail-safe transition
-  - `EMS_ALERT_RX`
+  - `V2X`
     - alert event phase
     - watchdog clear
-  - `CLU_HMI_CTRL`
+  - `CLU`
     - rendered warning clear / code / history query
 
 **Decision**
@@ -435,7 +435,7 @@ This report records the first-pass Dev1 audit decisions for the active CANoe SIL
   - fail-safe entry
   - renderer-visible result
   without adding broad continuous logging.
-- `BODY_GW` and `IVI_GW` remain low-verbosity by design; this is acceptable because they are output/mirror nodes and their externally visible state is already reflected elsewhere.
+- `BCM` and `IVI` remain low-verbosity by design; this is acceptable because they are output/mirror nodes and their externally visible state is already reflected elsewhere.
 
 **Action**
 - No code change required for P5 in this cycle.
@@ -477,12 +477,12 @@ This is the planned swap boundary at real Ethernet cutover.
 | `Chassis::*`, `Infotainment::*` input vars | harness/panel ingress for SIL | validation-only ingress namespace | Keep |
 | `V2X::*` primary emergency context | active runtime compatibility + EMS producer/receiver state | acceptable SIL shortcut for now | Keep, cutover cleanup still needed in fallback path |
 | `Body::*`, `Cluster::*`, `UiRender::*` | output mirror / renderer support | UI-debug support / output mirror | Keep |
-| `WARN_ARB_MGR -> Core::* -> BODY_GW/IVI_GW` | downstream alert distribution shortcut | cleanup target before Ethernet cutover | Track |
-| `INFOTAINMENT_GW -> Infotainment::* -> NAV_CTX_MGR` | nav context bridge | acceptable SIL shortcut for now | Track, no immediate refactor |
-| `CHS_GW -> Core::* -> ADAS_WARN_CTRL` | vehicle-state bridge into logic | acceptable SIL shortcut for now | Track, no immediate refactor |
-| `WARN_ARB_MGR -> Core::decelAssistReq` and `DOMAIN_BOUNDARY_MGR -> Core::decelAssistReq` | arbitration + fail-safe override | controlled exception | Keep |
-| `ADAS_WARN_CTRL -> Core::object*` and `VAL_SCENARIO_CTRL -> Core::object*` | runtime object state + harness injection/reset | controlled validation exception | Keep |
-| `IVI_GW -> CoreState::*` and `CLU_HMI_CTRL -> CoreState::*` | output mirror duplication | open cleanup target | Track |
+| `ADAS -> Core::* -> BCM/IVI` | downstream alert distribution shortcut | cleanup target before Ethernet cutover | Track |
+| `IVI -> Infotainment::* -> IVI` | nav context bridge | acceptable SIL shortcut for now | Track, no immediate refactor |
+| `CHGW -> Core::* -> ADAS` | vehicle-state bridge into logic | acceptable SIL shortcut for now | Track, no immediate refactor |
+| `ADAS -> Core::decelAssistReq` and `CGW -> Core::decelAssistReq` | arbitration + fail-safe override | controlled exception | Keep |
+| `ADAS -> Core::object*` and `VAL_SCENARIO_CTRL -> Core::object*` | runtime object state + harness injection/reset | controlled validation exception | Keep |
+| `IVI -> CoreState::*` and `CLU -> CoreState::*` | output mirror duplication | open cleanup target | Track |
 | `timeNowInt64()` raw vs `/100000` conversion | corrected to `getSimulationTimeMs()` in active profile | closed implementation item | Closed |
 
 Current conclusion:
@@ -500,7 +500,7 @@ These items should be recorded now and handed to the docs team together later.
 |---|---|---|
 | DSR-001 | `0303_Communication_Specification.md` | Fix residual `Comm_106 / frmBaseTestResultMsg` wording to match the active chain: `VAL_SCENARIO_CTRL -> frmTestResultMsg(0x2A5) -> VAL_BASELINE_CTRL -> frmBaseTestResultMsg(0x2A6)` |
 | DSR-002 | `0304_System_Variables.md` | Add active `Test::*` rows used in runtime: `displayModeSetting`, `alertVolumeSetting`, `seatBeltOverride`, `historyQueryOffset`, `historyQueryCode` |
-| DSR-003 | `0302_NWflowDef.md`, `0303_Communication_Specification.md` | When the team is ready, clarify that `ETH_SW` is a SIL health/freshness monitor in the active profile, not a forwarding Ethernet switch |
+| DSR-003 | `0302_NWflowDef.md`, `0303_Communication_Specification.md` | When the team is ready, clarify that `ETHM` is a SIL health/freshness monitor in the active profile, not a forwarding Ethernet switch |
 
 ---
 

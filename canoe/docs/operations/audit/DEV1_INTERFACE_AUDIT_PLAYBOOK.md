@@ -175,16 +175,16 @@ Classify each active SysVar path by boundary:
 - product behavior depends on validation-only input
 
 ### Current Review Targets
-- `WARN_ARB_MGR.can` reads many `Core::*` and `CoreState::*`
-- `ADAS_WARN_CTRL.can` writes object-risk states into `Core::*`
-- `BODY_GW.can`, `IVI_GW.can`, `CLU_HMI_CTRL.can` use `Test::*` overrides/settings
+- `ADAS.can` reads many `Core::*` and `CoreState::*`
+- `ADAS.can` writes object-risk states into `Core::*`
+- `BCM.can`, `IVI.can`, `CLU.can` use `Test::*` overrides/settings
 - `VAL_SCENARIO_CTRL.can` is the allowed harness-heavy writer
 
 ### Active Shortcut Hotspots
-- `CHS_GW -> Core::vehicleSpeedNorm -> ADAS_WARN_CTRL`
-- `INFOTAINMENT_GW -> Infotainment::roadZone -> NAV_CTX_MGR`
-- `WARN_ARB_MGR -> Core::selectedAlertLevel / selectedAlertType -> BODY_GW`
-- `WARN_ARB_MGR -> Core::selectedAlertLevel / selectedAlertType -> IVI_GW`
+- `CHGW -> Core::vehicleSpeedNorm -> ADAS`
+- `IVI -> Infotainment::roadZone -> IVI`
+- `ADAS -> Core::selectedAlertLevel / selectedAlertType -> BCM`
+- `ADAS -> Core::selectedAlertLevel / selectedAlertType -> IVI`
 
 These are not all equal:
 - stable domain CAN ingress can remain message-driven
@@ -274,7 +274,7 @@ Current first-pass findings:
    - Action: docs-side clarification required.
 
 2. `frmEmergencyBroadcastMsg (0x1C0)` still has a sender ownership ambiguity in DBC.
-   - Active runtime uses `EMS_POLICE_TX` and `EMS_AMB_TX`.
+   - Active runtime uses `V2X` and `V2X`.
    - Active DBC sender field is still `Vector__XXX`.
    - DBC comment explains the dual-source intent, but sender ownership is not explicit enough for the active ownership rule.
    - Action: Dev1 design decision required before docs-side closure.
@@ -299,9 +299,9 @@ Current first-pass findings:
    - Action: keep this distinction explicit in reviews and mentoring answers.
 
 6. SysVar audit should focus on `Test::*` usage in product-facing nodes:
-   - `BODY_GW`
-   - `IVI_GW`
-   - `CLU_HMI_CTRL`
+   - `BCM`
+   - `IVI`
+   - `CLU`
    - Matching variables exist in `project.sysvars`, but current `0304` coverage must be checked explicitly.
    - Missing `0304` rows are a docs issue, not an automatic code defect.
 

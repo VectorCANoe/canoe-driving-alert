@@ -40,8 +40,8 @@ This inventory is **not** equal to:
 
 | Surface ECU | Depth | Notes |
 |---|---|---|
-| `ECM` | Deep | engine control |
-| `TCM` | Deep | transmission control |
+| `EMS` | Deep | engine control |
+| `TCU` | Deep | transmission control |
 | `VCU` | Deep | longitudinal vehicle control |
 | `AWD_4WD` | Light | drivetrain torque split |
 | `BAT_BMS` | Light | battery / battery sensing |
@@ -52,8 +52,8 @@ This inventory is **not** equal to:
 
 | Surface ECU | Depth | Notes |
 |---|---|---|
-| `ESP` | Deep | brake / stability |
-| `EPS` | Deep | steering assist |
+| `ESC` | Deep | brake / stability |
+| `MDPS` | Deep | steering assist |
 | `ABS` | Light | braking sub-surface / wheel-speed family |
 | `EPB` | Light | electric parking brake |
 | `TPMS` | Light | tire pressure monitoring |
@@ -80,7 +80,7 @@ This inventory is **not** equal to:
 | Surface ECU | Depth | Notes |
 |---|---|---|
 | `IVI` | Deep | infotainment / navigation |
-| `CLUSTER` | Deep | cluster / warnings |
+| `CLU` | Deep | cluster / warnings |
 | `HUD` | Light | head-up display |
 | `TMU` | Light | telematics / connectivity |
 | `PGS` | Light | parking guidance |
@@ -131,15 +131,15 @@ For the main reviewer-facing top layer, trim to the following `32`-surface set f
 - `ETH_BACKBONE`
 - `DCM`
 - `IBOX`
-- `ECM`
-- `TCM`
+- `EMS`
+- `TCU`
 - `VCU`
 - `AWD_4WD`
 - `BAT_BMS`
 - `FPCM`
 - `LVR`
-- `ESP`
-- `EPS`
+- `ESC`
+- `MDPS`
 - `ABS`
 - `EPB`
 - `TPMS`
@@ -154,7 +154,7 @@ For the main reviewer-facing top layer, trim to the following `32`-surface set f
 - `SEAT_MODULE`
 - `LIGHTING_ECU`
 - `IVI`
-- `CLUSTER`
+- `CLU`
 - `HUD`
 - `TMU`
 - `ADAS`
@@ -182,14 +182,14 @@ Only these should stay deep right now:
 
 - `CGW`
 - `ETH_BACKBONE`
-- `ECM`
-- `TCM`
+- `EMS`
+- `TCU`
 - `VCU`
-- `ESP`
-- `EPS`
+- `ESC`
+- `MDPS`
 - `BCM`
 - `IVI`
-- `CLUSTER`
+- `CLU`
 - `ADAS`
 - `V2X`
 - `VALIDATION_HARNESS`

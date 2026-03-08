@@ -1,4 +1,4 @@
-﻿# Mentor Priority BP (Execution Baseline)
+# Mentor Priority BP (Execution Baseline)
 
 **Document ID**: CANOE-BP-MENTOR-PRIORITY  
 **Version**: 1.1  

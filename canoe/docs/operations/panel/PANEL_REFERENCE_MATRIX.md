@@ -1,4 +1,4 @@
-# PANEL REFERENCE MATRIX (External View + Cabin View)
+﻿# PANEL REFERENCE MATRIX (External View + Cabin View)
 
 ## Purpose
 - Scope: build two macro views (`External`, `Cabin`) and retire `Demo Stage` from active development
@@ -60,7 +60,7 @@
 - Step 6: freeze `SDV_Demo_Stage.xvp` for legacy comparison only
 
 ## BP Compliance Checkpoints
-- Keep decision/arbitration in `WARN_ARB_MGR` and `ADAS_WARN_CTRL`
+- Keep decision/arbitration in `ADAS` and `ADAS`
 - Use derived output variables (`UiRender::*`) only in renderer
 - On any `UiRender_*` addition, update traceability chain in `0304 -> 04 -> 05/06/07`
 - Keep Python simulator as input injector only (no arbitration logic)
@@ -81,3 +81,4 @@
 - GUI execution checklist: `canoe/docs/operations/panel/PANEL_SPLIT_EXECUTION_GUIDE.md`
 - Binding audit report: `canoe/docs/operations/panel/PANEL_BINDING_AUDIT.md`
 - Binding audit script: `canoe/scripts/audit_panel_bindings.py`
+

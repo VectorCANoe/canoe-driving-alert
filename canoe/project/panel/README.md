@@ -1,4 +1,4 @@
-# project/panel
+﻿# project/panel
 
 CANoe panel artifacts for this project.
 
@@ -45,8 +45,8 @@ CANoe panel artifacts for this project.
 - Legacy panel: `SDV_Demo_Stage.xvp` (freeze new features)
 
 ## BP (Renderer-Only Contract)
-- Decision/arbitration logic stays in `WARN_ARB_MGR` and `ADAS_WARN_CTRL`
-- `IVI_GW` and XVP panels are display-only
+- Decision/arbitration logic stays in `ADAS` and `ADAS`
+- `IVI` and XVP panels are display-only
 - No priority/timeout logic in renderer layer
 - Renderer binds derived outputs only (`UiRender::*`)
 - Do not bind raw inputs (`vehicleSpeed`, `eta`) directly to skin controls
@@ -71,3 +71,4 @@ Use these derived sysvars for animation-ready visualization:
 - `UiRender::ambientPulsePhase`
 - `UiRender::icFlowPhase`
 - `UiRender::activeAlertType`
+

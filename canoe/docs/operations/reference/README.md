@@ -1,4 +1,4 @@
-﻿# Reference Docs Index
+# Reference Docs Index
 
 This folder contains non-daily strategy notes, intake records, and supporting references.
 

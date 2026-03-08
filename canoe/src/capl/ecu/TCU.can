@@ -1,0 +1,93 @@
+includes
+{
+}
+
+variables
+{
+  msTimer tTransCycle;
+  int gGearInput;
+  int gGearState;
+  int gDriveMode;
+  int gLastGearState;
+  int gShiftCounter;
+}
+
+on start
+{
+  gGearInput    = 0;
+  gGearState    = 0;
+  gDriveMode    = 0;
+  gLastGearState = -1;
+  gShiftCounter  = 0;
+  setTimer(tTransCycle, 100);
+  write("[TCU] start");
+}
+
+on message frmGearStateMsg
+{
+  gGearInput = this.GearInput;
+  gGearState = this.GearState;
+}
+
+on message frmVehicleModeMsg
+{
+  gDriveMode = this.DriveMode;
+}
+
+on timer tTransCycle
+{
+  message frmTransmissionTempMsg mTemp;
+  message frmTransShiftStateMsg  mShift;
+  int transOilTemp;
+  int clutchTemp;
+  int shiftState;
+  int shiftSlip;
+  int speed;
+
+  speed = (int)@Core::vehicleSpeedNorm;
+
+  /* Oil temp: warm when gear engaged, higher under sport mode */
+  transOilTemp = 60;
+  if (gGearState > 0)
+  {
+    transOilTemp = 75 + (speed / 20);
+    if (gDriveMode == 2) transOilTemp = transOilTemp + 10;
+  }
+  if (transOilTemp > 255) transOilTemp = 255;
+
+  /* Clutch temp rises during active shift transitions */
+  clutchTemp = 50;
+  if (gShiftCounter > 0)
+  {
+    clutchTemp = 100 + gShiftCounter * 5;
+    gShiftCounter = gShiftCounter - 1;
+  }
+  if (clutchTemp > 255) clutchTemp = 255;
+
+  mTemp.TransOilTemp = transOilTemp;
+  mTemp.ClutchTemp   = clutchTemp;
+  output(mTemp);
+
+  /* ShiftState: 0=Idle 1=PreShift 2=Shifting 3=PostShift */
+  if (gGearState != gLastGearState && gLastGearState >= 0)
+  {
+    shiftState    = 2;
+    gShiftCounter = 4;
+    write("[TCU] shift gear=%d->%d", gLastGearState, gGearState);
+  }
+  else
+  {
+    shiftState = (gGearState > 0) ? 0 : 0;
+  }
+
+  shiftSlip = (shiftState == 2) ? 10 : 0;
+
+  mShift.ShiftState      = shiftState & 0x7;
+  mShift.ShiftTargetGear = gGearState & 0x7;
+  mShift.ShiftSlip       = shiftSlip;
+  output(mShift);
+
+  gLastGearState = gGearState;
+
+  setTimer(tTransCycle, 100);
+}

@@ -11,7 +11,7 @@ Native CANoe Test Unit assets for the current SIL cycle.
 - `TC_CANOE_UT_CORE_001_SCHOOLZONE_OVERSPEED`
   - scenario command: `2`
   - focus: school-zone overspeed warning path
-- `TC_CANOE_IT_V2_FAILSAFE_001_DOMAIN_BOUNDARY`
+- `TC_CANOE_IT_V2_FAILSAFE_001_CGW`
   - scenario command: `18`
   - focus: fail-safe downgrade / domain-boundary path
 

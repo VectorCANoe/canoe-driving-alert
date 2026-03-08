@@ -1,0 +1,315 @@
+includes
+{
+  #include "..\\common\\CAPL_COMMON.cin"
+}
+
+variables
+{
+  msTimer tBodyCycle;
+  msTimer tBodyBase100;
+  int gLastAmbientMode;
+  int gLastAmbientColor;
+  int gLastAmbientPattern;
+  int gBodyAliveCnt;
+  int gLastBcmDiagReqSid;
+  int gLastBcmDiagReqDidHigh;
+  int gLastBcmDiagReqDidLow;
+}
+
+void sendBcmDiagResponse()
+{
+  message frmBcmDiagResMsg mDiagRes;
+
+  mDiagRes.BcmDiagRespCode = (gLastBcmDiagReqSid + 0x40) & 0xFF;
+  mDiagRes.BcmDiagData0 = gLastBcmDiagReqDidHigh & 0xFF;
+  mDiagRes.BcmDiagData1 = gLastBcmDiagReqDidLow & 0xFF;
+  output(mDiagRes);
+}
+
+on start
+{
+  gLastAmbientMode = -1;
+  gLastAmbientColor = -1;
+  gLastAmbientPattern = -1;
+  gBodyAliveCnt = 0;
+  gLastBcmDiagReqSid = 0x22;
+  gLastBcmDiagReqDidHigh = 0xF1;
+  gLastBcmDiagReqDidLow = 0x90;
+  setTimer(tBodyCycle, 10);
+  setTimer(tBodyBase100, 100);
+  write("[BCM] start");
+}
+
+on message frmBcmDiagReqMsg
+{
+  gLastBcmDiagReqSid = clampRange((int)this.BcmDiagServiceId, 0, 255);
+  gLastBcmDiagReqDidHigh = clampRange((int)this.BcmDiagDidHigh, 0, 255);
+  gLastBcmDiagReqDidLow = clampRange((int)this.BcmDiagDidLow, 0, 255);
+  sendBcmDiagResponse();
+}
+
+on timer tBodyCycle
+{
+  int alertLevel;
+  int alertType;
+  int timeoutClear;
+  int ambientMode;
+  int ambientColor;
+  int ambientPattern;
+  message frmAmbientControlMsg mAmbient;
+
+  alertLevel = (int)@Core::selectedAlertLevel;
+  alertType = (int)@Core::selectedAlertType;
+  timeoutClear = (int)@Core::timeoutClear;
+  if (alertLevel < 0 || alertLevel > 7)
+  {
+    alertLevel = 0;
+  }
+  if (alertType < 0 || alertType > 7)
+  {
+    alertType = 0;
+  }
+  timeoutClear = (timeoutClear == 1) ? 1 : 0;
+
+  if (timeoutClear == 1)
+  {
+    ambientMode = 0;
+    ambientColor = 0;
+    ambientPattern = 0;
+  }
+  else
+  {
+    ambientMode = alertLevel;
+    ambientColor = 0;
+    ambientPattern = 0;
+    if (alertLevel >= 6)
+    {
+      /* Req_035: emergency color/pattern distinct from zone policies
+         Legacy Req_036 merged into Req_035
+         6=RED/BLUE(police)  7=RED/WHITE(ambulance) */
+      ambientColor   = (alertType == 2) ? 7 : 6;
+      ambientPattern = (alertType == 2) ? 7 : 6;
+    }
+    else if (alertType == 3)
+    {
+      ambientColor   = 3; /* red   - Req_037 school zone fixed color */
+      ambientPattern = 5; /* fast flash - Req_037 school zone fixed pattern */
+    }
+    else if (alertType == 4)
+    {
+      ambientColor   = 4; /* orange - Req_037 highway fixed color (Legacy Req_038) */
+      ambientPattern = 4; /* pulse  - Req_037 highway fixed pattern (Legacy Req_038) */
+    }
+    else if (alertType == 5)
+    {
+      ambientColor   = 5; /* cyan      - Req_037 guide left (Legacy Req_039) */
+      ambientPattern = 2; /* flow-left - Req_037 guide left fixed pattern (Legacy Req_039) */
+    }
+    else if (alertType == 6)
+    {
+      ambientColor   = 5; /* cyan       - Req_037 guide right (Legacy Req_039) */
+      ambientPattern = 3; /* flow-right - Req_037 guide right fixed pattern (Legacy Req_039) */
+    }
+    else if (alertLevel > 0)
+    {
+      ambientColor   = 1; /* green - general fallback */
+      ambientPattern = 1; /* solid */
+    }
+  }
+
+  if (ambientMode != gLastAmbientMode ||
+      ambientColor != gLastAmbientColor ||
+      ambientPattern != gLastAmbientPattern)
+  {
+    @Body::ambientMode = ambientMode;
+    @Body::ambientColor = ambientColor;
+    @Body::ambientPattern = ambientPattern;
+
+    mAmbient.AmbientMode = ambientMode;
+    mAmbient.AmbientColor = ambientColor;
+    mAmbient.AmbientPattern = ambientPattern;
+    output(mAmbient);
+
+    gLastAmbientMode = ambientMode;
+    gLastAmbientColor = ambientColor;
+    gLastAmbientPattern = ambientPattern;
+  }
+
+  setTimer(tBodyCycle, 10);
+}
+
+on timer tBodyBase100
+{
+  message frmHazardControlMsg mHazard;
+  message frmWindowControlMsg mWindow;
+  message frmDoorStateMsg mDoorState;
+  message frmLampControlMsg mLamp;
+  message frmWiperStateMsg mWiper;
+  message frmSeatBeltStateMsg mSeatBelt;
+  message frmCabinAirStateMsg mCabinAir;
+  message frmBodyHealthMsg mHealth;
+  message frmHvacStateMsg mHvacState;
+  message frmHvacActuatorMsg mHvacAct;
+  message frmMirrorStateMsg mMirror;
+  message frmSeatStateMsg mSeatState;
+  message frmSeatControlMsg mSeatCtrl;
+  message frmDoorControlMsg mDoorCtrl;
+  message frmImmobilizerStateMsg mImmobilizer;
+  message frmAlarmStateMsg mAlarm;
+  message frmBodyGatewayStateMsg mBodyGwState;
+  message frmBodyComfortStateMsg mComfort;
+  message frmInteriorLightMsg mLight;
+  message frmRainLightAutoMsg mRain;
+  int hazardActive;
+  int navDirection;
+  int seatBeltOverride;
+  int ambientMode;
+  hazardActive = ((int)@Core::selectedAlertLevel >= 6) ? 1 : 0;
+  navDirection = (int)@Infotainment::navDirection;
+  seatBeltOverride = (int)@Test::seatBeltOverride;
+  ambientMode = clampRange((int)@Body::ambientMode, 0, 7);
+  if (navDirection < 0 || navDirection > 3)
+  {
+    navDirection = 0;
+  }
+  if (seatBeltOverride < 0 || seatBeltOverride > 3)
+  {
+    seatBeltOverride = 0;
+  }
+
+  mHazard.HazardSwitch = hazardActive;
+  mHazard.HazardState = hazardActive;
+  output(mHazard);
+
+  mWindow.WindowCommand = 0;
+  mWindow.WindowState = 0;
+  output(mWindow);
+
+  mLight.CabinLightMode = ambientMode & 0x7;
+  mLight.DomeLightLevel = (ambientMode > 0) ? 20 : 4;
+  output(mLight);
+
+  mRain.RainSenseLevel = 0;
+  mRain.AutoLightState = 0;
+  output(mRain);
+
+  mDoorState.DoorStateMask = 0;
+  mDoorState.DoorLockState = 1;
+  mDoorState.ChildLockState = 0;
+  mDoorState.DoorOpenWarn = 0;
+  output(mDoorState);
+
+  mLamp.HeadLampState = (hazardActive == 1) ? 2 : 1;
+  mLamp.TailLampState = 1;
+  if (hazardActive == 1)
+  {
+    mLamp.TurnLampState = 3;
+  }
+  else if (navDirection == 1)
+  {
+    mLamp.TurnLampState = 1;
+  }
+  else if (navDirection == 2)
+  {
+    mLamp.TurnLampState = 2;
+  }
+  else
+  {
+    mLamp.TurnLampState = 0;
+  }
+  mLamp.HazardLampReq = hazardActive;
+  output(mLamp);
+
+  mWiper.FrontWiperState = 0;
+  mWiper.RearWiperState = 0;
+  mWiper.WiperInterval = 0;
+  output(mWiper);
+
+  mSeatBelt.DriverSeatBelt = 1;
+  mSeatBelt.PassengerSeatBelt = 1;
+  if (seatBeltOverride == 1 || seatBeltOverride == 3)
+  {
+    mSeatBelt.DriverSeatBelt = 0;
+  }
+  if (seatBeltOverride == 2 || seatBeltOverride == 3)
+  {
+    mSeatBelt.PassengerSeatBelt = 0;
+  }
+  mSeatBelt.RearSeatBelt = 3;
+  mSeatBelt.SeatBeltWarnLvl = 0;
+  if (mSeatBelt.DriverSeatBelt == 0 || mSeatBelt.PassengerSeatBelt == 0)
+  {
+    mSeatBelt.SeatBeltWarnLvl = 2;
+  }
+  else if (hazardActive == 1)
+  {
+    mSeatBelt.SeatBeltWarnLvl = 1;
+  }
+  output(mSeatBelt);
+
+  @CoreState::turnLampState = mLamp.TurnLampState;
+  @CoreState::driverSeatBelt = mSeatBelt.DriverSeatBelt;
+  @CoreState::passengerSeatBelt = mSeatBelt.PassengerSeatBelt;
+  @CoreState::seatBeltWarnLvl = mSeatBelt.SeatBeltWarnLvl;
+
+  mCabinAir.CabinTemp = 24;
+  mCabinAir.AirQualityIndex = 90;
+  output(mCabinAir);
+
+  mHealth.BodyAliveCnt = gBodyAliveCnt & 0xFF;
+  mHealth.BodyDiagState = 0;
+  mHealth.BodyFailCode = 0;
+  output(mHealth);
+
+  mHvacState.CabinSetTemp = 23;
+  mHvacState.BlowerLevel = 5;
+  mHvacState.AcCompressorOn = 1;
+  output(mHvacState);
+
+  mHvacAct.VentMode = 2;
+  mHvacAct.RecircMode = 0;
+  mHvacAct.DefogMode = 0;
+  mHvacAct.FanRpmStep = 80;
+  output(mHvacAct);
+
+  mMirror.MirrorFoldState = 0;
+  mMirror.MirrorHeatState = 0;
+  mMirror.MirrorAdjustAxis = 0;
+  output(mMirror);
+
+  mSeatState.DriverSeatPos = 120;
+  mSeatState.PassengerSeatPos = 118;
+  output(mSeatState);
+
+  mSeatCtrl.DriverSeatCmd = 0;
+  mSeatCtrl.PassengerSeatCmd = 0;
+  mSeatCtrl.SeatHeatLevel = 0;
+  mSeatCtrl.SeatVentLevel = 0;
+  output(mSeatCtrl);
+
+  mDoorCtrl.DoorControlCmd = 0;
+  mDoorCtrl.ChildLockCmd = 0;
+  output(mDoorCtrl);
+
+  /* BCM diagnostic request is validation/event-driven, not a cyclic comfort broadcast. */
+
+  mImmobilizer.ImmobilizerState = 1;
+  mImmobilizer.KeyAuthState = 1;
+  output(mImmobilizer);
+
+  mAlarm.AlarmArmState = 1;
+  mAlarm.IntrusionDetect = 0;
+  output(mAlarm);
+
+  mBodyGwState.BodyGwRouteState = 1;
+  mBodyGwState.BodyGwHealth = 0;
+  output(mBodyGwState);
+
+  mComfort.ComfortProfile = 1;
+  mComfort.ComfortStatus = 0;
+  mComfort.ComfortError = 0;
+  output(mComfort);
+  gBodyAliveCnt = (gBodyAliveCnt + 1) & 0xFF;
+
+  setTimer(tBodyBase100, 100);
+}

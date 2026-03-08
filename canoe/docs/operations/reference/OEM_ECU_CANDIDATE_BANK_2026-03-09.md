@@ -28,8 +28,8 @@ Promote only when all three are mostly true:
 
 | Candidate | Meaning | Decision | Reason |
 |---|---|---|---|
-| `EMS` | Engine Management System | Alias -> `ECM` | OEM-realistic, but current project surface is clearer as `ECM` |
-| `TCU` | Transmission Control Unit | Alias -> `TCM` | same role family, avoid duplicate top-level naming |
+| `EMS` | Engine Management System | Alias -> `EMS` | OEM-realistic, but current project surface is clearer as `EMS` |
+| `TCU` | Transmission Control Unit | Alias -> `TCU` | same role family, avoid duplicate top-level naming |
 | `_4WD` | 4WD / torque split control | Secondary breadth surface | good breadth signal, no deep implementation now |
 | `LPI` | LPG injection | Do not promote now | fuel-type specific, too narrow for current vehicle story |
 | `FPCM` | Fuel Pump Control Module | Internal / optional sub-surface | plausible ECU, but not needed as top-level now |
@@ -43,9 +43,9 @@ Promote only when all three are mostly true:
 
 | Candidate | Meaning | Decision | Reason |
 |---|---|---|---|
-| `ABS` | anti-lock braking | Secondary breadth surface under `ESP` family | useful for vehicle realism, but not separate deep runtime now |
-| `ESC` | stability control | Alias -> `ESP` | keep one top-level stability surface |
-| `MDPS` | motor-driven power steering | Alias -> `EPS` | keep one steering surface |
+| `ABS` | anti-lock braking | Secondary breadth surface under `ESC` family | useful for vehicle realism, but not separate deep runtime now |
+| `ESC` | stability control | Alias -> `ESC` | keep one top-level stability surface |
+| `MDPS` | motor-driven power steering | Alias -> `MDPS` | keep one steering surface |
 | `EPB` | electronic parking brake | Secondary breadth surface | OEM-realistic, light placeholder suitable |
 | `ECS` | electronic control suspension | Secondary breadth surface | suspension breadth is useful, no deep logic needed |
 | `ACU` | airbag control unit | Secondary breadth surface | strong safety ECU, breadth value high |
@@ -72,7 +72,7 @@ Promote only when all three are mostly true:
 | Candidate | Meaning | Decision | Reason |
 |---|---|---|---|
 | `BCM` | body control module | Top-level surface ECU | already core to current project |
-| `CLU` | cluster | Alias -> `CLUSTER` | normalize to clearer top-level surface |
+| `CLU` | cluster | Alias -> `CLU` | normalize to clearer top-level surface |
 | `DATC` | digital automatic temperature control | Alias -> `HVAC` | clearer cabin-climate surface |
 | `SMK` | smart key module | Secondary breadth surface | good body breadth candidate |
 | `AFLS` | adaptive front lighting | Secondary breadth surface | lighting breadth value is strong |
@@ -90,14 +90,14 @@ Promote only when all three are mostly true:
 
 - `CGW`
 - `ETH_BACKBONE`
-- `ECM`
-- `TCM`
+- `EMS`
+- `TCU`
 - `VCU`
-- `ESP`
-- `EPS`
+- `ESC`
+- `MDPS`
 - `BCM`
 - `IVI`
-- `CLUSTER`
+- `CLU`
 - `ADAS`
 - `V2X`
 - `VALIDATION_HARNESS`
@@ -131,11 +131,11 @@ Promote only when all three are mostly true:
 
 ### Keep As Alias / Normalized Name
 
-- `EMS -> ECM`
-- `TCU -> TCM`
-- `MDPS -> EPS`
-- `ESC -> ESP`
-- `CLU -> CLUSTER`
+- `EMS -> EMS`
+- `TCU -> TCU`
+- `MDPS -> MDPS`
+- `ESC -> ESC`
+- `CLU -> CLU`
 - `DATC -> HVAC`
 
 ### Do Not Promote In Current Cycle

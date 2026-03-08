@@ -40,7 +40,7 @@ Dev1이 native CANoe Test Unit 자산을 작성하고, Dev2가 그 결과를 외
 현재 repo는 이미 native Test Unit PoC를 보유한다.
 
 - `TC_CANOE_UT_CORE_001_SCHOOLZONE_OVERSPEED`
-- `TC_CANOE_IT_V2_FAILSAFE_001_DOMAIN_BOUNDARY`
+- `TC_CANOE_IT_V2_FAILSAFE_001_CGW`
 
 즉, Dev1은 CANoe 내부 test authoring capability를 이미 확보하는 방향이다.
 

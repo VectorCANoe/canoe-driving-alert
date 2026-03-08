@@ -53,8 +53,8 @@ Recommended implementation depth remains:
 
 ### A2. Powertrain (`10`)
 
-1. `ECM`
-2. `TCM`
+1. `EMS`
+2. `TCU`
 3. `VCU`
 4. `AWD_4WD`
 5. `BAT_BMS`
@@ -66,8 +66,8 @@ Recommended implementation depth remains:
 
 ### A3. Chassis / Safety (`12`)
 
-1. `ESP`
-2. `EPS`
+1. `ESC`
+2. `MDPS`
 3. `ABS`
 4. `EPB`
 5. `TPMS`
@@ -101,7 +101,7 @@ Recommended implementation depth remains:
 ### A5. IVI / HMI / Connectivity (`10`)
 
 1. `IVI`
-2. `CLUSTER`
+2. `CLU`
 3. `HUD`
 4. `TMU`
 5. `AMP`
@@ -186,8 +186,8 @@ Use these first in the main architecture tree:
 - `DCM`
 - `IBOX`
 - `SECURITY_GATEWAY`
-- `ECM`
-- `TCM`
+- `EMS`
+- `TCU`
 - `VCU`
 - `AWD_4WD`
 - `BAT_BMS`
@@ -196,8 +196,8 @@ Use these first in the main architecture tree:
 - `ISG`
 - `EOP`
 - `EWP`
-- `ESP`
-- `EPS`
+- `ESC`
+- `MDPS`
 - `ABS`
 - `EPB`
 - `TPMS`
@@ -219,7 +219,7 @@ Use these first in the main architecture tree:
 - `DOOR_FR`
 - `TAILGATE_MODULE`
 - `IVI`
-- `CLUSTER`
+- `CLU`
 - `HUD`
 - `TMU`
 - `AMP`
@@ -300,14 +300,14 @@ Keep deep runtime scope controlled even with 100-bank breadth.
 
 - `CGW`
 - `ETH_BACKBONE`
-- `ECM`
-- `TCM`
+- `EMS`
+- `TCU`
 - `VCU`
-- `ESP`
-- `EPS`
+- `ESC`
+- `MDPS`
 - `BCM`
 - `IVI`
-- `CLUSTER`
+- `CLU`
 - `ADAS`
 - `V2X`
 - `VALIDATION_HARNESS`
@@ -320,7 +320,7 @@ Keep deep runtime scope controlled even with 100-bank breadth.
 1. `ADAS`
 2. `V2X`
 3. `BCM`
-4. `CLUSTER`
+4. `CLU`
 5. `IVI`
 6. `CGW`
 7. `VALIDATION_HARNESS`

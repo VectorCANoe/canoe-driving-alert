@@ -103,13 +103,13 @@ Use the following normalization policy:
 
 | OEM/Reference Name | Current Program Surface | Treatment |
 |---|---|---|
-| `EMS` | `ECM` | top-level alias normalization |
-| `TCU` | `TCM` | top-level alias normalization |
-| `MDPS` | `EPS` | top-level alias normalization |
+| `EMS` | `EMS` | top-level alias normalization |
+| `TCU` | `TCU` | top-level alias normalization |
+| `MDPS` | `MDPS` | top-level alias normalization |
 | `DATC` / `FATC` | `HVAC` | top-level alias normalization |
-| `ABS` | `ESP` sub-surface | keep as secondary breadth or internal detail |
+| `ABS` | `ESC` sub-surface | keep as secondary breadth or internal detail |
 | `CGW` | `CGW` | keep top-level |
-| `CLU` | `CLUSTER` | top-level alias normalization |
+| `CLU` | `CLU` | top-level alias normalization |
 | `TMU` | `TMU` | secondary breadth surface |
 | `SCC` | `SCC` | secondary ADAS breadth surface |
 | `ACU` | `ACU` | secondary safety breadth surface |
@@ -141,8 +141,8 @@ Target range for the final vehicle-program surface:
 
 | Surface ECU | Status | Runtime Depth | Notes |
 |---|---|---|---|
-| `ECM` | Active | Deep | engine control |
-| `TCM` | Active | Deep | transmission control |
+| `EMS` | Active | Deep | engine control |
+| `TCU` | Active | Deep | transmission control |
 | `VCU` | Active | Deep | longitudinal vehicle control |
 | `AWD_4WD` | Placeholder | Light | torque split / drivetrain breadth surface |
 | `BAT_BMS` | Placeholder | Light | battery / battery sensing breadth surface |
@@ -152,8 +152,8 @@ Target range for the final vehicle-program surface:
 
 | Surface ECU | Status | Runtime Depth | Notes |
 |---|---|---|---|
-| `ESP` | Active | Deep | brake / stability |
-| `EPS` | Active | Deep | steering |
+| `ESC` | Active | Deep | brake / stability |
+| `MDPS` | Active | Deep | steering |
 | `ABS` | Placeholder | Light | brake sub-surface / wheel-speed breadth surface |
 | `EPB` | Placeholder | Light | electric parking brake |
 | `TPMS` | Placeholder | Light | tire pressure monitoring |
@@ -178,7 +178,7 @@ Target range for the final vehicle-program surface:
 | Surface ECU | Status | Runtime Depth | Notes |
 |---|---|---|---|
 | `IVI` | Active | Deep | head unit / navigation / infotainment |
-| `CLUSTER` | Active | Deep | cluster / warning / display |
+| `CLU` | Active | Deep | cluster / warning / display |
 | `HUD` | Placeholder | Light | head-up display breadth surface |
 | `TMU` | Placeholder | Light | telematics / connectivity unit |
 
@@ -206,14 +206,14 @@ Target range for the final vehicle-program surface:
 - Deep active runtime target:
   - `CGW`
   - `ETH_BACKBONE`
-  - `ECM`
-  - `TCM`
+  - `EMS`
+  - `TCU`
   - `VCU`
-  - `ESP`
-  - `EPS`
+  - `ESC`
+  - `MDPS`
   - `BCM`
   - `IVI`
-  - `CLUSTER`
+  - `CLU`
   - `ADAS`
   - `V2X`
   - `VALIDATION_HARNESS`
@@ -230,8 +230,8 @@ These are useful for a believable OEM architecture, but they should **not** all 
 
 | Candidate | Typical Meaning | Recommended Role In This Project |
 |---|---|---|
-| `EMS` | engine management system | alias to `ECM` |
-| `TCU` | transmission control unit | alias to `TCM` |
+| `EMS` | engine management system | alias to `EMS` |
+| `TCU` | transmission control unit | alias to `TCU` |
 | `_4WD` | all-wheel-drive control | keep as `AWD_4WD` breadth surface |
 | `LPI` | LPG fuel system | optional supplier/powertrain sub-surface only |
 | `FPCM` | fuel pump control module | internal/sub-surface only unless fuel story is added |
@@ -245,9 +245,9 @@ These are useful for a believable OEM architecture, but they should **not** all 
 
 | Candidate | Typical Meaning | Recommended Role In This Project |
 |---|---|---|
-| `ABS` | anti-lock brake system | secondary chassis surface under `ESP` family |
-| `ESC` | stability control | already represented by `ESP` top-level surface |
-| `MDPS` | motor driven power steering | alias to `EPS` |
+| `ABS` | anti-lock brake system | secondary chassis surface under `ESC` family |
+| `ESC` | stability control | already represented by `ESC` top-level surface |
+| `MDPS` | motor driven power steering | alias to `MDPS` |
 | `EPB` | electronic parking brake | light breadth surface |
 | `ECS` | electronic control suspension | light breadth surface |
 | `ACU` | airbag control unit | light safety breadth surface |
@@ -278,7 +278,7 @@ The real project differentiation should stay concentrated here:
 1. `ADAS`
 2. `V2X`
 3. `BCM`
-4. `CLUSTER`
+4. `CLU`
 5. `IVI`
 6. `CGW`
 7. `VALIDATION_HARNESS`
@@ -291,29 +291,29 @@ Optional 8th depth candidate:
 
 ### Keep Deep Now
 
-- `ENG_CTRL -> ECM`
-- `TCM -> TCM`
-- `ACCEL_CTRL -> VCU`
-- `BRK_CTRL -> ESP`
-- `STEER_CTRL -> EPS`
-- `BODY_GW`, `AMBIENT_CTRL` -> `BCM`
-- `IVI_GW` -> `IVI`
-- `CLU_HMI_CTRL` -> `CLUSTER`
-- `ADAS_WARN_CTRL`, `WARN_ARB_MGR` -> `ADAS`
-- `CHS_GW`, `INFOTAINMENT_GW`, `DOMAIN_ROUTER`, `DOMAIN_BOUNDARY_MGR` -> `CGW`
-- `ETH_SW -> ETH_BACKBONE`
-- `EMS_ALERT_RX` (+ later fold producers) -> `V2X`
+- `EMS -> EMS`
+- `TCU -> TCU`
+- `VCU -> VCU`
+- `ESC -> ESC`
+- `MDPS -> MDPS`
+- `BCM`, `BCM` -> `BCM`
+- `IVI` -> `IVI`
+- `CLU` -> `CLU`
+- `ADAS`, `ADAS` -> `ADAS`
+- `CHGW`, `IVI`, `PTGW`, `CGW` -> `CGW`
+- `ETHM -> ETH_BACKBONE`
+- `V2X` (+ later fold producers) -> `V2X`
 - `VAL_* -> VALIDATION_HARNESS`
 
 ### Merge Candidate
 
-- `HAZARD_CTRL`
-- `WINDOW_CTRL`
-- `DRV_STATE_MGR`
-- `NAV_CTX_MGR`
-- `CLU_BASE_CTRL`
-- `EMS_POLICE_TX`
-- `EMS_AMB_TX`
+- `BCM`
+- `BCM`
+- `BCM`
+- `IVI`
+- `CLU`
+- `V2X`
+- `V2X`
 
 ### Placeholder Only For Now
 
@@ -356,7 +356,7 @@ Recommended set:
 2. Do not add SoT changes directly from Dev1.
 3. Start runtime work in this order:
    - `BCM` fold candidates
-   - `IVI/CLUSTER` fold candidates
+   - `IVI/CLU` fold candidates
    - `V2X` producer fold
 4. Leave GUI surface rename until the runtime grouping is technically ready.
 

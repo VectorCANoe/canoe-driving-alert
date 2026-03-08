@@ -15,7 +15,7 @@ INSERTS = {
     # namespace_name -> list of variable XML lines to append before </namespace>
     "Core": [
         '      <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="km/h" '
-        'name="speedLimitNorm" comment="Normalized speed limit from NAV_CTX_MGR" '
+        'name="speedLimitNorm" comment="Normalized speed limit from IVI" '
         'bitcount="32" isSigned="false" encoding="65001" type="int" '
         'minValue="0" minValuePhys="0" maxValue="255" maxValuePhys="255" />',
     ],

@@ -1,4 +1,4 @@
-﻿# V2 Branch Guardrail
+# V2 Branch Guardrail
 
 ## Purpose
 Keep one stable integration baseline for v2 (`integration/v2-all-in`) and stop recurring merge conflicts caused by mixed sync methods.

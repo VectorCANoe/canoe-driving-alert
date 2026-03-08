@@ -1,4 +1,4 @@
-﻿# Navigation Simulator (Option B)
+# Navigation Simulator (Option B)
 
 ## Purpose
 - Drive `Infotainment::roadZone` and `Infotainment::navDirection` with grid-based coordinate movement.

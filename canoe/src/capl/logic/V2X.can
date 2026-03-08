@@ -1,0 +1,377 @@
+includes
+{
+  #include "..\\common\\CAPL_COMMON.cin"
+}
+
+variables
+{
+  msTimer tRxCycle;
+  msTimer tWatchdog;
+  msTimer tTimeoutClearPulse;
+  msTimer tEventTrace100;
+  msTimer tDispatchTx100;
+  int gActiveEmergencyType;
+  int gActiveEmergencyDirection;
+  int gActiveEta;
+  int gActiveSourceId;
+  int gPrevPoliceDispatch;
+  int gPrevAmbDispatch;
+  dword gActiveLastRxMs;
+  int gLastEmergencyContext;
+  int gLastTimeoutClear;
+  int gLastRecordedAlertType;
+  int gLastRecordedAlertLevel;
+  int gLastRecordedWarningCode;
+}
+
+
+dword getCurrentTick32()
+{
+  return getSimulationTimeMs();
+}
+
+void mirrorLastEmergencyRx(dword tickValue)
+{
+  gActiveLastRxMs = tickValue;
+  @CoreState::lastEmergencyRxMs = tickValue;
+}
+
+int isHigherPriority(int newType, int newEta, int newSourceId,
+                     int activeType, int activeEta, int activeSourceId)
+{
+  if (activeType == 0)
+  {
+    return 1;
+  }
+  if (newType != activeType)
+  {
+    return (newType > activeType);
+  }
+  if (newEta != activeEta)
+  {
+    return (newEta < activeEta);
+  }
+  return (newSourceId < activeSourceId);
+}
+
+void setTimeoutClear(int value)
+{
+  if (value != gLastTimeoutClear)
+  {
+    @Core::timeoutClear = value;
+    gLastTimeoutClear = value;
+  }
+}
+
+void updateEmergencyContext()
+{
+  int contextValue;
+
+  contextValue = gActiveEmergencyType;
+  if (contextValue < 0 || contextValue > 2)
+  {
+    contextValue = 0;
+  }
+
+  if (contextValue != gLastEmergencyContext)
+  {
+    @Core::emergencyContext = contextValue;
+    gLastEmergencyContext = contextValue;
+  }
+}
+
+void clearEmergencyState()
+{
+  gActiveEmergencyType = 0;
+  gActiveEmergencyDirection = 0;
+  gActiveEta = 255;
+  gActiveSourceId = 255;
+}
+
+void publishActiveEmergencyToV2X()
+{
+  @V2X::emergencyType = gActiveEmergencyType;
+  @V2X::emergencyDirection = gActiveEmergencyDirection;
+  @V2X::eta = gActiveEta;
+  @V2X::sourceId = gActiveSourceId;
+}
+
+void recordAlertEvent()
+{
+  int alertType;
+  int alertLevel;
+  int warningCode;
+  int eventPhase;
+
+  alertType = clampRange((int)@Core::selectedAlertType, 0, 15);
+  alertLevel = clampRange((int)@Core::selectedAlertLevel, 0, 7);
+  warningCode = clampRange((int)@Cluster::warningTextCode, 0, 255);
+  eventPhase = 0;
+
+  if (alertLevel > 0 && gLastRecordedAlertLevel == 0)
+  {
+    eventPhase = 1;
+  }
+  else if (alertLevel == 0 && gLastRecordedAlertLevel > 0)
+  {
+    eventPhase = 2;
+  }
+  else if (alertType != gLastRecordedAlertType ||
+           alertLevel != gLastRecordedAlertLevel ||
+           warningCode != gLastRecordedWarningCode)
+  {
+    eventPhase = 3;
+  }
+
+  if (eventPhase != 0)
+  {
+    @CoreState::lastAlertEventType = alertType;
+    @CoreState::lastAlertEventLevel = alertLevel;
+    @CoreState::lastAlertEventCode = warningCode;
+    @CoreState::lastAlertEventPhase = eventPhase;
+    write("[EMS_ALERT] event phase=%d type=%d level=%d code=%d snap=%d",
+          eventPhase, alertType, alertLevel, warningCode,
+          (int)@CoreState::arbitrationSnapshotId);
+    gLastRecordedAlertType = alertType;
+    gLastRecordedAlertLevel = alertLevel;
+    gLastRecordedWarningCode = warningCode;
+  }
+}
+
+void emitEmergencyBroadcast(int vehicleType, int status, int sourceId, int etaSec, int direction)
+{
+  message frmEmergencyBroadcastMsg mBcast;
+
+  mBcast.VehicleType = clampRange(vehicleType, 0, 2);
+  mBcast.Status = (status == 1) ? 1 : 0;
+  mBcast.SourceId = clampRange(sourceId, 0, 255);
+  mBcast.EtaSeconds = clampRange(etaSec, 0, 255);
+  mBcast.Direction = clampRange(direction, 0, 3);
+  output(mBcast);
+}
+
+on start
+{
+  clearEmergencyState();
+  gActiveLastRxMs = 0;
+  gPrevPoliceDispatch = 0;
+  gPrevAmbDispatch = 0;
+  @CoreState::lastEmergencyRxMs = 0;
+  gLastEmergencyContext = -1;
+  gLastTimeoutClear = -1;
+  gLastRecordedAlertType = -1;
+  gLastRecordedAlertLevel = -1;
+  gLastRecordedWarningCode = -1;
+  updateEmergencyContext();
+  setTimeoutClear(0);
+  setTimer(tRxCycle, 10);
+  setTimer(tWatchdog, 1000);
+  setTimer(tEventTrace100, 100);
+  setTimer(tDispatchTx100, 100);
+  write("[V2X] start");
+}
+
+/* v2: primary path - receive broadcast frame from ETH backbone ch5 */
+on message frmEmergencyBroadcastMsg
+{
+  message frmEmergencyMonitorMsg mMon;
+  int vType;
+  int status;
+  int srcId;
+  int etaSec;
+  int direction;
+  int accepted;
+
+  vType     = clampRange((int)this.VehicleType, 0, 2);
+  status    = ((int)this.Status == 1) ? 1 : 0;
+  srcId     = clampRange((int)this.SourceId, 0, 255);
+  etaSec    = clampRange((int)this.EtaSeconds, 0, 255);
+  direction = clampRange((int)this.Direction, 0, 3);
+  accepted  = 0;
+
+  if (status == 1 && (vType == 1 || vType == 2))
+  {
+    if (isHigherPriority(vType, etaSec, srcId,
+                         gActiveEmergencyType, gActiveEta, gActiveSourceId))
+    {
+      gActiveEmergencyType      = vType;
+      gActiveEmergencyDirection = direction;
+      gActiveEta                = etaSec;
+      gActiveSourceId           = srcId;
+      accepted = 1;
+    }
+    else if (vType == gActiveEmergencyType && srcId == gActiveSourceId)
+    {
+      gActiveEmergencyDirection = direction;
+      gActiveEta                = etaSec;
+      accepted = 1;
+    }
+
+    if (accepted == 1)
+    {
+      mirrorLastEmergencyRx(getCurrentTick32());
+      publishActiveEmergencyToV2X();
+      setTimeoutClear(0);
+      setTimer(tWatchdog, 1000);
+    }
+  }
+  else if (status == 0 && vType == gActiveEmergencyType &&
+           srcId == gActiveSourceId)
+  {
+    clearEmergencyState();
+    publishActiveEmergencyToV2X();
+    updateEmergencyContext();
+  }
+
+  updateEmergencyContext();
+
+  mMon.EmergencyContext = clampRange((int)@Core::emergencyContext, 0, 255);
+  mMon.TimeoutClearMon  = (((int)@Core::timeoutClear) == 1) ? 1 : 0;
+  output(mMon);
+}
+
+/* v1 fallback: sysvar polling (panel/legacy compat, kept for backward compat) */
+on timer tRxCycle
+{
+  message frmEmergencyMonitorMsg mMon;
+  int emergencyType;
+  int emergencyDirection;
+  int eta;
+  int sourceId;
+  int alertState;
+  dword nowMs;
+  int accepted;
+
+  emergencyType      = clampRange((int)@V2X::emergencyType, 0, 2);
+  emergencyDirection = clampRange((int)@V2X::emergencyDirection, 0, 3);
+  eta                = clampRange((int)@V2X::eta, 0, 255);
+  sourceId           = clampRange((int)@V2X::sourceId, 0, 255);
+  alertState         = (((int)@V2X::alertState) == 1) ? 1 : 0;
+  nowMs              = getCurrentTick32();
+  accepted           = 0;
+
+  if (alertState == 1 && (emergencyType == 1 || emergencyType == 2))
+  {
+    if (isHigherPriority(emergencyType, eta, sourceId,
+                         gActiveEmergencyType, gActiveEta, gActiveSourceId))
+    {
+      gActiveEmergencyType      = emergencyType;
+      gActiveEmergencyDirection = emergencyDirection;
+      gActiveEta                = eta;
+      gActiveSourceId           = sourceId;
+      accepted = 1;
+    }
+    else if (emergencyType == gActiveEmergencyType &&
+             sourceId == gActiveSourceId)
+    {
+      gActiveEmergencyDirection = emergencyDirection;
+      gActiveEta                = eta;
+      accepted = 1;
+    }
+
+    if (accepted == 1)
+    {
+      mirrorLastEmergencyRx(nowMs);
+      publishActiveEmergencyToV2X();
+      setTimeoutClear(0);
+      setTimer(tWatchdog, 1000);
+    }
+  }
+  else
+  {
+    if (gActiveEmergencyType != 0)
+    {
+      clearEmergencyState();
+      publishActiveEmergencyToV2X();
+      updateEmergencyContext();
+    }
+  }
+
+  updateEmergencyContext();
+
+  mMon.EmergencyContext = clampRange((int)@Core::emergencyContext, 0, 255);
+  mMon.TimeoutClearMon  = (((int)@Core::timeoutClear) == 1) ? 1 : 0;
+  output(mMon);
+  setTimer(tRxCycle, 10);
+}
+
+on timer tWatchdog
+{
+  dword nowMs;
+
+  nowMs = getCurrentTick32();
+  if (gActiveEmergencyType != 0 && (nowMs - gActiveLastRxMs) >= 1000)
+  {
+    clearEmergencyState();
+    publishActiveEmergencyToV2X();
+    updateEmergencyContext();
+    setTimeoutClear(1);
+    setTimer(tTimeoutClearPulse, 200);
+    write("[V2X] watchdog clear");
+  }
+  setTimer(tWatchdog, 1000);
+}
+
+on timer tTimeoutClearPulse
+{
+  setTimeoutClear(0);
+}
+
+on timer tEventTrace100
+{
+  recordAlertEvent();
+  setTimer(tEventTrace100, 100);
+}
+
+on timer tDispatchTx100
+{
+  int policeDispatch;
+  int ambDispatch;
+
+  policeDispatch = clampRange((int)@V2X::policeDispatch, 0, 1);
+  ambDispatch = clampRange((int)@V2X::ambulanceDispatch, 0, 1);
+
+  if (policeDispatch == 1 && gPrevPoliceDispatch == 0)
+  {
+    @V2X::emergencyType = 1;
+    @V2X::alertState = 1;
+    @V2X::sourceId = 1;
+    @V2X::eta = 30;
+    @V2X::emergencyDirection = 0;
+    emitEmergencyBroadcast(1, 1, 1, 30, 0);
+    write("[V2X] POLICE ACTIVE type=1 src=1 eta=30");
+  }
+  else if (policeDispatch == 0 && gPrevPoliceDispatch == 1)
+  {
+    if ((int)@V2X::sourceId == 1)
+    {
+      @V2X::alertState = 0;
+      emitEmergencyBroadcast(1, 0, 1, 0, 0);
+      write("[V2X] POLICE CLEAR");
+    }
+  }
+
+  if (ambDispatch == 1 && gPrevAmbDispatch == 0)
+  {
+    @V2X::emergencyType = 2;
+    @V2X::alertState = 1;
+    @V2X::sourceId = 2;
+    @V2X::eta = 20;
+    @V2X::emergencyDirection = 0;
+    emitEmergencyBroadcast(2, 1, 2, 20, 0);
+    write("[V2X] AMB ACTIVE type=2 src=2 eta=20");
+  }
+  else if (ambDispatch == 0 && gPrevAmbDispatch == 1)
+  {
+    if ((int)@V2X::sourceId == 2)
+    {
+      @V2X::alertState = 0;
+      emitEmergencyBroadcast(2, 0, 2, 0, 0);
+      write("[V2X] AMB CLEAR");
+    }
+  }
+
+  gPrevPoliceDispatch = policeDispatch;
+  gPrevAmbDispatch = ambDispatch;
+  setTimer(tDispatchTx100, 100);
+}

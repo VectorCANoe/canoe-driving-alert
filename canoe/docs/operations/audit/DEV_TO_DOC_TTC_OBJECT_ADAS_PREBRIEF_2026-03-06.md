@@ -19,8 +19,8 @@
 - 활성 승격 조건은 `ETH_INTERFACE_CONTRACT.md v1.2`에 `E213~E216` 계약 반영 완료임.
 
 2. 코드 기준 갭
-- `ADAS_WARN_CTRL`는 현재 긴급차 ETA/방향/자차속도 중심 위험도 모델이며 객체 리스트/TTC 다중객체 선정 로직이 없음.
-- `WARN_ARB_MGR`는 긴급/구역 중재는 있으나 객체 경합 우선순위 입력이 없음.
+- `ADAS`는 현재 긴급차 ETA/방향/자차속도 중심 위험도 모델이며 객체 리스트/TTC 다중객체 선정 로직이 없음.
+- `ADAS`는 긴급/구역 중재는 있으나 객체 경합 우선순위 입력이 없음.
 - `VAL_SCENARIO_CTRL`는 시나리오 1~19 중심이며 교차로/합류 객체 상호작용 세트가 부족함.
 
 3. 외부 기준 교차검증
@@ -45,15 +45,15 @@
 
 | Req ID | 권장 핵심 문구 (요약) | 구현 모듈(초안) |
 |---|---|---|
-| Req_130 | 객체 입력 계약(위치/상대속도/방향/신뢰도/타임스탬프) 수신 | ADAS_WARN_CTRL |
-| Req_131 | 객체 유효성(age/timeout/confidence) 관리 | ADAS_WARN_CTRL |
-| Req_132 | 종방향 TTC 산정 | ADAS_WARN_CTRL |
-| Req_133 | 교차/합류 확장 TTC(상대 진행방향 반영) | ADAS_WARN_CTRL |
-| Req_134 | 다중 객체 위험 우선 대상 선정 | WARN_ARB_MGR |
-| Req_135 | 위험도 정규화(0~100) + 히스테리시스 | ADAS_WARN_CTRL |
-| Req_136 | FCW 트리거/해제 규칙 | ADAS_WARN_CTRL |
-| Req_137 | 감속보조 요청 연동(기존 Req_121/123 정합) | WARN_ARB_MGR |
-| Req_138 | 객체 입력 단절/저신뢰 시 강등 정책 | DOMAIN_BOUNDARY_MGR |
+| Req_130 | 객체 입력 계약(위치/상대속도/방향/신뢰도/타임스탬프) 수신 | ADAS |
+| Req_131 | 객체 유효성(age/timeout/confidence) 관리 | ADAS |
+| Req_132 | 종방향 TTC 산정 | ADAS |
+| Req_133 | 교차/합류 확장 TTC(상대 진행방향 반영) | ADAS |
+| Req_134 | 다중 객체 위험 우선 대상 선정 | ADAS |
+| Req_135 | 위험도 정규화(0~100) + 히스테리시스 | ADAS |
+| Req_136 | FCW 트리거/해제 규칙 | ADAS |
+| Req_137 | 감속보조 요청 연동(기존 Req_121/123 정합) | ADAS |
+| Req_138 | 객체 입력 단절/저신뢰 시 강등 정책 | CGW |
 | Req_139 | 입력-판단-결정 로그/재현성 | EMS_ALERT + VAL_SCENARIO_CTRL |
 
 ## 5) 인터페이스 게이트 (필수 선행)
@@ -80,9 +80,9 @@
 - CAPL 입력 하네스(VAL_SCENARIO_CTRL)로 객체 입력 주입 경로 확보
 
 3. Phase C: 판단/중재 로직 구현
-- ADAS_WARN_CTRL: 객체 유효성 + TTC + 위험도 계산
-- WARN_ARB_MGR: 다중객체 우선선정 + 기존 긴급/구역 우선정책 정합
-- DOMAIN_BOUNDARY_MGR: 저신뢰/단절 강등, decelAssistReq 차단 연동
+- ADAS: 객체 유효성 + TTC + 위험도 계산
+- ADAS: 다중객체 우선선정 + 기존 긴급/구역 우선정책 정합
+- CGW: 저신뢰/단절 강등, decelAssistReq 차단 연동
 
 4. Phase D: 검증/증적
 - 시나리오 S20~S25(교차로/합류/복합/강건성) 추가

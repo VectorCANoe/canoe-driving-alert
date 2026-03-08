@@ -23,7 +23,7 @@
 Dev1 will author **two** official CANoe test assets only.
 
 1. `TC_CANOE_UT_CORE_001_SCHOOLZONE_OVERSPEED`
-2. `TC_CANOE_IT_V2_FAILSAFE_001_DOMAIN_BOUNDARY`
+2. `TC_CANOE_IT_V2_FAILSAFE_001_CGW`
 
 Reason:
 
@@ -38,7 +38,7 @@ Reason:
 | Asset ID | Level | Primary Intent | Main Trace Target | Expected Evidence |
 |---|---|---|---|---|
 | `TC_CANOE_UT_CORE_001_SCHOOLZONE_OVERSPEED` | Unit-oriented PoC | Prove native CANoe testcase authoring on the core school-zone overspeed warning path | `Req_001, Req_002, Req_003, Req_004, Req_006, Req_010` / `Func_001, Func_002, Func_003, Func_004, Func_006, Func_010` / `Flow_001, Flow_003` / `Comm_001, Comm_003` / `Var_012, Var_013, Var_016, Var_031` / `UT_ADAS_001`, `IT_CORE_001`, `ST_SPEED_001` | CANoe native test report, execution screenshot, measurement log, run-id binding |
-| `TC_CANOE_IT_V2_FAILSAFE_001_DOMAIN_BOUNDARY` | Integration-oriented PoC | Prove native CANoe testcase authoring on the V2 fail-safe and domain-boundary path | `Req_127, Req_128, Req_129` / `Func_127, Func_128, Func_129` / `Flow_124` / `Comm_124` / `Var_326, Var_327, Var_328, Var_329` / `IT_V2_FAILSAFE_001`, `ST_V2_FAILSAFE_001` | CANoe native test report, execution screenshot, measurement log, run-id binding |
+| `TC_CANOE_IT_V2_FAILSAFE_001_CGW` | Integration-oriented PoC | Prove native CANoe testcase authoring on the V2 fail-safe and domain-boundary path | `Req_127, Req_128, Req_129` / `Func_127, Func_128, Func_129` / `Flow_124` / `Comm_124` / `Var_326, Var_327, Var_328, Var_329` / `IT_V2_FAILSAFE_001`, `ST_V2_FAILSAFE_001` | CANoe native test report, execution screenshot, measurement log, run-id binding |
 
 ---
 

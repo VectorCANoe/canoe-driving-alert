@@ -9,7 +9,7 @@
 
 ## Current PoC Assets
 1. `canoe/tests/modules/test_units/TC_CANOE_UT_CORE_001_SCHOOLZONE_OVERSPEED`
-2. `canoe/tests/modules/test_units/TC_CANOE_IT_V2_FAILSAFE_001_DOMAIN_BOUNDARY`
+2. `canoe/tests/modules/test_units/TC_CANOE_IT_V2_FAILSAFE_001_CGW`
 
 ## Harness Contract
 - `Test::scenarioCommand`
@@ -32,7 +32,7 @@
 | Asset | Scenario | Main Runtime Checks |
 |---|---|---|
 | `TC_CANOE_UT_CORE_001_SCHOOLZONE_OVERSPEED` | `2` | `vehicleSpeedNorm`, `speedLimitNorm`, `baseZoneContext`, `selectedAlert*`, `ambient*`, `warningTextCode` |
-| `TC_CANOE_IT_V2_FAILSAFE_001_DOMAIN_BOUNDARY` | `18` | `failSafeMode`, `decelAssistReq`, `selectedAlert*`, `warningTextCode`, `frmBaseTestResultMsg` |
+| `TC_CANOE_IT_V2_FAILSAFE_001_CGW` | `18` | `failSafeMode`, `decelAssistReq`, `selectedAlert*`, `warningTextCode`, `frmBaseTestResultMsg` |
 
 ## Out of Scope
 - Direct patching of `canoe/cfg/*.cfg`

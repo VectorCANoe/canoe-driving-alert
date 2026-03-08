@@ -7,7 +7,7 @@
 ## Closed Audit Items
 - `A-007` domain boundary single-writer cleanup
 - `A-008` alert history single-owner cleanup
-- `A-009` HMI/cluster mirror ownership narrowed to `CLU_HMI_CTRL`
+- `A-009` HMI/cluster mirror ownership narrowed to `CLU`
 - `A-011` scenario delayed timer residue fixed
 - `A-012` timeout/reset/fail-safe paths reviewed and accepted
 - `A-013` CAPL time base normalized to milliseconds
@@ -15,7 +15,7 @@
 
 ## Accepted Backlog
 - `A-002` downstream `ethSelectedAlertMsg` consumption remains an accepted SIL shortcut and Ethernet cutover backlog item
-- `A-005` `EMS_ALERT_RX` `@V2X::*` fallback remains a compatibility path and Ethernet cutover backlog item
+- `A-005` `V2X` `@V2X::*` fallback remains a compatibility path and Ethernet cutover backlog item
 
 ## Docs Requests
 - `A-003` `Comm_106` wording mismatch

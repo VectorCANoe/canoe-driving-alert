@@ -56,8 +56,8 @@ This keeps the architecture wide without making the top layer look like a thin d
 - `DCM`
 - `IBOX`
 - `SECURITY_GATEWAY`
-- `ECM`
-- `TCM`
+- `EMS`
+- `TCU`
 - `VCU`
 - `AWD_4WD`
 - `BAT_BMS`
@@ -66,8 +66,8 @@ This keeps the architecture wide without making the top layer look like a thin d
 - `ISG`
 - `EOP`
 - `EWP`
-- `ESP`
-- `EPS`
+- `ESC`
+- `MDPS`
 - `ABS`
 - `EPB`
 - `TPMS`
@@ -89,7 +89,7 @@ This keeps the architecture wide without making the top layer look like a thin d
 - `DOOR_FR`
 - `TAILGATE_MODULE`
 - `IVI`
-- `CLUSTER`
+- `CLU`
 - `HUD`
 - `TMU`
 - `AMP`
@@ -164,14 +164,14 @@ Vehicle surface total: `100`
 
 1. `CGW`
 2. `ETH_BACKBONE`
-3. `ECM`
-4. `TCM`
+3. `EMS`
+4. `TCU`
 5. `VCU`
-6. `ESP`
-7. `EPS`
+6. `ESC`
+7. `MDPS`
 8. `BCM`
 9. `IVI`
-10. `CLUSTER`
+10. `CLU`
 11. `ADAS`
 12. `V2X`
 13. `VALIDATION_HARNESS`
@@ -184,7 +184,7 @@ Vehicle surface total: `100`
 1. `ADAS`
 2. `V2X`
 3. `BCM`
-4. `CLUSTER`
+4. `CLU`
 5. `IVI`
 6. `CGW`
 7. `VALIDATION_HARNESS`

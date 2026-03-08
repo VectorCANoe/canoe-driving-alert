@@ -1,4 +1,4 @@
-﻿# Open Source Intake Policy (CANoe-IVI-OTA)
+# Open Source Intake Policy (CANoe-IVI-OTA)
 
 Document ID: CANOE-OSS-POLICY
 Version: 1.0
