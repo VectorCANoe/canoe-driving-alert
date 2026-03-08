@@ -26,6 +26,7 @@ WARN_EXTENSIONS   = {".cfg"}
 EXCLUDE_DIRS = {
     ".git", ".idea", ".vscode", "__pycache__",
     "build", "dist", "tmp", "_pending_cleanup",
+    ".run",
     "vector_samples_19_4_10",
     "reference",
 }

@@ -35,6 +35,8 @@ EXCLUDE_DIRS = {
     ".git",
     ".idea",
     ".vscode",
+    ".venv",
+    ".codex-tmp",
     "__pycache__",
     "build",
     "dist",
