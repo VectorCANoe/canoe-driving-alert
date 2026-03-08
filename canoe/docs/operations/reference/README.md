@@ -24,6 +24,10 @@ Open these only when the active task needs background support:
   - expanded OEM ECU candidate screening table from local reference DBC and legacy samples
 - `OEM_WIDE_SURFACE_ECU_INVENTORY_V1_2026-03-09.md`
   - widened 30+ surface ECU inventory for OEM-scale vehicle-program framing
+- `OEM_ACTIVE_TARGET_PROFILE_2026-03-09.md`
+  - active Dev1 target profile: `52` surface ECUs, `14` deep runtimes, `8` core custom surfaces, `4` validation/test elements
+- `OEM_100_ECU_PROGRAM_BANK_2026-03-09.md`
+  - reserve architecture bank for 70+ base vehicle breadth and 100-scale reviewer-facing program framing
 - `LICENSE_REFERENCE_REPORT.md`
   - license/reference inventory
 - `OPEN_SOURCE_INTAKE_POLICY.md`
@@ -35,3 +39,6 @@ Open these only when the active task needs background support:
 
 - This folder is not part of the daily active SoT surface.
 - If a note becomes part of the daily working path, move or link it from a more active folder.
+- For the current reset cycle:
+  - use `OEM_ACTIVE_TARGET_PROFILE_2026-03-09.md` as the active Dev1 sizing target
+  - use `OEM_100_ECU_PROGRAM_BANK_2026-03-09.md` as reserve breadth only

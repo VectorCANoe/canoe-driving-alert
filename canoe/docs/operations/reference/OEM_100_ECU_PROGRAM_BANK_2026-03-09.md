@@ -1,0 +1,298 @@
+# OEM 100 ECU Program Bank (2026-03-09)
+
+## Decision
+
+Yes, the architecture surface can be expanded much more.
+
+Use this model:
+
+- `Base vehicle inventory`: `72` surface ECUs
+- `Validation surface`: `1`
+- `Premium option bank`: `27`
+- `Grand total inventory bank`: `100`
+
+This is an architecture/program-shaping bank.
+It is **not** a commitment to deeply implement 100 runtimes.
+
+## Why This Is Reasonable
+
+- A real vehicle program is much broader than the currently active feature set.
+- The reviewer should read the project as a complete vehicle architecture, not a single scenario demo.
+- Breadth can be modeled now while deep implementation stays limited.
+
+## Execution Rule
+
+Keep these separate:
+
+1. `Surface inventory breadth`
+2. `Deep runtime implementation`
+3. `Core custom feature focus`
+
+Recommended implementation depth remains:
+
+- deep runtime surfaces: `13~15`
+- core custom feature surfaces: `6~8`
+
+## A. Base Vehicle Inventory (`72`)
+
+### A1. Infrastructure / Integration (`5`)
+
+1. `CGW`
+2. `ETH_BACKBONE`
+3. `DCM`
+4. `IBOX`
+5. `SECURITY_GATEWAY`
+
+### A2. Powertrain (`10`)
+
+1. `ECM`
+2. `TCM`
+3. `VCU`
+4. `AWD_4WD`
+5. `BAT_BMS`
+6. `FPCM`
+7. `LVR`
+8. `ISG`
+9. `EOP`
+10. `EWP`
+
+### A3. Chassis / Safety (`12`)
+
+1. `ESP`
+2. `EPS`
+3. `ABS`
+4. `EPB`
+5. `TPMS`
+6. `SAS`
+7. `ECS`
+8. `ACU`
+9. `ODS`
+10. `VSM`
+11. `EHB`
+12. `CDC`
+
+### A4. Body / Comfort (`16`)
+
+1. `BCM`
+2. `HVAC`
+3. `SMK`
+4. `AFLS`
+5. `LIGHTING_ECU`
+6. `WIPER_MODULE`
+7. `SUNROOF_MODULE`
+8. `DOOR_FL`
+9. `DOOR_FR`
+10. `DOOR_RL`
+11. `DOOR_RR`
+12. `TAILGATE_MODULE`
+13. `SEAT_DRV`
+14. `SEAT_PASS`
+15. `MIRROR_MODULE`
+16. `BODY_SECURITY_MODULE`
+
+### A5. IVI / HMI / Connectivity (`10`)
+
+1. `IVI`
+2. `CLUSTER`
+3. `HUD`
+4. `TMU`
+5. `AMP`
+6. `PGS`
+7. `NAV_MODULE`
+8. `VOICE_ASSIST`
+9. `RSE`
+10. `DIGITAL_KEY`
+
+### A6. ADAS / V2X / Parking (`19`)
+
+1. `ADAS`
+2. `V2X`
+3. `SCC`
+4. `LDWS_LKAS`
+5. `FCA`
+6. `BCW`
+7. `LCA`
+8. `SPAS`
+9. `RSPA`
+10. `AVM`
+11. `FCAM`
+12. `FRADAR`
+13. `SRR_FL`
+14. `SRR_FR`
+15. `SRR_RL`
+16. `SRR_RR`
+17. `PARK_ULTRASONIC`
+18. `DMS`
+19. `OMS`
+
+Base vehicle inventory total: `72`
+
+## B. Validation Surface (`1`)
+
+1. `VALIDATION_HARNESS`
+
+Inventory subtotal with validation: `73`
+
+## C. Premium Option Bank (`27`)
+
+These are realistic additional surfaces for a higher trim / premium / technology-heavy program.
+
+1. `OBC`
+2. `DCDC`
+3. `MCU`
+4. `INVERTER`
+5. `CHARGE_PORT_CTRL`
+6. `AIR_SUSPENSION`
+7. `RWS`
+8. `NIGHT_VISION`
+9. `AEB_DOMAIN`
+10. `HIGHWAY_PILOT`
+11. `PARK_MASTER`
+12. `TRAILER_CTRL`
+13. `HEADLAMP_LEVELING`
+14. `AUTO_DOOR_CTRL`
+15. `POWER_TAILGATE_CTRL`
+16. `MASSAGE_SEAT_CTRL`
+17. `REAR_CLIMATE_MODULE`
+18. `CABIN_SENSING`
+19. `BIOMETRIC_AUTH`
+20. `CARPAY_CTRL`
+21. `PHONE_AS_KEY`
+22. `OTA_MASTER`
+23. `EDGE_LOGGER`
+24. `ROAD_PREVIEW_CAMERA`
+25. `LIDAR`
+26. `REAR_RADAR_MASTER`
+27. `SURROUND_PARK_MASTER`
+
+Grand total inventory bank: `100`
+
+## D. Practical Layering
+
+### Layer 1. Primary Reviewer Surface (`32`)
+
+Use these first in the main architecture tree:
+
+- `CGW`
+- `ETH_BACKBONE`
+- `DCM`
+- `IBOX`
+- `ECM`
+- `TCM`
+- `VCU`
+- `AWD_4WD`
+- `BAT_BMS`
+- `FPCM`
+- `LVR`
+- `ESP`
+- `EPS`
+- `ABS`
+- `EPB`
+- `TPMS`
+- `SAS`
+- `ACU`
+- `BCM`
+- `HVAC`
+- `SMK`
+- `LIGHTING_ECU`
+- `IVI`
+- `CLUSTER`
+- `HUD`
+- `TMU`
+- `ADAS`
+- `V2X`
+- `SCC`
+- `LDWS_LKAS`
+- `FCA`
+- `AVM`
+
+### Layer 2. Secondary Vehicle Breadth (`41`)
+
+Use these in category views, domain trees, and optional system maps:
+
+- `SECURITY_GATEWAY`
+- `ISG`
+- `EOP`
+- `EWP`
+- `ECS`
+- `ODS`
+- `VSM`
+- `EHB`
+- `CDC`
+- `AFLS`
+- `WIPER_MODULE`
+- `SUNROOF_MODULE`
+- `DOOR_FL`
+- `DOOR_FR`
+- `DOOR_RL`
+- `DOOR_RR`
+- `TAILGATE_MODULE`
+- `SEAT_DRV`
+- `SEAT_PASS`
+- `MIRROR_MODULE`
+- `BODY_SECURITY_MODULE`
+- `AMP`
+- `PGS`
+- `NAV_MODULE`
+- `VOICE_ASSIST`
+- `RSE`
+- `DIGITAL_KEY`
+- `BCW`
+- `LCA`
+- `SPAS`
+- `RSPA`
+- `FCAM`
+- `FRADAR`
+- `SRR_FL`
+- `SRR_FR`
+- `SRR_RL`
+- `SRR_RR`
+- `PARK_ULTRASONIC`
+- `DMS`
+- `OMS`
+- `VALIDATION_HARNESS`
+
+### Layer 3. Premium Option Bank (`27`)
+
+Keep these as premium/next-release architecture reserve.
+
+## E. Deep Runtime Commitment
+
+Keep deep runtime scope controlled even with 100-bank breadth.
+
+### Deep Now (`13`)
+
+- `CGW`
+- `ETH_BACKBONE`
+- `ECM`
+- `TCM`
+- `VCU`
+- `ESP`
+- `EPS`
+- `BCM`
+- `IVI`
+- `CLUSTER`
+- `ADAS`
+- `V2X`
+- `VALIDATION_HARNESS`
+
+### Optional Deep Next (`2`)
+
+- `SCC`
+- `TMU`
+
+## F. Core Custom Feature Focus (`7`)
+
+1. `ADAS`
+2. `V2X`
+3. `BCM`
+4. `CLUSTER`
+5. `IVI`
+6. `CGW`
+7. `VALIDATION_HARNESS`
+
+## Short Conclusion
+
+- Yes, `50` is still small if the goal is to look like a complete OEM vehicle program.
+- Use `72 + 1 + 27 = 100` as the architecture bank.
+- But keep actual deep implementation narrow.
