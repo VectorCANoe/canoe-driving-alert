@@ -15,6 +15,10 @@
 3. 패키징
    - portable ZIP
    - Windows executable
+4. CI bridge
+   - JUnit XML
+   - Jenkins archive contract
+   - sample pipeline: `product/sdv_operator/examples/Jenkinsfile.verify`
 
 ## One-Line Flow
 
@@ -22,6 +26,7 @@
 python scripts/run.py gate all
 python scripts/run.py scenario run --id 4
 python scripts/run.py verify quick --run-id 20260308_0900 --owner DEV2
+python scripts/run.py verify batch --run-id 20260308_0900 --owner DEV2 --phase pre --report-formats json,md,junit
 ```
 
 ## 표면 원칙
@@ -36,6 +41,7 @@ python scripts/run.py verify quick --run-id 20260308_0900 --owner DEV2
 1. Quickstart
 2. Commands
 3. Results
-4. Packaging
-5. Maintenance
-6. Repo Surfaces
+4. CI Bridge
+5. Packaging
+6. Maintenance
+7. Repo Surfaces

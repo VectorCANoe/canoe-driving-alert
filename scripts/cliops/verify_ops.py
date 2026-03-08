@@ -177,7 +177,19 @@ def cmd_verify_finalize(args: argparse.Namespace) -> int:
 
 
 def cmd_verify_quick(args: argparse.Namespace) -> int:
+    from cliops.runtime_ops import cmd_doctor
+
     steps = [
+        (
+            'doctor',
+            lambda: cmd_doctor(
+                argparse.Namespace(
+                    ensure_running=True,
+                    output_json=Path('canoe/tmp/reports/verification/doctor_report.json'),
+                    output_md=Path('canoe/tmp/reports/verification/doctor_report.md'),
+                )
+            ),
+        ),
         ('verify prepare', lambda: cmd_verify_prepare(argparse.Namespace(run_id=args.run_id))),
         ('verify smoke', lambda: cmd_verify_smoke(argparse.Namespace(owner=args.owner, run_date=args.run_date))),
         (
@@ -229,6 +241,7 @@ def _batch_artifact_rows(run_id: str) -> list[dict[str, object]]:
         'canoe/tmp/reports/verification/dev_completeness_smoke.md',
         'canoe/tmp/reports/verification/run_readiness.json',
         'canoe/tmp/reports/verification/run_readiness.md',
+        'canoe/tmp/reports/verification/dev2_batch_report.junit.xml',
         'canoe/tmp/reports/verification/run_insight_report.json',
         'canoe/tmp/reports/verification/run_insight_report.md',
         'canoe/tmp/reports/verification/doc_binding_bundle.json',
@@ -247,21 +260,22 @@ def _batch_artifact_rows(run_id: str) -> list[dict[str, object]]:
 
 
 def _normalize_report_formats(raw: str) -> list[str]:
-    allowed = {'json', 'md', 'csv'}
+    allowed = {'json', 'md', 'csv', 'junit'}
     parts = [item.strip().lower() for item in raw.split(',') if item.strip()]
     if not parts:
         return ['json', 'md']
     out: list[str] = []
     for item in parts:
         if item not in allowed:
-            raise ValueError(f'invalid report format: {item} (allowed: json,md,csv)')
+            raise ValueError(f'invalid report format: {item} (allowed: json,md,csv,junit)')
         if item not in out:
             out.append(item)
     return out
 
 
 def _write_batch_report(*, run_id: str, owner: str, run_date: str, phase: str, steps: list[dict[str, object]], report_formats: list[str], output_json: Path, output_md: Path, output_csv: Path) -> None:
-    if 'json' in report_formats:
+    write_json = 'json' in report_formats or 'junit' in report_formats
+    if write_json:
         output_json.parent.mkdir(parents=True, exist_ok=True)
     if 'md' in report_formats:
         output_md.parent.mkdir(parents=True, exist_ok=True)
@@ -284,7 +298,7 @@ def _write_batch_report(*, run_id: str, owner: str, run_date: str, phase: str, s
         'artifacts': artifacts,
         'generated_at': dt.datetime.now().isoformat(),
     }
-    if 'json' in report_formats:
+    if write_json:
         output_json.write_text(json.dumps(payload, indent=2), encoding='utf-8')
     if 'md' in report_formats:
         lines = [
@@ -318,7 +332,61 @@ def _write_batch_report(*, run_id: str, owner: str, run_date: str, phase: str, s
                 writer.writerow({'row_type': 'artifact', 'run_id': run_id, 'phase': phase, 'owner': owner, 'run_date': run_date, 'status': status, 'step_name': '', 'step_rc': '', 'artifact_path': row['path'], 'artifact_exists': str(row['exists']).lower(), 'artifact_size_bytes': row['size_bytes'], 'artifact_last_modified': row['last_modified']})
 
 
+def _maybe_export_batch_junit(*, report_formats: list[str], output_json: Path, output_junit: Path) -> int:
+    if 'junit' not in report_formats:
+        return 0
+    cmd = [
+        sys.executable,
+        str(SCRIPTS / 'quality' / 'export_junit_from_batch.py'),
+        '--batch-json',
+        str(output_json),
+        '--run-readiness',
+        'canoe/tmp/reports/verification/run_readiness.json',
+        '--doctor-report',
+        'canoe/tmp/reports/verification/doctor_report.json',
+        '--output-xml',
+        str(output_junit),
+    ]
+    return run_cmd(cmd)
+
+
+def _finalize_batch_reports(*, args: argparse.Namespace, report_formats: list[str], steps: list[dict[str, object]], exit_code: int) -> int:
+    _write_batch_report(
+        run_id=args.run_id,
+        owner=args.owner,
+        run_date=args.run_date,
+        phase=args.phase,
+        steps=steps,
+        report_formats=report_formats,
+        output_json=args.output_json,
+        output_md=args.output_md,
+        output_csv=args.output_csv,
+    )
+    junit_rc = _maybe_export_batch_junit(
+        report_formats=report_formats,
+        output_json=args.output_json,
+        output_junit=args.output_junit,
+    )
+    if junit_rc != 0:
+        return junit_rc
+    if 'junit' in report_formats:
+        _write_batch_report(
+            run_id=args.run_id,
+            owner=args.owner,
+            run_date=args.run_date,
+            phase=args.phase,
+            steps=steps,
+            report_formats=report_formats,
+            output_json=args.output_json,
+            output_md=args.output_md,
+            output_csv=args.output_csv,
+        )
+    return exit_code
+
+
 def cmd_verify_batch(args: argparse.Namespace) -> int:
+    from cliops.runtime_ops import cmd_doctor
+
     try:
         report_formats = _normalize_report_formats(args.report_formats)
     except ValueError as ex:
@@ -343,18 +411,29 @@ def cmd_verify_batch(args: argparse.Namespace) -> int:
             ]
             for name, fn in gate_steps:
                 if run_step(name, fn) != 0 and args.stop_on_fail:
-                    _write_batch_report(run_id=args.run_id, owner=args.owner, run_date=args.run_date, phase=args.phase, steps=steps, report_formats=report_formats, output_json=args.output_json, output_md=args.output_md, output_csv=args.output_csv)
-                    return 2
+                    return _finalize_batch_reports(args=args, report_formats=report_formats, steps=steps, exit_code=2)
 
         pre_steps = [
+            (
+                'doctor',
+                lambda: cmd_doctor(
+                    argparse.Namespace(
+                        ensure_running=True,
+                        output_json=Path('canoe/tmp/reports/verification/doctor_report.json'),
+                        output_md=Path('canoe/tmp/reports/verification/doctor_report.md'),
+                    )
+                ),
+            ),
             ('verify prepare', lambda: cmd_verify_prepare(argparse.Namespace(run_id=args.run_id))),
             ('verify smoke', lambda: cmd_verify_smoke(argparse.Namespace(owner=args.owner, run_date=args.run_date))),
             ('verify status', lambda: cmd_verify_status(argparse.Namespace(run_id=args.run_id, evidence_root='', output_json='canoe/tmp/reports/verification/run_readiness.json', output_md='canoe/tmp/reports/verification/run_readiness.md'))),
         ]
         for name, fn in pre_steps:
-            if run_step(name, fn) != 0 and args.stop_on_fail:
-                _write_batch_report(run_id=args.run_id, owner=args.owner, run_date=args.run_date, phase=args.phase, steps=steps, report_formats=report_formats, output_json=args.output_json, output_md=args.output_md, output_csv=args.output_csv)
-                return 2
+            rc = run_step(name, fn)
+            if name == 'doctor' and rc != 0:
+                return _finalize_batch_reports(args=args, report_formats=report_formats, steps=steps, exit_code=2)
+            if rc != 0 and args.stop_on_fail:
+                return _finalize_batch_reports(args=args, report_formats=report_formats, steps=steps, exit_code=2)
 
     if args.phase in {'post', 'full'}:
         finalize_ns = argparse.Namespace(
@@ -378,10 +457,8 @@ def cmd_verify_batch(args: argparse.Namespace) -> int:
             fill_md='canoe/tmp/reports/verification/doc_fill_template.md',
         )
         if run_step('verify finalize', lambda: cmd_verify_finalize(finalize_ns)) != 0 and args.stop_on_fail:
-            _write_batch_report(run_id=args.run_id, owner=args.owner, run_date=args.run_date, phase=args.phase, steps=steps, report_formats=report_formats, output_json=args.output_json, output_md=args.output_md, output_csv=args.output_csv)
-            return 2
+            return _finalize_batch_reports(args=args, report_formats=report_formats, steps=steps, exit_code=2)
         run_step('verify status', lambda: cmd_verify_status(argparse.Namespace(run_id=args.run_id, evidence_root='', output_json='canoe/tmp/reports/verification/run_readiness.json', output_md='canoe/tmp/reports/verification/run_readiness.md')))
 
-    _write_batch_report(run_id=args.run_id, owner=args.owner, run_date=args.run_date, phase=args.phase, steps=steps, report_formats=report_formats, output_json=args.output_json, output_md=args.output_md, output_csv=args.output_csv)
     failed = sum(1 for s in steps if s['rc'] != 0)
-    return 0 if failed == 0 else 2
+    return _finalize_batch_reports(args=args, report_formats=report_formats, steps=steps, exit_code=0 if failed == 0 else 2)

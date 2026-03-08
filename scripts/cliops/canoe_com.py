@@ -105,10 +105,12 @@ class CanoeComBridge:
         checks: list[DoctorCheck] = [DoctorCheck("CANoe COM attach", True, "ok")]
         try:
             running = self.measurement_running()
-            checks.append(DoctorCheck("Measurement running", running, "running" if running else "stopped"))
             if ensure_running and not running:
                 self.measurement_start()
+                checks.append(DoctorCheck("Measurement running", True, "stopped -> started"))
                 checks.append(DoctorCheck("Measurement auto-start", True, "started"))
+            else:
+                checks.append(DoctorCheck("Measurement running", running, "running" if running else "stopped"))
         except Exception as ex:
             checks.append(DoctorCheck("Measurement status", False, str(ex)))
 

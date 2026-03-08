@@ -149,7 +149,7 @@ def print_shell_help() -> None:
     print('  /start guided|demo [id]|precheck [run_id] [owner]')
     print('  /go  # alias of /start guided')
     print('  /verify prepare [run_id]')
-    print('  /verify batch [run_id] [owner] [pre|post|full] [json,md|json,md,csv|...]')
+    print('  /verify batch [run_id] [owner] [pre|post|full] [json,md|json,md,csv|json,md,junit|...]')
     print('  /verify smoke [owner] [run_date]')
     print('  /verify status [run_id]')
     print('  /verify finalize [run_id] [owner] [run_date]')

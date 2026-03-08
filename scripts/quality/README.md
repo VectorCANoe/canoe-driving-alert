@@ -11,6 +11,7 @@ Main tools:
   - `fill-template`
   - `status`
   - `finalize`
+- `export_junit_from_batch.py`
 - `evidence_score_gate.py`
 - `build_evidence_from_write_window.py`
 - `init_evidence_run.py`
@@ -43,5 +44,7 @@ Note:
 - CLI readiness gate report output:
   - `canoe/tmp/reports/verification/cli_readiness_gate.json`
   - `canoe/tmp/reports/verification/cli_readiness_gate.md`
+- `export_junit_from_batch.py` outputs Jenkins-ingestible JUnit XML:
+  - `canoe/tmp/reports/verification/dev2_batch_report.junit.xml`
 - This allows CAPL evidence lines to add fields without breaking parsing.
 - Gate purpose/CI mapping reference: `product/sdv_operator/docs-src/maintenance.md`

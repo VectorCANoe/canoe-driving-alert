@@ -118,7 +118,7 @@ CONTRACT_CANONICAL = [
     "python scripts/run.py evidence status --run-id <YYYYMMDD_HHMM>",
     "python scripts/run.py release portable",
     "python scripts/run.py verify prepare --run-id <YYYYMMDD_HHMM>",
-    "python scripts/run.py verify batch --run-id <YYYYMMDD_HHMM> --owner <OWNER>",
+    "python scripts/run.py verify batch --run-id <YYYYMMDD_HHMM> --owner <OWNER> --phase <pre|post|full> --report-formats json,md,junit",
     "python scripts/run.py verify smoke --owner <OWNER>",
     "python scripts/run.py verify fill-score --tier <UT|IT|ST> --run-id <YYYYMMDD_HHMM> --owner <OWNER>",
     "python scripts/run.py verify insight --run-id <YYYYMMDD_HHMM>",
@@ -442,6 +442,7 @@ def cmd_shell(_: argparse.Namespace) -> int:
                         output_json=Path("canoe/tmp/reports/verification/dev2_batch_report.json"),
                         output_md=Path("canoe/tmp/reports/verification/dev2_batch_report.md"),
                         output_csv=Path("canoe/tmp/reports/verification/dev2_batch_report.csv"),
+                        output_junit=Path("canoe/tmp/reports/verification/dev2_batch_report.junit.xml"),
                     )
                 )
             elif sub == "smoke":

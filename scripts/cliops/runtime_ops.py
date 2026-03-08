@@ -219,7 +219,19 @@ def cmd_start_demo(args: argparse.Namespace) -> int:
 
 
 def cmd_start_precheck(args: argparse.Namespace) -> int:
-    return cmd_verify_batch(argparse.Namespace(run_id=args.run_id, owner=args.owner, run_date=args.run_date, phase='pre', skip_gates=args.skip_gates, stop_on_fail=args.stop_on_fail, report_formats=args.report_formats, output_json=Path('canoe/tmp/reports/verification/dev2_batch_report.json'), output_md=Path('canoe/tmp/reports/verification/dev2_batch_report.md'), output_csv=Path('canoe/tmp/reports/verification/dev2_batch_report.csv')))
+    return cmd_verify_batch(argparse.Namespace(
+        run_id=args.run_id,
+        owner=args.owner,
+        run_date=args.run_date,
+        phase='pre',
+        skip_gates=args.skip_gates,
+        stop_on_fail=args.stop_on_fail,
+        report_formats=args.report_formats,
+        output_json=Path('canoe/tmp/reports/verification/dev2_batch_report.json'),
+        output_md=Path('canoe/tmp/reports/verification/dev2_batch_report.md'),
+        output_csv=Path('canoe/tmp/reports/verification/dev2_batch_report.csv'),
+        output_junit=Path('canoe/tmp/reports/verification/dev2_batch_report.junit.xml'),
+    ))
 
 
 def write_scenario_summary(args: argparse.Namespace, rc: int) -> None:

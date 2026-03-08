@@ -110,6 +110,40 @@ class CanoeSysVarClient:
     def get_int(self, namespace: str, variable: str) -> int:
         return int(self._resolve_var(namespace, variable).Value)
 
+    def has_var(self, namespace: str, variable: str) -> bool:
+        try:
+            self._resolve_var(namespace, variable)
+            return True
+        except Exception:
+            return False
+
+    def trigger_scenario(self, scenario_id: int, *, ack_wait_ms: int = 1200, poll_s: float = 0.02) -> str:
+        candidates = [
+            ("scenarioCommand", "scenarioCommandAck"),
+            ("testScenario", None),
+        ]
+
+        for var_name, ack_name in candidates:
+            if not self.has_var("Test", var_name):
+                continue
+
+            self.set_int("Test", var_name, 0)
+            time.sleep(0.15)
+            self.set_int("Test", var_name, scenario_id)
+
+            if not ack_name or not self.has_var("Test", ack_name):
+                return var_name
+
+            deadline = time.perf_counter() + max(0, ack_wait_ms) / 1000.0
+            while time.perf_counter() <= deadline:
+                if self.get_int("Test", ack_name) == scenario_id:
+                    return f"{var_name}/{ack_name}"
+                time.sleep(poll_s)
+
+            return f"{var_name} (ack-timeout)"
+
+        raise RuntimeError("No usable scenario trigger sysvar found in Test namespace")
+
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Run development completeness smoke checks")
@@ -204,9 +238,7 @@ def observed_text(data: Dict[str, int]) -> str:
 
 
 def run_case(client: CanoeSysVarClient, case: SmokeCase, poll_s: float) -> Dict[str, str]:
-    client.set_int("Test", "testScenario", 0)
-    time.sleep(0.15)
-    client.set_int("Test", "testScenario", case.scenario_id)
+    trigger_mode = client.trigger_scenario(case.scenario_id, poll_s=poll_s)
 
     start = time.perf_counter()
     timeout_s = case.timeout_ms / 1000.0
@@ -236,7 +268,7 @@ def run_case(client: CanoeSysVarClient, case: SmokeCase, poll_s: float) -> Dict[
         "rule_type": case.rule_type,
         "rule_ms": case.rule_ms,
         "expected": case.expected,
-        "observed": observed_text(last),
+        "observed": f"trigger={trigger_mode}; {observed_text(last)}",
         "logic_verdict": "PASS" if logic_pass else "FAIL",
         "comm_verdict": "PASS" if comm_pass else "FAIL",
         "verdict": "PASS" if matched else "FAIL",

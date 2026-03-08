@@ -47,7 +47,10 @@
 - `canoe/tmp/reports/verification/doctor_report.json`
 - `canoe/tmp/reports/verification/run_readiness.json`
 - `canoe/tmp/reports/verification/dev2_batch_report.json`
+- `canoe/tmp/reports/verification/dev2_batch_report.junit.xml`
 - `canoe/logging/evidence/<UT|IT|ST>/<run-id>/...`
+
+`dev2_batch_report.junit.xml`은 Jenkins 수집용 ingress 포맷입니다.
 
 ## 권장 확인 순서
 

@@ -42,6 +42,10 @@ python scripts/run.py verify quick --run-id 20260308_0900 --owner DEV2
 사용 시점:
 - 시나리오 직후 첫 증빙을 빠르게 수집할 때
 - 준비 상태, 누락 항목, 증빙 경로를 바로 확인할 때
+- 현재 붙은 CANoe 세션이 올바른 cfg/measurement인지 함께 확인할 때
+
+참고:
+- `verify quick`는 `doctor(auto-start) -> prepare -> smoke -> status` 순서로 동작합니다.
 
 ### Doctor
 
@@ -106,7 +110,17 @@ python scripts/run.py verify prepare --run-id 20260306_1930
 python scripts/run.py verify batch --run-id 20260308_0900 --owner DEV2 --phase pre
 python scripts/run.py verify batch --run-id 20260308_0900 --owner DEV2 --phase post
 python scripts/run.py verify batch --run-id 20260308_0900 --owner DEV2 --phase full
+python scripts/run.py verify batch --run-id 20260308_0900 --owner DEV2 --phase pre --report-formats json,md,junit
 ```
+
+권장:
+
+- 내부 검토: `json,md`
+- Jenkins 연계: `json,md,junit`
+
+참고:
+- `verify batch --phase pre/full`은 pre 단계 시작 전에 `doctor(auto-start)`를 같이 실행합니다.
+- 현재 CANoe 세션에 validation harness sysvar가 없으면 `doctor` 단계에서 먼저 드러나고, pre batch는 그 지점에서 종료됩니다.
 
 #### Smoke
 

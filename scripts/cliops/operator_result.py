@@ -77,12 +77,13 @@ def _artifact_candidates(command_id: str, args: argparse.Namespace) -> list[Path
         paths.extend([VERIFICATION_ROOT / "doctor_report.json", VERIFICATION_ROOT / "doctor_report.md"])
     elif command_id == "verify.all_gates":
         paths.extend([GATE_ALL_SUMMARY_JSON, GATE_ALL_SUMMARY_MD])
-    elif command_id == "verify.precheck_batch":
+    elif command_id in {"verify.precheck_batch", "verify.batch"}:
         paths.extend(
             [
                 VERIFICATION_ROOT / "dev2_batch_report.json",
                 VERIFICATION_ROOT / "dev2_batch_report.md",
                 VERIFICATION_ROOT / "dev2_batch_report.csv",
+                VERIFICATION_ROOT / "dev2_batch_report.junit.xml",
             ]
         )
     elif command_id in {"verify.quick_verify", "verify.run_readiness_status"}:
@@ -357,7 +358,7 @@ def build_operator_result(args: argparse.Namespace, rc: int) -> OperatorResult |
         return _doctor_result(command_id, title, rc)
     if command_id in {"verify.quick_verify", "verify.run_readiness_status"}:
         return _readiness_result(command_id, title, rc, args)
-    if command_id == "verify.precheck_batch":
+    if command_id in {"verify.precheck_batch", "verify.batch"}:
         return _batch_result(command_id, title, rc, args)
     if command_id == "verify.all_gates":
         return _gate_all_result(command_id, title, rc)

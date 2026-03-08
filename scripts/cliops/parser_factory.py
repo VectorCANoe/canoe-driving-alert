@@ -79,7 +79,7 @@ def add_verify_batch_args(p: argparse.ArgumentParser, handlers: HandlerMap) -> N
     p.add_argument(
         "--report-formats",
         default="json,md",
-        help="Comma-separated report formats: json,md,csv (default: json,md)",
+        help="Comma-separated report formats: json,md,csv,junit (default: json,md)",
     )
     p.add_argument(
         "--output-json",
@@ -98,6 +98,12 @@ def add_verify_batch_args(p: argparse.ArgumentParser, handlers: HandlerMap) -> N
         type=Path,
         default=Path("canoe/tmp/reports/verification/dev2_batch_report.csv"),
         help="Batch summary CSV output path (optional format)",
+    )
+    p.add_argument(
+        "--output-junit",
+        type=Path,
+        default=Path("canoe/tmp/reports/verification/dev2_batch_report.junit.xml"),
+        help="Batch summary JUnit XML output path (optional format)",
     )
     p.set_defaults(func=handlers["cmd_verify_batch"], operator_command_id="verify.batch")
 
@@ -344,7 +350,7 @@ def add_start_precheck_args(
     p.add_argument(
         "--report-formats",
         default="json,md",
-        help="Comma-separated formats: json,md,csv (default: json,md)",
+        help="Comma-separated formats: json,md,csv,junit (default: json,md)",
     )
     p.set_defaults(func=handlers["cmd_start_precheck"], operator_command_id="verify.precheck_batch")
 

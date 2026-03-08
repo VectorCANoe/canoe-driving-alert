@@ -9,7 +9,7 @@
 
 - 실행: `gate all`, `scenario run`, `verify quick`, `doctor`
 - 검토: TUI 기반 결과/로그/COM 상태 확인
-- 산출: readiness, batch report, portable ZIP / exe
+- 산출: readiness, batch report, JUnit XML, portable ZIP / exe
 
 ## 빠른 시작
 
@@ -47,9 +47,10 @@ python -m mkdocs build -f product/sdv_operator/mkdocs.yml --strict
 2. [`docs-src/quickstart.md`](docs-src/quickstart.md)
 3. [`docs-src/commands.md`](docs-src/commands.md)
 4. [`docs-src/results.md`](docs-src/results.md)
-5. [`docs-src/packaging.md`](docs-src/packaging.md)
-6. [`docs-src/repo-surfaces.md`](docs-src/repo-surfaces.md)
-7. [`docs-src/maintenance.md`](docs-src/maintenance.md)
+5. [`docs-src/ci-bridge.md`](docs-src/ci-bridge.md)
+6. [`docs-src/packaging.md`](docs-src/packaging.md)
+7. [`docs-src/repo-surfaces.md`](docs-src/repo-surfaces.md)
+8. [`docs-src/maintenance.md`](docs-src/maintenance.md)
 
 ## 패키징 계약
 
@@ -57,3 +58,7 @@ ZIP / exe 산출물 범위는 아래 두 파일을 기준으로 고정합니다.
 
 - `product/sdv_operator/manifest.json`
 - `product/sdv_operator/docs/PACKAGING_SCOPE.md`
+
+CI bridge sample:
+
+- `product/sdv_operator/examples/Jenkinsfile.verify`
