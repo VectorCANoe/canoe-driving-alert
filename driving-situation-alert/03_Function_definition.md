@@ -16,6 +16,7 @@
 - 본 문서는 요구사항(01)의 What을 노드 기능(How)으로 분해한다.
 - 상단 표는 표준 양식 구조만 유지하고, 상세 추적 정보는 하단 표에 분리한다.
 - Panel은 테스트 자극/관측 인터페이스이며 기능 주체 ECU로 보지 않는다.
+- `VAL_SCENARIO_CTRL`/`VAL_BASELINE_CTRL`는 Validation Harness(검증 전용)로만 취급하며, 제품 ECU 인벤토리와 분리해 표기한다.
 - 통합 기본요구사항 구간은 기능 ID `Func_001~Func_043`을 기준으로 요구사항 ID(`Req_001~Req_043`)와 누락 없는 추적 커버리지(N:M 허용)를 유지한다.
 - 차량 기본 기능 확장 요구(`Req_101~Req_107`, `Req_109~Req_119`)는 `Func_101~Func_107`, `Func_109~Func_119`로 별도 관리한다.
 - V2 확장 요구(`Req_120~Req_121`, `Req_123`, `Req_125~Req_129`)는 `Func_120~Func_121`, `Func_123`, `Func_125~Func_129`로 별도 관리하며, 본 문서에서는 구현 활성 상태로 유지한다.
@@ -52,12 +53,12 @@
 | 입력 | 구급 긴급 활성 | 구급 긴급 활성 상태 입력 | Switch/Indicator ON/OFF | Req_017 / Flow_005 / Comm_005 / ST_EMS_002 |
 | 입력 | 구급 ETA | 구급 도달예상시간 입력 | TrackBar로 값 조절 | Req_030 / Flow_006 / Comm_006 / ST_ARB_ETA_002 |
 | 입력 | 구급 방향 | 구급 접근 방향 입력 | Switch/Indicator로 방향 선택 | Req_020 / Flow_006 / Comm_006 / ST_HMI_DIR_002 |
-| 입력 | 시나리오 선택 | 테스트 시나리오 선택 입력 | 테스트 패널 선택 | Req_041 / Flow_009 / Comm_009 / ST_SIL_001 |
+| 입력 | 시나리오 선택(Validation-only) | 테스트 시나리오 선택 입력 | Validation Harness 테스트 패널 선택(Non-Production) | Req_041 / Flow_009 / Comm_009 / ST_SIL_001 |
 | 출력 | 앰비언트 제어 | 구간/긴급 상태에 따른 앰비언트 출력 | ETH 백본 -> BODY_GW -> CAN 출력 | Req_008~Req_009,Req_013~Req_016,Req_033,Req_034,Req_035,Req_037 / Flow_007 / Comm_007 / IT_OUT_001 |
 | 출력 | 클러스터 경고 | 경고 문구 및 상태 출력 | ETH 백본 -> IVI_GW -> CAN 출력 | Req_005,Req_019~Req_021,Req_026,Req_040 / Flow_008 / Comm_008 / IT_OUT_001 |
 | 출력 | 경찰 알림 송신 | 경찰 긴급 알림 송신 | Ethernet UDP 송신 | Req_017 / Flow_004 / Comm_004 / IT_EMS_001 |
 | 출력 | 구급 알림 송신 | 구급 긴급 알림 송신 | Ethernet UDP 송신 | Req_017 / Flow_005 / Comm_005 / IT_EMS_001 |
-| 출력 | 판정 결과 | 시나리오 판정 결과 출력 | 로그/패널 출력 | Req_043 / Flow_009 / Comm_009 / ST_RESULT_001 |
+| 출력 | 판정 결과(Validation-only) | 시나리오 판정 결과 출력 | Validation Harness 로그/패널 출력(Non-Production) | Req_043 / Flow_009 / Comm_009 / ST_RESULT_001 |
 | ECU 동작 | 구간 컨텍스트 관리 | 구간/제한속도 입력을 바탕으로 컨텍스트 갱신 | 상태 업데이트 | Req_007,Req_010 / Flow_003 / Comm_003 / UT_NAV_001 |
 | ECU 동작 | 경고 조건 판정 | 속도/조향/제한속도 기반 경고 조건 판정 | 경고 트리거 생성 | Req_001~Req_004,Req_006,Req_010~Req_012 / Flow_001,Flow_002,Flow_003 / Comm_001,Comm_002,Comm_003 / UT_ADAS_001 |
 | ECU 동작 | 경찰 알림 송신 제어 | 경찰 알림 송신 주기 관리 | 송신 상태 관리 | Req_017 / Flow_004 / Comm_004 / UT_EMS_POL_001 |
@@ -66,7 +67,7 @@
 | ECU 동작 | 경보 우선순위 판정 | 긴급/구간 충돌 시 우선순위 결정 | 중재 결과 산출 | Req_022,Req_025~Req_032 / Flow_006 / Comm_006 / UT_ARB_001 |
 | ECU 동작 | 앰비언트 제어 | 경고 패턴/색상 적용 | 패턴 결정 | Req_008,Req_009,Req_013~Req_016,Req_033,Req_034,Req_035,Req_037 / Flow_007 / Comm_007 / UT_BCM_001 |
 | ECU 동작 | 클러스터 표시 | 경고 문구/유형 표시 | 문구 결정 | Req_005,Req_019~Req_021,Req_026,Req_040 / Flow_008 / Comm_008 / UT_CLU_001 |
-| ECU 동작 | 테스트 실행/판정 | 테스트 시나리오 실행 및 판정 | Pass/Fail 기록 | Req_041~Req_043 / Flow_009 / Comm_009 / ST_SIL_002 |
+| ECU 동작 | 테스트 실행/판정(Validation-only) | 테스트 시나리오 실행 및 판정 | Validation Harness Pass/Fail 기록(Non-Production) | Req_041~Req_043 / Flow_009 / Comm_009 / ST_SIL_002 |
 | ECU 동작 | 엔진 기본 제어 | 시동 입력 기반 엔진 상태 반영 | Vehicle Baseline | Req_101 / Func_101 / ST_BASE_PT_001 |
 | ECU 동작 | 변속 기본 제어 | 기어 입력(P/R/N/D) 상태 반영 | Vehicle Baseline | Req_102 / Func_102 / ST_BASE_PT_001 |
 | ECU 동작 | 가속 기본 제어 | 가속 입력 상태 반영 | Vehicle Baseline | Req_103 / Func_103 / ST_BASE_CH_001 |
@@ -77,7 +78,7 @@
 | ECU 동작 | 클러스터 기본 표시 | 속도/기어/경고 기본 표시 반영 | Vehicle Baseline | Req_109 / Func_109 / ST_BASE_IVI_001 |
 | ECU 동작 | 도메인 게이트웨이 전달 | 도메인 경계 기반 메시지 전달 | Vehicle Baseline | Req_110 / Func_110 / IT_BASE_GW_001 |
 | ECU 동작 | 도메인 경계 유지 | 도메인 통신 경계/정책 유지 | Vehicle Baseline | Req_111 / Func_111 / IT_BASE_GW_001 |
-| ECU 동작 | 차량 기본 기능 SIL 검증 | 기본 기능 시나리오 실행/판정 | Vehicle Baseline | Req_112 / Func_112 / ST_BASE_DIAG_001 |
+| ECU 동작 | 차량 기본 기능 SIL 검증(Validation-only) | 기본 기능 시나리오 실행/판정 | Vehicle Baseline 검증 하네스(Non-Production) | Req_112 / Func_112 / ST_BASE_DIAG_001 |
 | ECU 동작 | 공조 상태 반영 | HVAC 상태/제어 신호 반영 | Vehicle Baseline | Req_113 / Func_113 / IT_BASE_EXT_BODY_001 |
 | ECU 동작 | 시트 상태 반영 | 시트 상태/제어 신호 반영 | Vehicle Baseline | Req_113 / Func_114 / IT_BASE_EXT_BODY_001 |
 | ECU 동작 | 미러 상태 반영 | 미러 상태 신호 반영 | Vehicle Baseline | Req_113 / Func_115 / IT_BASE_EXT_BODY_001 |
@@ -149,9 +150,9 @@
 | Func_038 | Req_037 | AMBIENT_CTRL | 고속도로 패턴 정책 | 고속 경고 패턴 고정 적용 | 입력: baseZoneContext / 출력: ambientColor, ambientPattern |
 | Func_039 | Req_037 | AMBIENT_CTRL | 유도선 패턴 정책 | 좌/우 유도 패턴 고정 적용 | 입력: navDirection, baseZoneContext / 출력: ambientColor, ambientPattern |
 | Func_040 | Req_040 | CLU_HMI_CTRL | 문구 길이 제한 | 경고 문구 길이/형식 고정 | 입력: warningTextCode / 출력: warningTextCode |
-| Func_041 | Req_041 | VAL_SCENARIO_CTRL | SIL 시나리오 실행 | CANoe SIL에서 시나리오 실행 제어 | 입력: testScenario / 출력: scenarioResult |
-| Func_042 | Req_042 | VAL_SCENARIO_CTRL | CAN+ETH 동시 검증 | CAN/Ethernet 동시 조건 검증 | 입력: testScenario / 출력: scenarioResult |
-| Func_043 | Req_043 | VAL_SCENARIO_CTRL | 판정 결과 산출 | 시나리오 Pass/Fail 판정 출력 | 입력: scenarioResult / 출력: scenarioResult |
+| Func_041 | Req_041 | VAL_SCENARIO_CTRL | SIL 시나리오 실행(Validation-only) | CANoe SIL에서 시나리오 실행 제어 | 입력: testScenario / 출력: scenarioResult |
+| Func_042 | Req_042 | VAL_SCENARIO_CTRL | CAN+ETH 동시 검증(Validation-only) | CAN/Ethernet 동시 조건 검증 | 입력: testScenario / 출력: scenarioResult |
+| Func_043 | Req_043 | VAL_SCENARIO_CTRL | 판정 결과 산출(Validation-only) | 시나리오 Pass/Fail 판정 출력 | 입력: scenarioResult / 출력: scenarioResult |
 
 ---
 
@@ -169,7 +170,7 @@
 | Func_109 | Req_109 | CLU_BASE_CTRL | 클러스터 기본 표시 | 속도/기어/경고 기본 상태를 클러스터에 표시 | 입력: ClusterSpeed, ClusterGear, warningTextCode / 출력: ClusterStatus |
 | Func_110 | Req_110 | DOMAIN_ROUTER | 도메인 게이트웨이 전달 | 도메인 간 입력/출력 메시지 라우팅 수행 | 입력: RoutingPolicy / 출력: BodyGatewayRoute |
 | Func_111 | Req_111 | DOMAIN_BOUNDARY_MGR | 도메인 경계 유지 | 도메인별 통신 경계/역할 분리를 유지 | 입력: RoutingPolicy / 출력: BoundaryStatus |
-| Func_112 | Req_112 | VAL_BASELINE_CTRL | 차량 기본 기능 SIL 검증 | 기본 차량 기능 시나리오 실행 및 판정 | 입력: BaseScenarioId / 출력: BaseScenarioResult |
+| Func_112 | Req_112 | VAL_BASELINE_CTRL | 차량 기본 기능 SIL 검증(Validation-only) | 기본 차량 기능 시나리오 실행 및 판정 | 입력: BaseScenarioId / 출력: BaseScenarioResult |
 | Func_113 | Req_113 | BODY_GW | 공조 상태 반영 | 공조 상태/제어 프레임(HVAC) 수신 정보를 도메인 정책에 반영 | 입력: CabinSetTemp, BlowerLevel, AcCompressorReq, VentMode / 출력: CabinTemp |
 | Func_114 | Req_113 | DRV_STATE_MGR | 시트 상태 반영 | 시트 상태/제어 프레임 수신 정보를 상태 관리에 반영 | 입력: DriverSeatPos, PassengerSeatPos, SeatHeatLevel, SeatVentLevel / 출력: DriverStateInfo |
 | Func_115 | Req_113 | WINDOW_CTRL | 미러 상태 반영 | 미러 상태 프레임(폴딩/열선/조정) 정보를 차량 상태에 반영 | 입력: MirrorFoldState, MirrorHeatState, MirrorAdjAxis / 출력: WindowState |
@@ -303,10 +304,11 @@
 | 도메인 | ECU |
 |---|---|
 | Powertrain | ENG_CTRL, TCM |
-| Chassis | ACCEL_CTRL, BRK_CTRL, STEER_CTRL, EMS_ALERT, WARN_ARB_MGR, VAL_SCENARIO_CTRL |
+| Chassis | ACCEL_CTRL, BRK_CTRL, STEER_CTRL, EMS_ALERT, WARN_ARB_MGR |
 | Body | AMBIENT_CTRL, HAZARD_CTRL, WINDOW_CTRL, DRV_STATE_MGR |
 | Infotainment | NAV_CTX_MGR, CLU_HMI_CTRL, CLU_BASE_CTRL |
 | Gateway/Infra | CHS_GW, INFOTAINMENT_GW, BODY_GW, IVI_GW, ETH_SW, DOMAIN_ROUTER, DOMAIN_BOUNDARY_MGR |
+| Validation Harness(Non-Production) | VAL_SCENARIO_CTRL, VAL_BASELINE_CTRL |
 
 ---
 

@@ -70,11 +70,11 @@
 
 | Message | Identifier | DLC | Signal | signal bit position | Data 설명 | Data 범위 | Data 사용 |
 |---|---|---|---|---|---|---|---|
-| frmVehicleStateCanMsg | 0x2A0 | 2 | vehicleSpeed | 0~7 | 차량 속도 | 0~255 km/h | VAL_SCENARIO_CTRL -> CHS_GW 전달 |
-|  |  |  | driveState | 8~9 | 주행 상태(PRND) | 0~3 | VAL_SCENARIO_CTRL -> CHS_GW 전달 |
-| frmSteeringCanMsg | 0x2A1 | 1 | steeringInput | 0 | 조향 입력 여부 | 0~1 | VAL_SCENARIO_CTRL -> CHS_GW 전달 |
-| frmPedalInputCanMsg | 0x2A2 | 2 | AccelPedal | 0~7 | 가속 페달 입력 | 0~100 % | VAL_SCENARIO_CTRL -> ACCEL_CTRL 전달 |
-|  |  |  | BrakePedal | 8~15 | 브레이크 페달 입력 | 0~100 % | VAL_SCENARIO_CTRL -> BRK_CTRL 전달 |
+| frmVehicleStateCanMsg | 0x2A0 | 2 | vehicleSpeed | 0~7 | 차량 속도 | 0~255 km/h | VAL_SCENARIO_CTRL(Validation stimulus) -> CHS_GW 전달 |
+|  |  |  | driveState | 8~9 | 주행 상태(PRND) | 0~3 | VAL_SCENARIO_CTRL(Validation stimulus) -> CHS_GW 전달 |
+| frmSteeringCanMsg | 0x2A1 | 1 | steeringInput | 0 | 조향 입력 여부 | 0~1 | VAL_SCENARIO_CTRL(Validation stimulus) -> CHS_GW 전달 |
+| frmPedalInputCanMsg | 0x2A2 | 2 | AccelPedal | 0~7 | 가속 페달 입력 | 0~100 % | VAL_SCENARIO_CTRL(Validation stimulus) -> ACCEL_CTRL 전달 |
+|  |  |  | BrakePedal | 8~15 | 브레이크 페달 입력 | 0~100 % | VAL_SCENARIO_CTRL(Validation stimulus) -> BRK_CTRL 전달 |
 | frmSteeringStateCanMsg | 0x100 | 1 | SteeringState | 0~1 | 조향 상태 | 0~3 | CHS_GW -> STEER_CTRL 전달 |
 | frmWheelSpeedMsg | 0x101 | 4 | WheelSpdFL | 0~7 | 전륜 좌 휠속도 | 0~255 km/h | CHS_GW -> ACCEL_CTRL, BRK_CTRL, STEER_CTRL 전달 |
 |  |  |  | WheelSpdFR | 8~15 | 전륜 우 휠속도 | 0~255 km/h | CHS_GW -> ACCEL_CTRL, BRK_CTRL, STEER_CTRL 전달 |
@@ -93,10 +93,10 @@
 | frmChassisHealthMsg | 0x103 | 2 | ChassisAliveCnt | 0~7 | Chassis Alive Counter | 0~255 | CHS_GW -> VAL_SCENARIO_CTRL 전달 |
 |  |  |  | ChassisDiagState | 8~11 | Chassis 진단 상태 | 0~15 | CHS_GW -> VAL_SCENARIO_CTRL 전달 |
 |  |  |  | ChassisFailCode | 12~15 | Chassis 오류 코드 | 0~15 | CHS_GW -> VAL_SCENARIO_CTRL 전달 |
-| frmNavContextCanMsg | 0x2A3 | 3 | roadZone | 0~1 | 구간 타입 | 0~3 | VAL_SCENARIO_CTRL -> INFOTAINMENT_GW 전달 |
-|  |  |  | navDirection | 2~3 | 유도 방향 | 0~3 | VAL_SCENARIO_CTRL -> INFOTAINMENT_GW 전달 |
-|  |  |  | zoneDistance | 8~15 | 구간 잔여 거리 | 0~255 m | VAL_SCENARIO_CTRL -> INFOTAINMENT_GW 전달 |
-|  |  |  | speedLimit | 16~23 | 구간 제한속도 | 0~255 km/h | VAL_SCENARIO_CTRL -> INFOTAINMENT_GW 전달 |
+| frmNavContextCanMsg | 0x2A3 | 3 | roadZone | 0~1 | 구간 타입 | 0~3 | VAL_SCENARIO_CTRL(Validation stimulus) -> INFOTAINMENT_GW 전달 |
+|  |  |  | navDirection | 2~3 | 유도 방향 | 0~3 | VAL_SCENARIO_CTRL(Validation stimulus) -> INFOTAINMENT_GW 전달 |
+|  |  |  | zoneDistance | 8~15 | 구간 잔여 거리 | 0~255 m | VAL_SCENARIO_CTRL(Validation stimulus) -> INFOTAINMENT_GW 전달 |
+|  |  |  | speedLimit | 16~23 | 구간 제한속도 | 0~255 km/h | VAL_SCENARIO_CTRL(Validation stimulus) -> INFOTAINMENT_GW 전달 |
 | frmAmbientControlMsg | 0x260 | 1 | ambientMode | 0~2 | 앰비언트 모드 | 0~7 | BODY_GW -> AMBIENT_CTRL 전달 |
 |  |  |  | ambientColor | 3~5 | 앰비언트 색상 | 0~7 | BODY_GW -> AMBIENT_CTRL 전달 |
 |  |  |  | ambientPattern | 6~7 | 앰비언트 패턴 | 0~3 | BODY_GW -> AMBIENT_CTRL 전달 |
@@ -340,9 +340,9 @@
 
 | Comm ID | Flow ID | Func ID | Req ID | Message(ID) | Tx Node | Rx Node | Protocol | Period | Clear/비고 |
 |---|---|---|---|---|---|---|---|---|---|
-| Comm_001 | Flow_001 | Func_001, Func_002, Func_003, Func_004, Func_006, Func_010 | Req_001, Req_002, Req_003, Req_004, Req_006, Req_010 | frmVehicleStateCanMsg(0x2A0), ethVehicleStateMsg(0x510) | VAL_SCENARIO_CTRL, CHS_GW | CHS_GW, ADAS_WARN_CTRL | CAN + Ethernet(UDP) | 100ms | 속도/주행상태 입력 갱신 |
-| Comm_002 | Flow_002 | Func_011, Func_012 | Req_011, Req_012 | frmSteeringCanMsg(0x2A1), ethSteeringMsg(0x511) | VAL_SCENARIO_CTRL, CHS_GW | CHS_GW, ADAS_WARN_CTRL | CAN + Ethernet(UDP) | 100ms | 조향 입력 갱신 |
-| Comm_003 | Flow_003 | Func_007, Func_010 | Req_007, Req_010 | frmNavContextCanMsg(0x2A3), ethNavContextMsg(0x512) | VAL_SCENARIO_CTRL, INFOTAINMENT_GW | INFOTAINMENT_GW, NAV_CTX_MGR, ADAS_WARN_CTRL, WARN_ARB_MGR | CAN + Ethernet(UDP) | 100ms | 구간/방향/거리/제한속도 입력 갱신 |
+| Comm_001 | Flow_001 | Func_001, Func_002, Func_003, Func_004, Func_006, Func_010 | Req_001, Req_002, Req_003, Req_004, Req_006, Req_010 | frmVehicleStateCanMsg(0x2A0), ethVehicleStateMsg(0x510) | VAL_SCENARIO_CTRL(Validation stimulus), CHS_GW | CHS_GW, ADAS_WARN_CTRL | CAN + Ethernet(UDP) | 100ms | 속도/주행상태 입력 갱신 |
+| Comm_002 | Flow_002 | Func_011, Func_012 | Req_011, Req_012 | frmSteeringCanMsg(0x2A1), ethSteeringMsg(0x511) | VAL_SCENARIO_CTRL(Validation stimulus), CHS_GW | CHS_GW, ADAS_WARN_CTRL | CAN + Ethernet(UDP) | 100ms | 조향 입력 갱신 |
+| Comm_003 | Flow_003 | Func_007, Func_010 | Req_007, Req_010 | frmNavContextCanMsg(0x2A3), ethNavContextMsg(0x512) | VAL_SCENARIO_CTRL(Validation stimulus), INFOTAINMENT_GW | INFOTAINMENT_GW, NAV_CTX_MGR, ADAS_WARN_CTRL, WARN_ARB_MGR | CAN + Ethernet(UDP) | 100ms | 구간/방향/거리/제한속도 입력 갱신 |
 | Comm_004 | Flow_004 | Func_017 | Req_017 | ETH_EmergencyAlert(0xE100) | EMS_ALERT(Tx:Police) | EMS_ALERT(Rx) | Ethernet(UDP) | 100ms | alertState=Clear 또는 송신 중지 |
 | Comm_005 | Flow_005 | Func_018 | Req_017 | ETH_EmergencyAlert(0xE100) | EMS_ALERT(Tx:Ambulance) | EMS_ALERT(Rx) | Ethernet(UDP) | 100ms | alertState=Clear 또는 송신 중지 |
 | Comm_006 | Flow_006 | Func_022, Func_023, Func_024, Func_025, Func_027, Func_028, Func_029, Func_030, Func_031, Func_032, Func_144, Func_149, Func_150, Func_152 | Req_022, Req_023, Req_024, Req_025, Req_027, Req_028, Req_029, Req_030, Req_031, Req_032, Req_144, Req_149, Req_150, Req_152 | ETH_EmergencyAlert(0xE100), ethSelectedAlertMsg(0xE200) | EMS_ALERT(Rx), WARN_ARB_MGR | WARN_ARB_MGR, BODY_GW, IVI_GW | Ethernet(UDP) | Event + 50ms | 1000ms 무갱신 시 timeoutClear=1 |
