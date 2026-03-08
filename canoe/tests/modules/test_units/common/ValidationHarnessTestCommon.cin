@@ -1,0 +1,90 @@
+long resetValidationHarnessIfNeeded()
+{
+  long rc;
+
+  if ((int)@Test::scenarioCommandAck == 0 &&
+      (int)@Test::scenarioResult == 0)
+  {
+    TestWaitForTimeout(100);
+    return 1;
+  }
+
+  @Test::scenarioCommand = 0;
+  rc = TestWaitForSysVar(sysvar::Test::scenarioCommandAck, 1000);
+  if (rc != 1)
+  {
+    testStepFail("scenario-reset", "Harness reset failed rc=%d ack=%d",
+                 rc, (int)@Test::scenarioCommandAck);
+    return 0;
+  }
+
+  if ((int)@Test::scenarioCommandAck != 0)
+  {
+    testStepFail("scenario-reset", "Harness reset ack mismatch actual=%d",
+                 (int)@Test::scenarioCommandAck);
+    return 0;
+  }
+
+  TestWaitForTimeout(150);
+  testStepPass("scenario-reset", "Validation harness reset completed");
+  return 1;
+}
+
+long waitForScenarioAck(int scenarioId, dword timeoutMs)
+{
+  long rc;
+
+  rc = TestWaitForSysVar(sysvar::Test::scenarioCommandAck, timeoutMs);
+  if (rc != 1)
+  {
+    testStepFail("scenario-ack", "Scenario %d ack timeout rc=%d actualAck=%d",
+                 scenarioId, rc, (int)@Test::scenarioCommandAck);
+    return 0;
+  }
+
+  if ((int)@Test::scenarioCommandAck != scenarioId)
+  {
+    testStepFail("scenario-ack", "Scenario ack mismatch expected=%d actual=%d",
+                 scenarioId, (int)@Test::scenarioCommandAck);
+    return 0;
+  }
+
+  testStepPass("scenario-ack", "Scenario %d accepted", scenarioId);
+  return 1;
+}
+
+long launchScenarioAndWait(int scenarioId, dword ackTimeoutMs, dword settleMs)
+{
+  @Test::scenarioCommand = scenarioId;
+  if (!waitForScenarioAck(scenarioId, ackTimeoutMs))
+  {
+    return 0;
+  }
+
+  TestWaitForTimeout(settleMs);
+  return 1;
+}
+
+void assertIntEq(char stepId[], long expected, long actual, char label[])
+{
+  if (expected == actual)
+  {
+    testStepPass(stepId, "%s expected=%d actual=%d", label, expected, actual);
+  }
+  else
+  {
+    testStepFail(stepId, "%s expected=%d actual=%d", label, expected, actual);
+  }
+}
+
+void assertIntMin(char stepId[], long minValue, long actual, char label[])
+{
+  if (actual >= minValue)
+  {
+    testStepPass(stepId, "%s minimum=%d actual=%d", label, minValue, actual);
+  }
+  else
+  {
+    testStepFail(stepId, "%s minimum=%d actual=%d", label, minValue, actual);
+  }
+}

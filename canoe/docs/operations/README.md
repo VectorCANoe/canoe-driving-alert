@@ -5,6 +5,7 @@ This folder contains process and execution documents used by CANoe development/v
 ## Core SoT / Governance
 - `DEV_DOC_ENTRYPOINT.md`
 - `CANOE_TEST_POC_SCOPE_2026-03-08.md`
+- `CANOE_TEST_UNIT_RUNBOOK.md`
 - `DEV1_INTERFACE_AUDIT_CHECKLIST.md`
 - `DEV1_INTERFACE_AUDIT_PLAYBOOK.md`
 - `DEV1_INTERFACE_AUDIT_REPORT_2026-03-08.md`

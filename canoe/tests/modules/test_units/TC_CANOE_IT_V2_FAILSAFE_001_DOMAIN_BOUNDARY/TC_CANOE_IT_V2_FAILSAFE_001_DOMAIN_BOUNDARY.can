@@ -1,0 +1,52 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\\common\\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+  message frmBaseTestResultMsg gBaseResultMsg;
+}
+
+export testcase TC_CANOE_IT_V2_FAILSAFE_001_DOMAIN_BOUNDARY()
+{
+  long rc;
+
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  @Test::scenarioCommand = 18;
+  if (!waitForScenarioAck(18, 1500))
+  {
+    return;
+  }
+
+  rc = TestWaitForMessage(frmBaseTestResultMsg, 2000);
+  if (rc != 1)
+  {
+    testStepFail("base-msg-wait", "frmBaseTestResultMsg not received rc=%d", rc);
+    return;
+  }
+
+  rc = TestGetWaitEventMsgData(gBaseResultMsg);
+  if (rc != 0)
+  {
+    testStepFail("base-msg-read", "Failed to read frmBaseTestResultMsg rc=%d", rc);
+    return;
+  }
+
+  TestWaitForTimeout(200);
+
+  assertIntEq("scenario-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+  assertIntEq("base-result", 1, (long)gBaseResultMsg.BaseScenarioResult, "BaseScenarioResult");
+  assertIntMin("fail-safe-mode", 1, (long)@Core::failSafeMode, "failSafeMode");
+  assertIntEq("decel-assist", 0, (long)@Core::decelAssistReq, "decelAssistReq");
+  assertIntMin("alert-level", 6, (long)@Core::selectedAlertLevel, "selectedAlertLevel");
+  assertIntEq("alert-type", 1, (long)@Core::selectedAlertType, "selectedAlertType");
+  assertIntMin("cluster-code", 100, (long)@Cluster::warningTextCode, "warningTextCode");
+
+  resetValidationHarnessIfNeeded();
+}

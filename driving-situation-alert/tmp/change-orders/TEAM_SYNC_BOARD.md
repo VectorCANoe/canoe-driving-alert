@@ -87,6 +87,7 @@
 | TSB-009 | 2026-03-08 | 인터페이스/멀티버스/CLI 운영 해석을 공통 언어로 정리하고 예외 범위를 명시 | `driving-situation-alert/tmp/change-orders/TEAM_SYNC_BOARD.md` | Ready for Docs -> Docs Updated | Docs | (this commit) |
 | TSB-011 | 2026-03-08 | 멘토 D11 원문과 AUTOSAR/00e 기준을 교차검증해 ECU 명명 운영 결론을 확정 | `docs/meeting-notes/MET_41_2026.03.07.txt`, `driving-situation-alert/00e_ECU_Naming_Standard.md`, `reference/standards/AUTOSAR_CP_TR_SWCModelingGuide.pdf` | Proposed -> Ready for Docs | Dev1 | working note |
 | TSB-004 | 2026-03-08 | 공식 CANoe Test PoC 범위를 대표 2건으로 고정하고 Dev1/Dev2/Docs 역할을 분리 | `canoe/docs/operations/CANOE_TEST_POC_SCOPE_2026-03-08.md`, `driving-situation-alert/tmp/change-orders/DEV1_CANOE_TEST_DOC_IMPACT_2026-03-08.md` | Proposed -> In Progress | Dev1 | planning note |
+| TSB-004 | 2026-03-08 | Dev1이 CANoe native Test Unit source/yaml 2건과 실행 runbook 초안을 작성 | `canoe/tests/modules/test_units/TC_CANOE_UT_CORE_001_SCHOOLZONE_OVERSPEED/*`, `canoe/tests/modules/test_units/TC_CANOE_IT_V2_FAILSAFE_001_DOMAIN_BOUNDARY/*`, `canoe/docs/operations/CANOE_TEST_UNIT_RUNBOOK.md` | In Progress -> In Progress | Dev1 | source scaffolded |
 | TSB-XXX | YYYY-MM-DD |  |  | Proposed -> In Progress -> Ready for Docs -> Docs Updated -> Done |  |  |
 
 ## 합의 메모

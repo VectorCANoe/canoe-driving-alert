@@ -1,0 +1,8 @@
+version: 2.2.0
+
+test-tree:
+  - test-fixture: V2FailSafeBoundary
+    description: Domain-boundary fail-safe downgrade PoC based on validation harness scenario 18.
+    elements:
+      - capl-test-case: TC_CANOE_IT_V2_FAILSAFE_001_DOMAIN_BOUNDARY
+        title: TC_CANOE_IT_V2_FAILSAFE_001_DOMAIN_BOUNDARY
