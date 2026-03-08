@@ -1,4 +1,4 @@
-# Dev1 Interface Audit Report (2026-03-08)
+﻿# Dev1 Interface Audit Report (2026-03-08)
 
 **Document ID**: CANOE-OPS-DEV1-INT-REPORT-20260308  
 **Version**: 1.0  
@@ -28,10 +28,10 @@ This report records the first-pass Dev1 audit decisions for the active CANoe SIL
 | ID | Topic | Decision | Status |
 |---|---|---|---|
 | A-001 | `frmEmergencyBroadcastMsg (0x1C0)` ownership | Treat as logical dual-source emergency contract in SIL stub. Do not force a fake single runtime owner into the stub DBC. | Closed |
-| A-002 | `ethSelectedAlertMsg` downstream distribution | Active path still bypasses the logical Ethernet contract and reads `Core::*` directly in output gateways. Keep as SIL shortcut now, but mark as cleanup target before real Ethernet cutover. | Open |
+| A-002 | `ethSelectedAlertMsg` downstream distribution | Active path still bypasses the logical Ethernet contract and reads `Core::*` directly in output gateways. Keep as an accepted SIL shortcut now, but track it as cleanup work before real Ethernet cutover. | Backlog |
 | A-003 | `Comm_106 / frmBaseTestResultMsg` | Runtime is already single-owner correct. Residual mismatch is docs-only. | Docs Request |
 | A-004 | `ETH_SW` role | `ETH_SW` is currently a health/freshness monitor, not a forwarding router. Keep this explicit in reviews and cutover planning. | Closed |
-| A-005 | `EMS_ALERT_RX` fallback path | `on message frmEmergencyBroadcastMsg` is the active primary path. `V2X::*` polling remains as compatibility fallback and should be retired before or at Ethernet cutover. | Open |
+| A-005 | `EMS_ALERT_RX` fallback path | `on message frmEmergencyBroadcastMsg` is the active primary path. `V2X::*` polling remains as compatibility fallback and should be retired before or at Ethernet cutover. | Backlog |
 | A-006 | `Test::*` controls in product-facing nodes | Active usage is validation-only and acceptable, but `0304` does not currently document the matching variables. | Docs Request |
 | A-007 | `domainBoundaryStatus` writer duplication | Redundant mirror write in `DOMAIN_ROUTER` removed. `DOMAIN_BOUNDARY_MGR` is now the sole active owner. | Closed |
 | A-008 | `alertHistoryCount` semantic collision | `EMS_ALERT_RX` counter increment removed. `CLU_HMI_CTRL` remains the active owner for query/display history count. | Closed |
@@ -530,3 +530,4 @@ The current architecture does not require immediate redesign.
   - cutover-ready cleanup tracking
 
 Do not confuse "SysVar exists" with "architecture defect."
+

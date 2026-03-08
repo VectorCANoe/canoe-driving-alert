@@ -1,4 +1,4 @@
-# Dev1 Doc Sync Request Queue
+﻿# Dev1 Doc Sync Request Queue
 
 **Document ID**: CANOE-OPS-DEV1-DOCSYNC-QUEUE  
 **Version**: 1.0  
@@ -26,6 +26,7 @@ This queue stores docs-team handoff items discovered during Dev1 audit work.
 | DSR-002 | High | `0304_System_Variables.md` | `Test::*` coverage | Add active `Test::*` rows used by runtime: `displayModeSetting`, `alertVolumeSetting`, `seatBeltOverride`, `historyQueryOffset`, `historyQueryCode` | `DEV1_INTERFACE_AUDIT_REPORT_2026-03-08.md` |
 | DSR-003 | Medium | `0302_NWflowDef.md`, `0303_Communication_Specification.md` | `ETH_SW` role wording | Clarify that `ETH_SW` is a SIL health/freshness monitor in the active profile, not a forwarding Ethernet switch | `DEV1_INTERFACE_AUDIT_REPORT_2026-03-08.md` |
 | DSR-004 | Medium | `0304_System_Variables.md`, `04_SW_Implementation.md` | HMI/cluster mirror ownership | Update owner/mapping wording so `IVI_GW` is the producer of cluster/HMI bus frames, while `CLU_HMI_CTRL` is the active mirror/display-state owner for `warningTextCode`, `themeMode`, `popup*`, `audio*`, `volumeLevel`, `ttsState`, `clusterNotif*`, and `clusterSync*` | `DEV1_INTERFACE_AUDIT_REPORT_2026-03-08.md` |
+| DSR-005 | Low | `04_SW_Implementation.md` | SIL shortcut disclosure | Add an implementation note that the active SIL runtime still consumes downstream `selectedAlert` state through `Core::*` in `BODY_GW`/`IVI_GW`, and keeps the `EMS_ALERT_RX` `@V2X::*` fallback for compatibility. Mark both as Ethernet cutover backlog, not current-cycle defects. | `DEV1_INTERFACE_AUDIT_REPORT_2026-03-08.md` |
 
 ---
 
@@ -35,3 +36,4 @@ This queue stores docs-team handoff items discovered during Dev1 audit work.
 - Close items only after:
   - docs are updated, or
   - Dev1 explicitly decides no docs action is needed.
+
