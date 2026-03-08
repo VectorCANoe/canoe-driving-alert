@@ -1,4 +1,4 @@
-# Reference Docs Index
+﻿# Reference Docs Index
 
 This folder contains non-daily strategy notes, intake records, and supporting references.
 
@@ -44,3 +44,5 @@ Open these only when the active task needs background support:
 - For the current reset cycle:
   - use `OEM_ACTIVE_TARGET_PROFILE_2026-03-09.md` as the active Dev1 sizing target
   - use `OEM_100_ECU_PROGRAM_BANK_2026-03-09.md` as the active breadth source bank
+- [RUNTIME_ABSORPTION_STATUS_2026-03-09.md](RUNTIME_ABSORPTION_STATUS_2026-03-09.md) - current Dev1 absorption boundary and GUI cleanup queue.
+
