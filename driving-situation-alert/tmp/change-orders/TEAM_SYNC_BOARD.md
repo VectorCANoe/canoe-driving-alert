@@ -161,3 +161,8 @@
 - current runtime status: current SIL baseline has no additional must-do code fix remaining for Dev1
 - accepted backlog: `A-002`, `A-005`
 - dependency: `M40-18` closure still waits on Dev2 evidence and docs-team updates in `05/06/07`
+
+## Final Phase Note (2026-03-08)
+- team split reference: `driving-situation-alert/tmp/change-orders/FINAL_PHASE_TEAM_SPLIT_2026-03-08.md`
+- Dev1 / Dev2 / Docs closeout flow reference: `canoe/docs/operations/verification/FINAL_PHASE_EXECUTION_FLOW.md`
+- Dev2 product boundary reference: `product/sdv_operator/README.md`

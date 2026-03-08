@@ -31,6 +31,10 @@ These remain at the top level because they are part of normal working flow:
 ### `verification/`
 Verification-specific runbooks and pass criteria.
 
+Current closeout anchor:
+
+- `verification/FINAL_PHASE_EXECUTION_FLOW.md`
+
 ### `audit/`
 Audit, runtime review, sync queue, and dated review snapshots.
 

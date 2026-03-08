@@ -41,6 +41,7 @@ Open subfolders only when the task needs them:
 
 ### Verification
 - `canoe/docs/operations/verification/`
+- `canoe/docs/operations/verification/FINAL_PHASE_EXECUTION_FLOW.md`
 
 ### Audit
 - `canoe/docs/operations/audit/`

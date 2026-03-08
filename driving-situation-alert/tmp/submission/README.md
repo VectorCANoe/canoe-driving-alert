@@ -13,3 +13,8 @@
 
 1. 신규 편집은 `final-docs`에서만 수행한다.
 2. 제출 전 최종 경로/구성은 `final-docs/00_FINAL_STRUCTURE_LOCK.md` 기준으로 확인한다.
+
+## Final Phase Reference
+
+- team split: `tmp/change-orders/FINAL_PHASE_TEAM_SPLIT_2026-03-08.md`
+- Dev1/Dev2/Docs execution flow: `canoe/docs/operations/verification/FINAL_PHASE_EXECUTION_FLOW.md`

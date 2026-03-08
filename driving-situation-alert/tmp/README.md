@@ -35,3 +35,10 @@
 - SoT 원문(`00~07`) 직접 축약/삭제 금지
 - `tmp` 정리 시 추적 근거 문서 삭제 금지
 - 경로 이동이 필요한 경우 README/가이드 참조 경로를 함께 갱신
+
+## 5) Final Phase Anchor
+
+- team closeout split:
+  - `tmp/change-orders/FINAL_PHASE_TEAM_SPLIT_2026-03-08.md`
+- final submission structure:
+  - `tmp/submission/final-docs/00_FINAL_STRUCTURE_LOCK.md`
