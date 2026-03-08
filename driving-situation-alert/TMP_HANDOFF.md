@@ -20,6 +20,7 @@
 - Current Working Objective:
   - closeout 중심 운영을 종료하고, 양산차 프로젝트 표면에 맞는 논리 ECU 구조를 다시 정의한다.
   - 현재 최우선은 `표면 ECU 고정 -> 구현 모듈/검증 하네스 분리 -> GUI/문서 재정렬`이다.
+  - OEM 전차량 프레이밍을 채택하되, 제품 핵심가치는 `구간 정보 + 긴급차량 접근 기반 실시간 경고`로 고정한다.
 - Scope In:
   - Navigation zone recognition (school zone, highway, guide lane)
   - V2V emergency alerts (police, ambulance)
@@ -206,6 +207,7 @@
   - 리드 지시가 있는 cross-team reset 문서
 ### 11.5 OEM System Framing Rule (Added)
 - 이 프로젝트는 “한 시나리오 PoC”가 아니라 “OEM 차량 시스템 축약 모델”로 정의한다.
+- OEM breadth 확장은 `핵심 가치 시나리오(구간/긴급차량 기반 경고)`를 대체하지 않고, 그 시나리오를 차량 전체 구조 안에 정합되게 배치하기 위한 것이다.
 - 따라서 문서/코드 판단 우선순위는 아래를 따른다:
   1. 차량 전체 구조 타당성(도메인/경계/Owner)
   2. 통신 규칙 일관성(ID/주기/Timeout/소유권)
