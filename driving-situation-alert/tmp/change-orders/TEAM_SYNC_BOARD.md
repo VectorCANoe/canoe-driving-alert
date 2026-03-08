@@ -152,3 +152,10 @@
 - Code decision: `frmTestResultMsg (0x2A5)` owner는 `VAL_SCENARIO_CTRL`, `frmBaseTestResultMsg (0x2A6)` owner는 `VAL_BASELINE_CTRL`로 고정.
 - Docs request: `0302_NWflowDef.md`, `0303_Communication_Specification.md`에서 `Comm_106`/`Flow_106` 문구를 `VAL_SCENARIO_CTRL -> frmTestResultMsg(0x2A5) -> VAL_BASELINE_CTRL -> frmBaseTestResultMsg(0x2A6)` 체인으로 수정.
 - Evidence: `canoe/src/capl/input/VAL_SCENARIO_CTRL.can`, `canoe/cfg/channel_assign/ETH_Backbone/VAL_SCENARIO_CTRL.can`, `canoe/src/capl/ecu/VAL_BASELINE_CTRL.can`, `python scripts/gates/check_capl_sync.py` PASS.
+
+## Dev1 -> Docs Batch Handoff (2026-03-08)
+- handoff file: `driving-situation-alert/tmp/change-orders/DEV1_TO_DOC_BATCH_2026-03-08.md`
+- scope: `DSR-001~005`
+- current runtime status: current SIL baseline has no additional must-do code fix remaining for Dev1
+- accepted backlog: `A-002`, `A-005`
+- dependency: `M40-18` closure still waits on Dev2 evidence and docs-team updates in `05/06/07`

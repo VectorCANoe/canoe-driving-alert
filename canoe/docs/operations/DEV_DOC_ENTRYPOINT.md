@@ -49,3 +49,8 @@
   - `driving-situation-alert` 구조 및 본문 내용
 - 개발팀 소유:
   - `canoe/docs/operations`의 진입 인덱스 및 운영 가이드
+
+## Dev1 Runtime Audit Entry
+- `canoe/docs/operations/DEV1_INTERFACE_AUDIT_CHECKLIST.md`
+- `canoe/docs/operations/DEV1_INTERFACE_AUDIT_PLAYBOOK.md`
+- `canoe/docs/operations/DEV1_RUNTIME_CLOSURE_SNAPSHOT_2026-03-08.md`
