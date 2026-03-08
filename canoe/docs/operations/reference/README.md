@@ -28,6 +28,8 @@ Open these only when the active task needs background support:
   - active Dev1 target profile: `100` surface ECUs, `16` deep runtimes, `8` core custom surfaces, `4` validation/test elements
 - `OEM_100_ECU_PROGRAM_BANK_2026-03-09.md`
   - active surface inventory bank for 100-scale OEM vehicle-program framing
+- `PRIMARY56_RUNTIME26_MAPPING_2026-03-09.md`
+  - executable Dev1 mapping from the current `26` active runtime nodes into the `56` primary reviewer-facing ECU surfaces
 - `LICENSE_REFERENCE_REPORT.md`
   - license/reference inventory
 - `OPEN_SOURCE_INTAKE_POLICY.md`
