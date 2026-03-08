@@ -1,0 +1,82 @@
+{
+  "schema": "sdv.verification.phase.policy.v1",
+  "owner": "Dev2",
+  "notes": [
+    "Execution phase controls batch verdict severity.",
+    "During architecture reset, doc-sync and capl-sync remain advisory in pre phase.",
+    "Closeout/full phase is strict and intended for final evidence freezing."
+  ],
+  "profiles": {
+    "pre": {
+      "description": "Operator preflight before closeout. Runtime/tooling stability is mandatory; document/runtime drift is advisory during architecture reset.",
+      "hard_fail_steps": [
+        "gate cfg-hygiene",
+        "gate multibus-dbc",
+        "gate cli-readiness",
+        "doctor",
+        "verify prepare",
+        "verify smoke",
+        "verify status"
+      ],
+      "advisory_steps": [
+        "gate doc-sync",
+        "gate capl-sync"
+      ],
+      "readiness_warn_states": [
+        "READY_FOR_FINALIZE",
+        "PREPARED",
+        "PREPARED_PARTIAL",
+        "NOT_PREPARED"
+      ],
+      "readiness_fail_states": [
+        "MISSING",
+        "BROKEN",
+        "INVALID"
+      ]
+    },
+    "full": {
+      "description": "Release-grade verification. All gate and readiness failures are blocking.",
+      "hard_fail_steps": [
+        "gate doc-sync",
+        "gate cfg-hygiene",
+        "gate capl-sync",
+        "gate multibus-dbc",
+        "gate cli-readiness",
+        "doctor",
+        "verify prepare",
+        "verify smoke",
+        "verify status",
+        "verify finalize"
+      ],
+      "advisory_steps": [],
+      "readiness_warn_states": [
+        "READY_FOR_FINALIZE",
+        "PREPARED_PARTIAL"
+      ],
+      "readiness_fail_states": [
+        "NOT_PREPARED",
+        "MISSING",
+        "BROKEN",
+        "INVALID"
+      ]
+    },
+    "post": {
+      "description": "Post-cutover audit. Focus on finalized evidence and archive integrity.",
+      "hard_fail_steps": [
+        "verify finalize",
+        "verify status"
+      ],
+      "advisory_steps": [],
+      "readiness_warn_states": [
+        "READY_FOR_FINALIZE",
+        "PREPARED_PARTIAL"
+      ],
+      "readiness_fail_states": [
+        "NOT_PREPARED",
+        "MISSING",
+        "BROKEN",
+        "INVALID"
+      ]
+    }
+  }
+}

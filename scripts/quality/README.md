@@ -60,6 +60,8 @@ Note:
   - output meaning:
     - execution key: `run_id / phase / owner / run_date`
     - stable review key: `Req ID / Test Case ID / Scenario ID / Surface ECU`
+  - verdict policy:
+    - `product/sdv_operator/config/verification_phase_policy.json`
 - `materialize_verification_artifacts.py` re-packs staging outputs into stable archive layout:
   - `artifacts/verification_runs/<run_id>/<phase>/reports/*`
   - `artifacts/verification_runs/<run_id>/<phase>/surface/<bundle_key>/*`

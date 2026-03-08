@@ -15,6 +15,7 @@ DEFAULT_INVENTORY = REPO_ROOT / "product" / "sdv_operator" / "config" / "surface
 DEFAULT_TRACEABILITY = REPO_ROOT / "product" / "sdv_operator" / "config" / "surface_traceability_profile.json"
 DEFAULT_REPORT_ROOT = REPO_ROOT / "canoe" / "tmp" / "reports" / "verification"
 DEFAULT_SMOKE_CSV = DEFAULT_REPORT_ROOT / "dev_completeness_smoke.csv"
+POLICY_PATH = REPO_ROOT / "product" / "sdv_operator" / "config" / "verification_phase_policy.json"
 
 
 def _repo_path(path: Path) -> Path:
@@ -26,6 +27,24 @@ def _load_json(path: Path) -> dict:
     if not path.exists():
         return {}
     return json.loads(path.read_text(encoding="utf-8"))
+
+
+def _load_phase_policy(phase: str) -> dict:
+    if not POLICY_PATH.exists():
+        return {
+            "phase": phase,
+            "readiness_warn_states": ["READY_FOR_FINALIZE", "PREPARED", "PREPARED_PARTIAL", "NOT_PREPARED"],
+            "readiness_fail_states": ["MISSING", "BROKEN", "INVALID"],
+            "source": "fallback",
+        }
+    raw = json.loads(POLICY_PATH.read_text(encoding="utf-8"))
+    profiles = raw.get("profiles", {}) if isinstance(raw, dict) else {}
+    profile = profiles.get(phase, profiles.get("pre")) if isinstance(profiles, dict) else {}
+    if not isinstance(profile, dict):
+        profile = {}
+    profile["phase"] = phase
+    profile["source"] = _rel(POLICY_PATH)
+    return profile
 
 
 def _load_csv_rows(path: Path) -> list[dict[str, str]]:
@@ -71,7 +90,7 @@ def _doctor_status(doctor: dict) -> tuple[str, list[str]]:
     return "FAIL", reasons
 
 
-def _readiness_status(readiness: dict) -> tuple[str, list[str]]:
+def _readiness_status(readiness: dict, phase_policy: dict) -> tuple[str, list[str]]:
     if not readiness:
         return "WARN", ["run readiness missing"]
     overall = str(readiness.get("overall_status", "")).upper()
@@ -79,7 +98,11 @@ def _readiness_status(readiness: dict) -> tuple[str, list[str]]:
     reasons = [str(item) for item in missing_items[:3]] if isinstance(missing_items, list) else []
     if overall in {"READY", "SCORED_READY", "PASS"}:
         return "PASS", [f"readiness {overall}"]
-    if overall in {"READY_FOR_FINALIZE", "PREPARED", "PREPARED_PARTIAL", "NOT_PREPARED"}:
+    fail_states = {str(item).upper() for item in phase_policy.get("readiness_fail_states", [])}
+    warn_states = {str(item).upper() for item in phase_policy.get("readiness_warn_states", [])}
+    if overall in fail_states:
+        return "FAIL", [f"readiness {overall}", *reasons]
+    if overall in warn_states or overall in {"READY_FOR_FINALIZE", "PREPARED", "PREPARED_PARTIAL", "NOT_PREPARED"}:
         return "WARN", [f"readiness {overall}", *reasons]
     return "WARN", [f"readiness {overall or 'UNKNOWN'}", *reasons]
 
@@ -89,9 +112,12 @@ def _batch_status(batch: dict) -> tuple[str, list[str]]:
         return "WARN", ["batch report missing"]
     status = str(batch.get("status", "")).upper()
     pass_count = int(batch.get("pass_count", 0))
+    warn_count = int(batch.get("warn_count", 0))
     fail_count = int(batch.get("fail_count", 0))
-    if status == "PASS" and fail_count == 0:
+    if status == "PASS" and fail_count == 0 and warn_count == 0:
         return "PASS", [f"batch {batch.get('phase', 'pre')} PASS ({pass_count}/{pass_count + fail_count})"]
+    if status == "WARN" and fail_count == 0:
+        return "WARN", [f"batch {batch.get('phase', 'pre')} WARN ({pass_count} pass, {warn_count} warn)"]
     return "FAIL", [f"batch {batch.get('phase', 'pre')} FAIL ({pass_count}/{pass_count + fail_count})"]
 
 
@@ -183,9 +209,10 @@ def _surface_rollup(
     readiness: dict,
     batch: dict,
     artifacts: list[str],
+    phase_policy: dict,
 ) -> dict:
     doctor_state, doctor_reasons = _doctor_status(doctor)
-    readiness_state, readiness_reasons = _readiness_status(readiness)
+    readiness_state, readiness_reasons = _readiness_status(readiness, phase_policy)
     batch_state, batch_reasons = _batch_status(batch)
 
     surface_type = str(surface.get("surface_type", ""))
@@ -296,6 +323,8 @@ def build_bundle(
     generated_at = dt.datetime.now().isoformat()
     artifacts = _artifact_list(report_root)
     traceability_idx = _traceability_index(traceability)
+    phase = str(batch.get("phase") or "pre").lower()
+    phase_policy = _load_phase_policy(phase)
     surfaces = sorted(
         [
             _surface_rollup(
@@ -305,6 +334,7 @@ def build_bundle(
                 readiness,
                 batch,
                 artifacts,
+                phase_policy,
             )
             for surface in inventory.get("surfaces", [])
         ],
@@ -324,6 +354,15 @@ def build_bundle(
             "source_docs": traceability.get("source_docs", []),
         },
         "execution": _execution_context(batch, readiness, doctor, smoke_rows, traceability),
+        "phase_policy": {
+            "phase": phase_policy.get("phase", phase),
+            "source": phase_policy.get("source", "fallback"),
+            "description": phase_policy.get("description", ""),
+            "advisory_steps": phase_policy.get("advisory_steps", []),
+            "hard_fail_steps": phase_policy.get("hard_fail_steps", []),
+            "readiness_warn_states": phase_policy.get("readiness_warn_states", []),
+            "readiness_fail_states": phase_policy.get("readiness_fail_states", []),
+        },
         "overall_status": overall,
         "summary": {
             "surface_count": len(surfaces),
@@ -393,6 +432,7 @@ def main() -> int:
         f"- Overall: `{bundle['overall_status']}`",
         f"- Run ID: `{bundle['execution']['run_id'] or '-'}`",
         f"- Phase: `{bundle['execution']['phase'] or '-'}`",
+        f"- Phase Policy: `{bundle['phase_policy']['source']}`",
         f"- Owner: `{bundle['execution']['owner'] or '-'}`",
         f"- Run Date: `{bundle['execution']['run_date'] or '-'}`",
         f"- Executed Scenarios: `{', '.join(str(item) for item in bundle['execution']['executed_scenario_ids']) or '-'}`",

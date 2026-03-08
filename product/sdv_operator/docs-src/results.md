@@ -39,6 +39,8 @@
 
 - `dev2_batch_report.json` 기준
 - phase / status / pass-fail 요약
+- `pre`에서는 advisory gate 실패가 `WARN`으로 남을 수 있습니다.
+- `full`에서는 같은 항목이 `FAIL`이 될 수 있습니다.
 
 ### Surface Evidence Bundle
 
@@ -61,6 +63,7 @@
 - 즉 OEM식으로 보면:
   - `run_id` = execution key
   - `Req/TestCase/Surface/Scenario` = stable review key
+  - `phase policy` = 이번 실행에서 무엇이 blocking인지 정의하는 verdict policy
 
 ## 증빙 경로
 

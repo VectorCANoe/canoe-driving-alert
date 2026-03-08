@@ -234,14 +234,22 @@ def _batch_result(command_id: str, title: str, rc: int, args: argparse.Namespace
     phase = str(data.get("phase", "pre")).upper()
     status = str(data.get("status", "FAIL")).upper()
     detail = f"{phase}: {data.get('pass_count', 0)} pass / {data.get('fail_count', 0)} fail"
+    if int(data.get("warn_count", 0)):
+        detail = f"{detail} / {data.get('warn_count', 0)} warn"
     if surface_data:
         bundle_status = str(surface_data.get("overall_status", "UNKNOWN")).upper()
         detail = f"{detail} | surface={bundle_status}"
-    next_action = "PASS면 본 검증 시나리오로 넘어가십시오." if status == "PASS" else "실패한 step과 gate를 먼저 수정하십시오."
+    next_action = (
+        "PASS면 본 검증 시나리오로 넘어가십시오."
+        if status == "PASS"
+        else "WARN 항목이 advisory인지 mandatory인지 확인하고, release 전에는 모두 정리하십시오."
+        if status == "WARN"
+        else "실패한 step과 gate를 먼저 수정하십시오."
+    )
     return OperatorResult(
         command_id=command_id,
         title=title,
-        status="PASS" if status == "PASS" else "FAIL",
+        status="PASS" if status == "PASS" else "WARN" if status == "WARN" else "FAIL",
         detail=detail,
         next_action=next_action,
         rc=rc,

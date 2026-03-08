@@ -117,6 +117,9 @@ python scripts/run.py verify batch --run-id 20260308_0900 --owner DEV2 --phase p
 
 - 내부 검토: `json,md`
 - Jenkins 연계: `json,md,junit`
+- `phase`에 따라 verdict policy가 달라집니다.
+  - `pre`: advisory gate 허용 (`WARN`)
+  - `full`: closeout strict (`FAIL`)
 
 참고:
 - `verify batch --phase pre/full`은 pre 단계 시작 전에 `doctor(auto-start)`를 같이 실행합니다.

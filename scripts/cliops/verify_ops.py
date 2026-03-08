@@ -15,6 +15,7 @@ from cliops.gate_ops import (
     cmd_gate_doc_sync,
     cmd_gate_multibus_dbc,
 )
+from cliops.verification_policy import classify_step_status, load_phase_policy
 
 
 def cmd_verify_prepare(args: argparse.Namespace) -> int:
@@ -326,7 +327,7 @@ def _normalize_report_formats(raw: str) -> list[str]:
     return out
 
 
-def _write_batch_report(*, run_id: str, owner: str, run_date: str, phase: str, steps: list[dict[str, object]], report_formats: list[str], output_json: Path, output_md: Path, output_csv: Path) -> None:
+def _write_batch_report(*, run_id: str, owner: str, run_date: str, phase: str, policy: dict, steps: list[dict[str, object]], report_formats: list[str], output_json: Path, output_md: Path, output_csv: Path) -> None:
     write_json = 'json' in report_formats or 'junit' in report_formats
     if write_json:
         output_json.parent.mkdir(parents=True, exist_ok=True)
@@ -335,17 +336,20 @@ def _write_batch_report(*, run_id: str, owner: str, run_date: str, phase: str, s
     if 'csv' in report_formats:
         output_csv.parent.mkdir(parents=True, exist_ok=True)
 
-    pass_count = sum(1 for s in steps if s.get('rc') == 0)
-    fail_count = len(steps) - pass_count
-    status = 'PASS' if fail_count == 0 else 'FAIL'
+    pass_count = sum(1 for s in steps if s.get('status') == 'PASS')
+    warn_count = sum(1 for s in steps if s.get('status') == 'WARN')
+    fail_count = sum(1 for s in steps if s.get('status') == 'FAIL')
+    status = 'FAIL' if fail_count else 'WARN' if warn_count else 'PASS'
     artifacts = _batch_artifact_rows(run_id, phase)
     payload = {
         'run_id': run_id,
         'owner': owner,
         'run_date': run_date,
         'phase': phase,
+        'policy': policy,
         'status': status,
         'pass_count': pass_count,
+        'warn_count': warn_count,
         'fail_count': fail_count,
         'steps': steps,
         'artifacts': artifacts,
@@ -362,27 +366,28 @@ def _write_batch_report(*, run_id: str, owner: str, run_date: str, phase: str, s
             f'- run_date: `{run_date}`',
             f'- phase: `{phase}`',
             f'- status: `{status}`',
-            f'- pass/fail: `{pass_count}/{fail_count}`',
+            f'- phase policy: `{policy.get("source", "-")}`',
+            f'- pass/warn/fail: `{pass_count}/{warn_count}/{fail_count}`',
             '',
             '## Step Results',
             '',
-            '| step | rc |',
-            '|---|---|',
+            '| step | status | severity | rc |',
+            '|---|---|---|---|',
         ]
         for step in steps:
-            lines.append(f"| `{step['name']}` | `{step['rc']}` |")
+            lines.append(f"| `{step['name']}` | `{step.get('status', 'UNKNOWN')}` | `{step.get('severity', 'mandatory')}` | `{step['rc']}` |")
         lines.extend(['', '## Artifact Snapshot', '', '| path | exists | size_bytes |', '|---|---:|---:|'])
         for row in artifacts:
             lines.append(f"| `{row['path']}` | `{str(row['exists']).lower()}` | `{row['size_bytes']}` |")
         output_md.write_text('\n'.join(lines) + '\n', encoding='utf-8')
     if 'csv' in report_formats:
         with output_csv.open('w', encoding='utf-8', newline='') as fp:
-            writer = csv.DictWriter(fp, fieldnames=['row_type', 'run_id', 'phase', 'owner', 'run_date', 'status', 'step_name', 'step_rc', 'artifact_path', 'artifact_exists', 'artifact_size_bytes', 'artifact_last_modified'])
+            writer = csv.DictWriter(fp, fieldnames=['row_type', 'run_id', 'phase', 'owner', 'run_date', 'status', 'step_name', 'step_status', 'step_severity', 'step_rc', 'artifact_path', 'artifact_exists', 'artifact_size_bytes', 'artifact_last_modified'])
             writer.writeheader()
             for step in steps:
-                writer.writerow({'row_type': 'step', 'run_id': run_id, 'phase': phase, 'owner': owner, 'run_date': run_date, 'status': status, 'step_name': step['name'], 'step_rc': step['rc'], 'artifact_path': '', 'artifact_exists': '', 'artifact_size_bytes': '', 'artifact_last_modified': ''})
+                writer.writerow({'row_type': 'step', 'run_id': run_id, 'phase': phase, 'owner': owner, 'run_date': run_date, 'status': status, 'step_name': step['name'], 'step_status': step.get('status', 'UNKNOWN'), 'step_severity': step.get('severity', 'mandatory'), 'step_rc': step['rc'], 'artifact_path': '', 'artifact_exists': '', 'artifact_size_bytes': '', 'artifact_last_modified': ''})
             for row in artifacts:
-                writer.writerow({'row_type': 'artifact', 'run_id': run_id, 'phase': phase, 'owner': owner, 'run_date': run_date, 'status': status, 'step_name': '', 'step_rc': '', 'artifact_path': row['path'], 'artifact_exists': str(row['exists']).lower(), 'artifact_size_bytes': row['size_bytes'], 'artifact_last_modified': row['last_modified']})
+                writer.writerow({'row_type': 'artifact', 'run_id': run_id, 'phase': phase, 'owner': owner, 'run_date': run_date, 'status': status, 'step_name': '', 'step_status': '', 'step_severity': '', 'step_rc': '', 'artifact_path': row['path'], 'artifact_exists': str(row['exists']).lower(), 'artifact_size_bytes': row['size_bytes'], 'artifact_last_modified': row['last_modified']})
 
 
 def _maybe_export_batch_junit(*, report_formats: list[str], output_json: Path, output_junit: Path) -> int:
@@ -403,12 +408,13 @@ def _maybe_export_batch_junit(*, report_formats: list[str], output_json: Path, o
     return run_cmd(cmd)
 
 
-def _finalize_batch_reports(*, args: argparse.Namespace, report_formats: list[str], steps: list[dict[str, object]], exit_code: int) -> int:
+def _finalize_batch_reports(*, args: argparse.Namespace, policy: dict, report_formats: list[str], steps: list[dict[str, object]], exit_code: int) -> int:
     _write_batch_report(
         run_id=args.run_id,
         owner=args.owner,
         run_date=args.run_date,
         phase=args.phase,
+        policy=policy,
         steps=steps,
         report_formats=report_formats,
         output_json=args.output_json,
@@ -445,6 +451,7 @@ def _finalize_batch_reports(*, args: argparse.Namespace, report_formats: list[st
         owner=args.owner,
         run_date=args.run_date,
         phase=args.phase,
+        policy=policy,
         steps=steps,
         report_formats=report_formats,
         output_json=args.output_json,
@@ -464,10 +471,12 @@ def cmd_verify_batch(args: argparse.Namespace) -> int:
         return 2
 
     steps: list[dict[str, object]] = []
+    policy = load_phase_policy(args.phase)
 
     def run_step(name: str, fn) -> int:
         rc = fn()
-        steps.append({'name': name, 'rc': rc})
+        step_status, severity = classify_step_status(name, rc, policy)
+        steps.append({'name': name, 'rc': rc, 'status': step_status, 'severity': severity})
         return rc
 
     if args.phase in {'pre', 'full'}:
@@ -480,8 +489,10 @@ def cmd_verify_batch(args: argparse.Namespace) -> int:
                 ('gate cli-readiness', lambda: cmd_gate_cli_readiness(argparse.Namespace())),
             ]
             for name, fn in gate_steps:
-                if run_step(name, fn) != 0 and args.stop_on_fail:
-                    return _finalize_batch_reports(args=args, report_formats=report_formats, steps=steps, exit_code=2)
+                rc = run_step(name, fn)
+                current = steps[-1]
+                if rc != 0 and args.stop_on_fail and current.get('status') == 'FAIL':
+                    return _finalize_batch_reports(args=args, policy=policy, report_formats=report_formats, steps=steps, exit_code=2)
 
         pre_steps = [
             (
@@ -501,9 +512,9 @@ def cmd_verify_batch(args: argparse.Namespace) -> int:
         for name, fn in pre_steps:
             rc = run_step(name, fn)
             if name == 'doctor' and rc != 0:
-                return _finalize_batch_reports(args=args, report_formats=report_formats, steps=steps, exit_code=2)
-            if rc != 0 and args.stop_on_fail:
-                return _finalize_batch_reports(args=args, report_formats=report_formats, steps=steps, exit_code=2)
+                return _finalize_batch_reports(args=args, policy=policy, report_formats=report_formats, steps=steps, exit_code=2)
+            if rc != 0 and args.stop_on_fail and steps[-1].get('status') == 'FAIL':
+                return _finalize_batch_reports(args=args, policy=policy, report_formats=report_formats, steps=steps, exit_code=2)
 
     if args.phase in {'post', 'full'}:
         finalize_ns = argparse.Namespace(
@@ -526,9 +537,10 @@ def cmd_verify_batch(args: argparse.Namespace) -> int:
             fill_csv='canoe/tmp/reports/verification/doc_fill_template.csv',
             fill_md='canoe/tmp/reports/verification/doc_fill_template.md',
         )
-        if run_step('verify finalize', lambda: cmd_verify_finalize(finalize_ns)) != 0 and args.stop_on_fail:
-            return _finalize_batch_reports(args=args, report_formats=report_formats, steps=steps, exit_code=2)
+        if run_step('verify finalize', lambda: cmd_verify_finalize(finalize_ns)) != 0 and args.stop_on_fail and steps[-1].get('status') == 'FAIL':
+            return _finalize_batch_reports(args=args, policy=policy, report_formats=report_formats, steps=steps, exit_code=2)
         run_step('verify status', lambda: cmd_verify_status(argparse.Namespace(run_id=args.run_id, evidence_root='', output_json='canoe/tmp/reports/verification/run_readiness.json', output_md='canoe/tmp/reports/verification/run_readiness.md')))
 
-    failed = sum(1 for s in steps if s['rc'] != 0)
-    return _finalize_batch_reports(args=args, report_formats=report_formats, steps=steps, exit_code=0 if failed == 0 else 2)
+    failed = sum(1 for s in steps if s.get('status') == 'FAIL')
+    exit_code = 0 if failed == 0 else 2
+    return _finalize_batch_reports(args=args, policy=policy, report_formats=report_formats, steps=steps, exit_code=exit_code)

@@ -44,6 +44,15 @@ python scripts/run.py verify surface-bundle
 - `artifacts/verification_runs/<run_id>/<phase>/evidence`
 - `artifacts/verification_runs/<run_id>/<phase>/manifests`
 
+phase별 판정은 동일하지 않습니다.
+
+- `pre`
+  - 런타임/툴링 안정성 중심
+  - `doc-sync`, `capl-sync`는 architecture reset 동안 advisory(`WARN`)로 처리 가능
+- `full`
+  - closeout/release grade
+  - 문서/코드/증빙 드리프트까지 hard fail로 처리
+
 ### 3. Jenkins ingestion
 
 Jenkins는 아래 세 종류를 각각 다르게 취급합니다.
@@ -56,6 +65,7 @@ Jenkins는 아래 세 종류를 각각 다르게 취급합니다.
   - surface ECU 기준 reviewer package / Jenkins archive
 - `execution_manifest.*`
   - `run_id + phase + owner + scenario + Req/TestCase/Surface`를 같이 보는 최종 실행 메타데이터
+  - `phase policy` 정보도 포함되어 실행의 판정 기준을 함께 남깁니다.
 - native `.vtestreport`, screenshot
   - 원본 증빙 archive
 
