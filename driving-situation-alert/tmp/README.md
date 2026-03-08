@@ -1,25 +1,39 @@
-> TEMP NOTE (STALE)
-> 이 문서는 참고용 임시 메모입니다. 공식 SoT는 `driving-situation-alert/00e_ECU_Naming_Standard.md`, `driving-situation-alert/00f_CAN_ID_Allocation_Standard.md` 및 정식 체인 문서(`01/03/0301/0302/0303/0304/04/05/06/07`)입니다.
-> 임시 문서와 SoT가 충돌하면 SoT를 우선 적용합니다.
+# tmp Workspace Guide (Active / Legacy)
 
-# tmp 폴더 구조 가이드
+이 폴더는 문서팀 작업 산출물의 운영 공간이다.
 
-본 폴더는 작업 중간 산출물/운영 메모를 보관한다.
+핵심 원칙:
+- SoT(원문)는 루트 `00~07`에서만 관리한다.
+- `tmp`는 운영/협업/제출 편집본 용도다.
+- 삭제보다 `활성/레거시/아카이브` 분리로 관리한다.
 
-## 디렉터리
+## 1) Active (지금 보는 경로)
 
-- `assets/current`: 본문 문서에서 직접 참조하는 최신 이미지
-- `assets/source`: 다이어그램 원본(drawio 등)
-- `mentoring`: 멘토링 분석/액션 문서
-- `change-orders`: 개발팀 전달용 변경지시/이관 문서
-- `work-notes`: 작업 메모, 계획, 가이드 문서
-- `onboarding`: 팀 온보딩용 쉬운 설명서(3/3/5, 중재 규칙, 게이트, FAQ)
-- `quality/reports`: 품질 점검 리포트 산출물
-- `quality/templates`: 품질 점검 템플릿
-- `archive/pending_cleanup`: 레거시/초안 보관본(삭제 전 임시 보관)
+- 협업 보드: `tmp/change-orders/TEAM_SYNC_BOARD.md`
+- 멘토링 체크: `tmp/mentoring/Mentoring_MET40.md`, `tmp/mentoring/Mentoring_MET41.md`
+- 제출 편집본: `tmp/submission/final-docs/`
+- 제출 엑셀: `tmp/submission/excel/`
+- 증빙 인덱스: `tmp/reports/M40_EVIDENCE_INDEX.md`
 
-## 운영 원칙
+## 2) Submission 운영 규칙
 
-- 문서 본문에서 참조하는 파일은 `assets/current`에 둔다.
-- 신규 임시 문서는 목적에 맞는 하위 폴더에 저장한다.
-- 삭제 여부가 불확실한 자료는 `archive/pending_cleanup`로 먼저 이동한다.
+- 편집은 `tmp/submission/final-docs/`에서만 수행
+- `tmp/submission/docs/`, `tmp/submission/midterm_legacy_docs/`는 조회용 스냅샷
+- 제출 패키징 기준은 `tmp/submission/README.md`를 따른다
+
+## 3) 폴더 역할
+
+- `assets/current`: 문서 본문에서 참조하는 최신 이미지
+- `assets/source`: 다이어그램 원본(drawio)
+- `change-orders`: 개발팀/문서팀 전달 및 동기화 문서
+- `mentoring`: 멘토링 분석 및 체크리스트
+- `reports`: 현재 사이클 실행/증빙 인덱스
+- `quality`: 템플릿/품질 점검 기록(운영 참고)
+- `work-notes`: 내부 메모/검토 초안
+- `archive`: 과거 산출물 보관
+
+## 4) 금지/주의
+
+- SoT 원문(`00~07`) 직접 축약/삭제 금지
+- `tmp` 정리 시 추적 근거 문서 삭제 금지
+- 경로 이동이 필요한 경우 README/가이드 참조 경로를 함께 갱신
