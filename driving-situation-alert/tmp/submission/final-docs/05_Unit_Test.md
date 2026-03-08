@@ -22,6 +22,16 @@
 
 ---
 
+## 심사위원 빠른 확인 (1분)
+
+- 목적: 모듈 단위 입력/출력/시간조건 검증
+- 핵심 모듈: `CHS_GW`, `INFOTAINMENT_GW`, `ADAS_WARN_CTRL`, `EMS_ALERT`, `WARN_ARB_MGR`
+- 출력 모듈: `BODY_GW`, `IVI_GW`, `AMBIENT_CTRL`, `CLU_HMI_CTRL`
+- 검증 노드: `VAL_SCENARIO_CTRL`, `VAL_BASELINE_CTRL`
+- 판정 기준: 시간조건 충족 + 정책 일치 + 상태 전이 안정성
+
+---
+
 ## 단위 테스트 표 (공식 표준 양식)
 
 | 노드 | 분류 | 기능명 | 기능 설명 | Pass/Fail | 담당자 | 일자 |

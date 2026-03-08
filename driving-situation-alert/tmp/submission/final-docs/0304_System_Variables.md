@@ -22,6 +22,16 @@
 
 ---
 
+## 심사위원 빠른 확인 (1분)
+
+- 핵심 Namespace: `Chassis`, `Infotainment`, `V2X`, `Core`, `Body`, `Cluster`, `Test`
+- 핵심 판단 변수: `warningState`, `selectedAlertLevel`, `selectedAlertType`, `timeoutClear`
+- 안전/강건성 변수: `failSafeMode`, `domainPathStatus`, `e2eHealthState`, `duplicatePopupGuard`
+- 출력 변수: `ambientMode`, `ambientColor`, `ambientPattern`, `warningTextCode`
+- 검증 포인트: 범위 준수, 초기값 일관성, 경계값(1000ms/50ms/150ms 관련 변수) 해석 가능성
+
+---
+
 ## 시스템 변수 표 (공식 표준 양식)
 
 | ID | Namespace | Name | Data type | Min | Max | Initial Value | Description |

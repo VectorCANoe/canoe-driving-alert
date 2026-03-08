@@ -22,6 +22,16 @@
 
 ---
 
+## 심사위원 빠른 확인 (1분)
+
+- 핵심 입력 메시지: `frmVehicleStateCanMsg(0x2A0)`, `frmSteeringCanMsg(0x2A1)`, `frmNavContextCanMsg(0x2A3)`
+- 핵심 긴급 메시지: `frmEmergencyBroadcastMsg(0x1C0)`, `ETH_EmergencyAlert(0xE100)`
+- 핵심 출력 메시지: `ethSelectedAlertMsg(0xE200)`, `frmAmbientControlMsg(0x260)`, `frmClusterWarningMsg(0x280)`
+- 시간 기준: 입력 주기 `100ms`, 출력 주기 `50ms`, timeout clear `1000ms`
+- 심사 포인트: 송신자/수신자 일치, ID 중복 없음, 경계 규칙 일관성
+
+---
+
 ## CAN ID 배정 정책 요약
 
 - ID 정책 기준 문서는 `governance/00f_CAN_ID_Allocation_Standard.md`를 따른다.

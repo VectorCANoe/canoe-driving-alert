@@ -22,6 +22,16 @@
 
 ---
 
+## 심사위원 빠른 확인 (1분)
+
+- 입력 경로: `Chassis CAN`, `Infotainment CAN`, `Emergency source`
+- 코어 경로: `CHS_GW/INFOTAINMENT_GW -> ETH_SW -> ADAS_WARN_CTRL/NAV_CTX_MGR/EMS_ALERT/WARN_ARB_MGR`
+- 출력 경로: `WARN_ARB_MGR -> BODY_GW/IVI_GW -> AMBIENT_CTRL/CLU_HMI_CTRL`
+- 기준 주기: 입력 `100ms`, 출력 `50ms`, 긴급 타임아웃 `1000ms`
+- 검증 포인트: 도메인 경계 유지, 경로 단절 없음, 경고 체인 연속성
+
+---
+
 ## 네트워크 플로우 표 (공식 표준 양식)
 
 | Channel | ID hex | Symbolic Name(message name) | Byte no. | Function | Bit no. | signal name | VAL_SCENARIO_CTRL | CHS_GW | INFOTAINMENT_GW | DOMAIN_ROUTER | ETH_SW | ADAS_WARN_CTRL | NAV_CTX_MGR | EMS_POLICE_TX | EMS_AMB_TX | EMS_ALERT_RX | WARN_ARB_MGR | BODY_GW | IVI_GW | AMBIENT_CTRL | CLU_HMI_CTRL | ENG_CTRL | TCM | ACCEL_CTRL | BRK_CTRL | STEER_CTRL | HAZARD_CTRL | WINDOW_CTRL | DRV_STATE_MGR | CLU_BASE_CTRL | VAL_BASELINE_CTRL | [비고] |
