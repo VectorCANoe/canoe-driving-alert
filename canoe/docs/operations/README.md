@@ -46,11 +46,23 @@ Primary index:
 ### `panel/`
 Panel/XVP guidance, reference matrix, and panel-specific checklists.
 
+Primary index:
+
+- `panel/README.md`
+
 ### `unity/`
 Unity and external-renderer bridge references.
 
+Primary index:
+
+- `unity/README.md`
+
 ### `reference/`
 Strategy notes, intake notes, guideline-style references, and non-daily supporting docs.
+
+Primary index:
+
+- `reference/README.md`
 
 ## Operating Rule
 

@@ -46,15 +46,19 @@ Open subfolders only when the task needs them:
 
 ### Audit
 - `canoe/docs/operations/audit/`
+- `canoe/docs/operations/audit/README.md`
 
 ### Panel
 - `canoe/docs/operations/panel/`
+- `canoe/docs/operations/panel/README.md`
 
 ### Unity / external renderer
 - `canoe/docs/operations/unity/`
+- `canoe/docs/operations/unity/README.md`
 
 ### Reference / strategy
 - `canoe/docs/operations/reference/`
+- `canoe/docs/operations/reference/README.md`
 
 ## 4) Default Ignore Set
 
