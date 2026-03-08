@@ -1,0 +1,42 @@
+{
+  "name": "sdv_operator",
+  "role": "verification_console",
+  "owner": "Dev2",
+  "entrypoints": [
+    "sdv",
+    "python scripts/run.py"
+  ],
+  "public_surface": [
+    "pyproject.toml",
+    "sdv_cli.py",
+    "scripts/run.py",
+    "scripts/tui_app.py",
+    "scripts/README.md",
+    "scripts/COMMAND_REFERENCE.md",
+    "scripts/MAINTENANCE_MAP.md"
+  ],
+  "runtime_modules": [
+    "scripts/cliops",
+    "scripts/release"
+  ],
+  "backend_modules": [
+    "scripts/gates",
+    "scripts/quality"
+  ],
+  "excluded_from_product_surface": [
+    "scripts/docs",
+    "scripts/report",
+    "scripts/canoe",
+    "canoe/scripts",
+    "canoe/tmp",
+    "reference",
+    "legacy_projects"
+  ],
+  "generated_outputs": [
+    "canoe/tmp/reports/verification",
+    "canoe/logging/evidence",
+    "canoe/cfg/.run",
+    "dist"
+  ],
+  "packaging_scope_doc": "product/sdv_operator/docs/PACKAGING_SCOPE.md"
+}

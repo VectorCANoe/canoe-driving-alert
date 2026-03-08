@@ -14,8 +14,8 @@ This avoids rework from importing large OSS projects wholesale.
 
 2. Unity renderer adapter baseline (project-owned)
 - `canoe/reference/unity_bridge_samples/README.md`
-- `canoe/docs/operations/UNITY_RENDERER_BRIDGE_QUICKSTART.md`
-- `canoe/docs/operations/UNITY_SCENE_BLUEPRINT.md`
+- `canoe/docs/operations/unity/UNITY_RENDERER_BRIDGE_QUICKSTART.md`
+- `canoe/docs/operations/unity/UNITY_SCENE_BLUEPRINT.md`
 
 3. Curated skin baseline (already filtered)
 - `canoe/reference/oss_panels/_exports/unity_skin_pack_v1/manifest.md`
@@ -45,4 +45,3 @@ This reference baseline supports current CLI-first plan:
 - `scripts/run.py verify ...` for evidence automation
 - `scripts/run.py verify insight ...` for run-level KPI/insight report
 - CANoe panel/Unity remains manual or semi-automatic visualization evidence.
-

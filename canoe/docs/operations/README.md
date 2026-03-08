@@ -1,50 +1,61 @@
-# Operations Docs Index
+﻿# Operations Docs Index
 
-This folder contains process and execution documents used by CANoe development/verification.
+This folder contains CANoe-side process, verification, and reference documents.
 
-## Core SoT / Governance
+The active top-level surface is intentionally small.
+Most dated, one-off, or topic-specific documents are now grouped under subfolders.
+
+## Start Here
+
+Open these first:
+
+1. `DEV_DOC_ENTRYPOINT.md`
+2. `ETH_INTERFACE_CONTRACT.md`
+3. `CAN_MESSAGE_OWNERSHIP_MATRIX.md`
+4. `VERIFICATION_EVIDENCE_LOG_STANDARD.md`
+5. `CLI_PRODUCTIZATION_BP.md`
+
+## Top-Level Active Docs
+
+These remain at the top level because they are part of normal working flow:
+
 - `DEV_DOC_ENTRYPOINT.md`
-- `CANOE_TEST_POC_SCOPE_2026-03-08.md`
-- `CANOE_TEST_UNIT_RUNBOOK.md`
-- `DEV1_INTERFACE_AUDIT_CHECKLIST.md`
-- `DEV1_INTERFACE_AUDIT_PLAYBOOK.md`
-- `DEV1_INTERFACE_AUDIT_REPORT_2026-03-08.md`
-- `DEV1_RUNTIME_CLOSURE_SNAPSHOT_2026-03-08.md`
-- `DEV1_DOC_SYNC_REQUEST_QUEUE.md`
 - `ETH_INTERFACE_CONTRACT.md`
 - `CAN_MESSAGE_OWNERSHIP_MATRIX.md`
-- `LICENSE_REFERENCE_REPORT.md`
-- `V2_BRANCH_GUARDRAIL.md`
-- `SIL_PASS_CRITERIA.md`
 - `VERIFICATION_EVIDENCE_LOG_STANDARD.md`
-- `CAPL_coding_guideline.md`
 - `CLI_PRODUCTIZATION_BP.md`
+- `README.md`
 
-## Panel / XVP
-- `PANEL_DEVELOPMENT_SPEC.md`
-- `PANEL_SPLIT_EXECUTION_GUIDE.md`
-- `PANEL_BINDING_AUDIT.md`
-- `PANEL_REFERENCE_MATRIX.md`
-- `PANEL_PASS_CHECKLIST.md`
-- `PANEL_QUICK_START.md`
-- `PANEL_EDITOR_STEP_BY_STEP.md`
-- `PANEL_GUI_DELETE_LIST.md`
+## Subfolders
 
-## Unity Bridge / External Renderer
-- `CANOE_UNITY_STANDARD.md`
-- `UNITY_RENDERER_BRIDGE_QUICKSTART.md`
-- `UNITY_SCENE_BLUEPRINT.md`
-- `UNITY_ASSET_PIPELINE.md`
-- `UNITY_SYNC_VERIFICATION.md`
-- `UNITY_SYNC_VERIFICATION_STANDARD.md`
+### `verification/`
+Verification-specific runbooks and pass criteria.
 
-## Intake / Strategy Notes
-- `OPEN_SOURCE_INTAKE_POLICY.md`
-- `OSS_PANEL_REFERENCE_INDEX.md`
-- `MENTOR_PRIORITY_BP.md`
-- `B_PLAN_POC.md`
-- `NAVIGATION_SIMULATOR_OPTION_B.md`
+### `audit/`
+Audit, runtime review, sync queue, and dated review snapshots.
 
-## Notes
-- Keep file paths stable when referenced by scripts/docs.
-- Prefer adding new docs with explicit purpose rather than replacing existing SoT files.
+### `panel/`
+Panel/XVP guidance, reference matrix, and panel-specific checklists.
+
+### `unity/`
+Unity and external-renderer bridge references.
+
+### `reference/`
+Strategy notes, intake notes, guideline-style references, and non-daily supporting docs.
+
+## Operating Rule
+
+When adding a new document to this area:
+
+1. keep it at top level only if it belongs to daily active flow
+2. otherwise place it directly in the appropriate subfolder
+3. do not create new dated top-level notes unless they are part of the active surface
+
+## Complexity Rule
+
+A developer should be able to understand the folder by looking at:
+
+- top-level active docs
+- one task-specific subfolder
+
+If they need to scan dozens of mixed files, the structure is failing.

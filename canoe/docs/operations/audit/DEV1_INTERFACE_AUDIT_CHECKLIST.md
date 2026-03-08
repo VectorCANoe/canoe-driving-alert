@@ -27,7 +27,7 @@ This checklist fixes Dev1 execution priority for the current phase.
 5. P5: Observability Support Audit
 
 Detailed procedure:
-- `canoe/docs/operations/DEV1_INTERFACE_AUDIT_PLAYBOOK.md`
+- `canoe/docs/operations/audit/DEV1_INTERFACE_AUDIT_PLAYBOOK.md`
 
 ### Ethernet Transition Guardrail
 

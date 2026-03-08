@@ -9,14 +9,13 @@ from typing import Callable, Mapping
 HandlerMap = Mapping[str, Callable]
 
 
-TOPLEVEL_COMMANDS = [
+VISIBLE_TOPLEVEL_COMMANDS = [
     "start",
     "doctor",
     "capl",
     "canoe",
-    "shell",
     "tui",
-    "wizard",
+    "shell",
     "scenario",
     "verify",
     "evidence",
@@ -24,6 +23,10 @@ TOPLEVEL_COMMANDS = [
     "package",
     "release",
     "contract",
+]
+
+COMPAT_TOPLEVEL_COMMANDS = [
+    "wizard",
     "scenario-run",
     "interactive",
     "verify-prepare",
@@ -49,6 +52,16 @@ TOPLEVEL_COMMANDS = [
     "mstop",
     "mstatus",
 ]
+
+TOPLEVEL_COMMANDS = [*VISIBLE_TOPLEVEL_COMMANDS, *COMPAT_TOPLEVEL_COMMANDS]
+
+
+def _add_hidden_parser(subparsers: argparse._SubParsersAction, name: str) -> argparse.ArgumentParser:
+    parser = subparsers.add_parser(name, help=argparse.SUPPRESS)
+    subparsers._choices_actions = [
+        action for action in subparsers._choices_actions if getattr(action, "dest", None) != name
+    ]
+    return parser
 
 
 def add_verify_prepare_args(p: argparse.ArgumentParser, handlers: HandlerMap) -> None:
@@ -395,7 +408,11 @@ def add_canoe_capl_call_args(p: argparse.ArgumentParser, handlers: HandlerMap) -
 
 def build_parser(handlers: HandlerMap, default_run_id: Callable[[], str]) -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Unified script launcher")
-    sub = parser.add_subparsers(dest="command", required=True)
+    sub = parser.add_subparsers(
+        dest="command",
+        required=True,
+        metavar="{" + ",".join(VISIBLE_TOPLEVEL_COMMANDS) + "}",
+    )
 
     start = sub.add_parser("start", help="Operator-first quick entrypoints")
     start_sub = start.add_subparsers(dest="start_command")
@@ -423,7 +440,7 @@ def build_parser(handlers: HandlerMap, default_run_id: Callable[[], str]) -> arg
 
     sub.add_parser("tui", help="Product-style Textual operator console").set_defaults(func=handlers["cmd_tui"])
     sub.add_parser("shell", help="Interactive slash-command shell").set_defaults(func=handlers["cmd_shell"])
-    sub.add_parser("wizard", help="Legacy alias: shell").set_defaults(func=handlers["cmd_wizard"])
+    _add_hidden_parser(sub, "wizard").set_defaults(func=handlers["cmd_wizard"])
 
     scenario = sub.add_parser("scenario", help="Manual scenario trigger commands (no panel)")
     scenario_sub = scenario.add_subparsers(dest="scenario_command", required=True)
@@ -502,28 +519,28 @@ def build_parser(handlers: HandlerMap, default_run_id: Callable[[], str]) -> arg
     contract.add_argument("--json", action="store_true", help="Output machine-readable JSON")
     contract.set_defaults(func=handlers["cmd_contract"])
 
-    add_scenario_run_args(sub.add_parser("scenario-run", help="Legacy alias: scenario run"), handlers)
-    sub.add_parser("interactive", help="Legacy alias: shell").set_defaults(func=handlers["cmd_shell"])
+    add_scenario_run_args(_add_hidden_parser(sub, "scenario-run"), handlers)
+    _add_hidden_parser(sub, "interactive").set_defaults(func=handlers["cmd_shell"])
 
-    add_verify_prepare_args(sub.add_parser("verify-prepare", help="Legacy alias: verify prepare"), handlers)
-    add_verify_batch_args(sub.add_parser("verify-batch", help="Legacy alias: verify batch"), handlers)
-    add_verify_smoke_args(sub.add_parser("verify-smoke", help="Legacy alias: verify smoke"), handlers)
-    add_verify_fill_args(sub.add_parser("verify-fill-score", help="Legacy alias: verify fill-score"), handlers)
-    add_verify_insight_args(sub.add_parser("verify-insight", help="Legacy alias: verify insight"), handlers)
-    add_verify_bind_doc_args(sub.add_parser("verify-bind-doc", help="Legacy alias: verify bind-doc"), handlers)
-    add_verify_fill_template_args(sub.add_parser("verify-fill-template", help="Legacy alias: verify fill-template"), handlers)
-    add_verify_status_args(sub.add_parser("verify-status", help="Legacy alias: verify status"), handlers)
-    add_verify_finalize_args(sub.add_parser("verify-finalize", help="Legacy alias: verify finalize"), handlers)
-    sub.add_parser("gate-doc-sync", help="Legacy alias: gate doc-sync").set_defaults(func=handlers["cmd_gate_doc_sync"])
-    sub.add_parser("gate-cfg-hygiene", help="Legacy alias: gate cfg-hygiene").set_defaults(func=handlers["cmd_gate_cfg_hygiene"])
-    sub.add_parser("gate-capl-sync", help="Legacy alias: gate capl-sync").set_defaults(func=handlers["cmd_gate_capl_sync"])
-    sub.add_parser("gate-multibus-dbc", help="Legacy alias: gate multibus-dbc").set_defaults(func=handlers["cmd_gate_multibus_dbc"])
-    sub.add_parser("gate-cli-readiness", help="Legacy alias: gate cli-readiness").set_defaults(func=handlers["cmd_gate_cli_readiness"])
-    pkg_build_legacy = sub.add_parser("package-build-exe", help="Legacy alias: package build-exe")
+    add_verify_prepare_args(_add_hidden_parser(sub, "verify-prepare"), handlers)
+    add_verify_batch_args(_add_hidden_parser(sub, "verify-batch"), handlers)
+    add_verify_smoke_args(_add_hidden_parser(sub, "verify-smoke"), handlers)
+    add_verify_fill_args(_add_hidden_parser(sub, "verify-fill-score"), handlers)
+    add_verify_insight_args(_add_hidden_parser(sub, "verify-insight"), handlers)
+    add_verify_bind_doc_args(_add_hidden_parser(sub, "verify-bind-doc"), handlers)
+    add_verify_fill_template_args(_add_hidden_parser(sub, "verify-fill-template"), handlers)
+    add_verify_status_args(_add_hidden_parser(sub, "verify-status"), handlers)
+    add_verify_finalize_args(_add_hidden_parser(sub, "verify-finalize"), handlers)
+    _add_hidden_parser(sub, "gate-doc-sync").set_defaults(func=handlers["cmd_gate_doc_sync"])
+    _add_hidden_parser(sub, "gate-cfg-hygiene").set_defaults(func=handlers["cmd_gate_cfg_hygiene"])
+    _add_hidden_parser(sub, "gate-capl-sync").set_defaults(func=handlers["cmd_gate_capl_sync"])
+    _add_hidden_parser(sub, "gate-multibus-dbc").set_defaults(func=handlers["cmd_gate_multibus_dbc"])
+    _add_hidden_parser(sub, "gate-cli-readiness").set_defaults(func=handlers["cmd_gate_cli_readiness"])
+    pkg_build_legacy = _add_hidden_parser(sub, "package-build-exe")
     pkg_build_legacy.add_argument("--mode", default="onefolder", choices=["onefolder", "onefile"])
     pkg_build_legacy.add_argument("--clean", action="store_true")
     pkg_build_legacy.set_defaults(func=handlers["cmd_package_build_exe"])
-    pkg_portable_legacy = sub.add_parser("package-bundle-portable", help="Legacy alias: package bundle-portable")
+    pkg_portable_legacy = _add_hidden_parser(sub, "package-bundle-portable")
     pkg_portable_legacy.add_argument("--mode", default="onefolder", choices=["onefolder", "onefile"])
     pkg_portable_legacy.add_argument("--clean", action="store_true")
     pkg_portable_legacy.add_argument("--rebuild-exe", action="store_true")
@@ -532,11 +549,11 @@ def build_parser(handlers: HandlerMap, default_run_id: Callable[[], str]) -> arg
     pkg_portable_legacy.add_argument("--zip-name", default="")
     pkg_portable_legacy.set_defaults(func=handlers["cmd_package_bundle_portable"])
 
-    sub.add_parser("go", help="Short alias: start guided").set_defaults(func=handlers["cmd_start_guided"])
-    add_start_demo_args(sub.add_parser("demo", help="Short alias: start demo"), handlers)
-    add_start_precheck_args(sub.add_parser("precheck", help="Short alias: start precheck"), handlers, default_run_id)
-    sub.add_parser("mstart", help="Short alias: canoe measure-start").set_defaults(func=handlers["cmd_canoe_measure_start"])
-    sub.add_parser("mstop", help="Short alias: canoe measure-stop").set_defaults(func=handlers["cmd_canoe_measure_stop"])
-    sub.add_parser("mstatus", help="Short alias: canoe measure-status").set_defaults(func=handlers["cmd_canoe_measure_status"])
+    _add_hidden_parser(sub, "go").set_defaults(func=handlers["cmd_start_guided"])
+    add_start_demo_args(_add_hidden_parser(sub, "demo"), handlers)
+    add_start_precheck_args(_add_hidden_parser(sub, "precheck"), handlers, default_run_id)
+    _add_hidden_parser(sub, "mstart").set_defaults(func=handlers["cmd_canoe_measure_start"])
+    _add_hidden_parser(sub, "mstop").set_defaults(func=handlers["cmd_canoe_measure_stop"])
+    _add_hidden_parser(sub, "mstatus").set_defaults(func=handlers["cmd_canoe_measure_status"])
 
     return parser

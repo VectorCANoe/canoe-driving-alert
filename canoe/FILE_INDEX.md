@@ -2,6 +2,14 @@
 
 Quick index for the `canoe` folder.
 
+## 0) First Open
+
+If you are entering the CANoe side for daily work, open these first:
+
+1. `C:\Users\이준영\CANoe-IVI-OTA\DEVELOPMENT_ENTRYPOINTS.md`
+2. `C:\Users\이준영\CANoe-IVI-OTA\driving-situation-alert\TMP_HANDOFF.md`
+3. `C:\Users\이준영\CANoe-IVI-OTA\scripts\README.md`
+
 ## 1) Runtime Profiles
 
 - Active runtime config:
@@ -33,6 +41,7 @@ Quick index for the `canoe` folder.
 
 - Operations: `canoe\docs\operations\`
 - Architecture: `canoe\docs\architecture\`
+- Working outputs: `canoe\tmp\reports\verification\` (generated, not source)
 
 ## 5) Legacy Notes
 

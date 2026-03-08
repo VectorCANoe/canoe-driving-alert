@@ -17,7 +17,7 @@ from typing import List
 
 
 DEFAULT_TARGET_REL = Path("canoe/reference/oss_panels/coupled_sim_unity_ref")
-DEFAULT_REPORT_REL = Path("canoe/docs/operations/UNITY_SYNC_VERIFICATION_STANDARD.md")
+DEFAULT_REPORT_REL = Path("canoe/docs/operations/unity/UNITY_SYNC_VERIFICATION_STANDARD.md")
 
 
 def run_cmd(cmd: List[str], cwd: Path) -> None:

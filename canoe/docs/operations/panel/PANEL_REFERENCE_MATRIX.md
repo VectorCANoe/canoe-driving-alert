@@ -78,6 +78,6 @@
 - 5. Run measurement and capture evidence on FZ_005/FZ_006/FZ_007 criteria
 
 ## Execution Documents
-- GUI execution checklist: `canoe/docs/operations/PANEL_SPLIT_EXECUTION_GUIDE.md`
-- Binding audit report: `canoe/docs/operations/PANEL_BINDING_AUDIT.md`
+- GUI execution checklist: `canoe/docs/operations/panel/PANEL_SPLIT_EXECUTION_GUIDE.md`
+- Binding audit report: `canoe/docs/operations/panel/PANEL_BINDING_AUDIT.md`
 - Binding audit script: `canoe/scripts/audit_panel_bindings.py`

@@ -19,7 +19,7 @@ What it does:
 1. Build skin pack (`unity_skin_pack_v1`)
 2. Sync bridge scripts + skin files into fixed Unity target
 3. Verify required files and write standard report:
-   - `canoe/docs/operations/UNITY_SYNC_VERIFICATION_STANDARD.md`
+   - `canoe/docs/operations/unity/UNITY_SYNC_VERIFICATION_STANDARD.md`
 
 ## Runtime sequence (production-like)
 1. In CANoe: Start Measurement

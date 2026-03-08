@@ -105,4 +105,4 @@ python canoe/scripts/build_unity_skin_pack.py --clean
 
 ## 6) Asset pipeline
 - See:
-  - `canoe/docs/operations/UNITY_ASSET_PIPELINE.md`
+  - `canoe/docs/operations/unity/UNITY_ASSET_PIPELINE.md`

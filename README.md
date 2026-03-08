@@ -2,6 +2,23 @@
 
 **CAN Communication Project in Hyundai Mobis Bootcamp with Vector Korea**
 
+## Developer Start
+
+If the repository feels too large, do not scan the whole tree first.
+Start here:
+
+1. [DEVELOPMENT_ENTRYPOINTS.md](C:\Users\이준영\CANoe-IVI-OTA\DEVELOPMENT_ENTRYPOINTS.md)
+2. [canoe/FILE_INDEX.md](C:\Users\이준영\CANoe-IVI-OTA\canoe\FILE_INDEX.md)
+3. [scripts/README.md](C:\Users\이준영\CANoe-IVI-OTA\scripts\README.md)
+4. [product/sdv_operator/README.md](C:\Users\이준영\CANoe-IVI-OTA\product\sdv_operator\README.md)
+
+Daily operator/developer commands stay narrow:
+
+- `python scripts/run.py`
+- `python scripts/run.py gate all`
+- `python scripts/run.py scenario run --id <n>`
+- `python scripts/run.py verify quick --run-id <RUN_ID> --owner <OWNER>`
+
 ## 🚗 Project Overview
 
 This project focuses on a **real-time driving situation warning system** implemented with **Vector CANoe SIL simulation**.  
@@ -226,8 +243,8 @@ License and reference handling:
 - Vendor tool dependency (Vector CANoe) is commercial/EULA-based and not redistributed by this repository.
 - Vendor sample bundles are treated as reference-only assets unless redistribution permission is explicitly confirmed.
 - Operational license reference:
-  - `canoe/docs/operations/LICENSE_REFERENCE_REPORT.md`
-  - `canoe/docs/operations/OPEN_SOURCE_INTAKE_POLICY.md`
+  - `canoe/docs/operations/reference/LICENSE_REFERENCE_REPORT.md`
+  - `canoe/docs/operations/reference/OPEN_SOURCE_INTAKE_POLICY.md`
 
 ---
 

@@ -142,7 +142,7 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument(
         "--write-report",
-        default="canoe/docs/operations/UNITY_SYNC_VERIFICATION.md",
+        default="canoe/docs/operations/unity/UNITY_SYNC_VERIFICATION.md",
         help="Markdown report output path relative to repo root",
     )
     return parser.parse_args()

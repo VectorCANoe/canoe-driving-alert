@@ -17,7 +17,7 @@ This playbook defines how Dev1 audits the active runtime before further implemen
 - Outcome: one closed list of code issues, doc-sync requests, and non-issues.
 
 Companion checklist:
-- `canoe/docs/operations/DEV1_INTERFACE_AUDIT_CHECKLIST.md`
+- `canoe/docs/operations/audit/DEV1_INTERFACE_AUDIT_CHECKLIST.md`
 
 ---
 

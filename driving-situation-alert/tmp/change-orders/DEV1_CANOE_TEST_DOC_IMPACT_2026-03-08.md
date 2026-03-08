@@ -18,7 +18,7 @@
 - `canoe/tests/modules/test_units/TC_CANOE_IT_V2_FAILSAFE_001_DOMAIN_BOUNDARY/TC_CANOE_IT_V2_FAILSAFE_001_DOMAIN_BOUNDARY.can`
 - `canoe/tests/modules/test_units/TC_CANOE_IT_V2_FAILSAFE_001_DOMAIN_BOUNDARY/TC_CANOE_IT_V2_FAILSAFE_001_DOMAIN_BOUNDARY.vtestunit.yaml`
 - `canoe/tests/modules/test_units/TC_CANOE_IT_V2_FAILSAFE_001_DOMAIN_BOUNDARY/TC_CANOE_IT_V2_FAILSAFE_001_DOMAIN_BOUNDARY.vtesttree.yaml`
-- `canoe/docs/operations/CANOE_TEST_UNIT_RUNBOOK.md`
+- `canoe/docs/operations/verification/CANOE_TEST_UNIT_RUNBOOK.md`
 
 ## Docs Update Scope
 

@@ -6,9 +6,11 @@ Temporary working area for CANoe-side artifacts.
 - `assets/screenshots/`: local screenshots and quick captures (ignored by git)
 - `backups/cfg/`: local backup files from config recovery (ignored by git)
 - `backups/sysvars/`: local sysvar backup snapshots (ignored by git)
+- `TUI.md`: current direction note for the verification TUI/operator console
 - `reports/dbc/`: DBC split/quality reports
 - `reports/contracts/`: manual contract verification reports
 - `reports/oss/`: OSS intake/audit reports
+- `reports/verification/`: generated verification outputs (`run_readiness`, smoke report, doctor report, TUI state)
 - `snapshots/`: markdown snapshots for temporary state notes
 - `dbc_compare/`: DBC comparison workspace and generated backups
 
@@ -20,3 +22,4 @@ Temporary working area for CANoe-side artifacts.
 - Keep this directory for working artifacts and evidence drafts only.
 - Do not store canonical requirements/architecture SoT here.
 - If a report becomes stable and referenced by process docs, move it to `canoe/docs/operations/`.
+- Treat `reports/verification/` as generated working output, not source code.

@@ -2,7 +2,7 @@ import re
 from pathlib import Path
 
 ROOT = Path("canoe/project/panel")
-OUT = Path("canoe/docs/operations/PANEL_BINDING_AUDIT.md")
+OUT = Path("canoe/docs/operations/panel/PANEL_BINDING_AUDIT.md")
 
 OBJ_RE = re.compile(
     r'<Object Type="Vector\.CANalyzer\.Panels\.Design\.[^"]+" Name="([^"]+)" ControlName="([^"]+)">'

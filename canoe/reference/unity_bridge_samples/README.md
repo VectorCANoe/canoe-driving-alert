@@ -24,5 +24,5 @@
   - `canoe/scripts/unity_renderer_mock_sender.py` (mock)
 
 ## Related docs
-- `canoe/docs/operations/UNITY_RENDERER_BRIDGE_QUICKSTART.md`
-- `canoe/docs/operations/UNITY_SCENE_BLUEPRINT.md`
+- `canoe/docs/operations/unity/UNITY_RENDERER_BRIDGE_QUICKSTART.md`
+- `canoe/docs/operations/unity/UNITY_SCENE_BLUEPRINT.md`

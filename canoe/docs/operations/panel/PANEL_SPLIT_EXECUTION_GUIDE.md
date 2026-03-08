@@ -14,8 +14,8 @@
 - Do not patch `.cfg`, `.cfg.ini`, `.stcfg` by script for normal development
 
 ## Inputs (Prepared)
-- Binding audit: `canoe/docs/operations/PANEL_BINDING_AUDIT.md`
-- Reference matrix: `canoe/docs/operations/PANEL_REFERENCE_MATRIX.md`
+- Binding audit: `canoe/docs/operations/panel/PANEL_BINDING_AUDIT.md`
+- Reference matrix: `canoe/docs/operations/panel/PANEL_REFERENCE_MATRIX.md`
 - Curated assets: `canoe/project/panel/Bitmaps/reference_pack_v1`
 
 ## Baseline Backup (GUI)
@@ -91,7 +91,7 @@
 - Run:
 - `python canoe/scripts/audit_panel_bindings.py`
 - Check generated file:
-- `canoe/docs/operations/PANEL_BINDING_AUDIT.md`
+- `canoe/docs/operations/panel/PANEL_BINDING_AUDIT.md`
 - Expected warnings to resolve:
 - `SDV_External_Road_View.xvp` should have no `renderColor`, `renderPattern`, `renderTextCode`
 - `SDV_Cabin_Panorama_View.xvp` should have no `renderTextCode`
@@ -99,4 +99,3 @@
 ## Note on Encoding
 - Keep code/script content in English ASCII where possible
 - Use UTF-8 for all text files
-

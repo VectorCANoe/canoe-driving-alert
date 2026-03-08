@@ -26,7 +26,7 @@ This file is a project process reference, not legal advice.
 ## 3) Required References
 
 - Open source intake policy:
-  - `canoe/docs/operations/OPEN_SOURCE_INTAKE_POLICY.md`
+  - `canoe/docs/operations/reference/OPEN_SOURCE_INTAKE_POLICY.md`
 - Gate matrix:
   - `scripts/GATE_MATRIX.md`
 - Git ownership of gate/workflow policy:
@@ -59,4 +59,3 @@ This file is a project process reference, not legal advice.
 - "Should vector sample bundle be excluded from Git?"
   - Yes, by default.
   - If already tracked, remove in a dedicated cleanup step after coordination.
-
