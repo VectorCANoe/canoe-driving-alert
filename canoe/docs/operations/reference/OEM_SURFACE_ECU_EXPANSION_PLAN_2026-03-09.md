@@ -72,11 +72,60 @@ Representative OEM-style ECU names observed there:
 - do not add deep CAPL logic for every placeholder ECU
 - do not copy OpenDBC node names blindly into runtime without ownership review
 
+## Surface Layering Rule
+
+We will use three layers, not one flat ECU list.
+
+### Layer A. Primary Surface ECU
+
+- reviewer-facing top-level vehicle architecture
+- shown first in GUI, diagrams, and presentation
+- limited to the ECUs that define the main vehicle story
+
+### Layer B. Secondary OEM Breadth ECU
+
+- still visible in a full vehicle architecture
+- helps the project read like an OEM program
+- usually no deep custom CAPL logic in this cycle
+- may remain placeholder/lightweight
+
+### Layer C. Runtime/Internal Module
+
+- `_GW`, `_CTRL`, `_MGR`, `_TX`, `_RX`
+- implementation-facing only
+- not promoted to top-level reviewer surface unless they truly represent a standalone ECU
+
+## OEM Alias Normalization Rule
+
+Do not blindly surface every OEM abbreviation as an independent top-level ECU.
+
+Use the following normalization policy:
+
+| OEM/Reference Name | Current Program Surface | Treatment |
+|---|---|---|
+| `EMS` | `ECM` | top-level alias normalization |
+| `TCU` | `TCM` | top-level alias normalization |
+| `MDPS` | `EPS` | top-level alias normalization |
+| `DATC` / `FATC` | `HVAC` | top-level alias normalization |
+| `ABS` | `ESP` sub-surface | keep as secondary breadth or internal detail |
+| `CGW` | `CGW` | keep top-level |
+| `CLU` | `CLUSTER` | top-level alias normalization |
+| `TMU` | `TMU` | secondary breadth surface |
+| `SCC` | `SCC` | secondary ADAS breadth surface |
+| `ACU` | `ACU` | secondary safety breadth surface |
+| `SMK` | `SMK` | secondary body breadth surface |
+| `_4WD` | `AWD_4WD` | secondary powertrain breadth surface |
+
+Rule:
+
+- If the OEM abbreviation already reads like a real ECU and improves readability, keep it.
+- If the OEM abbreviation is too signal-centric or supplier-centric, normalize it to a clearer surface ECU.
+
 ## Recommended Surface ECU Inventory
 
-Target range:
+Target range for the final vehicle-program surface:
 
-- visible surface ECUs: `24~28`
+- visible surface ECUs: `26~30`
 - deep active runtime modules: `12~14`
 - core custom feature ECUs: `5~8`
 
@@ -96,6 +145,8 @@ Target range:
 | `TCM` | Active | Deep | transmission control |
 | `VCU` | Active | Deep | longitudinal vehicle control |
 | `AWD_4WD` | Placeholder | Light | torque split / drivetrain breadth surface |
+| `BAT_BMS` | Placeholder | Light | battery / battery sensing breadth surface |
+| `LVR` | Placeholder | Light | electronic gear lever breadth surface |
 
 ### 3. Chassis Surface
 
@@ -103,9 +154,12 @@ Target range:
 |---|---|---|---|
 | `ESP` | Active | Deep | brake / stability |
 | `EPS` | Active | Deep | steering |
+| `ABS` | Placeholder | Light | brake sub-surface / wheel-speed breadth surface |
 | `EPB` | Placeholder | Light | electric parking brake |
 | `TPMS` | Placeholder | Light | tire pressure monitoring |
 | `SAS` | Placeholder | Light | steering angle sensing surface |
+| `ECS` | Placeholder | Light | active suspension breadth surface |
+| `EVP` | Placeholder | Light | electric vacuum pump breadth surface |
 
 ### 4. Body / Comfort Surface
 
@@ -138,6 +192,7 @@ Target range:
 | `FCAM` | Placeholder | Light | front camera surface |
 | `FRADAR` | Placeholder | Light | front radar surface |
 | `AVM` | Placeholder | Light | around-view monitor / parking breadth surface |
+| `LKA_LDW` | Placeholder | Light | lane keeping / lane departure breadth surface |
 
 ### 7. Validation Surface
 
@@ -147,7 +202,7 @@ Target range:
 
 ## Count Check
 
-- Surface ECU total in this plan: `24`
+- Surface ECU total in this plan: `30`
 - Deep active runtime target:
   - `CGW`
   - `ETH_BACKBONE`
@@ -163,8 +218,58 @@ Target range:
   - `V2X`
   - `VALIDATION_HARNESS`
 - Result: `13 deep surfaces + 11 light placeholder surfaces`
+- Result: `13 deep surfaces + 17 light breadth surfaces`
 
 This is within the intended project shape.
+
+## Secondary OEM Breadth Candidate Bank
+
+These are useful for a believable OEM architecture, but they should **not** all become deep runtime targets in this cycle.
+
+### Powertrain / Driveline Candidate Bank
+
+| Candidate | Typical Meaning | Recommended Role In This Project |
+|---|---|---|
+| `EMS` | engine management system | alias to `ECM` |
+| `TCU` | transmission control unit | alias to `TCM` |
+| `_4WD` | all-wheel-drive control | keep as `AWD_4WD` breadth surface |
+| `LPI` | LPG fuel system | optional supplier/powertrain sub-surface only |
+| `FPCM` | fuel pump control module | internal/sub-surface only unless fuel story is added |
+| `DI_BOX` | injector driver box | internal/sub-surface only |
+| `REA` | rotary electronic actuator / turbo actuator | internal/sub-surface only |
+| `OPI` | oil pump inverter | internal/sub-surface only |
+| `BAT` / battery sensing | battery/bms surface | expose as `BAT_BMS` breadth surface if needed |
+| `LVR` | electronic lever | keep as light breadth surface |
+
+### Chassis / Safety Candidate Bank
+
+| Candidate | Typical Meaning | Recommended Role In This Project |
+|---|---|---|
+| `ABS` | anti-lock brake system | secondary chassis surface under `ESP` family |
+| `ESC` | stability control | already represented by `ESP` top-level surface |
+| `MDPS` | motor driven power steering | alias to `EPS` |
+| `EPB` | electronic parking brake | light breadth surface |
+| `ECS` | electronic control suspension | light breadth surface |
+| `ACU` | airbag control unit | light safety breadth surface |
+| `SAS` | steering angle sensor | light chassis sensing breadth surface |
+| `TPMS` | tire pressure monitoring | light chassis sensing breadth surface |
+| `EVP` | electric vacuum pump | light chassis/actuation breadth surface |
+
+## Promotion Rule
+
+An OEM candidate is promoted to top-level surface only if at least one of these is true:
+
+1. it helps the reader understand the whole-vehicle architecture
+2. it is a common OEM ECU name seen across references
+3. it may later own a distinct DBC/message family
+4. it would plausibly exist as a separate controller in a production vehicle
+
+An OEM candidate stays out of top-level surface if:
+
+1. it is mainly a sub-function or actuator detail
+2. it would dilute the current vehicle story
+3. it has no realistic place in current CAN/Ethernet ownership
+4. it would force unnecessary deep runtime work now
 
 ## Core Custom Feature ECU Focus
 
