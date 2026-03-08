@@ -1,5 +1,6 @@
 includes
 {
+  #include "..\\common\\CAPL_COMMON.cin"
 }
 
 variables
@@ -10,6 +11,19 @@ variables
   int gLastAmbientColor;
   int gLastAmbientPattern;
   int gBodyAliveCnt;
+  int gLastBcmDiagReqSid;
+  int gLastBcmDiagReqDidHigh;
+  int gLastBcmDiagReqDidLow;
+}
+
+void sendBcmDiagResponse()
+{
+  message frmBcmDiagResMsg mDiagRes;
+
+  mDiagRes.BcmDiagRespCode = (gLastBcmDiagReqSid + 0x40) & 0xFF;
+  mDiagRes.BcmDiagData0 = gLastBcmDiagReqDidHigh & 0xFF;
+  mDiagRes.BcmDiagData1 = gLastBcmDiagReqDidLow & 0xFF;
+  output(mDiagRes);
 }
 
 on start
@@ -18,9 +32,20 @@ on start
   gLastAmbientColor = -1;
   gLastAmbientPattern = -1;
   gBodyAliveCnt = 0;
+  gLastBcmDiagReqSid = 0x22;
+  gLastBcmDiagReqDidHigh = 0xF1;
+  gLastBcmDiagReqDidLow = 0x90;
   setTimer(tBodyCycle, 10);
   setTimer(tBodyBase100, 100);
   write("[BODY_GW] start");
+}
+
+on message frmBcmDiagReqMsg
+{
+  gLastBcmDiagReqSid = clampRange((int)this.BcmDiagServiceId, 0, 255);
+  gLastBcmDiagReqDidHigh = clampRange((int)this.BcmDiagDidHigh, 0, 255);
+  gLastBcmDiagReqDidLow = clampRange((int)this.BcmDiagDidLow, 0, 255);
+  sendBcmDiagResponse();
 }
 
 on timer tBodyCycle
@@ -133,12 +158,16 @@ on timer tBodyBase100
   message frmAlarmStateMsg mAlarm;
   message frmBodyGatewayStateMsg mBodyGwState;
   message frmBodyComfortStateMsg mComfort;
+  message frmInteriorLightMsg mLight;
+  message frmRainLightAutoMsg mRain;
   int hazardActive;
   int navDirection;
   int seatBeltOverride;
+  int ambientMode;
   hazardActive = ((int)@Core::selectedAlertLevel >= 6) ? 1 : 0;
   navDirection = (int)@Infotainment::navDirection;
   seatBeltOverride = (int)@Test::seatBeltOverride;
+  ambientMode = clampRange((int)@Body::ambientMode, 0, 7);
   if (navDirection < 0 || navDirection > 3)
   {
     navDirection = 0;
@@ -155,6 +184,14 @@ on timer tBodyBase100
   mWindow.WindowCommand = 0;
   mWindow.WindowState = 0;
   output(mWindow);
+
+  mLight.CabinLightMode = ambientMode & 0x7;
+  mLight.DomeLightLevel = (ambientMode > 0) ? 20 : 4;
+  output(mLight);
+
+  mRain.RainSenseLevel = 0;
+  mRain.AutoLightState = 0;
+  output(mRain);
 
   mDoorState.DoorStateMask = 0;
   mDoorState.DoorLockState = 1;
