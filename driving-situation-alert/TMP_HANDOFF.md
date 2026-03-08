@@ -1,7 +1,7 @@
 # TMP Handoff (Next Codex Session)
 
 ## 0) Freshness Control
-- Last Updated: 2026-03-08
+- Last Updated: 2026-03-09
 - Freshness Status: FRESH
 - Validity Window: 3 days
 - Stale Criteria (any one = stale):
@@ -18,8 +18,8 @@
 - Title: 주행 상황 실시간 경고 시스템
 - Subtitle: 구간 정보 및 긴급차량 접근 기반 앰비언트·클러스터 경보
 - Current Working Objective:
-  - 기존 closeout/freeze 모드를 해제하고, 양산차 프로젝트 표면에 맞는 논리 ECU 구조와 네이밍을 재정의한다.
-  - 이번 사이클의 최우선은 `논리 ECU 재설계 -> GUI 표면명 정리 -> 구현 모듈 경계 재판정 -> 문서 체인 재동기화`다.
+  - closeout 중심 운영을 종료하고, 양산차 프로젝트 표면에 맞는 논리 ECU 구조를 다시 정의한다.
+  - 현재 최우선은 `표면 ECU 고정 -> 구현 모듈/검증 하네스 분리 -> GUI/문서 재정렬`이다.
 - Scope In:
   - Navigation zone recognition (school zone, highway, guide lane)
   - V2V emergency alerts (police, ambulance)
@@ -42,34 +42,48 @@
 ## 3) Non-Negotiable Rules (Mentoring)
 - Mandatory 1:1 traceability:
   - `Req -> Func -> Flow -> Comm -> Var -> Code -> UT/IT/ST`
-- Active Req range in this cycle:
-  - `Req_001~043`, `Req_101~107`, `Req_109~113`, `Req_116`, `Req_118~121`, `Req_123`, `Req_125~129`
-  - `Req_130~139` (Pre-Activation)
-  - `Req_140~147` (Pre-Activation)
-  - `Req_148~155` (Pre-Activation)
 - Keep separation:
   - `01 = What`
   - `03+ = How`
-- ECU naming governance is temporarily reopened:
-  - Explicit rule redesign starts in `00e`, then propagates to `0301`, `04`, `0302`, `0303`, `0304`
-  - 기존 Canonical 명칭은 transition baseline으로 취급하며, 리셋안 확정 전까지 reference baseline으로만 유지한다.
+- ECU naming governance is reopened and now follows the reset baseline:
+  - `00e` defines `surface ECU / runtime module / validation harness`
+  - runtime rename or GUI rename must not happen before the document chain is updated
 - Random Req audit must not break the trace chain.
 - Use V-model in both directions:
   - design to test
   - test failure back to source doc
 
-## 4) Node Naming Baseline (Transition Baseline)
-- ADAS_WARN_CTRL
-- NAV_CTX_MGR
-- WARN_ARB_MGR
-- EMS_ALERT (logical terminal)
-- EMS_POLICE_TX / EMS_AMB_TX / EMS_ALERT_RX (internal implementation modules, `AMB` = Ambulance)
-- AMBIENT_CTRL
-- CLU_HMI_CTRL
-- VAL_SCENARIO_CTRL
-- VAL_BASELINE_CTRL
-- Reset Note:
-  - 위 목록은 active baseline reference일 뿐, architecture reset 완료 전까지 최종 naming으로 간주하지 않는다.
+## 4) Current Reset Baseline
+
+### 4.1 Surface ECU Baseline
+- `CGW`
+- `ETH_BACKBONE`
+- `ECM`
+- `TCM`
+- `VCU`
+- `ESP`
+- `EPS`
+- `BCM`
+- `HVAC` (placeholder)
+- `IVI`
+- `CLUSTER`
+- `ADAS`
+- `V2X`
+- `VALIDATION_HARNESS`
+
+### 4.2 Runtime Transition Baseline
+- runtime canonical names remain reference baseline until runtime merge decisions are approved
+- key examples:
+  - `ENG_CTRL -> ECM`
+  - `ACCEL_CTRL -> VCU`
+  - `BRK_CTRL -> ESP`
+  - `STEER_CTRL -> EPS`
+  - `BODY_GW / AMBIENT_CTRL / HAZARD_CTRL / WINDOW_CTRL / DRV_STATE_MGR -> BCM`
+  - `IVI_GW / NAV_CTX_MGR -> IVI`
+  - `CLU_HMI_CTRL / CLU_BASE_CTRL -> CLUSTER`
+  - `ADAS_WARN_CTRL / WARN_ARB_MGR -> ADAS`
+  - `EMS_POLICE_TX / EMS_AMB_TX / EMS_ALERT_RX -> V2X`
+  - `VAL_* -> VALIDATION_HARNESS`
 
 ## 5) Priority and Timing Rules
 - Emergency > Navigation context
@@ -79,36 +93,19 @@
 - Timeout clear: 1000 ms
 
 ## 6) Current Status Snapshot
-- 00_VModel_Mapping.md: Version 4.5 (Released)
-- 00a_Audit_Readiness_Checklist.md: Version 1.13 (Draft)
-- 00b_Project_Scope.md: Version 2.9 (Released)
-- 00c_Req_Classification_and_Safety_Profile.md: Version 1.7 (Draft, Active Baseline Locked + Pre-Activation Open)
-- 00d_HARA_Worksheet.md: Version 1.5 (Draft, Active Baseline Approved + Pre-Activation In Progress)
-- 00e_ECU_Naming_Standard.md: Version 2.7 (Released, SoT Fixed)
-- 00f_CAN_ID_Allocation_Standard.md: Version 3.6 (Draft, Policy SoT)
-- 01_Requirements.md: Version 5.30 (Draft)
-- 02_Concept_design.md: Version 2.7 (Draft, Figure Finalized)
-- 03_Function_definition.md: Version 4.31 (Draft)
-- 0301_SysFuncAnalysis.md: Version 3.27 (Draft)
-- 0302_NWflowDef.md: Version 3.24 (Draft)
-- 0303_Communication_Specification.md: Version 3.27 (Draft)
-- 0304_System_Variables.md: Version 2.24 (Draft)
-- 04_SW_Implementation.md: Version 2.22 (Draft)
-- 05_Unit_Test.md: Version 2.21 (Draft)
-- 06_Integration_Test.md: Version 4.19 (Draft)
-- 07_System_Test.md: Version 5.19 (Draft)
-- Development Baseline Commit: `8eb020e` (Flow_106/Comm_106 baseline chain 문구 정합, 2026-03-08)
+- `00e_ECU_Naming_Standard.md`: reset baseline rewrite in progress
+- `ECU_RESET_CLASSIFICATION_MATRIX_2026-03-09.md`: code-reviewed baseline complete
+- `TARGET_SURFACE_ECU_INVENTORY_V2_2026-03-09.md`: reviewed inventory complete
+- `ECU_RESET_DOC_PROPAGATION_RULES_2026-03-09.md`: propagation order fixed
+- current implementation baseline commit before next rewrite step: `f1df423`
 
 ## 7) Immediate Next Steps
-1. Archive current baseline and switch the project into `Architecture Reset Mode`.
-2. Reclassify active nodes into logical ECU groups before any GUI rename or runtime merge decision.
-3. Redesign ECU naming policy in `00e` to separate:
-   - logical ECU surface names
-   - internal implementation module names
-   - validation harness names
-4. Decide which runtime splits stay for ownership/debuggability and which can be merged for production-style surface modeling.
-5. Propagate approved reset decisions through `0301/0302/0303/0304/04`, then reopen `05/06/07` evidence mapping against the new baseline.
-6. Keep `00f` and `00g` as supporting policy SoT, but allow their dependent sections to be refactored if ECU reset requires it.
+1. Freeze the reviewed surface ECU inventory in `00e`.
+2. Rewrite `0301` with surface ECU owner language first.
+3. Rewrite `0302/0303` so reviewer-facing flows use surface ECU ownership.
+4. Update `0304` with `Var -> Runtime -> Surface` mapping.
+5. Keep `04` as runtime reality and mark merge candidates there.
+6. Apply GUI surface rename only after the document chain is updated.
 
 ## 8) Do Not Do
 - Do not change file encoding away from UTF-8.
@@ -125,24 +122,19 @@
 ## 10) Architecture Reset Mode (Active)
 
 ### 10.1 Reset Trigger
-- 개발 초기 단계에서 유지비용이 낮은 시점에 구조를 바로잡기 위해, closeout 중심 운영을 종료하고 architecture reset을 시작한다.
-- 본 전환은 사용자 지시에 따라 승인되었으며, 기존 handoff baseline은 archive asset으로 보존한다.
+- 개발 초기 단계에서 유지비용이 낮은 시점에 구조를 바로잡기 위해, closeout 중심 운영을 종료하고 architecture reset을 시작했다.
+- 기존 handoff baseline은 archive asset으로 보존한다.
 
 ### 10.2 Current Working Mode
-- 현재 모드는 `architecture reset + baseline rebuild`로 고정한다.
-- 목표는 “기존 baseline을 방어”하는 것이 아니라 “양산차 프로젝트 표면에 맞는 구조로 다시 설계”하는 것이다.
+- 현재 모드는 `architecture reset + baseline rebuild`다.
+- 목표는 “기존 baseline 방어”가 아니라 “양산차 프로젝트 표면에 맞는 구조로 재설계”다.
 
 ### 10.3 Reset Checklist
-1. 논리 ECU 그룹 재정의:
-   - 현재 active node를 생산차 표면 기준의 logical ECU group으로 다시 분류
-2. 네이밍 계층 분리:
-   - logical ECU name / implementation module name / validation harness name 분리
-3. 런타임 합치기/유지 판단:
-   - owner, traceability, debug cost, CANoe GUI surface를 기준으로 merge/split 판단
-4. 문서 체인 재정렬:
-   - `00e -> 0301 -> 0302 -> 0303 -> 0304 -> 04 -> 05/06/07` 순으로 baseline 재구성
-5. 증빙 재연결:
-   - 기존 테스트/로그/evidence 자산을 새 논리 ECU 기준으로 다시 매핑
+1. 논리 ECU 그룹 고정
+2. surface / runtime / validation 계층 분리
+3. runtime merge candidate 확정
+4. 문서 체인 재정렬
+5. GUI 표면명 마지막 적용
 
 ### 10.4 Change Policy in This Mode
 - 허용:
@@ -154,4 +146,4 @@
   - 근거 없이 GUI/runtime rename을 먼저 수행하는 것
   - traceability chain을 끊는 ad-hoc 약어 도입
 - 원칙:
-  - `logical model first, runtime mapping second, evidence update last`
+  - `surface first, runtime second, evidence last`

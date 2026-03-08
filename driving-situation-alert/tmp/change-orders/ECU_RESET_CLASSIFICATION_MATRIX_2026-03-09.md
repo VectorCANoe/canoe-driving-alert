@@ -38,16 +38,16 @@
 | HAZARD_CTRL | `ecu/HAZARD_CTRL.can` | hazard basic body function | `BCM` | Fold into Parent Surface ECU | Merge candidate | only manages blink phase from received body frames; too small and too body-local to justify a standalone ECU surface | Code Reviewed |
 | WINDOW_CTRL | `ecu/WINDOW_CTRL.can` | window/door/mirror state | `BCM` | Fold into Parent Surface ECU | Merge candidate | mostly mirrors received door/window states into a door-control frame; better treated as an internal BCM comfort subfunction | Code Reviewed |
 | DRV_STATE_MGR | `ecu/DRV_STATE_MGR.can` | seat/belt/security state | `BCM` | Fold into Parent Surface ECU | Merge candidate | current file is an inactive placeholder with no meaningful runtime behavior, so it should not survive as a top-level ECU | Code Reviewed |
-| CLU_HMI_CTRL | `output/CLU_HMI_CTRL.can` | cluster warning/HMI state owner | `Cluster` | Keep as Surface ECU | Keep split | owns displayed warning code, duplicate guard, history, and cluster-facing state; best nucleus for a production-style cluster ECU | Code Reviewed |
-| CLU_BASE_CTRL | `ecu/CLU_BASE_CTRL.can` | cluster base display state | `Cluster` | Fold into Parent Surface ECU | Merge candidate | only tracks base display/sync status and should be absorbed into the main cluster ECU once the surface is renamed | Code Reviewed |
+| CLU_HMI_CTRL | `output/CLU_HMI_CTRL.can` | cluster warning/HMI state owner | `CLUSTER` | Keep as Surface ECU | Keep split | owns displayed warning code, duplicate guard, history, and cluster-facing state; best nucleus for a production-style cluster ECU | Code Reviewed |
+| CLU_BASE_CTRL | `ecu/CLU_BASE_CTRL.can` | cluster base display state | `CLUSTER` | Fold into Parent Surface ECU | Merge candidate | only tracks base display/sync status and should be absorbed into the main cluster ECU once the surface is renamed | Code Reviewed |
 | NAV_CTX_MGR | `logic/NAV_CTX_MGR.can` | navigation context logic | `IVI` | Fold into Parent Surface ECU | Merge candidate | pure context-derivation logic that maps IVI/navigation inputs into `Core::*`; not strong enough as a standalone reviewer-facing ECU | Code Reviewed |
-| ADAS_WARN_CTRL | `logic/ADAS_WARN_CTRL.can` | risk evaluation / trigger generation | `ADAS ECU` | Fold into Parent Surface ECU | Keep split | owns TTC/object-risk evaluation and warning trigger preparation; strong internal debug value, weak standalone ECU surface value | Code Reviewed |
-| WARN_ARB_MGR | `logic/WARN_ARB_MGR.can` | arbitration / final warning selection | `ADAS ECU` | Fold into Parent Surface ECU | Keep split | owns final alert arbitration, hysteresis, and fail-safe policy; should stay a split runtime stage but not a top-level ECU label | Code Reviewed |
-| EMS_POLICE_TX | `ems/EMS_POLICE_TX.can` | emergency police producer | `V2X ECU` | Fold into Parent Surface ECU | Merge candidate | tiny dispatch producer with no independent bus or lifecycle identity; should become an internal producer path under one V2X/emergency ECU | Code Reviewed |
-| EMS_AMB_TX | `ems/EMS_AMB_TX.can` | emergency ambulance producer | `V2X ECU` | Fold into Parent Surface ECU | Merge candidate | tiny dispatch producer with no independent bus or lifecycle identity; should become an internal producer path under one V2X/emergency ECU | Code Reviewed |
-| EMS_ALERT_RX | `logic/EMS_ALERT_RX.can` | emergency receive/timeout | `V2X ECU` | Fold into Parent Surface ECU | Keep split (merge base) | owns watchdog, priority selection, timeout clear, and event trace; best nucleus for a future single V2X ECU runtime even if producers are folded in | Code Reviewed |
-| VAL_SCENARIO_CTRL | `input/VAL_SCENARIO_CTRL.can` | validation harness scenario control | `Validation Harness` | Validation Only | Keep split | drives scenario presets, baseline diagnostic requests, and test-only locks; must remain explicitly non-production | Code Reviewed |
-| VAL_BASELINE_CTRL | `ecu/VAL_BASELINE_CTRL.can` | validation baseline aggregator | `Validation Harness` | Validation Only | Keep split | aggregates `frmTestResultMsg` into baseline validation output and must remain isolated from production ECU naming | Code Reviewed |
+| ADAS_WARN_CTRL | `logic/ADAS_WARN_CTRL.can` | risk evaluation / trigger generation | `ADAS` | Fold into Parent Surface ECU | Keep split | owns TTC/object-risk evaluation and warning trigger preparation; strong internal debug value, weak standalone ECU surface value | Code Reviewed |
+| WARN_ARB_MGR | `logic/WARN_ARB_MGR.can` | arbitration / final warning selection | `ADAS` | Fold into Parent Surface ECU | Keep split | owns final alert arbitration, hysteresis, and fail-safe policy; should stay a split runtime stage but not a top-level ECU label | Code Reviewed |
+| EMS_POLICE_TX | `ems/EMS_POLICE_TX.can` | emergency police producer | `V2X` | Fold into Parent Surface ECU | Merge candidate | tiny dispatch producer with no independent bus or lifecycle identity; should become an internal producer path under one V2X/emergency ECU | Code Reviewed |
+| EMS_AMB_TX | `ems/EMS_AMB_TX.can` | emergency ambulance producer | `V2X` | Fold into Parent Surface ECU | Merge candidate | tiny dispatch producer with no independent bus or lifecycle identity; should become an internal producer path under one V2X/emergency ECU | Code Reviewed |
+| EMS_ALERT_RX | `logic/EMS_ALERT_RX.can` | emergency receive/timeout | `V2X` | Fold into Parent Surface ECU | Keep split (merge base) | owns watchdog, priority selection, timeout clear, and event trace; best nucleus for a future single V2X ECU runtime even if producers are folded in | Code Reviewed |
+| VAL_SCENARIO_CTRL | `input/VAL_SCENARIO_CTRL.can` | validation harness scenario control | `VALIDATION_HARNESS` | Validation Only | Keep split | drives scenario presets, baseline diagnostic requests, and test-only locks; must remain explicitly non-production | Code Reviewed |
+| VAL_BASELINE_CTRL | `ecu/VAL_BASELINE_CTRL.can` | validation baseline aggregator | `VALIDATION_HARNESS` | Validation Only | Keep split | aggregates `frmTestResultMsg` into baseline validation output and must remain isolated from production ECU naming | Code Reviewed |
 
 ## Immediate Use
 
@@ -66,12 +66,12 @@
 | `EPS` | `STEER_CTRL` | Production ECU | rename surface, keep runtime split |
 | `BCM` | `BODY_GW`, `AMBIENT_CTRL`, `HAZARD_CTRL`, `WINDOW_CTRL`, `DRV_STATE_MGR` | Production ECU | keep `BODY_GW` and `AMBIENT_CTRL` internal splits, fold the rest |
 | `IVI` | `IVI_GW`, `NAV_CTX_MGR` | Production ECU | keep `IVI_GW` split, merge `NAV_CTX_MGR` inward |
-| `Cluster` | `CLU_HMI_CTRL`, `CLU_BASE_CTRL` | Production ECU | keep `CLU_HMI_CTRL` as main runtime, absorb `CLU_BASE_CTRL` later |
-| `ADAS ECU` | `ADAS_WARN_CTRL`, `WARN_ARB_MGR` | Core Feature ECU | keep both splits internally, hide implementation names from surface |
-| `V2X ECU` | `EMS_POLICE_TX`, `EMS_AMB_TX`, `EMS_ALERT_RX` | Core Feature ECU | promote `EMS_ALERT_RX` as merge base and fold TX producers inward |
+| `CLUSTER` | `CLU_HMI_CTRL`, `CLU_BASE_CTRL` | Production ECU | keep `CLU_HMI_CTRL` as main runtime, absorb `CLU_BASE_CTRL` later |
+| `ADAS` | `ADAS_WARN_CTRL`, `WARN_ARB_MGR` | Core Feature ECU | keep both splits internally, hide implementation names from surface |
+| `V2X` | `EMS_POLICE_TX`, `EMS_AMB_TX`, `EMS_ALERT_RX` | Core Feature ECU | promote `EMS_ALERT_RX` as merge base and fold TX producers inward |
 | `CGW` | `CHS_GW`, `INFOTAINMENT_GW`, `DOMAIN_ROUTER`, `DOMAIN_BOUNDARY_MGR` | Infrastructure ECU | keep split; present as gateway/backbone infrastructure, not feature ECU |
 | `ETH_BACKBONE` | `ETH_SW` | Infrastructure ECU | keep as explicit backbone monitor/infrastructure element |
-| `Validation Harness` | `VAL_SCENARIO_CTRL`, `VAL_BASELINE_CTRL` | Validation Only | keep fully separate from production ECU layer |
+| `VALIDATION_HARNESS` | `VAL_SCENARIO_CTRL`, `VAL_BASELINE_CTRL` | Validation Only | keep fully separate from production ECU layer |
 
 ## Next Step
 

@@ -74,8 +74,8 @@ Recommended rule:
 - Runtime sender/receiver = sub-note or lower tracking table
 
 Example direction:
-- `ADAS_WARN_CTRL -> WARN_ARB_MGR` becomes `ADAS_ECU internal warning path`
-- `EMS_POLICE_TX / EMS_AMB_TX / EMS_ALERT_RX` become `V2X_ECU internal emergency path`
+- `ADAS_WARN_CTRL -> WARN_ARB_MGR` becomes `ADAS internal warning path`
+- `EMS_POLICE_TX / EMS_AMB_TX / EMS_ALERT_RX` become `V2X internal emergency path`
 
 ### 5. 0304_System_Variables.md
 

@@ -42,16 +42,17 @@
 
 | Surface ECU | Layer | Runtime Status | Main Responsibility | Current Active Runtime Mapping |
 |---|---|---|---|---|
-| `ECM` | Powertrain | Active | engine/pedal/torque powertrain control | `ENG_CTRL`, `ACCEL_CTRL` |
+| `ECM` | Powertrain | Active | engine / powertrain state | `ENG_CTRL` |
 | `TCM` | Powertrain | Active | transmission control | `TCM` |
-| `ESC` | Chassis | Active by folded runtime | brake/stability surface | `BRK_CTRL` |
-| `EPS` | Chassis | Active by folded runtime | steering assist/torque surface | `STEER_CTRL` |
+| `VCU` | Chassis / Vehicle Control | Active by runtime rename | longitudinal vehicle-state source | `ACCEL_CTRL` |
+| `ESP` | Chassis | Active by runtime rename | brake / stability control surface | `BRK_CTRL` |
+| `EPS` | Chassis | Active by runtime rename | steering assist / steering state surface | `STEER_CTRL` |
 | `BCM` | Body | Active by folded runtime | body function and ambient/body gateway ownership | `BODY_GW`, `AMBIENT_CTRL`, `HAZARD_CTRL`, `WINDOW_CTRL`, `DRV_STATE_MGR` |
-| `HVAC` | Body | Placeholder surface | cabin comfort/air management breadth surface | no dedicated active runtime yet |
-| `IVI` | IVI/HMI | Active by folded runtime | IVI/navigation/service surface | `NAV_CTX_MGR`, `IVI_GW` |
-| `CLUSTER` | IVI/HMI | Active by folded runtime | cluster display/HMI surface | `CLU_HMI_CTRL`, `CLU_BASE_CTRL` |
-| `ADAS_ECU` | ADAS | Active by folded runtime | risk evaluation and warning arbitration | `ADAS_WARN_CTRL`, `WARN_ARB_MGR` |
-| `V2X_ECU` | V2X | Active by folded runtime | emergency/V2X receive-produce logic | `EMS_POLICE_TX`, `EMS_AMB_TX`, `EMS_ALERT_RX` |
+| `HVAC` | Body | Placeholder surface | cabin comfort / air management breadth surface | no dedicated active runtime yet |
+| `IVI` | IVI / HMI | Active by folded runtime | IVI/navigation/service surface | `IVI_GW`, `NAV_CTX_MGR` |
+| `CLUSTER` | IVI / HMI | Active by folded runtime | cluster display / warning surface | `CLU_HMI_CTRL`, `CLU_BASE_CTRL` |
+| `ADAS` | ADAS | Active by folded runtime | risk evaluation and warning arbitration | `ADAS_WARN_CTRL`, `WARN_ARB_MGR` |
+| `V2X` | V2X | Active by folded runtime | emergency/V2X receive-produce logic | `EMS_POLICE_TX`, `EMS_AMB_TX`, `EMS_ALERT_RX` |
 | `VALIDATION_HARNESS` | Validation | Active | non-production scenario/baseline control | `VAL_SCENARIO_CTRL`, `VAL_BASELINE_CTRL` |
 
 ### Optional Future Surface (Do Not Block Current Reset)
@@ -63,23 +64,24 @@
 | `OCCUPANT_MODULE` | Optional | only if driver/seat/belt logic needs standalone body sub-surface |
 | `NAVIGATION` | Optional | only if IVI and navigation are split in approved surface policy |
 | `WARNING_FUSION_ECU` | Optional | only if ADAS arbitration is intentionally separated from ADAS surface |
-| `EMS_ALERT` | Optional logical alias | use as logical terminal label in upper docs only if `V2X_ECU` naming is not yet approved |
+| `EMS_ALERT` | Optional logical alias | use only as logical story label if `V2X` terminology needs softer wording in upper docs |
 
 ## Surface ECU -> Runtime Nodes
 
 | Surface ECU | Runtime Nodes | Runtime Split Policy |
 |---|---|---|
-| `CGW` | `CHS_GW`, `DOMAIN_ROUTER`, `DOMAIN_BOUNDARY_MGR`, `INFOTAINMENT_GW` | Keep split |
+| `CGW` | `CHS_GW`, `INFOTAINMENT_GW`, `DOMAIN_ROUTER`, `DOMAIN_BOUNDARY_MGR` | Keep split |
 | `ETH_BACKBONE` | `ETH_SW` | Keep split |
-| `ECM` | `ENG_CTRL`, `ACCEL_CTRL` | Keep `ENG_CTRL`, `ACCEL_CTRL` = merge candidate |
+| `ECM` | `ENG_CTRL` | Keep split |
 | `TCM` | `TCM` | Keep split |
-| `ESC` | `BRK_CTRL` | Merge candidate |
-| `EPS` | `STEER_CTRL` | Merge candidate |
-| `BCM` | `BODY_GW`, `AMBIENT_CTRL`, `HAZARD_CTRL`, `WINDOW_CTRL`, `DRV_STATE_MGR` | Keep `BODY_GW`, `AMBIENT_CTRL`, `DRV_STATE_MGR`; `HAZARD_CTRL`, `WINDOW_CTRL` = merge candidate |
-| `IVI` | `NAV_CTX_MGR`, `IVI_GW` | Keep `IVI_GW`; `NAV_CTX_MGR` = merge candidate |
+| `VCU` | `ACCEL_CTRL` | Keep split for now |
+| `ESP` | `BRK_CTRL` | Keep split |
+| `EPS` | `STEER_CTRL` | Keep split |
+| `BCM` | `BODY_GW`, `AMBIENT_CTRL`, `HAZARD_CTRL`, `WINDOW_CTRL`, `DRV_STATE_MGR` | Keep `BODY_GW`, `AMBIENT_CTRL`; merge candidates exist below |
+| `IVI` | `IVI_GW`, `NAV_CTX_MGR` | Keep `IVI_GW`; `NAV_CTX_MGR` = merge candidate |
 | `CLUSTER` | `CLU_HMI_CTRL`, `CLU_BASE_CTRL` | Keep `CLU_HMI_CTRL`; `CLU_BASE_CTRL` = merge candidate |
-| `ADAS_ECU` | `ADAS_WARN_CTRL`, `WARN_ARB_MGR` | Keep split |
-| `V2X_ECU` | `EMS_POLICE_TX`, `EMS_AMB_TX`, `EMS_ALERT_RX` | Merge candidate |
+| `ADAS` | `ADAS_WARN_CTRL`, `WARN_ARB_MGR` | Keep split |
+| `V2X` | `EMS_POLICE_TX`, `EMS_AMB_TX`, `EMS_ALERT_RX` | promote `EMS_ALERT_RX` as merge base |
 | `VALIDATION_HARNESS` | `VAL_SCENARIO_CTRL`, `VAL_BASELINE_CTRL` | Keep split |
 
 ## Must Merge / Keep Split / Optional Matrix
@@ -93,28 +95,28 @@
 - `ETH_SW`
 - `ENG_CTRL`
 - `TCM`
+- `ACCEL_CTRL`
+- `BRK_CTRL`
+- `STEER_CTRL`
 - `BODY_GW`
 - `AMBIENT_CTRL`
-- `DRV_STATE_MGR`
 - `IVI_GW`
 - `CLU_HMI_CTRL`
 - `ADAS_WARN_CTRL`
 - `WARN_ARB_MGR`
+- `EMS_ALERT_RX`
 - `VAL_SCENARIO_CTRL`
 - `VAL_BASELINE_CTRL`
 
 ### Merge Candidate
 
-- `ACCEL_CTRL`
-- `BRK_CTRL`
-- `STEER_CTRL`
 - `HAZARD_CTRL`
 - `WINDOW_CTRL`
+- `DRV_STATE_MGR`
 - `CLU_BASE_CTRL`
 - `NAV_CTX_MGR`
 - `EMS_POLICE_TX`
 - `EMS_AMB_TX`
-- `EMS_ALERT_RX`
 
 ### Optional / Deferred Surface Only
 
@@ -124,6 +126,7 @@
 - `OCCUPANT_MODULE`
 - `NAVIGATION`
 - `WARNING_FUSION_ECU`
+- `EMS_ALERT`
 
 ## Immediate Use Rule
 
@@ -131,7 +134,7 @@
 2. Do not merge runtime code solely for naming convenience.
 3. If a runtime node is `Keep split`, preserve it in CAPL and only hide it below the surface layer.
 4. If a runtime node is `Merge candidate`, document first, then merge only after Dev1 code review approval.
-5. `HVAC` remains a surface breadth placeholder and must not block current reset if no dedicated runtime exists.
+5. `HVAC` remains a breadth placeholder and must not block current reset if no dedicated runtime exists.
 
 ## Recommended Next Step
 
