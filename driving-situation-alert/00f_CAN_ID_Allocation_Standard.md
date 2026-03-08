@@ -194,8 +194,8 @@
 ## 8. 실행 거버넌스 분리 원칙
 
 - 본 문서는 ID 정책(원칙/분류/우선순위/용어)의 SoT다.
-- 실행 항목(Cutover/Rollback/승인 게이트/수용 기준/제출물)은 변경지시서 SoT를 따른다:
-  - `driving-situation-alert/tmp/change-orders/archive/2026-03/DEV_CHANGE_ORDER_CAN_ID_335_FULL_RENUMBERING_2026-03-05.md`
+- 실행 항목(Cutover/Rollback/승인 게이트/수용 기준/제출물)은 협업 보드 SoT를 따른다:
+  - `driving-situation-alert/tmp/change-orders/TEAM_SYNC_BOARD.md`
 - 정책 변경 없이 실행 절차만 조정하는 경우, 변경지시서만 개정한다.
 - 정책 자체(Tier/Group/Index, 중재 경계, SoT 우선순위)를 변경하는 경우에만 00f를 개정한다.
 
@@ -203,10 +203,9 @@
 
 ## 9. Annex A (98+확장 매핑 운영)
 
-- 파일: `driving-situation-alert/tmp/work-notes/id/ID_335_AnnexA_Mapping_98_Template.csv`
-- 운영 메모: 현재 실운영 메시지 수는 101건이며, Annex A 템플릿(98건)에 확장분을 추가해 단일 테이블로 운영한다.
+- 운영 메모: 현재 실운영 메시지 수는 101건이며, Annex A 기준은 본 문서와 DBC 최신본으로 운영한다.
 - 목적: `Old ID -> New ID` 전수 매핑의 단일 근거 파일
-- 운영 원칙: 실제 할당 상태(`status/approver/approved_date`)는 Annex A CSV를 단일 운영 테이블로 사용한다.
+- 운영 원칙: 실제 할당 상태(`status/approver/approved_date`)는 Annex A 기준표를 단일 운영 테이블로 사용한다.
 - 필수 컬럼:
   - `new_tier`, `new_group`, `new_index`, `new_id_hex`, `new_id_dec`
   - `flow_ref`, `comm_ref`, `var_ref`, `code_ref`, `test_ref`

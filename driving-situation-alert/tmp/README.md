@@ -28,8 +28,7 @@
 - `change-orders`: 개발팀/문서팀 전달 및 동기화 문서
 - `mentoring`: 멘토링 분석 및 체크리스트
 - `reports`: 현재 사이클 실행/증빙 인덱스
-- `work-notes`: 내부 메모 인덱스(활성은 `id`만 유지)
-- `work-notes/id`: CAN ID 설계 초안/매핑 템플릿
+- `work-notes`: 비활성(기본 미사용)
 - `archive`: 과거 산출물 보관
 
 ## 4) 금지/주의
