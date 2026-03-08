@@ -1,19 +1,15 @@
-# Development Entrypoints
+# Internal Development Entrypoints
 
-Use this file when the repository feels too large.
+This file is for contributors working inside the repository.
 
-## 1. Working Set Only
-Ignore the full tree first. Start from these areas only:
+If you are just trying to understand the project, start with:
 
-- `driving-situation-alert/`
-- `canoe/`
-- `scripts/`
+1. `README.md`
+2. `product/sdv_operator/README.md`
+3. `canoe/README.md`
+4. `driving-situation-alert/README.md`
 
-Everything else is reference, legacy, or support material unless explicitly needed.
-
-## 2. First Files to Open
-
-Read in this order:
+## Internal Start Order
 
 1. `AGENTS.md`
 2. `driving-situation-alert/TMP_HANDOFF.md`
@@ -21,56 +17,33 @@ Read in this order:
 4. `scripts/README.md`
 5. `canoe/docs/operations/DEV_DOC_ENTRYPOINT.md`
 
-## 3. Daily Developer Surface
+## Active Working Surface
 
-### Documents
-- `driving-situation-alert/TMP_HANDOFF.md`
-- `driving-situation-alert/01_Requirements.md`
-- `driving-situation-alert/03_Function_definition.md`
-- `driving-situation-alert/0301_SysFuncAnalysis.md`
-- `driving-situation-alert/0302_NWflowDef.md`
-- `driving-situation-alert/0303_Communication_Specification.md`
-- `driving-situation-alert/0304_System_Variables.md`
-- `driving-situation-alert/04_SW_Implementation.md`
-- `driving-situation-alert/05_Unit_Test.md`
-- `driving-situation-alert/06_Integration_Test.md`
-- `driving-situation-alert/07_System_Test.md`
+Use these areas for daily development:
 
-### CANoe assets
-- `canoe/cfg/CAN_v2_topology_wip.cfg`
-- `canoe/project/sysvars/project.sysvars`
-- `canoe/databases/*.dbc`
-- `canoe/cfg/channel_assign/`
-- `canoe/src/capl/`
+- `canoe/`
+- `driving-situation-alert/`
+- `scripts/`
 
-### Automation surface
-- `python scripts/run.py`
-- `python scripts/run.py gate all`
-- `python scripts/run.py scenario run --id <n>`
-- `python scripts/run.py verify quick --run-id <RUN_ID> --owner <OWNER>`
-- `python scripts/run.py doctor`
+Everything else is support, reference, or internal record material unless the task explicitly needs it.
 
-## 4. Default Ignore Set
+## Default Ignore Set
 
-Do not browse these by default:
+Do not browse these first:
 
-- `driving-situation-alert/tmp/reference-*`
 - `driving-situation-alert/tmp/archive/`
+- `docs/meeting-notes/`
+- `docs/mentoring/`
 - `reference/`
 - `legacy_projects/`
 - `canoe/tmp/reports/verification/` as source code
-- `dist/`, `build/`, `__pycache__/`
 
-Open them only when the current task explicitly needs them.
+## Working Rule
 
-## 5. Complexity Rule
-
-If a team member needs more than these five answers, the public surface is too wide:
+If a new contributor cannot answer these five questions quickly, the internal surface is still too wide:
 
 1. What are we building now?
 2. Which docs are canonical?
-3. Which cfg/dbc/sysvar/capl files are active?
-4. What command do I run?
+3. Which runtime files are active?
+4. What command do I run first?
 5. Where do verification outputs go?
-
-This file exists to keep those five answers short.
