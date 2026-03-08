@@ -155,3 +155,49 @@
   - 예: `search`, `git status/log`, `gate`, `read-only diff`
 - 긴 중첩 PowerShell 래핑보다 `apply_patch` 또는 단일 직접 명령을 우선한다.
 - 문서/코드 반영 후에는 실제 파일 기준으로 `git diff` 또는 핵심 문자열 검증을 반드시 남긴다.
+
+## 11) Team Instance Boundary (Active)
+
+### 11.1 Dev1 Instance
+- Primary ownership:
+  - `canoe/`
+- Current responsibility:
+  - CANoe runtime/CAPL 구조 리팩토링
+  - ECU surface/runtime merge candidate 검토
+  - native CANoe test asset 및 validation harness 안정화
+  - `canoe/docs/operations/*` 내부 구현/검증 운영 문서
+- Do not do:
+  - `driving-situation-alert/` 정본 SoT 직접 수정
+  - `scripts/`, `product/sdv_operator/`의 Dev2 제품/도구 흐름 직접 변경
+
+### 11.2 Dev2 Instance
+- Primary ownership:
+  - `scripts/`
+  - `product/sdv_operator/`
+- Current responsibility:
+  - TUI/CLI/Operator product
+  - 검증 실행 오케스트레이션
+  - JSON/MD/CI bridge/evidence packaging
+- Do not do:
+  - `canoe/` runtime/CAPL 로직 직접 리팩토링
+  - `driving-situation-alert/` 정본 SoT 직접 rewrite
+
+### 11.3 Docs Instance
+- Primary ownership:
+  - `driving-situation-alert/`
+- Current responsibility:
+  - 정본 SoT 문서(`00/01/03/0301/0302/0303/0304/04/05/06/07`)
+  - 제출 문서셋/보드/hand-off 동기화
+  - reset baseline의 문서 전파
+- Do not do:
+  - `canoe/` 구현 코드/CAPL 직접 변경
+  - `scripts/`, `product/sdv_operator/` 제품 동작 직접 변경
+
+### 11.4 Cross-Team Rule
+- Dev1은 SoT 변경이 필요하면 문서팀에 기준안만 전달한다.
+- Dev2는 operator/tooling 변경이 필요하면 제품 표면과 실행 산출물만 책임진다.
+- 문서팀은 정본 SoT와 제출 문서를 책임지고, 구현 반영은 Dev1/Dev2 기준안에 따라 후행 반영한다.
+- 예외:
+  - `TMP_HANDOFF.md`
+  - 팀 보드/queue 성격의 임시 coordination 문서
+  - 리드 지시가 있는 cross-team reset 문서
