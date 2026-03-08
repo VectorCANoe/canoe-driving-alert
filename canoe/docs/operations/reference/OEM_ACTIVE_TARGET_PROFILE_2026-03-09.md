@@ -2,7 +2,7 @@
 
 ## Active Target
 
-Use this as the real program target for the current repository shape.
+Use this as the real execution profile for the current reset cycle.
 
 1. Total vehicle surface inventory
 - target: `100`
@@ -10,7 +10,7 @@ Use this as the real program target for the current repository shape.
 
 2. Deep active runtime implementation
 - target: `12~18`
-- chosen baseline: `14`
+- chosen baseline: `16`
 
 3. Core custom / differentiating ECU surfaces
 - target: `6~10`
@@ -20,39 +20,42 @@ Use this as the real program target for the current repository shape.
 - target: `3~6`
 - chosen baseline: `4`
 
-## Why 100 Is Now The Active Surface Target
+## Why This Profile Replaces The Old 32/41/27 Split
 
-- The project is being reset toward an OEM-scale vehicle program surface.
-- Growing later from `52` to `100` would force another naming and grouping rewrite.
-- Locking the `100` surface bank now is cheaper while the reset cost is still low.
-- Deep runtime remains narrow, so breadth increases without exploding implementation cost.
+- `32` primary was too small and made the vehicle look shallow.
+- A real OEM-style reviewer surface must show most of the vehicle in the first layer.
+- The correct tradeoff is:
+  - widen the primary layer
+  - keep deep runtime narrow
+  - keep premium/option surfaces placeholder-first
 
 ## Active Layering Rule
 
 Treat the active `100` surface inventory as three simultaneous layers:
 
 1. `Primary reviewer surface`
-- `32`
+- `56`
 - first-line ECU set used in top-level architecture views and reviewer-facing summaries
 
 2. `Secondary vehicle breadth`
-- `41`
-- shown in domain trees and OEM-scale vehicle decomposition views
+- `28`
+- still part of the active vehicle program, but shown mainly in domain trees and decomposition views
 
 3. `Premium / option / next-wave surface`
-- `27`
-- still active in the program bank, but placeholder-first unless promoted
+- `16`
+- active in the bank, but placeholder-first unless promoted
 
-This keeps the architecture wide without pretending that all `100` ECUs are deep runtimes.
+This keeps the architecture wide without making the top layer look like a thin demo.
 
 ## Active 100-Surface Vehicle Inventory Profile
 
-### Layer 1. Primary Reviewer Surface (`32`)
+### Layer 1. Primary Reviewer Surface (`56`)
 
 - `CGW`
 - `ETH_BACKBONE`
 - `DCM`
 - `IBOX`
+- `SECURITY_GATEWAY`
 - `ECM`
 - `TCM`
 - `VCU`
@@ -60,62 +63,53 @@ This keeps the architecture wide without pretending that all `100` ECUs are deep
 - `BAT_BMS`
 - `FPCM`
 - `LVR`
+- `ISG`
+- `EOP`
+- `EWP`
 - `ESP`
 - `EPS`
 - `ABS`
 - `EPB`
 - `TPMS`
 - `SAS`
+- `ECS`
 - `ACU`
+- `ODS`
+- `VSM`
+- `EHB`
+- `CDC`
 - `BCM`
 - `HVAC`
 - `SMK`
+- `AFLS`
 - `LIGHTING_ECU`
+- `WIPER_MODULE`
+- `SUNROOF_MODULE`
+- `DOOR_FL`
+- `DOOR_FR`
+- `TAILGATE_MODULE`
 - `IVI`
 - `CLUSTER`
 - `HUD`
 - `TMU`
+- `AMP`
+- `PGS`
+- `NAV_MODULE`
+- `DIGITAL_KEY`
 - `ADAS`
 - `V2X`
 - `SCC`
 - `LDWS_LKAS`
 - `FCA`
-- `AVM`
-
-### Layer 2. Secondary Vehicle Breadth (`41`)
-
-- `SECURITY_GATEWAY`
-- `ISG`
-- `EOP`
-- `EWP`
-- `ECS`
-- `ODS`
-- `VSM`
-- `EHB`
-- `CDC`
-- `AFLS`
-- `WIPER_MODULE`
-- `SUNROOF_MODULE`
-- `DOOR_FL`
-- `DOOR_FR`
-- `DOOR_RL`
-- `DOOR_RR`
-- `TAILGATE_MODULE`
-- `SEAT_DRV`
-- `SEAT_PASS`
-- `MIRROR_MODULE`
-- `BODY_SECURITY_MODULE`
-- `AMP`
-- `PGS`
-- `NAV_MODULE`
-- `VOICE_ASSIST`
-- `RSE`
-- `DIGITAL_KEY`
 - `BCW`
 - `LCA`
 - `SPAS`
 - `RSPA`
+- `AVM`
 - `FCAM`
+
+### Layer 2. Secondary Vehicle Breadth (`28`)
+
 - `FRADAR`
 - `SRR_FL`
 - `SRR_FR`
@@ -124,10 +118,15 @@ This keeps the architecture wide without pretending that all `100` ECUs are deep
 - `PARK_ULTRASONIC`
 - `DMS`
 - `OMS`
+- `DOOR_RL`
+- `DOOR_RR`
+- `SEAT_DRV`
+- `SEAT_PASS`
+- `MIRROR_MODULE`
+- `BODY_SECURITY_MODULE`
+- `VOICE_ASSIST`
+- `RSE`
 - `VALIDATION_HARNESS`
-
-### Layer 3. Premium / Option Program Surface (`27`)
-
 - `OBC`
 - `DCDC`
 - `MCU`
@@ -137,8 +136,11 @@ This keeps the architecture wide without pretending that all `100` ECUs are deep
 - `RWS`
 - `NIGHT_VISION`
 - `AEB_DOMAIN`
-- `HIGHWAY_PILOT`
 - `PARK_MASTER`
+- `OTA_MASTER`
+
+### Layer 3. Premium / Option Program Surface (`16`)
+
 - `TRAILER_CTRL`
 - `HEADLAMP_LEVELING`
 - `AUTO_DOOR_CTRL`
@@ -149,16 +151,16 @@ This keeps the architecture wide without pretending that all `100` ECUs are deep
 - `BIOMETRIC_AUTH`
 - `CARPAY_CTRL`
 - `PHONE_AS_KEY`
-- `OTA_MASTER`
 - `EDGE_LOGGER`
 - `ROAD_PREVIEW_CAMERA`
 - `LIDAR`
 - `REAR_RADAR_MASTER`
 - `SURROUND_PARK_MASTER`
+- `HIGHWAY_PILOT`
 
 Vehicle surface total: `100`
 
-## Chosen 14 Deep Runtime Surfaces
+## Chosen 16 Deep Runtime Surfaces
 
 1. `CGW`
 2. `ETH_BACKBONE`
@@ -173,7 +175,9 @@ Vehicle surface total: `100`
 11. `ADAS`
 12. `V2X`
 13. `VALIDATION_HARNESS`
-14. `SCC` (next deep target)
+14. `SCC`
+15. `TMU`
+16. `SECURITY_GATEWAY`
 
 ## Chosen 8 Core Custom Surfaces
 
@@ -193,11 +197,21 @@ Vehicle surface total: `100`
 3. `VAL_BASELINE_CTRL`
 4. `CANOE_NATIVE_TEST_SUITE`
 
+## Trim-Down Fallback
+
+If implementation pressure rises later, the first trim-down target is:
+
+- surface inventory: `52`
+- deep runtime: `14`
+- core custom surfaces: `8`
+- validation / test: `4`
+
 ## Relationship To The 100 ECU Bank
 
-- `OEM_100_ECU_PROGRAM_BANK_2026-03-09.md` is now the active surface source bank.
+- `OEM_100_ECU_PROGRAM_BANK_2026-03-09.md` is the active surface source bank.
 - This file is the active execution profile for using that 100-bank in practice.
 - Rule:
   - active architecture breadth follows the `100` bank
-  - active deep implementation stays controlled at `14`
+  - active deep implementation stays controlled at `16`
   - premium/option layer stays placeholder-first unless promoted
+  - trim-down is allowed later, but breadth-first framing comes first now

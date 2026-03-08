@@ -30,7 +30,7 @@ Keep these separate:
 
 Recommended implementation depth remains:
 
-- deep runtime surfaces: `13~15`
+- deep runtime surfaces: `14~16`
 - core custom feature surfaces: `6~8`
 
 ## Activation Rule
@@ -177,7 +177,7 @@ Grand total inventory bank: `100`
 
 ## D. Practical Layering
 
-### Layer 1. Primary Reviewer Surface (`32`)
+### Layer 1. Primary Reviewer Surface (`56`)
 
 Use these first in the main architecture tree:
 
@@ -185,6 +185,7 @@ Use these first in the main architecture tree:
 - `ETH_BACKBONE`
 - `DCM`
 - `IBOX`
+- `SECURITY_GATEWAY`
 - `ECM`
 - `TCM`
 - `VCU`
@@ -192,64 +193,55 @@ Use these first in the main architecture tree:
 - `BAT_BMS`
 - `FPCM`
 - `LVR`
+- `ISG`
+- `EOP`
+- `EWP`
 - `ESP`
 - `EPS`
 - `ABS`
 - `EPB`
 - `TPMS`
 - `SAS`
+- `ECS`
 - `ACU`
+- `ODS`
+- `VSM`
+- `EHB`
+- `CDC`
 - `BCM`
 - `HVAC`
 - `SMK`
+- `AFLS`
 - `LIGHTING_ECU`
+- `WIPER_MODULE`
+- `SUNROOF_MODULE`
+- `DOOR_FL`
+- `DOOR_FR`
+- `TAILGATE_MODULE`
 - `IVI`
 - `CLUSTER`
 - `HUD`
 - `TMU`
+- `AMP`
+- `PGS`
+- `NAV_MODULE`
+- `DIGITAL_KEY`
 - `ADAS`
 - `V2X`
 - `SCC`
 - `LDWS_LKAS`
 - `FCA`
-- `AVM`
-
-### Layer 2. Secondary Vehicle Breadth (`41`)
-
-Use these in category views, domain trees, and optional system maps:
-
-- `SECURITY_GATEWAY`
-- `ISG`
-- `EOP`
-- `EWP`
-- `ECS`
-- `ODS`
-- `VSM`
-- `EHB`
-- `CDC`
-- `AFLS`
-- `WIPER_MODULE`
-- `SUNROOF_MODULE`
-- `DOOR_FL`
-- `DOOR_FR`
-- `DOOR_RL`
-- `DOOR_RR`
-- `TAILGATE_MODULE`
-- `SEAT_DRV`
-- `SEAT_PASS`
-- `MIRROR_MODULE`
-- `BODY_SECURITY_MODULE`
-- `AMP`
-- `PGS`
-- `NAV_MODULE`
-- `VOICE_ASSIST`
-- `RSE`
-- `DIGITAL_KEY`
 - `BCW`
 - `LCA`
 - `SPAS`
 - `RSPA`
+- `AVM`
 - `FCAM`
+
+### Layer 2. Secondary Vehicle Breadth (`28`)
+
+Use these in category views, domain trees, and optional system maps:
+
 - `FRADAR`
 - `SRR_FL`
 - `SRR_FR`
@@ -258,17 +250,53 @@ Use these in category views, domain trees, and optional system maps:
 - `PARK_ULTRASONIC`
 - `DMS`
 - `OMS`
+- `DOOR_RL`
+- `DOOR_RR`
+- `SEAT_DRV`
+- `SEAT_PASS`
+- `MIRROR_MODULE`
+- `BODY_SECURITY_MODULE`
+- `VOICE_ASSIST`
+- `RSE`
 - `VALIDATION_HARNESS`
+- `OBC`
+- `DCDC`
+- `MCU`
+- `INVERTER`
+- `CHARGE_PORT_CTRL`
+- `AIR_SUSPENSION`
+- `RWS`
+- `NIGHT_VISION`
+- `AEB_DOMAIN`
+- `PARK_MASTER`
+- `OTA_MASTER`
 
-### Layer 3. Premium Option Bank (`27`)
+### Layer 3. Premium Option Bank (`16`)
 
 Keep these active in the surface bank, but placeholder-first unless promoted.
+
+- `TRAILER_CTRL`
+- `HEADLAMP_LEVELING`
+- `AUTO_DOOR_CTRL`
+- `POWER_TAILGATE_CTRL`
+- `MASSAGE_SEAT_CTRL`
+- `REAR_CLIMATE_MODULE`
+- `CABIN_SENSING`
+- `BIOMETRIC_AUTH`
+- `CARPAY_CTRL`
+- `PHONE_AS_KEY`
+- `EDGE_LOGGER`
+- `ROAD_PREVIEW_CAMERA`
+- `LIDAR`
+- `REAR_RADAR_MASTER`
+- `SURROUND_PARK_MASTER`
+- `HIGHWAY_PILOT`
 
 ## E. Deep Runtime Commitment
 
 Keep deep runtime scope controlled even with 100-bank breadth.
 
-### Deep Now (`13`)
+### Deep Now (`16`)
 
 - `CGW`
 - `ETH_BACKBONE`
@@ -283,13 +311,11 @@ Keep deep runtime scope controlled even with 100-bank breadth.
 - `ADAS`
 - `V2X`
 - `VALIDATION_HARNESS`
-
-### Optional Deep Next (`2`)
-
 - `SCC`
 - `TMU`
+- `SECURITY_GATEWAY`
 
-## F. Core Custom Feature Focus (`7`)
+## F. Core Custom Feature Focus (`8`)
 
 1. `ADAS`
 2. `V2X`
@@ -298,6 +324,7 @@ Keep deep runtime scope controlled even with 100-bank breadth.
 5. `IVI`
 6. `CGW`
 7. `VALIDATION_HARNESS`
+8. `SCC`
 
 ## Short Conclusion
 
