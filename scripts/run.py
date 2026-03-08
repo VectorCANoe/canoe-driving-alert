@@ -51,10 +51,12 @@ from cliops.gate_ops import (
     cmd_gate_cli_readiness,
     cmd_gate_doc_sync,
     cmd_gate_multibus_dbc,
+    cmd_gate_text_integrity,
     run_gate_all as _run_gate_all,
     run_named_gate as _run_named_gate,
 )
 from cliops.package_ops import cmd_package_build_exe, cmd_package_bundle_portable
+from cliops.operator_result import build_operator_result, clear_last_operator_result, write_last_operator_result
 from cliops.parser_factory import TOPLEVEL_COMMANDS, build_parser
 from cliops.platform_caps import canoe_runtime_check, platform_label
 from cliops.runtime_ops import (
@@ -921,6 +923,7 @@ PARSER_HANDLERS = {
     "cmd_evidence_finalize": cmd_evidence_finalize,
     "cmd_gate_all": cmd_gate_all,
     "cmd_gate_doc_sync": cmd_gate_doc_sync,
+    "cmd_gate_text_integrity": cmd_gate_text_integrity,
     "cmd_gate_cfg_hygiene": cmd_gate_cfg_hygiene,
     "cmd_gate_capl_sync": cmd_gate_capl_sync,
     "cmd_gate_multibus_dbc": cmd_gate_multibus_dbc,
@@ -930,6 +933,14 @@ PARSER_HANDLERS = {
     "cmd_release_exe": cmd_release_exe,
     "cmd_release_portable": cmd_release_portable,
     "cmd_contract": cmd_contract,
+}
+
+INTERACTIVE_FUNCS = {
+    cmd_tui,
+    cmd_shell,
+    cmd_wizard,
+    cmd_start_shell,
+    cmd_start_guided,
 }
 
 
@@ -953,7 +964,18 @@ def main() -> int:
 
     parser = build_parser(PARSER_HANDLERS, _default_run_id)
     args = parser.parse_args()
-    return args.func(args)
+    if args.func in INTERACTIVE_FUNCS:
+        return args.func(args)
+
+    clear_last_operator_result()
+    rc = args.func(args)
+    try:
+        result = build_operator_result(args, rc)
+        if result is not None:
+            write_last_operator_result(result)
+    except Exception as ex:
+        print(f"[CLI] result envelope warning: {ex}")
+    return rc
 
 
 if __name__ == "__main__":

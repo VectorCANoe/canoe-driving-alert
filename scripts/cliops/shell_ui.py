@@ -61,7 +61,7 @@ def ui_welcome_banner() -> None:
         _RICH_CONSOLE.print(Panel(body, title=title, border_style='cyan'))
     else:
         print('=' * 56)
-        print(f'{title} - CANoe ?? ?? ??')
+        print(f'{title} - CANoe 검증 운영 콘솔')
         print('=' * 56)
 
 
@@ -76,24 +76,24 @@ def run_with_loading(label: str, func) -> int:
 def prompt_menu_choice(default: int = 1, minimum: int = 1, maximum: int = 11) -> int:
     if has_questionary_support():
         choices = [
-            questionary.Choice('1) ?? ?? (CANoe COM + measurement + sysvar)', value=1),
-            questionary.Choice('2) ?? ?? (gate+prepare+smoke+status)', value=2),
-            questionary.Choice('3) ???? ?? (scenarioCommand/testScenario)', value=3),
-            questionary.Choice('4) ?? ?? (readiness report)', value=4),
-            questionary.Choice('5) ?? ??', value=5),
-            questionary.Choice('6) ?? ??', value=6),
-            questionary.Choice('7) ?? ??', value=7),
-            questionary.Choice('8) slash shell ??', value=8),
-            questionary.Choice('9) ?? ?? (?? ?? -> ???? -> ??)', value=9),
-            questionary.Choice('10) ??', value=10),
-            questionary.Choice('11) ??? ??', value=11),
+            questionary.Choice('1) 환경 점검 (CANoe COM + measurement + sysvar)', value=1),
+            questionary.Choice('2) 사전 점검 (gate + prepare + smoke + status)', value=2),
+            questionary.Choice('3) 시나리오 실행 (scenarioCommand/testScenario)', value=3),
+            questionary.Choice('4) 증빙 상태 (readiness report)', value=4),
+            questionary.Choice('5) 측정 시작', value=5),
+            questionary.Choice('6) 측정 중지', value=6),
+            questionary.Choice('7) 측정 상태', value=7),
+            questionary.Choice('8) slash shell 열기', value=8),
+            questionary.Choice('9) 빠른 흐름 (점검 -> 시나리오 -> 검증)', value=9),
+            questionary.Choice('10) 도움말', value=10),
+            questionary.Choice('11) 조용히 종료', value=11),
         ]
-        answer = questionary.select('?? ??', choices=choices, default=choices[default - 1]).ask()
+        answer = questionary.select('작업 선택', choices=choices, default=choices[default - 1]).ask()
         if answer is None:
             return 11
         return int(answer)
     while True:
-        raw = input(f'?? [{minimum}-{maximum}] (?? {default}, q=??? ??): ').strip()
+        raw = input(f'선택 [{minimum}-{maximum}] (기본 {default}, q=조용히 종료): ').strip()
         if raw.lower() in {'q', 'quit', 'x'}:
             return 11
         if not raw:
@@ -101,10 +101,10 @@ def prompt_menu_choice(default: int = 1, minimum: int = 1, maximum: int = 11) ->
         try:
             value = int(raw)
         except ValueError:
-            print('[GUIDED] ??? ??????.')
+            print('[GUIDED] 유효한 숫자를 입력하십시오.')
             continue
         if value < minimum or value > maximum:
-            print(f'[GUIDED] ? ??? {minimum}..{maximum} ???.')
+            print(f'[GUIDED] 값은 {minimum}..{maximum} 범위여야 합니다.')
             continue
         return value
 
@@ -154,7 +154,7 @@ def print_shell_help() -> None:
     print('  /verify status [run_id]')
     print('  /verify finalize [run_id] [owner] [run_date]')
     print('  /verify quick [run_id] [owner]  # prepare + smoke + readiness status')
-    print('  /gate all|doc-sync|cfg-hygiene|capl-sync|multibus-dbc|cli-readiness')
+    print('  /gate all|doc-sync|text-integrity|cfg-hygiene|capl-sync|multibus-dbc|cli-readiness')
     print('  /package portable [onefolder|onefile]')
     print('  /package exe [onefolder|onefile]')
     print('  /doctor [ensure-running]')

@@ -59,24 +59,24 @@ def no_visible_command() -> str:
 
 def recommended_next(command: PaletteCommand) -> str:
     if command.command_id == "verify.all_gates":
-        return "PASS? ?? Scenario run?? ??????."
+        return "PASS면 Scenario run으로 넘어가십시오."
     if command.command_id == "operate.scenario_trigger":
-        return "ack? ???? ?? Verify quick?? ??????."
+        return "ack가 확인되면 Verify quick으로 넘어가십시오."
     if command.command_id == "verify.quick_verify":
-        return "PASS? ??? ??? 05/06/07? ??????."
+        return "결과와 증빙을 확인한 뒤 05/06/07 문서에 반영하십시오."
     if command.command_id == "operate.measure_status":
-        return "stopped? ?? ?? ??? ??????."
+        return "stopped면 먼저 측정을 시작하십시오."
     if command.command_id == "operate.measure_start":
-        return "start ? Scenario run ?? ?? ?? ??? ??????."
+        return "측정이 올라오면 Scenario run 또는 Doctor를 실행하십시오."
     if command.command_id == "verify.precheck_batch":
-        return "PASS? ??? ?? ?? ??? ??????."
+        return "PASS면 본 검증 시나리오로 진입하십시오."
     if command.command_id == "verify.run_readiness_status":
-        return "?? ??? ??? ?? ?? ?? ??? ??????."
+        return "누락 항목을 확인하고 evidence를 보강하십시오."
     if command.command_id == "inspect.environment_doctor":
-        return "?? ??? ???? measurement ?? scenario ??? ??????."
+        return "점검이 정상이면 measurement와 scenario 흐름으로 넘어가십시오."
     if command.command_id == "package.portable_bundle":
-        return "?? ??? ??? ? ??? ??? ??????."
-    return "?? ? ?? ??? ???? ?? ?? ??? ??????."
+        return "산출물 경로를 확인하고 전달용 패키지를 검증하십시오."
+    return "결과와 다음 작업 지시를 확인한 뒤 이어서 진행하십시오."
 
 
 LOG_FILTER_LABELS: dict[str, str] = {
@@ -112,12 +112,12 @@ def live_runtime_summary(stage: str, last_line: str, last_output: str | None) ->
     if last_output:
         lines.append(f"산출물: {last_output[:120]}")
     else:
-        lines.append("산출물: 아직 감지되지 않았습니다")
+        lines.append("산출물: 아직 감지되지 않았습니다.")
     return "\n".join(lines)
 
 
 def no_artifact_path() -> str:
-    return "최근 결과에 열 수 있는 증빙 경로가 없습니다."
+    return "최근 결과에 연결된 증빙 경로가 없습니다."
 
 
 def artifact_opened(path: str) -> str:
@@ -136,7 +136,7 @@ def recent_selection_insight(title: str, status: str, duration_ms: int, detail: 
     return (
         f"단계: 최근 실행 선택\n"
         f"병목: {title} [{status}] {duration_ms}ms\n"
-        f"다음 액션: 최근 실행 항목에서 Enter로 다시 실행하십시오.\n"
+        f"다음 액션: 최근 실행 목록에서 Enter로 다시 실행하십시오.\n"
         f"상세: {detail}"
     )
 
@@ -159,7 +159,7 @@ def no_recent_rerun() -> str:
 
 def followup_hint(status: str) -> str:
     if status == "FAIL":
-        return "실행이 실패했습니다. 결과 화면에서 판정을 먼저 확인하고, 이어서 로그와 COM 상태를 검토하십시오."
+        return "실행이 실패했습니다. 결과 화면에서 판정과 근거를 확인하고, 이어서 로그와 COM 상태를 검토하십시오."
     if status == "WARN":
         return "경고와 함께 실행이 끝났습니다. 결과 화면에서 병목과 다음 액션을 확인하십시오."
     return "이제 결과 화면에서 판정, 증빙, COM 상태를 확인하십시오."

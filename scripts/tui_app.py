@@ -17,6 +17,7 @@ from cliops.command_catalog import (
     resolve_command_defaults,
 )
 from cliops.platform_caps import canoe_runtime_check, platform_label
+from cliops.operator_result import LAST_OPERATOR_RESULT_PATH
 from cliops.tui_text import (
     artifact_copied,
     artifact_open_failed,
@@ -975,7 +976,7 @@ class SdvTuiApp(App[None]):
         elif stripped.startswith("[DOCTOR]"):
             stage = "Doctor"
         elif stripped.startswith("[RUN_STATUS]"):
-            stage = "?? ?? ??"
+            stage = "증빙 준비 상태"
         elif stripped.startswith("[SMOKE]"):
             stage = "Smoke verification"
         elif stripped.startswith("[CANOE]"):
@@ -1675,6 +1676,10 @@ class SdvTuiApp(App[None]):
         started_perf = time.perf_counter()
         self.call_from_thread(self._set_running_state, command, started_ts, tokens)
         try:
+            LAST_OPERATOR_RESULT_PATH.unlink(missing_ok=True)
+        except Exception:
+            pass
+        try:
             proc = subprocess.Popen(
                 argv,
                 cwd=ROOT,
@@ -1714,10 +1719,27 @@ class SdvTuiApp(App[None]):
         duration_ms = int((time.perf_counter() - started_perf) * 1000)
         style = "green" if rc == 0 else "red"
         self.call_from_thread(self._write_log, f"[bold {style}]rc={rc}[/]")
-        status, detail = self._classify_result(command, rc, lines)
-        artifacts = self._merge_artifact_paths(command, tokens, lines)
-        insight = self._build_execution_insight(command, status, detail, tokens, artifacts)
-        related_logs = self._collect_related_logs(lines, status, detail)
+        structured = self._load_operator_result(command.command_id)
+        if structured:
+            status = str(structured.get("status", "PASS"))
+            detail = str(structured.get("detail", "Command completed successfully."))
+            artifacts = [
+                str(item)
+                for item in structured.get("artifacts", [])
+                if isinstance(item, str)
+            ] or self._merge_artifact_paths(command, tokens, lines)
+            related_logs = [
+                str(item)
+                for item in structured.get("related_logs", [])
+                if isinstance(item, str)
+            ] or self._collect_related_logs(lines, status, detail)
+            raw_insight = structured.get("insight", {})
+            insight = raw_insight if isinstance(raw_insight, dict) else self._build_execution_insight(command, status, detail, tokens, artifacts)
+        else:
+            status, detail = self._classify_result(command, rc, lines)
+            artifacts = self._merge_artifact_paths(command, tokens, lines)
+            insight = self._build_execution_insight(command, status, detail, tokens, artifacts)
+            related_logs = self._collect_related_logs(lines, status, detail)
         self.call_from_thread(
             self._record_execution_result,
             command.title,
@@ -1733,6 +1755,14 @@ class SdvTuiApp(App[None]):
         )
         next_hint = followup_hint(status)
         self.call_from_thread(self._write_log, f"[bold cyan]Next[/] {next_hint}")
+
+    def _load_operator_result(self, command_id: str) -> dict[str, object] | None:
+        data = self._load_json_file(LAST_OPERATOR_RESULT_PATH)
+        if not data:
+            return None
+        if str(data.get("command_id", "")) != command_id:
+            return None
+        return data
 
     def _first_matching_line(self, lines: list[str], keywords: tuple[str, ...]) -> str:
         for line in lines:
@@ -1824,7 +1854,7 @@ class SdvTuiApp(App[None]):
 
         if command.command_id == "operate.measure_start":
             if "measurement started" in joined or "measurement=start" in joined or "running" in joined:
-                return "PASS", "?? ?? ??? ???????."
+                return "PASS", "Measurement가 시작되었습니다."
 
         if command.command_id == "operate.measure_stop":
             if "measurement stopped" in joined or "measurement=stopped" in joined or "stopped" in joined:
@@ -1847,7 +1877,7 @@ class SdvTuiApp(App[None]):
 
         if command.command_id == "verify.quick_verify":
             if "[verify_quick] verify status" in joined and "missing" not in joined:
-                return "PASS", "Verify quick? readiness ???? ???????."
+                return "PASS", "Verify quick가 readiness까지 정상 완료되었습니다."
 
         if command.command_id == "verify.all_gates":
             if "gate summary: pass" in joined:

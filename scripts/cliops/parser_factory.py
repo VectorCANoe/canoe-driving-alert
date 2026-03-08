@@ -66,7 +66,7 @@ def _add_hidden_parser(subparsers: argparse._SubParsersAction, name: str) -> arg
 
 def add_verify_prepare_args(p: argparse.ArgumentParser, handlers: HandlerMap) -> None:
     p.add_argument("--run-id", required=True, help="Run ID, e.g. 20260306_1930")
-    p.set_defaults(func=handlers["cmd_verify_prepare"])
+    p.set_defaults(func=handlers["cmd_verify_prepare"], operator_command_id="verify.prepare")
 
 
 def add_verify_batch_args(p: argparse.ArgumentParser, handlers: HandlerMap) -> None:
@@ -99,13 +99,13 @@ def add_verify_batch_args(p: argparse.ArgumentParser, handlers: HandlerMap) -> N
         default=Path("canoe/tmp/reports/verification/dev2_batch_report.csv"),
         help="Batch summary CSV output path (optional format)",
     )
-    p.set_defaults(func=handlers["cmd_verify_batch"])
+    p.set_defaults(func=handlers["cmd_verify_batch"], operator_command_id="verify.batch")
 
 
 def add_verify_smoke_args(p: argparse.ArgumentParser, handlers: HandlerMap) -> None:
     p.add_argument("--owner", default="TBD")
     p.add_argument("--run-date", default=dt.date.today().isoformat())
-    p.set_defaults(func=handlers["cmd_verify_smoke"])
+    p.set_defaults(func=handlers["cmd_verify_smoke"], operator_command_id="verify.smoke")
 
 
 def add_verify_quick_args(
@@ -116,7 +116,7 @@ def add_verify_quick_args(
     p.add_argument("--run-id", default=default_run_id(), help="Run ID, e.g. 20260306_1930")
     p.add_argument("--owner", default="DEV2")
     p.add_argument("--run-date", default=dt.date.today().isoformat())
-    p.set_defaults(func=handlers["cmd_verify_quick"])
+    p.set_defaults(func=handlers["cmd_verify_quick"], operator_command_id="verify.quick_verify")
 
 
 def add_verify_fill_args(p: argparse.ArgumentParser, handlers: HandlerMap) -> None:
@@ -127,7 +127,7 @@ def add_verify_fill_args(p: argparse.ArgumentParser, handlers: HandlerMap) -> No
     p.add_argument("--baseline-csv", default="", help="Optional baseline scored CSV for regression comparison")
     p.add_argument("--no-strict-metadata", action="store_true")
     p.add_argument("--no-strict-axis", action="store_true")
-    p.set_defaults(func=handlers["cmd_verify_fill_score"])
+    p.set_defaults(func=handlers["cmd_verify_fill_score"], operator_command_id="verify.fill_score")
 
 
 def add_verify_insight_args(p: argparse.ArgumentParser, handlers: HandlerMap) -> None:
@@ -148,7 +148,7 @@ def add_verify_insight_args(p: argparse.ArgumentParser, handlers: HandlerMap) ->
         default="canoe/tmp/reports/verification/run_insight_report.json",
         help="Run-level insight JSON output path",
     )
-    p.set_defaults(func=handlers["cmd_verify_insight"])
+    p.set_defaults(func=handlers["cmd_verify_insight"], operator_command_id="verify.insight")
 
 
 def add_verify_bind_doc_args(p: argparse.ArgumentParser, handlers: HandlerMap) -> None:
@@ -178,7 +178,7 @@ def add_verify_bind_doc_args(p: argparse.ArgumentParser, handlers: HandlerMap) -
         default="canoe/tmp/reports/verification/doc_binding_bundle.md",
         help="05/06/07 doc binding markdown output path",
     )
-    p.set_defaults(func=handlers["cmd_verify_bind_doc"])
+    p.set_defaults(func=handlers["cmd_verify_bind_doc"], operator_command_id="verify.bind_doc")
 
 
 def add_verify_fill_template_args(p: argparse.ArgumentParser, handlers: HandlerMap) -> None:
@@ -220,7 +220,7 @@ def add_verify_fill_template_args(p: argparse.ArgumentParser, handlers: HandlerM
         default="canoe/tmp/reports/verification/doc_fill_template.md",
         help="Doc fill template markdown output path",
     )
-    p.set_defaults(func=handlers["cmd_verify_fill_template"])
+    p.set_defaults(func=handlers["cmd_verify_fill_template"], operator_command_id="verify.fill_template")
 
 
 def add_verify_finalize_args(p: argparse.ArgumentParser, handlers: HandlerMap) -> None:
@@ -278,7 +278,7 @@ def add_verify_finalize_args(p: argparse.ArgumentParser, handlers: HandlerMap) -
         default="canoe/tmp/reports/verification/doc_fill_template.md",
         help="Doc fill template markdown output path",
     )
-    p.set_defaults(func=handlers["cmd_verify_finalize"])
+    p.set_defaults(func=handlers["cmd_verify_finalize"], operator_command_id="verify.finalize")
 
 
 def add_verify_status_args(p: argparse.ArgumentParser, handlers: HandlerMap) -> None:
@@ -298,7 +298,7 @@ def add_verify_status_args(p: argparse.ArgumentParser, handlers: HandlerMap) -> 
         default="canoe/tmp/reports/verification/run_readiness.md",
         help="Run readiness markdown output path",
     )
-    p.set_defaults(func=handlers["cmd_verify_status"])
+    p.set_defaults(func=handlers["cmd_verify_status"], operator_command_id="verify.run_readiness_status")
 
 
 def add_scenario_run_args(p: argparse.ArgumentParser, handlers: HandlerMap) -> None:
@@ -314,7 +314,7 @@ def add_scenario_run_args(p: argparse.ArgumentParser, handlers: HandlerMap) -> N
     p.add_argument("--wait-ack-ms", type=int, default=1200, help="Ack wait timeout in ms")
     p.add_argument("--poll-ms", type=int, default=20, help="Ack poll interval in ms")
     p.add_argument("--no-ensure-running", action="store_true", help="Do not auto-start measurement")
-    p.set_defaults(func=handlers["cmd_scenario_run"])
+    p.set_defaults(func=handlers["cmd_scenario_run"], operator_command_id="operate.scenario_trigger")
 
 
 def add_start_demo_args(p: argparse.ArgumentParser, handlers: HandlerMap) -> None:
@@ -328,7 +328,7 @@ def add_start_demo_args(p: argparse.ArgumentParser, handlers: HandlerMap) -> Non
     p.add_argument("--wait-ack-ms", type=int, default=1200, help="Ack wait timeout in ms")
     p.add_argument("--poll-ms", type=int, default=20, help="Ack poll interval in ms")
     p.add_argument("--no-ensure-running", action="store_true", help="Do not auto-start measurement")
-    p.set_defaults(func=handlers["cmd_start_demo"])
+    p.set_defaults(func=handlers["cmd_start_demo"], operator_command_id="operate.scenario_trigger")
 
 
 def add_start_precheck_args(
@@ -346,7 +346,7 @@ def add_start_precheck_args(
         default="json,md",
         help="Comma-separated formats: json,md,csv (default: json,md)",
     )
-    p.set_defaults(func=handlers["cmd_start_precheck"])
+    p.set_defaults(func=handlers["cmd_start_precheck"], operator_command_id="verify.precheck_batch")
 
 
 def add_start_preset_args(p: argparse.ArgumentParser, handlers: HandlerMap) -> None:
@@ -372,13 +372,13 @@ def add_doctor_args(p: argparse.ArgumentParser, handlers: HandlerMap) -> None:
         default=Path("canoe/tmp/reports/verification/doctor_report.md"),
         help="Doctor report markdown output path",
     )
-    p.set_defaults(func=handlers["cmd_doctor"])
+    p.set_defaults(func=handlers["cmd_doctor"], operator_command_id="inspect.environment_doctor")
 
 
 def add_capl_sysvar_get_args(p: argparse.ArgumentParser, handlers: HandlerMap) -> None:
     p.add_argument("--namespace", required=True, help="System variable namespace")
     p.add_argument("--var", required=True, help="System variable name")
-    p.set_defaults(func=handlers["cmd_capl_sysvar_get"])
+    p.set_defaults(func=handlers["cmd_capl_sysvar_get"], operator_command_id="inspect.read_system_variable")
 
 
 def add_capl_sysvar_set_args(p: argparse.ArgumentParser, handlers: HandlerMap) -> None:
@@ -391,7 +391,7 @@ def add_capl_sysvar_set_args(p: argparse.ArgumentParser, handlers: HandlerMap) -
         choices=["int", "float", "bool", "string"],
         help="Input value type",
     )
-    p.set_defaults(func=handlers["cmd_capl_sysvar_set"])
+    p.set_defaults(func=handlers["cmd_capl_sysvar_set"], operator_command_id="inspect.write_system_variable")
 
 
 def add_canoe_capl_call_args(p: argparse.ArgumentParser, handlers: HandlerMap) -> None:
@@ -403,7 +403,7 @@ def add_canoe_capl_call_args(p: argparse.ArgumentParser, handlers: HandlerMap) -
         choices=["int", "float", "bool", "string"],
         help="Single coercion type for all --args values",
     )
-    p.set_defaults(func=handlers["cmd_canoe_capl_call"])
+    p.set_defaults(func=handlers["cmd_canoe_capl_call"], operator_command_id="inspect.capl_function_call")
 
 
 def build_parser(handlers: HandlerMap, default_run_id: Callable[[], str]) -> argparse.ArgumentParser:
@@ -432,10 +432,10 @@ def build_parser(handlers: HandlerMap, default_run_id: Callable[[], str]) -> arg
 
     canoe_cmd = sub.add_parser("canoe", help="CANoe COM control plane")
     canoe_sub = canoe_cmd.add_subparsers(dest="canoe_command", required=True)
-    canoe_sub.add_parser("measure-status", help="Read measurement status").set_defaults(func=handlers["cmd_canoe_measure_status"])
-    canoe_sub.add_parser("measure-start", help="Start measurement").set_defaults(func=handlers["cmd_canoe_measure_start"])
-    canoe_sub.add_parser("measure-stop", help="Stop measurement").set_defaults(func=handlers["cmd_canoe_measure_stop"])
-    canoe_sub.add_parser("measure-reset", help="Reset measurement (stop/start)").set_defaults(func=handlers["cmd_canoe_measure_reset"])
+    canoe_sub.add_parser("measure-status", help="Read measurement status").set_defaults(func=handlers["cmd_canoe_measure_status"], operator_command_id="operate.measure_status")
+    canoe_sub.add_parser("measure-start", help="Start measurement").set_defaults(func=handlers["cmd_canoe_measure_start"], operator_command_id="operate.measure_start")
+    canoe_sub.add_parser("measure-stop", help="Stop measurement").set_defaults(func=handlers["cmd_canoe_measure_stop"], operator_command_id="operate.measure_stop")
+    canoe_sub.add_parser("measure-reset", help="Reset measurement (stop/start)").set_defaults(func=handlers["cmd_canoe_measure_reset"], operator_command_id="operate.measure_reset")
     add_canoe_capl_call_args(canoe_sub.add_parser("capl-call", help="Call CAPL function"), handlers)
 
     sub.add_parser("tui", help="Product-style Textual operator console").set_defaults(func=handlers["cmd_tui"])
@@ -463,18 +463,19 @@ def build_parser(handlers: HandlerMap, default_run_id: Callable[[], str]) -> arg
     evidence_sub = evidence.add_subparsers(dest="evidence_command", required=True)
     ev_status = evidence_sub.add_parser("status", help="Alias of verify status")
     add_verify_status_args(ev_status, handlers)
-    ev_status.set_defaults(func=handlers["cmd_evidence_status"])
+    ev_status.set_defaults(func=handlers["cmd_evidence_status"], operator_command_id="verify.run_readiness_status")
     ev_insight = evidence_sub.add_parser("insight", help="Alias of verify insight")
     add_verify_insight_args(ev_insight, handlers)
-    ev_insight.set_defaults(func=handlers["cmd_evidence_insight"])
+    ev_insight.set_defaults(func=handlers["cmd_evidence_insight"], operator_command_id="verify.insight")
     ev_finalize = evidence_sub.add_parser("finalize", help="Alias of verify finalize")
     add_verify_finalize_args(ev_finalize, handlers)
-    ev_finalize.set_defaults(func=handlers["cmd_evidence_finalize"])
+    ev_finalize.set_defaults(func=handlers["cmd_evidence_finalize"], operator_command_id="verify.finalize")
 
     gate = sub.add_parser("gate", help="Quality gate commands")
     gate_sub = gate.add_subparsers(dest="gate_command", required=True)
-    gate_sub.add_parser("all", help="Run the full gate bundle").set_defaults(func=handlers["cmd_gate_all"])
+    gate_sub.add_parser("all", help="Run the full gate bundle").set_defaults(func=handlers["cmd_gate_all"], operator_command_id="verify.all_gates")
     gate_sub.add_parser("doc-sync", help="Run Req-Doc-Code sync gate").set_defaults(func=handlers["cmd_gate_doc_sync"])
+    gate_sub.add_parser("text-integrity", help="Run mojibake/question-run text integrity gate").set_defaults(func=handlers["cmd_gate_text_integrity"])
     gate_sub.add_parser("cfg-hygiene", help="Run cfg text hygiene gate").set_defaults(func=handlers["cmd_gate_cfg_hygiene"])
     gate_sub.add_parser("capl-sync", help="Run src/capl vs cfg/channel_assign sync gate").set_defaults(func=handlers["cmd_gate_capl_sync"])
     gate_sub.add_parser("multibus-dbc", help="Run multi-bus cfg + DBC domain policy gate").set_defaults(func=handlers["cmd_gate_multibus_dbc"])
@@ -485,7 +486,7 @@ def build_parser(handlers: HandlerMap, default_run_id: Callable[[], str]) -> arg
     pkg_build = package_sub.add_parser("build-exe", help="Build Windows exe bundle via PyInstaller")
     pkg_build.add_argument("--mode", default="onefolder", choices=["onefolder", "onefile"])
     pkg_build.add_argument("--clean", action="store_true")
-    pkg_build.set_defaults(func=handlers["cmd_package_build_exe"])
+    pkg_build.set_defaults(func=handlers["cmd_package_build_exe"], operator_command_id="package.windows_exe")
 
     pkg_portable = package_sub.add_parser(
         "bundle-portable",
@@ -497,14 +498,14 @@ def build_parser(handlers: HandlerMap, default_run_id: Callable[[], str]) -> arg
     pkg_portable.add_argument("--output-dir", default="")
     pkg_portable.add_argument("--bundle-name", default="")
     pkg_portable.add_argument("--zip-name", default="")
-    pkg_portable.set_defaults(func=handlers["cmd_package_bundle_portable"])
+    pkg_portable.set_defaults(func=handlers["cmd_package_bundle_portable"], operator_command_id="package.portable_bundle")
 
     release = sub.add_parser("release", help="Distribution-focused wrappers")
     release_sub = release.add_subparsers(dest="release_command", required=True)
     rel_exe = release_sub.add_parser("exe", help="Alias of package build-exe")
     rel_exe.add_argument("--mode", default="onefolder", choices=["onefolder", "onefile"])
     rel_exe.add_argument("--clean", action="store_true")
-    rel_exe.set_defaults(func=handlers["cmd_release_exe"])
+    rel_exe.set_defaults(func=handlers["cmd_release_exe"], operator_command_id="package.windows_exe")
 
     rel_portable = release_sub.add_parser("portable", help="Alias of package bundle-portable")
     rel_portable.add_argument("--mode", default="onefolder", choices=["onefolder", "onefile"])
@@ -513,11 +514,11 @@ def build_parser(handlers: HandlerMap, default_run_id: Callable[[], str]) -> arg
     rel_portable.add_argument("--output-dir", default="")
     rel_portable.add_argument("--bundle-name", default="")
     rel_portable.add_argument("--zip-name", default="")
-    rel_portable.set_defaults(func=handlers["cmd_release_portable"])
+    rel_portable.set_defaults(func=handlers["cmd_release_portable"], operator_command_id="package.portable_bundle")
 
     contract = sub.add_parser("contract", help="Show canonical command contract")
     contract.add_argument("--json", action="store_true", help="Output machine-readable JSON")
-    contract.set_defaults(func=handlers["cmd_contract"])
+    contract.set_defaults(func=handlers["cmd_contract"], operator_command_id="inspect.command_contract")
 
     add_scenario_run_args(_add_hidden_parser(sub, "scenario-run"), handlers)
     _add_hidden_parser(sub, "interactive").set_defaults(func=handlers["cmd_shell"])
@@ -539,7 +540,7 @@ def build_parser(handlers: HandlerMap, default_run_id: Callable[[], str]) -> arg
     pkg_build_legacy = _add_hidden_parser(sub, "package-build-exe")
     pkg_build_legacy.add_argument("--mode", default="onefolder", choices=["onefolder", "onefile"])
     pkg_build_legacy.add_argument("--clean", action="store_true")
-    pkg_build_legacy.set_defaults(func=handlers["cmd_package_build_exe"])
+    pkg_build_legacy.set_defaults(func=handlers["cmd_package_build_exe"], operator_command_id="package.windows_exe")
     pkg_portable_legacy = _add_hidden_parser(sub, "package-bundle-portable")
     pkg_portable_legacy.add_argument("--mode", default="onefolder", choices=["onefolder", "onefile"])
     pkg_portable_legacy.add_argument("--clean", action="store_true")
@@ -547,13 +548,13 @@ def build_parser(handlers: HandlerMap, default_run_id: Callable[[], str]) -> arg
     pkg_portable_legacy.add_argument("--output-dir", default="")
     pkg_portable_legacy.add_argument("--bundle-name", default="")
     pkg_portable_legacy.add_argument("--zip-name", default="")
-    pkg_portable_legacy.set_defaults(func=handlers["cmd_package_bundle_portable"])
+    pkg_portable_legacy.set_defaults(func=handlers["cmd_package_bundle_portable"], operator_command_id="package.portable_bundle")
 
     _add_hidden_parser(sub, "go").set_defaults(func=handlers["cmd_start_guided"])
     add_start_demo_args(_add_hidden_parser(sub, "demo"), handlers)
     add_start_precheck_args(_add_hidden_parser(sub, "precheck"), handlers, default_run_id)
-    _add_hidden_parser(sub, "mstart").set_defaults(func=handlers["cmd_canoe_measure_start"])
-    _add_hidden_parser(sub, "mstop").set_defaults(func=handlers["cmd_canoe_measure_stop"])
-    _add_hidden_parser(sub, "mstatus").set_defaults(func=handlers["cmd_canoe_measure_status"])
+    _add_hidden_parser(sub, "mstart").set_defaults(func=handlers["cmd_canoe_measure_start"], operator_command_id="operate.measure_start")
+    _add_hidden_parser(sub, "mstop").set_defaults(func=handlers["cmd_canoe_measure_stop"], operator_command_id="operate.measure_stop")
+    _add_hidden_parser(sub, "mstatus").set_defaults(func=handlers["cmd_canoe_measure_status"], operator_command_id="operate.measure_status")
 
     return parser

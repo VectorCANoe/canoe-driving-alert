@@ -7,6 +7,7 @@ from pathlib import Path
 
 from cliops.canoe_com import CanoeComBridge, CanoeComError
 from cliops.common import fail_unavailable, iso_today
+from cliops.operator_result import SCENARIO_SUMMARY_JSON, SCENARIO_SUMMARY_MD
 from cliops.platform_caps import canoe_runtime_check, platform_label
 from cliops.verify_ops import cmd_verify_batch
 
@@ -69,7 +70,9 @@ def cmd_scenario_run(args: argparse.Namespace) -> int:
     ]
     if args.no_ensure_running:
         cmd.append('--no-ensure-running')
-    return run_cmd(cmd)
+    rc = run_cmd(cmd)
+    write_scenario_summary(args, rc)
+    return rc
 
 
 def cmd_doctor(args: argparse.Namespace) -> int:
@@ -217,3 +220,33 @@ def cmd_start_demo(args: argparse.Namespace) -> int:
 
 def cmd_start_precheck(args: argparse.Namespace) -> int:
     return cmd_verify_batch(argparse.Namespace(run_id=args.run_id, owner=args.owner, run_date=args.run_date, phase='pre', skip_gates=args.skip_gates, stop_on_fail=args.stop_on_fail, report_formats=args.report_formats, output_json=Path('canoe/tmp/reports/verification/dev2_batch_report.json'), output_md=Path('canoe/tmp/reports/verification/dev2_batch_report.md'), output_csv=Path('canoe/tmp/reports/verification/dev2_batch_report.csv')))
+
+
+def write_scenario_summary(args: argparse.Namespace, rc: int) -> None:
+    payload = {
+        'generated_at': dt.datetime.now().isoformat(),
+        'scenario_id': args.id,
+        'namespace': args.namespace,
+        'var': args.var,
+        'ack_var': args.ack_var,
+        'wait_ack_ms': args.wait_ack_ms,
+        'poll_ms': args.poll_ms,
+        'status': 'PASS' if rc == 0 else 'FAIL',
+        'detail': f"Scenario {args.id} acknowledged." if rc == 0 else f"Scenario {args.id} failed.",
+    }
+    SCENARIO_SUMMARY_JSON.parent.mkdir(parents=True, exist_ok=True)
+    SCENARIO_SUMMARY_JSON.write_text(json.dumps(payload, indent=2), encoding='utf-8')
+    lines = [
+        '# Scenario Run Summary',
+        '',
+        f"- status: `{payload['status']}`",
+        f"- scenario_id: `{payload['scenario_id']}`",
+        f"- namespace: `{payload['namespace']}`",
+        f"- variable: `{payload['var']}`",
+        f"- ack_variable: `{payload['ack_var']}`",
+        f"- wait_ack_ms: `{payload['wait_ack_ms']}`",
+        f"- poll_ms: `{payload['poll_ms']}`",
+        '',
+        payload['detail'],
+    ]
+    SCENARIO_SUMMARY_MD.write_text('\n'.join(lines) + '\n', encoding='utf-8')
