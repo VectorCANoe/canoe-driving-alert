@@ -14,7 +14,7 @@ Before changing code or docs, open:
 
 1. `AGENTS.md`
 2. `driving-situation-alert/TMP_HANDOFF.md`
-3. `DEVELOPMENT_ENTRYPOINTS.md`
+3. `docs/DEVELOPMENT_ENTRYPOINTS.md`
 
 ## Basic Workflow
 

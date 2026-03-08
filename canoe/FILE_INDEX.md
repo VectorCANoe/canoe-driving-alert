@@ -6,7 +6,7 @@ Quick index for the `canoe` folder.
 
 If you are entering the CANoe side for daily work, open these first:
 
-1. `C:\Users\이준영\CANoe-IVI-OTA\DEVELOPMENT_ENTRYPOINTS.md`
+1. `C:\Users\이준영\CANoe-IVI-OTA\docs\DEVELOPMENT_ENTRYPOINTS.md`
 2. `C:\Users\이준영\CANoe-IVI-OTA\driving-situation-alert\TMP_HANDOFF.md`
 3. `C:\Users\이준영\CANoe-IVI-OTA\scripts\README.md`
 

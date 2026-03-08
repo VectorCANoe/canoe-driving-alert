@@ -61,7 +61,7 @@ python -m mkdocs build -f product/sdv_operator/mkdocs.yml --strict
 
 1. `AGENTS.md`
 2. `driving-situation-alert/TMP_HANDOFF.md`
-3. `DEVELOPMENT_ENTRYPOINTS.md`
+3. `docs/DEVELOPMENT_ENTRYPOINTS.md`
 4. `canoe/FILE_INDEX.md`
 5. `scripts/README.md`
 
@@ -69,6 +69,7 @@ python -m mkdocs build -f product/sdv_operator/mkdocs.yml --strict
 
 - `driving-situation-alert/tmp/`
 - `canoe/tmp/`
+- `docs/README.md`
 - `docs/meeting-notes/`
 - `reference/`
 
