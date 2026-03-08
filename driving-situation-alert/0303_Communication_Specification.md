@@ -3,7 +3,7 @@
 **Document ID**: PROJ-0303-CS
 **ISO 26262 Reference**: Part 6, Cl.7 (Software Architectural Design)
 **ASPICE Reference**: SWE.2 (Software Architectural Design)
-**Version**: 3.29
+**Version**: 3.30
 **Date**: 2026-03-09
 **Status**: Draft
 **Project Title**: 주행 상황 실시간 경고 시스템
@@ -70,15 +70,15 @@
 
 | Comm ID | Target EXT_ID | 비고 |
 |---|---|---|
-| Comm_001 | `0x0C200001` | 차량 상태 입력 |
-| Comm_003 | `0x0C600003` | 내비 컨텍스트 입력 |
-| Comm_006 | `0x04A00006` | 경고 선택 egress |
-| Comm_008 | `0x08600008` | 클러스터 출력 |
+| Comm_001 | `0x04200001` | 차량 상태 입력 |
+| Comm_003 | `0x04600003` | 내비 컨텍스트 입력 |
+| Comm_006 | `0x08A00006` | 경고 선택 egress |
+| Comm_008 | `0x0C600008` | 클러스터 출력 |
 | Comm_009 | `0x10E00009` | Validation 결과 프레임 |
 | Comm_120 | `0x04A00078` | 근접 위험 상태 |
-| Comm_124 | `0x04C0007C` | 경계/Fail-safe |
+| Comm_124 | `0x08C0007C` | 경계/Fail-safe |
 | Comm_130 | `0x04A00082` | 객체 위험 입력 |
-| Comm_133 | `0x04A00085` | 객체 안전/강등 |
+| Comm_133 | `0x08A00085` | 객체 안전/강등 |
 
 - 전수 `Comm` 매핑은 `00f` Annex 정책 기준으로 후속 확정한다.
 - 본문 상단 표의 `Identifier`는 현재 실행 ID를 유지하고, Extended ID는 하단 정책표로 관리한다.
@@ -554,6 +554,7 @@
 
 | 버전 | 날짜 | 변경 사항 |
 |---|---|---|
+| 3.30 | 2026-03-09 | `00f v4.3` Tier 재정렬(입력 -> 판정/Fail-safe -> HMI) 반영. Comm Target EXT_ID 샘플을 재계산값으로 동기화. |
 | 3.29 | 2026-03-09 | CAN ID 정책 재정렬: `00f v4.1` 기준으로 Primary를 29-bit `3/5/21` 3분할로 단순화하고, Tier/Block/Slot 용어로 통일. Comm Target EXT_ID 샘플을 신규 계산값으로 갱신. |
 | 3.28 | 2026-03-09 | CAN ID 정책 리팩토링 반영: `00f v4.0` 기준으로 29-bit Extended(`3/5/5/16`)를 Primary 정책으로 전환하고, 11-bit는 SIL 호환 계층으로 재정의. `CAN ID 배정 정책` 표와 Comm Target EXT_ID 샘플을 추가. |
 | 3.27 | 2026-03-07 | DBC SoT 정합 2차: ADAS/ETH-stub 소유 통신 범위를 `Comm_121/130~133` 기준으로 재동기화하고(`0x1C3~0x1C8`), `ETH_INTERFACE_CONTRACT.md v1.2` 활성 계약 상태를 본문/규모표에 반영. |

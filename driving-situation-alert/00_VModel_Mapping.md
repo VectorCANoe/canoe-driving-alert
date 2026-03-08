@@ -1,8 +1,8 @@
 ﻿# V-Model 문서 매핑표 (V-Model Document Mapping)
 
 **Document ID**: PROJ-00-VMM
-**Version**: 4.5
-**Date**: 2026-03-07
+**Version**: 4.6
+**Date**: 2026-03-09
 **Status**: Released
 **Project Title**: 주행 상황 실시간 경고 시스템
 **Subtitle**: 구간 정보 및 긴급차량 접근 기반 앰비언트·클러스터 경보
@@ -27,6 +27,7 @@
 - 네트워크: CAN + Ethernet(UDP) only
 - 도메인 CAN 분리: Ambient=`Body CAN(0x210)`, Cluster=`Infotainment CAN(0x220)`
 - 아키텍처 고정: `ETH_SW + CHS_GW/INFOTAINMENT_GW/BODY_GW/IVI_GW + 중앙 경고코어(ADAS_WARN_CTRL/NAV_CTX_MGR/EMS_ALERT/WARN_ARB_MGR)`
+- 시스템 관점 고정: 단일 시나리오 최적화보다 차량 전체 체인(입력->판정->출력->복귀->검증) 타당성을 우선한다.
 - 제외: 군집 위협 대응, 물류 OTA 임무전환, UDS OTA 구독, 위험운전 레벨 경고
 
 ---
@@ -72,6 +73,7 @@
 
 - 01 문서에 함수명/코드 레벨 상세를 과도하게 넣지 않는다.
 - 03 문서에 고객 요구 문장만 반복하지 않는다.
+- 특정 시나리오 데모를 위해 전체 아키텍처/도메인 책임을 왜곡하지 않는다.
 
 ---
 
@@ -141,6 +143,7 @@
 
 | 버전 | 날짜 | 변경 사항 |
 |------|------|---------|
+| 4.6 | 2026-03-09 | V-Model 상위 범위 규칙에 `OEM 시스템 관점 우선` 원칙을 추가하고, 시나리오 최적화로 인한 아키텍처 왜곡 금지 규칙을 명시. |
 | 4.5 | 2026-03-07 | 00e Canonical 정합 반영: 상위 아키텍처 표기를 `ETH_SW/CHS_GW/NAV_CTX_MGR` 기준으로 통일하고 현재 확장 범위(`Req_130~155`, Pre-Activation)를 범위 섹션에 반영. |
 | 4.4 | 2026-03-01 | 상위 문서 네이밍 정합 반영: 요구사항 예시 노드명을 내부 모듈(`EMS_ALERT_RX`)이 아닌 논리 단말(`EMS_ALERT`) 기준으로 정리. |
 | 4.3 | 2026-02-28 | Nav 제한속도(`speedLimit`)를 범위 정의에 반영하고 01/03/0302/0303/0304/04/05/06/07 추적 체인과 정합화. |

@@ -1,8 +1,8 @@
 # 감사 준비 체크리스트 (Audit Readiness Checklist)
 
 **Document ID**: PROJ-00A-ARC  
-**Version**: 1.13  
-**Date**: 2026-03-07  
+**Version**: 1.14  
+**Date**: 2026-03-09  
 **Status**: Draft  
 **Project Title**: 주행 상황 실시간 경고 시스템
 **Subtitle**: 구간 정보 및 긴급차량 접근 기반 앰비언트·클러스터 경보
@@ -12,6 +12,12 @@
 ## 목적
 - 감사/멘토 점검 시 문서 체인과 안전/프로세스 근거가 끊기지 않는지 사전 확인한다.
 - ISO 26262/ASPICE 관점의 최소 필수 항목만 단일 문서로 요약한다.
+
+## 목적 보강 (핵심 시나리오 축)
+- 본 프로젝트는 하나의 경고 베이스 엔진 위에서 주행상황에 따라 동작 시나리오가 전환되는 구조를 목표로 한다.
+- 시나리오 A: 구간 인식 기반 경고 패턴 동작
+- 시나리오 B: 긴급차량 접근 기반 경고 패턴 동작
+- 공통 베이스: 경고 표시/중재/복귀 로직
 
 ## A. 추적성 커버리지 (01 -> 07)
 
@@ -45,20 +51,20 @@
 
 | 문서 | Version | Date | 비고 |
 |---|---|---|---|
-| `00_VModel_Mapping.md` | 4.3 | 2026-02-28 | V-model 매핑 |
-| `00b_Project_Scope.md` | 2.8 | 2026-03-05 | 범위/제외 + 분류 운영 기준 |
+| `00_VModel_Mapping.md` | 4.6 | 2026-03-09 | V-model 매핑 |
+| `00b_Project_Scope.md` | 2.10 | 2026-03-09 | 범위/제외 + 분류 운영 기준 |
 | `00c_Req_Classification_and_Safety_Profile.md` | 1.7 | 2026-03-07 | ISO26262/ASPICE 분류 기준(Active/Pre-Activation 분리) |
 | `00d_HARA_Worksheet.md` | 1.5 | 2026-03-07 | HC-01~HC-08 S/E/C + Safety Goal + 승인 게이트 |
-| `00e_ECU_Naming_Standard.md` | 2.7 | 2026-03-05 | ECU Canonical/약어 표준 |
-| `00f_CAN_ID_Allocation_Standard.md` | 3.6 | 2026-03-07 | 3/3/5 ID 정책 SoT |
+| `00e_ECU_Naming_Standard.md` | 3.0 | 2026-03-09 | Surface/Runtime/Harness 계층 표준 |
+| `00f_CAN_ID_Allocation_Standard.md` | 4.5 | 2026-03-09 | OEM latency class + 3/5/21 ID 정책 SoT |
 | `00g_RTE_Name_Mapping_Standard.md` | 1.1 | 2026-03-05 | AUTOSAR RTE 네이밍 매핑 |
-| `01_Requirements.md` | 5.30 | 2026-03-06 | Req+VC 기준 |
-| `03_Function_definition.md` | 4.31 | 2026-03-06 | 기능 정의 |
-| `0301_SysFuncAnalysis.md` | 3.27 | 2026-03-06 | 노드 기능 분석 |
-| `0302_NWflowDef.md` | 3.24 | 2026-03-07 | 네트워크 흐름 |
-| `0303_Communication_Specification.md` | 3.27 | 2026-03-07 | 통신 명세 |
+| `01_Requirements.md` | 5.31 | 2026-03-07 | Req+VC 기준 |
+| `03_Function_definition.md` | 4.32 | 2026-03-07 | 기능 정의 |
+| `0301_SysFuncAnalysis.md` | 3.28 | 2026-03-09 | 노드 기능 분석 |
+| `0302_NWflowDef.md` | 3.25 | 2026-03-07 | 네트워크 흐름 |
+| `0303_Communication_Specification.md` | 3.30 | 2026-03-09 | 통신 명세 |
 | `0304_System_Variables.md` | 2.24 | 2026-03-06 | 변수/추적 |
-| `04_SW_Implementation.md` | 2.22 | 2026-03-06 | 구현 연결 |
+| `04_SW_Implementation.md` | 2.23 | 2026-03-07 | 구현 연결 |
 | `05_Unit_Test.md` | 2.21 | 2026-03-06 | UT |
 | `06_Integration_Test.md` | 4.19 | 2026-03-06 | IT |
 | `07_System_Test.md` | 5.19 | 2026-03-06 | ST |
@@ -71,6 +77,7 @@
 | 통신 범위 | CAN + Ethernet(UDP) only | OK |
 | 통신 원본 분리 | CAN=`*_can.dbc`, ETH=`ETH_INTERFACE_CONTRACT.md` | OK |
 | 중재 용어 경계 | WARN_ARB_MGR는 경보 우선순위 판정, CAN bit arbitration과 별개 | OK |
+| 시스템 관점 원칙 | 단일 시나리오 최적화 금지, OEM 차량 시스템 관점 우선 | OK |
 | 제외 항목 | OTA/UDS/DoIP | OK |
 | 문서 분리 | 01=What, 03+=How, 05~07=Verification | OK |
 
@@ -106,6 +113,8 @@
 
 | 버전 | 날짜 | 변경 사항 |
 |---|---|---|
+| 1.15 | 2026-03-09 | 목적 섹션에 핵심 시나리오 축(시나리오 A/B + 공통 베이스)을 명시해 신기능 중심 프로젝트 서술을 보강. |
+| 1.14 | 2026-03-09 | 문서 버전 매트릭스를 00f v4.5/0303 v3.30 포함 최신 기준으로 정합화하고, 범위 경계에 `OEM 시스템 관점 우선` 원칙을 추가. |
 | 1.13 | 2026-03-07 | 감사 기준 최신화: 활성 전환 Req(66) + Pre-Activation Req(26) 이중 커버리지 표기로 개편, 문서 버전 매트릭스를 00~07 최신 버전으로 동기화, HARA 상태를 Active 잠금/Pre-Activation 진행중으로 분리. |
 | 1.12 | 2026-03-04 | Lean IT 범위(활성 Req 67개) 고정, HARA/ASIL 내부 승인 완료 상태 반영, 문서 버전 매트릭스 최신화(0302/0303/0304/04 포함). |
 | 1.11 | 2026-03-02 | ISO26262/ASPICE 우선 정합 반영: 00c(1.3), 0304(2.12), 04(2.10) 버전 매트릭스 동기화. |

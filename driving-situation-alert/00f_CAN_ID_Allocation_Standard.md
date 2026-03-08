@@ -1,7 +1,7 @@
 # CAN ID 배정 표준
 
 **Document ID**: PROJ-00F-CAN-ID  
-**Version**: 4.1  
+**Version**: 4.5  
 **Date**: 2026-03-09  
 **Status**: Draft (Policy SoT, Under Refactor)  
 **Scope**: `0302 -> 0303 -> 0304 -> DBC -> 04 -> 05/06/07`
@@ -10,18 +10,25 @@
 
 ## 1. 목적
 
-- 현재 운영 중인 11-bit 정책(`3/3/5`)을 유지하면서, 확장 대비용 29-bit 정책을 명확히 고정한다.
-- 도메인 분리(블록/대역) 체계를 유지하고, 비트필드 해석 규칙을 함께 제공한다.
-- 문서/DBC/CAPL/테스트가 동일한 ID 거버넌스를 사용하도록 기준을 단순화한다.
+- 본 문서는 특정 시나리오가 아니라 **완성차 전체 시스템 관점**에서 CAN ID 배정 규칙을 정의한다.
+- 도메인/게이트웨이 구조를 유지하면서, 중장기 확장을 위해 29-bit 정책을 기본으로 사용한다.
+- 문서/DBC/CAPL/테스트가 동일한 ID 거버넌스를 따르도록 단일 기준을 제공한다.
 
 ---
 
-## 2. 근거 요약
+## 2. 설계 철학 (OEM 관점)
 
-- MET40: ID 규칙은 팀이 정의 가능하며, 우선순위/도메인/시퀀스 근거를 문서화해야 한다.
-- MET41: 11-bit만 고정하기보다 29-bit 확장 논리를 갖추는 편이 방어에 유리하다.
-- ISO 11898 관점: CAN 중재는 Identifier 값 기준이며, 비트 분할 방식 자체는 프로젝트 정책이다.
-- 업계 관행: 블록/대역 운영 + 비트필드 해석을 병행하는 하이브리드 방식이 일반적이다.
+핵심 원칙 3가지:
+
+1. **중재 우선순위 분리**: 버스 중재 우선순위(Tier)와 기능 의미를 혼동하지 않는다.
+2. **소유권 고정**: 메시지 Block은 경로가 아니라 Owner ECU 도메인으로 고정한다.
+3. **확장 우선**: Slot 공간을 크게 확보해 재할당 비용을 줄인다.
+
+이 구조의 의미:
+
+- `Tier`: 얼마나 지연에 민감한가
+- `Block`: 어느 도메인이 책임지는가
+- `Slot`: 해당 도메인 내에서 어떤 메시지인가
 
 ---
 
@@ -34,126 +41,101 @@
 
 ### 3.2 Primary 스키마 (29-bit, 3분할)
 
-- `[28:26]` Tier (3bit): 버스 중재 우선순위 대역
-- `[25:21]` Block (5bit): 도메인/경계 블록
-- `[20:0]` Slot (21bit): 메시지 슬롯
+- `[28:26]` Tier (3bit)
+- `[25:21]` Block (5bit)
+- `[20:0]` Slot (21bit)
 
 계산식:
 
 `EXT_ID = (Tier << 26) | (Block << 21) | Slot`
 
-핵심 의미:
+---
 
-- `Tier`가 최상위 블록/대역 규칙
-- `Block`이 도메인 경계 규칙
-- `Slot`이 상세 메시지 확장 영역
+## 4. Tier 규칙 (OEM Latency Class)
+
+| Tier | OEM Class | 통신 지연 목표(권고) | 적용 기준 (간단 판단) |
+|---|---|---|---|
+| 0 | Motion Control | 5~10 ms | 제동/조향/동력 등 차량 거동을 즉시 바꾸는 제어 명령 |
+| 1 | Safety State | 10~20 ms | 제어/안전 판단에 직접 쓰이는 입력 상태(속도/조향/객체/구간) |
+| 2 | Coordination & Fail-safe | 20~50 ms | 도메인 간 조정, 경보 판정 결과, 강등/복구 트리거 |
+| 3 | Driver Info & Comfort | 50~100 ms | 클러스터/앰비언트/음향/편의 출력 |
+| 4 | Validation & Diagnostic | Event/On-demand | 검증 하네스, 진단, 시험/정비 전용 트래픽 |
+| 5~7 | Reserved | N/A | 향후 확장 |
+
+Tier 판정 규칙:
+
+- Tier 숫자가 작을수록 CAN arbitration 우선순위가 높다.
+- Tier는 기능명 기준이 아니라 **지연 허용도(latency class)** 기준으로 배정한다.
+- 동일 기능이라도 지연 목표가 다르면 Tier를 분리할 수 있다.
+- 서비스 우선순위(예: 경보 우선순위 판정)는 애플리케이션 로직으로 별도 처리한다.
 
 ---
 
-## 4. Tier/Block 사전
+## 5. Block 규칙 (도메인 소유권)
 
-### 4.1 Tier 사전
-
-| Tier | 의미 | 설명 |
+| Block | Domain | Owner 예시 |
 |---|---|---|
-| 0 | Safety-Critical Control | 즉시 제어/안전 핵심 루프 |
-| 1 | Warning & Risk Core | 경보 판정/위험 상태 전파 |
-| 2 | HMI/Driver Output | 클러스터/앰비언트/알림 출력 |
-| 3 | Baseline Vehicle State | 기본 차량 상태/입력/주행 정보 |
-| 4 | Validation/Diag | 검증/진단/시험 프레임 |
-| 5~7 | Reserved | 향후 확장 |
+| 0x01 | CHASSIS | CHS_GW, BRK_CTRL, STEER_CTRL |
+| 0x02 | BODY | BODY_GW, AMBIENT_CTRL, HAZARD_CTRL |
+| 0x03 | INFOTAINMENT/CLUSTER | IVI_GW, NAV_CTX_MGR, CLU_* |
+| 0x04 | POWERTRAIN | ENG_CTRL, TCM |
+| 0x05 | ADAS | ADAS_WARN_CTRL, WARN_ARB_MGR |
+| 0x06 | BACKBONE/GATEWAY | DOMAIN_BOUNDARY_MGR, ETH_SW, DOMAIN_ROUTER |
+| 0x07 | VALIDATION/DIAG | VAL_SCENARIO_CTRL, VAL_BASELINE_CTRL |
+| 0x08 | V2X/EXTERNAL | EMS_* (V2X ingress/egress), 외부 연계 |
+| 0x09 | HVAC/ENERGY (Reserved Active) | HVAC/열관리/에너지 확장용 |
+| 0x1F | RESERVED | 사용 금지 |
 
-### 4.2 Block 사전
+Block 판정 규칙:
 
-| Block | Domain |
-|---|---|
-| 0x01 | CHASSIS |
-| 0x02 | BODY |
-| 0x03 | INFOTAINMENT |
-| 0x04 | POWERTRAIN |
-| 0x05 | ADAS |
-| 0x06 | BACKBONE/GATEWAY |
-| 0x07 | VALIDATION |
-| 0x1F | RESERVED |
+- Block은 메시지 생성 주체(Owner ECU) 도메인으로 지정한다.
+- GW를 경유해도 Block은 Owner 기준을 유지한다.
+- Block 번호 크고 작음은 우선순위 의미가 없다.
 
 ---
 
-## 5. Slot 규칙 (21bit)
-
-### 5.1 기본 규칙
+## 6. Slot 규칙 (21bit 확장 영역)
 
 - 범위: `0x000000 ~ 0x1FFFFF`
 - 동일 `(Tier, Block, Slot)` 조합 중복 금지
-- `0x1FF000 ~ 0x1FFFFF`는 Reserved
+- 같은 `Tier+Block` 조합 내에서는 Slot 1-up 증가를 기본으로 사용
+- `0x1FF000 ~ 0x1FFFFF`는 예약(운영/실험 직접 사용 금지)
 
-### 5.2 권고 프로파일 (선택)
+선택 프로파일(운영 편의):
 
-- 단순 운영이 필요하면 Slot 내부를 아래처럼 쓸 수 있다.
-  - `ClassPage = Slot[20:16]` (5bit)
-  - `Seq = Slot[15:0]` (16bit)
-- 이 권고 프로파일은 기존 `3/5/5/16` 운영 습관을 보존하기 위한 선택 사항이며, 상위 정책은 여전히 `3/5/21`이다.
-
-권고 ClassPage 예시:
-
-| ClassPage | 의미 |
-|---|---|
-| 0x00 | GW/Boundary |
-| 0x01 | Vehicle State |
-| 0x02 | Driver Input |
-| 0x03 | Dynamics Control |
-| 0x04 | Warning Core |
-| 0x05 | HMI Cluster |
-| 0x06 | Body Actuation |
-| 0x07 | Powertrain Control |
-| 0x08 | Fail-safe |
-| 0x09 | Validation/Diag |
-| 0x0A | ADAS Object |
+- 필요 시 `Slot[20:16]`을 ClassPage, `Slot[15:0]`을 Sequence로 사용 가능
+- 단, 이는 운영 편의 옵션이며 상위 정책은 `3/5/21`로 고정
 
 ---
 
-## 6. 11-bit 호환 정책
+## 7. 배정 절차 (실무)
 
-- 현행 11-bit 실행 ID 대역은 컷오버 전까지 유지 가능
-- 신규/변경 요구의 정책 승인 ID는 29-bit를 기준으로만 발급
-- 11-bit 값은 `Compatibility Mapping`으로만 유지
+1. Tier 결정: 지연 허용도 기준 분류
+2. Block 결정: Owner ECU 도메인 지정
+3. Slot 할당: 동일 Tier+Block 내 연번 배정
+4. 충돌 점검: 기존 DBC/예약 구간 중복 확인
+5. 동기화: `0303 -> DBC/CAPL -> 05/06/07` 같은 사이클로 반영
+
+---
+
+## 8. 11-bit 호환 정책
+
+- 현재 SIL 실행 ID는 컷오버 전까지 유지 가능
+- 신규/변경 메시지의 정책 승인 기준은 29-bit를 우선 적용
+- 11-bit 값은 Compatibility Mapping 용도로만 관리
 - `0x000~0x0FF` 신규 할당 금지
 
 ---
 
-## 7. 중재/해석 경계
+## 9. 샘플 (정책 이해용)
 
-- CAN 중재 우선순위: Identifier 값 기준
-- 서비스 우선순위(경보 판정/강등/복구): 애플리케이션 로직 기준
-- 두 개념을 문서에서 혼용하지 않는다.
-
----
-
-## 8. Comm 기준 Target EXT_ID 샘플 (1차)
-
-| Comm ID | 용도 | Target EXT_ID |
-|---|---|---|
-| Comm_001 | 차량 상태 입력 | `0x0C200001` |
-| Comm_003 | 내비 컨텍스트 입력 | `0x0C600003` |
-| Comm_006 | 경고 선택 egress | `0x04A00006` |
-| Comm_008 | 클러스터 출력 | `0x08600008` |
-| Comm_009 | 검증 결과 프레임 | `0x10E00009` |
-| Comm_120 | 근접 위험 상태 | `0x04A00078` |
-| Comm_124 | 경계/Fail-safe | `0x04C0007C` |
-| Comm_130 | 객체 위험 입력 | `0x04A00082` |
-| Comm_133 | 객체 안전/강등 | `0x04A00085` |
-
-- 위 샘플은 정책 검증용이다.
-- Comm 전수 매핑은 0303 동기화 시점에 확정한다.
-
----
-
-## 9. 전환 절차 (R0~R4)
-
-1. R0 정책 동결: 00f v4.1 승인
-2. R1 계약 동결: 0303 Comm별 Target EXT_ID 전수 매핑
-3. R2 구현 반영: DBC/CAPL/채널할당/게이트 스크립트
-4. R3 검증 반영: 05/06/07 증빙 동기화
-5. R4 컷오버: 11-bit 호환 계층 축소/종료 결정
+| 항목 | Tier | Block | Slot | EXT_ID |
+|---|---:|---:|---:|---|
+| Vehicle State Input | 1 | 0x01 | 0x000001 | `0x04200001` |
+| Navigation Context Input | 1 | 0x03 | 0x000003 | `0x04600003` |
+| Alert Decision Output | 2 | 0x05 | 0x000006 | `0x08A00006` |
+| Cluster Warning Output | 3 | 0x03 | 0x000008 | `0x0C600008` |
+| Validation Result | 4 | 0x07 | 0x000009 | `0x10E00009` |
 
 ---
 
@@ -162,7 +144,7 @@
 - 정책 SoT: `00f_CAN_ID_Allocation_Standard.md`
 - 통신 계약 SoT: `0303_Communication_Specification.md`
 - 실행 SoT: `canoe/databases/*.dbc`, `canoe/docs/operations/ETH_INTERFACE_CONTRACT.md`
-- 변경 실행 보드: `tmp/change-orders/TEAM_SYNC_BOARD.md`
+- 운영 보드: `tmp/change-orders/TEAM_SYNC_BOARD.md`
 
 ---
 
@@ -170,7 +152,8 @@
 
 | 버전 | 날짜 | 변경 사항 |
 |---|---|---|
-| 4.1 | 2026-03-09 | Primary 정책을 29-bit 3분할(`3/5/21`)로 단순화. 기존 `3/5/5/16`은 Slot 권고 프로파일(선택)로 하향. Tier/Block/Slot 하이브리드 규칙 및 Comm 샘플 EXT_ID 재정의. |
-| 4.0 | 2026-03-09 | 29-bit Extended 중심 정책 초안 도입(`3/5/5/16`). |
-| 3.7 | 2026-03-07 | 11-bit 유지/29-bit 전환 기준 추가. |
-| 3.6 | 2026-03-07 | 베이스라인 정합 보강 및 E213~E216 운영 규칙 명확화. |
+| 4.5 | 2026-03-09 | Tier를 OEM latency class 기준(Motion Control/Safety State/Coordination/Driver Info/Validation)으로 재정의하고 권고 지연 목표를 추가해 배정 기준을 명확화. |
+| 4.4 | 2026-03-09 | OEM 시스템 관점으로 전면 재구성: Tier/Block/Slot 철학을 단순화하고, Tier를 입력->판정/조정->출력 흐름으로 재정의. Block에 V2X/HVAC 확장 도메인 추가. |
+| 4.3 | 2026-03-09 | Tier 순서를 데이터 경로(입력 -> 판정/Fail-safe -> HMI) 기준으로 재정렬. 샘플 Target EXT_ID 재계산. |
+| 4.2 | 2026-03-09 | Tier/Block 빠른 판단 기준, Owner 기반 Block 선택 원칙, 3단계 배정 절차, 체크리스트 추가. |
+| 4.1 | 2026-03-09 | Primary를 29-bit `3/5/21`로 단순화. |

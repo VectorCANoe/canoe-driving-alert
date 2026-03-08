@@ -52,6 +52,9 @@
 - Use V-model in both directions:
   - design to test
   - test failure back to source doc
+- System-level viewpoint is mandatory:
+  - 문서/구현 판단 기준은 `단일 시나리오 최적화`가 아니라 `완성차 시스템 관점`이다.
+  - ECU/메시지/흐름은 특정 데모 장면이 아니라 차량 전반 동작(입력->판정->출력->진단/검증)을 기준으로 설계한다.
 
 ## 4) Current Reset Baseline
 
@@ -201,3 +204,11 @@
   - `TMP_HANDOFF.md`
   - 팀 보드/queue 성격의 임시 coordination 문서
   - 리드 지시가 있는 cross-team reset 문서
+### 11.5 OEM System Framing Rule (Added)
+- 이 프로젝트는 “한 시나리오 PoC”가 아니라 “OEM 차량 시스템 축약 모델”로 정의한다.
+- 따라서 문서/코드 판단 우선순위는 아래를 따른다:
+  1. 차량 전체 구조 타당성(도메인/경계/Owner)
+  2. 통신 규칙 일관성(ID/주기/Timeout/소유권)
+  3. 검증 가능성(UT/IT/ST 및 하네스 증빙)
+  4. 개별 시나리오 표현
+- 단일 시나리오 편의를 위해 전체 구조를 왜곡하는 변경은 금지한다.
