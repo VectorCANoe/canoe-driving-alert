@@ -343,22 +343,26 @@
     </Object>
 
     <!-- ============================================================ -->
-    <!-- GroupBox C: V2X EMERGENCY  (8,220) 272x292                   -->
+    <!-- GroupBox C: V2X EMERGENCY  (8,220) 272x384                   -->
+    <!--   Section 1 (y=18-106):  Dispatch triggers  [primary action] -->
+    <!--   Section 2 (y=110-244): Pre-dispatch params (dir, ETA, src) -->
+    <!--   Section 3 (y=248-370): EMS node output   [read-only]       -->
     <!-- ============================================================ -->
     <Object Type="Vector.CANalyzer.Panels.Design.GroupBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="GrpV2X" ControlName="GrpV2X">
 
-      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="LblAlertHdr" ControlName="Lbl Alert Hdr">
-        <Property Name="Name">LblAlertHdr</Property>
+      <!-- ── Section 1: Dispatch triggers (operator primary action) ── -->
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="LblDispatchHdr" ControlName="Lbl Dispatch Hdr">
+        <Property Name="Name">LblDispatchHdr</Property>
         <Property Name="Size">252, 14</Property>
-        <Property Name="Location">8, 24</Property>
-        <Property Name="ForeColor">255, 200, 200, 200</Property>
-        <Property Name="Text">Alert State  [click to toggle:  0=CLEAR  1=ACTIVE]</Property>
+        <Property Name="Location">8, 18</Property>
+        <Property Name="ForeColor">255, 255, 200, 80</Property>
+        <Property Name="Text">DISPATCH  [click → rising-edge triggers EMS node]</Property>
       </Object>
 
-      <Object Type="Vector.CANalyzer.Panels.Design.SwitchControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="SwAlertState" ControlName="Sw AlertState">
-        <Property Name="Name">SwAlertState</Property>
-        <Property Name="Size">210, 28</Property>
-        <Property Name="Location">8, 42</Property>
+      <Object Type="Vector.CANalyzer.Panels.Design.SwitchControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="SwPoliceDispatch" ControlName="Sw PoliceDispatch">
+        <Property Name="Name">SwPoliceDispatch</Property>
+        <Property Name="Size">170, 28</Property>
+        <Property Name="Location">8, 34</Property>
         <Property Name="TabIndex">1</Property>
         <Property Name="Activation">Left</Property>
         <Property Name="Epsilon">0</Property>
@@ -368,80 +372,96 @@
         <Property Name="SwitchValuesVT">1;2;0/Lower/0;1/Lower/1</Property>
         <Property Name="SwitchValues">1;2;0;1</Property>
         <Property Name="SwitchValuesRx">1;2;0;1</Property>
-        <Property Name="SymbolConfiguration">8;16;V2X;;;alertState;1;;;-1;;;Value;;;0</Property>
+        <Property Name="SymbolConfiguration">8;16;V2X;;;policeDispatch;1;;;-1;;;Value;;;0</Property>
       </Object>
 
-      <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="TxtAlertStateVal" ControlName="Txt AlertState Val">
-        <Property Name="Name">TxtAlertStateVal</Property>
+      <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="TxtPoliceVal" ControlName="Txt Police Val">
+        <Property Name="Name">TxtPoliceVal</Property>
         <Property Name="Size">40, 18</Property>
-        <Property Name="Location">220, 45</Property>
+        <Property Name="Location">182, 39</Property>
         <Property Name="BoxBackColor">255, 28, 31, 46</Property>
-        <Property Name="BoxForeColor">255, 0, 210, 120</Property>
+        <Property Name="BoxForeColor">255, 100, 140, 255</Property>
         <Property Name="TextBackColor">255, 28, 31, 46</Property>
-        <Property Name="TextForeColor">255, 0, 210, 120</Property>
+        <Property Name="TextForeColor">255, 100, 140, 255</Property>
         <Property Name="BoxBorderStyle">FixedSingle</Property>
         <Property Name="DisplayLabel">Hide</Property>
         <Property Name="BoxTextAlign">Center</Property>
         <Property Name="ReadOnlyControl">True</Property>
         <Property Name="TabStopActive">False</Property>
-        <Property Name="TabIndex">7</Property>
+        <Property Name="TabIndex">2</Property>
         <Property Name="ValueDecimalPlaces">0</Property>
         <Property Name="ValueDisplay">Double</Property>
         <Property Name="UsedValueTable">RawValue</Property>
         <Property Name="DescriptionSize">0, 0</Property>
-        <Property Name="SymbolConfiguration">8;16;V2X;;;alertState;2;;;-1;;;Value;;;0</Property>
+        <Property Name="SymbolConfiguration">8;16;V2X;;;policeDispatch;2;;;-1;;;Value;;;0</Property>
       </Object>
 
-      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="LblEmgTypeHdr" ControlName="Lbl EmgType Hdr">
-        <Property Name="Name">LblEmgTypeHdr</Property>
-        <Property Name="Size">252, 14</Property>
-        <Property Name="Location">8, 78</Property>
-        <Property Name="ForeColor">255, 200, 200, 200</Property>
-        <Property Name="Text">Emergency Type  [0=None  1=Police  2=Ambulance]</Property>
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="LblPoliceTag" ControlName="Lbl Police Tag">
+        <Property Name="Name">LblPoliceTag</Property>
+        <Property Name="Size">50, 14</Property>
+        <Property Name="Location">226, 41</Property>
+        <Property Name="ForeColor">255, 100, 140, 255</Property>
+        <Property Name="Text">Police</Property>
       </Object>
 
-      <Object Type="Vector.CANalyzer.Panels.Design.SwitchControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="SwEmgType" ControlName="Sw EmgType">
-        <Property Name="Name">SwEmgType</Property>
-        <Property Name="Size">210, 28</Property>
-        <Property Name="Location">8, 96</Property>
-        <Property Name="TabIndex">2</Property>
+      <Object Type="Vector.CANalyzer.Panels.Design.SwitchControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="SwAmbulanceDispatch" ControlName="Sw AmbulanceDispatch">
+        <Property Name="Name">SwAmbulanceDispatch</Property>
+        <Property Name="Size">170, 28</Property>
+        <Property Name="Location">8, 70</Property>
+        <Property Name="TabIndex">3</Property>
         <Property Name="Activation">Left</Property>
         <Property Name="Epsilon">0</Property>
         <Property Name="Increment">1</Property>
         <Property Name="StartValue">0</Property>
-        <Property Name="StateCnt">3</Property>
-        <Property Name="SwitchValuesVTXml">&lt;Version&gt;2&lt;/Version&gt;&lt;Count&gt;3&lt;/Count&gt;&lt;RxValue&gt;0&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;0&lt;/TxValue&gt;&lt;RxValue&gt;1&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;1&lt;/TxValue&gt;&lt;RxValue&gt;2&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;2&lt;/TxValue&gt;</Property>
-        <Property Name="SwitchValuesVT">1;3;0/Lower/0;1/Lower/1;2/Lower/2</Property>
-        <Property Name="SwitchValues">1;3;0;1;2</Property>
-        <Property Name="SwitchValuesRx">1;3;0;1;2</Property>
-        <Property Name="SymbolConfiguration">8;16;V2X;;;emergencyType;1;;;-1;;;Value;;;0</Property>
+        <Property Name="SwitchValuesVTXml">&lt;Version&gt;2&lt;/Version&gt;&lt;Count&gt;2&lt;/Count&gt;&lt;RxValue&gt;0&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;0&lt;/TxValue&gt;&lt;RxValue&gt;1&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;1&lt;/TxValue&gt;</Property>
+        <Property Name="SwitchValuesVT">1;2;0/Lower/0;1/Lower/1</Property>
+        <Property Name="SwitchValues">1;2;0;1</Property>
+        <Property Name="SwitchValuesRx">1;2;0;1</Property>
+        <Property Name="SymbolConfiguration">8;16;V2X;;;ambulanceDispatch;1;;;-1;;;Value;;;0</Property>
       </Object>
 
-      <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="TxtEmgTypeVal" ControlName="Txt EmgType Val">
-        <Property Name="Name">TxtEmgTypeVal</Property>
+      <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="TxtAmbulanceVal" ControlName="Txt Ambulance Val">
+        <Property Name="Name">TxtAmbulanceVal</Property>
         <Property Name="Size">40, 18</Property>
-        <Property Name="Location">220, 99</Property>
+        <Property Name="Location">182, 75</Property>
         <Property Name="BoxBackColor">255, 28, 31, 46</Property>
-        <Property Name="BoxForeColor">255, 0, 210, 120</Property>
+        <Property Name="BoxForeColor">255, 255, 100, 100</Property>
         <Property Name="TextBackColor">255, 28, 31, 46</Property>
-        <Property Name="TextForeColor">255, 0, 210, 120</Property>
+        <Property Name="TextForeColor">255, 255, 100, 100</Property>
         <Property Name="BoxBorderStyle">FixedSingle</Property>
         <Property Name="DisplayLabel">Hide</Property>
         <Property Name="BoxTextAlign">Center</Property>
         <Property Name="ReadOnlyControl">True</Property>
         <Property Name="TabStopActive">False</Property>
-        <Property Name="TabIndex">8</Property>
+        <Property Name="TabIndex">4</Property>
         <Property Name="ValueDecimalPlaces">0</Property>
         <Property Name="ValueDisplay">Double</Property>
         <Property Name="UsedValueTable">RawValue</Property>
         <Property Name="DescriptionSize">0, 0</Property>
-        <Property Name="SymbolConfiguration">8;16;V2X;;;emergencyType;2;;;-1;;;Value;;;0</Property>
+        <Property Name="SymbolConfiguration">8;16;V2X;;;ambulanceDispatch;2;;;-1;;;Value;;;0</Property>
+      </Object>
+
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="LblAmbulanceTag" ControlName="Lbl Ambulance Tag">
+        <Property Name="Name">LblAmbulanceTag</Property>
+        <Property Name="Size">60, 14</Property>
+        <Property Name="Location">226, 77</Property>
+        <Property Name="ForeColor">255, 255, 100, 100</Property>
+        <Property Name="Text">Ambulance</Property>
+      </Object>
+
+      <!-- ── Section 2: Pre-dispatch parameters (set before triggering) ── -->
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="LblParamSep" ControlName="Lbl Param Sep">
+        <Property Name="Name">LblParamSep</Property>
+        <Property Name="Size">256, 14</Property>
+        <Property Name="Location">8, 110</Property>
+        <Property Name="ForeColor">255, 110, 110, 130</Property>
+        <Property Name="Text">─── Pre-dispatch parameters ───────────────</Property>
       </Object>
 
       <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="LblEmgDirHdr" ControlName="Lbl EmgDir Hdr">
         <Property Name="Name">LblEmgDirHdr</Property>
         <Property Name="Size">252, 14</Property>
-        <Property Name="Location">8, 132</Property>
+        <Property Name="Location">8, 128</Property>
         <Property Name="ForeColor">255, 200, 200, 200</Property>
         <Property Name="Text">Direction  [0=Front  1=Left  2=Right  3=Rear]</Property>
       </Object>
@@ -449,8 +469,8 @@
       <Object Type="Vector.CANalyzer.Panels.Design.SwitchControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="SwEmgDir" ControlName="Sw EmgDir">
         <Property Name="Name">SwEmgDir</Property>
         <Property Name="Size">210, 28</Property>
-        <Property Name="Location">8, 150</Property>
-        <Property Name="TabIndex">3</Property>
+        <Property Name="Location">8, 146</Property>
+        <Property Name="TabIndex">5</Property>
         <Property Name="Activation">Left</Property>
         <Property Name="Epsilon">0</Property>
         <Property Name="Increment">1</Property>
@@ -466,7 +486,7 @@
       <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="TxtEmgDirVal" ControlName="Txt EmgDir Val">
         <Property Name="Name">TxtEmgDirVal</Property>
         <Property Name="Size">40, 18</Property>
-        <Property Name="Location">220, 153</Property>
+        <Property Name="Location">220, 149</Property>
         <Property Name="BoxBackColor">255, 28, 31, 46</Property>
         <Property Name="BoxForeColor">255, 0, 210, 120</Property>
         <Property Name="TextBackColor">255, 28, 31, 46</Property>
@@ -476,7 +496,7 @@
         <Property Name="BoxTextAlign">Center</Property>
         <Property Name="ReadOnlyControl">True</Property>
         <Property Name="TabStopActive">False</Property>
-        <Property Name="TabIndex">9</Property>
+        <Property Name="TabIndex">6</Property>
         <Property Name="ValueDecimalPlaces">0</Property>
         <Property Name="ValueDisplay">Double</Property>
         <Property Name="UsedValueTable">RawValue</Property>
@@ -487,7 +507,7 @@
       <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="LblEtaHdr" ControlName="Lbl ETA Hdr">
         <Property Name="Name">LblEtaHdr</Property>
         <Property Name="Size">80, 14</Property>
-        <Property Name="Location">8, 186</Property>
+        <Property Name="Location">8, 184</Property>
         <Property Name="ForeColor">255, 200, 200, 200</Property>
         <Property Name="Text">ETA (sec)</Property>
       </Object>
@@ -495,10 +515,10 @@
       <Object Type="Vector.CANalyzer.Panels.Design.TrackBarControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="TrkEta" ControlName="Trk ETA">
         <Property Name="Name">TrkEta</Property>
         <Property Name="Size">195, 36</Property>
-        <Property Name="Location">8, 204</Property>
+        <Property Name="Location">8, 200</Property>
         <Property Name="BackColor">255, 52, 56, 74</Property>
         <Property Name="DisplayMinMax">True</Property>
-        <Property Name="TabIndex">4</Property>
+        <Property Name="TabIndex">7</Property>
         <Property Name="MaximumDouble">120</Property>
         <Property Name="SmallChangeDouble">5</Property>
         <Property Name="LargeChangeDouble">15</Property>
@@ -513,7 +533,7 @@
       <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="TxtEtaVal" ControlName="Txt ETA Val">
         <Property Name="Name">TxtEtaVal</Property>
         <Property Name="Size">44, 19</Property>
-        <Property Name="Location">208, 209</Property>
+        <Property Name="Location">208, 205</Property>
         <Property Name="BoxBackColor">255, 28, 31, 46</Property>
         <Property Name="BoxForeColor">255, 0, 210, 120</Property>
         <Property Name="TextBackColor">255, 28, 31, 46</Property>
@@ -523,7 +543,7 @@
         <Property Name="BoxTextAlign">Center</Property>
         <Property Name="ReadOnlyControl">True</Property>
         <Property Name="TabStopActive">False</Property>
-        <Property Name="TabIndex">5</Property>
+        <Property Name="TabIndex">8</Property>
         <Property Name="ValueDecimalPlaces">0</Property>
         <Property Name="ValueDisplay">Double</Property>
         <Property Name="UsedValueTable">RawValue</Property>
@@ -533,8 +553,8 @@
 
       <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="LblSourceHdr" ControlName="Lbl Source Hdr">
         <Property Name="Name">LblSourceHdr</Property>
-        <Property Name="Size">80, 14</Property>
-        <Property Name="Location">8, 248</Property>
+        <Property Name="Size">60, 14</Property>
+        <Property Name="Location">8, 244</Property>
         <Property Name="ForeColor">255, 200, 200, 200</Property>
         <Property Name="Text">Source ID</Property>
       </Object>
@@ -542,7 +562,7 @@
       <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="TxtSourceId" ControlName="Txt SourceId">
         <Property Name="Name">TxtSourceId</Property>
         <Property Name="Size">60, 19</Property>
-        <Property Name="Location">8, 266</Property>
+        <Property Name="Location">72, 241</Property>
         <Property Name="BoxBackColor">255, 28, 31, 46</Property>
         <Property Name="BoxForeColor">255, 255, 200, 80</Property>
         <Property Name="TextBackColor">255, 28, 31, 46</Property>
@@ -550,7 +570,7 @@
         <Property Name="BoxBorderStyle">FixedSingle</Property>
         <Property Name="DisplayLabel">Hide</Property>
         <Property Name="BoxTextAlign">Center</Property>
-        <Property Name="TabIndex">6</Property>
+        <Property Name="TabIndex">9</Property>
         <Property Name="ValueDecimalPlaces">0</Property>
         <Property Name="ValueDisplay">Double</Property>
         <Property Name="UsedValueTable">RawValue</Property>
@@ -558,8 +578,83 @@
         <Property Name="SymbolConfiguration">8;16;V2X;;;sourceId;1;;;-1;;;Value;;;0</Property>
       </Object>
 
+      <!-- ── Section 3: EMS node output (read-only, set by CAPL) ── -->
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="LblStatusSep" ControlName="Lbl Status Sep">
+        <Property Name="Name">LblStatusSep</Property>
+        <Property Name="Size">256, 14</Property>
+        <Property Name="Location">8, 272</Property>
+        <Property Name="ForeColor">255, 110, 110, 130</Property>
+        <Property Name="Text">─── EMS node output  (read-only) ─────────</Property>
+      </Object>
+
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="LblAlertHdr" ControlName="Lbl Alert Hdr">
+        <Property Name="Name">LblAlertHdr</Property>
+        <Property Name="Size">68, 14</Property>
+        <Property Name="Location">8, 294</Property>
+        <Property Name="ForeColor">255, 160, 160, 160</Property>
+        <Property Name="Text">Alert State</Property>
+      </Object>
+
+      <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="TxtAlertStateVal" ControlName="Txt AlertState Val">
+        <Property Name="Name">TxtAlertStateVal</Property>
+        <Property Name="Size">40, 18</Property>
+        <Property Name="Location">80, 292</Property>
+        <Property Name="BoxBackColor">255, 28, 31, 46</Property>
+        <Property Name="BoxForeColor">255, 0, 210, 120</Property>
+        <Property Name="TextBackColor">255, 28, 31, 46</Property>
+        <Property Name="TextForeColor">255, 0, 210, 120</Property>
+        <Property Name="BoxBorderStyle">FixedSingle</Property>
+        <Property Name="DisplayLabel">Hide</Property>
+        <Property Name="BoxTextAlign">Center</Property>
+        <Property Name="ReadOnlyControl">True</Property>
+        <Property Name="TabStopActive">False</Property>
+        <Property Name="TabIndex">10</Property>
+        <Property Name="ValueDecimalPlaces">0</Property>
+        <Property Name="ValueDisplay">Double</Property>
+        <Property Name="UsedValueTable">RawValue</Property>
+        <Property Name="DescriptionSize">0, 0</Property>
+        <Property Name="SymbolConfiguration">8;16;V2X;;;alertState;2;;;-1;;;Value;;;0</Property>
+      </Object>
+
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="LblEmgTypeHdr" ControlName="Lbl EmgType Hdr">
+        <Property Name="Name">LblEmgTypeHdr</Property>
+        <Property Name="Size">70, 14</Property>
+        <Property Name="Location">134, 294</Property>
+        <Property Name="ForeColor">255, 160, 160, 160</Property>
+        <Property Name="Text">Emg Type</Property>
+      </Object>
+
+      <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="TxtEmgTypeVal" ControlName="Txt EmgType Val">
+        <Property Name="Name">TxtEmgTypeVal</Property>
+        <Property Name="Size">40, 18</Property>
+        <Property Name="Location">208, 292</Property>
+        <Property Name="BoxBackColor">255, 28, 31, 46</Property>
+        <Property Name="BoxForeColor">255, 0, 210, 120</Property>
+        <Property Name="TextBackColor">255, 28, 31, 46</Property>
+        <Property Name="TextForeColor">255, 0, 210, 120</Property>
+        <Property Name="BoxBorderStyle">FixedSingle</Property>
+        <Property Name="DisplayLabel">Hide</Property>
+        <Property Name="BoxTextAlign">Center</Property>
+        <Property Name="ReadOnlyControl">True</Property>
+        <Property Name="TabStopActive">False</Property>
+        <Property Name="TabIndex">11</Property>
+        <Property Name="ValueDecimalPlaces">0</Property>
+        <Property Name="ValueDisplay">Double</Property>
+        <Property Name="UsedValueTable">RawValue</Property>
+        <Property Name="DescriptionSize">0, 0</Property>
+        <Property Name="SymbolConfiguration">8;16;V2X;;;emergencyType;2;;;-1;;;Value;;;0</Property>
+      </Object>
+
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="LblV2XHint" ControlName="Lbl V2X Hint">
+        <Property Name="Name">LblV2XHint</Property>
+        <Property Name="Size">256, 14</Property>
+        <Property Name="Location">8, 318</Property>
+        <Property Name="ForeColor">255, 90, 90, 110</Property>
+        <Property Name="Text">0=CLEAR  1=ACTIVE  |  0=None  1=Police  2=Amb</Property>
+      </Object>
+
       <Property Name="Name">GrpV2X</Property>
-      <Property Name="Size">272, 292</Property>
+      <Property Name="Size">272, 384</Property>
       <Property Name="Location">8, 220</Property>
       <Property Name="BackColor">255, 42, 46, 62</Property>
       <Property Name="ForeColor">255, 255, 130, 130</Property>
@@ -796,10 +891,10 @@
 
       <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="LblArbiHdr" ControlName="Lbl Arbi Hdr">
         <Property Name="Name">LblArbiHdr</Property>
-        <Property Name="Size">160, 14</Property>
+        <Property Name="Size">130, 14</Property>
         <Property Name="Location">82, 195</Property>
         <Property Name="ForeColor">255, 130, 130, 130</Property>
-        <Property Name="Text">Arbitration Snapshot ID</Property>
+        <Property Name="Text">Arbi Snapshot ID</Property>
       </Object>
 
       <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="TxtArbiSnap" ControlName="Txt ArbiSnap">
@@ -823,8 +918,84 @@
         <Property Name="SymbolConfiguration">8;16;CoreState;;;arbitrationSnapshotId;2;;;-1;;;Value;;;0</Property>
       </Object>
 
+      <!-- scenarioCommandAck — echoes last acknowledged command ID -->
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="LblAckHdr" ControlName="Lbl Ack Hdr">
+        <Property Name="Name">LblAckHdr</Property>
+        <Property Name="Size">100, 14</Property>
+        <Property Name="Location">270, 195</Property>
+        <Property Name="ForeColor">255, 130, 130, 130</Property>
+        <Property Name="Text">Cmd Ack  (echo)</Property>
+      </Object>
+
+      <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="TxtScenarioAck" ControlName="Txt ScenarioAck">
+        <Property Name="Name">TxtScenarioAck</Property>
+        <Property Name="Size">60, 22</Property>
+        <Property Name="Location">270, 213</Property>
+        <Property Name="BoxBackColor">255, 28, 31, 46</Property>
+        <Property Name="BoxForeColor">255, 130, 180, 255</Property>
+        <Property Name="TextBackColor">255, 28, 31, 46</Property>
+        <Property Name="TextForeColor">255, 130, 180, 255</Property>
+        <Property Name="BoxBorderStyle">FixedSingle</Property>
+        <Property Name="DisplayLabel">Hide</Property>
+        <Property Name="BoxTextAlign">Center</Property>
+        <Property Name="ReadOnlyControl">True</Property>
+        <Property Name="TabStopActive">False</Property>
+        <Property Name="TabIndex">15</Property>
+        <Property Name="ValueDecimalPlaces">0</Property>
+        <Property Name="ValueDisplay">Double</Property>
+        <Property Name="UsedValueTable">RawValue</Property>
+        <Property Name="DescriptionSize">0, 0</Property>
+        <Property Name="SymbolConfiguration">8;16;Test;;;scenarioCommandAck;2;;;-1;;;Value;;;0</Property>
+      </Object>
+
+      <!-- ── Test override: Force fail-safe state ── -->
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="LblForceFailSafeHdr" ControlName="Lbl ForceFailSafe Hdr">
+        <Property Name="Name">LblForceFailSafeHdr</Property>
+        <Property Name="Size">440, 14</Property>
+        <Property Name="Location">8, 250</Property>
+        <Property Name="ForeColor">255, 180, 180, 180</Property>
+        <Property Name="Text">Force Fail-Safe  [Test override: 0=Normal  1=Force  — bypasses domain health]</Property>
+      </Object>
+
+      <Object Type="Vector.CANalyzer.Panels.Design.SwitchControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="SwForceFailSafe" ControlName="Sw ForceFailSafe">
+        <Property Name="Name">SwForceFailSafe</Property>
+        <Property Name="Size">205, 28</Property>
+        <Property Name="Location">8, 268</Property>
+        <Property Name="TabIndex">13</Property>
+        <Property Name="Activation">Left</Property>
+        <Property Name="Epsilon">0</Property>
+        <Property Name="Increment">1</Property>
+        <Property Name="StartValue">0</Property>
+        <Property Name="SwitchValuesVTXml">&lt;Version&gt;2&lt;/Version&gt;&lt;Count&gt;2&lt;/Count&gt;&lt;RxValue&gt;0&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;0&lt;/TxValue&gt;&lt;RxValue&gt;1&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;1&lt;/TxValue&gt;</Property>
+        <Property Name="SwitchValuesVT">1;2;0/Lower/0;1/Lower/1</Property>
+        <Property Name="SwitchValues">1;2;0;1</Property>
+        <Property Name="SwitchValuesRx">1;2;0;1</Property>
+        <Property Name="SymbolConfiguration">8;16;Test;;;forceFailSafe;1;;;-1;;;Value;;;0</Property>
+      </Object>
+
+      <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="TxtForceFailSafeVal" ControlName="Txt ForceFailSafe Val">
+        <Property Name="Name">TxtForceFailSafeVal</Property>
+        <Property Name="Size">40, 18</Property>
+        <Property Name="Location">218, 273</Property>
+        <Property Name="BoxBackColor">255, 28, 31, 46</Property>
+        <Property Name="BoxForeColor">255, 255, 120, 80</Property>
+        <Property Name="TextBackColor">255, 28, 31, 46</Property>
+        <Property Name="TextForeColor">255, 255, 120, 80</Property>
+        <Property Name="BoxBorderStyle">FixedSingle</Property>
+        <Property Name="DisplayLabel">Hide</Property>
+        <Property Name="BoxTextAlign">Center</Property>
+        <Property Name="ReadOnlyControl">True</Property>
+        <Property Name="TabStopActive">False</Property>
+        <Property Name="TabIndex">14</Property>
+        <Property Name="ValueDecimalPlaces">0</Property>
+        <Property Name="ValueDisplay">Double</Property>
+        <Property Name="UsedValueTable">RawValue</Property>
+        <Property Name="DescriptionSize">0, 0</Property>
+        <Property Name="SymbolConfiguration">8;16;Test;;;forceFailSafe;2;;;-1;;;Value;;;0</Property>
+      </Object>
+
       <Property Name="Name">GrpScenario</Property>
-      <Property Name="Size">462, 292</Property>
+      <Property Name="Size">462, 384</Property>
       <Property Name="Location">290, 220</Property>
       <Property Name="BackColor">255, 42, 46, 62</Property>
       <Property Name="ForeColor">255, 200, 180, 255</Property>
@@ -834,7 +1005,7 @@
     </Object>
 
     <Property Name="Name">Panel</Property>
-    <Property Name="Size">762, 524</Property>
+    <Property Name="Size">762, 616</Property>
     <Property Name="Location">0, 0</Property>
     <Property Name="BackColor">255, 35, 38, 52</Property>
   </Object>
