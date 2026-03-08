@@ -1,7 +1,7 @@
 # ECU 명명 및 계층 표준
 
 **Document ID**: PROJ-00E-ECU-NAMING
-**Version**: 3.0
+**Version**: 3.1
 **Date**: 2026-03-09
 **Status**: Draft (Architecture Reset Baseline)
 **Scope**: `00e -> 0301 -> 0302 -> 0303 -> 0304 -> 04 -> 05/06/07`
@@ -10,16 +10,15 @@
 
 ## 1. 목적
 
-- 양산차 프로젝트 표면에 맞는 ECU 계층을 재정의한다.
-- `표면 ECU`, `런타임 구현 모듈`, `검증 하네스`를 분리한다.
-- GUI, 상위 문서, 하위 구현 문서가 같은 레벨의 이름을 섞어 쓰지 않게 한다.
-- architecture reset 기간의 ECU naming SoT로 사용한다.
+- 양산차(OEM) 수준의 ECU 표면 구조를 문서 SoT로 고정한다.
+- `Surface ECU`, `Runtime Module`, `Validation Harness`를 분리해 혼용을 방지한다.
+- 프로젝트 핵심가치(구간/긴급차량 기반 실시간 경고)를 차량 전체 구조 안에서 일관되게 표현한다.
 
 ---
 
 ## 2. 핵심 원칙
 
-1. 상위 표면은 production-style ECU 중심으로 보인다.
+1. 상위 표면은 생산 ECU처럼 보인다.
 - 예: `ECM`, `TCM`, `VCU`, `ESP`, `EPS`, `BCM`, `IVI`, `CLUSTER`, `ADAS`, `V2X`, `CGW`
 
 2. 구현 상세는 런타임 모듈로 분리한다.
@@ -29,8 +28,8 @@
 - `VAL_*`
 - reviewer-facing vehicle architecture와 섞지 않는다.
 
-4. 이름 변경보다 계층 분리가 먼저다.
-- `logical model first, runtime mapping second, evidence update last`
+4. 이름 변경보다 계층 분리가 우선이다.
+- `surface first -> runtime mapping -> evidence sync`
 
 ---
 
@@ -38,126 +37,144 @@
 
 ### 3.1 Surface ECU Name
 
-- reviewer-facing vehicle ECU 표면 이름
+- reviewer-facing ECU 표면 이름
 - `0301/0302/0303`의 기본 owner 언어
-- GUI의 상위 표현 이름
-- 원칙:
-  - 짧고 기능 중심
-  - production ECU처럼 읽혀야 함
-  - `_TX/_RX/_MGR/_CTRL/_GW`를 직접 노출하지 않음
+- 내부 접미사(`_TX/_RX/_MGR/_CTRL/_GW`) 직접 노출 금지
 
 ### 3.2 Runtime Implementation Module
 
-- 실제 CAPL node / 내부 구현 모듈 이름
-- `04`, code trace, debugging, ownership 설명에서 유지
-- 허용 접미사:
-  - `_GW`
-  - `_CTRL`
-  - `_MGR`
-  - `_TX`
-  - `_RX`
+- 실제 CAPL node / 구현 모듈 이름
+- `04`와 코드 추적에서 유지
+- 디버깅과 실제 구현 경계 설명의 기준
 
 ### 3.3 Validation Harness
 
 - validation-only runtime
-- 생산 ECU 아키텍처와 분리 유지
-- 명명 규칙:
-  - `VAL_*`
+- `VAL_*` 규칙 유지
+- 생산 ECU 계층에 흡수 금지
 
 ---
 
 ## 4. 표기 규칙
 
-### 4.1 Surface ECU 표기 규칙
+### 4.1 Surface ECU 표기
 
-- 공식 표기는 `UPPER_SNAKE_CASE` 또는 업계 통용 약어를 사용한다.
-- 현재 승인 baseline:
-  - `CGW`
-  - `ETH_BACKBONE`
-  - `ECM`
-  - `TCM`
-  - `VCU`
-  - `ESP`
-  - `EPS`
-  - `BCM`
-  - `HVAC`
-  - `IVI`
-  - `CLUSTER`
-  - `ADAS`
-  - `V2X`
-  - `VALIDATION_HARNESS`
+- `UPPER_SNAKE_CASE` 또는 업계 통용 약어 사용
+- 기능/도메인 중심 명명, 구현 접미사 금지
 
-### 4.2 Runtime Module 표기 규칙
+### 4.2 Runtime Module 표기
 
-- 기존 Canonical runtime 이름은 transition baseline으로 유지한다.
-- runtime node는 traceability를 위해 당분간 유지 가능하다.
-- surface naming을 위해 runtime node를 즉시 rename할 필요는 없다.
+- 기존 canonical runtime 이름 유지
+- 구조 리셋 기간에는 surface rename 우선, runtime rename 후행
 
-### 4.3 Validation 표기 규칙
+### 4.3 Validation 표기
 
-- validation-only 이름은 반드시 `VAL_*` prefix를 사용한다.
-- 제품 ECU 명명층에 흡수하지 않는다.
+- validation-only 노드는 `VAL_*` prefix 고정
+- 문서에서 production ECU와 별도 섹션으로 표기
 
 ---
 
 ## 5. 금지 규칙
 
-- 상위 문서에서 `_TX/_RX/_MGR/_CTRL/_GW`를 surface ECU처럼 직접 사용하는 것 금지
-- GUI rename을 문서 baseline보다 먼저 수행하는 것 금지
-- variable/message를 cosmetic consistency만 위해 무리하게 rename하는 것 금지
-- validation harness를 production ECU처럼 설명하는 것 금지
+- 상위 문서에서 `_TX/_RX/_MGR/_CTRL/_GW`를 surface ECU처럼 직접 사용 금지
+- 문서 baseline 없이 GUI/runtime rename 선행 금지
+- cosmetic consistency만을 위한 대량 rename 금지
+- validation harness를 production ECU처럼 설명 금지
 
 ---
 
-## 6. Reset Surface ECU Inventory (Approved Baseline)
+## 6. Active Surface ECU Naming Table (Primary-56 + Validation)
 
-| Surface ECU | Layer | Runtime Mapping | Status | Notes |
+| Surface ECU | Category | Runtime Anchor | Status | Notes |
 |---|---|---|---|---|
-| `CGW` | Infrastructure | `CHS_GW`, `INFOTAINMENT_GW`, `DOMAIN_ROUTER`, `DOMAIN_BOUNDARY_MGR` | Active | central gateway / boundary surface |
-| `ETH_BACKBONE` | Infrastructure | `ETH_SW` | Active | backbone monitor / transport health |
-| `ECM` | Production | `ENG_CTRL` | Active | engine / powertrain state |
-| `TCM` | Production | `TCM` | Active | transmission control |
-| `VCU` | Production | `ACCEL_CTRL` | Active by runtime rename | vehicle longitudinal source surface |
-| `ESP` | Production | `BRK_CTRL` | Active by runtime rename | brake / stability surface |
-| `EPS` | Production | `STEER_CTRL` | Active by runtime rename | steering surface |
-| `BCM` | Production | `BODY_GW`, `AMBIENT_CTRL`, `HAZARD_CTRL`, `WINDOW_CTRL`, `DRV_STATE_MGR` | Active by folded runtime | body / ambient / comfort surface |
-| `HVAC` | Production | placeholder only | Placeholder | breadth-only surface for later optional activation |
-| `IVI` | Production | `IVI_GW`, `NAV_CTX_MGR` | Active by folded runtime | infotainment / navigation service surface |
-| `CLUSTER` | Production | `CLU_HMI_CTRL`, `CLU_BASE_CTRL` | Active by folded runtime | cluster display / warning surface |
-| `ADAS` | Production | `ADAS_WARN_CTRL`, `WARN_ARB_MGR` | Active by folded runtime | risk evaluation and warning arbitration |
-| `V2X` | Production | `EMS_POLICE_TX`, `EMS_AMB_TX`, `EMS_ALERT_RX` | Active by folded runtime | emergency/V2X path surface |
-| `VALIDATION_HARNESS` | Validation | `VAL_SCENARIO_CTRL`, `VAL_BASELINE_CTRL` | Active | non-production harness |
+| `CGW` | Infrastructure | `CHS_GW`, `INFOTAINMENT_GW`, `DOMAIN_ROUTER` | Anchored | central gateway surface |
+| `ETH_BACKBONE` | Infrastructure | `ETH_SW` | Anchored | backbone monitor/transport health |
+| `DCM` | Infrastructure | - | Placeholder | diagnostics breadth placeholder |
+| `IBOX` | Infrastructure | - | Placeholder | telematics breadth placeholder |
+| `SECURITY_GATEWAY` | Infrastructure | `DOMAIN_BOUNDARY_MGR` | Anchored | boundary/security runtime owner |
+| `ECM` | Powertrain | `ENG_CTRL` | Anchored | engine runtime anchor |
+| `TCM` | Powertrain | `TCM` | Anchored | transmission runtime anchor |
+| `VCU` | Powertrain | `ACCEL_CTRL` | Anchored | surface rename first, runtime split 유지 |
+| `AWD_4WD` | Powertrain | - | Placeholder | breadth placeholder |
+| `BAT_BMS` | Powertrain | - | Placeholder | breadth placeholder |
+| `FPCM` | Powertrain | - | Placeholder | breadth placeholder |
+| `LVR` | Powertrain | - | Placeholder | breadth placeholder |
+| `ISG` | Powertrain | - | Placeholder | breadth placeholder |
+| `EOP` | Powertrain | - | Placeholder | breadth placeholder |
+| `EWP` | Powertrain | - | Placeholder | breadth placeholder |
+| `ESP` | Chassis/Safety | `BRK_CTRL` | Anchored | brake/stability surface |
+| `EPS` | Chassis/Safety | `STEER_CTRL` | Anchored | steering surface |
+| `ABS` | Chassis/Safety | - | Placeholder | folded into ESP breadth |
+| `EPB` | Chassis/Safety | - | Placeholder | breadth placeholder |
+| `TPMS` | Chassis/Safety | - | Placeholder | breadth placeholder |
+| `SAS` | Chassis/Safety | - | Placeholder | breadth placeholder |
+| `ECS` | Chassis/Safety | - | Placeholder | breadth placeholder |
+| `ACU` | Chassis/Safety | - | Placeholder | breadth placeholder |
+| `ODS` | Chassis/Safety | - | Placeholder | breadth placeholder |
+| `VSM` | Chassis/Safety | - | Placeholder | breadth placeholder |
+| `EHB` | Chassis/Safety | - | Placeholder | breadth placeholder |
+| `CDC` | Chassis/Safety | - | Placeholder | breadth placeholder |
+| `BCM` | Body/Comfort | `BODY_GW`, `AMBIENT_CTRL`, `HAZARD_CTRL`, `WINDOW_CTRL`, `DRV_STATE_MGR` | Anchored | body/comfort folded surface |
+| `HVAC` | Body/Comfort | - | Placeholder | breadth placeholder |
+| `SMK` | Body/Comfort | - | Placeholder | breadth placeholder |
+| `AFLS` | Body/Comfort | - | Placeholder | breadth placeholder |
+| `LIGHTING_ECU` | Body/Comfort | - | Placeholder | breadth placeholder |
+| `WIPER_MODULE` | Body/Comfort | - | Placeholder | breadth placeholder |
+| `SUNROOF_MODULE` | Body/Comfort | - | Placeholder | breadth placeholder |
+| `DOOR_FL` | Body/Comfort | - | Placeholder | breadth placeholder |
+| `DOOR_FR` | Body/Comfort | - | Placeholder | breadth placeholder |
+| `TAILGATE_MODULE` | Body/Comfort | - | Placeholder | breadth placeholder |
+| `IVI` | IVI/HMI | `IVI_GW`, `NAV_CTX_MGR` | Anchored | IVI surface owner |
+| `CLUSTER` | IVI/HMI | `CLU_HMI_CTRL`, `CLU_BASE_CTRL` | Anchored | cluster surface owner |
+| `HUD` | IVI/HMI | - | Placeholder | breadth placeholder |
+| `TMU` | IVI/HMI | - | Placeholder | deep-next placeholder |
+| `AMP` | IVI/HMI | - | Placeholder | breadth placeholder |
+| `PGS` | IVI/HMI | - | Placeholder | breadth placeholder |
+| `NAV_MODULE` | IVI/HMI | - | Placeholder | represented inside IVI for now |
+| `DIGITAL_KEY` | IVI/HMI | - | Placeholder | breadth placeholder |
+| `ADAS` | ADAS/V2X | `ADAS_WARN_CTRL`, `WARN_ARB_MGR` | Anchored | risk/arbitration runtime split |
+| `V2X` | ADAS/V2X | `EMS_POLICE_TX`, `EMS_AMB_TX`, `EMS_ALERT_RX` | Anchored | emergency/V2X runtime split |
+| `SCC` | ADAS/V2X | - | Placeholder | next deep candidate |
+| `LDWS_LKAS` | ADAS/V2X | - | Placeholder | breadth placeholder |
+| `FCA` | ADAS/V2X | - | Placeholder | breadth placeholder |
+| `BCW` | ADAS/V2X | - | Placeholder | breadth placeholder |
+| `LCA` | ADAS/V2X | - | Placeholder | breadth placeholder |
+| `SPAS` | ADAS/V2X | - | Placeholder | breadth placeholder |
+| `RSPA` | ADAS/V2X | - | Placeholder | breadth placeholder |
+| `AVM` | ADAS/V2X | - | Placeholder | breadth placeholder |
+| `FCAM` | ADAS/V2X | - | Placeholder | breadth placeholder |
+| `VALIDATION_HARNESS` | Validation | `VAL_SCENARIO_CTRL`, `VAL_BASELINE_CTRL` | Active | outside primary production surface |
 
 ---
 
-## 7. Runtime Transition Baseline
+## 7. Runtime-26 Assignment Baseline
 
-| Current Runtime Node | Target Surface ECU | Runtime Policy | Notes |
+| Active Runtime Node | Target Surface ECU | Runtime Policy | Notes |
 |---|---|---|---|
-| `ENG_CTRL` | `ECM` | Keep split | already ECU-like |
-| `TCM` | `TCM` | Keep split | already ECU-like |
-| `ACCEL_CTRL` | `VCU` | Keep split for now | surface rename first, merge later optional |
-| `BRK_CTRL` | `ESP` | Keep split | good standalone brake/stability runtime |
-| `STEER_CTRL` | `EPS` | Keep split | good standalone steering runtime |
-| `CHS_GW` | `CGW` | Keep split | infrastructure ingress gateway |
-| `INFOTAINMENT_GW` | `CGW` | Keep split | infrastructure ingress gateway |
-| `DOMAIN_ROUTER` | `CGW` | Keep split | routing / integration |
-| `DOMAIN_BOUNDARY_MGR` | `CGW` | Keep split | path health / fail-safe |
+| `ENG_CTRL` | `ECM` | Keep split | production-like runtime |
+| `TCM` | `TCM` | Keep split | production-like runtime |
+| `ACCEL_CTRL` | `VCU` | Keep split | surface rename first |
+| `BRK_CTRL` | `ESP` | Keep split | brake/stability nucleus |
+| `STEER_CTRL` | `EPS` | Keep split | steering nucleus |
+| `CHS_GW` | `CGW` | Keep split | chassis ingress gateway |
+| `INFOTAINMENT_GW` | `CGW` | Keep split | IVI ingress gateway |
+| `DOMAIN_ROUTER` | `CGW` | Keep split | cross-domain routing |
+| `DOMAIN_BOUNDARY_MGR` | `SECURITY_GATEWAY` | Keep split | boundary/security role |
 | `ETH_SW` | `ETH_BACKBONE` | Keep split | backbone health monitor |
-| `BODY_GW` | `BCM` | Keep split | internal BCM frame producer |
-| `AMBIENT_CTRL` | `BCM` | Keep split | internal BCM output owner |
-| `HAZARD_CTRL` | `BCM` | Merge candidate | too small as standalone runtime surface |
-| `WINDOW_CTRL` | `BCM` | Merge candidate | body comfort subfunction |
-| `DRV_STATE_MGR` | `BCM` | Merge candidate | currently placeholder |
-| `IVI_GW` | `IVI` | Keep split | internal IVI frame producer |
-| `NAV_CTX_MGR` | `IVI` | Merge candidate | pure context logic |
-| `CLU_HMI_CTRL` | `CLUSTER` | Keep split | main cluster state owner |
-| `CLU_BASE_CTRL` | `CLUSTER` | Merge candidate | cluster subfunction |
-| `ADAS_WARN_CTRL` | `ADAS` | Keep split | core logic with debug value |
-| `WARN_ARB_MGR` | `ADAS` | Keep split | arbitration / fail-safe split valuable |
-| `EMS_POLICE_TX` | `V2X` | Merge candidate | internal producer path |
-| `EMS_AMB_TX` | `V2X` | Merge candidate | internal producer path |
-| `EMS_ALERT_RX` | `V2X` | Keep split (merge base) | watchdog / timeout / priority core |
+| `BODY_GW` | `BCM` | Keep split | BCM internal producer |
+| `AMBIENT_CTRL` | `BCM` | Keep split | BCM ambient owner |
+| `HAZARD_CTRL` | `BCM` | Merge candidate | absorb into BCM later |
+| `WINDOW_CTRL` | `BCM` | Merge candidate | absorb into BCM later |
+| `DRV_STATE_MGR` | `BCM` | Merge candidate | absorb into BCM later |
+| `IVI_GW` | `IVI` | Keep split | IVI frame producer |
+| `NAV_CTX_MGR` | `IVI` | Merge candidate | absorb into IVI later |
+| `CLU_HMI_CTRL` | `CLUSTER` | Keep split | cluster primary owner |
+| `CLU_BASE_CTRL` | `CLUSTER` | Merge candidate | absorb into CLUSTER later |
+| `ADAS_WARN_CTRL` | `ADAS` | Keep split | risk/trigger stage |
+| `WARN_ARB_MGR` | `ADAS` | Keep split | alert priority stage |
+| `EMS_POLICE_TX` | `V2X` | Merge candidate | fold into V2X producer stack |
+| `EMS_AMB_TX` | `V2X` | Merge candidate | fold into V2X producer stack |
+| `EMS_ALERT_RX` | `V2X` | Keep split / merge base | watchdog/timeout nucleus |
 | `VAL_SCENARIO_CTRL` | `VALIDATION_HARNESS` | Keep split | validation only |
 | `VAL_BASELINE_CTRL` | `VALIDATION_HARNESS` | Keep split | validation only |
 
@@ -167,19 +184,17 @@
 
 - 전파 순서:
   - `00e -> 0301 -> 0302 -> 0303 -> 0304 -> 04 -> 05/06/07 -> GUI`
-- 상위 문서(`0301/0302/0303`)는 surface ECU 언어를 먼저 사용한다.
-- `0304`는 변수 안정성을 유지하고 `Var -> Runtime -> Surface` 매핑을 추가한다.
-- `04`는 runtime module reality를 유지한다.
-- 세부 규칙은 다음 문서를 따른다.
-  - `tmp/change-orders/ECU_RESET_DOC_PROPAGATION_RULES_2026-03-09.md`
+- 상위 문서(`0301/0302/0303`)는 surface ECU 언어를 우선 사용한다.
+- `0304`는 `Var -> Runtime -> Surface` 매핑을 유지한다.
+- `04`는 runtime reality를 유지하고 merge candidate를 명시한다.
 
 ---
 
 ## 9. 적용 경계
 
-- `01`은 ECU naming 세부 구현을 설명하지 않는다.
-- `0301/0302/0303`은 reviewer-facing surface를 우선한다.
-- `04`는 implementation module을 유지한다.
+- `01`은 ECU naming 구현 상세를 다루지 않는다.
+- `0301/0302/0303`은 reviewer-facing surface 중심으로 작성한다.
+- `04`는 runtime module 현실을 반영한다.
 - `05/06/07`은 test title은 surface 중심, log/evidence는 runtime 이름 허용.
 
 ---
@@ -188,6 +203,7 @@
 
 | 버전 | 날짜 | 변경 사항 |
 |---|---|---|
-| 3.0 | 2026-03-09 | architecture reset baseline으로 전면 재작성. `surface ECU / runtime module / validation harness` 3층 구조와 target surface inventory 확정. |
-| 2.9 | 2026-03-08 | Architecture reset 승인 반영: Status를 `Draft (Architecture Reset In Progress)`로 전환하고, 기존 Canonical Matrix를 transition baseline으로 재정의. logical ECU surface / implementation module / validation harness 분리 원칙 추가. |
-| 2.8 | 2026-03-08 | 멘토 D11 해석 반영: `_TX/_RX` 사용 경계를 상위 체인/구현 계층으로 분리 명시. 팀 내부 개발 편의용 `3-글자 Quick Tag` 섹션(보조 식별자)을 추가. |
+| 3.1 | 2026-03-09 | OEM 확장 반영: `Primary-56 + Validation` 표면 ECU 명명표와 `Runtime-26` 매핑을 SoT 기준으로 재작성. |
+| 3.0 | 2026-03-09 | architecture reset baseline으로 전면 재작성. `surface ECU / runtime module / validation harness` 3층 구조 확정. |
+| 2.9 | 2026-03-08 | Architecture reset 승인 반영: status를 draft 전환, logical ECU surface / implementation module / validation harness 분리 원칙 추가. |
+
