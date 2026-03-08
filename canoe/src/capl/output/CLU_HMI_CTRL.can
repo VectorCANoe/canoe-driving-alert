@@ -8,6 +8,11 @@ variables
   msTimer tDuplicateGuard;
   int gLastDisplayedCode;
   dword gLastDisplayMs;
+  int gBaseClusterSpeed;
+  int gBaseClusterGear;
+  int gBaseClusterStatus;
+  int gLastBaseSyncState;
+  int gLastBaseSyncError;
   int gThemeMode;
   int gPopupType;
   int gPopupPriority;
@@ -178,6 +183,11 @@ on start
 
   gLastDisplayedCode = 0;
   gLastDisplayMs = 0;
+  gBaseClusterSpeed = 0;
+  gBaseClusterGear = 0;
+  gBaseClusterStatus = 0;
+  gLastBaseSyncState = -1;
+  gLastBaseSyncError = -1;
   gThemeMode = 0;
   gPopupType = 0;
   gPopupPriority = 0;
@@ -213,6 +223,13 @@ on start
   @CoreState::alertHistoryCount = 0;
   @Test::historyQueryCode = 0;
   write("[CLU_HMI_CTRL] start");
+}
+
+on message frmClusterBaseStateMsg
+{
+  gBaseClusterSpeed = clampRange((int)this.ClusterSpeed, 0, 255);
+  gBaseClusterGear = clampRange((int)this.ClusterGear, 0, 15);
+  gBaseClusterStatus = clampRange((int)this.ClusterStatus, 0, 15);
 }
 
 on message frmClusterThemeMsg
@@ -257,6 +274,15 @@ on message frmClusterSyncStateMsg
   gClusterSyncSeq = clampRange((int)this.ClusterSyncAge, 0, 255);
   @CoreState::clusterSyncState = gClusterSyncState;
   @CoreState::clusterSyncSeq = gClusterSyncSeq;
+  if (gClusterSyncState != gLastBaseSyncState ||
+      (int)this.ClusterSyncError != gLastBaseSyncError)
+  {
+    write("[CLU_HMI_CTRL] base sync state=%d err=%d age=%d spd=%d gear=%d status=%d",
+          gClusterSyncState, (int)this.ClusterSyncError, gClusterSyncSeq,
+          gBaseClusterSpeed, gBaseClusterGear, gBaseClusterStatus);
+    gLastBaseSyncState = gClusterSyncState;
+    gLastBaseSyncError = (int)this.ClusterSyncError;
+  }
 }
 
 on message frmClusterNotifMsg

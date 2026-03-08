@@ -9,10 +9,13 @@ variables
   msTimer tWatchdog;
   msTimer tTimeoutClearPulse;
   msTimer tEventTrace100;
+  msTimer tDispatchTx100;
   int gActiveEmergencyType;
   int gActiveEmergencyDirection;
   int gActiveEta;
   int gActiveSourceId;
+  int gPrevPoliceDispatch;
+  int gPrevAmbDispatch;
   dword gActiveLastRxMs;
   int gLastEmergencyContext;
   int gLastTimeoutClear;
@@ -135,10 +138,24 @@ void recordAlertEvent()
   }
 }
 
+void emitEmergencyBroadcast(int vehicleType, int status, int sourceId, int etaSec, int direction)
+{
+  message frmEmergencyBroadcastMsg mBcast;
+
+  mBcast.VehicleType = clampRange(vehicleType, 0, 2);
+  mBcast.Status = (status == 1) ? 1 : 0;
+  mBcast.SourceId = clampRange(sourceId, 0, 255);
+  mBcast.EtaSeconds = clampRange(etaSec, 0, 255);
+  mBcast.Direction = clampRange(direction, 0, 3);
+  output(mBcast);
+}
+
 on start
 {
   clearEmergencyState();
   gActiveLastRxMs = 0;
+  gPrevPoliceDispatch = 0;
+  gPrevAmbDispatch = 0;
   @CoreState::lastEmergencyRxMs = 0;
   gLastEmergencyContext = -1;
   gLastTimeoutClear = -1;
@@ -150,6 +167,7 @@ on start
   setTimer(tRxCycle, 10);
   setTimer(tWatchdog, 1000);
   setTimer(tEventTrace100, 100);
+  setTimer(tDispatchTx100, 100);
   write("[EMS_ALERT_RX] start");
 }
 
@@ -303,4 +321,57 @@ on timer tEventTrace100
 {
   recordAlertEvent();
   setTimer(tEventTrace100, 100);
+}
+
+on timer tDispatchTx100
+{
+  int policeDispatch;
+  int ambDispatch;
+
+  policeDispatch = clampRange((int)@V2X::policeDispatch, 0, 1);
+  ambDispatch = clampRange((int)@V2X::ambulanceDispatch, 0, 1);
+
+  if (policeDispatch == 1 && gPrevPoliceDispatch == 0)
+  {
+    @V2X::emergencyType = 1;
+    @V2X::alertState = 1;
+    @V2X::sourceId = 1;
+    @V2X::eta = 30;
+    @V2X::emergencyDirection = 0;
+    emitEmergencyBroadcast(1, 1, 1, 30, 0);
+    write("[EMS_ALERT_RX] POLICE ACTIVE type=1 src=1 eta=30");
+  }
+  else if (policeDispatch == 0 && gPrevPoliceDispatch == 1)
+  {
+    if ((int)@V2X::sourceId == 1)
+    {
+      @V2X::alertState = 0;
+      emitEmergencyBroadcast(1, 0, 1, 0, 0);
+      write("[EMS_ALERT_RX] POLICE CLEAR");
+    }
+  }
+
+  if (ambDispatch == 1 && gPrevAmbDispatch == 0)
+  {
+    @V2X::emergencyType = 2;
+    @V2X::alertState = 1;
+    @V2X::sourceId = 2;
+    @V2X::eta = 20;
+    @V2X::emergencyDirection = 0;
+    emitEmergencyBroadcast(2, 1, 2, 20, 0);
+    write("[EMS_ALERT_RX] AMB ACTIVE type=2 src=2 eta=20");
+  }
+  else if (ambDispatch == 0 && gPrevAmbDispatch == 1)
+  {
+    if ((int)@V2X::sourceId == 2)
+    {
+      @V2X::alertState = 0;
+      emitEmergencyBroadcast(2, 0, 2, 0, 0);
+      write("[EMS_ALERT_RX] AMB CLEAR");
+    }
+  }
+
+  gPrevPoliceDispatch = policeDispatch;
+  gPrevAmbDispatch = ambDispatch;
+  setTimer(tDispatchTx100, 100);
 }

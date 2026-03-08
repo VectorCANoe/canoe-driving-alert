@@ -1,70 +1,12 @@
 includes
 {
-  #include "..\\common\\CAPL_COMMON.cin"
 }
 
 variables
 {
 }
 
-void publishNavContext()
-{
-  int roadZone;
-  int navDirection;
-  int speedLimit;
-  int baseZoneContext;
-
-  roadZone = clampRange((int)@Infotainment::roadZone, 0, 3);
-  navDirection = clampRange((int)@Infotainment::navDirection, 0, 3);
-  speedLimit = clampRange((int)@Infotainment::speedLimit, 0, 255);
-
-  if (speedLimit == 0)
-  {
-    speedLimit = 30;
-  }
-
-  baseZoneContext = 0;
-  if (roadZone == 1)
-  {
-    baseZoneContext = 1;
-  }
-  else if (roadZone == 2)
-  {
-    baseZoneContext = 2;
-  }
-  else if (roadZone == 3)
-  {
-    if (navDirection == 2)
-    {
-      baseZoneContext = 4;
-    }
-    else
-    {
-      baseZoneContext = 3;
-    }
-  }
-
-  @Core::baseZoneContext = baseZoneContext;
-  @Core::speedLimitNorm = speedLimit;
-}
-
 on start
 {
-  publishNavContext();
-  write("[NAV_CTX_MGR] start");
-}
-
-on sysvar Infotainment::roadZone
-{
-  publishNavContext();
-}
-
-on sysvar Infotainment::navDirection
-{
-  publishNavContext();
-}
-
-on sysvar Infotainment::speedLimit
-{
-  publishNavContext();
+  write("[NAV_CTX_MGR] absorbed into IVI runtime; wrapper only");
 }
