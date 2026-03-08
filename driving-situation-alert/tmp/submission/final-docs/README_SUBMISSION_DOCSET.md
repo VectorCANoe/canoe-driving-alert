@@ -2,7 +2,6 @@
 
 - 활성 경로: `driving-situation-alert/tmp/submission/final-docs/`
 - 기준 문서: `00_FINAL_STRUCTURE_LOCK.md`
-- 레거시 경로: `tmp/submission/archive/docs_snapshot` (조회용, 신규 편집 금지)
 
 ## 1) 제출 본편 (고정)
 

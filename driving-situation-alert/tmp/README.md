@@ -1,11 +1,11 @@
-# tmp Workspace Guide (Active / Legacy)
+# tmp Workspace Guide
 
 이 폴더는 문서팀 작업 산출물의 운영 공간이다.
 
 핵심 원칙:
 - SoT(원문)는 루트 `00~07`에서만 관리한다.
 - `tmp`는 운영/협업/제출 편집본 용도다.
-- 삭제보다 `활성/레거시/아카이브` 분리로 관리한다.
+- 활성 문서만 유지하고 불필요한 스냅샷은 삭제한다.
 - 사람용 문서 언어는 `tmp/00_문서_언어_운영원칙.md`를 따른다.
 
 ## 1) Active (지금 보는 경로)
@@ -19,7 +19,6 @@
 ## 2) Submission 운영 규칙
 
 - 편집은 `tmp/submission/final-docs/`에서만 수행
-- `tmp/submission/archive/docs_snapshot/`, `tmp/submission/archive/midterm_legacy_docs/`는 조회용 스냅샷
 - 제출 패키징 기준은 `tmp/submission/README.md`를 따른다
 
 ## 3) 폴더 역할
@@ -33,7 +32,6 @@
 - `quality`: 템플릿/품질 점검 기록(운영 참고)
 - `work-notes`: 내부 메모 인덱스(활성은 `id`만 유지)
 - `work-notes/id`: CAN ID 설계 초안/매핑 템플릿
-- `work-notes/archive`: 종료된 내부 메모 보관
 - `archive`: 과거 산출물 보관
 
 ## 4) 금지/주의
