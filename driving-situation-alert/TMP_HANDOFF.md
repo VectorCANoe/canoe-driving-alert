@@ -147,3 +147,11 @@
   - traceability chain을 끊는 ad-hoc 약어 도입
 - 원칙:
   - `surface first, runtime second, evidence last`
+
+### 10.5 Tool Execution Discipline
+- 파일 `쓰기/복사/삭제`와 그 직후 `읽기 검증`은 병렬로 돌리지 않는다.
+- 수정 작업은 `write -> immediate read/hash/diff verification` 순서로 순차 처리한다.
+- 병렬 실행은 `read-only` 작업에만 사용한다.
+  - 예: `search`, `git status/log`, `gate`, `read-only diff`
+- 긴 중첩 PowerShell 래핑보다 `apply_patch` 또는 단일 직접 명령을 우선한다.
+- 문서/코드 반영 후에는 실제 파일 기준으로 `git diff` 또는 핵심 문자열 검증을 반드시 남긴다.
