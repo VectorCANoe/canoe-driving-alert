@@ -1,80 +1,80 @@
 # 00 마스터 프로젝트 프레임워크
 
 **Document ID**: PROJ-00-MASTER-FRAMEWORK  
-**Version**: 1.0  
-**Date**: 2026-03-07  
+**Version**: 1.1  
+**Date**: 2026-03-08  
 **Status**: Draft (Submission)  
 
-## 작성 원칙
+## 0) 한눈에 보기
 
-- 처음 읽는 심사위원이 프로젝트 목적과 전체 흐름을 빠르게 이해할 수 있도록 구성한다.
-- 세부 구현 메모보다 문제 정의, 설계 의도, 검증 접근을 우선 제시한다.
-- 기술 식별자는 유지하되 설명 문장은 간결한 한글로 작성한다.
+| 항목 | 내용 |
+|---|---|
+| 프로젝트 목적 | 주행 상황 위험을 운전자에게 즉시 인지 가능한 형태로 경보한다. |
+| 구현 범위 | 구간 경보 + 긴급차량 경보 + 경보 우선순위 + 출력 동기화 |
+| 검증 범위 | CANoe SIL, CAN + Ethernet(UDP) |
+| 제출 전략 | SoT 원문 유지, 제출본은 핵심 흐름 중심으로 단순화 |
 
----
+## 1) 문제와 목표
 
-## 1) 프로젝트 목표 및 범위
+- 문제: 주행 중 위험 정보가 분산되면 운전자가 경고를 늦게 인지할 수 있다.
+- 목표: 입력(차량/내비/긴급차량) -> 판정(경보 우선순위) -> 출력(클러스터/앰비언트) 체인을 안정적으로 구현하고 검증한다.
 
-### 목표
+## 2) 범위 정의
 
-- 주행 상황(구간 + 긴급차량 접근)에 따라 경고를 실시간 판정/표시하는 통합 경보 체인을 구현/검증한다.
+### In Scope
+- 내비 구간 컨텍스트 기반 경보
+- 긴급차량 접근 경보(경찰/구급)
+- 경보 우선순위 판정과 출력 동기화
+- 요구사항 기반 Pass/Fail 검증
 
-### Scope In
+### Out Scope
+- OTA/UDS 구독, 물류 OTA, 군집주행 시나리오
+- 실차 계측/HIL/무선 스택 통합
+- 본 사이클 외 확장 기능의 양산 적용
 
-- 내비게이션 구간 인식 컨텍스트(roadZone/navDirection/zoneDistance/speedLimit)
-- 긴급차량 접근 경보(경찰/구급) 및 경보 우선순위 판정
-- 앰비언트/클러스터 출력 동기화
-- CANoe SIL 기반 검증(Req-Func-Flow-Comm-Var-Test 체인)
+## 3) 시스템 구조와 네이밍 원칙
 
-### Scope Out
+### 시스템 구조(요약)
+- 입력 계층: `CHS_GW`, `INFOTAINMENT_GW`, `EMS_ALERT`
+- 판정 계층: `ADAS_WARN_CTRL`, `NAV_CTX_MGR`, `WARN_ARB_MGR`
+- 출력 계층: `BODY_GW`, `IVI_GW`, `AMBIENT_CTRL`, `CLU_HMI_CTRL`
+- 백본/경계: `ETH_SW`, `DOMAIN_BOUNDARY_MGR`, `DOMAIN_ROUTER`
 
-- OTA/UDS 구독, 군집(Lead/Follow) 위협 대응, 물류 임무전환 OTA
-- 위험운전 점수 기반 단계 경고 등 레거시 위험점수 기능
-- 실차/외부 HIL/무선 스택 연동
+### 표면 네이밍 원칙
+- 제출 문서 표면은 논리명(Canonical ECU Name)으로 고정한다.
+- 구현 내부 모듈명(`*_TX`, `*_RX`)은 코드/하위 매핑에서만 사용한다.
+- 문서 설명은 약어 남용보다 읽기 우선으로 작성한다.
 
-## 2) 통합 아키텍처 및 핵심 흐름
+## 4) 대표 시나리오 2개
 
-### 고정 아키텍처
+### 시나리오 A: 정상 경보 체인
+- 상황: 스쿨존 과속
+- 입력: 차량 속도 + 구간 정보
+- 판정: `WARN_ARB_MGR`가 경보 레벨 결정
+- 출력: 클러스터 문구 + 앰비언트 패턴 동시 반영
+- 판정 기준: 지정 시간 내 경보 표시, 정책표와 일치
 
-- `ETH_SW + CHS_GW/INFOTAINMENT_GW/BODY_GW/IVI_GW + 중앙 경고코어(ADAS_WARN_CTRL/NAV_CTX_MGR/EMS_ALERT/WARN_ARB_MGR)`
+### 시나리오 B: Fail-safe/경계 체인
+- 상황: 도메인 경계 통신 저하 또는 입력 stale
+- 입력: health/freshness 상태
+- 판정: 강등/대체 출력 규칙 적용
+- 출력: 최소 경보 유지 + 복구 시 정상 전환
+- 판정 기준: 타임아웃/복구 규칙 준수, 경보 연속성 유지
 
-### Red Thread (핵심 경로)
+## 5) 검증 전략(내부 + 외부 병행)
 
-1. Navigation context 입력  
-   `INFOTAINMENT_GW -> ETH_SW -> NAV_CTX_MGR -> WARN_ARB_MGR`
-2. Vehicle state 입력  
-   `CHS_GW -> ETH_SW -> ADAS_WARN_CTRL -> WARN_ARB_MGR`
-3. 긴급차량 이벤트  
-   `EMS_ALERT(TX/RX) -> ETH_SW -> WARN_ARB_MGR`
-4. 최종 출력  
-   `WARN_ARB_MGR -> BODY_GW/IVI_GW -> AMBIENT_CTRL/CLU_HMI_CTRL`
+- 내부 검증: CANoe 공식 Test Unit PoC로 도구 기반 테스트 수행
+- 외부 검증: Python CLI/TUI로 배치 실행, 증빙 수집, 리포트 패키징
+- 공통 기준: 동일 시나리오 계약과 Pass/Fail 기준을 공유한다.
 
-## 3) V-Model 적용 규칙
+## 6) 현재 완성도와 다음 단계
 
-### 정방향
+- 현재: 문서/코드/검증 체인은 동기화되어 있으며 제출 구조 단순화 완료
+- 대기: 실측 기반 최종 증빙 항목 채움(`M40-18`, `M41-10`, `M41-11`)
+- 다음: Ethernet 라이선스 확보 후 전환 케이스를 동일 기준으로 재검증
 
-`01 -> 03/0301 -> 0302/0303/0304 -> 04 -> 05/06/07`
+## 7) 연계 문서
 
-### 역방향
-
-`Test 실패 -> Code/Var/Comm/Flow/Func/Req`로 즉시 역추적
-
-### 추적 체인 고정 규칙
-
-- `Req -> Func -> Flow -> Comm -> Var -> Code Ref -> UT -> IT -> ST`
-- 임의 ID 샘플 감사 시 체인이 끊기면 불합격
-
-## 4) 검증 환경 및 제약
-
-- Tool: CANoe SIL
-- Network: CAN + Ethernet(UDP)
-- 실측 전 단계에서는 확장 요구를 `Planned/Ready`로 관리
-- Ethernet 라이선스 제약 구간은 CAN 대체 백본(stub)로 동일 체인 검증 후, 라이선스 확보 시 동일 케이스 재검증
-
-## 5) 제출 판단 기준
-
-- 01~07 문서에서 핵심 시나리오/추적 체인 일관성 확보
-- 문서 분량보다 추적 연결성과 검증 가능성 중심으로 평가 대응
-- 00 정책 상세는 `00_MASTER_Governance_Summary.md`에서 통합 참조
-
----
+- 범위/정책 SoT: `00b_Project_Scope.md`, `00_MASTER_Governance_Summary.md`
+- 설계/구현/검증 체인: `01~07`
+- 제출본 경로: `tmp/submission/final-docs/`
