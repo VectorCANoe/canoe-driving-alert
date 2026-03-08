@@ -59,26 +59,24 @@ def no_visible_command() -> str:
 
 def recommended_next(command: PaletteCommand) -> str:
     if command.command_id == "verify.all_gates":
-        return "PASS면 바로 Scenario run으로 이동하십시오."
+        return "PASS? ?? Scenario run?? ??????."
     if command.command_id == "operate.scenario_trigger":
-        return "ack를 받았으면 바로 Verify quick으로 이동하십시오."
+        return "ack? ???? ?? Verify quick?? ??????."
     if command.command_id == "verify.quick_verify":
-        return "PASS면 생성된 증빙을 05/06/07에 연결하십시오."
-    if command.title == "Measurement status":
-        return "stopped면 먼저 Measurement start를 실행하십시오."
-    if command.title == "Measurement start":
-        return "start 후 Scenario run 또는 Precheck batch로 진행하십시오."
-    if command.title == "Scenario trigger":
-        return "시나리오 ack 후 Run readiness status 또는 Quick verify로 진행하십시오."
-    if command.title == "Precheck batch":
-        return "PASS면 캡처/증빙 수집 단계로 이동하십시오."
-    if command.title == "Quick verify":
-        return "PASS면 결과를 05/06/07 증빙에 연결하십시오."
-    if command.title == "Environment doctor":
-        return "모든 검사가 정상이면 measurement 또는 scenario 단계로 진행하십시오."
-    if command.title == "Portable bundle":
-        return "운영 흐름이 안정된 뒤 패키징 단계로 이동하십시오."
-    return "실행 후 아래 로그를 확인하고 다음 검증 단계로 이동하십시오."
+        return "PASS? ??? ??? 05/06/07? ??????."
+    if command.command_id == "operate.measure_status":
+        return "stopped? ?? ?? ??? ??????."
+    if command.command_id == "operate.measure_start":
+        return "start ? Scenario run ?? ?? ?? ??? ??????."
+    if command.command_id == "verify.precheck_batch":
+        return "PASS? ??? ?? ?? ??? ??????."
+    if command.command_id == "verify.run_readiness_status":
+        return "?? ??? ??? ?? ?? ?? ??? ??????."
+    if command.command_id == "inspect.environment_doctor":
+        return "?? ??? ???? measurement ?? scenario ??? ??????."
+    if command.command_id == "package.portable_bundle":
+        return "?? ??? ??? ? ??? ??? ??????."
+    return "?? ? ?? ??? ???? ?? ?? ??? ??????."
 
 
 LOG_FILTER_LABELS: dict[str, str] = {

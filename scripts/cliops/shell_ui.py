@@ -55,13 +55,13 @@ def ui_info(msg: str) -> None:
 
 
 def ui_welcome_banner() -> None:
-    title = 'SDV CLI'
+    title = 'SDV Operator'
     body = 'CANoe Verification Operator Console\nMenu-driven UX | Scenario trigger | Evidence status | Measurement control'
     if has_rich_support() and Panel is not None:
         _RICH_CONSOLE.print(Panel(body, title=title, border_style='cyan'))
     else:
         print('=' * 56)
-        print(f'{title} - CANoe Verification Operator Console')
+        print(f'{title} - CANoe ?? ?? ??')
         print('=' * 56)
 
 
@@ -76,24 +76,24 @@ def run_with_loading(label: str, func) -> int:
 def prompt_menu_choice(default: int = 1, minimum: int = 1, maximum: int = 11) -> int:
     if has_questionary_support():
         choices = [
-            questionary.Choice('1) doctor (CANoe COM + measurement + sysvar check)', value=1),
-            questionary.Choice('2) precheck (gates+prepare+smoke+status)', value=2),
-            questionary.Choice('3) trigger scenario (scenarioCommand/testScenario)', value=3),
-            questionary.Choice('4) evidence status (readiness report)', value=4),
-            questionary.Choice('5) measurement start', value=5),
-            questionary.Choice('6) measurement stop', value=6),
-            questionary.Choice('7) measurement status', value=7),
-            questionary.Choice('8) open slash shell', value=8),
-            questionary.Choice('9) quick flow (doctor -> scenario -> status)', value=9),
-            questionary.Choice('10) exit', value=10),
-            questionary.Choice('11) silent exit', value=11),
+            questionary.Choice('1) ?? ?? (CANoe COM + measurement + sysvar)', value=1),
+            questionary.Choice('2) ?? ?? (gate+prepare+smoke+status)', value=2),
+            questionary.Choice('3) ???? ?? (scenarioCommand/testScenario)', value=3),
+            questionary.Choice('4) ?? ?? (readiness report)', value=4),
+            questionary.Choice('5) ?? ??', value=5),
+            questionary.Choice('6) ?? ??', value=6),
+            questionary.Choice('7) ?? ??', value=7),
+            questionary.Choice('8) slash shell ??', value=8),
+            questionary.Choice('9) ?? ?? (?? ?? -> ???? -> ??)', value=9),
+            questionary.Choice('10) ??', value=10),
+            questionary.Choice('11) ??? ??', value=11),
         ]
-        answer = questionary.select('Choose action', choices=choices, default=choices[default - 1]).ask()
+        answer = questionary.select('?? ??', choices=choices, default=choices[default - 1]).ask()
         if answer is None:
             return 11
         return int(answer)
     while True:
-        raw = input(f'select [{minimum}-{maximum}] (default {default}, q=silent-exit): ').strip()
+        raw = input(f'?? [{minimum}-{maximum}] (?? {default}, q=??? ??): ').strip()
         if raw.lower() in {'q', 'quit', 'x'}:
             return 11
         if not raw:
@@ -101,10 +101,10 @@ def prompt_menu_choice(default: int = 1, minimum: int = 1, maximum: int = 11) ->
         try:
             value = int(raw)
         except ValueError:
-            print('[GUIDED] enter a number.')
+            print('[GUIDED] ??? ??????.')
             continue
         if value < minimum or value > maximum:
-            print(f'[GUIDED] value must be in range {minimum}..{maximum}.')
+            print(f'[GUIDED] ? ??? {minimum}..{maximum} ???.')
             continue
         return value
 

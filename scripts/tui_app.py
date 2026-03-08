@@ -975,7 +975,7 @@ class SdvTuiApp(App[None]):
         elif stripped.startswith("[DOCTOR]"):
             stage = "Doctor"
         elif stripped.startswith("[RUN_STATUS]"):
-            stage = "Run readiness status"
+            stage = "?? ?? ??"
         elif stripped.startswith("[SMOKE]"):
             stage = "Smoke verification"
         elif stripped.startswith("[CANOE]"):
@@ -1824,7 +1824,7 @@ class SdvTuiApp(App[None]):
 
         if command.command_id == "operate.measure_start":
             if "measurement started" in joined or "measurement=start" in joined or "running" in joined:
-                return "PASS", "Measurement start request completed."
+                return "PASS", "?? ?? ??? ???????."
 
         if command.command_id == "operate.measure_stop":
             if "measurement stopped" in joined or "measurement=stopped" in joined or "stopped" in joined:
@@ -1847,7 +1847,7 @@ class SdvTuiApp(App[None]):
 
         if command.command_id == "verify.quick_verify":
             if "[verify_quick] verify status" in joined and "missing" not in joined:
-                return "PASS", "Quick verify completed through readiness status."
+                return "PASS", "Verify quick? readiness ???? ???????."
 
         if command.command_id == "verify.all_gates":
             if "gate summary: pass" in joined:
