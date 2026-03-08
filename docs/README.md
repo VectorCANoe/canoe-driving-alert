@@ -7,6 +7,7 @@ It contains internal project records such as:
 - meeting notes
 - mentoring notes
 - planning and blog-style working material
+- project management guide
 
 ## Subfolders
 
@@ -16,6 +17,8 @@ It contains internal project records such as:
   - mentoring analysis and guidance notes
 - `planning_and_Blog/`
   - planning drafts and blog-style working notes
+- `PROJECT_MANAGEMENT_GUIDE.md`
+  - internal project-management and working-process guide
 
 ## Use This Folder When
 
