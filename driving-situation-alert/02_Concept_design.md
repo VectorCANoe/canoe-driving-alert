@@ -1,9 +1,9 @@
 # 컨셉 디자인 (Concept Design)
 
 **Document ID**: PROJ-02-CD
-**Version**: 2.7
-**Date**: 2026-03-06
-**Status**: Draft (Figure Finalized)
+**Version**: 2.8
+**Date**: 2026-03-09
+**Status**: Draft (OEM Surface Concept Refresh)
 **Project Title**: 주행 상황 실시간 경고 시스템
 **Subtitle**: 구간 정보 및 긴급차량 접근 기반 앰비언트·클러스터 경보
 
@@ -11,73 +11,114 @@
 
 ## 1. 문서 목적
 
-본 문서는 00~07 문서 체인 중 **시각 설계 증거(Architecture Visualization)**를 담당한다.
-그림 반영이 완료된 기준본으로, 본문은 최소 설명만 유지하고 핵심 설계 근거는 그림/캡션으로 관리한다.
+본 문서는 00~07 문서 체인 중 시각 설계 증거(Architecture Visualization)를 담당한다.  
+이 문서는 개발 병행 시점의 컨셉 고정본으로, 아래 두 축을 동시에 유지한다.
+
+- OEM 차량 시스템 관점의 전체 구조 타당성
+- 프로젝트 핵심가치(구간 + 긴급차량 기반 실시간 경고)
+
+---
+
+## 2. 컨셉 선언 (고정)
+
+본 프로젝트는 단일 데모가 아니라, OEM 차량 시스템을 SIL 환경으로 축약한 통합 경보 모델이다.
+
+- 표면 프레이밍: 완성차 ECU 관점(`Surface ECU`)으로 읽힌다.
+- 구현 현실: CAPL 런타임 모듈(`Runtime Module`)로 동작한다.
+- 검증 분리: `Validation Harness`는 제품 기능 계층과 분리한다.
+
+---
+
+## 3. 구조 스케일 기준
+
+- Surface ECU 프로그램 뱅크: `100`
+  - Primary: `56`
+  - Secondary: `28`
+  - Premium/Option: `16`
+- 현재 활성 런타임 노드: `26`
+  - 제품 경로 런타임: `24`
+  - 검증 하네스 런타임: `2` (`VAL_SCENARIO_CTRL`, `VAL_BASELINE_CTRL`)
+
+해석 원칙:
+- 대외 설명은 Surface ECU 기준
+- 구현/디버깅은 Runtime Module 기준
 
 ---
 
 ![alt text](tmp/assets/current/02_concept.png)
 ![alt text](tmp/assets/current/02_networkflow.png)
 
-## 2. 기준 아키텍처 (고정)
+## 4. 기준 아키텍처 (고정)
 
-- 채택안: **Option 1**
-- 구조: `ETH_SW + Domain Gateway + Domain CAN + 중앙 경고코어`
-- 범위: CANoe SIL, CAN + Ethernet(UDP)
+- 채택안: `Option 1`
+- 구조: `ETH_BACKBONE + CGW + Domain CAN + 중앙 경고 판정 체인`
+- 검증 범위: CANoe SIL, CAN + Ethernet(UDP)
 - 핵심 규칙:
   - `Emergency > Zone`
   - `Ambulance > Police`
   - 동률 시 `ETA 오름차순 -> SourceID 오름차순`
-  - Timeout Clear: `1000ms`
+  - Timeout Clear: `1000 ms`
+
+핵심 체인:
+- 입력: 차량 상태 + 내비 컨텍스트 + V2X 긴급 알림
+- 판정: ADAS/V2X 위험/경보 우선순위 판정
+- 출력: Ambient + Cluster/HMI 동기 출력
+- 복귀: timeout/clear 후 정상 문맥 복귀
 
 ---
 
-## 3. 그림 구성 (확정)
+## 5. 핵심 시나리오 (가치 축)
+
+### A. 구간 기반 경고
+- 스쿨존/고속도로/유도차선 등 구간 문맥 기반 경고 패턴
+
+### B. 긴급차량 기반 경고
+- 경찰/구급 접근 알림 수신, 긴급 우선 표시
+
+### 공통 베이스
+- 경보 우선순위 판정
+- 출력 채널 동기화
+- timeout/fail-safe 복귀
+
+---
+
+## 6. 표면/구현 분리 표기 규칙
+
+- 컨셉 본문/그림 캡션은 Surface ECU 이름을 우선 표기한다.
+- 런타임 이름은 필요 시 괄호로만 병기한다.
+- `*_GW`, `*_CTRL`, `*_MGR`, `*_TX`, `*_RX`는 구현 계층 전용으로 사용한다.
+
+예시:
+- `V2X` (runtime: `EMS_ALERT_RX`, `EMS_POLICE_TX`, `EMS_AMB_TX`)
+- `CLUSTER` (runtime: `CLU_HMI_CTRL`, `CLU_BASE_CTRL`)
+
+---
+
+## 7. 그림 구성 (확정)
 
 | 문서 그림 번호 | 그림명 | 핵심 내용 | 연계 문서 |
 |---|---|---|---|
-| 02-01 | 전체 아키텍처 블록도 | VAL_SCENARIO_CTRL -> GW -> ETH_SW -> 중앙 경고코어 -> 출력 도메인 | 03, 0301, 0302 |
+| 02-01 | 전체 아키텍처 블록도 | Surface ECU 기준 입력->판정->출력->복귀 체인 | 00b, 03, 0301 |
 | 02-02 | 도메인/버스 분리도 | Chassis CAN / Infotainment CAN / Ethernet UDP 경계 | 0302, 0303 |
-| 02-03 | 시나리오 체인도 | 스쿨존 과속 / 고속도로 무조향 / 긴급 접근-해제 | 0301, 05, 06, 07 |
-| 02-04 | 중재/상태 전이도 | 경고 충돌 중재, 우선순위, 해제/복귀 | 0301, 04 |
-| 02-05 | 추적성 연결도 | Req -> Func -> Flow -> Comm -> Var 경로 가시화 | 01, 0301~0304 |
+| 02-03 | 핵심 가치 시나리오 | 구간 경보 + 긴급 경보 + 복귀 체인 | 01, 05, 06, 07 |
+| 02-04 | 경보 우선순위 상태도 | 경고 충돌 해소, 우선순위, 해제/복귀 | 0301, 04 |
+| 02-05 | 추적성 연결도 | Req -> Func -> Flow -> Comm -> Var 가시화 | 01, 0301~0304 |
 
 ---
 
-## 4. 그림 캡션 초안 (삽입용)
+## 8. 캡션 작성 규칙
 
-### Figure 02-01. Option 1 시스템 아키텍처
-- 입력: `VAL_SCENARIO_CTRL`
-- 게이트웨이: `CHS_GW`, `INFOTAINMENT_GW`
-- 중앙 코어: `ADAS_WARN_CTRL`, `NAV_CTX_MGR`, `EMS_ALERT`, `WARN_ARB_MGR`
-- 출력: `BODY_GW -> AMBIENT_CTRL`, `IVI_GW -> CLU_HMI_CTRL`
-
-### Figure 02-02. 도메인 네트워크 분리
-- Chassis CAN: 차량 상태/조향 입력
-- Infotainment CAN: 내비 문맥(roadZone/navDirection/zoneDistance/speedLimit)/클러스터 경고
-- Ethernet UDP: 긴급 알림(E100), 중재 결과(E200)
-
-### Figure 02-03. 핵심 시나리오 체인
-- 스쿨존 과속
-- 고속도로 무조향
-- 경찰/구급 긴급 접근 + 1000ms 타임아웃 해제
-
-### Figure 02-04. 경고 중재 상태도
-- Normal -> Zone Warning -> Emergency Warning
-- 충돌 시 중재 규칙 적용
-- Clear/Timeout 시 이전 문맥 복귀
-
-### Figure 02-05. 추적성 브리지
-- `Req_xxx -> Func_xxx -> Flow_xxx -> Comm_xxx -> Var_xxx`
-- 05/06/07 테스트 ID 역방향 연결 표시
+- Figure 캡션은 Surface ECU로 시작한다.
+- 구현 모듈은 괄호 병기로 최소화한다.
+- 테스트 하네스는 별도 계층(`Validation Harness`)으로 구분한다.
 
 ---
 
-## 5. 최종 변환 규칙 (그림 반영 시)
+## 9. 최종 변환 규칙 (그림 반영 시)
 
-- 본문은 1, 2, 5를 기준 설명으로 유지하고, 3, 4는 그림+캡션 기준으로 관리한다.
-- 노드명/ID 표기는 0301~0304와 완전히 동일하게 유지한다.
-- 구현 코드/세부 알고리즘은 02에 작성하지 않는다. (04에 유지)
+- 본문은 컨셉 선언/구조 기준/규칙만 유지한다.
+- 상세 알고리즘, 코드 동작, 구현 예외는 `04`에서 관리한다.
+- 노드명/ID/Owner 정합은 `00e`, `0303`, `0304` 기준으로 유지한다.
 
 ---
 
@@ -85,11 +126,12 @@
 
 | 버전 | 날짜 | 변경 사항 |
 |---|---|---|
+| 2.8 | 2026-03-09 | 컨셉 축을 OEM 표면 프레이밍 + 핵심 시나리오 가치 고정 구조로 재작성. `100/56/28/16` 스케일과 `Runtime-26` 병행 운영 원칙을 명시. |
 | 2.7 | 2026-03-06 | 그림 반영 완료 기준으로 상태를 `Draft (Figure Finalized)`로 전환하고, 본문 문구를 계획형에서 확정형으로 정리. |
 | 2.6 | 2026-03-05 | Validation Harness 노드 명칭을 `VAL_SCENARIO_CTRL` 기준으로 정리해 03/0301/0302 용어와 정합화. |
 | 2.5 | 2026-03-01 | 상위 컨셉 캡션의 EMS 표기를 논리 단말(`EMS_ALERT`) 기준으로 통일. 내부 TX/RX 모듈은 03계열 하단 보강표에서 분리 관리. |
-| 2.0 | 2026-02-25 | 주행상황 연동 실시간 경고 시스템 기준으로 컨셉 재정의 |
-| 2.1 | 2026-02-26 | 아키텍처 대안(Option 1/1A/2/3) 비교 및 채택 결론 추가 |
-| 2.2 | 2026-02-26 | 컨셉 블록도/네트워크 섹션에 도메인 GW 실명 반영 |
 | 2.4 | 2026-02-28 | 네트워크 분리 캡션에 `speedLimit` 입력을 반영해 0302/0303/0304과 정합화. |
-| 2.3 | 2026-02-27 | 02 문서를 그림 중심 구조로 전환하기 위한 시각화 계획/캡션/변환 규칙 추가 |
+| 2.3 | 2026-02-27 | 02 문서를 그림 중심 구조로 전환하기 위한 시각화 계획/캡션/변환 규칙 추가. |
+| 2.2 | 2026-02-26 | 컨셉 블록도/네트워크 섹션에 도메인 GW 실명 반영. |
+| 2.1 | 2026-02-26 | 아키텍처 대안(Option 1/1A/2/3) 비교 및 채택 결론 추가. |
+| 2.0 | 2026-02-25 | 주행상황 연동 실시간 경고 시스템 기준으로 컨셉 재정의. |
