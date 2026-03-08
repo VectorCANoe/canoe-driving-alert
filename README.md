@@ -76,6 +76,13 @@ python -m mkdocs build -f product/sdv_operator/mkdocs.yml --strict
 - `.claude/README.md`
 - `legacy_projects/README.md`
 
+루트에 남아 있는 내부 운영 파일:
+
+- `AGENTS.md`
+- `CLAUDE.md`
+
+이 두 파일은 현재 도구/자동화 참조 경로 때문에 루트에 유지합니다.
+
 </details>
 
 ## External References
