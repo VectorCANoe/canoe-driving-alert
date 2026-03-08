@@ -71,7 +71,8 @@ python -m mkdocs build -f product/sdv_operator/mkdocs.yml --strict
 - `canoe/tmp/`
 - `docs/README.md`
 - `docs/meeting-notes/`
-- `reference/`
+- `reference/README.md`
+- `.claude/README.md`
 
 </details>
 
