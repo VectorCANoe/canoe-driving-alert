@@ -1,9 +1,9 @@
 # ECU 명명 및 약어 표준
 
 **Document ID**: PROJ-00E-ECU-NAMING
-**Version**: 2.8
+**Version**: 2.9
 **Date**: 2026-03-08
-**Status**: Released (SoT Fixed)
+**Status**: Draft (Architecture Reset In Progress)
 **Scope**: `01 -> 03 -> 0301 -> 0302 -> 0303 -> 0304 -> 04 -> 05/06/07`
 
 ---
@@ -12,7 +12,16 @@
 
 - ECU 명칭과 약어를 단일 규칙으로 통일한다.
 - 문서/DBC/CAPL 간 명칭 불일치와 감사 리스크를 제거한다.
-- 본 문서를 ECU 명명 정책 SoT로 고정한다.
+- 본 문서를 architecture reset 동안 ECU 명명 정책 재설계 작업본으로 사용한다.
+
+## 1.1 Reset Status
+
+- 본 문서는 기존 baseline에서 `Released (SoT Fixed)` 상태였으나, 2026-03-08 architecture reset 승인에 따라 `Draft`로 전환한다.
+- 현재 Canonical Matrix는 transition baseline이다.
+- 리셋 완료 전까지:
+  - 기존 Canonical 명칭은 reference baseline으로 유지
+  - 논리 ECU surface name 재정의는 본 문서에서 먼저 승인
+  - 구현 모듈명과 GUI 표면명은 분리 관리한다
 
 ---
 
@@ -134,6 +143,15 @@
   - cfg/channel_assign/CAPL/문서에서 legacy 표기 0건
   - `VAL_*` 명칭 일관성 100%
 
+## 5.1 Architecture Reset Interim Rule
+
+- architecture reset 동안 ECU naming은 아래 세 층으로 분리 검토한다.
+  - `Logical ECU Surface`
+  - `Runtime Node / Implementation Module`
+  - `Validation Harness`
+- 본 문서 개정 전까지는 기존 Canonical을 삭제하지 않는다.
+- 신규 승인안은 기존 Canonical과의 매핑표를 유지한 상태에서만 반영한다.
+
 ---
 
 ## 6. SoT 필수 섹션 체크리스트 (Baseline Gate)
@@ -188,6 +206,7 @@
 
 | 버전 | 날짜 | 변경 사항 |
 |---|---|---|
+| 2.9 | 2026-03-08 | Architecture reset 승인 반영: Status를 `Draft (Architecture Reset In Progress)`로 전환하고, 기존 Canonical Matrix를 transition baseline으로 재정의. logical ECU surface / implementation module / validation harness 분리 원칙 추가. |
 | 2.8 | 2026-03-08 | 멘토 D11 해석 반영: `_TX/_RX` 사용 경계를 상위 체인/구현 계층으로 분리 명시. 팀 내부 개발 편의용 `3-글자 Quick Tag` 섹션(보조 식별자)을 추가. |
 | 2.7 | 2026-03-05 | Chassis Canonical 명칭을 `ACCEL_CTRL`, `STEER_CTRL`로 확정하고 기존 `ACCL_CTRL`, `STRG_CTRL`를 Legacy alias로 강등. |
 | 2.6 | 2026-03-05 | 4.1을 간략 등록 표로 축약하고 근거 아티팩트 열을 제거(요약형 유지). |

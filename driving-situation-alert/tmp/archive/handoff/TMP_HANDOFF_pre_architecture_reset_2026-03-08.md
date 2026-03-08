@@ -1,9 +1,9 @@
 # TMP Handoff (Next Codex Session)
 
 ## 0) Freshness Control
-- Last Updated: 2026-03-08
+- Last Updated: 2026-03-07
 - Freshness Status: FRESH
-- Validity Window: 3 days
+- Validity Window: 7 days
 - Stale Criteria (any one = stale):
   - Freshness Status is marked `STALE`
   - Node baseline includes deprecated validation node names as active naming
@@ -14,12 +14,9 @@
     - `tmp/mentoring/Mentoring_MET40.md`
   - Refresh this handoff and switch back to `FRESH`.
 
-## 1) Project Direction (Reset In Progress)
+## 1) Project Direction (Fixed)
 - Title: 주행 상황 실시간 경고 시스템
 - Subtitle: 구간 정보 및 긴급차량 접근 기반 앰비언트·클러스터 경보
-- Current Working Objective:
-  - 기존 closeout/freeze 모드를 해제하고, 양산차 프로젝트 표면에 맞는 논리 ECU 구조와 네이밍을 재정의한다.
-  - 이번 사이클의 최우선은 `논리 ECU 재설계 -> GUI 표면명 정리 -> 구현 모듈 경계 재판정 -> 문서 체인 재동기화`다.
 - Scope In:
   - Navigation zone recognition (school zone, highway, guide lane)
   - V2V emergency alerts (police, ambulance)
@@ -50,15 +47,15 @@
 - Keep separation:
   - `01 = What`
   - `03+ = How`
-- ECU naming governance is temporarily reopened:
-  - Explicit rule redesign starts in `00e`, then propagates to `0301`, `04`, `0302`, `0303`, `0304`
-  - 기존 Canonical 명칭은 transition baseline으로 취급하며, 리셋안 확정 전까지 reference baseline으로만 유지한다.
+- ECU naming governance is fixed:
+  - Explicit rule management only in `00e`, `0301`, `04`
+  - Other chain docs use Canonical names only
 - Random Req audit must not break the trace chain.
 - Use V-model in both directions:
   - design to test
   - test failure back to source doc
 
-## 4) Node Naming Baseline (Transition Baseline)
+## 4) Node Naming Baseline (Current)
 - ADAS_WARN_CTRL
 - NAV_CTX_MGR
 - WARN_ARB_MGR
@@ -68,8 +65,6 @@
 - CLU_HMI_CTRL
 - VAL_SCENARIO_CTRL
 - VAL_BASELINE_CTRL
-- Reset Note:
-  - 위 목록은 active baseline reference일 뿐, architecture reset 완료 전까지 최종 naming으로 간주하지 않는다.
 
 ## 5) Priority and Timing Rules
 - Emergency > Navigation context
@@ -100,15 +95,22 @@
 - Development Baseline Commit: `8eb020e` (Flow_106/Comm_106 baseline chain 문구 정합, 2026-03-08)
 
 ## 7) Immediate Next Steps
-1. Archive current baseline and switch the project into `Architecture Reset Mode`.
-2. Reclassify active nodes into logical ECU groups before any GUI rename or runtime merge decision.
-3. Redesign ECU naming policy in `00e` to separate:
-   - logical ECU surface names
-   - internal implementation module names
-   - validation harness names
-4. Decide which runtime splits stay for ownership/debuggability and which can be merged for production-style surface modeling.
-5. Propagate approved reset decisions through `0301/0302/0303/0304/04`, then reopen `05/06/07` evidence mapping against the new baseline.
-6. Keep `00f` and `00g` as supporting policy SoT, but allow their dependent sections to be refactored if ECU reset requires it.
+1. Keep `02_Concept_design.md` figure baseline fixed and ensure PPT sync consistency (star topology).
+2. Close `M40-18`: fill Pre-Activation execution evidence in `05/06/07` (`Pass/Fail`, owner, date, trace/log refs, panel capture links) and sync with `04`.
+3. Refresh submission lock anchors to current baseline:
+   - `TMP_MID_AUDIT_MAIN.md` lock anchor
+   - `tmp/reports/M40_EVIDENCE_INDEX.md` lock anchor
+4. Apply naming/ID SoT:
+   - Use `00e_ECU_Naming_Standard.md` as canonical ECU naming policy
+   - Use `00f_CAN_ID_Allocation_Standard.md` as canonical CAN-ID policy
+   - Gate status 운영: G1/G2/G3 closed, G4 hold(전체 개발 종료 후 재개)
+   - Use `00g_RTE_Name_Mapping_Standard.md` as canonical RTE name mapping policy
+   - Keep Canonical node names in trace docs; do not introduce unofficial abbreviations
+5. Keep SoT sync rule active:
+   - Domain CAN DBC (`*_can.dbc`) + Ethernet contract (`ETH_INTERFACE_CONTRACT.md`) -> `0302/0303/0304`
+   - `Comm_130~Comm_133`는 `ETH_INTERFACE_CONTRACT.md v1.2`의 `E213~E216` 계약을 기준으로 문서 SoT를 유지하고, 코드 구현은 Pre-Activation 상태로 관리
+6. Reflect Mentoring MET40 open items in docs/evidence:
+   - `M40-18`
 
 ## 8) Do Not Do
 - Do not change file encoding away from UTF-8.
@@ -116,42 +118,37 @@
 - Do not write customer-level statements only in 03.
 - Do not remove existing template columns.
 - Do not patch `canoe/cfg/*.cfg`, `*.cfg.ini`, `*.stcfg` by script unless explicitly requested for recovery.
-- Do not rename runtime nodes in GUI before logical ECU grouping and mapping are approved in docs.
 
 ## 9) Temporary Note
 - This handoff is temporary and must be refreshed continuously.
 - Once stale causes are resolved, keep handoff as SoT (`FRESH`) for the next session.
 
-## 10) Architecture Reset Mode (Active)
+## 10) Expansion Freeze + Review-First Mode (Added)
 
-### 10.1 Reset Trigger
-- 개발 초기 단계에서 유지비용이 낮은 시점에 구조를 바로잡기 위해, closeout 중심 운영을 종료하고 architecture reset을 시작한다.
-- 본 전환은 사용자 지시에 따라 승인되었으며, 기존 handoff baseline은 archive asset으로 보존한다.
+### 10.1 Expansion Freeze Rule
+- 문서 확장(신규 Req/Func/Flow/Comm/Var 추가)은 기본적으로 종료한다.
+- 아래 조건 중 하나를 만족할 때만 확장 재개:
+  - `M40-18` 실행증빙 폐쇄 완료
+  - 멘토/리뷰어의 명시적 확장 지시
 
 ### 10.2 Current Working Mode
-- 현재 모드는 `architecture reset + baseline rebuild`로 고정한다.
-- 목표는 “기존 baseline을 방어”하는 것이 아니라 “양산차 프로젝트 표면에 맞는 구조로 다시 설계”하는 것이다.
+- 현재 모드는 `체크 중심 점검 모드`로 고정한다.
+- 목표는 “새 내용 추가”가 아니라 “기존 논리의 오류/불일치 제거”다.
 
-### 10.3 Reset Checklist
-1. 논리 ECU 그룹 재정의:
-   - 현재 active node를 생산차 표면 기준의 logical ECU group으로 다시 분류
-2. 네이밍 계층 분리:
-   - logical ECU name / implementation module name / validation harness name 분리
-3. 런타임 합치기/유지 판단:
-   - owner, traceability, debug cost, CANoe GUI surface를 기준으로 merge/split 판단
-4. 문서 체인 재정렬:
-   - `00e -> 0301 -> 0302 -> 0303 -> 0304 -> 04 -> 05/06/07` 순으로 baseline 재구성
-5. 증빙 재연결:
-   - 기존 테스트/로그/evidence 자산을 새 논리 ECU 기준으로 다시 매핑
+### 10.3 Review Checklist (문서팀 우선순위)
+1. 체인 정합 점검:
+   - `Req -> Func -> Flow -> Comm -> Var -> Code -> UT/IT/ST` 링크 단절/역참조 오류 확인
+2. 표현/수준 점검:
+   - `01=What`, `03+=How` 분리 위반 문장 제거
+   - 모호어(즉시/적절히/충분히) 대비 수치/조건 근거 확인
+3. 정책 일관성 점검:
+   - ECU 명칭(`00e`), CAN ID(`00f`), RTE 이름(`00g`)과 본문 불일치 확인
+4. 표준 대조 점검:
+   - `reference/standards/ISO26262*`, `ASPICE*`, `Project Result_Sample*` 대비 누락/과잉 확인
+5. 증빙 링크 점검:
+   - `05/06/07`의 VC/테스트 ID, 로그 경로, 캡처 참조의 유효성 확인
 
 ### 10.4 Change Policy in This Mode
-- 허용:
-  - 정책 체계 재설계
-  - 논리 ECU 재분류
-  - 문서 체인 전면 재작성
-  - 구현 모듈 경계 재판정
-- 제한:
-  - 근거 없이 GUI/runtime rename을 먼저 수행하는 것
-  - traceability chain을 끊는 ad-hoc 약어 도입
-- 원칙:
-  - `logical model first, runtime mapping second, evidence update last`
+- 허용: 오탈자 수정, 용어 통일, 추적 링크 보정, 근거/참조 정합화
+- 제한: 기능 축 추가, 새로운 요구군 신설, 정책 체계 재설계
+- 원칙: “noise 감소” 우선, “신규 내용 추가” 최소화
