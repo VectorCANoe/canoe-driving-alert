@@ -58,6 +58,8 @@ def no_visible_command() -> str:
 
 
 def recommended_next(command: PaletteCommand) -> str:
+    if command.next_step:
+        return command.next_step
     if command.command_id == "verify.all_gates":
         return "PASS면 Scenario run으로 넘어가십시오."
     if command.command_id == "operate.scenario_trigger":
@@ -77,6 +79,44 @@ def recommended_next(command: PaletteCommand) -> str:
     if command.command_id == "package.portable_bundle":
         return "산출물 경로를 확인하고 전달용 패키지를 검증하십시오."
     return "결과와 다음 작업 지시를 확인한 뒤 이어서 진행하십시오."
+
+
+def _section(title: str, values: tuple[str, ...] | list[str]) -> list[str]:
+    if not values:
+        return []
+    lines = [f"[cyan]{title}[/cyan]"]
+    lines.extend(f"  - {item}" for item in values if item)
+    lines.append("")
+    return lines
+
+
+def command_info_body(
+    command: PaletteCommand,
+    runtime_text: str,
+    pin_text: str,
+    recommended: str,
+) -> str:
+    body: list[str] = [
+        f"[bold]{command.title}[/bold]",
+        "",
+        command.summary,
+        "",
+        f"[cyan]실행 명령[/cyan]",
+        f"  - python scripts/run.py {command.command}",
+        f"[cyan]실행 환경[/cyan]",
+        f"  - {runtime_text}",
+        f"[cyan]고정 상태[/cyan]",
+        f"  - {pin_text}",
+        "",
+    ]
+    body.extend(_section("언제 사용", list(command.use_when)))
+    body.extend(_section("성공 신호", list(command.success_signals)))
+    body.extend(_section("기대 산출물", list(command.expected_outputs)))
+    if command.notes:
+        body.extend(_section("운영 메모", [command.notes]))
+    body.extend(_section("실패 시 확인점", list(command.failure_focus)))
+    body.extend(_section("다음 단계", [recommended]))
+    return "\n".join(line for line in body if line is not None)
 
 
 LOG_FILTER_LABELS: dict[str, str] = {

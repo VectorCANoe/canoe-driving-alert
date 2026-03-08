@@ -28,6 +28,11 @@ class PaletteCommand:
     summary: str
     windows_only: bool = False
     notes: str = ""
+    use_when: tuple[str, ...] = field(default_factory=tuple)
+    success_signals: tuple[str, ...] = field(default_factory=tuple)
+    expected_outputs: tuple[str, ...] = field(default_factory=tuple)
+    failure_focus: tuple[str, ...] = field(default_factory=tuple)
+    next_step: str = ""
     base_command: str = ""
     params: tuple[CommandParam, ...] = field(default_factory=tuple)
 
@@ -85,6 +90,23 @@ PRODUCT_COMMAND_GROUPS: dict[str, list[PaletteCommand]] = {
             command="gate all",
             summary="런타임 조작 전에 전체 preflight gate 묶음을 실행합니다.",
             notes="일일 운영의 첫 단계입니다. 여기서 실패하면 먼저 정합성 문제를 수정하십시오.",
+            use_when=(
+                "측정을 올리기 전에 DBC/CAPL/문서 정합을 한 번에 확인할 때",
+                "작업 시작 직후 현재 저장소가 검증 가능한 상태인지 판단할 때",
+            ),
+            success_signals=(
+                "gate summary가 PASS로 끝남",
+                "cli_readiness_gate.json/md가 생성됨",
+            ),
+            expected_outputs=(
+                "canoe/tmp/reports/verification/cli_readiness_gate.json",
+                "canoe/tmp/reports/verification/cli_readiness_gate.md",
+            ),
+            failure_focus=(
+                "text-integrity / cfg-hygiene / doc-sync 중 어떤 gate가 깨졌는지 먼저 확인",
+                "FAIL이면 runtime 조작 전에 정합성부터 복구",
+            ),
+            next_step="PASS면 Scenario run으로 넘어가십시오.",
         ),
         PaletteCommand(
             command_id="operate.scenario_trigger",
@@ -94,6 +116,23 @@ PRODUCT_COMMAND_GROUPS: dict[str, list[PaletteCommand]] = {
             summary="SIL 시나리오를 CANoe에 주입하고 ack 경로를 확인합니다.",
             windows_only=True,
             notes="Gate all이 끝났고 measurement가 올라와 있을 때 실행하십시오.",
+            use_when=(
+                "CANoe measurement가 running이고 Test::scenarioCommand 경로를 검증할 때",
+                "패널/로그/증빙을 실제 시나리오 기준으로 시작할 때",
+            ),
+            success_signals=(
+                "scenarioCommandAck가 동일한 ID로 돌아옴",
+                "후속 Verify quick에서 해당 run의 증빙이 쌓이기 시작함",
+            ),
+            expected_outputs=(
+                "ACK log line in TUI/CLI output",
+                "후속 Verify quick을 위한 run context",
+            ),
+            failure_focus=(
+                "Measurement stopped 여부",
+                "Test::scenarioCommandAck / active CAPL path / COM attach 상태",
+            ),
+            next_step="ack가 확인되면 Verify quick으로 넘어가십시오.",
             params=(
                 CommandParam(
                     key="scenario_id",
@@ -114,6 +153,26 @@ PRODUCT_COMMAND_GROUPS: dict[str, list[PaletteCommand]] = {
             summary="증빙 폴더 생성, smoke, readiness scoring을 한 번에 수행합니다.",
             windows_only=True,
             notes="Scenario run 직후 첫 번째 검증 증빙을 수집할 때 사용합니다.",
+            use_when=(
+                "시나리오 주입 후 UT/IT/ST 증빙 준비 상태를 한 번에 확인할 때",
+                "05/06/07 문서에 붙일 evidence readiness를 빠르게 점검할 때",
+            ),
+            success_signals=(
+                "run_readiness overall_status가 PASS 또는 준비 가능한 상태로 생성됨",
+                "evidence 폴더와 readiness json/md가 생성됨",
+            ),
+            expected_outputs=(
+                "canoe/tmp/reports/verification/run_readiness.json",
+                "canoe/tmp/reports/verification/run_readiness.md",
+                "canoe/logging/evidence/UT/<run_id>",
+                "canoe/logging/evidence/IT/<run_id>",
+                "canoe/logging/evidence/ST/<run_id>",
+            ),
+            failure_focus=(
+                "[EVIDENCE_OUT] marker 누락 tier",
+                "filled/scored 파일 미생성 tier",
+            ),
+            next_step="결과와 증빙을 확인한 뒤 05/06/07 문서에 반영하십시오.",
             params=(
                 CommandParam(
                     key="run_id",
@@ -144,6 +203,24 @@ PRODUCT_COMMAND_GROUPS: dict[str, list[PaletteCommand]] = {
             summary="CANoe COM 연결, measurement 상태, 핵심 sysvar 접근성을 확인합니다.",
             windows_only=True,
             notes="Scenario run이나 Verify quick 전에 먼저 확인하십시오.",
+            use_when=(
+                "TUI/CLI가 현재 CANoe 세션을 제대로 잡고 있는지 먼저 확인할 때",
+                "시나리오 ack timeout이나 sysvar missing이 발생했을 때 원인 분리용으로",
+            ),
+            success_signals=(
+                "COM attach PASS",
+                "Measurement running = running",
+                "필수 sysvar check PASS",
+            ),
+            expected_outputs=(
+                "canoe/tmp/reports/verification/doctor_report.json",
+                "canoe/tmp/reports/verification/doctor_report.md",
+            ),
+            failure_focus=(
+                "COM attach 불가인지, measurement stop인지, sysvar 누락인지 구분",
+                "실패 종류별로 바로 다음 조치가 달라짐",
+            ),
+            next_step="정상이면 Scenario run 또는 Verify quick으로 이동하십시오.",
         ),
         PaletteCommand(
             command_id="operate.measure_status",
@@ -151,6 +228,10 @@ PRODUCT_COMMAND_GROUPS: dict[str, list[PaletteCommand]] = {
             command="canoe measure-status",
             summary="현재 CANoe measurement 상태를 읽습니다.",
             windows_only=True,
+            use_when=("Scenario run 전에 measurement 상태를 확인할 때",),
+            success_signals=("running 또는 stopped 상태가 명확히 출력됨",),
+            failure_focus=("COM attach/session 문제인지 단순 stopped인지 구분",),
+            next_step="stopped면 먼저 측정을 시작하십시오.",
         ),
         PaletteCommand(
             command_id="operate.measure_start",
@@ -158,6 +239,10 @@ PRODUCT_COMMAND_GROUPS: dict[str, list[PaletteCommand]] = {
             command="canoe measure-start",
             summary="COM 경유로 CANoe measurement를 시작합니다.",
             windows_only=True,
+            use_when=("Scenario run 전에 CANoe measurement를 올려야 할 때",),
+            success_signals=("measurement start 결과가 PASS",),
+            failure_focus=("권한/session mismatch 또는 CANoe attach 문제",),
+            next_step="running이 확인되면 Scenario run으로 이동하십시오.",
         ),
         PaletteCommand(
             command_id="operate.measure_stop",
@@ -165,6 +250,9 @@ PRODUCT_COMMAND_GROUPS: dict[str, list[PaletteCommand]] = {
             command="canoe measure-stop",
             summary="COM 경유로 CANoe measurement를 중지합니다.",
             windows_only=True,
+            use_when=("실행 정리 또는 상태 초기화가 필요할 때",),
+            success_signals=("measurement stop 결과가 PASS",),
+            next_step="필요 시 reset 또는 다음 measurement start를 준비하십시오.",
         ),
         PaletteCommand(
             command_id="verify.precheck_batch",
@@ -173,6 +261,23 @@ PRODUCT_COMMAND_GROUPS: dict[str, list[PaletteCommand]] = {
             summary="gate, prepare, smoke, readiness status를 한 번에 수행합니다.",
             windows_only=True,
             notes="개발 상태를 빠르게 훑고 검증 진입 가능 여부를 판단할 때 사용합니다.",
+            use_when=(
+                "개발 종료 전 현재 상태를 한 번에 스냅샷하고 싶을 때",
+                "오늘 작업이 검증 진입 가능한 수준인지 빠르게 판단할 때",
+            ),
+            success_signals=(
+                "dev2_batch_report status가 PASS",
+                "step별 rc가 모두 0",
+            ),
+            expected_outputs=(
+                "canoe/tmp/reports/verification/dev2_batch_report.json",
+                "canoe/tmp/reports/verification/dev2_batch_report.md",
+            ),
+            failure_focus=(
+                "첫 fail step 이름과 rc",
+                "precheck에서 막히면 runtime 조작 전에 먼저 해결",
+            ),
+            next_step="PASS면 본 시나리오 실행이나 증빙 수집으로 넘어가십시오.",
             params=(
                 CommandParam(
                     key="run_id",
@@ -200,6 +305,21 @@ PRODUCT_COMMAND_GROUPS: dict[str, list[PaletteCommand]] = {
             command="verify status --run-id 20260308_0900",
             base_command="verify status",
             summary="raw evidence, marker, score 준비 상태를 점검합니다.",
+            use_when=(
+                "특정 run_id의 증빙 누락 tier를 확인할 때",
+                "05/06/07 채우기 전에 현재 증빙 품질을 재점검할 때",
+            ),
+            success_signals=(
+                "target run_id에 대해 marker_count / filled / scored 상태가 채워짐",
+            ),
+            expected_outputs=(
+                "canoe/tmp/reports/verification/run_readiness.json",
+                "canoe/tmp/reports/verification/run_readiness.md",
+            ),
+            failure_focus=(
+                "UT/IT/ST 중 어떤 tier가 marker 또는 scored 파일이 없는지",
+            ),
+            next_step="누락 tier를 보강한 뒤 Verify quick 또는 status를 다시 실행하십시오.",
             params=(
                 CommandParam(
                     key="run_id",
@@ -310,6 +430,11 @@ PRODUCT_COMMAND_GROUPS: dict[str, list[PaletteCommand]] = {
             command="package bundle-portable --mode onefolder",
             base_command="package bundle-portable",
             summary="배포용 portable ZIP 산출물을 생성합니다.",
+            use_when=("검증 팀이나 발표용으로 전달 가능한 산출물을 만들 때",),
+            success_signals=("dist/portable/sdv_portable.zip 생성",),
+            expected_outputs=("dist/portable/sdv_portable.zip",),
+            failure_focus=("manifest 범위 밖 파일 누락 또는 build 경로 문제",),
+            next_step="ZIP을 풀어서 run.py/TUI 진입이 되는지 smoke 하십시오.",
             params=(
                 CommandParam(
                     key="mode",
@@ -330,6 +455,11 @@ PRODUCT_COMMAND_GROUPS: dict[str, list[PaletteCommand]] = {
             base_command="package build-exe",
             summary="Windows executable 산출물을 생성합니다.",
             windows_only=True,
+            use_when=("Windows 운영자용 standalone 실행 산출물이 필요할 때",),
+            success_signals=("dist/sdv_cli/sdv.exe 또는 onefolder bundle 생성",),
+            expected_outputs=("dist/sdv_cli/sdv.exe", "dist/sdv_cli/sdv/"),
+            failure_focus=("PyInstaller spec/build cache 문제",),
+            next_step="실행파일로 doctor와 TUI 기동 smoke를 확인하십시오.",
             params=(
                 CommandParam(
                     key="mode",

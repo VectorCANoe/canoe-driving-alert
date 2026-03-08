@@ -22,6 +22,7 @@ from cliops.tui_text import (
     artifact_copied,
     artifact_open_failed,
     artifact_opened,
+    command_info_body,
     execute_hint,
     followup_hint,
     group_surface_label,
@@ -49,6 +50,7 @@ from textual.app import App, ComposeResult
 from textual.containers import Horizontal, Vertical
 from textual.widgets import Button, Footer, Header, Input, OptionList, RichLog, Static
 from textual.widgets.option_list import Option
+from textual.css.query import NoMatches
 from rich.markup import escape
 
 
@@ -462,9 +464,9 @@ class SdvTuiApp(App[None]):
                         yield Static(id="commands-title", classes="pane-title")
                         yield OptionList(id="commands")
                     with Vertical(id="details-pane", classes="pane"):
-                        yield Static("3) 검토 및 실행", classes="pane-title")
+                        yield Static("2) 작업 정보", classes="pane-title")
                         yield Static(id="details-body")
-                        yield Static("빠른 입력", classes="pane-title")
+                        yield Static("3) 빠른 입력", classes="pane-title")
                         with Vertical(id="form-body"):
                             for index in range(FORM_SLOTS):
                                 with Vertical(id=f"field-row-{index}", classes="form-row hidden"):
@@ -772,8 +774,11 @@ class SdvTuiApp(App[None]):
         self.active_command_index = 0
         commands = self._active_group_commands()
         group_label = group_surface_label(self._active_group_name())
-        self.query_one("#commands-title", Static).update(f"2) 작업 선택  |  {group_label}")
-        command_list = self.query_one("#commands", OptionList)
+        try:
+            self.query_one("#commands-title", Static).update(f"2) 작업 선택  |  {group_label}")
+            command_list = self.query_one("#commands", OptionList)
+        except NoMatches:
+            return
         self._suspend_option_events = True
         command_list.clear_options()
         command_list.add_options([Option(cmd.title) for cmd in commands])
@@ -825,38 +830,42 @@ class SdvTuiApp(App[None]):
         return row, label, input_widget, help_widget
 
     def _update_command_view(self, command: PaletteCommand) -> None:
-        badges = [runtime_badge(command)]
+        try:
+            details_widget = self.query_one("#details-body", Static)
+            pin_button = self.query_one("#pin-button", Button)
+            execute_hint_widget = self.query_one("#execute-hint", Static)
+        except NoMatches:
+            return
+        runtime_text = runtime_badge(command)
         recommended = self._recommended_next(command)
         pin_text = pin_status(self._current_command_is_pinned())
-        body = [
-            f"[bold]{command.title}[/bold]",
-            "",
-            command.summary,
-            "",
-            f"[cyan]기본 명령[/cyan]: python scripts/run.py {command.command}",
-            f"[cyan]실행 환경[/cyan]: {', '.join(badges)}",
-            f"[cyan]고정 상태[/cyan]: {pin_text}",
-            f"[cyan]추천 다음 단계[/cyan]: {recommended}",
-        ]
-        if command.notes:
-            body.extend(["", f"[cyan]운영 메모[/cyan]: {command.notes}"])
-        self.query_one("#details-body", Static).update("\n".join(body))
-        pin_button = self.query_one("#pin-button", Button)
+        details_widget.update(
+            command_info_body(
+                command=command,
+                runtime_text=runtime_text,
+                pin_text=pin_text,
+                recommended=recommended,
+            )
+        )
         pin_button.label = pin_button_label(self._current_command_is_pinned())
         self._populate_form(command)
         self._update_preview()
         if command.params:
-            self.query_one("#execute-hint", Static).update(execute_hint(True))
+            execute_hint_widget.update(execute_hint(True))
         else:
-            self.query_one("#execute-hint", Static).update(execute_hint(False))
+            execute_hint_widget.update(execute_hint(False))
     def _clear_form(self) -> None:
+        try:
+            preview_widget = self.query_one("#preview-body", Static)
+        except NoMatches:
+            return
         for index in range(FORM_SLOTS):
             row, _, input_widget, help_widget = self._field_widgets(index)
             row.add_class("hidden")
             input_widget.value = ""
             input_widget.placeholder = ""
             help_widget.update("")
-        self.query_one("#preview-body", Static).update(preview_empty())
+        preview_widget.update(preview_empty())
     def _populate_form(self, command: PaletteCommand) -> None:
         params = list(command.params)
         defaults = resolve_command_defaults(command)
@@ -999,7 +1008,12 @@ class SdvTuiApp(App[None]):
             return
         try:
             tokens = build_command_tokens(command, self._form_values())
-            preview = "python scripts/run.py " + " ".join(tokens)
+            preview_lines = [f"python scripts/run.py {' '.join(tokens)}"]
+            artifact_lines = command.expected_outputs or tuple(self._artifact_paths(command, tokens))
+            if artifact_lines:
+                preview_lines.extend(["", "[cyan]예상 산출물[/cyan]"])
+                preview_lines.extend(f"  - {item}" for item in artifact_lines[:5])
+            preview = "\n".join(preview_lines)
         except ValueError as ex:
             preview = f"[red]Input check[/red]: {ex}"
         self.query_one("#preview-body", Static).update(preview)

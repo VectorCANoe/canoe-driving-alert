@@ -111,3 +111,35 @@ The TUI is acceptable only when:
 - FAIL/WARN always shows a direct reason and next action
 - evidence paths are visible without searching the filesystem
 - live logs are readable during execution
+
+## 9. Reference Patterns
+The current TUI follows three external reference patterns:
+
+### Trogon
+- source: `Textualize/trogon`
+- adopted idea:
+  - command list
+  - command info
+  - parameter form
+- applied here as:
+  - Execute page task list
+  - structured task info panel
+  - quick form + preview
+
+### pgcli
+- source: `dbcli/pgcli`
+- adopted idea:
+  - keep the interactive surface predictable
+  - keep the operator entry path narrow
+- applied here as:
+  - small public command surface
+  - shell/CLI remains the execution truth
+
+### aider
+- source: `Aider-AI/aider`
+- adopted idea:
+  - product-facing repo surface should stay thin
+  - internal implementation complexity may remain behind that surface
+- applied here as:
+  - `product/sdv_operator` as public surface
+  - implementation remains under `scripts/*`
