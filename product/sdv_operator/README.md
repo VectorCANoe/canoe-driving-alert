@@ -9,6 +9,22 @@ Machine-readable boundary:
 
 - `product/sdv_operator/manifest.json`
 
+Documentation source:
+
+- `product/sdv_operator/docs-src/`
+- `product/sdv_operator/mkdocs.yml`
+
+Generated site output (do not treat as source):
+
+- `product/sdv_operator/site/`
+
+Build locally:
+
+```powershell
+python -m pip install -e .[docs]
+python -m mkdocs build -f product/sdv_operator/mkdocs.yml --strict
+```
+
 ## Product Definition
 
 Product name:
