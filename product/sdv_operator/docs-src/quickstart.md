@@ -1,4 +1,4 @@
-﻿# 빠른 시작
+# 빠른 시작
 
 ## 1. 설치
 
@@ -37,11 +37,12 @@ python scripts/run.py verify quick --run-id 20260308_0900 --owner DEV2
 python scripts/run.py doctor
 ```
 
-## 4. 읽는 순서
+## 4. 먼저 볼 문서
 
-1. `DEVELOPMENT_ENTRYPOINTS.md`
-2. `scripts/README.md`
-3. `product/sdv_operator/README.md`
+1. 루트 `README.md`
+2. `product/sdv_operator/README.md`
+3. [저장소 표면](repo-surfaces.md)
+4. [명령 체계](commands.md)
 
 ## 5. 운영 규칙
 

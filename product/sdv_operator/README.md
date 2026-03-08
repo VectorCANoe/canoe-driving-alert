@@ -57,7 +57,13 @@ python scripts/run.py
 
 ## Documentation
 
-문서 정본:
+문서 진입점:
+
+- `product/sdv_operator/docs-src/index.md`
+- `product/sdv_operator/docs-src/quickstart.md`
+- `product/sdv_operator/docs-src/repo-surfaces.md`
+
+문서 소스:
 
 - `product/sdv_operator/docs-src/`
 - `product/sdv_operator/mkdocs.yml`
@@ -76,10 +82,11 @@ python -m mkdocs build -f product/sdv_operator/mkdocs.yml --strict
 
 1. [`docs-src/index.md`](docs-src/index.md)
 2. [`docs-src/quickstart.md`](docs-src/quickstart.md)
-3. [`docs-src/commands.md`](docs-src/commands.md)
-4. [`docs-src/results.md`](docs-src/results.md)
-5. [`docs-src/packaging.md`](docs-src/packaging.md)
-6. [`docs-src/maintenance.md`](docs-src/maintenance.md)
+3. [`docs-src/repo-surfaces.md`](docs-src/repo-surfaces.md)
+4. [`docs-src/commands.md`](docs-src/commands.md)
+5. [`docs-src/results.md`](docs-src/results.md)
+6. [`docs-src/packaging.md`](docs-src/packaging.md)
+7. [`docs-src/maintenance.md`](docs-src/maintenance.md)
 
 ## Packaging Rule
 
