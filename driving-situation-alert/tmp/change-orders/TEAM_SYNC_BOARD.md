@@ -67,7 +67,7 @@
 | TSB-001 | 역할 분리 타당성 점검(멀티버스/GW/테스터) | Dev1 | Dev1 + Docs | Docs Updated | `canoe/docs/operations/CAN_MESSAGE_OWNERSHIP_MATRIX.md`, `scripts/gates/multibus_cfg_dbc_gate.py` PASS | `tmp/mentoring/Mentoring_MET41.md`, `0302/0303` | 반영완료 | Dev1 구조 고정 완료: 일반 노드 단일버스, GW 다중버스, 테스터 예외 운영 |
 | TSB-002 | Req_151 문구 명확화 (`도메인 헬스/경로 상태`) | Docs | Docs | Docs Updated | `01_Requirements.md` (`Req_151`,`VC_151`) | `01_Requirements.md` + VC 문구 | 반영완료 | 도메인 경계 통신 상태(주기/타임아웃/유효플래그) 기준으로 수정 |
 | TSB-003 | Req_017/Req_139 표현 정밀화 | Docs | Docs | Docs Updated | `01_Requirements.md` (`Req_017`,`Req_139`,`VC_139`) | `01_Requirements.md` | 반영완료 | `일반차` 표현 정리 + 우선순위 규칙 문장 명확화 |
-| TSB-004 | CANoe 공식 Test Unit PoC 1건 | Dev2 | Dev2 | Proposed | Test Unit 실행 캡처/리포트 | `tmp/mentoring/Mentoring_MET41.md` 체크 갱신 | 대기 | CAPL 하네스는 유지 |
+| TSB-004 | CANoe 공식 Test PoC 1~2건 + Dev2 외부화 브리지 정합 | Dev1 | Dev1 + Dev2 + Docs | In Progress | `canoe/docs/operations/CANOE_TEST_POC_SCOPE_2026-03-08.md`, native CANoe test source/report, Dev2 TUI/CLI package flow | `04`, `05`, `06`, `07`, `TMP_HANDOFF.md`, `tmp/mentoring/Mentoring_MET41.md` | 진행중 | Dev1은 native CANoe test 자산 작성, Dev2는 외부 orchestration/evidence/CI 브리지 유지 |
 | TSB-005 | M40-18 실행 증빙 폐쇄 | Dev1 + Dev2 | Dev1 + Dev2 + Docs | In Progress | 로그/캡처/리포트 | `05/06/07`, `TMP_HANDOFF.md` | 진행중 | G4 재개 조건 |
 | TSB-008 | Dev2 검증 일괄 CLI + 저장포맷 옵션(기본 JSON/MD, CSV 선택) | Dev2 | Dev2 | Docs Updated | `scripts/run.py` (`verify batch`, `shell /verify batch`), `scripts/README.md`, `canoe/tmp/onboarding/VERIFY_EXECUTION_RUNBOOK.md` | `05/06/07` 실행 증빙 작성 가이드에 연결 | 반영완료 | pre/post/full 배치 + `--report-formats` (`json,md` 기본 / `csv` 옵션) |
 | TSB-006 | CAPL `timeNow()` overflow-safe 정리 | Dev1 | Dev1 | Docs Updated | `src/capl/*`, `cfg/channel_assign/*`의 `timeNowInt64()` 전환 + `check_capl_sync` PASS | 필요 시 `0304`, `04` 구현 노트 | 반영완료 | 컴파일 경고 `08-0041` 사전 제거 목적 |
@@ -86,6 +86,7 @@
 | TSB-008 | 2026-03-08 | Dev2 검증 배치 실행/리포트 포맷 정책을 05/06/07 작성 원칙에 연결 | `driving-situation-alert/05_Unit_Test.md`, `driving-situation-alert/06_Integration_Test.md`, `driving-situation-alert/07_System_Test.md` | Ready for Docs -> Docs Updated | Docs | (this commit) |
 | TSB-009 | 2026-03-08 | 인터페이스/멀티버스/CLI 운영 해석을 공통 언어로 정리하고 예외 범위를 명시 | `driving-situation-alert/tmp/change-orders/TEAM_SYNC_BOARD.md` | Ready for Docs -> Docs Updated | Docs | (this commit) |
 | TSB-011 | 2026-03-08 | 멘토 D11 원문과 AUTOSAR/00e 기준을 교차검증해 ECU 명명 운영 결론을 확정 | `docs/meeting-notes/MET_41_2026.03.07.txt`, `driving-situation-alert/00e_ECU_Naming_Standard.md`, `reference/standards/AUTOSAR_CP_TR_SWCModelingGuide.pdf` | Proposed -> Ready for Docs | Dev1 | working note |
+| TSB-004 | 2026-03-08 | 공식 CANoe Test PoC 범위를 대표 2건으로 고정하고 Dev1/Dev2/Docs 역할을 분리 | `canoe/docs/operations/CANOE_TEST_POC_SCOPE_2026-03-08.md`, `driving-situation-alert/tmp/change-orders/DEV1_CANOE_TEST_DOC_IMPACT_2026-03-08.md` | Proposed -> In Progress | Dev1 | planning note |
 | TSB-XXX | YYYY-MM-DD |  |  | Proposed -> In Progress -> Ready for Docs -> Docs Updated -> Done |  |  |
 
 ## 합의 메모
