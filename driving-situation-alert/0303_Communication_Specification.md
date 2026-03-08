@@ -3,8 +3,8 @@
 **Document ID**: PROJ-0303-CS
 **ISO 26262 Reference**: Part 6, Cl.7 (Software Architectural Design)
 **ASPICE Reference**: SWE.2 (Software Architectural Design)
-**Version**: 3.27
-**Date**: 2026-03-07
+**Version**: 3.29
+**Date**: 2026-03-09
 **Status**: Draft
 **Project Title**: 주행 상황 실시간 경고 시스템
 **Subtitle**: 구간 정보 및 긴급차량 접근 기반 앰비언트·클러스터 경보
@@ -56,13 +56,32 @@
 
 | 규칙 | 정책 |
 |---|---|
-| 도메인 우선 분리 | CAN ID는 도메인별 블록(Chassis/Body/Infotainment/Powertrain/ADAS reserved)으로 우선 배정한다. |
-| 논리 ID와 SIL Stub 분리 | Ethernet 논리 ID(`0xE100/0xE200/0xE210~0xE216`)와 CANoe SIL Stub ID(`0x1C3/0x1C4/0x111/0x1C5~0x1C8`)를 분리 표기한다. |
+| Primary ID 체계 | 신규/변경 통신의 정책 기준은 CAN Extended 29-bit(`3/5/21`)다. |
+| Compatibility 체계 | 현 SIL 실행은 11-bit ID를 병행 운용할 수 있으며, 이는 호환 계층으로만 사용한다. |
+| 도메인 우선 분리 | ID는 Owner 도메인 경계 기준으로 먼저 배정하고, 이후 Tier/Block/Slot을 적용한다. |
+| 논리 ID와 SIL Stub 분리 | Ethernet 논리 ID(`0xE100/0xE200/0xE213~0xE216`)와 CANoe SIL Stub ID(`0x1C3/0x1C4/0x111/0x1C5~0x1C8`)를 분리 표기한다. |
 | 긴급 우선 해석 레벨 | `Req_022/028/029/030/031`의 기본 판정 축은 기능중재(`WARN_ARB_MGR`)이며, 버스 중재는 CAN ID 값으로만 결정한다. |
-| Diag 명칭 해석 | 메시지명에 `Diag`가 포함되어도 Group 7 강제 배정 사유가 아니며, Owner/도메인 경계와 안전 경로를 우선 적용한다. |
+| Diag 명칭 해석 | 메시지명에 `Diag`가 포함되어도 특정 슬롯 강제 배정 사유가 아니며, Owner/도메인 경계와 안전 경로를 우선 적용한다. |
 | 충돌 회피 | 신규 ID 추가 시 기존 DBC ID와 중복 금지, 진단/검증 예약 구간과 충돌 금지 원칙을 따른다. |
 | 확장성 | 기존 Flow/Comm 체인을 깨지 않도록 Comm 단위로 확장하고, 동일 변경에서 0302/0304/04/05~07 동시 갱신한다. |
-| SoT 고정 | CAN ID SoT는 `canoe/databases/*.dbc`, Ethernet 계약 SoT는 `canoe/docs/operations/ETH_INTERFACE_CONTRACT.md`로 고정한다. |
+| SoT 고정 | 정책 SoT는 `00f`, 통신 계약 SoT는 `0303`, 실행 SoT는 `canoe/databases/*.dbc` 및 `ETH_INTERFACE_CONTRACT.md`로 고정한다. |
+
+### Comm 기준 Target EXT_ID 샘플 (1차)
+
+| Comm ID | Target EXT_ID | 비고 |
+|---|---|---|
+| Comm_001 | `0x0C200001` | 차량 상태 입력 |
+| Comm_003 | `0x0C600003` | 내비 컨텍스트 입력 |
+| Comm_006 | `0x04A00006` | 경고 선택 egress |
+| Comm_008 | `0x08600008` | 클러스터 출력 |
+| Comm_009 | `0x10E00009` | Validation 결과 프레임 |
+| Comm_120 | `0x04A00078` | 근접 위험 상태 |
+| Comm_124 | `0x04C0007C` | 경계/Fail-safe |
+| Comm_130 | `0x04A00082` | 객체 위험 입력 |
+| Comm_133 | `0x04A00085` | 객체 안전/강등 |
+
+- 전수 `Comm` 매핑은 `00f` Annex 정책 기준으로 후속 확정한다.
+- 본문 상단 표의 `Identifier`는 현재 실행 ID를 유지하고, Extended ID는 하단 정책표로 관리한다.
 
 ---
 
@@ -535,6 +554,8 @@
 
 | 버전 | 날짜 | 변경 사항 |
 |---|---|---|
+| 3.29 | 2026-03-09 | CAN ID 정책 재정렬: `00f v4.1` 기준으로 Primary를 29-bit `3/5/21` 3분할로 단순화하고, Tier/Block/Slot 용어로 통일. Comm Target EXT_ID 샘플을 신규 계산값으로 갱신. |
+| 3.28 | 2026-03-09 | CAN ID 정책 리팩토링 반영: `00f v4.0` 기준으로 29-bit Extended(`3/5/5/16`)를 Primary 정책으로 전환하고, 11-bit는 SIL 호환 계층으로 재정의. `CAN ID 배정 정책` 표와 Comm Target EXT_ID 샘플을 추가. |
 | 3.27 | 2026-03-07 | DBC SoT 정합 2차: ADAS/ETH-stub 소유 통신 범위를 `Comm_121/130~133` 기준으로 재동기화하고(`0x1C3~0x1C8`), `ETH_INTERFACE_CONTRACT.md v1.2` 활성 계약 상태를 본문/규모표에 반영. |
 | 3.26 | 2026-03-06 | Legacy 누락군 보강: `Req_018/036/038/039/114/115/117/122/124` 상속 관계를 `Legacy Req 상속 매핑` 섹션으로 추가해 Comm 추적 누락을 해소. |
 | 3.25 | 2026-03-06 | 경고 강건성·인지성 확장(Pre-Activation) 반영: `Req_148~Req_155`를 `Comm_130/133`, `Comm_006/007/008`, `Comm_104/105/124/203`에 매핑하고 연계 체크포인트를 동기화. |
