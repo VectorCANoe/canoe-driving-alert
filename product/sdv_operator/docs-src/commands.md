@@ -15,6 +15,7 @@ Campaign / CI 확장 표면:
 python scripts/run.py verify batch --run-id 20260310_0900 --campaign-id CMP_20260310 --owner DEV2 --phase pre --surface-scope ALL --repeat-count 1 --duration-minutes 0 --interval-seconds 0 --report-formats json,md,junit
 python scripts/run.py artifact open --target campaign-profiles
 python scripts/run.py artifact open --target native-test-portfolio
+python scripts/run.py artifact open --target native-testcase-blueprints
 python scripts/run.py artifact open --target network-gateway-pack
 python scripts/run.py artifact open --target verification-pack-matrix
 python scripts/run.py artifact open --target role-boundary-doc
@@ -262,6 +263,7 @@ python scripts/run.py artifact open --target execution-manifest --latest
 python scripts/run.py artifact open --target native-reports --latest
 python scripts/run.py artifact open --target surface-inventory
 python scripts/run.py artifact open --target native-test-portfolio
+python scripts/run.py artifact open --target native-testcase-blueprints
 python scripts/run.py artifact open --target network-gateway-pack
 python scripts/run.py artifact open --target verification-pack-matrix
 python scripts/run.py artifact open --target capability-matrix-json

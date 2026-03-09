@@ -770,6 +770,19 @@ PRODUCT_COMMAND_GROUPS: dict[str, list[PaletteCommand]] = {
             next_step="verification pack matrix와 함께 functional/native 구조를 대조하십시오.",
         ),
         PaletteCommand(
+            command_id="artifact.open_native_testcase_blueprints",
+            title="원본 testcase blueprint 열기",
+            command="artifact open --target native-testcase-blueprints",
+            summary="Dev2가 정의한 native testcase intent/oracle/timing blueprint JSON을 바로 엽니다.",
+            use_when=(
+                "Dev1이 native CANoe testcase를 구현할 때 testcase 설계 정본을 확인해야 할 때",
+                "functional/network/diag pack의 기대값 기준을 하나의 계약 파일에서 보고 싶을 때",
+            ),
+            success_signals=("native_testcase_blueprints_v1.json이 열림",),
+            expected_outputs=("product/sdv_operator/config/native_testcase_blueprints_v1.json",),
+            next_step="role boundary 문서와 함께 Dev1/Dev2 책임을 확인하십시오.",
+        ),
+        PaletteCommand(
             command_id="artifact.open_network_gateway_pack",
             title="원본 network/gateway pack 열기",
             command="artifact open --target network-gateway-pack",

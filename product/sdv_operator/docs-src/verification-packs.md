@@ -1,7 +1,7 @@
 # Verification Packs
 
-`CANoe Test Verification Console`은 native test 자산과 외부 CI/증빙 흐름을 직접 작성하지 않습니다.  
-대신 아래 3축을 **pack**으로 고정해서 Dev1 native CANoe test와 Dev2 batch/archive를 같은 운영 축으로 묶습니다.
+`CANoe Test Verification Console`은 native test harness 자체를 만들지 않습니다.  
+대신 아래 3축을 **pack**으로 고정하고, Dev2가 testcase blueprint/oracle 계약을 정의해서 Dev1 native CANoe test 구현과 Dev2 batch/archive를 같은 운영 축으로 묶습니다.
 
 ## 3축 구조
 
@@ -23,10 +23,25 @@
 - source:
   - `product/sdv_operator/config/network_gateway_verification_pack_v1.json`
 
+## testcase blueprint 기준
+
+각 pack은 단순 목록이 아니라 Dev2가 정의한 testcase blueprint와 함께 읽어야 합니다.
+
+- testcase blueprint source:
+  - `product/sdv_operator/config/native_testcase_blueprints_v1.json`
+
+여기에는 아래가 들어 있습니다.
+
+- testcase intent
+- oracle summary
+- timing target
+- evidence expectation
+- Dev1 / Dev2 구현 분리 기준
+
 ## 왜 이렇게 나누는가
 
 - 기능 검증과 네트워크 검증을 섞지 않기 위해서입니다.
-- reviewer는 `기능 핵심가치`와 `인프라 건전성`을 अलग अलग 읽어야 합니다.
+- reviewer는 `기능 핵심가치`와 `인프라 건전성`을 분리해서 읽어야 합니다.
 - diagnostic routing은 네트워크와 연결되어 있지만, owner/route 문서가 안정화되기 전까지는 draft로 유지하는 편이 OEM식 운영에 더 맞습니다.
 
 ## 용어 규칙

@@ -152,6 +152,7 @@ def _artifact_candidates(command_id: str, args: argparse.Namespace) -> list[Path
             "doctor": VERIFICATION_ROOT / "doctor_report.md",
             "surface-inventory": ROOT / "product" / "sdv_operator" / "config" / "surface_ecu_inventory.json",
             "native-test-portfolio": ROOT / "product" / "sdv_operator" / "config" / "native_canoe_test_portfolio_v1.json",
+            "native-testcase-blueprints": ROOT / "product" / "sdv_operator" / "config" / "native_testcase_blueprints_v1.json",
             "network-gateway-pack": ROOT / "product" / "sdv_operator" / "config" / "network_gateway_verification_pack_v1.json",
             "verification-pack-matrix": ROOT / "product" / "sdv_operator" / "config" / "verification_pack_matrix.json",
             "campaign-profiles": ROOT / "product" / "sdv_operator" / "config" / "campaign_profiles.json",

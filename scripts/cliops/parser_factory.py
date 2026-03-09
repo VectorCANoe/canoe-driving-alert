@@ -327,6 +327,7 @@ def add_artifact_open_args(p: argparse.ArgumentParser, handlers: HandlerMap) -> 
             "doctor",
             "surface-inventory",
             "native-test-portfolio",
+            "native-testcase-blueprints",
             "network-gateway-pack",
             "verification-pack-matrix",
             "campaign-profiles",

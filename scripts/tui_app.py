@@ -1526,6 +1526,7 @@ class SdvTuiApp(App[None]):
                 return [
                     "product/sdv_operator/config/surface_ecu_inventory.json",
                     "product/sdv_operator/config/native_canoe_test_portfolio_v1.json",
+                    "product/sdv_operator/config/native_testcase_blueprints_v1.json",
                     "product/sdv_operator/config/network_gateway_verification_pack_v1.json",
                     "product/sdv_operator/config/verification_pack_matrix.json",
                     "product/sdv_operator/config/campaign_profiles.json",
@@ -1549,6 +1550,7 @@ class SdvTuiApp(App[None]):
                 "doctor": "canoe/tmp/reports/verification/doctor_report.md",
                 "surface-inventory": "product/sdv_operator/config/surface_ecu_inventory.json",
                 "native-test-portfolio": "product/sdv_operator/config/native_canoe_test_portfolio_v1.json",
+                "native-testcase-blueprints": "product/sdv_operator/config/native_testcase_blueprints_v1.json",
                 "network-gateway-pack": "product/sdv_operator/config/network_gateway_verification_pack_v1.json",
                 "verification-pack-matrix": "product/sdv_operator/config/verification_pack_matrix.json",
                 "campaign-profiles": "product/sdv_operator/config/campaign_profiles.json",

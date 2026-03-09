@@ -1,0 +1,280 @@
+{
+  "schema": "canoe.test.verification.native-testcase-blueprints.v1",
+  "owner": "Dev2",
+  "purpose": "Dev2-owned testcase blueprint and oracle contract for Dev1 native CANoe realization.",
+  "team_split": {
+    "dev2": [
+      "select representative testcase portfolio",
+      "define testcase intent/oracle/timing/evidence blueprint",
+      "bind testcase assets to campaign/profile/pack metadata"
+    ],
+    "dev1": [
+      "implement common harness",
+      "realize native CANoe test assets (.can/.vtestunit.yaml/.vtesttree.yaml)",
+      "connect testcase blueprint to actual runtime signals/messages and native report output"
+    ]
+  },
+  "packs": [
+    {
+      "pack_id": "native_functional_6",
+      "asset_count": 6,
+      "assets": [
+        {
+          "asset_id": "TC_CANOE_UT_CORE_001_SCHOOLZONE_OVERSPEED",
+          "category": "functional",
+          "level": "UT",
+          "scenario_id": 2,
+          "primary_intent": "nominal school-zone overspeed warning path",
+          "surface_focus": [
+            "ADAS",
+            "CLU",
+            "BCM"
+          ],
+          "timing_ms": {
+            "warning_reflect_max": 150
+          },
+          "oracle_summary": [
+            "scenario result pass",
+            "school zone context retained",
+            "warning state active",
+            "cluster/body outputs aligned"
+          ],
+          "evidence": [
+            ".vtestreport",
+            "sysvar snapshot",
+            "scenario binding"
+          ]
+        },
+        {
+          "asset_id": "TC_CANOE_UT_V2X_001_EMERGENCY_PRIORITY_ETA",
+          "category": "functional",
+          "level": "UT",
+          "scenario_id": 9,
+          "primary_intent": "ETA priority decision for same-class emergency warning",
+          "surface_focus": [
+            "V2X",
+            "ADAS",
+            "CLU"
+          ],
+          "timing_ms": {
+            "priority_update_max": 150
+          },
+          "oracle_summary": [
+            "scenario result pass",
+            "lower ETA source selected",
+            "selected emergency class preserved",
+            "no illegal flip-flop"
+          ],
+          "terminology_rule": "Use ETA priority. Do not call this CAN bus arbitration.",
+          "evidence": [
+            ".vtestreport",
+            "priority decision snapshot",
+            "selected source trace"
+          ]
+        },
+        {
+          "asset_id": "TC_CANOE_UT_V2X_002_TIMEOUT_CLEAR",
+          "category": "functional",
+          "level": "UT",
+          "scenario_id": 6,
+          "primary_intent": "timeout clear and stale robustness",
+          "surface_focus": [
+            "V2X",
+            "ADAS",
+            "BCM",
+            "CLU"
+          ],
+          "timing_ms": {
+            "stale_window": 1000,
+            "clear_reflect_max": 150
+          },
+          "oracle_summary": [
+            "scenario result pass",
+            "timeout detected",
+            "warning safely clears",
+            "no post-clear oscillation"
+          ],
+          "evidence": [
+            ".vtestreport",
+            "timeout snapshot",
+            "clear trace"
+          ]
+        },
+        {
+          "asset_id": "TC_CANOE_IT_V2_FAILSAFE_001_CGW",
+          "category": "functional",
+          "level": "IT",
+          "scenario_id": 18,
+          "primary_intent": "fail-safe downgrade with minimum warning retention",
+          "surface_focus": [
+            "CGW",
+            "ADAS",
+            "BCM",
+            "CLU"
+          ],
+          "timing_ms": {
+            "failsafe_transition_max": 150
+          },
+          "oracle_summary": [
+            "scenario result pass",
+            "failSafeMode asserted",
+            "decel assist blocked",
+            "minimum warning path retained"
+          ],
+          "evidence": [
+            ".vtestreport",
+            "failsafe snapshot",
+            "minimum warning proof"
+          ]
+        },
+        {
+          "asset_id": "TC_CANOE_IT_V2_SYNC_001_DECEL_AND_WARNING",
+          "category": "functional",
+          "level": "IT",
+          "scenario_id": 19,
+          "primary_intent": "decel assist and warning synchronization across channels",
+          "surface_focus": [
+            "ADAS",
+            "BCM",
+            "CLU",
+            "V2X"
+          ],
+          "timing_ms": {
+            "activation_max": 150,
+            "channel_sync_offset_max": 50
+          },
+          "oracle_summary": [
+            "scenario result pass",
+            "decel assist asserted",
+            "warning outputs aligned",
+            "cross-channel sync offset within target"
+          ],
+          "evidence": [
+            ".vtestreport",
+            "sync snapshot",
+            "cross-channel timing proof"
+          ]
+        },
+        {
+          "asset_id": "TC_CANOE_IT_ADAS_001_OBJECT_FORWARD_CONFLICT",
+          "category": "functional",
+          "level": "IT",
+          "scenario_id": 20,
+          "primary_intent": "forward object TTC conflict path without emergency dependency",
+          "surface_focus": [
+            "ADAS",
+            "CLU",
+            "BCM"
+          ],
+          "timing_ms": {
+            "object_input_reflect_max": 100,
+            "warning_reflect_max": 150
+          },
+          "oracle_summary": [
+            "scenario result pass",
+            "object tracking valid",
+            "risk class elevated",
+            "proximity risk reflected"
+          ],
+          "evidence": [
+            ".vtestreport",
+            "object risk snapshot",
+            "TTC trace"
+          ]
+        }
+      ]
+    },
+    {
+      "pack_id": "network_gateway_core_4",
+      "asset_count": 4,
+      "assets": [
+        {
+          "asset_id": "TC_CANOE_NET_001_CAN_BUS_ARBITRATION_PRIORITY",
+          "category": "network_gateway",
+          "level": "IT",
+          "primary_intent": "verify lower CAN ID wins bus arbitration under contention",
+          "oracle_summary": [
+            "lower CAN ID wins",
+            "higher CAN ID retries",
+            "no frame corruption"
+          ],
+          "terminology_rule": "Use CAN bus arbitration only for protocol/network verification.",
+          "evidence": [
+            "trace capture",
+            "bus statistics"
+          ]
+        },
+        {
+          "asset_id": "TC_CANOE_NET_002_GW_ROUTE_FORWARDING_INTEGRITY",
+          "category": "network_gateway",
+          "level": "IT",
+          "primary_intent": "verify gateway forwarding keeps payload and owner integrity",
+          "oracle_summary": [
+            "payload forward match",
+            "no illegal owner swap",
+            "route health valid"
+          ],
+          "evidence": [
+            "source/target timestamps",
+            "forwarding latency summary"
+          ]
+        },
+        {
+          "asset_id": "TC_CANOE_NET_003_TIMEOUT_STALE_CHAIN_CLEAR",
+          "category": "network_gateway",
+          "level": "IT",
+          "primary_intent": "verify stale or timeout chain results in one safe clear/downgrade",
+          "oracle_summary": [
+            "timeout detected",
+            "clear/downgrade transition reached",
+            "no duplicate flip-flop"
+          ],
+          "evidence": [
+            "path health snapshot",
+            "timeout transition trace"
+          ]
+        },
+        {
+          "asset_id": "TC_CANOE_NET_004_LOAD_PERIOD_JITTER_STABILITY",
+          "category": "network_gateway",
+          "level": "IT",
+          "primary_intent": "verify period and jitter stay inside tolerance under load",
+          "oracle_summary": [
+            "period within tolerance",
+            "jitter within tolerance",
+            "no starvation"
+          ],
+          "evidence": [
+            "trace period/jitter summary",
+            "bus statistics"
+          ]
+        }
+      ]
+    },
+    {
+      "pack_id": "network_plus_diag_draft_5",
+      "asset_count": 5,
+      "status": "draft_pre_gate",
+      "assets": [
+        {
+          "asset_id": "TC_CANOE_NET_005_DIAG_ROUTE_INTEGRITY",
+          "category": "diagnostic_gateway",
+          "level": "IT",
+          "status": "draft_pre_gate",
+          "primary_intent": "verify diagnostic request/response routing is owner-safe and traceable",
+          "oracle_summary": [
+            "request reaches target route",
+            "response returns expected route",
+            "no wrong-surface leakage",
+            "timeout/failure path reported correctly"
+          ],
+          "evidence": [
+            "diagnostic trace capture",
+            "request/response timestamps",
+            "route path summary"
+          ]
+        }
+      ]
+    }
+  ]
+}
