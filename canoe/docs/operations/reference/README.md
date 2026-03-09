@@ -38,6 +38,8 @@ Open these only when the active task needs background support:
   - active Dev1 execution split: domain-wave development first, placeholder breadth second
 - `PRIMARY56_RUNTIME26_MAPPING_2026-03-09.md`
   - executable Dev1 mapping baseline from the active runtime set into the `56` primary reviewer-facing ECU surfaces
+- `OEM_4_LAYER_ECU_CLASSIFICATION_2026-03-10.md`
+  - four-layer architectural reading view: central gateway, domain controller, leaf ECU, validation/test
 - `LICENSE_REFERENCE_REPORT.md`
   - license/reference inventory
 - `OPEN_SOURCE_INTAKE_POLICY.md`
@@ -56,4 +58,3 @@ Open these only when the active task needs background support:
 - [RUNTIME_ABSORPTION_STATUS_2026-03-09.md](RUNTIME_ABSORPTION_STATUS_2026-03-09.md) - current Dev1 absorption boundary and GUI cleanup queue.
 - [OEM_RUNTIME_ANCHOR_NAMING_AUDIT_2026-03-09.md](OEM_RUNTIME_ANCHOR_NAMING_AUDIT_2026-03-09.md) - recheck of remaining runtime anchors and OEM-normalized names.
 - [RUNTIME_RENAME_SPLIT_PLAN_2026-03-09.md](RUNTIME_RENAME_SPLIT_PLAN_2026-03-09.md) - split between source/file rename targets and GUI-only rename targets.
-
