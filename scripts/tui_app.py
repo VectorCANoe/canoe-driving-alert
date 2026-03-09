@@ -56,7 +56,7 @@ from rich.markup import escape
 
 ROOT = Path(__file__).resolve().parent.parent
 RUNNER = ROOT / "scripts" / "run.py"
-FORM_SLOTS = 4
+FORM_SLOTS = 10
 STATE_FILE = ROOT / "canoe" / "tmp" / "reports" / "verification" / "tui_operator_state.json"
 CAMPAIGN_PROFILES_PATH = ROOT / "product" / "sdv_operator" / "config" / "campaign_profiles.json"
 BASE_GROUP_NAMES = list(PRODUCT_COMMAND_GROUPS.keys())
@@ -293,6 +293,7 @@ class SdvTuiApp(App[None]):
     #details-pane {
         width: 1fr;
         margin-right: 0;
+        overflow-y: auto;
     }
 
     #details-body {
@@ -303,6 +304,7 @@ class SdvTuiApp(App[None]):
 
     #form-body {
         margin-top: 1;
+        overflow-y: auto;
     }
 
     .form-row {
@@ -459,8 +461,14 @@ class SdvTuiApp(App[None]):
     }
 
     #automation-profiles {
-        height: 3;
+        height: 7;
         margin-top: 1;
+    }
+
+    #automation-profiles-primary,
+    #automation-profiles-secondary {
+        height: 3;
+        margin-bottom: 1;
     }
 
     #automation-profiles Button {
@@ -784,15 +792,22 @@ class SdvTuiApp(App[None]):
                                 yield Button("패키징 계약 점검", id="automation-contract")
                                 yield Button("native report 열기", id="automation-open-native")
                                 yield Button("최신 archive 열기", id="automation-open-archive")
-                        with Horizontal(id="automation-profiles"):
-                            yield Button("Quick smoke profile", id="automation-profile-quick")
-                            yield Button("CI preflight profile", id="automation-profile-ci")
-                            yield Button("Nightly profile", id="automation-profile-nightly")
-                            yield Button("Soak profile", id="automation-profile-soak")
-                            yield Button("Profile 원본", id="automation-open-profiles")
+                        with Vertical(id="automation-profiles"):
+                            with Horizontal(id="automation-profiles-primary"):
+                                yield Button("Quick smoke", id="automation-profile-quick")
+                                yield Button("CI preflight", id="automation-profile-ci")
+                                yield Button("Nightly", id="automation-profile-nightly")
+                                yield Button("Soak", id="automation-profile-soak")
+                            with Horizontal(id="automation-profiles-secondary"):
+                                yield Button("Functional 6", id="automation-profile-functional6")
+                                yield Button("Network Core 4", id="automation-profile-network4")
+                                yield Button("Network+Diag Draft", id="automation-profile-networkdiag")
+                                yield Button("Profile 원본", id="automation-open-profiles")
+                                yield Button("Pack matrix", id="automation-open-pack-matrix")
                         yield Static(
                             "원칙: CANoe TEST를 대체하지 않고, Jenkins를 복제하지 않습니다. "
-                            "Console은 campaign/evidence/CI bridge만 담당합니다. capability boundary와 role boundary 문서가 이 경계를 source contract로 고정합니다.",
+                            "Console은 campaign/evidence/CI bridge만 담당합니다. "
+                            "Quick/CI/Nightly/Soak은 실행 프로파일이고, Functional 6 / Network Core 4 / Network+Diag Draft는 검증 pack 프로파일입니다.",
                             id="automation-hint",
                         )
                 with Vertical(id="log-dock"):
@@ -933,6 +948,10 @@ class SdvTuiApp(App[None]):
             "profile_id": profile_id,
             "title": str(profile.get("title", profile_id)),
             "stop_on_fail": bool(profile.get("stop_on_fail", False)),
+            "pack_id": str(profile.get("pack_id", "")),
+            "review_focus": str(profile.get("review_focus", "")),
+            "contract_ref": str(profile.get("contract_ref", "")),
+            "surface_scope": str(profile.get("surface_scope", "ALL")),
         }
         self._update_preview()
         self._write_log(
@@ -946,9 +965,16 @@ class SdvTuiApp(App[None]):
             return []
         if command.command_id not in {"verify.batch", "verify.precheck_batch"}:
             return []
+        tokens: list[str] = []
+        profile_id = str(profile.get("profile_id", "")).strip()
+        pack_id = str(profile.get("pack_id", "")).strip()
+        if profile_id:
+            tokens.extend(["--profile-id", profile_id])
+        if pack_id:
+            tokens.extend(["--pack-id", pack_id])
         if bool(profile.get("stop_on_fail", False)):
-            return ["--stop-on-fail"]
-        return []
+            tokens.append("--stop-on-fail")
+        return tokens
 
     def _refresh_home_summary(self) -> None:
         last_result = self.state.get("last_result", {})
@@ -1094,12 +1120,16 @@ class SdvTuiApp(App[None]):
         lines = [self._relpath(source_target)]
         for candidate in (
             ROOT / "product" / "sdv_operator" / "config" / "surface_ecu_inventory.json",
+            ROOT / "product" / "sdv_operator" / "config" / "native_canoe_test_portfolio_v1.json",
+            ROOT / "product" / "sdv_operator" / "config" / "network_gateway_verification_pack_v1.json",
+            ROOT / "product" / "sdv_operator" / "config" / "verification_pack_matrix.json",
             ROOT / "product" / "sdv_operator" / "config" / "campaign_profiles.json",
             ROOT / "product" / "sdv_operator" / "config" / "capability_boundary_matrix.json",
             ROOT / "product" / "sdv_operator" / "config" / "surface_traceability_profile.json",
             ROOT / "product" / "sdv_operator" / "config" / "verification_artifact_layout.json",
             ROOT / "product" / "sdv_operator" / "docs-src" / "role-boundary.md",
             ROOT / "product" / "sdv_operator" / "docs-src" / "capability-boundary.md",
+            ROOT / "product" / "sdv_operator" / "docs-src" / "verification-packs.md",
         ):
             marker = "OK" if candidate.exists() else "MISS"
             lines.append(f"- [{marker}] {self._relpath(candidate)}")
@@ -1219,6 +1249,15 @@ class SdvTuiApp(App[None]):
         manifest_target = self._resolve_archive_child_target("manifests/execution_manifest.json")
         lines.append("execution manifest")
         lines.append(f"- {self._relpath(manifest_target) if manifest_target else '최근 archive가 없습니다.'}")
+        profile = self.state.get("campaign_profile", {})
+        if isinstance(profile, dict):
+            profile_id = str(profile.get("profile_id", "")).strip()
+            pack_id = str(profile.get("pack_id", "")).strip()
+            if profile_id or pack_id:
+                lines.append("")
+                lines.append("활성 pack")
+                lines.append(f"- profile={profile_id or '-'}")
+                lines.append(f"- pack={pack_id or '-'}")
         lines.append("")
         lines.append("원본 기준")
         lines.append(f"- {source_target.relative_to(ROOT).as_posix()}")
@@ -1486,12 +1525,16 @@ class SdvTuiApp(App[None]):
             if scope == "source":
                 return [
                     "product/sdv_operator/config/surface_ecu_inventory.json",
+                    "product/sdv_operator/config/native_canoe_test_portfolio_v1.json",
+                    "product/sdv_operator/config/network_gateway_verification_pack_v1.json",
+                    "product/sdv_operator/config/verification_pack_matrix.json",
                     "product/sdv_operator/config/campaign_profiles.json",
                     "product/sdv_operator/config/capability_boundary_matrix.json",
                     "product/sdv_operator/config/surface_traceability_profile.json",
                     "product/sdv_operator/config/verification_artifact_layout.json",
                     "product/sdv_operator/docs-src/role-boundary.md",
                     "product/sdv_operator/docs-src/capability-boundary.md",
+                    "product/sdv_operator/docs-src/verification-packs.md",
                 ]
             if scope == "build":
                 return ["dist", "build", "product/sdv_operator/site"]
@@ -1505,6 +1548,9 @@ class SdvTuiApp(App[None]):
                 "readiness": "canoe/tmp/reports/verification/run_readiness.md",
                 "doctor": "canoe/tmp/reports/verification/doctor_report.md",
                 "surface-inventory": "product/sdv_operator/config/surface_ecu_inventory.json",
+                "native-test-portfolio": "product/sdv_operator/config/native_canoe_test_portfolio_v1.json",
+                "network-gateway-pack": "product/sdv_operator/config/network_gateway_verification_pack_v1.json",
+                "verification-pack-matrix": "product/sdv_operator/config/verification_pack_matrix.json",
                 "campaign-profiles": "product/sdv_operator/config/campaign_profiles.json",
                 "capability-matrix-json": "product/sdv_operator/config/capability_boundary_matrix.json",
                 "traceability-profile": "product/sdv_operator/config/surface_traceability_profile.json",
@@ -1516,6 +1562,7 @@ class SdvTuiApp(App[None]):
                 "packaging-doc": "product/sdv_operator/docs-src/packaging.md",
                 "role-boundary-doc": "product/sdv_operator/docs-src/role-boundary.md",
                 "capability-matrix-doc": "product/sdv_operator/docs-src/capability-boundary.md",
+                "verification-packs-doc": "product/sdv_operator/docs-src/verification-packs.md",
                 "execution-manifest": "artifacts/verification_runs",
                 "archive-run": "artifacts/verification_runs",
                 "reports-dir": "artifacts/verification_runs",
@@ -1811,6 +1858,8 @@ class SdvTuiApp(App[None]):
         lines = [
             f"Task: {command_title}",
             f"Profile: {profile.get('title', '-')}",
+            f"profile_id={profile.get('profile_id', '-')}",
+            f"pack_id={profile.get('pack_id', '-')}",
             f"campaign_id={values.get('campaign_id', '-')}",
             f"phase={values.get('phase', '-')}",
             f"surface={values.get('surface_scope', '-')}",
@@ -1820,6 +1869,9 @@ class SdvTuiApp(App[None]):
             f"{values.get('interval_seconds', '-')}sec / "
             f"stop_on_fail={'Y' if profile.get('stop_on_fail', False) else 'N'}",
         ]
+        review_focus = str(profile.get("review_focus", "")).strip()
+        if review_focus:
+            lines.append(f"focus={review_focus}")
         return "\n".join(lines)
     def _resolve_artifact_target(self) -> Path | None:
         last_result = self.state.get("last_result", {})
@@ -1848,10 +1900,23 @@ class SdvTuiApp(App[None]):
 
     def _resolve_source_contract_target(self) -> Path:
         command_id = self._last_command_id()
+        profile = self.state.get("campaign_profile", {})
+        if isinstance(profile, dict):
+            contract_ref = str(profile.get("contract_ref", "")).strip()
+            if contract_ref:
+                candidate = ROOT / contract_ref
+                if candidate.exists():
+                    return candidate
         if command_id.startswith("package.") or command_id.startswith("artifact.open_artifact_layout"):
             return ROOT / "product" / "sdv_operator" / "config" / "verification_artifact_layout.json"
         if command_id.startswith("artifact.open_capability_matrix_json") or command_id.startswith("artifact.open_capability_boundary_doc"):
             return ROOT / "product" / "sdv_operator" / "config" / "capability_boundary_matrix.json"
+        if command_id.startswith("artifact.open_native_test_portfolio"):
+            return ROOT / "product" / "sdv_operator" / "config" / "native_canoe_test_portfolio_v1.json"
+        if command_id.startswith("artifact.open_network_gateway_pack"):
+            return ROOT / "product" / "sdv_operator" / "config" / "network_gateway_verification_pack_v1.json"
+        if command_id.startswith("artifact.open_verification_pack_matrix"):
+            return ROOT / "product" / "sdv_operator" / "config" / "verification_pack_matrix.json"
         if command_id.startswith("verify.surface_bundle") or command_id.startswith("artifact.open_source_inventory"):
             return ROOT / "product" / "sdv_operator" / "config" / "surface_ecu_inventory.json"
         if command_id.startswith("verify.") or command_id.startswith("operate.") or command_id.startswith("inspect."):
@@ -1934,6 +1999,15 @@ class SdvTuiApp(App[None]):
 
     def action_open_campaign_profiles(self) -> None:
         self._open_static_target(ROOT / "product" / "sdv_operator" / "config" / "campaign_profiles.json")
+
+    def action_open_native_test_portfolio(self) -> None:
+        self._open_static_target(ROOT / "product" / "sdv_operator" / "config" / "native_canoe_test_portfolio_v1.json")
+
+    def action_open_network_gateway_pack(self) -> None:
+        self._open_static_target(ROOT / "product" / "sdv_operator" / "config" / "network_gateway_verification_pack_v1.json")
+
+    def action_open_verification_pack_matrix(self) -> None:
+        self._open_static_target(ROOT / "product" / "sdv_operator" / "config" / "verification_pack_matrix.json")
 
     def action_open_capability_boundary(self) -> None:
         self._open_static_target(ROOT / "product" / "sdv_operator" / "docs-src" / "capability-boundary.md")
@@ -2171,6 +2245,7 @@ class SdvTuiApp(App[None]):
         lines = [
             f"Run: {batch.get('run_id', '-')}",
             f"Campaign: {batch.get('campaign_id', '-')}",
+            f"Profile/Pack: {batch.get('profile_id', '-') or '-'} / {batch.get('pack_id', '-') or '-'}",
             f"Phase/Status: {phase} / {status}",
             f"Surface Scope: {batch.get('campaign', {}).get('surface_scope', '-') if isinstance(batch.get('campaign', {}), dict) else '-'}",
             "Plan: "
@@ -2424,8 +2499,16 @@ class SdvTuiApp(App[None]):
             self._apply_campaign_profile("nightly_regression")
         elif event.button.id == "automation-profile-soak":
             self._apply_campaign_profile("soak_stability")
+        elif event.button.id == "automation-profile-functional6":
+            self._apply_campaign_profile("native_functional_6")
+        elif event.button.id == "automation-profile-network4":
+            self._apply_campaign_profile("network_gateway_core_4")
+        elif event.button.id == "automation-profile-networkdiag":
+            self._apply_campaign_profile("network_plus_diag_draft_5")
         elif event.button.id == "automation-open-profiles":
             self.action_open_campaign_profiles()
+        elif event.button.id == "automation-open-pack-matrix":
+            self.action_open_verification_pack_matrix()
         elif event.button.id == "automation-contract":
             self._open_task("Packaging", "package.validate_contract", focus="run")
         elif event.button.id == "automation-open-native":

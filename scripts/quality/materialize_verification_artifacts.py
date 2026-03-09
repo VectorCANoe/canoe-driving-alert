@@ -94,6 +94,7 @@ def _execution_manifest_payload(
     doctor = _load_json(staging_root / "doctor_report.json")
     surface_bundle = _load_json(staging_root / "surface_evidence_bundle.json")
 
+    batch_campaign = batch.get("campaign", {}) if isinstance(batch.get("campaign"), dict) else {}
     execution = {}
     if isinstance(surface_bundle.get("execution"), dict):
         execution = dict(surface_bundle.get("execution", {}))
@@ -104,15 +105,29 @@ def _execution_manifest_payload(
             "owner": str(batch.get("owner", "")),
             "run_date": str(batch.get("run_date", "")),
             "campaign_id": str(batch.get("campaign_id", "")),
-            "surface_scope": str(batch.get("campaign", {}).get("surface_scope", "ALL")) if isinstance(batch.get("campaign"), dict) else "ALL",
-            "repeat_count": int(batch.get("campaign", {}).get("repeat_count", 1)) if isinstance(batch.get("campaign"), dict) else 1,
-            "duration_minutes": int(batch.get("campaign", {}).get("duration_minutes", 0)) if isinstance(batch.get("campaign"), dict) else 0,
-            "interval_seconds": int(batch.get("campaign", {}).get("interval_seconds", 0)) if isinstance(batch.get("campaign"), dict) else 0,
-            "stop_on_fail": bool(batch.get("campaign", {}).get("stop_on_fail", False)) if isinstance(batch.get("campaign"), dict) else False,
+            "profile_id": str(batch.get("profile_id", "")),
+            "pack_id": str(batch.get("pack_id", "")),
+            "surface_scope": str(batch_campaign.get("surface_scope", "ALL")),
+            "repeat_count": int(batch_campaign.get("repeat_count", 1)),
+            "duration_minutes": int(batch_campaign.get("duration_minutes", 0)),
+            "interval_seconds": int(batch_campaign.get("interval_seconds", 0)),
+            "stop_on_fail": bool(batch_campaign.get("stop_on_fail", False)),
             "generated_at": "",
             "executed_scenario_ids": [],
             "smoke_case_ids": [],
         }
+    execution.setdefault("run_id", str(batch.get("run_id", run_id)))
+    execution.setdefault("phase", str(batch.get("phase", phase)))
+    execution.setdefault("owner", str(batch.get("owner", "")))
+    execution.setdefault("run_date", str(batch.get("run_date", "")))
+    execution.setdefault("campaign_id", str(batch.get("campaign_id", "")))
+    execution.setdefault("profile_id", str(batch.get("profile_id", batch_campaign.get("profile_id", ""))))
+    execution.setdefault("pack_id", str(batch.get("pack_id", batch_campaign.get("pack_id", ""))))
+    execution.setdefault("surface_scope", str(batch_campaign.get("surface_scope", "ALL")))
+    execution.setdefault("repeat_count", int(batch_campaign.get("repeat_count", 1)))
+    execution.setdefault("duration_minutes", int(batch_campaign.get("duration_minutes", 0)))
+    execution.setdefault("interval_seconds", int(batch_campaign.get("interval_seconds", 0)))
+    execution.setdefault("stop_on_fail", bool(batch_campaign.get("stop_on_fail", False)))
 
     surface_summary = []
     for item in surface_bundle.get("surfaces", []):
@@ -194,11 +209,14 @@ def main() -> int:
     for tier in ("UT", "IT", "ST"):
         copied_evidence_files.extend(_copy_tree(evidence_root / tier / args.run_id, evidence_dir / tier))
 
+    batch = _load_json(staging_root / "dev2_batch_report.json")
     artifact_manifest = {
         "schema": "sdv.verification.artifact.materialized.v2",
         "run_id": args.run_id,
         "phase": args.phase,
-        "campaign_id": str(_load_json(staging_root / "dev2_batch_report.json").get("campaign_id", "")),
+        "campaign_id": str(batch.get("campaign_id", "")),
+        "profile_id": str(batch.get("profile_id", "")),
+        "pack_id": str(batch.get("pack_id", "")),
         "layout_source": _rel(args.layout_json),
         "reports_dir": _rel(reports_dir),
         "surface_dir": _rel(surface_dir),
@@ -219,6 +237,9 @@ def main() -> int:
         "",
         f"- Run ID: `{args.run_id}`",
         f"- Phase: `{args.phase}`",
+        f"- Campaign ID: `{artifact_manifest['campaign_id'] or '-'}`",
+        f"- Profile ID: `{artifact_manifest['profile_id'] or '-'}`",
+        f"- Pack ID: `{artifact_manifest['pack_id'] or '-'}`",
         f"- Reports Dir: `{_rel(reports_dir)}`",
         f"- Surface Dir: `{_rel(surface_dir)}`",
         f"- Native Reports Dir: `{_rel(native_reports_dir)}`",
@@ -265,6 +286,8 @@ def main() -> int:
         f"- Owner: `{execution_manifest['execution'].get('owner', '-') or '-'}`",
         f"- Run Date: `{execution_manifest['execution'].get('run_date', '-') or '-'}`",
         f"- Campaign ID: `{execution_manifest['execution'].get('campaign_id', '-') or '-'}`",
+        f"- Profile ID: `{execution_manifest['execution'].get('profile_id', '-') or '-'}`",
+        f"- Pack ID: `{execution_manifest['execution'].get('pack_id', '-') or '-'}`",
         f"- Surface Scope: `{execution_manifest['execution'].get('surface_scope', '-') or '-'}`",
         f"- Repeat / Duration / Interval: `{execution_manifest['execution'].get('repeat_count', 1)}` / `{execution_manifest['execution'].get('duration_minutes', 0)} min` / `{execution_manifest['execution'].get('interval_seconds', 0)} sec`",
         f"- Stop On Fail: `{str(bool(execution_manifest['execution'].get('stop_on_fail', False))).lower()}`",

@@ -53,6 +53,54 @@
       "interval_seconds": 60,
       "stop_on_fail": false,
       "owner_default": "JENKINS"
+    },
+    {
+      "profile_id": "native_functional_6",
+      "title": "Functional 6 Pack",
+      "purpose": "Run the 6 representative native functional assets as a reviewer-facing OEM warning portfolio.",
+      "recommended_command": "verify batch",
+      "phase": "pre",
+      "surface_scope": "ADAS,BCM,CLU,V2X,CGW",
+      "repeat_count": 1,
+      "duration_minutes": 0,
+      "interval_seconds": 0,
+      "stop_on_fail": true,
+      "owner_default": "DEV2",
+      "pack_id": "native_functional_6",
+      "review_focus": "핵심 경고 컨셉 6개를 한 번에 검증",
+      "contract_ref": "product/sdv_operator/config/native_canoe_test_portfolio_v1.json"
+    },
+    {
+      "profile_id": "network_gateway_core_4",
+      "title": "Network Core 4 Pack",
+      "purpose": "Run the mandatory network/gateway core verification pack.",
+      "recommended_command": "verify batch",
+      "phase": "pre",
+      "surface_scope": "CGW,ETH_BACKBONE,ADAS,BCM,IVI,CLUSTER",
+      "repeat_count": 1,
+      "duration_minutes": 0,
+      "interval_seconds": 0,
+      "stop_on_fail": true,
+      "owner_default": "DEV2",
+      "pack_id": "network_gateway_core_4",
+      "review_focus": "CAN bus arbitration, forwarding, stale chain, jitter",
+      "contract_ref": "product/sdv_operator/config/network_gateway_verification_pack_v1.json"
+    },
+    {
+      "profile_id": "network_plus_diag_draft_5",
+      "title": "Network + Diag Draft Pack",
+      "purpose": "Run the network/gateway core plus diagnostic routing draft as a pre-gate engineering pack.",
+      "recommended_command": "verify batch",
+      "phase": "pre",
+      "surface_scope": "CGW,ETH_BACKBONE,ADAS,BCM,IVI,CLUSTER,V2X",
+      "repeat_count": 1,
+      "duration_minutes": 0,
+      "interval_seconds": 0,
+      "stop_on_fail": false,
+      "owner_default": "DEV2",
+      "pack_id": "network_plus_diag_draft_5",
+      "review_focus": "network/gateway core plus diagnostic route integrity draft",
+      "contract_ref": "product/sdv_operator/config/network_gateway_verification_pack_v1.json"
     }
   ]
 }

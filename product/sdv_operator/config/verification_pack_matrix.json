@@ -1,0 +1,45 @@
+{
+  "schema": "canoe.test.verification.pack-matrix.v1",
+  "description": "Dev2-owned verification pack matrix. Functional packs, network packs, and diagnostic draft packs stay separate from native CANoe harness implementation.",
+  "packs": [
+    {
+      "pack_id": "native_functional_6",
+      "title": "Native Functional Portfolio 6",
+      "status": "mandatory",
+      "category": "functional",
+      "review_focus": "핵심 운전자 경고 컨셉 검증",
+      "asset_count": 6,
+      "campaign_profile_id": "native_functional_6",
+      "source_contracts": [
+        "product/sdv_operator/config/native_canoe_test_portfolio_v1.json",
+        "driving-situation-alert/tmp/change-orders/DEV2_NATIVE_TEST_CASE_DESIGN_6_2026-03-10.md"
+      ]
+    },
+    {
+      "pack_id": "network_gateway_core_4",
+      "title": "Network / Gateway Core 4",
+      "status": "mandatory",
+      "category": "network_gateway",
+      "review_focus": "CAN bus arbitration, route forwarding, stale/timeout, load/jitter",
+      "asset_count": 4,
+      "campaign_profile_id": "network_gateway_core_4",
+      "source_contracts": [
+        "product/sdv_operator/config/network_gateway_verification_pack_v1.json",
+        "driving-situation-alert/tmp/change-orders/DEV2_NETWORK_GATEWAY_VERIFICATION_PACK_V1_2026-03-10.md"
+      ]
+    },
+    {
+      "pack_id": "network_plus_diag_draft_5",
+      "title": "Network / Gateway + Diagnostic Draft 5",
+      "status": "draft_pre_gate",
+      "category": "network_gateway_diagnostic",
+      "review_focus": "network/gateway core plus diagnostic route integrity draft",
+      "asset_count": 5,
+      "campaign_profile_id": "network_plus_diag_draft_5",
+      "source_contracts": [
+        "product/sdv_operator/config/network_gateway_verification_pack_v1.json",
+        "driving-situation-alert/tmp/change-orders/DEV2_NETWORK_GATEWAY_VERIFICATION_PACK_V1_2026-03-10.md"
+      ]
+    }
+  ]
+}

@@ -83,6 +83,9 @@ def _source_entries(layout: dict) -> list[Path]:
         LAYOUT_PATH,
         ROOT / "product" / "sdv_operator" / "manifest.json",
         ROOT / "product" / "sdv_operator" / "config" / "surface_ecu_inventory.json",
+        ROOT / "product" / "sdv_operator" / "config" / "native_canoe_test_portfolio_v1.json",
+        ROOT / "product" / "sdv_operator" / "config" / "network_gateway_verification_pack_v1.json",
+        ROOT / "product" / "sdv_operator" / "config" / "verification_pack_matrix.json",
         ROOT / "product" / "sdv_operator" / "config" / "campaign_profiles.json",
         ROOT / "product" / "sdv_operator" / "config" / "capability_boundary_matrix.json",
         ROOT / "product" / "sdv_operator" / "config" / "surface_traceability_profile.json",
@@ -162,6 +165,12 @@ def _resolve_open_target(layout: dict, target: str, run_id: str, phase: str, lat
         return staging_root / "doctor_report.md"
     if target == "surface-inventory":
         return ROOT / "product" / "sdv_operator" / "config" / "surface_ecu_inventory.json"
+    if target == "native-test-portfolio":
+        return ROOT / "product" / "sdv_operator" / "config" / "native_canoe_test_portfolio_v1.json"
+    if target == "network-gateway-pack":
+        return ROOT / "product" / "sdv_operator" / "config" / "network_gateway_verification_pack_v1.json"
+    if target == "verification-pack-matrix":
+        return ROOT / "product" / "sdv_operator" / "config" / "verification_pack_matrix.json"
     if target == "campaign-profiles":
         return ROOT / "product" / "sdv_operator" / "config" / "campaign_profiles.json"
     if target == "capability-matrix-json":

@@ -1,0 +1,125 @@
+{
+  "pack_id": "network_gateway_verification_pack_v1",
+  "date": "2026-03-10",
+  "owner": "Dev2",
+  "status": "design_baseline",
+  "separation_rule": {
+    "functional_portfolio": "separate",
+    "native_functional_portfolio_size": 6,
+    "network_gateway_pack_size": 4,
+    "diagnostic_draft_slots": 1
+  },
+  "assets": [
+    {
+      "asset_id": "TC_CANOE_NET_001_CAN_BUS_ARBITRATION_PRIORITY",
+      "level": "IT",
+      "category": "can_protocol",
+      "intent": "verify lower CAN ID wins bus arbitration under contention",
+      "scope": [
+        "CAN bus arbitration",
+        "ID priority",
+        "retry without corruption"
+      ],
+      "oracle": [
+        "lower_can_id_wins == true",
+        "higher_can_id_retry_detected == true",
+        "frame_mutation_count == 0"
+      ],
+      "evidence_tags": [
+        "trace_capture",
+        "bus_statistics"
+      ]
+    },
+    {
+      "asset_id": "TC_CANOE_NET_002_GW_ROUTE_FORWARDING_INTEGRITY",
+      "level": "IT",
+      "category": "gateway",
+      "intent": "verify gateway forwards expected payload across backbone/domain path",
+      "scope": [
+        "route forwarding",
+        "payload integrity",
+        "owner boundary"
+      ],
+      "oracle": [
+        "payload_forward_match == true",
+        "illegal_owner_swap == 0",
+        "field_mutation_count == 0",
+        "route_health_valid == true"
+      ],
+      "evidence_tags": [
+        "source_frame_timestamp",
+        "target_frame_timestamp",
+        "forwarding_latency_summary"
+      ]
+    },
+    {
+      "asset_id": "TC_CANOE_NET_003_TIMEOUT_STALE_CHAIN_CLEAR",
+      "level": "IT",
+      "category": "robustness",
+      "intent": "verify stale or timeout chain results in one safe clear or downgrade",
+      "scope": [
+        "path timeout",
+        "stale detection",
+        "clear transition"
+      ],
+      "oracle": [
+        "timeout_detected == true",
+        "clear_or_downgrade_transition == true",
+        "duplicate_flip_flop_count == 0"
+      ],
+      "evidence_tags": [
+        "path_health_snapshot",
+        "timeout_transition_trace"
+      ]
+    },
+    {
+      "asset_id": "TC_CANOE_NET_004_LOAD_PERIOD_JITTER_STABILITY",
+      "level": "IT",
+      "category": "timing_load",
+      "intent": "verify representative key traffic stays within period and jitter bounds under load",
+      "scope": [
+        "bus load",
+        "period",
+        "jitter"
+      ],
+      "oracle": [
+        "period_within_tolerance == true",
+        "unexpected_starvation_count == 0",
+        "jitter_within_tolerance == true"
+      ],
+      "evidence_tags": [
+        "trace_period_jitter_summary",
+        "bus_statistics"
+      ]
+    },
+    {
+      "asset_id": "TC_CANOE_NET_005_DIAG_ROUTE_INTEGRITY",
+      "level": "IT",
+      "status": "draft_pre_gate",
+      "category": "diagnostic_gateway",
+      "intent": "verify diagnostic request and response routing stays owner-safe and traceable",
+      "scope": [
+        "diagnostic request route",
+        "diagnostic response route",
+        "owner-safe forwarding",
+        "timeout/failure path"
+      ],
+      "oracle": [
+        "request_reaches_target_route == true",
+        "response_returns_expected_route == true",
+        "payload_mutation_count == 0",
+        "wrong_surface_owner_leakage == 0",
+        "route_failure_reported_correctly == true"
+      ],
+      "evidence_tags": [
+        "diagnostic_trace_capture",
+        "request_response_timestamps",
+        "route_path_summary"
+      ]
+    }
+  ],
+  "future_extension": {
+    "promotion_rule": "promote draft diagnostic routing asset to mandatory pack after diagnostic surface and route ownership stabilize",
+    "candidate_asset_id": "TC_CANOE_NET_005_DIAG_ROUTE_INTEGRITY"
+  }
+}

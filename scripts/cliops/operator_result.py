@@ -120,6 +120,9 @@ def _artifact_candidates(command_id: str, args: argparse.Namespace) -> list[Path
             paths.extend(
                 [
                     ROOT / "product" / "sdv_operator" / "config" / "surface_ecu_inventory.json",
+                    ROOT / "product" / "sdv_operator" / "config" / "native_canoe_test_portfolio_v1.json",
+                    ROOT / "product" / "sdv_operator" / "config" / "network_gateway_verification_pack_v1.json",
+                    ROOT / "product" / "sdv_operator" / "config" / "verification_pack_matrix.json",
                     ROOT / "product" / "sdv_operator" / "config" / "campaign_profiles.json",
                     ROOT / "product" / "sdv_operator" / "config" / "capability_boundary_matrix.json",
                     ROOT / "product" / "sdv_operator" / "config" / "surface_traceability_profile.json",
@@ -148,6 +151,9 @@ def _artifact_candidates(command_id: str, args: argparse.Namespace) -> list[Path
             "readiness": VERIFICATION_ROOT / "run_readiness.md",
             "doctor": VERIFICATION_ROOT / "doctor_report.md",
             "surface-inventory": ROOT / "product" / "sdv_operator" / "config" / "surface_ecu_inventory.json",
+            "native-test-portfolio": ROOT / "product" / "sdv_operator" / "config" / "native_canoe_test_portfolio_v1.json",
+            "network-gateway-pack": ROOT / "product" / "sdv_operator" / "config" / "network_gateway_verification_pack_v1.json",
+            "verification-pack-matrix": ROOT / "product" / "sdv_operator" / "config" / "verification_pack_matrix.json",
             "campaign-profiles": ROOT / "product" / "sdv_operator" / "config" / "campaign_profiles.json",
             "capability-matrix-json": ROOT / "product" / "sdv_operator" / "config" / "capability_boundary_matrix.json",
             "traceability-profile": ROOT / "product" / "sdv_operator" / "config" / "surface_traceability_profile.json",

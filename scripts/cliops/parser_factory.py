@@ -76,6 +76,8 @@ def add_verify_prepare_args(p: argparse.ArgumentParser, handlers: HandlerMap) ->
 def add_verify_batch_args(p: argparse.ArgumentParser, handlers: HandlerMap) -> None:
     p.add_argument("--run-id", required=True, help="Run ID, e.g. 20260306_1930")
     p.add_argument("--campaign-id", default=default_campaign_id(), help="Campaign ID, e.g. CMP_20260310")
+    p.add_argument("--profile-id", default="", help="Campaign profile ID, e.g. native_functional_6")
+    p.add_argument("--pack-id", default="", help="Verification pack ID, e.g. network_gateway_core_4")
     p.add_argument("--owner", default="TBD")
     p.add_argument("--run-date", default=dt.date.today().isoformat())
     p.add_argument("--phase", choices=["pre", "post", "full"], default="pre")
@@ -324,6 +326,9 @@ def add_artifact_open_args(p: argparse.ArgumentParser, handlers: HandlerMap) -> 
             "readiness",
             "doctor",
             "surface-inventory",
+            "native-test-portfolio",
+            "network-gateway-pack",
+            "verification-pack-matrix",
             "campaign-profiles",
             "capability-matrix-json",
             "traceability-profile",

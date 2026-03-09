@@ -331,6 +331,8 @@ def _write_batch_report(
     *,
     run_id: str,
     campaign_id: str,
+    profile_id: str,
+    pack_id: str,
     owner: str,
     run_date: str,
     phase: str,
@@ -362,11 +364,15 @@ def _write_batch_report(
     payload = {
         'run_id': run_id,
         'campaign_id': campaign_id,
+        'profile_id': profile_id,
+        'pack_id': pack_id,
         'owner': owner,
         'run_date': run_date,
         'phase': phase,
         'campaign': {
             'campaign_id': campaign_id,
+            'profile_id': profile_id,
+            'pack_id': pack_id,
             'surface_scope': surface_scope,
             'repeat_count': repeat_count,
             'duration_minutes': duration_minutes,
@@ -390,6 +396,8 @@ def _write_batch_report(
             '',
             f'- run_id: `{run_id}`',
             f'- campaign_id: `{campaign_id}`',
+            f'- profile_id: `{profile_id or "-"}`',
+            f'- pack_id: `{pack_id or "-"}`',
             f'- owner: `{owner}`',
             f'- run_date: `{run_date}`',
             f'- phase: `{phase}`',
@@ -413,12 +421,12 @@ def _write_batch_report(
         output_md.write_text('\n'.join(lines) + '\n', encoding='utf-8')
     if 'csv' in report_formats:
         with output_csv.open('w', encoding='utf-8', newline='') as fp:
-            writer = csv.DictWriter(fp, fieldnames=['row_type', 'run_id', 'campaign_id', 'phase', 'surface_scope', 'repeat_count', 'duration_minutes', 'interval_seconds', 'stop_on_fail', 'owner', 'run_date', 'status', 'step_name', 'step_status', 'step_severity', 'step_rc', 'artifact_path', 'artifact_exists', 'artifact_size_bytes', 'artifact_last_modified'])
+            writer = csv.DictWriter(fp, fieldnames=['row_type', 'run_id', 'campaign_id', 'profile_id', 'pack_id', 'phase', 'surface_scope', 'repeat_count', 'duration_minutes', 'interval_seconds', 'stop_on_fail', 'owner', 'run_date', 'status', 'step_name', 'step_status', 'step_severity', 'step_rc', 'artifact_path', 'artifact_exists', 'artifact_size_bytes', 'artifact_last_modified'])
             writer.writeheader()
             for step in steps:
-                writer.writerow({'row_type': 'step', 'run_id': run_id, 'campaign_id': campaign_id, 'phase': phase, 'surface_scope': surface_scope, 'repeat_count': repeat_count, 'duration_minutes': duration_minutes, 'interval_seconds': interval_seconds, 'stop_on_fail': str(bool(stop_on_fail)).lower(), 'owner': owner, 'run_date': run_date, 'status': status, 'step_name': step['name'], 'step_status': step.get('status', 'UNKNOWN'), 'step_severity': step.get('severity', 'mandatory'), 'step_rc': step['rc'], 'artifact_path': '', 'artifact_exists': '', 'artifact_size_bytes': '', 'artifact_last_modified': ''})
+                writer.writerow({'row_type': 'step', 'run_id': run_id, 'campaign_id': campaign_id, 'profile_id': profile_id, 'pack_id': pack_id, 'phase': phase, 'surface_scope': surface_scope, 'repeat_count': repeat_count, 'duration_minutes': duration_minutes, 'interval_seconds': interval_seconds, 'stop_on_fail': str(bool(stop_on_fail)).lower(), 'owner': owner, 'run_date': run_date, 'status': status, 'step_name': step['name'], 'step_status': step.get('status', 'UNKNOWN'), 'step_severity': step.get('severity', 'mandatory'), 'step_rc': step['rc'], 'artifact_path': '', 'artifact_exists': '', 'artifact_size_bytes': '', 'artifact_last_modified': ''})
             for row in artifacts:
-                writer.writerow({'row_type': 'artifact', 'run_id': run_id, 'campaign_id': campaign_id, 'phase': phase, 'surface_scope': surface_scope, 'repeat_count': repeat_count, 'duration_minutes': duration_minutes, 'interval_seconds': interval_seconds, 'stop_on_fail': str(bool(stop_on_fail)).lower(), 'owner': owner, 'run_date': run_date, 'status': status, 'step_name': '', 'step_status': '', 'step_severity': '', 'step_rc': '', 'artifact_path': row['path'], 'artifact_exists': str(row['exists']).lower(), 'artifact_size_bytes': row['size_bytes'], 'artifact_last_modified': row['last_modified']})
+                writer.writerow({'row_type': 'artifact', 'run_id': run_id, 'campaign_id': campaign_id, 'profile_id': profile_id, 'pack_id': pack_id, 'phase': phase, 'surface_scope': surface_scope, 'repeat_count': repeat_count, 'duration_minutes': duration_minutes, 'interval_seconds': interval_seconds, 'stop_on_fail': str(bool(stop_on_fail)).lower(), 'owner': owner, 'run_date': run_date, 'status': status, 'step_name': '', 'step_status': '', 'step_severity': '', 'step_rc': '', 'artifact_path': row['path'], 'artifact_exists': str(row['exists']).lower(), 'artifact_size_bytes': row['size_bytes'], 'artifact_last_modified': row['last_modified']})
 
 
 def _maybe_export_batch_junit(*, report_formats: list[str], output_json: Path, output_junit: Path) -> int:
@@ -443,6 +451,8 @@ def _finalize_batch_reports(*, args: argparse.Namespace, policy: dict, report_fo
     _write_batch_report(
         run_id=args.run_id,
         campaign_id=args.campaign_id,
+        profile_id=args.profile_id,
+        pack_id=args.pack_id,
         owner=args.owner,
         run_date=args.run_date,
         phase=args.phase,
@@ -486,6 +496,8 @@ def _finalize_batch_reports(*, args: argparse.Namespace, policy: dict, report_fo
     _write_batch_report(
         run_id=args.run_id,
         campaign_id=args.campaign_id,
+        profile_id=args.profile_id,
+        pack_id=args.pack_id,
         owner=args.owner,
         run_date=args.run_date,
         phase=args.phase,

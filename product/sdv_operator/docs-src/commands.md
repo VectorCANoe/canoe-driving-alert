@@ -14,6 +14,9 @@ Campaign / CI 확장 표면:
 ```powershell
 python scripts/run.py verify batch --run-id 20260310_0900 --campaign-id CMP_20260310 --owner DEV2 --phase pre --surface-scope ALL --repeat-count 1 --duration-minutes 0 --interval-seconds 0 --report-formats json,md,junit
 python scripts/run.py artifact open --target campaign-profiles
+python scripts/run.py artifact open --target native-test-portfolio
+python scripts/run.py artifact open --target network-gateway-pack
+python scripts/run.py artifact open --target verification-pack-matrix
 python scripts/run.py artifact open --target role-boundary-doc
 python scripts/run.py artifact open --target capability-matrix-doc
 python scripts/run.py artifact open --target surface-dir --latest
@@ -134,6 +137,7 @@ python scripts/run.py verify batch --run-id 20260308_0900 --campaign-id CMP_2026
 - `campaign_id`는 build/nightly/repeat 묶음 식별자입니다.
 - `surface_scope`는 reviewer-facing으로 집중해서 볼 surface ECU 범위입니다.
 - `repeat_count / duration_minutes / interval_seconds`는 반복 실행 의도와 운영 profile 기록입니다.
+- `profile_id / pack_id`는 Automation 또는 shell/TUI profile 적용 시 자동으로 execution manifest와 surface bundle에 반영됩니다.
 
 참고:
 - `verify batch --phase pre/full`은 pre 단계 시작 전에 `doctor(auto-start)`를 같이 실행합니다.
@@ -257,6 +261,9 @@ python scripts/run.py artifact open --target surface-dir --latest
 python scripts/run.py artifact open --target execution-manifest --latest
 python scripts/run.py artifact open --target native-reports --latest
 python scripts/run.py artifact open --target surface-inventory
+python scripts/run.py artifact open --target native-test-portfolio
+python scripts/run.py artifact open --target network-gateway-pack
+python scripts/run.py artifact open --target verification-pack-matrix
 python scripts/run.py artifact open --target capability-matrix-json
 python scripts/run.py artifact open --target results-doc
 python scripts/run.py artifact open --target build-root
@@ -272,7 +279,7 @@ python scripts/run.py package bundle-portable --mode onefolder --clean --rebuild
 - `artifact list`
   - staging / archive / source 기준으로 현재 확인 가능한 산출물과 원본 계약 파일을 나열합니다.
 - `artifact open`
-  - 결과 문서, execution manifest, native reports, surface inventory 같은 원본/산출물 파일을 외부 편집기/탐색기로 바로 엽니다.
+  - 결과 문서, execution manifest, native reports, surface inventory, verification pack 원본 같은 원본/산출물 파일을 외부 편집기/탐색기로 바로 엽니다.
 - `artifact clean`
   - generated output만 정리합니다. 기본은 preview이고 실제 삭제는 `--yes`가 필요합니다.
 

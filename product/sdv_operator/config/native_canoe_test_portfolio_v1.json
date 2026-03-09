@@ -1,0 +1,264 @@
+{
+  "portfolio_id": "native_canoe_test_portfolio_v1",
+  "date": "2026-03-10",
+  "owner": "Dev2",
+  "status": "design_baseline_for_dev1",
+  "canonical_sync_state": "pending_00_07_refresh",
+  "shared_harness": {
+    "expression_rule": "one_common_harness_set_plus_six_native_assets",
+    "components": [
+      "TST_SCN",
+      "TST_BAS",
+      "ValidationHarnessTestCommon.cin"
+    ],
+    "contracts": [
+      "Test::scenarioCommand",
+      "Test::scenarioCommandAck",
+      "Test::scenarioResult",
+      "frmBaseTestResultMsg.BaseScenarioResult"
+    ]
+  },
+  "assets": [
+    {
+      "asset_id": "TC_CANOE_UT_CORE_001_SCHOOLZONE_OVERSPEED",
+      "level": "UT",
+      "scenario_id": 2,
+      "surface_focus": [
+        "ADAS",
+        "CLU",
+        "BCM"
+      ],
+      "req_ids": [
+        "Req_009",
+        "Req_010",
+        "Req_037"
+      ],
+      "vc_ids": [
+        "VC_010"
+      ],
+      "related_system_cases": [
+        "ST_SPEED_001"
+      ],
+      "intent": "nominal school-zone overspeed warning path",
+      "timing_ms": {
+        "warning_reflect_max": 150
+      },
+      "oracle": [
+        "@Test::scenarioResult == 1",
+        "@Core::driveStateNorm == 3",
+        "@Core::vehicleSpeedNorm == 45",
+        "@Core::speedLimitNorm == 30",
+        "@Core::baseZoneContext == 1",
+        "@Core::warningState == 1",
+        "@Core::selectedAlertLevel == 3",
+        "@Core::selectedAlertType == 3",
+        "@Cluster::warningTextCode == 33",
+        "@Body::ambientColor == 3",
+        "@Body::ambientPattern == 5"
+      ],
+      "evidence_tags": [
+        "vtestreport",
+        "sysvar_snapshot",
+        "scenario:S02"
+      ]
+    },
+    {
+      "asset_id": "TC_CANOE_UT_V2X_001_EMERGENCY_PRIORITY_ETA",
+      "level": "UT",
+      "scenario_id": 9,
+      "surface_focus": [
+        "V2X",
+        "ADAS",
+        "CLU"
+      ],
+      "req_ids": [
+        "Req_030"
+      ],
+      "vc_ids": [
+        "VC_030"
+      ],
+      "related_system_cases": [
+        "ST_ARB_ETA_001"
+      ],
+      "intent": "ETA-based same-class emergency priority decision",
+      "timing_ms": {
+        "priority_update_max": 150
+      },
+      "oracle": [
+        "@Test::scenarioResult == 1",
+        "@V2X::eta == 10",
+        "@V2X::sourceId == 99",
+        "@Core::selectedAlertLevel == 6"
+      ],
+      "evidence_tags": [
+        "vtestreport",
+        "priority_decision_snapshot",
+        "scenario:S09"
+      ]
+    },
+    {
+      "asset_id": "TC_CANOE_UT_V2X_002_TIMEOUT_CLEAR",
+      "level": "UT",
+      "scenario_id": 6,
+      "surface_focus": [
+        "V2X",
+        "ADAS",
+        "BCM",
+        "CLU"
+      ],
+      "req_ids": [
+        "Req_024"
+      ],
+      "vc_ids": [
+        "VC_024"
+      ],
+      "related_system_cases": [
+        "ST_TIMEOUT_001"
+      ],
+      "intent": "timeout clear and stale robustness",
+      "timing_ms": {
+        "stale_window": 1000,
+        "clear_reflect_max": 150
+      },
+      "oracle": [
+        "@Test::scenarioResult == 1",
+        "timeoutClear == 1",
+        "warningLevel == 0",
+        "warningCode == 0",
+        "no_oscillation_after_clear == 1"
+      ],
+      "evidence_tags": [
+        "vtestreport",
+        "timeout_snapshot",
+        "scenario:S06"
+      ]
+    },
+    {
+      "asset_id": "TC_CANOE_IT_V2_FAILSAFE_001_CGW",
+      "level": "IT",
+      "scenario_id": 18,
+      "surface_focus": [
+        "CGW",
+        "ADAS",
+        "BCM",
+        "CLU"
+      ],
+      "req_ids": [
+        "Req_127",
+        "Req_128",
+        "Req_129"
+      ],
+      "vc_ids": [
+        "VC_127",
+        "VC_128",
+        "VC_129"
+      ],
+      "related_system_cases": [
+        "IT_V2_FAILSAFE_001",
+        "ST_V2_FAILSAFE_001"
+      ],
+      "intent": "fail-safe downgrade with minimum warning retention",
+      "timing_ms": {
+        "failsafe_transition_max": 150
+      },
+      "oracle": [
+        "@Test::scenarioResult == 1",
+        "frmBaseTestResultMsg.BaseScenarioResult == 1",
+        "@Core::failSafeMode >= 1",
+        "@Core::decelAssistReq == 0",
+        "@Core::selectedAlertLevel >= 6",
+        "@Core::selectedAlertType == 1",
+        "@Cluster::warningTextCode >= 100"
+      ],
+      "evidence_tags": [
+        "vtestreport",
+        "failsafe_snapshot",
+        "scenario:S18"
+      ]
+    },
+    {
+      "asset_id": "TC_CANOE_IT_V2_SYNC_001_DECEL_AND_WARNING",
+      "level": "IT",
+      "scenario_id": 19,
+      "surface_focus": [
+        "ADAS",
+        "BCM",
+        "CLU",
+        "V2X"
+      ],
+      "req_ids": [
+        "Req_125",
+        "Req_126"
+      ],
+      "vc_ids": [
+        "VC_125",
+        "VC_126"
+      ],
+      "related_system_cases": [
+        "IT_V2_RISK_001",
+        "ST_V2_RISK_001"
+      ],
+      "intent": "decel assist and warning sync",
+      "timing_ms": {
+        "activation_max": 150,
+        "channel_sync_offset_max": 50
+      },
+      "oracle": [
+        "@Test::scenarioResult == 1",
+        "@Core::decelAssistReq == 1",
+        "@Core::selectedAlertLevel == 7",
+        "@Core::selectedAlertType == 2",
+        "@Cluster::uiRenderAlertType == 2",
+        "@Cluster::uiRenderTextCode >= 200",
+        "@Body::ambientColor == 7",
+        "cluster_ambient_sync_offset_ms <= 50"
+      ],
+      "evidence_tags": [
+        "vtestreport",
+        "sync_snapshot",
+        "scenario:S19"
+      ]
+    },
+    {
+      "asset_id": "TC_CANOE_IT_ADAS_001_OBJECT_FORWARD_CONFLICT",
+      "level": "IT",
+      "scenario_id": 20,
+      "surface_focus": [
+        "ADAS",
+        "CLU",
+        "BCM"
+      ],
+      "req_ids": [
+        "Req_130",
+        "Req_131",
+        "Req_132"
+      ],
+      "vc_ids": [
+        "VC_130",
+        "VC_131",
+        "VC_132"
+      ],
+      "related_system_cases": [
+        "IT_ADAS_OBJ_001",
+        "ST_ADAS_OBJ_001"
+      ],
+      "intent": "forward object TTC conflict path",
+      "timing_ms": {
+        "object_input_reflect_max": 100,
+        "warning_reflect_max": 150
+      },
+      "oracle": [
+        "@Test::scenarioResult == 1",
+        "@ADAS::objectTrackValid == 1",
+        "@ADAS::objectRiskClass >= 3",
+        "@ADAS::objectTtcMin <= 3500",
+        "@Core::proximityRiskLevel >= 60"
+      ],
+      "evidence_tags": [
+        "vtestreport",
+        "object_risk_snapshot",
+        "scenario:S20"
+      ]
+    }
+  ]
+}

@@ -758,6 +758,42 @@ PRODUCT_COMMAND_GROUPS: dict[str, list[PaletteCommand]] = {
             next_step="필요하면 role boundary 문서와 함께 Jenkins/Console 경계를 확인하십시오.",
         ),
         PaletteCommand(
+            command_id="artifact.open_native_test_portfolio",
+            title="원본 functional 6 pack 열기",
+            command="artifact open --target native-test-portfolio",
+            summary="Native Functional Portfolio 6 원본 JSON을 바로 엽니다.",
+            use_when=(
+                "핵심 6개 native functional asset의 기준을 바로 확인할 때",
+            ),
+            success_signals=("native_canoe_test_portfolio_v1.json이 열림",),
+            expected_outputs=("product/sdv_operator/config/native_canoe_test_portfolio_v1.json",),
+            next_step="verification pack matrix와 함께 functional/native 구조를 대조하십시오.",
+        ),
+        PaletteCommand(
+            command_id="artifact.open_network_gateway_pack",
+            title="원본 network/gateway pack 열기",
+            command="artifact open --target network-gateway-pack",
+            summary="Network/Gateway Core 4 및 diagnostic draft 기준 JSON을 바로 엽니다.",
+            use_when=(
+                "기능 포트폴리오와 분리된 network/gateway 검증 기준을 확인할 때",
+            ),
+            success_signals=("network_gateway_verification_pack_v1.json이 열림",),
+            expected_outputs=("product/sdv_operator/config/network_gateway_verification_pack_v1.json",),
+            next_step="verification pack matrix와 함께 mandatory/draft 경계를 확인하십시오.",
+        ),
+        PaletteCommand(
+            command_id="artifact.open_verification_pack_matrix",
+            title="원본 verification pack matrix 열기",
+            command="artifact open --target verification-pack-matrix",
+            summary="functional 6 / network core 4 / network+diag draft 5 매트릭스를 바로 엽니다.",
+            use_when=(
+                "어떤 pack이 mandatory이고 어떤 pack이 draft인지 source contract 기준으로 확인할 때",
+            ),
+            success_signals=("verification_pack_matrix.json이 열림",),
+            expected_outputs=("product/sdv_operator/config/verification_pack_matrix.json",),
+            next_step="campaign profiles와 함께 어떤 profile이 어떤 pack을 실행하는지 검토하십시오.",
+        ),
+        PaletteCommand(
             command_id="artifact.open_capability_matrix_json",
             title="원본 capability matrix 열기",
             command="artifact open --target capability-matrix-json",
