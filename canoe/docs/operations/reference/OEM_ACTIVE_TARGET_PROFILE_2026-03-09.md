@@ -1,4 +1,4 @@
-# OEM Active Target Profile (2026-03-09)
+﻿# OEM Active Target Profile (2026-03-09)
 
 ## Active Target
 
@@ -52,8 +52,8 @@ This keeps the architecture wide without making the top layer look like a thin d
 ## Surface Type Rule (Current)
 
 - `PHYSICAL/DOMAIN ECU`: `EMS`, `TCU`, `VCU`, `ESC`, `MDPS`, `BCM`, `IVI`, `CLU`, `ADAS`, `V2X`, `CGW`
-- `FUNCTION/FEATURE SURFACE`: `SCC`, `HIGHWAY_PILOT`, `AEB_DOMAIN`, `SURROUND_PARK_MASTER` 등
-- `INFRA SERVICE SURFACE`: `EDR`, `CARPAY_CTRL`, `PHONE_AS_KEY` 등
+- `FUNCTION/FEATURE SURFACE`: `SCC`, `HIGHWAY_PILOT`, `AEB`, `SURROUND_PKM` 등
+- `INFRA SERVICE SURFACE`: `EDR`, `CPAY`, `PAK` 등
 - `VALIDATION`: `VALIDATION_HARNESS`, `VAL_*`
 
 Rule:
@@ -65,7 +65,7 @@ Rule:
 ### Layer 1. Primary Reviewer Surface (`56`)
 
 - `CGW`
-- `ETH_BACKBONE`
+- `ETHB`
 - `DCM`
 - `IBOX`
 - `SGW`
@@ -96,18 +96,18 @@ Rule:
 - `SMK`
 - `AFLS`
 - `AHLS`
-- `WIPER_MODULE`
-- `SUNROOF_MODULE`
+- `WIP`
+- `SRF`
 - `DOOR_FL`
 - `DOOR_FR`
-- `TAILGATE_MODULE`
+- `TGM`
 - `IVI`
 - `CLU`
 - `HUD`
 - `TMU`
 - `AMP`
 - `PGS`
-- `NAV_MODULE`
+- `NAV`
 - `DIGITAL_KEY`
 - `ADAS`
 - `V2X`
@@ -128,47 +128,47 @@ Rule:
 - `SRR_FR`
 - `SRR_RL`
 - `SRR_RR`
-- `PARK_ULTRASONIC`
+- `PUS`
 - `DMS`
 - `OMS`
 - `DOOR_RL`
 - `DOOR_RR`
 - `SEAT_DRV`
 - `SEAT_PASS`
-- `MIRROR_MODULE`
-- `BODY_SECURITY_MODULE`
-- `VOICE_ASSIST`
+- `MIR`
+- `BSEC`
+- `VCS`
 - `RSE`
 - `VALIDATION_HARNESS`
 - `OBC`
 - `DCDC`
 - `MCU`
 - `INVERTER`
-- `CHARGE_PORT_CTRL`
+- `CPC`
 - `AIR_SUSPENSION`
 - `RWS`
 - `NIGHT_VISION`
-- `AEB_DOMAIN`
-- `PARK_MASTER`
-- `OTA_MASTER`
+- `AEB`
+- `PKM`
+- `OTA`
 
 ### Layer 3. Premium / Option Program Surface (`16`)
 
-- `TRAILER_CTRL`
+- `TRM`
 - `HEADLAMP_LEVELING`
-- `AUTO_DOOR_CTRL`
-- `POWER_TAILGATE_CTRL`
-- `MASSAGE_SEAT_CTRL`
-- `REAR_CLIMATE_MODULE`
+- `ADM`
+- `PTG`
+- `MSC`
+- `RATC`
 - `CABIN_SENSING`
 - `BIOMETRIC_AUTH`
-- `CARPAY_CTRL`
-- `PHONE_AS_KEY`
+- `CPAY`
+- `PAK`
 - `EDR`
-- `ROAD_PREVIEW_CAMERA`
+- `RPC`
 - `LIDAR`
-- `REAR_RADAR_MASTER`
-- `SURROUND_PARK_MASTER`
+- `RRM`
+- `SURROUND_PKM`
 - `HIGHWAY_PILOT`
 
 Vehicle surface total: `100`
@@ -193,7 +193,7 @@ Current active baseline first:
 14. `DATC`
 15. `HUD`
 16. `AMP`
-17. `VOICE_ASSIST`
+17. `VCS`
 18. `IBOX`
 19. `SGW`
 20. `DCM`
@@ -202,8 +202,8 @@ Current active baseline first:
 23. `TPMS`
 24. `SAS`
 25. `SMK`
-26. `BODY_SECURITY_MODULE`
-27. `WIPER_MODULE`
+26. `BSEC`
+27. `WIP`
 28. `AFLS`
 29. `DOOR_FL`
 30. `DOOR_FR`
@@ -224,21 +224,21 @@ Current active baseline first:
 45. `FRADAR`
 46. `SRR_FL`
 47. `SRR_FR`
-48. `PARK_ULTRASONIC`
+48. `PUS`
 49. `DMS`
 50. `OMS`
 51. `SRR_RL`
 52. `SRR_RR`
-53. `NAV_MODULE`
-54. `OTA_MASTER`
+53. `NAV`
+54. `OTA`
 55. `DIGITAL_KEY`
 56. `RSE`
 57. `DOOR_RL`
 58. `DOOR_RR`
-59. `TAILGATE_MODULE`
-60. `MIRROR_MODULE`
-61. `REAR_CLIMATE_MODULE`
-62. `SUNROOF_MODULE`
+59. `TGM`
+60. `MIR`
+61. `RATC`
+62. `SRF`
 63. `HEADLAMP_LEVELING`
 64. `CABIN_SENSING`
 65. `OBC`
@@ -246,8 +246,8 @@ Current active baseline first:
 67. `MCU`
 68. `INVERTER`
 69. `AHLS`
-70. `AUTO_DOOR_CTRL`
-71. `POWER_TAILGATE_CTRL`
+70. `ADM`
+71. `PTG`
 72. `BIOMETRIC_AUTH`
 73. `_4WD`
 74. `BAT_BMS`
@@ -263,20 +263,20 @@ Current active baseline first:
 84. `ACU`
 85. `ODS`
 86. `PGS`
-87. `PHONE_AS_KEY`
-88. `CARPAY_CTRL`
-89. `CHARGE_PORT_CTRL`
-90. `MASSAGE_SEAT_CTRL`
+87. `PAK`
+88. `CPAY`
+89. `CPC`
+90. `MSC`
 91. `EDR`
-92. `ETH_BACKBONE`
-93. `AEB_DOMAIN`
-94. `PARK_MASTER`
-95. `ROAD_PREVIEW_CAMERA`
-96. `REAR_RADAR_MASTER`
-97. `SURROUND_PARK_MASTER`
+92. `ETHB`
+93. `AEB`
+94. `PKM`
+95. `RPC`
+96. `RRM`
+97. `SURROUND_PKM`
 98. `HIGHWAY_PILOT`
 99. `LIDAR`
-100. `TRAILER_CTRL`
+100. `TRM`
 
 ## Chosen 8 Core Custom Surfaces
 
@@ -314,3 +314,4 @@ If implementation pressure rises later, the first trim-down target is:
   - active deep implementation is currently `100`
   - the original placeholder bank is fully retired inside `canoe/src/capl/retired_placeholders`
   - trim-down is allowed later, but breadth-first framing comes first now
+

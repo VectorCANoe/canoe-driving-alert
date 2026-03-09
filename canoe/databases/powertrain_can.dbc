@@ -29,7 +29,7 @@ NS_ :
 
 BS_:
 
-BU_: VAL_SCENARIO_CTRL EMS TCU VCU SCC OBC DCDC MCU INVERTER _4WD BAT_BMS FPCM LVR ISG EOP EWP CHARGE_PORT_CTRL Vector__XXX
+BU_: VAL_SCENARIO_CTRL EMS TCU VCU SCC OBC DCDC MCU INVERTER _4WD BAT_BMS FPCM LVR ISG EOP EWP CPC Vector__XXX
 
 BO_ 680 frmIgnitionEngineMsg: 1 VAL_SCENARIO_CTRL
  SG_ IgnitionState  : 0|1@1+ (1,0) [0|1] "" EMS
@@ -190,7 +190,7 @@ BO_ 316 frmEwpStateMsg: 3 EWP
  SG_ PumpDuty         : 8|8@1+ (1,0) [0|100] "%" EMS,VCU
  SG_ CoolantFlow      : 16|8@1+ (1,0) [0|255] "Lpm" EMS,VCU
 
-BO_ 317 frmChargePortCtrlStateMsg: 3 CHARGE_PORT_CTRL
+BO_ 317 frmChargePortCtrlStateMsg: 3 CPC
  SG_ PortLockState    : 0|2@1+ (1,0) [0|3] "" OBC,BAT_BMS,VCU
  SG_ PlugState        : 2|1@1+ (1,0) [0|1] "" OBC,BAT_BMS,VCU
  SG_ ChargeEnable     : 3|1@1+ (1,0) [0|1] "" OBC,BAT_BMS,VCU
@@ -333,3 +333,4 @@ VAL_ 317 PortLockState 0 "Unlocked" 1 "Ready" 2 "Locked" 3 "Fault";
 VAL_ 317 PlugState 0 "Unplugged" 1 "Plugged";
 VAL_ 317 ChargeEnable 0 "Disabled" 1 "Enabled";
 VAL_ 317 ThermalState 0 "Normal" 1 "Warm" 2 "Hot" 3 "Fault";
+

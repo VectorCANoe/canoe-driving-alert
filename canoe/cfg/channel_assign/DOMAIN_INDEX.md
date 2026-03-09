@@ -1,4 +1,4 @@
-# V2 Domain CAPL Index
+﻿# V2 Domain CAPL Index
 
 This file documents the visible runtime and placeholder CAPL inventory after wrapper absorption and OEM abbreviation normalization.
 
@@ -14,7 +14,7 @@ This file documents the visible runtime and placeholder CAPL inventory after wra
 - `CGW.can`
 - `V2X.can`
 - `VAL_SCENARIO_CTRL.can`
-- `ETH_BACKBONE.can`
+- `ETHB.can`
 - `DCM.can`
 - `IBOX.can`
 - `SGW.can`
@@ -36,17 +36,17 @@ This file documents the visible runtime and placeholder CAPL inventory after wra
 - `SRR_FR.can`
 - `SRR_RL.can`
 - `SRR_RR.can`
-- `PARK_ULTRASONIC.can`
+- `PUS.can`
 - `DMS.can`
 - `OMS.can`
-- `AEB_DOMAIN.can`
-- `PARK_MASTER.can`
-- `ROAD_PREVIEW_CAMERA.can`
+- `AEB.can`
+- `PKM.can`
+- `RPC.can`
 - `LIDAR.can`
-- `REAR_RADAR_MASTER.can`
-- `SURROUND_PARK_MASTER.can`
+- `RRM.can`
+- `SURROUND_PKM.can`
 - `HIGHWAY_PILOT.can`
-- `TRAILER_CTRL.can`
+- `TRM.can`
 
 ### Infotainment
 - `IVI.can`
@@ -55,13 +55,13 @@ This file documents the visible runtime and placeholder CAPL inventory after wra
 - `TMU.can`
 - `AMP.can`
 - `PGS.can`
-- `NAV_MODULE.can`
-- `VOICE_ASSIST.can`
+- `NAV.can`
+- `VCS.can`
 - `RSE.can`
 - `DIGITAL_KEY.can`
-- `CARPAY_CTRL.can`
-- `PHONE_AS_KEY.can`
-- `OTA_MASTER.can`
+- `CPAY.can`
+- `PAK.can`
+- `OTA.can`
 
 ### Body
 - `BCM.can`
@@ -69,22 +69,22 @@ This file documents the visible runtime and placeholder CAPL inventory after wra
 - `SMK.can`
 - `AFLS.can`
 - `AHLS.can`
-- `WIPER_MODULE.can`
-- `SUNROOF_MODULE.can`
+- `WIP.can`
+- `SRF.can`
 - `DOOR_FL.can`
 - `DOOR_FR.can`
 - `DOOR_RL.can`
 - `DOOR_RR.can`
-- `TAILGATE_MODULE.can`
+- `TGM.can`
 - `SEAT_DRV.can`
 - `SEAT_PASS.can`
-- `MIRROR_MODULE.can`
-- `BODY_SECURITY_MODULE.can`
+- `MIR.can`
+- `BSEC.can`
 - `HEADLAMP_LEVELING.can`
-- `AUTO_DOOR_CTRL.can`
-- `POWER_TAILGATE_CTRL.can`
-- `MASSAGE_SEAT_CTRL.can`
-- `REAR_CLIMATE_MODULE.can`
+- `ADM.can`
+- `PTG.can`
+- `MSC.can`
+- `RATC.can`
 - `CABIN_SENSING.can`
 - `BIOMETRIC_AUTH.can`
 
@@ -102,7 +102,7 @@ This file documents the visible runtime and placeholder CAPL inventory after wra
 - `DCDC.can`
 - `MCU.can`
 - `INVERTER.can`
-- `CHARGE_PORT_CTRL.can`
+- `CPC.can`
 
 ### Chassis
 - `VCU.can`
@@ -127,3 +127,4 @@ This file documents the visible runtime and placeholder CAPL inventory after wra
 - validation-only nodes: `2`
 - placeholder surface nodes: `87`
 - total visible nodes: `100`
+

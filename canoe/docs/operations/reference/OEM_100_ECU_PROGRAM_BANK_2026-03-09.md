@@ -1,4 +1,4 @@
-# OEM 100 ECU Program Bank (2026-03-09)
+﻿# OEM 100 ECU Program Bank (2026-03-09)
 
 ## Decision
 
@@ -44,7 +44,7 @@ To avoid confusing functional/service surfaces with physical ECU modules, use th
 
 Representative non-physical surfaces in this bank:
 
-- `CARPAY_CTRL`, `PHONE_AS_KEY`, `EDGE_LOGGER`, `AEB_DOMAIN`, `HIGHWAY_PILOT`, `SURROUND_PARK_MASTER`
+- `CPAY`, `PAK`, `EDGE_LOGGER`, `AEB`, `HIGHWAY_PILOT`, `SURROUND_PKM`
 
 These remain placeholder-first unless explicitly promoted.
 
@@ -61,7 +61,7 @@ These remain placeholder-first unless explicitly promoted.
 ### A1. Infrastructure / Integration (`5`)
 
 1. `CGW`
-2. `ETH_BACKBONE`
+2. `ETHB`
 3. `DCM`
 4. `IBOX`
 5. `SGW`
@@ -101,17 +101,17 @@ These remain placeholder-first unless explicitly promoted.
 3. `SMK`
 4. `AFLS`
 5. `AHLS`
-6. `WIPER_MODULE`
-7. `SUNROOF_MODULE`
+6. `WIP`
+7. `SRF`
 8. `DOOR_FL`
 9. `DOOR_FR`
 10. `DOOR_RL`
 11. `DOOR_RR`
-12. `TAILGATE_MODULE`
+12. `TGM`
 13. `SEAT_DRV`
 14. `SEAT_PASS`
-15. `MIRROR_MODULE`
-16. `BODY_SECURITY_MODULE`
+15. `MIR`
+16. `BSEC`
 
 ### A5. IVI / HMI / Connectivity (`10`)
 
@@ -121,8 +121,8 @@ These remain placeholder-first unless explicitly promoted.
 4. `TMU`
 5. `AMP`
 6. `PGS`
-7. `NAV_MODULE`
-8. `VOICE_ASSIST`
+7. `NAV`
+8. `VCS`
 9. `RSE`
 10. `DIGITAL_KEY`
 
@@ -144,7 +144,7 @@ These remain placeholder-first unless explicitly promoted.
 14. `SRR_FR`
 15. `SRR_RL`
 16. `SRR_RR`
-17. `PARK_ULTRASONIC`
+17. `PUS`
 18. `DMS`
 19. `OMS`
 
@@ -164,29 +164,29 @@ These are realistic additional surfaces for a higher trim / premium / technology
 2. `DCDC`
 3. `MCU`
 4. `INVERTER`
-5. `CHARGE_PORT_CTRL`
+5. `CPC`
 6. `AIR_SUSPENSION`
 7. `RWS`
 8. `NIGHT_VISION`
-9. `AEB_DOMAIN`
+9. `AEB`
 10. `HIGHWAY_PILOT`
-11. `PARK_MASTER`
-12. `TRAILER_CTRL`
+11. `PKM`
+12. `TRM`
 13. `HEADLAMP_LEVELING`
-14. `AUTO_DOOR_CTRL`
-15. `POWER_TAILGATE_CTRL`
-16. `MASSAGE_SEAT_CTRL`
-17. `REAR_CLIMATE_MODULE`
+14. `ADM`
+15. `PTG`
+16. `MSC`
+17. `RATC`
 18. `CABIN_SENSING`
 19. `BIOMETRIC_AUTH`
-20. `CARPAY_CTRL`
-21. `PHONE_AS_KEY`
-22. `OTA_MASTER`
+20. `CPAY`
+21. `PAK`
+22. `OTA`
 23. `EDR`
-24. `ROAD_PREVIEW_CAMERA`
+24. `RPC`
 25. `LIDAR`
-26. `REAR_RADAR_MASTER`
-27. `SURROUND_PARK_MASTER`
+26. `RRM`
+27. `SURROUND_PKM`
 
 Grand total inventory bank: `100`
 
@@ -197,7 +197,7 @@ Grand total inventory bank: `100`
 Use these first in the main architecture tree:
 
 - `CGW`
-- `ETH_BACKBONE`
+- `ETHB`
 - `DCM`
 - `IBOX`
 - `SGW`
@@ -228,18 +228,18 @@ Use these first in the main architecture tree:
 - `SMK`
 - `AFLS`
 - `AHLS`
-- `WIPER_MODULE`
-- `SUNROOF_MODULE`
+- `WIP`
+- `SRF`
 - `DOOR_FL`
 - `DOOR_FR`
-- `TAILGATE_MODULE`
+- `TGM`
 - `IVI`
 - `CLU`
 - `HUD`
 - `TMU`
 - `AMP`
 - `PGS`
-- `NAV_MODULE`
+- `NAV`
 - `DIGITAL_KEY`
 - `ADAS`
 - `V2X`
@@ -262,49 +262,49 @@ Use these in category views, domain trees, and optional system maps:
 - `SRR_FR`
 - `SRR_RL`
 - `SRR_RR`
-- `PARK_ULTRASONIC`
+- `PUS`
 - `DMS`
 - `OMS`
 - `DOOR_RL`
 - `DOOR_RR`
 - `SEAT_DRV`
 - `SEAT_PASS`
-- `MIRROR_MODULE`
-- `BODY_SECURITY_MODULE`
-- `VOICE_ASSIST`
+- `MIR`
+- `BSEC`
+- `VCS`
 - `RSE`
 - `VALIDATION_HARNESS`
 - `OBC`
 - `DCDC`
 - `MCU`
 - `INVERTER`
-- `CHARGE_PORT_CTRL`
+- `CPC`
 - `AIR_SUSPENSION`
 - `RWS`
 - `NIGHT_VISION`
-- `AEB_DOMAIN`
-- `PARK_MASTER`
-- `OTA_MASTER`
+- `AEB`
+- `PKM`
+- `OTA`
 
 ### Layer 3. Premium Option Bank (`16`)
 
 Keep these active in the surface bank, but placeholder-first unless promoted.
 
-- `TRAILER_CTRL`
+- `TRM`
 - `HEADLAMP_LEVELING`
-- `AUTO_DOOR_CTRL`
-- `POWER_TAILGATE_CTRL`
-- `MASSAGE_SEAT_CTRL`
-- `REAR_CLIMATE_MODULE`
+- `ADM`
+- `PTG`
+- `MSC`
+- `RATC`
 - `CABIN_SENSING`
 - `BIOMETRIC_AUTH`
-- `CARPAY_CTRL`
-- `PHONE_AS_KEY`
+- `CPAY`
+- `PAK`
 - `EDR`
-- `ROAD_PREVIEW_CAMERA`
+- `RPC`
 - `LIDAR`
-- `REAR_RADAR_MASTER`
-- `SURROUND_PARK_MASTER`
+- `RRM`
+- `SURROUND_PKM`
 - `HIGHWAY_PILOT`
 
 ## E. Deep Runtime Commitment
@@ -314,7 +314,7 @@ Keep deep runtime scope controlled even with 100-bank breadth.
 ### Deep Now (`16`)
 
 - `CGW`
-- `ETH_BACKBONE`
+- `ETHB`
 - `EMS`
 - `TCU`
 - `VCU`
@@ -346,3 +346,4 @@ Keep deep runtime scope controlled even with 100-bank breadth.
 - Yes, `50` is still small if the goal is to look like a complete OEM vehicle program.
 - Use `72 + 1 + 27 = 100` as the active surface bank.
 - Keep actual deep implementation narrow and status-controlled.
+

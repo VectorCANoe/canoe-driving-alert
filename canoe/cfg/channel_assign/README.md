@@ -30,11 +30,11 @@ The current import bank exposes:
 | Domain | Visible deep nodes |
 | --- | --- |
 | Chassis | `VCU`, `ESC`, `MDPS`, `ABS`, `EPB`, `TPMS`, `SAS`, `VSM`, `EHB`, `ECS`, `CDC`, `AIR_SUSPENSION`, `RWS`, `ACU`, `ODS`, `VAL_BASELINE_CTRL` |
-| Body | `BCM`, `DATC`, `SMK`, `AFLS`, `WIPER_MODULE`, `BODY_SECURITY_MODULE`, `DOOR_FL`, `DOOR_FR`, `DOOR_RL`, `DOOR_RR`, `SEAT_DRV`, `SEAT_PASS`, `TAILGATE_MODULE`, `MIRROR_MODULE`, `REAR_CLIMATE_MODULE`, `SUNROOF_MODULE`, `HEADLAMP_LEVELING`, `CABIN_SENSING`, `AHLS`, `AUTO_DOOR_CTRL`, `POWER_TAILGATE_CTRL`, `BIOMETRIC_AUTH`, `MASSAGE_SEAT_CTRL` |
-| Infotainment | `IVI`, `CLU`, `HUD`, `AMP`, `VOICE_ASSIST`, `TMU`, `NAV_MODULE`, `OTA_MASTER`, `DIGITAL_KEY`, `RSE`, `PGS`, `PHONE_AS_KEY`, `CARPAY_CTRL` |
-| Powertrain | `EMS`, `TCU`, `_4WD`, `BAT_BMS`, `FPCM`, `LVR`, `ISG`, `EOP`, `EWP`, `OBC`, `DCDC`, `MCU`, `INVERTER`, `CHARGE_PORT_CTRL` |
-| ETH Backbone | `CGW`, `V2X`, `SGW`, `IBOX`, `DCM`, `EDR`, `ETH_BACKBONE`, `VAL_SCENARIO_CTRL` |
-| ADAS | `ADAS`, `SCC`, `LDWS_LKAS`, `FCA`, `BCW`, `LCA`, `SPAS`, `RSPA`, `AVM`, `FCAM`, `FRADAR`, `SRR_FL`, `SRR_FR`, `SRR_RL`, `SRR_RR`, `PARK_ULTRASONIC`, `DMS`, `OMS`, `AEB_DOMAIN`, `PARK_MASTER`, `ROAD_PREVIEW_CAMERA`, `REAR_RADAR_MASTER`, `SURROUND_PARK_MASTER`, `HIGHWAY_PILOT`, `LIDAR`, `TRAILER_CTRL` |
+| Body | `BCM`, `DATC`, `SMK`, `AFLS`, `WIP`, `BSEC`, `DOOR_FL`, `DOOR_FR`, `DOOR_RL`, `DOOR_RR`, `SEAT_DRV`, `SEAT_PASS`, `TGM`, `MIR`, `RATC`, `SRF`, `HEADLAMP_LEVELING`, `CABIN_SENSING`, `AHLS`, `ADM`, `PTG`, `BIOMETRIC_AUTH`, `MSC` |
+| Infotainment | `IVI`, `CLU`, `HUD`, `AMP`, `VCS`, `TMU`, `NAV`, `OTA`, `DIGITAL_KEY`, `RSE`, `PGS`, `PAK`, `CPAY` |
+| Powertrain | `EMS`, `TCU`, `_4WD`, `BAT_BMS`, `FPCM`, `LVR`, `ISG`, `EOP`, `EWP`, `OBC`, `DCDC`, `MCU`, `INVERTER`, `CPC` |
+| ETH Backbone | `CGW`, `V2X`, `SGW`, `IBOX`, `DCM`, `EDR`, `ETHB`, `VAL_SCENARIO_CTRL` |
+| ADAS | `ADAS`, `SCC`, `LDWS_LKAS`, `FCA`, `BCW`, `LCA`, `SPAS`, `RSPA`, `AVM`, `FCAM`, `FRADAR`, `SRR_FL`, `SRR_FR`, `SRR_RL`, `SRR_RR`, `PUS`, `DMS`, `OMS`, `AEB`, `PKM`, `RPC`, `RRM`, `SURROUND_PKM`, `HIGHWAY_PILOT`, `LIDAR`, `TRM` |
 
 ## GUI import order
 
@@ -75,28 +75,28 @@ These anchors still need extra bus assignments restored in GUI.
 
 ### Body
 - `BCM.can` ? body output owner after hazard/window/ambient/driver-state absorption
-- `DATC.can`, `SMK.can`, `AFLS.can`, `WIPER_MODULE.can`, `BODY_SECURITY_MODULE.can`, `DOOR_FL.can`, `DOOR_FR.can`, `DOOR_RL.can`, `DOOR_RR.can`, `SEAT_DRV.can`, `SEAT_PASS.can`, `TAILGATE_MODULE.can`, `MIRROR_MODULE.can`, `REAR_CLIMATE_MODULE.can`, `SUNROOF_MODULE.can`, `HEADLAMP_LEVELING.can`, `CABIN_SENSING.can`, `AHLS.can`, `AUTO_DOOR_CTRL.can`, `POWER_TAILGATE_CTRL.can`, `BIOMETRIC_AUTH.can` ? comfort/security runtime anchors
+- `DATC.can`, `SMK.can`, `AFLS.can`, `WIP.can`, `BSEC.can`, `DOOR_FL.can`, `DOOR_FR.can`, `DOOR_RL.can`, `DOOR_RR.can`, `SEAT_DRV.can`, `SEAT_PASS.can`, `TGM.can`, `MIR.can`, `RATC.can`, `SRF.can`, `HEADLAMP_LEVELING.can`, `CABIN_SENSING.can`, `AHLS.can`, `ADM.can`, `PTG.can`, `BIOMETRIC_AUTH.can` ? comfort/security runtime anchors
 
 ### Infotainment
 - `IVI.can` ? IVI display/connectivity/diagnostic owner after navigation owner split
-- `NAV_MODULE.can`, `OTA_MASTER.can`, `DIGITAL_KEY.can`, `RSE.can`, `PGS.can`, `PHONE_AS_KEY.can`, `CARPAY_CTRL.can` ? infotainment service/runtime anchors
+- `NAV.can`, `OTA.can`, `DIGITAL_KEY.can`, `RSE.can`, `PGS.can`, `PAK.can`, `CPAY.can` ? infotainment service/runtime anchors
 - `CLU.can` ? cluster display / HMI owner
-- `HUD.can`, `AMP.can`, `VOICE_ASSIST.can`, `TMU.can` ? HMI/connectivity runtime anchors
+- `HUD.can`, `AMP.can`, `VCS.can`, `TMU.can` ? HMI/connectivity runtime anchors
 
 ### Powertrain
 - `EMS.can` ? engine management runtime
 - `TCU.can` ? transmission control runtime
-- `_4WD.can`, `BAT_BMS.can`, `FPCM.can`, `LVR.can`, `ISG.can`, `EOP.can`, `EWP.can`, `OBC.can`, `DCDC.can`, `MCU.can`, `INVERTER.can`, `CHARGE_PORT_CTRL.can` ? driveline and power electronics runtime anchors
+- `_4WD.can`, `BAT_BMS.can`, `FPCM.can`, `LVR.can`, `ISG.can`, `EOP.can`, `EWP.can`, `OBC.can`, `DCDC.can`, `MCU.can`, `INVERTER.can`, `CPC.can` ? driveline and power electronics runtime anchors
 
 ### ETH Backbone
 - `CGW.can` ? cross-domain boundary, fail-safe, and gateway authority
 - `V2X.can` ? V2X emergency input / arbitration ingress
-- `SGW.can`, `IBOX.can`, `DCM.can`, `EDR.can`, `ETH_BACKBONE.can` ? security/infra/connectivity anchors
+- `SGW.can`, `IBOX.can`, `DCM.can`, `EDR.can`, `ETHB.can` ? security/infra/connectivity anchors
 - `VAL_SCENARIO_CTRL.can` ? validation scenario orchestrator
 
 ### ADAS
 - `ADAS.can` ? integrated risk, warning, and assist decision runtime
-- `SCC.can`, `LDWS_LKAS.can`, `FCA.can`, `BCW.can`, `LCA.can`, `SPAS.can`, `RSPA.can`, `AVM.can`, `FCAM.can`, `FRADAR.can`, `SRR_FL.can`, `SRR_FR.can`, `SRR_RL.can`, `SRR_RR.can`, `PARK_ULTRASONIC.can`, `DMS.can`, `OMS.can`, `AEB_DOMAIN.can`, `PARK_MASTER.can`, `ROAD_PREVIEW_CAMERA.can`, `REAR_RADAR_MASTER.can`, `SURROUND_PARK_MASTER.can`, `HIGHWAY_PILOT.can`, `LIDAR.can`, `TRAILER_CTRL.can` ? ADAS feature/sensor/runtime anchors
+- `SCC.can`, `LDWS_LKAS.can`, `FCA.can`, `BCW.can`, `LCA.can`, `SPAS.can`, `RSPA.can`, `AVM.can`, `FCAM.can`, `FRADAR.can`, `SRR_FL.can`, `SRR_FR.can`, `SRR_RL.can`, `SRR_RR.can`, `PUS.can`, `DMS.can`, `OMS.can`, `AEB.can`, `PKM.can`, `RPC.can`, `RRM.can`, `SURROUND_PKM.can`, `HIGHWAY_PILOT.can`, `LIDAR.can`, `TRM.can` ? ADAS feature/sensor/runtime anchors
 
 ## Placeholder note
 
@@ -114,3 +114,4 @@ Local runtime verification result for the current visible bank:
 - `cfg/channel_assign` visible files: `100`
 - name diff: `0`
 - content diff: `0`
+

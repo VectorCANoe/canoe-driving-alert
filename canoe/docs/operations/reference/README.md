@@ -1,4 +1,4 @@
-# Reference Docs Index
+﻿# Reference Docs Index
 
 This folder contains non-daily strategy notes, intake records, and supporting references.
 
@@ -54,3 +54,4 @@ Open these only when the active task needs background support:
 - [RUNTIME_ABSORPTION_STATUS_2026-03-09.md](RUNTIME_ABSORPTION_STATUS_2026-03-09.md) - current Dev1 absorption boundary and GUI cleanup queue.
 - [OEM_RUNTIME_ANCHOR_NAMING_AUDIT_2026-03-09.md](OEM_RUNTIME_ANCHOR_NAMING_AUDIT_2026-03-09.md) - recheck of remaining runtime anchors and OEM-normalized names.
 - [RUNTIME_RENAME_SPLIT_PLAN_2026-03-09.md](RUNTIME_RENAME_SPLIT_PLAN_2026-03-09.md) - split between source/file rename targets and GUI-only rename targets.
+

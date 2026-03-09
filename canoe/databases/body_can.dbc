@@ -1,4 +1,4 @@
-VERSION "Body_CAN_v1.0"
+﻿VERSION "Body_CAN_v1.0"
 
 NS_ :
   NS_DESC_
@@ -29,7 +29,7 @@ NS_ :
 
 BS_:
 
-BU_: BCM ADAS CGW DATC SMK BODY_SECURITY_MODULE WIPER_MODULE AFLS DOOR_FL DOOR_FR DOOR_RL DOOR_RR SEAT_DRV SEAT_PASS TAILGATE_MODULE MIRROR_MODULE REAR_CLIMATE_MODULE SUNROOF_MODULE HEADLAMP_LEVELING CABIN_SENSING AHLS AUTO_DOOR_CTRL POWER_TAILGATE_CTRL BIOMETRIC_AUTH ACU ODS MASSAGE_SEAT_CTRL VAL_SCENARIO_CTRL Vector__XXX
+BU_: BCM ADAS CGW DATC SMK BSEC WIP AFLS DOOR_FL DOOR_FR DOOR_RL DOOR_RR SEAT_DRV SEAT_PASS TGM MIR RATC SRF HEADLAMP_LEVELING CABIN_SENSING AHLS ADM PTG BIOMETRIC_AUTH ACU ODS MSC VAL_SCENARIO_CTRL Vector__XXX
 
 BO_ 608 frmAmbientControlMsg: 1 BCM
  SG_ AmbientMode    : 0|3@1+ (1,0) [0|7] "" BCM
@@ -60,10 +60,10 @@ BO_ 613 frmLampControlMsg: 1 BCM
  SG_ HazardLampReq    : 6|1@1+ (1,0) [0|1] "" BCM
  SG_ Reserved0        : 7|1@1+ (1,0) [0|0] "" Vector__XXX
 
-BO_ 614 frmWiperStateMsg: 1 WIPER_MODULE
- SG_ FrontWiperState  : 0|2@1+ (1,0) [0|3] "" WIPER_MODULE
- SG_ RearWiperState   : 2|2@1+ (1,0) [0|3] "" WIPER_MODULE
- SG_ WiperInterval    : 4|4@1+ (1,0) [0|15] "" WIPER_MODULE
+BO_ 614 frmWiperStateMsg: 1 WIP
+ SG_ FrontWiperState  : 0|2@1+ (1,0) [0|3] "" WIP
+ SG_ RearWiperState   : 2|2@1+ (1,0) [0|3] "" WIP
+ SG_ WiperInterval    : 4|4@1+ (1,0) [0|15] "" WIP
 
 BO_ 615 frmSeatBeltStateMsg: 1 BCM
  SG_ DriverSeatBelt   : 0|1@1+ (1,0) [0|1] "" BCM,BCM
@@ -94,7 +94,7 @@ BO_ 619 frmHvacActuatorMsg: 2 DATC
  SG_ Reserved0        : 5|3@1+ (1,0) [0|0] "" Vector__XXX
  SG_ FanRpmStep       : 8|8@1+ (1,0) [0|255] "" BCM
 
-BO_ 620 frmMirrorStateMsg: 1 MIRROR_MODULE
+BO_ 620 frmMirrorStateMsg: 1 MIR
  SG_ MirrorFoldState  : 0|2@1+ (1,0) [0|3] "" BCM
  SG_ MirrorHeatState  : 2|1@1+ (1,0) [0|1] "" BCM
  SG_ MirrorAdjustAxis : 3|2@1+ (1,0) [0|3] "" BCM
@@ -139,9 +139,9 @@ BO_ 628 frmImmobilizerStateMsg: 1 SMK
  SG_ KeyAuthState     : 2|2@1+ (1,0) [0|3] "" SMK
  SG_ Reserved0        : 4|4@1+ (1,0) [0|0] "" Vector__XXX
 
-BO_ 629 frmAlarmStateMsg: 1 BODY_SECURITY_MODULE
- SG_ AlarmArmState    : 0|2@1+ (1,0) [0|3] "" BODY_SECURITY_MODULE
- SG_ IntrusionDetect  : 2|1@1+ (1,0) [0|1] "" BODY_SECURITY_MODULE
+BO_ 629 frmAlarmStateMsg: 1 BSEC
+ SG_ AlarmArmState    : 0|2@1+ (1,0) [0|3] "" BSEC
+ SG_ IntrusionDetect  : 2|1@1+ (1,0) [0|1] "" BSEC
  SG_ Reserved0        : 3|5@1+ (1,0) [0|0] "" Vector__XXX
 
 BO_ 630 frmBodyGatewayStateMsg: 2 BCM
@@ -189,22 +189,22 @@ BO_ 638 frmDoorRrStateMsg: 2 DOOR_RR
  SG_ DoorRrOpenState  : 2|1@1+ (1,0) [0|1] "" DOOR_RR
  SG_ DoorRrWindowPos  : 8|8@1+ (1,0) [0|255] "%" DOOR_RR
 
-BO_ 639 frmTailgateStateMsg: 2 TAILGATE_MODULE
- SG_ TailgateLockState : 0|2@1+ (1,0) [0|3] "" TAILGATE_MODULE
- SG_ TailgateOpenState : 2|1@1+ (1,0) [0|1] "" TAILGATE_MODULE
- SG_ TailgatePowerState : 3|2@1+ (1,0) [0|3] "" TAILGATE_MODULE
- SG_ TailgatePosition  : 8|8@1+ (1,0) [0|255] "%" TAILGATE_MODULE
+BO_ 639 frmTailgateStateMsg: 2 TGM
+ SG_ TailgateLockState : 0|2@1+ (1,0) [0|3] "" TGM
+ SG_ TailgateOpenState : 2|1@1+ (1,0) [0|1] "" TGM
+ SG_ TailgatePowerState : 3|2@1+ (1,0) [0|3] "" TGM
+ SG_ TailgatePosition  : 8|8@1+ (1,0) [0|255] "%" TGM
 
-BO_ 640 frmRearClimateStateMsg: 2 REAR_CLIMATE_MODULE
- SG_ RearSetTemp      : 0|8@1+ (1,0) [0|100] "degC" REAR_CLIMATE_MODULE
- SG_ RearBlowerLevel  : 8|4@1+ (1,0) [0|15] "" REAR_CLIMATE_MODULE
- SG_ RearVentMode     : 12|3@1+ (1,0) [0|7] "" REAR_CLIMATE_MODULE
- SG_ RearSyncMode     : 15|1@1+ (1,0) [0|1] "" REAR_CLIMATE_MODULE
+BO_ 640 frmRearClimateStateMsg: 2 RATC
+ SG_ RearSetTemp      : 0|8@1+ (1,0) [0|100] "degC" RATC
+ SG_ RearBlowerLevel  : 8|4@1+ (1,0) [0|15] "" RATC
+ SG_ RearVentMode     : 12|3@1+ (1,0) [0|7] "" RATC
+ SG_ RearSyncMode     : 15|1@1+ (1,0) [0|1] "" RATC
 
-BO_ 641 frmSunroofStateMsg: 2 SUNROOF_MODULE
- SG_ SunroofPosition  : 0|8@1+ (1,0) [0|100] "%" SUNROOF_MODULE
- SG_ SunroofTiltState : 8|2@1+ (1,0) [0|3] "" SUNROOF_MODULE
- SG_ SunshadeState    : 10|2@1+ (1,0) [0|3] "" SUNROOF_MODULE
+BO_ 641 frmSunroofStateMsg: 2 SRF
+ SG_ SunroofPosition  : 0|8@1+ (1,0) [0|100] "%" SRF
+ SG_ SunroofTiltState : 8|2@1+ (1,0) [0|3] "" SRF
+ SG_ SunshadeState    : 10|2@1+ (1,0) [0|3] "" SRF
  SG_ Reserved0        : 12|4@1+ (1,0) [0|0] "" Vector__XXX
 
 BO_ 642 frmHeadlampLevelStateMsg: 2 HEADLAMP_LEVELING
@@ -224,15 +224,15 @@ BO_ 644 frmAhlsStateMsg: 2 AHLS
  SG_ HighBeamPermit    : 3|1@1+ (1,0) [0|1] "" AHLS
  SG_ GlareCutLevel     : 8|8@1+ (1,0) [0|100] "%" AHLS
 
-BO_ 645 frmAutoDoorCtrlStateMsg: 2 AUTO_DOOR_CTRL
- SG_ AutoDoorState     : 0|3@1+ (1,0) [0|7] "" AUTO_DOOR_CTRL
- SG_ AutoUnlockState   : 3|2@1+ (1,0) [0|3] "" AUTO_DOOR_CTRL
- SG_ DoorApproachScore : 8|8@1+ (1,0) [0|100] "%" AUTO_DOOR_CTRL
+BO_ 645 frmAutoDoorCtrlStateMsg: 2 ADM
+ SG_ AutoDoorState     : 0|3@1+ (1,0) [0|7] "" ADM
+ SG_ AutoUnlockState   : 3|2@1+ (1,0) [0|3] "" ADM
+ SG_ DoorApproachScore : 8|8@1+ (1,0) [0|100] "%" ADM
 
-BO_ 646 frmPowerTailgateCtrlStateMsg: 2 POWER_TAILGATE_CTRL
- SG_ TailgateAssistMode : 0|3@1+ (1,0) [0|7] "" POWER_TAILGATE_CTRL
- SG_ OpenRequestState   : 3|2@1+ (1,0) [0|3] "" POWER_TAILGATE_CTRL
- SG_ TailgateActuatorCmd : 8|8@1+ (1,0) [0|100] "%" POWER_TAILGATE_CTRL
+BO_ 646 frmPowerTailgateCtrlStateMsg: 2 PTG
+ SG_ TailgateAssistMode : 0|3@1+ (1,0) [0|7] "" PTG
+ SG_ OpenRequestState   : 3|2@1+ (1,0) [0|3] "" PTG
+ SG_ TailgateActuatorCmd : 8|8@1+ (1,0) [0|100] "%" PTG
 
 BO_ 647 frmBiometricAuthStateMsg: 2 BIOMETRIC_AUTH
  SG_ AuthState         : 0|3@1+ (1,0) [0|7] "" BIOMETRIC_AUTH
@@ -253,7 +253,7 @@ BO_ 649 frmOdsStateMsg: 2 ODS
  SG_ ChildSeatDetected : 5|1@1+ (1,0) [0|1] "" BCM,CGW
  SG_ Reserved0         : 6|10@1+ (1,0) [0|0] "" Vector__XXX
 
-BO_ 650 frmMassageSeatCtrlStateMsg: 3 MASSAGE_SEAT_CTRL
+BO_ 650 frmMassageSeatCtrlStateMsg: 3 MSC
  SG_ MassageMode       : 0|3@1+ (1,0) [0|7] "" BCM,SEAT_DRV,CLU
  SG_ MassageIntensity  : 8|8@1+ (1,0) [0|100] "%" BCM,SEAT_DRV,CLU
  SG_ OccupancyState    : 16|1@1+ (1,0) [0|1] "" BCM,SEAT_DRV,CLU
@@ -452,3 +452,4 @@ VAL_ 650 MassageMode 0 "Off" 1 "Cruise" 2 "Comfort" 3 "Alert" 4 "Reserved4" 5 "R
 VAL_ 650 OccupancyState 0 "Vacant" 1 "Occupied";
 VAL_ 650 AlertComfortMode 0 "Normal" 1 "Alert";
 VAL_ 650 DriveComfortMode 0 "Standstill" 1 "Urban" 2 "Cruise" 3 "Reserved";
+

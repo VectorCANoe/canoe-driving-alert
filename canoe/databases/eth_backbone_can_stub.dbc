@@ -30,7 +30,7 @@ NS_ :
 
 BS_:
 
-BU_: V2X ADAS IVI ESC MDPS VCU VAL_SCENARIO_CTRL CGW IBOX SGW DCM EDR ETH_BACKBONE Vector__XXX
+BU_: V2X ADAS IVI ESC MDPS VCU VAL_SCENARIO_CTRL CGW IBOX SGW DCM EDR ETHB Vector__XXX
 
 BO_ 448 frmEmergencyBroadcastMsg: 4 V2X
  SG_ VehicleType  : 0|4@1+  (1,0) [0|15]  ""    V2X
@@ -112,7 +112,7 @@ BO_ 668 ethEdrStateMsg: 4 EDR
  SG_ StorageLevel     : 16|8@1+ (1,0) [0|100] "%" CGW,VAL_SCENARIO_CTRL
  SG_ LastEventCode    : 24|8@1+ (1,0) [0|255] "" CGW,VAL_SCENARIO_CTRL
 
-BO_ 669 ethBackboneStateMsg: 4 ETH_BACKBONE
+BO_ 669 ethBackboneStateMsg: 4 ETHB
  SG_ BackboneMode     : 0|2@1+ (1,0) [0|3] "" CGW,IBOX,SGW,DCM
  SG_ RouteHealth      : 2|2@1+ (1,0) [0|3] "" CGW,IBOX,SGW,DCM
  SG_ ServiceHealth    : 4|2@1+ (1,0) [0|3] "" CGW,IBOX,SGW,DCM
@@ -150,7 +150,7 @@ CM_ BO_ 665 "IBOX backbone aggregation state. Produced by IBOX from ETH-backbone
 CM_ BO_ 666 "Security gateway state. Produced by SGW from CGW/IBOX backbone security posture.";
 CM_ BO_ 667 "Diagnostic backbone state. Produced by DCM from security and routing context.";
 CM_ BO_ 668 "EDR backbone event recorder state. Produced by EDR from fail-safe and object-safety context.";
-CM_ BO_ 669 "ETH backbone consolidated health state. Produced by ETH_BACKBONE service from IBOX/SGW/DCM context.";
+CM_ BO_ 669 "ETH backbone consolidated health state. Produced by ETHB service from IBOX/SGW/DCM context.";
 
 BA_DEF_ BO_ "GenMsgCycleTime" INT 0 10000;
 BA_DEF_DEF_ "GenMsgCycleTime" 0;
@@ -183,3 +183,4 @@ VAL_ 1298 RoadZone 0 "NONE" 1 "SCHOOL" 2 "HIGHWAY" 3 "GUIDE";
 VAL_ 1298 NavDirection 0 "NONE" 1 "LEFT" 2 "RIGHT" 3 "STRAIGHT";
 VAL_ 668 RecordState 0 "Idle" 1 "Armed" 2 "Recording" 3 "Fault";
 VAL_ 669 BackboneMode 0 "Init" 1 "Standby" 2 "Active" 3 "Fault";
+
