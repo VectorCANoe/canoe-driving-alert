@@ -15,6 +15,18 @@
 - 산출: readiness, batch report, JUnit XML, portable ZIP / exe
 - 관리: artifact list/open/clean으로 산출물과 원본 계약 파일 확인
 
+## 언어 표면 규칙
+
+- 사용자 설명, 도움말, 실패 원인, 다음 액션은 한국어로 유지합니다.
+- 명령명, 단계명, 판정값, 산출물 키는 영어로 유지합니다.
+  - 예: `Home`, `Execute`, `Results`, `Logs`
+  - 예: `gate all`, `scenario run`, `verify quick`
+  - 예: `PASS`, `WARN`, `FAIL`, `run_id`, `phase`, `surface bundle`
+- 이유:
+  - 운영자는 한국어 설명을 바로 이해해야 합니다.
+  - 동시에 코드/문서/JSON/CI와 용어가 어긋나면 안 됩니다.
+- 따라서 공개 제품 표면은 `한국어 설명 + 영어 식별자` 조합을 기본 정책으로 사용합니다.
+
 ## 빠른 시작
 
 ```powershell
