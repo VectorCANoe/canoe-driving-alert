@@ -29,7 +29,7 @@ NS_ :
 
 BS_:
 
-BU_: BCM ADAS CGW DATC SMK BODY_SECURITY_MODULE WIPER_MODULE AFLS DOOR_FL DOOR_FR SEAT_DRV SEAT_PASS VAL_SCENARIO_CTRL Vector__XXX
+BU_: BCM ADAS CGW DATC SMK BODY_SECURITY_MODULE WIPER_MODULE AFLS DOOR_FL DOOR_FR DOOR_RL DOOR_RR SEAT_DRV SEAT_PASS TAILGATE_MODULE MIRROR_MODULE VAL_SCENARIO_CTRL Vector__XXX
 
 BO_ 608 frmAmbientControlMsg: 1 BCM
  SG_ AmbientMode    : 0|3@1+ (1,0) [0|7] "" BCM
@@ -94,7 +94,7 @@ BO_ 619 frmHvacActuatorMsg: 2 DATC
  SG_ Reserved0        : 5|3@1+ (1,0) [0|0] "" Vector__XXX
  SG_ FanRpmStep       : 8|8@1+ (1,0) [0|255] "" BCM
 
-BO_ 620 frmMirrorStateMsg: 1 BCM
+BO_ 620 frmMirrorStateMsg: 1 MIRROR_MODULE
  SG_ MirrorFoldState  : 0|2@1+ (1,0) [0|3] "" BCM
  SG_ MirrorHeatState  : 2|1@1+ (1,0) [0|1] "" BCM
  SG_ MirrorAdjustAxis : 3|2@1+ (1,0) [0|3] "" BCM
@@ -178,6 +178,22 @@ BO_ 636 frmSeatPassStateMsg: 2 SEAT_PASS
  SG_ SeatPassPos      : 0|8@1+ (1,0) [0|255] "" SEAT_PASS
  SG_ SeatPassHeatLvl  : 8|4@1+ (1,0) [0|15] "" SEAT_PASS
  SG_ SeatPassVentLvl  : 12|4@1+ (1,0) [0|15] "" SEAT_PASS
+
+BO_ 637 frmDoorRlStateMsg: 2 DOOR_RL
+ SG_ DoorRlLockState  : 0|2@1+ (1,0) [0|3] "" DOOR_RL
+ SG_ DoorRlOpenState  : 2|1@1+ (1,0) [0|1] "" DOOR_RL
+ SG_ DoorRlWindowPos  : 8|8@1+ (1,0) [0|255] "%" DOOR_RL
+
+BO_ 638 frmDoorRrStateMsg: 2 DOOR_RR
+ SG_ DoorRrLockState  : 0|2@1+ (1,0) [0|3] "" DOOR_RR
+ SG_ DoorRrOpenState  : 2|1@1+ (1,0) [0|1] "" DOOR_RR
+ SG_ DoorRrWindowPos  : 8|8@1+ (1,0) [0|255] "%" DOOR_RR
+
+BO_ 639 frmTailgateStateMsg: 2 TAILGATE_MODULE
+ SG_ TailgateLockState : 0|2@1+ (1,0) [0|3] "" TAILGATE_MODULE
+ SG_ TailgateOpenState : 2|1@1+ (1,0) [0|1] "" TAILGATE_MODULE
+ SG_ TailgatePowerState : 3|2@1+ (1,0) [0|3] "" TAILGATE_MODULE
+ SG_ TailgatePosition  : 8|8@1+ (1,0) [0|255] "%" TAILGATE_MODULE
 
 CM_ BO_ 608 "Flow_007 ambient output.";
 CM_ BO_ 609 "Body baseline: hazard switch and hazard state.";

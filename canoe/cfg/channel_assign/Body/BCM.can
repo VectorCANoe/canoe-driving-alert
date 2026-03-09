@@ -147,7 +147,6 @@ on timer tBodyBase100
   message frmSeatBeltStateMsg mSeatBelt;
   message frmCabinAirStateMsg mCabinAir;
   message frmBodyHealthMsg mHealth;
-  message frmMirrorStateMsg mMirror;
   message frmSeatStateMsg mSeatState;
   message frmSeatControlMsg mSeatCtrl;
   message frmDoorControlMsg mDoorCtrl;
@@ -250,11 +249,6 @@ on timer tBodyBase100
   mHealth.BodyDiagState = 0;
   mHealth.BodyFailCode = 0;
   output(mHealth);
-
-  mMirror.MirrorFoldState = 0;
-  mMirror.MirrorHeatState = 0;
-  mMirror.MirrorAdjustAxis = 0;
-  output(mMirror);
 
   mSeatState.DriverSeatPos = 120;
   mSeatState.PassengerSeatPos = 118;
