@@ -29,7 +29,7 @@ NS_ :
 
 BS_:
 
-BU_: BCM ADAS CGW DATC SMK BODY_SECURITY_MODULE WIPER_MODULE AFLS VAL_SCENARIO_CTRL Vector__XXX
+BU_: BCM ADAS CGW DATC SMK BODY_SECURITY_MODULE WIPER_MODULE AFLS DOOR_FL DOOR_FR SEAT_DRV SEAT_PASS VAL_SCENARIO_CTRL Vector__XXX
 
 BO_ 608 frmAmbientControlMsg: 1 BCM
  SG_ AmbientMode    : 0|3@1+ (1,0) [0|7] "" BCM
@@ -159,6 +159,26 @@ BO_ 632 frmAflsStateMsg: 2 AFLS
  SG_ CornerLampState  : 6|1@1+ (1,0) [0|1] "" AFLS
  SG_ LevelStep        : 8|8@1+ (1,0) [0|255] "" AFLS
 
+BO_ 633 frmDoorFlStateMsg: 2 DOOR_FL
+ SG_ DoorFlLockState  : 0|2@1+ (1,0) [0|3] "" DOOR_FL
+ SG_ DoorFlOpenState  : 2|1@1+ (1,0) [0|1] "" DOOR_FL
+ SG_ DoorFlWindowPos  : 8|8@1+ (1,0) [0|255] "%" DOOR_FL
+
+BO_ 634 frmDoorFrStateMsg: 2 DOOR_FR
+ SG_ DoorFrLockState  : 0|2@1+ (1,0) [0|3] "" DOOR_FR
+ SG_ DoorFrOpenState  : 2|1@1+ (1,0) [0|1] "" DOOR_FR
+ SG_ DoorFrWindowPos  : 8|8@1+ (1,0) [0|255] "%" DOOR_FR
+
+BO_ 635 frmSeatDrvStateMsg: 2 SEAT_DRV
+ SG_ SeatDrvPos       : 0|8@1+ (1,0) [0|255] "" SEAT_DRV
+ SG_ SeatDrvHeatLvl   : 8|4@1+ (1,0) [0|15] "" SEAT_DRV
+ SG_ SeatDrvVentLvl   : 12|4@1+ (1,0) [0|15] "" SEAT_DRV
+
+BO_ 636 frmSeatPassStateMsg: 2 SEAT_PASS
+ SG_ SeatPassPos      : 0|8@1+ (1,0) [0|255] "" SEAT_PASS
+ SG_ SeatPassHeatLvl  : 8|4@1+ (1,0) [0|15] "" SEAT_PASS
+ SG_ SeatPassVentLvl  : 12|4@1+ (1,0) [0|15] "" SEAT_PASS
+
 CM_ BO_ 608 "Flow_007 ambient output.";
 CM_ BO_ 609 "Body baseline: hazard switch and hazard state.";
 CM_ BO_ 610 "Body baseline: window command and window state.";
@@ -183,6 +203,10 @@ CM_ BO_ 629 "Comm_202: alarm state extension.";
 CM_ BO_ 630 "Comm_202: body gateway status extension.";
 CM_ BO_ 631 "Comm_202: body comfort status extension.";
 CM_ BO_ 632 "Comm_202: adaptive front lighting state extension.";
+CM_ BO_ 633 "Comm_202: front-left door module state extension.";
+CM_ BO_ 634 "Comm_202: front-right door module state extension.";
+CM_ BO_ 635 "Comm_202: driver seat module state extension.";
+CM_ BO_ 636 "Comm_202: passenger seat module state extension.";
 
 BA_DEF_ BO_ "GenMsgCycleTime" INT 0 10000;
 BA_DEF_DEF_ "GenMsgCycleTime" 0;
@@ -210,6 +234,10 @@ BA_ "GenMsgCycleTime" BO_ 629 100;
 BA_ "GenMsgCycleTime" BO_ 630 100;
 BA_ "GenMsgCycleTime" BO_ 631 100;
 BA_ "GenMsgCycleTime" BO_ 632 100;
+BA_ "GenMsgCycleTime" BO_ 633 100;
+BA_ "GenMsgCycleTime" BO_ 634 100;
+BA_ "GenMsgCycleTime" BO_ 635 100;
+BA_ "GenMsgCycleTime" BO_ 636 100;
 
 VAL_ 608 AmbientMode
   0 "Off"
