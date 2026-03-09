@@ -10,7 +10,7 @@ Use this as the real execution profile for the current reset cycle.
 
 2. Deep active runtime implementation
 - target: `12~18`
-- chosen baseline (current): `38` (`36` product + `2` validation)
+- chosen baseline (current): `42` (`40` product + `2` validation)
 - note:
   - the reset cycle is intentionally overshooting the old `16` stretch line before the GUI import wave, so that more reviewer-facing surface ECUs are already compileable runtime anchors.
 
@@ -173,7 +173,7 @@ Rule:
 
 Vehicle surface total: `100`
 
-## Deep Runtime Plan (`38` current)
+## Deep Runtime Plan (`42` current)
 
 Current active baseline first:
 
@@ -213,8 +213,12 @@ Current active baseline first:
 34. `EHB`
 35. `ECS`
 36. `CDC`
-37. `VALIDATION_HARNESS` (`VAL_SCENARIO_CTRL`)
-38. `VALIDATION_HARNESS` (`VAL_BASELINE_CTRL`)
+37. `LDWS_LKAS`
+38. `FCA`
+39. `BCW`
+40. `LCA`
+41. `VALIDATION_HARNESS` (`VAL_SCENARIO_CTRL`)
+42. `VALIDATION_HARNESS` (`VAL_BASELINE_CTRL`)
 
 ## Chosen 8 Core Custom Surfaces
 
