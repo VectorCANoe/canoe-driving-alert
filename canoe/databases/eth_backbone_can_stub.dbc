@@ -81,6 +81,30 @@ BO_ 1298 ethNavContextMsg: 6 IVI
  SG_ SpeedLimit       : 16|8@1+  (1,0) [0|255]  "km/h" ADAS,VAL_SCENARIO_CTRL,IVI
  SG_ Reserved0        : 24|24@1+ (1,0) [0|0]    ""    Vector__XXX
 
+BO_ 665 ethIboxStateMsg: 3 IBOX
+ SG_ IboxLinkMode     : 0|2@1+ (1,0) [0|3] "" SGW,DCM,VAL_SCENARIO_CTRL
+ SG_ IboxRouteState   : 2|2@1+ (1,0) [0|3] "" SGW,DCM,VAL_SCENARIO_CTRL
+ SG_ Reserved0        : 4|4@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ IboxSignalBars   : 8|4@1+ (1,0) [0|15] "" SGW,DCM
+ SG_ IboxServiceFlags : 12|4@1+ (1,0) [0|15] "" SGW,DCM,VAL_SCENARIO_CTRL
+ SG_ IboxDiagState    : 16|4@1+ (1,0) [0|15] "" SGW,DCM
+ SG_ Reserved1        : 20|4@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 666 ethSecurityStateMsg: 2 SGW
+ SG_ SecuritySession  : 0|3@1+ (1,0) [0|7] "" DCM,VAL_SCENARIO_CTRL
+ SG_ AuthState        : 3|2@1+ (1,0) [0|3] "" DCM,VAL_SCENARIO_CTRL
+ SG_ KeyPresence      : 5|1@1+ (1,0) [0|1] "" DCM
+ SG_ Reserved0        : 6|2@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ SecurityFault    : 8|4@1+ (1,0) [0|15] "" DCM,VAL_SCENARIO_CTRL
+ SG_ SecurityPolicy   : 12|4@1+ (1,0) [0|15] "" DCM
+
+BO_ 667 ethDiagStateMsg: 2 DCM
+ SG_ DiagSession      : 0|3@1+ (1,0) [0|7] "" VAL_SCENARIO_CTRL
+ SG_ DiagPathState    : 3|2@1+ (1,0) [0|3] "" VAL_SCENARIO_CTRL
+ SG_ DiagPending      : 5|1@1+ (1,0) [0|1] "" VAL_SCENARIO_CTRL
+ SG_ Reserved0        : 6|2@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ LastDiagSid      : 8|8@1+ (1,0) [0|255] "" VAL_SCENARIO_CTRL
+
 CM_ BO_ 448 "E100: Emergency vehicle broadcast. Sent by V2X on ETH backbone stub through its internal V2X transport seam.";
 CM_ SG_ 448 VehicleType  "1=POLICE 2=AMBULANCE";
 CM_ SG_ 448 Status       "0=CLEAR 1=ACTIVE";
@@ -107,6 +131,9 @@ CM_ SG_ 1297 SteeringQuality "Steering signal quality indicator.";
 CM_ BO_ 1298 "Normalized navigation context frame on ETH backbone stub. Produced by IVI through its internal domain transport seam.";
 CM_ SG_ 1298 RoadZone "0=None 1=School 2=Highway 3=Guide.";
 CM_ SG_ 1298 NavDirection "0=None 1=Left 2=Right 3=Straight.";
+CM_ BO_ 665 "IBOX backbone aggregation state. Produced by IBOX from ETH-backbone context and service health.";
+CM_ BO_ 666 "Security gateway state. Produced by SGW from CGW/IBOX backbone security posture.";
+CM_ BO_ 667 "Diagnostic backbone state. Produced by DCM from security and routing context.";
 
 BA_DEF_ BO_ "GenMsgCycleTime" INT 0 10000;
 BA_DEF_DEF_ "GenMsgCycleTime" 0;
@@ -117,6 +144,9 @@ BA_ "GenMsgCycleTime" BO_ 273 300;
 BA_ "GenMsgCycleTime" BO_ 1296 100;
 BA_ "GenMsgCycleTime" BO_ 1297 100;
 BA_ "GenMsgCycleTime" BO_ 1298 100;
+BA_ "GenMsgCycleTime" BO_ 665 100;
+BA_ "GenMsgCycleTime" BO_ 666 100;
+BA_ "GenMsgCycleTime" BO_ 667 100;
 
 VAL_ 448 VehicleType 0 "NONE" 1 "POLICE" 2 "AMBULANCE";
 VAL_ 448 Status 0 "CLEAR" 1 "ACTIVE";
