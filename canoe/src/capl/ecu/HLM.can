@@ -23,7 +23,7 @@ on start
   gLastLevelMode = -1;
   gLastCompState = -1;
   setTimer(tHeadlampLevelCycle, 100);
-  write("[HEADLAMP_LEVELING] start");
+  write("[HLM] start");
 }
 
 on timer tHeadlampLevelCycle
@@ -44,7 +44,7 @@ on timer tHeadlampLevelCycle
       mLevel.HeadlampLevelMode != gLastLevelMode ||
       mLevel.LevelCompState != gLastCompState)
   {
-    write("[HEADLAMP_LEVELING] step=%d mode=%d comp=%d beam=%d",
+    write("[HLM] step=%d mode=%d comp=%d beam=%d",
           mLevel.HeadlampLevelStep,
           mLevel.HeadlampLevelMode,
           mLevel.LevelCompState,

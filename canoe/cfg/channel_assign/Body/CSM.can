@@ -27,7 +27,7 @@ on start
   gLastCabinAlertState = -1;
   gLastPresenceScore = -1;
   setTimer(tCabinSensingCycle, 100);
-  write("[CABIN_SENSING] start");
+  write("[CSM] start");
 }
 
 on timer tCabinSensingCycle
@@ -76,7 +76,7 @@ on timer tCabinSensingCycle
       mCabin.CabinAlertState != gLastCabinAlertState ||
       mCabin.CabinPresenceScore != gLastPresenceScore)
   {
-    write("[CABIN_SENSING] occ=%d aq=%d alert=%d score=%d belt=%d aqi=%d temp=%d",
+    write("[CSM] occ=%d aq=%d alert=%d score=%d belt=%d aqi=%d temp=%d",
           mCabin.OccupancyState,
           mCabin.AirQualityState,
           mCabin.CabinAlertState,

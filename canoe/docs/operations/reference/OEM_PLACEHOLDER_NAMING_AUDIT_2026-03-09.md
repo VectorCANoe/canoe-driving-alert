@@ -72,7 +72,7 @@ These names still read more like internal breadth placeholders than OEM-grade su
 - `BODY_SECURITY_MODULE`
 - `CARPAY_CTRL`
 - `CHARGE_PORT_CTRL`
-- `DIGITAL_KEY`
+- `DKEY`
 - `ETH_BACKBONE`
 - `MASSAGE_SEAT_CTRL`
 - `MIRROR_MODULE`

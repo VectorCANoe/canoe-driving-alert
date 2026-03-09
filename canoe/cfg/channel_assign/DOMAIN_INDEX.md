@@ -42,10 +42,10 @@ This file documents the visible runtime and placeholder CAPL inventory after wra
 - `AEB.can`
 - `PKM.can`
 - `RPC.can`
-- `LIDAR.can`
+- `LDR.can`
 - `RRM.can`
 - `SPM.can`
-- `HIGHWAY_PILOT.can`
+- `HWP.can`
 - `TRM.can`
 
 ### Infotainment
@@ -58,7 +58,7 @@ This file documents the visible runtime and placeholder CAPL inventory after wra
 - `NAV.can`
 - `VCS.can`
 - `RSE.can`
-- `DIGITAL_KEY.can`
+- `DKEY.can`
 - `CPAY.can`
 - `PAK.can`
 - `OTA.can`
@@ -80,13 +80,13 @@ This file documents the visible runtime and placeholder CAPL inventory after wra
 - `SEAT_PASS.can`
 - `MIR.can`
 - `BSEC.can`
-- `HEADLAMP_LEVELING.can`
+- `HLM.can`
 - `ADM.can`
 - `PTG.can`
 - `MSC.can`
 - `RATC.can`
-- `CABIN_SENSING.can`
-- `BIOMETRIC_AUTH.can`
+- `CSM.can`
+- `BIO.can`
 
 ### Powertrain
 - `EMS.can`
@@ -119,7 +119,7 @@ This file documents the visible runtime and placeholder CAPL inventory after wra
 - `VSM.can`
 - `EHB.can`
 - `CDC.can`
-- `AIR_SUSPENSION.can`
+- `ASM.can`
 - `RWS.can`
 
 ## Validation summary

@@ -23,7 +23,7 @@ on start
   gLastFrontHeight = -1;
   gLastRearHeight = -1;
   setTimer(tAirSuspensionCycle, 100);
-  write("[AIR_SUSPENSION] start");
+  write("[ASM] start");
 }
 
 on message frmSuspensionStateMsg
@@ -51,7 +51,7 @@ on timer tAirSuspensionCycle
       mAir.FrontHeight != gLastFrontHeight ||
       mAir.RearHeight != gLastRearHeight)
   {
-    write("[AIR_SUSPENSION] mode=%d front=%d rear=%d",
+    write("[ASM] mode=%d front=%d rear=%d",
           mAir.RideHeightMode,
           mAir.FrontHeight,
           mAir.RearHeight);

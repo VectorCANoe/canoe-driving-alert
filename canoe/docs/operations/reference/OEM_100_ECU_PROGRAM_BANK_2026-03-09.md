@@ -44,7 +44,7 @@ To avoid confusing functional/service surfaces with physical ECU modules, use th
 
 Representative non-physical surfaces in this bank:
 
-- `CPAY`, `PAK`, `EDGE_LOGGER`, `AEB`, `HIGHWAY_PILOT`, `SPM`
+- `CPAY`, `PAK`, `EDGE_LOGGER`, `AEB`, `HWP`, `SPM`
 
 These remain placeholder-first unless explicitly promoted.
 
@@ -124,7 +124,7 @@ These remain placeholder-first unless explicitly promoted.
 7. `NAV`
 8. `VCS`
 9. `RSE`
-10. `DIGITAL_KEY`
+10. `DKEY`
 
 ### A6. ADAS / V2X / Parking (`19`)
 
@@ -165,26 +165,26 @@ These are realistic additional surfaces for a higher trim / premium / technology
 3. `MCU`
 4. `INVERTER`
 5. `CPC`
-6. `AIR_SUSPENSION`
+6. `ASM`
 7. `RWS`
 8. `NIGHT_VISION`
 9. `AEB`
-10. `HIGHWAY_PILOT`
+10. `HWP`
 11. `PKM`
 12. `TRM`
-13. `HEADLAMP_LEVELING`
+13. `HLM`
 14. `ADM`
 15. `PTG`
 16. `MSC`
 17. `RATC`
-18. `CABIN_SENSING`
-19. `BIOMETRIC_AUTH`
+18. `CSM`
+19. `BIO`
 20. `CPAY`
 21. `PAK`
 22. `OTA`
 23. `EDR`
 24. `RPC`
-25. `LIDAR`
+25. `LDR`
 26. `RRM`
 27. `SPM`
 
@@ -240,7 +240,7 @@ Use these first in the main architecture tree:
 - `AMP`
 - `PGS`
 - `NAV`
-- `DIGITAL_KEY`
+- `DKEY`
 - `ADAS`
 - `V2X`
 - `SCC`
@@ -279,7 +279,7 @@ Use these in category views, domain trees, and optional system maps:
 - `MCU`
 - `INVERTER`
 - `CPC`
-- `AIR_SUSPENSION`
+- `ASM`
 - `RWS`
 - `NIGHT_VISION`
 - `AEB`
@@ -291,21 +291,21 @@ Use these in category views, domain trees, and optional system maps:
 Keep these active in the surface bank, but placeholder-first unless promoted.
 
 - `TRM`
-- `HEADLAMP_LEVELING`
+- `HLM`
 - `ADM`
 - `PTG`
 - `MSC`
 - `RATC`
-- `CABIN_SENSING`
-- `BIOMETRIC_AUTH`
+- `CSM`
+- `BIO`
 - `CPAY`
 - `PAK`
 - `EDR`
 - `RPC`
-- `LIDAR`
+- `LDR`
 - `RRM`
 - `SPM`
-- `HIGHWAY_PILOT`
+- `HWP`
 
 ## E. Deep Runtime Commitment
 

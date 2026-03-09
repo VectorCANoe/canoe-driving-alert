@@ -72,7 +72,7 @@ void publishLidarState()
       gObjectConfidence != gLastConfidence ||
       rangeBucket != gLastRangeBucket)
   {
-    write("[LIDAR] health=%d target=%d free=%d conf=%d range=%d failSafe=%d",
+    write("[LDR] health=%d target=%d free=%d conf=%d range=%d failSafe=%d",
           health,
           targetDetected,
           freeSpaceClass,
@@ -99,7 +99,7 @@ on start
   gLastConfidence = -1;
   gLastRangeBucket = -1;
   setTimer(tLidarCycle, 100);
-  write("[LIDAR] start");
+  write("[LDR] start");
 }
 
 on timer tLidarCycle

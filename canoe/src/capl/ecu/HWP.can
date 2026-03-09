@@ -65,7 +65,7 @@ void publishHighwayPilotState()
       driverMonitorReq != gLastDriverReq ||
       availabilityLevel != gLastAvail)
   {
-    write("[HIGHWAY_PILOT] ready=%d long=%d lat=%d dmsReq=%d avail=%d setSpeed=%d lane=%d",
+    write("[HWP] ready=%d long=%d lat=%d dmsReq=%d avail=%d setSpeed=%d lane=%d",
           highwayReady,
           longCtrlActive,
           latCtrlActive,
@@ -94,7 +94,7 @@ on start
   gLastDriverReq = -1;
   gLastAvail = -1;
   setTimer(tHighwayPilotCycle, 100);
-  write("[HIGHWAY_PILOT] start");
+  write("[HWP] start");
 }
 
 on timer tHighwayPilotCycle

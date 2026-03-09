@@ -32,4 +32,10 @@ Rule:
 | `VOICE_ASSIST` | `VCS` | voice control system short alias |
 | `WIPER_MODULE` | `WIP` | short project alias |
 | `PHONE_AS_KEY` | `PAK` | short project alias |
-
+| `DIGITAL_KEY` | `DKEY` | short project alias for digital key module |
+| `AIR_SUSPENSION` | `ASM` | short project alias for air suspension module |
+| `HEADLAMP_LEVELING` | `HLM` | short project alias for headlamp leveling module |
+| `CABIN_SENSING` | `CSM` | short project alias for cabin sensing module |
+| `BIOMETRIC_AUTH` | `BIO` | short project alias for biometric auth module |
+| `HIGHWAY_PILOT` | `HWP` | short project alias for highway pilot |
+| `LIDAR` | `LDR` | short project alias for lidar sensor module |

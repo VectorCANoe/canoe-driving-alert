@@ -29,12 +29,12 @@ The current import bank exposes:
 
 | Domain | Visible deep nodes |
 | --- | --- |
-| Chassis | `VCU`, `ESC`, `MDPS`, `ABS`, `EPB`, `TPMS`, `SAS`, `VSM`, `EHB`, `ECS`, `CDC`, `AIR_SUSPENSION`, `RWS`, `ACU`, `ODS`, `VAL_BASELINE_CTRL` |
-| Body | `BCM`, `DATC`, `SMK`, `AFLS`, `WIP`, `BSEC`, `DOOR_FL`, `DOOR_FR`, `DOOR_RL`, `DOOR_RR`, `SEAT_DRV`, `SEAT_PASS`, `TGM`, `MIR`, `RATC`, `SRF`, `HEADLAMP_LEVELING`, `CABIN_SENSING`, `AHLS`, `ADM`, `PTG`, `BIOMETRIC_AUTH`, `MSC` |
-| Infotainment | `IVI`, `CLU`, `HUD`, `AMP`, `VCS`, `TMU`, `NAV`, `OTA`, `DIGITAL_KEY`, `RSE`, `PGS`, `PAK`, `CPAY` |
+| Chassis | `VCU`, `ESC`, `MDPS`, `ABS`, `EPB`, `TPMS`, `SAS`, `VSM`, `EHB`, `ECS`, `CDC`, `ASM`, `RWS`, `ACU`, `ODS`, `VAL_BASELINE_CTRL` |
+| Body | `BCM`, `DATC`, `SMK`, `AFLS`, `WIP`, `BSEC`, `DOOR_FL`, `DOOR_FR`, `DOOR_RL`, `DOOR_RR`, `SEAT_DRV`, `SEAT_PASS`, `TGM`, `MIR`, `RATC`, `SRF`, `HLM`, `CSM`, `AHLS`, `ADM`, `PTG`, `BIO`, `MSC` |
+| Infotainment | `IVI`, `CLU`, `HUD`, `AMP`, `VCS`, `TMU`, `NAV`, `OTA`, `DKEY`, `RSE`, `PGS`, `PAK`, `CPAY` |
 | Powertrain | `EMS`, `TCU`, `_4WD`, `BAT_BMS`, `FPCM`, `LVR`, `ISG`, `EOP`, `EWP`, `OBC`, `DCDC`, `MCU`, `INVERTER`, `CPC` |
 | ETH Backbone | `CGW`, `V2X`, `SGW`, `IBOX`, `DCM`, `EDR`, `ETHB`, `VAL_SCENARIO_CTRL` |
-| ADAS | `ADAS`, `SCC`, `LDWS_LKAS`, `FCA`, `BCW`, `LCA`, `SPAS`, `RSPA`, `AVM`, `FCAM`, `FRADAR`, `SRR_FL`, `SRR_FR`, `SRR_RL`, `SRR_RR`, `PUS`, `DMS`, `OMS`, `AEB`, `PKM`, `RPC`, `RRM`, `SPM`, `HIGHWAY_PILOT`, `LIDAR`, `TRM` |
+| ADAS | `ADAS`, `SCC`, `LDWS_LKAS`, `FCA`, `BCW`, `LCA`, `SPAS`, `RSPA`, `AVM`, `FCAM`, `FRADAR`, `SRR_FL`, `SRR_FR`, `SRR_RL`, `SRR_RR`, `PUS`, `DMS`, `OMS`, `AEB`, `PKM`, `RPC`, `RRM`, `SPM`, `HWP`, `LDR`, `TRM` |
 
 ## GUI import order
 
@@ -70,16 +70,16 @@ These anchors still need extra bus assignments restored in GUI.
 - `VCU.can` ? propulsion / accel command owner
 - `ESC.can` ? brake / stability owner
 - `MDPS.can` ? steering owner
-- `ABS.can`, `EPB.can`, `TPMS.can`, `SAS.can`, `VSM.can`, `EHB.can`, `ECS.can`, `CDC.can`, `AIR_SUSPENSION.can`, `RWS.can` ? chassis/safety runtime anchors
+- `ABS.can`, `EPB.can`, `TPMS.can`, `SAS.can`, `VSM.can`, `EHB.can`, `ECS.can`, `CDC.can`, `ASM.can`, `RWS.can` ? chassis/safety runtime anchors
 - `VAL_BASELINE_CTRL.can` ? validation baseline aggregation
 
 ### Body
 - `BCM.can` ? body output owner after hazard/window/ambient/driver-state absorption
-- `DATC.can`, `SMK.can`, `AFLS.can`, `WIP.can`, `BSEC.can`, `DOOR_FL.can`, `DOOR_FR.can`, `DOOR_RL.can`, `DOOR_RR.can`, `SEAT_DRV.can`, `SEAT_PASS.can`, `TGM.can`, `MIR.can`, `RATC.can`, `SRF.can`, `HEADLAMP_LEVELING.can`, `CABIN_SENSING.can`, `AHLS.can`, `ADM.can`, `PTG.can`, `BIOMETRIC_AUTH.can` ? comfort/security runtime anchors
+- `DATC.can`, `SMK.can`, `AFLS.can`, `WIP.can`, `BSEC.can`, `DOOR_FL.can`, `DOOR_FR.can`, `DOOR_RL.can`, `DOOR_RR.can`, `SEAT_DRV.can`, `SEAT_PASS.can`, `TGM.can`, `MIR.can`, `RATC.can`, `SRF.can`, `HLM.can`, `CSM.can`, `AHLS.can`, `ADM.can`, `PTG.can`, `BIO.can` ? comfort/security runtime anchors
 
 ### Infotainment
 - `IVI.can` ? IVI display/connectivity/diagnostic owner after navigation owner split
-- `NAV.can`, `OTA.can`, `DIGITAL_KEY.can`, `RSE.can`, `PGS.can`, `PAK.can`, `CPAY.can` ? infotainment service/runtime anchors
+- `NAV.can`, `OTA.can`, `DKEY.can`, `RSE.can`, `PGS.can`, `PAK.can`, `CPAY.can` ? infotainment service/runtime anchors
 - `CLU.can` ? cluster display / HMI owner
 - `HUD.can`, `AMP.can`, `VCS.can`, `TMU.can` ? HMI/connectivity runtime anchors
 
@@ -96,7 +96,7 @@ These anchors still need extra bus assignments restored in GUI.
 
 ### ADAS
 - `ADAS.can` ? integrated risk, warning, and assist decision runtime
-- `SCC.can`, `LDWS_LKAS.can`, `FCA.can`, `BCW.can`, `LCA.can`, `SPAS.can`, `RSPA.can`, `AVM.can`, `FCAM.can`, `FRADAR.can`, `SRR_FL.can`, `SRR_FR.can`, `SRR_RL.can`, `SRR_RR.can`, `PUS.can`, `DMS.can`, `OMS.can`, `AEB.can`, `PKM.can`, `RPC.can`, `RRM.can`, `SPM.can`, `HIGHWAY_PILOT.can`, `LIDAR.can`, `TRM.can` ? ADAS feature/sensor/runtime anchors
+- `SCC.can`, `LDWS_LKAS.can`, `FCA.can`, `BCW.can`, `LCA.can`, `SPAS.can`, `RSPA.can`, `AVM.can`, `FCAM.can`, `FRADAR.can`, `SRR_FL.can`, `SRR_FR.can`, `SRR_RL.can`, `SRR_RR.can`, `PUS.can`, `DMS.can`, `OMS.can`, `AEB.can`, `PKM.can`, `RPC.can`, `RRM.can`, `SPM.can`, `HWP.can`, `LDR.can`, `TRM.can` ? ADAS feature/sensor/runtime anchors
 
 ## Placeholder note
 

@@ -29,7 +29,7 @@ NS_ :
 
 BS_:
 
-BU_: BCM ADAS CGW DATC SMK BSEC WIP AFLS DOOR_FL DOOR_FR DOOR_RL DOOR_RR SEAT_DRV SEAT_PASS TGM MIR RATC SRF HEADLAMP_LEVELING CABIN_SENSING AHLS ADM PTG BIOMETRIC_AUTH ACU ODS MSC VAL_SCENARIO_CTRL Vector__XXX
+BU_: BCM ADAS CGW DATC SMK BSEC WIP AFLS DOOR_FL DOOR_FR DOOR_RL DOOR_RR SEAT_DRV SEAT_PASS TGM MIR RATC SRF HLM CSM AHLS ADM PTG BIO ACU ODS MSC VAL_SCENARIO_CTRL Vector__XXX
 
 BO_ 608 frmAmbientControlMsg: 1 BCM
  SG_ AmbientMode    : 0|3@1+ (1,0) [0|7] "" BCM
@@ -207,17 +207,17 @@ BO_ 641 frmSunroofStateMsg: 2 SRF
  SG_ SunshadeState    : 10|2@1+ (1,0) [0|3] "" SRF
  SG_ Reserved0        : 12|4@1+ (1,0) [0|0] "" Vector__XXX
 
-BO_ 642 frmHeadlampLevelStateMsg: 2 HEADLAMP_LEVELING
- SG_ HeadlampLevelStep : 0|8@1+ (1,0) [0|255] "" HEADLAMP_LEVELING
- SG_ HeadlampLevelMode : 8|3@1+ (1,0) [0|7] "" HEADLAMP_LEVELING
- SG_ LevelCompState    : 11|2@1+ (1,0) [0|3] "" HEADLAMP_LEVELING
+BO_ 642 frmHeadlampLevelStateMsg: 2 HLM
+ SG_ HeadlampLevelStep : 0|8@1+ (1,0) [0|255] "" HLM
+ SG_ HeadlampLevelMode : 8|3@1+ (1,0) [0|7] "" HLM
+ SG_ LevelCompState    : 11|2@1+ (1,0) [0|3] "" HLM
  SG_ Reserved0         : 13|3@1+ (1,0) [0|0] "" Vector__XXX
 
-BO_ 643 frmCabinSensingStateMsg: 2 CABIN_SENSING
- SG_ OccupancyState    : 0|3@1+ (1,0) [0|7] "" CABIN_SENSING
- SG_ AirQualityState   : 3|3@1+ (1,0) [0|7] "" CABIN_SENSING
- SG_ CabinAlertState   : 6|2@1+ (1,0) [0|3] "" CABIN_SENSING
- SG_ CabinPresenceScore : 8|8@1+ (1,0) [0|100] "%" CABIN_SENSING
+BO_ 643 frmCabinSensingStateMsg: 2 CSM
+ SG_ OccupancyState    : 0|3@1+ (1,0) [0|7] "" CSM
+ SG_ AirQualityState   : 3|3@1+ (1,0) [0|7] "" CSM
+ SG_ CabinAlertState   : 6|2@1+ (1,0) [0|3] "" CSM
+ SG_ CabinPresenceScore : 8|8@1+ (1,0) [0|100] "%" CSM
 
 BO_ 644 frmAhlsStateMsg: 2 AHLS
  SG_ AhlsAssistState   : 0|3@1+ (1,0) [0|7] "" AHLS
@@ -234,10 +234,10 @@ BO_ 646 frmPowerTailgateCtrlStateMsg: 2 PTG
  SG_ OpenRequestState   : 3|2@1+ (1,0) [0|3] "" PTG
  SG_ TailgateActuatorCmd : 8|8@1+ (1,0) [0|100] "%" PTG
 
-BO_ 647 frmBiometricAuthStateMsg: 2 BIOMETRIC_AUTH
- SG_ AuthState         : 0|3@1+ (1,0) [0|7] "" BIOMETRIC_AUTH
- SG_ AuthFactorMode    : 3|2@1+ (1,0) [0|3] "" BIOMETRIC_AUTH
- SG_ PresenceConfidence : 8|8@1+ (1,0) [0|100] "%" BIOMETRIC_AUTH
+BO_ 647 frmBiometricAuthStateMsg: 2 BIO
+ SG_ AuthState         : 0|3@1+ (1,0) [0|7] "" BIO
+ SG_ AuthFactorMode    : 3|2@1+ (1,0) [0|3] "" BIO
+ SG_ PresenceConfidence : 8|8@1+ (1,0) [0|100] "%" BIO
 
 BO_ 648 frmAcuStateMsg: 2 ACU
  SG_ DeploymentArmed   : 0|1@1+ (1,0) [0|1] "" BCM,CGW

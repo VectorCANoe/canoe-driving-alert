@@ -39,7 +39,7 @@
 | frmEhbStateMsg | 0x12C | 2 | EHB | chassis_can.dbc | 2 |
 | frmEcsStateMsg | 0x12D | 2 | ECS | chassis_can.dbc | 3 |
 | frmCdcStateMsg | 0x12E | 2 | CDC | chassis_can.dbc | 2 |
-| frmAirSuspensionStateMsg | 0x12F | 3 | AIR_SUSPENSION | chassis_can.dbc | 3 |
+| frmAirSuspensionStateMsg | 0x12F | 3 | ASM | chassis_can.dbc | 3 |
 | frmRwsStateMsg | 0x130 | 3 | RWS | chassis_can.dbc | 3 |
 | frmChassisDiagReqMsg | 0x2A4 | 3 | VAL_SCENARIO_CTRL | chassis_can.dbc | 3 |
 | frmChassisDiagResMsg | 0x107 | 3 | ESC | chassis_can.dbc | 3 |
@@ -111,12 +111,12 @@
 | frmTailgateStateMsg | 0x27F | 2 | TGM | body_can.dbc | 4 |
 | frmRearClimateStateMsg | 0x280 | 2 | RATC | body_can.dbc | 4 |
 | frmSunroofStateMsg | 0x281 | 2 | SRF | body_can.dbc | 4 |
-| frmHeadlampLevelStateMsg | 0x282 | 2 | HEADLAMP_LEVELING | body_can.dbc | 4 |
-| frmCabinSensingStateMsg | 0x283 | 2 | CABIN_SENSING | body_can.dbc | 4 |
+| frmHeadlampLevelStateMsg | 0x282 | 2 | HLM | body_can.dbc | 4 |
+| frmCabinSensingStateMsg | 0x283 | 2 | CSM | body_can.dbc | 4 |
 | frmAhlsStateMsg | 0x284 | 2 | AHLS | body_can.dbc | 3 |
 | frmAutoDoorCtrlStateMsg | 0x285 | 2 | ADM | body_can.dbc | 3 |
 | frmPowerTailgateCtrlStateMsg | 0x286 | 2 | PTG | body_can.dbc | 3 |
-| frmBiometricAuthStateMsg | 0x287 | 2 | BIOMETRIC_AUTH | body_can.dbc | 3 |
+| frmBiometricAuthStateMsg | 0x287 | 2 | BIO | body_can.dbc | 3 |
 | frmAcuStateMsg | 0x288 | 2 | ACU | body_can.dbc | 5 |
 | frmOdsStateMsg | 0x289 | 2 | ODS | body_can.dbc | 5 |
 | frmMassageSeatCtrlStateMsg | 0x28A | 3 | MSC | body_can.dbc | 6 |
@@ -148,7 +148,7 @@
 | frmHudStateMsg | 0x297 | 3 | HUD | infotainment_can.dbc | 5 |
 | frmAmpStateMsg | 0x298 | 3 | AMP | infotainment_can.dbc | 7 |
 | frmOtaMasterStateMsg | 0x299 | 4 | OTA | infotainment_can.dbc | 9 |
-| frmDigitalKeyStateMsg | 0x29A | 3 | DIGITAL_KEY | infotainment_can.dbc | 7 |
+| frmDigitalKeyStateMsg | 0x29A | 3 | DKEY | infotainment_can.dbc | 7 |
 | frmRseStateMsg | 0x29B | 3 | RSE | infotainment_can.dbc | 7 |
 | frmNavModuleStateMsg | 0x29C | 3 | NAV | infotainment_can.dbc | 6 |
 | frmPgsStateMsg | 0x29D | 2 | PGS | infotainment_can.dbc | 4 |
@@ -182,8 +182,8 @@
 | frmRoadPreviewCameraStateMsg | 0x1DA | 4 | RPC | adas_can.dbc | 6 |
 | frmRearRadarMasterStateMsg | 0x1DB | 4 | RRM | adas_can.dbc | 7 |
 | frmSurroundParkMasterStateMsg | 0x1DC | 4 | SPM | adas_can.dbc | 7 |
-| frmHighwayPilotStateMsg | 0x1DD | 4 | HIGHWAY_PILOT | adas_can.dbc | 9 |
-| frmLidarStateMsg | 0x1DE | 4 | LIDAR | adas_can.dbc | 5 |
+| frmHighwayPilotStateMsg | 0x1DD | 4 | HWP | adas_can.dbc | 9 |
+| frmLidarStateMsg | 0x1DE | 4 | LDR | adas_can.dbc | 5 |
 | frmTrailerCtrlStateMsg | 0x1DF | 4 | TRM | adas_can.dbc | 6 |
 | frmEmergencyBroadcastMsg | 0x1C0 | 4 | V2X | eth_backbone_can_stub.dbc | 7 |
 | frmEmergencyMonitorMsg | 0x1C2 | 2 | V2X | eth_backbone_can_stub.dbc | 3 |

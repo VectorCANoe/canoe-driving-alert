@@ -25,7 +25,7 @@ on start
   gLastFactorMode = -1;
   gLastPresenceConfidence = -1;
   setTimer(tBiometricCycle, 100);
-  write("[BIOMETRIC_AUTH] start");
+  write("[BIO] start");
 }
 
 on message frmCabinSensingStateMsg
@@ -72,7 +72,7 @@ on timer tBiometricCycle
       mAuth.AuthFactorMode != gLastFactorMode ||
       mAuth.PresenceConfidence != gLastPresenceConfidence)
   {
-    write("[BIOMETRIC_AUTH] state=%d factor=%d confidence=%d occ=%d",
+    write("[BIO] state=%d factor=%d confidence=%d occ=%d",
           mAuth.AuthState,
           mAuth.AuthFactorMode,
           mAuth.PresenceConfidence,

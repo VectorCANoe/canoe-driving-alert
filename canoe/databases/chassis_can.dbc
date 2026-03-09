@@ -29,7 +29,7 @@ NS_ :
 
 BS_:
 
-BU_: VAL_SCENARIO_CTRL VCU ESC MDPS ADAS CGW ABS EPB TPMS SAS VSM EHB ECS CDC AIR_SUSPENSION RWS Vector__XXX VAL_BASELINE_CTRL
+BU_: VAL_SCENARIO_CTRL VCU ESC MDPS ADAS CGW ABS EPB TPMS SAS VSM EHB ECS CDC ASM RWS Vector__XXX VAL_BASELINE_CTRL
 
 BO_ 672 frmVehicleStateCanMsg: 2 VAL_SCENARIO_CTRL
  SG_ gVehicleSpeed : 0|8@1+ (1,0) [0|255] "km/h" ESC,ADAS
@@ -145,7 +145,7 @@ BO_ 302 frmCdcStateMsg: 2 CDC
  SG_ CdcMode          : 0|3@1+ (1,0) [0|7] "" ADAS
  SG_ CdcValveCurrent  : 8|8@1+ (1,0) [0|255] "" ADAS
 
-BO_ 303 frmAirSuspensionStateMsg: 3 AIR_SUSPENSION
+BO_ 303 frmAirSuspensionStateMsg: 3 ASM
  SG_ RideHeightMode   : 0|3@1+ (1,0) [0|7] "" ESC,ADAS
  SG_ FrontHeight      : 8|8@1+ (1,0) [0|255] "mm" ESC,ADAS
  SG_ RearHeight       : 16|8@1+ (1,0) [0|255] "mm" ESC,ADAS

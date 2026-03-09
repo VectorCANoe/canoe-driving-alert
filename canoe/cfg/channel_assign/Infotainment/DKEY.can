@@ -103,7 +103,7 @@ void publishDigitalKeyState()
       mDkey.VehicleAccessState != gLastAccessState ||
       mDkey.SecurityGrade != gLastSecurityGrade)
   {
-    write("[DIGITAL_KEY] state=%d auth=%d access=%d grade=%d syncAge=%d bars=%d drive=%d",
+    write("[DKEY] state=%d auth=%d access=%d grade=%d syncAge=%d bars=%d drive=%d",
           mDkey.DKeyState,
           mDkey.AuthMode,
           mDkey.VehicleAccessState,
@@ -128,7 +128,7 @@ on start
   gLastAccessState = -1;
   gLastSecurityGrade = -1;
   setTimer(tDigitalKeyCycle, 100);
-  write("[DIGITAL_KEY] start");
+  write("[DKEY] start");
 }
 
 on timer tDigitalKeyCycle

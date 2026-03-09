@@ -52,7 +52,7 @@ This keeps the architecture wide without making the top layer look like a thin d
 ## Surface Type Rule (Current)
 
 - `PHYSICAL/DOMAIN ECU`: `EMS`, `TCU`, `VCU`, `ESC`, `MDPS`, `BCM`, `IVI`, `CLU`, `ADAS`, `V2X`, `CGW`
-- `FUNCTION/FEATURE SURFACE`: `SCC`, `HIGHWAY_PILOT`, `AEB`, `SPM` 등
+- `FUNCTION/FEATURE SURFACE`: `SCC`, `HWP`, `AEB`, `SPM` 등
 - `INFRA SERVICE SURFACE`: `EDR`, `CPAY`, `PAK` 등
 - `VALIDATION`: `VALIDATION_HARNESS`, `VAL_*`
 
@@ -108,7 +108,7 @@ Rule:
 - `AMP`
 - `PGS`
 - `NAV`
-- `DIGITAL_KEY`
+- `DKEY`
 - `ADAS`
 - `V2X`
 - `SCC`
@@ -145,7 +145,7 @@ Rule:
 - `MCU`
 - `INVERTER`
 - `CPC`
-- `AIR_SUSPENSION`
+- `ASM`
 - `RWS`
 - `NIGHT_VISION`
 - `AEB`
@@ -155,21 +155,21 @@ Rule:
 ### Layer 3. Premium / Option Program Surface (`16`)
 
 - `TRM`
-- `HEADLAMP_LEVELING`
+- `HLM`
 - `ADM`
 - `PTG`
 - `MSC`
 - `RATC`
-- `CABIN_SENSING`
-- `BIOMETRIC_AUTH`
+- `CSM`
+- `BIO`
 - `CPAY`
 - `PAK`
 - `EDR`
 - `RPC`
-- `LIDAR`
+- `LDR`
 - `RRM`
 - `SPM`
-- `HIGHWAY_PILOT`
+- `HWP`
 
 Vehicle surface total: `100`
 
@@ -231,7 +231,7 @@ Current active baseline first:
 52. `SRR_RR`
 53. `NAV`
 54. `OTA`
-55. `DIGITAL_KEY`
+55. `DKEY`
 56. `RSE`
 57. `DOOR_RL`
 58. `DOOR_RR`
@@ -239,8 +239,8 @@ Current active baseline first:
 60. `MIR`
 61. `RATC`
 62. `SRF`
-63. `HEADLAMP_LEVELING`
-64. `CABIN_SENSING`
+63. `HLM`
+64. `CSM`
 65. `OBC`
 66. `DCDC`
 67. `MCU`
@@ -248,10 +248,10 @@ Current active baseline first:
 69. `AHLS`
 70. `ADM`
 71. `PTG`
-72. `BIOMETRIC_AUTH`
+72. `BIO`
 73. `_4WD`
 74. `BAT_BMS`
-75. `AIR_SUSPENSION`
+75. `ASM`
 76. `RWS`
 77. `VALIDATION_HARNESS` (`VAL_SCENARIO_CTRL`)
 78. `VALIDATION_HARNESS` (`VAL_BASELINE_CTRL`)
@@ -274,8 +274,8 @@ Current active baseline first:
 95. `RPC`
 96. `RRM`
 97. `SPM`
-98. `HIGHWAY_PILOT`
-99. `LIDAR`
+98. `HWP`
+99. `LDR`
 100. `TRM`
 
 ## Chosen 8 Core Custom Surfaces
