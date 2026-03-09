@@ -71,6 +71,12 @@
   - `Req/TestCase/Surface/Scenario` = stable review key
   - `phase policy` = 이번 실행에서 무엇이 blocking인지 정의하는 verdict policy
 
+### Surface Evidence Bundle
+
+- reviewer-facing 결과 묶음
+- runtime module 이름이 아니라 `BCM / IVI / CLUSTER / ADAS / V2X / ...` 기준으로 표시
+- `surface_evidence_bundle.json/md`와 `surface/<bundle_key>/bundle.*`를 기준으로 해석
+
 ## 증빙 경로
 
 주요 산출물은 아래 경로에 생성됩니다.
