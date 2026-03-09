@@ -80,6 +80,10 @@
 - `AFLS`
 - `WIPER_MODULE`
 - `BODY_SECURITY_MODULE`
+- `DOOR_FL`
+- `DOOR_FR`
+- `SEAT_DRV`
+- `SEAT_PASS`
 - `IVI`
 - `CLU`
 - `HUD`
@@ -113,9 +117,9 @@
 - Timeout clear: 1000 ms
 
 ## 6) Current Status Snapshot
-- Dev1 최신 runtime anchor 승격 반영: `a6fecf1` (Body comfort wave 포함)
-- visible surface bank: `100` (`30 active/deep runtime + 70 placeholder`)
-- deep runtime profile: `28 product + 2 validation` (`canoe/docs/operations/reference/OEM_ACTIVE_TARGET_PROFILE_2026-03-09.md`)
+- Dev1 최신 runtime anchor 승격 반영: `a6fecf1 + 2216335` (Body comfort + door/seat wave 포함)
+- visible surface bank: `100` (`34 active/deep runtime + 66 placeholder`)
+- deep runtime profile: `32 product + 2 validation` (`canoe/docs/operations/reference/OEM_ACTIVE_TARGET_PROFILE_2026-03-09.md`)
 - `00e_ECU_Naming_Standard.md`: active/placeholder 상태를 Dev1 승격 기준으로 동기화 진행 중
 - `00f_CAN_ID_Allocation_Standard.md`: placeholder ID 비할당/승격 시 배정 규칙 유지
 

@@ -3,7 +3,7 @@
 **Document ID**: PROJ-0301-SFA
 **ISO 26262 Reference**: Part 4, Cl.7 (System Design)
 **ASPICE Reference**: SYS.3 (System Architectural Design)
-**Version**: 3.31
+**Version**: 3.32
 **Date**: 2026-03-09
 **Status**: Draft (Architecture Reset In Progress)
 **Project Title**: 주행 상황 실시간 경고 시스템
@@ -44,8 +44,8 @@
 |---|---|
 | 기준 SoT | `00e_ECU_Naming_Standard.md` 6.4 (100 ECU 전수표) |
 | 전체 Surface ECU | 100 |
-| 활성(상세 정의) | 30 |
-| 미구현(Placeholder) | 70 |
+| 활성(상세 정의) | 34 |
+| 미구현(Placeholder) | 66 |
 
 ### OEM100 전수표 (100개)
 
@@ -85,13 +85,13 @@
 | `AHLS` | A4 | Body/Comfort | PHYSICAL/DOMAIN | 미구현(Placeholder) | - | 승격 전 참조만, 추적체인 미부여 |
 | `WIPER_MODULE` | A4 | Body/Comfort | PHYSICAL/DOMAIN | 활성(상세 정의) | `WIPER_MODULE` | 추적체인 반영 대상 |
 | `SUNROOF_MODULE` | A4 | Body/Comfort | PHYSICAL/DOMAIN | 미구현(Placeholder) | - | 승격 전 참조만, 추적체인 미부여 |
-| `DOOR_FL` | A4 | Body/Comfort | PHYSICAL/DOMAIN | 미구현(Placeholder) | - | 승격 전 참조만, 추적체인 미부여 |
-| `DOOR_FR` | A4 | Body/Comfort | PHYSICAL/DOMAIN | 미구현(Placeholder) | - | 승격 전 참조만, 추적체인 미부여 |
+| `DOOR_FL` | A4 | Body/Comfort | PHYSICAL/DOMAIN | 활성(상세 정의) | `DOOR_FL` | 추적체인 반영 대상 |
+| `DOOR_FR` | A4 | Body/Comfort | PHYSICAL/DOMAIN | 활성(상세 정의) | `DOOR_FR` | 추적체인 반영 대상 |
 | `DOOR_RL` | A4 | Body/Comfort | PHYSICAL/DOMAIN | 미구현(Placeholder) | - | 승격 전 참조만, 추적체인 미부여 |
 | `DOOR_RR` | A4 | Body/Comfort | PHYSICAL/DOMAIN | 미구현(Placeholder) | - | 승격 전 참조만, 추적체인 미부여 |
 | `TAILGATE_MODULE` | A4 | Body/Comfort | PHYSICAL/DOMAIN | 미구현(Placeholder) | - | 승격 전 참조만, 추적체인 미부여 |
-| `SEAT_DRV` | A4 | Body/Comfort | PHYSICAL/DOMAIN | 미구현(Placeholder) | - | 승격 전 참조만, 추적체인 미부여 |
-| `SEAT_PASS` | A4 | Body/Comfort | PHYSICAL/DOMAIN | 미구현(Placeholder) | - | 승격 전 참조만, 추적체인 미부여 |
+| `SEAT_DRV` | A4 | Body/Comfort | PHYSICAL/DOMAIN | 활성(상세 정의) | `SEAT_DRV` | 추적체인 반영 대상 |
+| `SEAT_PASS` | A4 | Body/Comfort | PHYSICAL/DOMAIN | 활성(상세 정의) | `SEAT_PASS` | 추적체인 반영 대상 |
 | `MIRROR_MODULE` | A4 | Body/Comfort | PHYSICAL/DOMAIN | 미구현(Placeholder) | - | 승격 전 참조만, 추적체인 미부여 |
 | `BODY_SECURITY_MODULE` | A4 | Body/Comfort | PHYSICAL/DOMAIN | 활성(상세 정의) | `BODY_SECURITY_MODULE` | 추적체인 반영 대상 |
 | `IVI` | A5 | IVI/HMI/Connectivity | PHYSICAL/DOMAIN | 활성(상세 정의) | `IVI` | 추적체인 반영 대상 |
@@ -449,6 +449,7 @@
 
 | 버전 | 날짜 | 변경 사항 |
 |---|---|---|
+| 3.32 | 2026-03-09 | Dev1 추가 승격(`2216335`) 동기화: `DOOR_FL/DOOR_FR/SEAT_DRV/SEAT_PASS`를 활성(상세 정의)로 전환하고 OEM100 전수표를 `34 활성/66 미구현`으로 갱신. |
 | 3.31 | 2026-03-09 | Dev1 최신 승격(`a6fecf1`) 동기화: OEM100 전수표 상태를 30 활성/70 미구현으로 갱신하고 `0301` 문서의 OEM100 섹션을 최신화. |
 | 3.30 | 2026-03-09 | OEM100 선행 문서화 보강: `0301`에 100 ECU 기준(활성 16/미구현 84) 적용 상태 섹션과 100 ECU 전수표(각 ECU 상태 명시)를 추가하고 Placeholder 승격 전 미추적 원칙을 명시. |
 | 3.29 | 2026-03-09 | OEM100 병렬 문서화 정책 반영: `00e` 6.4를 100 ECU 단일 정의 기준으로 연결하고, node 표에 `DATC/TMU/SCC` 활성 전개 상태를 추가. Placeholder는 미구현 유지/승격 후 편입 원칙 명시. |

@@ -1,7 +1,7 @@
 # ECU 명명 및 계층 표준
 
 **Document ID**: PROJ-00E-ECU-NAMING
-**Version**: 3.6
+**Version**: 3.7
 **Date**: 2026-03-09
 **Status**: Draft (Architecture Reset Baseline)
 **Scope**: `00e -> 0301 -> 0302 -> 0303 -> 0304 -> 04 -> 05/06/07`
@@ -83,7 +83,7 @@
 
 ---
 
-## 6. Active ECU Matrix (Core Anchors, Commit `a6fecf1`)
+## 6. Active ECU Matrix (Core Anchors, Commits `a6fecf1` + `2216335`)
 
 `VAL_SCENARIO_CTRL`, `VAL_BASELINE_CTRL`는 컴파일/검증 마감 전이라 이번 동기화에서 제외했다.
 
@@ -103,7 +103,7 @@
 | `V2X` | `V2X` | ADAS/V2X | `0x1C0,0x1C2` | 긴급차량 브로드캐스트/모니터 통합 Owner |
 
 - 본 표는 코어 anchor 요약이다.
-- 최신 승격 ECU(`DCM/IBOX/SGW`, `ABS/EPB/TPMS/SAS`, `SMK/AFLS/WIPER_MODULE/BODY_SECURITY_MODULE`, `HUD/AMP/VOICE_ASSIST`)의 활성 상태는 6.4 전수표를 단일 기준으로 본다.
+- 최신 승격 ECU(`DCM/IBOX/SGW`, `ABS/EPB/TPMS/SAS`, `SMK/AFLS/WIPER_MODULE/BODY_SECURITY_MODULE`, `DOOR_FL/DOOR_FR/SEAT_DRV/SEAT_PASS`, `HUD/AMP/VOICE_ASSIST`)의 활성 상태는 6.4 전수표를 단일 기준으로 본다.
 
 ### 6.1 Primary-56 Placeholder Policy
 
@@ -184,13 +184,13 @@
 | `AHLS` | A4 | Body/Comfort | PHYSICAL/DOMAIN | 미구현(Placeholder) | - | 승격 전 참조만, 추적체인 미부여 |
 | `WIPER_MODULE` | A4 | Body/Comfort | PHYSICAL/DOMAIN | 활성(상세 정의) | `WIPER_MODULE` | 추적체인 반영 대상 |
 | `SUNROOF_MODULE` | A4 | Body/Comfort | PHYSICAL/DOMAIN | 미구현(Placeholder) | - | 승격 전 참조만, 추적체인 미부여 |
-| `DOOR_FL` | A4 | Body/Comfort | PHYSICAL/DOMAIN | 미구현(Placeholder) | - | 승격 전 참조만, 추적체인 미부여 |
-| `DOOR_FR` | A4 | Body/Comfort | PHYSICAL/DOMAIN | 미구현(Placeholder) | - | 승격 전 참조만, 추적체인 미부여 |
+| `DOOR_FL` | A4 | Body/Comfort | PHYSICAL/DOMAIN | 활성(상세 정의) | `DOOR_FL` | 추적체인 반영 대상 |
+| `DOOR_FR` | A4 | Body/Comfort | PHYSICAL/DOMAIN | 활성(상세 정의) | `DOOR_FR` | 추적체인 반영 대상 |
 | `DOOR_RL` | A4 | Body/Comfort | PHYSICAL/DOMAIN | 미구현(Placeholder) | - | 승격 전 참조만, 추적체인 미부여 |
 | `DOOR_RR` | A4 | Body/Comfort | PHYSICAL/DOMAIN | 미구현(Placeholder) | - | 승격 전 참조만, 추적체인 미부여 |
 | `TAILGATE_MODULE` | A4 | Body/Comfort | PHYSICAL/DOMAIN | 미구현(Placeholder) | - | 승격 전 참조만, 추적체인 미부여 |
-| `SEAT_DRV` | A4 | Body/Comfort | PHYSICAL/DOMAIN | 미구현(Placeholder) | - | 승격 전 참조만, 추적체인 미부여 |
-| `SEAT_PASS` | A4 | Body/Comfort | PHYSICAL/DOMAIN | 미구현(Placeholder) | - | 승격 전 참조만, 추적체인 미부여 |
+| `SEAT_DRV` | A4 | Body/Comfort | PHYSICAL/DOMAIN | 활성(상세 정의) | `SEAT_DRV` | 추적체인 반영 대상 |
+| `SEAT_PASS` | A4 | Body/Comfort | PHYSICAL/DOMAIN | 활성(상세 정의) | `SEAT_PASS` | 추적체인 반영 대상 |
 | `MIRROR_MODULE` | A4 | Body/Comfort | PHYSICAL/DOMAIN | 미구현(Placeholder) | - | 승격 전 참조만, 추적체인 미부여 |
 | `BODY_SECURITY_MODULE` | A4 | Body/Comfort | PHYSICAL/DOMAIN | 활성(상세 정의) | `BODY_SECURITY_MODULE` | 추적체인 반영 대상 |
 | `IVI` | A5 | IVI/HMI/Connectivity | PHYSICAL/DOMAIN | 활성(상세 정의) | `IVI` | 추적체인 반영 대상 |
@@ -304,6 +304,7 @@ Wrapper 제거 상태(활성 트리 제외):
 
 | 버전 | 날짜 | 변경 사항 |
 |---|---|---|
+| 3.7 | 2026-03-09 | Dev1 runtime 승격(`2216335`) 반영: `DOOR_FL/DOOR_FR/SEAT_DRV/SEAT_PASS`를 활성(상세 정의)로 전환하고 OEM100 상태를 `34 활성/66 미구현`으로 갱신. |
 | 3.6 | 2026-03-09 | Dev1 runtime 승격(`a6fecf1`) 반영: `DCM/IBOX/SGW`, `ABS/EPB/TPMS/SAS`, `SMK/AFLS/WIPER_MODULE/BODY_SECURITY_MODULE`, `HUD/AMP/VOICE_ASSIST`를 활성(상세 정의)로 전환. |
 | 3.5 | 2026-03-09 | OEM100 기준 100개 Surface ECU 전체 정의 표(Active/미구현 Placeholder 상태, Runtime Binding, 승격 가드레일) 추가. |
 | 3.4 | 2026-03-09 | 국내 OEM 약어형 canonical 고정 정책 추가(`SGW/_4WD/DATC/AHLS/EDR`) 및 표면명 기준을 `EMS/TCU/ESC/MDPS/CLU`로 정렬. legacy 풀네임은 alias로 한정. |
