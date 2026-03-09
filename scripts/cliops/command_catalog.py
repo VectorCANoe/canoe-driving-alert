@@ -594,6 +594,20 @@ PRODUCT_COMMAND_GROUPS: dict[str, list[PaletteCommand]] = {
             next_step="reviewer bundle 또는 Jenkins archive 구조와 같이 검토하십시오.",
         ),
         PaletteCommand(
+            command_id="artifact.open_native_reports",
+            title="native report 열기",
+            command="artifact open --target native-reports --latest",
+            base_command="artifact open --target native-reports --latest",
+            summary="가장 최근 archive run의 native CANoe report 폴더를 엽니다.",
+            use_when=(
+                "Dev1 native .vtestreport를 reviewer 기준 archive 안에서 바로 확인할 때",
+            ),
+            success_signals=("native_reports 폴더가 열림",),
+            expected_outputs=("artifacts/verification_runs/<latest>/<phase>/native_reports/**/*",),
+            failure_focus=("latest archive run 또는 native report 복사본이 없는지 확인",),
+            next_step="execution manifest와 함께 실행 키와 stable key를 대조하십시오.",
+        ),
+        PaletteCommand(
             command_id="artifact.open_source_inventory",
             title="원본 surface inventory 열기",
             command="artifact open --target surface-inventory",

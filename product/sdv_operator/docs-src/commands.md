@@ -229,6 +229,7 @@ python scripts/run.py artifact list --scope archive --latest
 python scripts/run.py artifact list --scope source
 python scripts/run.py artifact open --target surface-bundle
 python scripts/run.py artifact open --target execution-manifest --latest
+python scripts/run.py artifact open --target native-reports --latest
 python scripts/run.py artifact open --target surface-inventory
 python scripts/run.py artifact open --target results-doc
 python scripts/run.py package validate-contract
