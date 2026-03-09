@@ -73,6 +73,24 @@
     <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="historyQueryCode" comment="Alert history query response warning code" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="255" maxValuePhys="255"/>
   </namespace>
 
+  <namespace name="Diag" comment="" interface="">
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="LastRequestTarget" comment="Last diagnostic request target code" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="255" maxValuePhys="255"/>
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="LastRequestSid" comment="Last diagnostic request service identifier" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="255" maxValuePhys="255"/>
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="LastRequestDidHigh" comment="Last diagnostic request DID high byte" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="255" maxValuePhys="255"/>
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="LastRequestDidLow" comment="Last diagnostic request DID low byte" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="255" maxValuePhys="255"/>
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="LastRequestSourceBus" comment="Last diagnostic request source bus code" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="255" maxValuePhys="255"/>
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="RequestCounter" comment="Diagnostic request counter" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="2147483647" maxValuePhys="2147483647"/>
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="ms" name="LastRequestTimeMs" comment="Last diagnostic request timestamp" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="4294967295" maxValuePhys="4294967295"/>
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="LastResponseTarget" comment="Last diagnostic response target code" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="255" maxValuePhys="255"/>
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="LastResponseCode" comment="Last diagnostic response code" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="255" maxValuePhys="255"/>
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="LastResponseData0" comment="Last diagnostic response data0 byte" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="255" maxValuePhys="255"/>
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="LastResponseData1" comment="Last diagnostic response data1 byte" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="255" maxValuePhys="255"/>
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="LastResponseOk" comment="Last diagnostic response positive flag" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1"/>
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="LastResponseSourceBus" comment="Last diagnostic response source bus code" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="255" maxValuePhys="255"/>
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="ResponseCounter" comment="Diagnostic response counter" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="2147483647" maxValuePhys="2147483647"/>
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="ms" name="LastResponseTimeMs" comment="Last diagnostic response timestamp" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="4294967295" maxValuePhys="4294967295"/>
+  </namespace>
+
   <namespace name="CoreState" comment="" interface="">
     <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="ms" name="lastEmergencyRxMs" comment="Last E100 receive timestamp mirror (32-bit wrap-tolerant tick)" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="4294967295" maxValuePhys="4294967295"/>
     <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="ms" name="duplicatePopupGuard" comment="Duplicate popup suppression timer" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="5000" maxValuePhys="5000"/>
@@ -123,4 +141,3 @@
     <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="activeAlertType" comment="Mirrored selected alert type for renderer" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="7" maxValuePhys="7"/>
   </namespace>
 </systemvariables>
-

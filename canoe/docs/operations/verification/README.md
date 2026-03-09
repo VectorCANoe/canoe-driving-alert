@@ -10,9 +10,10 @@ Open these first:
 2. `CANOE_TEST_UNIT_RUNBOOK.md`
 3. `DIAGNOSTIC_TESTER_COVERAGE_2026-03-10.md`
 4. `DIAGNOSTIC_COVERAGE_TIERS_2026-03-10.md`
-5. `CANOE_TEST_CI_BRIDGE_STRATEGY_2026-03-09.md`
-6. `TEST_AUTOMATION_REFERENCE_BASELINE_2026-03-09.md`
-7. `SIL_PASS_CRITERIA.md`
+5. `DIAGNOSTIC_SYSVAR_CONTRACT_2026-03-10.md`
+6. `CANOE_TEST_CI_BRIDGE_STRATEGY_2026-03-09.md`
+7. `TEST_AUTOMATION_REFERENCE_BASELINE_2026-03-09.md`
+8. `SIL_PASS_CRITERIA.md`
 
 ## Active Docs
 
@@ -24,6 +25,8 @@ Open these first:
   - current `TEST_SCN` diagnostic request/response coverage
 - `DIAGNOSTIC_COVERAGE_TIERS_2026-03-10.md`
   - `FULL` / `BASIC` / `DEFERRED` diagnostic responder tiers for Dev2 automation
+- `DIAGNOSTIC_SYSVAR_CONTRACT_2026-03-10.md`
+  - stable `Diag::*` tester-facing sysvar surface for Dev2 pipelines
 - `CANOE_TEST_POC_SCOPE_2026-03-08.md`
   - selected native CANoe test PoC scope and mapping
 - `CANOE_TEST_CI_BRIDGE_STRATEGY_2026-03-09.md`
