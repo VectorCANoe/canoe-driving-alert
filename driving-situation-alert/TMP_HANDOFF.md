@@ -62,15 +62,31 @@
 ### 4.1 Surface ECU Baseline
 - `CGW`
 - `ETH_BACKBONE`
+- `DCM`
+- `IBOX`
+- `SGW`
 - `EMS`
 - `TCU`
 - `VCU`
 - `ESC`
 - `MDPS`
+- `ABS`
+- `EPB`
+- `TPMS`
+- `SAS`
 - `BCM`
-- `DATC` (placeholder)
+- `DATC`
+- `SMK`
+- `AFLS`
+- `WIPER_MODULE`
+- `BODY_SECURITY_MODULE`
 - `IVI`
 - `CLU`
+- `HUD`
+- `AMP`
+- `VOICE_ASSIST`
+- `TMU`
+- `SCC`
 - `ADAS`
 - `V2X`
 - `VALIDATION_HARNESS`
@@ -97,11 +113,11 @@
 - Timeout clear: 1000 ms
 
 ## 6) Current Status Snapshot
-- Dev1 Wave1 placeholder bank 반영 완료: `56521c2`
-- visible node bank: `100` (`13 deep runtime + 2 validation + 87 placeholder`)
-- `canoe/cfg/channel_assign/DOMAIN_INDEX.md` 기준 domain 분포: `16/23/13/14/8/26`
-- `00e_ECU_Naming_Standard.md`: visible bank 정책 동기화 진행 중
-- `00f_CAN_ID_Allocation_Standard.md`: placeholder ID 비할당/승격 시 배정 규칙 반영 진행 중
+- Dev1 최신 runtime anchor 승격 반영: `a6fecf1` (Body comfort wave 포함)
+- visible surface bank: `100` (`30 active/deep runtime + 70 placeholder`)
+- deep runtime profile: `28 product + 2 validation` (`canoe/docs/operations/reference/OEM_ACTIVE_TARGET_PROFILE_2026-03-09.md`)
+- `00e_ECU_Naming_Standard.md`: active/placeholder 상태를 Dev1 승격 기준으로 동기화 진행 중
+- `00f_CAN_ID_Allocation_Standard.md`: placeholder ID 비할당/승격 시 배정 규칙 유지
 
 ## 7) Immediate Next Steps
 1. Freeze visible bank policy in `00e` (`deep/validation/placeholder` 3층 분리).
