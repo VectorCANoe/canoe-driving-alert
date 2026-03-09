@@ -16,6 +16,7 @@ python scripts/run.py verify batch --run-id 20260310_0900 --campaign-id CMP_2026
 python scripts/run.py artifact open --target campaign-profiles
 python scripts/run.py artifact open --target role-boundary-doc
 python scripts/run.py artifact open --target capability-matrix-doc
+python scripts/run.py artifact open --target surface-dir --latest
 ```
 
 ## 핵심 4개
@@ -252,6 +253,7 @@ python scripts/run.py artifact list --scope archive --latest
 python scripts/run.py artifact list --scope source
 python scripts/run.py artifact list --scope build
 python scripts/run.py artifact open --target surface-bundle
+python scripts/run.py artifact open --target surface-dir --latest
 python scripts/run.py artifact open --target execution-manifest --latest
 python scripts/run.py artifact open --target native-reports --latest
 python scripts/run.py artifact open --target surface-inventory

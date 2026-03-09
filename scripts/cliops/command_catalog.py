@@ -719,6 +719,20 @@ PRODUCT_COMMAND_GROUPS: dict[str, list[PaletteCommand]] = {
             next_step="execution manifest와 함께 실행 키와 stable key를 대조하십시오.",
         ),
         PaletteCommand(
+            command_id="artifact.open_surface_archive",
+            title="surface archive 열기",
+            command="artifact open --target surface-dir --latest",
+            base_command="artifact open --target surface-dir --latest",
+            summary="가장 최근 archive run의 surface ECU 증빙 폴더를 엽니다.",
+            use_when=(
+                "BCM/IVI/CLUSTER/ADAS/V2X 기준 reviewer bundle을 archive 기준으로 바로 보고 싶을 때",
+            ),
+            success_signals=("surface 폴더가 열림",),
+            expected_outputs=("artifacts/verification_runs/<latest>/<phase>/surface/**/*",),
+            failure_focus=("latest archive run 또는 surface bundle 복사본이 없는지 확인",),
+            next_step="execution manifest와 함께 어떤 campaign/run에서 나온 bundle인지 대조하십시오.",
+        ),
+        PaletteCommand(
             command_id="artifact.open_source_inventory",
             title="원본 surface inventory 열기",
             command="artifact open --target surface-inventory",

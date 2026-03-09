@@ -187,12 +187,12 @@ class SdvTuiApp(App[None]):
     }
 
     #summary-strip {
-        height: 11;
+        height: 12;
         margin-bottom: 1;
     }
 
     #status-strip {
-        height: 9;
+        height: 11;
         margin-bottom: 1;
     }
 
@@ -232,11 +232,7 @@ class SdvTuiApp(App[None]):
         width: 1fr;
     }
 
-    #com-card {
-        width: 40;
-    }
-
-    #timeline-card {
+    #runtime-card {
         width: 1fr;
         margin-right: 0;
     }
@@ -337,6 +333,15 @@ class SdvTuiApp(App[None]):
         height: 4;
     }
 
+    #campaign-meta {
+        margin-top: 1;
+        padding: 1;
+        background: #17202b;
+        border: round #33536f;
+        color: #d7e7f2;
+        height: 5;
+    }
+
     #execute-hint {
         margin-top: 1;
         padding: 1;
@@ -363,9 +368,19 @@ class SdvTuiApp(App[None]):
         border: round #2d3e50;
     }
 
+    #results-actions-card {
+        width: 1fr;
+    }
+
     #results-actions {
-        height: 3;
+        height: 7;
         margin-top: 1;
+    }
+
+    #results-actions-primary,
+    #results-actions-secondary {
+        height: 3;
+        margin-bottom: 1;
     }
 
     #results-actions Button {
@@ -646,6 +661,7 @@ class SdvTuiApp(App[None]):
                                             yield Input(id=f"field-input-{index}")
                                             yield Static(id=f"field-help-{index}", classes="field-help")
                                 yield Static(id="preview-body")
+                                yield Static(id="campaign-meta")
                         with Horizontal(id="actions"):
                             yield Button("Run now", id="run-button", variant="success")
                             yield Button("Pin task", id="pin-button")
@@ -656,39 +672,41 @@ class SdvTuiApp(App[None]):
                         )
                     with Vertical(id="page-results", classes="page hidden"):
                         with Horizontal(id="summary-strip"):
+                            with Vertical(id="result-card", classes="summary-card"):
+                                yield Static("Verdict", classes="summary-title")
+                                yield Static(id="result-body")
+                            with Vertical(id="insight-card", classes="summary-card"):
+                                yield Static("Reason", classes="summary-title")
+                                yield Static(id="insight-body")
                             with Vertical(id="favorites-card", classes="summary-card"):
-                                yield Static("Evidence Paths", classes="summary-title")
-                            yield Static(id="favorites-body")
-                        with Vertical(id="recent-card", classes="summary-card"):
-                            yield Static("Recent Runs", classes="summary-title")
-                            yield OptionList(id="recent-list")
-                        with Vertical(id="insight-card", classes="summary-card"):
-                            yield Static("Run Insight", classes="summary-title")
-                            yield Static(id="insight-body")
-                        with Vertical(id="result-card", classes="summary-card"):
-                            yield Static("Last Result", classes="summary-title")
-                            yield Static(id="result-body")
-                    with Horizontal(id="status-strip"):
-                        with Vertical(id="readiness-card", classes="summary-card"):
-                            yield Static("Tier Readiness", classes="summary-title")
-                            yield Static(id="readiness-body")
-                        with Vertical(id="batch-card", classes="summary-card"):
-                            yield Static("Batch Snapshot", classes="summary-title")
-                            yield Static(id="batch-body")
-                        with Vertical(id="com-card", classes="summary-card"):
-                            yield Static("COM Runtime", classes="summary-title")
-                            yield Static(id="com-body")
-                        with Vertical(id="timeline-card", classes="summary-card"):
-                            yield Static("Execution Timeline", classes="summary-title")
-                            yield Static(id="timeline-body")
-                        with Horizontal(id="results-actions"):
-                            yield Button("증빙 열기", id="results-open-artifact", variant="success")
-                            yield Button("native report 열기", id="results-open-native")
-                            yield Button("execution manifest", id="results-open-manifest")
-                            yield Button("원본 기준 열기", id="results-open-source")
-                            yield Button("staging 정리", id="results-clean-staging", variant="warning")
+                                yield Static("Evidence", classes="summary-title")
+                                yield Static(id="favorites-body")
+                            with Vertical(id="results-actions-card", classes="summary-card"):
+                                yield Static("Actions", classes="summary-title")
+                                with Vertical(id="results-actions"):
+                                    with Horizontal(id="results-actions-primary"):
+                                        yield Button("증빙 열기", id="results-open-artifact", variant="success")
+                                        yield Button("surface archive", id="results-open-surface")
+                                        yield Button("native report 열기", id="results-open-native")
+                                    with Horizontal(id="results-actions-secondary"):
+                                        yield Button("execution manifest", id="results-open-manifest")
+                                        yield Button("원본 기준 열기", id="results-open-source")
+                                        yield Button("staging 정리", id="results-clean-staging", variant="warning")
+                        with Horizontal(id="status-strip"):
+                            with Vertical(id="recent-card", classes="summary-card"):
+                                yield Static("Recent Runs", classes="summary-title")
+                                yield OptionList(id="recent-list")
+                            with Vertical(id="batch-card", classes="summary-card"):
+                                yield Static("Batch Snapshot", classes="summary-title")
+                                yield Static(id="batch-body")
+                            with Vertical(id="readiness-card", classes="summary-card"):
+                                yield Static("Tier Readiness", classes="summary-title")
+                                yield Static(id="readiness-body")
+                            with Vertical(id="runtime-card", classes="summary-card"):
+                                yield Static("Runtime", classes="summary-title")
+                                yield Static(id="runtime-body")
                         yield Static(
-                            "Results 화면에서는 최근 증빙, native report, execution manifest, 원본 기준 파일을 같은 흐름에서 열 수 있습니다.",
+                            "Results 화면은 Verdict / Reason / Evidence / Actions 기준으로 읽으십시오. support 정보는 아래 카드에 배치했습니다.",
                             id="results-hint",
                         )
                     with Vertical(id="page-artifacts", classes="page hidden"):
@@ -713,6 +731,7 @@ class SdvTuiApp(App[None]):
                         with Vertical(id="artifact-actions"):
                             with Horizontal(id="artifact-actions-primary"):
                                 yield Button("최근 증빙 열기", id="artifact-open-latest", variant="success")
+                                yield Button("surface archive", id="artifact-open-surface")
                                 yield Button("native report 열기", id="artifact-open-native")
                                 yield Button("execution manifest", id="artifact-open-manifest")
                                 yield Button("최신 archive 열기", id="artifact-open-archive")
@@ -1247,8 +1266,7 @@ class SdvTuiApp(App[None]):
         )
         self.query_one("#readiness-body", Static).update(self._summarize_tier_readiness())
         self.query_one("#batch-body", Static).update(self._summarize_batch_snapshot())
-        self.query_one("#com-body", Static).update(self._summarize_com_snapshot())
-        self.query_one("#timeline-body", Static).update(self._summarize_timeline())
+        self.query_one("#runtime-body", Static).update(self._summarize_runtime_summary())
 
         last_result = self.state.get("last_result", {})
         if isinstance(last_result, dict):
@@ -1354,6 +1372,7 @@ class SdvTuiApp(App[None]):
             details_widget = self.query_one("#details-body", Static)
             pin_button = self.query_one("#pin-button", Button)
             execute_hint_widget = self.query_one("#execute-hint", Static)
+            campaign_meta_widget = self.query_one("#campaign-meta", Static)
         except NoMatches:
             return
         runtime_text = runtime_badge(command)
@@ -1374,9 +1393,11 @@ class SdvTuiApp(App[None]):
             execute_hint_widget.update(execute_hint(True))
         else:
             execute_hint_widget.update(execute_hint(False))
+        campaign_meta_widget.update(self._summarize_campaign_meta())
     def _clear_form(self) -> None:
         try:
             preview_widget = self.query_one("#preview-body", Static)
+            campaign_meta_widget = self.query_one("#campaign-meta", Static)
         except NoMatches:
             return
         for index in range(FORM_SLOTS):
@@ -1386,6 +1407,7 @@ class SdvTuiApp(App[None]):
             input_widget.placeholder = ""
             help_widget.update("")
         preview_widget.update(preview_empty())
+        campaign_meta_widget.update(self._summarize_campaign_meta())
     def _populate_form(self, command: PaletteCommand) -> None:
         params = list(command.params)
         defaults = resolve_command_defaults(command)
@@ -1578,6 +1600,10 @@ class SdvTuiApp(App[None]):
         command = self._selected_command()
         if command is None:
             self.query_one("#preview-body", Static).update(no_selected_command())
+            try:
+                self.query_one("#campaign-meta", Static).update(self._summarize_campaign_meta())
+            except NoMatches:
+                pass
             return
         try:
             tokens = build_command_tokens(command, self._form_values()) + self._profile_extra_tokens(command)
@@ -1593,6 +1619,10 @@ class SdvTuiApp(App[None]):
         except ValueError as ex:
             preview = f"[red]Input check[/red]: {ex}"
         self.query_one("#preview-body", Static).update(preview)
+        try:
+            self.query_one("#campaign-meta", Static).update(self._summarize_campaign_meta())
+        except NoMatches:
+            pass
 
     def _write_log(self, message: str) -> None:
         self._append_log_entry(message, rendered=message, category="APP")
@@ -1761,6 +1791,36 @@ class SdvTuiApp(App[None]):
             verify_line,
             f"현재 단계: {current}",
         ])
+
+    def _summarize_runtime_summary(self) -> str:
+        return "\n".join(
+            [
+                self._summarize_com_snapshot(),
+                "",
+                self._summarize_timeline(),
+            ]
+        )
+
+    def _summarize_campaign_meta(self) -> str:
+        command = self._selected_command()
+        command_title = command.title if command is not None else "-"
+        values = self._form_values() if command is not None else {}
+        profile = self.state.get("campaign_profile", {})
+        if not isinstance(profile, dict):
+            profile = {}
+        lines = [
+            f"Task: {command_title}",
+            f"Profile: {profile.get('title', '-')}",
+            f"campaign_id={values.get('campaign_id', '-')}",
+            f"phase={values.get('phase', '-')}",
+            f"surface={values.get('surface_scope', '-')}",
+            "plan="
+            f"{values.get('repeat_count', '-')}x / "
+            f"{values.get('duration_minutes', '-')}min / "
+            f"{values.get('interval_seconds', '-')}sec / "
+            f"stop_on_fail={'Y' if profile.get('stop_on_fail', False) else 'N'}",
+        ]
+        return "\n".join(lines)
     def _resolve_artifact_target(self) -> Path | None:
         last_result = self.state.get("last_result", {})
         if not isinstance(last_result, dict):
@@ -1907,6 +1967,17 @@ class SdvTuiApp(App[None]):
         target = self._latest_archive_for_last_run()
         if target is None:
             self._write_log("[yellow]최근 archive run이 없습니다.[/]")
+            return
+        try:
+            self._open_path(target)
+            self._write_log(artifact_opened(str(target)))
+        except Exception as ex:
+            self._write_log(artifact_open_failed(ex))
+
+    def action_open_surface_archive(self) -> None:
+        target = self._resolve_archive_child_target("surface")
+        if target is None:
+            self._write_log("[yellow]최근 surface archive가 없습니다.[/]")
             return
         try:
             self._open_path(target)
@@ -2309,6 +2380,8 @@ class SdvTuiApp(App[None]):
             self.action_set_log_filter_canoe()
         elif event.button.id == "results-open-artifact":
             self.action_open_artifact()
+        elif event.button.id == "results-open-surface":
+            self.action_open_surface_archive()
         elif event.button.id == "results-open-native":
             self.action_open_native_report()
         elif event.button.id == "results-open-manifest":
@@ -2319,6 +2392,8 @@ class SdvTuiApp(App[None]):
             self.action_clean_staging_now()
         elif event.button.id == "artifact-open-latest":
             self.action_open_artifact()
+        elif event.button.id == "artifact-open-surface":
+            self.action_open_surface_archive()
         elif event.button.id == "artifact-open-native":
             self.action_open_native_report()
         elif event.button.id == "artifact-open-manifest":
