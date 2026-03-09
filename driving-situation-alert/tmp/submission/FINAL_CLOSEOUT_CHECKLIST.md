@@ -6,7 +6,7 @@
 
 - `TMP_HANDOFF.md`가 여전히 `FRESH` 상태인지 확인
 - SoT 체인(`01 -> 03 -> 0301/0302/0303/0304 -> 04 -> 05/06/07`)의 버전/헤더가 현재 제출본과 정합한지 확인
-- `tmp/submission/final-docs/00_FINAL_STRUCTURE_LOCK.md` 기준 파일셋이 유지되는지 확인
+- `tmp/submission/final-docs/` 실제 파일셋이 현재 제출 범위와 일치하는지 확인
 - `Req -> Func -> Flow -> Comm -> Var -> Code -> UT/IT/ST` 추적 연결이 끊기지 않았는지 확인
 
 ## 2) Dev1 체크
@@ -27,7 +27,7 @@
 
 - `04/05/06/07`에 최신 구현/증빙 상태가 반영됐는지 확인
 - `tmp/submission/final-docs/` 편집본이 루트 SoT와 어긋나지 않는지 확인
-- `README_SUBMISSION_DOCSET.md`와 `00_FINAL_STRUCTURE_LOCK.md`가 현재 제출 구조를 설명하는지 확인
+- `tmp/submission/README.md`와 `mid-docs` 보관본이 현재 제출 구조를 설명하는지 확인
 - 내부 운영 문서와 제출 문서를 섞지 않았는지 확인
 
 ## 5) 증빙 체크
@@ -39,7 +39,6 @@
 
 ## 6) 제출 직전 체크
 
-- `tmp/submission/final-docs/README_SUBMISSION_DOCSET.md`의 읽기 순서가 최신 상태인지 확인
 - `tmp/submission/excel/`의 제출용 엑셀만 유지되는지 확인
 - 제출 제외 파일이 `final-docs` 본편에 섞이지 않았는지 확인
 - 팀 보드의 open item 중 제출을 막는 항목이 남아 있지 않은지 확인
@@ -56,4 +55,5 @@
 - `driving-situation-alert/tmp/change-orders/TEAM_SYNC_BOARD.md`
 - `driving-situation-alert/tmp/change-orders/FINAL_PHASE_TEAM_SPLIT_2026-03-08.md`
 - `canoe/docs/operations/verification/FINAL_PHASE_EXECUTION_FLOW.md`
-- `driving-situation-alert/tmp/submission/final-docs/00_FINAL_STRUCTURE_LOCK.md`
+- `driving-situation-alert/tmp/submission/README.md`
+- `driving-situation-alert/tmp/submission/mid-docs/`

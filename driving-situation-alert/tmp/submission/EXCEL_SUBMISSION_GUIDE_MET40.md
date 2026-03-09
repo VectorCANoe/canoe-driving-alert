@@ -72,20 +72,21 @@
 
 ---
 
-## 4) 00 계열 문서 반영 방식 (2문서 통합 제출 확정)
+## 4) 00 계열 문서 반영 방식 (현재 제출 구조)
 
 원칙:
-- 00 문서는 통합본 2개만 본편 제출한다.
-- 상세 원문은 부록/요청 시 추가 제출한다.
+- 현재 제출본은 `final-docs`에 필요한 00 계열 문서를 직접 포함한다.
+- 이전 통합본과 구조 잠금 문서는 `mid-docs`에 보관한다.
 
-제출 본편(00 문서):
-1. `00_MASTER_Project_Framework.md` (`00 + 00b` 통합)
-2. `00_MASTER_Governance_Summary.md` (`00c + 00d + 00e + 00f + 00g` 통합)
+제출 본편(현재):
+1. `00d_HARA_Worksheet.md`
+2. `00e_ECU_Naming_Standard.md`
+3. `00f_CAN_ID_Allocation_Standard.md`
 
-부록/요청 시 추가:
-- `tmp/submission/final-docs/governance/00_VModel_Mapping.md`
-- `tmp/submission/final-docs/governance/00b_Project_Scope.md`
-- `tmp/submission/final-docs/governance/00c~00g` 원문 축소본
+보관본/참고:
+- `tmp/submission/mid-docs/00_MASTER_Project_Framework.md`
+- `tmp/submission/mid-docs/00_MASTER_Governance_Summary.md`
+- `tmp/submission/mid-docs/governance/*`
 
 제외:
 - `00a_Audit_Readiness_Checklist.md` (내부 운영)
