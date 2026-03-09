@@ -3,8 +3,8 @@
 **Document ID**: PROJ-0304-SV
 **ISO 26262 Reference**: Part 6, Cl.7 (Software Architectural Design)
 **ASPICE Reference**: SWE.2 / SWE.3
-**Version**: 2.24
-**Date**: 2026-03-06
+**Version**: 2.25
+**Date**: 2026-03-09
 **Status**: Draft
 **Project Title**: 주행 상황 실시간 경고 시스템
 **Subtitle**: 구간 정보 및 긴급차량 접근 기반 앰비언트·클러스터 경보
@@ -32,6 +32,22 @@
 - 경고 강건성·인지성 확장 변수(`Req_148~Req_155`)는 `Var_330/333/334`, `Var_016/020/021/024/027/028`, `Var_180/326/327/328`, `Var_166/167/168/268/269/289/296/297` Pre-Activation 매핑으로 추적하며, 구현 착수 시 0302/0303/04/05/06/07과 동일 커밋에서 동기화한다.
 - 목표 설계는 옵션1(ETH 백본) 고정이며, CANoe.CAN 라이선스 제약 구간의 SIL 검증은 임시로 CAN 대체 백본을 사용하고 Ethernet 라이선스 확보 후 동일 케이스로 재검증한다.
 - SoT 계층은 분리 관리한다: CAN 실프레임은 도메인 DBC(`chassis_can.dbc`/`powertrain_can.dbc`/`body_can.dbc`/`infotainment_can.dbc`/`adas_can.dbc` + `eth_backbone_can_stub.dbc`)를 따르고, Validation 결과 프레임(`0x2A5`,`0x2A6`)은 `chassis_can.dbc`에 통합 관리한다. Ethernet 논리 계약은 `ETH_INTERFACE_CONTRACT.md`를 따른다.
+- OEM100 Surface ECU 전체 전수(100개)와 구현 상태(`활성/미구현`)는 `00e` 6.4를 단일 기준으로 사용한다.
+- 본 문서는 활성(상세 정의) Surface ECU의 변수 계약만 상세 정의하고, 미구현(Placeholder) Surface ECU는 변수 owner를 강제하지 않는다.
+
+---
+
+## OEM100 Surface ECU 적용 상태 (0304 기준)
+
+| 구분 | 내용 |
+|---|---|
+| 기준 SoT | `00e_ECU_Naming_Standard.md` 6.4 (`100 ECU` 전수 표) |
+| 전체 Surface ECU | 100 |
+| 활성(상세 정의) | 16 (`CGW`, `ETH_BACKBONE`, `EMS`, `TCU`, `VCU`, `ESC`, `MDPS`, `BCM`, `DATC`, `IVI`, `CLU`, `TMU`, `ADAS`, `V2X`, `SCC`, `VALIDATION_HARNESS`) |
+| 미구현(Placeholder) | 84 (`00e` 6.4 목록 기준, 상태=`미구현`) |
+
+- Placeholder ECU는 본 문서에서 Var owner/값 범위/초기값 상세를 강제하지 않는다.
+- Placeholder ECU가 활성으로 승격될 때만 `0304 -> 04 -> 05/06/07`을 동일 커밋으로 확장한다.
 
 ---
 
@@ -728,6 +744,7 @@
 
 | 버전 | 날짜 | 변경 사항 |
 |---|---|---|
+| 2.25 | 2026-03-09 | OEM100 선행 문서화 반영: `00e` 6.4(100 ECU 전수) 기준을 0304에 명시하고, 활성 16/미구현 84 운영 규칙 및 Placeholder 승격 전 미추적 원칙을 추가. |
 | 2.24 | 2026-03-06 | Legacy 누락군 보강: `Req_018/036/038/039/114/115/117/122/124` 상속 관계를 `Legacy Req 상속 매핑` 섹션으로 추가해 Var 추적 누락을 해소. |
 | 2.23 | 2026-03-06 | 경고 강건성·인지성 확장(Pre-Activation) 반영: `Req_148~Req_155` 매핑을 위해 `Var_330/333/334`, `Var_016/020/021/024/027/028`, `Var_180/326/327/328`, `Var_166/167/168/268/269/289/296/297` 추적 행을 확장하고 연계 체크포인트를 동기화. |
 | 2.22 | 2026-03-06 | 차량 경보 편의 확장(Pre-Activation) 반영: `Req_140~Req_147` 매핑을 위해 `Var_009/012/024/029/133/138~141/155/164/166~168/191~193/268/281/282` 추적 행을 확장하고 연계 체크포인트를 동기화. |

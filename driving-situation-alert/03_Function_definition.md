@@ -3,8 +3,8 @@
 **Document ID**: PROJ-03-FD
 **ISO 26262 Reference**: Part 4, Cl.7 (System Design)
 **ASPICE Reference**: SYS.3 (System Architectural Design)
-**Version**: 4.32
-**Date**: 2026-03-07
+**Version**: 4.33
+**Date**: 2026-03-09
 **Status**: Draft
 **Project Title**: 주행 상황 실시간 경고 시스템
 **Subtitle**: 구간 정보 및 긴급차량 접근 기반 앰비언트·클러스터 경보
@@ -27,6 +27,8 @@
 - ID 규칙 SoT는 `00f_CAN_ID_Allocation_Standard.md`를 따르며, 적용 참조는 `0303_Communication_Specification.md`를 사용한다.
 - ECU 명칭은 Canonical(`UPPER_SNAKE_CASE`)만 사용하며, 명명 규칙은 `00e`를 단일 SoT로 하고 본 문서는 ECU 적용 참조 문서로 유지한다.
 - RTE 생성명 규칙은 `00g_RTE_Name_Mapping_Standard.md`를 SoT로 하고, 본 문서가 아닌 `04`에서 적용한다.
+- OEM100 Surface ECU 전체 전수(100개)와 구현 상태(`활성/미구현`)는 `00e` 6.4를 단일 기준으로 사용한다.
+- 본 문서는 활성(상세 정의) Surface ECU만 `Func` 상세를 부여하고, 미구현(Placeholder) Surface ECU는 이름/상태만 유지한다.
 - 네트워크 구현은 옵션1 아키텍처를 고정 적용한다: `ETH_SW + CHS_GW/INFOTAINMENT_GW/BODY_GW/IVI_GW + 도메인 CAN`.
 - 목표 설계는 옵션1(ETH 백본) 고정이며, CANoe.CAN 라이선스 제약 구간의 SIL 검증은 임시로 CAN 대체 백본을 사용하고 Ethernet 라이선스 확보 후 동일 케이스로 재검증한다.
 - `WARN_ARB_MGR`의 기능은 경보 우선순위 판정이며, CAN 비트 레벨 arbitration과 구분해 해석한다.
@@ -153,6 +155,20 @@
 | Func_041 | Req_041 | VAL_SCENARIO_CTRL | SIL 시나리오 실행(Validation-only) | CANoe SIL에서 시나리오 실행 제어 | 입력: testScenario / 출력: scenarioResult |
 | Func_042 | Req_042 | VAL_SCENARIO_CTRL | CAN+ETH 동시 검증(Validation-only) | CAN/Ethernet 동시 조건 검증 | 입력: testScenario / 출력: scenarioResult |
 | Func_043 | Req_043 | VAL_SCENARIO_CTRL | 판정 결과 산출(Validation-only) | 시나리오 Pass/Fail 판정 출력 | 입력: scenarioResult / 출력: scenarioResult |
+
+---
+
+## OEM100 Surface ECU 적용 상태 (03 기준)
+
+| 구분 | 내용 |
+|---|---|
+| 기준 SoT | `00e_ECU_Naming_Standard.md` 6.4 (`100 ECU` 전수 표) |
+| 전체 Surface ECU | 100 |
+| 활성(상세 정의) | 16 (`CGW`, `ETH_BACKBONE`, `EMS`, `TCU`, `VCU`, `ESC`, `MDPS`, `BCM`, `DATC`, `IVI`, `CLU`, `TMU`, `ADAS`, `V2X`, `SCC`, `VALIDATION_HARNESS`) |
+| 미구현(Placeholder) | 84 (`00e` 6.4 목록 기준, 상태=`미구현`) |
+
+- Placeholder ECU는 본 문서에서 `Func` owner/입출력 상세를 강제하지 않는다.
+- Placeholder ECU가 활성으로 승격될 때만 `03 -> 0301 -> 0302 -> 0303 -> 0304 -> 04 -> 05/06/07`을 동일 커밋으로 확장한다.
 
 ---
 
@@ -301,14 +317,12 @@
 
 ## 차량 ECU 인벤토리 (03 기준 요약)
 
-| 도메인 | ECU |
+| 구분 | 내용 |
 |---|---|
-| Powertrain | ENG_CTRL, TCU |
-| Chassis | ACCEL_CTRL, BRK_CTRL, STEER_CTRL, EMS_ALERT, WARN_ARB_MGR |
-| Body | AMBIENT_CTRL, HAZARD_CTRL, WINDOW_CTRL, DRV_STATE_MGR |
-| Infotainment | NAV_CTX_MGR, CLU_HMI_CTRL, CLU_BASE_CTRL |
-| Gateway/Infra | CHS_GW, INFOTAINMENT_GW, BODY_GW, IVI_GW, ETH_SW, DOMAIN_ROUTER, DOMAIN_BOUNDARY_MGR |
-| Validation Harness(Non-Production) | VAL_SCENARIO_CTRL, VAL_BASELINE_CTRL |
+| Surface 인벤토리 | OEM100 전체 100개 (`00e` 6.4) |
+| 상세 정의 대상 | 활성 16개 Surface ECU |
+| Placeholder 정책 | 미구현 84개는 이름/상태만 유지, 승격 전 상세 추적 미부여 |
+| Runtime 모듈 표기 | `Func` 상세표에서 supporting trace로만 유지 |
 
 ---
 
@@ -316,6 +330,7 @@
 
 | 버전 | 날짜 | 변경 사항 |
 |---|---|---|
+| 4.33 | 2026-03-09 | OEM100 선행 문서화 반영: `00e` 6.4를 100 ECU 단일 기준으로 연결하고, 03 문서에 활성 16/미구현 84 운영 규칙(승격 전 미추적)을 명시. |
 | 4.32 | 2026-03-07 | Req_151 정합 보강: `Func_151` 설명을 `도메인 경계 통신 상태(헬스/타임아웃/유효 플래그)` 기준으로 명확화해 01 요구 문구와 동기화. |
 | 4.31 | 2026-03-06 | Legacy 누락군 보강: `Req_018/036/038/039/114/115/117/122/124` 상속 관계를 `Legacy 전환 매핑` 섹션으로 명시해 통폐합 이후 추적 경로를 고정. |
 | 4.30 | 2026-03-06 | 경고 강건성·인지성 확장(Pre-Activation) 반영: `Func_148~Func_155` 상세표와 상단 기능요약을 추가하고 `Req_148~Req_155` 추적 범위를 문서 원칙에 반영. |

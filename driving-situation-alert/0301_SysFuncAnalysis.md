@@ -3,7 +3,7 @@
 **Document ID**: PROJ-0301-SFA
 **ISO 26262 Reference**: Part 4, Cl.7 (System Design)
 **ASPICE Reference**: SYS.3 (System Architectural Design)
-**Version**: 3.29
+**Version**: 3.30
 **Date**: 2026-03-09
 **Status**: Draft (Architecture Reset In Progress)
 **Project Title**: 주행 상황 실시간 경고 시스템
@@ -36,6 +36,20 @@
 - 현재 runtime canonical name은 transition baseline으로 유지하며, GUI/runtime rename은 `0301~04` 문서 재정렬 후 마지막에 수행한다.
 - OEM100 전체 Surface ECU 정의는 `00e` 6.4 표를 단일 기준으로 사용한다.
 - 본 문서는 Active ECU만 상세 동작을 기술하며, Placeholder ECU는 `미구현` 상태로 유지하고 승격 전에는 추적체인을 강제하지 않는다.
+
+---
+
+## OEM100 Surface ECU 적용 상태 (0301 기준)
+
+| 구분 | 내용 |
+|---|---|
+| 기준 SoT | `00e_ECU_Naming_Standard.md` 6.4 (`100 ECU` 전수 표) |
+| 전체 Surface ECU | 100 |
+| 활성(상세 정의) | 16 (`CGW`, `ETH_BACKBONE`, `EMS`, `TCU`, `VCU`, `ESC`, `MDPS`, `BCM`, `DATC`, `IVI`, `CLU`, `TMU`, `ADAS`, `V2X`, `SCC`, `VALIDATION_HARNESS`) |
+| 미구현(Placeholder) | 84 (`00e` 6.4 목록 기준, 상태=`미구현`) |
+
+- Placeholder ECU는 본 문서에서 노드 상세/입출력 owner를 강제하지 않는다.
+- 승격 시점에만 `0301 -> 0302 -> 0303 -> 0304 -> 04 -> 05/06/07` 상세 추적을 확장한다.
 
 ---
 
@@ -331,6 +345,7 @@
 
 | 버전 | 날짜 | 변경 사항 |
 |---|---|---|
+| 3.30 | 2026-03-09 | OEM100 선행 문서화 보강: `0301`에 100 ECU 기준(활성 16/미구현 84) 적용 상태 섹션을 추가하고 Placeholder 승격 전 미추적 원칙을 명시. |
 | 3.29 | 2026-03-09 | OEM100 병렬 문서화 정책 반영: `00e` 6.4를 100 ECU 단일 정의 기준으로 연결하고, node 표에 `DATC/TMU/SCC` 활성 전개 상태를 추가. Placeholder는 미구현 유지/승격 후 편입 원칙 명시. |
 | 3.28 | 2026-03-09 | Architecture reset baseline 반영: `0301`을 surface ECU owner 언어(`CGW/BCM/IVI/CLU/ADAS/V2X`) 기준으로 재작성하고, 상세/감사 표에 `Surface ECU + Runtime/Transition Baseline` 2층 추적을 추가. |
 | 3.27 | 2026-03-06 | Legacy 누락군 보강: `Req_018/036/038/039/114/115/117/122/124` 상속 관계를 `2-2` 섹션으로 추가해 Req-Func 감사 추적을 보강. |

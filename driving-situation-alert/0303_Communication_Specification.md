@@ -3,7 +3,7 @@
 **Document ID**: PROJ-0303-CS
 **ISO 26262 Reference**: Part 6, Cl.7 (Software Architectural Design)
 **ASPICE Reference**: SWE.2 (Software Architectural Design)
-**Version**: 3.30
+**Version**: 3.31
 **Date**: 2026-03-09
 **Status**: Draft
 **Project Title**: 주행 상황 실시간 경고 시스템
@@ -30,6 +30,8 @@
 - 하단 추적표는 `Comm ID -> Flow ID -> Func ID -> Req ID`를 유지한다.
 - 제출 전 현대/기아 및 OEM 기준으로 설명/별칭은 정리하되, Message ID/DLC/Bit Position/Signal 식별자는 SoT 기준으로 고정 유지한다.
 - Message ID notation rule (fixed): architecture references use Logical IDs (0xE210~0xE216) as primary; CANoe SIL implementation/test uses Stub IDs (0x1C3/0x1C4/0x111/0x1C5~0x1C8) per canoe/docs/operations/ETH_INTERFACE_CONTRACT.md.
+- OEM100 Surface ECU 전체 전수(100개)와 구현 상태(`활성/미구현`)는 `00e` 6.4를 단일 기준으로 사용한다.
+- 본 문서는 활성(상세 정의) Surface ECU의 Comm 계약만 상세 정의하고, 미구현(Placeholder) Surface ECU는 Comm owner를 강제하지 않는다.
 
 - 검증 범위는 CANoe SIL, CAN + Ethernet(UDP)로 고정한다.
 - 목표 설계는 옵션1(ETH 백본) 고정이며, CANoe.CAN 라이선스 제약 구간의 SIL 검증은 임시로 CAN 대체 백본을 사용하고 Ethernet 라이선스 확보 후 동일 케이스로 재검증한다.
@@ -46,6 +48,20 @@
 - 약어 충돌 방지 규칙: `EMS_AMB_TX`의 `AMB`는 `Ambulance` 의미의 구현 literal이며, `Ambient`는 항상 `AMBIENT` 풀토큰으로 표기한다.
 - Validation Harness 공통 프레임(`0x2A5`, `0x2A6`)은 독립 `test_can`이 아니라 `chassis_can.dbc`에 통합 관리한다.
 - 제출 설명 시 `0x2A5/0x2A6`은 “Validation frame(Chassis 통합)”으로 명시해 도메인 오해를 방지한다.
+
+---
+
+## OEM100 Surface ECU 적용 상태 (0303 기준)
+
+| 구분 | 내용 |
+|---|---|
+| 기준 SoT | `00e_ECU_Naming_Standard.md` 6.4 (`100 ECU` 전수 표) |
+| 전체 Surface ECU | 100 |
+| 활성(상세 정의) | 16 (`CGW`, `ETH_BACKBONE`, `EMS`, `TCU`, `VCU`, `ESC`, `MDPS`, `BCM`, `DATC`, `IVI`, `CLU`, `TMU`, `ADAS`, `V2X`, `SCC`, `VALIDATION_HARNESS`) |
+| 미구현(Placeholder) | 84 (`00e` 6.4 목록 기준, 상태=`미구현`) |
+
+- Placeholder ECU는 본 문서에서 Comm owner/주기/Timeout 상세를 강제하지 않는다.
+- Placeholder ECU가 활성으로 승격될 때만 `0303 -> 0304 -> 04 -> 05/06/07`을 동일 커밋으로 확장한다.
 
 ---
 
@@ -554,6 +570,7 @@
 
 | 버전 | 날짜 | 변경 사항 |
 |---|---|---|
+| 3.31 | 2026-03-09 | OEM100 선행 문서화 반영: `00e` 6.4(100 ECU 전수) 기준을 0303에 명시하고, 활성 16/미구현 84 운영 규칙 및 Placeholder 승격 전 미추적 원칙을 추가. |
 | 3.30 | 2026-03-09 | `00f v4.3` Tier 재정렬(입력 -> 판정/Fail-safe -> HMI) 반영. Comm Target EXT_ID 샘플을 재계산값으로 동기화. |
 | 3.29 | 2026-03-09 | CAN ID 정책 재정렬: `00f v4.1` 기준으로 Primary를 29-bit `3/5/21` 3분할로 단순화하고, Tier/Block/Slot 용어로 통일. Comm Target EXT_ID 샘플을 신규 계산값으로 갱신. |
 | 3.28 | 2026-03-09 | CAN ID 정책 리팩토링 반영: `00f v4.0` 기준으로 29-bit Extended(`3/5/5/16`)를 Primary 정책으로 전환하고, 11-bit는 SIL 호환 계층으로 재정의. `CAN ID 배정 정책` 표와 Comm Target EXT_ID 샘플을 추가. |

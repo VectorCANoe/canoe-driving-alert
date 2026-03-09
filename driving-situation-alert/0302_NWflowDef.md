@@ -3,8 +3,8 @@
 **Document ID**: PROJ-0302-NFD
 **ISO 26262 Reference**: Part 4, Cl.7 (System Design)
 **ASPICE Reference**: SYS.3 (System Architectural Design)
-**Version**: 3.25
-**Date**: 2026-03-07
+**Version**: 3.26
+**Date**: 2026-03-09
 **Status**: Draft
 **Project Title**: 주행 상황 실시간 경고 시스템
 **Subtitle**: 구간 정보 및 긴급차량 접근 기반 앰비언트·클러스터 경보
@@ -34,6 +34,8 @@
 - `Flow_009`, `Flow_106`, `Flow_205`는 Validation Harness 경로(검증 전용)이며 양산 서비스 플로우와 구분한다.
 - 제출 전 현대/기아 및 OEM 기준으로 설명/별칭은 정리하되, Flow/Comm/ID/signal 식별자는 SoT 기준으로 고정 유지한다.
 - ID notation rule (fixed): document primary references use Logical IDs (0xE210~0xE216); CANoe SIL execution uses Stub IDs (0x1C3/0x1C4/0x111/0x1C5~0x1C8) per canoe/docs/operations/ETH_INTERFACE_CONTRACT.md.
+- OEM100 Surface ECU 전체 전수(100개)와 구현 상태(`활성/미구현`)는 `00e` 6.4를 단일 기준으로 사용한다.
+- 본 문서는 활성(상세 정의) Surface ECU의 Flow만 상세 정의하고, 미구현(Placeholder) Surface ECU는 Flow owner를 강제하지 않는다.
 
 - Vehicle Baseline(Req_101~Req_107, Req_109~Req_119) 플로우(`Flow_101~Flow_106`, `Flow_201~Flow_205`)는 본 문서에서 확정 정의하고, DBC는 이 정의를 구현 대상으로 사용한다.
 - V2 확장 요구(`Req_120~Req_121`, `Req_123`, `Req_125~Req_129`) 플로우(`Flow_120~Flow_124`)는 구현 활성 상태로 관리하며, 관련 DBC/코드/테스트를 동일 커밋에서 동기화한다.
@@ -41,6 +43,20 @@
 - `Flow_130~Flow_133`의 Ethernet 계약 SoT는 `ETH_INTERFACE_CONTRACT.md v1.2`(`E213~E216`)로 고정하며, 구현 상태는 Pre-Activation으로 관리한다.
 - EMS는 상위 문서 레벨에서 논리 단말 `EMS_ALERT`로 표기하고, 상단 표의 `EMS_POLICE_TX/EMS_AMB_TX/EMS_ALERT_RX` 열은 내부 구현 모듈 분해 관점으로만 해석한다.
 - 약어 충돌 방지 규칙: `EMS_AMB_TX`의 `AMB`는 `Ambulance` 의미의 구현 literal이며, `Ambient`는 항상 `AMBIENT` 풀토큰으로 표기한다.
+
+---
+
+## OEM100 Surface ECU 적용 상태 (0302 기준)
+
+| 구분 | 내용 |
+|---|---|
+| 기준 SoT | `00e_ECU_Naming_Standard.md` 6.4 (`100 ECU` 전수 표) |
+| 전체 Surface ECU | 100 |
+| 활성(상세 정의) | 16 (`CGW`, `ETH_BACKBONE`, `EMS`, `TCU`, `VCU`, `ESC`, `MDPS`, `BCM`, `DATC`, `IVI`, `CLU`, `TMU`, `ADAS`, `V2X`, `SCC`, `VALIDATION_HARNESS`) |
+| 미구현(Placeholder) | 84 (`00e` 6.4 목록 기준, 상태=`미구현`) |
+
+- Placeholder ECU는 본 문서에서 Flow/TxRx 상세를 강제하지 않는다.
+- Placeholder ECU가 활성으로 승격될 때만 `0302 -> 0303 -> 0304 -> 04 -> 05/06/07`을 동일 커밋으로 확장한다.
 
 ---
 
@@ -520,6 +536,7 @@
 
 | 버전 | 날짜 | 변경 사항 |
 |---|---|---|
+| 3.26 | 2026-03-09 | OEM100 선행 문서화 반영: `00e` 6.4(100 ECU 전수) 기준을 0302에 명시하고, 활성 16/미구현 84 운영 규칙 및 Placeholder 승격 전 미추적 원칙을 추가. |
 | 3.25 | 2026-03-07 | Req_151 정합 보강: `Flow_105` 경로 설명을 `경로 상태` 표현에서 `도메인 경계 통신 상태/헬스 모니터` 기준으로 명확화. |
 | 3.24 | 2026-03-07 | DBC SoT 정합 2차: ADAS/ETH-stub 프레임 소유 범위를 1C3~1C8 기준으로 재동기화하고(`Flow_121`,`Flow_130~133`), `ETH_INTERFACE_CONTRACT.md v1.2` 활성 계약 상태를 반영. |
 | 3.23 | 2026-03-06 | Legacy 누락군 보강: `Req_018/036/038/039/108/114/115/117/122/124` 상속 관계를 `Legacy Req 상속 매핑` 섹션으로 추가해 Flow 추적 누락을 해소. |
