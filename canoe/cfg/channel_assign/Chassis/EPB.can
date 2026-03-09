@@ -5,6 +5,10 @@ includes
 
 variables
 {
+  int gDiagPending;
+  int gLastDiagSid;
+  int gLastDiagDidHigh;
+  int gLastDiagDidLow;
   msTimer tEpbCycle;
   int gBrakePressure;
   int gBrakeMode;
@@ -70,6 +74,10 @@ void publishEpbState()
 
 on start
 {
+  gDiagPending = 0;
+  gLastDiagSid = 0;
+  gLastDiagDidHigh = 0;
+  gLastDiagDidLow = 0;
   gBrakePressure = 0;
   gBrakeMode = 0;
   gDriveState = 0;
@@ -82,6 +90,17 @@ on start
 
 on timer tEpbCycle
 {
+  if (gDiagPending == 1)
+  {
+    message frmEpbDiagResMsg mDiagRes;
+
+    mDiagRes.EpbDiagRespCode = getBasicDiagRespCode(gLastDiagSid);
+    mDiagRes.EpbDiagData0 = gLastDiagDidHigh;
+    mDiagRes.EpbDiagData1 = gLastDiagDidLow;
+    output(mDiagRes);
+    gDiagPending = 0;
+  }
+
   publishEpbState();
   setTimer(tEpbCycle, 100);
 }
@@ -95,6 +114,14 @@ on message frmBrakeStatusMsg
 on message frmVehicleStateCanMsg
 {
   gDriveState = clampRange((int)this.gDriveState, 0, 3);
+}
+
+on message frmEpbDiagReqMsg
+{
+  gLastDiagSid = clampRange((int)this.EpbDiagServiceId, 0, 255);
+  gLastDiagDidHigh = clampRange((int)this.EpbDiagDidHigh, 0, 255);
+  gLastDiagDidLow = clampRange((int)this.EpbDiagDidLow, 0, 255);
+  gDiagPending = 1;
 }
 
 on stopMeasurement

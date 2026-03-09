@@ -15,3 +15,8 @@ dword getSimulationTimeMs()
 {
   return (dword)(timeNowInt64() / 1000000);
 }
+
+int getBasicDiagRespCode(int sid)
+{
+  return (sid == 0x22) ? 0x62 : 0x7F;
+}

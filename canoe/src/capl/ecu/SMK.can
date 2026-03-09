@@ -5,6 +5,10 @@ includes
 
 variables
 {
+  int gDiagPending;
+  int gLastDiagSid;
+  int gLastDiagDidHigh;
+  int gLastDiagDidLow;
   msTimer tSmkCycle;
   int gImmobilizerState;
   int gKeyAuthState;
@@ -31,6 +35,10 @@ void publishSmkState()
 
 on start
 {
+  gDiagPending = 0;
+  gLastDiagSid = 0;
+  gLastDiagDidHigh = 0;
+  gLastDiagDidLow = 0;
   gImmobilizerState = 1;
   gKeyAuthState = 1;
   gLastImmobilizerState = -1;
@@ -41,6 +49,17 @@ on start
 
 on timer tSmkCycle
 {
+  if (gDiagPending == 1)
+  {
+    message frmSmkDiagResMsg mDiagRes;
+
+    mDiagRes.SmkDiagRespCode = getBasicDiagRespCode(gLastDiagSid);
+    mDiagRes.SmkDiagData0 = gLastDiagDidHigh;
+    mDiagRes.SmkDiagData1 = gLastDiagDidLow;
+    output(mDiagRes);
+    gDiagPending = 0;
+  }
+
   if ((int)@Core::timeoutClear == 1)
   {
     gKeyAuthState = 0;
@@ -51,6 +70,14 @@ on timer tSmkCycle
   }
   publishSmkState();
   setTimer(tSmkCycle, 100);
+}
+
+on message frmSmkDiagReqMsg
+{
+  gLastDiagSid = clampRange((int)this.SmkDiagServiceId, 0, 255);
+  gLastDiagDidHigh = clampRange((int)this.SmkDiagDidHigh, 0, 255);
+  gLastDiagDidLow = clampRange((int)this.SmkDiagDidLow, 0, 255);
+  gDiagPending = 1;
 }
 
 on stopMeasurement

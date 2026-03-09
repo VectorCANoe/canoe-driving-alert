@@ -271,6 +271,36 @@ BO_ 652 frmDatcDiagResMsg: 3 DATC
  SG_ DatcDiagData0     : 8|8@1+ (1,0) [0|255] "" TEST_SCN
  SG_ DatcDiagData1     : 16|8@1+ (1,0) [0|255] "" TEST_SCN
 
+BO_ 720 frmSmkDiagReqMsg: 3 TEST_SCN
+ SG_ SmkDiagServiceId  : 0|8@1+ (1,0) [0|255] "" SMK
+ SG_ SmkDiagDidHigh    : 8|8@1+ (1,0) [0|255] "" SMK
+ SG_ SmkDiagDidLow     : 16|8@1+ (1,0) [0|255] "" SMK
+
+BO_ 721 frmSmkDiagResMsg: 3 SMK
+ SG_ SmkDiagRespCode   : 0|8@1+ (1,0) [0|255] "" TEST_SCN
+ SG_ SmkDiagData0      : 8|8@1+ (1,0) [0|255] "" TEST_SCN
+ SG_ SmkDiagData1      : 16|8@1+ (1,0) [0|255] "" TEST_SCN
+
+BO_ 722 frmAflsDiagReqMsg: 3 TEST_SCN
+ SG_ AflsDiagServiceId : 0|8@1+ (1,0) [0|255] "" AFLS
+ SG_ AflsDiagDidHigh   : 8|8@1+ (1,0) [0|255] "" AFLS
+ SG_ AflsDiagDidLow    : 16|8@1+ (1,0) [0|255] "" AFLS
+
+BO_ 723 frmAflsDiagResMsg: 3 AFLS
+ SG_ AflsDiagRespCode  : 0|8@1+ (1,0) [0|255] "" TEST_SCN
+ SG_ AflsDiagData0     : 8|8@1+ (1,0) [0|255] "" TEST_SCN
+ SG_ AflsDiagData1     : 16|8@1+ (1,0) [0|255] "" TEST_SCN
+
+BO_ 724 frmWipDiagReqMsg: 3 TEST_SCN
+ SG_ WipDiagServiceId  : 0|8@1+ (1,0) [0|255] "" WIP
+ SG_ WipDiagDidHigh    : 8|8@1+ (1,0) [0|255] "" WIP
+ SG_ WipDiagDidLow     : 16|8@1+ (1,0) [0|255] "" WIP
+
+BO_ 725 frmWipDiagResMsg: 3 WIP
+ SG_ WipDiagRespCode   : 0|8@1+ (1,0) [0|255] "" TEST_SCN
+ SG_ WipDiagData0      : 8|8@1+ (1,0) [0|255] "" TEST_SCN
+ SG_ WipDiagData1      : 16|8@1+ (1,0) [0|255] "" TEST_SCN
+
 CM_ BO_ 608 "Flow_007 ambient output.";
 CM_ BO_ 609 "Body baseline: hazard switch and hazard state.";
 CM_ BO_ 610 "Body baseline: window command and window state.";
@@ -315,6 +345,12 @@ CM_ BO_ 649 "Body runtime: occupant detection system state derived from passenge
 CM_ BO_ 650 "Body runtime: massage seat control state derived from seat comfort and alert context.";
 CM_ BO_ 651 "Body runtime: DATC diagnostic request.";
 CM_ BO_ 652 "Body runtime: DATC diagnostic response.";
+CM_ BO_ 720 "Body runtime: SMK diagnostic request.";
+CM_ BO_ 721 "Body runtime: SMK diagnostic response.";
+CM_ BO_ 722 "Body runtime: AFLS diagnostic request.";
+CM_ BO_ 723 "Body runtime: AFLS diagnostic response.";
+CM_ BO_ 724 "Body runtime: WIP diagnostic request.";
+CM_ BO_ 725 "Body runtime: WIP diagnostic response.";
 
 BA_DEF_ BO_ "GenMsgCycleTime" INT 0 10000;
 BA_DEF_DEF_ "GenMsgCycleTime" 0;
@@ -362,6 +398,12 @@ BA_ "GenMsgCycleTime" BO_ 649 100;
 BA_ "GenMsgCycleTime" BO_ 650 100;
 BA_ "GenMsgCycleTime" BO_ 651 0;
 BA_ "GenMsgCycleTime" BO_ 652 0;
+BA_ "GenMsgCycleTime" BO_ 720 0;
+BA_ "GenMsgCycleTime" BO_ 721 0;
+BA_ "GenMsgCycleTime" BO_ 722 0;
+BA_ "GenMsgCycleTime" BO_ 723 0;
+BA_ "GenMsgCycleTime" BO_ 724 0;
+BA_ "GenMsgCycleTime" BO_ 725 0;
 
 VAL_ 608 AmbientMode
   0 "Off"

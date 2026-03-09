@@ -1,4 +1,4 @@
-﻿includes
+includes
 {
   #include "..\\common\\CAPL_COMMON.cin"
 }
@@ -85,7 +85,19 @@ void sendBaselineDiagRequest(int scenarioId)
   message ethCgwDiagReqMsg mCgw;
   message ethSgwDiagReqMsg mSgw;
   message ethDcmDiagReqMsg mDcm;
-  int didLow;
+  message frmAbsDiagReqMsg mAbs;
+  message frmEpbDiagReqMsg mEpb;
+  message frmTpmsDiagReqMsg mTpms;
+  message frmSasDiagReqMsg mSas;
+  message frmVsmDiagReqMsg mVsm;
+  message frmEhbDiagReqMsg mEhb;
+  message frmEcsDiagReqMsg mEcs;
+  message frmCdcDiagReqMsg mCdc;
+  message frmAcuDiagReqMsg mAcu;
+  message frmOdsDiagReqMsg mOds;
+  message frmSmkDiagReqMsg mSmk;
+  message frmAflsDiagReqMsg mAfls;
+  message frmWipDiagReqMsg mWip;  int didLow;
 
   didLow = clampRange(scenarioId, 0, 255);
 
@@ -173,7 +185,59 @@ void sendBaselineDiagRequest(int scenarioId)
   mDcm.DcmDiagDidHigh = 0xF1;
   mDcm.DcmDiagDidLow = didLow;
   output(mDcm);
-}
+
+  mAbs.AbsDiagServiceId = 0x22;
+  mAbs.AbsDiagDidHigh = 0xF1;
+  mAbs.AbsDiagDidLow = didLow;
+  output(mAbs);
+  mEpb.EpbDiagServiceId = 0x22;
+  mEpb.EpbDiagDidHigh = 0xF1;
+  mEpb.EpbDiagDidLow = didLow;
+  output(mEpb);
+  mTpms.TpmsDiagServiceId = 0x22;
+  mTpms.TpmsDiagDidHigh = 0xF1;
+  mTpms.TpmsDiagDidLow = didLow;
+  output(mTpms);
+  mSas.SasDiagServiceId = 0x22;
+  mSas.SasDiagDidHigh = 0xF1;
+  mSas.SasDiagDidLow = didLow;
+  output(mSas);
+  mVsm.VsmDiagServiceId = 0x22;
+  mVsm.VsmDiagDidHigh = 0xF1;
+  mVsm.VsmDiagDidLow = didLow;
+  output(mVsm);
+  mEhb.EhbDiagServiceId = 0x22;
+  mEhb.EhbDiagDidHigh = 0xF1;
+  mEhb.EhbDiagDidLow = didLow;
+  output(mEhb);
+  mEcs.EcsDiagServiceId = 0x22;
+  mEcs.EcsDiagDidHigh = 0xF1;
+  mEcs.EcsDiagDidLow = didLow;
+  output(mEcs);
+  mCdc.CdcDiagServiceId = 0x22;
+  mCdc.CdcDiagDidHigh = 0xF1;
+  mCdc.CdcDiagDidLow = didLow;
+  output(mCdc);
+  mAcu.AcuDiagServiceId = 0x22;
+  mAcu.AcuDiagDidHigh = 0xF1;
+  mAcu.AcuDiagDidLow = didLow;
+  output(mAcu);
+  mOds.OdsDiagServiceId = 0x22;
+  mOds.OdsDiagDidHigh = 0xF1;
+  mOds.OdsDiagDidLow = didLow;
+  output(mOds);
+  mSmk.SmkDiagServiceId = 0x22;
+  mSmk.SmkDiagDidHigh = 0xF1;
+  mSmk.SmkDiagDidLow = didLow;
+  output(mSmk);
+  mAfls.AflsDiagServiceId = 0x22;
+  mAfls.AflsDiagDidHigh = 0xF1;
+  mAfls.AflsDiagDidLow = didLow;
+  output(mAfls);
+  mWip.WipDiagServiceId = 0x22;
+  mWip.WipDiagDidHigh = 0xF1;
+  mWip.WipDiagDidLow = didLow;
+  output(mWip);}
 
 void pushLockedScenarioInputs()
 {

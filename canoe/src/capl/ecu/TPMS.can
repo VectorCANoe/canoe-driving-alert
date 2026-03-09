@@ -5,6 +5,10 @@ includes
 
 variables
 {
+  int gDiagPending;
+  int gLastDiagSid;
+  int gLastDiagDidHigh;
+  int gLastDiagDidLow;
   msTimer tTpmsCycle;
   int gWheelSpdFL;
   int gWheelSpdFR;
@@ -50,6 +54,10 @@ void publishTireState()
 
 on start
 {
+  gDiagPending = 0;
+  gLastDiagSid = 0;
+  gLastDiagDidHigh = 0;
+  gLastDiagDidLow = 0;
   gWheelSpdFL = 0;
   gWheelSpdFR = 0;
   gWheelSpdRL = 0;
@@ -64,6 +72,17 @@ on start
 
 on timer tTpmsCycle
 {
+  if (gDiagPending == 1)
+  {
+    message frmTpmsDiagResMsg mDiagRes;
+
+    mDiagRes.TpmsDiagRespCode = getBasicDiagRespCode(gLastDiagSid);
+    mDiagRes.TpmsDiagData0 = gLastDiagDidHigh;
+    mDiagRes.TpmsDiagData1 = gLastDiagDidLow;
+    output(mDiagRes);
+    gDiagPending = 0;
+  }
+
   publishTireState();
   setTimer(tTpmsCycle, 100);
 }
@@ -74,6 +93,14 @@ on message frmWheelSpeedMsg
   gWheelSpdFR = clampRange((int)this.WheelSpdFR, 0, 255);
   gWheelSpdRL = clampRange((int)this.WheelSpdRL, 0, 255);
   gWheelSpdRR = clampRange((int)this.WheelSpdRR, 0, 255);
+}
+
+on message frmTpmsDiagReqMsg
+{
+  gLastDiagSid = clampRange((int)this.TpmsDiagServiceId, 0, 255);
+  gLastDiagDidHigh = clampRange((int)this.TpmsDiagDidHigh, 0, 255);
+  gLastDiagDidLow = clampRange((int)this.TpmsDiagDidLow, 0, 255);
+  gDiagPending = 1;
 }
 
 on stopMeasurement

@@ -5,6 +5,10 @@ includes
 
 variables
 {
+  int gDiagPending;
+  int gLastDiagSid;
+  int gLastDiagDidHigh;
+  int gLastDiagDidLow;
   msTimer tAflsCycle;
   int gSteeringAngle;
   int gHeadLampState;
@@ -54,6 +58,10 @@ void publishAflsState()
 
 on start
 {
+  gDiagPending = 0;
+  gLastDiagSid = 0;
+  gLastDiagDidHigh = 0;
+  gLastDiagDidLow = 0;
   gSteeringAngle = 0;
   gHeadLampState = 1;
   gLastAflsMode = -1;
@@ -66,6 +74,17 @@ on start
 
 on timer tAflsCycle
 {
+  if (gDiagPending == 1)
+  {
+    message frmAflsDiagResMsg mDiagRes;
+
+    mDiagRes.AflsDiagRespCode = getBasicDiagRespCode(gLastDiagSid);
+    mDiagRes.AflsDiagData0 = gLastDiagDidHigh;
+    mDiagRes.AflsDiagData1 = gLastDiagDidLow;
+    output(mDiagRes);
+    gDiagPending = 0;
+  }
+
   publishAflsState();
   setTimer(tAflsCycle, 100);
 }
@@ -78,6 +97,14 @@ on message frmSteeringAngleMsg
 on message frmLampControlMsg
 {
   gHeadLampState = clampRange((int)this.HeadLampState, 0, 3);
+}
+
+on message frmAflsDiagReqMsg
+{
+  gLastDiagSid = clampRange((int)this.AflsDiagServiceId, 0, 255);
+  gLastDiagDidHigh = clampRange((int)this.AflsDiagDidHigh, 0, 255);
+  gLastDiagDidLow = clampRange((int)this.AflsDiagDidLow, 0, 255);
+  gDiagPending = 1;
 }
 
 on stopMeasurement

@@ -31,10 +31,28 @@
 | `frmAmpDiagReqMsg` | `frmAmpDiagResMsg` | `AMP` |
 | `frmDmsDiagReqMsg` | `frmDmsDiagResMsg` | `DMS` |
 | `frmOmsDiagReqMsg` | `frmOmsDiagResMsg` | `OMS` |
+| `frmAbsDiagReqMsg` | `frmAbsDiagResMsg` | `ABS` |
+| `frmEpbDiagReqMsg` | `frmEpbDiagResMsg` | `EPB` |
+| `frmTpmsDiagReqMsg` | `frmTpmsDiagResMsg` | `TPMS` |
+| `frmSasDiagReqMsg` | `frmSasDiagResMsg` | `SAS` |
+| `frmVsmDiagReqMsg` | `frmVsmDiagResMsg` | `VSM` |
+| `frmEhbDiagReqMsg` | `frmEhbDiagResMsg` | `EHB` |
+| `frmEcsDiagReqMsg` | `frmEcsDiagResMsg` | `ECS` |
+| `frmCdcDiagReqMsg` | `frmCdcDiagResMsg` | `CDC` |
+| `frmAcuDiagReqMsg` | `frmAcuDiagResMsg` | `ACU` |
+| `frmOdsDiagReqMsg` | `frmOdsDiagResMsg` | `ODS` |
+| `frmSmkDiagReqMsg` | `frmSmkDiagResMsg` | `SMK` |
+| `frmAflsDiagReqMsg` | `frmAflsDiagResMsg` | `AFLS` |
+| `frmWipDiagReqMsg` | `frmWipDiagResMsg` | `WIP` |
 | `ethV2xDiagReqMsg` | `ethV2xDiagResMsg` | `V2X` |
 | `ethCgwDiagReqMsg` | `ethCgwDiagResMsg` | `CGW` |
 | `ethSgwDiagReqMsg` | `ethSgwDiagResMsg` | `SGW` |
 | `ethDcmDiagReqMsg` | `ethDcmDiagResMsg` | `DCM` |
+
+## Coverage Summary
+- Full responder tier: `17`
+- Basic responder tier: `13`
+- Total tester-driven req/res paths: `30`
 
 ## Lightweight Responder Pattern
 - Each local ECU stores:

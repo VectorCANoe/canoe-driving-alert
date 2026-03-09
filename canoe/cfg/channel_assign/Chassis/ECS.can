@@ -5,6 +5,10 @@ includes
 
 variables
 {
+  int gDiagPending;
+  int gLastDiagSid;
+  int gLastDiagDidHigh;
+  int gLastDiagDidLow;
   msTimer tEcsCycle;
   int gSuspensionMode;
   int gSuspensionLevel;
@@ -16,6 +20,10 @@ variables
 
 on start
 {
+  gDiagPending = 0;
+  gLastDiagSid = 0;
+  gLastDiagDidHigh = 0;
+  gLastDiagDidLow = 0;
   gSuspensionMode = 0;
   gSuspensionLevel = 8;
   gDampingLevel = 12;
@@ -35,6 +43,17 @@ on message frmSuspensionStateMsg
 
 on timer tEcsCycle
 {
+  if (gDiagPending == 1)
+  {
+    message frmEcsDiagResMsg mDiagRes;
+
+    mDiagRes.EcsDiagRespCode = getBasicDiagRespCode(gLastDiagSid);
+    mDiagRes.EcsDiagData0 = gLastDiagDidHigh;
+    mDiagRes.EcsDiagData1 = gLastDiagDidLow;
+    output(mDiagRes);
+    gDiagPending = 0;
+  }
+
   message frmEcsStateMsg mEcs;
 
   mEcs.EcsMode = gSuspensionMode;
@@ -56,6 +75,14 @@ on timer tEcsCycle
   }
 
   setTimer(tEcsCycle, 100);
+}
+
+on message frmEcsDiagReqMsg
+{
+  gLastDiagSid = clampRange((int)this.EcsDiagServiceId, 0, 255);
+  gLastDiagDidHigh = clampRange((int)this.EcsDiagDidHigh, 0, 255);
+  gLastDiagDidLow = clampRange((int)this.EcsDiagDidLow, 0, 255);
+  gDiagPending = 1;
 }
 
 on stopMeasurement

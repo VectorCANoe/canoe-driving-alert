@@ -1,10 +1,14 @@
-﻿includes
+includes
 {
   #include "..\\common\\CAPL_COMMON.cin"
 }
 
 variables
 {
+  int gDiagPending;
+  int gLastDiagSid;
+  int gLastDiagDidHigh;
+  int gLastDiagDidLow;
   msTimer tOdsCycle;
   int gPassengerSeatBelt;
   int gPassengerSeatPos;
@@ -16,6 +20,10 @@ variables
 
 on start
 {
+  gDiagPending = 0;
+  gLastDiagSid = 0;
+  gLastDiagDidHigh = 0;
+  gLastDiagDidLow = 0;
   gPassengerSeatBelt = 1;
   gPassengerSeatPos = 118;
   gLastDetected = -1;
@@ -38,6 +46,17 @@ on message frmSeatStateMsg
 
 on timer tOdsCycle
 {
+  if (gDiagPending == 1)
+  {
+    message frmOdsDiagResMsg mDiagRes;
+
+    mDiagRes.OdsDiagRespCode = getBasicDiagRespCode(gLastDiagSid);
+    mDiagRes.OdsDiagData0 = gLastDiagDidHigh;
+    mDiagRes.OdsDiagData1 = gLastDiagDidLow;
+    output(mDiagRes);
+    gDiagPending = 0;
+  }
+
   message frmOdsStateMsg mOds;
   int occupantDetected;
   int weightClass;
@@ -88,6 +107,14 @@ on timer tOdsCycle
   }
 
   setTimer(tOdsCycle, 100);
+}
+
+on message frmOdsDiagReqMsg
+{
+  gLastDiagSid = clampRange((int)this.OdsDiagServiceId, 0, 255);
+  gLastDiagDidHigh = clampRange((int)this.OdsDiagDidHigh, 0, 255);
+  gLastDiagDidLow = clampRange((int)this.OdsDiagDidLow, 0, 255);
+  gDiagPending = 1;
 }
 
 on stopMeasurement
