@@ -28,6 +28,8 @@ Open these only when the active task needs background support:
   - active Dev1 target profile: `100` surface ECUs, `16` deep runtimes, `8` core custom surfaces, `4` validation/test elements
 - `OEM_100_ECU_PROGRAM_BANK_2026-03-09.md`
   - active surface inventory bank for 100-scale OEM vehicle-program framing
+- `OEM_PLACEHOLDER_WAVE1_2026-03-09.md`
+  - materialized placeholder wave: `13` deep anchors + `87` shallow placeholders = `100` visible CAPL nodes
 - `ECU_PARALLEL_EXECUTION_STRATEGY_2026-03-09.md`
   - active Dev1 execution split: domain-wave development first, placeholder breadth second
 - `PRIMARY56_RUNTIME26_MAPPING_2026-03-09.md`
@@ -46,6 +48,7 @@ Open these only when the active task needs background support:
 - For the current reset cycle:
   - use `OEM_ACTIVE_TARGET_PROFILE_2026-03-09.md` as the active Dev1 sizing target
   - use `OEM_100_ECU_PROGRAM_BANK_2026-03-09.md` as the active breadth source bank
+  - use `OEM_PLACEHOLDER_WAVE1_2026-03-09.md` as the current visible node materialization baseline
 - [RUNTIME_ABSORPTION_STATUS_2026-03-09.md](RUNTIME_ABSORPTION_STATUS_2026-03-09.md) - current Dev1 absorption boundary and GUI cleanup queue.
 - [OEM_RUNTIME_ANCHOR_NAMING_AUDIT_2026-03-09.md](OEM_RUNTIME_ANCHOR_NAMING_AUDIT_2026-03-09.md) - recheck of remaining runtime anchors and OEM-normalized names.
 - [RUNTIME_RENAME_SPLIT_PLAN_2026-03-09.md](RUNTIME_RENAME_SPLIT_PLAN_2026-03-09.md) - split between source/file rename targets and GUI-only rename targets.

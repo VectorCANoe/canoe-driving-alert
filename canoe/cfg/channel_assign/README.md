@@ -1,6 +1,6 @@
 ﻿# channel_assign
 
-`channel_assign` is the GUI import surface for the active CANoe runtime.
+`channel_assign` is the GUI import surface for the active CANoe runtime and OEM breadth placeholder bank.
 
 - source of truth for runtime code: `canoe/src/capl/**`
 - GUI import mirror: `canoe/cfg/channel_assign/**`
@@ -8,34 +8,50 @@
 
 Do not edit files here directly. Edit `canoe/src/capl/**` first, then mirror into this tree.
 
-## Active runtime profile
+## Current visible import bank
 
-The absorbed runtime now exposes `13` active CAPL nodes.
+The current import bank exposes:
+
+- deep runtime anchors: `13`
+- shallow placeholder surfaces: `87`
+- total visible nodes: `100`
 
 | Domain | Folder | Active nodes |
 | --- | --- | --- |
-| Chassis | `Chassis/` | `VCU`, `ESC`, `MDPS`, `VAL_BASELINE_CTRL` |
-| Body | `Body/` | `BCM` |
-| Infotainment | `Infotainment/` | `IVI`, `CLU` |
-| Powertrain | `Powertrain/` | `EMS`, `TCU` |
-| ETH Backbone | `ETH_Backbone/` | `CGW`, `V2X`, `VAL_SCENARIO_CTRL` |
-| ADAS | `ADAS/` | `ADAS` |
+| Chassis | `Chassis/` | `16` |
+| Body | `Body/` | `23` |
+| Infotainment | `Infotainment/` | `13` |
+| Powertrain | `Powertrain/` | `14` |
+| ETH Backbone | `ETH_Backbone/` | `8` |
+| ADAS | `ADAS/` | `26` |
+
+## Active deep runtime anchors
+
+| Domain | Visible deep nodes |
+| --- | --- |
+| Chassis | `VCU`, `ESC`, `MDPS`, `VAL_BASELINE_CTRL` |
+| Body | `BCM` |
+| Infotainment | `IVI`, `CLU` |
+| Powertrain | `EMS`, `TCU` |
+| ETH Backbone | `CGW`, `V2X`, `VAL_SCENARIO_CTRL` |
+| ADAS | `ADAS` |
 
 ## GUI import order
 
 1. Open the active CANoe configuration in GUI.
-2. For each network, insert CAPL nodes from the matching folder below.
-3. Re-apply multibus assignments for anchor nodes.
-4. Compile and save from GUI.
+2. Import deep runtime anchors first.
+3. Import placeholder surface nodes by domain as needed.
+4. Re-apply multibus assignments for anchor nodes.
+5. Compile and save from GUI.
 
-| Network | Import folder | Count |
+| Network | Import folder | Visible node count |
 | --- | --- | --- |
-| Chassis | `Chassis/` | 4 |
-| Body | `Body/` | 1 |
-| Infotainment | `Infotainment/` | 2 |
-| Powertrain | `Powertrain/` | 2 |
-| ETH_Backbone | `ETH_Backbone/` | 3 |
-| ADAS | `ADAS/` | 1 |
+| Chassis | `Chassis/` | `16` |
+| Body | `Body/` | `23` |
+| Infotainment | `Infotainment/` | `13` |
+| Powertrain | `Powertrain/` | `14` |
+| ETH_Backbone | `ETH_Backbone/` | `8` |
+| ADAS | `ADAS/` | `26` |
 
 ## Multibus anchors
 
@@ -75,17 +91,20 @@ These anchors still need extra bus assignments restored in GUI.
 ### ADAS
 - `ADAS.can` ? integrated risk, warning, and assist decision runtime
 
+## Placeholder note
+
+Placeholder nodes are OEM surface breadth only. They do not carry deep runtime logic in this wave.
+
 ## Validation
 
 - `python scripts/gates/text_integrity_gate.py`
 - `python scripts/gates/cfg_hygiene_gate.py`
 
 `check_capl_sync.py` still needs the new ECU inventory update outside Dev1 scope.
-Local runtime verification result for this rename wave:
+Local runtime verification result for the current visible bank:
 
-- `src/capl` active files: `13`
-- `cfg/channel_assign` active files: `13`
+- `src/capl` visible files: `100`
+- `cfg/channel_assign` visible files: `100`
 - name diff: `0`
 - content diff: `0`
-
 
