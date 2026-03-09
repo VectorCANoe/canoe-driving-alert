@@ -29,6 +29,8 @@ Open these first:
   - stable `Diag::*` tester-facing sysvar surface for Dev2 pipelines
 - `OEM_VECTOR_DIAGNOSTIC_STACK_GAP_ANALYSIS_2026-03-10.md`
   - current stack vs OEM/Vector formal diagnostic stack and description roadmap
+- `DIAGNOSTIC_DESCRIPTION_NEED_DECISION_2026-03-10.md`
+  - why finalized 00~07 still needs a lightweight execution-side diagnostic description
 - `CANOE_TEST_POC_SCOPE_2026-03-08.md`
   - selected native CANoe test PoC scope and mapping
 - `CANOE_TEST_CI_BRIDGE_STRATEGY_2026-03-09.md`
