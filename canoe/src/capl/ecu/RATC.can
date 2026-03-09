@@ -49,7 +49,7 @@ void publishRearClimateState()
       mRear.RearVentMode != gLastRearVent ||
       mRear.RearSyncMode != gLastSyncMode)
   {
-    write("[REAR_CLIMATE_MODULE] temp=%d blower=%d vent=%d sync=%d",
+    write("[RATC] temp=%d blower=%d vent=%d sync=%d",
           mRear.RearSetTemp,
           mRear.RearBlowerLevel,
           mRear.RearVentMode,
@@ -72,7 +72,7 @@ on start
   gLastRearVent = -1;
   gLastSyncMode = -1;
   setTimer(tRearClimateCycle, 100);
-  write("[REAR_CLIMATE_MODULE] start");
+  write("[RATC] start");
 }
 
 on timer tRearClimateCycle
@@ -97,3 +97,4 @@ on stopMeasurement
 {
   cancelTimer(tRearClimateCycle);
 }
+

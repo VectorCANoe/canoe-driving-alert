@@ -107,7 +107,7 @@ void publishOtaState()
       mOta.UpdateWindowOpen != gLastWindowOpen ||
       mOta.OtaDiagState != gLastDiagState)
   {
-    write("[OTA_MASTER] session=%d ready=%d window=%d diag=%d dl=%d bars=%d cpu=%d mem=%d",
+    write("[OTA] session=%d ready=%d window=%d diag=%d dl=%d bars=%d cpu=%d mem=%d",
           mOta.OtaSessionState,
           mOta.PackageReady,
           mOta.UpdateWindowOpen,
@@ -138,7 +138,7 @@ on start
   gLastWindowOpen = -1;
   gLastDiagState = -1;
   setTimer(tOtaCycle, 100);
-  write("[OTA_MASTER] start");
+  write("[OTA] start");
 }
 
 on timer tOtaCycle
@@ -170,3 +170,4 @@ on stopMeasurement
 {
   cancelTimer(tOtaCycle);
 }
+

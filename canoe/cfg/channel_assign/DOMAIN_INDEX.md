@@ -1,4 +1,4 @@
-﻿# V2 Domain CAPL Index
+# V2 Domain CAPL Index
 
 This file documents the visible runtime and placeholder CAPL inventory after wrapper absorption and OEM abbreviation normalization.
 
@@ -44,7 +44,7 @@ This file documents the visible runtime and placeholder CAPL inventory after wra
 - `RPC.can`
 - `LIDAR.can`
 - `RRM.can`
-- `SURROUND_PKM.can`
+- `SPM.can`
 - `HIGHWAY_PILOT.can`
 - `TRM.can`
 

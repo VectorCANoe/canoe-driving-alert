@@ -1,4 +1,4 @@
-﻿includes
+includes
 {
   #include "..\\common\\CAPL_COMMON.cin"
 }
@@ -28,7 +28,7 @@ void publishBackboneVehicleState()
 {
   message ethVehicleStateMsg mEthVeh;
 
-  /* Internal PTGW/vehicle-state seam for CAN-stub today, transport swap later. */
+  /* Internal powertrain/vehicle-state gateway seam for CAN-stub today, transport swap later. */
   mEthVeh.DriveState = clampRange((int)@Core::driveStateNorm, 0, 3);
   mEthVeh.VehicleSpeed = clampRange((int)@Core::vehicleSpeedNorm, 0, 255);
   mEthVeh.BrakePedalNorm = clampRange(gBrakePedal, 0, 100);

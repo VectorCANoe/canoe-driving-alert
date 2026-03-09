@@ -1,4 +1,4 @@
-﻿includes
+includes
 {
   #include "..\\common\\CAPL_COMMON.cin"
 }
@@ -25,7 +25,7 @@ on start
   gLastProx = -1;
   gLastLatency = -1;
   setTimer(tPaakCycle, 100);
-  write("[PHONE_AS_KEY] start");
+  write("[PAK] start");
 }
 
 on message frmDigitalKeyStateMsg
@@ -69,7 +69,7 @@ on timer tPaakCycle
       mPaak.ProximityState != gLastProx ||
       mPaak.SyncLatency != gLastLatency)
   {
-    write("[PHONE_AS_KEY] state=%d auth=%d prox=%d latency=%d bars=%d",
+    write("[PAK] state=%d auth=%d prox=%d latency=%d bars=%d",
           mPaak.PaakState,
           mPaak.AuthLevel,
           mPaak.ProximityState,
@@ -88,3 +88,4 @@ on stopMeasurement
 {
   cancelTimer(tPaakCycle);
 }
+

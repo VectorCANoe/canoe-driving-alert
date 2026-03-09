@@ -60,7 +60,7 @@ void publishParkUltrasonicState()
       zoneMask != gLastZoneMask ||
       audibleWarn != gLastAudibleWarn)
   {
-    write("[PARK_ULTRASONIC] active=%d dist=%d zone=0x%02X warn=%d speed=%d",
+    write("[PUS] active=%d dist=%d zone=0x%02X warn=%d speed=%d",
           active,
           minDistance,
           zoneMask,
@@ -80,7 +80,7 @@ on start
   gLastZoneMask = -1;
   gLastAudibleWarn = -1;
   setTimer(tParkUltrasonicCycle, 100);
-  write("[PARK_ULTRASONIC] start");
+  write("[PUS] start");
 }
 
 on timer tParkUltrasonicCycle
@@ -93,3 +93,4 @@ on stopMeasurement
 {
   cancelTimer(tParkUltrasonicCycle);
 }
+

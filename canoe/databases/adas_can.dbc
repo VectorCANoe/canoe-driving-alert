@@ -1,4 +1,4 @@
-﻿VERSION "ADAS_CAN_v1.0"
+VERSION "ADAS_CAN_v1.0"
 
 
 NS_ :
@@ -30,7 +30,7 @@ NS_ :
 
 BS_:
 
-BU_: ADAS ESC VAL_SCENARIO_CTRL BCM IVI LDWS_LKAS FCA BCW LCA SPAS RSPA AVM FCAM FRADAR SRR_FL SRR_FR PUS DMS OMS SRR_RL SRR_RR AEB PKM RPC RRM SURROUND_PKM HIGHWAY_PILOT LIDAR TRM Vector__XXX
+BU_: ADAS ESC VAL_SCENARIO_CTRL BCM IVI LDWS_LKAS FCA BCW LCA SPAS RSPA AVM FCAM FRADAR SRR_FL SRR_FR PUS DMS OMS SRR_RL SRR_RR AEB PKM RPC RRM SPM HIGHWAY_PILOT LIDAR TRM Vector__XXX
 
 BO_ 449 frmAdasChassisStatusMsg: 2 ADAS
  SG_ AdasChassisState : 0|8@1+ (1,0) [0|255] "" ESC
@@ -238,7 +238,7 @@ BO_ 475 frmRearRadarMasterStateMsg: 4 RRM
  SG_ SensorHealth         : 26|2@1+ (1,0) [0|3] "" ADAS,CLU
  SG_ Reserved0            : 28|4@1+ (1,0) [0|0] "" Vector__XXX
 
-BO_ 476 frmSurroundParkMasterStateMsg: 4 SURROUND_PKM
+BO_ 476 frmSurroundParkMasterStateMsg: 4 SPM
  SG_ SurroundActive       : 0|1@1+  (1,0) [0|1] "" ADAS,IVI,CLU
  SG_ AutoParkReady        : 1|1@1+  (1,0) [0|1] "" ADAS,IVI,CLU
  SG_ ViewMode             : 8|3@1+  (1,0) [0|7] "" ADAS,IVI,CLU

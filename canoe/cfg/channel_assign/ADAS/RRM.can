@@ -61,7 +61,7 @@ void publishRearRadarMasterState()
       mergeConflict != gLastConflict ||
       sensorHealth != gLastHealth)
   {
-    write("[REAR_RADAR_MASTER] detected=%d lcb=%d risk=%d conflict=%d lamp=%d health=%d",
+    write("[RRM] detected=%d lcb=%d risk=%d conflict=%d lamp=%d health=%d",
           detected,
           laneChangeBlock,
           rearRiskLevel,
@@ -92,7 +92,7 @@ on start
   gLastConflict = -1;
   gLastHealth = -1;
   setTimer(tRearRadarCycle, 100);
-  write("[REAR_RADAR_MASTER] start");
+  write("[RRM] start");
 }
 
 on timer tRearRadarCycle

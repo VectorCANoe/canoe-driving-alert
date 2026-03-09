@@ -19,7 +19,7 @@ on start
   gLastHeatState = -1;
   gLastAdjustAxis = -1;
   setTimer(tMirrorCycle, 100);
-  write("[MIRROR_MODULE] start");
+  write("[MIR] start");
 }
 
 on timer tMirrorCycle
@@ -57,7 +57,7 @@ on timer tMirrorCycle
       mMirror.MirrorHeatState != gLastHeatState ||
       mMirror.MirrorAdjustAxis != gLastAdjustAxis)
   {
-    write("[MIRROR_MODULE] fold=%d heat=%d axis=%d turn=%d drive=%d",
+    write("[MIR] fold=%d heat=%d axis=%d turn=%d drive=%d",
           mMirror.MirrorFoldState,
           mMirror.MirrorHeatState,
           mMirror.MirrorAdjustAxis,
@@ -80,3 +80,4 @@ on stopMeasurement
 {
   cancelTimer(tMirrorCycle);
 }
+

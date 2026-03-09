@@ -1,4 +1,4 @@
-﻿# PANEL DEVELOPMENT SPEC (Aligned with 00~07)
+# PANEL DEVELOPMENT SPEC (Aligned with 00~07)
 
 ## 1) 기준 문서
 - 00_VModel_Mapping
@@ -18,7 +18,7 @@
 Panel Editor 실제 클릭 절차는 `canoe/PANEL_EDITOR_STEP_BY_STEP.md`를 따른다.
 
 ## 2) 아키텍처 고정점 (Panel 관점)
-- Option1 고정: `ETHM + CHGW/IVI/BCM/IVI + 중앙 경고코어`
+- Option1 고정: `CGW + VCU/MDPS/IVI/BCM + 중앙 경고코어`
 - 검증 범위: CANoe SIL, CAN + Ethernet(UDP)
 - 핵심 출력:
   - Ambient: `frmAmbientControlMsg(0x210)`
@@ -95,4 +95,3 @@ Panel Editor 실제 클릭 절차는 `canoe/PANEL_EDITOR_STEP_BY_STEP.md`를 따
 ## 8) 운영 규칙
 - CANoe MCP 자동화는 `canoe/AGENTS.md` 규칙을 따른다.
 - 병렬 제어 금지, `open -> wait -> compile -> wait -> start` 고정.
-

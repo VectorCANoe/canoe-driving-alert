@@ -1,4 +1,4 @@
-﻿# channel_assign
+# channel_assign
 
 `channel_assign` is the GUI import surface for the active CANoe runtime and the full OEM breadth runtime bank.
 
@@ -34,7 +34,7 @@ The current import bank exposes:
 | Infotainment | `IVI`, `CLU`, `HUD`, `AMP`, `VCS`, `TMU`, `NAV`, `OTA`, `DIGITAL_KEY`, `RSE`, `PGS`, `PAK`, `CPAY` |
 | Powertrain | `EMS`, `TCU`, `_4WD`, `BAT_BMS`, `FPCM`, `LVR`, `ISG`, `EOP`, `EWP`, `OBC`, `DCDC`, `MCU`, `INVERTER`, `CPC` |
 | ETH Backbone | `CGW`, `V2X`, `SGW`, `IBOX`, `DCM`, `EDR`, `ETHB`, `VAL_SCENARIO_CTRL` |
-| ADAS | `ADAS`, `SCC`, `LDWS_LKAS`, `FCA`, `BCW`, `LCA`, `SPAS`, `RSPA`, `AVM`, `FCAM`, `FRADAR`, `SRR_FL`, `SRR_FR`, `SRR_RL`, `SRR_RR`, `PUS`, `DMS`, `OMS`, `AEB`, `PKM`, `RPC`, `RRM`, `SURROUND_PKM`, `HIGHWAY_PILOT`, `LIDAR`, `TRM` |
+| ADAS | `ADAS`, `SCC`, `LDWS_LKAS`, `FCA`, `BCW`, `LCA`, `SPAS`, `RSPA`, `AVM`, `FCAM`, `FRADAR`, `SRR_FL`, `SRR_FR`, `SRR_RL`, `SRR_RR`, `PUS`, `DMS`, `OMS`, `AEB`, `PKM`, `RPC`, `RRM`, `SPM`, `HIGHWAY_PILOT`, `LIDAR`, `TRM` |
 
 ## GUI import order
 
@@ -96,7 +96,7 @@ These anchors still need extra bus assignments restored in GUI.
 
 ### ADAS
 - `ADAS.can` ? integrated risk, warning, and assist decision runtime
-- `SCC.can`, `LDWS_LKAS.can`, `FCA.can`, `BCW.can`, `LCA.can`, `SPAS.can`, `RSPA.can`, `AVM.can`, `FCAM.can`, `FRADAR.can`, `SRR_FL.can`, `SRR_FR.can`, `SRR_RL.can`, `SRR_RR.can`, `PUS.can`, `DMS.can`, `OMS.can`, `AEB.can`, `PKM.can`, `RPC.can`, `RRM.can`, `SURROUND_PKM.can`, `HIGHWAY_PILOT.can`, `LIDAR.can`, `TRM.can` ? ADAS feature/sensor/runtime anchors
+- `SCC.can`, `LDWS_LKAS.can`, `FCA.can`, `BCW.can`, `LCA.can`, `SPAS.can`, `RSPA.can`, `AVM.can`, `FCAM.can`, `FRADAR.can`, `SRR_FL.can`, `SRR_FR.can`, `SRR_RL.can`, `SRR_RR.can`, `PUS.can`, `DMS.can`, `OMS.can`, `AEB.can`, `PKM.can`, `RPC.can`, `RRM.can`, `SPM.can`, `HIGHWAY_PILOT.can`, `LIDAR.can`, `TRM.can` ? ADAS feature/sensor/runtime anchors
 
 ## Placeholder note
 

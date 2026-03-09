@@ -23,7 +23,7 @@ void publishSecurityState()
   if (mAlarm.AlarmArmState != gLastAlarmArmState ||
       mAlarm.IntrusionDetect != gLastIntrusionDetect)
   {
-    write("[BODY_SECURITY_MODULE] arm=%d intrusion=%d",
+    write("[BSEC] arm=%d intrusion=%d",
           mAlarm.AlarmArmState,
           mAlarm.IntrusionDetect);
     gLastAlarmArmState = mAlarm.AlarmArmState;
@@ -38,7 +38,7 @@ on start
   gLastAlarmArmState = -1;
   gLastIntrusionDetect = -1;
   setTimer(tSecurityCycle, 100);
-  write("[BODY_SECURITY_MODULE] start");
+  write("[BSEC] start");
 }
 
 on timer tSecurityCycle
@@ -52,3 +52,4 @@ on stopMeasurement
 {
   cancelTimer(tSecurityCycle);
 }
+

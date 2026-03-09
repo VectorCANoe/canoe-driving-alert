@@ -19,7 +19,7 @@ on start
   gLastPowerState = -1;
   gLastPosition = -1;
   setTimer(tTailgateCycle, 100);
-  write("[TAILGATE_MODULE] start");
+  write("[TGM] start");
 }
 
 on timer tTailgateCycle
@@ -63,7 +63,7 @@ on timer tTailgateCycle
       mTailgate.TailgatePowerState != gLastPowerState ||
       mTailgate.TailgatePosition != gLastPosition)
   {
-    write("[TAILGATE_MODULE] lock=%d open=%d power=%d pos=%d drive=%d",
+    write("[TGM] lock=%d open=%d power=%d pos=%d drive=%d",
           mTailgate.TailgateLockState,
           mTailgate.TailgateOpenState,
           mTailgate.TailgatePowerState,
@@ -82,3 +82,4 @@ on stopMeasurement
 {
   cancelTimer(tTailgateCycle);
 }
+

@@ -90,7 +90,7 @@ void publishBackboneState()
       activeServices != gLastActiveServices ||
       faultBitmap != gLastFaultBitmap)
   {
-    write("[ETH_BACKBONE] mode=%d route=%d service=%d sec=%d active=%d faults=0x%02X",
+    write("[ETHB] mode=%d route=%d service=%d sec=%d active=%d faults=0x%02X",
           backboneMode,
           routeHealth,
           serviceHealth,
@@ -126,7 +126,7 @@ on start
   gLastActiveServices = -1;
   gLastFaultBitmap = -1;
   setTimer(tEthBackboneCycle, 100);
-  write("[ETH_BACKBONE] start");
+  write("[ETHB] start");
 }
 
 on timer tEthBackboneCycle

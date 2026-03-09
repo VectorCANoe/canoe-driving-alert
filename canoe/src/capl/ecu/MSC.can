@@ -72,7 +72,7 @@ void publishMassageSeatState()
       alertComfortMode != gLastAlertMode ||
       driveComfortMode != gLastDriveComfortMode)
   {
-    write("[MASSAGE_SEAT_CTRL] mode=%d intensity=%d occ=%d alert=%d driveComfort=%d heat=%d vent=%d",
+    write("[MSC] mode=%d intensity=%d occ=%d alert=%d driveComfort=%d heat=%d vent=%d",
           massageMode,
           massageIntensity,
           occupancyState,
@@ -99,7 +99,7 @@ on start
   gLastAlertMode = -1;
   gLastDriveComfortMode = -1;
   setTimer(tMassageSeatCycle, 100);
-  write("[MASSAGE_SEAT_CTRL] start");
+  write("[MSC] start");
 }
 
 on timer tMassageSeatCycle

@@ -1,4 +1,4 @@
-﻿includes
+includes
 {
   #include "..\\common\\CAPL_COMMON.cin"
 }
@@ -15,7 +15,7 @@ void publishBackboneSteeringState(int steeringAngleRaw, int steeringQuality)
 {
   message ethSteeringMsg mEthSteer;
 
-  /* Internal CHGW steering seam for CAN-stub today, transport swap later. */
+  /* Internal chassis steering gateway seam for CAN-stub today, transport swap later. */
   mEthSteer.SteeringInput = clampRange(gSteeringInput, 0, 1);
   mEthSteer.SteeringAngleDeg = clampRange(steeringAngleRaw, -720, 720);
   mEthSteer.SteeringQuality = clampRange(steeringQuality, 0, 3);

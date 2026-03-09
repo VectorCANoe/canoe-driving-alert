@@ -70,7 +70,7 @@ void publishParkMasterState()
       gViewMode != gLastViewMode ||
       gMinDistanceCm != gLastDistance)
   {
-    write("[PARK_MASTER] active=%d ready=%d phase=%d view=%d dist=%d spas=%d rspa=%d",
+    write("[PKM] active=%d ready=%d phase=%d view=%d dist=%d spas=%d rspa=%d",
           parkMasterActive,
           autoManeuverReady,
           parkPhase,
@@ -101,7 +101,7 @@ on start
   gLastViewMode = -1;
   gLastDistance = -1;
   setTimer(tParkMasterCycle, 100);
-  write("[PARK_MASTER] start");
+  write("[PKM] start");
 }
 
 on timer tParkMasterCycle

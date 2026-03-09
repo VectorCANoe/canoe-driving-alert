@@ -1,4 +1,4 @@
-﻿# OEM Canonical Alias Table (2026-03-09)
+# OEM Canonical Alias Table (2026-03-09)
 
 This table closes the remaining non-OEM-style visible surface names in `canoe/`.
 
@@ -21,7 +21,6 @@ Rule:
 | `OTA_MASTER` | `OTA` | short project alias |
 | `PARK_MASTER` | `PKM` | short project alias for park master |
 | `PARK_ULTRASONIC` | `PUS` | short project alias for ultrasonic parking controller |
-| `PHONE_AS_KEY` | `PAK` | short project alias |
 | `POWER_TAILGATE_CTRL` | `PTG` | short project alias |
 | `REAR_CLIMATE_MODULE` | `RATC` | rear auto temperature control style alias |
 | `REAR_RADAR_MASTER` | `RRM` | short project alias |
@@ -33,3 +32,4 @@ Rule:
 | `VOICE_ASSIST` | `VCS` | voice control system short alias |
 | `WIPER_MODULE` | `WIP` | short project alias |
 | `PHONE_AS_KEY` | `PAK` | short project alias |
+

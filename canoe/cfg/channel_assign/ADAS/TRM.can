@@ -65,7 +65,7 @@ void publishTrailerCtrlState()
       stabilityAssistReq != gLastStabilityAssistReq ||
       rearRiskLevel != gLastRearRisk)
   {
-    write("[TRAILER_CTRL] trailer=%d tow=%d sway=%d assist=%d risk=%d lamp=%d speed=%d",
+    write("[TRM] trailer=%d tow=%d sway=%d assist=%d risk=%d lamp=%d speed=%d",
           trailerDetected,
           towMode,
           swayRisk,
@@ -93,7 +93,7 @@ on start
   gLastStabilityAssistReq = -1;
   gLastRearRisk = -1;
   setTimer(tTrailerCtrlCycle, 100);
-  write("[TRAILER_CTRL] start");
+  write("[TRM] start");
 }
 
 on timer tTrailerCtrlCycle

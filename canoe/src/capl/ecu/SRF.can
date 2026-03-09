@@ -17,7 +17,7 @@ on start
   gLastTiltState = -1;
   gLastSunshadeState = -1;
   setTimer(tSunroofCycle, 100);
-  write("[SUNROOF_MODULE] start");
+  write("[SRF] start");
 }
 
 on timer tSunroofCycle
@@ -56,7 +56,7 @@ on timer tSunroofCycle
       mRoof.SunroofTiltState != gLastTiltState ||
       mRoof.SunshadeState != gLastSunshadeState)
   {
-    write("[SUNROOF_MODULE] pos=%d tilt=%d shade=%d drive=%d",
+    write("[SRF] pos=%d tilt=%d shade=%d drive=%d",
           mRoof.SunroofPosition,
           mRoof.SunroofTiltState,
           mRoof.SunshadeState,
@@ -73,3 +73,4 @@ on stopMeasurement
 {
   cancelTimer(tSunroofCycle);
 }
+

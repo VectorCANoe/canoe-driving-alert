@@ -85,7 +85,7 @@ void publishChargePortState()
       thermalState != gLastThermalState ||
       chargeTargetSoc != gLastChargeTargetSoc)
   {
-    write("[CHARGE_PORT_CTRL] lock=%d plug=%d enable=%d thermal=%d targetSoc=%d soc=%d temp=%d obc=%d",
+    write("[CPC] lock=%d plug=%d enable=%d thermal=%d targetSoc=%d soc=%d temp=%d obc=%d",
           portLockState,
           plugState,
           chargeEnable,
@@ -115,7 +115,7 @@ on start
   gLastThermalState = -1;
   gLastChargeTargetSoc = -1;
   setTimer(tChargePortCycle, 100);
-  write("[CHARGE_PORT_CTRL] start");
+  write("[CPC] start");
 }
 
 on timer tChargePortCycle

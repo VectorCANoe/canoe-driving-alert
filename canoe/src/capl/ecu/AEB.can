@@ -70,7 +70,7 @@ void publishAebDomainState()
       domainHealth != gLastHealth ||
       gObjectRiskClass != gLastRiskClass)
   {
-    write("[AEB_DOMAIN] armed=%d stop=%d profile=%d health=%d risk=%d ttc=%d",
+    write("[AEB] armed=%d stop=%d profile=%d health=%d risk=%d ttc=%d",
           aebArmed,
           stopReq,
           decelProfile,
@@ -100,7 +100,7 @@ on start
   gLastHealth = -1;
   gLastRiskClass = -1;
   setTimer(tAebDomainCycle, 100);
-  write("[AEB_DOMAIN] start");
+  write("[AEB] start");
 }
 
 on timer tAebDomainCycle

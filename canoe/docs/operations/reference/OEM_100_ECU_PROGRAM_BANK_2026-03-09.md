@@ -1,4 +1,4 @@
-﻿# OEM 100 ECU Program Bank (2026-03-09)
+# OEM 100 ECU Program Bank (2026-03-09)
 
 ## Decision
 
@@ -44,7 +44,7 @@ To avoid confusing functional/service surfaces with physical ECU modules, use th
 
 Representative non-physical surfaces in this bank:
 
-- `CPAY`, `PAK`, `EDGE_LOGGER`, `AEB`, `HIGHWAY_PILOT`, `SURROUND_PKM`
+- `CPAY`, `PAK`, `EDGE_LOGGER`, `AEB`, `HIGHWAY_PILOT`, `SPM`
 
 These remain placeholder-first unless explicitly promoted.
 
@@ -186,7 +186,7 @@ These are realistic additional surfaces for a higher trim / premium / technology
 24. `RPC`
 25. `LIDAR`
 26. `RRM`
-27. `SURROUND_PKM`
+27. `SPM`
 
 Grand total inventory bank: `100`
 
@@ -304,7 +304,7 @@ Keep these active in the surface bank, but placeholder-first unless promoted.
 - `RPC`
 - `LIDAR`
 - `RRM`
-- `SURROUND_PKM`
+- `SPM`
 - `HIGHWAY_PILOT`
 
 ## E. Deep Runtime Commitment

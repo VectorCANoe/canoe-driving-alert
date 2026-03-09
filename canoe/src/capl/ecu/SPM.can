@@ -64,7 +64,7 @@ void publishSurroundParkState()
       proximityClass != gLastProximityClass ||
       distanceBucket != gLastDistance)
   {
-    write("[SURROUND_PARK_MASTER] active=%d ready=%d view=%d prox=%d dist=%d steer=%d hold=%d",
+    write("[SPM] active=%d ready=%d view=%d prox=%d dist=%d steer=%d hold=%d",
           surroundActive,
           autoParkReady,
           gViewMode,
@@ -94,7 +94,7 @@ on start
   gLastProximityClass = -1;
   gLastDistance = -1;
   setTimer(tSurroundParkCycle, 100);
-  write("[SURROUND_PARK_MASTER] start");
+  write("[SPM] start");
 }
 
 on timer tSurroundParkCycle

@@ -81,7 +81,7 @@ void publishVoiceAssistState()
       mTts.TtsPriority != gLastTtsPriority ||
       mTts.TtsQueueDepth != gLastTtsQueueDepth)
   {
-    write("[VOICE_ASSIST] voice=%d wake=%d tts=%d prio=%d q=%d focus=%d duck=%d service=%d bars=%d",
+    write("[VCS] voice=%d wake=%d tts=%d prio=%d q=%d focus=%d duck=%d service=%d bars=%d",
           mVoice.VoiceAssistState,
           mVoice.WakeWordState,
           mTts.TtsState,
@@ -111,7 +111,7 @@ on start
   gLastTtsPriority = -1;
   gLastTtsQueueDepth = -1;
   setTimer(tVoiceCycle, 50);
-  write("[VOICE_ASSIST] start");
+  write("[VCS] start");
 }
 
 on timer tVoiceCycle
@@ -136,3 +136,4 @@ on stopMeasurement
 {
   cancelTimer(tVoiceCycle);
 }
+

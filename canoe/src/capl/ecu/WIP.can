@@ -27,7 +27,7 @@ void publishWiperState()
       mWiper.RearWiperState != gLastRearWiperState ||
       mWiper.WiperInterval != gLastWiperInterval)
   {
-    write("[WIPER_MODULE] front=%d rear=%d interval=%d",
+    write("[WIP] front=%d rear=%d interval=%d",
           mWiper.FrontWiperState,
           mWiper.RearWiperState,
           mWiper.WiperInterval);
@@ -46,7 +46,7 @@ on start
   gLastRearWiperState = -1;
   gLastWiperInterval = -1;
   setTimer(tWiperCycle, 100);
-  write("[WIPER_MODULE] start");
+  write("[WIP] start");
 }
 
 on timer tWiperCycle
@@ -71,3 +71,4 @@ on stopMeasurement
 {
   cancelTimer(tWiperCycle);
 }
+

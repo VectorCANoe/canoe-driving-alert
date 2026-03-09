@@ -1,4 +1,4 @@
-﻿# OEM Active Target Profile (2026-03-09)
+# OEM Active Target Profile (2026-03-09)
 
 ## Active Target
 
@@ -52,7 +52,7 @@ This keeps the architecture wide without making the top layer look like a thin d
 ## Surface Type Rule (Current)
 
 - `PHYSICAL/DOMAIN ECU`: `EMS`, `TCU`, `VCU`, `ESC`, `MDPS`, `BCM`, `IVI`, `CLU`, `ADAS`, `V2X`, `CGW`
-- `FUNCTION/FEATURE SURFACE`: `SCC`, `HIGHWAY_PILOT`, `AEB`, `SURROUND_PKM` 등
+- `FUNCTION/FEATURE SURFACE`: `SCC`, `HIGHWAY_PILOT`, `AEB`, `SPM` 등
 - `INFRA SERVICE SURFACE`: `EDR`, `CPAY`, `PAK` 등
 - `VALIDATION`: `VALIDATION_HARNESS`, `VAL_*`
 
@@ -168,7 +168,7 @@ Rule:
 - `RPC`
 - `LIDAR`
 - `RRM`
-- `SURROUND_PKM`
+- `SPM`
 - `HIGHWAY_PILOT`
 
 Vehicle surface total: `100`
@@ -273,7 +273,7 @@ Current active baseline first:
 94. `PKM`
 95. `RPC`
 96. `RRM`
-97. `SURROUND_PKM`
+97. `SPM`
 98. `HIGHWAY_PILOT`
 99. `LIDAR`
 100. `TRM`

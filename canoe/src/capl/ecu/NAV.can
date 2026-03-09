@@ -113,7 +113,7 @@ void publishNavState()
       mNavState.NavGuideType != gLastGuideType ||
       mNavState.NavEtaMinutes != gLastEtaMinutes)
   {
-    write("[NAV_MODULE] state=%d class=%d guide=%d eta=%d dist=%d limit=%d",
+    write("[NAV] state=%d class=%d guide=%d eta=%d dist=%d limit=%d",
           mNavState.NavSessionState,
           mNavState.NavRouteClass,
           mNavState.NavGuideType,
@@ -135,7 +135,7 @@ on start
   gLastEtaMinutes = -1;
   syncNavInputs();
   setTimer(tNavModuleCycle, 100);
-  write("[NAV_MODULE] start");
+  write("[NAV] start");
 }
 
 on timer tNavModuleCycle
@@ -177,3 +177,4 @@ on stopMeasurement
 {
   cancelTimer(tNavModuleCycle);
 }
+

@@ -1,4 +1,4 @@
-﻿includes
+includes
 {
   #include "..\\common\\CAPL_COMMON.cin"
 }
@@ -25,7 +25,7 @@ on start
   gLastReceipt = -1;
   gLastQuality = -1;
   setTimer(tCarpayCycle, 100);
-  write("[CARPAY_CTRL] start");
+  write("[CPAY] start");
 }
 
 on message frmTmuServiceStateMsg
@@ -63,7 +63,7 @@ on timer tCarpayCycle
       mPay.ReceiptPending != gLastReceipt ||
       mPay.ServiceQuality != gLastQuality)
   {
-    write("[CARPAY_CTRL] pay=%d wallet=%d receipt=%d quality=%d bars=%d",
+    write("[CPAY] pay=%d wallet=%d receipt=%d quality=%d bars=%d",
           mPay.PaymentState,
           mPay.WalletLinkState,
           mPay.ReceiptPending,
@@ -82,3 +82,4 @@ on stopMeasurement
 {
   cancelTimer(tCarpayCycle);
 }
+
