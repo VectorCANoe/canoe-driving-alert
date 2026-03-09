@@ -324,6 +324,8 @@ def add_artifact_open_args(p: argparse.ArgumentParser, handlers: HandlerMap) -> 
             "commands-doc",
             "results-doc",
             "packaging-doc",
+            "ci-bridge-doc",
+            "jenkinsfile-sample",
             "archive-run",
             "reports-dir",
             "surface-dir",

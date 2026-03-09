@@ -164,6 +164,10 @@ def _resolve_open_target(layout: dict, target: str, run_id: str, phase: str, lat
         return ROOT / "product" / "sdv_operator" / "docs-src" / "results.md"
     if target == "packaging-doc":
         return ROOT / "product" / "sdv_operator" / "docs-src" / "packaging.md"
+    if target == "ci-bridge-doc":
+        return ROOT / "product" / "sdv_operator" / "docs-src" / "ci-bridge.md"
+    if target == "jenkinsfile-sample":
+        return ROOT / "product" / "sdv_operator" / "examples" / "Jenkinsfile.verify"
 
     archive_dir = _resolve_archive_dir(layout, run_id, phase, latest)
     if target == "archive-run":

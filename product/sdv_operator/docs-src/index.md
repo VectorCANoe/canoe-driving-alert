@@ -10,7 +10,7 @@
    - `verify quick`
 2. 결과 확인
    - Verification Console 결과 카드
-   - 로그 화면
+   - 하단 Log 패널
    - 증빙 경로
    - artifact open / artifact list
 3. 패키징

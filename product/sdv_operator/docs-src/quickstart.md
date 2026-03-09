@@ -47,9 +47,10 @@ python scripts/run.py doctor
 
 ## 4. Verification Console 기본 흐름
 
-1. Home에서 핵심 작업 선택
-2. Run 화면에서 범주 버튼과 Task list를 통해 작업 선택
+1. Overview에서 핵심 작업 선택
+2. Campaign 화면에서 범주 버튼과 Task list를 통해 작업 선택
 3. Quick form에 필요한 값 입력
 4. Run now 실행
-5. Logs에서 실시간 출력 확인
+5. 하단 Log 패널에서 실시간 출력 확인
 6. Results에서 verdict, COM 상태, 증빙/원본 경로 확인
+7. Automation에서 CI bridge/Jenkins 샘플과 batch 경로를 확인

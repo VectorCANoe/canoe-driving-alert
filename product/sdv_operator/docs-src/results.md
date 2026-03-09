@@ -99,11 +99,12 @@
 
 ## 권장 확인 순서
 
-1. Logs에서 실행 흐름 확인
+1. 하단 Log 패널에서 실행 흐름 확인
 2. Results에서 verdict 확인
 3. COM Runtime과 Tier Readiness 확인
 4. Batch Snapshot의 Surface 요약에서 `BCM / IVI / CLUSTER / ADAS / V2X` 우선순위를 확인
 5. 필요한 경우 Artifacts 화면에서 증빙 파일과 원본 기준 파일을 직접 연다
+6. CI/Jenkins 역할 분리는 Automation 화면에서 확인한다
 
 ## 제품 안에서 바로 하는 작업
 

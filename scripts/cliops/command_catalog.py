@@ -640,6 +640,30 @@ PRODUCT_COMMAND_GROUPS: dict[str, list[PaletteCommand]] = {
             next_step="archive list 또는 packaging 문서와 함께 구조를 검토하십시오.",
         ),
         PaletteCommand(
+            command_id="artifact.open_ci_bridge_doc",
+            title="CI bridge 문서 열기",
+            command="artifact open --target ci-bridge-doc",
+            summary="Jenkins와 Verification Console 사이의 연결 규약 문서를 엽니다.",
+            use_when=(
+                "Jenkins가 담당하는 역할과 Verification Console이 담당하는 역할을 다시 확인할 때",
+            ),
+            success_signals=("ci-bridge.md가 열림",),
+            expected_outputs=("product/sdv_operator/docs-src/ci-bridge.md",),
+            next_step="batch/JUnit/archive 설정은 Jenkinsfile.verify와 함께 확인하십시오.",
+        ),
+        PaletteCommand(
+            command_id="artifact.open_jenkinsfile_sample",
+            title="Jenkins 샘플 열기",
+            command="artifact open --target jenkinsfile-sample",
+            summary="Jenkins pipeline 샘플을 바로 엽니다.",
+            use_when=(
+                "Jenkins stage, junit, archiveArtifacts 흐름을 실제 예제로 확인할 때",
+            ),
+            success_signals=("Jenkinsfile.verify가 열림",),
+            expected_outputs=("product/sdv_operator/examples/Jenkinsfile.verify",),
+            next_step="CI bridge 문서와 함께 역할 경계를 확인하십시오.",
+        ),
+        PaletteCommand(
             command_id="package.validate_contract",
             title="패키징 계약 점검",
             command="package validate-contract",

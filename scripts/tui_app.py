@@ -115,6 +115,10 @@ class SdvTuiApp(App[None]):
         width: 1fr;
     }
 
+    #content-pages {
+        height: 1fr;
+    }
+
     .page {
         height: 1fr;
     }
@@ -350,8 +354,9 @@ class SdvTuiApp(App[None]):
         margin-right: 1;
     }
 
-    #log-pane {
-        height: 1fr;
+    #log-dock {
+        height: 16;
+        margin-top: 1;
         padding: 1;
         background: #0f151b;
         border: round #2d3e50;
@@ -379,6 +384,55 @@ class SdvTuiApp(App[None]):
         padding: 1;
         background: #121920;
         border: round #2d3e50;
+    }
+
+    #page-automation {
+        padding: 1;
+        background: #121920;
+        border: round #2d3e50;
+    }
+
+    #automation-overview {
+        min-height: 6;
+        margin-bottom: 1;
+        padding: 1 2;
+        background: #17202b;
+        border: round #33536f;
+        color: #d7e7f2;
+    }
+
+    #automation-strip {
+        height: 12;
+        margin-bottom: 1;
+    }
+
+    .automation-card {
+        padding: 1;
+        margin-right: 1;
+        background: #17202b;
+        border: round #33536f;
+    }
+
+    .automation-card:last-child {
+        margin-right: 0;
+    }
+
+    #automation-actions {
+        height: 3;
+        margin-top: 1;
+    }
+
+    #automation-actions Button {
+        margin-right: 1;
+    }
+
+    #automation-hint {
+        height: 4;
+        margin-top: 1;
+        padding: 1 2;
+        background: #17202b;
+        border: round #33536f;
+        color: #8ba4b8;
     }
 
     #artifacts-overview {
@@ -494,91 +548,92 @@ class SdvTuiApp(App[None]):
         runtime = canoe_runtime_check()
         runtime_text = (
             f"호스트: {platform_label()} | CANoe 런타임: {'ready' if runtime.available else 'limited'} | "
-            "실행: Ctrl+R | 최근 실행: Ctrl+N | 로그: Ctrl+L | 증빙: Ctrl+O/Ctrl+Y | 종료: q"
+            "실행: Ctrl+R | 최근 실행: Ctrl+N | 로그 패널: Ctrl+L | 증빙: Ctrl+O/Ctrl+Y | 종료: q"
         )
         if not runtime.available:
             runtime_text += f"\n제약: {runtime.detail}"
         yield Static(runtime_text, id="runtime")
         with Horizontal(id="shell-main"):
             with Vertical(id="sidebar"):
-                yield Button("Home", id="nav-home", classes="nav-button", variant="primary")
-                yield Button("Run", id="nav-execute", classes="nav-button")
+                yield Button("Overview", id="nav-home", classes="nav-button", variant="primary")
+                yield Button("Campaign", id="nav-execute", classes="nav-button")
                 yield Button("Results", id="nav-results", classes="nav-button")
                 yield Button("Artifacts", id="nav-artifacts", classes="nav-button")
-                yield Button("Logs", id="nav-logs", classes="nav-button")
+                yield Button("Automation", id="nav-automation", classes="nav-button")
             with Vertical(id="content"):
-                with Vertical(id="page-home", classes="page"):
-                    yield Static(
-                        "CANoe Test Verification Console\n\n"
-                        "사용자 표면은 단순하게, 검증 엔진은 내부에서 복잡하게 유지합니다.\n"
-                        "핵심 흐름은 Gate all -> Scenario run -> Verify quick 순서입니다.\n"
-                        "CANoe Panel은 제품 조작 UI이고, 이 콘솔은 실행·증빙·검토를 담당합니다.",
-                        id="home-body",
-                    )
-                    yield Static(id="home-summary")
-                    with Horizontal(id="home-core-flow"):
-                        with Vertical(classes="home-task-card"):
-                            yield Static("1) Gate all", classes="home-task-title")
-                            yield Static(
-                                "시나리오 실행이나 증빙 수집 전에 DBC/CAPL/문서 준비 상태를 먼저 점검합니다.",
-                                classes="home-task-copy",
-                            )
-                            yield Button("Gate all 열기", id="home-gate", classes="quick-button", variant="success")
-                        with Vertical(classes="home-task-card"):
-                            yield Static("2) Scenario run", classes="home-task-title")
-                            yield Static(
-                                "CANoe COM으로 시나리오를 주입하고 Test sysvar ack가 돌아오는지 확인합니다.",
-                                classes="home-task-copy",
-                            )
-                            yield Button("Scenario run 열기", id="home-scenario", classes="quick-button")
-                        with Vertical(classes="home-task-card"):
-                            yield Static("3) Verify quick", classes="home-task-title")
-                            yield Static(
-                                "준비 상태와 증빙 상태를 생성한 뒤 PASS/WARN/FAIL과 증빙 경로를 함께 검토합니다.",
-                                classes="home-task-copy",
-                            )
-                            yield Button("Verify quick 열기", id="home-verify", classes="quick-button", variant="primary")
-                    yield Static(id="home-recent")
-                with Vertical(id="page-execute", classes="page hidden"):
-                    yield Static(
-                        "Run 화면 사용 순서\n"
-                        "1) 상단 큰 범주 버튼에서 작업 묶음을 고르십시오.  2) 왼쪽 Task list에서 작업을 고르십시오.  "
-                        "3) 오른쪽 Quick form을 채운 뒤 Run now 또는 Ctrl+R로 실행하십시오.",
-                        id="execute-overview",
-                    )
-                    with Horizontal(id="execute-group-strip"):
-                        yield Button("Primary\n핵심 검증 흐름", id="group-primary", classes="group-button", variant="primary")
-                        yield Button("Runtime\n환경·측정 제어", id="group-runtime", classes="group-button")
-                        yield Button("Inspect\n원본·계약 확인", id="group-inspect", classes="group-button")
-                        yield Button("Package\n산출물·정리", id="group-package", classes="group-button")
-                    with Horizontal(id="workspace"):
-                        with Vertical(id="commands-pane", classes="pane"):
-                            yield Static("2) Task list", classes="pane-title")
-                            yield Static(id="commands-title", classes="pane-title")
-                            yield OptionList(id="commands")
-                        with Vertical(id="details-pane", classes="pane"):
-                            yield Static("3) Task info", classes="pane-title")
-                            yield Static(id="details-body")
-                            yield Static("4) Quick form", classes="pane-title")
-                            with Vertical(id="form-body"):
-                                for index in range(FORM_SLOTS):
-                                    with Vertical(id=f"field-row-{index}", classes="form-row hidden"):
-                                        yield Static(id=f"field-label-{index}", classes="field-label")
-                                        yield Input(id=f"field-input-{index}")
-                                        yield Static(id=f"field-help-{index}", classes="field-help")
-                            yield Static(id="preview-body")
-                    with Horizontal(id="actions"):
-                        yield Button("Run now", id="run-button", variant="success")
-                        yield Button("Pin task", id="pin-button")
-                        yield Button("Reset form", id="reset-button")
-                    yield Static(
-                        "Run을 시작하면 자동으로 Logs 화면으로 이동합니다. 종료 후에는 Results에서 판정, 근거, 증빙 경로를 확인하십시오.",
-                        id="execute-hint",
-                    )
-                with Vertical(id="page-results", classes="page hidden"):
-                    with Horizontal(id="summary-strip"):
-                        with Vertical(id="favorites-card", classes="summary-card"):
-                            yield Static("Evidence Paths", classes="summary-title")
+                with Vertical(id="content-pages"):
+                    with Vertical(id="page-home", classes="page"):
+                        yield Static(
+                            "CANoe Test Verification Console\n\n"
+                            "사용자 표면은 단순하게, 검증 엔진은 내부에서 복잡하게 유지합니다.\n"
+                            "핵심 흐름은 Gate all -> Scenario run -> Verify quick 순서입니다.\n"
+                            "CANoe Panel은 제품 조작 UI이고, 이 콘솔은 campaign, 증빙, CI 연결을 담당합니다.",
+                            id="home-body",
+                        )
+                        yield Static(id="home-summary")
+                        with Horizontal(id="home-core-flow"):
+                            with Vertical(classes="home-task-card"):
+                                yield Static("1) Gate all", classes="home-task-title")
+                                yield Static(
+                                    "시나리오 실행이나 증빙 수집 전에 DBC/CAPL/문서 준비 상태를 먼저 점검합니다.",
+                                    classes="home-task-copy",
+                                )
+                                yield Button("Gate all 열기", id="home-gate", classes="quick-button", variant="success")
+                            with Vertical(classes="home-task-card"):
+                                yield Static("2) Scenario run", classes="home-task-title")
+                                yield Static(
+                                    "CANoe COM으로 시나리오를 주입하고 Test sysvar ack가 돌아오는지 확인합니다.",
+                                    classes="home-task-copy",
+                                )
+                                yield Button("Scenario run 열기", id="home-scenario", classes="quick-button")
+                            with Vertical(classes="home-task-card"):
+                                yield Static("3) Verify quick", classes="home-task-title")
+                                yield Static(
+                                    "준비 상태와 증빙 상태를 생성한 뒤 PASS/WARN/FAIL과 증빙 경로를 함께 검토합니다.",
+                                    classes="home-task-copy",
+                                )
+                                yield Button("Verify quick 열기", id="home-verify", classes="quick-button", variant="primary")
+                        yield Static(id="home-recent")
+                    with Vertical(id="page-execute", classes="page hidden"):
+                        yield Static(
+                            "Campaign 화면 사용 순서\n"
+                            "1) 상단 큰 범주 버튼에서 작업 묶음을 고르십시오.  2) 왼쪽 Task list에서 작업을 고르십시오.  "
+                            "3) 오른쪽 Quick form을 채운 뒤 Run now 또는 Ctrl+R로 실행하십시오.",
+                            id="execute-overview",
+                        )
+                        with Horizontal(id="execute-group-strip"):
+                            yield Button("Primary\nCampaign core", id="group-primary", classes="group-button", variant="primary")
+                            yield Button("Runtime\nSession control", id="group-runtime", classes="group-button")
+                            yield Button("Inspect\nSource / contract", id="group-inspect", classes="group-button")
+                            yield Button("Package\nArtifacts / cleanup", id="group-package", classes="group-button")
+                        with Horizontal(id="workspace"):
+                            with Vertical(id="commands-pane", classes="pane"):
+                                yield Static("2) Task list", classes="pane-title")
+                                yield Static(id="commands-title", classes="pane-title")
+                                yield OptionList(id="commands")
+                            with Vertical(id="details-pane", classes="pane"):
+                                yield Static("3) Task info", classes="pane-title")
+                                yield Static(id="details-body")
+                                yield Static("4) Quick form", classes="pane-title")
+                                with Vertical(id="form-body"):
+                                    for index in range(FORM_SLOTS):
+                                        with Vertical(id=f"field-row-{index}", classes="form-row hidden"):
+                                            yield Static(id=f"field-label-{index}", classes="field-label")
+                                            yield Input(id=f"field-input-{index}")
+                                            yield Static(id=f"field-help-{index}", classes="field-help")
+                                yield Static(id="preview-body")
+                        with Horizontal(id="actions"):
+                            yield Button("Run now", id="run-button", variant="success")
+                            yield Button("Pin task", id="pin-button")
+                            yield Button("Reset form", id="reset-button")
+                        yield Static(
+                            "Campaign을 실행하면 하단 로그 패널에 즉시 출력됩니다. 종료 후에는 Results에서 판정, 근거, 증빙 경로를 확인하십시오.",
+                            id="execute-hint",
+                        )
+                    with Vertical(id="page-results", classes="page hidden"):
+                        with Horizontal(id="summary-strip"):
+                            with Vertical(id="favorites-card", classes="summary-card"):
+                                yield Static("Evidence Paths", classes="summary-title")
                             yield Static(id="favorites-body")
                         with Vertical(id="recent-card", classes="summary-card"):
                             yield Static("Recent Runs", classes="summary-title")
@@ -602,56 +657,96 @@ class SdvTuiApp(App[None]):
                         with Vertical(id="timeline-card", classes="summary-card"):
                             yield Static("Execution Timeline", classes="summary-title")
                             yield Static(id="timeline-body")
-                    with Horizontal(id="results-actions"):
-                        yield Button("증빙 열기", id="results-open-artifact", variant="success")
-                        yield Button("native report 열기", id="results-open-native")
-                        yield Button("execution manifest", id="results-open-manifest")
-                        yield Button("원본 기준 열기", id="results-open-source")
-                        yield Button("staging 정리", id="results-clean-staging", variant="warning")
-                    yield Static(
-                        "Results 화면에서는 최근 증빙, native report, execution manifest, 원본 기준 파일을 같은 흐름에서 열 수 있습니다.",
-                        id="results-hint",
-                    )
-                with Vertical(id="page-artifacts", classes="page hidden"):
-                    yield Static(
-                        "Artifacts 화면은 생성 산출물과 원본 계약 파일을 분리해서 보여줍니다. "
-                        "staging은 작업면, archive는 최종 보관, source는 원본 기준입니다.",
-                        id="artifacts-overview",
-                    )
-                    with Horizontal(id="artifact-strip"):
-                        with Vertical(classes="artifact-card"):
-                            yield Static("Staging Outputs", classes="summary-title")
-                            yield Static(id="artifact-staging-body")
-                        with Vertical(classes="artifact-card"):
-                            yield Static("Final Archive", classes="summary-title")
-                            yield Static(id="artifact-archive-body")
-                        with Vertical(classes="artifact-card"):
-                            yield Static("Source Contracts", classes="summary-title")
-                            yield Static(id="artifact-source-body")
-                    with Horizontal(id="artifact-actions"):
-                        yield Button("최근 증빙 열기", id="artifact-open-latest", variant="success")
-                        yield Button("native report 열기", id="artifact-open-native")
-                        yield Button("execution manifest", id="artifact-open-manifest")
-                        yield Button("최신 archive 열기", id="artifact-open-archive")
-                        yield Button("원본 기준 열기", id="artifact-open-source")
-                        yield Button("staging 정리", id="artifact-clean-staging", variant="warning")
-                    yield Static(
-                        "원칙: staging은 재생성 가능한 작업 산출물, archive는 reviewer/Jenkins 보관물, "
-                        "source는 결과가 의존하는 원본 계약 파일입니다.",
-                        id="artifacts-hint",
-                    )
-                with Vertical(id="page-logs", classes="page hidden"):
-                    with Vertical(id="log-pane"):
-                        yield Static("Execution Log", classes="pane-title")
-                        yield Static(id="log-summary")
-                        with Horizontal(id="log-controls"):
-                            yield Button("F1 전체", id="log-filter-all", classes="filter-button")
-                            yield Button("F2 경고", id="log-filter-warn", classes="filter-button")
-                            yield Button("F3 실패", id="log-filter-fail", classes="filter-button")
-                            yield Button("F4 Verify", id="log-filter-verify", classes="filter-button")
-                            yield Button("F5 CANoe", id="log-filter-canoe", classes="filter-button")
-                            yield Static(id="log-filter-status")
-                        yield RichLog(id="log", wrap=True, highlight=True, markup=True)
+                        with Horizontal(id="results-actions"):
+                            yield Button("증빙 열기", id="results-open-artifact", variant="success")
+                            yield Button("native report 열기", id="results-open-native")
+                            yield Button("execution manifest", id="results-open-manifest")
+                            yield Button("원본 기준 열기", id="results-open-source")
+                            yield Button("staging 정리", id="results-clean-staging", variant="warning")
+                        yield Static(
+                            "Results 화면에서는 최근 증빙, native report, execution manifest, 원본 기준 파일을 같은 흐름에서 열 수 있습니다.",
+                            id="results-hint",
+                        )
+                    with Vertical(id="page-artifacts", classes="page hidden"):
+                        yield Static(
+                            "Artifacts 화면은 생성 산출물과 원본 계약 파일을 분리해서 보여줍니다. "
+                            "staging은 작업면, archive는 최종 보관, source는 원본 기준입니다.",
+                            id="artifacts-overview",
+                        )
+                        with Horizontal(id="artifact-strip"):
+                            with Vertical(classes="artifact-card"):
+                                yield Static("Staging Outputs", classes="summary-title")
+                                yield Static(id="artifact-staging-body")
+                            with Vertical(classes="artifact-card"):
+                                yield Static("Final Archive", classes="summary-title")
+                                yield Static(id="artifact-archive-body")
+                            with Vertical(classes="artifact-card"):
+                                yield Static("Source Contracts", classes="summary-title")
+                                yield Static(id="artifact-source-body")
+                        with Horizontal(id="artifact-actions"):
+                            yield Button("최근 증빙 열기", id="artifact-open-latest", variant="success")
+                            yield Button("native report 열기", id="artifact-open-native")
+                            yield Button("execution manifest", id="artifact-open-manifest")
+                            yield Button("최신 archive 열기", id="artifact-open-archive")
+                            yield Button("원본 기준 열기", id="artifact-open-source")
+                            yield Button("staging 정리", id="artifact-clean-staging", variant="warning")
+                        yield Static(
+                            "원칙: staging은 재생성 가능한 작업 산출물, archive는 reviewer/Jenkins 보관물, "
+                            "source는 결과가 의존하는 원본 계약 파일입니다.",
+                            id="artifacts-hint",
+                        )
+                    with Vertical(id="page-automation", classes="page hidden"):
+                        yield Static(
+                            "Automation 화면은 CANoe TEST와 Jenkins 사이의 운영 계층을 담당합니다.\n"
+                            "Jenkins는 스케줄링/재시도/아카이브를 담당하고, Console은 batch, execution manifest, "
+                            "surface bundle, native report 연결을 담당합니다.",
+                            id="automation-overview",
+                        )
+                        with Horizontal(id="automation-strip"):
+                            with Vertical(classes="automation-card"):
+                                yield Static("CI Bridge", classes="summary-title")
+                                yield Static(
+                                    "Jenkins는 junit + archiveArtifacts를 수집합니다.\n"
+                                    "Console은 그 이전 단계에서 batch/JUnit/surface bundle을 생성합니다.",
+                                    id="automation-ci-body",
+                                )
+                            with Vertical(classes="automation-card"):
+                                yield Static("Long-run Policy", classes="summary-title")
+                                yield Static(
+                                    "장시간 반복 실행은 Jenkins scheduler가 맡고,\n"
+                                    "Console은 run_id, execution manifest, evidence normalization을 맡습니다.",
+                                    id="automation-soak-body",
+                                )
+                            with Vertical(classes="automation-card"):
+                                yield Static("Native/Archive Link", classes="summary-title")
+                                yield Static(
+                                    "Dev1 native .vtestreport와 Dev2 bundle/archive를\n"
+                                    "같은 run 기준으로 열어 reviewer가 따라갈 수 있게 합니다.",
+                                    id="automation-native-body",
+                                )
+                        with Horizontal(id="automation-actions"):
+                            yield Button("검증 배치 준비", id="automation-batch", variant="success")
+                            yield Button("CI bridge 문서", id="automation-open-ci")
+                            yield Button("Jenkins 샘플", id="automation-open-jenkins")
+                            yield Button("패키징 계약 점검", id="automation-contract")
+                            yield Button("native report 열기", id="automation-open-native")
+                            yield Button("최신 archive 열기", id="automation-open-archive")
+                        yield Static(
+                            "원칙: CANoe TEST를 대체하지 않고, Jenkins를 복제하지 않습니다. "
+                            "Console은 campaign/evidence/CI bridge만 담당합니다.",
+                            id="automation-hint",
+                        )
+                with Vertical(id="log-dock"):
+                    yield Static("Execution Log", classes="pane-title")
+                    yield Static(id="log-summary")
+                    with Horizontal(id="log-controls"):
+                        yield Button("F1 전체", id="log-filter-all", classes="filter-button")
+                        yield Button("F2 경고", id="log-filter-warn", classes="filter-button")
+                        yield Button("F3 실패", id="log-filter-fail", classes="filter-button")
+                        yield Button("F4 Verify", id="log-filter-verify", classes="filter-button")
+                        yield Button("F5 CANoe", id="log-filter-canoe", classes="filter-button")
+                        yield Static(id="log-filter-status")
+                    yield RichLog(id="log", wrap=True, highlight=True, markup=True)
         yield Footer()
 
     def on_mount(self) -> None:
@@ -666,7 +761,7 @@ class SdvTuiApp(App[None]):
 
     def _show_page(self, page_name: str) -> None:
         self.current_page = page_name
-        pages = ("home", "execute", "results", "artifacts", "logs")
+        pages = ("home", "execute", "results", "artifacts", "automation")
         for item in pages:
             page = self.query_one(f"#page-{item}")
             if item == page_name:
@@ -678,9 +773,9 @@ class SdvTuiApp(App[None]):
             "execute": "nav-execute",
             "results": "nav-results",
             "artifacts": "nav-artifacts",
-            "logs": "nav-logs",
+            "automation": "nav-automation",
         }[page_name]
-        for button_id in ("nav-home", "nav-execute", "nav-results", "nav-artifacts", "nav-logs"):
+        for button_id in ("nav-home", "nav-execute", "nav-results", "nav-artifacts", "nav-automation"):
             button = self.query_one(f"#{button_id}", Button)
             button.variant = "primary" if button_id == active_nav else "default"
         self._refresh_execute_group_buttons()
@@ -723,8 +818,8 @@ class SdvTuiApp(App[None]):
                 self._update_command_view(command)
                 return
 
-    def _open_core_task(self, command_id: str, *, focus: str) -> None:
-        self._set_command_group("Primary Workflow")
+    def _open_task(self, group_name: str, command_id: str, *, focus: str) -> None:
+        self._set_command_group(group_name)
         self._select_command_by_id(command_id)
         self._show_page("execute")
         self._refresh_execute_group_buttons()
@@ -732,6 +827,9 @@ class SdvTuiApp(App[None]):
             self.action_focus_form()
         else:
             self.query_one("#run-button", Button).focus()
+
+    def _open_core_task(self, command_id: str, *, focus: str) -> None:
+        self._open_task("Primary Workflow", command_id, focus=focus)
 
     def _refresh_home_summary(self) -> None:
         last_result = self.state.get("last_result", {})
@@ -762,7 +860,7 @@ class SdvTuiApp(App[None]):
                 recent_lines.append(f"- {self._recent_entry_label(item)}")
         else:
             recent_lines.append("- 아직 실행 기록이 없습니다. Gate all부터 시작하십시오.")
-        recent_lines.extend(["", f"최근 상세: {detail}", "", "자세한 판정·증빙·COM 상태는 결과 화면에서 확인하십시오."])
+        recent_lines.extend(["", f"최근 상세: {detail}", "", "자세한 판정은 Results, 원본/증빙은 Artifacts, CI 연결은 Automation에서 확인하십시오."])
         self.query_one("#home-recent", Static).update("\n".join(recent_lines))
 
     def _artifact_layout(self) -> dict[str, object]:
@@ -1613,6 +1711,19 @@ class SdvTuiApp(App[None]):
         except Exception as ex:
             self._write_log(artifact_open_failed(ex))
 
+    def _open_static_target(self, target: Path) -> None:
+        try:
+            self._open_path(target)
+            self._write_log(artifact_opened(str(target)))
+        except Exception as ex:
+            self._write_log(artifact_open_failed(ex))
+
+    def action_open_ci_bridge_doc(self) -> None:
+        self._open_static_target(ROOT / "product" / "sdv_operator" / "docs-src" / "ci-bridge.md")
+
+    def action_open_jenkins_sample(self) -> None:
+        self._open_static_target(ROOT / "product" / "sdv_operator" / "examples" / "Jenkinsfile.verify")
+
     def action_open_native_report(self) -> None:
         target = self._resolve_archive_child_target("native_reports")
         if target is None:
@@ -1663,7 +1774,7 @@ class SdvTuiApp(App[None]):
             return
         tokens = ["package", "clean", "--scope", "staging", "--yes"]
         self._write_log(f"[bold green]$[/] python scripts/run.py {' '.join(tokens)}")
-        self._show_page("logs")
+        self.query_one("#log", RichLog).focus()
         self._run_command(command, tokens)
 
     def _load_json_file(self, path: Path) -> dict[str, object] | None:
@@ -1995,8 +2106,8 @@ class SdvTuiApp(App[None]):
             self._show_page("results")
         elif event.button.id == "nav-artifacts":
             self._show_page("artifacts")
-        elif event.button.id == "nav-logs":
-            self._show_page("logs")
+        elif event.button.id == "nav-automation":
+            self._show_page("automation")
         elif event.button.id == "home-gate":
             self._open_core_task("verify.all_gates", focus="run")
         elif event.button.id == "home-scenario":
@@ -2052,6 +2163,18 @@ class SdvTuiApp(App[None]):
             self.action_open_source_contract()
         elif event.button.id == "artifact-clean-staging":
             self.action_clean_staging_now()
+        elif event.button.id == "automation-batch":
+            self._open_task("Runtime Support", "verify.batch", focus="form")
+        elif event.button.id == "automation-open-ci":
+            self.action_open_ci_bridge_doc()
+        elif event.button.id == "automation-open-jenkins":
+            self.action_open_jenkins_sample()
+        elif event.button.id == "automation-contract":
+            self._open_task("Packaging", "package.validate_contract", focus="run")
+        elif event.button.id == "automation-open-native":
+            self.action_open_native_report()
+        elif event.button.id == "automation-open-archive":
+            self.action_open_latest_archive()
 
     def action_focus_navigation(self) -> None:
         self.query_one("#nav-home", Button).focus()
@@ -2070,7 +2193,6 @@ class SdvTuiApp(App[None]):
         input_widget.focus()
 
     def action_focus_log(self) -> None:
-        self._show_page("logs")
         self.query_one("#log", RichLog).focus()
 
     def action_focus_favorites(self) -> None:
@@ -2130,7 +2252,7 @@ class SdvTuiApp(App[None]):
             self._update_preview()
             return
         self._write_log(f"[bold green]$[/] python scripts/run.py {' '.join(tokens)}")
-        self._show_page("logs")
+        self.query_one("#log", RichLog).focus()
         self._run_command(command, tokens)
 
     @work(thread=True, exclusive=True)
