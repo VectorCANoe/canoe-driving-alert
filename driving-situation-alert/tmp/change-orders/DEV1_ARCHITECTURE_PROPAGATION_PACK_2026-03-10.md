@@ -18,11 +18,18 @@
   - `ADAS`
 - 즉, 이번 변경은 `버스 재정의`가 아니라 `ECU 역할 해석 재정의`다.
 
-### 2. 4-Layer 분류
-- Layer 1: `Central Gateway / Backbone Services`
-- Layer 2: `Domain Controller / Primary Runtime Anchors`
-- Layer 3: `Leaf ECU / Feature ECU / Local Runtime Surfaces`
-- Layer 4: `Validation / Test`
+### 2. 내부 분류와 외부 설명 분리
+- 내부 구현/운영 분류는 `4-layer`를 유지한다.
+  - Layer 1: `Central Gateway / Backbone Services`
+  - Layer 2: `Domain Controller / Primary Runtime Anchors`
+  - Layer 3: `Leaf ECU / Feature ECU / Local Runtime Surfaces`
+  - Layer 4: `Validation / Test`
+- 외부/OEM 표면 설명은 `3-layer + validation overlay`로 정리한다.
+  - Layer 1: `Central Gateway / Backbone Services`
+  - Layer 2: `Domain Controllers / Vehicle Computers`
+  - Layer 3: `Leaf / Feature ECUs`
+  - Overlay: `Validation Harness`
+- 즉 `4-layer`는 프로젝트 내부 분류 모델이고, 외부 발표/정본 설명에서는 차량 아키텍처 표준처럼 말하지 않는다.
 
 근거 문서:
 - `canoe/docs/operations/reference/OEM_4_LAYER_ECU_CLASSIFICATION_2026-03-10.md`
@@ -89,12 +96,13 @@
 - `_GW`, `_CTRL`, `_MGR` 같은 내부 구현명은 surface ECU명으로 올리지 않음
 
 ### 0301_SysFuncAnalysis.md
-- 4-layer ECU 해석 반영
+- 내부 상세 분석에서는 `4-layer` 분류를 유지 가능
 - `CGW`는 supervision/gateway edge
 - `VCU/IVI/ADAS/V2X/BCM`는 domain-controller 성격으로 기술
 
 ### 0302_NWflowDef.md
 - 버스 구조는 기존 6도메인 유지
+- 외부/OEM 표면 설명은 `3-layer + validation overlay` 기준으로 기술
 - flow 설명에서 `CGW가 모든 raw payload를 relay`하는 듯한 문장을 제거
 - domain controller가 seam을 직접 publish하는 현재 구조를 반영
 
@@ -102,6 +110,7 @@
 - backbone seam contract에 대해 `Logical ID` vs `SIL Stub ID`를 분리해 서술
 - active DBC가 11-bit execution임을 명시
 - `TEST_SCN`/`TEST_BAS`를 validation seam으로 분리
+- 외부 설명에서는 `Validation Harness`를 차량 ECU 레이어가 아닌 overlay로 표현
 
 ### 0304_System_Variables.md
 - `TEST_SCN`/`TEST_BAS` 관련 변수는 validation-only로 유지
@@ -109,14 +118,16 @@
 
 ### 04_SW_Implementation.md
 - 현재 구현은 `centralized CGW`가 아니라 `domain-controller + CGW supervision`
+- 외부/OEM 설명은 `3-layer + validation overlay` 기준으로 표현
 - Ethernet cutover 시 `CAN-stub handler -> Ethernet handler` 교체를 기준으로 설명
 - downstream ECU 로직 유지 전략을 명시
 
 ## 문서팀 전달 문장
-- `canoe/` 구현 기준으로 현재 아키텍처는 `4-layer OEM ECU classification`과 `domain-controller + CGW supervision`으로 고정되었습니다.
+- `canoe/` 구현 기준으로 현재 아키텍처는 `domain-controller + CGW supervision`으로 고정되었습니다.
+- 내부 상세 분석에는 `4-layer` 분류를 유지할 수 있지만, 외부/OEM 표면 설명은 `3-layer + validation overlay`로 정리해 주세요.
 - 버스 구조는 `ETH_Backbone / Powertrain / Chassis / Body / Infotainment / ADAS` 그대로 유지합니다.
 - `00f`의 `29-bit 3/5/21`은 정책 SoT로 유지하되, 현재 active DBC 실행은 `11-bit compatibility` 기준으로 문서화해 주세요.
-- `TEST_SCN`, `TEST_BAS`는 제품 ECU가 아니라 validation harness layer로 분리해 주세요.
+- `TEST_SCN`, `TEST_BAS`는 제품 ECU가 아니라 validation harness overlay로 분리해 주세요.
 
 ## 근거 파일
 - `canoe/docs/operations/reference/OEM_4_LAYER_ECU_CLASSIFICATION_2026-03-10.md`
