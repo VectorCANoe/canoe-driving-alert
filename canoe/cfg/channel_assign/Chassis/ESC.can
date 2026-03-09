@@ -64,12 +64,10 @@ on timer tEscCycle
   message frmYawAccelMsg mYawAccel;
   message frmBrakeStatusMsg mBrakeStatus;
   message frmChassisHealthMsg mHealth;
-  message frmAbsStateMsg mAbs;
   message frmEscStateMsg mEsc;
   message frmBrakeTempMsg mBrakeTemp;
   message frmBrakeWearMsg mBrakeWear;
   message frmSuspensionStateMsg mSuspension;
-  message frmTirePressureMsg mTire;
   message frmChassisDiagResMsg mDiagRes;
   message frmRoadFrictionMsg mFriction;
   int decelAssistReq;
@@ -117,11 +115,6 @@ on timer tEscCycle
   output(mHealth);
   gChassisAliveCnt = (gChassisAliveCnt + 1) & 0xFF;
 
-  mAbs.AbsCtrlState = absActive ? 2 : 0;
-  mAbs.AbsSlipLevel = absSlip;
-  mAbs.AbsPressureCmd = absActive ? brakePressure : 0;
-  output(mAbs);
-
   mEsc.EscCtrlState = espActive ? 2 : 0;
   mEsc.EscIntervention = espActive ? clampRange(appliedBrakePedal - 40, 0, 63) : 0;
   mEsc.EscYawTarget = 128;
@@ -138,12 +131,6 @@ on timer tEscCycle
   mSuspension.SuspensionLevel = 8;
   mSuspension.DampingLevel = 12;
   output(mSuspension);
-
-  mTire.TirePressFL = 230;
-  mTire.TirePressFR = 230;
-  mTire.TirePressRL = 228;
-  mTire.TirePressRR = 228;
-  output(mTire);
 
   mDiagRes.ChsDiagRespCode = (gLastDiagServiceId == 0x22) ? 0x62 : 0x7F;
   mDiagRes.ChsDiagData0 = gLastDiagDidHigh;

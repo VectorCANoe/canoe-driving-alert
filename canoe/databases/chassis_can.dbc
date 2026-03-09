@@ -84,7 +84,7 @@ BO_ 291 frmEpsStateMsg: 2 MDPS
  SG_ Reserved0        : 4|4@1+ (1,0) [0|0] "" Vector__XXX
  SG_ EpsTemp          : 8|8@1+ (1,0) [0|255] "degC" ESC,ADAS
 
-BO_ 292 frmAbsStateMsg: 2 ESC
+BO_ 292 frmAbsStateMsg: 2 ABS
  SG_ AbsCtrlState     : 0|2@1+ (1,0) [0|3] "" ESC,ADAS
  SG_ AbsSlipLevel     : 2|6@1+ (1,0) [0|63] "" ESC,ADAS
  SG_ AbsPressureCmd   : 8|8@1+ (1,0) [0|255] "" ESC,ADAS
@@ -103,7 +103,7 @@ BO_ 295 frmBrakeTempMsg: 2 ESC
  SG_ BrakeTempFL      : 0|8@1+ (1,0) [0|255] "degC" ESC,ADAS
  SG_ BrakeTempFR      : 8|8@1+ (1,0) [0|255] "degC" ESC,ADAS
 
-BO_ 296 frmSteeringAngleMsg: 2 MDPS
+BO_ 296 frmSteeringAngleMsg: 2 SAS
  SG_ SteeringAngleRaw : 0|16@1+ (1,0) [0|65535] "0.1deg" ESC,ADAS
 
 BO_ 260 frmWheelPulseMsg: 2 VCU
@@ -115,11 +115,17 @@ BO_ 261 frmSuspensionStateMsg: 2 ESC
  SG_ SuspensionLevel  : 3|5@1+ (1,0) [0|31] "" ADAS
  SG_ DampingLevel     : 8|8@1+ (1,0) [0|255] "" ADAS
 
-BO_ 262 frmTirePressureMsg: 4 ESC
+BO_ 262 frmTirePressureMsg: 4 TPMS
  SG_ TirePressFL      : 0|8@1+ (1,0) [0|255] "kPa" ADAS
  SG_ TirePressFR      : 8|8@1+ (1,0) [0|255] "kPa" ADAS
  SG_ TirePressRL      : 16|8@1+ (1,0) [0|255] "kPa" ADAS
  SG_ TirePressRR      : 24|8@1+ (1,0) [0|255] "kPa" ADAS
+
+BO_ 298 frmEpbStateMsg: 2 EPB
+ SG_ EpbState         : 0|2@1+ (1,0) [0|3] "" CLU,VAL_SCENARIO_CTRL
+ SG_ EpbWarnLevel     : 2|2@1+ (1,0) [0|3] "" CLU,VAL_SCENARIO_CTRL
+ SG_ Reserved0        : 4|4@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ EpbHoldForce     : 8|8@1+ (1,0) [0|255] "%" CLU,VAL_SCENARIO_CTRL
 
 BO_ 676 frmChassisDiagReqMsg: 3 VAL_SCENARIO_CTRL
  SG_ ChsDiagServiceId : 0|8@1+ (1,0) [0|255] "" ESC
@@ -168,6 +174,7 @@ CM_ BO_ 296 "Comm_201: steering angle extension.";
 CM_ BO_ 260 "Comm_201: wheel pulse extension.";
 CM_ BO_ 261 "Comm_201: suspension state extension.";
 CM_ BO_ 262 "Comm_201: tire pressure extension.";
+CM_ BO_ 298 "Comm_201: electronic parking brake state extension.";
 CM_ BO_ 676 "Comm_201: chassis diagnostic request.";
 CM_ BO_ 263 "Comm_201: chassis diagnostic response.";
 CM_ BO_ 297 "Comm_201: brake wear extension.";
@@ -196,6 +203,7 @@ BA_ "GenMsgCycleTime" BO_ 296 100;
 BA_ "GenMsgCycleTime" BO_ 260 100;
 BA_ "GenMsgCycleTime" BO_ 261 100;
 BA_ "GenMsgCycleTime" BO_ 262 100;
+BA_ "GenMsgCycleTime" BO_ 298 100;
 BA_ "GenMsgCycleTime" BO_ 676 0;
 BA_ "GenMsgCycleTime" BO_ 263 0;
 BA_ "GenMsgCycleTime" BO_ 297 100;
@@ -241,5 +249,4 @@ VAL_ 677 ScenarioResult
 VAL_ 678 BaseScenarioResult
   0 "Fail"
   1 "Pass" ;
-
 
