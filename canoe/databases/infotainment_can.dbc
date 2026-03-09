@@ -29,7 +29,7 @@ NS_ :
 
 BS_:
 
-BU_: VAL_SCENARIO_CTRL IVI IVI IVI CLU CLU CGW TMU Vector__XXX
+BU_: VAL_SCENARIO_CTRL IVI CLU CGW TMU VOICE_ASSIST HUD AMP NAV_MODULE OTA_MASTER DIGITAL_KEY RSE CARPAY_CTRL PGS PHONE_AS_KEY Vector__XXX
 
 BO_ 675 frmNavContextCanMsg: 3 VAL_SCENARIO_CTRL
  SG_ gRoadZone     : 0|2@1+ (1,0) [0|3]    "" IVI,IVI
@@ -46,7 +46,7 @@ BO_ 641 frmClusterBaseStateMsg: 2 IVI
  SG_ ClusterGear      : 8|3@1+ (1,0) [0|7] "" CLU
  SG_ ClusterStatus    : 11|5@1+ (1,0) [0|31] "" CLU
 
-BO_ 642 frmNaviGuideStateMsg: 1 IVI
+BO_ 642 frmNaviGuideStateMsg: 1 NAV_MODULE
  SG_ GuideLaneState   : 0|2@1+ (1,0) [0|3] "" IVI
  SG_ GuideConfidence  : 2|6@1+ (1,0) [0|63] "" IVI
 
@@ -64,7 +64,7 @@ BO_ 644 frmCallStateMsg: 2 IVI
  SG_ BtDeviceCount    : 8|4@1+ (1,0) [0|15] "" CLU
  SG_ Reserved0        : 12|4@1+ (1,0) [0|0] "" Vector__XXX
 
-BO_ 645 frmNavigationRouteMsg: 3 IVI
+BO_ 645 frmNavigationRouteMsg: 3 NAV_MODULE
  SG_ RouteClass       : 0|2@1+ (1,0) [0|3] "" IVI
  SG_ GuideType        : 2|2@1+ (1,0) [0|3] "" IVI
  SG_ Reserved0        : 4|4@1+ (1,0) [0|0] "" Vector__XXX
@@ -95,18 +95,18 @@ BO_ 650 frmVoiceAssistStateMsg: 1 VOICE_ASSIST
  SG_ WakeWordState    : 3|1@1+ (1,0) [0|1] "" CLU
  SG_ Reserved0        : 4|4@1+ (1,0) [0|0] "" Vector__XXX
 
-BO_ 651 frmMapRenderStateMsg: 2 IVI
+BO_ 651 frmMapRenderStateMsg: 2 NAV_MODULE
  SG_ MapRenderState   : 0|3@1+ (1,0) [0|7] "" IVI
  SG_ ZoomLevel        : 3|5@1+ (1,0) [0|31] "" IVI
  SG_ TileLoadPercent  : 8|8@1+ (1,0) [0|100] "%" IVI
 
-BO_ 652 frmRouteAlertMsg: 2 IVI
+BO_ 652 frmRouteAlertMsg: 2 NAV_MODULE
  SG_ RouteAlertType   : 0|4@1+ (1,0) [0|15] "" IVI
  SG_ RouteAlertPrio   : 4|3@1+ (1,0) [0|7] "" IVI
  SG_ RouteAlertActive : 7|1@1+ (1,0) [0|1] "" IVI
  SG_ RouteAlertEta    : 8|8@1+ (1,0) [0|255] "s" IVI
 
-BO_ 653 frmTrafficEventMsg: 3 IVI
+BO_ 653 frmTrafficEventMsg: 3 NAV_MODULE
  SG_ TrafficEventType : 0|8@1+ (1,0) [0|255] "" IVI
  SG_ TrafficSeverity  : 8|8@1+ (1,0) [0|255] "" IVI
  SG_ TrafficDistance  : 16|8@1+ (1,0) [0|255] "m" IVI
@@ -180,6 +180,43 @@ BO_ 664 frmAmpStateMsg: 3 AMP
  SG_ AmpVolumeLevel   : 8|8@1+ (1,0) [0|100] "%" CLU,IVI
  SG_ AmpDiagState     : 16|4@1+ (1,0) [0|15] "" CLU,IVI
  SG_ Reserved1        : 20|4@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 665 frmOtaMasterStateMsg: 4 OTA_MASTER
+ SG_ OtaSessionState   : 0|2@1+ (1,0) [0|3] "" IVI,TMU,CLU,VAL_SCENARIO_CTRL
+ SG_ PackageReady      : 2|1@1+ (1,0) [0|1] "" IVI,TMU
+ SG_ UpdateWindowOpen  : 3|1@1+ (1,0) [0|1] "" IVI,TMU
+ SG_ Reserved0         : 4|4@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ OtaDiagState      : 8|4@1+ (1,0) [0|15] "" IVI,TMU,VAL_SCENARIO_CTRL
+ SG_ OtaTargetDomain   : 12|4@1+ (1,0) [0|15] "" IVI
+ SG_ DownloadPercent   : 16|8@1+ (1,0) [0|100] "%" IVI,VAL_SCENARIO_CTRL
+ SG_ OtaRolloutStage   : 24|4@1+ (1,0) [0|15] "" IVI
+ SG_ Reserved1         : 28|4@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 666 frmDigitalKeyStateMsg: 3 DIGITAL_KEY
+ SG_ DKeyState         : 0|3@1+ (1,0) [0|7] "" IVI,CLU,VAL_SCENARIO_CTRL
+ SG_ AuthMode          : 3|2@1+ (1,0) [0|3] "" IVI
+ SG_ VehicleAccessState : 5|3@1+ (1,0) [0|7] "" IVI,CLU
+ SG_ KeySyncAge        : 8|8@1+ (1,0) [0|255] "s" IVI
+ SG_ SecurityGrade     : 16|4@1+ (1,0) [0|15] "" IVI
+ SG_ KeyPresence       : 20|1@1+ (1,0) [0|1] "" IVI,CLU
+ SG_ Reserved0         : 21|3@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 667 frmRseStateMsg: 3 RSE
+ SG_ RsePlaybackState  : 0|3@1+ (1,0) [0|7] "" IVI,CLU
+ SG_ RseSource         : 3|3@1+ (1,0) [0|7] "" IVI,CLU
+ SG_ RseLinkState      : 6|2@1+ (1,0) [0|3] "" IVI
+ SG_ RseVolumeProfile  : 8|8@1+ (1,0) [0|100] "%" IVI,CLU
+ SG_ RseContentType    : 16|4@1+ (1,0) [0|15] "" IVI
+ SG_ RseZoneMode       : 20|2@1+ (1,0) [0|3] "" IVI
+ SG_ Reserved0         : 22|2@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 668 frmNavModuleStateMsg: 3 NAV_MODULE
+ SG_ NavSessionState   : 0|2@1+ (1,0) [0|3] "" IVI,CLU,VAL_SCENARIO_CTRL
+ SG_ NavRouteClass     : 2|2@1+ (1,0) [0|3] "" IVI,CLU
+ SG_ NavGuideType      : 4|2@1+ (1,0) [0|3] "" IVI,CLU
+ SG_ NavTrafficSeverity : 6|2@1+ (1,0) [0|3] "" IVI
+ SG_ NavEtaMinutes     : 8|8@1+ (1,0) [0|255] "min" IVI,CLU
+ SG_ NavSpeedLimit     : 16|8@1+ (1,0) [0|255] "km/h" IVI,CLU
 
 CM_ BO_ 675 "Flow_003 navigation context input.";
 CM_ BO_ 640 "Flow_008 cluster warning output.";

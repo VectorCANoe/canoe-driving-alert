@@ -41,47 +41,6 @@ int calcEmergencyDistanceM(int etaSec, int speedKph)
   return (int)distanceM;
 }
 
-void publishNavContextCore()
-{
-  int roadZone;
-  int navDirection;
-  int speedLimit;
-  int baseZoneContext;
-
-  roadZone = clampRange((int)@Infotainment::roadZone, 0, 3);
-  navDirection = clampRange((int)@Infotainment::navDirection, 0, 3);
-  speedLimit = clampRange((int)@Infotainment::speedLimit, 0, 255);
-
-  if (speedLimit == 0)
-  {
-    speedLimit = 30;
-  }
-
-  baseZoneContext = 0;
-  if (roadZone == 1)
-  {
-    baseZoneContext = 1;
-  }
-  else if (roadZone == 2)
-  {
-    baseZoneContext = 2;
-  }
-  else if (roadZone == 3)
-  {
-    if (navDirection == 2)
-    {
-      baseZoneContext = 4;
-    }
-    else
-    {
-      baseZoneContext = 3;
-    }
-  }
-
-  @Core::baseZoneContext = baseZoneContext;
-  @Core::speedLimitNorm = speedLimit;
-}
-
 void publishBackboneNavContext()
 {
   message ethNavContextMsg mNav;
@@ -110,20 +69,10 @@ on start
   gAmbientPulsePhase = 0;
   gIcFlowPhase = 0;
   gVehicleObjectPos = 0;
-  publishNavContextCore();
   setTimer(tIviCycle, 10);
   setTimer(tIviBase50, 50);
   setTimer(tIviExt100, 100);
   write("[IVI] start");
-}
-
-on message frmNavContextCanMsg
-{
-  @Infotainment::roadZone = clampRange((int)this.gRoadZone, 0, 3);
-  @Infotainment::navDirection = clampRange((int)this.gNavDirection, 0, 3);
-  @Infotainment::zoneDistance = clampRange((int)this.gZoneDistance, 0, 255);
-  @Infotainment::speedLimit = clampRange((int)this.gSpeedLimit, 0, 255);
-  publishNavContextCore();
 }
 
 on message frmIviDiagReqMsg
@@ -131,21 +80,6 @@ on message frmIviDiagReqMsg
   gLastIviDiagSid = clampRange((int)this.IviDiagServiceId, 0, 255);
   gLastIviDiagDidHigh = clampRange((int)this.IviDiagDidHigh, 0, 255);
   gLastIviDiagDidLow = clampRange((int)this.IviDiagDidLow, 0, 255);
-}
-
-on sysvar Infotainment::roadZone
-{
-  publishNavContextCore();
-}
-
-on sysvar Infotainment::navDirection
-{
-  publishNavContextCore();
-}
-
-on sysvar Infotainment::speedLimit
-{
-  publishNavContextCore();
 }
 
 on timer tIviCycle
@@ -499,49 +433,16 @@ on timer tIviBase50
 
 on timer tIviExt100
 {
-  message frmNaviGuideStateMsg mGuide;
-  message frmNavigationRouteMsg mRouteBase;
-  message frmMapRenderStateMsg mMap;
-  message frmRouteAlertMsg mRoute;
-  message frmTrafficEventMsg mTraffic;
   message frmConnectivityStateMsg mConn;
   message frmIviHealthDetailMsg mHealthDetail;
   message frmIviDiagResMsg mDiagRes;
-  int roadZone;
-  int navDirection;
-  int zoneDistance;
   int speedLimit;
 
-  roadZone = clampRange((int)@Infotainment::roadZone, 0, 3);
-  navDirection = clampRange((int)@Infotainment::navDirection, 0, 3);
-  zoneDistance = clampRange((int)@Infotainment::zoneDistance, 0, 255);
-  speedLimit = clampRange((int)@Infotainment::speedLimit, 0, 255);
-
-  mMap.MapRenderState = 1;
-  mMap.ZoomLevel = (roadZone == 2) ? 12 : 16;
-  mMap.TileLoadPercent = 95;
-  output(mMap);
-
-  mGuide.GuideLaneState = (roadZone == 3) ? navDirection : 0;
-  mGuide.GuideConfidence = (roadZone == 3) ? 50 : 10;
-  output(mGuide);
-
-  mRouteBase.RouteClass = roadZone;
-  mRouteBase.GuideType = navDirection;
-  mRouteBase.RouteProgress = (zoneDistance > 100) ? 20 : 80;
-  mRouteBase.EtaMinutes = clampRange(zoneDistance / 10, 0, 255);
-  output(mRouteBase);
-
-  mRoute.RouteAlertType = roadZone;
-  mRoute.RouteAlertPrio = (roadZone == 1) ? 5 : 2;
-  mRoute.RouteAlertActive = (roadZone > 0) ? 1 : 0;
-  mRoute.RouteAlertEta = zoneDistance;
-  output(mRoute);
-
-  mTraffic.TrafficEventType = roadZone;
-  mTraffic.TrafficSeverity = (roadZone == 1) ? 7 : 2;
-  mTraffic.TrafficDistance = zoneDistance;
-  output(mTraffic);
+  speedLimit = clampRange((int)@Core::speedLimitNorm, 0, 255);
+  if (speedLimit == 0)
+  {
+    speedLimit = 30;
+  }
 
   mConn.ConnectivityType = 1;
   mConn.ConnectivityState = 1;
