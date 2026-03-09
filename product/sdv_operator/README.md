@@ -19,7 +19,8 @@
 
 - 사용자 설명, 도움말, 실패 원인, 다음 액션은 한국어로 유지합니다.
 - 명령명, 단계명, 판정값, 산출물 키는 영어로 유지합니다.
-  - 예: `Home`, `Execute`, `Results`, `Logs`
+  - 예: `Home`, `Run`, `Results`, `Logs`
+  - 예: `Primary`, `Runtime`, `Inspect`, `Package`
   - 예: `gate all`, `scenario run`, `verify quick`
   - 예: `PASS`, `WARN`, `FAIL`, `run_id`, `phase`, `surface bundle`
 - 이유:

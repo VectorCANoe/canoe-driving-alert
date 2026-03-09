@@ -70,22 +70,24 @@ class SdvTuiApp(App[None]):
     }
 
     #hero {
-        height: 3;
+        height: 4;
         padding: 1 2;
         margin: 1 1 0 1;
         background: #1b2635;
         color: #f0f4f8;
         border: round #4ea1ff;
         text-style: bold;
+        content-align: left middle;
     }
 
     #runtime {
-        height: 3;
+        height: 4;
         padding: 1 2;
         margin: 0 1 1 1;
         background: #17202b;
         border: round #33536f;
         color: #a9bed1;
+        content-align: left middle;
     }
 
     #shell-main {
@@ -103,7 +105,10 @@ class SdvTuiApp(App[None]):
 
     .nav-button {
         width: 1fr;
+        height: 3;
         margin-bottom: 1;
+        content-align: center middle;
+        text-style: bold;
     }
 
     #content {
@@ -241,14 +246,26 @@ class SdvTuiApp(App[None]):
         height: 1fr;
     }
 
+    #execute-overview {
+        height: 5;
+        margin-bottom: 1;
+        padding: 1 2;
+        background: #17202b;
+        border: round #33536f;
+        color: #d7e7f2;
+    }
+
     #execute-group-strip {
-        height: 3;
+        height: 5;
         margin-bottom: 1;
     }
 
     .group-button {
+        height: 3;
         margin-right: 1;
         width: 1fr;
+        content-align: center middle;
+        text-style: bold;
     }
 
     .pane {
@@ -269,7 +286,7 @@ class SdvTuiApp(App[None]):
     }
 
     #commands-pane {
-        width: 32;
+        width: 38;
     }
 
     #details-pane {
@@ -280,6 +297,7 @@ class SdvTuiApp(App[None]):
     #details-body {
         padding: 0 1;
         margin-bottom: 1;
+        min-height: 12;
     }
 
     #form-body {
@@ -337,6 +355,24 @@ class SdvTuiApp(App[None]):
         padding: 1;
         background: #0f151b;
         border: round #2d3e50;
+    }
+
+    #results-actions {
+        height: 3;
+        margin-top: 1;
+    }
+
+    #results-actions Button {
+        margin-right: 1;
+    }
+
+    #results-hint {
+        height: 3;
+        margin-top: 1;
+        padding: 1 2;
+        background: #17202b;
+        border: round #33536f;
+        color: #8ba4b8;
     }
 
     #log-controls {
@@ -403,7 +439,7 @@ class SdvTuiApp(App[None]):
     def compose(self) -> ComposeResult:
         yield Header(show_clock=True)
         yield Static(
-            "CANoe Test Verification Console",
+            "CANoe Test Verification Console\nRun the core flow here, then review verdicts and evidence in Results.",
             id="hero",
         )
         runtime = canoe_runtime_check()
@@ -416,10 +452,10 @@ class SdvTuiApp(App[None]):
         yield Static(runtime_text, id="runtime")
         with Horizontal(id="shell-main"):
             with Vertical(id="sidebar"):
-                yield Button("홈", id="nav-home", classes="nav-button", variant="primary")
-                yield Button("실행", id="nav-execute", classes="nav-button")
-                yield Button("결과", id="nav-results", classes="nav-button")
-                yield Button("로그", id="nav-logs", classes="nav-button")
+                yield Button("Home", id="nav-home", classes="nav-button", variant="primary")
+                yield Button("Run", id="nav-execute", classes="nav-button")
+                yield Button("Results", id="nav-results", classes="nav-button")
+                yield Button("Logs", id="nav-logs", classes="nav-button")
             with Vertical(id="content"):
                 with Vertical(id="page-home", classes="page"):
                     yield Static(
@@ -453,65 +489,79 @@ class SdvTuiApp(App[None]):
                             )
                             yield Button("Verify quick 열기", id="home-verify", classes="quick-button", variant="primary")
                     yield Static(id="home-recent")
-                with Horizontal(id="page-execute", classes="page hidden"):
-                    with Vertical(id="commands-pane", classes="pane"):
-                        yield Static("1) 작업 범주 선택", classes="pane-title")
-                        with Horizontal(id="execute-group-strip"):
-                            yield Button("핵심", id="group-primary", classes="group-button", variant="primary")
-                            yield Button("런타임", id="group-runtime", classes="group-button")
-                            yield Button("점검", id="group-inspect", classes="group-button")
-                            yield Button("패키징", id="group-package", classes="group-button")
-                        yield Static(id="commands-title", classes="pane-title")
-                        yield OptionList(id="commands")
-                    with Vertical(id="details-pane", classes="pane"):
-                        yield Static("2) 작업 정보", classes="pane-title")
-                        yield Static(id="details-body")
-                        yield Static("3) 빠른 입력", classes="pane-title")
-                        with Vertical(id="form-body"):
-                            for index in range(FORM_SLOTS):
-                                with Vertical(id=f"field-row-{index}", classes="form-row hidden"):
-                                    yield Static(id=f"field-label-{index}", classes="field-label")
-                                    yield Input(id=f"field-input-{index}")
-                                    yield Static(id=f"field-help-{index}", classes="field-help")
-                        yield Static(id="preview-body")
-                    with Horizontal(id="actions"):
-                        yield Button("지금 실행", id="run-button", variant="success")
-                        yield Button("작업 고정", id="pin-button")
-                        yield Button("기본값 복원", id="reset-button")
+                with Vertical(id="page-execute", classes="page hidden"):
                     yield Static(
-                        "실행을 시작하면 자동으로 로그 화면으로 이동합니다. 종료 후 결과 화면에서 판정과 증빙을 확인하십시오.",
+                        "1) 상단 범주 버튼에서 작업 묶음을 고르십시오.  2) 왼쪽 Task list에서 작업을 고르십시오.  "
+                        "3) 오른쪽 Quick form을 채운 뒤 Run now 또는 Ctrl+R로 실행하십시오.",
+                        id="execute-overview",
+                    )
+                    with Horizontal(id="execute-group-strip"):
+                        yield Button("Primary", id="group-primary", classes="group-button", variant="primary")
+                        yield Button("Runtime", id="group-runtime", classes="group-button")
+                        yield Button("Inspect", id="group-inspect", classes="group-button")
+                        yield Button("Package", id="group-package", classes="group-button")
+                    with Horizontal(id="workspace"):
+                        with Vertical(id="commands-pane", classes="pane"):
+                            yield Static("2) Task list", classes="pane-title")
+                            yield Static(id="commands-title", classes="pane-title")
+                            yield OptionList(id="commands")
+                        with Vertical(id="details-pane", classes="pane"):
+                            yield Static("3) Task info", classes="pane-title")
+                            yield Static(id="details-body")
+                            yield Static("4) Quick form", classes="pane-title")
+                            with Vertical(id="form-body"):
+                                for index in range(FORM_SLOTS):
+                                    with Vertical(id=f"field-row-{index}", classes="form-row hidden"):
+                                        yield Static(id=f"field-label-{index}", classes="field-label")
+                                        yield Input(id=f"field-input-{index}")
+                                        yield Static(id=f"field-help-{index}", classes="field-help")
+                            yield Static(id="preview-body")
+                    with Horizontal(id="actions"):
+                        yield Button("Run now", id="run-button", variant="success")
+                        yield Button("Pin task", id="pin-button")
+                        yield Button("Reset form", id="reset-button")
+                    yield Static(
+                        "Run을 시작하면 자동으로 Logs 화면으로 이동합니다. 종료 후에는 Results에서 판정, 근거, 증빙 경로를 확인하십시오.",
                         id="execute-hint",
                     )
                 with Vertical(id="page-results", classes="page hidden"):
                     with Horizontal(id="summary-strip"):
                         with Vertical(id="favorites-card", classes="summary-card"):
-                            yield Static("고정 작업", classes="summary-title")
+                            yield Static("Pinned Tasks", classes="summary-title")
                             yield Static(id="favorites-body")
                         with Vertical(id="recent-card", classes="summary-card"):
-                            yield Static("최근 실행", classes="summary-title")
+                            yield Static("Recent Runs", classes="summary-title")
                             yield OptionList(id="recent-list")
                         with Vertical(id="insight-card", classes="summary-card"):
-                            yield Static("실행 인사이트", classes="summary-title")
+                            yield Static("Run Insight", classes="summary-title")
                             yield Static(id="insight-body")
                         with Vertical(id="result-card", classes="summary-card"):
-                            yield Static("최근 결과", classes="summary-title")
+                            yield Static("Last Result", classes="summary-title")
                             yield Static(id="result-body")
                     with Horizontal(id="status-strip"):
                         with Vertical(id="readiness-card", classes="summary-card"):
-                            yield Static("계층 준비 상태", classes="summary-title")
+                            yield Static("Tier Readiness", classes="summary-title")
                             yield Static(id="readiness-body")
                         with Vertical(id="batch-card", classes="summary-card"):
-                            yield Static("배치 스냅샷", classes="summary-title")
+                            yield Static("Batch Snapshot", classes="summary-title")
                             yield Static(id="batch-body")
                         with Vertical(id="com-card", classes="summary-card"):
-                            yield Static("COM 런타임", classes="summary-title")
+                            yield Static("COM Runtime", classes="summary-title")
                             yield Static(id="com-body")
                         with Vertical(id="timeline-card", classes="summary-card"):
-                            yield Static("실행 타임라인", classes="summary-title")
+                            yield Static("Execution Timeline", classes="summary-title")
                             yield Static(id="timeline-body")
+                    with Horizontal(id="results-actions"):
+                        yield Button("증빙 열기", id="results-open-artifact", variant="success")
+                        yield Button("원본 기준 열기", id="results-open-source")
+                        yield Button("staging 정리", id="results-clean-staging", variant="warning")
+                    yield Static(
+                        "Results 화면에서는 최근 증빙과 그 증빙의 기준이 되는 원본 계약 파일을 같은 흐름에서 열 수 있습니다.",
+                        id="results-hint",
+                    )
                 with Vertical(id="page-logs", classes="page hidden"):
                     with Vertical(id="log-pane"):
-                        yield Static("실행 로그", classes="pane-title")
+                        yield Static("Execution Log", classes="pane-title")
                         yield Static(id="log-summary")
                         with Horizontal(id="log-controls"):
                             yield Button("F1 전체", id="log-filter-all", classes="filter-button")
@@ -558,7 +608,7 @@ class SdvTuiApp(App[None]):
             return
         self.active_group_index = self.group_names.index(group_name)
         self._refresh_commands(self.active_group_index)
-        self.query_one("#commands-title", Static).update(f"2) 작업 선택  |  {group_name}")
+        self.query_one("#commands-title", Static).update(f"현재 범주  |  {group_surface_label(group_name)}")
         self._show_page("execute")
         self._refresh_execute_group_buttons()
         self.query_one("#commands", OptionList).focus()
@@ -794,7 +844,7 @@ class SdvTuiApp(App[None]):
         commands = self._active_group_commands()
         group_label = group_surface_label(self._active_group_name())
         try:
-            self.query_one("#commands-title", Static).update(f"2) 작업 선택  |  {group_label}")
+            self.query_one("#commands-title", Static).update(f"현재 범주  |  {group_label}")
             command_list = self.query_one("#commands", OptionList)
         except NoMatches:
             return
@@ -1262,6 +1312,33 @@ class SdvTuiApp(App[None]):
             return candidate.parent
         return None
 
+    def _last_command_id(self) -> str:
+        recent = self._recent_rows()
+        if recent:
+            return str(recent[0].get("command_id", ""))
+        last_result = self.state.get("last_result", {})
+        if isinstance(last_result, dict):
+            return str(last_result.get("command_id", ""))
+        return ""
+
+    def _resolve_source_contract_target(self) -> Path:
+        command_id = self._last_command_id()
+        if command_id.startswith("package.") or command_id.startswith("artifact.open_artifact_layout"):
+            return ROOT / "product" / "sdv_operator" / "config" / "verification_artifact_layout.json"
+        if command_id.startswith("verify.surface_bundle") or command_id.startswith("artifact.open_source_inventory"):
+            return ROOT / "product" / "sdv_operator" / "config" / "surface_ecu_inventory.json"
+        if command_id.startswith("verify.") or command_id.startswith("operate.") or command_id.startswith("inspect."):
+            return ROOT / "product" / "sdv_operator" / "config" / "surface_traceability_profile.json"
+        return ROOT / "product" / "sdv_operator" / "config" / "surface_ecu_inventory.json"
+
+    def _open_path(self, target: Path) -> None:
+        if sys.platform.startswith("win"):
+            os.startfile(str(target))  # type: ignore[attr-defined]
+        elif sys.platform == "darwin":
+            subprocess.Popen(["open", str(target)])
+        else:
+            subprocess.Popen(["xdg-open", str(target)])
+
     def _copy_text_to_clipboard(self, text: str) -> bool:
         try:
             if sys.platform.startswith("win"):
@@ -1302,12 +1379,15 @@ class SdvTuiApp(App[None]):
             self._write_log(f"[yellow]{no_artifact_path()}[/]")
             return
         try:
-            if sys.platform.startswith("win"):
-                os.startfile(str(target))  # type: ignore[attr-defined]
-            elif sys.platform == "darwin":
-                subprocess.Popen(["open", str(target)])
-            else:
-                subprocess.Popen(["xdg-open", str(target)])
+            self._open_path(target)
+            self._write_log(artifact_opened(str(target)))
+        except Exception as ex:
+            self._write_log(artifact_open_failed(ex))
+
+    def action_open_source_contract(self) -> None:
+        target = self._resolve_source_contract_target()
+        try:
+            self._open_path(target)
             self._write_log(artifact_opened(str(target)))
         except Exception as ex:
             self._write_log(artifact_open_failed(ex))
@@ -1321,6 +1401,16 @@ class SdvTuiApp(App[None]):
             self._write_log(artifact_copied(str(target)))
             return
         self._write_log(f"[bold yellow]Clipboard copy unavailable[/] {target}")
+
+    def action_clean_staging_now(self) -> None:
+        command = COMMAND_INDEX.get("package.clean")
+        if command is None:
+            self._write_log("[bold red]package.clean metadata missing[/]")
+            return
+        tokens = ["package", "clean", "--scope", "staging", "--yes"]
+        self._write_log(f"[bold green]$[/] python scripts/run.py {' '.join(tokens)}")
+        self._show_page("logs")
+        self._run_command(command, tokens)
 
     def _load_json_file(self, path: Path) -> dict[str, object] | None:
         try:
@@ -1555,6 +1645,7 @@ class SdvTuiApp(App[None]):
             "next_action": "Wait for completion, then review the result and evidence cards.",
         }
         self.state["last_result"] = {
+            "command_id": command.command_id,
             "status": "RUNNING",
             "title": command.title,
             "detail": "Execution in progress.",
@@ -1589,9 +1680,12 @@ class SdvTuiApp(App[None]):
                 status = str(item.get("status", ""))
                 duration_ms = int(item.get("duration_ms", 0) or 0)
                 detail = str(item.get("detail", ""))
-                self.query_one(
-                    "#insight-body", Static
-                ).update(recent_selection_insight(title, status, duration_ms, detail))
+                try:
+                    self.query_one(
+                        "#insight-body", Static
+                    ).update(recent_selection_insight(title, status, duration_ms, detail))
+                except NoMatches:
+                    return
 
     def on_option_list_option_selected(self, event: OptionList.OptionSelected) -> None:
         if event.option_list.id == "commands":
@@ -1662,6 +1756,12 @@ class SdvTuiApp(App[None]):
             self.action_set_log_filter_verify()
         elif event.button.id == "log-filter-canoe":
             self.action_set_log_filter_canoe()
+        elif event.button.id == "results-open-artifact":
+            self.action_open_artifact()
+        elif event.button.id == "results-open-source":
+            self.action_open_source_contract()
+        elif event.button.id == "results-clean-staging":
+            self.action_clean_staging_now()
 
     def action_focus_navigation(self) -> None:
         self.query_one("#nav-home", Button).focus()
@@ -2014,6 +2114,7 @@ class SdvTuiApp(App[None]):
         self.state["recent"] = recent[:5]
         self.state["last_insight"] = insight
         self.state["last_result"] = {
+            "command_id": command_id,
             "status": status,
             "title": title,
             "detail": detail,

@@ -48,7 +48,8 @@ python scripts/run.py doctor
 ## 4. TUI 기본 흐름
 
 1. Home에서 핵심 작업 선택
-2. Execute에서 필요한 값 입력
-3. Run now 실행
-4. Logs에서 실시간 출력 확인
-5. Results에서 verdict, COM 상태, 증빙 경로 확인
+2. Run 화면에서 범주 버튼과 Task list를 통해 작업 선택
+3. Quick form에 필요한 값 입력
+4. Run now 실행
+5. Logs에서 실시간 출력 확인
+6. Results에서 verdict, COM 상태, 증빙/원본 경로 확인

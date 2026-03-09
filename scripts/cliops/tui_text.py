@@ -6,10 +6,10 @@ from cliops.command_catalog import PaletteCommand
 
 
 GROUP_LABELS: dict[str, str] = {
-    "Primary Workflow": "핵심",
-    "Runtime Support": "런타임",
-    "System Access": "점검",
-    "Packaging": "산출물/패키징",
+    "Primary Workflow": "Primary (핵심)",
+    "Runtime Support": "Runtime (운영 지원)",
+    "System Access": "Inspect (점검/원본)",
+    "Packaging": "Package (산출물/정리)",
 }
 
 

@@ -62,12 +62,14 @@ Dev2가 관리하는 것은 `scripts` 전체가 아니라 `SDV Operator` 제품 
 - 명령명
 - 단계명
 - 화면 탭/핵심 카드 식별자
+- 범주 버튼과 핵심 action label
 - 판정값
 - JSON 키/산출물 키/CI 식별자
 
 대표 예:
 
-- `Home / Execute / Results / Logs`
+- `Home / Run / Results / Logs`
+- `Primary / Runtime / Inspect / Package`
 - `gate all / scenario run / verify quick / doctor`
 - `PASS / WARN / FAIL`
 - `run_id / phase / surface bundle`
