@@ -104,7 +104,7 @@
 | frmBrakeStatusMsg | 0x120 | 2 | BrakePressure | 0~7 | 브레이크 압력 | 0~255 % | BRK_CTRL -> CHS_GW 전달 |
 |  |  |  | BrakeMode | 8~9 | 브레이크 동작 모드 | 0~3 | BRK_CTRL -> CHS_GW 전달 |
 |  |  |  | AbsActive | 10 | ABS 활성 상태 | 0~1 | BRK_CTRL -> CHS_GW 전달 |
-|  |  |  | EspActive | 11 | ESP 활성 상태 | 0~1 | BRK_CTRL -> CHS_GW 전달 |
+|  |  |  | EspActive | 11 | ESC 활성 상태 | 0~1 | BRK_CTRL -> CHS_GW 전달 |
 | frmAccelStatusMsg | 0x121 | 2 | AccelRequest | 0~7 | 가속 요청 | 0~100 % | ACCEL_CTRL -> CHS_GW 전달 |
 |  |  |  | TorqueRequest | 8~15 | 토크 요청 | 0~255 Nm | ACCEL_CTRL -> CHS_GW 전달 |
 | frmSteeringTorqueMsg | 0x122 | 2 | SteeringTorque | 0~11 | 조향 토크 | 0~4095 0.1Nm | STEER_CTRL -> CHS_GW 전달 |
@@ -181,30 +181,30 @@
 |  |  |  | TimeoutClearMon | 8 | 타임아웃 모니터 플래그 | 0~1 | EMS_ALERT(Rx) -> CAN-stub 버스 운반(ETH_SW 모니터링) |
 | frmIgnitionEngineMsg | 0x2A8 | 1 | IgnitionState | 0 | 시동 입력 상태 | 0~1 | VAL_SCENARIO_CTRL -> ENG_CTRL 전달 |
 |  |  |  | EngineState | 1~2 | 엔진 동작 상태 | 0~3 | VAL_SCENARIO_CTRL -> ENG_CTRL 전달 |
-| frmGearStateMsg | 0x2A9 | 1 | GearInput | 0~2 | 기어 입력값 | 0~7 | VAL_SCENARIO_CTRL -> TCM 전달 |
-|  |  |  | GearState | 3~5 | 기어 상태값 | 0~7 | VAL_SCENARIO_CTRL -> TCM 전달 |
-| frmPowertrainGatewayMsg | 0x109 | 2 | RoutingPolicy | 0~7 | 도메인 라우팅 정책 | 0~255 | DOMAIN_ROUTER -> ENG_CTRL, TCM 전달 |
-|  |  |  | BoundaryStatus | 8~15 | 도메인 경계 상태 | 0~255 | DOMAIN_ROUTER -> ENG_CTRL, TCM 전달 |
-| frmEngineSpeedTempMsg | 0x12A | 4 | EngineRpm | 0~15 | 엔진 회전수 | 0~65535 rpm | ENG_CTRL -> TCM, DOMAIN_ROUTER 전달 |
-|  |  |  | CoolantTemp | 16~23 | 냉각수 온도 | 0~255 degC | ENG_CTRL -> TCM, DOMAIN_ROUTER 전달 |
-|  |  |  | OilTemp | 24~31 | 엔진오일 온도 | 0~255 degC | ENG_CTRL -> TCM, DOMAIN_ROUTER 전달 |
+| frmGearStateMsg | 0x2A9 | 1 | GearInput | 0~2 | 기어 입력값 | 0~7 | VAL_SCENARIO_CTRL -> TCU 전달 |
+|  |  |  | GearState | 3~5 | 기어 상태값 | 0~7 | VAL_SCENARIO_CTRL -> TCU 전달 |
+| frmPowertrainGatewayMsg | 0x109 | 2 | RoutingPolicy | 0~7 | 도메인 라우팅 정책 | 0~255 | DOMAIN_ROUTER -> ENG_CTRL, TCU 전달 |
+|  |  |  | BoundaryStatus | 8~15 | 도메인 경계 상태 | 0~255 | DOMAIN_ROUTER -> ENG_CTRL, TCU 전달 |
+| frmEngineSpeedTempMsg | 0x12A | 4 | EngineRpm | 0~15 | 엔진 회전수 | 0~65535 rpm | ENG_CTRL -> TCU, DOMAIN_ROUTER 전달 |
+|  |  |  | CoolantTemp | 16~23 | 냉각수 온도 | 0~255 degC | ENG_CTRL -> TCU, DOMAIN_ROUTER 전달 |
+|  |  |  | OilTemp | 24~31 | 엔진오일 온도 | 0~255 degC | ENG_CTRL -> TCU, DOMAIN_ROUTER 전달 |
 | frmFuelBatteryStateMsg | 0x12B | 3 | FuelLevel | 0~7 | 연료 잔량 | 0~100 % | ENG_CTRL -> DOMAIN_ROUTER 전달 |
 |  |  |  | BatterySoc | 8~15 | 배터리 SOC | 0~100 % | ENG_CTRL -> DOMAIN_ROUTER 전달 |
 |  |  |  | ChargingState | 16~17 | 충전 상태 | 0~3 | ENG_CTRL -> DOMAIN_ROUTER 전달 |
-| frmThrottleStateMsg | 0x12C | 2 | ThrottlePos | 0~7 | 스로틀 위치 | 0~100 % | ENG_CTRL -> TCM, DOMAIN_ROUTER 전달 |
-|  |  |  | ThrottleReq | 8~15 | 스로틀 요청 | 0~100 % | ENG_CTRL -> TCM, DOMAIN_ROUTER 전달 |
-| frmTransmissionTempMsg | 0x12D | 2 | TransOilTemp | 0~7 | 변속기 오일 온도 | 0~255 degC | TCM -> ENG_CTRL, DOMAIN_ROUTER 전달 |
-|  |  |  | ClutchTemp | 8~15 | 클러치 온도 | 0~255 degC | TCM -> ENG_CTRL, DOMAIN_ROUTER 전달 |
-| frmVehicleModeMsg | 0x10A | 2 | DriveMode | 0~2 | 주행 모드 | 0~7 | DOMAIN_ROUTER -> ENG_CTRL, TCM 전달 |
-|  |  |  | EcoMode | 3 | 에코 모드 | 0~1 | DOMAIN_ROUTER -> ENG_CTRL, TCM 전달 |
-|  |  |  | SportMode | 4 | 스포츠 모드 | 0~1 | DOMAIN_ROUTER -> ENG_CTRL, TCM 전달 |
-|  |  |  | SnowMode | 5 | 스노우 모드 | 0~1 | DOMAIN_ROUTER -> ENG_CTRL, TCM 전달 |
-|  |  |  | PowertrainState | 8~15 | 파워트레인 상태 | 0~255 | DOMAIN_ROUTER -> ENG_CTRL, TCM 전달 |
-| frmPowerLimitMsg | 0x10B | 2 | TorqueLimit | 0~7 | 토크 제한값 | 0~255 Nm | DOMAIN_ROUTER -> ENG_CTRL, TCM 전달 |
-|  |  |  | SpeedLimit | 8~15 | 속도 제한값 | 0~255 km/h | DOMAIN_ROUTER -> ENG_CTRL, TCM 전달 |
-| frmCruiseStateMsg | 0x10C | 2 | CruiseState | 0~1 | 크루즈 상태 | 0~3 | DOMAIN_ROUTER -> ENG_CTRL, TCM 전달 |
-|  |  |  | GapLevel | 2~3 | 차간 거리 레벨 | 0~3 | DOMAIN_ROUTER -> ENG_CTRL, TCM 전달 |
-|  |  |  | CruiseSetSpeed | 8~15 | 크루즈 설정 속도 | 0~255 km/h | DOMAIN_ROUTER -> ENG_CTRL, TCM 전달 |
+| frmThrottleStateMsg | 0x12C | 2 | ThrottlePos | 0~7 | 스로틀 위치 | 0~100 % | ENG_CTRL -> TCU, DOMAIN_ROUTER 전달 |
+|  |  |  | ThrottleReq | 8~15 | 스로틀 요청 | 0~100 % | ENG_CTRL -> TCU, DOMAIN_ROUTER 전달 |
+| frmTransmissionTempMsg | 0x12D | 2 | TransOilTemp | 0~7 | 변속기 오일 온도 | 0~255 degC | TCU -> ENG_CTRL, DOMAIN_ROUTER 전달 |
+|  |  |  | ClutchTemp | 8~15 | 클러치 온도 | 0~255 degC | TCU -> ENG_CTRL, DOMAIN_ROUTER 전달 |
+| frmVehicleModeMsg | 0x10A | 2 | DriveMode | 0~2 | 주행 모드 | 0~7 | DOMAIN_ROUTER -> ENG_CTRL, TCU 전달 |
+|  |  |  | EcoMode | 3 | 에코 모드 | 0~1 | DOMAIN_ROUTER -> ENG_CTRL, TCU 전달 |
+|  |  |  | SportMode | 4 | 스포츠 모드 | 0~1 | DOMAIN_ROUTER -> ENG_CTRL, TCU 전달 |
+|  |  |  | SnowMode | 5 | 스노우 모드 | 0~1 | DOMAIN_ROUTER -> ENG_CTRL, TCU 전달 |
+|  |  |  | PowertrainState | 8~15 | 파워트레인 상태 | 0~255 | DOMAIN_ROUTER -> ENG_CTRL, TCU 전달 |
+| frmPowerLimitMsg | 0x10B | 2 | TorqueLimit | 0~7 | 토크 제한값 | 0~255 Nm | DOMAIN_ROUTER -> ENG_CTRL, TCU 전달 |
+|  |  |  | SpeedLimit | 8~15 | 속도 제한값 | 0~255 km/h | DOMAIN_ROUTER -> ENG_CTRL, TCU 전달 |
+| frmCruiseStateMsg | 0x10C | 2 | CruiseState | 0~1 | 크루즈 상태 | 0~3 | DOMAIN_ROUTER -> ENG_CTRL, TCU 전달 |
+|  |  |  | GapLevel | 2~3 | 차간 거리 레벨 | 0~3 | DOMAIN_ROUTER -> ENG_CTRL, TCU 전달 |
+|  |  |  | CruiseSetSpeed | 8~15 | 크루즈 설정 속도 | 0~255 km/h | DOMAIN_ROUTER -> ENG_CTRL, TCU 전달 |
 | frmPowertrainHealthMsg | 0x10D | 2 | PtAliveCnt | 0~7 | Powertrain Alive Counter | 0~255 | DOMAIN_ROUTER -> VAL_SCENARIO_CTRL 전달 |
 |  |  |  | PtDiagState | 8~11 | Powertrain 진단 상태 | 0~15 | DOMAIN_ROUTER -> VAL_SCENARIO_CTRL 전달 |
 |  |  |  | PtFailCode | 12~15 | Powertrain 오류 코드 | 0~15 | DOMAIN_ROUTER -> VAL_SCENARIO_CTRL 전달 |
@@ -223,9 +223,9 @@
 | ethSelectedAlertMsg | 0xE200 | 2 | selectedAlertLevel | 0~2 | 최종 경고 레벨 | 0~7 | WARN_ARB_MGR -> BODY_GW, IVI_GW 전달 (UDP) |
 |  |  |  | selectedAlertType | 3~5 | 최종 경고 타입 | 0~7 | WARN_ARB_MGR -> BODY_GW, IVI_GW 전달 (UDP) |
 |  |  |  | timeoutClear | 8 | 타임아웃 해제 플래그 | 0~1 | WARN_ARB_MGR -> BODY_GW, IVI_GW 전달 (UDP) |
-| frmEpsStateMsg | 0x123 | 2 | EpsAssistState | 0~2 | EPS 보조 상태 | 0~7 | CHS_GW -> STEER_CTRL, DOMAIN_ROUTER 전달 |
-|  |  |  | EpsFault | 3 | EPS 고장 상태 | 0~1 | CHS_GW -> STEER_CTRL, DOMAIN_ROUTER 전달 |
-|  |  |  | EpsTorqueReq | 8~15 | EPS 토크 요청 | 0~255 0.1Nm | CHS_GW -> STEER_CTRL, DOMAIN_ROUTER 전달 |
+| frmEpsStateMsg | 0x123 | 2 | EpsAssistState | 0~2 | MDPS 보조 상태 | 0~7 | CHS_GW -> STEER_CTRL, DOMAIN_ROUTER 전달 |
+|  |  |  | EpsFault | 3 | MDPS 고장 상태 | 0~1 | CHS_GW -> STEER_CTRL, DOMAIN_ROUTER 전달 |
+|  |  |  | EpsTorqueReq | 8~15 | MDPS 토크 요청 | 0~255 0.1Nm | CHS_GW -> STEER_CTRL, DOMAIN_ROUTER 전달 |
 | frmAbsStateMsg | 0x124 | 2 | AbsCtrlState | 0~2 | ABS 제어 상태 | 0~7 | CHS_GW -> BRK_CTRL, DOMAIN_ROUTER 전달 |
 |  |  |  | AbsSlipLevel | 8~15 | ABS 슬립 레벨 | 0~255 | CHS_GW -> BRK_CTRL, DOMAIN_ROUTER 전달 |
 | frmEscStateMsg | 0x125 | 2 | EscCtrlState | 0~2 | ESC 제어 상태 | 0~7 | CHS_GW -> BRK_CTRL, STEER_CTRL, DOMAIN_ROUTER 전달 |
@@ -316,23 +316,23 @@
 |  |  |  | MemLoad | 8~15 | IVI 메모리 부하율 | 0~100 % | INFOTAINMENT_GW -> VAL_SCENARIO_CTRL 전달 |
 | frmClusterSyncStateMsg | 0x295 | 2 | ClusterSyncState | 0~2 | 클러스터 동기화 상태 | 0~7 | IVI_GW -> CLU_BASE_CTRL 전달 |
 |  |  |  | ClusterSyncSeq | 8~15 | 클러스터 동기화 시퀀스 | 0~255 | IVI_GW -> CLU_BASE_CTRL 전달 |
-| frmEngineTorqueMsg | 0x12E | 2 | EngineTorqueAct | 0~15 | 엔진 실제 토크 | 0~65535 0.1Nm | ENG_CTRL -> TCM, DOMAIN_ROUTER 전달 |
-|  |  |  | EngineTorqueReq | 16~31 | 엔진 요구 토크 | 0~65535 0.1Nm | ENG_CTRL -> TCM, DOMAIN_ROUTER 전달 |
+| frmEngineTorqueMsg | 0x12E | 2 | EngineTorqueAct | 0~15 | 엔진 실제 토크 | 0~65535 0.1Nm | ENG_CTRL -> TCU, DOMAIN_ROUTER 전달 |
+|  |  |  | EngineTorqueReq | 16~31 | 엔진 요구 토크 | 0~65535 0.1Nm | ENG_CTRL -> TCU, DOMAIN_ROUTER 전달 |
 | frmEngineLoadMsg | 0x12F | 1 | EngineLoad | 0~7 | 엔진 부하율 | 0~100 % | ENG_CTRL -> DOMAIN_ROUTER 전달 |
 |  |  |  | ManifoldPressure | 8~15 | 흡기 매니폴드 압력 | 0~255 kPa | ENG_CTRL -> DOMAIN_ROUTER 전달 |
-| frmTransShiftStateMsg | 0x130 | 2 | ShiftState | 0~2 | 변속 상태 | 0~7 | TCM -> ENG_CTRL, DOMAIN_ROUTER 전달 |
-|  |  |  | ShiftInProgress | 3 | 변속 진행 상태 | 0~1 | TCM -> ENG_CTRL, DOMAIN_ROUTER 전달 |
-|  |  |  | ShiftTargetGear | 8~10 | 목표 기어 | 0~7 | TCM -> ENG_CTRL, DOMAIN_ROUTER 전달 |
+| frmTransShiftStateMsg | 0x130 | 2 | ShiftState | 0~2 | 변속 상태 | 0~7 | TCU -> ENG_CTRL, DOMAIN_ROUTER 전달 |
+|  |  |  | ShiftInProgress | 3 | 변속 진행 상태 | 0~1 | TCU -> ENG_CTRL, DOMAIN_ROUTER 전달 |
+|  |  |  | ShiftTargetGear | 8~10 | 목표 기어 | 0~7 | TCU -> ENG_CTRL, DOMAIN_ROUTER 전달 |
 | frmPtDiagReqMsg | 0x2AA | 3 | PtDiagReqId | 0~7 | Powertrain 진단 요청 ID | 0~255 | VAL_SCENARIO_CTRL -> DOMAIN_ROUTER 전달 (Validation-only) |
 |  |  |  | PtDiagReqAct | 8 | Powertrain 진단 요청 활성 | 0~1 | VAL_SCENARIO_CTRL -> DOMAIN_ROUTER 전달 |
 | frmPtDiagResMsg | 0x10E | 3 | PtDiagResId | 0~7 | Powertrain 진단 응답 ID | 0~255 | DOMAIN_ROUTER -> VAL_SCENARIO_CTRL 전달 |
 |  |  |  | PtDiagStatus | 8~11 | Powertrain 진단 결과 | 0~15 | DOMAIN_ROUTER -> VAL_SCENARIO_CTRL 전달 |
-| frmThermalMgmtStateMsg | 0x131 | 2 | ThermalMode | 0~2 | 열관리 모드 | 0~7 | DOMAIN_ROUTER -> ENG_CTRL, TCM 전달 |
-|  |  |  | FanSpeedCmd | 8~15 | 팬 속도 명령 | 0~255 | DOMAIN_ROUTER -> ENG_CTRL, TCM 전달 |
-| frmEnergyFlowStateMsg | 0x10F | 2 | RegenLevel | 0~3 | 회생 제동 레벨 | 0~15 | DOMAIN_ROUTER -> ENG_CTRL, TCM 전달 |
-|  |  |  | EnergyFlowDir | 4~5 | 에너지 흐름 방향 | 0~3 | DOMAIN_ROUTER -> ENG_CTRL, TCM 전달 |
-| frmPowertrainCtrlAuthMsg | 0x110 | 1 | PtCtrlAuthState | 0~1 | 파워트레인 제어 권한 상태 | 0~3 | DOMAIN_ROUTER -> ENG_CTRL, TCM 전달 |
-|  |  |  | PtCtrlSource | 8~11 | 파워트레인 제어 출처 | 0~15 | DOMAIN_ROUTER -> ENG_CTRL, TCM 전달 |
+| frmThermalMgmtStateMsg | 0x131 | 2 | ThermalMode | 0~2 | 열관리 모드 | 0~7 | DOMAIN_ROUTER -> ENG_CTRL, TCU 전달 |
+|  |  |  | FanSpeedCmd | 8~15 | 팬 속도 명령 | 0~255 | DOMAIN_ROUTER -> ENG_CTRL, TCU 전달 |
+| frmEnergyFlowStateMsg | 0x10F | 2 | RegenLevel | 0~3 | 회생 제동 레벨 | 0~15 | DOMAIN_ROUTER -> ENG_CTRL, TCU 전달 |
+|  |  |  | EnergyFlowDir | 4~5 | 에너지 흐름 방향 | 0~3 | DOMAIN_ROUTER -> ENG_CTRL, TCU 전달 |
+| frmPowertrainCtrlAuthMsg | 0x110 | 1 | PtCtrlAuthState | 0~1 | 파워트레인 제어 권한 상태 | 0~3 | DOMAIN_ROUTER -> ENG_CTRL, TCU 전달 |
+|  |  |  | PtCtrlSource | 8~11 | 파워트레인 제어 출처 | 0~15 | DOMAIN_ROUTER -> ENG_CTRL, TCU 전달 |
 ---
 
 ## 하단 보강표 (감사/추적 전용)

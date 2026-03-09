@@ -185,7 +185,7 @@ Emergency Source (logical terminal)
 | Func_042 | Req_042 | VAL_SCENARIO_CTRL | Flow_009 / Comm_009 / testScenario | Flow_009 / scenarioResult | `MOD_13.F042` | ST_SIL_002 |
 | Func_043 | Req_043 | VAL_SCENARIO_CTRL | Flow_009 / Comm_009 / scenarioResult | Flow_009 / scenarioResult | `MOD_13.F043` | ST_RESULT_001 |
 | Func_101 | Req_101 | ENG_CTRL | Flow_101 / Comm_101 / IgnitionState, GearInput | Flow_101 / EngineState, EngineRpm | `ENG_CTRL.F101` | UT_BASE_PT_001 / IT_BASE_PT_001 |
-| Func_102 | Req_102 | TCM | Flow_101 / Comm_101 / IgnitionState, GearInput | Flow_101 / GearState | `TCM.F102` | UT_BASE_PT_001 / IT_BASE_PT_001 |
+| Func_102 | Req_102 | TCU | Flow_101 / Comm_101 / IgnitionState, GearInput | Flow_101 / GearState | `TCU.F102` | UT_BASE_PT_001 / IT_BASE_PT_001 |
 | Func_103 | Req_103 | ACCEL_CTRL | Flow_102 / Comm_102 / AccelPedal | Flow_102 / AccelRequest, TorqueRequest | `ACCEL_CTRL.F103` | UT_BASE_CH_001 / IT_BASE_CH_001 |
 | Func_104 | Req_104 | BRK_CTRL | Flow_102 / Comm_102 / BrakePedal | Flow_102 / BrakePressure, BrakeMode, AbsActive, EspActive | `BRK_CTRL.F104` | UT_BASE_CH_001 / IT_BASE_CH_001 |
 | Func_105 | Req_105 | STEER_CTRL | Flow_102 / Comm_102 / steeringInput, SteeringTorque | Flow_102 / SteeringState, SteeringAssistLv | `STEER_CTRL.F105` | UT_BASE_CH_001 / IT_BASE_CH_001 |

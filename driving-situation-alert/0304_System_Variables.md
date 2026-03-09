@@ -104,7 +104,7 @@
 | 110 | Chassis | BrakePressure | uint32 | 0 | 255 | 0 | 브레이크 압력 |
 | 111 | Chassis | BrakeMode | uint32 | 0 | 3 | 0 | 브레이크 동작 모드 |
 | 112 | Chassis | AbsActive | uint32 | 0 | 1 | 0 | ABS 활성 상태 |
-| 113 | Chassis | EspActive | uint32 | 0 | 1 | 0 | ESP 활성 상태 |
+| 113 | Chassis | EspActive | uint32 | 0 | 1 | 0 | ESC 활성 상태 |
 | 114 | Chassis | AccelRequest | uint32 | 0 | 100 | 0 | 가속 요청 |
 | 115 | Chassis | TorqueRequest | uint32 | 0 | 255 | 0 | 토크 요청 |
 | 116 | Chassis | SteeringTorque | uint32 | 0 | 4095 | 0 | 조향 토크 |
@@ -193,9 +193,9 @@
 | 201 | Powertrain | PtAliveCnt | uint32 | 0 | 255 | 0 | Powertrain Alive Counter |
 | 202 | Powertrain | PtDiagState | uint32 | 0 | 15 | 0 | Powertrain 진단 상태 |
 | 203 | Powertrain | PtFailCode | uint32 | 0 | 15 | 0 | Powertrain 오류 코드 |
-| 204 | Chassis | EpsAssistState | uint32 | 0 | 7 | 0 | EPS 보조 상태 |
-| 205 | Chassis | EpsFault | uint32 | 0 | 1 | 0 | EPS 고장 상태 |
-| 206 | Chassis | EpsTorqueReq | uint32 | 0 | 255 | 0 | EPS 토크 요청 |
+| 204 | Chassis | EpsAssistState | uint32 | 0 | 7 | 0 | MDPS 보조 상태 |
+| 205 | Chassis | EpsFault | uint32 | 0 | 1 | 0 | MDPS 고장 상태 |
+| 206 | Chassis | EpsTorqueReq | uint32 | 0 | 255 | 0 | MDPS 토크 요청 |
 | 207 | Chassis | AbsCtrlState | uint32 | 0 | 7 | 0 | ABS 제어 상태 |
 | 208 | Chassis | AbsSlipLevel | uint32 | 0 | 255 | 0 | ABS 슬립 레벨 |
 | 209 | Chassis | EscCtrlState | uint32 | 0 | 7 | 0 | ESC 제어 상태 |
@@ -518,10 +518,10 @@
 | Var_172 | BaseScenarioId | baseScenarioId_CAN_BASE | CAN_BASE | VAL_SCENARIO_CTRL | Comm_106 | Flow_106 | Func_112 | Req_112 | Event 발생 시 갱신 |
 | Var_173 | BaseScenarioResult | baseScenarioResult_CAN_BASE | CAN_BASE | VAL_SCENARIO_CTRL | Comm_106 | Flow_106 | Func_112 | Req_112 | Event 발생 시 갱신 |
 | Var_174 | TimeoutClearMon | timeoutClearMon_CAN_BASE | CAN_BASE | VAL_SCENARIO_CTRL | Comm_106 | Flow_106 | Func_112 | Req_112 | Event 발생 시 갱신 |
-| Var_175 | IgnitionState | ignitionState_CAN_BASE | CAN_BASE | ENG_CTRL/TCM | Comm_101 | Flow_101 | Func_101, Func_102 | Req_101, Req_102 | 100ms 주기 수신 시 갱신 |
-| Var_176 | EngineState | engineState_CAN_BASE | CAN_BASE | ENG_CTRL/TCM | Comm_101 | Flow_101 | Func_101, Func_102 | Req_101, Req_102 | 100ms 주기 수신 시 갱신 |
-| Var_177 | GearInput | gearInput_CAN_BASE | CAN_BASE | ENG_CTRL/TCM | Comm_101 | Flow_101 | Func_101, Func_102 | Req_101, Req_102 | 100ms 주기 수신 시 갱신 |
-| Var_178 | GearState | gearState_CAN_BASE | CAN_BASE | ENG_CTRL/TCM | Comm_101 | Flow_101 | Func_101, Func_102 | Req_101, Req_102 | 100ms 주기 수신 시 갱신 |
+| Var_175 | IgnitionState | ignitionState_CAN_BASE | CAN_BASE | ENG_CTRL/TCU | Comm_101 | Flow_101 | Func_101, Func_102 | Req_101, Req_102 | 100ms 주기 수신 시 갱신 |
+| Var_176 | EngineState | engineState_CAN_BASE | CAN_BASE | ENG_CTRL/TCU | Comm_101 | Flow_101 | Func_101, Func_102 | Req_101, Req_102 | 100ms 주기 수신 시 갱신 |
+| Var_177 | GearInput | gearInput_CAN_BASE | CAN_BASE | ENG_CTRL/TCU | Comm_101 | Flow_101 | Func_101, Func_102 | Req_101, Req_102 | 100ms 주기 수신 시 갱신 |
+| Var_178 | GearState | gearState_CAN_BASE | CAN_BASE | ENG_CTRL/TCU | Comm_101 | Flow_101 | Func_101, Func_102 | Req_101, Req_102 | 100ms 주기 수신 시 갱신 |
 | Var_179 | RoutingPolicy | routingPolicy_CAN_BASE | CAN_BASE | DOMAIN_ROUTER | Comm_105 | Flow_105 | Func_110, Func_111 | Req_110, Req_111 | 100ms 주기 수신 시 갱신 |
 | Var_180 | BoundaryStatus | boundaryStatus_CAN_BASE | CAN_BASE | DOMAIN_ROUTER | Comm_105 | Flow_105 | Func_110, Func_111, Func_151 | Req_110, Req_111, Req_151 | 100ms 주기 수신 시 갱신(출력 채널 가용성 판정 입력 포함) |
 | Var_181 | EngineRpm | engineRpm_CAN_BASE | CAN_BASE | ENG_CTRL | Comm_101 | Flow_101 | Func_101, Func_102 | Req_101, Req_102 | 100ms 주기 수신 시 갱신 |
@@ -532,8 +532,8 @@
 | Var_186 | ChargingState | chargingState_CAN_BASE | CAN_BASE | DOMAIN_ROUTER | Comm_105 | Flow_105 | Func_110, Func_111 | Req_110, Req_111 | 100ms 주기 수신 시 갱신 |
 | Var_187 | ThrottlePos | throttlePos_CAN_BASE | CAN_BASE | DOMAIN_ROUTER | Comm_105 | Flow_105 | Func_110, Func_111 | Req_110, Req_111 | 100ms 주기 수신 시 갱신 |
 | Var_188 | ThrottleReq | throttleReq_CAN_BASE | CAN_BASE | DOMAIN_ROUTER | Comm_105 | Flow_105 | Func_110, Func_111 | Req_110, Req_111 | 100ms 주기 수신 시 갱신 |
-| Var_189 | TransOilTemp | transOilTemp_CAN_BASE | CAN_BASE | TCM | Comm_101 | Flow_101 | Func_101, Func_102 | Req_101, Req_102 | 100ms 주기 수신 시 갱신 |
-| Var_190 | ClutchTemp | clutchTemp_CAN_BASE | CAN_BASE | TCM | Comm_101 | Flow_101 | Func_101, Func_102 | Req_101, Req_102 | 100ms 주기 수신 시 갱신 |
+| Var_189 | TransOilTemp | transOilTemp_CAN_BASE | CAN_BASE | TCU | Comm_101 | Flow_101 | Func_101, Func_102 | Req_101, Req_102 | 100ms 주기 수신 시 갱신 |
+| Var_190 | ClutchTemp | clutchTemp_CAN_BASE | CAN_BASE | TCU | Comm_101 | Flow_101 | Func_101, Func_102 | Req_101, Req_102 | 100ms 주기 수신 시 갱신 |
 | Var_191 | DriveMode | driveMode_CAN_BASE | CAN_BASE | DOMAIN_ROUTER | Comm_105 | Flow_105 | Func_110, Func_111, Func_141 | Req_110, Req_111, Req_141 | 100ms 주기 수신 시 갱신 |
 | Var_192 | EcoMode | ecoMode_CAN_BASE | CAN_BASE | DOMAIN_ROUTER | Comm_105 | Flow_105 | Func_110, Func_111, Func_141 | Req_110, Req_111, Req_141 | 100ms 주기 수신 시 갱신 |
 | Var_193 | SportMode | sportMode_CAN_BASE | CAN_BASE | DOMAIN_ROUTER | Comm_105 | Flow_105 | Func_110, Func_111, Func_141 | Req_110, Req_111, Req_141 | 100ms 주기 수신 시 갱신 |

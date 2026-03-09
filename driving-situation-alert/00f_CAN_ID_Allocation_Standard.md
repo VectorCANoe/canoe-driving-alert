@@ -75,15 +75,15 @@ Tier 판정 규칙:
 
 | Block | Domain | Owner 예시 (Surface ECU) |
 |---|---|---|
-| 0x01 | CHASSIS | `ESP`, `EPS` |
+| 0x01 | CHASSIS | `ESC`, `MDPS` |
 | 0x02 | BODY | `BCM` |
-| 0x03 | INFOTAINMENT/CLUSTER | `IVI`, `CLUSTER` |
-| 0x04 | POWERTRAIN | `ECM`, `TCM`, `VCU` |
+| 0x03 | INFOTAINMENT/CLU | `IVI`, `CLU` |
+| 0x04 | POWERTRAIN | `EMS`, `TCU`, `VCU` |
 | 0x05 | ADAS | `ADAS` |
 | 0x06 | BACKBONE/GATEWAY | `CGW`, `ETH_BACKBONE` |
 | 0x07 | VALIDATION/DIAG | `VALIDATION_HARNESS` (현재 실행 반영 제외) |
 | 0x08 | V2X/EXTERNAL | `V2X`, 외부 연계 ingress/egress |
-| 0x09 | HVAC/ENERGY (Reserved Active) | HVAC/열관리/에너지 확장용 |
+| 0x09 | DATC/ENERGY (Reserved Active) | DATC/열관리/에너지 확장용 |
 | 0x1F | RESERVED | 사용 금지 |
 
 Block 판정 규칙:
@@ -181,9 +181,9 @@ Block 판정 규칙:
 | 버전 | 날짜 | 변경 사항 |
 |---|---|---|
 | 4.7 | 2026-03-09 | OEM visible placeholder wave(`56521c2`) 반영: placeholder node는 ID 비할당 원칙으로 고정, 승격 시점 신규 배정 절차 추가. |
-| 4.6 | 2026-03-09 | `6cbb647` 기준 non-VAL 실행 상태와 Block owner 예시를 surface ECU(`ECM/TCM/VCU/ESP/EPS/BCM/IVI/CLUSTER/ADAS/CGW/V2X`)로 동기화. 11-bit active band/예약블록(`0x500~`) 추가. |
+| 4.6 | 2026-03-09 | `6cbb647` 기준 non-VAL 실행 상태와 Block owner 예시를 surface ECU(`EMS/TCU/VCU/ESC/MDPS/BCM/IVI/CLU/ADAS/CGW/V2X`)로 동기화. 11-bit active band/예약블록(`0x500~`) 추가. |
 | 4.5 | 2026-03-09 | Tier를 OEM latency class 기준(Motion Control/Safety State/Coordination/Driver Info/Validation)으로 재정의하고 권고 지연 목표를 추가해 배정 기준을 명확화. |
-| 4.4 | 2026-03-09 | OEM 시스템 관점으로 전면 재구성: Tier/Block/Slot 철학을 단순화하고, Tier를 입력->판정/조정->출력 흐름으로 재정의. Block에 V2X/HVAC 확장 도메인 추가. |
+| 4.4 | 2026-03-09 | OEM 시스템 관점으로 전면 재구성: Tier/Block/Slot 철학을 단순화하고, Tier를 입력->판정/조정->출력 흐름으로 재정의. Block에 V2X/DATC 확장 도메인 추가. |
 | 4.3 | 2026-03-09 | Tier 순서를 데이터 경로(입력 -> 판정/Fail-safe -> HMI) 기준으로 재정렬. 샘플 Target EXT_ID 재계산. |
 | 4.2 | 2026-03-09 | Tier/Block 빠른 판단 기준, Owner 기반 Block 선택 원칙, 3단계 배정 절차, 체크리스트 추가. |
 | 4.1 | 2026-03-09 | Primary를 29-bit `3/5/21`로 단순화. |

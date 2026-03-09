@@ -62,15 +62,15 @@
 ### 4.1 Surface ECU Baseline
 - `CGW`
 - `ETH_BACKBONE`
-- `ECM`
-- `TCM`
+- `EMS`
+- `TCU`
 - `VCU`
-- `ESP`
-- `EPS`
+- `ESC`
+- `MDPS`
 - `BCM`
-- `HVAC` (placeholder)
+- `DATC` (placeholder)
 - `IVI`
-- `CLUSTER`
+- `CLU`
 - `ADAS`
 - `V2X`
 - `VALIDATION_HARNESS`
@@ -78,13 +78,13 @@
 ### 4.2 Runtime Transition Baseline
 - runtime canonical names remain reference baseline until runtime merge decisions are approved
 - key examples:
-  - `ENG_CTRL -> ECM`
+  - `ENG_CTRL -> EMS`
   - `ACCEL_CTRL -> VCU`
-  - `BRK_CTRL -> ESP`
-  - `STEER_CTRL -> EPS`
+  - `BRK_CTRL -> ESC`
+  - `STEER_CTRL -> MDPS`
   - `BODY_GW / AMBIENT_CTRL / HAZARD_CTRL / WINDOW_CTRL / DRV_STATE_MGR -> BCM`
   - `IVI_GW / NAV_CTX_MGR -> IVI`
-  - `CLU_HMI_CTRL / CLU_BASE_CTRL -> CLUSTER`
+  - `CLU_HMI_CTRL / CLU_BASE_CTRL -> CLU`
   - `ADAS_WARN_CTRL / WARN_ARB_MGR -> ADAS`
   - `EMS_POLICE_TX / EMS_AMB_TX / EMS_ALERT_RX -> V2X`
   - `VAL_* -> VALIDATION_HARNESS`

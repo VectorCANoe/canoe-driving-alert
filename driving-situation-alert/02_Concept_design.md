@@ -90,7 +90,7 @@
 
 예시:
 - `V2X` (runtime: `EMS_ALERT_RX`, `EMS_POLICE_TX`, `EMS_AMB_TX`)
-- `CLUSTER` (runtime: `CLU_HMI_CTRL`, `CLU_BASE_CTRL`)
+- `CLU` (runtime: `CLU_HMI_CTRL`, `CLU_BASE_CTRL`)
 
 ---
 
