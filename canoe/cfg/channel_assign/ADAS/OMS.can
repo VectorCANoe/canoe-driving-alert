@@ -6,6 +6,10 @@ includes
 variables
 {
   msTimer tOmsCycle;
+  int gDiagPending;
+  int gLastDiagSid;
+  int gLastDiagDidHigh;
+  int gLastDiagDidLow;
   int gLastDetected;
   int gLastChildWarn;
   int gLastSeatBelt;
@@ -61,6 +65,10 @@ void publishOmsState()
 
 on start
 {
+  gDiagPending = 0;
+  gLastDiagSid = 0;
+  gLastDiagDidHigh = 0;
+  gLastDiagDidLow = 0;
   gLastDetected = -1;
   gLastChildWarn = -1;
   gLastSeatBelt = -1;
@@ -73,7 +81,24 @@ on start
 on timer tOmsCycle
 {
   publishOmsState();
+  if (gDiagPending == 1)
+  {
+    message frmOmsDiagResMsg mDiagRes;
+    mDiagRes.OmsDiagRespCode = (gLastDiagSid == 0x22) ? 0x62 : 0x7F;
+    mDiagRes.OmsDiagData0 = gLastDiagDidHigh;
+    mDiagRes.OmsDiagData1 = gLastDiagDidLow;
+    output(mDiagRes);
+    gDiagPending = 0;
+  }
   setTimer(tOmsCycle, 100);
+}
+
+on message frmOmsDiagReqMsg
+{
+  gLastDiagSid = (int)this.OmsDiagServiceId;
+  gLastDiagDidHigh = (int)this.OmsDiagDidHigh;
+  gLastDiagDidLow = (int)this.OmsDiagDidLow;
+  gDiagPending = 1;
 }
 
 on stopMeasurement

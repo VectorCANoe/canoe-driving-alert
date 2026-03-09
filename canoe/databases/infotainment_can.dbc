@@ -258,6 +258,26 @@ BO_ 673 frmTmuDiagResMsg: 3 TMU
  SG_ TmuDiagData0     : 8|8@1+ (1,0) [0|255] "" TEST_SCN
  SG_ TmuDiagData1     : 16|8@1+ (1,0) [0|255] "" TEST_SCN
 
+BO_ 682 frmHudDiagReqMsg: 3 TEST_SCN
+ SG_ HudDiagServiceId : 0|8@1+ (1,0) [0|255] "" HUD
+ SG_ HudDiagDidHigh   : 8|8@1+ (1,0) [0|255] "" HUD
+ SG_ HudDiagDidLow    : 16|8@1+ (1,0) [0|255] "" HUD
+
+BO_ 683 frmHudDiagResMsg: 3 HUD
+ SG_ HudDiagRespCode  : 0|8@1+ (1,0) [0|255] "" TEST_SCN
+ SG_ HudDiagData0     : 8|8@1+ (1,0) [0|255] "" TEST_SCN
+ SG_ HudDiagData1     : 16|8@1+ (1,0) [0|255] "" TEST_SCN
+
+BO_ 684 frmAmpDiagReqMsg: 3 TEST_SCN
+ SG_ AmpDiagServiceId : 0|8@1+ (1,0) [0|255] "" AMP
+ SG_ AmpDiagDidHigh   : 8|8@1+ (1,0) [0|255] "" AMP
+ SG_ AmpDiagDidLow    : 16|8@1+ (1,0) [0|255] "" AMP
+
+BO_ 685 frmAmpDiagResMsg: 3 AMP
+ SG_ AmpDiagRespCode  : 0|8@1+ (1,0) [0|255] "" TEST_SCN
+ SG_ AmpDiagData0     : 8|8@1+ (1,0) [0|255] "" TEST_SCN
+ SG_ AmpDiagData1     : 16|8@1+ (1,0) [0|255] "" TEST_SCN
+
 CM_ BO_ 675 "Flow_003 navigation context input.";
 CM_ BO_ 640 "Flow_008 cluster warning output.";
 CM_ BO_ 641 "Infotainment baseline: cluster base display payload (speed/gear/status).";

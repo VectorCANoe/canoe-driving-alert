@@ -77,8 +77,14 @@ void sendBaselineDiagRequest(int scenarioId)
   message frmTmuDiagReqMsg mTmu;
   message frmDatcDiagReqMsg mDatc;
   message frmSccDiagReqMsg mScc;
+  message frmHudDiagReqMsg mHud;
+  message frmAmpDiagReqMsg mAmp;
+  message frmDmsDiagReqMsg mDms;
+  message frmOmsDiagReqMsg mOms;
   message ethV2xDiagReqMsg mV2x;
   message ethCgwDiagReqMsg mCgw;
+  message ethSgwDiagReqMsg mSgw;
+  message ethDcmDiagReqMsg mDcm;
   int didLow;
 
   didLow = clampRange(scenarioId, 0, 255);
@@ -128,6 +134,26 @@ void sendBaselineDiagRequest(int scenarioId)
   mScc.SccDiagDidLow = didLow;
   output(mScc);
 
+  mHud.HudDiagServiceId = 0x22;
+  mHud.HudDiagDidHigh = 0xF1;
+  mHud.HudDiagDidLow = didLow;
+  output(mHud);
+
+  mAmp.AmpDiagServiceId = 0x22;
+  mAmp.AmpDiagDidHigh = 0xF1;
+  mAmp.AmpDiagDidLow = didLow;
+  output(mAmp);
+
+  mDms.DmsDiagServiceId = 0x22;
+  mDms.DmsDiagDidHigh = 0xF1;
+  mDms.DmsDiagDidLow = didLow;
+  output(mDms);
+
+  mOms.OmsDiagServiceId = 0x22;
+  mOms.OmsDiagDidHigh = 0xF1;
+  mOms.OmsDiagDidLow = didLow;
+  output(mOms);
+
   mV2x.V2xDiagServiceId = 0x22;
   mV2x.V2xDiagDidHigh = 0xF1;
   mV2x.V2xDiagDidLow = didLow;
@@ -137,6 +163,16 @@ void sendBaselineDiagRequest(int scenarioId)
   mCgw.CgwDiagDidHigh = 0xF1;
   mCgw.CgwDiagDidLow = didLow;
   output(mCgw);
+
+  mSgw.SgwDiagServiceId = 0x22;
+  mSgw.SgwDiagDidHigh = 0xF1;
+  mSgw.SgwDiagDidLow = didLow;
+  output(mSgw);
+
+  mDcm.DcmDiagServiceId = 0x22;
+  mDcm.DcmDiagDidHigh = 0xF1;
+  mDcm.DcmDiagDidLow = didLow;
+  output(mDcm);
 }
 
 void pushLockedScenarioInputs()

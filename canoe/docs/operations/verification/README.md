@@ -8,6 +8,7 @@ Open these first:
 
 1. `FINAL_PHASE_EXECUTION_FLOW.md`
 2. `CANOE_TEST_UNIT_RUNBOOK.md`
+3. `DIAGNOSTIC_TESTER_COVERAGE_2026-03-10.md`
 3. `CANOE_TEST_CI_BRIDGE_STRATEGY_2026-03-09.md`
 4. `TEST_AUTOMATION_REFERENCE_BASELINE_2026-03-09.md`
 5. `SIL_PASS_CRITERIA.md`
@@ -18,6 +19,8 @@ Open these first:
   - final-phase split between Dev1, Dev2, and Docs
 - `CANOE_TEST_UNIT_RUNBOOK.md`
   - GUI-side registration and execution steps for native CANoe Test Units
+- `DIAGNOSTIC_TESTER_COVERAGE_2026-03-10.md`
+  - current `TEST_SCN` diagnostic request/response coverage
 - `CANOE_TEST_POC_SCOPE_2026-03-08.md`
   - selected native CANoe test PoC scope and mapping
 - `CANOE_TEST_CI_BRIDGE_STRATEGY_2026-03-09.md`

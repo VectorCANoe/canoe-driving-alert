@@ -283,6 +283,26 @@ BO_ 481 frmAdasDiagResMsg: 3 ADAS
  SG_ AdasDiagData0     : 8|8@1+ (1,0) [0|255] "" TEST_SCN
  SG_ AdasDiagData1     : 16|8@1+ (1,0) [0|255] "" TEST_SCN
 
+BO_ 482 frmDmsDiagReqMsg: 3 TEST_SCN
+ SG_ DmsDiagServiceId : 0|8@1+ (1,0) [0|255] "" DMS
+ SG_ DmsDiagDidHigh   : 8|8@1+ (1,0) [0|255] "" DMS
+ SG_ DmsDiagDidLow    : 16|8@1+ (1,0) [0|255] "" DMS
+
+BO_ 483 frmDmsDiagResMsg: 3 DMS
+ SG_ DmsDiagRespCode  : 0|8@1+ (1,0) [0|255] "" TEST_SCN
+ SG_ DmsDiagData0     : 8|8@1+ (1,0) [0|255] "" TEST_SCN
+ SG_ DmsDiagData1     : 16|8@1+ (1,0) [0|255] "" TEST_SCN
+
+BO_ 484 frmOmsDiagReqMsg: 3 TEST_SCN
+ SG_ OmsDiagServiceId : 0|8@1+ (1,0) [0|255] "" OMS
+ SG_ OmsDiagDidHigh   : 8|8@1+ (1,0) [0|255] "" OMS
+ SG_ OmsDiagDidLow    : 16|8@1+ (1,0) [0|255] "" OMS
+
+BO_ 485 frmOmsDiagResMsg: 3 OMS
+ SG_ OmsDiagRespCode  : 0|8@1+ (1,0) [0|255] "" TEST_SCN
+ SG_ OmsDiagData0     : 8|8@1+ (1,0) [0|255] "" TEST_SCN
+ SG_ OmsDiagData1     : 16|8@1+ (1,0) [0|255] "" TEST_SCN
+
 CM_ BO_ 449 "Comm_201: ADAS chassis status output. ADAS-owned frame.";
 CM_ SG_ 449 AdasChassisState "Computed ADAS warning level (0=none).";
 CM_ SG_ 449 AdasHealthLevel  "ADAS node health (0=fault 1=ok).";

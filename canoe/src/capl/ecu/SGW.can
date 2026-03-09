@@ -6,6 +6,10 @@ includes
 variables
 {
   msTimer tSgwCycle;
+  int gDiagPending;
+  int gLastDiagSid;
+  int gLastDiagDidHigh;
+  int gLastDiagDidLow;
   int gIboxLinkMode;
   int gIboxRouteState;
   int gIboxServiceFlags;
@@ -95,6 +99,10 @@ void publishSecurityState()
 
 on start
 {
+  gDiagPending = 0;
+  gLastDiagSid = 0;
+  gLastDiagDidHigh = 0;
+  gLastDiagDidLow = 0;
   gIboxLinkMode = 0;
   gIboxRouteState = 0;
   gIboxServiceFlags = 0;
@@ -113,6 +121,15 @@ on start
 on timer tSgwCycle
 {
   publishSecurityState();
+  if (gDiagPending == 1)
+  {
+    message ethSgwDiagResMsg mDiagRes;
+    mDiagRes.SgwDiagRespCode = (gLastDiagSid == 0x22) ? 0x62 : 0x7F;
+    mDiagRes.SgwDiagData0 = gLastDiagDidHigh;
+    mDiagRes.SgwDiagData1 = gLastDiagDidLow;
+    output(mDiagRes);
+    gDiagPending = 0;
+  }
   setTimer(tSgwCycle, 100);
 }
 
@@ -129,6 +146,14 @@ on message ethFailSafeStateMsg
   gDomainPathStatus = clampRange((int)this.DomainPathStatus, 0, 3);
   gFailSafeMode = clampRange((int)this.FailSafeMode, 0, 3);
   gBoundaryAlive = clampRange((int)this.BoundaryAlive, 0, 1);
+}
+
+on message ethSgwDiagReqMsg
+{
+  gLastDiagSid = (int)this.SgwDiagServiceId;
+  gLastDiagDidHigh = (int)this.SgwDiagDidHigh;
+  gLastDiagDidLow = (int)this.SgwDiagDidLow;
+  gDiagPending = 1;
 }
 
 on stopMeasurement

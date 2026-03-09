@@ -152,6 +152,26 @@ BO_ 673 ethCgwDiagResMsg: 3 CGW
  SG_ CgwDiagData0     : 8|8@1+ (1,0) [0|255] "" TEST_SCN
  SG_ CgwDiagData1     : 16|8@1+ (1,0) [0|255] "" TEST_SCN
 
+BO_ 674 ethSgwDiagReqMsg: 3 TEST_SCN
+ SG_ SgwDiagServiceId : 0|8@1+ (1,0) [0|255] "" SGW
+ SG_ SgwDiagDidHigh   : 8|8@1+ (1,0) [0|255] "" SGW
+ SG_ SgwDiagDidLow    : 16|8@1+ (1,0) [0|255] "" SGW
+
+BO_ 675 ethSgwDiagResMsg: 3 SGW
+ SG_ SgwDiagRespCode  : 0|8@1+ (1,0) [0|255] "" TEST_SCN
+ SG_ SgwDiagData0     : 8|8@1+ (1,0) [0|255] "" TEST_SCN
+ SG_ SgwDiagData1     : 16|8@1+ (1,0) [0|255] "" TEST_SCN
+
+BO_ 679 ethDcmDiagReqMsg: 3 TEST_SCN
+ SG_ DcmDiagServiceId : 0|8@1+ (1,0) [0|255] "" DCM
+ SG_ DcmDiagDidHigh   : 8|8@1+ (1,0) [0|255] "" DCM
+ SG_ DcmDiagDidLow    : 16|8@1+ (1,0) [0|255] "" DCM
+
+BO_ 680 ethDcmDiagResMsg: 3 DCM
+ SG_ DcmDiagRespCode  : 0|8@1+ (1,0) [0|255] "" TEST_SCN
+ SG_ DcmDiagData0     : 8|8@1+ (1,0) [0|255] "" TEST_SCN
+ SG_ DcmDiagData1     : 16|8@1+ (1,0) [0|255] "" TEST_SCN
+
 CM_ BO_ 448 "E100: Emergency vehicle broadcast. Sent by V2X on ETH backbone stub through its internal V2X transport seam.";
 CM_ SG_ 448 VehicleType  "1=POLICE 2=AMBULANCE";
 CM_ SG_ 448 Status       "0=CLEAR 1=ACTIVE";
@@ -223,4 +243,3 @@ VAL_ 1298 RoadZone 0 "NONE" 1 "SCHOOL" 2 "HIGHWAY" 3 "GUIDE";
 VAL_ 1298 NavDirection 0 "NONE" 1 "LEFT" 2 "RIGHT" 3 "STRAIGHT";
 VAL_ 668 RecordState 0 "Idle" 1 "Armed" 2 "Recording" 3 "Fault";
 VAL_ 669 BackboneMode 0 "Init" 1 "Standby" 2 "Active" 3 "Fault";
-

@@ -6,6 +6,10 @@ includes
 variables
 {
   msTimer tAmpCycle;
+  int gDiagPending;
+  int gLastDiagSid;
+  int gLastDiagDidHigh;
+  int gLastDiagDidLow;
   int gMediaState;
   int gMuteState;
   int gVolumeLevel;
@@ -89,6 +93,10 @@ void publishAmpState()
 
 on start
 {
+  gDiagPending = 0;
+  gLastDiagSid = 0;
+  gLastDiagDidHigh = 0;
+  gLastDiagDidLow = 0;
   gMediaState = 0;
   gMuteState = 0;
   gVolumeLevel = 20;
@@ -108,6 +116,15 @@ on start
 on timer tAmpCycle
 {
   publishAmpState();
+  if (gDiagPending == 1)
+  {
+    message frmAmpDiagResMsg mDiagRes;
+    mDiagRes.AmpDiagRespCode = (gLastDiagSid == 0x22) ? 0x62 : 0x7F;
+    mDiagRes.AmpDiagData0 = gLastDiagDidHigh;
+    mDiagRes.AmpDiagData1 = gLastDiagDidLow;
+    output(mDiagRes);
+    gDiagPending = 0;
+  }
   setTimer(tAmpCycle, 50);
 }
 
@@ -132,6 +149,14 @@ on message frmVoiceAssistStateMsg
 on message frmSpeechTtsStateMsg
 {
   gTtsState = clampRange((int)this.TtsState, 0, 7);
+}
+
+on message frmAmpDiagReqMsg
+{
+  gLastDiagSid = (int)this.AmpDiagServiceId;
+  gLastDiagDidHigh = (int)this.AmpDiagDidHigh;
+  gLastDiagDidLow = (int)this.AmpDiagDidLow;
+  gDiagPending = 1;
 }
 
 on stopMeasurement

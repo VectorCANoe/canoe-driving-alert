@@ -6,6 +6,10 @@ includes
 variables
 {
   msTimer tDcmCycle;
+  int gDiagPending;
+  int gLastDiagReqSid;
+  int gLastDiagDidHigh;
+  int gLastDiagDidLow;
   int gSecuritySession;
   int gAuthState;
   int gSecurityFault;
@@ -76,6 +80,10 @@ void publishDiagState()
 
 on start
 {
+  gDiagPending = 0;
+  gLastDiagReqSid = 0;
+  gLastDiagDidHigh = 0;
+  gLastDiagDidLow = 0;
   gSecuritySession = 0;
   gAuthState = 0;
   gSecurityFault = 0;
@@ -91,6 +99,15 @@ on start
 on timer tDcmCycle
 {
   publishDiagState();
+  if (gDiagPending == 1)
+  {
+    message ethDcmDiagResMsg mDiagRes;
+    mDiagRes.DcmDiagRespCode = (gLastDiagReqSid == 0x22) ? 0x62 : 0x7F;
+    mDiagRes.DcmDiagData0 = gLastDiagDidHigh;
+    mDiagRes.DcmDiagData1 = gLastDiagDidLow;
+    output(mDiagRes);
+    gDiagPending = 0;
+  }
   setTimer(tDcmCycle, 100);
 }
 
@@ -100,6 +117,14 @@ on message ethSecurityStateMsg
   gAuthState = clampRange((int)this.AuthState, 0, 3);
   gSecurityFault = clampRange((int)this.SecurityFault, 0, 15);
   gSecurityPolicy = clampRange((int)this.SecurityPolicy, 0, 15);
+}
+
+on message ethDcmDiagReqMsg
+{
+  gLastDiagReqSid = (int)this.DcmDiagServiceId;
+  gLastDiagDidHigh = (int)this.DcmDiagDidHigh;
+  gLastDiagDidLow = (int)this.DcmDiagDidLow;
+  gDiagPending = 1;
 }
 
 on stopMeasurement
