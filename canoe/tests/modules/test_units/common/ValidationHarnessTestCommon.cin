@@ -1,6 +1,6 @@
 long resetValidationHarnessIfNeeded()
 {
-  long rc;
+  dword waitedMs;
 
   if ((int)@Test::scenarioCommandAck == 0 &&
       (int)@Test::scenarioResult == 0)
@@ -10,18 +10,17 @@ long resetValidationHarnessIfNeeded()
   }
 
   @Test::scenarioCommand = 0;
-  rc = TestWaitForSysVar(sysvar::Test::scenarioCommandAck, 1000);
-  if (rc != 1)
+  waitedMs = 0;
+  while ((int)@Test::scenarioCommandAck != 0 && waitedMs < 1000)
   {
-    testStepFail("scenario-reset", "Harness reset failed rc=%d ack=%d",
-                 rc, (int)@Test::scenarioCommandAck);
-    return 0;
+    TestWaitForTimeout(50);
+    waitedMs += 50;
   }
 
   if ((int)@Test::scenarioCommandAck != 0)
   {
-    testStepFail("scenario-reset", "Harness reset ack mismatch actual=%d",
-                 (int)@Test::scenarioCommandAck);
+    testStepFail("scenario-reset", "Harness reset timeout waited=%d ack=%d",
+                 waitedMs, (int)@Test::scenarioCommandAck);
     return 0;
   }
 
@@ -32,20 +31,19 @@ long resetValidationHarnessIfNeeded()
 
 long waitForScenarioAck(int scenarioId, dword timeoutMs)
 {
-  long rc;
+  dword waitedMs;
 
-  rc = TestWaitForSysVar(sysvar::Test::scenarioCommandAck, timeoutMs);
-  if (rc != 1)
+  waitedMs = 0;
+  while ((int)@Test::scenarioCommandAck != scenarioId && waitedMs < timeoutMs)
   {
-    testStepFail("scenario-ack", "Scenario %d ack timeout rc=%d actualAck=%d",
-                 scenarioId, rc, (int)@Test::scenarioCommandAck);
-    return 0;
+    TestWaitForTimeout(50);
+    waitedMs += 50;
   }
 
   if ((int)@Test::scenarioCommandAck != scenarioId)
   {
-    testStepFail("scenario-ack", "Scenario ack mismatch expected=%d actual=%d",
-                 scenarioId, (int)@Test::scenarioCommandAck);
+    testStepFail("scenario-ack", "Scenario ack timeout expected=%d actual=%d waited=%d",
+                 scenarioId, (int)@Test::scenarioCommandAck, waitedMs);
     return 0;
   }
 

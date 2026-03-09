@@ -36,6 +36,7 @@ variables
   int gLockMergeCutInFlag;
   int gLockObjectAlertHoldMs;
   int gScenarioCmdInternalClear;
+  int gScenarioMirrorInternalWrite;
 }
 
 
@@ -131,6 +132,49 @@ void stopScenarioExecution()
   cancelScenarioTransientTimers();
   @Test::forceFailSafe = 0;
   @Test::scenarioResult = 0;
+}
+
+void setScenarioMirror(int scenarioId)
+{
+  gScenarioMirrorInternalWrite = 1;
+  @Test::testScenario = clampRange(scenarioId, 0, 255);
+}
+
+void publishScenarioResultFrame()
+{
+  message frmTestResultMsg mRes;
+
+  mRes.ScenarioResult = (((int)@Test::scenarioResult) == 1) ? 1 : 0;
+  output(mRes);
+}
+
+void beginScenarioExecution(int scenarioId)
+{
+  gDemoRunning = 0;
+  cancelTimer(tDemoStep);
+  cancelScenarioTransientTimers();
+  @Test::scenarioResult = 0;
+  applyScenarioPreset(scenarioId);
+  gCurrentScenarioId = scenarioId;
+  setScenarioMirror(scenarioId);
+  scheduleScenarioEvaluation(scenarioId);
+}
+
+void beginAutoDemoExecution()
+{
+  cancelScenarioTransientTimers();
+  gDemoRunning = 1;
+  gDemoStepIndex = 0;
+  setScenarioMirror(100);
+  runDemoStep();
+}
+
+void beginBaselineDiagRequest(int scenarioId)
+{
+  stopScenarioExecution();
+  gCurrentScenarioId = scenarioId;
+  setScenarioMirror(scenarioId);
+  sendBaselineDiagRequest(scenarioId);
 }
 
 void applyScenarioPreset(int scenarioId)
@@ -680,6 +724,7 @@ void runDemoStep()
 
   applyScenarioPreset(gDemoStepIndex);
   gCurrentScenarioId = gDemoStepIndex;
+  setScenarioMirror(gCurrentScenarioId);
   scheduleScenarioEvaluation(gDemoStepIndex);
   setTimer(tDemoStep, 4000);
 }
@@ -805,6 +850,7 @@ on start
   gLockMergeCutInFlag = 0;
   gLockObjectAlertHoldMs = 300;
   gScenarioCmdInternalClear = 0;
+  gScenarioMirrorInternalWrite = 0;
   @Test::scenarioCommand = 0;
   @Test::scenarioCommandAck = 0;
   @Test::testScenario = 0;
@@ -981,9 +1027,7 @@ on timer tInput100
 
 on sysvar Test::scenarioResult
 {
-  message frmTestResultMsg mRes;
-  mRes.ScenarioResult = (int)@Test::scenarioResult;
-  output(mRes);
+  publishScenarioResultFrame();
 }
 
 on sysvar Test::scenarioCommand
@@ -999,33 +1043,23 @@ on sysvar Test::scenarioCommand
 
   if (scenarioId == 100)
   {
-    cancelScenarioTransientTimers();
-    gDemoRunning = 1;
-    gDemoStepIndex = 0;
-    runDemoStep();
+    beginAutoDemoExecution();
     write("[VAL_SCENARIO_CTRL] command: auto demo start");
   }
   else if (scenarioId == 0)
   {
     stopScenarioExecution();
+    setScenarioMirror(0);
     write("[VAL_SCENARIO_CTRL] command: auto demo stop");
   }
   else if (scenarioId >= 1 && scenarioId <= 25)
   {
-    gDemoRunning = 0;
-    cancelTimer(tDemoStep);
-    cancelScenarioTransientTimers();
-    @Test::scenarioResult = 0;
-    applyScenarioPreset(scenarioId);
-    gCurrentScenarioId = scenarioId;
-    scheduleScenarioEvaluation(scenarioId);
+    beginScenarioExecution(scenarioId);
     write("[VAL_SCENARIO_CTRL] command apply scenario=%d", scenarioId);
   }
   else if (scenarioId >= 200 && scenarioId <= 255)
   {
-    stopScenarioExecution();
-    gCurrentScenarioId = scenarioId;
-    sendBaselineDiagRequest(scenarioId);
+    beginBaselineDiagRequest(scenarioId);
     write("[VAL_SCENARIO_CTRL] command send baseline diag scenario=%d", scenarioId);
   }
   else
@@ -1041,6 +1075,13 @@ on sysvar Test::scenarioCommand
 on sysvar Test::testScenario
 {
   int scenarioId;
+
+  if (gScenarioMirrorInternalWrite == 1)
+  {
+    gScenarioMirrorInternalWrite = 0;
+    return;
+  }
+
   scenarioId = (int)@Test::testScenario;
 
   if (gScenarioInputLock == 1 &&
@@ -1050,7 +1091,7 @@ on sysvar Test::testScenario
   {
     /* Ignore panel re-write while a locked scenario is running.
        Switch scenario only via explicit reset (scenario 0) first. */
-    @Test::testScenario = gCurrentScenarioId;
+    setScenarioMirror(gCurrentScenarioId);
     write("[VAL_SCENARIO_CTRL] ignore scenario change while locked: req=%d keep=%d",
           scenarioId, gCurrentScenarioId);
     return;
@@ -1058,33 +1099,23 @@ on sysvar Test::testScenario
 
   if (scenarioId == 100)
   {
-    cancelScenarioTransientTimers();
-    gDemoRunning = 1;
-    gDemoStepIndex = 0;
-    runDemoStep();
+    beginAutoDemoExecution();
     write("[VAL_SCENARIO_CTRL] auto demo start");
   }
   else if (scenarioId == 0)
   {
     stopScenarioExecution();
+    setScenarioMirror(0);
     write("[VAL_SCENARIO_CTRL] auto demo stop");
   }
   else if (scenarioId >= 1 && scenarioId <= 25)
   {
-    gDemoRunning = 0;
-    cancelTimer(tDemoStep);
-    cancelScenarioTransientTimers();
-    @Test::scenarioResult = 0;
-    applyScenarioPreset(scenarioId);
-    gCurrentScenarioId = scenarioId;
-    scheduleScenarioEvaluation(scenarioId);
+    beginScenarioExecution(scenarioId);
     write("[VAL_SCENARIO_CTRL] apply scenario=%d", scenarioId);
   }
   else if (scenarioId >= 200 && scenarioId <= 255)
   {
-    stopScenarioExecution();
-    gCurrentScenarioId = scenarioId;
-    sendBaselineDiagRequest(scenarioId);
+    beginBaselineDiagRequest(scenarioId);
     write("[VAL_SCENARIO_CTRL] send baseline diag request scenario=%d", scenarioId);
   }
   else
@@ -1139,5 +1170,4 @@ on timer tScenarioEval
         objectTtcMin, objectEventCode, renderAlertType, renderTextCode);
 
 }
-
 
