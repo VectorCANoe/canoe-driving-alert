@@ -82,6 +82,22 @@ void publishNavContextCore()
   @Core::speedLimitNorm = speedLimit;
 }
 
+void publishBackboneNavContext()
+{
+  message ethNavContextMsg mNav;
+
+  /* Internal IVI gateway seam for CAN-stub today, transport swap later. */
+  mNav.RoadZone = clampRange((int)@Infotainment::roadZone, 0, 7);
+  mNav.NavDirection = clampRange((int)@Infotainment::navDirection, 0, 7);
+  mNav.ZoneDistance = clampRange((int)@Infotainment::zoneDistance, 0, 255);
+  mNav.SpeedLimit = clampRange((int)@Infotainment::speedLimit, 0, 255);
+  if (mNav.SpeedLimit == 0)
+  {
+    mNav.SpeedLimit = 30;
+  }
+  output(mNav);
+}
+
 on start
 {
   gLastWarningTextCode = -1;
@@ -546,6 +562,8 @@ on timer tIviExt100
   mHealthDetail.IviCpuLoad = (speedLimit > 100) ? 45 : 35;
   mHealthDetail.IviMemLoad = 40;
   output(mHealthDetail);
+
+  publishBackboneNavContext();
 
   mDiagRes.IviDiagRespCode = 0x62;
   mDiagRes.IviDiagData0 = gLastIviDiagDidHigh & 0xFF;

@@ -30,7 +30,7 @@ NS_ :
 
 BS_:
 
-BU_: ADAS ADAS ESC VAL_SCENARIO_CTRL BCM IVI Vector__XXX
+BU_: ADAS ESC VAL_SCENARIO_CTRL BCM IVI Vector__XXX
 
 BO_ 449 frmAdasChassisStatusMsg: 2 ADAS
  SG_ AdasChassisState : 0|8@1+ (1,0) [0|255] "" ESC
@@ -87,17 +87,17 @@ CM_ BO_ 449 "Comm_201: ADAS chassis status output. ADAS-owned frame.";
 CM_ SG_ 449 AdasChassisState "Computed ADAS warning level (0=none).";
 CM_ SG_ 449 AdasHealthLevel  "ADAS node health (0=fault 1=ok).";
 
-CM_ BO_ 451 "Comm_120: Emergency proximity risk frame. ADAS-owned frame.";
+CM_ BO_ 451 "Comm_120: Emergency proximity risk frame. Produced by ADAS through its internal backbone transport seam.";
 CM_ SG_ 451 RiskLevel "0..100 emergency proximity risk score.";
 CM_ SG_ 451 EtaSeconds "Emergency ETA seconds used by risk model.";
 CM_ SG_ 451 VehicleSpeed "Vehicle speed input used by risk model.";
 CM_ SG_ 451 EmergencyDirection "0=front 1=left 2=right 3=rear.";
 CM_ SG_ 451 EmergencyType "0=none 1=police 2=ambulance.";
-CM_ BO_ 452 "Comm_121: Deceleration assist request frame. Produced by ADAS (Req_121~123).";
+CM_ BO_ 452 "Comm_121: Deceleration assist request frame. Produced by ADAS from ADAS Core decision state through its internal transport seam.";
 CM_ SG_ 452 DecelAssistReq "0=off 1=active.";
 CM_ SG_ 452 FailSafeMode "0=normal 1=degraded 2=blocked.";
 CM_ SG_ 452 DriverReleaseReason "0=none 1=steering 2=brake 3=failsafe.";
-CM_ BO_ 518 "Comm_006/007/008/122: Selected alert distribution frame. Produced by ADAS for BCM/IVI sync.";
+CM_ BO_ 518 "Comm_006/007/008/122: Selected alert distribution frame. Produced by ADAS for BCM/IVI sync through its internal transport seam.";
 CM_ SG_ 518 selectedAlertLevel "Final selected alert level (0..7).";
 CM_ SG_ 518 selectedAlertType "Final selected alert type (0..7).";
 CM_ SG_ 518 timeoutClear "Timeout clear pulse for deterministic reset path.";
@@ -109,11 +109,11 @@ CM_ SG_ 453 ObjectConfidence "Object confidence score in percent.";
 CM_ SG_ 453 IntersectionConflict "1=intersection lateral conflict context.";
 CM_ SG_ 453 MergeCutIn "1=merge/cut-in conflict context.";
 CM_ SG_ 453 ObjectAlertHoldMs "Conservative hold time for temporary track loss.";
-CM_ BO_ 454 "Comm_131: Object risk state frame. Produced by ADAS for object TTC/risk arbitration.";
+CM_ BO_ 454 "Comm_131: Object risk state frame. Produced by ADAS for object TTC/risk arbitration through its internal transport seam.";
 CM_ SG_ 454 ObjectRiskClass "0=none .. 5=critical object risk class.";
 CM_ SG_ 454 ObjectTtcMinMs "Representative object minimum TTC in ms.";
 CM_ SG_ 454 ObjectRiskLevel "Normalized object risk level (0..100).";
-CM_ BO_ 455 "Comm_132: Object scenario alert frame. Produced by ADAS for object-context alert sharing.";
+CM_ BO_ 455 "Comm_132: Object scenario alert frame. Produced by ADAS for object-context alert sharing through its internal transport seam.";
 CM_ SG_ 455 ObjectAlertLevel "Object-context selected alert level.";
 CM_ SG_ 455 ObjectAlertType "Object-context selected alert type.";
 
@@ -136,4 +136,3 @@ VAL_ 453 MergeCutIn 0 "NO" 1 "YES";
 VAL_ 454 ObjectTrackValid 0 "INVALID" 1 "VALID";
 VAL_ 455 IntersectionConflict 0 "NO" 1 "YES";
 VAL_ 455 MergeCutIn 0 "NO" 1 "YES";
-

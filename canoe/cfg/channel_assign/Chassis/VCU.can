@@ -24,6 +24,19 @@ variables
   int gLastDiagDidLow;
 }
 
+void publishBackboneVehicleState()
+{
+  message ethVehicleStateMsg mEthVeh;
+
+  /* Internal PTGW/vehicle-state seam for CAN-stub today, transport swap later. */
+  mEthVeh.DriveState = clampRange((int)@Core::driveStateNorm, 0, 3);
+  mEthVeh.VehicleSpeed = clampRange((int)@Core::vehicleSpeedNorm, 0, 255);
+  mEthVeh.BrakePedalNorm = clampRange(gBrakePedal, 0, 100);
+  mEthVeh.TurnLampState = clampRange((int)@CoreState::turnLampState, 0, 3);
+  mEthVeh.SeatBeltWarnLvl = clampRange((int)@CoreState::seatBeltWarnLvl, 0, 3);
+  output(mEthVeh);
+}
+
 on start
 {
   gSpeed = 0;
@@ -148,6 +161,7 @@ on timer tVcuCycle
   output(mState);
   @Chassis::vehicleSpeed = gSpeed;
   @Chassis::driveState = driveState;
+  publishBackboneVehicleState();
 
   torqueRequest = clampRange(gAccelPedal * 2, 0, 255);
   mAccel.AccelRequest = gAccelPedal;

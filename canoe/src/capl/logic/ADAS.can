@@ -29,6 +29,54 @@ variables
   int gStableAlertType;
   int gLastStaleInputState;
   int gLastFallbackState;
+  int gLastObjectRiskLevel;
+  int gLastObjectAlertLevel;
+  int gLastObjectAlertType;
+}
+
+void publishBackboneDecisionFrames()
+{
+  message ethEmergencyRiskMsg mRisk;
+  message ethDecelAssistReqMsg mDecel;
+  message ethSelectedAlertMsg mAlert;
+  message ethObjectRiskStateMsg mObjRisk;
+  message ethObjectScenarioAlertMsg mObjAlert;
+  int emergencyContext;
+
+  emergencyContext = clampRange((int)@Core::emergencyContext, 0, 2);
+
+  /* Internal ADAS gateway seam for CAN-stub today, transport swap later. */
+  mRisk.RiskLevel = clampRange((int)@Core::proximityRiskLevel, 0, 100);
+  mRisk.EtaSeconds = clampRange((int)@V2X::eta, 0, 255);
+  mRisk.VehicleSpeed = clampRange((int)@Core::vehicleSpeedNorm, 0, 255);
+  mRisk.EmergencyDirection = clampRange((int)@V2X::emergencyDirection, 0, 3);
+  mRisk.EmergencyType = emergencyContext;
+  output(mRisk);
+
+  mDecel.DecelAssistReq = (((int)@Core::decelAssistReq) == 1) ? 1 : 0;
+  mDecel.FailSafeMode = clampRange((int)@Core::failSafeMode, 0, 2);
+  mDecel.DriverReleaseReason = clampRange(gLastDriverReleaseReason, 0, 3);
+  mDecel.EmergencyContext = emergencyContext;
+  mDecel.RiskLevel = clampRange((int)@Core::proximityRiskLevel, 0, 100);
+  output(mDecel);
+
+  mAlert.selectedAlertLevel = clampRange((int)@Core::selectedAlertLevel, 0, 7);
+  mAlert.selectedAlertType = clampRange((int)@Core::selectedAlertType, 0, 7);
+  mAlert.timeoutClear = (((int)@Core::timeoutClear) == 1) ? 1 : 0;
+  output(mAlert);
+
+  mObjRisk.ObjectRiskClass = clampRange((int)@Core::objectRiskClass, 0, 7);
+  mObjRisk.ObjectTtcMinMs = clampRange((int)@Core::objectTtcMin, 0, 10000);
+  mObjRisk.ObjectRiskLevel = clampRange(gLastObjectRiskLevel, 0, 100);
+  mObjRisk.ObjectTrackValid = clampRange((int)@Core::objectTrackValid, 0, 1);
+  output(mObjRisk);
+
+  mObjAlert.ObjectAlertLevel = clampRange(gLastObjectAlertLevel, 0, 7);
+  mObjAlert.ObjectAlertType = clampRange(gLastObjectAlertType, 0, 7);
+  mObjAlert.IntersectionConflict = clampRange((int)@Core::intersectionConflictFlag, 0, 1);
+  mObjAlert.MergeCutIn = clampRange((int)@Core::mergeCutInFlag, 0, 1);
+  mObjAlert.ObjectRiskClass = clampRange((int)@Core::objectRiskClass, 0, 7);
+  output(mObjAlert);
 }
 
 int calcProximityRisk(int emergencyContext, int etaSec, int speed, int emergencyDirection, int driveState)
@@ -303,9 +351,6 @@ int getObjectAlertType(int intersectionConflictFlag, int mergeCutInFlag)
 
 void runArbiter()
 {
-  message ethDecelAssistReqMsg mDecel;
-  message ethSelectedAlertMsg mSelected;
-  message ethObjectScenarioAlertMsg mObjAlert;
   int emergencyContext;
   int warningState;
   int baseZoneContext;
@@ -621,32 +666,11 @@ void runArbiter()
     gLastDriverReleaseReason = driverReleaseReason;
   }
 
-  mDecel.DecelAssistReq = decelAssistReq;
-  mDecel.RiskLevel = proximityRiskLevel;
-  mDecel.FailSafeMode = failSafeMode;
-  mDecel.DriverReleaseReason = driverReleaseReason;
-  mDecel.EmergencyContext = emergencyContext;
-  output(mDecel);
-
-  mSelected.selectedAlertLevel = clampRange(selectedAlertLevel, 0, 7);
-  mSelected.selectedAlertType = clampRange(selectedAlertType, 0, 6);
-  mSelected.timeoutClear = timeoutClear;
-  output(mSelected);
-
-  mObjAlert.ObjectAlertLevel = clampRange(selectedAlertLevel, 0, 7);
-  mObjAlert.ObjectAlertType = clampRange(selectedAlertType, 0, 6);
-  mObjAlert.IntersectionConflict = intersectionConflictFlag;
-  mObjAlert.MergeCutIn = mergeCutInFlag;
-  mObjAlert.ObjectRiskClass = clampRange(objectRiskClass, 0, 7);
-  output(mObjAlert);
-
   gPrevEmergencyContext = emergencyContext;
 }
 
 void updateWarningState()
 {
-  message ethEmergencyRiskMsg mRisk;
-  message ethObjectRiskStateMsg mObjRisk;
   int speed;
   int driveState;
   int steeringInput;
@@ -806,6 +830,17 @@ void updateWarningState()
   @Core::intersectionConflictFlag = intersectionConflictFlag;
   @Core::mergeCutInFlag = mergeCutInFlag;
   @Core::objectAlertHoldMs = objectAlertHoldMs;
+  gLastObjectRiskLevel = objectRiskLevel;
+  if (objectRiskClass >= 2)
+  {
+    gLastObjectAlertLevel = getObjectAlertLevel(intersectionConflictFlag, mergeCutInFlag, objectRiskClass);
+    gLastObjectAlertType = getObjectAlertType(intersectionConflictFlag, mergeCutInFlag);
+  }
+  else
+  {
+    gLastObjectAlertLevel = 0;
+    gLastObjectAlertType = 0;
+  }
 
   riskLevel = calcProximityRisk(emergencyContext, etaSec, speed, emergencyDirection, driveState);
   if (objectRiskLevel > riskLevel)
@@ -866,27 +901,9 @@ void updateWarningState()
     gLastWarningState = warningState;
   }
 
-  gRiskPublishTick = gRiskPublishTick + 1;
-  gObjectStatePublishTick = gObjectStatePublishTick + 1;
-  if (riskLevel != gLastRiskLevel || gRiskPublishTick >= 10)
+  if (riskLevel != gLastRiskLevel)
   {
-    mRisk.RiskLevel = clampRange(riskLevel, 0, 100);
-    mRisk.EtaSeconds = etaSec;
-    mRisk.VehicleSpeed = speed;
-    mRisk.EmergencyDirection = emergencyDirection;
-    mRisk.EmergencyType = emergencyContext;
-    output(mRisk);
     gLastRiskLevel = riskLevel;
-    gRiskPublishTick = 0;
-  }
-  if (gObjectStatePublishTick >= 10 || objectRiskClass >= 3)
-  {
-    mObjRisk.ObjectRiskClass = objectRiskClass;
-    mObjRisk.ObjectTtcMinMs = objectTtcMin;
-    mObjRisk.ObjectRiskLevel = clampRange(objectRiskLevel, 0, 100);
-    mObjRisk.ObjectTrackValid = objectTrackValid;
-    output(mObjRisk);
-    gObjectStatePublishTick = 0;
   }
 
   if ((int)@Core::objectEventCode != gLastObjectEventCode)
@@ -957,6 +974,9 @@ on start
   gStableAlertType = -1;
   gLastStaleInputState = -1;
   gLastFallbackState = -1;
+  gLastObjectRiskLevel = 0;
+  gLastObjectAlertLevel = 0;
+  gLastObjectAlertType = 0;
   @Core::proximityRiskLevel = 0;
   @Core::objectTrackValid = 0;
   @Core::objectRange = 0;
@@ -983,6 +1003,6 @@ on timer tAdasCycle
 on timer tArbiter50
 {
   runArbiter();
+  publishBackboneDecisionFrames();
   setTimer(tArbiter50, 50);
 }
-

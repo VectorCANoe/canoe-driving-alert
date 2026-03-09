@@ -11,6 +11,17 @@ variables
   int gPrevSteering;
 }
 
+void publishBackboneSteeringState(int steeringAngleRaw, int steeringQuality)
+{
+  message ethSteeringMsg mEthSteer;
+
+  /* Internal CHGW steering seam for CAN-stub today, transport swap later. */
+  mEthSteer.SteeringInput = clampRange(gSteeringInput, 0, 1);
+  mEthSteer.SteeringAngleDeg = clampRange(steeringAngleRaw, -720, 720);
+  mEthSteer.SteeringQuality = clampRange(steeringQuality, 0, 3);
+  output(mEthSteer);
+}
+
 on start
 {
   gSteeringInput = 0;
@@ -66,6 +77,8 @@ on timer tMdpsCycle
   mEps.EpsFaultState = 0;
   mEps.EpsTemp = 55;
   output(mEps);
+
+  publishBackboneSteeringState(steeringAngleRaw, (mEps.EpsFaultState == 0) ? 3 : 1);
 
   setTimer(tMdpsCycle, 50);
 }

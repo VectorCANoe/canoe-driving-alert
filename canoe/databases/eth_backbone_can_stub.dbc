@@ -30,9 +30,9 @@ NS_ :
 
 BS_:
 
-BU_: V2X ADAS IVI ESC VAL_SCENARIO_CTRL CGW Vector__XXX
+BU_: V2X ADAS IVI ESC MDPS VCU VAL_SCENARIO_CTRL CGW Vector__XXX
 
-BO_ 448 frmEmergencyBroadcastMsg: 4 Vector__XXX
+BO_ 448 frmEmergencyBroadcastMsg: 4 V2X
  SG_ VehicleType  : 0|4@1+  (1,0) [0|15]  ""    V2X
  SG_ Status       : 4|2@1+  (1,0) [0|3]   ""    V2X
  SG_ Reserved0    : 6|2@1+  (1,0) [0|0]   ""    Vector__XXX
@@ -60,7 +60,7 @@ BO_ 273 ethFailSafeStateMsg: 2 CGW
  SG_ BoundaryAlive    : 6|1@1+ (1,0) [0|1] "" ADAS,VAL_SCENARIO_CTRL
  SG_ Reserved0        : 7|9@1+ (1,0) [0|0] "" Vector__XXX
 
-BO_ 1296 ethVehicleStateMsg: 6 CGW
+BO_ 1296 ethVehicleStateMsg: 6 VCU
  SG_ DriveState       : 0|2@1+  (1,0) [0|3]   ""    ADAS,VAL_SCENARIO_CTRL,ADAS
  SG_ VehicleSpeed     : 8|8@1+  (1,0) [0|255] "km/h" ADAS,VAL_SCENARIO_CTRL,ADAS
  SG_ BrakePedalNorm   : 16|7@1+ (1,0) [0|100] "%"   ADAS,VAL_SCENARIO_CTRL
@@ -68,26 +68,26 @@ BO_ 1296 ethVehicleStateMsg: 6 CGW
  SG_ SeatBeltWarnLvl  : 25|2@1+ (1,0) [0|3]   ""    ADAS,VAL_SCENARIO_CTRL
  SG_ Reserved0        : 27|21@1+ (1,0) [0|0]  ""    Vector__XXX
 
-BO_ 1297 ethSteeringMsg: 4 CGW
+BO_ 1297 ethSteeringMsg: 4 MDPS
  SG_ SteeringInput    : 0|1@1+   (1,0) [0|1]    ""    ADAS,VAL_SCENARIO_CTRL,ADAS
  SG_ SteeringAngleDeg : 8|12@1-  (1,0) [-720|720] "deg" ADAS,VAL_SCENARIO_CTRL
  SG_ SteeringQuality  : 20|2@1+  (1,0) [0|3]    ""    ADAS,VAL_SCENARIO_CTRL
  SG_ Reserved0        : 22|10@1+ (1,0) [0|0]    ""    Vector__XXX
 
-BO_ 1298 ethNavContextMsg: 6 CGW
+BO_ 1298 ethNavContextMsg: 6 IVI
  SG_ RoadZone         : 0|3@1+   (1,0) [0|7]    ""    ADAS,VAL_SCENARIO_CTRL,IVI
  SG_ NavDirection     : 3|3@1+   (1,0) [0|7]    ""    ADAS,VAL_SCENARIO_CTRL,IVI
  SG_ ZoneDistance     : 8|8@1+   (1,0) [0|255]  "m"   ADAS,VAL_SCENARIO_CTRL,IVI
  SG_ SpeedLimit       : 16|8@1+  (1,0) [0|255]  "km/h" ADAS,VAL_SCENARIO_CTRL,IVI
  SG_ Reserved0        : 24|24@1+ (1,0) [0|0]    ""    Vector__XXX
 
-CM_ BO_ 448 "E100: Emergency vehicle broadcast. Sent by V2X (type=1) or V2X (type=2) on ETH backbone (ch5). Received by V2X for priority arbitration. STUB: This file substitutes CANoe.Ethernet backbone using CAN ch5. Delete this file and replace with Ethernet network when CANoe.Ethernet license is available. Interface spec: 0303_Communication_Specification.md E100.";
+CM_ BO_ 448 "E100: Emergency vehicle broadcast. Sent by V2X on ETH backbone stub through its internal V2X transport seam.";
 CM_ SG_ 448 VehicleType  "1=POLICE 2=AMBULANCE";
 CM_ SG_ 448 Status       "0=CLEAR 1=ACTIVE";
 CM_ SG_ 448 SourceId     "Unique vehicle source ID for tiebreaker.";
 CM_ SG_ 448 EtaSeconds   "Estimated time of arrival in seconds. Lower = higher priority.";
 CM_ SG_ 448 Direction    "0=UNKNOWN 1=FRONT 2=REAR 3=SIDE";
-CM_ BO_ 450 "E562: Emergency monitor shadow. Produced by V2X on ETH backbone. Moved from chassis_can v2 architecture refactor.";
+CM_ BO_ 450 "E562: Emergency monitor shadow. Produced by V2X on ETH backbone stub through its internal transport seam.";
 CM_ SG_ 450 EmergencyContext "Active emergency type mirrored from Core sysvar.";
 CM_ SG_ 450 TimeoutClearMon  "1=timeout clear pulse active.";
 CM_ BO_ 456 "E216: Object safety state frame. Produced by CGW for confidence/failsafe/event trace.";
@@ -97,14 +97,14 @@ CM_ BO_ 273 "E789: Fail-safe state frame. Produced by CGW (Req_124).";
 CM_ SG_ 273 DomainPathStatus "0=normal 1=degraded 2=failed.";
 CM_ SG_ 273 E2eHealthState "0=failed 1=degraded 2=healthy.";
 CM_ SG_ 273 FailSafeMode "0=normal 1=degraded 2=blocked.";
-CM_ BO_ 1296 "Normalized vehicle state frame on ETH backbone stub for domain arbitration.";
+CM_ BO_ 1296 "Normalized vehicle state frame on ETH backbone stub. Produced by VCU through its internal domain transport seam.";
 CM_ SG_ 1296 DriveState "0=P 1=R 2=N 3=D.";
 CM_ SG_ 1296 BrakePedalNorm "Driver brake pedal normalized percentage.";
 CM_ SG_ 1296 TurnLampState "0=Off 1=Left 2=Right 3=Hazard.";
-CM_ BO_ 1297 "Normalized steering context frame on ETH backbone stub.";
+CM_ BO_ 1297 "Normalized steering context frame on ETH backbone stub. Produced by MDPS through its internal domain transport seam.";
 CM_ SG_ 1297 SteeringInput "1 when driver steering intervention is detected.";
 CM_ SG_ 1297 SteeringQuality "Steering signal quality indicator.";
-CM_ BO_ 1298 "Normalized navigation context frame on ETH backbone stub.";
+CM_ BO_ 1298 "Normalized navigation context frame on ETH backbone stub. Produced by IVI through its internal domain transport seam.";
 CM_ SG_ 1298 RoadZone "0=None 1=School 2=Highway 3=Guide.";
 CM_ SG_ 1298 NavDirection "0=None 1=Left 2=Right 3=Straight.";
 
@@ -132,4 +132,3 @@ VAL_ 1296 TurnLampState 0 "OFF" 1 "LEFT" 2 "RIGHT" 3 "HAZARD";
 VAL_ 1297 SteeringInput 0 "NO" 1 "YES";
 VAL_ 1298 RoadZone 0 "NONE" 1 "SCHOOL" 2 "HIGHWAY" 3 "GUIDE";
 VAL_ 1298 NavDirection 0 "NONE" 1 "LEFT" 2 "RIGHT" 3 "STRAIGHT";
-

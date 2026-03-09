@@ -67,17 +67,17 @@ on message frmInfotainmentHealthMsg
   gInfoTsMs = getSimulationTimeMs();
 }
 
-on message frmVehicleStateCanMsg
+on message ethVehicleStateMsg
 {
   gVehicleStateAgeMs = 0;
 }
 
-on message frmNavContextCanMsg
+on message ethNavContextMsg
 {
   gNavContextAgeMs = 0;
 }
 
-on message frmSteeringCanMsg
+on message ethSteeringMsg
 {
   gSteeringAgeMs = 0;
 }
@@ -91,9 +91,6 @@ on timer tBoundaryCheck
 {
   message ethFailSafeStateMsg mFailSafe;
   message ethObjectSafetyStateMsg mObjSafety;
-  message ethVehicleStateMsg mVehEth;
-  message ethSteeringMsg mSteerEth;
-  message ethNavContextMsg mNavEth;
   dword nowMs;
   int routingPolicy;
   int forceFailSafe;
@@ -110,16 +107,6 @@ on timer tBoundaryCheck
   int e2eHealthState;
   int failSafeMode;
   int ethPathState;
-  int steeringInput;
-  int steeringAngleDeg;
-  int navDirection;
-  int roadZone;
-  int speedLimit;
-  int speedNorm;
-  int driveState;
-  int brakePedalNorm;
-  int turnLampState;
-  int seatBeltWarnLvl;
 
   nowMs = getSimulationTimeMs();
   aliveCount = 0;
@@ -262,35 +249,6 @@ on timer tBoundaryCheck
   mObjSafety.ObjectFailSafeMode = failSafeMode;
   mObjSafety.ObjectTrackValid = objectTrackValid;
   output(mObjSafety);
-
-  speedNorm = clampRange((int)@Core::vehicleSpeedNorm, 0, 255);
-  driveState = clampRange((int)@Core::driveStateNorm, 0, 3);
-  brakePedalNorm = clampRange((int)@Core::brakePedalNorm, 0, 100);
-  turnLampState = clampRange((int)@CoreState::turnLampState, 0, 3);
-  seatBeltWarnLvl = clampRange((int)@CoreState::seatBeltWarnLvl, 0, 3);
-  steeringInput = clampRange((int)@Core::steeringInputNorm, 0, 1);
-  steeringAngleDeg = steeringInput * 30;
-  roadZone = clampRange((int)@Infotainment::roadZone, 0, 7);
-  navDirection = clampRange((int)@Infotainment::navDirection, 0, 7);
-  speedLimit = clampRange((int)@Core::speedLimitNorm, 0, 255);
-
-  mVehEth.DriveState = driveState;
-  mVehEth.VehicleSpeed = speedNorm;
-  mVehEth.BrakePedalNorm = brakePedalNorm;
-  mVehEth.TurnLampState = turnLampState;
-  mVehEth.SeatBeltWarnLvl = seatBeltWarnLvl;
-  output(mVehEth);
-
-  mSteerEth.SteeringInput = steeringInput;
-  mSteerEth.SteeringAngleDeg = steeringAngleDeg;
-  mSteerEth.SteeringQuality = (ethPathState == 0) ? 3 : ((ethPathState == 1) ? 2 : 1);
-  output(mSteerEth);
-
-  mNavEth.RoadZone = roadZone;
-  mNavEth.NavDirection = navDirection;
-  mNavEth.ZoneDistance = clampRange((int)@Infotainment::zoneDistance, 0, 255);
-  mNavEth.SpeedLimit = speedLimit;
-  output(mNavEth);
 
   setTimer(tBoundaryCheck, 100);
 }
