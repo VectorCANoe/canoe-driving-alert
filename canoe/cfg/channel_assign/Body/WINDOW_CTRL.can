@@ -4,10 +4,10 @@
 // 입력  : @Body::windowUp   (0=해제 1=누름) — 유리 올라감=닫힘 (state 감소)
 //         @Body::windowDown (0=해제 1=누름) — 유리 내려감=열림 (state 증가)
 //         @Body::doorLockCmd
-// 출력  : @Body::windowState (0=완전열림 ~ 16=완전닫힘)
+// 출력  : @Body::windowState (0=완전열림 ~ 9=완전닫힘)
 //         frmDoorControlMsg
 //
-// 단클릭: 1프레임 즉시 / 장기 누름: 500ms 후 313ms 간격 연속 (5초/16단계)
+// 단클릭: 1프레임 즉시 / 장기 누름: 4000ms 간격 연속 (10단계)
 
 includes
 {
@@ -81,7 +81,7 @@ on sysvar Body::windowDown
   }
   if ((int)@Body::windowDown == 1)
   {
-    if (gWindowState < 16)
+    if (gWindowState < 9)
     {
       gWindowState += 1;
       @Body::windowState = gWindowState;
@@ -98,7 +98,7 @@ on sysvar Body::windowDown
 on timer tWindowDown
 {
   if ((int)@Powertrain::ignitionKey == 0) return;
-  if ((int)@Body::windowDown == 1 && gWindowState < 16)
+  if ((int)@Body::windowDown == 1 && gWindowState < 9)
   {
     gWindowState += 1;
     @Body::windowState = gWindowState;

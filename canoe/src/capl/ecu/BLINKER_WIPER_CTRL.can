@@ -3,11 +3,11 @@
 // Body Domain - 깜빡이 + 비상등 + 와이퍼
 //
 // [깜빡이 동작]
-//   스위치 ON  -> 즉시 1번 프레임 + 250ms마다 1->2->...->7->0->1 무한 반복
+//   스위치 ON  -> 즉시 1번 프레임 + 500ms마다 0->1->0->1 무한 반복
 //   스위치 OFF -> 즉시 0번 프레임(꺼짐), 타이머 정지
 //
-// [프레임 사이클 (StateCnt=8, 인덱스 0-7)]
-//   ON  : 1->2->3->4->5->6->7->0(8번째)->1(첫번째)-> ... 무한 반복
+// [프레임 사이클 (StateCnt=2, 인덱스 0-1)]
+//   ON  : 1->0->1->0-> ... 무한 반복 (500ms 간격)
 //   OFF : 0번 프레임 고정
 //
 // [비상등 동작]
@@ -28,7 +28,7 @@ variables
   msTimer tWiper;
 
   int gBlinkState;  // 0=off 1=left 2=right 3=hazard
-  int gBlinkFrame;  // 0-7 (애니메이션 프레임 인덱스)
+  int gBlinkFrame;  // 0-1 (0=꺼짐, 1=켜짐)
   int gWiperPos;    // 0-15
   int gWiperDir;    // +1 or -1 (왕복)
 }
@@ -78,8 +78,8 @@ on sysvar Body::turnLeft
     gBlinkState      = 1;
     gBlinkFrame      = 1;      // 즉시 1번 프레임(켜짐) 표시
     @Body::blinkLeft = 1;
-    setTimer(tBlink, 250);     // 250ms 후 다음 프레임으로
-    write("[BLINKER] LEFT ON - frame animation start");
+    setTimer(tBlink, 500);     // 500ms 후 토글
+    write("[BLINKER] LEFT ON - blink start");
   }
   else
   {
@@ -103,8 +103,8 @@ on sysvar Body::turnRight
     gBlinkState       = 2;
     gBlinkFrame       = 1;      // 즉시 1번 프레임(켜짐) 표시
     @Body::blinkRight = 1;
-    setTimer(tBlink, 250);
-    write("[BLINKER] RIGHT ON - frame animation start");
+    setTimer(tBlink, 500);
+    write("[BLINKER] RIGHT ON - blink start");
   }
   else
   {
@@ -129,8 +129,8 @@ on sysvar Body::hazard
     gBlinkFrame       = 1;      // 즉시 1번 프레임 양쪽 켜짐
     @Body::blinkLeft  = 1;
     @Body::blinkRight = 1;
-    setTimer(tBlink, 250);
-    write("[BLINKER] HAZARD ON - frame animation start");
+    setTimer(tBlink, 500);
+    write("[BLINKER] HAZARD ON - blink start");
   }
   else
   {
@@ -138,14 +138,14 @@ on sysvar Body::hazard
   }
 }
 
-// ── 깜빡이 타이머 (250ms마다 다음 프레임으로) ────────────────────
-// 사이클: 1->2->3->4->5->6->7->0(8번째)->1(첫번째)->...
+// ── 깜빡이 타이머 (500ms마다 0↔1 토글) ──────────────────────────
+// 사이클: 1->0->1->0->...
 on timer tBlink
 {
   if (isEngineOn() == 0) return;
   if (gBlinkState == 0)  return;
 
-  gBlinkFrame = (gBlinkFrame + 1) % 8;  // 0-7 순환 (7 다음은 0으로 복귀)
+  gBlinkFrame = 1 - gBlinkFrame;  // 0↔1 토글
 
   if (gBlinkState == 1)
   {
@@ -163,7 +163,7 @@ on timer tBlink
     @Body::blinkRight = gBlinkFrame;
   }
 
-  setTimer(tBlink, 250);  // 250ms 후 다음 프레임
+  setTimer(tBlink, 500);  // 500ms 후 토글
 }
 
 // ── 와이퍼 ───────────────────────────────────────────────────────

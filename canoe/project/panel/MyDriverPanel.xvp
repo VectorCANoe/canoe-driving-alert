@@ -68,14 +68,6 @@
       <Property Name="Location">1281, 413</Property>
       <Property Name="Text">Description</Property>
     </Object>
-    <Object Type="Vector.CANalyzer.Panels.Design.GroupBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X01d43239e75c6e47abeadd4ecc89b252c008" ControlName="편의 기능">
-      <Property Name="Name">X01d43239e75c6e47abeadd4ecc89b252c008</Property>
-      <Property Name="Size">1187, 60</Property>
-      <Property Name="Location">42, 541</Property>
-      <Property Name="Text">Description</Property>
-      <Property Name="TabIndex">3</Property>
-      <Property Name="UseWindowsStyle">False</Property>
-    </Object>
     <Object Type="Vector.CANalyzer.Panels.Design.GroupBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X47c835c7e7625e4100e9a0fe2ae23ab5fa8a" ControlName="Group Box 2">
       <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X752e75f6e0cfae425aebd84e18945d3e833e" ControlName="경고등">
         <Property Name="Name">X752e75f6e0cfae425aebd84e18945d3e833e</Property>
@@ -418,92 +410,13 @@ AUTO
       </Object>
       <Property Name="Name">X47c835c7e7625e4100e9a0fe2ae23ab5fa8a</Property>
       <Property Name="Size">576, 471</Property>
-      <Property Name="Location">653, 36</Property>
+      <Property Name="Location">5, 5</Property>
       <Property Name="Text">Description</Property>
       <Property Name="TabIndex">2</Property>
       <Property Name="UseWindowsStyle">False</Property>
     </Object>
-    <Object Type="Vector.CANalyzer.Panels.Design.GroupBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xac070e4ce6cc2e4363eb94ae6d456bd8cb5f" ControlName="주행제어">
-      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X2b4b921bef0c4e471debb7fe83e8bd9c4c42" ControlName="streeing">
-        <Property Name="Name">X2b4b921bef0c4e471debb7fe83e8bd9c4c42</Property>
-        <Property Name="Size">122, 18</Property>
-        <Property Name="Location">219, 217</Property>
-        <Property Name="ForeColor">White</Property>
-        <Property Name="Font">Microsoft Sans Serif, 10pt, style=Bold</Property>
-        <Property Name="Text">스티이어링 미구현 </Property>
-      </Object>
-      <Object Type="Vector.CANalyzer.Panels.Design.TrackBarControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X9b0b8d19ed93ae421eeb5e7e9809bf1a0baf" ControlName="Track Bar 3">
-        <Property Name="Name">X9b0b8d19ed93ae421eeb5e7e9809bf1a0baf</Property>
-        <Property Name="Size">106, 30</Property>
-        <Property Name="Location">235, 241</Property>
-        <Property Name="TabIndex">4</Property>
-        <Property Name="MaximumSize">100000, 30</Property>
-        <Property Name="SymbolConfiguration"></Property>
-      </Object>
-      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xb78da70eefa2ce492beb72be8e5bf75d8c56" ControlName="가속 패달">
-        <Property Name="Name">Xb78da70eefa2ce492beb72be8e5bf75d8c56</Property>
-        <Property Name="Size">52, 15</Property>
-        <Property Name="Location">75, 350</Property>
-        <Property Name="ForeColor">White</Property>
-        <Property Name="Font">Microsoft Sans Serif, 8.25pt, style=Bold</Property>
-        <Property Name="Text">가속패달</Property>
-      </Object>
-      <Object Type="Vector.CANalyzer.Panels.Design.TrackBarControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xb83fb943e0ff5e4301e8f68eabd33d9fedcd" ControlName="Track Bar 1">
-        <Property Name="Name">Xb83fb943e0ff5e4301e8f68eabd33d9fedcd</Property>
-        <Property Name="Size">106, 30</Property>
-        <Property Name="Location">75, 371</Property>
-        <Property Name="DisplayValue">True</Property>
-        <Property Name="TabIndex">3</Property>
-        <Property Name="MaximumDouble">100</Property>
-        <Property Name="MaximumSize">100000, 30</Property>
-        <Property Name="Maximum">100</Property>
-        <Property Name="SymbolConfiguration">8;2;chassis_can;SIL_TEST_CTRL;frmPedalInputCanMsg;AccelPedal;1;Chassis;;-1;;;Value;;;0</Property>
-      </Object>
-      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xb2470c43e7f0fe4bbee87b1eb78c45dbeb1d" ControlName="속도 숫자">
-        <Property Name="Name">Xb2470c43e7f0fe4bbee87b1eb78c45dbeb1d</Property>
-        <Property Name="Size">192, 15</Property>
-        <Property Name="Location">60, 92</Property>
-        <Property Name="ForeColor">White</Property>
-        <Property Name="Font">Microsoft Sans Serif, 8pt, style=Bold</Property>
-        <Property Name="Text"> 0    30   60   90  120 150 180 210 240</Property>
-      </Object>
-      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X90c12b9ce6815e4e79eb294e5d84ea5bc32b" ControlName="속도 구별 선">
-        <Property Name="Name">X90c12b9ce6815e4e79eb294e5d84ea5bc32b</Property>
-        <Property Name="Size">187, 18</Property>
-        <Property Name="Location">60, 69</Property>
-        <Property Name="ForeColor">White</Property>
-        <Property Name="Font">Microsoft Sans Serif, 10pt, style=Bold</Property>
-        <Property Name="Text"> |     |     |     |     |     |     |     |     |</Property>
-      </Object>
-      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xcd63b368ec11ce49dee9606efe119aab684c" ControlName="속도">
-        <Property Name="Name">Xcd63b368ec11ce49dee9606efe119aab684c</Property>
-        <Property Name="Size">35, 18</Property>
-        <Property Name="Location">60, 30</Property>
-        <Property Name="ForeColor">White</Property>
-        <Property Name="Font">Microsoft Sans Serif, 10pt, style=Bold</Property>
-        <Property Name="Text">속도</Property>
-      </Object>
-      <Object Type="Vector.CANalyzer.Panels.Design.TrackBarControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xa2a445d3ee9b9e41b1e9060eb79310801f2d" ControlName="vehicleSpeed">
-        <Property Name="Name">Xa2a445d3ee9b9e41b1e9060eb79310801f2d</Property>
-        <Property Name="Size">201, 30</Property>
-        <Property Name="Location">60, 54</Property>
-        <Property Name="DisplayValue">True</Property>
-        <Property Name="TabIndex">1</Property>
-        <Property Name="MaximumDouble">255</Property>
-        <Property Name="MaximumSize">100000, 30</Property>
-        <Property Name="Maximum">255</Property>
-        <Property Name="SymbolConfiguration">8;16;Chassis;;;vehicleSpeed;1;;;-1;;;Value;;;0</Property>
-      </Object>
-      <Property Name="Name">Xac070e4ce6cc2e4363eb94ae6d456bd8cb5f</Property>
-      <Property Name="Size">565, 471</Property>
-      <Property Name="Location">42, 36</Property>
-      <Property Name="ForeColor">White</Property>
-      <Property Name="Text">주행제어</Property>
-      <Property Name="TabIndex">1</Property>
-      <Property Name="UseWindowsStyle">False</Property>
-    </Object>
     <Property Name="Name">Panel</Property>
-    <Property Name="Size">1282, 632</Property>
+    <Property Name="Size">590, 493</Property>
     <Property Name="Location">0, 0</Property>
     <Property Name="BackColor">255, 127, 127, 127</Property>
   </Object>

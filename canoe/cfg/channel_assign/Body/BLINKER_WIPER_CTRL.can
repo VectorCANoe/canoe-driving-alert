@@ -1,22 +1,5 @@
-/*@!Encoding:65001*/
-// BLINKER_WIPER_CTRL.can  (cfg/channel_assign)
-// Body Domain - 깜빡이 + 비상등 + 와이퍼
-//
-// [깜빡이 동작]
-//   스위치 ON  -> 즉시 1번 프레임 + 250ms마다 1->2->...->7->0->1 무한 반복
-//   스위치 OFF -> 즉시 0번 프레임(꺼짐), 타이머 정지
-//
-// [프레임 사이클 (StateCnt=8, 인덱스 0-7)]
-//   ON  : 1->2->3->4->5->6->7->0(8번째)->1(첫번째)-> ... 무한 반복
-//   OFF : 0번 프레임 고정
-//
-// [비상등 동작]
-//   1번 누름 (0->1) -> 양쪽 동일 프레임 사이클 시작
-//   2번 누름 (1->0) -> 즉시 0번 프레임 소거
-//
-// [엔진 조건]
-//   ignitionKey==1 일때만 동작 / OFF시 모든 출력 소거
-//   기어 P(driveState==0) 일때만 시동 끄기 허용
+﻿/*@!Encoding:65001*/
+// BLINKER_WIPER_CTRL.can (Frame 3 version)
 
 includes
 {
@@ -27,10 +10,14 @@ variables
   msTimer tBlink;
   msTimer tWiper;
 
-  int gBlinkState;  // 0=off 1=left 2=right 3=hazard
-  int gBlinkFrame;  // 0-7 (애니메이션 프레임 인덱스)
-  int gWiperPos;    // 0-15
-  int gWiperDir;    // +1 or -1 (왕복)
+  int gBlinkState;  
+  // 0=off 1=left 2=right 3=hazard
+
+  int gBlinkFrame;  
+  // 0-2 (3 frame cycle)
+
+  int gWiperPos;
+  int gWiperDir;
 }
 
 on start
@@ -52,17 +39,18 @@ int isEngineOn()
   return (int)@Powertrain::ignitionKey;
 }
 
-// ── 공통 깜빡이 정지 (0번 프레임으로 즉시 복귀) ─────────────────────
 void stopBlink()
 {
   cancelTimer(tBlink);
-  @Body::blinkLeft  = 0;  // 0번 프레임
-  @Body::blinkRight = 0;  // 0번 프레임
+
+  @Body::blinkLeft  = 0;
+  @Body::blinkRight = 0;
+
   gBlinkState = 0;
   gBlinkFrame = 0;
 }
 
-// ── 좌측 깜빡이 ──────────────────────────────────────────────────
+// 좌측 깜빡이
 on sysvar Body::turnLeft
 {
   stopBlink();
@@ -76,18 +64,17 @@ on sysvar Body::turnLeft
   if ((int)@Body::turnLeft == 1)
   {
     gBlinkState      = 1;
-    gBlinkFrame      = 1;      // 즉시 1번 프레임(켜짐) 표시
+    gBlinkFrame      = 1;
+
     @Body::blinkLeft = 1;
-    setTimer(tBlink, 250);     // 250ms 후 다음 프레임으로
-    write("[BLINKER] LEFT ON - frame animation start");
-  }
-  else
-  {
-    write("[BLINKER] LEFT OFF - frame 0");
+
+    setTimer(tBlink, 500);
+
+    write("[BLINKER] LEFT ON");
   }
 }
 
-// ── 우측 깜빡이 ──────────────────────────────────────────────────
+// 우측 깜빡이
 on sysvar Body::turnRight
 {
   stopBlink();
@@ -101,18 +88,17 @@ on sysvar Body::turnRight
   if ((int)@Body::turnRight == 1)
   {
     gBlinkState       = 2;
-    gBlinkFrame       = 1;      // 즉시 1번 프레임(켜짐) 표시
+    gBlinkFrame       = 1;
+
     @Body::blinkRight = 1;
-    setTimer(tBlink, 250);
-    write("[BLINKER] RIGHT ON - frame animation start");
-  }
-  else
-  {
-    write("[BLINKER] RIGHT OFF - frame 0");
+
+    setTimer(tBlink, 500);
+
+    write("[BLINKER] RIGHT ON");
   }
 }
 
-// ── 비상등 ───────────────────────────────────────────────────────
+// 비상등
 on sysvar Body::hazard
 {
   stopBlink();
@@ -125,48 +111,49 @@ on sysvar Body::hazard
 
   if ((int)@Body::hazard == 1)
   {
-    gBlinkState       = 3;
-    gBlinkFrame       = 1;      // 즉시 1번 프레임 양쪽 켜짐
+    gBlinkState = 3;
+    gBlinkFrame = 1;
+
     @Body::blinkLeft  = 1;
     @Body::blinkRight = 1;
-    setTimer(tBlink, 250);
-    write("[BLINKER] HAZARD ON - frame animation start");
-  }
-  else
-  {
-    write("[BLINKER] HAZARD OFF - frame 0");
+
+    setTimer(tBlink, 500);
+
+    write("[BLINKER] HAZARD ON");
   }
 }
 
-// ── 깜빡이 타이머 (250ms마다 다음 프레임으로) ────────────────────
-// 사이클: 1->2->3->4->5->6->7->0(8번째)->1(첫번째)->...
+// 깜빡이 타이머
 on timer tBlink
 {
   if (isEngineOn() == 0) return;
-  if (gBlinkState == 0)  return;
+  if (gBlinkState == 0) return;
 
-  gBlinkFrame = (gBlinkFrame + 1) % 8;  // 0-7 순환 (7 다음은 0으로 복귀)
+  // 3 frame cycle
+  gBlinkFrame = (gBlinkFrame + 1) % 3;
 
   if (gBlinkState == 1)
   {
     @Body::blinkLeft  = gBlinkFrame;
     @Body::blinkRight = 0;
   }
+
   else if (gBlinkState == 2)
   {
     @Body::blinkLeft  = 0;
     @Body::blinkRight = gBlinkFrame;
   }
+
   else if (gBlinkState == 3)
   {
     @Body::blinkLeft  = gBlinkFrame;
     @Body::blinkRight = gBlinkFrame;
   }
 
-  setTimer(tBlink, 250);  // 250ms 후 다음 프레임
+  setTimer(tBlink, 500);
 }
 
-// ── 와이퍼 ───────────────────────────────────────────────────────
+// 와이퍼
 on sysvar Body::wiperMode
 {
   int mode;
@@ -178,6 +165,7 @@ on sysvar Body::wiperMode
     gWiperPos         = 0;
     gWiperDir         = 1;
     @Body::wiperState = 0;
+
     write("[WIPER] blocked - engine off");
     return;
   }
@@ -189,24 +177,27 @@ on sysvar Body::wiperMode
     gWiperPos         = 0;
     gWiperDir         = 1;
     @Body::wiperState = 0;
+
     write("[WIPER] OFF");
   }
   else
   {
     gWiperPos += gWiperDir;
+
     if (gWiperPos >= 15) gWiperDir = -1;
     if (gWiperPos <= 0)  gWiperDir =  1;
+
     @Body::wiperState = gWiperPos;
 
     if (mode == 1)
     {
       setTimer(tWiper, 5000);
-      write("[WIPER] SLOW start pos=%d", gWiperPos);
+      write("[WIPER] SLOW");
     }
     else
     {
       setTimer(tWiper, 2500);
-      write("[WIPER] FAST start pos=%d", gWiperPos);
+      write("[WIPER] FAST");
     }
   }
 }
@@ -222,8 +213,10 @@ on timer tWiper
   if (mode == 0) return;
 
   gWiperPos += gWiperDir;
+
   if (gWiperPos >= 15) gWiperDir = -1;
   if (gWiperPos <= 0)  gWiperDir =  1;
+
   @Body::wiperState = gWiperPos;
 
   if (mode == 1) interval = 5000;
@@ -232,7 +225,7 @@ on timer tWiper
   setTimer(tWiper, interval);
 }
 
-// ── 기어 잠금 (시동 OFF 시 기어 변경 불가) ───────────────────────
+// 기어 잠금
 on sysvar Chassis::driveState
 {
   if ((int)@Powertrain::ignitionKey == 0)
@@ -242,7 +235,7 @@ on sysvar Chassis::driveState
   }
 }
 
-// ── 시동 키 (기어 P 조건 체크) ───────────────────────────────────
+// 시동 키
 on sysvar Powertrain::ignitionKey
 {
   int ignVal;
@@ -256,15 +249,19 @@ on sysvar Powertrain::ignitionKey
     if (gearVal != 0)
     {
       @Powertrain::ignitionKey = 1;
-      write("[ENGINE] OFF 불가 - 기어 P 필요 (현재=%d)", gearVal);
+      write("[ENGINE] OFF blocked - gear P required");
       return;
     }
+
     stopBlink();
     cancelTimer(tWiper);
+
     @Body::wiperState = 0;
+
     gWiperPos = 0;
     gWiperDir = 1;
-    write("[ENGINE] OFF (기어 P 확인)");
+
+    write("[ENGINE] OFF");
   }
   else
   {
