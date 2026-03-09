@@ -124,15 +124,15 @@ BO_ 625 frmRainLightAutoMsg: 1 BCM
  SG_ AutoLightState   : 4|2@1+ (1,0) [0|3] "" BCM
  SG_ Reserved0        : 6|2@1+ (1,0) [0|0] "" Vector__XXX
 
-BO_ 626 frmBcmDiagReqMsg: 3 BCM
+BO_ 626 frmBcmDiagReqMsg: 3 TEST_SCN
  SG_ BcmDiagServiceId : 0|8@1+ (1,0) [0|255] "" BCM
  SG_ BcmDiagDidHigh   : 8|8@1+ (1,0) [0|255] "" BCM
  SG_ BcmDiagDidLow    : 16|8@1+ (1,0) [0|255] "" BCM
 
 BO_ 627 frmBcmDiagResMsg: 3 BCM
- SG_ BcmDiagRespCode  : 0|8@1+ (1,0) [0|255] "" BCM
- SG_ BcmDiagData0     : 8|8@1+ (1,0) [0|255] "" BCM
- SG_ BcmDiagData1     : 16|8@1+ (1,0) [0|255] "" BCM
+ SG_ BcmDiagRespCode  : 0|8@1+ (1,0) [0|255] "" TEST_SCN
+ SG_ BcmDiagData0     : 8|8@1+ (1,0) [0|255] "" TEST_SCN
+ SG_ BcmDiagData1     : 16|8@1+ (1,0) [0|255] "" TEST_SCN
 
 BO_ 628 frmImmobilizerStateMsg: 1 SMK
  SG_ ImmobilizerState : 0|2@1+ (1,0) [0|3] "" SMK
@@ -261,6 +261,16 @@ BO_ 650 frmMassageSeatCtrlStateMsg: 3 MSC
  SG_ DriveComfortMode  : 18|2@1+ (1,0) [0|3] "" BCM,SEAT_DRV,CLU
  SG_ Reserved0         : 20|4@1+ (1,0) [0|0] "" Vector__XXX
 
+BO_ 651 frmDatcDiagReqMsg: 3 TEST_SCN
+ SG_ DatcDiagServiceId : 0|8@1+ (1,0) [0|255] "" DATC
+ SG_ DatcDiagDidHigh   : 8|8@1+ (1,0) [0|255] "" DATC
+ SG_ DatcDiagDidLow    : 16|8@1+ (1,0) [0|255] "" DATC
+
+BO_ 652 frmDatcDiagResMsg: 3 DATC
+ SG_ DatcDiagRespCode  : 0|8@1+ (1,0) [0|255] "" TEST_SCN
+ SG_ DatcDiagData0     : 8|8@1+ (1,0) [0|255] "" TEST_SCN
+ SG_ DatcDiagData1     : 16|8@1+ (1,0) [0|255] "" TEST_SCN
+
 CM_ BO_ 608 "Flow_007 ambient output.";
 CM_ BO_ 609 "Body baseline: hazard switch and hazard state.";
 CM_ BO_ 610 "Body baseline: window command and window state.";
@@ -303,6 +313,8 @@ CM_ BO_ 647 "Comm_202: biometric authentication extension.";
 CM_ BO_ 648 "Body runtime: airbag control unit state derived from restraint and crash context.";
 CM_ BO_ 649 "Body runtime: occupant detection system state derived from passenger presence context.";
 CM_ BO_ 650 "Body runtime: massage seat control state derived from seat comfort and alert context.";
+CM_ BO_ 651 "Body runtime: DATC diagnostic request.";
+CM_ BO_ 652 "Body runtime: DATC diagnostic response.";
 
 BA_DEF_ BO_ "GenMsgCycleTime" INT 0 10000;
 BA_DEF_DEF_ "GenMsgCycleTime" 0;
@@ -348,6 +360,8 @@ BA_ "GenMsgCycleTime" BO_ 647 100;
 BA_ "GenMsgCycleTime" BO_ 648 100;
 BA_ "GenMsgCycleTime" BO_ 649 100;
 BA_ "GenMsgCycleTime" BO_ 650 100;
+BA_ "GenMsgCycleTime" BO_ 651 0;
+BA_ "GenMsgCycleTime" BO_ 652 0;
 
 VAL_ 608 AmbientMode
   0 "Off"
@@ -452,4 +466,3 @@ VAL_ 650 MassageMode 0 "Off" 1 "Cruise" 2 "Comfort" 3 "Alert" 4 "Reserved4" 5 "R
 VAL_ 650 OccupancyState 0 "Vacant" 1 "Occupied";
 VAL_ 650 AlertComfortMode 0 "Normal" 1 "Alert";
 VAL_ 650 DriveComfortMode 0 "Standstill" 1 "Urban" 2 "Cruise" 3 "Reserved";
-

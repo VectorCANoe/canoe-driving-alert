@@ -109,6 +109,16 @@ BO_ 270 frmPtDiagResMsg: 3 VCU
  SG_ PtDiagData0     : 8|8@1+ (1,0) [0|255] "" TEST_SCN
  SG_ PtDiagData1     : 16|8@1+ (1,0) [0|255] "" TEST_SCN
 
+BO_ 683 frmSccDiagReqMsg: 3 TEST_SCN
+ SG_ SccDiagServiceId : 0|8@1+ (1,0) [0|255] "" SCC
+ SG_ SccDiagDidHigh   : 8|8@1+ (1,0) [0|255] "" SCC
+ SG_ SccDiagDidLow    : 16|8@1+ (1,0) [0|255] "" SCC
+
+BO_ 684 frmSccDiagResMsg: 3 SCC
+ SG_ SccDiagRespCode  : 0|8@1+ (1,0) [0|255] "" TEST_SCN
+ SG_ SccDiagData0     : 8|8@1+ (1,0) [0|255] "" TEST_SCN
+ SG_ SccDiagData1     : 16|8@1+ (1,0) [0|255] "" TEST_SCN
+
 BO_ 305 frmThermalMgmtStateMsg: 2 EMS
  SG_ ThermalMode     : 0|3@1+ (1,0) [0|7] "" VCU
  SG_ FanDuty         : 3|5@1+ (1,0) [0|31] "" VCU
@@ -215,6 +225,8 @@ CM_ BO_ 303 "Comm_204: engine load extension.";
 CM_ BO_ 304 "Comm_204: transmission shift state extension.";
 CM_ BO_ 682 "Comm_205: powertrain diagnostic request.";
 CM_ BO_ 270 "Comm_205: powertrain diagnostic response.";
+CM_ BO_ 683 "Powertrain runtime: SCC diagnostic request.";
+CM_ BO_ 684 "Powertrain runtime: SCC diagnostic response.";
 CM_ BO_ 305 "Comm_204: thermal management state extension.";
 CM_ BO_ 271 "Comm_204: energy flow state extension.";
 CM_ BO_ 272 "Comm_204: powertrain control authorization extension.";
@@ -249,6 +261,8 @@ BA_ "GenMsgCycleTime" BO_ 303 100;
 BA_ "GenMsgCycleTime" BO_ 304 100;
 BA_ "GenMsgCycleTime" BO_ 682 0;
 BA_ "GenMsgCycleTime" BO_ 270 0;
+BA_ "GenMsgCycleTime" BO_ 683 0;
+BA_ "GenMsgCycleTime" BO_ 684 0;
 BA_ "GenMsgCycleTime" BO_ 305 100;
 BA_ "GenMsgCycleTime" BO_ 271 100;
 BA_ "GenMsgCycleTime" BO_ 272 100;
@@ -333,4 +347,3 @@ VAL_ 317 PortLockState 0 "Unlocked" 1 "Ready" 2 "Locked" 3 "Fault";
 VAL_ 317 PlugState 0 "Unplugged" 1 "Plugged";
 VAL_ 317 ChargeEnable 0 "Disabled" 1 "Enabled";
 VAL_ 317 ThermalState 0 "Normal" 1 "Warm" 2 "Hot" 3 "Fault";
-

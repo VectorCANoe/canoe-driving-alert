@@ -238,6 +238,16 @@ BO_ 671 frmCarpayCtrlStateMsg: 2 CPAY
  SG_ Reserved0         : 6|2@1+ (1,0) [0|0] "" Vector__XXX
  SG_ ServiceQuality    : 8|8@1+ (1,0) [0|100] "%" TMU,IVI
 
+BO_ 672 frmTmuDiagReqMsg: 3 TEST_SCN
+ SG_ TmuDiagServiceId : 0|8@1+ (1,0) [0|255] "" TMU
+ SG_ TmuDiagDidHigh   : 8|8@1+ (1,0) [0|255] "" TMU
+ SG_ TmuDiagDidLow    : 16|8@1+ (1,0) [0|255] "" TMU
+
+BO_ 673 frmTmuDiagResMsg: 3 TMU
+ SG_ TmuDiagRespCode  : 0|8@1+ (1,0) [0|255] "" TEST_SCN
+ SG_ TmuDiagData0     : 8|8@1+ (1,0) [0|255] "" TEST_SCN
+ SG_ TmuDiagData1     : 16|8@1+ (1,0) [0|255] "" TEST_SCN
+
 CM_ BO_ 675 "Flow_003 navigation context input.";
 CM_ BO_ 640 "Flow_008 cluster warning output.";
 CM_ BO_ 641 "Infotainment baseline: cluster base display payload (speed/gear/status).";
@@ -268,6 +278,8 @@ CM_ BO_ 664 "Amplifier surface ECU state derived from media focus, volume, and T
 CM_ BO_ 669 "Infotainment runtime: parking guidance system state derived from parking assist context.";
 CM_ BO_ 670 "Infotainment runtime: phone-as-key state derived from digital key and telematics service context.";
 CM_ BO_ 671 "Infotainment runtime: in-vehicle payment service state derived from TMU service availability.";
+CM_ BO_ 672 "Infotainment runtime: TMU diagnostic request.";
+CM_ BO_ 673 "Infotainment runtime: TMU diagnostic response.";
 
 BA_DEF_ BO_ "GenMsgCycleTime" INT 0 10000;
 BA_DEF_DEF_ "GenMsgCycleTime" 0;
@@ -301,6 +313,8 @@ BA_ "GenMsgCycleTime" BO_ 664 50;
 BA_ "GenMsgCycleTime" BO_ 669 100;
 BA_ "GenMsgCycleTime" BO_ 670 100;
 BA_ "GenMsgCycleTime" BO_ 671 100;
+BA_ "GenMsgCycleTime" BO_ 672 0;
+BA_ "GenMsgCycleTime" BO_ 673 0;
 
 VAL_ 675 gRoadZone
   0 "Normal"
@@ -384,4 +398,3 @@ VAL_ 646 ThemeMode
 VAL_ 647 PopupActive
   0 "Inactive"
   1 "Active" ;
-

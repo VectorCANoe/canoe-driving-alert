@@ -15,6 +15,10 @@ variables
   int gLastServiceMode;
   int gLastRemoteClimateReq;
   int gLastDiagState;
+  int gDiagPending;
+  int gLastDiagSid;
+  int gLastDiagDidHigh;
+  int gLastDiagDidLow;
 }
 
 void publishTmuState()
@@ -102,6 +106,10 @@ on start
   gLastServiceMode = -1;
   gLastRemoteClimateReq = -1;
   gLastDiagState = -1;
+  gDiagPending = 0;
+  gLastDiagSid = 0;
+  gLastDiagDidHigh = 0;
+  gLastDiagDidLow = 0;
 
   setTimer(tTmuCycle, 100);
   write("[TMU] start");
@@ -109,6 +117,17 @@ on start
 
 on timer tTmuCycle
 {
+  if (gDiagPending == 1)
+  {
+    message frmTmuDiagResMsg mDiagRes;
+
+    mDiagRes.TmuDiagRespCode = (gLastDiagSid == 0x22) ? 0x62 : 0x7F;
+    mDiagRes.TmuDiagData0 = gLastDiagDidHigh;
+    mDiagRes.TmuDiagData1 = gLastDiagDidLow;
+    output(mDiagRes);
+    gDiagPending = 0;
+  }
+
   publishTmuState();
   setTimer(tTmuCycle, 100);
 }
@@ -124,6 +143,14 @@ on message frmIviHealthDetailMsg
 {
   gIviCpuLoad = clampRange((int)this.IviCpuLoad, 0, 100);
   gIviMemLoad = clampRange((int)this.IviMemLoad, 0, 100);
+}
+
+on message frmTmuDiagReqMsg
+{
+  gLastDiagSid = clampRange((int)this.TmuDiagServiceId, 0, 255);
+  gLastDiagDidHigh = clampRange((int)this.TmuDiagDidHigh, 0, 255);
+  gLastDiagDidLow = clampRange((int)this.TmuDiagDidLow, 0, 255);
+  gDiagPending = 1;
 }
 
 on stopMeasurement

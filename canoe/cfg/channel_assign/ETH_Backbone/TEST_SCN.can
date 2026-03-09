@@ -71,6 +71,10 @@ void sendBaselineDiagRequest(int scenarioId)
   message frmIviDiagReqMsg mIvi;
   message frmPtDiagReqMsg mPt;
   message frmChassisDiagReqMsg mChs;
+  message frmBcmDiagReqMsg mBcm;
+  message frmTmuDiagReqMsg mTmu;
+  message frmDatcDiagReqMsg mDatc;
+  message frmSccDiagReqMsg mScc;
   int didLow;
 
   didLow = clampRange(scenarioId, 0, 255);
@@ -89,6 +93,26 @@ void sendBaselineDiagRequest(int scenarioId)
   mChs.ChsDiagDidHigh = 0xF1;
   mChs.ChsDiagDidLow = didLow;
   output(mChs);
+
+  mBcm.BcmDiagServiceId = 0x22;
+  mBcm.BcmDiagDidHigh = 0xF1;
+  mBcm.BcmDiagDidLow = didLow;
+  output(mBcm);
+
+  mTmu.TmuDiagServiceId = 0x22;
+  mTmu.TmuDiagDidHigh = 0xF1;
+  mTmu.TmuDiagDidLow = didLow;
+  output(mTmu);
+
+  mDatc.DatcDiagServiceId = 0x22;
+  mDatc.DatcDiagDidHigh = 0xF1;
+  mDatc.DatcDiagDidLow = didLow;
+  output(mDatc);
+
+  mScc.SccDiagServiceId = 0x22;
+  mScc.SccDiagDidHigh = 0xF1;
+  mScc.SccDiagDidLow = didLow;
+  output(mScc);
 }
 
 void pushLockedScenarioInputs()
@@ -1170,4 +1194,3 @@ on timer tScenarioEval
         objectTtcMin, objectEventCode, renderAlertType, renderTextCode);
 
 }
-
