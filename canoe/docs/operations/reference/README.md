@@ -30,6 +30,8 @@ Open these only when the active task needs background support:
   - active surface inventory bank for 100-scale OEM vehicle-program framing
 - `OEM_PLACEHOLDER_WAVE1_2026-03-09.md`
   - materialized placeholder wave: `13` deep anchors + `87` shallow placeholders = `100` visible CAPL nodes
+- `OEM_PLACEHOLDER_NAMING_AUDIT_2026-03-09.md`
+  - audit of the 100-node placeholder bank against OEM/HKG-style surface naming
 - `ECU_PARALLEL_EXECUTION_STRATEGY_2026-03-09.md`
   - active Dev1 execution split: domain-wave development first, placeholder breadth second
 - `PRIMARY56_RUNTIME26_MAPPING_2026-03-09.md`

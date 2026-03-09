@@ -49,14 +49,14 @@ Recommended implementation depth remains:
 2. `ETH_BACKBONE`
 3. `DCM`
 4. `IBOX`
-5. `SECURITY_GATEWAY`
+5. `SGW`
 
 ### A2. Powertrain (`10`)
 
 1. `EMS`
 2. `TCU`
 3. `VCU`
-4. `AWD_4WD`
+4. `_4WD`
 5. `BAT_BMS`
 6. `FPCM`
 7. `LVR`
@@ -82,10 +82,10 @@ Recommended implementation depth remains:
 ### A4. Body / Comfort (`16`)
 
 1. `BCM`
-2. `HVAC`
+2. `DATC`
 3. `SMK`
 4. `AFLS`
-5. `LIGHTING_ECU`
+5. `AHLS`
 6. `WIPER_MODULE`
 7. `SUNROOF_MODULE`
 8. `DOOR_FL`
@@ -167,7 +167,7 @@ These are realistic additional surfaces for a higher trim / premium / technology
 20. `CARPAY_CTRL`
 21. `PHONE_AS_KEY`
 22. `OTA_MASTER`
-23. `EDGE_LOGGER`
+23. `EDR`
 24. `ROAD_PREVIEW_CAMERA`
 25. `LIDAR`
 26. `REAR_RADAR_MASTER`
@@ -185,11 +185,11 @@ Use these first in the main architecture tree:
 - `ETH_BACKBONE`
 - `DCM`
 - `IBOX`
-- `SECURITY_GATEWAY`
+- `SGW`
 - `EMS`
 - `TCU`
 - `VCU`
-- `AWD_4WD`
+- `_4WD`
 - `BAT_BMS`
 - `FPCM`
 - `LVR`
@@ -209,10 +209,10 @@ Use these first in the main architecture tree:
 - `EHB`
 - `CDC`
 - `BCM`
-- `HVAC`
+- `DATC`
 - `SMK`
 - `AFLS`
-- `LIGHTING_ECU`
+- `AHLS`
 - `WIPER_MODULE`
 - `SUNROOF_MODULE`
 - `DOOR_FL`
@@ -285,7 +285,7 @@ Keep these active in the surface bank, but placeholder-first unless promoted.
 - `BIOMETRIC_AUTH`
 - `CARPAY_CTRL`
 - `PHONE_AS_KEY`
-- `EDGE_LOGGER`
+- `EDR`
 - `ROAD_PREVIEW_CAMERA`
 - `LIDAR`
 - `REAR_RADAR_MASTER`
@@ -313,7 +313,7 @@ Keep deep runtime scope controlled even with 100-bank breadth.
 - `VALIDATION_HARNESS`
 - `SCC`
 - `TMU`
-- `SECURITY_GATEWAY`
+- `SGW`
 
 ## F. Core Custom Feature Focus (`8`)
 

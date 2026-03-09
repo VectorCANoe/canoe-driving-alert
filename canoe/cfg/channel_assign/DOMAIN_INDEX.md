@@ -1,4 +1,4 @@
-﻿# V2 Domain CAPL Index
+# V2 Domain CAPL Index
 
 This file documents the visible runtime and placeholder CAPL inventory after wrapper absorption and OEM abbreviation normalization.
 
@@ -17,8 +17,8 @@ This file documents the visible runtime and placeholder CAPL inventory after wra
 - `ETH_BACKBONE.can`
 - `DCM.can`
 - `IBOX.can`
-- `SECURITY_GATEWAY.can`
-- `EDGE_LOGGER.can`
+- `SGW.can`
+- `EDR.can`
 
 ### ADAS
 - `ADAS.can`
@@ -65,10 +65,10 @@ This file documents the visible runtime and placeholder CAPL inventory after wra
 
 ### Body
 - `BCM.can`
-- `HVAC.can`
+- `DATC.can`
 - `SMK.can`
 - `AFLS.can`
-- `LIGHTING_ECU.can`
+- `AHLS.can`
 - `WIPER_MODULE.can`
 - `SUNROOF_MODULE.can`
 - `DOOR_FL.can`
@@ -91,7 +91,7 @@ This file documents the visible runtime and placeholder CAPL inventory after wra
 ### Powertrain
 - `EMS.can`
 - `TCU.can`
-- `AWD_4WD.can`
+- `_4WD.can`
 - `BAT_BMS.can`
 - `FPCM.can`
 - `LVR.can`

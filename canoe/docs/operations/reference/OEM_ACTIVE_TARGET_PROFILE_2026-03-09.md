@@ -55,11 +55,11 @@ This keeps the architecture wide without making the top layer look like a thin d
 - `ETH_BACKBONE`
 - `DCM`
 - `IBOX`
-- `SECURITY_GATEWAY`
+- `SGW`
 - `EMS`
 - `TCU`
 - `VCU`
-- `AWD_4WD`
+- `_4WD`
 - `BAT_BMS`
 - `FPCM`
 - `LVR`
@@ -79,10 +79,10 @@ This keeps the architecture wide without making the top layer look like a thin d
 - `EHB`
 - `CDC`
 - `BCM`
-- `HVAC`
+- `DATC`
 - `SMK`
 - `AFLS`
-- `LIGHTING_ECU`
+- `AHLS`
 - `WIPER_MODULE`
 - `SUNROOF_MODULE`
 - `DOOR_FL`
@@ -151,7 +151,7 @@ This keeps the architecture wide without making the top layer look like a thin d
 - `BIOMETRIC_AUTH`
 - `CARPAY_CTRL`
 - `PHONE_AS_KEY`
-- `EDGE_LOGGER`
+- `EDR`
 - `ROAD_PREVIEW_CAMERA`
 - `LIDAR`
 - `REAR_RADAR_MASTER`
@@ -177,7 +177,7 @@ Vehicle surface total: `100`
 13. `VALIDATION_HARNESS`
 14. `SCC`
 15. `TMU`
-16. `SECURITY_GATEWAY`
+16. `SGW`
 
 ## Chosen 8 Core Custom Surfaces
 

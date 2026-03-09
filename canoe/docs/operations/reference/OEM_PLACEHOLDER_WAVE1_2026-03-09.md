@@ -38,9 +38,9 @@ Execution rule:
 
 1. `SCC`
 2. `TMU`
-3. `SECURITY_GATEWAY`
+3. `SGW`
 4. `ETH_BACKBONE`
-5. `HVAC`
+5. `DATC`
 6. `HUD`
 7. `ABS`
 8. `TPMS`
