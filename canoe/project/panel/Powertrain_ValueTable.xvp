@@ -1,0 +1,437 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Panel Type="Vector.CANalyzer.Panels.PanelSerializer, Vector.CANalyzer.Panels.Serializer, Version=19.4.10.0, Culture=neutral, PublicKeyToken=null">
+  <Object Type="Vector.CANalyzer.Panels.Runtime.Panel, Vector.CANalyzer.Panels.Common, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Panel" ControlName="Powertrain_ValueTable_Corrected">
+    <Object Type="Vector.CANalyzer.Panels.Design.GroupBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="XPowertrainGroup" ControlName="Group Box 1">
+      <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xpowertrainvt001" ControlName="Input/Output Box 1">
+        <Property Name="Name">Xpowertrainvt001</Property>
+        <Property Name="Size">320, 21</Property>
+        <Property Name="Location">5, 18</Property>
+        <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+        <Property Name="AlarmLowerBkgColor">Salmon</Property>
+        <Property Name="AlarmLowerTextColor">Black</Property>
+        <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+        <Property Name="AlarmUpperTextColor">Black</Property>
+        <Property Name="BoxBorderStyle">FixedSingle</Property>
+        <Property Name="DisplayLabel">Left</Property>
+        <Property Name="ReadOnlyControl">True</Property>
+        <Property Name="TabIndex">1</Property>
+        <Property Name="TabStopActive">False</Property>
+        <Property Name="DescriptionText">IgnitionState:</Property>
+        <Property Name="ValueDisplay">Symbolic</Property>
+        <Property Name="UsedValueTable">RawValue</Property>
+        <Property Name="DescriptionSize">140, 21</Property>
+        <Property Name="SymbolConfiguration">8;2;powertrain_can;VAL_SCENARIO_CTRL;frmIgnitionEngineMsg;IgnitionState;1;Powertrain;;-1;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xpowertrainvt002" ControlName="Input/Output Box 2">
+        <Property Name="Name">Xpowertrainvt002</Property>
+        <Property Name="Size">320, 21</Property>
+        <Property Name="Location">5, 39</Property>
+        <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+        <Property Name="AlarmLowerBkgColor">Salmon</Property>
+        <Property Name="AlarmLowerTextColor">Black</Property>
+        <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+        <Property Name="AlarmUpperTextColor">Black</Property>
+        <Property Name="BoxBorderStyle">FixedSingle</Property>
+        <Property Name="DisplayLabel">Left</Property>
+        <Property Name="ReadOnlyControl">True</Property>
+        <Property Name="TabIndex">2</Property>
+        <Property Name="TabStopActive">False</Property>
+        <Property Name="DescriptionText">EngineState:</Property>
+        <Property Name="ValueDisplay">Symbolic</Property>
+        <Property Name="UsedValueTable">RawValue</Property>
+        <Property Name="DescriptionSize">140, 21</Property>
+        <Property Name="SymbolConfiguration">8;2;powertrain_can;VAL_SCENARIO_CTRL;frmIgnitionEngineMsg;EngineState;1;Powertrain;;-1;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xpowertrainvt003" ControlName="Input/Output Box 3">
+        <Property Name="Name">Xpowertrainvt003</Property>
+        <Property Name="Size">320, 21</Property>
+        <Property Name="Location">5, 60</Property>
+        <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+        <Property Name="AlarmLowerBkgColor">Salmon</Property>
+        <Property Name="AlarmLowerTextColor">Black</Property>
+        <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+        <Property Name="AlarmUpperTextColor">Black</Property>
+        <Property Name="BoxBorderStyle">FixedSingle</Property>
+        <Property Name="DisplayLabel">Left</Property>
+        <Property Name="ReadOnlyControl">True</Property>
+        <Property Name="TabIndex">3</Property>
+        <Property Name="TabStopActive">False</Property>
+        <Property Name="DescriptionText">GearInput:</Property>
+        <Property Name="ValueDisplay">Symbolic</Property>
+        <Property Name="UsedValueTable">RawValue</Property>
+        <Property Name="DescriptionSize">140, 21</Property>
+        <Property Name="SymbolConfiguration">8;2;powertrain_can;VAL_SCENARIO_CTRL;frmGearStateMsg;GearInput;1;Powertrain;;-1;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xpowertrainvt004" ControlName="Input/Output Box 4">
+        <Property Name="Name">Xpowertrainvt004</Property>
+        <Property Name="Size">320, 21</Property>
+        <Property Name="Location">5, 81</Property>
+        <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+        <Property Name="AlarmLowerBkgColor">Salmon</Property>
+        <Property Name="AlarmLowerTextColor">Black</Property>
+        <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+        <Property Name="AlarmUpperTextColor">Black</Property>
+        <Property Name="BoxBorderStyle">FixedSingle</Property>
+        <Property Name="DisplayLabel">Left</Property>
+        <Property Name="ReadOnlyControl">True</Property>
+        <Property Name="TabIndex">4</Property>
+        <Property Name="TabStopActive">False</Property>
+        <Property Name="DescriptionText">GearState:</Property>
+        <Property Name="ValueDisplay">Symbolic</Property>
+        <Property Name="UsedValueTable">RawValue</Property>
+        <Property Name="DescriptionSize">140, 21</Property>
+        <Property Name="SymbolConfiguration">8;2;powertrain_can;VAL_SCENARIO_CTRL;frmGearStateMsg;GearState;1;Powertrain;;-1;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xpowertrainvt005" ControlName="Input/Output Box 5">
+        <Property Name="Name">Xpowertrainvt005</Property>
+        <Property Name="Size">320, 21</Property>
+        <Property Name="Location">5, 102</Property>
+        <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+        <Property Name="AlarmLowerBkgColor">Salmon</Property>
+        <Property Name="AlarmLowerTextColor">Black</Property>
+        <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+        <Property Name="AlarmUpperTextColor">Black</Property>
+        <Property Name="BoxBorderStyle">FixedSingle</Property>
+        <Property Name="DisplayLabel">Left</Property>
+        <Property Name="ReadOnlyControl">True</Property>
+        <Property Name="TabIndex">5</Property>
+        <Property Name="TabStopActive">False</Property>
+        <Property Name="DescriptionText">ChargingState:</Property>
+        <Property Name="ValueDisplay">Symbolic</Property>
+        <Property Name="UsedValueTable">RawValue</Property>
+        <Property Name="DescriptionSize">140, 21</Property>
+        <Property Name="SymbolConfiguration">8;2;powertrain_can;EMS;frmFuelBatteryStateMsg;ChargingState;1;Powertrain;;-1;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xpowertrainvt006" ControlName="Input/Output Box 6">
+        <Property Name="Name">Xpowertrainvt006</Property>
+        <Property Name="Size">320, 21</Property>
+        <Property Name="Location">5, 123</Property>
+        <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+        <Property Name="AlarmLowerBkgColor">Salmon</Property>
+        <Property Name="AlarmLowerTextColor">Black</Property>
+        <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+        <Property Name="AlarmUpperTextColor">Black</Property>
+        <Property Name="BoxBorderStyle">FixedSingle</Property>
+        <Property Name="DisplayLabel">Left</Property>
+        <Property Name="ReadOnlyControl">True</Property>
+        <Property Name="TabIndex">6</Property>
+        <Property Name="TabStopActive">False</Property>
+        <Property Name="DescriptionText">DriveMode:</Property>
+        <Property Name="ValueDisplay">Symbolic</Property>
+        <Property Name="UsedValueTable">RawValue</Property>
+        <Property Name="DescriptionSize">140, 21</Property>
+        <Property Name="SymbolConfiguration">8;2;powertrain_can;VCU;frmVehicleModeMsg;DriveMode;1;Powertrain;;-1;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xpowertrainvt007" ControlName="Input/Output Box 7">
+        <Property Name="Name">Xpowertrainvt007</Property>
+        <Property Name="Size">320, 21</Property>
+        <Property Name="Location">5, 144</Property>
+        <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+        <Property Name="AlarmLowerBkgColor">Salmon</Property>
+        <Property Name="AlarmLowerTextColor">Black</Property>
+        <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+        <Property Name="AlarmUpperTextColor">Black</Property>
+        <Property Name="BoxBorderStyle">FixedSingle</Property>
+        <Property Name="DisplayLabel">Left</Property>
+        <Property Name="ReadOnlyControl">True</Property>
+        <Property Name="TabIndex">7</Property>
+        <Property Name="TabStopActive">False</Property>
+        <Property Name="DescriptionText">EcoMode:</Property>
+        <Property Name="ValueDisplay">Symbolic</Property>
+        <Property Name="UsedValueTable">RawValue</Property>
+        <Property Name="DescriptionSize">140, 21</Property>
+        <Property Name="SymbolConfiguration">8;2;powertrain_can;VCU;frmVehicleModeMsg;EcoMode;1;Powertrain;;-1;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xpowertrainvt008" ControlName="Input/Output Box 8">
+        <Property Name="Name">Xpowertrainvt008</Property>
+        <Property Name="Size">320, 21</Property>
+        <Property Name="Location">5, 165</Property>
+        <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+        <Property Name="AlarmLowerBkgColor">Salmon</Property>
+        <Property Name="AlarmLowerTextColor">Black</Property>
+        <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+        <Property Name="AlarmUpperTextColor">Black</Property>
+        <Property Name="BoxBorderStyle">FixedSingle</Property>
+        <Property Name="DisplayLabel">Left</Property>
+        <Property Name="ReadOnlyControl">True</Property>
+        <Property Name="TabIndex">8</Property>
+        <Property Name="TabStopActive">False</Property>
+        <Property Name="DescriptionText">SportMode:</Property>
+        <Property Name="ValueDisplay">Symbolic</Property>
+        <Property Name="UsedValueTable">RawValue</Property>
+        <Property Name="DescriptionSize">140, 21</Property>
+        <Property Name="SymbolConfiguration">8;2;powertrain_can;VCU;frmVehicleModeMsg;SportMode;1;Powertrain;;-1;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xpowertrainvt009" ControlName="Input/Output Box 9">
+        <Property Name="Name">Xpowertrainvt009</Property>
+        <Property Name="Size">320, 21</Property>
+        <Property Name="Location">5, 186</Property>
+        <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+        <Property Name="AlarmLowerBkgColor">Salmon</Property>
+        <Property Name="AlarmLowerTextColor">Black</Property>
+        <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+        <Property Name="AlarmUpperTextColor">Black</Property>
+        <Property Name="BoxBorderStyle">FixedSingle</Property>
+        <Property Name="DisplayLabel">Left</Property>
+        <Property Name="ReadOnlyControl">True</Property>
+        <Property Name="TabIndex">9</Property>
+        <Property Name="TabStopActive">False</Property>
+        <Property Name="DescriptionText">SnowMode:</Property>
+        <Property Name="ValueDisplay">Symbolic</Property>
+        <Property Name="UsedValueTable">RawValue</Property>
+        <Property Name="DescriptionSize">140, 21</Property>
+        <Property Name="SymbolConfiguration">8;2;powertrain_can;VCU;frmVehicleModeMsg;SnowMode;1;Powertrain;;-1;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xpowertrainvt010" ControlName="Input/Output Box 10">
+        <Property Name="Name">Xpowertrainvt010</Property>
+        <Property Name="Size">320, 21</Property>
+        <Property Name="Location">5, 207</Property>
+        <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+        <Property Name="AlarmLowerBkgColor">Salmon</Property>
+        <Property Name="AlarmLowerTextColor">Black</Property>
+        <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+        <Property Name="AlarmUpperTextColor">Black</Property>
+        <Property Name="BoxBorderStyle">FixedSingle</Property>
+        <Property Name="DisplayLabel">Left</Property>
+        <Property Name="ReadOnlyControl">True</Property>
+        <Property Name="TabIndex">10</Property>
+        <Property Name="TabStopActive">False</Property>
+        <Property Name="DescriptionText">CruiseState:</Property>
+        <Property Name="ValueDisplay">Symbolic</Property>
+        <Property Name="UsedValueTable">RawValue</Property>
+        <Property Name="DescriptionSize">140, 21</Property>
+        <Property Name="SymbolConfiguration">8;2;powertrain_can;SCC;frmCruiseStateMsg;CruiseState;1;Powertrain;;-1;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xpowertrainvt011" ControlName="Input/Output Box 11">
+        <Property Name="Name">Xpowertrainvt011</Property>
+        <Property Name="Size">320, 21</Property>
+        <Property Name="Location">5, 228</Property>
+        <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+        <Property Name="AlarmLowerBkgColor">Salmon</Property>
+        <Property Name="AlarmLowerTextColor">Black</Property>
+        <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+        <Property Name="AlarmUpperTextColor">Black</Property>
+        <Property Name="BoxBorderStyle">FixedSingle</Property>
+        <Property Name="DisplayLabel">Left</Property>
+        <Property Name="ReadOnlyControl">True</Property>
+        <Property Name="TabIndex">11</Property>
+        <Property Name="TabStopActive">False</Property>
+        <Property Name="DescriptionText">RoutingPolicy:</Property>
+        <Property Name="ValueDisplay">Symbolic</Property>
+        <Property Name="UsedValueTable">RawValue</Property>
+        <Property Name="DescriptionSize">140, 21</Property>
+        <Property Name="SymbolConfiguration">8;2;powertrain_can;VCU;frmPowertrainGatewayMsg;RoutingPolicy;1;Powertrain;;-1;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xpowertrainvt012" ControlName="Input/Output Box 12">
+        <Property Name="Name">Xpowertrainvt012</Property>
+        <Property Name="Size">320, 21</Property>
+        <Property Name="Location">5, 249</Property>
+        <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+        <Property Name="AlarmLowerBkgColor">Salmon</Property>
+        <Property Name="AlarmLowerTextColor">Black</Property>
+        <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+        <Property Name="AlarmUpperTextColor">Black</Property>
+        <Property Name="BoxBorderStyle">FixedSingle</Property>
+        <Property Name="DisplayLabel">Left</Property>
+        <Property Name="ReadOnlyControl">True</Property>
+        <Property Name="TabIndex">12</Property>
+        <Property Name="TabStopActive">False</Property>
+        <Property Name="DescriptionText">BoundaryStatus:</Property>
+        <Property Name="ValueDisplay">Symbolic</Property>
+        <Property Name="UsedValueTable">RawValue</Property>
+        <Property Name="DescriptionSize">140, 21</Property>
+        <Property Name="SymbolConfiguration">8;2;powertrain_can;VCU;frmPowertrainGatewayMsg;BoundaryStatus;1;Powertrain;;-1;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xpowertrainvt013" ControlName="Input/Output Box 13">
+        <Property Name="Name">Xpowertrainvt013</Property>
+        <Property Name="Size">320, 21</Property>
+        <Property Name="Location">5, 270</Property>
+        <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+        <Property Name="AlarmLowerBkgColor">Salmon</Property>
+        <Property Name="AlarmLowerTextColor">Black</Property>
+        <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+        <Property Name="AlarmUpperTextColor">Black</Property>
+        <Property Name="BoxBorderStyle">FixedSingle</Property>
+        <Property Name="DisplayLabel">Left</Property>
+        <Property Name="ReadOnlyControl">True</Property>
+        <Property Name="TabIndex">13</Property>
+        <Property Name="TabStopActive">False</Property>
+        <Property Name="DescriptionText">PowertrainState:</Property>
+        <Property Name="ValueDisplay">Symbolic</Property>
+        <Property Name="UsedValueTable">RawValue</Property>
+        <Property Name="DescriptionSize">140, 21</Property>
+        <Property Name="SymbolConfiguration">8;2;powertrain_can;VCU;frmVehicleModeMsg;PowertrainState;1;Powertrain;;-1;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xpowertrainvt014" ControlName="Input/Output Box 14">
+        <Property Name="Name">Xpowertrainvt014</Property>
+        <Property Name="Size">320, 21</Property>
+        <Property Name="Location">5, 291</Property>
+        <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+        <Property Name="AlarmLowerBkgColor">Salmon</Property>
+        <Property Name="AlarmLowerTextColor">Black</Property>
+        <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+        <Property Name="AlarmUpperTextColor">Black</Property>
+        <Property Name="BoxBorderStyle">FixedSingle</Property>
+        <Property Name="DisplayLabel">Left</Property>
+        <Property Name="ReadOnlyControl">True</Property>
+        <Property Name="TabIndex">14</Property>
+        <Property Name="TabStopActive">False</Property>
+        <Property Name="DescriptionText">GapLevel:</Property>
+        <Property Name="ValueDisplay">Symbolic</Property>
+        <Property Name="UsedValueTable">RawValue</Property>
+        <Property Name="DescriptionSize">140, 21</Property>
+        <Property Name="SymbolConfiguration">8;2;powertrain_can;SCC;frmCruiseStateMsg;GapLevel;1;Powertrain;;-1;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xpowertrainvt015" ControlName="Input/Output Box 15">
+        <Property Name="Name">Xpowertrainvt015</Property>
+        <Property Name="Size">320, 21</Property>
+        <Property Name="Location">5, 312</Property>
+        <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+        <Property Name="AlarmLowerBkgColor">Salmon</Property>
+        <Property Name="AlarmLowerTextColor">Black</Property>
+        <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+        <Property Name="AlarmUpperTextColor">Black</Property>
+        <Property Name="BoxBorderStyle">FixedSingle</Property>
+        <Property Name="DisplayLabel">Left</Property>
+        <Property Name="ReadOnlyControl">True</Property>
+        <Property Name="TabIndex">15</Property>
+        <Property Name="TabStopActive">False</Property>
+        <Property Name="DescriptionText">PtDiagState:</Property>
+        <Property Name="ValueDisplay">Symbolic</Property>
+        <Property Name="UsedValueTable">RawValue</Property>
+        <Property Name="DescriptionSize">140, 21</Property>
+        <Property Name="SymbolConfiguration">8;2;powertrain_can;VCU;frmPowertrainHealthMsg;PtDiagState;1;Powertrain;;-1;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xpowertrainvt016" ControlName="Input/Output Box 16">
+        <Property Name="Name">Xpowertrainvt016</Property>
+        <Property Name="Size">320, 21</Property>
+        <Property Name="Location">5, 333</Property>
+        <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+        <Property Name="AlarmLowerBkgColor">Salmon</Property>
+        <Property Name="AlarmLowerTextColor">Black</Property>
+        <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+        <Property Name="AlarmUpperTextColor">Black</Property>
+        <Property Name="BoxBorderStyle">FixedSingle</Property>
+        <Property Name="DisplayLabel">Left</Property>
+        <Property Name="ReadOnlyControl">True</Property>
+        <Property Name="TabIndex">16</Property>
+        <Property Name="TabStopActive">False</Property>
+        <Property Name="DescriptionText">EnergyFlowMode:</Property>
+        <Property Name="ValueDisplay">Symbolic</Property>
+        <Property Name="UsedValueTable">RawValue</Property>
+        <Property Name="DescriptionSize">140, 21</Property>
+        <Property Name="SymbolConfiguration">8;2;powertrain_can;VCU;frmEnergyFlowStateMsg;EnergyFlowMode;1;Powertrain;;-1;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xpowertrainvt017" ControlName="Input/Output Box 17">
+        <Property Name="Name">Xpowertrainvt017</Property>
+        <Property Name="Size">320, 21</Property>
+        <Property Name="Location">5, 354</Property>
+        <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+        <Property Name="AlarmLowerBkgColor">Salmon</Property>
+        <Property Name="AlarmLowerTextColor">Black</Property>
+        <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+        <Property Name="AlarmUpperTextColor">Black</Property>
+        <Property Name="BoxBorderStyle">FixedSingle</Property>
+        <Property Name="DisplayLabel">Left</Property>
+        <Property Name="ReadOnlyControl">True</Property>
+        <Property Name="TabIndex">17</Property>
+        <Property Name="TabStopActive">False</Property>
+        <Property Name="DescriptionText">CtrlAuthLevel:</Property>
+        <Property Name="ValueDisplay">Symbolic</Property>
+        <Property Name="UsedValueTable">RawValue</Property>
+        <Property Name="DescriptionSize">140, 21</Property>
+        <Property Name="SymbolConfiguration">8;2;powertrain_can;VCU;frmPowertrainCtrlAuthMsg;CtrlAuthLevel;1;Powertrain;;-1;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xpowertrainvt018" ControlName="Input/Output Box 18">
+        <Property Name="Name">Xpowertrainvt018</Property>
+        <Property Name="Size">320, 21</Property>
+        <Property Name="Location">5, 375</Property>
+        <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+        <Property Name="AlarmLowerBkgColor">Salmon</Property>
+        <Property Name="AlarmLowerTextColor">Black</Property>
+        <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+        <Property Name="AlarmUpperTextColor">Black</Property>
+        <Property Name="BoxBorderStyle">FixedSingle</Property>
+        <Property Name="DisplayLabel">Left</Property>
+        <Property Name="ReadOnlyControl">True</Property>
+        <Property Name="TabIndex">18</Property>
+        <Property Name="TabStopActive">False</Property>
+        <Property Name="DescriptionText">CtrlAuthSource:</Property>
+        <Property Name="ValueDisplay">Symbolic</Property>
+        <Property Name="UsedValueTable">RawValue</Property>
+        <Property Name="DescriptionSize">140, 21</Property>
+        <Property Name="SymbolConfiguration">8;2;powertrain_can;VCU;frmPowertrainCtrlAuthMsg;CtrlAuthSource;1;Powertrain;;-1;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xpowertrainvt019" ControlName="Input/Output Box 19">
+        <Property Name="Name">Xpowertrainvt019</Property>
+        <Property Name="Size">320, 21</Property>
+        <Property Name="Location">5, 396</Property>
+        <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+        <Property Name="AlarmLowerBkgColor">Salmon</Property>
+        <Property Name="AlarmLowerTextColor">Black</Property>
+        <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+        <Property Name="AlarmUpperTextColor">Black</Property>
+        <Property Name="BoxBorderStyle">FixedSingle</Property>
+        <Property Name="DisplayLabel">Left</Property>
+        <Property Name="ReadOnlyControl">True</Property>
+        <Property Name="TabIndex">19</Property>
+        <Property Name="TabStopActive">False</Property>
+        <Property Name="DescriptionText">ShiftState:</Property>
+        <Property Name="ValueDisplay">Symbolic</Property>
+        <Property Name="UsedValueTable">RawValue</Property>
+        <Property Name="DescriptionSize">140, 21</Property>
+        <Property Name="SymbolConfiguration">8;2;powertrain_can;TCU;frmTransShiftStateMsg;ShiftState;1;ETH_Backbone;;-1;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xpowertrainvt020" ControlName="Input/Output Box 20">
+        <Property Name="Name">Xpowertrainvt020</Property>
+        <Property Name="Size">320, 21</Property>
+        <Property Name="Location">5, 417</Property>
+        <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+        <Property Name="AlarmLowerBkgColor">Salmon</Property>
+        <Property Name="AlarmLowerTextColor">Black</Property>
+        <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+        <Property Name="AlarmUpperTextColor">Black</Property>
+        <Property Name="BoxBorderStyle">FixedSingle</Property>
+        <Property Name="DisplayLabel">Left</Property>
+        <Property Name="ReadOnlyControl">True</Property>
+        <Property Name="TabIndex">20</Property>
+        <Property Name="TabStopActive">False</Property>
+        <Property Name="DescriptionText">ShiftTargetGear:</Property>
+        <Property Name="ValueDisplay">Symbolic</Property>
+        <Property Name="UsedValueTable">RawValue</Property>
+        <Property Name="DescriptionSize">140, 21</Property>
+        <Property Name="SymbolConfiguration">8;2;powertrain_can;TCU;frmTransShiftStateMsg;ShiftTargetGear;1;ETH_Backbone;;-1;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xpowertrainvt021" ControlName="Input/Output Box 21">
+        <Property Name="Name">Xpowertrainvt021</Property>
+        <Property Name="Size">320, 21</Property>
+        <Property Name="Location">5, 438</Property>
+        <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
+        <Property Name="AlarmLowerBkgColor">Salmon</Property>
+        <Property Name="AlarmLowerTextColor">Black</Property>
+        <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+        <Property Name="AlarmUpperTextColor">Black</Property>
+        <Property Name="BoxBorderStyle">FixedSingle</Property>
+        <Property Name="DisplayLabel">Left</Property>
+        <Property Name="ReadOnlyControl">True</Property>
+        <Property Name="TabIndex">21</Property>
+        <Property Name="TabStopActive">False</Property>
+        <Property Name="DescriptionText">ThermalMode:</Property>
+        <Property Name="ValueDisplay">Symbolic</Property>
+        <Property Name="UsedValueTable">RawValue</Property>
+        <Property Name="DescriptionSize">140, 21</Property>
+        <Property Name="SymbolConfiguration">8;2;powertrain_can;EMS;frmThermalMgmtStateMsg;ThermalMode;1;Powertrain;;-1;;;Value;;;0</Property>
+      </Object>
+      <Property Name="Name">XPowertrainGroup</Property>
+      <Property Name="Size">350, 479</Property>
+      <Property Name="Location">5, 5</Property>
+      <Property Name="Text">Description</Property>
+      <Property Name="TabIndex">3</Property>
+      <Property Name="UseWindowsStyle">False</Property>
+    </Object>
+    <Property Name="Name">Panel</Property>
+    <Property Name="Size">361, 492</Property>
+    <Property Name="Location">0, 0</Property>
+    <Property Name="BackColor">White</Property>
+  </Object>
+</Panel>
