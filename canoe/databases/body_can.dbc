@@ -29,7 +29,7 @@ NS_ :
 
 BS_:
 
-BU_: BCM ADAS CGW DATC SMK BODY_SECURITY_MODULE WIPER_MODULE AFLS DOOR_FL DOOR_FR DOOR_RL DOOR_RR SEAT_DRV SEAT_PASS TAILGATE_MODULE MIRROR_MODULE REAR_CLIMATE_MODULE SUNROOF_MODULE HEADLAMP_LEVELING CABIN_SENSING AHLS AUTO_DOOR_CTRL POWER_TAILGATE_CTRL BIOMETRIC_AUTH VAL_SCENARIO_CTRL Vector__XXX
+BU_: BCM ADAS CGW DATC SMK BODY_SECURITY_MODULE WIPER_MODULE AFLS DOOR_FL DOOR_FR DOOR_RL DOOR_RR SEAT_DRV SEAT_PASS TAILGATE_MODULE MIRROR_MODULE REAR_CLIMATE_MODULE SUNROOF_MODULE HEADLAMP_LEVELING CABIN_SENSING AHLS AUTO_DOOR_CTRL POWER_TAILGATE_CTRL BIOMETRIC_AUTH ACU ODS MASSAGE_SEAT_CTRL VAL_SCENARIO_CTRL Vector__XXX
 
 BO_ 608 frmAmbientControlMsg: 1 BCM
  SG_ AmbientMode    : 0|3@1+ (1,0) [0|7] "" BCM
@@ -239,6 +239,28 @@ BO_ 647 frmBiometricAuthStateMsg: 2 BIOMETRIC_AUTH
  SG_ AuthFactorMode    : 3|2@1+ (1,0) [0|3] "" BIOMETRIC_AUTH
  SG_ PresenceConfidence : 8|8@1+ (1,0) [0|100] "%" BIOMETRIC_AUTH
 
+BO_ 648 frmAcuStateMsg: 2 ACU
+ SG_ DeploymentArmed   : 0|1@1+ (1,0) [0|1] "" BCM,CGW
+ SG_ CrashSeverity     : 1|3@1+ (1,0) [0|7] "" BCM,CGW
+ SG_ PretensionReq     : 4|1@1+ (1,0) [0|1] "" BCM,CGW
+ SG_ AirbagWarn        : 5|1@1+ (1,0) [0|1] "" BCM,CGW
+ SG_ Reserved0         : 6|10@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 649 frmOdsStateMsg: 2 ODS
+ SG_ OccupantDetected  : 0|1@1+ (1,0) [0|1] "" BCM,CGW
+ SG_ WeightClass       : 1|3@1+ (1,0) [0|7] "" BCM,CGW
+ SG_ AirbagSuppress    : 4|1@1+ (1,0) [0|1] "" BCM,CGW
+ SG_ ChildSeatDetected : 5|1@1+ (1,0) [0|1] "" BCM,CGW
+ SG_ Reserved0         : 6|10@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 650 frmMassageSeatCtrlStateMsg: 3 MASSAGE_SEAT_CTRL
+ SG_ MassageMode       : 0|3@1+ (1,0) [0|7] "" BCM,SEAT_DRV,CLU
+ SG_ MassageIntensity  : 8|8@1+ (1,0) [0|100] "%" BCM,SEAT_DRV,CLU
+ SG_ OccupancyState    : 16|1@1+ (1,0) [0|1] "" BCM,SEAT_DRV,CLU
+ SG_ AlertComfortMode  : 17|1@1+ (1,0) [0|1] "" BCM,SEAT_DRV,CLU
+ SG_ DriveComfortMode  : 18|2@1+ (1,0) [0|3] "" BCM,SEAT_DRV,CLU
+ SG_ Reserved0         : 20|4@1+ (1,0) [0|0] "" Vector__XXX
+
 CM_ BO_ 608 "Flow_007 ambient output.";
 CM_ BO_ 609 "Body baseline: hazard switch and hazard state.";
 CM_ BO_ 610 "Body baseline: window command and window state.";
@@ -278,6 +300,9 @@ CM_ BO_ 644 "Comm_202: adaptive high-beam lighting extension.";
 CM_ BO_ 645 "Comm_202: automatic door control extension.";
 CM_ BO_ 646 "Comm_202: power tailgate control extension.";
 CM_ BO_ 647 "Comm_202: biometric authentication extension.";
+CM_ BO_ 648 "Body runtime: airbag control unit state derived from restraint and crash context.";
+CM_ BO_ 649 "Body runtime: occupant detection system state derived from passenger presence context.";
+CM_ BO_ 650 "Body runtime: massage seat control state derived from seat comfort and alert context.";
 
 BA_DEF_ BO_ "GenMsgCycleTime" INT 0 10000;
 BA_DEF_DEF_ "GenMsgCycleTime" 0;
@@ -320,6 +345,9 @@ BA_ "GenMsgCycleTime" BO_ 644 100;
 BA_ "GenMsgCycleTime" BO_ 645 100;
 BA_ "GenMsgCycleTime" BO_ 646 100;
 BA_ "GenMsgCycleTime" BO_ 647 100;
+BA_ "GenMsgCycleTime" BO_ 648 100;
+BA_ "GenMsgCycleTime" BO_ 649 100;
+BA_ "GenMsgCycleTime" BO_ 650 100;
 
 VAL_ 608 AmbientMode
   0 "Off"
@@ -419,3 +447,8 @@ VAL_ 615 SeatBeltWarnLvl
   1 "Info"
   2 "Warn"
   3 "Critical" ;
+
+VAL_ 650 MassageMode 0 "Off" 1 "Cruise" 2 "Comfort" 3 "Alert" 4 "Reserved4" 5 "Reserved5" 6 "Reserved6" 7 "Reserved7";
+VAL_ 650 OccupancyState 0 "Vacant" 1 "Occupied";
+VAL_ 650 AlertComfortMode 0 "Normal" 1 "Alert";
+VAL_ 650 DriveComfortMode 0 "Standstill" 1 "Urban" 2 "Cruise" 3 "Reserved";

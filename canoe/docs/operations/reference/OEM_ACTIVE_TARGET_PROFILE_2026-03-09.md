@@ -10,9 +10,9 @@ Use this as the real execution profile for the current reset cycle.
 
 2. Deep active runtime implementation
 - target: `12~18`
-- chosen baseline (current): `78` (`76` product + `2` validation)
+- chosen baseline (current): `100` (`98` product + `2` validation)
 - note:
-  - the reset cycle is intentionally overshooting the old `16` stretch line before the GUI import wave, so that more reviewer-facing surface ECUs are already compileable runtime anchors.
+  - the reset cycle now promotes the full visible bank into compileable runtime anchors inside `canoe/`.
 
 3. Core custom / differentiating ECU surfaces
 - target: `6~10`
@@ -29,7 +29,7 @@ Use this as the real execution profile for the current reset cycle.
 - The correct tradeoff is:
   - widen the primary layer
   - keep deep runtime narrow
-  - keep premium/option surfaces placeholder-first
+- keep premium/option surfaces reviewer-visible while promoting runtime in waves
 
 ## Active Layering Rule
 
@@ -45,7 +45,7 @@ Treat the active `100` surface inventory as three simultaneous layers:
 
 3. `Premium / option / next-wave surface`
 - `16`
-- active in the bank, but placeholder-first unless promoted
+- active in the bank and now promoted into compileable runtime anchors
 
 This keeps the architecture wide without making the top layer look like a thin demo.
 
@@ -53,12 +53,12 @@ This keeps the architecture wide without making the top layer look like a thin d
 
 - `PHYSICAL/DOMAIN ECU`: `EMS`, `TCU`, `VCU`, `ESC`, `MDPS`, `BCM`, `IVI`, `CLU`, `ADAS`, `V2X`, `CGW`
 - `FUNCTION/FEATURE SURFACE`: `SCC`, `HIGHWAY_PILOT`, `AEB_DOMAIN`, `SURROUND_PARK_MASTER` 등
-- `INFRA SERVICE SURFACE`: `EDGE_LOGGER`, `CARPAY_CTRL`, `PHONE_AS_KEY` 등
+- `INFRA SERVICE SURFACE`: `EDR`, `CARPAY_CTRL`, `PHONE_AS_KEY` 등
 - `VALIDATION`: `VALIDATION_HARNESS`, `VAL_*`
 
 Rule:
 - current deep runtime promotion은 `PHYSICAL/DOMAIN ECU` 우선
-- function/infra surfaces는 placeholder-first를 유지
+- function/infra surfaces도 current wave 기준 runtime anchor로 승격 완료
 
 ## Active 100-Surface Vehicle Inventory Profile
 
@@ -173,7 +173,7 @@ Rule:
 
 Vehicle surface total: `100`
 
-## Deep Runtime Plan (`78` current)
+## Deep Runtime Plan (`100` current)
 
 Current active baseline first:
 
@@ -255,6 +255,28 @@ Current active baseline first:
 76. `RWS`
 77. `VALIDATION_HARNESS` (`VAL_SCENARIO_CTRL`)
 78. `VALIDATION_HARNESS` (`VAL_BASELINE_CTRL`)
+79. `FPCM`
+80. `LVR`
+81. `ISG`
+82. `EOP`
+83. `EWP`
+84. `ACU`
+85. `ODS`
+86. `PGS`
+87. `PHONE_AS_KEY`
+88. `CARPAY_CTRL`
+89. `CHARGE_PORT_CTRL`
+90. `MASSAGE_SEAT_CTRL`
+91. `EDR`
+92. `ETH_BACKBONE`
+93. `AEB_DOMAIN`
+94. `PARK_MASTER`
+95. `ROAD_PREVIEW_CAMERA`
+96. `REAR_RADAR_MASTER`
+97. `SURROUND_PARK_MASTER`
+98. `HIGHWAY_PILOT`
+99. `LIDAR`
+100. `TRAILER_CTRL`
 
 ## Chosen 8 Core Custom Surfaces
 
@@ -289,6 +311,6 @@ If implementation pressure rises later, the first trim-down target is:
 - This file is the active execution profile for using that 100-bank in practice.
 - Rule:
   - active architecture breadth follows the `100` bank
-  - active deep implementation is currently `78`
-  - premium/option layer stays placeholder-first unless promoted
+  - active deep implementation is currently `100`
+  - the original placeholder bank is fully retired inside `canoe/src/capl/retired_placeholders`
   - trim-down is allowed later, but breadth-first framing comes first now

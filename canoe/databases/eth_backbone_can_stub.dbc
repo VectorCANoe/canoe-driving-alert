@@ -30,7 +30,7 @@ NS_ :
 
 BS_:
 
-BU_: V2X ADAS IVI ESC MDPS VCU VAL_SCENARIO_CTRL CGW Vector__XXX
+BU_: V2X ADAS IVI ESC MDPS VCU VAL_SCENARIO_CTRL CGW IBOX SGW DCM EDR ETH_BACKBONE Vector__XXX
 
 BO_ 448 frmEmergencyBroadcastMsg: 4 V2X
  SG_ VehicleType  : 0|4@1+  (1,0) [0|15]  ""    V2X
@@ -105,6 +105,21 @@ BO_ 667 ethDiagStateMsg: 2 DCM
  SG_ Reserved0        : 6|2@1+ (1,0) [0|0] "" Vector__XXX
  SG_ LastDiagSid      : 8|8@1+ (1,0) [0|255] "" VAL_SCENARIO_CTRL
 
+BO_ 668 ethEdrStateMsg: 4 EDR
+ SG_ RecordState      : 0|2@1+ (1,0) [0|3] "" CGW,VAL_SCENARIO_CTRL
+ SG_ EventSeverity    : 2|3@1+ (1,0) [0|7] "" CGW,VAL_SCENARIO_CTRL
+ SG_ RecordReason     : 8|8@1+ (1,0) [0|255] "" CGW,VAL_SCENARIO_CTRL
+ SG_ StorageLevel     : 16|8@1+ (1,0) [0|100] "%" CGW,VAL_SCENARIO_CTRL
+ SG_ LastEventCode    : 24|8@1+ (1,0) [0|255] "" CGW,VAL_SCENARIO_CTRL
+
+BO_ 669 ethBackboneStateMsg: 4 ETH_BACKBONE
+ SG_ BackboneMode     : 0|2@1+ (1,0) [0|3] "" CGW,IBOX,SGW,DCM
+ SG_ RouteHealth      : 2|2@1+ (1,0) [0|3] "" CGW,IBOX,SGW,DCM
+ SG_ ServiceHealth    : 4|2@1+ (1,0) [0|3] "" CGW,IBOX,SGW,DCM
+ SG_ SecurityLevel    : 8|4@1+ (1,0) [0|15] "" CGW,IBOX,SGW,DCM
+ SG_ ActiveServices   : 12|4@1+ (1,0) [0|15] "" CGW,IBOX,SGW,DCM
+ SG_ FaultBitmap      : 16|16@1+ (1,0) [0|65535] "" CGW,IBOX,SGW,DCM
+
 CM_ BO_ 448 "E100: Emergency vehicle broadcast. Sent by V2X on ETH backbone stub through its internal V2X transport seam.";
 CM_ SG_ 448 VehicleType  "1=POLICE 2=AMBULANCE";
 CM_ SG_ 448 Status       "0=CLEAR 1=ACTIVE";
@@ -134,6 +149,8 @@ CM_ SG_ 1298 NavDirection "0=None 1=Left 2=Right 3=Straight.";
 CM_ BO_ 665 "IBOX backbone aggregation state. Produced by IBOX from ETH-backbone context and service health.";
 CM_ BO_ 666 "Security gateway state. Produced by SGW from CGW/IBOX backbone security posture.";
 CM_ BO_ 667 "Diagnostic backbone state. Produced by DCM from security and routing context.";
+CM_ BO_ 668 "EDR backbone event recorder state. Produced by EDR from fail-safe and object-safety context.";
+CM_ BO_ 669 "ETH backbone consolidated health state. Produced by ETH_BACKBONE service from IBOX/SGW/DCM context.";
 
 BA_DEF_ BO_ "GenMsgCycleTime" INT 0 10000;
 BA_DEF_DEF_ "GenMsgCycleTime" 0;
@@ -147,6 +164,8 @@ BA_ "GenMsgCycleTime" BO_ 1298 100;
 BA_ "GenMsgCycleTime" BO_ 665 100;
 BA_ "GenMsgCycleTime" BO_ 666 100;
 BA_ "GenMsgCycleTime" BO_ 667 100;
+BA_ "GenMsgCycleTime" BO_ 668 100;
+BA_ "GenMsgCycleTime" BO_ 669 100;
 
 VAL_ 448 VehicleType 0 "NONE" 1 "POLICE" 2 "AMBULANCE";
 VAL_ 448 Status 0 "CLEAR" 1 "ACTIVE";
@@ -162,3 +181,5 @@ VAL_ 1296 TurnLampState 0 "OFF" 1 "LEFT" 2 "RIGHT" 3 "HAZARD";
 VAL_ 1297 SteeringInput 0 "NO" 1 "YES";
 VAL_ 1298 RoadZone 0 "NONE" 1 "SCHOOL" 2 "HIGHWAY" 3 "GUIDE";
 VAL_ 1298 NavDirection 0 "NONE" 1 "LEFT" 2 "RIGHT" 3 "STRAIGHT";
+VAL_ 668 RecordState 0 "Idle" 1 "Armed" 2 "Recording" 3 "Fault";
+VAL_ 669 BackboneMode 0 "Init" 1 "Standby" 2 "Active" 3 "Fault";

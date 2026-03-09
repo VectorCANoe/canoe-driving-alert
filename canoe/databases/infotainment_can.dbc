@@ -218,6 +218,26 @@ BO_ 668 frmNavModuleStateMsg: 3 NAV_MODULE
  SG_ NavEtaMinutes     : 8|8@1+ (1,0) [0|255] "min" IVI,CLU
  SG_ NavSpeedLimit     : 16|8@1+ (1,0) [0|255] "km/h" IVI,CLU
 
+BO_ 669 frmPgsStateMsg: 2 PGS
+ SG_ PgsActive         : 0|1@1+ (1,0) [0|1] "" IVI,CLU
+ SG_ GuideMode         : 1|2@1+ (1,0) [0|3] "" IVI,CLU
+ SG_ Reserved0         : 3|5@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ TrajectoryQuality : 8|8@1+ (1,0) [0|100] "%" IVI,CLU
+
+BO_ 670 frmPhoneAsKeyStateMsg: 2 PHONE_AS_KEY
+ SG_ PaakState         : 0|3@1+ (1,0) [0|7] "" DIGITAL_KEY,TMU
+ SG_ AuthLevel         : 3|2@1+ (1,0) [0|3] "" DIGITAL_KEY,TMU
+ SG_ ProximityState    : 5|2@1+ (1,0) [0|3] "" DIGITAL_KEY,TMU
+ SG_ Reserved0         : 7|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ SyncLatency       : 8|8@1+ (1,0) [0|255] "ms" DIGITAL_KEY,TMU
+
+BO_ 671 frmCarpayCtrlStateMsg: 2 CARPAY_CTRL
+ SG_ PaymentState      : 0|3@1+ (1,0) [0|7] "" TMU,IVI
+ SG_ WalletLinkState   : 3|2@1+ (1,0) [0|3] "" TMU,IVI
+ SG_ ReceiptPending    : 5|1@1+ (1,0) [0|1] "" TMU,IVI
+ SG_ Reserved0         : 6|2@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ ServiceQuality    : 8|8@1+ (1,0) [0|100] "%" TMU,IVI
+
 CM_ BO_ 675 "Flow_003 navigation context input.";
 CM_ BO_ 640 "Flow_008 cluster warning output.";
 CM_ BO_ 641 "Infotainment baseline: cluster base display payload (speed/gear/status).";
@@ -245,6 +265,9 @@ CM_ BO_ 661 "Comm_203: cluster sync state extension.";
 CM_ BO_ 662 "Telematics service/link state and remote climate request.";
 CM_ BO_ 663 "HUD surface ECU state projected from CLU/IVI guidance and warning context.";
 CM_ BO_ 664 "Amplifier surface ECU state derived from media focus, volume, and TTS ducking.";
+CM_ BO_ 669 "Infotainment runtime: parking guidance system state derived from parking assist context.";
+CM_ BO_ 670 "Infotainment runtime: phone-as-key state derived from digital key and telematics service context.";
+CM_ BO_ 671 "Infotainment runtime: in-vehicle payment service state derived from TMU service availability.";
 
 BA_DEF_ BO_ "GenMsgCycleTime" INT 0 10000;
 BA_DEF_DEF_ "GenMsgCycleTime" 0;
@@ -275,6 +298,9 @@ BA_ "GenMsgCycleTime" BO_ 661 50;
 BA_ "GenMsgCycleTime" BO_ 662 100;
 BA_ "GenMsgCycleTime" BO_ 663 50;
 BA_ "GenMsgCycleTime" BO_ 664 50;
+BA_ "GenMsgCycleTime" BO_ 669 100;
+BA_ "GenMsgCycleTime" BO_ 670 100;
+BA_ "GenMsgCycleTime" BO_ 671 100;
 
 VAL_ 675 gRoadZone
   0 "Normal"

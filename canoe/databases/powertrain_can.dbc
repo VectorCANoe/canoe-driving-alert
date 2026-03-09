@@ -29,7 +29,7 @@ NS_ :
 
 BS_:
 
-BU_: VAL_SCENARIO_CTRL EMS TCU VCU SCC OBC DCDC MCU INVERTER _4WD BAT_BMS Vector__XXX
+BU_: VAL_SCENARIO_CTRL EMS TCU VCU SCC OBC DCDC MCU INVERTER _4WD BAT_BMS FPCM LVR ISG EOP EWP CHARGE_PORT_CTRL Vector__XXX
 
 BO_ 680 frmIgnitionEngineMsg: 1 VAL_SCENARIO_CTRL
  SG_ IgnitionState  : 0|1@1+ (1,0) [0|1] "" EMS
@@ -158,6 +158,47 @@ BO_ 311 frmBatBmsStateMsg: 3 BAT_BMS
  SG_ PackSoc          : 8|8@1+ (1,0) [0|100] "%" VCU,OBC,DCDC
  SG_ PackTemp         : 16|8@1+ (1,0) [0|255] "degC" VCU,OBC,DCDC
 
+BO_ 312 frmFpcmStateMsg: 3 FPCM
+ SG_ FpcmState        : 0|3@1+ (1,0) [0|7] "" EMS,VCU
+ SG_ Reserved0        : 3|5@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ PumpDuty         : 8|8@1+ (1,0) [0|100] "%" EMS,VCU
+ SG_ LinePressure     : 16|8@1+ (1,0) [0|255] "kPa" EMS,VCU
+
+BO_ 313 frmLvrStateMsg: 2 LVR
+ SG_ LeverPosition    : 0|3@1+ (1,0) [0|7] "" TCU,VCU
+ SG_ LeverValid       : 3|1@1+ (1,0) [0|1] "" TCU,VCU
+ SG_ ParkLockCmd      : 4|1@1+ (1,0) [0|1] "" TCU,VCU
+ SG_ Reserved0        : 5|3@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ LeverState       : 8|3@1+ (1,0) [0|7] "" TCU,VCU
+ SG_ Reserved1        : 11|5@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 314 frmIsgStateMsg: 2 ISG
+ SG_ IsgState         : 0|3@1+ (1,0) [0|7] "" EMS,VCU
+ SG_ RestartReady     : 3|1@1+ (1,0) [0|1] "" EMS,VCU
+ SG_ Reserved0        : 4|4@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ RecuperationLvl  : 8|8@1+ (1,0) [0|100] "%" EMS,VCU
+
+BO_ 315 frmEopStateMsg: 4 EOP
+ SG_ EopState         : 0|3@1+ (1,0) [0|7] "" EMS,VCU
+ SG_ Reserved0        : 3|5@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ PumpRpm          : 8|16@1+ (1,0) [0|65535] "rpm" EMS,VCU
+ SG_ OilPressure      : 24|8@1+ (1,0) [0|255] "kPa" EMS,VCU
+
+BO_ 316 frmEwpStateMsg: 3 EWP
+ SG_ EwpState         : 0|3@1+ (1,0) [0|7] "" EMS,VCU
+ SG_ Reserved0        : 3|5@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ PumpDuty         : 8|8@1+ (1,0) [0|100] "%" EMS,VCU
+ SG_ CoolantFlow      : 16|8@1+ (1,0) [0|255] "Lpm" EMS,VCU
+
+BO_ 317 frmChargePortCtrlStateMsg: 3 CHARGE_PORT_CTRL
+ SG_ PortLockState    : 0|2@1+ (1,0) [0|3] "" OBC,BAT_BMS,VCU
+ SG_ PlugState        : 2|1@1+ (1,0) [0|1] "" OBC,BAT_BMS,VCU
+ SG_ ChargeEnable     : 3|1@1+ (1,0) [0|1] "" OBC,BAT_BMS,VCU
+ SG_ ThermalState     : 4|2@1+ (1,0) [0|3] "" OBC,BAT_BMS,VCU
+ SG_ Reserved0        : 6|2@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ ChargeTargetSoc  : 8|8@1+ (1,0) [0|100] "%" OBC,BAT_BMS,VCU
+ SG_ Reserved1        : 16|8@1+ (1,0) [0|0] "" Vector__XXX
+
 CM_ BO_ 680 "Powertrain baseline: ignition state and engine state.";
 CM_ BO_ 681 "Powertrain baseline: gear input and gear state.";
 CM_ BO_ 265 "Powertrain baseline: domain routing policy and boundary status.";
@@ -183,6 +224,12 @@ CM_ BO_ 308 "Power electronics extension: motor control unit state.";
 CM_ BO_ 309 "Power electronics extension: inverter state.";
 CM_ BO_ 310 "Powertrain extension: 4WD torque split and clutch state.";
 CM_ BO_ 311 "Powertrain extension: battery management state.";
+CM_ BO_ 312 "Powertrain runtime: fuel pump control module state.";
+CM_ BO_ 313 "Powertrain runtime: electronic lever state.";
+CM_ BO_ 314 "Powertrain runtime: idle stop and go state.";
+CM_ BO_ 315 "Powertrain runtime: electric oil pump state.";
+CM_ BO_ 316 "Powertrain runtime: electric water pump state.";
+CM_ BO_ 317 "Powertrain runtime: charge port control state derived from OBC/BMS and drive-state context.";
 
 BA_DEF_ BO_ "GenMsgCycleTime" INT 0 10000;
 BA_DEF_DEF_ "GenMsgCycleTime" 0;
@@ -211,6 +258,12 @@ BA_ "GenMsgCycleTime" BO_ 308 100;
 BA_ "GenMsgCycleTime" BO_ 309 100;
 BA_ "GenMsgCycleTime" BO_ 310 100;
 BA_ "GenMsgCycleTime" BO_ 311 100;
+BA_ "GenMsgCycleTime" BO_ 312 100;
+BA_ "GenMsgCycleTime" BO_ 313 100;
+BA_ "GenMsgCycleTime" BO_ 314 100;
+BA_ "GenMsgCycleTime" BO_ 315 100;
+BA_ "GenMsgCycleTime" BO_ 316 100;
+BA_ "GenMsgCycleTime" BO_ 317 100;
 
 VAL_ 680 IgnitionState
   0 "Off"
@@ -275,3 +328,8 @@ VAL_ 268 CruiseState
   1 "Standby"
   2 "Active"
   3 "Fault" ;
+
+VAL_ 317 PortLockState 0 "Unlocked" 1 "Ready" 2 "Locked" 3 "Fault";
+VAL_ 317 PlugState 0 "Unplugged" 1 "Plugged";
+VAL_ 317 ChargeEnable 0 "Disabled" 1 "Enabled";
+VAL_ 317 ThermalState 0 "Normal" 1 "Warm" 2 "Hot" 3 "Fault";
