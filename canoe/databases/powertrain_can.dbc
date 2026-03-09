@@ -29,7 +29,7 @@ NS_ :
 
 BS_:
 
-BU_: VAL_SCENARIO_CTRL EMS TCU VCU Vector__XXX
+BU_: VAL_SCENARIO_CTRL EMS TCU VCU SCC Vector__XXX
 
 BO_ 680 frmIgnitionEngineMsg: 1 VAL_SCENARIO_CTRL
  SG_ IgnitionState  : 0|1@1+ (1,0) [0|1] "" EMS
@@ -76,7 +76,7 @@ BO_ 267 frmPowerLimitMsg: 2 VCU
  SG_ TorqueLimit     : 0|8@1+ (1,0) [0|255] "Nm" EMS,TCU
  SG_ SpeedLimit      : 8|8@1+ (1,0) [0|255] "km/h" EMS,TCU
 
-BO_ 268 frmCruiseStateMsg: 2 VCU
+BO_ 268 frmCruiseStateMsg: 2 SCC
  SG_ CruiseState     : 0|2@1+ (1,0) [0|3] "" EMS,TCU
  SG_ GapLevel        : 2|2@1+ (1,0) [0|3] "" EMS,TCU
  SG_ Reserved0       : 4|4@1+ (1,0) [0|0] "" Vector__XXX
@@ -229,4 +229,3 @@ VAL_ 268 CruiseState
   1 "Standby"
   2 "Active"
   3 "Fault" ;
-

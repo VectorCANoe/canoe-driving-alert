@@ -106,7 +106,6 @@ on timer tVcuCycle
   message frmPowertrainGatewayMsg mPtGw;
   message frmVehicleModeMsg mVehMode;
   message frmPowerLimitMsg mPowerLimit;
-  message frmCruiseStateMsg mCruise;
   message frmPowertrainHealthMsg mPtHealth;
   message frmPtDiagResMsg mPtDiagRes;
   message frmEnergyFlowStateMsg mEnergy;
@@ -195,11 +194,6 @@ on timer tVcuCycle
   mPowerLimit.TorqueLimit = torqueRequest;
   mPowerLimit.SpeedLimit = gSpeedLimitNorm;
   output(mPowerLimit);
-
-  mCruise.CruiseState = (gDriveMode == 3) ? 1 : 0;
-  mCruise.GapLevel = 2;
-  mCruise.CruiseSetSpeed = gSpeedLimitNorm;
-  output(mCruise);
 
   mPtHealth.PtAliveCnt = gPtAliveCnt & 0xFF;
   mPtHealth.PtDiagState = 0;
