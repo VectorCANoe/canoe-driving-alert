@@ -109,6 +109,12 @@
 |  |  | IVI (`IVI_GW`) | 중재 결과(E200)를 Cluster CAN(0x280)으로 50ms 주기 변환 송신 |  |  |  |
 |  |  | BCM (`AMBIENT_CTRL`) | selectedAlert 결과에 따라 ambientMode/color/pattern 정책 출력(전환 안정화 포함) |  |  |  |
 |  |  | CLU (`CLU_HMI_CTRL`) | warningTextCode/방향 표시/중복팝업 억제 정책 적용 |  |  |  |
+|  |  | CGW (`CHS_GW`, 샤시 확장) | 전동 주차/제동 보조 및 차체안정 상태를 경고 맥락으로 집계 | Ready |  |  |
+|  |  | BCM (`BODY_GW`, 바디 확장) | 출입 개폐/탑승자 보호/실내 편의 상태를 바디 정책 상태로 집계 | Ready |  |  |
+|  |  | IVI (`IVI_GW`, 서비스 확장) | 표시/음향/디지털 접근 서비스 상태를 HMI 정책 상태로 집계 | Ready |  |  |
+|  |  | ADAS (`ADAS_WARN_CTRL`, 상태 확장) | 주행 보조/주차 인지/센서 가용성 상태를 위험/가용성 판단에 반영 | Ready |  |  |
+|  |  | CGW (`DOMAIN_BOUNDARY_MGR`, 백본 서비스 확장) | 백본 및 도메인 서비스 가용성 상태를 경계/강등 정책으로 집계 | Ready |  |  |
+|  |  | CGW (`DOMAIN_ROUTER`, Powertrain 확장) | 구동/전력변환 및 변속·열관리·충전 인터페이스 상태를 집계 | Ready |  |  |
 |  |  | VALIDATION_HARNESS (`TST_SCN`) | testScenario 실행, 통신 조건(CAN+Ethernet 또는 대체 백본) 판정, scenarioResult 기록 |  |  |  |
 |  |  | VALIDATION_HARNESS (`TST_BAS`) | 차량 기본 기능(시동/기어/입력/표시) 단위 검증 및 결과 반영 |  |  |  |
 | 가상 노드 (Simulator) | 입력 | Vehicle/Steering Input | `gVehicleSpeed`, `gDriveState`, `SteeringInput` 입력 생성 |  |  |  |

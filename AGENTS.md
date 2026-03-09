@@ -43,6 +43,9 @@ Use those references to align:
 - Maintain 1:1 traceability chain:
   - `Req -> Func -> Flow -> Comm -> Var -> Code -> UT/IT/ST`
 - Do not remove existing template columns in requirement/function tables.
+- Do not change the column/header structure of any top-level `공식 표준 양식` table unless the user explicitly requests a template change.
+- When more detail is needed, keep the official table format and enrich the cell content instead of adding/replacing columns ad hoc.
+- Keep top-level `공식 표준 양식` text concise and reviewer-facing; do not list runtime/module implementation details there unless the template explicitly requires them.
 - Keep all text files in UTF-8 (do not re-save with legacy code pages).
 - Verification scope is fixed to CANoe SIL, CAN + Ethernet only.
 

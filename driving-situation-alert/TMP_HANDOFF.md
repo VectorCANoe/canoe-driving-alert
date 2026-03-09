@@ -46,6 +46,12 @@
 - Keep separation:
   - `01 = What`
   - `03+ = How`
+- Submission rule is fixed:
+  - 각 문서의 `공식 표준 양식` 상단 표만 제출 정본으로 간주한다.
+  - 하단 `보강표/상세 추적표/참고표`는 내부 작업용 reference이며, 제출 근거를 단독으로 대신할 수 없다.
+  - 어떤 입력/처리/출력/시나리오/판정 기준이 하단 표에만 있으면 안 되며, 제출 시점 전에는 상단 공식 표로 끌어올려야 한다.
+  - 단, 상단 `공식 표준 양식`의 열/헤더 구조 자체는 임의로 바꾸지 않는다. 상세도가 더 필요하면 기존 컬럼 안에서 문장을 보강한다.
+  - 상단 `공식 표준 양식`은 reviewer-facing 요약 표로 유지하며, runtime/module 구현명이나 저수준 기술 나열은 템플릿이 요구하지 않는 한 넣지 않는다.
 - ECU naming governance is reopened and now follows the reset baseline:
   - `00e` defines `surface ECU / runtime module / validation harness`
   - runtime rename or GUI rename must not happen before the document chain is updated
@@ -134,6 +140,8 @@
 4. `04`는 runtime reality를 유지하고, 승격/미승격 경계를 명시한다.
 5. Dev2 게이트 정책(`check_capl_sync.py`)에서 residual placeholder(`NIGHT_VISION`) 처리 규칙만 정리한다.
 6. GUI import/compile cycle은 active 99 우선 검증, placeholder 1은 compile-safe 확인만 수행한다.
+7. `05/06/07` 상단 공식 표에는 입력 조건, 기대 출력, 대표 시나리오, 판정 기준이 기존 컬럼 안에 직접 들어가야 하며 하단 추적표 의존을 줄인다.
+8. `0301` 상단 공식 표는 기존 열 구조(`노드/기능 상세/비고`)를 유지한 채 노드 요약을 넘어서 노드별 기능 명세가 직접 보이도록 보강한다.
 
 ## 8) Do Not Do
 - Do not change file encoding away from UTF-8.
@@ -142,6 +150,7 @@
 - Do not remove existing template columns.
 - Do not patch `canoe/cfg/*.cfg`, `*.cfg.ini`, `*.stcfg` by script unless explicitly requested for recovery.
 - Do not rename runtime nodes in GUI before logical ECU grouping and mapping are approved in docs.
+- Do not leave 제출 핵심 내용(입력/출력/시나리오/판정 기준)을 하단 보강표에만 두고 상단 공식 표를 빈약하게 유지하지 않는다.
 
 ## 9) Temporary Note
 - This handoff is temporary and must be refreshed continuously.
