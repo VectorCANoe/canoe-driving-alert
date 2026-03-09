@@ -125,6 +125,16 @@ BO_ 679 frmIviDiagReqMsg: 3 TEST_SCN
  SG_ IviDiagDidHigh   : 8|8@1+ (1,0) [0|255] "" IVI
  SG_ IviDiagDidLow    : 16|8@1+ (1,0) [0|255] "" IVI
 
+BO_ 680 frmCluDiagReqMsg: 3 TEST_SCN
+ SG_ CluDiagServiceId : 0|8@1+ (1,0) [0|255] "" CLU
+ SG_ CluDiagDidHigh   : 8|8@1+ (1,0) [0|255] "" CLU
+ SG_ CluDiagDidLow    : 16|8@1+ (1,0) [0|255] "" CLU
+
+BO_ 681 frmCluDiagResMsg: 3 CLU
+ SG_ CluDiagRespCode  : 0|8@1+ (1,0) [0|255] "" TEST_SCN
+ SG_ CluDiagData0     : 8|8@1+ (1,0) [0|255] "" TEST_SCN
+ SG_ CluDiagData1     : 16|8@1+ (1,0) [0|255] "" TEST_SCN
+
 BO_ 656 frmIviDiagResMsg: 3 IVI
  SG_ IviDiagRespCode  : 0|8@1+ (1,0) [0|255] "" TEST_SCN
  SG_ IviDiagData0     : 8|8@1+ (1,0) [0|255] "" TEST_SCN
@@ -266,6 +276,8 @@ CM_ BO_ 653 "Comm_203: traffic event extension.";
 CM_ BO_ 654 "Comm_203: phone projection extension.";
 CM_ BO_ 655 "Comm_203: cluster notification extension.";
 CM_ BO_ 679 "Comm_205: IVI diagnostic request.";
+CM_ BO_ 680 "Comm_205: CLU diagnostic request.";
+CM_ BO_ 681 "Comm_205: CLU diagnostic response.";
 CM_ BO_ 656 "Comm_205: IVI diagnostic response.";
 CM_ BO_ 657 "Comm_203: media metadata extension.";
 CM_ BO_ 658 "Comm_203: speech TTS state extension.";
@@ -301,6 +313,8 @@ BA_ "GenMsgCycleTime" BO_ 653 100;
 BA_ "GenMsgCycleTime" BO_ 654 50;
 BA_ "GenMsgCycleTime" BO_ 655 50;
 BA_ "GenMsgCycleTime" BO_ 679 0;
+BA_ "GenMsgCycleTime" BO_ 680 0;
+BA_ "GenMsgCycleTime" BO_ 681 0;
 BA_ "GenMsgCycleTime" BO_ 656 0;
 BA_ "GenMsgCycleTime" BO_ 657 50;
 BA_ "GenMsgCycleTime" BO_ 658 50;

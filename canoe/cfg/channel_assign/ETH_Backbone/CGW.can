@@ -25,6 +25,10 @@ variables
   dword gSteeringTsMs;
   dword gEmergencyMonTsMs;
   int gLastEthPathState;
+  int gDiagPending;
+  int gLastDiagSid;
+  int gLastDiagDidHigh;
+  int gLastDiagDidLow;
 }
 
 on start
@@ -48,6 +52,10 @@ on start
   gSteeringTsMs = 0;
   gEmergencyMonTsMs = 0;
   gLastEthPathState = -1;
+  gDiagPending = 0;
+  gLastDiagSid = 0;
+  gLastDiagDidHigh = 0;
+  gLastDiagDidLow = 0;
   @CoreState::domainBoundaryStatus = 0;
   @CoreState::domainPathStatus = 2;
   @CoreState::e2eHealthState = 0;
@@ -95,8 +103,17 @@ on message frmEmergencyMonitorMsg
   gEmergencyMonTsMs = getSimulationTimeMs();
 }
 
+on message ethCgwDiagReqMsg
+{
+  gLastDiagSid = clampRange((int)this.CgwDiagServiceId, 0, 255);
+  gLastDiagDidHigh = clampRange((int)this.CgwDiagDidHigh, 0, 255);
+  gLastDiagDidLow = clampRange((int)this.CgwDiagDidLow, 0, 255);
+  gDiagPending = 1;
+}
+
 on timer tBoundaryCheck
 {
+  message ethCgwDiagResMsg mDiag;
   message ethFailSafeStateMsg mFailSafe;
   message ethObjectSafetyStateMsg mObjSafety;
   dword nowMs;
@@ -288,6 +305,15 @@ on timer tBoundaryCheck
   mObjSafety.ObjectFailSafeMode = failSafeMode;
   mObjSafety.ObjectTrackValid = objectTrackValid;
   output(mObjSafety);
+
+  if (gDiagPending == 1)
+  {
+    mDiag.CgwDiagRespCode = (gLastDiagSid == 0x22) ? 0x62 : 0x7F;
+    mDiag.CgwDiagData0 = gLastDiagDidHigh;
+    mDiag.CgwDiagData1 = gLastDiagDidLow;
+    output(mDiag);
+    gDiagPending = 0;
+  }
 
   setTimer(tBoundaryCheck, 100);
 }

@@ -132,6 +132,26 @@ BO_ 669 ethBackboneStateMsg: 4 ETHB
  SG_ ActiveServices   : 12|4@1+ (1,0) [0|15] "" CGW,IBOX,SGW,DCM
  SG_ FaultBitmap      : 16|16@1+ (1,0) [0|65535] "" CGW,IBOX,SGW,DCM
 
+BO_ 670 ethV2xDiagReqMsg: 3 TEST_SCN
+ SG_ V2xDiagServiceId : 0|8@1+ (1,0) [0|255] "" V2X
+ SG_ V2xDiagDidHigh   : 8|8@1+ (1,0) [0|255] "" V2X
+ SG_ V2xDiagDidLow    : 16|8@1+ (1,0) [0|255] "" V2X
+
+BO_ 671 ethV2xDiagResMsg: 3 V2X
+ SG_ V2xDiagRespCode  : 0|8@1+ (1,0) [0|255] "" TEST_SCN
+ SG_ V2xDiagData0     : 8|8@1+ (1,0) [0|255] "" TEST_SCN
+ SG_ V2xDiagData1     : 16|8@1+ (1,0) [0|255] "" TEST_SCN
+
+BO_ 672 ethCgwDiagReqMsg: 3 TEST_SCN
+ SG_ CgwDiagServiceId : 0|8@1+ (1,0) [0|255] "" CGW
+ SG_ CgwDiagDidHigh   : 8|8@1+ (1,0) [0|255] "" CGW
+ SG_ CgwDiagDidLow    : 16|8@1+ (1,0) [0|255] "" CGW
+
+BO_ 673 ethCgwDiagResMsg: 3 CGW
+ SG_ CgwDiagRespCode  : 0|8@1+ (1,0) [0|255] "" TEST_SCN
+ SG_ CgwDiagData0     : 8|8@1+ (1,0) [0|255] "" TEST_SCN
+ SG_ CgwDiagData1     : 16|8@1+ (1,0) [0|255] "" TEST_SCN
+
 CM_ BO_ 448 "E100: Emergency vehicle broadcast. Sent by V2X on ETH backbone stub through its internal V2X transport seam.";
 CM_ SG_ 448 VehicleType  "1=POLICE 2=AMBULANCE";
 CM_ SG_ 448 Status       "0=CLEAR 1=ACTIVE";
@@ -163,6 +183,10 @@ CM_ BO_ 666 "Security gateway state. Produced by SGW from CGW/IBOX backbone secu
 CM_ BO_ 667 "Diagnostic backbone state. Produced by DCM from security and routing context.";
 CM_ BO_ 668 "EDR backbone event recorder state. Produced by EDR from fail-safe and object-safety context.";
 CM_ BO_ 669 "ETH backbone consolidated health state. Produced by ETHB service from IBOX/SGW/DCM context.";
+CM_ BO_ 670 "ETH backbone runtime: V2X diagnostic request.";
+CM_ BO_ 671 "ETH backbone runtime: V2X diagnostic response.";
+CM_ BO_ 672 "ETH backbone runtime: CGW diagnostic request.";
+CM_ BO_ 673 "ETH backbone runtime: CGW diagnostic response.";
 
 BA_DEF_ BO_ "GenMsgCycleTime" INT 0 10000;
 BA_DEF_DEF_ "GenMsgCycleTime" 0;
@@ -178,6 +202,10 @@ BA_ "GenMsgCycleTime" BO_ 666 100;
 BA_ "GenMsgCycleTime" BO_ 667 100;
 BA_ "GenMsgCycleTime" BO_ 668 100;
 BA_ "GenMsgCycleTime" BO_ 669 100;
+BA_ "GenMsgCycleTime" BO_ 670 0;
+BA_ "GenMsgCycleTime" BO_ 671 0;
+BA_ "GenMsgCycleTime" BO_ 672 0;
+BA_ "GenMsgCycleTime" BO_ 673 0;
 
 VAL_ 448 VehicleType 0 "NONE" 1 "POLICE" 2 "AMBULANCE";
 VAL_ 448 Status 0 "CLEAR" 1 "ACTIVE";

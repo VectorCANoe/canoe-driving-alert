@@ -273,6 +273,16 @@ BO_ 479 frmTrailerCtrlStateMsg: 4 TRM
  SG_ TurnLampState        : 24|2@1+ (1,0) [0|3] "" ADAS,CLU,VCU
  SG_ RearRiskLevel        : 26|6@1+ (1,0) [0|63] "" ADAS,CLU,VCU
 
+BO_ 480 frmAdasDiagReqMsg: 3 TEST_SCN
+ SG_ AdasDiagServiceId : 0|8@1+ (1,0) [0|255] "" ADAS
+ SG_ AdasDiagDidHigh   : 8|8@1+ (1,0) [0|255] "" ADAS
+ SG_ AdasDiagDidLow    : 16|8@1+ (1,0) [0|255] "" ADAS
+
+BO_ 481 frmAdasDiagResMsg: 3 ADAS
+ SG_ AdasDiagRespCode  : 0|8@1+ (1,0) [0|255] "" TEST_SCN
+ SG_ AdasDiagData0     : 8|8@1+ (1,0) [0|255] "" TEST_SCN
+ SG_ AdasDiagData1     : 16|8@1+ (1,0) [0|255] "" TEST_SCN
+
 CM_ BO_ 449 "Comm_201: ADAS chassis status output. ADAS-owned frame.";
 CM_ SG_ 449 AdasChassisState "Computed ADAS warning level (0=none).";
 CM_ SG_ 449 AdasHealthLevel  "ADAS node health (0=fault 1=ok).";
@@ -363,6 +373,8 @@ CM_ BO_ 476 "Comm_222: Surround park master frame derived from surround parking 
 CM_ BO_ 477 "Comm_223: Highway pilot readiness frame derived from SCC/LKAS/DMS context.";
 CM_ BO_ 478 "Comm_224: Lidar state frame derived from object safety and free-space context.";
 CM_ BO_ 479 "Comm_225: Trailer control state frame derived from rear radar and vehicle stability context.";
+CM_ BO_ 480 "ADAS runtime: diagnostic request.";
+CM_ BO_ 481 "ADAS runtime: diagnostic response.";
 
 BA_DEF_ BO_ "GenMsgCycleTime" INT 0 10000;
 BA_DEF_DEF_ "GenMsgCycleTime" 0;
@@ -397,6 +409,8 @@ BA_ "GenMsgCycleTime" BO_ 476 100;
 BA_ "GenMsgCycleTime" BO_ 477 100;
 BA_ "GenMsgCycleTime" BO_ 478 100;
 BA_ "GenMsgCycleTime" BO_ 479 100;
+BA_ "GenMsgCycleTime" BO_ 480 0;
+BA_ "GenMsgCycleTime" BO_ 481 0;
 
 VAL_ 452 DecelAssistReq 0 "OFF" 1 "ON";
 VAL_ 452 DriverReleaseReason 0 "NONE" 1 "STEER" 2 "BRAKE" 3 "FAILSAFE";
@@ -451,4 +465,3 @@ VAL_ 477 DriverMonitorReq 0 "NO" 1 "YES";
 VAL_ 478 TargetDetected 0 "NO" 1 "YES";
 VAL_ 479 TrailerDetected 0 "NO" 1 "YES";
 VAL_ 479 StabilityAssistReq 0 "OFF" 1 "ON";
-

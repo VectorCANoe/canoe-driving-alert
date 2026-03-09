@@ -69,12 +69,16 @@ int calcBaselineIgnitionState(int speed, int driveState)
 void sendBaselineDiagRequest(int scenarioId)
 {
   message frmIviDiagReqMsg mIvi;
+  message frmCluDiagReqMsg mClu;
+  message frmAdasDiagReqMsg mAdas;
   message frmPtDiagReqMsg mPt;
   message frmChassisDiagReqMsg mChs;
   message frmBcmDiagReqMsg mBcm;
   message frmTmuDiagReqMsg mTmu;
   message frmDatcDiagReqMsg mDatc;
   message frmSccDiagReqMsg mScc;
+  message ethV2xDiagReqMsg mV2x;
+  message ethCgwDiagReqMsg mCgw;
   int didLow;
 
   didLow = clampRange(scenarioId, 0, 255);
@@ -83,6 +87,16 @@ void sendBaselineDiagRequest(int scenarioId)
   mIvi.IviDiagDidHigh = 0xF1;
   mIvi.IviDiagDidLow = didLow;
   output(mIvi);
+
+  mClu.CluDiagServiceId = 0x22;
+  mClu.CluDiagDidHigh = 0xF1;
+  mClu.CluDiagDidLow = didLow;
+  output(mClu);
+
+  mAdas.AdasDiagServiceId = 0x22;
+  mAdas.AdasDiagDidHigh = 0xF1;
+  mAdas.AdasDiagDidLow = didLow;
+  output(mAdas);
 
   mPt.PtDiagServiceId = 0x22;
   mPt.PtDiagDidHigh = 0xF1;
@@ -113,6 +127,16 @@ void sendBaselineDiagRequest(int scenarioId)
   mScc.SccDiagDidHigh = 0xF1;
   mScc.SccDiagDidLow = didLow;
   output(mScc);
+
+  mV2x.V2xDiagServiceId = 0x22;
+  mV2x.V2xDiagDidHigh = 0xF1;
+  mV2x.V2xDiagDidLow = didLow;
+  output(mV2x);
+
+  mCgw.CgwDiagServiceId = 0x22;
+  mCgw.CgwDiagDidHigh = 0xF1;
+  mCgw.CgwDiagDidLow = didLow;
+  output(mCgw);
 }
 
 void pushLockedScenarioInputs()

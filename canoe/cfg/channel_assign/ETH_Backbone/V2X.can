@@ -24,6 +24,10 @@ variables
   int gPrevAmbDispatch;
   int gLastMonContext;
   int gLastMonTimeoutClear;
+  int gDiagPending;
+  int gLastDiagSid;
+  int gLastDiagDidHigh;
+  int gLastDiagDidLow;
 }
 
 
@@ -188,6 +192,10 @@ on start
   gPrevAmbDispatch = 0;
   gLastMonContext = -1;
   gLastMonTimeoutClear = -1;
+  gDiagPending = 0;
+  gLastDiagSid = 0;
+  gLastDiagDidHigh = 0;
+  gLastDiagDidLow = 0;
   updateEmergencyContext();
   setTimeoutClear(0);
   setTimer(tRxCycle, 10);
@@ -225,6 +233,14 @@ on message frmEmergencyBroadcastMsg
   }
 
   pushEmergencyMonitor();
+}
+
+on message ethV2xDiagReqMsg
+{
+  gLastDiagSid = clampRange((int)this.V2xDiagServiceId, 0, 255);
+  gLastDiagDidHigh = clampRange((int)this.V2xDiagDidHigh, 0, 255);
+  gLastDiagDidLow = clampRange((int)this.V2xDiagDidLow, 0, 255);
+  gDiagPending = 1;
 }
 
 /* v1 fallback: sysvar polling (panel/legacy compat, kept for backward compat) */
@@ -317,6 +333,7 @@ on timer tEventTrace100
 
 on timer tTransport100
 {
+  message ethV2xDiagResMsg mDiag;
   int policeDispatch;
   int ambDispatch;
 
@@ -366,5 +383,13 @@ on timer tTransport100
   gPrevPoliceDispatch = policeDispatch;
   gPrevAmbDispatch = ambDispatch;
   pushEmergencyMonitor();
+  if (gDiagPending == 1)
+  {
+    mDiag.V2xDiagRespCode = (gLastDiagSid == 0x22) ? 0x62 : 0x7F;
+    mDiag.V2xDiagData0 = gLastDiagDidHigh;
+    mDiag.V2xDiagData1 = gLastDiagDidLow;
+    output(mDiag);
+    gDiagPending = 0;
+  }
   setTimer(tTransport100, 100);
 }
