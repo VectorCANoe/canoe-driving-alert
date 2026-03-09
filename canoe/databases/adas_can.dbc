@@ -30,7 +30,7 @@ NS_ :
 
 BS_:
 
-BU_: ADAS ESC VAL_SCENARIO_CTRL BCM IVI LDWS_LKAS FCA BCW LCA SPAS RSPA AVM FCAM Vector__XXX
+BU_: ADAS ESC VAL_SCENARIO_CTRL BCM IVI LDWS_LKAS FCA BCW LCA SPAS RSPA AVM FCAM FRADAR SRR_FL SRR_FR PARK_ULTRASONIC Vector__XXX
 
 BO_ 449 frmAdasChassisStatusMsg: 2 ADAS
  SG_ AdasChassisState : 0|8@1+ (1,0) [0|255] "" ESC
@@ -145,6 +145,34 @@ BO_ 463 frmFcamStateMsg: 4 FCAM
  SG_ Confidence           : 8|8@1+  (1,0) [0|100] "%" ADAS,CLU
  SG_ Reserved0            : 16|16@1+ (1,0) [0|0] "" Vector__XXX
 
+BO_ 464 frmFradarStateMsg: 4 FRADAR
+ SG_ RadarHealth          : 0|2@1+  (1,0) [0|3] "" ADAS,CLU
+ SG_ ObjectDetected       : 2|1@1+  (1,0) [0|1] "" ADAS,CLU
+ SG_ DistanceBucket       : 8|8@1+  (1,0) [0|255] "" ADAS,CLU
+ SG_ RelSpeedBucket       : 16|8@1+ (1,0) [0|255] "" ADAS,CLU
+ SG_ Reserved0            : 24|8@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 465 frmSrrFlStateMsg: 4 SRR_FL
+ SG_ SideObjectDetected   : 0|1@1+  (1,0) [0|1] "" ADAS,CLU
+ SG_ SideRiskLevel        : 8|8@1+  (1,0) [0|100] "" ADAS,CLU
+ SG_ MergeConflict        : 16|1@1+ (1,0) [0|1] "" ADAS,CLU
+ SG_ TurnLampState        : 24|2@1+ (1,0) [0|3] "" ADAS,CLU
+ SG_ Reserved0            : 26|6@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 466 frmSrrFrStateMsg: 4 SRR_FR
+ SG_ SideObjectDetected   : 0|1@1+  (1,0) [0|1] "" ADAS,CLU
+ SG_ SideRiskLevel        : 8|8@1+  (1,0) [0|100] "" ADAS,CLU
+ SG_ MergeConflict        : 16|1@1+ (1,0) [0|1] "" ADAS,CLU
+ SG_ TurnLampState        : 24|2@1+ (1,0) [0|3] "" ADAS,CLU
+ SG_ Reserved0            : 26|6@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 467 frmParkUltrasonicStateMsg: 4 PARK_ULTRASONIC
+ SG_ ParkAssistActive     : 0|1@1+  (1,0) [0|1] "" BCM,IVI,CLU
+ SG_ MinDistanceCm        : 8|8@1+  (1,0) [0|255] "cm" BCM,IVI,CLU
+ SG_ ZoneMask             : 16|8@1+ (1,0) [0|255] "" BCM,IVI,CLU
+ SG_ AudibleWarn          : 24|1@1+ (1,0) [0|1] "" BCM,IVI,CLU
+ SG_ Reserved0            : 25|7@1+ (1,0) [0|0] "" Vector__XXX
+
 CM_ BO_ 449 "Comm_201: ADAS chassis status output. ADAS-owned frame.";
 CM_ SG_ 449 AdasChassisState "Computed ADAS warning level (0=none).";
 CM_ SG_ 449 AdasHealthLevel  "ADAS node health (0=fault 1=ok).";
@@ -205,6 +233,16 @@ CM_ BO_ 463 "Comm_209: FCAM state frame derived from ADAS object and lane-model 
 CM_ SG_ 463 CameraHealth "0=fault 1=degraded 2=ok.";
 CM_ SG_ 463 ObjectDetected "Front camera object detected state.";
 CM_ SG_ 463 LaneModelValid "Lane model validity state.";
+CM_ BO_ 464 "Comm_210: Front radar state frame derived from current ADAS object tracking context.";
+CM_ SG_ 464 RadarHealth "0=fault 1=degraded 2=ok.";
+CM_ SG_ 464 ObjectDetected "Front radar target detected state.";
+CM_ BO_ 465 "Comm_211: Left rear side radar frame derived from side conflict and turn intent.";
+CM_ SG_ 465 SideObjectDetected "Left side object detected state.";
+CM_ BO_ 466 "Comm_212: Right rear side radar frame derived from side conflict and turn intent.";
+CM_ SG_ 466 SideObjectDetected "Right side object detected state.";
+CM_ BO_ 467 "Comm_213: Parking ultrasonic state frame derived from low-speed parking proximity context.";
+CM_ SG_ 467 ParkAssistActive "Parking ultrasonic active state.";
+CM_ SG_ 467 MinDistanceCm "Minimum proximity bucket in centimeters.";
 
 BA_DEF_ BO_ "GenMsgCycleTime" INT 0 10000;
 BA_DEF_DEF_ "GenMsgCycleTime" 0;
@@ -223,6 +261,10 @@ BA_ "GenMsgCycleTime" BO_ 460 100;
 BA_ "GenMsgCycleTime" BO_ 461 100;
 BA_ "GenMsgCycleTime" BO_ 462 100;
 BA_ "GenMsgCycleTime" BO_ 463 100;
+BA_ "GenMsgCycleTime" BO_ 464 100;
+BA_ "GenMsgCycleTime" BO_ 465 100;
+BA_ "GenMsgCycleTime" BO_ 466 100;
+BA_ "GenMsgCycleTime" BO_ 467 100;
 
 VAL_ 452 DecelAssistReq 0 "OFF" 1 "ON";
 VAL_ 452 DriverReleaseReason 0 "NONE" 1 "STEER" 2 "BRAKE" 3 "FAILSAFE";
@@ -247,3 +289,8 @@ VAL_ 461 BrakeHoldReq 0 "OFF" 1 "ON";
 VAL_ 462 AvmActive 0 "OFF" 1 "ON";
 VAL_ 463 ObjectDetected 0 "NO" 1 "YES";
 VAL_ 463 LaneModelValid 0 "NO" 1 "YES";
+VAL_ 464 ObjectDetected 0 "NO" 1 "YES";
+VAL_ 465 SideObjectDetected 0 "NO" 1 "YES";
+VAL_ 466 SideObjectDetected 0 "NO" 1 "YES";
+VAL_ 467 ParkAssistActive 0 "OFF" 1 "ON";
+VAL_ 467 AudibleWarn 0 "OFF" 1 "ON";
