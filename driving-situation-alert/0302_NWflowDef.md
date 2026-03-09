@@ -166,7 +166,8 @@
 
 ## 네트워크 플로우 표 (공식 표준 양식)
 
-| Channel | ID hex | Symbolic Name(message name) | Byte no. | Function | Bit no. | signal name | VAL_SCENARIO_CTRL | CHS_GW | INFOTAINMENT_GW | DOMAIN_ROUTER | ETHB | ADAS_WARN_CTRL | NAV_CTX_MGR | EMS_POLICE_TX | EMS_AMB_TX | EMS_ALERT_RX | WARN_ARB_MGR | BODY_GW | IVI_GW | AMBIENT_CTRL | CLU_HMI_CTRL | ENG_CTRL | TCU | ACCEL_CTRL | BRK_CTRL | STEER_CTRL | HAZARD_CTRL | WINDOW_CTRL | DRV_STATE_MGR | CLU_BASE_CTRL | VAL_BASELINE_CTRL | [비고] |
+- 표의 노드 열은 표면 ECU를 먼저 쓰고, 괄호 안 이름은 CANoe 내부 노드명으로 읽는다.
+| Channel | ID hex | Symbolic Name(message name) | Byte no. | Function | Bit no. | signal name | Validation Harness (`VAL_SCENARIO_CTRL`) | CGW (`CHS_GW`) | IVI (`INFOTAINMENT_GW`) | CGW (`DOMAIN_ROUTER`) | ETHB | ADAS (`ADAS_WARN_CTRL`) | IVI (`NAV_CTX_MGR`) | V2X Police Tx (`EMS_POLICE_TX`) | V2X Ambulance Tx (`EMS_AMB_TX`) | V2X Rx (`EMS_ALERT_RX`) | ADAS (`WARN_ARB_MGR`) | BCM (`BODY_GW`) | IVI (`IVI_GW`) | BCM (`AMBIENT_CTRL`) | CLU (`CLU_HMI_CTRL`) | EMS (`ENG_CTRL`) | TCU | VCU (`ACCEL_CTRL`) | ESC (`BRK_CTRL`) | MDPS (`STEER_CTRL`) | BCM (`HAZARD_CTRL`) | BCM (`WINDOW_CTRL`) | BCM (`DRV_STATE_MGR`) | CLU (`CLU_BASE_CTRL`) | Validation Harness (`VAL_BASELINE_CTRL`) | [비고] |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | Chassis CAN | 0x2A0 | frmVehicleStateCanMsg | 0 | Vehicle State Check | 0~7 | vehicleSpeed | Tx | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | CAN, 100ms |
 |  |  |  | 1 | Vehicle State Check | 8~9 | driveState | Tx | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
