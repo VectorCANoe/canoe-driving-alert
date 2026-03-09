@@ -3,7 +3,7 @@
 **Document ID**: PROJ-0303-CS
 **ISO 26262 Reference**: Part 6, Cl.7 (Software Architectural Design)
 **ASPICE Reference**: SWE.2 (Software Architectural Design)
-**Version**: 3.34
+**Version**: 3.35
 **Date**: 2026-03-09
 **Status**: Draft
 **Project Title**: 주행 상황 실시간 경고 시스템
@@ -56,28 +56,28 @@
 |---|---|
 | 기준 SoT | `00e_ECU_Naming_Standard.md` 6.4 (100 ECU 전수표) |
 | 전체 Surface ECU | 100 |
-| 활성(상세 정의) | 38 |
-| 미구현(Placeholder) | 62 |
+| 활성(상세 정의) | 99 |
+| 미구현(Placeholder) | 1 |
 
 ### OEM100 전수표 (100개)
 
 | Surface ECU | Group | Domain Bucket | Surface Type | 구현 상태 | Runtime Binding | 문서 반영 정책 |
 |---|---|---|---|---|---|---|
 | `CGW` | A1 | Infrastructure/Integration | INFRA_SERVICE | 활성(상세 정의) | `CGW` | 추적체인 반영 대상 |
-| `ETH_BACKBONE` | A1 | Infrastructure/Integration | INFRA_SERVICE | 활성(상세 정의) | `ETH_SW(Seam monitor)` | 추적체인 반영 대상 |
+| `ETH_BACKBONE` | A1 | Infrastructure/Integration | INFRA_SERVICE | 활성(상세 정의) | `ETH_SW(Health/Freshness monitor)` | 추적체인 반영 대상 |
 | `DCM` | A1 | Infrastructure/Integration | INFRA_SERVICE | 활성(상세 정의) | `DCM` | 추적체인 반영 대상 |
 | `IBOX` | A1 | Infrastructure/Integration | INFRA_SERVICE | 활성(상세 정의) | `IBOX` | 추적체인 반영 대상 |
 | `SGW` | A1 | Infrastructure/Integration | INFRA_SERVICE | 활성(상세 정의) | `SGW` | 추적체인 반영 대상 |
 | `EMS` | A2 | Powertrain | PHYSICAL/DOMAIN | 활성(상세 정의) | `EMS` | 추적체인 반영 대상 |
 | `TCU` | A2 | Powertrain | PHYSICAL/DOMAIN | 활성(상세 정의) | `TCU` | 추적체인 반영 대상 |
 | `VCU` | A2 | Powertrain | PHYSICAL/DOMAIN | 활성(상세 정의) | `VCU` | 추적체인 반영 대상 |
-| `_4WD` | A2 | Powertrain | PHYSICAL/DOMAIN | 미구현(Placeholder) | - | 승격 전 참조만, 추적체인 미부여 |
-| `BAT_BMS` | A2 | Powertrain | PHYSICAL/DOMAIN | 미구현(Placeholder) | - | 승격 전 참조만, 추적체인 미부여 |
-| `FPCM` | A2 | Powertrain | PHYSICAL/DOMAIN | 미구현(Placeholder) | - | 승격 전 참조만, 추적체인 미부여 |
-| `LVR` | A2 | Powertrain | PHYSICAL/DOMAIN | 미구현(Placeholder) | - | 승격 전 참조만, 추적체인 미부여 |
-| `ISG` | A2 | Powertrain | PHYSICAL/DOMAIN | 미구현(Placeholder) | - | 승격 전 참조만, 추적체인 미부여 |
-| `EOP` | A2 | Powertrain | PHYSICAL/DOMAIN | 미구현(Placeholder) | - | 승격 전 참조만, 추적체인 미부여 |
-| `EWP` | A2 | Powertrain | PHYSICAL/DOMAIN | 미구현(Placeholder) | - | 승격 전 참조만, 추적체인 미부여 |
+| `_4WD` | A2 | Powertrain | PHYSICAL/DOMAIN | 활성(상세 정의) | `_4WD` | 추적체인 반영 대상 |
+| `BAT_BMS` | A2 | Powertrain | PHYSICAL/DOMAIN | 활성(상세 정의) | `BAT_BMS` | 추적체인 반영 대상 |
+| `FPCM` | A2 | Powertrain | PHYSICAL/DOMAIN | 활성(상세 정의) | `FPCM` | 추적체인 반영 대상 |
+| `LVR` | A2 | Powertrain | PHYSICAL/DOMAIN | 활성(상세 정의) | `LVR` | 추적체인 반영 대상 |
+| `ISG` | A2 | Powertrain | PHYSICAL/DOMAIN | 활성(상세 정의) | `ISG` | 추적체인 반영 대상 |
+| `EOP` | A2 | Powertrain | PHYSICAL/DOMAIN | 활성(상세 정의) | `EOP` | 추적체인 반영 대상 |
+| `EWP` | A2 | Powertrain | PHYSICAL/DOMAIN | 활성(상세 정의) | `EWP` | 추적체인 반영 대상 |
 | `ESC` | A3 | Chassis/Safety | PHYSICAL/DOMAIN | 활성(상세 정의) | `ESC` | 추적체인 반영 대상 |
 | `MDPS` | A3 | Chassis/Safety | PHYSICAL/DOMAIN | 활성(상세 정의) | `MDPS` | 추적체인 반영 대상 |
 | `ABS` | A3 | Chassis/Safety | PHYSICAL/DOMAIN | 활성(상세 정의) | `ABS` | 추적체인 반영 대상 |
@@ -85,8 +85,8 @@
 | `TPMS` | A3 | Chassis/Safety | PHYSICAL/DOMAIN | 활성(상세 정의) | `TPMS` | 추적체인 반영 대상 |
 | `SAS` | A3 | Chassis/Safety | PHYSICAL/DOMAIN | 활성(상세 정의) | `SAS` | 추적체인 반영 대상 |
 | `ECS` | A3 | Chassis/Safety | PHYSICAL/DOMAIN | 활성(상세 정의) | `ECS` | 추적체인 반영 대상 |
-| `ACU` | A3 | Chassis/Safety | PHYSICAL/DOMAIN | 미구현(Placeholder) | - | 승격 전 참조만, 추적체인 미부여 |
-| `ODS` | A3 | Chassis/Safety | PHYSICAL/DOMAIN | 미구현(Placeholder) | - | 승격 전 참조만, 추적체인 미부여 |
+| `ACU` | A3 | Chassis/Safety | PHYSICAL/DOMAIN | 활성(상세 정의) | `ACU` | 추적체인 반영 대상 |
+| `ODS` | A3 | Chassis/Safety | PHYSICAL/DOMAIN | 활성(상세 정의) | `ODS` | 추적체인 반영 대상 |
 | `VSM` | A3 | Chassis/Safety | PHYSICAL/DOMAIN | 활성(상세 정의) | `VSM` | 추적체인 반영 대상 |
 | `EHB` | A3 | Chassis/Safety | PHYSICAL/DOMAIN | 활성(상세 정의) | `EHB` | 추적체인 반영 대상 |
 | `CDC` | A3 | Chassis/Safety | PHYSICAL/DOMAIN | 활성(상세 정의) | `CDC` | 추적체인 반영 대상 |
@@ -94,75 +94,75 @@
 | `DATC` | A4 | Body/Comfort | PHYSICAL/DOMAIN | 활성(상세 정의) | `DATC` | 추적체인 반영 대상 |
 | `SMK` | A4 | Body/Comfort | PHYSICAL/DOMAIN | 활성(상세 정의) | `SMK` | 추적체인 반영 대상 |
 | `AFLS` | A4 | Body/Comfort | PHYSICAL/DOMAIN | 활성(상세 정의) | `AFLS` | 추적체인 반영 대상 |
-| `AHLS` | A4 | Body/Comfort | PHYSICAL/DOMAIN | 미구현(Placeholder) | - | 승격 전 참조만, 추적체인 미부여 |
+| `AHLS` | A4 | Body/Comfort | PHYSICAL/DOMAIN | 활성(상세 정의) | `AHLS` | 추적체인 반영 대상 |
 | `WIPER_MODULE` | A4 | Body/Comfort | PHYSICAL/DOMAIN | 활성(상세 정의) | `WIPER_MODULE` | 추적체인 반영 대상 |
-| `SUNROOF_MODULE` | A4 | Body/Comfort | PHYSICAL/DOMAIN | 미구현(Placeholder) | - | 승격 전 참조만, 추적체인 미부여 |
+| `SUNROOF_MODULE` | A4 | Body/Comfort | PHYSICAL/DOMAIN | 활성(상세 정의) | `SUNROOF_MODULE` | 추적체인 반영 대상 |
 | `DOOR_FL` | A4 | Body/Comfort | PHYSICAL/DOMAIN | 활성(상세 정의) | `DOOR_FL` | 추적체인 반영 대상 |
 | `DOOR_FR` | A4 | Body/Comfort | PHYSICAL/DOMAIN | 활성(상세 정의) | `DOOR_FR` | 추적체인 반영 대상 |
-| `DOOR_RL` | A4 | Body/Comfort | PHYSICAL/DOMAIN | 미구현(Placeholder) | - | 승격 전 참조만, 추적체인 미부여 |
-| `DOOR_RR` | A4 | Body/Comfort | PHYSICAL/DOMAIN | 미구현(Placeholder) | - | 승격 전 참조만, 추적체인 미부여 |
-| `TAILGATE_MODULE` | A4 | Body/Comfort | PHYSICAL/DOMAIN | 미구현(Placeholder) | - | 승격 전 참조만, 추적체인 미부여 |
+| `DOOR_RL` | A4 | Body/Comfort | PHYSICAL/DOMAIN | 활성(상세 정의) | `DOOR_RL` | 추적체인 반영 대상 |
+| `DOOR_RR` | A4 | Body/Comfort | PHYSICAL/DOMAIN | 활성(상세 정의) | `DOOR_RR` | 추적체인 반영 대상 |
+| `TAILGATE_MODULE` | A4 | Body/Comfort | PHYSICAL/DOMAIN | 활성(상세 정의) | `TAILGATE_MODULE` | 추적체인 반영 대상 |
 | `SEAT_DRV` | A4 | Body/Comfort | PHYSICAL/DOMAIN | 활성(상세 정의) | `SEAT_DRV` | 추적체인 반영 대상 |
 | `SEAT_PASS` | A4 | Body/Comfort | PHYSICAL/DOMAIN | 활성(상세 정의) | `SEAT_PASS` | 추적체인 반영 대상 |
-| `MIRROR_MODULE` | A4 | Body/Comfort | PHYSICAL/DOMAIN | 미구현(Placeholder) | - | 승격 전 참조만, 추적체인 미부여 |
+| `MIRROR_MODULE` | A4 | Body/Comfort | PHYSICAL/DOMAIN | 활성(상세 정의) | `MIRROR_MODULE` | 추적체인 반영 대상 |
 | `BODY_SECURITY_MODULE` | A4 | Body/Comfort | PHYSICAL/DOMAIN | 활성(상세 정의) | `BODY_SECURITY_MODULE` | 추적체인 반영 대상 |
 | `IVI` | A5 | IVI/HMI/Connectivity | PHYSICAL/DOMAIN | 활성(상세 정의) | `IVI` | 추적체인 반영 대상 |
 | `CLU` | A5 | IVI/HMI/Connectivity | PHYSICAL/DOMAIN | 활성(상세 정의) | `CLU` | 추적체인 반영 대상 |
 | `HUD` | A5 | IVI/HMI/Connectivity | PHYSICAL/DOMAIN | 활성(상세 정의) | `HUD` | 추적체인 반영 대상 |
 | `TMU` | A5 | IVI/HMI/Connectivity | PHYSICAL/DOMAIN | 활성(상세 정의) | `TMU` | 추적체인 반영 대상 |
 | `AMP` | A5 | IVI/HMI/Connectivity | PHYSICAL/DOMAIN | 활성(상세 정의) | `AMP` | 추적체인 반영 대상 |
-| `PGS` | A5 | IVI/HMI/Connectivity | PHYSICAL/DOMAIN | 미구현(Placeholder) | - | 승격 전 참조만, 추적체인 미부여 |
-| `NAV_MODULE` | A5 | IVI/HMI/Connectivity | PHYSICAL/DOMAIN | 미구현(Placeholder) | - | 승격 전 참조만, 추적체인 미부여 |
+| `PGS` | A5 | IVI/HMI/Connectivity | PHYSICAL/DOMAIN | 활성(상세 정의) | `PGS` | 추적체인 반영 대상 |
+| `NAV_MODULE` | A5 | IVI/HMI/Connectivity | PHYSICAL/DOMAIN | 활성(상세 정의) | `NAV_MODULE` | 추적체인 반영 대상 |
 | `VOICE_ASSIST` | A5 | IVI/HMI/Connectivity | PHYSICAL/DOMAIN | 활성(상세 정의) | `VOICE_ASSIST` | 추적체인 반영 대상 |
-| `RSE` | A5 | IVI/HMI/Connectivity | PHYSICAL/DOMAIN | 미구현(Placeholder) | - | 승격 전 참조만, 추적체인 미부여 |
-| `DIGITAL_KEY` | A5 | IVI/HMI/Connectivity | PHYSICAL/DOMAIN | 미구현(Placeholder) | - | 승격 전 참조만, 추적체인 미부여 |
+| `RSE` | A5 | IVI/HMI/Connectivity | PHYSICAL/DOMAIN | 활성(상세 정의) | `RSE` | 추적체인 반영 대상 |
+| `DIGITAL_KEY` | A5 | IVI/HMI/Connectivity | PHYSICAL/DOMAIN | 활성(상세 정의) | `DIGITAL_KEY` | 추적체인 반영 대상 |
 | `ADAS` | A6 | ADAS/V2X/Parking | PHYSICAL/DOMAIN | 활성(상세 정의) | `ADAS` | 추적체인 반영 대상 |
 | `V2X` | A6 | ADAS/V2X/Parking | PHYSICAL/DOMAIN | 활성(상세 정의) | `V2X` | 추적체인 반영 대상 |
 | `SCC` | A6 | ADAS/V2X/Parking | FUNCTION_SURFACE | 활성(상세 정의) | `SCC` | 추적체인 반영 대상 |
-| `LDWS_LKAS` | A6 | ADAS/V2X/Parking | FUNCTION_SURFACE | 미구현(Placeholder) | - | 승격 전 참조만, 추적체인 미부여 |
-| `FCA` | A6 | ADAS/V2X/Parking | FUNCTION_SURFACE | 미구현(Placeholder) | - | 승격 전 참조만, 추적체인 미부여 |
-| `BCW` | A6 | ADAS/V2X/Parking | FUNCTION_SURFACE | 미구현(Placeholder) | - | 승격 전 참조만, 추적체인 미부여 |
-| `LCA` | A6 | ADAS/V2X/Parking | FUNCTION_SURFACE | 미구현(Placeholder) | - | 승격 전 참조만, 추적체인 미부여 |
-| `SPAS` | A6 | ADAS/V2X/Parking | FUNCTION_SURFACE | 미구현(Placeholder) | - | 승격 전 참조만, 추적체인 미부여 |
-| `RSPA` | A6 | ADAS/V2X/Parking | FUNCTION_SURFACE | 미구현(Placeholder) | - | 승격 전 참조만, 추적체인 미부여 |
-| `AVM` | A6 | ADAS/V2X/Parking | FUNCTION_SURFACE | 미구현(Placeholder) | - | 승격 전 참조만, 추적체인 미부여 |
-| `FCAM` | A6 | ADAS/V2X/Parking | PHYSICAL/DOMAIN | 미구현(Placeholder) | - | 승격 전 참조만, 추적체인 미부여 |
-| `FRADAR` | A6 | ADAS/V2X/Parking | PHYSICAL/DOMAIN | 미구현(Placeholder) | - | 승격 전 참조만, 추적체인 미부여 |
-| `SRR_FL` | A6 | ADAS/V2X/Parking | PHYSICAL/DOMAIN | 미구현(Placeholder) | - | 승격 전 참조만, 추적체인 미부여 |
-| `SRR_FR` | A6 | ADAS/V2X/Parking | PHYSICAL/DOMAIN | 미구현(Placeholder) | - | 승격 전 참조만, 추적체인 미부여 |
-| `SRR_RL` | A6 | ADAS/V2X/Parking | PHYSICAL/DOMAIN | 미구현(Placeholder) | - | 승격 전 참조만, 추적체인 미부여 |
-| `SRR_RR` | A6 | ADAS/V2X/Parking | PHYSICAL/DOMAIN | 미구현(Placeholder) | - | 승격 전 참조만, 추적체인 미부여 |
-| `PARK_ULTRASONIC` | A6 | ADAS/V2X/Parking | PHYSICAL/DOMAIN | 미구현(Placeholder) | - | 승격 전 참조만, 추적체인 미부여 |
-| `DMS` | A6 | ADAS/V2X/Parking | PHYSICAL/DOMAIN | 미구현(Placeholder) | - | 승격 전 참조만, 추적체인 미부여 |
-| `OMS` | A6 | ADAS/V2X/Parking | PHYSICAL/DOMAIN | 미구현(Placeholder) | - | 승격 전 참조만, 추적체인 미부여 |
+| `LDWS_LKAS` | A6 | ADAS/V2X/Parking | FUNCTION_SURFACE | 활성(상세 정의) | `LDWS_LKAS` | 추적체인 반영 대상 |
+| `FCA` | A6 | ADAS/V2X/Parking | FUNCTION_SURFACE | 활성(상세 정의) | `FCA` | 추적체인 반영 대상 |
+| `BCW` | A6 | ADAS/V2X/Parking | FUNCTION_SURFACE | 활성(상세 정의) | `BCW` | 추적체인 반영 대상 |
+| `LCA` | A6 | ADAS/V2X/Parking | FUNCTION_SURFACE | 활성(상세 정의) | `LCA` | 추적체인 반영 대상 |
+| `SPAS` | A6 | ADAS/V2X/Parking | FUNCTION_SURFACE | 활성(상세 정의) | `SPAS` | 추적체인 반영 대상 |
+| `RSPA` | A6 | ADAS/V2X/Parking | FUNCTION_SURFACE | 활성(상세 정의) | `RSPA` | 추적체인 반영 대상 |
+| `AVM` | A6 | ADAS/V2X/Parking | FUNCTION_SURFACE | 활성(상세 정의) | `AVM` | 추적체인 반영 대상 |
+| `FCAM` | A6 | ADAS/V2X/Parking | PHYSICAL/DOMAIN | 활성(상세 정의) | `FCAM` | 추적체인 반영 대상 |
+| `FRADAR` | A6 | ADAS/V2X/Parking | PHYSICAL/DOMAIN | 활성(상세 정의) | `FRADAR` | 추적체인 반영 대상 |
+| `SRR_FL` | A6 | ADAS/V2X/Parking | PHYSICAL/DOMAIN | 활성(상세 정의) | `SRR_FL` | 추적체인 반영 대상 |
+| `SRR_FR` | A6 | ADAS/V2X/Parking | PHYSICAL/DOMAIN | 활성(상세 정의) | `SRR_FR` | 추적체인 반영 대상 |
+| `SRR_RL` | A6 | ADAS/V2X/Parking | PHYSICAL/DOMAIN | 활성(상세 정의) | `SRR_RL` | 추적체인 반영 대상 |
+| `SRR_RR` | A6 | ADAS/V2X/Parking | PHYSICAL/DOMAIN | 활성(상세 정의) | `SRR_RR` | 추적체인 반영 대상 |
+| `PARK_ULTRASONIC` | A6 | ADAS/V2X/Parking | PHYSICAL/DOMAIN | 활성(상세 정의) | `PARK_ULTRASONIC` | 추적체인 반영 대상 |
+| `DMS` | A6 | ADAS/V2X/Parking | PHYSICAL/DOMAIN | 활성(상세 정의) | `DMS` | 추적체인 반영 대상 |
+| `OMS` | A6 | ADAS/V2X/Parking | PHYSICAL/DOMAIN | 활성(상세 정의) | `OMS` | 추적체인 반영 대상 |
 | `VALIDATION_HARNESS` | B | Validation | VALIDATION | 활성(상세 정의) | `VAL_SCENARIO_CTRL + VAL_BASELINE_CTRL` | 추적체인 반영 대상 |
-| `OBC` | C | Premium Option | PHYSICAL/DOMAIN | 미구현(Placeholder) | - | 승격 전 참조만, 추적체인 미부여 |
-| `DCDC` | C | Premium Option | PHYSICAL/DOMAIN | 미구현(Placeholder) | - | 승격 전 참조만, 추적체인 미부여 |
-| `MCU` | C | Premium Option | PHYSICAL/DOMAIN | 미구현(Placeholder) | - | 승격 전 참조만, 추적체인 미부여 |
-| `INVERTER` | C | Premium Option | PHYSICAL/DOMAIN | 미구현(Placeholder) | - | 승격 전 참조만, 추적체인 미부여 |
-| `CHARGE_PORT_CTRL` | C | Premium Option | PHYSICAL/DOMAIN | 미구현(Placeholder) | - | 승격 전 참조만, 추적체인 미부여 |
-| `AIR_SUSPENSION` | C | Premium Option | PHYSICAL/DOMAIN | 미구현(Placeholder) | - | 승격 전 참조만, 추적체인 미부여 |
-| `RWS` | C | Premium Option | PHYSICAL/DOMAIN | 미구현(Placeholder) | - | 승격 전 참조만, 추적체인 미부여 |
+| `OBC` | C | Premium Option | PHYSICAL/DOMAIN | 활성(상세 정의) | `OBC` | 추적체인 반영 대상 |
+| `DCDC` | C | Premium Option | PHYSICAL/DOMAIN | 활성(상세 정의) | `DCDC` | 추적체인 반영 대상 |
+| `MCU` | C | Premium Option | PHYSICAL/DOMAIN | 활성(상세 정의) | `MCU` | 추적체인 반영 대상 |
+| `INVERTER` | C | Premium Option | PHYSICAL/DOMAIN | 활성(상세 정의) | `INVERTER` | 추적체인 반영 대상 |
+| `CHARGE_PORT_CTRL` | C | Premium Option | PHYSICAL/DOMAIN | 활성(상세 정의) | `CHARGE_PORT_CTRL` | 추적체인 반영 대상 |
+| `AIR_SUSPENSION` | C | Premium Option | PHYSICAL/DOMAIN | 활성(상세 정의) | `AIR_SUSPENSION` | 추적체인 반영 대상 |
+| `RWS` | C | Premium Option | PHYSICAL/DOMAIN | 활성(상세 정의) | `RWS` | 추적체인 반영 대상 |
 | `NIGHT_VISION` | C | Premium Option | PHYSICAL/DOMAIN | 미구현(Placeholder) | - | 승격 전 참조만, 추적체인 미부여 |
-| `AEB_DOMAIN` | C | Premium Option | FUNCTION_SURFACE | 미구현(Placeholder) | - | 승격 전 참조만, 추적체인 미부여 |
-| `HIGHWAY_PILOT` | C | Premium Option | FUNCTION_SURFACE | 미구현(Placeholder) | - | 승격 전 참조만, 추적체인 미부여 |
-| `PARK_MASTER` | C | Premium Option | FUNCTION_SURFACE | 미구현(Placeholder) | - | 승격 전 참조만, 추적체인 미부여 |
-| `TRAILER_CTRL` | C | Premium Option | PHYSICAL/DOMAIN | 미구현(Placeholder) | - | 승격 전 참조만, 추적체인 미부여 |
-| `HEADLAMP_LEVELING` | C | Premium Option | PHYSICAL/DOMAIN | 미구현(Placeholder) | - | 승격 전 참조만, 추적체인 미부여 |
-| `AUTO_DOOR_CTRL` | C | Premium Option | PHYSICAL/DOMAIN | 미구현(Placeholder) | - | 승격 전 참조만, 추적체인 미부여 |
-| `POWER_TAILGATE_CTRL` | C | Premium Option | PHYSICAL/DOMAIN | 미구현(Placeholder) | - | 승격 전 참조만, 추적체인 미부여 |
-| `MASSAGE_SEAT_CTRL` | C | Premium Option | PHYSICAL/DOMAIN | 미구현(Placeholder) | - | 승격 전 참조만, 추적체인 미부여 |
-| `REAR_CLIMATE_MODULE` | C | Premium Option | PHYSICAL/DOMAIN | 미구현(Placeholder) | - | 승격 전 참조만, 추적체인 미부여 |
-| `CABIN_SENSING` | C | Premium Option | PHYSICAL/DOMAIN | 미구현(Placeholder) | - | 승격 전 참조만, 추적체인 미부여 |
-| `BIOMETRIC_AUTH` | C | Premium Option | PHYSICAL/DOMAIN | 미구현(Placeholder) | - | 승격 전 참조만, 추적체인 미부여 |
-| `CARPAY_CTRL` | C | Premium Option | INFRA_SERVICE | 미구현(Placeholder) | - | 승격 전 참조만, 추적체인 미부여 |
-| `PHONE_AS_KEY` | C | Premium Option | INFRA_SERVICE | 미구현(Placeholder) | - | 승격 전 참조만, 추적체인 미부여 |
-| `OTA_MASTER` | C | Premium Option | INFRA_SERVICE | 미구현(Placeholder) | - | 승격 전 참조만, 추적체인 미부여 |
-| `EDR` | C | Premium Option | INFRA_SERVICE | 미구현(Placeholder) | - | 승격 전 참조만, 추적체인 미부여 |
-| `ROAD_PREVIEW_CAMERA` | C | Premium Option | PHYSICAL/DOMAIN | 미구현(Placeholder) | - | 승격 전 참조만, 추적체인 미부여 |
-| `LIDAR` | C | Premium Option | PHYSICAL/DOMAIN | 미구현(Placeholder) | - | 승격 전 참조만, 추적체인 미부여 |
-| `REAR_RADAR_MASTER` | C | Premium Option | PHYSICAL/DOMAIN | 미구현(Placeholder) | - | 승격 전 참조만, 추적체인 미부여 |
-| `SURROUND_PARK_MASTER` | C | Premium Option | FUNCTION_SURFACE | 미구현(Placeholder) | - | 승격 전 참조만, 추적체인 미부여 |
+| `AEB_DOMAIN` | C | Premium Option | FUNCTION_SURFACE | 활성(상세 정의) | `AEB_DOMAIN` | 추적체인 반영 대상 |
+| `HIGHWAY_PILOT` | C | Premium Option | FUNCTION_SURFACE | 활성(상세 정의) | `HIGHWAY_PILOT` | 추적체인 반영 대상 |
+| `PARK_MASTER` | C | Premium Option | FUNCTION_SURFACE | 활성(상세 정의) | `PARK_MASTER` | 추적체인 반영 대상 |
+| `TRAILER_CTRL` | C | Premium Option | PHYSICAL/DOMAIN | 활성(상세 정의) | `TRAILER_CTRL` | 추적체인 반영 대상 |
+| `HEADLAMP_LEVELING` | C | Premium Option | PHYSICAL/DOMAIN | 활성(상세 정의) | `HEADLAMP_LEVELING` | 추적체인 반영 대상 |
+| `AUTO_DOOR_CTRL` | C | Premium Option | PHYSICAL/DOMAIN | 활성(상세 정의) | `AUTO_DOOR_CTRL` | 추적체인 반영 대상 |
+| `POWER_TAILGATE_CTRL` | C | Premium Option | PHYSICAL/DOMAIN | 활성(상세 정의) | `POWER_TAILGATE_CTRL` | 추적체인 반영 대상 |
+| `MASSAGE_SEAT_CTRL` | C | Premium Option | PHYSICAL/DOMAIN | 활성(상세 정의) | `MASSAGE_SEAT_CTRL` | 추적체인 반영 대상 |
+| `REAR_CLIMATE_MODULE` | C | Premium Option | PHYSICAL/DOMAIN | 활성(상세 정의) | `REAR_CLIMATE_MODULE` | 추적체인 반영 대상 |
+| `CABIN_SENSING` | C | Premium Option | PHYSICAL/DOMAIN | 활성(상세 정의) | `CABIN_SENSING` | 추적체인 반영 대상 |
+| `BIOMETRIC_AUTH` | C | Premium Option | PHYSICAL/DOMAIN | 활성(상세 정의) | `BIOMETRIC_AUTH` | 추적체인 반영 대상 |
+| `CARPAY_CTRL` | C | Premium Option | INFRA_SERVICE | 활성(상세 정의) | `CARPAY_CTRL` | 추적체인 반영 대상 |
+| `PHONE_AS_KEY` | C | Premium Option | INFRA_SERVICE | 활성(상세 정의) | `PHONE_AS_KEY` | 추적체인 반영 대상 |
+| `OTA_MASTER` | C | Premium Option | INFRA_SERVICE | 활성(상세 정의) | `OTA_MASTER` | 추적체인 반영 대상 |
+| `EDR` | C | Premium Option | INFRA_SERVICE | 활성(상세 정의) | `EDR` | 추적체인 반영 대상 |
+| `ROAD_PREVIEW_CAMERA` | C | Premium Option | PHYSICAL/DOMAIN | 활성(상세 정의) | `ROAD_PREVIEW_CAMERA` | 추적체인 반영 대상 |
+| `LIDAR` | C | Premium Option | PHYSICAL/DOMAIN | 활성(상세 정의) | `LIDAR` | 추적체인 반영 대상 |
+| `REAR_RADAR_MASTER` | C | Premium Option | PHYSICAL/DOMAIN | 활성(상세 정의) | `REAR_RADAR_MASTER` | 추적체인 반영 대상 |
+| `SURROUND_PARK_MASTER` | C | Premium Option | FUNCTION_SURFACE | 활성(상세 정의) | `SURROUND_PARK_MASTER` | 추적체인 반영 대상 |
 
 
 - Placeholder ECU는 승격 전까지 상세 추적(Req/Func/Flow/Comm/Var/Test)을 강제하지 않는다.
@@ -674,6 +674,8 @@
 
 | 버전 | 날짜 | 변경 사항 |
 |---|---|---|
+| 3.36 | 2026-03-09 | 03~0304 정합 점검 반영: `ETH_BACKBONE` 표기(`ETH_SW(Health/Freshness monitor)`)를 통일하고, 개정 이력 `3.17` 중복 항목을 단일 행으로 병합해 이력 버전 중복을 해소. |
+| 3.35 | 2026-03-09 | Dev1 최종 승격(`1fda129`) 동기화: OEM100 상태를 `99 활성/1 미구현(NIGHT_VISION)`으로 갱신하고 Comm owner/상태표를 최신 runtime anchor 기준으로 반영. |
 | 3.34 | 2026-03-09 | Dev1 추가 승격(`f61cb26`, rebased from `e4f69a2`) 동기화: `VSM/EHB/ECS/CDC`를 활성(상세 정의)로 전환하고 OEM100 전수표를 `38 활성/62 미구현`으로 갱신. |
 | 3.33 | 2026-03-09 | Dev1 추가 승격(`2216335`) 동기화: `DOOR_FL/DOOR_FR/SEAT_DRV/SEAT_PASS`를 활성(상세 정의)로 전환하고 OEM100 전수표를 `34 활성/66 미구현`으로 갱신. |
 | 3.32 | 2026-03-09 | Dev1 최신 승격(`a6fecf1`) 동기화: OEM100 전수표 상태를 30 활성/70 미구현으로 갱신하고 `0303` 문서의 OEM100 섹션을 최신화. |
@@ -691,9 +693,8 @@
 | 3.20 | 2026-03-06 | 감사 해석 보강: 긴급 우선 요구의 기본 판정 축(기능중재)과 `Diag` 명칭/Group 7 비강제 규칙을 CAN ID 정책 요약표에 명시. |
 | 3.19 | 2026-03-05 | 통신 문서 경계 정리: 본 문서에서는 CAN ID/메시지 규칙만 명시하고 ECU 명명은 `00e` SoT + `03`/`04` 참조 체계를 따르도록 정리. |
 | 3.18 | 2026-03-05 | Validation 결과 프레임(`0x2A5`,`0x2A6`)의 관리 기준을 `chassis_can.dbc` 통합으로 전환하고 Validation 노드 명칭(`VAL_*`) 및 Comm 매체 표기를 정합화. |
-| 3.17 | 2026-03-04 | 멘토링 체크리스트 반영: `test_can` 해석(Validation Harness 공통 DBC) 규칙과 CAN ID 배정 팀 룰(도메인/Stub/충돌회피/SoT)을 본문에 명시. |
+| 3.17 | 2026-03-05 | 멘토링 체크리스트 반영: `test_can` 해석(Validation Harness 공통 DBC) 규칙과 CAN ID 배정 팀 룰(도메인/Stub/충돌회피/SoT)을 본문에 명시. ADAS 도메인 분리(`adas_can.dbc`)를 반영해 ADAS 소유 프레임(0x1C1/0x1C3)을 ETH Backbone CAN-stub에서 분리하고 통신 원본표/도메인표를 동기화. |
 | 3.16 | 2026-03-04 | DBC SoT 정합 보강: `eth_backbone_can_stub.dbc`를 통신 원본 매핑에 반영하고 0x1C0/0x1C1/0x1C2(및 0x1C3/0x1C4/0x111) CAN-stub 운반 경로를 상단표/Comm 표/규모표에 동기화. |
-| 3.17 | 2026-03-05 | ADAS 도메인 분리 반영: `adas_can.dbc`를 추가하고 ADAS 소유 프레임(0x1C1/0x1C3)을 ETH Backbone CAN-stub에서 분리, 통신 원본표/도메인표를 동기화. |
 | 3.15 | 2026-03-03 | ID 표기 기준 고정: 문서 본문은 Logical ID(0xE210/0xE211/0xE212)를 우선 표기하고, CANoe SIL 실행 ID는 Stub(0x1C3/0x1C4/0x111)로 병기하도록 작성 원칙을 보강. |
 | 3.14 | 2026-03-03 | V2 확장 통신(`Comm_120~124`)을 Implemented 상태로 전환하고 메시지 ID/송수신 노드를 코드/DBC 실값(`0x1C3/0x1C4/0x111`, `WARN_ARB_MGR` 중심)으로 정정. |
 | 3.13 | 2026-03-02 | 감사 정합 보강: 옵션1 설계 vs SIL 임시 CAN 대체 백본 검증 경계 문구를 작성 원칙에 추가. |
