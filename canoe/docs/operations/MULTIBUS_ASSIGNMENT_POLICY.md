@@ -39,8 +39,8 @@ These nodes are expected to see multiple buses as part of their normal runtime r
 
 | Node | Reason |
 | --- | --- |
-| `CGW` | cross-domain boundary, fail-safe authority, backbone seam supervision |
-| `TEST_SCN` | validation scenario orchestration and full-system signal injection/observation |
+| `CGW` | cross-domain boundary, fail-safe authority, backbone seam supervision; requires `ETH_Backbone` plus `Chassis`, `Body`, and `Infotainment` visibility |
+| `TEST_SCN` | validation scenario orchestration and full-system signal injection/observation; requires `ETH_Backbone` plus `Powertrain`, `Chassis`, `Body`, `Infotainment`, and `ADAS` visibility |
 
 ### 3.2 Cross-domain visibility consumers
 
@@ -56,7 +56,7 @@ These nodes remain single visible ECU nodes, but require additional GUI bus/data
 | `ODS` | Chassis | Body |
 | `VCU` | Chassis-facing runtime node | Powertrain, ETH backbone |
 | `MDPS` | Chassis | ETH backbone |
-| `SCC` | ADAS | Chassis |
+| `SCC` | ADAS | Chassis, Powertrain |
 | `AEB` | ADAS | ETH backbone |
 | `HWP` | ADAS | Powertrain |
 | `LDR` | ADAS | ETH backbone |

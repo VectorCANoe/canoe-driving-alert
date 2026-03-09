@@ -60,8 +60,8 @@ These anchors still need extra bus assignments restored in GUI.
 
 | Node | Primary folder | Extra bus context to restore in GUI |
 | --- | --- | --- |
-| `CGW` | `ETH_Backbone/` | backbone + cross-domain visibility |
-| `TEST_SCN` | `ETH_Backbone/` | validation multibus setup |
+| `CGW` | `ETH_Backbone/` | `Chassis`, `Body`, `Infotainment` |
+| `TEST_SCN` | `ETH_Backbone/` | `Powertrain`, `Chassis`, `Body`, `Infotainment`, `ADAS` |
 
 `TEST_BAS` is intentionally **not** a multibus anchor. It stays on `ETH_Backbone/` as a narrow validation result aggregator.
 
@@ -98,7 +98,7 @@ The nodes below reference messages outside their primary domain DBC. If they are
 | `ODS` | `Chassis/` | `Body` (`frmSeatBeltStateMsg`, `frmSeatStateMsg`) |
 | `VCU` | `Chassis/` | `Powertrain`, `ETH_Backbone` |
 | `MDPS` | `Chassis/` | `ETH_Backbone` (`ethSteeringMsg`) |
-| `SCC` | `ADAS/` | `Chassis` (`frmVehicleStateCanMsg`) |
+| `SCC` | `ADAS/` | `Chassis` (`frmVehicleStateCanMsg`), `Powertrain` (`frmSccDiagReqMsg`) |
 | `AEB` | `ADAS/` | `ETH_Backbone` (`ethFailSafeStateMsg`) |
 | `HWP` | `ADAS/` | `Powertrain` (`frmCruiseStateMsg`) |
 | `LDR` | `ADAS/` | `ETH_Backbone` (`ethObjectSafetyStateMsg`) |
