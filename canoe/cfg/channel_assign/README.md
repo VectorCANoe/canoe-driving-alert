@@ -39,10 +39,11 @@ The current import bank exposes:
 ## GUI import order
 
 1. Open the active CANoe configuration in GUI.
-2. Import deep runtime anchors first.
-3. Import the remaining active nodes by domain as needed.
-4. Re-apply multibus assignments for anchor nodes.
-5. Compile and save from GUI.
+2. Remove duplicate node instances first. Keep a single visible node instance per ECU.
+3. Re-attach only the current six active DBCs to the matching GUI networks.
+4. Import active nodes by domain from `channel_assign/`.
+5. Re-apply multibus assignments or extra DB visibility only for the nodes listed below.
+6. Compile and save from GUI.
 
 | Network | Import folder | Visible node count |
 | --- | --- | --- |
@@ -59,10 +60,44 @@ These anchors still need extra bus assignments restored in GUI.
 
 | Node | Primary folder | Extra bus context to restore in GUI |
 | --- | --- | --- |
-| `BCM` | `Body/` | body + backbone |
-| `IVI` | `Infotainment/` | infotainment + backbone |
 | `CGW` | `ETH_Backbone/` | backbone + cross-domain visibility |
 | `TST_SCN` | `ETH_Backbone/` | validation multibus setup |
+
+## Fresh cfg rebuild checklist
+
+If the active GUI configuration was rebuilt from scratch or old DBC assignments were changed, restore the database attachment first.
+
+| GUI network / folder | Attach this DBC |
+| --- | --- |
+| `ETH_Backbone/` | `canoe/databases/eth_backbone_can_stub.dbc` |
+| `Powertrain/` | `canoe/databases/powertrain_can.dbc` |
+| `Chassis/` | `canoe/databases/chassis_can.dbc` |
+| `Body/` | `canoe/databases/body_can.dbc` |
+| `Infotainment/` | `canoe/databases/infotainment_can.dbc` |
+| `ADAS/` | `canoe/databases/adas_can.dbc` |
+
+Do not keep stale legacy DBC attachments in the same GUI config. Re-attach the six current DBCs only.
+
+## Cross-domain visibility restore candidates
+
+The nodes below reference messages outside their primary domain DBC. If they are imported into a fresh cfg as a single node instance, restore additional bus / DB visibility in GUI instead of duplicating the node.
+
+| Node | Primary folder | Also needs visibility to |
+| --- | --- | --- |
+| `IVI` | `Infotainment/` | `ETH_Backbone` (`ethNavContextMsg`) |
+| `PGS` | `Infotainment/` | `ADAS` (`frmParkUltrasonicStateMsg`) |
+| `AFLS` | `Body/` | `Chassis` (`frmSteeringAngleMsg`) |
+| `DATC` | `Body/` | `Infotainment` (`frmTmuServiceStateMsg`) |
+| `ACU` | `Chassis/` | `Body` (`frmSeatBeltStateMsg`) |
+| `ODS` | `Chassis/` | `Body` (`frmSeatBeltStateMsg`, `frmSeatStateMsg`) |
+| `VCU` | `Chassis/` | `Powertrain`, `ETH_Backbone` |
+| `MDPS` | `Chassis/` | `ETH_Backbone` (`ethSteeringMsg`) |
+| `SCC` | `ADAS/` | `Chassis` (`frmVehicleStateCanMsg`) |
+| `AEB` | `ADAS/` | `ETH_Backbone` (`ethFailSafeStateMsg`) |
+| `HWP` | `ADAS/` | `Powertrain` (`frmCruiseStateMsg`) |
+| `LDR` | `ADAS/` | `ETH_Backbone` (`ethObjectSafetyStateMsg`) |
+
+Nodes not listed above should compile on their primary domain DBC if the current six DBCs were attached correctly.
 
 ## Node intent
 

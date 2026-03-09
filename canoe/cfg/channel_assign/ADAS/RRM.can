@@ -33,7 +33,7 @@ void publishRearRadarMasterState()
 
   detected = (gLeftDetected == 1 || gRightDetected == 1) ? 1 : 0;
   laneChangeBlock = (gLeftRisk >= 40 || gRightRisk >= 40) ? 1 : 0;
-  rearRiskLevel = max(gLeftRisk, gRightRisk);
+  rearRiskLevel = (gLeftRisk > gRightRisk) ? gLeftRisk : gRightRisk;
   mergeConflict = (gLeftMergeConflict == 1 || gRightMergeConflict == 1) ? 1 : 0;
   turnLampState = (gLeftTurnLamp != 0) ? gLeftTurnLamp : gRightTurnLamp;
 

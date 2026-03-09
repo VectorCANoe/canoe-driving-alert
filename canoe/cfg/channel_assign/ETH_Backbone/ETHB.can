@@ -70,10 +70,10 @@ void publishBackboneState()
   if (gIboxServiceFlags > 0) { activeServices = activeServices + 1; }
 
   faultBitmap = 0;
-  if (gSecurityFault > 0) { faultBitmap = faultBitmap -bor 0x01; }
-  if (gDiagPending == 1) { faultBitmap = faultBitmap -bor 0x02; }
-  if (gFailSafeMode > 0) { faultBitmap = faultBitmap -bor 0x04; }
-  if (gIboxDiagState >= 2) { faultBitmap = faultBitmap -bor 0x08; }
+  if (gSecurityFault > 0) { faultBitmap = faultBitmap | 0x01; }
+  if (gDiagPending == 1) { faultBitmap = faultBitmap | 0x02; }
+  if (gFailSafeMode > 0) { faultBitmap = faultBitmap | 0x04; }
+  if (gIboxDiagState >= 2) { faultBitmap = faultBitmap | 0x08; }
 
   mBackbone.BackboneMode = clampRange(backboneMode, 0, 3);
   mBackbone.RouteHealth = clampRange(routeHealth, 0, 3);

@@ -30,7 +30,7 @@ void publishTrailerCtrlState()
 
   vehicleSpeed = clampRange((int)@Core::vehicleSpeedNorm, 0, 255);
   turnLampState = clampRange((int)@CoreState::turnLampState, 0, 3);
-  rearRiskLevel = max(gLeftRisk, gRightRisk);
+  rearRiskLevel = (gLeftRisk > gRightRisk) ? gLeftRisk : gRightRisk;
 
   trailerDetected = ((gLeftDetected == 1 && gRightDetected == 1) || vehicleSpeed >= 60) ? 1 : 0;
   towMode = trailerDetected == 1 ? 1 : 0;

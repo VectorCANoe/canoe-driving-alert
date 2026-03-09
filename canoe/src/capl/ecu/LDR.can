@@ -57,7 +57,7 @@ void publishLidarState()
     freeSpaceClass = 0;
   }
 
-  rangeBucket = clampRange((gObjectEventCode -band 0xFF), 0, 255);
+  rangeBucket = clampRange((gObjectEventCode & 0xFF), 0, 255);
 
   mLidar.LidarHealth = clampRange(health, 0, 3);
   mLidar.TargetDetected = targetDetected;
