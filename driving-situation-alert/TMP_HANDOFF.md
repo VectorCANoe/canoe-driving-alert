@@ -53,6 +53,8 @@
   - 단, 상단 `공식 표준 양식`의 열/헤더 구조 자체는 임의로 바꾸지 않는다. 상세도가 더 필요하면 기존 컬럼 안에서 문장을 보강한다.
   - 상단 `공식 표준 양식`은 reviewer-facing 요약 표로 유지하며, runtime/module 구현명이나 저수준 기술 나열은 템플릿이 요구하지 않는 한 넣지 않는다.
   - 상단 `공식 표준 양식`의 문체는 `vector_sample`, `Project Result_Sample`의 BP 어투를 따른다. 짧은 평문 문장, 실제 ECU/서비스 기준 표현, "A 정보를 수신하여 B에 반영/전달" 형식을 우선한다.
+  - 상단 `공식 표준 양식`은 `Flow/Comm` ID, `체인` 같은 표현, 타 문서 참조에 기대지 않고 그 표만 읽어도 이해 가능해야 한다.
+  - ID 범위가 넓더라도 OEM 관점의 의미, 주체, 검증 의도가 달라지면 reviewer-facing 행은 과도하게 합치지 말고 분리한다.
 - ECU naming governance is reopened and now follows the reset baseline:
   - `00e` defines `surface ECU / runtime module / validation harness`
   - runtime rename or GUI rename must not happen before the document chain is updated
