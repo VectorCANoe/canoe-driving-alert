@@ -1,7 +1,7 @@
 # ECU 명명 및 계층 표준
 
 **Document ID**: PROJ-00E-ECU-NAMING
-**Version**: 3.7
+**Version**: 3.8
 **Date**: 2026-03-09
 **Status**: Draft (Architecture Reset Baseline)
 **Scope**: `00e -> 0301 -> 0302 -> 0303 -> 0304 -> 04 -> 05/06/07`
@@ -83,7 +83,7 @@
 
 ---
 
-## 6. Active ECU Matrix (Core Anchors, Commits `a6fecf1` + `2216335`)
+## 6. Active ECU Matrix (Core Anchors, Commits `a6fecf1` + `2216335` + `f61cb26`)
 
 `VAL_SCENARIO_CTRL`, `VAL_BASELINE_CTRL`는 컴파일/검증 마감 전이라 이번 동기화에서 제외했다.
 
@@ -103,7 +103,7 @@
 | `V2X` | `V2X` | ADAS/V2X | `0x1C0,0x1C2` | 긴급차량 브로드캐스트/모니터 통합 Owner |
 
 - 본 표는 코어 anchor 요약이다.
-- 최신 승격 ECU(`DCM/IBOX/SGW`, `ABS/EPB/TPMS/SAS`, `SMK/AFLS/WIPER_MODULE/BODY_SECURITY_MODULE`, `DOOR_FL/DOOR_FR/SEAT_DRV/SEAT_PASS`, `HUD/AMP/VOICE_ASSIST`)의 활성 상태는 6.4 전수표를 단일 기준으로 본다.
+- 최신 승격 ECU(`DCM/IBOX/SGW`, `ABS/EPB/TPMS/SAS/VSM/EHB/ECS/CDC`, `SMK/AFLS/WIPER_MODULE/BODY_SECURITY_MODULE`, `DOOR_FL/DOOR_FR/SEAT_DRV/SEAT_PASS`, `HUD/AMP/VOICE_ASSIST`)의 활성 상태는 6.4 전수표를 단일 기준으로 본다.
 
 ### 6.1 Primary-56 Placeholder Policy
 
@@ -171,12 +171,12 @@
 | `EPB` | A3 | Chassis/Safety | PHYSICAL/DOMAIN | 활성(상세 정의) | `EPB` | 추적체인 반영 대상 |
 | `TPMS` | A3 | Chassis/Safety | PHYSICAL/DOMAIN | 활성(상세 정의) | `TPMS` | 추적체인 반영 대상 |
 | `SAS` | A3 | Chassis/Safety | PHYSICAL/DOMAIN | 활성(상세 정의) | `SAS` | 추적체인 반영 대상 |
-| `ECS` | A3 | Chassis/Safety | PHYSICAL/DOMAIN | 미구현(Placeholder) | - | 승격 전 참조만, 추적체인 미부여 |
+| `ECS` | A3 | Chassis/Safety | PHYSICAL/DOMAIN | 활성(상세 정의) | `ECS` | 추적체인 반영 대상 |
 | `ACU` | A3 | Chassis/Safety | PHYSICAL/DOMAIN | 미구현(Placeholder) | - | 승격 전 참조만, 추적체인 미부여 |
 | `ODS` | A3 | Chassis/Safety | PHYSICAL/DOMAIN | 미구현(Placeholder) | - | 승격 전 참조만, 추적체인 미부여 |
-| `VSM` | A3 | Chassis/Safety | PHYSICAL/DOMAIN | 미구현(Placeholder) | - | 승격 전 참조만, 추적체인 미부여 |
-| `EHB` | A3 | Chassis/Safety | PHYSICAL/DOMAIN | 미구현(Placeholder) | - | 승격 전 참조만, 추적체인 미부여 |
-| `CDC` | A3 | Chassis/Safety | PHYSICAL/DOMAIN | 미구현(Placeholder) | - | 승격 전 참조만, 추적체인 미부여 |
+| `VSM` | A3 | Chassis/Safety | PHYSICAL/DOMAIN | 활성(상세 정의) | `VSM` | 추적체인 반영 대상 |
+| `EHB` | A3 | Chassis/Safety | PHYSICAL/DOMAIN | 활성(상세 정의) | `EHB` | 추적체인 반영 대상 |
+| `CDC` | A3 | Chassis/Safety | PHYSICAL/DOMAIN | 활성(상세 정의) | `CDC` | 추적체인 반영 대상 |
 | `BCM` | A4 | Body/Comfort | PHYSICAL/DOMAIN | 활성(상세 정의) | `BCM` | 추적체인 반영 대상 |
 | `DATC` | A4 | Body/Comfort | PHYSICAL/DOMAIN | 활성(상세 정의) | `DATC` | 추적체인 반영 대상 |
 | `SMK` | A4 | Body/Comfort | PHYSICAL/DOMAIN | 활성(상세 정의) | `SMK` | 추적체인 반영 대상 |
@@ -304,6 +304,7 @@ Wrapper 제거 상태(활성 트리 제외):
 
 | 버전 | 날짜 | 변경 사항 |
 |---|---|---|
+| 3.8 | 2026-03-09 | Dev1 runtime 승격(`f61cb26`, rebased from `e4f69a2`) 반영: `VSM/EHB/ECS/CDC`를 활성(상세 정의)로 전환하고 OEM100 상태를 `38 활성/62 미구현`으로 갱신. |
 | 3.7 | 2026-03-09 | Dev1 runtime 승격(`2216335`) 반영: `DOOR_FL/DOOR_FR/SEAT_DRV/SEAT_PASS`를 활성(상세 정의)로 전환하고 OEM100 상태를 `34 활성/66 미구현`으로 갱신. |
 | 3.6 | 2026-03-09 | Dev1 runtime 승격(`a6fecf1`) 반영: `DCM/IBOX/SGW`, `ABS/EPB/TPMS/SAS`, `SMK/AFLS/WIPER_MODULE/BODY_SECURITY_MODULE`, `HUD/AMP/VOICE_ASSIST`를 활성(상세 정의)로 전환. |
 | 3.5 | 2026-03-09 | OEM100 기준 100개 Surface ECU 전체 정의 표(Active/미구현 Placeholder 상태, Runtime Binding, 승격 가드레일) 추가. |
