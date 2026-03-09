@@ -20,6 +20,10 @@ variables
   int gNavContextAgeMs;
   int gSteeringAgeMs;
   int gEmergencyMonAgeMs;
+  dword gVehicleStateTsMs;
+  dword gNavContextTsMs;
+  dword gSteeringTsMs;
+  dword gEmergencyMonTsMs;
   int gLastEthPathState;
 }
 
@@ -39,6 +43,10 @@ on start
   gNavContextAgeMs = 10000;
   gSteeringAgeMs = 10000;
   gEmergencyMonAgeMs = 10000;
+  gVehicleStateTsMs = 0;
+  gNavContextTsMs = 0;
+  gSteeringTsMs = 0;
+  gEmergencyMonTsMs = 0;
   gLastEthPathState = -1;
   @CoreState::domainBoundaryStatus = 0;
   @CoreState::domainPathStatus = 2;
@@ -69,22 +77,22 @@ on message frmInfotainmentHealthMsg
 
 on message ethVehicleStateMsg
 {
-  gVehicleStateAgeMs = 0;
+  gVehicleStateTsMs = getSimulationTimeMs();
 }
 
 on message ethNavContextMsg
 {
-  gNavContextAgeMs = 0;
+  gNavContextTsMs = getSimulationTimeMs();
 }
 
 on message ethSteeringMsg
 {
-  gSteeringAgeMs = 0;
+  gSteeringTsMs = getSimulationTimeMs();
 }
 
 on message frmEmergencyMonitorMsg
 {
-  gEmergencyMonAgeMs = 0;
+  gEmergencyMonTsMs = getSimulationTimeMs();
 }
 
 on timer tBoundaryCheck
@@ -121,10 +129,41 @@ on timer tBoundaryCheck
     routingPolicy = 0;
   }
 
-  gVehicleStateAgeMs = clampRange(gVehicleStateAgeMs + 100, 0, 60000);
-  gNavContextAgeMs = clampRange(gNavContextAgeMs + 100, 0, 60000);
-  gSteeringAgeMs = clampRange(gSteeringAgeMs + 100, 0, 60000);
-  gEmergencyMonAgeMs = clampRange(gEmergencyMonAgeMs + 100, 0, 60000);
+  if (gVehicleStateTsMs == 0)
+  {
+    gVehicleStateAgeMs = 60000;
+  }
+  else
+  {
+    gVehicleStateAgeMs = clampRange((int)(nowMs - gVehicleStateTsMs), 0, 60000);
+  }
+
+  if (gNavContextTsMs == 0)
+  {
+    gNavContextAgeMs = 60000;
+  }
+  else
+  {
+    gNavContextAgeMs = clampRange((int)(nowMs - gNavContextTsMs), 0, 60000);
+  }
+
+  if (gSteeringTsMs == 0)
+  {
+    gSteeringAgeMs = 60000;
+  }
+  else
+  {
+    gSteeringAgeMs = clampRange((int)(nowMs - gSteeringTsMs), 0, 60000);
+  }
+
+  if (gEmergencyMonTsMs == 0)
+  {
+    gEmergencyMonAgeMs = 60000;
+  }
+  else
+  {
+    gEmergencyMonAgeMs = clampRange((int)(nowMs - gEmergencyMonTsMs), 0, 60000);
+  }
 
   ethPathState = 0;
   if (gVehicleStateAgeMs > 1000 || gNavContextAgeMs > 1000 || gSteeringAgeMs > 1000 || gEmergencyMonAgeMs > 1500)
