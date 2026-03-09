@@ -29,7 +29,7 @@ NS_ :
 
 BS_:
 
-BU_: VAL_SCENARIO_CTRL VCU ESC MDPS ADAS CGW Vector__XXX VAL_BASELINE_CTRL
+BU_: VAL_SCENARIO_CTRL VCU ESC MDPS ADAS CGW ABS EPB TPMS SAS VSM EHB ECS CDC Vector__XXX VAL_BASELINE_CTRL
 
 BO_ 672 frmVehicleStateCanMsg: 2 VAL_SCENARIO_CTRL
  SG_ gVehicleSpeed : 0|8@1+ (1,0) [0|255] "km/h" ESC,ADAS
@@ -127,6 +127,24 @@ BO_ 298 frmEpbStateMsg: 2 EPB
  SG_ Reserved0        : 4|4@1+ (1,0) [0|0] "" Vector__XXX
  SG_ EpbHoldForce     : 8|8@1+ (1,0) [0|255] "%" CLU,VAL_SCENARIO_CTRL
 
+BO_ 299 frmVsmStateMsg: 2 VSM
+ SG_ VsmCtrlState     : 0|3@1+ (1,0) [0|7] "" ADAS
+ SG_ VsmAlertLevel    : 3|3@1+ (1,0) [0|7] "" ADAS
+ SG_ VsmIntervention  : 8|8@1+ (1,0) [0|255] "" ADAS
+
+BO_ 300 frmEhbStateMsg: 2 EHB
+ SG_ EhbCtrlState     : 0|3@1+ (1,0) [0|7] "" ADAS
+ SG_ EhbPressureCmd   : 8|8@1+ (1,0) [0|255] "%" ADAS
+
+BO_ 301 frmEcsStateMsg: 2 ECS
+ SG_ EcsMode          : 0|3@1+ (1,0) [0|7] "" ADAS
+ SG_ EcsHeightLevel   : 3|5@1+ (1,0) [0|31] "" ADAS
+ SG_ EcsDampingLevel  : 8|8@1+ (1,0) [0|255] "" ADAS
+
+BO_ 302 frmCdcStateMsg: 2 CDC
+ SG_ CdcMode          : 0|3@1+ (1,0) [0|7] "" ADAS
+ SG_ CdcValveCurrent  : 8|8@1+ (1,0) [0|255] "" ADAS
+
 BO_ 676 frmChassisDiagReqMsg: 3 VAL_SCENARIO_CTRL
  SG_ ChsDiagServiceId : 0|8@1+ (1,0) [0|255] "" ESC
  SG_ ChsDiagDidHigh   : 8|8@1+ (1,0) [0|255] "" ESC
@@ -179,6 +197,10 @@ CM_ BO_ 676 "Comm_201: chassis diagnostic request.";
 CM_ BO_ 263 "Comm_201: chassis diagnostic response.";
 CM_ BO_ 297 "Comm_201: brake wear extension.";
 CM_ BO_ 264 "Comm_201: road friction extension.";
+CM_ BO_ 299 "Comm_201: vehicle stability management state extension.";
+CM_ BO_ 300 "Comm_201: electro-hydraulic brake state extension.";
+CM_ BO_ 301 "Comm_201: electronic control suspension state extension.";
+CM_ BO_ 302 "Comm_201: continuous damping control state extension.";
 CM_ BO_ 677 "Comm_009 scenario result frame (Validation-only).";
 CM_ BO_ 678 "Comm_106 baseline test aggregate result frame (Validation-only).";
 
@@ -208,6 +230,10 @@ BA_ "GenMsgCycleTime" BO_ 676 0;
 BA_ "GenMsgCycleTime" BO_ 263 0;
 BA_ "GenMsgCycleTime" BO_ 297 100;
 BA_ "GenMsgCycleTime" BO_ 264 100;
+BA_ "GenMsgCycleTime" BO_ 299 100;
+BA_ "GenMsgCycleTime" BO_ 300 100;
+BA_ "GenMsgCycleTime" BO_ 301 100;
+BA_ "GenMsgCycleTime" BO_ 302 100;
 BA_ "GenMsgCycleTime" BO_ 677 0;
 BA_ "GenMsgCycleTime" BO_ 678 0;
 
@@ -249,4 +275,3 @@ VAL_ 677 ScenarioResult
 VAL_ 678 BaseScenarioResult
   0 "Fail"
   1 "Pass" ;
-
