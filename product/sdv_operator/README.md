@@ -11,7 +11,7 @@
 ## 제공 범위
 
 - 실행: `gate all`, `scenario run`, `verify quick`, `doctor`
-- 검토: TUI 기반 결과/로그/COM 상태 확인
+- 검토: Verification Console 기반 결과/로그/COM 상태 확인
 - 산출: readiness, batch report, JUnit XML, portable ZIP / exe
 - 관리: artifact list/open/clean으로 산출물과 원본 계약 파일 확인
 
@@ -46,7 +46,7 @@ python -m mkdocs build -f product/sdv_operator/mkdocs.yml --strict
 
 이 제품이 담당하는 것:
 
-- CLI / TUI 실행 표면
+- Verification Console 실행 표면
 - CANoe COM 기반 검증 자동화
 - 결과/증빙 요약과 패키징
 

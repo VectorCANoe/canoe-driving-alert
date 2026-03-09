@@ -96,7 +96,7 @@ class SdvTuiApp(App[None]):
     }
 
     #sidebar {
-        width: 22;
+        width: 24;
         padding: 1;
         margin-right: 1;
         background: #121920;
@@ -247,7 +247,7 @@ class SdvTuiApp(App[None]):
     }
 
     #execute-overview {
-        height: 5;
+        height: 6;
         margin-bottom: 1;
         padding: 1 2;
         background: #17202b;
@@ -256,12 +256,12 @@ class SdvTuiApp(App[None]):
     }
 
     #execute-group-strip {
-        height: 5;
+        height: 7;
         margin-bottom: 1;
     }
 
     .group-button {
-        height: 3;
+        height: 5;
         margin-right: 1;
         width: 1fr;
         content-align: center middle;
@@ -375,6 +375,55 @@ class SdvTuiApp(App[None]):
         color: #8ba4b8;
     }
 
+    #page-artifacts {
+        padding: 1;
+        background: #121920;
+        border: round #2d3e50;
+    }
+
+    #artifacts-overview {
+        min-height: 5;
+        margin-bottom: 1;
+        padding: 1 2;
+        background: #17202b;
+        border: round #33536f;
+        color: #d7e7f2;
+    }
+
+    #artifact-strip {
+        height: 12;
+        margin-bottom: 1;
+    }
+
+    .artifact-card {
+        padding: 1;
+        margin-right: 1;
+        background: #17202b;
+        border: round #33536f;
+    }
+
+    .artifact-card:last-child {
+        margin-right: 0;
+    }
+
+    #artifact-actions {
+        height: 3;
+        margin-top: 1;
+    }
+
+    #artifact-actions Button {
+        margin-right: 1;
+    }
+
+    #artifacts-hint {
+        height: 3;
+        margin-top: 1;
+        padding: 1 2;
+        background: #17202b;
+        border: round #33536f;
+        color: #8ba4b8;
+    }
+
     #log-controls {
         height: 3;
         margin-bottom: 1;
@@ -439,13 +488,13 @@ class SdvTuiApp(App[None]):
     def compose(self) -> ComposeResult:
         yield Header(show_clock=True)
         yield Static(
-            "CANoe Test Verification Console\nRun the core flow here, then review verdicts and evidence in Results.",
+            "CANoe Test Verification Console\n핵심 흐름을 실행하고, Results와 Artifacts에서 판정·증빙·원본 기준을 확인합니다.",
             id="hero",
         )
         runtime = canoe_runtime_check()
         runtime_text = (
             f"호스트: {platform_label()} | CANoe 런타임: {'ready' if runtime.available else 'limited'} | "
-            "실행: Ctrl+R | 최근 실행: Ctrl+N | 로그: Ctrl+L | 필터: F1..F5 | 증빙: Ctrl+O/Ctrl+Y | 종료: q"
+            "실행: Ctrl+R | 최근 실행: Ctrl+N | 로그: Ctrl+L | 증빙: Ctrl+O/Ctrl+Y | 종료: q"
         )
         if not runtime.available:
             runtime_text += f"\n제약: {runtime.detail}"
@@ -455,6 +504,7 @@ class SdvTuiApp(App[None]):
                 yield Button("Home", id="nav-home", classes="nav-button", variant="primary")
                 yield Button("Run", id="nav-execute", classes="nav-button")
                 yield Button("Results", id="nav-results", classes="nav-button")
+                yield Button("Artifacts", id="nav-artifacts", classes="nav-button")
                 yield Button("Logs", id="nav-logs", classes="nav-button")
             with Vertical(id="content"):
                 with Vertical(id="page-home", classes="page"):
@@ -491,15 +541,16 @@ class SdvTuiApp(App[None]):
                     yield Static(id="home-recent")
                 with Vertical(id="page-execute", classes="page hidden"):
                     yield Static(
-                        "1) 상단 범주 버튼에서 작업 묶음을 고르십시오.  2) 왼쪽 Task list에서 작업을 고르십시오.  "
+                        "Run 화면 사용 순서\n"
+                        "1) 상단 큰 범주 버튼에서 작업 묶음을 고르십시오.  2) 왼쪽 Task list에서 작업을 고르십시오.  "
                         "3) 오른쪽 Quick form을 채운 뒤 Run now 또는 Ctrl+R로 실행하십시오.",
                         id="execute-overview",
                     )
                     with Horizontal(id="execute-group-strip"):
-                        yield Button("Primary", id="group-primary", classes="group-button", variant="primary")
-                        yield Button("Runtime", id="group-runtime", classes="group-button")
-                        yield Button("Inspect", id="group-inspect", classes="group-button")
-                        yield Button("Package", id="group-package", classes="group-button")
+                        yield Button("Primary\n핵심 검증 흐름", id="group-primary", classes="group-button", variant="primary")
+                        yield Button("Runtime\n환경·측정 제어", id="group-runtime", classes="group-button")
+                        yield Button("Inspect\n원본·계약 확인", id="group-inspect", classes="group-button")
+                        yield Button("Package\n산출물·정리", id="group-package", classes="group-button")
                     with Horizontal(id="workspace"):
                         with Vertical(id="commands-pane", classes="pane"):
                             yield Static("2) Task list", classes="pane-title")
@@ -559,6 +610,32 @@ class SdvTuiApp(App[None]):
                         "Results 화면에서는 최근 증빙과 그 증빙의 기준이 되는 원본 계약 파일을 같은 흐름에서 열 수 있습니다.",
                         id="results-hint",
                     )
+                with Vertical(id="page-artifacts", classes="page hidden"):
+                    yield Static(
+                        "Artifacts 화면은 생성 산출물과 원본 계약 파일을 분리해서 보여줍니다. "
+                        "staging은 작업면, archive는 최종 보관, source는 원본 기준입니다.",
+                        id="artifacts-overview",
+                    )
+                    with Horizontal(id="artifact-strip"):
+                        with Vertical(classes="artifact-card"):
+                            yield Static("Staging Outputs", classes="summary-title")
+                            yield Static(id="artifact-staging-body")
+                        with Vertical(classes="artifact-card"):
+                            yield Static("Final Archive", classes="summary-title")
+                            yield Static(id="artifact-archive-body")
+                        with Vertical(classes="artifact-card"):
+                            yield Static("Source Contracts", classes="summary-title")
+                            yield Static(id="artifact-source-body")
+                    with Horizontal(id="artifact-actions"):
+                        yield Button("최근 증빙 열기", id="artifact-open-latest", variant="success")
+                        yield Button("최신 archive 열기", id="artifact-open-archive")
+                        yield Button("원본 기준 열기", id="artifact-open-source")
+                        yield Button("staging 정리", id="artifact-clean-staging", variant="warning")
+                    yield Static(
+                        "원칙: staging은 재생성 가능한 작업 산출물, archive는 reviewer/Jenkins 보관물, "
+                        "source는 결과가 의존하는 원본 계약 파일입니다.",
+                        id="artifacts-hint",
+                    )
                 with Vertical(id="page-logs", classes="page hidden"):
                     with Vertical(id="log-pane"):
                         yield Static("Execution Log", classes="pane-title")
@@ -585,7 +662,7 @@ class SdvTuiApp(App[None]):
 
     def _show_page(self, page_name: str) -> None:
         self.current_page = page_name
-        pages = ("home", "execute", "results", "logs")
+        pages = ("home", "execute", "results", "artifacts", "logs")
         for item in pages:
             page = self.query_one(f"#page-{item}")
             if item == page_name:
@@ -596,12 +673,14 @@ class SdvTuiApp(App[None]):
             "home": "nav-home",
             "execute": "nav-execute",
             "results": "nav-results",
+            "artifacts": "nav-artifacts",
             "logs": "nav-logs",
         }[page_name]
-        for button_id in ("nav-home", "nav-execute", "nav-results", "nav-logs"):
+        for button_id in ("nav-home", "nav-execute", "nav-results", "nav-artifacts", "nav-logs"):
             button = self.query_one(f"#{button_id}", Button)
             button.variant = "primary" if button_id == active_nav else "default"
         self._refresh_execute_group_buttons()
+        self._refresh_artifact_cards()
 
     def _set_command_group(self, group_name: str) -> None:
         if group_name not in self.group_names:
@@ -681,6 +760,108 @@ class SdvTuiApp(App[None]):
             recent_lines.append("- 아직 실행 기록이 없습니다. Gate all부터 시작하십시오.")
         recent_lines.extend(["", f"최근 상세: {detail}", "", "자세한 판정·증빙·COM 상태는 결과 화면에서 확인하십시오."])
         self.query_one("#home-recent", Static).update("\n".join(recent_lines))
+
+    def _artifact_layout(self) -> dict[str, object]:
+        path = ROOT / "product" / "sdv_operator" / "config" / "verification_artifact_layout.json"
+        data = self._load_json_file(path)
+        return data if isinstance(data, dict) else {}
+
+    def _latest_archive_phase_dir(self) -> Path | None:
+        layout = self._artifact_layout()
+        root_rel = str(layout.get("root", "artifacts/verification_runs"))
+        archive_root = ROOT / root_rel
+        if not archive_root.exists():
+            return None
+        candidates: list[Path] = []
+        for run_dir in archive_root.iterdir():
+            if not run_dir.is_dir():
+                continue
+            for phase in ("pre", "post", "full"):
+                candidate = run_dir / phase
+                if candidate.exists():
+                    candidates.append(candidate)
+        if not candidates:
+            return None
+        return max(candidates, key=lambda item: item.stat().st_mtime)
+
+    def _last_result_tokens(self) -> list[str]:
+        last_result = self.state.get("last_result", {})
+        if isinstance(last_result, dict):
+            argv = last_result.get("argv", [])
+            if isinstance(argv, list):
+                return [str(item) for item in argv]
+        return []
+
+    def _latest_archive_for_last_run(self) -> Path | None:
+        layout = self._artifact_layout()
+        root_rel = str(layout.get("root", "artifacts/verification_runs"))
+        archive_root = ROOT / root_rel
+        tokens = self._last_result_tokens()
+        run_id = self._extract_flag(tokens, "--run-id")
+        phase = self._extract_flag(tokens, "--phase")
+        if run_id:
+            run_root = archive_root / run_id
+            if phase:
+                candidate = run_root / phase
+                if candidate.exists():
+                    return candidate
+            for phase_name in ("pre", "post", "full"):
+                candidate = run_root / phase_name
+                if candidate.exists():
+                    return candidate
+        return self._latest_archive_phase_dir()
+
+    def _relpath(self, path: Path) -> str:
+        try:
+            return path.relative_to(ROOT).as_posix()
+        except ValueError:
+            return str(path)
+
+    def _summarize_artifact_staging(self) -> str:
+        layout = self._artifact_layout()
+        staging_root = ROOT / str(layout.get("staging_root", "canoe/tmp/reports/verification"))
+        lines = [self._relpath(staging_root)]
+        for name in (
+            "doctor_report.json",
+            "run_readiness.json",
+            "dev2_batch_report.json",
+            "surface_evidence_bundle.json",
+        ):
+            candidate = staging_root / name
+            marker = "OK" if candidate.exists() else "MISS"
+            lines.append(f"- [{marker}] {name}")
+        return "\n".join(lines)
+
+    def _summarize_artifact_archive(self) -> str:
+        archive_dir = self._latest_archive_for_last_run()
+        if archive_dir is None:
+            return "최근 archive run이 없습니다.\nverify batch 또는 materialize 단계가 끝나면 채워집니다."
+        lines = [self._relpath(archive_dir)]
+        for name in ("reports", "surface", "native_reports", "evidence", "manifests"):
+            candidate = archive_dir / name
+            marker = "OK" if candidate.exists() else "MISS"
+            lines.append(f"- [{marker}] {name}")
+        return "\n".join(lines)
+
+    def _summarize_artifact_source(self) -> str:
+        source_target = self._resolve_source_contract_target()
+        lines = [self._relpath(source_target)]
+        for candidate in (
+            ROOT / "product" / "sdv_operator" / "config" / "surface_ecu_inventory.json",
+            ROOT / "product" / "sdv_operator" / "config" / "surface_traceability_profile.json",
+            ROOT / "product" / "sdv_operator" / "config" / "verification_artifact_layout.json",
+        ):
+            marker = "OK" if candidate.exists() else "MISS"
+            lines.append(f"- [{marker}] {self._relpath(candidate)}")
+        return "\n".join(lines)
+
+    def _refresh_artifact_cards(self) -> None:
+        try:
+            self.query_one("#artifact-staging-body", Static).update(self._summarize_artifact_staging())
+            self.query_one("#artifact-archive-body", Static).update(self._summarize_artifact_archive())
+            self.query_one("#artifact-source-body", Static).update(self._summarize_artifact_source())
+        except NoMatches:
+            return
 
     def _load_state(self) -> dict[str, object]:
         default_state: dict[str, object] = {
@@ -855,6 +1036,7 @@ class SdvTuiApp(App[None]):
         self.query_one("#result-body", Static).update("\n".join(result_lines))
         self._refresh_log_controls()
         self._refresh_home_summary()
+        self._refresh_artifact_cards()
 
     def _refresh_commands(self, group_index: int) -> None:
         self.active_group_index = group_index
@@ -1410,6 +1592,17 @@ class SdvTuiApp(App[None]):
         except Exception as ex:
             self._write_log(artifact_open_failed(ex))
 
+    def action_open_latest_archive(self) -> None:
+        target = self._latest_archive_for_last_run()
+        if target is None:
+            self._write_log("[yellow]최근 archive run이 없습니다.[/]")
+            return
+        try:
+            self._open_path(target)
+            self._write_log(artifact_opened(str(target)))
+        except Exception as ex:
+            self._write_log(artifact_open_failed(ex))
+
     def action_copy_artifact(self) -> None:
         target = self._resolve_artifact_target()
         if target is None:
@@ -1739,6 +1932,8 @@ class SdvTuiApp(App[None]):
             self.query_one("#commands", OptionList).focus()
         elif event.button.id == "nav-results":
             self._show_page("results")
+        elif event.button.id == "nav-artifacts":
+            self._show_page("artifacts")
         elif event.button.id == "nav-logs":
             self._show_page("logs")
         elif event.button.id == "home-gate":
@@ -1779,6 +1974,14 @@ class SdvTuiApp(App[None]):
         elif event.button.id == "results-open-source":
             self.action_open_source_contract()
         elif event.button.id == "results-clean-staging":
+            self.action_clean_staging_now()
+        elif event.button.id == "artifact-open-latest":
+            self.action_open_artifact()
+        elif event.button.id == "artifact-open-archive":
+            self.action_open_latest_archive()
+        elif event.button.id == "artifact-open-source":
+            self.action_open_source_contract()
+        elif event.button.id == "artifact-clean-staging":
             self.action_clean_staging_now()
 
     def action_focus_navigation(self) -> None:

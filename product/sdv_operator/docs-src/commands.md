@@ -19,7 +19,7 @@ python scripts/run.py gate all
 
 사용 시점:
 - 런타임 조작 전에 전체 gate를 먼저 확인할 때
-- 문서/DBC/CAPL/CLI 정합성을 먼저 점검할 때
+- 문서/DBC/CAPL/Verification Console 정합성을 먼저 점검할 때
 
 ### Scenario run
 
@@ -60,7 +60,7 @@ python scripts/run.py doctor --ensure-running
 
 ## 운영 모드
 
-### TUI
+### Verification Console
 
 ```powershell
 python scripts/run.py
@@ -78,7 +78,7 @@ python scripts/run.py shell
 ```
 
 용도:
-- TUI가 맞지 않는 터미널 환경에서 fallback으로 사용
+- 화면형 Verification Console이 맞지 않는 터미널 환경에서 fallback으로 사용
 - 반복 명령을 빠르게 직접 입력할 때 사용
 
 ### Guided flow
@@ -252,5 +252,5 @@ python scripts/run.py package bundle-portable --mode onefolder --clean --rebuild
 
 - 공개 표면은 canonical 명령 중심으로 유지합니다.
 - compatibility alias는 내부 호환용으로만 유지합니다.
-- 결과 해석은 TUI 또는 generated docs에서 우선 확인합니다.
+- 결과 해석은 Verification Console 또는 generated docs에서 우선 확인합니다.
 - 구현 세부사항은 `scripts/` 내부 모듈에서 관리합니다.

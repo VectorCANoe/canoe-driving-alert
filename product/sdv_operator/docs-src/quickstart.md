@@ -6,8 +6,8 @@
 python scripts/run.py
 ```
 
-기본 실행은 Textual TUI를 엽니다.  
-터미널 호환성 문제로 TUI를 쓰기 어렵다면 plain shell로 전환합니다.
+기본 실행은 Verification Console(Textual 화면)을 엽니다.  
+터미널 호환성 문제로 화면형 콘솔을 쓰기 어렵다면 plain shell로 전환합니다.
 
 ```powershell
 python scripts/run.py shell
@@ -45,7 +45,7 @@ python scripts/run.py doctor
 - measurement running 여부
 - 핵심 sysvar 접근 가능 여부
 
-## 4. TUI 기본 흐름
+## 4. Verification Console 기본 흐름
 
 1. Home에서 핵심 작업 선택
 2. Run 화면에서 범주 버튼과 Task list를 통해 작업 선택
