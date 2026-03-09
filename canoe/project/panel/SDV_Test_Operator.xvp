@@ -1,0 +1,376 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Panel Type="Vector.CANalyzer.Panels.PanelSerializer, Vector.CANalyzer.Panels.Serializer, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null">
+  <Object Type="Vector.CANalyzer.Panels.Runtime.Panel, Vector.CANalyzer.Panels.Common, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Panel" ControlName="SDV Test Operator">
+
+    <Object Type="Vector.CANalyzer.Panels.Design.GroupBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="GrpOverview" ControlName="GrpOverview">
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="LblTitle" ControlName="LblTitle">
+        <Property Name="Name">LblTitle</Property>
+        <Property Name="Size">720, 20</Property>
+        <Property Name="Location">8, 22</Property>
+        <Property Name="ForeColor">255, 220, 230, 240</Property>
+        <Property Name="Text">CANoe TEST / DIAG COMMAND CONSOLE</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="LblGuide1" ControlName="LblGuide1">
+        <Property Name="Name">LblGuide1</Property>
+        <Property Name="Size">720, 14</Property>
+        <Property Name="Location">8, 48</Property>
+        <Property Name="ForeColor">255, 180, 180, 180</Property>
+        <Property Name="Text">기능 시나리오와 진단 명령은 모두 Test::scenarioCommand 기준으로 실행합니다.</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="LblGuide2" ControlName="LblGuide2">
+        <Property Name="Name">LblGuide2</Property>
+        <Property Name="Size">720, 14</Property>
+        <Property Name="Location">8, 66</Property>
+        <Property Name="ForeColor">255, 180, 180, 180</Property>
+        <Property Name="Text">1..25=functional scenario, 200..255=diagnostic baseline request, 0=idle/reset.</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="LblGuide3" ControlName="LblGuide3">
+        <Property Name="Name">LblGuide3</Property>
+        <Property Name="Size">720, 14</Property>
+        <Property Name="Location">8, 84</Property>
+        <Property Name="ForeColor">255, 120, 170, 255</Property>
+        <Property Name="Text">운영 순서: 1) 프리셋 또는 수동 명령 입력  2) Ack/Result 확인  3) Trace와 native report 확인</Property>
+      </Object>
+      <Property Name="Name">GrpOverview</Property>
+      <Property Name="Size">744, 116</Property>
+      <Property Name="Location">8, 8</Property>
+      <Property Name="BackColor">255, 42, 46, 62</Property>
+      <Property Name="ForeColor">255, 120, 200, 255</Property>
+      <Property Name="Text">OVERVIEW</Property>
+      <Property Name="UseWindowsStyle">False</Property>
+    </Object>
+
+    <Object Type="Vector.CANalyzer.Panels.Design.GroupBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="GrpFunctional" ControlName="GrpFunctional">
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="LblFuncHdr" ControlName="LblFuncHdr">
+        <Property Name="Name">LblFuncHdr</Property>
+        <Property Name="Size">340, 14</Property>
+        <Property Name="Location">8, 22</Property>
+        <Property Name="ForeColor">255, 180, 180, 180</Property>
+        <Property Name="Text">기능 검증 프리셋 6개 (native anchor + 확장 시나리오)</Property>
+      </Object>
+
+      <Object Type="Vector.CANalyzer.Panels.Design.SwitchControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="SwCmd2" ControlName="Cmd2 SchoolZone">
+        <Property Name="Name">SwCmd2</Property>
+        <Property Name="Size">108, 30</Property>
+        <Property Name="Location">8, 44</Property>
+        <Property Name="Activation">Left</Property>
+        <Property Name="Increment">1</Property>
+        <Property Name="StartValue">0</Property>
+        <Property Name="SwitchValuesVTXml">&lt;Version&gt;2&lt;/Version&gt;&lt;Count&gt;2&lt;/Count&gt;&lt;RxValue&gt;0&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;0&lt;/TxValue&gt;&lt;RxValue&gt;2&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;2&lt;/TxValue&gt;</Property>
+        <Property Name="SwitchValuesVT">1;2;0/Lower/0;2/Lower/2</Property>
+        <Property Name="SwitchValues">1;2;0;2</Property>
+        <Property Name="SwitchValuesRx">1;2;0;2</Property>
+        <Property Name="SymbolConfiguration">8;16;Test;;;scenarioCommand;1;;;-1;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.SwitchControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="SwCmd6" ControlName="Cmd6 Timeout">
+        <Property Name="Name">SwCmd6</Property>
+        <Property Name="Size">108, 30</Property>
+        <Property Name="Location">126, 44</Property>
+        <Property Name="Activation">Left</Property>
+        <Property Name="Increment">1</Property>
+        <Property Name="StartValue">0</Property>
+        <Property Name="SwitchValuesVTXml">&lt;Version&gt;2&lt;/Version&gt;&lt;Count&gt;2&lt;/Count&gt;&lt;RxValue&gt;0&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;0&lt;/TxValue&gt;&lt;RxValue&gt;6&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;6&lt;/TxValue&gt;</Property>
+        <Property Name="SwitchValuesVT">1;2;0/Lower/0;6/Lower/6</Property>
+        <Property Name="SwitchValues">1;2;0;6</Property>
+        <Property Name="SwitchValuesRx">1;2;0;6</Property>
+        <Property Name="SymbolConfiguration">8;16;Test;;;scenarioCommand;1;;;-1;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.SwitchControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="SwCmd9" ControlName="Cmd9 ETA Priority">
+        <Property Name="Name">SwCmd9</Property>
+        <Property Name="Size">108, 30</Property>
+        <Property Name="Location">244, 44</Property>
+        <Property Name="Activation">Left</Property>
+        <Property Name="Increment">1</Property>
+        <Property Name="StartValue">0</Property>
+        <Property Name="SwitchValuesVTXml">&lt;Version&gt;2&lt;/Version&gt;&lt;Count&gt;2&lt;/Count&gt;&lt;RxValue&gt;0&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;0&lt;/TxValue&gt;&lt;RxValue&gt;9&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;9&lt;/TxValue&gt;</Property>
+        <Property Name="SwitchValuesVT">1;2;0/Lower/0;9/Lower/9</Property>
+        <Property Name="SwitchValues">1;2;0;9</Property>
+        <Property Name="SwitchValuesRx">1;2;0;9</Property>
+        <Property Name="SymbolConfiguration">8;16;Test;;;scenarioCommand;1;;;-1;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.SwitchControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="SwCmd18" ControlName="Cmd18 FailSafe">
+        <Property Name="Name">SwCmd18</Property>
+        <Property Name="Size">108, 30</Property>
+        <Property Name="Location">8, 82</Property>
+        <Property Name="Activation">Left</Property>
+        <Property Name="Increment">1</Property>
+        <Property Name="StartValue">0</Property>
+        <Property Name="SwitchValuesVTXml">&lt;Version&gt;2&lt;/Version&gt;&lt;Count&gt;2&lt;/Count&gt;&lt;RxValue&gt;0&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;0&lt;/TxValue&gt;&lt;RxValue&gt;18&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;18&lt;/TxValue&gt;</Property>
+        <Property Name="SwitchValuesVT">1;2;0/Lower/0;18/Lower/18</Property>
+        <Property Name="SwitchValues">1;2;0;18</Property>
+        <Property Name="SwitchValuesRx">1;2;0;18</Property>
+        <Property Name="SymbolConfiguration">8;16;Test;;;scenarioCommand;1;;;-1;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.SwitchControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="SwCmd19" ControlName="Cmd19 Sync">
+        <Property Name="Name">SwCmd19</Property>
+        <Property Name="Size">108, 30</Property>
+        <Property Name="Location">126, 82</Property>
+        <Property Name="Activation">Left</Property>
+        <Property Name="Increment">1</Property>
+        <Property Name="StartValue">0</Property>
+        <Property Name="SwitchValuesVTXml">&lt;Version&gt;2&lt;/Version&gt;&lt;Count&gt;2&lt;/Count&gt;&lt;RxValue&gt;0&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;0&lt;/TxValue&gt;&lt;RxValue&gt;19&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;19&lt;/TxValue&gt;</Property>
+        <Property Name="SwitchValuesVT">1;2;0/Lower/0;19/Lower/19</Property>
+        <Property Name="SwitchValues">1;2;0;19</Property>
+        <Property Name="SwitchValuesRx">1;2;0;19</Property>
+        <Property Name="SymbolConfiguration">8;16;Test;;;scenarioCommand;1;;;-1;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.SwitchControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="SwCmd20" ControlName="Cmd20 ADAS Object">
+        <Property Name="Name">SwCmd20</Property>
+        <Property Name="Size">108, 30</Property>
+        <Property Name="Location">244, 82</Property>
+        <Property Name="Activation">Left</Property>
+        <Property Name="Increment">1</Property>
+        <Property Name="StartValue">0</Property>
+        <Property Name="SwitchValuesVTXml">&lt;Version&gt;2&lt;/Version&gt;&lt;Count&gt;2&lt;/Count&gt;&lt;RxValue&gt;0&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;0&lt;/TxValue&gt;&lt;RxValue&gt;20&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;20&lt;/TxValue&gt;</Property>
+        <Property Name="SwitchValuesVT">1;2;0/Lower/0;20/Lower/20</Property>
+        <Property Name="SwitchValues">1;2;0;20</Property>
+        <Property Name="SwitchValuesRx">1;2;0;20</Property>
+        <Property Name="SymbolConfiguration">8;16;Test;;;scenarioCommand;1;;;-1;;;Value;;;0</Property>
+      </Object>
+
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="LblFuncHint" ControlName="LblFuncHint">
+        <Property Name="Name">LblFuncHint</Property>
+        <Property Name="Size">340, 14</Property>
+        <Property Name="Location">8, 122</Property>
+        <Property Name="ForeColor">255, 120, 150, 220</Property>
+        <Property Name="Text">시나리오 값은 command 처리 후 자동으로 0으로 복귀할 수 있습니다.</Property>
+      </Object>
+
+      <Property Name="Name">GrpFunctional</Property>
+      <Property Name="Size">360, 150</Property>
+      <Property Name="Location">8, 132</Property>
+      <Property Name="BackColor">255, 42, 46, 62</Property>
+      <Property Name="ForeColor">255, 160, 220, 255</Property>
+      <Property Name="Text">FUNCTIONAL PRESETS</Property>
+      <Property Name="UseWindowsStyle">False</Property>
+    </Object>
+
+    <Object Type="Vector.CANalyzer.Panels.Design.GroupBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="GrpDiag" ControlName="GrpDiag">
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="LblDiagHdr" ControlName="LblDiagHdr">
+        <Property Name="Name">LblDiagHdr</Property>
+        <Property Name="Size">348, 14</Property>
+        <Property Name="Location">8, 22</Property>
+        <Property Name="ForeColor">255, 180, 180, 180</Property>
+        <Property Name="Text">진단 baseline request와 수동 명령 주입</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.SwitchControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="SwCmd200" ControlName="Cmd200 Diag Base">
+        <Property Name="Name">SwCmd200</Property>
+        <Property Name="Size">112, 30</Property>
+        <Property Name="Location">8, 44</Property>
+        <Property Name="Activation">Left</Property>
+        <Property Name="Increment">1</Property>
+        <Property Name="StartValue">0</Property>
+        <Property Name="SwitchValuesVTXml">&lt;Version&gt;2&lt;/Version&gt;&lt;Count&gt;2&lt;/Count&gt;&lt;RxValue&gt;0&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;0&lt;/TxValue&gt;&lt;RxValue&gt;200&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;200&lt;/TxValue&gt;</Property>
+        <Property Name="SwitchValuesVT">1;2;0/Lower/0;200/Lower/200</Property>
+        <Property Name="SwitchValues">1;2;0;200</Property>
+        <Property Name="SwitchValuesRx">1;2;0;200</Property>
+        <Property Name="SymbolConfiguration">8;16;Test;;;scenarioCommand;1;;;-1;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.SwitchControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="SwCmd201" ControlName="Cmd201 Diag +1">
+        <Property Name="Name">SwCmd201</Property>
+        <Property Name="Size">112, 30</Property>
+        <Property Name="Location">130, 44</Property>
+        <Property Name="Activation">Left</Property>
+        <Property Name="Increment">1</Property>
+        <Property Name="StartValue">0</Property>
+        <Property Name="SwitchValuesVTXml">&lt;Version&gt;2&lt;/Version&gt;&lt;Count&gt;2&lt;/Count&gt;&lt;RxValue&gt;0&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;0&lt;/TxValue&gt;&lt;RxValue&gt;201&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;201&lt;/TxValue&gt;</Property>
+        <Property Name="SwitchValuesVT">1;2;0/Lower/0;201/Lower/201</Property>
+        <Property Name="SwitchValues">1;2;0;201</Property>
+        <Property Name="SwitchValuesRx">1;2;0;201</Property>
+        <Property Name="SymbolConfiguration">8;16;Test;;;scenarioCommand;1;;;-1;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="LblManualHdr" ControlName="LblManualHdr">
+        <Property Name="Name">LblManualHdr</Property>
+        <Property Name="Size">120, 14</Property>
+        <Property Name="Location">8, 86</Property>
+        <Property Name="ForeColor">255, 180, 180, 180</Property>
+        <Property Name="Text">Manual command</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="TxtScenarioCommand" ControlName="TxtScenarioCommand">
+        <Property Name="Name">TxtScenarioCommand</Property>
+        <Property Name="Size">72, 20</Property>
+        <Property Name="Location">130, 84</Property>
+        <Property Name="BoxBackColor">255, 28, 31, 46</Property>
+        <Property Name="BoxForeColor">255, 255, 200, 80</Property>
+        <Property Name="TextBackColor">255, 28, 31, 46</Property>
+        <Property Name="TextForeColor">255, 255, 200, 80</Property>
+        <Property Name="BoxBorderStyle">FixedSingle</Property>
+        <Property Name="DisplayLabel">Hide</Property>
+        <Property Name="BoxTextAlign">Center</Property>
+        <Property Name="ValueDecimalPlaces">0</Property>
+        <Property Name="ValueDisplay">Double</Property>
+        <Property Name="UsedValueTable">RawValue</Property>
+        <Property Name="DescriptionSize">0, 0</Property>
+        <Property Name="SymbolConfiguration">8;16;Test;;;scenarioCommand;1;;;-1;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="LblManualHint" ControlName="LblManualHint">
+        <Property Name="Name">LblManualHint</Property>
+        <Property Name="Size">340, 14</Property>
+        <Property Name="Location">8, 112</Property>
+        <Property Name="ForeColor">255, 120, 150, 220</Property>
+        <Property Name="Text">0=idle/reset, 1..25=function, 200..255=diag. 값 입력 후 Enter.</Property>
+      </Object>
+
+      <Property Name="Name">GrpDiag</Property>
+      <Property Name="Size">384, 150</Property>
+      <Property Name="Location">368, 132</Property>
+      <Property Name="BackColor">255, 42, 46, 62</Property>
+      <Property Name="ForeColor">255, 255, 170, 120</Property>
+      <Property Name="Text">DIAG / COMMAND</Property>
+      <Property Name="UseWindowsStyle">False</Property>
+    </Object>
+
+    <Object Type="Vector.CANalyzer.Panels.Design.GroupBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="GrpStatus" ControlName="GrpStatus">
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="LblAck" ControlName="LblAck">
+        <Property Name="Name">LblAck</Property>
+        <Property Name="Size">120, 14</Property>
+        <Property Name="Location">8, 24</Property>
+        <Property Name="ForeColor">255, 180, 180, 180</Property>
+        <Property Name="Text">scenarioCommandAck</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="TxtAck" ControlName="TxtAck">
+        <Property Name="Name">TxtAck</Property>
+        <Property Name="Size">92, 20</Property>
+        <Property Name="Location">8, 42</Property>
+        <Property Name="BoxBackColor">255, 28, 31, 46</Property>
+        <Property Name="BoxForeColor">255, 130, 180, 255</Property>
+        <Property Name="TextBackColor">255, 28, 31, 46</Property>
+        <Property Name="TextForeColor">255, 130, 180, 255</Property>
+        <Property Name="BoxBorderStyle">FixedSingle</Property>
+        <Property Name="DisplayLabel">Hide</Property>
+        <Property Name="BoxTextAlign">Center</Property>
+        <Property Name="ReadOnlyControl">True</Property>
+        <Property Name="ValueDecimalPlaces">0</Property>
+        <Property Name="ValueDisplay">Double</Property>
+        <Property Name="UsedValueTable">RawValue</Property>
+        <Property Name="DescriptionSize">0, 0</Property>
+        <Property Name="SymbolConfiguration">8;16;Test;;;scenarioCommandAck;2;;;-1;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="LblResult" ControlName="LblResult">
+        <Property Name="Name">LblResult</Property>
+        <Property Name="Size">100, 14</Property>
+        <Property Name="Location">116, 24</Property>
+        <Property Name="ForeColor">255, 180, 180, 180</Property>
+        <Property Name="Text">scenarioResult</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="TxtResult" ControlName="TxtResult">
+        <Property Name="Name">TxtResult</Property>
+        <Property Name="Size">92, 20</Property>
+        <Property Name="Location">116, 42</Property>
+        <Property Name="AlarmGeneralSettings">1;1;1;255</Property>
+        <Property Name="AlarmLowerBkgColor">255, 200, 60, 60</Property>
+        <Property Name="AlarmLowerTextColor">White</Property>
+        <Property Name="AlarmUpperBkgColor">255, 50, 180, 90</Property>
+        <Property Name="AlarmUpperTextColor">White</Property>
+        <Property Name="BoxBackColor">255, 50, 180, 90</Property>
+        <Property Name="BoxForeColor">White</Property>
+        <Property Name="TextBackColor">255, 50, 180, 90</Property>
+        <Property Name="TextForeColor">White</Property>
+        <Property Name="BoxBorderStyle">FixedSingle</Property>
+        <Property Name="DisplayLabel">Hide</Property>
+        <Property Name="BoxTextAlign">Center</Property>
+        <Property Name="ReadOnlyControl">True</Property>
+        <Property Name="ValueDecimalPlaces">0</Property>
+        <Property Name="ValueDisplay">Double</Property>
+        <Property Name="UsedValueTable">RawValue</Property>
+        <Property Name="DescriptionSize">0, 0</Property>
+        <Property Name="SymbolConfiguration">8;16;Test;;;scenarioResult;2;;;-1;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="LblCurrent" ControlName="LblCurrent">
+        <Property Name="Name">LblCurrent</Property>
+        <Property Name="Size">100, 14</Property>
+        <Property Name="Location">224, 24</Property>
+        <Property Name="ForeColor">255, 180, 180, 180</Property>
+        <Property Name="Text">testScenario</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="TxtCurrent" ControlName="TxtCurrent">
+        <Property Name="Name">TxtCurrent</Property>
+        <Property Name="Size">92, 20</Property>
+        <Property Name="Location">224, 42</Property>
+        <Property Name="BoxBackColor">255, 28, 31, 46</Property>
+        <Property Name="BoxForeColor">255, 130, 220, 140</Property>
+        <Property Name="TextBackColor">255, 28, 31, 46</Property>
+        <Property Name="TextForeColor">255, 130, 220, 140</Property>
+        <Property Name="BoxBorderStyle">FixedSingle</Property>
+        <Property Name="DisplayLabel">Hide</Property>
+        <Property Name="BoxTextAlign">Center</Property>
+        <Property Name="ReadOnlyControl">True</Property>
+        <Property Name="ValueDecimalPlaces">0</Property>
+        <Property Name="ValueDisplay">Double</Property>
+        <Property Name="UsedValueTable">RawValue</Property>
+        <Property Name="DescriptionSize">0, 0</Property>
+        <Property Name="SymbolConfiguration">8;16;Test;;;testScenario;2;;;-1;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="LblForce" ControlName="LblForce">
+        <Property Name="Name">LblForce</Property>
+        <Property Name="Size">120, 14</Property>
+        <Property Name="Location">336, 24</Property>
+        <Property Name="ForeColor">255, 180, 180, 180</Property>
+        <Property Name="Text">forceFailSafe</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.SwitchControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="SwForceFailSafe" ControlName="SwForceFailSafe">
+        <Property Name="Name">SwForceFailSafe</Property>
+        <Property Name="Size">126, 26</Property>
+        <Property Name="Location">336, 40</Property>
+        <Property Name="Activation">Left</Property>
+        <Property Name="Increment">1</Property>
+        <Property Name="StartValue">0</Property>
+        <Property Name="SwitchValuesVTXml">&lt;Version&gt;2&lt;/Version&gt;&lt;Count&gt;2&lt;/Count&gt;&lt;RxValue&gt;0&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;0&lt;/TxValue&gt;&lt;RxValue&gt;1&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;1&lt;/TxValue&gt;</Property>
+        <Property Name="SwitchValuesVT">1;2;0/Lower/0;1/Lower/1</Property>
+        <Property Name="SwitchValues">1;2;0;1</Property>
+        <Property Name="SwitchValuesRx">1;2;0;1</Property>
+        <Property Name="SymbolConfiguration">8;16;Test;;;forceFailSafe;1;;;-1;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="LblStatusHint" ControlName="LblStatusHint">
+        <Property Name="Name">LblStatusHint</Property>
+        <Property Name="Size">720, 14</Property>
+        <Property Name="Location">8, 78</Property>
+        <Property Name="ForeColor">255, 120, 150, 220</Property>
+        <Property Name="Text">Ack=200이면 baseline diagnose trigger가 수락된 것입니다. 응답은 Trace에서 *DiagResMsg와 ethDiagStateMsg로 확인합니다.</Property>
+      </Object>
+      <Property Name="Name">GrpStatus</Property>
+      <Property Name="Size">744, 100</Property>
+      <Property Name="Location">8, 290</Property>
+      <Property Name="BackColor">255, 42, 46, 62</Property>
+      <Property Name="ForeColor">255, 150, 220, 150</Property>
+      <Property Name="Text">STATUS / FEEDBACK</Property>
+      <Property Name="UseWindowsStyle">False</Property>
+    </Object>
+
+    <Object Type="Vector.CANalyzer.Panels.Design.GroupBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="GrpTrace" ControlName="GrpTrace">
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="LblTrace1" ControlName="LblTrace1">
+        <Property Name="Name">LblTrace1</Property>
+        <Property Name="Size">720, 14</Property>
+        <Property Name="Location">8, 22</Property>
+        <Property Name="ForeColor">255, 180, 180, 180</Property>
+        <Property Name="Text">Trace filter 추천: frmBcmDiagResMsg | frmChsDiagResMsg | ethCgwDiagResMsg | ethDiagStateMsg</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="LblTrace2" ControlName="LblTrace2">
+        <Property Name="Name">LblTrace2</Property>
+        <Property Name="Size">720, 14</Property>
+        <Property Name="Location">8, 42</Property>
+        <Property Name="ForeColor">255, 180, 180, 180</Property>
+        <Property Name="Text">Anchor test 먼저: TC_CANOE_UT_CORE_001_SCHOOLZONE_OVERSPEED / TC_CANOE_IT_V2_FAILSAFE_001_CGW</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="LblTrace3" ControlName="LblTrace3">
+        <Property Name="Name">LblTrace3</Property>
+        <Property Name="Size">720, 14</Property>
+        <Property Name="Location">8, 62</Property>
+        <Property Name="ForeColor">255, 120, 150, 220</Property>
+        <Property Name="Text">GUI에서 바로 쓰려면 이 패널에서 command를 넣고, 운영 입력은 SDV_Vehicle_Operator 패널을 사용합니다.</Property>
+      </Object>
+      <Property Name="Name">GrpTrace</Property>
+      <Property Name="Size">744, 94</Property>
+      <Property Name="Location">8, 398</Property>
+      <Property Name="BackColor">255, 42, 46, 62</Property>
+      <Property Name="ForeColor">255, 255, 200, 120</Property>
+      <Property Name="Text">TRACE / REPORT CHECK</Property>
+      <Property Name="UseWindowsStyle">False</Property>
+    </Object>
+
+    <Property Name="Name">Panel</Property>
+    <Property Name="Size">760, 500</Property>
+    <Property Name="Location">0, 0</Property>
+    <Property Name="BackColor">255, 35, 38, 52</Property>
+  </Object>
+</Panel>
