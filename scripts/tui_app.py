@@ -199,7 +199,7 @@ class SdvTuiApp(App[None]):
     }
 
     #favorites-card {
-        width: 28;
+        width: 1fr;
     }
 
     #recent-card {
@@ -527,7 +527,7 @@ class SdvTuiApp(App[None]):
                 with Vertical(id="page-results", classes="page hidden"):
                     with Horizontal(id="summary-strip"):
                         with Vertical(id="favorites-card", classes="summary-card"):
-                            yield Static("Pinned Tasks", classes="summary-title")
+                            yield Static("Evidence Paths", classes="summary-title")
                             yield Static(id="favorites-body")
                         with Vertical(id="recent-card", classes="summary-card"):
                             yield Static("Recent Runs", classes="summary-title")
@@ -750,15 +750,33 @@ class SdvTuiApp(App[None]):
         target_index = self.group_names.index(target_group)
         self._refresh_commands(target_index)
 
-    def _refresh_summary_cards(self) -> None:
-        favorites = self._favorite_commands()
-        if favorites:
-            favorite_lines = [f"{idx + 1}. {command.title}" for idx, command in enumerate(favorites[:5])]
-            favorite_lines.append("")
-            favorite_lines.append("선택한 작업에서 Ctrl+P로 고정/해제를 전환하십시오.")
+    def _summarize_evidence_paths(self) -> str:
+        last_result = self.state.get("last_result", {})
+        if not isinstance(last_result, dict):
+            return "최근 실행 결과가 없습니다.\n먼저 Gate all 또는 Verify quick을 실행하십시오."
+
+        artifacts = last_result.get("artifacts", [])
+        if not isinstance(artifacts, list):
+            artifacts = []
+        source_target = self._resolve_source_contract_target()
+
+        lines: list[str] = []
+        if artifacts:
+            lines.append("최근 증빙")
+            lines.extend(f"- {str(item)}" for item in artifacts[:3])
         else:
-            favorite_lines = ["아직 고정된 작업이 없습니다.", "작업을 선택한 뒤 Ctrl+P로 고정하십시오."]
-        self.query_one("#favorites-body", Static).update("\n".join(favorite_lines))
+            lines.append("최근 증빙")
+            lines.append("- 아직 연결된 증빙 경로가 없습니다.")
+
+        lines.append("")
+        lines.append("원본 기준")
+        lines.append(f"- {source_target.relative_to(ROOT).as_posix()}")
+        lines.append("")
+        lines.append("동작: 증빙 열기 / 원본 기준 열기 / staging 정리")
+        return "\n".join(lines)
+
+    def _refresh_summary_cards(self) -> None:
+        self.query_one("#favorites-body", Static).update(self._summarize_evidence_paths())
 
         recent_rows = self._recent_rows()
         recent_list = self.query_one("#recent-list", OptionList)

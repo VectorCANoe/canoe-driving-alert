@@ -206,7 +206,16 @@
   - `TMP_HANDOFF.md`
   - 팀 보드/queue 성격의 임시 coordination 문서
   - 리드 지시가 있는 cross-team reset 문서
-### 11.5 OEM System Framing Rule (Added)
+
+### 11.5 Team Commit/Push Isolation Rule
+- Dev1은 `canoe/` 소유 변경만 commit/push한다.
+- Dev2는 `scripts/`, `product/sdv_operator/` 및 Dev2 운영에 필요한 최소 coordination 문서만 commit/push한다.
+- 문서팀은 `driving-situation-alert/` 정본/제출 문서 변경만 commit/push한다.
+- 다른 팀 경로가 dirty여도 자기 소유 경로만 `git add`해서 선별 commit/push한다.
+- 타 팀 변경을 임시로 로컬에 보관(stash/backup)할 수는 있지만, 묶어서 함께 push하지 않는다.
+- cross-team coordination 문서(`TMP_HANDOFF.md`, 팀 보드, 리드 지시 문서)는 목적 범위에 맞는 최소 변경만 허용한다.
+
+### 11.6 OEM System Framing Rule (Added)
 - 이 프로젝트는 “한 시나리오 PoC”가 아니라 “OEM 차량 시스템 축약 모델”로 정의한다.
 - OEM breadth 확장은 `핵심 가치 시나리오(구간/긴급차량 기반 경고)`를 대체하지 않고, 그 시나리오를 차량 전체 구조 안에 정합되게 배치하기 위한 것이다.
 - 따라서 문서/코드 판단 우선순위는 아래를 따른다:
