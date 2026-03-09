@@ -10,8 +10,9 @@ Use this as the real execution profile for the current reset cycle.
 
 2. Deep active runtime implementation
 - target: `12~18`
-- chosen baseline (current): `13` (`11` product + `2` validation)
-- stretch target (next promotions): `16`
+- chosen baseline (current): `19` (`17` product + `2` validation)
+- note:
+  - the reset cycle is intentionally overshooting the old `16` stretch line before the GUI import wave, so that more reviewer-facing surface ECUs are already compileable runtime anchors.
 
 3. Core custom / differentiating ECU surfaces
 - target: `6~10`
@@ -172,7 +173,7 @@ Rule:
 
 Vehicle surface total: `100`
 
-## Deep Runtime Plan (`13` current, `16` stretch)
+## Deep Runtime Plan (`19` current)
 
 Current active baseline first:
 
@@ -187,14 +188,14 @@ Current active baseline first:
 9. `CLU`
 10. `ADAS`
 11. `V2X`
-12. `VALIDATION_HARNESS` (`VAL_SCENARIO_CTRL`, `VAL_BASELINE_CTRL`)
-
-Promotion candidates to reach stretch target `16`:
-
-13. `ETH_BACKBONE`
-14. `SCC`
-15. `TMU`
-16. `SGW`
+12. `SCC`
+13. `TMU`
+14. `DATC`
+15. `HUD`
+16. `AMP`
+17. `VOICE_ASSIST`
+18. `VALIDATION_HARNESS` (`VAL_SCENARIO_CTRL`)
+19. `VALIDATION_HARNESS` (`VAL_BASELINE_CTRL`)
 
 ## Chosen 8 Core Custom Surfaces
 
@@ -229,6 +230,6 @@ If implementation pressure rises later, the first trim-down target is:
 - This file is the active execution profile for using that 100-bank in practice.
 - Rule:
   - active architecture breadth follows the `100` bank
-  - active deep implementation is currently `13` and may expand to `16` by promotion
+  - active deep implementation is currently `19`
   - premium/option layer stays placeholder-first unless promoted
   - trim-down is allowed later, but breadth-first framing comes first now

@@ -255,13 +255,11 @@ on timer tIviBase50
   message frmClusterThemeMsg mTheme;
   message frmHmiPopupStateMsg mPopup;
   message frmAudioFocusMsg mAudio;
-  message frmVoiceAssistStateMsg mVoice;
   message frmMediaStateMsg mMediaState;
   message frmCallStateMsg mCallState;
   message frmPhoneProjectionMsg mProjection;
   message frmClusterNotifMsg mNotif;
   message frmMediaMetaMsg mMedia;
-  message frmSpeechTtsStateMsg mTts;
   message frmClusterSyncStateMsg mSync;
   message frmInfotainmentHealthMsg mHealth;
   int speed;
@@ -336,10 +334,6 @@ on timer tIviBase50
   mAudio.AudioDuckingLvl = (alertLevel > 0) ? 4 : 1;
   output(mAudio);
 
-  mVoice.VoiceAssistState = 1;
-  mVoice.WakeWordState = 1;
-  output(mVoice);
-
   mMediaState.MediaSource = 1;
   mMediaState.MediaState = 1;
   mMediaState.MuteState = 0;
@@ -365,11 +359,6 @@ on timer tIviBase50
   mMedia.MediaShuffleMode = 0;
   mMedia.MediaRemainTime = 120;
   output(mMedia);
-
-  mTts.TtsState = (alertLevel > 0 && displayModeSetting != 1) ? 1 : 0;
-  mTts.TtsPriority = 0;
-  mTts.TtsQueueDepth = 0;
-  output(mTts);
 
   mSync.ClusterSyncState = 1;
   mSync.ClusterSyncError = 0;

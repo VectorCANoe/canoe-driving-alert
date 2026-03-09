@@ -90,7 +90,7 @@ BO_ 649 frmAudioFocusMsg: 1 IVI
  SG_ AudioDuckingLvl  : 3|3@1+ (1,0) [0|7] "" CLU
  SG_ Reserved0        : 6|2@1+ (1,0) [0|0] "" Vector__XXX
 
-BO_ 650 frmVoiceAssistStateMsg: 1 IVI
+BO_ 650 frmVoiceAssistStateMsg: 1 VOICE_ASSIST
  SG_ VoiceAssistState : 0|3@1+ (1,0) [0|7] "" CLU
  SG_ WakeWordState    : 3|1@1+ (1,0) [0|1] "" CLU
  SG_ Reserved0        : 4|4@1+ (1,0) [0|0] "" Vector__XXX
@@ -136,7 +136,7 @@ BO_ 657 frmMediaMetaMsg: 2 IVI
  SG_ MediaShuffleMode : 6|2@1+ (1,0) [0|3] "" CLU
  SG_ MediaRemainTime  : 8|8@1+ (1,0) [0|255] "s" CLU
 
-BO_ 658 frmSpeechTtsStateMsg: 2 IVI
+BO_ 658 frmSpeechTtsStateMsg: 2 VOICE_ASSIST
  SG_ TtsState         : 0|3@1+ (1,0) [0|7] "" CLU
  SG_ TtsPriority      : 3|3@1+ (1,0) [0|7] "" CLU
  SG_ Reserved0        : 6|2@1+ (1,0) [0|0] "" Vector__XXX
@@ -165,6 +165,22 @@ BO_ 662 frmTmuServiceStateMsg: 2 TMU
  SG_ SignalBars        : 8|4@1+ (1,0) [0|15] "" IVI,CLU
  SG_ TmuDiagState      : 12|4@1+ (1,0) [0|15] "" IVI,CLU,VAL_SCENARIO_CTRL
 
+BO_ 663 frmHudStateMsg: 3 HUD
+ SG_ HudMode          : 0|3@1+ (1,0) [0|7] "" CLU,IVI,VAL_SCENARIO_CTRL
+ SG_ Reserved0        : 3|5@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ HudWarningCode   : 8|8@1+ (1,0) [0|255] "" CLU,IVI,VAL_SCENARIO_CTRL
+ SG_ HudGuideType     : 16|4@1+ (1,0) [0|15] "" CLU,IVI
+ SG_ HudBrightness    : 20|5@1+ (1,0) [0|31] "" CLU,IVI
+
+BO_ 664 frmAmpStateMsg: 3 AMP
+ SG_ AmpMode          : 0|3@1+ (1,0) [0|7] "" CLU,IVI,VOICE_ASSIST
+ SG_ AmpMute          : 3|1@1+ (1,0) [0|1] "" CLU,IVI
+ SG_ AmpDuckingLvl    : 4|3@1+ (1,0) [0|7] "" CLU,IVI,VOICE_ASSIST
+ SG_ Reserved0        : 7|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ AmpVolumeLevel   : 8|8@1+ (1,0) [0|100] "%" CLU,IVI
+ SG_ AmpDiagState     : 16|4@1+ (1,0) [0|15] "" CLU,IVI
+ SG_ Reserved1        : 20|4@1+ (1,0) [0|0] "" Vector__XXX
+
 CM_ BO_ 675 "Flow_003 navigation context input.";
 CM_ BO_ 640 "Flow_008 cluster warning output.";
 CM_ BO_ 641 "Infotainment baseline: cluster base display payload (speed/gear/status).";
@@ -190,6 +206,8 @@ CM_ BO_ 659 "Comm_203: connectivity state extension.";
 CM_ BO_ 660 "Comm_205: IVI health detail extension.";
 CM_ BO_ 661 "Comm_203: cluster sync state extension.";
 CM_ BO_ 662 "Telematics service/link state and remote climate request.";
+CM_ BO_ 663 "HUD surface ECU state projected from CLU/IVI guidance and warning context.";
+CM_ BO_ 664 "Amplifier surface ECU state derived from media focus, volume, and TTS ducking.";
 
 BA_DEF_ BO_ "GenMsgCycleTime" INT 0 10000;
 BA_DEF_DEF_ "GenMsgCycleTime" 0;
@@ -218,6 +236,8 @@ BA_ "GenMsgCycleTime" BO_ 659 100;
 BA_ "GenMsgCycleTime" BO_ 660 100;
 BA_ "GenMsgCycleTime" BO_ 661 50;
 BA_ "GenMsgCycleTime" BO_ 662 100;
+BA_ "GenMsgCycleTime" BO_ 663 50;
+BA_ "GenMsgCycleTime" BO_ 664 50;
 
 VAL_ 675 gRoadZone
   0 "Normal"
