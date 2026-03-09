@@ -1,0 +1,33 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\common\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+}
+
+export testcase TC_CANOE_NET_004_LOAD_PERIOD_JITTER_STABILITY()
+{
+  // Dev2 blueprint intent: verify period and jitter stay inside tolerance under load
+  // Pack: network_gateway_core_4
+  // Draft skeleton only: Dev1 must bind exact runtime messages/signals/asserts before enabling this asset in the mandatory suite.
+  // No fixed scenarioId is assigned for this network/diagnostic asset.
+  // Dev1 must inject the matching traffic/request path before wiring concrete oracle asserts.
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  testStepPass("blueprint-intent", "Intent: verify period and jitter stay inside tolerance under load");
+  testStepPass("oracle-guide-1", "Expected: period within tolerance");
+  testStepPass("oracle-guide-2", "Expected: jitter within tolerance");
+  testStepPass("oracle-guide-3", "Expected: no starvation");
+  testStepPass("evidence-guide-1", "Evidence: trace period/jitter summary");
+  testStepPass("evidence-guide-2", "Evidence: bus statistics");
+
+  testStepFail("oracle-hook", "Draft skeleton only. Connect concrete stimulus/oracle hooks before enabling this testcase.");
+
+  resetValidationHarnessIfNeeded();
+}

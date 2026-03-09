@@ -1,0 +1,42 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\common\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+}
+
+export testcase TC_CANOE_IT_V2_SYNC_001_DECEL_AND_WARNING()
+{
+  // Dev2 blueprint intent: decel assist and warning synchronization across channels
+  // Pack: native_functional_6
+  // Draft skeleton only: Dev1 must bind exact runtime messages/signals/asserts before enabling this asset in the mandatory suite.
+  // Scenario ID: 19
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  if (!launchScenarioAndWait(19, 1500, 1200))
+  {
+    return;
+  }
+
+  testStepPass("blueprint-intent", "Intent: decel assist and warning synchronization across channels");
+  testStepPass("oracle-guide-1", "Expected: scenario result pass");
+  testStepPass("oracle-guide-2", "Expected: decel assist asserted");
+  testStepPass("oracle-guide-3", "Expected: warning outputs aligned");
+  testStepPass("oracle-guide-4", "Expected: cross-channel sync offset within target");
+  testStepPass("evidence-guide-1", "Evidence: .vtestreport");
+  testStepPass("evidence-guide-2", "Evidence: sync snapshot");
+  testStepPass("evidence-guide-3", "Evidence: cross-channel timing proof");
+
+  // - activation_max: 150 ms
+  // - channel_sync_offset_max: 50 ms
+
+  testStepFail("oracle-hook", "Draft skeleton only. Connect concrete stimulus/oracle hooks before enabling this testcase.");
+
+  resetValidationHarnessIfNeeded();
+}

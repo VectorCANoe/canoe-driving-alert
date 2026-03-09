@@ -1,0 +1,8 @@
+version: 2.2.0
+
+test-tree:
+  - test-fixture: TimeoutStaleChainClear
+    description: Draft skeleton for verify stale or timeout chain results in one safe clear/downgrade.
+    elements:
+      - capl-test-case: TC_CANOE_NET_003_TIMEOUT_STALE_CHAIN_CLEAR
+        title: TC_CANOE_NET_003_TIMEOUT_STALE_CHAIN_CLEAR

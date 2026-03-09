@@ -1,0 +1,41 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\common\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+}
+
+export testcase TC_CANOE_UT_V2X_001_EMERGENCY_PRIORITY_ETA()
+{
+  // Dev2 blueprint intent: ETA priority decision for same-class emergency warning
+  // Pack: native_functional_6
+  // Draft skeleton only: Dev1 must bind exact runtime messages/signals/asserts before enabling this asset in the mandatory suite.
+  // Scenario ID: 9
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  if (!launchScenarioAndWait(9, 1500, 1200))
+  {
+    return;
+  }
+
+  testStepPass("blueprint-intent", "Intent: ETA priority decision for same-class emergency warning");
+  testStepPass("oracle-guide-1", "Expected: scenario result pass");
+  testStepPass("oracle-guide-2", "Expected: lower ETA source selected");
+  testStepPass("oracle-guide-3", "Expected: selected emergency class preserved");
+  testStepPass("oracle-guide-4", "Expected: no illegal flip-flop");
+  testStepPass("evidence-guide-1", "Evidence: .vtestreport");
+  testStepPass("evidence-guide-2", "Evidence: priority decision snapshot");
+  testStepPass("evidence-guide-3", "Evidence: selected source trace");
+
+  // - priority_update_max: 150 ms
+
+  testStepFail("oracle-hook", "Draft skeleton only. Connect concrete stimulus/oracle hooks before enabling this testcase.");
+
+  resetValidationHarnessIfNeeded();
+}

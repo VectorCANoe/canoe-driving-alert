@@ -1,0 +1,8 @@
+version: 2.2.0
+
+test-tree:
+  - test-fixture: CanBusArbitrationPriority
+    description: Draft skeleton for verify lower CAN ID wins bus arbitration under contention.
+    elements:
+      - capl-test-case: TC_CANOE_NET_001_CAN_BUS_ARBITRATION_PRIORITY
+        title: TC_CANOE_NET_001_CAN_BUS_ARBITRATION_PRIORITY

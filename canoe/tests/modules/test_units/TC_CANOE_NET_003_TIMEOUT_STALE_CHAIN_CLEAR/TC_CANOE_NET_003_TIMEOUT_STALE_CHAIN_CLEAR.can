@@ -1,0 +1,33 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\common\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+}
+
+export testcase TC_CANOE_NET_003_TIMEOUT_STALE_CHAIN_CLEAR()
+{
+  // Dev2 blueprint intent: verify stale or timeout chain results in one safe clear/downgrade
+  // Pack: network_gateway_core_4
+  // Draft skeleton only: Dev1 must bind exact runtime messages/signals/asserts before enabling this asset in the mandatory suite.
+  // No fixed scenarioId is assigned for this network/diagnostic asset.
+  // Dev1 must inject the matching traffic/request path before wiring concrete oracle asserts.
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  testStepPass("blueprint-intent", "Intent: verify stale or timeout chain results in one safe clear/downgrade");
+  testStepPass("oracle-guide-1", "Expected: timeout detected");
+  testStepPass("oracle-guide-2", "Expected: clear/downgrade transition reached");
+  testStepPass("oracle-guide-3", "Expected: no duplicate flip-flop");
+  testStepPass("evidence-guide-1", "Evidence: path health snapshot");
+  testStepPass("evidence-guide-2", "Evidence: timeout transition trace");
+
+  testStepFail("oracle-hook", "Draft skeleton only. Connect concrete stimulus/oracle hooks before enabling this testcase.");
+
+  resetValidationHarnessIfNeeded();
+}

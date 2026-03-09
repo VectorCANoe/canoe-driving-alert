@@ -1,0 +1,33 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\common\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+}
+
+export testcase TC_CANOE_NET_002_GW_ROUTE_FORWARDING_INTEGRITY()
+{
+  // Dev2 blueprint intent: verify gateway forwarding keeps payload and owner integrity
+  // Pack: network_gateway_core_4
+  // Draft skeleton only: Dev1 must bind exact runtime messages/signals/asserts before enabling this asset in the mandatory suite.
+  // No fixed scenarioId is assigned for this network/diagnostic asset.
+  // Dev1 must inject the matching traffic/request path before wiring concrete oracle asserts.
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  testStepPass("blueprint-intent", "Intent: verify gateway forwarding keeps payload and owner integrity");
+  testStepPass("oracle-guide-1", "Expected: payload forward match");
+  testStepPass("oracle-guide-2", "Expected: no illegal owner swap");
+  testStepPass("oracle-guide-3", "Expected: route health valid");
+  testStepPass("evidence-guide-1", "Evidence: source/target timestamps");
+  testStepPass("evidence-guide-2", "Evidence: forwarding latency summary");
+
+  testStepFail("oracle-hook", "Draft skeleton only. Connect concrete stimulus/oracle hooks before enabling this testcase.");
+
+  resetValidationHarnessIfNeeded();
+}

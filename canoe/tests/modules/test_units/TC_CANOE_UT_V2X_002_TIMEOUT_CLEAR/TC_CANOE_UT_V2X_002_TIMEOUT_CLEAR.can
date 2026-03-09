@@ -1,0 +1,42 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\common\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+}
+
+export testcase TC_CANOE_UT_V2X_002_TIMEOUT_CLEAR()
+{
+  // Dev2 blueprint intent: timeout clear and stale robustness
+  // Pack: native_functional_6
+  // Draft skeleton only: Dev1 must bind exact runtime messages/signals/asserts before enabling this asset in the mandatory suite.
+  // Scenario ID: 6
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  if (!launchScenarioAndWait(6, 1500, 1200))
+  {
+    return;
+  }
+
+  testStepPass("blueprint-intent", "Intent: timeout clear and stale robustness");
+  testStepPass("oracle-guide-1", "Expected: scenario result pass");
+  testStepPass("oracle-guide-2", "Expected: timeout detected");
+  testStepPass("oracle-guide-3", "Expected: warning safely clears");
+  testStepPass("oracle-guide-4", "Expected: no post-clear oscillation");
+  testStepPass("evidence-guide-1", "Evidence: .vtestreport");
+  testStepPass("evidence-guide-2", "Evidence: timeout snapshot");
+  testStepPass("evidence-guide-3", "Evidence: clear trace");
+
+  // - stale_window: 1000 ms
+  // - clear_reflect_max: 150 ms
+
+  testStepFail("oracle-hook", "Draft skeleton only. Connect concrete stimulus/oracle hooks before enabling this testcase.");
+
+  resetValidationHarnessIfNeeded();
+}

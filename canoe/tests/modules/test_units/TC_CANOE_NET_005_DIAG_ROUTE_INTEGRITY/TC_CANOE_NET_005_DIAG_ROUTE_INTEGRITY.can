@@ -1,0 +1,35 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\common\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+}
+
+export testcase TC_CANOE_NET_005_DIAG_ROUTE_INTEGRITY()
+{
+  // Dev2 blueprint intent: verify diagnostic request/response routing is owner-safe and traceable
+  // Pack: network_plus_diag_draft_5
+  // Draft skeleton only: Dev1 must bind exact runtime messages/signals/asserts before enabling this asset in the mandatory suite.
+  // No fixed scenarioId is assigned for this network/diagnostic asset.
+  // Dev1 must inject the matching traffic/request path before wiring concrete oracle asserts.
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  testStepPass("blueprint-intent", "Intent: verify diagnostic request/response routing is owner-safe and traceable");
+  testStepPass("oracle-guide-1", "Expected: request reaches target route");
+  testStepPass("oracle-guide-2", "Expected: response returns expected route");
+  testStepPass("oracle-guide-3", "Expected: no wrong-surface leakage");
+  testStepPass("oracle-guide-4", "Expected: timeout/failure path reported correctly");
+  testStepPass("evidence-guide-1", "Evidence: diagnostic trace capture");
+  testStepPass("evidence-guide-2", "Evidence: request/response timestamps");
+  testStepPass("evidence-guide-3", "Evidence: route path summary");
+
+  testStepFail("oracle-hook", "Draft skeleton only. Connect concrete stimulus/oracle hooks before enabling this testcase.");
+
+  resetValidationHarnessIfNeeded();
+}

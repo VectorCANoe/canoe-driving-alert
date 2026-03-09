@@ -1,0 +1,8 @@
+version: 2.2.0
+
+test-tree:
+  - test-fixture: LoadPeriodJitterStability
+    description: Draft skeleton for verify period and jitter stay inside tolerance under load.
+    elements:
+      - capl-test-case: TC_CANOE_NET_004_LOAD_PERIOD_JITTER_STABILITY
+        title: TC_CANOE_NET_004_LOAD_PERIOD_JITTER_STABILITY

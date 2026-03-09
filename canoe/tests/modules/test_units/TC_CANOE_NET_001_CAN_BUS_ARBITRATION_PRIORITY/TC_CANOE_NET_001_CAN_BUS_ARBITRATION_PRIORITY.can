@@ -1,0 +1,33 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\common\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+}
+
+export testcase TC_CANOE_NET_001_CAN_BUS_ARBITRATION_PRIORITY()
+{
+  // Dev2 blueprint intent: verify lower CAN ID wins bus arbitration under contention
+  // Pack: network_gateway_core_4
+  // Draft skeleton only: Dev1 must bind exact runtime messages/signals/asserts before enabling this asset in the mandatory suite.
+  // No fixed scenarioId is assigned for this network/diagnostic asset.
+  // Dev1 must inject the matching traffic/request path before wiring concrete oracle asserts.
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  testStepPass("blueprint-intent", "Intent: verify lower CAN ID wins bus arbitration under contention");
+  testStepPass("oracle-guide-1", "Expected: lower CAN ID wins");
+  testStepPass("oracle-guide-2", "Expected: higher CAN ID retries");
+  testStepPass("oracle-guide-3", "Expected: no frame corruption");
+  testStepPass("evidence-guide-1", "Evidence: trace capture");
+  testStepPass("evidence-guide-2", "Evidence: bus statistics");
+
+  testStepFail("oracle-hook", "Draft skeleton only. Connect concrete stimulus/oracle hooks before enabling this testcase.");
+
+  resetValidationHarnessIfNeeded();
+}
