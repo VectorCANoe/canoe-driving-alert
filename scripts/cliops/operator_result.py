@@ -121,9 +121,19 @@ def _artifact_candidates(command_id: str, args: argparse.Namespace) -> list[Path
                 [
                     ROOT / "product" / "sdv_operator" / "config" / "surface_ecu_inventory.json",
                     ROOT / "product" / "sdv_operator" / "config" / "campaign_profiles.json",
+                    ROOT / "product" / "sdv_operator" / "config" / "capability_boundary_matrix.json",
                     ROOT / "product" / "sdv_operator" / "config" / "surface_traceability_profile.json",
                     ROOT / "product" / "sdv_operator" / "config" / "verification_artifact_layout.json",
                     ROOT / "product" / "sdv_operator" / "docs-src" / "role-boundary.md",
+                    ROOT / "product" / "sdv_operator" / "docs-src" / "capability-boundary.md",
+                ]
+            )
+        elif scope == "build":
+            paths.extend(
+                [
+                    ROOT / "dist",
+                    ROOT / "build",
+                    ROOT / "product" / "sdv_operator" / "site",
                 ]
             )
         elif scope == "archive":
@@ -139,6 +149,7 @@ def _artifact_candidates(command_id: str, args: argparse.Namespace) -> list[Path
             "doctor": VERIFICATION_ROOT / "doctor_report.md",
             "surface-inventory": ROOT / "product" / "sdv_operator" / "config" / "surface_ecu_inventory.json",
             "campaign-profiles": ROOT / "product" / "sdv_operator" / "config" / "campaign_profiles.json",
+            "capability-matrix-json": ROOT / "product" / "sdv_operator" / "config" / "capability_boundary_matrix.json",
             "traceability-profile": ROOT / "product" / "sdv_operator" / "config" / "surface_traceability_profile.json",
             "artifact-layout": ROOT / "product" / "sdv_operator" / "config" / "verification_artifact_layout.json",
             "phase-policy": ROOT / "product" / "sdv_operator" / "config" / "verification_phase_policy.json",
@@ -147,10 +158,13 @@ def _artifact_candidates(command_id: str, args: argparse.Namespace) -> list[Path
             "results-doc": ROOT / "product" / "sdv_operator" / "docs-src" / "results.md",
             "packaging-doc": ROOT / "product" / "sdv_operator" / "docs-src" / "packaging.md",
             "role-boundary-doc": ROOT / "product" / "sdv_operator" / "docs-src" / "role-boundary.md",
+            "capability-matrix-doc": ROOT / "product" / "sdv_operator" / "docs-src" / "capability-boundary.md",
         }
         resolved = target_map.get(target)
         if resolved:
             paths.append(resolved)
+        elif target == "build-root":
+            paths.append(ROOT / "dist")
         elif target in {"execution-manifest", "archive-run", "reports-dir", "surface-dir", "native-reports"}:
             paths.append(ROOT / "artifacts" / "verification_runs")
     return paths

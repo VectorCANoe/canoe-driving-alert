@@ -412,6 +412,7 @@ class SdvTuiApp(App[None]):
         margin-right: 1;
         background: #17202b;
         border: round #33536f;
+        width: 1fr;
     }
 
     .automation-card:last-child {
@@ -419,8 +420,14 @@ class SdvTuiApp(App[None]):
     }
 
     #automation-actions {
-        height: 3;
+        height: 7;
         margin-top: 1;
+    }
+
+    #automation-actions-primary,
+    #automation-actions-secondary {
+        height: 3;
+        margin-bottom: 1;
     }
 
     #automation-actions Button {
@@ -464,6 +471,7 @@ class SdvTuiApp(App[None]):
         margin-right: 1;
         background: #17202b;
         border: round #33536f;
+        width: 1fr;
     }
 
     .artifact-card:last-child {
@@ -471,8 +479,14 @@ class SdvTuiApp(App[None]):
     }
 
     #artifact-actions {
-        height: 3;
+        height: 7;
         margin-top: 1;
+    }
+
+    #artifact-actions-primary,
+    #artifact-actions-secondary {
+        height: 3;
+        margin-bottom: 1;
     }
 
     #artifact-actions Button {
@@ -680,7 +694,7 @@ class SdvTuiApp(App[None]):
                     with Vertical(id="page-artifacts", classes="page hidden"):
                         yield Static(
                             "Artifacts 화면은 생성 산출물과 원본 계약 파일을 분리해서 보여줍니다. "
-                            "staging은 작업면, archive는 최종 보관, source는 원본 기준입니다.",
+                            "staging은 작업면, archive는 최종 보관, source는 원본 기준, build는 배포 출력입니다.",
                             id="artifacts-overview",
                         )
                         with Horizontal(id="artifact-strip"):
@@ -693,16 +707,22 @@ class SdvTuiApp(App[None]):
                             with Vertical(classes="artifact-card"):
                                 yield Static("Source Contracts", classes="summary-title")
                                 yield Static(id="artifact-source-body")
-                        with Horizontal(id="artifact-actions"):
-                            yield Button("최근 증빙 열기", id="artifact-open-latest", variant="success")
-                            yield Button("native report 열기", id="artifact-open-native")
-                            yield Button("execution manifest", id="artifact-open-manifest")
-                            yield Button("최신 archive 열기", id="artifact-open-archive")
-                            yield Button("원본 기준 열기", id="artifact-open-source")
-                            yield Button("staging 정리", id="artifact-clean-staging", variant="warning")
+                            with Vertical(classes="artifact-card"):
+                                yield Static("Build Outputs", classes="summary-title")
+                                yield Static(id="artifact-build-body")
+                        with Vertical(id="artifact-actions"):
+                            with Horizontal(id="artifact-actions-primary"):
+                                yield Button("최근 증빙 열기", id="artifact-open-latest", variant="success")
+                                yield Button("native report 열기", id="artifact-open-native")
+                                yield Button("execution manifest", id="artifact-open-manifest")
+                                yield Button("최신 archive 열기", id="artifact-open-archive")
+                            with Horizontal(id="artifact-actions-secondary"):
+                                yield Button("원본 기준 열기", id="artifact-open-source")
+                                yield Button("빌드 출력 열기", id="artifact-open-build")
+                                yield Button("staging 정리", id="artifact-clean-staging", variant="warning")
                         yield Static(
                             "원칙: staging은 재생성 가능한 작업 산출물, archive는 reviewer/Jenkins 보관물, "
-                            "source는 결과가 의존하는 원본 계약 파일입니다.",
+                            "source는 결과가 의존하는 원본 계약 파일, build는 배포 출력입니다.",
                             id="artifacts-hint",
                         )
                     with Vertical(id="page-automation", classes="page hidden"):
@@ -734,14 +754,17 @@ class SdvTuiApp(App[None]):
                                     "같은 run 기준으로 열어 reviewer가 따라갈 수 있게 합니다.",
                                     id="automation-native-body",
                                 )
-                        with Horizontal(id="automation-actions"):
-                            yield Button("검증 배치 준비", id="automation-batch", variant="success")
-                            yield Button("CI bridge 문서", id="automation-open-ci")
-                            yield Button("역할 경계", id="automation-open-role")
-                            yield Button("Jenkins 샘플", id="automation-open-jenkins")
-                            yield Button("패키징 계약 점검", id="automation-contract")
-                            yield Button("native report 열기", id="automation-open-native")
-                            yield Button("최신 archive 열기", id="automation-open-archive")
+                        with Vertical(id="automation-actions"):
+                            with Horizontal(id="automation-actions-primary"):
+                                yield Button("검증 배치 준비", id="automation-batch", variant="success")
+                                yield Button("CI bridge 문서", id="automation-open-ci")
+                                yield Button("역할 경계", id="automation-open-role")
+                                yield Button("Capability boundary", id="automation-open-capability")
+                            with Horizontal(id="automation-actions-secondary"):
+                                yield Button("Jenkins 샘플", id="automation-open-jenkins")
+                                yield Button("패키징 계약 점검", id="automation-contract")
+                                yield Button("native report 열기", id="automation-open-native")
+                                yield Button("최신 archive 열기", id="automation-open-archive")
                         with Horizontal(id="automation-profiles"):
                             yield Button("Quick smoke profile", id="automation-profile-quick")
                             yield Button("CI preflight profile", id="automation-profile-ci")
@@ -750,7 +773,7 @@ class SdvTuiApp(App[None]):
                             yield Button("Profile 원본", id="automation-open-profiles")
                         yield Static(
                             "원칙: CANoe TEST를 대체하지 않고, Jenkins를 복제하지 않습니다. "
-                            "Console은 campaign/evidence/CI bridge만 담당합니다. 반복 실행 정책은 profile로 정의하고 scheduler는 Jenkins가 맡습니다.",
+                            "Console은 campaign/evidence/CI bridge만 담당합니다. capability boundary와 role boundary 문서가 이 경계를 source contract로 고정합니다.",
                             id="automation-hint",
                         )
                 with Vertical(id="log-dock"):
@@ -1037,9 +1060,22 @@ class SdvTuiApp(App[None]):
         for candidate in (
             ROOT / "product" / "sdv_operator" / "config" / "surface_ecu_inventory.json",
             ROOT / "product" / "sdv_operator" / "config" / "campaign_profiles.json",
+            ROOT / "product" / "sdv_operator" / "config" / "capability_boundary_matrix.json",
             ROOT / "product" / "sdv_operator" / "config" / "surface_traceability_profile.json",
             ROOT / "product" / "sdv_operator" / "config" / "verification_artifact_layout.json",
             ROOT / "product" / "sdv_operator" / "docs-src" / "role-boundary.md",
+            ROOT / "product" / "sdv_operator" / "docs-src" / "capability-boundary.md",
+        ):
+            marker = "OK" if candidate.exists() else "MISS"
+            lines.append(f"- [{marker}] {self._relpath(candidate)}")
+        return "\n".join(lines)
+
+    def _summarize_artifact_build(self) -> str:
+        lines = []
+        for candidate in (
+            ROOT / "dist",
+            ROOT / "build",
+            ROOT / "product" / "sdv_operator" / "site",
         ):
             marker = "OK" if candidate.exists() else "MISS"
             lines.append(f"- [{marker}] {self._relpath(candidate)}")
@@ -1050,6 +1086,7 @@ class SdvTuiApp(App[None]):
             self.query_one("#artifact-staging-body", Static).update(self._summarize_artifact_staging())
             self.query_one("#artifact-archive-body", Static).update(self._summarize_artifact_archive())
             self.query_one("#artifact-source-body", Static).update(self._summarize_artifact_source())
+            self.query_one("#artifact-build-body", Static).update(self._summarize_artifact_build())
         except NoMatches:
             return
 
@@ -1412,10 +1449,14 @@ class SdvTuiApp(App[None]):
                 return [
                     "product/sdv_operator/config/surface_ecu_inventory.json",
                     "product/sdv_operator/config/campaign_profiles.json",
+                    "product/sdv_operator/config/capability_boundary_matrix.json",
                     "product/sdv_operator/config/surface_traceability_profile.json",
                     "product/sdv_operator/config/verification_artifact_layout.json",
                     "product/sdv_operator/docs-src/role-boundary.md",
+                    "product/sdv_operator/docs-src/capability-boundary.md",
                 ]
+            if scope == "build":
+                return ["dist", "build", "product/sdv_operator/site"]
             if scope == "archive":
                 return ["artifacts/verification_runs"]
             return ["canoe/tmp/reports/verification"]
@@ -1427,6 +1468,7 @@ class SdvTuiApp(App[None]):
                 "doctor": "canoe/tmp/reports/verification/doctor_report.md",
                 "surface-inventory": "product/sdv_operator/config/surface_ecu_inventory.json",
                 "campaign-profiles": "product/sdv_operator/config/campaign_profiles.json",
+                "capability-matrix-json": "product/sdv_operator/config/capability_boundary_matrix.json",
                 "traceability-profile": "product/sdv_operator/config/surface_traceability_profile.json",
                 "artifact-layout": "product/sdv_operator/config/verification_artifact_layout.json",
                 "phase-policy": "product/sdv_operator/config/verification_phase_policy.json",
@@ -1435,11 +1477,13 @@ class SdvTuiApp(App[None]):
                 "results-doc": "product/sdv_operator/docs-src/results.md",
                 "packaging-doc": "product/sdv_operator/docs-src/packaging.md",
                 "role-boundary-doc": "product/sdv_operator/docs-src/role-boundary.md",
+                "capability-matrix-doc": "product/sdv_operator/docs-src/capability-boundary.md",
                 "execution-manifest": "artifacts/verification_runs",
                 "archive-run": "artifacts/verification_runs",
                 "reports-dir": "artifacts/verification_runs",
                 "surface-dir": "artifacts/verification_runs",
                 "native-reports": "artifacts/verification_runs",
+                "build-root": "dist",
             }
             resolved = mapping.get(target, "")
             return [resolved] if resolved else []
@@ -1730,6 +1774,8 @@ class SdvTuiApp(App[None]):
         command_id = self._last_command_id()
         if command_id.startswith("package.") or command_id.startswith("artifact.open_artifact_layout"):
             return ROOT / "product" / "sdv_operator" / "config" / "verification_artifact_layout.json"
+        if command_id.startswith("artifact.open_capability_matrix_json") or command_id.startswith("artifact.open_capability_boundary_doc"):
+            return ROOT / "product" / "sdv_operator" / "config" / "capability_boundary_matrix.json"
         if command_id.startswith("verify.surface_bundle") or command_id.startswith("artifact.open_source_inventory"):
             return ROOT / "product" / "sdv_operator" / "config" / "surface_ecu_inventory.json"
         if command_id.startswith("verify.") or command_id.startswith("operate.") or command_id.startswith("inspect."):
@@ -1813,6 +1859,9 @@ class SdvTuiApp(App[None]):
     def action_open_campaign_profiles(self) -> None:
         self._open_static_target(ROOT / "product" / "sdv_operator" / "config" / "campaign_profiles.json")
 
+    def action_open_capability_boundary(self) -> None:
+        self._open_static_target(ROOT / "product" / "sdv_operator" / "docs-src" / "capability-boundary.md")
+
     def action_open_jenkins_sample(self) -> None:
         self._open_static_target(ROOT / "product" / "sdv_operator" / "examples" / "Jenkinsfile.verify")
 
@@ -1848,6 +1897,9 @@ class SdvTuiApp(App[None]):
             self._write_log(artifact_opened(str(target)))
         except Exception as ex:
             self._write_log(artifact_open_failed(ex))
+
+    def action_open_build_root(self) -> None:
+        self._open_static_target(ROOT / "dist")
 
     def action_copy_artifact(self) -> None:
         target = self._resolve_artifact_target()
@@ -2259,6 +2311,8 @@ class SdvTuiApp(App[None]):
             self.action_open_latest_archive()
         elif event.button.id == "artifact-open-source":
             self.action_open_source_contract()
+        elif event.button.id == "artifact-open-build":
+            self.action_open_build_root()
         elif event.button.id == "artifact-clean-staging":
             self.action_clean_staging_now()
         elif event.button.id == "automation-batch":
@@ -2267,6 +2321,8 @@ class SdvTuiApp(App[None]):
             self.action_open_ci_bridge_doc()
         elif event.button.id == "automation-open-role":
             self.action_open_role_boundary_doc()
+        elif event.button.id == "automation-open-capability":
+            self.action_open_capability_boundary()
         elif event.button.id == "automation-open-jenkins":
             self.action_open_jenkins_sample()
         elif event.button.id == "automation-profile-quick":

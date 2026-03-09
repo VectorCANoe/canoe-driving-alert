@@ -15,6 +15,7 @@ Campaign / CI 확장 표면:
 python scripts/run.py verify batch --run-id 20260310_0900 --campaign-id CMP_20260310 --owner DEV2 --phase pre --surface-scope ALL --repeat-count 1 --duration-minutes 0 --interval-seconds 0 --report-formats json,md,junit
 python scripts/run.py artifact open --target campaign-profiles
 python scripts/run.py artifact open --target role-boundary-doc
+python scripts/run.py artifact open --target capability-matrix-doc
 ```
 
 ## 핵심 4개
@@ -249,11 +250,14 @@ python scripts/run.py canoe capl-call --function-name MyFunction --args 1 2 --ar
 python scripts/run.py artifact list --scope staging
 python scripts/run.py artifact list --scope archive --latest
 python scripts/run.py artifact list --scope source
+python scripts/run.py artifact list --scope build
 python scripts/run.py artifact open --target surface-bundle
 python scripts/run.py artifact open --target execution-manifest --latest
 python scripts/run.py artifact open --target native-reports --latest
 python scripts/run.py artifact open --target surface-inventory
+python scripts/run.py artifact open --target capability-matrix-json
 python scripts/run.py artifact open --target results-doc
+python scripts/run.py artifact open --target build-root
 python scripts/run.py package validate-contract
 python scripts/run.py package clean --scope staging --yes
 python scripts/run.py package build-exe --mode onefolder --clean

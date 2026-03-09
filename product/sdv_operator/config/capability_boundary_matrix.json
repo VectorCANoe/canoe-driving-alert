@@ -1,0 +1,65 @@
+﻿{
+  "schema": "sdv.verification.capability.boundary.v1",
+  "owner": "Dev2",
+  "principle": "use CANoe TEST for native test authoring/execution, Jenkins for scheduling/archive, Console for campaign/evidence/review surface",
+  "systems": [
+    {
+      "system": "CANoe TEST",
+      "owns": [
+        "native test authoring",
+        "test module / test unit / test case execution",
+        "native .vtestreport generation",
+        "CANoe-internal stimulus / measurement / verdict"
+      ],
+      "does_not_own": [
+        "campaign metadata policy",
+        "surface ECU rollup",
+        "execution manifest",
+        "Jenkins scheduler / archive policy"
+      ]
+    },
+    {
+      "system": "Jenkins",
+      "owns": [
+        "schedule / nightly / periodic trigger",
+        "retry / timeout / stage orchestration",
+        "JUnit ingest",
+        "archiveArtifacts / build history"
+      ],
+      "does_not_own": [
+        "CANoe native semantics",
+        "surface ECU evidence normalization",
+        "execution manifest semantics",
+        "source contract interpretation"
+      ]
+    },
+    {
+      "system": "CANoe Test Verification Console",
+      "owns": [
+        "campaign metadata",
+        "doctor / gate / scenario / verify orchestration",
+        "surface ECU evidence bundle",
+        "execution manifest",
+        "artifact navigation",
+        "CI bridge inputs for Jenkins"
+      ],
+      "does_not_own": [
+        "native test authoring",
+        "Jenkins scheduling",
+        "Jenkins artifact retention policy"
+      ]
+    }
+  ],
+  "top_level_sections": [
+    "Overview",
+    "Campaign",
+    "Results",
+    "Artifacts",
+    "Automation"
+  ],
+  "notes": [
+    "Logs are a support pane, not a first-class product section.",
+    "Campaign profiles define execution defaults, not scheduler ownership.",
+    "Surface ECU is the reviewer-facing key; runtime modules remain implementation-facing."
+  ]
+}

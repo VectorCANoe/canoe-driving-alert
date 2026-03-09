@@ -306,7 +306,7 @@ def add_package_clean_args(p: argparse.ArgumentParser, handlers: HandlerMap) -> 
 
 
 def add_artifact_list_args(p: argparse.ArgumentParser, handlers: HandlerMap) -> None:
-    p.add_argument("--scope", choices=["staging", "archive", "source"], default="staging")
+    p.add_argument("--scope", choices=["staging", "archive", "source", "build"], default="staging")
     p.add_argument("--run-id", default="", help="Archive run ID or evidence run ID")
     p.add_argument("--phase", choices=["pre", "post", "full"], default="", help="Optional archive phase")
     p.add_argument("--latest", action="store_true", help="Resolve the most recent archive run automatically")
@@ -325,6 +325,7 @@ def add_artifact_open_args(p: argparse.ArgumentParser, handlers: HandlerMap) -> 
             "doctor",
             "surface-inventory",
             "campaign-profiles",
+            "capability-matrix-json",
             "traceability-profile",
             "artifact-layout",
             "phase-policy",
@@ -334,7 +335,9 @@ def add_artifact_open_args(p: argparse.ArgumentParser, handlers: HandlerMap) -> 
             "packaging-doc",
             "ci-bridge-doc",
             "role-boundary-doc",
+            "capability-matrix-doc",
             "jenkinsfile-sample",
+            "build-root",
             "archive-run",
             "reports-dir",
             "surface-dir",

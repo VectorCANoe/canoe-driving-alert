@@ -653,6 +653,22 @@ PRODUCT_COMMAND_GROUPS: dict[str, list[PaletteCommand]] = {
             next_step="원본 파일 검토가 필요하면 artifact open으로 바로 여십시오.",
         ),
         PaletteCommand(
+            command_id="artifact.list_build_outputs",
+            title="빌드 출력 목록",
+            command="artifact list --scope build",
+            summary="dist/build/site 같은 생성 출력 경로를 한 번에 확인합니다.",
+            use_when=(
+                "portable ZIP, exe, docs site가 현재 어디까지 생성됐는지 점검할 때",
+            ),
+            success_signals=("dist/build/site 경로가 상태와 함께 표시됨",),
+            expected_outputs=(
+                "dist",
+                "build",
+                "product/sdv_operator/site",
+            ),
+            next_step="필요한 경우 build-root를 열거나 package.clean으로 정리하십시오.",
+        ),
+        PaletteCommand(
             command_id="artifact.open_surface_bundle",
             title="표면 ECU 결과 열기",
             command="artifact open --target surface-bundle",
@@ -728,6 +744,18 @@ PRODUCT_COMMAND_GROUPS: dict[str, list[PaletteCommand]] = {
             next_step="필요하면 role boundary 문서와 함께 Jenkins/Console 경계를 확인하십시오.",
         ),
         PaletteCommand(
+            command_id="artifact.open_capability_matrix_json",
+            title="원본 capability matrix 열기",
+            command="artifact open --target capability-matrix-json",
+            summary="CANoe TEST / Jenkins / Console 역할 경계 원본 JSON을 바로 엽니다.",
+            use_when=(
+                "제품 역할 경계를 source contract 기준으로 다시 확인할 때",
+            ),
+            success_signals=("capability_boundary_matrix.json이 열림",),
+            expected_outputs=("product/sdv_operator/config/capability_boundary_matrix.json",),
+            next_step="설명용 capability boundary 문서와 함께 검토하십시오.",
+        ),
+        PaletteCommand(
             command_id="artifact.open_traceability_profile",
             title="원본 traceability profile 열기",
             command="artifact open --target traceability-profile",
@@ -749,6 +777,18 @@ PRODUCT_COMMAND_GROUPS: dict[str, list[PaletteCommand]] = {
             success_signals=("role-boundary.md가 열림",),
             expected_outputs=("product/sdv_operator/docs-src/role-boundary.md",),
             next_step="campaign profiles와 CI bridge 문서를 함께 확인하십시오.",
+        ),
+        PaletteCommand(
+            command_id="artifact.open_capability_boundary_doc",
+            title="Capability boundary 문서 열기",
+            command="artifact open --target capability-matrix-doc",
+            summary="CANoe TEST가 하는 일, Jenkins가 하는 일, Console이 하는 일을 한 문서에서 확인합니다.",
+            use_when=(
+                "이 콘솔이 무엇을 추가로 제공하는지 다시 설명해야 할 때",
+            ),
+            success_signals=("capability-boundary.md가 열림",),
+            expected_outputs=("product/sdv_operator/docs-src/capability-boundary.md",),
+            next_step="role boundary, campaign profiles, CI bridge를 같이 열어 경계를 확정하십시오.",
         ),
         PaletteCommand(
             command_id="artifact.open_artifact_layout",
@@ -783,6 +823,18 @@ PRODUCT_COMMAND_GROUPS: dict[str, list[PaletteCommand]] = {
             success_signals=("Jenkinsfile.verify가 열림",),
             expected_outputs=("product/sdv_operator/examples/Jenkinsfile.verify",),
             next_step="CI bridge 문서와 함께 역할 경계를 확인하십시오.",
+        ),
+        PaletteCommand(
+            command_id="artifact.open_build_root",
+            title="빌드 출력 폴더 열기",
+            command="artifact open --target build-root",
+            summary="dist 기준 빌드 출력 폴더를 바로 엽니다.",
+            use_when=(
+                "portable ZIP, exe, docs site 결과물을 파일 탐색기로 바로 확인할 때",
+            ),
+            success_signals=("dist 폴더가 열림",),
+            expected_outputs=("dist",),
+            next_step="필요하면 build 출력 목록이나 packaging 계약 점검으로 이어가십시오.",
         ),
         PaletteCommand(
             command_id="package.validate_contract",

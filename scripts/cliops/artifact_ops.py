@@ -84,12 +84,22 @@ def _source_entries(layout: dict) -> list[Path]:
         ROOT / "product" / "sdv_operator" / "manifest.json",
         ROOT / "product" / "sdv_operator" / "config" / "surface_ecu_inventory.json",
         ROOT / "product" / "sdv_operator" / "config" / "campaign_profiles.json",
+        ROOT / "product" / "sdv_operator" / "config" / "capability_boundary_matrix.json",
         ROOT / "product" / "sdv_operator" / "config" / "surface_traceability_profile.json",
         ROOT / "product" / "sdv_operator" / "config" / "verification_phase_policy.json",
         ROOT / "product" / "sdv_operator" / "docs-src" / "commands.md",
         ROOT / "product" / "sdv_operator" / "docs-src" / "results.md",
         ROOT / "product" / "sdv_operator" / "docs-src" / "packaging.md",
         ROOT / "product" / "sdv_operator" / "docs-src" / "role-boundary.md",
+        ROOT / "product" / "sdv_operator" / "docs-src" / "capability-boundary.md",
+    ]
+
+
+def _build_entries() -> list[Path]:
+    return [
+        ROOT / "dist",
+        ROOT / "build",
+        ROOT / "product" / "sdv_operator" / "site",
     ]
 
 
@@ -154,6 +164,8 @@ def _resolve_open_target(layout: dict, target: str, run_id: str, phase: str, lat
         return ROOT / "product" / "sdv_operator" / "config" / "surface_ecu_inventory.json"
     if target == "campaign-profiles":
         return ROOT / "product" / "sdv_operator" / "config" / "campaign_profiles.json"
+    if target == "capability-matrix-json":
+        return ROOT / "product" / "sdv_operator" / "config" / "capability_boundary_matrix.json"
     if target == "traceability-profile":
         return ROOT / "product" / "sdv_operator" / "config" / "surface_traceability_profile.json"
     if target == "artifact-layout":
@@ -172,8 +184,12 @@ def _resolve_open_target(layout: dict, target: str, run_id: str, phase: str, lat
         return ROOT / "product" / "sdv_operator" / "docs-src" / "ci-bridge.md"
     if target == "role-boundary-doc":
         return ROOT / "product" / "sdv_operator" / "docs-src" / "role-boundary.md"
+    if target == "capability-matrix-doc":
+        return ROOT / "product" / "sdv_operator" / "docs-src" / "capability-boundary.md"
     if target == "jenkinsfile-sample":
         return ROOT / "product" / "sdv_operator" / "examples" / "Jenkinsfile.verify"
+    if target == "build-root":
+        return ROOT / "dist"
 
     archive_dir = _resolve_archive_dir(layout, run_id, phase, latest)
     if target == "archive-run":
@@ -195,6 +211,8 @@ def cmd_artifact_list(args: argparse.Namespace) -> int:
         return _print_entries("staging outputs", _staging_entries(layout, args.run_id), args.json)
     if args.scope == "source":
         return _print_entries("source contracts", _source_entries(layout), args.json)
+    if args.scope == "build":
+        return _print_entries("build outputs", _build_entries(), args.json)
     return _print_entries("archive outputs", _archive_entries(layout, args.run_id, args.phase, args.latest), args.json)
 
 

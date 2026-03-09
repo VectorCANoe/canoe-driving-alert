@@ -20,8 +20,9 @@
    - JUnit XML
    - Jenkins archive contract
    - sample pipeline: `product/sdv_operator/examples/Jenkinsfile.verify`
-5. 역할 경계 / campaign profile
+5. 역할 경계 / capability boundary / campaign profile
    - CANoe TEST / Jenkins / Console 역할 분리
+   - capability boundary source contract
    - campaign profile source contract
 
 ## One-Line Flow
@@ -46,8 +47,9 @@ python scripts/run.py verify batch --run-id 20260308_0900 --campaign-id CMP_2026
 2. Commands
 3. Results
 4. Role Boundary
-5. Campaign Profiles
-6. CI Bridge
-7. Packaging
-8. Maintenance
-9. Repo Surfaces
+5. Capability Boundary
+6. Campaign Profiles
+7. CI Bridge
+8. Packaging
+9. Maintenance
+10. Repo Surfaces
