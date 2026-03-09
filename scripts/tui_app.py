@@ -1039,6 +1039,16 @@ class SdvTuiApp(App[None]):
         if archive_dir is None:
             return "최근 archive run이 없습니다.\nverify batch 또는 materialize 단계가 끝나면 채워집니다."
         lines = [self._relpath(archive_dir)]
+        execution_manifest = self._latest_execution_manifest_payload()
+        if execution_manifest:
+            execution = execution_manifest.get("execution", {})
+            if isinstance(execution, dict):
+                lines.append(f"run_id={execution.get('run_id', '-')}")
+                lines.append(f"campaign={execution.get('campaign_id', '-')}")
+                lines.append(f"phase={execution.get('phase', execution_manifest.get('phase', '-'))}")
+                lines.append(f"owner={execution.get('owner', '-')}")
+                lines.append(f"surface={execution.get('surface_scope', '-')}")
+            lines.append("")
         for name in ("reports", "surface", "native_reports", "evidence", "manifests"):
             candidate = archive_dir / name
             marker = "OK" if candidate.exists() else "MISS"
@@ -1053,6 +1063,12 @@ class SdvTuiApp(App[None]):
         if candidate.exists():
             return candidate
         return archive_dir if archive_dir.exists() else None
+
+    def _latest_execution_manifest_payload(self) -> dict[str, object] | None:
+        target = self._resolve_archive_child_target("manifests/execution_manifest.json")
+        if target is None or not target.exists() or target.is_dir():
+            return None
+        return self._load_json_file(target)
 
     def _summarize_artifact_source(self) -> str:
         source_target = self._resolve_source_contract_target()
