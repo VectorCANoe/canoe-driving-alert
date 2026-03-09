@@ -1,4 +1,4 @@
-# V2 Domain CAPL Index
+﻿# V2 Domain CAPL Index
 
 This file documents the active runtime CAPL inventory after wrapper absorption and OEM abbreviation normalization.
 
@@ -12,7 +12,6 @@ This file documents the active runtime CAPL inventory after wrapper absorption a
 
 ### ETH_Backbone
 - `CGW.can`
-- `ETHM.can`
 - `V2X.can`
 - `VAL_SCENARIO_CTRL.can`
 
@@ -29,10 +28,8 @@ This file documents the active runtime CAPL inventory after wrapper absorption a
 ### Powertrain
 - `EMS.can`
 - `TCU.can`
-- `PTGW.can`
 
 ### Chassis
-- `CHGW.can`
 - `VCU.can`
 - `ESC.can`
 - `MDPS.can`
@@ -42,3 +39,4 @@ This file documents the active runtime CAPL inventory after wrapper absorption a
 - active runtime anchors: `14`
 - validation-only nodes: `2`
 - absorbed wrapper-only nodes left in active tree: `0`
+

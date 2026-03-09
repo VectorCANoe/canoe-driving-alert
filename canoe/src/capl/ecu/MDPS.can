@@ -1,39 +1,71 @@
-includes
+﻿includes
 {
+  #include "..\\common\\CAPL_COMMON.cin"
 }
 
 variables
 {
-  msTimer tSteerCycle;
-  int gSteeringState;
+  msTimer tMdpsCycle;
+  int gSteeringInput;
+  int gSpeedNorm;
   int gPrevSteering;
 }
 
 on start
 {
-  gSteeringState = 0;
-  gPrevSteering  = -1;
-  setTimer(tSteerCycle, 50);
+  gSteeringInput = 0;
+  gSpeedNorm = 0;
+  gPrevSteering = -1;
+  setTimer(tMdpsCycle, 50);
   write("[MDPS] start");
 }
 
-on timer tSteerCycle
+on message frmSteeringCanMsg
 {
-  message frmSteeringCanMsg mSteer;
-  int steerInput;
+  gSteeringInput = clampRange((int)this.SteeringInput, 0, 1);
+  @Core::steeringInputNorm = gSteeringInput;
+}
 
-  steerInput = (int)@Chassis::steeringInput;
-  if (steerInput < 0) steerInput = 0;
-  if (steerInput > 1) steerInput = 1;
+on message frmVehicleStateCanMsg
+{
+  gSpeedNorm = clampRange((int)this.gVehicleSpeed, 0, 255);
+}
 
-  if (steerInput != gPrevSteering)
+on timer tMdpsCycle
+{
+  message frmSteeringStateCanMsg mSteerState;
+  message frmSteeringTorqueMsg mSteerTorque;
+  message frmSteeringAngleMsg mSteerAngle;
+  message frmEpsStateMsg mEps;
+  int steeringAngleRaw;
+  int assistLevel;
+  int steeringTorque;
+
+  steeringAngleRaw = gSteeringInput * 30;
+  assistLevel = (gSpeedNorm > 80) ? 1 : 2;
+  steeringTorque = gSteeringInput * 20;
+
+  if (gSteeringInput != gPrevSteering)
   {
-    write("[MDPS] input=%d", steerInput);
-    gPrevSteering = steerInput;
+    write("[MDPS] input=%d assist=%d angle=%d",
+          gSteeringInput, assistLevel, steeringAngleRaw);
+    gPrevSteering = gSteeringInput;
   }
 
-  mSteer.SteeringInput = steerInput;
-  output(mSteer);
+  mSteerState.SteeringState = gSteeringInput;
+  output(mSteerState);
 
-  setTimer(tSteerCycle, 50);
+  mSteerTorque.SteeringTorque = steeringTorque;
+  mSteerTorque.SteeringAssistLv = assistLevel;
+  output(mSteerTorque);
+
+  mSteerAngle.SteeringAngleRaw = steeringAngleRaw;
+  output(mSteerAngle);
+
+  mEps.EpsAssistState = assistLevel;
+  mEps.EpsFaultState = 0;
+  mEps.EpsTemp = 55;
+  output(mEps);
+
+  setTimer(tMdpsCycle, 50);
 }

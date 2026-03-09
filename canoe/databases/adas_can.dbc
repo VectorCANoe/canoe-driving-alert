@@ -1,4 +1,4 @@
-VERSION "ADAS_CAN_v1.0"
+﻿VERSION "ADAS_CAN_v1.0"
 
 
 NS_ :
@@ -30,11 +30,11 @@ NS_ :
 
 BS_:
 
-BU_: ADAS ADAS CHGW VAL_SCENARIO_CTRL BCM IVI Vector__XXX
+BU_: ADAS ADAS ESC VAL_SCENARIO_CTRL BCM IVI Vector__XXX
 
 BO_ 449 frmAdasChassisStatusMsg: 2 ADAS
- SG_ AdasChassisState : 0|8@1+ (1,0) [0|255] "" CHGW
- SG_ AdasHealthLevel  : 8|8@1+ (1,0) [0|255] "" CHGW
+ SG_ AdasChassisState : 0|8@1+ (1,0) [0|255] "" ESC
+ SG_ AdasHealthLevel  : 8|8@1+ (1,0) [0|255] "" ESC
 
 BO_ 451 ethEmergencyRiskMsg: 5 ADAS
  SG_ RiskLevel          : 0|8@1+  (1,0) [0|100] "" ADAS,VAL_SCENARIO_CTRL
@@ -45,11 +45,11 @@ BO_ 451 ethEmergencyRiskMsg: 5 ADAS
  SG_ Reserved0          : 28|12@1+ (1,0) [0|0] "" Vector__XXX
 
 BO_ 452 ethDecelAssistReqMsg: 4 ADAS
- SG_ DecelAssistReq      : 0|1@1+ (1,0) [0|1] "" VAL_SCENARIO_CTRL,CHGW
- SG_ FailSafeMode        : 1|2@1+ (1,0) [0|2] "" VAL_SCENARIO_CTRL,CHGW
- SG_ DriverReleaseReason : 3|2@1+ (1,0) [0|3] "" VAL_SCENARIO_CTRL,CHGW
- SG_ EmergencyContext    : 5|2@1+ (1,0) [0|2] "" VAL_SCENARIO_CTRL,CHGW
- SG_ RiskLevel           : 8|8@1+ (1,0) [0|100] "" VAL_SCENARIO_CTRL,CHGW
+ SG_ DecelAssistReq      : 0|1@1+ (1,0) [0|1] "" VAL_SCENARIO_CTRL,ESC
+ SG_ FailSafeMode        : 1|2@1+ (1,0) [0|2] "" VAL_SCENARIO_CTRL,ESC
+ SG_ DriverReleaseReason : 3|2@1+ (1,0) [0|3] "" VAL_SCENARIO_CTRL,ESC
+ SG_ EmergencyContext    : 5|2@1+ (1,0) [0|2] "" VAL_SCENARIO_CTRL,ESC
+ SG_ RiskLevel           : 8|8@1+ (1,0) [0|100] "" VAL_SCENARIO_CTRL,ESC
  SG_ Reserved0           : 16|16@1+ (1,0) [0|0] "" Vector__XXX
 
 BO_ 518 ethSelectedAlertMsg: 2 ADAS
@@ -136,3 +136,4 @@ VAL_ 453 MergeCutIn 0 "NO" 1 "YES";
 VAL_ 454 ObjectTrackValid 0 "INVALID" 1 "VALID";
 VAL_ 455 IntersectionConflict 0 "NO" 1 "YES";
 VAL_ 455 MergeCutIn 0 "NO" 1 "YES";
+

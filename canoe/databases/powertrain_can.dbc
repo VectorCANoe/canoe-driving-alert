@@ -1,4 +1,4 @@
-VERSION "Powertrain_CAN_v1.0"
+﻿VERSION "Powertrain_CAN_v1.0"
 
 NS_ :
   NS_DESC_
@@ -29,7 +29,7 @@ NS_ :
 
 BS_:
 
-BU_: VAL_SCENARIO_CTRL EMS TCU CHGW PTGW Vector__XXX
+BU_: VAL_SCENARIO_CTRL EMS TCU VCU Vector__XXX
 
 BO_ 680 frmIgnitionEngineMsg: 1 VAL_SCENARIO_CTRL
  SG_ IgnitionState  : 0|1@1+ (1,0) [0|1] "" EMS
@@ -41,30 +41,30 @@ BO_ 681 frmGearStateMsg: 1 VAL_SCENARIO_CTRL
  SG_ GearState      : 3|3@1+ (1,0) [0|7] "" TCU
  SG_ Reserved0      : 6|2@1+ (1,0) [0|0] "" Vector__XXX
 
-BO_ 265 frmPowertrainGatewayMsg: 2 PTGW
+BO_ 265 frmPowertrainGatewayMsg: 2 VCU
  SG_ RoutingPolicy  : 0|8@1+ (1,0) [0|255] "" EMS,TCU
  SG_ BoundaryStatus : 8|8@1+ (1,0) [0|255] "" EMS,TCU
 
 BO_ 298 frmEngineSpeedTempMsg: 4 EMS
- SG_ EngineRpm       : 0|16@1+ (1,0) [0|65535] "rpm" TCU,PTGW
- SG_ CoolantTemp     : 16|8@1+ (1,0) [0|255] "degC" TCU,PTGW
- SG_ OilTemp         : 24|8@1+ (1,0) [0|255] "degC" TCU,PTGW
+ SG_ EngineRpm       : 0|16@1+ (1,0) [0|65535] "rpm" TCU,VCU
+ SG_ CoolantTemp     : 16|8@1+ (1,0) [0|255] "degC" TCU,VCU
+ SG_ OilTemp         : 24|8@1+ (1,0) [0|255] "degC" TCU,VCU
 
 BO_ 299 frmFuelBatteryStateMsg: 3 EMS
- SG_ FuelLevel       : 0|8@1+ (1,0) [0|100] "%" PTGW
- SG_ BatterySoc      : 8|8@1+ (1,0) [0|100] "%" PTGW
- SG_ ChargingState   : 16|2@1+ (1,0) [0|3] "" PTGW
+ SG_ FuelLevel       : 0|8@1+ (1,0) [0|100] "%" VCU
+ SG_ BatterySoc      : 8|8@1+ (1,0) [0|100] "%" VCU
+ SG_ ChargingState   : 16|2@1+ (1,0) [0|3] "" VCU
  SG_ Reserved0       : 18|6@1+ (1,0) [0|0] "" Vector__XXX
 
 BO_ 300 frmThrottleStateMsg: 2 EMS
- SG_ ThrottlePos     : 0|8@1+ (1,0) [0|100] "%" TCU,PTGW
- SG_ ThrottleReq     : 8|8@1+ (1,0) [0|100] "%" TCU,PTGW
+ SG_ ThrottlePos     : 0|8@1+ (1,0) [0|100] "%" TCU,VCU
+ SG_ ThrottleReq     : 8|8@1+ (1,0) [0|100] "%" TCU,VCU
 
 BO_ 301 frmTransmissionTempMsg: 2 TCU
- SG_ TransOilTemp    : 0|8@1+ (1,0) [0|255] "degC" EMS,PTGW
- SG_ ClutchTemp      : 8|8@1+ (1,0) [0|255] "degC" EMS,PTGW
+ SG_ TransOilTemp    : 0|8@1+ (1,0) [0|255] "degC" EMS,VCU
+ SG_ ClutchTemp      : 8|8@1+ (1,0) [0|255] "degC" EMS,VCU
 
-BO_ 266 frmVehicleModeMsg: 2 PTGW
+BO_ 266 frmVehicleModeMsg: 2 VCU
  SG_ DriveMode       : 0|3@1+ (1,0) [0|7] "" EMS,TCU
  SG_ EcoMode         : 3|1@1+ (1,0) [0|1] "" EMS,TCU
  SG_ SportMode       : 4|1@1+ (1,0) [0|1] "" EMS,TCU
@@ -72,54 +72,54 @@ BO_ 266 frmVehicleModeMsg: 2 PTGW
  SG_ Reserved0       : 6|2@1+ (1,0) [0|0] "" Vector__XXX
  SG_ PowertrainState : 8|8@1+ (1,0) [0|255] "" EMS,TCU
 
-BO_ 267 frmPowerLimitMsg: 2 PTGW
+BO_ 267 frmPowerLimitMsg: 2 VCU
  SG_ TorqueLimit     : 0|8@1+ (1,0) [0|255] "Nm" EMS,TCU
  SG_ SpeedLimit      : 8|8@1+ (1,0) [0|255] "km/h" EMS,TCU
 
-BO_ 268 frmCruiseStateMsg: 2 PTGW
+BO_ 268 frmCruiseStateMsg: 2 VCU
  SG_ CruiseState     : 0|2@1+ (1,0) [0|3] "" EMS,TCU
  SG_ GapLevel        : 2|2@1+ (1,0) [0|3] "" EMS,TCU
  SG_ Reserved0       : 4|4@1+ (1,0) [0|0] "" Vector__XXX
  SG_ CruiseSetSpeed  : 8|8@1+ (1,0) [0|255] "km/h" EMS,TCU
 
-BO_ 269 frmPowertrainHealthMsg: 2 PTGW
+BO_ 269 frmPowertrainHealthMsg: 2 VCU
  SG_ PtAliveCnt      : 0|8@1+ (1,0) [0|255] "" VAL_SCENARIO_CTRL
  SG_ PtDiagState     : 8|4@1+ (1,0) [0|15] "" VAL_SCENARIO_CTRL
  SG_ PtFailCode      : 12|4@1+ (1,0) [0|15] "" VAL_SCENARIO_CTRL
 
 BO_ 302 frmEngineTorqueMsg: 2 EMS
- SG_ EngineTorqueAct : 0|16@1+ (1,0) [0|65535] "Nm" PTGW
+ SG_ EngineTorqueAct : 0|16@1+ (1,0) [0|65535] "Nm" VCU
 
 BO_ 303 frmEngineLoadMsg: 1 EMS
- SG_ EngineLoad      : 0|8@1+ (1,0) [0|100] "%" PTGW
+ SG_ EngineLoad      : 0|8@1+ (1,0) [0|100] "%" VCU
 
 BO_ 304 frmTransShiftStateMsg: 2 TCU
- SG_ ShiftState      : 0|3@1+ (1,0) [0|7] "" PTGW
- SG_ ShiftTargetGear : 3|3@1+ (1,0) [0|7] "" PTGW
+ SG_ ShiftState      : 0|3@1+ (1,0) [0|7] "" VCU
+ SG_ ShiftTargetGear : 3|3@1+ (1,0) [0|7] "" VCU
  SG_ Reserved0       : 6|2@1+ (1,0) [0|0] "" Vector__XXX
- SG_ ShiftSlip       : 8|8@1+ (1,0) [0|255] "" PTGW
+ SG_ ShiftSlip       : 8|8@1+ (1,0) [0|255] "" VCU
 
 BO_ 682 frmPtDiagReqMsg: 3 VAL_SCENARIO_CTRL
- SG_ PtDiagServiceId : 0|8@1+ (1,0) [0|255] "" PTGW
- SG_ PtDiagDidHigh   : 8|8@1+ (1,0) [0|255] "" PTGW
- SG_ PtDiagDidLow    : 16|8@1+ (1,0) [0|255] "" PTGW
+ SG_ PtDiagServiceId : 0|8@1+ (1,0) [0|255] "" VCU
+ SG_ PtDiagDidHigh   : 8|8@1+ (1,0) [0|255] "" VCU
+ SG_ PtDiagDidLow    : 16|8@1+ (1,0) [0|255] "" VCU
 
-BO_ 270 frmPtDiagResMsg: 3 PTGW
+BO_ 270 frmPtDiagResMsg: 3 VCU
  SG_ PtDiagRespCode  : 0|8@1+ (1,0) [0|255] "" VAL_SCENARIO_CTRL
  SG_ PtDiagData0     : 8|8@1+ (1,0) [0|255] "" VAL_SCENARIO_CTRL
  SG_ PtDiagData1     : 16|8@1+ (1,0) [0|255] "" VAL_SCENARIO_CTRL
 
 BO_ 305 frmThermalMgmtStateMsg: 2 EMS
- SG_ ThermalMode     : 0|3@1+ (1,0) [0|7] "" PTGW
- SG_ FanDuty         : 3|5@1+ (1,0) [0|31] "" PTGW
- SG_ CoolantTarget   : 8|8@1+ (1,0) [0|255] "degC" PTGW
+ SG_ ThermalMode     : 0|3@1+ (1,0) [0|7] "" VCU
+ SG_ FanDuty         : 3|5@1+ (1,0) [0|31] "" VCU
+ SG_ CoolantTarget   : 8|8@1+ (1,0) [0|255] "degC" VCU
 
-BO_ 271 frmEnergyFlowStateMsg: 2 PTGW
+BO_ 271 frmEnergyFlowStateMsg: 2 VCU
  SG_ EnergyFlowMode  : 0|3@1+ (1,0) [0|7] "" EMS,TCU
  SG_ RegenLevel      : 3|5@1+ (1,0) [0|31] "" EMS,TCU
  SG_ PowerBalance    : 8|8@1+ (1,0) [0|255] "" EMS,TCU
 
-BO_ 272 frmPowertrainCtrlAuthMsg: 1 PTGW
+BO_ 272 frmPowertrainCtrlAuthMsg: 1 VCU
  SG_ CtrlAuthLevel   : 0|3@1+ (1,0) [0|7] "" EMS,TCU
  SG_ CtrlAuthSource  : 3|3@1+ (1,0) [0|7] "" EMS,TCU
  SG_ Reserved0       : 6|2@1+ (1,0) [0|0] "" Vector__XXX
@@ -229,3 +229,4 @@ VAL_ 268 CruiseState
   1 "Standby"
   2 "Active"
   3 "Fault" ;
+

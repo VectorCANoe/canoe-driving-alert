@@ -1,97 +1,165 @@
-includes
+﻿includes
 {
+  #include "..\\common\\CAPL_COMMON.cin"
 }
 
 variables
 {
-  msTimer tBrakeCycle;
+  msTimer tEscCycle;
   int gBrakePedal;
-  int gWheelSpdFL;
+  int gSpeedNorm;
+  int gDriveState;
+  int gSteeringInput;
+  int gChassisAliveCnt;
   int gLastBrakePedal;
   int gLastAssistReq;
+  int gLastDiagServiceId;
+  int gLastDiagDidHigh;
+  int gLastDiagDidLow;
 }
 
 on start
 {
-  gBrakePedal    = 0;
-  gWheelSpdFL    = 0;
+  gBrakePedal = 0;
+  gSpeedNorm = 0;
+  gDriveState = 0;
+  gSteeringInput = 0;
+  gChassisAliveCnt = 0;
   gLastBrakePedal = -1;
   gLastAssistReq = -1;
-  setTimer(tBrakeCycle, 100);
+  gLastDiagServiceId = 0x22;
+  gLastDiagDidHigh = 0xF1;
+  gLastDiagDidLow = 0x00;
+  setTimer(tEscCycle, 100);
   write("[ESC] start");
+}
+
+on message frmVehicleStateCanMsg
+{
+  gSpeedNorm = clampRange((int)this.gVehicleSpeed, 0, 255);
+  gDriveState = clampRange((int)this.gDriveState, 0, 3);
+}
+
+on message frmSteeringCanMsg
+{
+  gSteeringInput = clampRange((int)this.SteeringInput, 0, 1);
 }
 
 on message frmPedalInputCanMsg
 {
-  gBrakePedal = this.BrakePedal;
-  if (gBrakePedal < 0)   gBrakePedal = 0;
-  if (gBrakePedal > 100) gBrakePedal = 100;
+  gBrakePedal = clampRange((int)this.BrakePedal, 0, 100);
+  @Core::brakePedalNorm = gBrakePedal;
 }
 
-on message frmWheelSpeedMsg
+on message frmChassisDiagReqMsg
 {
-  gWheelSpdFL = this.WheelSpdFL;
+  gLastDiagServiceId = clampRange((int)this.ChsDiagServiceId, 0, 255);
+  gLastDiagDidHigh = clampRange((int)this.ChsDiagDidHigh, 0, 255);
+  gLastDiagDidLow = clampRange((int)this.ChsDiagDidLow, 0, 255);
 }
 
-on timer tBrakeCycle
+on timer tEscCycle
 {
-  message frmBrakeStatusMsg mStatus;
-  message frmAbsStateMsg    mAbs;
-  message frmEscStateMsg    mEsc;
-  message frmBrakeTempMsg   mTemp;
-  message frmBrakeWearMsg   mWear;
+  message frmWheelSpeedMsg mWheelSpd;
+  message frmYawAccelMsg mYawAccel;
+  message frmBrakeStatusMsg mBrakeStatus;
+  message frmChassisHealthMsg mHealth;
+  message frmAbsStateMsg mAbs;
+  message frmEscStateMsg mEsc;
+  message frmBrakeTempMsg mBrakeTemp;
+  message frmBrakeWearMsg mBrakeWear;
+  message frmSuspensionStateMsg mSuspension;
+  message frmTirePressureMsg mTire;
+  message frmChassisDiagResMsg mDiagRes;
+  message frmRoadFrictionMsg mFriction;
   int decelAssistReq;
   int appliedBrakePedal;
   int brakePressure;
   int absActive;
   int espActive;
   int absSlip;
+  int yawRate;
+  int latAccel;
 
-  decelAssistReq = ((int)@Core::decelAssistReq == 1) ? 1 : 0;
+  decelAssistReq = (((int)@Core::decelAssistReq) == 1) ? 1 : 0;
   appliedBrakePedal = gBrakePedal;
   if (decelAssistReq == 1 && appliedBrakePedal < 25)
   {
     appliedBrakePedal = 25;
   }
 
-  brakePressure = appliedBrakePedal * 2;
-  if (brakePressure > 255) brakePressure = 255;
+  brakePressure = clampRange(appliedBrakePedal * 2, 0, 255);
+  absActive = ((appliedBrakePedal > 80) && (gSpeedNorm > 10)) ? 1 : 0;
+  absSlip = absActive ? clampRange(appliedBrakePedal - 80, 0, 63) : 0;
+  espActive = ((appliedBrakePedal > 40) && (gSteeringInput == 1)) ? 1 : 0;
+  yawRate = gSteeringInput * 15;
+  latAccel = gSpeedNorm;
 
-  absActive = ((appliedBrakePedal > 80) && (gWheelSpdFL > 10)) ? 1 : 0;
-  absSlip   = absActive ? ((appliedBrakePedal - 80) & 0x3F) : 0;
-  espActive = ((appliedBrakePedal > 40) && ((int)@Core::steeringInputNorm == 1)) ? 1 : 0;
+  mWheelSpd.WheelSpdFL = gSpeedNorm;
+  mWheelSpd.WheelSpdFR = gSpeedNorm;
+  mWheelSpd.WheelSpdRL = gSpeedNorm;
+  mWheelSpd.WheelSpdRR = gSpeedNorm;
+  output(mWheelSpd);
 
-  mStatus.BrakePressure = brakePressure;
-  mStatus.BrakeMode     = (appliedBrakePedal > 80) ? 2 : ((appliedBrakePedal > 0) ? 1 : 0);
-  mStatus.AbsActive     = absActive;
-  mStatus.EspActive     = espActive;
-  output(mStatus);
+  mYawAccel.YawRate = yawRate;
+  mYawAccel.LatAccel = latAccel;
+  output(mYawAccel);
 
-  mAbs.AbsCtrlState   = absActive ? 2 : 0;
-  mAbs.AbsSlipLevel   = absSlip;
+  mBrakeStatus.BrakePressure = brakePressure;
+  mBrakeStatus.BrakeMode = (appliedBrakePedal > 80) ? 2 : ((appliedBrakePedal > 0) ? 1 : 0);
+  mBrakeStatus.AbsActive = absActive;
+  mBrakeStatus.EspActive = espActive;
+  output(mBrakeStatus);
+
+  mHealth.ChassisAliveCnt = gChassisAliveCnt & 0xFF;
+  mHealth.ChassisDiagState = 0;
+  mHealth.ChassisFailCode = 0;
+  output(mHealth);
+  gChassisAliveCnt = (gChassisAliveCnt + 1) & 0xFF;
+
+  mAbs.AbsCtrlState = absActive ? 2 : 0;
+  mAbs.AbsSlipLevel = absSlip;
   mAbs.AbsPressureCmd = absActive ? brakePressure : 0;
   output(mAbs);
 
-  mEsc.EscCtrlState    = espActive ? 2 : 0;
-  mEsc.EscIntervention = espActive ? ((gBrakePedal - 40) & 0x3F) : 0;
-  mEsc.EscYawTarget    = 128;
+  mEsc.EscCtrlState = espActive ? 2 : 0;
+  mEsc.EscIntervention = espActive ? clampRange(appliedBrakePedal - 40, 0, 63) : 0;
+  mEsc.EscYawTarget = 128;
   output(mEsc);
 
-  mTemp.BrakeTempFL = 30 + (appliedBrakePedal / 5);
-  mTemp.BrakeTempFR = 30 + (appliedBrakePedal / 5);
-  output(mTemp);
+  mBrakeTemp.BrakeTempFL = 30 + (appliedBrakePedal / 5);
+  mBrakeTemp.BrakeTempFR = 30 + (appliedBrakePedal / 5);
+  output(mBrakeTemp);
 
-  mWear.BrakePadWearLvl = 10;
-  output(mWear);
+  mBrakeWear.BrakePadWearLvl = 10;
+  output(mBrakeWear);
+
+  mSuspension.SuspensionMode = (gDriveState == 3) ? 1 : 0;
+  mSuspension.SuspensionLevel = 8;
+  mSuspension.DampingLevel = 12;
+  output(mSuspension);
+
+  mTire.TirePressFL = 230;
+  mTire.TirePressFR = 230;
+  mTire.TirePressRL = 228;
+  mTire.TirePressRR = 228;
+  output(mTire);
+
+  mDiagRes.ChsDiagRespCode = (gLastDiagServiceId == 0x22) ? 0x62 : 0x7F;
+  mDiagRes.ChsDiagData0 = gLastDiagDidHigh;
+  mDiagRes.ChsDiagData1 = gLastDiagDidLow;
+  output(mDiagRes);
+
+  mFriction.RoadFrictionCoef = 80;
+  output(mFriction);
 
   if (gBrakePedal != gLastBrakePedal || decelAssistReq != gLastAssistReq)
   {
-    write("[ESC] pedal=%d assist=%d applied=%d pressure=%d abs=%d esp=%d",
-          gBrakePedal, decelAssistReq, appliedBrakePedal,
-          brakePressure, absActive, espActive);
+    write("[ESC] speed=%d pedal=%d assist=%d pressure=%d abs=%d esp=%d",
+          gSpeedNorm, gBrakePedal, decelAssistReq, brakePressure, absActive, espActive);
     gLastBrakePedal = gBrakePedal;
     gLastAssistReq = decelAssistReq;
   }
 
-  setTimer(tBrakeCycle, 100);
+  setTimer(tEscCycle, 100);
 }

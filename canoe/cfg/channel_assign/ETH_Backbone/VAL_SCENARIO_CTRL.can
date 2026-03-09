@@ -1,4 +1,4 @@
-includes
+﻿includes
 {
   #include "..\\common\\CAPL_COMMON.cin"
 }
@@ -928,7 +928,7 @@ on timer tInput100
   output(mPedal);
 
   /* Comm_105 baseline gateway/boundary path
-     PTGW now owns gateway-state output frames. */
+     VCU now owns vehicle-state and powertrain supervisory output frames. */
 
   /* Comm_101 baseline powertrain detail path */
   mEngTemp.EngineRpm = clampRange(speed * 40, 0, 65535);

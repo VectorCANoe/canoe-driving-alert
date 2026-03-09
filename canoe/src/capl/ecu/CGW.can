@@ -1,4 +1,4 @@
-includes
+﻿includes
 {
   #include "..\\common\\CAPL_COMMON.cin"
 }
@@ -16,21 +16,30 @@ variables
   int gLastDomainPathStatus;
   int gLastE2eHealthState;
   int gLastFailSafeMode;
+  int gVehicleStateAgeMs;
+  int gNavContextAgeMs;
+  int gSteeringAgeMs;
+  int gEmergencyMonAgeMs;
+  int gLastEthPathState;
 }
-
 
 on start
 {
   gChassisAlive = 0;
-  gBodyAlive    = 0;
-  gInfoAlive    = 0;
-  gChassisTsMs  = 0;
-  gBodyTsMs     = 0;
-  gInfoTsMs     = 0;
+  gBodyAlive = 0;
+  gInfoAlive = 0;
+  gChassisTsMs = 0;
+  gBodyTsMs = 0;
+  gInfoTsMs = 0;
   gLastBoundaryStatus = -1;
   gLastDomainPathStatus = -1;
   gLastE2eHealthState = -1;
   gLastFailSafeMode = -1;
+  gVehicleStateAgeMs = 10000;
+  gNavContextAgeMs = 10000;
+  gSteeringAgeMs = 10000;
+  gEmergencyMonAgeMs = 10000;
+  gLastEthPathState = -1;
   @CoreState::domainBoundaryStatus = 0;
   @CoreState::domainPathStatus = 2;
   @CoreState::e2eHealthState = 0;
@@ -43,25 +52,48 @@ on start
 on message frmChassisHealthMsg
 {
   gChassisAlive = this.ChassisAliveCnt;
-  gChassisTsMs  = getSimulationTimeMs();
+  gChassisTsMs = getSimulationTimeMs();
 }
 
 on message frmBodyHealthMsg
 {
-  gBodyAlive  = this.BodyAliveCnt;
-  gBodyTsMs   = getSimulationTimeMs();
+  gBodyAlive = this.BodyAliveCnt;
+  gBodyTsMs = getSimulationTimeMs();
 }
 
 on message frmInfotainmentHealthMsg
 {
-  gInfoAlive  = this.InfoAliveCnt;
-  gInfoTsMs   = getSimulationTimeMs();
+  gInfoAlive = this.InfoAliveCnt;
+  gInfoTsMs = getSimulationTimeMs();
+}
+
+on message frmVehicleStateCanMsg
+{
+  gVehicleStateAgeMs = 0;
+}
+
+on message frmNavContextCanMsg
+{
+  gNavContextAgeMs = 0;
+}
+
+on message frmSteeringCanMsg
+{
+  gSteeringAgeMs = 0;
+}
+
+on message frmEmergencyMonitorMsg
+{
+  gEmergencyMonAgeMs = 0;
 }
 
 on timer tBoundaryCheck
 {
   message ethFailSafeStateMsg mFailSafe;
   message ethObjectSafetyStateMsg mObjSafety;
+  message ethVehicleStateMsg mVehEth;
+  message ethSteeringMsg mSteerEth;
+  message ethNavContextMsg mNavEth;
   dword nowMs;
   int routingPolicy;
   int forceFailSafe;
@@ -77,9 +109,19 @@ on timer tBoundaryCheck
   int domainPathStatus;
   int e2eHealthState;
   int failSafeMode;
+  int ethPathState;
+  int steeringInput;
+  int steeringAngleDeg;
+  int navDirection;
+  int roadZone;
+  int speedLimit;
+  int speedNorm;
+  int driveState;
+  int brakePedalNorm;
+  int turnLampState;
+  int seatBeltWarnLvl;
 
-  nowMs    = getSimulationTimeMs();
-  allAlive = 0;
+  nowMs = getSimulationTimeMs();
   aliveCount = 0;
   routingPolicy = (int)@CoreState::routingPolicy;
   forceFailSafe = (((int)@Test::forceFailSafe) == 1) ? 1 : 0;
@@ -90,6 +132,32 @@ on timer tBoundaryCheck
   if (routingPolicy < 0 || routingPolicy > 2)
   {
     routingPolicy = 0;
+  }
+
+  gVehicleStateAgeMs = clampRange(gVehicleStateAgeMs + 100, 0, 60000);
+  gNavContextAgeMs = clampRange(gNavContextAgeMs + 100, 0, 60000);
+  gSteeringAgeMs = clampRange(gSteeringAgeMs + 100, 0, 60000);
+  gEmergencyMonAgeMs = clampRange(gEmergencyMonAgeMs + 100, 0, 60000);
+
+  ethPathState = 0;
+  if (gVehicleStateAgeMs > 1000 || gNavContextAgeMs > 1000 || gSteeringAgeMs > 1000 || gEmergencyMonAgeMs > 1500)
+  {
+    ethPathState = 2;
+  }
+  else if (!((gVehicleStateAgeMs <= 300) && (gNavContextAgeMs <= 300) && (gSteeringAgeMs <= 300) && (gEmergencyMonAgeMs <= 500)))
+  {
+    ethPathState = 1;
+  }
+
+  if (ethPathState != gLastEthPathState)
+  {
+    write("[CGW] ethPath=%d (veh=%dms nav=%dms steer=%dms ems=%dms)",
+          ethPathState,
+          gVehicleStateAgeMs,
+          gNavContextAgeMs,
+          gSteeringAgeMs,
+          gEmergencyMonAgeMs);
+    gLastEthPathState = ethPathState;
   }
 
   chassisAliveOk = ((nowMs - gChassisTsMs) < 300 && gChassisAlive > 0) ? 1 : 0;
@@ -119,6 +187,10 @@ on timer tBoundaryCheck
   {
     domainPathStatus = 1;
   }
+  if (ethPathState > domainPathStatus)
+  {
+    domainPathStatus = ethPathState;
+  }
 
   if (forceFailSafe == 1)
   {
@@ -133,6 +205,10 @@ on timer tBoundaryCheck
     e2eHealthState = 2;
   }
   else
+  {
+    e2eHealthState = 1;
+  }
+  if (ethPathState == 1 && e2eHealthState == 2)
   {
     e2eHealthState = 1;
   }
@@ -187,9 +263,34 @@ on timer tBoundaryCheck
   mObjSafety.ObjectTrackValid = objectTrackValid;
   output(mObjSafety);
 
+  speedNorm = clampRange((int)@Core::vehicleSpeedNorm, 0, 255);
+  driveState = clampRange((int)@Core::driveStateNorm, 0, 3);
+  brakePedalNorm = clampRange((int)@Core::brakePedalNorm, 0, 100);
+  turnLampState = clampRange((int)@CoreState::turnLampState, 0, 3);
+  seatBeltWarnLvl = clampRange((int)@CoreState::seatBeltWarnLvl, 0, 3);
+  steeringInput = clampRange((int)@Core::steeringInputNorm, 0, 1);
+  steeringAngleDeg = steeringInput * 30;
+  roadZone = clampRange((int)@Infotainment::roadZone, 0, 7);
+  navDirection = clampRange((int)@Infotainment::navDirection, 0, 7);
+  speedLimit = clampRange((int)@Core::speedLimitNorm, 0, 255);
+
+  mVehEth.DriveState = driveState;
+  mVehEth.VehicleSpeed = speedNorm;
+  mVehEth.BrakePedalNorm = brakePedalNorm;
+  mVehEth.TurnLampState = turnLampState;
+  mVehEth.SeatBeltWarnLvl = seatBeltWarnLvl;
+  output(mVehEth);
+
+  mSteerEth.SteeringInput = steeringInput;
+  mSteerEth.SteeringAngleDeg = steeringAngleDeg;
+  mSteerEth.SteeringQuality = (ethPathState == 0) ? 3 : ((ethPathState == 1) ? 2 : 1);
+  output(mSteerEth);
+
+  mNavEth.RoadZone = roadZone;
+  mNavEth.NavDirection = navDirection;
+  mNavEth.ZoneDistance = clampRange((int)@Infotainment::zoneDistance, 0, 255);
+  mNavEth.SpeedLimit = speedLimit;
+  output(mNavEth);
+
   setTimer(tBoundaryCheck, 100);
 }
-
-
-
-

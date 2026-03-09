@@ -1,4 +1,4 @@
-VERSION "ETH_Backbone_CAN_STUB_v2.1"
+﻿VERSION "ETH_Backbone_CAN_STUB_v2.1"
 
 
 NS_ :
@@ -30,7 +30,7 @@ NS_ :
 
 BS_:
 
-BU_: V2X V2X V2X ETHM ADAS ADAS IVI IVI CHGW VAL_SCENARIO_CTRL CGW Vector__XXX
+BU_: V2X ADAS IVI ESC VAL_SCENARIO_CTRL CGW Vector__XXX
 
 BO_ 448 frmEmergencyBroadcastMsg: 4 Vector__XXX
  SG_ VehicleType  : 0|4@1+  (1,0) [0|15]  ""    V2X
@@ -42,8 +42,8 @@ BO_ 448 frmEmergencyBroadcastMsg: 4 Vector__XXX
  SG_ Reserved1    : 28|4@1+ (1,0) [0|0]   ""    Vector__XXX
 
 BO_ 450 frmEmergencyMonitorMsg: 2 V2X
- SG_ EmergencyContext : 0|8@1+ (1,0) [0|255] "" VAL_SCENARIO_CTRL,CHGW
- SG_ TimeoutClearMon  : 8|1@1+ (1,0) [0|1]   "" VAL_SCENARIO_CTRL,CHGW
+ SG_ EmergencyContext : 0|8@1+ (1,0) [0|255] "" VAL_SCENARIO_CTRL,ESC
+ SG_ TimeoutClearMon  : 8|1@1+ (1,0) [0|1]   "" VAL_SCENARIO_CTRL,ESC
  SG_ Reserved0        : 9|7@1+ (1,0) [0|0]   "" Vector__XXX
 
 BO_ 456 ethObjectSafetyStateMsg: 4 CGW
@@ -60,7 +60,7 @@ BO_ 273 ethFailSafeStateMsg: 2 CGW
  SG_ BoundaryAlive    : 6|1@1+ (1,0) [0|1] "" ADAS,VAL_SCENARIO_CTRL
  SG_ Reserved0        : 7|9@1+ (1,0) [0|0] "" Vector__XXX
 
-BO_ 1296 ethVehicleStateMsg: 6 ETHM
+BO_ 1296 ethVehicleStateMsg: 6 CGW
  SG_ DriveState       : 0|2@1+  (1,0) [0|3]   ""    ADAS,VAL_SCENARIO_CTRL,ADAS
  SG_ VehicleSpeed     : 8|8@1+  (1,0) [0|255] "km/h" ADAS,VAL_SCENARIO_CTRL,ADAS
  SG_ BrakePedalNorm   : 16|7@1+ (1,0) [0|100] "%"   ADAS,VAL_SCENARIO_CTRL
@@ -68,13 +68,13 @@ BO_ 1296 ethVehicleStateMsg: 6 ETHM
  SG_ SeatBeltWarnLvl  : 25|2@1+ (1,0) [0|3]   ""    ADAS,VAL_SCENARIO_CTRL
  SG_ Reserved0        : 27|21@1+ (1,0) [0|0]  ""    Vector__XXX
 
-BO_ 1297 ethSteeringMsg: 4 ETHM
+BO_ 1297 ethSteeringMsg: 4 CGW
  SG_ SteeringInput    : 0|1@1+   (1,0) [0|1]    ""    ADAS,VAL_SCENARIO_CTRL,ADAS
  SG_ SteeringAngleDeg : 8|12@1-  (1,0) [-720|720] "deg" ADAS,VAL_SCENARIO_CTRL
  SG_ SteeringQuality  : 20|2@1+  (1,0) [0|3]    ""    ADAS,VAL_SCENARIO_CTRL
  SG_ Reserved0        : 22|10@1+ (1,0) [0|0]    ""    Vector__XXX
 
-BO_ 1298 ethNavContextMsg: 6 ETHM
+BO_ 1298 ethNavContextMsg: 6 CGW
  SG_ RoadZone         : 0|3@1+   (1,0) [0|7]    ""    ADAS,VAL_SCENARIO_CTRL,IVI
  SG_ NavDirection     : 3|3@1+   (1,0) [0|7]    ""    ADAS,VAL_SCENARIO_CTRL,IVI
  SG_ ZoneDistance     : 8|8@1+   (1,0) [0|255]  "m"   ADAS,VAL_SCENARIO_CTRL,IVI
@@ -132,3 +132,4 @@ VAL_ 1296 TurnLampState 0 "OFF" 1 "LEFT" 2 "RIGHT" 3 "HAZARD";
 VAL_ 1297 SteeringInput 0 "NO" 1 "YES";
 VAL_ 1298 RoadZone 0 "NONE" 1 "SCHOOL" 2 "HIGHWAY" 3 "GUIDE";
 VAL_ 1298 NavDirection 0 "NONE" 1 "LEFT" 2 "RIGHT" 3 "STRAIGHT";
+
