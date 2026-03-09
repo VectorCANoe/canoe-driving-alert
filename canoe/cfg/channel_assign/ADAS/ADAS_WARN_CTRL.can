@@ -1,0 +1,495 @@
+includes
+{
+}
+
+variables
+{
+  msTimer tAdasCycle;
+  int gLastWarningState;
+  dword gHighwayNoSteerStartMs;
+  int gLastRiskLevel;
+  int gRiskPublishTick;
+  int gObjectStatePublishTick;
+  dword gLastObjectTrackRxMs;
+  int gLastObjectRiskClass;
+  int gLastObjectEventCode;
+  int gLastInputFilterState;
+}
+
+int clampRange(int value, int minValue, int maxValue)
+{
+  if (value < minValue)
+  {
+    return minValue;
+  }
+  if (value > maxValue)
+  {
+    return maxValue;
+  }
+  return value;
+}
+
+int calcProximityRisk(int emergencyContext, int etaSec, int speed, int emergencyDirection, int driveState)
+{
+  int etaScore;
+  int speedScore;
+  int directionScore;
+  int typeBias;
+  int riskLevel;
+
+  if (driveState != 3 || emergencyContext == 0)
+  {
+    return 0;
+  }
+
+  etaScore = 100 - (etaSec * 5);
+  etaScore = clampRange(etaScore, 0, 100);
+  speedScore = clampRange((speed * 40) / 255, 0, 40);
+
+  if (emergencyDirection == 0)
+  {
+    directionScore = 25;
+  }
+  else if (emergencyDirection == 3)
+  {
+    directionScore = 10;
+  }
+  else
+  {
+    directionScore = 18;
+  }
+
+  typeBias = (emergencyContext == 2) ? 12 : 6;
+  riskLevel = ((etaScore * 55) / 100) + speedScore + directionScore + typeBias;
+  return clampRange(riskLevel, 0, 100);
+}
+
+int calcObjectTtcMs(int objectRange, int objectRelSpeed)
+{
+  long closingKph;
+  long ttcMs;
+
+  if (objectRelSpeed >= 0 || objectRange <= 0)
+  {
+    return 10000;
+  }
+
+  closingKph = -objectRelSpeed;
+  if (closingKph <= 0)
+  {
+    return 10000;
+  }
+
+  ttcMs = ((long)objectRange * 3600) / closingKph;
+  if (ttcMs < 0)
+  {
+    ttcMs = 0;
+  }
+  if (ttcMs > 10000)
+  {
+    ttcMs = 10000;
+  }
+  return (int)ttcMs;
+}
+
+int calcObjectRisk(int ttcMs, int confidence, int objectRange,
+                   int intersectionConflictFlag, int mergeCutInFlag)
+{
+  int baseRisk;
+  int rangeBias;
+  int confidenceBias;
+  int scenarioBias;
+  int riskLevel;
+
+  if (confidence < 20)
+  {
+    return 0;
+  }
+
+  if (ttcMs <= 1200)
+  {
+    baseRisk = 85;
+  }
+  else if (ttcMs <= 2000)
+  {
+    baseRisk = 72;
+  }
+  else if (ttcMs <= 3000)
+  {
+    baseRisk = 58;
+  }
+  else if (ttcMs <= 4500)
+  {
+    baseRisk = 40;
+  }
+  else
+  {
+    baseRisk = 18;
+  }
+
+  rangeBias = clampRange((500 - objectRange) / 10, 0, 20);
+  confidenceBias = clampRange((confidence - 50) / 5, -10, 10);
+  scenarioBias = 0;
+  if (intersectionConflictFlag == 1)
+  {
+    scenarioBias = scenarioBias + 8;
+  }
+  if (mergeCutInFlag == 1)
+  {
+    scenarioBias = scenarioBias + 6;
+  }
+
+  riskLevel = baseRisk + rangeBias + confidenceBias + scenarioBias;
+  return clampRange(riskLevel, 0, 100);
+}
+
+int calcObjectRiskClass(int objectTrackValid, int confidence, int objectRiskLevel)
+{
+  if (objectTrackValid == 0)
+  {
+    return 0;
+  }
+  if (confidence < 30)
+  {
+    return 1;
+  }
+  if (objectRiskLevel >= 85)
+  {
+    return 5;
+  }
+  if (objectRiskLevel >= 70)
+  {
+    return 4;
+  }
+  if (objectRiskLevel >= 55)
+  {
+    return 3;
+  }
+  if (objectRiskLevel >= 35)
+  {
+    return 2;
+  }
+  return 1;
+}
+
+void updateWarningState()
+{
+  message ethEmergencyRiskMsg mRisk;
+  message ethObjectRiskStateMsg mObjRisk;
+  int speed;
+  int driveState;
+  int steeringInput;
+  int speedLimit;
+  int baseZoneContext;
+  int emergencyContext;
+  int etaSec;
+  int emergencyDirection;
+  int warningState;
+  int riskLevel;
+  int objectTrackValid;
+  int objectRange;
+  int objectRelSpeed;
+  int objectConfidence;
+  int objectRiskClass;
+  int objectRiskLevel;
+  int objectTtcMin;
+  int intersectionConflictFlag;
+  int mergeCutInFlag;
+  int objectAlertHoldMs;
+  int objectHoldActive;
+  int objectInputValid;
+  dword nowMs;
+
+  speed = (int)@Core::vehicleSpeedNorm;
+  driveState = (int)@Core::driveStateNorm;
+  steeringInput = (int)@Core::steeringInputNorm;
+  speedLimit = (int)@Core::speedLimitNorm;
+  baseZoneContext = (int)@Core::baseZoneContext;
+  emergencyContext = (int)@Core::emergencyContext;
+  etaSec = (int)@V2X::eta;
+  emergencyDirection = (int)@V2X::emergencyDirection;
+  objectTrackValid = clampRange((int)@Core::objectTrackValid, 0, 1);
+  objectRange = clampRange((int)@Core::objectRange, 0, 500);
+  objectRelSpeed = clampRange((int)@Core::objectRelSpeed, -200, 200);
+  objectConfidence = clampRange((int)@Core::objectConfidence, 0, 100);
+  intersectionConflictFlag = clampRange((int)@Core::intersectionConflictFlag, 0, 1);
+  mergeCutInFlag = clampRange((int)@Core::mergeCutInFlag, 0, 1);
+  objectAlertHoldMs = clampRange((int)@Core::objectAlertHoldMs, 0, 5000);
+
+  if (objectAlertHoldMs == 0)
+  {
+    objectAlertHoldMs = 300;
+  }
+  if (emergencyContext < 0 || emergencyContext > 2)
+  {
+    emergencyContext = 0;
+  }
+  etaSec = clampRange(etaSec, 0, 255);
+  emergencyDirection = clampRange(emergencyDirection, 0, 3);
+  if (speed < 0)
+  {
+    speed = 0;
+  }
+  if (speed > 255)
+  {
+    speed = 255;
+  }
+  if (driveState < 0 || driveState > 3)
+  {
+    driveState = 0;
+  }
+  if (steeringInput < 0 || steeringInput > 1)
+  {
+    steeringInput = 0;
+  }
+  if (speedLimit <= 0 || speedLimit > 255)
+  {
+    speedLimit = 30;
+  }
+  if (baseZoneContext < 0 || baseZoneContext > 4)
+  {
+    baseZoneContext = 0;
+  }
+
+  nowMs = timeNow();
+  objectHoldActive = 0;
+  objectInputValid = 0;
+
+  if (objectTrackValid == 1 &&
+      objectConfidence >= 25 &&
+      objectRange > 0 &&
+      objectRange <= 500)
+  {
+    objectInputValid = 1;
+  }
+
+  if (objectInputValid == 0)
+  {
+    objectTrackValid = 0;
+  }
+
+  if (objectTrackValid == 1)
+  {
+    gLastObjectTrackRxMs = nowMs;
+  }
+  else if (gLastObjectTrackRxMs != 0 &&
+           (nowMs - gLastObjectTrackRxMs) <= (dword)objectAlertHoldMs &&
+           gLastObjectRiskClass >= 2)
+  {
+    objectTrackValid = 1;
+    objectHoldActive = 1;
+  }
+
+  if (objectTrackValid == 1 && objectConfidence >= 20)
+  {
+    objectTtcMin = calcObjectTtcMs(objectRange, objectRelSpeed);
+    objectRiskLevel = calcObjectRisk(objectTtcMin, objectConfidence, objectRange,
+                                     intersectionConflictFlag, mergeCutInFlag);
+  }
+  else
+  {
+    objectTtcMin = 10000;
+    objectRiskLevel = 0;
+  }
+
+  objectRiskClass = calcObjectRiskClass(objectTrackValid, objectConfidence, objectRiskLevel);
+  if (objectHoldActive == 1 && objectRiskClass >= 2 && objectRiskClass < 3)
+  {
+    objectRiskClass = 3;
+  }
+
+  if (objectInputValid != gLastInputFilterState)
+  {
+    write("[ADAS_WARN_CTRL] input filter valid=%d track=%d conf=%d range=%d rel=%d",
+          objectInputValid, objectTrackValid, objectConfidence, objectRange, objectRelSpeed);
+    gLastInputFilterState = objectInputValid;
+  }
+
+  if (objectRiskClass != gLastObjectRiskClass)
+  {
+    if (objectRiskClass >= 2 && gLastObjectRiskClass < 2)
+    {
+      @Core::objectEventCode = 1381;
+    }
+    else if (objectRiskClass < 2 && gLastObjectRiskClass >= 2)
+    {
+      @Core::objectEventCode = 1382;
+    }
+    else if (objectRiskClass >= 2)
+    {
+      @Core::objectEventCode = 1383;
+    }
+    else
+    {
+      @Core::objectEventCode = 0;
+    }
+    gLastObjectRiskClass = objectRiskClass;
+  }
+
+  @Core::objectTrackValid = objectTrackValid;
+  @Core::objectRange = objectRange;
+  @Core::objectRelSpeed = objectRelSpeed;
+  @Core::objectConfidence = objectConfidence;
+  @Core::objectRiskClass = objectRiskClass;
+  @Core::objectTtcMin = objectTtcMin;
+  @Core::intersectionConflictFlag = intersectionConflictFlag;
+  @Core::mergeCutInFlag = mergeCutInFlag;
+  @Core::objectAlertHoldMs = objectAlertHoldMs;
+
+  riskLevel = calcProximityRisk(emergencyContext, etaSec, speed, emergencyDirection, driveState);
+  if (objectRiskLevel > riskLevel)
+  {
+    riskLevel = objectRiskLevel;
+  }
+  @Core::proximityRiskLevel = riskLevel;
+  warningState = 0;
+
+  if (driveState == 3)
+  {
+    if (baseZoneContext == 1 && speed > speedLimit)
+    {
+      warningState = 1;
+    }
+    else if (baseZoneContext == 2 && speed >= 60 && steeringInput == 0)
+    {
+      if (gHighwayNoSteerStartMs == 0)
+      {
+        gHighwayNoSteerStartMs = nowMs;
+      }
+      if ((nowMs - gHighwayNoSteerStartMs) >= 10000)
+      {
+        warningState = 2;
+      }
+    }
+    else
+    {
+      /* Alert Priority timer freeze: do not reset highway timer during active emergency (Req_033).
+         Prevents steeringInput glitches during emergency from invalidating the 10s count. */
+      if (emergencyContext == 0)
+      {
+        gHighwayNoSteerStartMs = 0;
+      }
+    }
+  }
+  else
+  {
+    if (emergencyContext == 0)
+    {
+      gHighwayNoSteerStartMs = 0;
+    }
+  }
+
+  if (warningState == 0 && objectRiskClass >= 3)
+  {
+    warningState = 2;
+  }
+
+  if (warningState != gLastWarningState)
+  {
+    message frmAdasChassisStatusMsg mAdas;
+
+    @Core::warningState = warningState;
+    mAdas.AdasChassisState = warningState;
+    mAdas.AdasHealthLevel = (warningState > 0) ? 1 : 0;
+    output(mAdas);
+    gLastWarningState = warningState;
+  }
+
+  gRiskPublishTick = gRiskPublishTick + 1;
+  gObjectStatePublishTick = gObjectStatePublishTick + 1;
+  if (riskLevel != gLastRiskLevel || gRiskPublishTick >= 10)
+  {
+    mRisk.RiskLevel = clampRange(riskLevel, 0, 100);
+    mRisk.EtaSeconds = etaSec;
+    mRisk.VehicleSpeed = speed;
+    mRisk.EmergencyDirection = emergencyDirection;
+    mRisk.EmergencyType = emergencyContext;
+    output(mRisk);
+    gLastRiskLevel = riskLevel;
+    gRiskPublishTick = 0;
+  }
+  if (gObjectStatePublishTick >= 10 || objectRiskClass >= 3)
+  {
+    mObjRisk.ObjectRiskClass = objectRiskClass;
+    mObjRisk.ObjectTtcMinMs = objectTtcMin;
+    mObjRisk.ObjectRiskLevel = clampRange(objectRiskLevel, 0, 100);
+    mObjRisk.ObjectTrackValid = objectTrackValid;
+    output(mObjRisk);
+    gObjectStatePublishTick = 0;
+  }
+
+  if ((int)@Core::objectEventCode != gLastObjectEventCode)
+  {
+    write("[ADAS_WARN_CTRL] objectEvent=%d riskClass=%d ttcMs=%d conf=%d hold=%d",
+          (int)@Core::objectEventCode, objectRiskClass, objectTtcMin,
+          objectConfidence, objectHoldActive);
+    gLastObjectEventCode = (int)@Core::objectEventCode;
+  }
+}
+
+on message ethObjectRiskInputMsg
+{
+  int trackValid;
+  int rangeM;
+  int relSpeedKph;
+  int confidence;
+  int intersectionConflict;
+  int mergeCutIn;
+  int alertHoldMs;
+
+  trackValid = clampRange((int)this.ObjectTrackValid, 0, 1);
+  rangeM = clampRange((int)this.ObjectRangeM, 0, 500);
+  relSpeedKph = clampRange((int)this.ObjectRelSpeedKph, -200, 200);
+  confidence = clampRange((int)this.ObjectConfidence, 0, 100);
+  intersectionConflict = clampRange((int)this.IntersectionConflict, 0, 1);
+  mergeCutIn = clampRange((int)this.MergeCutIn, 0, 1);
+  alertHoldMs = clampRange((int)this.ObjectAlertHoldMs, 0, 5000);
+  if (alertHoldMs == 0)
+  {
+    alertHoldMs = 300;
+  }
+
+  @Core::objectTrackValid = trackValid;
+  @Core::objectRange = rangeM;
+  @Core::objectRelSpeed = relSpeedKph;
+  @Core::objectConfidence = confidence;
+  @Core::intersectionConflictFlag = intersectionConflict;
+  @Core::mergeCutInFlag = mergeCutIn;
+  @Core::objectAlertHoldMs = alertHoldMs;
+  if (trackValid == 1)
+  {
+    gLastObjectTrackRxMs = timeNow();
+  }
+}
+
+on start
+{
+  gLastWarningState = -1;
+  gHighwayNoSteerStartMs = 0;
+  gLastRiskLevel = -1;
+  gRiskPublishTick = 0;
+  gObjectStatePublishTick = 0;
+  gLastObjectTrackRxMs = 0;
+  gLastObjectRiskClass = 0;
+  gLastObjectEventCode = -1;
+  gLastInputFilterState = -1;
+  @Core::proximityRiskLevel = 0;
+  @Core::objectTrackValid = 0;
+  @Core::objectRange = 0;
+  @Core::objectRelSpeed = 0;
+  @Core::objectConfidence = 0;
+  @Core::objectRiskClass = 0;
+  @Core::objectTtcMin = 10000;
+  @Core::intersectionConflictFlag = 0;
+  @Core::mergeCutInFlag = 0;
+  @Core::objectAlertHoldMs = 300;
+  @Core::objectEventCode = 0;
+  setTimer(tAdasCycle, 10);
+  write("[ADAS_WARN_CTRL] start");
+}
+
+on timer tAdasCycle
+{
+  updateWarningState();
+  setTimer(tAdasCycle, 10);
+}

@@ -1,3 +1,14 @@
+/*@!Encoding:65001*/
+// WINDOW_CTRL.can
+// Body Domain — 도어 잠금 + 창문 제어
+// 입력  : @Body::doorLockCmd   (0=none 1=lockAll 2=unlockAll 3=unlockDriver) — Panel
+//         @Body::windowUpBtn   (0=해제 1=누름) — Panel
+//         @Body::windowDownBtn (0=해제 1=누름) — Panel
+//         frmDoorStateMsg      (CAN — 외부 도어 상태 수신, 병렬 경로)
+//         frmWindowControlMsg  (CAN — 외부 창문 명령 수신, 병렬 경로)
+// 출력  : frmDoorControlMsg
+// 주기  : 100ms
+
 includes
 {
 }
@@ -5,24 +16,82 @@ includes
 variables
 {
   msTimer tWindowCycle;
-  int gWindowCommand;
-  int gWindowState;
-  int gDoorLockState;
+  int gWindowCommand;    // 0=정지 1=UP 2=DOWN
+  int gWindowState;      // 0=닫힘 1=열림 (토글)
+  int gDoorLockState;    // 0=none 1=lockAll 2=unlockAll 3=unlockDriver
   int gChildLockState;
   int gLastWindowState;
 }
 
 on start
 {
-  gWindowCommand  = 0;
-  gWindowState    = 0;
-  gDoorLockState  = 0;
-  gChildLockState = 0;
+  gWindowCommand   = 0;
+  gWindowState     = 0;
+  gDoorLockState   = 0;
+  gChildLockState  = 0;
   gLastWindowState = -1;
   setTimer(tWindowCycle, 100);
-  write("[WINDOW_CTRL] start");
+  write("[WINDOW_CTRL] start — sysvar + CAN 입력 지원");
 }
 
+// ── Panel 도어 잠금 버튼 → sysvar 브릿지 ───────────────────────────
+on sysvar Body::doorLockCmd
+{
+  if ((int)@Powertrain::ignitionKey == 0)
+  {
+    write("[DOOR] 시동 OFF - 도어 잠금 명령 차단");
+    return;
+  }
+  gDoorLockState = (int)@Body::doorLockCmd;
+  write("[WINDOW_CTRL] doorLock sysvar=%d", gDoorLockState);
+}
+
+// ── Panel 창문 UP 버튼 ────────────────────────────────────────────
+on sysvar Body::windowUpBtn
+{
+  if ((int)@Powertrain::ignitionKey == 0)
+  {
+    gWindowCommand = 0;
+    write("[WINDOW] 시동 OFF - 창문 조작 불가");
+    return;
+  }
+  if ((int)@Body::windowUpBtn == 1)
+  {
+    gWindowCommand = 1;    // UP 명령
+    gWindowState   = 1;    // 열림
+    write("[WINDOW_CTRL] window UP pressed");
+  }
+  else
+  {
+    // 두 버튼 모두 해제됐을 때만 명령 정지
+    if ((int)@Body::windowDownBtn == 0)
+      gWindowCommand = 0;
+  }
+}
+
+// ── Panel 창문 DOWN 버튼 ──────────────────────────────────────────
+on sysvar Body::windowDownBtn
+{
+  if ((int)@Powertrain::ignitionKey == 0)
+  {
+    gWindowCommand = 0;
+    write("[WINDOW] 시동 OFF - 창문 조작 불가");
+    return;
+  }
+  if ((int)@Body::windowDownBtn == 1)
+  {
+    gWindowCommand = 2;    // DOWN 명령
+    gWindowState   = 0;    // 닫힘
+    write("[WINDOW_CTRL] window DOWN pressed");
+  }
+  else
+  {
+    if ((int)@Body::windowUpBtn == 0)
+      gWindowCommand = 0;
+  }
+}
+
+// ── CAN 수신 (외부 ECU 제어 경로 — Panel sysvar와 병렬) ──────────
 on message frmWindowControlMsg
 {
   gWindowCommand = this.WindowCommand;
@@ -41,13 +110,12 @@ on timer tWindowCycle
   int doorCmd;
   int childLockCmd;
 
-  /* DoorControlCmd: 0=None 1=LockAll 2=UnlockAll 3=UnlockDriver
-     Mirror vehicle lock state from received door lock state */
-  if (gDoorLockState == 1)       doorCmd = 1;
-  else if (gDoorLockState == 2)  doorCmd = 2;
-  else                           doorCmd = 0;
+  // DoorControlCmd: 0=None 1=LockAll 2=UnlockAll 3=UnlockDriver
+  if      (gDoorLockState == 1)  doorCmd = 1;   // lockAll
+  else if (gDoorLockState == 2)  doorCmd = 2;   // unlockAll
+  else if (gDoorLockState == 3)  doorCmd = 3;   // unlockDriver
+  else                           doorCmd = 0;   // none
 
-  /* Child lock follows received ChildLockState */
   childLockCmd = gChildLockState & 0x1;
 
   mDoor.DoorControlCmd = doorCmd & 0x7;

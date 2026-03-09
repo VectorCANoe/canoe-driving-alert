@@ -1,0 +1,80 @@
+/*@!Encoding:949*/
+// PEDAL_BUTTON_CTRL.can
+// Chassis 도메인
+
+includes
+{
+}
+
+variables
+{
+  msTimer tPedalUpdate;
+  int gAccelPedal;
+  int gBrakePedal;
+}
+
+on start
+{
+  gAccelPedal = 0;
+  gBrakePedal = 0;
+  @Body::AccelButton = 0;
+  @Body::BrakeButton = 0;
+  setTimer(tPedalUpdate, 50);
+  write("[PEDAL_BUTTON] start");
+}
+
+on timer tPedalUpdate
+{
+  message frmPedalInputCanMsg mPedal;
+  int accelBtn;
+  int brakeBtn;
+  int ignition;
+
+  ignition = (int)@Powertrain::ignitionState;
+  accelBtn = (int)@Body::AccelButton;
+  brakeBtn = (int)@Body::BrakeButton;
+
+  if (ignition == 0)
+  {
+    gAccelPedal = 0;
+    gBrakePedal = 0;
+    mPedal.AccelPedal = 0;
+    mPedal.BrakePedal = 0;
+    output(mPedal);
+    setTimer(tPedalUpdate, 50);
+    return;
+  }
+
+  // 액셀
+  if (accelBtn == 1)
+  {
+    gAccelPedal += 10;
+    if (gAccelPedal > 100) gAccelPedal = 100;
+  }
+  else
+  {
+    gAccelPedal -= 5;
+    if (gAccelPedal < 0) gAccelPedal = 0;
+  }
+
+  // 브레이크
+  if (brakeBtn == 1)
+  {
+    gBrakePedal += 15;
+    if (gBrakePedal > 100) gBrakePedal = 100;
+  }
+  else
+  {
+    gBrakePedal -= 15;
+    if (gBrakePedal < 0) gBrakePedal = 0;
+  }
+
+  mPedal.AccelPedal = gAccelPedal;
+  mPedal.BrakePedal = gBrakePedal;
+  output(mPedal);
+
+  @Chassis::throttlePosition = gAccelPedal;
+  @Chassis::brakePressure    = gBrakePedal;
+
+  setTimer(tPedalUpdate, 50);
+}

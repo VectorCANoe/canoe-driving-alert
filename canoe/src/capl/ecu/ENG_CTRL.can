@@ -1,4 +1,19 @@
-﻿includes
+/*@!Encoding:65001*/
+// ENG_CTRL.can
+// Powertrain Domain — 엔진 상태 + ignitionKey 게이트 + sysvar 브릿지
+// 입력  : frmIgnitionEngineMsg (VAL_SCENARIO_CTRL 자동 생성)
+//         @Powertrain::ignitionKey  (Panel 시동 키 버튼 — 0=off 1=on)
+// 출력  : @Powertrain::ignitionState (0/1)
+//         @Powertrain::engineRPM
+//         frmEngineSpeedTempMsg, frmFuelBatteryStateMsg, frmThrottleStateMsg,
+//         frmEngineTorqueMsg, frmEngineLoadMsg, frmThermalMgmtStateMsg
+//
+// RPM 동작:
+//   key=0          : RPM=0  (시동 꺼짐)
+//   key=1, P/N 기어 : RPM=800 + throttle*40  (레빙, 최대 4500)
+//   key=1, D/R 주행 : gear-based RPM 테이블 (1단=3000+spd*15 ... 4단=1000+spd*5)
+
+includes
 {
 }
 
@@ -20,15 +35,50 @@ on start
   gFuelLevel       = 80;
   gBatterySoc      = 95;
   setTimer(tEngineCycle, 100);
-  write("[ENG_CTRL] start");
+  write("[ENG_CTRL] start — ignitionKey gate + idle revving + gear RPM");
 }
+
+// ── ignitionKey 버튼 변경 시 즉시 반응 ───────────────────────────────
+on sysvar Powertrain::ignitionKey
+{
+  if ((int)@Powertrain::ignitionKey == 0)
+  {
+    gIgnitionState = 0;
+    gEngineState   = 0;
+  }
+  else
+  {
+    gIgnitionState = 1;
+    if (gEngineState == 0) gEngineState = 2;   // 최소 아이들
+  }
+  @Powertrain::ignitionState = gIgnitionState;
+  write("[ENG_CTRL] ignitionKey=%d => ignitionState=%d engineState=%d",
+        (int)@Powertrain::ignitionKey, gIgnitionState, gEngineState);
+}
+// ─────────────────────────────────────────────────────────────────────
 
 on message frmIgnitionEngineMsg
 {
-  gIgnitionState = this.IgnitionState;
-  gEngineState   = this.EngineState;
-  if (gIgnitionState < 0 || gIgnitionState > 1) gIgnitionState = 0;
-  if (gEngineState   < 0 || gEngineState   > 3) gEngineState   = 0;
+  int key;
+  key = (int)@Powertrain::ignitionKey;
+
+  if (key == 0)
+  {
+    // 키 OFF -> 강제 소등
+    gIgnitionState = 0;
+    gEngineState   = 0;
+  }
+  else
+  {
+    // 키 ON -> ignition 항상 1, engineState: VAL 수신값 (0이면 아이들=2)
+    gIgnitionState = 1;
+    gEngineState   = (this.EngineState > 0) ? this.EngineState : 2;
+    if (gEngineState < 0 || gEngineState > 3) gEngineState = 2;
+  }
+
+  // ── sysvar 브릿지 ─────────────────────────────────────────────
+  @Powertrain::ignitionState = gIgnitionState;
+  // ──────────────────────────────────────────────────────────────
 }
 
 on timer tEngineCycle
@@ -39,27 +89,60 @@ on timer tEngineCycle
   message frmEngineTorqueMsg     mTorque;
   message frmEngineLoadMsg       mLoad;
   message frmThermalMgmtStateMsg mThermal;
+
   int rpm;
   int throttlePos;
   int engineLoad;
   int torque;
-  int speed;
+  int gear;
+  int spd;
+  int driveMode;
+  int effectiveState;
 
-  if      (gEngineState == 0) { rpm = 0; }
-  else if (gEngineState == 1) { rpm = 400; }
-  else if (gEngineState == 2) { rpm = 800; }
+  driveMode = (int)@Chassis::driveMode;
+  spd       = (int)@Chassis::vehicleSpeed;
+
+  // ── effectiveState 결정 ──────────────────────────────────────────────
+  // gEngineState==2(아이들) + D/R 기어 + 속도>0 -> 주행(3)으로 취급
+  if (gEngineState == 2 && (driveMode == 3 || driveMode == 1) && spd > 0)
+    effectiveState = 3;
+  else
+    effectiveState = gEngineState;
+  // ────────────────────────────────────────────────────────────────────
+
+  // 스로틀 포지션 읽기 (시동 ON일 때만 유효)
+  throttlePos = (gIgnitionState == 1) ? (int)@Chassis::throttlePosition : 0;
+  if (throttlePos > 100) throttlePos = 100;
+
+  // ── RPM 계산 ─────────────────────────────────────────────────────────
+  if      (effectiveState == 0) { rpm = 0; }
+  else if (effectiveState == 1) { rpm = 400; }
+  else if (effectiveState == 2)
+  {
+    // 키 ON, P/N 기어 또는 정지 -> 스로틀 레빙 (800~4500 rpm)
+    rpm = 800 + (throttlePos * 40);
+    if (rpm > 4500) rpm = 4500;
+    if (rpm < 800)  rpm = 800;
+  }
   else
   {
-    speed = (int)@Core::vehicleSpeedNorm;
-    rpm   = 800 + (speed * 25);
+    // effectiveState==3: D 또는 R 기어 주행
+    gear = (int)@Chassis::gearPosition;
+    if      (gear == 1) rpm = 3000 + spd * 15;
+    else if (gear == 2) rpm = 2000 + spd * 10;
+    else if (gear == 3) rpm = 1500 + spd *  7;
+    else                rpm = 1000 + spd *  5;   // 4단
     if (rpm > 6500) rpm = 6500;
+    if (rpm < 800)  rpm = 800;
   }
+  // ─────────────────────────────────────────────────────────────────────
 
-  throttlePos = (gEngineState == 3) ? (int)@Core::vehicleSpeedNorm : 0;
-  if (throttlePos > 100) throttlePos = 100;
-  engineLoad  = (gEngineState == 3) ? (throttlePos * 8 / 10) : 0;
+  @Powertrain::engineRPM = rpm;
+
+  // 엔진 부하 / 토크 (주행 중만 의미 있음)
+  engineLoad = (effectiveState == 3) ? (throttlePos * 8 / 10) : 0;
   if (engineLoad > 100) engineLoad = 100;
-  torque      = (gEngineState == 3) ? (engineLoad * 3) : 0;
+  torque     = (effectiveState == 3) ? (engineLoad * 3) : 0;
   if (torque > 300) torque = 300;
 
   mSpeedTemp.EngineRpm   = rpm & 0xFFFF;
@@ -83,14 +166,15 @@ on timer tEngineCycle
   output(mLoad);
 
   mThermal.ThermalMode   = (gEngineState > 0) ? 1 : 0;
-  mThermal.FanDuty       = (gEngineState == 3) ? 8 : 0;
+  mThermal.FanDuty       = (effectiveState == 3) ? 8 : 0;
   mThermal.CoolantTarget = 90;
   output(mThermal);
 
   if (gEngineState != gLastEngineState)
   {
-    write("[ENG_CTRL] ignition=%d engine=%d rpm=%d",
-          gIgnitionState, gEngineState, rpm);
+    write("[ENG_CTRL] ignition=%d engine=%d effective=%d rpm=%d gear=%d spd=%d",
+          gIgnitionState, gEngineState, effectiveState, rpm,
+          (int)@Chassis::gearPosition, spd);
     gLastEngineState = gEngineState;
   }
 

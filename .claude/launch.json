@@ -1,0 +1,23 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "unity-renderer-bridge",
+      "runtimeExecutable": "python",
+      "runtimeArgs": ["canoe/scripts/unity_renderer_bridge.py", "--host", "127.0.0.1", "--port", "7400", "--period-ms", "50"],
+      "port": 7400
+    },
+    {
+      "name": "unity-renderer-mock",
+      "runtimeExecutable": "python",
+      "runtimeArgs": ["canoe/scripts/unity_renderer_mock_sender.py", "--host", "127.0.0.1", "--port", "7400", "--period-ms", "50"],
+      "port": 7400
+    },
+    {
+      "name": "navigation-simulator",
+      "runtimeExecutable": "python",
+      "runtimeArgs": ["canoe/scripts/navigation_simulator.py", "--interval-ms", "250"],
+      "port": 0
+    }
+  ]
+}

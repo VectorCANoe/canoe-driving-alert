@@ -1,0 +1,510 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Panel Type="Vector.CANalyzer.Panels.PanelSerializer, Vector.CANalyzer.Panels.Serializer, Version=19.4.10.0, Culture=neutral, PublicKeyToken=null">
+  <Object Type="Vector.CANalyzer.Panels.Runtime.Panel, Vector.CANalyzer.Panels.Common, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Panel" ControlName="MyDriverPanel">
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xb1d078dbeda0ce4674e957befae4aa630bd3" ControlName="Static Text 4">
+      <Property Name="Name">Xb1d078dbeda0ce4674e957befae4aa630bd3</Property>
+      <Property Name="Size">66, 15</Property>
+      <Property Name="Location">1281, 584</Property>
+      <Property Name="Text">Description</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xa4258faee9aade400de9012e99b49b392d6e" ControlName="Static Text 2">
+      <Property Name="Name">Xa4258faee9aade400de9012e99b49b392d6e</Property>
+      <Property Name="Size">66, 15</Property>
+      <Property Name="Location">1280, 472</Property>
+      <Property Name="Text">Description</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.AnalogGaugeControl, Vector.CANalyzer.Panels.AnalogGauge, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xe046a1cbeea65e4f86e916dec0e964b686fe" ControlName="Analog Gauge 1">
+      <Property Name="Name">Xe046a1cbeea65e4f86e916dec0e964b686fe</Property>
+      <Property Name="Size">225, 180</Property>
+      <Property Name="Location">1281, 540</Property>
+      <Property Name="ScaleMin">0</Property>
+      <Property Name="ScaleMax">100</Property>
+      <Property Name="LowerRangeLimit">30</Property>
+      <Property Name="UpperRangeLimit">80</Property>
+      <Property Name="BorderStyle">FixedSingle</Property>
+      <Property Name="BackgroundColor">White</Property>
+      <Property Name="LegendTextFont">Microsoft Sans Serif, 8.25pt</Property>
+      <Property Name="CurrentPosition">0</Property>
+      <Property Name="IsFrame">False</Property>
+      <Property Name="IsMargin">False</Property>
+      <Property Name="ScaleMargin">0</Property>
+      <Property Name="SymbolConfiguration"></Property>
+      <Property Name="CriticalProps" Member="AAEAAAD/////AQAAAAAAAAAEAQAAAC9TeXN0ZW0uUmVmbGVjdGlvbi5NZW1iZXJJbmZvU2VyaWFsaXphdGlvbkhvbGRlcgcAAAAETmFtZQxBc3NlbWJseU5hbWUJQ2xhc3NOYW1lCVNpZ25hdHVyZQpTaWduYXR1cmUyCk1lbWJlclR5cGUQR2VuZXJpY0FyZ3VtZW50cwEBAQEBAAMIDVN5c3RlbS5UeXBlW10GAgAAAAUuY3RvcgYDAAAAXFZlY3Rvci5DQU5hbHl6ZXIuUGFuZWxzLkFuYWxvZ0dhdWdlLCBWZXJzaW9uPTE3LjMuOTEuMCwgQ3VsdHVyZT1uZXV0cmFsLCBQdWJsaWNLZXlUb2tlbj1udWxsBgQAAAA2VmVjdG9yLkNBTmFseXplci5QYW5lbHMuRGVzaWduLkdhdWdlQ3JpdGljYWxQcm9wZXJ0aWVzBgUAAAAyVm9pZCAuY3RvcihEb3VibGUsIERvdWJsZSwgRG91YmxlLCBEb3VibGUsIERvdWJsZSkGBgAAAFAuY3RvcihTeXN0ZW0uRG91YmxlLCBTeXN0ZW0uRG91YmxlLCBTeXN0ZW0uRG91YmxlLCBTeXN0ZW0uRG91YmxlLCBTeXN0ZW0uRG91YmxlKQEAAAAKCw==">
+        <Argument>0</Argument>
+        <Argument>100</Argument>
+        <Argument>0</Argument>
+        <Argument>30</Argument>
+        <Argument>80</Argument>
+      </Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.ClinometerControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xec7fd606ecbd9e44bee8e87e5d369567c38f" ControlName="Clinometer 1">
+      <Property Name="Name">Xec7fd606ecbd9e44bee8e87e5d369567c38f</Property>
+      <Property Name="Size">216, 231</Property>
+      <Property Name="Location">1276, 558</Property>
+      <Property Name="SymbolConfiguration"></Property>
+      <Property Name="ForeColor">Black</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.CompassControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xa8290ee4e0a77e4b0ae9ac2e6eec3b35978e" ControlName="Compass 1">
+      <Property Name="Name">Xa8290ee4e0a77e4b0ae9ac2e6eec3b35978e</Property>
+      <Property Name="Size">199, 244</Property>
+      <Property Name="Location">1267, 552</Property>
+      <Property Name="ToolTipMode">Automatic</Property>
+      <Property Name="SymbolConfiguration1"></Property>
+      <Property Name="SymbolConfiguration2"></Property>
+      <Property Name="ForeColor">Black</Property>
+      <Property Name="UnitForeColor">Black</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.TrackBarControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X56ad65c8e1e73e49bce9505e92c0e68c9637" ControlName="Track Bar 2">
+      <Property Name="Name">X56ad65c8e1e73e49bce9505e92c0e68c9637</Property>
+      <Property Name="Size">18, 30</Property>
+      <Property Name="Location">1282, 515</Property>
+      <Property Name="TabIndex">0</Property>
+      <Property Name="MaximumSize">100000, 30</Property>
+      <Property Name="SymbolConfiguration"></Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X04d1aac1e91cce4610e8009ec8a78ca34753" ControlName="Static Text 1">
+      <Property Name="Name">X04d1aac1e91cce4610e8009ec8a78ca34753</Property>
+      <Property Name="Size">66, 15</Property>
+      <Property Name="Location">1281, 413</Property>
+      <Property Name="Text">Description</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.GroupBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X01d43239e75c6e47abeadd4ecc89b252c008" ControlName="편의 기능">
+      <Property Name="Name">X01d43239e75c6e47abeadd4ecc89b252c008</Property>
+      <Property Name="Size">1187, 60</Property>
+      <Property Name="Location">42, 541</Property>
+      <Property Name="Text">Description</Property>
+      <Property Name="TabIndex">3</Property>
+      <Property Name="UseWindowsStyle">False</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.GroupBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X47c835c7e7625e4100e9a0fe2ae23ab5fa8a" ControlName="Group Box 2">
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X752e75f6e0cfae425aebd84e18945d3e833e" ControlName="경고등">
+        <Property Name="Name">X752e75f6e0cfae425aebd84e18945d3e833e</Property>
+        <Property Name="Size">52, 18</Property>
+        <Property Name="Location">276, 217</Property>
+        <Property Name="ForeColor">White</Property>
+        <Property Name="Font">Microsoft Sans Serif, 10pt, style=Bold</Property>
+        <Property Name="Text">경고등 </Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.SwitchControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X02a71ff1efa53e4fe0eb19ce8f1348377bc9" ControlName="경고등">
+        <Property Name="Name">X02a71ff1efa53e4fe0eb19ce8f1348377bc9</Property>
+        <Property Name="Size">20, 20</Property>
+        <Property Name="Location">293, 253</Property>
+        <Property Name="SymbolConfiguration">8;16;Body;;;hazard;1;;;-1;;;Value;;;0</Property>
+        <Property Name="ImageFile">Bitmaps\alert3.bmp</Property>
+        <Property Name="TabIndex">17</Property>
+        <Property Name="Epsilon">0</Property>
+        <Property Name="Increment">1</Property>
+        <Property Name="StartValue">2</Property>
+        <Property Name="StateCnt">3</Property>
+        <Property Name="SwitchValuesVTXml">&lt;Version&gt;2&lt;/Version&gt;&lt;Count&gt;3&lt;/Count&gt;&lt;RxValue&gt;2&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;2&lt;/TxValue&gt;&lt;RxValue&gt;3&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;3&lt;/TxValue&gt;&lt;RxValue&gt;4&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;4&lt;/TxValue&gt;</Property>
+        <Property Name="SwitchValuesVT">1;3;2/Lower/2;3/Lower/3;4/Lower/4</Property>
+        <Property Name="SwitchValues">1;3;2;3;4</Property>
+        <Property Name="SwitchValuesRx">1;3;2;3;4</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.SwitchControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X3cd08767ed674e40e6e9032eb04d470fcff9" ControlName="Switch / Indicator 4">
+        <Property Name="Name">X3cd08767ed674e40e6e9032eb04d470fcff9</Property>
+        <Property Name="Size">23, 30</Property>
+        <Property Name="Location">214, 241</Property>
+        <Property Name="SymbolConfiguration">8;16;Body;;;turnRight;1;;;-1;;;Value;;;0</Property>
+        <Property Name="TabIndex">16</Property>
+        <Property Name="Epsilon">0</Property>
+        <Property Name="Increment">1</Property>
+        <Property Name="StartValue">0</Property>
+        <Property Name="SwitchValuesVTXml">&lt;Version&gt;2&lt;/Version&gt;&lt;Count&gt;2&lt;/Count&gt;&lt;RxValue&gt;0&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;0&lt;/TxValue&gt;&lt;RxValue&gt;1&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;1&lt;/TxValue&gt;</Property>
+        <Property Name="SwitchValuesVT">1;2;0/Lower/0;1/Lower/1</Property>
+        <Property Name="SwitchValues">1;2;0;1</Property>
+        <Property Name="SwitchValuesRx">1;2;0;1</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.SwitchControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X32097566eceeae449beb61becbca997c9cc6" ControlName="Switch / Indicator 3">
+        <Property Name="Name">X32097566eceeae449beb61becbca997c9cc6</Property>
+        <Property Name="Size">23, 30</Property>
+        <Property Name="Location">175, 241</Property>
+        <Property Name="SymbolConfiguration">8;16;Body;;;turnLeft;1;;;-1;;;Value;;;0</Property>
+        <Property Name="TabIndex">15</Property>
+        <Property Name="Epsilon">0</Property>
+        <Property Name="Increment">1</Property>
+        <Property Name="StartValue">0</Property>
+        <Property Name="SwitchValuesVTXml">&lt;Version&gt;2&lt;/Version&gt;&lt;Count&gt;2&lt;/Count&gt;&lt;RxValue&gt;0&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;0&lt;/TxValue&gt;&lt;RxValue&gt;1&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;1&lt;/TxValue&gt;</Property>
+        <Property Name="SwitchValuesVT">1;2;0/Lower/0;1/Lower/1</Property>
+        <Property Name="SwitchValues">1;2;0;1</Property>
+        <Property Name="SwitchValuesRx">1;2;0;1</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.LEDControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X3a9ac8e3e5ba6e46aaea5fae542ba33994b0" ControlName="LED Control 4">
+        <Property Name="Name">X3a9ac8e3e5ba6e46aaea5fae542ba33994b0</Property>
+        <Property Name="Size">24, 24</Property>
+        <Property Name="Location">282, 427</Property>
+        <Property Name="ReadOnlyControl">True</Property>
+        <Property Name="TabIndex">14</Property>
+        <Property Name="TabStopActive">False</Property>
+        <Property Name="SwitchValuesVTXml">&lt;Version&gt;2&lt;/Version&gt;&lt;Count&gt;2&lt;/Count&gt;&lt;RxValue&gt;0&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;0&lt;/TxValue&gt;&lt;Color&gt;255, 152, 152, 152&lt;/Color&gt;&lt;RxValue&gt;3&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;3&lt;/TxValue&gt;&lt;Color&gt;Red&lt;/Color&gt;</Property>
+        <Property Name="SwitchValueVTOnXml">&lt;Version&gt;2&lt;/Version&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;RxValue&gt;3&lt;/RxValue&gt;</Property>
+        <Property Name="SwitchValueVTOn">1;Lower;3</Property>
+        <Property Name="SwitchValueOn">3</Property>
+        <Property Name="SymbolConfiguration">8;16;Body;;;doorLockState;1;;;-1;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.LEDControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X13ebe00ae41c3e4570eaac1ea09b106591c4" ControlName="LED Control 3">
+        <Property Name="Name">X13ebe00ae41c3e4570eaac1ea09b106591c4</Property>
+        <Property Name="Size">24, 24</Property>
+        <Property Name="Location">186, 427</Property>
+        <Property Name="ReadOnlyControl">True</Property>
+        <Property Name="TabIndex">13</Property>
+        <Property Name="TabStopActive">False</Property>
+        <Property Name="SwitchValuesVTXml">&lt;Version&gt;2&lt;/Version&gt;&lt;Count&gt;2&lt;/Count&gt;&lt;RxValue&gt;0&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;0&lt;/TxValue&gt;&lt;Color&gt;255, 152, 152, 152&lt;/Color&gt;&lt;RxValue&gt;2&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;2&lt;/TxValue&gt;&lt;Color&gt;Red&lt;/Color&gt;</Property>
+        <Property Name="SwitchValueVTOnXml">&lt;Version&gt;2&lt;/Version&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;RxValue&gt;2&lt;/RxValue&gt;</Property>
+        <Property Name="SwitchValueVTOn">1;Lower;2</Property>
+        <Property Name="SwitchValueOn">2</Property>
+        <Property Name="SymbolConfiguration">8;16;Body;;;doorLockState;1;;;-1;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.LEDControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xbb2b8f75e782be4ecbe815bec6445a735550" ControlName="LED Control 2">
+        <Property Name="Name">Xbb2b8f75e782be4ecbe815bec6445a735550</Property>
+        <Property Name="Size">24, 24</Property>
+        <Property Name="Location">106, 427</Property>
+        <Property Name="ReadOnlyControl">True</Property>
+        <Property Name="TabIndex">12</Property>
+        <Property Name="TabStopActive">False</Property>
+        <Property Name="SwitchValuesVTXml">&lt;Version&gt;2&lt;/Version&gt;&lt;Count&gt;2&lt;/Count&gt;&lt;RxValue&gt;0&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;0&lt;/TxValue&gt;&lt;Color&gt;255, 152, 152, 152&lt;/Color&gt;&lt;RxValue&gt;1&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;1&lt;/TxValue&gt;&lt;Color&gt;Red&lt;/Color&gt;</Property>
+        <Property Name="SymbolConfiguration">8;16;Body;;;doorLockState;1;;;-1;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.LEDControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xa6b2fee7e4112e40dcea132ee5bbc531d817" ControlName="LED Control 1">
+        <Property Name="Name">Xa6b2fee7e4112e40dcea132ee5bbc531d817</Property>
+        <Property Name="Size">24, 24</Property>
+        <Property Name="Location">36, 427</Property>
+        <Property Name="ReadOnlyControl">True</Property>
+        <Property Name="TabIndex">11</Property>
+        <Property Name="TabStopActive">False</Property>
+        <Property Name="SwitchValuesVTXml">&lt;Version&gt;2&lt;/Version&gt;&lt;Count&gt;2&lt;/Count&gt;&lt;RxValue&gt;0&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;0&lt;/TxValue&gt;&lt;Color&gt;255, 152, 152, 152&lt;/Color&gt;&lt;RxValue&gt;0&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;0&lt;/TxValue&gt;&lt;Color&gt;Red&lt;/Color&gt;</Property>
+        <Property Name="SwitchValueVTOnXml">&lt;Version&gt;2&lt;/Version&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;RxValue&gt;0&lt;/RxValue&gt;</Property>
+        <Property Name="SwitchValueVTOn">1;Lower;0</Property>
+        <Property Name="SwitchValueOn">0</Property>
+        <Property Name="SymbolConfiguration">8;16;Body;;;doorLockState;1;;;-1;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xf3c40b07e8094e4065e8249ec96b09113dfa" ControlName="PNDR text">
+        <Property Name="Name">Xf3c40b07e8094e4065e8249ec96b09113dfa</Property>
+        <Property Name="Size">18, 168</Property>
+        <Property Name="Location">479, 50</Property>
+        <Property Name="ForeColor">White</Property>
+        <Property Name="Font">Microsoft Sans Serif, 10pt</Property>
+        <Property Name="Text">D
+
+
+N
+
+
+R
+
+
+P
+</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X0540b095e8e4ce4018e9fcde2daaf616e480" ControlName="기어레버">
+        <Property Name="Name">X0540b095e8e4ce4018e9fcde2daaf616e480</Property>
+        <Property Name="Size">62, 18</Property>
+        <Property Name="Location">435, 26</Property>
+        <Property Name="ForeColor">White</Property>
+        <Property Name="Font">Microsoft Sans Serif, 10pt, style=Bold</Property>
+        <Property Name="Text">기어레버</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.TrackBarControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xa138fff2e9014e43d3ea749ee21c039f870e" ControlName="driveState">
+        <Property Name="Name">Xa138fff2e9014e43d3ea749ee21c039f870e</Property>
+        <Property Name="Size">30, 149</Property>
+        <Property Name="Location">450, 50</Property>
+        <Property Name="Orientation">Vertical</Property>
+        <Property Name="TabIndex">10</Property>
+        <Property Name="MaximumDouble">3</Property>
+        <Property Name="LargeChangeDouble">1</Property>
+        <Property Name="MaximumSize">30, 100000</Property>
+        <Property Name="Maximum">3</Property>
+        <Property Name="LargeChange">1</Property>
+        <Property Name="SymbolConfiguration">8;16;Chassis;;;driveMode;1;;;-1;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.SwitchControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X92b9388ce5f20e457ae87b9e257b7c17477c" ControlName="Switch / Indicator 2">
+        <Property Name="Name">X92b9388ce5f20e457ae87b9e257b7c17477c</Property>
+        <Property Name="Size">35, 34</Property>
+        <Property Name="Location">24, 30</Property>
+        <Property Name="SymbolConfiguration">8;16;Powertrain;;;ignitionKey;1;;;-1;;;Value;;;0</Property>
+        <Property Name="ImageFile">Bitmaps\ControlIgnition.png</Property>
+        <Property Name="IsProportional">False</Property>
+        <Property Name="TabIndex">1</Property>
+        <Property Name="Epsilon">0</Property>
+        <Property Name="Increment">1</Property>
+        <Property Name="StartValue">0</Property>
+        <Property Name="SwitchValuesVTXml">&lt;Version&gt;2&lt;/Version&gt;&lt;Count&gt;2&lt;/Count&gt;&lt;RxValue&gt;0&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;0&lt;/TxValue&gt;&lt;RxValue&gt;1&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;1&lt;/TxValue&gt;</Property>
+        <Property Name="SwitchValuesVT">1;2;0/Lower/0;1/Lower/1</Property>
+        <Property Name="SwitchValues">1;2;0;1</Property>
+        <Property Name="SwitchValuesRx">1;2;0;1</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xe5111375eb49fe4b0ce8b07ecb264e6f808f" ControlName="Static Text 5">
+        <Property Name="Name">Xe5111375eb49fe4b0ce8b07ecb264e6f808f</Property>
+        <Property Name="Size">75, 18</Property>
+        <Property Name="Location">5, 15</Property>
+        <Property Name="ForeColor">White</Property>
+        <Property Name="Font">Microsoft Sans Serif, 10pt, style=Bold</Property>
+        <Property Name="Text">엔진스타트</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.SwitchControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xbcf46135efa2de4ac6e8f5de4d2b982f9aa6" ControlName="Switch / Indicator 1">
+        <Property Name="Name">Xbcf46135efa2de4ac6e8f5de4d2b982f9aa6</Property>
+        <Property Name="Size">23, 30</Property>
+        <Property Name="Location">282, 371</Property>
+        <Property Name="SymbolConfiguration">8;16;Body;;;doorLockState;1;;;-1;;;Value;;;0</Property>
+        <Property Name="TabIndex">9</Property>
+        <Property Name="Epsilon">0</Property>
+        <Property Name="Increment">1</Property>
+        <Property Name="StartValue">0</Property>
+        <Property Name="SwitchValuesVTXml">&lt;Version&gt;2&lt;/Version&gt;&lt;Count&gt;2&lt;/Count&gt;&lt;RxValue&gt;0&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;0&lt;/TxValue&gt;&lt;RxValue&gt;3&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;3&lt;/TxValue&gt;</Property>
+        <Property Name="SwitchValuesVT">1;2;0/Lower/0;3/Lower/3</Property>
+        <Property Name="SwitchValues">1;2;0;3</Property>
+        <Property Name="SwitchValuesRx">1;2;0;3</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xf13b7d05e713ce4488ea291e97044aacec21" ControlName="Static Text 3">
+        <Property Name="Name">Xf13b7d05e713ce4488ea291e97044aacec21</Property>
+        <Property Name="Size">104, 18</Property>
+        <Property Name="Location">247, 338</Property>
+        <Property Name="ForeColor">White</Property>
+        <Property Name="Font">Microsoft Sans Serif, 10pt, style=Bold</Property>
+        <Property Name="Text">UNLOCK driver</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.SwitchControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xd04b9baaed13ce4c83e880ce032ecf00b7dc" ControlName="오른쪽뒷좌석문">
+        <Property Name="Name">Xd04b9baaed13ce4c83e880ce032ecf00b7dc</Property>
+        <Property Name="Size">23, 30</Property>
+        <Property Name="Location">186, 371</Property>
+        <Property Name="SymbolConfiguration">8;16;Body;;;doorLockState;1;;;-1;;;Value;;;0</Property>
+        <Property Name="TabIndex">8</Property>
+        <Property Name="Epsilon">0</Property>
+        <Property Name="Increment">1</Property>
+        <Property Name="StartValue">0</Property>
+        <Property Name="SwitchValuesVTXml">&lt;Version&gt;2&lt;/Version&gt;&lt;Count&gt;2&lt;/Count&gt;&lt;RxValue&gt;0&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;0&lt;/TxValue&gt;&lt;RxValue&gt;2&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;2&lt;/TxValue&gt;</Property>
+        <Property Name="SwitchValuesVT">1;2;0/Lower/0;2/Lower/2</Property>
+        <Property Name="SwitchValues">1;2;0;2</Property>
+        <Property Name="SwitchValuesRx">1;2;0;2</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X48e71163e8f08e47a1e8789e62a417be5275" ControlName="오른쪽뒷좌석문">
+        <Property Name="Name">X48e71163e8f08e47a1e8789e62a417be5275</Property>
+        <Property Name="Size">94, 18</Property>
+        <Property Name="Location">151, 338</Property>
+        <Property Name="ForeColor">White</Property>
+        <Property Name="Font">Microsoft Sans Serif, 10pt, style=Bold</Property>
+        <Property Name="Text">UNLOCK ALL</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.SwitchControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xcc3109dce078ce447feba7ee6164f7b34d97" ControlName="보조석 문">
+        <Property Name="Name">Xcc3109dce078ce447feba7ee6164f7b34d97</Property>
+        <Property Name="Size">23, 30</Property>
+        <Property Name="Location">106, 371</Property>
+        <Property Name="SymbolConfiguration">8;16;Body;;;doorLockState;1;;;-1;;;Value;;;0</Property>
+        <Property Name="TabIndex">7</Property>
+        <Property Name="Epsilon">0</Property>
+        <Property Name="Increment">1</Property>
+        <Property Name="StartValue">0</Property>
+        <Property Name="SwitchValuesVTXml">&lt;Version&gt;2&lt;/Version&gt;&lt;Count&gt;2&lt;/Count&gt;&lt;RxValue&gt;0&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;0&lt;/TxValue&gt;&lt;RxValue&gt;1&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;1&lt;/TxValue&gt;</Property>
+        <Property Name="SwitchValuesVT">1;2;0/Lower/0;1/Lower/1</Property>
+        <Property Name="SwitchValues">1;2;0;1</Property>
+        <Property Name="SwitchValuesRx">1;2;0;1</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xa0fe9f57e1b83e41d3eb2a7ed4959c899a5c" ControlName="보조석 문">
+        <Property Name="Name">Xa0fe9f57e1b83e41d3eb2a7ed4959c899a5c</Property>
+        <Property Name="Size">74, 18</Property>
+        <Property Name="Location">78, 338</Property>
+        <Property Name="ForeColor">White</Property>
+        <Property Name="Font">Microsoft Sans Serif, 10pt, style=Bold</Property>
+        <Property Name="Text">LOCK ALL</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xa6bef88deac66e4d4de95f9ef19afd902030" ControlName="운전석문">
+        <Property Name="Name">Xa6bef88deac66e4d4de95f9ef19afd902030</Property>
+        <Property Name="Size">65, 18</Property>
+        <Property Name="Location">15, 338</Property>
+        <Property Name="ForeColor">White</Property>
+        <Property Name="Font">Microsoft Sans Serif, 10pt, style=Bold</Property>
+        <Property Name="Text">rock해제 </Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.SwitchControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X66f3ec69e7a1be434ce97f6e6f33b21dcf7f" ControlName="운전석 문">
+        <Property Name="Name">X66f3ec69e7a1be434ce97f6e6f33b21dcf7f</Property>
+        <Property Name="Size">23, 30</Property>
+        <Property Name="Location">36, 371</Property>
+        <Property Name="SymbolConfiguration">8;16;Body;;;doorLockState;1;;;-1;;;Value;;;0</Property>
+        <Property Name="IsProportional">False</Property>
+        <Property Name="TabIndex">6</Property>
+        <Property Name="Epsilon">0</Property>
+        <Property Name="Increment">1</Property>
+        <Property Name="StartValue">0</Property>
+        <Property Name="SwitchValuesVTXml">&lt;Version&gt;2&lt;/Version&gt;&lt;Count&gt;2&lt;/Count&gt;&lt;RxValue&gt;0&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;0&lt;/TxValue&gt;&lt;RxValue&gt;0&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;0&lt;/TxValue&gt;</Property>
+        <Property Name="SwitchValuesVT">1;2;0/Lower/0;0/Lower/0</Property>
+        <Property Name="SwitchValues">1;2;0;0</Property>
+        <Property Name="SwitchValuesRx">1;2;0;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X0b3d0506e2240e4481e9ab8eb8342af603be" ControlName="와이퍼 상태">
+        <Property Name="Name">X0b3d0506e2240e4481e9ab8eb8342af603be</Property>
+        <Property Name="Size">46, 168</Property>
+        <Property Name="Location">471, 272</Property>
+        <Property Name="ForeColor">White</Property>
+        <Property Name="Font">Microsoft Sans Serif, 10pt</Property>
+        <Property Name="Text">OFF
+
+
+LOW
+
+
+HIGH
+
+
+AUTO
+</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X472adb42eebe1e4eade9890e29704e5615d2" ControlName="와이퍼">
+        <Property Name="Name">X472adb42eebe1e4eade9890e29704e5615d2</Property>
+        <Property Name="Size">48, 18</Property>
+        <Property Name="Location">420, 253</Property>
+        <Property Name="ForeColor">White</Property>
+        <Property Name="Font">Microsoft Sans Serif, 10pt, style=Bold</Property>
+        <Property Name="Text">와이퍼</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.TrackBarControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xbb7b40b6ef9d6e4af1ebbc6e97cc3cbc4e37" ControlName="와이퍼">
+        <Property Name="Name">Xbb7b40b6ef9d6e4af1ebbc6e97cc3cbc4e37</Property>
+        <Property Name="Size">30, 149</Property>
+        <Property Name="Location">435, 277</Property>
+        <Property Name="Orientation">Vertical</Property>
+        <Property Name="TabIndex">4</Property>
+        <Property Name="MaximumDouble">3</Property>
+        <Property Name="LargeChangeDouble">1</Property>
+        <Property Name="MaximumSize">30, 100000</Property>
+        <Property Name="Maximum">3</Property>
+        <Property Name="LargeChange">1</Property>
+        <Property Name="SymbolConfiguration">8;16;Body;;;wiperMode;1;;;-1;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.SwitchControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X9c662d3ae55a8e445fea5e0ee6e1857721fc" ControlName="창문 다운">
+        <Property Name="Name">X9c662d3ae55a8e445fea5e0ee6e1857721fc</Property>
+        <Property Name="Size">23, 30</Property>
+        <Property Name="Location">49, 241</Property>
+        <Property Name="SymbolConfiguration">8;16;Body;;;windowDown;1;;;-1;;;Value;;;0</Property>
+        <Property Name="TabIndex">3</Property>
+        <Property Name="IsButton">True</Property>
+        <Property Name="Epsilon">0</Property>
+        <Property Name="Increment">1</Property>
+        <Property Name="StartValue">0</Property>
+        <Property Name="SwitchValuesVTXml">&lt;Version&gt;2&lt;/Version&gt;&lt;Count&gt;2&lt;/Count&gt;&lt;RxValue&gt;0&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;0&lt;/TxValue&gt;&lt;RxValue&gt;1&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;1&lt;/TxValue&gt;</Property>
+        <Property Name="SwitchValuesVT">1;2;0/Lower/0;1/Lower/1</Property>
+        <Property Name="SwitchValues">1;2;0;1</Property>
+        <Property Name="SwitchValuesRx">1;2;0;1</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xfc682dd8e020fe4b93e9812ea54ae6da9854" ControlName="창문 다운">
+        <Property Name="Name">Xfc682dd8e020fe4b93e9812ea54ae6da9854</Property>
+        <Property Name="Size">112, 18</Property>
+        <Property Name="Location">7, 277</Property>
+        <Property Name="ForeColor">White</Property>
+        <Property Name="Font">Microsoft Sans Serif, 10pt, style=Bold</Property>
+        <Property Name="Text">창문 다운 스위치 </Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X449576efeb361e4ecfeaf53eb08be0c59cb2" ControlName="창문 업">
+        <Property Name="Name">X449576efeb361e4ecfeaf53eb08be0c59cb2</Property>
+        <Property Name="Size">99, 18</Property>
+        <Property Name="Location">9, 188</Property>
+        <Property Name="ForeColor">White</Property>
+        <Property Name="Font">Microsoft Sans Serif, 10pt, style=Bold</Property>
+        <Property Name="Text">창문 업 스위치 </Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.SwitchControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xe096cbbaea290e4669eb3c4e3b53750fd54d" ControlName="창문 업">
+        <Property Name="Name">Xe096cbbaea290e4669eb3c4e3b53750fd54d</Property>
+        <Property Name="Size">23, 30</Property>
+        <Property Name="Location">49, 205</Property>
+        <Property Name="SymbolConfiguration">8;16;Body;;;windowUp;1;;;-1;;;Value;;;0</Property>
+        <Property Name="TabIndex">2</Property>
+        <Property Name="IsButton">True</Property>
+        <Property Name="Activation">Left</Property>
+        <Property Name="Epsilon">0</Property>
+        <Property Name="Increment">1</Property>
+        <Property Name="StartValue">0</Property>
+        <Property Name="SwitchValuesVTXml">&lt;Version&gt;2&lt;/Version&gt;&lt;Count&gt;2&lt;/Count&gt;&lt;RxValue&gt;0&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;0&lt;/TxValue&gt;&lt;RxValue&gt;1&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;1&lt;/TxValue&gt;</Property>
+        <Property Name="SwitchValuesVT">1;2;0/Lower/0;1/Lower/1</Property>
+        <Property Name="SwitchValues">1;2;0;1</Property>
+        <Property Name="SwitchValuesRx">1;2;0;1</Property>
+      </Object>
+      <Property Name="Name">X47c835c7e7625e4100e9a0fe2ae23ab5fa8a</Property>
+      <Property Name="Size">576, 471</Property>
+      <Property Name="Location">653, 36</Property>
+      <Property Name="Text">Description</Property>
+      <Property Name="TabIndex">2</Property>
+      <Property Name="UseWindowsStyle">False</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.GroupBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xac070e4ce6cc2e4363eb94ae6d456bd8cb5f" ControlName="주행제어">
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X2b4b921bef0c4e471debb7fe83e8bd9c4c42" ControlName="streeing">
+        <Property Name="Name">X2b4b921bef0c4e471debb7fe83e8bd9c4c42</Property>
+        <Property Name="Size">122, 18</Property>
+        <Property Name="Location">219, 217</Property>
+        <Property Name="ForeColor">White</Property>
+        <Property Name="Font">Microsoft Sans Serif, 10pt, style=Bold</Property>
+        <Property Name="Text">스티이어링 미구현 </Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.TrackBarControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X9b0b8d19ed93ae421eeb5e7e9809bf1a0baf" ControlName="Track Bar 3">
+        <Property Name="Name">X9b0b8d19ed93ae421eeb5e7e9809bf1a0baf</Property>
+        <Property Name="Size">106, 30</Property>
+        <Property Name="Location">235, 241</Property>
+        <Property Name="TabIndex">4</Property>
+        <Property Name="MaximumSize">100000, 30</Property>
+        <Property Name="SymbolConfiguration"></Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xb78da70eefa2ce492beb72be8e5bf75d8c56" ControlName="가속 패달">
+        <Property Name="Name">Xb78da70eefa2ce492beb72be8e5bf75d8c56</Property>
+        <Property Name="Size">52, 15</Property>
+        <Property Name="Location">75, 350</Property>
+        <Property Name="ForeColor">White</Property>
+        <Property Name="Font">Microsoft Sans Serif, 8.25pt, style=Bold</Property>
+        <Property Name="Text">가속패달</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.TrackBarControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xb83fb943e0ff5e4301e8f68eabd33d9fedcd" ControlName="Track Bar 1">
+        <Property Name="Name">Xb83fb943e0ff5e4301e8f68eabd33d9fedcd</Property>
+        <Property Name="Size">106, 30</Property>
+        <Property Name="Location">75, 371</Property>
+        <Property Name="DisplayValue">True</Property>
+        <Property Name="TabIndex">3</Property>
+        <Property Name="MaximumDouble">100</Property>
+        <Property Name="MaximumSize">100000, 30</Property>
+        <Property Name="Maximum">100</Property>
+        <Property Name="SymbolConfiguration">8;2;chassis_can;SIL_TEST_CTRL;frmPedalInputCanMsg;AccelPedal;1;Chassis;;-1;;;Value;;;0</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xb2470c43e7f0fe4bbee87b1eb78c45dbeb1d" ControlName="속도 숫자">
+        <Property Name="Name">Xb2470c43e7f0fe4bbee87b1eb78c45dbeb1d</Property>
+        <Property Name="Size">192, 15</Property>
+        <Property Name="Location">60, 92</Property>
+        <Property Name="ForeColor">White</Property>
+        <Property Name="Font">Microsoft Sans Serif, 8pt, style=Bold</Property>
+        <Property Name="Text"> 0    30   60   90  120 150 180 210 240</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X90c12b9ce6815e4e79eb294e5d84ea5bc32b" ControlName="속도 구별 선">
+        <Property Name="Name">X90c12b9ce6815e4e79eb294e5d84ea5bc32b</Property>
+        <Property Name="Size">187, 18</Property>
+        <Property Name="Location">60, 69</Property>
+        <Property Name="ForeColor">White</Property>
+        <Property Name="Font">Microsoft Sans Serif, 10pt, style=Bold</Property>
+        <Property Name="Text"> |     |     |     |     |     |     |     |     |</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xcd63b368ec11ce49dee9606efe119aab684c" ControlName="속도">
+        <Property Name="Name">Xcd63b368ec11ce49dee9606efe119aab684c</Property>
+        <Property Name="Size">35, 18</Property>
+        <Property Name="Location">60, 30</Property>
+        <Property Name="ForeColor">White</Property>
+        <Property Name="Font">Microsoft Sans Serif, 10pt, style=Bold</Property>
+        <Property Name="Text">속도</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.TrackBarControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xa2a445d3ee9b9e41b1e9060eb79310801f2d" ControlName="vehicleSpeed">
+        <Property Name="Name">Xa2a445d3ee9b9e41b1e9060eb79310801f2d</Property>
+        <Property Name="Size">201, 30</Property>
+        <Property Name="Location">60, 54</Property>
+        <Property Name="DisplayValue">True</Property>
+        <Property Name="TabIndex">1</Property>
+        <Property Name="MaximumDouble">255</Property>
+        <Property Name="MaximumSize">100000, 30</Property>
+        <Property Name="Maximum">255</Property>
+        <Property Name="SymbolConfiguration">8;16;Chassis;;;vehicleSpeed;1;;;-1;;;Value;;;0</Property>
+      </Object>
+      <Property Name="Name">Xac070e4ce6cc2e4363eb94ae6d456bd8cb5f</Property>
+      <Property Name="Size">565, 471</Property>
+      <Property Name="Location">42, 36</Property>
+      <Property Name="ForeColor">White</Property>
+      <Property Name="Text">주행제어</Property>
+      <Property Name="TabIndex">1</Property>
+      <Property Name="UseWindowsStyle">False</Property>
+    </Object>
+    <Property Name="Name">Panel</Property>
+    <Property Name="Size">1282, 632</Property>
+    <Property Name="Location">0, 0</Property>
+    <Property Name="BackColor">255, 127, 127, 127</Property>
+  </Object>
+</Panel>

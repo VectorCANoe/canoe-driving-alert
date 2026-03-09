@@ -1,0 +1,117 @@
+/*@!Encoding:949*/
+// ACCEL_CTRL_Fixed.can
+// Chassis 도메인
+// 속도 계산 + 크루즈 컨트롤
+
+includes
+{
+}
+
+variables
+{
+  msTimer tAccelCycle;
+  double gSpeed;
+  int gCCActive;
+  double gCCTargetSpeed;
+}
+
+on start
+{
+  gSpeed         = 0.0;
+  gCCActive      = 0;
+  gCCTargetSpeed = 0.0;
+  setTimer(tAccelCycle, 100);
+  write("[ACCEL] start");
+}
+
+on sysvar Chassis::ccActive
+{
+  if (@Chassis::ccActive == 0)
+  {
+    gCCActive = 0;
+    write("[CC] Cruise Control OFF");
+  }
+  else
+  {
+    if ((int)@Chassis::driveMode == 3)
+    {
+      gCCActive      = 1;
+      gCCTargetSpeed = @Chassis::ccTargetSpeed;
+      write("[CC] Cruise Control ON - target=%.1f", gCCTargetSpeed);
+    }
+    else
+    {
+      @Chassis::ccActive = 0;
+      gCCActive = 0;
+      write("[CC] Cruise Control REJECTED - not in D gear");
+    }
+  }
+}
+
+on timer tAccelCycle
+{
+  int    ignition;
+  int    driveMode;
+  double brakePressure;
+  double throttle;
+  double ccTarget;
+
+  ignition      = (int)@Powertrain::ignitionState;
+  driveMode     = (int)@Chassis::driveMode;
+  brakePressure = (double)@Chassis::brakePressure;
+  throttle      = (double)@Chassis::throttlePosition;
+  ccTarget      = (double)@Chassis::ccTargetSpeed;
+
+  if (ignition == 0)
+  {
+    gSpeed    = 0.0;
+    gCCActive = 0;
+    @Chassis::vehicleSpeed = 0;
+    @Chassis::ccActive     = 0;
+    setTimer(tAccelCycle, 100);
+    return;
+  }
+
+  // 브레이크시 CC 취소
+  if (brakePressure > 10 && gCCActive == 1)
+  {
+    gCCActive = 0;
+    @Chassis::ccActive = 0;
+    write("[CC] CANCELLED - brake");
+  }
+
+  // 기어 변경시 CC 취소
+  if (driveMode != 3 && gCCActive == 1)
+  {
+    gCCActive = 0;
+    @Chassis::ccActive = 0;
+    write("[CC] CANCELLED - gear changed");
+  }
+
+  // 속도 계산
+  if (brakePressure > 10)
+  {
+    gSpeed -= (15.0 * 0.1);
+    if (gSpeed < 0.0) gSpeed = 0.0;
+  }
+  else if (gCCActive == 1)
+  {
+    if (gSpeed < ccTarget - 0.5)      gSpeed += (0.3 * 0.1);
+    else if (gSpeed > ccTarget + 0.5) gSpeed -= (0.3 * 0.1);
+  }
+  else if (throttle > 0 && (driveMode == 3 || driveMode == 1))
+  {
+    gSpeed += (throttle / 100.0) * 0.3 * 0.1;
+    if (driveMode == 1 && gSpeed > 30.0)  gSpeed = 30.0;
+    if (driveMode == 3 && gSpeed > 200.0) gSpeed = 200.0;
+  }
+  else
+  {
+    gSpeed -= 0.003;
+    if (gSpeed < 0.0) gSpeed = 0.0;
+  }
+
+  @Chassis::vehicleSpeed = (int)gSpeed;
+
+  setTimer(tAccelCycle, 100);
+}

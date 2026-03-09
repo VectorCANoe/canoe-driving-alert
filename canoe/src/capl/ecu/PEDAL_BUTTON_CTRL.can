@@ -1,0 +1,84 @@
+/*@!Encoding:65001*/
+// PEDAL_BUTTON_CTRL.can
+// Chassis Domain — Panel 버튼 -> 페달 압력 램프 -> CAN 출력
+// 입력  : @Body::AccelButton (0=해제 1=누름)
+//         @Body::BrakeButton (0=해제 1=누름)
+//         @Powertrain::ignitionState
+// 출력  : frmPedalInputCanMsg (AccelPedal, BrakePedal)
+//         @Chassis::throttlePosition (ACCEL_CTRL 참조)
+// 주기  : 50ms
+// 램프  : 액셀 +5/-3 per 50ms (0->100 약 1초) | 브레이크 +10/-8 per 50ms
+
+includes
+{
+}
+
+variables
+{
+  msTimer tPedalUpdate;
+  int     gAccelPedal;
+  int     gBrakePedal;
+}
+
+on start
+{
+  gAccelPedal = 0;
+  gBrakePedal = 0;
+  setTimer(tPedalUpdate, 50);
+  write("[PEDAL_BUTTON] start — accel +5/-3, brake +10/-8 per 50ms");
+}
+
+on timer tPedalUpdate
+{
+  message frmPedalInputCanMsg mPedal;
+  int accelBtn;
+  int brakeBtn;
+  int ignition;
+
+  ignition = (int)@Powertrain::ignitionState;
+  accelBtn = (int)@Body::AccelButton;
+  brakeBtn = (int)@Body::BrakeButton;
+
+  // 시동 OFF -> 즉시 0
+  if (ignition == 0)
+  {
+    gAccelPedal = 0;
+    gBrakePedal = 0;
+    mPedal.AccelPedal          = 0;
+    mPedal.BrakePedal          = 0;
+    output(mPedal);
+    setTimer(tPedalUpdate, 50);
+    return;
+  }
+
+  // 액셀: 버튼 누름 +5, 해제 -3 (0-100 범위) — 0->100 약 1초
+  if (accelBtn > 0)
+  {
+    gAccelPedal += 5;
+    if (gAccelPedal > 100) gAccelPedal = 100;
+  }
+  else
+  {
+    gAccelPedal -= 3;
+    if (gAccelPedal < 0) gAccelPedal = 0;
+  }
+
+  // 브레이크: 버튼 누름 +10, 해제 -8 (0-100 범위)
+  if (brakeBtn > 0)
+  {
+    gBrakePedal += 10;
+    if (gBrakePedal > 100) gBrakePedal = 100;
+  }
+  else
+  {
+    gBrakePedal -= 8;
+    if (gBrakePedal < 0) gBrakePedal = 0;
+  }
+
+  // CAN 메시지 출력 -> BRK_CTRL이 수신하여 브레이크 압력 계산
+  mPedal.AccelPedal = gAccelPedal;
+  mPedal.BrakePedal = gBrakePedal;
+  output(mPedal);
+
+  setTimer(tPedalUpdate, 50);
+}

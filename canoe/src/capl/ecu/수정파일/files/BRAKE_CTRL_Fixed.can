@@ -1,0 +1,135 @@
+/*@!Encoding:949*/
+// BRAKE_CTRL_Fixed.can
+// Chassis 도메인
+
+includes
+{
+}
+
+variables
+{
+  msTimer tBrakeCycle;
+  double gBrakePressureTarget;
+  double gBrakePressureActual;
+  int gBrakePedal;
+  int gWheelSpdFL;
+  int gLastBrakePedal;
+  int gLastAssistReq;
+}
+
+on start
+{
+  gBrakePressureTarget = 0.0;
+  gBrakePressureActual = 0.0;
+  gBrakePedal          = 0;
+  gWheelSpdFL          = 0;
+  gLastBrakePedal      = -1;
+  gLastAssistReq       = -1;
+  setTimer(tBrakeCycle, 100);
+  write("[BRAKE_CTRL] start");
+}
+
+on message frmPedalInputCanMsg
+{
+  gBrakePedal = this.BrakePedal;
+  if (gBrakePedal < 0)   gBrakePedal = 0;
+  if (gBrakePedal > 100) gBrakePedal = 100;
+}
+
+on message frmWheelSpeedMsg
+{
+  gWheelSpdFL = this.WheelSpdFL;
+}
+
+on timer tBrakeCycle
+{
+  message frmBrakeStatusMsg mStatus;
+  message frmAbsStateMsg    mAbs;
+  message frmEscStateMsg    mEsc;
+  message frmBrakeTempMsg   mTemp;
+  message frmBrakeWearMsg   mWear;
+
+  int ignition;
+  int decelAssistReq;
+  int appliedBrakePedal;
+  int brakePressure;
+  int absActive;
+  int espActive;
+  int absSlip;
+
+  ignition = (int)@Powertrain::ignitionState;
+
+  if (ignition == 0)
+  {
+    gBrakePressureTarget = 0.0;
+    gBrakePressureActual = 0.0;
+    @Chassis::brakePressure = 0;
+    setTimer(tBrakeCycle, 100);
+    return;
+  }
+
+  gBrakePressureTarget = (double)gBrakePedal;
+
+  if (gBrakePressureTarget > gBrakePressureActual)
+  {
+    gBrakePressureActual += 0.5;
+    if (gBrakePressureActual > gBrakePressureTarget)
+      gBrakePressureActual = gBrakePressureTarget;
+  }
+  else if (gBrakePressureTarget < gBrakePressureActual)
+  {
+    gBrakePressureActual -= 1.0;
+    if (gBrakePressureActual < gBrakePressureTarget)
+      gBrakePressureActual = gBrakePressureTarget;
+  }
+
+  @Chassis::brakePressure = (int)gBrakePressureActual;
+
+  decelAssistReq = ((int)@Core::decelAssistReq == 1) ? 1 : 0;
+
+  appliedBrakePedal = (int)gBrakePressureActual;
+  if (decelAssistReq == 1 && appliedBrakePedal < 25)
+    appliedBrakePedal = 25;
+
+  brakePressure = appliedBrakePedal * 2;
+  if (brakePressure > 255) brakePressure = 255;
+
+  absActive = ((appliedBrakePedal > 80) && (gWheelSpdFL > 10)) ? 1 : 0;
+  absSlip   = absActive ? ((appliedBrakePedal - 80) & 0x3F) : 0;
+
+  espActive = ((appliedBrakePedal > 40) && ((int)@Core::steeringInputNorm == 1)) ? 1 : 0;
+
+  mStatus.BrakePressure = brakePressure;
+  mStatus.BrakeMode     = (appliedBrakePedal > 80) ? 2 : ((appliedBrakePedal > 0) ? 1 : 0);
+  mStatus.AbsActive     = absActive;
+  mStatus.EspActive     = espActive;
+  output(mStatus);
+
+  mAbs.AbsCtrlState   = absActive ? 2 : 0;
+  mAbs.AbsSlipLevel   = absSlip;
+  mAbs.AbsPressureCmd = absActive ? brakePressure : 0;
+  output(mAbs);
+
+  mEsc.EscCtrlState    = espActive ? 2 : 0;
+  mEsc.EscIntervention = espActive ? ((appliedBrakePedal - 40) & 0x3F) : 0;
+  mEsc.EscYawTarget    = 128;
+  output(mEsc);
+
+  mTemp.BrakeTempFL = 30 + (appliedBrakePedal / 5);
+  mTemp.BrakeTempFR = 30 + (appliedBrakePedal / 5);
+  output(mTemp);
+
+  mWear.BrakePadWearLvl = 10;
+  output(mWear);
+
+  if (gBrakePedal != gLastBrakePedal || decelAssistReq != gLastAssistReq)
+  {
+    write("[BRAKE_CTRL] pedal=%d assist=%d applied=%d pressure=%d abs=%d esp=%d",
+          gBrakePedal, decelAssistReq, appliedBrakePedal,
+          brakePressure, absActive, espActive);
+    gLastBrakePedal = gBrakePedal;
+    gLastAssistReq  = decelAssistReq;
+  }
+
+  setTimer(tBrakeCycle, 100);
+}

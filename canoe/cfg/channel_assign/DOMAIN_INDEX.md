@@ -12,7 +12,6 @@ This file documents domain-oriented CAPL ownership for the v2 runtime profile.
 ## Domain -> CAPL Files
 
 ### ETH_Backbone
-- `ADAS_WARN_CTRL.can`
 - `DOMAIN_BOUNDARY_MGR.can`
 - `EMS_ALERT_RX.can`
 - `EMS_AMB_TX.can`
@@ -20,6 +19,9 @@ This file documents domain-oriented CAPL ownership for the v2 runtime profile.
 - `ETH_SW.can`
 - `NAV_CTX_MGR.can`
 - `VAL_SCENARIO_CTRL` (validation scenario controller)
+
+### ADAS
+- `ADAS_WARN_CTRL.can`
 - `WARN_ARB_MGR.can`
 
 ### Infotainment

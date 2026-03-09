@@ -4,6 +4,19 @@
     <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="km/h" name="vehicleSpeed" comment="Panel input speed" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="255" maxValuePhys="255"/>
     <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="driveState" comment="0=P 1=R 2=N 3=D" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="3" maxValuePhys="3"/>
     <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="steeringInput" comment="0=NoInput 1=Input" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1"/>
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="%" name="throttlePosition" comment="Throttle position 0-100 (set by PEDAL_BUTTON_CTRL)" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="100" maxValuePhys="100"/>
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="%" name="brakePressure" comment="Brake pressure 0-100 (set by BRK_CTRL ramp)" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="100" maxValuePhys="100"/>
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="driveMode" comment="0=P 1=R 2=N 3=D (bridged from TCM via GearState)" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="3" maxValuePhys="3"/>
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="ccActive" comment="Cruise Control 0=off 1=on (panel button)" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1"/>
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="km/h" name="ccTargetSpeed" comment="Cruise Control target speed (panel input)" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="200" maxValuePhys="200"/>
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="gearPosition" comment="Auto gear 1-6 (set by TCM based on speed)" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="1" minValuePhys="1" maxValue="6" maxValuePhys="6"/>
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="driveModeLabel" comment="PRND text label: P/R/N/D (set by TCM, bind to Text Display widget)" encoding="65001" type="string"/>
+  </namespace>
+
+  <namespace name="Powertrain" comment="" interface="">
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="ignitionState" comment="0=Off 1=On (bridged from ENG_CTRL via frmIgnitionEngineMsg)" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1"/>
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="ignitionKey" comment="Engine key switch: 0=off 1=on (panel toggle button)" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1"/>
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="rpm" name="engineRPM" comment="Engine RPM (set by ENG_CTRL)" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="8000" maxValuePhys="8000"/>
   </namespace>
 
   <namespace name="Infotainment" comment="" interface="">
@@ -54,6 +67,19 @@
     <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="ambientMode" comment="Ambient mode output" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="7" maxValuePhys="7"/>
     <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="ambientColor" comment="Ambient color output" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="7" maxValuePhys="7"/>
     <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="ambientPattern" comment="Ambient pattern output" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="7" maxValuePhys="7"/>
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="AccelButton" comment="Accel panel button: 0=released 1=pressed (read by PEDAL_BUTTON_CTRL)" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1"/>
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="BrakeButton" comment="Brake panel button: 0=released 1=pressed (read by PEDAL_BUTTON_CTRL)" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1"/>
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="doorLockCmd" comment="Panel door lock: 0=none 1=lockAll 2=unlockAll 3=unlockDriver" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="3" maxValuePhys="3"/>
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="windowUp" comment="Window up button: 0=released 1=pressed (panel toggle)" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1"/>
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="windowDown" comment="Window down button: 0=released 1=pressed (panel toggle)" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1"/>
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="windowState" comment="Window animation frame 0=closed 16=fully open (17 states)" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="16" maxValuePhys="16"/>
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="turnLeft" comment="좌측깜빡이 버튼 (0=off 1=on, 패널 토글)" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1"/>
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="turnRight" comment="우측깜빡이 버튼 (0=off 1=on, 패널 토글)" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1"/>
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="hazard" comment="비상등 버튼 (0=off 1=on, 패널 토글)" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1"/>
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="blinkLeft" comment="좌측깜빡이 점등 출력 (0=off 1~7=애니메이션 프레임)" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="7" maxValuePhys="7"/>
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="blinkRight" comment="우측깜빡이 점등 출력 (0=off 1~7=애니메이션 프레임)" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="7" maxValuePhys="7"/>
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="wiperMode" comment="와이퍼 모드 (0=off 1=저속 2=고속, 패널 셀렉터)" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="2" maxValuePhys="2"/>
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="wiperState" comment="와이퍼 애니메이션 프레임 0-15 (16프레임, 0=정지 1~15=작동)" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="15" maxValuePhys="15"/>
   </namespace>
 
   <namespace name="Cluster" comment="" interface="">

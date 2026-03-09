@@ -1,4 +1,12 @@
-﻿includes
+/*@!Encoding:65001*/
+// ENG_CTRL.can  (cfg/channel_assign — CANoe 실제 로드 파일)
+// Powertrain Domain — 엔진 상태 + 점화 제어
+// 입력  : @Powertrain::ignitionKey (Panel 버튼 직접)
+//         frmIgnitionEngineMsg (기존 CAN 경로 — 병행 유지)
+// 출력  : @Powertrain::ignitionState (패널 표시용)
+//         frmEngineSpeedTempMsg, frmFuelBatteryStateMsg 등
+
+includes
 {
 }
 
@@ -19,16 +27,39 @@ on start
   gLastEngineState = -1;
   gFuelLevel       = 80;
   gBatterySoc      = 95;
+  @Powertrain::ignitionState = 0;
   setTimer(tEngineCycle, 100);
   write("[ENG_CTRL] start");
 }
 
+// ── Panel 시동 버튼 직접 처리 ────────────────────────────────────────
+// @Powertrain::ignitionKey: 0=OFF, 1=ON (Panel SwitchControl 연결)
+on sysvar Powertrain::ignitionKey
+{
+  if (@Powertrain::ignitionKey == 1)
+  {
+    gIgnitionState = 1;
+    gEngineState   = 3;
+    @Powertrain::ignitionState = 1;
+    write("[ENG_CTRL] ignitionKey ON");
+  }
+  else
+  {
+    gIgnitionState = 0;
+    gEngineState   = 0;
+    @Powertrain::ignitionState = 0;
+    write("[ENG_CTRL] ignitionKey OFF");
+  }
+}
+
+// 기존 CAN 경로 유지 (VAL_SCENARIO_CTRL 등이 보낼 경우)
 on message frmIgnitionEngineMsg
 {
   gIgnitionState = this.IgnitionState;
   gEngineState   = this.EngineState;
   if (gIgnitionState < 0 || gIgnitionState > 1) gIgnitionState = 0;
   if (gEngineState   < 0 || gEngineState   > 3) gEngineState   = 0;
+  @Powertrain::ignitionState = gIgnitionState;
 }
 
 on timer tEngineCycle
@@ -50,12 +81,12 @@ on timer tEngineCycle
   else if (gEngineState == 2) { rpm = 800; }
   else
   {
-    speed = (int)@Core::vehicleSpeedNorm;
+    speed = (int)@Chassis::vehicleSpeed;
     rpm   = 800 + (speed * 25);
     if (rpm > 6500) rpm = 6500;
   }
 
-  throttlePos = (gEngineState == 3) ? (int)@Core::vehicleSpeedNorm : 0;
+  throttlePos = (gEngineState == 3) ? (int)@Chassis::throttlePosition : 0;
   if (throttlePos > 100) throttlePos = 100;
   engineLoad  = (gEngineState == 3) ? (throttlePos * 8 / 10) : 0;
   if (engineLoad > 100) engineLoad = 100;

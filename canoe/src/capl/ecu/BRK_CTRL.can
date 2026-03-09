@@ -1,26 +1,38 @@
-﻿includes
+/*@!Encoding:65001*/
+// BRK_CTRL.can
+// Chassis Domain — 브레이크 압력 램프 + ABS/ESC 시뮬레이션
+// 입력  : frmPedalInputCanMsg.BrakePedal (from PEDAL_BUTTON_CTRL)
+//         @Powertrain::ignitionState     (from ENG_CTRL bridge)
+// 출력  : @Chassis::brakePressure (ACCEL_CTRL가 참조)
+//         frmBrakeStatusMsg, frmAbsStateMsg, frmEscStateMsg,
+//         frmBrakeTempMsg, frmBrakeWearMsg
+
+includes
 {
 }
 
 variables
 {
   msTimer tBrakeCycle;
-  int gBrakePedal;
-  int gWheelSpdFL;
-  int gLastBrakePedal;
-  int gLastAssistReq;
+  double  gBrakePressureActual;   // 현재 실제 압력 (부드러운 램프)
+  int     gBrakePedal;            // CAN 수신 페달 목표값 (0-100)
+  int     gWheelSpdFL;
+  int     gLastBrakePedal;
+  int     gLastAssistReq;
 }
 
 on start
 {
-  gBrakePedal    = 0;
-  gWheelSpdFL    = 0;
-  gLastBrakePedal = -1;
-  gLastAssistReq = -1;
+  gBrakePressureActual = 0.0;
+  gBrakePedal          = 0;
+  gWheelSpdFL          = 0;
+  gLastBrakePedal      = -1;
+  gLastAssistReq       = -1;
   setTimer(tBrakeCycle, 100);
-  write("[BRK_CTRL] start");
+  write("[BRK_CTRL] start — pressure ramp +5.0/-3.0 per 100ms");
 }
 
+// PEDAL_BUTTON_CTRL이 출력한 frmPedalInputCanMsg 수신
 on message frmPedalInputCanMsg
 {
   gBrakePedal = this.BrakePedal;
@@ -40,6 +52,8 @@ on timer tBrakeCycle
   message frmEscStateMsg    mEsc;
   message frmBrakeTempMsg   mTemp;
   message frmBrakeWearMsg   mWear;
+
+  int ignition;
   int decelAssistReq;
   int appliedBrakePedal;
   int brakePressure;
@@ -47,13 +61,42 @@ on timer tBrakeCycle
   int espActive;
   int absSlip;
 
-  decelAssistReq = ((int)@Core::decelAssistReq == 1) ? 1 : 0;
-  appliedBrakePedal = gBrakePedal;
-  if (decelAssistReq == 1 && appliedBrakePedal < 25)
+  ignition = (int)@Powertrain::ignitionState;
+
+  // 시동 OFF → 즉시 압력 0
+  if (ignition == 0)
   {
-    appliedBrakePedal = 25;
+    gBrakePressureActual    = 0.0;
+    @Chassis::brakePressure = 0;
+    setTimer(tBrakeCycle, 100);
+    return;
   }
 
+  // ── 압력 램프 (+5.0 상승 / -3.0 하강 per 100ms) ──────────────
+  if ((double)gBrakePedal > gBrakePressureActual)
+  {
+    gBrakePressureActual += 5.0;
+    if (gBrakePressureActual > (double)gBrakePedal)
+      gBrakePressureActual = (double)gBrakePedal;
+  }
+  else if ((double)gBrakePedal < gBrakePressureActual)
+  {
+    gBrakePressureActual -= 3.0;
+    if (gBrakePressureActual < (double)gBrakePedal)
+      gBrakePressureActual = (double)gBrakePedal;
+  }
+  // ──────────────────────────────────────────────────────────────
+
+  // ACCEL_CTRL가 이 값을 읽어 속도를 감속시킴
+  @Chassis::brakePressure = (int)gBrakePressureActual;
+
+  // Decel Assist (ADAS 긴급 감속 요청)
+  decelAssistReq    = ((int)@Core::decelAssistReq == 1) ? 1 : 0;
+  appliedBrakePedal = (int)gBrakePressureActual;
+  if (decelAssistReq == 1 && appliedBrakePedal < 25)
+    appliedBrakePedal = 25;
+
+  // CAN 신호로 변환 (0-100% → 0-255)
   brakePressure = appliedBrakePedal * 2;
   if (brakePressure > 255) brakePressure = 255;
 
@@ -73,7 +116,7 @@ on timer tBrakeCycle
   output(mAbs);
 
   mEsc.EscCtrlState    = espActive ? 2 : 0;
-  mEsc.EscIntervention = espActive ? ((gBrakePedal - 40) & 0x3F) : 0;
+  mEsc.EscIntervention = espActive ? ((appliedBrakePedal - 40) & 0x3F) : 0;
   mEsc.EscYawTarget    = 128;
   output(mEsc);
 
@@ -86,11 +129,11 @@ on timer tBrakeCycle
 
   if (gBrakePedal != gLastBrakePedal || decelAssistReq != gLastAssistReq)
   {
-    write("[BRK_CTRL] pedal=%d assist=%d applied=%d pressure=%d abs=%d esp=%d",
-          gBrakePedal, decelAssistReq, appliedBrakePedal,
+    write("[BRK_CTRL] pedal=%d actual=%.1f applied=%d pressure=%d abs=%d esp=%d",
+          gBrakePedal, gBrakePressureActual, appliedBrakePedal,
           brakePressure, absActive, espActive);
     gLastBrakePedal = gBrakePedal;
-    gLastAssistReq = decelAssistReq;
+    gLastAssistReq  = decelAssistReq;
   }
 
   setTimer(tBrakeCycle, 100);

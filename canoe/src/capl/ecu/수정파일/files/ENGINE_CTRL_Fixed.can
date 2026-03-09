@@ -1,0 +1,52 @@
+/*@!Encoding:949*/
+// ENGINE_CTRL_Fixed.can
+// Powertrain 도메인
+
+includes
+{
+}
+
+variables
+{
+  msTimer tEngineCycle;
+}
+
+on start
+{
+  setTimer(tEngineCycle, 100);
+  write("[ENGINE] start");
+}
+
+on timer tEngineCycle
+{
+  int ignition;
+  int speed;
+  int gear;
+  int rpm;
+
+  ignition = (int)@Powertrain::ignitionState;
+  speed    = (int)@Chassis::vehicleSpeed;
+  gear     = (int)@Chassis::gearPosition;
+
+  if (ignition == 0)
+  {
+    rpm = 0;
+  }
+  else if (speed == 0)
+  {
+    rpm = 800;
+  }
+  else
+  {
+    if (gear == 1)      rpm = 800 + (speed * 80);
+    else if (gear == 2) rpm = 800 + (speed * 50);
+    else if (gear == 3) rpm = 800 + (speed * 35);
+    else                rpm = 800 + (speed * 25);
+
+    if (rpm > 7000) rpm = 7000;
+  }
+
+  @Powertrain::engineRPM = rpm;
+
+  setTimer(tEngineCycle, 100);
+}

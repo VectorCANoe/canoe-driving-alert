@@ -1,3 +1,12 @@
+/*@!Encoding:65001*/
+// ACCEL_CTRL.can
+// Chassis Domain — 속도 계산 + 크루즈 컨트롤
+// 입력  : @Chassis::throttlePosition, @Chassis::brakePressure (from PEDAL_BUTTON_CTRL/BRK_CTRL)
+//         @Powertrain::ignitionState (from ENG_CTRL bridge)
+//         @Chassis::driveMode        (from TCM bridge)
+//         @Chassis::ccActive, @Chassis::ccTargetSpeed (Panel)
+// 출력  : @Chassis::vehicleSpeed, frmVehicleStateCanMsg
+
 includes
 {
 }
@@ -5,52 +14,109 @@ includes
 variables
 {
   msTimer tAccelCycle;
-  int gSpeed;
-  int gAccelPedal;
-  int gBrakePedal;
+  double  gSpeed;
+  int     gCCActive;
+  double  gCCTargetSpeed;
 }
 
 on start
 {
-  gSpeed = 0;
-  gAccelPedal = 0;
-  gBrakePedal = 0;
+  gSpeed         = 0.0;
+  gCCActive      = 0;
+  gCCTargetSpeed = 0.0;
   setTimer(tAccelCycle, 100);
-  write("[ACCEL_CTRL] start");
+  write("[ACCEL_CTRL] start — sysvar-driven speed model");
 }
 
-on message frmPedalInputCanMsg
+// Panel CC 버튼 변경 시 즉시 처리
+on sysvar Chassis::ccActive
 {
-  gAccelPedal = this.AccelPedal;
-  gBrakePedal = this.BrakePedal;
+  if (@Chassis::ccActive == 0)
+  {
+    gCCActive = 0;
+    write("[CC] OFF");
+  }
+  else
+  {
+    if ((int)@Chassis::driveMode == 3)
+    {
+      gCCActive      = 1;
+      gCCTargetSpeed = (double)@Chassis::ccTargetSpeed;
+      write("[CC] ON — target=%.1f km/h", gCCTargetSpeed);
+    }
+    else
+    {
+      @Chassis::ccActive = 0;
+      gCCActive = 0;
+      write("[CC] REJECTED — D gear required");
+    }
+  }
 }
 
 on timer tAccelCycle
 {
   message frmVehicleStateCanMsg mState;
-  int targetSpeed;
-  int delta;
+  int    driveMode;
+  double brakePressure;
+  double throttle;
 
-  /* AccelPedal 0-100% -> target speed 0-200 km/h */
-  targetSpeed = gAccelPedal * 2;
-  if (targetSpeed > 200) targetSpeed = 200;
+  driveMode     = (int)@Chassis::driveMode;
+  brakePressure = (double)@Chassis::brakePressure;
+  throttle      = (double)@Chassis::throttlePosition;
 
-  /* brake above 20% overrides accel */
-  if (gBrakePedal > 20) targetSpeed = 0;
+  // P/N 기어에서 CC 자동 취소
+  // (ignition 체크 제거 — VAL_SCENARIO_CTRL이 speed/driveState로 자동 계산)
 
-  /* ramp: +5 km/h per 100ms accel, -15 km/h per 100ms brake */
-  delta = targetSpeed - gSpeed;
-  if (delta > 5)   delta = 5;
-  if (delta < -15) delta = -15;
-  gSpeed = gSpeed + delta;
-  if (gSpeed < 0)   gSpeed = 0;
-  if (gSpeed > 255) gSpeed = 255;
+  // 브레이크 밟으면 CC 취소
+  if (brakePressure > 10 && gCCActive == 1)
+  {
+    gCCActive          = 0;
+    @Chassis::ccActive = 0;
+    write("[CC] CANCELLED — brake");
+  }
 
-  mState.gVehicleSpeed = gSpeed;
-  mState.gDriveState   = (gSpeed == 0) ? 0 : 3;
+  // D 기어 아닐 때 CC 취소
+  if (driveMode != 3 && gCCActive == 1)
+  {
+    gCCActive          = 0;
+    @Chassis::ccActive = 0;
+    write("[CC] CANCELLED — gear change");
+  }
+
+  // ── 속도 계산 (100ms 주기) ──────────────────────────────────────
+  // 물리 기준: 풀액셀 +15km/h/s | 코스팅 -5km/h/s | 브레이크 -15km/h/s
+  if (brakePressure > 10)
+  {
+    // 제동: -1.5 km/h per 100ms = -15 km/h/s
+    gSpeed -= 1.5;
+    if (gSpeed < 0.0) gSpeed = 0.0;
+  }
+  else if (gCCActive == 1)
+  {
+    // CC 유지: ±0.5 km/h per 100ms (코스팅 속도와 동일)
+    if      (gSpeed < gCCTargetSpeed - 0.5) gSpeed += 0.5;
+    else if (gSpeed > gCCTargetSpeed + 0.5) gSpeed -= 0.5;
+  }
+  else if (throttle > 0.0 && (driveMode == 3 || driveMode == 1))
+  {
+    // 가속: (throttle/100) * 1.5 km/h per 100ms = 풀액셀 +15 km/h/s
+    gSpeed += (throttle / 100.0) * 1.5;
+    if (driveMode == 1 && gSpeed > 30.0)  gSpeed = 30.0;   // R 최대 30 km/h
+    if (driveMode == 3 && gSpeed > 200.0) gSpeed = 200.0;  // D 최대 200 km/h
+  }
+  else
+  {
+    // 코스팅: -0.5 km/h per 100ms = -5 km/h/s
+    gSpeed -= 0.5;
+    if (gSpeed < 0.0) gSpeed = 0.0;
+  }
+  // ──────────────────────────────────────────────────────────────────
+
+  @Chassis::vehicleSpeed = (int)gSpeed;
+
+  mState.gVehicleSpeed = (int)gSpeed;
+  mState.gDriveState   = ((int)gSpeed == 0) ? 0 : 3;
   output(mState);
-
-  @Chassis::vehicleSpeed = gSpeed;
 
   setTimer(tAccelCycle, 100);
 }

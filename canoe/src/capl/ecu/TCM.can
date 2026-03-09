@@ -1,4 +1,14 @@
-﻿includes
+/*@!Encoding:65001*/
+// TCM.can
+// Powertrain Domain — 변속기 제어 + sysvar 브릿지
+// 입력  : frmGearStateMsg (Panel: GearState 0=P 1=R 2=N 3=D 4=S 5=M)
+//         frmVehicleModeMsg
+//         @Chassis::vehicleSpeed (ACCEL_CTRL 설정값)
+// 출력  : @Chassis::driveMode    (0=P 1=R 2=N 3=D) → ACCEL_CTRL 참조
+//         @Chassis::gearPosition (1-4 자동) → ENG_CTRL RPM 참조
+//         frmTransmissionTempMsg, frmTransShiftStateMsg
+
+includes
 {
 }
 
@@ -14,19 +24,49 @@ variables
 
 on start
 {
-  gGearInput    = 0;
-  gGearState    = 0;
-  gDriveMode    = 0;
+  gGearInput     = 0;
+  gGearState     = 0;
+  gDriveMode     = 0;
   gLastGearState = -1;
   gShiftCounter  = 0;
+  @Chassis::driveState     = 0;    // VAL_SCENARIO_CTRL 동기화 초기값
+  sysSetVariableString(sysvar::Chassis::driveModeLabel, "P");
   setTimer(tTransCycle, 100);
-  write("[TCM] start");
+  write("[TCM] start — driveMode bridge + auto gear");
+}
+
+// ── Panel driveMode → driveState 동기화 (VAL_SCENARIO_CTRL용) ────
+// VAL_SCENARIO_CTRL은 @Chassis::driveState를 읽어 기어 상태를 판단.
+// 패널 TrackBar는 driveMode에 연결되므로 두 값을 항상 일치시켜야 함.
+// 불일치 시: VAL이 brakePedal=30 강제 전송 + driveMode가 매 100ms 0으로 덮어짐.
+on sysvar Chassis::driveMode
+{
+  int mode;
+  mode = (int)@Chassis::driveMode;
+  @Chassis::driveState = mode;     // VAL_SCENARIO_CTRL 동기화 핵심!
+  switch (mode)
+  {
+    case 0:  sysSetVariableString(sysvar::Chassis::driveModeLabel, "P"); break;
+    case 1:  sysSetVariableString(sysvar::Chassis::driveModeLabel, "R"); break;
+    case 2:  sysSetVariableString(sysvar::Chassis::driveModeLabel, "N"); break;
+    default: sysSetVariableString(sysvar::Chassis::driveModeLabel, "D"); break;
+  }
+  write("[TCM] driveMode=%d driveState=%d label synced", mode, mode);
 }
 
 on message frmGearStateMsg
 {
   gGearInput = this.GearInput;
   gGearState = this.GearState;
+
+  // ── sysvar 브릿지 : GearState → @Chassis::driveMode ──────────
+  // GearState: 0=P 1=R 2=N 3=D 4=S 5=M
+  // driveMode:  0=P 1=R 2=N 3=D (S/M도 전진 주행이므로 3)
+  if      (gGearState == 0) @Chassis::driveMode = 0;
+  else if (gGearState == 1) @Chassis::driveMode = 1;
+  else if (gGearState == 2) @Chassis::driveMode = 2;
+  else                      @Chassis::driveMode = 3;
+  // ──────────────────────────────────────────────────────────────
 }
 
 on message frmVehicleModeMsg
@@ -38,28 +78,47 @@ on timer tTransCycle
 {
   message frmTransmissionTempMsg mTemp;
   message frmTransShiftStateMsg  mShift;
+
   int transOilTemp;
   int clutchTemp;
   int shiftState;
   int shiftSlip;
   int speed;
+  int autoGear;
 
-  speed = (int)@Core::vehicleSpeedNorm;
+  speed = (int)@Chassis::vehicleSpeed;
 
-  /* Oil temp: warm when gear engaged, higher under sport mode */
+  // ── 자동 기어 단수 계산 (D 모드, 6단) ────────────────────────
+  if ((int)@Chassis::driveMode == 3)
+  {
+    if      (speed <  20) autoGear = 1;
+    else if (speed <  40) autoGear = 2;
+    else if (speed <  65) autoGear = 3;
+    else if (speed <  90) autoGear = 4;
+    else if (speed < 130) autoGear = 5;
+    else                  autoGear = 6;
+  }
+  else
+  {
+    autoGear = 1;
+  }
+  @Chassis::gearPosition = autoGear;
+  // ──────────────────────────────────────────────────────────────
+
+  // 오일 온도
   transOilTemp = 60;
   if (gGearState > 0)
   {
     transOilTemp = 75 + (speed / 20);
-    if (gDriveMode == 2) transOilTemp = transOilTemp + 10;
+    if (gDriveMode == 2) transOilTemp = transOilTemp + 10;   // Sport
   }
   if (transOilTemp > 255) transOilTemp = 255;
 
-  /* Clutch temp rises during active shift transitions */
+  // 클러치 온도 (변속 중 상승)
   clutchTemp = 50;
   if (gShiftCounter > 0)
   {
-    clutchTemp = 100 + gShiftCounter * 5;
+    clutchTemp    = 100 + gShiftCounter * 5;
     gShiftCounter = gShiftCounter - 1;
   }
   if (clutchTemp > 255) clutchTemp = 255;
@@ -68,16 +127,18 @@ on timer tTransCycle
   mTemp.ClutchTemp   = clutchTemp;
   output(mTemp);
 
-  /* ShiftState: 0=Idle 1=PreShift 2=Shifting 3=PostShift */
+  // 시프트 이벤트 감지
   if (gGearState != gLastGearState && gLastGearState >= 0)
   {
     shiftState    = 2;
     gShiftCounter = 4;
-    write("[TCM] shift gear=%d->%d", gLastGearState, gGearState);
+    write("[TCM] shift %d->%d  driveMode=%d  autoGear=%d",
+          gLastGearState, gGearState,
+          (int)@Chassis::driveMode, autoGear);
   }
   else
   {
-    shiftState = (gGearState > 0) ? 0 : 0;
+    shiftState = 0;
   }
 
   shiftSlip = (shiftState == 2) ? 10 : 0;

@@ -1,0 +1,41 @@
+/*@!Encoding:949*/
+// IGNITION_CTRL_Fixed.can
+// Powertrain 도메인
+
+includes
+{
+}
+
+variables
+{
+}
+
+on start
+{
+  @Powertrain::ignitionState   = 0;
+  @Powertrain::engineRPM       = 0;
+  @Chassis::vehicleSpeed       = 0;
+  @Chassis::throttlePosition   = 0;
+  @Chassis::brakePressure      = 0;
+  @Chassis::ccActive           = 0;
+  @Chassis::gearPosition       = 1;
+  write("[IGNITION] start");
+}
+
+on sysvar Powertrain::ignitionState
+{
+  if (@Powertrain::ignitionState == 0)
+  {
+    @Powertrain::engineRPM     = 0;
+    @Chassis::vehicleSpeed     = 0;
+    @Chassis::throttlePosition = 0;
+    @Chassis::brakePressure    = 0;
+    @Chassis::ccActive         = 0;
+    @Chassis::gearPosition     = 1;
+    write("[IGNITION] OFF - all reset");
+  }
+  else
+  {
+    write("[IGNITION] ON");
+  }
+}
