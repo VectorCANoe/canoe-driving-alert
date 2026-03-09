@@ -109,3 +109,24 @@
 2. Results에서 verdict 확인
 3. COM Runtime과 Tier Readiness 확인
 4. 필요한 경우 증빙 파일을 직접 열어 문서에 연결
+
+## 제품 안에서 바로 하는 작업
+
+Verification Console 안에서는 아래 흐름을 바로 사용할 수 있습니다.
+
+- 결과 보기
+  - `Results` 화면에서 verdict / insight / surface bundle / execution timeline 확인
+- 산출물 열기
+  - `artifact open --target batch-report`
+  - `artifact open --target surface-bundle`
+  - `artifact open --target execution-manifest --latest`
+- 원본 계약 파일 열기
+  - `artifact open --target surface-inventory`
+  - `artifact open --target traceability-profile`
+  - `artifact open --target artifact-layout`
+  - `artifact open --target results-doc`
+- 산출물 정리
+  - `artifact clean --scope staging`
+  - `artifact clean --scope staging --yes`
+
+즉, 결과를 본 뒤 같은 제품 표면에서 산출물과 원본 계약 파일까지 바로 따라갈 수 있어야 합니다.

@@ -114,6 +114,41 @@ def _artifact_candidates(command_id: str, args: argparse.Namespace) -> list[Path
         paths.extend([EXE_ONEFOLDER_DIR, EXE_ONEFILE_PATH])
     elif command_id == "package.validate_contract":
         paths.extend([RELEASE_CONTRACT_JSON, RELEASE_CONTRACT_MD])
+    elif command_id.startswith("artifact.list"):
+        scope = str(getattr(args, "scope", "staging")).lower()
+        if scope == "source":
+            paths.extend(
+                [
+                    ROOT / "product" / "sdv_operator" / "config" / "surface_ecu_inventory.json",
+                    ROOT / "product" / "sdv_operator" / "config" / "surface_traceability_profile.json",
+                    ROOT / "product" / "sdv_operator" / "config" / "verification_artifact_layout.json",
+                ]
+            )
+        elif scope == "archive":
+            paths.append(ROOT / "artifacts" / "verification_runs")
+        else:
+            paths.append(VERIFICATION_ROOT)
+    elif command_id.startswith("artifact.open"):
+        target = str(getattr(args, "target", "")).strip().lower()
+        target_map = {
+            "batch-report": VERIFICATION_ROOT / "dev2_batch_report.md",
+            "surface-bundle": SURFACE_BUNDLE_MD,
+            "readiness": VERIFICATION_ROOT / "run_readiness.md",
+            "doctor": VERIFICATION_ROOT / "doctor_report.md",
+            "surface-inventory": ROOT / "product" / "sdv_operator" / "config" / "surface_ecu_inventory.json",
+            "traceability-profile": ROOT / "product" / "sdv_operator" / "config" / "surface_traceability_profile.json",
+            "artifact-layout": ROOT / "product" / "sdv_operator" / "config" / "verification_artifact_layout.json",
+            "phase-policy": ROOT / "product" / "sdv_operator" / "config" / "verification_phase_policy.json",
+            "manifest": ROOT / "product" / "sdv_operator" / "manifest.json",
+            "commands-doc": ROOT / "product" / "sdv_operator" / "docs-src" / "commands.md",
+            "results-doc": ROOT / "product" / "sdv_operator" / "docs-src" / "results.md",
+            "packaging-doc": ROOT / "product" / "sdv_operator" / "docs-src" / "packaging.md",
+        }
+        resolved = target_map.get(target)
+        if resolved:
+            paths.append(resolved)
+        elif target in {"execution-manifest", "archive-run", "reports-dir", "surface-dir", "native-reports"}:
+            paths.append(ROOT / "artifacts" / "verification_runs")
     return paths
 
 
@@ -429,6 +464,29 @@ def _generic_result(command_id: str, title: str, rc: int, args: argparse.Namespa
     )
 
 
+def _artifact_result(command_id: str, title: str, rc: int, args: argparse.Namespace) -> OperatorResult:
+    artifacts = _existing_artifacts(_artifact_candidates(command_id, args))
+    if command_id.startswith("artifact.list"):
+        scope = str(getattr(args, "scope", "staging")).lower()
+        detail = f"{scope} artifact listing completed."
+        next_action = "필요한 항목은 artifact open으로 바로 여십시오."
+    else:
+        target = str(getattr(args, "target", "artifact")).strip().lower()
+        detail = f"Opened target: {target}" if rc == 0 else f"Failed to open target: {target}"
+        next_action = "열린 원본/산출물을 확인한 뒤 Results 또는 문서 연결 작업으로 이어가십시오."
+    return OperatorResult(
+        command_id=command_id,
+        title=title,
+        status="PASS" if rc == 0 else "FAIL",
+        detail=detail,
+        next_action=next_action,
+        rc=rc,
+        artifacts=artifacts,
+        insight={"stage": "Artifacts", "bottleneck": detail, "next_action": next_action},
+        context={"run_id": _run_id_from_args(args)},
+    )
+
+
 def build_operator_result(args: argparse.Namespace, rc: int) -> OperatorResult | None:
     command_id = getattr(args, "operator_command_id", "")
     if not command_id:
@@ -448,6 +506,8 @@ def build_operator_result(args: argparse.Namespace, rc: int) -> OperatorResult |
         return _release_contract_result(command_id, title, rc)
     if command_id == "verify.surface_bundle":
         return _surface_bundle_result(command_id, title, rc, args)
+    if command_id.startswith("artifact."):
+        return _artifact_result(command_id, title, rc, args)
     return _generic_result(command_id, title, rc, args)
 
 

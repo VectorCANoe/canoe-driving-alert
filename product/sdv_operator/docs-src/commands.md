@@ -223,12 +223,28 @@ python scripts/run.py canoe capl-call --function-name MyFunction --args 1 2 --ar
 ### Packaging
 
 ```powershell
+python scripts/run.py artifact list --scope staging
+python scripts/run.py artifact list --scope archive --latest
+python scripts/run.py artifact list --scope source
+python scripts/run.py artifact open --target surface-bundle
+python scripts/run.py artifact open --target execution-manifest --latest
+python scripts/run.py artifact open --target surface-inventory
+python scripts/run.py artifact open --target results-doc
 python scripts/run.py package validate-contract
 python scripts/run.py package clean --scope staging --yes
 python scripts/run.py package build-exe --mode onefolder --clean
 python scripts/run.py package build-exe --mode onefile --clean
 python scripts/run.py package bundle-portable --mode onefolder --clean --rebuild-exe
 ```
+
+의미:
+
+- `artifact list`
+  - staging / archive / source 기준으로 현재 확인 가능한 산출물과 원본 계약 파일을 나열합니다.
+- `artifact open`
+  - 결과 문서, execution manifest, surface inventory 같은 원본 파일을 외부 편집기/탐색기로 바로 엽니다.
+- `artifact clean`
+  - generated output만 정리합니다. 기본은 preview이고 실제 삭제는 `--yes`가 필요합니다.
 
 </details>
 

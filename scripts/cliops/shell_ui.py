@@ -55,8 +55,8 @@ def ui_info(msg: str) -> None:
 
 
 def ui_welcome_banner() -> None:
-    title = 'SDV Operator'
-    body = 'CANoe Verification Operator Console\nMenu-driven UX | Scenario trigger | Evidence status | Measurement control'
+    title = 'CANoe Test Verification Console'
+    body = 'CANoe verification console\nScenario trigger | Results | Artifacts | Measurement control'
     if has_rich_support() and Panel is not None:
         _RICH_CONSOLE.print(Panel(body, title=title, border_style='cyan'))
     else:
@@ -156,10 +156,12 @@ def print_shell_help() -> None:
     print('  /verify finalize [run_id] [owner] [run_date]')
     print('  /verify quick [run_id] [owner]  # prepare + smoke + readiness status')
     print('  /gate all|doc-sync|text-integrity|cfg-hygiene|capl-sync|multibus-dbc|cli-readiness')
+    print('  /artifact list [staging|archive|source] [--latest|--run-id <id>] [--phase <pre|post|full>]')
+    print('  /artifact open --target <batch-report|surface-bundle|readiness|doctor|surface-inventory|traceability-profile|artifact-layout|phase-policy|manifest|commands-doc|results-doc|packaging-doc|archive-run|reports-dir|surface-dir|native-reports|execution-manifest>')
+    print('  /artifact clean [staging|archive|build|all] [run_id] [phase] [--yes]')
     print('  /package portable [onefolder|onefile]')
     print('  /package exe [onefolder|onefile]')
     print('  /package validate-contract')
-    print('  /package clean [staging|archive|build|all] [run_id] [phase] [--yes]')
     print('  /doctor [ensure-running]')
     print('  /capl get <Namespace> <Variable>')
     print('  /capl set <Namespace> <Variable> <Value>')

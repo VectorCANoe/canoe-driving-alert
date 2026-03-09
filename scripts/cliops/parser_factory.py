@@ -20,6 +20,7 @@ VISIBLE_TOPLEVEL_COMMANDS = [
     "verify",
     "evidence",
     "gate",
+    "artifact",
     "package",
     "release",
     "contract",
@@ -297,6 +298,48 @@ def add_package_clean_args(p: argparse.ArgumentParser, handlers: HandlerMap) -> 
     p.set_defaults(func=handlers["cmd_package_clean"], operator_command_id="package.clean")
 
 
+def add_artifact_list_args(p: argparse.ArgumentParser, handlers: HandlerMap) -> None:
+    p.add_argument("--scope", choices=["staging", "archive", "source"], default="staging")
+    p.add_argument("--run-id", default="", help="Archive run ID or evidence run ID")
+    p.add_argument("--phase", choices=["pre", "post", "full"], default="", help="Optional archive phase")
+    p.add_argument("--latest", action="store_true", help="Resolve the most recent archive run automatically")
+    p.add_argument("--json", action="store_true", help="Print JSON instead of plain text")
+    p.set_defaults(func=handlers["cmd_artifact_list"], operator_command_id="artifact.list")
+
+
+def add_artifact_open_args(p: argparse.ArgumentParser, handlers: HandlerMap) -> None:
+    p.add_argument(
+        "--target",
+        choices=[
+            "staging-root",
+            "batch-report",
+            "surface-bundle",
+            "readiness",
+            "doctor",
+            "surface-inventory",
+            "traceability-profile",
+            "artifact-layout",
+            "phase-policy",
+            "manifest",
+            "commands-doc",
+            "results-doc",
+            "packaging-doc",
+            "archive-run",
+            "reports-dir",
+            "surface-dir",
+            "native-reports",
+            "execution-manifest",
+        ],
+        required=True,
+        help="Artifact target to resolve and open",
+    )
+    p.add_argument("--run-id", default="", help="Archive run ID")
+    p.add_argument("--phase", choices=["pre", "post", "full"], default="", help="Optional archive phase")
+    p.add_argument("--latest", action="store_true", help="Resolve the most recent archive run automatically")
+    p.add_argument("--print-only", action="store_true", help="Print resolved path only")
+    p.set_defaults(func=handlers["cmd_artifact_open"], operator_command_id="artifact.open")
+
+
 def add_verify_status_args(p: argparse.ArgumentParser, handlers: HandlerMap) -> None:
     p.add_argument("--run-id", required=True, help="Run ID, e.g. 20260306_1930")
     p.add_argument(
@@ -555,6 +598,12 @@ def build_parser(handlers: HandlerMap, default_run_id: Callable[[], str]) -> arg
     gate_sub.add_parser("capl-sync", help="Run src/capl vs cfg/channel_assign sync gate").set_defaults(func=handlers["cmd_gate_capl_sync"])
     gate_sub.add_parser("multibus-dbc", help="Run multi-bus cfg + DBC domain policy gate").set_defaults(func=handlers["cmd_gate_multibus_dbc"])
     gate_sub.add_parser("cli-readiness", help="Run CLI readiness gate before GUI phase").set_defaults(func=handlers["cmd_gate_cli_readiness"])
+
+    artifact = sub.add_parser("artifact", help="Artifact inspection/open/cleanup commands")
+    artifact_sub = artifact.add_subparsers(dest="artifact_command", required=True)
+    add_artifact_list_args(artifact_sub.add_parser("list", help="List staging or archive artifact paths"), handlers)
+    add_artifact_open_args(artifact_sub.add_parser("open", help="Open one artifact target"), handlers)
+    add_package_clean_args(artifact_sub.add_parser("clean", help="Clean staging/archive/build outputs"), handlers)
 
     package = sub.add_parser("package", help="Build/distribution commands")
     package_sub = package.add_subparsers(dest="package_command", required=True)

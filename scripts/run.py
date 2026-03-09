@@ -44,6 +44,7 @@ import sys
 from pathlib import Path
 
 from cliops.common import ROOT, SCRIPTS, default_run_id as _default_run_id
+from cliops.artifact_ops import cmd_artifact_clean, cmd_artifact_list, cmd_artifact_open
 from cliops.gate_ops import (
     cmd_gate_all,
     cmd_gate_capl_sync,
@@ -107,6 +108,11 @@ CONTRACT_CANONICAL = [
     "python scripts/run.py gate all",
     "python scripts/run.py scenario run --id <0..255>",
     "python scripts/run.py verify quick --run-id <YYYYMMDD_HHMM> --owner <OWNER>",
+    "python scripts/run.py artifact list --scope staging",
+    "python scripts/run.py artifact open --target batch-report",
+    "python scripts/run.py artifact open --target surface-inventory",
+    "python scripts/run.py artifact list --scope source",
+    "python scripts/run.py artifact clean --scope staging --yes",
     "python scripts/run.py tui",
     "python scripts/run.py shell",
     "python scripts/run.py start demo --id <0..255>",
@@ -136,7 +142,6 @@ CONTRACT_CANONICAL = [
     "python scripts/run.py package build-exe --mode onefolder",
     "python scripts/run.py package bundle-portable",
     "python scripts/run.py package validate-contract",
-    "python scripts/run.py package clean --scope staging --yes",
 ]
 
 CONTRACT_LEGACY = [
@@ -950,6 +955,9 @@ PARSER_HANDLERS = {
     "cmd_gate_capl_sync": cmd_gate_capl_sync,
     "cmd_gate_multibus_dbc": cmd_gate_multibus_dbc,
     "cmd_gate_cli_readiness": cmd_gate_cli_readiness,
+    "cmd_artifact_list": cmd_artifact_list,
+    "cmd_artifact_open": cmd_artifact_open,
+    "cmd_artifact_clean": cmd_artifact_clean,
     "cmd_package_build_exe": cmd_package_build_exe,
     "cmd_package_bundle_portable": cmd_package_bundle_portable,
     "cmd_package_clean": cmd_package_clean,

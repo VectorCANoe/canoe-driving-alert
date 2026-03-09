@@ -1,4 +1,4 @@
-"""Textual TUI frontend for the SDV CANoe operator CLI."""
+"""Textual frontend for the public CANoe Test Verification Console surface."""
 
 from __future__ import annotations
 
@@ -403,7 +403,7 @@ class SdvTuiApp(App[None]):
     def compose(self) -> ComposeResult:
         yield Header(show_clock=True)
         yield Static(
-            "SDV Operator Console",
+            "CANoe Test Verification Console",
             id="hero",
         )
         runtime = canoe_runtime_check()
@@ -423,7 +423,7 @@ class SdvTuiApp(App[None]):
             with Vertical(id="content"):
                 with Vertical(id="page-home", classes="page"):
                     yield Static(
-                        "Verification Console\n\n"
+                        "CANoe Test Verification Console\n\n"
                         "사용자 표면은 단순하게, 검증 엔진은 내부에서 복잡하게 유지합니다.\n"
                         "핵심 흐름은 Gate all -> Scenario run -> Verify quick 순서입니다.\n"
                         "CANoe Panel은 제품 조작 UI이고, 이 콘솔은 실행·증빙·검토를 담당합니다.",
@@ -524,7 +524,7 @@ class SdvTuiApp(App[None]):
         yield Footer()
 
     def on_mount(self) -> None:
-        self.title = "SDV Operator Console"
+        self.title = "CANoe Test Verification Console"
         self.sub_title = "검증 운영 콘솔"
         self.active_group_index = self.group_names.index("Primary Workflow")
         self._refresh_commands(self.active_group_index)
@@ -924,6 +924,8 @@ class SdvTuiApp(App[None]):
 
     def _artifact_paths(self, command: PaletteCommand, tokens: list[str]) -> list[str]:
         run_id = self._extract_flag(tokens, "--run-id")
+        target = self._extract_flag(tokens, "--target")
+        scope = self._extract_flag(tokens, "--scope")
         if command.command_id == "inspect.environment_doctor":
             return [
                 "canoe/tmp/reports/verification/doctor_report.json",
@@ -957,6 +959,46 @@ class SdvTuiApp(App[None]):
             return ["dist/portable/sdv_portable.zip"]
         if command.command_id == "package.windows_exe":
             return ["dist/sdv_cli"]
+        if command.command_id.startswith("artifact.list"):
+            if scope == "source":
+                return [
+                    "product/sdv_operator/config/surface_ecu_inventory.json",
+                    "product/sdv_operator/config/surface_traceability_profile.json",
+                    "product/sdv_operator/config/verification_artifact_layout.json",
+                ]
+            if scope == "archive":
+                return ["artifacts/verification_runs"]
+            return ["canoe/tmp/reports/verification"]
+        if command.command_id.startswith("artifact.open"):
+            mapping = {
+                "batch-report": "canoe/tmp/reports/verification/dev2_batch_report.md",
+                "surface-bundle": "canoe/tmp/reports/verification/surface_evidence_bundle.md",
+                "readiness": "canoe/tmp/reports/verification/run_readiness.md",
+                "doctor": "canoe/tmp/reports/verification/doctor_report.md",
+                "surface-inventory": "product/sdv_operator/config/surface_ecu_inventory.json",
+                "traceability-profile": "product/sdv_operator/config/surface_traceability_profile.json",
+                "artifact-layout": "product/sdv_operator/config/verification_artifact_layout.json",
+                "phase-policy": "product/sdv_operator/config/verification_phase_policy.json",
+                "manifest": "product/sdv_operator/manifest.json",
+                "commands-doc": "product/sdv_operator/docs-src/commands.md",
+                "results-doc": "product/sdv_operator/docs-src/results.md",
+                "packaging-doc": "product/sdv_operator/docs-src/packaging.md",
+                "execution-manifest": "artifacts/verification_runs",
+                "archive-run": "artifacts/verification_runs",
+                "reports-dir": "artifacts/verification_runs",
+                "surface-dir": "artifacts/verification_runs",
+                "native-reports": "artifacts/verification_runs",
+            }
+            resolved = mapping.get(target, "")
+            return [resolved] if resolved else []
+        if command.command_id == "package.clean":
+            if scope == "build":
+                return ["dist", "build"]
+            if scope == "archive":
+                return ["artifacts/verification_runs"]
+            if scope == "all":
+                return ["canoe/tmp/reports/verification", "artifacts/verification_runs", "dist", "build"]
+            return ["canoe/tmp/reports/verification"]
         return []
 
     def _extract_output_paths_from_lines(self, lines: list[str]) -> list[str]:

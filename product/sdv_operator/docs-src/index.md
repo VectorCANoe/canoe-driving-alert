@@ -1,6 +1,6 @@
-# SDV Operator
+# CANoe Test Verification Console
 
-`SDV Operator`는 CANoe SIL 검증을 위한 Dev2 운영 콘솔입니다.
+`CANoe Test Verification Console`은 CANoe SIL 검증을 위한 Dev2 운영 콘솔입니다.
 
 역할은 세 가지로 고정합니다.
 
@@ -12,6 +12,7 @@
    - TUI 결과 카드
    - 로그 화면
    - 증빙 경로
+   - artifact open / artifact list
 3. 패키징
    - portable ZIP
    - Windows executable
@@ -31,10 +32,9 @@ python scripts/run.py verify batch --run-id 20260308_0900 --owner DEV2 --phase p
 
 ## 표면 원칙
 
-- 실행 계층은 CLI입니다.
-- 리뷰 계층은 TUI입니다.
+- 구현 계층은 CLI/TUI로 나뉘지만, 사용자 표면은 하나의 CANoe Test Verification Console으로 봅니다.
 - CANoe Panel은 별도 제품 조작 UI로 유지합니다.
-- SDV Operator는 CANoe를 대체하지 않고, 검증 운영/리뷰 표면만 제공합니다.
+- CANoe Test Verification Console은 CANoe를 대체하지 않고, 검증 운영/리뷰 표면만 제공합니다.
 
 ## 문서 순서
 

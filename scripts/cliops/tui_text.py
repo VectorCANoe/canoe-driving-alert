@@ -1,8 +1,4 @@
-"""Operator-facing TUI text helpers.
-
-Keep the SDV Operator surface text in one place so UI wording can evolve
-without adding more string noise into the Textual app logic.
-"""
+"""Operator-facing text helpers for the public CANoe Test Verification Console surface."""
 
 from __future__ import annotations
 
@@ -13,7 +9,7 @@ GROUP_LABELS: dict[str, str] = {
     "Primary Workflow": "핵심",
     "Runtime Support": "런타임",
     "System Access": "점검",
-    "Packaging": "패키징",
+    "Packaging": "산출물/패키징",
 }
 
 

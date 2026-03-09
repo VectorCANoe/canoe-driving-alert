@@ -1,15 +1,19 @@
-# SDV Operator
+# CANoe Test Verification Console
 
-`SDV Operator`는 CANoe SIL 검증 자동화를 위한 Dev2 제품 표면입니다.
+`CANoe Test Verification Console`은 CANoe SIL 검증 자동화를 위한 Dev2 제품 표면입니다.
 
-이 경로는 CANoe 자체를 대체하지 않습니다. CANoe는 실행기이고, `SDV Operator`는
+이 경로는 CANoe 자체를 대체하지 않습니다. CANoe는 실행기이고, `CANoe Test Verification Console`은
 검증 실행, 결과 수집, 증빙 산출, 운영 콘솔을 제공합니다.
+
+내부 패키지/경로 식별자는 `sdv_operator`를 유지합니다.
+내부 실행 파일/엔트리포인트의 `sdv` 이름도 호환성 때문에 유지하지만, 공개 표면 명칭은 `CANoe Test Verification Console`으로 고정합니다.
 
 ## 제공 범위
 
 - 실행: `gate all`, `scenario run`, `verify quick`, `doctor`
 - 검토: TUI 기반 결과/로그/COM 상태 확인
 - 산출: readiness, batch report, JUnit XML, portable ZIP / exe
+- 관리: artifact list/open/clean으로 산출물과 원본 계약 파일 확인
 
 ## 빠른 시작
 
