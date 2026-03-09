@@ -29,7 +29,7 @@ NS_ :
 
 BS_:
 
-BU_: BCM ADAS CGW DATC SMK BODY_SECURITY_MODULE WIPER_MODULE AFLS DOOR_FL DOOR_FR DOOR_RL DOOR_RR SEAT_DRV SEAT_PASS TAILGATE_MODULE MIRROR_MODULE REAR_CLIMATE_MODULE SUNROOF_MODULE HEADLAMP_LEVELING CABIN_SENSING VAL_SCENARIO_CTRL Vector__XXX
+BU_: BCM ADAS CGW DATC SMK BODY_SECURITY_MODULE WIPER_MODULE AFLS DOOR_FL DOOR_FR DOOR_RL DOOR_RR SEAT_DRV SEAT_PASS TAILGATE_MODULE MIRROR_MODULE REAR_CLIMATE_MODULE SUNROOF_MODULE HEADLAMP_LEVELING CABIN_SENSING AHLS AUTO_DOOR_CTRL POWER_TAILGATE_CTRL BIOMETRIC_AUTH VAL_SCENARIO_CTRL Vector__XXX
 
 BO_ 608 frmAmbientControlMsg: 1 BCM
  SG_ AmbientMode    : 0|3@1+ (1,0) [0|7] "" BCM
@@ -219,6 +219,26 @@ BO_ 643 frmCabinSensingStateMsg: 2 CABIN_SENSING
  SG_ CabinAlertState   : 6|2@1+ (1,0) [0|3] "" CABIN_SENSING
  SG_ CabinPresenceScore : 8|8@1+ (1,0) [0|100] "%" CABIN_SENSING
 
+BO_ 644 frmAhlsStateMsg: 2 AHLS
+ SG_ AhlsAssistState   : 0|3@1+ (1,0) [0|7] "" AHLS
+ SG_ HighBeamPermit    : 3|1@1+ (1,0) [0|1] "" AHLS
+ SG_ GlareCutLevel     : 8|8@1+ (1,0) [0|100] "%" AHLS
+
+BO_ 645 frmAutoDoorCtrlStateMsg: 2 AUTO_DOOR_CTRL
+ SG_ AutoDoorState     : 0|3@1+ (1,0) [0|7] "" AUTO_DOOR_CTRL
+ SG_ AutoUnlockState   : 3|2@1+ (1,0) [0|3] "" AUTO_DOOR_CTRL
+ SG_ DoorApproachScore : 8|8@1+ (1,0) [0|100] "%" AUTO_DOOR_CTRL
+
+BO_ 646 frmPowerTailgateCtrlStateMsg: 2 POWER_TAILGATE_CTRL
+ SG_ TailgateAssistMode : 0|3@1+ (1,0) [0|7] "" POWER_TAILGATE_CTRL
+ SG_ OpenRequestState   : 3|2@1+ (1,0) [0|3] "" POWER_TAILGATE_CTRL
+ SG_ TailgateActuatorCmd : 8|8@1+ (1,0) [0|100] "%" POWER_TAILGATE_CTRL
+
+BO_ 647 frmBiometricAuthStateMsg: 2 BIOMETRIC_AUTH
+ SG_ AuthState         : 0|3@1+ (1,0) [0|7] "" BIOMETRIC_AUTH
+ SG_ AuthFactorMode    : 3|2@1+ (1,0) [0|3] "" BIOMETRIC_AUTH
+ SG_ PresenceConfidence : 8|8@1+ (1,0) [0|100] "%" BIOMETRIC_AUTH
+
 CM_ BO_ 608 "Flow_007 ambient output.";
 CM_ BO_ 609 "Body baseline: hazard switch and hazard state.";
 CM_ BO_ 610 "Body baseline: window command and window state.";
@@ -247,6 +267,17 @@ CM_ BO_ 633 "Comm_202: front-left door module state extension.";
 CM_ BO_ 634 "Comm_202: front-right door module state extension.";
 CM_ BO_ 635 "Comm_202: driver seat module state extension.";
 CM_ BO_ 636 "Comm_202: passenger seat module state extension.";
+CM_ BO_ 637 "Comm_202: rear-left door module state extension.";
+CM_ BO_ 638 "Comm_202: rear-right door module state extension.";
+CM_ BO_ 639 "Comm_202: tailgate module state extension.";
+CM_ BO_ 640 "Comm_202: rear climate module state extension.";
+CM_ BO_ 641 "Comm_202: sunroof module state extension.";
+CM_ BO_ 642 "Comm_202: headlamp leveling extension.";
+CM_ BO_ 643 "Comm_202: cabin sensing extension.";
+CM_ BO_ 644 "Comm_202: adaptive high-beam lighting extension.";
+CM_ BO_ 645 "Comm_202: automatic door control extension.";
+CM_ BO_ 646 "Comm_202: power tailgate control extension.";
+CM_ BO_ 647 "Comm_202: biometric authentication extension.";
 
 BA_DEF_ BO_ "GenMsgCycleTime" INT 0 10000;
 BA_DEF_DEF_ "GenMsgCycleTime" 0;
@@ -278,6 +309,17 @@ BA_ "GenMsgCycleTime" BO_ 633 100;
 BA_ "GenMsgCycleTime" BO_ 634 100;
 BA_ "GenMsgCycleTime" BO_ 635 100;
 BA_ "GenMsgCycleTime" BO_ 636 100;
+BA_ "GenMsgCycleTime" BO_ 637 100;
+BA_ "GenMsgCycleTime" BO_ 638 100;
+BA_ "GenMsgCycleTime" BO_ 639 100;
+BA_ "GenMsgCycleTime" BO_ 640 100;
+BA_ "GenMsgCycleTime" BO_ 641 100;
+BA_ "GenMsgCycleTime" BO_ 642 100;
+BA_ "GenMsgCycleTime" BO_ 643 100;
+BA_ "GenMsgCycleTime" BO_ 644 100;
+BA_ "GenMsgCycleTime" BO_ 645 100;
+BA_ "GenMsgCycleTime" BO_ 646 100;
+BA_ "GenMsgCycleTime" BO_ 647 100;
 
 VAL_ 608 AmbientMode
   0 "Off"
