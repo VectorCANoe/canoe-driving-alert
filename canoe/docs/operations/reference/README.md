@@ -18,6 +18,8 @@ Open these only when the active task needs background support:
   - mentor-driven priority interpretation
 - `CAPL_coding_guideline.md`
   - coding guidance reference
+- `../MULTIBUS_ASSIGNMENT_POLICY.md`
+  - formal GUI/runtime policy for multibus visibility, CGW/TST_SCN anchors, and why `TST_BAS` remains single-bus
 - `OEM_SURFACE_ECU_EXPANSION_PLAN_2026-03-09.md`
   - Dev1 vehicle-program surface ECU expansion baseline using local OEM/OpenDBC references
 - `OEM_ECU_CANDIDATE_BANK_2026-03-09.md`

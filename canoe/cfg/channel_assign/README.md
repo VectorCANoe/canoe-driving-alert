@@ -63,6 +63,10 @@ These anchors still need extra bus assignments restored in GUI.
 | `CGW` | `ETH_Backbone/` | backbone + cross-domain visibility |
 | `TST_SCN` | `ETH_Backbone/` | validation multibus setup |
 
+Formal rationale:
+
+- [MULTIBUS_ASSIGNMENT_POLICY.md](C:\Users\이준영\CANoe-IVI-OTA\canoe\docs\operations\MULTIBUS_ASSIGNMENT_POLICY.md)
+
 ## Fresh cfg rebuild checklist
 
 If the active GUI configuration was rebuilt from scratch or old DBC assignments were changed, restore the database attachment first.
