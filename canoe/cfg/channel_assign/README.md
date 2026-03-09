@@ -12,8 +12,8 @@ Do not edit files here directly. Edit `canoe/src/capl/**` first, then mirror int
 
 The current import bank exposes:
 
-- deep runtime anchors: `13`
-- shallow placeholder surfaces: `87`
+- deep runtime anchors: `54`
+- shallow placeholder surfaces: `46`
 - total visible nodes: `100`
 
 | Domain | Folder | Active nodes |
@@ -29,12 +29,12 @@ The current import bank exposes:
 
 | Domain | Visible deep nodes |
 | --- | --- |
-| Chassis | `VCU`, `ESC`, `MDPS`, `VAL_BASELINE_CTRL` |
-| Body | `BCM` |
-| Infotainment | `IVI`, `CLU` |
+| Chassis | `VCU`, `ESC`, `MDPS`, `ABS`, `EPB`, `TPMS`, `SAS`, `VSM`, `EHB`, `ECS`, `CDC`, `VAL_BASELINE_CTRL` |
+| Body | `BCM`, `DATC`, `SMK`, `AFLS`, `WIPER_MODULE`, `BODY_SECURITY_MODULE`, `DOOR_FL`, `DOOR_FR`, `SEAT_DRV`, `SEAT_PASS` |
+| Infotainment | `IVI`, `CLU`, `HUD`, `AMP`, `VOICE_ASSIST`, `TMU` |
 | Powertrain | `EMS`, `TCU` |
-| ETH Backbone | `CGW`, `V2X`, `VAL_SCENARIO_CTRL` |
-| ADAS | `ADAS` |
+| ETH Backbone | `CGW`, `V2X`, `SGW`, `IBOX`, `DCM`, `VAL_SCENARIO_CTRL` |
+| ADAS | `ADAS`, `SCC`, `LDWS_LKAS`, `FCA`, `BCW`, `LCA`, `SPAS`, `RSPA`, `AVM`, `FCAM`, `FRADAR`, `SRR_FL`, `SRR_FR`, `SRR_RL`, `SRR_RR`, `PARK_ULTRASONIC`, `DMS`, `OMS` |
 
 ## GUI import order
 
@@ -70,14 +70,17 @@ These anchors still need extra bus assignments restored in GUI.
 - `VCU.can` ? propulsion / accel command owner
 - `ESC.can` ? brake / stability owner
 - `MDPS.can` ? steering owner
+- `ABS.can`, `EPB.can`, `TPMS.can`, `SAS.can`, `VSM.can`, `EHB.can`, `ECS.can`, `CDC.can` ? chassis/safety runtime anchors
 - `VAL_BASELINE_CTRL.can` ? validation baseline aggregation
 
 ### Body
 - `BCM.can` ? body output owner after hazard/window/ambient/driver-state absorption
+- `DATC.can`, `SMK.can`, `AFLS.can`, `WIPER_MODULE.can`, `BODY_SECURITY_MODULE.can`, `DOOR_FL.can`, `DOOR_FR.can`, `SEAT_DRV.can`, `SEAT_PASS.can` ? comfort/security runtime anchors
 
 ### Infotainment
 - `IVI.can` ? IVI route, navigation, infotainment output owner
 - `CLU.can` ? cluster display / HMI owner
+- `HUD.can`, `AMP.can`, `VOICE_ASSIST.can`, `TMU.can` ? HMI/connectivity runtime anchors
 
 ### Powertrain
 - `EMS.can` ? engine management runtime
@@ -86,10 +89,12 @@ These anchors still need extra bus assignments restored in GUI.
 ### ETH Backbone
 - `CGW.can` ? cross-domain boundary, fail-safe, and gateway authority
 - `V2X.can` ? V2X emergency input / arbitration ingress
+- `SGW.can`, `IBOX.can`, `DCM.can` ? security/infra/connectivity anchors
 - `VAL_SCENARIO_CTRL.can` ? validation scenario orchestrator
 
 ### ADAS
 - `ADAS.can` ? integrated risk, warning, and assist decision runtime
+- `SCC.can`, `LDWS_LKAS.can`, `FCA.can`, `BCW.can`, `LCA.can`, `SPAS.can`, `RSPA.can`, `AVM.can`, `FCAM.can`, `FRADAR.can`, `SRR_FL.can`, `SRR_FR.can`, `SRR_RL.can`, `SRR_RR.can`, `PARK_ULTRASONIC.can`, `DMS.can`, `OMS.can` ? ADAS feature/sensor runtime anchors
 
 ## Placeholder note
 
@@ -107,4 +112,3 @@ Local runtime verification result for the current visible bank:
 - `cfg/channel_assign` visible files: `100`
 - name diff: `0`
 - content diff: `0`
-

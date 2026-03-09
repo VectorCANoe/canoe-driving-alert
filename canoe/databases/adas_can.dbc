@@ -30,7 +30,7 @@ NS_ :
 
 BS_:
 
-BU_: ADAS ESC VAL_SCENARIO_CTRL BCM IVI LDWS_LKAS FCA BCW LCA SPAS RSPA AVM FCAM FRADAR SRR_FL SRR_FR PARK_ULTRASONIC Vector__XXX
+BU_: ADAS ESC VAL_SCENARIO_CTRL BCM IVI LDWS_LKAS FCA BCW LCA SPAS RSPA AVM FCAM FRADAR SRR_FL SRR_FR PARK_ULTRASONIC DMS OMS SRR_RL SRR_RR Vector__XXX
 
 BO_ 449 frmAdasChassisStatusMsg: 2 ADAS
  SG_ AdasChassisState : 0|8@1+ (1,0) [0|255] "" ESC
@@ -173,6 +173,35 @@ BO_ 467 frmParkUltrasonicStateMsg: 4 PARK_ULTRASONIC
  SG_ AudibleWarn          : 24|1@1+ (1,0) [0|1] "" BCM,IVI,CLU
  SG_ Reserved0            : 25|7@1+ (1,0) [0|0] "" Vector__XXX
 
+BO_ 468 frmDmsStateMsg: 4 DMS
+ SG_ DriverMonitorActive  : 0|1@1+  (1,0) [0|1] "" CLU
+ SG_ AttentionLevel       : 8|2@1+  (1,0) [0|3] "" CLU
+ SG_ FatigueWarn          : 10|1@1+ (1,0) [0|1] "" CLU
+ SG_ DriverSeatBelt       : 16|1@1+ (1,0) [0|1] "" CLU
+ SG_ VehicleSpeed         : 24|8@1+ (1,0) [0|255] "km/h" CLU
+
+BO_ 469 frmOmsStateMsg: 4 OMS
+ SG_ OccupantDetected     : 0|1@1+  (1,0) [0|1] "" BCM,CLU
+ SG_ ChildPresenceWarn    : 8|1@1+  (1,0) [0|1] "" BCM,CLU
+ SG_ PassengerSeatBelt    : 16|1@1+ (1,0) [0|1] "" BCM,CLU
+ SG_ SeatBeltWarnLevel    : 24|3@1+ (1,0) [0|7] "" BCM,CLU
+ SG_ OccupantAlertActive  : 27|1@1+ (1,0) [0|1] "" BCM,CLU
+ SG_ Reserved0            : 28|4@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 470 frmSrrRlStateMsg: 4 SRR_RL
+ SG_ SideObjectDetected   : 0|1@1+  (1,0) [0|1] "" ADAS,CLU
+ SG_ SideRiskLevel        : 8|8@1+  (1,0) [0|100] "" ADAS,CLU
+ SG_ MergeConflict        : 16|1@1+ (1,0) [0|1] "" ADAS,CLU
+ SG_ TurnLampState        : 24|2@1+ (1,0) [0|3] "" ADAS,CLU
+ SG_ Reserved0            : 26|6@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 471 frmSrrRrStateMsg: 4 SRR_RR
+ SG_ SideObjectDetected   : 0|1@1+  (1,0) [0|1] "" ADAS,CLU
+ SG_ SideRiskLevel        : 8|8@1+  (1,0) [0|100] "" ADAS,CLU
+ SG_ MergeConflict        : 16|1@1+ (1,0) [0|1] "" ADAS,CLU
+ SG_ TurnLampState        : 24|2@1+ (1,0) [0|3] "" ADAS,CLU
+ SG_ Reserved0            : 26|6@1+ (1,0) [0|0] "" Vector__XXX
+
 CM_ BO_ 449 "Comm_201: ADAS chassis status output. ADAS-owned frame.";
 CM_ SG_ 449 AdasChassisState "Computed ADAS warning level (0=none).";
 CM_ SG_ 449 AdasHealthLevel  "ADAS node health (0=fault 1=ok).";
@@ -243,6 +272,18 @@ CM_ SG_ 466 SideObjectDetected "Right side object detected state.";
 CM_ BO_ 467 "Comm_213: Parking ultrasonic state frame derived from low-speed parking proximity context.";
 CM_ SG_ 467 ParkAssistActive "Parking ultrasonic active state.";
 CM_ SG_ 467 MinDistanceCm "Minimum proximity bucket in centimeters.";
+CM_ BO_ 468 "Comm_214: Driver monitoring state frame derived from current alert context and driver restraint state.";
+CM_ SG_ 468 DriverMonitorActive "Driver monitoring active state.";
+CM_ SG_ 468 AttentionLevel "0=unknown 1=normal 2=watch 3=critical.";
+CM_ SG_ 468 FatigueWarn "Driver fatigue warning state.";
+CM_ BO_ 469 "Comm_215: Occupant monitoring state frame derived from passenger restraint and alert context.";
+CM_ SG_ 469 OccupantDetected "Passenger/occupant detected state.";
+CM_ SG_ 469 ChildPresenceWarn "Child presence warning state.";
+CM_ SG_ 469 OccupantAlertActive "Occupant-related alert active state.";
+CM_ BO_ 470 "Comm_216: Left rear side radar frame derived from rear-left side conflict and turn intent.";
+CM_ SG_ 470 SideObjectDetected "Rear-left side object detected state.";
+CM_ BO_ 471 "Comm_217: Right rear side radar frame derived from rear-right side conflict and turn intent.";
+CM_ SG_ 471 SideObjectDetected "Rear-right side object detected state.";
 
 BA_DEF_ BO_ "GenMsgCycleTime" INT 0 10000;
 BA_DEF_DEF_ "GenMsgCycleTime" 0;
@@ -265,6 +306,10 @@ BA_ "GenMsgCycleTime" BO_ 464 100;
 BA_ "GenMsgCycleTime" BO_ 465 100;
 BA_ "GenMsgCycleTime" BO_ 466 100;
 BA_ "GenMsgCycleTime" BO_ 467 100;
+BA_ "GenMsgCycleTime" BO_ 468 100;
+BA_ "GenMsgCycleTime" BO_ 469 100;
+BA_ "GenMsgCycleTime" BO_ 470 100;
+BA_ "GenMsgCycleTime" BO_ 471 100;
 
 VAL_ 452 DecelAssistReq 0 "OFF" 1 "ON";
 VAL_ 452 DriverReleaseReason 0 "NONE" 1 "STEER" 2 "BRAKE" 3 "FAILSAFE";
@@ -294,3 +339,10 @@ VAL_ 465 SideObjectDetected 0 "NO" 1 "YES";
 VAL_ 466 SideObjectDetected 0 "NO" 1 "YES";
 VAL_ 467 ParkAssistActive 0 "OFF" 1 "ON";
 VAL_ 467 AudibleWarn 0 "OFF" 1 "ON";
+VAL_ 468 DriverMonitorActive 0 "OFF" 1 "ON";
+VAL_ 468 FatigueWarn 0 "OFF" 1 "ON";
+VAL_ 469 OccupantDetected 0 "NO" 1 "YES";
+VAL_ 469 ChildPresenceWarn 0 "OFF" 1 "ON";
+VAL_ 469 OccupantAlertActive 0 "OFF" 1 "ON";
+VAL_ 470 SideObjectDetected 0 "NO" 1 "YES";
+VAL_ 471 SideObjectDetected 0 "NO" 1 "YES";
