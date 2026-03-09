@@ -33,3 +33,16 @@ def cmd_package_bundle_portable(args: argparse.Namespace) -> int:
 def cmd_package_validate_contract(args: argparse.Namespace) -> int:
     cmd = [sys.executable, str(SCRIPTS / 'release' / 'validate_release_contract.py')]
     return run_cmd(cmd)
+
+
+def cmd_package_clean(args: argparse.Namespace) -> int:
+    cmd = [sys.executable, str(SCRIPTS / 'release' / 'clean_generated_outputs.py'), '--scope', args.scope]
+    if args.run_id:
+        cmd.extend(['--run-id', args.run_id])
+    if args.phase:
+        cmd.extend(['--phase', args.phase])
+    if args.all_runs:
+        cmd.append('--all-runs')
+    if args.yes:
+        cmd.append('--yes')
+    return run_cmd(cmd)

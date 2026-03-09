@@ -12,6 +12,7 @@
     "scripts/run.py",
     "scripts/tui_app.py",
     "product/sdv_operator/README.md",
+    "product/sdv_operator/config/cleanup_policy.json",
     "product/sdv_operator/config/surface_ecu_inventory.json",
     "product/sdv_operator/config/verification_phase_policy.json",
     "product/sdv_operator/config/surface_traceability_profile.json",
@@ -49,7 +50,9 @@
     "canoe/logging/evidence",
     "artifacts/verification_runs",
     "canoe/cfg/.run",
-    "dist"
+    "dist",
+    "build",
+    "product/sdv_operator/site"
   ],
   "release_artifacts": {
     "exe_onefolder": "dist/sdv_cli/sdv",

@@ -159,6 +159,7 @@ def print_shell_help() -> None:
     print('  /package portable [onefolder|onefile]')
     print('  /package exe [onefolder|onefile]')
     print('  /package validate-contract')
+    print('  /package clean [staging|archive|build|all] [run_id] [phase] [--yes]')
     print('  /doctor [ensure-running]')
     print('  /capl get <Namespace> <Variable>')
     print('  /capl set <Namespace> <Variable> <Value>')

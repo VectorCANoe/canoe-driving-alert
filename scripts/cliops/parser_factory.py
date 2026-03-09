@@ -288,6 +288,15 @@ def add_verify_finalize_args(p: argparse.ArgumentParser, handlers: HandlerMap) -
     p.set_defaults(func=handlers["cmd_verify_finalize"], operator_command_id="verify.finalize")
 
 
+def add_package_clean_args(p: argparse.ArgumentParser, handlers: HandlerMap) -> None:
+    p.add_argument("--scope", choices=["staging", "archive", "build", "all"], default="staging")
+    p.add_argument("--run-id", default="", help="Archive run ID to delete")
+    p.add_argument("--phase", choices=["pre", "post", "full"], default="", help="Optional archive phase")
+    p.add_argument("--all-runs", action="store_true", help="Delete the entire archive root")
+    p.add_argument("--yes", action="store_true", help="Apply deletion. Without this flag, preview only.")
+    p.set_defaults(func=handlers["cmd_package_clean"], operator_command_id="package.clean")
+
+
 def add_verify_status_args(p: argparse.ArgumentParser, handlers: HandlerMap) -> None:
     p.add_argument("--run-id", required=True, help="Run ID, e.g. 20260306_1930")
     p.add_argument(
@@ -568,6 +577,7 @@ def build_parser(handlers: HandlerMap, default_run_id: Callable[[], str]) -> arg
 
     pkg_validate = package_sub.add_parser("validate-contract", help="Validate manifest/layout packaging contract")
     pkg_validate.set_defaults(func=handlers["cmd_package_validate_contract"], operator_command_id="package.validate_contract")
+    add_package_clean_args(package_sub.add_parser("clean", help="Clean generated staging/archive/build outputs"), handlers)
 
     release = sub.add_parser("release", help="Distribution-focused wrappers")
     release_sub = release.add_subparsers(dest="release_command", required=True)
@@ -623,6 +633,7 @@ def build_parser(handlers: HandlerMap, default_run_id: Callable[[], str]) -> arg
         func=handlers["cmd_package_validate_contract"],
         operator_command_id="package.validate_contract",
     )
+    add_package_clean_args(_add_hidden_parser(sub, "package-clean"), handlers)
 
     _add_hidden_parser(sub, "go").set_defaults(func=handlers["cmd_start_guided"])
     add_start_demo_args(_add_hidden_parser(sub, "demo"), handlers)

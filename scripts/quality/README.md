@@ -17,6 +17,7 @@ Main tools:
 - `evidence_score_gate.py`
 - `build_evidence_from_write_window.py`
 - `init_evidence_run.py`
+- `package clean --scope staging --yes`
 - Gate scripts moved to: `scripts/gates/`
 
 Note:
@@ -71,3 +72,4 @@ Note:
   - `artifacts/verification_runs/<run_id>/<phase>/manifests/execution_manifest.json`
 - This allows CAPL evidence lines to add fields without breaking parsing.
 - Gate purpose/CI mapping reference: `product/sdv_operator/docs-src/maintenance.md`
+- `canoe/tmp/reports/verification`는 staging output 전용이며 Git 추적 대상이 아닙니다.

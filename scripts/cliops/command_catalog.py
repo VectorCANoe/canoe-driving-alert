@@ -535,6 +535,55 @@ PRODUCT_COMMAND_GROUPS: dict[str, list[PaletteCommand]] = {
             next_step="PASS면 build-exe 또는 bundle-portable로 넘어가십시오.",
         ),
         PaletteCommand(
+            command_id="package.clean",
+            title="생성물 정리",
+            command="package clean --scope staging",
+            base_command="package clean",
+            summary="staging/build/archive generated output만 정리합니다.",
+            notes="archive는 run_id 또는 all-runs 지정 없이는 지워지지 않습니다. 기본은 preview이며, 실제 삭제는 --yes가 필요합니다.",
+            use_when=(
+                "검증 산출물이 누적되어 작업면이 복잡해졌을 때",
+                "배포 전 build/dist/site 캐시를 비우고 다시 만들고 싶을 때",
+            ),
+            success_signals=(
+                "preview 목록이 기대한 생성물만 가리킴",
+                "staging clean 후 run 결과가 다시 생성됨",
+            ),
+            expected_outputs=(
+                "verification staging cleaned",
+                "optional archive/build cleanup",
+            ),
+            failure_focus=(
+                "archive는 run_id 없이 지우지 않음",
+                "README.md 같은 설명 파일은 유지됨",
+            ),
+            next_step="preview가 맞으면 shell에서 동일 명령 뒤에 --yes를 붙여 적용하십시오.",
+            params=(
+                CommandParam(
+                    key="scope",
+                    flag="--scope",
+                    label="정리 범위",
+                    default="staging",
+                    choices=("staging", "archive", "build", "all"),
+                    required=True,
+                ),
+                CommandParam(
+                    key="run_id",
+                    flag="--run-id",
+                    label="Run ID",
+                    default="",
+                    placeholder="20260310_0010",
+                ),
+                CommandParam(
+                    key="phase",
+                    flag="--phase",
+                    label="Phase",
+                    default="",
+                    choices=("pre", "post", "full"),
+                ),
+            ),
+        ),
+        PaletteCommand(
             command_id="package.portable_bundle",
             title="포터블 번들",
             command="package bundle-portable --mode onefolder",

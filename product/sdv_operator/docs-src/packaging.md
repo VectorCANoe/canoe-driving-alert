@@ -14,6 +14,21 @@ python scripts/run.py package validate-contract
 
 manifest와 release layout 상수가 drift 없이 맞는지 먼저 확인합니다.
 
+### Generated output cleanup
+
+```powershell
+python scripts/run.py package clean --scope staging
+python scripts/run.py package clean --scope staging --yes
+python scripts/run.py package clean --scope archive --run-id 20260310_0010 --phase pre --yes
+python scripts/run.py package clean --scope build --yes
+```
+
+원칙:
+
+- 기본은 preview입니다.
+- 실제 삭제는 `--yes`가 필요합니다.
+- `archive`는 `run_id` 또는 `--all-runs` 지정 없이는 지워지지 않습니다.
+
 ### Portable bundle
 
 ```powershell
@@ -61,4 +76,5 @@ python scripts/run.py package build-exe --mode onefolder
 - reviewer-facing 식별자는 `Surface ECU / Req / TestCase / Scenario`입니다.
 - execution 식별자는 `run_id / phase / owner / run_date`입니다.
 - staging 결과는 `canoe/tmp/reports/verification`에 남겨두되, 배포/보관/CI 아카이브는 `artifacts/verification_runs`만 기준으로 봅니다.
+- `canoe/tmp/reports/verification`는 staging output 전용이며 Git 추적 대상이 아닙니다.
 - 배포 전에는 `validate-contract -> build-exe -> bundle-portable` 순서로 진행합니다.

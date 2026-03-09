@@ -1,0 +1,27 @@
+{
+  "schema": "sdv.operator.cleanup.policy.v1",
+  "owner": "Dev2",
+  "policy": "generated outputs are disposable; controlled archive requires explicit run selection",
+  "staging_roots": [
+    "canoe/tmp/reports/verification",
+    "canoe/logging/evidence",
+    "canoe/cfg/.run"
+  ],
+  "build_roots": [
+    "dist/sdv_cli",
+    "dist/portable",
+    "build/pyinstaller",
+    "build/spec",
+    "product/sdv_operator/site"
+  ],
+  "archive_root": "artifacts/verification_runs",
+  "preserve_names": [
+    "README.md",
+    ".gitkeep"
+  ],
+  "archive_policy": {
+    "default_action": "keep",
+    "delete_requires_run_id": true,
+    "delete_requires_yes": true
+  }
+}

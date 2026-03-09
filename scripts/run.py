@@ -55,7 +55,7 @@ from cliops.gate_ops import (
     run_gate_all as _run_gate_all,
     run_named_gate as _run_named_gate,
 )
-from cliops.package_ops import cmd_package_build_exe, cmd_package_bundle_portable, cmd_package_validate_contract
+from cliops.package_ops import cmd_package_build_exe, cmd_package_bundle_portable, cmd_package_clean, cmd_package_validate_contract
 from cliops.operator_result import build_operator_result, clear_last_operator_result, write_last_operator_result
 from cliops.parser_factory import TOPLEVEL_COMMANDS, build_parser
 from cliops.platform_caps import canoe_runtime_check, platform_label
@@ -136,6 +136,7 @@ CONTRACT_CANONICAL = [
     "python scripts/run.py package build-exe --mode onefolder",
     "python scripts/run.py package bundle-portable",
     "python scripts/run.py package validate-contract",
+    "python scripts/run.py package clean --scope staging --yes",
 ]
 
 CONTRACT_LEGACY = [
@@ -164,6 +165,7 @@ CONTRACT_LEGACY = [
     "package-build-exe",
     "package-bundle-portable",
     "package-validate-contract",
+    "package-clean",
 ]
 
 
@@ -950,6 +952,7 @@ PARSER_HANDLERS = {
     "cmd_gate_cli_readiness": cmd_gate_cli_readiness,
     "cmd_package_build_exe": cmd_package_build_exe,
     "cmd_package_bundle_portable": cmd_package_bundle_portable,
+    "cmd_package_clean": cmd_package_clean,
     "cmd_package_validate_contract": cmd_package_validate_contract,
     "cmd_release_exe": cmd_release_exe,
     "cmd_release_portable": cmd_release_portable,

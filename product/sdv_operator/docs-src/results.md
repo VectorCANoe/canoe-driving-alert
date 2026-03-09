@@ -1,5 +1,11 @@
 # 결과 해석
 
+운영 원칙:
+
+- `canoe/tmp/reports/verification`는 실행 중간 결과를 쌓는 staging 영역입니다.
+- reviewer/Jenkins 기준 최종 보관은 `artifacts/verification_runs/<run_id>/<phase>/`만 봅니다.
+- staging 결과는 Git에 커밋하지 않습니다.
+
 ## 판정 체계
 
 - `PASS`
