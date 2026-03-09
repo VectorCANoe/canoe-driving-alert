@@ -58,6 +58,7 @@ ROOT = Path(__file__).resolve().parent.parent
 RUNNER = ROOT / "scripts" / "run.py"
 FORM_SLOTS = 4
 STATE_FILE = ROOT / "canoe" / "tmp" / "reports" / "verification" / "tui_operator_state.json"
+CAMPAIGN_PROFILES_PATH = ROOT / "product" / "sdv_operator" / "config" / "campaign_profiles.json"
 BASE_GROUP_NAMES = list(PRODUCT_COMMAND_GROUPS.keys())
 COMMAND_INDEX = build_command_index()
 
@@ -435,6 +436,15 @@ class SdvTuiApp(App[None]):
         color: #8ba4b8;
     }
 
+    #automation-profiles {
+        height: 3;
+        margin-top: 1;
+    }
+
+    #automation-profiles Button {
+        margin-right: 1;
+    }
+
     #artifacts-overview {
         min-height: 5;
         margin-bottom: 1;
@@ -699,7 +709,7 @@ class SdvTuiApp(App[None]):
                         yield Static(
                             "Automation 화면은 CANoe TEST와 Jenkins 사이의 운영 계층을 담당합니다.\n"
                             "Jenkins는 스케줄링/재시도/아카이브를 담당하고, Console은 batch, execution manifest, "
-                            "surface bundle, native report 연결을 담당합니다.",
+                            "surface bundle, native report 연결, campaign profile 기본값을 담당합니다.",
                             id="automation-overview",
                         )
                         with Horizontal(id="automation-strip"):
@@ -727,13 +737,20 @@ class SdvTuiApp(App[None]):
                         with Horizontal(id="automation-actions"):
                             yield Button("검증 배치 준비", id="automation-batch", variant="success")
                             yield Button("CI bridge 문서", id="automation-open-ci")
+                            yield Button("역할 경계", id="automation-open-role")
                             yield Button("Jenkins 샘플", id="automation-open-jenkins")
                             yield Button("패키징 계약 점검", id="automation-contract")
                             yield Button("native report 열기", id="automation-open-native")
                             yield Button("최신 archive 열기", id="automation-open-archive")
+                        with Horizontal(id="automation-profiles"):
+                            yield Button("Quick smoke profile", id="automation-profile-quick")
+                            yield Button("CI preflight profile", id="automation-profile-ci")
+                            yield Button("Nightly profile", id="automation-profile-nightly")
+                            yield Button("Soak profile", id="automation-profile-soak")
+                            yield Button("Profile 원본", id="automation-open-profiles")
                         yield Static(
                             "원칙: CANoe TEST를 대체하지 않고, Jenkins를 복제하지 않습니다. "
-                            "Console은 campaign/evidence/CI bridge만 담당합니다.",
+                            "Console은 campaign/evidence/CI bridge만 담당합니다. 반복 실행 정책은 profile로 정의하고 scheduler는 Jenkins가 맡습니다.",
                             id="automation-hint",
                         )
                 with Vertical(id="log-dock"):
@@ -830,6 +847,66 @@ class SdvTuiApp(App[None]):
 
     def _open_core_task(self, command_id: str, *, focus: str) -> None:
         self._open_task("Primary Workflow", command_id, focus=focus)
+
+    def _load_campaign_profiles(self) -> dict[str, dict[str, object]]:
+        try:
+            raw = json.loads(CAMPAIGN_PROFILES_PATH.read_text(encoding="utf-8"))
+        except Exception:
+            return {}
+        profiles = raw.get("profiles", []) if isinstance(raw, dict) else []
+        out: dict[str, dict[str, object]] = {}
+        if not isinstance(profiles, list):
+            return out
+        for item in profiles:
+            if not isinstance(item, dict):
+                continue
+            key = str(item.get("profile_id", "")).strip()
+            if key:
+                out[key] = item
+        return out
+
+    def _apply_campaign_profile(self, profile_id: str) -> None:
+        profile = self._load_campaign_profiles().get(profile_id)
+        if not profile:
+            self._write_log(f"[bold red]Campaign profile not found[/] {profile_id}")
+            return
+        self._open_task("Primary Workflow", "verify.batch", focus="form")
+        command = self._selected_command()
+        if command is None:
+            return
+        overrides = {
+            "phase": str(profile.get("phase", "pre")),
+            "surface_scope": str(profile.get("surface_scope", "ALL")),
+            "repeat_count": str(profile.get("repeat_count", 1)),
+            "duration_minutes": str(profile.get("duration_minutes", 0)),
+            "interval_seconds": str(profile.get("interval_seconds", 0)),
+            "owner": str(profile.get("owner_default", "DEV2")),
+        }
+        for index, param in enumerate(command.params):
+            if param.key not in overrides:
+                continue
+            _, _, input_widget, _ = self._field_widgets(index)
+            input_widget.value = overrides[param.key]
+        self.state["campaign_profile"] = {
+            "profile_id": profile_id,
+            "title": str(profile.get("title", profile_id)),
+            "stop_on_fail": bool(profile.get("stop_on_fail", False)),
+        }
+        self._update_preview()
+        self._write_log(
+            f"[bold cyan]Profile[/] {profile.get('title', profile_id)}  "
+            f"(phase={profile.get('phase', 'pre')}, repeat={profile.get('repeat_count', 1)})"
+        )
+
+    def _profile_extra_tokens(self, command: PaletteCommand) -> list[str]:
+        profile = self.state.get("campaign_profile", {})
+        if not isinstance(profile, dict):
+            return []
+        if command.command_id not in {"verify.batch", "verify.precheck_batch"}:
+            return []
+        if bool(profile.get("stop_on_fail", False)):
+            return ["--stop-on-fail"]
+        return []
 
     def _refresh_home_summary(self) -> None:
         last_result = self.state.get("last_result", {})
@@ -959,8 +1036,10 @@ class SdvTuiApp(App[None]):
         lines = [self._relpath(source_target)]
         for candidate in (
             ROOT / "product" / "sdv_operator" / "config" / "surface_ecu_inventory.json",
+            ROOT / "product" / "sdv_operator" / "config" / "campaign_profiles.json",
             ROOT / "product" / "sdv_operator" / "config" / "surface_traceability_profile.json",
             ROOT / "product" / "sdv_operator" / "config" / "verification_artifact_layout.json",
+            ROOT / "product" / "sdv_operator" / "docs-src" / "role-boundary.md",
         ):
             marker = "OK" if candidate.exists() else "MISS"
             lines.append(f"- [{marker}] {self._relpath(candidate)}")
@@ -1332,8 +1411,10 @@ class SdvTuiApp(App[None]):
             if scope == "source":
                 return [
                     "product/sdv_operator/config/surface_ecu_inventory.json",
+                    "product/sdv_operator/config/campaign_profiles.json",
                     "product/sdv_operator/config/surface_traceability_profile.json",
                     "product/sdv_operator/config/verification_artifact_layout.json",
+                    "product/sdv_operator/docs-src/role-boundary.md",
                 ]
             if scope == "archive":
                 return ["artifacts/verification_runs"]
@@ -1345,6 +1426,7 @@ class SdvTuiApp(App[None]):
                 "readiness": "canoe/tmp/reports/verification/run_readiness.md",
                 "doctor": "canoe/tmp/reports/verification/doctor_report.md",
                 "surface-inventory": "product/sdv_operator/config/surface_ecu_inventory.json",
+                "campaign-profiles": "product/sdv_operator/config/campaign_profiles.json",
                 "traceability-profile": "product/sdv_operator/config/surface_traceability_profile.json",
                 "artifact-layout": "product/sdv_operator/config/verification_artifact_layout.json",
                 "phase-policy": "product/sdv_operator/config/verification_phase_policy.json",
@@ -1352,6 +1434,7 @@ class SdvTuiApp(App[None]):
                 "commands-doc": "product/sdv_operator/docs-src/commands.md",
                 "results-doc": "product/sdv_operator/docs-src/results.md",
                 "packaging-doc": "product/sdv_operator/docs-src/packaging.md",
+                "role-boundary-doc": "product/sdv_operator/docs-src/role-boundary.md",
                 "execution-manifest": "artifacts/verification_runs",
                 "archive-run": "artifacts/verification_runs",
                 "reports-dir": "artifacts/verification_runs",
@@ -1437,8 +1520,11 @@ class SdvTuiApp(App[None]):
             self.query_one("#preview-body", Static).update(no_selected_command())
             return
         try:
-            tokens = build_command_tokens(command, self._form_values())
+            tokens = build_command_tokens(command, self._form_values()) + self._profile_extra_tokens(command)
             preview_lines = [f"python scripts/run.py {' '.join(tokens)}"]
+            profile = self.state.get("campaign_profile", {})
+            if isinstance(profile, dict) and profile.get("profile_id"):
+                preview_lines.extend(["", f"[cyan]적용 profile[/cyan]  {profile.get('title', profile.get('profile_id'))}"])
             artifact_lines = command.expected_outputs or tuple(self._artifact_paths(command, tokens))
             if artifact_lines:
                 preview_lines.extend(["", "[cyan]예상 산출물[/cyan]"])
@@ -1720,6 +1806,12 @@ class SdvTuiApp(App[None]):
 
     def action_open_ci_bridge_doc(self) -> None:
         self._open_static_target(ROOT / "product" / "sdv_operator" / "docs-src" / "ci-bridge.md")
+
+    def action_open_role_boundary_doc(self) -> None:
+        self._open_static_target(ROOT / "product" / "sdv_operator" / "docs-src" / "role-boundary.md")
+
+    def action_open_campaign_profiles(self) -> None:
+        self._open_static_target(ROOT / "product" / "sdv_operator" / "config" / "campaign_profiles.json")
 
     def action_open_jenkins_sample(self) -> None:
         self._open_static_target(ROOT / "product" / "sdv_operator" / "examples" / "Jenkinsfile.verify")
@@ -2170,11 +2262,23 @@ class SdvTuiApp(App[None]):
         elif event.button.id == "artifact-clean-staging":
             self.action_clean_staging_now()
         elif event.button.id == "automation-batch":
-            self._open_task("Runtime Support", "verify.batch", focus="form")
+            self._open_task("Primary Workflow", "verify.batch", focus="form")
         elif event.button.id == "automation-open-ci":
             self.action_open_ci_bridge_doc()
+        elif event.button.id == "automation-open-role":
+            self.action_open_role_boundary_doc()
         elif event.button.id == "automation-open-jenkins":
             self.action_open_jenkins_sample()
+        elif event.button.id == "automation-profile-quick":
+            self._apply_campaign_profile("quick_smoke")
+        elif event.button.id == "automation-profile-ci":
+            self._apply_campaign_profile("ci_preflight")
+        elif event.button.id == "automation-profile-nightly":
+            self._apply_campaign_profile("nightly_regression")
+        elif event.button.id == "automation-profile-soak":
+            self._apply_campaign_profile("soak_stability")
+        elif event.button.id == "automation-open-profiles":
+            self.action_open_campaign_profiles()
         elif event.button.id == "automation-contract":
             self._open_task("Packaging", "package.validate_contract", focus="run")
         elif event.button.id == "automation-open-native":
@@ -2252,7 +2356,7 @@ class SdvTuiApp(App[None]):
             return
         values = self._form_values()
         try:
-            tokens = build_command_tokens(command, values)
+            tokens = build_command_tokens(command, values) + self._profile_extra_tokens(command)
         except ValueError as ex:
             self._write_log(f"[bold red]Input error[/]: {ex}")
             self._update_preview()

@@ -120,8 +120,10 @@ def _artifact_candidates(command_id: str, args: argparse.Namespace) -> list[Path
             paths.extend(
                 [
                     ROOT / "product" / "sdv_operator" / "config" / "surface_ecu_inventory.json",
+                    ROOT / "product" / "sdv_operator" / "config" / "campaign_profiles.json",
                     ROOT / "product" / "sdv_operator" / "config" / "surface_traceability_profile.json",
                     ROOT / "product" / "sdv_operator" / "config" / "verification_artifact_layout.json",
+                    ROOT / "product" / "sdv_operator" / "docs-src" / "role-boundary.md",
                 ]
             )
         elif scope == "archive":
@@ -136,6 +138,7 @@ def _artifact_candidates(command_id: str, args: argparse.Namespace) -> list[Path
             "readiness": VERIFICATION_ROOT / "run_readiness.md",
             "doctor": VERIFICATION_ROOT / "doctor_report.md",
             "surface-inventory": ROOT / "product" / "sdv_operator" / "config" / "surface_ecu_inventory.json",
+            "campaign-profiles": ROOT / "product" / "sdv_operator" / "config" / "campaign_profiles.json",
             "traceability-profile": ROOT / "product" / "sdv_operator" / "config" / "surface_traceability_profile.json",
             "artifact-layout": ROOT / "product" / "sdv_operator" / "config" / "verification_artifact_layout.json",
             "phase-policy": ROOT / "product" / "sdv_operator" / "config" / "verification_phase_policy.json",
@@ -143,6 +146,7 @@ def _artifact_candidates(command_id: str, args: argparse.Namespace) -> list[Path
             "commands-doc": ROOT / "product" / "sdv_operator" / "docs-src" / "commands.md",
             "results-doc": ROOT / "product" / "sdv_operator" / "docs-src" / "results.md",
             "packaging-doc": ROOT / "product" / "sdv_operator" / "docs-src" / "packaging.md",
+            "role-boundary-doc": ROOT / "product" / "sdv_operator" / "docs-src" / "role-boundary.md",
         }
         resolved = target_map.get(target)
         if resolved:

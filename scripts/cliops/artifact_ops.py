@@ -83,11 +83,13 @@ def _source_entries(layout: dict) -> list[Path]:
         LAYOUT_PATH,
         ROOT / "product" / "sdv_operator" / "manifest.json",
         ROOT / "product" / "sdv_operator" / "config" / "surface_ecu_inventory.json",
+        ROOT / "product" / "sdv_operator" / "config" / "campaign_profiles.json",
         ROOT / "product" / "sdv_operator" / "config" / "surface_traceability_profile.json",
         ROOT / "product" / "sdv_operator" / "config" / "verification_phase_policy.json",
         ROOT / "product" / "sdv_operator" / "docs-src" / "commands.md",
         ROOT / "product" / "sdv_operator" / "docs-src" / "results.md",
         ROOT / "product" / "sdv_operator" / "docs-src" / "packaging.md",
+        ROOT / "product" / "sdv_operator" / "docs-src" / "role-boundary.md",
     ]
 
 
@@ -150,6 +152,8 @@ def _resolve_open_target(layout: dict, target: str, run_id: str, phase: str, lat
         return staging_root / "doctor_report.md"
     if target == "surface-inventory":
         return ROOT / "product" / "sdv_operator" / "config" / "surface_ecu_inventory.json"
+    if target == "campaign-profiles":
+        return ROOT / "product" / "sdv_operator" / "config" / "campaign_profiles.json"
     if target == "traceability-profile":
         return ROOT / "product" / "sdv_operator" / "config" / "surface_traceability_profile.json"
     if target == "artifact-layout":
@@ -166,6 +170,8 @@ def _resolve_open_target(layout: dict, target: str, run_id: str, phase: str, lat
         return ROOT / "product" / "sdv_operator" / "docs-src" / "packaging.md"
     if target == "ci-bridge-doc":
         return ROOT / "product" / "sdv_operator" / "docs-src" / "ci-bridge.md"
+    if target == "role-boundary-doc":
+        return ROOT / "product" / "sdv_operator" / "docs-src" / "role-boundary.md"
     if target == "jenkinsfile-sample":
         return ROOT / "product" / "sdv_operator" / "examples" / "Jenkinsfile.verify"
 

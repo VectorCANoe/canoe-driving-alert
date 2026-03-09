@@ -20,6 +20,9 @@
    - JUnit XML
    - Jenkins archive contract
    - sample pipeline: `product/sdv_operator/examples/Jenkinsfile.verify`
+5. 역할 경계 / campaign profile
+   - CANoe TEST / Jenkins / Console 역할 분리
+   - campaign profile source contract
 
 ## One-Line Flow
 
@@ -27,7 +30,7 @@
 python scripts/run.py gate all
 python scripts/run.py scenario run --id 4
 python scripts/run.py verify quick --run-id 20260308_0900 --owner DEV2
-python scripts/run.py verify batch --run-id 20260308_0900 --owner DEV2 --phase pre --report-formats json,md,junit
+python scripts/run.py verify batch --run-id 20260308_0900 --campaign-id CMP_20260310 --owner DEV2 --phase pre --surface-scope ALL --repeat-count 1 --duration-minutes 0 --interval-seconds 0 --report-formats json,md,junit
 ```
 
 ## 표면 원칙
@@ -42,7 +45,9 @@ python scripts/run.py verify batch --run-id 20260308_0900 --owner DEV2 --phase p
 1. Quickstart
 2. Commands
 3. Results
-4. CI Bridge
-5. Packaging
-6. Maintenance
-7. Repo Surfaces
+4. Role Boundary
+5. Campaign Profiles
+6. CI Bridge
+7. Packaging
+8. Maintenance
+9. Repo Surfaces

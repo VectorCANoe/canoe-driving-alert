@@ -715,6 +715,19 @@ PRODUCT_COMMAND_GROUPS: dict[str, list[PaletteCommand]] = {
             next_step="traceability/profile 문서도 필요하면 source target으로 이어서 여십시오.",
         ),
         PaletteCommand(
+            command_id="artifact.open_campaign_profiles",
+            title="원본 campaign profiles 열기",
+            command="artifact open --target campaign-profiles",
+            summary="quick smoke, CI preflight, nightly, soak profile 원본 JSON을 바로 엽니다.",
+            use_when=(
+                "Automation/Campaign 실행 기본값이 어떤 profile에서 오는지 확인할 때",
+                "Jenkins가 어떤 반복/간격/지속시간 규칙을 써야 하는지 원본 기준을 볼 때",
+            ),
+            success_signals=("campaign_profiles.json이 열림",),
+            expected_outputs=("product/sdv_operator/config/campaign_profiles.json",),
+            next_step="필요하면 role boundary 문서와 함께 Jenkins/Console 경계를 확인하십시오.",
+        ),
+        PaletteCommand(
             command_id="artifact.open_traceability_profile",
             title="원본 traceability profile 열기",
             command="artifact open --target traceability-profile",
@@ -723,6 +736,19 @@ PRODUCT_COMMAND_GROUPS: dict[str, list[PaletteCommand]] = {
             success_signals=("surface_traceability_profile.json이 열림",),
             expected_outputs=("product/sdv_operator/config/surface_traceability_profile.json",),
             next_step="필요하면 execution manifest와 함께 대조하십시오.",
+        ),
+        PaletteCommand(
+            command_id="artifact.open_role_boundary_doc",
+            title="역할 경계 문서 열기",
+            command="artifact open --target role-boundary-doc",
+            summary="CANoe TEST, Jenkins, Console이 각각 어디까지 담당하는지 문서를 엽니다.",
+            use_when=(
+                "도구 역할 경계를 다시 확인해야 할 때",
+                "reviewer나 팀원에게 Console의 담당 범위를 설명할 때",
+            ),
+            success_signals=("role-boundary.md가 열림",),
+            expected_outputs=("product/sdv_operator/docs-src/role-boundary.md",),
+            next_step="campaign profiles와 CI bridge 문서를 함께 확인하십시오.",
         ),
         PaletteCommand(
             command_id="artifact.open_artifact_layout",

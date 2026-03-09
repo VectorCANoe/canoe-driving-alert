@@ -1,0 +1,58 @@
+{
+  "schema": "canoe.test.verification.campaign-profiles.v1",
+  "description": "Console-owned campaign profiles. Jenkins schedules them, the console defines execution/evidence conventions.",
+  "profiles": [
+    {
+      "profile_id": "quick_smoke",
+      "title": "Quick Smoke",
+      "purpose": "Local operator smoke before deeper verification.",
+      "recommended_command": "verify batch",
+      "phase": "pre",
+      "surface_scope": "ALL",
+      "repeat_count": 1,
+      "duration_minutes": 0,
+      "interval_seconds": 0,
+      "stop_on_fail": true,
+      "owner_default": "DEV2"
+    },
+    {
+      "profile_id": "ci_preflight",
+      "title": "CI Preflight",
+      "purpose": "Jenkins preflight batch for build acceptance.",
+      "recommended_command": "verify batch",
+      "phase": "pre",
+      "surface_scope": "ALL",
+      "repeat_count": 1,
+      "duration_minutes": 0,
+      "interval_seconds": 0,
+      "stop_on_fail": true,
+      "owner_default": "JENKINS"
+    },
+    {
+      "profile_id": "nightly_regression",
+      "title": "Nightly Regression",
+      "purpose": "Nightly repeated regression run with stable interval.",
+      "recommended_command": "verify batch",
+      "phase": "full",
+      "surface_scope": "ALL",
+      "repeat_count": 10,
+      "duration_minutes": 0,
+      "interval_seconds": 30,
+      "stop_on_fail": false,
+      "owner_default": "JENKINS"
+    },
+    {
+      "profile_id": "soak_stability",
+      "title": "Soak Stability",
+      "purpose": "Long-run stability evidence profile. Scheduler belongs to Jenkins.",
+      "recommended_command": "verify batch",
+      "phase": "full",
+      "surface_scope": "ALL",
+      "repeat_count": 0,
+      "duration_minutes": 120,
+      "interval_seconds": 60,
+      "stop_on_fail": false,
+      "owner_default": "JENKINS"
+    }
+  ]
+}
