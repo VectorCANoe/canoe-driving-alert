@@ -8,6 +8,7 @@
 - `FINAL_PHASE_TEAM_SPLIT_2026-03-08.md`
 - `DEV1_TO_DOC_BATCH_2026-03-08.md`
 - `DEV1_CANOE_TEST_DOC_IMPACT_2026-03-08.md`
+- `DEV1_ARCHITECTURE_PROPAGATION_PACK_2026-03-10.md`
 
 ## Active Architecture Reset Baseline
 
@@ -43,3 +44,5 @@
   - Dev1 -> Docs 일괄 반영 요청
 - `DEV1_CANOE_TEST_DOC_IMPACT_2026-03-08.md`
   - native CANoe Test Unit 반영 범위 정리
+- `DEV1_ARCHITECTURE_PROPAGATION_PACK_2026-03-10.md`
+  - `4-layer`, `domain-controller + CGW supervision`, `00f 29-bit policy vs 11-bit active execution` 전파 패킷
