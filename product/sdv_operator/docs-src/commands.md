@@ -108,10 +108,10 @@ python scripts/run.py verify prepare --run-id 20260306_1930
 #### Batch
 
 ```powershell
-python scripts/run.py verify batch --run-id 20260308_0900 --owner DEV2 --phase pre
-python scripts/run.py verify batch --run-id 20260308_0900 --owner DEV2 --phase post
-python scripts/run.py verify batch --run-id 20260308_0900 --owner DEV2 --phase full
-python scripts/run.py verify batch --run-id 20260308_0900 --owner DEV2 --phase pre --report-formats json,md,junit
+python scripts/run.py verify batch --run-id 20260308_0900 --campaign-id CMP_20260310 --owner DEV2 --phase pre --surface-scope ALL --repeat-count 1 --duration-minutes 0 --interval-seconds 0
+python scripts/run.py verify batch --run-id 20260308_0900 --campaign-id CMP_20260310 --owner DEV2 --phase post --surface-scope ADAS --repeat-count 3 --duration-minutes 30 --interval-seconds 10
+python scripts/run.py verify batch --run-id 20260308_0900 --campaign-id CMP_20260310 --owner DEV2 --phase full --surface-scope BCM --repeat-count 1 --duration-minutes 0 --interval-seconds 0
+python scripts/run.py verify batch --run-id 20260308_0900 --campaign-id CMP_20260310 --owner DEV2 --phase pre --surface-scope ALL --repeat-count 1 --duration-minutes 0 --interval-seconds 0 --report-formats json,md,junit
 ```
 
 권장:
@@ -121,11 +121,25 @@ python scripts/run.py verify batch --run-id 20260308_0900 --owner DEV2 --phase p
 - `phase`에 따라 verdict policy가 달라집니다.
   - `pre`: advisory gate 허용 (`WARN`)
   - `full`: closeout strict (`FAIL`)
+- `campaign_id`는 build/nightly/repeat 묶음 식별자입니다.
+- `surface_scope`는 reviewer-facing으로 집중해서 볼 surface ECU 범위입니다.
+- `repeat_count / duration_minutes / interval_seconds`는 반복 실행 의도와 운영 profile 기록입니다.
 
 참고:
 - `verify batch --phase pre/full`은 pre 단계 시작 전에 `doctor(auto-start)`를 같이 실행합니다.
 - 현재 CANoe 세션에 validation harness sysvar가 없으면 `doctor` 단계에서 먼저 드러나고, pre batch는 그 지점에서 종료됩니다.
 - batch가 끝나면 staging 산출물은 `artifacts/verification_runs/<run_id>/<phase>/`로 다시 materialize됩니다.
+
+#### Precheck batch
+
+```powershell
+python scripts/run.py start precheck --run-id 20260308_0900 --campaign-id CMP_20260310 --owner DEV2 --surface-scope ALL --repeat-count 1 --duration-minutes 0 --interval-seconds 0
+```
+
+사용 시점:
+
+- full batch 전에 현재 작업 상태를 한 번에 스냅샷하고 싶을 때
+- gate + prepare + smoke + status를 같은 execution metadata로 묶고 싶을 때
 
 #### Surface bundle
 

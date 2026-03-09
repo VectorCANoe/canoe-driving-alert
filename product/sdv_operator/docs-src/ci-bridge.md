@@ -31,7 +31,7 @@ Dev2는 아래 경로를 유지합니다.
 ```powershell
 python scripts/run.py gate all
 python scripts/run.py scenario run --id 4
-python scripts/run.py verify batch --run-id 20260309_0900 --owner DEV2 --phase pre --report-formats json,md,junit
+python scripts/run.py verify batch --run-id 20260309_0900 --campaign-id CMP_20260310 --owner DEV2 --phase pre --surface-scope ALL --repeat-count 1 --duration-minutes 0 --interval-seconds 0 --report-formats json,md,junit
 python scripts/run.py verify surface-bundle
 ```
 
@@ -64,7 +64,7 @@ Jenkins는 아래 세 종류를 각각 다르게 취급합니다.
 - `surface_evidence_bundle.*`, `surface/<bundle_key>/*`
   - surface ECU 기준 reviewer package / Jenkins archive
 - `execution_manifest.*`
-  - `run_id + phase + owner + scenario + Req/TestCase/Surface`를 같이 보는 최종 실행 메타데이터
+  - `run_id + campaign_id + phase + owner + scenario + Req/TestCase/Surface`를 같이 보는 최종 실행 메타데이터
   - `phase policy` 정보도 포함되어 실행의 판정 기준을 함께 남깁니다.
 - native `.vtestreport`, screenshot
   - 원본 증빙 archive

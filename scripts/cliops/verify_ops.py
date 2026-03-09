@@ -327,7 +327,25 @@ def _normalize_report_formats(raw: str) -> list[str]:
     return out
 
 
-def _write_batch_report(*, run_id: str, owner: str, run_date: str, phase: str, policy: dict, steps: list[dict[str, object]], report_formats: list[str], output_json: Path, output_md: Path, output_csv: Path) -> None:
+def _write_batch_report(
+    *,
+    run_id: str,
+    campaign_id: str,
+    owner: str,
+    run_date: str,
+    phase: str,
+    surface_scope: str,
+    repeat_count: int,
+    duration_minutes: int,
+    interval_seconds: int,
+    stop_on_fail: bool,
+    policy: dict,
+    steps: list[dict[str, object]],
+    report_formats: list[str],
+    output_json: Path,
+    output_md: Path,
+    output_csv: Path,
+) -> None:
     write_json = 'json' in report_formats or 'junit' in report_formats
     if write_json:
         output_json.parent.mkdir(parents=True, exist_ok=True)
@@ -343,9 +361,18 @@ def _write_batch_report(*, run_id: str, owner: str, run_date: str, phase: str, p
     artifacts = _batch_artifact_rows(run_id, phase)
     payload = {
         'run_id': run_id,
+        'campaign_id': campaign_id,
         'owner': owner,
         'run_date': run_date,
         'phase': phase,
+        'campaign': {
+            'campaign_id': campaign_id,
+            'surface_scope': surface_scope,
+            'repeat_count': repeat_count,
+            'duration_minutes': duration_minutes,
+            'interval_seconds': interval_seconds,
+            'stop_on_fail': bool(stop_on_fail),
+        },
         'policy': policy,
         'status': status,
         'pass_count': pass_count,
@@ -362,9 +389,13 @@ def _write_batch_report(*, run_id: str, owner: str, run_date: str, phase: str, p
             '# Dev2 Batch Verification Report',
             '',
             f'- run_id: `{run_id}`',
+            f'- campaign_id: `{campaign_id}`',
             f'- owner: `{owner}`',
             f'- run_date: `{run_date}`',
             f'- phase: `{phase}`',
+            f'- surface_scope: `{surface_scope}`',
+            f'- repeat/duration/interval: `{repeat_count}` / `{duration_minutes} min` / `{interval_seconds} sec`',
+            f'- stop_on_fail: `{str(bool(stop_on_fail)).lower()}`',
             f'- status: `{status}`',
             f'- phase policy: `{policy.get("source", "-")}`',
             f'- pass/warn/fail: `{pass_count}/{warn_count}/{fail_count}`',
@@ -382,12 +413,12 @@ def _write_batch_report(*, run_id: str, owner: str, run_date: str, phase: str, p
         output_md.write_text('\n'.join(lines) + '\n', encoding='utf-8')
     if 'csv' in report_formats:
         with output_csv.open('w', encoding='utf-8', newline='') as fp:
-            writer = csv.DictWriter(fp, fieldnames=['row_type', 'run_id', 'phase', 'owner', 'run_date', 'status', 'step_name', 'step_status', 'step_severity', 'step_rc', 'artifact_path', 'artifact_exists', 'artifact_size_bytes', 'artifact_last_modified'])
+            writer = csv.DictWriter(fp, fieldnames=['row_type', 'run_id', 'campaign_id', 'phase', 'surface_scope', 'repeat_count', 'duration_minutes', 'interval_seconds', 'stop_on_fail', 'owner', 'run_date', 'status', 'step_name', 'step_status', 'step_severity', 'step_rc', 'artifact_path', 'artifact_exists', 'artifact_size_bytes', 'artifact_last_modified'])
             writer.writeheader()
             for step in steps:
-                writer.writerow({'row_type': 'step', 'run_id': run_id, 'phase': phase, 'owner': owner, 'run_date': run_date, 'status': status, 'step_name': step['name'], 'step_status': step.get('status', 'UNKNOWN'), 'step_severity': step.get('severity', 'mandatory'), 'step_rc': step['rc'], 'artifact_path': '', 'artifact_exists': '', 'artifact_size_bytes': '', 'artifact_last_modified': ''})
+                writer.writerow({'row_type': 'step', 'run_id': run_id, 'campaign_id': campaign_id, 'phase': phase, 'surface_scope': surface_scope, 'repeat_count': repeat_count, 'duration_minutes': duration_minutes, 'interval_seconds': interval_seconds, 'stop_on_fail': str(bool(stop_on_fail)).lower(), 'owner': owner, 'run_date': run_date, 'status': status, 'step_name': step['name'], 'step_status': step.get('status', 'UNKNOWN'), 'step_severity': step.get('severity', 'mandatory'), 'step_rc': step['rc'], 'artifact_path': '', 'artifact_exists': '', 'artifact_size_bytes': '', 'artifact_last_modified': ''})
             for row in artifacts:
-                writer.writerow({'row_type': 'artifact', 'run_id': run_id, 'phase': phase, 'owner': owner, 'run_date': run_date, 'status': status, 'step_name': '', 'step_status': '', 'step_severity': '', 'step_rc': '', 'artifact_path': row['path'], 'artifact_exists': str(row['exists']).lower(), 'artifact_size_bytes': row['size_bytes'], 'artifact_last_modified': row['last_modified']})
+                writer.writerow({'row_type': 'artifact', 'run_id': run_id, 'campaign_id': campaign_id, 'phase': phase, 'surface_scope': surface_scope, 'repeat_count': repeat_count, 'duration_minutes': duration_minutes, 'interval_seconds': interval_seconds, 'stop_on_fail': str(bool(stop_on_fail)).lower(), 'owner': owner, 'run_date': run_date, 'status': status, 'step_name': '', 'step_status': '', 'step_severity': '', 'step_rc': '', 'artifact_path': row['path'], 'artifact_exists': str(row['exists']).lower(), 'artifact_size_bytes': row['size_bytes'], 'artifact_last_modified': row['last_modified']})
 
 
 def _maybe_export_batch_junit(*, report_formats: list[str], output_json: Path, output_junit: Path) -> int:
@@ -411,9 +442,15 @@ def _maybe_export_batch_junit(*, report_formats: list[str], output_json: Path, o
 def _finalize_batch_reports(*, args: argparse.Namespace, policy: dict, report_formats: list[str], steps: list[dict[str, object]], exit_code: int) -> int:
     _write_batch_report(
         run_id=args.run_id,
+        campaign_id=args.campaign_id,
         owner=args.owner,
         run_date=args.run_date,
         phase=args.phase,
+        surface_scope=args.surface_scope,
+        repeat_count=args.repeat_count,
+        duration_minutes=args.duration_minutes,
+        interval_seconds=args.interval_seconds,
+        stop_on_fail=args.stop_on_fail,
         policy=policy,
         steps=steps,
         report_formats=report_formats,
@@ -448,9 +485,15 @@ def _finalize_batch_reports(*, args: argparse.Namespace, policy: dict, report_fo
         return materialize_rc
     _write_batch_report(
         run_id=args.run_id,
+        campaign_id=args.campaign_id,
         owner=args.owner,
         run_date=args.run_date,
         phase=args.phase,
+        surface_scope=args.surface_scope,
+        repeat_count=args.repeat_count,
+        duration_minutes=args.duration_minutes,
+        interval_seconds=args.interval_seconds,
+        stop_on_fail=args.stop_on_fail,
         policy=policy,
         steps=steps,
         report_formats=report_formats,

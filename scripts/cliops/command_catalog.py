@@ -65,6 +65,8 @@ def build_command_tokens(command: PaletteCommand, values: dict[str, str] | None 
 def resolve_default_value(raw: str) -> str:
     if raw == "{run_id}":
         return dt.datetime.now().strftime("%Y%m%d_%H%M")
+    if raw == "{campaign_id}":
+        return dt.datetime.now().strftime("CMP_%Y%m%d")
     if raw == "{today}":
         return dt.date.today().isoformat()
     return raw
@@ -289,12 +291,60 @@ PRODUCT_COMMAND_GROUPS: dict[str, list[PaletteCommand]] = {
                     required=True,
                 ),
                 CommandParam(
+                    key="campaign_id",
+                    flag="--campaign-id",
+                    label="Campaign ID",
+                    default="{campaign_id}",
+                    help="반복 실행/CI 묶음을 식별하는 campaign 키입니다.",
+                    placeholder="CMP_20260310",
+                    required=True,
+                ),
+                CommandParam(
                     key="owner",
                     flag="--owner",
                     label="담당자",
                     default="DEV2",
                     help="보고서에 기록되는 운영자 태그입니다.",
                     placeholder="DEV2",
+                    required=True,
+                ),
+                CommandParam(
+                    key="surface_scope",
+                    flag="--surface-scope",
+                    label="Surface Scope",
+                    default="ALL",
+                    help="이번 precheck가 중점적으로 보는 surface ECU 범위입니다.",
+                    placeholder="ALL",
+                    required=True,
+                ),
+                CommandParam(
+                    key="repeat_count",
+                    flag="--repeat-count",
+                    label="반복 횟수",
+                    default="1",
+                    help="예정된 campaign 반복 횟수입니다.",
+                    placeholder="1",
+                    kind="int",
+                    required=True,
+                ),
+                CommandParam(
+                    key="duration_minutes",
+                    flag="--duration-minutes",
+                    label="지속 시간(분)",
+                    default="0",
+                    help="0이면 duration 기반 제한을 쓰지 않습니다.",
+                    placeholder="0",
+                    kind="int",
+                    required=True,
+                ),
+                CommandParam(
+                    key="interval_seconds",
+                    flag="--interval-seconds",
+                    label="반복 간격(초)",
+                    default="0",
+                    help="repeat 사이 간격입니다. 0이면 즉시 다음 단계로 진행합니다.",
+                    placeholder="0",
+                    kind="int",
                     required=True,
                 ),
             ),
@@ -336,6 +386,15 @@ PRODUCT_COMMAND_GROUPS: dict[str, list[PaletteCommand]] = {
                     required=True,
                 ),
                 CommandParam(
+                    key="campaign_id",
+                    flag="--campaign-id",
+                    label="Campaign ID",
+                    default="{campaign_id}",
+                    help="nightly/CI/반복 실행 묶음을 식별하는 campaign 키입니다.",
+                    placeholder="CMP_20260310",
+                    required=True,
+                ),
+                CommandParam(
                     key="owner",
                     flag="--owner",
                     label="담당자",
@@ -349,6 +408,42 @@ PRODUCT_COMMAND_GROUPS: dict[str, list[PaletteCommand]] = {
                     label="배치 단계",
                     default="pre",
                     choices=("pre", "post", "full"),
+                    required=True,
+                ),
+                CommandParam(
+                    key="surface_scope",
+                    flag="--surface-scope",
+                    label="Surface Scope",
+                    default="ALL",
+                    help="이번 batch에서 reviewer-facing으로 묶을 surface ECU 범위입니다.",
+                    placeholder="ALL",
+                    required=True,
+                ),
+                CommandParam(
+                    key="repeat_count",
+                    flag="--repeat-count",
+                    label="반복 횟수",
+                    default="1",
+                    placeholder="1",
+                    kind="int",
+                    required=True,
+                ),
+                CommandParam(
+                    key="duration_minutes",
+                    flag="--duration-minutes",
+                    label="지속 시간(분)",
+                    default="0",
+                    placeholder="0",
+                    kind="int",
+                    required=True,
+                ),
+                CommandParam(
+                    key="interval_seconds",
+                    flag="--interval-seconds",
+                    label="반복 간격(초)",
+                    default="0",
+                    placeholder="0",
+                    kind="int",
                     required=True,
                 ),
                 CommandParam(

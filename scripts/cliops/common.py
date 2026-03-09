@@ -30,5 +30,9 @@ def default_run_id() -> str:
     return dt.datetime.now().strftime('%Y%m%d_%H%M')
 
 
+def default_campaign_id() -> str:
+    return dt.datetime.now().strftime('CMP_%Y%m%d')
+
+
 def iso_today() -> str:
     return dt.date.today().isoformat()

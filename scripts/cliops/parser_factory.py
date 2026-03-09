@@ -5,6 +5,8 @@ import datetime as dt
 from pathlib import Path
 from typing import Callable, Mapping
 
+from cliops.common import default_campaign_id
+
 
 HandlerMap = Mapping[str, Callable]
 
@@ -73,9 +75,14 @@ def add_verify_prepare_args(p: argparse.ArgumentParser, handlers: HandlerMap) ->
 
 def add_verify_batch_args(p: argparse.ArgumentParser, handlers: HandlerMap) -> None:
     p.add_argument("--run-id", required=True, help="Run ID, e.g. 20260306_1930")
+    p.add_argument("--campaign-id", default=default_campaign_id(), help="Campaign ID, e.g. CMP_20260310")
     p.add_argument("--owner", default="TBD")
     p.add_argument("--run-date", default=dt.date.today().isoformat())
     p.add_argument("--phase", choices=["pre", "post", "full"], default="pre")
+    p.add_argument("--surface-scope", default="ALL", help="Surface ECU scope label, e.g. ALL / BCM / ADAS")
+    p.add_argument("--repeat-count", type=int, default=1, help="Planned repeat count for this campaign")
+    p.add_argument("--duration-minutes", type=int, default=0, help="Planned campaign duration in minutes (0 means not fixed)")
+    p.add_argument("--interval-seconds", type=int, default=0, help="Planned interval between repeats in seconds")
     p.add_argument("--skip-gates", action="store_true", help="Skip all gate steps in pre/full phase")
     p.add_argument("--stop-on-fail", action="store_true", help="Stop immediately at first failed step")
     p.add_argument(
@@ -456,8 +463,13 @@ def add_start_precheck_args(
     default_run_id: Callable[[], str],
 ) -> None:
     p.add_argument("--run-id", default=default_run_id(), help="Run ID, e.g. 20260308_1900")
+    p.add_argument("--campaign-id", default=default_campaign_id(), help="Campaign ID, e.g. CMP_20260310")
     p.add_argument("--owner", default="DEV2")
     p.add_argument("--run-date", default=dt.date.today().isoformat())
+    p.add_argument("--surface-scope", default="ALL", help="Surface ECU scope label, e.g. ALL / BCM / ADAS")
+    p.add_argument("--repeat-count", type=int, default=1, help="Planned repeat count for this precheck")
+    p.add_argument("--duration-minutes", type=int, default=0, help="Planned campaign duration in minutes (0 means not fixed)")
+    p.add_argument("--interval-seconds", type=int, default=0, help="Planned interval between repeats in seconds")
     p.add_argument("--skip-gates", action="store_true", help="Skip all gates in precheck")
     p.add_argument("--stop-on-fail", action="store_true", help="Stop at first failed step")
     p.add_argument(

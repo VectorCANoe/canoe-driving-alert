@@ -268,7 +268,13 @@ def _batch_result(command_id: str, title: str, rc: int, args: argparse.Namespace
 
     phase = str(data.get("phase", "pre")).upper()
     status = str(data.get("status", "FAIL")).upper()
-    detail = f"{phase}: {data.get('pass_count', 0)} pass / {data.get('fail_count', 0)} fail"
+    campaign_id = str(data.get("campaign_id", "-") or "-")
+    surface_scope = (
+        str(data.get("campaign", {}).get("surface_scope", "-"))
+        if isinstance(data.get("campaign", {}), dict)
+        else "-"
+    )
+    detail = f"{phase}: {data.get('pass_count', 0)} pass / {data.get('fail_count', 0)} fail | campaign={campaign_id} | scope={surface_scope}"
     if int(data.get("warn_count", 0)):
         detail = f"{detail} / {data.get('warn_count', 0)} warn"
     if surface_data:
@@ -290,7 +296,12 @@ def _batch_result(command_id: str, title: str, rc: int, args: argparse.Namespace
         rc=rc,
         artifacts=artifacts,
         insight={"stage": "Verify Batch", "bottleneck": detail, "next_action": next_action},
-        context={"run_id": data.get("run_id", _run_id_from_args(args)), "phase": phase},
+        context={
+            "run_id": data.get("run_id", _run_id_from_args(args)),
+            "campaign_id": campaign_id,
+            "phase": phase,
+            "surface_scope": surface_scope,
+        },
     )
 
 

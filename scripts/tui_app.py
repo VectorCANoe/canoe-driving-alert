@@ -1939,7 +1939,13 @@ class SdvTuiApp(App[None]):
                 first_fail = str(failed_steps[0].get("name", "-"))
         lines = [
             f"Run: {batch.get('run_id', '-')}",
+            f"Campaign: {batch.get('campaign_id', '-')}",
             f"Phase/Status: {phase} / {status}",
+            f"Surface Scope: {batch.get('campaign', {}).get('surface_scope', '-') if isinstance(batch.get('campaign', {}), dict) else '-'}",
+            "Plan: "
+            f"{batch.get('campaign', {}).get('repeat_count', 1) if isinstance(batch.get('campaign', {}), dict) else 1}x / "
+            f"{batch.get('campaign', {}).get('duration_minutes', 0) if isinstance(batch.get('campaign', {}), dict) else 0} min / "
+            f"{batch.get('campaign', {}).get('interval_seconds', 0) if isinstance(batch.get('campaign', {}), dict) else 0} sec",
             f"Steps: {pass_count}/{total_steps} pass, fail={fail_count}",
             f"Last step: {last_step}",
             f"First fail: {first_fail}",

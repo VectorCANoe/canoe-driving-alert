@@ -43,7 +43,7 @@ import shlex
 import sys
 from pathlib import Path
 
-from cliops.common import ROOT, SCRIPTS, default_run_id as _default_run_id
+from cliops.common import ROOT, SCRIPTS, default_campaign_id as _default_campaign_id, default_run_id as _default_run_id
 from cliops.artifact_ops import cmd_artifact_clean, cmd_artifact_list, cmd_artifact_open
 from cliops.gate_ops import (
     cmd_gate_all,
@@ -116,7 +116,7 @@ CONTRACT_CANONICAL = [
     "python scripts/run.py tui",
     "python scripts/run.py shell",
     "python scripts/run.py start demo --id <0..255>",
-    "python scripts/run.py start precheck --run-id <YYYYMMDD_HHMM> --owner <OWNER>",
+    "python scripts/run.py start precheck --run-id <YYYYMMDD_HHMM> --campaign-id <CMP_YYYYMMDD> --owner <OWNER>",
     "python scripts/run.py doctor",
     "python scripts/run.py capl sysvar-get --namespace <NS> --var <NAME>",
     "python scripts/run.py capl sysvar-set --namespace <NS> --var <NAME> --value <V> --value-type int",
@@ -406,12 +406,22 @@ def cmd_shell(_: argparse.Namespace) -> int:
                 )
             elif sub == "precheck":
                 run_id = tokens[2] if len(tokens) > 2 else _prompt_with_default("Run ID", _default_run_id())
-                owner = tokens[3] if len(tokens) > 3 else _prompt_with_default("Owner", "DEV2")
+                campaign_id = tokens[3] if len(tokens) > 3 else _prompt_with_default("Campaign ID", _default_campaign_id())
+                owner = tokens[4] if len(tokens) > 4 else _prompt_with_default("Owner", "DEV2")
+                surface_scope = tokens[5] if len(tokens) > 5 else _prompt_with_default("Surface Scope", "ALL")
+                repeat_count = int(tokens[6]) if len(tokens) > 6 else _prompt_int("Repeat Count", default=1, minimum=1, maximum=9999)
+                duration_minutes = int(tokens[7]) if len(tokens) > 7 else _prompt_int("Duration Minutes", default=0, minimum=0, maximum=100000)
+                interval_seconds = int(tokens[8]) if len(tokens) > 8 else _prompt_int("Interval Seconds", default=0, minimum=0, maximum=100000)
                 rc = cmd_start_precheck(
                     argparse.Namespace(
                         run_id=run_id,
+                        campaign_id=campaign_id,
                         owner=owner,
                         run_date=dt.date.today().isoformat(),
+                        surface_scope=surface_scope,
+                        repeat_count=repeat_count,
+                        duration_minutes=duration_minutes,
+                        interval_seconds=interval_seconds,
                         skip_gates=False,
                         stop_on_fail=False,
                         report_formats="json,md",
@@ -434,18 +444,28 @@ def cmd_shell(_: argparse.Namespace) -> int:
                 rc = cmd_verify_prepare(argparse.Namespace(run_id=run_id))
             elif sub == "batch":
                 run_id = tokens[2] if len(tokens) > 2 else _prompt_with_default("Run ID", _default_run_id())
-                owner = tokens[3] if len(tokens) > 3 else _prompt_with_default("Owner", "TBD")
-                phase = tokens[4] if len(tokens) > 4 else "pre"
-                report_formats = tokens[5] if len(tokens) > 5 else "json,md"
+                campaign_id = tokens[3] if len(tokens) > 3 else _prompt_with_default("Campaign ID", _default_campaign_id())
+                owner = tokens[4] if len(tokens) > 4 else _prompt_with_default("Owner", "TBD")
+                phase = tokens[5] if len(tokens) > 5 else _prompt_with_default("Phase", "pre")
+                surface_scope = tokens[6] if len(tokens) > 6 else _prompt_with_default("Surface Scope", "ALL")
+                repeat_count = int(tokens[7]) if len(tokens) > 7 else _prompt_int("Repeat Count", default=1, minimum=1, maximum=9999)
+                duration_minutes = int(tokens[8]) if len(tokens) > 8 else _prompt_int("Duration Minutes", default=0, minimum=0, maximum=100000)
+                interval_seconds = int(tokens[9]) if len(tokens) > 9 else _prompt_int("Interval Seconds", default=0, minimum=0, maximum=100000)
+                report_formats = tokens[10] if len(tokens) > 10 else _prompt_with_default("Report Formats", "json,md")
                 if phase not in {"pre", "post", "full"}:
                     print("[SHELL] phase must be pre|post|full")
                     continue
                 rc = cmd_verify_batch(
                     argparse.Namespace(
                         run_id=run_id,
+                        campaign_id=campaign_id,
                         owner=owner,
                         run_date=dt.date.today().isoformat(),
                         phase=phase,
+                        surface_scope=surface_scope,
+                        repeat_count=repeat_count,
+                        duration_minutes=duration_minutes,
+                        interval_seconds=interval_seconds,
                         skip_gates=False,
                         stop_on_fail=False,
                         report_formats=report_formats,
@@ -792,14 +812,24 @@ def cmd_start_guided(_: argparse.Namespace) -> int:
             )
         elif choice == 2:
             run_id = _prompt_with_default("Run ID", _default_run_id())
+            campaign_id = _prompt_with_default("Campaign ID", _default_campaign_id())
             owner = _prompt_with_default("Owner", "DEV2")
+            surface_scope = _prompt_with_default("Surface Scope", "ALL")
+            repeat_count = _prompt_int("Repeat Count", default=1, minimum=1, maximum=9999)
+            duration_minutes = _prompt_int("Duration Minutes", default=0, minimum=0, maximum=100000)
+            interval_seconds = _prompt_int("Interval Seconds", default=0, minimum=0, maximum=100000)
             rc = _run_with_loading(
                 "precheck batch",
                 lambda: cmd_start_precheck(
                     argparse.Namespace(
                         run_id=run_id,
+                        campaign_id=campaign_id,
                         owner=owner,
                         run_date=dt.date.today().isoformat(),
+                        surface_scope=surface_scope,
+                        repeat_count=repeat_count,
+                        duration_minutes=duration_minutes,
+                        interval_seconds=interval_seconds,
                         skip_gates=False,
                         stop_on_fail=False,
                         report_formats="json,md",

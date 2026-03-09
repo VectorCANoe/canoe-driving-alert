@@ -31,6 +31,7 @@ python scripts/run.py scenario run --id 4
 
 ```powershell
 python scripts/run.py verify quick --run-id 20260308_0900 --owner DEV2
+python scripts/run.py verify batch --run-id 20260310_0900 --campaign-id CMP_20260310 --owner DEV2 --phase pre --surface-scope ALL --repeat-count 1 --duration-minutes 0 --interval-seconds 0 --report-formats json,md,junit
 ```
 
 ## 3. 점검 명령
@@ -54,3 +55,22 @@ python scripts/run.py doctor
 5. 하단 Log 패널에서 실시간 출력 확인
 6. Results에서 verdict, COM 상태, 증빙/원본 경로 확인
 7. Automation에서 CI bridge/Jenkins 샘플과 batch 경로를 확인
+
+## 5. Campaign 메타데이터
+
+Verification Console은 단순 실행기보다 한 단계 위의 운영 계층입니다.  
+그래서 batch/precheck에는 아래 메타데이터를 함께 남깁니다.
+
+- `run_id`
+  - 이번 한 번의 실행 묶음 식별자
+- `campaign_id`
+  - nightly/repeat/CI 묶음 식별자
+- `surface_scope`
+  - reviewer-facing으로 집중해서 볼 surface ECU 범위
+- `repeat_count / duration_minutes / interval_seconds`
+  - 반복 실행 의도와 운영 profile 기록
+
+즉 OEM/CI 관점에서는:
+
+- `Req / TestCase / Surface ECU / Scenario` = stable trace key
+- `run_id / campaign_id / phase` = execution key
