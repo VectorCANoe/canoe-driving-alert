@@ -46,6 +46,7 @@ Use those references to align:
 - Do not change the column/header structure of any top-level `공식 표준 양식` table unless the user explicitly requests a template change.
 - When more detail is needed, keep the official table format and enrich the cell content instead of adding/replacing columns ad hoc.
 - Keep top-level `공식 표준 양식` text concise and reviewer-facing; do not list runtime/module implementation details there unless the template explicitly requires them.
+- For reviewer-facing official tables, follow the sample/BP tone: short plain sentences, actual ECU/service wording first, and prefer expressions like "A 정보를 수신하여 B에 반영/전달" over internal state or variable names.
 - Keep all text files in UTF-8 (do not re-save with legacy code pages).
 - Verification scope is fixed to CANoe SIL, CAN + Ethernet only.
 

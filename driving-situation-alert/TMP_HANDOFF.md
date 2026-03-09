@@ -52,6 +52,7 @@
   - 어떤 입력/처리/출력/시나리오/판정 기준이 하단 표에만 있으면 안 되며, 제출 시점 전에는 상단 공식 표로 끌어올려야 한다.
   - 단, 상단 `공식 표준 양식`의 열/헤더 구조 자체는 임의로 바꾸지 않는다. 상세도가 더 필요하면 기존 컬럼 안에서 문장을 보강한다.
   - 상단 `공식 표준 양식`은 reviewer-facing 요약 표로 유지하며, runtime/module 구현명이나 저수준 기술 나열은 템플릿이 요구하지 않는 한 넣지 않는다.
+  - 상단 `공식 표준 양식`의 문체는 `vector_sample`, `Project Result_Sample`의 BP 어투를 따른다. 짧은 평문 문장, 실제 ECU/서비스 기준 표현, "A 정보를 수신하여 B에 반영/전달" 형식을 우선한다.
 - ECU naming governance is reopened and now follows the reset baseline:
   - `00e` defines `surface ECU / runtime module / validation harness`
   - runtime rename or GUI rename must not happen before the document chain is updated
