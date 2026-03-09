@@ -27,6 +27,8 @@ Open these first:
   - `FULL` / `BASIC` / `DEFERRED` diagnostic responder tiers for Dev2 automation
 - `DIAGNOSTIC_SYSVAR_CONTRACT_2026-03-10.md`
   - stable `Diag::*` tester-facing sysvar surface for Dev2 pipelines
+- `OEM_VECTOR_DIAGNOSTIC_STACK_GAP_ANALYSIS_2026-03-10.md`
+  - current stack vs OEM/Vector formal diagnostic stack and description roadmap
 - `CANOE_TEST_POC_SCOPE_2026-03-08.md`
   - selected native CANoe test PoC scope and mapping
 - `CANOE_TEST_CI_BRIDGE_STRATEGY_2026-03-09.md`
