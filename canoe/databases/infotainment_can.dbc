@@ -29,7 +29,7 @@ NS_ :
 
 BS_:
 
-BU_: VAL_SCENARIO_CTRL IVI IVI IVI CLU CLU CGW Vector__XXX
+BU_: VAL_SCENARIO_CTRL IVI IVI IVI CLU CLU CGW TMU Vector__XXX
 
 BO_ 675 frmNavContextCanMsg: 3 VAL_SCENARIO_CTRL
  SG_ gRoadZone     : 0|2@1+ (1,0) [0|3]    "" IVI,IVI
@@ -157,6 +157,14 @@ BO_ 661 frmClusterSyncStateMsg: 2 IVI
  SG_ ClusterSyncError : 4|4@1+ (1,0) [0|15] "" CLU
  SG_ ClusterSyncAge   : 8|8@1+ (1,0) [0|255] "ms" CLU
 
+BO_ 662 frmTmuServiceStateMsg: 2 TMU
+ SG_ TmuLinkState      : 0|2@1+ (1,0) [0|3] "" IVI,CLU,DATC,VAL_SCENARIO_CTRL
+ SG_ TmuServiceMode    : 2|2@1+ (1,0) [0|3] "" IVI,CLU,DATC,VAL_SCENARIO_CTRL
+ SG_ RemoteClimateReq  : 4|1@1+ (1,0) [0|1] "" DATC
+ SG_ Reserved0         : 5|3@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ SignalBars        : 8|4@1+ (1,0) [0|15] "" IVI,CLU
+ SG_ TmuDiagState      : 12|4@1+ (1,0) [0|15] "" IVI,CLU,VAL_SCENARIO_CTRL
+
 CM_ BO_ 675 "Flow_003 navigation context input.";
 CM_ BO_ 640 "Flow_008 cluster warning output.";
 CM_ BO_ 641 "Infotainment baseline: cluster base display payload (speed/gear/status).";
@@ -181,6 +189,7 @@ CM_ BO_ 658 "Comm_203: speech TTS state extension.";
 CM_ BO_ 659 "Comm_203: connectivity state extension.";
 CM_ BO_ 660 "Comm_205: IVI health detail extension.";
 CM_ BO_ 661 "Comm_203: cluster sync state extension.";
+CM_ BO_ 662 "Telematics service/link state and remote climate request.";
 
 BA_DEF_ BO_ "GenMsgCycleTime" INT 0 10000;
 BA_DEF_DEF_ "GenMsgCycleTime" 0;
@@ -208,6 +217,7 @@ BA_ "GenMsgCycleTime" BO_ 658 50;
 BA_ "GenMsgCycleTime" BO_ 659 100;
 BA_ "GenMsgCycleTime" BO_ 660 100;
 BA_ "GenMsgCycleTime" BO_ 661 50;
+BA_ "GenMsgCycleTime" BO_ 662 100;
 
 VAL_ 675 gRoadZone
   0 "Normal"
