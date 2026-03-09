@@ -25,7 +25,7 @@ Open these only when the active task needs background support:
 - `OEM_WIDE_SURFACE_ECU_INVENTORY_V1_2026-03-09.md`
   - widened 30+ surface ECU inventory for OEM-scale vehicle-program framing
 - `OEM_ACTIVE_TARGET_PROFILE_2026-03-09.md`
-  - active Dev1 target profile: `100` surface ECUs, `42` deep runtimes, `8` core custom surfaces, `4` validation/test elements
+  - active Dev1 target profile: `100` surface ECUs, `46` deep runtimes, `8` core custom surfaces, `4` validation/test elements
 - `OEM_100_ECU_PROGRAM_BANK_2026-03-09.md`
   - active surface inventory bank for 100-scale OEM vehicle-program framing
 - `OEM_PLACEHOLDER_WAVE1_2026-03-09.md`
