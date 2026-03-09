@@ -29,7 +29,7 @@ NS_ :
 
 BS_:
 
-BU_: TEST_SCN VCU ESC MDPS ADAS CGW ABS EPB TPMS SAS VSM EHB ECS CDC ASM RWS Vector__XXX
+BU_: TEST_SCN VCU ESC MDPS ADAS CGW ABS EPB TPMS SAS VSM EHB ECS CDC ASM RWS CLU Vector__XXX
 
 BO_ 672 frmVehicleStateCanMsg: 2 TEST_SCN
  SG_ gVehicleSpeed : 0|8@1+ (1,0) [0|255] "km/h" ESC,ADAS
@@ -201,9 +201,6 @@ CM_ BO_ 301 "Comm_201: electronic control suspension state extension.";
 CM_ BO_ 302 "Comm_201: continuous damping control state extension.";
 CM_ BO_ 303 "Comm_201: air suspension ride-height extension.";
 CM_ BO_ 304 "Comm_201: rear-wheel steering extension.";
-CM_ BO_ 677 "Comm_009 scenario result frame (Validation-only).";
-CM_ BO_ 678 "Comm_106 baseline test aggregate result frame (Validation-only).";
-
 BA_DEF_ BO_ "GenMsgCycleTime" INT 0 10000;
 BA_DEF_DEF_ "GenMsgCycleTime" 0;
 BA_ "GenMsgCycleTime" BO_ 672 100;
@@ -236,8 +233,6 @@ BA_ "GenMsgCycleTime" BO_ 301 100;
 BA_ "GenMsgCycleTime" BO_ 302 100;
 BA_ "GenMsgCycleTime" BO_ 303 100;
 BA_ "GenMsgCycleTime" BO_ 304 100;
-BA_ "GenMsgCycleTime" BO_ 677 0;
-BA_ "GenMsgCycleTime" BO_ 678 0;
 
 VAL_ 672 gDriveState
   0 "P"
@@ -269,11 +264,3 @@ VAL_ 288 AbsActive
 VAL_ 288 EspActive
   0 "Inactive"
   1 "Active" ;
-
-VAL_ 677 ScenarioResult
-  0 "Fail"
-  1 "Pass" ;
-
-VAL_ 678 BaseScenarioResult
-  0 "Fail"
-  1 "Pass" ;
