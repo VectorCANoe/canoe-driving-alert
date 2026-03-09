@@ -74,6 +74,7 @@
 | TSB-007 | ETH Backbone DBC 누락 3건 보완 | Dev1 | Dev1 | Docs Updated | `canoe/databases/eth_backbone_can_stub.dbc` + `multibus-dbc` PASS | `0303`, `00f`(소유권/ID 운영 근거) | 반영완료 | `ethVehicleStateMsg`, `ethSteeringMsg`, `ethNavContextMsg` 추가 |
 | TSB-009 | 인터페이스/멀티버스/CLI 운영 해석 정렬 | Docs | Docs + Dev2 | Docs Updated | `scripts/run.py`, `scripts/README.md`, `scripts/gates/multibus_cfg_dbc_gate.py` | `tmp/change-orders/TEAM_SYNC_BOARD.md` | 반영완료 | 인터페이스는 메시지 계약 단위로 해석, 도메인 테스트 분리 + E2E 예외 멀티버스 정책 명확화 |
 | TSB-011 | ECU 명명/약어 정책 재확인 (멘토 D11 + `_TX/_RX` 해석) | Dev1 | Dev1 + Docs | Ready for Docs | `docs/meeting-notes/MET_41_2026.03.07.txt`, `driving-situation-alert/00e_ECU_Naming_Standard.md`, `reference/standards/AUTOSAR_CP_TR_SWCModelingGuide.pdf` 교차검증 | `00e`, `0302`, `0303` | 대기 | 결론: 3글자 강제 아님, 짧은 약어 권장. 상위 체인 문서는 논리명 우선(`EMS_ALERT`), 구현/하위 매핑표만 내부 모듈명(`EMS_*_TX/RX`) 허용 |
+| TSB-012 | OEM Placeholder Wave1(100 visible nodes) 반영 동기화 | Dev1 | Docs | Docs Updated | `56521c2`, `canoe/cfg/channel_assign/DOMAIN_INDEX.md`, `canoe/src/capl/placeholders/README.md` | `00e`, `00f` | 반영완료 | 문서 정책 반영: `13 deep + 2 validation + 87 placeholder`, placeholder는 ID 비할당 후 승격 시 배정 |
 
 ## 업데이트 템플릿
 

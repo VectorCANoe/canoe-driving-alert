@@ -97,19 +97,20 @@
 - Timeout clear: 1000 ms
 
 ## 6) Current Status Snapshot
-- `00e_ECU_Naming_Standard.md`: reset baseline rewrite in progress
-- `ECU_RESET_CLASSIFICATION_MATRIX_2026-03-09.md`: code-reviewed baseline complete
-- `TARGET_SURFACE_ECU_INVENTORY_V2_2026-03-09.md`: reviewed inventory complete
-- `ECU_RESET_DOC_PROPAGATION_RULES_2026-03-09.md`: propagation order fixed
-- current implementation baseline commit before next rewrite step: `f1df423`
+- Dev1 Wave1 placeholder bank 반영 완료: `56521c2`
+- visible node bank: `100` (`13 deep runtime + 2 validation + 87 placeholder`)
+- `canoe/cfg/channel_assign/DOMAIN_INDEX.md` 기준 domain 분포: `16/23/13/14/8/26`
+- `00e_ECU_Naming_Standard.md`: visible bank 정책 동기화 진행 중
+- `00f_CAN_ID_Allocation_Standard.md`: placeholder ID 비할당/승격 시 배정 규칙 반영 진행 중
 
 ## 7) Immediate Next Steps
-1. Freeze the reviewed surface ECU inventory in `00e`.
-2. Rewrite `0301` with surface ECU owner language first.
-3. Rewrite `0302/0303` so reviewer-facing flows use surface ECU ownership.
-4. Update `0304` with `Var -> Runtime -> Surface` mapping.
-5. Keep `04` as runtime reality and mark merge candidates there.
-6. Apply GUI surface rename only after the document chain is updated.
+1. Freeze visible bank policy in `00e` (`deep/validation/placeholder` 3층 분리).
+2. Keep `00f` placeholder ID policy as `no allocation until promotion`.
+3. Sync `0301/0302/0303` owner 표현을 surface ECU 중심으로 고정.
+4. Sync `0304` to `Var -> Runtime -> Surface` without placeholder over-specification.
+5. Keep `04` as runtime reality and mark promoted vs placeholder boundary.
+6. Dev2에 `check_capl_sync.py` inventory policy 업데이트 요청 (현재 placeholder 포함 기준 미동기화).
+7. GUI import/compile cycle은 `deep runtime anchors` 우선으로 검증하고 placeholder는 compile-safe만 확인.
 
 ## 8) Do Not Do
 - Do not change file encoding away from UTF-8.

@@ -1,7 +1,7 @@
 # CAN ID 배정 표준
 
 **Document ID**: PROJ-00F-CAN-ID  
-**Version**: 4.5  
+**Version**: 4.7  
 **Date**: 2026-03-09  
 **Status**: Draft (Policy SoT, Under Refactor)  
 **Scope**: `0302 -> 0303 -> 0304 -> DBC -> 04 -> 05/06/07`
@@ -73,16 +73,16 @@ Tier 판정 규칙:
 
 ## 5. Block 규칙 (도메인 소유권)
 
-| Block | Domain | Owner 예시 |
+| Block | Domain | Owner 예시 (Surface ECU) |
 |---|---|---|
-| 0x01 | CHASSIS | CHS_GW, BRK_CTRL, STEER_CTRL |
-| 0x02 | BODY | BODY_GW, AMBIENT_CTRL, HAZARD_CTRL |
-| 0x03 | INFOTAINMENT/CLUSTER | IVI_GW, NAV_CTX_MGR, CLU_* |
-| 0x04 | POWERTRAIN | ENG_CTRL, TCM |
-| 0x05 | ADAS | ADAS_WARN_CTRL, WARN_ARB_MGR |
-| 0x06 | BACKBONE/GATEWAY | DOMAIN_BOUNDARY_MGR, ETH_SW, DOMAIN_ROUTER |
-| 0x07 | VALIDATION/DIAG | VAL_SCENARIO_CTRL, VAL_BASELINE_CTRL |
-| 0x08 | V2X/EXTERNAL | EMS_* (V2X ingress/egress), 외부 연계 |
+| 0x01 | CHASSIS | `ESP`, `EPS` |
+| 0x02 | BODY | `BCM` |
+| 0x03 | INFOTAINMENT/CLUSTER | `IVI`, `CLUSTER` |
+| 0x04 | POWERTRAIN | `ECM`, `TCM`, `VCU` |
+| 0x05 | ADAS | `ADAS` |
+| 0x06 | BACKBONE/GATEWAY | `CGW`, `ETH_BACKBONE` |
+| 0x07 | VALIDATION/DIAG | `VALIDATION_HARNESS` (현재 실행 반영 제외) |
+| 0x08 | V2X/EXTERNAL | `V2X`, 외부 연계 ingress/egress |
 | 0x09 | HVAC/ENERGY (Reserved Active) | HVAC/열관리/에너지 확장용 |
 | 0x1F | RESERVED | 사용 금지 |
 
@@ -118,12 +118,40 @@ Block 판정 규칙:
 
 ---
 
-## 8. 11-bit 호환 정책
+## 8. 11-bit 호환 정책 (SIL Active Snapshot)
 
 - 현재 SIL 실행 ID는 컷오버 전까지 유지 가능
 - 신규/변경 메시지의 정책 승인 기준은 29-bit를 우선 적용
 - 11-bit 값은 Compatibility Mapping 용도로만 관리
 - `0x000~0x0FF` 신규 할당 금지
+
+### 8.1 Active Compatibility Band (Commit `6cbb647`, Non-VAL)
+
+- 기준: `canoe/databases/*.dbc`의 non-VAL 송신 메시지
+- 총 93개 메시지, 중복 0건
+- 활성 범위: `0x100 ~ 0x512`
+- 현재 분포:
+  - `0x100~0x13F`: Chassis + Powertrain + 일부 Backbone 상태
+  - `0x1C0~0x20F`: ADAS + V2X
+  - `0x260~0x27F`: Body
+  - `0x280~0x29F`: Infotainment/Cluster
+  - `0x510~0x512`: ETH seam compatibility
+
+### 8.2 Compatibility Reserve Block
+
+- `0x500~0x50F`: ETH seam 확장 예약
+- `0x513~0x53F`: Backbone/CGW 확장 예약
+- `0x700~0x7FF`: Validation/Diagnostic 확장 예약 (현재 실행 반영 제외)
+
+### 8.3 Placeholder Surface Node ID Rule
+
+- OEM visible placeholder node는 **ID 비할당**을 기본으로 한다.
+- placeholder는 표면 ECU 폭을 보여주는 용도이며, 통신 owner 계약이 아직 없으므로 DBC/CAPL 송신 ID를 부여하지 않는다.
+- placeholder가 deep runtime으로 승격될 때에만 다음 순서로 ID를 신규 배정한다.
+  1. `Tier` 결정 (latency class)
+  2. `Block` 결정 (owner surface ECU 도메인)
+  3. `Slot` 신규 배정 및 충돌 점검
+  4. `0303 -> DBC -> 04 -> 05/06/07` 동기화
 
 ---
 
@@ -152,6 +180,8 @@ Block 판정 규칙:
 
 | 버전 | 날짜 | 변경 사항 |
 |---|---|---|
+| 4.7 | 2026-03-09 | OEM visible placeholder wave(`56521c2`) 반영: placeholder node는 ID 비할당 원칙으로 고정, 승격 시점 신규 배정 절차 추가. |
+| 4.6 | 2026-03-09 | `6cbb647` 기준 non-VAL 실행 상태와 Block owner 예시를 surface ECU(`ECM/TCM/VCU/ESP/EPS/BCM/IVI/CLUSTER/ADAS/CGW/V2X`)로 동기화. 11-bit active band/예약블록(`0x500~`) 추가. |
 | 4.5 | 2026-03-09 | Tier를 OEM latency class 기준(Motion Control/Safety State/Coordination/Driver Info/Validation)으로 재정의하고 권고 지연 목표를 추가해 배정 기준을 명확화. |
 | 4.4 | 2026-03-09 | OEM 시스템 관점으로 전면 재구성: Tier/Block/Slot 철학을 단순화하고, Tier를 입력->판정/조정->출력 흐름으로 재정의. Block에 V2X/HVAC 확장 도메인 추가. |
 | 4.3 | 2026-03-09 | Tier 순서를 데이터 경로(입력 -> 판정/Fail-safe -> HMI) 기준으로 재정렬. 샘플 Target EXT_ID 재계산. |
