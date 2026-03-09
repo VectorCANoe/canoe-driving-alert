@@ -106,7 +106,7 @@ on timer tHighwayPilotCycle
 on message frmCruiseStateMsg
 {
   gCruiseState = clampRange((int)this.CruiseState, 0, 3);
-  gSetSpeed = clampRange((int)this.SetSpeedKph, 0, 255);
+  gSetSpeed = clampRange((int)this.CruiseSetSpeed, 0, 255);
 }
 
 on message frmLdwsLkasStateMsg
