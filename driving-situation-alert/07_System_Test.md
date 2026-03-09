@@ -26,7 +26,6 @@
 - 임시 주석(실행 제약): 현재 CANoe.CAN 라이선스 환경에서는 SIL 실행 시 Ethernet 구간을 CAN 대체 백본으로 검증하며, Ethernet 라이선스 확보 후 동일 ST 케이스로 재검증한다.
 - 본 문서는 `FZ_001~FZ_012` 결과 반영 전 Baseline Draft이며, 측정값 확정 시 Pass/Fail를 기입한다.
 - 대조군/우수성 비교 실험은 본 문서 범위 밖으로 두며, 요구사항 충족 Pass/Fail 증빙을 우선한다.
-- `ST_SIL_001`, `ST_SIL_002`, `ST_RESULT_001`, `ST_BASE_DIAG_001`은 Validation Harness 기반 검증 시나리오(검증 전용)다.
 - ST 증적(로그/캡처/리포트)은 `canoe/logging/evidence/ST/` 경로 규칙으로 관리한다.
 - ST 증적 포맷/채점 규칙은 `canoe/docs/operations/VERIFICATION_EVIDENCE_LOG_STANDARD.md`를 따른다.
 - 검증 배치 실행/리포트 생성은 `scripts/run.py verify batch`를 사용하고, 출력 포맷은 기본 `json,md`(옵션 `--report-formats csv`)를 적용한다.
@@ -52,20 +51,18 @@
 | 분류 | ST 반영 방식 | 대표 ST |
 |---|---|---|
 | Active Surface ECU | 기존 E2E 시나리오에 흡수하여 검증 | `ST_SPEED_001`, `ST_EMS_001`, `ST_POLICY_001`, `ST_BASE_001` |
-| Validation Harness | 검증 전용 시나리오로 분리 검증 | `ST_SIL_001`, `ST_SIL_002`, `ST_RESULT_001`, `ST_BASE_DIAG_001` |
 | Placeholder Surface ECU | 구현 완료 전까지 Planned 유지 | `ST_ADAS_OBJ_001`, `ST_BASE_ALERT_EXT_001`, `ST_BASE_ROBUST_EXT_001` |
 
 ### OEM100 Surface 상세-ST 매핑 (실제 본문 운영)
 
 | 그룹 | Surface ECU(실명) | ST 커버 방식 | 주요 ST ID |
 |---|---|---|---|
-| A1 Infrastructure/Integration | `CGW`, `ETH_BACKBONE`, `DCM`, `IBOX`, `SGW` | 시스템 경계/인수/진단 시나리오 커버 | `ST_SIL_001`, `ST_SIL_002`, `ST_BASE_DIAG_001`, `ST_OEM_SURFACE_001` |
+| A1 Infrastructure/Integration | `CGW`, `ETH_BACKBONE`, `DCM`, `IBOX`, `SGW` | 시스템 경계/서비스 가용성 시나리오 커버 | `ST_OEM_SURFACE_001`, `ST_BACKBONE_STATE_001` |
 | A2 Powertrain | `EMS`, `TCU`, `VCU`, `_4WD`, `BAT_BMS`, `FPCM`, `LVR`, `ISG`, `EOP`, `EWP` | 동력계/기어/상태 연계 시나리오 커버 | `ST_BASE_PT_001`, `ST_BASE_EXT_PT_002`, `ST_BASE_001` |
 | A3 Chassis/Safety | `ESC`, `MDPS`, `ABS`, `EPB`, `TPMS`, `SAS`, `ECS`, `ACU`, `ODS`, `VSM`, `EHB`, `CDC` | 제동/조향/무조향/안전 연계 시나리오 커버 | `ST_BASE_CH_001`, `ST_STEER_001`, `ST_BASE_001` |
 | A4 Body/Comfort | `BCM`, `DATC`, `SMK`, `AFLS`, `AHLS`, `WIPER_MODULE`, `SUNROOF_MODULE`, `DOOR_FL`, `DOOR_FR`, `DOOR_RL`, `DOOR_RR`, `TAILGATE_MODULE`, `SEAT_DRV`, `SEAT_PASS`, `MIRROR_MODULE`, `BODY_SECURITY_MODULE` | 바디/편의 상태 시나리오 커버 | `ST_BASE_BODY_001`, `ST_BASE_EXT_BODY_001`, `ST_BASE_EXT_BODY_002`, `ST_BASE_001` |
 | A5 IVI/HMI/Connectivity | `IVI`, `CLU`, `HUD`, `TMU`, `AMP`, `PGS`, `NAV_MODULE`, `VOICE_ASSIST`, `RSE`, `DIGITAL_KEY` | 표시/HMI/인지성 시나리오 커버 | `ST_POLICY_001`, `ST_BASE_IVI_001`, `ST_BASE_EXT_IVI_001` |
 | A6 ADAS/V2X/Parking | `ADAS`, `V2X`, `SCC`, `LDWS_LKAS`, `FCA`, `BCW`, `LCA`, `SPAS`, `RSPA`, `AVM`, `FCAM`, `FRADAR`, `SRR_FL`, `SRR_FR`, `SRR_RL`, `SRR_RR`, `PARK_ULTRASONIC`, `DMS`, `OMS` | 핵심 경보/중재/객체위험 시나리오 커버 | `ST_SPEED_001`, `ST_EMS_001`, `ST_EMS_002`, `ST_V2_RISK_001`, `ST_ADAS_OBJ_001` |
-| B Validation Harness | `VALIDATION_HARNESS` | 검증 실행/판정 시나리오 커버 | `ST_SIL_001`, `ST_RESULT_001`, `ST_BASE_DIAG_001` |
 | C Premium Option | `OBC`, `DCDC`, `MCU`, `INVERTER`, `CHARGE_PORT_CTRL`, `AIR_SUSPENSION`, `RWS`, `NIGHT_VISION`, `AEB_DOMAIN`, `HIGHWAY_PILOT`, `PARK_MASTER`, `TRAILER_CTRL`, `HEADLAMP_LEVELING`, `AUTO_DOOR_CTRL`, `POWER_TAILGATE_CTRL`, `MASSAGE_SEAT_CTRL`, `REAR_CLIMATE_MODULE`, `CABIN_SENSING`, `BIOMETRIC_AUTH`, `CARPAY_CTRL`, `PHONE_AS_KEY`, `OTA_MASTER`, `EDR`, `ROAD_PREVIEW_CAMERA`, `LIDAR`, `REAR_RADAR_MASTER`, `SURROUND_PARK_MASTER` | 기존 ST 체인 흡수, 미구현 1개 Planned 유지 | `ST_BASE_EXT_PT_002`, `ST_BASE_EXT_CH_002`, `ST_BASE_EXT_BODY_002`, `ST_BASE_EXT_IVI_002`, `ST_ADAS_EXT_STATE_001`, `ST_BACKBONE_STATE_001`, `ST_BASE_ALERT_EXT_001`, `ST_BASE_ROBUST_EXT_001`, `ST_OEM_PREMIUM_001` |
 
 ---
@@ -87,16 +84,12 @@
 | ST_ARB_ETA_002 | 동일 등급 구급 긴급 알림 충돌 시 ETA 우선 규칙이 적용되는지 확인한다. |  |  |  |
 | ST_TIMEOUT_001 | 긴급 알림 1000ms 무갱신 시 안전 해제 및 복귀 동작을 확인한다. |  |  |  |
 | ST_POLICY_001 | 긴급/구간 패턴·색상·문구 정책과 중복 팝업 억제가 요구대로 동작하는지 확인한다. |  |  |  |
-| ST_SIL_001 | 물리 하드웨어 없이 CANoe SIL에서 핵심 시나리오 수행이 가능한지 확인한다. |  |  |  |
-| ST_SIL_002 | CAN+Ethernet(또는 CAN 대체 백본) 동시 통신 조건에서 전체 경고 기능이 유지되는지 확인한다. |  |  |  |
-| ST_RESULT_001 | 시나리오별 합격/불합격 결과가 일관되게 기록·추적되는지 확인한다. |  |  |  |
 | ST_BASE_PT_001 | 시동/기어/동력계 상태가 Powertrain 시나리오에서 안정적으로 연동되는지 확인한다. |  |  |  |
 | ST_BASE_CH_001 | 가감속/조향/제동 입력이 Chassis 시나리오에서 안전 규칙대로 반영되는지 확인한다. |  |  |  |
 | ST_BASE_BODY_001 | 비상등/창문 등 Body 시나리오가 의도한 동작으로 유지되는지 확인한다. |  |  |  |
 | ST_BASE_IVI_001 | 클러스터 기본표시/안내/UI 상태가 Infotainment 시나리오에서 일관되게 유지되는지 확인한다. |  |  |  |
 | ST_BASE_EXT_BODY_001 | 공조, 시트, 미러, 도어, 와이퍼, 보안 상태가 Body 확장 시나리오에서 일관되게 반영되는지 확인한다. |  |  |  |
 | ST_BASE_EXT_IVI_001 | 오디오, 음성 안내, TTS 상태가 Infotainment 확장 시나리오에서 일관되게 반영되는지 확인한다. |  |  |  |
-| ST_BASE_DIAG_001 | 테스트/진단 요청-응답 및 결과 기록이 시나리오 종료까지 추적 가능하게 유지되는지 확인한다. |  |  |  |
 | ST_V2_RISK_001 | 긴급차량 근접 위험도 기반 감속 보조 요청과 경고 출력 동기화가 일관되게 동작하는지 확인한다. (SIL Scenario 15/16/17/19) | Ready |  |  |
 | ST_V2_FAILSAFE_001 | 도메인 경로 단절 시 자동 감속 보조 금지와 최소 경고 채널 유지 강등이 동작하는지 확인한다. (SIL Scenario 18) | Ready |  |  |
 | ST_ADAS_OBJ_001 | 객체 목록, 교차로, 합류 위험이 들어올 때 위험 경고와 강등, 이벤트 기록이 일관되게 동작하는지 확인한다. (Pre-Activation) | Planned |  |  |

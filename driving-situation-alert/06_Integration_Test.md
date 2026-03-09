@@ -26,7 +26,6 @@
 - 대조군/우수성 비교 실험은 본 문서 범위 밖으로 두며, 요구사항 충족 Pass/Fail 증빙을 우선한다.
 - IT는 인터페이스/흐름 중심의 핵심 체인만 유지한다(Lean IT).
 - 세부 경계값/미세 분기는 원칙적으로 UT(05)와 ST(07)에서 검증하고, 인터페이스 리스크가 큰 항목은 IT 보강 케이스로 선별 검증한다.
-- `IT_SIL_001`, `IT_BASE_DIAG_001`은 Validation Harness 경로 검증(검증 전용) 항목이다.
 - IT 증적(로그/캡처/리포트)은 `canoe/logging/evidence/IT/` 경로 규칙으로 관리한다.
 - IT 증적 포맷/채점 규칙은 `canoe/docs/operations/VERIFICATION_EVIDENCE_LOG_STANDARD.md`를 따른다.
 - 검증 배치 실행/리포트 생성은 `scripts/run.py verify batch`를 사용하고, 출력 포맷은 기본 `json,md`(옵션 `--report-formats csv`)를 적용한다.
@@ -59,13 +58,12 @@
 
 | 그룹 | Surface ECU(실명) | IT 커버 방식 | 주요 IT ID |
 |---|---|---|---|
-| A1 Infrastructure/Integration | `CGW`, `ETH_BACKBONE`, `DCM`, `IBOX`, `SGW` | 경계/진단/인수 검증 중심 IT | `IT_SIL_001`, `IT_BASE_DIAG_001`, `IT_BASE_001` |
+| A1 Infrastructure/Integration | `CGW`, `ETH_BACKBONE`, `DCM`, `IBOX`, `SGW` | 경계/서비스 가용성 중심 IT | `IT_OEM_SURFACE_001`, `IT_BACKBONE_STATE_001` |
 | A2 Powertrain | `EMS`, `TCU`, `VCU`, `_4WD`, `BAT_BMS`, `FPCM`, `LVR`, `ISG`, `EOP`, `EWP` | 동력/상태 전달 IT | `IT_BASE_PT_001`, `IT_BASE_EXT_PT_002`, `IT_BASE_001` |
 | A3 Chassis/Safety | `ESC`, `MDPS`, `ABS`, `EPB`, `TPMS`, `SAS`, `ECS`, `ACU`, `ODS`, `VSM`, `EHB`, `CDC` | 제동/조향/차체상태 IT | `IT_BASE_CH_001`, `IT_BASE_001` |
 | A4 Body/Comfort | `BCM`, `DATC`, `SMK`, `AFLS`, `AHLS`, `WIPER_MODULE`, `SUNROOF_MODULE`, `DOOR_FL`, `DOOR_FR`, `DOOR_RL`, `DOOR_RR`, `TAILGATE_MODULE`, `SEAT_DRV`, `SEAT_PASS`, `MIRROR_MODULE`, `BODY_SECURITY_MODULE` | 바디/편의 제어 IT | `IT_BASE_BODY_001`, `IT_BASE_EXT_BODY_001`, `IT_BASE_EXT_BODY_002`, `IT_BASE_001` |
 | A5 IVI/HMI/Connectivity | `IVI`, `CLU`, `HUD`, `TMU`, `AMP`, `PGS`, `NAV_MODULE`, `VOICE_ASSIST`, `RSE`, `DIGITAL_KEY` | HMI/표시/음향 IT | `IT_OUT_001`, `IT_BASE_IVI_001`, `IT_BASE_EXT_IVI_001` |
 | A6 ADAS/V2X/Parking | `ADAS`, `V2X`, `SCC`, `LDWS_LKAS`, `FCA`, `BCW`, `LCA`, `SPAS`, `RSPA`, `AVM`, `FCAM`, `FRADAR`, `SRR_FL`, `SRR_FR`, `SRR_RL`, `SRR_RR`, `PARK_ULTRASONIC`, `DMS`, `OMS` | 핵심 경보/중재/객체위험 IT | `IT_CORE_001`, `IT_EMS_001`, `IT_ARB_001`, `IT_V2_RISK_001`, `IT_ADAS_OBJ_001` |
-| B Validation Harness | `VALIDATION_HARNESS` | SIL 실행/판정 IT | `IT_SIL_001`, `IT_BASE_DIAG_001` |
 | C Premium Option | `OBC`, `DCDC`, `MCU`, `INVERTER`, `CHARGE_PORT_CTRL`, `AIR_SUSPENSION`, `RWS`, `NIGHT_VISION`, `AEB_DOMAIN`, `HIGHWAY_PILOT`, `PARK_MASTER`, `TRAILER_CTRL`, `HEADLAMP_LEVELING`, `AUTO_DOOR_CTRL`, `POWER_TAILGATE_CTRL`, `MASSAGE_SEAT_CTRL`, `REAR_CLIMATE_MODULE`, `CABIN_SENSING`, `BIOMETRIC_AUTH`, `CARPAY_CTRL`, `PHONE_AS_KEY`, `OTA_MASTER`, `EDR`, `ROAD_PREVIEW_CAMERA`, `LIDAR`, `REAR_RADAR_MASTER`, `SURROUND_PARK_MASTER` | 기존 IT 체인 흡수, 미구현 1개 계획 상태 | `IT_BASE_EXT_PT_002`, `IT_BASE_EXT_CH_002`, `IT_BASE_EXT_BODY_002`, `IT_BASE_EXT_IVI_002`, `IT_ADAS_EXT_STATE_001`, `IT_BACKBONE_STATE_001`, `IT_BASE_ALERT_EXT_001`, `IT_BASE_ROBUST_EXT_001` |
 
 ---
@@ -84,16 +82,14 @@
 | IT_ADAS_OBJ_001 | Req_130,Req_131,Req_132,Req_133,Req_134,Req_135,Req_136,Req_137,Req_138,Req_139 | VC_130,VC_131,VC_132,VC_133,VC_134,VC_135,VC_136,VC_137,VC_138,VC_139 | 객체 목록, 상대속도, 교차로, 합류 위험 반영 통합 검증 | 객체 입력은 `100ms` 이내 반영되고 위험 경고는 `150ms` 이내 발생하며 신뢰도 저하 시 강등과 이벤트 기록이 누락 없이 수행된다 | Planned |  |  |
 | IT_BASE_ALERT_EXT_001 | Req_140,Req_141,Req_142,Req_143,Req_144,Req_145,Req_146,Req_147 | VC_140,VC_141,VC_142,VC_143,VC_144,VC_145,VC_146,VC_147 | 방향지시등, 주행모드, 안전벨트, 접근거리, 표시 설정, 음량 설정 반영 통합 검증 | 입력 보정은 `150ms` 이내 반영되고 접근거리 표시는 `200ms` 이내 갱신되며 이벤트 기록 누락이 없고 표시·음량 설정은 `150ms` 이내 반영된다 | Planned |  |  |
 | IT_BASE_ROBUST_EXT_001 | Req_148,Req_149,Req_150,Req_151,Req_152,Req_153,Req_154,Req_155 | VC_148,VC_149,VC_150,VC_151,VC_152,VC_153,VC_154,VC_155 | 입력 지연 감지, 상태 전이 안정화, 채널 전환, 오디오 경합 대응 통합 검증 | 입력 지연 감지는 `100ms`, 상태 전이 안정화는 `150ms`, 채널 전환과 오디오 경합 대응은 `150ms` 기준을 충족한다 | Planned |  |  |
-| IT_SIL_001 | Req_041,Req_042,Req_043 | VC_041,VC_042,VC_043 | CANoe SIL 실행과 결과 기록 통합 검증 | CAN+Ethernet(또는 CAN 대체 백본) 조건에서도 시나리오 실행, 결과 기록, 로그 요약이 일관되게 유지된다 |  |  |  |
-| IT_BASE_001 | Req_101~Req_107,Req_109~Req_119,Req_167,Req_168 | VC_101~VC_107,VC_109~VC_119,VC_167,VC_168 | 시동, 기어, 가감속, 조향, 비상등, 창문, 표시, 주요 확장 상태 통합 검증 | 기본 차량 기능과 주요 확장 기능이 함께 동작해도 기본 상태와 표시가 일관되게 유지된다 |  |  |  |
-| IT_BASE_PT_001 | Req_101,Req_102,Req_110 | VC_101,VC_102,VC_110 | 엔진, 변속, 동력 상태 통합 검증 | 엔진, 변속, 동력 상태가 `100ms` 주기로 일관되게 반영된다 |  |  |  |
-| IT_BASE_CH_001 | Req_103,Req_104,Req_105,Req_110 | VC_103,VC_104,VC_105,VC_110 | 가감속, 조향, 제동, 차체 상태 통합 검증 | 입력과 차체 상태 정보가 `100ms` 기준으로 일관되게 반영된다 |  |  |  |
-| IT_BASE_BODY_001 | Req_106,Req_107,Req_111 | VC_106,VC_107,VC_111 | 비상등, 창문, 차체 편의 상태 통합 검증 | 차체 제어 상태와 도메인 경계 상태가 일관되게 유지된다 |  |  |  |
-| IT_BASE_IVI_001 | Req_109,Req_111 | VC_109,VC_111 | 기본 표시, UI, 도메인 경계 연동 통합 검증 | 표시 상태와 연계 이벤트가 50/100ms 규칙을 만족한다 |  |  |  |
+| IT_BASE_001 | Req_101~Req_107,Req_109,Req_113~Req_119,Req_167,Req_168 | VC_101~VC_107,VC_109,VC_113~VC_119,VC_167,VC_168 | 시동, 기어, 가감속, 조향, 비상등, 창문, 표시, 주요 확장 상태 통합 검증 | 기본 차량 기능과 주요 확장 기능이 함께 동작해도 기본 상태와 표시가 일관되게 유지된다 |  |  |  |
+| IT_BASE_PT_001 | Req_101,Req_102 | VC_101,VC_102 | 엔진, 변속, 동력 상태 통합 검증 | 엔진, 변속, 동력 상태가 `100ms` 주기로 일관되게 반영된다 |  |  |  |
+| IT_BASE_CH_001 | Req_103,Req_104,Req_105 | VC_103,VC_104,VC_105 | 가감속, 조향, 제동, 차체 상태 통합 검증 | 입력과 차체 상태 정보가 `100ms` 기준으로 일관되게 반영된다 |  |  |  |
+| IT_BASE_BODY_001 | Req_106,Req_107 | VC_106,VC_107 | 비상등, 창문, 차체 편의 상태 통합 검증 | 차체 제어 상태가 일관되게 유지된다 |  |  |  |
+| IT_BASE_IVI_001 | Req_109 | VC_109 | 기본 표시, UI 연동 통합 검증 | 표시 상태와 연계 이벤트가 50/100ms 규칙을 만족한다 |  |  |  |
 | IT_BASE_EXT_BODY_001 | Req_113,Req_116,Req_118 | VC_113,VC_116,VC_118 | 공조, 시트, 미러, 도어, 와이퍼, 보안 상태 통합 검증 | 관련 상태와 제어 정보가 `100ms` 주기로 연계되고 `150ms` 이내 정책에 반영된다 |  |  |  |
 | IT_BASE_EXT_IVI_001 | Req_119 | VC_119 | 오디오, 음성 안내, TTS 상태 통합 검증 | 오디오와 음성 상태가 50/100ms 규칙을 만족하고 `150ms` 이내 HMI 정책에 반영된다 |  |  |  |
-| IT_BASE_DIAG_001 | Req_112 | VC_112 | 진단 요청, 응답, 결과 기록 통합 검증 | 진단 요청과 응답, 결과 기록이 누락 없이 유지된다 |  |  |  |
-| IT_OEM_SURFACE_001 | Req_041,Req_042,Req_043,Req_110,Req_111,Req_151,Req_152 | VC_041,VC_042,VC_043,VC_110,VC_111,VC_151,VC_152 | 주요 Active Surface ECU의 경계, 헬스, 가용성 판정 통합 검증 | 경계, 상태 이상, 가용성 이벤트가 누락 없이 전달되고 대체 출력 전환 규칙이 `150ms` 내 충족된다 | Planned |  |  |
+| IT_OEM_SURFACE_001 | Req_151,Req_152 | VC_151,VC_152 | 주요 Active Surface ECU의 출력 채널 가용성과 대체 출력 통합 검증 | 경계와 상태 이상이 누락 없이 전달되고 대체 출력 전환 규칙이 `150ms` 내 충족된다 | Planned |  |  |
 | IT_OEM_PREMIUM_001 | Req_113,Req_116,Req_118,Req_119,Req_140,Req_141,Req_142,Req_146,Req_147,Req_153,Req_154,Req_155 | VC_113,VC_116,VC_118,VC_119,VC_140,VC_141,VC_142,VC_146,VC_147,VC_153,VC_154,VC_155 | Premium Option ECU 편입 영향 통합 검증(`NIGHT_VISION` 제외) | Premium Option ECU가 편입되어도 기존 검증 항목이 유지되고 `NIGHT_VISION`은 Not Implemented로 분리 기록된다 | Planned |  |  |
 | IT_BASE_EXT_CH_002 | Req_156,Req_157 | VC_156,VC_157 | EPB, EHB, VSM, ECS, CDC 상태 통합 검증 | 제동과 차체 제어 상태가 `100ms` 주기로 반영되고 `150ms` 이내 경고 맥락에 반영된다 | Ready |  |  |
 | IT_BASE_EXT_BODY_002 | Req_158,Req_159,Req_160 | VC_158,VC_159,VC_160 | 도어, 테일게이트, 에어백, 탑승자 감지, 공조, 시트, 선루프 상태 통합 검증 | 관련 상태가 `100ms` 주기로 반영되고 `150ms` 이내 정책에 반영된다 | Ready |  |  |

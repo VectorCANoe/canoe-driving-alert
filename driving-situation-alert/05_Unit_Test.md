@@ -26,7 +26,6 @@
 - 본 문서는 `FZ_001~FZ_012` 결과 반영 전 Baseline Draft이며, 측정값 확정 시 Pass/Fail를 기입한다.
 - 대조군/우수성 비교 실험은 본 문서 범위 밖으로 두며, 요구사항 충족 Pass/Fail 증빙을 우선한다.
 - 임시 주석(실행 제약): 현재 CANoe.CAN 라이선스 환경에서는 SIL 실행 시 Ethernet 구간을 CAN 대체 백본으로 검증하며, Ethernet 라이선스 확보 후 동일 케이스로 재검증한다.
-- `TST_SCN`/`TST_BAS` 관련 항목은 Validation Harness(검증 전용)이며 양산 사용자 기능으로 해석하지 않는다.
 - UT 증적(로그/캡처/리포트)은 `canoe/logging/evidence/UT/` 경로 규칙으로 관리한다.
 - UT 증적 포맷/채점 규칙은 `canoe/docs/operations/VERIFICATION_EVIDENCE_LOG_STANDARD.md`를 따른다.
 - 검증 배치 실행/리포트 생성은 `scripts/run.py verify batch`를 사용하고, 출력 포맷은 기본 `json,md`(옵션 `--report-formats csv`)를 적용한다.
@@ -67,20 +66,18 @@
 | A4 Body/Comfort | 16 | 활성(상세 정의) | 바디/편의 묶음 UT | `UT_BASE_BODY_001`, `UT_BASE_EXT_BODY_001`, `UT_BASE_EXT_BODY_002`, `UT_BASE_001` |
 | A5 IVI/HMI/Connectivity | 10 | 활성(상세 정의) | IVI/HMI 묶음 UT | `UT_BASE_IVI_001`, `UT_BASE_EXT_IVI_001`, `UT_BASE_EXT_IVI_002`, `UT_BASE_001` |
 | A6 ADAS/V2X/Parking | 19 | 활성(상세 정의) | ADAS/V2X/위험도 묶음 UT | `UT_ADAS_001`, `UT_ARB_001`, `UT_V2_RISK_001`, `UT_ADAS_OBJ_RISK_001`, `UT_ADAS_EXT_STATE_001`, `UT_BASE_ROBUST_EXT_001` |
-| B Validation Harness | 1 | 활성(상세 정의) | 검증 전용 UT | `UT_SIL_001`, `UT_BASE_TEST_001` |
 | C Premium Option | 27 | 26 활성 + 1 미구현 | 활성 항목은 도메인 묶음/확장 UT, 미구현 항목은 UT 미부여 | `UT_BASE_001`, `UT_BASE_EXT_CH_002`, `UT_BASE_EXT_BODY_001`, `UT_BASE_EXT_BODY_002`, `UT_BASE_EXT_IVI_001`, `UT_BASE_EXT_IVI_002`, `UT_ADAS_EXT_STATE_001`, `UT_BACKBONE_STATE_001`, `UT_BASE_ALERT_EXT_001`, `UT_BASE_ROBUST_EXT_001` |
 
 ### OEM100 Surface 상세-UT 매핑 (실제 본문 운영)
 
 | 그룹 | Surface ECU(실명) | UT 커버 방식 | 주요 UT ID |
 |---|---|---|---|
-| A1 Infrastructure/Integration | `CGW`, `ETH_BACKBONE`, `DCM`, `IBOX`, `SGW` | 경계/진단/검증 하네스 연동 묶음 검증 | `UT_BASE_GW_001`, `UT_BASE_TEST_001`, `UT_BACKBONE_STATE_001` |
+| A1 Infrastructure/Integration | `CGW`, `ETH_BACKBONE`, `DCM`, `IBOX`, `SGW` | 경계/진단 연동 묶음 검증 | `UT_BASE_GW_001`, `UT_BACKBONE_STATE_001` |
 | A2 Powertrain | `EMS`, `TCU`, `VCU`, `_4WD`, `BAT_BMS`, `FPCM`, `LVR`, `ISG`, `EOP`, `EWP` | 동력계 상태/입력 연동 묶음 검증 | `UT_BASE_PT_001`, `UT_BASE_EXT_PT_002`, `UT_BASE_001` |
 | A3 Chassis/Safety | `ESC`, `MDPS`, `ABS`, `EPB`, `TPMS`, `SAS`, `ECS`, `ACU`, `ODS`, `VSM`, `EHB`, `CDC` | 차체 입력/안전 상태 묶음 검증 | `UT_BASE_CH_001`, `UT_BASE_EXT_CH_002`, `UT_BASE_001` |
 | A4 Body/Comfort | `BCM`, `DATC`, `SMK`, `AFLS`, `AHLS`, `WIPER_MODULE`, `SUNROOF_MODULE`, `DOOR_FL`, `DOOR_FR`, `DOOR_RL`, `DOOR_RR`, `TAILGATE_MODULE`, `SEAT_DRV`, `SEAT_PASS`, `MIRROR_MODULE`, `BODY_SECURITY_MODULE` | 바디/편의 상태 묶음 검증 | `UT_BASE_BODY_001`, `UT_BASE_EXT_BODY_001`, `UT_BASE_EXT_BODY_002`, `UT_BASE_001` |
 | A5 IVI/HMI/Connectivity | `IVI`, `CLU`, `HUD`, `TMU`, `AMP`, `PGS`, `NAV_MODULE`, `VOICE_ASSIST`, `RSE`, `DIGITAL_KEY` | HMI/표시/음향 상태 묶음 검증 | `UT_CLU_001`, `UT_BASE_IVI_001`, `UT_BASE_EXT_IVI_001`, `UT_BASE_EXT_IVI_002` |
 | A6 ADAS/V2X/Parking | `ADAS`, `V2X`, `SCC`, `LDWS_LKAS`, `FCA`, `BCW`, `LCA`, `SPAS`, `RSPA`, `AVM`, `FCAM`, `FRADAR`, `SRR_FL`, `SRR_FR`, `SRR_RL`, `SRR_RR`, `PARK_ULTRASONIC`, `DMS`, `OMS` | 경고 판정/중재/객체위험 묶음 검증 | `UT_ADAS_001`, `UT_ARB_001`, `UT_V2_RISK_001`, `UT_ADAS_OBJ_RISK_001`, `UT_ADAS_OBJ_SAFETY_001`, `UT_ADAS_EXT_STATE_001` |
-| B Validation Harness | `VALIDATION_HARNESS` | 검증 전용 실행/판정 묶음 | `UT_SIL_001`, `UT_BASE_TEST_001` |
 | C Premium Option | `OBC`, `DCDC`, `MCU`, `INVERTER`, `CHARGE_PORT_CTRL`, `AIR_SUSPENSION`, `RWS`, `NIGHT_VISION`, `AEB_DOMAIN`, `HIGHWAY_PILOT`, `PARK_MASTER`, `TRAILER_CTRL`, `HEADLAMP_LEVELING`, `AUTO_DOOR_CTRL`, `POWER_TAILGATE_CTRL`, `MASSAGE_SEAT_CTRL`, `REAR_CLIMATE_MODULE`, `CABIN_SENSING`, `BIOMETRIC_AUTH`, `CARPAY_CTRL`, `PHONE_AS_KEY`, `OTA_MASTER`, `EDR`, `ROAD_PREVIEW_CAMERA`, `LIDAR`, `REAR_RADAR_MASTER`, `SURROUND_PARK_MASTER` | 기존 도메인 UT에 흡수, 미구현 1개는 계획 상태 | `UT_BASE_EXT_PT_002`, `UT_BASE_EXT_CH_002`, `UT_BASE_EXT_BODY_002`, `UT_BASE_EXT_IVI_002`, `UT_ADAS_EXT_STATE_001`, `UT_BACKBONE_STATE_001`, `UT_BASE_ALERT_EXT_001`, `UT_BASE_ROBUST_EXT_001` |
 
 ### 미구현(Placeholder) ECU 명시
@@ -122,8 +119,6 @@
 |  |  | CGW (`DOMAIN_BOUNDARY_MGR`, 백본 서비스 확장) | 백본 및 도메인 서비스 상태 정보를 수신하여 경계 상태와 강등 동작에 반영 | Ready |  |  |
 |  |  | CGW (`DOMAIN_ROUTER`, 구동 확장) | 모터와 인버터 상태를 수신하여 차량 구동 상태에 반영 | Ready |  |  |
 |  |  | CGW (`DOMAIN_ROUTER`, 전력·충전 확장) | 전력 변환과 충전 상태를 수신하여 차량 구동 상태에 반영 | Ready |  |  |
-|  |  | VALIDATION_HARNESS (`TST_SCN`) | 시험 시나리오를 실행하고 통신 조건 판정과 결과 기록을 수행 |  |  |  |
-|  |  | VALIDATION_HARNESS (`TST_BAS`) | 차량 기본 기능 검증 결과를 판정하고 반영 |  |  |  |
 | 가상 노드 (Simulator) | 입력 | Vehicle/Steering Input | 차량 속도(km/h), 주행 상태, 조향 각도 입력 정보를 생성 |  |  |  |
 |  |  | Nav Context Input | 구간, 방향, 거리(m), 제한속도(km/h) 입력 정보를 생성 |  |  |  |
 |  |  | Emergency Input | 경찰, 구급 긴급 접근 정보와 도착예정시간(s) 입력을 생성 |  |  |  |
@@ -160,7 +155,6 @@
 |  |  | HUD Output | 전면 표시 화면의 경고 및 안내 정보를 50ms 주기로 확인 |  |  |  |
 |  |  | Audio Output | 경고 우선순위에 따른 음향 안내 출력을 50ms 주기로 확인 |  |  |  |
 |  |  | Vehicle Control Output | 감속 보조 요청이 차량 제어 경로로 전달되는지 확인 |  |  |  |
-|  |  | Scenario Result | 시나리오 결과와 로그 기록을 확인 |  |  |  |
 
 ---
 
