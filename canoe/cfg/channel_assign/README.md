@@ -12,8 +12,8 @@ Do not edit files here directly. Edit `canoe/src/capl/**` first, then mirror int
 
 The current import bank exposes:
 
-- deep runtime anchors: `74`
-- shallow placeholder surfaces: `26`
+- deep runtime anchors: `78`
+- shallow placeholder surfaces: `22`
 - total visible nodes: `100`
 
 | Domain | Folder | Active nodes |
@@ -29,10 +29,10 @@ The current import bank exposes:
 
 | Domain | Visible deep nodes |
 | --- | --- |
-| Chassis | `VCU`, `ESC`, `MDPS`, `ABS`, `EPB`, `TPMS`, `SAS`, `VSM`, `EHB`, `ECS`, `CDC`, `VAL_BASELINE_CTRL` |
+| Chassis | `VCU`, `ESC`, `MDPS`, `ABS`, `EPB`, `TPMS`, `SAS`, `VSM`, `EHB`, `ECS`, `CDC`, `AIR_SUSPENSION`, `RWS`, `VAL_BASELINE_CTRL` |
 | Body | `BCM`, `DATC`, `SMK`, `AFLS`, `WIPER_MODULE`, `BODY_SECURITY_MODULE`, `DOOR_FL`, `DOOR_FR`, `DOOR_RL`, `DOOR_RR`, `SEAT_DRV`, `SEAT_PASS`, `TAILGATE_MODULE`, `MIRROR_MODULE`, `REAR_CLIMATE_MODULE`, `SUNROOF_MODULE`, `HEADLAMP_LEVELING`, `CABIN_SENSING`, `AHLS`, `AUTO_DOOR_CTRL`, `POWER_TAILGATE_CTRL`, `BIOMETRIC_AUTH` |
 | Infotainment | `IVI`, `CLU`, `HUD`, `AMP`, `VOICE_ASSIST`, `TMU`, `NAV_MODULE`, `OTA_MASTER`, `DIGITAL_KEY`, `RSE` |
-| Powertrain | `EMS`, `TCU`, `OBC`, `DCDC`, `MCU`, `INVERTER` |
+| Powertrain | `EMS`, `TCU`, `_4WD`, `BAT_BMS`, `OBC`, `DCDC`, `MCU`, `INVERTER` |
 | ETH Backbone | `CGW`, `V2X`, `SGW`, `IBOX`, `DCM`, `VAL_SCENARIO_CTRL` |
 | ADAS | `ADAS`, `SCC`, `LDWS_LKAS`, `FCA`, `BCW`, `LCA`, `SPAS`, `RSPA`, `AVM`, `FCAM`, `FRADAR`, `SRR_FL`, `SRR_FR`, `SRR_RL`, `SRR_RR`, `PARK_ULTRASONIC`, `DMS`, `OMS` |
 
@@ -70,7 +70,7 @@ These anchors still need extra bus assignments restored in GUI.
 - `VCU.can` ? propulsion / accel command owner
 - `ESC.can` ? brake / stability owner
 - `MDPS.can` ? steering owner
-- `ABS.can`, `EPB.can`, `TPMS.can`, `SAS.can`, `VSM.can`, `EHB.can`, `ECS.can`, `CDC.can` ? chassis/safety runtime anchors
+- `ABS.can`, `EPB.can`, `TPMS.can`, `SAS.can`, `VSM.can`, `EHB.can`, `ECS.can`, `CDC.can`, `AIR_SUSPENSION.can`, `RWS.can` ? chassis/safety runtime anchors
 - `VAL_BASELINE_CTRL.can` ? validation baseline aggregation
 
 ### Body
@@ -86,7 +86,7 @@ These anchors still need extra bus assignments restored in GUI.
 ### Powertrain
 - `EMS.can` ? engine management runtime
 - `TCU.can` ? transmission control runtime
-- `OBC.can`, `DCDC.can`, `MCU.can`, `INVERTER.can` ? power electronics runtime anchors
+- `_4WD.can`, `BAT_BMS.can`, `OBC.can`, `DCDC.can`, `MCU.can`, `INVERTER.can` ? driveline and power electronics runtime anchors
 
 ### ETH Backbone
 - `CGW.can` ? cross-domain boundary, fail-safe, and gateway authority

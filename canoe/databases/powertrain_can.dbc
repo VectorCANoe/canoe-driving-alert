@@ -29,7 +29,7 @@ NS_ :
 
 BS_:
 
-BU_: VAL_SCENARIO_CTRL EMS TCU VCU SCC OBC DCDC MCU INVERTER Vector__XXX
+BU_: VAL_SCENARIO_CTRL EMS TCU VCU SCC OBC DCDC MCU INVERTER _4WD BAT_BMS Vector__XXX
 
 BO_ 680 frmIgnitionEngineMsg: 1 VAL_SCENARIO_CTRL
  SG_ IgnitionState  : 0|1@1+ (1,0) [0|1] "" EMS
@@ -148,6 +148,16 @@ BO_ 309 frmInverterStateMsg: 3 INVERTER
  SG_ InvTemp          : 8|8@1+ (1,0) [0|255] "degC" VCU,EMS
  SG_ DcLinkVolt       : 16|8@1+ (1,0) [0|255] "V" VCU,EMS
 
+BO_ 310 frm4wdStateMsg: 2 _4WD
+ SG_ Mode4wd          : 0|3@1+ (1,0) [0|7] "" VCU
+ SG_ CenterClutchState : 3|2@1+ (1,0) [0|3] "" VCU
+ SG_ TorqueSplitFront : 8|8@1+ (1,0) [0|100] "%" VCU
+
+BO_ 311 frmBatBmsStateMsg: 3 BAT_BMS
+ SG_ BmsState         : 0|3@1+ (1,0) [0|7] "" VCU,OBC,DCDC
+ SG_ PackSoc          : 8|8@1+ (1,0) [0|100] "%" VCU,OBC,DCDC
+ SG_ PackTemp         : 16|8@1+ (1,0) [0|255] "degC" VCU,OBC,DCDC
+
 CM_ BO_ 680 "Powertrain baseline: ignition state and engine state.";
 CM_ BO_ 681 "Powertrain baseline: gear input and gear state.";
 CM_ BO_ 265 "Powertrain baseline: domain routing policy and boundary status.";
@@ -171,6 +181,8 @@ CM_ BO_ 306 "Power electronics extension: onboard charger state.";
 CM_ BO_ 307 "Power electronics extension: low-voltage DCDC state.";
 CM_ BO_ 308 "Power electronics extension: motor control unit state.";
 CM_ BO_ 309 "Power electronics extension: inverter state.";
+CM_ BO_ 310 "Powertrain extension: 4WD torque split and clutch state.";
+CM_ BO_ 311 "Powertrain extension: battery management state.";
 
 BA_DEF_ BO_ "GenMsgCycleTime" INT 0 10000;
 BA_DEF_DEF_ "GenMsgCycleTime" 0;
@@ -197,6 +209,8 @@ BA_ "GenMsgCycleTime" BO_ 306 100;
 BA_ "GenMsgCycleTime" BO_ 307 100;
 BA_ "GenMsgCycleTime" BO_ 308 100;
 BA_ "GenMsgCycleTime" BO_ 309 100;
+BA_ "GenMsgCycleTime" BO_ 310 100;
+BA_ "GenMsgCycleTime" BO_ 311 100;
 
 VAL_ 680 IgnitionState
   0 "Off"

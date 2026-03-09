@@ -29,7 +29,7 @@ NS_ :
 
 BS_:
 
-BU_: VAL_SCENARIO_CTRL VCU ESC MDPS ADAS CGW ABS EPB TPMS SAS VSM EHB ECS CDC Vector__XXX VAL_BASELINE_CTRL
+BU_: VAL_SCENARIO_CTRL VCU ESC MDPS ADAS CGW ABS EPB TPMS SAS VSM EHB ECS CDC AIR_SUSPENSION RWS Vector__XXX VAL_BASELINE_CTRL
 
 BO_ 672 frmVehicleStateCanMsg: 2 VAL_SCENARIO_CTRL
  SG_ gVehicleSpeed : 0|8@1+ (1,0) [0|255] "km/h" ESC,ADAS
@@ -145,6 +145,16 @@ BO_ 302 frmCdcStateMsg: 2 CDC
  SG_ CdcMode          : 0|3@1+ (1,0) [0|7] "" ADAS
  SG_ CdcValveCurrent  : 8|8@1+ (1,0) [0|255] "" ADAS
 
+BO_ 303 frmAirSuspensionStateMsg: 3 AIR_SUSPENSION
+ SG_ RideHeightMode   : 0|3@1+ (1,0) [0|7] "" ESC,ADAS
+ SG_ FrontHeight      : 8|8@1+ (1,0) [0|255] "mm" ESC,ADAS
+ SG_ RearHeight       : 16|8@1+ (1,0) [0|255] "mm" ESC,ADAS
+
+BO_ 304 frmRwsStateMsg: 3 RWS
+ SG_ RwsMode          : 0|3@1+ (1,0) [0|7] "" ESC,ADAS
+ SG_ RwsState         : 3|2@1+ (1,0) [0|3] "" ESC,ADAS
+ SG_ RearSteerAngle   : 8|8@1+ (1,0) [0|255] "0.1deg" ESC,ADAS
+
 BO_ 676 frmChassisDiagReqMsg: 3 VAL_SCENARIO_CTRL
  SG_ ChsDiagServiceId : 0|8@1+ (1,0) [0|255] "" ESC
  SG_ ChsDiagDidHigh   : 8|8@1+ (1,0) [0|255] "" ESC
@@ -201,6 +211,8 @@ CM_ BO_ 299 "Comm_201: vehicle stability management state extension.";
 CM_ BO_ 300 "Comm_201: electro-hydraulic brake state extension.";
 CM_ BO_ 301 "Comm_201: electronic control suspension state extension.";
 CM_ BO_ 302 "Comm_201: continuous damping control state extension.";
+CM_ BO_ 303 "Comm_201: air suspension ride-height extension.";
+CM_ BO_ 304 "Comm_201: rear-wheel steering extension.";
 CM_ BO_ 677 "Comm_009 scenario result frame (Validation-only).";
 CM_ BO_ 678 "Comm_106 baseline test aggregate result frame (Validation-only).";
 
@@ -234,6 +246,8 @@ BA_ "GenMsgCycleTime" BO_ 299 100;
 BA_ "GenMsgCycleTime" BO_ 300 100;
 BA_ "GenMsgCycleTime" BO_ 301 100;
 BA_ "GenMsgCycleTime" BO_ 302 100;
+BA_ "GenMsgCycleTime" BO_ 303 100;
+BA_ "GenMsgCycleTime" BO_ 304 100;
 BA_ "GenMsgCycleTime" BO_ 677 0;
 BA_ "GenMsgCycleTime" BO_ 678 0;
 
