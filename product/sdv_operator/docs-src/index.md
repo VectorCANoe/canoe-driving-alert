@@ -32,7 +32,7 @@ python scripts/run.py verify batch --run-id 20260308_0900 --owner DEV2 --phase p
 
 ## 표면 원칙
 
-- 구현 계층은 shell/TUI로 나뉘지만, 사용자 표면은 하나의 CANoe Test Verification Console으로 봅니다.
+- 내부 실행 계층은 Verification Console 화면과 Shell fallback으로 나뉘지만, 사용자 표면은 하나의 CANoe Test Verification Console으로 봅니다.
 - CANoe Panel은 별도 제품 조작 UI로 유지합니다.
 - CANoe Test Verification Console은 CANoe를 대체하지 않고, 검증 운영/리뷰 표면만 제공합니다.
 - 표면 언어 정책은 `한국어 설명 + 영어 식별자`를 기본으로 합니다.

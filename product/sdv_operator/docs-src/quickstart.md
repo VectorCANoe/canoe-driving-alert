@@ -6,7 +6,7 @@
 python scripts/run.py
 ```
 
-기본 실행은 Verification Console(Textual 화면)을 엽니다.  
+기본 실행은 Verification Console 화면을 엽니다.  
 터미널 호환성 문제로 화면형 콘솔을 쓰기 어렵다면 plain shell로 전환합니다.
 
 ```powershell

@@ -265,23 +265,23 @@ def _run_skill(skill_name: str) -> int:
 def cmd_tui(_: argparse.Namespace) -> int:
     ok, reason = _can_launch_tui()
     if not ok:
-        print(f"[TUI] unavailable: {reason}")
-        print("[TUI] fallback: use `python scripts/run.py shell`")
+        print(f"[CONSOLE] unavailable: {reason}")
+        print("[CONSOLE] fallback: use `python scripts/run.py shell`")
         return 2
     try:
         from tui_app import launch_tui
     except Exception as ex:
-        print(f"[TUI] startup failed: {ex}")
-        print("[TUI] fallback: use `python scripts/run.py shell`")
+        print(f"[CONSOLE] startup failed: {ex}")
+        print("[CONSOLE] fallback: use `python scripts/run.py shell`")
         return 2
     return launch_tui()
 
 
 def cmd_shell(_: argparse.Namespace) -> int:
-    print("SDV Shell (slash mode)")
+    print("CANoe Test Verification Console - Shell fallback")
     print("Type /help, /exit")
     print("Tip: /palette for grouped command palette")
-    print("Tip: /tui for the Textual operator console")
+    print("Tip: /tui for the Verification Console screen")
     print("Tip: keep CANoe measurement running before scenario/verify commands")
     print(f"Host: {platform_label()}")
     runtime_cap = canoe_runtime_check()
@@ -289,7 +289,7 @@ def cmd_shell(_: argparse.Namespace) -> int:
         print(f"Note: {runtime_cap.detail}")
     session_commands: list[str] = []
     while True:
-        line = input("sdv> ").strip()
+        line = input("console> ").strip()
         if not line:
             continue
 
@@ -986,12 +986,12 @@ def main() -> int:
     if argv and argv[0] not in {"-h", "--help"} and argv[0] not in TOPLEVEL_COMMANDS:
         suggestion = _suggest_choice(argv[0], TOPLEVEL_COMMANDS)
         if suggestion:
-            print(f"[CLI] unknown command: {argv[0]} (did you mean '{suggestion}'?)")
+            print(f"[SHELL] unknown command: {argv[0]} (did you mean '{suggestion}'?)")
         else:
-            print(f"[CLI] unknown command: {argv[0]}")
-        print("[CLI] tip: run `python scripts/run.py` for the default operator console")
-        print("[CLI] tip: run `python scripts/run.py shell` for the plain fallback shell")
-        print("[CLI] tip: run `python scripts/run.py go` for guided mode")
+            print(f"[SHELL] unknown command: {argv[0]}")
+        print("[SHELL] tip: run `python scripts/run.py` for the default Verification Console")
+        print("[SHELL] tip: run `python scripts/run.py shell` for the plain fallback shell")
+        print("[SHELL] tip: run `python scripts/run.py go` for guided mode")
         return 2
 
     parser = build_parser(PARSER_HANDLERS, _default_run_id)
@@ -1006,8 +1006,8 @@ def main() -> int:
         if result is not None:
             write_last_operator_result(result)
     except Exception as ex:
-        print(f"[CLI] result envelope warning: {ex}")
-    return rc
+        print(f"[SHELL] result envelope warning: {ex}")
+        return rc
 
 
 if __name__ == "__main__":

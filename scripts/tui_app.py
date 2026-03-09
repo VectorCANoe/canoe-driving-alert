@@ -604,10 +604,12 @@ class SdvTuiApp(App[None]):
                             yield Static(id="timeline-body")
                     with Horizontal(id="results-actions"):
                         yield Button("증빙 열기", id="results-open-artifact", variant="success")
+                        yield Button("native report 열기", id="results-open-native")
+                        yield Button("execution manifest", id="results-open-manifest")
                         yield Button("원본 기준 열기", id="results-open-source")
                         yield Button("staging 정리", id="results-clean-staging", variant="warning")
                     yield Static(
-                        "Results 화면에서는 최근 증빙과 그 증빙의 기준이 되는 원본 계약 파일을 같은 흐름에서 열 수 있습니다.",
+                        "Results 화면에서는 최근 증빙, native report, execution manifest, 원본 기준 파일을 같은 흐름에서 열 수 있습니다.",
                         id="results-hint",
                     )
                 with Vertical(id="page-artifacts", classes="page hidden"):
@@ -628,6 +630,8 @@ class SdvTuiApp(App[None]):
                             yield Static(id="artifact-source-body")
                     with Horizontal(id="artifact-actions"):
                         yield Button("최근 증빙 열기", id="artifact-open-latest", variant="success")
+                        yield Button("native report 열기", id="artifact-open-native")
+                        yield Button("execution manifest", id="artifact-open-manifest")
                         yield Button("최신 archive 열기", id="artifact-open-archive")
                         yield Button("원본 기준 열기", id="artifact-open-source")
                         yield Button("staging 정리", id="artifact-clean-staging", variant="warning")
@@ -843,6 +847,15 @@ class SdvTuiApp(App[None]):
             lines.append(f"- [{marker}] {name}")
         return "\n".join(lines)
 
+    def _resolve_archive_child_target(self, relative_path: str) -> Path | None:
+        archive_dir = self._latest_archive_for_last_run()
+        if archive_dir is None:
+            return None
+        candidate = archive_dir / relative_path
+        if candidate.exists():
+            return candidate
+        return archive_dir if archive_dir.exists() else None
+
     def _summarize_artifact_source(self) -> str:
         source_target = self._resolve_source_contract_target()
         lines = [self._relpath(source_target)]
@@ -950,10 +963,18 @@ class SdvTuiApp(App[None]):
             lines.append("- 아직 연결된 증빙 경로가 없습니다.")
 
         lines.append("")
+        native_target = self._resolve_archive_child_target("native_reports")
+        lines.append("native report")
+        lines.append(f"- {self._relpath(native_target) if native_target else '최근 archive가 없습니다.'}")
+        lines.append("")
+        manifest_target = self._resolve_archive_child_target("manifests/execution_manifest.json")
+        lines.append("execution manifest")
+        lines.append(f"- {self._relpath(manifest_target) if manifest_target else '최근 archive가 없습니다.'}")
+        lines.append("")
         lines.append("원본 기준")
         lines.append(f"- {source_target.relative_to(ROOT).as_posix()}")
         lines.append("")
-        lines.append("동작: 증빙 열기 / 원본 기준 열기 / staging 정리")
+        lines.append("동작: 증빙 / native report / execution manifest / 원본 기준 / staging 정리")
         return "\n".join(lines)
 
     def _refresh_summary_cards(self) -> None:
@@ -1592,6 +1613,28 @@ class SdvTuiApp(App[None]):
         except Exception as ex:
             self._write_log(artifact_open_failed(ex))
 
+    def action_open_native_report(self) -> None:
+        target = self._resolve_archive_child_target("native_reports")
+        if target is None:
+            self._write_log("[yellow]최근 native report archive가 없습니다.[/]")
+            return
+        try:
+            self._open_path(target)
+            self._write_log(artifact_opened(str(target)))
+        except Exception as ex:
+            self._write_log(artifact_open_failed(ex))
+
+    def action_open_execution_manifest(self) -> None:
+        target = self._resolve_archive_child_target("manifests/execution_manifest.json")
+        if target is None:
+            self._write_log("[yellow]최근 execution manifest가 없습니다.[/]")
+            return
+        try:
+            self._open_path(target)
+            self._write_log(artifact_opened(str(target)))
+        except Exception as ex:
+            self._write_log(artifact_open_failed(ex))
+
     def action_open_latest_archive(self) -> None:
         target = self._latest_archive_for_last_run()
         if target is None:
@@ -1989,12 +2032,20 @@ class SdvTuiApp(App[None]):
             self.action_set_log_filter_canoe()
         elif event.button.id == "results-open-artifact":
             self.action_open_artifact()
+        elif event.button.id == "results-open-native":
+            self.action_open_native_report()
+        elif event.button.id == "results-open-manifest":
+            self.action_open_execution_manifest()
         elif event.button.id == "results-open-source":
             self.action_open_source_contract()
         elif event.button.id == "results-clean-staging":
             self.action_clean_staging_now()
         elif event.button.id == "artifact-open-latest":
             self.action_open_artifact()
+        elif event.button.id == "artifact-open-native":
+            self.action_open_native_report()
+        elif event.button.id == "artifact-open-manifest":
+            self.action_open_execution_manifest()
         elif event.button.id == "artifact-open-archive":
             self.action_open_latest_archive()
         elif event.button.id == "artifact-open-source":
