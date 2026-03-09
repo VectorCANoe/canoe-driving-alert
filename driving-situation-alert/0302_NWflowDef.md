@@ -21,7 +21,7 @@
 - 상단 표의 `Bit no.`는 가독성을 위해 범위 표기(예: `0~7`, `8~15`)를 사용하되, 상단 열 구성은 공식 샘플 구조를 유지한다.
 - 상단 표의 `signal name`은 0304 표준 변수명(`vehicleSpeed` 등) 기준으로 작성하고, 코드/런타임 별칭(`g*`)은 하단 보강표에서만 관리한다.
 - 0304에 아직 등재되지 않은 Vehicle Baseline 확장 신호는 DBC 원본 신호명(`AccelPedal`, `DriveMode` 등)으로 표기한다.
-- 옵션1 아키텍처를 고정한다: `중앙 경고코어 + Ethernet 논리 백본(실제 forwarding은 SIL 네트워크 스택/실차 스위치, ETH_SW는 health/freshness monitor) + 도메인 게이트웨이 + 도메인 CAN`.
+- 옵션1 아키텍처를 고정한다: `중앙 경고코어 + Ethernet 논리 백본(실제 forwarding은 SIL 네트워크 스택/실차 스위치, ETHB는 health/freshness monitor) + 도메인 게이트웨이 + 도메인 CAN`.
 - 멀티버스 운영 원칙: 일반 기능 노드는 단일 버스 소속을 원칙으로 하며 도메인 경계 전달은 GW/Router가 담당한다. 테스터/검증 노드는 예외적으로 멀티버스 연결을 허용하되 가능하면 버스별 분리 운용을 우선한다.
 - Validation Harness 역할 분리: `VAL_SCENARIO_CTRL`는 E2E 통합 주입/관찰을 위한 멀티버스 예외 노드, `VAL_BASELINE_CTRL`는 Chassis 단일버스 baseline 결과 집계 노드로 고정한다.
 - 인터페이스 정의 단위는 도메인명이 아니라 메시지 계약 단위이며 최소 계약 항목은 `Message Name/ID/DLC/주기(또는 Event)/Timeout/Owner`로 관리한다.
@@ -37,7 +37,7 @@
 - OEM100 Surface ECU 전체 전수(100개)와 구현 상태(`활성/미구현`)는 `00e` 6.4를 단일 기준으로 사용한다.
 - 본 문서는 활성(상세 정의) Surface ECU의 Flow만 상세 정의하고, 미구현(Placeholder) Surface ECU는 Flow owner를 강제하지 않는다.
 
-- Vehicle Baseline(Req_101~Req_107, Req_109~Req_119) 플로우(`Flow_101~Flow_106`, `Flow_201~Flow_205`)는 본 문서에서 확정 정의하고, DBC는 이 정의를 구현 대상으로 사용한다.
+- Vehicle Baseline(Req_101~Req_107, Req_109~Req_119) 플로우(`Flow_101~Flow_106`, `Flow_201~Flow_210`)는 본 문서에서 확정 정의하고, DBC는 이 정의를 구현 대상으로 사용한다.
 - V2 확장 요구(`Req_120~Req_121`, `Req_123`, `Req_125~Req_129`) 플로우(`Flow_120~Flow_124`)는 구현 활성 상태로 관리하며, 관련 DBC/코드/테스트를 동일 커밋에서 동기화한다.
 - ADAS 객체 인지 확장 요구(`Req_130~Req_139`) 플로우(`Flow_130~Flow_133`)는 Pre-Activation(설계 선반영) 상태로 관리하며, 구현 착수 시 0303/0304/04/05/06/07을 동일 커밋에서 동기화한다.
 - `Flow_130~Flow_133`의 Ethernet 계약 SoT는 `ETH_INTERFACE_CONTRACT.md v1.2`(`E213~E216`)로 고정하며, 구현 상태는 Pre-Activation으로 관리한다.
@@ -59,7 +59,7 @@
 | Surface ECU | Group | Domain Bucket | Surface Type | 구현 상태 | Runtime Binding | 문서 반영 정책 |
 |---|---|---|---|---|---|---|
 | `CGW` | A1 | Infrastructure/Integration | INFRA_SERVICE | 활성(상세 정의) | `CGW` | 추적체인 반영 대상 |
-| `ETH_BACKBONE` | A1 | Infrastructure/Integration | INFRA_SERVICE | 활성(상세 정의) | `ETH_SW(Health/Freshness monitor)` | 추적체인 반영 대상 |
+| `ETHB` | A1 | Infrastructure/Integration | INFRA_SERVICE | 활성(상세 정의) | `ETHB(Health/Freshness monitor)` | 추적체인 반영 대상 |
 | `DCM` | A1 | Infrastructure/Integration | INFRA_SERVICE | 활성(상세 정의) | `DCM` | 추적체인 반영 대상 |
 | `IBOX` | A1 | Infrastructure/Integration | INFRA_SERVICE | 활성(상세 정의) | `IBOX` | 추적체인 반영 대상 |
 | `SGW` | A1 | Infrastructure/Integration | INFRA_SERVICE | 활성(상세 정의) | `SGW` | 추적체인 반영 대상 |
@@ -90,27 +90,27 @@
 | `SMK` | A4 | Body/Comfort | PHYSICAL/DOMAIN | 활성(상세 정의) | `SMK` | 추적체인 반영 대상 |
 | `AFLS` | A4 | Body/Comfort | PHYSICAL/DOMAIN | 활성(상세 정의) | `AFLS` | 추적체인 반영 대상 |
 | `AHLS` | A4 | Body/Comfort | PHYSICAL/DOMAIN | 활성(상세 정의) | `AHLS` | 추적체인 반영 대상 |
-| `WIPER_MODULE` | A4 | Body/Comfort | PHYSICAL/DOMAIN | 활성(상세 정의) | `WIPER_MODULE` | 추적체인 반영 대상 |
-| `SUNROOF_MODULE` | A4 | Body/Comfort | PHYSICAL/DOMAIN | 활성(상세 정의) | `SUNROOF_MODULE` | 추적체인 반영 대상 |
+| `WIP` | A4 | Body/Comfort | PHYSICAL/DOMAIN | 활성(상세 정의) | `WIPER_MODULE` | 추적체인 반영 대상 |
+| `SRF` | A4 | Body/Comfort | PHYSICAL/DOMAIN | 활성(상세 정의) | `SUNROOF_MODULE` | 추적체인 반영 대상 |
 | `DOOR_FL` | A4 | Body/Comfort | PHYSICAL/DOMAIN | 활성(상세 정의) | `DOOR_FL` | 추적체인 반영 대상 |
 | `DOOR_FR` | A4 | Body/Comfort | PHYSICAL/DOMAIN | 활성(상세 정의) | `DOOR_FR` | 추적체인 반영 대상 |
 | `DOOR_RL` | A4 | Body/Comfort | PHYSICAL/DOMAIN | 활성(상세 정의) | `DOOR_RL` | 추적체인 반영 대상 |
 | `DOOR_RR` | A4 | Body/Comfort | PHYSICAL/DOMAIN | 활성(상세 정의) | `DOOR_RR` | 추적체인 반영 대상 |
-| `TAILGATE_MODULE` | A4 | Body/Comfort | PHYSICAL/DOMAIN | 활성(상세 정의) | `TAILGATE_MODULE` | 추적체인 반영 대상 |
+| `TGM` | A4 | Body/Comfort | PHYSICAL/DOMAIN | 활성(상세 정의) | `TAILGATE_MODULE` | 추적체인 반영 대상 |
 | `SEAT_DRV` | A4 | Body/Comfort | PHYSICAL/DOMAIN | 활성(상세 정의) | `SEAT_DRV` | 추적체인 반영 대상 |
 | `SEAT_PASS` | A4 | Body/Comfort | PHYSICAL/DOMAIN | 활성(상세 정의) | `SEAT_PASS` | 추적체인 반영 대상 |
-| `MIRROR_MODULE` | A4 | Body/Comfort | PHYSICAL/DOMAIN | 활성(상세 정의) | `MIRROR_MODULE` | 추적체인 반영 대상 |
-| `BODY_SECURITY_MODULE` | A4 | Body/Comfort | PHYSICAL/DOMAIN | 활성(상세 정의) | `BODY_SECURITY_MODULE` | 추적체인 반영 대상 |
+| `MIR` | A4 | Body/Comfort | PHYSICAL/DOMAIN | 활성(상세 정의) | `MIRROR_MODULE` | 추적체인 반영 대상 |
+| `BSEC` | A4 | Body/Comfort | PHYSICAL/DOMAIN | 활성(상세 정의) | `BODY_SECURITY_MODULE` | 추적체인 반영 대상 |
 | `IVI` | A5 | IVI/HMI/Connectivity | PHYSICAL/DOMAIN | 활성(상세 정의) | `IVI` | 추적체인 반영 대상 |
 | `CLU` | A5 | IVI/HMI/Connectivity | PHYSICAL/DOMAIN | 활성(상세 정의) | `CLU` | 추적체인 반영 대상 |
 | `HUD` | A5 | IVI/HMI/Connectivity | PHYSICAL/DOMAIN | 활성(상세 정의) | `HUD` | 추적체인 반영 대상 |
 | `TMU` | A5 | IVI/HMI/Connectivity | PHYSICAL/DOMAIN | 활성(상세 정의) | `TMU` | 추적체인 반영 대상 |
 | `AMP` | A5 | IVI/HMI/Connectivity | PHYSICAL/DOMAIN | 활성(상세 정의) | `AMP` | 추적체인 반영 대상 |
 | `PGS` | A5 | IVI/HMI/Connectivity | PHYSICAL/DOMAIN | 활성(상세 정의) | `PGS` | 추적체인 반영 대상 |
-| `NAV_MODULE` | A5 | IVI/HMI/Connectivity | PHYSICAL/DOMAIN | 활성(상세 정의) | `NAV_MODULE` | 추적체인 반영 대상 |
-| `VOICE_ASSIST` | A5 | IVI/HMI/Connectivity | PHYSICAL/DOMAIN | 활성(상세 정의) | `VOICE_ASSIST` | 추적체인 반영 대상 |
+| `NAV` | A5 | IVI/HMI/Connectivity | PHYSICAL/DOMAIN | 활성(상세 정의) | `NAV_MODULE` | 추적체인 반영 대상 |
+| `VCS` | A5 | IVI/HMI/Connectivity | PHYSICAL/DOMAIN | 활성(상세 정의) | `VOICE_ASSIST` | 추적체인 반영 대상 |
 | `RSE` | A5 | IVI/HMI/Connectivity | PHYSICAL/DOMAIN | 활성(상세 정의) | `RSE` | 추적체인 반영 대상 |
-| `DIGITAL_KEY` | A5 | IVI/HMI/Connectivity | PHYSICAL/DOMAIN | 활성(상세 정의) | `DIGITAL_KEY` | 추적체인 반영 대상 |
+| `DKEY` | A5 | IVI/HMI/Connectivity | PHYSICAL/DOMAIN | 활성(상세 정의) | `DIGITAL_KEY` | 추적체인 반영 대상 |
 | `ADAS` | A6 | ADAS/V2X/Parking | PHYSICAL/DOMAIN | 활성(상세 정의) | `ADAS` | 추적체인 반영 대상 |
 | `V2X` | A6 | ADAS/V2X/Parking | PHYSICAL/DOMAIN | 활성(상세 정의) | `V2X` | 추적체인 반영 대상 |
 | `SCC` | A6 | ADAS/V2X/Parking | FUNCTION_SURFACE | 활성(상세 정의) | `SCC` | 추적체인 반영 대상 |
@@ -127,7 +127,7 @@
 | `SRR_FR` | A6 | ADAS/V2X/Parking | PHYSICAL/DOMAIN | 활성(상세 정의) | `SRR_FR` | 추적체인 반영 대상 |
 | `SRR_RL` | A6 | ADAS/V2X/Parking | PHYSICAL/DOMAIN | 활성(상세 정의) | `SRR_RL` | 추적체인 반영 대상 |
 | `SRR_RR` | A6 | ADAS/V2X/Parking | PHYSICAL/DOMAIN | 활성(상세 정의) | `SRR_RR` | 추적체인 반영 대상 |
-| `PARK_ULTRASONIC` | A6 | ADAS/V2X/Parking | PHYSICAL/DOMAIN | 활성(상세 정의) | `PARK_ULTRASONIC` | 추적체인 반영 대상 |
+| `PUS` | A6 | ADAS/V2X/Parking | PHYSICAL/DOMAIN | 활성(상세 정의) | `PARK_ULTRASONIC` | 추적체인 반영 대상 |
 | `DMS` | A6 | ADAS/V2X/Parking | PHYSICAL/DOMAIN | 활성(상세 정의) | `DMS` | 추적체인 반영 대상 |
 | `OMS` | A6 | ADAS/V2X/Parking | PHYSICAL/DOMAIN | 활성(상세 정의) | `OMS` | 추적체인 반영 대상 |
 | `VALIDATION_HARNESS` | B | Validation | VALIDATION | 활성(상세 정의) | `VAL_SCENARIO_CTRL + VAL_BASELINE_CTRL` | 추적체인 반영 대상 |
@@ -135,29 +135,29 @@
 | `DCDC` | C | Premium Option | PHYSICAL/DOMAIN | 활성(상세 정의) | `DCDC` | 추적체인 반영 대상 |
 | `MCU` | C | Premium Option | PHYSICAL/DOMAIN | 활성(상세 정의) | `MCU` | 추적체인 반영 대상 |
 | `INVERTER` | C | Premium Option | PHYSICAL/DOMAIN | 활성(상세 정의) | `INVERTER` | 추적체인 반영 대상 |
-| `CHARGE_PORT_CTRL` | C | Premium Option | PHYSICAL/DOMAIN | 활성(상세 정의) | `CHARGE_PORT_CTRL` | 추적체인 반영 대상 |
-| `AIR_SUSPENSION` | C | Premium Option | PHYSICAL/DOMAIN | 활성(상세 정의) | `AIR_SUSPENSION` | 추적체인 반영 대상 |
+| `CPC` | C | Premium Option | PHYSICAL/DOMAIN | 활성(상세 정의) | `CHARGE_PORT_CTRL` | 추적체인 반영 대상 |
+| `ASM` | C | Premium Option | PHYSICAL/DOMAIN | 활성(상세 정의) | `AIR_SUSPENSION` | 추적체인 반영 대상 |
 | `RWS` | C | Premium Option | PHYSICAL/DOMAIN | 활성(상세 정의) | `RWS` | 추적체인 반영 대상 |
 | `NIGHT_VISION` | C | Premium Option | PHYSICAL/DOMAIN | 미구현(Placeholder) | - | 승격 전 참조만, 추적체인 미부여 |
-| `AEB_DOMAIN` | C | Premium Option | FUNCTION_SURFACE | 활성(상세 정의) | `AEB_DOMAIN` | 추적체인 반영 대상 |
-| `HIGHWAY_PILOT` | C | Premium Option | FUNCTION_SURFACE | 활성(상세 정의) | `HIGHWAY_PILOT` | 추적체인 반영 대상 |
-| `PARK_MASTER` | C | Premium Option | FUNCTION_SURFACE | 활성(상세 정의) | `PARK_MASTER` | 추적체인 반영 대상 |
-| `TRAILER_CTRL` | C | Premium Option | PHYSICAL/DOMAIN | 활성(상세 정의) | `TRAILER_CTRL` | 추적체인 반영 대상 |
-| `HEADLAMP_LEVELING` | C | Premium Option | PHYSICAL/DOMAIN | 활성(상세 정의) | `HEADLAMP_LEVELING` | 추적체인 반영 대상 |
-| `AUTO_DOOR_CTRL` | C | Premium Option | PHYSICAL/DOMAIN | 활성(상세 정의) | `AUTO_DOOR_CTRL` | 추적체인 반영 대상 |
-| `POWER_TAILGATE_CTRL` | C | Premium Option | PHYSICAL/DOMAIN | 활성(상세 정의) | `POWER_TAILGATE_CTRL` | 추적체인 반영 대상 |
-| `MASSAGE_SEAT_CTRL` | C | Premium Option | PHYSICAL/DOMAIN | 활성(상세 정의) | `MASSAGE_SEAT_CTRL` | 추적체인 반영 대상 |
-| `REAR_CLIMATE_MODULE` | C | Premium Option | PHYSICAL/DOMAIN | 활성(상세 정의) | `REAR_CLIMATE_MODULE` | 추적체인 반영 대상 |
-| `CABIN_SENSING` | C | Premium Option | PHYSICAL/DOMAIN | 활성(상세 정의) | `CABIN_SENSING` | 추적체인 반영 대상 |
-| `BIOMETRIC_AUTH` | C | Premium Option | PHYSICAL/DOMAIN | 활성(상세 정의) | `BIOMETRIC_AUTH` | 추적체인 반영 대상 |
-| `CARPAY_CTRL` | C | Premium Option | INFRA_SERVICE | 활성(상세 정의) | `CARPAY_CTRL` | 추적체인 반영 대상 |
-| `PHONE_AS_KEY` | C | Premium Option | INFRA_SERVICE | 활성(상세 정의) | `PHONE_AS_KEY` | 추적체인 반영 대상 |
-| `OTA_MASTER` | C | Premium Option | INFRA_SERVICE | 활성(상세 정의) | `OTA_MASTER` | 추적체인 반영 대상 |
+| `AEB` | C | Premium Option | FUNCTION_SURFACE | 활성(상세 정의) | `AEB_DOMAIN` | 추적체인 반영 대상 |
+| `HWP` | C | Premium Option | FUNCTION_SURFACE | 활성(상세 정의) | `HIGHWAY_PILOT` | 추적체인 반영 대상 |
+| `PKM` | C | Premium Option | FUNCTION_SURFACE | 활성(상세 정의) | `PARK_MASTER` | 추적체인 반영 대상 |
+| `TRM` | C | Premium Option | PHYSICAL/DOMAIN | 활성(상세 정의) | `TRAILER_CTRL` | 추적체인 반영 대상 |
+| `HLM` | C | Premium Option | PHYSICAL/DOMAIN | 활성(상세 정의) | `HEADLAMP_LEVELING` | 추적체인 반영 대상 |
+| `ADM` | C | Premium Option | PHYSICAL/DOMAIN | 활성(상세 정의) | `AUTO_DOOR_CTRL` | 추적체인 반영 대상 |
+| `PTG` | C | Premium Option | PHYSICAL/DOMAIN | 활성(상세 정의) | `POWER_TAILGATE_CTRL` | 추적체인 반영 대상 |
+| `MSC` | C | Premium Option | PHYSICAL/DOMAIN | 활성(상세 정의) | `MASSAGE_SEAT_CTRL` | 추적체인 반영 대상 |
+| `RATC` | C | Premium Option | PHYSICAL/DOMAIN | 활성(상세 정의) | `REAR_CLIMATE_MODULE` | 추적체인 반영 대상 |
+| `CSM` | C | Premium Option | PHYSICAL/DOMAIN | 활성(상세 정의) | `CABIN_SENSING` | 추적체인 반영 대상 |
+| `BIO` | C | Premium Option | PHYSICAL/DOMAIN | 활성(상세 정의) | `BIOMETRIC_AUTH` | 추적체인 반영 대상 |
+| `CPAY` | C | Premium Option | INFRA_SERVICE | 활성(상세 정의) | `CARPAY_CTRL` | 추적체인 반영 대상 |
+| `PAK` | C | Premium Option | INFRA_SERVICE | 활성(상세 정의) | `PHONE_AS_KEY` | 추적체인 반영 대상 |
+| `OTA` | C | Premium Option | INFRA_SERVICE | 활성(상세 정의) | `OTA_MASTER` | 추적체인 반영 대상 |
 | `EDR` | C | Premium Option | INFRA_SERVICE | 활성(상세 정의) | `EDR` | 추적체인 반영 대상 |
-| `ROAD_PREVIEW_CAMERA` | C | Premium Option | PHYSICAL/DOMAIN | 활성(상세 정의) | `ROAD_PREVIEW_CAMERA` | 추적체인 반영 대상 |
-| `LIDAR` | C | Premium Option | PHYSICAL/DOMAIN | 활성(상세 정의) | `LIDAR` | 추적체인 반영 대상 |
-| `REAR_RADAR_MASTER` | C | Premium Option | PHYSICAL/DOMAIN | 활성(상세 정의) | `REAR_RADAR_MASTER` | 추적체인 반영 대상 |
-| `SURROUND_PARK_MASTER` | C | Premium Option | FUNCTION_SURFACE | 활성(상세 정의) | `SURROUND_PARK_MASTER` | 추적체인 반영 대상 |
+| `RPC` | C | Premium Option | PHYSICAL/DOMAIN | 활성(상세 정의) | `ROAD_PREVIEW_CAMERA` | 추적체인 반영 대상 |
+| `LDR` | C | Premium Option | PHYSICAL/DOMAIN | 활성(상세 정의) | `LIDAR` | 추적체인 반영 대상 |
+| `RRM` | C | Premium Option | PHYSICAL/DOMAIN | 활성(상세 정의) | `REAR_RADAR_MASTER` | 추적체인 반영 대상 |
+| `SPM` | C | Premium Option | FUNCTION_SURFACE | 활성(상세 정의) | `SURROUND_PARK_MASTER` | 추적체인 반영 대상 |
 
 
 - Placeholder ECU는 승격 전까지 상세 추적(Req/Func/Flow/Comm/Var/Test)을 강제하지 않는다.
@@ -166,7 +166,7 @@
 
 ## 네트워크 플로우 표 (공식 표준 양식)
 
-| Channel | ID hex | Symbolic Name(message name) | Byte no. | Function | Bit no. | signal name | VAL_SCENARIO_CTRL | CHS_GW | INFOTAINMENT_GW | DOMAIN_ROUTER | ETH_SW | ADAS_WARN_CTRL | NAV_CTX_MGR | EMS_POLICE_TX | EMS_AMB_TX | EMS_ALERT_RX | WARN_ARB_MGR | BODY_GW | IVI_GW | AMBIENT_CTRL | CLU_HMI_CTRL | ENG_CTRL | TCU | ACCEL_CTRL | BRK_CTRL | STEER_CTRL | HAZARD_CTRL | WINDOW_CTRL | DRV_STATE_MGR | CLU_BASE_CTRL | VAL_BASELINE_CTRL | [비고] |
+| Channel | ID hex | Symbolic Name(message name) | Byte no. | Function | Bit no. | signal name | VAL_SCENARIO_CTRL | CHS_GW | INFOTAINMENT_GW | DOMAIN_ROUTER | ETHB | ADAS_WARN_CTRL | NAV_CTX_MGR | EMS_POLICE_TX | EMS_AMB_TX | EMS_ALERT_RX | WARN_ARB_MGR | BODY_GW | IVI_GW | AMBIENT_CTRL | CLU_HMI_CTRL | ENG_CTRL | TCU | ACCEL_CTRL | BRK_CTRL | STEER_CTRL | HAZARD_CTRL | WINDOW_CTRL | DRV_STATE_MGR | CLU_BASE_CTRL | VAL_BASELINE_CTRL | [비고] |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | Chassis CAN | 0x2A0 | frmVehicleStateCanMsg | 0 | Vehicle State Check | 0~7 | vehicleSpeed | Tx | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | CAN, 100ms |
 |  |  |  | 1 | Vehicle State Check | 8~9 | driveState | Tx | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
@@ -421,19 +421,41 @@
 
 ---
 
+## 신규 활성 메시지 누락 보강표 (2026-03-10)
+
+| Domain | Flow/Comm | Message(ID) | 주요 Signal | Tx Node | 집계/주 수신 노드 | 연결 Func/Req | 보강 사유 |
+|---|---|---|---|---|---|---|---|
+| Powertrain CAN | Flow_204 / Comm_204 | frmObcStateMsg(0x132) | ObcState, AcPlugState, ChargePowerKw | OBC | DOMAIN_ROUTER | Func_167 / Req_167 | 활성 ECU 반영 누락 보강 |
+| Powertrain CAN | Flow_204 / Comm_204 | frmDcdcStateMsg(0x133) | DcdcMode, LvOutputVolt, LvOutputCurr | DCDC | DOMAIN_ROUTER | Func_167 / Req_167 | 활성 ECU 반영 누락 보강 |
+| Powertrain CAN | Flow_204 / Comm_204 | frmMcuStateMsg(0x134) | McuState, MotorTorqueCmd, MotorSpeedRpm | MCU | DOMAIN_ROUTER | Func_167 / Req_167 | 활성 ECU 반영 누락 보강 |
+| Powertrain CAN | Flow_204 / Comm_204 | frmInverterStateMsg(0x135) | InverterState, InvTemp, DcLinkVolt | INVERTER | DOMAIN_ROUTER | Func_167 / Req_167 | 활성 ECU 반영 누락 보강 |
+| Powertrain CAN | Flow_204 / Comm_204 | frm4wdStateMsg(0x136) | Mode4wd, CenterClutchState, TorqueSplitFront | _4WD | DOMAIN_ROUTER | Func_167 / Req_167 | 활성 ECU 반영 누락 보강 |
+| Powertrain CAN | Flow_204 / Comm_204 | frmBatBmsStateMsg(0x137) | BmsState, PackSoc, PackTemp | BAT_BMS | DOMAIN_ROUTER | Func_167 / Req_167 | 활성 ECU 반영 누락 보강 |
+| Powertrain CAN | Flow_204 / Comm_204 | frmFpcmStateMsg(0x138) | FpcmState, PumpDuty, LinePressure | FPCM | DOMAIN_ROUTER | Func_168 / Req_168 | 활성 ECU 반영 누락 보강 |
+| Powertrain CAN | Flow_204 / Comm_204 | frmLvrStateMsg(0x139) | LeverPosition, LeverValid, ParkLockCmd, LeverState | LVR | DOMAIN_ROUTER | Func_168 / Req_168 | 활성 ECU 반영 누락 보강 |
+| Powertrain CAN | Flow_204 / Comm_204 | frmIsgStateMsg(0x13A) | IsgState, RestartReady, RecuperationLvl | ISG | DOMAIN_ROUTER | Func_168 / Req_168 | 활성 ECU 반영 누락 보강 |
+| Powertrain CAN | Flow_204 / Comm_204 | frmEopStateMsg(0x13B) | EopState, PumpRpm, OilPressure | EOP | DOMAIN_ROUTER | Func_168 / Req_168 | 활성 ECU 반영 누락 보강 |
+| Powertrain CAN | Flow_204 / Comm_204 | frmEwpStateMsg(0x13C) | EwpState, PumpDuty, CoolantFlow | EWP | DOMAIN_ROUTER | Func_168 / Req_168 | 활성 ECU 반영 누락 보강 |
+| Powertrain CAN | Flow_204 / Comm_204 | frmChargePortCtrlStateMsg(0x13D) | PortLockState, PlugState, ChargeEnable, ThermalState, ChargeTargetSoc | CPC | DOMAIN_ROUTER | Func_168 / Req_168 | 활성 ECU 반영 누락 보강 |
+| Body CAN | Flow_202 / Comm_202 | frmSeatDrvStateMsg(0x27B) | SeatDrvPos, SeatDrvHeatLvl, SeatDrvVentLvl | SEAT_DRV | BODY_GW | Func_114 / Req_113 | 활성 ECU 반영 누락 보강 |
+| Body CAN | Flow_202 / Comm_202 | frmSeatPassStateMsg(0x27C) | SeatPassPos, SeatPassHeatLvl, SeatPassVentLvl | SEAT_PASS | BODY_GW | Func_114 / Req_113 | 활성 ECU 반영 누락 보강 |
+| Body CAN | Flow_207 / Comm_207 | frmAhlsStateMsg(0x284) | AhlsAssistState, HighBeamPermit, GlareCutLevel | AHLS | BODY_GW | Func_160 / Req_160 | 활성 ECU 반영 누락 보강 |
+
+---
+
 ## Flow 원본(Source of Truth) 매핑
 
 | 계층 | 적용 Flow ID | 원본 파일(SoT) | 유지 규칙 |
 |---|---|---|---|
 | Core CAN Profile | Flow_001, Flow_002, Flow_003(CAN), Flow_007(CAN 0x289), Flow_008(CAN 0x280), Flow_009(CAN 0x2A5) | `canoe/databases/chassis_can.dbc` + `canoe/databases/infotainment_can.dbc` + `canoe/databases/body_can.dbc` + `canoe/databases/adas_can.dbc` + `canoe/databases/eth_backbone_can_stub.dbc` | 상단 공식표와 동일 ID/Signal 유지(CAN-stub 포함) |
 | Core Ethernet Profile | Flow_001~Flow_008(Ethernet 구간) | `canoe/docs/operations/ETH_INTERFACE_CONTRACT.md` | E100/E200, 0x510/0x511/0x512 계약 우선 |
-| Chassis Domain Profile | Flow_102, Flow_106(일부), Flow_105(헬스 연계), Flow_201 | `canoe/databases/chassis_can.dbc` | 0x122~0x2A0(0x1C1 제외) 범위 준수 |
-| ADAS Domain CAN Profile | Flow_006(egress), Flow_007, Flow_008, Flow_120, Flow_121, Flow_122, Flow_130~Flow_132, Flow_201(일부) | `canoe/databases/adas_can.dbc` | 0x1C1/0x206/0x1C3~0x1C7 범위 준수 (ADAS 소유 프레임) |
-| ETH Backbone CAN Stub Profile | Flow_004, Flow_005, Flow_006, Flow_124, Flow_133 | `canoe/databases/eth_backbone_can_stub.dbc` | 0x1C0/0x1C2/0x111/0x1C8 범위 준수 |
+| Chassis Domain Profile | Flow_102, Flow_106(일부), Flow_105(헬스 연계), Flow_201, Flow_206 | `canoe/databases/chassis_can.dbc` | 0x122~0x2A0(0x1C1 제외) 범위 준수 |
+| ADAS Domain CAN Profile | Flow_006(egress), Flow_007, Flow_008, Flow_120, Flow_121, Flow_122, Flow_130~Flow_132, Flow_201(일부), Flow_209 | `canoe/databases/adas_can.dbc` | 0x1C1/0x206/0x1C3~0x1C7 범위 준수 (ADAS 소유 프레임) |
+| ETH Backbone CAN Stub Profile | Flow_004, Flow_005, Flow_006, Flow_124, Flow_133, Flow_210 | `canoe/databases/eth_backbone_can_stub.dbc` | 0x1C0/0x1C2/0x111/0x1C8 범위 준수 |
 | ADAS Object Extension Profile (Pre-Activation) | Flow_130~Flow_133 | `canoe/databases/adas_can.dbc` + `canoe/databases/eth_backbone_can_stub.dbc` + `canoe/docs/operations/ETH_INTERFACE_CONTRACT.md` (v1.2) | `Flow_130~132`는 ADAS CAN Stub(0x1C5~0x1C7), `Flow_133`은 ETH Stub(0x1C8) 운반 기준. 계약 SoT는 활성, 구현/시험은 Pre-Activation으로 관리 |
 | Powertrain Domain Profile | Flow_101, Flow_105, Flow_204 | `canoe/databases/powertrain_can.dbc` | 0x110~0x2A8 범위 준수 |
-| Body Domain Profile | Flow_103, Flow_105, Flow_202 | `canoe/databases/body_can.dbc` | 0x289~0x291, 0x277~0x292 범위 준수 |
-| Infotainment Domain Profile | Flow_104, Flow_105, Flow_203, Flow_205 | `canoe/databases/infotainment_can.dbc` | 0x2A3, 0x280~0x288, 0x289~0x295 범위 준수 |
+| Body Domain Profile | Flow_103, Flow_105, Flow_202, Flow_207 | `canoe/databases/body_can.dbc` | 0x289~0x291, 0x277~0x292 범위 준수 |
+| Infotainment Domain Profile | Flow_104, Flow_105, Flow_203, Flow_205, Flow_208 | `canoe/databases/infotainment_can.dbc` | 0x2A3, 0x280~0x288, 0x289~0x295 범위 준수 |
 
 ---
 
@@ -524,14 +546,14 @@
 
 | Domain Network | Gateway(경계 노드) | 대상 ECU/노드 | DBC 파일(정의) | ID 범위 | 연계 Flow |
 |---|---|---|---|---|---|
-| Core Integration CAN | CHS_GW, INFOTAINMENT_GW, BODY_GW, IVI_GW, ETH_SW | 경고 코어 체인 연계 노드 집합 | `canoe/databases/chassis_can.dbc` + `canoe/databases/infotainment_can.dbc` + `canoe/databases/body_can.dbc` + `canoe/databases/adas_can.dbc` + `canoe/databases/eth_backbone_can_stub.dbc` | 0x2A0/0x2A1/0x2A3/0x289/0x280/0x2A5/0x1C0/0x1C2/0x206 | Flow_001~Flow_009 |
-| Chassis CAN | CHS_GW | ACCEL_CTRL, BRK_CTRL, STEER_CTRL, ADAS_WARN_CTRL 입력 경로 | `canoe/databases/chassis_can.dbc` | 0x122~0x2A0(0x1C1 제외) | Flow_001, Flow_002, Flow_102, Flow_106, Flow_201, Flow_121, Flow_123 |
+| Core Integration CAN | CHS_GW, INFOTAINMENT_GW, BODY_GW, IVI_GW, ETHB | 경고 코어 체인 연계 노드 집합 | `canoe/databases/chassis_can.dbc` + `canoe/databases/infotainment_can.dbc` + `canoe/databases/body_can.dbc` + `canoe/databases/adas_can.dbc` + `canoe/databases/eth_backbone_can_stub.dbc` | 0x2A0/0x2A1/0x2A3/0x289/0x280/0x2A5/0x1C0/0x1C2/0x206 | Flow_001~Flow_009 |
+| Chassis CAN | CHS_GW | ACCEL_CTRL, BRK_CTRL, STEER_CTRL, ADAS_WARN_CTRL 입력 경로 | `canoe/databases/chassis_can.dbc` | 0x122~0x2A0(0x1C1 제외) | Flow_001, Flow_002, Flow_102, Flow_106, Flow_201, Flow_206, Flow_121, Flow_123 |
 | Powertrain CAN | DOMAIN_ROUTER | ENG_CTRL, TCU | `canoe/databases/powertrain_can.dbc` | 0x110~0x2A8 | Flow_101, Flow_105, Flow_204 |
-| Body CAN | BODY_GW | AMBIENT_CTRL, HAZARD_CTRL, WINDOW_CTRL, DRV_STATE_MGR | `canoe/databases/body_can.dbc` | 0x289~0x291, 0x277~0x292 | Flow_007, Flow_103, Flow_105, Flow_202 |
-| Infotainment CAN | INFOTAINMENT_GW, IVI_GW | NAV_CTX_MGR, CLU_HMI_CTRL, CLU_BASE_CTRL | `canoe/databases/infotainment_can.dbc` | 0x2A3, 0x280~0x288, 0x289~0x295 | Flow_003, Flow_008, Flow_104, Flow_105, Flow_203, Flow_205 |
-| ADAS Domain CAN | ETH_SW | ADAS 소유 상태/위험도/객체 확장 프레임 운반(중재 결과 포함) | `canoe/databases/adas_can.dbc` | 0x1C1, 0x206, 0x1C3~0x1C7 | Flow_120, Flow_121, Flow_130~Flow_132, Flow_201(일부) |
-| ETH Backbone CAN Stub | ETH_SW | EMS/경계/객체안전 프레임 대체 운반(라이선스 제약 대응) | `canoe/databases/eth_backbone_can_stub.dbc` | 0x1C0, 0x1C2, 0x111, 0x1C8 | Flow_004, Flow_005, Flow_006, Flow_124, Flow_133 |
-| Ethernet UDP | ETH_SW(health/freshness monitor) | EMS_ALERT(내부: EMS_POLICE_TX/EMS_AMB_TX/EMS_ALERT_RX), WARN_ARB_MGR, GW 집합(실제 forwarding은 SIL 네트워크 스택/실차 스위치) | `canoe/docs/operations/ETH_INTERFACE_CONTRACT.md` | 0x510/0x511/0x512/0xE100/0xE200 | Flow_004, Flow_005, Flow_006 |
+| Body CAN | BODY_GW | AMBIENT_CTRL, HAZARD_CTRL, WINDOW_CTRL, DRV_STATE_MGR | `canoe/databases/body_can.dbc` | 0x289~0x291, 0x277~0x292 | Flow_007, Flow_103, Flow_105, Flow_202, Flow_207 |
+| Infotainment CAN | INFOTAINMENT_GW, IVI_GW | NAV_CTX_MGR, CLU_HMI_CTRL, CLU_BASE_CTRL | `canoe/databases/infotainment_can.dbc` | 0x2A3, 0x280~0x288, 0x289~0x295 | Flow_003, Flow_008, Flow_104, Flow_105, Flow_203, Flow_205, Flow_208 |
+| ADAS Domain CAN | ETHB | ADAS 소유 상태/위험도/객체 확장 프레임 운반(중재 결과 포함) | `canoe/databases/adas_can.dbc` | 0x1C1, 0x206, 0x1C3~0x1C7 | Flow_120, Flow_121, Flow_130~Flow_132, Flow_201(일부), Flow_209 |
+| ETH Backbone CAN Stub | ETHB | EMS/경계/객체안전 프레임 대체 운반(라이선스 제약 대응) | `canoe/databases/eth_backbone_can_stub.dbc` | 0x1C0, 0x1C2, 0x111, 0x1C8 | Flow_004, Flow_005, Flow_006, Flow_124, Flow_133, Flow_210 |
+| Ethernet UDP | ETHB(health/freshness monitor) | EMS_ALERT(내부: EMS_POLICE_TX/EMS_AMB_TX/EMS_ALERT_RX), WARN_ARB_MGR, GW 집합(실제 forwarding은 SIL 네트워크 스택/실차 스위치) | `canoe/docs/operations/ETH_INTERFACE_CONTRACT.md` | 0x510/0x511/0x512/0xE100/0xE200 | Flow_004, Flow_005, Flow_006 |
 
 ---
 
@@ -548,17 +570,22 @@
 
 ---
 
-## Vehicle Baseline Phase-B 확장 Flow (Flow_201~Flow_205)
+## Vehicle Baseline Phase-B 확장 Flow (Flow_201~Flow_210)
 
 | Flow ID | Comm ID(0303 연계) | Func ID | Req ID | 관련 메시지(ID) | 주 경로 | Period | 상태 |
 |---|---|---|---|---|---|---|---|
 | Flow_201 | Comm_201 | Func_103, Func_104, Func_110 | Req_103, Req_104, Req_110 | frmEpsStateMsg(0x123), frmAbsStateMsg(0x124), frmEscStateMsg(0x125), frmTcsStateMsg(0x126), frmBrakeTempMsg(0x127), frmSteeringAngleMsg(0x128), frmWheelPulseMsg(0x104), frmSuspensionStateMsg(0x105), frmTirePressureMsg(0x106), frmChassisDiagReqMsg(0x2A4), frmChassisDiagResMsg(0x107), frmAdasChassisStatusMsg(0x1C1), frmBrakeWearMsg(0x129), frmRoadFrictionMsg(0x108) | Chassis CAN + ETH Backbone CAN Stub(0x1C1) -> CHS_GW -> 도메인 연계 노드 | 100ms + Event | Defined |
-| Flow_202 | Comm_202 | Func_106, Func_107, Func_111, Func_113, Func_114, Func_115, Func_116, Func_117, Func_118 | Req_106, Req_107, Req_111, Req_113, Req_116, Req_118 | frmHvacStateMsg(0x26A), frmHvacActuatorMsg(0x26B), frmMirrorStateMsg(0x26C), frmSeatStateMsg(0x26D), frmSeatControlMsg(0x26E), frmDoorControlMsg(0x26F), frmInteriorLightMsg(0x270), frmRainLightAutoMsg(0x271), frmBcmDiagReqMsg(0x272), frmBcmDiagResMsg(0x273), frmImmobilizerStateMsg(0x274), frmAlarmStateMsg(0x275), frmBodyGatewayStateMsg(0x276), frmBodyComfortStateMsg(0x277) | Body CAN(차체편의/실내환경/진단) -> BODY_GW -> 출력/상태 노드 | 100ms + Event | Defined |
+| Flow_202 | Comm_202 | Func_106, Func_107, Func_111, Func_113, Func_114, Func_115, Func_116, Func_117, Func_118 | Req_106, Req_107, Req_111, Req_113, Req_116, Req_118 | frmHvacStateMsg(0x26A), frmHvacActuatorMsg(0x26B), frmMirrorStateMsg(0x26C), frmSeatStateMsg(0x26D), frmSeatControlMsg(0x26E), frmDoorControlMsg(0x26F), frmInteriorLightMsg(0x270), frmRainLightAutoMsg(0x271), frmBcmDiagReqMsg(0x272), frmBcmDiagResMsg(0x273), frmImmobilizerStateMsg(0x274), frmAlarmStateMsg(0x275), frmBodyGatewayStateMsg(0x276), frmBodyComfortStateMsg(0x277), frmSeatDrvStateMsg(0x27B), frmSeatPassStateMsg(0x27C) | Body CAN(차체편의/실내환경/진단) -> BODY_GW -> 출력/상태 노드 | 100ms + Event | Defined |
 | Flow_203 | Comm_203 | Func_109, Func_111, Func_119, Func_145, Func_147, Func_153, Func_154, Func_155 | Req_109, Req_111, Req_119, Req_145, Req_147, Req_153, Req_154, Req_155 | frmAudioFocusMsg(0x289), frmVoiceAssistStateMsg(0x28A), frmMapRenderStateMsg(0x28B), frmRouteAlertMsg(0x28C), frmTrafficEventMsg(0x28D), frmPhoneProjectionMsg(0x28E), frmClusterNotifMsg(0x28F), frmMediaMetaMsg(0x291), frmSpeechTtsStateMsg(0x292), frmConnectivityStateMsg(0x293), frmClusterSyncStateMsg(0x295) | Infotainment CAN(안내/UI/연결상태) -> INFOTAINMENT_GW/IVI_GW -> NAV/HMI | 50/100ms | Defined |
-| Flow_204 | Comm_204 | Func_101, Func_102, Func_110 | Req_101, Req_102, Req_110 | frmEngineTorqueMsg(0x12E), frmEngineLoadMsg(0x12F), frmTransShiftStateMsg(0x130), frmThermalMgmtStateMsg(0x131), frmEnergyFlowStateMsg(0x10F), frmPowertrainCtrlAuthMsg(0x110) | Powertrain CAN(토크/열관리/변속상태) -> DOMAIN_ROUTER -> 엔진/변속 노드 | 100ms | Defined |
+| Flow_204 | Comm_204 | Func_101, Func_102, Func_110, Func_167, Func_168 | Req_101, Req_102, Req_110, Req_167, Req_168 | frmEngineTorqueMsg(0x12E), frmEngineLoadMsg(0x12F), frmTransShiftStateMsg(0x130), frmThermalMgmtStateMsg(0x131), frmEnergyFlowStateMsg(0x10F), frmPowertrainCtrlAuthMsg(0x110), frmObcStateMsg(0x132), frmDcdcStateMsg(0x133), frmMcuStateMsg(0x134), frmInverterStateMsg(0x135), frm4wdStateMsg(0x136), frmBatBmsStateMsg(0x137), frmFpcmStateMsg(0x138), frmLvrStateMsg(0x139), frmIsgStateMsg(0x13A), frmEopStateMsg(0x13B), frmEwpStateMsg(0x13C), frmChargePortCtrlStateMsg(0x13D) | Powertrain CAN(토크/열관리/전동동력/충전상태) -> DOMAIN_ROUTER -> 엔진/변속/전동동력 노드 | 100ms | Defined |
 | Flow_205 | Comm_205 | Func_112 | Req_112 | frmIviDiagReqMsg(0x2A7), frmIviDiagResMsg(0x290), frmIviHealthDetailMsg(0x294), frmPtDiagReqMsg(0x2AA), frmPtDiagResMsg(0x10E) | Test/Diag 경로(VAL_SCENARIO_CTRL <-> 각 도메인 GW) | Event + 100ms | Defined (Validation-only) |
+| Flow_206 | Comm_206 | Func_156,Func_157 | Req_156,Req_157 | frmEpbStateMsg(0x12A), frmVsmStateMsg(0x12B), frmEhbStateMsg(0x12C), frmEcsStateMsg(0x12D), frmCdcStateMsg(0x12E), frmAirSuspensionStateMsg(0x12F), frmRwsStateMsg(0x130) | Chassis CAN(제동/차체안정 확장 상태) -> CHS_GW -> DOMAIN_ROUTER/WARN_ARB_MGR | 100ms | Defined |
+| Flow_207 | Comm_207 | Func_158,Func_159,Func_160 | Req_158,Req_159,Req_160 | frmAflsStateMsg(0x278), frmDoorFlStateMsg(0x279), frmDoorFrStateMsg(0x27A), frmSeatDrvStateMsg(0x27B), frmSeatPassStateMsg(0x27C), frmDoorRlStateMsg(0x27D), frmDoorRrStateMsg(0x27E), frmTailgateStateMsg(0x27F), frmRearClimateStateMsg(0x280), frmSunroofStateMsg(0x281), frmHeadlampLevelStateMsg(0x282), frmCabinSensingStateMsg(0x283), frmAhlsStateMsg(0x284), frmAutoDoorCtrlStateMsg(0x285), frmPowerTailgateCtrlStateMsg(0x286), frmBiometricAuthStateMsg(0x287), frmAcuStateMsg(0x288), frmOdsStateMsg(0x289), frmMassageSeatCtrlStateMsg(0x28A) | Body CAN(출입/탑승자보호/실내편의 상태) -> BODY_GW -> DRV_STATE_MGR/AMBIENT_CTRL | 100ms | Defined |
+| Flow_208 | Comm_208 | Func_161,Func_162 | Req_161,Req_162 | frmTmuServiceStateMsg(0x296), frmHudStateMsg(0x297), frmAmpStateMsg(0x298), frmOtaMasterStateMsg(0x299), frmDigitalKeyStateMsg(0x29A), frmRseStateMsg(0x29B), frmNavModuleStateMsg(0x29C), frmPgsStateMsg(0x29D), frmPhoneAsKeyStateMsg(0x29E), frmCarpayCtrlStateMsg(0x29F) | Infotainment CAN(표시/디지털 서비스 상태) -> INFOTAINMENT_GW/IVI_GW -> CLU_HMI_CTRL | 100ms | Defined |
+| Flow_209 | Comm_209 | Func_163,Func_164,Func_165 | Req_163,Req_164,Req_165 | frmLdwsLkasStateMsg(0x1C8), frmFcaStateMsg(0x1C9), frmBcwStateMsg(0x1CA), frmLcaStateMsg(0x1CB), frmSpasStateMsg(0x1CC), frmRspaStateMsg(0x1CD), frmAvmStateMsg(0x1CE), frmFcamStateMsg(0x1CF), frmFradarStateMsg(0x1D0), frmSrrFlStateMsg(0x1D1), frmSrrFrStateMsg(0x1D2), frmParkUltrasonicStateMsg(0x1D3), frmDmsStateMsg(0x1D4), frmOmsStateMsg(0x1D5), frmSrrRlStateMsg(0x1D6), frmSrrRrStateMsg(0x1D7), frmAebDomainStateMsg(0x1D8), frmParkMasterStateMsg(0x1D9), frmRoadPreviewCameraStateMsg(0x1DA), frmRearRadarMasterStateMsg(0x1DB), frmSurroundParkMasterStateMsg(0x1DC), frmHighwayPilotStateMsg(0x1DD), frmLidarStateMsg(0x1DE), frmTrailerCtrlStateMsg(0x1DF) | ADAS CAN(주행보조/주차인지/센서가용성 상태) -> ADAS_WARN_CTRL -> WARN_ARB_MGR/DOMAIN_BOUNDARY_MGR | 100ms | Defined |
+| Flow_210 | Comm_210 | Func_166 | Req_166 | ethIboxStateMsg(0x299), ethSecurityStateMsg(0x29A), ethDiagStateMsg(0x29B), ethEdrStateMsg(0x29C), ethBackboneStateMsg(0x29D) | ETH Backbone CAN Stub(도메인 서비스 가용성 상태) -> DOMAIN_BOUNDARY_MGR -> DOMAIN_ROUTER | 100ms | Defined |
 
-- 주의: `Flow_201~Flow_205`는 도메인 분리 DBC(`*_can.dbc`)와 동기화된 확정 플로우이며, 변경 시 0303/0304를 동일 커밋에서 함께 갱신한다.
+- 주의: `Flow_201~Flow_210`는 도메인 분리 DBC(`*_can.dbc`)와 동기화된 확정 플로우이며, 변경 시 0303/0304를 동일 커밋에서 함께 갱신한다.
 
 ## V2 확장 Flow (Implemented, Flow_120~Flow_124)
 
@@ -602,7 +629,7 @@
 |---|---|---|---|
 | CAN Message | 98(도메인 확장 설계 + CAN-stub 포함) | 90~130 | 메시지 세분화 + 건강상태/진단 채널 확장 |
 | Ethernet Message Type | 12 | 12~16 | UDP 계약 유지, 리스크/감속요청/Fail-safe/객체확장 이벤트 포함 |
-| Flow ID | 20(Flow_001~009,101~106,201~205) | 20+ | 서비스/기본기능 분리 유지 |
+| Flow ID | 25(Flow_001~009,101~106,201~210) | 25+ | 서비스/기본기능 분리 유지 |
 | ECU/노드 | 20+ | 24~32 | OEM 명칭 전환 시 식별자 유지 |
 
 ---
@@ -614,7 +641,7 @@
 - `selectedAlertLevel/selectedAlertType -> frmClusterWarningMsg(0x280)` 송신 Flow가 존재해야 한다.
 - `ETH_EmergencyAlert(0xE100)` 송신/수신/해제 Flow가 존재해야 한다.
 - 타임아웃(1000ms) 해제 Flow가 존재해야 한다.
-- `ETH_SW` health/freshness 모니터 상태가 정상일 때 `BODY_GW/IVI_GW`에서 CAN 분배 Flow가 성립해야 한다.
+- `ETHB` health/freshness 모니터 상태가 정상일 때 `BODY_GW/IVI_GW`에서 CAN 분배 Flow가 성립해야 한다.
 - `speedLimit` 신호가 `Flow_003/Comm_003`에서 `NAV_CTX_MGR`와 `ADAS_WARN_CTRL`로 전달되어야 한다.
 - `Req_101~Req_107`, `Req_109~Req_119`는 `Flow_101~Flow_106`, `Flow_201~Flow_205`에서 누락 없이 연결되어야 한다.
 - `Req_120~Req_121`, `Req_123`, `Req_125~Req_129`는 `Flow_120~Flow_124`로 구현 추적을 유지하고, 변경 시 0303/0304/05~07을 동일 커밋으로 동기화한다.
@@ -640,7 +667,7 @@
 
 | 버전 | 날짜 | 변경 사항 |
 |---|---|---|
-| 3.31 | 2026-03-09 | 03~0304 정합 점검 반영: `ETH_BACKBONE` 표기(`ETH_SW(Health/Freshness monitor)`)를 통일하고, 개정 이력 `3.17` 중복 항목을 단일 행으로 병합해 버전 이력 해석 충돌을 해소. |
+| 3.31 | 2026-03-09 | 03~0304 정합 점검 반영: `ETHB` 표기(`ETHB(Health/Freshness monitor)`)를 통일하고, 개정 이력 `3.17` 중복 항목을 단일 행으로 병합해 버전 이력 해석 충돌을 해소. |
 | 3.30 | 2026-03-09 | Dev1 최종 승격(`1fda129`) 동기화: OEM100 상태를 `99 활성/1 미구현(NIGHT_VISION)`으로 갱신하고 Flow owner/추적 경계를 최신 runtime anchor 기준으로 반영. |
 | 3.29 | 2026-03-09 | Dev1 추가 승격(`f61cb26`, rebased from `e4f69a2`) 동기화: `VSM/EHB/ECS/CDC`를 활성(상세 정의)로 전환하고 OEM100 전수표를 `38 활성/62 미구현`으로 갱신. |
 | 3.28 | 2026-03-09 | Dev1 추가 승격(`2216335`) 동기화: `DOOR_FL/DOOR_FR/SEAT_DRV/SEAT_PASS`를 활성(상세 정의)로 전환하고 OEM100 전수표를 `34 활성/66 미구현`으로 갱신. |
@@ -667,7 +694,7 @@
 | 2.0 | 2026-02-25 | 공식 표준 양식 기반으로 전면 재작성. CAN+Ethernet 범위 고정, OTA/UDS/DoIP 항목 제거, Flow/Func/Req 추적 표 추가 |
 | 2.1 | 2026-02-25 | 공식 0302 표준 샘플 구조에 맞춰 상단 표를 재정렬하고, 하단 추적 표에 Comm 연계/메시지 ID/활성·해제 조건을 보강 |
 | 2.2 | 2026-02-25 | 실문서 이관 시 Bit no. 행 단위(0/1/2...)로 확장 작성해야 함을 상단 공식표 하단 주석으로 추가 |
-| 2.3 | 2026-02-25 | 옵션1 아키텍처(ETH_SW + 도메인 GW + 도메인 CAN)로 네트워크 플로우 전면 통일 |
+| 2.3 | 2026-02-25 | 옵션1 아키텍처(ETHB + 도메인 GW + 도메인 CAN)로 네트워크 플로우 전면 통일 |
 | 2.4 | 2026-02-25 | 상단 공식표 Bit no.를 개별 비트 행(0/1/2/...)으로 전개하고, GW/ETH/CAN 장애 처리 규칙 섹션 추가 |
 | 2.5 | 2026-02-26 | Cluster 경고 메시지(0x280) 채널을 Infotainment CAN으로 정합화(IVI_GW -> CLU_HMI_CTRL 경로 기준) |
 | 2.6 | 2026-02-26 | Flow_006 단계 분해 표(E100 Ingress / E200 Egress) 추가로 감사 해석 모호성 제거 |

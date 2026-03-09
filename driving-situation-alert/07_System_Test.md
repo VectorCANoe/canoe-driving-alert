@@ -3,8 +3,8 @@
 **Document ID**: PROJ-07-ST
 **ISO 26262 Reference**: Part 4, Cl.10 (System Integration and System Qualification Test)
 **ASPICE Reference**: SYS.5 (System Qualification Test)
-**Version**: 5.19
-**Date**: 2026-03-06
+**Version**: 5.22
+**Date**: 2026-03-09
 **Status**: Draft
 **Project Title**: 주행 상황 실시간 경고 시스템
 **Subtitle**: 구간 정보 및 긴급차량 접근 기반 앰비언트·클러스터 경보
@@ -35,6 +35,38 @@
 - 차량 경보 편의 확장(`Req_140~Req_147`)은 Pre-Activation(설계 선반영) ST 항목(`ST_BASE_ALERT_EXT_001`)으로 분리 관리한다.
 - 경고 강건성·인지성 확장(`Req_148~Req_155`)은 Pre-Activation(설계 선반영) ST 항목(`ST_BASE_ROBUST_EXT_001`)으로 분리 관리한다.
 - Panel 검증은 `차량 화면 -> 제어 패널 -> 상태 모니터` 순서로 수행하고, 시스템 동작 확인은 차량 화면 기준으로 판정한다.
+
+---
+
+## 시나리오 확장 원칙 (OEM100 Surface ECU)
+
+### 핵심 원칙
+
+- Surface ECU가 증가해도 ST의 핵심 사용자 시나리오 축(`구간`, `긴급`, `중재`, `기본차량`, `확장`)은 유지한다.
+- ST는 ECU 개수 기반이 아니라 사용자 관찰 결과 기반으로 설계한다.
+- 신규 Active Surface가 기존 시나리오 경로에 편입되면 기존 ST에 흡수하고, 사용자 관찰 결과가 달라질 때만 ST를 추가한다.
+- Placeholder Surface는 ST 실행 대상이 아니라 `Planned` 상태로 유지한다.
+
+### ST 운영 매핑 (요약)
+
+| 분류 | ST 반영 방식 | 대표 ST |
+|---|---|---|
+| Active Surface ECU | 기존 E2E 시나리오에 흡수하여 검증 | `ST_SPEED_001`, `ST_EMS_001`, `ST_POLICY_001`, `ST_BASE_001` |
+| Validation Harness | 검증 전용 시나리오로 분리 검증 | `ST_SIL_001`, `ST_SIL_002`, `ST_RESULT_001`, `ST_BASE_DIAG_001` |
+| Placeholder Surface ECU | 구현 완료 전까지 Planned 유지 | `ST_ADAS_OBJ_001`, `ST_BASE_ALERT_EXT_001`, `ST_BASE_ROBUST_EXT_001` |
+
+### OEM100 Surface 상세-ST 매핑 (실제 본문 운영)
+
+| 그룹 | Surface ECU(실명) | ST 커버 방식 | 주요 ST ID |
+|---|---|---|---|
+| A1 Infrastructure/Integration | `CGW`, `ETH_BACKBONE`, `DCM`, `IBOX`, `SGW` | 시스템 경계/인수/진단 시나리오 커버 | `ST_SIL_001`, `ST_SIL_002`, `ST_BASE_DIAG_001`, `ST_OEM_SURFACE_001` |
+| A2 Powertrain | `EMS`, `TCU`, `VCU`, `_4WD`, `BAT_BMS`, `FPCM`, `LVR`, `ISG`, `EOP`, `EWP` | 동력계/기어/상태 연계 시나리오 커버 | `ST_BASE_PT_001`, `ST_BASE_EXT_PT_002`, `ST_BASE_001` |
+| A3 Chassis/Safety | `ESC`, `MDPS`, `ABS`, `EPB`, `TPMS`, `SAS`, `ECS`, `ACU`, `ODS`, `VSM`, `EHB`, `CDC` | 제동/조향/무조향/안전 연계 시나리오 커버 | `ST_BASE_CH_001`, `ST_STEER_001`, `ST_BASE_001` |
+| A4 Body/Comfort | `BCM`, `DATC`, `SMK`, `AFLS`, `AHLS`, `WIPER_MODULE`, `SUNROOF_MODULE`, `DOOR_FL`, `DOOR_FR`, `DOOR_RL`, `DOOR_RR`, `TAILGATE_MODULE`, `SEAT_DRV`, `SEAT_PASS`, `MIRROR_MODULE`, `BODY_SECURITY_MODULE` | 바디/편의 상태 시나리오 커버 | `ST_BASE_BODY_001`, `ST_BASE_EXT_BODY_001`, `ST_BASE_EXT_BODY_002`, `ST_BASE_001` |
+| A5 IVI/HMI/Connectivity | `IVI`, `CLU`, `HUD`, `TMU`, `AMP`, `PGS`, `NAV_MODULE`, `VOICE_ASSIST`, `RSE`, `DIGITAL_KEY` | 표시/HMI/인지성 시나리오 커버 | `ST_POLICY_001`, `ST_BASE_IVI_001`, `ST_BASE_EXT_IVI_001` |
+| A6 ADAS/V2X/Parking | `ADAS`, `V2X`, `SCC`, `LDWS_LKAS`, `FCA`, `BCW`, `LCA`, `SPAS`, `RSPA`, `AVM`, `FCAM`, `FRADAR`, `SRR_FL`, `SRR_FR`, `SRR_RL`, `SRR_RR`, `PARK_ULTRASONIC`, `DMS`, `OMS` | 핵심 경보/중재/객체위험 시나리오 커버 | `ST_SPEED_001`, `ST_EMS_001`, `ST_EMS_002`, `ST_V2_RISK_001`, `ST_ADAS_OBJ_001` |
+| B Validation Harness | `VALIDATION_HARNESS` | 검증 실행/판정 시나리오 커버 | `ST_SIL_001`, `ST_RESULT_001`, `ST_BASE_DIAG_001` |
+| C Premium Option | `OBC`, `DCDC`, `MCU`, `INVERTER`, `CHARGE_PORT_CTRL`, `AIR_SUSPENSION`, `RWS`, `NIGHT_VISION`, `AEB_DOMAIN`, `HIGHWAY_PILOT`, `PARK_MASTER`, `TRAILER_CTRL`, `HEADLAMP_LEVELING`, `AUTO_DOOR_CTRL`, `POWER_TAILGATE_CTRL`, `MASSAGE_SEAT_CTRL`, `REAR_CLIMATE_MODULE`, `CABIN_SENSING`, `BIOMETRIC_AUTH`, `CARPAY_CTRL`, `PHONE_AS_KEY`, `OTA_MASTER`, `EDR`, `ROAD_PREVIEW_CAMERA`, `LIDAR`, `REAR_RADAR_MASTER`, `SURROUND_PARK_MASTER` | 기존 ST 체인 흡수, 미구현 1개 Planned 유지 | `ST_BASE_EXT_PT_002`, `ST_BASE_EXT_CH_002`, `ST_BASE_EXT_BODY_002`, `ST_BASE_EXT_IVI_002`, `ST_ADAS_EXT_STATE_001`, `ST_BACKBONE_STATE_001`, `ST_BASE_ALERT_EXT_001`, `ST_BASE_ROBUST_EXT_001`, `ST_OEM_PREMIUM_001` |
 
 ---
 
@@ -70,7 +102,15 @@
 | ST_ADAS_OBJ_001 | 객체 목록 기반 TTC/교차로/합류 위험 경고와 신뢰도 저하 강등/이벤트 기록이 일관되게 동작하는지 확인한다. (Pre-Activation) | Planned |  |  |
 | ST_BASE_ALERT_EXT_001 | 방향지시등/주행모드/안전벨트 입력 기반 경보 보정, 접근거리 표시, 이벤트 기록·조회, 표시/음량 설정 반영이 E2E로 일관되게 동작하는지 확인한다. (Pre-Activation) | Planned |  |  |
 | ST_BASE_ROBUST_EXT_001 | 입력 유효성/신선도 보호, 상태전이 안정화, 채널 가용성·대체 출력, 오디오 경합/팝업 과밀/채널 동기 복원 정책이 E2E로 일관되게 동작하는지 확인한다. (Pre-Activation) | Planned |  |  |
-| ST_BASE_001 | 차량 기본 기능(시동/기어/가감속/조향/비상등/창문/기본표시/도메인경계)이 시스템 수준에서 일관되게 동작하는지 확인한다. |  |  |  |
+| ST_BASE_EXT_CH_002 | 전동 주차/제동 보조 및 차체안정 상태가 시스템 시나리오에서 경고 맥락으로 일관되게 반영되는지 확인한다. | Ready |  |  |
+| ST_BASE_EXT_BODY_002 | 출입 개폐/탑승자 보호/실내 편의 상태가 시스템 시나리오에서 일관되게 반영되는지 확인한다. | Ready |  |  |
+| ST_BASE_EXT_IVI_002 | 표시/음향/디지털 접근 서비스 상태가 시스템 시나리오에서 표시/HMI/안내 정책에 일관되게 반영되는지 확인한다. | Ready |  |  |
+| ST_ADAS_EXT_STATE_001 | 주행 보조/주차 인지/센서 가용성 상태가 시스템 시나리오에서 위험/가용성 판단으로 일관되게 반영되는지 확인한다. | Ready |  |  |
+| ST_BACKBONE_STATE_001 | 백본 및 도메인 서비스 가용성 상태가 시스템 시나리오에서 경계 가용성/강등 정책으로 일관되게 반영되는지 확인한다. | Ready |  |  |
+| ST_BASE_EXT_PT_002 | 구동/전력변환 및 변속·열관리·충전 인터페이스 상태가 시스템 시나리오에서 구동 준비/서비스 경고 맥락으로 일관되게 반영되는지 확인한다. | Ready |  |  |
+| ST_BASE_001 | 차량 기본 기능(시동/기어/가감속/조향/비상등/창문/기본표시/도메인경계 + Body/IVI/Powertrain 확장 상태)이 시스템 수준에서 일관되게 동작하는지 확인한다. |  |  |  |
+| ST_OEM_SURFACE_001 | OEM100 Active Surface ECU 그룹(A1~A6, B)에서 경계/소유권/헬스 상태가 시스템 시나리오에서 일관되게 유지되는지 확인한다. | Planned |  |  |
+| ST_OEM_PREMIUM_001 | Premium Option 그룹(C) 활성 ECU가 기존 경고/표시/강건성 시나리오에 편입될 때 사용자 관찰 결과가 기존 요구를 위반하지 않는지 확인한다. (`NIGHT_VISION` 제외) | Planned |  |  |
 
 ---
 
@@ -106,7 +146,15 @@
 | ST_ADAS_OBJ_001 | Req_130,Req_131,Req_132,Req_133,Req_134,Req_135,Req_136,Req_137,Req_138,Req_139 | VC_130,VC_131,VC_132,VC_133,VC_134,VC_135,VC_136,VC_137,VC_138,VC_139 | Func_130,Func_131,Func_132,Func_133,Func_134,Func_135,Func_136,Func_137,Func_138,Func_139 | Flow_130,Flow_131,Flow_132,Flow_133 / Comm_130,Comm_131,Comm_132,Comm_133 | Var_330,Var_331,Var_332,Var_333,Var_334,Var_335,Var_336,Var_337,Var_338,Var_339 | IT_ADAS_OBJ_001 | 객체 입력 반영 `100ms`, 경고/강등 반영 `150ms`, 이벤트 기록 누락 0건 및 우선순위 결정론 유지(Pre-Activation) |
 | ST_BASE_ALERT_EXT_001 | Req_140,Req_141,Req_142,Req_143,Req_144,Req_145,Req_146,Req_147 | VC_140,VC_141,VC_142,VC_143,VC_144,VC_145,VC_146,VC_147 | Func_140,Func_141,Func_142,Func_143,Func_144,Func_145,Func_146,Func_147 | Flow_103,Flow_104,Flow_105,Flow_203,Flow_006,Flow_008 / Comm_103,Comm_104,Comm_105,Comm_203,Comm_006,Comm_008 | Var_009,Var_012,Var_024,Var_029,Var_133,Var_138,Var_139,Var_141,Var_155,Var_164,Var_166,Var_167,Var_168,Var_191,Var_192,Var_193,Var_268,Var_281,Var_282 | IT_BASE_ALERT_EXT_001 | 맥락 보정/거리 표시/이력 조회/설정 반영 체인이 E2E에서 수치 기준(`150ms`,`200ms`)과 기록 기준(누락 0건)을 충족(Pre-Activation) |
 | ST_BASE_ROBUST_EXT_001 | Req_148,Req_149,Req_150,Req_151,Req_152,Req_153,Req_154,Req_155 | VC_148,VC_149,VC_150,VC_151,VC_152,VC_153,VC_154,VC_155 | Func_148,Func_149,Func_150,Func_151,Func_152,Func_153,Func_154,Func_155 | Flow_130,Flow_133,Flow_006,Flow_007,Flow_008,Flow_104,Flow_105,Flow_124,Flow_203 / Comm_130,Comm_133,Comm_006,Comm_007,Comm_008,Comm_104,Comm_105,Comm_124,Comm_203 | Var_330,Var_333,Var_334,Var_016,Var_020,Var_021,Var_024,Var_027,Var_028,Var_166,Var_167,Var_168,Var_180,Var_268,Var_269,Var_289,Var_296,Var_297,Var_326,Var_327,Var_328,Var_282 | IT_BASE_ROBUST_EXT_001 | 입력 유효성 필터링 `100ms`, stale/전이 안정화 `150ms`, 채널 가용성·대체 출력 `150ms`, 오디오 경합·팝업 과밀·채널 동기 복원 `150ms` 기준 충족(Pre-Activation) |
-| ST_BASE_001 | Req_101~Req_107,Req_109~Req_119 | VC_101~VC_107,VC_109~VC_119 | Func_101~Func_107,Func_109~Func_119 | Flow_101~Flow_106,Flow_201~Flow_205 / Comm_101~Comm_106,Comm_201~Comm_205 | Var_101~Var_314 | IT_BASE_001, IT_BASE_PT_001, IT_BASE_CH_001, IT_BASE_BODY_001, IT_BASE_IVI_001, IT_BASE_EXT_BODY_001, IT_BASE_EXT_IVI_001, IT_BASE_DIAG_001 | 차량 기본 기능 E2E 시나리오에서 입력/상태/표시/경계/판정 체인이 일관되게 유지 |
+| ST_BASE_EXT_CH_002 | Req_156,Req_157 | VC_156,VC_157 | Func_156,Func_157 | Flow_206 / Comm_206 | Var_340,Var_341,Var_342,Var_343 | IT_BASE_EXT_CH_002 | 제동/차체안정 상태가 `150ms` 이내 경고 맥락에 반영되고 상태 누락 0건 |
+| ST_BASE_EXT_BODY_002 | Req_158,Req_159,Req_160 | VC_158,VC_159,VC_160 | Func_158,Func_159,Func_160 | Flow_207 / Comm_207 | Var_344,Var_345,Var_346,Var_367 | IT_BASE_EXT_BODY_002 | 출입/탑승자보호/실내편의 상태가 `150ms` 이내 정책 반영되고 상태 누락 0건 |
+| ST_BASE_EXT_IVI_002 | Req_161,Req_162 | VC_161,VC_162 | Func_161,Func_162 | Flow_208 / Comm_208 | Var_347,Var_348,Var_349 | IT_BASE_EXT_IVI_002 | 표시/음향/디지털 접근 서비스 상태가 `150ms` 이내 표시/안내 정책 반영 |
+| ST_ADAS_EXT_STATE_001 | Req_163,Req_164,Req_165 | VC_163,VC_164,VC_165 | Func_163,Func_164,Func_165 | Flow_209 / Comm_209 | Var_350,Var_351,Var_352 | IT_ADAS_EXT_STATE_001 | 주행보조/주차인지/센서가용성 상태 수신 `100ms`, 위험/강등 정책 반영 `150ms` 기준 충족 |
+| ST_BACKBONE_STATE_001 | Req_166 | VC_166 | Func_166 | Flow_210 / Comm_210 | Var_353,Var_326,Var_328 | IT_BACKBONE_STATE_001 | 백본/도메인 서비스 상태가 `100ms` 이내 경계 가용성/강등 정책에 반영 |
+| ST_BASE_EXT_PT_002 | Req_167,Req_168 | VC_167,VC_168 | Func_167,Func_168 | Flow_204 / Comm_204 | Var_354~Var_366 | IT_BASE_EXT_PT_002 | 구동/전력변환 및 변속·열관리·충전 인터페이스 상태가 `150ms` 이내 구동 준비/서비스 경고 맥락에 반영되고 상태 누락 0건 |
+| ST_BASE_001 | Req_101~Req_107,Req_109~Req_119,Req_167,Req_168 | VC_101~VC_107,VC_109~VC_119,VC_167,VC_168 | Func_101~Func_107,Func_109~Func_119,Func_167,Func_168 | Flow_101~Flow_106,Flow_201~Flow_205 / Comm_101~Comm_106,Comm_201~Comm_205 | Var_101~Var_314,Var_354~Var_367 | IT_BASE_001, IT_BASE_PT_001, IT_BASE_EXT_PT_002, IT_BASE_CH_001, IT_BASE_BODY_001, IT_BASE_IVI_001, IT_BASE_EXT_BODY_001, IT_BASE_EXT_IVI_001, IT_BASE_DIAG_001 | 차량 기본 기능 E2E 시나리오에서 입력/상태/표시/경계/판정 체인이 일관되게 유지 |
+| ST_OEM_SURFACE_001 | Req_041,Req_042,Req_043,Req_110,Req_111,Req_151,Req_152 | VC_041,VC_042,VC_043,VC_110,VC_111,VC_151,VC_152 | Func_041,Func_042,Func_043,Func_110,Func_111,Func_151,Func_152 | Flow_009,Flow_105,Flow_106,Flow_124,Flow_205 / Comm_009,Comm_105,Comm_106,Comm_124,Comm_205 | Var_025,Var_026,Var_118~Var_120,Var_169~Var_171,Var_172~Var_174,Var_180,Var_326~Var_328 | IT_OEM_SURFACE_001, IT_SIL_001 | Active Surface 그룹 경계/헬스/가용성 판정이 누락 없이 유지되고 대체 출력 규칙 위반 0건 |
+| ST_OEM_PREMIUM_001 | Req_113,Req_116,Req_118,Req_119,Req_140,Req_141,Req_142,Req_146,Req_147,Req_153,Req_154,Req_155 | VC_113,VC_116,VC_118,VC_119,VC_140,VC_141,VC_142,VC_146,VC_147,VC_153,VC_154,VC_155 | Func_113,Func_116,Func_118,Func_119,Func_140,Func_141,Func_142,Func_146,Func_147,Func_153,Func_154,Func_155 | Flow_202,Flow_203,Flow_103,Flow_104,Flow_105,Flow_008 / Comm_202,Comm_203,Comm_103,Comm_104,Comm_105,Comm_008 | Var_133,Var_138,Var_139,Var_141,Var_155,Var_164,Var_166,Var_167,Var_168,Var_191,Var_192,Var_193,Var_268,Var_281,Var_282,Var_289,Var_296,Var_297 | IT_OEM_PREMIUM_001, IT_BASE_ALERT_EXT_001 | Premium Active ECU 편입 후에도 경고 인지/설정/강건성 기준 위반 0건, `NIGHT_VISION`은 Planned 상태 유지 |
 
 ---
 
@@ -131,6 +179,9 @@
 
 | 버전 | 날짜 | 변경 사항 |
 |---|---|---|
+| 5.22 | 2026-03-09 | OEM100 ST-IT 정합 보강: `ST_OEM_SURFACE_001`, `ST_OEM_PREMIUM_001`의 선행 IT를 `IT_OEM_SURFACE_001`, `IT_OEM_PREMIUM_001` 중심으로 동기화. |
+| 5.21 | 2026-03-09 | 본문 실내용 보강: `OEM100 Surface 상세-ST 매핑` 표를 추가하고, `ST_OEM_SURFACE_001`, `ST_OEM_PREMIUM_001` 시나리오 및 추적 상세를 신설. |
+| 5.20 | 2026-03-09 | OEM100 시스템 검증 원칙 보강: `시나리오 확장 원칙` 섹션을 추가해 Surface 확장 시 ST 운영 기준(핵심 시나리오 축 유지, Active/Validation/Placeholder 분리)을 명시. |
 | 5.19 | 2026-03-06 | Legacy 누락군 보강: `Req_018/036/038/039/108/114/115/117/122/124` 상속 관계를 `Legacy Req 상속 매핑` 섹션으로 추가해 ST 추적 누락을 해소. |
 | 5.18 | 2026-03-06 | 경고 강건성·인지성 확장(Pre-Activation) 반영: `ST_BASE_ROBUST_EXT_001` 추가, `Req_148~Req_155`/`Flow·Comm_130·133·006·007·008·104·105·124·203`/`Var_016...334` 추적을 동기화. |
 | 5.17 | 2026-03-06 | 차량 경보 편의 확장(Pre-Activation) 반영: `ST_BASE_ALERT_EXT_001` 추가, `Req_140~Req_147`/`Flow·Comm_103·104·105·203·006·008`/`Var_133...282` 추적을 동기화. |

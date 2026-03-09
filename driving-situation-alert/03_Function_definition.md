@@ -106,6 +106,19 @@
 | ECU 동작 | 표시 방식/음량 설정 반영 | 경보 표시 방식/음량 설정을 HMI 출력 정책에 반영 | 차량 경보 편의 확장(Planned) | Req_146,Req_147 / Flow_104,Flow_203 / Comm_104,Comm_203 / ST_BASE_ALERT_EXT_001 |
 | ECU 동작 | 경고 입력 유효성/신선도 보호 | 경고 판정 입력의 유효성/신선도를 검사하고 stale·저신뢰 입력에 보수 정책을 적용 | 경고 강건성·인지성 확장(Planned) | Req_148,Req_149 / Flow_130,Flow_006,Flow_105 / Comm_130,Comm_006,Comm_105 / ST_BASE_ROBUST_EXT_001 |
 | ECU 동작 | 경고 안정화/채널 가용성·대체·인지성/동기 관리 | 상태전이 안정화, 출력 채널 가용성 판정, 대체 출력 유지, 오디오 경합/팝업 과밀 제어, 채널 동기 일관성 관리 | 경고 강건성·인지성 확장(Planned) | Req_150,Req_151,Req_152,Req_153,Req_154,Req_155 / Flow_006,Flow_007,Flow_008,Flow_104,Flow_124,Flow_203 / Comm_006,Comm_007,Comm_008,Comm_104,Comm_124,Comm_203 / ST_BASE_ROBUST_EXT_001 |
+| ECU 동작 | 전동 주차/제동 보조 상태 반영 | 전동 주차 및 제동 보조 상태를 제동 관련 경고 맥락에 반영 | ECU 확장 상태 연계(Implemented) | Req_156 / Flow_206 / Comm_206 / ST_BASE_EXT_CH_002 |
+| ECU 동작 | 차체자세/조향 안정화 상태 반영 | 차체자세/현가/후륜조향 상태를 주행 안정성 경고 맥락에 반영 | ECU 확장 상태 연계(Implemented) | Req_157 / Flow_206 / Comm_206 / ST_BASE_EXT_CH_002 |
+| ECU 동작 | 출입 개폐 상태 반영 | 도어 및 테일게이트 개폐/제어 상태를 출입 개방 관련 경고 맥락에 반영 | ECU 확장 상태 연계(Implemented) | Req_158 / Flow_207 / Comm_207 / ST_BASE_EXT_BODY_002 |
+| ECU 동작 | 탑승자 보호 상태 반영 | 탑승자 감지 및 보호 상태를 탑승자 보호 경고 맥락에 반영 | ECU 확장 상태 연계(Implemented) | Req_159 / Flow_207 / Comm_207 / ST_BASE_EXT_BODY_002 |
+| ECU 동작 | 실내 편의/조명 상태 반영 | 실내 편의 및 조명 상태를 차체 편의 경고 및 표시 맥락에 반영 | ECU 확장 상태 연계(Implemented) | Req_160 / Flow_207 / Comm_207 / ST_BASE_EXT_BODY_002 |
+| ECU 동작 | 표시/음향 서비스 상태 반영 | 표시 및 음향 서비스 상태를 경고 표시/HMI 상태 판단에 반영 | ECU 확장 상태 연계(Implemented) | Req_161 / Flow_208 / Comm_208 / ST_BASE_EXT_IVI_002 |
+| ECU 동작 | 디지털 접근/차량 서비스 상태 반영 | 디지털 접근 및 차량 서비스 상태를 사용자 안내 및 서비스 경고 맥락에 반영 | ECU 확장 상태 연계(Implemented) | Req_162 / Flow_208 / Comm_208 / ST_BASE_EXT_IVI_002 |
+| ECU 동작 | 주행 보조 제어 상태 반영 | 주행 보조 제어 상태를 위험 경고 및 기능 가용성 판단에 반영 | ECU 확장 상태 연계(Implemented) | Req_163 / Flow_209 / Comm_209 / ST_ADAS_EXT_STATE_001 |
+| ECU 동작 | 주차/저속 주변인지 상태 반영 | 주차 보조 및 저속 주변인지 상태를 주차 관련 경고와 기능 가용성 판단에 반영 | ECU 확장 상태 연계(Implemented) | Req_164 / Flow_209 / Comm_209 / ST_ADAS_EXT_STATE_001 |
+| ECU 동작 | 인지 센서 상태 반영 | 인지 센서 상태를 위험 판단 신뢰도 및 경고 강등 판단에 반영 | ECU 확장 상태 연계(Implemented) | Req_165 / Flow_209 / Comm_209 / ST_ADAS_EXT_STATE_001 |
+| ECU 동작 | 도메인 서비스 가용성 상태 반영 | 백본 및 도메인 서비스 가용성 상태를 경계 통신 가용성과 서비스 강등 정책에 반영 | ECU 확장 상태 연계(Implemented) | Req_166 / Flow_210 / Comm_210 / ST_BACKBONE_STATE_001 |
+| ECU 동작 | 구동/전력변환 상태 반영 | 구동 및 전력변환 상태를 동력 전달 가용성과 에너지 기반 경고 맥락에 반영 | ECU 확장 상태 연계(Implemented) | Req_167 / Flow_204 / Comm_204 / ST_BASE_EXT_PT_002 |
+| ECU 동작 | 변속/열관리/충전 인터페이스 상태 반영 | 변속, 열관리 및 충전 인터페이스 상태를 구동 준비 상태와 서비스 경고 맥락에 반영 | ECU 확장 상태 연계(Implemented) | Req_168 / Flow_204 / Comm_204 / ST_BASE_EXT_PT_002 |
 
 ---
 
@@ -171,7 +184,7 @@
 | Surface ECU | Group | Domain Bucket | Surface Type | 구현 상태 | Runtime Binding | 문서 반영 정책 |
 |---|---|---|---|---|---|---|
 | `CGW` | A1 | Infrastructure/Integration | INFRA_SERVICE | 활성(상세 정의) | `CGW` | 추적체인 반영 대상 |
-| `ETH_BACKBONE` | A1 | Infrastructure/Integration | INFRA_SERVICE | 활성(상세 정의) | `ETH_SW(Health/Freshness monitor)` | 추적체인 반영 대상 |
+| `ETHB` | A1 | Infrastructure/Integration | INFRA_SERVICE | 활성(상세 정의) | `ETHB(Health/Freshness monitor)` | 추적체인 반영 대상 |
 | `DCM` | A1 | Infrastructure/Integration | INFRA_SERVICE | 활성(상세 정의) | `DCM` | 추적체인 반영 대상 |
 | `IBOX` | A1 | Infrastructure/Integration | INFRA_SERVICE | 활성(상세 정의) | `IBOX` | 추적체인 반영 대상 |
 | `SGW` | A1 | Infrastructure/Integration | INFRA_SERVICE | 활성(상세 정의) | `SGW` | 추적체인 반영 대상 |
@@ -202,27 +215,27 @@
 | `SMK` | A4 | Body/Comfort | PHYSICAL/DOMAIN | 활성(상세 정의) | `SMK` | 추적체인 반영 대상 |
 | `AFLS` | A4 | Body/Comfort | PHYSICAL/DOMAIN | 활성(상세 정의) | `AFLS` | 추적체인 반영 대상 |
 | `AHLS` | A4 | Body/Comfort | PHYSICAL/DOMAIN | 활성(상세 정의) | `AHLS` | 추적체인 반영 대상 |
-| `WIPER_MODULE` | A4 | Body/Comfort | PHYSICAL/DOMAIN | 활성(상세 정의) | `WIPER_MODULE` | 추적체인 반영 대상 |
-| `SUNROOF_MODULE` | A4 | Body/Comfort | PHYSICAL/DOMAIN | 활성(상세 정의) | `SUNROOF_MODULE` | 추적체인 반영 대상 |
+| `WIP` | A4 | Body/Comfort | PHYSICAL/DOMAIN | 활성(상세 정의) | `WIPER_MODULE` | 추적체인 반영 대상 |
+| `SRF` | A4 | Body/Comfort | PHYSICAL/DOMAIN | 활성(상세 정의) | `SUNROOF_MODULE` | 추적체인 반영 대상 |
 | `DOOR_FL` | A4 | Body/Comfort | PHYSICAL/DOMAIN | 활성(상세 정의) | `DOOR_FL` | 추적체인 반영 대상 |
 | `DOOR_FR` | A4 | Body/Comfort | PHYSICAL/DOMAIN | 활성(상세 정의) | `DOOR_FR` | 추적체인 반영 대상 |
 | `DOOR_RL` | A4 | Body/Comfort | PHYSICAL/DOMAIN | 활성(상세 정의) | `DOOR_RL` | 추적체인 반영 대상 |
 | `DOOR_RR` | A4 | Body/Comfort | PHYSICAL/DOMAIN | 활성(상세 정의) | `DOOR_RR` | 추적체인 반영 대상 |
-| `TAILGATE_MODULE` | A4 | Body/Comfort | PHYSICAL/DOMAIN | 활성(상세 정의) | `TAILGATE_MODULE` | 추적체인 반영 대상 |
+| `TGM` | A4 | Body/Comfort | PHYSICAL/DOMAIN | 활성(상세 정의) | `TAILGATE_MODULE` | 추적체인 반영 대상 |
 | `SEAT_DRV` | A4 | Body/Comfort | PHYSICAL/DOMAIN | 활성(상세 정의) | `SEAT_DRV` | 추적체인 반영 대상 |
 | `SEAT_PASS` | A4 | Body/Comfort | PHYSICAL/DOMAIN | 활성(상세 정의) | `SEAT_PASS` | 추적체인 반영 대상 |
-| `MIRROR_MODULE` | A4 | Body/Comfort | PHYSICAL/DOMAIN | 활성(상세 정의) | `MIRROR_MODULE` | 추적체인 반영 대상 |
-| `BODY_SECURITY_MODULE` | A4 | Body/Comfort | PHYSICAL/DOMAIN | 활성(상세 정의) | `BODY_SECURITY_MODULE` | 추적체인 반영 대상 |
+| `MIR` | A4 | Body/Comfort | PHYSICAL/DOMAIN | 활성(상세 정의) | `MIRROR_MODULE` | 추적체인 반영 대상 |
+| `BSEC` | A4 | Body/Comfort | PHYSICAL/DOMAIN | 활성(상세 정의) | `BODY_SECURITY_MODULE` | 추적체인 반영 대상 |
 | `IVI` | A5 | IVI/HMI/Connectivity | PHYSICAL/DOMAIN | 활성(상세 정의) | `IVI` | 추적체인 반영 대상 |
 | `CLU` | A5 | IVI/HMI/Connectivity | PHYSICAL/DOMAIN | 활성(상세 정의) | `CLU` | 추적체인 반영 대상 |
 | `HUD` | A5 | IVI/HMI/Connectivity | PHYSICAL/DOMAIN | 활성(상세 정의) | `HUD` | 추적체인 반영 대상 |
 | `TMU` | A5 | IVI/HMI/Connectivity | PHYSICAL/DOMAIN | 활성(상세 정의) | `TMU` | 추적체인 반영 대상 |
 | `AMP` | A5 | IVI/HMI/Connectivity | PHYSICAL/DOMAIN | 활성(상세 정의) | `AMP` | 추적체인 반영 대상 |
 | `PGS` | A5 | IVI/HMI/Connectivity | PHYSICAL/DOMAIN | 활성(상세 정의) | `PGS` | 추적체인 반영 대상 |
-| `NAV_MODULE` | A5 | IVI/HMI/Connectivity | PHYSICAL/DOMAIN | 활성(상세 정의) | `NAV_MODULE` | 추적체인 반영 대상 |
-| `VOICE_ASSIST` | A5 | IVI/HMI/Connectivity | PHYSICAL/DOMAIN | 활성(상세 정의) | `VOICE_ASSIST` | 추적체인 반영 대상 |
+| `NAV` | A5 | IVI/HMI/Connectivity | PHYSICAL/DOMAIN | 활성(상세 정의) | `NAV_MODULE` | 추적체인 반영 대상 |
+| `VCS` | A5 | IVI/HMI/Connectivity | PHYSICAL/DOMAIN | 활성(상세 정의) | `VOICE_ASSIST` | 추적체인 반영 대상 |
 | `RSE` | A5 | IVI/HMI/Connectivity | PHYSICAL/DOMAIN | 활성(상세 정의) | `RSE` | 추적체인 반영 대상 |
-| `DIGITAL_KEY` | A5 | IVI/HMI/Connectivity | PHYSICAL/DOMAIN | 활성(상세 정의) | `DIGITAL_KEY` | 추적체인 반영 대상 |
+| `DKEY` | A5 | IVI/HMI/Connectivity | PHYSICAL/DOMAIN | 활성(상세 정의) | `DIGITAL_KEY` | 추적체인 반영 대상 |
 | `ADAS` | A6 | ADAS/V2X/Parking | PHYSICAL/DOMAIN | 활성(상세 정의) | `ADAS` | 추적체인 반영 대상 |
 | `V2X` | A6 | ADAS/V2X/Parking | PHYSICAL/DOMAIN | 활성(상세 정의) | `V2X` | 추적체인 반영 대상 |
 | `SCC` | A6 | ADAS/V2X/Parking | FUNCTION_SURFACE | 활성(상세 정의) | `SCC` | 추적체인 반영 대상 |
@@ -239,7 +252,7 @@
 | `SRR_FR` | A6 | ADAS/V2X/Parking | PHYSICAL/DOMAIN | 활성(상세 정의) | `SRR_FR` | 추적체인 반영 대상 |
 | `SRR_RL` | A6 | ADAS/V2X/Parking | PHYSICAL/DOMAIN | 활성(상세 정의) | `SRR_RL` | 추적체인 반영 대상 |
 | `SRR_RR` | A6 | ADAS/V2X/Parking | PHYSICAL/DOMAIN | 활성(상세 정의) | `SRR_RR` | 추적체인 반영 대상 |
-| `PARK_ULTRASONIC` | A6 | ADAS/V2X/Parking | PHYSICAL/DOMAIN | 활성(상세 정의) | `PARK_ULTRASONIC` | 추적체인 반영 대상 |
+| `PUS` | A6 | ADAS/V2X/Parking | PHYSICAL/DOMAIN | 활성(상세 정의) | `PARK_ULTRASONIC` | 추적체인 반영 대상 |
 | `DMS` | A6 | ADAS/V2X/Parking | PHYSICAL/DOMAIN | 활성(상세 정의) | `DMS` | 추적체인 반영 대상 |
 | `OMS` | A6 | ADAS/V2X/Parking | PHYSICAL/DOMAIN | 활성(상세 정의) | `OMS` | 추적체인 반영 대상 |
 | `VALIDATION_HARNESS` | B | Validation | VALIDATION | 활성(상세 정의) | `VAL_SCENARIO_CTRL + VAL_BASELINE_CTRL` | 추적체인 반영 대상 |
@@ -247,29 +260,29 @@
 | `DCDC` | C | Premium Option | PHYSICAL/DOMAIN | 활성(상세 정의) | `DCDC` | 추적체인 반영 대상 |
 | `MCU` | C | Premium Option | PHYSICAL/DOMAIN | 활성(상세 정의) | `MCU` | 추적체인 반영 대상 |
 | `INVERTER` | C | Premium Option | PHYSICAL/DOMAIN | 활성(상세 정의) | `INVERTER` | 추적체인 반영 대상 |
-| `CHARGE_PORT_CTRL` | C | Premium Option | PHYSICAL/DOMAIN | 활성(상세 정의) | `CHARGE_PORT_CTRL` | 추적체인 반영 대상 |
-| `AIR_SUSPENSION` | C | Premium Option | PHYSICAL/DOMAIN | 활성(상세 정의) | `AIR_SUSPENSION` | 추적체인 반영 대상 |
+| `CPC` | C | Premium Option | PHYSICAL/DOMAIN | 활성(상세 정의) | `CHARGE_PORT_CTRL` | 추적체인 반영 대상 |
+| `ASM` | C | Premium Option | PHYSICAL/DOMAIN | 활성(상세 정의) | `AIR_SUSPENSION` | 추적체인 반영 대상 |
 | `RWS` | C | Premium Option | PHYSICAL/DOMAIN | 활성(상세 정의) | `RWS` | 추적체인 반영 대상 |
 | `NIGHT_VISION` | C | Premium Option | PHYSICAL/DOMAIN | 미구현(Placeholder) | - | 승격 전 참조만, 추적체인 미부여 |
-| `AEB_DOMAIN` | C | Premium Option | FUNCTION_SURFACE | 활성(상세 정의) | `AEB_DOMAIN` | 추적체인 반영 대상 |
-| `HIGHWAY_PILOT` | C | Premium Option | FUNCTION_SURFACE | 활성(상세 정의) | `HIGHWAY_PILOT` | 추적체인 반영 대상 |
-| `PARK_MASTER` | C | Premium Option | FUNCTION_SURFACE | 활성(상세 정의) | `PARK_MASTER` | 추적체인 반영 대상 |
-| `TRAILER_CTRL` | C | Premium Option | PHYSICAL/DOMAIN | 활성(상세 정의) | `TRAILER_CTRL` | 추적체인 반영 대상 |
-| `HEADLAMP_LEVELING` | C | Premium Option | PHYSICAL/DOMAIN | 활성(상세 정의) | `HEADLAMP_LEVELING` | 추적체인 반영 대상 |
-| `AUTO_DOOR_CTRL` | C | Premium Option | PHYSICAL/DOMAIN | 활성(상세 정의) | `AUTO_DOOR_CTRL` | 추적체인 반영 대상 |
-| `POWER_TAILGATE_CTRL` | C | Premium Option | PHYSICAL/DOMAIN | 활성(상세 정의) | `POWER_TAILGATE_CTRL` | 추적체인 반영 대상 |
-| `MASSAGE_SEAT_CTRL` | C | Premium Option | PHYSICAL/DOMAIN | 활성(상세 정의) | `MASSAGE_SEAT_CTRL` | 추적체인 반영 대상 |
-| `REAR_CLIMATE_MODULE` | C | Premium Option | PHYSICAL/DOMAIN | 활성(상세 정의) | `REAR_CLIMATE_MODULE` | 추적체인 반영 대상 |
-| `CABIN_SENSING` | C | Premium Option | PHYSICAL/DOMAIN | 활성(상세 정의) | `CABIN_SENSING` | 추적체인 반영 대상 |
-| `BIOMETRIC_AUTH` | C | Premium Option | PHYSICAL/DOMAIN | 활성(상세 정의) | `BIOMETRIC_AUTH` | 추적체인 반영 대상 |
-| `CARPAY_CTRL` | C | Premium Option | INFRA_SERVICE | 활성(상세 정의) | `CARPAY_CTRL` | 추적체인 반영 대상 |
-| `PHONE_AS_KEY` | C | Premium Option | INFRA_SERVICE | 활성(상세 정의) | `PHONE_AS_KEY` | 추적체인 반영 대상 |
-| `OTA_MASTER` | C | Premium Option | INFRA_SERVICE | 활성(상세 정의) | `OTA_MASTER` | 추적체인 반영 대상 |
+| `AEB` | C | Premium Option | FUNCTION_SURFACE | 활성(상세 정의) | `AEB_DOMAIN` | 추적체인 반영 대상 |
+| `HWP` | C | Premium Option | FUNCTION_SURFACE | 활성(상세 정의) | `HIGHWAY_PILOT` | 추적체인 반영 대상 |
+| `PKM` | C | Premium Option | FUNCTION_SURFACE | 활성(상세 정의) | `PARK_MASTER` | 추적체인 반영 대상 |
+| `TRM` | C | Premium Option | PHYSICAL/DOMAIN | 활성(상세 정의) | `TRAILER_CTRL` | 추적체인 반영 대상 |
+| `HLM` | C | Premium Option | PHYSICAL/DOMAIN | 활성(상세 정의) | `HEADLAMP_LEVELING` | 추적체인 반영 대상 |
+| `ADM` | C | Premium Option | PHYSICAL/DOMAIN | 활성(상세 정의) | `AUTO_DOOR_CTRL` | 추적체인 반영 대상 |
+| `PTG` | C | Premium Option | PHYSICAL/DOMAIN | 활성(상세 정의) | `POWER_TAILGATE_CTRL` | 추적체인 반영 대상 |
+| `MSC` | C | Premium Option | PHYSICAL/DOMAIN | 활성(상세 정의) | `MASSAGE_SEAT_CTRL` | 추적체인 반영 대상 |
+| `RATC` | C | Premium Option | PHYSICAL/DOMAIN | 활성(상세 정의) | `REAR_CLIMATE_MODULE` | 추적체인 반영 대상 |
+| `CSM` | C | Premium Option | PHYSICAL/DOMAIN | 활성(상세 정의) | `CABIN_SENSING` | 추적체인 반영 대상 |
+| `BIO` | C | Premium Option | PHYSICAL/DOMAIN | 활성(상세 정의) | `BIOMETRIC_AUTH` | 추적체인 반영 대상 |
+| `CPAY` | C | Premium Option | INFRA_SERVICE | 활성(상세 정의) | `CARPAY_CTRL` | 추적체인 반영 대상 |
+| `PAK` | C | Premium Option | INFRA_SERVICE | 활성(상세 정의) | `PHONE_AS_KEY` | 추적체인 반영 대상 |
+| `OTA` | C | Premium Option | INFRA_SERVICE | 활성(상세 정의) | `OTA_MASTER` | 추적체인 반영 대상 |
 | `EDR` | C | Premium Option | INFRA_SERVICE | 활성(상세 정의) | `EDR` | 추적체인 반영 대상 |
-| `ROAD_PREVIEW_CAMERA` | C | Premium Option | PHYSICAL/DOMAIN | 활성(상세 정의) | `ROAD_PREVIEW_CAMERA` | 추적체인 반영 대상 |
-| `LIDAR` | C | Premium Option | PHYSICAL/DOMAIN | 활성(상세 정의) | `LIDAR` | 추적체인 반영 대상 |
-| `REAR_RADAR_MASTER` | C | Premium Option | PHYSICAL/DOMAIN | 활성(상세 정의) | `REAR_RADAR_MASTER` | 추적체인 반영 대상 |
-| `SURROUND_PARK_MASTER` | C | Premium Option | FUNCTION_SURFACE | 활성(상세 정의) | `SURROUND_PARK_MASTER` | 추적체인 반영 대상 |
+| `RPC` | C | Premium Option | PHYSICAL/DOMAIN | 활성(상세 정의) | `ROAD_PREVIEW_CAMERA` | 추적체인 반영 대상 |
+| `LDR` | C | Premium Option | PHYSICAL/DOMAIN | 활성(상세 정의) | `LIDAR` | 추적체인 반영 대상 |
+| `RRM` | C | Premium Option | PHYSICAL/DOMAIN | 활성(상세 정의) | `REAR_RADAR_MASTER` | 추적체인 반영 대상 |
+| `SPM` | C | Premium Option | FUNCTION_SURFACE | 활성(상세 정의) | `SURROUND_PARK_MASTER` | 추적체인 반영 대상 |
 
 
 - Placeholder ECU는 승격 전까지 상세 추적(Req/Func/Flow/Comm/Var/Test)을 강제하지 않는다.
@@ -299,7 +312,6 @@
 | Func_118 | Req_118 | BCM / DRV_STATE_MGR | 보안 상태 반영 | 이모빌라이저/경보 상태를 보안 상태로 반영 | 입력: ImmoState, AlarmArmed, AlarmTrigger, AlarmZone / 출력: DriverStateInfo |
 | Func_119 | Req_119 | CLU / CLU_HMI_CTRL | 오디오 상태 반영 | 오디오 포커스/음성비서/TTS 상태를 HMI 정책에 반영 | 입력: AudioFocusOwner, VoiceAssistState, TtsState, TtsLangId / 출력: warningTextCode |
 
----
 
 ## V2 확장 기능 상세 표 (Implemented, Phase-2)
 
@@ -353,6 +365,19 @@
 | Func_153 | Req_153 | CLU_HMI_CTRL | 오디오 경합 인지성 보호 | 오디오/음성 경합 상태를 반영해 경고 인지성 보호 정책 적용 | 입력: AudioFocusOwner, AudioDuckLevel, TtsState / 출력: warningTextCode, ClusterNotifPrio |
 | Func_154 | Req_154 | CLU_HMI_CTRL | 팝업 과밀 억제 및 우선 표시 | 복수 경고 동시 상황에서 비긴급 팝업 과밀을 억제하고 우선 경고를 선표시 | 입력: PopupType, PopupPriority, PopupActive, duplicatePopupGuard / 출력: warningTextCode, ClusterNotifPrio |
 | Func_155 | Req_155 | CLU_HMI_CTRL | 경고 채널 동기 일관성 관리 | 앰비언트/클러스터 경고 맥락 불일치 감시 및 동기 복원 | 입력: ClusterSyncState, ClusterSyncSeq, selectedAlertType, selectedAlertLevel / 출력: warningTextCode, ClusterNotifPrio |
+| Func_156 | Req_156 | CHS_GW | 전동 주차/제동 보조 상태 통합 | 전동 주차 및 제동 보조 상태를 통합해 제동 관련 경고 맥락에 반영 | 입력: EpbState, EhbState / 출력: brakeAssistExtState, selectedAlertLevel |
+| Func_157 | Req_157 | CHS_GW | 차체자세/조향 안정화 상태 통합 | 차체자세 제어, 현가, 후륜조향 상태를 통합해 주행 안정성 경고 맥락에 반영 | 입력: VsmState, EcsState, CdcState, AirSuspensionState, RwsState / 출력: chassisStabilityExtState, selectedAlertLevel |
+| Func_158 | Req_158 | BODY_GW | 출입 개폐 상태 통합 | 도어 및 테일게이트 개폐/제어 상태를 통합해 출입 개방 관련 경고 맥락에 반영 | 입력: DoorModuleStateMask, TailgateState, AutoDoorCtrlState, PowerTailgateCtrlState / 출력: closureAccessState |
+| Func_159 | Req_159 | BODY_GW | 탑승자 보호 상태 통합 | 탑승자 감지 및 보호 상태를 통합해 탑승자 보호 경고 맥락에 반영 | 입력: CabinSensingState, AcuState, OdsState, BiometricAuthState / 출력: occupantProtectionState |
+| Func_160 | Req_160 | BODY_GW | 실내 편의/조명 상태 통합 | 실내 편의 및 조명 상태를 통합해 차체 편의 경고 및 표시 맥락에 반영 | 입력: AflsState, AhlsAssistState, RearClimateState, SunroofState, HeadlampLevelState, MassageSeatState / 출력: comfortLightingState |
+| Func_161 | Req_161 | IVI_GW | 표시/음향 서비스 상태 통합 | 표시 및 음향 서비스 상태를 통합해 경고 표시/HMI 상태 판단에 반영 | 입력: HudState, AmpState, RseState, NavModuleState, PgsState / 출력: displayAudioServiceState, navigationTelematicsState |
+| Func_162 | Req_162 | IVI_GW | 디지털 접근/차량 서비스 상태 통합 | 디지털 접근 및 차량 서비스 상태를 통합해 사용자 안내 및 서비스 경고 맥락에 반영 | 입력: TmuServiceState, OtaMasterState, DigitalKeyState, PhoneAsKeyState, CarpayCtrlState / 출력: digitalAccessServiceState |
+| Func_163 | Req_163 | ADAS_WARN_CTRL | 주행 보조 제어 상태 통합 | 주행 보조 제어 상태를 통합해 위험 경고 및 기능 가용성 판단에 반영 | 입력: LaneKeepState, FcaState, BlindSpotState, AebDomainState, HighwayPilotState / 출력: drivingAssistStateExt, selectedAlertLevel |
+| Func_164 | Req_164 | ADAS_WARN_CTRL | 주차/저속 주변인지 상태 통합 | 주차 보조 및 저속 주변인지 상태를 통합해 주차 관련 경고와 기능 가용성 판단에 반영 | 입력: ParkingAssistState, TrailerCtrlState / 출력: parkingSurroundState, selectedAlertLevel |
+| Func_165 | Req_165 | ADAS_WARN_CTRL | 인지 센서 상태 통합 | 인지 센서 상태를 통합해 위험 판단 신뢰도 및 경고 강등 판단에 반영 | 입력: CameraRadarState, OccupantMonitorState, LidarState / 출력: sensorAvailabilityState, failSafeMode |
+| Func_166 | Req_166 | DOMAIN_BOUNDARY_MGR | 도메인 서비스 가용성 상태 통합 | 백본 및 도메인 서비스 가용성 상태를 통합해 경계 통신 가용성과 서비스 강등 정책에 반영 | 입력: IboxState, SecurityState, DiagState, EdrState, BackboneState / 출력: backboneServiceState, domainPathStatus, failSafeMode |
+| Func_167 | Req_167 | DOMAIN_ROUTER | 구동/전력변환 상태 통합 | 구동 및 전력변환 상태를 통합해 동력 전달 가용성과 에너지 기반 경고 맥락에 반영 | 입력: ObcChargeState, DcDcSupplyState, MotorDriveState, InverterDriveState, TorqueSplitState, BatteryEnergyState / 출력: PowertrainElectrifiedState |
+| Func_168 | Req_168 | DOMAIN_ROUTER | 변속/열관리/충전 인터페이스 상태 통합 | 변속, 열관리 및 충전 인터페이스 상태를 통합해 구동 준비 상태와 서비스 경고 맥락에 반영 | 입력: FuelPumpState, ShiftLeverExtState, IdleStopState, ThermalPumpState, ChargePortState / 출력: PowertrainAuxiliaryState |
 
 ---
 
@@ -404,7 +429,7 @@
 - 상단 표는 공식 표준 양식의 열 구성(분류/기능명/기능설명/비고/검증)을 유지한다.
 - 하단 표는 `Func/Req/노드/입출력` 기준으로 추적성을 보강한다.
 - 추적 체인: `Req -> Func -> Flow -> Comm -> Var -> Code -> UT/IT/ST`.
-- 옵션1 네트워크 전달 경로 고정: `입력 CAN -> 도메인 GW 정규화 -> ETH_SW -> 중앙 경고코어 -> 도메인 GW -> 출력 CAN`.
+- 옵션1 네트워크 전달 경로 고정: `입력 CAN -> 도메인 GW 정규화 -> ETHB -> 중앙 경고코어 -> 도메인 GW -> 출력 CAN`.
 - `Func_101~Func_107`, `Func_109~Func_119`는 차량 기본 기능 확장 체인으로, 0302/0303/0304의 Flow/Comm/Var와 최신 도메인 DBC 기준으로 동기화되어야 한다.
 - `Func_120~Func_121`, `Func_123`, `Func_125~Func_129`는 V2 확장 활성 체인으로 관리하며, 코드/DBC/05/06/07 변경을 동일 커밋 단위로 동기화한다.
 - `Func_130~Func_139`는 ADAS 객체 인지 확장 Pre-Activation 체인으로 관리하며, 구현 착수 시 0302/0303/0304/04/05/06/07을 동일 커밋 단위로 동기화한다.
@@ -424,8 +449,8 @@
 | 구분 | 내용 |
 |---|---|
 | Surface 인벤토리 | OEM100 전체 100개 (`00e` 6.4) |
-| 상세 정의 대상 | 활성 16개 Surface ECU |
-| Placeholder 정책 | 미구현 84개는 이름/상태만 유지, 승격 전 상세 추적 미부여 |
+| 상세 정의 대상 | 활성 99개 Surface ECU |
+| Placeholder 정책 | 미구현 1개(`NIGHT_VISION`)는 이름/상태만 유지, 승격 전 상세 추적 미부여 |
 | Runtime 모듈 표기 | `Func` 상세표에서 supporting trace로만 유지 |
 
 ---
@@ -434,7 +459,7 @@
 
 | 버전 | 날짜 | 변경 사항 |
 |---|---|---|
-| 4.38 | 2026-03-09 | 03~0304 정합 점검 반영: `ETH_BACKBONE` runtime 표기를 `ETH_SW(Health/Freshness monitor)`로 통일하고, Phase-1 기능표의 owner 표기를 `Surface ECU / runtime alias` 형식으로 정리해 reviewer 해석 혼선을 제거. |
+| 4.38 | 2026-03-09 | 03~0304 정합 점검 반영: `ETHB` runtime 표기를 `ETHB(Health/Freshness monitor)`로 통일하고, Phase-1 기능표의 owner 표기를 `Surface ECU / runtime alias` 형식으로 정리해 reviewer 해석 혼선을 제거. |
 | 4.37 | 2026-03-09 | Dev1 최종 승격(`1fda129`) 동기화: OEM100 상태를 `99 활성/1 미구현(NIGHT_VISION)`으로 갱신하고 활성 Surface ECU의 Func owner 표기를 최신 runtime anchor 기준으로 동기화. |
 | 4.36 | 2026-03-09 | Dev1 추가 승격(`f61cb26`, rebased from `e4f69a2`) 동기화: `VSM/EHB/ECS/CDC`를 활성(상세 정의)로 전환하고 OEM100 전수표를 `38 활성/62 미구현`으로 갱신. |
 | 4.35 | 2026-03-09 | Dev1 추가 승격(`2216335`) 동기화: `DOOR_FL/DOOR_FR/SEAT_DRV/SEAT_PASS`를 활성(상세 정의)로 전환하고 OEM100 전수표를 `34 활성/66 미구현`으로 갱신. |

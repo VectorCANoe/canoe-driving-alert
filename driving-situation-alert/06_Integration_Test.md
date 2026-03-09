@@ -3,8 +3,8 @@
 **Document ID**: PROJ-06-IT
 **ISO 26262 Reference**: Part 6, Cl.10 (Software Integration and Integration Test)
 **ASPICE Reference**: SWE.5 (Software Integration and Integration Test)
-**Version**: 4.19
-**Date**: 2026-03-06
+**Version**: 4.22
+**Date**: 2026-03-09
 **Status**: Draft
 **Project Title**: 주행 상황 실시간 경고 시스템
 **Subtitle**: 구간 정보 및 긴급차량 접근 기반 앰비언트·클러스터 경보
@@ -37,6 +37,39 @@
 
 ---
 
+## 05-06 동기화 기준 (OEM100 Surface ECU)
+
+### 동기화 원칙
+
+- 06은 Surface ECU 개별 IT를 강제하지 않고, 인터페이스 리스크 기준의 도메인/기능 묶음 IT로 커버한다.
+- Surface 수량 변경 시 IT 케이스 수를 동일 비율로 늘리지 않고, `요구 기능/인터페이스 변경`이 있을 때만 IT를 증설한다.
+- Placeholder Surface ECU는 실행 IT 대상이 아니라 `미구현(계획)` 상태로 유지하고, 컴파일/정합 확인 대상으로만 관리한다.
+- Surface ECU 최신 수량/상태는 `00e_ECU_Naming_Standard.md`를 기준으로 참조한다.
+
+### DEV2 테스트 설계 전달 규칙
+
+| 항목 | 규칙 |
+|---|---|
+| 테스트 오케스트레이션 단위 | `Req/VC`와 `Flow/Comm` 기반 묶음 IT를 기준으로 배치 실행 |
+| Surface 확장 대응 | 신규 Active Surface가 기존 Flow/Comm에 편입되면 기존 IT에 흡수, 신규 인터페이스가 생기면 IT 신설 |
+| Placeholder 대응 | 실행 실패 처리 대상이 아니라 `Not Implemented` 분류로 리포트 분리 |
+| 증적 기준 | `json/md` 산출물에서 IT ID, Req/VC, Pass/Fail, 미구현 상태를 분리 기록 |
+
+### OEM100 Surface 상세-IT 매핑 (실제 본문 운영)
+
+| 그룹 | Surface ECU(실명) | IT 커버 방식 | 주요 IT ID |
+|---|---|---|---|
+| A1 Infrastructure/Integration | `CGW`, `ETH_BACKBONE`, `DCM`, `IBOX`, `SGW` | 경계/진단/인수 검증 중심 IT | `IT_SIL_001`, `IT_BASE_DIAG_001`, `IT_BASE_001` |
+| A2 Powertrain | `EMS`, `TCU`, `VCU`, `_4WD`, `BAT_BMS`, `FPCM`, `LVR`, `ISG`, `EOP`, `EWP` | 동력/상태 전달 IT | `IT_BASE_PT_001`, `IT_BASE_EXT_PT_002`, `IT_BASE_001` |
+| A3 Chassis/Safety | `ESC`, `MDPS`, `ABS`, `EPB`, `TPMS`, `SAS`, `ECS`, `ACU`, `ODS`, `VSM`, `EHB`, `CDC` | 제동/조향/차체상태 IT | `IT_BASE_CH_001`, `IT_BASE_001` |
+| A4 Body/Comfort | `BCM`, `DATC`, `SMK`, `AFLS`, `AHLS`, `WIPER_MODULE`, `SUNROOF_MODULE`, `DOOR_FL`, `DOOR_FR`, `DOOR_RL`, `DOOR_RR`, `TAILGATE_MODULE`, `SEAT_DRV`, `SEAT_PASS`, `MIRROR_MODULE`, `BODY_SECURITY_MODULE` | 바디/편의 제어 IT | `IT_BASE_BODY_001`, `IT_BASE_EXT_BODY_001`, `IT_BASE_EXT_BODY_002`, `IT_BASE_001` |
+| A5 IVI/HMI/Connectivity | `IVI`, `CLU`, `HUD`, `TMU`, `AMP`, `PGS`, `NAV_MODULE`, `VOICE_ASSIST`, `RSE`, `DIGITAL_KEY` | HMI/표시/음향 IT | `IT_OUT_001`, `IT_BASE_IVI_001`, `IT_BASE_EXT_IVI_001` |
+| A6 ADAS/V2X/Parking | `ADAS`, `V2X`, `SCC`, `LDWS_LKAS`, `FCA`, `BCW`, `LCA`, `SPAS`, `RSPA`, `AVM`, `FCAM`, `FRADAR`, `SRR_FL`, `SRR_FR`, `SRR_RL`, `SRR_RR`, `PARK_ULTRASONIC`, `DMS`, `OMS` | 핵심 경보/중재/객체위험 IT | `IT_CORE_001`, `IT_EMS_001`, `IT_ARB_001`, `IT_V2_RISK_001`, `IT_ADAS_OBJ_001` |
+| B Validation Harness | `VALIDATION_HARNESS` | SIL 실행/판정 IT | `IT_SIL_001`, `IT_BASE_DIAG_001` |
+| C Premium Option | `OBC`, `DCDC`, `MCU`, `INVERTER`, `CHARGE_PORT_CTRL`, `AIR_SUSPENSION`, `RWS`, `NIGHT_VISION`, `AEB_DOMAIN`, `HIGHWAY_PILOT`, `PARK_MASTER`, `TRAILER_CTRL`, `HEADLAMP_LEVELING`, `AUTO_DOOR_CTRL`, `POWER_TAILGATE_CTRL`, `MASSAGE_SEAT_CTRL`, `REAR_CLIMATE_MODULE`, `CABIN_SENSING`, `BIOMETRIC_AUTH`, `CARPAY_CTRL`, `PHONE_AS_KEY`, `OTA_MASTER`, `EDR`, `ROAD_PREVIEW_CAMERA`, `LIDAR`, `REAR_RADAR_MASTER`, `SURROUND_PARK_MASTER` | 기존 IT 체인 흡수, 미구현 1개 계획 상태 | `IT_BASE_EXT_PT_002`, `IT_BASE_EXT_CH_002`, `IT_BASE_EXT_BODY_002`, `IT_BASE_EXT_IVI_002`, `IT_ADAS_EXT_STATE_001`, `IT_BACKBONE_STATE_001`, `IT_BASE_ALERT_EXT_001`, `IT_BASE_ROBUST_EXT_001` |
+
+---
+
 ## 통합 테스트 표 (공식 표준 양식)
 
 | 테스트 ID | 요구사항 ID | VC ID | 테스트 목적 | 예상 결과 | 테스트 수행 결과 | 담당자 | 일자 |
@@ -52,7 +85,7 @@
 | IT_BASE_ALERT_EXT_001 | Req_140,Req_141,Req_142,Req_143,Req_144,Req_145,Req_146,Req_147 | VC_140,VC_141,VC_142,VC_143,VC_144,VC_145,VC_146,VC_147 | 차량 경보 편의 확장(입력 맥락 보정/접근거리 표시/이벤트 기록·조회/표시·음량 설정) 체인 통합 검증 | 입력 보정 반영 `150ms`, 접근거리 표시 갱신 `200ms`, 이벤트 기록 누락 0건, 표시·음량 설정 반영 `150ms` | Planned |  |  |
 | IT_BASE_ROBUST_EXT_001 | Req_148,Req_149,Req_150,Req_151,Req_152,Req_153,Req_154,Req_155 | VC_148,VC_149,VC_150,VC_151,VC_152,VC_153,VC_154,VC_155 | 경고 강건성·인지성 확장(입력 유효성/신선도 보호, 상태전이 안정화, 채널 가용성·대체, 오디오 경합/팝업 과밀/채널 동기 복원) 체인 통합 검증 | 유효성 필터링 `100ms`, stale/전이 안정화 `150ms`, 채널 가용성 판정·대체 출력 `150ms`, 오디오 경합/과밀 억제/동기 복원 `150ms` 기준 충족 | Planned |  |  |
 | IT_SIL_001 | Req_041,Req_042,Req_043 | VC_041,VC_042,VC_043 | CANoe SIL 실행/판정 경로(TestScenario->ScenarioResult) 통합 검증 | CAN+Ethernet(또는 CAN 대체 백본) 조건에서도 시나리오 실행/결과 기록/로그 요약이 일관되게 유지된다 |  |  |  |
-| IT_BASE_001 | Req_101~Req_107,Req_109~Req_119 | VC_101~VC_107,VC_109~VC_119 | 차량 기본 기능(시동/기어/가감속/조향/비상등/창문/표시/도메인 경계 + Body/IVI 확장 상태) 통합 검증 | Flow_101~106, Flow_201~205 경로에서 기본 차량 기능 체인이 성립하고 기본 상태/표시가 일관되게 유지된다 |  |  |  |
+| IT_BASE_001 | Req_101~Req_107,Req_109~Req_119,Req_167,Req_168 | VC_101~VC_107,VC_109~VC_119,VC_167,VC_168 | 차량 기본 기능(시동/기어/가감속/조향/비상등/창문/표시/도메인 경계 + Body/IVI/Powertrain 확장 상태) 통합 검증 | Flow_101~106, Flow_201~205 경로에서 기본 차량 기능 체인이 성립하고 기본 상태/표시가 일관되게 유지된다 |  |  |  |
 | IT_BASE_PT_001 | Req_101,Req_102,Req_110 | VC_101,VC_102,VC_110 | Powertrain 도메인 기본 동력/변속/상태 경로 통합 검증 | Comm_101/204/105 경로에서 엔진/변속/동력 상태가 `100ms` 주기로 일관되게 연계된다 |  |  |  |
 | IT_BASE_CH_001 | Req_103,Req_104,Req_105,Req_110 | VC_103,VC_104,VC_105,VC_110 | Chassis 도메인 가감속/조향/제동/차체상태 경로 통합 검증 | Comm_102/201/105 경로에서 입력/상태/헬스 연계가 `100ms` 기준으로 유지된다 |  |  |  |
 | IT_BASE_BODY_001 | Req_106,Req_107,Req_111 | VC_106,VC_107,VC_111 | Body 도메인 비상등/창문/편의상태 경로 통합 검증 | Comm_103/202/105 경로에서 차체 제어 상태와 경계 라우팅이 일관되게 유지된다 |  |  |  |
@@ -60,6 +93,14 @@
 | IT_BASE_EXT_BODY_001 | Req_113,Req_116,Req_118 | VC_113,VC_116,VC_118 | Body 확장 기능(DATC/Seat/Mirror/Door/Wiper-Rain/Security) 통합 검증 | Comm_202/105 경로에서 확장 상태/제어 프레임이 `100ms` 주기로 연계되고 `150ms` 이내 정책 반영된다 |  |  |  |
 | IT_BASE_EXT_IVI_001 | Req_119 | VC_119 | Infotainment 확장 기능(Audio Focus/Voice/TTS 상태) 통합 검증 | Comm_203/105 경로에서 오디오/음성 상태가 50/100ms 규칙을 만족하고 `150ms` 이내 HMI 정책에 반영된다 |  |  |  |
 | IT_BASE_DIAG_001 | Req_112 | VC_112 | Test/Diag 결과 경로 통합 검증 | Comm_106/205(Event+100ms) 경로에서 진단 요청-응답 및 결과 기록이 누락 없이 유지된다 |  |  |  |
+| IT_OEM_SURFACE_001 | Req_041,Req_042,Req_043,Req_110,Req_111,Req_151,Req_152 | VC_041,VC_042,VC_043,VC_110,VC_111,VC_151,VC_152 | OEM100 Active Surface 그룹(A1~A6, B)의 경계/헬스/가용성 판정 체인 통합 검증 | 경계/헬스/가용성 이벤트가 누락 없이 전달되고 대체 출력 전환 규칙이 `150ms` 내 충족된다 | Planned |  |  |
+| IT_OEM_PREMIUM_001 | Req_113,Req_116,Req_118,Req_119,Req_140,Req_141,Req_142,Req_146,Req_147,Req_153,Req_154,Req_155 | VC_113,VC_116,VC_118,VC_119,VC_140,VC_141,VC_142,VC_146,VC_147,VC_153,VC_154,VC_155 | Premium Option 활성 ECU 편입 시 기존 경고/표시/강건성 체인 영향 통합 검증(`NIGHT_VISION` 제외) | Premium 활성 ECU 편입 후 기존 IT 체인 Pass 유지, `NIGHT_VISION`은 Not Implemented로 분리 기록된다 | Planned |  |  |
+| IT_BASE_EXT_CH_002 | Req_156,Req_157 | VC_156,VC_157 | 전동 주차/제동 보조 및 차체안정 상태 통합 검증 | Comm_206 경로에서 제동/차체안정 상태가 `100ms` 주기로 연계되고 `150ms` 이내 경고 맥락에 반영된다 | Ready |  |  |
+| IT_BASE_EXT_BODY_002 | Req_158,Req_159,Req_160 | VC_158,VC_159,VC_160 | 출입 개폐/탑승자 보호/실내 편의 상태 통합 검증 | Comm_207 경로에서 바디 확장 상태가 `100ms` 주기로 연계되고 `150ms` 이내 정책 반영된다 | Ready |  |  |
+| IT_BASE_EXT_IVI_002 | Req_161,Req_162 | VC_161,VC_162 | 표시/음향/디지털 접근 서비스 상태 통합 검증 | Comm_208 경로에서 서비스 상태가 `100ms` 주기로 연계되고 `150ms` 이내 표시/HMI/안내 정책에 반영된다 | Ready |  |  |
+| IT_ADAS_EXT_STATE_001 | Req_163,Req_164,Req_165 | VC_163,VC_164,VC_165 | 주행 보조/주차 인지/센서 가용성 상태 통합 검증 | Comm_209 경로에서 상태가 `100ms` 주기로 연계되고 `150ms` 이내 위험/가용성/강등 정책에 반영된다 | Ready |  |  |
+| IT_BACKBONE_STATE_001 | Req_166 | VC_166 | 도메인 서비스 가용성 상태 통합 검증 | Comm_210 경로에서 서비스 상태가 `100ms` 주기로 연계되고 경계 가용성/강등 상태가 즉시 반영된다 | Ready |  |  |
+| IT_BASE_EXT_PT_002 | Req_167,Req_168 | VC_167,VC_168 | 구동/전력변환 및 변속·열관리·충전 인터페이스 상태 통합 검증 | Comm_204 경로에서 Powertrain 확장 상태가 `100ms` 주기로 연계되고 `150ms` 이내 구동 준비/서비스 경고 맥락에 반영된다 | Ready |  |  |
 
 ---
 
@@ -78,7 +119,7 @@
 | IT_BASE_ALERT_EXT_001 | Flow_103,Flow_104,Flow_105,Flow_203,Flow_006,Flow_008 | Comm_103,Comm_104,Comm_105,Comm_203,Comm_006,Comm_008 | Func_140,Func_141,Func_142,Func_143,Func_144,Func_145,Func_146,Func_147 | Req_140,Req_141,Req_142,Req_143,Req_144,Req_145,Req_146,Req_147 | VC_140,VC_141,VC_142,VC_143,VC_144,VC_145,VC_146,VC_147 | UT_BASE_ALERT_EXT_001 | 입력 맥락 보정 `150ms`, 거리 표시 `200ms`, 이벤트 기록 누락 0건, 표시/음량 설정 반영 `150ms` 기준 충족(Pre-Activation) |
 | IT_BASE_ROBUST_EXT_001 | Flow_130,Flow_133,Flow_006,Flow_007,Flow_008,Flow_104,Flow_105,Flow_124,Flow_203 | Comm_130,Comm_133,Comm_006,Comm_007,Comm_008,Comm_104,Comm_105,Comm_124,Comm_203 | Func_148,Func_149,Func_150,Func_151,Func_152,Func_153,Func_154,Func_155 | Req_148,Req_149,Req_150,Req_151,Req_152,Req_153,Req_154,Req_155 | VC_148,VC_149,VC_150,VC_151,VC_152,VC_153,VC_154,VC_155 | UT_BASE_ROBUST_EXT_001 | 입력 유효성/신선도 보호, 전이 안정화, 채널 가용성·대체, 오디오 경합·팝업 과밀·채널 동기 복원 체인이 수치 기준(`100ms`,`150ms`)을 충족(Pre-Activation) |
 | IT_SIL_001 | Flow_009 | Comm_009 | Func_041,Func_042,Func_043 | Req_041,Req_042,Req_043 | VC_041,VC_042,VC_043 | UT_SIL_001 | 시나리오 실행/결과 기록/로그 연동 완료 |
-| IT_BASE_001 | Flow_101~Flow_106, Flow_201~Flow_205 | Comm_101~Comm_106, Comm_201~Comm_205 | Func_101~Func_107,Func_109~Func_119 | Req_101~Req_107,Req_109~Req_119 | VC_101~VC_107,VC_109~VC_119 | UT_BASE_001, UT_BASE_PT_001, UT_BASE_CH_001, UT_BASE_BODY_001, UT_BASE_IVI_001, UT_BASE_EXT_BODY_001, UT_BASE_EXT_IVI_001, UT_BASE_GW_001, UT_BASE_TEST_001 | 차량 기본 기능 입력/상태/표시/도메인 경계/SIL 판정 연동이 일관되게 유지 |
+| IT_BASE_001 | Flow_101~Flow_106, Flow_201~Flow_205 | Comm_101~Comm_106, Comm_201~Comm_205 | Func_101~Func_107,Func_109~Func_119,Func_167,Func_168 | Req_101~Req_107,Req_109~Req_119,Req_167,Req_168 | VC_101~VC_107,VC_109~VC_119,VC_167,VC_168 | UT_BASE_001, UT_BASE_PT_001, UT_BASE_EXT_PT_002, UT_BASE_CH_001, UT_BASE_BODY_001, UT_BASE_IVI_001, UT_BASE_EXT_BODY_001, UT_BASE_EXT_IVI_001, UT_BASE_GW_001, UT_BASE_TEST_001 | 차량 기본 기능 입력/상태/표시/도메인 경계/SIL 판정 연동이 일관되게 유지 |
 | IT_BASE_PT_001 | Flow_101,Flow_204,Flow_105 | Comm_101,Comm_204,Comm_105 | Func_101,Func_102,Func_110 | Req_101,Req_102,Req_110 | VC_101,VC_102,VC_110 | UT_BASE_PT_001, UT_BASE_GW_001 | 엔진/변속/동력 상태 연계가 `100ms` 기준으로 유지 |
 | IT_BASE_CH_001 | Flow_102,Flow_201,Flow_105 | Comm_102,Comm_201,Comm_105 | Func_103,Func_104,Func_105,Func_110 | Req_103,Req_104,Req_105,Req_110 | VC_103,VC_104,VC_105,VC_110 | UT_BASE_CH_001, UT_BASE_GW_001 | 가감속/제동/조향/차체상태 연계가 `100ms` 기준으로 유지 |
 | IT_BASE_BODY_001 | Flow_103,Flow_202,Flow_105 | Comm_103,Comm_202,Comm_105 | Func_106,Func_107,Func_111 | Req_106,Req_107,Req_111 | VC_106,VC_107,VC_111 | UT_BASE_BODY_001, UT_BASE_GW_001 | 차체 제어/편의/상태 경로가 일관되게 유지 |
@@ -86,6 +127,14 @@
 | IT_BASE_EXT_BODY_001 | Flow_202,Flow_105 | Comm_202,Comm_105 | Func_113,Func_114,Func_115,Func_116,Func_117,Func_118 | Req_113,Req_116,Req_118 | VC_113,VC_116,VC_118 | UT_BASE_EXT_BODY_001, UT_BASE_GW_001 | DATC/Seat/Mirror/Door/Wiper-Rain/Security 확장 상태가 `100ms` 주기로 연계되고 `150ms` 이내 반영 |
 | IT_BASE_EXT_IVI_001 | Flow_203,Flow_105 | Comm_203,Comm_105 | Func_119 | Req_119 | VC_119 | UT_BASE_EXT_IVI_001, UT_BASE_GW_001 | Audio Focus/Voice/TTS 상태가 50/100ms 주기 규칙과 `150ms` 반영 기준을 만족 |
 | IT_BASE_DIAG_001 | Flow_106,Flow_205 | Comm_106,Comm_205 | Func_112 | Req_112 | VC_112 | UT_BASE_TEST_001 | 진단 요청-응답 및 결과 기록이 Event+100ms 기준으로 유지 |
+| IT_OEM_SURFACE_001 | Flow_009,Flow_105,Flow_106,Flow_124,Flow_205 | Comm_009,Comm_105,Comm_106,Comm_124,Comm_205 | Func_041,Func_042,Func_043,Func_110,Func_111,Func_151,Func_152 | Req_041,Req_042,Req_043,Req_110,Req_111,Req_151,Req_152 | VC_041,VC_042,VC_043,VC_110,VC_111,VC_151,VC_152 | UT_BASE_GW_001, UT_BASE_TEST_001, UT_BASE_ROBUST_EXT_001 | OEM100 Active Surface 그룹 경계/헬스/가용성 체인이 누락 없이 유지되고 대체 출력 규칙 위반 0건 |
+| IT_OEM_PREMIUM_001 | Flow_202,Flow_203,Flow_103,Flow_104,Flow_105,Flow_008 | Comm_202,Comm_203,Comm_103,Comm_104,Comm_105,Comm_008 | Func_113,Func_116,Func_118,Func_119,Func_140,Func_141,Func_142,Func_146,Func_147,Func_153,Func_154,Func_155 | Req_113,Req_116,Req_118,Req_119,Req_140,Req_141,Req_142,Req_146,Req_147,Req_153,Req_154,Req_155 | VC_113,VC_116,VC_118,VC_119,VC_140,VC_141,VC_142,VC_146,VC_147,VC_153,VC_154,VC_155 | UT_BASE_EXT_BODY_001, UT_BASE_EXT_IVI_001, UT_BASE_ALERT_EXT_001, UT_BASE_ROBUST_EXT_001 | Premium 활성 ECU 편입 후 기존 체인 Pass 유지, 미구현(`NIGHT_VISION`)은 Not Implemented로 분리 관리 |
+| IT_BASE_EXT_CH_002 | Flow_206 | Comm_206 | Func_156,Func_157 | Req_156,Req_157 | VC_156,VC_157 | UT_BASE_EXT_CH_002 | 제동/차체안정 상태가 `100ms` 주기로 연계되고 `150ms` 이내 경고 맥락에 반영 |
+| IT_BASE_EXT_BODY_002 | Flow_207 | Comm_207 | Func_158,Func_159,Func_160 | Req_158,Req_159,Req_160 | VC_158,VC_159,VC_160 | UT_BASE_EXT_BODY_002 | 출입/탑승자보호/실내편의 상태가 `100ms` 주기로 연계되고 `150ms` 이내 정책 반영 |
+| IT_BASE_EXT_IVI_002 | Flow_208 | Comm_208 | Func_161,Func_162 | Req_161,Req_162 | VC_161,VC_162 | UT_BASE_EXT_IVI_002 | 표시/음향/디지털 접근 서비스 상태가 `100ms` 주기로 연계되고 `150ms` 이내 표시/안내 정책 반영 |
+| IT_ADAS_EXT_STATE_001 | Flow_209 | Comm_209 | Func_163,Func_164,Func_165 | Req_163,Req_164,Req_165 | VC_163,VC_164,VC_165 | UT_ADAS_EXT_STATE_001 | 주행보조/주차인지/센서가용성 상태가 `100ms` 주기로 연계되고 `150ms` 이내 위험/강등 정책 반영 |
+| IT_BACKBONE_STATE_001 | Flow_210 | Comm_210 | Func_166 | Req_166 | VC_166 | UT_BACKBONE_STATE_001 | 백본/도메인 서비스 상태가 `100ms` 주기로 연계되고 경계 가용성/강등 상태가 즉시 반영 |
+| IT_BASE_EXT_PT_002 | Flow_204 | Comm_204 | Func_167,Func_168 | Req_167,Req_168 | VC_167,VC_168 | UT_BASE_EXT_PT_002 | 구동/전력변환 및 변속·열관리·충전 인터페이스 상태가 `100ms` 주기로 연계되고 `150ms` 이내 구동 준비/서비스 경고 맥락에 반영 |
 
 ---
 
@@ -121,11 +170,13 @@
 ## 07 연계 체크포인트
 
 - `IT_*`의 E2E 결과는 `07_System_Test.md`의 `ST_*` 수용 판단 근거로 사용한다.
-- `IT_CORE_001`, `IT_EMS_001`, `IT_ARB_001`, `IT_OUT_001`, `IT_TIMEOUT_001`, `IT_SIL_001`, `IT_BASE_001`, `IT_BASE_PT_001`, `IT_BASE_CH_001`, `IT_BASE_BODY_001`, `IT_BASE_IVI_001`, `IT_BASE_DIAG_001`, `IT_BASE_ALERT_EXT_001`, `IT_BASE_ROBUST_EXT_001`는 03/04 문서의 검증 참조 ID와 일치해야 한다.
+- `IT_CORE_001`, `IT_EMS_001`, `IT_ARB_001`, `IT_OUT_001`, `IT_TIMEOUT_001`, `IT_SIL_001`, `IT_BASE_001`, `IT_BASE_PT_001`, `IT_BASE_EXT_PT_002`, `IT_BASE_CH_001`, `IT_BASE_BODY_001`, `IT_BASE_IVI_001`, `IT_BASE_DIAG_001`, `IT_BASE_ALERT_EXT_001`, `IT_BASE_ROBUST_EXT_001`, `IT_BASE_EXT_CH_002`, `IT_BASE_EXT_BODY_002`, `IT_BASE_EXT_IVI_002`, `IT_ADAS_EXT_STATE_001`, `IT_BACKBONE_STATE_001`는 03/04 문서의 검증 참조 ID와 일치해야 한다.
+- `IT_OEM_SURFACE_001`, `IT_OEM_PREMIUM_001`은 OEM100 확장 ST(`ST_OEM_SURFACE_001`, `ST_OEM_PREMIUM_001`)의 선행 근거로 유지한다.
 - `IT_V2_RISK_001`, `IT_V2_FAILSAFE_001`은 `Req_120~Req_121, Req_123, Req_125~Req_129` 활성 체인의 ST 연계 근거로 유지한다.
 - `IT_ADAS_OBJ_001`은 `Req_130~Req_139` Pre-Activation 체인의 ST 연계 근거(`ST_ADAS_OBJ_001`)로 유지한다.
 - `IT_BASE_ALERT_EXT_001`은 `Req_140~Req_147` Pre-Activation 체인의 ST 연계 근거(`ST_BASE_ALERT_EXT_001`)로 유지한다.
 - `IT_BASE_ROBUST_EXT_001`은 `Req_148~Req_155` Pre-Activation 체인의 ST 연계 근거(`ST_BASE_ROBUST_EXT_001`)로 유지한다.
+- `IT_BASE_EXT_CH_002`, `IT_BASE_EXT_BODY_002`, `IT_BASE_EXT_IVI_002`, `IT_ADAS_EXT_STATE_001`, `IT_BACKBONE_STATE_001`, `IT_BASE_EXT_PT_002`은 `Req_156~Req_168` 구현 체인의 ST 연계 근거로 유지한다.
 
 ---
 
@@ -133,6 +184,9 @@
 
 | 버전 | 날짜 | 변경 사항 |
 |---|---|---|
+| 4.22 | 2026-03-09 | OEM100 확장 실케이스 반영: `IT_OEM_SURFACE_001`, `IT_OEM_PREMIUM_001`를 상단/상세 표와 07 연계 체크포인트에 추가. |
+| 4.21 | 2026-03-09 | 본문 실내용 보강: `OEM100 Surface 상세-IT 매핑` 표를 추가해 그룹별 실제 ECU 목록과 IT 커버 경로를 명시. |
+| 4.20 | 2026-03-09 | OEM100 통합 검증 원칙 보강: `05-06 동기화 기준` 섹션을 추가해 Surface 확장 시 IT 증설 조건, Placeholder 처리, DEV2 테스트 설계 전달 규칙을 명시. |
 | 4.19 | 2026-03-06 | Legacy 누락군 보강: `Req_018/036/038/039/108/114/115/117/122/124` 상속 관계를 `Legacy Req 상속 매핑` 섹션으로 추가해 Lean IT advisory 누락을 해소. |
 | 4.18 | 2026-03-06 | 경고 강건성·인지성 확장(Pre-Activation) 반영: `IT_BASE_ROBUST_EXT_001` 추가, `Req_148~Req_155`/`Flow·Comm_130·133·006·007·008·104·105·124·203` 추적 및 07 연계 체크포인트를 동기화. |
 | 4.17 | 2026-03-06 | 차량 경보 편의 확장(Pre-Activation) 반영: `IT_BASE_ALERT_EXT_001` 추가, `Req_140~Req_147`/`Flow·Comm_103·104·105·203·006·008` 추적 및 07 연계 체크포인트를 동기화. |
