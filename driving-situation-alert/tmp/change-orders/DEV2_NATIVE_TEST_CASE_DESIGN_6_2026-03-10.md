@@ -22,6 +22,47 @@
   - do not call these "6 harnesses"
   - call them "1 common harness set + 6 native test assets"
 
+## 1.1 Existing Two-Asset Review
+
+### Judgment
+
+- The existing two native CANoe assets are valid as baseline anchors.
+- They already follow the correct OEM-facing direction for this project:
+  - shared harness reuse
+  - explicit oracle assertions
+  - scenario/ack/reset discipline
+  - native `.vtestreport` evidence production
+- Therefore, they should **not** be discarded or rewritten first.
+
+### What Is Good
+
+1. `TC_CANOE_UT_CORE_001_SCHOOLZONE_OVERSPEED`
+   - strong nominal anchor
+   - explicit end-state oracle on Core/Cluster/Body
+2. `TC_CANOE_IT_V2_FAILSAFE_001_CGW`
+   - strong fail-safe anchor
+   - message + sysvar mixed oracle is appropriate for integration level
+3. Common harness contract is already visible and reusable:
+   - `resetValidationHarnessIfNeeded()`
+   - `waitForScenarioAck()`
+   - `launchScenarioAndWait()`
+   - shared assert helpers
+
+### What Should Be Normalized Before Expansion Freeze Closes
+
+- Remove `PoC` wording from reviewer-facing descriptions in:
+  - `*.vtestunit.yaml`
+  - `*.vtesttree.yaml`
+  - test runbook text
+- Align scenario launch style so both assets use the common helper path consistently where practical.
+- Keep current oracle values unless Dev1 changes runtime behavior after ECU reset.
+
+### Recommendation
+
+- Keep the two existing assets as `anchor assets`.
+- Expand from `2 -> 6` on the functional side without redesigning the first two.
+- Treat metadata/wording normalization as a small follow-up task, not a blocker for the remaining asset skeletons.
+
 ## 2. Why These 6
 
 The portfolio is selected by representative verification intent, not by ECU count.
