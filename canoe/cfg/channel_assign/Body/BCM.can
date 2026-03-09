@@ -144,7 +144,6 @@ on timer tBodyBase100
   message frmWindowControlMsg mWindow;
   message frmDoorStateMsg mDoorState;
   message frmLampControlMsg mLamp;
-  message frmWiperStateMsg mWiper;
   message frmSeatBeltStateMsg mSeatBelt;
   message frmCabinAirStateMsg mCabinAir;
   message frmBodyHealthMsg mHealth;
@@ -152,8 +151,6 @@ on timer tBodyBase100
   message frmSeatStateMsg mSeatState;
   message frmSeatControlMsg mSeatCtrl;
   message frmDoorControlMsg mDoorCtrl;
-  message frmImmobilizerStateMsg mImmobilizer;
-  message frmAlarmStateMsg mAlarm;
   message frmBodyGatewayStateMsg mBodyGwState;
   message frmBodyComfortStateMsg mComfort;
   message frmInteriorLightMsg mLight;
@@ -218,11 +215,6 @@ on timer tBodyBase100
   mLamp.HazardLampReq = hazardActive;
   output(mLamp);
 
-  mWiper.FrontWiperState = 0;
-  mWiper.RearWiperState = 0;
-  mWiper.WiperInterval = 0;
-  output(mWiper);
-
   mSeatBelt.DriverSeatBelt = 1;
   mSeatBelt.PassengerSeatBelt = 1;
   if (seatBeltOverride == 1 || seatBeltOverride == 3)
@@ -279,14 +271,6 @@ on timer tBodyBase100
   output(mDoorCtrl);
 
   /* BCM diagnostic request is validation/event-driven, not a cyclic comfort broadcast. */
-
-  mImmobilizer.ImmobilizerState = 1;
-  mImmobilizer.KeyAuthState = 1;
-  output(mImmobilizer);
-
-  mAlarm.AlarmArmState = 1;
-  mAlarm.IntrusionDetect = 0;
-  output(mAlarm);
 
   mBodyGwState.BodyGwRouteState = 1;
   mBodyGwState.BodyGwHealth = 0;
