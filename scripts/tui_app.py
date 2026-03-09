@@ -1790,6 +1790,24 @@ class SdvTuiApp(App[None]):
             f"Last step: {last_step}",
             f"First fail: {first_fail}",
         ]
+        surface_bundle = self._load_json_file(ROOT / "canoe" / "tmp" / "reports" / "verification" / "surface_evidence_bundle.json")
+        if surface_bundle:
+            summary = surface_bundle.get("summary", {})
+            if isinstance(summary, dict):
+                lines.append(
+                    "Surface: "
+                    f"{surface_bundle.get('overall_status', '-')} "
+                    f"(P/W/F={summary.get('pass_count', 0)}/{summary.get('warn_count', 0)}/{summary.get('fail_count', 0)})"
+                )
+            surfaces = surface_bundle.get("surfaces", [])
+            if isinstance(surfaces, list):
+                failing = [
+                    str(item.get("surface_id", "-"))
+                    for item in surfaces
+                    if isinstance(item, dict) and str(item.get("status", "")).upper() in {"WARN", "FAIL"}
+                ]
+                if failing:
+                    lines.append("Focus: " + ", ".join(failing[:4]))
         return "\n".join(lines)
 
     def _last_scenario_recent(self) -> dict[str, object] | None:
