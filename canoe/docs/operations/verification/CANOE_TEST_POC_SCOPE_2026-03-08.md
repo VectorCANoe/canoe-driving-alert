@@ -57,7 +57,7 @@ Reason:
 ### 5.1 Rule
 
 - Product ECUs and validation harness nodes must not be mixed without labeling.
-- `VAL_SCENARIO_CTRL` and `VAL_BASELINE_CTRL` are allowed in documentation only when explicitly marked as:
+- `TST_SCN` and `TST_BAS` are allowed in documentation only when explicitly marked as:
   - `Validation Harness`
   - `Validation-only`
   - `Non-Production`
@@ -76,13 +76,13 @@ Reason:
 
 ### 5.3 Not Allowed
 
-- Treating `VAL_*` nodes as customer-facing product ECUs
-- Using `VAL_*` nodes as justification for product feature ownership in `01`
+- Treating `TST_*` nodes as customer-facing product ECUs
+- Using `TST_*` nodes as justification for product feature ownership in `01`
 - Presenting validation harness behavior as if it were in-vehicle runtime behavior
 
 ### 5.4 Current Project Judgment
 
-- The current project is **not wrong** to include `VAL_SCENARIO_CTRL` / `VAL_BASELINE_CTRL`.
+- The current project is **not wrong** to include `TST_SCN` / `TST_BAS`.
 - The reason is that CANoe SIL itself is the verification environment, and the harness nodes own validation-only frames such as `0x2A5` and `0x2A6`.
 - The important boundary is labeling, not removal.
 

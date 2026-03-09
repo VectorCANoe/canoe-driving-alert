@@ -3,8 +3,8 @@
 ## Purpose
 - Define how Dev1 uses native CANoe Test Unit assets in the current SIL project.
 - Keep the harness-first strategy intact:
-  - `VAL_SCENARIO_CTRL` drives the scenario
-  - `VAL_BASELINE_CTRL` aggregates the baseline result frame
+  - `TST_SCN` drives the scenario
+  - `TST_BAS` aggregates the baseline result frame
   - Dev2 TUI/CLI remains the external bridge for packaging and CI
 
 ## Current PoC Assets
@@ -17,9 +17,9 @@
 - `Test::scenarioCommandAck`
   - accepted command id
 - `Test::scenarioResult`
-  - 0/1 validation result from `VAL_SCENARIO_CTRL`
+  - 0/1 validation result from `TST_SCN`
 - `frmBaseTestResultMsg (0x2A6)`
-  - baseline aggregation frame from `VAL_BASELINE_CTRL`
+  - baseline aggregation frame from `TST_BAS`
 
 ## Execution Rule
 1. Open the active CANoe configuration in the GUI.

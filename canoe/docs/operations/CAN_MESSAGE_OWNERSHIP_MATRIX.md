@@ -15,9 +15,9 @@
 
 | Message | ID (hex) | DLC | Sender | DBC | Signals |
 |---|---|---|---|---|---|
-| frmVehicleStateCanMsg | 0x2A0 | 2 | VAL_SCENARIO_CTRL | chassis_can.dbc | 3 |
-| frmSteeringCanMsg | 0x2A1 | 1 | VAL_SCENARIO_CTRL | chassis_can.dbc | 2 |
-| frmPedalInputCanMsg | 0x2A2 | 2 | VAL_SCENARIO_CTRL | chassis_can.dbc | 2 |
+| frmVehicleStateCanMsg | 0x2A0 | 2 | TST_SCN | chassis_can.dbc | 3 |
+| frmSteeringCanMsg | 0x2A1 | 1 | TST_SCN | chassis_can.dbc | 2 |
+| frmPedalInputCanMsg | 0x2A2 | 2 | TST_SCN | chassis_can.dbc | 2 |
 | frmSteeringStateCanMsg | 0x100 | 1 | MDPS | chassis_can.dbc | 2 |
 | frmWheelSpeedMsg | 0x101 | 4 | ESC | chassis_can.dbc | 4 |
 | frmYawAccelMsg | 0x102 | 4 | ESC | chassis_can.dbc | 2 |
@@ -41,14 +41,14 @@
 | frmCdcStateMsg | 0x12E | 2 | CDC | chassis_can.dbc | 2 |
 | frmAirSuspensionStateMsg | 0x12F | 3 | ASM | chassis_can.dbc | 3 |
 | frmRwsStateMsg | 0x130 | 3 | RWS | chassis_can.dbc | 3 |
-| frmChassisDiagReqMsg | 0x2A4 | 3 | VAL_SCENARIO_CTRL | chassis_can.dbc | 3 |
+| frmChassisDiagReqMsg | 0x2A4 | 3 | TST_SCN | chassis_can.dbc | 3 |
 | frmChassisDiagResMsg | 0x107 | 3 | ESC | chassis_can.dbc | 3 |
 | frmBrakeWearMsg | 0x129 | 1 | ESC | chassis_can.dbc | 1 |
 | frmRoadFrictionMsg | 0x108 | 1 | ESC | chassis_can.dbc | 1 |
-| frmTestResultMsg | 0x2A5 | 1 | VAL_SCENARIO_CTRL | chassis_can.dbc | 2 |
-| frmBaseTestResultMsg | 0x2A6 | 8 | VAL_BASELINE_CTRL | chassis_can.dbc | 6 |
-| frmIgnitionEngineMsg | 0x2A8 | 1 | VAL_SCENARIO_CTRL | powertrain_can.dbc | 3 |
-| frmGearStateMsg | 0x2A9 | 1 | VAL_SCENARIO_CTRL | powertrain_can.dbc | 3 |
+| frmTestResultMsg | 0x2A5 | 1 | TST_SCN | chassis_can.dbc | 2 |
+| frmBaseTestResultMsg | 0x2A6 | 8 | TST_BAS | chassis_can.dbc | 6 |
+| frmIgnitionEngineMsg | 0x2A8 | 1 | TST_SCN | powertrain_can.dbc | 3 |
+| frmGearStateMsg | 0x2A9 | 1 | TST_SCN | powertrain_can.dbc | 3 |
 | frmPowertrainGatewayMsg | 0x109 | 2 | VCU | powertrain_can.dbc | 2 |
 | frmEngineSpeedTempMsg | 0x12A | 4 | EMS | powertrain_can.dbc | 3 |
 | frmFuelBatteryStateMsg | 0x12B | 3 | EMS | powertrain_can.dbc | 4 |
@@ -61,7 +61,7 @@
 | frmEngineTorqueMsg | 0x12E | 2 | EMS | powertrain_can.dbc | 1 |
 | frmEngineLoadMsg | 0x12F | 1 | EMS | powertrain_can.dbc | 1 |
 | frmTransShiftStateMsg | 0x130 | 2 | TCU | powertrain_can.dbc | 4 |
-| frmPtDiagReqMsg | 0x2AA | 3 | VAL_SCENARIO_CTRL | powertrain_can.dbc | 3 |
+| frmPtDiagReqMsg | 0x2AA | 3 | TST_SCN | powertrain_can.dbc | 3 |
 | frmPtDiagResMsg | 0x10E | 3 | VCU | powertrain_can.dbc | 3 |
 | frmThermalMgmtStateMsg | 0x131 | 2 | EMS | powertrain_can.dbc | 3 |
 | frmEnergyFlowStateMsg | 0x10F | 2 | VCU | powertrain_can.dbc | 3 |
@@ -120,7 +120,7 @@
 | frmAcuStateMsg | 0x288 | 2 | ACU | body_can.dbc | 5 |
 | frmOdsStateMsg | 0x289 | 2 | ODS | body_can.dbc | 5 |
 | frmMassageSeatCtrlStateMsg | 0x28A | 3 | MSC | body_can.dbc | 6 |
-| frmNavContextCanMsg | 0x2A3 | 3 | VAL_SCENARIO_CTRL | infotainment_can.dbc | 5 |
+| frmNavContextCanMsg | 0x2A3 | 3 | TST_SCN | infotainment_can.dbc | 5 |
 | frmClusterWarningMsg | 0x280 | 1 | IVI | infotainment_can.dbc | 1 |
 | frmClusterBaseStateMsg | 0x281 | 2 | IVI | infotainment_can.dbc | 3 |
 | frmNaviGuideStateMsg | 0x282 | 1 | NAV | infotainment_can.dbc | 2 |
@@ -137,7 +137,7 @@
 | frmTrafficEventMsg | 0x28D | 3 | NAV | infotainment_can.dbc | 3 |
 | frmPhoneProjectionMsg | 0x28E | 1 | IVI | infotainment_can.dbc | 3 |
 | frmClusterNotifMsg | 0x28F | 2 | IVI | infotainment_can.dbc | 2 |
-| frmIviDiagReqMsg | 0x2A7 | 3 | VAL_SCENARIO_CTRL | infotainment_can.dbc | 3 |
+| frmIviDiagReqMsg | 0x2A7 | 3 | TST_SCN | infotainment_can.dbc | 3 |
 | frmIviDiagResMsg | 0x290 | 3 | IVI | infotainment_can.dbc | 3 |
 | frmMediaMetaMsg | 0x291 | 2 | IVI | infotainment_can.dbc | 4 |
 | frmSpeechTtsStateMsg | 0x292 | 2 | VCS | infotainment_can.dbc | 4 |
@@ -158,7 +158,7 @@
 | ethEmergencyRiskMsg | 0x1C3 | 5 | ADAS | adas_can.dbc | 6 |
 | ethDecelAssistReqMsg | 0x1C4 | 4 | ADAS | adas_can.dbc | 6 |
 | ethSelectedAlertMsg | 0x206 | 2 | ADAS | adas_can.dbc | 4 |
-| ethObjectRiskInputMsg | 0x1C5 | 8 | VAL_SCENARIO_CTRL | adas_can.dbc | 8 |
+| ethObjectRiskInputMsg | 0x1C5 | 8 | TST_SCN | adas_can.dbc | 8 |
 | ethObjectRiskStateMsg | 0x1C6 | 6 | ADAS | adas_can.dbc | 5 |
 | ethObjectScenarioAlertMsg | 0x1C7 | 4 | ADAS | adas_can.dbc | 6 |
 | frmLdwsLkasStateMsg | 0x1C8 | 4 | LDWS_LKAS | adas_can.dbc | 7 |

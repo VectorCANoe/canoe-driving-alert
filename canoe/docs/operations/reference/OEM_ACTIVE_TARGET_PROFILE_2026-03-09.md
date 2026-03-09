@@ -54,7 +54,7 @@ This keeps the architecture wide without making the top layer look like a thin d
 - `PHYSICAL/DOMAIN ECU`: `EMS`, `TCU`, `VCU`, `ESC`, `MDPS`, `BCM`, `IVI`, `CLU`, `ADAS`, `V2X`, `CGW`
 - `FUNCTION/FEATURE SURFACE`: `SCC`, `HWP`, `AEB`, `SPM` 등
 - `INFRA SERVICE SURFACE`: `EDR`, `CPAY`, `PAK` 등
-- `VALIDATION`: `VALIDATION_HARNESS`, `VAL_*`
+- `VALIDATION`: `VALIDATION_HARNESS`, `TST_*`
 
 Rule:
 - current deep runtime promotion은 `PHYSICAL/DOMAIN ECU` 우선
@@ -253,8 +253,8 @@ Current active baseline first:
 74. `BAT_BMS`
 75. `ASM`
 76. `RWS`
-77. `VALIDATION_HARNESS` (`VAL_SCENARIO_CTRL`)
-78. `VALIDATION_HARNESS` (`VAL_BASELINE_CTRL`)
+77. `VALIDATION_HARNESS` (`TST_SCN`)
+78. `VALIDATION_HARNESS` (`TST_BAS`)
 79. `FPCM`
 80. `LVR`
 81. `ISG`
@@ -292,8 +292,8 @@ Current active baseline first:
 ## Chosen 4 Validation / Test Stack Elements
 
 1. `VALIDATION_HARNESS`
-2. `VAL_SCENARIO_CTRL`
-3. `VAL_BASELINE_CTRL`
+2. `TST_SCN`
+3. `TST_BAS`
 4. `CANOE_NATIVE_TEST_SUITE`
 
 ## Trim-Down Fallback

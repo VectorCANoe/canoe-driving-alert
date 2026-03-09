@@ -198,7 +198,7 @@ Target range for the final vehicle-program surface:
 
 | Surface ECU | Status | Runtime Depth | Notes |
 |---|---|---|---|
-| `VALIDATION_HARNESS` | Active | Deep | `VAL_*`, non-production only |
+| `VALIDATION_HARNESS` | Active | Deep | `TST_*`, non-production only |
 
 ## Count Check
 
@@ -302,7 +302,7 @@ Optional 8th depth candidate:
 - `ADAS -> ADAS`
 - `CGW -> CGW`
 - `V2X` (+ later fold producers) -> `V2X`
-- `VAL_* -> VALIDATION_HARNESS`
+- `TST_* -> VALIDATION_HARNESS`
 
 ### Merge Candidate
 

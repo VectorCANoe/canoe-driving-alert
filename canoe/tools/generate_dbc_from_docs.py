@@ -81,23 +81,23 @@ MSG_META: Dict[str, Dict[str, object]] = {
     "frmVehicleStateCanMsg": {
         "id": 0x100,
         "dlc": 2,
-        "sender": "VAL_SCENARIO_CTRL",
-        "receivers": ["CHGW"],
+        "sender": "TST_SCN",
+        "receivers": ["ESC", "MDPS", "SAS", "RWS", "EPB", "SCC"],
         "cycle_ms": 100,
         "comment": "Chassis CAN input: vehicle speed and drive state.",
     },
     "frmSteeringCanMsg": {
         "id": 0x101,
         "dlc": 1,
-        "sender": "VAL_SCENARIO_CTRL",
-        "receivers": ["CHGW"],
+        "sender": "TST_SCN",
+        "receivers": ["ESC", "MDPS", "SAS"],
         "cycle_ms": 100,
         "comment": "Chassis CAN input: steering input state.",
     },
     "frmNavContextCanMsg": {
         "id": 0x110,
         "dlc": 3,
-        "sender": "VAL_SCENARIO_CTRL",
+        "sender": "TST_SCN",
         "receivers": ["IVI"],
         "cycle_ms": 100,
         "comment": "Infotainment CAN input: road zone, direction, distance, and speed limit.",
@@ -121,7 +121,7 @@ MSG_META: Dict[str, Dict[str, object]] = {
     "frmTestResultMsg": {
         "id": 0x230,
         "dlc": 1,
-        "sender": "VAL_SCENARIO_CTRL",
+        "sender": "TST_SCN",
         "receivers": ["Vector__XXX"],
         "cycle_ms": 0,
         "comment": "Scenario pass/fail result for SIL traceability.",
@@ -172,8 +172,7 @@ VALUE_TABLES: Dict[str, Dict[int, str]] = {
 }
 
 NODE_COMMENTS = {
-    "VAL_SCENARIO_CTRL": "SIL test controller for CAN input injection and scenario result logging.",
-    "CHGW": "Chassis ingress normalization, synthesis, and diagnostic boundary.",
+    "TST_SCN": "SIL test controller for CAN input injection and scenario result logging.",
     "IVI": "Infotainment route and output owner after gateway absorption.",
     "V2X": "Integrated V2X emergency context owner on the backbone contract.",
     "ADAS": "Integrated ADAS warning, risk, and assist decision owner.",
@@ -184,10 +183,8 @@ NODE_COMMENTS = {
     "MDPS": "Motor-driven power steering runtime owner.",
     "EMS": "Engine management runtime owner.",
     "TCU": "Transmission control runtime owner.",
-    "VAL_BASELINE_CTRL": "Baseline SIL test controller for vehicle basic functions.",
-    "PTGW": "Powertrain routing, drive-mode, and gateway boundary owner.",
+    "TST_BAS": "Baseline SIL test controller for vehicle basic functions.",
     "CGW": "Cross-domain gateway, fail-safe, and boundary authority.",
-    "ETHM": "Ethernet path freshness monitor for SIL backbone contract.",
     "Vector__XXX": "Reserved node for unused or filler signals.",
 }
 
@@ -620,10 +617,8 @@ def main() -> int:
             "MDPS",
             "BCM",
             "CLU",
-            "VAL_BASELINE_CTRL",
-            "PTGW",
+            "TST_BAS",
             "CGW",
-            "ETHM",
         ],
     )
 
@@ -644,7 +639,7 @@ def main() -> int:
         "emergency_system_chassis.dbc": {
             "version": "Emergency_System_CAN_Chassis_v1.1",
             "ids": [0x100, 0x101, 0x230],
-            "extra_nodes": ["VCU", "ESC", "MDPS", "VAL_BASELINE_CTRL"],
+            "extra_nodes": ["VCU", "ESC", "MDPS", "TST_BAS"],
             "comment": "Domain split: chassis CAN network from emergency_system.dbc baseline.",
         },
         "emergency_system_body.dbc": {
@@ -662,7 +657,7 @@ def main() -> int:
         "emergency_system_powertrain.dbc": {
             "version": "Emergency_System_CAN_Powertrain_v1.1",
             "ids": [],
-            "extra_nodes": ["VAL_SCENARIO_CTRL", "EMS", "TCU", "PTGW"],
+            "extra_nodes": ["TST_SCN", "EMS", "TCU", "VCU"],
             "comment": "Domain split: powertrain CAN network from emergency_system.dbc baseline.",
             "extra_comments": [
                 "Current baseline has no dedicated powertrain CAN frame.",

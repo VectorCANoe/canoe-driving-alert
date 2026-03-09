@@ -37,7 +37,7 @@
 
 ## 4) 네트워크/노드 확인 체크
 측정 시작 후 아래가 만족되어야 정상입니다.
-- Simulation Setup 노드 13개 active
+- Simulation Setup에서 panel demo에 필요한 active subset이 로드되어 있어야 함
 - UDP 포트 5000 사용
 - CAPL compile error 0
 - CAN 통신 프레임 관측 가능
@@ -96,5 +96,5 @@
 - `00~07` 문서는 구현 참조용이며, 구현/운영 변경은 `canoe/`에서만 수행합니다.
 
 ## 8) 자동 데모 모드
-- `Test::testScenario=100`으로 설정하면 VAL_SCENARIO_CTRL이 4초 간격으로 시나리오 1~6을 순환합니다.
+- `Test::testScenario=100`으로 설정하면 TST_SCN이 4초 간격으로 시나리오 1~6을 순환합니다.
 - 자동 데모 중지: `Test::testScenario=0`

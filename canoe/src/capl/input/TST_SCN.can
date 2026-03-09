@@ -739,7 +739,7 @@ on timer tScenarioPhase2
     gLockSourceId = 99;
     gLockEmergencyDirection = 2;
     pushLockedScenarioInputs();
-    write("[VAL_SCENARIO_CTRL] Req_030 phase2: inject eta=10 sourceId=99");
+    write("[TST_SCN] Req_030 phase2: inject eta=10 sourceId=99");
   }
   else if (gCurrentScenarioId == 10)
   {
@@ -749,7 +749,7 @@ on timer tScenarioPhase2
     gLockSourceId = 5;
     gLockEmergencyDirection = 2;
     pushLockedScenarioInputs();
-    write("[VAL_SCENARIO_CTRL] Req_031 phase2: inject eta=10 sourceId=5");
+    write("[TST_SCN] Req_031 phase2: inject eta=10 sourceId=5");
   }
   else if (gCurrentScenarioId == 11)
   {
@@ -761,7 +761,7 @@ on timer tScenarioPhase2
     gLockSourceId = 10;
     gLockEmergencyDirection = 1;
     pushLockedScenarioInputs();
-    write("[VAL_SCENARIO_CTRL] Req_034 phase2: inject police, baseline snapshotId=%d",
+    write("[TST_SCN] Req_034 phase2: inject police, baseline snapshotId=%d",
           gArbitrationSnapshotBaseline);
   }
   else if (gCurrentScenarioId == 12)
@@ -770,7 +770,7 @@ on timer tScenarioPhase2
     gLockVehicleSpeed = 20;
     pushLockedScenarioInputs();
     setTimer(tScenarioPhase3, 100);
-    write("[VAL_SCENARIO_CTRL] Req_006 phase2: speed=20 clear warning");
+    write("[TST_SCN] Req_006 phase2: speed=20 clear warning");
   }
   else if (gCurrentScenarioId == 13)
   {
@@ -782,7 +782,7 @@ on timer tScenarioPhase2
     gLockSteeringInput = 1;
     pushLockedScenarioInputs();
     setTimer(tScenarioPhase3, 200);
-    write("[VAL_SCENARIO_CTRL] Req_015 phase2: roadZone=2 baseline snapshotId=%d",
+    write("[TST_SCN] Req_015 phase2: roadZone=2 baseline snapshotId=%d",
           gArbitrationSnapshotBaseline);
   }
   else if (gCurrentScenarioId == 17)
@@ -790,14 +790,14 @@ on timer tScenarioPhase2
     /* Req_123: simulate driver intervention (steering input) */
     gLockSteeringInput = 1;
     pushLockedScenarioInputs();
-    write("[VAL_SCENARIO_CTRL] Req_123 phase2: steering intervention");
+    write("[TST_SCN] Req_123 phase2: steering intervention");
   }
   else if (gCurrentScenarioId == 25)
   {
     /* Req_136: force temporary object loss and verify hold-time behavior */
     gLockObjectTrackValid = 0;
     pushLockedScenarioInputs();
-    write("[VAL_SCENARIO_CTRL] Req_136 phase2: object track lost");
+    write("[TST_SCN] Req_136 phase2: object track lost");
   }
 }
 
@@ -808,7 +808,7 @@ on timer tScenarioPhase3
     /* Req_006 + Req_026: Phase 3 - re-trigger school zone warning */
     gLockVehicleSpeed = 45;
     pushLockedScenarioInputs();
-    write("[VAL_SCENARIO_CTRL] Req_006 phase3: speed=45 re-trigger warning");
+    write("[TST_SCN] Req_006 phase3: speed=45 re-trigger warning");
   }
   else if (gCurrentScenarioId == 13)
   {
@@ -818,7 +818,7 @@ on timer tScenarioPhase3
     gLockSpeedLimit = 30;
     gLockSteeringInput = 1;
     pushLockedScenarioInputs();
-    write("[VAL_SCENARIO_CTRL] Req_015 phase3: roadZone=1 back to school zone");
+    write("[TST_SCN] Req_015 phase3: roadZone=1 back to school zone");
   }
 }
 
@@ -872,7 +872,7 @@ on start
   @Core::objectAlertHoldMs = 300;
   @Core::objectEventCode = 0;
   setTimer(tInput100, 100);
-  write("[VAL_SCENARIO_CTRL] start");
+  write("[TST_SCN] start");
 }
 
 on timer tInput100
@@ -1044,27 +1044,27 @@ on sysvar Test::scenarioCommand
   if (scenarioId == 100)
   {
     beginAutoDemoExecution();
-    write("[VAL_SCENARIO_CTRL] command: auto demo start");
+    write("[TST_SCN] command: auto demo start");
   }
   else if (scenarioId == 0)
   {
     stopScenarioExecution();
     setScenarioMirror(0);
-    write("[VAL_SCENARIO_CTRL] command: auto demo stop");
+    write("[TST_SCN] command: auto demo stop");
   }
   else if (scenarioId >= 1 && scenarioId <= 25)
   {
     beginScenarioExecution(scenarioId);
-    write("[VAL_SCENARIO_CTRL] command apply scenario=%d", scenarioId);
+    write("[TST_SCN] command apply scenario=%d", scenarioId);
   }
   else if (scenarioId >= 200 && scenarioId <= 255)
   {
     beginBaselineDiagRequest(scenarioId);
-    write("[VAL_SCENARIO_CTRL] command send baseline diag scenario=%d", scenarioId);
+    write("[TST_SCN] command send baseline diag scenario=%d", scenarioId);
   }
   else
   {
-    write("[VAL_SCENARIO_CTRL] command ignore invalid scenario=%d", scenarioId);
+    write("[TST_SCN] command ignore invalid scenario=%d", scenarioId);
   }
 
   @Test::scenarioCommandAck = clampRange(scenarioId, 0, 255);
@@ -1092,7 +1092,7 @@ on sysvar Test::testScenario
     /* Ignore panel re-write while a locked scenario is running.
        Switch scenario only via explicit reset (scenario 0) first. */
     setScenarioMirror(gCurrentScenarioId);
-    write("[VAL_SCENARIO_CTRL] ignore scenario change while locked: req=%d keep=%d",
+    write("[TST_SCN] ignore scenario change while locked: req=%d keep=%d",
           scenarioId, gCurrentScenarioId);
     return;
   }
@@ -1100,27 +1100,27 @@ on sysvar Test::testScenario
   if (scenarioId == 100)
   {
     beginAutoDemoExecution();
-    write("[VAL_SCENARIO_CTRL] auto demo start");
+    write("[TST_SCN] auto demo start");
   }
   else if (scenarioId == 0)
   {
     stopScenarioExecution();
     setScenarioMirror(0);
-    write("[VAL_SCENARIO_CTRL] auto demo stop");
+    write("[TST_SCN] auto demo stop");
   }
   else if (scenarioId >= 1 && scenarioId <= 25)
   {
     beginScenarioExecution(scenarioId);
-    write("[VAL_SCENARIO_CTRL] apply scenario=%d", scenarioId);
+    write("[TST_SCN] apply scenario=%d", scenarioId);
   }
   else if (scenarioId >= 200 && scenarioId <= 255)
   {
     beginBaselineDiagRequest(scenarioId);
-    write("[VAL_SCENARIO_CTRL] send baseline diag request scenario=%d", scenarioId);
+    write("[TST_SCN] send baseline diag request scenario=%d", scenarioId);
   }
   else
   {
-    write("[VAL_SCENARIO_CTRL] ignore invalid scenario=%d", scenarioId);
+    write("[TST_SCN] ignore invalid scenario=%d", scenarioId);
   }
 }
 

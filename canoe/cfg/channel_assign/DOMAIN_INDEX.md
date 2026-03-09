@@ -13,7 +13,7 @@ This file documents the visible runtime and placeholder CAPL inventory after wra
 ### ETH_Backbone
 - `CGW.can`
 - `V2X.can`
-- `VAL_SCENARIO_CTRL.can`
+- `TST_SCN.can`
 - `ETHB.can`
 - `DCM.can`
 - `IBOX.can`
@@ -108,7 +108,7 @@ This file documents the visible runtime and placeholder CAPL inventory after wra
 - `VCU.can`
 - `ESC.can`
 - `MDPS.can`
-- `VAL_BASELINE_CTRL.can`
+- `TST_BAS.can`
 - `ABS.can`
 - `EPB.can`
 - `TPMS.can`

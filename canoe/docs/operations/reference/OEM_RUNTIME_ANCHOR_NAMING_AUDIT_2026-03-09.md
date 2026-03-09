@@ -13,7 +13,7 @@ This audit verifies that the **current active runtime anchor names** align with:
 - Product runtime anchors (`11`):
   - `EMS`, `TCU`, `VCU`, `ESC`, `MDPS`, `CGW`, `BCM`, `IVI`, `CLU`, `ADAS`, `V2X`
 - Validation-only runtime (`2`):
-  - `VAL_SCENARIO_CTRL`, `VAL_BASELINE_CTRL`
+  - `TST_SCN`, `TST_BAS`
 
 ## Summary Decision
 
@@ -30,8 +30,8 @@ This audit verifies that the **current active runtime anchor names** align with:
 | `CLU` | Yes | `CLUSTER` | Keep | cluster display owner |
 | `ADAS` | Yes | `ADAS` | Keep | risk/decision owner |
 | `V2X` | Yes | `V2X` | Keep | emergency ingress/context owner |
-| `VAL_SCENARIO_CTRL` | Yes | `VALIDATION_HARNESS` | Keep | validation orchestrator |
-| `VAL_BASELINE_CTRL` | Yes | `VALIDATION_HARNESS` | Keep | validation result aggregator |
+| `TST_SCN` | Yes | `VALIDATION_HARNESS` | Keep | validation orchestrator |
+| `TST_BAS` | Yes | `VALIDATION_HARNESS` | Keep | validation result aggregator |
 
 ## Historical Labels (Retired)
 

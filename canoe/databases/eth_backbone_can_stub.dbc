@@ -30,7 +30,7 @@ NS_ :
 
 BS_:
 
-BU_: V2X ADAS IVI ESC MDPS VCU VAL_SCENARIO_CTRL CGW IBOX SGW DCM EDR ETHB Vector__XXX
+BU_: V2X ADAS IVI ESC MDPS VCU TST_SCN CGW IBOX SGW DCM EDR ETHB Vector__XXX
 
 BO_ 448 frmEmergencyBroadcastMsg: 4 V2X
  SG_ VehicleType  : 0|4@1+  (1,0) [0|15]  ""    V2X
@@ -42,75 +42,75 @@ BO_ 448 frmEmergencyBroadcastMsg: 4 V2X
  SG_ Reserved1    : 28|4@1+ (1,0) [0|0]   ""    Vector__XXX
 
 BO_ 450 frmEmergencyMonitorMsg: 2 V2X
- SG_ EmergencyContext : 0|8@1+ (1,0) [0|255] "" VAL_SCENARIO_CTRL,ESC
- SG_ TimeoutClearMon  : 8|1@1+ (1,0) [0|1]   "" VAL_SCENARIO_CTRL,ESC
+ SG_ EmergencyContext : 0|8@1+ (1,0) [0|255] "" TST_SCN,ESC
+ SG_ TimeoutClearMon  : 8|1@1+ (1,0) [0|1]   "" TST_SCN,ESC
  SG_ Reserved0        : 9|7@1+ (1,0) [0|0]   "" Vector__XXX
 
 BO_ 456 ethObjectSafetyStateMsg: 4 CGW
- SG_ ObjectConfidence      : 0|7@1+   (1,0) [0|100] "%" ADAS,VAL_SCENARIO_CTRL,V2X
- SG_ ObjectEventCode       : 7|16@1+  (1,0) [0|65535] "" ADAS,VAL_SCENARIO_CTRL,V2X
- SG_ ObjectFailSafeMode    : 23|2@1+  (1,0) [0|2] "" ADAS,VAL_SCENARIO_CTRL,V2X
- SG_ ObjectTrackValid      : 25|1@1+  (1,0) [0|1] "" ADAS,VAL_SCENARIO_CTRL,V2X
+ SG_ ObjectConfidence      : 0|7@1+   (1,0) [0|100] "%" ADAS,TST_SCN,V2X
+ SG_ ObjectEventCode       : 7|16@1+  (1,0) [0|65535] "" ADAS,TST_SCN,V2X
+ SG_ ObjectFailSafeMode    : 23|2@1+  (1,0) [0|2] "" ADAS,TST_SCN,V2X
+ SG_ ObjectTrackValid      : 25|1@1+  (1,0) [0|1] "" ADAS,TST_SCN,V2X
  SG_ Reserved0             : 26|6@1+  (1,0) [0|0] "" Vector__XXX
 
 BO_ 273 ethFailSafeStateMsg: 2 CGW
- SG_ DomainPathStatus : 0|2@1+ (1,0) [0|2] "" ADAS,VAL_SCENARIO_CTRL
- SG_ E2eHealthState   : 2|2@1+ (1,0) [0|2] "" ADAS,VAL_SCENARIO_CTRL
- SG_ FailSafeMode     : 4|2@1+ (1,0) [0|2] "" ADAS,VAL_SCENARIO_CTRL
- SG_ BoundaryAlive    : 6|1@1+ (1,0) [0|1] "" ADAS,VAL_SCENARIO_CTRL
+ SG_ DomainPathStatus : 0|2@1+ (1,0) [0|2] "" ADAS,TST_SCN
+ SG_ E2eHealthState   : 2|2@1+ (1,0) [0|2] "" ADAS,TST_SCN
+ SG_ FailSafeMode     : 4|2@1+ (1,0) [0|2] "" ADAS,TST_SCN
+ SG_ BoundaryAlive    : 6|1@1+ (1,0) [0|1] "" ADAS,TST_SCN
  SG_ Reserved0        : 7|9@1+ (1,0) [0|0] "" Vector__XXX
 
 BO_ 1296 ethVehicleStateMsg: 6 VCU
- SG_ DriveState       : 0|2@1+  (1,0) [0|3]   ""    ADAS,VAL_SCENARIO_CTRL,ADAS
- SG_ VehicleSpeed     : 8|8@1+  (1,0) [0|255] "km/h" ADAS,VAL_SCENARIO_CTRL,ADAS
- SG_ BrakePedalNorm   : 16|7@1+ (1,0) [0|100] "%"   ADAS,VAL_SCENARIO_CTRL
- SG_ TurnLampState    : 23|2@1+ (1,0) [0|3]   ""    ADAS,VAL_SCENARIO_CTRL
- SG_ SeatBeltWarnLvl  : 25|2@1+ (1,0) [0|3]   ""    ADAS,VAL_SCENARIO_CTRL
+ SG_ DriveState       : 0|2@1+  (1,0) [0|3]   ""    ADAS,TST_SCN,ADAS
+ SG_ VehicleSpeed     : 8|8@1+  (1,0) [0|255] "km/h" ADAS,TST_SCN,ADAS
+ SG_ BrakePedalNorm   : 16|7@1+ (1,0) [0|100] "%"   ADAS,TST_SCN
+ SG_ TurnLampState    : 23|2@1+ (1,0) [0|3]   ""    ADAS,TST_SCN
+ SG_ SeatBeltWarnLvl  : 25|2@1+ (1,0) [0|3]   ""    ADAS,TST_SCN
  SG_ Reserved0        : 27|21@1+ (1,0) [0|0]  ""    Vector__XXX
 
 BO_ 1297 ethSteeringMsg: 4 MDPS
- SG_ SteeringInput    : 0|1@1+   (1,0) [0|1]    ""    ADAS,VAL_SCENARIO_CTRL,ADAS
- SG_ SteeringAngleDeg : 8|12@1-  (1,0) [-720|720] "deg" ADAS,VAL_SCENARIO_CTRL
- SG_ SteeringQuality  : 20|2@1+  (1,0) [0|3]    ""    ADAS,VAL_SCENARIO_CTRL
+ SG_ SteeringInput    : 0|1@1+   (1,0) [0|1]    ""    ADAS,TST_SCN,ADAS
+ SG_ SteeringAngleDeg : 8|12@1-  (1,0) [-720|720] "deg" ADAS,TST_SCN
+ SG_ SteeringQuality  : 20|2@1+  (1,0) [0|3]    ""    ADAS,TST_SCN
  SG_ Reserved0        : 22|10@1+ (1,0) [0|0]    ""    Vector__XXX
 
 BO_ 1298 ethNavContextMsg: 6 IVI
- SG_ RoadZone         : 0|3@1+   (1,0) [0|7]    ""    ADAS,VAL_SCENARIO_CTRL,IVI
- SG_ NavDirection     : 3|3@1+   (1,0) [0|7]    ""    ADAS,VAL_SCENARIO_CTRL,IVI
- SG_ ZoneDistance     : 8|8@1+   (1,0) [0|255]  "m"   ADAS,VAL_SCENARIO_CTRL,IVI
- SG_ SpeedLimit       : 16|8@1+  (1,0) [0|255]  "km/h" ADAS,VAL_SCENARIO_CTRL,IVI
+ SG_ RoadZone         : 0|3@1+   (1,0) [0|7]    ""    ADAS,TST_SCN,IVI
+ SG_ NavDirection     : 3|3@1+   (1,0) [0|7]    ""    ADAS,TST_SCN,IVI
+ SG_ ZoneDistance     : 8|8@1+   (1,0) [0|255]  "m"   ADAS,TST_SCN,IVI
+ SG_ SpeedLimit       : 16|8@1+  (1,0) [0|255]  "km/h" ADAS,TST_SCN,IVI
  SG_ Reserved0        : 24|24@1+ (1,0) [0|0]    ""    Vector__XXX
 
 BO_ 665 ethIboxStateMsg: 3 IBOX
- SG_ IboxLinkMode     : 0|2@1+ (1,0) [0|3] "" SGW,DCM,VAL_SCENARIO_CTRL
- SG_ IboxRouteState   : 2|2@1+ (1,0) [0|3] "" SGW,DCM,VAL_SCENARIO_CTRL
+ SG_ IboxLinkMode     : 0|2@1+ (1,0) [0|3] "" SGW,DCM,TST_SCN
+ SG_ IboxRouteState   : 2|2@1+ (1,0) [0|3] "" SGW,DCM,TST_SCN
  SG_ Reserved0        : 4|4@1+ (1,0) [0|0] "" Vector__XXX
  SG_ IboxSignalBars   : 8|4@1+ (1,0) [0|15] "" SGW,DCM
- SG_ IboxServiceFlags : 12|4@1+ (1,0) [0|15] "" SGW,DCM,VAL_SCENARIO_CTRL
+ SG_ IboxServiceFlags : 12|4@1+ (1,0) [0|15] "" SGW,DCM,TST_SCN
  SG_ IboxDiagState    : 16|4@1+ (1,0) [0|15] "" SGW,DCM
  SG_ Reserved1        : 20|4@1+ (1,0) [0|0] "" Vector__XXX
 
 BO_ 666 ethSecurityStateMsg: 2 SGW
- SG_ SecuritySession  : 0|3@1+ (1,0) [0|7] "" DCM,VAL_SCENARIO_CTRL
- SG_ AuthState        : 3|2@1+ (1,0) [0|3] "" DCM,VAL_SCENARIO_CTRL
+ SG_ SecuritySession  : 0|3@1+ (1,0) [0|7] "" DCM,TST_SCN
+ SG_ AuthState        : 3|2@1+ (1,0) [0|3] "" DCM,TST_SCN
  SG_ KeyPresence      : 5|1@1+ (1,0) [0|1] "" DCM
  SG_ Reserved0        : 6|2@1+ (1,0) [0|0] "" Vector__XXX
- SG_ SecurityFault    : 8|4@1+ (1,0) [0|15] "" DCM,VAL_SCENARIO_CTRL
+ SG_ SecurityFault    : 8|4@1+ (1,0) [0|15] "" DCM,TST_SCN
  SG_ SecurityPolicy   : 12|4@1+ (1,0) [0|15] "" DCM
 
 BO_ 667 ethDiagStateMsg: 2 DCM
- SG_ DiagSession      : 0|3@1+ (1,0) [0|7] "" VAL_SCENARIO_CTRL
- SG_ DiagPathState    : 3|2@1+ (1,0) [0|3] "" VAL_SCENARIO_CTRL
- SG_ DiagPending      : 5|1@1+ (1,0) [0|1] "" VAL_SCENARIO_CTRL
+ SG_ DiagSession      : 0|3@1+ (1,0) [0|7] "" TST_SCN
+ SG_ DiagPathState    : 3|2@1+ (1,0) [0|3] "" TST_SCN
+ SG_ DiagPending      : 5|1@1+ (1,0) [0|1] "" TST_SCN
  SG_ Reserved0        : 6|2@1+ (1,0) [0|0] "" Vector__XXX
- SG_ LastDiagSid      : 8|8@1+ (1,0) [0|255] "" VAL_SCENARIO_CTRL
+ SG_ LastDiagSid      : 8|8@1+ (1,0) [0|255] "" TST_SCN
 
 BO_ 668 ethEdrStateMsg: 4 EDR
- SG_ RecordState      : 0|2@1+ (1,0) [0|3] "" CGW,VAL_SCENARIO_CTRL
- SG_ EventSeverity    : 2|3@1+ (1,0) [0|7] "" CGW,VAL_SCENARIO_CTRL
- SG_ RecordReason     : 8|8@1+ (1,0) [0|255] "" CGW,VAL_SCENARIO_CTRL
- SG_ StorageLevel     : 16|8@1+ (1,0) [0|100] "%" CGW,VAL_SCENARIO_CTRL
- SG_ LastEventCode    : 24|8@1+ (1,0) [0|255] "" CGW,VAL_SCENARIO_CTRL
+ SG_ RecordState      : 0|2@1+ (1,0) [0|3] "" CGW,TST_SCN
+ SG_ EventSeverity    : 2|3@1+ (1,0) [0|7] "" CGW,TST_SCN
+ SG_ RecordReason     : 8|8@1+ (1,0) [0|255] "" CGW,TST_SCN
+ SG_ StorageLevel     : 16|8@1+ (1,0) [0|100] "%" CGW,TST_SCN
+ SG_ LastEventCode    : 24|8@1+ (1,0) [0|255] "" CGW,TST_SCN
 
 BO_ 669 ethBackboneStateMsg: 4 ETHB
  SG_ BackboneMode     : 0|2@1+ (1,0) [0|3] "" CGW,IBOX,SGW,DCM

@@ -97,8 +97,8 @@ Focus:
 
 Primary runtime:
 
-- `VAL_SCENARIO_CTRL`
-- `VAL_BASELINE_CTRL`
+- `TST_SCN`
+- `TST_BAS`
 
 Focus:
 

@@ -30,35 +30,35 @@ NS_ :
 
 BS_:
 
-BU_: ADAS ESC VAL_SCENARIO_CTRL BCM IVI LDWS_LKAS FCA BCW LCA SPAS RSPA AVM FCAM FRADAR SRR_FL SRR_FR PUS DMS OMS SRR_RL SRR_RR AEB PKM RPC RRM SPM HWP LDR TRM Vector__XXX
+BU_: ADAS ESC TST_SCN BCM IVI LDWS_LKAS FCA BCW LCA SPAS RSPA AVM FCAM FRADAR SRR_FL SRR_FR PUS DMS OMS SRR_RL SRR_RR AEB PKM RPC RRM SPM HWP LDR TRM Vector__XXX
 
 BO_ 449 frmAdasChassisStatusMsg: 2 ADAS
  SG_ AdasChassisState : 0|8@1+ (1,0) [0|255] "" ESC
  SG_ AdasHealthLevel  : 8|8@1+ (1,0) [0|255] "" ESC
 
 BO_ 451 ethEmergencyRiskMsg: 5 ADAS
- SG_ RiskLevel          : 0|8@1+  (1,0) [0|100] "" ADAS,VAL_SCENARIO_CTRL
- SG_ EtaSeconds         : 8|8@1+  (1,0) [0|255] "s" ADAS,VAL_SCENARIO_CTRL
- SG_ VehicleSpeed       : 16|8@1+ (1,0) [0|255] "km/h" ADAS,VAL_SCENARIO_CTRL
- SG_ EmergencyDirection : 24|2@1+ (1,0) [0|3] "" ADAS,VAL_SCENARIO_CTRL
- SG_ EmergencyType      : 26|2@1+ (1,0) [0|2] "" ADAS,VAL_SCENARIO_CTRL
+ SG_ RiskLevel          : 0|8@1+  (1,0) [0|100] "" ADAS,TST_SCN
+ SG_ EtaSeconds         : 8|8@1+  (1,0) [0|255] "s" ADAS,TST_SCN
+ SG_ VehicleSpeed       : 16|8@1+ (1,0) [0|255] "km/h" ADAS,TST_SCN
+ SG_ EmergencyDirection : 24|2@1+ (1,0) [0|3] "" ADAS,TST_SCN
+ SG_ EmergencyType      : 26|2@1+ (1,0) [0|2] "" ADAS,TST_SCN
  SG_ Reserved0          : 28|12@1+ (1,0) [0|0] "" Vector__XXX
 
 BO_ 452 ethDecelAssistReqMsg: 4 ADAS
- SG_ DecelAssistReq      : 0|1@1+ (1,0) [0|1] "" VAL_SCENARIO_CTRL,ESC
- SG_ FailSafeMode        : 1|2@1+ (1,0) [0|2] "" VAL_SCENARIO_CTRL,ESC
- SG_ DriverReleaseReason : 3|2@1+ (1,0) [0|3] "" VAL_SCENARIO_CTRL,ESC
- SG_ EmergencyContext    : 5|2@1+ (1,0) [0|2] "" VAL_SCENARIO_CTRL,ESC
- SG_ RiskLevel           : 8|8@1+ (1,0) [0|100] "" VAL_SCENARIO_CTRL,ESC
+ SG_ DecelAssistReq      : 0|1@1+ (1,0) [0|1] "" TST_SCN,ESC
+ SG_ FailSafeMode        : 1|2@1+ (1,0) [0|2] "" TST_SCN,ESC
+ SG_ DriverReleaseReason : 3|2@1+ (1,0) [0|3] "" TST_SCN,ESC
+ SG_ EmergencyContext    : 5|2@1+ (1,0) [0|2] "" TST_SCN,ESC
+ SG_ RiskLevel           : 8|8@1+ (1,0) [0|100] "" TST_SCN,ESC
  SG_ Reserved0           : 16|16@1+ (1,0) [0|0] "" Vector__XXX
 
 BO_ 518 ethSelectedAlertMsg: 2 ADAS
- SG_ selectedAlertLevel  : 0|3@1+ (1,0) [0|7] "" BCM,IVI,VAL_SCENARIO_CTRL
- SG_ selectedAlertType   : 3|3@1+ (1,0) [0|7] "" BCM,IVI,VAL_SCENARIO_CTRL
- SG_ timeoutClear        : 6|1@1+ (1,0) [0|1] "" BCM,IVI,VAL_SCENARIO_CTRL
+ SG_ selectedAlertLevel  : 0|3@1+ (1,0) [0|7] "" BCM,IVI,TST_SCN
+ SG_ selectedAlertType   : 3|3@1+ (1,0) [0|7] "" BCM,IVI,TST_SCN
+ SG_ timeoutClear        : 6|1@1+ (1,0) [0|1] "" BCM,IVI,TST_SCN
  SG_ Reserved0           : 7|9@1+ (1,0) [0|0] "" Vector__XXX
 
-BO_ 453 ethObjectRiskInputMsg: 8 VAL_SCENARIO_CTRL
+BO_ 453 ethObjectRiskInputMsg: 8 TST_SCN
  SG_ ObjectTrackValid      : 0|1@1+  (1,0) [0|1] "" ADAS
  SG_ ObjectRangeM          : 1|9@1+  (1,0) [0|500] "m" ADAS
  SG_ ObjectRelSpeedKph     : 10|9@1- (1,0) [-200|200] "km/h" ADAS
@@ -69,18 +69,18 @@ BO_ 453 ethObjectRiskInputMsg: 8 VAL_SCENARIO_CTRL
  SG_ Reserved0             : 41|23@1+ (1,0) [0|0] "" Vector__XXX
 
 BO_ 454 ethObjectRiskStateMsg: 6 ADAS
- SG_ ObjectRiskClass       : 0|3@1+   (1,0) [0|7] "" ADAS,VAL_SCENARIO_CTRL
- SG_ ObjectTtcMinMs        : 3|14@1+  (1,0) [0|10000] "ms" ADAS,VAL_SCENARIO_CTRL
- SG_ ObjectRiskLevel       : 17|7@1+  (1,0) [0|100] "" ADAS,VAL_SCENARIO_CTRL
- SG_ ObjectTrackValid      : 24|1@1+  (1,0) [0|1] "" ADAS,VAL_SCENARIO_CTRL
+ SG_ ObjectRiskClass       : 0|3@1+   (1,0) [0|7] "" ADAS,TST_SCN
+ SG_ ObjectTtcMinMs        : 3|14@1+  (1,0) [0|10000] "ms" ADAS,TST_SCN
+ SG_ ObjectRiskLevel       : 17|7@1+  (1,0) [0|100] "" ADAS,TST_SCN
+ SG_ ObjectTrackValid      : 24|1@1+  (1,0) [0|1] "" ADAS,TST_SCN
  SG_ Reserved0             : 25|23@1+ (1,0) [0|0] "" Vector__XXX
 
 BO_ 455 ethObjectScenarioAlertMsg: 4 ADAS
- SG_ ObjectAlertLevel      : 0|3@1+   (1,0) [0|7] "" BCM,IVI,VAL_SCENARIO_CTRL
- SG_ ObjectAlertType       : 3|3@1+   (1,0) [0|7] "" BCM,IVI,VAL_SCENARIO_CTRL
- SG_ IntersectionConflict  : 6|1@1+   (1,0) [0|1] "" BCM,IVI,VAL_SCENARIO_CTRL
- SG_ MergeCutIn            : 7|1@1+   (1,0) [0|1] "" BCM,IVI,VAL_SCENARIO_CTRL
- SG_ ObjectRiskClass       : 8|3@1+   (1,0) [0|7] "" BCM,IVI,VAL_SCENARIO_CTRL
+ SG_ ObjectAlertLevel      : 0|3@1+   (1,0) [0|7] "" BCM,IVI,TST_SCN
+ SG_ ObjectAlertType       : 3|3@1+   (1,0) [0|7] "" BCM,IVI,TST_SCN
+ SG_ IntersectionConflict  : 6|1@1+   (1,0) [0|1] "" BCM,IVI,TST_SCN
+ SG_ MergeCutIn            : 7|1@1+   (1,0) [0|1] "" BCM,IVI,TST_SCN
+ SG_ ObjectRiskClass       : 8|3@1+   (1,0) [0|7] "" BCM,IVI,TST_SCN
  SG_ Reserved0             : 11|21@1+ (1,0) [0|0] "" Vector__XXX
 
 BO_ 456 frmLdwsLkasStateMsg: 4 LDWS_LKAS
@@ -291,7 +291,7 @@ CM_ BO_ 518 "Comm_006/007/008/122: Selected alert distribution frame. Produced b
 CM_ SG_ 518 selectedAlertLevel "Final selected alert level (0..7).";
 CM_ SG_ 518 selectedAlertType "Final selected alert type (0..7).";
 CM_ SG_ 518 timeoutClear "Timeout clear pulse for deterministic reset path.";
-CM_ BO_ 453 "Comm_130: Object risk input frame (SIL harness path). Produced by VAL_SCENARIO_CTRL and consumed by ADAS.";
+CM_ BO_ 453 "Comm_130: Object risk input frame (SIL harness path). Produced by TST_SCN and consumed by ADAS.";
 CM_ SG_ 453 ObjectTrackValid "Object track validity.";
 CM_ SG_ 453 ObjectRangeM "Representative object range in meters.";
 CM_ SG_ 453 ObjectRelSpeedKph "Relative speed of representative object (negative=closing).";

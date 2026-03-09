@@ -16,8 +16,8 @@ This plan is closed on the current Dev1 active baseline (`56521c2` aligned).
 - `CLU`
 - `ADAS`
 - `V2X`
-- `VAL_SCENARIO_CTRL`
-- `VAL_BASELINE_CTRL`
+- `TST_SCN`
+- `TST_BAS`
 
 Count: `13`
 

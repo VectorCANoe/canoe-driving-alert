@@ -29,11 +29,11 @@ The current import bank exposes:
 
 | Domain | Visible deep nodes |
 | --- | --- |
-| Chassis | `VCU`, `ESC`, `MDPS`, `ABS`, `EPB`, `TPMS`, `SAS`, `VSM`, `EHB`, `ECS`, `CDC`, `ASM`, `RWS`, `ACU`, `ODS`, `VAL_BASELINE_CTRL` |
+| Chassis | `VCU`, `ESC`, `MDPS`, `ABS`, `EPB`, `TPMS`, `SAS`, `VSM`, `EHB`, `ECS`, `CDC`, `ASM`, `RWS`, `ACU`, `ODS`, `TST_BAS` |
 | Body | `BCM`, `DATC`, `SMK`, `AFLS`, `WIP`, `BSEC`, `DOOR_FL`, `DOOR_FR`, `DOOR_RL`, `DOOR_RR`, `SEAT_DRV`, `SEAT_PASS`, `TGM`, `MIR`, `RATC`, `SRF`, `HLM`, `CSM`, `AHLS`, `ADM`, `PTG`, `BIO`, `MSC` |
 | Infotainment | `IVI`, `CLU`, `HUD`, `AMP`, `VCS`, `TMU`, `NAV`, `OTA`, `DKEY`, `RSE`, `PGS`, `PAK`, `CPAY` |
 | Powertrain | `EMS`, `TCU`, `_4WD`, `BAT_BMS`, `FPCM`, `LVR`, `ISG`, `EOP`, `EWP`, `OBC`, `DCDC`, `MCU`, `INVERTER`, `CPC` |
-| ETH Backbone | `CGW`, `V2X`, `SGW`, `IBOX`, `DCM`, `EDR`, `ETHB`, `VAL_SCENARIO_CTRL` |
+| ETH Backbone | `CGW`, `V2X`, `SGW`, `IBOX`, `DCM`, `EDR`, `ETHB`, `TST_SCN` |
 | ADAS | `ADAS`, `SCC`, `LDWS_LKAS`, `FCA`, `BCW`, `LCA`, `SPAS`, `RSPA`, `AVM`, `FCAM`, `FRADAR`, `SRR_FL`, `SRR_FR`, `SRR_RL`, `SRR_RR`, `PUS`, `DMS`, `OMS`, `AEB`, `PKM`, `RPC`, `RRM`, `SPM`, `HWP`, `LDR`, `TRM` |
 
 ## GUI import order
@@ -62,7 +62,7 @@ These anchors still need extra bus assignments restored in GUI.
 | `BCM` | `Body/` | body + backbone |
 | `IVI` | `Infotainment/` | infotainment + backbone |
 | `CGW` | `ETH_Backbone/` | backbone + cross-domain visibility |
-| `VAL_SCENARIO_CTRL` | `ETH_Backbone/` | validation multibus setup |
+| `TST_SCN` | `ETH_Backbone/` | validation multibus setup |
 
 ## Node intent
 
@@ -71,7 +71,7 @@ These anchors still need extra bus assignments restored in GUI.
 - `ESC.can` ? brake / stability owner
 - `MDPS.can` ? steering owner
 - `ABS.can`, `EPB.can`, `TPMS.can`, `SAS.can`, `VSM.can`, `EHB.can`, `ECS.can`, `CDC.can`, `ASM.can`, `RWS.can` ? chassis/safety runtime anchors
-- `VAL_BASELINE_CTRL.can` ? validation baseline aggregation
+- `TST_BAS.can` ? validation baseline aggregation
 
 ### Body
 - `BCM.can` ? body output owner after hazard/window/ambient/driver-state absorption
@@ -92,7 +92,7 @@ These anchors still need extra bus assignments restored in GUI.
 - `CGW.can` ? cross-domain boundary, fail-safe, and gateway authority
 - `V2X.can` ? V2X emergency input / arbitration ingress
 - `SGW.can`, `IBOX.can`, `DCM.can`, `EDR.can`, `ETHB.can` ? security/infra/connectivity anchors
-- `VAL_SCENARIO_CTRL.can` ? validation scenario orchestrator
+- `TST_SCN.can` ? validation scenario orchestrator
 
 ### ADAS
 - `ADAS.can` ? integrated risk, warning, and assist decision runtime

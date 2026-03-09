@@ -29,18 +29,18 @@ NS_ :
 
 BS_:
 
-BU_: VAL_SCENARIO_CTRL VCU ESC MDPS ADAS CGW ABS EPB TPMS SAS VSM EHB ECS CDC ASM RWS Vector__XXX VAL_BASELINE_CTRL
+BU_: TST_SCN VCU ESC MDPS ADAS CGW ABS EPB TPMS SAS VSM EHB ECS CDC ASM RWS Vector__XXX TST_BAS
 
-BO_ 672 frmVehicleStateCanMsg: 2 VAL_SCENARIO_CTRL
+BO_ 672 frmVehicleStateCanMsg: 2 TST_SCN
  SG_ gVehicleSpeed : 0|8@1+ (1,0) [0|255] "km/h" ESC,ADAS
  SG_ gDriveState   : 8|2@1+ (1,0) [0|3]   ""     ESC,ADAS
  SG_ Reserved0     : 10|6@1+ (1,0) [0|0]  ""     Vector__XXX
 
-BO_ 673 frmSteeringCanMsg: 1 VAL_SCENARIO_CTRL
+BO_ 673 frmSteeringCanMsg: 1 TST_SCN
  SG_ SteeringInput : 0|1@1+ (1,0) [0|1] "" ESC,MDPS
  SG_ Reserved0     : 1|7@1+ (1,0) [0|0] "" Vector__XXX
 
-BO_ 674 frmPedalInputCanMsg: 2 VAL_SCENARIO_CTRL
+BO_ 674 frmPedalInputCanMsg: 2 TST_SCN
  SG_ AccelPedal       : 0|8@1+ (1,0) [0|100] "%" VCU
  SG_ BrakePedal       : 8|8@1+ (1,0) [0|100] "%" ESC
 
@@ -74,9 +74,9 @@ BO_ 290 frmSteeringTorqueMsg: 2 MDPS
  SG_ SteeringAssistLv : 12|4@1+ (1,0) [0|15] "" ESC
 
 BO_ 259 frmChassisHealthMsg: 2 ESC
- SG_ ChassisAliveCnt  : 0|8@1+ (1,0) [0|255] "" VAL_SCENARIO_CTRL,CGW
- SG_ ChassisDiagState : 8|4@1+ (1,0) [0|15] "" VAL_SCENARIO_CTRL,CGW
- SG_ ChassisFailCode  : 12|4@1+ (1,0) [0|15] "" VAL_SCENARIO_CTRL,CGW
+ SG_ ChassisAliveCnt  : 0|8@1+ (1,0) [0|255] "" TST_SCN,CGW
+ SG_ ChassisDiagState : 8|4@1+ (1,0) [0|15] "" TST_SCN,CGW
+ SG_ ChassisFailCode  : 12|4@1+ (1,0) [0|15] "" TST_SCN,CGW
 
 BO_ 291 frmEpsStateMsg: 2 MDPS
  SG_ EpsAssistState   : 0|3@1+ (1,0) [0|7] "" ESC,ADAS
@@ -122,10 +122,10 @@ BO_ 262 frmTirePressureMsg: 4 TPMS
  SG_ TirePressRR      : 24|8@1+ (1,0) [0|255] "kPa" ADAS
 
 BO_ 298 frmEpbStateMsg: 2 EPB
- SG_ EpbState         : 0|2@1+ (1,0) [0|3] "" CLU,VAL_SCENARIO_CTRL
- SG_ EpbWarnLevel     : 2|2@1+ (1,0) [0|3] "" CLU,VAL_SCENARIO_CTRL
+ SG_ EpbState         : 0|2@1+ (1,0) [0|3] "" CLU,TST_SCN
+ SG_ EpbWarnLevel     : 2|2@1+ (1,0) [0|3] "" CLU,TST_SCN
  SG_ Reserved0        : 4|4@1+ (1,0) [0|0] "" Vector__XXX
- SG_ EpbHoldForce     : 8|8@1+ (1,0) [0|255] "%" CLU,VAL_SCENARIO_CTRL
+ SG_ EpbHoldForce     : 8|8@1+ (1,0) [0|255] "%" CLU,TST_SCN
 
 BO_ 299 frmVsmStateMsg: 2 VSM
  SG_ VsmCtrlState     : 0|3@1+ (1,0) [0|7] "" ADAS
@@ -155,15 +155,15 @@ BO_ 304 frmRwsStateMsg: 3 RWS
  SG_ RwsState         : 3|2@1+ (1,0) [0|3] "" ESC,ADAS
  SG_ RearSteerAngle   : 8|8@1+ (1,0) [0|255] "0.1deg" ESC,ADAS
 
-BO_ 676 frmChassisDiagReqMsg: 3 VAL_SCENARIO_CTRL
+BO_ 676 frmChassisDiagReqMsg: 3 TST_SCN
  SG_ ChsDiagServiceId : 0|8@1+ (1,0) [0|255] "" ESC
  SG_ ChsDiagDidHigh   : 8|8@1+ (1,0) [0|255] "" ESC
  SG_ ChsDiagDidLow    : 16|8@1+ (1,0) [0|255] "" ESC
 
 BO_ 263 frmChassisDiagResMsg: 3 ESC
- SG_ ChsDiagRespCode  : 0|8@1+ (1,0) [0|255] "" VAL_SCENARIO_CTRL
- SG_ ChsDiagData0     : 8|8@1+ (1,0) [0|255] "" VAL_SCENARIO_CTRL
- SG_ ChsDiagData1     : 16|8@1+ (1,0) [0|255] "" VAL_SCENARIO_CTRL
+ SG_ ChsDiagRespCode  : 0|8@1+ (1,0) [0|255] "" TST_SCN
+ SG_ ChsDiagData0     : 8|8@1+ (1,0) [0|255] "" TST_SCN
+ SG_ ChsDiagData1     : 16|8@1+ (1,0) [0|255] "" TST_SCN
 
 BO_ 297 frmBrakeWearMsg: 1 ESC
  SG_ BrakePadWearLvl  : 0|8@1+ (1,0) [0|255] "%" ESC
@@ -171,16 +171,16 @@ BO_ 297 frmBrakeWearMsg: 1 ESC
 BO_ 264 frmRoadFrictionMsg: 1 ESC
  SG_ RoadFrictionCoef : 0|8@1+ (1,0) [0|255] "0.01" ADAS
 
-BO_ 677 frmTestResultMsg: 1 VAL_SCENARIO_CTRL
- SG_ ScenarioResult : 0|1@1+ (1,0) [0|1] "" VAL_BASELINE_CTRL
+BO_ 677 frmTestResultMsg: 1 TST_SCN
+ SG_ ScenarioResult : 0|1@1+ (1,0) [0|1] "" TST_BAS
  SG_ Reserved0      : 1|7@1+ (1,0) [0|0] "" Vector__XXX
 
-BO_ 678 frmBaseTestResultMsg: 8 VAL_BASELINE_CTRL
- SG_ BaseScenarioId    : 0|8@1+ (1,0) [0|255] "" VAL_SCENARIO_CTRL
- SG_ BaseScenarioResult: 8|1@1+ (1,0) [0|1]   "" VAL_SCENARIO_CTRL
- SG_ FlowCoverageMask  : 9|15@1+ (1,0) [0|32767] "" VAL_SCENARIO_CTRL
- SG_ TraceSnapshotId   : 24|16@1+ (1,0) [0|65535] "" VAL_SCENARIO_CTRL
- SG_ TestHealth        : 40|8@1+ (1,0) [0|255] "" VAL_SCENARIO_CTRL
+BO_ 678 frmBaseTestResultMsg: 8 TST_BAS
+ SG_ BaseScenarioId    : 0|8@1+ (1,0) [0|255] "" TST_SCN
+ SG_ BaseScenarioResult: 8|1@1+ (1,0) [0|1]   "" TST_SCN
+ SG_ FlowCoverageMask  : 9|15@1+ (1,0) [0|32767] "" TST_SCN
+ SG_ TraceSnapshotId   : 24|16@1+ (1,0) [0|65535] "" TST_SCN
+ SG_ TestHealth        : 40|8@1+ (1,0) [0|255] "" TST_SCN
  SG_ Reserved1         : 48|16@1+ (1,0) [0|0] "" Vector__XXX
 
 CM_ BO_ 672 "Flow_001 core vehicle state input.";
