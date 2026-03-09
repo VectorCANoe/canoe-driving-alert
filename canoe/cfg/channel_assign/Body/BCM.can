@@ -148,8 +148,6 @@ on timer tBodyBase100
   message frmSeatBeltStateMsg mSeatBelt;
   message frmCabinAirStateMsg mCabinAir;
   message frmBodyHealthMsg mHealth;
-  message frmHvacStateMsg mHvacState;
-  message frmHvacActuatorMsg mHvacAct;
   message frmMirrorStateMsg mMirror;
   message frmSeatStateMsg mSeatState;
   message frmSeatControlMsg mSeatCtrl;
@@ -260,17 +258,6 @@ on timer tBodyBase100
   mHealth.BodyDiagState = 0;
   mHealth.BodyFailCode = 0;
   output(mHealth);
-
-  mHvacState.CabinSetTemp = 23;
-  mHvacState.BlowerLevel = 5;
-  mHvacState.AcCompressorOn = 1;
-  output(mHvacState);
-
-  mHvacAct.VentMode = 2;
-  mHvacAct.RecircMode = 0;
-  mHvacAct.DefogMode = 0;
-  mHvacAct.FanRpmStep = 80;
-  output(mHvacAct);
 
   mMirror.MirrorFoldState = 0;
   mMirror.MirrorHeatState = 0;

@@ -29,7 +29,7 @@ NS_ :
 
 BS_:
 
-BU_: BCM BCM BCM BCM ADAS CGW VAL_SCENARIO_CTRL Vector__XXX
+BU_: BCM BCM BCM BCM ADAS CGW DATC VAL_SCENARIO_CTRL Vector__XXX
 
 BO_ 608 frmAmbientControlMsg: 1 BCM
  SG_ AmbientMode    : 0|3@1+ (1,0) [0|7] "" BCM
@@ -81,13 +81,13 @@ BO_ 617 frmBodyHealthMsg: 2 BCM
  SG_ BodyDiagState    : 8|4@1+ (1,0) [0|15] "" VAL_SCENARIO_CTRL,CGW
  SG_ BodyFailCode     : 12|4@1+ (1,0) [0|15] "" VAL_SCENARIO_CTRL,CGW
 
-BO_ 618 frmHvacStateMsg: 2 BCM
+BO_ 618 frmHvacStateMsg: 2 DATC
  SG_ CabinSetTemp     : 0|8@1+ (1,0) [0|100] "degC" BCM
  SG_ BlowerLevel      : 8|4@1+ (1,0) [0|15] "" BCM
  SG_ AcCompressorOn   : 12|1@1+ (1,0) [0|1] "" BCM
  SG_ Reserved0        : 13|3@1+ (1,0) [0|0] "" Vector__XXX
 
-BO_ 619 frmHvacActuatorMsg: 2 BCM
+BO_ 619 frmHvacActuatorMsg: 2 DATC
  SG_ VentMode         : 0|3@1+ (1,0) [0|7] "" BCM
  SG_ RecircMode       : 3|1@1+ (1,0) [0|1] "" BCM
  SG_ DefogMode        : 4|1@1+ (1,0) [0|1] "" BCM
@@ -301,4 +301,3 @@ VAL_ 615 SeatBeltWarnLvl
   1 "Info"
   2 "Warn"
   3 "Critical" ;
-
