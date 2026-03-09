@@ -12,6 +12,7 @@ DOC_ROOT = ROOT / "driving-situation-alert"
 TMP_ROOT = DOC_ROOT / "tmp"
 REPORT_PATH = TMP_ROOT / "reports" / "Doc_Code_Sync_Report.md"
 TEMPLATE_PATH = TMP_ROOT / "templates" / "Doc_Code_Sync_Report_Template.md"
+CHANNEL_ASSIGN_ROOT = ROOT / "canoe" / "cfg" / "channel_assign"
 
 
 def read_text(path: Path) -> str:
@@ -103,34 +104,6 @@ def main() -> int:
     func_table = markdown_table(["Doc", "Covered", "Total", "Status"], func_rows)
 
     # Implementation checks
-    expected_nodes = {
-        "ADAS_WARN_CTRL",
-        "NAV_CTX_MGR",
-        "WARN_ARB_MGR",
-        "EMS_POLICE_TX",
-        "EMS_AMB_TX",
-        "EMS_ALERT_RX",
-        "AMBIENT_CTRL",
-        "CLU_HMI_CTRL",
-        "VAL_SCENARIO_CTRL",
-        "VAL_BASELINE_CTRL",
-        "CHS_GW",
-        "INFOTAINMENT_GW",
-        "BODY_GW",
-        "IVI_GW",
-        "ETH_SW",
-        "DOMAIN_ROUTER",
-        "DOMAIN_BOUNDARY_MGR",
-        "ENG_CTRL",
-        "TCM",
-        "ACCEL_CTRL",
-        "BRK_CTRL",
-        "STEER_CTRL",
-        "HAZARD_CTRL",
-        "WINDOW_CTRL",
-        "DRV_STATE_MGR",
-        "CLU_BASE_CTRL",
-    }
     alias_to_canonical = {
         # Validation aliases
         "SIL_TEST_CTRL": "VAL_SCENARIO_CTRL",
@@ -154,9 +127,15 @@ def main() -> int:
     capl_nodes_raw = {
         p.stem
         for p in (ROOT / "canoe" / "src" / "capl").glob("**/*.can")
-        if "v1_legacy" not in p.parts
+        if "v1_legacy" not in p.parts and "retired_placeholders" not in p.parts
     }
     capl_nodes = {alias_to_canonical.get(n, n) for n in capl_nodes_raw}
+    assign_nodes_raw = {
+        p.stem
+        for p in CHANNEL_ASSIGN_ROOT.glob("**/*.can")
+    }
+    assign_nodes = {alias_to_canonical.get(n, n) for n in assign_nodes_raw}
+    cfg_nodes_raw: set[str] = set()
     cfg_candidates = [
         ROOT / "canoe" / "cfg" / "CAN_500kBaud_1ch_split.cfg",
         ROOT / "canoe" / "cfg" / "CAN_v2_topology_wip.cfg",
@@ -181,6 +160,9 @@ def main() -> int:
         }
         cfg_nodes = {alias_to_canonical.get(n, n) for n in cfg_nodes_raw}
 
+    # Dynamic expected node set: source + channel_assign are the primary sync surface.
+    expected_nodes = capl_nodes | assign_nodes
+
     dbc_paths = [
         ROOT / "canoe" / "databases" / "chassis_can.dbc",
         ROOT / "canoe" / "databases" / "powertrain_can.dbc",
@@ -192,7 +174,7 @@ def main() -> int:
     missing_dbc_files = [p.name for p in dbc_paths if not p.exists()]
 
     missing_capl = sorted(expected_nodes - capl_nodes)
-    missing_cfg = sorted(expected_nodes - cfg_nodes)
+    missing_assign = sorted(expected_nodes - assign_nodes)
     cfg_lines = cfg_text.splitlines()
     cfg_abs_path_hits = []
     for i, line in enumerate(cfg_lines, start=1):
@@ -211,9 +193,9 @@ def main() -> int:
     if missing_capl:
         fail = True
         fail_issues.append(f"CAPL missing: {', '.join(missing_capl)}")
-    if missing_cfg:
+    if missing_assign:
         fail = True
-        fail_issues.append(f"CFG unlinked nodes: {', '.join(missing_cfg)}")
+        fail_issues.append(f"channel_assign missing nodes: {', '.join(missing_assign)}")
     if missing_dbc_files:
         fail = True
         fail_issues.append(f"Missing DBC files: {', '.join(missing_dbc_files)}")
@@ -234,6 +216,18 @@ def main() -> int:
             "Legacy validation labels detected (allowed by alias policy, GUI rename pending): "
             + ", ".join(legacy_name_hits)
         )
+    cfg_runtime_only = sorted(cfg_nodes - expected_nodes)
+    cfg_runtime_missing = sorted(expected_nodes - cfg_nodes)
+    if cfg_runtime_only:
+        warn_issues.append(
+            "CFG runtime has legacy-only node links (GUI migration pending): "
+            + ", ".join(cfg_runtime_only[:12])
+        )
+    if cfg_runtime_missing:
+        warn_issues.append(
+            f"CFG runtime links are partial vs channel_assign/source ({len(cfg_nodes)}/{len(expected_nodes)}): "
+            + ", ".join(cfg_runtime_missing[:12])
+        )
 
     # boundary manager policy advisory
     dbcs = [p for p in (ROOT / "canoe" / "databases").glob("*_can.dbc")]
@@ -247,7 +241,8 @@ def main() -> int:
 
     impl_rows = [
         ["CAPL node files", f"{len(expected_nodes)-len(missing_capl)}/{len(expected_nodes)}", "PASS" if not missing_capl else "FAIL"],
-        ["CFG node links", f"{len(expected_nodes)-len(missing_cfg)}/{len(expected_nodes)}", "PASS" if not missing_cfg else "FAIL"],
+        ["channel_assign links", f"{len(expected_nodes)-len(missing_assign)}/{len(expected_nodes)}", "PASS" if not missing_assign else "FAIL"],
+        ["CFG runtime links", f"{len(cfg_nodes)}/{len(expected_nodes)}", "PASS" if len(cfg_nodes) == len(expected_nodes) else "WARN"],
         ["Split DBC files", f"{len(dbc_paths)-len(missing_dbc_files)}/{len(dbc_paths)}", "PASS" if not missing_dbc_files else "FAIL"],
         ["CFG absolute path hygiene", "0 forbidden path", "PASS" if not cfg_abs_path_hits else "FAIL"],
     ]

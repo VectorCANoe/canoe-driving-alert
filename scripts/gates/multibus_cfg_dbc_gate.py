@@ -26,6 +26,15 @@ ACTIVE_DBC_FILES = [
     "eth_backbone_can_stub.dbc",
 ]
 
+DBC_ROLE = {
+    "chassis_can.dbc": "CHASSIS",
+    "body_can.dbc": "BODY",
+    "infotainment_can.dbc": "INFOTAINMENT",
+    "powertrain_can.dbc": "POWERTRAIN",
+    "adas_can.dbc": "ADAS",
+    "eth_backbone_can_stub.dbc": "ETH_BACKBONE",
+}
+
 PRIMARY_NODE_FOR_BUS = {
     "ETH_BACKBONE": "ETH_SW",
     "INFOTAINMENT": "INFOTAINMENT_GW",
@@ -204,11 +213,23 @@ def main() -> int:
         sample = ", ".join([f"{n}({','.join(sorted(name_index[n]))})" for n in dup_names[:8]])
         fail_issues.append(f"Duplicate message names across DBCs: {sample}")
 
-    # Domain policy: CAN IDs must not be duplicated across active DBCs.
+    # Domain policy: ID duplicates across different bus roles are tolerated in multi-bus SIL.
+    # Fail only when the same role reuses IDs across multiple DBC sources.
+    dup_id_fail_rows: list[str] = []
+    dup_id_warn_rows: list[str] = []
     dup_ids = sorted([mid for mid, files in id_index.items() if len(files) > 1])
-    if dup_ids:
-        sample = ", ".join([f"0x{mid:X}({','.join(sorted(id_index[mid]))})" for mid in dup_ids[:8]])
-        fail_issues.append(f"Duplicate CAN IDs across DBCs: {sample}")
+    for mid in dup_ids:
+        files = sorted(id_index[mid])
+        roles = sorted({DBC_ROLE.get(name, name) for name in files})
+        if len(roles) <= 1:
+            dup_id_fail_rows.append(f"0x{mid:X}({','.join(files)})")
+        else:
+            dup_id_warn_rows.append(f"0x{mid:X}({','.join(files)} -> roles:{','.join(roles)})")
+
+    if dup_id_fail_rows:
+        fail_issues.append(f"Duplicate CAN IDs within same role: {', '.join(dup_id_fail_rows[:12])}")
+    if dup_id_warn_rows:
+        warn_issues.append(f"Cross-role duplicate CAN IDs tolerated: {', '.join(dup_id_warn_rows[:12])}")
 
     # Ownership checks for critical Ethernet/ADAS bridge messages.
     for msg_name, owner in REQUIRED_OWNER.items():

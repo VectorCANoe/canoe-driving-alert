@@ -121,20 +121,19 @@
 - Timeout clear: 1000 ms
 
 ## 6) Current Status Snapshot
-- Dev1 최신 runtime anchor 승격 반영: `a6fecf1 + 2216335 + f61cb26` (Body comfort + door/seat + chassis control wave 포함)
-- visible surface bank: `100` (`38 active/deep runtime + 62 placeholder`)
-- deep runtime profile: `36 product + 2 validation` (`canoe/docs/operations/reference/OEM_ACTIVE_TARGET_PROFILE_2026-03-09.md`)
-- `00e_ECU_Naming_Standard.md`: active/placeholder 상태를 Dev1 승격 기준으로 동기화 진행 중
+- Dev1 최신 runtime anchor 승격 반영: `a6fecf1 + 2216335 + f61cb26 + 1fda129`
+- visible surface bank: `100` (`99 active + 1 placeholder(NIGHT_VISION)`)
+- deep runtime profile: `98 product + VALIDATION_HARNESS(2 runtime nodes)` 기준으로 운영
+- `00e_ECU_Naming_Standard.md`: active/placeholder 상태를 최신 승격 기준으로 동기화 완료
 - `00f_CAN_ID_Allocation_Standard.md`: placeholder ID 비할당/승격 시 배정 규칙 유지
 
 ## 7) Immediate Next Steps
-1. Freeze visible bank policy in `00e` (`deep/validation/placeholder` 3층 분리).
-2. Keep `00f` placeholder ID policy as `no allocation until promotion`.
-3. Sync `0301/0302/0303` owner 표현을 surface ECU 중심으로 고정.
-4. Sync `0304` to `Var -> Runtime -> Surface` without placeholder over-specification.
-5. Keep `04` as runtime reality and mark promoted vs placeholder boundary.
-6. Dev2에 `check_capl_sync.py` inventory policy 업데이트 요청 (현재 placeholder 포함 기준 미동기화).
-7. GUI import/compile cycle은 `deep runtime anchors` 우선으로 검증하고 placeholder는 compile-safe만 확인.
+1. Keep `00f` placeholder ID policy as `no allocation until promotion`.
+2. `0301/0302/0303` owner 표기에서 surface ECU 우선 원칙 유지(구현 모듈명은 supporting note로 한정).
+3. `0304`는 `Var -> Runtime -> Surface` 추적을 유지하고 placeholder 과잉 명세를 금지.
+4. `04`는 runtime reality를 유지하고, 승격/미승격 경계를 명시한다.
+5. Dev2 게이트 정책(`check_capl_sync.py`)에서 residual placeholder(`NIGHT_VISION`) 처리 규칙만 정리한다.
+6. GUI import/compile cycle은 active 99 우선 검증, placeholder 1은 compile-safe 확인만 수행한다.
 
 ## 8) Do Not Do
 - Do not change file encoding away from UTF-8.
