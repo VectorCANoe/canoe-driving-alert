@@ -39,8 +39,8 @@ Wrapper absorption for the current runtime wave is complete.
 | `CLU` | cluster output owner |
 | `ADAS` | integrated risk / warning / assist decision owner |
 | `V2X` | integrated V2X ingress / emergency context owner |
-| `TST_SCN` | validation orchestrator |
-| `TST_BAS` | validation result aggregator |
+| `TEST_SCN` | validation orchestrator |
+| `TEST_BAS` | validation result aggregator |
 
 Anchor count: `13` (product runtime `11` + validation runtime `2`)
 

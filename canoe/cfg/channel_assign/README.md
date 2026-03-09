@@ -18,22 +18,22 @@ The current import bank exposes:
 
 | Domain | Folder | Active nodes |
 | --- | --- | --- |
-| Chassis | `Chassis/` | `16` |
+| Chassis | `Chassis/` | `15` |
 | Body | `Body/` | `24` |
 | Infotainment | `Infotainment/` | `13` |
 | Powertrain | `Powertrain/` | `15` |
-| ETH Backbone | `ETH_Backbone/` | `8` |
+| ETH Backbone | `ETH_Backbone/` | `9` |
 | ADAS | `ADAS/` | `26` |
 
 ## Active deep runtime anchors
 
 | Domain | Visible deep nodes |
 | --- | --- |
-| Chassis | `VCU`, `ESC`, `MDPS`, `ABS`, `EPB`, `TPMS`, `SAS`, `VSM`, `EHB`, `ECS`, `CDC`, `ASM`, `RWS`, `ACU`, `ODS`, `TST_BAS` |
+| Chassis | `VCU`, `ESC`, `MDPS`, `ABS`, `EPB`, `TPMS`, `SAS`, `VSM`, `EHB`, `ECS`, `CDC`, `ASM`, `RWS`, `ACU`, `ODS` |
 | Body | `BCM`, `DATC`, `SMK`, `AFLS`, `WIP`, `BSEC`, `DOOR_FL`, `DOOR_FR`, `DOOR_RL`, `DOOR_RR`, `SEAT_DRV`, `SEAT_PASS`, `TGM`, `MIR`, `RATC`, `SRF`, `HLM`, `CSM`, `AHLS`, `ADM`, `PTG`, `BIO`, `MSC` |
 | Infotainment | `IVI`, `CLU`, `HUD`, `AMP`, `VCS`, `TMU`, `NAV`, `OTA`, `DKEY`, `RSE`, `PGS`, `PAK`, `CPAY` |
 | Powertrain | `EMS`, `TCU`, `_4WD`, `BAT_BMS`, `FPCM`, `LVR`, `ISG`, `EOP`, `EWP`, `OBC`, `DCDC`, `MCU`, `INVERTER`, `CPC` |
-| ETH Backbone | `CGW`, `V2X`, `SGW`, `IBOX`, `DCM`, `EDR`, `ETHB`, `TST_SCN` |
+| ETH Backbone | `CGW`, `V2X`, `SGW`, `IBOX`, `DCM`, `EDR`, `ETHB`, `TEST_SCN`, `TEST_BAS` |
 | ADAS | `ADAS`, `SCC`, `LDWS_LKAS`, `FCA`, `BCW`, `LCA`, `SPAS`, `RSPA`, `AVM`, `FCAM`, `FRADAR`, `SRR_FL`, `SRR_FR`, `SRR_RL`, `SRR_RR`, `PUS`, `DMS`, `OMS`, `AEB`, `PKM`, `RPC`, `RRM`, `SPM`, `HWP`, `LDR`, `TRM` |
 
 ## GUI import order
@@ -47,11 +47,11 @@ The current import bank exposes:
 
 | Network | Import folder | Visible node count |
 | --- | --- | --- |
-| Chassis | `Chassis/` | `16` |
+| Chassis | `Chassis/` | `15` |
 | Body | `Body/` | `24` |
 | Infotainment | `Infotainment/` | `13` |
 | Powertrain | `Powertrain/` | `15` |
-| ETH_Backbone | `ETH_Backbone/` | `8` |
+| ETH_Backbone | `ETH_Backbone/` | `9` |
 | ADAS | `ADAS/` | `26` |
 
 ## Multibus anchors
@@ -61,7 +61,9 @@ These anchors still need extra bus assignments restored in GUI.
 | Node | Primary folder | Extra bus context to restore in GUI |
 | --- | --- | --- |
 | `CGW` | `ETH_Backbone/` | backbone + cross-domain visibility |
-| `TST_SCN` | `ETH_Backbone/` | validation multibus setup |
+| `TEST_SCN` | `ETH_Backbone/` | validation multibus setup |
+
+`TEST_BAS` is intentionally **not** a multibus anchor. It stays on `ETH_Backbone/` as a narrow validation result aggregator.
 
 Formal rationale:
 
@@ -110,7 +112,7 @@ Nodes not listed above should compile on their primary domain DBC if the current
 - `ESC.can` ? brake / stability owner
 - `MDPS.can` ? steering owner
 - `ABS.can`, `EPB.can`, `TPMS.can`, `SAS.can`, `VSM.can`, `EHB.can`, `ECS.can`, `CDC.can`, `ASM.can`, `RWS.can` ? chassis/safety runtime anchors
-- `TST_BAS.can` ? validation baseline aggregation
+- `TEST_BAS.can` ? backbone-side validation baseline aggregation
 
 ### Body
 - `BCM.can` ? body output owner after hazard/window/ambient/driver-state absorption
@@ -131,7 +133,7 @@ Nodes not listed above should compile on their primary domain DBC if the current
 - `CGW.can` ? cross-domain boundary, fail-safe, and gateway authority
 - `V2X.can` ? V2X emergency input / arbitration ingress
 - `SGW.can`, `IBOX.can`, `DCM.can`, `EDR.can`, `ETHB.can` ? security/infra/connectivity anchors
-- `TST_SCN.can` ? validation scenario orchestrator
+- `TEST_SCN.can` ? validation scenario orchestrator
 
 ### ADAS
 - `ADAS.can` ? integrated risk, warning, and assist decision runtime

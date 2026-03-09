@@ -178,7 +178,7 @@ Classify each active SysVar path by boundary:
 - `ADAS.can` reads many `Core::*` and `CoreState::*`
 - `ADAS.can` writes object-risk states into `Core::*`
 - `BCM.can`, `IVI.can`, `CLU.can` use `Test::*` overrides/settings
-- `TST_SCN.can` is the allowed harness-heavy writer
+- `TEST_SCN.can` is the allowed harness-heavy writer
 
 ### Active Shortcut Hotspots
 - `CHGW -> Core::vehicleSpeedNorm -> ADAS`
@@ -209,8 +209,8 @@ Runtime state and result outputs must be deterministic.
 - one baseline result owner
 
 ### Current Known Baseline
-- `frmTestResultMsg (0x2A5)` owner: `TST_SCN`
-- `frmBaseTestResultMsg (0x2A6)` owner: `TST_BAS`
+- `frmTestResultMsg (0x2A5)` owner: `TEST_SCN`
+- `frmBaseTestResultMsg (0x2A6)` owner: `TEST_BAS`
 
 ### Hotspots
 - `Core::objectEventCode`
@@ -269,8 +269,8 @@ Current first-pass findings:
 
 1. `Comm_106 / frmBaseTestResultMsg` still has one doc-side residual mismatch.
    - `0302` flow chain is already correct.
-   - `0303` top message row still says `TST_BAS -> TST_SCN`.
-   - Active runtime has `TST_BAS` sender, but no active `on message frmBaseTestResultMsg` consumer in `canoe/src/capl`.
+   - `0303` top message row still says `TEST_BAS -> TEST_SCN`.
+   - Active runtime has `TEST_BAS` sender, but no active `on message frmBaseTestResultMsg` consumer in `canoe/src/capl`.
    - Action: docs-side clarification required.
 
 2. `frmEmergencyBroadcastMsg (0x1C0)` still has a sender ownership ambiguity in DBC.

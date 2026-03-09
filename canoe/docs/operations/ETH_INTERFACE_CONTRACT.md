@@ -34,40 +34,40 @@
 | ethSelectedAlertMsg | 0xE200 | 2 | selectedAlertLevel | 0~2 | 0~7 | ADAS | BCM, IVI | Event + 50ms | 중재 결과 |
 |  |  |  | selectedAlertType | 3~5 | 0~7 | ADAS | BCM, IVI | Event + 50ms | 중재 결과 |
 |  |  |  | timeoutClear | 8 | 0~1 | ADAS | BCM, IVI | Event + 50ms | 1000ms 무갱신 해제 |
-| ethEmergencyRiskMsg | 0x1C3(SIL Stub) / 0xE210(Logical) | 5 | proximityRiskLevel | 0~7 | 0~100 | ADAS | ADAS, TST_SCN | 100ms | V2 근접위험 산정 |
-|  |  |  | eta | 8~15 | 0~255 | ADAS | ADAS, TST_SCN | 100ms | 도달예상시간(s) |
-|  |  |  | vehicleSpeed | 16~23 | 0~255 | ADAS | ADAS, TST_SCN | 100ms | 자차 속도(km/h) |
-|  |  |  | emergencyDirection | 24~25 | 0~3 | ADAS | ADAS, TST_SCN | 100ms | 방향 정보 |
-|  |  |  | emergencyType | 26~27 | 0~2 | ADAS | ADAS, TST_SCN | 100ms | 긴급차량 유형 |
-| ethDecelAssistReqMsg | 0x1C4(SIL Stub) / 0xE211(Logical) | 4 | decelAssistReq | 0 | 0~1 | ADAS | ESC, TST_SCN | Event + 50ms | decel assist decision export for SIL/runtime seam |
-|  |  |  | failSafeMode | 1~2 | 0~2 | ADAS | ESC, TST_SCN | Event + 50ms | 0:Normal,1:Degraded,2:Blocked |
-|  |  |  | driverReleaseReason | 3~4 | 0~3 | ADAS | ESC, TST_SCN | Event + 50ms | 0:None,1:Steer,2:Brake,3:FailSafe |
-|  |  |  | emergencyContext | 5~6 | 0~2 | ADAS | ESC, TST_SCN | Event + 50ms | 긴급 컨텍스트 |
-|  |  |  | proximityRiskLevel | 8~15 | 0~100 | ADAS | ESC, TST_SCN | Event + 50ms | 위험도 전달 |
-| ethFailSafeStateMsg | 0x111(SIL Stub) / 0xE212(Logical) | 2 | domainPathStatus | 0~1 | 0~2 | CGW | ADAS, TST_SCN | 100ms + Event | 0:Normal,1:Degraded,2:Failed |
-|  |  |  | e2eHealthState | 2~3 | 0~2 | CGW | ADAS, TST_SCN | 100ms + Event | 0:Failed,1:Degraded,2:Healthy |
-|  |  |  | failSafeMode | 4~5 | 0~2 | CGW | ADAS, TST_SCN | 100ms + Event | 강등 모드 상태 |
-|  |  |  | boundaryAlive | 6 | 0~1 | CGW | ADAS, TST_SCN | 100ms + Event | 경계관리 노드 생존 상태 |
-| ethObjectRiskInputMsg | 0x1C5(SIL Stub) / 0xE213(Logical) | 8 | objectTrackValid | 0 | 0~1 | TST_SCN (SIL harness) | ADAS | 100ms | 객체 입력 유효성 |
-|  |  |  | objectRange | 1~9 | 0~500 | TST_SCN (SIL harness) | ADAS | 100ms | 대표 객체 상대거리(m) |
-|  |  |  | objectRelSpeed | 10~18 | -200~200 | TST_SCN (SIL harness) | ADAS | 100ms | 대표 객체 상대속도(km/h) |
-|  |  |  | objectConfidence | 19~25 | 0~100 | TST_SCN (SIL harness) | ADAS | 100ms | 객체 신뢰도(%) |
-|  |  |  | intersectionConflict | 26 | 0~1 | TST_SCN (SIL harness) | ADAS | 100ms | 교차로 충돌 맥락 |
-|  |  |  | mergeCutIn | 27 | 0~1 | TST_SCN (SIL harness) | ADAS | 100ms | 합류/끼어들기 맥락 |
-|  |  |  | objectAlertHoldMs | 28~40 | 0~5000 | TST_SCN (SIL harness) | ADAS | 100ms | 추적손실 보수 유지시간(ms) |
-| ethObjectRiskStateMsg | 0x1C6(SIL Stub) / 0xE214(Logical) | 6 | objectRiskClass | 0~2 | 0~7 | ADAS | ADAS, TST_SCN | 100ms + Event | 객체 위험 등급 |
-|  |  |  | objectTtcMinMs | 3~16 | 0~10000 | ADAS | ADAS, TST_SCN | 100ms + Event | 객체 최소 TTC(ms) |
-|  |  |  | objectRiskLevel | 17~23 | 0~100 | ADAS | ADAS, TST_SCN | 100ms + Event | 객체 위험도(0~100) |
-|  |  |  | objectTrackValid | 24 | 0~1 | ADAS | ADAS, TST_SCN | 100ms + Event | 객체 추적 유효 상태 |
-| ethObjectScenarioAlertMsg | 0x1C7(SIL Stub) / 0xE215(Logical) | 4 | objectAlertLevel | 0~2 | 0~7 | ADAS | BCM, IVI, TST_SCN | Event + 50ms | 객체 맥락 경고 레벨 |
-|  |  |  | objectAlertType | 3~5 | 0~7 | ADAS | BCM, IVI, TST_SCN | Event + 50ms | 객체 맥락 경고 타입 |
-|  |  |  | intersectionConflict | 6 | 0~1 | ADAS | BCM, IVI, TST_SCN | Event + 50ms | 교차로 충돌 플래그 |
-|  |  |  | mergeCutIn | 7 | 0~1 | ADAS | BCM, IVI, TST_SCN | Event + 50ms | 합류 충돌 플래그 |
-|  |  |  | objectRiskClass | 8~10 | 0~7 | ADAS | BCM, IVI, TST_SCN | Event + 50ms | 객체 위험 분류 |
-| ethObjectSafetyStateMsg | 0x1C8(SIL Stub) / 0xE216(Logical) | 4 | objectConfidence | 0~6 | 0~100 | CGW | ADAS, TST_SCN, V2X | 100ms + Event | 객체 신뢰도 |
-|  |  |  | objectEventCode | 7~22 | 0~65535 | CGW | ADAS, TST_SCN, V2X | 100ms + Event | 객체 이벤트 코드 |
-|  |  |  | objectFailSafeMode | 23~24 | 0~2 | CGW | ADAS, TST_SCN, V2X | 100ms + Event | 객체 경로 강등 모드 |
-|  |  |  | objectTrackValid | 25 | 0~1 | CGW | ADAS, TST_SCN, V2X | 100ms + Event | 객체 추적 유효 상태 |
+| ethEmergencyRiskMsg | 0x1C3(SIL Stub) / 0xE210(Logical) | 5 | proximityRiskLevel | 0~7 | 0~100 | ADAS | ADAS, TEST_SCN | 100ms | V2 근접위험 산정 |
+|  |  |  | eta | 8~15 | 0~255 | ADAS | ADAS, TEST_SCN | 100ms | 도달예상시간(s) |
+|  |  |  | vehicleSpeed | 16~23 | 0~255 | ADAS | ADAS, TEST_SCN | 100ms | 자차 속도(km/h) |
+|  |  |  | emergencyDirection | 24~25 | 0~3 | ADAS | ADAS, TEST_SCN | 100ms | 방향 정보 |
+|  |  |  | emergencyType | 26~27 | 0~2 | ADAS | ADAS, TEST_SCN | 100ms | 긴급차량 유형 |
+| ethDecelAssistReqMsg | 0x1C4(SIL Stub) / 0xE211(Logical) | 4 | decelAssistReq | 0 | 0~1 | ADAS | ESC, TEST_SCN | Event + 50ms | decel assist decision export for SIL/runtime seam |
+|  |  |  | failSafeMode | 1~2 | 0~2 | ADAS | ESC, TEST_SCN | Event + 50ms | 0:Normal,1:Degraded,2:Blocked |
+|  |  |  | driverReleaseReason | 3~4 | 0~3 | ADAS | ESC, TEST_SCN | Event + 50ms | 0:None,1:Steer,2:Brake,3:FailSafe |
+|  |  |  | emergencyContext | 5~6 | 0~2 | ADAS | ESC, TEST_SCN | Event + 50ms | 긴급 컨텍스트 |
+|  |  |  | proximityRiskLevel | 8~15 | 0~100 | ADAS | ESC, TEST_SCN | Event + 50ms | 위험도 전달 |
+| ethFailSafeStateMsg | 0x111(SIL Stub) / 0xE212(Logical) | 2 | domainPathStatus | 0~1 | 0~2 | CGW | ADAS, TEST_SCN | 100ms + Event | 0:Normal,1:Degraded,2:Failed |
+|  |  |  | e2eHealthState | 2~3 | 0~2 | CGW | ADAS, TEST_SCN | 100ms + Event | 0:Failed,1:Degraded,2:Healthy |
+|  |  |  | failSafeMode | 4~5 | 0~2 | CGW | ADAS, TEST_SCN | 100ms + Event | 강등 모드 상태 |
+|  |  |  | boundaryAlive | 6 | 0~1 | CGW | ADAS, TEST_SCN | 100ms + Event | 경계관리 노드 생존 상태 |
+| ethObjectRiskInputMsg | 0x1C5(SIL Stub) / 0xE213(Logical) | 8 | objectTrackValid | 0 | 0~1 | TEST_SCN (SIL harness) | ADAS | 100ms | 객체 입력 유효성 |
+|  |  |  | objectRange | 1~9 | 0~500 | TEST_SCN (SIL harness) | ADAS | 100ms | 대표 객체 상대거리(m) |
+|  |  |  | objectRelSpeed | 10~18 | -200~200 | TEST_SCN (SIL harness) | ADAS | 100ms | 대표 객체 상대속도(km/h) |
+|  |  |  | objectConfidence | 19~25 | 0~100 | TEST_SCN (SIL harness) | ADAS | 100ms | 객체 신뢰도(%) |
+|  |  |  | intersectionConflict | 26 | 0~1 | TEST_SCN (SIL harness) | ADAS | 100ms | 교차로 충돌 맥락 |
+|  |  |  | mergeCutIn | 27 | 0~1 | TEST_SCN (SIL harness) | ADAS | 100ms | 합류/끼어들기 맥락 |
+|  |  |  | objectAlertHoldMs | 28~40 | 0~5000 | TEST_SCN (SIL harness) | ADAS | 100ms | 추적손실 보수 유지시간(ms) |
+| ethObjectRiskStateMsg | 0x1C6(SIL Stub) / 0xE214(Logical) | 6 | objectRiskClass | 0~2 | 0~7 | ADAS | ADAS, TEST_SCN | 100ms + Event | 객체 위험 등급 |
+|  |  |  | objectTtcMinMs | 3~16 | 0~10000 | ADAS | ADAS, TEST_SCN | 100ms + Event | 객체 최소 TTC(ms) |
+|  |  |  | objectRiskLevel | 17~23 | 0~100 | ADAS | ADAS, TEST_SCN | 100ms + Event | 객체 위험도(0~100) |
+|  |  |  | objectTrackValid | 24 | 0~1 | ADAS | ADAS, TEST_SCN | 100ms + Event | 객체 추적 유효 상태 |
+| ethObjectScenarioAlertMsg | 0x1C7(SIL Stub) / 0xE215(Logical) | 4 | objectAlertLevel | 0~2 | 0~7 | ADAS | BCM, IVI, TEST_SCN | Event + 50ms | 객체 맥락 경고 레벨 |
+|  |  |  | objectAlertType | 3~5 | 0~7 | ADAS | BCM, IVI, TEST_SCN | Event + 50ms | 객체 맥락 경고 타입 |
+|  |  |  | intersectionConflict | 6 | 0~1 | ADAS | BCM, IVI, TEST_SCN | Event + 50ms | 교차로 충돌 플래그 |
+|  |  |  | mergeCutIn | 7 | 0~1 | ADAS | BCM, IVI, TEST_SCN | Event + 50ms | 합류 충돌 플래그 |
+|  |  |  | objectRiskClass | 8~10 | 0~7 | ADAS | BCM, IVI, TEST_SCN | Event + 50ms | 객체 위험 분류 |
+| ethObjectSafetyStateMsg | 0x1C8(SIL Stub) / 0xE216(Logical) | 4 | objectConfidence | 0~6 | 0~100 | CGW | ADAS, TEST_SCN, V2X | 100ms + Event | 객체 신뢰도 |
+|  |  |  | objectEventCode | 7~22 | 0~65535 | CGW | ADAS, TEST_SCN, V2X | 100ms + Event | 객체 이벤트 코드 |
+|  |  |  | objectFailSafeMode | 23~24 | 0~2 | CGW | ADAS, TEST_SCN, V2X | 100ms + Event | 객체 경로 강등 모드 |
+|  |  |  | objectTrackValid | 25 | 0~1 | CGW | ADAS, TEST_SCN, V2X | 100ms + Event | 객체 추적 유효 상태 |
 
 ---
 
@@ -86,6 +86,22 @@
 - 시스템/문서 아키텍처는 Logical ID를 기준으로 해석한다.
 - CANoe.CAN 라이선스 SIL 구현은 Stub ID(0x1C3/0x1C4/0x111/0x1C5~0x1C8)를 사용한다.
 - Ethernet 라이선스 적용 시 동일 의미를 Logical ID 기반으로 재검증한다.
+
+---
+
+## 2.2 Validation Backbone Result Seam
+
+Validation harness result aggregation is intentionally kept on the backbone-side seam.
+
+| Message | Active DBC | Tx Node | Rx Node | Topology Intent |
+|---|---|---|---|---|
+| `frmTestResultMsg (0x2A5)` | `eth_backbone_can_stub.dbc` | `TEST_SCN` | `TEST_BAS` | scenario-level validation result export |
+| `frmBaseTestResultMsg (0x2A6)` | `eth_backbone_can_stub.dbc` | `TEST_BAS` | downstream test/report consumers | baseline aggregation result export |
+
+- `TEST_SCN` stays multibus because it injects and observes cross-domain scenarios.
+- `TEST_BAS` stays single-bus on `ETH_Backbone` because it aggregates only the summarized result chain.
+- `TEST_BAS` is intentionally not placed in `Chassis` and not merged into `CGW`.
+- On Ethernet cutover, this seam should change by replacing transport-facing CAN-stub handlers and bindings only; downstream ECU logic remains unchanged.
 
 ---
 

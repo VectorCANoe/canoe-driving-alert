@@ -37,7 +37,7 @@ This report records the first-pass Dev1 audit decisions for the active CANoe SIL
 | A-008 | `alertHistoryCount` semantic collision | `V2X` counter increment removed. `CLU` remains the active owner for query/display history count. | Closed |
 | A-009 | output mirror duplication (`IVI` vs `CLU`) | `IVI` now remains the cluster/HMI frame producer, while `CLU` is the sole active writer for mirrored `CoreState::*` and final `Cluster::warningTextCode` display state. | Closed |
 | A-010 | guarded override / validation exception writers | Some duplicate writers are intentional: fail-safe override and harness object injection. Treat as controlled exceptions, not immediate defects. | Closed |
-| A-011 | `TST_SCN` delayed timer residue | Scenario stop/switch paths did not cancel `tScenarioEval`, `tScenarioPhase2`, `tScenarioPhase3`, so delayed callbacks could still fire after reset or mode switch. Fixed in code. | Closed |
+| A-011 | `TEST_SCN` delayed timer residue | Scenario stop/switch paths did not cancel `tScenarioEval`, `tScenarioPhase2`, `tScenarioPhase3`, so delayed callbacks could still fire after reset or mode switch. Fixed in code. | Closed |
 | A-012 | timeout/reset/fail-safe control paths | `V2X`, `ADAS`, `CLU`, `CGW` are structurally deterministic in the active profile after reviewing watchdog clear, hold-time, duplicate-popup guard, and fail-safe recompute paths. | Closed |
 | A-013 | `timeNowInt64()` time-base consistency | Vector local help confirms `timeNowInt64()` returns nanoseconds and `timeNow()` returns 10 microseconds. Active profile was normalized to `getSimulationTimeMs()` for all ms-based thresholds. | Closed |
 | A-014 | observability baseline for Dev2 evidence | Active runtime already exposes enough state-change logging to explain scenario verdicts without adding broad debug noise. | Closed |
@@ -107,8 +107,8 @@ This report records the first-pass Dev1 audit decisions for the active CANoe SIL
 
 **Evidence**
 - Runtime sender owner:
-  - `TST_BAS`
-- Runtime duplicate sender in `TST_SCN` was already removed.
+  - `TEST_BAS`
+- Runtime duplicate sender in `TEST_SCN` was already removed.
 - `0302` chain is aligned.
 - `0303` still contains a residual top-row mismatch.
 
@@ -294,7 +294,7 @@ This report records the first-pass Dev1 audit decisions for the active CANoe SIL
   - `CGW` forces clear under degraded/fail-safe conditions
 - `Core::object*`
   - `ADAS` writes runtime object state
-  - `TST_SCN` injects/reset test inputs for SIL harness scenarios
+  - `TEST_SCN` injects/reset test inputs for SIL harness scenarios
 
 **Decision**
 - These are controlled exceptions, not accidental duplicate writers.
@@ -307,7 +307,7 @@ This report records the first-pass Dev1 audit decisions for the active CANoe SIL
 
 ---
 
-### A-011. `TST_SCN` delayed timer residue
+### A-011. `TEST_SCN` delayed timer residue
 
 **Evidence**
 - Scenario apply path schedules delayed callbacks:
@@ -317,7 +317,7 @@ This report records the first-pass Dev1 audit decisions for the active CANoe SIL
 - Stop/reset and diag-switch paths previously canceled only:
   - `tDemoStep`
 - Active file:
-  - `canoe/src/capl/input/TST_SCN.can`
+  - `canoe/src/capl/input/TEST_SCN.can`
 
 **Decision**
 - This was a real runtime defect.
@@ -380,7 +380,7 @@ This report records the first-pass Dev1 audit decisions for the active CANoe SIL
     - `CLU`
   - `/100000` conversion in:
     - `CGW`
-    - `TST_SCN`
+    - `TEST_SCN`
 
 **Decision**
 - This was a real active-profile defect, not just a naming issue.
@@ -400,7 +400,7 @@ This report records the first-pass Dev1 audit decisions for the active CANoe SIL
   - `ADAS`
   - `CLU`
   - `CGW`
-  - `TST_SCN`
+  - `TEST_SCN`
 - Left `v1_legacy` untouched.
 
 ---
@@ -409,7 +409,7 @@ This report records the first-pass Dev1 audit decisions for the active CANoe SIL
 
 **Evidence**
 - Scenario harness evidence:
-  - `TST_SCN` logs `EVIDENCE_IN` and `EVIDENCE_OUT`
+  - `TEST_SCN` logs `EVIDENCE_IN` and `EVIDENCE_OUT`
 - Runtime decision logs:
   - `ADAS`
     - input filter validity
@@ -481,7 +481,7 @@ This is the planned swap boundary at real Ethernet cutover.
 | `IVI -> Infotainment::* -> IVI` | nav context bridge | acceptable SIL shortcut for now | Track, no immediate refactor |
 | `CHGW -> Core::* -> ADAS` | vehicle-state bridge into logic | acceptable SIL shortcut for now | Track, no immediate refactor |
 | `ADAS -> Core::decelAssistReq` and `CGW -> Core::decelAssistReq` | arbitration + fail-safe override | controlled exception | Keep |
-| `ADAS -> Core::object*` and `TST_SCN -> Core::object*` | runtime object state + harness injection/reset | controlled validation exception | Keep |
+| `ADAS -> Core::object*` and `TEST_SCN -> Core::object*` | runtime object state + harness injection/reset | controlled validation exception | Keep |
 | `IVI -> CoreState::*` and `CLU -> CoreState::*` | output mirror duplication | open cleanup target | Track |
 | `timeNowInt64()` raw vs `/100000` conversion | corrected to `getSimulationTimeMs()` in active profile | closed implementation item | Closed |
 
@@ -498,7 +498,7 @@ These items should be recorded now and handed to the docs team together later.
 
 | Request ID | Target Doc | Request |
 |---|---|---|
-| DSR-001 | `0303_Communication_Specification.md` | Fix residual `Comm_106 / frmBaseTestResultMsg` wording to match the active chain: `TST_SCN -> frmTestResultMsg(0x2A5) -> TST_BAS -> frmBaseTestResultMsg(0x2A6)` |
+| DSR-001 | `0303_Communication_Specification.md` | Fix residual `Comm_106 / frmBaseTestResultMsg` wording to match the active chain: `TEST_SCN -> frmTestResultMsg(0x2A5) -> TEST_BAS -> frmBaseTestResultMsg(0x2A6)` |
 | DSR-002 | `0304_System_Variables.md` | Add active `Test::*` rows used in runtime: `displayModeSetting`, `alertVolumeSetting`, `seatBeltOverride`, `historyQueryOffset`, `historyQueryCode` |
 | DSR-003 | `0302_NWflowDef.md`, `0303_Communication_Specification.md` | When the team is ready, clarify that `ETHM` is a SIL health/freshness monitor in the active profile, not a forwarding Ethernet switch |
 

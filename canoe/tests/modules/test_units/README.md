@@ -3,7 +3,7 @@
 Native CANoe Test Unit assets for the current SIL cycle.
 
 ## Scope
-- Keep the existing validation harness (`TST_SCN`, `TST_BAS`)
+- Keep the existing validation harness (`TEST_SCN`, `TEST_BAS`)
 - Add minimal official CANoe Test Unit PoC assets on top of that harness
 - Leave Dev2 TUI/CLI as the external orchestration, packaging, and CI bridge
 

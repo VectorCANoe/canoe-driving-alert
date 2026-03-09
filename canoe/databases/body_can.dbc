@@ -29,7 +29,7 @@ NS_ :
 
 BS_:
 
-BU_: BCM ADAS CGW DATC SMK BSEC WIP AFLS DOOR_FL DOOR_FR DOOR_RL DOOR_RR SEAT_DRV SEAT_PASS TGM MIR RATC SRF HLM CSM AHLS ADM PTG BIO ACU ODS MSC TST_SCN Vector__XXX
+BU_: BCM ADAS CGW DATC SMK BSEC WIP AFLS DOOR_FL DOOR_FR DOOR_RL DOOR_RR SEAT_DRV SEAT_PASS TGM MIR RATC SRF HLM CSM AHLS ADM PTG BIO ACU ODS MSC TEST_SCN Vector__XXX
 
 BO_ 608 frmAmbientControlMsg: 1 BCM
  SG_ AmbientMode    : 0|3@1+ (1,0) [0|7] "" BCM
@@ -77,9 +77,9 @@ BO_ 616 frmCabinAirStateMsg: 2 BCM
  SG_ AirQualityIndex  : 8|8@1+ (1,0) [0|255] "" BCM
 
 BO_ 617 frmBodyHealthMsg: 2 BCM
- SG_ BodyAliveCnt     : 0|8@1+ (1,0) [0|255] "" TST_SCN,CGW
- SG_ BodyDiagState    : 8|4@1+ (1,0) [0|15] "" TST_SCN,CGW
- SG_ BodyFailCode     : 12|4@1+ (1,0) [0|15] "" TST_SCN,CGW
+ SG_ BodyAliveCnt     : 0|8@1+ (1,0) [0|255] "" TEST_SCN,CGW
+ SG_ BodyDiagState    : 8|4@1+ (1,0) [0|15] "" TEST_SCN,CGW
+ SG_ BodyFailCode     : 12|4@1+ (1,0) [0|15] "" TEST_SCN,CGW
 
 BO_ 618 frmHvacStateMsg: 2 DATC
  SG_ CabinSetTemp     : 0|8@1+ (1,0) [0|100] "degC" BCM

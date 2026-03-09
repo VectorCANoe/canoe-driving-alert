@@ -253,8 +253,8 @@ Current active baseline first:
 74. `BAT_BMS`
 75. `ASM`
 76. `RWS`
-77. `VALIDATION_HARNESS` (`TST_SCN`)
-78. `VALIDATION_HARNESS` (`TST_BAS`)
+77. `VALIDATION_HARNESS` (`TEST_SCN`)
+78. `VALIDATION_HARNESS` (`TEST_BAS`)
 79. `FPCM`
 80. `LVR`
 81. `ISG`
@@ -292,8 +292,8 @@ Current active baseline first:
 ## Chosen 4 Validation / Test Stack Elements
 
 1. `VALIDATION_HARNESS`
-2. `TST_SCN`
-3. `TST_BAS`
+2. `TEST_SCN`
+3. `TEST_BAS`
 4. `CANOE_NATIVE_TEST_SUITE`
 
 ## Trim-Down Fallback

@@ -97,8 +97,8 @@ Focus:
 
 Primary runtime:
 
-- `TST_SCN`
-- `TST_BAS`
+- `TEST_SCN`
+- `TEST_BAS`
 
 Focus:
 

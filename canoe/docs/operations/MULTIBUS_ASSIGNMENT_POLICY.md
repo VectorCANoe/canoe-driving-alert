@@ -40,7 +40,7 @@ These nodes are expected to see multiple buses as part of their normal runtime r
 | Node | Reason |
 | --- | --- |
 | `CGW` | cross-domain boundary, fail-safe authority, backbone seam supervision |
-| `TST_SCN` | validation scenario orchestration and full-system signal injection/observation |
+| `TEST_SCN` | validation scenario orchestration and full-system signal injection/observation |
 
 ### 3.2 Cross-domain visibility consumers
 
@@ -61,48 +61,49 @@ These nodes remain single visible ECU nodes, but require additional GUI bus/data
 | `HWP` | ADAS | Powertrain |
 | `LDR` | ADAS | ETH backbone |
 
-## 4. Why `TST_BAS` Stays Single-Bus
+## 4. Why `TEST_BAS` Stays Single-Bus
 
-`TST_BAS` is intentionally different from `TST_SCN`.
+`TEST_BAS` is intentionally different from `TEST_SCN`.
 
-### 4.1 What `TST_BAS` actually does
+### 4.1 What `TEST_BAS` actually does
 
-`TST_BAS`:
+`TEST_BAS`:
 
 - receives `frmTestResultMsg (0x2A5)`
 - computes the baseline aggregate result
 - transmits `frmBaseTestResultMsg (0x2A6)`
 
-Both messages live in `chassis_can.dbc`.
+Both messages live in `eth_backbone_can_stub.dbc` on the validation backbone seam.
 
 Source references:
 
-- [TST_BAS.can](C:\Users\이준영\CANoe-IVI-OTA\canoe\src\capl\ecu\TST_BAS.can)
-- [chassis_can.dbc](C:\Users\이준영\CANoe-IVI-OTA\canoe\databases\chassis_can.dbc)
+- [TEST_BAS.can](C:\Users\이준영\CANoe-IVI-OTA\canoe\src\capl\ecu\TEST_BAS.can)
+- [eth_backbone_can_stub.dbc](C:\Users\이준영\CANoe-IVI-OTA\canoe\databases\eth_backbone_can_stub.dbc)
 
 ### 4.2 Why this is still "system-wide" validation
 
-`TST_BAS` is not a raw multi-domain collector.
+`TEST_BAS` is not a raw multi-domain collector.
 
-System-wide information is already condensed before it reaches `TST_BAS`:
+System-wide information is already condensed before it reaches `TEST_BAS`:
 
-- `TST_SCN` orchestrates scenario inputs across domains
+- `TEST_SCN` orchestrates scenario inputs across domains
 - runtime ECUs evaluate and publish/reflect state
-- `TST_SCN` emits `frmTestResultMsg`
-- `TST_BAS` only aggregates the final baseline result frame
+- `TEST_SCN` emits `frmTestResultMsg`
+- `TEST_BAS` only aggregates the final baseline result frame
 
 So:
 
 - the **validation meaning** is system-wide
-- the **transport boundary** for `TST_BAS` is intentionally narrow
+- the **transport boundary** for `TEST_BAS` is intentionally narrow
+- the **topology placement** stays on the backbone-side validation seam, not in a product chassis ECU and not inside `CGW`
 
-That is why `TST_BAS` remains single-bus while `TST_SCN` remains multibus.
+That is why `TEST_BAS` remains single-bus while `TEST_SCN` remains multibus.
 
-### 4.3 When `TST_BAS` would need multibus
+### 4.3 When `TEST_BAS` would need multibus
 
-Only change this if `TST_BAS` begins to directly consume raw cross-domain messages instead of the current summarized result chain.
+Only change this if `TEST_BAS` begins to directly consume raw cross-domain messages instead of the current summarized result chain.
 
-Under the current design, widening `TST_BAS` adds complexity without improving the validation architecture.
+Under the current design, widening `TEST_BAS` adds complexity without improving the validation architecture.
 
 ## 5. GUI Restore Rule
 

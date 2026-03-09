@@ -16,8 +16,8 @@ This plan is closed on the current Dev1 active baseline (`56521c2` aligned).
 - `CLU`
 - `ADAS`
 - `V2X`
-- `TST_SCN`
-- `TST_BAS`
+- `TEST_SCN`
+- `TEST_BAS`
 
 Count: `13`
 

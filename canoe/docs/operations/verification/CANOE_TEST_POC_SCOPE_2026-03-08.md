@@ -57,7 +57,7 @@ Reason:
 ### 5.1 Rule
 
 - Product ECUs and validation harness nodes must not be mixed without labeling.
-- `TST_SCN` and `TST_BAS` are allowed in documentation only when explicitly marked as:
+- `TEST_SCN` and `TEST_BAS` are allowed in documentation only when explicitly marked as:
   - `Validation Harness`
   - `Validation-only`
   - `Non-Production`
@@ -82,7 +82,7 @@ Reason:
 
 ### 5.4 Current Project Judgment
 
-- The current project is **not wrong** to include `TST_SCN` / `TST_BAS`.
+- The current project is **not wrong** to include `TEST_SCN` / `TEST_BAS`.
 - The reason is that CANoe SIL itself is the verification environment, and the harness nodes own validation-only frames such as `0x2A5` and `0x2A6`.
 - The important boundary is labeling, not removal.
 

@@ -5,7 +5,7 @@
 ## 0) 공통 준비
 - Configuration: `canoe/cfg/CAN_v2_topology_wip.cfg`
 - Measurement: Start
-- Active Nodes: current panel-demo subset only (`TST_SCN` 포함, full active bank와 별도)
+- Active Nodes: current panel-demo subset only (`TEST_SCN` 포함, full active bank와 별도)
 - Trace 창에 아래 메시지 표시:
   - `0x100`, `0x101`, `0x110`, `0x210`, `0x220`
 - Panel 출력 표시:

@@ -26,8 +26,8 @@ This document maps the current wide reviewer-facing surface ECU inventory (`100`
 | `CLU` | `CLU` | IVI/HMI | Active |
 | `ADAS` | `ADAS` | ADAS/V2X | Active |
 | `V2X` | `V2X` | ADAS/V2X | Active |
-| `TST_SCN` | `VALIDATION_HARNESS` | Validation | Validation-only |
-| `TST_BAS` | `VALIDATION_HARNESS` | Validation | Validation-only |
+| `TEST_SCN` | `VALIDATION_HARNESS` | Validation | Validation-only |
+| `TEST_BAS` | `VALIDATION_HARNESS` | Validation | Validation-only |
 
 ## Placeholder policy
 Remaining visible surface ECUs stay as placeholder nodes and do not receive runtime logic, message ownership, or ID allocation until explicitly promoted.
