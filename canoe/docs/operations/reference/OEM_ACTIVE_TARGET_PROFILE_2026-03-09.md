@@ -10,7 +10,8 @@ Use this as the real execution profile for the current reset cycle.
 
 2. Deep active runtime implementation
 - target: `12~18`
-- chosen baseline: `16`
+- chosen baseline (current): `13` (`11` product + `2` validation)
+- stretch target (next promotions): `16`
 
 3. Core custom / differentiating ECU surfaces
 - target: `6~10`
@@ -46,6 +47,17 @@ Treat the active `100` surface inventory as three simultaneous layers:
 - active in the bank, but placeholder-first unless promoted
 
 This keeps the architecture wide without making the top layer look like a thin demo.
+
+## Surface Type Rule (Current)
+
+- `PHYSICAL/DOMAIN ECU`: `EMS`, `TCU`, `VCU`, `ESC`, `MDPS`, `BCM`, `IVI`, `CLU`, `ADAS`, `V2X`, `CGW`
+- `FUNCTION/FEATURE SURFACE`: `SCC`, `HIGHWAY_PILOT`, `AEB_DOMAIN`, `SURROUND_PARK_MASTER` 등
+- `INFRA SERVICE SURFACE`: `EDGE_LOGGER`, `CARPAY_CTRL`, `PHONE_AS_KEY` 등
+- `VALIDATION`: `VALIDATION_HARNESS`, `VAL_*`
+
+Rule:
+- current deep runtime promotion은 `PHYSICAL/DOMAIN ECU` 우선
+- function/infra surfaces는 placeholder-first를 유지
 
 ## Active 100-Surface Vehicle Inventory Profile
 
@@ -160,21 +172,26 @@ This keeps the architecture wide without making the top layer look like a thin d
 
 Vehicle surface total: `100`
 
-## Chosen 16 Deep Runtime Surfaces
+## Deep Runtime Plan (`13` current, `16` stretch)
+
+Current active baseline first:
 
 1. `CGW`
-2. `ETH_BACKBONE`
-3. `EMS`
-4. `TCU`
-5. `VCU`
-6. `ESC`
-7. `MDPS`
-8. `BCM`
-9. `IVI`
-10. `CLU`
-11. `ADAS`
-12. `V2X`
-13. `VALIDATION_HARNESS`
+2. `EMS`
+3. `TCU`
+4. `VCU`
+5. `ESC`
+6. `MDPS`
+7. `BCM`
+8. `IVI`
+9. `CLU`
+10. `ADAS`
+11. `V2X`
+12. `VALIDATION_HARNESS` (`VAL_SCENARIO_CTRL`, `VAL_BASELINE_CTRL`)
+
+Promotion candidates to reach stretch target `16`:
+
+13. `ETH_BACKBONE`
 14. `SCC`
 15. `TMU`
 16. `SGW`
@@ -188,7 +205,7 @@ Vehicle surface total: `100`
 5. `IVI`
 6. `CGW`
 7. `VALIDATION_HARNESS`
-8. `SCC`
+8. `VCU`
 
 ## Chosen 4 Validation / Test Stack Elements
 
@@ -212,6 +229,6 @@ If implementation pressure rises later, the first trim-down target is:
 - This file is the active execution profile for using that 100-bank in practice.
 - Rule:
   - active architecture breadth follows the `100` bank
-  - active deep implementation stays controlled at `16`
+  - active deep implementation is currently `13` and may expand to `16` by promotion
   - premium/option layer stays placeholder-first unless promoted
   - trim-down is allowed later, but breadth-first framing comes first now

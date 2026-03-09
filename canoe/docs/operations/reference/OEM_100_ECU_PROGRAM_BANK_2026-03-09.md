@@ -33,10 +33,25 @@ Recommended implementation depth remains:
 - deep runtime surfaces: `14~16`
 - core custom feature surfaces: `6~8`
 
+## Surface Type Tag (for reviewer clarity)
+
+To avoid confusing functional/service surfaces with physical ECU modules, use these tags:
+
+- `PHYSICAL`: typical domain ECU/controller in OEM architecture
+- `FUNCTION_SURFACE`: feature/service surface name shown for architecture breadth
+- `INFRA_SERVICE`: integration/governance/logging/security service surface
+- `VALIDATION`: test/harness surface only
+
+Representative non-physical surfaces in this bank:
+
+- `CARPAY_CTRL`, `PHONE_AS_KEY`, `EDGE_LOGGER`, `AEB_DOMAIN`, `HIGHWAY_PILOT`, `SURROUND_PARK_MASTER`
+
+These remain placeholder-first unless explicitly promoted.
+
 ## Activation Rule
 
 - Treat this document as the active surface inventory bank for the reset cycle.
-- Use [OEM_ACTIVE_TARGET_PROFILE_2026-03-09.md](C:\Users\이준영\CANoe-IVI-OTA\canoe\docs\operations\reference\OEM_ACTIVE_TARGET_PROFILE_2026-03-09.md) to decide:
+- Use [OEM_ACTIVE_TARGET_PROFILE_2026-03-09.md](./OEM_ACTIVE_TARGET_PROFILE_2026-03-09.md) to decide:
   - which `100` surfaces are primary reviewer-facing
   - which remain placeholder-first
   - which are promoted to deep runtime

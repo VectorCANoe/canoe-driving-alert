@@ -1,19 +1,16 @@
 # Runtime Rename Split Plan (2026-03-09)
 
-## Final rename result
+## Status
 
-The runtime rename wave is now closed on the active Dev1 baseline.
+This plan is closed on the current Dev1 active baseline (`56521c2` aligned).
 
-## Final active runtime names
+## Final active runtime names (current)
 - `EMS`
 - `TCU`
 - `VCU`
 - `ESC`
 - `MDPS`
-- `CHGW`
-- `PTGW`
 - `CGW`
-- `ETHM`
 - `BCM`
 - `IVI`
 - `CLU`
@@ -21,6 +18,20 @@ The runtime rename wave is now closed on the active Dev1 baseline.
 - `V2X`
 - `VAL_SCENARIO_CTRL`
 - `VAL_BASELINE_CTRL`
+
+Count: `13`
+
+## Historical note (retired working labels)
+
+The following labels were used in an intermediate design discussion and are now retired from active runtime:
+- `CHGW`
+- `PTGW`
+- `ETHM`
+
+Current ownership for those concerns is implemented in:
+- `VCU` (powertrain/vehicle-state seam)
+- `MDPS` (steering seam)
+- `CGW` (cross-domain boundary/freshness/fail-safe authority)
 
 ## Removed wrapper-only names
 These no longer belong in the active tree.
@@ -36,4 +47,7 @@ These no longer belong in the active tree.
 - `WARN_ARB_MGR`
 
 ## Import rule
-The user can now import directly from `canoe/cfg/channel_assign/**` without reintroducing wrapper-only nodes.
+Import from `canoe/cfg/channel_assign/**` must keep:
+- active runtime names above
+- OEM placeholder surface names
+- wrapper-only names excluded

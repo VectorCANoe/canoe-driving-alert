@@ -296,24 +296,18 @@ Optional 8th depth candidate:
 - `VCU -> VCU`
 - `ESC -> ESC`
 - `MDPS -> MDPS`
-- `BCM`, `BCM` -> `BCM`
+- `BCM -> BCM`
 - `IVI` -> `IVI`
 - `CLU` -> `CLU`
-- `ADAS`, `ADAS` -> `ADAS`
-- `CHGW`, `IVI`, `PTGW`, `CGW` -> `CGW`
-- `ETHM -> ETH_BACKBONE`
+- `ADAS -> ADAS`
+- `CGW -> CGW`
 - `V2X` (+ later fold producers) -> `V2X`
 - `VAL_* -> VALIDATION_HARNESS`
 
 ### Merge Candidate
 
-- `BCM`
-- `BCM`
-- `BCM`
-- `IVI`
-- `CLU`
-- `V2X`
-- `V2X`
+- Wrapper merge wave is already closed in current baseline.
+- New merge targets should be promoted from placeholder bank only after owner/ID/contract closure.
 
 ### Placeholder Only For Now
 

@@ -1,14 +1,15 @@
-# Primary-56 to Runtime Mapping (2026-03-09)
+# Primary Surface to Runtime Mapping (2026-03-09)
 
 ## Purpose
 
-This document maps the wide reviewer-facing surface ECU inventory to the reduced active runtime anchor set after absorption.
+This document maps the current wide reviewer-facing surface ECU inventory (`100`) to the current active runtime set (`13`).
 
 ## Current counts
-- primary reviewer-facing surface ECUs: `56`
-- active runtime anchors: `14`
+- visible surface ECUs: `100`
+- active runtime anchors: `13`
+- product runtime anchors: `11`
 - validation-only nodes: `2`
-- absorbed wrapper-only nodes removed from active tree: `10`
+- placeholder surface nodes: `87`
 
 ## Active runtime anchor assignment
 
@@ -19,10 +20,7 @@ This document maps the wide reviewer-facing surface ECU inventory to the reduced
 | `VCU` | `VCU` | Powertrain | Active |
 | `ESC` | `ESC` | Chassis/Safety | Active |
 | `MDPS` | `MDPS` | Chassis/Safety | Active |
-| `CHGW` | `CHGW` | Chassis/Safety | Active |
-| `PTGW` | `PTGW` | Powertrain | Active |
 | `CGW` | `CGW` | Infrastructure | Active |
-| `ETHM` | `ETH_BACKBONE` | Infrastructure | Active |
 | `BCM` | `BCM` | Body/Comfort | Active |
 | `IVI` | `IVI` | IVI/HMI | Active |
 | `CLU` | `CLU` | IVI/HMI | Active |
@@ -32,4 +30,8 @@ This document maps the wide reviewer-facing surface ECU inventory to the reduced
 | `VAL_BASELINE_CTRL` | `VALIDATION_HARNESS` | Validation | Validation-only |
 
 ## Placeholder policy
-The remaining primary surface ECUs stay visible at architecture level, but they do not receive CAPL runtime nodes until explicitly promoted.
+Remaining visible surface ECUs stay as placeholder nodes and do not receive runtime logic, message ownership, or ID allocation until explicitly promoted.
+
+## Historical note
+
+`CHGW`, `PTGW`, `ETHM` were intermediate naming candidates in pre-merge audit notes and are not part of the current active runtime mapping baseline.

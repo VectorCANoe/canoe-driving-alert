@@ -33,10 +33,7 @@ Wrapper absorption for the current runtime wave is complete.
 | `VCU` | propulsion / accel command owner |
 | `ESC` | brake / stability owner |
 | `MDPS` | steering owner |
-| `CHGW` | chassis ingress normalization, synthesis, and chassis diag boundary |
-| `PTGW` | powertrain routing policy and drive-mode boundary |
 | `CGW` | cross-domain health, fail-safe, and boundary authority |
-| `ETHM` | backbone freshness monitor |
 | `BCM` | body output owner |
 | `IVI` | infotainment output owner |
 | `CLU` | cluster output owner |
@@ -45,7 +42,18 @@ Wrapper absorption for the current runtime wave is complete.
 | `VAL_SCENARIO_CTRL` | validation orchestrator |
 | `VAL_BASELINE_CTRL` | validation result aggregator |
 
+Anchor count: `13` (product runtime `11` + validation runtime `2`)
+
+## Historical rename closure
+
+- `CHGW`, `PTGW`, `ETHM` are not active runtime anchors in the current tree.
+- related responsibilities are now covered by:
+  - `VCU` (vehicle/powertrain seam publication)
+  - `MDPS` (steering seam publication)
+  - `CGW` (boundary/freshness/fail-safe authority)
+
 ## Current policy
 - absorb helper/runtime-wrapper nodes
 - keep ECU anchors and infrastructure anchors split
-- do not add new ECUs until this anchor set is stable in GUI and compile flow
+- keep placeholder surfaces compile-safe and non-traffic by default
+- do not promote placeholder to deep runtime without owner/ID/contract closure

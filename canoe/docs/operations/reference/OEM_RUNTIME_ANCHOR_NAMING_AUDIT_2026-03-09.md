@@ -1,108 +1,63 @@
-﻿# OEM Runtime Anchor Naming Audit (2026-03-09)
+# OEM Runtime Anchor Naming Audit (2026-03-09)
 
 ## Scope
-This audit rechecks the remaining runtime anchors that were intentionally not absorbed:
-- `CHGW`
-- `PTGW`
-- `CGW`
-- `ETHM`
 
-The goal is to decide:
-1. whether the current name is only ugly or structurally misleading
-2. whether the node should remain split
-3. what OEM-normalized runtime name should be used later during GUI/runtime rename
+This audit verifies that the **current active runtime anchor names** align with:
+
+1. OEM-style reviewer readability
+2. runtime ownership boundaries
+3. current active code baseline (`56521c2`)
+
+## Current Active Runtime Set
+
+- Product runtime anchors (`11`):
+  - `EMS`, `TCU`, `VCU`, `ESC`, `MDPS`, `CGW`, `BCM`, `IVI`, `CLU`, `ADAS`, `V2X`
+- Validation-only runtime (`2`):
+  - `VAL_SCENARIO_CTRL`, `VAL_BASELINE_CTRL`
 
 ## Summary Decision
 
-| Current Runtime Node | Keep Split | Prior Mapping | Rechecked Result | Proposed OEM-Normalized Runtime Name | Reason |
-| --- | --- | --- | --- | --- | --- |
-| `CHGW` | Yes | `CGW` | prior mapping too broad | `CHGW` | not a central gateway; owns chassis state synthesis and chassis diagnostic response |
-| `PTGW` | Yes | `CGW` | prior mapping too broad | `PTGW` | routes powertrain policy and publishes drive mode / powertrain health |
-| `CGW` | Yes | `CGW` | keep under gateway/infrastructure | `CGW` | owns cross-domain health, fail-safe, boundary authority |
-| `ETHM` | Yes | `ETH_BACKBONE` | keep under Ethernet backbone | `ETHM` | monitors freshness/age only, not a real switch/router |
+| Runtime Node | Keep Split | Surface Mapping | Decision | Reason |
+| --- | --- | --- | --- | --- |
+| `EMS` | Yes | `ECM` | Keep | engine state owner |
+| `TCU` | Yes | `TCM` | Keep | transmission owner |
+| `VCU` | Yes | `VCU` | Keep | vehicle/powertrain seam owner |
+| `ESC` | Yes | `ESP` | Keep | brake/stability owner |
+| `MDPS` | Yes | `EPS` | Keep | steering owner |
+| `CGW` | Yes | `CGW` | Keep | cross-domain boundary/fail-safe authority |
+| `BCM` | Yes | `BCM` | Keep | body output owner |
+| `IVI` | Yes | `IVI` | Keep | infotainment owner |
+| `CLU` | Yes | `CLUSTER` | Keep | cluster display owner |
+| `ADAS` | Yes | `ADAS` | Keep | risk/decision owner |
+| `V2X` | Yes | `V2X` | Keep | emergency ingress/context owner |
+| `VAL_SCENARIO_CTRL` | Yes | `VALIDATION_HARNESS` | Keep | validation orchestrator |
+| `VAL_BASELINE_CTRL` | Yes | `VALIDATION_HARNESS` | Keep | validation result aggregator |
 
-## Detailed Readback
+## Historical Labels (Retired)
 
-### 1. `CHGW`
-Source: [CHGW.can](../../src/capl/input/CHGW.can)
+The following labels were intermediate audit artifacts and are no longer active runtime names:
 
-Observed responsibilities:
-- normalizes `frmVehicleStateCanMsg`, `frmSteeringCanMsg`, `frmPedalInputCanMsg` into `@Core::*`
-- publishes wheel speed, yaw/accel, brake, accel, MDPS, ABS, ESC, TCS, suspension, tire pressure, brake wear, road friction
-- serves `frmChassisDiagReqMsg -> frmChassisDiagResMsg`
+- `CHGW`
+- `PTGW`
+- `ETHM`
 
-Decision:
-- this is not a thin CAN gateway
-- this is the active chassis domain runtime anchor
-- therefore `CGW` classification is misleading
+Related concerns are currently handled by:
 
-Recommended naming direction:
-- surface owner remains chassis-side
-- runtime normalized name: `CHGW`
-- OEM surface alias later: `ESC`, `MDPS`, `ABS`, `TPMS`, `SAS`, `ECS` remain as breadth ECUs, but this anchor is the current chassis domain controller
+- `VCU` (vehicle/powertrain seam publication)
+- `MDPS` (steering seam publication)
+- `CGW` (boundary/freshness/fail-safe authority)
 
-### 2. `PTGW`
-Source: [PTGW.can](../../src/capl/ecu/PTGW.can)
+## Structural Finding
 
-Observed responsibilities:
-- derives `routingPolicy`
-- publishes `frmVehicleModeMsg`, `frmPowerLimitMsg`, `frmCruiseStateMsg`, `frmEnergyFlowStateMsg`, `frmPowertrainCtrlAuthMsg`
-- mirrors `driveMode`, `ecoMode`, `sportMode`
-- handles `frmPtDiagReqMsg -> frmPtDiagResMsg`
+No urgent naming defect was found in the current active runtime set.
 
-Decision:
-- this is not a central gateway either
-- it is closer to a powertrain domain coordinator/controller
-- therefore `CGW` classification is misleading
+The remaining risk is not naming but governance consistency:
 
-Recommended naming direction:
-- runtime normalized name: `PTGW`
-- surface alignment later: `EMS`, `TCU`, `VCU`, `AWD_4WD` remain separate surface ECUs, but current active anchor is powertrain-domain level
+- keep `surface vs runtime vs validation` separation explicit in docs
+- do not promote placeholder nodes directly to deep runtime without owner/ID/contract closure
 
-### 3. `CGW`
-Source: [CGW.can](../../src/capl/ecu/CGW.can)
+## Action
 
-Observed responsibilities:
-- monitors chassis/body/infotainment health age
-- owns `domainBoundaryStatus`, `domainPathStatus`, `e2eHealthState`
-- owns fail-safe escalation and clears `decelAssistReq`
-- emits `ethFailSafeStateMsg`, `ethObjectSafetyStateMsg`
-
-Decision:
-- keep split
-- this is the correct safety/boundary authority anchor
-- current name is implementation-heavy but structurally valid
-
-Recommended naming direction:
-- runtime normalized name: `CGW`
-- surface classification may stay under infrastructure/gateway domain, not under body/chassis/powertrain
-
-### 4. `ETHM`
-Source: [ETHM.can](../../src/capl/network/ETHM.can)
-
-Observed responsibilities:
-- tracks age for vehicle/nav/steering/emergency monitor messages
-- computes only `gEthPathHealthy`
-- does not route payloads
-
-Decision:
-- keep split
-- current name overstates switch behavior
-- active SIL meaning is path freshness monitor, not switch fabric
-
-Recommended naming direction:
-- runtime normalized name: `ETHM`
-- surface owner remains `ETH_BACKBONE`
-
-## Structural Issues Found
-No urgent code defect requiring immediate refactor was found in this audit.
-
-However, two classification issues were corrected:
-1. `CHGW` should not be treated as `CGW`
-2. `PTGW` should not be treated as `CGW`
-
-## Next Dev1 Action
-1. update runtime-to-surface mapping documents in `canoe/docs/operations/reference`
-2. keep actual file rename deferred until GUI/runtime rename wave
-3. use the normalized names above for future reviewer-facing GUI labels
-
+1. Keep this audit as the naming baseline for current runtime anchors.
+2. Treat placeholder ECU expansion as surface-only unless promoted by wave plan.
+3. Update sync scripts (`check_capl_sync.py`) to the new active inventory policy.
