@@ -12,8 +12,8 @@ Do not edit files here directly. Edit `canoe/src/capl/**` first, then mirror int
 
 The current import bank exposes:
 
-- deep runtime anchors: `62`
-- shallow placeholder surfaces: `38`
+- deep runtime anchors: `66`
+- shallow placeholder surfaces: `34`
 - total visible nodes: `100`
 
 | Domain | Folder | Active nodes |
@@ -30,7 +30,7 @@ The current import bank exposes:
 | Domain | Visible deep nodes |
 | --- | --- |
 | Chassis | `VCU`, `ESC`, `MDPS`, `ABS`, `EPB`, `TPMS`, `SAS`, `VSM`, `EHB`, `ECS`, `CDC`, `VAL_BASELINE_CTRL` |
-| Body | `BCM`, `DATC`, `SMK`, `AFLS`, `WIPER_MODULE`, `BODY_SECURITY_MODULE`, `DOOR_FL`, `DOOR_FR`, `DOOR_RL`, `DOOR_RR`, `SEAT_DRV`, `SEAT_PASS`, `TAILGATE_MODULE`, `MIRROR_MODULE` |
+| Body | `BCM`, `DATC`, `SMK`, `AFLS`, `WIPER_MODULE`, `BODY_SECURITY_MODULE`, `DOOR_FL`, `DOOR_FR`, `DOOR_RL`, `DOOR_RR`, `SEAT_DRV`, `SEAT_PASS`, `TAILGATE_MODULE`, `MIRROR_MODULE`, `REAR_CLIMATE_MODULE`, `SUNROOF_MODULE`, `HEADLAMP_LEVELING`, `CABIN_SENSING` |
 | Infotainment | `IVI`, `CLU`, `HUD`, `AMP`, `VOICE_ASSIST`, `TMU`, `NAV_MODULE`, `OTA_MASTER`, `DIGITAL_KEY`, `RSE` |
 | Powertrain | `EMS`, `TCU` |
 | ETH Backbone | `CGW`, `V2X`, `SGW`, `IBOX`, `DCM`, `VAL_SCENARIO_CTRL` |
@@ -75,7 +75,7 @@ These anchors still need extra bus assignments restored in GUI.
 
 ### Body
 - `BCM.can` ? body output owner after hazard/window/ambient/driver-state absorption
-- `DATC.can`, `SMK.can`, `AFLS.can`, `WIPER_MODULE.can`, `BODY_SECURITY_MODULE.can`, `DOOR_FL.can`, `DOOR_FR.can`, `DOOR_RL.can`, `DOOR_RR.can`, `SEAT_DRV.can`, `SEAT_PASS.can`, `TAILGATE_MODULE.can`, `MIRROR_MODULE.can` ? comfort/security runtime anchors
+- `DATC.can`, `SMK.can`, `AFLS.can`, `WIPER_MODULE.can`, `BODY_SECURITY_MODULE.can`, `DOOR_FL.can`, `DOOR_FR.can`, `DOOR_RL.can`, `DOOR_RR.can`, `SEAT_DRV.can`, `SEAT_PASS.can`, `TAILGATE_MODULE.can`, `MIRROR_MODULE.can`, `REAR_CLIMATE_MODULE.can`, `SUNROOF_MODULE.can`, `HEADLAMP_LEVELING.can`, `CABIN_SENSING.can` ? comfort/security runtime anchors
 
 ### Infotainment
 - `IVI.can` ? IVI display/connectivity/diagnostic owner after navigation owner split

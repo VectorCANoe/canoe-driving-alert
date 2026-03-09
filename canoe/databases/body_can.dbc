@@ -29,7 +29,7 @@ NS_ :
 
 BS_:
 
-BU_: BCM ADAS CGW DATC SMK BODY_SECURITY_MODULE WIPER_MODULE AFLS DOOR_FL DOOR_FR DOOR_RL DOOR_RR SEAT_DRV SEAT_PASS TAILGATE_MODULE MIRROR_MODULE VAL_SCENARIO_CTRL Vector__XXX
+BU_: BCM ADAS CGW DATC SMK BODY_SECURITY_MODULE WIPER_MODULE AFLS DOOR_FL DOOR_FR DOOR_RL DOOR_RR SEAT_DRV SEAT_PASS TAILGATE_MODULE MIRROR_MODULE REAR_CLIMATE_MODULE SUNROOF_MODULE HEADLAMP_LEVELING CABIN_SENSING VAL_SCENARIO_CTRL Vector__XXX
 
 BO_ 608 frmAmbientControlMsg: 1 BCM
  SG_ AmbientMode    : 0|3@1+ (1,0) [0|7] "" BCM
@@ -194,6 +194,30 @@ BO_ 639 frmTailgateStateMsg: 2 TAILGATE_MODULE
  SG_ TailgateOpenState : 2|1@1+ (1,0) [0|1] "" TAILGATE_MODULE
  SG_ TailgatePowerState : 3|2@1+ (1,0) [0|3] "" TAILGATE_MODULE
  SG_ TailgatePosition  : 8|8@1+ (1,0) [0|255] "%" TAILGATE_MODULE
+
+BO_ 640 frmRearClimateStateMsg: 2 REAR_CLIMATE_MODULE
+ SG_ RearSetTemp      : 0|8@1+ (1,0) [0|100] "degC" REAR_CLIMATE_MODULE
+ SG_ RearBlowerLevel  : 8|4@1+ (1,0) [0|15] "" REAR_CLIMATE_MODULE
+ SG_ RearVentMode     : 12|3@1+ (1,0) [0|7] "" REAR_CLIMATE_MODULE
+ SG_ RearSyncMode     : 15|1@1+ (1,0) [0|1] "" REAR_CLIMATE_MODULE
+
+BO_ 641 frmSunroofStateMsg: 2 SUNROOF_MODULE
+ SG_ SunroofPosition  : 0|8@1+ (1,0) [0|100] "%" SUNROOF_MODULE
+ SG_ SunroofTiltState : 8|2@1+ (1,0) [0|3] "" SUNROOF_MODULE
+ SG_ SunshadeState    : 10|2@1+ (1,0) [0|3] "" SUNROOF_MODULE
+ SG_ Reserved0        : 12|4@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 642 frmHeadlampLevelStateMsg: 2 HEADLAMP_LEVELING
+ SG_ HeadlampLevelStep : 0|8@1+ (1,0) [0|255] "" HEADLAMP_LEVELING
+ SG_ HeadlampLevelMode : 8|3@1+ (1,0) [0|7] "" HEADLAMP_LEVELING
+ SG_ LevelCompState    : 11|2@1+ (1,0) [0|3] "" HEADLAMP_LEVELING
+ SG_ Reserved0         : 13|3@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 643 frmCabinSensingStateMsg: 2 CABIN_SENSING
+ SG_ OccupancyState    : 0|3@1+ (1,0) [0|7] "" CABIN_SENSING
+ SG_ AirQualityState   : 3|3@1+ (1,0) [0|7] "" CABIN_SENSING
+ SG_ CabinAlertState   : 6|2@1+ (1,0) [0|3] "" CABIN_SENSING
+ SG_ CabinPresenceScore : 8|8@1+ (1,0) [0|100] "%" CABIN_SENSING
 
 CM_ BO_ 608 "Flow_007 ambient output.";
 CM_ BO_ 609 "Body baseline: hazard switch and hazard state.";
