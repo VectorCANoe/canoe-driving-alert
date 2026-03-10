@@ -1,5 +1,43 @@
 includes
 {
+  #define DIAG_TARGET_IVI 1
+  #define DIAG_TARGET_CLU 2
+  #define DIAG_TARGET_ADAS 3
+  #define DIAG_TARGET_VCU 4
+  #define DIAG_TARGET_ESC 5
+  #define DIAG_TARGET_BCM 6
+  #define DIAG_TARGET_TMU 7
+  #define DIAG_TARGET_DATC 8
+  #define DIAG_TARGET_SCC 9
+  #define DIAG_TARGET_HUD 10
+  #define DIAG_TARGET_AMP 11
+  #define DIAG_TARGET_DMS 12
+  #define DIAG_TARGET_OMS 13
+  #define DIAG_TARGET_V2X 14
+  #define DIAG_TARGET_CGW 15
+  #define DIAG_TARGET_SGW 16
+  #define DIAG_TARGET_DCM 17
+  #define DIAG_TARGET_ABS 18
+  #define DIAG_TARGET_EPB 19
+  #define DIAG_TARGET_TPMS 20
+  #define DIAG_TARGET_SAS 21
+  #define DIAG_TARGET_VSM 22
+  #define DIAG_TARGET_EHB 23
+  #define DIAG_TARGET_ECS 24
+  #define DIAG_TARGET_CDC 25
+  #define DIAG_TARGET_ACU 26
+  #define DIAG_TARGET_ODS 27
+  #define DIAG_TARGET_SMK 28
+  #define DIAG_TARGET_AFLS 29
+  #define DIAG_TARGET_WIP 30
+
+  #define DIAG_BUS_ETH 1
+  #define DIAG_BUS_POWERTRAIN 2
+  #define DIAG_BUS_CHASSIS 3
+  #define DIAG_BUS_BODY 4
+  #define DIAG_BUS_INFOTAINMENT 5
+  #define DIAG_BUS_ADAS 6
+
   #include "..\\common\\CAPL_COMMON.cin"
 }
 
@@ -97,147 +135,329 @@ void sendBaselineDiagRequest(int scenarioId)
   message frmOdsDiagReqMsg mOds;
   message frmSmkDiagReqMsg mSmk;
   message frmAflsDiagReqMsg mAfls;
-  message frmWipDiagReqMsg mWip;  int didLow;
+  message frmWipDiagReqMsg mWip;
+  int didLow;
 
   didLow = clampRange(scenarioId, 0, 255);
 
   mIvi.IviDiagServiceId = 0x22;
   mIvi.IviDiagDidHigh = 0xF1;
   mIvi.IviDiagDidLow = didLow;
+  mirrorDiagRequest(DIAG_TARGET_IVI, 0x22, 0xF1, didLow, DIAG_BUS_INFOTAINMENT);
   output(mIvi);
 
   mClu.CluDiagServiceId = 0x22;
   mClu.CluDiagDidHigh = 0xF1;
   mClu.CluDiagDidLow = didLow;
+  mirrorDiagRequest(DIAG_TARGET_CLU, 0x22, 0xF1, didLow, DIAG_BUS_INFOTAINMENT);
   output(mClu);
 
   mAdas.AdasDiagServiceId = 0x22;
   mAdas.AdasDiagDidHigh = 0xF1;
   mAdas.AdasDiagDidLow = didLow;
+  mirrorDiagRequest(DIAG_TARGET_ADAS, 0x22, 0xF1, didLow, DIAG_BUS_ADAS);
   output(mAdas);
 
   mPt.PtDiagServiceId = 0x22;
   mPt.PtDiagDidHigh = 0xF1;
   mPt.PtDiagDidLow = didLow;
+  mirrorDiagRequest(DIAG_TARGET_VCU, 0x22, 0xF1, didLow, DIAG_BUS_POWERTRAIN);
   output(mPt);
 
   mChs.ChsDiagServiceId = 0x22;
   mChs.ChsDiagDidHigh = 0xF1;
   mChs.ChsDiagDidLow = didLow;
+  mirrorDiagRequest(DIAG_TARGET_ESC, 0x22, 0xF1, didLow, DIAG_BUS_CHASSIS);
   output(mChs);
 
   mBcm.BcmDiagServiceId = 0x22;
   mBcm.BcmDiagDidHigh = 0xF1;
   mBcm.BcmDiagDidLow = didLow;
+  mirrorDiagRequest(DIAG_TARGET_BCM, 0x22, 0xF1, didLow, DIAG_BUS_BODY);
   output(mBcm);
 
   mTmu.TmuDiagServiceId = 0x22;
   mTmu.TmuDiagDidHigh = 0xF1;
   mTmu.TmuDiagDidLow = didLow;
+  mirrorDiagRequest(DIAG_TARGET_TMU, 0x22, 0xF1, didLow, DIAG_BUS_INFOTAINMENT);
   output(mTmu);
 
   mDatc.DatcDiagServiceId = 0x22;
   mDatc.DatcDiagDidHigh = 0xF1;
   mDatc.DatcDiagDidLow = didLow;
+  mirrorDiagRequest(DIAG_TARGET_DATC, 0x22, 0xF1, didLow, DIAG_BUS_BODY);
   output(mDatc);
 
   mScc.SccDiagServiceId = 0x22;
   mScc.SccDiagDidHigh = 0xF1;
   mScc.SccDiagDidLow = didLow;
+  mirrorDiagRequest(DIAG_TARGET_SCC, 0x22, 0xF1, didLow, DIAG_BUS_POWERTRAIN);
   output(mScc);
 
   mHud.HudDiagServiceId = 0x22;
   mHud.HudDiagDidHigh = 0xF1;
   mHud.HudDiagDidLow = didLow;
+  mirrorDiagRequest(DIAG_TARGET_HUD, 0x22, 0xF1, didLow, DIAG_BUS_INFOTAINMENT);
   output(mHud);
 
   mAmp.AmpDiagServiceId = 0x22;
   mAmp.AmpDiagDidHigh = 0xF1;
   mAmp.AmpDiagDidLow = didLow;
+  mirrorDiagRequest(DIAG_TARGET_AMP, 0x22, 0xF1, didLow, DIAG_BUS_INFOTAINMENT);
   output(mAmp);
 
   mDms.DmsDiagServiceId = 0x22;
   mDms.DmsDiagDidHigh = 0xF1;
   mDms.DmsDiagDidLow = didLow;
+  mirrorDiagRequest(DIAG_TARGET_DMS, 0x22, 0xF1, didLow, DIAG_BUS_ADAS);
   output(mDms);
 
   mOms.OmsDiagServiceId = 0x22;
   mOms.OmsDiagDidHigh = 0xF1;
   mOms.OmsDiagDidLow = didLow;
+  mirrorDiagRequest(DIAG_TARGET_OMS, 0x22, 0xF1, didLow, DIAG_BUS_ADAS);
   output(mOms);
 
   mV2x.V2xDiagServiceId = 0x22;
   mV2x.V2xDiagDidHigh = 0xF1;
   mV2x.V2xDiagDidLow = didLow;
+  mirrorDiagRequest(DIAG_TARGET_V2X, 0x22, 0xF1, didLow, DIAG_BUS_ETH);
   output(mV2x);
 
   mCgw.CgwDiagServiceId = 0x22;
   mCgw.CgwDiagDidHigh = 0xF1;
   mCgw.CgwDiagDidLow = didLow;
+  mirrorDiagRequest(DIAG_TARGET_CGW, 0x22, 0xF1, didLow, DIAG_BUS_ETH);
   output(mCgw);
 
   mSgw.SgwDiagServiceId = 0x22;
   mSgw.SgwDiagDidHigh = 0xF1;
   mSgw.SgwDiagDidLow = didLow;
+  mirrorDiagRequest(DIAG_TARGET_SGW, 0x22, 0xF1, didLow, DIAG_BUS_ETH);
   output(mSgw);
 
   mDcm.DcmDiagServiceId = 0x22;
   mDcm.DcmDiagDidHigh = 0xF1;
   mDcm.DcmDiagDidLow = didLow;
+  mirrorDiagRequest(DIAG_TARGET_DCM, 0x22, 0xF1, didLow, DIAG_BUS_ETH);
   output(mDcm);
 
   mAbs.AbsDiagServiceId = 0x22;
   mAbs.AbsDiagDidHigh = 0xF1;
   mAbs.AbsDiagDidLow = didLow;
+  mirrorDiagRequest(DIAG_TARGET_ABS, 0x22, 0xF1, didLow, DIAG_BUS_CHASSIS);
   output(mAbs);
   mEpb.EpbDiagServiceId = 0x22;
   mEpb.EpbDiagDidHigh = 0xF1;
   mEpb.EpbDiagDidLow = didLow;
+  mirrorDiagRequest(DIAG_TARGET_EPB, 0x22, 0xF1, didLow, DIAG_BUS_CHASSIS);
   output(mEpb);
   mTpms.TpmsDiagServiceId = 0x22;
   mTpms.TpmsDiagDidHigh = 0xF1;
   mTpms.TpmsDiagDidLow = didLow;
+  mirrorDiagRequest(DIAG_TARGET_TPMS, 0x22, 0xF1, didLow, DIAG_BUS_CHASSIS);
   output(mTpms);
   mSas.SasDiagServiceId = 0x22;
   mSas.SasDiagDidHigh = 0xF1;
   mSas.SasDiagDidLow = didLow;
+  mirrorDiagRequest(DIAG_TARGET_SAS, 0x22, 0xF1, didLow, DIAG_BUS_CHASSIS);
   output(mSas);
   mVsm.VsmDiagServiceId = 0x22;
   mVsm.VsmDiagDidHigh = 0xF1;
   mVsm.VsmDiagDidLow = didLow;
+  mirrorDiagRequest(DIAG_TARGET_VSM, 0x22, 0xF1, didLow, DIAG_BUS_CHASSIS);
   output(mVsm);
   mEhb.EhbDiagServiceId = 0x22;
   mEhb.EhbDiagDidHigh = 0xF1;
   mEhb.EhbDiagDidLow = didLow;
+  mirrorDiagRequest(DIAG_TARGET_EHB, 0x22, 0xF1, didLow, DIAG_BUS_CHASSIS);
   output(mEhb);
   mEcs.EcsDiagServiceId = 0x22;
   mEcs.EcsDiagDidHigh = 0xF1;
   mEcs.EcsDiagDidLow = didLow;
+  mirrorDiagRequest(DIAG_TARGET_ECS, 0x22, 0xF1, didLow, DIAG_BUS_CHASSIS);
   output(mEcs);
   mCdc.CdcDiagServiceId = 0x22;
   mCdc.CdcDiagDidHigh = 0xF1;
   mCdc.CdcDiagDidLow = didLow;
+  mirrorDiagRequest(DIAG_TARGET_CDC, 0x22, 0xF1, didLow, DIAG_BUS_CHASSIS);
   output(mCdc);
   mAcu.AcuDiagServiceId = 0x22;
   mAcu.AcuDiagDidHigh = 0xF1;
   mAcu.AcuDiagDidLow = didLow;
+  mirrorDiagRequest(DIAG_TARGET_ACU, 0x22, 0xF1, didLow, DIAG_BUS_CHASSIS);
   output(mAcu);
   mOds.OdsDiagServiceId = 0x22;
   mOds.OdsDiagDidHigh = 0xF1;
   mOds.OdsDiagDidLow = didLow;
+  mirrorDiagRequest(DIAG_TARGET_ODS, 0x22, 0xF1, didLow, DIAG_BUS_CHASSIS);
   output(mOds);
   mSmk.SmkDiagServiceId = 0x22;
   mSmk.SmkDiagDidHigh = 0xF1;
   mSmk.SmkDiagDidLow = didLow;
+  mirrorDiagRequest(DIAG_TARGET_SMK, 0x22, 0xF1, didLow, DIAG_BUS_BODY);
   output(mSmk);
   mAfls.AflsDiagServiceId = 0x22;
   mAfls.AflsDiagDidHigh = 0xF1;
   mAfls.AflsDiagDidLow = didLow;
+  mirrorDiagRequest(DIAG_TARGET_AFLS, 0x22, 0xF1, didLow, DIAG_BUS_BODY);
   output(mAfls);
   mWip.WipDiagServiceId = 0x22;
   mWip.WipDiagDidHigh = 0xF1;
   mWip.WipDiagDidLow = didLow;
-  output(mWip);}
+  mirrorDiagRequest(DIAG_TARGET_WIP, 0x22, 0xF1, didLow, DIAG_BUS_BODY);
+  output(mWip);
+}
+
+on message frmIviDiagResMsg
+{
+  mirrorDiagResponse(DIAG_TARGET_IVI, this.IviDiagRespCode, this.IviDiagData0, this.IviDiagData1, DIAG_BUS_INFOTAINMENT);
+}
+
+on message frmCluDiagResMsg
+{
+  mirrorDiagResponse(DIAG_TARGET_CLU, this.CluDiagRespCode, this.CluDiagData0, this.CluDiagData1, DIAG_BUS_INFOTAINMENT);
+}
+
+on message frmAdasDiagResMsg
+{
+  mirrorDiagResponse(DIAG_TARGET_ADAS, this.AdasDiagRespCode, this.AdasDiagData0, this.AdasDiagData1, DIAG_BUS_ADAS);
+}
+
+on message frmPtDiagResMsg
+{
+  mirrorDiagResponse(DIAG_TARGET_VCU, this.PtDiagRespCode, this.PtDiagData0, this.PtDiagData1, DIAG_BUS_POWERTRAIN);
+}
+
+on message frmChassisDiagResMsg
+{
+  mirrorDiagResponse(DIAG_TARGET_ESC, this.ChsDiagRespCode, this.ChsDiagData0, this.ChsDiagData1, DIAG_BUS_CHASSIS);
+}
+
+on message frmBcmDiagResMsg
+{
+  mirrorDiagResponse(DIAG_TARGET_BCM, this.BcmDiagRespCode, this.BcmDiagData0, this.BcmDiagData1, DIAG_BUS_BODY);
+}
+
+on message frmTmuDiagResMsg
+{
+  mirrorDiagResponse(DIAG_TARGET_TMU, this.TmuDiagRespCode, this.TmuDiagData0, this.TmuDiagData1, DIAG_BUS_INFOTAINMENT);
+}
+
+on message frmDatcDiagResMsg
+{
+  mirrorDiagResponse(DIAG_TARGET_DATC, this.DatcDiagRespCode, this.DatcDiagData0, this.DatcDiagData1, DIAG_BUS_BODY);
+}
+
+on message frmSccDiagResMsg
+{
+  mirrorDiagResponse(DIAG_TARGET_SCC, this.SccDiagRespCode, this.SccDiagData0, this.SccDiagData1, DIAG_BUS_POWERTRAIN);
+}
+
+on message frmHudDiagResMsg
+{
+  mirrorDiagResponse(DIAG_TARGET_HUD, this.HudDiagRespCode, this.HudDiagData0, this.HudDiagData1, DIAG_BUS_INFOTAINMENT);
+}
+
+on message frmAmpDiagResMsg
+{
+  mirrorDiagResponse(DIAG_TARGET_AMP, this.AmpDiagRespCode, this.AmpDiagData0, this.AmpDiagData1, DIAG_BUS_INFOTAINMENT);
+}
+
+on message frmDmsDiagResMsg
+{
+  mirrorDiagResponse(DIAG_TARGET_DMS, this.DmsDiagRespCode, this.DmsDiagData0, this.DmsDiagData1, DIAG_BUS_ADAS);
+}
+
+on message frmOmsDiagResMsg
+{
+  mirrorDiagResponse(DIAG_TARGET_OMS, this.OmsDiagRespCode, this.OmsDiagData0, this.OmsDiagData1, DIAG_BUS_ADAS);
+}
+
+on message ethV2xDiagResMsg
+{
+  mirrorDiagResponse(DIAG_TARGET_V2X, this.V2xDiagRespCode, this.V2xDiagData0, this.V2xDiagData1, DIAG_BUS_ETH);
+}
+
+on message ethCgwDiagResMsg
+{
+  mirrorDiagResponse(DIAG_TARGET_CGW, this.CgwDiagRespCode, this.CgwDiagData0, this.CgwDiagData1, DIAG_BUS_ETH);
+}
+
+on message ethSgwDiagResMsg
+{
+  mirrorDiagResponse(DIAG_TARGET_SGW, this.SgwDiagRespCode, this.SgwDiagData0, this.SgwDiagData1, DIAG_BUS_ETH);
+}
+
+on message ethDcmDiagResMsg
+{
+  mirrorDiagResponse(DIAG_TARGET_DCM, this.DcmDiagRespCode, this.DcmDiagData0, this.DcmDiagData1, DIAG_BUS_ETH);
+}
+
+on message frmAbsDiagResMsg
+{
+  mirrorDiagResponse(DIAG_TARGET_ABS, this.AbsDiagRespCode, this.AbsDiagData0, this.AbsDiagData1, DIAG_BUS_CHASSIS);
+}
+
+on message frmEpbDiagResMsg
+{
+  mirrorDiagResponse(DIAG_TARGET_EPB, this.EpbDiagRespCode, this.EpbDiagData0, this.EpbDiagData1, DIAG_BUS_CHASSIS);
+}
+
+on message frmTpmsDiagResMsg
+{
+  mirrorDiagResponse(DIAG_TARGET_TPMS, this.TpmsDiagRespCode, this.TpmsDiagData0, this.TpmsDiagData1, DIAG_BUS_CHASSIS);
+}
+
+on message frmSasDiagResMsg
+{
+  mirrorDiagResponse(DIAG_TARGET_SAS, this.SasDiagRespCode, this.SasDiagData0, this.SasDiagData1, DIAG_BUS_CHASSIS);
+}
+
+on message frmVsmDiagResMsg
+{
+  mirrorDiagResponse(DIAG_TARGET_VSM, this.VsmDiagRespCode, this.VsmDiagData0, this.VsmDiagData1, DIAG_BUS_CHASSIS);
+}
+
+on message frmEhbDiagResMsg
+{
+  mirrorDiagResponse(DIAG_TARGET_EHB, this.EhbDiagRespCode, this.EhbDiagData0, this.EhbDiagData1, DIAG_BUS_CHASSIS);
+}
+
+on message frmEcsDiagResMsg
+{
+  mirrorDiagResponse(DIAG_TARGET_ECS, this.EcsDiagRespCode, this.EcsDiagData0, this.EcsDiagData1, DIAG_BUS_CHASSIS);
+}
+
+on message frmCdcDiagResMsg
+{
+  mirrorDiagResponse(DIAG_TARGET_CDC, this.CdcDiagRespCode, this.CdcDiagData0, this.CdcDiagData1, DIAG_BUS_CHASSIS);
+}
+
+on message frmAcuDiagResMsg
+{
+  mirrorDiagResponse(DIAG_TARGET_ACU, this.AcuDiagRespCode, this.AcuDiagData0, this.AcuDiagData1, DIAG_BUS_CHASSIS);
+}
+
+on message frmOdsDiagResMsg
+{
+  mirrorDiagResponse(DIAG_TARGET_ODS, this.OdsDiagRespCode, this.OdsDiagData0, this.OdsDiagData1, DIAG_BUS_CHASSIS);
+}
+
+on message frmSmkDiagResMsg
+{
+  mirrorDiagResponse(DIAG_TARGET_SMK, this.SmkDiagRespCode, this.SmkDiagData0, this.SmkDiagData1, DIAG_BUS_BODY);
+}
+
+on message frmAflsDiagResMsg
+{
+  mirrorDiagResponse(DIAG_TARGET_AFLS, this.AflsDiagRespCode, this.AflsDiagData0, this.AflsDiagData1, DIAG_BUS_BODY);
+}
+
+on message frmWipDiagResMsg
+{
+  mirrorDiagResponse(DIAG_TARGET_WIP, this.WipDiagRespCode, this.WipDiagData0, this.WipDiagData1, DIAG_BUS_BODY);
+}
 
 void pushLockedScenarioInputs()
 {

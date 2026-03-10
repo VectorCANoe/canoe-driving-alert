@@ -13,6 +13,9 @@ Open these first:
 5. `CANOE_TEST_CI_BRIDGE_STRATEGY_2026-03-09.md`
 6. `TEST_AUTOMATION_REFERENCE_BASELINE_2026-03-09.md`
 7. `SIL_PASS_CRITERIA.md`
+8. `OEM_VECTOR_DIAGNOSTIC_STACK_GAP_ANALYSIS_2026-03-10.md`
+9. `DIAGNOSTIC_DESCRIPTION_NEED_DECISION_2026-03-10.md`
+10. `DIAGNOSTIC_SYSVAR_CONTRACT_2026-03-10.md`
 
 ## Active Docs
 
@@ -34,6 +37,12 @@ Open these first:
   - pass/fail baseline for SIL execution
 - `VERIFICATION_INSIGHT_PLAYBOOK.md`
   - evidence interpretation and review guidance
+- `OEM_VECTOR_DIAGNOSTIC_STACK_GAP_ANALYSIS_2026-03-10.md`
+  - gap analysis between current lightweight diagnostics and OEM/Vector stack expectations
+- `DIAGNOSTIC_DESCRIPTION_NEED_DECISION_2026-03-10.md`
+  - rationale for a lightweight basic diagnostic description below 00~07 SoT
+- `DIAGNOSTIC_SYSVAR_CONTRACT_2026-03-10.md`
+  - Dev2-facing `Diag::*` observer contract for tester mirroring
 
 ## Working Rule
 

@@ -1,0 +1,27 @@
+int isDiagPositiveResponse(int respCode)
+{
+  return ((respCode >= 0x40) && (respCode <= 0x7E));
+}
+
+void mirrorDiagRequest(int target, int sid, int didHigh, int didLow, int busCode)
+{
+  @Diag::LastRequestTarget = clampRange(target, 0, 255);
+  @Diag::LastRequestSid = clampRange(sid, 0, 255);
+  @Diag::LastRequestDidHigh = clampRange(didHigh, 0, 255);
+  @Diag::LastRequestDidLow = clampRange(didLow, 0, 255);
+  @Diag::LastRequestSourceBus = clampRange(busCode, 0, 255);
+  @Diag::RequestCounter = clampRange((int)@Diag::RequestCounter + 1, 0, 2147483647);
+  @Diag::LastRequestTimeMs = getSimulationTimeMs();
+}
+
+void mirrorDiagResponse(int target, int respCode, int data0, int data1, int busCode)
+{
+  @Diag::LastResponseTarget = clampRange(target, 0, 255);
+  @Diag::LastResponseCode = clampRange(respCode, 0, 255);
+  @Diag::LastResponseData0 = clampRange(data0, 0, 255);
+  @Diag::LastResponseData1 = clampRange(data1, 0, 255);
+  @Diag::LastResponseOk = isDiagPositiveResponse(respCode);
+  @Diag::LastResponseSourceBus = clampRange(busCode, 0, 255);
+  @Diag::ResponseCounter = clampRange((int)@Diag::ResponseCounter + 1, 0, 2147483647);
+  @Diag::LastResponseTimeMs = getSimulationTimeMs();
+}
