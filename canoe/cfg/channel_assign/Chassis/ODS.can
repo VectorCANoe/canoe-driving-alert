@@ -1,3 +1,4 @@
+/*@!Encoding:949*/
 includes
 {
   #include "..\\common\\CAPL_COMMON.cin"
@@ -46,6 +47,11 @@ on message frmSeatStateMsg
 
 on timer tOdsCycle
 {
+  message frmOdsStateMsg mOds;
+  int occupantDetected;
+  int weightClass;
+  int airbagSuppress;
+  int childSeatDetected;
   if (gDiagPending == 1)
   {
     message frmOdsDiagResMsg mDiagRes;
@@ -57,11 +63,6 @@ on timer tOdsCycle
     gDiagPending = 0;
   }
 
-  message frmOdsStateMsg mOds;
-  int occupantDetected;
-  int weightClass;
-  int airbagSuppress;
-  int childSeatDetected;
 
   occupantDetected = (gPassengerSeatPos > 20) ? 1 : 0;
   childSeatDetected = (occupantDetected == 1 && gPassengerSeatBelt == 0 && gPassengerSeatPos < 80) ? 1 : 0;

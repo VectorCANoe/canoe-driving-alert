@@ -1,3 +1,4 @@
+/*@!Encoding:949*/
 includes
 {
   #include "..\\common\\CAPL_COMMON.cin"
@@ -43,6 +44,8 @@ on message frmSuspensionStateMsg
 
 on timer tEcsCycle
 {
+  message frmEcsStateMsg mEcs;
+  
   if (gDiagPending == 1)
   {
     message frmEcsDiagResMsg mDiagRes;
@@ -54,7 +57,6 @@ on timer tEcsCycle
     gDiagPending = 0;
   }
 
-  message frmEcsStateMsg mEcs;
 
   mEcs.EcsMode = gSuspensionMode;
   mEcs.EcsHeightLevel = gSuspensionLevel;

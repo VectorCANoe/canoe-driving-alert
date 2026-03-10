@@ -1,3 +1,4 @@
+/*@!Encoding:949*/
 includes
 {
   #include "..\\common\\CAPL_COMMON.cin"
@@ -35,6 +36,10 @@ on message frmSuspensionStateMsg
 
 on timer tCdcCycle
 {
+  message frmCdcStateMsg mCdc;
+  int mode;
+  int valveCurrent;
+  
   if (gDiagPending == 1)
   {
     message frmCdcDiagResMsg mDiagRes;
@@ -45,10 +50,6 @@ on timer tCdcCycle
     output(mDiagRes);
     gDiagPending = 0;
   }
-
-  message frmCdcStateMsg mCdc;
-  int mode;
-  int valveCurrent;
 
   mode = (gDampingLevel > 20) ? 2 : ((gDampingLevel > 0) ? 1 : 0);
   valveCurrent = clampRange(gDampingLevel * 4, 0, 255);

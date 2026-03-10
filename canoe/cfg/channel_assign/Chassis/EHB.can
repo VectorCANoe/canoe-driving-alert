@@ -1,3 +1,4 @@
+/*@!Encoding:949*/
 includes
 {
   #include "..\\common\\CAPL_COMMON.cin"
@@ -35,6 +36,9 @@ on message frmBrakeStatusMsg
 
 on timer tEhbCycle
 {
+  message frmEhbStateMsg mEhb;
+  int ctrlState;
+
   if (gDiagPending == 1)
   {
     message frmEhbDiagResMsg mDiagRes;
@@ -45,9 +49,6 @@ on timer tEhbCycle
     output(mDiagRes);
     gDiagPending = 0;
   }
-
-  message frmEhbStateMsg mEhb;
-  int ctrlState;
 
   ctrlState = (gBrakePressure > 0) ? 1 : 0;
   if ((int)@Core::decelAssistReq == 1)
