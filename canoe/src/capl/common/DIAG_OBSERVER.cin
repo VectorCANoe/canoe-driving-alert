@@ -1,27 +1,21 @@
-int isDiagPositiveResponse(int respCode)
-{
-  return ((respCode >= 0x40) && (respCode <= 0x7E));
-}
-
 void mirrorDiagRequest(int target, int sid, int didHigh, int didLow, int busCode)
 {
-  @Diag::LastRequestTarget = clampRange(target, 0, 255);
-  @Diag::LastRequestSid = clampRange(sid, 0, 255);
-  @Diag::LastRequestDidHigh = clampRange(didHigh, 0, 255);
-  @Diag::LastRequestDidLow = clampRange(didLow, 0, 255);
-  @Diag::LastRequestSourceBus = clampRange(busCode, 0, 255);
-  @Diag::RequestCounter = clampRange((int)@Diag::RequestCounter + 1, 0, 2147483647);
-  @Diag::LastRequestTimeMs = getSimulationTimeMs();
+  target = clampRange(target, 0, 255);
+  sid = clampRange(sid, 0, 255);
+  didHigh = clampRange(didHigh, 0, 255);
+  didLow = clampRange(didLow, 0, 255);
+  busCode = clampRange(busCode, 0, 255);
+  write("[DIAG_DISABLED] mirrorDiagRequest ignored t=%d sid=%d did=%d/%d bus=%d",
+        target, sid, didHigh, didLow, busCode);
 }
 
 void mirrorDiagResponse(int target, int respCode, int data0, int data1, int busCode)
 {
-  @Diag::LastResponseTarget = clampRange(target, 0, 255);
-  @Diag::LastResponseCode = clampRange(respCode, 0, 255);
-  @Diag::LastResponseData0 = clampRange(data0, 0, 255);
-  @Diag::LastResponseData1 = clampRange(data1, 0, 255);
-  @Diag::LastResponseOk = isDiagPositiveResponse(respCode);
-  @Diag::LastResponseSourceBus = clampRange(busCode, 0, 255);
-  @Diag::ResponseCounter = clampRange((int)@Diag::ResponseCounter + 1, 0, 2147483647);
-  @Diag::LastResponseTimeMs = getSimulationTimeMs();
+  target = clampRange(target, 0, 255);
+  respCode = clampRange(respCode, 0, 255);
+  data0 = clampRange(data0, 0, 255);
+  data1 = clampRange(data1, 0, 255);
+  busCode = clampRange(busCode, 0, 255);
+  write("[DIAG_DISABLED] mirrorDiagResponse ignored t=%d code=%d data=%d,%d bus=%d",
+        target, respCode, data0, data1, busCode);
 }
