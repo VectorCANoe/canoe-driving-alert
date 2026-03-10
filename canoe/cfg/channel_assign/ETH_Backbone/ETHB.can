@@ -9,13 +9,9 @@ variables
   int gIboxRouteState;
   int gIboxSignalBars;
   int gIboxServiceFlags;
-  int gIboxDiagState;
   int gSecuritySession;
   int gAuthState;
   int gSecurityFault;
-  int gDiagSession;
-  int gDiagPathState;
-  int gDiagPending;
   int gFailSafeMode;
   int gLastBackboneMode;
   int gLastRouteHealth;
@@ -38,11 +34,9 @@ void publishBackboneState()
   routeHealth = clampRange(gIboxRouteState, 0, 3);
 
   serviceHealth = 2;
-  if (gIboxDiagState >= 2 || gDiagPending == 1)
   {
     serviceHealth = 1;
   }
-  if (gFailSafeMode >= 2 || gDiagPathState == 0)
   {
     serviceHealth = 0;
   }
@@ -65,15 +59,12 @@ void publishBackboneState()
 
   activeServices = 0;
   if (gIboxSignalBars > 0) { activeServices = activeServices + 1; }
-  if (gDiagSession > 0) { activeServices = activeServices + 1; }
   if (gSecuritySession > 0) { activeServices = activeServices + 1; }
   if (gIboxServiceFlags > 0) { activeServices = activeServices + 1; }
 
   faultBitmap = 0;
   if (gSecurityFault > 0) { faultBitmap = faultBitmap | 0x01; }
-  if (gDiagPending == 1) { faultBitmap = faultBitmap | 0x02; }
   if (gFailSafeMode > 0) { faultBitmap = faultBitmap | 0x04; }
-  if (gIboxDiagState >= 2) { faultBitmap = faultBitmap | 0x08; }
 
   mBackbone.BackboneMode = clampRange(backboneMode, 0, 3);
   mBackbone.RouteHealth = clampRange(routeHealth, 0, 3);
@@ -111,13 +102,9 @@ on start
   gIboxRouteState = 0;
   gIboxSignalBars = 0;
   gIboxServiceFlags = 0;
-  gIboxDiagState = 0;
   gSecuritySession = 0;
   gAuthState = 0;
   gSecurityFault = 0;
-  gDiagSession = 0;
-  gDiagPathState = 0;
-  gDiagPending = 0;
   gFailSafeMode = 0;
   gLastBackboneMode = -1;
   gLastRouteHealth = -1;
@@ -140,7 +127,6 @@ on message ethIboxStateMsg
   gIboxRouteState = clampRange((int)this.IboxRouteState, 0, 3);
   gIboxSignalBars = clampRange((int)this.IboxSignalBars, 0, 15);
   gIboxServiceFlags = clampRange((int)this.IboxServiceFlags, 0, 15);
-  gIboxDiagState = clampRange((int)this.IboxDiagState, 0, 15);
 }
 
 on message ethSecurityStateMsg
@@ -150,12 +136,7 @@ on message ethSecurityStateMsg
   gSecurityFault = clampRange((int)this.SecurityFault, 0, 15);
 }
 
-on message ethDiagStateMsg
-{
-  gDiagSession = clampRange((int)this.DiagSession, 0, 7);
-  gDiagPathState = clampRange((int)this.DiagPathState, 0, 3);
-  gDiagPending = clampRange((int)this.DiagPending, 0, 1);
-}
+
 
 on message ethFailSafeStateMsg
 {

@@ -29,10 +29,6 @@ variables
   int gHistorySnaps[16];
   int gHistoryWriteIdx;
   int gHistoryCount;
-  int gDiagPending;
-  int gLastDiagSid;
-  int gLastDiagDidHigh;
-  int gLastDiagDidLow;
 }
 
 
@@ -206,10 +202,6 @@ on start
   gClusterSyncSeq = 0;
   gHistoryWriteIdx = 0;
   gHistoryCount = 0;
-  gDiagPending = 0;
-  gLastDiagSid = 0;
-  gLastDiagDidHigh = 0;
-  gLastDiagDidLow = 0;
   for (i = 0; i < 16; i = i + 1)
   {
     gHistoryCodes[i] = 0;
@@ -268,14 +260,6 @@ on message frmAudioFocusMsg
   gAudioDuckingLvl = clampRange((int)this.AudioDuckingLvl, 0, 7);
   @CoreState::audioFocusOwner = gAudioFocusOwner;
   @CoreState::audioDuckingLvl = gAudioDuckingLvl;
-}
-
-on message frmCluDiagReqMsg
-{
-  gLastDiagSid = clampRange((int)this.CluDiagServiceId, 0, 255);
-  gLastDiagDidHigh = clampRange((int)this.CluDiagDidHigh, 0, 255);
-  gLastDiagDidLow = clampRange((int)this.CluDiagDidLow, 0, 255);
-  gDiagPending = 1;
 }
 
 on message frmSpeechTtsStateMsg
@@ -383,20 +367,6 @@ on sysvar Test::historyQueryOffset
 }
 
 on timer tDuplicateGuard
-{
-  message frmCluDiagResMsg mDiag;
-  int guardRemainMs;
-  dword nowMs;
-  dword elapsedMs;
-
-  if (gDiagPending == 1)
-  {
-    mDiag.CluDiagRespCode = (gLastDiagSid == 0x22) ? 0x62 : 0x7F;
-    mDiag.CluDiagData0 = gLastDiagDidHigh;
-    mDiag.CluDiagData1 = gLastDiagDidLow;
-    output(mDiag);
-    gDiagPending = 0;
-  }
 
   if (gLastDisplayedCode == 0)
   {

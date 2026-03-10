@@ -32,10 +32,6 @@ variables
   int gLastObjectRiskLevel;
   int gLastObjectAlertLevel;
   int gLastObjectAlertType;
-  int gDiagPending;
-  int gLastDiagSid;
-  int gLastDiagDidHigh;
-  int gLastDiagDidLow;
 }
 
 void publishBackboneDecisionFrames()
@@ -993,21 +989,9 @@ on start
   @Core::objectAlertHoldMs = 300;
   @Core::objectEventCode = 0;
   @Core::decelAssistReq = 0;
-  gDiagPending = 0;
-  gLastDiagSid = 0;
-  gLastDiagDidHigh = 0;
-  gLastDiagDidLow = 0;
   setTimer(tAdasCycle, 10);
   setTimer(tArbiter50, 50);
   write("[ADAS] start");
-}
-
-on message frmAdasDiagReqMsg
-{
-  gLastDiagSid = clampRange((int)this.AdasDiagServiceId, 0, 255);
-  gLastDiagDidHigh = clampRange((int)this.AdasDiagDidHigh, 0, 255);
-  gLastDiagDidLow = clampRange((int)this.AdasDiagDidLow, 0, 255);
-  gDiagPending = 1;
 }
 
 on timer tAdasCycle
@@ -1017,18 +1001,5 @@ on timer tAdasCycle
 }
 
 on timer tArbiter50
-{
-  message frmAdasDiagResMsg mDiag;
-
-  runArbiter();
-  publishBackboneDecisionFrames();
-  if (gDiagPending == 1)
-  {
-    mDiag.AdasDiagRespCode = (gLastDiagSid == 0x22) ? 0x62 : 0x7F;
-    mDiag.AdasDiagData0 = gLastDiagDidHigh;
-    mDiag.AdasDiagData1 = gLastDiagDidLow;
-    output(mDiag);
-    gDiagPending = 0;
-  }
   setTimer(tArbiter50, 50);
 }

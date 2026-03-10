@@ -11,9 +11,6 @@ variables
   int gLastWarningTextCode;
   int gInfoAliveCnt;
   int gIviBaseTick;
-  int gLastIviDiagSid;
-  int gLastIviDiagDidHigh;
-  int gLastIviDiagDidLow;
   int gEmsBlinkPhase;
   int gAmbientPulsePhase;
   int gIcFlowPhase;
@@ -62,9 +59,6 @@ on start
   gLastWarningTextCode = -1;
   gInfoAliveCnt = 0;
   gIviBaseTick = 0;
-  gLastIviDiagSid = 0x22;
-  gLastIviDiagDidHigh = 0xF1;
-  gLastIviDiagDidLow = 0x90;
   gEmsBlinkPhase = 0;
   gAmbientPulsePhase = 0;
   gIcFlowPhase = 0;
@@ -73,13 +67,6 @@ on start
   setTimer(tIviBase50, 50);
   setTimer(tIviExt100, 100);
   write("[IVI] start");
-}
-
-on message frmIviDiagReqMsg
-{
-  gLastIviDiagSid = clampRange((int)this.IviDiagServiceId, 0, 255);
-  gLastIviDiagDidHigh = clampRange((int)this.IviDiagDidHigh, 0, 255);
-  gLastIviDiagDidLow = clampRange((int)this.IviDiagDidLow, 0, 255);
 }
 
 on timer tIviCycle
@@ -303,7 +290,6 @@ on timer tIviBase50
   if ((gIviBaseTick % 2) == 0)
   {
     mHealth.InfoAliveCnt = gInfoAliveCnt & 0xFF;
-    mHealth.InfoDiagState = 0;
     mHealth.InfoFailCode = 0;
     output(mHealth);
     gInfoAliveCnt = (gInfoAliveCnt + 1) & 0xFF;
@@ -435,7 +421,6 @@ on timer tIviExt100
 {
   message frmConnectivityStateMsg mConn;
   message frmIviHealthDetailMsg mHealthDetail;
-  message frmIviDiagResMsg mDiagRes;
   int speedLimit;
 
   speedLimit = clampRange((int)@Core::speedLimitNorm, 0, 255);
@@ -455,10 +440,6 @@ on timer tIviExt100
 
   publishBackboneNavContext();
 
-  mDiagRes.IviDiagRespCode = 0x62;
-  mDiagRes.IviDiagData0 = gLastIviDiagDidHigh & 0xFF;
-  mDiagRes.IviDiagData1 = gLastIviDiagDidLow & 0xFF;
-  output(mDiagRes);
 
   setTimer(tIviExt100, 100);
 }

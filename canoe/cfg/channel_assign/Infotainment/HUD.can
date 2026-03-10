@@ -6,10 +6,6 @@ includes
 variables
 {
   msTimer tHudCycle;
-  int gDiagPending;
-  int gLastDiagSid;
-  int gLastDiagDidHigh;
-  int gLastDiagDidLow;
   int gWarningCode;
   int gPopupPriority;
   int gPopupActive;
@@ -80,10 +76,6 @@ void publishHudState()
 
 on start
 {
-  gDiagPending = 0;
-  gLastDiagSid = 0;
-  gLastDiagDidHigh = 0;
-  gLastDiagDidLow = 0;
   gWarningCode = 0;
   gPopupPriority = 0;
   gPopupActive = 0;
@@ -101,15 +93,6 @@ on start
 on timer tHudCycle
 {
   publishHudState();
-  if (gDiagPending == 1)
-  {
-    message frmHudDiagResMsg mDiagRes;
-    mDiagRes.HudDiagRespCode = (gLastDiagSid == 0x22) ? 0x62 : 0x7F;
-    mDiagRes.HudDiagData0 = gLastDiagDidHigh;
-    mDiagRes.HudDiagData1 = gLastDiagDidLow;
-    output(mDiagRes);
-    gDiagPending = 0;
-  }
   setTimer(tHudCycle, 50);
 }
 
@@ -133,14 +116,6 @@ on message frmClusterThemeMsg
 {
   gThemeMode = clampRange((int)this.ThemeMode, 0, 7);
   gBrightness = clampRange((int)this.ClusterBrightness, 0, 31);
-}
-
-on message frmHudDiagReqMsg
-{
-  gLastDiagSid = (int)this.HudDiagServiceId;
-  gLastDiagDidHigh = (int)this.HudDiagDidHigh;
-  gLastDiagDidLow = (int)this.HudDiagDidLow;
-  gDiagPending = 1;
 }
 
 on stopMeasurement

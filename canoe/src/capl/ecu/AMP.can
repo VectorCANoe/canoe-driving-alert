@@ -6,10 +6,6 @@ includes
 variables
 {
   msTimer tAmpCycle;
-  int gDiagPending;
-  int gLastDiagSid;
-  int gLastDiagDidHigh;
-  int gLastDiagDidLow;
   int gMediaState;
   int gMuteState;
   int gVolumeLevel;
@@ -21,7 +17,6 @@ variables
   int gLastAmpMute;
   int gLastAmpDucking;
   int gLastAmpVolume;
-  int gLastAmpDiag;
 }
 
 void publishAmpState()
@@ -29,7 +24,6 @@ void publishAmpState()
   message frmAmpStateMsg mAmp;
   int ampMode;
   int ampDucking;
-  int ampDiagState;
 
   ampMode = 0;
   if (gVoiceAssistState > 0 || gTtsState > 0)
@@ -51,35 +45,28 @@ void publishAmpState()
     ampDucking = 2;
   }
 
-  ampDiagState = 0;
   if (gVolumeLevel >= 90 || ampDucking >= 6)
   {
-    ampDiagState = 2;
   }
   else if (gAudioFocusOwner > 0 || ampDucking > 0)
   {
-    ampDiagState = 1;
   }
 
   mAmp.AmpMode = clampRange(ampMode, 0, 7);
   mAmp.AmpMute = clampRange(gMuteState, 0, 1);
   mAmp.AmpDuckingLvl = clampRange(ampDucking, 0, 7);
   mAmp.AmpVolumeLevel = clampRange(gVolumeLevel, 0, 100);
-  mAmp.AmpDiagState = clampRange(ampDiagState, 0, 15);
   output(mAmp);
 
   if (mAmp.AmpMode != gLastAmpMode ||
       mAmp.AmpMute != gLastAmpMute ||
       mAmp.AmpDuckingLvl != gLastAmpDucking ||
       mAmp.AmpVolumeLevel != gLastAmpVolume ||
-      mAmp.AmpDiagState != gLastAmpDiag)
   {
-    write("[AMP] mode=%d mute=%d duck=%d vol=%d diag=%d focus=%d voice=%d tts=%d",
           mAmp.AmpMode,
           mAmp.AmpMute,
           mAmp.AmpDuckingLvl,
           mAmp.AmpVolumeLevel,
-          mAmp.AmpDiagState,
           gAudioFocusOwner,
           gVoiceAssistState,
           gTtsState);
@@ -87,16 +74,11 @@ void publishAmpState()
     gLastAmpMute = mAmp.AmpMute;
     gLastAmpDucking = mAmp.AmpDuckingLvl;
     gLastAmpVolume = mAmp.AmpVolumeLevel;
-    gLastAmpDiag = mAmp.AmpDiagState;
   }
 }
 
 on start
 {
-  gDiagPending = 0;
-  gLastDiagSid = 0;
-  gLastDiagDidHigh = 0;
-  gLastDiagDidLow = 0;
   gMediaState = 0;
   gMuteState = 0;
   gVolumeLevel = 20;
@@ -108,7 +90,6 @@ on start
   gLastAmpMute = -1;
   gLastAmpDucking = -1;
   gLastAmpVolume = -1;
-  gLastAmpDiag = -1;
   setTimer(tAmpCycle, 50);
   write("[AMP] start");
 }
@@ -116,15 +97,6 @@ on start
 on timer tAmpCycle
 {
   publishAmpState();
-  if (gDiagPending == 1)
-  {
-    message frmAmpDiagResMsg mDiagRes;
-    mDiagRes.AmpDiagRespCode = (gLastDiagSid == 0x22) ? 0x62 : 0x7F;
-    mDiagRes.AmpDiagData0 = gLastDiagDidHigh;
-    mDiagRes.AmpDiagData1 = gLastDiagDidLow;
-    output(mDiagRes);
-    gDiagPending = 0;
-  }
   setTimer(tAmpCycle, 50);
 }
 
@@ -149,14 +121,6 @@ on message frmVoiceAssistStateMsg
 on message frmSpeechTtsStateMsg
 {
   gTtsState = clampRange((int)this.TtsState, 0, 7);
-}
-
-on message frmAmpDiagReqMsg
-{
-  gLastDiagSid = (int)this.AmpDiagServiceId;
-  gLastDiagDidHigh = (int)this.AmpDiagDidHigh;
-  gLastDiagDidLow = (int)this.AmpDiagDidLow;
-  gDiagPending = 1;
 }
 
 on stopMeasurement

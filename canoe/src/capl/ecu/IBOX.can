@@ -17,7 +17,6 @@ variables
   int gLastLinkMode;
   int gLastRouteState;
   int gLastServiceFlags;
-  int gLastDiagState;
 }
 
 void publishIboxState()
@@ -29,7 +28,6 @@ void publishIboxState()
   int linkMode;
   int routeState;
   int serviceFlags;
-  int diagState;
   int failSafeMode;
   int alertLevel;
   int signalBars;
@@ -78,14 +76,11 @@ void publishIboxState()
     serviceFlags = serviceFlags | 8;
   }
 
-  diagState = 0;
   if (vehAgeMs > 1000 || navAgeMs > 1000)
   {
-    diagState = 2;
   }
   else if (vehAgeMs > 300 || navAgeMs > 300)
   {
-    diagState = 1;
   }
 
   signalBars = 4;
@@ -93,7 +88,6 @@ void publishIboxState()
   {
     signalBars = 2;
   }
-  if (diagState >= 2)
   {
     signalBars = 1;
   }
@@ -102,25 +96,20 @@ void publishIboxState()
   mIbox.IboxRouteState = clampRange(routeState, 0, 3);
   mIbox.IboxSignalBars = clampRange(signalBars, 0, 15);
   mIbox.IboxServiceFlags = clampRange(serviceFlags, 0, 15);
-  mIbox.IboxDiagState = clampRange(diagState, 0, 15);
   output(mIbox);
 
   if (mIbox.IboxLinkMode != gLastLinkMode ||
       mIbox.IboxRouteState != gLastRouteState ||
       mIbox.IboxServiceFlags != gLastServiceFlags ||
-      mIbox.IboxDiagState != gLastDiagState)
   {
-    write("[IBOX] link=%d route=%d flags=0x%X diag=%d vehAge=%d navAge=%d",
           mIbox.IboxLinkMode,
           mIbox.IboxRouteState,
           mIbox.IboxServiceFlags,
-          mIbox.IboxDiagState,
           vehAgeMs,
           navAgeMs);
     gLastLinkMode = mIbox.IboxLinkMode;
     gLastRouteState = mIbox.IboxRouteState;
     gLastServiceFlags = mIbox.IboxServiceFlags;
-    gLastDiagState = mIbox.IboxDiagState;
   }
 }
 
@@ -137,7 +126,6 @@ on start
   gLastLinkMode = -1;
   gLastRouteState = -1;
   gLastServiceFlags = -1;
-  gLastDiagState = -1;
   setTimer(tIboxCycle, 100);
   write("[IBOX] start");
 }

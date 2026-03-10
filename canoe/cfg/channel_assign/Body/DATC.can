@@ -16,10 +16,6 @@ variables
   int gLastAcOn;
   int gLastVentMode;
   int gLastDefogMode;
-  int gDiagPending;
-  int gLastDiagSid;
-  int gLastDiagDidHigh;
-  int gLastDiagDidLow;
 }
 
 void publishDatcState()
@@ -115,10 +111,6 @@ on start
   gLastAcOn = -1;
   gLastVentMode = -1;
   gLastDefogMode = -1;
-  gDiagPending = 0;
-  gLastDiagSid = 0;
-  gLastDiagDidHigh = 0;
-  gLastDiagDidLow = 0;
 
   setTimer(tDatcCycle, 100);
   write("[DATC] start");
@@ -126,16 +118,6 @@ on start
 
 on timer tDatcCycle
 {
-  if (gDiagPending == 1)
-  {
-    message frmDatcDiagResMsg mDiagRes;
-
-    mDiagRes.DatcDiagRespCode = (gLastDiagSid == 0x22) ? 0x62 : 0x7F;
-    mDiagRes.DatcDiagData0 = gLastDiagDidHigh;
-    mDiagRes.DatcDiagData1 = gLastDiagDidLow;
-    output(mDiagRes);
-    gDiagPending = 0;
-  }
 
   publishDatcState();
   setTimer(tDatcCycle, 100);
@@ -152,14 +134,6 @@ on message frmTmuServiceStateMsg
 on message frmCabinAirStateMsg
 {
   gCabinTemp = clampRange((int)this.CabinTemp, 0, 100);
-}
-
-on message frmDatcDiagReqMsg
-{
-  gLastDiagSid = clampRange((int)this.DatcDiagServiceId, 0, 255);
-  gLastDiagDidHigh = clampRange((int)this.DatcDiagDidHigh, 0, 255);
-  gLastDiagDidLow = clampRange((int)this.DatcDiagDidLow, 0, 255);
-  gDiagPending = 1;
 }
 
 on stopMeasurement

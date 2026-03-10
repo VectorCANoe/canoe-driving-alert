@@ -1,4 +1,4 @@
-﻿includes
+includes
 {
   #include "..\\common\\CAPL_COMMON.cin"
 }
@@ -25,10 +25,6 @@ variables
   dword gSteeringTsMs;
   dword gEmergencyMonTsMs;
   int gLastEthPathState;
-  int gDiagPending;
-  int gLastDiagSid;
-  int gLastDiagDidHigh;
-  int gLastDiagDidLow;
 }
 
 on start
@@ -52,10 +48,6 @@ on start
   gSteeringTsMs = 0;
   gEmergencyMonTsMs = 0;
   gLastEthPathState = -1;
-  gDiagPending = 0;
-  gLastDiagSid = 0;
-  gLastDiagDidHigh = 0;
-  gLastDiagDidLow = 0;
   @CoreState::domainBoundaryStatus = 0;
   @CoreState::domainPathStatus = 2;
   @CoreState::e2eHealthState = 0;
@@ -103,217 +95,7 @@ on message frmEmergencyMonitorMsg
   gEmergencyMonTsMs = getSimulationTimeMs();
 }
 
-on message ethCgwDiagReqMsg
-{
-  gLastDiagSid = clampRange((int)this.CgwDiagServiceId, 0, 255);
-  gLastDiagDidHigh = clampRange((int)this.CgwDiagDidHigh, 0, 255);
-  gLastDiagDidLow = clampRange((int)this.CgwDiagDidLow, 0, 255);
-  gDiagPending = 1;
-}
-
 on timer tBoundaryCheck
-{
-  message ethCgwDiagResMsg mDiag;
-  message ethFailSafeStateMsg mFailSafe;
-  message ethObjectSafetyStateMsg mObjSafety;
-  dword nowMs;
-  int routingPolicy;
-  int forceFailSafe;
-  int objectTrackValid;
-  int objectConfidence;
-  int objectEventCode;
-  int objectConfidenceLow;
-  int chassisAliveOk;
-  int bodyAliveOk;
-  int infoAliveOk;
-  int aliveCount;
-  int allAlive;
-  int domainPathStatus;
-  int e2eHealthState;
-  int failSafeMode;
-  int ethPathState;
-
-  nowMs = getSimulationTimeMs();
-  aliveCount = 0;
-  routingPolicy = (int)@CoreState::routingPolicy;
-  forceFailSafe = (((int)@Test::forceFailSafe) == 1) ? 1 : 0;
-  objectTrackValid = clampRange((int)@Core::objectTrackValid, 0, 1);
-  objectConfidence = clampRange((int)@Core::objectConfidence, 0, 100);
-  objectEventCode = clampRange((int)@Core::objectEventCode, 0, 65535);
-  objectConfidenceLow = (objectTrackValid == 1 && objectConfidence < 35) ? 1 : 0;
-  if (routingPolicy < 0 || routingPolicy > 2)
-  {
-    routingPolicy = 0;
-  }
-
-  if (gVehicleStateTsMs == 0)
-  {
-    gVehicleStateAgeMs = 60000;
-  }
-  else
-  {
-    gVehicleStateAgeMs = clampRange((int)(nowMs - gVehicleStateTsMs), 0, 60000);
-  }
-
-  if (gNavContextTsMs == 0)
-  {
-    gNavContextAgeMs = 60000;
-  }
-  else
-  {
-    gNavContextAgeMs = clampRange((int)(nowMs - gNavContextTsMs), 0, 60000);
-  }
-
-  if (gSteeringTsMs == 0)
-  {
-    gSteeringAgeMs = 60000;
-  }
-  else
-  {
-    gSteeringAgeMs = clampRange((int)(nowMs - gSteeringTsMs), 0, 60000);
-  }
-
-  if (gEmergencyMonTsMs == 0)
-  {
-    gEmergencyMonAgeMs = 60000;
-  }
-  else
-  {
-    gEmergencyMonAgeMs = clampRange((int)(nowMs - gEmergencyMonTsMs), 0, 60000);
-  }
-
-  ethPathState = 0;
-  if (gVehicleStateAgeMs > 1000 || gNavContextAgeMs > 1000 || gSteeringAgeMs > 1000 || gEmergencyMonAgeMs > 1500)
-  {
-    ethPathState = 2;
-  }
-  else if (!((gVehicleStateAgeMs <= 300) && (gNavContextAgeMs <= 300) && (gSteeringAgeMs <= 300) && (gEmergencyMonAgeMs <= 500)))
-  {
-    ethPathState = 1;
-  }
-
-  if (ethPathState != gLastEthPathState)
-  {
-    write("[CGW] ethPath=%d (veh=%dms nav=%dms steer=%dms ems=%dms)",
-          ethPathState,
-          gVehicleStateAgeMs,
-          gNavContextAgeMs,
-          gSteeringAgeMs,
-          gEmergencyMonAgeMs);
-    gLastEthPathState = ethPathState;
-  }
-
-  chassisAliveOk = ((nowMs - gChassisTsMs) < 300 && gChassisAlive > 0) ? 1 : 0;
-  bodyAliveOk = ((nowMs - gBodyTsMs) < 300 && gBodyAlive > 0) ? 1 : 0;
-  infoAliveOk = ((nowMs - gInfoTsMs) < 300 && gInfoAlive > 0) ? 1 : 0;
-  aliveCount = chassisAliveOk + bodyAliveOk + infoAliveOk;
-  allAlive = (aliveCount == 3) ? 1 : 0;
-
-  @CoreState::domainBoundaryStatus = allAlive;
-  if (forceFailSafe == 1)
-  {
-    domainPathStatus = 2;
-  }
-  else if (aliveCount == 3)
-  {
-    domainPathStatus = 0;
-  }
-  else if (aliveCount >= 2)
-  {
-    domainPathStatus = 1;
-  }
-  else
-  {
-    domainPathStatus = 2;
-  }
-  if (objectConfidenceLow == 1 && domainPathStatus == 0)
-  {
-    domainPathStatus = 1;
-  }
-  if (ethPathState > domainPathStatus)
-  {
-    domainPathStatus = ethPathState;
-  }
-
-  if (forceFailSafe == 1)
-  {
-    e2eHealthState = 0;
-  }
-  else if (domainPathStatus >= 2)
-  {
-    e2eHealthState = 0;
-  }
-  else if (routingPolicy == 1 && objectConfidenceLow == 0)
-  {
-    e2eHealthState = 2;
-  }
-  else
-  {
-    e2eHealthState = 1;
-  }
-  if (ethPathState == 1 && e2eHealthState == 2)
-  {
-    e2eHealthState = 1;
-  }
-
-  failSafeMode = 0;
-  if (forceFailSafe == 1)
-  {
-    failSafeMode = 2;
-    @Core::decelAssistReq = 0;
-  }
-  else if (domainPathStatus >= 2 || e2eHealthState == 0)
-  {
-    failSafeMode = 1;
-    @Core::decelAssistReq = 0;
-  }
-  else if (domainPathStatus == 1 || objectConfidenceLow == 1)
-  {
-    failSafeMode = 1;
-    @Core::decelAssistReq = 0;
-  }
-
-  @CoreState::domainPathStatus = domainPathStatus;
-  @CoreState::e2eHealthState = e2eHealthState;
-  @Core::failSafeMode = failSafeMode;
-
-  if (allAlive != gLastBoundaryStatus)
-  {
-    write("[CGW] boundary=%d aliveCount=%d ch=%d bd=%d inf=%d",
-          allAlive, aliveCount, gChassisAlive, gBodyAlive, gInfoAlive);
-    gLastBoundaryStatus = allAlive;
-  }
-  if (domainPathStatus != gLastDomainPathStatus ||
-      e2eHealthState != gLastE2eHealthState ||
-      failSafeMode != gLastFailSafeMode)
-  {
-    write("[CGW] path=%d e2e=%d failSafe=%d routing=%d force=%d",
-          domainPathStatus, e2eHealthState, failSafeMode, routingPolicy, forceFailSafe);
-    gLastDomainPathStatus = domainPathStatus;
-    gLastE2eHealthState = e2eHealthState;
-    gLastFailSafeMode = failSafeMode;
-  }
-
-  mFailSafe.DomainPathStatus = domainPathStatus;
-  mFailSafe.E2eHealthState = e2eHealthState;
-  mFailSafe.FailSafeMode = failSafeMode;
-  mFailSafe.BoundaryAlive = allAlive;
-  output(mFailSafe);
-
-  mObjSafety.ObjectConfidence = objectConfidence;
-  mObjSafety.ObjectEventCode = objectEventCode;
-  mObjSafety.ObjectFailSafeMode = failSafeMode;
-  mObjSafety.ObjectTrackValid = objectTrackValid;
-  output(mObjSafety);
-
-  if (gDiagPending == 1)
-  {
-    mDiag.CgwDiagRespCode = (gLastDiagSid == 0x22) ? 0x62 : 0x7F;
-    mDiag.CgwDiagData0 = gLastDiagDidHigh;
-    mDiag.CgwDiagData1 = gLastDiagDidLow;
-    output(mDiag);
-    gDiagPending = 0;
-  }
 
   setTimer(tBoundaryCheck, 100);
 }

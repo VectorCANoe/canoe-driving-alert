@@ -5,10 +5,6 @@ includes
 
 variables
 {
-  int gDiagPending;
-  int gLastDiagSid;
-  int gLastDiagDidHigh;
-  int gLastDiagDidLow;
   msTimer tAbsCycle;
   int gBrakePressure;
   int gBrakeMode;
@@ -66,10 +62,6 @@ void publishAbsState()
 
 on start
 {
-  gDiagPending = 0;
-  gLastDiagSid = 0;
-  gLastDiagDidHigh = 0;
-  gLastDiagDidLow = 0;
   gBrakePressure = 0;
   gBrakeMode = 0;
   gAbsActive = 0;
@@ -86,16 +78,6 @@ on start
 
 on timer tAbsCycle
 {
-  if (gDiagPending == 1)
-  {
-    message frmAbsDiagResMsg mDiagRes;
-
-    mDiagRes.AbsDiagRespCode = getBasicDiagRespCode(gLastDiagSid);
-    mDiagRes.AbsDiagData0 = gLastDiagDidHigh;
-    mDiagRes.AbsDiagData1 = gLastDiagDidLow;
-    output(mDiagRes);
-    gDiagPending = 0;
-  }
 
   publishAbsState();
   setTimer(tAbsCycle, 100);
@@ -114,14 +96,6 @@ on message frmWheelSpeedMsg
   gWheelSpdFR = clampRange((int)this.WheelSpdFR, 0, 255);
   gWheelSpdRL = clampRange((int)this.WheelSpdRL, 0, 255);
   gWheelSpdRR = clampRange((int)this.WheelSpdRR, 0, 255);
-}
-
-on message frmAbsDiagReqMsg
-{
-  gLastDiagSid = clampRange((int)this.AbsDiagServiceId, 0, 255);
-  gLastDiagDidHigh = clampRange((int)this.AbsDiagDidHigh, 0, 255);
-  gLastDiagDidLow = clampRange((int)this.AbsDiagDidLow, 0, 255);
-  gDiagPending = 1;
 }
 
 on stopMeasurement

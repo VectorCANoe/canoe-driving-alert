@@ -6,10 +6,6 @@ includes
 
 variables
 {
-  int gDiagPending;
-  int gLastDiagSid;
-  int gLastDiagDidHigh;
-  int gLastDiagDidLow;
   msTimer tVsmCycle;
   int gLastCtrlState;
   int gLastAlertLevel;
@@ -18,10 +14,6 @@ variables
 
 on start
 {
-  gDiagPending = 0;
-  gLastDiagSid = 0;
-  gLastDiagDidHigh = 0;
-  gLastDiagDidLow = 0;
   gLastCtrlState = -1;
   gLastAlertLevel = -1;
   gLastIntervention = -1;
@@ -35,16 +27,6 @@ on timer tVsmCycle
   int ctrlState;
   int alertLevel;
   int intervention;
-  if (gDiagPending == 1)
-  {
-    message frmVsmDiagResMsg mDiagRes;
-
-    mDiagRes.VsmDiagRespCode = getBasicDiagRespCode(gLastDiagSid);
-    mDiagRes.VsmDiagData0 = gLastDiagDidHigh;
-    mDiagRes.VsmDiagData1 = gLastDiagDidLow;
-    output(mDiagRes);
-    gDiagPending = 0;
-  }
 
 
   ctrlState = ((int)@Core::failSafeMode == 1) ? 2 : 1;
@@ -70,14 +52,6 @@ on timer tVsmCycle
   }
 
   setTimer(tVsmCycle, 100);
-}
-
-on message frmVsmDiagReqMsg
-{
-  gLastDiagSid = clampRange((int)this.VsmDiagServiceId, 0, 255);
-  gLastDiagDidHigh = clampRange((int)this.VsmDiagDidHigh, 0, 255);
-  gLastDiagDidLow = clampRange((int)this.VsmDiagDidLow, 0, 255);
-  gDiagPending = 1;
 }
 
 on stopMeasurement

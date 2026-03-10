@@ -5,10 +5,6 @@ includes
 
 variables
 {
-  int gDiagPending;
-  int gLastDiagSid;
-  int gLastDiagDidHigh;
-  int gLastDiagDidLow;
   msTimer tEhbCycle;
   int gBrakePressure;
   int gLastCtrlState;
@@ -17,10 +13,6 @@ variables
 
 on start
 {
-  gDiagPending = 0;
-  gLastDiagSid = 0;
-  gLastDiagDidHigh = 0;
-  gLastDiagDidLow = 0;
   gBrakePressure = 0;
   gLastCtrlState = -1;
   gLastPressureCmd = -1;
@@ -35,16 +27,6 @@ on message frmBrakeStatusMsg
 
 on timer tEhbCycle
 {
-  if (gDiagPending == 1)
-  {
-    message frmEhbDiagResMsg mDiagRes;
-
-    mDiagRes.EhbDiagRespCode = getBasicDiagRespCode(gLastDiagSid);
-    mDiagRes.EhbDiagData0 = gLastDiagDidHigh;
-    mDiagRes.EhbDiagData1 = gLastDiagDidLow;
-    output(mDiagRes);
-    gDiagPending = 0;
-  }
 
   message frmEhbStateMsg mEhb;
   int ctrlState;
@@ -68,14 +50,6 @@ on timer tEhbCycle
   }
 
   setTimer(tEhbCycle, 100);
-}
-
-on message frmEhbDiagReqMsg
-{
-  gLastDiagSid = clampRange((int)this.EhbDiagServiceId, 0, 255);
-  gLastDiagDidHigh = clampRange((int)this.EhbDiagDidHigh, 0, 255);
-  gLastDiagDidLow = clampRange((int)this.EhbDiagDidLow, 0, 255);
-  gDiagPending = 1;
 }
 
 on stopMeasurement

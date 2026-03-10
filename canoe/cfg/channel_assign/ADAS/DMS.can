@@ -6,10 +6,6 @@ includes
 variables
 {
   msTimer tDmsCycle;
-  int gDiagPending;
-  int gLastDiagSid;
-  int gLastDiagDidHigh;
-  int gLastDiagDidLow;
   int gLastActive;
   int gLastAttention;
   int gLastFatigueWarn;
@@ -75,10 +71,6 @@ void publishDmsState()
 
 on start
 {
-  gDiagPending = 0;
-  gLastDiagSid = 0;
-  gLastDiagDidHigh = 0;
-  gLastDiagDidLow = 0;
   gLastActive = -1;
   gLastAttention = -1;
   gLastFatigueWarn = -1;
@@ -90,24 +82,7 @@ on start
 on timer tDmsCycle
 {
   publishDmsState();
-  if (gDiagPending == 1)
-  {
-    message frmDmsDiagResMsg mDiagRes;
-    mDiagRes.DmsDiagRespCode = (gLastDiagSid == 0x22) ? 0x62 : 0x7F;
-    mDiagRes.DmsDiagData0 = gLastDiagDidHigh;
-    mDiagRes.DmsDiagData1 = gLastDiagDidLow;
-    output(mDiagRes);
-    gDiagPending = 0;
-  }
   setTimer(tDmsCycle, 100);
-}
-
-on message frmDmsDiagReqMsg
-{
-  gLastDiagSid = (int)this.DmsDiagServiceId;
-  gLastDiagDidHigh = (int)this.DmsDiagDidHigh;
-  gLastDiagDidLow = (int)this.DmsDiagDidLow;
-  gDiagPending = 1;
 }
 
 on stopMeasurement

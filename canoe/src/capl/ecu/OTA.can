@@ -12,12 +12,10 @@ variables
   int gIviCpuLoad;
   int gIviMemLoad;
   int gTmuServiceMode;
-  int gTmuDiagState;
   int gDownloadPercent;
   int gLastSessionState;
   int gLastPackageReady;
   int gLastWindowOpen;
-  int gLastDiagState;
 }
 
 void publishOtaState()
@@ -28,7 +26,6 @@ void publishOtaState()
   int sessionState;
   int packageReady;
   int updateWindowOpen;
-  int diagState;
   int rolloutStage;
 
   failSafeMode = clampRange((int)@Core::failSafeMode, 0, 2);
@@ -69,14 +66,9 @@ void publishOtaState()
     gDownloadPercent = 0;
   }
 
-  diagState = 0;
-  if (failSafeMode > 0 || gTmuDiagState >= 2 || gIviCpuLoad >= 85 || gIviMemLoad >= 85)
   {
-    diagState = 2;
   }
-  else if (gTmuDiagState == 1 || gIviCpuLoad >= 65 || gIviMemLoad >= 65)
   {
-    diagState = 1;
   }
 
   rolloutStage = 0;
@@ -96,7 +88,6 @@ void publishOtaState()
   mOta.OtaSessionState = clampRange(sessionState, 0, 3);
   mOta.PackageReady = clampRange(packageReady, 0, 1);
   mOta.UpdateWindowOpen = clampRange(updateWindowOpen, 0, 1);
-  mOta.OtaDiagState = clampRange(diagState, 0, 15);
   mOta.OtaTargetDomain = 1;
   mOta.DownloadPercent = clampRange(gDownloadPercent, 0, 100);
   mOta.OtaRolloutStage = clampRange(rolloutStage, 0, 15);
@@ -105,13 +96,10 @@ void publishOtaState()
   if (mOta.OtaSessionState != gLastSessionState ||
       mOta.PackageReady != gLastPackageReady ||
       mOta.UpdateWindowOpen != gLastWindowOpen ||
-      mOta.OtaDiagState != gLastDiagState)
   {
-    write("[OTA] session=%d ready=%d window=%d diag=%d dl=%d bars=%d cpu=%d mem=%d",
           mOta.OtaSessionState,
           mOta.PackageReady,
           mOta.UpdateWindowOpen,
-          mOta.OtaDiagState,
           mOta.DownloadPercent,
           gSignalBars,
           gIviCpuLoad,
@@ -119,7 +107,6 @@ void publishOtaState()
     gLastSessionState = mOta.OtaSessionState;
     gLastPackageReady = mOta.PackageReady;
     gLastWindowOpen = mOta.UpdateWindowOpen;
-    gLastDiagState = mOta.OtaDiagState;
   }
 }
 
@@ -131,12 +118,10 @@ on start
   gIviCpuLoad = 0;
   gIviMemLoad = 0;
   gTmuServiceMode = 0;
-  gTmuDiagState = 0;
   gDownloadPercent = 0;
   gLastSessionState = -1;
   gLastPackageReady = -1;
   gLastWindowOpen = -1;
-  gLastDiagState = -1;
   setTimer(tOtaCycle, 100);
   write("[OTA] start");
 }
@@ -163,7 +148,6 @@ on message frmIviHealthDetailMsg
 on message frmTmuServiceStateMsg
 {
   gTmuServiceMode = clampRange((int)this.TmuServiceMode, 0, 3);
-  gTmuDiagState = clampRange((int)this.TmuDiagState, 0, 15);
 }
 
 on stopMeasurement

@@ -5,10 +5,6 @@ includes
 
 variables
 {
-  int gDiagPending;
-  int gLastDiagSid;
-  int gLastDiagDidHigh;
-  int gLastDiagDidLow;
   msTimer tAcuCycle;
   int gDriverSeatBelt;
   int gPassengerSeatBelt;
@@ -21,10 +17,6 @@ variables
 
 on start
 {
-  gDiagPending = 0;
-  gLastDiagSid = 0;
-  gLastDiagDidHigh = 0;
-  gLastDiagDidLow = 0;
   gDriverSeatBelt = 1;
   gPassengerSeatBelt = 1;
   gSeatBeltWarnLvl = 0;
@@ -45,16 +37,6 @@ on message frmSeatBeltStateMsg
 
 on timer tAcuCycle
 {
-  if (gDiagPending == 1)
-  {
-    message frmAcuDiagResMsg mDiagRes;
-
-    mDiagRes.AcuDiagRespCode = getBasicDiagRespCode(gLastDiagSid);
-    mDiagRes.AcuDiagData0 = gLastDiagDidHigh;
-    mDiagRes.AcuDiagData1 = gLastDiagDidLow;
-    output(mDiagRes);
-    gDiagPending = 0;
-  }
 
   message frmAcuStateMsg mAcu;
   int alertLevel;
@@ -93,14 +75,6 @@ on timer tAcuCycle
   }
 
   setTimer(tAcuCycle, 100);
-}
-
-on message frmAcuDiagReqMsg
-{
-  gLastDiagSid = clampRange((int)this.AcuDiagServiceId, 0, 255);
-  gLastDiagDidHigh = clampRange((int)this.AcuDiagDidHigh, 0, 255);
-  gLastDiagDidLow = clampRange((int)this.AcuDiagDidLow, 0, 255);
-  gDiagPending = 1;
 }
 
 on stopMeasurement

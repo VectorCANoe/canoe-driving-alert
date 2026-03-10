@@ -24,10 +24,6 @@ variables
   int gPrevAmbDispatch;
   int gLastMonContext;
   int gLastMonTimeoutClear;
-  int gDiagPending;
-  int gLastDiagSid;
-  int gLastDiagDidHigh;
-  int gLastDiagDidLow;
 }
 
 
@@ -192,10 +188,6 @@ on start
   gPrevAmbDispatch = 0;
   gLastMonContext = -1;
   gLastMonTimeoutClear = -1;
-  gDiagPending = 0;
-  gLastDiagSid = 0;
-  gLastDiagDidHigh = 0;
-  gLastDiagDidLow = 0;
   updateEmergencyContext();
   setTimeoutClear(0);
   setTimer(tRxCycle, 10);
@@ -233,14 +225,6 @@ on message frmEmergencyBroadcastMsg
   }
 
   pushEmergencyMonitor();
-}
-
-on message ethV2xDiagReqMsg
-{
-  gLastDiagSid = clampRange((int)this.V2xDiagServiceId, 0, 255);
-  gLastDiagDidHigh = clampRange((int)this.V2xDiagDidHigh, 0, 255);
-  gLastDiagDidLow = clampRange((int)this.V2xDiagDidLow, 0, 255);
-  gDiagPending = 1;
 }
 
 /* v1 fallback: sysvar polling (panel/legacy compat, kept for backward compat) */
@@ -332,64 +316,5 @@ on timer tEventTrace100
 }
 
 on timer tTransport100
-{
-  message ethV2xDiagResMsg mDiag;
-  int policeDispatch;
-  int ambDispatch;
-
-  policeDispatch = clampRange((int)@V2X::policeDispatch, 0, 1);
-  ambDispatch = clampRange((int)@V2X::ambulanceDispatch, 0, 1);
-
-  if (policeDispatch == 1 && gPrevPoliceDispatch == 0)
-  {
-    @V2X::emergencyType = 1;
-    @V2X::alertState = 1;
-    @V2X::sourceId = 1;
-    @V2X::eta = 30;
-    @V2X::emergencyDirection = 0;
-    emitEmergencyBroadcast(1, 1, 1, 30, 0);
-    write("[V2X] police dispatch active");
-  }
-  else if (policeDispatch == 0 && gPrevPoliceDispatch == 1)
-  {
-    if ((int)@V2X::sourceId == 1)
-    {
-      @V2X::alertState = 0;
-      emitEmergencyBroadcast(1, 0, 1, 0, 0);
-      write("[V2X] police dispatch clear");
-    }
-  }
-
-  if (ambDispatch == 1 && gPrevAmbDispatch == 0)
-  {
-    @V2X::emergencyType = 2;
-    @V2X::alertState = 1;
-    @V2X::sourceId = 2;
-    @V2X::eta = 20;
-    @V2X::emergencyDirection = 0;
-    emitEmergencyBroadcast(2, 1, 2, 20, 0);
-    write("[V2X] ambulance dispatch active");
-  }
-  else if (ambDispatch == 0 && gPrevAmbDispatch == 1)
-  {
-    if ((int)@V2X::sourceId == 2)
-    {
-      @V2X::alertState = 0;
-      emitEmergencyBroadcast(2, 0, 2, 0, 0);
-      write("[V2X] ambulance dispatch clear");
-    }
-  }
-
-  gPrevPoliceDispatch = policeDispatch;
-  gPrevAmbDispatch = ambDispatch;
-  pushEmergencyMonitor();
-  if (gDiagPending == 1)
-  {
-    mDiag.V2xDiagRespCode = (gLastDiagSid == 0x22) ? 0x62 : 0x7F;
-    mDiag.V2xDiagData0 = gLastDiagDidHigh;
-    mDiag.V2xDiagData1 = gLastDiagDidLow;
-    output(mDiag);
-    gDiagPending = 0;
-  }
   setTimer(tTransport100, 100);
 }

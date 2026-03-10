@@ -1,4 +1,4 @@
-﻿includes
+includes
 {
   #include "..\\common\\CAPL_COMMON.cin"
 }
@@ -13,9 +13,6 @@ variables
   int gChassisAliveCnt;
   int gLastBrakePedal;
   int gLastAssistReq;
-  int gLastDiagServiceId;
-  int gLastDiagDidHigh;
-  int gLastDiagDidLow;
 }
 
 on start
@@ -27,9 +24,6 @@ on start
   gChassisAliveCnt = 0;
   gLastBrakePedal = -1;
   gLastAssistReq = -1;
-  gLastDiagServiceId = 0x22;
-  gLastDiagDidHigh = 0xF1;
-  gLastDiagDidLow = 0x00;
   setTimer(tEscCycle, 100);
   write("[ESC] start");
 }
@@ -51,13 +45,6 @@ on message frmPedalInputCanMsg
   @Core::brakePedalNorm = gBrakePedal;
 }
 
-on message frmChassisDiagReqMsg
-{
-  gLastDiagServiceId = clampRange((int)this.ChsDiagServiceId, 0, 255);
-  gLastDiagDidHigh = clampRange((int)this.ChsDiagDidHigh, 0, 255);
-  gLastDiagDidLow = clampRange((int)this.ChsDiagDidLow, 0, 255);
-}
-
 on timer tEscCycle
 {
   message frmWheelSpeedMsg mWheelSpd;
@@ -68,7 +55,6 @@ on timer tEscCycle
   message frmBrakeTempMsg mBrakeTemp;
   message frmBrakeWearMsg mBrakeWear;
   message frmSuspensionStateMsg mSuspension;
-  message frmChassisDiagResMsg mDiagRes;
   message frmRoadFrictionMsg mFriction;
   int decelAssistReq;
   int appliedBrakePedal;
@@ -110,7 +96,6 @@ on timer tEscCycle
   output(mBrakeStatus);
 
   mHealth.ChassisAliveCnt = gChassisAliveCnt & 0xFF;
-  mHealth.ChassisDiagState = 0;
   mHealth.ChassisFailCode = 0;
   output(mHealth);
   gChassisAliveCnt = (gChassisAliveCnt + 1) & 0xFF;
@@ -132,10 +117,6 @@ on timer tEscCycle
   mSuspension.DampingLevel = 12;
   output(mSuspension);
 
-  mDiagRes.ChsDiagRespCode = (gLastDiagServiceId == 0x22) ? 0x62 : 0x7F;
-  mDiagRes.ChsDiagData0 = gLastDiagDidHigh;
-  mDiagRes.ChsDiagData1 = gLastDiagDidLow;
-  output(mDiagRes);
 
   mFriction.RoadFrictionCoef = 80;
   output(mFriction);

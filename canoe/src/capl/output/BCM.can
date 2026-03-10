@@ -11,20 +11,9 @@ variables
   int gLastAmbientColor;
   int gLastAmbientPattern;
   int gBodyAliveCnt;
-  int gLastBcmDiagReqSid;
-  int gLastBcmDiagReqDidHigh;
-  int gLastBcmDiagReqDidLow;
 }
 
-void sendBcmDiagResponse()
-{
-  message frmBcmDiagResMsg mDiagRes;
 
-  mDiagRes.BcmDiagRespCode = (gLastBcmDiagReqSid + 0x40) & 0xFF;
-  mDiagRes.BcmDiagData0 = gLastBcmDiagReqDidHigh & 0xFF;
-  mDiagRes.BcmDiagData1 = gLastBcmDiagReqDidLow & 0xFF;
-  output(mDiagRes);
-}
 
 on start
 {
@@ -32,20 +21,9 @@ on start
   gLastAmbientColor = -1;
   gLastAmbientPattern = -1;
   gBodyAliveCnt = 0;
-  gLastBcmDiagReqSid = 0x22;
-  gLastBcmDiagReqDidHigh = 0xF1;
-  gLastBcmDiagReqDidLow = 0x90;
   setTimer(tBodyCycle, 10);
   setTimer(tBodyBase100, 100);
   write("[BCM] start");
-}
-
-on message frmBcmDiagReqMsg
-{
-  gLastBcmDiagReqSid = clampRange((int)this.BcmDiagServiceId, 0, 255);
-  gLastBcmDiagReqDidHigh = clampRange((int)this.BcmDiagDidHigh, 0, 255);
-  gLastBcmDiagReqDidLow = clampRange((int)this.BcmDiagDidLow, 0, 255);
-  sendBcmDiagResponse();
 }
 
 on timer tBodyCycle
@@ -246,7 +224,6 @@ on timer tBodyBase100
   output(mCabinAir);
 
   mHealth.BodyAliveCnt = gBodyAliveCnt & 0xFF;
-  mHealth.BodyDiagState = 0;
   mHealth.BodyFailCode = 0;
   output(mHealth);
 
@@ -264,7 +241,6 @@ on timer tBodyBase100
   mDoorCtrl.ChildLockCmd = 0;
   output(mDoorCtrl);
 
-  /* BCM diagnostic request is validation/event-driven, not a cyclic comfort broadcast. */
 
   mBodyGwState.BodyGwRouteState = 1;
   mBodyGwState.BodyGwHealth = 0;

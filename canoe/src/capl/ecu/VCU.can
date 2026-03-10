@@ -18,10 +18,6 @@ variables
   int gBoundaryStatus;
   int gSpeedLimitNorm;
   int gPtAliveCnt;
-  int gDiagPending;
-  int gLastDiagSid;
-  int gLastDiagDidHigh;
-  int gLastDiagDidLow;
 }
 
 void publishBackboneVehicleState()
@@ -51,10 +47,6 @@ on start
   gBoundaryStatus = 0;
   gSpeedLimitNorm = 30;
   gPtAliveCnt = 0;
-  gDiagPending = 0;
-  gLastDiagSid = 0;
-  gLastDiagDidHigh = 0;
-  gLastDiagDidLow = 0;
   setTimer(tVcuCycle, 100);
   write("[VCU] start");
 }
@@ -89,14 +81,6 @@ on message frmVehicleModeMsg
   gEngineState = clampRange((int)this.PowertrainState, 0, 255);
 }
 
-on message frmPtDiagReqMsg
-{
-  gLastDiagSid = clampRange((int)this.PtDiagServiceId, 0, 255);
-  gLastDiagDidHigh = clampRange((int)this.PtDiagDidHigh, 0, 255);
-  gLastDiagDidLow = clampRange((int)this.PtDiagDidLow, 0, 255);
-  gDiagPending = 1;
-}
-
 on timer tVcuCycle
 {
   message frmVehicleStateCanMsg mState;
@@ -107,7 +91,6 @@ on timer tVcuCycle
   message frmVehicleModeMsg mVehMode;
   message frmPowerLimitMsg mPowerLimit;
   message frmPowertrainHealthMsg mPtHealth;
-  message frmPtDiagResMsg mPtDiagRes;
   message frmEnergyFlowStateMsg mEnergy;
   message frmPowertrainCtrlAuthMsg mCtrlAuth;
   int targetSpeed;
@@ -196,7 +179,6 @@ on timer tVcuCycle
   output(mPowerLimit);
 
   mPtHealth.PtAliveCnt = gPtAliveCnt & 0xFF;
-  mPtHealth.PtDiagState = 0;
   mPtHealth.PtFailCode = 0;
   output(mPtHealth);
   gPtAliveCnt = (gPtAliveCnt + 1) & 0xFF;
@@ -209,14 +191,7 @@ on timer tVcuCycle
   mCtrlAuth.CtrlAuthLevel = (gBoundaryStatus == 1) ? 3 : 1;
   mCtrlAuth.CtrlAuthSource = 1;
   output(mCtrlAuth);
-
-  if (gDiagPending == 1)
   {
-    mPtDiagRes.PtDiagRespCode = (gLastDiagSid == 0x22) ? 0x62 : 0x7F;
-    mPtDiagRes.PtDiagData0 = gLastDiagDidHigh;
-    mPtDiagRes.PtDiagData1 = gLastDiagDidLow;
-    output(mPtDiagRes);
-    gDiagPending = 0;
   }
 
   setTimer(tVcuCycle, 100);

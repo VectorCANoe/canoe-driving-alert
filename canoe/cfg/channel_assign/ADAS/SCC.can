@@ -11,10 +11,6 @@ variables
   int gLastCruiseState;
   int gLastGapLevel;
   int gLastCruiseSetSpeed;
-  int gDiagPending;
-  int gLastDiagSid;
-  int gLastDiagDidHigh;
-  int gLastDiagDidLow;
 }
 
 void publishCruiseState()
@@ -102,10 +98,6 @@ on start
   gLastCruiseState = -1;
   gLastGapLevel = -1;
   gLastCruiseSetSpeed = -1;
-  gDiagPending = 0;
-  gLastDiagSid = 0;
-  gLastDiagDidHigh = 0;
-  gLastDiagDidLow = 0;
   setTimer(tSccCycle, 50);
   write("[SCC] start");
 }
@@ -116,26 +108,8 @@ on message frmVehicleStateCanMsg
   gDriveState = clampRange((int)this.gDriveState, 0, 3);
 }
 
-on message frmSccDiagReqMsg
-{
-  gLastDiagSid = clampRange((int)this.SccDiagServiceId, 0, 255);
-  gLastDiagDidHigh = clampRange((int)this.SccDiagDidHigh, 0, 255);
-  gLastDiagDidLow = clampRange((int)this.SccDiagDidLow, 0, 255);
-  gDiagPending = 1;
-}
-
 on timer tSccCycle
 {
-  if (gDiagPending == 1)
-  {
-    message frmSccDiagResMsg mDiagRes;
-
-    mDiagRes.SccDiagRespCode = (gLastDiagSid == 0x22) ? 0x62 : 0x7F;
-    mDiagRes.SccDiagData0 = gLastDiagDidHigh;
-    mDiagRes.SccDiagData1 = gLastDiagDidLow;
-    output(mDiagRes);
-    gDiagPending = 0;
-  }
 
   publishCruiseState();
   setTimer(tSccCycle, 50);

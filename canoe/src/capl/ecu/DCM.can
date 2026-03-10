@@ -6,108 +6,47 @@ includes
 variables
 {
   msTimer tDcmCycle;
-  int gDiagPending;
-  int gLastDiagReqSid;
-  int gLastDiagDidHigh;
-  int gLastDiagDidLow;
   int gSecuritySession;
   int gAuthState;
   int gSecurityFault;
   int gSecurityPolicy;
-  int gLastDiagSession;
-  int gLastDiagPathState;
-  int gLastDiagPending;
-  int gLastDiagSid;
 }
 
-void publishDiagState()
-{
-  message ethDiagStateMsg mDiag;
-  int diagSession;
-  int diagPathState;
-  int diagPending;
-  int lastDiagSid;
 
-  diagSession = 0;
-  if (gSecuritySession > 0)
-  {
-    diagSession = 1;
-  }
   if (gAuthState >= 2)
   {
-    diagSession = 2;
   }
 
-  diagPathState = 0;
   if (gSecurityPolicy >= 2 || gSecurityFault >= 2)
   {
-    diagPathState = 2;
   }
   else if (gSecurityPolicy == 1 || gSecurityFault == 1)
   {
-    diagPathState = 1;
   }
 
-  diagPending = (gSecurityFault >= 2) ? 1 : 0;
-  lastDiagSid = (diagPending == 1) ? 0x19 : 0x22;
 
-  mDiag.DiagSession = clampRange(diagSession, 0, 7);
-  mDiag.DiagPathState = clampRange(diagPathState, 0, 3);
-  mDiag.DiagPending = clampRange(diagPending, 0, 1);
-  mDiag.LastDiagSid = clampRange(lastDiagSid, 0, 255);
-  output(mDiag);
 
-  if (mDiag.DiagSession != gLastDiagSession ||
-      mDiag.DiagPathState != gLastDiagPathState ||
-      mDiag.DiagPending != gLastDiagPending ||
-      mDiag.LastDiagSid != gLastDiagSid)
   {
     write("[DCM] session=%d path=%d pending=%d sid=0x%X sec=%d auth=%d fault=%d policy=%d",
-          mDiag.DiagSession,
-          mDiag.DiagPathState,
-          mDiag.DiagPending,
-          mDiag.LastDiagSid,
           gSecuritySession,
           gAuthState,
           gSecurityFault,
           gSecurityPolicy);
-    gLastDiagSession = mDiag.DiagSession;
-    gLastDiagPathState = mDiag.DiagPathState;
-    gLastDiagPending = mDiag.DiagPending;
-    gLastDiagSid = mDiag.LastDiagSid;
   }
 }
 
 on start
 {
-  gDiagPending = 0;
-  gLastDiagReqSid = 0;
-  gLastDiagDidHigh = 0;
-  gLastDiagDidLow = 0;
   gSecuritySession = 0;
   gAuthState = 0;
   gSecurityFault = 0;
   gSecurityPolicy = 0;
-  gLastDiagSession = -1;
-  gLastDiagPathState = -1;
-  gLastDiagPending = -1;
-  gLastDiagSid = -1;
   setTimer(tDcmCycle, 100);
   write("[DCM] start");
 }
 
 on timer tDcmCycle
 {
-  publishDiagState();
-  if (gDiagPending == 1)
-  {
-    message ethDcmDiagResMsg mDiagRes;
-    mDiagRes.DcmDiagRespCode = (gLastDiagReqSid == 0x22) ? 0x62 : 0x7F;
-    mDiagRes.DcmDiagData0 = gLastDiagDidHigh;
-    mDiagRes.DcmDiagData1 = gLastDiagDidLow;
-    output(mDiagRes);
-    gDiagPending = 0;
-  }
   setTimer(tDcmCycle, 100);
 }
 
@@ -117,14 +56,6 @@ on message ethSecurityStateMsg
   gAuthState = clampRange((int)this.AuthState, 0, 3);
   gSecurityFault = clampRange((int)this.SecurityFault, 0, 15);
   gSecurityPolicy = clampRange((int)this.SecurityPolicy, 0, 15);
-}
-
-on message ethDcmDiagReqMsg
-{
-  gLastDiagReqSid = (int)this.DcmDiagServiceId;
-  gLastDiagDidHigh = (int)this.DcmDiagDidHigh;
-  gLastDiagDidLow = (int)this.DcmDiagDidLow;
-  gDiagPending = 1;
 }
 
 on stopMeasurement

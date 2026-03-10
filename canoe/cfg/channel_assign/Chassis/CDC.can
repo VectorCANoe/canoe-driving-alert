@@ -6,10 +6,6 @@ includes
 
 variables
 {
-  int gDiagPending;
-  int gLastDiagSid;
-  int gLastDiagDidHigh;
-  int gLastDiagDidLow;
   msTimer tCdcCycle;
   int gDampingLevel;
   int gLastMode;
@@ -18,10 +14,6 @@ variables
 
 on start
 {
-  gDiagPending = 0;
-  gLastDiagSid = 0;
-  gLastDiagDidHigh = 0;
-  gLastDiagDidLow = 0;
   gDampingLevel = 12;
   gLastMode = -1;
   gLastValveCurrent = -1;
@@ -39,17 +31,6 @@ on timer tCdcCycle
   message frmCdcStateMsg mCdc;
   int mode;
   int valveCurrent;
-  
-  if (gDiagPending == 1)
-  {
-    message frmCdcDiagResMsg mDiagRes;
-
-    mDiagRes.CdcDiagRespCode = getBasicDiagRespCode(gLastDiagSid);
-    mDiagRes.CdcDiagData0 = gLastDiagDidHigh;
-    mDiagRes.CdcDiagData1 = gLastDiagDidLow;
-    output(mDiagRes);
-    gDiagPending = 0;
-  }
 
   mode = (gDampingLevel > 20) ? 2 : ((gDampingLevel > 0) ? 1 : 0);
   valveCurrent = clampRange(gDampingLevel * 4, 0, 255);
@@ -67,14 +48,6 @@ on timer tCdcCycle
   }
 
   setTimer(tCdcCycle, 100);
-}
-
-on message frmCdcDiagReqMsg
-{
-  gLastDiagSid = clampRange((int)this.CdcDiagServiceId, 0, 255);
-  gLastDiagDidHigh = clampRange((int)this.CdcDiagDidHigh, 0, 255);
-  gLastDiagDidLow = clampRange((int)this.CdcDiagDidLow, 0, 255);
-  gDiagPending = 1;
 }
 
 on stopMeasurement

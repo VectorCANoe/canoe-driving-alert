@@ -5,10 +5,6 @@ includes
 
 variables
 {
-  int gDiagPending;
-  int gLastDiagSid;
-  int gLastDiagDidHigh;
-  int gLastDiagDidLow;
   msTimer tWiperCycle;
   int gFrontWiperState;
   int gRearWiperState;
@@ -43,10 +39,6 @@ void publishWiperState()
 
 on start
 {
-  gDiagPending = 0;
-  gLastDiagSid = 0;
-  gLastDiagDidHigh = 0;
-  gLastDiagDidLow = 0;
   gFrontWiperState = 0;
   gRearWiperState = 0;
   gWiperInterval = 0;
@@ -59,16 +51,6 @@ on start
 
 on timer tWiperCycle
 {
-  if (gDiagPending == 1)
-  {
-    message frmWipDiagResMsg mDiagRes;
-
-    mDiagRes.WipDiagRespCode = getBasicDiagRespCode(gLastDiagSid);
-    mDiagRes.WipDiagData0 = gLastDiagDidHigh;
-    mDiagRes.WipDiagData1 = gLastDiagDidLow;
-    output(mDiagRes);
-    gDiagPending = 0;
-  }
 
   if ((int)@Core::timeoutClear == 1)
   {
@@ -84,14 +66,6 @@ on timer tWiperCycle
   }
   publishWiperState();
   setTimer(tWiperCycle, 100);
-}
-
-on message frmWipDiagReqMsg
-{
-  gLastDiagSid = clampRange((int)this.WipDiagServiceId, 0, 255);
-  gLastDiagDidHigh = clampRange((int)this.WipDiagDidHigh, 0, 255);
-  gLastDiagDidLow = clampRange((int)this.WipDiagDidLow, 0, 255);
-  gDiagPending = 1;
 }
 
 on stopMeasurement
