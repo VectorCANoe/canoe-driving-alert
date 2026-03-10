@@ -68,301 +68,6 @@ int calcBaselineIgnitionState(int speed, int driveState)
   return 0;
 }
 
-void sendBaselineDiagRequest(int scenarioId)
-{
-  message frmIviDiagReqMsg mIvi;
-  message frmCluDiagReqMsg mClu;
-  message frmAdasDiagReqMsg mAdas;
-  message frmPtDiagReqMsg mPt;
-  message frmChassisDiagReqMsg mChs;
-  message frmBcmDiagReqMsg mBcm;
-  message frmTmuDiagReqMsg mTmu;
-  message frmDatcDiagReqMsg mDatc;
-  message frmSccDiagReqMsg mScc;
-  message frmHudDiagReqMsg mHud;
-  message frmAmpDiagReqMsg mAmp;
-  message frmDmsDiagReqMsg mDms;
-  message frmOmsDiagReqMsg mOms;
-  message ethV2xDiagReqMsg mV2x;
-  message ethCgwDiagReqMsg mCgw;
-  message ethSgwDiagReqMsg mSgw;
-  message ethDcmDiagReqMsg mDcm;
-  message frmAbsDiagReqMsg mAbs;
-  message frmEpbDiagReqMsg mEpb;
-  message frmTpmsDiagReqMsg mTpms;
-  message frmSasDiagReqMsg mSas;
-  message frmVsmDiagReqMsg mVsm;
-  message frmEhbDiagReqMsg mEhb;
-  message frmEcsDiagReqMsg mEcs;
-  message frmCdcDiagReqMsg mCdc;
-  message frmAcuDiagReqMsg mAcu;
-  message frmOdsDiagReqMsg mOds;
-  message frmSmkDiagReqMsg mSmk;
-  message frmAflsDiagReqMsg mAfls;
-  message frmWipDiagReqMsg mWip;
-  int didLow;
-
-  didLow = clampRange(scenarioId, 0, 255);
-
-  mIvi.IviDiagServiceId = 0x22;
-  mIvi.IviDiagDidHigh = 0xF1;
-  mIvi.IviDiagDidLow = didLow;
-  output(mIvi);
-
-  mClu.CluDiagServiceId = 0x22;
-  mClu.CluDiagDidHigh = 0xF1;
-  mClu.CluDiagDidLow = didLow;
-  output(mClu);
-
-  mAdas.AdasDiagServiceId = 0x22;
-  mAdas.AdasDiagDidHigh = 0xF1;
-  mAdas.AdasDiagDidLow = didLow;
-  output(mAdas);
-
-  mPt.PtDiagServiceId = 0x22;
-  mPt.PtDiagDidHigh = 0xF1;
-  mPt.PtDiagDidLow = didLow;
-  output(mPt);
-
-  mChs.ChsDiagServiceId = 0x22;
-  mChs.ChsDiagDidHigh = 0xF1;
-  mChs.ChsDiagDidLow = didLow;
-  output(mChs);
-
-  mBcm.BcmDiagServiceId = 0x22;
-  mBcm.BcmDiagDidHigh = 0xF1;
-  mBcm.BcmDiagDidLow = didLow;
-  output(mBcm);
-
-  mTmu.TmuDiagServiceId = 0x22;
-  mTmu.TmuDiagDidHigh = 0xF1;
-  mTmu.TmuDiagDidLow = didLow;
-  output(mTmu);
-
-  mDatc.DatcDiagServiceId = 0x22;
-  mDatc.DatcDiagDidHigh = 0xF1;
-  mDatc.DatcDiagDidLow = didLow;
-  output(mDatc);
-
-  mScc.SccDiagServiceId = 0x22;
-  mScc.SccDiagDidHigh = 0xF1;
-  mScc.SccDiagDidLow = didLow;
-  output(mScc);
-
-  mHud.HudDiagServiceId = 0x22;
-  mHud.HudDiagDidHigh = 0xF1;
-  mHud.HudDiagDidLow = didLow;
-  output(mHud);
-
-  mAmp.AmpDiagServiceId = 0x22;
-  mAmp.AmpDiagDidHigh = 0xF1;
-  mAmp.AmpDiagDidLow = didLow;
-  output(mAmp);
-
-  mDms.DmsDiagServiceId = 0x22;
-  mDms.DmsDiagDidHigh = 0xF1;
-  mDms.DmsDiagDidLow = didLow;
-  output(mDms);
-
-  mOms.OmsDiagServiceId = 0x22;
-  mOms.OmsDiagDidHigh = 0xF1;
-  mOms.OmsDiagDidLow = didLow;
-  output(mOms);
-
-  mV2x.V2xDiagServiceId = 0x22;
-  mV2x.V2xDiagDidHigh = 0xF1;
-  mV2x.V2xDiagDidLow = didLow;
-  output(mV2x);
-
-  mCgw.CgwDiagServiceId = 0x22;
-  mCgw.CgwDiagDidHigh = 0xF1;
-  mCgw.CgwDiagDidLow = didLow;
-  output(mCgw);
-
-  mSgw.SgwDiagServiceId = 0x22;
-  mSgw.SgwDiagDidHigh = 0xF1;
-  mSgw.SgwDiagDidLow = didLow;
-  output(mSgw);
-
-  mDcm.DcmDiagServiceId = 0x22;
-  mDcm.DcmDiagDidHigh = 0xF1;
-  mDcm.DcmDiagDidLow = didLow;
-  output(mDcm);
-
-  mAbs.AbsDiagServiceId = 0x22;
-  mAbs.AbsDiagDidHigh = 0xF1;
-  mAbs.AbsDiagDidLow = didLow;
-  output(mAbs);
-  mEpb.EpbDiagServiceId = 0x22;
-  mEpb.EpbDiagDidHigh = 0xF1;
-  mEpb.EpbDiagDidLow = didLow;
-  output(mEpb);
-  mTpms.TpmsDiagServiceId = 0x22;
-  mTpms.TpmsDiagDidHigh = 0xF1;
-  mTpms.TpmsDiagDidLow = didLow;
-  output(mTpms);
-  mSas.SasDiagServiceId = 0x22;
-  mSas.SasDiagDidHigh = 0xF1;
-  mSas.SasDiagDidLow = didLow;
-  output(mSas);
-  mVsm.VsmDiagServiceId = 0x22;
-  mVsm.VsmDiagDidHigh = 0xF1;
-  mVsm.VsmDiagDidLow = didLow;
-  output(mVsm);
-  mEhb.EhbDiagServiceId = 0x22;
-  mEhb.EhbDiagDidHigh = 0xF1;
-  mEhb.EhbDiagDidLow = didLow;
-  output(mEhb);
-  mEcs.EcsDiagServiceId = 0x22;
-  mEcs.EcsDiagDidHigh = 0xF1;
-  mEcs.EcsDiagDidLow = didLow;
-  output(mEcs);
-  mCdc.CdcDiagServiceId = 0x22;
-  mCdc.CdcDiagDidHigh = 0xF1;
-  mCdc.CdcDiagDidLow = didLow;
-  output(mCdc);
-  mAcu.AcuDiagServiceId = 0x22;
-  mAcu.AcuDiagDidHigh = 0xF1;
-  mAcu.AcuDiagDidLow = didLow;
-  output(mAcu);
-  mOds.OdsDiagServiceId = 0x22;
-  mOds.OdsDiagDidHigh = 0xF1;
-  mOds.OdsDiagDidLow = didLow;
-  output(mOds);
-  mSmk.SmkDiagServiceId = 0x22;
-  mSmk.SmkDiagDidHigh = 0xF1;
-  mSmk.SmkDiagDidLow = didLow;
-  output(mSmk);
-  mAfls.AflsDiagServiceId = 0x22;
-  mAfls.AflsDiagDidHigh = 0xF1;
-  mAfls.AflsDiagDidLow = didLow;
-  output(mAfls);
-  mWip.WipDiagServiceId = 0x22;
-  mWip.WipDiagDidHigh = 0xF1;
-  mWip.WipDiagDidLow = didLow;
-  output(mWip);
-}
-
-on message frmIviDiagResMsg
-{
-}
-
-on message frmCluDiagResMsg
-{
-}
-
-on message frmAdasDiagResMsg
-{
-}
-
-on message frmPtDiagResMsg
-{
-}
-
-on message frmChassisDiagResMsg
-{
-}
-
-on message frmBcmDiagResMsg
-{
-}
-
-on message frmTmuDiagResMsg
-{
-}
-
-on message frmDatcDiagResMsg
-{
-}
-
-on message frmSccDiagResMsg
-{
-}
-
-on message frmHudDiagResMsg
-{
-}
-
-on message frmAmpDiagResMsg
-{
-}
-
-on message frmDmsDiagResMsg
-{
-}
-
-on message frmOmsDiagResMsg
-{
-}
-
-on message ethV2xDiagResMsg
-{
-}
-
-on message ethCgwDiagResMsg
-{
-}
-
-on message ethSgwDiagResMsg
-{
-}
-
-on message ethDcmDiagResMsg
-{
-}
-
-on message frmAbsDiagResMsg
-{
-}
-
-on message frmEpbDiagResMsg
-{
-}
-
-on message frmTpmsDiagResMsg
-{
-}
-
-on message frmSasDiagResMsg
-{
-}
-
-on message frmVsmDiagResMsg
-{
-}
-
-on message frmEhbDiagResMsg
-{
-}
-
-on message frmEcsDiagResMsg
-{
-}
-
-on message frmCdcDiagResMsg
-{
-}
-
-on message frmAcuDiagResMsg
-{
-}
-
-on message frmOdsDiagResMsg
-{
-}
-
-on message frmSmkDiagResMsg
-{
-}
-
-on message frmAflsDiagResMsg
-{
-}
-
-on message frmWipDiagResMsg
-{
-}
-
 void pushLockedScenarioInputs()
 {
   @Chassis::driveState = clampRange(gLockDriveState, 0, 3);
@@ -439,14 +144,6 @@ void beginAutoDemoExecution()
   gDemoStepIndex = 0;
   setScenarioMirror(100);
   runDemoStep();
-}
-
-void beginBaselineDiagRequest(int scenarioId)
-{
-  stopScenarioExecution();
-  gCurrentScenarioId = scenarioId;
-  setScenarioMirror(scenarioId);
-  sendBaselineDiagRequest(scenarioId);
 }
 
 void applyScenarioPreset(int scenarioId)
@@ -1331,8 +1028,8 @@ on sysvar Test::scenarioCommand
   }
   else if (scenarioId >= 200 && scenarioId <= 255)
   {
-    beginBaselineDiagRequest(scenarioId);
-    write("[TEST_SCN] command send baseline diag scenario=%d", scenarioId);
+    beginScenarioExecution(scenarioId);
+    write("[TEST_SCN] command execute scenario=%d", scenarioId);
   }
   else
   {
@@ -1387,8 +1084,8 @@ on sysvar Test::testScenario
   }
   else if (scenarioId >= 200 && scenarioId <= 255)
   {
-    beginBaselineDiagRequest(scenarioId);
-    write("[TEST_SCN] send baseline diag request scenario=%d", scenarioId);
+    beginScenarioExecution(scenarioId);
+    write("[TEST_SCN] execute scenario=%d", scenarioId);
   }
   else
   {
@@ -1442,4 +1139,5 @@ on timer tScenarioEval
         objectTtcMin, objectEventCode, renderAlertType, renderTextCode);
 
 }
+
 
