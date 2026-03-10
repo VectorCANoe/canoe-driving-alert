@@ -1,26 +1,3 @@
-int clampRange(int value, int minValue, int maxValue)
-{
-  if (value < minValue)
-  {
-    return minValue;
-  }
-  if (value > maxValue)
-  {
-    return maxValue;
-  }
-  return value;
-}
-
-dword getSimulationTimeMs()
-{
-  return (dword)(timeNowInt64() / 1000000);
-}
-
-int getBasicDiagRespCode(int sid)
-{
-  return (sid == 0x22) ? 0x62 : 0x7F;
-}
-
 #define DIAG_TARGET_IVI 1
 #define DIAG_TARGET_CLU 2
 #define DIAG_TARGET_ADAS 3
@@ -58,6 +35,29 @@ int getBasicDiagRespCode(int sid)
 #define DIAG_BUS_BODY 4
 #define DIAG_BUS_INFOTAINMENT 5
 #define DIAG_BUS_ADAS 6
+
+int clampRange(int value, int minValue, int maxValue)
+{
+  if (value < minValue)
+  {
+    return minValue;
+  }
+  if (value > maxValue)
+  {
+    return maxValue;
+  }
+  return value;
+}
+
+dword getSimulationTimeMs()
+{
+  return (dword)(timeNowInt64() / 1000000);
+}
+
+int getBasicDiagRespCode(int sid)
+{
+  return (sid == 0x22) ? 0x62 : 0x7F;
+}
 
 int isDiagPositiveResponse(int respCode)
 {
