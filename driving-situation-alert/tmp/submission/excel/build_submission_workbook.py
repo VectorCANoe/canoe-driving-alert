@@ -15,6 +15,9 @@ OUTPUT = ROOT / "excel" / "submission_final_all_in_one.xlsx"
 
 ORDER = [
     "00_Project_Overview.md",
+    "governance/00d_HARA_Worksheet.md",
+    "governance/00e_ECU_Naming_Standard.md",
+    "governance/00f_CAN_ID_Allocation_Standard.md",
     "01_Requirements.md",
     "02_Concept_design.md",
     "03_Function_definition.md",
