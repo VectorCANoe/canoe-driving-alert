@@ -1,4 +1,4 @@
-# 통신 명세서 (Communication Specification)
+﻿# 통신 명세서 (Communication Specification)
 
 **Document ID**: PROJ-0303-CS
 **ISO 26262 Reference**: Part 6, Cl.7 (Software Architectural Design)
@@ -103,9 +103,9 @@
 | frmBaseTestResultMsg | 0x2A6 | 8 | BaseScenarioId | 0~7 | 기본 시나리오 ID | 0~255 | Validation Harness에서 기본 시나리오 판정에 사용 |
 |  |  |  | BaseScenarioResult | 8 | 기본 시나리오 판정 | 0~1 | Validation Harness에서 기본 시나리오 판정에 사용 |
 | frmEmergencyBroadcastMsg | 0x1C0 | 4 | emergencyType | 0~3 | 긴급차량 타입 | 0~15 | V2X에서 긴급 알림 수신 경로로 전달 |
-|  |  |  | alertState | 4~5 | 긴급 상태 | 0~3 | V2X에서 긴급 알림 수신 경로로 전달 |
-|  |  |  | sourceId | 8~15 | 긴급 송신 주체 ID | 0~255 | V2X에서 긴급 알림 수신 경로로 전달 |
-|  |  |  | eta | 16~23 | 도달 예상 시간 | 0~255 s | V2X에서 긴급 알림 수신 경로로 전달 |
+|  |  |  | Status | 4~5 | 긴급 상태 | 0~3 | V2X에서 긴급 알림 수신 경로로 전달 |
+|  |  |  | SourceId | 8~15 | 긴급 송신 주체 ID | 0~255 | V2X에서 긴급 알림 수신 경로로 전달 |
+|  |  |  | EtaSeconds | 16~23 | 도달 예상 시간 | 0~255 s | V2X에서 긴급 알림 수신 경로로 전달 |
 |  |  |  | emergencyDirection | 24~27 | 접근 방향 | 0~15 | V2X에서 긴급 알림 수신 경로로 전달 |
 | frmEmergencyMonitorMsg | 0x1C2 | 2 | emergencyContext | 0~7 | 긴급 컨텍스트 상태 | 0~255 | V2X에서 ETHB 상태 모니터링 경로로 전달 |
 |  |  |  | TimeoutClearMon | 8 | 타임아웃 모니터 플래그 | 0~1 | V2X에서 ETHB 상태 모니터링 경로로 전달 |
@@ -145,122 +145,119 @@
 |  |  |  | navDirection | 2~3 | 유도 방향 | 0~3 | IVI에서 구간 판단과 경고 중재에 전달 (UDP) |
 |  |  |  | zoneDistance | 8~15 | 구간 잔여 거리 | 0~255 m | IVI에서 구간 판단과 경고 중재에 전달 (UDP) |
 |  |  |  | speedLimit | 16~23 | 구간 제한속도 | 0~255 km/h | IVI에서 구간 판단과 경고 중재에 전달 (UDP) |
-| ETH_EmergencyAlert | 0xE100 | 4 | emergencyType | 0~1 | 긴급차량 종류 | 0~3 | V2X 긴급 알림 송신 기능에서 V2X 긴급 알림 수신 기능에 전달 (UDP) |
+| frmEmergencyBroadcastMsg | 0xE100 | 4 | emergencyType | 0~1 | 긴급차량 종류 | 0~3 | V2X 긴급 알림 송신 기능에서 V2X 긴급 알림 수신 기능에 전달 (UDP) |
 |  |  |  | emergencyDirection | 2~3 | 긴급차량 접근 방향 | 0~3 | V2X 긴급 알림 송신 기능에서 V2X 긴급 알림 수신 기능에 전달 (UDP) |
-|  |  |  | eta | 8~15 | 도달 예상시간 | 0~255 s | V2X 긴급 알림 송신 기능에서 V2X 긴급 알림 수신 기능에 전달 (UDP) |
-|  |  |  | sourceId | 16~23 | 송신 주체 ID | 0~255 | V2X 긴급 알림 송신 기능에서 V2X 긴급 알림 수신 기능에 전달 (UDP) |
-|  |  |  | alertState | 24 | 긴급 상태 | 0~1 | V2X 긴급 알림 송신 기능에서 V2X 긴급 알림 수신 기능에 전달 (UDP) |
-| ethSelectedAlertMsg | 0xE200 | 2 | selectedAlertLevel | 0~2 | 최종 경고 레벨 | 0~7 | ADAS에서 최종 경고 결과를 BCM, IVI에 전달 (UDP) |
+|  |  |  | EtaSeconds | 8~15 | 도달 예상시간 | 0~255 s | V2X 긴급 알림 송신 기능에서 V2X 긴급 알림 수신 기능에 전달 (UDP) |
+|  |  |  | SourceId | 16~23 | 송신 주체 ID | 0~255 | V2X 긴급 알림 송신 기능에서 V2X 긴급 알림 수신 기능에 전달 (UDP) |
+|  |  |  | Status | 24 | 긴급 상태 | 0~1 | V2X 긴급 알림 송신 기능에서 V2X 긴급 알림 수신 기능에 전달 (UDP) |
+| ethSelectedAlertMsg | 0x206 | 2 | selectedAlertLevel | 0~2 | 최종 경고 레벨 | 0~7 | ADAS에서 최종 경고 결과를 BCM, IVI에 전달 (UDP) |
 |  |  |  | selectedAlertType | 3~5 | 최종 경고 타입 | 0~7 | ADAS에서 최종 경고 결과를 BCM, IVI에 전달 (UDP) |
 |  |  |  | timeoutClear | 8 | 타임아웃 해제 플래그 | 0~1 | ADAS에서 최종 경고 결과를 BCM, IVI에 전달 (UDP) |
 | frmEpsStateMsg | 0x123 | 2 | EpsAssistState | 0~2 | MDPS 보조 상태 | 0~7 | CGW에서 MDPS와 경계 판단 경로에 전달 |
-|  |  |  | EpsFault | 3 | MDPS 고장 상태 | 0~1 | CGW에서 MDPS와 경계 판단 경로에 전달 |
-|  |  |  | EpsTorqueReq | 8~15 | MDPS 토크 요청 | 0~255 0.1Nm | CGW에서 MDPS와 경계 판단 경로에 전달 |
+|  |  |  | EpsFaultState | 3 | MDPS 고장 상태 | 0~1 | CGW에서 MDPS와 경계 판단 경로에 전달 |
+|  |  |  | EpsTemp | 8~15 | MDPS 토크 요청 | 0~255 0.1Nm | CGW에서 MDPS와 경계 판단 경로에 전달 |
 | frmAbsStateMsg | 0x124 | 2 | AbsCtrlState | 0~2 | ABS 제어 상태 | 0~7 | CGW에서 ESC와 경계 판단 경로에 전달 |
 |  |  |  | AbsSlipLevel | 8~15 | ABS 슬립 레벨 | 0~255 | CGW에서 ESC와 경계 판단 경로에 전달 |
 | frmEscStateMsg | 0x125 | 2 | EscCtrlState | 0~2 | ESC 제어 상태 | 0~7 | CGW에서 ESC, MDPS와 경계 판단 경로에 전달 |
-|  |  |  | YawCtrlReq | 8~15 | 요 모멘트 제어 요구 | 0~255 | CGW에서 ESC, MDPS와 경계 판단 경로에 전달 |
-| frmTcsStateMsg | 0x126 | 2 | TcsActive | 0 | TCS 활성 상태 | 0~1 | CGW에서 VCU, ESC와 경계 판단 경로에 전달 |
+|  |  |  | EscYawTarget | 8~15 | 요 모멘트 제어 요구 | 0~255 | CGW에서 ESC, MDPS와 경계 판단 경로에 전달 |
+| frmTcsStateMsg | 0x126 | 2 | TcsCtrlState | 0 | TCS 활성 상태 | 0~1 | CGW에서 VCU, ESC와 경계 판단 경로에 전달 |
 |  |  |  | TcsSlipRatio | 8~15 | TCS 슬립 비율 | 0~255 | CGW에서 VCU, ESC와 경계 판단 경로에 전달 |
 | frmBrakeTempMsg | 0x127 | 2 | BrakeTempFL | 0~7 | 브레이크 전륜좌 온도 | 0~255 degC | CGW에서 ESC와 경계 판단 경로에 전달 |
 |  |  |  | BrakeTempFR | 8~15 | 브레이크 전륜우 온도 | 0~255 degC | CGW에서 ESC와 경계 판단 경로에 전달 |
-|  |  |  | BrakeTempRL | 16~23 | 브레이크 후륜좌 온도 | 0~255 degC | CGW에서 ESC와 경계 판단 경로에 전달 |
-|  |  |  | BrakeTempRR | 24~31 | 브레이크 후륜우 온도 | 0~255 degC | CGW에서 ESC와 경계 판단 경로에 전달 |
-| frmSteeringAngleMsg | 0x128 | 2 | SteeringAngle | 0~15 | 조향각 | -720~720 deg | CGW에서 MDPS와 ADAS에 전달 |
-|  |  |  | SteeringAngleRate | 16~31 | 조향각속도 | -1024~1023 deg/s | CGW에서 MDPS와 ADAS에 전달 |
-| frmWheelPulseMsg | 0x104 | 2 | WheelPulseFL | 0~15 | 전륜좌 휠 펄스 | 0~65535 cnt | CGW에서 VCU, ESC, MDPS에 전달 |
-|  |  |  | WheelPulseFR | 16~31 | 전륜우 휠 펄스 | 0~65535 cnt | CGW에서 VCU, ESC, MDPS에 전달 |
-| frmSuspensionStateMsg | 0x105 | 2 | DamperMode | 0~2 | 댐퍼 모드 | 0~7 | CGW에서 경계 판단 경로에 전달 |
-|  |  |  | RideHeight | 8~15 | 차고 높이 | 0~255 mm | CGW에서 경계 판단 경로에 전달 |
+| frmSteeringAngleMsg | 0x128 | 2 | SteeringAngleRaw | 0~15 | 조향각 | -720~720 deg | CGW에서 MDPS와 ADAS에 전달 |
+|  |  |  | SteeringAngleRaw | 16~31 | 조향각속도 | -1024~1023 deg/s | CGW에서 MDPS와 ADAS에 전달 |
+| frmWheelPulseMsg | 0x104 | 2 | WheelPulseFront | 0~15 | 전륜좌 휠 펄스 | 0~65535 cnt | CGW에서 VCU, ESC, MDPS에 전달 |
+|  |  |  | WheelPulseRear | 16~31 | 전륜우 휠 펄스 | 0~65535 cnt | CGW에서 VCU, ESC, MDPS에 전달 |
+| frmSuspensionStateMsg | 0x105 | 2 | SuspensionMode | 0~2 | 댐퍼 모드 | 0~7 | CGW에서 경계 판단 경로에 전달 |
+|  |  |  | SuspensionLevel | 8~15 | 차고 높이 | 0~255 mm | CGW에서 경계 판단 경로에 전달 |
 | frmTirePressureMsg | 0x106 | 4 | TirePressFL | 0~7 | 전륜좌 타이어 압력 | 0~255 kPa | CGW에서 경계 판단 경로에 전달 |
 |  |  |  | TirePressFR | 8~15 | 전륜우 타이어 압력 | 0~255 kPa | CGW에서 경계 판단 경로에 전달 |
 |  |  |  | TirePressRL | 16~23 | 후륜좌 타이어 압력 | 0~255 kPa | CGW에서 경계 판단 경로에 전달 |
 |  |  |  | TirePressRR | 24~31 | 후륜우 타이어 압력 | 0~255 kPa | CGW에서 경계 판단 경로에 전달 |
-| frmChassisDiagReqMsg | 0x2A4 | 3 | ChassisDiagReqId | 0~7 | Chassis 진단 요청 ID | 0~255 | Validation Harness에서 CGW에 전달 |
-|  |  |  | ChassisDiagReqAct | 8 | Chassis 진단 요청 활성 | 0~1 | Validation Harness에서 CGW에 전달 |
-| frmChassisDiagResMsg | 0x107 | 3 | ChassisDiagResId | 0~7 | Chassis 진단 응답 ID | 0~255 | CGW에서 Validation Harness에 전달 |
-|  |  |  | ChassisDiagStatus | 8~11 | Chassis 진단 결과 | 0~15 | CGW에서 Validation Harness에 전달 |
+| frmChassisDiagReqMsg | 0x2A4 | 3 | ChsDiagServiceId | 0~7 | Chassis 진단 요청 ID | 0~255 | Validation Harness에서 CGW에 전달 |
+|  |  |  | ChsDiagDidHigh | 8 | Chassis 진단 요청 활성 | 0~1 | Validation Harness에서 CGW에 전달 |
+| frmChassisDiagResMsg | 0x107 | 3 | ChsDiagRespCode | 0~7 | Chassis 진단 응답 ID | 0~255 | CGW에서 Validation Harness에 전달 |
+|  |  |  | ChsDiagData0 | 8~11 | Chassis 진단 결과 | 0~15 | CGW에서 Validation Harness에 전달 |
 | frmAdasChassisStatusMsg | 0x1C1 | 2 | AdasChassisState | 0~7 | ADAS 섀시 상태 코드 | 0~255 | ADAS에서 SIL 대체 버스로 상태를 전달 |
 |  |  |  | AdasHealthLevel | 8~15 | ADAS 헬스 레벨 | 0~255 | ADAS에서 SIL 대체 버스로 상태를 전달 |
-| frmBrakeWearMsg | 0x129 | 1 | BrakePadWearFL | 0~7 | 브레이크 패드 마모(전륜좌) | 0~100 % | CGW에서 ESC와 경계 판단 경로에 전달 |
-|  |  |  | BrakePadWearFR | 8~15 | 브레이크 패드 마모(전륜우) | 0~100 % | CGW에서 ESC와 경계 판단 경로에 전달 |
-| frmRoadFrictionMsg | 0x108 | 1 | RoadFrictionEst | 0~7 | 노면 마찰 추정치 | 0~255 | CGW에서 ADAS와 경계 판단 경로에 전달 |
-|  |  |  | SurfaceType | 8~11 | 노면 타입 | 0~15 | CGW에서 ADAS와 경계 판단 경로에 전달 |
+| frmBrakeWearMsg | 0x129 | 1 | BrakePadWearLvl | 0~7 | 브레이크 패드 마모(전륜좌) | 0~100 % | CGW에서 ESC와 경계 판단 경로에 전달 |
+|  |  |  | BrakePadWearLvl | 8~15 | 브레이크 패드 마모(전륜우) | 0~100 % | CGW에서 ESC와 경계 판단 경로에 전달 |
+| frmRoadFrictionMsg | 0x108 | 1 | RoadFrictionCoef | 0~7 | 노면 마찰 추정치 | 0~255 | CGW에서 ADAS와 경계 판단 경로에 전달 |
 | frmHvacStateMsg | 0x26A | 2 | CabinSetTemp | 0~7 | 실내 설정 온도 | 0~63 degC | BCM에서 앰비언트 제어와 차체 상태 판단에 전달 |
 |  |  |  | BlowerLevel | 8~11 | 블로워 레벨 | 0~15 | BCM에서 앰비언트 제어와 차체 상태 판단에 전달 |
 | frmHvacActuatorMsg | 0x26B | 2 | VentMode | 0~2 | 공조 벤트 모드 | 0~7 | BCM에서 앰비언트 제어에 전달 |
-|  |  |  | AcCompressorReq | 3 | A/C 컴프레서 요청 | 0~1 | BCM에서 앰비언트 제어에 전달 |
+|  |  |  | AcCompressorOn | 3 | A/C 컴프레서 요청 | 0~1 | BCM에서 앰비언트 제어에 전달 |
 | frmMirrorStateMsg | 0x26C | 1 | MirrorFoldState | 0 | 미러 폴딩 상태 | 0~1 | BCM에서 창문 제어에 전달 |
 |  |  |  | MirrorHeatState | 1 | 미러 열선 상태 | 0~1 | BCM에서 창문 제어에 전달 |
-|  |  |  | MirrorAdjAxis | 8~9 | 미러 조정 축 | 0~3 | BCM에서 창문 제어에 전달 |
+|  |  |  | MirrorAdjustAxis | 8~9 | 미러 조정 축 | 0~3 | BCM에서 창문 제어에 전달 |
 | frmSeatStateMsg | 0x26D | 2 | DriverSeatPos | 0~7 | 운전석 시트 위치 | 0~255 | BCM에서 차체 상태 판단에 전달 |
 |  |  |  | PassengerSeatPos | 8~15 | 동승석 시트 위치 | 0~255 | BCM에서 차체 상태 판단에 전달 |
 | frmSeatControlMsg | 0x26E | 2 | SeatHeatLevel | 0~2 | 시트 히터 레벨 | 0~7 | BCM에서 차체 상태 판단에 전달 |
 |  |  |  | SeatVentLevel | 3~5 | 시트 통풍 레벨 | 0~7 | BCM에서 차체 상태 판단에 전달 |
-| frmDoorControlMsg | 0x26F | 1 | DoorUnlockCmd | 0~1 | 도어 언락 명령 | 0~3 | BCM에서 창문 제어에 전달 |
-|  |  |  | TrunkOpenCmd | 2 | 트렁크 오픈 명령 | 0~1 | BCM에서 창문 제어에 전달 |
-| frmInteriorLightMsg | 0x270 | 1 | InteriorLampMode | 0~2 | 실내등 모드 | 0~7 | BCM에서 앰비언트 제어에 전달 |
-|  |  |  | InteriorLampLevel | 8~15 | 실내등 밝기 | 0~255 | BCM에서 앰비언트 제어에 전달 |
-| frmRainLightAutoMsg | 0x271 | 1 | RainSensorLevel | 0~7 | 우적 센서 레벨 | 0~255 | BCM에서 앰비언트 제어와 창문 제어에 전달 |
-|  |  |  | AutoHeadlampReq | 8 | 오토 헤드램프 요청 | 0~1 | BCM에서 앰비언트 제어와 창문 제어에 전달 |
-| frmBcmDiagReqMsg | 0x272 | 3 | BcmDiagReqId | 0~7 | BCM 진단 요청 ID | 0~255 | Validation Harness에서 BCM에 전달 |
-|  |  |  | BcmDiagReqAct | 8 | BCM 진단 요청 활성 | 0~1 | Validation Harness에서 BCM에 전달 |
-| frmBcmDiagResMsg | 0x273 | 3 | BcmDiagResId | 0~7 | BCM 진단 응답 ID | 0~255 | BCM에서 Validation Harness에 전달 |
-|  |  |  | BcmDiagStatus | 8~11 | BCM 진단 결과 | 0~15 | BCM에서 Validation Harness에 전달 |
-| frmImmobilizerStateMsg | 0x274 | 1 | ImmoState | 0~1 | 이모빌라이저 상태 | 0~3 | BCM에서 CGW, EMS에 전달 |
+| frmDoorControlMsg | 0x26F | 1 | DoorControlCmd | 0~1 | 도어 언락 명령 | 0~3 | BCM에서 창문 제어에 전달 |
+|  |  |  | ChildLockCmd | 2 | 트렁크 오픈 명령 | 0~1 | BCM에서 창문 제어에 전달 |
+| frmInteriorLightMsg | 0x270 | 1 | CabinLightMode | 0~2 | 실내등 모드 | 0~7 | BCM에서 앰비언트 제어에 전달 |
+|  |  |  | DomeLightLevel | 8~15 | 실내등 밝기 | 0~255 | BCM에서 앰비언트 제어에 전달 |
+| frmRainLightAutoMsg | 0x271 | 1 | RainSenseLevel | 0~7 | 우적 센서 레벨 | 0~255 | BCM에서 앰비언트 제어와 창문 제어에 전달 |
+|  |  |  | AutoLightState | 8 | 오토 헤드램프 요청 | 0~1 | BCM에서 앰비언트 제어와 창문 제어에 전달 |
+| frmBcmDiagReqMsg | 0x272 | 3 | BcmDiagServiceId | 0~7 | BCM 진단 요청 ID | 0~255 | Validation Harness에서 BCM에 전달 |
+|  |  |  | BcmDiagDidHigh | 8 | BCM 진단 요청 활성 | 0~1 | Validation Harness에서 BCM에 전달 |
+| frmBcmDiagResMsg | 0x273 | 3 | BcmDiagRespCode | 0~7 | BCM 진단 응답 ID | 0~255 | BCM에서 Validation Harness에 전달 |
+|  |  |  | BcmDiagData0 | 8~11 | BCM 진단 결과 | 0~15 | BCM에서 Validation Harness에 전달 |
+| frmImmobilizerStateMsg | 0x274 | 1 | ImmobilizerState | 0~1 | 이모빌라이저 상태 | 0~3 | BCM에서 CGW, EMS에 전달 |
 |  |  |  | KeyAuthState | 2~3 | 키 인증 상태 | 0~3 | BCM에서 CGW, EMS에 전달 |
-| frmAlarmStateMsg | 0x275 | 1 | AlarmArmed | 0 | 알람 경계 상태 | 0~1 | BCM에서 차체 상태 판단과 CLU 표시에 전달 |
-|  |  |  | AlarmTrigger | 1 | 알람 트리거 상태 | 0~1 | BCM에서 차체 상태 판단과 CLU 표시에 전달 |
-|  |  |  | AlarmZone | 8~11 | 알람 존 정보 | 0~15 | BCM에서 차체 상태 판단과 CLU 표시에 전달 |
-| frmBodyGatewayStateMsg | 0x276 | 2 | BodyGatewayLoad | 0~7 | Body GW 부하율 | 0~100 % | BCM에서 CGW에 전달 |
-|  |  |  | BodyGatewayRoute | 8~15 | Body GW 라우팅 상태 | 0~255 | BCM에서 CGW에 전달 |
-| frmBodyComfortStateMsg | 0x277 | 2 | ComfortMode | 0~2 | 컴포트 모드 | 0~7 | BCM에서 앰비언트 제어와 차체 상태 판단에 전달 |
-|  |  |  | ChildSafetyState | 3 | 아동 안전 상태 | 0~1 | BCM에서 앰비언트 제어와 차체 상태 판단에 전달 |
+| frmAlarmStateMsg | 0x275 | 1 | AlarmArmState | 0 | 알람 경계 상태 | 0~1 | BCM에서 차체 상태 판단과 CLU 표시에 전달 |
+|  |  |  | IntrusionDetect | 1 | 알람 트리거 상태 | 0~1 | BCM에서 차체 상태 판단과 CLU 표시에 전달 |
+| frmBodyGatewayStateMsg | 0x276 | 2 | BodyGwRouteState | 0~7 | Body GW 부하율 | 0~100 % | BCM에서 CGW에 전달 |
+|  |  |  | BodyGwHealth | 8~15 | Body GW 라우팅 상태 | 0~255 | BCM에서 CGW에 전달 |
+| frmBodyComfortStateMsg | 0x277 | 2 | ComfortProfile | 0~2 | 컴포트 모드 | 0~7 | BCM에서 앰비언트 제어와 차체 상태 판단에 전달 |
+|  |  |  | ComfortStatus | 3 | 아동 안전 상태 | 0~1 | BCM에서 앰비언트 제어와 차체 상태 판단에 전달 |
 | frmAudioFocusMsg | 0x289 | 1 | AudioFocusOwner | 0~2 | 오디오 포커스 소유자 | 0~7 | IVI에서 CLU 표시와 기본 표시에 사용 |
-|  |  |  | AudioDuckLevel | 8~15 | 오디오 덕킹 레벨 | 0~255 | IVI에서 CLU 표시와 기본 표시에 사용 |
+|  |  |  | AudioDuckingLvl | 8~15 | 오디오 덕킹 레벨 | 0~255 | IVI에서 CLU 표시와 기본 표시에 사용 |
 | frmVoiceAssistStateMsg | 0x28A | 1 | VoiceAssistState | 0~2 | 음성비서 상태 | 0~7 | IVI에서 CLU에 전달 |
-|  |  |  | VoiceWakeSource | 8~11 | 음성 깨우기 소스 | 0~15 | IVI에서 CLU에 전달 |
-| frmMapRenderStateMsg | 0x28B | 2 | MapZoomLevel | 0~7 | 지도 줌 레벨 | 0~255 | IVI에서 구간 안내 판단에 사용 |
-|  |  |  | MapTheme | 8~11 | 지도 테마 | 0~15 | IVI에서 구간 안내 판단에 사용 |
-| frmRouteAlertMsg | 0x28C | 2 | NextTurnType | 0~3 | 다음 회전 유형 | 0~15 | IVI에서 구간 안내 판단과 CLU 표시에 사용 |
-|  |  |  | NextTurnDist | 8~15 | 다음 회전 잔여 거리 | 0~255 m | IVI에서 구간 안내 판단과 CLU 표시에 사용 |
+|  |  |  | WakeWordState | 8~11 | 음성 깨우기 소스 | 0~15 | IVI에서 CLU에 전달 |
+| frmMapRenderStateMsg | 0x28B | 2 | ZoomLevel | 0~7 | 지도 줌 레벨 | 0~255 | IVI에서 구간 안내 판단에 사용 |
+|  |  |  | MapRenderState | 8~11 | 지도 테마 | 0~15 | IVI에서 구간 안내 판단에 사용 |
+| frmRouteAlertMsg | 0x28C | 2 | RouteAlertType | 0~3 | 다음 회전 유형 | 0~15 | IVI에서 구간 안내 판단과 CLU 표시에 사용 |
+|  |  |  | RouteAlertEta | 8~15 | 다음 회전 잔여 거리 | 0~255 m | IVI에서 구간 안내 판단과 CLU 표시에 사용 |
 | frmTrafficEventMsg | 0x28D | 3 | TrafficEventType | 0~3 | 교통 이벤트 유형 | 0~15 | IVI에서 구간 안내 판단과 ADAS에 전달 |
 |  |  |  | TrafficSeverity | 4~6 | 교통 이벤트 심각도 | 0~7 | IVI에서 구간 안내 판단과 ADAS에 전달 |
-|  |  |  | TrafficDist | 8~15 | 이벤트 잔여 거리 | 0~255 m | IVI에서 구간 안내 판단과 ADAS에 전달 |
+|  |  |  | TrafficDistance | 8~15 | 이벤트 잔여 거리 | 0~255 m | IVI에서 구간 안내 판단과 ADAS에 전달 |
 | frmPhoneProjectionMsg | 0x28E | 1 | ProjectionType | 0~2 | 프로젝션 유형 | 0~7 | IVI에서 CLU에 전달 |
 |  |  |  | ProjectionState | 3~4 | 프로젝션 상태 | 0~3 | IVI에서 CLU에 전달 |
 | frmClusterNotifMsg | 0x28F | 2 | ClusterNotifType | 0~3 | 클러스터 알림 유형 | 0~15 | IVI에서 CLU 표시와 기본 표시에 사용 |
-|  |  |  | ClusterNotifPrio | 4~6 | 클러스터 알림 우선순위 | 0~7 | IVI에서 CLU 표시와 기본 표시에 사용 |
-| frmIviDiagReqMsg | 0x2A7 | 3 | IviDiagReqId | 0~7 | IVI 진단 요청 ID | 0~255 | Validation Harness에서 IVI 진단 경로에 전달 |
-|  |  |  | IviDiagReqAct | 8 | IVI 진단 요청 활성 | 0~1 | Validation Harness에서 IVI에 전달 |
-| frmIviDiagResMsg | 0x290 | 3 | IviDiagResId | 0~7 | IVI 진단 응답 ID | 0~255 | IVI에서 Validation Harness에 전달 |
-|  |  |  | IviDiagStatus | 8~11 | IVI 진단 결과 | 0~15 | IVI에서 Validation Harness에 전달 |
-| frmMediaMetaMsg | 0x291 | 2 | MediaGenre | 0~3 | 미디어 장르 | 0~15 | IVI에서 CLU에 전달 |
-|  |  |  | TrackProgress | 8~15 | 트랙 진행률 | 0~100 % | IVI에서 CLU에 전달 |
+|  |  |  | ClusterNotifArg | 4~6 | 클러스터 알림 우선순위 | 0~7 | IVI에서 CLU 표시와 기본 표시에 사용 |
+| frmIviDiagReqMsg | 0x2A7 | 3 | IviDiagServiceId | 0~7 | IVI 진단 요청 ID | 0~255 | Validation Harness에서 IVI 진단 경로에 전달 |
+|  |  |  | IviDiagDidHigh | 8 | IVI 진단 요청 활성 | 0~1 | Validation Harness에서 IVI에 전달 |
+| frmIviDiagResMsg | 0x290 | 3 | IviDiagRespCode | 0~7 | IVI 진단 응답 ID | 0~255 | IVI에서 Validation Harness에 전달 |
+|  |  |  | IviDiagData0 | 8~11 | IVI 진단 결과 | 0~15 | IVI에서 Validation Harness에 전달 |
+| frmMediaMetaMsg | 0x291 | 2 | MediaTrackType | 0~3 | 미디어 장르 | 0~15 | IVI에서 CLU에 전달 |
+|  |  |  | MediaRemainTime | 8~15 | 트랙 진행률 | 0~100 % | IVI에서 CLU에 전달 |
 | frmSpeechTtsStateMsg | 0x292 | 2 | TtsState | 0~2 | TTS 상태 | 0~7 | IVI에서 CLU에 전달 |
-|  |  |  | TtsLangId | 8~15 | TTS 언어 ID | 0~255 | IVI에서 CLU에 전달 |
-| frmConnectivityStateMsg | 0x293 | 2 | LteState | 0~2 | LTE 연결 상태 | 0~7 | IVI에서 구간 안내 판단과 CLU 표시에 사용 |
-|  |  |  | WifiState | 3 | Wi-Fi 연결 상태 | 0~1 | IVI에서 구간 안내 판단과 CLU 표시에 사용 |
-|  |  |  | BtState | 4 | Bluetooth 연결 상태 | 0~1 | IVI에서 구간 안내 판단과 CLU 표시에 사용 |
-| frmIviHealthDetailMsg | 0x294 | 2 | CpuLoad | 0~7 | IVI CPU 부하율 | 0~100 % | IVI에서 Validation Harness에 전달 |
-|  |  |  | MemLoad | 8~15 | IVI 메모리 부하율 | 0~100 % | IVI에서 Validation Harness에 전달 |
+|  |  |  | TtsQueueDepth | 8~15 | TTS 언어 ID | 0~255 | IVI에서 CLU에 전달 |
+| frmConnectivityStateMsg | 0x293 | 2 | ConnectivityType | 0~2 | LTE 연결 상태 | 0~7 | IVI에서 구간 안내 판단과 CLU 표시에 사용 |
+|  |  |  | ConnectivityState | 3 | Wi-Fi 연결 상태 | 0~1 | IVI에서 구간 안내 판단과 CLU 표시에 사용 |
+|  |  |  | SignalBars | 4 | Bluetooth 연결 상태 | 0~1 | IVI에서 구간 안내 판단과 CLU 표시에 사용 |
+| frmIviHealthDetailMsg | 0x294 | 2 | IviCpuLoad | 0~7 | IVI CPU 부하율 | 0~100 % | IVI에서 Validation Harness에 전달 |
+|  |  |  | IviMemLoad | 8~15 | IVI 메모리 부하율 | 0~100 % | IVI에서 Validation Harness에 전달 |
 | frmClusterSyncStateMsg | 0x295 | 2 | ClusterSyncState | 0~2 | 클러스터 동기화 상태 | 0~7 | IVI에서 클러스터 기본 표시에 사용 |
-|  |  |  | ClusterSyncSeq | 8~15 | 클러스터 동기화 시퀀스 | 0~255 | IVI에서 클러스터 기본 표시에 사용 |
+|  |  |  | ClusterSyncAge | 8~15 | 클러스터 동기화 시퀀스 | 0~255 | IVI에서 클러스터 기본 표시에 사용 |
 | frmEngineTorqueMsg | 0x12E | 2 | EngineTorqueAct | 0~15 | 엔진 실제 토크 | 0~65535 0.1Nm | EMS에서 TCU, CGW에 전달 |
-|  |  |  | EngineTorqueReq | 16~31 | 엔진 요구 토크 | 0~65535 0.1Nm | EMS에서 TCU, CGW에 전달 |
+|  |  |  | EngineTorqueAct | 16~31 | 엔진 요구 토크 | 0~65535 0.1Nm | EMS에서 TCU, CGW에 전달 |
 | frmEngineLoadMsg | 0x12F | 1 | EngineLoad | 0~7 | 엔진 부하율 | 0~100 % | EMS에서 CGW에 전달 |
-|  |  |  | ManifoldPressure | 8~15 | 흡기 매니폴드 압력 | 0~255 kPa | EMS에서 CGW에 전달 |
 | frmTransShiftStateMsg | 0x130 | 2 | ShiftState | 0~2 | 변속 상태 | 0~7 | TCU에서 EMS, CGW에 전달 |
-|  |  |  | ShiftInProgress | 3 | 변속 진행 상태 | 0~1 | TCU에서 EMS, CGW에 전달 |
+|  |  |  | ShiftSlip | 3 | 변속 진행 상태 | 0~1 | TCU에서 EMS, CGW에 전달 |
 |  |  |  | ShiftTargetGear | 8~10 | 목표 기어 | 0~7 | TCU에서 EMS, CGW에 전달 |
-| frmPtDiagReqMsg | 0x2AA | 3 | PtDiagReqId | 0~7 | Powertrain 진단 요청 ID | 0~255 | Validation Harness에서 CGW 진단 경로에 전달 |
-|  |  |  | PtDiagReqAct | 8 | Powertrain 진단 요청 활성 | 0~1 | Validation Harness에서 CGW에 전달 |
-| frmPtDiagResMsg | 0x10E | 3 | PtDiagResId | 0~7 | Powertrain 진단 응답 ID | 0~255 | CGW에서 Validation Harness에 전달 |
-|  |  |  | PtDiagStatus | 8~11 | Powertrain 진단 결과 | 0~15 | CGW에서 Validation Harness에 전달 |
+| frmPtDiagReqMsg | 0x2AA | 3 | PtDiagServiceId | 0~7 | Powertrain 진단 요청 ID | 0~255 | Validation Harness에서 CGW 진단 경로에 전달 |
+|  |  |  | PtDiagDidHigh | 8 | Powertrain 진단 요청 활성 | 0~1 | Validation Harness에서 CGW에 전달 |
+| frmPtDiagResMsg | 0x10E | 3 | PtDiagRespCode | 0~7 | Powertrain 진단 응답 ID | 0~255 | CGW에서 Validation Harness에 전달 |
+|  |  |  | PtDiagData0 | 8~11 | Powertrain 진단 결과 | 0~15 | CGW에서 Validation Harness에 전달 |
 | frmThermalMgmtStateMsg | 0x131 | 2 | ThermalMode | 0~2 | 열관리 모드 | 0~7 | CGW에서 EMS, TCU에 전달 |
-|  |  |  | FanSpeedCmd | 8~15 | 팬 속도 명령 | 0~255 | CGW에서 EMS, TCU에 전달 |
+|  |  |  | FanDuty | 8~15 | 팬 속도 명령 | 0~255 | CGW에서 EMS, TCU에 전달 |
 | frmEnergyFlowStateMsg | 0x10F | 2 | RegenLevel | 0~3 | 회생 제동 레벨 | 0~15 | CGW에서 EMS, TCU에 전달 |
-|  |  |  | EnergyFlowDir | 4~5 | 에너지 흐름 방향 | 0~3 | CGW에서 EMS, TCU에 전달 |
-| frmPowertrainCtrlAuthMsg | 0x110 | 1 | PtCtrlAuthState | 0~1 | 파워트레인 제어 권한 상태 | 0~3 | CGW에서 EMS, TCU에 전달 |
-|  |  |  | PtCtrlSource | 8~11 | 파워트레인 제어 출처 | 0~15 | CGW에서 EMS, TCU에 전달 |
+|  |  |  | EnergyFlowMode | 4~5 | 에너지 흐름 방향 | 0~3 | CGW에서 EMS, TCU에 전달 |
+| frmPowertrainCtrlAuthMsg | 0x110 | 1 | CtrlAuthLevel | 0~1 | 파워트레인 제어 권한 상태 | 0~3 | CGW에서 EMS, TCU에 전달 |
+|  |  |  | CtrlAuthSource | 8~11 | 파워트레인 제어 출처 | 0~15 | CGW에서 EMS, TCU에 전달 |
 ---
+
+

@@ -1,4 +1,4 @@
-# 네트워크 플로우 정의 (Network Flow Definition)
+﻿# 네트워크 플로우 정의 (Network Flow Definition)
 
 **Document ID**: PROJ-0302-NFD
 **ISO 26262 Reference**: Part 4, Cl.7 (System Design)
@@ -105,9 +105,9 @@
 | Chassis CAN(Validation) | 0x2A6 | frmBaseTestResultMsg | 0 | Base Result Report | 0~7 | BaseScenarioId | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | Tx | Event |
 |  |  |  | 1 | Base Result Report | 8 | BaseScenarioResult | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | Tx |  |
 | Ethernet Backbone CAN Stub | 0x1C0 | frmEmergencyBroadcastMsg | 0 | Emergency Broadcast | 0~3 | emergencyType |  |  |  |  |  |  |  | Tx | Tx | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | CAN-stub, 100ms |
-|  |  |  | 0 | Emergency Broadcast | 4~5 | alertState |  |  |  |  |  |  |  | Tx | Tx | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-|  |  |  | 1 | Emergency Broadcast | 8~15 | sourceId |  |  |  |  |  |  |  | Tx | Tx | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-|  |  |  | 2 | Emergency Broadcast | 16~23 | eta |  |  |  |  |  |  |  | Tx | Tx | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+|  |  |  | 0 | Emergency Broadcast | 4~5 | Status |  |  |  |  |  |  |  | Tx | Tx | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+|  |  |  | 1 | Emergency Broadcast | 8~15 | SourceId |  |  |  |  |  |  |  | Tx | Tx | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+|  |  |  | 2 | Emergency Broadcast | 16~23 | EtaSeconds |  |  |  |  |  |  |  | Tx | Tx | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 |  |  |  | 3 | Emergency Broadcast | 24~27 | emergencyDirection |  |  |  |  |  |  |  | Tx | Tx | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 | Ethernet Backbone CAN Stub | 0x1C2 | frmEmergencyMonitorMsg | 0 | Emergency Monitor | 0~7 | emergencyContext | Rx | Rx |  |  |  |  |  |  |  | Tx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | CAN-stub, 100ms |
 |  |  |  | 1 | Emergency Monitor | 8 | TimeoutClearMon | Rx | Rx |  |  |  |  |  |  |  | Tx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
@@ -147,122 +147,119 @@
 |  |  |  | 0 | Gateway Normalized Nav Context | 2~3 | navDirection |  |  | Tx |  | Rx | Rx | Rx |  |  |  | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 |  |  |  | 1 | Gateway Normalized Nav Context | 8~15 | zoneDistance |  |  | Tx |  | Rx | Rx | Rx |  |  |  | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 |  |  |  | 2 | Gateway Normalized Nav Context | 16~23 | speedLimit |  |  | Tx |  | Rx | Rx | Rx |  |  |  | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| Ethernet | 0xE100 | ETH_EmergencyAlert | 0 | Emergency Alert Tx/Rx | 0~1 | emergencyType |  |  |  |  | Rx |  |  | Tx | Tx | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | UDP, 100ms |
+| Ethernet | 0xE100 | frmEmergencyBroadcastMsg | 0 | Emergency Alert Tx/Rx | 0~1 | emergencyType |  |  |  |  | Rx |  |  | Tx | Tx | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | UDP, 100ms |
 |  |  |  | 0 | Emergency Alert Tx/Rx | 2~3 | emergencyDirection |  |  |  |  | Rx |  |  | Tx | Tx | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-|  |  |  | 1 | Emergency Alert Tx/Rx | 8~15 | eta |  |  |  |  | Rx |  |  | Tx | Tx | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-|  |  |  | 2 | Emergency Alert Tx/Rx | 16~23 | sourceId |  |  |  |  | Rx |  |  | Tx | Tx | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-|  |  |  | 3 | Emergency Alert Tx/Rx | 24 | alertState |  |  |  |  | Rx |  |  | Tx | Tx | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| Ethernet | 0xE200 | ethSelectedAlertMsg | 0 | Arbitration Result Distribution | 0~2 | selectedAlertLevel |  |  |  |  | Rx |  |  |  |  |  | Tx | Rx | Rx |  |  |  |  |  |  |  |  |  |  |  |  | UDP, Event + 50ms |
+|  |  |  | 1 | Emergency Alert Tx/Rx | 8~15 | EtaSeconds |  |  |  |  | Rx |  |  | Tx | Tx | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+|  |  |  | 2 | Emergency Alert Tx/Rx | 16~23 | SourceId |  |  |  |  | Rx |  |  | Tx | Tx | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+|  |  |  | 3 | Emergency Alert Tx/Rx | 24 | Status |  |  |  |  | Rx |  |  | Tx | Tx | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| Ethernet | 0x206 | ethSelectedAlertMsg | 0 | Arbitration Result Distribution | 0~2 | selectedAlertLevel |  |  |  |  | Rx |  |  |  |  |  | Tx | Rx | Rx |  |  |  |  |  |  |  |  |  |  |  |  | UDP, Event + 50ms |
 |  |  |  | 0 | Arbitration Result Distribution | 3~5 | selectedAlertType |  |  |  |  | Rx |  |  |  |  |  | Tx | Rx | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |
 |  |  |  | 1 | Arbitration Result Distribution | 8 | timeoutClear |  |  |  |  | Rx |  |  |  |  |  | Tx | Rx | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |
 | Chassis CAN | 0x123 | frmEpsStateMsg | 0 | MDPS State Check | 0~2 | EpsAssistState |  | Tx |  | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | Rx |  |  |  |  |  | CAN, 100ms |
-|  |  |  | 0 | MDPS State Check | 3 | EpsFault |  | Tx |  | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | Rx |  |  |  |  |  |  |
-|  |  |  | 1 | MDPS State Check | 8~15 | EpsTorqueReq |  | Tx |  | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | Rx |  |  |  |  |  |  |
+|  |  |  | 0 | MDPS State Check | 3 | EpsFaultState |  | Tx |  | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | Rx |  |  |  |  |  |  |
+|  |  |  | 1 | MDPS State Check | 8~15 | EpsTemp |  | Tx |  | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | Rx |  |  |  |  |  |  |
 | Chassis CAN | 0x124 | frmAbsStateMsg | 0 | ABS State Check | 0~2 | AbsCtrlState |  | Tx |  | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |  | Rx |  |  |  |  |  |  | CAN, 100ms |
 |  |  |  | 1 | ABS State Check | 8~15 | AbsSlipLevel |  | Tx |  | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |  | Rx |  |  |  |  |  |  |  |
 | Chassis CAN | 0x125 | frmEscStateMsg | 0 | ESC State Check | 0~2 | EscCtrlState |  | Tx |  | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |  | Rx |  |  |  |  |  |  | CAN, 100ms |
-|  |  |  | 1 | ESC State Check | 8~15 | YawCtrlReq |  | Tx |  | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |  | Rx |  |  |  |  |  |  |  |
-| Chassis CAN | 0x126 | frmTcsStateMsg | 0 | TCS State Check | 0 | TcsActive |  | Tx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | Rx | Rx | Rx |  |  |  |  |  | CAN, 100ms |
+|  |  |  | 1 | ESC State Check | 8~15 | EscYawTarget |  | Tx |  | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |  | Rx |  |  |  |  |  |  |  |
+| Chassis CAN | 0x126 | frmTcsStateMsg | 0 | TCS State Check | 0 | TcsCtrlState |  | Tx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | Rx | Rx | Rx |  |  |  |  |  | CAN, 100ms |
 |  |  |  | 1 | TCS State Check | 8~15 | TcsSlipRatio |  | Tx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | Rx | Rx | Rx |  |  |  |  |  |  |
 | Chassis CAN | 0x127 | frmBrakeTempMsg | 0 | Brake Temp Check | 0~7 | BrakeTempFL |  | Tx |  | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |  | Rx |  |  |  |  |  |  | CAN, 100ms |
 |  |  |  | 1 | Brake Temp Check | 8~15 | BrakeTempFR |  | Tx |  | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |  | Rx |  |  |  |  |  |  |  |
-|  |  |  | 2 | Brake Temp Check | 16~23 | BrakeTempRL |  | Tx |  | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |  | Rx |  |  |  |  |  |  |  |
-|  |  |  | 3 | Brake Temp Check | 24~31 | BrakeTempRR |  | Tx |  | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |  | Rx |  |  |  |  |  |  |  |
-| Chassis CAN | 0x128 | frmSteeringAngleMsg | 0 | Steering Angle Check | 0~15 | SteeringAngle |  | Tx |  | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | Rx |  |  |  |  |  | CAN, 100ms |
-|  |  |  | 2 | Steering Angle Check | 16~31 | SteeringAngleRate |  | Tx |  | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | Rx |  |  |  |  |  |  |
-| Chassis CAN | 0x104 | frmWheelPulseMsg | 0 | Wheel Pulse Check | 0~15 | WheelPulseFL |  | Tx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | Rx | Rx | Rx |  |  |  |  |  | CAN, 100ms |
-|  |  |  | 2 | Wheel Pulse Check | 16~31 | WheelPulseFR |  | Tx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | Rx | Rx | Rx |  |  |  |  |  |  |
-| Chassis CAN | 0x105 | frmSuspensionStateMsg | 0 | Suspension State Check | 0~2 | DamperMode |  | Tx |  | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | CAN, 100ms |
-|  |  |  | 1 | Suspension State Check | 8~15 | RideHeight |  | Tx |  | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| Chassis CAN | 0x128 | frmSteeringAngleMsg | 0 | Steering Angle Check | 0~15 | SteeringAngleRaw |  | Tx |  | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | Rx |  |  |  |  |  | CAN, 100ms |
+|  |  |  | 2 | Steering Angle Check | 16~31 | SteeringAngleRaw |  | Tx |  | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | Rx |  |  |  |  |  |  |
+| Chassis CAN | 0x104 | frmWheelPulseMsg | 0 | Wheel Pulse Check | 0~15 | WheelPulseFront |  | Tx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | Rx | Rx | Rx |  |  |  |  |  | CAN, 100ms |
+|  |  |  | 2 | Wheel Pulse Check | 16~31 | WheelPulseRear |  | Tx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | Rx | Rx | Rx |  |  |  |  |  |  |
+| Chassis CAN | 0x105 | frmSuspensionStateMsg | 0 | Suspension State Check | 0~2 | SuspensionMode |  | Tx |  | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | CAN, 100ms |
+|  |  |  | 1 | Suspension State Check | 8~15 | SuspensionLevel |  | Tx |  | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 | Chassis CAN | 0x106 | frmTirePressureMsg | 0 | Tire Pressure Check | 0~7 | TirePressFL |  | Tx |  | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | CAN, 100ms |
 |  |  |  | 1 | Tire Pressure Check | 8~15 | TirePressFR |  | Tx |  | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 |  |  |  | 2 | Tire Pressure Check | 16~23 | TirePressRL |  | Tx |  | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 |  |  |  | 3 | Tire Pressure Check | 24~31 | TirePressRR |  | Tx |  | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| Chassis CAN | 0x2A4 | frmChassisDiagReqMsg | 0 | Chassis Diag Request | 0~7 | ChassisDiagReqId | Tx | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | CAN, Event |
-|  |  |  | 1 | Chassis Diag Request | 8 | ChassisDiagReqAct | Tx | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| Chassis CAN | 0x107 | frmChassisDiagResMsg | 0 | Chassis Diag Response | 0~7 | ChassisDiagResId | Rx | Tx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | CAN, Event |
-|  |  |  | 1 | Chassis Diag Response | 8~11 | ChassisDiagStatus | Rx | Tx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| Chassis CAN | 0x2A4 | frmChassisDiagReqMsg | 0 | Chassis Diag Request | 0~7 | ChsDiagServiceId | Tx | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | CAN, Event |
+|  |  |  | 1 | Chassis Diag Request | 8 | ChsDiagDidHigh | Tx | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| Chassis CAN | 0x107 | frmChassisDiagResMsg | 0 | Chassis Diag Response | 0~7 | ChsDiagRespCode | Rx | Tx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | CAN, Event |
+|  |  |  | 1 | Chassis Diag Response | 8~11 | ChsDiagData0 | Rx | Tx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 | Ethernet Backbone CAN Stub | 0x1C1 | frmAdasChassisStatusMsg | 0 | ADAS Chassis Interface | 0~7 | AdasChassisState |  | Rx |  |  |  | Tx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | CAN-stub, 100ms |
 |  |  |  | 1 | ADAS Chassis Interface | 8~15 | AdasHealthLevel |  | Rx |  |  |  | Tx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| Chassis CAN | 0x129 | frmBrakeWearMsg | 0 | Brake Wear Check | 0~7 | BrakePadWearFL |  | Tx |  | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |  | Rx |  |  |  |  |  |  | CAN, 100ms |
-|  |  |  | 1 | Brake Wear Check | 8~15 | BrakePadWearFR |  | Tx |  | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |  | Rx |  |  |  |  |  |  |  |
-| Chassis CAN | 0x108 | frmRoadFrictionMsg | 0 | Road Friction Check | 0~7 | RoadFrictionEst |  | Tx |  | Rx |  | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | CAN, 100ms |
-|  |  |  | 1 | Road Friction Check | 8~11 | SurfaceType |  | Tx |  | Rx |  | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| Chassis CAN | 0x129 | frmBrakeWearMsg | 0 | Brake Wear Check | 0~7 | BrakePadWearLvl |  | Tx |  | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |  | Rx |  |  |  |  |  |  | CAN, 100ms |
+|  |  |  | 1 | Brake Wear Check | 8~15 | BrakePadWearLvl |  | Tx |  | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |  | Rx |  |  |  |  |  |  |  |
+| Chassis CAN | 0x108 | frmRoadFrictionMsg | 0 | Road Friction Check | 0~7 | RoadFrictionCoef |  | Tx |  | Rx |  | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | CAN, 100ms |
 | Body CAN | 0x26A | frmHvacStateMsg | 0 | DATC State Check | 0~7 | CabinSetTemp |  |  |  |  |  |  |  |  |  |  |  | Tx |  | Rx |  |  |  |  |  |  |  |  | Rx |  |  | CAN, 100ms |
 |  |  |  | 1 | DATC State Check | 8~11 | BlowerLevel |  |  |  |  |  |  |  |  |  |  |  | Tx |  | Rx |  |  |  |  |  |  |  |  | Rx |  |  |  |
 | Body CAN | 0x26B | frmHvacActuatorMsg | 0 | DATC Actuator Check | 0~2 | VentMode |  |  |  |  |  |  |  |  |  |  |  | Tx |  | Rx |  |  |  |  |  |  |  |  | Rx |  |  | CAN, 100ms |
-|  |  |  | 0 | DATC Actuator Check | 3 | AcCompressorReq |  |  |  |  |  |  |  |  |  |  |  | Tx |  | Rx |  |  |  |  |  |  |  |  | Rx |  |  |  |
+|  |  |  | 0 | DATC Actuator Check | 3 | AcCompressorOn |  |  |  |  |  |  |  |  |  |  |  | Tx |  | Rx |  |  |  |  |  |  |  |  | Rx |  |  |  |
 | Body CAN | 0x26C | frmMirrorStateMsg | 0 | Mirror State Check | 0 | MirrorFoldState |  |  |  |  |  |  |  |  |  |  |  | Tx |  |  |  |  |  |  |  |  |  | Rx |  |  |  | CAN, 100ms |
 |  |  |  | 0 | Mirror State Check | 1 | MirrorHeatState |  |  |  |  |  |  |  |  |  |  |  | Tx |  |  |  |  |  |  |  |  |  | Rx |  |  |  |  |
-|  |  |  | 1 | Mirror State Check | 8~9 | MirrorAdjAxis |  |  |  |  |  |  |  |  |  |  |  | Tx |  |  |  |  |  |  |  |  |  | Rx |  |  |  |  |
+|  |  |  | 1 | Mirror State Check | 8~9 | MirrorAdjustAxis |  |  |  |  |  |  |  |  |  |  |  | Tx |  |  |  |  |  |  |  |  |  | Rx |  |  |  |  |
 | Body CAN | 0x26D | frmSeatStateMsg | 0 | Seat State Check | 0~7 | DriverSeatPos |  |  |  |  |  |  |  |  |  |  |  | Tx |  |  |  |  |  |  |  |  |  |  | Rx |  |  | CAN, 100ms |
 |  |  |  | 1 | Seat State Check | 8~15 | PassengerSeatPos |  |  |  |  |  |  |  |  |  |  |  | Tx |  |  |  |  |  |  |  |  |  |  | Rx |  |  |  |
 | Body CAN | 0x26E | frmSeatControlMsg | 0 | Seat Control Check | 0~2 | SeatHeatLevel |  |  |  |  |  |  |  |  |  |  |  | Tx |  |  |  |  |  |  |  |  |  |  | Rx |  |  | CAN, 100ms |
 |  |  |  | 0 | Seat Control Check | 3~5 | SeatVentLevel |  |  |  |  |  |  |  |  |  |  |  | Tx |  |  |  |  |  |  |  |  |  |  | Rx |  |  |  |
-| Body CAN | 0x26F | frmDoorControlMsg | 0 | Door Control Check | 0~1 | DoorUnlockCmd |  |  |  |  |  |  |  |  |  |  |  | Tx |  |  |  |  |  |  |  |  |  | Rx |  |  |  | CAN, 100ms |
-|  |  |  | 0 | Door Control Check | 2 | TrunkOpenCmd |  |  |  |  |  |  |  |  |  |  |  | Tx |  |  |  |  |  |  |  |  |  | Rx |  |  |  |  |
-| Body CAN | 0x270 | frmInteriorLightMsg | 0 | Interior Light Check | 0~2 | InteriorLampMode |  |  |  |  |  |  |  |  |  |  |  | Tx |  | Rx |  |  |  |  |  |  |  |  | Rx |  |  | CAN, 100ms |
-|  |  |  | 1 | Interior Light Check | 8~15 | InteriorLampLevel |  |  |  |  |  |  |  |  |  |  |  | Tx |  | Rx |  |  |  |  |  |  |  |  | Rx |  |  |  |
-| Body CAN | 0x271 | frmRainLightAutoMsg | 0 | Auto Rain/Light Check | 0~7 | RainSensorLevel |  |  |  |  |  |  |  |  |  |  |  | Tx |  |  |  |  |  |  |  |  |  | Rx |  |  |  | CAN, 100ms |
-|  |  |  | 1 | Auto Rain/Light Check | 8 | AutoHeadlampReq |  |  |  |  |  |  |  |  |  |  |  | Tx |  |  |  |  |  |  |  |  |  | Rx |  |  |  |  |
-| Body CAN | 0x272 | frmBcmDiagReqMsg | 0 | BCM Diag Request | 0~7 | BcmDiagReqId | Tx |  |  |  |  |  |  |  |  |  |  | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  | CAN, Event |
-|  |  |  | 1 | BCM Diag Request | 8 | BcmDiagReqAct | Tx |  |  |  |  |  |  |  |  |  |  | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| Body CAN | 0x273 | frmBcmDiagResMsg | 0 | BCM Diag Response | 0~7 | BcmDiagResId | Rx |  |  |  |  |  |  |  |  |  |  | Tx |  |  |  |  |  |  |  |  |  |  |  |  |  | CAN, Event |
-|  |  |  | 1 | BCM Diag Response | 8~11 | BcmDiagStatus | Rx |  |  |  |  |  |  |  |  |  |  | Tx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| Body CAN | 0x274 | frmImmobilizerStateMsg | 0 | Immobilizer State | 0~1 | ImmoState |  |  |  | Rx |  |  |  |  |  |  |  | Tx |  |  |  | Rx |  |  |  |  |  |  |  |  |  | CAN, 100ms |
+| Body CAN | 0x26F | frmDoorControlMsg | 0 | Door Control Check | 0~1 | DoorControlCmd |  |  |  |  |  |  |  |  |  |  |  | Tx |  |  |  |  |  |  |  |  |  | Rx |  |  |  | CAN, 100ms |
+|  |  |  | 0 | Door Control Check | 2 | ChildLockCmd |  |  |  |  |  |  |  |  |  |  |  | Tx |  |  |  |  |  |  |  |  |  | Rx |  |  |  |  |
+| Body CAN | 0x270 | frmInteriorLightMsg | 0 | Interior Light Check | 0~2 | CabinLightMode |  |  |  |  |  |  |  |  |  |  |  | Tx |  | Rx |  |  |  |  |  |  |  |  | Rx |  |  | CAN, 100ms |
+|  |  |  | 1 | Interior Light Check | 8~15 | DomeLightLevel |  |  |  |  |  |  |  |  |  |  |  | Tx |  | Rx |  |  |  |  |  |  |  |  | Rx |  |  |  |
+| Body CAN | 0x271 | frmRainLightAutoMsg | 0 | Auto Rain/Light Check | 0~7 | RainSenseLevel |  |  |  |  |  |  |  |  |  |  |  | Tx |  |  |  |  |  |  |  |  |  | Rx |  |  |  | CAN, 100ms |
+|  |  |  | 1 | Auto Rain/Light Check | 8 | AutoLightState |  |  |  |  |  |  |  |  |  |  |  | Tx |  |  |  |  |  |  |  |  |  | Rx |  |  |  |  |
+| Body CAN | 0x272 | frmBcmDiagReqMsg | 0 | BCM Diag Request | 0~7 | BcmDiagServiceId | Tx |  |  |  |  |  |  |  |  |  |  | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  | CAN, Event |
+|  |  |  | 1 | BCM Diag Request | 8 | BcmDiagDidHigh | Tx |  |  |  |  |  |  |  |  |  |  | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| Body CAN | 0x273 | frmBcmDiagResMsg | 0 | BCM Diag Response | 0~7 | BcmDiagRespCode | Rx |  |  |  |  |  |  |  |  |  |  | Tx |  |  |  |  |  |  |  |  |  |  |  |  |  | CAN, Event |
+|  |  |  | 1 | BCM Diag Response | 8~11 | BcmDiagData0 | Rx |  |  |  |  |  |  |  |  |  |  | Tx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| Body CAN | 0x274 | frmImmobilizerStateMsg | 0 | Immobilizer State | 0~1 | ImmobilizerState |  |  |  | Rx |  |  |  |  |  |  |  | Tx |  |  |  | Rx |  |  |  |  |  |  |  |  |  | CAN, 100ms |
 |  |  |  | 0 | Immobilizer State | 2~3 | KeyAuthState |  |  |  | Rx |  |  |  |  |  |  |  | Tx |  |  |  | Rx |  |  |  |  |  |  |  |  |  |  |
-| Body CAN | 0x275 | frmAlarmStateMsg | 0 | Alarm State Check | 0 | AlarmArmed |  |  |  |  |  |  |  |  |  |  |  | Tx |  |  | Rx |  |  |  |  |  |  |  | Rx |  |  | CAN, 100ms |
-|  |  |  | 0 | Alarm State Check | 1 | AlarmTrigger |  |  |  |  |  |  |  |  |  |  |  | Tx |  |  | Rx |  |  |  |  |  |  |  | Rx |  |  |  |
-|  |  |  | 1 | Alarm State Check | 8~11 | AlarmZone |  |  |  |  |  |  |  |  |  |  |  | Tx |  |  | Rx |  |  |  |  |  |  |  | Rx |  |  |  |
-| Body CAN | 0x276 | frmBodyGatewayStateMsg | 0 | Body Gateway State | 0~7 | BodyGatewayLoad |  |  |  | Rx |  |  |  |  |  |  |  | Tx |  |  |  | Rx |  |  |  |  |  |  |  |  |  | CAN, 100ms |
-|  |  |  | 1 | Body Gateway State | 8~15 | BodyGatewayRoute |  |  |  | Rx |  |  |  |  |  |  |  | Tx |  |  |  | Rx |  |  |  |  |  |  |  |  |  |  |
-| Body CAN | 0x277 | frmBodyComfortStateMsg | 0 | Body Comfort State | 0~2 | ComfortMode |  |  |  |  |  |  |  |  |  |  |  | Tx |  | Rx |  |  |  |  |  |  |  |  | Rx |  |  | CAN, 100ms |
-|  |  |  | 0 | Body Comfort State | 3 | ChildSafetyState |  |  |  |  |  |  |  |  |  |  |  | Tx |  | Rx |  |  |  |  |  |  |  |  | Rx |  |  |  |
+| Body CAN | 0x275 | frmAlarmStateMsg | 0 | Alarm State Check | 0 | AlarmArmState |  |  |  |  |  |  |  |  |  |  |  | Tx |  |  | Rx |  |  |  |  |  |  |  | Rx |  |  | CAN, 100ms |
+|  |  |  | 0 | Alarm State Check | 1 | IntrusionDetect |  |  |  |  |  |  |  |  |  |  |  | Tx |  |  | Rx |  |  |  |  |  |  |  | Rx |  |  |  |
+| Body CAN | 0x276 | frmBodyGatewayStateMsg | 0 | Body Gateway State | 0~7 | BodyGwRouteState |  |  |  | Rx |  |  |  |  |  |  |  | Tx |  |  |  | Rx |  |  |  |  |  |  |  |  |  | CAN, 100ms |
+|  |  |  | 1 | Body Gateway State | 8~15 | BodyGwHealth |  |  |  | Rx |  |  |  |  |  |  |  | Tx |  |  |  | Rx |  |  |  |  |  |  |  |  |  |  |
+| Body CAN | 0x277 | frmBodyComfortStateMsg | 0 | Body Comfort State | 0~2 | ComfortProfile |  |  |  |  |  |  |  |  |  |  |  | Tx |  | Rx |  |  |  |  |  |  |  |  | Rx |  |  | CAN, 100ms |
+|  |  |  | 0 | Body Comfort State | 3 | ComfortStatus |  |  |  |  |  |  |  |  |  |  |  | Tx |  | Rx |  |  |  |  |  |  |  |  | Rx |  |  |  |
 | Infotainment CAN | 0x289 | frmAudioFocusMsg | 0 | Audio Focus Check | 0~2 | AudioFocusOwner |  |  |  |  |  |  |  |  |  |  |  |  | Tx |  | Rx |  |  |  |  |  |  |  |  | Rx |  | CAN, 100ms |
-|  |  |  | 1 | Audio Focus Check | 8~15 | AudioDuckLevel |  |  |  |  |  |  |  |  |  |  |  |  | Tx |  | Rx |  |  |  |  |  |  |  |  | Rx |  |  |
+|  |  |  | 1 | Audio Focus Check | 8~15 | AudioDuckingLvl |  |  |  |  |  |  |  |  |  |  |  |  | Tx |  | Rx |  |  |  |  |  |  |  |  | Rx |  |  |
 | Infotainment CAN | 0x28A | frmVoiceAssistStateMsg | 0 | Voice Assist State | 0~2 | VoiceAssistState |  |  |  |  |  |  |  |  |  |  |  |  | Tx |  | Rx |  |  |  |  |  |  |  |  |  |  | CAN, 100ms |
-|  |  |  | 1 | Voice Assist State | 8~11 | VoiceWakeSource |  |  |  |  |  |  |  |  |  |  |  |  | Tx |  | Rx |  |  |  |  |  |  |  |  |  |  |  |
-| Infotainment CAN | 0x28B | frmMapRenderStateMsg | 0 | Map Render State | 0~7 | MapZoomLevel |  |  | Tx |  |  |  | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | CAN, 100ms |
-|  |  |  | 1 | Map Render State | 8~11 | MapTheme |  |  | Tx |  |  |  | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| Infotainment CAN | 0x28C | frmRouteAlertMsg | 0 | Route Alert Check | 0~3 | NextTurnType |  |  | Tx |  |  |  | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | CAN, 100ms |
-|  |  |  | 1 | Route Alert Check | 8~15 | NextTurnDist |  |  | Tx |  |  |  | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+|  |  |  | 1 | Voice Assist State | 8~11 | WakeWordState |  |  |  |  |  |  |  |  |  |  |  |  | Tx |  | Rx |  |  |  |  |  |  |  |  |  |  |  |
+| Infotainment CAN | 0x28B | frmMapRenderStateMsg | 0 | Map Render State | 0~7 | ZoomLevel |  |  | Tx |  |  |  | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | CAN, 100ms |
+|  |  |  | 1 | Map Render State | 8~11 | MapRenderState |  |  | Tx |  |  |  | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| Infotainment CAN | 0x28C | frmRouteAlertMsg | 0 | Route Alert Check | 0~3 | RouteAlertType |  |  | Tx |  |  |  | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | CAN, 100ms |
+|  |  |  | 1 | Route Alert Check | 8~15 | RouteAlertEta |  |  | Tx |  |  |  | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 | Infotainment CAN | 0x28D | frmTrafficEventMsg | 0 | Traffic Event Check | 0~3 | TrafficEventType |  |  | Tx |  |  | Rx | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | CAN, 100ms |
 |  |  |  | 0 | Traffic Event Check | 4~6 | TrafficSeverity |  |  | Tx |  |  | Rx | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-|  |  |  | 1 | Traffic Event Check | 8~15 | TrafficDist |  |  | Tx |  |  | Rx | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+|  |  |  | 1 | Traffic Event Check | 8~15 | TrafficDistance |  |  | Tx |  |  | Rx | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 | Infotainment CAN | 0x28E | frmPhoneProjectionMsg | 0 | Phone Projection Check | 0~2 | ProjectionType |  |  |  |  |  |  |  |  |  |  |  |  | Tx |  | Rx |  |  |  |  |  |  |  |  |  |  | CAN, 100ms |
 |  |  |  | 0 | Phone Projection Check | 3~4 | ProjectionState |  |  |  |  |  |  |  |  |  |  |  |  | Tx |  | Rx |  |  |  |  |  |  |  |  |  |  |  |
 | Infotainment CAN | 0x28F | frmClusterNotifMsg | 0 | Cluster Notification | 0~3 | ClusterNotifType |  |  |  |  |  |  |  |  |  |  |  |  | Tx |  | Rx |  |  |  |  |  |  |  |  | Rx |  | CAN, 50ms |
-|  |  |  | 0 | Cluster Notification | 4~6 | ClusterNotifPrio |  |  |  |  |  |  |  |  |  |  |  |  | Tx |  | Rx |  |  |  |  |  |  |  |  | Rx |  |  |
-| Infotainment CAN | 0x2A7 | frmIviDiagReqMsg | 0 | IVI Diag Request | 0~7 | IviDiagReqId | Tx |  | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | CAN, Event |
-|  |  |  | 1 | IVI Diag Request | 8 | IviDiagReqAct | Tx |  | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| Infotainment CAN | 0x290 | frmIviDiagResMsg | 0 | IVI Diag Response | 0~7 | IviDiagResId | Rx |  | Tx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | CAN, Event |
-|  |  |  | 1 | IVI Diag Response | 8~11 | IviDiagStatus | Rx |  | Tx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| Infotainment CAN | 0x291 | frmMediaMetaMsg | 0 | Media Metadata Check | 0~3 | MediaGenre |  |  |  |  |  |  |  |  |  |  |  |  | Tx |  | Rx |  |  |  |  |  |  |  |  | Rx |  | CAN, 100ms |
-|  |  |  | 1 | Media Metadata Check | 8~15 | TrackProgress |  |  |  |  |  |  |  |  |  |  |  |  | Tx |  | Rx |  |  |  |  |  |  |  |  | Rx |  |  |
+|  |  |  | 0 | Cluster Notification | 4~6 | ClusterNotifArg |  |  |  |  |  |  |  |  |  |  |  |  | Tx |  | Rx |  |  |  |  |  |  |  |  | Rx |  |  |
+| Infotainment CAN | 0x2A7 | frmIviDiagReqMsg | 0 | IVI Diag Request | 0~7 | IviDiagServiceId | Tx |  | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | CAN, Event |
+|  |  |  | 1 | IVI Diag Request | 8 | IviDiagDidHigh | Tx |  | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| Infotainment CAN | 0x290 | frmIviDiagResMsg | 0 | IVI Diag Response | 0~7 | IviDiagRespCode | Rx |  | Tx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | CAN, Event |
+|  |  |  | 1 | IVI Diag Response | 8~11 | IviDiagData0 | Rx |  | Tx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| Infotainment CAN | 0x291 | frmMediaMetaMsg | 0 | Media Metadata Check | 0~3 | MediaTrackType |  |  |  |  |  |  |  |  |  |  |  |  | Tx |  | Rx |  |  |  |  |  |  |  |  | Rx |  | CAN, 100ms |
+|  |  |  | 1 | Media Metadata Check | 8~15 | MediaRemainTime |  |  |  |  |  |  |  |  |  |  |  |  | Tx |  | Rx |  |  |  |  |  |  |  |  | Rx |  |  |
 | Infotainment CAN | 0x292 | frmSpeechTtsStateMsg | 0 | TTS State Check | 0~2 | TtsState |  |  |  |  |  |  |  |  |  |  |  |  | Tx |  | Rx |  |  |  |  |  |  |  |  | Rx |  | CAN, 100ms |
-|  |  |  | 1 | TTS State Check | 8~15 | TtsLangId |  |  |  |  |  |  |  |  |  |  |  |  | Tx |  | Rx |  |  |  |  |  |  |  |  | Rx |  |  |
-| Infotainment CAN | 0x293 | frmConnectivityStateMsg | 0 | Connectivity State | 0~2 | LteState |  |  | Tx |  |  |  | Rx |  |  |  |  |  |  |  | Rx |  |  |  |  |  |  |  |  |  |  | CAN, 100ms |
-|  |  |  | 0 | Connectivity State | 3 | WifiState |  |  | Tx |  |  |  | Rx |  |  |  |  |  |  |  | Rx |  |  |  |  |  |  |  |  |  |  |  |
-|  |  |  | 0 | Connectivity State | 4 | BtState |  |  | Tx |  |  |  | Rx |  |  |  |  |  |  |  | Rx |  |  |  |  |  |  |  |  |  |  |  |
-| Infotainment CAN | 0x294 | frmIviHealthDetailMsg | 0 | IVI Health Detail | 0~7 | CpuLoad | Rx |  | Tx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | CAN, 100ms |
-|  |  |  | 1 | IVI Health Detail | 8~15 | MemLoad | Rx |  | Tx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+|  |  |  | 1 | TTS State Check | 8~15 | TtsQueueDepth |  |  |  |  |  |  |  |  |  |  |  |  | Tx |  | Rx |  |  |  |  |  |  |  |  | Rx |  |  |
+| Infotainment CAN | 0x293 | frmConnectivityStateMsg | 0 | Connectivity State | 0~2 | ConnectivityType |  |  | Tx |  |  |  | Rx |  |  |  |  |  |  |  | Rx |  |  |  |  |  |  |  |  |  |  | CAN, 100ms |
+|  |  |  | 0 | Connectivity State | 3 | ConnectivityState |  |  | Tx |  |  |  | Rx |  |  |  |  |  |  |  | Rx |  |  |  |  |  |  |  |  |  |  |  |
+|  |  |  | 0 | Connectivity State | 4 | SignalBars |  |  | Tx |  |  |  | Rx |  |  |  |  |  |  |  | Rx |  |  |  |  |  |  |  |  |  |  |  |
+| Infotainment CAN | 0x294 | frmIviHealthDetailMsg | 0 | IVI Health Detail | 0~7 | IviCpuLoad | Rx |  | Tx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | CAN, 100ms |
+|  |  |  | 1 | IVI Health Detail | 8~15 | IviMemLoad | Rx |  | Tx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 | Infotainment CAN | 0x295 | frmClusterSyncStateMsg | 0 | Cluster Sync State | 0~2 | ClusterSyncState |  |  |  |  |  |  |  |  |  |  |  |  | Tx |  |  |  |  |  |  |  |  |  |  | Rx |  | CAN, 50ms |
-|  |  |  | 1 | Cluster Sync State | 8~15 | ClusterSyncSeq |  |  |  |  |  |  |  |  |  |  |  |  | Tx |  |  |  |  |  |  |  |  |  |  | Rx |  |  |
+|  |  |  | 1 | Cluster Sync State | 8~15 | ClusterSyncAge |  |  |  |  |  |  |  |  |  |  |  |  | Tx |  |  |  |  |  |  |  |  |  |  | Rx |  |  |
 | Powertrain CAN | 0x12E | frmEngineTorqueMsg | 0 | Engine Torque Check | 0~15 | EngineTorqueAct |  |  |  | Rx |  |  |  |  |  |  |  |  |  |  |  | Tx | Rx |  |  |  |  |  |  |  |  | CAN, 100ms |
-|  |  |  | 2 | Engine Torque Check | 16~31 | EngineTorqueReq |  |  |  | Rx |  |  |  |  |  |  |  |  |  |  |  | Tx | Rx |  |  |  |  |  |  |  |  |  |
+|  |  |  | 2 | Engine Torque Check | 16~31 | EngineTorqueAct |  |  |  | Rx |  |  |  |  |  |  |  |  |  |  |  | Tx | Rx |  |  |  |  |  |  |  |  |  |
 | Powertrain CAN | 0x12F | frmEngineLoadMsg | 0 | Engine Load Check | 0~7 | EngineLoad |  |  |  | Rx |  |  |  |  |  |  |  |  |  |  |  | Tx | Rx |  |  |  |  |  |  |  |  | CAN, 100ms |
-|  |  |  | 1 | Engine Load Check | 8~15 | ManifoldPressure |  |  |  | Rx |  |  |  |  |  |  |  |  |  |  |  | Tx | Rx |  |  |  |  |  |  |  |  |  |
 | Powertrain CAN | 0x130 | frmTransShiftStateMsg | 0 | Transmission Shift Check | 0~2 | ShiftState |  |  |  | Rx |  |  |  |  |  |  |  |  |  |  |  | Rx | Tx |  |  |  |  |  |  |  |  | CAN, 100ms |
-|  |  |  | 0 | Transmission Shift Check | 3 | ShiftInProgress |  |  |  | Rx |  |  |  |  |  |  |  |  |  |  |  | Rx | Tx |  |  |  |  |  |  |  |  |  |
+|  |  |  | 0 | Transmission Shift Check | 3 | ShiftSlip |  |  |  | Rx |  |  |  |  |  |  |  |  |  |  |  | Rx | Tx |  |  |  |  |  |  |  |  |  |
 |  |  |  | 1 | Transmission Shift Check | 8~10 | ShiftTargetGear |  |  |  | Rx |  |  |  |  |  |  |  |  |  |  |  | Rx | Tx |  |  |  |  |  |  |  |  |  |
-| Powertrain CAN | 0x2AA | frmPtDiagReqMsg | 0 | Powertrain Diag Request | 0~7 | PtDiagReqId | Tx |  |  | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | CAN, Event |
-|  |  |  | 1 | Powertrain Diag Request | 8 | PtDiagReqAct | Tx |  |  | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| Powertrain CAN | 0x10E | frmPtDiagResMsg | 0 | Powertrain Diag Response | 0~7 | PtDiagResId | Rx |  |  | Tx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | CAN, Event |
-|  |  |  | 1 | Powertrain Diag Response | 8~11 | PtDiagStatus | Rx |  |  | Tx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| Powertrain CAN | 0x2AA | frmPtDiagReqMsg | 0 | Powertrain Diag Request | 0~7 | PtDiagServiceId | Tx |  |  | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | CAN, Event |
+|  |  |  | 1 | Powertrain Diag Request | 8 | PtDiagDidHigh | Tx |  |  | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| Powertrain CAN | 0x10E | frmPtDiagResMsg | 0 | Powertrain Diag Response | 0~7 | PtDiagRespCode | Rx |  |  | Tx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | CAN, Event |
+|  |  |  | 1 | Powertrain Diag Response | 8~11 | PtDiagData0 | Rx |  |  | Tx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 | Powertrain CAN | 0x131 | frmThermalMgmtStateMsg | 0 | Thermal Management | 0~2 | ThermalMode |  |  |  | Tx |  |  |  |  |  |  |  |  |  |  |  | Rx | Rx |  |  |  |  |  |  |  |  | CAN, 100ms |
-|  |  |  | 1 | Thermal Management | 8~15 | FanSpeedCmd |  |  |  | Tx |  |  |  |  |  |  |  |  |  |  |  | Rx | Rx |  |  |  |  |  |  |  |  |  |
+|  |  |  | 1 | Thermal Management | 8~15 | FanDuty |  |  |  | Tx |  |  |  |  |  |  |  |  |  |  |  | Rx | Rx |  |  |  |  |  |  |  |  |  |
 | Powertrain CAN | 0x10F | frmEnergyFlowStateMsg | 0 | Energy Flow Check | 0~3 | RegenLevel |  |  |  | Tx |  |  |  |  |  |  |  |  |  |  |  | Rx | Rx |  |  |  |  |  |  |  |  | CAN, 100ms |
-|  |  |  | 0 | Energy Flow Check | 4~5 | EnergyFlowDir |  |  |  | Tx |  |  |  |  |  |  |  |  |  |  |  | Rx | Rx |  |  |  |  |  |  |  |  |  |
-| Powertrain CAN | 0x110 | frmPowertrainCtrlAuthMsg | 0 | Powertrain Control Auth | 0~1 | PtCtrlAuthState |  |  |  | Tx |  |  |  |  |  |  |  |  |  |  |  | Rx | Rx |  |  |  |  |  |  |  |  | CAN, 100ms |
-|  |  |  | 1 | Powertrain Control Auth | 8~11 | PtCtrlSource |  |  |  | Tx |  |  |  |  |  |  |  |  |  |  |  | Rx | Rx |  |  |  |  |  |  |  |  |  |
+|  |  |  | 0 | Energy Flow Check | 4~5 | EnergyFlowMode |  |  |  | Tx |  |  |  |  |  |  |  |  |  |  |  | Rx | Rx |  |  |  |  |  |  |  |  |  |
+| Powertrain CAN | 0x110 | frmPowertrainCtrlAuthMsg | 0 | Powertrain Control Auth | 0~1 | CtrlAuthLevel |  |  |  | Tx |  |  |  |  |  |  |  |  |  |  |  | Rx | Rx |  |  |  |  |  |  |  |  | CAN, 100ms |
+|  |  |  | 1 | Powertrain Control Auth | 8~11 | CtrlAuthSource |  |  |  | Tx |  |  |  |  |  |  |  |  |  |  |  | Rx | Rx |  |  |  |  |  |  |  |  |  |
 ---
+
+

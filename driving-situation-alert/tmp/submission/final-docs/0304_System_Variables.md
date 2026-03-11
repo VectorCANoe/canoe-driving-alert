@@ -1,4 +1,4 @@
-# 시스템 변수 정의 (System Variables)
+﻿# 시스템 변수 정의 (System Variables)
 
 **Document ID**: PROJ-0304-SV
 **ISO 26262 Reference**: Part 6, Cl.7 (Software Architectural Design)
@@ -28,9 +28,9 @@
 | 30 | Infotainment | speedLimit | uint32 | 0 | 255 | 30 | 구간 제한속도(km/h) |
 | 7 | V2X | emergencyType | uint32 | 0 | 3 | 0 | 긴급차량 종류 |
 | 8 | V2X | emergencyDirection | uint32 | 0 | 3 | 0 | 긴급차량 접근 방향 |
-| 9 | V2X | eta | uint32 | 0 | 255 | 0 | 긴급차량 ETA(유효값 0~255, 내부 invalid sentinel 65535) |
-| 10 | V2X | sourceId | uint32 | 0 | 255 | 0 | 긴급 메시지 Source ID |
-| 11 | V2X | alertState | uint32 | 0 | 1 | 0 | 긴급 메시지 Active/Clear 상태 |
+| 9 | V2X | EtaSeconds | uint32 | 0 | 255 | 0 | 긴급차량 ETA(유효값 0~255, 내부 invalid sentinel 65535) |
+| 10 | V2X | SourceId | uint32 | 0 | 255 | 0 | 긴급 메시지 Source ID |
+| 11 | V2X | Status | uint32 | 0 | 1 | 0 | 긴급 메시지 Active/Clear 상태 |
 | 12 | Core | vehicleSpeedNorm | uint32 | 0 | 255 | 0 | 게이트웨이 정규화 후 차량 속도 |
 | 13 | Core | driveStateNorm | uint32 | 0 | 3 | 0 | 게이트웨이 정규화 후 주행 상태 |
 | 14 | Core | steeringInputNorm | uint32 | 0 | 1 | 0 | 게이트웨이 정규화 후 조향 입력 |
@@ -174,113 +174,110 @@
 | 202 | Powertrain | PtDiagState | uint32 | 0 | 15 | 0 | Powertrain 진단 상태 |
 | 203 | Powertrain | PtFailCode | uint32 | 0 | 15 | 0 | Powertrain 오류 코드 |
 | 204 | Chassis | EpsAssistState | uint32 | 0 | 7 | 0 | MDPS 보조 상태 |
-| 205 | Chassis | EpsFault | uint32 | 0 | 1 | 0 | MDPS 고장 상태 |
-| 206 | Chassis | EpsTorqueReq | uint32 | 0 | 255 | 0 | MDPS 토크 요청 |
+| 205 | Chassis | EpsFaultState | uint32 | 0 | 1 | 0 | MDPS 고장 상태 |
+| 206 | Chassis | EpsTemp | uint32 | 0 | 255 | 0 | MDPS 토크 요청 |
 | 207 | Chassis | AbsCtrlState | uint32 | 0 | 7 | 0 | ABS 제어 상태 |
 | 208 | Chassis | AbsSlipLevel | uint32 | 0 | 255 | 0 | ABS 슬립 레벨 |
 | 209 | Chassis | EscCtrlState | uint32 | 0 | 7 | 0 | ESC 제어 상태 |
-| 210 | Chassis | YawCtrlReq | uint32 | 0 | 255 | 0 | 요 모멘트 제어 요구 |
-| 211 | Chassis | TcsActive | uint32 | 0 | 1 | 0 | TCS 활성 상태 |
+| 210 | Chassis | EscYawTarget | uint32 | 0 | 255 | 0 | 요 모멘트 제어 요구 |
+| 211 | Chassis | TcsCtrlState | uint32 | 0 | 1 | 0 | TCS 활성 상태 |
 | 212 | Chassis | TcsSlipRatio | uint32 | 0 | 255 | 0 | TCS 슬립 비율 |
 | 213 | Chassis | BrakeTempFL | uint32 | 0 | 255 | 0 | 브레이크 전륜좌 온도 |
 | 214 | Chassis | BrakeTempFR | uint32 | 0 | 255 | 0 | 브레이크 전륜우 온도 |
-| 215 | Chassis | BrakeTempRL | uint32 | 0 | 255 | 0 | 브레이크 후륜좌 온도 |
-| 216 | Chassis | BrakeTempRR | uint32 | 0 | 255 | 0 | 브레이크 후륜우 온도 |
-| 217 | Chassis | SteeringAngle | int32 | -720 | 720 | 0 | 조향각 |
-| 218 | Chassis | SteeringAngleRate | int32 | -1024 | 1023 | 0 | 조향각속도 |
-| 219 | Chassis | WheelPulseFL | uint32 | 0 | 65535 | 0 | 전륜좌 휠 펄스 |
-| 220 | Chassis | WheelPulseFR | uint32 | 0 | 65535 | 0 | 전륜우 휠 펄스 |
-| 221 | Chassis | DamperMode | uint32 | 0 | 7 | 0 | 댐퍼 모드 |
-| 222 | Chassis | RideHeight | uint32 | 0 | 255 | 0 | 차고 높이 |
+| 217 | Chassis | SteeringAngleRaw | int32 | -720 | 720 | 0 | 조향각 |
+| 218 | Chassis | SteeringAngleRaw | int32 | -1024 | 1023 | 0 | 조향각속도 |
+| 219 | Chassis | WheelPulseFront | uint32 | 0 | 65535 | 0 | 전륜좌 휠 펄스 |
+| 220 | Chassis | WheelPulseRear | uint32 | 0 | 65535 | 0 | 전륜우 휠 펄스 |
+| 221 | Chassis | SuspensionMode | uint32 | 0 | 7 | 0 | 댐퍼 모드 |
+| 222 | Chassis | SuspensionLevel | uint32 | 0 | 255 | 0 | 차고 높이 |
 | 223 | Chassis | TirePressFL | uint32 | 0 | 255 | 0 | 전륜좌 타이어 압력 |
 | 224 | Chassis | TirePressFR | uint32 | 0 | 255 | 0 | 전륜우 타이어 압력 |
 | 225 | Chassis | TirePressRL | uint32 | 0 | 255 | 0 | 후륜좌 타이어 압력 |
 | 226 | Chassis | TirePressRR | uint32 | 0 | 255 | 0 | 후륜우 타이어 압력 |
-| 227 | Chassis | ChassisDiagReqId | uint32 | 0 | 255 | 0 | Chassis 진단 요청 ID |
-| 228 | Chassis | ChassisDiagReqAct | uint32 | 0 | 1 | 0 | Chassis 진단 요청 활성 |
-| 229 | Chassis | ChassisDiagResId | uint32 | 0 | 255 | 0 | Chassis 진단 응답 ID |
-| 230 | Chassis | ChassisDiagStatus | uint32 | 0 | 15 | 0 | Chassis 진단 결과 |
+| 227 | Chassis | ChsDiagServiceId | uint32 | 0 | 255 | 0 | Chassis 진단 요청 ID |
+| 228 | Chassis | ChsDiagDidHigh | uint32 | 0 | 1 | 0 | Chassis 진단 요청 활성 |
+| 229 | Chassis | ChsDiagRespCode | uint32 | 0 | 255 | 0 | Chassis 진단 응답 ID |
+| 230 | Chassis | ChsDiagData0 | uint32 | 0 | 15 | 0 | Chassis 진단 결과 |
 | 231 | Chassis | AdasChassisState | uint32 | 0 | 255 | 0 | ADAS 섀시 상태 코드 |
 | 232 | Chassis | AdasHealthLevel | uint32 | 0 | 255 | 0 | ADAS 헬스 상태 코드 |
-| 234 | Chassis | BrakePadWearFL | uint32 | 0 | 100 | 0 | 브레이크 패드 마모(전륜좌) |
-| 235 | Chassis | BrakePadWearFR | uint32 | 0 | 100 | 0 | 브레이크 패드 마모(전륜우) |
-| 236 | Chassis | RoadFrictionEst | uint32 | 0 | 255 | 0 | 노면 마찰 추정치 |
-| 237 | Chassis | SurfaceType | uint32 | 0 | 15 | 0 | 노면 타입 |
+| 234 | Chassis | BrakePadWearLvl | uint32 | 0 | 100 | 0 | 브레이크 패드 마모(전륜좌) |
+| 235 | Chassis | BrakePadWearLvl | uint32 | 0 | 100 | 0 | 브레이크 패드 마모(전륜우) |
+| 236 | Chassis | RoadFrictionCoef | uint32 | 0 | 255 | 0 | 노면 마찰 추정치 |
 | 238 | Body | CabinSetTemp | uint32 | 0 | 63 | 0 | 실내 설정 온도 |
 | 239 | Body | BlowerLevel | uint32 | 0 | 15 | 0 | 블로워 레벨 |
 | 240 | Body | VentMode | uint32 | 0 | 7 | 0 | 공조 벤트 모드 |
-| 241 | Body | AcCompressorReq | uint32 | 0 | 1 | 0 | A/C 컴프레서 요청 |
+| 241 | Body | AcCompressorOn | uint32 | 0 | 1 | 0 | A/C 컴프레서 요청 |
 | 242 | Body | MirrorFoldState | uint32 | 0 | 1 | 0 | 미러 폴딩 상태 |
 | 243 | Body | MirrorHeatState | uint32 | 0 | 1 | 0 | 미러 열선 상태 |
-| 244 | Body | MirrorAdjAxis | uint32 | 0 | 3 | 0 | 미러 조정 축 |
+| 244 | Body | MirrorAdjustAxis | uint32 | 0 | 3 | 0 | 미러 조정 축 |
 | 245 | Body | DriverSeatPos | uint32 | 0 | 255 | 0 | 운전석 시트 위치 |
 | 246 | Body | PassengerSeatPos | uint32 | 0 | 255 | 0 | 동승석 시트 위치 |
 | 247 | Body | SeatHeatLevel | uint32 | 0 | 7 | 0 | 시트 히터 레벨 |
 | 248 | Body | SeatVentLevel | uint32 | 0 | 7 | 0 | 시트 통풍 레벨 |
-| 249 | Body | DoorUnlockCmd | uint32 | 0 | 3 | 0 | 도어 언락 명령 |
-| 250 | Body | TrunkOpenCmd | uint32 | 0 | 1 | 0 | 트렁크 오픈 명령 |
-| 251 | Body | InteriorLampMode | uint32 | 0 | 7 | 0 | 실내등 모드 |
-| 252 | Body | InteriorLampLevel | uint32 | 0 | 255 | 0 | 실내등 밝기 |
-| 253 | Body | RainSensorLevel | uint32 | 0 | 255 | 0 | 우적 센서 레벨 |
-| 254 | Body | AutoHeadlampReq | uint32 | 0 | 1 | 0 | 오토 헤드램프 요청 |
-| 255 | Body | BcmDiagReqId | uint32 | 0 | 255 | 0 | BCM 진단 요청 ID |
-| 256 | Body | BcmDiagReqAct | uint32 | 0 | 1 | 0 | BCM 진단 요청 활성 |
-| 257 | Body | BcmDiagResId | uint32 | 0 | 255 | 0 | BCM 진단 응답 ID |
-| 258 | Body | BcmDiagStatus | uint32 | 0 | 15 | 0 | BCM 진단 결과 |
-| 259 | Body | ImmoState | uint32 | 0 | 3 | 0 | 이모빌라이저 상태 |
+| 249 | Body | DoorControlCmd | uint32 | 0 | 3 | 0 | 도어 언락 명령 |
+| 250 | Body | ChildLockCmd | uint32 | 0 | 1 | 0 | 트렁크 오픈 명령 |
+| 251 | Body | CabinLightMode | uint32 | 0 | 7 | 0 | 실내등 모드 |
+| 252 | Body | DomeLightLevel | uint32 | 0 | 255 | 0 | 실내등 밝기 |
+| 253 | Body | RainSenseLevel | uint32 | 0 | 255 | 0 | 우적 센서 레벨 |
+| 254 | Body | AutoLightState | uint32 | 0 | 1 | 0 | 오토 헤드램프 요청 |
+| 255 | Body | BcmDiagServiceId | uint32 | 0 | 255 | 0 | BCM 진단 요청 ID |
+| 256 | Body | BcmDiagDidHigh | uint32 | 0 | 1 | 0 | BCM 진단 요청 활성 |
+| 257 | Body | BcmDiagRespCode | uint32 | 0 | 255 | 0 | BCM 진단 응답 ID |
+| 258 | Body | BcmDiagData0 | uint32 | 0 | 15 | 0 | BCM 진단 결과 |
+| 259 | Body | ImmobilizerState | uint32 | 0 | 3 | 0 | 이모빌라이저 상태 |
 | 260 | Body | KeyAuthState | uint32 | 0 | 3 | 0 | 키 인증 상태 |
-| 261 | Body | AlarmArmed | uint32 | 0 | 1 | 0 | 알람 경계 상태 |
-| 262 | Body | AlarmTrigger | uint32 | 0 | 1 | 0 | 알람 트리거 상태 |
-| 263 | Body | AlarmZone | uint32 | 0 | 15 | 0 | 알람 존 정보 |
-| 264 | Body | BodyGatewayLoad | uint32 | 0 | 100 | 0 | Body GW 부하율 |
-| 265 | Body | BodyGatewayRoute | uint32 | 0 | 255 | 0 | Body GW 라우팅 상태 |
-| 266 | Body | ComfortMode | uint32 | 0 | 7 | 0 | 컴포트 모드 |
-| 267 | Body | ChildSafetyState | uint32 | 0 | 1 | 0 | 아동 안전 상태 |
+| 261 | Body | AlarmArmState | uint32 | 0 | 1 | 0 | 알람 경계 상태 |
+| 262 | Body | IntrusionDetect | uint32 | 0 | 1 | 0 | 알람 트리거 상태 |
+| 264 | Body | BodyGwRouteState | uint32 | 0 | 100 | 0 | Body GW 부하율 |
+| 265 | Body | BodyGwHealth | uint32 | 0 | 255 | 0 | Body GW 라우팅 상태 |
+| 266 | Body | ComfortProfile | uint32 | 0 | 7 | 0 | 컴포트 모드 |
+| 267 | Body | ComfortStatus | uint32 | 0 | 1 | 0 | 아동 안전 상태 |
 | 268 | Infotainment | AudioFocusOwner | uint32 | 0 | 7 | 0 | 오디오 포커스 소유자 |
-| 269 | Infotainment | AudioDuckLevel | uint32 | 0 | 255 | 0 | 오디오 덕킹 레벨 |
+| 269 | Infotainment | AudioDuckingLvl | uint32 | 0 | 255 | 0 | 오디오 덕킹 레벨 |
 | 270 | Infotainment | VoiceAssistState | uint32 | 0 | 7 | 0 | 음성비서 상태 |
-| 271 | Infotainment | VoiceWakeSource | uint32 | 0 | 15 | 0 | 음성 깨우기 소스 |
-| 272 | Infotainment | MapZoomLevel | uint32 | 0 | 255 | 0 | 지도 줌 레벨 |
-| 273 | Infotainment | MapTheme | uint32 | 0 | 15 | 0 | 지도 테마 |
-| 274 | Infotainment | NextTurnType | uint32 | 0 | 15 | 0 | 다음 회전 유형 |
-| 275 | Infotainment | NextTurnDist | uint32 | 0 | 255 | 0 | 다음 회전 잔여 거리 |
+| 271 | Infotainment | WakeWordState | uint32 | 0 | 15 | 0 | 음성 깨우기 소스 |
+| 272 | Infotainment | ZoomLevel | uint32 | 0 | 255 | 0 | 지도 줌 레벨 |
+| 273 | Infotainment | MapRenderState | uint32 | 0 | 15 | 0 | 지도 테마 |
+| 274 | Infotainment | RouteAlertType | uint32 | 0 | 15 | 0 | 다음 회전 유형 |
+| 275 | Infotainment | RouteAlertEta | uint32 | 0 | 255 | 0 | 다음 회전 잔여 거리 |
 | 276 | Infotainment | TrafficEventType | uint32 | 0 | 15 | 0 | 교통 이벤트 유형 |
 | 277 | Infotainment | TrafficSeverity | uint32 | 0 | 7 | 0 | 교통 이벤트 심각도 |
-| 278 | Infotainment | TrafficDist | uint32 | 0 | 255 | 0 | 이벤트 잔여 거리 |
+| 278 | Infotainment | TrafficDistance | uint32 | 0 | 255 | 0 | 이벤트 잔여 거리 |
 | 279 | Infotainment | ProjectionType | uint32 | 0 | 7 | 0 | 프로젝션 유형 |
 | 280 | Infotainment | ProjectionState | uint32 | 0 | 3 | 0 | 프로젝션 상태 |
 | 281 | Cluster | ClusterNotifType | uint32 | 0 | 15 | 0 | 클러스터 알림 유형 |
-| 282 | Cluster | ClusterNotifPrio | uint32 | 0 | 7 | 0 | 클러스터 알림 우선순위 |
-| 283 | Infotainment | IviDiagReqId | uint32 | 0 | 255 | 0 | IVI 진단 요청 ID |
-| 284 | Infotainment | IviDiagReqAct | uint32 | 0 | 1 | 0 | IVI 진단 요청 활성 |
-| 285 | Infotainment | IviDiagResId | uint32 | 0 | 255 | 0 | IVI 진단 응답 ID |
-| 286 | Infotainment | IviDiagStatus | uint32 | 0 | 15 | 0 | IVI 진단 결과 |
-| 287 | Infotainment | MediaGenre | uint32 | 0 | 15 | 0 | 미디어 장르 |
-| 288 | Infotainment | TrackProgress | uint32 | 0 | 100 | 0 | 트랙 진행률 |
+| 282 | Cluster | ClusterNotifArg | uint32 | 0 | 7 | 0 | 클러스터 알림 우선순위 |
+| 283 | Infotainment | IviDiagServiceId | uint32 | 0 | 255 | 0 | IVI 진단 요청 ID |
+| 284 | Infotainment | IviDiagDidHigh | uint32 | 0 | 1 | 0 | IVI 진단 요청 활성 |
+| 285 | Infotainment | IviDiagRespCode | uint32 | 0 | 255 | 0 | IVI 진단 응답 ID |
+| 286 | Infotainment | IviDiagData0 | uint32 | 0 | 15 | 0 | IVI 진단 결과 |
+| 287 | Infotainment | MediaTrackType | uint32 | 0 | 15 | 0 | 미디어 장르 |
+| 288 | Infotainment | MediaRemainTime | uint32 | 0 | 100 | 0 | 트랙 진행률 |
 | 289 | Infotainment | TtsState | uint32 | 0 | 7 | 0 | TTS 상태 |
-| 290 | Infotainment | TtsLangId | uint32 | 0 | 255 | 0 | TTS 언어 ID |
-| 291 | Infotainment | LteState | uint32 | 0 | 7 | 0 | LTE 연결 상태 |
-| 292 | Infotainment | WifiState | uint32 | 0 | 1 | 0 | Wi-Fi 연결 상태 |
-| 293 | Infotainment | BtState | uint32 | 0 | 1 | 0 | Bluetooth 연결 상태 |
-| 294 | Infotainment | CpuLoad | uint32 | 0 | 100 | 0 | IVI CPU 부하율 |
-| 295 | Infotainment | MemLoad | uint32 | 0 | 100 | 0 | IVI 메모리 부하율 |
+| 290 | Infotainment | TtsQueueDepth | uint32 | 0 | 255 | 0 | TTS 언어 ID |
+| 291 | Infotainment | ConnectivityType | uint32 | 0 | 7 | 0 | LTE 연결 상태 |
+| 292 | Infotainment | ConnectivityState | uint32 | 0 | 1 | 0 | Wi-Fi 연결 상태 |
+| 293 | Infotainment | SignalBars | uint32 | 0 | 1 | 0 | Bluetooth 연결 상태 |
+| 294 | Infotainment | IviCpuLoad | uint32 | 0 | 100 | 0 | IVI CPU 부하율 |
+| 295 | Infotainment | IviMemLoad | uint32 | 0 | 100 | 0 | IVI 메모리 부하율 |
 | 296 | Cluster | ClusterSyncState | uint32 | 0 | 7 | 0 | 클러스터 동기화 상태 |
-| 297 | Cluster | ClusterSyncSeq | uint32 | 0 | 255 | 0 | 클러스터 동기화 시퀀스 |
+| 297 | Cluster | ClusterSyncAge | uint32 | 0 | 255 | 0 | 클러스터 동기화 시퀀스 |
 | 298 | Powertrain | EngineTorqueAct | uint32 | 0 | 65535 | 0 | 엔진 실제 토크 |
-| 299 | Powertrain | EngineTorqueReq | uint32 | 0 | 65535 | 0 | 엔진 요구 토크 |
+| 299 | Powertrain | EngineTorqueAct | uint32 | 0 | 65535 | 0 | 엔진 요구 토크 |
 | 300 | Powertrain | EngineLoad | uint32 | 0 | 100 | 0 | 엔진 부하율 |
-| 301 | Powertrain | ManifoldPressure | uint32 | 0 | 255 | 0 | 흡기 매니폴드 압력 |
 | 302 | Powertrain | ShiftState | uint32 | 0 | 7 | 0 | 변속 상태 |
-| 303 | Powertrain | ShiftInProgress | uint32 | 0 | 1 | 0 | 변속 진행 상태 |
+| 303 | Powertrain | ShiftSlip | uint32 | 0 | 1 | 0 | 변속 진행 상태 |
 | 304 | Powertrain | ShiftTargetGear | uint32 | 0 | 7 | 0 | 목표 기어 |
-| 305 | Powertrain | PtDiagReqId | uint32 | 0 | 255 | 0 | Powertrain 진단 요청 ID |
-| 306 | Powertrain | PtDiagReqAct | uint32 | 0 | 1 | 0 | Powertrain 진단 요청 활성 |
-| 307 | Powertrain | PtDiagResId | uint32 | 0 | 255 | 0 | Powertrain 진단 응답 ID |
-| 308 | Powertrain | PtDiagStatus | uint32 | 0 | 15 | 0 | Powertrain 진단 결과 |
+| 305 | Powertrain | PtDiagServiceId | uint32 | 0 | 255 | 0 | Powertrain 진단 요청 ID |
+| 306 | Powertrain | PtDiagDidHigh | uint32 | 0 | 1 | 0 | Powertrain 진단 요청 활성 |
+| 307 | Powertrain | PtDiagRespCode | uint32 | 0 | 255 | 0 | Powertrain 진단 응답 ID |
+| 308 | Powertrain | PtDiagData0 | uint32 | 0 | 15 | 0 | Powertrain 진단 결과 |
 | 309 | Powertrain | ThermalMode | uint32 | 0 | 7 | 0 | 열관리 모드 |
-| 310 | Powertrain | FanSpeedCmd | uint32 | 0 | 255 | 0 | 팬 속도 명령 |
+| 310 | Powertrain | FanDuty | uint32 | 0 | 255 | 0 | 팬 속도 명령 |
 | 311 | Powertrain | RegenLevel | uint32 | 0 | 15 | 0 | 회생 제동 레벨 |
-| 312 | Powertrain | EnergyFlowDir | uint32 | 0 | 3 | 0 | 에너지 흐름 방향 |
-| 313 | Powertrain | PtCtrlAuthState | uint32 | 0 | 3 | 0 | 파워트레인 제어 권한 상태 |
-| 314 | Powertrain | PtCtrlSource | uint32 | 0 | 15 | 0 | 파워트레인 제어 출처 |
+| 312 | Powertrain | EnergyFlowMode | uint32 | 0 | 3 | 0 | 에너지 흐름 방향 |
+| 313 | Powertrain | CtrlAuthLevel | uint32 | 0 | 3 | 0 | 파워트레인 제어 권한 상태 |
+| 314 | Powertrain | CtrlAuthSource | uint32 | 0 | 15 | 0 | 파워트레인 제어 출처 |
 ---
+
+
