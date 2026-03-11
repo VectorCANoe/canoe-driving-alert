@@ -113,8 +113,8 @@
 |  |  |  | EngineState | 1~2 | 엔진 동작 상태 | 0~3 | Validation Harness에서 EMS에 전달 |
 | frmGearStateMsg | 0x2A9 | 1 | GearInput | 0~2 | 기어 입력값 | 0~7 | Validation Harness에서 TCU에 전달 |
 |  |  |  | GearState | 3~5 | 기어 상태값 | 0~7 | Validation Harness에서 TCU에 전달 |
-| frmPowertrainGatewayMsg | 0x109 | 2 | RoutingPolicy | 0~7 | 도메인 라우팅 정책 | 0~255 | CGW에서 EMS, TCU에 전달 |
-|  |  |  | BoundaryStatus | 8~15 | 도메인 경계 상태 | 0~255 | CGW에서 EMS, TCU에 전달 |
+| frmPowertrainGatewayMsg | 0x109 | 2 | RoutingPolicy | 0~7 | 경고 정보 전달 정책 | 0~255 | CGW에서 EMS, TCU에 전달 |
+|  |  |  | BoundaryStatus | 8~15 | 경고 정보 전달 경계 상태 | 0~255 | CGW에서 EMS, TCU에 전달 |
 | frmEngineSpeedTempMsg | 0x12A | 4 | EngineRpm | 0~15 | 엔진 회전수 | 0~65535 rpm | EMS에서 TCU, CGW에 전달 |
 |  |  |  | CoolantTemp | 16~23 | 냉각수 온도 | 0~255 degC | EMS에서 TCU, CGW에 전달 |
 |  |  |  | OilTemp | 24~31 | 엔진오일 온도 | 0~255 degC | EMS에서 TCU, CGW에 전달 |

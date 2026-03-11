@@ -39,7 +39,7 @@
 | ST_BASE_EXT_BODY_001 | 공조, 시트, 미러, 도어, 와이퍼, 보안 상태가 Body 확장 시나리오에서 일관되게 반영되는지 확인한다. |  |  |  |
 | ST_BASE_EXT_IVI_001 | 오디오, 음성 안내, TTS 상태가 Infotainment 확장 시나리오에서 일관되게 반영되는지 확인한다. |  |  |  |
 | ST_V2_RISK_001 | 긴급차량 근접 위험도 기반 감속 보조 요청과 경고 출력 동기화가 일관되게 동작하는지 확인한다. (SIL Scenario 15/16/17/19) | Ready |  |  |
-| ST_V2_FAILSAFE_001 | 도메인 경로 단절 시 자동 감속 보조 금지와 최소 경고 채널 유지 강등이 동작하는지 확인한다. (SIL Scenario 18) | Ready |  |  |
+| ST_V2_FAILSAFE_001 | 경고 전달 이상 시 자동 감속 보조 차단, 최소 경고 채널 유지, fail-safe 전환이 동작하는지 확인한다. (SIL Scenario 18) | Ready |  |  |
 | ST_ADAS_OBJ_001 | 객체 목록, 교차로, 합류 위험이 들어올 때 위험 경고와 강등, 이벤트 기록이 일관되게 동작하는지 확인한다. (Pre-Activation) | Planned |  |  |
 | ST_BASE_ALERT_EXT_001 | 방향지시등, 주행모드, 안전벨트, 접근거리 표시, 표시 설정, 음량 설정이 함께 반영될 때 경고 안내가 일관되게 동작하는지 확인한다. (Pre-Activation) | Planned |  |  |
 | ST_BASE_ROBUST_EXT_001 | 입력 지연, 상태 전이, 채널 전환, 오디오 경합이 발생해도 경고 안내가 안정적으로 유지되는지 확인한다. (Pre-Activation) | Planned |  |  |
@@ -47,7 +47,7 @@
 | ST_BASE_EXT_BODY_002 | 도어, 테일게이트, 에어백, 탑승자 감지, 공조, 시트, 선루프 상태가 시스템 시나리오에서 일관되게 반영되는지 확인한다. | Ready |  |  |
 | ST_BASE_EXT_IVI_002 | HUD, AMP, TMU, 디지털 접근 서비스 상태가 시스템 시나리오에서 표시와 안내 정책에 일관되게 반영되는지 확인한다. | Ready |  |  |
 | ST_ADAS_EXT_STATE_001 | SCC, 주차 보조, 주변 센서 상태가 시스템 시나리오에서 위험과 가용성 판단으로 일관되게 반영되는지 확인한다. | Ready |  |  |
-| ST_BACKBONE_STATE_001 | IBOX, SGW, DCM 등 도메인 서비스 가용성 상태가 시스템 시나리오에서 경계 가용성과 강등 정책으로 일관되게 반영되는지 확인한다. | Ready |  |  |
+| ST_BACKBONE_STATE_001 | IBOX, SGW, DCM 등 경고 서비스 가용성 상태가 시스템 시나리오에서 전달 가용성과 강등 정책으로 일관되게 반영되는지 확인한다. | Ready |  |  |
 | ST_BASE_EXT_PT_002 | OBC, DCDC, MCU, INVERTER 상태가 시스템 시나리오에서 구동 준비와 서비스 경고 맥락으로 일관되게 반영되는지 확인한다. | Ready |  |  |
 | ST_BASE_001 | 차량 기본 기능과 주요 확장 상태가 시스템 수준에서 일관되게 동작하는지 확인한다. |  |  |  |
 | ST_OEM_SURFACE_001 | 주요 Active Surface ECU의 경계, 소유권, 헬스 상태가 시스템 시나리오에서 일관되게 유지되는지 확인한다. | Planned |  |  |

@@ -43,7 +43,7 @@
 |  |  | IVI (`IVI_GW`, 서비스 접근 확장) | 디지털 키와 차량 서비스 상태를 수신하여 사용자 안내에 반영 | Ready |  |  |
 |  |  | ADAS (`ADAS_WARN_CTRL`, 주행 보조 확장) | 주행 보조 상태를 수신하여 위험 판단에 반영 | Ready |  |  |
 |  |  | ADAS (`ADAS_WARN_CTRL`, 주차·인지 확장) | 주차 보조와 주변 인지 상태를 수신하여 위험 판단에 반영 | Ready |  |  |
-|  |  | CGW (`DOMAIN_BOUNDARY_MGR`, 백본 서비스 확장) | 백본 및 도메인 서비스 상태 정보를 수신하여 경계 상태와 강등 동작에 반영 | Ready |  |  |
+|  |  | CGW (경고 전달 경계 관리, 백본 서비스 확장) | 백본 및 경고 서비스 상태 정보를 수신하여 전달 경계 상태와 fail-safe 동작에 반영 | Ready |  |  |
 |  |  | CGW (`DOMAIN_ROUTER`, 구동 확장) | 모터와 인버터 상태를 수신하여 차량 구동 상태에 반영 | Ready |  |  |
 |  |  | CGW (`DOMAIN_ROUTER`, 전력·충전 확장) | 전력 변환과 충전 상태를 수신하여 차량 구동 상태에 반영 | Ready |  |  |
 | 가상 노드 (Simulator) | 입력 | Vehicle/Steering Input | 차량 속도(km/h), 주행 상태, 조향 각도 입력 정보를 생성 |  |  |  |
