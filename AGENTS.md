@@ -3,17 +3,20 @@
 ## Session Start Priority
 At the start of every Codex session, read this file first, then read:
 - `driving-situation-alert/TMP_HANDOFF.md`
+- `driving-situation-alert/tmp/submission/README.md`
 
-Use `driving-situation-alert/TMP_HANDOFF.md` as the current project intent/source of truth for:
+Use `driving-situation-alert/TMP_HANDOFF.md` as the current project intent/execution guardrail source of truth for:
 - what the team is building now
 - fixed scope and exclusions
 - immediate next steps
 - non-negotiable traceability rules
+Use `driving-situation-alert/tmp/submission/final-docs/` as the operational document SoT for ongoing edits.
+Treat root docs under `driving-situation-alert/` as canonical sync targets to be updated later.
 
 ## Handoff Freshness Gate
-- Before treating `driving-situation-alert/TMP_HANDOFF.md` as SoT, check section `0) Freshness Control`.
-- If handoff status is `FRESH`, follow handoff-first execution.
-- If handoff status is `STALE` (or stale criteria are met), use canonical docs as temporary SoT in this order:
+- Before treating `driving-situation-alert/TMP_HANDOFF.md` as intent SoT, check section `0) Freshness Control`.
+- If handoff status is `FRESH`, follow handoff-first execution and `final-docs`-first document edits.
+- If handoff status is `STALE` (or stale criteria are met), use canonical docs as temporary intent reference in this order:
   - `driving-situation-alert/01_Requirements.md`
   - `driving-situation-alert/03_Function_definition.md`
   - `driving-situation-alert/0301_SysFuncAnalysis.md`
@@ -25,7 +28,8 @@ Use `driving-situation-alert/TMP_HANDOFF.md` as the current project intent/sourc
   - `driving-situation-alert/06_Integration_Test.md`
   - `driving-situation-alert/07_System_Test.md`
   - `driving-situation-alert/tmp/mentoring/Mentoring_MET40.md`
-- After stale causes are cleared, update `TMP_HANDOFF.md` and switch back to handoff-first execution.
+- Keep ongoing edits in `final-docs` unless a task explicitly requests root SoT sync-back.
+- After stale causes are cleared, update `TMP_HANDOFF.md` and switch back to `FRESH`.
 
 ## Reference Standards (When Ambiguous)
 If any requirement, format, or wording is unclear, consult:
@@ -70,5 +74,5 @@ Use those references to align:
 ## Notes
 - `driving-situation-alert/TMP_HANDOFF.md` is temporary and can be replaced as project state changes.
 - If this file and `driving-situation-alert/TMP_HANDOFF.md` conflict:
-  - when handoff is `FRESH`, follow handoff first
-  - when handoff is `STALE`, follow canonical docs first, then refresh handoff
+  - when handoff is `FRESH`, follow handoff for intent and `final-docs` for working docs
+  - when handoff is `STALE`, follow canonical docs for intent, keep `final-docs` as working baseline, then refresh handoff

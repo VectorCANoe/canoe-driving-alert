@@ -1,17 +1,23 @@
 # TMP Handoff (Next Codex Session)
 
 ## 0) Freshness Control
-- Last Updated: 2026-03-09
+- Last Updated: 2026-03-11
 - Freshness Status: FRESH
 - Validity Window: 3 days
+- Operational Document SoT:
+  - `driving-situation-alert/tmp/submission/final-docs/`
+  - scope: `01~07`, `governance/00d~00f`
+- Root Canonical Sync Target:
+  - `driving-situation-alert/00/01/03/0301/0302/0303/0304/04/05/06/07`
 - Stale Criteria (any one = stale):
   - Freshness Status is marked `STALE`
   - Node baseline includes deprecated validation node names as active naming
-  - Document version snapshot differs from current headers in 01/03/0301/0302/0303/0304/04/05/06/07
+  - Document version snapshot differs from current headers in `tmp/submission/final-docs/01~07`
 - Stale Recovery Rule:
-  - Use canonical docs as temporary SoT:
+  - Use canonical docs as temporary intent reference:
     - `01 -> 03 -> 0301/0302/0303/0304 -> 04 -> 05/06/07`
     - `tmp/mentoring/Mentoring_MET40.md`
+  - Keep ongoing edits in `tmp/submission/final-docs` and queue root sync-back deltas.
   - Refresh this handoff and switch back to `FRESH`.
 
 ## 1) Project Direction (Reset In Progress)
@@ -157,7 +163,7 @@
 
 ## 9) Temporary Note
 - This handoff is temporary and must be refreshed continuously.
-- Once stale causes are resolved, keep handoff as SoT (`FRESH`) for the next session.
+- In `FRESH`, treat handoff as intent SoT and `tmp/submission/final-docs` as operational document SoT.
 
 ## 10) Architecture Reset Mode (Active)
 
@@ -226,7 +232,8 @@
 - Primary ownership:
   - `driving-situation-alert/`
 - Current responsibility:
-  - 정본 SoT 문서(`00/01/03/0301/0302/0303/0304/04/05/06/07`)
+  - 운영 SoT 문서(`tmp/submission/final-docs/01~07`, `tmp/submission/final-docs/governance/00d~00f`)
+  - 루트 정본 문서(`00/01/03/0301/0302/0303/0304/04/05/06/07`) 후행 동기화 큐 관리
   - 제출 문서셋/보드/hand-off 동기화
   - reset baseline의 문서 전파
 - Do not do:
@@ -236,7 +243,7 @@
 ### 11.4 Cross-Team Rule
 - Dev1은 SoT 변경이 필요하면 문서팀에 기준안만 전달한다.
 - Dev2는 operator/tooling 변경이 필요하면 제품 표면과 실행 산출물만 책임진다.
-- 문서팀은 정본 SoT와 제출 문서를 책임지고, 구현 반영은 Dev1/Dev2 기준안에 따라 후행 반영한다.
+- 문서팀은 운영 SoT(`final-docs`)를 우선 관리하고, 루트 정본 SoT는 마일스톤 단위로 후행 반영한다.
 - 예외:
   - `TMP_HANDOFF.md`
   - 팀 보드/queue 성격의 임시 coordination 문서
@@ -267,21 +274,22 @@
 
 ### 12.1 Why
 - 부가 문서를 무제한으로 늘리면 최신 기준이 분산되고, 동일 주제의 중복 설명이 생겨 문서/구현 정합 품질이 오히려 떨어진다.
-- 따라서 OSS repo 운영처럼 “핵심 정본 중심 + 수명 짧은 보조 문서” 원칙을 적용한다.
+- 따라서 운영 SoT(`final-docs`) 중심 + 루트 정본 후행 동기화 + 수명 짧은 보조 문서 원칙을 적용한다.
 
 ### 12.2 Keep vs Remove Rule
 - 항상 유지(삭제 금지):
-  - 정본 SoT 체인: `00/01/03/0301/0302/0303/0304/04/05/06/07`
+  - 운영 SoT 체인: `tmp/submission/final-docs/01~07`, `tmp/submission/final-docs/governance/00d~00f`
+  - 루트 정본 체인(후행 동기화 대상): `00/01/03/0301/0302/0303/0304/04/05/06/07`
   - 멘토 체크리스트/핸드오프 등 현재 운영 기준 문서
   - 제출본으로 확정된 문서셋
 - 제한 생성(필요 시만 생성):
   - 분석 메모, 비교표, 임시 의사결정 노트, 작업 큐 문서
 - 사용 종료 후 정리:
-  - 임시 문서의 내용이 정본에 반영 완료되면 해당 임시 문서는 삭제 또는 archive로 이동
+  - 임시 문서의 내용이 운영 SoT에 반영되고 루트 정본 sync-back이 완료되면 해당 임시 문서는 삭제 또는 archive로 이동
   - 동일 목적 문서가 2개 이상이면 최신 1개만 유지
 
 ### 12.3 Creation Gate (Before adding a new doc)
-1. 기존 SoT 문서의 섹션 추가로 해결 가능한가?
+1. 기존 운영 SoT(`final-docs`) 문서의 섹션 추가로 해결 가능한가?
 2. 새 문서가 없으면 작업/의사결정이 실제로 막히는가?
 3. 종료 조건(삭제/흡수 시점)이 명확한가?
 - 3개 중 하나라도 `No`면 새 문서 생성 금지, 기존 문서를 부분수정한다.
@@ -289,7 +297,7 @@
 ### 12.4 Quality Guardrail
 - 문서 축소 자체는 품질을 떨어뜨리지 않는다.
 - 다만 다음은 품질 저하로 간주한다:
-  - SoT 증빙이 없는 상태에서 임시 문서만 삭제
+  - 운영 SoT 증빙이 없는 상태에서 임시 문서만 삭제
   - 추적체인(Req->...->Test)을 끊는 삭제
-  - 운영 중 문서를 archive만 하고 정본 반영을 생략
-- 원칙: `정본 강화 -> 임시 정리` 순서로만 정리한다.
+  - 운영 중 문서를 archive만 하고 루트 정본 sync-back을 생략
+- 원칙: `운영 SoT 강화 -> 루트 정본 동기화 -> 임시 정리` 순서로만 정리한다.
