@@ -149,7 +149,7 @@
 
 | 안전 등급 | 개수 | 해당 HARA ID | 관련 Req (대표) |
 |---|---:|---|---|
-| ASIL C (Locked) | 3개 | HC-02, HC-03, HC-05 | Req_011~Req_012, Req_021/Req_026~Req_030, Req_052~Req_056 |
+| ASIL C (Locked) | 3개 | HC-02, HC-03, HC-05 | Req_011~Req_012, Req_021/Req_024/Req_026~Req_031, Req_054~Req_056 |
 | ASIL C (Provisional) | 2개 | HC-06, HC-07 | Req_057~Req_066, Req_075~Req_079 |
 | ASIL B (Locked) | 2개 | HC-01, HC-04 | Req_010, Req_023/Req_032/Req_033 |
 | ASIL B (Provisional) | 1개 | HC-08 | Req_080~Req_082 |
