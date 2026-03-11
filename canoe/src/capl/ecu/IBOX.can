@@ -100,13 +100,8 @@ void publishIboxState()
 
   if (mIbox.IboxLinkMode != gLastLinkMode ||
       mIbox.IboxRouteState != gLastRouteState ||
-      mIbox.IboxServiceFlags != gLastServiceFlags ||
+      mIbox.IboxServiceFlags != gLastServiceFlags)
   {
-          mIbox.IboxLinkMode,
-          mIbox.IboxRouteState,
-          mIbox.IboxServiceFlags,
-          vehAgeMs,
-          navAgeMs);
     gLastLinkMode = mIbox.IboxLinkMode;
     gLastRouteState = mIbox.IboxRouteState;
     gLastServiceFlags = mIbox.IboxServiceFlags;

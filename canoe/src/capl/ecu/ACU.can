@@ -1,3 +1,4 @@
+/*@!Encoding:949*/
 includes
 {
   #include "..\\common\\CAPL_COMMON.cin"
@@ -37,14 +38,13 @@ on message frmSeatBeltStateMsg
 
 on timer tAcuCycle
 {
-
   message frmAcuStateMsg mAcu;
   int alertLevel;
   int deploymentArmed;
   int crashSeverity;
   int pretensionReq;
   int airbagWarn;
-
+  
   alertLevel = clampRange((int)@Core::selectedAlertLevel, 0, 7);
   deploymentArmed = (gDriverSeatBelt == 1 || gPassengerSeatBelt == 1) ? 1 : 0;
   crashSeverity = (alertLevel >= 6) ? 4 : ((alertLevel >= 4) ? 2 : 0);

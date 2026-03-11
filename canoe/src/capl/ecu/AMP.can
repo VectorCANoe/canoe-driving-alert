@@ -61,15 +61,8 @@ void publishAmpState()
   if (mAmp.AmpMode != gLastAmpMode ||
       mAmp.AmpMute != gLastAmpMute ||
       mAmp.AmpDuckingLvl != gLastAmpDucking ||
-      mAmp.AmpVolumeLevel != gLastAmpVolume ||
+      mAmp.AmpVolumeLevel != gLastAmpVolume)
   {
-          mAmp.AmpMode,
-          mAmp.AmpMute,
-          mAmp.AmpDuckingLvl,
-          mAmp.AmpVolumeLevel,
-          gAudioFocusOwner,
-          gVoiceAssistState,
-          gTtsState);
     gLastAmpMode = mAmp.AmpMode;
     gLastAmpMute = mAmp.AmpMute;
     gLastAmpDucking = mAmp.AmpDuckingLvl;

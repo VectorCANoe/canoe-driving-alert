@@ -1,3 +1,4 @@
+/*@!Encoding:949*/
 includes
 {
   #include "..\\common\\CAPL_COMMON.cin"
@@ -27,7 +28,6 @@ on message frmSuspensionStateMsg
 
 on timer tCdcCycle
 {
-
   message frmCdcStateMsg mCdc;
   int mode;
   int valveCurrent;

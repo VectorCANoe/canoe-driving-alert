@@ -95,15 +95,8 @@ void publishOtaState()
 
   if (mOta.OtaSessionState != gLastSessionState ||
       mOta.PackageReady != gLastPackageReady ||
-      mOta.UpdateWindowOpen != gLastWindowOpen ||
+      mOta.UpdateWindowOpen != gLastWindowOpen)
   {
-          mOta.OtaSessionState,
-          mOta.PackageReady,
-          mOta.UpdateWindowOpen,
-          mOta.DownloadPercent,
-          gSignalBars,
-          gIviCpuLoad,
-          gIviMemLoad);
     gLastSessionState = mOta.OtaSessionState;
     gLastPackageReady = mOta.PackageReady;
     gLastWindowOpen = mOta.UpdateWindowOpen;

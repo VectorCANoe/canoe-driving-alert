@@ -42,6 +42,7 @@ void publishSecurityState()
   {
     authState = 1;
   }
+  if (gFailSafeMode == 0 && gBoundaryAlive == 1)
   {
     authState = 2;
   }
@@ -49,9 +50,11 @@ void publishSecurityState()
   keyPresence = ((gIboxServiceFlags & 1) != 0) ? 1 : 0;
 
   securityFault = 0;
+  if (gFailSafeMode > 0)
   {
     securityFault = 2;
   }
+  else if (gDomainPathStatus == 1)
   {
     securityFault = 1;
   }
@@ -74,12 +77,6 @@ void publishSecurityState()
       mSec.SecurityFault != gLastSecurityFault ||
       mSec.SecurityPolicy != gLastSecurityPolicy)
   {
-          mSec.SecuritySession,
-          mSec.AuthState,
-          mSec.SecurityFault,
-          mSec.SecurityPolicy,
-          gIboxLinkMode,
-          gFailSafeMode);
     gLastSecuritySession = mSec.SecuritySession;
     gLastAuthState = mSec.AuthState;
     gLastSecurityFault = mSec.SecurityFault;

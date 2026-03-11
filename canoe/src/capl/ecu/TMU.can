@@ -67,14 +67,8 @@ void publishTmuState()
 
   if (linkState != gLastLinkState ||
       serviceMode != gLastServiceMode ||
-      remoteClimateReq != gLastRemoteClimateReq ||
+      remoteClimateReq != gLastRemoteClimateReq)
   {
-          linkState,
-          serviceMode,
-          remoteClimateReq,
-          gSignalBars,
-          gIviCpuLoad,
-          gIviMemLoad);
     gLastLinkState = linkState;
     gLastServiceMode = serviceMode;
     gLastRemoteClimateReq = remoteClimateReq;

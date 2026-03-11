@@ -1,3 +1,4 @@
+/*@!Encoding:949*/
 includes
 {
   #include "..\\common\\CAPL_COMMON.cin"
@@ -22,11 +23,11 @@ on start
 
 on timer tVsmCycle
 {
-
   message frmVsmStateMsg mVsm;
   int ctrlState;
   int alertLevel;
   int intervention;
+
 
   ctrlState = ((int)@Core::failSafeMode == 1) ? 2 : 1;
   alertLevel = clampRange((int)@Core::selectedAlertLevel, 0, 7);

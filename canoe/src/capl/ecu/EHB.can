@@ -1,3 +1,4 @@
+/*@!Encoding:949*/
 includes
 {
   #include "..\\common\\CAPL_COMMON.cin"
@@ -27,7 +28,6 @@ on message frmBrakeStatusMsg
 
 on timer tEhbCycle
 {
-
   message frmEhbStateMsg mEhb;
   int ctrlState;
 
