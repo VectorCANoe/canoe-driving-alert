@@ -37,8 +37,8 @@
 | 31 | Core | speedLimitNorm | uint32 | 0 | 255 | 30 | 게이트웨이 정규화 후 구간 제한속도 |
 | 32 | Core | proximityRiskLevel | uint32 | 0 | 100 | 0 | 긴급차량 근접 위험도 산정값 |
 | 33 | Core | decelAssistReq | uint32 | 0 | 1 | 0 | 감속 보조 요청 플래그 |
-| 34 | Core | failSafeMode | uint32 | 0 | 2 | 0 | 도메인 경로 단절 강등 모드 |
-| 35 | CoreState | domainPathStatus | uint32 | 0 | 2 | 0 | 도메인 경로 상태(정상/열화/단절) |
+| 34 | Core | failSafeMode | uint32 | 0 | 2 | 0 | 경고 정보 전달 이상 강등 모드 |
+| 35 | CoreState | domainPathStatus | uint32 | 0 | 2 | 0 | 경고 정보 전달 경로 상태(정상/열화/단절) |
 | 36 | CoreState | e2eHealthState | uint32 | 0 | 2 | 0 | E2E 경로 헬스 상태 |
 | 37 | Core | brakePedalNorm | uint32 | 0 | 100 | 0 | CHS_GW에서 정규화한 브레이크 입력 |
 | 38 | Test | forceFailSafe | uint32 | 0 | 1 | 0 | Fail-safe 강제 주입(Validation-only) |
@@ -148,8 +148,8 @@
 | 176 | Powertrain | EngineState | uint32 | 0 | 3 | 0 | 엔진 동작 상태 |
 | 177 | Powertrain | GearInput | uint32 | 0 | 7 | 0 | 기어 입력값 |
 | 178 | Powertrain | GearState | uint32 | 0 | 7 | 0 | 기어 상태값 |
-| 179 | Powertrain | RoutingPolicy | uint32 | 0 | 255 | 0 | 도메인 라우팅 정책 |
-| 180 | Powertrain | BoundaryStatus | uint32 | 0 | 255 | 0 | 도메인 경계 상태 |
+| 179 | Powertrain | RoutingPolicy | uint32 | 0 | 255 | 0 | 경고 정보 전달 라우팅 정책 |
+| 180 | Powertrain | BoundaryStatus | uint32 | 0 | 255 | 0 | 경고 정보 전달 경계 상태 |
 | 181 | Powertrain | EngineRpm | uint32 | 0 | 65535 | 0 | 엔진 회전수 |
 | 182 | Powertrain | CoolantTemp | uint32 | 0 | 255 | 0 | 냉각수 온도 |
 | 183 | Powertrain | OilTemp | uint32 | 0 | 255 | 0 | 엔진오일 온도 |
@@ -279,5 +279,4 @@
 | 313 | Powertrain | CtrlAuthLevel | uint32 | 0 | 3 | 0 | 파워트레인 제어 권한 상태 |
 | 314 | Powertrain | CtrlAuthSource | uint32 | 0 | 15 | 0 | 파워트레인 제어 출처 |
 ---
-
 
