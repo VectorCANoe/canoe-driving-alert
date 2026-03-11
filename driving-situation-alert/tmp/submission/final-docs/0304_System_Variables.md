@@ -25,7 +25,6 @@
 | 4 | Infotainment | roadZone | uint32 | 0 | 3 | 0 | 구간 타입 입력값 |
 | 5 | Infotainment | navDirection | uint32 | 0 | 3 | 0 | 내비게이션 방향 정보 |
 | 6 | Infotainment | zoneDistance | uint32 | 0 | 255 | 0 | 구간 잔여 거리 |
-| 30 | Infotainment | speedLimit | uint32 | 0 | 255 | 30 | 구간 제한속도(km/h) |
 | 7 | V2X | emergencyType | uint32 | 0 | 3 | 0 | 긴급차량 종류 |
 | 8 | V2X | emergencyDirection | uint32 | 0 | 3 | 0 | 긴급차량 접근 방향 |
 | 9 | V2X | EtaSeconds | uint32 | 0 | 255 | 0 | 긴급차량 ETA(유효값 0~255, 내부 invalid sentinel 65535) |
@@ -34,29 +33,6 @@
 | 12 | Core | vehicleSpeedNorm | uint32 | 0 | 255 | 0 | 게이트웨이 정규화 후 차량 속도 |
 | 13 | Core | driveStateNorm | uint32 | 0 | 3 | 0 | 게이트웨이 정규화 후 주행 상태 |
 | 14 | Core | steeringInputNorm | uint32 | 0 | 1 | 0 | 게이트웨이 정규화 후 조향 입력 |
-| 31 | Core | speedLimitNorm | uint32 | 0 | 255 | 30 | 게이트웨이 정규화 후 구간 제한속도 |
-| 32 | Core | proximityRiskLevel | uint32 | 0 | 100 | 0 | 긴급차량 근접 위험도 산정값 |
-| 33 | Core | decelAssistReq | uint32 | 0 | 1 | 0 | 감속 보조 요청 플래그 |
-| 34 | Core | failSafeMode | uint32 | 0 | 2 | 0 | 경고 정보 전달 이상 강등 모드 |
-| 35 | CoreState | warningPathStatus | uint32 | 0 | 2 | 0 | 경고 정보 전달 경로 상태(정상/열화/단절) |
-| 36 | CoreState | e2eHealthState | uint32 | 0 | 2 | 0 | E2E 경로 헬스 상태 |
-| 37 | Core | brakePedalNorm | uint32 | 0 | 100 | 0 | CHS_GW에서 정규화한 브레이크 입력 |
-| 38 | Test | forceFailSafe | uint32 | 0 | 1 | 0 | Fail-safe 강제 주입(Validation-only) |
-| 49 | Test | displayModeSetting | uint32 | 0 | 2 | 0 | 표시 모드 수동 설정 입력(Validation-only) |
-| 50 | Test | alertVolumeSetting | uint32 | 0 | 100 | 50 | 경고 음량 수동 설정 입력(Validation-only) |
-| 51 | Test | seatBeltOverride | uint32 | 0 | 2 | 0 | 안전벨트 상태 오버라이드 입력(Validation-only) |
-| 52 | Test | historyQueryOffset | uint32 | 0 | 255 | 0 | 경고 이력 조회 오프셋 입력(Validation-only) |
-| 53 | Test | historyQueryCode | uint32 | 0 | 65535 | 0 | 경고 이력 조회 코드 입력(Validation-only) |
-| 39 | Core | objectTrackValid | uint32 | 0 | 1 | 0 | 객체 추적 유효 플래그 |
-| 40 | Core | objectRange | uint32 | 0 | 500 | 0 | 대표 위험 객체 상대 거리(m) |
-| 41 | Core | objectRelSpeed | int32 | -200 | 200 | 0 | 대표 위험 객체 상대 속도(km/h) |
-| 42 | Core | objectConfidence | uint32 | 0 | 100 | 0 | 객체 인지 신뢰도(%) |
-| 43 | Core | objectRiskClass | uint32 | 0 | 7 | 0 | 객체 위험 분류 코드 |
-| 44 | Core | objectTtcMin | uint32 | 0 | 10000 | 10000 | 대표 위험 객체 최소 TTC(ms) |
-| 45 | Core | intersectionConflictFlag | uint32 | 0 | 1 | 0 | 교차로 측방 접근 충돌 플래그 |
-| 46 | Core | mergeCutInFlag | uint32 | 0 | 1 | 0 | 합류/끼어들기 급간섭 플래그 |
-| 47 | Core | objectAlertHoldMs | uint32 | 0 | 5000 | 300 | 객체 추적 손실 시 경고 유지시간(ms) |
-| 48 | Core | objectEventCode | uint32 | 0 | 65535 | 0 | 객체 기반 경고 이벤트 코드 |
 | 15 | Core | baseZoneContext | uint32 | 0 | 255 | 0 | 구간 컨텍스트 계산 결과 |
 | 16 | Core | warningState | uint32 | 0 | 255 | 0 | 경고 조건 판정 상태 |
 | 17 | Core | emergencyContext | uint32 | 0 | 255 | 0 | 긴급 수신 컨텍스트 상태 |
@@ -72,6 +48,30 @@
 | 27 | CoreState | lastEmergencyRxMs | uint32 | 0 | 4294967295 | 0 | 마지막 긴급 신호 수신 시각(ms) |
 | 28 | CoreState | duplicatePopupGuard | uint32 | 0 | 5000 | 0 | 중복 팝업 억제 타이머(ms) |
 | 29 | CoreState | arbitrationSnapshotId | uint32 | 0 | 65535 | 0 | 중재 스냅샷 식별자 |
+| 30 | Infotainment | speedLimit | uint32 | 0 | 255 | 30 | 구간 제한속도(km/h) |
+| 31 | Core | speedLimitNorm | uint32 | 0 | 255 | 30 | 게이트웨이 정규화 후 구간 제한속도 |
+| 32 | Core | proximityRiskLevel | uint32 | 0 | 100 | 0 | 긴급차량 근접 위험도 산정값 |
+| 33 | Core | decelAssistReq | uint32 | 0 | 1 | 0 | 감속 보조 요청 플래그 |
+| 34 | Core | failSafeMode | uint32 | 0 | 2 | 0 | 경고 정보 전달 이상 강등 모드 |
+| 35 | CoreState | warningPathStatus | uint32 | 0 | 2 | 0 | 경고 정보 전달 경로 상태(정상/열화/단절) |
+| 36 | CoreState | e2eHealthState | uint32 | 0 | 2 | 0 | E2E 경로 헬스 상태 |
+| 37 | Core | brakePedalNorm | uint32 | 0 | 100 | 0 | CHS_GW에서 정규화한 브레이크 입력 |
+| 38 | Test | forceFailSafe | uint32 | 0 | 1 | 0 | Fail-safe 강제 주입(Validation-only) |
+| 39 | Core | objectTrackValid | uint32 | 0 | 1 | 0 | 객체 추적 유효 플래그 |
+| 40 | Core | objectRange | uint32 | 0 | 500 | 0 | 대표 위험 객체 상대 거리(m) |
+| 41 | Core | objectRelSpeed | int32 | -200 | 200 | 0 | 대표 위험 객체 상대 속도(km/h) |
+| 42 | Core | objectConfidence | uint32 | 0 | 100 | 0 | 객체 인지 신뢰도(%) |
+| 43 | Core | objectRiskClass | uint32 | 0 | 7 | 0 | 객체 위험 분류 코드 |
+| 44 | Core | objectTtcMin | uint32 | 0 | 10000 | 10000 | 대표 위험 객체 최소 TTC(ms) |
+| 45 | Core | intersectionConflictFlag | uint32 | 0 | 1 | 0 | 교차로 측방 접근 충돌 플래그 |
+| 46 | Core | mergeCutInFlag | uint32 | 0 | 1 | 0 | 합류/끼어들기 급간섭 플래그 |
+| 47 | Core | objectAlertHoldMs | uint32 | 0 | 5000 | 300 | 객체 추적 손실 시 경고 유지시간(ms) |
+| 48 | Core | objectEventCode | uint32 | 0 | 65535 | 0 | 객체 기반 경고 이벤트 코드 |
+| 49 | Test | displayModeSetting | uint32 | 0 | 2 | 0 | 표시 모드 수동 설정 입력(Validation-only) |
+| 50 | Test | alertVolumeSetting | uint32 | 0 | 100 | 50 | 경고 음량 수동 설정 입력(Validation-only) |
+| 51 | Test | seatBeltOverride | uint32 | 0 | 2 | 0 | 안전벨트 상태 오버라이드 입력(Validation-only) |
+| 52 | Test | historyQueryOffset | uint32 | 0 | 255 | 0 | 경고 이력 조회 오프셋 입력(Validation-only) |
+| 53 | Test | historyQueryCode | uint32 | 0 | 65535 | 0 | 경고 이력 조회 코드 입력(Validation-only) |
 | 101 | Chassis | AccelPedal | uint32 | 0 | 100 | 0 | 가속 페달 입력 |
 | 102 | Chassis | BrakePedal | uint32 | 0 | 100 | 0 | 브레이크 페달 입력 |
 | 103 | Chassis | SteeringState | uint32 | 0 | 3 | 0 | 조향 상태 |
@@ -186,7 +186,7 @@
 | 214 | Chassis | BrakeTempFR | uint32 | 0 | 255 | 0 | 브레이크 전륜우 온도 |
 | 217 | Chassis | SteeringAngleRaw | int32 | -720 | 720 | 0 | 조향각 |
 | 218 | Chassis | SteeringAngleRate | int32 | -1024 | 1023 | 0 | 조향각속도 |
-| 219 | Chassis | WheelPulseFront | uint32 | 0 | 65535 | 0 | 전륜좌 휠 펄스 |
+| 219 | Chassis | WheelPulseFront | uint32 | 0 | 65535 | 0 | 전륜 휠 펄스 |
 | 220 | Chassis | WheelPulseRear | uint32 | 0 | 65535 | 0 | 후륜 휠 펄스 |
 | 221 | Chassis | SuspensionMode | uint32 | 0 | 7 | 0 | 댐퍼 모드 |
 | 222 | Chassis | SuspensionLevel | uint32 | 0 | 255 | 0 | 차고 높이 |

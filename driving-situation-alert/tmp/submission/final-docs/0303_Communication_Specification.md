@@ -166,7 +166,7 @@
 |  |  |  | BrakeTempFR | 8~15 | 브레이크 전륜우 온도 | 0~255 degC | CGW에서 ESC와 경계 판단 경로에 전달 |
 | frmSteeringAngleMsg | 0x128 | 2 | SteeringAngleRaw | 0~15 | 조향각 | -720~720 deg | CGW에서 MDPS와 ADAS에 전달 |
 |  |  |  | SteeringAngleRate | 16~31 | 조향각속도 | -1024~1023 deg/s | CGW에서 MDPS와 ADAS에 전달 |
-| frmWheelPulseMsg | 0x104 | 2 | WheelPulseFront | 0~15 | 전륜좌 휠 펄스 | 0~65535 cnt | CGW에서 VCU, ESC, MDPS에 전달 |
+| frmWheelPulseMsg | 0x104 | 2 | WheelPulseFront | 0~15 | 전륜 휠 펄스 | 0~65535 cnt | CGW에서 VCU, ESC, MDPS에 전달 |
 |  |  |  | WheelPulseRear | 16~31 | 후륜 휠 펄스 | 0~65535 cnt | CGW에서 VCU, ESC, MDPS에 전달 |
 | frmSuspensionStateMsg | 0x105 | 2 | SuspensionMode | 0~2 | 댐퍼 모드 | 0~7 | CGW에서 경계 판단 경로에 전달 |
 |  |  |  | SuspensionLevel | 8~15 | 차고 높이 | 0~255 mm | CGW에서 경계 판단 경로에 전달 |
@@ -259,4 +259,3 @@
 | frmPowertrainCtrlAuthMsg | 0x110 | 1 | CtrlAuthLevel | 0~1 | 파워트레인 제어 권한 상태 | 0~3 | CGW에서 EMS, TCU에 전달 |
 |  |  |  | CtrlAuthSource | 8~11 | 파워트레인 제어 출처 | 0~15 | CGW에서 EMS, TCU에 전달 |
 ---
-
