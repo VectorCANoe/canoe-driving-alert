@@ -45,6 +45,7 @@
 | `ESC` | `ESP` | 제동/차체 제어 표면명 |
 | `MDPS` | `EPS` | 조향 제어 표면명 |
 | `CLU` | `CLUSTER` | 클러스터 표면명 |
+| `ETH_BACKBONE` | `ETHB` | Ethernet 경계 표면명 |
 
 ## 5. 주요 표면 ECU 기준
 

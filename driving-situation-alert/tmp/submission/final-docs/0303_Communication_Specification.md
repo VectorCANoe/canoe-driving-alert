@@ -155,7 +155,7 @@
 |  |  |  | timeoutClear | 8 | 타임아웃 해제 플래그 | 0~1 | ADAS에서 최종 경고 결과를 BCM, IVI에 전달 (UDP) |
 | frmEpsStateMsg | 0x123 | 2 | EpsAssistState | 0~2 | MDPS 보조 상태 | 0~7 | CGW에서 MDPS와 경계 판단 경로에 전달 |
 |  |  |  | EpsFaultState | 3 | MDPS 고장 상태 | 0~1 | CGW에서 MDPS와 경계 판단 경로에 전달 |
-|  |  |  | EpsTemp | 8~15 | MDPS 토크 요청 | 0~255 0.1Nm | CGW에서 MDPS와 경계 판단 경로에 전달 |
+|  |  |  | EpsTemp | 8~15 | MDPS 온도 | 0~255 degC | CGW에서 MDPS와 경계 판단 경로에 전달 |
 | frmAbsStateMsg | 0x124 | 2 | AbsCtrlState | 0~2 | ABS 제어 상태 | 0~7 | CGW에서 ESC와 경계 판단 경로에 전달 |
 |  |  |  | AbsSlipLevel | 8~15 | ABS 슬립 레벨 | 0~255 | CGW에서 ESC와 경계 판단 경로에 전달 |
 | frmEscStateMsg | 0x125 | 2 | EscCtrlState | 0~2 | ESC 제어 상태 | 0~7 | CGW에서 ESC, MDPS와 경계 판단 경로에 전달 |
@@ -165,9 +165,9 @@
 | frmBrakeTempMsg | 0x127 | 2 | BrakeTempFL | 0~7 | 브레이크 전륜좌 온도 | 0~255 degC | CGW에서 ESC와 경계 판단 경로에 전달 |
 |  |  |  | BrakeTempFR | 8~15 | 브레이크 전륜우 온도 | 0~255 degC | CGW에서 ESC와 경계 판단 경로에 전달 |
 | frmSteeringAngleMsg | 0x128 | 2 | SteeringAngleRaw | 0~15 | 조향각 | -720~720 deg | CGW에서 MDPS와 ADAS에 전달 |
-|  |  |  | SteeringAngleRaw | 16~31 | 조향각속도 | -1024~1023 deg/s | CGW에서 MDPS와 ADAS에 전달 |
+|  |  |  | SteeringAngleRate | 16~31 | 조향각속도 | -1024~1023 deg/s | CGW에서 MDPS와 ADAS에 전달 |
 | frmWheelPulseMsg | 0x104 | 2 | WheelPulseFront | 0~15 | 전륜좌 휠 펄스 | 0~65535 cnt | CGW에서 VCU, ESC, MDPS에 전달 |
-|  |  |  | WheelPulseRear | 16~31 | 전륜우 휠 펄스 | 0~65535 cnt | CGW에서 VCU, ESC, MDPS에 전달 |
+|  |  |  | WheelPulseRear | 16~31 | 후륜 휠 펄스 | 0~65535 cnt | CGW에서 VCU, ESC, MDPS에 전달 |
 | frmSuspensionStateMsg | 0x105 | 2 | SuspensionMode | 0~2 | 댐퍼 모드 | 0~7 | CGW에서 경계 판단 경로에 전달 |
 |  |  |  | SuspensionLevel | 8~15 | 차고 높이 | 0~255 mm | CGW에서 경계 판단 경로에 전달 |
 | frmTirePressureMsg | 0x106 | 4 | TirePressFL | 0~7 | 전륜좌 타이어 압력 | 0~255 kPa | CGW에서 경계 판단 경로에 전달 |
@@ -180,8 +180,8 @@
 |  |  |  | ChsDiagData0 | 8~11 | Chassis 진단 결과 | 0~15 | CGW에서 Validation Harness에 전달 |
 | frmAdasChassisStatusMsg | 0x1C1 | 2 | AdasChassisState | 0~7 | ADAS 섀시 상태 코드 | 0~255 | ADAS에서 SIL 대체 버스로 상태를 전달 |
 |  |  |  | AdasHealthLevel | 8~15 | ADAS 헬스 레벨 | 0~255 | ADAS에서 SIL 대체 버스로 상태를 전달 |
-| frmBrakeWearMsg | 0x129 | 1 | BrakePadWearLvl | 0~7 | 브레이크 패드 마모(전륜좌) | 0~100 % | CGW에서 ESC와 경계 판단 경로에 전달 |
-|  |  |  | BrakePadWearLvl | 8~15 | 브레이크 패드 마모(전륜우) | 0~100 % | CGW에서 ESC와 경계 판단 경로에 전달 |
+| frmBrakeWearMsg | 0x129 | 1 | BrakePadWearFl | 0~7 | 브레이크 패드 마모(전륜좌) | 0~100 % | CGW에서 ESC와 경계 판단 경로에 전달 |
+|  |  |  | BrakePadWearFr | 8~15 | 브레이크 패드 마모(전륜우) | 0~100 % | CGW에서 ESC와 경계 판단 경로에 전달 |
 | frmRoadFrictionMsg | 0x108 | 1 | RoadFrictionCoef | 0~7 | 노면 마찰 추정치 | 0~255 | CGW에서 ADAS와 경계 판단 경로에 전달 |
 | frmHvacStateMsg | 0x26A | 2 | CabinSetTemp | 0~7 | 실내 설정 온도 | 0~63 degC | BCM에서 앰비언트 제어와 차체 상태 판단에 전달 |
 |  |  |  | BlowerLevel | 8~11 | 블로워 레벨 | 0~15 | BCM에서 앰비언트 제어와 차체 상태 판단에 전달 |
@@ -195,7 +195,7 @@
 | frmSeatControlMsg | 0x26E | 2 | SeatHeatLevel | 0~2 | 시트 히터 레벨 | 0~7 | BCM에서 차체 상태 판단에 전달 |
 |  |  |  | SeatVentLevel | 3~5 | 시트 통풍 레벨 | 0~7 | BCM에서 차체 상태 판단에 전달 |
 | frmDoorControlMsg | 0x26F | 1 | DoorControlCmd | 0~1 | 도어 언락 명령 | 0~3 | BCM에서 창문 제어에 전달 |
-|  |  |  | ChildLockCmd | 2 | 트렁크 오픈 명령 | 0~1 | BCM에서 창문 제어에 전달 |
+|  |  |  | ChildLockCmd | 2 | 아동 잠금 명령 | 0~1 | BCM에서 창문 제어에 전달 |
 | frmInteriorLightMsg | 0x270 | 1 | CabinLightMode | 0~2 | 실내등 모드 | 0~7 | BCM에서 앰비언트 제어에 전달 |
 |  |  |  | DomeLightLevel | 8~15 | 실내등 밝기 | 0~255 | BCM에서 앰비언트 제어에 전달 |
 | frmRainLightAutoMsg | 0x271 | 1 | RainSenseLevel | 0~7 | 우적 센서 레벨 | 0~255 | BCM에서 앰비언트 제어와 창문 제어에 전달 |
@@ -243,7 +243,7 @@
 | frmClusterSyncStateMsg | 0x295 | 2 | ClusterSyncState | 0~2 | 클러스터 동기화 상태 | 0~7 | IVI에서 클러스터 기본 표시에 사용 |
 |  |  |  | ClusterSyncAge | 8~15 | 클러스터 동기화 시퀀스 | 0~255 | IVI에서 클러스터 기본 표시에 사용 |
 | frmEngineTorqueMsg | 0x12E | 2 | EngineTorqueAct | 0~15 | 엔진 실제 토크 | 0~65535 0.1Nm | EMS에서 TCU, CGW에 전달 |
-|  |  |  | EngineTorqueAct | 16~31 | 엔진 요구 토크 | 0~65535 0.1Nm | EMS에서 TCU, CGW에 전달 |
+|  |  |  | EngineTorqueReq | 16~31 | 엔진 요구 토크 | 0~65535 0.1Nm | EMS에서 TCU, CGW에 전달 |
 | frmEngineLoadMsg | 0x12F | 1 | EngineLoad | 0~7 | 엔진 부하율 | 0~100 % | EMS에서 CGW에 전달 |
 | frmTransShiftStateMsg | 0x130 | 2 | ShiftState | 0~2 | 변속 상태 | 0~7 | TCU에서 EMS, CGW에 전달 |
 |  |  |  | ShiftSlip | 3 | 변속 진행 상태 | 0~1 | TCU에서 EMS, CGW에 전달 |
@@ -259,5 +259,4 @@
 | frmPowertrainCtrlAuthMsg | 0x110 | 1 | CtrlAuthLevel | 0~1 | 파워트레인 제어 권한 상태 | 0~3 | CGW에서 EMS, TCU에 전달 |
 |  |  |  | CtrlAuthSource | 8~11 | 파워트레인 제어 출처 | 0~15 | CGW에서 EMS, TCU에 전달 |
 ---
-
 

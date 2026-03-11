@@ -19,7 +19,7 @@
 | 항목 | 내용 |
 |---|---|
 | 개발 목적 | 주행 구간 정보와 긴급차량 접근 정보를 통합해 운전자 경고를 실시간으로 제공한다. |
-| 시스템 범위 | CANoe SIL 환경에서 Domain CAN + Ethernet Backbone 기반 경고 시스템을 구현한다. |
+| 시스템 범위 | CANoe SIL 환경에서 차량 CAN + Ethernet 기반 경고 시스템을 구현한다. |
 | 핵심 입력 | 차량 상태, 구간/경로 정보, 긴급차량 접근 정보, 객체/주행 위험 관련 상태 |
 | 핵심 처리 | 경고 우선순위 판정, 경고 단일 결정, TTC 기반 충돌 위험 판단, 자동 감속 보조 요청, 경고 채널 동기화, 장애 시 fail-safe 처리 |
 | 핵심 출력 | 클러스터, 앰비언트, 오디오 경고 출력, 자동 감속 보조 요청 |
@@ -87,7 +87,7 @@
 | `0302_NWflowDef.md` | 네트워크 플로우 정의 |
 | `0303_Communication_Specification.md` | 통신 명세 |
 | `0304_System_Variables.md` | 시스템 변수 정의 |
-| `04_SW_Implementation.md` | 소프트웨어 구현 단위와 도메인 구성 |
+| `04_SW_Implementation.md` | 소프트웨어 구현 단위와 계층 구성 |
 | `05_Unit_Test.md` | 단위 테스트 명세 |
 | `06_Integration_Test.md` | 통합 테스트 명세 |
 | `07_System_Test.md` | 시스템 테스트 시나리오 |

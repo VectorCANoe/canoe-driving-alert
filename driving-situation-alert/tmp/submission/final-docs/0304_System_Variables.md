@@ -175,7 +175,7 @@
 | 203 | Powertrain | PtFailCode | uint32 | 0 | 15 | 0 | Powertrain 오류 코드 |
 | 204 | Chassis | EpsAssistState | uint32 | 0 | 7 | 0 | MDPS 보조 상태 |
 | 205 | Chassis | EpsFaultState | uint32 | 0 | 1 | 0 | MDPS 고장 상태 |
-| 206 | Chassis | EpsTemp | uint32 | 0 | 255 | 0 | MDPS 토크 요청 |
+| 206 | Chassis | EpsTemp | uint32 | 0 | 255 | 0 | MDPS 온도 |
 | 207 | Chassis | AbsCtrlState | uint32 | 0 | 7 | 0 | ABS 제어 상태 |
 | 208 | Chassis | AbsSlipLevel | uint32 | 0 | 255 | 0 | ABS 슬립 레벨 |
 | 209 | Chassis | EscCtrlState | uint32 | 0 | 7 | 0 | ESC 제어 상태 |
@@ -185,9 +185,9 @@
 | 213 | Chassis | BrakeTempFL | uint32 | 0 | 255 | 0 | 브레이크 전륜좌 온도 |
 | 214 | Chassis | BrakeTempFR | uint32 | 0 | 255 | 0 | 브레이크 전륜우 온도 |
 | 217 | Chassis | SteeringAngleRaw | int32 | -720 | 720 | 0 | 조향각 |
-| 218 | Chassis | SteeringAngleRaw | int32 | -1024 | 1023 | 0 | 조향각속도 |
+| 218 | Chassis | SteeringAngleRate | int32 | -1024 | 1023 | 0 | 조향각속도 |
 | 219 | Chassis | WheelPulseFront | uint32 | 0 | 65535 | 0 | 전륜좌 휠 펄스 |
-| 220 | Chassis | WheelPulseRear | uint32 | 0 | 65535 | 0 | 전륜우 휠 펄스 |
+| 220 | Chassis | WheelPulseRear | uint32 | 0 | 65535 | 0 | 후륜 휠 펄스 |
 | 221 | Chassis | SuspensionMode | uint32 | 0 | 7 | 0 | 댐퍼 모드 |
 | 222 | Chassis | SuspensionLevel | uint32 | 0 | 255 | 0 | 차고 높이 |
 | 223 | Chassis | TirePressFL | uint32 | 0 | 255 | 0 | 전륜좌 타이어 압력 |
@@ -200,8 +200,8 @@
 | 230 | Chassis | ChsDiagData0 | uint32 | 0 | 15 | 0 | Chassis 진단 결과 |
 | 231 | Chassis | AdasChassisState | uint32 | 0 | 255 | 0 | ADAS 섀시 상태 코드 |
 | 232 | Chassis | AdasHealthLevel | uint32 | 0 | 255 | 0 | ADAS 헬스 상태 코드 |
-| 234 | Chassis | BrakePadWearLvl | uint32 | 0 | 100 | 0 | 브레이크 패드 마모(전륜좌) |
-| 235 | Chassis | BrakePadWearLvl | uint32 | 0 | 100 | 0 | 브레이크 패드 마모(전륜우) |
+| 234 | Chassis | BrakePadWearFl | uint32 | 0 | 100 | 0 | 브레이크 패드 마모(전륜좌) |
+| 235 | Chassis | BrakePadWearFr | uint32 | 0 | 100 | 0 | 브레이크 패드 마모(전륜우) |
 | 236 | Chassis | RoadFrictionCoef | uint32 | 0 | 255 | 0 | 노면 마찰 추정치 |
 | 238 | Body | CabinSetTemp | uint32 | 0 | 63 | 0 | 실내 설정 온도 |
 | 239 | Body | BlowerLevel | uint32 | 0 | 15 | 0 | 블로워 레벨 |
@@ -215,7 +215,7 @@
 | 247 | Body | SeatHeatLevel | uint32 | 0 | 7 | 0 | 시트 히터 레벨 |
 | 248 | Body | SeatVentLevel | uint32 | 0 | 7 | 0 | 시트 통풍 레벨 |
 | 249 | Body | DoorControlCmd | uint32 | 0 | 3 | 0 | 도어 언락 명령 |
-| 250 | Body | ChildLockCmd | uint32 | 0 | 1 | 0 | 트렁크 오픈 명령 |
+| 250 | Body | ChildLockCmd | uint32 | 0 | 1 | 0 | 아동 잠금 명령 |
 | 251 | Body | CabinLightMode | uint32 | 0 | 7 | 0 | 실내등 모드 |
 | 252 | Body | DomeLightLevel | uint32 | 0 | 255 | 0 | 실내등 밝기 |
 | 253 | Body | RainSenseLevel | uint32 | 0 | 255 | 0 | 우적 센서 레벨 |
@@ -263,7 +263,7 @@
 | 296 | Cluster | ClusterSyncState | uint32 | 0 | 7 | 0 | 클러스터 동기화 상태 |
 | 297 | Cluster | ClusterSyncAge | uint32 | 0 | 255 | 0 | 클러스터 동기화 시퀀스 |
 | 298 | Powertrain | EngineTorqueAct | uint32 | 0 | 65535 | 0 | 엔진 실제 토크 |
-| 299 | Powertrain | EngineTorqueAct | uint32 | 0 | 65535 | 0 | 엔진 요구 토크 |
+| 299 | Powertrain | EngineTorqueReq | uint32 | 0 | 65535 | 0 | 엔진 요구 토크 |
 | 300 | Powertrain | EngineLoad | uint32 | 0 | 100 | 0 | 엔진 부하율 |
 | 302 | Powertrain | ShiftState | uint32 | 0 | 7 | 0 | 변속 상태 |
 | 303 | Powertrain | ShiftSlip | uint32 | 0 | 1 | 0 | 변속 진행 상태 |
@@ -279,4 +279,3 @@
 | 313 | Powertrain | CtrlAuthLevel | uint32 | 0 | 3 | 0 | 파워트레인 제어 권한 상태 |
 | 314 | Powertrain | CtrlAuthSource | uint32 | 0 | 15 | 0 | 파워트레인 제어 출처 |
 ---
-

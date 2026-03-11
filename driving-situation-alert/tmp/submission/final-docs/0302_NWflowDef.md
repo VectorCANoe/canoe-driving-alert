@@ -167,7 +167,7 @@
 | Chassis CAN | 0x127 | frmBrakeTempMsg | 0 | Brake Temp Check | 0~7 | BrakeTempFL |  | Tx |  | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |  | Rx |  |  |  |  |  |  | CAN, 100ms |
 |  |  |  | 1 | Brake Temp Check | 8~15 | BrakeTempFR |  | Tx |  | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |  | Rx |  |  |  |  |  |  |  |
 | Chassis CAN | 0x128 | frmSteeringAngleMsg | 0 | Steering Angle Check | 0~15 | SteeringAngleRaw |  | Tx |  | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | Rx |  |  |  |  |  | CAN, 100ms |
-|  |  |  | 2 | Steering Angle Check | 16~31 | SteeringAngleRaw |  | Tx |  | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | Rx |  |  |  |  |  |  |
+|  |  |  | 2 | Steering Angle Check | 16~31 | SteeringAngleRate |  | Tx |  | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | Rx |  |  |  |  |  |  |
 | Chassis CAN | 0x104 | frmWheelPulseMsg | 0 | Wheel Pulse Check | 0~15 | WheelPulseFront |  | Tx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | Rx | Rx | Rx |  |  |  |  |  | CAN, 100ms |
 |  |  |  | 2 | Wheel Pulse Check | 16~31 | WheelPulseRear |  | Tx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | Rx | Rx | Rx |  |  |  |  |  |  |
 | Chassis CAN | 0x105 | frmSuspensionStateMsg | 0 | Suspension State Check | 0~2 | SuspensionMode |  | Tx |  | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | CAN, 100ms |
@@ -182,8 +182,8 @@
 |  |  |  | 1 | Chassis Diag Response | 8~11 | ChsDiagData0 | Rx | Tx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 | Ethernet Backbone CAN Stub | 0x1C1 | frmAdasChassisStatusMsg | 0 | ADAS Chassis Interface | 0~7 | AdasChassisState |  | Rx |  |  |  | Tx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | CAN-stub, 100ms |
 |  |  |  | 1 | ADAS Chassis Interface | 8~15 | AdasHealthLevel |  | Rx |  |  |  | Tx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| Chassis CAN | 0x129 | frmBrakeWearMsg | 0 | Brake Wear Check | 0~7 | BrakePadWearLvl |  | Tx |  | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |  | Rx |  |  |  |  |  |  | CAN, 100ms |
-|  |  |  | 1 | Brake Wear Check | 8~15 | BrakePadWearLvl |  | Tx |  | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |  | Rx |  |  |  |  |  |  |  |
+| Chassis CAN | 0x129 | frmBrakeWearMsg | 0 | Brake Wear Check | 0~7 | BrakePadWearFl |  | Tx |  | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |  | Rx |  |  |  |  |  |  | CAN, 100ms |
+|  |  |  | 1 | Brake Wear Check | 8~15 | BrakePadWearFr |  | Tx |  | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |  | Rx |  |  |  |  |  |  |  |
 | Chassis CAN | 0x108 | frmRoadFrictionMsg | 0 | Road Friction Check | 0~7 | RoadFrictionCoef |  | Tx |  | Rx |  | Rx |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | CAN, 100ms |
 | Body CAN | 0x26A | frmHvacStateMsg | 0 | DATC State Check | 0~7 | CabinSetTemp |  |  |  |  |  |  |  |  |  |  |  | Tx |  | Rx |  |  |  |  |  |  |  |  | Rx |  |  | CAN, 100ms |
 |  |  |  | 1 | DATC State Check | 8~11 | BlowerLevel |  |  |  |  |  |  |  |  |  |  |  | Tx |  | Rx |  |  |  |  |  |  |  |  | Rx |  |  |  |
@@ -245,7 +245,7 @@
 | Infotainment CAN | 0x295 | frmClusterSyncStateMsg | 0 | Cluster Sync State | 0~2 | ClusterSyncState |  |  |  |  |  |  |  |  |  |  |  |  | Tx |  |  |  |  |  |  |  |  |  |  | Rx |  | CAN, 50ms |
 |  |  |  | 1 | Cluster Sync State | 8~15 | ClusterSyncAge |  |  |  |  |  |  |  |  |  |  |  |  | Tx |  |  |  |  |  |  |  |  |  |  | Rx |  |  |
 | Powertrain CAN | 0x12E | frmEngineTorqueMsg | 0 | Engine Torque Check | 0~15 | EngineTorqueAct |  |  |  | Rx |  |  |  |  |  |  |  |  |  |  |  | Tx | Rx |  |  |  |  |  |  |  |  | CAN, 100ms |
-|  |  |  | 2 | Engine Torque Check | 16~31 | EngineTorqueAct |  |  |  | Rx |  |  |  |  |  |  |  |  |  |  |  | Tx | Rx |  |  |  |  |  |  |  |  |  |
+|  |  |  | 2 | Engine Torque Check | 16~31 | EngineTorqueReq |  |  |  | Rx |  |  |  |  |  |  |  |  |  |  |  | Tx | Rx |  |  |  |  |  |  |  |  |  |
 | Powertrain CAN | 0x12F | frmEngineLoadMsg | 0 | Engine Load Check | 0~7 | EngineLoad |  |  |  | Rx |  |  |  |  |  |  |  |  |  |  |  | Tx | Rx |  |  |  |  |  |  |  |  | CAN, 100ms |
 | Powertrain CAN | 0x130 | frmTransShiftStateMsg | 0 | Transmission Shift Check | 0~2 | ShiftState |  |  |  | Rx |  |  |  |  |  |  |  |  |  |  |  | Rx | Tx |  |  |  |  |  |  |  |  | CAN, 100ms |
 |  |  |  | 0 | Transmission Shift Check | 3 | ShiftSlip |  |  |  | Rx |  |  |  |  |  |  |  |  |  |  |  | Rx | Tx |  |  |  |  |  |  |  |  |  |
@@ -261,5 +261,3 @@
 | Powertrain CAN | 0x110 | frmPowertrainCtrlAuthMsg | 0 | Powertrain Control Auth | 0~1 | CtrlAuthLevel |  |  |  | Tx |  |  |  |  |  |  |  |  |  |  |  | Rx | Rx |  |  |  |  |  |  |  |  | CAN, 100ms |
 |  |  |  | 1 | Powertrain Control Auth | 8~11 | CtrlAuthSource |  |  |  | Tx |  |  |  |  |  |  |  |  |  |  |  | Rx | Rx |  |  |  |  |  |  |  |  |  |
 ---
-
-
