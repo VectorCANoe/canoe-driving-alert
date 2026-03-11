@@ -61,6 +61,8 @@
   - 상단 `공식 표준 양식`의 문체는 `vector_sample`, `Project Result_Sample`의 BP 어투를 따른다. 짧은 평문 문장, 실제 ECU/서비스 기준 표현, "A 정보를 수신하여 B에 반영/전달" 형식을 우선한다.
   - 상단 `공식 표준 양식`은 `Flow/Comm` ID, `체인` 같은 표현, 타 문서 참조에 기대지 않고 그 표만 읽어도 이해 가능해야 한다.
   - ID 범위가 넓더라도 OEM 관점의 의미, 주체, 검증 의도가 달라지면 reviewer-facing 행은 과도하게 합치지 말고 분리한다.
+  - `05/06/07`의 `Ready`와 `Planned`는 현재 구현 진행 상태를 나타내는 임시 표기다.
+  - 해당 항목들은 이후 모두 TEST 자산으로 구현·고정되어야 하며, 실행 가능한 검증 자산이 준비되면 근거 기반 `PASS/FAIL`로 대치한다.
 - ECU naming governance is reopened and now follows the reset baseline:
   - `00e` defines `surface ECU / runtime module / validation harness`
   - runtime rename or GUI rename must not happen before the document chain is updated

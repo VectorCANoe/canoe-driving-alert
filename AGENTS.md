@@ -53,6 +53,8 @@ Use those references to align:
 - For reviewer-facing official tables, follow the sample/BP tone: short plain sentences, actual ECU/service wording first, and prefer expressions like "A 정보를 수신하여 B에 반영/전달" over internal state or variable names.
 - In top-level `공식 표준 양식`, do not rely on `Flow/Comm` IDs, the word `체인`, or cross-document references to explain behavior; the table itself must be understandable on its own.
 - Broad ID ranges are not a reason to over-merge reviewer-facing rows; split rows when OEM-facing meaning, actors, or verification intent are materially different.
+- In `05/06/07` official test tables, interim status values such as `Ready` and `Planned` may be used only as temporary implementation progress markers before executable test assets are fixed.
+- All `Ready`/`Planned` items are expected to be implemented, and once corresponding TEST assets are available they must be diagnosed with evidence and replaced by `PASS`/`FAIL`.
 - Keep all text files in UTF-8 (do not re-save with legacy code pages).
 - Verification scope is fixed to CANoe SIL, CAN + Ethernet only.
 - Before `pull/rebase`, inspect remote changed paths first (`fetch -> log/diff`).
