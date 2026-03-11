@@ -45,13 +45,13 @@
 | `ESC` | `ESP` | 제동/차체 제어 표면명 |
 | `MDPS` | `EPS` | 조향 제어 표면명 |
 | `CLU` | `CLUSTER` | 클러스터 표면명 |
-| `ETH_BACKBONE` | `ETHB` | Ethernet 경계 표면명 |
+| `ETHB` | `ETH_BACKBONE` | Ethernet 경계 표면명 |
 
 ## 5. 주요 표면 ECU 기준
 
 | Domain | 주요 표면 ECU | 설명 |
 |---|---|---|
-| Integration | `CGW`, `ETH_BACKBONE`, `DCM`, `IBOX`, `SGW` | 도메인 연결, 진단, 보안, 서비스 경계 역할 (`ETH_BACKBONE` alias) |
+| Integration | `CGW`, `ETHB`, `DCM`, `IBOX`, `SGW` | 차량 경계 연결, 진단, 보안, 서비스 경계 역할 (`ETH_BACKBONE` alias) |
 | Powertrain | `EMS`, `TCU`, `VCU`, `_4WD`, `BAT_BMS`, `OBC`, `DCDC`, `MCU`, `INVERTER` | 동력, 전력 변환, 충전, 열관리 관련 기능 |
 | Chassis/Safety | `ESC`, `MDPS`, `ABS`, `EPB`, `EHB`, `VSM`, `ECS`, `CDC`, `RWS` | 제동, 조향, 차체 안정화 관련 기능 |
 | Body/Comfort | `BCM`, `DATC`, `AFLS`, `AHLS`, `DOOR_FL/FR/RL/RR`, `TAILGATE_MODULE`, `SEAT_DRV`, `SEAT_PASS` | 출입, 조명, 공조, 실내 편의 관련 기능 |
