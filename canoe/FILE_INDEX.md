@@ -15,7 +15,7 @@ If you are entering the CANoe side for daily work, open these first:
 - Active runtime config:
   - `C:\Users\이준영\CANoe-IVI-OTA\canoe\cfg\CAN_v2_topology_wip.cfg`
 - V1 legacy backup config:
-  - `C:\Users\이준영\CANoe-IVI-OTA\canoe\cfg\v1_cfg\CAN_500kBaud_1ch.cfg`
+  - `C:\Users\이준영\CANoe-IVI-OTA\canoe\legacy\cfg\v1_cfg\CAN_500kBaud_1ch.cfg`
 - System variables:
   - `C:\Users\이준영\CANoe-IVI-OTA\canoe\project\sysvars\project.sysvars`
 
@@ -29,7 +29,7 @@ If you are entering the CANoe side for daily work, open these first:
   - `C:\Users\이준영\CANoe-IVI-OTA\canoe\databases\adas_can.dbc`
   - `C:\Users\이준영\CANoe-IVI-OTA\canoe\databases\eth_backbone_can_stub.dbc`
 - V1 legacy backup DBC:
-  - `C:\Users\이준영\CANoe-IVI-OTA\canoe\databases\v1_legacy\v1_split_345bdb4\emergency_system.dbc`
+  - `C:\Users\이준영\CANoe-IVI-OTA\canoe\legacy\dbc\v1_legacy\v1_split_345bdb4\emergency_system.dbc`
 
 ## 3) CAPL Source
 
@@ -46,4 +46,4 @@ If you are entering the CANoe side for daily work, open these first:
 ## 5) Legacy Notes
 
 - v1 was a single-bus flat architecture for fast parallel development.
-- Legacy backups are under `canoe\cfg\v1_cfg\`, `canoe\databases\v1_legacy\`, `canoe\src\capl\v1_legacy\`.
+- Legacy backups are under `canoe\legacy\cfg\v1_cfg\`, `canoe\legacy\dbc\v1_legacy\`, `canoe\src\capl\v1_legacy\`.

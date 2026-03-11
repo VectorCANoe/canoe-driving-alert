@@ -24,6 +24,12 @@
 *.ps1 text eol=lf working-tree-encoding=UTF-8
 *.bat text eol=lf working-tree-encoding=UTF-8
 
+# CANoe runtime assets: preserve bytes as-is (avoid GUI-generated metadata normalization side effects)
+*.cfg -text
+*.cfg.ini -text
+*.stcfg -text
+*.blf binary
+
 # Binary files
 *.png binary
 *.jpg binary
@@ -31,5 +37,4 @@
 *.gif binary
 *.pdf binary
 *.zip binary
-*.blf binary
 *.asc binary
