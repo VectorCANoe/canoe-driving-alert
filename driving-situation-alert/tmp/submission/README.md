@@ -5,7 +5,7 @@
 ## 활성 경로 (편집 허용)
 
 - 문서 편집: `tmp/submission/final-docs/`
-  - 본편: `01~07`
+  - 본편: `00~07`
   - 부록: `final-docs/governance/00d_HARA_Worksheet.md`, `00e_ECU_Naming_Standard.md`, `00f_CAN_ID_Allocation_Standard.md`
 - 엑셀 산출: `tmp/submission/excel/`
   - 활성 파일: `submission_final_all_in_one.xlsx`
@@ -15,7 +15,7 @@
 ## 운영 규칙
 
 1. 신규 편집은 `final-docs`에서만 수행한다.
-2. 제출 본편은 `01~07`로 고정한다.
+2. 제출 본편은 `00~07`로 고정한다.
 3. `governance` 부록은 `00d`, `00e`, `00f`만 유지한다.
 4. `00_MASTER_*`, `00b`, `00c`, `00g`는 내부 참고용으로 `mid-docs`에서만 관리한다.
 5. 이전 제출 구조와 운영 메모는 `mid-docs`에서 보관한다.

@@ -1,7 +1,7 @@
 # 컨셉 디자인 (Concept Design)
 
 **Document ID**: PROJ-02-CD
-**Version**: 3.2
+**Version**: 3.4
 **Date**: 2026-03-11
 **Status**: Draft (Submission Summary)
 **Project Title**: 주행 상황 실시간 경고 시스템
@@ -42,7 +42,7 @@
 
 | 규칙 | 내용 |
 |---|---|
-| 우선순위 규칙 | Emergency 경고가 Zone 경고보다 우선한다. |
-| 긴급차량 우선순위 | Ambulance가 Police보다 우선한다. |
-| 동률 처리 | ETA 오름차순 후 SourceID 오름차순으로 결정한다. |
+| 우선순위 규칙 | 긴급 경고(Emergency)가 구간 경고(Zone)보다 우선한다. |
+| 긴급차량 우선순위 | 구급차(Ambulance)가 경찰차(Police)보다 우선한다. |
+| 동률 처리 | 우선순위가 같은 경고가 동시에 존재하면 ETA가 짧은 경고를 먼저 선택하고, ETA도 같으면 SourceID 오름차순으로 결정한다. |
 | 복귀 기준 | 1000ms 동안 갱신이 없으면 경고를 해제하고 정상 상태로 복귀한다. |

@@ -35,6 +35,7 @@
 
 ### L0: 프로젝트 이해 계층
 - 파일:
+  - `00_Project_Overview.md`
   - `02_Concept_design.md`
 - 목적: 프로젝트 구조와 핵심 시나리오를 빠르게 이해하게 한다.
 - 규칙: 그림과 핵심 규칙만 유지하고 내부 운영 설명은 넣지 않는다.
@@ -103,19 +104,20 @@
 
 ## 5) 최종 제출 읽기 순서 (권장)
 
-1. `02_Concept_design.md`
-2. `01_Requirements.md`
-3. `03 -> 0301 -> 0302 -> 0303 -> 0304`
-4. `04_SW_Implementation.md`
-5. `05 -> 06 -> 07`
-6. 필요 시 `governance/00d -> 00e -> 00f`
+1. `00_Project_Overview.md`
+2. `02_Concept_design.md`
+3. `01_Requirements.md`
+4. `03 -> 0301 -> 0302 -> 0303 -> 0304`
+5. `04_SW_Implementation.md`
+6. `05 -> 06 -> 07`
+7. 필요 시 `governance/00d -> 00e -> 00f`
 
 ---
 
 ## 6) 운영 결정
 
 - `tmp/submission/final-docs`를 최종 제출 편집본 기준 폴더로 고정한다.
-- 제출 본편은 `01~07`만 유지한다.
+- 제출 본편은 `00~07`만 유지한다.
 - `00_MASTER_*`, `00b`, `00c`, `00g`는 내부 참고용으로 `mid-docs`에만 유지한다.
 - 원문 SoT 수정이 발생하면 동일 변경을 `final-docs`에 후행 반영한다.
 
@@ -127,6 +129,7 @@
 - 제출 엑셀 생성 시 입력 경로는 `tmp/submission/final-docs`로 고정한다.
 
 2. 워크북 포함 파일
+- `00_Project_Overview.md`
 - `01_Requirements.md`
 - `02_Concept_design.md`
 - `03_Function_definition.md`

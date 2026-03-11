@@ -6,6 +6,7 @@
 
 ## 1) 제출 본편 (고정)
 
+- `00_Project_Overview.md`
 - `01_Requirements.md`
 - `02_Concept_design.md`
 - `03_Function_definition.md`
@@ -20,8 +21,8 @@
 
 ## 1-1) 권장 읽기 순서
 
-- 10분 빠른 파악: `02_Concept_design -> 01_Requirements -> 07_System_Test`
-- 30분 기술 파악: 위 3개 + `03_Function_definition -> 06_Integration_Test`
+- 10분 빠른 파악: `00_Project_Overview -> 02_Concept_design -> 07_System_Test`
+- 30분 기술 파악: 위 3개 + `01_Requirements -> 03_Function_definition -> 06_Integration_Test`
 - 심화 검토: `0301 -> 0302 -> 0303 -> 0304 -> 04 -> 05`
 
 ## 2) 부록/요청 시 첨부

@@ -14,6 +14,7 @@ FINAL_DOCS = ROOT / "final-docs"
 OUTPUT = ROOT / "excel" / "submission_final_all_in_one.xlsx"
 
 ORDER = [
+    "00_Project_Overview.md",
     "01_Requirements.md",
     "02_Concept_design.md",
     "03_Function_definition.md",
