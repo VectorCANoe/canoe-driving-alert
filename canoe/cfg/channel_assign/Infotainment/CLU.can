@@ -367,6 +367,10 @@ on sysvar Test::historyQueryOffset
 }
 
 on timer tDuplicateGuard
+{
+  int guardRemainMs;
+  dword nowMs;
+  dword elapsedMs;
 
   if (gLastDisplayedCode == 0)
   {
@@ -391,6 +395,5 @@ on timer tDuplicateGuard
     setTimer(tDuplicateGuard, 100);
   }
 }
-
 
 

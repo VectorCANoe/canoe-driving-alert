@@ -96,6 +96,6 @@ on message frmEmergencyMonitorMsg
 }
 
 on timer tBoundaryCheck
-
+{
   setTimer(tBoundaryCheck, 100);
 }

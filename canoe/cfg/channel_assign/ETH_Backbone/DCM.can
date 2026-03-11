@@ -11,28 +11,17 @@ variables
   int gSecurityFault;
   int gSecurityPolicy;
 }
-
-
-  if (gAuthState >= 2)
-  {
-  }
-
-  if (gSecurityPolicy >= 2 || gSecurityFault >= 2)
-  {
-  }
-  else if (gSecurityPolicy == 1 || gSecurityFault == 1)
-  {
-  }
-
-
-
-  {
-    write("[DCM] session=%d path=%d pending=%d sid=0x%X sec=%d auth=%d fault=%d policy=%d",
-          gSecuritySession,
-          gAuthState,
-          gSecurityFault,
-          gSecurityPolicy);
-  }
+void publishDcmStateTrace()
+{
+  write("[DCM] session=%d path=%d pending=%d sid=0x%X sec=%d auth=%d fault=%d policy=%d",
+        gSecuritySession,
+        gSecurityPolicy,
+        0,
+        0x22,
+        0,
+        gAuthState,
+        gSecurityFault,
+        gSecurityPolicy);
 }
 
 on start
