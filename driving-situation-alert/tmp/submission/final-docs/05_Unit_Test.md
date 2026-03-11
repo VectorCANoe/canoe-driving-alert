@@ -54,8 +54,11 @@
 |  |  | VSM Input | 차체안정 ECU 상태 정보를 입력 |  |  |  |
 |  |  | ECS Input | 차고 제어 ECU 상태 정보를 입력 |  |  |  |
 |  |  | CDC Input | 감쇠 제어 ECU 상태 정보를 입력 |  |  |  |
-|  |  | Door Input | 출입문 ECU 상태 정보를 입력 |  |  |  |
-|  |  | Tailgate Input | 테일게이트 ECU 상태 정보를 입력 |  |  |  |
+|  |  | DOOR_FL Input | 좌전 도어 ECU 상태 정보를 입력 |  |  |  |
+|  |  | DOOR_FR Input | 우전 도어 ECU 상태 정보를 입력 |  |  |  |
+|  |  | DOOR_RL Input | 좌후 도어 ECU 상태 정보를 입력 |  |  |  |
+|  |  | DOOR_RR Input | 우후 도어 ECU 상태 정보를 입력 |  |  |  |
+|  |  | TGM Input | 테일게이트 ECU 상태 정보를 입력 |  |  |  |
 |  |  | ACU Input | 에어백 ECU 상태 정보를 입력 |  |  |  |
 |  |  | ODS Input | 탑승자 감지 상태를 입력 |  |  |  |
 |  |  | AFLS Input | 전조등 방향 제어 상태를 입력 |  |  |  |
@@ -63,24 +66,35 @@
 |  |  | DATC Input | 공조 ECU 상태 정보를 입력 |  |  |  |
 |  |  | SEAT_DRV Input | 운전석 시트 편의 상태를 입력 |  |  |  |
 |  |  | SEAT_PASS Input | 동승석 시트 편의 상태를 입력 |  |  |  |
-|  |  | Sunroof Input | 선루프 상태를 입력 |  |  |  |
+|  |  | SRF Input | 선루프 ECU 상태를 입력 |  |  |  |
 |  |  | HUD Input | 전면 표시 ECU 상태 정보를 입력 |  |  |  |
 |  |  | AMP Input | 음향 출력 ECU 상태 정보를 입력 |  |  |  |
 |  |  | TMU Input | 텔레매틱스 ECU 상태 정보를 입력 |  |  |  |
-|  |  | Driving Assist Input | 주행 보조 ECU 상태 정보를 입력 |  |  |  |
-|  |  | Parking Assist Input | 주차 보조 ECU 상태 정보를 입력 |  |  |  |
-|  |  | Surround Sensor Input | 주변 인지 센서 상태를 입력 |  |  |  |
+|  |  | SCC Input | 주행 보조 ECU 상태 정보를 입력 |  |  |  |
+|  |  | PGS Input | 주차 보조 ECU 상태 정보를 입력 |  |  |  |
+|  |  | PUS Input | 주차 초음파 센서 상태를 입력 |  |  |  |
+|  |  | AVM Input | 주변 영상 ECU 상태를 입력 |  |  |  |
+|  |  | FCAM Input | 전방 카메라 센서 상태를 입력 |  |  |  |
+|  |  | FRADAR Input | 전방 레이더 센서 상태를 입력 |  |  |  |
+|  |  | SRR_FL Input | 좌전 측후방 레이더 상태를 입력 |  |  |  |
+|  |  | SRR_FR Input | 우전 측후방 레이더 상태를 입력 |  |  |  |
+|  |  | SRR_RL Input | 좌후 측후방 레이더 상태를 입력 |  |  |  |
+|  |  | SRR_RR Input | 우후 측후방 레이더 상태를 입력 |  |  |  |
 |  |  | IBOX Input | 차량 서비스 ECU 상태 정보를 입력 |  |  |  |
 |  |  | SGW Input | 보안 게이트웨이 상태를 입력 |  |  |  |
 |  |  | DCM Input | 진단 제어 상태를 입력 |  |  |  |
+|  |  | ETHB Input | 백본 서비스 상태를 입력 |  |  |  |
 |  |  | OBC Input | 충전 ECU 상태 정보를 입력 |  |  |  |
 |  |  | DCDC Input | 전력 변환 ECU 상태 정보를 입력 |  |  |  |
 |  |  | MCU Input | 모터 제어 ECU 상태 정보를 입력 |  |  |  |
 |  |  | INVERTER Input | 인버터 상태를 입력 |  |  |  |
-|  | 출력 | Ambient Output | 앰비언트 경고 출력 상태를 50ms 주기로 확인 |  |  |  |
-|  |  | Cluster Output | 계기판 경고 문구와 방향 표시를 50ms 주기로 확인 |  |  |  |
-|  |  | HUD Output | 전면 표시 화면의 경고 및 안내 정보를 50ms 주기로 확인 |  |  |  |
-|  |  | Audio Output | 경고 우선순위에 따른 음향 안내 출력을 50ms 주기로 확인 |  |  |  |
-|  |  | Vehicle Control Output | 감속 보조 요청이 차량 제어 경로로 전달되는지 확인 |  |  |  |
+|  | 출력 | BCM (앰비언트 경고 출력) | 경고 상태에 따라 앰비언트 모드, 색상, 패턴을 출력 | Ready |  |  |
+|  |  | IVI (클러스터/HMI 출력) | 경고 문구, 거리/방향, 팝업, 테마, 오디오 포커스 정보를 생성하여 표시 채널에 전달 | Ready |  |  |
+|  |  | CLU (클러스터 표시 처리) | 경고 문구와 팝업, 테마 정보를 수신하여 클러스터 표시에 반영 | Ready |  |  |
+|  |  | HUD (전면 표시 처리) | 경고 문구와 팝업, 경로, 테마 정보를 수신하여 전면 표시에 반영 | Ready |  |  |
+|  |  | AMP (오디오 안내 처리) | 오디오 포커스와 음성안내, TTS 상태를 수신하여 오디오 안내에 반영 | Ready |  |  |
+|  |  | ADAS (자동 감속 보조 요청 출력) | 위험도와 fail-safe 상태에 따라 자동 감속 보조 요청을 출력 | Ready |  |  |
+|  |  | V2X (경찰 긴급 알림 송신) | 경찰 긴급 알림을 외부 송신 프레임으로 전송 | Ready |  |  |
+|  |  | V2X (구급 긴급 알림 송신) | 구급 긴급 알림을 외부 송신 프레임으로 전송 | Ready |  |  |
 
 ---
