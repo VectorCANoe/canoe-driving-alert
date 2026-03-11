@@ -51,6 +51,9 @@ Use those references to align:
 - Broad ID ranges are not a reason to over-merge reviewer-facing rows; split rows when OEM-facing meaning, actors, or verification intent are materially different.
 - Keep all text files in UTF-8 (do not re-save with legacy code pages).
 - Verification scope is fixed to CANoe SIL, CAN + Ethernet only.
+- Before `pull/rebase`, inspect remote changed paths first (`fetch -> log/diff`).
+- If remote changes mix `canoe/` and `driving-situation-alert/`, do not blindly full-pull on behalf of the docs instance.
+- In mixed-change recovery, sync `canoe/` selectively first and preserve `driving-situation-alert/` until docs ownership changes are reviewed or explicitly approved.
 
 ## CANoe GUI-First Operations
 - For CANoe configuration and runtime state stability, keep these as **GUI-first**:

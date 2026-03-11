@@ -249,6 +249,9 @@
 - 다른 팀 경로가 dirty여도 자기 소유 경로만 `git add`해서 선별 commit/push한다.
 - 타 팀 변경을 임시로 로컬에 보관(stash/backup)할 수는 있지만, 묶어서 함께 push하지 않는다.
 - cross-team coordination 문서(`TMP_HANDOFF.md`, 팀 보드, 리드 지시 문서)는 목적 범위에 맞는 최소 변경만 허용한다.
+- 문서팀은 `pull/rebase` 전에 항상 `fetch -> changed paths`를 먼저 본다.
+- 원격 변경이 `canoe/`만 포함하면 `canoe/`만 선택 반영하고 `driving-situation-alert/`는 유지한다.
+- 원격 변경이 `driving-situation-alert/`까지 포함하면 문서 기준선 훼손 여부를 먼저 검토하고, 필요 시 문서팀 기준 백업 브랜치에서 복원한 뒤 후행 반영한다.
 
 ### 11.6 OEM System Framing Rule (Added)
 - 이 프로젝트는 “한 시나리오 PoC”가 아니라 “OEM 차량 시스템 축약 모델”로 정의한다.
