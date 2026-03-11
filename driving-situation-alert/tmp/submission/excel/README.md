@@ -10,4 +10,5 @@
 ## Working Rule
 
 - 파일명은 제출 시점 기준으로 고정한다.
-- 상세 문서 구조 기준은 상위 `tmp/submission/README.md`와 `final-docs/00_FINAL_STRUCTURE_LOCK.md`를 따른다.
+- 상세 문서 구조 기준은 상위 `tmp/submission/README.md`와 `final-docs/` 실제 파일 목록을 따른다.
+- 재생성 스크립트: `tmp/submission/excel/build_submission_workbook.py`

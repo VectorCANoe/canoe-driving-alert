@@ -3,8 +3,8 @@
 **Document ID**: PROJ-0304-SV
 **ISO 26262 Reference**: Part 6, Cl.7 (Software Architectural Design)
 **ASPICE Reference**: SWE.2 / SWE.3
-**Version**: 2.29
-**Date**: 2026-03-09
+**Version**: 2.24
+**Date**: 2026-03-06
 **Status**: Draft
 **Project Title**: 주행 상황 실시간 경고 시스템
 **Subtitle**: 구간 정보 및 긴급차량 접근 기반 앰비언트·클러스터 경보
@@ -12,6 +12,23 @@
 | V-Model 위치 | 현재 문서 | 상위 연결 | 하위 연결 |
 |---|---|---|---|
 | 좌측 하단 (SWE.2/SWE.3) | `0304_System_Variables.md` | `0303_Communication_Specification.md` | `04_SW_Implementation.md` |
+
+## 작성 원칙
+
+- 본 문서는 시스템 변수 사전 및 추적 관계를 정의한다.
+- 변수 의미, 범위, 초기값을 표준 형태로 명확히 제시한다.
+- 심사자가 신호 해석과 경계값을 빠르게 확인할 수 있게 구성한다.
+- 세부 운영 메모보다 변수 정의 자체의 명료성을 우선한다.
+
+---
+
+## 심사위원 빠른 확인 (1분)
+
+- 핵심 Namespace: `Chassis`, `Infotainment`, `V2X`, `Core`, `Body`, `Cluster`, `Test`
+- 핵심 판단 변수: `warningState`, `selectedAlertLevel`, `selectedAlertType`, `timeoutClear`
+- 안전/강건성 변수: `failSafeMode`, `domainPathStatus`, `e2eHealthState`, `duplicatePopupGuard`
+- 출력 변수: `ambientMode`, `ambientColor`, `ambientPattern`, `warningTextCode`
+- 검증 포인트: 범위 준수, 초기값 일관성, 경계값(1000ms/50ms/150ms 관련 변수) 해석 가능성
 
 ---
 
@@ -28,7 +45,7 @@
 | 30 | Infotainment | speedLimit | uint32 | 0 | 255 | 30 | 구간 제한속도(km/h) |
 | 7 | V2X | emergencyType | uint32 | 0 | 3 | 0 | 긴급차량 종류 |
 | 8 | V2X | emergencyDirection | uint32 | 0 | 3 | 0 | 긴급차량 접근 방향 |
-| 9 | V2X | eta | uint32 | 0 | 255 | 0 | 긴급차량 ETA(유효값 0~255, 내부 invalid sentinel 65535) |
+| 9 | V2X | eta | uint32 | 0 | 255 | 0 | 긴급차량 ETA(유효값 0~255, sentinel 65535는 구현 내부 보호값) |
 | 10 | V2X | sourceId | uint32 | 0 | 255 | 0 | 긴급 메시지 Source ID |
 | 11 | V2X | alertState | uint32 | 0 | 1 | 0 | 긴급 메시지 Active/Clear 상태 |
 | 12 | Core | vehicleSpeedNorm | uint32 | 0 | 255 | 0 | 게이트웨이 정규화 후 차량 속도 |
@@ -42,11 +59,6 @@
 | 36 | CoreState | e2eHealthState | uint32 | 0 | 2 | 0 | E2E 경로 헬스 상태 |
 | 37 | Core | brakePedalNorm | uint32 | 0 | 100 | 0 | CHS_GW에서 정규화한 브레이크 입력 |
 | 38 | Test | forceFailSafe | uint32 | 0 | 1 | 0 | Fail-safe 강제 주입(Validation-only) |
-| 49 | Test | displayModeSetting | uint32 | 0 | 2 | 0 | 표시 모드 수동 설정 입력(Validation-only) |
-| 50 | Test | alertVolumeSetting | uint32 | 0 | 100 | 50 | 경고 음량 수동 설정 입력(Validation-only) |
-| 51 | Test | seatBeltOverride | uint32 | 0 | 2 | 0 | 안전벨트 상태 오버라이드 입력(Validation-only) |
-| 52 | Test | historyQueryOffset | uint32 | 0 | 255 | 0 | 경고 이력 조회 오프셋 입력(Validation-only) |
-| 53 | Test | historyQueryCode | uint32 | 0 | 65535 | 0 | 경고 이력 조회 코드 입력(Validation-only) |
 | 39 | Core | objectTrackValid | uint32 | 0 | 1 | 0 | 객체 추적 유효 플래그 |
 | 40 | Core | objectRange | uint32 | 0 | 500 | 0 | 대표 위험 객체 상대 거리(m) |
 | 41 | Core | objectRelSpeed | int32 | -200 | 200 | 0 | 대표 위험 객체 상대 속도(km/h) |
@@ -69,7 +81,7 @@
 | 24 | Cluster | warningTextCode | uint32 | 0 | 255 | 0 | 클러스터 경고 코드 |
 | 25 | Test | testScenario | uint32 | 0 | 255 | 0 | SIL 테스트 시나리오 선택값(Validation-only) |
 | 26 | Test | scenarioResult | uint32 | 0 | 1 | 0 | SIL 시나리오 Pass/Fail 결과(Validation-only) |
-| 27 | CoreState | lastEmergencyRxMs | uint32 | 0 | 4294967295 | 0 | 마지막 긴급 신호 수신 시각(ms) |
+| 27 | CoreState | lastEmergencyRxMs | uint32 | 0 | 60000 | 0 | 마지막 긴급 신호 수신 시각(ms) |
 | 28 | CoreState | duplicatePopupGuard | uint32 | 0 | 5000 | 0 | 중복 팝업 억제 타이머(ms) |
 | 29 | CoreState | arbitrationSnapshotId | uint32 | 0 | 65535 | 0 | 중재 스냅샷 식별자 |
 | 101 | Chassis | AccelPedal | uint32 | 0 | 100 | 0 | 가속 페달 입력 |
@@ -84,7 +96,7 @@
 | 110 | Chassis | BrakePressure | uint32 | 0 | 255 | 0 | 브레이크 압력 |
 | 111 | Chassis | BrakeMode | uint32 | 0 | 3 | 0 | 브레이크 동작 모드 |
 | 112 | Chassis | AbsActive | uint32 | 0 | 1 | 0 | ABS 활성 상태 |
-| 113 | Chassis | EspActive | uint32 | 0 | 1 | 0 | ESC 활성 상태 |
+| 113 | Chassis | EspActive | uint32 | 0 | 1 | 0 | ESP 활성 상태 |
 | 114 | Chassis | AccelRequest | uint32 | 0 | 100 | 0 | 가속 요청 |
 | 115 | Chassis | TorqueRequest | uint32 | 0 | 255 | 0 | 토크 요청 |
 | 116 | Chassis | SteeringTorque | uint32 | 0 | 4095 | 0 | 조향 토크 |
@@ -173,9 +185,9 @@
 | 201 | Powertrain | PtAliveCnt | uint32 | 0 | 255 | 0 | Powertrain Alive Counter |
 | 202 | Powertrain | PtDiagState | uint32 | 0 | 15 | 0 | Powertrain 진단 상태 |
 | 203 | Powertrain | PtFailCode | uint32 | 0 | 15 | 0 | Powertrain 오류 코드 |
-| 204 | Chassis | EpsAssistState | uint32 | 0 | 7 | 0 | MDPS 보조 상태 |
-| 205 | Chassis | EpsFault | uint32 | 0 | 1 | 0 | MDPS 고장 상태 |
-| 206 | Chassis | EpsTorqueReq | uint32 | 0 | 255 | 0 | MDPS 토크 요청 |
+| 204 | Chassis | EpsAssistState | uint32 | 0 | 7 | 0 | EPS 보조 상태 |
+| 205 | Chassis | EpsFault | uint32 | 0 | 1 | 0 | EPS 고장 상태 |
+| 206 | Chassis | EpsTorqueReq | uint32 | 0 | 255 | 0 | EPS 토크 요청 |
 | 207 | Chassis | AbsCtrlState | uint32 | 0 | 7 | 0 | ABS 제어 상태 |
 | 208 | Chassis | AbsSlipLevel | uint32 | 0 | 255 | 0 | ABS 슬립 레벨 |
 | 209 | Chassis | EscCtrlState | uint32 | 0 | 7 | 0 | ESC 제어 상태 |

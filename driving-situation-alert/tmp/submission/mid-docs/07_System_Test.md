@@ -3,8 +3,8 @@
 **Document ID**: PROJ-07-ST
 **ISO 26262 Reference**: Part 4, Cl.10 (System Integration and System Qualification Test)
 **ASPICE Reference**: SYS.5 (System Qualification Test)
-**Version**: 5.22
-**Date**: 2026-03-09
+**Version**: 5.19
+**Date**: 2026-03-06
 **Status**: Draft
 **Project Title**: 주행 상황 실시간 경고 시스템
 **Subtitle**: 구간 정보 및 긴급차량 접근 기반 앰비언트·클러스터 경보
@@ -12,6 +12,23 @@
 | V-Model 위치 | 현재 문서 | 상위 연결 | 하위 연결 |
 |---|---|---|---|
 | 우측 상단 (SYS.5) | `07_System_Test.md` | `06_Integration_Test.md`, `01_Requirements.md` | 릴리즈/검수 |
+
+## 작성 원칙
+
+- 본 문서는 운전자 관점 E2E 시스템 시나리오(ST)를 정리한다.
+- 판정 기준은 사용자 관찰 결과 중심으로 유지한다.
+- 시나리오 단위로 기능 체인의 완결성과 사용자 인지성을 검증한다.
+- Pass/Fail 기록은 심사자가 바로 해석 가능하도록 간결하게 작성한다.
+
+---
+
+## 심사위원 빠른 확인 (1분)
+
+- 목적: 운전자 관점 최종 동작 확인
+- 핵심 시나리오: 구간 경고, 긴급 경고, 우선순위 판정, timeout 복귀
+- 확장 시나리오 상태: `Ready`(V2 일부), `Planned`(ADAS/편의/강건성 확장)
+- 판정 기준: 표시 인지성, 경고 연속성, 정책 일치
+- 결과 기록: 시나리오별 `Pass/Fail` 단일 기준
 
 ---
 
@@ -32,25 +49,21 @@
 | ST_ARB_ETA_002 | 동일 등급 구급 긴급 알림 충돌 시 ETA 우선 규칙이 적용되는지 확인한다. |  |  |  |
 | ST_TIMEOUT_001 | 긴급 알림 1000ms 무갱신 시 안전 해제 및 복귀 동작을 확인한다. |  |  |  |
 | ST_POLICY_001 | 긴급/구간 패턴·색상·문구 정책과 중복 팝업 억제가 요구대로 동작하는지 확인한다. |  |  |  |
+| ST_SIL_001 | 물리 하드웨어 없이 CANoe SIL에서 핵심 시나리오 수행이 가능한지 확인한다. |  |  |  |
+| ST_SIL_002 | CAN+Ethernet(또는 CAN 대체 백본) 동시 통신 조건에서 E2E 경고 체인이 유지되는지 확인한다. |  |  |  |
+| ST_RESULT_001 | 시나리오별 합격/불합격 결과가 일관되게 기록·추적되는지 확인한다. |  |  |  |
 | ST_BASE_PT_001 | 시동/기어/동력계 상태가 Powertrain 시나리오에서 안정적으로 연동되는지 확인한다. |  |  |  |
 | ST_BASE_CH_001 | 가감속/조향/제동 입력이 Chassis 시나리오에서 안전 규칙대로 반영되는지 확인한다. |  |  |  |
 | ST_BASE_BODY_001 | 비상등/창문 등 Body 시나리오가 의도한 동작으로 유지되는지 확인한다. |  |  |  |
 | ST_BASE_IVI_001 | 클러스터 기본표시/안내/UI 상태가 Infotainment 시나리오에서 일관되게 유지되는지 확인한다. |  |  |  |
-| ST_BASE_EXT_BODY_001 | 공조, 시트, 미러, 도어, 와이퍼, 보안 상태가 Body 확장 시나리오에서 일관되게 반영되는지 확인한다. |  |  |  |
-| ST_BASE_EXT_IVI_001 | 오디오, 음성 안내, TTS 상태가 Infotainment 확장 시나리오에서 일관되게 반영되는지 확인한다. |  |  |  |
+| ST_BASE_EXT_BODY_001 | HVAC/Seat/Mirror/Door/Wiper-Rain/Security 상태가 Body 확장 시나리오에서 일관되게 반영되는지 확인한다. |  |  |  |
+| ST_BASE_EXT_IVI_001 | Audio Focus/Voice/TTS 상태가 Infotainment 확장 시나리오에서 일관되게 반영되는지 확인한다. |  |  |  |
+| ST_BASE_DIAG_001 | 테스트/진단 요청-응답 및 결과 기록이 시나리오 종료까지 추적 가능하게 유지되는지 확인한다. |  |  |  |
 | ST_V2_RISK_001 | 긴급차량 근접 위험도 기반 감속 보조 요청과 경고 출력 동기화가 일관되게 동작하는지 확인한다. (SIL Scenario 15/16/17/19) | Ready |  |  |
 | ST_V2_FAILSAFE_001 | 도메인 경로 단절 시 자동 감속 보조 금지와 최소 경고 채널 유지 강등이 동작하는지 확인한다. (SIL Scenario 18) | Ready |  |  |
-| ST_ADAS_OBJ_001 | 객체 목록, 교차로, 합류 위험이 들어올 때 위험 경고와 강등, 이벤트 기록이 일관되게 동작하는지 확인한다. (Pre-Activation) | Planned |  |  |
-| ST_BASE_ALERT_EXT_001 | 방향지시등, 주행모드, 안전벨트, 접근거리 표시, 표시 설정, 음량 설정이 함께 반영될 때 경고 안내가 일관되게 동작하는지 확인한다. (Pre-Activation) | Planned |  |  |
-| ST_BASE_ROBUST_EXT_001 | 입력 지연, 상태 전이, 채널 전환, 오디오 경합이 발생해도 경고 안내가 안정적으로 유지되는지 확인한다. (Pre-Activation) | Planned |  |  |
-| ST_BASE_EXT_CH_002 | EPB, EHB, VSM, ECS, CDC 상태가 시스템 시나리오에서 경고 맥락으로 일관되게 반영되는지 확인한다. | Ready |  |  |
-| ST_BASE_EXT_BODY_002 | 도어, 테일게이트, 에어백, 탑승자 감지, 공조, 시트, 선루프 상태가 시스템 시나리오에서 일관되게 반영되는지 확인한다. | Ready |  |  |
-| ST_BASE_EXT_IVI_002 | HUD, AMP, TMU, 디지털 접근 서비스 상태가 시스템 시나리오에서 표시와 안내 정책에 일관되게 반영되는지 확인한다. | Ready |  |  |
-| ST_ADAS_EXT_STATE_001 | SCC, 주차 보조, 주변 센서 상태가 시스템 시나리오에서 위험과 가용성 판단으로 일관되게 반영되는지 확인한다. | Ready |  |  |
-| ST_BACKBONE_STATE_001 | IBOX, SGW, DCM 등 도메인 서비스 가용성 상태가 시스템 시나리오에서 경계 가용성과 강등 정책으로 일관되게 반영되는지 확인한다. | Ready |  |  |
-| ST_BASE_EXT_PT_002 | OBC, DCDC, MCU, INVERTER 상태가 시스템 시나리오에서 구동 준비와 서비스 경고 맥락으로 일관되게 반영되는지 확인한다. | Ready |  |  |
-| ST_BASE_001 | 차량 기본 기능과 주요 확장 상태가 시스템 수준에서 일관되게 동작하는지 확인한다. |  |  |  |
-| ST_OEM_SURFACE_001 | 주요 Active Surface ECU의 경계, 소유권, 헬스 상태가 시스템 시나리오에서 일관되게 유지되는지 확인한다. | Planned |  |  |
-| ST_OEM_PREMIUM_001 | Premium Option ECU가 기존 경고, 표시, 강건성 시나리오에 편입될 때 사용자 관찰 결과가 기존 요구를 위반하지 않는지 확인한다. (`NIGHT_VISION` 제외) | Planned |  |  |
+| ST_ADAS_OBJ_001 | 객체 목록 기반 TTC/교차로/합류 위험 경고와 신뢰도 저하 강등/이벤트 기록이 일관되게 동작하는지 확인한다. (Planned) | Planned |  |  |
+| ST_BASE_ALERT_EXT_001 | 방향지시등/주행모드/안전벨트 입력 기반 경보 보정, 접근거리 표시, 이벤트 기록·조회, 표시/음량 설정 반영이 E2E로 일관되게 동작하는지 확인한다. (Planned) | Planned |  |  |
+| ST_BASE_ROBUST_EXT_001 | 입력 유효성/신선도 보호, 상태전이 안정화, 채널 가용성·대체 출력, 오디오 경합/팝업 과밀/채널 동기 복원 정책이 E2E로 일관되게 동작하는지 확인한다. (Planned) | Planned |  |  |
+| ST_BASE_001 | 차량 기본 기능(시동/기어/가감속/조향/비상등/창문/기본표시/도메인경계)이 시스템 수준에서 일관되게 동작하는지 확인한다. |  |  |  |
 
 ---
