@@ -8,15 +8,27 @@
 
 ---
 
-> 제출용 정리본: 현재 실행 기준인 11-bit CAN ID 배정 규칙만 간단히 정리한 문서입니다.
+> 제출용 정리본: 현재 실행 기준인 11-bit CAN ID 규칙과 Ethernet/UDP 식별자 규칙을 분리해 정리한 문서입니다.
 
 ## 1. 현재 운영 구조
 
-- 현재 개발 코드와 실행 환경은 전 버스를 `11-bit CAN ID`로 통합 운영한다.
+- 현재 개발 코드와 실행 환경은 CAN/CAN-stub 버스를 `11-bit CAN ID`로 통합 운영한다.
 - 승용차 기준 대역폭, 지연, 운영 단순성을 고려해 현재 단계에서는 11-bit 체계를 유지한다.
-- 활성 운영 범위는 `0x100 ~ 0x512`이다.
+- CAN 활성 운영 범위는 `0x100 ~ 0x2FF`이며, 현재 사용 범위는 `0x100 ~ 0x2AA`다.
 - `0x000 ~ 0x0FF` 구간은 신규 할당하지 않는다.
 - 진단 및 확장 기능을 위한 `29-bit` 구조는 별도 확장 설계로 검토 중이며, 현재 실행 기준에는 적용하지 않는다.
+
+## 1-1. Ethernet 사전 정의 (나중에 이더넷 실 전환)
+
+- CAN ID 제거 가능.
+- 대신 아래를 필수 관리:
+- 현재 `0x510`, `0x511`, `0x512`, `0x206`, `0xE100` 값은 CAN ID가 아니라 Ethernet/UDP 식별자로 관리한다.
+- Protocol (UDP/TCP/SOME-IP/DoIP)
+- Service/Event/Method ID (SOME-IP면)
+- Src/Dst IP:Port
+- PDU/Message Name
+- Cycle/Timeout
+- Gateway mapping (필요 시 CAN↔ETH 변환 규칙)
 
 ## 2. 목적
 
