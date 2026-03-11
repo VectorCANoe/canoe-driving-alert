@@ -207,7 +207,7 @@ Emergency Source (logical terminal)
 | Func_121 | Req_121 | WARN_ARB_MGR | Flow_120 / Flow_121 / proximityRiskLevel, failSafeMode, driveStateNorm | Flow_121 / decelAssistReq | `MOD_06.F121` | UT_V2_RISK_001 / UT_V2_RELEASE_001 / IT_V2_RISK_001 |
 | Func_125,Func_126 | Req_125,Req_126 | WARN_ARB_MGR | Flow_122 / Comm_122 / decelAssistReq, selectedAlertType/Level | Flow_122 / selectedAlertType/Level | `MOD_06.F122` | UT_V2_RISK_001 / IT_V2_RISK_001 |
 | Func_123 | Req_123 | WARN_ARB_MGR | Flow_123 / Comm_123 / steeringInputNorm, brakePedalNorm | Flow_123 / decelAssistReq | `MOD_06.F123` | UT_V2_RELEASE_001 / IT_V2_RISK_001 |
-| Func_127,Func_128,Func_129 | Req_127,Req_128,Req_129 | DOMAIN_BOUNDARY_MGR | Flow_124 / Comm_124 / domainPathStatus, e2eHealthState | Flow_124 / decelAssistReq, failSafeMode | `MOD_15.F124` | UT_V2_FAILSAFE_001 / IT_V2_FAILSAFE_001 |
+| Func_127,Func_128,Func_129 | Req_127,Req_128,Req_129 | DOMAIN_BOUNDARY_MGR | Flow_124 / Comm_124 / warningPathStatus, e2eHealthState | Flow_124 / decelAssistReq, failSafeMode | `MOD_15.F124` | UT_V2_FAILSAFE_001 / IT_V2_FAILSAFE_001 |
 | Func_130 | Req_130 | ADAS_WARN_CTRL | Flow_130 / Comm_130 / objectTrackValid, objectRange, objectRelSpeed, objectConfidence | Flow_130 / objectTrackValid, objectRange, objectRelSpeed | `MOD_01.F130` | UT_ADAS_OBJ_RISK_001 / IT_ADAS_OBJ_001 |
 | Func_131 | Req_131 | ADAS_WARN_CTRL | Flow_130 / Comm_130 / objectTrackValid, objectRange, objectRelSpeed | Flow_130 / objectRiskClass, objectTtcMin | `MOD_01.F131` | UT_ADAS_OBJ_RISK_001 / IT_ADAS_OBJ_001 |
 | Func_132 | Req_132 | ADAS_WARN_CTRL | Flow_131 / Comm_131 / objectTtcMin, objectRiskClass | Flow_131 / selectedAlertLevel, objectRiskClass | `MOD_01.F132` | UT_ADAS_OBJ_RISK_001 / IT_ADAS_OBJ_001 |
@@ -229,7 +229,7 @@ Emergency Source (logical terminal)
 | Func_148 | Req_148 | ADAS_WARN_CTRL | Flow_130,Flow_133 / Comm_130,Comm_133 / objectTrackValid, objectConfidence, objectRiskClass | Flow_130,Flow_133 / Comm_130,Comm_133 / objectRiskClass, selectedAlertLevel | `MOD_01.F148` | UT_BASE_ROBUST_EXT_001 / IT_BASE_ROBUST_EXT_001 |
 | Func_149 | Req_149 | WARN_ARB_MGR | Flow_006,Flow_105 / Comm_006,Comm_105 / lastEmergencyRxMs, timeoutClear, warningState, BoundaryStatus | Flow_006 / Comm_006 / warningState, selectedAlertLevel | `MOD_06.F149` | UT_BASE_ROBUST_EXT_001 / IT_BASE_ROBUST_EXT_001 |
 | Func_150 | Req_150 | WARN_ARB_MGR | Flow_006 / Comm_006 / warningState, selectedAlertLevel, duplicatePopupGuard | Flow_006 / Comm_006 / selectedAlertLevel, selectedAlertType | `MOD_06.F150` | UT_BASE_ROBUST_EXT_001 / IT_BASE_ROBUST_EXT_001 |
-| Func_151 | Req_151 | DOMAIN_BOUNDARY_MGR | Flow_105,Flow_124 / Comm_105,Comm_124 / domainPathStatus, e2eHealthState, BoundaryStatus | Flow_124 / Comm_124 / domainPathStatus, failSafeMode | `MOD_15.F151` | UT_BASE_ROBUST_EXT_001 / IT_BASE_ROBUST_EXT_001 |
+| Func_151 | Req_151 | DOMAIN_BOUNDARY_MGR | Flow_105,Flow_124 / Comm_105,Comm_124 / warningPathStatus, e2eHealthState, BoundaryStatus | Flow_124 / Comm_124 / warningPathStatus, failSafeMode | `MOD_15.F151` | UT_BASE_ROBUST_EXT_001 / IT_BASE_ROBUST_EXT_001 |
 | Func_152 | Req_152 | WARN_ARB_MGR | Flow_006,Flow_124 / Comm_006,Comm_124 / failSafeMode, selectedAlertType, selectedAlertLevel | Flow_007,Flow_008 / Comm_007,Comm_008 / ambientMode, warningTextCode | `MOD_06.F152` | UT_BASE_ROBUST_EXT_001 / IT_BASE_ROBUST_EXT_001 |
 | Func_153 | Req_153 | CLU_HMI_CTRL | Flow_203 / Comm_203 / AudioFocusOwner, AudioDuckLevel, TtsState | Flow_008,Flow_203 / Comm_008,Comm_203 / warningTextCode, ClusterNotifPrio | `MOD_12.F153` | UT_BASE_ROBUST_EXT_001 / IT_BASE_ROBUST_EXT_001 |
 | Func_154 | Req_154 | CLU_HMI_CTRL | Flow_104,Flow_203 / Comm_104,Comm_203 / PopupType, PopupPriority, PopupActive, duplicatePopupGuard | Flow_008,Flow_203 / Comm_008,Comm_203 / warningTextCode, ClusterNotifPrio | `MOD_12.F154` | UT_BASE_ROBUST_EXT_001 / IT_BASE_ROBUST_EXT_001 |
@@ -244,7 +244,7 @@ Emergency Source (logical terminal)
 | Func_163 | Req_163 | ADAS_WARN_CTRL | Flow_209 / Comm_209 / LaneKeepState, FcaState, BlindSpotState, AebDomainState, HighwayPilotState | Flow_209 / Comm_209 / drivingAssistStateExt, selectedAlertLevel | `ADAS_WARN_CTRL.F163` | UT_ADAS_EXT_STATE_001 / IT_ADAS_EXT_STATE_001 |
 | Func_164 | Req_164 | ADAS_WARN_CTRL | Flow_209 / Comm_209 / ParkingAssistState, TrailerCtrlState | Flow_209 / Comm_209 / parkingSurroundState, selectedAlertLevel | `ADAS_WARN_CTRL.F164` | UT_ADAS_EXT_STATE_001 / IT_ADAS_EXT_STATE_001 |
 | Func_165 | Req_165 | ADAS_WARN_CTRL | Flow_209 / Comm_209 / CameraRadarState, OccupantMonitorState, LidarState | Flow_209 / Comm_209 / sensorAvailabilityState, failSafeMode | `ADAS_WARN_CTRL.F165` | UT_ADAS_EXT_STATE_001 / IT_ADAS_EXT_STATE_001 |
-| Func_166 | Req_166 | DOMAIN_BOUNDARY_MGR | Flow_210 / Comm_210 / IboxState, SecurityState, DiagState, EdrState, BackboneState | Flow_210 / Comm_210 / backboneServiceState, domainPathStatus, failSafeMode | `DOMAIN_BOUNDARY_MGR.F166` | UT_BACKBONE_STATE_001 / IT_BACKBONE_STATE_001 |
+| Func_166 | Req_166 | DOMAIN_BOUNDARY_MGR | Flow_210 / Comm_210 / IboxState, SecurityState, DiagState, EdrState, BackboneState | Flow_210 / Comm_210 / backboneServiceState, warningPathStatus, failSafeMode | `DOMAIN_BOUNDARY_MGR.F166` | UT_BACKBONE_STATE_001 / IT_BACKBONE_STATE_001 |
 | Func_167 | Req_167 | DOMAIN_ROUTER | Flow_204 / Comm_204 / ObcChargeState, DcDcSupplyState, MotorDriveState, InverterDriveState, TorqueSplitState, BatteryEnergyState | Flow_204 / Comm_204 / PowertrainElectrifiedState | `DOMAIN_ROUTER.F167` | UT_BASE_EXT_PT_002 / IT_BASE_EXT_PT_002 |
 | Func_168 | Req_168 | DOMAIN_ROUTER | Flow_204 / Comm_204 / FuelPumpState, ShiftLeverExtState, IdleStopState, ThermalPumpState, ChargePortState | Flow_204 / Comm_204 / PowertrainAuxiliaryState | `DOMAIN_ROUTER.F168` | UT_BASE_EXT_PT_002 / IT_BASE_EXT_PT_002 |
 
@@ -312,7 +312,7 @@ Emergency Source (logical terminal)
 | Var_323 | selectedAlertType | WARN_ARB_MGR | Flow_122 / Comm_122 |
 | Var_324 | steeringInputNorm | CHS_GW | Flow_123 / Comm_123 |
 | Var_325 | brakePedalNorm | CHS_GW | Flow_123 / Comm_123 |
-| Var_326 | domainPathStatus | DOMAIN_BOUNDARY_MGR | Flow_124 / Comm_124 |
+| Var_326 | warningPathStatus | DOMAIN_BOUNDARY_MGR | Flow_124 / Comm_124 |
 | Var_327 | e2eHealthState | DOMAIN_BOUNDARY_MGR | Flow_124 / Comm_124 |
 | Var_328 | failSafeMode | DOMAIN_BOUNDARY_MGR | Flow_124 / Comm_124 |
 | Var_329 | decelAssistReq | DOMAIN_BOUNDARY_MGR | Flow_124 / Comm_124 |

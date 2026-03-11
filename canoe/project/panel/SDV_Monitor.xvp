@@ -632,13 +632,13 @@
         <Property Name="SymbolConfiguration">8;16;CoreState;;;domainBoundaryStatus;2;;;-1;;;Value;;;0</Property>
       </Object>
 
-      <!-- domainPathStatus -->
+      <!-- warningPathStatus -->
       <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="LblPathStatus" ControlName="Lbl PathStatus">
         <Property Name="Name">LblPathStatus</Property>
         <Property Name="Size">175, 14</Property>
         <Property Name="Location">8, 134</Property>
         <Property Name="ForeColor">255, 160, 160, 160</Property>
-        <Property Name="Text">domainPathStatus (0/1/2)</Property>
+        <Property Name="Text">warningPathStatus (0/1/2)</Property>
       </Object>
       <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="TxtPathStatus" ControlName="Txt PathStatus">
         <Property Name="Name">TxtPathStatus</Property>
@@ -658,7 +658,7 @@
         <Property Name="ValueDisplay">Double</Property>
         <Property Name="UsedValueTable">RawValue</Property>
         <Property Name="DescriptionSize">0, 0</Property>
-        <Property Name="SymbolConfiguration">8;16;CoreState;;;domainPathStatus;2;;;-1;;;Value;;;0</Property>
+        <Property Name="SymbolConfiguration">8;16;CoreState;;;warningPathStatus;2;;;-1;;;Value;;;0</Property>
       </Object>
 
       <!-- e2eHealthState -->

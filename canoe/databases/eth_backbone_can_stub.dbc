@@ -54,7 +54,7 @@ BO_ 456 ethObjectSafetyStateMsg: 4 CGW
  SG_ Reserved0             : 26|6@1+  (1,0) [0|0] "" Vector__XXX
 
 BO_ 273 ethFailSafeStateMsg: 2 CGW
- SG_ DomainPathStatus : 0|2@1+ (1,0) [0|2] "" ADAS,TEST_SCN
+ SG_ WarningPathStatus : 0|2@1+ (1,0) [0|2] "" ADAS,TEST_SCN
  SG_ E2eHealthState   : 2|2@1+ (1,0) [0|2] "" ADAS,TEST_SCN
  SG_ FailSafeMode     : 4|2@1+ (1,0) [0|2] "" ADAS,TEST_SCN
  SG_ BoundaryAlive    : 6|1@1+ (1,0) [0|1] "" ADAS,TEST_SCN
@@ -185,7 +185,7 @@ CM_ BO_ 456 "E216: Object safety state frame. Produced by CGW for confidence/fai
 CM_ SG_ 456 ObjectEventCode "Object alert event code (Req_138 traceability).";
 CM_ SG_ 456 ObjectFailSafeMode "Object path fail-safe mode mirror.";
 CM_ BO_ 273 "E789: Fail-safe state frame. Produced by CGW (Req_124).";
-CM_ SG_ 273 DomainPathStatus "0=normal 1=degraded 2=failed.";
+CM_ SG_ 273 WarningPathStatus "0=normal 1=degraded 2=failed.";
 CM_ SG_ 273 E2eHealthState "0=failed 1=degraded 2=healthy.";
 CM_ SG_ 273 FailSafeMode "0=normal 1=degraded 2=blocked.";
 CM_ BO_ 1296 "Normalized vehicle state frame on ETH backbone stub. Produced by VCU through its internal domain transport seam.";
@@ -233,7 +233,7 @@ VAL_ 448 Direction 0 "UNKNOWN" 1 "FRONT" 2 "REAR" 3 "SIDE";
 VAL_ 450 TimeoutClearMon 0 "NoClear" 1 "Clear";
 VAL_ 456 ObjectFailSafeMode 0 "NORMAL" 1 "DEGRADED" 2 "BLOCKED";
 VAL_ 456 ObjectTrackValid 0 "INVALID" 1 "VALID";
-VAL_ 273 DomainPathStatus 0 "NORMAL" 1 "DEGRADED" 2 "FAILED";
+VAL_ 273 WarningPathStatus 0 "NORMAL" 1 "DEGRADED" 2 "FAILED";
 VAL_ 273 E2eHealthState 0 "FAILED" 1 "DEGRADED" 2 "HEALTHY";
 VAL_ 273 FailSafeMode 0 "NORMAL" 1 "DEGRADED" 2 "BLOCKED";
 VAL_ 1296 DriveState 0 "P" 1 "R" 2 "N" 3 "D";

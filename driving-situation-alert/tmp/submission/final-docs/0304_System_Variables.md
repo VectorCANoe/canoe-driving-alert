@@ -38,7 +38,7 @@
 | 32 | Core | proximityRiskLevel | uint32 | 0 | 100 | 0 | 긴급차량 근접 위험도 산정값 |
 | 33 | Core | decelAssistReq | uint32 | 0 | 1 | 0 | 감속 보조 요청 플래그 |
 | 34 | Core | failSafeMode | uint32 | 0 | 2 | 0 | 경고 정보 전달 이상 강등 모드 |
-| 35 | CoreState | domainPathStatus | uint32 | 0 | 2 | 0 | 경고 정보 전달 경로 상태(정상/열화/단절) |
+| 35 | CoreState | warningPathStatus | uint32 | 0 | 2 | 0 | 경고 정보 전달 경로 상태(정상/열화/단절) |
 | 36 | CoreState | e2eHealthState | uint32 | 0 | 2 | 0 | E2E 경로 헬스 상태 |
 | 37 | Core | brakePedalNorm | uint32 | 0 | 100 | 0 | CHS_GW에서 정규화한 브레이크 입력 |
 | 38 | Test | forceFailSafe | uint32 | 0 | 1 | 0 | Fail-safe 강제 주입(Validation-only) |

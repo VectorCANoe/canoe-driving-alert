@@ -13,7 +13,7 @@ variables
   dword gBodyTsMs;
   dword gInfoTsMs;
   int gLastBoundaryStatus;
-  int gLastDomainPathStatus;
+  int gLastWarningPathStatus;
   int gLastE2eHealthState;
   int gLastFailSafeMode;
   int gVehicleStateAgeMs;
@@ -36,7 +36,7 @@ on start
   gBodyTsMs = 0;
   gInfoTsMs = 0;
   gLastBoundaryStatus = -1;
-  gLastDomainPathStatus = -1;
+  gLastWarningPathStatus = -1;
   gLastE2eHealthState = -1;
   gLastFailSafeMode = -1;
   gVehicleStateAgeMs = 10000;
@@ -49,7 +49,7 @@ on start
   gEmergencyMonTsMs = 0;
   gLastEthPathState = -1;
   @CoreState::domainBoundaryStatus = 0;
-  @CoreState::domainPathStatus = 2;
+  @CoreState::warningPathStatus = 2;
   @CoreState::e2eHealthState = 0;
   @Core::failSafeMode = 1;
   @Core::decelAssistReq = 0;

@@ -12,7 +12,7 @@ variables
   dword gBodyTsMs;
   dword gInfoTsMs;
   int gLastBoundaryStatus;
-  int gLastDomainPathStatus;
+  int gLastWarningPathStatus;
   int gLastE2eHealthState;
   int gLastFailSafeMode;
 }
@@ -26,11 +26,11 @@ on start
   gBodyTsMs     = 0;
   gInfoTsMs     = 0;
   gLastBoundaryStatus = -1;
-  gLastDomainPathStatus = -1;
+  gLastWarningPathStatus = -1;
   gLastE2eHealthState = -1;
   gLastFailSafeMode = -1;
   @CoreState::domainBoundaryStatus = 0;
-  @CoreState::domainPathStatus = 2;
+  @CoreState::warningPathStatus = 2;
   @CoreState::e2eHealthState = 0;
   @Core::failSafeMode = 1;
   @Core::decelAssistReq = 0;
@@ -63,7 +63,7 @@ on timer tBoundaryCheck
   int routingPolicy;
   int forceFailSafe;
   int allAlive;
-  int domainPathStatus;
+  int warningPathStatus;
   int e2eHealthState;
   int failSafeMode;
 
@@ -88,10 +88,10 @@ on timer tBoundaryCheck
   }
 
   @CoreState::domainBoundaryStatus = allAlive;
-  domainPathStatus = (allAlive == 1) ? 0 : 2;
+  warningPathStatus = (allAlive == 1) ? 0 : 2;
   if (forceFailSafe == 1)
   {
-    domainPathStatus = 2;
+    warningPathStatus = 2;
     e2eHealthState = 0;
   }
   else if (allAlive == 1 && routingPolicy == 1)
@@ -113,13 +113,13 @@ on timer tBoundaryCheck
     failSafeMode = 2;
     @Core::decelAssistReq = 0;
   }
-  else if (domainPathStatus >= 2 || e2eHealthState == 0)
+  else if (warningPathStatus >= 2 || e2eHealthState == 0)
   {
     failSafeMode = 1;
     @Core::decelAssistReq = 0;
   }
 
-  @CoreState::domainPathStatus = domainPathStatus;
+  @CoreState::warningPathStatus = warningPathStatus;
   @CoreState::e2eHealthState = e2eHealthState;
   @Core::failSafeMode = failSafeMode;
 
@@ -129,18 +129,18 @@ on timer tBoundaryCheck
           allAlive, gChassisAlive, gBodyAlive, gInfoAlive);
     gLastBoundaryStatus = allAlive;
   }
-  if (domainPathStatus != gLastDomainPathStatus ||
+  if (warningPathStatus != gLastWarningPathStatus ||
       e2eHealthState != gLastE2eHealthState ||
       failSafeMode != gLastFailSafeMode)
   {
     write("[DOMAIN_BOUNDARY_MGR] path=%d e2e=%d failSafe=%d routing=%d force=%d",
-          domainPathStatus, e2eHealthState, failSafeMode, routingPolicy, forceFailSafe);
-    gLastDomainPathStatus = domainPathStatus;
+          warningPathStatus, e2eHealthState, failSafeMode, routingPolicy, forceFailSafe);
+    gLastWarningPathStatus = warningPathStatus;
     gLastE2eHealthState = e2eHealthState;
     gLastFailSafeMode = failSafeMode;
   }
 
-  mFailSafe.DomainPathStatus = domainPathStatus;
+  mFailSafe.WarningPathStatus = warningPathStatus;
   mFailSafe.E2eHealthState = e2eHealthState;
   mFailSafe.FailSafeMode = failSafeMode;
   mFailSafe.BoundaryAlive = allAlive;

@@ -316,9 +316,9 @@
 | Func_125 | Req_125 | WARN_ARB_MGR | 감속 보조 시 긴급경고 최우선 유지 | 감속 보조 요청 활성 시 긴급 경고 최우선 유지 | 입력: decelAssistReq, selectedAlertType, selectedAlertLevel / 출력: selectedAlertType, selectedAlertLevel |
 | Func_126 | Req_126 | WARN_ARB_MGR | 감속 보조 시 경고 채널 동기화 | 감속 보조 요청 활성 시 Ambient/Cluster 출력 동기화 | 입력: decelAssistReq, selectedAlertType, selectedAlertLevel / 출력: selectedAlertType, selectedAlertLevel |
 | Func_123 | Req_123 | WARN_ARB_MGR | 운전자 개입 우선 해제 | 운전자 제동/조향 회피 입력 검출 시 감속 보조 요청 해제 | 입력: steeringInputNorm, brakePedalNorm / 출력: decelAssistReq |
-| Func_127 | Req_127 | DOMAIN_BOUNDARY_MGR | 도메인 단절 시 자동감속 금지 | 도메인 경로 단절 감지 시 자동 감속 보조 요청 생성 금지 | 입력: domainPathStatus, e2eHealthState / 출력: decelAssistReq |
-| Func_128 | Req_128 | DOMAIN_BOUNDARY_MGR | 도메인 단절 시 최소 경고 유지 | 도메인 경로 단절 감지 시 최소 경고 채널 유지 | 입력: domainPathStatus, e2eHealthState / 출력: selectedAlertType, selectedAlertLevel |
-| Func_129 | Req_129 | DOMAIN_BOUNDARY_MGR | 도메인 단절 시 안전 강등 전환 | 도메인 경로 단절 감지 시 failSafeMode 전환 | 입력: domainPathStatus, e2eHealthState / 출력: failSafeMode |
+| Func_127 | Req_127 | DOMAIN_BOUNDARY_MGR | 도메인 단절 시 자동감속 금지 | 도메인 경로 단절 감지 시 자동 감속 보조 요청 생성 금지 | 입력: warningPathStatus, e2eHealthState / 출력: decelAssistReq |
+| Func_128 | Req_128 | DOMAIN_BOUNDARY_MGR | 도메인 단절 시 최소 경고 유지 | 도메인 경로 단절 감지 시 최소 경고 채널 유지 | 입력: warningPathStatus, e2eHealthState / 출력: selectedAlertType, selectedAlertLevel |
+| Func_129 | Req_129 | DOMAIN_BOUNDARY_MGR | 도메인 단절 시 안전 강등 전환 | 도메인 경로 단절 감지 시 failSafeMode 전환 | 입력: warningPathStatus, e2eHealthState / 출력: failSafeMode |
 
 ---
 
@@ -354,7 +354,7 @@
 | Func_148 | Req_148 | ADAS_WARN_CTRL | 경고 입력 유효성 필터링 | 객체/상태 입력의 유효성·신뢰도 기준을 점검해 판정 입력을 필터링 | 입력: objectTrackValid, objectConfidence, objectRiskClass / 출력: objectRiskClass, selectedAlertLevel |
 | Func_149 | Req_149 | WARN_ARB_MGR | 경고 입력 신선도 보호 | 핵심 입력 무갱신 상태(stale)를 감지해 보수 경고 정책으로 전환 | 입력: lastEmergencyRxMs, timeoutClear, warningState / 출력: warningState, selectedAlertLevel |
 | Func_150 | Req_150 | WARN_ARB_MGR | 경고 상태 전이 안정화 | 동일 원인 경고 상태의 반복 진동을 억제하도록 전이 안정화 처리 | 입력: warningState, selectedAlertLevel, duplicatePopupGuard / 출력: selectedAlertLevel, selectedAlertType |
-| Func_151 | Req_151 | DOMAIN_BOUNDARY_MGR | 출력 채널 가용성 판정 | 도메인 경계 통신 상태(헬스/타임아웃/유효 플래그) 기반 출력 채널 가용성 판정 | 입력: domainPathStatus, e2eHealthState, BoundaryStatus / 출력: domainPathStatus, failSafeMode |
+| Func_151 | Req_151 | DOMAIN_BOUNDARY_MGR | 출력 채널 가용성 판정 | 도메인 경계 통신 상태(헬스/타임아웃/유효 플래그) 기반 출력 채널 가용성 판정 | 입력: warningPathStatus, e2eHealthState, BoundaryStatus / 출력: warningPathStatus, failSafeMode |
 | Func_152 | Req_152 | WARN_ARB_MGR | 출력 채널 장애 대체 정책 | 주 출력 채널 장애 시 대체 채널 기반 경고 지속 정책 적용 | 입력: failSafeMode, selectedAlertType, selectedAlertLevel / 출력: selectedAlertType, selectedAlertLevel, warningTextCode |
 | Func_153 | Req_153 | CLU_HMI_CTRL | 오디오 경합 인지성 보호 | 오디오/음성 경합 상태를 반영해 경고 인지성 보호 정책 적용 | 입력: AudioFocusOwner, AudioDuckLevel, TtsState / 출력: warningTextCode, ClusterNotifPrio |
 | Func_154 | Req_154 | CLU_HMI_CTRL | 팝업 과밀 억제 및 우선 표시 | 복수 경고 동시 상황에서 비긴급 팝업 과밀을 억제하고 우선 경고를 선표시 | 입력: PopupType, PopupPriority, PopupActive, duplicatePopupGuard / 출력: warningTextCode, ClusterNotifPrio |
@@ -369,7 +369,7 @@
 | Func_163 | Req_163 | ADAS_WARN_CTRL | 주행 보조 제어 상태 통합 | 주행 보조 제어 상태를 통합해 위험 경고 및 기능 가용성 판단에 반영 | 입력: LaneKeepState, FcaState, BlindSpotState, AebDomainState, HighwayPilotState / 출력: drivingAssistStateExt, selectedAlertLevel |
 | Func_164 | Req_164 | ADAS_WARN_CTRL | 주차/저속 주변인지 상태 통합 | 주차 보조 및 저속 주변인지 상태를 통합해 주차 관련 경고와 기능 가용성 판단에 반영 | 입력: ParkingAssistState, TrailerCtrlState / 출력: parkingSurroundState, selectedAlertLevel |
 | Func_165 | Req_165 | ADAS_WARN_CTRL | 인지 센서 상태 통합 | 인지 센서 상태를 통합해 위험 판단 신뢰도 및 경고 강등 판단에 반영 | 입력: CameraRadarState, OccupantMonitorState, LidarState / 출력: sensorAvailabilityState, failSafeMode |
-| Func_166 | Req_166 | DOMAIN_BOUNDARY_MGR | 도메인 서비스 가용성 상태 통합 | 백본 및 도메인 서비스 가용성 상태를 통합해 경계 통신 가용성과 서비스 강등 정책에 반영 | 입력: IboxState, SecurityState, DiagState, EdrState, BackboneState / 출력: backboneServiceState, domainPathStatus, failSafeMode |
+| Func_166 | Req_166 | DOMAIN_BOUNDARY_MGR | 도메인 서비스 가용성 상태 통합 | 백본 및 도메인 서비스 가용성 상태를 통합해 경계 통신 가용성과 서비스 강등 정책에 반영 | 입력: IboxState, SecurityState, DiagState, EdrState, BackboneState / 출력: backboneServiceState, warningPathStatus, failSafeMode |
 | Func_167 | Req_167 | DOMAIN_ROUTER | 구동/전력변환 상태 통합 | 구동 및 전력변환 상태를 통합해 동력 전달 가용성과 에너지 기반 경고 맥락에 반영 | 입력: ObcChargeState, DcDcSupplyState, MotorDriveState, InverterDriveState, TorqueSplitState, BatteryEnergyState / 출력: PowertrainElectrifiedState |
 | Func_168 | Req_168 | DOMAIN_ROUTER | 변속/열관리/충전 인터페이스 상태 통합 | 변속, 열관리 및 충전 인터페이스 상태를 통합해 구동 준비 상태와 서비스 경고 맥락에 반영 | 입력: FuelPumpState, ShiftLeverExtState, IdleStopState, ThermalPumpState, ChargePortState / 출력: PowertrainAuxiliaryState |
 

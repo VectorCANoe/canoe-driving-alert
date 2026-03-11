@@ -179,7 +179,7 @@
 | 32 | Core | proximityRiskLevel | uint32 | 0 | 100 | 0 | 긴급차량 근접 위험도 산정값 |
 | 33 | Core | decelAssistReq | uint32 | 0 | 1 | 0 | 감속 보조 요청 플래그 |
 | 34 | Core | failSafeMode | uint32 | 0 | 2 | 0 | 도메인 경로 단절 강등 모드 |
-| 35 | CoreState | domainPathStatus | uint32 | 0 | 2 | 0 | 도메인 경로 상태(정상/열화/단절) |
+| 35 | CoreState | warningPathStatus | uint32 | 0 | 2 | 0 | 도메인 경로 상태(정상/열화/단절) |
 | 36 | CoreState | e2eHealthState | uint32 | 0 | 2 | 0 | E2E 경로 헬스 상태 |
 | 37 | Core | brakePedalNorm | uint32 | 0 | 100 | 0 | CHS_GW에서 정규화한 브레이크 입력 |
 | 38 | Test | forceFailSafe | uint32 | 0 | 1 | 0 | Fail-safe 강제 주입(Validation-only) |
@@ -785,7 +785,7 @@
 | Var_323 | selectedAlertType | selectedAlertType_V2_SYNC | ETH_V2 | WARN_ARB_MGR | Comm_122 | Flow_122 | Func_125, Func_126 | Req_125, Req_126 | 50ms 주기 경고 동기화 시 갱신 |
 | Var_324 | steeringInputNorm | steeringInputNorm_V2_RELEASE | CAN_V2 | CHS_GW | Comm_123 | Flow_123 | Func_123 | Req_123 | 운전자 개입 이벤트 수신 시 갱신 |
 | Var_325 | brakePedalNorm | brakePedalNorm_V2_RELEASE | CAN_V2 | CHS_GW | Comm_123 | Flow_123 | Func_123 | Req_123 | 운전자 제동 입력 이벤트 수신 시 갱신 |
-| Var_326 | domainPathStatus | domainPathStatus_V2_FAILSAFE | CAN_V2 | DOMAIN_BOUNDARY_MGR | Comm_124 | Flow_124 | Func_127, Func_128, Func_129, Func_151 | Req_127, Req_128, Req_129, Req_151 | 100ms 주기 경로상태 수신 시 갱신(채널 가용성 판정 입력 포함) |
+| Var_326 | warningPathStatus | warningPathStatus_V2_FAILSAFE | CAN_V2 | DOMAIN_BOUNDARY_MGR | Comm_124 | Flow_124 | Func_127, Func_128, Func_129, Func_151 | Req_127, Req_128, Req_129, Req_151 | 100ms 주기 경로상태 수신 시 갱신(채널 가용성 판정 입력 포함) |
 | Var_327 | e2eHealthState | e2eHealthState_V2_FAILSAFE | CAN_V2 | DOMAIN_BOUNDARY_MGR | Comm_124 | Flow_124 | Func_127, Func_128, Func_129, Func_151 | Req_127, Req_128, Req_129, Req_151 | 100ms 주기 헬스상태 수신 시 갱신(채널 가용성 판정 입력 포함) |
 | Var_328 | failSafeMode | failSafeMode_V2_FAILSAFE | ETH_V2 | DOMAIN_BOUNDARY_MGR | Comm_124 | Flow_124 | Func_127, Func_128, Func_129, Func_151, Func_152 | Req_127, Req_128, Req_129, Req_151, Req_152 | 단절 감지/가용성 판정/대체 출력 정책 적용 시 즉시 갱신 |
 | Var_329 | decelAssistReq | decelAssistReq_V2_BLOCK | ETH_V2 | DOMAIN_BOUNDARY_MGR | Comm_124 | Flow_124 | Func_127, Func_128, Func_129 | Req_127, Req_128, Req_129 | failSafeMode=1 전환 시 0 강제 갱신 |
@@ -880,7 +880,7 @@
 | 2.16 | 2026-03-03 | V2 변수(`Var_320~329`)를 구현 기준으로 전환: `Var_321/324/325` Owner를 `WARN_ARB_MGR/CHS_GW`로 정정하고 `brakePedalNorm`, `forceFailSafe` 상단 표준 변수를 추가. |
 | 2.15 | 2026-03-02 | 감사 정합 보강: 옵션1 설계 vs SIL 임시 CAN 대체 백본 검증 경계 문구를 작성 원칙에 추가. |
 | 2.14 | 2026-03-02 | V2 확장 제어 책임 분리 반영: `Var_321/324/325` Owner Node를 `DECEL_ASSIST_CTRL`로 조정해 `Func_121/123`과 정합화. |
-| 2.13 | 2026-03-02 | V2 확장(Pre-Activation) 변수 반영: 상단 표준 변수 `proximityRiskLevel/decelAssistReq/failSafeMode/domainPathStatus/e2eHealthState` 추가, 하단 추적 `Var_320~Var_329` 및 `Comm_120~Comm_124` 연계 추가. |
+| 2.13 | 2026-03-02 | V2 확장(Pre-Activation) 변수 반영: 상단 표준 변수 `proximityRiskLevel/decelAssistReq/failSafeMode/warningPathStatus/e2eHealthState` 추가, 하단 추적 `Var_320~Var_329` 및 `Comm_120~Comm_124` 연계 추가. |
 | 2.12 | 2026-03-02 | ISO26262/ASPICE 분류 정합 보강: `V2X/policeDispatch`, `V2X/ambulanceDispatch`, `Test/*`, `UiRender/*`를 Verification-Harness(Req 비연계) 운영 메모로 추가. |
 | 1.0 | 2026-02-23 | 초기 생성 |
 | 2.0 | 2026-02-25 | 옵션1 아키텍처 기준으로 전면 재작성. 변수 계층(CAN_IN/ETH_CORE/CAN_OUT) 분리, Var-Comm-Flow-Func-Req 추적 표 추가 |

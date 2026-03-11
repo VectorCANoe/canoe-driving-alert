@@ -7,7 +7,7 @@ variables
 {
   msTimer tEdrCycle;
   int gFailSafeMode;
-  int gDomainPathStatus;
+  int gWarningPathStatus;
   int gE2eHealthState;
   int gObjectTrackValid;
   int gObjectEventCode;
@@ -77,7 +77,7 @@ void publishEdrState()
     recordReason = 0;
   }
 
-  storageLevel = clampRange((eventSeverity * 20) + (gDomainPathStatus * 10) + (gE2eHealthState == 0 ? 30 : 0), 0, 100);
+  storageLevel = clampRange((eventSeverity * 20) + (gWarningPathStatus * 10) + (gE2eHealthState == 0 ? 30 : 0), 0, 100);
   lastEventCode = clampRange(gObjectEventCode, 0, 255);
 
   mEdr.RecordState = clampRange(recordState, 0, 3);
@@ -112,7 +112,7 @@ void publishEdrState()
 on start
 {
   gFailSafeMode = 0;
-  gDomainPathStatus = 0;
+  gWarningPathStatus = 0;
   gE2eHealthState = 2;
   gObjectTrackValid = 0;
   gObjectEventCode = 0;
@@ -133,7 +133,7 @@ on timer tEdrCycle
 
 on message ethFailSafeStateMsg
 {
-  gDomainPathStatus = clampRange((int)this.DomainPathStatus, 0, 2);
+  gWarningPathStatus = clampRange((int)this.WarningPathStatus, 0, 2);
   gE2eHealthState = clampRange((int)this.E2eHealthState, 0, 2);
   gFailSafeMode = clampRange((int)this.FailSafeMode, 0, 2);
 }

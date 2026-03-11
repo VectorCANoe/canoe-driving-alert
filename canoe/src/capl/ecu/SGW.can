@@ -11,7 +11,7 @@ variables
   int gIboxServiceFlags;
   int gFailSafeMode;
   int gBoundaryAlive;
-  int gDomainPathStatus;
+  int gWarningPathStatus;
   int gLastSecuritySession;
   int gLastAuthState;
   int gLastSecurityFault;
@@ -54,12 +54,12 @@ void publishSecurityState()
   {
     securityFault = 2;
   }
-  else if (gDomainPathStatus == 1)
+  else if (gWarningPathStatus == 1)
   {
     securityFault = 1;
   }
 
-  securityPolicy = gDomainPathStatus;
+  securityPolicy = gWarningPathStatus;
   if (securityPolicy < 0 || securityPolicy > 3)
   {
     securityPolicy = 0;
@@ -91,7 +91,7 @@ on start
   gIboxServiceFlags = 0;
   gFailSafeMode = 1;
   gBoundaryAlive = 0;
-  gDomainPathStatus = 2;
+  gWarningPathStatus = 2;
   gLastSecuritySession = -1;
   gLastAuthState = -1;
   gLastSecurityFault = -1;
@@ -115,7 +115,7 @@ on message ethIboxStateMsg
 
 on message ethFailSafeStateMsg
 {
-  gDomainPathStatus = clampRange((int)this.DomainPathStatus, 0, 3);
+  gWarningPathStatus = clampRange((int)this.WarningPathStatus, 0, 3);
   gFailSafeMode = clampRange((int)this.FailSafeMode, 0, 3);
   gBoundaryAlive = clampRange((int)this.BoundaryAlive, 0, 1);
 }

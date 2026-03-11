@@ -122,7 +122,7 @@
     <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="alertHistoryCount" comment="Accumulated alert history count for query" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="65535" maxValuePhys="65535"/>
     <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="domainBoundaryStatus" comment="Domain boundary health: 1=all Chassis/Body/Info domains alive within 300ms" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1"/>
     <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="routingPolicy" comment="GW routing policy: 0=timeout 1=normal 2=emergency" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="2" maxValuePhys="2"/>
-    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="domainPathStatus" comment="Domain path status: 0=normal 1=degraded 2=failed" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="2" maxValuePhys="2"/>
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="warningPathStatus" comment="Warning path status: 0=normal 1=degraded 2=failed" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="2" maxValuePhys="2"/>
     <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="e2eHealthState" comment="End-to-end health: 0=failed 1=degraded 2=healthy" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="2" maxValuePhys="2"/>
   </namespace>
 

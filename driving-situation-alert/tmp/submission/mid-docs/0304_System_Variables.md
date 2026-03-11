@@ -26,7 +26,7 @@
 
 - 핵심 Namespace: `Chassis`, `Infotainment`, `V2X`, `Core`, `Body`, `Cluster`, `Test`
 - 핵심 판단 변수: `warningState`, `selectedAlertLevel`, `selectedAlertType`, `timeoutClear`
-- 안전/강건성 변수: `failSafeMode`, `domainPathStatus`, `e2eHealthState`, `duplicatePopupGuard`
+- 안전/강건성 변수: `failSafeMode`, `warningPathStatus`, `e2eHealthState`, `duplicatePopupGuard`
 - 출력 변수: `ambientMode`, `ambientColor`, `ambientPattern`, `warningTextCode`
 - 검증 포인트: 범위 준수, 초기값 일관성, 경계값(1000ms/50ms/150ms 관련 변수) 해석 가능성
 
@@ -55,7 +55,7 @@
 | 32 | Core | proximityRiskLevel | uint32 | 0 | 100 | 0 | 긴급차량 근접 위험도 산정값 |
 | 33 | Core | decelAssistReq | uint32 | 0 | 1 | 0 | 감속 보조 요청 플래그 |
 | 34 | Core | failSafeMode | uint32 | 0 | 2 | 0 | 도메인 경로 단절 강등 모드 |
-| 35 | CoreState | domainPathStatus | uint32 | 0 | 2 | 0 | 도메인 경로 상태(정상/열화/단절) |
+| 35 | CoreState | warningPathStatus | uint32 | 0 | 2 | 0 | 도메인 경로 상태(정상/열화/단절) |
 | 36 | CoreState | e2eHealthState | uint32 | 0 | 2 | 0 | E2E 경로 헬스 상태 |
 | 37 | Core | brakePedalNorm | uint32 | 0 | 100 | 0 | CHS_GW에서 정규화한 브레이크 입력 |
 | 38 | Test | forceFailSafe | uint32 | 0 | 1 | 0 | Fail-safe 강제 주입(Validation-only) |

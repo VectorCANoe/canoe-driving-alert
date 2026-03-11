@@ -44,7 +44,7 @@
 |  |  |  | driverReleaseReason | 3~4 | 0~3 | ADAS | ESC, TEST_SCN | Event + 50ms | 0:None,1:Steer,2:Brake,3:FailSafe |
 |  |  |  | emergencyContext | 5~6 | 0~2 | ADAS | ESC, TEST_SCN | Event + 50ms | 긴급 컨텍스트 |
 |  |  |  | proximityRiskLevel | 8~15 | 0~100 | ADAS | ESC, TEST_SCN | Event + 50ms | 위험도 전달 |
-| ethFailSafeStateMsg | 0x111(SIL Stub) / 0xE212(Logical) | 2 | domainPathStatus | 0~1 | 0~2 | CGW | ADAS, TEST_SCN | 100ms + Event | 0:Normal,1:Degraded,2:Failed |
+| ethFailSafeStateMsg | 0x111(SIL Stub) / 0xE212(Logical) | 2 | warningPathStatus | 0~1 | 0~2 | CGW | ADAS, TEST_SCN | 100ms + Event | 0:Normal,1:Degraded,2:Failed |
 |  |  |  | e2eHealthState | 2~3 | 0~2 | CGW | ADAS, TEST_SCN | 100ms + Event | 0:Failed,1:Degraded,2:Healthy |
 |  |  |  | failSafeMode | 4~5 | 0~2 | CGW | ADAS, TEST_SCN | 100ms + Event | 강등 모드 상태 |
 |  |  |  | boundaryAlive | 6 | 0~1 | CGW | ADAS, TEST_SCN | 100ms + Event | 경계관리 노드 생존 상태 |
