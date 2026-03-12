@@ -99,16 +99,40 @@ void clearEmergencyState()
 
 void emitEmergencyBroadcast(int vehicleType, int status, int sourceId, int etaSec, int direction)
 {
+  char frame[8];
+
+  if (gEthSocket == ethInvalidSocket())
+  {
+    return;
+  }
+
+  ethInitFrame(frame, ethMsgEmergencyAlert(), 4);
+  ethSetU8(frame, 0,
+           clampRange(vehicleType, 0, 2) |
+           (clampRange(direction, 0, 3) << 2));
+  ethSetU8(frame, 1, clampRange(etaSec, 0, 255));
+  ethSetU8(frame, 2, clampRange(sourceId, 0, 255));
+  ethSetU8(frame, 3, (status == 1) ? 1 : 0);
+  ethSendFrame(gEthSocket, gEthTargetIp, ethMsgEmergencyAlert(), frame, 4);
 }
 
 void pushEmergencyMonitor()
 {
+  char frame[4];
   int emergencyContext;
   int timeoutClear;
 
   emergencyContext = clampRange((int)@Core::emergencyContext, 0, 255);
   timeoutClear = (((int)@Core::timeoutClear) == 1) ? 1 : 0;
   @CoreState::lastEmergencyRxMs = getCurrentTick32();
+
+  if (gEthSocket != ethInvalidSocket())
+  {
+    ethInitFrame(frame, ethMsgEmergencyMonitor(), 2);
+    ethSetU8(frame, 0, emergencyContext);
+    ethSetU8(frame, 1, timeoutClear);
+    ethSendFrame(gEthSocket, gEthTargetIp, ethMsgEmergencyMonitor(), frame, 2);
+  }
 
   if (emergencyContext != gLastMonContext || timeoutClear != gLastMonTimeoutClear)
   {

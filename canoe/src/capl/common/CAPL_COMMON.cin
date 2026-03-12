@@ -51,6 +51,11 @@ int ethMsgEmergencyAlert()
   return 0xE100;
 }
 
+int ethMsgEmergencyMonitor()
+{
+  return 0x1C2;
+}
+
 int ethMsgSelectedAlert()
 {
   return 0xE200;

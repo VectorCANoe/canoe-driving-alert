@@ -159,10 +159,8 @@ void setScenarioMirror(int scenarioId)
 
 void publishScenarioResultFrame()
 {
-  message frmTestResultMsg mRes;
-
-  mRes.ScenarioResult = (((int)@Test::scenarioResult) == 1) ? 1 : 0;
-  output(mRes);
+  write("[TEST_SCN] scenario result=%d",
+        (((int)@Test::scenarioResult) == 1) ? 1 : 0);
 }
 
 void beginScenarioExecution(int scenarioId)

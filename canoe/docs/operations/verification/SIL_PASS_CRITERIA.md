@@ -34,8 +34,8 @@ Test::testScenario = N  →  applyScenarioPreset(N)
                         →  (Phase2: tScenarioPhase2, Phase3: tScenarioPhase3)
                         →  evaluateScenarioResult()
                         →  Test::scenarioResult = 1(PASS) / 0(FAIL)
-                        →  frmTestResultMsg.ScenarioResult 출력
-                        →  frmBaseTestResultMsg.BaseScenarioResult 출력
+                        →  TEST_BAS aggregates `Test::scenarioResult`
+                        →  Test::baseScenarioResult / Test::baseTestHealth 갱신
 ```
 
 ---
@@ -54,6 +54,11 @@ Test::testScenario = N  →  applyScenarioPreset(N)
 | sysvar | 역할 | 판정에 사용 |
 |--------|------|----------|
 | `@Test::scenarioResult` | 현재 시나리오 결과 (0/1) | S01~S14 전체 |
+| `@Test::baseScenarioId` | baseline 집계 대상 시나리오 ID | IT/ST harness summary |
+| `@Test::baseScenarioResult` | baseline 집계 결과 (0/1) | IT/ST harness summary |
+| `@Test::baseFlowCoverageMask` | baseline 커버리지 요약 비트 | IT/ST harness summary |
+| `@Test::baseTraceSnapshotId` | baseline trace snapshot anchor | IT/ST harness summary |
+| `@Test::baseTestHealth` | baseline harness health 요약 | IT/ST harness summary |
 | `@Core::selectedAlertLevel` | 중재 결과 alertLevel (0~7) | 전체 |
 | `@Core::selectedAlertType` | 중재 결과 alertType (0~7) | 전체 |
 | `@Cluster::warningTextCode` | IVI 표시 코드 | S04~S08 |
@@ -87,4 +92,5 @@ Test::testScenario = N  →  applyScenarioPreset(N)
 
 | 버전 | 날짜 | 내용 |
 |------|------|------|
+| v1.1 | 2026-03-12 | validation result frame 의존 제거. `Test::scenarioResult -> Test::base*` sysvar 집계 체계 반영 |
 | v1.0 | 2026-03-01 | S01~S14 판정 기준 최초 정의 |

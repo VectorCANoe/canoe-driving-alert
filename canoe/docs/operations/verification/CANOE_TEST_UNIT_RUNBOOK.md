@@ -4,7 +4,7 @@
 - Define how Dev1 uses native CANoe Test Unit assets in the current SIL project.
 - Keep the harness-first strategy intact:
   - `TEST_SCN` drives the scenario
-  - `TEST_BAS` aggregates the baseline result frame
+  - `TEST_BAS` aggregates the baseline result sysvar summary
   - Dev2 TUI/CLI remains the external bridge for packaging and CI
 
 ## Current PoC Assets
@@ -18,8 +18,12 @@
   - accepted command id
 - `Test::scenarioResult`
   - 0/1 validation result from `TEST_SCN`
-- `frmBaseTestResultMsg (0x2A6)`
-  - baseline aggregation frame from `TEST_BAS`
+- `Test::baseScenarioId`
+  - baseline aggregation scenario id from `TEST_BAS`
+- `Test::baseScenarioResult`
+  - baseline aggregation PASS/FAIL result from `TEST_BAS`
+- `Test::baseFlowCoverageMask`, `Test::baseTraceSnapshotId`, `Test::baseTestHealth`
+  - baseline coverage/trace/health summary from `TEST_BAS`
 
 ## Execution Rule
 1. Open the active CANoe configuration in the GUI.
@@ -32,7 +36,7 @@
 | Asset | Scenario | Main Runtime Checks |
 |---|---|---|
 | `TC_CANOE_UT_CORE_001_SCHOOLZONE_OVERSPEED` | `2` | `vehicleSpeedNorm`, `speedLimitNorm`, `baseZoneContext`, `selectedAlert*`, `ambient*`, `warningTextCode` |
-| `TC_CANOE_IT_V2_FAILSAFE_001_CGW` | `18` | `failSafeMode`, `decelAssistReq`, `selectedAlert*`, `warningTextCode`, `frmBaseTestResultMsg` |
+| `TC_CANOE_IT_V2_FAILSAFE_001_CGW` | `18` | `failSafeMode`, `decelAssistReq`, `selectedAlert*`, `warningTextCode`, `Test::baseScenarioId`, `Test::baseScenarioResult` |
 
 ## Out of Scope
 - Direct patching of `canoe/cfg/*.cfg`
