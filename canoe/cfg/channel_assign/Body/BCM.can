@@ -18,9 +18,78 @@ variables
   int gBackboneAlertType;
   int gBackboneTimeoutClear;
   dword gBackboneAlertTsMs;
+  int gAmbientModeWork;
+  int gAmbientColorWork;
+  int gAmbientPatternWork;
+  
+  const int BCM_BACKBONE_ALERT_TIMEOUT_MS = 500;
+  const int BCM_ALERT_LEVEL_MAX = 7;
+  const int BCM_ALERT_TYPE_MAX = 7;
+  const int BCM_NAV_DIRECTION_MAX = 3;
+  const int BCM_SEAT_BELT_OVERRIDE_MAX = 3;
+  const int BCM_TIMEOUT_CLEAR_ACTIVE = 1;
+  const int BCM_HAZARD_ALERT_THRESHOLD = 6;
+  const int BCM_ALERT_TYPE_AMBULANCE = 2;
+  const int BCM_ALERT_TYPE_SCHOOL_ZONE = 3;
+  const int BCM_ALERT_TYPE_HIGHWAY = 4;
+  const int BCM_ALERT_TYPE_GUIDE_LEFT = 5;
+  const int BCM_ALERT_TYPE_GUIDE_RIGHT = 6;
+  const int BCM_DRIVER_OVERRIDE = 1;
+  const int BCM_PASSENGER_OVERRIDE = 2;
+  const int BCM_DRIVER_AND_PASSENGER_OVERRIDE = 3;
+  const int BCM_TURN_LAMP_OFF = 0;
+  const int BCM_TURN_LAMP_LEFT = 1;
+  const int BCM_TURN_LAMP_RIGHT = 2;
+  const int BCM_TURN_LAMP_HAZARD = 3;
+  const int BCM_SEAT_BELT_UNBUCKLED = 0;
+  const int BCM_SEAT_BELT_BUCKLED = 1;
+  const int BCM_REAR_SEAT_BELT_ALL_BUCKLED = 3;
+  const int BCM_SEAT_BELT_WARN_OFF = 0;
+  const int BCM_SEAT_BELT_WARN_HAZARD = 1;
+  const int BCM_SEAT_BELT_WARN_UNBUCKLED = 2;
+  const int BCM_SELECTED_ALERT_PAYLOAD_MIN_LEN = 2;
+  const int BCM_AMBIENT_OFF = 0;
+  const int BCM_AMBIENT_EMERGENCY_POLICE = 6;
+  const int BCM_AMBIENT_EMERGENCY_AMBULANCE = 7;
+  const int BCM_AMBIENT_SCHOOL_ZONE_COLOR = 3;
+  const int BCM_AMBIENT_SCHOOL_ZONE_PATTERN = 5;
+  const int BCM_AMBIENT_HIGHWAY_COLOR = 4;
+  const int BCM_AMBIENT_HIGHWAY_PATTERN = 4;
+  const int BCM_AMBIENT_GUIDE_COLOR = 5;
+  const int BCM_AMBIENT_GUIDE_LEFT_PATTERN = 2;
+  const int BCM_AMBIENT_GUIDE_RIGHT_PATTERN = 3;
+  const int BCM_AMBIENT_FALLBACK_COLOR = 1;
+  const int BCM_AMBIENT_FALLBACK_PATTERN = 1;
+  const int BCM_WINDOW_COMMAND_DEFAULT = 0;
+  const int BCM_WINDOW_STATE_DEFAULT = 0;
+  const int BCM_DOME_LIGHT_LEVEL_ACTIVE = 20;
+  const int BCM_DOME_LIGHT_LEVEL_IDLE = 4;
+  const int BCM_RAIN_SENSE_LEVEL_DEFAULT = 0;
+  const int BCM_AUTO_LIGHT_STATE_DEFAULT = 0;
+  const int BCM_DOOR_STATE_MASK_DEFAULT = 0;
+  const int BCM_DOOR_LOCK_STATE_LOCKED = 1;
+  const int BCM_CHILD_LOCK_STATE_OFF = 0;
+  const int BCM_DOOR_OPEN_WARN_OFF = 0;
+  const int BCM_HEAD_LAMP_STATE_NORMAL = 1;
+  const int BCM_HEAD_LAMP_STATE_HAZARD = 2;
+  const int BCM_TAIL_LAMP_STATE_ON = 1;
+  const int BCM_CABIN_TEMP_DEFAULT = 24;
+  const int BCM_AIR_QUALITY_INDEX_DEFAULT = 90;
+  const int BCM_BODY_FAIL_CODE_NONE = 0;
+  const int BCM_DRIVER_SEAT_POS_DEFAULT = 120;
+  const int BCM_PASSENGER_SEAT_POS_DEFAULT = 118;
+  const int BCM_SEAT_CONTROL_CMD_DEFAULT = 0;
+  const int BCM_SEAT_HEAT_LEVEL_DEFAULT = 0;
+  const int BCM_SEAT_VENT_LEVEL_DEFAULT = 0;
+  const int BCM_DOOR_CONTROL_CMD_DEFAULT = 0;
+  const int BCM_BODY_GW_ROUTE_STATE_NORMAL = 1;
+  const int BCM_BODY_GW_HEALTH_OK = 0;
+  const int BCM_COMFORT_PROFILE_DEFAULT = 1;
+  const int BCM_COMFORT_STATUS_DEFAULT = 0;
+  const int BCM_COMFORT_ERROR_NONE = 0;
 }
 
-int useBackboneAlertState()
+int isUsingBackboneAlertState()
 {
   dword nowMs;
 
@@ -30,7 +99,7 @@ int useBackboneAlertState()
   }
 
   nowMs = getSimulationTimeMs();
-  if ((nowMs - gBackboneAlertTsMs) > 500)
+  if ((nowMs - gBackboneAlertTsMs) > BCM_BACKBONE_ALERT_TIMEOUT_MS)
   {
     return 0;
   }
@@ -38,12 +107,191 @@ int useBackboneAlertState()
   return 1;
 }
 
+int normalizeAmbientAlertLevel(int alertLevel)
+{
+  if (alertLevel < 0 || alertLevel > BCM_ALERT_LEVEL_MAX)
+  {
+    return 0;
+  }
+
+  return alertLevel;
+}
+
+int normalizeAmbientAlertType(int alertType)
+{
+  if (alertType < 0 || alertType > BCM_ALERT_TYPE_MAX)
+  {
+    return 0;
+  }
+
+  return alertType;
+}
+
+int normalizeTimeoutClear(int timeoutClear)
+{
+  return ((timeoutClear == BCM_TIMEOUT_CLEAR_ACTIVE) ? 1 : 0);
+}
+
+int deriveHazardActiveState()
+{
+  if (isUsingBackboneAlertState())
+  {
+    return ((gBackboneAlertLevel >= BCM_HAZARD_ALERT_THRESHOLD) ? 1 : 0);
+  }
+
+  return ((((int)@Core::selectedAlertLevel) >= BCM_HAZARD_ALERT_THRESHOLD) ? 1 : 0);
+}
+
+int normalizeNavDirection(int navDirection)
+{
+  if (navDirection < 0 || navDirection > BCM_NAV_DIRECTION_MAX)
+  {
+    return 0;
+  }
+
+  return navDirection;
+}
+
+int normalizeSeatBeltOverride(int seatBeltOverride)
+{
+  if (seatBeltOverride < 0 || seatBeltOverride > BCM_SEAT_BELT_OVERRIDE_MAX)
+  {
+    return 0;
+  }
+
+  return seatBeltOverride;
+}
+
+int deriveTurnLampState(int hazardActive, int navDirection)
+{
+  if (hazardActive == BCM_TIMEOUT_CLEAR_ACTIVE)
+  {
+    return BCM_TURN_LAMP_HAZARD;
+  }
+  if (navDirection == BCM_TURN_LAMP_LEFT)
+  {
+    return BCM_TURN_LAMP_LEFT;
+  }
+  if (navDirection == BCM_TURN_LAMP_RIGHT)
+  {
+    return BCM_TURN_LAMP_RIGHT;
+  }
+
+  return BCM_TURN_LAMP_OFF;
+}
+
+int deriveDriverSeatBeltState(int seatBeltOverride)
+{
+  if (seatBeltOverride == BCM_DRIVER_OVERRIDE ||
+      seatBeltOverride == BCM_DRIVER_AND_PASSENGER_OVERRIDE)
+  {
+    return BCM_SEAT_BELT_UNBUCKLED;
+  }
+
+  return BCM_SEAT_BELT_BUCKLED;
+}
+
+int derivePassengerSeatBeltState(int seatBeltOverride)
+{
+  if (seatBeltOverride == BCM_PASSENGER_OVERRIDE ||
+      seatBeltOverride == BCM_DRIVER_AND_PASSENGER_OVERRIDE)
+  {
+    return BCM_SEAT_BELT_UNBUCKLED;
+  }
+
+  return BCM_SEAT_BELT_BUCKLED;
+}
+
+int deriveSeatBeltWarnLevel(int driverSeatBelt, int passengerSeatBelt, int hazardActive)
+{
+  if (driverSeatBelt == BCM_SEAT_BELT_UNBUCKLED ||
+      passengerSeatBelt == BCM_SEAT_BELT_UNBUCKLED)
+  {
+    return BCM_SEAT_BELT_WARN_UNBUCKLED;
+  }
+  if (hazardActive == BCM_TIMEOUT_CLEAR_ACTIVE)
+  {
+    return BCM_SEAT_BELT_WARN_HAZARD;
+  }
+
+  return BCM_SEAT_BELT_WARN_OFF;
+}
+
+int isSelectedAlertPayload(int msgId, dword count)
+{
+  return ((msgId == ethMsgSelectedAlert()) &&
+          (ethFramePayloadLen(count) >= BCM_SELECTED_ALERT_PAYLOAD_MIN_LEN));
+}
+
 void updateBackboneAlertState(int alertLevel, int alertType, int timeoutClear)
 {
-  gBackboneAlertLevel = clampRange(alertLevel, 0, 7);
-  gBackboneAlertType = clampRange(alertType, 0, 7);
-  gBackboneTimeoutClear = (timeoutClear == 1) ? 1 : 0;
+  gBackboneAlertLevel = clampRange(alertLevel, 0, BCM_ALERT_LEVEL_MAX);
+  gBackboneAlertType = clampRange(alertType, 0, BCM_ALERT_TYPE_MAX);
+  gBackboneTimeoutClear = (timeoutClear == BCM_TIMEOUT_CLEAR_ACTIVE) ? 1 : 0;
   gBackboneAlertTsMs = getSimulationTimeMs();
+}
+
+void setAmbientOutputValues(int ambientMode, int ambientColor, int ambientPattern)
+{
+  gAmbientModeWork = ambientMode;
+  gAmbientColorWork = ambientColor;
+  gAmbientPatternWork = ambientPattern;
+}
+
+void resolveAmbientOutputValues(int alertLevel, int alertType, int timeoutClear)
+{
+  if (timeoutClear == BCM_TIMEOUT_CLEAR_ACTIVE)
+  {
+    setAmbientOutputValues(BCM_AMBIENT_OFF, BCM_AMBIENT_OFF, BCM_AMBIENT_OFF);
+  }
+  else
+  {
+    // Use the alert level as the base ambient mode.
+    setAmbientOutputValues(alertLevel, BCM_AMBIENT_OFF, BCM_AMBIENT_OFF);
+
+    // Highlight emergency alerts with dedicated color and pattern.
+    if (alertLevel >= BCM_HAZARD_ALERT_THRESHOLD)
+    {
+      /* Req_035: emergency color/pattern distinct from zone policies
+         Legacy Req_036 merged into Req_035
+         6=RED/BLUE(police)  7=RED/WHITE(ambulance) */
+      setAmbientOutputValues(alertLevel,
+                             (alertType == BCM_ALERT_TYPE_AMBULANCE) ? BCM_AMBIENT_EMERGENCY_AMBULANCE : BCM_AMBIENT_EMERGENCY_POLICE,
+                             (alertType == BCM_ALERT_TYPE_AMBULANCE) ? BCM_AMBIENT_EMERGENCY_AMBULANCE : BCM_AMBIENT_EMERGENCY_POLICE);
+    }
+    // Use a fixed color and pattern for school-zone alerts.
+    else if (alertType == BCM_ALERT_TYPE_SCHOOL_ZONE)
+    {
+      setAmbientOutputValues(alertLevel, BCM_AMBIENT_SCHOOL_ZONE_COLOR, BCM_AMBIENT_SCHOOL_ZONE_PATTERN);
+    }
+    // Use a fixed color and pattern for highway alerts.
+    else if (alertType == BCM_ALERT_TYPE_HIGHWAY)
+    {
+      setAmbientOutputValues(alertLevel, BCM_AMBIENT_HIGHWAY_COLOR, BCM_AMBIENT_HIGHWAY_PATTERN);
+    }
+    // Use the left-flow pattern for left guidance alerts.
+    else if (alertType == BCM_ALERT_TYPE_GUIDE_LEFT)
+    {
+      setAmbientOutputValues(alertLevel, BCM_AMBIENT_GUIDE_COLOR, BCM_AMBIENT_GUIDE_LEFT_PATTERN);
+    }
+    // Use the right-flow pattern for right guidance alerts.
+    else if (alertType == BCM_ALERT_TYPE_GUIDE_RIGHT)
+    {
+      setAmbientOutputValues(alertLevel, BCM_AMBIENT_GUIDE_COLOR, BCM_AMBIENT_GUIDE_RIGHT_PATTERN);
+    }
+    // Use the generic fallback color and pattern for other alerts.
+    else if (alertLevel > 0)
+    {
+      setAmbientOutputValues(alertLevel, BCM_AMBIENT_FALLBACK_COLOR, BCM_AMBIENT_FALLBACK_PATTERN);
+    }
+  }
+}
+
+int hasAmbientOutputChanged()
+{
+  return ((gAmbientModeWork != gLastAmbientMode) ||
+          (gAmbientColorWork != gLastAmbientColor) ||
+          (gAmbientPatternWork != gLastAmbientPattern));
 }
 
 void OnUdpReceiveFrom(dword socket, long result, dword address, dword port, char buffer[], dword count)
@@ -57,7 +305,7 @@ void OnUdpReceiveFrom(dword socket, long result, dword address, dword port, char
   if (result == 0)
   {
     msgId = ethFrameMsgId(buffer, count);
-    if (msgId == ethMsgSelectedAlert() && ethFramePayloadLen(count) >= 2)
+    if (isSelectedAlertPayload(msgId, count))
     {
       updateBackboneAlertState(ethGetU8(buffer, 0) & 0x7,
                                (ethGetU8(buffer, 0) >> 3) & 0x7,
@@ -96,14 +344,9 @@ on timer tBodyCycle
   int alertLevel;
   int alertType;
   int timeoutClear;
-  int ambientMode;
-  int ambientColor;
-  int ambientPattern;
-  int useBackbone;
   message frmAmbientControlMsg mAmbient;
 
-  useBackbone = useBackboneAlertState();
-  if (useBackbone == 1)
+  if (isUsingBackboneAlertState())
   {
     alertLevel = gBackboneAlertLevel;
     alertType = gBackboneAlertType;
@@ -111,82 +354,33 @@ on timer tBodyCycle
   }
   else
   {
-    alertLevel = (int)@Core::selectedAlertLevel;
+    // Read the arbitration result for ambient control.
+  alertLevel = (int)@Core::selectedAlertLevel;
     alertType = (int)@Core::selectedAlertType;
     timeoutClear = (int)@Core::timeoutClear;
   }
-  if (alertLevel < 0 || alertLevel > 7)
-  {
-    alertLevel = 0;
-  }
-  if (alertType < 0 || alertType > 7)
-  {
-    alertType = 0;
-  }
-  timeoutClear = (timeoutClear == 1) ? 1 : 0;
+  // Clamp out-of-range inputs back to defaults.
+  alertLevel = normalizeAmbientAlertLevel(alertLevel);
+  alertType = normalizeAmbientAlertType(alertType);
+  timeoutClear = normalizeTimeoutClear(timeoutClear);
 
-  if (timeoutClear == 1)
-  {
-    ambientMode = 0;
-    ambientColor = 0;
-    ambientPattern = 0;
-  }
-  else
-  {
-    ambientMode = alertLevel;
-    ambientColor = 0;
-    ambientPattern = 0;
-    if (alertLevel >= 6)
-    {
-      /* Req_035: emergency color/pattern distinct from zone policies
-         Legacy Req_036 merged into Req_035
-         6=RED/BLUE(police)  7=RED/WHITE(ambulance) */
-      ambientColor   = (alertType == 2) ? 7 : 6;
-      ambientPattern = (alertType == 2) ? 7 : 6;
-    }
-    else if (alertType == 3)
-    {
-      ambientColor   = 3; /* red   - Req_037 school zone fixed color */
-      ambientPattern = 5; /* fast flash - Req_037 school zone fixed pattern */
-    }
-    else if (alertType == 4)
-    {
-      ambientColor   = 4; /* orange - Req_037 highway fixed color (Legacy Req_038) */
-      ambientPattern = 4; /* pulse  - Req_037 highway fixed pattern (Legacy Req_038) */
-    }
-    else if (alertType == 5)
-    {
-      ambientColor   = 5; /* cyan      - Req_037 guide left (Legacy Req_039) */
-      ambientPattern = 2; /* flow-left - Req_037 guide left fixed pattern (Legacy Req_039) */
-    }
-    else if (alertType == 6)
-    {
-      ambientColor   = 5; /* cyan       - Req_037 guide right (Legacy Req_039) */
-      ambientPattern = 3; /* flow-right - Req_037 guide right fixed pattern (Legacy Req_039) */
-    }
-    else if (alertLevel > 0)
-    {
-      ambientColor   = 1; /* green - general fallback */
-      ambientPattern = 1; /* solid */
-    }
-  }
+  resolveAmbientOutputValues(alertLevel, alertType, timeoutClear);
 
-  if (ambientMode != gLastAmbientMode ||
-      ambientColor != gLastAmbientColor ||
-      ambientPattern != gLastAmbientPattern)
+  // Update sysvars and the message only when ambient outputs change.
+  if (hasAmbientOutputChanged())
   {
-    @Body::ambientMode = ambientMode;
-    @Body::ambientColor = ambientColor;
-    @Body::ambientPattern = ambientPattern;
+    @Body::ambientMode = gAmbientModeWork;
+    @Body::ambientColor = gAmbientColorWork;
+    @Body::ambientPattern = gAmbientPatternWork;
 
-    mAmbient.AmbientMode = ambientMode;
-    mAmbient.AmbientColor = ambientColor;
-    mAmbient.AmbientPattern = ambientPattern;
+    mAmbient.AmbientMode = gAmbientModeWork;
+    mAmbient.AmbientColor = gAmbientColorWork;
+    mAmbient.AmbientPattern = gAmbientPatternWork;
     output(mAmbient);
 
-    gLastAmbientMode = ambientMode;
-    gLastAmbientColor = ambientColor;
-    gLastAmbientPattern = ambientPattern;
+    gLastAmbientMode = gAmbientModeWork;
+    gLastAmbientColor = gAmbientColorWork;
+    gLastAmbientPattern = gAmbientPatternWork;
   }
 
   setTimer(tBodyCycle, 10);
@@ -212,126 +406,99 @@ on timer tBodyBase100
   int navDirection;
   int seatBeltOverride;
   int ambientMode;
-  if (useBackboneAlertState() == 1)
-  {
-    hazardActive = (gBackboneAlertLevel >= 6) ? 1 : 0;
-  }
-  else
-  {
-    hazardActive = ((int)@Core::selectedAlertLevel >= 6) ? 1 : 0;
-  }
-  navDirection = (int)@Infotainment::navDirection;
-  seatBeltOverride = (int)@Test::seatBeltOverride;
-  ambientMode = clampRange((int)@Body::ambientMode, 0, 7);
-  if (navDirection < 0 || navDirection > 3)
-  {
-    navDirection = 0;
-  }
-  if (seatBeltOverride < 0 || seatBeltOverride > 3)
-  {
-    seatBeltOverride = 0;
-  }
 
+  // Read and normalize the inputs needed for periodic transmission.
+  hazardActive = deriveHazardActiveState();
+  navDirection = normalizeNavDirection((int)@Infotainment::navDirection);
+  seatBeltOverride = normalizeSeatBeltOverride((int)@Test::seatBeltOverride);
+  ambientMode = clampRange((int)@Body::ambientMode, 0, BCM_ALERT_LEVEL_MAX);
+
+  // Publish the hazard state periodically.
   mHazard.HazardSwitch = hazardActive;
   mHazard.HazardState = hazardActive;
   output(mHazard);
 
-  mWindow.WindowCommand = 0;
-  mWindow.WindowState = 0;
+  // Publish the window state with default values.
+  mWindow.WindowCommand = BCM_WINDOW_COMMAND_DEFAULT;
+  mWindow.WindowState = BCM_WINDOW_STATE_DEFAULT;
   output(mWindow);
 
+  // Publish the interior light state based on the ambient mode.
   mLight.CabinLightMode = ambientMode & 0x7;
-  mLight.DomeLightLevel = (ambientMode > 0) ? 20 : 4;
+  mLight.DomeLightLevel = (ambientMode > 0) ? BCM_DOME_LIGHT_LEVEL_ACTIVE : BCM_DOME_LIGHT_LEVEL_IDLE;
   output(mLight);
 
-  mRain.RainSenseLevel = 0;
-  mRain.AutoLightState = 0;
+  // Publish default auto-light and rain-sensor states.
+  mRain.RainSenseLevel = BCM_RAIN_SENSE_LEVEL_DEFAULT;
+  mRain.AutoLightState = BCM_AUTO_LIGHT_STATE_DEFAULT;
   output(mRain);
 
-  mDoorState.DoorStateMask = 0;
-  mDoorState.DoorLockState = 1;
-  mDoorState.ChildLockState = 0;
-  mDoorState.DoorOpenWarn = 0;
+  // Publish the default door state.
+  mDoorState.DoorStateMask = BCM_DOOR_STATE_MASK_DEFAULT;
+  mDoorState.DoorLockState = BCM_DOOR_LOCK_STATE_LOCKED;
+  mDoorState.ChildLockState = BCM_CHILD_LOCK_STATE_OFF;
+  mDoorState.DoorOpenWarn = BCM_DOOR_OPEN_WARN_OFF;
   output(mDoorState);
 
-  mLamp.HeadLampState = (hazardActive == 1) ? 2 : 1;
-  mLamp.TailLampState = 1;
-  if (hazardActive == 1)
-  {
-    mLamp.TurnLampState = 3;
-  }
-  else if (navDirection == 1)
-  {
-    mLamp.TurnLampState = 1;
-  }
-  else if (navDirection == 2)
-  {
-    mLamp.TurnLampState = 2;
-  }
-  else
-  {
-    mLamp.TurnLampState = 0;
-  }
+  // Determine lamp states from hazard status and navigation direction.
+  mLamp.HeadLampState = (hazardActive == BCM_TIMEOUT_CLEAR_ACTIVE) ? BCM_HEAD_LAMP_STATE_HAZARD : BCM_HEAD_LAMP_STATE_NORMAL;
+  mLamp.TailLampState = BCM_TAIL_LAMP_STATE_ON;
+  mLamp.TurnLampState = deriveTurnLampState(hazardActive, navDirection);
   mLamp.HazardLampReq = hazardActive;
   output(mLamp);
 
-  mSeatBelt.DriverSeatBelt = 1;
-  mSeatBelt.PassengerSeatBelt = 1;
-  if (seatBeltOverride == 1 || seatBeltOverride == 3)
-  {
-    mSeatBelt.DriverSeatBelt = 0;
-  }
-  if (seatBeltOverride == 2 || seatBeltOverride == 3)
-  {
-    mSeatBelt.PassengerSeatBelt = 0;
-  }
-  mSeatBelt.RearSeatBelt = 3;
-  mSeatBelt.SeatBeltWarnLvl = 0;
-  if (mSeatBelt.DriverSeatBelt == 0 || mSeatBelt.PassengerSeatBelt == 0)
-  {
-    mSeatBelt.SeatBeltWarnLvl = 2;
-  }
-  else if (hazardActive == 1)
-  {
-    mSeatBelt.SeatBeltWarnLvl = 1;
-  }
+  // Build seat-belt states from the override input.
+  mSeatBelt.DriverSeatBelt = deriveDriverSeatBeltState(seatBeltOverride);
+  mSeatBelt.PassengerSeatBelt = derivePassengerSeatBeltState(seatBeltOverride);
+  mSeatBelt.RearSeatBelt = BCM_REAR_SEAT_BELT_ALL_BUCKLED;
+  mSeatBelt.SeatBeltWarnLvl = deriveSeatBeltWarnLevel(mSeatBelt.DriverSeatBelt,
+                                                       mSeatBelt.PassengerSeatBelt,
+                                                       hazardActive);
   output(mSeatBelt);
 
+  // Mirror key states into CoreState for other ECUs.
   @CoreState::turnLampState = mLamp.TurnLampState;
   @CoreState::driverSeatBelt = mSeatBelt.DriverSeatBelt;
   @CoreState::passengerSeatBelt = mSeatBelt.PassengerSeatBelt;
   @CoreState::seatBeltWarnLvl = mSeatBelt.SeatBeltWarnLvl;
 
-  mCabinAir.CabinTemp = 24;
-  mCabinAir.AirQualityIndex = 90;
+  // Publish the cabin environment state with default values.
+  mCabinAir.CabinTemp = BCM_CABIN_TEMP_DEFAULT;
+  mCabinAir.AirQualityIndex = BCM_AIR_QUALITY_INDEX_DEFAULT;
   output(mCabinAir);
 
+  // Publish body health and the alive counter.
   mHealth.BodyAliveCnt = gBodyAliveCnt & 0xFF;
-  mHealth.BodyFailCode = 0;
+  mHealth.BodyFailCode = BCM_BODY_FAIL_CODE_NONE;
   output(mHealth);
 
-  mSeatState.DriverSeatPos = 120;
-  mSeatState.PassengerSeatPos = 118;
+  // Publish seat position states.
+  mSeatState.DriverSeatPos = BCM_DRIVER_SEAT_POS_DEFAULT;
+  mSeatState.PassengerSeatPos = BCM_PASSENGER_SEAT_POS_DEFAULT;
   output(mSeatState);
 
-  mSeatCtrl.DriverSeatCmd = 0;
-  mSeatCtrl.PassengerSeatCmd = 0;
-  mSeatCtrl.SeatHeatLevel = 0;
-  mSeatCtrl.SeatVentLevel = 0;
+  // Publish default seat control commands.
+  mSeatCtrl.DriverSeatCmd = BCM_SEAT_CONTROL_CMD_DEFAULT;
+  mSeatCtrl.PassengerSeatCmd = BCM_SEAT_CONTROL_CMD_DEFAULT;
+  mSeatCtrl.SeatHeatLevel = BCM_SEAT_HEAT_LEVEL_DEFAULT;
+  mSeatCtrl.SeatVentLevel = BCM_SEAT_VENT_LEVEL_DEFAULT;
   output(mSeatCtrl);
 
-  mDoorCtrl.DoorControlCmd = 0;
-  mDoorCtrl.ChildLockCmd = 0;
+  // Publish default door control commands.
+  mDoorCtrl.DoorControlCmd = BCM_DOOR_CONTROL_CMD_DEFAULT;
+  mDoorCtrl.ChildLockCmd = BCM_CHILD_LOCK_STATE_OFF;
   output(mDoorCtrl);
 
 
-  mBodyGwState.BodyGwRouteState = 1;
-  mBodyGwState.BodyGwHealth = 0;
+  // Publish the body gateway state.
+  mBodyGwState.BodyGwRouteState = BCM_BODY_GW_ROUTE_STATE_NORMAL;
+  mBodyGwState.BodyGwHealth = BCM_BODY_GW_HEALTH_OK;
   output(mBodyGwState);
 
-  mComfort.ComfortProfile = 1;
-  mComfort.ComfortStatus = 0;
-  mComfort.ComfortError = 0;
+  // Publish the comfort state and advance the alive counter.
+  mComfort.ComfortProfile = BCM_COMFORT_PROFILE_DEFAULT;
+  mComfort.ComfortStatus = BCM_COMFORT_STATUS_DEFAULT;
+  mComfort.ComfortError = BCM_COMFORT_ERROR_NONE;
   output(mComfort);
   gBodyAliveCnt = (gBodyAliveCnt + 1) & 0xFF;
 
