@@ -23,9 +23,7 @@ DBC_ACTIVE_FILES = [
     "body_can.dbc",
     "infotainment_can.dbc",
     "adas_can.dbc",
-    "eth_backbone_can_stub.dbc",
 ]
-DBC_BACKUP_FILE = "legacy/LEGACY_emergency_system.dbc"
 ETH_CONTRACT_REL = "canoe/docs/operations/ETH_INTERFACE_CONTRACT.md"
 
 MANDATORY_MESSAGE_IDS: Dict[str, int] = {
@@ -58,9 +56,6 @@ MANDATORY_MESSAGE_IDS: Dict[str, int] = {
     "frmClusterThemeMsg": 0x286,
     "frmHmiPopupStateMsg": 0x287,
     "frmInfotainmentHealthMsg": 0x288,
-    "frmTestResultMsg": 0x2A5,
-    "frmBaseTestResultMsg": 0x2A6,
-    "frmEmergencyMonitorMsg": 0x1C2,
     "frmIgnitionEngineMsg": 0x2A8,
     "frmGearStateMsg": 0x2A9,
     "frmPowertrainGatewayMsg": 0x109,
@@ -165,7 +160,6 @@ def build_gate_report(
     messages: List[Dict[str, object]],
     missing_dbc: List[str],
     has_eth_contract: bool,
-    has_backup_dbc: bool,
 ) -> Tuple[str, bool]:
     by_id: Dict[int, List[Dict[str, object]]] = {}
     by_file_and_id: Dict[Tuple[str, int], List[Dict[str, object]]] = {}
@@ -214,10 +208,6 @@ def build_gate_report(
     lines.append("")
     lines.append(f"- Generated: {dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     lines.append("- Scope: `canoe/databases` active split set validation")
-    lines.append(
-        f"- Backup DBC (`{DBC_BACKUP_FILE}`) present: {'YES' if has_backup_dbc else 'NO'}"
-    )
-    lines.append("")
     lines.append("## Gate Summary")
     lines.append("")
     lines.append(f"- Result: {'PASS' if gate_pass else 'FAIL'}")
@@ -319,9 +309,8 @@ def main() -> int:
     matrix_path.write_text(matrix_md, encoding="utf-8")
 
     has_eth_contract = (root / ETH_CONTRACT_REL).exists()
-    has_backup_dbc = (dbc_dir / DBC_BACKUP_FILE).exists()
     report_md, gate_pass = build_gate_report(
-        all_messages, missing_dbc, has_eth_contract, has_backup_dbc
+        all_messages, missing_dbc, has_eth_contract
     )
     report_path = root / args.report_out
     report_path.parent.mkdir(parents=True, exist_ok=True)

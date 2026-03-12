@@ -27,15 +27,16 @@ This baseline applies mentor feedback first and keeps implementation decisions p
 - `canoe/databases/powertrain_can.dbc`
 - `canoe/databases/body_can.dbc`
 - `canoe/databases/infotainment_can.dbc`
-- `canoe/databases/chassis_can.dbc`
-- `canoe/databases/eth_backbone_can_stub.dbc`
+- `canoe/databases/adas_can.dbc`
+
+`canoe/databases/eth_backbone_can_stub.dbc` may still appear as a temporary GUI attachment during migration, but it is not the active backbone SoT.
 
 2. Ethernet SoT is contract document only:
 - `canoe/docs/operations/ETH_INTERFACE_CONTRACT.md`
 
 3. Backup policy:
-- `canoe/databases/v1_legacy/v1_split_345bdb4/emergency_system.dbc` is backup compatibility artifact.
-- It must not replace split DBC SoT in design documents.
+- historical backup assets are preserved in `archive/*` git branches.
+- they must not replace split DBC SoT in design documents.
 
 4. Ownership policy:
 - One CAN message has one sender owner.
@@ -95,5 +96,3 @@ The following gates are mandatory before calling a build mentor-priority complia
   - `canoe/docs/operations/CAN_MESSAGE_OWNERSHIP_MATRIX.md`
 - Gate report:
   - `canoe/tmp/mentor_priority_gate_report.md`
-- Optional compatibility backup:
-  - `canoe/databases/v1_legacy/v1_split_345bdb4/emergency_system.dbc`

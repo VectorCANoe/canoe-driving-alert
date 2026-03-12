@@ -25,13 +25,17 @@ Open these first:
   - `cfg/CAN_v2_topology_wip.cfg`
 - system variables
   - `project/sysvars/project.sysvars`
-- active DBC set
+- active CAN DBC set
   - `databases/chassis_can.dbc`
   - `databases/powertrain_can.dbc`
   - `databases/body_can.dbc`
   - `databases/infotainment_can.dbc`
   - `databases/adas_can.dbc`
+- active Ethernet contract
+  - `docs/operations/ETH_INTERFACE_CONTRACT.md`
+- transitional cfg attachment
   - `databases/eth_backbone_can_stub.dbc`
+  - keep only while the active GUI configuration still references it
 - CAPL source
   - `cfg/channel_assign/`
   - `src/capl/`
@@ -61,7 +65,8 @@ Do not patch them directly unless the task explicitly calls for recovery work.
 - `docs/operations/`
   - CANoe-side working docs
 - `tmp/`
-  - generated verification outputs and temporary runtime-side artifacts
+  - local generated outputs may appear here during gate or verification runs
+  - this branch does not keep legacy snapshots or temp reports as tracked source
 
 ## What This Folder Is Not
 

@@ -16,7 +16,7 @@ Utility scripts for CANoe project maintenance.
 ## `validate_mentor_priority.py`
 - Purpose: enforce mentor-priority gates for active CAN/ETH contract.
 - Inputs:
-  - Active split DBC set (`chassis/powertrain/body/infotainment/test`)
+  - Active CAN DBC set (`chassis/powertrain/body/infotainment/adas`)
   - Ethernet contract (`canoe/docs/operations/ETH_INTERFACE_CONTRACT.md`)
 - Outputs:
   - Ownership matrix: `canoe/docs/operations/CAN_MESSAGE_OWNERSHIP_MATRIX.md`
