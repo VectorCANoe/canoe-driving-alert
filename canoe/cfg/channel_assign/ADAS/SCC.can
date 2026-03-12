@@ -1,3 +1,15 @@
+/*
+Rx
+  frmVehicleStateCanMsg
+  - gVehicleSpeed
+  - gDriveState
+
+Tx
+  frmCruiseStateMsg
+  - CruiseState
+  - GapLevel
+  - CruiseSetSpeed
+*/
 includes
 {
   #include "..\\common\\CAPL_COMMON.cin"
@@ -5,12 +17,83 @@ includes
 
 variables
 {
+  enum SccGapLevel
+  {
+    SCC_DEFAULT_GAP_LEVEL = 2,
+    SCC_EXPANDED_GAP_LEVEL = 3
+  };
+
+  enum SccDriveState
+  {
+    SCC_DRIVE_STATE_DRIVE = 3
+  };
+
+  enum SccFailSafeMode
+  {
+    SCC_FAIL_SAFE_OFF = 0
+  };
+
+  enum SccCruiseState
+  {
+    SCC_STATE_OFF = 0,
+    SCC_STATE_READY = 1,
+    SCC_STATE_DECEL_CONTROL = 2
+  };
+
+  enum SccEmergencyContext
+  {
+    SCC_EMERGENCY_CONTEXT_NONE = 0
+  };
+  const int SCC_SPEED_LIMIT_UNSET = 0;
+  const int SCC_MIN_CRUISE_SET_SPEED_KPH = 30;
+  const int SCC_DEFAULT_SPEED_LIMIT_KPH = 60;
+
+  const int SCC_HIGH_RISK_THRESHOLD = 70;
+  const int SCC_HIGH_ALERT_LEVEL_THRESHOLD = 6;
+  const int SCC_MEDIUM_RISK_THRESHOLD = 40;
+  const int SCC_MEDIUM_ALERT_LEVEL_THRESHOLD = 4;
+
+  const int SCC_HIGH_RISK_SPEED_REDUCTION_KPH = 10;
+  const int SCC_MEDIUM_RISK_SPEED_REDUCTION_KPH = 5;
+
   msTimer tSccCycle;
   int gVehicleSpeed;
   int gDriveState;
   int gLastCruiseState;
   int gLastGapLevel;
   int gLastCruiseSetSpeed;
+}
+
+int isSccActivationAllowed(int driveState, int failSafeMode)
+{
+  return ((driveState == SCC_DRIVE_STATE_DRIVE) &&
+          (failSafeMode == SCC_FAIL_SAFE_OFF));
+}
+
+int isHighRiskCruiseCondition(int riskLevel, int selectedAlertLevel, int emergencyContext)
+{
+  return ((riskLevel >= SCC_HIGH_RISK_THRESHOLD) ||
+          (selectedAlertLevel >= SCC_HIGH_ALERT_LEVEL_THRESHOLD) ||
+          (emergencyContext > SCC_EMERGENCY_CONTEXT_NONE));
+}
+
+int isMediumRiskCruiseCondition(int riskLevel, int selectedAlertLevel)
+{
+  return ((riskLevel >= SCC_MEDIUM_RISK_THRESHOLD) ||
+          (selectedAlertLevel >= SCC_MEDIUM_ALERT_LEVEL_THRESHOLD));
+}
+
+int isCruiseSetSpeedBelowActiveMinimum(int cruiseSetSpeed, int cruiseState)
+{
+  return ((cruiseSetSpeed < SCC_MIN_CRUISE_SET_SPEED_KPH) &&
+          (cruiseState > SCC_STATE_OFF));
+}
+
+int hasCruiseOutputChanged(int cruiseState, int gapLevel, int cruiseSetSpeed)
+{
+  return ((cruiseState != gLastCruiseState) ||
+          (gapLevel != gLastGapLevel) ||
+          (cruiseSetSpeed != gLastCruiseSetSpeed));
 }
 
 void publishCruiseState()
@@ -31,50 +114,52 @@ void publishCruiseState()
   selectedAlertLevel = clampRange((int)@Core::selectedAlertLevel, 0, 7);
   emergencyContext = clampRange((int)@Core::emergencyContext, 0, 2);
 
-  if (speedLimit == 0)
+  /* Use the default speed limit when the incoming limit is unset. */
+  if (speedLimit == SCC_SPEED_LIMIT_UNSET)
   {
-    speedLimit = 60;
+    speedLimit = SCC_DEFAULT_SPEED_LIMIT_KPH;
   }
 
-  cruiseState = 0;
-  gapLevel = 2;
+  /* Initialize the default SCC state, gap level, and set speed. */
+  cruiseState = SCC_STATE_OFF;
+  gapLevel = SCC_DEFAULT_GAP_LEVEL;
   cruiseSetSpeed = speedLimit;
 
-  if (gDriveState == 3 && failSafeMode == 0)
+  /* Enable SCC only when the vehicle is driving and fail-safe is inactive. */
+  if (isSccActivationAllowed(gDriveState, failSafeMode))
   {
-    cruiseState = 1;
+    cruiseState = SCC_STATE_READY;
 
-    if (riskLevel >= 70 || selectedAlertLevel >= 6 || emergencyContext > 0)
+    /* Increase the gap and lower the set speed more aggressively under high risk. */
+    if (isHighRiskCruiseCondition(riskLevel, selectedAlertLevel, emergencyContext))
     {
-      cruiseState = 2;
-      gapLevel = 3;
-      cruiseSetSpeed = gVehicleSpeed - 10;
+      cruiseState = SCC_STATE_DECEL_CONTROL;
+      gapLevel = SCC_EXPANDED_GAP_LEVEL;
+      cruiseSetSpeed = gVehicleSpeed - SCC_HIGH_RISK_SPEED_REDUCTION_KPH;
     }
-    else if (riskLevel >= 40 || selectedAlertLevel >= 4)
+    /* Under medium risk, adjust only the gap and set speed conservatively. */
+    else if (isMediumRiskCruiseCondition(riskLevel, selectedAlertLevel))
     {
-      gapLevel = 3;
-      cruiseSetSpeed = gVehicleSpeed - 5;
+      gapLevel = SCC_EXPANDED_GAP_LEVEL;
+      cruiseSetSpeed = gVehicleSpeed - SCC_MEDIUM_RISK_SPEED_REDUCTION_KPH;
     }
   }
 
-  if (cruiseSetSpeed < 30 && cruiseState > 0)
+  /* Clamp the set speed to the allowed minimum and speed-limit bounds. */
+  if (isCruiseSetSpeedBelowActiveMinimum(cruiseSetSpeed, cruiseState))
   {
-    cruiseSetSpeed = 30;
+    cruiseSetSpeed = SCC_MIN_CRUISE_SET_SPEED_KPH;
   }
-  if (cruiseSetSpeed > speedLimit)
-  {
-    cruiseSetSpeed = speedLimit;
-  }
-  cruiseSetSpeed = clampRange(cruiseSetSpeed, 0, 255);
+  cruiseSetSpeed = clampRange(cruiseSetSpeed, 0, speedLimit);
 
+  /* Publish the calculated SCC state through the output message. */
   mCruise.CruiseState = cruiseState;
   mCruise.GapLevel = gapLevel;
   mCruise.CruiseSetSpeed = cruiseSetSpeed;
   output(mCruise);
 
-  if (cruiseState != gLastCruiseState ||
-      gapLevel != gLastGapLevel ||
-      cruiseSetSpeed != gLastCruiseSetSpeed)
+  /* Update the log and last-state cache only when the state changes. */
+  if (hasCruiseOutputChanged(cruiseState, gapLevel, cruiseSetSpeed))
   {
     write("[SCC] cruise=%d gap=%d set=%d risk=%d failSafe=%d alert=%d ems=%d speed=%d",
           cruiseState,
