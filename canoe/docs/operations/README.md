@@ -38,13 +38,6 @@ Current closeout anchor:
 - `verification/FINAL_PHASE_EXECUTION_FLOW.md`
 - `verification/README.md`
 
-### `audit/`
-Audit, runtime review, sync queue, and dated review snapshots.
-
-Primary index:
-
-- `audit/README.md`
-
 ### `panel/`
 Panel/XVP guidance, reference matrix, and panel-specific checklists.
 
@@ -60,7 +53,7 @@ Primary index:
 - `unity/README.md`
 
 ### `reference/`
-Strategy notes, intake notes, guideline-style references, and non-daily supporting docs.
+Reference policies, coding guidance, and a small set of local-support notes.
 
 Primary index:
 

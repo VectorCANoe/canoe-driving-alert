@@ -36,14 +36,9 @@ Primary daily actions remain:
 ### Simulator support
 - `navigation_simulator.py`
 
-### Experimental / recovery-style scripts
-- `fix_cfg_paths.py`
-- `fix_new_cfg.py`
-
 Rule:
-- `fix_cfg_paths.py` and `fix_new_cfg.py` directly touch cfg-like concerns.
-- They are not part of the normal stable operator path.
-- Prefer GUI-first config operations according to repo policy.
+- GUI-first config operations remain the default for cfg recovery and rebind work.
+- Do not add cfg-patching helper scripts back into this folder unless a lead explicitly reopens that path.
 
 ## Maintenance Rule
 If a script here becomes part of normal day-to-day flow, promote it through:

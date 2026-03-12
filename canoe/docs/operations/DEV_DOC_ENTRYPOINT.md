@@ -44,10 +44,6 @@ Open subfolders only when the task needs them:
 - `canoe/docs/operations/verification/README.md`
 - `canoe/docs/operations/verification/FINAL_PHASE_EXECUTION_FLOW.md`
 
-### Audit
-- `canoe/docs/operations/audit/`
-- `canoe/docs/operations/audit/README.md`
-
 ### Panel
 - `canoe/docs/operations/panel/`
 - `canoe/docs/operations/panel/README.md`
