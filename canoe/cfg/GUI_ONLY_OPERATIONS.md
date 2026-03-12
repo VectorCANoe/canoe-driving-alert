@@ -35,4 +35,4 @@ Follow this file as a strict operational boundary.
 ## 5) Version Control Guidance
 - Commit `*.cfg` only when it is known-good from GUI save.
 - Do not commit transient `*.stcfg` unless explicitly required by process.
-- Archive obsolete configs under `canoe/legacy/cfg/v1_cfg/` with timestamped names.
+- Preserve obsolete configs in dedicated git archive branches or external backup storage, not under a rebuilt local `canoe/legacy/` tree.

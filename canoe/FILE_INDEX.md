@@ -36,7 +36,6 @@ If you are entering the CANoe side for daily work, open these first:
 ## 4) Documents
 
 - Operations: `canoe\docs\operations\`
-- Architecture: `canoe\docs\architecture\`
 - Generated local outputs may appear under `canoe\tmp\` during validation runs
 
 ## 5) Archive Notes
