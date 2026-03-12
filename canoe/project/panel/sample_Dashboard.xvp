@@ -30,78 +30,6 @@
       <Property Name="DescriptionSize">0, 0</Property>
       <Property Name="SymbolConfiguration">8;16;Chassis;;;gearPosition;1;;;-1;;;Value;;;0</Property>
     </Object>
-    <Object Type="Vector.CANalyzer.Panels.Design.SwitchControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="Xad4e805ced688e48cae83cce8ea2f933ab05" ControlName="Switch / Indicator 2">
-      <Property Name="Name">Xad4e805ced688e48cae83cce8ea2f933ab05</Property>
-      <Property Name="Size">22, 17</Property>
-      <Property Name="Location">295, 268</Property>
-      <Property Name="SymbolConfiguration">8;16;Headlights;;;Headlight;1;;;-1;;;Value;;;0</Property>
-      <Property Name="ImageFile">..\..\..\..\..\..\..\Public\Documents\Vector\CANoe\Sample Configurations 19.4.10\CAN\CANSystem\CANoe\Panels\Bitmaps\Headlightsymbol.png</Property>
-      <Property Name="TransparentColor">Black</Property>
-      <Property Name="TabIndex">52</Property>
-      <Property Name="Epsilon">0</Property>
-      <Property Name="Increment">1</Property>
-      <Property Name="StartValue">0</Property>
-      <Property Name="SwitchValuesVTXml">&lt;Version&gt;2&lt;/Version&gt;&lt;Count&gt;2&lt;/Count&gt;&lt;RxValue&gt;0&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;0&lt;/TxValue&gt;&lt;RxValue&gt;1&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;1&lt;/TxValue&gt;</Property>
-      <Property Name="SwitchValuesVT">1;2;0/Lower/0;1/Lower/1</Property>
-      <Property Name="SwitchValues">1;2;0;1</Property>
-      <Property Name="SwitchValuesRx">1;2;0;1</Property>
-    </Object>
-    <Object Type="Vector.CANalyzer.Panels.Design.SwitchControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X2c5fb12fe8c5be414ee8a94e530c9ed93dac" ControlName="Switch / Indicator 1">
-      <Property Name="Name">X2c5fb12fe8c5be414ee8a94e530c9ed93dac</Property>
-      <Property Name="Size">22, 20</Property>
-      <Property Name="Location">562, 161</Property>
-      <Property Name="SymbolConfiguration">8;16;CruiseControl;;;CC_Active;1;;;-1;;;Value;;;0</Property>
-      <Property Name="ImageFile">..\..\..\..\..\..\..\Public\Documents\Vector\CANoe\Sample Configurations 19.4.10\CAN\CANSystem\CANoe\Panels\Bitmaps\CruiseControlIndicator.bmp</Property>
-      <Property Name="TransparentColor">Fuchsia</Property>
-      <Property Name="TabIndex">51</Property>
-      <Property Name="Epsilon">0</Property>
-      <Property Name="Increment">1</Property>
-      <Property Name="StartValue">0</Property>
-      <Property Name="SwitchValuesVTXml">&lt;Version&gt;2&lt;/Version&gt;&lt;Count&gt;2&lt;/Count&gt;&lt;RxValue&gt;0&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;0&lt;/TxValue&gt;&lt;RxValue&gt;1&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;1&lt;/TxValue&gt;</Property>
-      <Property Name="SwitchValuesVT">1;2;0/Lower/0;1/Lower/1</Property>
-      <Property Name="SwitchValues">1;2;0;1</Property>
-      <Property Name="SwitchValuesRx">1;2;0;1</Property>
-    </Object>
-    <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl3" ControlName="(engine)">
-      <Property Name="Name">StaticTextControl3</Property>
-      <Property Name="Size">48, 18</Property>
-      <Property Name="Location">348, 215</Property>
-      <Property Name="ForeColor">255, 127, 127, 127</Property>
-      <Property Name="Font">Microsoft Sans Serif, 8pt</Property>
-      <Property Name="Text">(engine)</Property>
-    </Object>
-    <Object Type="Vector.CANalyzer.Panels.Design.SwitchControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="SwitchControlBSI18" ControlName="Sig:Ig_15">
-      <Property Name="Name">SwitchControlBSI18</Property>
-      <Property Name="Size">18, 17</Property>
-      <Property Name="Location">368, 268</Property>
-      <Property Name="SymbolConfiguration">8;2;Comfort;;Gateway_1;Ig_15;0;;;-1;;;Value;;;0</Property>
-      <Property Name="ImageFile">..\..\..\..\..\..\..\Public\Documents\Vector\CANoe\Sample Configurations 19.4.10\CAN\CANSystem\CANoe\Panels\Bitmaps\DashboardIgnition15.png</Property>
-      <Property Name="ReadOnlyControl">True</Property>
-      <Property Name="TabIndex">50</Property>
-      <Property Name="Epsilon">0</Property>
-      <Property Name="Increment">1</Property>
-      <Property Name="StartValue">0</Property>
-      <Property Name="SwitchValuesVTXml">&lt;Version&gt;2&lt;/Version&gt;&lt;Count&gt;2&lt;/Count&gt;&lt;RxValue&gt;0&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;0&lt;/TxValue&gt;&lt;RxValue&gt;1&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;1&lt;/TxValue&gt;</Property>
-      <Property Name="SwitchValuesVT">1;2;0/Lower/0;1/Lower/1</Property>
-      <Property Name="SwitchValues">1;2;0;1</Property>
-      <Property Name="SwitchValuesRx">1;2;0;1</Property>
-    </Object>
-    <Object Type="Vector.CANalyzer.Panels.Design.SwitchControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="SwitchControlBSI20" ControlName="Sig:Ig_15R">
-      <Property Name="Name">SwitchControlBSI20</Property>
-      <Property Name="Size">18, 17</Property>
-      <Property Name="Location">332, 268</Property>
-      <Property Name="SymbolConfiguration">8;2;Comfort;;Gateway_1;Ig_15R;0;;;-1;;;Value;;;0</Property>
-      <Property Name="ImageFile">..\..\..\..\..\..\..\Public\Documents\Vector\CANoe\Sample Configurations 19.4.10\CAN\CANSystem\CANoe\Panels\Bitmaps\DashboardIgnition15R.png</Property>
-      <Property Name="ReadOnlyControl">True</Property>
-      <Property Name="TabIndex">49</Property>
-      <Property Name="Epsilon">0</Property>
-      <Property Name="Increment">1</Property>
-      <Property Name="StartValue">0</Property>
-      <Property Name="SwitchValuesVTXml">&lt;Version&gt;2&lt;/Version&gt;&lt;Count&gt;2&lt;/Count&gt;&lt;RxValue&gt;0&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;0&lt;/TxValue&gt;&lt;RxValue&gt;1&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;1&lt;/TxValue&gt;</Property>
-      <Property Name="SwitchValuesVT">1;2;0/Lower/0;1/Lower/1</Property>
-      <Property Name="SwitchValues">1;2;0;1</Property>
-      <Property Name="SwitchValuesRx">1;2;0;1</Property>
-    </Object>
     <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="StaticTextControl2" ControlName="km/h">
       <Property Name="Name">StaticTextControl2</Property>
       <Property Name="Size">32, 15</Property>
@@ -145,53 +73,6 @@
       <Property Name="DescriptionSize">0, 0</Property>
       <Property Name="SymbolConfiguration">8;16;Chassis;;;driveModeLabel;4;;;-1;;;Value;;;0</Property>
     </Object>
-    <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="TextBoxControl4" ControlName="Sig:EngineSpeed">
-      <Property Name="Name">TextBoxControl4</Property>
-      <Property Name="Size">64, 21</Property>
-      <Property Name="Location">299, 229</Property>
-      <Property Name="AlarmGeneralSettings">1;0;0;100</Property>
-      <Property Name="AlarmLowerBkgColor">Salmon</Property>
-      <Property Name="AlarmLowerTextColor">WindowText</Property>
-      <Property Name="AlarmUpperBkgColor">IndianRed</Property>
-      <Property Name="AlarmUpperTextColor">WindowText</Property>
-      <Property Name="BoxBorderStyle">None</Property>
-      <Property Name="DisplayLabel">Right</Property>
-      <Property Name="BoxBackColor">Black</Property>
-      <Property Name="BoxTextAlign">Right</Property>
-      <Property Name="BoxForeColor">White</Property>
-      <Property Name="TextForeColor">White</Property>
-      <Property Name="TabIndex">26</Property>
-      <Property Name="DescriptionText">1/min</Property>
-      <Property Name="ValueDecimalPlaces">0</Property>
-      <Property Name="ValueDisplay">Double</Property>
-      <Property Name="UsedValueTable">RawValue</Property>
-      <Property Name="DescriptionSize">32, 21</Property>
-      <Property Name="SymbolConfiguration">8;2;Comfort;Gateway;Gateway_2;EngSpeed;1;Comfort;;-1;;;Value;;;0</Property>
-    </Object>
-    <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="TextBoxControl3" ControlName="Sig:EingineTemp">
-      <Property Name="Name">TextBoxControl3</Property>
-      <Property Name="Size">51, 21</Property>
-      <Property Name="Location">299, 213</Property>
-      <Property Name="AlarmGeneralSettings">1;3;0;255</Property>
-      <Property Name="AlarmLowerBkgColor">Salmon</Property>
-      <Property Name="AlarmLowerTextColor">WindowText</Property>
-      <Property Name="AlarmUpperBkgColor">IndianRed</Property>
-      <Property Name="AlarmUpperTextColor">WindowText</Property>
-      <Property Name="BoxBorderStyle">None</Property>
-      <Property Name="DisplayLabel">Right</Property>
-      <Property Name="BoxBackColor">Black</Property>
-      <Property Name="BoxTextAlign">Right</Property>
-      <Property Name="BoxForeColor">White</Property>
-      <Property Name="TextBackColor">Black</Property>
-      <Property Name="TextForeColor">White</Property>
-      <Property Name="TabIndex">25</Property>
-      <Property Name="DescriptionText">°C</Property>
-      <Property Name="ValueDecimalPlaces">0</Property>
-      <Property Name="ValueDisplay">Double</Property>
-      <Property Name="UsedValueTable">RawValue</Property>
-      <Property Name="DescriptionSize">18, 21</Property>
-      <Property Name="SymbolConfiguration">8;2;Comfort;Gateway;Gateway_2;EngineTemp;1;Comfort;;-1;;;Value;;;0</Property>
-    </Object>
     <Object Type="Vector.CANalyzer.Panels.Design.ClockControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="ClockControl1" ControlName="Clock Control">
       <Property Name="Name">ClockControl1</Property>
       <Property Name="Size">67, 21</Property>
@@ -231,59 +112,13 @@
       <Property Name="DescriptionSize">0, 0</Property>
       <Property Name="SymbolConfiguration">8;16;Chassis;;;vehicleSpeed;1;;;-1;;;Value;;;0</Property>
     </Object>
-    <Object Type="Vector.CANalyzer.Panels.Design.SwitchControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="SwitchControl8" ControlName="DashboardTurnIndRightDisplay">
-      <Property Name="Name">SwitchControl8</Property>
-      <Property Name="Size">24, 20</Property>
-      <Property Name="Location">395, 138</Property>
-      <Property Name="SymbolConfiguration">8;16;ComfortBus;;;DashboardTurnIndRightDisplay;1;;;-1;;;Value;;;0</Property>
-      <Property Name="ImageFile">..\..\..\..\..\..\..\Public\Documents\Vector\CANoe\Sample Configurations 19.4.10\CAN\CANSystem\CANoe\Panels\Bitmaps\DashboardFlasherRight.png</Property>
-      <Property Name="TabIndex">21</Property>
-      <Property Name="Epsilon">0</Property>
-      <Property Name="Increment">1</Property>
-      <Property Name="StartValue">0</Property>
-      <Property Name="SwitchValuesVTXml">&lt;Version&gt;2&lt;/Version&gt;&lt;Count&gt;2&lt;/Count&gt;&lt;RxValue&gt;0&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;0&lt;/TxValue&gt;&lt;RxValue&gt;1&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;1&lt;/TxValue&gt;</Property>
-      <Property Name="SwitchValuesVT">1;2;0/Lower/0;1/Lower/1</Property>
-      <Property Name="SwitchValues">1;2;0;1</Property>
-      <Property Name="SwitchValuesRx">1;2;0;1</Property>
-    </Object>
-    <Object Type="Vector.CANalyzer.Panels.Design.SwitchControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="SwitchControl7" ControlName="DashboardTurnIndLeftDisplay">
-      <Property Name="Name">SwitchControl7</Property>
-      <Property Name="Size">24, 20</Property>
-      <Property Name="Location">245, 138</Property>
-      <Property Name="SymbolConfiguration">8;16;ComfortBus;;;DashboardTurnIndLeftDisplay;1;;;-1;;;Value;;;0</Property>
-      <Property Name="ImageFile">..\..\..\..\..\..\..\Public\Documents\Vector\CANoe\Sample Configurations 19.4.10\CAN\CANSystem\CANoe\Panels\Bitmaps\DashboardFlasherLeft.png</Property>
-      <Property Name="TabIndex">20</Property>
-      <Property Name="Epsilon">0</Property>
-      <Property Name="Increment">1</Property>
-      <Property Name="StartValue">0</Property>
-      <Property Name="SwitchValuesVTXml">&lt;Version&gt;2&lt;/Version&gt;&lt;Count&gt;2&lt;/Count&gt;&lt;RxValue&gt;0&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;0&lt;/TxValue&gt;&lt;RxValue&gt;1&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;1&lt;/TxValue&gt;</Property>
-      <Property Name="SwitchValuesVT">1;2;0/Lower/0;1/Lower/1</Property>
-      <Property Name="SwitchValues">1;2;0;1</Property>
-      <Property Name="SwitchValuesRx">1;2;0;1</Property>
-    </Object>
     <Object Type="Vector.CANalyzer.Panels.Design.SwitchControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="SwitchControl6" ControlName="DashboardEngineOilDisplay">
       <Property Name="Name">SwitchControl6</Property>
-      <Property Name="Size">43, 17</Property>
-      <Property Name="Location">338, 93</Property>
-      <Property Name="SymbolConfiguration">8;16;ComfortBus;;;DashboardEngineOilDisplay;1;;;-1;;;Value;;;0</Property>
-      <Property Name="ImageFile">..\..\..\..\..\..\..\Public\Documents\Vector\CANoe\Sample Configurations 19.4.10\CAN\CANSystem\CANoe\Panels\Bitmaps\DashboardOil.png</Property>
+      <Property Name="Size">32, 27</Property>
+      <Property Name="Location">395, 93</Property>
+      <Property Name="SymbolConfiguration">8;16;Body;;;blinkRight;1;;;-1;;;Value;;;0</Property>
+      <Property Name="ImageFile">..\..\..\..\..\..\..\Public\Documents\Vector\CANoe\Sample Configurations 19.4.10\CAN\CANSystem\CANoe\Panels\Bitmaps\DashboardFlasherRight.png</Property>
       <Property Name="TabIndex">19</Property>
-      <Property Name="IsButton">True</Property>
-      <Property Name="Epsilon">0</Property>
-      <Property Name="Increment">1</Property>
-      <Property Name="StartValue">0</Property>
-      <Property Name="SwitchValuesVTXml">&lt;Version&gt;2&lt;/Version&gt;&lt;Count&gt;2&lt;/Count&gt;&lt;RxValue&gt;0&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;0&lt;/TxValue&gt;&lt;RxValue&gt;1&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;1&lt;/TxValue&gt;</Property>
-      <Property Name="SwitchValuesVT">1;2;0/Lower/0;1/Lower/1</Property>
-      <Property Name="SwitchValues">1;2;0;1</Property>
-      <Property Name="SwitchValuesRx">1;2;0;1</Property>
-    </Object>
-    <Object Type="Vector.CANalyzer.Panels.Design.SwitchControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="SwitchControl5" ControlName="DashboardESPDisplay">
-      <Property Name="Name">SwitchControl5</Property>
-      <Property Name="Size">23, 17</Property>
-      <Property Name="Location">280, 93</Property>
-      <Property Name="SymbolConfiguration">8;16;ComfortBus;;;DashboardESPDisplay;1;;;-1;;;Value;;;0</Property>
-      <Property Name="ImageFile">..\..\..\..\..\..\..\Public\Documents\Vector\CANoe\Sample Configurations 19.4.10\CAN\CANSystem\CANoe\Panels\Bitmaps\DashboardESP.png</Property>
-      <Property Name="TabIndex">18</Property>
       <Property Name="IsButton">True</Property>
       <Property Name="Epsilon">0</Property>
       <Property Name="Increment">1</Property>
@@ -296,26 +131,10 @@
     <Object Type="Vector.CANalyzer.Panels.Design.SwitchControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="SwitchControl4" ControlName="DashboardABSDisplay">
       <Property Name="Name">SwitchControl4</Property>
       <Property Name="Size">23, 17</Property>
-      <Property Name="Location">252, 93</Property>
-      <Property Name="SymbolConfiguration">8;16;ComfortBus;;;DashboardABSDisplay;1;;;-1;;;Value;;;0</Property>
-      <Property Name="ImageFile">..\..\..\..\..\..\..\Public\Documents\Vector\CANoe\Sample Configurations 19.4.10\CAN\CANSystem\CANoe\Panels\Bitmaps\DashboardABS.png</Property>
+      <Property Name="Location">244, 93</Property>
+      <Property Name="SymbolConfiguration">8;16;Body;;;blinkLeft;1;;;-1;;;Value;;;0</Property>
+      <Property Name="ImageFile">..\..\..\..\..\..\..\Public\Documents\Vector\CANoe\Sample Configurations 19.4.10\CAN\CANSystem\CANoe\Panels\Bitmaps\DashboardFlasherLeft.png</Property>
       <Property Name="TabIndex">17</Property>
-      <Property Name="IsButton">True</Property>
-      <Property Name="Epsilon">0</Property>
-      <Property Name="Increment">1</Property>
-      <Property Name="StartValue">0</Property>
-      <Property Name="SwitchValuesVTXml">&lt;Version&gt;2&lt;/Version&gt;&lt;Count&gt;2&lt;/Count&gt;&lt;RxValue&gt;0&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;0&lt;/TxValue&gt;&lt;RxValue&gt;1&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;1&lt;/TxValue&gt;</Property>
-      <Property Name="SwitchValuesVT">1;2;0/Lower/0;1/Lower/1</Property>
-      <Property Name="SwitchValues">1;2;0;1</Property>
-      <Property Name="SwitchValuesRx">1;2;0;1</Property>
-    </Object>
-    <Object Type="Vector.CANalyzer.Panels.Design.SwitchControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="SwitchControl3" ControlName="DashboardEngineWater Display">
-      <Property Name="Name">SwitchControl3</Property>
-      <Property Name="Size">22, 17</Property>
-      <Property Name="Location">386, 93</Property>
-      <Property Name="SymbolConfiguration">8;16;ComfortBus;;;DashboardEngineWaterDisplay;1;;;-1;;;Value;;;0</Property>
-      <Property Name="ImageFile">..\..\..\..\..\..\..\Public\Documents\Vector\CANoe\Sample Configurations 19.4.10\CAN\CANSystem\CANoe\Panels\Bitmaps\DashboardWater.png</Property>
-      <Property Name="TabIndex">16</Property>
       <Property Name="IsButton">True</Property>
       <Property Name="Epsilon">0</Property>
       <Property Name="Increment">1</Property>

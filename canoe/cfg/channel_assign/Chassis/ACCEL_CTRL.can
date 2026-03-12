@@ -1,4 +1,4 @@
-/*@!Encoding:65001*/
+﻿/*@!Encoding:65001*/
 // ACCEL_CTRL.can  (cfg/channel_assign — CANoe 실제 로드 파일)
 // Chassis Domain — 버튼 직접 읽기 + 드라이브 모드 체크 + CC
 // 입력  : @Body::AccelButton, @Body::BrakeButton (Panel 버튼 직접)
@@ -111,32 +111,32 @@ on timer tAccelCycle
     write("[CC] CANCELLED — gear change");
   }
 
-  // ── 속도 계산 (100ms 주기) ────────────────────────────────────────
+  // ── 속도 계산 (1000ms 주기) ────────────────────────────────────────
   // 물리 기준 (실시간 모드 기준): 풀액셀 0->100 약 250초 | 풀브레이크 100->0 약 50초
   // ※ CANoe 시뮬레이션 속도가 빠를수록 이 값은 더 빠르게 동작함
   if (gBrakePedal > 5)
   {
-    // 제동: 페달 비례, 풀브레이크 -0.1 km/h per 100ms
-    gSpeed -= ((double)gBrakePedal / 100.0) * 0.1;
+    // 제동: 페달 비례, 풀브레이크 -1 km/h per 100ms
+    gSpeed -= (2*(double)gBrakePedal / 100.0);
     if (gSpeed < 0.0) gSpeed = 0.0;
   }
   else if (gCCActive == 1)
   {
-    // CC 유지: ±0.05 km/h per 100ms
-    if      (gSpeed < gCCTargetSpeed - 0.05) gSpeed += 0.05;
-    else if (gSpeed > gCCTargetSpeed + 0.05) gSpeed -= 0.05;
+    // CC 유지: ±5 km/h per 100ms
+    if      (gSpeed < gCCTargetSpeed - 5) gSpeed += 5;
+    else if (gSpeed > gCCTargetSpeed + 5) gSpeed -= 5;
   }
   else if (gAccelPedal > 0 && (driveMode == 3 || driveMode == 1))
   {
-    // 가속: 페달 비례, 풀액셀 +0.04 km/h per 100ms
-    gSpeed += ((double)gAccelPedal / 100.0) * 0.04;
+    // 가속: 페달 비례, 풀액셀 +4 km/h per 100ms
+    gSpeed += ((double)gAccelPedal / 100.0);
     if (driveMode == 1 && gSpeed > 30.0)  gSpeed = 30.0;   // R 최대 30
     if (driveMode == 3 && gSpeed > 200.0) gSpeed = 200.0;  // D 최대 200
   }
   else
   {
-    // 코스팅: -0.002 km/h per 100ms
-    gSpeed -= 0.002;
+    // 코스팅: -2 km/h per 100ms
+    gSpeed -= 0.1;
     if (gSpeed < 0.0) gSpeed = 0.0;
   }
   // ──────────────────────────────────────────────────────────────────

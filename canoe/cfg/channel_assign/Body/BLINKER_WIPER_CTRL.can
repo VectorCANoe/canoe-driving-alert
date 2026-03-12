@@ -68,7 +68,7 @@ on sysvar Body::turnLeft
 
     @Body::blinkLeft = 1;
 
-    setTimer(tBlink, 500);
+    setTimer(tBlink, 50);
 
     write("[BLINKER] LEFT ON");
   }
@@ -92,7 +92,7 @@ on sysvar Body::turnRight
 
     @Body::blinkRight = 1;
 
-    setTimer(tBlink, 500);
+    setTimer(tBlink, 50);
 
     write("[BLINKER] RIGHT ON");
   }
@@ -117,7 +117,7 @@ on sysvar Body::hazard
     @Body::blinkLeft  = 1;
     @Body::blinkRight = 1;
 
-    setTimer(tBlink, 500);
+    setTimer(tBlink, 50);
 
     write("[BLINKER] HAZARD ON");
   }
@@ -184,19 +184,19 @@ on sysvar Body::wiperMode
   {
     gWiperPos += gWiperDir;
 
-    if (gWiperPos >= 15) gWiperDir = -1;
+    if (gWiperPos >= 22) gWiperDir = -1;
     if (gWiperPos <= 0)  gWiperDir =  1;
 
     @Body::wiperState = gWiperPos;
 
     if (mode == 1)
     {
-      setTimer(tWiper, 5000);
+      setTimer(tWiper, 50);
       write("[WIPER] SLOW");
     }
     else
     {
-      setTimer(tWiper, 2500);
+      setTimer(tWiper, 25);
       write("[WIPER] FAST");
     }
   }
@@ -214,13 +214,13 @@ on timer tWiper
 
   gWiperPos += gWiperDir;
 
-  if (gWiperPos >= 15) gWiperDir = -1;
+  if (gWiperPos >= 22) gWiperDir = -1;
   if (gWiperPos <= 0)  gWiperDir =  1;
 
   @Body::wiperState = gWiperPos;
 
-  if (mode == 1) interval = 5000;
-  else           interval = 2500;
+  if (mode == 1) interval = 50;
+  else           interval = 25;
 
   setTimer(tWiper, interval);
 }

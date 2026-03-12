@@ -1,4 +1,5 @@
-﻿includes
+﻿/*@!Encoding:65001*/
+includes
 {
 }
 
@@ -9,10 +10,12 @@ variables
   int gWheelSpdFL;
   int gLastBrakePedal;
   int gLastAssistReq;
+  int gLastBrakeLamp;
 }
 
 on start
 {
+  gLastBrakeLamp = -1;
   gBrakePedal    = 0;
   gWheelSpdFL    = 0;
   gLastBrakePedal = -1;
@@ -46,7 +49,8 @@ on timer tBrakeCycle
   int absActive;
   int espActive;
   int absSlip;
-
+  int brakeLamp;
+  
   decelAssistReq = ((int)@Core::decelAssistReq == 1) ? 1 : 0;
   appliedBrakePedal = gBrakePedal;
   if (decelAssistReq == 1 && appliedBrakePedal < 25)
@@ -83,6 +87,15 @@ on timer tBrakeCycle
 
   mWear.BrakePadWearLvl = 10;
   output(mWear);
+  
+  brakeLamp = (appliedBrakePedal > 0) ? 1 : 0;
+  @Body::brakeLamp = brakeLamp;
+
+  if (brakeLamp != gLastBrakeLamp)
+  {
+    write("[BRK_CTRL] brakeLamp=%d", brakeLamp);
+    gLastBrakeLamp = brakeLamp;
+  }
 
   if (gBrakePedal != gLastBrakePedal || decelAssistReq != gLastAssistReq)
   {

@@ -1,4 +1,4 @@
-/*@!Encoding:65001*/
+﻿/*@!Encoding:65001*/
 // WINDOW_CTRL.can  (cfg/channel_assign — CANoe 실제 로드 파일)
 // Body Domain — 도어 잠금 + 창문 제어
 // 입력  : @Body::windowUp   (0=해제 1=누름) — 유리 올라감=닫힘 (state 감소)
@@ -7,7 +7,7 @@
 // 출력  : @Body::windowState (0=완전열림 ~ 9=완전닫힘)
 //         frmDoorControlMsg
 //
-// 단클릭: 1프레임 즉시 / 장기 누름: 4000ms 간격 연속 (10단계)
+// 단클릭: 1프레임 즉시 / 장기 누름: 100ms 간격 연속 (10단계)
 
 includes
 {
@@ -50,7 +50,7 @@ on sysvar Body::windowUp
       @Body::windowState = gWindowState;
       write("[WINDOW] Up click -> state=%d", gWindowState);
     }
-    setTimer(tWindowUp, 4000);
+    setTimer(tWindowUp, 100);
   }
   else
   {
@@ -66,7 +66,7 @@ on timer tWindowUp
     gWindowState -= 1;
     @Body::windowState = gWindowState;
     write("[WINDOW] Up hold -> state=%d", gWindowState);
-    setTimer(tWindowUp, 4000);
+    setTimer(tWindowUp, 100);
   }
 }
 
@@ -87,7 +87,7 @@ on sysvar Body::windowDown
       @Body::windowState = gWindowState;
       write("[WINDOW] Down click -> state=%d", gWindowState);
     }
-    setTimer(tWindowDown, 4000);
+    setTimer(tWindowDown, 100);
   }
   else
   {
@@ -103,7 +103,7 @@ on timer tWindowDown
     gWindowState += 1;
     @Body::windowState = gWindowState;
     write("[WINDOW] Down hold -> state=%d", gWindowState);
-    setTimer(tWindowDown, 4000);
+    setTimer(tWindowDown, 100);
   }
 }
 

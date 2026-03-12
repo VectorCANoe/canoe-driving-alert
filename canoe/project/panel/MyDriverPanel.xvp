@@ -87,11 +87,10 @@
         <Property Name="Epsilon">0</Property>
         <Property Name="Increment">1</Property>
         <Property Name="StartValue">2</Property>
-        <Property Name="StateCnt">3</Property>
-        <Property Name="SwitchValuesVTXml">&lt;Version&gt;2&lt;/Version&gt;&lt;Count&gt;3&lt;/Count&gt;&lt;RxValue&gt;2&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;2&lt;/TxValue&gt;&lt;RxValue&gt;3&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;3&lt;/TxValue&gt;&lt;RxValue&gt;4&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;4&lt;/TxValue&gt;</Property>
-        <Property Name="SwitchValuesVT">1;3;2/Lower/2;3/Lower/3;4/Lower/4</Property>
-        <Property Name="SwitchValues">1;3;2;3;4</Property>
-        <Property Name="SwitchValuesRx">1;3;2;3;4</Property>
+        <Property Name="SwitchValuesVTXml">&lt;Version&gt;2&lt;/Version&gt;&lt;Count&gt;2&lt;/Count&gt;&lt;RxValue&gt;0&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;0&lt;/TxValue&gt;&lt;RxValue&gt;1&lt;/RxValue&gt;&lt;LowerUpper&gt;Lower&lt;/LowerUpper&gt;&lt;TxValue&gt;1&lt;/TxValue&gt;</Property>
+        <Property Name="SwitchValuesVT">1;2;0/Lower/0;1/Lower/1</Property>
+        <Property Name="SwitchValues">1;2;0;1</Property>
+        <Property Name="SwitchValuesRx">1;2;0;1</Property>
       </Object>
       <Object Type="Vector.CANalyzer.Panels.Design.SwitchControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X3cd08767ed674e40e6e9032eb04d470fcff9" ControlName="Switch / Indicator 4">
         <Property Name="Name">X3cd08767ed674e40e6e9032eb04d470fcff9</Property>
@@ -324,20 +323,19 @@ P
       </Object>
       <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X0b3d0506e2240e4481e9ab8eb8342af603be" ControlName="와이퍼 상태">
         <Property Name="Name">X0b3d0506e2240e4481e9ab8eb8342af603be</Property>
-        <Property Name="Size">46, 168</Property>
-        <Property Name="Location">471, 272</Property>
+        <Property Name="Size">42, 153</Property>
+        <Property Name="Location">471, 283</Property>
         <Property Name="ForeColor">White</Property>
         <Property Name="Font">Microsoft Sans Serif, 10pt</Property>
-        <Property Name="Text">OFF
+        <Property Name="Text">HIGH
+
 
 
 LOW
 
 
-HIGH
 
-
-AUTO
+OFF
 </Property>
       </Object>
       <Object Type="Vector.CANalyzer.Panels.Design.StaticTextControl, Vector.CANalyzer.Panels.CommonControls, Version=18.0.150.0, Culture=neutral, PublicKeyToken=null" Name="X472adb42eebe1e4eade9890e29704e5615d2" ControlName="와이퍼">
@@ -354,10 +352,10 @@ AUTO
         <Property Name="Location">435, 277</Property>
         <Property Name="Orientation">Vertical</Property>
         <Property Name="TabIndex">4</Property>
-        <Property Name="MaximumDouble">3</Property>
+        <Property Name="MaximumDouble">2</Property>
         <Property Name="LargeChangeDouble">1</Property>
         <Property Name="MaximumSize">30, 100000</Property>
-        <Property Name="Maximum">3</Property>
+        <Property Name="Maximum">2</Property>
         <Property Name="LargeChange">1</Property>
         <Property Name="SymbolConfiguration">8;16;Body;;;wiperMode;1;;;-1;;;Value;;;0</Property>
       </Object>
