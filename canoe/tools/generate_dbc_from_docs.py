@@ -118,14 +118,6 @@ MSG_META: Dict[str, Dict[str, object]] = {
         "cycle_ms": 50,
         "comment": "Infotainment CAN output: cluster warning text code.",
     },
-    "frmTestResultMsg": {
-        "id": 0x230,
-        "dlc": 1,
-        "sender": "TEST_SCN",
-        "receivers": ["Vector__XXX"],
-        "cycle_ms": 0,
-        "comment": "Scenario pass/fail result for SIL traceability.",
-    },
 }
 
 MSG_ORDER = [
@@ -134,7 +126,6 @@ MSG_ORDER = [
     "frmNavContextCanMsg",
     "frmAmbientControlMsg",
     "frmClusterWarningMsg",
-    "frmTestResultMsg",
 ]
 
 COMPAT_SIGNAL_NAME = {
@@ -149,7 +140,6 @@ COMPAT_SIGNAL_NAME = {
     "ambientColor": "AmbientColor",
     "ambientPattern": "AmbientPattern",
     "warningTextCode": "WarningTextCode",
-    "scenarioResult": "ScenarioResult",
 }
 
 VALUE_TABLES: Dict[str, Dict[int, str]] = {
@@ -168,7 +158,6 @@ VALUE_TABLES: Dict[str, Dict[int, str]] = {
         7: "Emergency",
     },
     "AmbientPattern": {0: "None", 1: "DefaultBlink", 2: "GuideLeftPattern", 3: "GuideRightPattern"},
-    "ScenarioResult": {0: "Fail", 1: "Pass"},
 }
 
 NODE_COMMENTS = {
@@ -692,4 +681,3 @@ def main() -> int:
 
 if __name__ == "__main__":
     sys.exit(main())
-

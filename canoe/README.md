@@ -33,9 +33,6 @@ Open these first:
   - `databases/adas_can.dbc`
 - active Ethernet contract
   - `docs/operations/ETH_INTERFACE_CONTRACT.md`
-- transitional cfg attachment
-  - `databases/eth_backbone_can_stub.dbc`
-  - keep only while the active GUI configuration still references it
 - CAPL source
   - `cfg/channel_assign/`
   - `src/capl/`

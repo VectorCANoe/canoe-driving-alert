@@ -13,12 +13,6 @@ Ethernet backbone SoT is the contract document:
 
 - `../docs/operations/ETH_INTERFACE_CONTRACT.md`
 
-Transitional GUI attachment only:
-
-- `eth_backbone_can_stub.dbc`
-  - keep only while the inherited `.cfg` still references it
-  - do not treat it as the primary active backbone contract
-
 `test_can.dbc` is kept as a deprecated placeholder only.
 
 ## Legacy Backup DBC

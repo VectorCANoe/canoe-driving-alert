@@ -19,8 +19,8 @@ Visible surface nodes remain OEM-style ECU names. Additional bus/database visibi
 Important distinction:
 
 - **Ethernet runtime placement** is not the same thing as **extra CAN DBC visibility**
-- ETH-capable nodes may stay on the `ETH_Backbone` side of the topology without needing a CAN-stub backbone DBC
-- multibus assignment should now be driven by **foreign-domain CAN message visibility**, not by the retired CAN-stub backbone seam
+- ETH-capable nodes may stay on the `ETH_Backbone` side of the topology without needing any backbone CAN DBC
+- multibus assignment is driven by **foreign-domain CAN message visibility**, not by old backbone stub seams
 
 ## 2. Why Multibus Exists In This Project
 
@@ -139,7 +139,7 @@ Compile-guided shortcut:
 
 - if `CGW`, `TEST_SCN`, `HWP`, `SCC`, `ACU`, `ODS`, `AFLS`, `DATC`, `PGS`, or `VCU` show `Database missing?` errors, treat that as missing foreign-domain CAN visibility first
 - if `TEST_BAS` shows `Test::base*` variable errors, reload `project.sysvars`
-- do not use `eth_backbone_can_stub.dbc` as a generic workaround for missing foreign CAN visibility
+- do not reintroduce a retired backbone stub DBC as a workaround for missing foreign CAN visibility
 
 ## 6. Current DBC Set For Multibus Assignment
 
@@ -150,12 +150,6 @@ Use these as the primary multibus assignment set:
 - `infotainment_can.dbc`
 - `powertrain_can.dbc`
 - `adas_can.dbc`
-
-Deprecated for active transport assignment:
-
-- `eth_backbone_can_stub.dbc`
-  - do not use this as the primary basis for multibus assignment
-  - keep it only if a temporary GUI transition step still needs it before final removal
 
 ## 7. Design Intent
 

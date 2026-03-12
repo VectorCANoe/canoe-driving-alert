@@ -29,8 +29,6 @@ This baseline applies mentor feedback first and keeps implementation decisions p
 - `canoe/databases/infotainment_can.dbc`
 - `canoe/databases/adas_can.dbc`
 
-`canoe/databases/eth_backbone_can_stub.dbc` may still appear as a temporary GUI attachment during migration, but it is not the active backbone SoT.
-
 2. Ethernet SoT is contract document only:
 - `canoe/docs/operations/ETH_INTERFACE_CONTRACT.md`
 

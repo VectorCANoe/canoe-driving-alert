@@ -81,9 +81,7 @@ If the active GUI configuration was rebuilt from scratch or old DBC assignments 
 | `Infotainment/` | `canoe/databases/infotainment_can.dbc` |
 | `ADAS/` | `canoe/databases/adas_can.dbc` |
 
-`ETH_Backbone/` uses UDP helper code and does not require a primary CAN-stub DBC for runtime semantics.
-
-If the inherited GUI config still carries `canoe/databases/eth_backbone_can_stub.dbc`, treat it as a temporary migration attachment only. Do not use it as the primary basis for compile recovery or multibus restore.
+`ETH_Backbone/` uses UDP helper code and does not require a CAN DBC for primary runtime semantics.
 
 Do not keep stale legacy DBC attachments in the same GUI config. Re-attach the five current domain CAN DBCs first, then restore only the documented foreign CAN visibility.
 

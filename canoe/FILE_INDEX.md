@@ -27,9 +27,6 @@ If you are entering the CANoe side for daily work, open these first:
   - `C:\Users\이준영\CANoe-IVI-OTA\canoe\databases\adas_can.dbc`
 - Ethernet contract SoT:
   - `C:\Users\이준영\CANoe-IVI-OTA\canoe\docs\operations\ETH_INTERFACE_CONTRACT.md`
-- Transitional cfg attachment:
-  - `C:\Users\이준영\CANoe-IVI-OTA\canoe\databases\eth_backbone_can_stub.dbc`
-  - keep only until the GUI config fully detaches the stub network
 
 ## 3) CAPL Source
 

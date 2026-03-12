@@ -1,8 +1,8 @@
 # Ethernet Interface Contract (CANoe SIL)
 
 **Document ID**: CANOE-ETH-IFC  
-**Version**: 1.4  
-**Date**: 2026-03-12  
+**Version**: 1.5  
+**Date**: 2026-03-13  
 **Status**: Active  
 **Scope**: CANoe SIL, UDP 기반 Ethernet 계약 정의
 
@@ -13,7 +13,6 @@
 - 본 문서는 `0x510/0x511/0x512`, `0xE100`, `0xE200`, `0xE210~0xE216`, `0x1C2`를 포함한 active Ethernet backbone 계약의 단일 원본(Single Source of Truth)이다.
 - Active backbone transport는 UDP multicast `239.0.2.1:5000`을 사용한다.
 - CAN 프레임 원본은 `canoe/databases/chassis_can.dbc`, `canoe/databases/powertrain_can.dbc`, `canoe/databases/body_can.dbc`, `canoe/databases/infotainment_can.dbc`, `canoe/databases/adas_can.dbc`가 담당한다.
-- `canoe/databases/eth_backbone_can_stub.dbc`는 legacy SIL 전환 자산이며, active backbone primary contract로 사용하지 않는다.
 
 ---
 
@@ -75,27 +74,9 @@
 
 ---
 
-## 2.1 SIL Stub 매핑 규칙
+## 2.1 Validation Result Contract
 
-| Logical ID (Architecture) | SIL Stub ID (CANoe.CAN) | 비고 |
-|---|---|---|
-| 0xE210 | 0x1C3 | `ethEmergencyRiskMsg` |
-| 0xE211 | 0x1C4 | `ethDecelAssistReqMsg` |
-| 0xE212 | 0x111 | `ethFailSafeStateMsg` |
-| 0xE213 | 0x1C5 | `ethObjectRiskInputMsg` |
-| 0xE214 | 0x1C6 | `ethObjectRiskStateMsg` |
-| 0xE215 | 0x1C7 | `ethObjectScenarioAlertMsg` |
-| 0xE216 | 0x1C8 | `ethObjectSafetyStateMsg` |
-
-- 시스템/문서 아키텍처는 Logical ID를 기준으로 해석한다.
-- CANoe.CAN 라이선스 SIL 구현은 Stub ID(0x1C3/0x1C4/0x111/0x1C5~0x1C8)를 사용한다.
-- Ethernet 라이선스 적용 시 동일 의미를 Logical ID 기반으로 재검증한다.
-
----
-
-## 2.2 Validation Result Contract
-
-Validation harness result aggregation no longer uses backbone CAN-stub result frames.
+Validation harness result aggregation uses a sysvar-only summary seam.
 
 | Artifact | Producer | Consumer | Topology Intent |
 |---|---|---|---|
@@ -109,7 +90,6 @@ Validation harness result aggregation no longer uses backbone CAN-stub result fr
 - `TEST_SCN` stays multibus because it injects and observes cross-domain scenarios.
 - `TEST_BAS` stays single-bus on `ETH_Backbone` because it aggregates only the summarized sysvar result chain.
 - `TEST_BAS` is intentionally not placed in `Chassis` and not merged into `CGW`.
-- `eth_backbone_can_stub.dbc` must not be reintroduced as a generic validation result workaround.
 
 ---
 
@@ -126,6 +106,7 @@ Validation harness result aggregation no longer uses backbone CAN-stub result fr
 
 | 버전 | 날짜 | 변경 사항 |
 |---|---|---|
+| 1.5 | 2026-03-13 | Active cfg에서 backbone stub DBC 제거 완료. SIL stub ID 매핑 섹션 삭제, active backbone contract를 UDP multicast 단일 기준으로 정리. |
 | 1.4 | 2026-03-12 | Active UDP multicast backbone 기준으로 contract 정렬. `ETH_EmergencyMonitor`와 validation sysvar result seam(`Test::scenarioResult`, `Test::base*`) 반영, legacy stub 설명 정리. |
 | 1.3 | 2026-03-09 | Active runtime sender 기준으로 Ethernet contract 정렬: `VCU/MDPS/IVI/CGW/V2X` ownership 및 CAN-stub backbone seam 설명 최신화. |
 | 1.2 | 2026-03-06 | ADAS 객체 인지 Pre-Activation 계약 추가: `E213~E216` (`ethObjectRiskInputMsg`, `ethObjectRiskStateMsg`, `ethObjectScenarioAlertMsg`, `ethObjectSafetyStateMsg`) 및 SIL Stub ID(`0x1C5~0x1C8`) 반영. |
