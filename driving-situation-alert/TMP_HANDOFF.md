@@ -204,6 +204,22 @@
 - 긴 중첩 PowerShell 래핑보다 `apply_patch` 또는 단일 직접 명령을 우선한다.
 - 문서/코드 반영 후에는 실제 파일 기준으로 `git diff` 또는 핵심 문자열 검증을 반드시 남긴다.
 
+### 10.6 CAPL / CANoe Refactor Pitfalls (Do Not Repeat)
+- CAPL include(`*.cin`)를 `includes {}`로 불러오는 구조에서는 top-level `const`나 무리한 `#define`로 transport 상수를 넣지 않는다.
+  - parser 호환성이 애매하면 helper function으로 처리한다.
+- CAPL refactor 중 C 습관인 `(void)x;` suppress 패턴을 넣지 않는다.
+  - compile warning 억제보다 parser 안정성을 우선한다.
+- CAN-stub backbone을 real ETH로 바꿀 때는 의미 로직과 transport를 먼저 분리한다.
+  - owner logic이 stub message type에 직접 묶여 있으면 transport 교체 때 business code까지 같이 흔들린다.
+- UDP 구현은 host adapter 조회나 loopback 가정부터 시작하지 않는다.
+  - CANoe sample pattern 기준 `UdpOpen/UdpSocket::Open -> ReceiveFrom -> callback` 최소 경로로 먼저 검증한다.
+- CANoe 내부 Ethernet stack은 일반 host-local socket 감각으로 가정하지 않는다.
+  - broadcast/multicast/interface index는 CANoe TCP/IP stack 기준으로 검증한다.
+- ETH 전환은 전면 일괄 변경보다 `1 producer -> 1 consumer sanity path` 또는 explicit CAPL test hook을 먼저 만든 뒤 확장한다.
+- `src/capl/**`가 SoT이고 `cfg/channel_assign/**`가 active mirror인 구조에서는 두 경로를 항상 같이 반영하고 즉시 compile한다.
+- `compile success`와 `runtime success`는 별도 게이트다.
+  - MCP에서 trace/write window 증거를 못 읽으면 runtime은 추정 완료 처리하지 않고 `미확인`으로 남긴다.
+
 ## 11) Team Instance Boundary (Active)
 
 ### 11.1 Dev1 Instance

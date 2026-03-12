@@ -6,6 +6,8 @@ includes
 variables
 {
   msTimer tEdrCycle;
+  long gEthSocket;
+  char gEthRxBuffer[64];
   int gFailSafeMode;
   int gWarningPathStatus;
   int gE2eHealthState;
@@ -20,7 +22,6 @@ variables
 
 void publishEdrState()
 {
-  message ethEdrStateMsg mEdr;
   int alertLevel;
   int recordState;
   int eventSeverity;
@@ -80,13 +81,6 @@ void publishEdrState()
   storageLevel = clampRange((eventSeverity * 20) + (gWarningPathStatus * 10) + (gE2eHealthState == 0 ? 30 : 0), 0, 100);
   lastEventCode = clampRange(gObjectEventCode, 0, 255);
 
-  mEdr.RecordState = clampRange(recordState, 0, 3);
-  mEdr.EventSeverity = clampRange(eventSeverity, 0, 3);
-  mEdr.RecordReason = clampRange(recordReason, 0, 15);
-  mEdr.StorageLevel = storageLevel;
-  mEdr.LastEventCode = lastEventCode;
-  output(mEdr);
-
   if (recordState != gLastRecordState ||
       eventSeverity != gLastEventSeverity ||
       recordReason != gLastRecordReason ||
@@ -109,8 +103,40 @@ void publishEdrState()
   }
 }
 
+void OnUdpReceiveFrom(dword socket, long result, dword address, dword port, char buffer[], dword count)
+{
+  int msgId;
+  int payload0;
+  int payload3;
+
+  if (socket != gEthSocket)
+  {
+    return;
+  }
+  if (result == 0)
+  {
+    msgId = ethFrameMsgId(buffer, count);
+    if (msgId == ethMsgFailSafe() && ethFramePayloadLen(count) >= 1)
+    {
+      payload0 = ethGetU8(buffer, 0);
+      gWarningPathStatus = clampRange(payload0 & 0x3, 0, 2);
+      gE2eHealthState = clampRange((payload0 >> 2) & 0x3, 0, 2);
+      gFailSafeMode = clampRange((payload0 >> 4) & 0x3, 0, 2);
+    }
+    else if (msgId == ethMsgObjectSafety() && ethFramePayloadLen(count) >= 4)
+    {
+      payload3 = ethGetU8(buffer, 3);
+      gObjectTrackValid = clampRange((payload3 >> 2) & 0x1, 0, 1);
+      gObjectEventCode = clampRange(ethGetU16Le(buffer, 1), 0, 65535);
+    }
+  }
+
+  ethArmReceive(gEthSocket, gEthRxBuffer, elcount(gEthRxBuffer));
+}
+
 on start
 {
+  gEthSocket = ethOpenDefaultSocket();
   gFailSafeMode = 0;
   gWarningPathStatus = 0;
   gE2eHealthState = 2;
@@ -121,6 +147,10 @@ on start
   gLastRecordReason = -1;
   gLastStorageLevel = -1;
   gLastEventCode = -1;
+  if (gEthSocket != ethInvalidSocket())
+  {
+    ethStartReceiver(gEthSocket, gEthRxBuffer, elcount(gEthRxBuffer));
+  }
   setTimer(tEdrCycle, 100);
   write("[EDR] start");
 }
@@ -131,20 +161,9 @@ on timer tEdrCycle
   setTimer(tEdrCycle, 100);
 }
 
-on message ethFailSafeStateMsg
-{
-  gWarningPathStatus = clampRange((int)this.WarningPathStatus, 0, 2);
-  gE2eHealthState = clampRange((int)this.E2eHealthState, 0, 2);
-  gFailSafeMode = clampRange((int)this.FailSafeMode, 0, 2);
-}
-
-on message ethObjectSafetyStateMsg
-{
-  gObjectTrackValid = clampRange((int)this.ObjectTrackValid, 0, 1);
-  gObjectEventCode = clampRange((int)this.ObjectEventCode, 0, 65535);
-}
-
 on stopMeasurement
 {
   cancelTimer(tEdrCycle);
+  ethCloseSocket(gEthSocket);
+  gEthSocket = ethInvalidSocket();
 }

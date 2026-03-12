@@ -73,6 +73,22 @@ Use those references to align:
 - If config integrity issue occurs, recover by GUI reload/save path first, then document deltas in text docs (`0304`, panel README, etc.).
 - Detailed operational checklist: `canoe/cfg/GUI_ONLY_OPERATIONS.md`
 
+## CAPL / Ethernet Guardrails
+- When replacing CAN-stub backbone paths with Ethernet, separate `business semantics` from `transport` first.
+  - Do not bind owner logic directly to stub DBC message types if the final target is real Ethernet transport.
+- In CAPL include files (`*.cin`) that are pulled in via `includes {}`, avoid top-level `const` and preprocessor directives for transport constants.
+  - Prefer helper functions or normal variables inside valid CAPL sections.
+- Avoid C-only idioms that often break CAPL parsing during refactors.
+  - Example: do not use `(void)x;` suppression statements.
+- For CANoe UDP work, do not start from host adapter probing or loopback assumptions.
+  - Prefer CANoe sample patterns first: open with wildcard/configured stack address, then validate broadcast or multicast behavior against the configured Ethernet stack.
+- Do not assume a local host UDP pattern is equivalent to CANoe internal Ethernet behavior.
+  - If runtime delivery is unclear, verify with CANoe trace/write-window evidence before expanding the refactor.
+- Before broad transport migration, create one narrow producer/consumer sanity path or explicit CAPL test hook and verify that path first.
+- Whenever `src/capl` is the SoT and `cfg/channel_assign` is the active mirror, update both together and compile immediately after sync.
+- Treat `compile success` and `runtime success` as separate gates.
+  - If MCP cannot observe Ethernet trace or write-window evidence, report runtime verification as pending instead of assuming transport is correct.
+
 ## Notes
 - `driving-situation-alert/TMP_HANDOFF.md` is temporary and can be replaced as project state changes.
 - If this file and `driving-situation-alert/TMP_HANDOFF.md` conflict:

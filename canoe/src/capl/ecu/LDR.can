@@ -6,6 +6,8 @@ includes
 variables
 {
   msTimer tLidarCycle;
+  long gEthSocket;
+  char gEthRxBuffer[64];
   int gObjectConfidence;
   int gObjectEventCode;
   int gObjectTrackValid;
@@ -87,8 +89,34 @@ void publishLidarState()
   }
 }
 
+void OnUdpReceiveFrom(dword socket, long result, dword address, dword port, char buffer[], dword count)
+{
+  int msgId;
+  int payload3;
+
+  if (socket != gEthSocket)
+  {
+    return;
+  }
+  if (result == 0)
+  {
+    msgId = ethFrameMsgId(buffer, count);
+    if (msgId == ethMsgObjectSafety() && ethFramePayloadLen(count) >= 4)
+    {
+      payload3 = ethGetU8(buffer, 3);
+      gObjectConfidence = clampRange(ethGetU8(buffer, 0), 0, 100);
+      gObjectEventCode = clampRange(ethGetU16Le(buffer, 1), 0, 65535);
+      gObjectFailSafeMode = clampRange(payload3 & 0x3, 0, 2);
+      gObjectTrackValid = clampRange((payload3 >> 2) & 0x1, 0, 1);
+    }
+  }
+
+  ethArmReceive(gEthSocket, gEthRxBuffer, elcount(gEthRxBuffer));
+}
+
 on start
 {
+  gEthSocket = ethOpenDefaultSocket();
   gObjectConfidence = 0;
   gObjectEventCode = 0;
   gObjectTrackValid = 0;
@@ -98,6 +126,10 @@ on start
   gLastFreeSpaceClass = -1;
   gLastConfidence = -1;
   gLastRangeBucket = -1;
+  if (gEthSocket != ethInvalidSocket())
+  {
+    ethStartReceiver(gEthSocket, gEthRxBuffer, elcount(gEthRxBuffer));
+  }
   setTimer(tLidarCycle, 100);
   write("[LDR] start");
 }
@@ -108,15 +140,9 @@ on timer tLidarCycle
   setTimer(tLidarCycle, 100);
 }
 
-on message ethObjectSafetyStateMsg
-{
-  gObjectConfidence = clampRange((int)this.ObjectConfidence, 0, 100);
-  gObjectEventCode = clampRange((int)this.ObjectEventCode, 0, 65535);
-  gObjectFailSafeMode = clampRange((int)this.ObjectFailSafeMode, 0, 2);
-  gObjectTrackValid = clampRange((int)this.ObjectTrackValid, 0, 1);
-}
-
 on stopMeasurement
 {
   cancelTimer(tLidarCycle);
+  ethCloseSocket(gEthSocket);
+  gEthSocket = ethInvalidSocket();
 }

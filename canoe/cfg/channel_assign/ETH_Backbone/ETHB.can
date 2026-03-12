@@ -23,22 +23,99 @@ variables
 
 void publishBackboneState()
 {
-  message ethBackboneStateMsg mBackbone;
   int backboneMode;
   int routeHealth;
   int serviceHealth;
   int securityLevel;
   int activeServices;
   int faultBitmap;
+  int roadZone;
+  int navDirection;
+  int zoneDistance;
+  int alertLevel;
+  int warningPathStatus;
+  int boundaryAlive;
+
+  roadZone = clampRange((int)@Infotainment::roadZone, 0, 3);
+  navDirection = clampRange((int)@Infotainment::navDirection, 0, 3);
+  zoneDistance = clampRange((int)@Infotainment::zoneDistance, 0, 255);
+  alertLevel = clampRange((int)@Core::selectedAlertLevel, 0, 7);
+  gFailSafeMode = clampRange((int)@Core::failSafeMode, 0, 2);
+  warningPathStatus = clampRange((int)@CoreState::warningPathStatus, 0, 2);
+  boundaryAlive = clampRange((int)@CoreState::domainBoundaryStatus, 0, 1);
+
+  gIboxRouteState = 0;
+  if (roadZone > 0)
+  {
+    gIboxRouteState = 1;
+  }
+  if (navDirection > 0 && zoneDistance > 0)
+  {
+    gIboxRouteState = 2;
+  }
+
+  gIboxSignalBars = 1;
+  if (boundaryAlive == 1)
+  {
+    gIboxSignalBars = 3;
+  }
+  if (boundaryAlive == 1 && warningPathStatus == 0)
+  {
+    gIboxSignalBars = 4;
+  }
+
+  gIboxServiceFlags = 0;
+  if (roadZone > 0)
+  {
+    gIboxServiceFlags = gIboxServiceFlags | 1;
+  }
+  if (alertLevel > 0)
+  {
+    gIboxServiceFlags = gIboxServiceFlags | 2;
+  }
+  if (gFailSafeMode > 0)
+  {
+    gIboxServiceFlags = gIboxServiceFlags | 4;
+  }
+
+  gSecuritySession = 0;
+  if (roadZone > 0 || alertLevel > 0)
+  {
+    gSecuritySession = 1;
+  }
+  if (boundaryAlive == 1 && roadZone > 0)
+  {
+    gSecuritySession = 2;
+  }
+  gAuthState = (gSecuritySession > 0) ? 1 : 0;
+  if (gFailSafeMode == 0 && boundaryAlive == 1)
+  {
+    gAuthState = 2;
+  }
+  gSecurityFault = 0;
+  if (gFailSafeMode > 0)
+  {
+    gSecurityFault = 2;
+  }
+  else if (warningPathStatus == 1)
+  {
+    gSecurityFault = 1;
+  }
 
   routeHealth = clampRange(gIboxRouteState, 0, 3);
 
-  serviceHealth = 2;
+  serviceHealth = 0;
+  if (gIboxSignalBars > 0 || (gIboxServiceFlags & 0x3) != 0)
   {
     serviceHealth = 1;
   }
+  if (routeHealth >= 2 &&
+      gIboxSignalBars >= 2 &&
+      (gIboxServiceFlags & 0x3) != 0 &&
+      gFailSafeMode == 0 &&
+      gSecurityFault == 0)
   {
-    serviceHealth = 0;
+    serviceHealth = 2;
   }
 
   securityLevel = clampRange(gAuthState, 0, 3);
@@ -52,7 +129,7 @@ void publishBackboneState()
   {
     backboneMode = 2;
   }
-  if (securityLevel >= 2 && serviceHealth >= 1)
+  if (securityLevel >= 2 && serviceHealth >= 2)
   {
     backboneMode = 3;
   }
@@ -65,14 +142,6 @@ void publishBackboneState()
   faultBitmap = 0;
   if (gSecurityFault > 0) { faultBitmap = faultBitmap | 0x01; }
   if (gFailSafeMode > 0) { faultBitmap = faultBitmap | 0x04; }
-
-  mBackbone.BackboneMode = clampRange(backboneMode, 0, 3);
-  mBackbone.RouteHealth = clampRange(routeHealth, 0, 3);
-  mBackbone.ServiceHealth = clampRange(serviceHealth, 0, 3);
-  mBackbone.SecurityLevel = clampRange(securityLevel, 0, 3);
-  mBackbone.ActiveServices = clampRange(activeServices, 0, 255);
-  mBackbone.FaultBitmap = clampRange(faultBitmap, 0, 255);
-  output(mBackbone);
 
   if (backboneMode != gLastBackboneMode ||
       routeHealth != gLastRouteHealth ||
@@ -120,27 +189,6 @@ on timer tEthBackboneCycle
 {
   publishBackboneState();
   setTimer(tEthBackboneCycle, 100);
-}
-
-on message ethIboxStateMsg
-{
-  gIboxRouteState = clampRange((int)this.IboxRouteState, 0, 3);
-  gIboxSignalBars = clampRange((int)this.IboxSignalBars, 0, 15);
-  gIboxServiceFlags = clampRange((int)this.IboxServiceFlags, 0, 15);
-}
-
-on message ethSecurityStateMsg
-{
-  gSecuritySession = clampRange((int)this.SecuritySession, 0, 7);
-  gAuthState = clampRange((int)this.AuthState, 0, 3);
-  gSecurityFault = clampRange((int)this.SecurityFault, 0, 15);
-}
-
-
-
-on message ethFailSafeStateMsg
-{
-  gFailSafeMode = clampRange((int)this.FailSafeMode, 0, 2);
 }
 
 on stopMeasurement

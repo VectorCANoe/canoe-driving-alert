@@ -36,15 +36,46 @@ on start
 
 on timer tDcmCycle
 {
-  setTimer(tDcmCycle, 100);
-}
+  int roadZone;
+  int alertLevel;
+  int boundaryAlive;
+  int warningPathStatus;
+  int failSafeMode;
 
-on message ethSecurityStateMsg
-{
-  gSecuritySession = clampRange((int)this.SecuritySession, 0, 7);
-  gAuthState = clampRange((int)this.AuthState, 0, 3);
-  gSecurityFault = clampRange((int)this.SecurityFault, 0, 15);
-  gSecurityPolicy = clampRange((int)this.SecurityPolicy, 0, 15);
+  roadZone = clampRange((int)@Infotainment::roadZone, 0, 3);
+  alertLevel = clampRange((int)@Core::selectedAlertLevel, 0, 7);
+  boundaryAlive = clampRange((int)@CoreState::domainBoundaryStatus, 0, 1);
+  warningPathStatus = clampRange((int)@CoreState::warningPathStatus, 0, 2);
+  failSafeMode = clampRange((int)@Core::failSafeMode, 0, 2);
+
+  gSecuritySession = 0;
+  if (roadZone > 0 || alertLevel > 0)
+  {
+    gSecuritySession = 1;
+  }
+  if (boundaryAlive == 1 && roadZone > 0)
+  {
+    gSecuritySession = 2;
+  }
+
+  gAuthState = (gSecuritySession > 0) ? 1 : 0;
+  if (failSafeMode == 0 && boundaryAlive == 1)
+  {
+    gAuthState = 2;
+  }
+
+  gSecurityFault = 0;
+  if (failSafeMode > 0)
+  {
+    gSecurityFault = 2;
+  }
+  else if (warningPathStatus == 1)
+  {
+    gSecurityFault = 1;
+  }
+  gSecurityPolicy = warningPathStatus;
+  publishDcmStateTrace();
+  setTimer(tDcmCycle, 100);
 }
 
 on stopMeasurement

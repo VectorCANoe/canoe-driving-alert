@@ -22,55 +22,56 @@ DBC_ACTIVE_FILES = [
     "powertrain_can.dbc",
     "body_can.dbc",
     "infotainment_can.dbc",
+    "adas_can.dbc",
     "eth_backbone_can_stub.dbc",
 ]
 DBC_BACKUP_FILE = "legacy/LEGACY_emergency_system.dbc"
 ETH_CONTRACT_REL = "canoe/docs/operations/ETH_INTERFACE_CONTRACT.md"
 
 MANDATORY_MESSAGE_IDS: Dict[str, int] = {
-    "frmVehicleStateCanMsg": 0x100,
-    "frmSteeringCanMsg": 0x101,
-    "frmPedalInputCanMsg": 0x102,
-    "frmSteeringStateCanMsg": 0x103,
-    "frmWheelSpeedMsg": 0x104,
-    "frmYawAccelMsg": 0x105,
-    "frmBrakeStatusMsg": 0x106,
-    "frmAccelStatusMsg": 0x107,
-    "frmSteeringTorqueMsg": 0x108,
-    "frmChassisHealthMsg": 0x109,
-    "frmNavContextCanMsg": 0x110,
-    "frmAmbientControlMsg": 0x210,
-    "frmHazardControlMsg": 0x211,
-    "frmWindowControlMsg": 0x212,
-    "frmDoorStateMsg": 0x214,
-    "frmLampControlMsg": 0x215,
-    "frmWiperStateMsg": 0x216,
-    "frmSeatBeltStateMsg": 0x217,
-    "frmCabinAirStateMsg": 0x218,
-    "frmBodyHealthMsg": 0x219,
-    "frmClusterWarningMsg": 0x220,
-    "frmClusterBaseStateMsg": 0x221,
-    "frmNaviGuideStateMsg": 0x222,
-    "frmMediaStateMsg": 0x223,
-    "frmCallStateMsg": 0x224,
-    "frmNavigationRouteMsg": 0x225,
-    "frmClusterThemeMsg": 0x226,
-    "frmHmiPopupStateMsg": 0x227,
-    "frmInfotainmentHealthMsg": 0x228,
-    "frmTestResultMsg": 0x230,
-    "frmBaseTestResultMsg": 0x231,
-    "frmEmergencyMonitorMsg": 0x232,
-    "frmIgnitionEngineMsg": 0x300,
-    "frmGearStateMsg": 0x301,
-    "frmPowertrainGatewayMsg": 0x302,
-    "frmEngineSpeedTempMsg": 0x303,
-    "frmFuelBatteryStateMsg": 0x304,
-    "frmThrottleStateMsg": 0x305,
-    "frmTransmissionTempMsg": 0x306,
-    "frmVehicleModeMsg": 0x307,
-    "frmPowerLimitMsg": 0x308,
-    "frmCruiseStateMsg": 0x309,
-    "frmPowertrainHealthMsg": 0x30A,
+    "frmVehicleStateCanMsg": 0x2A0,
+    "frmSteeringCanMsg": 0x2A1,
+    "frmPedalInputCanMsg": 0x2A2,
+    "frmSteeringStateCanMsg": 0x100,
+    "frmWheelSpeedMsg": 0x101,
+    "frmYawAccelMsg": 0x102,
+    "frmBrakeStatusMsg": 0x120,
+    "frmAccelStatusMsg": 0x121,
+    "frmSteeringTorqueMsg": 0x122,
+    "frmChassisHealthMsg": 0x103,
+    "frmNavContextCanMsg": 0x2A3,
+    "frmAmbientControlMsg": 0x260,
+    "frmHazardControlMsg": 0x261,
+    "frmWindowControlMsg": 0x262,
+    "frmDoorStateMsg": 0x264,
+    "frmLampControlMsg": 0x265,
+    "frmWiperStateMsg": 0x266,
+    "frmSeatBeltStateMsg": 0x267,
+    "frmCabinAirStateMsg": 0x268,
+    "frmBodyHealthMsg": 0x269,
+    "frmClusterWarningMsg": 0x280,
+    "frmClusterBaseStateMsg": 0x281,
+    "frmNaviGuideStateMsg": 0x282,
+    "frmMediaStateMsg": 0x283,
+    "frmCallStateMsg": 0x284,
+    "frmNavigationRouteMsg": 0x285,
+    "frmClusterThemeMsg": 0x286,
+    "frmHmiPopupStateMsg": 0x287,
+    "frmInfotainmentHealthMsg": 0x288,
+    "frmTestResultMsg": 0x2A5,
+    "frmBaseTestResultMsg": 0x2A6,
+    "frmEmergencyMonitorMsg": 0x1C2,
+    "frmIgnitionEngineMsg": 0x2A8,
+    "frmGearStateMsg": 0x2A9,
+    "frmPowertrainGatewayMsg": 0x109,
+    "frmEngineSpeedTempMsg": 0x12A,
+    "frmFuelBatteryStateMsg": 0x12B,
+    "frmThrottleStateMsg": 0x12C,
+    "frmTransmissionTempMsg": 0x12D,
+    "frmVehicleModeMsg": 0x10A,
+    "frmPowerLimitMsg": 0x10B,
+    "frmCruiseStateMsg": 0x10C,
+    "frmPowertrainHealthMsg": 0x10D,
 }
 
 MANDATORY_MESSAGES = set(MANDATORY_MESSAGE_IDS.keys())
@@ -128,6 +129,25 @@ def build_ownership_matrix(messages: List[Dict[str, object]]) -> str:
         "- Rule: Each message must have one clear sender in active runtime profile."
     )
     lines.append("")
+    lines.append("## Special-case interpretation")
+    lines.append("")
+    lines.append(
+        "- `frmEmergencyBroadcastMsg (0x1C0)` is the SIL backbone emergency ingress contract."
+    )
+    lines.append("  - Active runtime sender is `V2X`.")
+    lines.append(
+        "  - Historical police/ambulance split producers were absorbed into the `V2X` runtime anchor."
+    )
+    lines.append(
+        "- `ethSelectedAlertMsg` is the active output seam for warning consumers in the current SIL profile."
+    )
+    lines.append(
+        "  - `BCM`, `IVI`, and `CLU` prefer the fresh backbone frame and fall back to mirrored `Core::*` only when the seam is stale."
+    )
+    lines.append(
+        "  - Treat `Core::*` use here as a SIL fallback path, not as the primary output contract."
+    )
+    lines.append("")
     lines.append("| Message | ID (hex) | DLC | Sender | DBC | Signals |")
     lines.append("|---|---|---|---|---|---|")
 
@@ -148,13 +168,22 @@ def build_gate_report(
     has_backup_dbc: bool,
 ) -> Tuple[str, bool]:
     by_id: Dict[int, List[Dict[str, object]]] = {}
+    by_file_and_id: Dict[Tuple[str, int], List[Dict[str, object]]] = {}
     by_name: Dict[str, List[Dict[str, object]]] = {}
 
     for msg in messages:
         by_id.setdefault(int(msg["id"]), []).append(msg)
+        by_file_and_id.setdefault((str(msg["file"]), int(msg["id"])), []).append(msg)
         by_name.setdefault(str(msg["name"]), []).append(msg)
 
-    dup_ids = {k: v for k, v in by_id.items() if len(v) > 1}
+    dup_ids_within_dbc = {
+        key: value for key, value in by_file_and_id.items() if len(value) > 1
+    }
+    shared_ids_across_dbcs = {
+        mid: entries
+        for mid, entries in by_id.items()
+        if len({str(entry["file"]) for entry in entries}) > 1
+    }
     dup_names = {k: v for k, v in by_name.items() if len(v) > 1}
     msg_names = {str(m["name"]) for m in messages}
     missing_mandatory = sorted(MANDATORY_MESSAGES - msg_names)
@@ -169,7 +198,7 @@ def build_gate_report(
     gate_checks = [
         ("Split CAN DBC files present", len(missing_dbc) == 0),
         ("Ethernet SoT document present", has_eth_contract),
-        ("No duplicate message IDs across active DBCs", len(dup_ids) == 0),
+        ("No duplicate message IDs within an active DBC", len(dup_ids_within_dbc) == 0),
         ("No duplicate message names across active DBCs", len(dup_names) == 0),
         ("Mandatory message IDs match contract", len(id_mismatches) == 0),
         (
@@ -207,10 +236,22 @@ def build_gate_report(
             lines.append(f"- {name}")
         lines.append("")
 
-    if dup_ids:
-        lines.append("## Duplicate IDs (Active Set)")
+    if dup_ids_within_dbc:
+        lines.append("## Duplicate IDs Within A DBC (Invalid)")
         lines.append("")
-        for mid, entries in sorted(dup_ids.items()):
+        for (dbc_name, mid), entries in sorted(dup_ids_within_dbc.items()):
+            desc = ", ".join(str(e["name"]) for e in entries)
+            lines.append(f"- {dbc_name} 0x{mid:03X}: {desc}")
+        lines.append("")
+
+    if shared_ids_across_dbcs:
+        lines.append("## Shared IDs Across DBCs (Allowed In Split Profile)")
+        lines.append("")
+        lines.append(
+            "- These overlaps are informational. In the active split profile, ID reuse across different domain DBCs is allowed."
+        )
+        lines.append("")
+        for mid, entries in sorted(shared_ids_across_dbcs.items()):
             desc = ", ".join(f"{e['file']}:{e['name']}" for e in entries)
             lines.append(f"- 0x{mid:03X}: {desc}")
         lines.append("")
