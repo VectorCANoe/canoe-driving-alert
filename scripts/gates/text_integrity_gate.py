@@ -12,6 +12,7 @@ operator docs, Python surface strings, and CAPL sources before commit/push.
 """
 from __future__ import annotations
 
+import os
 import re
 from pathlib import Path
 
@@ -78,7 +79,15 @@ def should_scan(path: Path) -> bool:
 
 
 def iter_scan_files() -> list[Path]:
-    return sorted(p for p in ROOT.rglob("*") if p.is_file() and should_scan(p))
+    files: list[Path] = []
+    for dirpath, dirnames, filenames in os.walk(ROOT, topdown=True):
+        dirnames[:] = [name for name in dirnames if name not in EXCLUDE_DIRS]
+        base = Path(dirpath)
+        for filename in filenames:
+            path = base / filename
+            if should_scan(path):
+                files.append(path)
+    return sorted(files)
 
 
 def scan_file(path: Path) -> tuple[list[str], list[str], list[str], list[str]]:
