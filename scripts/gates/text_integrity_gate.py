@@ -42,6 +42,7 @@ EXCLUDE_DIRS = {
     "build",
     "dist",
     "node_modules",
+    "AGENT",
     "Library",
     "Temp",
     "Logs",
