@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 """Convenience wrapper for the CANoe SIL verification evidence pipeline.
 
 This wrapper keeps day-to-day execution simple while preserving existing tools:
@@ -388,7 +388,7 @@ def build_parser() -> argparse.ArgumentParser:
     p_bind = sub.add_parser("bind-doc", help="Build 05/06/07 evidence binding bundle from scored logs")
     p_bind.add_argument("--run-id", required=True, help="Run ID, e.g. 20260306_1930")
     p_bind.add_argument("--evidence-root", type=Path, default=DEFAULT_EVIDENCE_ROOT)
-    p_bind.add_argument("--docs-root", type=Path, default=REPO_ROOT / "driving-situation-alert")
+    p_bind.add_argument("--docs-root", type=Path, default=REPO_ROOT / "driving-alert-workproducts")
     p_bind.add_argument(
         "--output-csv",
         type=Path,
@@ -412,7 +412,7 @@ def build_parser() -> argparse.ArgumentParser:
     )
     p_fill.add_argument("--run-id", required=True, help="Run ID, e.g. 20260306_1930")
     p_fill.add_argument("--evidence-root", type=Path, default=DEFAULT_EVIDENCE_ROOT)
-    p_fill.add_argument("--docs-root", type=Path, default=REPO_ROOT / "driving-situation-alert")
+    p_fill.add_argument("--docs-root", type=Path, default=REPO_ROOT / "driving-alert-workproducts")
     p_fill.add_argument(
         "--binding-csv",
         type=Path,
@@ -456,7 +456,7 @@ def build_parser() -> argparse.ArgumentParser:
     p_finalize.add_argument("--no-strict-metadata", action="store_true")
     p_finalize.add_argument("--no-strict-axis", action="store_true")
     p_finalize.add_argument("--evidence-root", type=Path, default=DEFAULT_EVIDENCE_ROOT)
-    p_finalize.add_argument("--docs-root", type=Path, default=REPO_ROOT / "driving-situation-alert")
+    p_finalize.add_argument("--docs-root", type=Path, default=REPO_ROOT / "driving-alert-workproducts")
     p_finalize.add_argument(
         "--insight-md",
         type=Path,

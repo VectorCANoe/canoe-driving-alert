@@ -1,4 +1,4 @@
-# Internal Development Entrypoints
+﻿# Internal Development Entrypoints
 
 This file is for contributors working inside the repository.
 
@@ -7,12 +7,12 @@ If you are just trying to understand the project, start with:
 1. `README.md`
 2. `product/sdv_operator/README.md`
 3. `canoe/README.md`
-4. `driving-situation-alert/README.md`
+4. `driving-alert-workproducts/00_Project_Overview.md`
 
 ## Internal Start Order
 
 1. `AGENTS.md`
-2. `driving-situation-alert/TMP_HANDOFF.md`
+2. `driving-alert-workproducts/ops/handoff/TMP_HANDOFF.md`
 3. `canoe/FILE_INDEX.md`
 4. `scripts/README.md`
 5. `canoe/docs/operations/00_ACTIVE_WORKSET.md`
@@ -22,7 +22,7 @@ If you are just trying to understand the project, start with:
 Use these areas for daily development:
 
 - `canoe/`
-- `driving-situation-alert/`
+- `driving-alert-workproducts/`
 - `scripts/`
 
 Everything else is support, reference, or internal record material unless the task explicitly needs it.
@@ -31,7 +31,7 @@ Everything else is support, reference, or internal record material unless the ta
 
 Do not browse these first:
 
-- `driving-situation-alert/tmp/archive/`
+- `driving-alert-workproducts/archive/`
 - `docs/meeting-notes/`
 - `docs/mentoring/`
 - `reference/`

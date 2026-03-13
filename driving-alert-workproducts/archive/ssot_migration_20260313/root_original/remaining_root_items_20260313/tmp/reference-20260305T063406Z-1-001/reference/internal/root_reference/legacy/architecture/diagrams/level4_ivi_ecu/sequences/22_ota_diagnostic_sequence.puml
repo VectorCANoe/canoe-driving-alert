@@ -1,0 +1,415 @@
+@startuml
+!theme materia-outline
+
+title REQ_IVI_012: UDS 0x14 - Clear DTC (ASIL-B)
+
+actor "Diagnostic Tester\n(CANoe)" as Tester
+participant "CAN Bus" as CAN
+box "vECU (Target)" #f9f9f9
+    participant "DCM\n(Diagnostic Communication Manager)" as DCM
+    participant "DEM\n(Diagnostic Event Manager)" as DEM
+    participant "NvM\n(Non-volatile Memory)" as NVM
+end box
+
+== Extended Diagnostic Session ==
+
+Tester -> CAN : 0x10 03\n(Extended Diagnostic Session)
+activate CAN
+CAN -> DCM : Session Request
+activate DCM
+DCM -> DCM : Validate Session Request
+DCM --> CAN : 0x50 03\n(Positive Response)
+CAN --> Tester : Session Active
+deactivate DCM
+deactivate CAN
+
+note right of DCM
+    **Session Established**
+    • Extended Diagnostic Mode
+    • Security Access Required
+end note
+
+== Clear DTC Request ==
+
+Tester -> CAN : 0x14 FF FF FF\n(Clear All DTCs)
+activate CAN
+note right: REQ_IVI_012\nSuccess Rate: >99%
+
+CAN -> DCM : Clear DTC Service
+activate DCM
+
+DCM -> DEM : Request Clear All DTCs
+activate DEM
+
+DEM -> DEM : Validate Request\n(Check Session State)
+
+alt Clear DTC Successful
+    DEM -> NVM : Erase DTC Storage
+    activate NVM
+    NVM -> NVM : Clear Flash Memory\n(DTC Area: 0x8000-0x8FFF)
+    NVM --> DEM : Erase Complete
+    deactivate NVM
+
+    DEM -> DEM : Reset DTC Counters\nReset Freeze Frames
+    DEM --> DCM : Clear Successful
+    deactivate DEM
+
+    DCM --> CAN : 0x54\n(Positive Response)
+    CAN --> Tester : DTCs Cleared
+    deactivate DCM
+    deactivate CAN
+
+else Clear DTC Failed
+    DEM --> DCM : Clear Failed\n(Memory Error)
+    deactivate DEM
+
+    DCM --> CAN : 0x7F 14 22\n(Conditions Not Correct)
+    CAN --> Tester : Clear Failed
+    deactivate DCM
+    deactivate CAN
+end
+
+== Verification ==
+
+Tester -> CAN : 0x19 02 FF\n(Read DTC by Status Mask)
+CAN -> DCM : Read DTC Request
+activate DCM
+DCM -> DEM : Get Stored DTCs
+activate DEM
+DEM --> DCM : No DTCs Found
+deactivate DEM
+DCM --> CAN : 0x59 02\n(No DTC Available)
+CAN --> Tester : Verification Complete
+deactivate DCM
+
+note over Tester
+    **REQ_IVI_012 Verified**
+    • All DTCs cleared
+    • Re-query returns empty
+    • Success rate: >99%
+end note
+
+@enduml
+@startuml
+!theme materia-outline
+
+title REQ_IVI_013, 047: UDS 0x34 - OTA Download (ASIL-B)
+
+actor "OTA Server\n(CANoe)" as Server
+participant "CAN Bus" as CAN
+box "vECU (Target)" #f9f9f9
+    participant "DCM" as DCM
+    participant "OTA_Update_Agent" as OTA
+    participant "Flash Memory" as FLASH
+    participant "DEM" as DEM
+end box
+
+== Programming Session ==
+
+Server -> CAN : 0x10 02\n(Programming Session)
+activate CAN
+CAN -> DCM : Session Request
+activate DCM
+DCM --> CAN : 0x50 02\n(Positive Response)
+CAN --> Server : Programming Mode Active
+deactivate DCM
+deactivate CAN
+
+== Security Access ==
+
+Server -> CAN : 0x27 01\n(Request Seed)
+CAN -> DCM : Security Access Request
+activate DCM
+DCM -> DCM : Generate Seed\n(Random: 0x12345678)
+DCM --> CAN : 0x67 01 12 34 56 78\n(Seed Response)
+CAN --> Server : Seed Received
+deactivate DCM
+
+Server -> Server : Calculate Key\n(Algorithm: AES-128)
+
+Server -> CAN : 0x27 02 AB CD EF 01\n(Send Key)
+CAN -> DCM : Security Key
+activate DCM
+DCM -> DCM : Validate Key
+DCM --> CAN : 0x67 02\n(Key Accepted)
+CAN --> Server : Security Unlocked
+deactivate DCM
+
+== Request Download (0x34) ==
+
+Server -> CAN : 0x34 00 44\n00 08 00 00\n00 00 10 00\n(Address: 0x80000, Size: 4096 bytes)
+activate CAN
+note right: REQ_IVI_013\nSuccess Rate: >98%
+
+CAN -> DCM : Request Download
+activate DCM
+
+DCM -> OTA : Verify Memory & Security
+activate OTA
+
+OTA -> OTA : Check Address Range\nCheck Available Space
+
+alt Memory Available
+    OTA -> FLASH : Allocate Flash Space\n(Address: 0x80000-0x81000)
+    activate FLASH
+    FLASH --> OTA : Space Allocated
+    deactivate FLASH
+
+    OTA --> DCM : Download Accepted\n(Max Block Size: 256 bytes)
+    deactivate OTA
+
+    DCM --> CAN : 0x74 20 10\n(Max Block: 0x1000 = 4096 bytes)
+    CAN --> Server : Ready for Transfer
+    deactivate DCM
+    deactivate CAN
+
+else Memory Full
+    OTA --> DCM : Insufficient Memory
+    deactivate OTA
+    DCM --> CAN : 0x7F 34 70\n(Upload/Download Not Accepted)
+    CAN --> Server : Download Rejected
+    deactivate DCM
+    deactivate CAN
+end
+
+== Data Transfer (0x36) ==
+
+loop Transfer Blocks (16 blocks × 256 bytes)
+    Server -> CAN : 0x36 01 [256 bytes data]\n(Block Sequence: 0x01)
+    CAN -> DCM : Transfer Data
+    activate DCM
+    DCM -> FLASH : Write Payload to Flash
+    activate FLASH
+    FLASH --> DCM : Write Complete
+    deactivate FLASH
+    DCM --> CAN : 0x76 01\n(Block Received)
+    CAN --> Server : Block ACK
+    deactivate DCM
+end
+
+note over Server
+    **REQ_IVI_047**
+    • Parameter OTA: <45s
+    • Success Rate: >99%
+    • Lighting Theme Update
+end note
+
+== Transfer Exit (0x37) ==
+
+Server -> CAN : 0x37\n(Request Transfer Exit)
+CAN -> DCM : Transfer Exit Request
+activate DCM
+DCM -> OTA : Finalize Transfer
+activate OTA
+OTA -> OTA : Calculate Checksum\n(CRC32: 0xABCDEF01)
+OTA --> DCM : Transfer Complete
+deactivate OTA
+DCM --> CAN : 0x77\n(Transfer Exit OK)
+CAN --> Server : Download Complete
+deactivate DCM
+
+== Integrity Check (0x31) ==
+
+Server -> CAN : 0x31 01 02 02\n(Check Programming Dependencies)
+CAN -> DCM : Routine Control Request
+activate DCM
+DCM -> OTA : Verify Integrity
+activate OTA
+
+OTA -> OTA : Checksum Validation\nSignature Verification
+
+alt Validation Successful
+    OTA --> DCM : Integrity OK
+    deactivate OTA
+    DCM --> CAN : 0x71 01 02 02\n(Routine Complete)
+    CAN --> Server : Validation Passed
+    deactivate DCM
+
+else Validation Failed
+    OTA --> DCM : Integrity Check Failed
+    deactivate OTA
+    DCM -> DEM : Log DTC (0xC00400)
+    activate DEM
+    DEM --> DCM : DTC Logged
+    deactivate DEM
+    DCM --> CAN : 0x7F 31 72\n(General Programming Failure)
+    CAN --> Server : Validation Failed
+    deactivate DCM
+end
+
+note over OTA
+    **REQ_IVI_013 Complete**
+    • Download Success: >98%
+    • Integrity Verified
+    • Ready for Activation
+end note
+
+@enduml
+@startuml
+!theme silver
+
+title REQ_IVI_015: OTA Failure Auto-Recovery (ASIL-C)
+
+participant "OTA Server" as Server
+participant "CAN Bus" as CAN
+box "vECU (Target)" #f9f9f9
+    participant "OTA_Update_Agent" as OTA
+    participant "Flash Memory" as FLASH
+    participant "Bootloader" as BL
+    participant "DEM" as DEM
+end box
+
+== OTA Update in Progress ==
+
+Server -> CAN : 0x36 0A [256 bytes]\n(Block 10/16)
+CAN -> OTA : Transfer Data Block 10
+activate OTA
+OTA -> FLASH : Write to Flash
+activate FLASH
+
+== Power Failure Occurs ==
+
+note over FLASH #Red
+    **POWER CUT**
+    Simulated by CANoe
+    Fault Injection
+end note
+
+FLASH --> OTA : Write Interrupted
+deactivate FLASH
+OTA -> OTA : Detect Incomplete Transfer
+deactivate OTA
+
+== System Reboot ==
+
+note over BL: **Bootloader Startup**\nPower Restored
+
+BL -> BL : Check Application Integrity
+BL -> FLASH : Read Application CRC
+activate FLASH
+FLASH --> BL : CRC Mismatch\n(Corrupted Application)
+deactivate FLASH
+
+BL -> BL : **Recovery Decision**\nApplication Invalid
+
+== Automatic Rollback ==
+
+BL -> FLASH : Load Backup Image\n(Previous Valid Version)
+activate FLASH
+note right: REQ_IVI_015\nRecovery: 100%
+
+FLASH -> FLASH : Copy Backup to Active\n(Address: 0x90000 → 0x80000)
+FLASH --> BL : Rollback Complete
+deactivate FLASH
+
+BL -> BL : Verify Backup Integrity
+BL -> FLASH : Read Backup CRC
+activate FLASH
+FLASH --> BL : CRC Valid
+deactivate FLASH
+
+== Application Restart ==
+
+BL -> OTA : Start Application\n(Previous Version)
+activate OTA
+
+OTA -> OTA : Initialize System
+OTA -> DEM : Log Recovery Event\n(DTC: 0xC00500)
+activate DEM
+DEM --> OTA : Event Logged
+deactivate DEM
+
+OTA --> CAN : System Ready\n(Fallback Version Active)
+CAN --> Server : Recovery Complete
+
+note over OTA
+    **REQ_IVI_015 Verified**
+    • Auto Rollback: 100%
+    • Previous Version Restored
+    • System Functional
+    • DTC Logged for Analysis
+end note
+
+deactivate OTA
+
+@enduml
+@startuml
+!theme silver
+
+title REQ_IVI_014: Post-OTA Function Verification (ASIL-B)
+
+participant "Test System\n(CANoe)" as Test
+participant "CAN Bus" as CAN
+box "vECU (Updated)" #f9f9f9
+    participant "OTA_Update_Agent" as OTA
+    participant "Lighting_Controller" as LIGHT
+    participant "Safety_Manager" as SAFETY
+    participant "Diagnostic_Stack" as DIAG
+end box
+
+== OTA Update Complete ==
+
+note over OTA: New Software Version: v2.1.0\nPrevious Version: v2.0.5
+
+== Automated Function Test ==
+
+Test -> CAN : Start Function Verification\n(UDS 0x31 01 FF 01)
+CAN -> OTA : Verification Request
+activate OTA
+
+OTA -> OTA : Initialize Test Sequence
+note right: REQ_IVI_014\nSuccess Rate: >99%
+
+== Test 1: Lighting Function ==
+
+OTA -> LIGHT : Test Sport Mode Lighting
+activate LIGHT
+LIGHT -> LIGHT : Simulate Speed 60 km/h\nExpected: BLUE
+LIGHT --> OTA : Color: BLUE ✅
+deactivate LIGHT
+
+== Test 2: Safety Function ==
+
+OTA -> SAFETY : Test Reverse Safety Alert
+activate SAFETY
+SAFETY -> SAFETY : Simulate Gear R\nExpected: UI + Light ON
+SAFETY --> OTA : Alert Active ✅
+deactivate SAFETY
+
+== Test 3: Diagnostic Function ==
+
+OTA -> DIAG : Test DTC Storage
+activate DIAG
+DIAG -> DIAG : Inject Test Fault\nExpected: DTC 0xC00001
+DIAG --> OTA : DTC Stored ✅
+deactivate DIAG
+
+== Test Results ==
+
+OTA -> OTA : Aggregate Test Results\n• Lighting: PASS\n• Safety: PASS\n• Diagnostic: PASS
+
+alt All Tests Passed
+    OTA --> CAN : 0x71 01 FF 01\n(Verification Successful)
+    CAN --> Test : All Functions OK
+    deactivate OTA
+
+else Any Test Failed
+    OTA --> CAN : 0x7F 31 72\n(Verification Failed)
+    CAN --> Test : Function Test Failed
+    deactivate OTA
+
+    note over Test #Red
+        **Rollback Triggered**
+        Automatic return to
+        previous version
+    end note
+end
+
+note over OTA
+    **REQ_IVI_014 Complete**
+    • Automated Test: >99% success
+    • All Functions Verified
+    • System Ready for Operation
+end note
+
+@enduml

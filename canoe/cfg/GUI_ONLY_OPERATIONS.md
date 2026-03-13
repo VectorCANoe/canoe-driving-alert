@@ -15,7 +15,7 @@ Follow this file as a strict operational boundary.
 - `project.sysvars` source template (`canoe/project/sysvars/project.sysvars`)
 - Panel source (`canoe/project/panel/*.xvp`) when explicitly requested
 - Panel image assets (`canoe/project/panel/Bitmaps/*`)
-- Documentation (`driving-situation-alert/*.md`, `canoe/project/panel/README.md`)
+- Documentation (`driving-alert-workproducts/*.md`, `canoe/project/panel/README.md`)
 - Scripts and test artifacts under `canoe/scripts`, `canoe/docs` (text-based only)
 
 ## 3) Forbidden Direct Edit (Unless Emergency Recovery Explicitly Requested)

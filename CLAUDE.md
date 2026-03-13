@@ -1,4 +1,4 @@
-# CLAUDE.md — Mobis PBL 프로젝트 컨텍스트
+﻿# CLAUDE.md — Mobis PBL 프로젝트 컨텍스트
 
 > Claude Code가 매 세션 시작 시 자동으로 읽습니다.
 
@@ -12,16 +12,16 @@
 > **⚠️ 단일 활성 프로젝트 — 아래 경로만 읽고 수정한다:**
 
 ### 활성 문서 (유일한 현행 기준)
-- **프로젝트 문서 전체**: `driving-situation-alert/` — 01~07 전 문서 현행 기준
-  - `driving-situation-alert/01_Requirements.md` — Req_001~Req_043 확정
-  - `driving-situation-alert/02_Concept_design.md`
-  - `driving-situation-alert/03_Function_definition.md` + `0301~0304`
-  - `driving-situation-alert/04_SW_Implementation.md`
-  - `driving-situation-alert/05_Unit_Test.md` — UT_*_001 체계
-  - `driving-situation-alert/06_Integration_Test.md` — IT_*_001 체계
-  - `driving-situation-alert/07_System_Test.md` — ST_*_001 체계
-  - `driving-situation-alert/tmp/` — 임시 작업 파일 (완료 후 삭제)
-  - `driving-situation-alert/compact/` — 요약본
+- **프로젝트 문서 전체**: `driving-alert-workproducts/` — 01~07 전 문서 현행 기준
+  - `driving-alert-workproducts/01_Requirements.md` — Req_001~Req_043 확정
+  - `driving-alert-workproducts/02_Concept_design.md`
+  - `driving-alert-workproducts/03_Function_definition.md` + `0301~0304`
+  - `driving-alert-workproducts/04_SW_Implementation.md`
+  - `driving-alert-workproducts/05_Unit_Test.md` — UT_*_001 체계
+  - `driving-alert-workproducts/06_Integration_Test.md` — IT_*_001 체계
+  - `driving-alert-workproducts/07_System_Test.md` — ST_*_001 체계
+  - `driving-alert-workproducts/ops/` — 임시 작업 파일 (완료 후 삭제)
+  - `driving-alert-workproducts/compact/` — 요약본
 
 - **CAPL 노드**: `canoe/nodes/*.can` — 현행 구현 소스
 - **DBC**: `canoe/databases/emergency_system.dbc`
@@ -34,7 +34,7 @@
 - `docs/OTA/`, `docs/architecture/`, `docs/V-Model/`, `docs/mentoring/` — 전부 레거시
 - `reference/` — 참조 DBC/CAPL 예제 (구조 참조용)
 
-**규칙: `driving-situation-alert/` 외의 문서를 현행 기준으로 혼동하지 않는다.**
+**규칙: `driving-alert-workproducts/` 외의 문서를 현행 기준으로 혼동하지 않는다.**
 
 ---
 

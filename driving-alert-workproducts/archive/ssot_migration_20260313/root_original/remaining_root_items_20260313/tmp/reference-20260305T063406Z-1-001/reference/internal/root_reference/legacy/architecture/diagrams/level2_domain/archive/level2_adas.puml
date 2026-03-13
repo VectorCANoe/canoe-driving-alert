@@ -1,0 +1,164 @@
+@startuml level2_adas
+!theme plain
+
+title Level 2: ADAS Domain Architecture\nAdvanced Driver Assistance Systems
+
+skinparam component {
+    BackgroundColor LightCyan
+    BorderColor DarkCyan
+    ArrowColor DarkBlue
+}
+
+package "ADAS Domain" {
+
+    component "F_CAMERA\n(Front Camera)" as CAM {
+        portin p_image_sensor
+        portout p_lane_detection
+        portout p_object_detection
+        portout p_ldw_warning
+        portout p_lka_control
+
+        [Image Processing]
+        [Lane Detection Algorithm]
+        [Object Recognition]
+        [LDWS/LKAS Logic]
+    }
+
+    component "BSD_RADAR\n(Blind Spot Detection)" as BSD {
+        portin p_radar_sensor
+        portout p_blind_spot_warning
+        portout p_lca_warning
+
+        [Radar Signal Processing]
+        [Object Tracking]
+        [Warning Generation]
+    }
+
+    component "SCC\n(Smart Cruise Control)" as SCC {
+        portin p_radar_data
+        portin p_vehicle_speed
+        portin p_driver_input
+        portout p_cruise_control
+        portout p_speed_target
+
+        [Adaptive Cruise Control]
+        [Distance Control]
+        [Speed Regulation]
+    }
+
+    component "SPAS\n(Smart Parking Assist)" as SPAS {
+        portin p_ultrasonic_sensors
+        portin p_steering_angle
+        portout p_parking_guide
+        portout p_steering_assist
+
+        [Parking Space Detection]
+        [Path Planning]
+        [Steering Control]
+    }
+
+    component "AVM\n(Around View Monitor)" as AVM {
+        portin p_4_cameras
+        portout p_360_view
+
+        [Image Stitching]
+        [Bird's Eye View Generation]
+    }
+
+    component "PGS\n(Parking Guidance System)" as PGS {
+        portin p_ultrasonic_data
+        portout p_parking_guide
+
+        [Distance Calculation]
+        [Guidance Display]
+    }
+
+    component "SNV\n(Surround Night Vision)" as SNV {
+        portin p_ir_cameras
+        portout p_night_vision_image
+
+        [IR Image Processing]
+        [Pedestrian Detection]
+    }
+}
+
+cloud "CAN-HS #2\n500 kbps" as CAN2
+
+' F_CAMERA Messages (OpenDBC)
+CAM --> CAN2 : **LDWS_LKAS11 (0x420)**\n• LDW_Status (Left/Right)\n• LKA_Event\n• Lane_Detection_Quality\nCycle: 100ms, ASIL-B
+
+CAM --> CAN2 : **F_CAMERA_ObjDetect**\n• Object_Type\n• Object_Distance\n• Collision_Warning\nCycle: 50ms
+
+' BSD_RADAR Messages
+BSD --> CAN2 : **LCA11 (0x485)**\n• Blind_Spot_Left\n• Blind_Spot_Right\n• LCA_Warning\nCycle: 100ms, ASIL-B
+
+' SCC Messages
+SCC --> CAN2 : **SCC11 (0x421)**\n• Cruise_Active\n• Speed_Target (km/h)\n• Distance_Target (m)\nCycle: 50ms, ASIL-B
+
+SCC --> CAN2 : **SCC12**\n• ACC_Status\n• Brake_Request\n• Accel_Request\nCycle: 20ms
+
+CAN2 --> SCC : **EMS16**\n• Vehicle_Speed\n(via Gateway)
+
+' SPAS Messages
+SPAS --> CAN2 : **SPAS12**\n• Parking_Mode\n• Steering_Assist_Angle\n• Parking_Guide_Lines\nCycle: 100ms
+
+CAN2 --> SPAS : **MDPS12**\n• Steering_Angle\n(via Gateway)
+
+' AVM Messages
+AVM --> CAN2 : **AVM11**\n• View_Mode (Front/Rear/360)\n• Camera_Status (4 cameras)\nCycle: 100ms
+
+' PGS Messages
+PGS --> CAN2 : **PGS11**\n• Distance_Front/Rear/Left/Right\n• Parking_Warning\nCycle: 100ms
+
+' SNV Messages
+SNV --> CAN2 : **SNV11**\n• Night_Vision_Active\n• Pedestrian_Detected\nCycle: 100ms
+
+component "CGW\n(Central Gateway)" as CGW
+CAN2 --> CGW : Route to CAN-HS #1
+CGW --> CAN2 : Vehicle Speed, Steering
+
+component "IVI\n(Infotainment)" as IVI
+CAN2 --> IVI : ADAS Warnings & Status
+
+note right of CAM
+  **F_CAMERA Key Functions**
+  • Lane departure warning (LDWS)
+  • Lane keeping assist (LKAS)
+  • Forward collision warning
+  • Traffic sign recognition
+
+  **Safety Level**: ASIL-B
+  **Cycle Time**: 50-100ms
+  **Sensors**: Front camera (1280x720)
+end note
+
+note right of SCC
+  **SCC Key Functions**
+  • Adaptive cruise control (ACC)
+  • Distance maintenance
+  • Speed regulation
+  • Stop & Go function
+
+  **Safety Level**: ASIL-B
+  **Cycle Time**: 20-50ms
+  **Sensors**: Front radar (77 GHz)
+end note
+
+note bottom of CAN2
+  **ADAS CAN Messages**
+
+  Critical Messages (20-50ms):
+  • SCC12: ACC Control
+  • F_CAMERA_ObjDetect
+
+  Warning Messages (100ms):
+  • LDWS_LKAS11: Lane warnings
+  • LCA11: Blind spot warnings
+  • SPAS12: Parking assist
+
+  **Total Messages**: ~20 messages
+  **ASIL Level**: B
+  **Bandwidth**: High (sensor data)
+end note
+
+@enduml

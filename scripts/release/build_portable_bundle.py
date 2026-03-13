@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 """Build a portable ZIP bundle for sdv CLI runtime.
 
 Bundle goals:
@@ -149,7 +149,7 @@ def main() -> int:
     copy_tree(ROOT / "scripts", bundle_root / "scripts")
 
     # Minimal docs required by verify bind-doc/fill-template commands
-    docs_root = bundle_root / "driving-situation-alert"
+    docs_root = bundle_root / "driving-alert-workproducts"
     docs_root.mkdir(parents=True, exist_ok=True)
     for rel in [
         "05_Unit_Test.md",
@@ -157,7 +157,7 @@ def main() -> int:
         "07_System_Test.md",
         "TMP_HANDOFF.md",
     ]:
-        src = ROOT / "driving-situation-alert" / rel
+        src = ROOT / "driving-alert-workproducts" / rel
         if src.exists():
             copy_file(src, docs_root / rel)
 

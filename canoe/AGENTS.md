@@ -1,4 +1,4 @@
-# AGENTS.md (scope: `canoe/`)
+﻿# AGENTS.md (scope: `canoe/`)
 
 ## MCP CANoe 운영 규칙 (필수)
 
@@ -26,7 +26,7 @@
 
 5. 범위 제한
 - 구현 변경은 `canoe/` 폴더만 허용.
-- `driving-situation-alert/00~07` 문서는 참고용이며 자동 수정 금지.
+- `driving-alert-workproducts/00~07` 문서는 참고용이며 자동 수정 금지.
 
 ## CANoe GUI-Only Files (Forbidden Direct Edit)
 
@@ -65,6 +65,14 @@
 7. 검증 게이트 분리
 - `compile success`와 `runtime delivery success`를 같은 의미로 취급하지 않는다.
 - MCP에서 trace/write window를 못 읽으면 runtime은 `미확인`으로 남기고 추정 완료 처리하지 않는다.
+
+## Local-Only Reference Rule
+- 중요한 참고 문서와 레퍼런스는 Git ignore 상태의 로컬 경로에만 있을 수 있다.
+- 따라서 Git history, PR diff, remote repository state에서 보이지 않아도 `없는 자료`로 판단하지 않는다.
+- 필요한 문맥이 비어 보이면 먼저 로컬 파일시스템을 직접 확인한다.
+- 이 저장소의 주요 로컬 참고 경로:
+  - `canoe/reference/`
+  - `canoe/AGENT/`
 
 ## Repository Boundary (Non-Negotiable)
 - This file scope is `canoe/` only.

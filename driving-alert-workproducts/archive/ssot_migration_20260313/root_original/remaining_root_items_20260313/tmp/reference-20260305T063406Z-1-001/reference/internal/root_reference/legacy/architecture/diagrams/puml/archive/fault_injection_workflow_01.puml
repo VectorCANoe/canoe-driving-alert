@@ -1,0 +1,103 @@
+@startuml
+!theme silver
+skinparam activityStyle uml2
+
+title Fault Injection Test Workflow (CANoe Integration)
+
+|CANoe Test Environment|
+start
+:Initialize Fault Injection\nTest Environment;
+note right
+    **Test Tools**:
+    • CANoe Fault Injection Module
+    • vECU Simulation
+    • DTC Monitor
+end note
+
+:Load Test Scenario\nConfiguration;
+
+|vECU System|
+:System Running\nNormal Operation;
+
+|CANoe Test Environment|
+:Select Fault Type;
+
+if (Fault Type?) then (CAN Message Fault)
+    :Configure CAN\nFault Injection;
+    note right
+        **Fault Types**:
+        • Message Drop
+        • Message Delay
+        • Bit Error
+        • Frame Error
+    end note
+
+elseif (Sensor Fault) then
+    :Configure Sensor\nSignal Fault;
+    note right
+        **Fault Types**:
+        • Signal Loss
+        • Out-of-Range
+        • Stuck-at Fault
+        • Intermittent
+    end note
+
+else (Timing Fault)
+    :Configure Timing\nFault Injection;
+    note right
+        **Fault Types**:
+        • Timeout
+        • Jitter
+        • Burst Delay
+    end note
+endif
+
+:Inject Fault into\nvECU System;
+
+|vECU System|
+:Detect Fault\nCondition;
+
+:Execute Safety\nMechanism;
+
+if (Fault Detected?) then (Yes)
+    :Generate DTC;
+    :Log Fault Event;
+    :Enter Safe State;
+
+    |CANoe Test Environment|
+    :Monitor DTC\nGeneration;
+
+    if (DTC Generated?) then (Yes)
+        :Record Test Result\n**PASS**;
+        note right
+            **REQ_IVI_011**
+            Detection Rate: >99%
+        end note
+    else (No)
+        :Record Test Result\n**FAIL**;
+        note right #Red
+            **Test Failed**
+            DTC not generated
+        end note
+    endif
+
+else (No)
+    |CANoe Test Environment|
+    :Record Test Result\n**FAIL**;
+    note right #Red
+        **Test Failed**
+        Fault not detected
+    end note
+endif
+
+:Clear Fault\nInjection;
+
+|vECU System|
+:Recovery to\nNormal State;
+
+|CANoe Test Environment|
+:Generate Test\nReport;
+
+stop
+
+@enduml

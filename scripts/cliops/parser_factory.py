@@ -1,4 +1,4 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
 import argparse
 import datetime as dt
@@ -178,7 +178,7 @@ def add_verify_bind_doc_args(p: argparse.ArgumentParser, handlers: HandlerMap) -
     p.add_argument(
         "--docs-root",
         default="",
-        help="Optional docs root path (default: driving-situation-alert)",
+        help="Optional docs root path (default: driving-alert-workproducts)",
     )
     p.add_argument(
         "--output-csv",
@@ -208,7 +208,7 @@ def add_verify_fill_template_args(p: argparse.ArgumentParser, handlers: HandlerM
     p.add_argument(
         "--docs-root",
         default="",
-        help="Optional docs root path (default: driving-situation-alert)",
+        help="Optional docs root path (default: driving-alert-workproducts)",
     )
     p.add_argument("--owner-fallback", default="TBD", help="Fallback owner for READY rows")
     p.add_argument("--date-fallback", default=dt.date.today().isoformat(), help="Fallback date for READY rows")
@@ -258,7 +258,7 @@ def add_verify_finalize_args(p: argparse.ArgumentParser, handlers: HandlerMap) -
     p.add_argument(
         "--docs-root",
         default="",
-        help="Optional docs root path (default: driving-situation-alert)",
+        help="Optional docs root path (default: driving-alert-workproducts)",
     )
     p.add_argument(
         "--insight-md",

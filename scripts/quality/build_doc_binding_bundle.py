@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 """Build 05/06/07 document binding bundle from scored verification logs.
 
 Outputs:
@@ -67,7 +67,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Build 05/06/07 doc binding bundle")
     parser.add_argument("--run-id", required=True, help="Run ID, e.g. 20260307_1030")
     parser.add_argument("--evidence-root", type=Path, default=Path("canoe/logging/evidence"))
-    parser.add_argument("--docs-root", type=Path, default=Path("driving-situation-alert"))
+    parser.add_argument("--docs-root", type=Path, default=Path("driving-alert-workproducts"))
     parser.add_argument(
         "--output-csv",
         type=Path,

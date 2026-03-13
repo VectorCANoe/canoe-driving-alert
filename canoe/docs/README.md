@@ -4,27 +4,24 @@ This folder keeps only the active CANoe document surface.
 
 ## Start Here
 
-1. `00_ADMIN/00_ACTIVE_WORKSET.md`
-2. `10_RUNTIME/10_ETHERNET_BACKBONE_SSoT.md`
-3. `10_RUNTIME/11_RUNTIME_MESSAGE_OWNERSHIP_MATRIX.md`
-4. `10_RUNTIME/12_RUNTIME_MULTIBUS_VISIBILITY_POLICY.md`
-5. `20_VERIFICATION/20_CANOE_TEST_EXECUTION_GUIDE.md`
-6. `20_VERIFICATION/21_SIL_ACCEPTANCE_CRITERIA.md`
+1. `operations/00_ACTIVE_WORKSET.md`
+2. `contracts/10_ETHERNET_BACKBONE_SSoT.md`
+3. `contracts/11_RUNTIME_MESSAGE_OWNERSHIP_MATRIX.md`
+4. `contracts/12_RUNTIME_MULTIBUS_VISIBILITY_POLICY.md`
+5. `verification/20_CANOE_TEST_EXECUTION_GUIDE.md`
+6. `verification/21_SIL_ACCEPTANCE_CRITERIA.md`
+7. `architecture/README.md`
 
 ## Folder Convention
 
-- `00_ADMIN/`
-  - entrypoint and active workset
-- `10_RUNTIME/`
-  - runtime SSoT, ownership, and runtime policy
-- `20_VERIFICATION/`
-  - execution guide and acceptance criteria
-
-## Naming Rule
-
-- `00_*` : entry and control
-- `10_*` : runtime contracts and runtime control rules
-- `20_*` : verification execution and acceptance
+- `architecture/`
+  - system structure, ECU partitioning, and runtime shape
+- `contracts/`
+  - communication, ownership, route, bus, timeout, and interface contracts
+- `verification/`
+  - execution guide, acceptance criteria, and verification flow
+- `operations/`
+  - active workset, maintenance rules, and runbook entrypoints
 
 ## Operating Rule
 

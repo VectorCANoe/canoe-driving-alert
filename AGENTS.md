@@ -1,34 +1,34 @@
-# AGENTS.md
+﻿# AGENTS.md
 
 ## Session Start Priority
 At the start of every Codex session, read this file first, then read:
-- `driving-situation-alert/TMP_HANDOFF.md`
-- `driving-situation-alert/tmp/submission/README.md`
+- `driving-alert-workproducts/ops/handoff/TMP_HANDOFF.md`
+- `driving-alert-workproducts/ops/submission/README.md`
 
-Use `driving-situation-alert/TMP_HANDOFF.md` as the current project intent/execution guardrail source of truth for:
+Use `driving-alert-workproducts/ops/handoff/TMP_HANDOFF.md` as the current project intent/execution guardrail source of truth for:
 - what the team is building now
 - fixed scope and exclusions
 - immediate next steps
 - non-negotiable traceability rules
-Use `driving-situation-alert/tmp/submission/final-docs/` as the operational document SoT for ongoing edits.
-Treat root docs under `driving-situation-alert/` as canonical sync targets to be updated later.
+Use `driving-alert-workproducts/` as the operational document SoT for ongoing edits.
+Treat root docs under `driving-alert-workproducts/` as canonical sync targets to be updated later.
 
 ## Handoff Freshness Gate
-- Before treating `driving-situation-alert/TMP_HANDOFF.md` as intent SoT, check section `0) Freshness Control`.
-- If handoff status is `FRESH`, follow handoff-first execution and `final-docs`-first document edits.
+- Before treating `driving-alert-workproducts/ops/handoff/TMP_HANDOFF.md` as intent SoT, check section `0) Freshness Control`.
+- If handoff status is `FRESH`, follow handoff-first execution and root SSoT-first document edits.
 - If handoff status is `STALE` (or stale criteria are met), use canonical docs as temporary intent reference in this order:
-  - `driving-situation-alert/01_Requirements.md`
-  - `driving-situation-alert/03_Function_definition.md`
-  - `driving-situation-alert/0301_SysFuncAnalysis.md`
-  - `driving-situation-alert/0302_NWflowDef.md`
-  - `driving-situation-alert/0303_Communication_Specification.md`
-  - `driving-situation-alert/0304_System_Variables.md`
-  - `driving-situation-alert/04_SW_Implementation.md`
-  - `driving-situation-alert/05_Unit_Test.md`
-  - `driving-situation-alert/06_Integration_Test.md`
-  - `driving-situation-alert/07_System_Test.md`
-  - `driving-situation-alert/tmp/mentoring/Mentoring_MET40.md`
-- Keep ongoing edits in `final-docs` unless a task explicitly requests root SoT sync-back.
+  - `driving-alert-workproducts/01_Requirements.md`
+  - `driving-alert-workproducts/03_Function_definition.md`
+  - `driving-alert-workproducts/0301_SysFuncAnalysis.md`
+  - `driving-alert-workproducts/0302_NWflowDef.md`
+  - `driving-alert-workproducts/0303_Communication_Specification.md`
+  - `driving-alert-workproducts/0304_System_Variables.md`
+  - `driving-alert-workproducts/04_SW_Implementation.md`
+  - `driving-alert-workproducts/05_Unit_Test.md`
+  - `driving-alert-workproducts/06_Integration_Test.md`
+  - `driving-alert-workproducts/07_System_Test.md`
+  - `driving-alert-workproducts/ops/mentoring/Mentoring_MET40.md`
+- Keep ongoing edits in `driving-alert-workproducts/` SSoT unless a task explicitly requests archive sync-back.
 - After stale causes are cleared, update `TMP_HANDOFF.md` and switch back to `FRESH`.
 
 ## Reference Standards (When Ambiguous)
@@ -58,8 +58,10 @@ Use those references to align:
 - Keep all text files in UTF-8 (do not re-save with legacy code pages).
 - Verification scope is fixed to CANoe SIL, CAN + Ethernet only.
 - Before `pull/rebase`, inspect remote changed paths first (`fetch -> log/diff`).
-- If remote changes mix `canoe/` and `driving-situation-alert/`, do not blindly full-pull on behalf of the docs instance.
-- In mixed-change recovery, sync `canoe/` selectively first and preserve `driving-situation-alert/` until docs ownership changes are reviewed or explicitly approved.
+- If remote changes mix `canoe/` and `driving-alert-workproducts/`, do not blindly full-pull on behalf of the docs instance.
+- In mixed-change recovery, sync `canoe/` selectively first and preserve `driving-alert-workproducts/` until docs ownership changes are reviewed or explicitly approved.
+- During official-repo preparation, assets excluded by `.gitignore` (for example `driving-alert-workproducts/reference/`, `driving-alert-workproducts/archive/`, and local evidence/log outputs) are not reviewable via Git history/diff.
+- For `.gitignore`-excluded reference assets, verify directly from local filesystem paths.
 
 ## CANoe GUI-First Operations
 - For CANoe configuration and runtime state stability, keep these as **GUI-first**:
@@ -90,7 +92,7 @@ Use those references to align:
   - If MCP cannot observe Ethernet trace or write-window evidence, report runtime verification as pending instead of assuming transport is correct.
 
 ## Notes
-- `driving-situation-alert/TMP_HANDOFF.md` is temporary and can be replaced as project state changes.
-- If this file and `driving-situation-alert/TMP_HANDOFF.md` conflict:
-  - when handoff is `FRESH`, follow handoff for intent and `final-docs` for working docs
-  - when handoff is `STALE`, follow canonical docs for intent, keep `final-docs` as working baseline, then refresh handoff
+- `driving-alert-workproducts/ops/handoff/TMP_HANDOFF.md` is temporary and can be replaced as project state changes.
+- If this file and `driving-alert-workproducts/ops/handoff/TMP_HANDOFF.md` conflict:
+  - when handoff is `FRESH`, follow handoff for intent and root SSoT for working docs
+  - when handoff is `STALE`, follow canonical docs for intent, keep root SSoT as working baseline, then refresh handoff

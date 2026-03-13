@@ -1,4 +1,4 @@
-# 저장소 표면
+﻿# 저장소 표면
 
 이 저장소는 공개 OSS 저장소라기보다 `협업 + 제출 + 제품` 저장소입니다.
 
@@ -16,7 +16,7 @@
 ## Internal working surface
 
 - `canoe/`
-- `driving-situation-alert/`
+- `driving-alert-workproducts/`
 - `reference/`
 - `scripts/*` 내부 구현
 - handoff, mentoring, team board, tmp, reports

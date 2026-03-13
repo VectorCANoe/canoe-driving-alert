@@ -1,0 +1,67 @@
+@startuml Architecture_Tree_Simple
+!theme plain
+
+skinparam node {
+  BackgroundColor<<gateway>> #FFD700
+  BackgroundColor<<domain>> #E3F2FD
+  BackgroundColor<<ecu>> #FFFFFF
+  BorderColor #333333
+  FontSize 12
+}
+
+title 시스템 아키텍처 (System Architecture)\nGateway 중심 계층 구조
+
+node "**Central Gateway**" as GW <<gateway>>
+
+node "Infotainment\nDomain" as InfoDomain <<domain>>
+node "Body\nDomain" as BodyDomain <<domain>>
+node "ADAS\nDomain" as ADASdomain <<domain>>
+node "Powertrain\nDomain" as PowerDomain <<domain>>
+
+GW -down-> InfoDomain : CAN 500kbps
+GW -down-> BodyDomain : CAN 500kbps
+GW -down-> ADASdomain : CAN 500kbps
+GW -down-> PowerDomain : CAN 500kbps
+
+' Infotainment Domain ECUs
+node "IVI Control ECU" as IVI <<ecu>>
+node "vECU (IVI vECU)" as vECU <<ecu>>
+node "Cluster ECU" as Cluster <<ecu>>
+
+InfoDomain -down-> IVI
+InfoDomain -down-> vECU
+InfoDomain -down-> Cluster
+
+' Body Domain ECUs
+node "Lighting ECU" as Light <<ecu>>
+node "BDC" as BDC <<ecu>>
+node "Door Sensors" as Door <<ecu>>
+
+BodyDomain -down-> Light
+BodyDomain -down-> BDC
+BodyDomain -down-> Door
+
+' ADAS Domain ECUs
+node "ADAS ECU" as ADAS <<ecu>>
+node "LDW Sensor" as LDW <<ecu>>
+node "AEB Sensor" as AEB <<ecu>>
+
+ADASdomain -down-> ADAS
+ADASdomain -down-> LDW
+ADASdomain -down-> AEB
+
+' Powertrain Domain ECUs
+node "Transmission ECU" as Trans <<ecu>>
+node "Speed Sensor" as Speed <<ecu>>
+
+PowerDomain -down-> Trans
+PowerDomain -down-> Speed
+
+legend right
+  |= 구성 |= 설명 |
+  | Gateway | 모든 도메인 간 메시지 중계 |
+  | Domain | 기능별 ECU 그룹 |
+  | ECU | 개별 제어 유닛/센서 |
+endlegend
+
+@enduml

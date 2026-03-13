@@ -1,0 +1,173 @@
+@startuml 05_infotainment_adas_domain
+!theme plain
+
+title Level 2: Infotainment & ADAS Domain Architecture\nConnectivity and Driver Assistance Systems
+
+skinparam component {
+    BackgroundColor LightCyan
+    BorderColor DarkBlue
+    ArrowColor DarkBlue
+}
+
+package "Infotainment Domain" {
+    component "IVI\n(In-Vehicle Infotainment)" as IVI {
+        portin p_touch
+        portin p_audio
+        portout p_display
+        portout p_control
+
+        [UI Manager]
+        [Media Player]
+        [Navi System]
+        [Theme Manager]
+    }
+
+    component "CLU\n(Instrument Cluster)" as CLU {
+        portin p_vehicle_data
+        portout p_driver_info
+
+        [Gauge Control]
+        [Warning Indicators]
+    }
+
+    component "HUD\n(Head-Up Display)" as HUD {
+        portin p_display_data
+        portout p_projection
+
+        [Image Projection]
+    }
+
+    component "TMU\n(Telematics Unit)" as TMU {
+        portin p_gps
+        portin p_lte
+        portout p_remote_cmd
+
+        [Remote Control]
+        [Emergency Call]
+    }
+
+    component "CUBIS\n(Camera Unit)" as CUBIS {
+        portin p_camera_raw
+        portout p_processed_video
+
+        [Image Processing]
+    }
+}
+
+package "ADAS Domain" {
+    component "F_CAMERA\n(Front Camera)" as F_CAMERA {
+        portin p_image
+        portout p_lane_data
+        portout p_object_data
+
+        [Lane Detection]
+        [Object Recognition]
+    }
+
+    component "R_CAMERA\n(Rear Camera)" as R_CAMERA {
+        portin p_rear_image
+        portout p_rear_object_data
+        portout p_collision_risk
+
+        [Rear Object Detection]
+        [Parking Assist]
+    }
+
+    component "BSD_RADAR\n(Blind Spot Radar)" as BSD_RADAR {
+        portin p_radar_echo
+        portout p_obstacle_data
+
+        [Blind Spot Detection]
+    }
+
+    component "SCC\n(Smart Cruise Control)" as SCC {
+        portin p_distance
+        portin p_speed
+        portout p_accel_req
+        portout p_decel_req
+
+        [Distance Control]
+        [Speed Control]
+    }
+
+    component "SPAS\n(Parking Assist)" as SPAS {
+        portin p_ultrasonic
+        portout p_steering_req
+
+        [Parking Path Planning]
+    }
+
+    component "AVM\n(Around View Monitor)" as AVM {
+        portin p_camera_4ch
+        portout p_surround_view
+
+        [Image Stitching]
+    }
+
+    component "PGS\n(Parking Guide System)" as PGS {
+        portin p_steering_angle
+        portout p_guide_line
+
+        [Trajectory Calculation]
+    }
+
+    component "SNV\n(Night Vision)" as SNV {
+        portin p_ir_image
+        portout p_enhanced_view
+
+        [Night Enhancement]
+    }
+}
+
+cloud "CAN-HS #2\n500 kbps" as CAN2
+cloud "Ethernet\n1 Gbps" as ETH
+
+' Infotainment Connections
+IVI <--> ETH : High-speed Data
+IVI <--> CAN2 : Control Signals
+CLU <--> CAN2
+HUD <--> CAN2
+TMU <--> CAN2
+TMU <--> ETH : OTA Updates
+CUBIS --> ETH : Video Stream
+
+' ADAS Connections
+F_CAMERA --> CAN2
+R_CAMERA --> CAN2 : ⭐ Rear Object Data
+BSD_RADAR --> CAN2
+SCC --> CAN2
+SPAS --> CAN2
+AVM --> ETH : Video Stream
+PGS --> CAN2
+SNV --> ETH : Video Stream
+
+component "CGW\n(Central Gateway)" as CGW
+CAN2 --> CGW : Route to/from other domains
+ETH --> CGW : Route to/from other domains
+
+note right of IVI
+  **IVI Key Functions**
+  • Media, Navigation, UI
+  • Vehicle Settings
+  • Connectivity Hub
+
+  **Safety Level**: QM-ASIL B
+end note
+
+note right of SCC
+  **ADAS Key Functions**
+  • Smart Cruise Control
+  • Lane Keeping Assist
+  • Collision Avoidance
+
+  **Safety Level**: ASIL-B/D
+end note
+
+note bottom of CAN2
+  **Infotainment/ADAS Network**
+  • High bandwidth requirements
+  • Mix of Control (CAN) and Data (Ethernet)
+  • Critical safety messages (ADAS) vs Convenience (IVI)
+end note
+
+@enduml

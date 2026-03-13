@@ -1,4 +1,4 @@
-# ID Reference Catalog (RAG Seed)
+﻿# ID Reference Catalog (RAG Seed)
 
 **Last Updated**: 2026-03-05  
 **Scope**: CAN Identifier policy, AUTOSAR communication stack, traceability evidence for `00f_CAN_ID_Allocation_Standard.md`
@@ -45,10 +45,10 @@
 | Path | Use |
 |---|---|
 | `canoe/databases/*.dbc` | 실제 메시지 ID/Owner 최종 기준 |
-| `driving-situation-alert/0302_NWflowDef.md` | Flow 기준 |
-| `driving-situation-alert/0303_Communication_Specification.md` | Comm 기준 |
-| `driving-situation-alert/0304_System_Variables.md` | Var 기준 |
-| `driving-situation-alert/00f_CAN_ID_Allocation_Standard.md` | 프로젝트 ID 정책 SoT |
+| `driving-alert-workproducts/0302_NWflowDef.md` | Flow 기준 |
+| `driving-alert-workproducts/0303_Communication_Specification.md` | Comm 기준 |
+| `driving-alert-workproducts/0304_System_Variables.md` | Var 기준 |
+| `driving-alert-workproducts/governance/00f_CAN_ID_Allocation_Standard.md` | 프로젝트 ID 정책 SoT |
 
 ---
 

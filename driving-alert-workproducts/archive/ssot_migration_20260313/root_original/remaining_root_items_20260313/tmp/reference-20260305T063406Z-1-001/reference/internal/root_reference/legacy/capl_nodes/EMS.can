@@ -1,0 +1,97 @@
+/*@@=================================================================
+ * CANoe CAPL Node: EMS (Engine Management System)
+ *==================================================================@@*/
+
+includes {}
+
+variables
+{
+  // Engine parameters
+  int gEngineRPM = 0;
+  float gVehicleSpeed = 0.0;
+  int gEngineTorque = 0;
+  int gThrottlePosition = 0;
+  int gCoolantTemp = 20;
+
+  byte gAliveCounter_EngineStatus = 0;
+
+  msTimer tEngineStatus;
+  msTimer tTemperature;
+}
+
+on start
+{
+  write("EMS (Engine Management System) Started");
+
+  gEngineRPM = 800; // Idle RPM
+  gVehicleSpeed = 0.0;
+  gCoolantTemp = 20;
+
+  setTimer(tEngineStatus, 10);  // 10ms
+  setTimer(tTemperature, 100);  // 100ms
+}
+
+on timer tEngineStatus
+{
+  message EMS_EngineStatus msg;
+
+  msg.Engine_RPM = gEngineRPM;
+  msg.Vehicle_Speed = gVehicleSpeed;
+  msg.Engine_Torque = gEngineTorque;
+  msg.Throttle_Position = (byte)((gThrottlePosition * 255) / 100);
+  msg.AliveCounter = gAliveCounter_EngineStatus;
+  msg.Checksum = 0; // Simplified
+
+  gAliveCounter_EngineStatus = (gAliveCounter_EngineStatus + 1) & 0x0F;
+
+  output(msg);
+  setEnvironmentVariable("Engine_RPM", gEngineRPM);
+  setEnvironmentVariable("Vehicle_Speed", gVehicleSpeed);
+
+  setTimer(tEngineStatus, 10);
+}
+
+on timer tTemperature
+{
+  message EMS_Temperature msg;
+
+  msg.Coolant_Temp = gCoolantTemp;
+  msg.Oil_Temp = gCoolantTemp - 5;
+  msg.Intake_Air_Temp = gCoolantTemp + 10;
+
+  output(msg);
+  setTimer(tTemperature, 100);
+}
+
+// Simulate acceleration
+on key 'A'
+{
+  gThrottlePosition = 100;
+  gEngineRPM = 3000;
+  gVehicleSpeed = 60.0;
+  write("Accelerating: RPM=%d, Speed=%.1f km/h", gEngineRPM, gVehicleSpeed);
+}
+
+// Simulate idle
+on key 'I'
+{
+  gThrottlePosition = 0;
+  gEngineRPM = 800;
+  gVehicleSpeed = 0.0;
+  write("Idle: RPM=%d", gEngineRPM);
+}
+
+// Simulate cruising
+on key 'C'
+{
+  gThrottlePosition = 30;
+  gEngineRPM = 2000;
+  gVehicleSpeed = 80.0;
+  write("Cruising: RPM=%d, Speed=%.1f km/h", gEngineRPM, gVehicleSpeed);
+}
+
+on stopMeasurement
+{
+  cancelTimer(tEngineStatus);
+  cancelTimer(tTemperature);
+}

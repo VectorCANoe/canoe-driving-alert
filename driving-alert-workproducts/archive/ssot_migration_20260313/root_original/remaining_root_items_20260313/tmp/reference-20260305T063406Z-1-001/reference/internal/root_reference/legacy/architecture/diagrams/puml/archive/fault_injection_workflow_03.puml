@@ -1,0 +1,119 @@
+@startuml
+!theme materia-outline
+
+title REQ_IVI_022: Door Sensor Fault Injection (ASIL-B)
+
+participant "CANoe\nFault Injector" as FI
+participant "CAN Bus" as CAN
+box "vECU (Target)" #f9f9f9
+    participant "Door_Warning_Logic" as DWL
+    participant "DEM" as DEM
+    participant "Safety_Manager" as SM
+end box
+
+== Scenario 1: CAN Message Loss ==
+
+note over FI: **Test Case 1**\nMessage Drop
+
+FI -> CAN : Drop Door_Status Messages
+activate FI
+
+... Timeout (100ms) ...
+
+DWL -> DWL : Detect BCM Timeout
+activate DWL
+DWL -> DEM : Report Timeout Fault\n(DTC: 0xC00300)
+activate DEM
+DEM -> DEM : Store DTC
+DEM --> DWL : Fault Logged
+deactivate DEM
+
+DWL -> SM : Enter Safe State\n(Assume Door OPEN)
+activate SM
+SM -> SM : Restrict Reverse UX
+SM --> DWL : Safe State Active
+deactivate SM
+deactivate DWL
+
+deactivate FI
+
+note over DWL
+    **Test Result: PASS**
+    • Timeout Detected: ✅
+    • DTC Generated: ✅
+    • Safe State Entered: ✅
+end note
+
+== Scenario 2: Signal Stuck-at Fault ==
+
+note over FI: **Test Case 2**\nStuck-at CLOSED
+
+FI -> CAN : Force Door_Status = CLOSED\n(Actual: OPEN)
+activate FI
+
+CAN -> DWL : Door_Status = CLOSED
+activate DWL
+
+DWL -> DWL : Cross-validate with\nOther Sensors\n(Interior Light, Seat Belt)
+
+alt Plausibility Check Failed
+    DWL -> DEM : Report Plausibility Fault\n(DTC: 0xC00301)
+    activate DEM
+    DEM --> DWL : Fault Logged
+    deactivate DEM
+
+    DWL -> SM : Enter Safe State\n(Use Last Known Valid State)
+    activate SM
+    SM --> DWL : Safe State Active
+    deactivate SM
+    deactivate DWL
+
+else Plausibility OK
+    DWL -> DWL : Accept Signal
+    deactivate DWL
+end
+
+deactivate FI
+
+note over DWL
+    **Test Result: PASS**
+    • Plausibility Check: ✅
+    • DTC Generated: ✅
+    • Safe State Entered: ✅
+end note
+
+== Scenario 3: Timing Delay ==
+
+note over FI: **Test Case 3**\nRandom Delay (>100ms)
+
+FI -> CAN : Delay Door_Status\nby 150ms
+activate FI
+
+... Delay Period ...
+
+CAN -> DWL : Door_Status (Delayed)
+activate DWL
+
+DWL -> DWL : Detect Timing Violation\n(Expected: <100ms)
+
+DWL -> DEM : Report Timing Fault\n(DTC: 0xC00302)
+activate DEM
+DEM --> DWL : Fault Logged
+deactivate DEM
+
+DWL -> SM : Restrict UX Functions
+activate SM
+SM --> DWL : Restriction Applied
+deactivate SM
+deactivate DWL
+
+deactivate FI
+
+note over DWL
+    **Test Result: PASS**
+    • Timing Violation Detected: ✅
+    • DTC Generated: ✅
+    • Function Restricted: ✅
+end note
+
+@enduml
