@@ -17,8 +17,8 @@
 
 - `canoe/`
 - `driving-alert-workproducts/`
+- `scripts/` (공용 실행/게이트/품질/릴리스 계층)
 - `reference/`
-- `scripts/*` 내부 구현
 - handoff, mentoring, team board, tmp, reports
 
 이 층은 내부 협업과 제출 추적성을 위한 작업면입니다.
@@ -27,4 +27,5 @@
 
 1. public-facing surface는 계속 얇게 유지합니다.
 2. internal working surface는 숨기지 말고, 다만 전면 진입점에서는 노출을 줄입니다.
-3. repo 전체를 공개 OSS처럼 보이게 만들기보다, public docs entry를 명확하게 유지합니다.
+3. 저장소 공식 축은 `canoe/`, `driving-alert-workproducts/`, `product/`, `scripts/`로 유지합니다.
+4. repo 전체를 공개 OSS처럼 보이게 만들기보다, public docs entry를 명확하게 유지합니다.
