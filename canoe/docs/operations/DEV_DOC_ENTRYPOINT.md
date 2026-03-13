@@ -1,13 +1,6 @@
-﻿# Developer Document Entrypoint
+# Developer Document Entrypoint
 
 This file is the active whitelist for CANoe-side working documents.
-Use it to avoid browsing too many files.
-
-## Purpose
-
-- keep the daily document surface small
-- separate active docs from topic-specific references
-- reduce browsing noise during development and verification
 
 ## 1) Canonical SoT Chain
 
@@ -25,54 +18,31 @@ Open these first, in order:
 10. `driving-situation-alert/06_Integration_Test.md`
 11. `driving-situation-alert/07_System_Test.md`
 
-## 2) Active CANoe Operations Docs
+## 2) Active CANoe Docs
 
-Read these only after the SoT chain above:
+Read these after the SoT chain:
 
 - `canoe/docs/operations/ETH_INTERFACE_CONTRACT.md`
 - `canoe/docs/operations/CAN_MESSAGE_OWNERSHIP_MATRIX.md`
-- `canoe/docs/operations/VERIFICATION_EVIDENCE_LOG_STANDARD.md`
-- `canoe/docs/operations/CLI_PRODUCTIZATION_BP.md`
-- `canoe/docs/operations/README.md`
+- `canoe/docs/operations/MULTIBUS_ASSIGNMENT_POLICY.md`
+- `canoe/docs/operations/verification/CANOE_TEST_UNIT_RUNBOOK.md`
+- `canoe/docs/operations/verification/SIL_PASS_CRITERIA.md`
 
-## 3) Task-Specific Buckets
-
-Open subfolders only when the task needs them:
-
-### Verification
-- `canoe/docs/operations/verification/`
-- `canoe/docs/operations/verification/README.md`
-- `canoe/docs/operations/verification/FINAL_PHASE_EXECUTION_FLOW.md`
-
-### Panel
-- `canoe/docs/operations/panel/`
-- `canoe/docs/operations/panel/README.md`
-
-### Unity / external renderer
-- `canoe/docs/operations/unity/`
-- `canoe/docs/operations/unity/README.md`
-
-### Reference / strategy
-- `canoe/docs/operations/reference/`
-- `canoe/docs/operations/reference/README.md`
-
-## 4) Default Ignore Set
+## 3) Keep Out Of Daily Flow
 
 Do not browse these first:
 
-- `driving-situation-alert/tmp/reference-*`
-- `driving-situation-alert/tmp/archive/`
-- `driving-situation-alert/tmp/onboarding/`
+- `archive/*` branches
 - `reference/`
-- `legacy_projects/`
-- `canoe/tmp/reports/verification/` as source code
+- `driving-situation-alert/tmp/archive/`
+- local-only `canoe/{legacy,logging,reference,scripts,tmp}/`
 
-## 5) Working Rule
+## 4) Working Rule
 
-If a new note is not part of daily active flow, do not leave it at a top-level folder root.
-Place it in the correct bucket immediately.
+If a note is not part of daily active flow, do not recreate a new bucket for it.
+Use archive branches instead.
 
-## 6) Traceability Reminder
+## 5) Traceability Reminder
 
 Always preserve:
 

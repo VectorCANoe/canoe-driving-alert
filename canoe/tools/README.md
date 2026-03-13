@@ -1,31 +1,22 @@
 # tools
 
-Utility scripts for CANoe project maintenance.
+Active utility scripts for CANoe maintenance.
 
-## Manual-first policy
-- DBC quality is decided by human review, not by script output.
-- `driving-situation-alert` documents are the source of truth.
-- Scripts in this folder are support tools only.
+## Kept Tools
 
-## `generate_dbc_from_docs.py`
-- Purpose: generate baseline/split DBC drafts from latest 0303/0304 docs.
-- Output path: `canoe/databases/`
-- Limitation: parser assumes stable Markdown headings/table formats.
-- Required practice: always compare generated DBC with current document intent and CAPL/runtime usage.
+### `generate_dbc_from_docs.py`
+- generate draft DBC baselines from current `0303/0304` docs
+- output path: `canoe/databases/`
+- always review output manually before integration
 
-## `validate_mentor_priority.py`
-- Purpose: enforce mentor-priority gates for active CAN/ETH contract.
-- Inputs:
-  - Active CAN DBC set (`chassis/powertrain/body/infotainment/adas`)
-  - Ethernet contract (`canoe/docs/operations/ETH_INTERFACE_CONTRACT.md`)
-- Outputs:
-  - Ownership matrix: `canoe/docs/operations/CAN_MESSAGE_OWNERSHIP_MATRIX.md`
-  - Gate report: `canoe/tmp/mentor_priority_gate_report.md`
-- Exit code:
-  - `0` = pass
-  - `2` = gate failed
+### `validate_mentor_priority.py`
+- enforce the active CAN/ETH priority gate
+- uses active CAN DBCs and `ETH_INTERFACE_CONTRACT.md`
+- writes a local gate report under `canoe/tmp/`
+- exit code `0` = pass, `2` = fail
 
-## AI usage note
-- If an AI agent runs tools in this folder, it must verify document template compatibility first.
-- If an AI agent runs tools in this folder, it must treat generated files as draft artifacts.
-- If an AI agent runs tools in this folder, it must request or perform manual verification before integration.
+## Policy
+
+- `driving-situation-alert` documents remain the source of truth
+- generated artifacts are draft support outputs
+- cfg patch helpers and reference-side helper scripts are not kept in the active tree
