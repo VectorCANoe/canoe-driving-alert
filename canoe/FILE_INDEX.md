@@ -6,7 +6,7 @@ Quick index for the active `canoe` surface.
 
 1. `C:\Users\이준영\CANoe-IVI-OTA\driving-situation-alert\TMP_HANDOFF.md`
 2. `C:\Users\이준영\CANoe-IVI-OTA\canoe\README.md`
-3. `C:\Users\이준영\CANoe-IVI-OTA\canoe\docs\operations\00_ACTIVE_WORKSET.md`
+3. `C:\Users\이준영\CANoe-IVI-OTA\canoe\docs\00_ADMIN\00_ACTIVE_WORKSET.md`
 
 ## 1) Runtime Core
 
@@ -27,22 +27,22 @@ Quick index for the active `canoe` surface.
   - `C:\Users\이준영\CANoe-IVI-OTA\canoe\databases\infotainment_can.dbc`
   - `C:\Users\이준영\CANoe-IVI-OTA\canoe\databases\adas_can.dbc`
 - Ethernet contract
-  - `C:\Users\이준영\CANoe-IVI-OTA\canoe\docs\operations\10_ETHERNET_BACKBONE_INTERFACE_SPEC.md`
+  - `C:\Users\이준영\CANoe-IVI-OTA\canoe\docs\10_RUNTIME\10_ETHERNET_BACKBONE_SSoT.md`
 - ownership matrix
-  - `C:\Users\이준영\CANoe-IVI-OTA\canoe\docs\operations\11_RUNTIME_MESSAGE_OWNERSHIP_MATRIX.md`
+  - `C:\Users\이준영\CANoe-IVI-OTA\canoe\docs\10_RUNTIME\11_RUNTIME_MESSAGE_OWNERSHIP_MATRIX.md`
 - multibus policy
-  - `C:\Users\이준영\CANoe-IVI-OTA\canoe\docs\operations\12_MULTIBUS_VISIBILITY_POLICY.md`
+  - `C:\Users\이준영\CANoe-IVI-OTA\canoe\docs\10_RUNTIME\12_RUNTIME_MULTIBUS_VISIBILITY_POLICY.md`
 
 ## 3) Verification
 
-- `C:\Users\이준영\CANoe-IVI-OTA\canoe\docs\operations\verification\20_CANOE_TEST_EXECUTION_GUIDE.md`
-- `C:\Users\이준영\CANoe-IVI-OTA\canoe\docs\operations\verification\21_SIL_ACCEPTANCE_CRITERIA.md`
+- `C:\Users\이준영\CANoe-IVI-OTA\canoe\docs\20_VERIFICATION\20_CANOE_TEST_EXECUTION_GUIDE.md`
+- `C:\Users\이준영\CANoe-IVI-OTA\canoe\docs\20_VERIFICATION\21_SIL_ACCEPTANCE_CRITERIA.md`
 - `C:\Users\이준영\CANoe-IVI-OTA\canoe\tests\`
 
 ## 4) Maintenance Tools
 
-- `C:\Users\이준영\CANoe-IVI-OTA\canoe\tools\10_generate_can_dbc_from_docs.py`
-- `C:\Users\이준영\CANoe-IVI-OTA\canoe\tools\20_validate_runtime_priority_gate.py`
+- `C:\Users\이준영\CANoe-IVI-OTA\canoe\tools\10_RUNTIME\10_generate_can_dbc_from_docs.py`
+- `C:\Users\이준영\CANoe-IVI-OTA\canoe\tools\20_VERIFICATION\20_validate_runtime_priority_gate.py`
 
 ## 5) Archive Policy
 

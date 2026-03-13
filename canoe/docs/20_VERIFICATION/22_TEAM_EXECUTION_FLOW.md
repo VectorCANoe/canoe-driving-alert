@@ -20,7 +20,7 @@
 - continues CLI/TUI, evidence packaging, and CI/Jenkins bridge work
 
 ### Docs
-- owns the SoT chain under `driving-situation-alert/`
+- owns the SSoT chain under `driving-situation-alert/`
 - owns the final submission workspace under:
   - `driving-situation-alert/tmp/submission/final-docs/`
 
@@ -70,8 +70,8 @@ Current Dev1 native CANoe Test Unit PoC assets:
 
 Primary execution guidance:
 
-- `canoe/docs/operations/verification/20_CANOE_TEST_EXECUTION_GUIDE.md`
-- `canoe/docs/operations/verification/CANOE_TEST_POC_SCOPE_2026-03-08.md`
+- `canoe/docs/20_VERIFICATION/20_CANOE_TEST_EXECUTION_GUIDE.md`
+- `canoe/tests/modules/test_units/README.md`
 
 ## Evidence Mapping
 
@@ -85,7 +85,7 @@ Primary execution guidance:
 - operator run output
 - CI-friendly artifact bundle
 
-### SoT evidence owned by Docs
+### SSoT evidence owned by Docs
 - `05/06/07` verdict rows
 - final-docs submission copy
 

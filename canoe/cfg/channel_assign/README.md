@@ -67,7 +67,7 @@ These anchors still need extra bus assignments restored in GUI.
 
 Formal rationale:
 
-- [12_MULTIBUS_VISIBILITY_POLICY.md](/C:/Users/이준영/CANoe-IVI-OTA/canoe/docs/operations/12_MULTIBUS_VISIBILITY_POLICY.md)
+- [12_RUNTIME_MULTIBUS_VISIBILITY_POLICY.md](/C:/Users/이준영/CANoe-IVI-OTA/canoe/docs/10_RUNTIME/12_RUNTIME_MULTIBUS_VISIBILITY_POLICY.md)
 
 ## Fresh cfg rebuild checklist
 

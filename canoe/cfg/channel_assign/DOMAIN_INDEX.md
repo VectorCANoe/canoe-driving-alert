@@ -2,7 +2,7 @@
 
 This file documents the visible runtime and placeholder CAPL inventory after wrapper absorption and OEM abbreviation normalization.
 
-## Runtime SoT
+## Runtime SSoT
 - v2 runtime cfg: `canoe/cfg/CAN_v2_topology_wip.cfg`
 - runtime source: `canoe/src/capl/**`
 - GUI import mirror: `canoe/cfg/channel_assign/**`

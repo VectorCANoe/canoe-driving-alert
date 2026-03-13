@@ -2,8 +2,8 @@
 """Validate runtime priority communication contracts for CANoe project.
 
 This script enforces a practical gate for the mentoring direction:
-1) CAN SoT must be split domain DBCs.
-2) Ethernet SoT must be a separate contract document.
+1) CAN SSoT must be split domain DBCs.
+2) Ethernet SSoT must be a separate contract document.
 3) Message ownership must be unambiguous across active CAN DBC set.
 4) Volume target must stay above minimum visibility threshold.
 """
@@ -24,7 +24,7 @@ DBC_ACTIVE_FILES = [
     "infotainment_can.dbc",
     "adas_can.dbc",
 ]
-ETH_CONTRACT_REL = "canoe/docs/operations/10_ETHERNET_BACKBONE_INTERFACE_SPEC.md"
+ETH_CONTRACT_REL = "canoe/docs/10_RUNTIME/10_ETHERNET_BACKBONE_SSoT.md"
 DEFAULT_MATRIX_OUT = "canoe/tmp/runtime_message_ownership_matrix.md"
 DEFAULT_REPORT_OUT = "canoe/tmp/runtime_priority_gate_report.md"
 
@@ -193,7 +193,7 @@ def build_gate_report(
 
     gate_checks = [
         ("Split CAN DBC files present", len(missing_dbc) == 0),
-        ("Ethernet SoT document present", has_eth_contract),
+        ("Ethernet SSoT document present", has_eth_contract),
         ("No duplicate message IDs within an active DBC", len(dup_ids_within_dbc) == 0),
         ("No duplicate message names across active DBCs", len(dup_names) == 0),
         ("Mandatory message IDs match contract", len(id_mismatches) == 0),

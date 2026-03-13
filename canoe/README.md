@@ -6,7 +6,7 @@ This folder keeps the active CANoe runtime only.
 
 1. `cfg/CAN_v2_topology_wip.cfg`
 2. `FILE_INDEX.md`
-3. `docs/operations/README.md`
+3. `docs/README.md`
 
 ## Active Surface
 
@@ -26,7 +26,7 @@ This folder keeps the active CANoe runtime only.
 - verification assets
   - `tests/`
 - active operation docs
-  - `docs/operations/`
+  - `docs/`
 - active maintenance tools
   - `tools/`
 

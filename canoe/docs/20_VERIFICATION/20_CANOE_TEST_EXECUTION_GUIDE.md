@@ -46,5 +46,5 @@
 ## Follow-up
 - Docs team reflects the asset in `04/05/06/07`
 - Dev2 may package the generated native report after execution
-- Diagnostic tester/responder coverage is tracked in:
-  - `canoe/docs/operations/verification/DIAGNOSTIC_TESTER_COVERAGE_2026-03-10.md`
+- Additional diagnostic detail is no longer part of the active CANoe doc surface.
+- Restore archived verification notes only if that workflow is explicitly reopened.

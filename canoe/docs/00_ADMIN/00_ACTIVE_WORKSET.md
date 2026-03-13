@@ -2,7 +2,7 @@
 
 This file is the active whitelist for CANoe-side working documents.
 
-## 1) Canonical SoT Chain
+## 1) Canonical SSoT Chain
 
 Open these first, in order:
 
@@ -20,13 +20,13 @@ Open these first, in order:
 
 ## 2) Active CANoe Docs
 
-Read these after the SoT chain:
+Read these after the SSoT chain:
 
-- `canoe/docs/operations/10_ETHERNET_BACKBONE_INTERFACE_SPEC.md`
-- `canoe/docs/operations/11_RUNTIME_MESSAGE_OWNERSHIP_MATRIX.md`
-- `canoe/docs/operations/12_MULTIBUS_VISIBILITY_POLICY.md`
-- `canoe/docs/operations/verification/20_CANOE_TEST_EXECUTION_GUIDE.md`
-- `canoe/docs/operations/verification/21_SIL_ACCEPTANCE_CRITERIA.md`
+- `canoe/docs/10_RUNTIME/10_ETHERNET_BACKBONE_SSoT.md`
+- `canoe/docs/10_RUNTIME/11_RUNTIME_MESSAGE_OWNERSHIP_MATRIX.md`
+- `canoe/docs/10_RUNTIME/12_RUNTIME_MULTIBUS_VISIBILITY_POLICY.md`
+- `canoe/docs/20_VERIFICATION/20_CANOE_TEST_EXECUTION_GUIDE.md`
+- `canoe/docs/20_VERIFICATION/21_SIL_ACCEPTANCE_CRITERIA.md`
 
 ## 3) Keep Out Of Daily Flow
 
