@@ -167,3 +167,45 @@ nul
 # public-main exclusions for workproducts
 driving-alert-workproducts/archive/
 driving-alert-workproducts/ops/
+
+# ------------------------------------------------------------------
+# Official public-main exclusions (keep official 4-axis surface only)
+# ------------------------------------------------------------------
+# root-level
+.claude/
+.codex-tmp/
+.githooks/
+.github/
+.pytest_cache/
+.venv/
+artifacts/
+build/
+canoe_sdv_cli.egg-info/
+dist/
+docs/
+legacy_projects/
+reference/
+__pycache__/
+
+# canoe local/internal surfaces
+canoe/.claude/
+canoe/AGENT/
+canoe/logging/
+canoe/reference/
+canoe/tmp/
+canoe/legacy/
+
+# workproducts local/internal surfaces
+driving-alert-workproducts/archive/
+driving-alert-workproducts/ops/
+driving-alert-workproducts/reference/
+
+# product generated/internal samples
+product/sdv_operator/site/
+product/sdv_operator/examples/
+
+# scripts local/support-only buckets (public main excludes)
+scripts/canoe/
+scripts/docs/
+scripts/report/
+scripts/__pycache__/
