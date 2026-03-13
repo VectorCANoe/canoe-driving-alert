@@ -25,7 +25,7 @@
 ## 4. 동역학 (Chassis/Safety)
 | ECU | 파일 경로 | 점검 항목 | 상태 | 비고 |
 | :--- | :--- | :--- | :---: | :--- |
-| **ESC** | `canoe/cfg/channel_assign/Chassis/ESC.can` | 제동 상태 및 차체 안정화 제어 | [ ] | |
+| **ESC** | `canoe/cfg/channel_assign/Chassis/ESC.can` | 제동 상태 및 차체 안정화 제어 | ✅ | 1. `AbsActive`가 0인데 `BrakeMode`가 1일 수 있음(`AbsActive`는 페달과 차량 속력을 조건으로 두지만, `BrakeMode`는 페달만 조건으로 두고 있음). 2. `absSlip`을 계산만 하고 쓰지 않음. 3. `frmYawAccelMsg`를 보내긴 하는데 받는 노드가 없는 상태임 |
 | **MDPS** | `canoe/cfg/channel_assign/Chassis/MDPS.can` | 조향 상태 및 조향 보조 제어 | [ ] | |
 
 ---

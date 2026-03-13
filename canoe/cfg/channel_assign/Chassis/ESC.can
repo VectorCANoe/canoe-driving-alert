@@ -5,48 +5,175 @@ includes
 
 variables
 {
+  const int ESC_MIN_VEHICLE_SPEED_KPH = 0;
+  const int ESC_MAX_VEHICLE_SPEED_KPH = 255;
+  const int ESC_MIN_DRIVE_STATE = 0;
+  const int ESC_DRIVE_STATE_DRIVE = 3;
+  const int ESC_MAX_DRIVE_STATE = 3;
+  const int ESC_BOOL_FALSE = 0;
+  const int ESC_BOOL_TRUE = 1;
+  const int ESC_MIN_PEDAL_PERCENT = 0;
+  const int ESC_MAX_PEDAL_PERCENT = 100;
+  const int ESC_MIN_STEERING_INPUT_FLAG = 0;
+  const int ESC_MAX_STEERING_INPUT_FLAG = 1;
+  const int ESC_ASSIST_MIN_PEDAL_PERCENT = 25;
+  const int ESC_BRAKE_PRESSURE_GAIN = 2;
+  const int ESC_MAX_BRAKE_PRESSURE = 255;
+  const int ESC_ABS_PEDAL_THRESHOLD = 80;
+  const int ESC_ABS_SPEED_THRESHOLD = 10;
+  const int ESC_ABS_SLIP_MAX = 63;
+  const int ESC_ESP_PEDAL_THRESHOLD = 40;
+  const int ESC_YAW_RATE_PER_STEERING_INPUT = 15;
+  const int ESC_BRAKE_MODE_OFF = 0;
+  const int ESC_BRAKE_MODE_BRAKE = 1;
+  const int ESC_BRAKE_MODE_ABS = 2;
+  const int ESC_HEALTH_FAIL_CODE_NONE = 0;
+  const int ESC_ALIVE_COUNTER_STEP = 1;
+  const int ESC_ALIVE_COUNTER_MASK = 0xFF;
+  const int ESC_ESC_CTRL_STATE_OFF = 0;
+  const int ESC_ESC_CTRL_STATE_ACTIVE = 2;
+  const int ESC_ESC_INTERVENTION_MAX = 63;
+  const int ESC_ESC_YAW_TARGET_DEFAULT = 128;
+  const int ESC_BRAKE_TEMP_BASE_C = 30;
+  const int ESC_BRAKE_TEMP_PEDAL_DIVISOR = 5;
+  const int ESC_BRAKE_PAD_WEAR_LEVEL_DEFAULT = 10;
+  const int ESC_SUSPENSION_MODE_NORMAL = 0;
+  const int ESC_SUSPENSION_MODE_DRIVE = 1;
+  const int ESC_SUSPENSION_LEVEL_DEFAULT = 8;
+  const int ESC_DAMPING_LEVEL_DEFAULT = 12;
+  const int ESC_ROAD_FRICTION_DEFAULT = 80;
+  const int ESC_TIMER_PERIOD_MS = 100;
+  const int ESC_STATUS_SENTINEL_UNINITIALIZED = -1;
+
   msTimer tEscCycle;
   int gBrakePedal;
   int gSpeedNorm;
   int gDriveState;
-  int gSteeringInput;
+  int gIsSteeringInputActive;
   int gChassisAliveCnt;
   int gLastBrakePedal;
-  int gLastAssistReq;
+  int gLastIsDecelAssistRequested;
+}
+
+int normalizeDecelAssistRequestFlag(int decelAssistReqRawValue)
+{
+  return ((((int)decelAssistReqRawValue) == ESC_BOOL_TRUE) ? ESC_BOOL_TRUE : ESC_BOOL_FALSE);
+}
+
+int applyAssistBrakePedalFloor(int brakePedal, int isDecelAssistRequested)
+{
+  if (isDecelAssistRequested == ESC_BOOL_TRUE && brakePedal < ESC_ASSIST_MIN_PEDAL_PERCENT)
+  {
+    return ESC_ASSIST_MIN_PEDAL_PERCENT;
+  }
+  return brakePedal;
+}
+
+int deriveBrakePressure(int appliedBrakePedal)
+{
+  return clampRange(appliedBrakePedal * ESC_BRAKE_PRESSURE_GAIN, ESC_MIN_VEHICLE_SPEED_KPH, ESC_MAX_BRAKE_PRESSURE);
+}
+
+int isAbsActiveCondition(int appliedBrakePedal, int speedNorm)
+{
+  return (((appliedBrakePedal > ESC_ABS_PEDAL_THRESHOLD) && (speedNorm > ESC_ABS_SPEED_THRESHOLD)) ? ESC_BOOL_TRUE : ESC_BOOL_FALSE);
+}
+
+int deriveAbsSlipLevel(int isAbsActive, int appliedBrakePedal)
+{
+  if (isAbsActive == ESC_BOOL_TRUE)
+  {
+    return clampRange(appliedBrakePedal - ESC_ABS_PEDAL_THRESHOLD, ESC_MIN_VEHICLE_SPEED_KPH, ESC_ABS_SLIP_MAX);
+  }
+  return ESC_BOOL_FALSE;
+}
+
+int isEspActiveCondition(int appliedBrakePedal, int isSteeringInputActive)
+{
+  return (((appliedBrakePedal > ESC_ESP_PEDAL_THRESHOLD) && (isSteeringInputActive == ESC_BOOL_TRUE)) ? ESC_BOOL_TRUE : ESC_BOOL_FALSE);
+}
+
+int deriveBrakeModeCode(int appliedBrakePedal)
+{
+  if (appliedBrakePedal > ESC_ABS_PEDAL_THRESHOLD)
+  {
+    return ESC_BRAKE_MODE_ABS;
+  }
+  if (appliedBrakePedal > ESC_MIN_PEDAL_PERCENT)
+  {
+    return ESC_BRAKE_MODE_BRAKE;
+  }
+  return ESC_BRAKE_MODE_OFF;
+}
+
+int deriveEscCtrlStateCode(int isEspActive)
+{
+  if (isEspActive == ESC_BOOL_TRUE)
+  {
+    return ESC_ESC_CTRL_STATE_ACTIVE;
+  }
+  return ESC_ESC_CTRL_STATE_OFF;
+}
+
+int deriveEscInterventionLevel(int isEspActive, int appliedBrakePedal)
+{
+  if (isEspActive == ESC_BOOL_TRUE)
+  {
+    return clampRange(appliedBrakePedal - ESC_ESP_PEDAL_THRESHOLD, ESC_MIN_VEHICLE_SPEED_KPH, ESC_ESC_INTERVENTION_MAX);
+  }
+  return ESC_BOOL_FALSE;
+}
+
+int deriveSuspensionModeCode(int driveStateCode)
+{
+  if (driveStateCode == ESC_DRIVE_STATE_DRIVE)
+  {
+    return ESC_SUSPENSION_MODE_DRIVE;
+  }
+  return ESC_SUSPENSION_MODE_NORMAL;
+}
+
+int isEscLogUpdateRequired(int brakePedal, int isDecelAssistRequested)
+{
+  return (brakePedal != gLastBrakePedal ||
+          isDecelAssistRequested != gLastIsDecelAssistRequested);
 }
 
 on start
 {
-  gBrakePedal = 0;
-  gSpeedNorm = 0;
-  gDriveState = 0;
-  gSteeringInput = 0;
-  gChassisAliveCnt = 0;
-  gLastBrakePedal = -1;
-  gLastAssistReq = -1;
-  setTimer(tEscCycle, 100);
+  gBrakePedal = ESC_MIN_PEDAL_PERCENT;
+  gSpeedNorm = ESC_MIN_VEHICLE_SPEED_KPH;
+  gDriveState = ESC_MIN_DRIVE_STATE;
+  gIsSteeringInputActive = ESC_BOOL_FALSE;
+  gChassisAliveCnt = ESC_MIN_VEHICLE_SPEED_KPH;
+  gLastBrakePedal = ESC_STATUS_SENTINEL_UNINITIALIZED;
+  gLastIsDecelAssistRequested = ESC_STATUS_SENTINEL_UNINITIALIZED;
+  setTimer(tEscCycle, ESC_TIMER_PERIOD_MS);
   write("[ESC] start");
 }
 
 on message frmVehicleStateCanMsg
 {
-  gSpeedNorm = clampRange((int)this.gVehicleSpeed, 0, 255);
-  gDriveState = clampRange((int)this.gDriveState, 0, 3);
+  gSpeedNorm = clampRange((int)this.gVehicleSpeed, ESC_MIN_VEHICLE_SPEED_KPH, ESC_MAX_VEHICLE_SPEED_KPH);
+  gDriveState = clampRange((int)this.gDriveState, ESC_MIN_DRIVE_STATE, ESC_MAX_DRIVE_STATE);
 }
 
 on message frmSteeringCanMsg
 {
-  gSteeringInput = clampRange((int)this.SteeringInput, 0, 1);
+  // Normalize the steering-input flag from the chassis input frame.
+  gIsSteeringInputActive = clampRange((int)this.SteeringInput, ESC_MIN_STEERING_INPUT_FLAG, ESC_MAX_STEERING_INPUT_FLAG);
 }
 
 on message frmPedalInputCanMsg
 {
-  gBrakePedal = clampRange((int)this.BrakePedal, 0, 100);
+  // Normalize the brake pedal and mirror it into Core.
+  gBrakePedal = clampRange((int)this.BrakePedal, ESC_MIN_PEDAL_PERCENT, ESC_MAX_PEDAL_PERCENT);
   @Core::brakePedalNorm = gBrakePedal;
 }
 
 on timer tEscCycle
 {
+  // Prepare the chassis status messages for the ESC cycle.
   message frmWheelSpeedMsg mWheelSpd;
   message frmYawAccelMsg mYawAccel;
   message frmBrakeStatusMsg mBrakeStatus;
@@ -56,27 +183,23 @@ on timer tEscCycle
   message frmBrakeWearMsg mBrakeWear;
   message frmSuspensionStateMsg mSuspension;
   message frmRoadFrictionMsg mFriction;
-  int decelAssistReq;
+  int isDecelAssistRequested;
   int appliedBrakePedal;
   int brakePressure;
-  int absActive;
-  int espActive;
+  int isAbsActive;
+  int isEspActive;
   int absSlip;
   int yawRate;
   int latAccel;
 
-  decelAssistReq = (((int)@Core::decelAssistReq) == 1) ? 1 : 0;
-  appliedBrakePedal = gBrakePedal;
-  if (decelAssistReq == 1 && appliedBrakePedal < 25)
-  {
-    appliedBrakePedal = 25;
-  }
+  isDecelAssistRequested = normalizeDecelAssistRequestFlag((int)@Core::decelAssistReq);
+  appliedBrakePedal = applyAssistBrakePedalFloor(gBrakePedal, isDecelAssistRequested);
 
-  brakePressure = clampRange(appliedBrakePedal * 2, 0, 255);
-  absActive = ((appliedBrakePedal > 80) && (gSpeedNorm > 10)) ? 1 : 0;
-  absSlip = absActive ? clampRange(appliedBrakePedal - 80, 0, 63) : 0;
-  espActive = ((appliedBrakePedal > 40) && (gSteeringInput == 1)) ? 1 : 0;
-  yawRate = gSteeringInput * 15;
+  brakePressure = deriveBrakePressure(appliedBrakePedal);
+  isAbsActive = isAbsActiveCondition(appliedBrakePedal, gSpeedNorm);
+  absSlip = deriveAbsSlipLevel(isAbsActive, appliedBrakePedal);
+  isEspActive = isEspActiveCondition(appliedBrakePedal, gIsSteeringInputActive);
+  yawRate = gIsSteeringInputActive * ESC_YAW_RATE_PER_STEERING_INPUT;
   latAccel = gSpeedNorm;
 
   mWheelSpd.WheelSpdFL = gSpeedNorm;
@@ -90,44 +213,44 @@ on timer tEscCycle
   output(mYawAccel);
 
   mBrakeStatus.BrakePressure = brakePressure;
-  mBrakeStatus.BrakeMode = (appliedBrakePedal > 80) ? 2 : ((appliedBrakePedal > 0) ? 1 : 0);
-  mBrakeStatus.AbsActive = absActive;
-  mBrakeStatus.EspActive = espActive;
+  mBrakeStatus.BrakeMode = deriveBrakeModeCode(appliedBrakePedal);
+  mBrakeStatus.AbsActive = isAbsActive;
+  mBrakeStatus.EspActive = isEspActive;
   output(mBrakeStatus);
 
-  mHealth.ChassisAliveCnt = gChassisAliveCnt & 0xFF;
-  mHealth.ChassisFailCode = 0;
+  mHealth.ChassisAliveCnt = gChassisAliveCnt & ESC_ALIVE_COUNTER_MASK;
+  mHealth.ChassisFailCode = ESC_HEALTH_FAIL_CODE_NONE;
   output(mHealth);
-  gChassisAliveCnt = (gChassisAliveCnt + 1) & 0xFF;
+  gChassisAliveCnt = (gChassisAliveCnt + ESC_ALIVE_COUNTER_STEP) & ESC_ALIVE_COUNTER_MASK;
 
-  mEsc.EscCtrlState = espActive ? 2 : 0;
-  mEsc.EscIntervention = espActive ? clampRange(appliedBrakePedal - 40, 0, 63) : 0;
-  mEsc.EscYawTarget = 128;
+  mEsc.EscCtrlState = deriveEscCtrlStateCode(isEspActive);
+  mEsc.EscIntervention = deriveEscInterventionLevel(isEspActive, appliedBrakePedal);
+  mEsc.EscYawTarget = ESC_ESC_YAW_TARGET_DEFAULT;
   output(mEsc);
 
-  mBrakeTemp.BrakeTempFL = 30 + (appliedBrakePedal / 5);
-  mBrakeTemp.BrakeTempFR = 30 + (appliedBrakePedal / 5);
+  mBrakeTemp.BrakeTempFL = ESC_BRAKE_TEMP_BASE_C + (appliedBrakePedal / ESC_BRAKE_TEMP_PEDAL_DIVISOR);
+  mBrakeTemp.BrakeTempFR = ESC_BRAKE_TEMP_BASE_C + (appliedBrakePedal / ESC_BRAKE_TEMP_PEDAL_DIVISOR);
   output(mBrakeTemp);
 
-  mBrakeWear.BrakePadWearLvl = 10;
+  mBrakeWear.BrakePadWearLvl = ESC_BRAKE_PAD_WEAR_LEVEL_DEFAULT;
   output(mBrakeWear);
 
-  mSuspension.SuspensionMode = (gDriveState == 3) ? 1 : 0;
-  mSuspension.SuspensionLevel = 8;
-  mSuspension.DampingLevel = 12;
+  mSuspension.SuspensionMode = deriveSuspensionModeCode(gDriveState);
+  mSuspension.SuspensionLevel = ESC_SUSPENSION_LEVEL_DEFAULT;
+  mSuspension.DampingLevel = ESC_DAMPING_LEVEL_DEFAULT;
   output(mSuspension);
 
 
-  mFriction.RoadFrictionCoef = 80;
+  mFriction.RoadFrictionCoef = ESC_ROAD_FRICTION_DEFAULT;
   output(mFriction);
 
-  if (gBrakePedal != gLastBrakePedal || decelAssistReq != gLastAssistReq)
+  if (isEscLogUpdateRequired(gBrakePedal, isDecelAssistRequested))
   {
     write("[ESC] speed=%d pedal=%d assist=%d pressure=%d abs=%d esp=%d",
-          gSpeedNorm, gBrakePedal, decelAssistReq, brakePressure, absActive, espActive);
+          gSpeedNorm, gBrakePedal, isDecelAssistRequested, brakePressure, isAbsActive, isEspActive);
     gLastBrakePedal = gBrakePedal;
-    gLastAssistReq = decelAssistReq;
+    gLastIsDecelAssistRequested = isDecelAssistRequested;
   }
 
-  setTimer(tEscCycle, 100);
+  setTimer(tEscCycle, ESC_TIMER_PERIOD_MS);
 }
