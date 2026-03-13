@@ -6,6 +6,8 @@ includes
 variables
 {
   msTimer tIboxCycle;
+  long gEthSocket;
+  char gEthRxBuffer[64];
   dword gVehTsMs;
   dword gNavTsMs;
   int gDriveState;
@@ -21,7 +23,6 @@ variables
 
 void publishIboxState()
 {
-  message ethIboxStateMsg mIbox;
   dword nowMs;
   int vehAgeMs;
   int navAgeMs;
@@ -49,11 +50,11 @@ void publishIboxState()
   }
 
   routeState = 0;
-  if (gRoadZone > 0)
+  if (gRoadZone > 0 && navAgeMs <= 1000)
   {
     routeState = 1;
   }
-  if (gNavDirection > 0 && gZoneDistance > 0)
+  if (gNavDirection > 0 && gZoneDistance > 0 && navAgeMs <= 300)
   {
     routeState = 2;
   }
@@ -78,38 +79,73 @@ void publishIboxState()
 
   if (vehAgeMs > 1000 || navAgeMs > 1000)
   {
+    signalBars = 1;
   }
   else if (vehAgeMs > 300 || navAgeMs > 300)
   {
+    signalBars = 3;
+  }
+  else
+  {
+    signalBars = 4;
   }
 
-  signalBars = 4;
-  if (failSafeMode > 0)
+  if (failSafeMode > 0 && signalBars > 2)
   {
     signalBars = 2;
   }
+  if (routeState == 0 && signalBars > 1)
   {
-    signalBars = 1;
+    signalBars = signalBars - 1;
   }
 
-  mIbox.IboxLinkMode = clampRange(linkMode, 0, 3);
-  mIbox.IboxRouteState = clampRange(routeState, 0, 3);
-  mIbox.IboxSignalBars = clampRange(signalBars, 0, 15);
-  mIbox.IboxServiceFlags = clampRange(serviceFlags, 0, 15);
-  output(mIbox);
-
-  if (mIbox.IboxLinkMode != gLastLinkMode ||
-      mIbox.IboxRouteState != gLastRouteState ||
-      mIbox.IboxServiceFlags != gLastServiceFlags)
+  if (linkMode != gLastLinkMode ||
+      routeState != gLastRouteState ||
+      serviceFlags != gLastServiceFlags)
   {
-    gLastLinkMode = mIbox.IboxLinkMode;
-    gLastRouteState = mIbox.IboxRouteState;
-    gLastServiceFlags = mIbox.IboxServiceFlags;
+    write("[IBOX] link=%d route=%d bars=%d service=0x%X",
+          linkMode, routeState, signalBars, serviceFlags);
+    gLastLinkMode = linkMode;
+    gLastRouteState = routeState;
+    gLastServiceFlags = serviceFlags;
   }
+}
+
+void OnUdpReceiveFrom(dword socket, long result, dword address, dword port, char buffer[], dword count)
+{
+  int msgId;
+  int payload0;
+
+  if (socket != gEthSocket)
+  {
+    return;
+  }
+  if (result == 0)
+  {
+    msgId = ethFrameMsgId(buffer, count);
+    if (msgId == ethMsgVehicleState() && ethFramePayloadLen(count) >= 2)
+    {
+      gVehTsMs = getSimulationTimeMs();
+      gVehicleSpeed = clampRange(ethGetU8(buffer, 0), 0, 255);
+      gDriveState = clampRange(ethGetU8(buffer, 1), 0, 3);
+    }
+    else if (msgId == ethMsgNavContext() && ethFramePayloadLen(count) >= 3)
+    {
+      gNavTsMs = getSimulationTimeMs();
+      payload0 = ethGetU8(buffer, 0);
+      gRoadZone = clampRange(payload0 & 0x3, 0, 3);
+      gNavDirection = clampRange((payload0 >> 2) & 0x3, 0, 3);
+      gZoneDistance = clampRange(ethGetU8(buffer, 1), 0, 255);
+      gSpeedLimit = clampRange(ethGetU8(buffer, 2), 0, 255);
+    }
+  }
+
+  ethArmReceive(gEthSocket, gEthRxBuffer, elcount(gEthRxBuffer));
 }
 
 on start
 {
+  gEthSocket = ethOpenDefaultSocket();
   gVehTsMs = 0;
   gNavTsMs = 0;
   gDriveState = 0;
@@ -121,6 +157,10 @@ on start
   gLastLinkMode = -1;
   gLastRouteState = -1;
   gLastServiceFlags = -1;
+  if (gEthSocket != ethInvalidSocket())
+  {
+    ethStartReceiver(gEthSocket, gEthRxBuffer, elcount(gEthRxBuffer));
+  }
   setTimer(tIboxCycle, 100);
   write("[IBOX] start");
 }
@@ -131,23 +171,9 @@ on timer tIboxCycle
   setTimer(tIboxCycle, 100);
 }
 
-on message ethVehicleStateMsg
-{
-  gVehTsMs = getSimulationTimeMs();
-  gDriveState = clampRange((int)this.DriveState, 0, 3);
-  gVehicleSpeed = clampRange((int)this.VehicleSpeed, 0, 255);
-}
-
-on message ethNavContextMsg
-{
-  gNavTsMs = getSimulationTimeMs();
-  gRoadZone = clampRange((int)this.RoadZone, 0, 7);
-  gNavDirection = clampRange((int)this.NavDirection, 0, 7);
-  gZoneDistance = clampRange((int)this.ZoneDistance, 0, 255);
-  gSpeedLimit = clampRange((int)this.SpeedLimit, 0, 255);
-}
-
 on stopMeasurement
 {
   cancelTimer(tIboxCycle);
+  ethCloseSocket(gEthSocket);
+  gEthSocket = ethInvalidSocket();
 }

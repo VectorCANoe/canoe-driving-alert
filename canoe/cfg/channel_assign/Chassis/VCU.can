@@ -6,6 +6,8 @@ includes
 variables
 {
   msTimer tVcuCycle;
+  long gEthSocket;
+  dword gEthTargetIp;
   int gSpeed;
   int gAccelPedal;
   int gBrakePedal;
@@ -22,19 +24,23 @@ variables
 
 void publishBackboneVehicleState()
 {
-  message ethVehicleStateMsg mEthVeh;
+  char frame[4];
+  int driveState;
+  int vehicleSpeed;
 
-  /* Internal powertrain/vehicle-state gateway seam for CAN-stub today, transport swap later. */
-  mEthVeh.DriveState = clampRange((int)@Core::driveStateNorm, 0, 3);
-  mEthVeh.VehicleSpeed = clampRange((int)@Core::vehicleSpeedNorm, 0, 255);
-  mEthVeh.BrakePedalNorm = clampRange(gBrakePedal, 0, 100);
-  mEthVeh.TurnLampState = clampRange((int)@CoreState::turnLampState, 0, 3);
-  mEthVeh.SeatBeltWarnLvl = clampRange((int)@CoreState::seatBeltWarnLvl, 0, 3);
-  output(mEthVeh);
+  driveState = clampRange((int)@Core::driveStateNorm, 0, 3);
+  vehicleSpeed = clampRange((int)@Core::vehicleSpeedNorm, 0, 255);
+
+  ethInitFrame(frame, ethMsgVehicleState(), 2);
+  ethSetU8(frame, 0, vehicleSpeed);
+  ethSetU8(frame, 1, driveState);
+  ethSendFrame(gEthSocket, gEthTargetIp, ethMsgVehicleState(), frame, 2);
 }
 
 on start
 {
+  gEthSocket = ethOpenDefaultSocket();
+  gEthTargetIp = ethGetDefaultIpAddress();
   gSpeed = 0;
   gAccelPedal = 0;
   gBrakePedal = 0;
@@ -101,17 +107,29 @@ on timer tVcuCycle
   int failSafeMode;
   int torqueRequest;
   int tcsActive;
+  int scenarioActive;
+  int scenarioSpeedHint;
 
-  targetSpeed = gAccelPedal * 2;
-  if (targetSpeed > 200) targetSpeed = 200;
-  if (gBrakePedal > 20) targetSpeed = 0;
+  scenarioActive = (((int)@Test::testScenario) > 0) ? 1 : 0;
+  scenarioSpeedHint = clampRange((int)@Chassis::vehicleSpeed, 0, 255);
 
-  delta = targetSpeed - gSpeed;
-  if (delta > 5) delta = 5;
-  if (delta < -15) delta = -15;
-  gSpeed = gSpeed + delta;
-  if (gSpeed < 0) gSpeed = 0;
-  if (gSpeed > 255) gSpeed = 255;
+  if (scenarioActive == 1)
+  {
+    gSpeed = scenarioSpeedHint;
+  }
+  else
+  {
+    targetSpeed = gAccelPedal * 2;
+    if (targetSpeed > 200) targetSpeed = 200;
+    if (gBrakePedal > 20) targetSpeed = 0;
+
+    delta = targetSpeed - gSpeed;
+    if (delta > 5) delta = 5;
+    if (delta < -15) delta = -15;
+    gSpeed = gSpeed + delta;
+    if (gSpeed < 0) gSpeed = 0;
+    if (gSpeed > 255) gSpeed = 255;
+  }
 
   driveState = (gGearState > 0 || gSpeed > 0) ? 3 : 0;
   gDriveMode = clampRange(gGearState, 0, 7);
@@ -191,8 +209,13 @@ on timer tVcuCycle
   mCtrlAuth.CtrlAuthLevel = (gBoundaryStatus == 1) ? 3 : 1;
   mCtrlAuth.CtrlAuthSource = 1;
   output(mCtrlAuth);
-  {
-  }
 
   setTimer(tVcuCycle, 100);
+}
+
+on stopMeasurement
+{
+  cancelTimer(tVcuCycle);
+  ethCloseSocket(gEthSocket);
+  gEthSocket = ethInvalidSocket();
 }

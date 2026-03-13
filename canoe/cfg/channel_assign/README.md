@@ -40,7 +40,7 @@ The current import bank exposes:
 
 1. Open the active CANoe configuration in GUI.
 2. Remove duplicate node instances first. Keep a single visible node instance per ECU.
-3. Re-attach only the current six active DBCs to the matching GUI networks.
+3. Re-attach the five domain CAN DBCs to the matching GUI networks.
 4. Import active nodes by domain from `channel_assign/`.
 5. Re-apply multibus assignments or extra DB visibility only for the nodes listed below.
 6. Compile and save from GUI.
@@ -67,7 +67,7 @@ These anchors still need extra bus assignments restored in GUI.
 
 Formal rationale:
 
-- [MULTIBUS_ASSIGNMENT_POLICY.md](C:\Users\이준영\CANoe-IVI-OTA\canoe\docs\operations\MULTIBUS_ASSIGNMENT_POLICY.md)
+- [12_RUNTIME_MULTIBUS_VISIBILITY_POLICY.md](/C:/Users/이준영/CANoe-IVI-OTA/canoe/docs/10_RUNTIME/12_RUNTIME_MULTIBUS_VISIBILITY_POLICY.md)
 
 ## Fresh cfg rebuild checklist
 
@@ -75,14 +75,15 @@ If the active GUI configuration was rebuilt from scratch or old DBC assignments 
 
 | GUI network / folder | Attach this DBC |
 | --- | --- |
-| `ETH_Backbone/` | `canoe/databases/eth_backbone_can_stub.dbc` |
 | `Powertrain/` | `canoe/databases/powertrain_can.dbc` |
 | `Chassis/` | `canoe/databases/chassis_can.dbc` |
 | `Body/` | `canoe/databases/body_can.dbc` |
 | `Infotainment/` | `canoe/databases/infotainment_can.dbc` |
 | `ADAS/` | `canoe/databases/adas_can.dbc` |
 
-Do not keep stale legacy DBC attachments in the same GUI config. Re-attach the six current DBCs only.
+`ETH_Backbone/` uses UDP helper code and does not require a CAN DBC for primary runtime semantics.
+
+Do not keep stale legacy DBC attachments in the same GUI config. Re-attach the five current domain CAN DBCs first, then restore only the documented foreign CAN visibility.
 
 ## Cross-domain visibility restore candidates
 
@@ -96,14 +97,11 @@ The nodes below reference messages outside their primary domain DBC. If they are
 | `DATC` | `Body/` | `Infotainment` (`frmTmuServiceStateMsg`) |
 | `ACU` | `Chassis/` | `Body` (`frmSeatBeltStateMsg`) |
 | `ODS` | `Chassis/` | `Body` (`frmSeatBeltStateMsg`, `frmSeatStateMsg`) |
-| `VCU` | `Chassis/` | `Powertrain`, `ETH_Backbone` |
-| `MDPS` | `Chassis/` | `ETH_Backbone` (`ethSteeringMsg`) |
+| `VCU` | `Chassis/` | `Powertrain` |
 | `SCC` | `ADAS/` | `Chassis` (`frmVehicleStateCanMsg`), `Powertrain` (`frmSccDiagReqMsg`) |
-| `AEB` | `ADAS/` | `ETH_Backbone` (`ethFailSafeStateMsg`) |
 | `HWP` | `ADAS/` | `Powertrain` (`frmCruiseStateMsg`) |
-| `LDR` | `ADAS/` | `ETH_Backbone` (`ethObjectSafetyStateMsg`) |
 
-Nodes not listed above should compile on their primary domain DBC if the current six DBCs were attached correctly.
+Nodes not listed above should compile on their primary domain DBC if the five current domain CAN DBCs were attached correctly.
 
 ## Node intent
 
@@ -141,7 +139,7 @@ Nodes not listed above should compile on their primary domain DBC if the current
 
 ## Placeholder note
 
-The original placeholder bank is fully promoted. Placeholder source files remain only under `retired_placeholders/` for history.
+The original placeholder bank is fully retired from the active branch. Historical placeholder and v1 assets are preserved in archive branches, not in the working tree.
 
 ## Validation
 

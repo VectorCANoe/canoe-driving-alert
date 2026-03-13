@@ -6,6 +6,8 @@ includes
 variables
 {
   msTimer tMdpsCycle;
+  long gEthSocket;
+  dword gEthTargetIp;
   int gSteeringInput;
   int gSpeedNorm;
   int gPrevSteering;
@@ -13,17 +15,20 @@ variables
 
 void publishBackboneSteeringState(int steeringAngleRaw, int steeringQuality)
 {
-  message ethSteeringMsg mEthSteer;
+  char frame[3];
+  int steeringInput;
 
-  /* Internal chassis steering gateway seam for CAN-stub today, transport swap later. */
-  mEthSteer.SteeringInput = clampRange(gSteeringInput, 0, 1);
-  mEthSteer.SteeringAngleDeg = clampRange(steeringAngleRaw, -720, 720);
-  mEthSteer.SteeringQuality = clampRange(steeringQuality, 0, 3);
-  output(mEthSteer);
+  steeringInput = clampRange(gSteeringInput, 0, 1);
+
+  ethInitFrame(frame, ethMsgSteering(), 1);
+  ethSetU8(frame, 0, steeringInput);
+  ethSendFrame(gEthSocket, gEthTargetIp, ethMsgSteering(), frame, 1);
 }
 
 on start
 {
+  gEthSocket = ethOpenDefaultSocket();
+  gEthTargetIp = ethGetDefaultIpAddress();
   gSteeringInput = 0;
   gSpeedNorm = 0;
   gPrevSteering = -1;
@@ -77,4 +82,11 @@ on timer tMdpsCycle
   publishBackboneSteeringState(steeringAngleRaw, (mEps.EpsFaultState == 0) ? 3 : 1);
 
   setTimer(tMdpsCycle, 50);
+}
+
+on stopMeasurement
+{
+  cancelTimer(tMdpsCycle);
+  ethCloseSocket(gEthSocket);
+  gEthSocket = ethInvalidSocket();
 }

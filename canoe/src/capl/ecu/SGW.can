@@ -20,12 +20,65 @@ variables
 
 void publishSecurityState()
 {
-  message ethSecurityStateMsg mSec;
   int securitySession;
   int authState;
   int keyPresence;
   int securityFault;
   int securityPolicy;
+  int roadZone;
+  int navDirection;
+  int zoneDistance;
+  int speedLimit;
+  int vehicleSpeed;
+  int alertLevel;
+
+  roadZone = clampRange((int)@Infotainment::roadZone, 0, 3);
+  navDirection = clampRange((int)@Infotainment::navDirection, 0, 3);
+  zoneDistance = clampRange((int)@Infotainment::zoneDistance, 0, 255);
+  speedLimit = clampRange((int)@Infotainment::speedLimit, 0, 255);
+  vehicleSpeed = clampRange((int)@Chassis::vehicleSpeed, 0, 255);
+  alertLevel = clampRange((int)@Core::selectedAlertLevel, 0, 7);
+  gWarningPathStatus = clampRange((int)@CoreState::warningPathStatus, 0, 2);
+  gFailSafeMode = clampRange((int)@Core::failSafeMode, 0, 2);
+  gBoundaryAlive = clampRange((int)@CoreState::domainBoundaryStatus, 0, 1);
+
+  gIboxLinkMode = 0;
+  if (roadZone > 0 || alertLevel > 0)
+  {
+    gIboxLinkMode = 1;
+  }
+  if (gBoundaryAlive == 1 && roadZone > 0)
+  {
+    gIboxLinkMode = 2;
+  }
+
+  gIboxRouteState = 0;
+  if (roadZone > 0)
+  {
+    gIboxRouteState = 1;
+  }
+  if (navDirection > 0 && zoneDistance > 0)
+  {
+    gIboxRouteState = 2;
+  }
+
+  gIboxServiceFlags = 0;
+  if (roadZone > 0)
+  {
+    gIboxServiceFlags = gIboxServiceFlags | 1;
+  }
+  if (alertLevel > 0)
+  {
+    gIboxServiceFlags = gIboxServiceFlags | 2;
+  }
+  if (gFailSafeMode > 0)
+  {
+    gIboxServiceFlags = gIboxServiceFlags | 4;
+  }
+  if (speedLimit > 0 && vehicleSpeed > speedLimit)
+  {
+    gIboxServiceFlags = gIboxServiceFlags | 8;
+  }
 
   securitySession = 0;
   if (gIboxLinkMode > 0)
@@ -65,22 +118,23 @@ void publishSecurityState()
     securityPolicy = 0;
   }
 
-  mSec.SecuritySession = clampRange(securitySession, 0, 7);
-  mSec.AuthState = clampRange(authState, 0, 3);
-  mSec.KeyPresence = clampRange(keyPresence, 0, 1);
-  mSec.SecurityFault = clampRange(securityFault, 0, 15);
-  mSec.SecurityPolicy = clampRange(securityPolicy, 0, 15);
-  output(mSec);
-
-  if (mSec.SecuritySession != gLastSecuritySession ||
-      mSec.AuthState != gLastAuthState ||
-      mSec.SecurityFault != gLastSecurityFault ||
-      mSec.SecurityPolicy != gLastSecurityPolicy)
+  if (securitySession != gLastSecuritySession ||
+      authState != gLastAuthState ||
+      securityFault != gLastSecurityFault ||
+      securityPolicy != gLastSecurityPolicy)
   {
-    gLastSecuritySession = mSec.SecuritySession;
-    gLastAuthState = mSec.AuthState;
-    gLastSecurityFault = mSec.SecurityFault;
-    gLastSecurityPolicy = mSec.SecurityPolicy;
+    write("[SGW] session=%d auth=%d key=%d fault=%d policy=%d route=%d service=0x%X",
+          securitySession,
+          authState,
+          keyPresence,
+          securityFault,
+          securityPolicy,
+          gIboxRouteState,
+          gIboxServiceFlags);
+    gLastSecuritySession = securitySession;
+    gLastAuthState = authState;
+    gLastSecurityFault = securityFault;
+    gLastSecurityPolicy = securityPolicy;
   }
 }
 
@@ -104,20 +158,6 @@ on timer tSgwCycle
 {
   publishSecurityState();
   setTimer(tSgwCycle, 100);
-}
-
-on message ethIboxStateMsg
-{
-  gIboxLinkMode = clampRange((int)this.IboxLinkMode, 0, 3);
-  gIboxRouteState = clampRange((int)this.IboxRouteState, 0, 3);
-  gIboxServiceFlags = clampRange((int)this.IboxServiceFlags, 0, 15);
-}
-
-on message ethFailSafeStateMsg
-{
-  gWarningPathStatus = clampRange((int)this.WarningPathStatus, 0, 3);
-  gFailSafeMode = clampRange((int)this.FailSafeMode, 0, 3);
-  gBoundaryAlive = clampRange((int)this.BoundaryAlive, 0, 1);
 }
 
 on stopMeasurement

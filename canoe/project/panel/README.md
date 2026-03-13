@@ -1,4 +1,4 @@
-﻿# project/panel
+# project/panel
 
 CANoe panel artifacts for this project.
 
@@ -50,7 +50,7 @@ CANoe panel artifacts for this project.
 - No priority/timeout logic in renderer layer
 - Renderer binds derived outputs only (`UiRender::*`)
 - Do not bind raw inputs (`vehicleSpeed`, `eta`) directly to skin controls
-- Add/modify `UiRender_*` only with SoT update in `0304`
+- Add/modify `UiRender_*` only with SSoT update in `0304`
 
 ## GUI-Only Scope
 - `.xvp` layout/property/binding changes must be done in CANoe GUI Panel Editor
