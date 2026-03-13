@@ -58,6 +58,7 @@ variables
   const int ADAS_DUPLICATE_POPUP_HOLD_MS = 1000;
   const int ADAS_SEAT_BELT_WARN_LEVEL_HIGH = 2;
   const int ADAS_ALERT_LEVEL_NONE = 0;
+  const int ADAS_ALERT_LEVEL_BASE_CAUTION = 1;
   const int ADAS_ALERT_LEVEL_STALE_MIN = 3;
   const int ADAS_ALERT_LEVEL_FAILSAFE_MIN = 4;
   const int ADAS_ALERT_LEVEL_OBJECT_DECEL_MIN = 5;
@@ -105,11 +106,6 @@ variables
   int gWorkSelectedAlertLevel;
   int gWorkSelectedAlertType;
 
-  // ethSelectedAlertMsg
-  //   - selectedAlertLevel
-  //   - selectedAlertType
-  // ethDecelAssistReqMsg
-  //   - FailSafeMode
   dword gLastStableAlertMs;
   int gStableAlertLevel;
   int gStableAlertType;
@@ -424,7 +420,7 @@ int getBaseAlertLevel(int baseZoneContext, int warningState)
   if (baseZoneContext == ADAS_BASE_ZONE_CONTEXT_GUIDE_LEFT ||
       baseZoneContext == ADAS_BASE_ZONE_CONTEXT_GUIDE_RIGHT)
   {
-    return ADAS_WARNING_STATE_CRITICAL;
+    return ADAS_ALERT_LEVEL_FAILSAFE_MIN;
   }
   if (warningState <= ADAS_WARNING_STATE_NONE)
   {
@@ -432,13 +428,13 @@ int getBaseAlertLevel(int baseZoneContext, int warningState)
   }
   if (baseZoneContext == ADAS_BASE_ZONE_CONTEXT_SCHOOL)
   {
-    return 3;
+    return ADAS_ALERT_LEVEL_STALE_MIN;
   }
   if (baseZoneContext == ADAS_BASE_ZONE_CONTEXT_HIGHWAY)
   {
-    return ADAS_WARNING_STATE_CRITICAL;
+    return ADAS_ALERT_LEVEL_FAILSAFE_MIN;
   }
-  return ADAS_WARNING_STATE_CAUTION;
+  return ADAS_ALERT_LEVEL_BASE_CAUTION;
 }
 
 int getBaseAlertType(int baseZoneContext, int warningState)
