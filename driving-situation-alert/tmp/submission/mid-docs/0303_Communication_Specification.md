@@ -45,7 +45,7 @@
 | Diag 명칭 해석 | 메시지명에 `Diag`가 포함되어도 Group 7 강제 배정 사유가 아니며, Owner/도메인 경계와 안전 경로를 우선 적용한다. |
 | 충돌 회피 | 신규 ID 추가 시 기존 DBC ID와 중복 금지, 진단/검증 예약 구간과 충돌 금지 원칙을 따른다. |
 | 확장성 | 기존 Flow/Comm 체인을 깨지 않도록 Comm 단위로 확장하고, 동일 변경에서 0302/0304/04/05~07 동시 갱신한다. |
-| 기준 문서 고정 | CAN ID 기준은 `canoe/databases/*.dbc`, Ethernet 계약 기준은 `canoe/docs/operations/ETH_INTERFACE_CONTRACT.md`로 고정한다. |
+| 기준 문서 고정 | CAN ID 기준은 `canoe/databases/*.dbc`, Ethernet 계약 기준은 `canoe/docs/operations/10_ETHERNET_BACKBONE_INTERFACE_SPEC.md`로 고정한다. |
 
 ---
 

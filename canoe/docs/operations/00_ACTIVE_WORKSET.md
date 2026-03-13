@@ -1,4 +1,4 @@
-# Developer Document Entrypoint
+# CANoe Active Workset
 
 This file is the active whitelist for CANoe-side working documents.
 
@@ -22,11 +22,11 @@ Open these first, in order:
 
 Read these after the SoT chain:
 
-- `canoe/docs/operations/ETH_INTERFACE_CONTRACT.md`
-- `canoe/docs/operations/CAN_MESSAGE_OWNERSHIP_MATRIX.md`
-- `canoe/docs/operations/MULTIBUS_ASSIGNMENT_POLICY.md`
-- `canoe/docs/operations/verification/CANOE_TEST_UNIT_RUNBOOK.md`
-- `canoe/docs/operations/verification/SIL_PASS_CRITERIA.md`
+- `canoe/docs/operations/10_ETHERNET_BACKBONE_INTERFACE_SPEC.md`
+- `canoe/docs/operations/11_RUNTIME_MESSAGE_OWNERSHIP_MATRIX.md`
+- `canoe/docs/operations/12_MULTIBUS_VISIBILITY_POLICY.md`
+- `canoe/docs/operations/verification/20_CANOE_TEST_EXECUTION_GUIDE.md`
+- `canoe/docs/operations/verification/21_SIL_ACCEPTANCE_CRITERIA.md`
 
 ## 3) Keep Out Of Daily Flow
 

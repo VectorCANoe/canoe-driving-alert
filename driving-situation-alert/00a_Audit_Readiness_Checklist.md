@@ -75,7 +75,7 @@
 |---|---|---|
 | 검증 환경 | CANoe SIL only | OK |
 | 통신 범위 | CAN + Ethernet(UDP) only | OK |
-| 통신 원본 분리 | CAN=`*_can.dbc`, ETH=`ETH_INTERFACE_CONTRACT.md` | OK |
+| 통신 원본 분리 | CAN=`*_can.dbc`, ETH=`10_ETHERNET_BACKBONE_INTERFACE_SPEC.md` | OK |
 | 중재 용어 경계 | WARN_ARB_MGR는 경보 우선순위 판정, CAN bit arbitration과 별개 | OK |
 | 시스템 관점 원칙 | 단일 시나리오 최적화 금지, OEM 차량 시스템 관점 우선 | OK |
 | 제외 항목 | OTA/UDS/DoIP | OK |

@@ -4,15 +4,15 @@ Active utility scripts for CANoe maintenance.
 
 ## Kept Tools
 
-### `generate_dbc_from_docs.py`
+### `10_generate_can_dbc_from_docs.py`
 - generate draft DBC baselines from current `0303/0304` docs
 - output path: `canoe/databases/`
 - always review output manually before integration
 
-### `validate_mentor_priority.py`
+### `20_validate_runtime_priority_gate.py`
 - enforce the active CAN/ETH priority gate
-- uses active CAN DBCs and `ETH_INTERFACE_CONTRACT.md`
-- writes a local gate report under `canoe/tmp/`
+- uses active CAN DBCs and `10_ETHERNET_BACKBONE_INTERFACE_SPEC.md`
+- writes local draft outputs under `canoe/tmp/`
 - exit code `0` = pass, `2` = fail
 
 ## Policy

@@ -27,4 +27,4 @@
 ## Final Phase Reference
 
 - team split: `tmp/change-orders/FINAL_PHASE_TEAM_SPLIT_2026-03-08.md`
-- Dev1/Dev2/Docs execution flow: `canoe/docs/operations/verification/FINAL_PHASE_EXECUTION_FLOW.md`
+- Dev1/Dev2/Docs execution flow: `canoe/docs/operations/verification/22_TEAM_EXECUTION_FLOW.md`

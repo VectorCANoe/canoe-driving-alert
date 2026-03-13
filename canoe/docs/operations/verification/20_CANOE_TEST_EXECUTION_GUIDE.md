@@ -1,4 +1,4 @@
-# CANoe Test Unit Runbook
+# CANoe Test Execution Guide
 
 ## Purpose
 - Define how Dev1 uses native CANoe Test Unit assets in the current SIL project.

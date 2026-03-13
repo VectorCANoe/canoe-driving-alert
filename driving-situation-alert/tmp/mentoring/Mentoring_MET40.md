@@ -42,7 +42,7 @@
 | M40-01 | 중간보고 제출물 정합 | 중간보고 제출본을 `PPT + 엑셀 + DBC`로 버전/날짜 고정 | [x] | `driving-situation-alert/TMP_MID_AUDIT_MAIN.md`, `driving-situation-alert/tmp/reports/M40_EVIDENCE_INDEX.md` |
 | M40-15 | 중간보고 엑셀 포맷 정합 | 엑셀 첫 탭에 프로젝트 개요 추가 + 팀 간 비교 가능한 탭/컬럼 구조 유지 | [x] | `driving-situation-alert/TMP_MID_AUDIT_MAIN.md`, `driving-situation-alert/tmp/reports/M40_EVIDENCE_INDEX.md` |
 | M40-02 | 도메인 DBC 분리/명명 정리 | 도메인 DBC 구조 유지 + `test_can` 제출 해석 문구 고정 | [x] | `canoe/databases/*.dbc`, `driving-situation-alert/0303_Communication_Specification.md` |
-| M40-03 | Ethernet SoT 분리 | CAN DBC와 ETH 계약 원본을 분리 명시 | [x] | `canoe/docs/operations/ETH_INTERFACE_CONTRACT.md`, `driving-situation-alert/0302_NWflowDef.md`, `driving-situation-alert/0303_Communication_Specification.md` |
+| M40-03 | Ethernet SoT 분리 | CAN DBC와 ETH 계약 원본을 분리 명시 | [x] | `canoe/docs/operations/10_ETHERNET_BACKBONE_INTERFACE_SPEC.md`, `driving-situation-alert/0302_NWflowDef.md`, `driving-situation-alert/0303_Communication_Specification.md` |
 | M40-04 | test_can 해석 정리 | `test_can`을 공통/검증용으로 정의하고 오해 방지 설명 확보 | [x] | `driving-situation-alert/0303_Communication_Specification.md` |
 | M40-05 | 네트워크 도식 수정 | Ethernet 버스선 제거 + 스타형 연결 그림 반영 | [x] | `driving-situation-alert/02_Concept_design.md`, `driving-situation-alert/tmp/assets/current/02_networkflow.png`, `driving-situation-alert/tmp/reports/M40_EVIDENCE_INDEX.md` |
 | M40-06 | Panel 우선순위 반영 | `차량 화면(1) / 제어패널(2) / 상태모니터(3)` 기준을 설계/테스트에 반영 | [x] | `driving-situation-alert/04_SW_Implementation.md`, `driving-situation-alert/07_System_Test.md`, `driving-situation-alert/tmp/reports/M40_EVIDENCE_INDEX.md` |
@@ -73,7 +73,7 @@
 - 질문: UDS/예약영역과 충돌 리스크는 어떻게 대응했나?
   - 답변: 신규 ID는 기존 DBC ID와 중복 금지, 진단/검증 예약 구간과 충돌 금지 원칙으로 배정했고(0303 규칙표), 배정 정책 SoT는 00f를 기준으로 유지했다.
 - 질문: Ethernet도 DBC로 관리하나?
-  - 답변: Ethernet은 CAN DBC 직접 적용 대상이 아니며, `ETH_INTERFACE_CONTRACT.md` 기반의 계약/매트릭스 수준으로 관리한다.
+  - 답변: Ethernet은 CAN DBC 직접 적용 대상이 아니며, `10_ETHERNET_BACKBONE_INTERFACE_SPEC.md` 기반의 계약/매트릭스 수준으로 관리한다.
 
 ## 5) 비고
 

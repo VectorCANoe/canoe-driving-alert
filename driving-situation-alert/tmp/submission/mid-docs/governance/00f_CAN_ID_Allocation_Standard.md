@@ -61,7 +61,7 @@
 - 전환 전 베이스라인의 저대역 ID(`0x064` 포함)는 `Old ID`로만 인정하며 Cutover 대상에 포함한다.
 - 전환 완료 후 `0x000~0x0FF` 활성 운영 ID는 0건이어야 한다.
 - 논리 Ethernet ID(`0xE1xx/0xE2xx`)는 CAN 11-bit 3/3/5 대상이 아니다.
-- `E213~E216`(`Comm_130~Comm_133`)은 Pre-Activation Ethernet 논리 ID이며, `ETH_INTERFACE_CONTRACT.md v1.2` 반영 전에는 활성 계약으로 취급하지 않는다.
+- `E213~E216`(`Comm_130~Comm_133`)은 Pre-Activation Ethernet 논리 ID이며, `10_ETHERNET_BACKBONE_INTERFACE_SPEC.md v1.2` 반영 전에는 활성 계약으로 취급하지 않는다.
 
 ### 5.5 11-bit 유지/29-bit 전환 기준 (운영 디펜스)
 

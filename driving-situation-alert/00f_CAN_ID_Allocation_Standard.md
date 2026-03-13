@@ -171,7 +171,7 @@ Block 판정 규칙:
 
 - 정책 SoT: `00f_CAN_ID_Allocation_Standard.md`
 - 통신 계약 SoT: `0303_Communication_Specification.md`
-- 실행 SoT: `canoe/databases/*.dbc`, `canoe/docs/operations/ETH_INTERFACE_CONTRACT.md`
+- 실행 SoT: `canoe/databases/*.dbc`, `canoe/docs/operations/10_ETHERNET_BACKBONE_INTERFACE_SPEC.md`
 - 운영 보드: `tmp/change-orders/TEAM_SYNC_BOARD.md`
 
 ---

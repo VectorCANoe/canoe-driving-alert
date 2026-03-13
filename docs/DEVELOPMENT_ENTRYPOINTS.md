@@ -15,7 +15,7 @@ If you are just trying to understand the project, start with:
 2. `driving-situation-alert/TMP_HANDOFF.md`
 3. `canoe/FILE_INDEX.md`
 4. `scripts/README.md`
-5. `canoe/docs/operations/DEV_DOC_ENTRYPOINT.md`
+5. `canoe/docs/operations/00_ACTIVE_WORKSET.md`
 
 ## Active Working Surface
 

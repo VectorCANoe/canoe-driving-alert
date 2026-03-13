@@ -51,8 +51,8 @@
 
 ## 참고 문서
 
-- `canoe/docs/operations/verification/FINAL_PHASE_EXECUTION_FLOW.md`
-- `canoe/docs/operations/verification/CANOE_TEST_UNIT_RUNBOOK.md`
+- `canoe/docs/operations/verification/22_TEAM_EXECUTION_FLOW.md`
+- `canoe/docs/operations/verification/20_CANOE_TEST_EXECUTION_GUIDE.md`
 - `product/sdv_operator/README.md`
 - `product/sdv_operator/docs/PACKAGING_SCOPE.md`
 - `driving-situation-alert/tmp/submission/final-docs/00_FINAL_STRUCTURE_LOCK.md`

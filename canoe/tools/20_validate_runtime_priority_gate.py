@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate mentor-priority communication contracts for CANoe project.
+"""Validate runtime priority communication contracts for CANoe project.
 
 This script enforces a practical gate for the mentoring direction:
 1) CAN SoT must be split domain DBCs.
@@ -24,7 +24,9 @@ DBC_ACTIVE_FILES = [
     "infotainment_can.dbc",
     "adas_can.dbc",
 ]
-ETH_CONTRACT_REL = "canoe/docs/operations/ETH_INTERFACE_CONTRACT.md"
+ETH_CONTRACT_REL = "canoe/docs/operations/10_ETHERNET_BACKBONE_INTERFACE_SPEC.md"
+DEFAULT_MATRIX_OUT = "canoe/tmp/runtime_message_ownership_matrix.md"
+DEFAULT_REPORT_OUT = "canoe/tmp/runtime_priority_gate_report.md"
 
 MANDATORY_MESSAGE_IDS: Dict[str, int] = {
     "frmVehicleStateCanMsg": 0x2A0,
@@ -114,7 +116,7 @@ def parse_dbc(path: Path) -> List[Dict[str, object]]:
 
 def build_ownership_matrix(messages: List[Dict[str, object]]) -> str:
     lines = []
-    lines.append("# CAN Message Ownership Matrix")
+    lines.append("# Runtime Message Ownership Matrix")
     lines.append("")
     lines.append(
         f"- Generated: {dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
@@ -283,12 +285,12 @@ def main() -> int:
     )
     parser.add_argument(
         "--matrix-out",
-        default="canoe/docs/operations/CAN_MESSAGE_OWNERSHIP_MATRIX.md",
-        help="Path for ownership matrix markdown output.",
+        default=DEFAULT_MATRIX_OUT,
+        help="Path for generated ownership matrix draft output.",
     )
     parser.add_argument(
         "--report-out",
-        default="canoe/tmp/mentor_priority_gate_report.md",
+        default=DEFAULT_REPORT_OUT,
         help="Path for gate report markdown output.",
     )
     args = parser.parse_args()

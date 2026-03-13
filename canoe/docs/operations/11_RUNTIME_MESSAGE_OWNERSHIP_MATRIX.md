@@ -1,4 +1,4 @@
-# CAN Message Ownership Matrix
+# Runtime Message Ownership Matrix
 
 - Generated: 2026-03-12 23:58:00
 - Scope: Active runtime ownership for domain CAN and Ethernet backbone contracts

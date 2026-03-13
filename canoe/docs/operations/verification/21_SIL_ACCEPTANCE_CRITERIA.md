@@ -1,4 +1,4 @@
-# SIL Pass/Fail Criteria (Req_043)
+# SIL Acceptance Criteria (Req_043)
 
 > CANoe SIL 환경에서 시나리오별 합격/불합격 판정 기준.
 > TEST_SCN.can의 `evaluateScenarioResult()` 함수와 1:1 대응한다.

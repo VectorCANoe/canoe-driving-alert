@@ -86,7 +86,7 @@
 
 근거 문서:
 - `driving-situation-alert/00f_CAN_ID_Allocation_Standard.md`
-- `canoe/docs/operations/ETH_INTERFACE_CONTRACT.md`
+- `canoe/docs/operations/10_ETHERNET_BACKBONE_INTERFACE_SPEC.md`
 
 ## 문서별 수정 포인트
 
@@ -132,5 +132,5 @@
 ## 근거 파일
 - `canoe/docs/operations/reference/OEM_4_LAYER_ECU_CLASSIFICATION_2026-03-10.md`
 - `canoe/tmp/DOMAIN_CONTROLLER_VS_CENTRAL_CGW_VIEW_2026-03-10.md`
-- `canoe/docs/operations/ETH_INTERFACE_CONTRACT.md`
+- `canoe/docs/operations/10_ETHERNET_BACKBONE_INTERFACE_SPEC.md`
 - `canoe/docs/operations/reference/OEM_ACTIVE_TARGET_PROFILE_2026-03-09.md`

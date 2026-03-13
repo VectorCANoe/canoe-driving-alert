@@ -22,14 +22,14 @@
 - `DLC`는 순수 숫자만 기재한다.
 - 상단 표의 `Signal`은 0304 표준 변수명(`vehicleSpeed` 등) 기준으로 작성하고, 코드/런타임 별칭(`g*`)은 하단 보강표에서만 관리한다.
 - 0304에 아직 등재되지 않은 Vehicle Baseline 확장 신호는 DBC 원본 신호명(`AccelPedal`, `DriveMode` 등)으로 표기한다.
-- CAN 통신 원본은 계층 분리로 관리한다: 도메인 프로파일은 `canoe/databases/chassis_can.dbc`, `canoe/databases/powertrain_can.dbc`, `canoe/databases/body_can.dbc`, `canoe/databases/infotainment_can.dbc`, `canoe/databases/adas_can.dbc`, `canoe/databases/eth_backbone_can_stub.dbc`를 사용하고, Validation 결과 프레임(`0x2A5`,`0x2A6`)은 `chassis_can.dbc`에 통합 관리한다. Ethernet 논리 계약은 `canoe/docs/operations/ETH_INTERFACE_CONTRACT.md`를 사용한다.
+- CAN 통신 원본은 계층 분리로 관리한다: 도메인 프로파일은 `canoe/databases/chassis_can.dbc`, `canoe/databases/powertrain_can.dbc`, `canoe/databases/body_can.dbc`, `canoe/databases/infotainment_can.dbc`, `canoe/databases/adas_can.dbc`, `canoe/databases/eth_backbone_can_stub.dbc`를 사용하고, Validation 결과 프레임(`0x2A5`,`0x2A6`)은 `chassis_can.dbc`에 통합 관리한다. Ethernet 논리 계약은 `canoe/docs/operations/10_ETHERNET_BACKBONE_INTERFACE_SPEC.md`를 사용한다.
 - 본 설계는 Ethernet 논리 백본 + 도메인 게이트웨이(`CHS_GW`, `INFOTAINMENT_GW`, `BODY_GW`, `IVI_GW`) + 도메인 CAN 분배 구조를 사용하며, active SIL profile에서 `ETHB`는 forwarding switch가 아니라 health/freshness monitor로 동작한다.
 - 멀티버스 운영 원칙: 일반 기능 노드는 단일 버스 소속을 원칙으로 하며 도메인 간 전달은 게이트웨이 경유를 기본으로 한다. 테스터/검증 노드는 예외적으로 멀티버스 연결을 허용하되 가능하면 버스별 분리 운용을 우선한다.
 - Validation Harness 역할 분리: `VAL_SCENARIO_CTRL`는 E2E 통합 주입/관찰을 위한 멀티버스 예외 노드, `VAL_BASELINE_CTRL`는 Chassis 단일버스 baseline 결과 집계 노드로 고정한다.
 - 인터페이스 정의 단위는 도메인명이 아니라 메시지 계약 단위이며 최소 계약 항목은 `Message/Identifier/DLC/주기(또는 Event)/Timeout/Owner`로 관리한다.
 - 하단 추적표는 `Comm ID -> Flow ID -> Func ID -> Req ID`를 유지한다.
 - 제출 전 현대/기아 및 OEM 기준으로 설명/별칭은 정리하되, Message ID/DLC/Bit Position/Signal 식별자는 SoT 기준으로 고정 유지한다.
-- Message ID notation rule (fixed): architecture references use Logical IDs (0xE210~0xE216) as primary; CANoe SIL implementation/test uses Stub IDs (0x1C3/0x1C4/0x111/0x1C5~0x1C8) per canoe/docs/operations/ETH_INTERFACE_CONTRACT.md.
+- Message ID notation rule (fixed): architecture references use Logical IDs (0xE210~0xE216) as primary; CANoe SIL implementation/test uses Stub IDs (0x1C3/0x1C4/0x111/0x1C5~0x1C8) per canoe/docs/operations/10_ETHERNET_BACKBONE_INTERFACE_SPEC.md.
 - OEM100 Surface ECU 전체 전수(100개)와 구현 상태(`활성/미구현`)는 `00e` 6.4를 단일 기준으로 사용한다.
 - 본 문서는 활성(상세 정의) Surface ECU의 Comm 계약만 상세 정의하고, 미구현(Placeholder) Surface ECU는 Comm owner를 강제하지 않는다.
 
@@ -41,7 +41,7 @@
 - Vehicle Baseline(Req_101~Req_107, Req_109~Req_119) 통신(`Comm_101~Comm_106`, `Comm_201~Comm_210`)은 본 문서에서 확정 정의하고, 도메인 DBC는 이 정의를 구현 대상으로 사용한다.
 - V2 확장 요구(`Req_120~Req_121`, `Req_123`, `Req_125~Req_129`) 통신(`Comm_120~Comm_124`)은 구현 활성 상태로 관리하며, DBC/코드/테스트를 동일 커밋에서 동기화한다.
 - ADAS 객체 인지 확장 요구(`Req_130~Req_139`) 통신(`Comm_130~Comm_133`)은 Pre-Activation(설계 선반영) 상태로 관리하며, 구현 착수 시 0302/0304/04/05/06/07을 동일 커밋에서 동기화한다.
-- `Comm_130~Comm_133`의 Ethernet 계약 SoT는 `ETH_INTERFACE_CONTRACT.md v1.2`(`E213~E216`)로 고정하며, 구현 상태는 Pre-Activation으로 관리한다.
+- `Comm_130~Comm_133`의 Ethernet 계약 SoT는 `10_ETHERNET_BACKBONE_INTERFACE_SPEC.md v1.2`(`E213~E216`)로 고정하며, 구현 상태는 Pre-Activation으로 관리한다.
 - 차량 경보 편의 확장 요구(`Req_140~Req_147`) 통신은 `Comm_103/104/105/203`과 `Comm_006/008` Pre-Activation 매핑으로 관리하며, 구현 착수 시 0302/0304/04/05/06/07을 동일 커밋에서 동기화한다.
 - 경고 강건성·인지성 확장 요구(`Req_148~Req_155`) 통신은 `Comm_130/133`, `Comm_006/007/008`, `Comm_104/105/124/203` Pre-Activation 매핑으로 관리하며, 구현 착수 시 0302/0304/04/05/06/07을 동일 커밋에서 동기화한다.
 - EMS는 상위 문서 레벨에서 논리 단말 `EMS_ALERT`로 표기하고, 내부 구현 모듈(`EMS_POLICE_TX`, `EMS_AMB_TX`, `EMS_ALERT_RX`)은 하단 보강표에서만 분리 관리한다.
@@ -184,7 +184,7 @@
 | Diag 명칭 해석 | 메시지명에 `Diag`가 포함되어도 특정 슬롯 강제 배정 사유가 아니며, Owner/도메인 경계와 안전 경로를 우선 적용한다. |
 | 충돌 회피 | 신규 ID 추가 시 기존 DBC ID와 중복 금지, 진단/검증 예약 구간과 충돌 금지 원칙을 따른다. |
 | 확장성 | 기존 Flow/Comm 체인을 깨지 않도록 Comm 단위로 확장하고, 동일 변경에서 0302/0304/04/05~07 동시 갱신한다. |
-| SoT 고정 | 정책 SoT는 `00f`, 통신 계약 SoT는 `0303`, 실행 SoT는 `canoe/databases/*.dbc` 및 `ETH_INTERFACE_CONTRACT.md`로 고정한다. |
+| SoT 고정 | 정책 SoT는 `00f`, 통신 계약 SoT는 `0303`, 실행 SoT는 `canoe/databases/*.dbc` 및 `10_ETHERNET_BACKBONE_INTERFACE_SPEC.md`로 고정한다. |
 
 ### Comm 기준 Target EXT_ID 샘플 (1차)
 
@@ -492,8 +492,8 @@
 | Domain CAN Profile | Comm_101~Comm_106, Comm_201~Comm_210 | `canoe/databases/chassis_can.dbc` + `canoe/databases/powertrain_can.dbc` + `canoe/databases/body_can.dbc` + `canoe/databases/infotainment_can.dbc` + `canoe/databases/adas_can.dbc` + `canoe/databases/eth_backbone_can_stub.dbc` | 차량 기본 기능/도메인 분리 원본(CAN-stub 포함) |
 | ADAS CAN Profile | Comm_006, Comm_007, Comm_008, Comm_120, Comm_121, Comm_122, Comm_130~Comm_132, Comm_201(일부), Comm_209 | `canoe/databases/adas_can.dbc` | ADAS 소유 프레임 원본 |
 | ETH Stub Transport Profile | Comm_004, Comm_005, Comm_006, Comm_124, Comm_133 | `canoe/databases/eth_backbone_can_stub.dbc` | CANoe.CAN 환경 대체 운반 원본 |
-| Ethernet Profile (Logical Contract) | Comm_004, Comm_005, Comm_006, Comm_120, Comm_121, Comm_124, Comm_130~Comm_133 (및 Comm_001~003/007~008의 ETH 구간) | `canoe/docs/operations/ETH_INTERFACE_CONTRACT.md` | UDP 활성 계약 단일 원본(v1.2) |
-| Ethernet Profile (Pre-Activation Scope) | Comm_130~Comm_133 | `canoe/docs/operations/ETH_INTERFACE_CONTRACT.md` (v1.2) | 계약 SoT는 활성, 구현/시험 상태는 Pre-Activation 유지 |
+| Ethernet Profile (Logical Contract) | Comm_004, Comm_005, Comm_006, Comm_120, Comm_121, Comm_124, Comm_130~Comm_133 (및 Comm_001~003/007~008의 ETH 구간) | `canoe/docs/operations/10_ETHERNET_BACKBONE_INTERFACE_SPEC.md` | UDP 활성 계약 단일 원본(v1.2) |
+| Ethernet Profile (Pre-Activation Scope) | Comm_130~Comm_133 | `canoe/docs/operations/10_ETHERNET_BACKBONE_INTERFACE_SPEC.md` (v1.2) | 계약 SoT는 활성, 구현/시험 상태는 Pre-Activation 유지 |
 
 ---
 
@@ -576,7 +576,7 @@
 | Powertrain CAN | `canoe/databases/powertrain_can.dbc` | Comm_101, Comm_105, Comm_204 | frmIgnitionEngineMsg, frmGearStateMsg, frmPowertrainGatewayMsg, frmEngineSpeedTempMsg, frmPowerLimitMsg, frmCruiseStateMsg, frmEngineTorqueMsg, frmEngineLoadMsg, frmObcStateMsg, frmBatBmsStateMsg, frmChargePortCtrlStateMsg |
 | Body CAN | `canoe/databases/body_can.dbc` | Comm_007, Comm_103, Comm_105, Comm_202, Comm_207 | frmAmbientControlMsg, frmHazardControlMsg, frmWindowControlMsg, frmBodyHealthMsg, frmHvacStateMsg, frmMirrorStateMsg, frmSeatDrvStateMsg, frmSeatPassStateMsg, frmAflsStateMsg, frmAhlsStateMsg, frmTailgateStateMsg |
 | Infotainment CAN | `canoe/databases/infotainment_can.dbc` | Comm_003, Comm_008, Comm_104, Comm_105, Comm_203, Comm_205, Comm_208 | frmNavContextCanMsg, frmClusterWarningMsg, frmClusterBaseStateMsg, frmClusterThemeMsg, frmHmiPopupStateMsg, frmInfotainmentHealthMsg, frmAudioFocusMsg, frmMapRenderStateMsg, frmTmuServiceStateMsg, frmHudStateMsg |
-| Ethernet UDP | `canoe/docs/operations/ETH_INTERFACE_CONTRACT.md` | Comm_004, Comm_005, Comm_006, Comm_120, Comm_121, Comm_124, Comm_130~Comm_133 | ethVehicleStateMsg, ethSteeringMsg, ethNavContextMsg, ETH_EmergencyAlert, ethSelectedAlertMsg, ethEmergencyRiskMsg, ethDecelAssistReqMsg, ethFailSafeStateMsg, ethObjectRiskInputMsg, ethObjectRiskStateMsg, ethObjectScenarioAlertMsg, ethObjectSafetyStateMsg |
+| Ethernet UDP | `canoe/docs/operations/10_ETHERNET_BACKBONE_INTERFACE_SPEC.md` | Comm_004, Comm_005, Comm_006, Comm_120, Comm_121, Comm_124, Comm_130~Comm_133 | ethVehicleStateMsg, ethSteeringMsg, ethNavContextMsg, ETH_EmergencyAlert, ethSelectedAlertMsg, ethEmergencyRiskMsg, ethDecelAssistReqMsg, ethFailSafeStateMsg, ethObjectRiskInputMsg, ethObjectRiskStateMsg, ethObjectScenarioAlertMsg, ethObjectSafetyStateMsg |
 
 ---
 
@@ -632,7 +632,7 @@
 | Comm_133 | Flow_133 | Func_137, Func_138, Func_148 | Req_137, Req_138, Req_148 | ethObjectSafetyStateMsg(0xE216) | Ethernet(UDP) | Event |
 
 - 주의: `Comm_130~Comm_133`는 ADAS 객체 인지 확장 Pre-Activation Comm 세트다. 구현 착수 시 0302/0304/04/05/06/07을 동일 커밋으로 동기화한다.
-- 계약 SoT 상태: `ETH_INTERFACE_CONTRACT.md v1.2`에 `E213~E216` 반영 완료(활성).
+- 계약 SoT 상태: `10_ETHERNET_BACKBONE_INTERFACE_SPEC.md v1.2`에 `E213~E216` 반영 완료(활성).
 - 구현 상태: `Comm_130~Comm_133`은 문서 선반영(Pre-Activation)으로 유지하며 코드/테스트 활성은 별도 컷오버에서 수행.
 
 ---
@@ -696,11 +696,11 @@
 | 3.30 | 2026-03-09 | `00f v4.3` Tier 재정렬(입력 -> 판정/Fail-safe -> HMI) 반영. Comm Target EXT_ID 샘플을 재계산값으로 동기화. |
 | 3.29 | 2026-03-09 | CAN ID 정책 재정렬: `00f v4.1` 기준으로 Primary를 29-bit `3/5/21` 3분할로 단순화하고, Tier/Block/Slot 용어로 통일. Comm Target EXT_ID 샘플을 신규 계산값으로 갱신. |
 | 3.28 | 2026-03-09 | CAN ID 정책 리팩토링 반영: `00f v4.0` 기준으로 29-bit Extended(`3/5/5/16`)를 Primary 정책으로 전환하고, 11-bit는 SIL 호환 계층으로 재정의. `CAN ID 배정 정책` 표와 Comm Target EXT_ID 샘플을 추가. |
-| 3.27 | 2026-03-07 | DBC SoT 정합 2차: ADAS/ETH-stub 소유 통신 범위를 `Comm_121/130~133` 기준으로 재동기화하고(`0x1C3~0x1C8`), `ETH_INTERFACE_CONTRACT.md v1.2` 활성 계약 상태를 본문/규모표에 반영. |
+| 3.27 | 2026-03-07 | DBC SoT 정합 2차: ADAS/ETH-stub 소유 통신 범위를 `Comm_121/130~133` 기준으로 재동기화하고(`0x1C3~0x1C8`), `10_ETHERNET_BACKBONE_INTERFACE_SPEC.md v1.2` 활성 계약 상태를 본문/규모표에 반영. |
 | 3.26 | 2026-03-06 | Legacy 누락군 보강: `Req_018/036/038/039/114/115/117/122/124` 상속 관계를 `Legacy Req 상속 매핑` 섹션으로 추가해 Comm 추적 누락을 해소. |
 | 3.25 | 2026-03-06 | 경고 강건성·인지성 확장(Pre-Activation) 반영: `Req_148~Req_155`를 `Comm_130/133`, `Comm_006/007/008`, `Comm_104/105/124/203`에 매핑하고 연계 체크포인트를 동기화. |
 | 3.24 | 2026-03-06 | 차량 경보 편의 확장(Pre-Activation) 반영: `Req_140~Req_147`을 `Comm_103/104/105/203` 및 `Comm_006/008`에 매핑하고 연계 체크포인트를 동기화. |
-| 3.23 | 2026-03-06 | SoT 정합 보강: `Comm_130~Comm_133`를 Pending Ethernet 계약(`ETH_INTERFACE_CONTRACT.md v1.2`, `E213~E216`)으로 분리하고 활성 SoT 범위를 명확화. |
+| 3.23 | 2026-03-06 | SoT 정합 보강: `Comm_130~Comm_133`를 Pending Ethernet 계약(`10_ETHERNET_BACKBONE_INTERFACE_SPEC.md v1.2`, `E213~E216`)으로 분리하고 활성 SoT 범위를 명확화. |
 | 3.22 | 2026-03-06 | ADAS 객체 인지 확장(Pre-Activation) 반영: `Comm_130~Comm_133`와 `Req_130~Req_139` 추적을 추가하고 Ethernet SoT/체크포인트를 동기화. |
 | 3.21 | 2026-03-06 | 미사용 체인 정리: `Req_108/Func_108` 및 `frmDriverStateMsg(0x263)`를 Baseline Comm(103/202)·도메인 원본 표에서 제거하고 범위 문구를 `108 제외`로 동기화. |
 | 3.20 | 2026-03-06 | 감사 해석 보강: 긴급 우선 요구의 기본 판정 축(기능중재)과 `Diag` 명칭/Group 7 비강제 규칙을 CAN ID 정책 요약표에 명시. |
@@ -725,7 +725,7 @@
 | 2.7 | 2026-02-26 | 상단 Signal 명칭을 0304 표준명(vehicleSpeed 등)으로 통일하고, g* 별칭은 하단 매핑표로 분리 |
 | 2.8 | 2026-02-28 | signal 케이스/명칭을 0304 표준명(`steeringInput/emergencyType/eta/sourceId` 등)으로 정합하고 `SelectedAlertContext` 잔여 표현 제거 |
 | 2.9 | 2026-02-28 | Nav 컨텍스트 메시지(0x2A3/0x512)에 `speedLimit`(bit16, DLC=3)를 추가하고 Comm_003을 Req_010/Func_010까지 확장 정합. |
-| 3.0 | 2026-02-28 | CAN/Ethernet 통신 원본 파일 분리 원칙을 명시하고 SoT 매핑 표를 추가(`emergency_system.dbc` / `ETH_INTERFACE_CONTRACT.md`). |
+| 3.0 | 2026-02-28 | CAN/Ethernet 통신 원본 파일 분리 원칙을 명시하고 SoT 매핑 표를 추가(`emergency_system.dbc` / `10_ETHERNET_BACKBONE_INTERFACE_SPEC.md`). |
 | 3.1 | 2026-02-28 | DBC 병렬 작업용 도메인 통신 원본 확장 계획과 Vehicle Baseline Comm 계획(Comm_101~106, 예약 ID)을 추가. |
 | 3.2 | 2026-02-28 | Comm_101~106을 확정 정의로 전환하고 도메인별 메시지 규모 기준(총 CAN 80~120, 전체 100+)을 명시. |
 | 3.3 | 2026-02-28 | 도메인 분리 DBC(`emergency_system_*`) 실 메시지(0x126~0x2A8, 0x103~0x2A2, 0x288~0x28A, 0x1C2~0x2A6)를 Comm_101~106에 반영하고 SoT 계층 매핑을 보강. |

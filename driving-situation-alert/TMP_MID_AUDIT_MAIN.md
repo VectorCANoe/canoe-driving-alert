@@ -38,7 +38,7 @@
 - No standalone single-file patch is allowed in the frozen set.
 - DBC/contract sync check remains mandatory for this baseline:
   - `0302/0303 <-> canoe/databases/*.dbc`
-  - `0302/0303 <-> canoe/docs/operations/ETH_INTERFACE_CONTRACT.md`
+  - `0302/0303 <-> canoe/docs/operations/10_ETHERNET_BACKBONE_INTERFACE_SPEC.md`
 
 ## 2) One-Page Audit Answer (Ready-to-use)
 

@@ -1,4 +1,4 @@
-# Multibus Assignment Policy
+# Multi-Bus Visibility Policy
 
 This document defines when a CANoe node may require visibility to more than one bus/database in the active SIL configuration.
 

@@ -67,7 +67,7 @@
 | M41-04 | 구현 우선 운영 | 문서 작업이 구현 일정 저해하지 않도록 운영 | [x] | `driving-situation-alert/TMP_HANDOFF.md` |
 | M41-05 | 3/3/5 정책 고정 | 도메인 구조 + 3/3/5 병행 정책 유지 | [x] | `driving-situation-alert/00f_CAN_ID_Allocation_Standard.md` |
 | M41-06 | 11-bit/29-bit 디펜스 정리 | 확장 ID 전환 기준(트리거/조건) 명문화 | [x] | `driving-situation-alert/00f_CAN_ID_Allocation_Standard.md` |
-| M41-07 | ETH 전환 경계 유지 | CAN-stub 임시 운용 + ETH 전환 경계 문서화 | [x] | `driving-situation-alert/0302_NWflowDef.md`, `driving-situation-alert/0303_Communication_Specification.md`, `canoe/docs/operations/ETH_INTERFACE_CONTRACT.md` |
+| M41-07 | ETH 전환 경계 유지 | CAN-stub 임시 운용 + ETH 전환 경계 문서화 | [x] | `driving-situation-alert/0302_NWflowDef.md`, `driving-situation-alert/0303_Communication_Specification.md`, `canoe/docs/operations/10_ETHERNET_BACKBONE_INTERFACE_SPEC.md` |
 | M41-08 | 검증 Pass/Fail 중심화 | 05/06/07이 케이스 기반 Pass/Fail 중심으로 운영 | [x] | `driving-situation-alert/05_Unit_Test.md`, `driving-situation-alert/06_Integration_Test.md`, `driving-situation-alert/07_System_Test.md` |
 | M41-09 | CI/CD 범위 최소화 | 자동화는 경험 수준으로 제한, 리포트 산출 우선 | [x] | `scripts/gates/*`, `driving-situation-alert/tmp/reports/*` |
 | M41-10 | 공식 Test Unit PoC(권고) | CANoe 테스트 메뉴 기반 Test Unit 1건 이상 수행 증빙 | [ ] | `canoe` 테스트 산출물, 실행 캡처 |

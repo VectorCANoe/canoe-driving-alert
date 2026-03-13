@@ -32,7 +32,7 @@
 - 경고 강건성·인지성 확장 변수(`Req_148~Req_155`)는 `Var_330/333/334`, `Var_016/020/021/024/027/028`, `Var_180/326/327/328`, `Var_166/167/168/268/269/289/296/297` Pre-Activation 매핑으로 추적하며, 구현 착수 시 0302/0303/04/05/06/07과 동일 커밋에서 동기화한다.
 - ECU 확장 상태 연계 변수(`Req_156~Req_168`)는 `Var_340~Var_367` 구현 추적으로 관리하며, 변경 시 0302/0303/04/05/06/07을 동일 커밋에서 동기화한다.
 - 목표 설계는 옵션1(ETH 백본) 고정이며, CANoe.CAN 라이선스 제약 구간의 SIL 검증은 임시로 CAN 대체 백본을 사용하고 Ethernet 라이선스 확보 후 동일 케이스로 재검증한다.
-- SoT 계층은 분리 관리한다: CAN 실프레임은 도메인 DBC(`chassis_can.dbc`/`powertrain_can.dbc`/`body_can.dbc`/`infotainment_can.dbc`/`adas_can.dbc` + `eth_backbone_can_stub.dbc`)를 따르고, Validation 결과 프레임(`0x2A5`,`0x2A6`)은 `chassis_can.dbc`에 통합 관리한다. Ethernet 논리 계약은 `ETH_INTERFACE_CONTRACT.md`를 따른다.
+- SoT 계층은 분리 관리한다: CAN 실프레임은 도메인 DBC(`chassis_can.dbc`/`powertrain_can.dbc`/`body_can.dbc`/`infotainment_can.dbc`/`adas_can.dbc` + `eth_backbone_can_stub.dbc`)를 따르고, Validation 결과 프레임(`0x2A5`,`0x2A6`)은 `chassis_can.dbc`에 통합 관리한다. Ethernet 논리 계약은 `10_ETHERNET_BACKBONE_INTERFACE_SPEC.md`를 따른다.
 - OEM100 Surface ECU 전체 전수(100개)와 구현 상태(`활성/미구현`)는 `00e` 6.4를 단일 기준으로 사용한다.
 - 본 문서는 활성(상세 정의) Surface ECU의 변수 계약만 상세 정의하고, 미구현(Placeholder) Surface ECU는 변수 owner를 강제하지 않는다.
 
@@ -840,7 +840,7 @@
 - `Comm_204`, `Comm_206~Comm_210`는 `Var_340~Var_367` 구현 추적을 유지하고, 변경 시 0302/0303/04/05/06/07을 동일 커밋으로 동기화한다.
 - `Req_140~Req_147`는 `Var_009/012/024/029/133/138~141/155/164/166~168/191~193/268/281/282` Pre-Activation 추적을 유지하고, 구현 착수 시 0302/0303/04/05/06/07을 동일 커밋으로 동기화한다.
 - `Req_148~Req_155`는 `Var_330/333/334`, `Var_016/020/021/024/027/028`, `Var_180/326/327/328`, `Var_166/167/168/268/269/289/296/297` Pre-Activation 추적을 유지하고, 구현 착수 시 0302/0303/04/05/06/07을 동일 커밋으로 동기화한다.
-- `Comm_004~Comm_006`, `Comm_120~Comm_124`, `Comm_201(0x1C1)` 구간은 CANoe.CAN 환경에서 `adas_can.dbc`(0x1C1/0x1C3) + `eth_backbone_can_stub.dbc`(0x1C0/0x1C2/0x1C4/0x111) 운반 경로와 논리 Ethernet 계약(`ETH_INTERFACE_CONTRACT.md`)을 동시에 만족해야 한다.
+- `Comm_004~Comm_006`, `Comm_120~Comm_124`, `Comm_201(0x1C1)` 구간은 CANoe.CAN 환경에서 `adas_can.dbc`(0x1C1/0x1C3) + `eth_backbone_can_stub.dbc`(0x1C0/0x1C2/0x1C4/0x111) 운반 경로와 논리 Ethernet 계약(`10_ETHERNET_BACKBONE_INTERFACE_SPEC.md`)을 동시에 만족해야 한다.
 - `timeoutClear`(내부 구현: `timeoutClear_ETH_CORE`)는 `Req_024(1000ms)` 검증 로직과 직접 연결되어야 한다.
 - `selectedAlertLevel`, `selectedAlertType`(내부 구현: `selectedAlertLevel_ETH_CORE`, `selectedAlertType_ETH_CORE`)는 `WARN_ARB_MGR` 출력의 단일 소스로 유지한다.
 - `speedLimit`/`speedLimitNorm`은 Req_010 과속 판정 비교 입력으로 0303 Comm_003과 정합되어야 한다.
@@ -876,7 +876,7 @@
 | 2.20 | 2026-03-06 | 용어/범위 정리: Verification-Harness 운영 메모에서 Driver 네임스페이스 자극 항목을 제거하고 제품 체인을 `고속 무조향 의심 경고` 중심으로 정렬. |
 | 2.19 | 2026-03-06 | 미사용 체인 정리: `Req_108/Func_108` 연계 변수(`Var_125/Var_126`, `DriverStateLevel/DriverStateInfo` 전달 경로)를 삭제하고 Baseline 추적 범위를 `108 제외` 기준으로 동기화. |
 | 2.18 | 2026-03-05 | Validation 결과 프레임(`0x2A5`,`0x2A6`)의 SoT를 `chassis_can.dbc` 통합 기준으로 갱신하고 Validation 노드 명칭을 `VAL_*`로 정리. ADAS 도메인 분리(`adas_can.dbc`)를 반영해 V2/긴급 경로의 CAN-stub 운반 규칙을 ADAS 소유(0x1C1/0x1C3)와 ETH Backbone(0x1C0/0x1C2/0x1C4/0x111)로 분리 고정. |
-| 2.17 | 2026-03-04 | DBC SoT 정합 보강: 작성 원칙/체크포인트에 `eth_backbone_can_stub.dbc` + `ETH_INTERFACE_CONTRACT.md` 병행 규칙을 명시하고 V2/긴급 경로(`Comm_004~006`, `Comm_120~124`, `Comm_201(0x1C1)`)의 변수 추적 해석 기준을 고정. |
+| 2.17 | 2026-03-04 | DBC SoT 정합 보강: 작성 원칙/체크포인트에 `eth_backbone_can_stub.dbc` + `10_ETHERNET_BACKBONE_INTERFACE_SPEC.md` 병행 규칙을 명시하고 V2/긴급 경로(`Comm_004~006`, `Comm_120~124`, `Comm_201(0x1C1)`)의 변수 추적 해석 기준을 고정. |
 | 2.16 | 2026-03-03 | V2 변수(`Var_320~329`)를 구현 기준으로 전환: `Var_321/324/325` Owner를 `WARN_ARB_MGR/CHS_GW`로 정정하고 `brakePedalNorm`, `forceFailSafe` 상단 표준 변수를 추가. |
 | 2.15 | 2026-03-02 | 감사 정합 보강: 옵션1 설계 vs SIL 임시 CAN 대체 백본 검증 경계 문구를 작성 원칙에 추가. |
 | 2.14 | 2026-03-02 | V2 확장 제어 책임 분리 반영: `Var_321/324/325` Owner Node를 `DECEL_ASSIST_CTRL`로 조정해 `Func_121/123`과 정합화. |

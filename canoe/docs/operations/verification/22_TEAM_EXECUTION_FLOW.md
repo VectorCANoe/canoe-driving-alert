@@ -1,4 +1,4 @@
-# Final Phase Execution Flow
+# Team Execution Flow
 
 ## Purpose
 
@@ -70,7 +70,7 @@ Current Dev1 native CANoe Test Unit PoC assets:
 
 Primary execution guidance:
 
-- `canoe/docs/operations/verification/CANOE_TEST_UNIT_RUNBOOK.md`
+- `canoe/docs/operations/verification/20_CANOE_TEST_EXECUTION_GUIDE.md`
 - `canoe/docs/operations/verification/CANOE_TEST_POC_SCOPE_2026-03-08.md`
 
 ## Evidence Mapping

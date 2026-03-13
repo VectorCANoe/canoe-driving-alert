@@ -99,7 +99,7 @@
 - 도메인 분리 제출 유지 (`canoe/databases/*.dbc`)
 - `test_can`은 별도 도메인처럼 보이지 않게 설명문으로 처리
 - Ethernet은 DBC 직접 적용 대상이 아님:
-  - 통신 계약/매트릭스는 `ETH_INTERFACE_CONTRACT.md` 기준
+  - 통신 계약/매트릭스는 `10_ETHERNET_BACKBONE_INTERFACE_SPEC.md` 기준
 
 ---
 

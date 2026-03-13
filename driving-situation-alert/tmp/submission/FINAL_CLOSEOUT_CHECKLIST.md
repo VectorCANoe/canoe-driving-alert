@@ -54,6 +54,6 @@
 - `driving-situation-alert/TMP_HANDOFF.md`
 - `driving-situation-alert/tmp/change-orders/TEAM_SYNC_BOARD.md`
 - `driving-situation-alert/tmp/change-orders/FINAL_PHASE_TEAM_SPLIT_2026-03-08.md`
-- `canoe/docs/operations/verification/FINAL_PHASE_EXECUTION_FLOW.md`
+- `canoe/docs/operations/verification/22_TEAM_EXECUTION_FLOW.md`
 - `driving-situation-alert/tmp/submission/README.md`
 - `driving-situation-alert/tmp/submission/mid-docs/`
