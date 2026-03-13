@@ -20,7 +20,7 @@
 | ECU | 파일 경로 | 점검 항목 | 상태 | 비고 |
 | :--- | :--- | :--- | :---: | :--- |
 | **CGW** | `canoe/cfg/channel_assign/ETH_Backbone/CGW.can` | 도메인 간 게이트웨이 라우팅 및 Fail-safe | ✅ | 각 도메인과 연결이 되었는지 체크를 하는 코드가 있는데, CAN 메세지를 받는 대신 UDP 패킷을 받는 것이 아키텍처 그림과 일치하는 것 같음(CGW_explain.md문서 참고) |
-| **VCU** | `canoe/cfg/channel_assign/Chassis/VCU.can` | 차량 전체 상태 및 동력 정책 제어 | [ ] | |
+| **VCU** | `canoe/cfg/channel_assign/Chassis/VCU.can` | 차량 전체 상태 및 동력 정책 제어 | ✅ | `frmVehicleModeMsg`, `frmPowertrainGatewayMsg` 이 두 메세지는 VCU가 보내는 메세지지만, 현재는 VCU가 받는 메세지로도 설정되어 있음(셀프 루프백되고 있음) |
 
 ## 4. 동역학 (Chassis/Safety)
 | ECU | 파일 경로 | 점검 항목 | 상태 | 비고 |

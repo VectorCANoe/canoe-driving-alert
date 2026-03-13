@@ -5,6 +5,79 @@ includes
 
 variables
 {
+  const int VCU_MIN_TARGET_SPEED_KPH = 0;
+  const int VCU_MIN_VEHICLE_SPEED_KPH = 0;
+  const int VCU_MIN_PEDAL_PERCENT = 0;
+  const int VCU_MIN_DRIVE_STATE = 0;
+  const int VCU_MIN_DRIVE_MODE = 0;
+  const int VCU_MIN_ROUTING_POLICY = 0;
+  const int VCU_MIN_BOUNDARY_STATUS = 0;
+  const int VCU_MIN_SELECTED_ALERT_LEVEL = 0;
+  const int VCU_MIN_FAIL_SAFE_MODE = 0;
+  const int VCU_MIN_IGNITION_STATE = 0;
+  const int VCU_MIN_ENGINE_STATE = 0;
+  const int VCU_MIN_GEAR_STATE = 0;
+  const int VCU_MIN_ALIVE_COUNT = 0;
+  const int VCU_MAX_VEHICLE_SPEED_KPH = 255;
+  const int VCU_MAX_SPEED_LIMIT_KPH = 255;
+  const int VCU_MAX_POWERTRAIN_STATE = 255;
+  const int VCU_MAX_TORQUE_REQUEST = 255;
+  const int VCU_BOOL_FALSE = 0;
+  const int VCU_BOOL_TRUE = 1;
+  const int VCU_DRIVE_STATE_IDLE = 0;
+  const int VCU_DRIVE_STATE_DRIVE = 3;
+  const int VCU_DRIVE_MODE_MAX = 7;
+  const int VCU_ROUTING_POLICY_FAIL_SAFE = 0;
+  const int VCU_ROUTING_POLICY_NORMAL = 1;
+  const int VCU_ROUTING_POLICY_ALERT = 2;
+  const int VCU_ROUTING_POLICY_MAX = 2;
+  const int VCU_BOUNDARY_STATUS_MAX = 1;
+  const int VCU_PEDAL_MAX = 100;
+  const int VCU_IGNITION_STATE_MAX = 1;
+  const int VCU_ENGINE_STATE_MAX = 3;
+  const int VCU_GEAR_STATE_MAX = 7;
+  const int VCU_MAX_TARGET_SPEED_KPH = 200;
+  const int VCU_DEFAULT_SPEED_LIMIT_KPH = 30;
+  const int VCU_BRAKE_OVERRIDE_THRESHOLD = 20;
+  const int VCU_MAX_SPEED_STEP_UP = 5;
+  const int VCU_MAX_SPEED_STEP_DOWN = -15;
+  const int VCU_SPEED_REQUEST_GAIN = 2;
+  const int VCU_SELECTED_ALERT_HIGH_THRESHOLD = 4;
+  const int VCU_FAIL_SAFE_MODE_MAX = 2;
+  const int VCU_FAIL_SAFE_MODE_OFF = 0;
+  const int VCU_TCS_ACCEL_THRESHOLD = 70;
+  const int VCU_TCS_SPEED_THRESHOLD = 25;
+  const int VCU_TCS_CTRL_STATE_INACTIVE = 0;
+  const int VCU_TCS_CTRL_STATE_ACTIVE = 2;
+  const int VCU_TCS_TORQUE_CUT_INACTIVE = 0;
+  const int VCU_TCS_TORQUE_CUT_ACTIVE = 20;
+  const int VCU_TCS_SLIP_RATIO_INACTIVE = 0;
+  const int VCU_TCS_SLIP_RATIO_ACTIVE = 12;
+  const int VCU_ECO_DRIVE_MODE = 3;
+  const int VCU_ECO_MODE_INACTIVE = 0;
+  const int VCU_ECO_MODE_ACTIVE = 1;
+  const int VCU_SPORT_MODE_INACTIVE = 0;
+  const int VCU_SPORT_MODE_ACTIVE = 1;
+  const int VCU_SPORT_SPEED_THRESHOLD = 80;
+  const int VCU_SNOW_DRIVE_MODE = 0;
+  const int VCU_SNOW_MODE_INACTIVE = 0;
+  const int VCU_SNOW_MODE_ACTIVE = 1;
+  const int VCU_SNOW_SPEED_THRESHOLD = 20;
+  const int VCU_PT_FAIL_CODE_NONE = 0;
+  const int VCU_ALIVE_COUNTER_MASK = 0xFF;
+  const int VCU_ENERGY_FLOW_MODE_INACTIVE = 0;
+  const int VCU_ENERGY_FLOW_MODE_ACTIVE = 1;
+  const int VCU_REGEN_ALERT_THRESHOLD = 3;
+  const int VCU_REGEN_LEVEL_NORMAL = 2;
+  const int VCU_REGEN_LEVEL_HIGH = 8;
+  const int VCU_POWER_BALANCE_NORMAL = 50;
+  const int VCU_POWER_BALANCE_ALERT = 60;
+  const int VCU_CTRL_AUTH_LEVEL_RESTRICTED = 1;
+  const int VCU_CTRL_AUTH_LEVEL_FULL = 3;
+  const int VCU_CTRL_AUTH_SOURCE_VCU = 1;
+  const int VCU_TIMER_PERIOD_MS = 100;
+  const int VCU_ETH_VEHICLE_STATE_PAYLOAD_LEN = 2;
+
   msTimer tVcuCycle;
   long gEthSocket;
   dword gEthTargetIp;
@@ -28,63 +101,135 @@ void publishBackboneVehicleState()
   int driveState;
   int vehicleSpeed;
 
-  driveState = clampRange((int)@Core::driveStateNorm, 0, 3);
-  vehicleSpeed = clampRange((int)@Core::vehicleSpeedNorm, 0, 255);
+  driveState = clampRange((int)@Core::driveStateNorm, VCU_MIN_DRIVE_STATE, VCU_DRIVE_STATE_DRIVE);
+  vehicleSpeed = clampRange((int)@Core::vehicleSpeedNorm, VCU_MIN_VEHICLE_SPEED_KPH, VCU_MAX_VEHICLE_SPEED_KPH);
 
-  ethInitFrame(frame, ethMsgVehicleState(), 2);
+  ethInitFrame(frame, ethMsgVehicleState(), VCU_ETH_VEHICLE_STATE_PAYLOAD_LEN);
   ethSetU8(frame, 0, vehicleSpeed);
   ethSetU8(frame, 1, driveState);
-  ethSendFrame(gEthSocket, gEthTargetIp, ethMsgVehicleState(), frame, 2);
+  ethSendFrame(gEthSocket, gEthTargetIp, ethMsgVehicleState(), frame, VCU_ETH_VEHICLE_STATE_PAYLOAD_LEN);
+}
+
+int isScenarioSpeedOverrideActive()
+{
+  return ((((int)@Test::testScenario) > VCU_MIN_DRIVE_STATE) ? VCU_BOOL_TRUE : VCU_BOOL_FALSE);
+}
+
+int getScenarioSpeedHint()
+{
+  return clampRange((int)@Chassis::vehicleSpeed, VCU_MIN_VEHICLE_SPEED_KPH, VCU_MAX_VEHICLE_SPEED_KPH);
+}
+
+int deriveTargetSpeedFromPedals(int accelPedal, int brakePedal)
+{
+  int targetSpeed;
+
+  targetSpeed = accelPedal * VCU_SPEED_REQUEST_GAIN;
+  targetSpeed = clampRange(targetSpeed, VCU_MIN_TARGET_SPEED_KPH, VCU_MAX_TARGET_SPEED_KPH);
+  if (brakePedal > VCU_BRAKE_OVERRIDE_THRESHOLD)
+  {
+    targetSpeed = VCU_MIN_TARGET_SPEED_KPH;
+  }
+  return targetSpeed;
+}
+
+int limitSpeedDelta(int delta)
+{
+  if (delta > VCU_MAX_SPEED_STEP_UP)
+  {
+    return VCU_MAX_SPEED_STEP_UP;
+  }
+  if (delta < VCU_MAX_SPEED_STEP_DOWN)
+  {
+    return VCU_MAX_SPEED_STEP_DOWN;
+  }
+  return delta;
+}
+
+int deriveSlewedVehicleSpeed(int currentSpeed, int targetSpeed)
+{
+  int delta;
+
+  delta = targetSpeed - currentSpeed;
+  delta = limitSpeedDelta(delta);
+  return clampRange(currentSpeed + delta, VCU_MIN_VEHICLE_SPEED_KPH, VCU_MAX_VEHICLE_SPEED_KPH);
+}
+
+int deriveDriveStateCode(int gearState, int vehicleSpeed)
+{
+  if (gearState > VCU_MIN_GEAR_STATE || vehicleSpeed > VCU_MIN_VEHICLE_SPEED_KPH)
+  {
+    return VCU_DRIVE_STATE_DRIVE;
+  }
+  return VCU_DRIVE_STATE_IDLE;
+}
+
+int normalizeTimeoutClearFlag(int timeoutClearRawValue)
+{
+  return ((((int)timeoutClearRawValue) == VCU_BOOL_TRUE) ? VCU_BOOL_TRUE : VCU_BOOL_FALSE);
+}
+
+int deriveRoutingPolicyCode(int failSafeMode, int isTimeoutClearActive, int selectedAlertLevel)
+{
+  if (failSafeMode > VCU_FAIL_SAFE_MODE_OFF || isTimeoutClearActive == VCU_BOOL_TRUE)
+  {
+    return VCU_ROUTING_POLICY_FAIL_SAFE;
+  }
+  if (selectedAlertLevel >= VCU_SELECTED_ALERT_HIGH_THRESHOLD)
+  {
+    return VCU_ROUTING_POLICY_ALERT;
+  }
+  return VCU_ROUTING_POLICY_NORMAL;
 }
 
 on start
 {
   gEthSocket = ethOpenDefaultSocket();
   gEthTargetIp = ethGetDefaultIpAddress();
-  gSpeed = 0;
-  gAccelPedal = 0;
-  gBrakePedal = 0;
-  gIgnitionState = 0;
-  gEngineState = 0;
-  gGearInput = 0;
-  gGearState = 0;
-  gDriveMode = 0;
-  gRoutingPolicy = 1;
-  gBoundaryStatus = 0;
-  gSpeedLimitNorm = 30;
-  gPtAliveCnt = 0;
-  setTimer(tVcuCycle, 100);
+  gSpeed = VCU_MIN_VEHICLE_SPEED_KPH;
+  gAccelPedal = VCU_MIN_PEDAL_PERCENT;
+  gBrakePedal = VCU_MIN_PEDAL_PERCENT;
+  gIgnitionState = VCU_MIN_IGNITION_STATE;
+  gEngineState = VCU_MIN_ENGINE_STATE;
+  gGearInput = VCU_MIN_GEAR_STATE;
+  gGearState = VCU_MIN_GEAR_STATE;
+  gDriveMode = VCU_MIN_DRIVE_MODE;
+  gRoutingPolicy = VCU_ROUTING_POLICY_NORMAL;
+  gBoundaryStatus = VCU_MIN_BOUNDARY_STATUS;
+  gSpeedLimitNorm = VCU_DEFAULT_SPEED_LIMIT_KPH;
+  gPtAliveCnt = VCU_MIN_ALIVE_COUNT;
+  setTimer(tVcuCycle, VCU_TIMER_PERIOD_MS);
   write("[VCU] start");
 }
 
 on message frmPedalInputCanMsg
 {
-  gAccelPedal = clampRange((int)this.AccelPedal, 0, 100);
-  gBrakePedal = clampRange((int)this.BrakePedal, 0, 100);
+  gAccelPedal = clampRange((int)this.AccelPedal, VCU_MIN_PEDAL_PERCENT, VCU_PEDAL_MAX);
+  gBrakePedal = clampRange((int)this.BrakePedal, VCU_MIN_PEDAL_PERCENT, VCU_PEDAL_MAX);
 }
 
 on message frmIgnitionEngineMsg
 {
-  gIgnitionState = clampRange((int)this.IgnitionState, 0, 1);
-  gEngineState = clampRange((int)this.EngineState, 0, 3);
+  gIgnitionState = clampRange((int)this.IgnitionState, VCU_MIN_IGNITION_STATE, VCU_IGNITION_STATE_MAX);
+  gEngineState = clampRange((int)this.EngineState, VCU_MIN_ENGINE_STATE, VCU_ENGINE_STATE_MAX);
 }
 
 on message frmGearStateMsg
 {
-  gGearInput = clampRange((int)this.GearInput, 0, 7);
-  gGearState = clampRange((int)this.GearState, 0, 7);
+  gGearInput = clampRange((int)this.GearInput, VCU_MIN_GEAR_STATE, VCU_GEAR_STATE_MAX);
+  gGearState = clampRange((int)this.GearState, VCU_MIN_GEAR_STATE, VCU_GEAR_STATE_MAX);
 }
 
 on message frmPowertrainGatewayMsg
 {
-  gRoutingPolicy = clampRange((int)this.RoutingPolicy, 0, 2);
-  gBoundaryStatus = clampRange((int)this.BoundaryStatus, 0, 1);
+  gRoutingPolicy = clampRange((int)this.RoutingPolicy, VCU_MIN_ROUTING_POLICY, VCU_ROUTING_POLICY_MAX);
+  gBoundaryStatus = clampRange((int)this.BoundaryStatus, VCU_MIN_BOUNDARY_STATUS, VCU_BOUNDARY_STATUS_MAX);
 }
 
 on message frmVehicleModeMsg
 {
-  gDriveMode = clampRange((int)this.DriveMode, 0, 7);
-  gEngineState = clampRange((int)this.PowertrainState, 0, 255);
+  gDriveMode = clampRange((int)this.DriveMode, VCU_MIN_DRIVE_MODE, VCU_DRIVE_MODE_MAX);
+  gEngineState = clampRange((int)this.PowertrainState, VCU_MIN_ENGINE_STATE, VCU_MAX_POWERTRAIN_STATE);
 }
 
 on timer tVcuCycle
@@ -100,58 +245,44 @@ on timer tVcuCycle
   message frmEnergyFlowStateMsg mEnergy;
   message frmPowertrainCtrlAuthMsg mCtrlAuth;
   int targetSpeed;
-  int delta;
   int driveState;
   int selectedAlertLevel;
-  int timeoutClear;
+  int isTimeoutClearActive;
   int failSafeMode;
   int torqueRequest;
-  int tcsActive;
-  int scenarioActive;
+  int isTcsActive;
+  int isScenarioActive;
   int scenarioSpeedHint;
 
-  scenarioActive = (((int)@Test::testScenario) > 0) ? 1 : 0;
-  scenarioSpeedHint = clampRange((int)@Chassis::vehicleSpeed, 0, 255);
+  isScenarioActive = isScenarioSpeedOverrideActive();
+  scenarioSpeedHint = getScenarioSpeedHint();
 
-  if (scenarioActive == 1)
+  if (isScenarioActive == VCU_BOOL_TRUE)
   {
     gSpeed = scenarioSpeedHint;
   }
   else
   {
-    targetSpeed = gAccelPedal * 2;
-    if (targetSpeed > 200) targetSpeed = 200;
-    if (gBrakePedal > 20) targetSpeed = 0;
+    // Convert pedal inputs into a bounded target speed.
+    targetSpeed = deriveTargetSpeedFromPedals(gAccelPedal, gBrakePedal);
 
-    delta = targetSpeed - gSpeed;
-    if (delta > 5) delta = 5;
-    if (delta < -15) delta = -15;
-    gSpeed = gSpeed + delta;
-    if (gSpeed < 0) gSpeed = 0;
-    if (gSpeed > 255) gSpeed = 255;
+    // Slew the current speed toward the target with asymmetric limits.
+    gSpeed = deriveSlewedVehicleSpeed(gSpeed, targetSpeed);
   }
 
-  driveState = (gGearState > 0 || gSpeed > 0) ? 3 : 0;
-  gDriveMode = clampRange(gGearState, 0, 7);
-  gSpeedLimitNorm = clampRange((int)@Core::speedLimitNorm, 0, 255);
-  selectedAlertLevel = clampRange((int)@Core::selectedAlertLevel, 0, 7);
-  timeoutClear = (((int)@Core::timeoutClear) == 1) ? 1 : 0;
-  failSafeMode = clampRange((int)@Core::failSafeMode, 0, 2);
-  gBoundaryStatus = clampRange((int)@CoreState::domainBoundaryStatus, 0, 1);
+  // Derive drivetrain state and policy inputs from the current motion state.
+  driveState = deriveDriveStateCode(gGearState, gSpeed);
+  gDriveMode = clampRange(gGearState, VCU_MIN_DRIVE_MODE, VCU_DRIVE_MODE_MAX);
+  gSpeedLimitNorm = clampRange((int)@Core::speedLimitNorm, VCU_MIN_VEHICLE_SPEED_KPH, VCU_MAX_SPEED_LIMIT_KPH);
+  selectedAlertLevel = clampRange((int)@Core::selectedAlertLevel, VCU_MIN_SELECTED_ALERT_LEVEL, VCU_DRIVE_MODE_MAX);
+  isTimeoutClearActive = normalizeTimeoutClearFlag((int)@Core::timeoutClear);
+  failSafeMode = clampRange((int)@Core::failSafeMode, VCU_MIN_FAIL_SAFE_MODE, VCU_FAIL_SAFE_MODE_MAX);
+  gBoundaryStatus = clampRange((int)@CoreState::domainBoundaryStatus, VCU_MIN_BOUNDARY_STATUS, VCU_BOUNDARY_STATUS_MAX);
 
-  if (failSafeMode > 0 || timeoutClear == 1)
-  {
-    gRoutingPolicy = 0;
-  }
-  else if (selectedAlertLevel >= 4)
-  {
-    gRoutingPolicy = 2;
-  }
-  else
-  {
-    gRoutingPolicy = 1;
-  }
+  // Select the routing policy from fail-safe and alert severity.
+  gRoutingPolicy = deriveRoutingPolicyCode(failSafeMode, isTimeoutClearActive, selectedAlertLevel);
 
+  // Mirror normalized vehicle state into Core and chassis-facing outputs.
   @Core::vehicleSpeedNorm = gSpeed;
   @Core::driveStateNorm = driveState;
   @CoreState::routingPolicy = gRoutingPolicy;
@@ -163,54 +294,63 @@ on timer tVcuCycle
   @Chassis::driveState = driveState;
   publishBackboneVehicleState();
 
-  torqueRequest = clampRange(gAccelPedal * 2, 0, 255);
+  // Publish acceleration demand and torque request.
+  torqueRequest = clampRange(gAccelPedal * VCU_SPEED_REQUEST_GAIN, VCU_MIN_TARGET_SPEED_KPH, VCU_MAX_TORQUE_REQUEST);
   mAccel.AccelRequest = gAccelPedal;
   mAccel.TorqueRequest = torqueRequest;
   output(mAccel);
 
-  tcsActive = ((gAccelPedal > 70) && (gSpeed < 25)) ? 1 : 0;
-  mTcs.TcsCtrlState = tcsActive ? 2 : 0;
-  mTcs.TcsTorqueCut = tcsActive ? 20 : 0;
-  mTcs.TcsSlipRatio = tcsActive ? 12 : 0;
+  // Build a simple TCS intervention state at low speed and high pedal input.
+  isTcsActive = ((gAccelPedal > VCU_TCS_ACCEL_THRESHOLD) && (gSpeed < VCU_TCS_SPEED_THRESHOLD)) ? VCU_BOOL_TRUE : VCU_BOOL_FALSE;
+  mTcs.TcsCtrlState = isTcsActive ? VCU_TCS_CTRL_STATE_ACTIVE : VCU_TCS_CTRL_STATE_INACTIVE;
+  mTcs.TcsTorqueCut = isTcsActive ? VCU_TCS_TORQUE_CUT_ACTIVE : VCU_TCS_TORQUE_CUT_INACTIVE;
+  mTcs.TcsSlipRatio = isTcsActive ? VCU_TCS_SLIP_RATIO_ACTIVE : VCU_TCS_SLIP_RATIO_INACTIVE;
   output(mTcs);
 
+  // Publish wheel pulses from the current vehicle speed.
   mWheelPulse.WheelPulseFront = gSpeed;
   mWheelPulse.WheelPulseRear = gSpeed;
   output(mWheelPulse);
 
+  // Publish powertrain gateway routing and boundary state.
   mPtGw.RoutingPolicy = gRoutingPolicy;
   mPtGw.BoundaryStatus = gBoundaryStatus;
   output(mPtGw);
 
+  // Publish drive-mode state and mirror key mode flags into CoreState.
   mVehMode.DriveMode = gDriveMode;
-  mVehMode.EcoMode = (gDriveMode == 3) ? 1 : 0;
-  mVehMode.SportMode = (gSpeed > 80) ? 1 : 0;
-  mVehMode.SnowMode = (gDriveMode == 0 && gSpeed < 20) ? 1 : 0;
+  mVehMode.EcoMode = (gDriveMode == VCU_ECO_DRIVE_MODE) ? VCU_ECO_MODE_ACTIVE : VCU_ECO_MODE_INACTIVE;
+  mVehMode.SportMode = (gSpeed > VCU_SPORT_SPEED_THRESHOLD) ? VCU_SPORT_MODE_ACTIVE : VCU_SPORT_MODE_INACTIVE;
+  mVehMode.SnowMode = (gDriveMode == VCU_SNOW_DRIVE_MODE && gSpeed < VCU_SNOW_SPEED_THRESHOLD) ? VCU_SNOW_MODE_ACTIVE : VCU_SNOW_MODE_INACTIVE;
   mVehMode.PowertrainState = gEngineState;
   output(mVehMode);
   @CoreState::driveMode = mVehMode.DriveMode;
   @CoreState::ecoMode = mVehMode.EcoMode;
   @CoreState::sportMode = mVehMode.SportMode;
 
+  // Publish current torque and speed limits.
   mPowerLimit.TorqueLimit = torqueRequest;
   mPowerLimit.SpeedLimit = gSpeedLimitNorm;
   output(mPowerLimit);
 
-  mPtHealth.PtAliveCnt = gPtAliveCnt & 0xFF;
-  mPtHealth.PtFailCode = 0;
+  // Publish powertrain health and advance the alive counter.
+  mPtHealth.PtAliveCnt = gPtAliveCnt & VCU_ALIVE_COUNTER_MASK;
+  mPtHealth.PtFailCode = VCU_PT_FAIL_CODE_NONE;
   output(mPtHealth);
-  gPtAliveCnt = (gPtAliveCnt + 1) & 0xFF;
+  gPtAliveCnt = (gPtAliveCnt + VCU_BOOL_TRUE) & VCU_ALIVE_COUNTER_MASK;
 
-  mEnergy.EnergyFlowMode = (gDriveMode == 3) ? 1 : 0;
-  mEnergy.RegenLevel = (selectedAlertLevel >= 3) ? 8 : 2;
-  mEnergy.PowerBalance = (gRoutingPolicy == 2) ? 60 : 50;
+  // Publish energy flow and regen behavior from the active routing context.
+  mEnergy.EnergyFlowMode = (gDriveMode == VCU_ECO_DRIVE_MODE) ? VCU_ENERGY_FLOW_MODE_ACTIVE : VCU_ENERGY_FLOW_MODE_INACTIVE;
+  mEnergy.RegenLevel = (selectedAlertLevel >= VCU_REGEN_ALERT_THRESHOLD) ? VCU_REGEN_LEVEL_HIGH : VCU_REGEN_LEVEL_NORMAL;
+  mEnergy.PowerBalance = (gRoutingPolicy == VCU_ROUTING_POLICY_ALERT) ? VCU_POWER_BALANCE_ALERT : VCU_POWER_BALANCE_NORMAL;
   output(mEnergy);
 
-  mCtrlAuth.CtrlAuthLevel = (gBoundaryStatus == 1) ? 3 : 1;
-  mCtrlAuth.CtrlAuthSource = 1;
+  // Publish the current control authority level.
+  mCtrlAuth.CtrlAuthLevel = (gBoundaryStatus == VCU_BOOL_TRUE) ? VCU_CTRL_AUTH_LEVEL_FULL : VCU_CTRL_AUTH_LEVEL_RESTRICTED;
+  mCtrlAuth.CtrlAuthSource = VCU_CTRL_AUTH_SOURCE_VCU;
   output(mCtrlAuth);
 
-  setTimer(tVcuCycle, 100);
+  setTimer(tVcuCycle, VCU_TIMER_PERIOD_MS);
 }
 
 on stopMeasurement
