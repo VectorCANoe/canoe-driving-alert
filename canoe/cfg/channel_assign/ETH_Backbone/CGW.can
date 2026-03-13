@@ -9,16 +9,16 @@ variables
   long gEthSocket;
   dword gEthTargetIp;
   char gEthRxBuffer[64];
-  int gChassisAlive;
-  int gBodyAlive;
-  int gInfoAlive;
+  int gChassisAliveCount;
+  int gBodyAliveCount;
+  int gInfoAliveCount;
   dword gChassisTsMs;
   dword gBodyTsMs;
   dword gInfoTsMs;
-  int gLastBoundaryStatus;
-  int gLastWarningPathStatus;
-  int gLastE2eHealthState;
-  int gLastFailSafeMode;
+  int gLastIsBoundaryAlive;
+  int gLastWarningPathStatusCode;
+  int gLastE2eHealthStateCode;
+  int gLastFailSafeModeCode;
   int gVehicleStateAgeMs;
   int gNavContextAgeMs;
   int gSteeringAgeMs;
@@ -27,9 +27,9 @@ variables
   dword gNavContextTsMs;
   dword gSteeringTsMs;
   dword gEmergencyMonTsMs;
-  int gLastRoutingPolicy;
-  int gLastObjectTrackValid;
-  int gLastObjectFailSafeMode;
+  int gLastRoutingPolicyCode;
+  int gLastIsObjectTrackValid;
+  int gLastObjectFailSafeModeCode;
   int gLastObjectEventCode;
 }
 
@@ -42,47 +42,162 @@ int calcAgeMs(dword lastTsMs, dword nowMs)
   return clampRange((int)(nowMs - lastTsMs), 0, 10000);
 }
 
-void publishFailSafeState(int warningPathStatus,
-                          int e2eHealthState,
-                          int failSafeMode,
-                          int boundaryAlive)
+int isBoundaryAliveCondition(int chassisAgeMs, int bodyAgeMs, int infoAgeMs)
+{
+  return (chassisAgeMs <= 300 &&
+          bodyAgeMs <= 300 &&
+          infoAgeMs <= 300);
+}
+
+int isWarningPathNormal(int isBoundaryAlive,
+                        int vehicleStateAgeMs,
+                        int navContextAgeMs,
+                        int steeringAgeMs,
+                        int emergencyMonAgeMs)
+{
+  return (isBoundaryAlive == 1 &&
+          vehicleStateAgeMs <= 150 &&
+          navContextAgeMs <= 150 &&
+          steeringAgeMs <= 150 &&
+          emergencyMonAgeMs <= 150);
+}
+
+int isWarningPathDegraded(int isBoundaryAlive,
+                          int vehicleStateAgeMs,
+                          int navContextAgeMs,
+                          int steeringAgeMs,
+                          int emergencyMonAgeMs)
+{
+  return (isBoundaryAlive == 1 &&
+          vehicleStateAgeMs <= 300 &&
+          navContextAgeMs <= 300 &&
+          steeringAgeMs <= 300 &&
+          emergencyMonAgeMs <= 300);
+}
+
+int isBoundarySupervisionChanged(int isBoundaryAlive,
+                                 int warningPathStatusCode,
+                                 int e2eHealthStateCode,
+                                 int failSafeModeCode,
+                                 int routingPolicyCode)
+{
+  return (isBoundaryAlive != gLastIsBoundaryAlive ||
+          warningPathStatusCode != gLastWarningPathStatusCode ||
+          e2eHealthStateCode != gLastE2eHealthStateCode ||
+          failSafeModeCode != gLastFailSafeModeCode ||
+          routingPolicyCode != gLastRoutingPolicyCode);
+}
+
+int deriveWarningPathStatus(int isForceFailSafeRequested,
+                            int isBoundaryAlive,
+                            int vehicleStateAgeMs,
+                            int navContextAgeMs,
+                            int steeringAgeMs,
+                            int emergencyMonAgeMs)
+{
+  if (isForceFailSafeRequested == 1)
+  {
+    return 2;
+  }
+  if (isWarningPathNormal(isBoundaryAlive,
+                          vehicleStateAgeMs,
+                          navContextAgeMs,
+                          steeringAgeMs,
+                          emergencyMonAgeMs))
+  {
+    return 0;
+  }
+  if (isWarningPathDegraded(isBoundaryAlive,
+                            vehicleStateAgeMs,
+                            navContextAgeMs,
+                            steeringAgeMs,
+                            emergencyMonAgeMs))
+  {
+    return 1;
+  }
+  return 2;
+}
+
+int deriveE2eHealthState(int warningPathStatusCode)
+{
+  if (warningPathStatusCode == 0)
+  {
+    return 2;
+  }
+  if (warningPathStatusCode == 1)
+  {
+    return 1;
+  }
+  return 0;
+}
+
+int deriveFailSafeMode(int warningPathStatusCode)
+{
+  if (warningPathStatusCode == 0)
+  {
+    return 0;
+  }
+  if (warningPathStatusCode == 1)
+  {
+    return 1;
+  }
+  return 2;
+}
+
+int deriveRoutingPolicy(int failSafeModeCode, int emergencyContextCode)
+{
+  if (failSafeModeCode > 0)
+  {
+    return 0;
+  }
+  if (emergencyContextCode > 0)
+  {
+    return 2;
+  }
+  return 1;
+}
+
+void publishFailSafeState(int warningPathStatusCode,
+                          int e2eHealthStateCode,
+                          int failSafeModeCode,
+                          int isBoundaryAlive)
 {
   char frame[4];
 
   ethInitFrame(frame, ethMsgFailSafe(), 1);
-  ethSetU8(frame, 0, clampRange(warningPathStatus, 0, 2) |
-                    (clampRange(e2eHealthState, 0, 2) << 2) |
-                    (clampRange(failSafeMode, 0, 2) << 4) |
-                    (clampRange(boundaryAlive, 0, 1) << 6));
+  ethSetU8(frame, 0, clampRange(warningPathStatusCode, 0, 2) |
+                    (clampRange(e2eHealthStateCode, 0, 2) << 2) |
+                    (clampRange(failSafeModeCode, 0, 2) << 4) |
+                    (clampRange(isBoundaryAlive, 0, 1) << 6));
   ethSendFrame(gEthSocket, gEthTargetIp, ethMsgFailSafe(), frame, 1);
 }
 
-void publishObjectSafetyState(int failSafeMode)
+void publishObjectSafetyState(int failSafeModeCode)
 {
   char frame[8];
   int objectConfidence;
   int objectEventCode;
-  int objectTrackValid;
+  int isObjectTrackValid;
 
   objectConfidence = clampRange((int)@Core::objectConfidence, 0, 100);
   objectEventCode = clampRange((int)@Core::objectEventCode, 0, 65535);
-  objectTrackValid = clampRange((int)@Core::objectTrackValid, 0, 1);
+  isObjectTrackValid = clampRange((int)@Core::objectTrackValid, 0, 1);
 
   ethInitFrame(frame, ethMsgObjectSafety(), 4);
   ethSetU8(frame, 0, objectConfidence);
   ethSetU16Le(frame, 1, objectEventCode);
-  ethSetU8(frame, 3, clampRange(failSafeMode, 0, 2) |
-                    (objectTrackValid << 2));
+  ethSetU8(frame, 3, clampRange(failSafeModeCode, 0, 2) |
+                    (isObjectTrackValid << 2));
   ethSendFrame(gEthSocket, gEthTargetIp, ethMsgObjectSafety(), frame, 4);
 
-  if (objectTrackValid != gLastObjectTrackValid ||
-      failSafeMode != gLastObjectFailSafeMode ||
+  if (isObjectTrackValid != gLastIsObjectTrackValid ||
+      failSafeModeCode != gLastObjectFailSafeModeCode ||
       objectEventCode != gLastObjectEventCode)
   {
     write("[CGW] objectSafety track=%d conf=%d event=%d failSafe=%d",
-          objectTrackValid, objectConfidence, objectEventCode, failSafeMode);
-    gLastObjectTrackValid = objectTrackValid;
-    gLastObjectFailSafeMode = failSafeMode;
+          isObjectTrackValid, objectConfidence, objectEventCode, failSafeModeCode);
+    gLastIsObjectTrackValid = isObjectTrackValid;
+    gLastObjectFailSafeModeCode = failSafeModeCode;
     gLastObjectEventCode = objectEventCode;
   }
 }
@@ -119,16 +234,16 @@ on start
 {
   gEthSocket = ethOpenDefaultSocket();
   gEthTargetIp = ethGetDefaultIpAddress();
-  gChassisAlive = 0;
-  gBodyAlive = 0;
-  gInfoAlive = 0;
+  gChassisAliveCount = 0;
+  gBodyAliveCount = 0;
+  gInfoAliveCount = 0;
   gChassisTsMs = 0;
   gBodyTsMs = 0;
   gInfoTsMs = 0;
-  gLastBoundaryStatus = -1;
-  gLastWarningPathStatus = -1;
-  gLastE2eHealthState = -1;
-  gLastFailSafeMode = -1;
+  gLastIsBoundaryAlive = -1;
+  gLastWarningPathStatusCode = -1;
+  gLastE2eHealthStateCode = -1;
+  gLastFailSafeModeCode = -1;
   gVehicleStateAgeMs = 10000;
   gNavContextAgeMs = 10000;
   gSteeringAgeMs = 10000;
@@ -137,12 +252,12 @@ on start
   gNavContextTsMs = 0;
   gSteeringTsMs = 0;
   gEmergencyMonTsMs = 0;
-  gLastRoutingPolicy = -1;
-  gLastObjectTrackValid = -1;
-  gLastObjectFailSafeMode = -1;
+  gLastRoutingPolicyCode = -1;
+  gLastIsObjectTrackValid = -1;
+  gLastObjectFailSafeModeCode = -1;
   gLastObjectEventCode = -1;
   @CoreState::domainBoundaryStatus = 0;
-  @CoreState::warningPathStatus = 2;
+  // @CoreState::warningPathStatus = 2;
   @CoreState::e2eHealthState = 0;
   @Core::failSafeMode = 1;
   @Core::decelAssistReq = 0;
@@ -156,19 +271,19 @@ on start
 
 on message frmChassisHealthMsg
 {
-  gChassisAlive = this.ChassisAliveCnt;
+  gChassisAliveCount = this.ChassisAliveCnt;
   gChassisTsMs = getSimulationTimeMs();
 }
 
 on message frmBodyHealthMsg
 {
-  gBodyAlive = this.BodyAliveCnt;
+  gBodyAliveCount = this.BodyAliveCnt;
   gBodyTsMs = getSimulationTimeMs();
 }
 
 on message frmInfotainmentHealthMsg
 {
-  gInfoAlive = this.InfoAliveCnt;
+  gInfoAliveCount = this.InfoAliveCnt;
   gInfoTsMs = getSimulationTimeMs();
 }
 
@@ -179,14 +294,15 @@ on timer tBoundaryCheck
   int chassisAgeMs;
   int bodyAgeMs;
   int infoAgeMs;
-  int boundaryAlive;
-  int warningPathStatus;
-  int e2eHealthState;
-  int failSafeMode;
-  int routingPolicy;
-  int emergencyContext;
-  int forceFailSafe;
+  int isBoundaryAlive;
+  int warningPathStatusCode;
+  int e2eHealthStateCode;
+  int failSafeModeCode;
+  int routingPolicyCode;
+  int emergencyContextCode;
+  int isForceFailSafeRequested;
 
+  // Collect the latest domain and monitor ages for boundary supervision.
   nowMs = getSimulationTimeMs();
   chassisAgeMs = calcAgeMs(gChassisTsMs, nowMs);
   bodyAgeMs = calcAgeMs(gBodyTsMs, nowMs);
@@ -197,100 +313,58 @@ on timer tBoundaryCheck
   emergencyHeartbeatMs = (dword)clampRange((int)@CoreState::lastEmergencyRxMs, 0, 2147483647);
   gEmergencyMonAgeMs = calcAgeMs(emergencyHeartbeatMs, nowMs);
 
-  boundaryAlive = 0;
-  if (chassisAgeMs <= 300 &&
-      bodyAgeMs <= 300 &&
-      infoAgeMs <= 300)
+  // Mark the backbone boundary alive only when all domain heartbeats are fresh.
+  isBoundaryAlive = 0;
+  if (isBoundaryAliveCondition(chassisAgeMs, bodyAgeMs, infoAgeMs))
   {
-    boundaryAlive = 1;
+    isBoundaryAlive = 1;
   }
 
-  forceFailSafe = (((int)@Test::forceFailSafe) == 1) ? 1 : 0;
-  if (forceFailSafe == 1)
-  {
-    warningPathStatus = 2;
-  }
-  else if (boundaryAlive == 1 &&
-           gVehicleStateAgeMs <= 150 &&
-           gNavContextAgeMs <= 150 &&
-           gSteeringAgeMs <= 150 &&
-           gEmergencyMonAgeMs <= 150)
-  {
-    warningPathStatus = 0;
-  }
-  else if (boundaryAlive == 1 &&
-           gVehicleStateAgeMs <= 300 &&
-           gNavContextAgeMs <= 300 &&
-           gSteeringAgeMs <= 300 &&
-           gEmergencyMonAgeMs <= 300)
-  {
-    warningPathStatus = 1;
-  }
-  else
-  {
-    warningPathStatus = 2;
-  }
+  // Classify the warning path as normal, degraded, or broken.
+  isForceFailSafeRequested = (((int)@Test::forceFailSafe) == 1) ? 1 : 0;
+  warningPathStatusCode = deriveWarningPathStatus(isForceFailSafeRequested,
+                                                  isBoundaryAlive,
+                                                  gVehicleStateAgeMs,
+                                                  gNavContextAgeMs,
+                                                  gSteeringAgeMs,
+                                                  gEmergencyMonAgeMs);
 
-  if (forceFailSafe == 1)
-  {
-    e2eHealthState = 0;
-    failSafeMode = 2;
-  }
-  else if (warningPathStatus == 0)
-  {
-    e2eHealthState = 2;
-    failSafeMode = 0;
-  }
-  else if (warningPathStatus == 1)
-  {
-    e2eHealthState = 1;
-    failSafeMode = 1;
-  }
-  else
-  {
-    e2eHealthState = 0;
-    failSafeMode = 2;
-  }
+  // Convert the warning path state into E2E health and fail-safe mode.
+  e2eHealthStateCode = deriveE2eHealthState(warningPathStatusCode);
+  failSafeModeCode = deriveFailSafeMode(warningPathStatusCode);
 
-  emergencyContext = clampRange((int)@Core::emergencyContext, 0, 2);
-  if (failSafeMode > 0)
-  {
-    routingPolicy = 0;
-  }
-  else if (emergencyContext > 0)
-  {
-    routingPolicy = 2;
-  }
-  else
-  {
-    routingPolicy = 1;
-  }
+  // Select the routing policy from fail-safe state and emergency context.
+  emergencyContextCode = clampRange((int)@Core::emergencyContext, 0, 2);
+  routingPolicyCode = deriveRoutingPolicy(failSafeModeCode, emergencyContextCode);
 
-  @CoreState::domainBoundaryStatus = boundaryAlive;
-  @CoreState::warningPathStatus = warningPathStatus;
-  @CoreState::e2eHealthState = e2eHealthState;
-  @CoreState::routingPolicy = routingPolicy;
-  @Core::failSafeMode = failSafeMode;
-  if (failSafeMode > 0)
+  // Mirror the boundary supervision result into Core and CoreState.
+  @CoreState::domainBoundaryStatus = isBoundaryAlive;
+  @CoreState::warningPathStatus = warningPathStatusCode;
+  @CoreState::e2eHealthState = e2eHealthStateCode;
+  @CoreState::routingPolicy = routingPolicyCode;
+  @Core::failSafeMode = failSafeModeCode;
+  if (failSafeModeCode > 0)
   {
     @Core::decelAssistReq = 0;
   }
 
-  publishFailSafeState(warningPathStatus, e2eHealthState, failSafeMode, boundaryAlive);
-  publishObjectSafetyState(failSafeMode);
+  // Publish the fail-safe and object-safety state for downstream consumers.
+  publishFailSafeState(warningPathStatusCode, e2eHealthStateCode, failSafeModeCode, isBoundaryAlive);
+  publishObjectSafetyState(failSafeModeCode);
 
-  if (boundaryAlive != gLastBoundaryStatus ||
-      warningPathStatus != gLastWarningPathStatus ||
-      e2eHealthState != gLastE2eHealthState ||
-      failSafeMode != gLastFailSafeMode ||
-      routingPolicy != gLastRoutingPolicy)
+  // Emit a log only when any boundary supervision result changes.
+  if (isBoundarySupervisionChanged(isBoundaryAlive,
+                                   warningPathStatusCode,
+                                   e2eHealthStateCode,
+                                   failSafeModeCode,
+                                   routingPolicyCode))
   {
     write("[CGW] boundary=%d warnPath=%d e2e=%d failSafe=%d routing=%d ages(ch=%d body=%d info=%d veh=%d nav=%d str=%d mon=%d)",
-          boundaryAlive,
-          warningPathStatus,
-          e2eHealthState,
-          failSafeMode,
-          routingPolicy,
+          isBoundaryAlive,
+          warningPathStatusCode,
+          e2eHealthStateCode,
+          failSafeModeCode,
+          routingPolicyCode,
           chassisAgeMs,
           bodyAgeMs,
           infoAgeMs,
@@ -298,11 +372,11 @@ on timer tBoundaryCheck
           gNavContextAgeMs,
           gSteeringAgeMs,
           gEmergencyMonAgeMs);
-    gLastBoundaryStatus = boundaryAlive;
-    gLastWarningPathStatus = warningPathStatus;
-    gLastE2eHealthState = e2eHealthState;
-    gLastFailSafeMode = failSafeMode;
-    gLastRoutingPolicy = routingPolicy;
+    gLastIsBoundaryAlive = isBoundaryAlive;
+    gLastWarningPathStatusCode = warningPathStatusCode;
+    gLastE2eHealthStateCode = e2eHealthStateCode;
+    gLastFailSafeModeCode = failSafeModeCode;
+    gLastRoutingPolicyCode = routingPolicyCode;
   }
 
   setTimer(tBoundaryCheck, 100);
