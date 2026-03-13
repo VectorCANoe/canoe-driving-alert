@@ -1,0 +1,72 @@
+@startuml
+!theme materia-outline
+
+title REQ_IVI_003, 017: Door-Linked UX & Reverse Lighting
+
+actor "Driver" as Driver
+participant "CAN Bus" as CAN
+participant "Dashboard_Lighting_Controller" as DLC
+participant "LED_Actuator" as LED
+
+== Door Open Scenario (REQ_IVI_003) ==
+
+Driver -> CAN : Door Open Signal (0x102)
+activate CAN
+CAN -> DLC : Door_Status = OPEN
+activate DLC
+note right: Response Time Budget: <400ms
+
+DLC -> DLC : Validate Signal
+DLC -> LED : Turn ON Dashboard Light
+activate LED
+LED --> DLC : ACK
+deactivate LED
+
+DLC --> CAN : Status Confirmation
+deactivate DLC
+deactivate CAN
+
+note over DLC
+    **ASIL-A Requirement**
+    • Detection: >99%
+    • Response: <400ms
+    • Auto OFF when door closed
+end note
+
+== Reverse Gear Scenario (REQ_IVI_017) ==
+
+Driver -> CAN : Gear Position = R (0x103)
+activate CAN
+CAN -> DLC : Gear_Position = REVERSE
+activate DLC
+note right: Response Time Budget: ≤150ms
+
+DLC -> DLC : Validate Reverse State
+DLC -> LED : Turn ON Rear Light
+activate LED
+LED --> DLC : ACK
+deactivate LED
+
+DLC --> CAN : Status Confirmation
+deactivate DLC
+
+... Reverse Operation ...
+
+Driver -> CAN : Gear Position = D/N
+CAN -> DLC : Gear_Position = DRIVE/NEUTRAL
+activate DLC
+DLC -> LED : Turn OFF Rear Light
+activate LED
+LED --> DLC : ACK
+deactivate LED
+deactivate DLC
+deactivate CAN
+
+note over DLC
+    **ASIL-B Requirement**
+    • Lighting ON delay: ≤150ms
+    • Auto OFF on D/N transition
+    • Integration Test Required
+end note
+
+@enduml

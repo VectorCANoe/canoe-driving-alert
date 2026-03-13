@@ -1,0 +1,157 @@
+@startuml level2_infotainment
+!theme plain
+
+title Level 2: Infotainment Domain Architecture\nUser Interface and Entertainment Systems
+
+skinparam component {
+    BackgroundColor LightSalmon
+    BorderColor DarkOrange
+    ArrowColor DarkBlue
+}
+
+package "Infotainment Domain" {
+
+    component "IVI\n(In-Vehicle Infotainment)" as IVI {
+        portin p_user_input
+        portin p_vehicle_data
+        portin p_adas_warnings
+        portout p_display_data
+        portout p_ambient_light
+        portout p_media_control
+
+        [Media Player]
+        [Navigation System]
+        [Ambient Lighting Manager]
+        [User Profile Manager]
+        [Connectivity Service]
+        [Voice Recognition]
+    }
+
+    component "CLU\n(Cluster Unit)" as CLU {
+        portin p_vehicle_speed
+        portin p_engine_rpm
+        portin p_warnings
+        portout p_display_output
+
+        [Speed Display]
+        [RPM Display]
+        [Warning Lights]
+        [Trip Computer]
+    }
+
+    component "HUD\n(Head-Up Display)" as HUD {
+        portin p_speed_data
+        portin p_navigation_data
+        portout p_hud_projection
+
+        [Speed Projection]
+        [Navigation Arrows]
+        [ADAS Warnings]
+    }
+
+    component "TMU\n(Telematics Unit)" as TMU {
+        portin p_vehicle_status
+        portout p_connectivity_data
+        portout p_remote_control
+
+        [LTE/5G Modem]
+        [Remote Diagnostics]
+        [OTA Updates]
+        [Emergency Call (eCall)]
+    }
+
+    component "CUBIS\n(Connected User Box)" as CUBIS {
+        portin p_user_device
+        portout p_connectivity_status
+
+        [Smartphone Integration]
+        [Wireless Charging]
+        [Device Management]
+    }
+}
+
+cloud "CAN-HS #2\n500 kbps" as CAN2
+
+' IVI Messages (Project-Specific)
+IVI --> CAN2 : **IVI_AmbientLight (0x400)**\n• Ambient_Light_R/G/B\n• Brightness (%)\n• Theme_Package\nCycle: 100ms, QM
+
+IVI --> CAN2 : **IVI_Profile (0x410)**\n• Profile_ID\n• Scenario_ID\n• Scenario_Params\nCycle: 1000ms (Event), QM
+
+IVI --> CAN2 : **IVI_MediaInfo**\n• Media_Source\n• Track_Info\n• Volume_Level\nCycle: 500ms
+
+CAN2 --> IVI : **LDWS_LKAS11**\n• ADAS Warnings\n(via Gateway)
+
+CAN2 --> IVI : **EMS16**\n• Vehicle_Speed, RPM\n(via Gateway)
+
+' CLU Messages
+CLU --> CAN2 : **CLU11**\n• Display_Mode\n• Warning_Status\n• Trip_Data\nCycle: 100ms
+
+CAN2 --> CLU : **EMS16**\n• Vehicle_Speed, RPM\n(via Gateway)
+
+CAN2 --> CLU : **ESP12**\n• Stability_Warnings\n(via Gateway)
+
+' HUD Messages
+HUD --> CAN2 : **HUD11**\n• HUD_Active\n• Brightness_Level\nCycle: 100ms
+
+CAN2 --> HUD : **EMS16**\n• Vehicle_Speed\n(via Gateway)
+
+CAN2 --> HUD : **IVI_NavData**\n• Navigation_Arrows
+
+' TMU Messages
+TMU --> CAN2 : **TMU11**\n• Connectivity_Status\n• Signal_Strength\n• OTA_Status\nCycle: 1000ms
+
+' CUBIS Messages
+CUBIS --> CAN2 : **CUBIS11**\n• Device_Connected\n• Charging_Status\nCycle: 500ms
+
+component "CGW\n(Central Gateway)" as CGW
+CAN2 --> CGW : Route to CAN-HS #1, CAN-LS
+CGW --> CAN2 : Vehicle Data, ADAS Warnings
+
+cloud "CAN-LS\n125 kbps" as CAN3
+CGW --> CAN3 : **IVI_AmbientLight**\n(to BCM)
+
+note right of IVI
+  **IVI Key Functions**
+  • Media playback (Audio/Video)
+  • Navigation (GPS, maps)
+  • Ambient lighting control
+  • User profile management
+  • Smartphone connectivity
+  • Voice recognition
+
+  **Safety Level**: QM
+  **Cycle Time**: 100-1000ms
+  **Display**: 10-12 inch touchscreen
+end note
+
+note right of CLU
+  **CLU Key Functions**
+  • Speed display (analog/digital)
+  • RPM display (tachometer)
+  • Warning lights (engine, ABS, etc.)
+  • Trip computer (fuel, distance)
+  • Gear position indicator
+
+  **Safety Level**: QM
+  **Cycle Time**: 100ms
+  **Display**: 7-12 inch TFT
+end note
+
+note bottom of CAN2
+  **Infotainment CAN Messages**
+
+  User Interface (100-500ms):
+  • IVI_AmbientLight: RGB control
+  • IVI_MediaInfo: Media status
+  • CLU11: Display data
+
+  Connectivity (1000ms):
+  • TMU11: Telematics status
+  • CUBIS11: Device status
+
+  **Total Messages**: ~15 messages
+  **ASIL Level**: QM
+  **Feature**: Project-specific ambient lighting
+end note
+
+@enduml

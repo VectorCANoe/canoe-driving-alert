@@ -1,4 +1,4 @@
-# tools
+﻿# tools
 
 Active utility scripts for CANoe maintenance.
 
@@ -29,6 +29,6 @@ Active utility scripts for CANoe maintenance.
 
 ## Policy
 
-- `driving-situation-alert` documents remain the source of truth
+- `driving-alert-workproducts` documents remain the source of truth
 - generated artifacts are draft support outputs
 - cfg patch helpers and reference-side helper scripts are not kept in the active tree

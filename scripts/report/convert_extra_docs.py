@@ -1,7 +1,7 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 """
 Markdown to Excel Converter for Extra Documents
-Converts specific Markdown files for the current driving-situation-alert baseline.
+Converts specific Markdown files for the current driving-alert-workproducts baseline.
 """
 
 import re
@@ -140,8 +140,9 @@ def convert_md_to_excel(md_file, excel_file):
     print(f"✓ Created: {excel_file}")
 
 def main():
-    source_dir = Path("/Users/juns/code/work/mobis/PBL/driving-situation-alert")
-    output_dir = Path("/Users/juns/code/work/mobis/PBL/driving-situation-alert/tmp/submission/excel_extra")
+    repo_root = Path(__file__).resolve().parents[2]
+    source_dir = repo_root / "driving-alert-workproducts"
+    output_dir = source_dir / "excel" / "excel_extra"
     output_dir.mkdir(parents=True, exist_ok=True)
 
     # Specific files to convert

@@ -1,4 +1,4 @@
-# CANoe 개발기 2편: 다시 설계하라고 했는데, 그게 진짜 시작이었다
+﻿# CANoe 개발기 2편: 다시 설계하라고 했는데, 그게 진짜 시작이었다
 
 > 1편에서 우리는 스타 토폴로지 그림을 들고 갔다가 두 번 얻어맞고 돌아왔다. 이번엔 그 다음 이야기다.
 
@@ -58,7 +58,7 @@ V-Model에서 요구하는 방식은 다음과 같다.
 
 올바른 구조가 이렇다는 걸 직접 그려서 확인했다.
 
-![올바른 CAN 버스 토폴로지: Ethernet Backbone + 도메인별 CAN](/Users/juns/code/work/mobis/PBL/driving-situation-alert/02_network.png)
+![올바른 CAN 버스 토폴로지: Ethernet Backbone + 도메인별 CAN](/Users/juns/code/work/mobis/PBL/driving-alert-workproducts/02_network.png)
 
 게이트웨이는 네트워크 간 프로토콜을 변환하는 역할이고, 같은 도메인 안 ECU끼리는 CAN Bus 하나로 묶인다. 이 원칙 하나만 제대로 이해하면 그림이 바로 잡힌다.
 
@@ -68,7 +68,7 @@ V-Model에서 요구하는 방식은 다음과 같다.
 
 우리가 처음 그린 컨셉 디자인이다.
 
-![컨셉 디자인 초안: 입력부/제어부/출력부 구조](/Users/juns/code/work/mobis/PBL/driving-situation-alert/02_concept.png)
+![컨셉 디자인 초안: 입력부/제어부/출력부 구조](/Users/juns/code/work/mobis/PBL/driving-alert-workproducts/02_concept.png)
 
 멘토링에서 이 그림을 보여드렸을 때 다음과 같은 피드백이 나왔다.
 

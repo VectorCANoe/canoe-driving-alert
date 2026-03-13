@@ -1,0 +1,56 @@
+/*@@=================================================================
+ * CANoe CAPL Node: Rear_Camera (Rear Camera ECU)
+ *==================================================================@@*/
+
+includes {}
+
+variables
+{
+  float gRearObjectDistance = 50.0;
+  int gRearObjectType = 0;
+  int gRearCollisionRisk = 0;
+  float gRearObjectVelocity = 0.0;
+
+  byte gAliveCounter = 0;
+  msTimer tRearCamera;
+}
+
+on start
+{
+  write("Rear_Camera (Parking Assistance) Started");
+  setTimer(tRearCamera, 50);  // 50ms
+}
+
+on timer tRearCamera
+{
+  message Rear_Camera_Objects msg;
+
+  msg.Rear_Object_Distance = gRearObjectDistance;
+  msg.Rear_Object_Type = gRearObjectType;
+  msg.Rear_Collision_Risk = gRearCollisionRisk;
+  msg.Rear_Object_Velocity = gRearObjectVelocity;
+  msg.AliveCounter = gAliveCounter;
+  msg.Checksum = 0;
+
+  gAliveCounter = (gAliveCounter + 1) & 0x0F;
+
+  output(msg);
+  setTimer(tRearCamera, 50);
+}
+
+on message TCU_GearStatus
+{
+  if (this.Gear_Position == 1) { // Reverse
+    gRearCollisionRisk = 30;
+    gRearObjectDistance = 5.0;
+    write("🚗 Reverse gear - Rear camera ACTIVE");
+  } else {
+    gRearCollisionRisk = 0;
+    gRearObjectDistance = 50.0;
+  }
+}
+
+on stopMeasurement
+{
+  cancelTimer(tRearCamera);
+}

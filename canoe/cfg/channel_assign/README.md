@@ -1,12 +1,12 @@
 # channel_assign
 
-`channel_assign` is the GUI import surface for the active CANoe runtime and the full OEM breadth runtime bank.
+`channel_assign` is the GUI import mirror for the active CANoe runtime. It is not an independent source tree.
 
 - source of truth for runtime code: `canoe/src/capl/**`
 - GUI import mirror: `canoe/cfg/channel_assign/**`
 - rule: both trees must stay `1:1` synchronized for active `*.can`
 
-Do not edit files here directly. Edit `canoe/src/capl/**` first, then mirror into this tree.
+Do not edit files here directly. Edit `canoe/src/capl/**` first, then mirror into this tree and compile after sync.
 
 ## Current visible import bank
 
@@ -67,7 +67,7 @@ These anchors still need extra bus assignments restored in GUI.
 
 Formal rationale:
 
-- [12_RUNTIME_MULTIBUS_VISIBILITY_POLICY.md](/C:/Users/이준영/CANoe-IVI-OTA/canoe/docs/10_RUNTIME/12_RUNTIME_MULTIBUS_VISIBILITY_POLICY.md)
+- [12_RUNTIME_MULTIBUS_VISIBILITY_POLICY.md](/C:/Users/이준영/CANoe-IVI-OTA/canoe/docs/contracts/12_RUNTIME_MULTIBUS_VISIBILITY_POLICY.md)
 
 ## Fresh cfg rebuild checklist
 

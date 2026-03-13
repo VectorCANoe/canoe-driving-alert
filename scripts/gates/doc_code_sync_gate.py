@@ -8,7 +8,7 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[2]
-DOC_ROOT = ROOT / "driving-situation-alert"
+DOC_ROOT = ROOT / "driving-alert-workproducts"
 TMP_ROOT = DOC_ROOT / "tmp"
 REPORT_PATH = TMP_ROOT / "reports" / "Doc_Code_Sync_Report.md"
 TEMPLATE_PATH = TMP_ROOT / "templates" / "Doc_Code_Sync_Report_Template.md"

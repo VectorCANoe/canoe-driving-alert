@@ -1,4 +1,4 @@
-# Reference Surface
+﻿# Reference Surface
 
 This folder contains standards, sample material, and external references used to justify project decisions.
 
@@ -18,4 +18,4 @@ This folder contains standards, sample material, and external references used to
 ## Working Rule
 
 - This folder is for reference, not for active source-of-truth edits.
-- If a decision depends on one of these files, reflect the conclusion back into the canonical docs under `driving-situation-alert/` or the runtime/docs surface under `canoe/`.
+- If a decision depends on one of these files, reflect the conclusion back into the canonical docs under `driving-alert-workproducts/` or the runtime/docs surface under `canoe/`.

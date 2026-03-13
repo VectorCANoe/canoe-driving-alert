@@ -1,0 +1,51 @@
+@startuml
+!theme silver
+
+title REQ_IVI_004: IVI Color Synchronization (>99%)
+
+participant "IVI HMI" as IVI
+participant "CAN Bus" as CAN
+participant "IVI_Sync_Manager" as ISM
+participant "Lighting_Module" as LM
+
+IVI -> IVI : User Selects Color\n(RGB: 255, 128, 64)
+activate IVI
+
+IVI -> CAN : IVI_Color_Cmd (0x200)\n[R=255, G=128, B=64]
+activate CAN
+
+CAN -> ISM : Receive Color Command
+activate ISM
+
+ISM -> ISM : Parse RGB Values
+ISM -> ISM : Validate Range (0-255)
+
+alt Valid Color Command
+    ISM -> LM : Apply RGB to Interior Lighting
+    activate LM
+    LM -> LM : Set LED PWM Duty Cycle
+    LM --> ISM : Color Applied Successfully
+    deactivate LM
+
+    ISM -> CAN : Sync Confirmation (0x201)
+    CAN -> IVI : Display "Color Applied"
+    deactivate ISM
+    deactivate CAN
+    deactivate IVI
+
+else Invalid Color Command
+    ISM -> CAN : Error Response (0x7F)
+    CAN -> IVI : Display "Color Sync Failed"
+    deactivate ISM
+    deactivate CAN
+    deactivate IVI
+end
+
+note over ISM
+    **QM Requirement**
+    • Synchronization Rate: >99%
+    • CAN Message Reliability
+    • No Safety Impact
+end note
+
+@enduml

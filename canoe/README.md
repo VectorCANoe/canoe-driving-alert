@@ -20,9 +20,10 @@ This folder keeps the active CANoe runtime only.
   - `databases/body_can.dbc`
   - `databases/infotainment_can.dbc`
   - `databases/adas_can.dbc`
-- CAPL source
-  - `cfg/channel_assign/`
+- CAPL source of truth
   - `src/capl/`
+- GUI import mirror
+  - `cfg/channel_assign/`
 - verification assets
   - `tests/`
 - active operation docs
@@ -42,11 +43,13 @@ Do not patch these directly unless recovery work is explicitly requested:
 
 These may exist on a developer machine but are not part of the active Git surface:
 
-- `legacy/`
+- `AGENT/`
 - `logging/`
 - `reference/`
 - `scripts/`
 - `tmp/`
+
+Legacy runtime assets are preserved in archive branches and local `AGENT/legacy/`, not in the active root.
 
 ## Not Owned Here
 

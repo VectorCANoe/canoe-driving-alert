@@ -1,10 +1,10 @@
-# Contributing to canoe-driving-alert
+﻿# Contributing to canoe-driving-alert
 
 This repository contains three different working surfaces:
 
 1. `canoe/` for the CANoe runtime project
 2. `product/sdv_operator/` for the Dev2 operator surface
-3. `driving-situation-alert/` for the canonical lifecycle documents and submission set
+3. `driving-alert-workproducts/` for the canonical lifecycle documents and submission set
 
 Contributions should keep those boundaries explicit instead of mixing them.
 
@@ -13,7 +13,7 @@ Contributions should keep those boundaries explicit instead of mixing them.
 Before changing code or docs, open:
 
 1. `AGENTS.md`
-2. `driving-situation-alert/TMP_HANDOFF.md`
+2. `driving-alert-workproducts/ops/handoff/TMP_HANDOFF.md`
 3. `docs/DEVELOPMENT_ENTRYPOINTS.md`
 
 ## Basic Workflow
@@ -22,7 +22,7 @@ Before changing code or docs, open:
 2. Update the correct ownership area:
    - runtime behavior: `canoe/`
    - operator surface: `scripts/` and `product/sdv_operator/`
-   - canonical docs: `driving-situation-alert/`
+   - canonical docs: `driving-alert-workproducts/`
 3. Run the relevant local checks
 4. Update traceability or evidence docs when the change affects the chain
 

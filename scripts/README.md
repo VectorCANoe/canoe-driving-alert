@@ -25,7 +25,8 @@ python scripts/run.py doctor
 
 ## Boundary
 
-- `run.py` = 단일 런처 표면
-- `tui_app.py` = 운영 콘솔 화면
-- `cliops/*`, `quality/*`, `gates/*` = 내부 구현 계층
+- `scripts/run.py` = compatibility launcher (`product/sdv_operator/scripts/run.py`로 위임)
+- `scripts/tui_app.py` = compatibility launcher (`product/sdv_operator/scripts/tui_app.py`로 위임)
+- `product/sdv_operator/scripts/cliops/*` = 제품 전용 실행 계층
+- `scripts/gates/*`, `scripts/quality/*`, `scripts/release/*` = 공용(CANoe/CI) 계층
 - 호환용 alias는 유지하지만, 일일 사용자는 canonical 명령만 사용합니다

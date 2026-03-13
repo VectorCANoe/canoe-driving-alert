@@ -1,4 +1,4 @@
-# Changelog
+﻿# Changelog
 
 All notable changes to this repository are documented in this file.
 
@@ -11,7 +11,7 @@ and the repository uses semantic-style version sections for human-readable relea
 - Simplified the public repository surface around three primary entrypoints:
   - `product/sdv_operator/`
   - `canoe/`
-  - `driving-situation-alert/`
+  - `driving-alert-workproducts/`
 - Added folder-level indexes for active working areas, submission workspaces, and CANoe-side operations.
 - Clarified the separation between:
   - public product/docs surface

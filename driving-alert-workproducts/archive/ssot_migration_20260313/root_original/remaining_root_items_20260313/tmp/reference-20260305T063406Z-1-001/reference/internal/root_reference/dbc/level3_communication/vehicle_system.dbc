@@ -1,0 +1,330 @@
+VERSION ""
+
+
+NS_ :
+	NS_DESC_
+	CM_
+	BA_DEF_
+	BA_
+	VAL_
+	CAT_DEF_
+	CAT_
+	FILTER
+	BA_DEF_DEF_
+	EV_DATA_
+	ENVVAR_DATA_
+	SGTYPE_
+	SGTYPE_VAL_
+	BA_DEF_SGTYPE_
+	BA_SGTYPE_
+	SIG_TYPE_REF_
+	VAL_TABLE_
+	SIG_GROUP_
+	SIG_VALTYPE_
+	SIGTYPE_VALTYPE_
+	BO_TX_BU_
+	BA_DEF_REL_
+	BA_REL_
+	BA_SGTYPE_REL_
+	SG_MUL_VAL_
+
+BS_:
+
+BU_: EMS TCU ESP MDPS BCM IVI Cluster Camera Rear_Camera Radar SCC CGW HVAC
+
+VAL_TABLE_ GearPosition 0 "P" 1 "R" 2 "N" 3 "D" 4 "S" 5 "L" 6 "M" 7 "ERROR" ;
+VAL_TABLE_ ShiftStatus 0 "IDLE" 1 "SHIFTING" 2 "COMPLETE" 3 "FAULT" ;
+VAL_TABLE_ LDWStatus 0 "OFF" 1 "STANDBY" 2 "ACTIVE" 3 "WARNING" ;
+VAL_TABLE_ AEBEvent 0 "NONE" 1 "PRE_WARNING" 2 "WARNING" 3 "BRAKING" ;
+VAL_TABLE_ ObjectType 0 "NONE" 1 "CAR" 2 "TRUCK" 3 "MOTORCYCLE" 4 "PEDESTRIAN" 5 "BICYCLE" 6 "UNKNOWN" ;
+VAL_TABLE_ SCCMode 0 "OFF" 1 "STANDBY" 2 "ACTIVE" 3 "FAULT" ;
+VAL_TABLE_ DoorStatus 0 "CLOSED" 1 "OPEN" 2 "AJAR" 3 "ERROR" ;
+VAL_TABLE_ HeadlightStatus 0 "OFF" 1 "PARKING" 2 "LOW_BEAM" 3 "HIGH_BEAM" ;
+VAL_TABLE_ ThemePackage 0 "SPORT" 1 "COMFORT" 2 "ECO" 3 "CUSTOM1" 4 "CUSTOM2" 5 "CUSTOM3" ;
+VAL_TABLE_ ProfileID 0 "DRIVER1" 1 "DRIVER2" 2 "DRIVER3" 3 "GUEST" 4 "VALET" ;
+
+
+BO_ 256 EMS_EngineStatus: 8 EMS
+ SG_ Engine_RPM : 0|16@1+ (1,0) [0|8000] "rpm" Cluster,IVI
+ SG_ Vehicle_Speed : 16|16@1+ (0.01,0) [0|300] "km/h" Cluster,IVI
+ SG_ Engine_Torque : 32|16@1- (0.1,0) [-500|1000] "Nm" CGW
+ SG_ Throttle_Position : 48|8@1+ (0.4,0) [0|100] "%" CGW
+ SG_ AliveCounter : 56|4@1+ (1,0) [0|15] "" CGW
+ SG_ Checksum : 60|4@1+ (1,0) [0|15] "" CGW
+
+BO_ 257 EMS_Temperature: 4 EMS
+ SG_ Coolant_Temp : 0|8@1+ (1,-40) [-40|150] "C" Cluster,IVI
+ SG_ Oil_Temp : 8|8@1+ (1,-40) [-40|150] "C" CGW
+ SG_ Intake_Air_Temp : 16|8@1+ (1,-40) [-40|150] "C" CGW
+
+BO_ 260 HVAC_Status: 4 HVAC
+ SG_ Cabin_Temperature : 0|8@1+ (0.5,-40) [-40|80] "C" IVI,Cluster
+ SG_ Target_Temperature : 8|8@1+ (0.5,-40) [-40|80] "C" IVI
+ SG_ HVAC_Mode : 16|4@1+ (1,0) [0|7] "" IVI
+ SG_ Fan_Speed : 20|4@1+ (1,0) [0|7] "" CGW
+
+BO_ 384 TCU_GearStatus: 4 TCU
+ SG_ Gear_Position : 0|4@1+ (1,0) [0|7] "" Cluster,IVI
+ SG_ Shift_Status : 4|2@1+ (1,0) [0|3] "" CGW
+ SG_ Oil_Temperature : 8|8@1+ (1,-40) [-40|150] "C" CGW
+ SG_ Torque_Converter_Lock : 16|1@1+ (1,0) [0|1] "" CGW
+
+BO_ 512 ESP_VehicleDynamics: 8 ESP
+ SG_ Wheel_Speed_FL : 0|16@1+ (0.01,0) [0|300] "km/h" CGW,SCC
+ SG_ Wheel_Speed_FR : 16|16@1+ (0.01,0) [0|300] "km/h" CGW,SCC
+ SG_ Wheel_Speed_RL : 32|16@1+ (0.01,0) [0|300] "km/h" CGW
+ SG_ Wheel_Speed_RR : 48|16@1+ (0.01,0) [0|300] "km/h" CGW
+
+BO_ 528 ESP_Sensors: 8 ESP
+ SG_ Yaw_Rate : 0|16@1- (0.01,0) [-100|100] "deg/s" Camera,SCC
+ SG_ Lateral_Accel : 16|16@1- (0.01,0) [-15|15] "m/s2" Camera,SCC
+ SG_ Brake_Pressure : 32|16@1+ (0.1,0) [0|200] "bar" CGW
+ SG_ ESP_Active : 48|1@1+ (1,0) [0|1] "" Cluster,IVI
+ SG_ AliveCounter : 56|4@1+ (1,0) [0|15] "" CGW
+ SG_ Checksum : 60|4@1+ (1,0) [0|15] "" CGW
+
+BO_ 640 MDPS_SteeringStatus: 8 MDPS
+ SG_ Steering_Angle : 0|16@1- (0.1,0) [-720|720] "deg" Camera,SCC,Cluster
+ SG_ Steering_Torque : 16|16@1- (0.01,0) [-10|10] "Nm" CGW
+ SG_ Steering_Rate : 32|16@1- (0.1,0) [-500|500] "deg/s" Camera
+ SG_ MDPS_Status : 48|8@1+ (1,0) [0|7] "" Cluster,IVI
+ SG_ AliveCounter : 56|4@1+ (1,0) [0|15] "" CGW
+ SG_ Checksum : 60|4@1+ (1,0) [0|15] "" CGW
+
+BO_ 768 Camera_LDW: 4 Camera
+ SG_ LDW_Status : 0|2@1+ (1,0) [0|3] "" IVI,Cluster
+ SG_ Lane_Position : 2|16@1- (0.01,0) [-2|2] "m" SCC
+ SG_ AEB_Event : 18|2@1+ (1,0) [0|3] "" IVI,Cluster,ESP
+ SG_ Collision_Risk : 20|8@1+ (1,0) [0|100] "%" IVI,Cluster
+
+BO_ 784 Camera_Objects: 8 Camera
+ SG_ Object_Distance : 0|16@1+ (0.1,0) [0|200] "m" SCC,IVI
+ SG_ Object_Velocity : 16|16@1- (0.1,0) [-100|100] "km/h" SCC
+ SG_ Object_Type : 32|4@1+ (1,0) [0|7] "" IVI
+ SG_ AliveCounter : 56|4@1+ (1,0) [0|15] "" CGW
+ SG_ Checksum : 60|4@1+ (1,0) [0|15] "" CGW
+
+BO_ 786 Rear_Camera_Objects: 8 Rear_Camera
+ SG_ Rear_Object_Distance : 0|16@1+ (0.1,0) [0|50] "m" IVI,BCM
+ SG_ Rear_Object_Type : 16|4@1+ (1,0) [0|7] "" IVI
+ SG_ Rear_Collision_Risk : 20|8@1+ (1,0) [0|100] "%" IVI,Cluster
+ SG_ Rear_Object_Velocity : 28|16@1- (0.1,0) [-50|50] "km/h" IVI
+ SG_ AliveCounter : 56|4@1+ (1,0) [0|15] "" CGW
+ SG_ Checksum : 60|4@1+ (1,0) [0|15] "" CGW
+
+BO_ 832 Radar_BSD: 8 Radar
+ SG_ BSD_Object_Left : 0|1@1+ (1,0) [0|1] "" IVI,Cluster
+ SG_ BSD_Object_Right : 1|1@1+ (1,0) [0|1] "" IVI,Cluster
+ SG_ Object_Distance_L : 8|8@1+ (0.1,0) [0|50] "m" IVI
+ SG_ Object_Distance_R : 16|8@1+ (0.1,0) [0|50] "m" IVI
+ SG_ Object_Velocity_L : 24|16@1- (0.1,0) [-100|100] "km/h" IVI
+ SG_ Object_Velocity_R : 40|16@1- (0.1,0) [-100|100] "km/h" IVI
+ SG_ AliveCounter : 56|4@1+ (1,0) [0|15] "" CGW
+ SG_ Checksum : 60|4@1+ (1,0) [0|15] "" CGW
+
+BO_ 896 SCC_Status: 8 SCC
+ SG_ SCC_Active : 0|1@1+ (1,0) [0|1] "" Cluster,IVI
+ SG_ Set_Speed : 8|8@1+ (1,0) [0|200] "km/h" Cluster,IVI
+ SG_ Following_Distance : 16|8@1+ (0.1,0) [0|100] "m" IVI
+ SG_ Target_Speed : 24|8@1+ (1,0) [0|200] "km/h" EMS
+ SG_ SCC_Mode : 32|2@1+ (1,0) [0|3] "" Cluster,IVI
+ SG_ AliveCounter : 56|4@1+ (1,0) [0|15] "" CGW
+ SG_ Checksum : 60|4@1+ (1,0) [0|15] "" CGW
+
+BO_ 1024 IVI_AmbientLight: 8 IVI
+ SG_ Ambient_Light_R : 0|8@1+ (1,0) [0|255] "" BCM
+ SG_ Ambient_Light_G : 8|8@1+ (1,0) [0|255] "" BCM
+ SG_ Ambient_Light_B : 16|8@1+ (1,0) [0|255] "" BCM
+ SG_ Brightness : 24|8@1+ (0.4,0) [0|100] "%" BCM
+ SG_ Theme_Package : 32|8@1+ (1,0) [0|10] "" BCM
+ SG_ Reserved : 40|16@1+ (1,0) [0|65535] "" BCM
+ SG_ AliveCounter : 56|4@1+ (1,0) [0|15] "" CGW
+ SG_ Checksum : 60|4@1+ (1,0) [0|15] "" CGW
+
+BO_ 1040 IVI_Profile: 8 IVI
+ SG_ Profile_ID : 0|8@1+ (1,0) [0|5] "" BCM
+ SG_ Scenario_ID : 8|8@1+ (1,0) [0|20] "" BCM
+ SG_ Scenario_Params : 16|32@1+ (1,0) [0|4294967295] "" BCM
+
+BO_ 1152 Cluster_Display: 8 Cluster
+ SG_ Speed_Display : 0|16@1+ (0.01,0) [0|300] "km/h" CGW
+ SG_ RPM_Display : 16|16@1+ (1,0) [0|8000] "rpm" CGW
+ SG_ Gear_Display : 32|4@1+ (1,0) [0|7] "" CGW
+ SG_ Warning_Lights : 36|16@1+ (1,0) [0|65535] "" CGW
+ SG_ AliveCounter : 56|4@1+ (1,0) [0|15] "" CGW
+ SG_ Checksum : 60|4@1+ (1,0) [0|15] "" CGW
+
+BO_ 1280 BCM_DoorStatus: 4 BCM
+ SG_ Door_Status_FL : 0|2@1+ (1,0) [0|3] "" Cluster,IVI
+ SG_ Door_Status_FR : 2|2@1+ (1,0) [0|3] "" Cluster,IVI
+ SG_ Door_Status_RL : 4|2@1+ (1,0) [0|3] "" Cluster,IVI
+ SG_ Door_Status_RR : 6|2@1+ (1,0) [0|3] "" Cluster,IVI
+ SG_ Central_Lock_Status : 8|1@1+ (1,0) [0|1] "" Cluster,IVI
+
+BO_ 1296 BCM_LightControl: 8 BCM
+ SG_ Headlight_Status : 0|2@1+ (1,0) [0|3] "" Cluster
+ SG_ Ambient_Light_Active : 2|1@1+ (1,0) [0|1] "" Cluster
+ SG_ Ambient_R_Actual : 8|8@1+ (1,0) [0|255] "" CGW
+ SG_ Ambient_G_Actual : 16|8@1+ (1,0) [0|255] "" CGW
+ SG_ Ambient_B_Actual : 24|8@1+ (1,0) [0|255] "" CGW
+
+BO_ 1312 BCM_SensorStatus: 4 BCM
+ SG_ Ambient_Light_Level : 0|8@1+ (1,0) [0|100] "%" IVI
+ SG_ Rain_Sensor_Level : 8|8@1+ (1,0) [0|100] "%" IVI
+ SG_ Wiper_Status : 16|3@1+ (1,0) [0|7] "" IVI
+ SG_ Headlight_Auto_Status : 19|1@1+ (1,0) [0|1] "" IVI
+ SG_ Reserved : 20|12@1+ (1,0) [0|4095] "" IVI
+
+BO_ 1314 BCM_SeatStatus: 4 BCM
+ SG_ Front_Left_Occupied : 0|1@1+ (1,0) [0|1] "" IVI
+ SG_ Front_Right_Occupied : 1|1@1+ (1,0) [0|1] "" IVI
+ SG_ Rear_Left_Occupied : 2|1@1+ (1,0) [0|1] "" IVI
+ SG_ Rear_Center_Occupied : 3|1@1+ (1,0) [0|1] "" IVI
+ SG_ Rear_Right_Occupied : 4|1@1+ (1,0) [0|1] "" IVI
+ SG_ Seat_Belt_FL : 8|1@1+ (1,0) [0|1] "" Cluster
+ SG_ Seat_Belt_FR : 9|1@1+ (1,0) [0|1] "" Cluster
+ SG_ Seat_Belt_RL : 10|1@1+ (1,0) [0|1] "" Cluster
+ SG_ Seat_Belt_RC : 11|1@1+ (1,0) [0|1] "" Cluster
+ SG_ Seat_Belt_RR : 12|1@1+ (1,0) [0|1] "" Cluster
+
+BO_ 1792 CGW_Status: 8 CGW
+ SG_ Gateway_Status : 0|8@1+ (1,0) [0|255] "" EMS,TCU,ESP,MDPS,BCM,IVI,Cluster,Camera,Radar,SCC
+ SG_ Network_Load_HS1 : 8|8@1+ (0.4,0) [0|100] "%" EMS,TCU,ESP,MDPS,BCM,IVI,Cluster,Camera,Radar,SCC
+ SG_ Network_Load_HS2 : 16|8@1+ (0.4,0) [0|100] "%" EMS,TCU,ESP,MDPS,BCM,IVI,Cluster,Camera,Radar,SCC
+ SG_ Network_Load_LS : 24|8@1+ (0.4,0) [0|100] "%" EMS,TCU,ESP,MDPS,BCM,IVI,Cluster,Camera,Radar,SCC
+ SG_ Diagnostic_Active : 32|1@1+ (1,0) [0|1] "" EMS,TCU,ESP,MDPS,BCM,IVI,Cluster,Camera,Radar,SCC
+ SG_ OTA_Active : 33|1@1+ (1,0) [0|1] "" EMS,TCU,ESP,MDPS,BCM,IVI,Cluster,Camera,Radar,SCC
+
+
+
+CM_ BU_ EMS "Engine Management System - Controls fuel injection, ignition timing, emission control";
+CM_ BU_ TCU "Transmission Control Unit - Manages gear shifting and torque converter";
+CM_ BU_ ESP "Electronic Stability Program - ABS, TCS, ESC, Hill Start Assist";
+CM_ BU_ MDPS "Motor Driven Power Steering - Electric power steering with LKA actuation";
+CM_ BU_ BCM "Body Control Module - Exterior/interior lighting, door locks, windows";
+CM_ BU_ IVI "In-Vehicle Infotainment - Multimedia, navigation, ambient lighting, ADAS warnings";
+CM_ BU_ Cluster "Instrument Cluster - Speedometer, tachometer, warning lights, ADAS status";
+CM_ BU_ Camera "Front Camera ECU - LDW, AEB, FCW, traffic sign recognition";
+CM_ BU_ Radar "Blind Spot Detection Radar - BSD, RCTA";
+CM_ BU_ SCC "Smart Cruise Control - Adaptive cruise control, speed limit assist";
+CM_ BU_ CGW "Central Gateway - CAN-CAN routing, firewall, diagnostics, OTA coordination";
+CM_ BU_ HVAC "HVAC Control Unit - Climate control, cabin temperature management";
+CM_ BU_ Rear_Camera "Rear Camera ECU - Rear object detection, parking assistance, collision warning";
+
+CM_ BO_ 256 "Engine status including RPM, speed, torque, throttle position";
+CM_ BO_ 257 "Engine temperature sensors (coolant, oil, intake air)";
+CM_ BO_ 260 "HVAC status including cabin temperature, target temperature, mode, and fan speed";
+CM_ BO_ 384 "Transmission gear position and status";
+CM_ BO_ 512 "Wheel speed sensors for all four wheels";
+CM_ BO_ 528 "ESP sensors: yaw rate, lateral acceleration, brake pressure";
+CM_ BO_ 640 "Steering angle, torque, and rate from MDPS";
+CM_ BO_ 768 "Lane Departure Warning and Automatic Emergency Braking status";
+CM_ BO_ 784 "Camera-detected object information";
+CM_ BO_ 786 "Rear camera object detection for parking assistance and collision warning";
+CM_ BO_ 832 "Blind Spot Detection radar data";
+CM_ BO_ 896 "Smart Cruise Control status and settings";
+CM_ BO_ 1024 "IVI ambient lighting control (RGB + brightness + theme)";
+CM_ SG_ 256 AliveCounter "Message alive counter (0-15, increments by 1 each cycle, rolls over at 15)";
+CM_ SG_ 256 Checksum "CRC-4 checksum calculated as XOR of data bytes 0-6";
+CM_ SG_ 528 AliveCounter "Message alive counter (0-15, increments by 1 each cycle, rolls over at 15)";
+CM_ SG_ 528 Checksum "CRC-4 checksum calculated as XOR of data bytes 0-6";
+CM_ SG_ 640 AliveCounter "Message alive counter (0-15, increments by 1 each cycle, rolls over at 15)";
+CM_ SG_ 640 Checksum "CRC-4 checksum calculated as XOR of data bytes 0-6";
+CM_ SG_ 784 AliveCounter "Message alive counter (0-15, increments by 1 each cycle, rolls over at 15)";
+CM_ SG_ 784 Checksum "CRC-4 checksum calculated as XOR of data bytes 0-6";
+CM_ SG_ 832 AliveCounter "Message alive counter (0-15, increments by 1 each cycle, rolls over at 15)";
+CM_ SG_ 832 Checksum "CRC-4 checksum calculated as XOR of data bytes 0-6";
+CM_ SG_ 896 AliveCounter "Message alive counter (0-15, increments by 1 each cycle, rolls over at 15)";
+CM_ SG_ 896 Checksum "CRC-4 checksum calculated as XOR of data bytes 0-6";
+CM_ SG_ 1024 AliveCounter "Message alive counter (0-15, increments by 1 each cycle, rolls over at 15)";
+CM_ SG_ 1024 Checksum "CRC-4 checksum calculated as XOR of data bytes 0-6";
+CM_ SG_ 1152 AliveCounter "Message alive counter (0-15, increments by 1 each cycle, rolls over at 15)";
+CM_ SG_ 1152 Checksum "CRC-4 checksum calculated as XOR of data bytes 0-6";
+CM_ SG_ 786 AliveCounter "Message alive counter (0-15, increments by 1 each cycle, rolls over at 15)";
+CM_ SG_ 786 Checksum "CRC-4 checksum calculated as XOR of data bytes 0-6";
+CM_ BO_ 1040 "IVI user profile and scenario parameters";
+CM_ BO_ 1152 "Cluster display data (speed, RPM, gear, warnings)";
+CM_ BO_ 1280 "Body Control Module door status";
+CM_ BO_ 1296 "Body Control Module light control and ambient lighting feedback";
+CM_ BO_ 1312 "Environment sensor data (ambient light, wiper, rain sensor)";
+CM_ BO_ 1314 "Seat occupancy and seat belt status";
+CM_ BO_ 1792 "Gateway status and network load monitoring";
+
+BA_DEF_ BO_  "GenMsgCycleTime" INT 0 10000;
+BA_DEF_ BO_  "ASIL_Level" STRING  ;
+BA_DEF_ SG_  "SPN" INT 0 524287;
+
+BA_DEF_DEF_  "GenMsgCycleTime" 0;
+BA_DEF_DEF_  "ASIL_Level" "";
+BA_DEF_DEF_  "SPN" 0;
+
+BA_ "GenMsgCycleTime" BO_ 256 10;
+BA_ "GenMsgCycleTime" BO_ 257 100;
+BA_ "GenMsgCycleTime" BO_ 260 200;
+BA_ "GenMsgCycleTime" BO_ 384 20;
+BA_ "GenMsgCycleTime" BO_ 512 10;
+BA_ "GenMsgCycleTime" BO_ 528 10;
+BA_ "GenMsgCycleTime" BO_ 640 20;
+BA_ "GenMsgCycleTime" BO_ 768 50;
+BA_ "GenMsgCycleTime" BO_ 784 50;
+BA_ "GenMsgCycleTime" BO_ 786 50;
+BA_ "GenMsgCycleTime" BO_ 832 50;
+BA_ "GenMsgCycleTime" BO_ 896 50;
+BA_ "GenMsgCycleTime" BO_ 1024 100;
+BA_ "GenMsgCycleTime" BO_ 1040 500;
+BA_ "GenMsgCycleTime" BO_ 1152 50;
+BA_ "GenMsgCycleTime" BO_ 1280 100;
+BA_ "GenMsgCycleTime" BO_ 1296 100;
+BA_ "GenMsgCycleTime" BO_ 1312 200;
+BA_ "GenMsgCycleTime" BO_ 1314 500;
+BA_ "GenMsgCycleTime" BO_ 1792 1000;
+
+BA_ "ASIL_Level" BO_ 256 "ASIL-D";
+BA_ "ASIL_Level" BO_ 257 "ASIL-D";
+BA_ "ASIL_Level" BO_ 260 "QM";
+BA_ "ASIL_Level" BO_ 384 "ASIL-C";
+BA_ "ASIL_Level" BO_ 512 "ASIL-D";
+BA_ "ASIL_Level" BO_ 528 "ASIL-D";
+BA_ "ASIL_Level" BO_ 640 "ASIL-C";
+BA_ "ASIL_Level" BO_ 768 "ASIL-D";
+BA_ "ASIL_Level" BO_ 784 "ASIL-C";
+BA_ "ASIL_Level" BO_ 786 "ASIL-B";
+BA_ "ASIL_Level" BO_ 832 "ASIL-B";
+BA_ "ASIL_Level" BO_ 896 "ASIL-C";
+BA_ "ASIL_Level" BO_ 1024 "QM";
+BA_ "ASIL_Level" BO_ 1040 "QM";
+BA_ "ASIL_Level" BO_ 1152 "ASIL-B";
+BA_ "ASIL_Level" BO_ 1280 "ASIL-B";
+BA_ "ASIL_Level" BO_ 1296 "ASIL-B";
+BA_ "ASIL_Level" BO_ 1312 "QM";
+BA_ "ASIL_Level" BO_ 1314 "ASIL-B";
+BA_ "ASIL_Level" BO_ 1792 "ASIL-D";
+
+VAL_ 384 Gear_Position 0 "P" 1 "R" 2 "N" 3 "D" 4 "S" 5 "L" 6 "M" 7 "ERROR" ;
+VAL_ 384 Shift_Status 0 "IDLE" 1 "SHIFTING" 2 "COMPLETE" 3 "FAULT" ;
+VAL_ 260 HVAC_Mode 0 "OFF" 1 "AUTO" 2 "COOL" 3 "HEAT" 4 "VENT" 5 "DEFROST" 6 "DUAL" 7 "ECO" ;
+VAL_ 768 LDW_Status 0 "OFF" 1 "STANDBY" 2 "ACTIVE" 3 "WARNING" ;
+VAL_ 768 AEB_Event 0 "NONE" 1 "PRE_WARNING" 2 "WARNING" 3 "BRAKING" ;
+VAL_ 784 Object_Type 0 "NONE" 1 "CAR" 2 "TRUCK" 3 "MOTORCYCLE" 4 "PEDESTRIAN" 5 "BICYCLE" 6 "UNKNOWN" ;
+VAL_ 786 Rear_Object_Type 0 "NONE" 1 "CAR" 2 "TRUCK" 3 "MOTORCYCLE" 4 "PEDESTRIAN" 5 "BICYCLE" 6 "UNKNOWN" ;
+VAL_ 896 SCC_Mode 0 "OFF" 1 "STANDBY" 2 "ACTIVE" 3 "FAULT" ;
+VAL_ 1024 Theme_Package 0 "SPORT" 1 "COMFORT" 2 "ECO" 3 "CUSTOM1" 4 "CUSTOM2" 5 "CUSTOM3" ;
+VAL_ 1040 Profile_ID 0 "DRIVER1" 1 "DRIVER2" 2 "DRIVER3" 3 "GUEST" 4 "VALET" ;
+VAL_ 1280 Door_Status_FL 0 "CLOSED" 1 "OPEN" 2 "AJAR" 3 "ERROR" ;
+VAL_ 1280 Door_Status_FR 0 "CLOSED" 1 "OPEN" 2 "AJAR" 3 "ERROR" ;
+VAL_ 1280 Door_Status_RL 0 "CLOSED" 1 "OPEN" 2 "AJAR" 3 "ERROR" ;
+VAL_ 1280 Door_Status_RR 0 "CLOSED" 1 "OPEN" 2 "AJAR" 3 "ERROR" ;
+VAL_ 1296 Headlight_Status 0 "OFF" 1 "PARKING" 2 "LOW_BEAM" 3 "HIGH_BEAM" ;
+VAL_ 1312 Wiper_Status 0 "OFF" 1 "INTERMITTENT" 2 "LOW" 3 "HIGH" 4 "AUTO" 5 "MIST" 6 "WASH" 7 "ERROR" ;
+VAL_ 1312 Headlight_Auto_Status 0 "MANUAL" 1 "AUTO_ACTIVE" ;
+VAL_ 1314 Front_Left_Occupied 0 "EMPTY" 1 "OCCUPIED" ;
+VAL_ 1314 Front_Right_Occupied 0 "EMPTY" 1 "OCCUPIED" ;
+VAL_ 1314 Rear_Left_Occupied 0 "EMPTY" 1 "OCCUPIED" ;
+VAL_ 1314 Rear_Center_Occupied 0 "EMPTY" 1 "OCCUPIED" ;
+VAL_ 1314 Rear_Right_Occupied 0 "EMPTY" 1 "OCCUPIED" ;
+VAL_ 1314 Seat_Belt_FL 0 "UNBUCKLED" 1 "BUCKLED" ;
+VAL_ 1314 Seat_Belt_FR 0 "UNBUCKLED" 1 "BUCKLED" ;
+VAL_ 1314 Seat_Belt_RL 0 "UNBUCKLED" 1 "BUCKLED" ;
+VAL_ 1314 Seat_Belt_RC 0 "UNBUCKLED" 1 "BUCKLED" ;
+VAL_ 1314 Seat_Belt_RR 0 "UNBUCKLED" 1 "BUCKLED" ;
+

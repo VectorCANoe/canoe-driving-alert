@@ -1,0 +1,111 @@
+@startuml
+!theme silver
+skinparam componentStyle uml2
+
+package "AUTOSAR Communication Stack" {
+
+    ' Application Layer
+    package "Application Software (ASW)" #LightBlue {
+        component "Lighting_Controller" as APP1
+        component "Safety_Manager" as APP2
+        component "OTA_Manager" as APP3
+    }
+
+    ' RTE Layer
+    package "Runtime Environment (RTE)" #line.dashed {
+        interface "Com_Signal_Interface" as CSI
+
+        APP1 --> CSI
+        APP2 --> CSI
+        APP3 --> CSI
+    }
+
+    ' BSW Communication Stack
+    package "Basic Software - Communication" #LightGray {
+
+        ' Service Layer
+        package "Service Layer" {
+            component "DCM\n(Diagnostic Communication)" as DCM #Orange
+            component "COM\n(Communication Manager)" as COM #LightGreen
+
+            note right of DCM
+                **UDS Services**:
+                • 0x10, 0x14, 0x19
+                • 0x22, 0x2E, 0x27
+                • 0x31, 0x34, 0x36, 0x37
+            end note
+
+            note right of COM
+                **Signal Processing**:
+                • Pack/Unpack Signals
+                • Endianness Conversion
+                • Signal Filtering
+                • Timeout Monitoring
+            end note
+        }
+
+        ' Communication Abstraction
+        package "Communication Abstraction" {
+            component "PduR\n(PDU Router)" as PDUR #Yellow
+
+            note right of PDUR
+                **Routing**:
+                • Signal → Message Mapping
+                • Multi-destination Routing
+                • Gateway Function
+            end note
+        }
+
+        ' Communication Drivers
+        package "Communication Drivers" {
+            component "CanIf\n(CAN Interface)" as CANIF #LightCoral
+            component "CanDrv\n(CAN Driver)" as CANDRV #LightCoral
+
+            note right of CANIF
+                **CAN Interface**:
+                • Message Buffering
+                • Transmit Confirmation
+                • Receive Indication
+                • Error Handling
+            end note
+
+            note right of CANDRV
+                **Hardware Access**:
+                • CAN Controller Config
+                • Interrupt Handling
+                • Baudrate: 500 kbps
+            end note
+        }
+
+        ' Connections
+        CSI --> COM
+        CSI --> DCM
+
+        COM --> PDUR
+        DCM --> PDUR
+
+        PDUR --> CANIF
+
+        CANIF --> CANDRV
+    }
+
+    ' Hardware Layer
+    package "Virtual Hardware (CANoe)" #LightYellow {
+        component "Virtual CAN Controller" as VCAN
+        component "CAN Bus (500 kbps)" as BUS
+
+        CANDRV --> VCAN
+        VCAN --> BUS
+
+        note bottom of BUS
+            **CAN Configuration**:
+            • Baudrate: 500 kbps
+            • Arbitration: Standard (11-bit ID)
+            • Error Detection: CRC-15
+            • Retransmission: Automatic
+        end note
+    }
+}
+
+caption AUTOSAR Communication Stack - ISO 11898 CAN Compliant
+@enduml
