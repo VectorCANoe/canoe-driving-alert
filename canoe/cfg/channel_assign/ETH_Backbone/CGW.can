@@ -5,10 +5,42 @@ includes {
 
 variables
 {
+  const int CGW_SIGNAL_MIN = 0;
+  const int CGW_BOOL_FALSE = 0;
+  const int CGW_BOOL_TRUE = 1;
+  const int CGW_STATUS_SENTINEL_UNINITIALIZED = -1;
+  const int CGW_AGE_MISSING_MS = 10000;
+  const int CGW_AGE_MAX_MS = 10000;
+  const int CGW_BOUNDARY_AGE_THRESHOLD_MS = 300;
+  const int CGW_WARNING_PATH_NORMAL_AGE_THRESHOLD_MS = 150;
+  const int CGW_WARNING_PATH_DEGRADED_AGE_THRESHOLD_MS = 300;
+  const int CGW_WARNING_PATH_STATUS_NORMAL = 0;
+  const int CGW_WARNING_PATH_STATUS_DEGRADED = 1;
+  const int CGW_WARNING_PATH_STATUS_BROKEN = 2;
+  const int CGW_E2E_HEALTH_BROKEN = 0;
+  const int CGW_E2E_HEALTH_DEGRADED = 1;
+  const int CGW_E2E_HEALTH_NORMAL = 2;
+  const int CGW_FAIL_SAFE_MODE_OFF = 0;
+  const int CGW_FAIL_SAFE_MODE_DEGRADED = 1;
+  const int CGW_FAIL_SAFE_MODE_ACTIVE = 2;
+  const int CGW_ROUTING_POLICY_FAIL_SAFE = 0;
+  const int CGW_ROUTING_POLICY_NORMAL = 1;
+  const int CGW_ROUTING_POLICY_EMERGENCY = 2;
+  const int CGW_OBJECT_CONFIDENCE_MAX = 100;
+  const int CGW_OBJECT_EVENT_CODE_MAX = 65535;
+  const int CGW_FAIL_SAFE_FRAME_PAYLOAD_LEN = 1;
+  const int CGW_OBJECT_SAFETY_FRAME_PAYLOAD_LEN = 4;
+  const int CGW_ETH_RX_BUFFER_LEN = 64;
+  const int CGW_VEHICLE_STATE_FRAME_MIN_LEN = 2;
+  const int CGW_NAV_CONTEXT_FRAME_MIN_LEN = 3;
+  const int CGW_STEERING_FRAME_MIN_LEN = 1;
+  const int CGW_LAST_EMERGENCY_RX_MAX = 2147483647;
+  const int CGW_TIMER_PERIOD_MS = 100;
+
   msTimer tBoundaryCheck;
   long gEthSocket;
   dword gEthTargetIp;
-  char gEthRxBuffer[64];
+  char gEthRxBuffer[CGW_ETH_RX_BUFFER_LEN];
   int gChassisAliveCount;
   int gBodyAliveCount;
   int gInfoAliveCount;
@@ -35,18 +67,18 @@ variables
 
 int calcAgeMs(dword lastTsMs, dword nowMs)
 {
-  if (lastTsMs == 0)
+  if (lastTsMs == CGW_SIGNAL_MIN)
   {
-    return 10000;
+    return CGW_AGE_MISSING_MS;
   }
-  return clampRange((int)(nowMs - lastTsMs), 0, 10000);
+  return clampRange((int)(nowMs - lastTsMs), CGW_SIGNAL_MIN, CGW_AGE_MAX_MS);
 }
 
 int isBoundaryAliveCondition(int chassisAgeMs, int bodyAgeMs, int infoAgeMs)
 {
-  return (chassisAgeMs <= 300 &&
-          bodyAgeMs <= 300 &&
-          infoAgeMs <= 300);
+  return (chassisAgeMs <= CGW_BOUNDARY_AGE_THRESHOLD_MS &&
+          bodyAgeMs <= CGW_BOUNDARY_AGE_THRESHOLD_MS &&
+          infoAgeMs <= CGW_BOUNDARY_AGE_THRESHOLD_MS);
 }
 
 int isWarningPathNormal(int isBoundaryAlive,
@@ -55,11 +87,11 @@ int isWarningPathNormal(int isBoundaryAlive,
                         int steeringAgeMs,
                         int emergencyMonAgeMs)
 {
-  return (isBoundaryAlive == 1 &&
-          vehicleStateAgeMs <= 150 &&
-          navContextAgeMs <= 150 &&
-          steeringAgeMs <= 150 &&
-          emergencyMonAgeMs <= 150);
+  return (isBoundaryAlive == CGW_BOOL_TRUE &&
+          vehicleStateAgeMs <= CGW_WARNING_PATH_NORMAL_AGE_THRESHOLD_MS &&
+          navContextAgeMs <= CGW_WARNING_PATH_NORMAL_AGE_THRESHOLD_MS &&
+          steeringAgeMs <= CGW_WARNING_PATH_NORMAL_AGE_THRESHOLD_MS &&
+          emergencyMonAgeMs <= CGW_WARNING_PATH_NORMAL_AGE_THRESHOLD_MS);
 }
 
 int isWarningPathDegraded(int isBoundaryAlive,
@@ -68,11 +100,11 @@ int isWarningPathDegraded(int isBoundaryAlive,
                           int steeringAgeMs,
                           int emergencyMonAgeMs)
 {
-  return (isBoundaryAlive == 1 &&
-          vehicleStateAgeMs <= 300 &&
-          navContextAgeMs <= 300 &&
-          steeringAgeMs <= 300 &&
-          emergencyMonAgeMs <= 300);
+  return (isBoundaryAlive == CGW_BOOL_TRUE &&
+          vehicleStateAgeMs <= CGW_WARNING_PATH_DEGRADED_AGE_THRESHOLD_MS &&
+          navContextAgeMs <= CGW_WARNING_PATH_DEGRADED_AGE_THRESHOLD_MS &&
+          steeringAgeMs <= CGW_WARNING_PATH_DEGRADED_AGE_THRESHOLD_MS &&
+          emergencyMonAgeMs <= CGW_WARNING_PATH_DEGRADED_AGE_THRESHOLD_MS);
 }
 
 int isBoundarySupervisionChanged(int isBoundaryAlive,
@@ -95,9 +127,9 @@ int deriveWarningPathStatus(int isForceFailSafeRequested,
                             int steeringAgeMs,
                             int emergencyMonAgeMs)
 {
-  if (isForceFailSafeRequested == 1)
+  if (isForceFailSafeRequested == CGW_BOOL_TRUE)
   {
-    return 2;
+    return CGW_WARNING_PATH_STATUS_BROKEN;
   }
   if (isWarningPathNormal(isBoundaryAlive,
                           vehicleStateAgeMs,
@@ -105,7 +137,7 @@ int deriveWarningPathStatus(int isForceFailSafeRequested,
                           steeringAgeMs,
                           emergencyMonAgeMs))
   {
-    return 0;
+    return CGW_WARNING_PATH_STATUS_NORMAL;
   }
   if (isWarningPathDegraded(isBoundaryAlive,
                             vehicleStateAgeMs,
@@ -113,48 +145,48 @@ int deriveWarningPathStatus(int isForceFailSafeRequested,
                             steeringAgeMs,
                             emergencyMonAgeMs))
   {
-    return 1;
+    return CGW_WARNING_PATH_STATUS_DEGRADED;
   }
-  return 2;
+  return CGW_WARNING_PATH_STATUS_BROKEN;
 }
 
 int deriveE2eHealthState(int warningPathStatusCode)
 {
-  if (warningPathStatusCode == 0)
+  if (warningPathStatusCode == CGW_WARNING_PATH_STATUS_NORMAL)
   {
-    return 2;
+    return CGW_E2E_HEALTH_NORMAL;
   }
-  if (warningPathStatusCode == 1)
+  if (warningPathStatusCode == CGW_WARNING_PATH_STATUS_DEGRADED)
   {
-    return 1;
+    return CGW_E2E_HEALTH_DEGRADED;
   }
-  return 0;
+  return CGW_E2E_HEALTH_BROKEN;
 }
 
 int deriveFailSafeMode(int warningPathStatusCode)
 {
-  if (warningPathStatusCode == 0)
+  if (warningPathStatusCode == CGW_WARNING_PATH_STATUS_NORMAL)
   {
-    return 0;
+    return CGW_FAIL_SAFE_MODE_OFF;
   }
-  if (warningPathStatusCode == 1)
+  if (warningPathStatusCode == CGW_WARNING_PATH_STATUS_DEGRADED)
   {
-    return 1;
+    return CGW_FAIL_SAFE_MODE_DEGRADED;
   }
-  return 2;
+  return CGW_FAIL_SAFE_MODE_ACTIVE;
 }
 
 int deriveRoutingPolicy(int failSafeModeCode, int emergencyContextCode)
 {
-  if (failSafeModeCode > 0)
+  if (failSafeModeCode > CGW_FAIL_SAFE_MODE_OFF)
   {
-    return 0;
+    return CGW_ROUTING_POLICY_FAIL_SAFE;
   }
-  if (emergencyContextCode > 0)
+  if (emergencyContextCode > CGW_SIGNAL_MIN)
   {
-    return 2;
+    return CGW_ROUTING_POLICY_EMERGENCY;
   }
-  return 1;
+  return CGW_ROUTING_POLICY_NORMAL;
 }
 
 void publishFailSafeState(int warningPathStatusCode,
@@ -164,12 +196,12 @@ void publishFailSafeState(int warningPathStatusCode,
 {
   char frame[4];
 
-  ethInitFrame(frame, ethMsgFailSafe(), 1);
-  ethSetU8(frame, 0, clampRange(warningPathStatusCode, 0, 2) |
-                    (clampRange(e2eHealthStateCode, 0, 2) << 2) |
-                    (clampRange(failSafeModeCode, 0, 2) << 4) |
-                    (clampRange(isBoundaryAlive, 0, 1) << 6));
-  ethSendFrame(gEthSocket, gEthTargetIp, ethMsgFailSafe(), frame, 1);
+  ethInitFrame(frame, ethMsgFailSafe(), CGW_FAIL_SAFE_FRAME_PAYLOAD_LEN);
+  ethSetU8(frame, 0, clampRange(warningPathStatusCode, CGW_SIGNAL_MIN, CGW_WARNING_PATH_STATUS_BROKEN) |
+                    (clampRange(e2eHealthStateCode, CGW_SIGNAL_MIN, CGW_E2E_HEALTH_NORMAL) << 2) |
+                    (clampRange(failSafeModeCode, CGW_SIGNAL_MIN, CGW_FAIL_SAFE_MODE_ACTIVE) << 4) |
+                    (clampRange(isBoundaryAlive, CGW_SIGNAL_MIN, CGW_BOOL_TRUE) << 6));
+  ethSendFrame(gEthSocket, gEthTargetIp, ethMsgFailSafe(), frame, CGW_FAIL_SAFE_FRAME_PAYLOAD_LEN);
 }
 
 void publishObjectSafetyState(int failSafeModeCode)
@@ -179,16 +211,16 @@ void publishObjectSafetyState(int failSafeModeCode)
   int objectEventCode;
   int isObjectTrackValid;
 
-  objectConfidence = clampRange((int)@Core::objectConfidence, 0, 100);
-  objectEventCode = clampRange((int)@Core::objectEventCode, 0, 65535);
-  isObjectTrackValid = clampRange((int)@Core::objectTrackValid, 0, 1);
+  objectConfidence = clampRange((int)@Core::objectConfidence, CGW_SIGNAL_MIN, CGW_OBJECT_CONFIDENCE_MAX);
+  objectEventCode = clampRange((int)@Core::objectEventCode, CGW_SIGNAL_MIN, CGW_OBJECT_EVENT_CODE_MAX);
+  isObjectTrackValid = clampRange((int)@Core::objectTrackValid, CGW_SIGNAL_MIN, CGW_BOOL_TRUE);
 
-  ethInitFrame(frame, ethMsgObjectSafety(), 4);
+  ethInitFrame(frame, ethMsgObjectSafety(), CGW_OBJECT_SAFETY_FRAME_PAYLOAD_LEN);
   ethSetU8(frame, 0, objectConfidence);
   ethSetU16Le(frame, 1, objectEventCode);
-  ethSetU8(frame, 3, clampRange(failSafeModeCode, 0, 2) |
+  ethSetU8(frame, 3, clampRange(failSafeModeCode, CGW_SIGNAL_MIN, CGW_FAIL_SAFE_MODE_ACTIVE) |
                     (isObjectTrackValid << 2));
-  ethSendFrame(gEthSocket, gEthTargetIp, ethMsgObjectSafety(), frame, 4);
+  ethSendFrame(gEthSocket, gEthTargetIp, ethMsgObjectSafety(), frame, CGW_OBJECT_SAFETY_FRAME_PAYLOAD_LEN);
 
   if (isObjectTrackValid != gLastIsObjectTrackValid ||
       failSafeModeCode != gLastObjectFailSafeModeCode ||
@@ -210,18 +242,18 @@ void OnUdpReceiveFrom(dword socket, long result, dword address, dword port, char
   {
     return;
   }
-  if (result == 0)
+  if (result == CGW_SIGNAL_MIN)
   {
     msgId = ethFrameMsgId(buffer, count);
-    if (msgId == ethMsgVehicleState() && ethFramePayloadLen(count) >= 2)
+    if (msgId == ethMsgVehicleState() && ethFramePayloadLen(count) >= CGW_VEHICLE_STATE_FRAME_MIN_LEN)
     {
       gVehicleStateTsMs = getSimulationTimeMs();
     }
-    else if (msgId == ethMsgNavContext() && ethFramePayloadLen(count) >= 3)
+    else if (msgId == ethMsgNavContext() && ethFramePayloadLen(count) >= CGW_NAV_CONTEXT_FRAME_MIN_LEN)
     {
       gNavContextTsMs = getSimulationTimeMs();
     }
-    else if (msgId == ethMsgSteering() && ethFramePayloadLen(count) >= 1)
+    else if (msgId == ethMsgSteering() && ethFramePayloadLen(count) >= CGW_STEERING_FRAME_MIN_LEN)
     {
       gSteeringTsMs = getSimulationTimeMs();
     }
@@ -234,38 +266,38 @@ on start
 {
   gEthSocket = ethOpenDefaultSocket();
   gEthTargetIp = ethGetDefaultIpAddress();
-  gChassisAliveCount = 0;
-  gBodyAliveCount = 0;
-  gInfoAliveCount = 0;
-  gChassisTsMs = 0;
-  gBodyTsMs = 0;
-  gInfoTsMs = 0;
-  gLastIsBoundaryAlive = -1;
-  gLastWarningPathStatusCode = -1;
-  gLastE2eHealthStateCode = -1;
-  gLastFailSafeModeCode = -1;
-  gVehicleStateAgeMs = 10000;
-  gNavContextAgeMs = 10000;
-  gSteeringAgeMs = 10000;
-  gEmergencyMonAgeMs = 10000;
-  gVehicleStateTsMs = 0;
-  gNavContextTsMs = 0;
-  gSteeringTsMs = 0;
-  gEmergencyMonTsMs = 0;
-  gLastRoutingPolicyCode = -1;
-  gLastIsObjectTrackValid = -1;
-  gLastObjectFailSafeModeCode = -1;
-  gLastObjectEventCode = -1;
-  @CoreState::domainBoundaryStatus = 0;
-  // @CoreState::warningPathStatus = 2;
-  @CoreState::e2eHealthState = 0;
-  @Core::failSafeMode = 1;
-  @Core::decelAssistReq = 0;
+  gChassisAliveCount = CGW_SIGNAL_MIN;
+  gBodyAliveCount = CGW_SIGNAL_MIN;
+  gInfoAliveCount = CGW_SIGNAL_MIN;
+  gChassisTsMs = CGW_SIGNAL_MIN;
+  gBodyTsMs = CGW_SIGNAL_MIN;
+  gInfoTsMs = CGW_SIGNAL_MIN;
+  gLastIsBoundaryAlive = CGW_STATUS_SENTINEL_UNINITIALIZED;
+  gLastWarningPathStatusCode = CGW_STATUS_SENTINEL_UNINITIALIZED;
+  gLastE2eHealthStateCode = CGW_STATUS_SENTINEL_UNINITIALIZED;
+  gLastFailSafeModeCode = CGW_STATUS_SENTINEL_UNINITIALIZED;
+  gVehicleStateAgeMs = CGW_AGE_MISSING_MS;
+  gNavContextAgeMs = CGW_AGE_MISSING_MS;
+  gSteeringAgeMs = CGW_AGE_MISSING_MS;
+  gEmergencyMonAgeMs = CGW_AGE_MISSING_MS;
+  gVehicleStateTsMs = CGW_SIGNAL_MIN;
+  gNavContextTsMs = CGW_SIGNAL_MIN;
+  gSteeringTsMs = CGW_SIGNAL_MIN;
+  gEmergencyMonTsMs = CGW_SIGNAL_MIN;
+  gLastRoutingPolicyCode = CGW_STATUS_SENTINEL_UNINITIALIZED;
+  gLastIsObjectTrackValid = CGW_STATUS_SENTINEL_UNINITIALIZED;
+  gLastObjectFailSafeModeCode = CGW_STATUS_SENTINEL_UNINITIALIZED;
+  gLastObjectEventCode = CGW_STATUS_SENTINEL_UNINITIALIZED;
+  @CoreState::domainBoundaryStatus = CGW_SIGNAL_MIN;
+  // @CoreState::warningPathStatus = CGW_WARNING_PATH_STATUS_BROKEN;
+  @CoreState::e2eHealthState = CGW_E2E_HEALTH_BROKEN;
+  @Core::failSafeMode = CGW_FAIL_SAFE_MODE_DEGRADED;
+  @Core::decelAssistReq = CGW_SIGNAL_MIN;
   if (gEthSocket != ethInvalidSocket())
   {
     ethStartReceiver(gEthSocket, gEthRxBuffer, elcount(gEthRxBuffer));
   }
-  setTimer(tBoundaryCheck, 100);
+  setTimer(tBoundaryCheck, CGW_TIMER_PERIOD_MS);
   write("[CGW] start");
 }
 
@@ -310,18 +342,18 @@ on timer tBoundaryCheck
   gVehicleStateAgeMs = calcAgeMs(gVehicleStateTsMs, nowMs);
   gNavContextAgeMs = calcAgeMs(gNavContextTsMs, nowMs);
   gSteeringAgeMs = calcAgeMs(gSteeringTsMs, nowMs);
-  emergencyHeartbeatMs = (dword)clampRange((int)@CoreState::lastEmergencyRxMs, 0, 2147483647);
+  emergencyHeartbeatMs = (dword)clampRange((int)@CoreState::lastEmergencyRxMs, CGW_SIGNAL_MIN, CGW_LAST_EMERGENCY_RX_MAX);
   gEmergencyMonAgeMs = calcAgeMs(emergencyHeartbeatMs, nowMs);
 
   // Mark the backbone boundary alive only when all domain heartbeats are fresh.
-  isBoundaryAlive = 0;
+  isBoundaryAlive = CGW_BOOL_FALSE;
   if (isBoundaryAliveCondition(chassisAgeMs, bodyAgeMs, infoAgeMs))
   {
-    isBoundaryAlive = 1;
+    isBoundaryAlive = CGW_BOOL_TRUE;
   }
 
   // Classify the warning path as normal, degraded, or broken.
-  isForceFailSafeRequested = (((int)@Test::forceFailSafe) == 1) ? 1 : 0;
+  isForceFailSafeRequested = (((int)@Test::forceFailSafe) == CGW_BOOL_TRUE) ? CGW_BOOL_TRUE : CGW_BOOL_FALSE;
   warningPathStatusCode = deriveWarningPathStatus(isForceFailSafeRequested,
                                                   isBoundaryAlive,
                                                   gVehicleStateAgeMs,
@@ -334,7 +366,7 @@ on timer tBoundaryCheck
   failSafeModeCode = deriveFailSafeMode(warningPathStatusCode);
 
   // Select the routing policy from fail-safe state and emergency context.
-  emergencyContextCode = clampRange((int)@Core::emergencyContext, 0, 2);
+  emergencyContextCode = clampRange((int)@Core::emergencyContext, CGW_SIGNAL_MIN, CGW_ROUTING_POLICY_EMERGENCY);
   routingPolicyCode = deriveRoutingPolicy(failSafeModeCode, emergencyContextCode);
 
   // Mirror the boundary supervision result into Core and CoreState.
@@ -343,9 +375,9 @@ on timer tBoundaryCheck
   @CoreState::e2eHealthState = e2eHealthStateCode;
   @CoreState::routingPolicy = routingPolicyCode;
   @Core::failSafeMode = failSafeModeCode;
-  if (failSafeModeCode > 0)
+  if (failSafeModeCode > CGW_FAIL_SAFE_MODE_OFF)
   {
-    @Core::decelAssistReq = 0;
+    @Core::decelAssistReq = CGW_SIGNAL_MIN;
   }
 
   // Publish the fail-safe and object-safety state for downstream consumers.
@@ -379,7 +411,7 @@ on timer tBoundaryCheck
     gLastRoutingPolicyCode = routingPolicyCode;
   }
 
-  setTimer(tBoundaryCheck, 100);
+  setTimer(tBoundaryCheck, CGW_TIMER_PERIOD_MS);
 }
 
 on stopMeasurement

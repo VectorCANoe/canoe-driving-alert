@@ -5,6 +5,27 @@ includes
 
 variables
 {
+  const int CLU_BACKBONE_ALERT_FRESHNESS_MS = 500;
+  const int CLU_DISPLAY_MODE_OFFSET_ALT_1 = 40;
+  const int CLU_DISPLAY_MODE_OFFSET_ALT_2 = 80;
+  const int CLU_EFFECTIVE_VOLUME_MIN = 15;
+  const int CLU_EFFECTIVE_VOLUME_HIGH = 70;
+  const int CLU_EFFECTIVE_VOLUME_CODE_BONUS = 5;
+  const int CLU_AUDIO_DUCKING_ALERT_THRESHOLD = 4;
+  const int CLU_TTS_ACTIVE_THRESHOLD = 1;
+  const int CLU_AUDIO_ACTIVITY_CODE_BONUS = 6;
+  const int CLU_POPUP_PRIORITY_SUPPRESS_THRESHOLD = 5;
+  const int CLU_POPUP_CODE_SUPPRESS_MAX = 100;
+  const int CLU_POPUP_LEVEL_SUPPRESS_MAX = 5;
+  const int CLU_CLUSTER_SYNC_AGE_STALE_THRESHOLD = 50;
+  const int CLU_SYNC_RECOVERY_NOTIF_PRIORITY = 6;
+  const int CLU_DUPLICATE_GUARD_MS = 1000;
+  const int CLU_DUPLICATE_GUARD_TIMER_MS = 100;
+  const int CLU_DEFAULT_VOLUME_LEVEL = 30;
+  const int CLU_HISTORY_CAPACITY = 16;
+  const int CLU_HISTORY_RING_MASK = 15;
+  const int CLU_HISTORY_QUERY_MAX_OFFSET = 15;
+
   msTimer tDuplicateGuard;
   long gEthSocket;
   dword gEthTargetIp;
@@ -28,8 +49,8 @@ variables
   int gNotifArg;
   int gClusterSyncState;
   int gClusterSyncSeq;
-  int gHistoryCodes[16];
-  int gHistorySnaps[16];
+  int gHistoryCodes[CLU_HISTORY_CAPACITY];
+  int gHistorySnaps[CLU_HISTORY_CAPACITY];
   int gHistoryWriteIdx;
   int gHistoryCount;
   int gBackboneAlertLevel;
@@ -48,7 +69,7 @@ int useBackboneAlertState()
   }
 
   nowMs = getSimulationTimeMs();
-  if ((nowMs - gBackboneAlertTsMs) > 500)
+  if ((nowMs - gBackboneAlertTsMs) > CLU_BACKBONE_ALERT_FRESHNESS_MS)
   {
     return 0;
   }
@@ -62,6 +83,169 @@ void updateBackboneAlertState(int alertLevel, int alertType, int timeoutClear)
   gBackboneAlertType = clampRange(alertType, 0, 7);
   gBackboneTimeoutClear = (timeoutClear == 1) ? 1 : 0;
   gBackboneAlertTsMs = getSimulationTimeMs();
+}
+
+int calcEffectiveVolume(int volumeSetting)
+{
+  if (volumeSetting > 0)
+  {
+    return volumeSetting;
+  }
+
+  return gVolumeLevel;
+}
+
+int applyModeDisplayOffset(int code, int modeSetting)
+{
+  int coded;
+
+  coded = code;
+  if (modeSetting == 2)
+  {
+      coded = clampRange(code + CLU_DISPLAY_MODE_OFFSET_ALT_1, 0, 255);
+  }
+  else if (modeSetting == 3)
+  {
+      coded = clampRange(code + CLU_DISPLAY_MODE_OFFSET_ALT_2, 0, 255);
+  }
+
+  return coded;
+}
+
+int applyVolumeDisplayBias(int code, int coded, int modeSetting, int effectiveVolume)
+{
+  int adjustedCode;
+
+  adjustedCode = coded;
+  if (modeSetting != 1)
+  {
+    if (gAudioFocusOwner == 0 || effectiveVolume < CLU_EFFECTIVE_VOLUME_MIN)
+    {
+      adjustedCode = code;
+    }
+    else if (effectiveVolume >= CLU_EFFECTIVE_VOLUME_HIGH)
+    {
+      adjustedCode = clampRange(coded + CLU_EFFECTIVE_VOLUME_CODE_BONUS, 0, 255);
+    }
+  }
+
+  return adjustedCode;
+}
+
+int getRobustPolicySelectedAlertLevel()
+{
+  if (useBackboneAlertState() == 1)
+  {
+    return clampRange(gBackboneAlertLevel, 0, 7);
+  }
+
+  return clampRange((int)@Core::selectedAlertLevel, 0, 7);
+}
+
+int getRobustPolicySelectedAlertType()
+{
+  if (useBackboneAlertState() == 1)
+  {
+    return clampRange(gBackboneAlertType, 0, 15);
+  }
+
+  return clampRange((int)@Core::selectedAlertType, 0, 15);
+}
+
+int getRobustPolicyTimeoutClear()
+{
+  if (useBackboneAlertState() == 1)
+  {
+    return (gBackboneTimeoutClear == 1) ? 1 : 0;
+  }
+
+  return (((int)@Core::timeoutClear) == 1) ? 1 : 0;
+}
+
+int calcExpectedWarningCode(int selectedAlertLevel, int selectedAlertType, int timeoutClear)
+{
+  if (timeoutClear == 0 && selectedAlertLevel > 0)
+  {
+    return clampRange((selectedAlertType * 10) + selectedAlertLevel, 0, 255);
+  }
+
+  return 0;
+}
+
+int shouldForceExpectedWarningCode(int coded, int selectedAlertLevel)
+{
+  if (selectedAlertLevel > 0 &&
+      (gClusterSyncState == 0 || gClusterSyncSeq > CLU_CLUSTER_SYNC_AGE_STALE_THRESHOLD || coded == 0))
+  {
+    return 1;
+  }
+
+  return 0;
+}
+
+void elevateClusterNotifPriorityForSyncRecovery()
+{
+  @CoreState::clusterNotifPrio = clampRange((int)@CoreState::clusterNotifPrio, 0, 255);
+  if ((int)@CoreState::clusterNotifPrio < CLU_SYNC_RECOVERY_NOTIF_PRIORITY)
+  {
+    @CoreState::clusterNotifPrio = CLU_SYNC_RECOVERY_NOTIF_PRIORITY;
+  }
+}
+
+void clearDisplayedWarningState()
+{
+  cancelTimer(tDuplicateGuard);
+  gLastDisplayedCode = 0;
+  gLastDisplayMs = 0;
+  @CoreState::duplicatePopupGuard = 0;
+  @Cluster::warningTextCode = 0;
+}
+
+int calcGuardRemainMsForCode(int code, dword nowMs)
+{
+  dword elapsedMs;
+
+  if (code == gLastDisplayedCode)
+  {
+    elapsedMs = nowMs - gLastDisplayMs;
+    if (elapsedMs < CLU_DUPLICATE_GUARD_MS)
+    {
+      return CLU_DUPLICATE_GUARD_MS - (int)elapsedMs;
+    }
+
+    gLastDisplayMs = nowMs;
+    return CLU_DUPLICATE_GUARD_MS;
+  }
+
+  gLastDisplayedCode = code;
+  gLastDisplayMs = nowMs;
+  return CLU_DUPLICATE_GUARD_MS;
+}
+
+void publishDisplayedWarningState(int code, int guardRemainMs)
+{
+  @Cluster::warningTextCode = code;
+  @CoreState::duplicatePopupGuard = guardRemainMs;
+  if (guardRemainMs > 0)
+  {
+    setTimer(tDuplicateGuard, CLU_DUPLICATE_GUARD_TIMER_MS);
+  }
+}
+
+void updateWarningHistoryIfChanged(int code, int prevCode)
+{
+  if (code != prevCode)
+  {
+    pushHistory(code);
+    respondHistoryQuery();
+  }
+}
+
+void logDisplayedWarningState(int code, int rawCode)
+{
+  write("[CLU] warning code=%d raw=%d focus=%d duck=%d tts=%d popup=%d/%d sync=%d age=%d",
+        code, rawCode, gAudioFocusOwner, gAudioDuckingLvl, gTtsState,
+        gPopupPriority, gPopupActive, gClusterSyncState, gClusterSyncSeq);
 }
 
 void OnUdpReceiveFrom(dword socket, long result, dword address, dword port, char buffer[], dword count)
@@ -101,29 +285,9 @@ int applyDisplayPolicy(int code)
 
   modeSetting = clampRange((int)@Test::displayModeSetting, 0, 3);
   volumeSetting = clampRange((int)@Test::alertVolumeSetting, 0, 100);
-  effectiveVolume = (volumeSetting > 0) ? volumeSetting : gVolumeLevel;
-  coded = code;
-
-  if (modeSetting == 2)
-  {
-    coded = clampRange(code + 40, 0, 255);
-  }
-  else if (modeSetting == 3)
-  {
-    coded = clampRange(code + 80, 0, 255);
-  }
-
-  if (modeSetting != 1)
-  {
-    if (gAudioFocusOwner == 0 || effectiveVolume < 15)
-    {
-      coded = code;
-    }
-    else if (effectiveVolume >= 70)
-    {
-      coded = clampRange(coded + 5, 0, 255);
-    }
-  }
+  effectiveVolume = calcEffectiveVolume(volumeSetting);
+  coded = applyModeDisplayOffset(code, modeSetting);
+  coded = applyVolumeDisplayBias(code, coded, modeSetting, effectiveVolume);
 
   return coded;
 }
@@ -135,8 +299,6 @@ int applyRobustPolicy(int code)
   int timeoutClear;
   int expectedCode;
   int coded;
-  int syncMismatch;
-  int useBackbone;
 
   coded = code;
   if (coded <= 0)
@@ -144,51 +306,31 @@ int applyRobustPolicy(int code)
     return 0;
   }
 
-  if (gAudioFocusOwner != 0 && (gAudioDuckingLvl >= 4 || gTtsState >= 1))
+  if (gAudioFocusOwner != 0 &&
+      (gAudioDuckingLvl >= CLU_AUDIO_DUCKING_ALERT_THRESHOLD ||
+       gTtsState >= CLU_TTS_ACTIVE_THRESHOLD))
   {
-    coded = clampRange(coded + 6, 0, 255);
+    coded = clampRange(coded + CLU_AUDIO_ACTIVITY_CODE_BONUS, 0, 255);
   }
 
-  if (gPopupActive == 1 && gPopupPriority >= 5 &&
-      coded < 100 && (coded % 10) < 5)
+  if (gPopupActive == 1 &&
+      gPopupPriority >= CLU_POPUP_PRIORITY_SUPPRESS_THRESHOLD &&
+      coded < CLU_POPUP_CODE_SUPPRESS_MAX &&
+      (coded % 10) < CLU_POPUP_LEVEL_SUPPRESS_MAX)
   {
-    coded = 0;
+      coded = 0;
   }
 
-  useBackbone = useBackboneAlertState();
-  if (useBackbone == 1)
-  {
-    selectedAlertLevel = clampRange(gBackboneAlertLevel, 0, 7);
-    selectedAlertType = clampRange(gBackboneAlertType, 0, 15);
-    timeoutClear = (gBackboneTimeoutClear == 1) ? 1 : 0;
-  }
-  else
-  {
-    selectedAlertLevel = clampRange((int)@Core::selectedAlertLevel, 0, 7);
-    selectedAlertType = clampRange((int)@Core::selectedAlertType, 0, 15);
-    timeoutClear = (((int)@Core::timeoutClear) == 1) ? 1 : 0;
-  }
-  expectedCode = 0;
-  if (timeoutClear == 0 && selectedAlertLevel > 0)
-  {
-    expectedCode = clampRange((selectedAlertType * 10) + selectedAlertLevel, 0, 255);
-  }
+  selectedAlertLevel = getRobustPolicySelectedAlertLevel();
+  selectedAlertType = getRobustPolicySelectedAlertType();
+  timeoutClear = getRobustPolicyTimeoutClear();
+  expectedCode = calcExpectedWarningCode(selectedAlertLevel, selectedAlertType, timeoutClear);
 
-  syncMismatch = 0;
-  if (selectedAlertLevel > 0 &&
-      (gClusterSyncState == 0 || gClusterSyncSeq > 50 || coded == 0))
-  {
-    syncMismatch = 1;
-  }
-
-  if (syncMismatch == 1 && expectedCode > 0)
+  if (shouldForceExpectedWarningCode(coded, selectedAlertLevel) == 1 &&
+      expectedCode > 0)
   {
     coded = expectedCode;
-    @CoreState::clusterNotifPrio = clampRange((int)@CoreState::clusterNotifPrio, 0, 255);
-    if ((int)@CoreState::clusterNotifPrio < 6)
-    {
-      @CoreState::clusterNotifPrio = 6;
-    }
+    elevateClusterNotifPriorityForSyncRecovery();
   }
 
   return coded;
@@ -206,8 +348,8 @@ void pushHistory(int code)
   snap = clampRange((int)@CoreState::arbitrationSnapshotId, 0, 65535);
   gHistoryCodes[gHistoryWriteIdx] = code;
   gHistorySnaps[gHistoryWriteIdx] = snap;
-  gHistoryWriteIdx = (gHistoryWriteIdx + 1) & 15;
-  if (gHistoryCount < 16)
+  gHistoryWriteIdx = (gHistoryWriteIdx + 1) & CLU_HISTORY_RING_MASK;
+  if (gHistoryCount < CLU_HISTORY_CAPACITY)
   {
     gHistoryCount = gHistoryCount + 1;
   }
@@ -222,7 +364,7 @@ void respondHistoryQuery()
   int pos;
   int response;
 
-  queryOffset = clampRange((int)@Test::historyQueryOffset, 0, 15);
+  queryOffset = clampRange((int)@Test::historyQueryOffset, 0, CLU_HISTORY_QUERY_MAX_OFFSET);
   response = 0;
 
   if (gHistoryCount > 0)
@@ -235,7 +377,7 @@ void respondHistoryQuery()
     pos = gHistoryWriteIdx - 1 - idx;
     if (pos < 0)
     {
-      pos = pos + 16;
+      pos = pos + CLU_HISTORY_CAPACITY;
     }
     response = gHistoryCodes[pos];
   }
@@ -260,7 +402,7 @@ on start
   gPopupType = 0;
   gPopupPriority = 0;
   gPopupActive = 0;
-  gVolumeLevel = 30;
+  gVolumeLevel = CLU_DEFAULT_VOLUME_LEVEL;
   gAudioFocusOwner = 0;
   gAudioDuckingLvl = 0;
   gTtsState = 0;
@@ -278,7 +420,7 @@ on start
   {
     ethStartReceiver(gEthSocket, gEthRxBuffer, elcount(gEthRxBuffer));
   }
-  for (i = 0; i < 16; i = i + 1)
+  for (i = 0; i < CLU_HISTORY_CAPACITY; i = i + 1)
   {
     gHistoryCodes[i] = 0;
     gHistorySnaps[i] = 0;
@@ -288,7 +430,7 @@ on start
   @CoreState::popupType = 0;
   @CoreState::popupPriority = 0;
   @CoreState::popupActive = 0;
-  @CoreState::volumeLevel = 30;
+  @CoreState::volumeLevel = CLU_DEFAULT_VOLUME_LEVEL;
   @CoreState::audioFocusOwner = 0;
   @CoreState::audioDuckingLvl = 0;
   @CoreState::ttsState = 0;
@@ -383,8 +525,8 @@ on message frmClusterWarningMsg
   int prevCode;
   int guardRemainMs;
   dword nowMs;
-  dword elapsedMs;
 
+  // Normalize the incoming warning code through display policies.
   prevCode = gLastDisplayedCode;
   rawCode = clampRange((int)this.WarningTextCode, 0, 255);
   code = applyDisplayPolicy(rawCode);
@@ -392,58 +534,25 @@ on message frmClusterWarningMsg
   nowMs = getSimulationTimeMs();
   guardRemainMs = 0;
 
+  // Clear the display state and duplicate guard when the code is zero.
   if (code == 0)
   {
-    cancelTimer(tDuplicateGuard);
-    gLastDisplayedCode = 0;
-    gLastDisplayMs = 0;
-    @CoreState::duplicatePopupGuard = 0;
-    @Cluster::warningTextCode = 0;
+    clearDisplayedWarningState();
     write("[CLU] clear");
   }
   else
   {
-    if (code == gLastDisplayedCode)
-    {
-      elapsedMs = nowMs - gLastDisplayMs;
-      if (elapsedMs < 1000)
-      {
-        guardRemainMs = 1000 - (int)elapsedMs;
-      }
-      else
-      {
-        gLastDisplayMs = nowMs;
-        guardRemainMs = 1000;
-      }
-    }
-    else
-    {
-      gLastDisplayedCode = code;
-      gLastDisplayMs = nowMs;
-      guardRemainMs = 1000;
-    }
-
-    @Cluster::warningTextCode = code;
-    @CoreState::duplicatePopupGuard = guardRemainMs;
-    if (guardRemainMs > 0)
-    {
-      setTimer(tDuplicateGuard, 100);
-    }
-
-    if (code != prevCode)
-    {
-      pushHistory(code);
-      respondHistoryQuery();
-    }
-
-    write("[CLU] warning code=%d raw=%d focus=%d duck=%d tts=%d popup=%d/%d sync=%d age=%d",
-          code, rawCode, gAudioFocusOwner, gAudioDuckingLvl, gTtsState,
-          gPopupPriority, gPopupActive, gClusterSyncState, gClusterSyncSeq);
+    // Recalculate the remaining guard time and publish the new display state.
+    guardRemainMs = calcGuardRemainMsForCode(code, nowMs);
+    publishDisplayedWarningState(code, guardRemainMs);
+    updateWarningHistoryIfChanged(code, prevCode);
+    logDisplayedWarningState(code, rawCode);
   }
 }
 
 on sysvar Test::historyQueryOffset
 {
+  // Recompute the history response when the query offset changes.
   respondHistoryQuery();
   write("[CLU] history query offset=%d code=%d",
         (int)@Test::historyQueryOffset, (int)@Test::historyQueryCode);
@@ -455,26 +564,29 @@ on timer tDuplicateGuard
   dword nowMs;
   dword elapsedMs;
 
+  // Drop the guard state immediately if no code is being displayed.
   if (gLastDisplayedCode == 0)
   {
     @CoreState::duplicatePopupGuard = 0;
     return;
   }
 
+  // Compute the remaining guard time from the last display timestamp.
   nowMs = getSimulationTimeMs();
   elapsedMs = nowMs - gLastDisplayMs;
-  if (elapsedMs >= 1000)
+  if (elapsedMs >= CLU_DUPLICATE_GUARD_MS)
   {
     guardRemainMs = 0;
   }
   else
   {
-    guardRemainMs = 1000 - (int)elapsedMs;
+    guardRemainMs = CLU_DUPLICATE_GUARD_MS - (int)elapsedMs;
   }
 
+  // Reschedule the timer while guard time remains.
   @CoreState::duplicatePopupGuard = guardRemainMs;
   if (guardRemainMs > 0)
   {
-    setTimer(tDuplicateGuard, 100);
+    setTimer(tDuplicateGuard, CLU_DUPLICATE_GUARD_TIMER_MS);
   }
 }

@@ -8,20 +8,65 @@ variables
   msTimer tMdpsCycle;
   long gEthSocket;
   dword gEthTargetIp;
-  int gSteeringInput;
+  int gIsSteeringInputActive;
   int gSpeedNorm;
-  int gPrevSteering;
+  int gPrevIsSteeringInputActive;
+
+  const int MDPS_BOOL_FALSE = 0;
+  const int MDPS_BOOL_TRUE = 1;
+  const int MDPS_MIN_VEHICLE_SPEED_KPH = 0;
+  const int MDPS_MAX_VEHICLE_SPEED_KPH = 255;
+  const int MDPS_MIN_STEERING_INPUT_FLAG = 0;
+  const int MDPS_MAX_STEERING_INPUT_FLAG = 1;
+  const int MDPS_STEERING_ANGLE_PER_INPUT = 30;
+  const int MDPS_STEERING_TORQUE_PER_INPUT = 20;
+  const int MDPS_HIGH_SPEED_THRESHOLD_KPH = 80;
+  const int MDPS_ASSIST_LEVEL_HIGH_SPEED = 1;
+  const int MDPS_ASSIST_LEVEL_LOW_SPEED = 2;
+  const int MDPS_EPS_FAULT_NONE = 0;
+  const int MDPS_EPS_TEMP_DEFAULT_C = 55;
+  const int MDPS_STATUS_SENTINEL_UNINITIALIZED = -1;
+  const int MDPS_TIMER_PERIOD_MS = 50;
 }
 
-void publishBackboneSteeringState(int steeringAngleRaw, int steeringQuality)
+int normalizeSteeringInputFlag(int steeringInputRawValue)
+{
+  return clampRange(steeringInputRawValue,
+                    MDPS_MIN_STEERING_INPUT_FLAG,
+                    MDPS_MAX_STEERING_INPUT_FLAG);
+}
+
+int deriveSteeringAngleRaw(int isSteeringInputActive)
+{
+  return isSteeringInputActive * MDPS_STEERING_ANGLE_PER_INPUT;
+}
+
+int deriveAssistLevel(int speedNorm)
+{
+  if (speedNorm > MDPS_HIGH_SPEED_THRESHOLD_KPH)
+  {
+    return MDPS_ASSIST_LEVEL_HIGH_SPEED;
+  }
+
+  return MDPS_ASSIST_LEVEL_LOW_SPEED;
+}
+
+int deriveSteeringTorque(int isSteeringInputActive)
+{
+  return isSteeringInputActive * MDPS_STEERING_TORQUE_PER_INPUT;
+}
+
+int isSteeringLogUpdateRequired(void)
+{
+  return (gIsSteeringInputActive != gPrevIsSteeringInputActive);
+}
+
+void publishBackboneSteeringState(void)
 {
   char frame[3];
-  int steeringInput;
-
-  steeringInput = clampRange(gSteeringInput, 0, 1);
 
   ethInitFrame(frame, ethMsgSteering(), 1);
-  ethSetU8(frame, 0, steeringInput);
+  ethSetU8(frame, 0, gIsSteeringInputActive);
   ethSendFrame(gEthSocket, gEthTargetIp, ethMsgSteering(), frame, 1);
 }
 
@@ -29,22 +74,24 @@ on start
 {
   gEthSocket = ethOpenDefaultSocket();
   gEthTargetIp = ethGetDefaultIpAddress();
-  gSteeringInput = 0;
-  gSpeedNorm = 0;
-  gPrevSteering = -1;
-  setTimer(tMdpsCycle, 50);
+  gIsSteeringInputActive = MDPS_BOOL_FALSE;
+  gSpeedNorm = MDPS_MIN_VEHICLE_SPEED_KPH;
+  gPrevIsSteeringInputActive = MDPS_STATUS_SENTINEL_UNINITIALIZED;
+  setTimer(tMdpsCycle, MDPS_TIMER_PERIOD_MS);
   write("[MDPS] start");
 }
 
 on message frmSteeringCanMsg
 {
-  gSteeringInput = clampRange((int)this.SteeringInput, 0, 1);
-  @Core::steeringInputNorm = gSteeringInput;
+  gIsSteeringInputActive = normalizeSteeringInputFlag((int)this.SteeringInput);
+  @Core::steeringInputNorm = gIsSteeringInputActive;
 }
 
 on message frmVehicleStateCanMsg
 {
-  gSpeedNorm = clampRange((int)this.gVehicleSpeed, 0, 255);
+  gSpeedNorm = clampRange((int)this.gVehicleSpeed,
+                          MDPS_MIN_VEHICLE_SPEED_KPH,
+                          MDPS_MAX_VEHICLE_SPEED_KPH);
 }
 
 on timer tMdpsCycle
@@ -56,18 +103,18 @@ on timer tMdpsCycle
   int assistLevel;
   int steeringTorque;
 
-  steeringAngleRaw = gSteeringInput * 30;
-  assistLevel = (gSpeedNorm > 80) ? 1 : 2;
-  steeringTorque = gSteeringInput * 20;
+  steeringAngleRaw = deriveSteeringAngleRaw(gIsSteeringInputActive);
+  assistLevel = deriveAssistLevel(gSpeedNorm);
+  steeringTorque = deriveSteeringTorque(gIsSteeringInputActive);
 
-  if (gSteeringInput != gPrevSteering)
+  if (isSteeringLogUpdateRequired() == MDPS_BOOL_TRUE)
   {
     write("[MDPS] input=%d assist=%d angle=%d",
-          gSteeringInput, assistLevel, steeringAngleRaw);
-    gPrevSteering = gSteeringInput;
+          gIsSteeringInputActive, assistLevel, steeringAngleRaw);
+    gPrevIsSteeringInputActive = gIsSteeringInputActive;
   }
 
-  mSteerState.SteeringState = gSteeringInput;
+  mSteerState.SteeringState = gIsSteeringInputActive;
   output(mSteerState);
 
   mSteerTorque.SteeringTorque = steeringTorque;
@@ -75,13 +122,13 @@ on timer tMdpsCycle
   output(mSteerTorque);
 
   mEps.EpsAssistState = assistLevel;
-  mEps.EpsFaultState = 0;
-  mEps.EpsTemp = 55;
+  mEps.EpsFaultState = MDPS_EPS_FAULT_NONE;
+  mEps.EpsTemp = MDPS_EPS_TEMP_DEFAULT_C;
   output(mEps);
 
-  publishBackboneSteeringState(steeringAngleRaw, (mEps.EpsFaultState == 0) ? 3 : 1);
+  publishBackboneSteeringState();
 
-  setTimer(tMdpsCycle, 50);
+  setTimer(tMdpsCycle, MDPS_TIMER_PERIOD_MS);
 }
 
 on stopMeasurement

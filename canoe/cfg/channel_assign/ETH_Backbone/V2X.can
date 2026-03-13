@@ -48,23 +48,28 @@ void mirrorLastEmergencyRx(dword tickValue)
 int isHigherPriority(int newType, int newEta, int newSourceId,
                      int activeType, int activeEta, int activeSourceId)
 {
+  // Prefer the new event if no active emergency is present.
   if (activeType == 0)
   {
     return 1;
   }
+  // If vehicle types differ, select the higher-priority type.
   if (newType != activeType)
   {
     return (newType > activeType);
   }
+  // If types match, select the event with the shorter ETA.
   if (newEta != activeEta)
   {
     return (newEta < activeEta);
   }
+  // Use sourceId as the final stable tie-breaker.
   return (newSourceId < activeSourceId);
 }
 
 void setTimeoutClear(int value)
 {
+  // Update Core timeoutClear only when the value changes.
   if (value != gLastTimeoutClear)
   {
     @Core::timeoutClear = value;
@@ -76,12 +81,14 @@ void updateEmergencyContext()
 {
   int contextValue;
 
+  // Normalize the active emergency type into emergencyContext.
   contextValue = gActiveEmergencyType;
   if (contextValue < 0 || contextValue > 2)
   {
     contextValue = 0;
   }
 
+  // Reflect the context into Core only when it changes.
   if (contextValue != gLastEmergencyContext)
   {
     @Core::emergencyContext = contextValue;
@@ -91,6 +98,7 @@ void updateEmergencyContext()
 
 void clearEmergencyState()
 {
+  // Reset the active emergency state to its defaults.
   gActiveEmergencyType = 0;
   gActiveEmergencyDirection = 0;
   gActiveEta = 255;
@@ -122,6 +130,7 @@ void pushEmergencyMonitor()
   int emergencyContext;
   int timeoutClear;
 
+  // Read the current context and timeout state for monitoring.
   emergencyContext = clampRange((int)@Core::emergencyContext, 0, 255);
   timeoutClear = (((int)@Core::timeoutClear) == 1) ? 1 : 0;
   @CoreState::lastEmergencyRxMs = getCurrentTick32();
@@ -134,6 +143,7 @@ void pushEmergencyMonitor()
     ethSendFrame(gEthSocket, gEthTargetIp, ethMsgEmergencyMonitor(), frame, 2);
   }
 
+  // Log only when monitored values change.
   if (emergencyContext != gLastMonContext || timeoutClear != gLastMonTimeoutClear)
   {
     write("[V2X] mon(context=%d timeoutClear=%d)", emergencyContext, timeoutClear);
@@ -186,6 +196,7 @@ void OnUdpReceiveFrom(dword socket, long result, dword address, dword port, char
 
 void publishActiveEmergencyToV2X()
 {
+  // Mirror the selected active emergency into V2X sysvars.
   @V2X::emergencyType = gActiveEmergencyType;
   @V2X::emergencyDirection = gActiveEmergencyDirection;
   @V2X::eta = gActiveEta;
@@ -281,11 +292,13 @@ void recordAlertEvent()
   int warningCode;
   int eventPhase;
 
+  // Normalize the current arbitration result and warning code for logging.
   alertType = clampRange((int)@Core::selectedAlertType, 0, 15);
   alertLevel = clampRange((int)@Core::selectedAlertLevel, 0, 7);
   warningCode = clampRange((int)@Cluster::warningTextCode, 0, 255);
   eventPhase = 0;
 
+  // Classify the alert as start, end, or change.
   if (alertLevel > 0 && gLastRecordedAlertLevel == 0)
   {
     eventPhase = 1;
@@ -301,6 +314,7 @@ void recordAlertEvent()
     eventPhase = 3;
   }
 
+  // Update CoreState and logs only when an event is detected.
   if (eventPhase != 0)
   {
     @CoreState::lastAlertEventType = alertType;
@@ -369,6 +383,7 @@ on timer tRxCycle
   nowMs              = getCurrentTick32();
   accepted           = 0;
 
+  // For a valid emergency event, compare priority and update the active state.
   if (alertState == 1 && (emergencyType == 1 || emergencyType == 2))
   {
     if (isHigherPriority(emergencyType, eta, sourceId,
@@ -388,6 +403,7 @@ on timer tRxCycle
       accepted = 1;
     }
 
+    // If the event is accepted, refresh the receive timestamp and watchdog.
     if (accepted == 1)
     {
       mirrorLastEmergencyRx(nowMs);
@@ -398,6 +414,7 @@ on timer tRxCycle
   }
   else
   {
+    // Clear the active state when the valid event disappears.
     if (gActiveEmergencyType != 0)
     {
       clearEmergencyState();
@@ -406,6 +423,7 @@ on timer tRxCycle
     }
   }
 
+  // Sync the context and reschedule polling for the next cycle.
   updateEmergencyContext();
   setTimer(tRxCycle, 10);
 }

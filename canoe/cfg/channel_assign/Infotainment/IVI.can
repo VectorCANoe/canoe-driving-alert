@@ -22,6 +22,107 @@ variables
   int gBackboneAlertType;
   int gBackboneTimeoutClear;
   dword gBackboneAlertTsMs;
+
+  const int IVI_BOOL_FALSE = 0;
+  const int IVI_BOOL_TRUE = 1;
+  const int IVI_MIN_ALERT_LEVEL = 0;
+  const int IVI_ALERT_LEVEL_MAX = 7;
+  const int IVI_MIN_ALERT_TYPE = 0;
+  const int IVI_ALERT_TYPE_MAX = 15;
+  const int IVI_MIN_BACKBONE_ALERT_TYPE = 0;
+  const int IVI_BACKBONE_ALERT_TYPE_MAX = 7;
+  const int IVI_TIMEOUT_CLEAR_ACTIVE = 1;
+  const int IVI_BACKBONE_ALERT_TIMEOUT_MS = 500;
+  const int IVI_MIN_SPEED_LIMIT_KPH = 0;
+  const int IVI_DEFAULT_SPEED_LIMIT_KPH = 30;
+  const int IVI_MAX_SPEED_LIMIT_KPH = 255;
+  const int IVI_MIN_SPEED_KPH = 0;
+  const int IVI_MAX_SPEED_KPH = 255;
+  const int IVI_EMERGENCY_TYPE_NONE = 0;
+  const int IVI_EMERGENCY_TYPE_POLICE = 1;
+  const int IVI_EMERGENCY_TYPE_AMBULANCE = 2;
+  const int IVI_EMERGENCY_TYPE_MAX = 2;
+  const int IVI_MIN_EMERGENCY_DIRECTION = 0;
+  const int IVI_EMERGENCY_DIRECTION_MAX = 3;
+  const int IVI_WARNING_CODE_CLEAR = 0;
+  const int IVI_HIGH_ALERT_LEVEL_THRESHOLD = 6;
+  const int IVI_GUIDE_LEFT_ALERT_TYPE = 5;
+  const int IVI_GUIDE_RIGHT_ALERT_TYPE = 6;
+  const int IVI_GUIDE_LEFT_WARNING_CODE = 31;
+  const int IVI_GUIDE_RIGHT_WARNING_CODE = 32;
+  const int IVI_POLICE_WARNING_CODE_BASE = 100;
+  const int IVI_AMBULANCE_WARNING_CODE_BASE = 200;
+  const int IVI_EMERGENCY_DISTANCE_BAND_NEAR = 1;
+  const int IVI_EMERGENCY_DISTANCE_BAND_MID = 2;
+  const int IVI_EMERGENCY_DISTANCE_BAND_FAR = 3;
+  const int IVI_EMERGENCY_DISTANCE_NEAR_MAX_M = 80;
+  const int IVI_EMERGENCY_DISTANCE_MID_MAX_M = 180;
+  const int IVI_EMERGENCY_DISTANCE_MAX_M = 10000;
+  const int IVI_MIN_BASE_ZONE_CONTEXT = 0;
+  const int IVI_BASE_ZONE_CONTEXT_MAX = 4;
+  const int IVI_BASE_ZONE_CONTEXT_SCHOOL = 1;
+  const int IVI_BASE_ZONE_CONTEXT_HIGHWAY = 2;
+  const int IVI_BASE_ZONE_CONTEXT_GUIDE_LEFT = 3;
+  const int IVI_BASE_ZONE_CONTEXT_GUIDE_RIGHT = 4;
+  const int IVI_ROAD_ZONE_COLOR_NONE = 0;
+  const int IVI_ROAD_ZONE_COLOR_SCHOOL = 1;
+  const int IVI_ROAD_ZONE_COLOR_HIGHWAY = 2;
+  const int IVI_ROAD_ZONE_COLOR_GUIDE = 3;
+  const int IVI_ROAD_FLOW_DIRECTION_NONE = 0;
+  const int IVI_ROAD_FLOW_DIRECTION_LEFT = 1;
+  const int IVI_ROAD_FLOW_DIRECTION_RIGHT = 2;
+  const int IVI_VEHICLE_OBJECT_POS_MIN = 0;
+  const int IVI_VEHICLE_OBJECT_POS_MAX = 100;
+  const int IVI_VEHICLE_OBJECT_POS_WRAP = 101;
+  const int IVI_MIN_RENDER_VALUE = 0;
+  const int IVI_MOTION_STEP_DEFAULT = 2;
+  const int IVI_MOTION_STEP_SCHOOL = 1;
+  const int IVI_MOTION_STEP_HIGHWAY = 4;
+  const int IVI_MOTION_STEP_GUIDE = 6;
+  const int IVI_DISPLAY_MODE_DEFAULT = 0;
+  const int IVI_DISPLAY_MODE_FORCE_MINIMAL = 1;
+  const int IVI_DISPLAY_MODE_HIDE_POPUP = 2;
+  const int IVI_DISPLAY_MODE_ELEVATED = 3;
+  const int IVI_THEME_MODE_NORMAL = 0;
+  const int IVI_THEME_MODE_ALERT = 1;
+  const int IVI_THEME_MODE_MINIMAL = 2;
+  const int IVI_CLUSTER_BRIGHTNESS_IDLE = 20;
+  const int IVI_CLUSTER_BRIGHTNESS_ALERT = 28;
+  const int IVI_AUDIO_FOCUS_NONE = 0;
+  const int IVI_AUDIO_FOCUS_ALERT = 1;
+  const int IVI_AUDIO_DUCKING_IDLE = 1;
+  const int IVI_AUDIO_DUCKING_ALERT = 4;
+  const int IVI_DEFAULT_ALERT_VOLUME = 30;
+  const int IVI_DEFAULT_IDLE_VOLUME = 20;
+  const int IVI_POPUP_PRIORITY_ELEVATED_BASE = 1;
+  const int IVI_CLUSTER_SYNC_STATE_OK = 1;
+  const int IVI_CLUSTER_SYNC_ERROR_NONE = 0;
+  const int IVI_CLUSTER_SYNC_AGE_DEFAULT = 10;
+  const int IVI_MEDIA_SOURCE_DEFAULT = 1;
+  const int IVI_MEDIA_STATE_DEFAULT = 1;
+  const int IVI_MUTE_STATE_DEFAULT = 0;
+  const int IVI_CALL_STATE_IDLE = 0;
+  const int IVI_MIC_MUTE_OFF = 0;
+  const int IVI_SIGNAL_QUALITY_DEFAULT = 10;
+  const int IVI_BT_DEVICE_COUNT_DEFAULT = 1;
+  const int IVI_PROJECTION_TYPE_DEFAULT = 1;
+  const int IVI_PROJECTION_STATE_DEFAULT = 1;
+  const int IVI_MEDIA_TRACK_TYPE_DEFAULT = 1;
+  const int IVI_MEDIA_REPEAT_MODE_DEFAULT = 0;
+  const int IVI_MEDIA_SHUFFLE_MODE_DEFAULT = 0;
+  const int IVI_MEDIA_REMAIN_TIME_DEFAULT = 120;
+  const int IVI_CONNECTIVITY_TYPE_DEFAULT = 1;
+  const int IVI_CONNECTIVITY_STATE_DEFAULT = 1;
+  const int IVI_SIGNAL_BARS_DEFAULT = 4;
+  const int IVI_CPU_LOAD_HIGH_SPEED_LIMIT = 100;
+  const int IVI_CPU_LOAD_HIGH = 45;
+  const int IVI_CPU_LOAD_NORMAL = 35;
+  const int IVI_MEM_LOAD_DEFAULT = 40;
+  const int IVI_INFO_FAIL_CODE_NONE = 0;
+  const int IVI_TIMER_CYCLE_MS = 10;
+  const int IVI_TIMER_BASE_MS = 50;
+  const int IVI_TIMER_EXT_MS = 100;
+  const int IVI_HEALTH_PUBLISH_DIVISOR = 2;
 }
 
 
@@ -38,11 +139,338 @@ int calcEmergencyDistanceM(int etaSec, int speedKph)
   {
     distanceM = 0;
   }
-  if (distanceM > 10000)
+  if (distanceM > IVI_EMERGENCY_DISTANCE_MAX_M)
   {
-    distanceM = 10000;
+    distanceM = IVI_EMERGENCY_DISTANCE_MAX_M;
   }
   return (int)distanceM;
+}
+
+int normalizeSpeedLimit(int speedLimitRawValue)
+{
+  int speedLimit;
+
+  speedLimit = clampRange(speedLimitRawValue, IVI_MIN_SPEED_LIMIT_KPH, IVI_MAX_SPEED_LIMIT_KPH);
+  if (speedLimit == IVI_MIN_SPEED_LIMIT_KPH)
+  {
+    speedLimit = IVI_DEFAULT_SPEED_LIMIT_KPH;
+  }
+
+  return speedLimit;
+}
+
+int isUsingBackboneAlertState()
+{
+  dword nowMs;
+
+  if (gBackboneAlertTsMs == 0)
+  {
+    return IVI_BOOL_FALSE;
+  }
+
+  nowMs = getSimulationTimeMs();
+  if ((nowMs - gBackboneAlertTsMs) > IVI_BACKBONE_ALERT_TIMEOUT_MS)
+  {
+    return IVI_BOOL_FALSE;
+  }
+
+  return IVI_BOOL_TRUE;
+}
+
+int getEffectiveAlertLevel()
+{
+  if (isUsingBackboneAlertState() == IVI_BOOL_TRUE)
+  {
+    return clampRange(gBackboneAlertLevel, IVI_MIN_ALERT_LEVEL, IVI_ALERT_LEVEL_MAX);
+  }
+
+  return clampRange((int)@Core::selectedAlertLevel, IVI_MIN_ALERT_LEVEL, IVI_ALERT_LEVEL_MAX);
+}
+
+int getEffectiveAlertType()
+{
+  if (isUsingBackboneAlertState() == IVI_BOOL_TRUE)
+  {
+    return clampRange(gBackboneAlertType, IVI_MIN_BACKBONE_ALERT_TYPE, IVI_BACKBONE_ALERT_TYPE_MAX);
+  }
+
+  return clampRange((int)@Core::selectedAlertType, IVI_MIN_ALERT_TYPE, IVI_ALERT_TYPE_MAX);
+}
+
+int getEffectiveTimeoutClear()
+{
+  if (isUsingBackboneAlertState() == IVI_BOOL_TRUE)
+  {
+    return (gBackboneTimeoutClear == IVI_TIMEOUT_CLEAR_ACTIVE) ? IVI_BOOL_TRUE : IVI_BOOL_FALSE;
+  }
+
+  return (((int)@Core::timeoutClear) == IVI_TIMEOUT_CLEAR_ACTIVE) ? IVI_BOOL_TRUE : IVI_BOOL_FALSE;
+}
+
+int normalizeEmergencyType(int emergencyTypeRawValue)
+{
+  if (emergencyTypeRawValue < IVI_EMERGENCY_TYPE_NONE || emergencyTypeRawValue > IVI_EMERGENCY_TYPE_MAX)
+  {
+    return IVI_EMERGENCY_TYPE_NONE;
+  }
+
+  return emergencyTypeRawValue;
+}
+
+int normalizeEmergencyDirection(int emergencyDirectionRawValue)
+{
+  if (emergencyDirectionRawValue < IVI_MIN_EMERGENCY_DIRECTION || emergencyDirectionRawValue > IVI_EMERGENCY_DIRECTION_MAX)
+  {
+    return IVI_MIN_EMERGENCY_DIRECTION;
+  }
+
+  return emergencyDirectionRawValue;
+}
+
+int deriveEmergencyDistanceBand(int emergencyDistanceM)
+{
+  if (emergencyDistanceM <= IVI_WARNING_CODE_CLEAR)
+  {
+    return IVI_WARNING_CODE_CLEAR;
+  }
+  if (emergencyDistanceM <= IVI_EMERGENCY_DISTANCE_NEAR_MAX_M)
+  {
+    return IVI_EMERGENCY_DISTANCE_BAND_NEAR;
+  }
+  if (emergencyDistanceM <= IVI_EMERGENCY_DISTANCE_MID_MAX_M)
+  {
+    return IVI_EMERGENCY_DISTANCE_BAND_MID;
+  }
+
+  return IVI_EMERGENCY_DISTANCE_BAND_FAR;
+}
+
+int deriveEmergencyWarningCode(int emergencyType, int emergencyDistanceBand, int emergencyDirection)
+{
+  int baseCode;
+
+  if (emergencyType == IVI_EMERGENCY_TYPE_AMBULANCE)
+  {
+    baseCode = IVI_AMBULANCE_WARNING_CODE_BASE;
+  }
+  else
+  {
+    baseCode = IVI_POLICE_WARNING_CODE_BASE;
+  }
+
+  if (emergencyDistanceBand > IVI_WARNING_CODE_CLEAR)
+  {
+    return baseCode + (emergencyDistanceBand * 10) + emergencyDirection;
+  }
+
+  return baseCode + emergencyDirection;
+}
+
+int deriveWarningTextCode(int alertLevel,
+                          int alertType,
+                          int timeoutClear,
+                          int emergencyType,
+                          int emergencyDirection,
+                          int emergencyDistanceBand)
+{
+  if (timeoutClear == IVI_BOOL_TRUE || alertLevel == IVI_WARNING_CODE_CLEAR)
+  {
+    return IVI_WARNING_CODE_CLEAR;
+  }
+
+  if (alertLevel >= IVI_HIGH_ALERT_LEVEL_THRESHOLD)
+  {
+    if (emergencyType == IVI_EMERGENCY_TYPE_AMBULANCE ||
+        emergencyType == IVI_EMERGENCY_TYPE_POLICE)
+    {
+      return deriveEmergencyWarningCode(emergencyType, emergencyDistanceBand, emergencyDirection);
+    }
+
+    return IVI_POLICE_WARNING_CODE_BASE + emergencyDirection;
+  }
+
+  if (alertType == IVI_GUIDE_LEFT_ALERT_TYPE)
+  {
+    return IVI_GUIDE_LEFT_WARNING_CODE;
+  }
+
+  if (alertType == IVI_GUIDE_RIGHT_ALERT_TYPE)
+  {
+    return IVI_GUIDE_RIGHT_WARNING_CODE;
+  }
+
+  return (alertType * 10) + alertLevel;
+}
+
+int deriveThemeMode(int displayModeSetting, int alertLevel)
+{
+  if (displayModeSetting == IVI_DISPLAY_MODE_FORCE_MINIMAL)
+  {
+    return IVI_THEME_MODE_MINIMAL;
+  }
+  if (alertLevel > IVI_WARNING_CODE_CLEAR)
+  {
+    return IVI_THEME_MODE_ALERT;
+  }
+
+  return IVI_THEME_MODE_NORMAL;
+}
+
+int deriveClusterBrightness(int alertLevel)
+{
+  if (alertLevel > IVI_WARNING_CODE_CLEAR)
+  {
+    return IVI_CLUSTER_BRIGHTNESS_ALERT;
+  }
+
+  return IVI_CLUSTER_BRIGHTNESS_IDLE;
+}
+
+int derivePopupPriority(int alertLevel, int displayModeSetting)
+{
+  if (displayModeSetting == IVI_DISPLAY_MODE_FORCE_MINIMAL)
+  {
+    return IVI_POPUP_PRIORITY_ELEVATED_BASE;
+  }
+  if (displayModeSetting == IVI_DISPLAY_MODE_ELEVATED)
+  {
+    return clampRange(alertLevel + 1, IVI_WARNING_CODE_CLEAR, IVI_ALERT_LEVEL_MAX);
+  }
+
+  return clampRange(alertLevel, IVI_WARNING_CODE_CLEAR, IVI_ALERT_LEVEL_MAX);
+}
+
+int derivePopupActive(int alertLevel, int displayModeSetting)
+{
+  if (displayModeSetting == IVI_DISPLAY_MODE_HIDE_POPUP)
+  {
+    return IVI_BOOL_FALSE;
+  }
+  if (displayModeSetting == IVI_DISPLAY_MODE_FORCE_MINIMAL)
+  {
+    return IVI_BOOL_TRUE;
+  }
+
+  return (alertLevel > IVI_WARNING_CODE_CLEAR) ? IVI_BOOL_TRUE : IVI_BOOL_FALSE;
+}
+
+int deriveAudioFocusOwner(int alertLevel, int displayModeSetting)
+{
+  if (displayModeSetting == IVI_DISPLAY_MODE_FORCE_MINIMAL)
+  {
+    return IVI_AUDIO_FOCUS_NONE;
+  }
+
+  return (alertLevel > IVI_WARNING_CODE_CLEAR) ? IVI_AUDIO_FOCUS_ALERT : IVI_AUDIO_FOCUS_NONE;
+}
+
+int deriveEffectiveVolume(int alertVolumeSetting, int alertLevel)
+{
+  if (alertVolumeSetting > IVI_WARNING_CODE_CLEAR)
+  {
+    return alertVolumeSetting;
+  }
+  if (alertLevel > IVI_WARNING_CODE_CLEAR)
+  {
+    return IVI_DEFAULT_ALERT_VOLUME;
+  }
+
+  return IVI_DEFAULT_IDLE_VOLUME;
+}
+
+int deriveRoadZoneColorCode(int baseZoneContext)
+{
+  if (baseZoneContext == IVI_BASE_ZONE_CONTEXT_SCHOOL)
+  {
+    return IVI_ROAD_ZONE_COLOR_SCHOOL;
+  }
+  if (baseZoneContext == IVI_BASE_ZONE_CONTEXT_HIGHWAY)
+  {
+    return IVI_ROAD_ZONE_COLOR_HIGHWAY;
+  }
+  if (baseZoneContext == IVI_BASE_ZONE_CONTEXT_GUIDE_LEFT ||
+      baseZoneContext == IVI_BASE_ZONE_CONTEXT_GUIDE_RIGHT)
+  {
+    return IVI_ROAD_ZONE_COLOR_GUIDE;
+  }
+
+  return IVI_ROAD_ZONE_COLOR_NONE;
+}
+
+int deriveRoadFlowDirection(int baseZoneContext)
+{
+  if (baseZoneContext == IVI_BASE_ZONE_CONTEXT_GUIDE_LEFT)
+  {
+    return IVI_ROAD_FLOW_DIRECTION_LEFT;
+  }
+  if (baseZoneContext == IVI_BASE_ZONE_CONTEXT_GUIDE_RIGHT)
+  {
+    return IVI_ROAD_FLOW_DIRECTION_RIGHT;
+  }
+
+  return IVI_ROAD_FLOW_DIRECTION_NONE;
+}
+
+int deriveVehicleMotionStep(int roadZoneColorCode)
+{
+  if (roadZoneColorCode == IVI_ROAD_ZONE_COLOR_SCHOOL)
+  {
+    return IVI_MOTION_STEP_SCHOOL;
+  }
+  if (roadZoneColorCode == IVI_ROAD_ZONE_COLOR_HIGHWAY)
+  {
+    return IVI_MOTION_STEP_HIGHWAY;
+  }
+  if (roadZoneColorCode == IVI_ROAD_ZONE_COLOR_GUIDE)
+  {
+    return IVI_MOTION_STEP_GUIDE;
+  }
+
+  return IVI_MOTION_STEP_DEFAULT;
+}
+
+int advanceVehicleObjectPosition(int currentPosition, int roadFlowDirection, int vehicleMotionStep)
+{
+  int nextPosition;
+
+  nextPosition = currentPosition;
+  if (roadFlowDirection == IVI_ROAD_FLOW_DIRECTION_RIGHT)
+  {
+    nextPosition = nextPosition - vehicleMotionStep;
+    if (nextPosition < IVI_VEHICLE_OBJECT_POS_MIN)
+    {
+      nextPosition = nextPosition + IVI_VEHICLE_OBJECT_POS_WRAP;
+    }
+  }
+  else
+  {
+    nextPosition = nextPosition + vehicleMotionStep;
+    if (nextPosition > IVI_VEHICLE_OBJECT_POS_MAX)
+    {
+      nextPosition = nextPosition - IVI_VEHICLE_OBJECT_POS_WRAP;
+    }
+  }
+
+  return nextPosition;
+}
+
+int deriveRenderDirection(int renderTextCode, int alertType)
+{
+  if (renderTextCode >= IVI_POLICE_WARNING_CODE_BASE &&
+      renderTextCode <= IVI_AMBULANCE_WARNING_CODE_BASE + IVI_EMERGENCY_DIRECTION_MAX)
+  {
+    return renderTextCode % 100;
+  }
+  if (alertType == IVI_GUIDE_LEFT_ALERT_TYPE)
+  {
+    return IVI_ROAD_FLOW_DIRECTION_LEFT;
+  }
+  if (alertType == IVI_GUIDE_RIGHT_ALERT_TYPE)
+  {
+    return IVI_ROAD_FLOW_DIRECTION_RIGHT;
+  }
+
+  return IVI_WARNING_CODE_CLEAR;
 }
 
 void publishBackboneNavContext()
@@ -56,11 +484,7 @@ void publishBackboneNavContext()
   roadZone = clampRange((int)@Infotainment::roadZone, 0, 7);
   navDirection = clampRange((int)@Infotainment::navDirection, 0, 7);
   zoneDistance = clampRange((int)@Infotainment::zoneDistance, 0, 255);
-  speedLimit = clampRange((int)@Infotainment::speedLimit, 0, 255);
-  if (speedLimit == 0)
-  {
-    speedLimit = 30;
-  }
+  speedLimit = normalizeSpeedLimit((int)@Infotainment::speedLimit);
 
   ethInitFrame(frame, ethMsgNavContext(), 3);
   ethSetU8(frame, 0, (roadZone & 0x3) | ((navDirection & 0x3) << 2));
@@ -73,7 +497,7 @@ void updateBackboneAlertState(int alertLevel, int alertType, int timeoutClear)
 {
   gBackboneAlertLevel = clampRange(alertLevel, 0, 7);
   gBackboneAlertType = clampRange(alertType, 0, 7);
-  gBackboneTimeoutClear = (timeoutClear == 1) ? 1 : 0;
+  gBackboneTimeoutClear = (timeoutClear == IVI_TIMEOUT_CLEAR_ACTIVE) ? IVI_BOOL_TRUE : IVI_BOOL_FALSE;
   gBackboneAlertTsMs = getSimulationTimeMs();
 }
 
@@ -99,24 +523,6 @@ void OnUdpReceiveFrom(dword socket, long result, dword address, dword port, char
   ethArmReceive(gEthSocket, gEthRxBuffer, elcount(gEthRxBuffer));
 }
 
-int useBackboneAlertState()
-{
-  dword nowMs;
-
-  if (gBackboneAlertTsMs == 0)
-  {
-    return 0;
-  }
-
-  nowMs = getSimulationTimeMs();
-  if ((nowMs - gBackboneAlertTsMs) > 500)
-  {
-    return 0;
-  }
-
-  return 1;
-}
-
 on start
 {
   gEthSocket = ethOpenDefaultSocket();
@@ -136,9 +542,9 @@ on start
   {
     ethStartReceiver(gEthSocket, gEthRxBuffer, elcount(gEthRxBuffer));
   }
-  setTimer(tIviCycle, 10);
-  setTimer(tIviBase50, 50);
-  setTimer(tIviExt100, 100);
+  setTimer(tIviCycle, IVI_TIMER_CYCLE_MS);
+  setTimer(tIviBase50, IVI_TIMER_BASE_MS);
+  setTimer(tIviExt100, IVI_TIMER_EXT_MS);
   write("[IVI] start");
 }
 
@@ -153,105 +559,33 @@ on timer tIviCycle
   int speed;
   int emergencyDistanceM;
   int emergencyDistanceBand;
-  int baseCode;
-  int useBackbone;
   message frmClusterWarningMsg mCluster;
 
-  useBackbone = useBackboneAlertState();
-  if (useBackbone == 1)
-  {
-    alertLevel = gBackboneAlertLevel;
-    alertType = gBackboneAlertType;
-    timeoutClear = gBackboneTimeoutClear;
-  }
-  else
-  {
-    alertLevel = (int)@Core::selectedAlertLevel;
-    alertType = (int)@Core::selectedAlertType;
-    timeoutClear = (int)@Core::timeoutClear;
-  }
-  emergencyType = (int)@V2X::emergencyType;
-  emergencyDirection = (int)@V2X::emergencyDirection;
-  speed = clampRange((int)@Core::vehicleSpeedNorm, 0, 255);
-  if (alertLevel < 0 || alertLevel > 7)
-  {
-    alertLevel = 0;
-  }
-  if (alertType < 0 || alertType > 7)
-  {
-    alertType = 0;
-  }
-  if (emergencyType < 0 || emergencyType > 2)
-  {
-    emergencyType = 0;
-  }
-  if (emergencyDirection < 0 || emergencyDirection > 3)
-  {
-    emergencyDirection = 0;
-  }
-  timeoutClear = (timeoutClear == 1) ? 1 : 0;
+  alertLevel = getEffectiveAlertLevel();
+  alertType = getEffectiveAlertType();
+  timeoutClear = getEffectiveTimeoutClear();
+  emergencyType = normalizeEmergencyType((int)@V2X::emergencyType);
+  emergencyDirection = normalizeEmergencyDirection((int)@V2X::emergencyDirection);
+  speed = clampRange((int)@Core::vehicleSpeedNorm, IVI_MIN_SPEED_KPH, IVI_MAX_SPEED_KPH);
   emergencyDistanceM = calcEmergencyDistanceM((int)@V2X::eta, speed);
-  emergencyDistanceBand = 0;
-  if (emergencyDistanceM > 0)
-  {
-    if (emergencyDistanceM <= 80)
-    {
-      emergencyDistanceBand = 1;
-    }
-    else if (emergencyDistanceM <= 180)
-    {
-      emergencyDistanceBand = 2;
-    }
-    else
-    {
-      emergencyDistanceBand = 3;
-    }
-  }
+  emergencyDistanceBand = deriveEmergencyDistanceBand(emergencyDistanceM);
   @CoreState::emergencyDistanceM = emergencyDistanceM;
 
-  if (timeoutClear == 1 || alertLevel == 0)
-  {
-    warningTextCode = 0;
-  }
-  else if (alertLevel >= 6)
-  {
-    if (emergencyType == 2 || emergencyType == 1)
-    {
-      baseCode = (emergencyType == 2) ? 200 : 100;
-      if (emergencyDistanceBand > 0)
-      {
-        warningTextCode = baseCode + (emergencyDistanceBand * 10) + emergencyDirection;
-      }
-      else
-      {
-        warningTextCode = baseCode + emergencyDirection;
-      }
-    }
-    else
-    {
-      warningTextCode = 100 + emergencyDirection;
-    }
-  }
-  else if (alertType == 5)
-  {
-    warningTextCode = 31;
-  }
-  else if (alertType == 6)
-  {
-    warningTextCode = 32;
-  }
-  else
-  {
-    warningTextCode = (alertType * 10) + alertLevel;
-  }
+  warningTextCode = deriveWarningTextCode(alertLevel,
+                                          alertType,
+                                          timeoutClear,
+                                          emergencyType,
+                                          emergencyDirection,
+                                          emergencyDistanceBand);
 
+  // Publish the warning text only when the code changes.
   if (warningTextCode != gLastWarningTextCode)
   {
     mCluster.WarningTextCode = warningTextCode;
     output(mCluster);
     gLastWarningTextCode = warningTextCode;
   }
-  setTimer(tIviCycle, 10);
+  setTimer(tIviCycle, IVI_TIMER_CYCLE_MS);
 }
 
 on timer tIviBase50
@@ -283,218 +617,117 @@ on timer tIviBase50
   int displayModeSetting;
   int alertVolumeSetting;
   int effectiveVolume;
-  int useBackbone;
-
-  speed = clampRange((int)@Core::vehicleSpeedNorm, 0, 255);
-  driveState = clampRange((int)@Core::driveStateNorm, 0, 3);
-  useBackbone = useBackboneAlertState();
-  if (useBackbone == 1)
-  {
-    alertLevel = clampRange(gBackboneAlertLevel, 0, 7);
-    alertType = clampRange(gBackboneAlertType, 0, 15);
-  }
-  else
-  {
-    alertLevel = clampRange((int)@Core::selectedAlertLevel, 0, 7);
-    alertType = clampRange((int)@Core::selectedAlertType, 0, 15);
-  }
-  baseZoneContext = clampRange((int)@Core::baseZoneContext, 0, 4);
-  renderMode = clampRange((int)@Body::ambientMode, 0, 7);
-  renderColor = clampRange((int)@Body::ambientColor, 0, 15);
-  renderPattern = clampRange((int)@Body::ambientPattern, 0, 15);
+  speed = clampRange((int)@Core::vehicleSpeedNorm, IVI_MIN_SPEED_KPH, IVI_MAX_SPEED_KPH);
+  driveState = clampRange((int)@Core::driveStateNorm, IVI_MIN_RENDER_VALUE, 3);
+  alertLevel = getEffectiveAlertLevel();
+  alertType = getEffectiveAlertType();
+  baseZoneContext = clampRange((int)@Core::baseZoneContext, IVI_MIN_BASE_ZONE_CONTEXT, IVI_BASE_ZONE_CONTEXT_MAX);
+  renderMode = clampRange((int)@Body::ambientMode, IVI_MIN_RENDER_VALUE, IVI_ALERT_LEVEL_MAX);
+  renderColor = clampRange((int)@Body::ambientColor, IVI_MIN_RENDER_VALUE, IVI_ALERT_TYPE_MAX);
+  renderPattern = clampRange((int)@Body::ambientPattern, IVI_MIN_RENDER_VALUE, IVI_ALERT_TYPE_MAX);
   renderTextCode = clampRange((int)@Cluster::warningTextCode, 0, 65535);
-  displayModeSetting = clampRange((int)@Test::displayModeSetting, 0, 3);
+  displayModeSetting = clampRange((int)@Test::displayModeSetting, IVI_DISPLAY_MODE_DEFAULT, IVI_DISPLAY_MODE_ELEVATED);
   alertVolumeSetting = clampRange((int)@Test::alertVolumeSetting, 0, 100);
-  effectiveVolume = (alertVolumeSetting > 0) ? alertVolumeSetting : ((alertLevel > 0) ? 30 : 20);
+  effectiveVolume = deriveEffectiveVolume(alertVolumeSetting, alertLevel);
 
   /* CLU owns the mirrored display state after consuming these frames. */
 
+  // Publish the base cluster state.
   mBase.ClusterSpeed = speed;
   mBase.ClusterGear = driveState;
   mBase.ClusterStatus = alertLevel;
   output(mBase);
 
-  mTheme.ThemeMode = (displayModeSetting == 1) ? 2 : ((alertLevel > 0) ? 1 : 0);
-  mTheme.ClusterBrightness = (alertLevel > 0) ? 28 : 20;
+  mTheme.ThemeMode = deriveThemeMode(displayModeSetting, alertLevel);
+  mTheme.ClusterBrightness = deriveClusterBrightness(alertLevel);
   output(mTheme);
 
   mPopup.PopupType = alertType;
-  mPopup.PopupPriority = clampRange(alertLevel, 0, 7);
-  mPopup.PopupActive = (alertLevel > 0) ? 1 : 0;
-  if (displayModeSetting == 1)
-  {
-    mPopup.PopupActive = 1;
-    mPopup.PopupPriority = 1;
-  }
-  else if (displayModeSetting == 2)
-  {
-    mPopup.PopupActive = 0;
-  }
-  else if (displayModeSetting == 3)
-  {
-    mPopup.PopupActive = (alertLevel > 0) ? 1 : 0;
-    mPopup.PopupPriority = clampRange(alertLevel + 1, 0, 7);
-  }
+  mPopup.PopupPriority = derivePopupPriority(alertLevel, displayModeSetting);
+  mPopup.PopupActive = derivePopupActive(alertLevel, displayModeSetting);
   output(mPopup);
 
-  mAudio.AudioFocusOwner = (alertLevel > 0) ? 1 : 0;
-  if (displayModeSetting == 1)
-  {
-    mAudio.AudioFocusOwner = 0;
-  }
-  else if (displayModeSetting == 2 || displayModeSetting == 3)
-  {
-    mAudio.AudioFocusOwner = (alertLevel > 0) ? 1 : 0;
-  }
-  mAudio.AudioDuckingLvl = (alertLevel > 0) ? 4 : 1;
+  mAudio.AudioFocusOwner = deriveAudioFocusOwner(alertLevel, displayModeSetting);
+  mAudio.AudioDuckingLvl = (alertLevel > IVI_WARNING_CODE_CLEAR) ? IVI_AUDIO_DUCKING_ALERT : IVI_AUDIO_DUCKING_IDLE;
   output(mAudio);
 
-  mMediaState.MediaSource = 1;
-  mMediaState.MediaState = 1;
-  mMediaState.MuteState = 0;
+  mMediaState.MediaSource = IVI_MEDIA_SOURCE_DEFAULT;
+  mMediaState.MediaState = IVI_MEDIA_STATE_DEFAULT;
+  mMediaState.MuteState = IVI_MUTE_STATE_DEFAULT;
   mMediaState.VolumeLevel = effectiveVolume;
   output(mMediaState);
 
-  mCallState.CallState = 0;
-  mCallState.MicMute = 0;
-  mCallState.SignalQuality = 10;
-  mCallState.BtDeviceCount = 1;
+  mCallState.CallState = IVI_CALL_STATE_IDLE;
+  mCallState.MicMute = IVI_MIC_MUTE_OFF;
+  mCallState.SignalQuality = IVI_SIGNAL_QUALITY_DEFAULT;
+  mCallState.BtDeviceCount = IVI_BT_DEVICE_COUNT_DEFAULT;
   output(mCallState);
 
-  mProjection.ProjectionType = 1;
-  mProjection.ProjectionState = 1;
+  mProjection.ProjectionType = IVI_PROJECTION_TYPE_DEFAULT;
+  mProjection.ProjectionState = IVI_PROJECTION_STATE_DEFAULT;
   output(mProjection);
 
+  // Publish cluster notification metadata for the active alert.
   mNotif.ClusterNotifType = alertType;
   mNotif.ClusterNotifArg = alertLevel;
   output(mNotif);
 
-  mMedia.MediaTrackType = 1;
-  mMedia.MediaRepeatMode = 0;
-  mMedia.MediaShuffleMode = 0;
-  mMedia.MediaRemainTime = 120;
+  mMedia.MediaTrackType = IVI_MEDIA_TRACK_TYPE_DEFAULT;
+  mMedia.MediaRepeatMode = IVI_MEDIA_REPEAT_MODE_DEFAULT;
+  mMedia.MediaShuffleMode = IVI_MEDIA_SHUFFLE_MODE_DEFAULT;
+  mMedia.MediaRemainTime = IVI_MEDIA_REMAIN_TIME_DEFAULT;
   output(mMedia);
 
-  mSync.ClusterSyncState = 1;
-  mSync.ClusterSyncError = 0;
-  mSync.ClusterSyncAge = 10;
+  mSync.ClusterSyncState = IVI_CLUSTER_SYNC_STATE_OK;
+  mSync.ClusterSyncError = IVI_CLUSTER_SYNC_ERROR_NONE;
+  mSync.ClusterSyncAge = IVI_CLUSTER_SYNC_AGE_DEFAULT;
   output(mSync);
 
   gIviBaseTick = gIviBaseTick + 1;
-  if ((gIviBaseTick % 2) == 0)
+  if ((gIviBaseTick % IVI_HEALTH_PUBLISH_DIVISOR) == 0)
   {
     mHealth.InfoAliveCnt = gInfoAliveCnt & 0xFF;
-    mHealth.InfoFailCode = 0;
+    mHealth.InfoFailCode = IVI_INFO_FAIL_CODE_NONE;
     output(mHealth);
     gInfoAliveCnt = (gInfoAliveCnt + 1) & 0xFF;
   }
 
-  if (baseZoneContext == 1)
+  roadZoneColorCode = deriveRoadZoneColorCode(baseZoneContext);
+  roadFlowDirection = deriveRoadFlowDirection(baseZoneContext);
+  vehicleMotionStep = deriveVehicleMotionStep(roadZoneColorCode);
+  gVehicleObjectPos = advanceVehicleObjectPosition(gVehicleObjectPos, roadFlowDirection, vehicleMotionStep);
+
+  // Toggle the emergency blink phase only for high-priority alerts.
+  if (alertLevel >= IVI_HIGH_ALERT_LEVEL_THRESHOLD)
   {
-    roadZoneColorCode = 1;
-  }
-  else if (baseZoneContext == 2)
-  {
-    roadZoneColorCode = 2;
-  }
-  else if (baseZoneContext == 3 || baseZoneContext == 4)
-  {
-    roadZoneColorCode = 3;
+    gEmsBlinkPhase = IVI_BOOL_TRUE - gEmsBlinkPhase;
   }
   else
   {
-    roadZoneColorCode = 0;
+    gEmsBlinkPhase = IVI_BOOL_FALSE;
   }
 
-  if (baseZoneContext == 3)
-  {
-    roadFlowDirection = 1;
-  }
-  else if (baseZoneContext == 4)
-  {
-    roadFlowDirection = 2;
-  }
-  else
-  {
-    roadFlowDirection = 0;
-  }
-
-  vehicleMotionStep = 2;
-  if (roadZoneColorCode == 1)
-  {
-    vehicleMotionStep = 1;
-  }
-  else if (roadZoneColorCode == 2)
-  {
-    vehicleMotionStep = 4;
-  }
-  else if (roadZoneColorCode == 3)
-  {
-    vehicleMotionStep = 6;
-  }
-
-  if (roadFlowDirection == 2)
-  {
-    gVehicleObjectPos = gVehicleObjectPos - vehicleMotionStep;
-    if (gVehicleObjectPos < 0)
-    {
-      gVehicleObjectPos = gVehicleObjectPos + 101;
-    }
-  }
-  else
-  {
-    gVehicleObjectPos = gVehicleObjectPos + vehicleMotionStep;
-    if (gVehicleObjectPos > 100)
-    {
-      gVehicleObjectPos = gVehicleObjectPos - 101;
-    }
-  }
-
-  if (alertLevel >= 6)
-  {
-    gEmsBlinkPhase = 1 - gEmsBlinkPhase;
-  }
-  else
-  {
-    gEmsBlinkPhase = 0;
-  }
-
-  if (alertType == 4)
+  if (alertType == IVI_BASE_ZONE_CONTEXT_HIGHWAY)
   {
     gAmbientPulsePhase = (gAmbientPulsePhase + 1) & 3;
   }
   else
   {
-    gAmbientPulsePhase = 0;
+    gAmbientPulsePhase = IVI_WARNING_CODE_CLEAR;
   }
 
-  if (alertType == 5 || alertType == 6)
+  if (alertType == IVI_GUIDE_LEFT_ALERT_TYPE || alertType == IVI_GUIDE_RIGHT_ALERT_TYPE)
   {
     gIcFlowPhase = (gIcFlowPhase + 1) & 7;
   }
   else
   {
-    gIcFlowPhase = 0;
+    gIcFlowPhase = IVI_WARNING_CODE_CLEAR;
   }
 
-  if (renderTextCode >= 100 && renderTextCode <= 203)
-  {
-    renderDirection = renderTextCode % 100;
-  }
-  else if (alertType == 5)
-  {
-    renderDirection = 1;
-  }
-  else if (alertType == 6)
-  {
-    renderDirection = 2;
-  }
-  else
-  {
-    renderDirection = 0;
-  }
+  renderDirection = deriveRenderDirection(renderTextCode, alertType);
 
-  renderDirection = clampRange(renderDirection, 0, 3);
+  renderDirection = clampRange(renderDirection, IVI_MIN_EMERGENCY_DIRECTION, IVI_EMERGENCY_DIRECTION_MAX);
   @UiRender::renderMode = renderMode;
   @UiRender::renderColor = renderColor;
   @UiRender::renderPattern = renderPattern;
@@ -502,13 +735,13 @@ on timer tIviBase50
   @UiRender::renderDirection = renderDirection;
   @UiRender::roadZoneColorCode = roadZoneColorCode;
   @UiRender::roadFlowDirection = roadFlowDirection;
-  @UiRender::vehicleObjectPos = clampRange(gVehicleObjectPos, 0, 100);
+  @UiRender::vehicleObjectPos = clampRange(gVehicleObjectPos, IVI_VEHICLE_OBJECT_POS_MIN, IVI_VEHICLE_OBJECT_POS_MAX);
   @UiRender::emsBlinkPhase = gEmsBlinkPhase;
   @UiRender::ambientPulsePhase = gAmbientPulsePhase;
   @UiRender::icFlowPhase = gIcFlowPhase;
-  @UiRender::activeAlertType = clampRange(alertType, 0, 7);
+  @UiRender::activeAlertType = clampRange(alertType, IVI_MIN_BACKBONE_ALERT_TYPE, IVI_BACKBONE_ALERT_TYPE_MAX);
 
-  setTimer(tIviBase50, 50);
+  setTimer(tIviBase50, IVI_TIMER_BASE_MS);
 }
 
 on timer tIviExt100
@@ -517,25 +750,24 @@ on timer tIviExt100
   message frmIviHealthDetailMsg mHealthDetail;
   int speedLimit;
 
-  speedLimit = clampRange((int)@Core::speedLimitNorm, 0, 255);
-  if (speedLimit == 0)
-  {
-    speedLimit = 30;
-  }
+  // Read the normalized speed limit and apply the default fallback.
+  speedLimit = normalizeSpeedLimit((int)@Core::speedLimitNorm);
 
-  mConn.ConnectivityType = 1;
-  mConn.ConnectivityState = 1;
-  mConn.SignalBars = 4;
+  // Publish baseline connectivity status.
+  mConn.ConnectivityType = IVI_CONNECTIVITY_TYPE_DEFAULT;
+  mConn.ConnectivityState = IVI_CONNECTIVITY_STATE_DEFAULT;
+  mConn.SignalBars = IVI_SIGNAL_BARS_DEFAULT;
   output(mConn);
 
-  mHealthDetail.IviCpuLoad = (speedLimit > 100) ? 45 : 35;
-  mHealthDetail.IviMemLoad = 40;
+  mHealthDetail.IviCpuLoad = (speedLimit > IVI_CPU_LOAD_HIGH_SPEED_LIMIT) ? IVI_CPU_LOAD_HIGH : IVI_CPU_LOAD_NORMAL;
+  mHealthDetail.IviMemLoad = IVI_MEM_LOAD_DEFAULT;
   output(mHealthDetail);
 
+  // Republish the backbone navigation context on the extended cycle.
   publishBackboneNavContext();
 
 
-  setTimer(tIviExt100, 100);
+  setTimer(tIviExt100, IVI_TIMER_EXT_MS);
 }
 
 on stopMeasurement

@@ -27,6 +27,8 @@ variables
   const int BCM_ALERT_TYPE_MAX = 7;
   const int BCM_NAV_DIRECTION_MAX = 3;
   const int BCM_SEAT_BELT_OVERRIDE_MAX = 3;
+  const int BCM_HAZARD_INACTIVE = 0;
+  const int BCM_HAZARD_ACTIVE = 1;
   const int BCM_TIMEOUT_CLEAR_ACTIVE = 1;
   const int BCM_HAZARD_ALERT_THRESHOLD = 6;
   const int BCM_ALERT_TYPE_AMBULANCE = 2;
@@ -136,10 +138,10 @@ int deriveHazardActiveState()
 {
   if (isUsingBackboneAlertState())
   {
-    return ((gBackboneAlertLevel >= BCM_HAZARD_ALERT_THRESHOLD) ? 1 : 0);
+    return ((gBackboneAlertLevel >= BCM_HAZARD_ALERT_THRESHOLD) ? BCM_HAZARD_ACTIVE : BCM_HAZARD_INACTIVE);
   }
 
-  return ((((int)@Core::selectedAlertLevel) >= BCM_HAZARD_ALERT_THRESHOLD) ? 1 : 0);
+  return ((((int)@Core::selectedAlertLevel) >= BCM_HAZARD_ALERT_THRESHOLD) ? BCM_HAZARD_ACTIVE : BCM_HAZARD_INACTIVE);
 }
 
 int normalizeNavDirection(int navDirection)
@@ -164,7 +166,7 @@ int normalizeSeatBeltOverride(int seatBeltOverride)
 
 int deriveTurnLampState(int hazardActive, int navDirection)
 {
-  if (hazardActive == BCM_TIMEOUT_CLEAR_ACTIVE)
+  if (hazardActive == BCM_HAZARD_ACTIVE)
   {
     return BCM_TURN_LAMP_HAZARD;
   }
@@ -209,7 +211,7 @@ int deriveSeatBeltWarnLevel(int driverSeatBelt, int passengerSeatBelt, int hazar
   {
     return BCM_SEAT_BELT_WARN_UNBUCKLED;
   }
-  if (hazardActive == BCM_TIMEOUT_CLEAR_ACTIVE)
+  if (hazardActive == BCM_HAZARD_ACTIVE)
   {
     return BCM_SEAT_BELT_WARN_HAZARD;
   }
@@ -441,7 +443,7 @@ on timer tBodyBase100
   output(mDoorState);
 
   // Determine lamp states from hazard status and navigation direction.
-  mLamp.HeadLampState = (hazardActive == BCM_TIMEOUT_CLEAR_ACTIVE) ? BCM_HEAD_LAMP_STATE_HAZARD : BCM_HEAD_LAMP_STATE_NORMAL;
+  mLamp.HeadLampState = (hazardActive == BCM_HAZARD_ACTIVE) ? BCM_HEAD_LAMP_STATE_HAZARD : BCM_HEAD_LAMP_STATE_NORMAL;
   mLamp.TailLampState = BCM_TAIL_LAMP_STATE_ON;
   mLamp.TurnLampState = deriveTurnLampState(hazardActive, navDirection);
   mLamp.HazardLampReq = hazardActive;
