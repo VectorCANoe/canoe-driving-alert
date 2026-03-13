@@ -186,7 +186,7 @@
 | 214 | Chassis | BrakeTempFR | uint32 | 0 | 255 | 0 | 브레이크 전륜우 온도 |
 | 217 | Chassis | SteeringAngleRaw | int32 | -720 | 720 | 0 | 조향각 |
 | 218 | Chassis | SteeringAngleRate | int32 | -1024 | 1023 | 0 | 조향각속도 |
-| 219 | Chassis | WheelPulseFront | uint32 | 0 | 65535 | 0 | 전륜좌 휠 펄스 |
+| 219 | Chassis | WheelPulseFront | uint32 | 0 | 65535 | 0 | 전륜 휠 펄스 |
 | 220 | Chassis | WheelPulseRear | uint32 | 0 | 65535 | 0 | 후륜 휠 펄스 |
 | 221 | Chassis | SuspensionMode | uint32 | 0 | 7 | 0 | 댐퍼 모드 |
 | 222 | Chassis | SuspensionLevel | uint32 | 0 | 255 | 0 | 차고 높이 |
