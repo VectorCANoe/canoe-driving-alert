@@ -71,6 +71,16 @@
 공식 공개 제외(ignorable candidates):
 
 - `archive/`
+- `ops/`
+- `reference/`
+
+세부 제외 원칙:
+
+- `archive/` = archived snapshots, migrated root backups, old tmp payloads
+- `ops/` = handoff, mentoring, reports, change-orders, submission support, internal execution notes
+- `reference/` = local reference bank, imported OSS/tutorial/standard/sample material
+- `tmp` 성격 자료 = 공개 surface에서 제외
+- `internal notes` 성격 자료 = 공개 surface에서 제외
 
 ### `product/`
 
@@ -120,6 +130,8 @@ canoe/.claude/
 canoe/AGENT/
 
 driving-alert-workproducts/archive/
+driving-alert-workproducts/ops/
+driving-alert-workproducts/reference/
 
 product/sdv_operator/site/
 # product/sdv_operator/examples/

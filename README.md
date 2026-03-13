@@ -2,11 +2,12 @@
 
 CANoe SIL 기반 주행상황 경고 시스템과 검증 자동화 저장소입니다.
 
-이 저장소는 단일 제품 저장소가 아니라 아래 세 층을 함께 포함합니다.
+이 저장소는 단일 제품 저장소가 아니라 아래 네 축을 함께 포함합니다.
 
 - `canoe/`: CANoe 런타임 프로젝트
 - `driving-alert-workproducts/`: V-model 문서와 추적성 정본
 - `product/sdv_operator/`: Dev2 검증 실행/리뷰 표면
+- `scripts/`: 공용 실행/게이트/품질/릴리스 자동화 계층
 
 ## Start Here
 
@@ -43,6 +44,13 @@ python scripts/run.py verify quick --run-id 20260308_0900 --owner DEV2
 - `canoe/`
 - `driving-alert-workproducts/`
 - `product/`
+- `scripts/` (공용 계층만)
+
+`scripts/` 운영 원칙:
+
+- product 전용 구현: `product/sdv_operator/scripts/`
+- 루트 `scripts/run.py`, `scripts/tui_app.py`: compatibility launcher
+- 공용 유지: `scripts/gates/`, `scripts/quality/`, `scripts/release/`
 
 공개 전 `gitignore` 제외 후보(legacy/tmp/archive/generated)와 적용 순서는 아래 문서 기준으로 관리합니다.
 

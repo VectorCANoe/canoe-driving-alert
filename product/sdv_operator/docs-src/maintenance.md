@@ -7,9 +7,10 @@ Dev2가 관리하는 것은 `scripts` 전체가 아니라 `SDV Operator` 제품 
 제품 경계는 아래를 기준으로 봅니다.
 
 - `product/sdv_operator/`
+- `product/sdv_operator/scripts/run.py`
+- `product/sdv_operator/scripts/tui_app.py`
+- `product/sdv_operator/scripts/cliops/`
 - `scripts/run.py`
-- `scripts/tui_app.py`
-- `scripts/cliops/`
 - `scripts/gates/`
 - `scripts/quality/`
 - `scripts/release/`
@@ -32,7 +33,7 @@ Dev2가 관리하는 것은 `scripts` 전체가 아니라 `SDV Operator` 제품 
 
 ### 내부 구현면
 
-- `scripts/cliops/*`
+- `product/sdv_operator/scripts/cliops/*`
 - `scripts/gates/*`
 - `scripts/quality/*`
 - `scripts/release/*`

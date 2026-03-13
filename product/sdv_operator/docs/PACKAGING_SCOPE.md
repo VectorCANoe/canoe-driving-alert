@@ -9,9 +9,10 @@ This file defines what belongs in the packaged `SDV Operator` distribution.
 - `sdv_cli.py`
 
 ### Product launcher/UI
-- `scripts/run.py`
-- `scripts/tui_app.py`
-- `scripts/cliops/`
+- `product/sdv_operator/scripts/run.py`
+- `product/sdv_operator/scripts/tui_app.py`
+- `product/sdv_operator/scripts/cliops/`
+- `scripts/run.py` (compatibility shim)
 
 ### Product backend
 - `scripts/gates/`

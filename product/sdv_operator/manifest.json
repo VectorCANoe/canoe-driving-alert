@@ -10,8 +10,9 @@
   "public_surface": [
     "pyproject.toml",
     "sdv_cli.py",
+    "product/sdv_operator/scripts/run.py",
+    "product/sdv_operator/scripts/tui_app.py",
     "scripts/run.py",
-    "scripts/tui_app.py",
     "product/sdv_operator/README.md",
     "product/sdv_operator/config/cleanup_policy.json",
     "product/sdv_operator/config/surface_ecu_inventory.json",
@@ -40,7 +41,7 @@
     "product/sdv_operator/docs-src/capability-boundary.md"
   ],
   "runtime_modules": [
-    "scripts/cliops",
+    "product/sdv_operator/scripts/cliops",
     "scripts/release"
   ],
   "backend_modules": [
