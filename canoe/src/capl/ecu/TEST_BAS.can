@@ -60,37 +60,54 @@ int resolveFlowCoverageMask(int pass)
   return clampRange((int)@CoreState::routingPolicy, 0, 7) << 12;
 }
 
-on start
+void clearBaseResultState()
 {
   gLastBaseScenarioId  = 0;
   gBaseScenarioResult  = 0;
   gFlowCoverage        = 0;
-  gTestHealth          = 0xFF;
+  gTestHealth          = 0;
   gTraceSnapshotId     = 0;
-  write("[TEST_BAS] start");
+
+  @Test::baseScenarioId       = 0;
+  @Test::baseScenarioResult   = 0;
+  @Test::baseFlowCoverageMask = 0;
+  @Test::baseTraceSnapshotId  = 0;
+  @Test::baseTestHealth       = 0;
 }
 
-on message frmTestResultMsg
+void publishBaseResultState(int pass)
 {
-  /* Aggregate SIL scenario result into base test result frame */
-  message frmBaseTestResultMsg mResult;
-  int pass;
-
-  pass = this.ScenarioResult;
-
-  gBaseScenarioResult  = pass;
+  gBaseScenarioResult  = clampRange(pass, 0, 1);
   gTraceSnapshotId     = (int)@CoreState::arbitrationSnapshotId;
   gTestHealth          = resolveTestHealth();
-  gFlowCoverage        = resolveFlowCoverageMask(pass);
+  gFlowCoverage        = resolveFlowCoverageMask(gBaseScenarioResult);
   gLastBaseScenarioId  = resolveBaseScenarioId();
 
-  mResult.BaseScenarioId     = gLastBaseScenarioId & 0xFF;
-  mResult.BaseScenarioResult = gBaseScenarioResult & 0x1;
-  mResult.FlowCoverageMask   = gFlowCoverage & 0x7FFF;
-  mResult.TraceSnapshotId    = gTraceSnapshotId & 0xFFFF;
-  mResult.TestHealth         = gTestHealth & 0xFF;
-  output(mResult);
+  @Test::baseScenarioId       = gLastBaseScenarioId & 0xFF;
+  @Test::baseScenarioResult   = gBaseScenarioResult & 0x1;
+  @Test::baseFlowCoverageMask = gFlowCoverage & 0x7FFF;
+  @Test::baseTraceSnapshotId  = gTraceSnapshotId & 0xFFFF;
+  @Test::baseTestHealth       = gTestHealth & 0xFF;
 
   write("[TEST_BAS] scenario id=%d result=%d health=%d",
         gLastBaseScenarioId, gBaseScenarioResult, gTestHealth);
+}
+
+on start
+{
+  clearBaseResultState();
+  write("[TEST_BAS] start");
+}
+
+on sysvar Test::scenarioResult
+{
+  publishBaseResultState((int)@Test::scenarioResult);
+}
+
+on sysvar Test::scenarioCommandAck
+{
+  if ((int)@Test::scenarioCommandAck == 0)
+  {
+    clearBaseResultState();
+  }
 }

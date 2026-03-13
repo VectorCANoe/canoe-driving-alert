@@ -10,6 +10,9 @@ variables
   msTimer tTimeoutClearPulse;
   msTimer tEventTrace100;
   msTimer tTransport100;
+  long gEthSocket;
+  dword gEthTargetIp;
+  char gEthRxBuffer[64];
   int gActiveEmergencyType;
   int gActiveEmergencyDirection;
   int gActiveEta;
@@ -24,6 +27,10 @@ variables
   int gPrevAmbDispatch;
   int gLastMonContext;
   int gLastMonTimeoutClear;
+  int gLastTransportStatus;
+  int gLastTransportType;
+  int gLastTransportSourceId;
+  int gLastTransportDirection;
 }
 
 
@@ -92,29 +99,40 @@ void clearEmergencyState()
 
 void emitEmergencyBroadcast(int vehicleType, int status, int sourceId, int etaSec, int direction)
 {
-  message frmEmergencyBroadcastMsg mBcast;
+  char frame[8];
 
-  /* Internal V2X gateway seam for CAN-stub today, transport swap later. */
-  mBcast.VehicleType = clampRange(vehicleType, 0, 2);
-  mBcast.Status = (status == 1) ? 1 : 0;
-  mBcast.SourceId = clampRange(sourceId, 0, 255);
-  mBcast.EtaSeconds = clampRange(etaSec, 0, 255);
-  mBcast.Direction = clampRange(direction, 0, 3);
-  output(mBcast);
+  if (gEthSocket == ethInvalidSocket())
+  {
+    return;
+  }
+
+  ethInitFrame(frame, ethMsgEmergencyAlert(), 4);
+  ethSetU8(frame, 0,
+           clampRange(vehicleType, 0, 2) |
+           (clampRange(direction, 0, 3) << 2));
+  ethSetU8(frame, 1, clampRange(etaSec, 0, 255));
+  ethSetU8(frame, 2, clampRange(sourceId, 0, 255));
+  ethSetU8(frame, 3, (status == 1) ? 1 : 0);
+  ethSendFrame(gEthSocket, gEthTargetIp, ethMsgEmergencyAlert(), frame, 4);
 }
 
 void pushEmergencyMonitor()
 {
-  message frmEmergencyMonitorMsg mMon;
+  char frame[4];
   int emergencyContext;
   int timeoutClear;
 
   emergencyContext = clampRange((int)@Core::emergencyContext, 0, 255);
   timeoutClear = (((int)@Core::timeoutClear) == 1) ? 1 : 0;
+  @CoreState::lastEmergencyRxMs = getCurrentTick32();
 
-  mMon.EmergencyContext = emergencyContext;
-  mMon.TimeoutClearMon = timeoutClear;
-  output(mMon);
+  if (gEthSocket != ethInvalidSocket())
+  {
+    ethInitFrame(frame, ethMsgEmergencyMonitor(), 2);
+    ethSetU8(frame, 0, emergencyContext);
+    ethSetU8(frame, 1, timeoutClear);
+    ethSendFrame(gEthSocket, gEthTargetIp, ethMsgEmergencyMonitor(), frame, 2);
+  }
 
   if (emergencyContext != gLastMonContext || timeoutClear != gLastMonTimeoutClear)
   {
@@ -124,12 +142,136 @@ void pushEmergencyMonitor()
   }
 }
 
+void applyEmergencyIngress(int vehicleType, int status, int sourceId, int etaSec, int direction)
+{
+  if (status == 1 && (vehicleType == 1 || vehicleType == 2))
+  {
+    @V2X::emergencyType = vehicleType;
+    @V2X::emergencyDirection = direction;
+    @V2X::eta = etaSec;
+    @V2X::sourceId = sourceId;
+    @V2X::alertState = 1;
+  }
+  else if (status == 0)
+  {
+    @V2X::alertState = 0;
+  }
+}
+
+void OnUdpReceiveFrom(dword socket, long result, dword address, dword port, char buffer[], dword count)
+{
+  int msgId;
+  int typeAndDirection;
+
+  if (socket != gEthSocket)
+  {
+    return;
+  }
+  if (result == 0)
+  {
+    msgId = ethFrameMsgId(buffer, count);
+    if (msgId == ethMsgEmergencyAlert() && ethFramePayloadLen(count) >= 4)
+    {
+      typeAndDirection = ethGetU8(buffer, 0);
+      applyEmergencyIngress(typeAndDirection & 0x3,
+                            ethGetU8(buffer, 3) & 0x1,
+                            ethGetU8(buffer, 2),
+                            ethGetU8(buffer, 1),
+                            (typeAndDirection >> 2) & 0x3);
+    }
+  }
+
+  ethArmReceive(gEthSocket, gEthRxBuffer, elcount(gEthRxBuffer));
+}
+
 void publishActiveEmergencyToV2X()
 {
   @V2X::emergencyType = gActiveEmergencyType;
   @V2X::emergencyDirection = gActiveEmergencyDirection;
   @V2X::eta = gActiveEta;
   @V2X::sourceId = gActiveSourceId;
+  @V2X::alertState = (gActiveEmergencyType > 0) ? 1 : 0;
+}
+
+void syncLegacyDispatchInputs()
+{
+  int policeDispatch;
+  int ambulanceDispatch;
+  int direction;
+  int eta;
+
+  policeDispatch = (((int)@V2X::policeDispatch) > 0) ? 1 : 0;
+  ambulanceDispatch = (((int)@V2X::ambulanceDispatch) > 0) ? 1 : 0;
+  direction = clampRange((int)@V2X::emergencyDirection, 0, 3);
+  eta = clampRange((int)@V2X::eta, 0, 255);
+
+  if (ambulanceDispatch == 1)
+  {
+    if (eta == 0 || eta == 255)
+    {
+      eta = 20;
+    }
+    @V2X::emergencyType = 2;
+    @V2X::emergencyDirection = direction;
+    @V2X::eta = eta;
+    @V2X::sourceId = 2;
+    @V2X::alertState = 1;
+  }
+  else if (policeDispatch == 1)
+  {
+    if (eta == 0 || eta == 255)
+    {
+      eta = 30;
+    }
+    @V2X::emergencyType = 1;
+    @V2X::emergencyDirection = direction;
+    @V2X::eta = eta;
+    @V2X::sourceId = 1;
+    @V2X::alertState = 1;
+  }
+  else if ((gPrevAmbDispatch == 1 && (int)@V2X::sourceId == 2) ||
+           (gPrevPoliceDispatch == 1 && (int)@V2X::sourceId == 1))
+  {
+    @V2X::alertState = 0;
+  }
+
+  gPrevPoliceDispatch = policeDispatch;
+  gPrevAmbDispatch = ambulanceDispatch;
+}
+
+void publishTransportFrames()
+{
+  int txStatus;
+  int txType;
+  int txSourceId;
+  int txEta;
+  int txDirection;
+
+  txStatus = (gActiveEmergencyType > 0) ? 1 : 0;
+  txType = clampRange(gActiveEmergencyType, 0, 2);
+  txSourceId = clampRange(gActiveSourceId, 0, 255);
+  txEta = clampRange(gActiveEta, 0, 255);
+  txDirection = clampRange(gActiveEmergencyDirection, 0, 3);
+
+  if (txStatus == 1)
+  {
+    emitEmergencyBroadcast(txType, 1, txSourceId, txEta, txDirection);
+    gLastTransportStatus = 1;
+    gLastTransportType = txType;
+    gLastTransportSourceId = txSourceId;
+    gLastTransportDirection = txDirection;
+  }
+  else if (gLastTransportStatus == 1)
+  {
+    emitEmergencyBroadcast(clampRange(gLastTransportType, 1, 2),
+                           0,
+                           clampRange(gLastTransportSourceId, 0, 255),
+                           0,
+                           clampRange(gLastTransportDirection, 0, 3));
+    gLastTransportStatus = 0;
+  }
+
+  pushEmergencyMonitor();
 }
 
 void recordAlertEvent()
@@ -176,6 +318,8 @@ void recordAlertEvent()
 
 on start
 {
+  gEthSocket = ethOpenDefaultSocket();
+  gEthTargetIp = ethGetDefaultIpAddress();
   clearEmergencyState();
   gActiveLastRxMs = 0;
   @CoreState::lastEmergencyRxMs = 0;
@@ -188,43 +332,21 @@ on start
   gPrevAmbDispatch = 0;
   gLastMonContext = -1;
   gLastMonTimeoutClear = -1;
+  gLastTransportStatus = 0;
+  gLastTransportType = 0;
+  gLastTransportSourceId = 0;
+  gLastTransportDirection = 0;
   updateEmergencyContext();
   setTimeoutClear(0);
+  if (gEthSocket != ethInvalidSocket())
+  {
+    ethStartReceiver(gEthSocket, gEthRxBuffer, elcount(gEthRxBuffer));
+  }
   setTimer(tRxCycle, 10);
   setTimer(tWatchdog, 1000);
   setTimer(tEventTrace100, 100);
   setTimer(tTransport100, 100);
   write("[V2X] start");
-}
-
-on message frmEmergencyBroadcastMsg
-{
-  int vehicleType;
-  int status;
-  int sourceId;
-  int etaSec;
-  int direction;
-
-  vehicleType = clampRange((int)this.VehicleType, 0, 2);
-  status = (((int)this.Status) == 1) ? 1 : 0;
-  sourceId = clampRange((int)this.SourceId, 0, 255);
-  etaSec = clampRange((int)this.EtaSeconds, 0, 255);
-  direction = clampRange((int)this.Direction, 0, 3);
-
-  if (status == 1 && (vehicleType == 1 || vehicleType == 2))
-  {
-    @V2X::emergencyType = vehicleType;
-    @V2X::emergencyDirection = direction;
-    @V2X::eta = etaSec;
-    @V2X::sourceId = sourceId;
-    @V2X::alertState = 1;
-  }
-  else if (status == 0 && sourceId == (int)@V2X::sourceId)
-  {
-    @V2X::alertState = 0;
-  }
-
-  pushEmergencyMonitor();
 }
 
 /* v1 fallback: sysvar polling (panel/legacy compat, kept for backward compat) */
@@ -238,6 +360,7 @@ on timer tRxCycle
   dword nowMs;
   int accepted;
 
+  syncLegacyDispatchInputs();
   emergencyType      = clampRange((int)@V2X::emergencyType, 0, 2);
   emergencyDirection = clampRange((int)@V2X::emergencyDirection, 0, 3);
   eta                = clampRange((int)@V2X::eta, 0, 255);
@@ -317,5 +440,17 @@ on timer tEventTrace100
 
 on timer tTransport100
 {
+  publishTransportFrames();
   setTimer(tTransport100, 100);
+}
+
+on stopMeasurement
+{
+  cancelTimer(tRxCycle);
+  cancelTimer(tWatchdog);
+  cancelTimer(tTimeoutClearPulse);
+  cancelTimer(tEventTrace100);
+  cancelTimer(tTransport100);
+  ethCloseSocket(gEthSocket);
+  gEthSocket = ethInvalidSocket();
 }

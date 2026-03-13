@@ -12,6 +12,8 @@ variables
   msTimer tScenarioEval;
   msTimer tScenarioPhase2;
   msTimer tScenarioPhase3;
+  long gEthSocket;
+  dword gEthTargetIp;
   int gDemoStepIndex;
   int gDemoRunning;
   int gCurrentScenarioId;
@@ -77,19 +79,57 @@ void pushLockedScenarioInputs()
   @Infotainment::navDirection = clampRange(gLockNavDirection, 0, 3);
   @Infotainment::zoneDistance = clampRange(gLockZoneDistance, 0, 255);
   @Infotainment::speedLimit = clampRange(gLockSpeedLimit, 0, 255);
-  @V2X::alertState = clampRange(gLockAlertState, 0, 1);
-  @V2X::emergencyType = clampRange(gLockEmergencyType, 0, 2);
-  @V2X::emergencyDirection = clampRange(gLockEmergencyDirection, 0, 3);
-  @V2X::eta = clampRange(gLockEta, 0, 255);
-  @V2X::sourceId = clampRange(gLockSourceId, 0, 255);
   @Test::forceFailSafe = clampRange(gLockForceFailSafe, 0, 1);
-  @Core::objectTrackValid = clampRange(gLockObjectTrackValid, 0, 1);
-  @Core::objectRange = clampRange(gLockObjectRange, 0, 500);
-  @Core::objectRelSpeed = clampRange(gLockObjectRelSpeed, -200, 200);
-  @Core::objectConfidence = clampRange(gLockObjectConfidence, 0, 100);
-  @Core::intersectionConflictFlag = clampRange(gLockIntersectionConflictFlag, 0, 1);
-  @Core::mergeCutInFlag = clampRange(gLockMergeCutInFlag, 0, 1);
-  @Core::objectAlertHoldMs = clampRange(gLockObjectAlertHoldMs, 0, 5000);
+}
+
+long EmitBackboneEmergencyTest(int emergencyType,
+                               int etaSec,
+                               int sourceId,
+                               int emergencyDirection,
+                               int alertState)
+{
+  char emergencyFrame[8];
+
+  if (gEthSocket == ethInvalidSocket())
+  {
+    return -1;
+  }
+
+  ethInitFrame(emergencyFrame, ethMsgEmergencyAlert(), 4);
+  ethSetU8(emergencyFrame, 0,
+           clampRange(emergencyType, 0, 2) |
+           (clampRange(emergencyDirection, 0, 3) << 2));
+  ethSetU8(emergencyFrame, 1, clampRange(etaSec, 0, 255));
+  ethSetU8(emergencyFrame, 2, clampRange(sourceId, 0, 255));
+  ethSetU8(emergencyFrame, 3, (alertState == 1) ? 1 : 0);
+  return ethSendFrame(gEthSocket, gEthTargetIp, ethMsgEmergencyAlert(), emergencyFrame, 4);
+}
+
+long EmitBackboneObjectRiskTest(int trackValid,
+                                int rangeM,
+                                int relSpeedKph,
+                                int confidence,
+                                int intersectionConflict,
+                                int mergeCutIn,
+                                int holdMs)
+{
+  char objectFrame[12];
+
+  if (gEthSocket == ethInvalidSocket())
+  {
+    return -1;
+  }
+
+  ethInitFrame(objectFrame, ethMsgObjectRiskInput(), 8);
+  ethSetU8(objectFrame, 0,
+           (trackValid == 1 ? 1 : 0) |
+           ((intersectionConflict == 1 ? 1 : 0) << 1) |
+           ((mergeCutIn == 1 ? 1 : 0) << 2));
+  ethSetU16Le(objectFrame, 1, clampRange(rangeM, 0, 500));
+  ethSetS16Le(objectFrame, 3, clampRange(relSpeedKph, -200, 200));
+  ethSetU8(objectFrame, 5, clampRange(confidence, 0, 100));
+  ethSetU16Le(objectFrame, 6, clampRange(holdMs, 0, 5000));
+  return ethSendFrame(gEthSocket, gEthTargetIp, ethMsgObjectRiskInput(), objectFrame, 8);
 }
 
 void cancelScenarioTransientTimers()
@@ -119,10 +159,8 @@ void setScenarioMirror(int scenarioId)
 
 void publishScenarioResultFrame()
 {
-  message frmTestResultMsg mRes;
-
-  mRes.ScenarioResult = (((int)@Test::scenarioResult) == 1) ? 1 : 0;
-  output(mRes);
+  write("[TEST_SCN] scenario result=%d",
+        (((int)@Test::scenarioResult) == 1) ? 1 : 0);
 }
 
 void beginScenarioExecution(int scenarioId)
@@ -793,6 +831,8 @@ on timer tScenarioPhase3
 
 on start
 {
+  gEthSocket = ethOpenDefaultSocket();
+  gEthTargetIp = ethGetDefaultIpAddress();
   gDemoStepIndex = 0;
   gDemoRunning = 0;
   gCurrentScenarioId = 0;
@@ -846,21 +886,13 @@ on start
 
 on timer tInput100
 {
-  message frmVehicleStateCanMsg mVeh;
   message frmSteeringCanMsg mStr;
   message frmNavContextCanMsg mNav;
   message frmIgnitionEngineMsg mIgn;
   message frmGearStateMsg mGear;
   message frmPedalInputCanMsg mPedal;
-  message frmEngineSpeedTempMsg mEngTemp;
-  message frmFuelBatteryStateMsg mFuelBat;
-  message frmThrottleStateMsg mThrottle;
-  message frmTransmissionTempMsg mTransTemp;
-  message frmEngineTorqueMsg mEngineTorque;
-  message frmEngineLoadMsg mEngineLoad;
-  message frmTransShiftStateMsg mShift;
-  message frmThermalMgmtStateMsg mThermal;
-  message ethObjectRiskInputMsg mObjInput;
+  char emergencyFrame[8];
+  char objectFrame[12];
   int speed;
   int driveState;
   int steeringInput;
@@ -880,6 +912,11 @@ on timer tInput100
   int intersectionConflictFlag;
   int mergeCutInFlag;
   int objectAlertHoldMs;
+  int alertState;
+  int emergencyType;
+  int emergencyDirection;
+  int eta;
+  int sourceId;
 
   if (gScenarioInputLock == 1)
   {
@@ -890,6 +927,11 @@ on timer tInput100
     navDirection = clampRange(gLockNavDirection, 0, 3);
     zoneDistance = clampRange(gLockZoneDistance, 0, 255);
     speedLimit = clampRange(gLockSpeedLimit, 0, 255);
+    alertState = clampRange(gLockAlertState, 0, 1);
+    emergencyType = clampRange(gLockEmergencyType, 0, 2);
+    emergencyDirection = clampRange(gLockEmergencyDirection, 0, 3);
+    eta = clampRange(gLockEta, 0, 255);
+    sourceId = clampRange(gLockSourceId, 0, 255);
     pushLockedScenarioInputs();
   }
   else
@@ -901,6 +943,11 @@ on timer tInput100
     navDirection = clampRange((int)@Infotainment::navDirection, 0, 3);
     zoneDistance = clampRange((int)@Infotainment::zoneDistance, 0, 255);
     speedLimit = clampRange((int)@Infotainment::speedLimit, 0, 255);
+    alertState = 0;
+    emergencyType = 0;
+    emergencyDirection = 0;
+    eta = 0;
+    sourceId = 0;
   }
   ignitionState = calcBaselineIgnitionState(speed, driveState);
   engineState = (ignitionState == 1) ? 2 : 0;
@@ -914,10 +961,6 @@ on timer tInput100
   intersectionConflictFlag = clampRange((int)@Core::intersectionConflictFlag, 0, 1);
   mergeCutInFlag = clampRange((int)@Core::mergeCutInFlag, 0, 1);
   objectAlertHoldMs = clampRange((int)@Core::objectAlertHoldMs, 0, 5000);
-
-  mVeh.gVehicleSpeed = speed;
-  mVeh.gDriveState = driveState;
-  output(mVeh);
 
   mStr.SteeringInput = steeringInput;
   output(mStr);
@@ -942,54 +985,28 @@ on timer tInput100
   mPedal.BrakePedal = brakePedal;
   output(mPedal);
 
-  /* Comm_105 baseline gateway/boundary path
-     VCU now owns vehicle-state and powertrain supervisory output frames. */
+  /* Product-side generated frames stay on ECU owners:
+     VCU emits vehicle state, EMS emits engine detail, TCU emits transmission detail. */
 
-  /* Comm_101 baseline powertrain detail path */
-  mEngTemp.EngineRpm = clampRange(speed * 40, 0, 65535);
-  mEngTemp.CoolantTemp = 85;
-  mEngTemp.OilTemp = 90;
-  output(mEngTemp);
+  if (gScenarioInputLock == 1)
+  {
+    ethInitFrame(emergencyFrame, ethMsgEmergencyAlert(), 4);
+    ethSetU8(emergencyFrame, 0, emergencyType | (emergencyDirection << 2));
+    ethSetU8(emergencyFrame, 1, eta);
+    ethSetU8(emergencyFrame, 2, sourceId);
+    ethSetU8(emergencyFrame, 3, alertState);
+    ethSendFrame(gEthSocket, gEthTargetIp, ethMsgEmergencyAlert(), emergencyFrame, 4);
 
-  mFuelBat.FuelLevel = 60;
-  mFuelBat.BatterySoc = 80;
-  mFuelBat.ChargingState = (engineState > 0) ? 1 : 0;
-  output(mFuelBat);
-
-  mThrottle.ThrottlePos = accelPedal;
-  mThrottle.ThrottleReq = accelPedal;
-  output(mThrottle);
-
-  mTransTemp.TransOilTemp = 75;
-  mTransTemp.ClutchTemp = 70;
-  output(mTransTemp);
-
-  /* Comm_204 extension path */
-  mEngineTorque.EngineTorqueAct = clampRange(accelPedal * 5, 0, 65535);
-  output(mEngineTorque);
-
-  mEngineLoad.EngineLoad = accelPedal;
-  output(mEngineLoad);
-
-  mShift.ShiftState = gearState;
-  mShift.ShiftTargetGear = gearState;
-  mShift.ShiftSlip = (driveState == 3 && speed > 90) ? 8 : 0;
-  output(mShift);
-
-  mThermal.ThermalMode = (engineState > 0) ? 1 : 0;
-  mThermal.FanDuty = 12;
-  mThermal.CoolantTarget = 88;
-  output(mThermal);
-
-  /* Comm_130 pre-activation object input contract (E213 SIL stub path). */
-  mObjInput.ObjectTrackValid = objectTrackValid;
-  mObjInput.ObjectRangeM = objectRange;
-  mObjInput.ObjectRelSpeedKph = objectRelSpeed;
-  mObjInput.ObjectConfidence = objectConfidence;
-  mObjInput.IntersectionConflict = intersectionConflictFlag;
-  mObjInput.MergeCutIn = mergeCutInFlag;
-  mObjInput.ObjectAlertHoldMs = objectAlertHoldMs;
-  output(mObjInput);
+    ethInitFrame(objectFrame, ethMsgObjectRiskInput(), 8);
+    ethSetU8(objectFrame, 0, objectTrackValid |
+                           (intersectionConflictFlag << 1) |
+                           (mergeCutInFlag << 2));
+    ethSetU16Le(objectFrame, 1, objectRange);
+    ethSetS16Le(objectFrame, 3, objectRelSpeed);
+    ethSetU8(objectFrame, 5, objectConfidence);
+    ethSetU16Le(objectFrame, 6, objectAlertHoldMs);
+    ethSendFrame(gEthSocket, gEthTargetIp, ethMsgObjectRiskInput(), objectFrame, 8);
+  }
 
   setTimer(tInput100, 100);
 }
@@ -1132,12 +1149,20 @@ on timer tScenarioEval
   renderTextCode = (int)@UiRender::renderTextCode;
   clusterCode = (int)@Cluster::warningTextCode;
 
-  write("[EVIDENCE_OUT] scenario=%d outputTsMs=%lu result=%d level=%d type=%d code=%d timeout=%d risk=%d decel=%d failSafe=%d objValid=%d objClass=%d objTtc=%d objEvent=%d renderType=%d renderCode=%d",
+write("[EVIDENCE_OUT] scenario=%d outputTsMs=%lu result=%d level=%d type=%d code=%d timeout=%d risk=%d decel=%d failSafe=%d objValid=%d objClass=%d objTtc=%d objEvent=%d renderType=%d renderCode=%d",
         gCurrentScenarioId, getSimulationTimeMs(), (int)@Test::scenarioResult,
         coreLevel, coreType, clusterCode, timeoutClear, proximityRiskLevel,
         decelAssistReq, failSafeMode, objectTrackValid, objectRiskClass,
         objectTtcMin, objectEventCode, renderAlertType, renderTextCode);
 
+}
+
+on stopMeasurement
+{
+  stopScenarioExecution();
+  cancelTimer(tInput100);
+  ethCloseSocket(gEthSocket);
+  gEthSocket = ethInvalidSocket();
 }
 
 

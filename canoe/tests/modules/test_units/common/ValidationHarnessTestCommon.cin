@@ -63,6 +63,28 @@ long launchScenarioAndWait(int scenarioId, dword ackTimeoutMs, dword settleMs)
   return 1;
 }
 
+long waitForBaseResult(int scenarioId, dword timeoutMs)
+{
+  dword waitedMs;
+
+  waitedMs = 0;
+  while ((int)@Test::baseScenarioId != scenarioId && waitedMs < timeoutMs)
+  {
+    TestWaitForTimeout(50);
+    waitedMs += 50;
+  }
+
+  if ((int)@Test::baseScenarioId != scenarioId)
+  {
+    testStepFail("base-result-wait", "Base result timeout expected=%d actual=%d waited=%d",
+                 scenarioId, (int)@Test::baseScenarioId, waitedMs);
+    return 0;
+  }
+
+  testStepPass("base-result-wait", "Base result ready for scenario %d", scenarioId);
+  return 1;
+}
+
 void assertIntEq(char stepId[], long expected, long actual, char label[])
 {
   if (expected == actual)

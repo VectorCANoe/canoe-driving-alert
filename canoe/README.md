@@ -1,76 +1,55 @@
 # CANoe Runtime Surface
 
-This folder contains the CANoe runtime project for the driving-situation warning baseline.
-
-## What This Folder Owns
-
-- active CANoe configuration
-- CAPL runtime logic
-- CAN DBC set
-- system variables and panel assets
-- native CANoe test assets
-- CANoe-side operation docs
+This folder keeps the active CANoe runtime only.
 
 ## Start Here
 
-Open these first:
-
 1. `cfg/CAN_v2_topology_wip.cfg`
 2. `FILE_INDEX.md`
-3. `docs/operations/README.md`
+3. `docs/README.md`
 
-## Active Runtime Files
+## Active Surface
 
 - configuration
   - `cfg/CAN_v2_topology_wip.cfg`
 - system variables
   - `project/sysvars/project.sysvars`
-- active DBC set
+- runtime DBCs
   - `databases/chassis_can.dbc`
   - `databases/powertrain_can.dbc`
   - `databases/body_can.dbc`
   - `databases/infotainment_can.dbc`
   - `databases/adas_can.dbc`
-  - `databases/eth_backbone_can_stub.dbc`
 - CAPL source
   - `cfg/channel_assign/`
   - `src/capl/`
+- verification assets
+  - `tests/`
+- active operation docs
+  - `docs/`
+- active maintenance tools
+  - `tools/`
 
 ## GUI-First Rule
 
-Treat these as GUI-first:
+Do not patch these directly unless recovery work is explicitly requested:
 
 - `cfg/*.cfg`
 - `cfg/*.cfg.ini`
 - `cfg/*.stcfg`
 
-Do not patch them directly unless the task explicitly calls for recovery work.
+## Local-Only Paths
 
-## Folder Map
+These may exist on a developer machine but are not part of the active Git surface:
 
-- `cfg/`
-  - CANoe configuration and channel assignment
-- `databases/`
-  - runtime DBC files
-- `project/`
-  - sysvars and panel assets
-- `src/`
-  - CAPL source tree
-- `tests/`
-  - native CANoe test assets
-- `docs/operations/`
-  - CANoe-side working docs
+- `legacy/`
+- `logging/`
+- `reference/`
+- `scripts/`
 - `tmp/`
-  - generated verification outputs and temporary runtime-side artifacts
 
-## What This Folder Is Not
+## Not Owned Here
 
-- not the public operator product surface
-- not the canonical requirements/design document set
-- not the place for internal meeting records
-
-For those surfaces, go to:
-
-- `product/sdv_operator/README.md`
-- `driving-situation-alert/README.md`
-- `docs/README.md`
+- operator product
+- canonical requirements/design document set
+- archive/reference notes

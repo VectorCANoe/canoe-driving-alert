@@ -6,6 +6,8 @@ includes
 variables
 {
   msTimer tAebDomainCycle;
+  long gEthSocket;
+  char gEthRxBuffer[64];
   int gFcwState;
   int gAebRequest;
   int gDecelAssistReq;
@@ -85,8 +87,31 @@ void publishAebDomainState()
   }
 }
 
+void OnUdpReceiveFrom(dword socket, long result, dword address, dword port, char buffer[], dword count)
+{
+  int msgId;
+  int payload0;
+
+  if (socket != gEthSocket)
+  {
+    return;
+  }
+  if (result == 0)
+  {
+    msgId = ethFrameMsgId(buffer, count);
+    if (msgId == ethMsgFailSafe() && ethFramePayloadLen(count) >= 1)
+    {
+      payload0 = ethGetU8(buffer, 0);
+      gFailSafeMode = clampRange((payload0 >> 4) & 0x3, 0, 2);
+    }
+  }
+
+  ethArmReceive(gEthSocket, gEthRxBuffer, elcount(gEthRxBuffer));
+}
+
 on start
 {
+  gEthSocket = ethOpenDefaultSocket();
   gFcwState = 0;
   gAebRequest = 0;
   gDecelAssistReq = 0;
@@ -99,6 +124,10 @@ on start
   gLastDecelProfile = -1;
   gLastHealth = -1;
   gLastRiskClass = -1;
+  if (gEthSocket != ethInvalidSocket())
+  {
+    ethStartReceiver(gEthSocket, gEthRxBuffer, elcount(gEthRxBuffer));
+  }
   setTimer(tAebDomainCycle, 100);
   write("[AEB] start");
 }
@@ -119,12 +148,9 @@ on message frmFcaStateMsg
   gSelectedAlertLevel = clampRange((int)this.SelectedAlertLevel, 0, 7);
 }
 
-on message ethFailSafeStateMsg
-{
-  gFailSafeMode = clampRange((int)this.FailSafeMode, 0, 2);
-}
-
 on stopMeasurement
 {
   cancelTimer(tAebDomainCycle);
+  ethCloseSocket(gEthSocket);
+  gEthSocket = ethInvalidSocket();
 }

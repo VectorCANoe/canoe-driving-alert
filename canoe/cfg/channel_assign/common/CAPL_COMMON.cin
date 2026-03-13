@@ -15,3 +15,253 @@ dword getSimulationTimeMs()
 {
   return (dword)(timeNowInt64() / 1000000);
 }
+
+long ethInvalidSocket()
+{
+  return ~0;
+}
+
+dword ethInvalidIp()
+{
+  return 0xffffffff;
+}
+
+int ethBackbonePort()
+{
+  return 5000;
+}
+
+int ethMsgVehicleState()
+{
+  return 0x510;
+}
+
+int ethMsgSteering()
+{
+  return 0x511;
+}
+
+int ethMsgNavContext()
+{
+  return 0x512;
+}
+
+int ethMsgEmergencyAlert()
+{
+  return 0xE100;
+}
+
+int ethMsgEmergencyMonitor()
+{
+  return 0x1C2;
+}
+
+int ethMsgSelectedAlert()
+{
+  return 0xE200;
+}
+
+int ethMsgEmergencyRisk()
+{
+  return 0xE210;
+}
+
+int ethMsgDecelAssist()
+{
+  return 0xE211;
+}
+
+int ethMsgFailSafe()
+{
+  return 0xE212;
+}
+
+int ethMsgObjectRiskInput()
+{
+  return 0xE213;
+}
+
+int ethMsgObjectRiskState()
+{
+  return 0xE214;
+}
+
+int ethMsgObjectScenarioAlert()
+{
+  return 0xE215;
+}
+
+int ethMsgObjectSafety()
+{
+  return 0xE216;
+}
+
+void ethClearFrame(char frame[], int frameLen)
+{
+  int i;
+
+  for (i = 0; i < frameLen; i = i + 1)
+  {
+    frame[i] = 0;
+  }
+}
+
+void ethInitFrame(char frame[], int msgId, int payloadLen)
+{
+  ethClearFrame(frame, payloadLen + 2);
+  frame[0] = (char)(msgId & 0xFF);
+  frame[1] = (char)((msgId >> 8) & 0xFF);
+}
+
+int ethFrameMsgId(char frame[], dword count)
+{
+  if (count < 2)
+  {
+    return -1;
+  }
+
+  return (((int)frame[1] & 0xFF) << 8) | ((int)frame[0] & 0xFF);
+}
+
+int ethFramePayloadLen(dword count)
+{
+  if (count < 2)
+  {
+    return 0;
+  }
+  return (int)(count - 2);
+}
+
+void ethSetU8(char frame[], int payloadIndex, int value)
+{
+  frame[payloadIndex + 2] = (char)(value & 0xFF);
+}
+
+int ethGetU8(char frame[], int payloadIndex)
+{
+  return ((int)frame[payloadIndex + 2] & 0xFF);
+}
+
+void ethSetU16Le(char frame[], int payloadIndex, int value)
+{
+  frame[payloadIndex + 2] = (char)(value & 0xFF);
+  frame[payloadIndex + 3] = (char)((value >> 8) & 0xFF);
+}
+
+int ethGetU16Le(char frame[], int payloadIndex)
+{
+  int lo;
+  int hi;
+
+  lo = ((int)frame[payloadIndex + 2] & 0xFF);
+  hi = ((int)frame[payloadIndex + 3] & 0xFF);
+  return lo | (hi << 8);
+}
+
+void ethSetS16Le(char frame[], int payloadIndex, int value)
+{
+  ethSetU16Le(frame, payloadIndex, value & 0xFFFF);
+}
+
+int ethGetS16Le(char frame[], int payloadIndex)
+{
+  int value;
+
+  value = ethGetU16Le(frame, payloadIndex);
+  if (value >= 32768)
+  {
+    value = value - 65536;
+  }
+  return value;
+}
+
+dword ethBackboneGroupIp()
+{
+  return IpGetAddressAsNumber("239.0.2.1");
+}
+
+dword ethGetDefaultIpAddress()
+{
+  return ethBackboneGroupIp();
+}
+
+long ethOpenNodeSocket(int localPort)
+{
+  long socket;
+
+  socket = UdpOpen(0, localPort);
+  if (socket == ethInvalidSocket())
+  {
+    write("[ETH] open failed port=%d err=%d", localPort, IpGetLastError());
+  }
+  return socket;
+}
+
+long ethOpenDefaultSocket()
+{
+  return ethOpenNodeSocket(ethBackbonePort());
+}
+
+void ethCloseSocket(long socket)
+{
+  if (socket != ethInvalidSocket())
+  {
+    UdpClose(socket);
+  }
+}
+
+int ethArmReceive(long socket, char rxBuffer[], int rxBufferSize)
+{
+  int result;
+  int lastError;
+  char lastErrorText[256];
+
+  result = UdpReceiveFrom(socket, rxBuffer, rxBufferSize);
+  if (result != 0)
+  {
+    lastError = IpGetLastSocketError(socket);
+    if (lastError != 997)
+    {
+      IpGetLastSocketErrorAsString(socket, lastErrorText, elcount(lastErrorText));
+      write("[ETH] recv error=%d %s", lastError, lastErrorText);
+    }
+  }
+  return result;
+}
+
+int ethStartReceiver(long socket, char rxBuffer[], int rxBufferSize)
+{
+  int result;
+
+  if (socket == ethInvalidSocket())
+  {
+    return -1;
+  }
+
+  result = ipJoinMulticastGroup(socket, 1, ethBackboneGroupIp());
+  if (result != 0)
+  {
+    write("[ETH] join multicast failed result=%d", result);
+  }
+
+  return ethArmReceive(socket, rxBuffer, rxBufferSize);
+}
+
+int ethSendFrame(long socket, dword targetIp, int msgId, char frame[], int payloadLen)
+{
+  int frameLen;
+
+  if (socket == ethInvalidSocket())
+  {
+    return -1;
+  }
+  if (targetIp == ethInvalidIp())
+  {
+    targetIp = ethBackboneGroupIp();
+  }
+
+  frame[0] = (char)(msgId & 0xFF);
+  frame[1] = (char)((msgId >> 8) & 0xFF);
+  frameLen = payloadLen + 2;
+  return UdpSendTo(socket, targetIp, ethBackbonePort(), frame, frameLen);
+}
