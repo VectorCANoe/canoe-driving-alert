@@ -13,34 +13,93 @@ variables
   int gIviMemLoad;
   int gTmuServiceMode;
   int gDownloadPercent;
+  dword gConnRxMs;
+  dword gIviHealthRxMs;
+  dword gTmuServiceRxMs;
+  int gLastConnInputStale;
+  int gLastIviHealthInputStale;
+  int gLastTmuInputStale;
   int gLastSessionState;
   int gLastPackageReady;
   int gLastWindowOpen;
 }
 
+void traceOtaInputHealth(int connInputStale, int iviHealthInputStale, int tmuInputStale)
+{
+  if (connInputStale != gLastConnInputStale)
+  {
+    write("[OTA] connectivity input %s", connInputStale == 1 ? "stale" : "restored");
+    gLastConnInputStale = connInputStale;
+  }
+
+  if (iviHealthInputStale != gLastIviHealthInputStale)
+  {
+    write("[OTA] ivi-health input %s", iviHealthInputStale == 1 ? "stale" : "restored");
+    gLastIviHealthInputStale = iviHealthInputStale;
+  }
+
+  if (tmuInputStale != gLastTmuInputStale)
+  {
+    write("[OTA] tmu input %s", tmuInputStale == 1 ? "stale" : "restored");
+    gLastTmuInputStale = tmuInputStale;
+  }
+}
+
 void publishOtaState()
 {
   message frmOtaMasterStateMsg mOta;
+  int connInputStale;
+  int iviHealthInputStale;
+  int tmuInputStale;
   int failSafeMode;
   int driveState;
+  int connState;
+  int signalBars;
+  int iviCpuLoad;
+  int iviMemLoad;
+  int tmuServiceMode;
   int sessionState;
   int packageReady;
   int updateWindowOpen;
   int rolloutStage;
 
+  connInputStale = (ethIsRecentTick(gConnRxMs, 300) == 1) ? 0 : 1;
+  iviHealthInputStale = (ethIsRecentTick(gIviHealthRxMs, 300) == 1) ? 0 : 1;
+  tmuInputStale = (ethIsRecentTick(gTmuServiceRxMs, 300) == 1) ? 0 : 1;
+  traceOtaInputHealth(connInputStale, iviHealthInputStale, tmuInputStale);
+
   failSafeMode = clampRange((int)@Core::failSafeMode, 0, 2);
   driveState = clampRange((int)@Core::driveStateNorm, 0, 3);
+  connState = gConnState;
+  signalBars = gSignalBars;
+  iviCpuLoad = gIviCpuLoad;
+  iviMemLoad = gIviMemLoad;
+  tmuServiceMode = gTmuServiceMode;
+  if (connInputStale == 1)
+  {
+    connState = 0;
+    signalBars = 0;
+  }
+  if (iviHealthInputStale == 1)
+  {
+    iviCpuLoad = 100;
+    iviMemLoad = 100;
+  }
+  if (tmuInputStale == 1)
+  {
+    tmuServiceMode = 0;
+  }
 
-  packageReady = (gTmuServiceMode == 1 &&
-                  gConnState > 0 &&
-                  gSignalBars >= 2 &&
-                  gIviCpuLoad < 80 &&
-                  gIviMemLoad < 80) ? 1 : 0;
+  packageReady = (tmuServiceMode == 1 &&
+                  connState > 0 &&
+                  signalBars >= 2 &&
+                  iviCpuLoad < 80 &&
+                  iviMemLoad < 80) ? 1 : 0;
 
   updateWindowOpen = (driveState == 0 && failSafeMode == 0) ? 1 : 0;
 
   sessionState = 0;
-  if (failSafeMode > 0 || gConnState == 0)
+  if (failSafeMode > 0 || connState == 0)
   {
     sessionState = 3;
   }
@@ -48,7 +107,7 @@ void publishOtaState()
   {
     sessionState = 2;
   }
-  else if (packageReady == 1 || gConnState > 0)
+  else if (packageReady == 1 || connState > 0)
   {
     sessionState = 1;
   }
@@ -107,6 +166,12 @@ on start
   gIviMemLoad = 0;
   gTmuServiceMode = 0;
   gDownloadPercent = 0;
+  gConnRxMs = 0;
+  gIviHealthRxMs = 0;
+  gTmuServiceRxMs = 0;
+  gLastConnInputStale = 0;
+  gLastIviHealthInputStale = 0;
+  gLastTmuInputStale = 0;
   gLastSessionState = -1;
   gLastPackageReady = -1;
   gLastWindowOpen = -1;
@@ -125,17 +190,20 @@ on message frmConnectivityStateMsg
   gConnType = clampRange((int)this.ConnectivityType, 0, 7);
   gConnState = clampRange((int)this.ConnectivityState, 0, 7);
   gSignalBars = clampRange((int)this.SignalBars, 0, 15);
+  gConnRxMs = getSimulationTimeMs();
 }
 
 on message frmIviHealthDetailMsg
 {
   gIviCpuLoad = clampRange((int)this.IviCpuLoad, 0, 100);
   gIviMemLoad = clampRange((int)this.IviMemLoad, 0, 100);
+  gIviHealthRxMs = getSimulationTimeMs();
 }
 
 on message frmTmuServiceStateMsg
 {
   gTmuServiceMode = clampRange((int)this.TmuServiceMode, 0, 3);
+  gTmuServiceRxMs = getSimulationTimeMs();
 }
 
 on stopMeasurement

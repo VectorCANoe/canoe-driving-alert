@@ -9,10 +9,21 @@ variables
   int gServiceMode;
   int gSignalBars;
   int gRemoteClimateReq;
+  dword gTmuServiceRxMs;
+  int gLastTmuInputStale;
   int gLastPayState;
   int gLastWallet;
   int gLastReceipt;
   int gLastQuality;
+}
+
+void traceCpayInputHealth(int tmuInputStale)
+{
+  if (tmuInputStale != gLastTmuInputStale)
+  {
+    write("[CPAY] tmu input %s", tmuInputStale == 1 ? "stale" : "restored");
+    gLastTmuInputStale = tmuInputStale;
+  }
 }
 
 on start
@@ -20,6 +31,8 @@ on start
   gServiceMode = 0;
   gSignalBars = 0;
   gRemoteClimateReq = 0;
+  gTmuServiceRxMs = 0;
+  gLastTmuInputStale = 0;
   gLastPayState = -1;
   gLastWallet = -1;
   gLastReceipt = -1;
@@ -33,24 +46,42 @@ on message frmTmuServiceStateMsg
   gServiceMode = clampRange((int)this.TmuServiceMode, 0, 3);
   gRemoteClimateReq = clampRange((int)this.RemoteClimateReq, 0, 1);
   gSignalBars = clampRange((int)this.SignalBars, 0, 15);
+  gTmuServiceRxMs = getSimulationTimeMs();
 }
 
 on timer tCarpayCycle
 {
   message frmCarpayCtrlStateMsg mPay;
+  int tmuInputStale;
+  int serviceMode;
+  int signalBars;
+  int remoteClimateReq;
   int paymentState;
   int walletLinkState;
   int receiptPending;
   int serviceQuality;
 
-  walletLinkState = (gServiceMode > 0 && gSignalBars >= 2) ? 1 : 0;
+  tmuInputStale = (ethIsRecentTick(gTmuServiceRxMs, 300) == 1) ? 0 : 1;
+  traceCpayInputHealth(tmuInputStale);
+
+  serviceMode = gServiceMode;
+  signalBars = gSignalBars;
+  remoteClimateReq = gRemoteClimateReq;
+  if (tmuInputStale == 1)
+  {
+    serviceMode = 0;
+    signalBars = 0;
+    remoteClimateReq = 0;
+  }
+
+  walletLinkState = (serviceMode > 0 && signalBars >= 2) ? 1 : 0;
   paymentState = 0;
   if (walletLinkState == 1)
   {
-    paymentState = (gRemoteClimateReq == 1) ? 2 : 1;
+    paymentState = (remoteClimateReq == 1) ? 2 : 1;
   }
   receiptPending = (paymentState == 2) ? 1 : 0;
-  serviceQuality = clampRange(gSignalBars * 20, 0, 100);
+  serviceQuality = clampRange(signalBars * 20, 0, 100);
 
   mPay.PaymentState = clampRange(paymentState, 0, 7);
   mPay.WalletLinkState = clampRange(walletLinkState, 0, 3);
@@ -68,7 +99,7 @@ on timer tCarpayCycle
           mPay.WalletLinkState,
           mPay.ReceiptPending,
           mPay.ServiceQuality,
-          gSignalBars);
+          signalBars);
     gLastPayState = mPay.PaymentState;
     gLastWallet = mPay.WalletLinkState;
     gLastReceipt = mPay.ReceiptPending;

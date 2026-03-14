@@ -14,13 +14,24 @@ variables
   int gObjectRiskClass;
   int gTtcBucket;
   int gSelectedAlertLevel;
+  dword gFcaRxMs;
   int gFailSafeMode;
   dword gFailSafeRxTsMs;
+  int gLastFcaInputStale;
   int gLastArmed;
   int gLastStopReq;
   int gLastDecelProfile;
   int gLastHealth;
   int gLastRiskClass;
+}
+
+void traceAebInputHealth(int fcaInputStale)
+{
+  if (fcaInputStale != gLastFcaInputStale)
+  {
+    write("[AEB] fca input %s", fcaInputStale == 1 ? "stale" : "restored");
+    gLastFcaInputStale = fcaInputStale;
+  }
 }
 
 int getEffectiveFailSafeMode()
@@ -38,25 +49,51 @@ int getEffectiveFailSafeMode()
 void publishAebDomainState()
 {
   message frmAebDomainStateMsg mAeb;
+  int fcaInputStale;
+  int fcwState;
+  int aebRequest;
+  int decelAssistReq;
+  int objectRiskClass;
+  int ttcBucket;
+  int selectedAlertLevel;
   int aebArmed;
   int stopReq;
   int decelProfile;
   int domainHealth;
   int failSafeMode;
 
+  fcaInputStale = (ethIsRecentTick(gFcaRxMs, 300) == 1) ? 0 : 1;
+  traceAebInputHealth(fcaInputStale);
+
   failSafeMode = getEffectiveFailSafeMode();
-  aebArmed = (gFcwState >= 1 && failSafeMode < 2) ? 1 : 0;
-  stopReq = (gAebRequest == 1 && failSafeMode < 2) ? 1 : 0;
+  fcwState = gFcwState;
+  aebRequest = gAebRequest;
+  decelAssistReq = gDecelAssistReq;
+  objectRiskClass = gObjectRiskClass;
+  ttcBucket = gTtcBucket;
+  selectedAlertLevel = gSelectedAlertLevel;
+  if (fcaInputStale == 1)
+  {
+    fcwState = 0;
+    aebRequest = 0;
+    decelAssistReq = 0;
+    objectRiskClass = 0;
+    ttcBucket = 255;
+    selectedAlertLevel = 0;
+  }
+
+  aebArmed = (fcwState >= 1 && failSafeMode < 2) ? 1 : 0;
+  stopReq = (aebRequest == 1 && failSafeMode < 2) ? 1 : 0;
 
   decelProfile = 0;
-  if (gDecelAssistReq == 1)
+  if (decelAssistReq == 1)
   {
     decelProfile = 1;
-    if (gObjectRiskClass >= 4 || gTtcBucket <= 10)
+    if (objectRiskClass >= 4 || ttcBucket <= 10)
     {
       decelProfile = 3;
     }
-    else if (gObjectRiskClass >= 2 || gTtcBucket <= 20)
+    else if (objectRiskClass >= 2 || ttcBucket <= 20)
     {
       decelProfile = 2;
     }
@@ -71,34 +108,38 @@ void publishAebDomainState()
   {
     domainHealth = 0;
   }
+  if (fcaInputStale == 1 && domainHealth > 1)
+  {
+    domainHealth = 1;
+  }
 
   mAeb.AebArmed = aebArmed;
   mAeb.StopReq = stopReq;
   mAeb.DecelProfile = clampRange(decelProfile, 0, 3);
   mAeb.DomainHealth = clampRange(domainHealth, 0, 3);
-  mAeb.ObjectRiskClass = clampRange(gObjectRiskClass, 0, 7);
-  mAeb.SelectedAlertLevel = clampRange(gSelectedAlertLevel, 0, 7);
-  mAeb.TtcBucket = clampRange(gTtcBucket, 0, 255);
+  mAeb.ObjectRiskClass = clampRange(objectRiskClass, 0, 7);
+  mAeb.SelectedAlertLevel = clampRange(selectedAlertLevel, 0, 7);
+  mAeb.TtcBucket = clampRange(ttcBucket, 0, 255);
   output(mAeb);
 
   if (aebArmed != gLastArmed ||
       stopReq != gLastStopReq ||
       decelProfile != gLastDecelProfile ||
       domainHealth != gLastHealth ||
-      gObjectRiskClass != gLastRiskClass)
+      objectRiskClass != gLastRiskClass)
   {
     write("[AEB] armed=%d stop=%d profile=%d health=%d risk=%d ttc=%d",
           aebArmed,
           stopReq,
           decelProfile,
           domainHealth,
-          gObjectRiskClass,
-          gTtcBucket);
+          objectRiskClass,
+          ttcBucket);
     gLastArmed = aebArmed;
     gLastStopReq = stopReq;
     gLastDecelProfile = decelProfile;
     gLastHealth = domainHealth;
-    gLastRiskClass = gObjectRiskClass;
+    gLastRiskClass = objectRiskClass;
   }
 }
 
@@ -134,8 +175,10 @@ on start
   gObjectRiskClass = 0;
   gTtcBucket = 255;
   gSelectedAlertLevel = 0;
+  gFcaRxMs = 0;
   gFailSafeMode = 0;
   gFailSafeRxTsMs = 0;
+  gLastFcaInputStale = 0;
   gLastArmed = -1;
   gLastStopReq = -1;
   gLastDecelProfile = -1;
@@ -163,6 +206,7 @@ on message frmFcaStateMsg
   gObjectRiskClass = clampRange((int)this.ObjectRiskClass, 0, 7);
   gTtcBucket = clampRange((int)this.TtcBucket, 0, 255);
   gSelectedAlertLevel = clampRange((int)this.SelectedAlertLevel, 0, 7);
+  gFcaRxMs = getSimulationTimeMs();
 }
 
 on stopMeasurement

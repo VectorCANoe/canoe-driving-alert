@@ -11,6 +11,12 @@ variables
   int gLaneGuideState;
   int gDmsActive;
   int gAttentionLevel;
+  dword gCruiseRxMs;
+  dword gLaneGuideRxMs;
+  dword gDmsRxMs;
+  int gLastCruiseInputStale;
+  int gLastLaneGuideInputStale;
+  int gLastDmsInputStale;
   int gLastReady;
   int gLastLongCtrl;
   int gLastLatCtrl;
@@ -18,22 +24,75 @@ variables
   int gLastAvail;
 }
 
+void traceHwpInputHealth(int cruiseInputStale, int laneGuideInputStale, int dmsInputStale)
+{
+  if (cruiseInputStale != gLastCruiseInputStale)
+  {
+    write("[HWP] cruise input %s", cruiseInputStale == 1 ? "stale" : "restored");
+    gLastCruiseInputStale = cruiseInputStale;
+  }
+
+  if (laneGuideInputStale != gLastLaneGuideInputStale)
+  {
+    write("[HWP] lane-guide input %s", laneGuideInputStale == 1 ? "stale" : "restored");
+    gLastLaneGuideInputStale = laneGuideInputStale;
+  }
+
+  if (dmsInputStale != gLastDmsInputStale)
+  {
+    write("[HWP] dms input %s", dmsInputStale == 1 ? "stale" : "restored");
+    gLastDmsInputStale = dmsInputStale;
+  }
+}
+
 void publishHighwayPilotState()
 {
   message frmHighwayPilotStateMsg mHp;
   int baseZoneContext;
+  int cruiseInputStale;
+  int laneGuideInputStale;
+  int dmsInputStale;
+  int cruiseState;
+  int setSpeed;
+  int laneGuideState;
+  int dmsActive;
+  int attentionLevel;
   int highwayReady;
   int longCtrlActive;
   int latCtrlActive;
   int driverMonitorReq;
   int availabilityLevel;
 
-  baseZoneContext = clampRange((int)@Core::baseZoneContext, 0, 7);
+  cruiseInputStale = (ethIsRecentTick(gCruiseRxMs, 300) == 1) ? 0 : 1;
+  laneGuideInputStale = (ethIsRecentTick(gLaneGuideRxMs, 300) == 1) ? 0 : 1;
+  dmsInputStale = (ethIsRecentTick(gDmsRxMs, 300) == 1) ? 0 : 1;
+  traceHwpInputHealth(cruiseInputStale, laneGuideInputStale, dmsInputStale);
 
-  highwayReady = (baseZoneContext == 2 && gCruiseState >= 1 && gAttentionLevel <= 2) ? 1 : 0;
-  longCtrlActive = (highwayReady == 1 && gCruiseState == 2) ? 1 : 0;
-  latCtrlActive = (highwayReady == 1 && gLaneGuideState >= 2) ? 1 : 0;
-  driverMonitorReq = (gDmsActive == 1 && gAttentionLevel >= 2) ? 1 : 0;
+  baseZoneContext = clampRange((int)@Core::baseZoneContext, 0, 7);
+  cruiseState = gCruiseState;
+  setSpeed = gSetSpeed;
+  laneGuideState = gLaneGuideState;
+  dmsActive = gDmsActive;
+  attentionLevel = gAttentionLevel;
+  if (cruiseInputStale == 1)
+  {
+    cruiseState = 0;
+    setSpeed = 0;
+  }
+  if (laneGuideInputStale == 1)
+  {
+    laneGuideState = 0;
+  }
+  if (dmsInputStale == 1)
+  {
+    dmsActive = 1;
+    attentionLevel = 3;
+  }
+
+  highwayReady = (baseZoneContext == 2 && cruiseState >= 1 && attentionLevel <= 2) ? 1 : 0;
+  longCtrlActive = (highwayReady == 1 && cruiseState == 2) ? 1 : 0;
+  latCtrlActive = (highwayReady == 1 && laneGuideState >= 2) ? 1 : 0;
+  driverMonitorReq = (dmsActive == 1 && attentionLevel >= 2) ? 1 : 0;
 
   availabilityLevel = 0;
   if (highwayReady == 1)
@@ -54,9 +113,9 @@ void publishHighwayPilotState()
   mHp.LatCtrlActive = latCtrlActive;
   mHp.DriverMonitorReq = driverMonitorReq;
   mHp.AvailabilityLevel = clampRange(availabilityLevel, 0, 3);
-  mHp.SetSpeed = clampRange(gSetSpeed, 0, 255);
-  mHp.LaneGuideState = clampRange(gLaneGuideState, 0, 3);
-  mHp.CruiseState = clampRange(gCruiseState, 0, 3);
+  mHp.SetSpeed = clampRange(setSpeed, 0, 255);
+  mHp.LaneGuideState = clampRange(laneGuideState, 0, 3);
+  mHp.CruiseState = clampRange(cruiseState, 0, 3);
   output(mHp);
 
   if (highwayReady != gLastReady ||
@@ -71,8 +130,8 @@ void publishHighwayPilotState()
           latCtrlActive,
           driverMonitorReq,
           availabilityLevel,
-          gSetSpeed,
-          gLaneGuideState);
+          setSpeed,
+          laneGuideState);
     gLastReady = highwayReady;
     gLastLongCtrl = longCtrlActive;
     gLastLatCtrl = latCtrlActive;
@@ -88,6 +147,12 @@ on start
   gLaneGuideState = 0;
   gDmsActive = 0;
   gAttentionLevel = 1;
+  gCruiseRxMs = 0;
+  gLaneGuideRxMs = 0;
+  gDmsRxMs = 0;
+  gLastCruiseInputStale = 0;
+  gLastLaneGuideInputStale = 0;
+  gLastDmsInputStale = 0;
   gLastReady = -1;
   gLastLongCtrl = -1;
   gLastLatCtrl = -1;
@@ -107,17 +172,20 @@ on message frmCruiseStateMsg
 {
   gCruiseState = clampRange((int)this.CruiseState, 0, 3);
   gSetSpeed = clampRange((int)this.CruiseSetSpeed, 0, 255);
+  gCruiseRxMs = getSimulationTimeMs();
 }
 
 on message frmLdwsLkasStateMsg
 {
   gLaneGuideState = clampRange((int)this.LaneGuideState, 0, 3);
+  gLaneGuideRxMs = getSimulationTimeMs();
 }
 
 on message frmDmsStateMsg
 {
   gDmsActive = clampRange((int)this.DriverMonitorActive, 0, 1);
   gAttentionLevel = clampRange((int)this.AttentionLevel, 0, 3);
+  gDmsRxMs = getSimulationTimeMs();
 }
 
 on stopMeasurement
