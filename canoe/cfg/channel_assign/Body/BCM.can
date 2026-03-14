@@ -82,6 +82,7 @@ on start
   gBackboneAlertType = 0;
   gBackboneTimeoutClear = 0;
   gBackboneAlertTsMs = 0;
+  @CoreState::bodyHealthTick = 0;
   if (gEthSocket != ethInvalidSocket())
   {
     ethStartReceiver(gEthSocket, gEthRxBuffer, elcount(gEthRxBuffer));
@@ -209,7 +210,6 @@ on timer tBodyBase100
   message frmInteriorLightMsg mLight;
   message frmRainLightAutoMsg mRain;
   int hazardActive;
-  int navDirection;
   int seatBeltOverride;
   int ambientMode;
   if (useBackboneAlertState() == 1)
@@ -220,13 +220,8 @@ on timer tBodyBase100
   {
     hazardActive = ((int)@Core::selectedAlertLevel >= 6) ? 1 : 0;
   }
-  navDirection = (int)@Infotainment::navDirection;
   seatBeltOverride = (int)@Test::seatBeltOverride;
   ambientMode = clampRange((int)@Body::ambientMode, 0, 7);
-  if (navDirection < 0 || navDirection > 3)
-  {
-    navDirection = 0;
-  }
   if (seatBeltOverride < 0 || seatBeltOverride > 3)
   {
     seatBeltOverride = 0;
@@ -260,16 +255,9 @@ on timer tBodyBase100
   {
     mLamp.TurnLampState = 3;
   }
-  else if (navDirection == 1)
-  {
-    mLamp.TurnLampState = 1;
-  }
-  else if (navDirection == 2)
-  {
-    mLamp.TurnLampState = 2;
-  }
   else
   {
+    /* Do not synthesize body turn lamps from navigation guidance. */
     mLamp.TurnLampState = 0;
   }
   mLamp.HazardLampReq = hazardActive;
@@ -309,6 +297,7 @@ on timer tBodyBase100
   mHealth.BodyAliveCnt = gBodyAliveCnt & 0xFF;
   mHealth.BodyFailCode = 0;
   output(mHealth);
+  @CoreState::bodyHealthTick = mHealth.BodyAliveCnt;
 
   mSeatState.DriverSeatPos = 120;
   mSeatState.PassengerSeatPos = 118;

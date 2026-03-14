@@ -8,6 +8,7 @@ variables
   msTimer tAdasCycle;
   msTimer tArbiter50;
   long gEthSocket;
+  long gEthTxSocket;
   dword gEthTargetIp;
   char gEthRxBuffer[64];
   int gLastWarningState;
@@ -23,10 +24,8 @@ variables
   int gLastAlertType;
   int gLastDecelAssistReq;
   int gLastDriverReleaseReason;
+  int gLastReportedDriverReleaseReason;
   int gPrevEmergencyContext;
-  int gPreEmergencyAlertLevel;
-  int gPreEmergencyAlertType;
-  int gPreEmergencySnapshotValid;
   dword gLastStableAlertMs;
   int gStableAlertLevel;
   int gStableAlertType;
@@ -37,6 +36,11 @@ variables
   int gLastObjectAlertType;
 }
 
+int getAdasTxPort()
+{
+  return ethBackbonePort() + 5;
+}
+
 void publishBackboneDecisionFrames()
 {
   char riskFrame[8];
@@ -45,8 +49,14 @@ void publishBackboneDecisionFrames()
   char objRiskFrame[8];
   char objAlertFrame[6];
   int emergencyContext;
+  long txSocket;
 
   emergencyContext = clampRange((int)@Core::emergencyContext, 0, 2);
+  txSocket = gEthTxSocket;
+  if (txSocket == ethInvalidSocket())
+  {
+    txSocket = gEthSocket;
+  }
 
   ethInitFrame(riskFrame, ethMsgEmergencyRisk(), 4);
   ethSetU8(riskFrame, 0, clampRange((int)@Core::proximityRiskLevel, 0, 100));
@@ -54,7 +64,7 @@ void publishBackboneDecisionFrames()
   ethSetU8(riskFrame, 2, clampRange((int)@Core::vehicleSpeedNorm, 0, 255));
   ethSetU8(riskFrame, 3, clampRange((int)@V2X::emergencyDirection, 0, 3) |
                        (clampRange(emergencyContext, 0, 3) << 2));
-  ethSendFrame(gEthSocket, gEthTargetIp, ethMsgEmergencyRisk(), riskFrame, 4);
+  ethSendFrame(txSocket, gEthTargetIp, ethMsgEmergencyRisk(), riskFrame, 4);
 
   ethInitFrame(decelFrame, ethMsgDecelAssist(), 2);
   ethSetU8(decelFrame, 0, ((((int)@Core::decelAssistReq) == 1) ? 1 : 0) |
@@ -62,13 +72,13 @@ void publishBackboneDecisionFrames()
                           (clampRange(gLastDriverReleaseReason, 0, 3) << 3) |
                           (clampRange(emergencyContext, 0, 3) << 5));
   ethSetU8(decelFrame, 1, clampRange((int)@Core::proximityRiskLevel, 0, 100));
-  ethSendFrame(gEthSocket, gEthTargetIp, ethMsgDecelAssist(), decelFrame, 2);
+  ethSendFrame(txSocket, gEthTargetIp, ethMsgDecelAssist(), decelFrame, 2);
 
   ethInitFrame(alertFrame, ethMsgSelectedAlert(), 2);
   ethSetU8(alertFrame, 0, clampRange((int)@Core::selectedAlertLevel, 0, 7) |
                           (clampRange((int)@Core::selectedAlertType, 0, 7) << 3));
   ethSetU8(alertFrame, 1, (((int)@Core::timeoutClear) == 1) ? 1 : 0);
-  ethSendFrame(gEthSocket, gEthTargetIp, ethMsgSelectedAlert(), alertFrame, 2);
+  ethSendFrame(txSocket, gEthTargetIp, ethMsgSelectedAlert(), alertFrame, 2);
 
   ethInitFrame(objRiskFrame, ethMsgObjectRiskState(), 6);
   ethSetU8(objRiskFrame, 0, clampRange((int)@Core::objectRiskClass, 0, 7));
@@ -76,7 +86,7 @@ void publishBackboneDecisionFrames()
   ethSetU8(objRiskFrame, 3, clampRange(gLastObjectRiskLevel, 0, 100));
   ethSetU8(objRiskFrame, 4, clampRange((int)@Core::objectTrackValid, 0, 1));
   ethSetU8(objRiskFrame, 5, clampRange((int)@Core::objectConfidence, 0, 100));
-  ethSendFrame(gEthSocket, gEthTargetIp, ethMsgObjectRiskState(), objRiskFrame, 6);
+  ethSendFrame(txSocket, gEthTargetIp, ethMsgObjectRiskState(), objRiskFrame, 6);
 
   ethInitFrame(objAlertFrame, ethMsgObjectScenarioAlert(), 3);
   ethSetU8(objAlertFrame, 0, clampRange(gLastObjectAlertLevel, 0, 7) |
@@ -84,7 +94,7 @@ void publishBackboneDecisionFrames()
   ethSetU8(objAlertFrame, 1, clampRange((int)@Core::intersectionConflictFlag, 0, 1) |
                             (clampRange((int)@Core::mergeCutInFlag, 0, 1) << 1));
   ethSetU8(objAlertFrame, 2, clampRange((int)@Core::objectRiskClass, 0, 7));
-  ethSendFrame(gEthSocket, gEthTargetIp, ethMsgObjectScenarioAlert(), objAlertFrame, 3);
+  ethSendFrame(txSocket, gEthTargetIp, ethMsgObjectScenarioAlert(), objAlertFrame, 3);
 }
 
 int calcProximityRisk(int emergencyContext, int etaSec, int speed, int emergencyDirection, int driveState)
@@ -476,16 +486,22 @@ void runArbiter()
     driverReleaseReason = 3;
   }
 
+  if (decelAssistReq == 1)
+  {
+    gLastDriverReleaseReason = 0;
+  }
+  else if (driverReleaseReason != 0)
+  {
+    gLastDriverReleaseReason = driverReleaseReason;
+  }
+
   baseAlertLevel = getBaseAlertLevel(baseZoneContext, warningState);
   baseAlertType = getBaseAlertType(baseZoneContext, warningState);
 
   if (emergencyContext > 0 && gPrevEmergencyContext == 0)
   {
-    gPreEmergencyAlertLevel = baseAlertLevel;
-    gPreEmergencyAlertType = baseAlertType;
-    gPreEmergencySnapshotValid = 1;
-    write("[ADAS] Alert preempt zone lvl=%d type=%d -> emergency=%d",
-          gPreEmergencyAlertLevel, gPreEmergencyAlertType, emergencyContext);
+    write("[ADAS] Alert preempt base lvl=%d type=%d -> emergency=%d",
+          baseAlertLevel, baseAlertType, emergencyContext);
   }
 
   if (emergencyContext == 2)
@@ -502,7 +518,6 @@ void runArbiter()
   {
     selectedAlertLevel = baseAlertLevel;
     selectedAlertType = baseAlertType;
-    gPreEmergencySnapshotValid = 0;
   }
   else
   {
@@ -664,14 +679,14 @@ void runArbiter()
     gLastAlertType = selectedAlertType;
   }
   if (gLastDecelAssistReq != decelAssistReq ||
-      gLastDriverReleaseReason != driverReleaseReason)
+      gLastReportedDriverReleaseReason != gLastDriverReleaseReason)
   {
     write("[ADAS] decelAssistReq=%d risk=%d failSafe=%d steer=%d brake=%d reason=%d objClass=%d objTtc=%d objConf=%d",
           decelAssistReq, proximityRiskLevel, failSafeMode,
-          steeringInput, brakePedal, driverReleaseReason,
+          steeringInput, brakePedal, gLastDriverReleaseReason,
           objectRiskClass, objectTtcMin, objectConfidence);
     gLastDecelAssistReq = decelAssistReq;
-    gLastDriverReleaseReason = driverReleaseReason;
+    gLastReportedDriverReleaseReason = gLastDriverReleaseReason;
   }
 
   gPrevEmergencyContext = emergencyContext;
@@ -978,6 +993,7 @@ void OnUdpReceiveFrom(dword socket, long result, dword address, dword port, char
 on start
 {
   gEthSocket = ethOpenDefaultSocket();
+  gEthTxSocket = ethOpenNodeSocket(getAdasTxPort());
   gEthTargetIp = ethGetDefaultIpAddress();
   gLastWarningState = -1;
   gHighwayNoSteerStartMs = 0;
@@ -991,11 +1007,9 @@ on start
   gLastAlertLevel = -1;
   gLastAlertType = -1;
   gLastDecelAssistReq = -1;
-  gLastDriverReleaseReason = -1;
+  gLastDriverReleaseReason = 0;
+  gLastReportedDriverReleaseReason = -1;
   gPrevEmergencyContext = 0;
-  gPreEmergencyAlertLevel = 0;
-  gPreEmergencyAlertType = 0;
-  gPreEmergencySnapshotValid = 0;
   gLastStableAlertMs = 0;
   gStableAlertLevel = -1;
   gStableAlertType = -1;
@@ -1016,6 +1030,10 @@ on start
   @Core::objectAlertHoldMs = 300;
   @Core::objectEventCode = 0;
   @Core::decelAssistReq = 0;
+  if (gEthTxSocket == ethInvalidSocket())
+  {
+    write("[ADAS] tx socket fallback to shared backbone port");
+  }
   if (gEthSocket != ethInvalidSocket())
   {
     ethStartReceiver(gEthSocket, gEthRxBuffer, elcount(gEthRxBuffer));
@@ -1042,6 +1060,8 @@ on stopMeasurement
 {
   cancelTimer(tAdasCycle);
   cancelTimer(tArbiter50);
+  ethCloseSocket(gEthTxSocket);
+  gEthTxSocket = ethInvalidSocket();
   ethCloseSocket(gEthSocket);
   gEthSocket = ethInvalidSocket();
 }

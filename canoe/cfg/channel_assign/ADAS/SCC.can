@@ -52,6 +52,7 @@ void publishCruiseState()
     }
     else if (riskLevel >= 40 || selectedAlertLevel >= 4)
     {
+      cruiseState = 2;
       gapLevel = 3;
       cruiseSetSpeed = gVehicleSpeed - 5;
     }

@@ -7,6 +7,7 @@ variables
 {
   msTimer tVcuCycle;
   long gEthSocket;
+  long gEthTxSocket;
   dword gEthTargetIp;
   int gSpeed;
   int gAccelPedal;
@@ -22,24 +23,36 @@ variables
   int gPtAliveCnt;
 }
 
+int getVcuTxPort()
+{
+  return ethBackbonePort() + 2;
+}
+
 void publishBackboneVehicleState()
 {
   char frame[4];
   int driveState;
   int vehicleSpeed;
+  long txSocket;
 
   driveState = clampRange((int)@Core::driveStateNorm, 0, 3);
   vehicleSpeed = clampRange((int)@Core::vehicleSpeedNorm, 0, 255);
+  txSocket = gEthTxSocket;
+  if (txSocket == ethInvalidSocket())
+  {
+    txSocket = gEthSocket;
+  }
 
   ethInitFrame(frame, ethMsgVehicleState(), 2);
   ethSetU8(frame, 0, vehicleSpeed);
   ethSetU8(frame, 1, driveState);
-  ethSendFrame(gEthSocket, gEthTargetIp, ethMsgVehicleState(), frame, 2);
+  ethSendFrame(txSocket, gEthTargetIp, ethMsgVehicleState(), frame, 2);
 }
 
 on start
 {
   gEthSocket = ethOpenDefaultSocket();
+  gEthTxSocket = ethOpenNodeSocket(getVcuTxPort());
   gEthTargetIp = ethGetDefaultIpAddress();
   gSpeed = 0;
   gAccelPedal = 0;
@@ -53,6 +66,10 @@ on start
   gBoundaryStatus = 0;
   gSpeedLimitNorm = 30;
   gPtAliveCnt = 0;
+  if (gEthTxSocket == ethInvalidSocket())
+  {
+    write("[VCU] tx socket fallback to shared backbone port");
+  }
   setTimer(tVcuCycle, 100);
   write("[VCU] start");
 }
@@ -216,6 +233,8 @@ on timer tVcuCycle
 on stopMeasurement
 {
   cancelTimer(tVcuCycle);
+  ethCloseSocket(gEthTxSocket);
+  gEthTxSocket = ethInvalidSocket();
   ethCloseSocket(gEthSocket);
   gEthSocket = ethInvalidSocket();
 }

@@ -26,6 +26,19 @@ dword ethInvalidIp()
   return 0xffffffff;
 }
 
+int ethIsRecentTick(dword lastTsMs, int maxAgeMs)
+{
+  dword nowMs;
+
+  if (lastTsMs == 0 || maxAgeMs < 0)
+  {
+    return 0;
+  }
+
+  nowMs = getSimulationTimeMs();
+  return ((nowMs - lastTsMs) <= (dword)maxAgeMs) ? 1 : 0;
+}
+
 int ethBackbonePort()
 {
   return 5000;
@@ -250,6 +263,9 @@ int ethStartReceiver(long socket, char rxBuffer[], int rxBufferSize)
 int ethSendFrame(long socket, dword targetIp, int msgId, char frame[], int payloadLen)
 {
   int frameLen;
+  int result;
+  int lastError;
+  char lastErrorText[256];
 
   if (socket == ethInvalidSocket())
   {
@@ -263,5 +279,16 @@ int ethSendFrame(long socket, dword targetIp, int msgId, char frame[], int paylo
   frame[0] = (char)(msgId & 0xFF);
   frame[1] = (char)((msgId >> 8) & 0xFF);
   frameLen = payloadLen + 2;
-  return UdpSendTo(socket, targetIp, ethBackbonePort(), frame, frameLen);
+  result = UdpSendTo(socket, targetIp, ethBackbonePort(), frame, frameLen);
+  if (result != 0)
+  {
+    lastError = IpGetLastSocketError(socket);
+    IpGetLastSocketErrorAsString(socket, lastErrorText, elcount(lastErrorText));
+    write("[ETH] send failed msg=0x%X port=%d err=%d %s",
+          msgId,
+          ethBackbonePort(),
+          lastError,
+          lastErrorText);
+  }
+  return result;
 }

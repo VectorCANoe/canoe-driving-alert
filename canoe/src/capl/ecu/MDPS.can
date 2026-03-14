@@ -7,31 +7,48 @@ variables
 {
   msTimer tMdpsCycle;
   long gEthSocket;
+  long gEthTxSocket;
   dword gEthTargetIp;
   int gSteeringInput;
   int gSpeedNorm;
   int gPrevSteering;
 }
 
+int getMdpsTxPort()
+{
+  return ethBackbonePort() + 3;
+}
+
 void publishBackboneSteeringState(int steeringAngleRaw, int steeringQuality)
 {
   char frame[3];
   int steeringInput;
+  long txSocket;
 
   steeringInput = clampRange(gSteeringInput, 0, 1);
+  txSocket = gEthTxSocket;
+  if (txSocket == ethInvalidSocket())
+  {
+    txSocket = gEthSocket;
+  }
 
   ethInitFrame(frame, ethMsgSteering(), 1);
   ethSetU8(frame, 0, steeringInput);
-  ethSendFrame(gEthSocket, gEthTargetIp, ethMsgSteering(), frame, 1);
+  ethSendFrame(txSocket, gEthTargetIp, ethMsgSteering(), frame, 1);
 }
 
 on start
 {
   gEthSocket = ethOpenDefaultSocket();
+  gEthTxSocket = ethOpenNodeSocket(getMdpsTxPort());
   gEthTargetIp = ethGetDefaultIpAddress();
   gSteeringInput = 0;
   gSpeedNorm = 0;
   gPrevSteering = -1;
+  if (gEthTxSocket == ethInvalidSocket())
+  {
+    write("[MDPS] tx socket fallback to shared backbone port");
+  }
   setTimer(tMdpsCycle, 50);
   write("[MDPS] start");
 }
@@ -87,6 +104,8 @@ on timer tMdpsCycle
 on stopMeasurement
 {
   cancelTimer(tMdpsCycle);
+  ethCloseSocket(gEthTxSocket);
+  gEthTxSocket = ethInvalidSocket();
   ethCloseSocket(gEthSocket);
   gEthSocket = ethInvalidSocket();
 }

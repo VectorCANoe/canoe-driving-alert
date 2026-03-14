@@ -24,6 +24,7 @@ on start
   gChassisAliveCnt = 0;
   gLastBrakePedal = -1;
   gLastAssistReq = -1;
+  @CoreState::chassisHealthTick = 0;
   setTimer(tEscCycle, 100);
   write("[ESC] start");
 }
@@ -98,6 +99,7 @@ on timer tEscCycle
   mHealth.ChassisAliveCnt = gChassisAliveCnt & 0xFF;
   mHealth.ChassisFailCode = 0;
   output(mHealth);
+  @CoreState::chassisHealthTick = mHealth.ChassisAliveCnt;
   gChassisAliveCnt = (gChassisAliveCnt + 1) & 0xFF;
 
   mEsc.EscCtrlState = espActive ? 2 : 0;

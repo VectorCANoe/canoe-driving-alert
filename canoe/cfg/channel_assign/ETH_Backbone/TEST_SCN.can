@@ -14,11 +14,13 @@ variables
   msTimer tScenarioPhase3;
   long gEthSocket;
   dword gEthTargetIp;
+  char gEthRxBuffer[64];
   int gDemoStepIndex;
   int gDemoRunning;
   int gCurrentScenarioId;
   int gArbitrationSnapshotBaseline;
   int gScenarioInputLock;
+  int gObservedDecelReleaseReason;
   int gLockDriveState;
   int gLockVehicleSpeed;
   int gLockSteeringInput;
@@ -145,6 +147,7 @@ void stopScenarioExecution()
   gScenarioInputLock = 0;
   gCurrentScenarioId = 0;
   gArbitrationSnapshotBaseline = 0;
+  gObservedDecelReleaseReason = 0;
   cancelTimer(tDemoStep);
   cancelScenarioTransientTimers();
   @Test::forceFailSafe = 0;
@@ -166,6 +169,7 @@ void publishScenarioResultFrame()
 void beginScenarioExecution(int scenarioId)
 {
   gDemoRunning = 0;
+  gObservedDecelReleaseReason = 0;
   cancelTimer(tDemoStep);
   cancelScenarioTransientTimers();
   @Test::scenarioResult = 0;
@@ -373,7 +377,8 @@ void applyScenarioPreset(int scenarioId)
     gLockEmergencyType = 1;
     gLockEta = 6;
     gLockSourceId = 44;
-    gLockForceFailSafe = 1;
+    gLockForceFailSafe = 0;
+    setTimer(tScenarioPhase2, 250);
   }
   else if (scenarioId == 19)
   {
@@ -516,7 +521,7 @@ void scheduleScenarioEvaluation(int scenarioId)
   }
   else if (scenarioId == 18)
   {
-    evalDelayMs = 700;
+    evalDelayMs = 900;
   }
   else if (scenarioId >= 20 && scenarioId <= 24)
   {
@@ -543,6 +548,7 @@ void evaluateScenarioResult()
   int proximityRiskLevel;
   int decelAssistReq;
   int failSafeMode;
+  int driverReleaseReason;
   int objectTrackValid;
   int objectRiskClass;
   int objectTtcMin;
@@ -563,6 +569,7 @@ void evaluateScenarioResult()
   proximityRiskLevel = (int)@Core::proximityRiskLevel;
   decelAssistReq = (int)@Core::decelAssistReq;
   failSafeMode = (int)@Core::failSafeMode;
+  driverReleaseReason = clampRange(gObservedDecelReleaseReason, 0, 3);
   objectTrackValid = (int)@Core::objectTrackValid;
   objectRiskClass = (int)@Core::objectRiskClass;
   objectTtcMin = (int)@Core::objectTtcMin;
@@ -661,13 +668,13 @@ void evaluateScenarioResult()
   {
     /* Req_123: steering intervention releases decel assist */
     result = ((int)@Core::steeringInputNorm == 1 && decelAssistReq == 0 &&
-              failSafeMode == 0) ? 1 : 0;
+              failSafeMode == 0 && driverReleaseReason == 1) ? 1 : 0;
   }
   else if (gCurrentScenarioId == 18)
   {
     /* Req_127 + Req_128 + Req_129 (Legacy Req_124): fail-safe blocks decel assist but keeps minimum warning path */
     result = (failSafeMode >= 1 && decelAssistReq == 0 &&
-              level >= 6 && code >= 100) ? 1 : 0;
+              level >= 6 && code >= 100 && driverReleaseReason == 3) ? 1 : 0;
   }
   else if (gCurrentScenarioId == 19)
   {
@@ -799,6 +806,13 @@ on timer tScenarioPhase2
     pushLockedScenarioInputs();
     write("[TEST_SCN] Req_123 phase2: steering intervention");
   }
+  else if (gCurrentScenarioId == 18)
+  {
+    /* Req_127 + Req_128 + Req_129: fail-safe transition after decel assist became active */
+    gLockForceFailSafe = 1;
+    pushLockedScenarioInputs();
+    write("[TEST_SCN] Req_127/128/129 phase2: fail-safe asserted");
+  }
   else if (gCurrentScenarioId == 25)
   {
     /* Req_136: force temporary object loss and verify hold-time behavior */
@@ -833,6 +847,7 @@ on start
 {
   gEthSocket = ethOpenDefaultSocket();
   gEthTargetIp = ethGetDefaultIpAddress();
+  gObservedDecelReleaseReason = 0;
   gDemoStepIndex = 0;
   gDemoRunning = 0;
   gCurrentScenarioId = 0;
@@ -880,8 +895,35 @@ on start
   @Core::mergeCutInFlag = 0;
   @Core::objectAlertHoldMs = 300;
   @Core::objectEventCode = 0;
+  if (gEthSocket != ethInvalidSocket())
+  {
+    ethStartReceiver(gEthSocket, gEthRxBuffer, elcount(gEthRxBuffer));
+  }
   setTimer(tInput100, 100);
   write("[TEST_SCN] start");
+}
+
+void OnUdpReceiveFrom(dword socket, long result, dword address, dword port, char buffer[], dword count)
+{
+  int msgId;
+  int payload0;
+
+  if (socket != gEthSocket)
+  {
+    return;
+  }
+
+  if (result == 0)
+  {
+    msgId = ethFrameMsgId(buffer, count);
+    if (msgId == ethMsgDecelAssist() && ethFramePayloadLen(count) >= 1)
+    {
+      payload0 = ethGetU8(buffer, 0);
+      gObservedDecelReleaseReason = clampRange((payload0 >> 3) & 0x3, 0, 3);
+    }
+  }
+
+  ethArmReceive(gEthSocket, gEthRxBuffer, elcount(gEthRxBuffer));
 }
 
 on timer tInput100
@@ -1126,6 +1168,7 @@ on timer tScenarioEval
   int proximityRiskLevel;
   int decelAssistReq;
   int failSafeMode;
+  int driverReleaseReason;
   int objectTrackValid;
   int objectRiskClass;
   int objectTtcMin;
@@ -1141,6 +1184,7 @@ on timer tScenarioEval
   proximityRiskLevel = (int)@Core::proximityRiskLevel;
   decelAssistReq = (int)@Core::decelAssistReq;
   failSafeMode = (int)@Core::failSafeMode;
+  driverReleaseReason = clampRange(gObservedDecelReleaseReason, 0, 3);
   objectTrackValid = (int)@Core::objectTrackValid;
   objectRiskClass = (int)@Core::objectRiskClass;
   objectTtcMin = (int)@Core::objectTtcMin;
@@ -1149,10 +1193,10 @@ on timer tScenarioEval
   renderTextCode = (int)@UiRender::renderTextCode;
   clusterCode = (int)@Cluster::warningTextCode;
 
-write("[EVIDENCE_OUT] scenario=%d outputTsMs=%lu result=%d level=%d type=%d code=%d timeout=%d risk=%d decel=%d failSafe=%d objValid=%d objClass=%d objTtc=%d objEvent=%d renderType=%d renderCode=%d",
+write("[EVIDENCE_OUT] scenario=%d outputTsMs=%lu result=%d level=%d type=%d code=%d timeout=%d risk=%d decel=%d failSafe=%d release=%d objValid=%d objClass=%d objTtc=%d objEvent=%d renderType=%d renderCode=%d",
         gCurrentScenarioId, getSimulationTimeMs(), (int)@Test::scenarioResult,
         coreLevel, coreType, clusterCode, timeoutClear, proximityRiskLevel,
-        decelAssistReq, failSafeMode, objectTrackValid, objectRiskClass,
+        decelAssistReq, failSafeMode, driverReleaseReason, objectTrackValid, objectRiskClass,
         objectTtcMin, objectEventCode, renderAlertType, renderTextCode);
 
 }

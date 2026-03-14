@@ -12,6 +12,7 @@ variables
   int gObjectEventCode;
   int gObjectTrackValid;
   int gObjectFailSafeMode;
+  dword gObjectSafetyRxTsMs;
   int gLastHealth;
   int gLastDetected;
   int gLastFreeSpaceClass;
@@ -26,18 +27,47 @@ void publishLidarState()
   int targetDetected;
   int freeSpaceClass;
   int rangeBucket;
+  int objectConfidence;
+  int objectEventCode;
+  int objectTrackValid;
+  int objectFailSafeMode;
 
-  targetDetected = clampRange(gObjectTrackValid, 0, 1);
+  objectConfidence = clampRange((int)@Core::objectConfidence, 0, 100);
+  objectEventCode = clampRange((int)@Core::objectEventCode, 0, 65535);
+  objectTrackValid = clampRange((int)@Core::objectTrackValid, 0, 1);
+  objectFailSafeMode = clampRange((int)@Core::failSafeMode, 0, 2);
 
-  if (gObjectFailSafeMode >= 2)
+  if (ethIsRecentTick(gObjectSafetyRxTsMs, 300) == 1)
+  {
+    if (gObjectConfidence > objectConfidence)
+    {
+      objectConfidence = gObjectConfidence;
+    }
+    if (gObjectEventCode != 0)
+    {
+      objectEventCode = gObjectEventCode;
+    }
+    if (gObjectTrackValid > objectTrackValid)
+    {
+      objectTrackValid = gObjectTrackValid;
+    }
+    if (gObjectFailSafeMode > objectFailSafeMode)
+    {
+      objectFailSafeMode = gObjectFailSafeMode;
+    }
+  }
+
+  targetDetected = clampRange(objectTrackValid, 0, 1);
+
+  if (objectFailSafeMode >= 2)
   {
     health = 0;
   }
-  else if (gObjectConfidence >= 70)
+  else if (objectConfidence >= 70)
   {
     health = 2;
   }
-  else if (gObjectConfidence >= 30)
+  else if (objectConfidence >= 30)
   {
     health = 1;
   }
@@ -46,11 +76,11 @@ void publishLidarState()
     health = 0;
   }
 
-  if (gObjectConfidence >= 80)
+  if (objectConfidence >= 80)
   {
     freeSpaceClass = 2;
   }
-  else if (gObjectConfidence >= 40)
+  else if (objectConfidence >= 40)
   {
     freeSpaceClass = 1;
   }
@@ -59,32 +89,32 @@ void publishLidarState()
     freeSpaceClass = 0;
   }
 
-  rangeBucket = clampRange((gObjectEventCode & 0xFF), 0, 255);
+  rangeBucket = clampRange((objectEventCode & 0xFF), 0, 255);
 
   mLidar.LidarHealth = clampRange(health, 0, 3);
   mLidar.TargetDetected = targetDetected;
   mLidar.FreeSpaceClass = clampRange(freeSpaceClass, 0, 3);
-  mLidar.Confidence = clampRange(gObjectConfidence, 0, 100);
+  mLidar.Confidence = clampRange(objectConfidence, 0, 100);
   mLidar.RangeBucket = rangeBucket;
   output(mLidar);
 
   if (health != gLastHealth ||
       targetDetected != gLastDetected ||
       freeSpaceClass != gLastFreeSpaceClass ||
-      gObjectConfidence != gLastConfidence ||
+      objectConfidence != gLastConfidence ||
       rangeBucket != gLastRangeBucket)
   {
     write("[LDR] health=%d target=%d free=%d conf=%d range=%d failSafe=%d",
           health,
           targetDetected,
           freeSpaceClass,
-          gObjectConfidence,
+          objectConfidence,
           rangeBucket,
-          gObjectFailSafeMode);
+          objectFailSafeMode);
     gLastHealth = health;
     gLastDetected = targetDetected;
     gLastFreeSpaceClass = freeSpaceClass;
-    gLastConfidence = gObjectConfidence;
+    gLastConfidence = objectConfidence;
     gLastRangeBucket = rangeBucket;
   }
 }
@@ -108,6 +138,7 @@ void OnUdpReceiveFrom(dword socket, long result, dword address, dword port, char
       gObjectEventCode = clampRange(ethGetU16Le(buffer, 1), 0, 65535);
       gObjectFailSafeMode = clampRange(payload3 & 0x3, 0, 2);
       gObjectTrackValid = clampRange((payload3 >> 2) & 0x1, 0, 1);
+      gObjectSafetyRxTsMs = getSimulationTimeMs();
     }
   }
 
@@ -121,6 +152,7 @@ on start
   gObjectEventCode = 0;
   gObjectTrackValid = 0;
   gObjectFailSafeMode = 0;
+  gObjectSafetyRxTsMs = 0;
   gLastHealth = -1;
   gLastDetected = -1;
   gLastFreeSpaceClass = -1;

@@ -9,6 +9,7 @@ variables
   msTimer tIviBase50;
   msTimer tIviExt100;
   long gEthSocket;
+  long gEthTxSocket;
   dword gEthTargetIp;
   char gEthRxBuffer[64];
   int gLastWarningTextCode;
@@ -22,6 +23,11 @@ variables
   int gBackboneAlertType;
   int gBackboneTimeoutClear;
   dword gBackboneAlertTsMs;
+}
+
+int getIviTxPort()
+{
+  return ethBackbonePort() + 4;
 }
 
 
@@ -45,6 +51,72 @@ int calcEmergencyDistanceM(int etaSec, int speedKph)
   return (int)distanceM;
 }
 
+int deriveEmergencyWarningCode(int emergencyType, int emergencyDistanceBand, int emergencyDirection)
+{
+  int baseCode;
+
+  emergencyDirection = clampRange(emergencyDirection, 0, 3);
+  emergencyDistanceBand = clampRange(emergencyDistanceBand, 0, 3);
+
+  if (emergencyType == 2)
+  {
+    baseCode = 200;
+  }
+  else if (emergencyType == 1)
+  {
+    baseCode = 100;
+  }
+  else
+  {
+    return 100 + emergencyDirection;
+  }
+
+  if (emergencyDistanceBand > 0)
+  {
+    return baseCode + (emergencyDistanceBand * 10) + emergencyDirection;
+  }
+  return baseCode + emergencyDirection;
+}
+
+int deriveWarningTextCode(int alertLevel, int alertType, int timeoutClear,
+                          int emergencyType, int emergencyDirection, int emergencyDistanceBand)
+{
+  if (timeoutClear == 1 || alertLevel == 0)
+  {
+    return 0;
+  }
+  if (alertLevel >= 6)
+  {
+    return deriveEmergencyWarningCode(emergencyType, emergencyDistanceBand, emergencyDirection);
+  }
+  if (alertType == 5)
+  {
+    return 31;
+  }
+  if (alertType == 6)
+  {
+    return 32;
+  }
+  return clampRange((alertType * 10) + alertLevel, 0, 255);
+}
+
+int deriveRenderDirection(int renderTextCode, int alertType)
+{
+  if (renderTextCode >= 100 && renderTextCode <= 203)
+  {
+    return clampRange(renderTextCode % 100, 0, 3);
+  }
+  if (alertType == 5)
+  {
+    return 1;
+  }
+  if (alertType == 6)
+  {
+    return 2;
+  }
+  return 0;
+}
+
 void publishBackboneNavContext()
 {
   char frame[8];
@@ -52,6 +124,7 @@ void publishBackboneNavContext()
   int navDirection;
   int zoneDistance;
   int speedLimit;
+  long txSocket;
 
   roadZone = clampRange((int)@Infotainment::roadZone, 0, 7);
   navDirection = clampRange((int)@Infotainment::navDirection, 0, 7);
@@ -61,12 +134,17 @@ void publishBackboneNavContext()
   {
     speedLimit = 30;
   }
+  txSocket = gEthTxSocket;
+  if (txSocket == ethInvalidSocket())
+  {
+    txSocket = gEthSocket;
+  }
 
   ethInitFrame(frame, ethMsgNavContext(), 3);
   ethSetU8(frame, 0, (roadZone & 0x3) | ((navDirection & 0x3) << 2));
   ethSetU8(frame, 1, zoneDistance);
   ethSetU8(frame, 2, speedLimit);
-  ethSendFrame(gEthSocket, gEthTargetIp, ethMsgNavContext(), frame, 3);
+  ethSendFrame(txSocket, gEthTargetIp, ethMsgNavContext(), frame, 3);
 }
 
 void updateBackboneAlertState(int alertLevel, int alertType, int timeoutClear)
@@ -120,6 +198,7 @@ int useBackboneAlertState()
 on start
 {
   gEthSocket = ethOpenDefaultSocket();
+  gEthTxSocket = ethOpenNodeSocket(getIviTxPort());
   gEthTargetIp = ethGetDefaultIpAddress();
   gLastWarningTextCode = -1;
   gInfoAliveCnt = 0;
@@ -132,6 +211,11 @@ on start
   gBackboneAlertType = 0;
   gBackboneTimeoutClear = 0;
   gBackboneAlertTsMs = 0;
+  @CoreState::infoHealthTick = 0;
+  if (gEthTxSocket == ethInvalidSocket())
+  {
+    write("[IVI] tx socket fallback to shared backbone port");
+  }
   if (gEthSocket != ethInvalidSocket())
   {
     ethStartReceiver(gEthSocket, gEthRxBuffer, elcount(gEthRxBuffer));
@@ -153,7 +237,6 @@ on timer tIviCycle
   int speed;
   int emergencyDistanceM;
   int emergencyDistanceBand;
-  int baseCode;
   int useBackbone;
   message frmClusterWarningMsg mCluster;
 
@@ -209,41 +292,8 @@ on timer tIviCycle
   }
   @CoreState::emergencyDistanceM = emergencyDistanceM;
 
-  if (timeoutClear == 1 || alertLevel == 0)
-  {
-    warningTextCode = 0;
-  }
-  else if (alertLevel >= 6)
-  {
-    if (emergencyType == 2 || emergencyType == 1)
-    {
-      baseCode = (emergencyType == 2) ? 200 : 100;
-      if (emergencyDistanceBand > 0)
-      {
-        warningTextCode = baseCode + (emergencyDistanceBand * 10) + emergencyDirection;
-      }
-      else
-      {
-        warningTextCode = baseCode + emergencyDirection;
-      }
-    }
-    else
-    {
-      warningTextCode = 100 + emergencyDirection;
-    }
-  }
-  else if (alertType == 5)
-  {
-    warningTextCode = 31;
-  }
-  else if (alertType == 6)
-  {
-    warningTextCode = 32;
-  }
-  else
-  {
-    warningTextCode = (alertType * 10) + alertLevel;
-  }
+  warningTextCode = deriveWarningTextCode(alertLevel, alertType, timeoutClear,
+                                          emergencyType, emergencyDirection, emergencyDistanceBand);
 
   if (warningTextCode != gLastWarningTextCode)
   {
@@ -386,6 +436,7 @@ on timer tIviBase50
     mHealth.InfoAliveCnt = gInfoAliveCnt & 0xFF;
     mHealth.InfoFailCode = 0;
     output(mHealth);
+    @CoreState::infoHealthTick = mHealth.InfoAliveCnt;
     gInfoAliveCnt = (gInfoAliveCnt + 1) & 0xFF;
   }
 
@@ -477,24 +528,7 @@ on timer tIviBase50
     gIcFlowPhase = 0;
   }
 
-  if (renderTextCode >= 100 && renderTextCode <= 203)
-  {
-    renderDirection = renderTextCode % 100;
-  }
-  else if (alertType == 5)
-  {
-    renderDirection = 1;
-  }
-  else if (alertType == 6)
-  {
-    renderDirection = 2;
-  }
-  else
-  {
-    renderDirection = 0;
-  }
-
-  renderDirection = clampRange(renderDirection, 0, 3);
+  renderDirection = deriveRenderDirection(renderTextCode, alertType);
   @UiRender::renderMode = renderMode;
   @UiRender::renderColor = renderColor;
   @UiRender::renderPattern = renderPattern;
@@ -543,6 +577,8 @@ on stopMeasurement
   cancelTimer(tIviCycle);
   cancelTimer(tIviBase50);
   cancelTimer(tIviExt100);
+  ethCloseSocket(gEthTxSocket);
+  gEthTxSocket = ethInvalidSocket();
   ethCloseSocket(gEthSocket);
   gEthSocket = ethInvalidSocket();
 }
