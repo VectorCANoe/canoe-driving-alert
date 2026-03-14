@@ -16,32 +16,17 @@ void publishDmsState()
 {
   message frmDmsStateMsg mDms;
   int vehicleSpeed;
-  int alertLevel;
   int driverSeatBelt;
   int active;
   int attentionLevel;
   int fatigueWarn;
 
   vehicleSpeed = clampRange((int)@Core::vehicleSpeedNorm, 0, 255);
-  alertLevel = clampRange((int)@Core::selectedAlertLevel, 0, 7);
   driverSeatBelt = clampRange((int)@CoreState::driverSeatBelt, 0, 1);
 
   active = vehicleSpeed >= 20 ? 1 : 0;
   attentionLevel = 1;
   fatigueWarn = 0;
-
-  if (active == 1)
-  {
-    if (alertLevel >= 5)
-    {
-      attentionLevel = 3;
-      fatigueWarn = 1;
-    }
-    else if (alertLevel >= 3 || driverSeatBelt == 0)
-    {
-      attentionLevel = 2;
-    }
-  }
 
   mDms.DriverMonitorActive = active;
   mDms.AttentionLevel = attentionLevel;
@@ -55,13 +40,12 @@ void publishDmsState()
       fatigueWarn != gLastFatigueWarn ||
       driverSeatBelt != gLastSeatBelt)
   {
-    write("[DMS] active=%d attention=%d fatigue=%d belt=%d speed=%d alert=%d",
+    write("[DMS] active=%d attention=%d fatigue=%d belt=%d speed=%d",
           active,
           attentionLevel,
           fatigueWarn,
           driverSeatBelt,
-          vehicleSpeed,
-          alertLevel);
+          vehicleSpeed);
     gLastActive = active;
     gLastAttention = attentionLevel;
     gLastFatigueWarn = fatigueWarn;

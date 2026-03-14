@@ -18,18 +18,16 @@ void publishOmsState()
   message frmOmsStateMsg mOms;
   int passengerSeatBelt;
   int seatBeltWarnLevel;
-  int alertLevel;
   int detected;
   int childWarn;
   int alertActive;
 
   passengerSeatBelt = clampRange((int)@CoreState::passengerSeatBelt, 0, 1);
   seatBeltWarnLevel = clampRange((int)@CoreState::seatBeltWarnLvl, 0, 7);
-  alertLevel = clampRange((int)@Core::selectedAlertLevel, 0, 7);
 
   detected = (passengerSeatBelt == 1 || seatBeltWarnLevel > 0) ? 1 : 0;
   childWarn = (detected == 1 && passengerSeatBelt == 0 && seatBeltWarnLevel >= 2) ? 1 : 0;
-  alertActive = (detected == 1 && (seatBeltWarnLevel >= 2 || alertLevel >= 4)) ? 1 : 0;
+  alertActive = (detected == 1 && seatBeltWarnLevel >= 2) ? 1 : 0;
 
   mOms.OccupantDetected = detected;
   mOms.ChildPresenceWarn = childWarn;
@@ -44,13 +42,12 @@ void publishOmsState()
       seatBeltWarnLevel != gLastWarnLevel ||
       alertActive != gLastAlert)
   {
-    write("[OMS] detected=%d child=%d belt=%d warn=%d alert=%d core=%d",
+    write("[OMS] detected=%d child=%d belt=%d warn=%d alert=%d",
           detected,
           childWarn,
           passengerSeatBelt,
           seatBeltWarnLevel,
-          alertActive,
-          alertLevel);
+          alertActive);
     gLastDetected = detected;
     gLastChildWarn = childWarn;
     gLastSeatBelt = passengerSeatBelt;
