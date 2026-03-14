@@ -110,7 +110,7 @@ on start
   gGearInput = 0;
   gGearState = 0;
   gDriveMode = 0;
-  gRoutingPolicy = 1;
+  gRoutingPolicy = 0;
   gBoundaryStatus = 0;
   gSpeedLimitNorm = 30;
   gPtAliveCnt = 0;
@@ -176,9 +176,8 @@ on timer tVcuCycle
   int targetSpeed;
   int delta;
   int driveState;
+  int coreRoutingPolicy;
   int selectedAlertLevel;
-  int timeoutClear;
-  int failSafeMode;
   int torqueRequest;
   int tcsActive;
   int scenarioActive;
@@ -238,26 +237,12 @@ on timer tVcuCycle
   gDriveMode = clampRange(gearState, 0, 7);
   gSpeedLimitNorm = clampRange((int)@Core::speedLimitNorm, 0, 255);
   selectedAlertLevel = clampRange((int)@Core::selectedAlertLevel, 0, 7);
-  timeoutClear = (((int)@Core::timeoutClear) == 1) ? 1 : 0;
-  failSafeMode = clampRange((int)@Core::failSafeMode, 0, 2);
   gBoundaryStatus = clampRange((int)@CoreState::domainBoundaryStatus, 0, 1);
-
-  if (failSafeMode > 0 || timeoutClear == 1)
-  {
-    gRoutingPolicy = 0;
-  }
-  else if (selectedAlertLevel >= 4)
-  {
-    gRoutingPolicy = 2;
-  }
-  else
-  {
-    gRoutingPolicy = 1;
-  }
+  coreRoutingPolicy = clampRange((int)@CoreState::routingPolicy, 0, 2);
+  gRoutingPolicy = coreRoutingPolicy;
 
   @Core::vehicleSpeedNorm = gSpeed;
   @Core::driveStateNorm = driveState;
-  @CoreState::routingPolicy = gRoutingPolicy;
 
   mState.gVehicleSpeed = gSpeed;
   mState.gDriveState = driveState;
