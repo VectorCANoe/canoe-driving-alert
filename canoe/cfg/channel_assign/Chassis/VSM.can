@@ -27,11 +27,21 @@ on timer tVsmCycle
   int ctrlState;
   int alertLevel;
   int intervention;
+  int failSafeMode;
 
 
-  ctrlState = ((int)@Core::failSafeMode == 1) ? 2 : 1;
+  failSafeMode = clampRange((int)@Core::failSafeMode, 0, 2);
+  ctrlState = 1;
+  if (failSafeMode == 1)
+  {
+    ctrlState = 2;
+  }
+  else if (failSafeMode >= 2)
+  {
+    ctrlState = 3;
+  }
   alertLevel = clampRange((int)@Core::selectedAlertLevel, 0, 7);
-  intervention = ((int)@Core::decelAssistReq == 1) ? 40 : 0;
+  intervention = (((int)@Core::decelAssistReq == 1) && failSafeMode == 0) ? 40 : 0;
 
   mVsm.VsmCtrlState = clampRange(ctrlState, 0, 7);
   mVsm.VsmAlertLevel = alertLevel;

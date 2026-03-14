@@ -24,32 +24,32 @@ variables
 void publishBackboneState()
 {
   int backboneMode;
+  int baseZoneContext;
+  int roadZoneActive;
+  int guidedRouteActive;
   int routeHealth;
   int serviceHealth;
   int securityLevel;
   int activeServices;
   int faultBitmap;
-  int roadZone;
-  int navDirection;
-  int zoneDistance;
   int alertLevel;
   int warningPathStatus;
   int boundaryAlive;
 
-  roadZone = clampRange((int)@Infotainment::roadZone, 0, 3);
-  navDirection = clampRange((int)@Infotainment::navDirection, 0, 3);
-  zoneDistance = clampRange((int)@Infotainment::zoneDistance, 0, 255);
+  baseZoneContext = clampRange((int)@Core::baseZoneContext, 0, 4);
+  roadZoneActive = (baseZoneContext > 0) ? 1 : 0;
+  guidedRouteActive = (baseZoneContext == 3 || baseZoneContext == 4) ? 1 : 0;
   alertLevel = clampRange((int)@Core::selectedAlertLevel, 0, 7);
   gFailSafeMode = clampRange((int)@Core::failSafeMode, 0, 2);
   warningPathStatus = clampRange((int)@CoreState::warningPathStatus, 0, 2);
   boundaryAlive = clampRange((int)@CoreState::domainBoundaryStatus, 0, 1);
 
   gIboxRouteState = 0;
-  if (roadZone > 0)
+  if (roadZoneActive == 1)
   {
     gIboxRouteState = 1;
   }
-  if (navDirection > 0 && zoneDistance > 0)
+  if (guidedRouteActive == 1)
   {
     gIboxRouteState = 2;
   }
@@ -65,7 +65,7 @@ void publishBackboneState()
   }
 
   gIboxServiceFlags = 0;
-  if (roadZone > 0)
+  if (roadZoneActive == 1)
   {
     gIboxServiceFlags = gIboxServiceFlags | 1;
   }
@@ -79,11 +79,11 @@ void publishBackboneState()
   }
 
   gSecuritySession = 0;
-  if (roadZone > 0 || alertLevel > 0)
+  if (roadZoneActive == 1 || alertLevel > 0)
   {
     gSecuritySession = 1;
   }
-  if (boundaryAlive == 1 && roadZone > 0)
+  if (boundaryAlive == 1 && roadZoneActive == 1)
   {
     gSecuritySession = 2;
   }

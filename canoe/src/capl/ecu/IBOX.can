@@ -16,9 +16,26 @@ variables
   int gNavDirection;
   int gZoneDistance;
   int gSpeedLimit;
+  int gLastVehInputStale;
+  int gLastNavInputStale;
   int gLastLinkMode;
   int gLastRouteState;
   int gLastServiceFlags;
+}
+
+void traceIboxInputHealth(int vehInputStale, int navInputStale)
+{
+  if (vehInputStale != gLastVehInputStale)
+  {
+    write("[IBOX] vehicle input %s", vehInputStale == 1 ? "stale" : "restored");
+    gLastVehInputStale = vehInputStale;
+  }
+
+  if (navInputStale != gLastNavInputStale)
+  {
+    write("[IBOX] nav input %s", navInputStale == 1 ? "stale" : "restored");
+    gLastNavInputStale = navInputStale;
+  }
 }
 
 void publishIboxState()
@@ -26,6 +43,17 @@ void publishIboxState()
   dword nowMs;
   int vehAgeMs;
   int navAgeMs;
+  int vehInputStale;
+  int navInputStale;
+  int vehicleFresh;
+  int navFresh;
+  int vehicleLinkActive;
+  int navLinkActive;
+  int vehicleSpeed;
+  int roadZone;
+  int navDirection;
+  int zoneDistance;
+  int speedLimit;
   int linkMode;
   int routeState;
   int serviceFlags;
@@ -36,31 +64,44 @@ void publishIboxState()
   nowMs = getSimulationTimeMs();
   vehAgeMs = (gVehTsMs == 0) ? 60000 : clampRange((int)(nowMs - gVehTsMs), 0, 60000);
   navAgeMs = (gNavTsMs == 0) ? 60000 : clampRange((int)(nowMs - gNavTsMs), 0, 60000);
+  vehInputStale = (vehAgeMs <= 1000) ? 0 : 1;
+  navInputStale = (navAgeMs <= 1000) ? 0 : 1;
+  traceIboxInputHealth(vehInputStale, navInputStale);
+
+  vehicleFresh = (vehAgeMs <= 300) ? 1 : 0;
+  navFresh = (navAgeMs <= 300) ? 1 : 0;
+  vehicleLinkActive = (vehAgeMs <= 1000) ? 1 : 0;
+  navLinkActive = (navAgeMs <= 1000) ? 1 : 0;
+  vehicleSpeed = vehicleFresh == 1 ? gVehicleSpeed : 0;
+  roadZone = navLinkActive == 1 ? gRoadZone : 0;
+  navDirection = navFresh == 1 ? gNavDirection : 0;
+  zoneDistance = navFresh == 1 ? gZoneDistance : 0;
+  speedLimit = navFresh == 1 ? gSpeedLimit : 0;
   failSafeMode = clampRange((int)@Core::failSafeMode, 0, 2);
   alertLevel = clampRange((int)@Core::selectedAlertLevel, 0, 7);
 
   linkMode = 0;
-  if (vehAgeMs <= 1000 || navAgeMs <= 1000)
+  if (vehicleLinkActive == 1 || navLinkActive == 1)
   {
     linkMode = 1;
   }
-  if (vehAgeMs <= 300 && navAgeMs <= 300)
+  if (vehicleFresh == 1 && navFresh == 1)
   {
     linkMode = 2;
   }
 
   routeState = 0;
-  if (gRoadZone > 0 && navAgeMs <= 1000)
+  if (roadZone > 0 && navLinkActive == 1)
   {
     routeState = 1;
   }
-  if (gNavDirection > 0 && gZoneDistance > 0 && navAgeMs <= 300)
+  if (navDirection > 0 && zoneDistance > 0 && navFresh == 1)
   {
     routeState = 2;
   }
 
   serviceFlags = 0;
-  if (gRoadZone > 0)
+  if (roadZone > 0)
   {
     serviceFlags = serviceFlags | 1;
   }
@@ -72,7 +113,8 @@ void publishIboxState()
   {
     serviceFlags = serviceFlags | 4;
   }
-  if (gVehicleSpeed > gSpeedLimit && gSpeedLimit > 0)
+  if (vehicleFresh == 1 && navFresh == 1 &&
+      vehicleSpeed > speedLimit && speedLimit > 0)
   {
     serviceFlags = serviceFlags | 8;
   }
@@ -154,6 +196,8 @@ on start
   gNavDirection = 0;
   gZoneDistance = 0;
   gSpeedLimit = 0;
+  gLastVehInputStale = 1;
+  gLastNavInputStale = 1;
   gLastLinkMode = -1;
   gLastRouteState = -1;
   gLastServiceFlags = -1;
