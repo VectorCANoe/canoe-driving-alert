@@ -1,4 +1,4 @@
-# 시스템 테스트 (System Test)
+﻿# 시스템 테스트 (System Test)
 
 **Document ID**: PROJ-07-ST
 **ISO 26262 Reference**: Part 4, Cl.10 (System Integration and System Qualification Test)
