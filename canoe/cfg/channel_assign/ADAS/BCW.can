@@ -11,6 +11,23 @@ variables
   int gLastMergeConflict;
   int gLastRiskClass;
   int gLastAlertLevel;
+  int gLastPathReady;
+}
+
+int bcwPathReady()
+{
+  int warningPathStatus;
+  int e2eHealthState;
+  int failSafeMode;
+
+  warningPathStatus = clampRange((int)@CoreState::warningPathStatus, 0, 2);
+  e2eHealthState = clampRange((int)@CoreState::e2eHealthState, 0, 2);
+  failSafeMode = clampRange((int)@Core::failSafeMode, 0, 2);
+  if (warningPathStatus >= 2 || e2eHealthState == 0 || failSafeMode >= 2)
+  {
+    return 0;
+  }
+  return 1;
 }
 
 void publishBcwState()
@@ -22,11 +39,13 @@ void publishBcwState()
   int alertLevel;
   int warnLeft;
   int warnRight;
+  int pathReady;
 
   turnLampState = clampRange((int)@CoreState::turnLampState, 0, 3);
   mergeConflict = (((int)@Core::mergeCutInFlag) == 1) ? 1 : 0;
   objectRiskClass = clampRange((int)@Core::objectRiskClass, 0, 7);
   alertLevel = clampRange((int)@Core::selectedAlertLevel, 0, 7);
+  pathReady = bcwPathReady();
 
   warnLeft = 0;
   warnRight = 0;
@@ -42,6 +61,14 @@ void publishBcwState()
       warnRight = 1;
     }
   }
+  if (pathReady == 0)
+  {
+    warnLeft = 0;
+    warnRight = 0;
+    mergeConflict = 0;
+    objectRiskClass = 0;
+    alertLevel = 0;
+  }
 
   mBcw.BcwWarnLeft = warnLeft;
   mBcw.BcwWarnRight = warnRight;
@@ -50,18 +77,21 @@ void publishBcwState()
   mBcw.SelectedAlertLevel = alertLevel;
   output(mBcw);
 
-  if (warnLeft != gLastWarnLeft ||
+  if (pathReady != gLastPathReady ||
+      warnLeft != gLastWarnLeft ||
       warnRight != gLastWarnRight ||
       mergeConflict != gLastMergeConflict ||
       objectRiskClass != gLastRiskClass ||
       alertLevel != gLastAlertLevel)
   {
-    write("[BCW] left=%d right=%d merge=%d riskClass=%d alert=%d",
+    write("[BCW] path=%d left=%d right=%d merge=%d riskClass=%d alert=%d",
+          pathReady,
           warnLeft,
           warnRight,
           mergeConflict,
           objectRiskClass,
           alertLevel);
+    gLastPathReady = pathReady;
     gLastWarnLeft = warnLeft;
     gLastWarnRight = warnRight;
     gLastMergeConflict = mergeConflict;
@@ -72,6 +102,7 @@ void publishBcwState()
 
 on start
 {
+  gLastPathReady = -1;
   gLastWarnLeft = -1;
   gLastWarnRight = -1;
   gLastMergeConflict = -1;

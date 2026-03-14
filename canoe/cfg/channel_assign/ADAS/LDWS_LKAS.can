@@ -12,6 +12,23 @@ variables
   int gLastTurnLampState;
   int gLastVehicleSpeed;
   int gLastAlertLevel;
+  int gLastPathReady;
+}
+
+int ldwsPathReady()
+{
+  int warningPathStatus;
+  int e2eHealthState;
+  int failSafeMode;
+
+  warningPathStatus = clampRange((int)@CoreState::warningPathStatus, 0, 2);
+  e2eHealthState = clampRange((int)@CoreState::e2eHealthState, 0, 2);
+  failSafeMode = clampRange((int)@Core::failSafeMode, 0, 2);
+  if (warningPathStatus >= 2 || e2eHealthState == 0 || failSafeMode >= 2)
+  {
+    return 0;
+  }
+  return 1;
 }
 
 void publishLdwsLkasState()
@@ -24,11 +41,13 @@ void publishLdwsLkasState()
   int laneDepartureWarn;
   int laneKeepAssist;
   int laneGuideState;
+  int pathReady;
 
   alertLevel = clampRange((int)@Core::selectedAlertLevel, 0, 7);
   alertType = clampRange((int)@Core::selectedAlertType, 0, 7);
   turnLampState = clampRange((int)@CoreState::turnLampState, 0, 3);
   vehicleSpeed = clampRange((int)@Core::vehicleSpeedNorm, 0, 255);
+  pathReady = ldwsPathReady();
 
   laneDepartureWarn = 0;
   laneKeepAssist = 0;
@@ -45,6 +64,13 @@ void publishLdwsLkasState()
     laneKeepAssist = 1;
     laneGuideState = 2;
   }
+  if (pathReady == 0)
+  {
+    laneDepartureWarn = 0;
+    laneKeepAssist = 0;
+    laneGuideState = 0;
+    alertLevel = 0;
+  }
 
   mLdws.LaneDepartureWarn = laneDepartureWarn;
   mLdws.LaneKeepAssistActive = laneKeepAssist;
@@ -54,20 +80,23 @@ void publishLdwsLkasState()
   mLdws.SelectedAlertLevel = alertLevel;
   output(mLdws);
 
-  if (laneDepartureWarn != gLastLaneDepartureWarn ||
+  if (pathReady != gLastPathReady ||
+      laneDepartureWarn != gLastLaneDepartureWarn ||
       laneKeepAssist != gLastLaneKeepAssist ||
       laneGuideState != gLastLaneGuideState ||
       turnLampState != gLastTurnLampState ||
       vehicleSpeed != gLastVehicleSpeed ||
       alertLevel != gLastAlertLevel)
   {
-    write("[LDWS_LKAS] warn=%d assist=%d guide=%d turn=%d speed=%d alert=%d",
+    write("[LDWS_LKAS] path=%d warn=%d assist=%d guide=%d turn=%d speed=%d alert=%d",
+          pathReady,
           laneDepartureWarn,
           laneKeepAssist,
           laneGuideState,
           turnLampState,
           vehicleSpeed,
           alertLevel);
+    gLastPathReady = pathReady;
     gLastLaneDepartureWarn = laneDepartureWarn;
     gLastLaneKeepAssist = laneKeepAssist;
     gLastLaneGuideState = laneGuideState;
@@ -79,6 +108,7 @@ void publishLdwsLkasState()
 
 on start
 {
+  gLastPathReady = -1;
   gLastLaneDepartureWarn = -1;
   gLastLaneKeepAssist = -1;
   gLastLaneGuideState = -1;
