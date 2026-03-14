@@ -24,17 +24,17 @@ void publishReservedDiagSecuritySeam(int securitySession, int authState, int sec
   int routeOwner;
 
   securityState = 0;
-  if (securityFault > 0 || gFailSafeMode > 0)
+  if (securityFault >= 2 || gFailSafeMode >= 2)
   {
     securityState = 3;
   }
-  else if (authState >= 2 && gBoundaryAlive == 1)
-  {
-    securityState = 2;
-  }
-  else if (securitySession > 0)
+  else if (authState >= 2 && gBoundaryAlive == 1 && securityFault == 0)
   {
     securityState = 1;
+  }
+  else if (securitySession > 0 || authState > 0 || securityFault == 1)
+  {
+    securityState = 2;
   }
 
   routeOwner = 0;
@@ -44,6 +44,10 @@ void publishReservedDiagSecuritySeam(int securitySession, int authState, int sec
       (gIboxRouteState > 0 || gIboxServiceFlags > 0))
   {
     routeOwner = 3;
+  }
+  else if (securitySession > 0 || authState > 0)
+  {
+    routeOwner = 2;
   }
   else if (gIboxLinkMode > 0 || gIboxRouteState > 0 || gIboxServiceFlags > 0)
   {
@@ -139,11 +143,11 @@ void publishSecurityState()
   keyPresence = ((gIboxServiceFlags & 1) != 0) ? 1 : 0;
 
   securityFault = 0;
-  if (gFailSafeMode > 0)
+  if (gFailSafeMode >= 2 || gWarningPathStatus >= 2)
   {
     securityFault = 2;
   }
-  else if (gWarningPathStatus == 1)
+  else if (gFailSafeMode == 1 || gWarningPathStatus == 1)
   {
     securityFault = 1;
   }
