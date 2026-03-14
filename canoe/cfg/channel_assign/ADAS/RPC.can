@@ -10,6 +10,8 @@ variables
   int gObjectDetected;
   int gLaneModelValid;
   int gConfidence;
+  dword gFcamRxMs;
+  int gLastFcamInputStale;
   int gLastHealth;
   int gLastLanePreview;
   int gLastZonePreview;
@@ -17,51 +19,79 @@ variables
   int gLastConfidence;
 }
 
+void traceRpcInputHealth(int fcamInputStale)
+{
+  if (fcamInputStale != gLastFcamInputStale)
+  {
+    write("[RPC] fcam input %s", fcamInputStale == 1 ? "stale" : "restored");
+    gLastFcamInputStale = fcamInputStale;
+  }
+}
+
 void publishRoadPreviewState()
 {
   message frmRoadPreviewCameraStateMsg mPreview;
+  int fcamInputStale;
   int zonePreview;
   int speedLimit;
+  int cameraHealth;
+  int objectDetected;
+  int laneModelValid;
+  int confidence;
   int previewHealth;
+
+  fcamInputStale = (ethIsRecentTick(gFcamRxMs, 300) == 1) ? 0 : 1;
+  traceRpcInputHealth(fcamInputStale);
 
   zonePreview = clampRange((int)@Core::baseZoneContext, 0, 7);
   speedLimit = clampRange((int)@Core::speedLimitNorm, 0, 255);
+  cameraHealth = gCameraHealth;
+  objectDetected = gObjectDetected;
+  laneModelValid = gLaneModelValid;
+  confidence = gConfidence;
+  if (fcamInputStale == 1)
+  {
+    cameraHealth = 0;
+    objectDetected = 0;
+    laneModelValid = 0;
+    confidence = 0;
+  }
 
   previewHealth = 0;
-  if (gCameraHealth >= 2 && gConfidence >= 60)
+  if (cameraHealth >= 2 && confidence >= 60)
   {
     previewHealth = 2;
   }
-  else if (gCameraHealth >= 1 && gConfidence >= 30)
+  else if (cameraHealth >= 1 && confidence >= 30)
   {
     previewHealth = 1;
   }
 
   mPreview.PreviewHealth = clampRange(previewHealth, 0, 3);
-  mPreview.LanePreviewValid = clampRange(gLaneModelValid, 0, 1);
+  mPreview.LanePreviewValid = clampRange(laneModelValid, 0, 1);
   mPreview.ZonePreview = clampRange(zonePreview, 0, 7);
   mPreview.SpeedLimit = speedLimit;
-  mPreview.PreviewConfidence = clampRange(gConfidence, 0, 100);
+  mPreview.PreviewConfidence = clampRange(confidence, 0, 100);
   output(mPreview);
 
   if (previewHealth != gLastHealth ||
-      gLaneModelValid != gLastLanePreview ||
+      laneModelValid != gLastLanePreview ||
       zonePreview != gLastZonePreview ||
       speedLimit != gLastSpeedLimit ||
-      gConfidence != gLastConfidence)
+      confidence != gLastConfidence)
   {
     write("[RPC] health=%d lane=%d zone=%d speedLimit=%d conf=%d obj=%d",
           previewHealth,
-          gLaneModelValid,
+          laneModelValid,
           zonePreview,
           speedLimit,
-          gConfidence,
-          gObjectDetected);
+          confidence,
+          objectDetected);
     gLastHealth = previewHealth;
-    gLastLanePreview = gLaneModelValid;
+    gLastLanePreview = laneModelValid;
     gLastZonePreview = zonePreview;
     gLastSpeedLimit = speedLimit;
-    gLastConfidence = gConfidence;
+    gLastConfidence = confidence;
   }
 }
 
@@ -71,6 +101,8 @@ on start
   gObjectDetected = 0;
   gLaneModelValid = 0;
   gConfidence = 0;
+  gFcamRxMs = 0;
+  gLastFcamInputStale = 0;
   gLastHealth = -1;
   gLastLanePreview = -1;
   gLastZonePreview = -1;
@@ -92,6 +124,7 @@ on message frmFcamStateMsg
   gObjectDetected = clampRange((int)this.ObjectDetected, 0, 1);
   gLaneModelValid = clampRange((int)this.LaneModelValid, 0, 1);
   gConfidence = clampRange((int)this.Confidence, 0, 100);
+  gFcamRxMs = getSimulationTimeMs();
 }
 
 on stopMeasurement
