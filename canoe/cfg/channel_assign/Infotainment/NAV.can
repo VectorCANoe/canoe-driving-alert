@@ -10,6 +10,9 @@ variables
   int gNavDirection;
   int gZoneDistance;
   int gSpeedLimit;
+  dword gNavInputTouchMs;
+  int gNavInputDirty;
+  int gLastNavInputStale;
   int gLastNavState;
   int gLastRouteClass;
   int gLastGuideType;
@@ -33,20 +36,73 @@ int calcBaseZoneContext(int roadZone, int navDirection)
   return 0;
 }
 
-void syncNavInputs()
+int calcEffectiveSpeedLimit(int speedLimit)
 {
-  gRoadZone = clampRange((int)@Infotainment::roadZone, 0, 3);
-  gNavDirection = clampRange((int)@Infotainment::navDirection, 0, 3);
-  gZoneDistance = clampRange((int)@Infotainment::zoneDistance, 0, 255);
-  gSpeedLimit = clampRange((int)@Infotainment::speedLimit, 0, 255);
-
-  if (gSpeedLimit == 0)
+  speedLimit = clampRange(speedLimit, 0, 255);
+  if (speedLimit == 0)
   {
-    gSpeedLimit = 30;
+    return 30;
+  }
+  return speedLimit;
+}
+
+int hasNavContext(int roadZone, int navDirection, int zoneDistance, int speedLimit)
+{
+  if (roadZone > 0 || navDirection > 0 || zoneDistance > 0 || speedLimit > 0)
+  {
+    return 1;
+  }
+  return 0;
+}
+
+int navLeaseWindowMs()
+{
+  return 2000;
+}
+
+void markNavInputDirty()
+{
+  gNavInputTouchMs = getSimulationTimeMs();
+  gNavInputDirty = 1;
+}
+
+void latchNavInputs()
+{
+  int roadZone;
+  int navDirection;
+  int zoneDistance;
+  int speedLimit;
+
+  roadZone = clampRange((int)@Infotainment::roadZone, 0, 3);
+  navDirection = clampRange((int)@Infotainment::navDirection, 0, 3);
+  zoneDistance = clampRange((int)@Infotainment::zoneDistance, 0, 255);
+  speedLimit = clampRange((int)@Infotainment::speedLimit, 0, 255);
+
+  if (hasNavContext(roadZone, navDirection, zoneDistance, speedLimit) == 1)
+  {
+    gRoadZone = roadZone;
+    gNavDirection = navDirection;
+    gZoneDistance = zoneDistance;
+    gSpeedLimit = speedLimit;
+  }
+  else
+  {
+    gRoadZone = 0;
+    gNavDirection = 0;
+    gZoneDistance = 0;
+    gSpeedLimit = 0;
   }
 
-  @Core::baseZoneContext = calcBaseZoneContext(gRoadZone, gNavDirection);
-  @Core::speedLimitNorm = gSpeedLimit;
+  gNavInputDirty = 0;
+}
+
+void traceNavInputHealth(int navInputStale)
+{
+  if (navInputStale != gLastNavInputStale)
+  {
+    write("[NAV] input %s", navInputStale == 1 ? "stale" : "restored");
+    gLastNavInputStale = navInputStale;
+  }
 }
 
 void publishNavState()
@@ -57,9 +113,31 @@ void publishNavState()
   message frmRouteAlertMsg mRoute;
   message frmTrafficEventMsg mTraffic;
   message frmNavModuleStateMsg mNavState;
+  int navInputStale;
   int navState;
   int etaMinutes;
   int trafficSeverity;
+  int routeVisualActive;
+  int speedLimit;
+
+  navInputStale = 0;
+  if (hasNavContext(gRoadZone, gNavDirection, gZoneDistance, gSpeedLimit) == 1 &&
+      ethIsRecentTick(gNavInputTouchMs, navLeaseWindowMs()) == 0)
+  {
+    navInputStale = 1;
+  }
+  traceNavInputHealth(navInputStale);
+
+  if (navInputStale == 1)
+  {
+    @Core::baseZoneContext = 0;
+    @Core::speedLimitNorm = 30;
+    return;
+  }
+
+  speedLimit = calcEffectiveSpeedLimit(gSpeedLimit);
+  @Core::baseZoneContext = calcBaseZoneContext(gRoadZone, gNavDirection);
+  @Core::speedLimitNorm = speedLimit;
 
   navState = (gRoadZone > 0) ? 1 : 0;
   if (gRoadZone == 3)
@@ -73,19 +151,20 @@ void publishNavState()
 
   etaMinutes = clampRange(gZoneDistance / 10, 0, 255);
   trafficSeverity = (gRoadZone == 1) ? 3 : ((gRoadZone > 0) ? 2 : 0);
+  routeVisualActive = (gRoadZone > 0 || gNavDirection > 0 || gZoneDistance > 0) ? 1 : 0;
 
-  mMap.MapRenderState = (gRoadZone > 0) ? 1 : 0;
+  mMap.MapRenderState = routeVisualActive;
   mMap.ZoomLevel = (gRoadZone == 2) ? 12 : 16;
-  mMap.TileLoadPercent = (gRoadZone > 0) ? 95 : 70;
+  mMap.TileLoadPercent = (routeVisualActive == 1) ? 95 : 70;
   output(mMap);
 
   mGuide.GuideLaneState = (gRoadZone == 3) ? gNavDirection : 0;
-  mGuide.GuideConfidence = (gRoadZone == 3) ? 50 : ((gRoadZone > 0) ? 20 : 10);
+  mGuide.GuideConfidence = (gRoadZone == 3) ? 50 : ((routeVisualActive == 1) ? 20 : 0);
   output(mGuide);
 
   mRouteBase.RouteClass = gRoadZone;
   mRouteBase.GuideType = gNavDirection;
-  mRouteBase.RouteProgress = (gZoneDistance > 100) ? 20 : 80;
+  mRouteBase.RouteProgress = (routeVisualActive == 1) ? ((gZoneDistance > 100) ? 20 : 80) : 0;
   mRouteBase.EtaMinutes = etaMinutes;
   output(mRouteBase);
 
@@ -105,7 +184,7 @@ void publishNavState()
   mNavState.NavGuideType = clampRange(gNavDirection, 0, 3);
   mNavState.NavTrafficSeverity = clampRange(trafficSeverity, 0, 3);
   mNavState.NavEtaMinutes = etaMinutes;
-  mNavState.NavSpeedLimit = clampRange(gSpeedLimit, 0, 255);
+  mNavState.NavSpeedLimit = clampRange(speedLimit, 0, 255);
   output(mNavState);
 
   if (mNavState.NavSessionState != gLastNavState ||
@@ -119,7 +198,7 @@ void publishNavState()
           mNavState.NavGuideType,
           mNavState.NavEtaMinutes,
           gZoneDistance,
-          gSpeedLimit);
+          speedLimit);
     gLastNavState = mNavState.NavSessionState;
     gLastRouteClass = mNavState.NavRouteClass;
     gLastGuideType = mNavState.NavGuideType;
@@ -129,17 +208,29 @@ void publishNavState()
 
 on start
 {
+  gRoadZone = 0;
+  gNavDirection = 0;
+  gZoneDistance = 0;
+  gSpeedLimit = 0;
+  gNavInputTouchMs = 0;
+  gNavInputDirty = 0;
+  gLastNavInputStale = 0;
   gLastNavState = -1;
   gLastRouteClass = -1;
   gLastGuideType = -1;
   gLastEtaMinutes = -1;
-  syncNavInputs();
+  markNavInputDirty();
+  latchNavInputs();
   setTimer(tNavModuleCycle, 100);
   write("[NAV] start");
 }
 
 on timer tNavModuleCycle
 {
+  if (gNavInputDirty == 1)
+  {
+    latchNavInputs();
+  }
   publishNavState();
   setTimer(tNavModuleCycle, 100);
 }
@@ -150,27 +241,28 @@ on message frmNavContextCanMsg
   @Infotainment::navDirection = clampRange((int)this.gNavDirection, 0, 3);
   @Infotainment::zoneDistance = clampRange((int)this.gZoneDistance, 0, 255);
   @Infotainment::speedLimit = clampRange((int)this.gSpeedLimit, 0, 255);
-  syncNavInputs();
+  markNavInputDirty();
+  latchNavInputs();
 }
 
 on sysvar Infotainment::roadZone
 {
-  syncNavInputs();
+  markNavInputDirty();
 }
 
 on sysvar Infotainment::navDirection
 {
-  syncNavInputs();
+  markNavInputDirty();
 }
 
 on sysvar Infotainment::zoneDistance
 {
-  syncNavInputs();
+  markNavInputDirty();
 }
 
 on sysvar Infotainment::speedLimit
 {
-  syncNavInputs();
+  markNavInputDirty();
 }
 
 on stopMeasurement
