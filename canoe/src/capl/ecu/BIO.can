@@ -10,9 +10,20 @@ variables
   int gAirQualityState;
   int gCabinAlertState;
   int gPresenceScore;
+  dword gCabinSensingRxMs;
+  int gLastCabinSensingInputStale;
   int gLastAuthState;
   int gLastFactorMode;
   int gLastPresenceConfidence;
+}
+
+void traceBioInputHealth(int cabinSensingInputStale)
+{
+  if (cabinSensingInputStale != gLastCabinSensingInputStale)
+  {
+    write("[BIO] cabin-sensing input %s", cabinSensingInputStale == 1 ? "stale" : "restored");
+    gLastCabinSensingInputStale = cabinSensingInputStale;
+  }
 }
 
 on start
@@ -21,6 +32,8 @@ on start
   gAirQualityState = 0;
   gCabinAlertState = 0;
   gPresenceScore = 0;
+  gCabinSensingRxMs = 0;
+  gLastCabinSensingInputStale = 0;
   gLastAuthState = -1;
   gLastFactorMode = -1;
   gLastPresenceConfidence = -1;
@@ -34,21 +47,40 @@ on message frmCabinSensingStateMsg
   gAirQualityState = clampRange((int)this.AirQualityState, 0, 7);
   gCabinAlertState = clampRange((int)this.CabinAlertState, 0, 3);
   gPresenceScore = clampRange((int)this.CabinPresenceScore, 0, 100);
+  gCabinSensingRxMs = getSimulationTimeMs();
 }
 
 on timer tBiometricCycle
 {
   message frmBiometricAuthStateMsg mAuth;
+  int cabinSensingInputStale;
+  int occupancyState;
+  int airQualityState;
+  int cabinAlertState;
   int authState;
   int authFactorMode;
   int presenceConfidence;
 
+  cabinSensingInputStale = (ethIsRecentTick(gCabinSensingRxMs, 300) == 1) ? 0 : 1;
+  traceBioInputHealth(cabinSensingInputStale);
+
+  occupancyState = gOccupancyState;
+  airQualityState = gAirQualityState;
+  cabinAlertState = gCabinAlertState;
   presenceConfidence = clampRange(gPresenceScore, 0, 100);
-  if (gCabinAlertState >= 2)
+  if (cabinSensingInputStale == 1)
+  {
+    occupancyState = 0;
+    airQualityState = 0;
+    cabinAlertState = 0;
+    presenceConfidence = 0;
+  }
+
+  if (cabinAlertState >= 2)
   {
     authState = 3;
   }
-  else if (gOccupancyState >= 2 && presenceConfidence >= 70)
+  else if (occupancyState >= 2 && presenceConfidence >= 70)
   {
     authState = 2;
   }
@@ -61,7 +93,7 @@ on timer tBiometricCycle
     authState = 0;
   }
 
-  authFactorMode = (gAirQualityState >= 2) ? 2 : ((presenceConfidence >= 70) ? 1 : 0);
+  authFactorMode = (airQualityState >= 2) ? 2 : ((presenceConfidence >= 70) ? 1 : 0);
 
   mAuth.AuthState = clampRange(authState, 0, 7);
   mAuth.AuthFactorMode = clampRange(authFactorMode, 0, 3);
@@ -76,7 +108,7 @@ on timer tBiometricCycle
           mAuth.AuthState,
           mAuth.AuthFactorMode,
           mAuth.PresenceConfidence,
-          gOccupancyState);
+          occupancyState);
     gLastAuthState = mAuth.AuthState;
     gLastFactorMode = mAuth.AuthFactorMode;
     gLastPresenceConfidence = mAuth.PresenceConfidence;
