@@ -9,9 +9,20 @@ variables
   int gParkActive;
   int gMinDistance;
   int gZoneMask;
+  dword gParkAssistRxMs;
+  int gLastParkAssistInputStale;
   int gLastActive;
   int gLastGuide;
   int gLastQuality;
+}
+
+void tracePgsInputHealth(int parkAssistInputStale)
+{
+  if (parkAssistInputStale != gLastParkAssistInputStale)
+  {
+    write("[PGS] park-ultrasonic input %s", parkAssistInputStale == 1 ? "stale" : "restored");
+    gLastParkAssistInputStale = parkAssistInputStale;
+  }
 }
 
 on start
@@ -19,6 +30,8 @@ on start
   gParkActive = 0;
   gMinDistance = 255;
   gZoneMask = 0;
+  gParkAssistRxMs = 0;
+  gLastParkAssistInputStale = 0;
   gLastActive = -1;
   gLastGuide = -1;
   gLastQuality = -1;
@@ -31,22 +44,40 @@ on message frmParkUltrasonicStateMsg
   gParkActive = clampRange((int)this.ParkAssistActive, 0, 1);
   gMinDistance = clampRange((int)this.MinDistanceCm, 0, 255);
   gZoneMask = clampRange((int)this.ZoneMask, 0, 255);
+  gParkAssistRxMs = getSimulationTimeMs();
 }
 
 on timer tPgsCycle
 {
   message frmPgsStateMsg mPgs;
+  int parkAssistInputStale;
   int speed;
+  int parkActive;
+  int minDistance;
+  int zoneMask;
   int guideMode;
   int quality;
 
+  parkAssistInputStale = (ethIsRecentTick(gParkAssistRxMs, 300) == 1) ? 0 : 1;
+  tracePgsInputHealth(parkAssistInputStale);
+
   speed = clampRange((int)@Core::vehicleSpeedNorm, 0, 255);
-  guideMode = 0;
-  if (gParkActive == 1)
+  parkActive = gParkActive;
+  minDistance = gMinDistance;
+  zoneMask = gZoneMask;
+  if (parkAssistInputStale == 1)
   {
-    guideMode = (gZoneMask > 0) ? 2 : 1;
+    parkActive = 0;
+    minDistance = 255;
+    zoneMask = 0;
   }
-  quality = (gParkActive == 1) ? clampRange(100 - (gMinDistance / 2), 0, 100) : 0;
+
+  guideMode = 0;
+  if (parkActive == 1)
+  {
+    guideMode = (zoneMask > 0) ? 2 : 1;
+  }
+  quality = (parkActive == 1) ? clampRange(100 - (minDistance / 2), 0, 100) : 0;
   if (speed > 15)
   {
     quality = 0;
@@ -66,7 +97,7 @@ on timer tPgsCycle
           mPgs.PgsActive,
           mPgs.GuideMode,
           mPgs.TrajectoryQuality,
-          gMinDistance,
+          minDistance,
           speed);
     gLastActive = mPgs.PgsActive;
     gLastGuide = mPgs.GuideMode;

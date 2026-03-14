@@ -9,10 +9,29 @@ variables
   int gDkeyState;
   int gDkeyAuth;
   int gSignalBars;
+  dword gDkeyRxMs;
+  dword gTmuServiceRxMs;
+  int gLastDkeyInputStale;
+  int gLastTmuInputStale;
   int gLastState;
   int gLastAuth;
   int gLastProx;
   int gLastLatency;
+}
+
+void tracePaakInputHealth(int dkeyInputStale, int tmuInputStale)
+{
+  if (dkeyInputStale != gLastDkeyInputStale)
+  {
+    write("[PAK] digital-key input %s", dkeyInputStale == 1 ? "stale" : "restored");
+    gLastDkeyInputStale = dkeyInputStale;
+  }
+
+  if (tmuInputStale != gLastTmuInputStale)
+  {
+    write("[PAK] tmu input %s", tmuInputStale == 1 ? "stale" : "restored");
+    gLastTmuInputStale = tmuInputStale;
+  }
 }
 
 on start
@@ -20,6 +39,10 @@ on start
   gDkeyState = 0;
   gDkeyAuth = 0;
   gSignalBars = 0;
+  gDkeyRxMs = 0;
+  gTmuServiceRxMs = 0;
+  gLastDkeyInputStale = 0;
+  gLastTmuInputStale = 0;
   gLastState = -1;
   gLastAuth = -1;
   gLastProx = -1;
@@ -32,34 +55,65 @@ on message frmDigitalKeyStateMsg
 {
   gDkeyState = clampRange((int)this.DKeyState, 0, 7);
   gDkeyAuth = clampRange((int)this.AuthMode, 0, 3);
+  gDkeyRxMs = getSimulationTimeMs();
 }
 
 on message frmTmuServiceStateMsg
 {
   gSignalBars = clampRange((int)this.SignalBars, 0, 15);
+  gTmuServiceRxMs = getSimulationTimeMs();
 }
 
 on timer tPaakCycle
 {
   message frmPhoneAsKeyStateMsg mPaak;
+  int dkeyInputStale;
+  int tmuInputStale;
   int driveState;
+  int dkeyState;
+  int dkeyAuth;
+  int signalBars;
   int proxState;
   int latency;
 
-  driveState = clampRange((int)@Core::driveStateNorm, 0, 3);
-  proxState = 0;
-  if (gSignalBars >= 2)
-  {
-    proxState = 1;
-  }
-  if (gSignalBars >= 4 && driveState == 0)
-  {
-    proxState = 2;
-  }
-  latency = clampRange(200 - (gSignalBars * 30), 20, 255);
+  dkeyInputStale = (ethIsRecentTick(gDkeyRxMs, 300) == 1) ? 0 : 1;
+  tmuInputStale = (ethIsRecentTick(gTmuServiceRxMs, 300) == 1) ? 0 : 1;
+  tracePaakInputHealth(dkeyInputStale, tmuInputStale);
 
-  mPaak.PaakState = clampRange(gDkeyState, 0, 7);
-  mPaak.AuthLevel = clampRange(gDkeyAuth, 0, 3);
+  driveState = clampRange((int)@Core::driveStateNorm, 0, 3);
+  dkeyState = gDkeyState;
+  dkeyAuth = gDkeyAuth;
+  signalBars = gSignalBars;
+  if (dkeyInputStale == 1)
+  {
+    dkeyState = 0;
+    dkeyAuth = 0;
+  }
+  if (tmuInputStale == 1)
+  {
+    signalBars = 0;
+  }
+
+  proxState = 0;
+  latency = 255;
+  if (dkeyInputStale == 0 && tmuInputStale == 0)
+  {
+    if (signalBars >= 2)
+    {
+      proxState = 1;
+    }
+    if (signalBars >= 4 && driveState == 0)
+    {
+      proxState = 2;
+    }
+    if (signalBars > 0)
+    {
+      latency = clampRange(200 - (signalBars * 30), 20, 255);
+    }
+  }
+
+  mPaak.PaakState = clampRange(dkeyState, 0, 7);
+  mPaak.AuthLevel = clampRange(dkeyAuth, 0, 3);
   mPaak.ProximityState = clampRange(proxState, 0, 3);
   mPaak.SyncLatency = latency;
   output(mPaak);
@@ -74,7 +128,7 @@ on timer tPaakCycle
           mPaak.AuthLevel,
           mPaak.ProximityState,
           mPaak.SyncLatency,
-          gSignalBars);
+          signalBars);
     gLastState = mPaak.PaakState;
     gLastAuth = mPaak.AuthLevel;
     gLastProx = mPaak.ProximityState;

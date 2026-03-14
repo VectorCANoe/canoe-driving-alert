@@ -9,9 +9,28 @@ variables
   int gGearInput;
   int gGearState;
   int gIgnitionState;
+  dword gGearRxMs;
+  dword gIgnitionRxMs;
+  int gLastGearInputStale;
+  int gLastIgnitionInputStale;
   int gLastPosition;
   int gLastValid;
   int gLastParkLock;
+}
+
+void traceLvrInputHealth(int gearInputStale, int ignitionInputStale)
+{
+  if (gearInputStale != gLastGearInputStale)
+  {
+    write("[LVR] gear input %s", gearInputStale == 1 ? "stale" : "restored");
+    gLastGearInputStale = gearInputStale;
+  }
+
+  if (ignitionInputStale != gLastIgnitionInputStale)
+  {
+    write("[LVR] ignition input %s", ignitionInputStale == 1 ? "stale" : "restored");
+    gLastIgnitionInputStale = ignitionInputStale;
+  }
 }
 
 on start
@@ -19,6 +38,10 @@ on start
   gGearInput = 0;
   gGearState = 0;
   gIgnitionState = 0;
+  gGearRxMs = 0;
+  gIgnitionRxMs = 0;
+  gLastGearInputStale = 0;
+  gLastIgnitionInputStale = 0;
   gLastPosition = -1;
   gLastValid = -1;
   gLastParkLock = -1;
@@ -30,26 +53,50 @@ on message frmGearStateMsg
 {
   gGearInput = clampRange((int)this.GearInput, 0, 7);
   gGearState = clampRange((int)this.GearState, 0, 7);
+  gGearRxMs = getSimulationTimeMs();
 }
 
 on message frmIgnitionEngineMsg
 {
   gIgnitionState = clampRange((int)this.IgnitionState, 0, 1);
+  gIgnitionRxMs = getSimulationTimeMs();
 }
 
 on timer tLvrCycle
 {
   message frmLvrStateMsg mLvr;
+  int gearInputStale;
+  int ignitionInputStale;
+  int gearInput;
+  int gearState;
+  int ignitionState;
   int leverValid;
   int parkLockCmd;
 
-  leverValid = (gIgnitionState == 1) ? 1 : 0;
-  parkLockCmd = ((gGearState == 0) && (gIgnitionState == 0)) ? 1 : 0;
+  gearInputStale = (ethIsRecentTick(gGearRxMs, 300) == 1) ? 0 : 1;
+  ignitionInputStale = (ethIsRecentTick(gIgnitionRxMs, 300) == 1) ? 0 : 1;
+  traceLvrInputHealth(gearInputStale, ignitionInputStale);
 
-  mLvr.LeverPosition = gGearInput;
+  gearInput = gGearInput;
+  gearState = gGearState;
+  ignitionState = gIgnitionState;
+  if (gearInputStale == 1)
+  {
+    gearInput = 0;
+    gearState = 0;
+  }
+  if (ignitionInputStale == 1)
+  {
+    ignitionState = 0;
+  }
+
+  leverValid = (ignitionState == 1) ? 1 : 0;
+  parkLockCmd = ((gearState == 0) && (ignitionState == 0)) ? 1 : 0;
+
+  mLvr.LeverPosition = gearInput;
   mLvr.LeverValid = leverValid;
   mLvr.ParkLockCmd = parkLockCmd;
-  mLvr.LeverState = gGearState;
+  mLvr.LeverState = gearState;
   output(mLvr);
 
   if (mLvr.LeverPosition != gLastPosition ||
