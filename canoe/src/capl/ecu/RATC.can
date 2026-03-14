@@ -24,13 +24,27 @@ void traceRatcInputHealth(int hvacStateInputStale, int hvacActuatorInputStale)
 {
   if (hvacStateInputStale != gLastHvacStateInputStale)
   {
-    write("[RATC] hvac-state input %s", hvacStateInputStale == 1 ? "stale" : "restored");
+    if (hvacStateInputStale == 1)
+    {
+      write("[RATC] hvac-state input stale");
+    }
+    else
+    {
+      write("[RATC] hvac-state input restored");
+    }
     gLastHvacStateInputStale = hvacStateInputStale;
   }
 
   if (hvacActuatorInputStale != gLastHvacActuatorInputStale)
   {
-    write("[RATC] hvac-actuator input %s", hvacActuatorInputStale == 1 ? "stale" : "restored");
+    if (hvacActuatorInputStale == 1)
+    {
+      write("[RATC] hvac-actuator input stale");
+    }
+    else
+    {
+      write("[RATC] hvac-actuator input restored");
+    }
     gLastHvacActuatorInputStale = hvacActuatorInputStale;
   }
 }

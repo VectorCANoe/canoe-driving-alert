@@ -22,7 +22,14 @@ void traceTpmsInputHealth(int wheelInputStale)
 {
   if (wheelInputStale != gLastWheelInputStale)
   {
-    write("[TPMS] wheel-speed input %s", wheelInputStale == 1 ? "stale" : "restored");
+    if (wheelInputStale == 1)
+    {
+      write("[TPMS] wheel-speed input stale");
+    }
+    else
+    {
+      write("[TPMS] wheel-speed input restored");
+    }
     gLastWheelInputStale = wheelInputStale;
   }
 }

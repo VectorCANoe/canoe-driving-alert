@@ -18,7 +18,14 @@ void traceEhbInputHealth(int brakeInputStale)
 {
   if (brakeInputStale != gLastBrakeInputStale)
   {
-    write("[EHB] brake input %s", brakeInputStale == 1 ? "stale" : "restored");
+    if (brakeInputStale == 1)
+    {
+      write("[EHB] brake input stale");
+    }
+    else
+    {
+      write("[EHB] brake input restored");
+    }
     gLastBrakeInputStale = brakeInputStale;
   }
 }

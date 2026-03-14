@@ -25,19 +25,40 @@ void traceEscInputHealth(int vehicleStateInputStale, int steeringInputStale, int
 {
   if (vehicleStateInputStale != gLastVehicleStateInputStale)
   {
-    write("[ESC] vehicle-state input %s", vehicleStateInputStale == 1 ? "stale" : "restored");
+    if (vehicleStateInputStale == 1)
+    {
+      write("[ESC] vehicle-state input stale");
+    }
+    else
+    {
+      write("[ESC] vehicle-state input restored");
+    }
     gLastVehicleStateInputStale = vehicleStateInputStale;
   }
 
   if (steeringInputStale != gLastSteeringInputStale)
   {
-    write("[ESC] steering input %s", steeringInputStale == 1 ? "stale" : "restored");
+    if (steeringInputStale == 1)
+    {
+      write("[ESC] steering input stale");
+    }
+    else
+    {
+      write("[ESC] steering input restored");
+    }
     gLastSteeringInputStale = steeringInputStale;
   }
 
   if (pedalInputStale != gLastPedalInputStale)
   {
-    write("[ESC] pedal input %s", pedalInputStale == 1 ? "stale" : "restored");
+    if (pedalInputStale == 1)
+    {
+      write("[ESC] pedal input stale");
+    }
+    else
+    {
+      write("[ESC] pedal input restored");
+    }
     gLastPedalInputStale = pedalInputStale;
   }
 }

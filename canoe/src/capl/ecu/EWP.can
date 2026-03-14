@@ -1,4 +1,4 @@
-﻿includes
+includes
 {
   #include "..\\common\\CAPL_COMMON.cin"
 }
@@ -23,13 +23,27 @@ void traceEwpInputHealth(int thermalMgmtInputStale, int engineTempInputStale)
 {
   if (thermalMgmtInputStale != gLastThermalMgmtInputStale)
   {
-    write("[EWP] thermal-mgmt input %s", thermalMgmtInputStale == 1 ? "stale" : "restored");
+    if (thermalMgmtInputStale == 1)
+    {
+      write("[EWP] thermal-mgmt input stale");
+    }
+    else
+    {
+      write("[EWP] thermal-mgmt input restored");
+    }
     gLastThermalMgmtInputStale = thermalMgmtInputStale;
   }
 
   if (engineTempInputStale != gLastEngineTempInputStale)
   {
-    write("[EWP] engine-temp input %s", engineTempInputStale == 1 ? "stale" : "restored");
+    if (engineTempInputStale == 1)
+    {
+      write("[EWP] engine-temp input stale");
+    }
+    else
+    {
+      write("[EWP] engine-temp input restored");
+    }
     gLastEngineTempInputStale = engineTempInputStale;
   }
 }

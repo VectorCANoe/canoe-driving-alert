@@ -21,7 +21,14 @@ void traceCpayInputHealth(int tmuInputStale)
 {
   if (tmuInputStale != gLastTmuInputStale)
   {
-    write("[CPAY] tmu input %s", tmuInputStale == 1 ? "stale" : "restored");
+    if (tmuInputStale == 1)
+    {
+      write("[CPAY] tmu input stale");
+    }
+    else
+    {
+      write("[CPAY] tmu input restored");
+    }
     gLastTmuInputStale = tmuInputStale;
   }
 }

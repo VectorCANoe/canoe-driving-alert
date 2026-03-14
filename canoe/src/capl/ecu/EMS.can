@@ -19,7 +19,14 @@ void traceEmsInputHealth(int ignitionInputStale)
 {
   if (ignitionInputStale != gLastIgnitionInputStale)
   {
-    write("[EMS] ignition input %s", ignitionInputStale == 1 ? "stale" : "restored");
+    if (ignitionInputStale == 1)
+    {
+      write("[EMS] ignition input stale");
+    }
+    else
+    {
+      write("[EMS] ignition input restored");
+    }
     gLastIgnitionInputStale = ignitionInputStale;
   }
 }

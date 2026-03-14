@@ -21,13 +21,27 @@ void trace4wdInputHealth(int driveModeInputStale, int energyFlowInputStale)
 {
   if (driveModeInputStale != gLastDriveModeInputStale)
   {
-    write("[_4WD] drive-mode input %s", driveModeInputStale == 1 ? "stale" : "restored");
+    if (driveModeInputStale == 1)
+    {
+      write("[_4WD] drive-mode input stale");
+    }
+    else
+    {
+      write("[_4WD] drive-mode input restored");
+    }
     gLastDriveModeInputStale = driveModeInputStale;
   }
 
   if (energyFlowInputStale != gLastEnergyFlowInputStale)
   {
-    write("[_4WD] energy-flow input %s", energyFlowInputStale == 1 ? "stale" : "restored");
+    if (energyFlowInputStale == 1)
+    {
+      write("[_4WD] energy-flow input stale");
+    }
+    else
+    {
+      write("[_4WD] energy-flow input restored");
+    }
     gLastEnergyFlowInputStale = energyFlowInputStale;
   }
 }

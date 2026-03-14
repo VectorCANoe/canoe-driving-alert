@@ -29,13 +29,27 @@ void traceRrmInputHealth(int leftRadarInputStale, int rightRadarInputStale)
 {
   if (leftRadarInputStale != gLastLeftRadarInputStale)
   {
-    write("[RRM] left radar input %s", leftRadarInputStale == 1 ? "stale" : "restored");
+    if (leftRadarInputStale == 1)
+    {
+      write("[RRM] left radar input stale");
+    }
+    else
+    {
+      write("[RRM] left radar input restored");
+    }
     gLastLeftRadarInputStale = leftRadarInputStale;
   }
 
   if (rightRadarInputStale != gLastRightRadarInputStale)
   {
-    write("[RRM] right radar input %s", rightRadarInputStale == 1 ? "stale" : "restored");
+    if (rightRadarInputStale == 1)
+    {
+      write("[RRM] right radar input stale");
+    }
+    else
+    {
+      write("[RRM] right radar input restored");
+    }
     gLastRightRadarInputStale = rightRadarInputStale;
   }
 }

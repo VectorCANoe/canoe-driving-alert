@@ -23,13 +23,27 @@ void traceMcuInputHealth(int powerLimitInputStale, int energyFlowInputStale)
 {
   if (powerLimitInputStale != gLastPowerLimitInputStale)
   {
-    write("[MCU] power-limit input %s", powerLimitInputStale == 1 ? "stale" : "restored");
+    if (powerLimitInputStale == 1)
+    {
+      write("[MCU] power-limit input stale");
+    }
+    else
+    {
+      write("[MCU] power-limit input restored");
+    }
     gLastPowerLimitInputStale = powerLimitInputStale;
   }
 
   if (energyFlowInputStale != gLastEnergyFlowInputStale)
   {
-    write("[MCU] energy-flow input %s", energyFlowInputStale == 1 ? "stale" : "restored");
+    if (energyFlowInputStale == 1)
+    {
+      write("[MCU] energy-flow input stale");
+    }
+    else
+    {
+      write("[MCU] energy-flow input restored");
+    }
     gLastEnergyFlowInputStale = energyFlowInputStale;
   }
 }

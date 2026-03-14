@@ -23,13 +23,27 @@ void tracePaakInputHealth(int dkeyInputStale, int tmuInputStale)
 {
   if (dkeyInputStale != gLastDkeyInputStale)
   {
-    write("[PAK] digital-key input %s", dkeyInputStale == 1 ? "stale" : "restored");
+    if (dkeyInputStale == 1)
+    {
+      write("[PAK] digital-key input stale");
+    }
+    else
+    {
+      write("[PAK] digital-key input restored");
+    }
     gLastDkeyInputStale = dkeyInputStale;
   }
 
   if (tmuInputStale != gLastTmuInputStale)
   {
-    write("[PAK] tmu input %s", tmuInputStale == 1 ? "stale" : "restored");
+    if (tmuInputStale == 1)
+    {
+      write("[PAK] tmu input stale");
+    }
+    else
+    {
+      write("[PAK] tmu input restored");
+    }
     gLastTmuInputStale = tmuInputStale;
   }
 }

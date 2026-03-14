@@ -25,13 +25,27 @@ void traceVcsInputHealth(int audioFocusInputStale, int tmuInputStale)
 {
   if (audioFocusInputStale != gLastAudioFocusInputStale)
   {
-    write("[VCS] audio-focus input %s", audioFocusInputStale == 1 ? "stale" : "restored");
+    if (audioFocusInputStale == 1)
+    {
+      write("[VCS] audio-focus input stale");
+    }
+    else
+    {
+      write("[VCS] audio-focus input restored");
+    }
     gLastAudioFocusInputStale = audioFocusInputStale;
   }
 
   if (tmuInputStale != gLastTmuInputStale)
   {
-    write("[VCS] tmu input %s", tmuInputStale == 1 ? "stale" : "restored");
+    if (tmuInputStale == 1)
+    {
+      write("[VCS] tmu input stale");
+    }
+    else
+    {
+      write("[VCS] tmu input restored");
+    }
     gLastTmuInputStale = tmuInputStale;
   }
 }

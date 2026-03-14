@@ -1,4 +1,4 @@
-﻿includes
+includes
 {
   #include "..\\common\\CAPL_COMMON.cin"
 }
@@ -22,13 +22,27 @@ void traceLvrInputHealth(int gearInputStale, int ignitionInputStale)
 {
   if (gearInputStale != gLastGearInputStale)
   {
-    write("[LVR] gear input %s", gearInputStale == 1 ? "stale" : "restored");
+    if (gearInputStale == 1)
+    {
+      write("[LVR] gear input stale");
+    }
+    else
+    {
+      write("[LVR] gear input restored");
+    }
     gLastGearInputStale = gearInputStale;
   }
 
   if (ignitionInputStale != gLastIgnitionInputStale)
   {
-    write("[LVR] ignition input %s", ignitionInputStale == 1 ? "stale" : "restored");
+    if (ignitionInputStale == 1)
+    {
+      write("[LVR] ignition input stale");
+    }
+    else
+    {
+      write("[LVR] ignition input restored");
+    }
     gLastIgnitionInputStale = ignitionInputStale;
   }
 }

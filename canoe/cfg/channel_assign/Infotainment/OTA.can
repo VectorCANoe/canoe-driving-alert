@@ -28,19 +28,40 @@ void traceOtaInputHealth(int connInputStale, int iviHealthInputStale, int tmuInp
 {
   if (connInputStale != gLastConnInputStale)
   {
-    write("[OTA] connectivity input %s", connInputStale == 1 ? "stale" : "restored");
+    if (connInputStale == 1)
+    {
+      write("[OTA] connectivity input stale");
+    }
+    else
+    {
+      write("[OTA] connectivity input restored");
+    }
     gLastConnInputStale = connInputStale;
   }
 
   if (iviHealthInputStale != gLastIviHealthInputStale)
   {
-    write("[OTA] ivi-health input %s", iviHealthInputStale == 1 ? "stale" : "restored");
+    if (iviHealthInputStale == 1)
+    {
+      write("[OTA] ivi-health input stale");
+    }
+    else
+    {
+      write("[OTA] ivi-health input restored");
+    }
     gLastIviHealthInputStale = iviHealthInputStale;
   }
 
   if (tmuInputStale != gLastTmuInputStale)
   {
-    write("[OTA] tmu input %s", tmuInputStale == 1 ? "stale" : "restored");
+    if (tmuInputStale == 1)
+    {
+      write("[OTA] tmu input stale");
+    }
+    else
+    {
+      write("[OTA] tmu input restored");
+    }
     gLastTmuInputStale = tmuInputStale;
   }
 }

@@ -1,4 +1,4 @@
-﻿includes
+includes
 {
   #include "..\\common\\CAPL_COMMON.cin"
 }
@@ -22,13 +22,27 @@ void traceEopInputHealth(int engineTempInputStale, int driveModeInputStale)
 {
   if (engineTempInputStale != gLastEngineTempInputStale)
   {
-    write("[EOP] engine-temp input %s", engineTempInputStale == 1 ? "stale" : "restored");
+    if (engineTempInputStale == 1)
+    {
+      write("[EOP] engine-temp input stale");
+    }
+    else
+    {
+      write("[EOP] engine-temp input restored");
+    }
     gLastEngineTempInputStale = engineTempInputStale;
   }
 
   if (driveModeInputStale != gLastDriveModeInputStale)
   {
-    write("[EOP] drive-mode input %s", driveModeInputStale == 1 ? "stale" : "restored");
+    if (driveModeInputStale == 1)
+    {
+      write("[EOP] drive-mode input stale");
+    }
+    else
+    {
+      write("[EOP] drive-mode input restored");
+    }
     gLastDriveModeInputStale = driveModeInputStale;
   }
 }

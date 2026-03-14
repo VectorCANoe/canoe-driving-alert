@@ -33,25 +33,53 @@ void tracePkmInputHealth(int spasInputStale, int rspaInputStale,
 {
   if (spasInputStale != gLastSpasInputStale)
   {
-    write("[PKM] spas input %s", spasInputStale == 1 ? "stale" : "restored");
+    if (spasInputStale == 1)
+    {
+      write("[PKM] spas input stale");
+    }
+    else
+    {
+      write("[PKM] spas input restored");
+    }
     gLastSpasInputStale = spasInputStale;
   }
 
   if (rspaInputStale != gLastRspaInputStale)
   {
-    write("[PKM] rspa input %s", rspaInputStale == 1 ? "stale" : "restored");
+    if (rspaInputStale == 1)
+    {
+      write("[PKM] rspa input stale");
+    }
+    else
+    {
+      write("[PKM] rspa input restored");
+    }
     gLastRspaInputStale = rspaInputStale;
   }
 
   if (avmInputStale != gLastAvmInputStale)
   {
-    write("[PKM] avm input %s", avmInputStale == 1 ? "stale" : "restored");
+    if (avmInputStale == 1)
+    {
+      write("[PKM] avm input stale");
+    }
+    else
+    {
+      write("[PKM] avm input restored");
+    }
     gLastAvmInputStale = avmInputStale;
   }
 
   if (parkAssistInputStale != gLastParkAssistInputStale)
   {
-    write("[PKM] park-ultrasonic input %s", parkAssistInputStale == 1 ? "stale" : "restored");
+    if (parkAssistInputStale == 1)
+    {
+      write("[PKM] park-ultrasonic input stale");
+    }
+    else
+    {
+      write("[PKM] park-ultrasonic input restored");
+    }
     gLastParkAssistInputStale = parkAssistInputStale;
   }
 }

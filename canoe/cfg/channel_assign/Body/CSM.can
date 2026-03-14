@@ -24,13 +24,27 @@ void traceCsmInputHealth(int seatBeltInputStale, int cabinAirInputStale)
 {
   if (seatBeltInputStale != gLastSeatBeltInputStale)
   {
-    write("[CSM] seat-belt input %s", seatBeltInputStale == 1 ? "stale" : "restored");
+    if (seatBeltInputStale == 1)
+    {
+      write("[CSM] seat-belt input stale");
+    }
+    else
+    {
+      write("[CSM] seat-belt input restored");
+    }
     gLastSeatBeltInputStale = seatBeltInputStale;
   }
 
   if (cabinAirInputStale != gLastCabinAirInputStale)
   {
-    write("[CSM] cabin-air input %s", cabinAirInputStale == 1 ? "stale" : "restored");
+    if (cabinAirInputStale == 1)
+    {
+      write("[CSM] cabin-air input stale");
+    }
+    else
+    {
+      write("[CSM] cabin-air input restored");
+    }
     gLastCabinAirInputStale = cabinAirInputStale;
   }
 }

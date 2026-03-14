@@ -20,7 +20,14 @@ void traceAhlsInputHealth(int aflsInputStale)
 {
   if (aflsInputStale != gLastAflsInputStale)
   {
-    write("[AHLS] afls input %s", aflsInputStale == 1 ? "stale" : "restored");
+    if (aflsInputStale == 1)
+    {
+      write("[AHLS] afls input stale");
+    }
+    else
+    {
+      write("[AHLS] afls input restored");
+    }
     gLastAflsInputStale = aflsInputStale;
   }
 }

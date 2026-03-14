@@ -23,13 +23,27 @@ void traceAdmInputHealth(int doorFlInputStale, int doorFrInputStale)
 {
   if (doorFlInputStale != gLastDoorFlInputStale)
   {
-    write("[ADM] door-fl input %s", doorFlInputStale == 1 ? "stale" : "restored");
+    if (doorFlInputStale == 1)
+    {
+      write("[ADM] door-fl input stale");
+    }
+    else
+    {
+      write("[ADM] door-fl input restored");
+    }
     gLastDoorFlInputStale = doorFlInputStale;
   }
 
   if (doorFrInputStale != gLastDoorFrInputStale)
   {
-    write("[ADM] door-fr input %s", doorFrInputStale == 1 ? "stale" : "restored");
+    if (doorFrInputStale == 1)
+    {
+      write("[ADM] door-fr input stale");
+    }
+    else
+    {
+      write("[ADM] door-fr input restored");
+    }
     gLastDoorFrInputStale = doorFrInputStale;
   }
 }

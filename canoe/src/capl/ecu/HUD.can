@@ -31,25 +31,53 @@ void traceHudInputHealth(int warningInputStale, int popupInputStale,
 {
   if (warningInputStale != gLastWarningInputStale)
   {
-    write("[HUD] warning input %s", warningInputStale == 1 ? "stale" : "restored");
+    if (warningInputStale == 1)
+    {
+      write("[HUD] warning input stale");
+    }
+    else
+    {
+      write("[HUD] warning input restored");
+    }
     gLastWarningInputStale = warningInputStale;
   }
 
   if (popupInputStale != gLastPopupInputStale)
   {
-    write("[HUD] popup input %s", popupInputStale == 1 ? "stale" : "restored");
+    if (popupInputStale == 1)
+    {
+      write("[HUD] popup input stale");
+    }
+    else
+    {
+      write("[HUD] popup input restored");
+    }
     gLastPopupInputStale = popupInputStale;
   }
 
   if (guideInputStale != gLastGuideInputStale)
   {
-    write("[HUD] navigation input %s", guideInputStale == 1 ? "stale" : "restored");
+    if (guideInputStale == 1)
+    {
+      write("[HUD] navigation input stale");
+    }
+    else
+    {
+      write("[HUD] navigation input restored");
+    }
     gLastGuideInputStale = guideInputStale;
   }
 
   if (themeInputStale != gLastThemeInputStale)
   {
-    write("[HUD] theme input %s", themeInputStale == 1 ? "stale" : "restored");
+    if (themeInputStale == 1)
+    {
+      write("[HUD] theme input stale");
+    }
+    else
+    {
+      write("[HUD] theme input restored");
+    }
     gLastThemeInputStale = themeInputStale;
   }
 }

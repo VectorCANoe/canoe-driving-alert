@@ -22,13 +22,27 @@ void traceEpbInputHealth(int brakeInputStale, int vehicleInputStale)
 {
   if (brakeInputStale != gLastBrakeInputStale)
   {
-    write("[EPB] brake input %s", brakeInputStale == 1 ? "stale" : "restored");
+    if (brakeInputStale == 1)
+    {
+      write("[EPB] brake input stale");
+    }
+    else
+    {
+      write("[EPB] brake input restored");
+    }
     gLastBrakeInputStale = brakeInputStale;
   }
 
   if (vehicleInputStale != gLastVehicleInputStale)
   {
-    write("[EPB] vehicle-state input %s", vehicleInputStale == 1 ? "stale" : "restored");
+    if (vehicleInputStale == 1)
+    {
+      write("[EPB] vehicle-state input stale");
+    }
+    else
+    {
+      write("[EPB] vehicle-state input restored");
+    }
     gLastVehicleInputStale = vehicleInputStale;
   }
 }

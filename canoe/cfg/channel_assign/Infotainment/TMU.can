@@ -24,13 +24,27 @@ void traceTmuInputHealth(int connInputStale, int iviHealthInputStale)
 {
   if (connInputStale != gLastConnInputStale)
   {
-    write("[TMU] connectivity input %s", connInputStale == 1 ? "stale" : "restored");
+    if (connInputStale == 1)
+    {
+      write("[TMU] connectivity input stale");
+    }
+    else
+    {
+      write("[TMU] connectivity input restored");
+    }
     gLastConnInputStale = connInputStale;
   }
 
   if (iviHealthInputStale != gLastIviHealthInputStale)
   {
-    write("[TMU] ivi-health input %s", iviHealthInputStale == 1 ? "stale" : "restored");
+    if (iviHealthInputStale == 1)
+    {
+      write("[TMU] ivi-health input stale");
+    }
+    else
+    {
+      write("[TMU] ivi-health input restored");
+    }
     gLastIviHealthInputStale = iviHealthInputStale;
   }
 }

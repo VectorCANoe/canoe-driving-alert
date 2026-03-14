@@ -20,7 +20,14 @@ void traceInverterInputHealth(int mcuInputStale)
 {
   if (mcuInputStale != gLastMcuInputStale)
   {
-    write("[INVERTER] mcu input %s", mcuInputStale == 1 ? "stale" : "restored");
+    if (mcuInputStale == 1)
+    {
+      write("[INVERTER] mcu input stale");
+    }
+    else
+    {
+      write("[INVERTER] mcu input restored");
+    }
     gLastMcuInputStale = mcuInputStale;
   }
 }

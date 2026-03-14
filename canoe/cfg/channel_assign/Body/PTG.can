@@ -21,7 +21,14 @@ void tracePtgInputHealth(int tailgateInputStale)
 {
   if (tailgateInputStale != gLastTailgateInputStale)
   {
-    write("[PTG] tailgate input %s", tailgateInputStale == 1 ? "stale" : "restored");
+    if (tailgateInputStale == 1)
+    {
+      write("[PTG] tailgate input stale");
+    }
+    else
+    {
+      write("[PTG] tailgate input restored");
+    }
     gLastTailgateInputStale = tailgateInputStale;
   }
 }

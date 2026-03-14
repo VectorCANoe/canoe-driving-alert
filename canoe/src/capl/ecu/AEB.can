@@ -29,7 +29,14 @@ void traceAebInputHealth(int fcaInputStale)
 {
   if (fcaInputStale != gLastFcaInputStale)
   {
-    write("[AEB] fca input %s", fcaInputStale == 1 ? "stale" : "restored");
+    if (fcaInputStale == 1)
+    {
+      write("[AEB] fca input stale");
+    }
+    else
+    {
+      write("[AEB] fca input restored");
+    }
     gLastFcaInputStale = fcaInputStale;
   }
 }

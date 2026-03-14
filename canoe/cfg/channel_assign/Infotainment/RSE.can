@@ -34,25 +34,53 @@ void traceRseInputHealth(int mediaInputStale, int audioFocusInputStale,
 {
   if (mediaInputStale != gLastMediaInputStale)
   {
-    write("[RSE] media input %s", mediaInputStale == 1 ? "stale" : "restored");
+    if (mediaInputStale == 1)
+    {
+      write("[RSE] media input stale");
+    }
+    else
+    {
+      write("[RSE] media input restored");
+    }
     gLastMediaInputStale = mediaInputStale;
   }
 
   if (audioFocusInputStale != gLastAudioFocusInputStale)
   {
-    write("[RSE] audio-focus input %s", audioFocusInputStale == 1 ? "stale" : "restored");
+    if (audioFocusInputStale == 1)
+    {
+      write("[RSE] audio-focus input stale");
+    }
+    else
+    {
+      write("[RSE] audio-focus input restored");
+    }
     gLastAudioFocusInputStale = audioFocusInputStale;
   }
 
   if (mediaMetaInputStale != gLastMediaMetaInputStale)
   {
-    write("[RSE] media-meta input %s", mediaMetaInputStale == 1 ? "stale" : "restored");
+    if (mediaMetaInputStale == 1)
+    {
+      write("[RSE] media-meta input stale");
+    }
+    else
+    {
+      write("[RSE] media-meta input restored");
+    }
     gLastMediaMetaInputStale = mediaMetaInputStale;
   }
 
   if (projectionInputStale != gLastProjectionInputStale)
   {
-    write("[RSE] projection input %s", projectionInputStale == 1 ? "stale" : "restored");
+    if (projectionInputStale == 1)
+    {
+      write("[RSE] projection input stale");
+    }
+    else
+    {
+      write("[RSE] projection input restored");
+    }
     gLastProjectionInputStale = projectionInputStale;
   }
 }

@@ -18,7 +18,14 @@ void traceMirrorInputHealth(int lampInputStale)
 {
   if (lampInputStale != gLastLampInputStale)
   {
-    write("[MIR] lamp-control input %s", lampInputStale == 1 ? "stale" : "restored");
+    if (lampInputStale == 1)
+    {
+      write("[MIR] lamp-control input stale");
+    }
+    else
+    {
+      write("[MIR] lamp-control input restored");
+    }
     gLastLampInputStale = lampInputStale;
   }
 }

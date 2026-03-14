@@ -23,7 +23,14 @@ void traceRpcInputHealth(int fcamInputStale)
 {
   if (fcamInputStale != gLastFcamInputStale)
   {
-    write("[RPC] fcam input %s", fcamInputStale == 1 ? "stale" : "restored");
+    if (fcamInputStale == 1)
+    {
+      write("[RPC] fcam input stale");
+    }
+    else
+    {
+      write("[RPC] fcam input restored");
+    }
     gLastFcamInputStale = fcamInputStale;
   }
 }

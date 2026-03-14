@@ -100,7 +100,14 @@ void traceNavInputHealth(int navInputStale)
 {
   if (navInputStale != gLastNavInputStale)
   {
-    write("[NAV] input %s", navInputStale == 1 ? "stale" : "restored");
+    if (navInputStale == 1)
+    {
+      write("[NAV] input stale");
+    }
+    else
+    {
+      write("[NAV] input restored");
+    }
     gLastNavInputStale = navInputStale;
   }
 }

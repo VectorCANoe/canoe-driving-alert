@@ -38,19 +38,40 @@ void traceVcuInputHealth(int pedalInputStale, int ignitionInputStale, int gearIn
 {
   if (pedalInputStale != gLastPedalInputStale)
   {
-    write("[VCU] pedal input %s", pedalInputStale == 1 ? "stale" : "restored");
+    if (pedalInputStale == 1)
+    {
+      write("[VCU] pedal input stale");
+    }
+    else
+    {
+      write("[VCU] pedal input restored");
+    }
     gLastPedalInputStale = pedalInputStale;
   }
 
   if (ignitionInputStale != gLastIgnitionInputStale)
   {
-    write("[VCU] ignition input %s", ignitionInputStale == 1 ? "stale" : "restored");
+    if (ignitionInputStale == 1)
+    {
+      write("[VCU] ignition input stale");
+    }
+    else
+    {
+      write("[VCU] ignition input restored");
+    }
     gLastIgnitionInputStale = ignitionInputStale;
   }
 
   if (gearInputStale != gLastGearInputStale)
   {
-    write("[VCU] gear input %s", gearInputStale == 1 ? "stale" : "restored");
+    if (gearInputStale == 1)
+    {
+      write("[VCU] gear input stale");
+    }
+    else
+    {
+      write("[VCU] gear input restored");
+    }
     gLastGearInputStale = gearInputStale;
   }
 }

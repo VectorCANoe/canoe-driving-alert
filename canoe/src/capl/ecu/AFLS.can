@@ -22,13 +22,27 @@ void traceAflsInputHealth(int steeringInputStale, int lampInputStale)
 {
   if (steeringInputStale != gLastSteeringInputStale)
   {
-    write("[AFLS] steering-angle input %s", steeringInputStale == 1 ? "stale" : "restored");
+    if (steeringInputStale == 1)
+    {
+      write("[AFLS] steering-angle input stale");
+    }
+    else
+    {
+      write("[AFLS] steering-angle input restored");
+    }
     gLastSteeringInputStale = steeringInputStale;
   }
 
   if (lampInputStale != gLastLampInputStale)
   {
-    write("[AFLS] lamp-control input %s", lampInputStale == 1 ? "stale" : "restored");
+    if (lampInputStale == 1)
+    {
+      write("[AFLS] lamp-control input stale");
+    }
+    else
+    {
+      write("[AFLS] lamp-control input restored");
+    }
     gLastLampInputStale = lampInputStale;
   }
 }

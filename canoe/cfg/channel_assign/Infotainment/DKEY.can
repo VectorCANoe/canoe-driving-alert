@@ -21,7 +21,14 @@ void traceDkeyInputHealth(int tmuInputStale)
 {
   if (tmuInputStale != gLastTmuInputStale)
   {
-    write("[DKEY] tmu input %s", tmuInputStale == 1 ? "stale" : "restored");
+    if (tmuInputStale == 1)
+    {
+      write("[DKEY] tmu input stale");
+    }
+    else
+    {
+      write("[DKEY] tmu input restored");
+    }
     gLastTmuInputStale = tmuInputStale;
   }
 }

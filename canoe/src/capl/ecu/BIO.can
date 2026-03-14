@@ -21,7 +21,14 @@ void traceBioInputHealth(int cabinSensingInputStale)
 {
   if (cabinSensingInputStale != gLastCabinSensingInputStale)
   {
-    write("[BIO] cabin-sensing input %s", cabinSensingInputStale == 1 ? "stale" : "restored");
+    if (cabinSensingInputStale == 1)
+    {
+      write("[BIO] cabin-sensing input stale");
+    }
+    else
+    {
+      write("[BIO] cabin-sensing input restored");
+    }
     gLastCabinSensingInputStale = cabinSensingInputStale;
   }
 }

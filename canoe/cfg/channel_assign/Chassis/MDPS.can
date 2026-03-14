@@ -45,13 +45,27 @@ void traceMdpsInputHealth(int steeringInputStale, int vehicleInputStale)
 {
   if (steeringInputStale != gLastSteeringInputStale)
   {
-    write("[MDPS] steering input %s", steeringInputStale == 1 ? "stale" : "restored");
+    if (steeringInputStale == 1)
+    {
+      write("[MDPS] steering input stale");
+    }
+    else
+    {
+      write("[MDPS] steering input restored");
+    }
     gLastSteeringInputStale = steeringInputStale;
   }
 
   if (vehicleInputStale != gLastVehicleInputStale)
   {
-    write("[MDPS] vehicle-state input %s", vehicleInputStale == 1 ? "stale" : "restored");
+    if (vehicleInputStale == 1)
+    {
+      write("[MDPS] vehicle-state input stale");
+    }
+    else
+    {
+      write("[MDPS] vehicle-state input restored");
+    }
     gLastVehicleInputStale = vehicleInputStale;
   }
 }

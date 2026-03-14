@@ -26,13 +26,27 @@ void traceCpcInputHealth(int obcInputStale, int bmsInputStale)
 {
   if (obcInputStale != gLastObcInputStale)
   {
-    write("[CPC] obc input %s", obcInputStale == 1 ? "stale" : "restored");
+    if (obcInputStale == 1)
+    {
+      write("[CPC] obc input stale");
+    }
+    else
+    {
+      write("[CPC] obc input restored");
+    }
     gLastObcInputStale = obcInputStale;
   }
 
   if (bmsInputStale != gLastBmsInputStale)
   {
-    write("[CPC] bms input %s", bmsInputStale == 1 ? "stale" : "restored");
+    if (bmsInputStale == 1)
+    {
+      write("[CPC] bms input stale");
+    }
+    else
+    {
+      write("[CPC] bms input restored");
+    }
     gLastBmsInputStale = bmsInputStale;
   }
 }

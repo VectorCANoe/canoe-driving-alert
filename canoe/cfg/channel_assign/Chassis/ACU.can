@@ -22,7 +22,14 @@ void traceAcuInputHealth(int seatBeltInputStale)
 {
   if (seatBeltInputStale != gLastSeatBeltInputStale)
   {
-    write("[ACU] seat-belt input %s", seatBeltInputStale == 1 ? "stale" : "restored");
+    if (seatBeltInputStale == 1)
+    {
+      write("[ACU] seat-belt input stale");
+    }
+    else
+    {
+      write("[ACU] seat-belt input restored");
+    }
     gLastSeatBeltInputStale = seatBeltInputStale;
   }
 }

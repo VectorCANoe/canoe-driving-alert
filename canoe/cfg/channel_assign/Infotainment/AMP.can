@@ -32,25 +32,53 @@ void traceAmpInputHealth(int mediaInputStale, int audioFocusInputStale,
 {
   if (mediaInputStale != gLastMediaInputStale)
   {
-    write("[AMP] media input %s", mediaInputStale == 1 ? "stale" : "restored");
+    if (mediaInputStale == 1)
+    {
+      write("[AMP] media input stale");
+    }
+    else
+    {
+      write("[AMP] media input restored");
+    }
     gLastMediaInputStale = mediaInputStale;
   }
 
   if (audioFocusInputStale != gLastAudioFocusInputStale)
   {
-    write("[AMP] audio-focus input %s", audioFocusInputStale == 1 ? "stale" : "restored");
+    if (audioFocusInputStale == 1)
+    {
+      write("[AMP] audio-focus input stale");
+    }
+    else
+    {
+      write("[AMP] audio-focus input restored");
+    }
     gLastAudioFocusInputStale = audioFocusInputStale;
   }
 
   if (voiceInputStale != gLastVoiceInputStale)
   {
-    write("[AMP] voice-assist input %s", voiceInputStale == 1 ? "stale" : "restored");
+    if (voiceInputStale == 1)
+    {
+      write("[AMP] voice-assist input stale");
+    }
+    else
+    {
+      write("[AMP] voice-assist input restored");
+    }
     gLastVoiceInputStale = voiceInputStale;
   }
 
   if (ttsInputStale != gLastTtsInputStale)
   {
-    write("[AMP] tts input %s", ttsInputStale == 1 ? "stale" : "restored");
+    if (ttsInputStale == 1)
+    {
+      write("[AMP] tts input stale");
+    }
+    else
+    {
+      write("[AMP] tts input restored");
+    }
     gLastTtsInputStale = ttsInputStale;
   }
 }

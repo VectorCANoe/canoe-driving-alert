@@ -28,19 +28,40 @@ void traceHwpInputHealth(int cruiseInputStale, int laneGuideInputStale, int dmsI
 {
   if (cruiseInputStale != gLastCruiseInputStale)
   {
-    write("[HWP] cruise input %s", cruiseInputStale == 1 ? "stale" : "restored");
+    if (cruiseInputStale == 1)
+    {
+      write("[HWP] cruise input stale");
+    }
+    else
+    {
+      write("[HWP] cruise input restored");
+    }
     gLastCruiseInputStale = cruiseInputStale;
   }
 
   if (laneGuideInputStale != gLastLaneGuideInputStale)
   {
-    write("[HWP] lane-guide input %s", laneGuideInputStale == 1 ? "stale" : "restored");
+    if (laneGuideInputStale == 1)
+    {
+      write("[HWP] lane-guide input stale");
+    }
+    else
+    {
+      write("[HWP] lane-guide input restored");
+    }
     gLastLaneGuideInputStale = laneGuideInputStale;
   }
 
   if (dmsInputStale != gLastDmsInputStale)
   {
-    write("[HWP] dms input %s", dmsInputStale == 1 ? "stale" : "restored");
+    if (dmsInputStale == 1)
+    {
+      write("[HWP] dms input stale");
+    }
+    else
+    {
+      write("[HWP] dms input restored");
+    }
     gLastDmsInputStale = dmsInputStale;
   }
 }

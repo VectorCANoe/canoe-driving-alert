@@ -21,13 +21,27 @@ void traceRwsInputHealth(int vehicleInputStale, int steeringInputStale)
 {
   if (vehicleInputStale != gLastVehicleInputStale)
   {
-    write("[RWS] vehicle-state input %s", vehicleInputStale == 1 ? "stale" : "restored");
+    if (vehicleInputStale == 1)
+    {
+      write("[RWS] vehicle-state input stale");
+    }
+    else
+    {
+      write("[RWS] vehicle-state input restored");
+    }
     gLastVehicleInputStale = vehicleInputStale;
   }
 
   if (steeringInputStale != gLastSteeringInputStale)
   {
-    write("[RWS] steering-torque input %s", steeringInputStale == 1 ? "stale" : "restored");
+    if (steeringInputStale == 1)
+    {
+      write("[RWS] steering-torque input stale");
+    }
+    else
+    {
+      write("[RWS] steering-torque input restored");
+    }
     gLastSteeringInputStale = steeringInputStale;
   }
 }

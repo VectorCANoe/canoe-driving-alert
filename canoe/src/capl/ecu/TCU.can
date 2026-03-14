@@ -21,13 +21,27 @@ void traceTcuInputHealth(int gearInputStale, int driveModeInputStale)
 {
   if (gearInputStale != gLastGearInputStale)
   {
-    write("[TCU] gear input %s", gearInputStale == 1 ? "stale" : "restored");
+    if (gearInputStale == 1)
+    {
+      write("[TCU] gear input stale");
+    }
+    else
+    {
+      write("[TCU] gear input restored");
+    }
     gLastGearInputStale = gearInputStale;
   }
 
   if (driveModeInputStale != gLastDriveModeInputStale)
   {
-    write("[TCU] drive-mode input %s", driveModeInputStale == 1 ? "stale" : "restored");
+    if (driveModeInputStale == 1)
+    {
+      write("[TCU] drive-mode input stale");
+    }
+    else
+    {
+      write("[TCU] drive-mode input restored");
+    }
     gLastDriveModeInputStale = driveModeInputStale;
   }
 }

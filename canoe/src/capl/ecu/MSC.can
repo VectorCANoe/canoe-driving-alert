@@ -22,7 +22,14 @@ void traceMscInputHealth(int seatDrvInputStale)
 {
   if (seatDrvInputStale != gLastSeatDrvInputStale)
   {
-    write("[MSC] seat-driver input %s", seatDrvInputStale == 1 ? "stale" : "restored");
+    if (seatDrvInputStale == 1)
+    {
+      write("[MSC] seat-driver input stale");
+    }
+    else
+    {
+      write("[MSC] seat-driver input restored");
+    }
     gLastSeatDrvInputStale = seatDrvInputStale;
   }
 }

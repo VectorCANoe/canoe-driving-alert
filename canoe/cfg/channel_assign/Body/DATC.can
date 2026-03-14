@@ -26,13 +26,27 @@ void traceDatcInputHealth(int tmuInputStale, int cabinAirInputStale)
 {
   if (tmuInputStale != gLastTmuInputStale)
   {
-    write("[DATC] tmu input %s", tmuInputStale == 1 ? "stale" : "restored");
+    if (tmuInputStale == 1)
+    {
+      write("[DATC] tmu input stale");
+    }
+    else
+    {
+      write("[DATC] tmu input restored");
+    }
     gLastTmuInputStale = tmuInputStale;
   }
 
   if (cabinAirInputStale != gLastCabinAirInputStale)
   {
-    write("[DATC] cabin-air input %s", cabinAirInputStale == 1 ? "stale" : "restored");
+    if (cabinAirInputStale == 1)
+    {
+      write("[DATC] cabin-air input stale");
+    }
+    else
+    {
+      write("[DATC] cabin-air input restored");
+    }
     gLastCabinAirInputStale = cabinAirInputStale;
   }
 }

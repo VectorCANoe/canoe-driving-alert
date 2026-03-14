@@ -1,4 +1,4 @@
-﻿includes
+includes
 {
   #include "..\\common\\CAPL_COMMON.cin"
 }
@@ -20,7 +20,14 @@ void tracePgsInputHealth(int parkAssistInputStale)
 {
   if (parkAssistInputStale != gLastParkAssistInputStale)
   {
-    write("[PGS] park-ultrasonic input %s", parkAssistInputStale == 1 ? "stale" : "restored");
+    if (parkAssistInputStale == 1)
+    {
+      write("[PGS] park-ultrasonic input stale");
+    }
+    else
+    {
+      write("[PGS] park-ultrasonic input restored");
+    }
     gLastParkAssistInputStale = parkAssistInputStale;
   }
 }

@@ -27,13 +27,27 @@ void traceIboxInputHealth(int vehInputStale, int navInputStale)
 {
   if (vehInputStale != gLastVehInputStale)
   {
-    write("[IBOX] vehicle input %s", vehInputStale == 1 ? "stale" : "restored");
+    if (vehInputStale == 1)
+    {
+      write("[IBOX] vehicle input stale");
+    }
+    else
+    {
+      write("[IBOX] vehicle input restored");
+    }
     gLastVehInputStale = vehInputStale;
   }
 
   if (navInputStale != gLastNavInputStale)
   {
-    write("[IBOX] nav input %s", navInputStale == 1 ? "stale" : "restored");
+    if (navInputStale == 1)
+    {
+      write("[IBOX] nav input stale");
+    }
+    else
+    {
+      write("[IBOX] nav input restored");
+    }
     gLastNavInputStale = navInputStale;
   }
 }

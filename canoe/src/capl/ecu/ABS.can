@@ -26,13 +26,27 @@ void traceAbsInputHealth(int brakeInputStale, int wheelInputStale)
 {
   if (brakeInputStale != gLastBrakeInputStale)
   {
-    write("[ABS] brake input %s", brakeInputStale == 1 ? "stale" : "restored");
+    if (brakeInputStale == 1)
+    {
+      write("[ABS] brake input stale");
+    }
+    else
+    {
+      write("[ABS] brake input restored");
+    }
     gLastBrakeInputStale = brakeInputStale;
   }
 
   if (wheelInputStale != gLastWheelInputStale)
   {
-    write("[ABS] wheel-speed input %s", wheelInputStale == 1 ? "stale" : "restored");
+    if (wheelInputStale == 1)
+    {
+      write("[ABS] wheel-speed input stale");
+    }
+    else
+    {
+      write("[ABS] wheel-speed input restored");
+    }
     gLastWheelInputStale = wheelInputStale;
   }
 }

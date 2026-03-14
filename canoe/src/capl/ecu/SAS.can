@@ -19,13 +19,27 @@ void traceSasInputHealth(int steeringInputStale, int vehicleInputStale)
 {
   if (steeringInputStale != gLastSteeringInputStale)
   {
-    write("[SAS] steering input %s", steeringInputStale == 1 ? "stale" : "restored");
+    if (steeringInputStale == 1)
+    {
+      write("[SAS] steering input stale");
+    }
+    else
+    {
+      write("[SAS] steering input restored");
+    }
     gLastSteeringInputStale = steeringInputStale;
   }
 
   if (vehicleInputStale != gLastVehicleInputStale)
   {
-    write("[SAS] vehicle-state input %s", vehicleInputStale == 1 ? "stale" : "restored");
+    if (vehicleInputStale == 1)
+    {
+      write("[SAS] vehicle-state input stale");
+    }
+    else
+    {
+      write("[SAS] vehicle-state input restored");
+    }
     gLastVehicleInputStale = vehicleInputStale;
   }
 }

@@ -23,13 +23,27 @@ void traceOdsInputHealth(int seatBeltInputStale, int seatStateInputStale)
 {
   if (seatBeltInputStale != gLastSeatBeltInputStale)
   {
-    write("[ODS] seat-belt input %s", seatBeltInputStale == 1 ? "stale" : "restored");
+    if (seatBeltInputStale == 1)
+    {
+      write("[ODS] seat-belt input stale");
+    }
+    else
+    {
+      write("[ODS] seat-belt input restored");
+    }
     gLastSeatBeltInputStale = seatBeltInputStale;
   }
 
   if (seatStateInputStale != gLastSeatStateInputStale)
   {
-    write("[ODS] seat-state input %s", seatStateInputStale == 1 ? "stale" : "restored");
+    if (seatStateInputStale == 1)
+    {
+      write("[ODS] seat-state input stale");
+    }
+    else
+    {
+      write("[ODS] seat-state input restored");
+    }
     gLastSeatStateInputStale = seatStateInputStale;
   }
 }
