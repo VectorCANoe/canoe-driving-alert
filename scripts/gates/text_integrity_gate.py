@@ -13,6 +13,7 @@ operator docs, Python surface strings, and CAPL sources before commit/push.
 from __future__ import annotations
 
 import re
+import os
 from pathlib import Path
 
 
@@ -46,6 +47,7 @@ EXCLUDE_DIRS = {
     "Logs",
     "obj",
     "bin",
+    "archive",
     "reference",
     "site",
 }
@@ -59,6 +61,7 @@ EXCLUDE_PATH_PARTS = {
 EXEMPT_LITERAL_SENTINEL_FILES = {
     Path("scripts/gates/cfg_hygiene_gate.py"),
     Path("canoe/scripts/fix_cfg_paths.py"),
+    Path("canoe/AGENT/canoe/scripts/fix_cfg_paths.py"),
 }
 
 QUESTION_RUN_RE = re.compile(r"\?{3,}")
@@ -78,7 +81,15 @@ def should_scan(path: Path) -> bool:
 
 
 def iter_scan_files() -> list[Path]:
-    return sorted(p for p in ROOT.rglob("*") if p.is_file() and should_scan(p))
+    files: list[Path] = []
+    for dirpath, dirnames, filenames in os.walk(ROOT, topdown=True, onerror=lambda _e: None):
+        dirnames[:] = [name for name in dirnames if name not in EXCLUDE_DIRS]
+        base = Path(dirpath)
+        for filename in filenames:
+            path = base / filename
+            if should_scan(path):
+                files.append(path)
+    return sorted(files)
 
 
 def scan_file(path: Path) -> tuple[list[str], list[str], list[str], list[str]]:
