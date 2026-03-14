@@ -10,6 +10,23 @@ variables
   int gLastDetected;
   int gLastDistanceBucket;
   int gLastRelSpeedBucket;
+  int gLastPathReady;
+}
+
+int fradarPathReady()
+{
+  int warningPathStatus;
+  int e2eHealthState;
+  int failSafeMode;
+
+  warningPathStatus = clampRange((int)@CoreState::warningPathStatus, 0, 2);
+  e2eHealthState = clampRange((int)@CoreState::e2eHealthState, 0, 2);
+  failSafeMode = clampRange((int)@Core::failSafeMode, 0, 2);
+  if (warningPathStatus >= 2 || e2eHealthState == 0 || failSafeMode >= 2)
+  {
+    return 0;
+  }
+  return 1;
 }
 
 void publishFradarState()
@@ -23,11 +40,13 @@ void publishFradarState()
   int detected;
   int distanceBucket;
   int relSpeedBucket;
+  int pathReady;
 
   trackValid = clampRange((int)@Core::objectTrackValid, 0, 1);
   confidence = clampRange((int)@Core::objectConfidence, 0, 100);
   rangeM = clampRange((int)@Core::objectRange, 0, 500);
   relSpeed = clampRange((int)@Core::objectRelSpeed, -200, 200);
+  pathReady = fradarPathReady();
 
   detected = trackValid;
   if (confidence >= 70)
@@ -45,6 +64,15 @@ void publishFradarState()
 
   distanceBucket = clampRange(rangeM, 0, 255);
   relSpeedBucket = clampRange(relSpeed + 128, 0, 255);
+  if (pathReady == 0)
+  {
+    health = 0;
+    detected = 0;
+    rangeM = 0;
+    relSpeed = 0;
+    distanceBucket = 0;
+    relSpeedBucket = 128;
+  }
 
   mFradar.RadarHealth = clampRange(health, 0, 3);
   mFradar.ObjectDetected = detected;
@@ -52,17 +80,20 @@ void publishFradarState()
   mFradar.RelSpeedBucket = relSpeedBucket;
   output(mFradar);
 
-  if (health != gLastHealth ||
+  if (pathReady != gLastPathReady ||
+      health != gLastHealth ||
       detected != gLastDetected ||
       distanceBucket != gLastDistanceBucket ||
       relSpeedBucket != gLastRelSpeedBucket)
   {
-    write("[FRADAR] health=%d detected=%d range=%d rel=%d conf=%d",
+    write("[FRADAR] path=%d health=%d detected=%d range=%d rel=%d conf=%d",
+          pathReady,
           health,
           detected,
           rangeM,
           relSpeed,
           confidence);
+    gLastPathReady = pathReady;
     gLastHealth = health;
     gLastDetected = detected;
     gLastDistanceBucket = distanceBucket;
@@ -72,6 +103,7 @@ void publishFradarState()
 
 on start
 {
+  gLastPathReady = -1;
   gLastHealth = -1;
   gLastDetected = -1;
   gLastDistanceBucket = -1;

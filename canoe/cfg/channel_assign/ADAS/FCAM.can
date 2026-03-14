@@ -10,6 +10,23 @@ variables
   int gLastObjectDetected;
   int gLastLaneModelValid;
   int gLastConfidence;
+  int gLastPathReady;
+}
+
+int fcamPathReady()
+{
+  int warningPathStatus;
+  int e2eHealthState;
+  int failSafeMode;
+
+  warningPathStatus = clampRange((int)@CoreState::warningPathStatus, 0, 2);
+  e2eHealthState = clampRange((int)@CoreState::e2eHealthState, 0, 2);
+  failSafeMode = clampRange((int)@Core::failSafeMode, 0, 2);
+  if (warningPathStatus >= 2 || e2eHealthState == 0 || failSafeMode >= 2)
+  {
+    return 0;
+  }
+  return 1;
 }
 
 void publishFcamState()
@@ -21,10 +38,12 @@ void publishFcamState()
   int health;
   int objectDetected;
   int laneModelValid;
+  int pathReady;
 
   objectTrackValid = clampRange((int)@Core::objectTrackValid, 0, 1);
   objectConfidence = clampRange((int)@Core::objectConfidence, 0, 100);
   selectedAlertType = clampRange((int)@Core::selectedAlertType, 0, 7);
+  pathReady = fcamPathReady();
 
   objectDetected = objectTrackValid;
   laneModelValid = ((selectedAlertType == 5 || selectedAlertType == 6) && objectConfidence >= 30) ? 1 : 0;
@@ -41,6 +60,13 @@ void publishFcamState()
   {
     health = 0;
   }
+  if (pathReady == 0)
+  {
+    health = 0;
+    objectDetected = 0;
+    laneModelValid = 0;
+    objectConfidence = 0;
+  }
 
   mFcam.CameraHealth = clampRange(health, 0, 3);
   mFcam.ObjectDetected = objectDetected;
@@ -48,17 +74,20 @@ void publishFcamState()
   mFcam.Confidence = objectConfidence;
   output(mFcam);
 
-  if (health != gLastHealth ||
+  if (pathReady != gLastPathReady ||
+      health != gLastHealth ||
       objectDetected != gLastObjectDetected ||
       laneModelValid != gLastLaneModelValid ||
       objectConfidence != gLastConfidence)
   {
-    write("[FCAM] health=%d obj=%d lane=%d conf=%d alertType=%d",
+    write("[FCAM] path=%d health=%d obj=%d lane=%d conf=%d alertType=%d",
+          pathReady,
           health,
           objectDetected,
           laneModelValid,
           objectConfidence,
           selectedAlertType);
+    gLastPathReady = pathReady;
     gLastHealth = health;
     gLastObjectDetected = objectDetected;
     gLastLaneModelValid = laneModelValid;
@@ -68,6 +97,7 @@ void publishFcamState()
 
 on start
 {
+  gLastPathReady = -1;
   gLastHealth = -1;
   gLastObjectDetected = -1;
   gLastLaneModelValid = -1;

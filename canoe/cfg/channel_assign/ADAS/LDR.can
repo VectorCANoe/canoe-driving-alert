@@ -18,6 +18,23 @@ variables
   int gLastFreeSpaceClass;
   int gLastConfidence;
   int gLastRangeBucket;
+  int gLastPathReady;
+}
+
+int lidarPathReady()
+{
+  int warningPathStatus;
+  int e2eHealthState;
+  int failSafeMode;
+
+  warningPathStatus = clampRange((int)@CoreState::warningPathStatus, 0, 2);
+  e2eHealthState = clampRange((int)@CoreState::e2eHealthState, 0, 2);
+  failSafeMode = clampRange((int)@Core::failSafeMode, 0, 2);
+  if (warningPathStatus >= 2 || e2eHealthState == 0 || failSafeMode >= 2)
+  {
+    return 0;
+  }
+  return 1;
 }
 
 void publishLidarState()
@@ -31,11 +48,13 @@ void publishLidarState()
   int objectEventCode;
   int objectTrackValid;
   int objectFailSafeMode;
+  int pathReady;
 
   objectConfidence = clampRange((int)@Core::objectConfidence, 0, 100);
   objectEventCode = clampRange((int)@Core::objectEventCode, 0, 65535);
   objectTrackValid = clampRange((int)@Core::objectTrackValid, 0, 1);
   objectFailSafeMode = clampRange((int)@Core::failSafeMode, 0, 2);
+  pathReady = lidarPathReady();
 
   if (ethIsRecentTick(gObjectSafetyRxTsMs, 300) == 1)
   {
@@ -90,6 +109,14 @@ void publishLidarState()
   }
 
   rangeBucket = clampRange((objectEventCode & 0xFF), 0, 255);
+  if (pathReady == 0)
+  {
+    health = 0;
+    targetDetected = 0;
+    freeSpaceClass = 0;
+    objectConfidence = 0;
+    rangeBucket = 0;
+  }
 
   mLidar.LidarHealth = clampRange(health, 0, 3);
   mLidar.TargetDetected = targetDetected;
@@ -98,19 +125,22 @@ void publishLidarState()
   mLidar.RangeBucket = rangeBucket;
   output(mLidar);
 
-  if (health != gLastHealth ||
+  if (pathReady != gLastPathReady ||
+      health != gLastHealth ||
       targetDetected != gLastDetected ||
       freeSpaceClass != gLastFreeSpaceClass ||
       objectConfidence != gLastConfidence ||
       rangeBucket != gLastRangeBucket)
   {
-    write("[LDR] health=%d target=%d free=%d conf=%d range=%d failSafe=%d",
+    write("[LDR] path=%d health=%d target=%d free=%d conf=%d range=%d failSafe=%d",
+          pathReady,
           health,
           targetDetected,
           freeSpaceClass,
           objectConfidence,
           rangeBucket,
           objectFailSafeMode);
+    gLastPathReady = pathReady;
     gLastHealth = health;
     gLastDetected = targetDetected;
     gLastFreeSpaceClass = freeSpaceClass;
@@ -158,6 +188,7 @@ on start
   gLastFreeSpaceClass = -1;
   gLastConfidence = -1;
   gLastRangeBucket = -1;
+  gLastPathReady = -1;
   if (gEthSocket != ethInvalidSocket())
   {
     ethStartReceiver(gEthSocket, gEthRxBuffer, elcount(gEthRxBuffer));

@@ -10,6 +10,23 @@ variables
   int gLastRisk;
   int gLastMerge;
   int gLastTurn;
+  int gLastPathReady;
+}
+
+int srrFlPathReady()
+{
+  int warningPathStatus;
+  int e2eHealthState;
+  int failSafeMode;
+
+  warningPathStatus = clampRange((int)@CoreState::warningPathStatus, 0, 2);
+  e2eHealthState = clampRange((int)@CoreState::e2eHealthState, 0, 2);
+  failSafeMode = clampRange((int)@Core::failSafeMode, 0, 2);
+  if (warningPathStatus >= 2 || e2eHealthState == 0 || failSafeMode >= 2)
+  {
+    return 0;
+  }
+  return 1;
 }
 
 void publishSrrFlState()
@@ -20,13 +37,22 @@ void publishSrrFlState()
   int turnLampState;
   int detected;
   int riskLevel;
+  int pathReady;
 
   mergeConflict = (((int)@Core::mergeCutInFlag) == 1) ? 1 : 0;
   riskClass = clampRange((int)@Core::objectRiskClass, 0, 7);
   turnLampState = clampRange((int)@CoreState::turnLampState, 0, 3);
+  pathReady = srrFlPathReady();
 
   detected = (mergeConflict == 1 && turnLampState == 1 && riskClass >= 2) ? 1 : 0;
   riskLevel = detected == 1 ? clampRange(40 + (riskClass * 10), 0, 100) : 0;
+  if (pathReady == 0)
+  {
+    mergeConflict = 0;
+    riskClass = 0;
+    detected = 0;
+    riskLevel = 0;
+  }
 
   mSrrFl.SideObjectDetected = detected;
   mSrrFl.SideRiskLevel = riskLevel;
@@ -34,17 +60,20 @@ void publishSrrFlState()
   mSrrFl.TurnLampState = turnLampState;
   output(mSrrFl);
 
-  if (detected != gLastDetected ||
+  if (pathReady != gLastPathReady ||
+      detected != gLastDetected ||
       riskLevel != gLastRisk ||
       mergeConflict != gLastMerge ||
       turnLampState != gLastTurn)
   {
-    write("[SRR_FL] detected=%d risk=%d merge=%d turn=%d class=%d",
+    write("[SRR_FL] path=%d detected=%d risk=%d merge=%d turn=%d class=%d",
+          pathReady,
           detected,
           riskLevel,
           mergeConflict,
           turnLampState,
           riskClass);
+    gLastPathReady = pathReady;
     gLastDetected = detected;
     gLastRisk = riskLevel;
     gLastMerge = mergeConflict;
@@ -54,6 +83,7 @@ void publishSrrFlState()
 
 on start
 {
+  gLastPathReady = -1;
   gLastDetected = -1;
   gLastRisk = -1;
   gLastMerge = -1;
