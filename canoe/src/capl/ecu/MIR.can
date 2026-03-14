@@ -7,14 +7,27 @@ variables
 {
   msTimer tMirrorCycle;
   int gTurnLampState;
+  dword gLampControlRxMs;
+  int gLastLampInputStale;
   int gLastFoldState;
   int gLastHeatState;
   int gLastAdjustAxis;
 }
 
+void traceMirrorInputHealth(int lampInputStale)
+{
+  if (lampInputStale != gLastLampInputStale)
+  {
+    write("[MIR] lamp-control input %s", lampInputStale == 1 ? "stale" : "restored");
+    gLastLampInputStale = lampInputStale;
+  }
+}
+
 on start
 {
   gTurnLampState = 0;
+  gLampControlRxMs = 0;
+  gLastLampInputStale = 0;
   gLastFoldState = -1;
   gLastHeatState = -1;
   gLastAdjustAxis = -1;
@@ -25,25 +38,35 @@ on start
 on timer tMirrorCycle
 {
   message frmMirrorStateMsg mMirror;
+  int lampInputStale;
   int driveState;
   int timeoutClear;
   int failSafeMode;
+  int turnLampState;
   int foldState;
   int heatState;
   int adjustAxis;
 
+  lampInputStale = (ethIsRecentTick(gLampControlRxMs, 300) == 1) ? 0 : 1;
+  traceMirrorInputHealth(lampInputStale);
+
   driveState = clampRange((int)@Core::driveStateNorm, 0, 3);
   timeoutClear = clampRange((int)@Core::timeoutClear, 0, 1);
   failSafeMode = clampRange((int)@Core::failSafeMode, 0, 2);
+  turnLampState = gTurnLampState;
+  if (lampInputStale == 1)
+  {
+    turnLampState = 0;
+  }
 
   foldState = (driveState == 0) ? 1 : 0;
   heatState = (timeoutClear == 1 || failSafeMode == 1) ? 1 : 0;
   adjustAxis = 0;
-  if (gTurnLampState == 1)
+  if (turnLampState == 1)
   {
     adjustAxis = 1;
   }
-  else if (gTurnLampState == 2)
+  else if (turnLampState == 2)
   {
     adjustAxis = 2;
   }
@@ -61,7 +84,7 @@ on timer tMirrorCycle
           mMirror.MirrorFoldState,
           mMirror.MirrorHeatState,
           mMirror.MirrorAdjustAxis,
-          gTurnLampState,
+          turnLampState,
           driveState);
     gLastFoldState = mMirror.MirrorFoldState;
     gLastHeatState = mMirror.MirrorHeatState;
@@ -74,6 +97,7 @@ on timer tMirrorCycle
 on message frmLampControlMsg
 {
   gTurnLampState = clampRange((int)this.TurnLampState, 0, 3);
+  gLampControlRxMs = getSimulationTimeMs();
 }
 
 on stopMeasurement
