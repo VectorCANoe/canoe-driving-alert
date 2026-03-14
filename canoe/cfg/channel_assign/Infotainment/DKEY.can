@@ -39,7 +39,6 @@ void publishDigitalKeyState()
   int tmuInputStale;
   int failSafeMode;
   int driveState;
-  int timeoutClear;
   int tmuServiceMode;
   int signalBars;
   int dkeyState;
@@ -53,7 +52,6 @@ void publishDigitalKeyState()
 
   failSafeMode = clampRange((int)@Core::failSafeMode, 0, 2);
   driveState = clampRange((int)@Core::driveStateNorm, 0, 3);
-  timeoutClear = clampRange((int)@Core::timeoutClear, 0, 1);
   tmuServiceMode = gTmuServiceMode;
   signalBars = gSignalBars;
   if (tmuInputStale == 1)
@@ -67,7 +65,7 @@ void publishDigitalKeyState()
   {
     dkeyState = 1;
   }
-  if (driveState == 0 && failSafeMode == 0 && timeoutClear == 0 && tmuServiceMode == 1 && signalBars >= 3)
+  if (driveState == 0 && failSafeMode == 0 && tmuServiceMode == 1 && signalBars >= 3)
   {
     dkeyState = 2;
   }
@@ -110,7 +108,7 @@ void publishDigitalKeyState()
   }
 
   securityGrade = 0;
-  if (failSafeMode > 0 || timeoutClear == 1)
+  if (failSafeMode > 0)
   {
     securityGrade = 2;
   }

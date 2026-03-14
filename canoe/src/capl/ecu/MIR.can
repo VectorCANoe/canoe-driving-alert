@@ -47,8 +47,6 @@ on timer tMirrorCycle
   message frmMirrorStateMsg mMirror;
   int lampInputStale;
   int driveState;
-  int timeoutClear;
-  int failSafeMode;
   int turnLampState;
   int foldState;
   int heatState;
@@ -58,8 +56,6 @@ on timer tMirrorCycle
   traceMirrorInputHealth(lampInputStale);
 
   driveState = clampRange((int)@Core::driveStateNorm, 0, 3);
-  timeoutClear = clampRange((int)@Core::timeoutClear, 0, 1);
-  failSafeMode = clampRange((int)@Core::failSafeMode, 0, 2);
   turnLampState = gTurnLampState;
   if (lampInputStale == 1)
   {
@@ -67,7 +63,7 @@ on timer tMirrorCycle
   }
 
   foldState = (driveState == 0) ? 1 : 0;
-  heatState = (timeoutClear == 1 || failSafeMode == 1) ? 1 : 0;
+  heatState = 0;
   adjustAxis = 0;
   if (turnLampState == 1)
   {

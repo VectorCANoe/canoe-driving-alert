@@ -41,15 +41,6 @@ on start
 
 on timer tSmkCycle
 {
-
-  if ((int)@Core::timeoutClear == 1)
-  {
-    gKeyAuthState = 0;
-  }
-  else
-  {
-    gKeyAuthState = 1;
-  }
   publishSmkState();
   setTimer(tSmkCycle, 100);
 }

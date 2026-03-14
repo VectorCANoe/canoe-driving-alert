@@ -51,19 +51,6 @@ on start
 
 on timer tWiperCycle
 {
-
-  if ((int)@Core::timeoutClear == 1)
-  {
-    gFrontWiperState = 1;
-    gRearWiperState = 0;
-    gWiperInterval = 4;
-  }
-  else
-  {
-    gFrontWiperState = 0;
-    gRearWiperState = 0;
-    gWiperInterval = 0;
-  }
   publishWiperState();
   setTimer(tWiperCycle, 100);
 }
