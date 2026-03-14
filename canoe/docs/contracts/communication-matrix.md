@@ -1,5 +1,9 @@
 # Runtime Message Ownership Matrix
 
+> [!IMPORTANT]
+> This document reflects the current development baseline and the planned target architecture.
+> Some runtime, diagnostic, and verification details are still under implementation and may change.
+
 - Generated: 2026-03-12 23:58:00
 - Scope: Active runtime ownership for domain CAN and Ethernet backbone contracts
 - Rule: Each message must have one clear sender in active runtime profile.

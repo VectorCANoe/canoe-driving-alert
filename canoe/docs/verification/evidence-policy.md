@@ -1,5 +1,9 @@
 # 검증 증빙 로그 표준 (CANoe SIL)
 
+> [!IMPORTANT]
+> This document reflects the current development baseline and the planned target architecture.
+> Some runtime, diagnostic, and verification details are still under implementation and may change.
+
 ## 1) 목적
 - `05_Unit_Test.md`, `06_Integration_Test.md`, `07_System_Test.md`에 입력할 증빙 로그 포맷을 단일화한다.
 - 검증 축을 `로직(Logic) / 통신(Comm) / 주기(Period)`로 분리해 PASS 근거를 명확히 한다.

@@ -122,11 +122,14 @@ See [`CONTRIBUTING.md`](CONTRIBUTING.md) for contribution guidance.
 
 ## Core architecture and ECU maps
 
-If you want to understand why the architecture, ECU split, runtime ownership, and verification path are structured the way they are, start from these documents:
+If you want to understand why the architecture, ECU split, runtime ownership, and verification path are structured the way they are, start here:
 
-- [Surface Map](canoe/docs/architecture/11_SURFACE_RUNTIME_VERIFICATION_MAP.md)
-- [ECU Ownership](canoe/docs/contracts/11_RUNTIME_MESSAGE_OWNERSHIP_MATRIX.md)
-- [Multibus Policy](canoe/docs/contracts/12_RUNTIME_MULTIBUS_VISIBILITY_POLICY.md)
-- [Ethernet Contract](canoe/docs/contracts/13_ETH_INTERFACE_CONTRACT.md)
-- [Panel and SysVar Binding](canoe/docs/contracts/17_PANEL_SYSVAR_BINDING_CONTRACT.md)
-- [Verification Evidence](canoe/docs/verification/23_VERIFICATION_EVIDENCE_LOG_STANDARD.md)
+- [ECU Classification](canoe/docs/architecture/ecu-classification.md)
+- [Surface Map](canoe/docs/architecture/surface-runtime-verification-map.md)
+- [Skeleton](canoe/docs/architecture/skeleton.md)
+- [Communication Matrix](canoe/docs/contracts/communication-matrix.md)
+- [Owner / Route](canoe/docs/contracts/owner-route.md)
+- [Diagnostic Description](canoe/docs/contracts/diagnostic-description.md)
+- [Panel and SysVar Contract](canoe/docs/contracts/panel-sysvar-contract.md)
+- [Oracle](canoe/docs/verification/oracle.md)
+- [Evidence Policy](canoe/docs/verification/evidence-policy.md)

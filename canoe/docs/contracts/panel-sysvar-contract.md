@@ -1,5 +1,9 @@
 # Panel and SysVar Binding Contract
 
+> [!IMPORTANT]
+> This document reflects the current development baseline and the planned target architecture.
+> Some runtime, diagnostic, and verification details are still under implementation and may change.
+
 ## 1. Purpose
 
 This document defines the stable binding contract between:

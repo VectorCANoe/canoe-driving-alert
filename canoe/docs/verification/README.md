@@ -1,26 +1,19 @@
-# Verification Docs Index
+# Verification Docs
 
-This folder keeps only the active verification execution documents for the CANoe SIL baseline.
-
-## Start Here
-
-1. `20_CANOE_TEST_EXECUTION_GUIDE.md`
-2. `21_SIL_ACCEPTANCE_CRITERIA.md`
-3. `22_TEAM_EXECUTION_FLOW.md`
-4. `23_VERIFICATION_EVIDENCE_LOG_STANDARD.md`
+This folder defines the active verification documents for the CANoe SIL baseline.
 
 ## Active Docs
 
-- `20_CANOE_TEST_EXECUTION_GUIDE.md`
-  - GUI-side registration and execution steps for native CANoe Test Units
-- `21_SIL_ACCEPTANCE_CRITERIA.md`
-  - pass/fail baseline for SIL execution
-- `22_TEAM_EXECUTION_FLOW.md`
-  - current Dev1/Dev2/Docs execution split reference
-- `23_VERIFICATION_EVIDENCE_LOG_STANDARD.md`
-  - evidence log schema, timing rule evaluation, and PASS/FAIL evidence completion rule
+- `execution-guide.md`
+  - native CANoe Test Unit registration and execution flow
+- `acceptance-criteria.md`
+  - SIL pass/fail criteria
+- `oracle.md`
+  - oracle definition for contract, behavior, harness, and evidence checks
+- `evidence-policy.md`
+  - evidence logging and completion policy
 
 ## Working Rule
 
-- Keep this folder limited to execution steps and pass/fail rules.
-- Dated analysis notes stay in archive branches, not in this tree.
+- Keep this folder limited to execution, verdict, oracle, and evidence rules.
+- Keep temporary team coordination and packaging ownership outside this folder.

@@ -12,6 +12,7 @@ Use `driving-alert-workproducts/ops/handoff/TMP_HANDOFF.md` as the current proje
 - non-negotiable traceability rules
 Use `driving-alert-workproducts/` as the operational document SoT for ongoing edits.
 Treat root docs under `driving-alert-workproducts/` as canonical sync targets to be updated later.
+For CANoe-side internal history, migration notes, and non-official working materials, check `canoe/AGENT/` directly.
 
 ## Handoff Freshness Gate
 - Before treating `driving-alert-workproducts/ops/handoff/TMP_HANDOFF.md` as intent SoT, check section `0) Freshness Control`.

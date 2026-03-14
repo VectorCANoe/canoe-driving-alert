@@ -212,6 +212,11 @@ on timer tBodyBase100
   int hazardActive;
   int seatBeltOverride;
   int ambientMode;
+  int routingPolicy;
+  int warningPathStatus;
+  int boundaryAlive;
+  int bodyGwRouteState;
+  int bodyGwHealth;
   if (useBackboneAlertState() == 1)
   {
     hazardActive = (gBackboneAlertLevel >= 6) ? 1 : 0;
@@ -222,6 +227,15 @@ on timer tBodyBase100
   }
   seatBeltOverride = (int)@Test::seatBeltOverride;
   ambientMode = clampRange((int)@Body::ambientMode, 0, 7);
+  routingPolicy = clampRange((int)@CoreState::routingPolicy, 0, 2);
+  warningPathStatus = clampRange((int)@CoreState::warningPathStatus, 0, 2);
+  boundaryAlive = clampRange((int)@CoreState::domainBoundaryStatus, 0, 1);
+  bodyGwRouteState = routingPolicy;
+  bodyGwHealth = warningPathStatus;
+  if (boundaryAlive == 0 && bodyGwHealth == 0)
+  {
+    bodyGwHealth = 1;
+  }
   if (seatBeltOverride < 0 || seatBeltOverride > 3)
   {
     seatBeltOverride = 0;
@@ -313,9 +327,8 @@ on timer tBodyBase100
   mDoorCtrl.ChildLockCmd = 0;
   output(mDoorCtrl);
 
-
-  mBodyGwState.BodyGwRouteState = 1;
-  mBodyGwState.BodyGwHealth = 0;
+  mBodyGwState.BodyGwRouteState = bodyGwRouteState;
+  mBodyGwState.BodyGwHealth = bodyGwHealth;
   output(mBodyGwState);
 
   mComfort.ComfortProfile = 1;

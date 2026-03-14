@@ -1,4 +1,4 @@
-﻿# Internal Development Entrypoints
+# Internal Development Entrypoints
 
 This file is for contributors working inside the repository.
 
@@ -15,7 +15,7 @@ If you are just trying to understand the project, start with:
 2. `driving-alert-workproducts/ops/handoff/TMP_HANDOFF.md`
 3. `canoe/FILE_INDEX.md`
 4. `scripts/README.md`
-5. `canoe/docs/operations/00_ACTIVE_WORKSET.md`
+5. `canoe/docs/README.md`
 
 ## Active Working Surface
 

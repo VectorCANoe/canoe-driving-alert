@@ -1,5 +1,9 @@
 # Ethernet Backbone Interface Specification (CANoe SIL)
 
+> [!IMPORTANT]
+> This document reflects the current development baseline and the planned target architecture.
+> Some runtime, diagnostic, and verification details are still under implementation and may change.
+
 **Document ID**: CANOE-ETH-IFC  
 **Version**: 1.5  
 **Date**: 2026-03-13  
@@ -98,7 +102,7 @@ Validation harness result aggregation uses a sysvar-only summary seam.
 - `0302_NWflowDef.md`와 `0303_Communication_Specification.md`의 Ethernet 항목은 본 문서를 참조한다.
 - `0304_System_Variables.md`의 `ETH_IN/ETH_CORE` 변수는 본 문서 Signal 정의와 1:1 대응한다.
 - 구현 변경 시 갱신 순서:
-  - `10_ETHERNET_BACKBONE_SSoT.md -> 0302 -> 0303 -> 0304 -> 04 -> 05/06/07`
+  - `ethernet-backbone.md -> 0302 -> 0303 -> 0304 -> 04 -> 05/06/07`
 
 ---
 

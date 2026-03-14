@@ -1,5 +1,9 @@
 # ETH Interface Contract
 
+> [!IMPORTANT]
+> This document reflects the current development baseline and the planned target architecture.
+> Some runtime, diagnostic, and verification details are still under implementation and may change.
+
 ## 1. Purpose
 
 This document defines the operational Ethernet contract for the active CANoe SIL profile.
@@ -14,7 +18,7 @@ It complements the bit-level Ethernet specification by answering:
 
 For bit fields, IDs, and signal packing, use:
 
-- `docs/contracts/10_ETHERNET_BACKBONE_SSoT.md`
+- `docs/contracts/ethernet-backbone.md`
 
 ## 2. Active transport baseline
 
@@ -114,10 +118,10 @@ Primary examples:
 
 When an Ethernet seam changes, update in this order:
 
-1. `docs/contracts/10_ETHERNET_BACKBONE_SSoT.md`
-2. `docs/contracts/13_ETH_INTERFACE_CONTRACT.md`
-3. `docs/contracts/11_RUNTIME_MESSAGE_OWNERSHIP_MATRIX.md`
-4. `docs/contracts/12_RUNTIME_MULTIBUS_VISIBILITY_POLICY.md`
+1. `docs/contracts/ethernet-backbone.md`
+2. `docs/contracts/ethernet-interface.md`
+3. `docs/contracts/communication-matrix.md`
+4. `docs/contracts/multibus-policy.md`
 5. runtime CAPL and verification docs
 
 ## 6. Non-goals

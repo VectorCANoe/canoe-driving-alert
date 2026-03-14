@@ -1,5 +1,9 @@
 # Multi-Bus Visibility Policy
 
+> [!IMPORTANT]
+> This document reflects the current development baseline and the planned target architecture.
+> Some runtime, diagnostic, and verification details are still under implementation and may change.
+
 This document defines when a CANoe node may require visibility to more than one bus/database in the active SIL configuration.
 
 ## 1. Principle
@@ -97,8 +101,8 @@ This is now a **sysvar-only validation aggregation path**.
 
 Source references:
 
-- [TEST_BAS.can](C:\Users\이준영\CANoe-IVI-OTA\canoe\src\capl\ecu\TEST_BAS.can)
-- [project.sysvars](C:\Users\이준영\CANoe-IVI-OTA\canoe\project\sysvars\project.sysvars)
+- [TEST_BAS.can](../../src/capl/ecu/TEST_BAS.can)
+- [project.sysvars](../../project/sysvars/project.sysvars)
 
 ### 4.2 Why this is still "system-wide" validation
 

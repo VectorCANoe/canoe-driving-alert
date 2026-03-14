@@ -1,5 +1,9 @@
 # Surface, Runtime, and Verification Map
 
+> [!IMPORTANT]
+> This document reflects the current development baseline and the planned target architecture.
+> Some runtime, diagnostic, and verification details are still under implementation and may change.
+
 ## 1. Purpose
 
 This document explains how the active CANoe SIL system is split across:
@@ -147,10 +151,10 @@ Representative Ethernet seams:
 
 Use these documents for transport-level truth:
 
-- `docs/contracts/10_ETHERNET_BACKBONE_SSoT.md`
-- `docs/contracts/11_RUNTIME_MESSAGE_OWNERSHIP_MATRIX.md`
-- `docs/contracts/12_RUNTIME_MULTIBUS_VISIBILITY_POLICY.md`
-- `docs/contracts/13_ETH_INTERFACE_CONTRACT.md`
+- `docs/contracts/ethernet-backbone.md`
+- `docs/contracts/communication-matrix.md`
+- `docs/contracts/multibus-policy.md`
+- `docs/contracts/ethernet-interface.md`
 
 ## 6. Verification layer
 
@@ -193,9 +197,9 @@ When deciding where to edit, use this order.
 |---|---|
 | CAPL logic and runtime behavior | `src/capl/**` |
 | GUI import mirror after CAPL sync | `cfg/channel_assign/**` |
-| bit-level Ethernet contract | `docs/contracts/10_ETHERNET_BACKBONE_SSoT.md` |
+| bit-level Ethernet contract | `docs/contracts/ethernet-backbone.md` |
 | message owner or multibus policy | `docs/contracts/11_*`, `docs/contracts/12_*`, `docs/contracts/13_*` |
-| panel/system-variable binding | `docs/contracts/17_PANEL_SYSVAR_BINDING_CONTRACT.md` |
+| panel/system-variable binding | `docs/contracts/panel-sysvar-contract.md` |
 | scenario pass criteria or evidence rules | `docs/verification/**` |
 
 ## 8. Design rule

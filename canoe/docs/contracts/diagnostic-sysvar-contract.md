@@ -1,5 +1,9 @@
 # Diagnostic SysVar Contract
 
+> [!IMPORTANT]
+> This document reflects the current development baseline and the planned target architecture.
+> Some runtime, diagnostic, and verification details are still under implementation and may change.
+
 ## 1. Purpose
 
 This document defines the stable diagnostic observation contract exposed through `Diag::*` system variables.

@@ -1,19 +1,27 @@
-# Contracts Docs Index
+# Contracts Docs
 
-This folder keeps active CANoe interface and runtime control contracts.
+This folder defines the active development contracts for the CANoe baseline.
 
 ## Active Docs
 
-- `10_ETHERNET_BACKBONE_SSoT.md`
-  - Ethernet-side runtime contract baseline
-- `11_RUNTIME_MESSAGE_OWNERSHIP_MATRIX.md`
-  - runtime message ownership and producer/consumer mapping
-- `12_RUNTIME_MULTIBUS_VISIBILITY_POLICY.md`
-  - multibus visibility and GUI restore policy
+- `ethernet-backbone.md`
+  - Ethernet message-level backbone specification
+- `communication-matrix.md`
+  - runtime message ownership matrix
+- `multibus-policy.md`
+  - multibus visibility and routing policy
+- `ethernet-interface.md`
+  - seam-level Ethernet interface contract
+- `diagnostic-description.md`
+  - current diagnostic model and diagnostic surface description
+- `diagnostic-sysvar-contract.md`
+  - diagnostic SysVar contract
+- `panel-sysvar-contract.md`
+  - panel and SysVar binding contract
+- `owner-route.md`
+  - owner, bus, timeout, and route authority contract
 
-## Target Doc Types
+## Working Rule
 
-- communication matrix
-- owner, bus, timeout, and route rules
-- diagnostic and interface contracts
-- panel and sysvar contracts
+- Keep this folder limited to current runtime contracts.
+- Keep implementation steps, team flow, and archive rationale outside this folder.
