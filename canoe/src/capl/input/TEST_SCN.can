@@ -56,6 +56,12 @@ variables
   int gDcmCtxPositiveSeen;
   int gDcmCtxNegativeSeen;
   int gDcmCtxBlockedSeen;
+  int gCgwBoundaryNominalSeen;
+  int gAdasWarningNominalSeen;
+  int gBcmAmbientNominalSeen;
+  int gIviTextNominalSeen;
+  int gV2xContextNominalSeen;
+  int gCluDisplayNominalSeen;
 }
 
 
@@ -177,6 +183,12 @@ void stopScenarioExecution()
   gDcmCtxPositiveSeen = 0;
   gDcmCtxNegativeSeen = 0;
   gDcmCtxBlockedSeen = 0;
+  gCgwBoundaryNominalSeen = 0;
+  gAdasWarningNominalSeen = 0;
+  gBcmAmbientNominalSeen = 0;
+  gIviTextNominalSeen = 0;
+  gV2xContextNominalSeen = 0;
+  gCluDisplayNominalSeen = 0;
   @Core::accelGroupFlag = 0;
   @Core::steerGroupFlag = 0;
 }
@@ -247,6 +259,73 @@ void trackDcmDiagnosticContext()
   }
 }
 
+void trackWave2NominalContexts()
+{
+  if (gCurrentScenarioId == 206)
+  {
+    if ((int)@CoreState::domainBoundaryStatus == 1 &&
+        (int)@CoreState::routingPolicy == 1 &&
+        (int)@Core::selectedAlertLevel == 0 &&
+        (int)@Core::failSafeMode == 0)
+    {
+      gCgwBoundaryNominalSeen = 1;
+    }
+  }
+  else if (gCurrentScenarioId == 207)
+  {
+    if ((int)@Core::selectedAlertLevel == 3 &&
+        (int)@Core::selectedAlertType == 3 &&
+        (int)@CoreState::warningPathStatus == 0 &&
+        (int)@Core::failSafeMode == 0)
+    {
+      gAdasWarningNominalSeen = 1;
+    }
+  }
+  else if (gCurrentScenarioId == 208)
+  {
+    if ((int)@Core::selectedAlertLevel == 3 &&
+        (int)@Core::selectedAlertType == 3 &&
+        (int)@Body::ambientColor == 3 &&
+        (int)@Body::ambientPattern == 5 &&
+        (int)@Core::failSafeMode == 0)
+    {
+      gBcmAmbientNominalSeen = 1;
+    }
+  }
+  else if (gCurrentScenarioId == 209)
+  {
+    if ((int)@Core::selectedAlertLevel == 6 &&
+        (int)@Core::selectedAlertType == 1 &&
+        (int)@Cluster::warningTextCode == 101 &&
+        (int)@Core::failSafeMode == 0)
+    {
+      gIviTextNominalSeen = 1;
+    }
+  }
+  else if (gCurrentScenarioId == 210)
+  {
+    if ((int)@V2X::eta == 9 &&
+        (int)@V2X::sourceId == 92 &&
+        (int)@Core::selectedAlertLevel == 6 &&
+        (int)@Core::selectedAlertType == 1 &&
+        (int)@Core::failSafeMode == 0)
+    {
+      gV2xContextNominalSeen = 1;
+    }
+  }
+  else if (gCurrentScenarioId == 211)
+  {
+    if ((int)@Core::selectedAlertLevel == 6 &&
+        (int)@Core::selectedAlertType == 1 &&
+        (int)@Cluster::warningTextCode == 102 &&
+        (int)@UiRender::renderDirection == 2 &&
+        (int)@Core::failSafeMode == 0)
+    {
+      gCluDisplayNominalSeen = 1;
+    }
+  }
+}
+
 void setScenarioMirror(int scenarioId)
 {
   gScenarioMirrorInternalWrite = 1;
@@ -313,6 +392,12 @@ void applyScenarioPreset(int scenarioId)
   gDcmCtxPositiveSeen = 0;
   gDcmCtxNegativeSeen = 0;
   gDcmCtxBlockedSeen = 0;
+  gCgwBoundaryNominalSeen = 0;
+  gAdasWarningNominalSeen = 0;
+  gBcmAmbientNominalSeen = 0;
+  gIviTextNominalSeen = 0;
+  gV2xContextNominalSeen = 0;
+  gCluDisplayNominalSeen = 0;
   @Test::displayModeSetting = 0;
   @Test::alertVolumeSetting = 0;
   @Test::seatBeltOverride = 0;
@@ -784,6 +869,87 @@ void applyScenarioPreset(int scenarioId)
     gLockSuppressEmergencyFrame = 0;
     setTimer(tScenarioPhase2, 700);
   }
+  else if (scenarioId == 206)
+  {
+    /* UT_003: CGW nominal boundary-status and routing-policy health */
+    gLockDriveState = 3;
+    gLockVehicleSpeed = 60;
+    gLockRoadZone = 0;
+    gLockSpeedLimit = 80;
+    gLockAlertState = 0;
+    gLockEmergencyType = 0;
+    gLockForceFailSafe = 0;
+    gLockSuppressEmergencyFrame = 0;
+  }
+  else if (scenarioId == 207)
+  {
+    /* UT_011: ADAS warning-selection on school-zone overspeed path */
+    gLockDriveState = 3;
+    gLockVehicleSpeed = 45;
+    gLockRoadZone = 1;
+    gLockSpeedLimit = 30;
+    gLockAlertState = 0;
+    gLockEmergencyType = 0;
+    gLockForceFailSafe = 0;
+    gLockSuppressEmergencyFrame = 0;
+  }
+  else if (scenarioId == 208)
+  {
+    /* UT_014: BCM ambient policy on school-zone overspeed path */
+    gLockDriveState = 3;
+    gLockVehicleSpeed = 45;
+    gLockRoadZone = 1;
+    gLockSpeedLimit = 30;
+    gLockAlertState = 0;
+    gLockEmergencyType = 0;
+    gLockForceFailSafe = 0;
+    gLockSuppressEmergencyFrame = 0;
+  }
+  else if (scenarioId == 209)
+  {
+    /* UT_015: IVI text mapping on police emergency path */
+    gLockDriveState = 3;
+    gLockVehicleSpeed = 40;
+    gLockRoadZone = 0;
+    gLockSpeedLimit = 60;
+    gLockAlertState = 1;
+    gLockEmergencyType = 1;
+    gLockEta = 12;
+    gLockSourceId = 91;
+    gLockEmergencyDirection = 1;
+    gLockForceFailSafe = 0;
+    gLockSuppressEmergencyFrame = 0;
+  }
+  else if (scenarioId == 210)
+  {
+    /* UT_076: V2X event context on police emergency path */
+    gLockDriveState = 3;
+    gLockVehicleSpeed = 50;
+    gLockRoadZone = 0;
+    gLockSpeedLimit = 60;
+    gLockAlertState = 1;
+    gLockEmergencyType = 1;
+    gLockEta = 9;
+    gLockSourceId = 92;
+    gLockEmergencyDirection = 2;
+    gLockForceFailSafe = 0;
+    gLockSuppressEmergencyFrame = 0;
+  }
+  else if (scenarioId == 211)
+  {
+    /* UT_077: CLU warning display on police-right emergency path */
+    gLockDriveState = 3;
+    gLockVehicleSpeed = 40;
+    gLockRoadZone = 0;
+    gLockSpeedLimit = 60;
+    gLockAlertState = 1;
+    gLockEmergencyType = 1;
+    gLockEta = 11;
+    gLockSourceId = 93;
+    gLockEmergencyDirection = 2;
+    gLockForceFailSafe = 0;
+    gLockSuppressEmergencyFrame = 0;
+  }
 
   pushLockedScenarioInputs();
   write("[EVIDENCE_IN] scenario=%d inputTsMs=%lu",
@@ -880,6 +1046,11 @@ void scheduleScenarioEvaluation(int scenarioId)
   else if (scenarioId == 203 || scenarioId == 204 || scenarioId == 205)
   {
     evalDelayMs = 1800;
+  }
+  else if (scenarioId == 206 || scenarioId == 207 || scenarioId == 208 || scenarioId == 209 ||
+           scenarioId == 210 || scenarioId == 211)
+  {
+    evalDelayMs = 900;
   }
   setTimer(tScenarioEval, evalDelayMs);
 }
@@ -1181,6 +1352,57 @@ void evaluateScenarioResult()
               (int)@Diag::RouteOwner == 1 &&
               (int)@Diag::ResponseKind == 4 &&
               (int)@Diag::ReasonCode == 2) ? 1 : 0;
+  }
+  else if (gCurrentScenarioId == 206)
+  {
+    result = (gCgwBoundaryNominalSeen == 1 &&
+              (int)@CoreState::domainBoundaryStatus == 1 &&
+              (int)@CoreState::routingPolicy == 1 &&
+              (int)@Core::selectedAlertLevel == 0 &&
+              (int)@Core::failSafeMode == 0) ? 1 : 0;
+  }
+  else if (gCurrentScenarioId == 207)
+  {
+    result = (gAdasWarningNominalSeen == 1 &&
+              (int)@Core::selectedAlertLevel == 3 &&
+              (int)@Core::selectedAlertType == 3 &&
+              (int)@CoreState::warningPathStatus == 0 &&
+              (int)@Core::failSafeMode == 0) ? 1 : 0;
+  }
+  else if (gCurrentScenarioId == 208)
+  {
+    result = (gBcmAmbientNominalSeen == 1 &&
+              (int)@Core::selectedAlertLevel == 3 &&
+              (int)@Core::selectedAlertType == 3 &&
+              (int)@Body::ambientColor == 3 &&
+              (int)@Body::ambientPattern == 5 &&
+              (int)@Core::failSafeMode == 0) ? 1 : 0;
+  }
+  else if (gCurrentScenarioId == 209)
+  {
+    result = (gIviTextNominalSeen == 1 &&
+              (int)@Core::selectedAlertLevel == 6 &&
+              (int)@Core::selectedAlertType == 1 &&
+              (int)@Cluster::warningTextCode == 101 &&
+              (int)@Core::failSafeMode == 0) ? 1 : 0;
+  }
+  else if (gCurrentScenarioId == 210)
+  {
+    result = (gV2xContextNominalSeen == 1 &&
+              (int)@V2X::eta == 9 &&
+              (int)@V2X::sourceId == 92 &&
+              (int)@Core::selectedAlertLevel == 6 &&
+              (int)@Core::selectedAlertType == 1 &&
+              (int)@Core::failSafeMode == 0) ? 1 : 0;
+  }
+  else if (gCurrentScenarioId == 211)
+  {
+    result = (gCluDisplayNominalSeen == 1 &&
+              (int)@Core::selectedAlertLevel == 6 &&
+              (int)@Core::selectedAlertType == 1 &&
+              (int)@Cluster::warningTextCode == 102 &&
+              (int)@UiRender::renderDirection == 2 &&
+              (int)@Core::failSafeMode == 0) ? 1 : 0;
   }
   else
   {
@@ -1676,6 +1898,7 @@ on timer tInput100
 
   trackSt038DiagnosticContext();
   trackDcmDiagnosticContext();
+  trackWave2NominalContexts();
 
   setTimer(tInput100, 100);
 }

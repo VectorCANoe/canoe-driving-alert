@@ -193,3 +193,41 @@ Use this document together with:
 | UT_064 | `TC_CANOE_UT_EXT_017_DCM_DIAGNOSTIC_STATE` | `204` | `DCM.can -> Diag::ServiceState, Diag::ResponseKind, Diag::ReasonCode, Diag::LastRequestSid, Diag::LastResponseCode, Diag::LastResponseOk` | Producer wiring done, compile/runtime pending |
 | IT_027 | `TC_CANOE_IT_EXT_010_SERVICE_SECURITY_DIAG` | `205` | `SGW + DCM integrated diagnostic seam` | Producer wiring done, compile/runtime pending |
 | ST_038 | `TC_CANOE_ST_EXT_018_SERVICE_SECURITY_DIAG_CONTEXT` | `202` | `SGW + DCM integrated diagnostic seam with scenario phase tracking` | Producer wiring done, compile/runtime pending |
+
+## Wave 2 direct-ownership UT baseline
+
+| Official Scope | Native Asset | Reserved TEST_SCN Scenario | Current State |
+| --- | --- | --- | --- |
+| UT_003 | `TC_CANOE_UT_CORE_003_CGW_BOUNDARY_STATUS` | `206` | Draft skeleton created, stimulus/oracle binding pending |
+| UT_011 | `TC_CANOE_UT_CORE_011_ADAS_WARNING_SELECTION` | `207` | Draft skeleton created, stimulus/oracle binding pending |
+| UT_014 | `TC_CANOE_UT_CORE_014_BCM_AMBIENT_POLICY` | `208` | Draft skeleton created, stimulus/oracle binding pending |
+| UT_015 | `TC_CANOE_UT_CORE_015_IVI_TEXT_MAPPING` | `209` | Draft skeleton created, stimulus/oracle binding pending |
+| UT_076 | `TC_CANOE_UT_EXT_076_V2X_EVENT_CONTEXT` | `210` | Draft skeleton created, stimulus/oracle binding pending |
+| UT_077 | `TC_CANOE_UT_EXT_077_CLU_WARNING_DISPLAY` | `211` | Draft skeleton created, stimulus/oracle binding pending |
+
+## Wave 2 planned oracle baseline
+
+- `UT_003 / 206`: nominal CGW boundary readiness, nominal routing policy, fail-safe clear.
+- `UT_011 / 207`: intended ADAS warning-selection context, nominal warning path, fail-safe clear.
+- `UT_014 / 208`: intended BCM ambient policy with nominal body gateway health.
+- `UT_015 / 209`: intended IVI text/output mapping without fail-safe override.
+- `UT_076 / 210`: retained V2X event context with nominal timeout-clear contract.
+- `UT_077 / 211`: intended CLU display output with nominal clear/restore behavior.
+
+## Wave 2 current progress update
+
+- `UT_003 / 206`: executable scenario contract added. Current oracle checks `domainBoundaryStatus=1`, `routingPolicy=1`, `selectedAlertLevel=0`, and `failSafeMode=0`.
+- `UT_011 / 207`: executable scenario contract added. Current oracle checks `selectedAlertLevel=3`, `selectedAlertType=3`, `warningPathStatus=0`, and `failSafeMode=0`.
+- `UT_014 / 208`, `UT_015 / 209`, `UT_076 / 210`, and `UT_077 / 211` remain draft skeletons pending concrete stimulus/oracle binding.
+
+## Wave 2 progress update (208/209)
+
+- `UT_014 / 208`: executable scenario contract added. Current oracle checks school-zone ambient policy via `selectedAlertLevel=3`, `selectedAlertType=3`, `ambientColor=3`, `ambientPattern=5`, and `failSafeMode=0`.
+- `UT_015 / 209`: executable scenario contract added. Current oracle checks police-emergency text mapping via `selectedAlertLevel=6`, `selectedAlertType=1`, `warningTextCode=101`, and `failSafeMode=0`.
+- `UT_076 / 210` and `UT_077 / 211` remain draft skeletons pending narrowed output oracle definition.
+
+## Wave 2 completion update (210/211)
+
+- `UT_076 / 210`: executable scenario contract added. Current oracle checks `V2X::eta=9`, `V2X::sourceId=92`, `selectedAlertLevel=6`, `selectedAlertType=1`, and `failSafeMode=0`.
+- `UT_077 / 211`: executable scenario contract added. Current oracle checks `selectedAlertLevel=6`, `selectedAlertType=1`, `warningTextCode=102`, `renderDirection=2`, and `failSafeMode=0`.
+- Wave 2 direct-ownership UT assets (`206` to `211`) are now all executable at the scenario/assert-contract level; compile and runtime evidence remain pending gates.

@@ -57,3 +57,27 @@ Recommended path:
 - Execution screenshot
 - Measurement log / run-id binding
 - Optional Dev2 packaging through TUI/CLI after native execution
+
+## Wave 2 reserved baseline
+
+The following direct-ownership UT assets are now reserved in the active tree and are intentionally kept as draft skeletons until `TEST_SCN` stimulus and concrete oracle bindings are fixed:
+`TC_CANOE_UT_CORE_003_CGW_BOUNDARY_STATUS` (`206`),
+`TC_CANOE_UT_CORE_011_ADAS_WARNING_SELECTION` (`207`),
+`TC_CANOE_UT_CORE_014_BCM_AMBIENT_POLICY` (`208`),
+`TC_CANOE_UT_CORE_015_IVI_TEXT_MAPPING` (`209`),
+`TC_CANOE_UT_EXT_076_V2X_EVENT_CONTEXT` (`210`), and
+`TC_CANOE_UT_EXT_077_CLU_WARNING_DISPLAY` (`211`).
+
+## Wave 2 execution progress
+
+`TC_CANOE_UT_CORE_003_CGW_BOUNDARY_STATUS` (`206`) and
+`TC_CANOE_UT_CORE_011_ADAS_WARNING_SELECTION` (`207`) now have executable scenario bindings and concrete assert sets.
+The remaining wave-2 assets (`208` to `211`) are still maintained as draft skeletons.
+
+`TC_CANOE_UT_CORE_014_BCM_AMBIENT_POLICY` (`208`) and
+`TC_CANOE_UT_CORE_015_IVI_TEXT_MAPPING` (`209`) now also have executable scenario bindings and concrete assert sets.
+Only `TC_CANOE_UT_EXT_076_V2X_EVENT_CONTEXT` (`210`) and `TC_CANOE_UT_EXT_077_CLU_WARNING_DISPLAY` (`211`) remain as wave-2 draft skeletons.
+
+`TC_CANOE_UT_EXT_076_V2X_EVENT_CONTEXT` (`210`) and
+`TC_CANOE_UT_EXT_077_CLU_WARNING_DISPLAY` (`211`) now also have executable scenario bindings and concrete assert sets.
+Wave 2 (`206` to `211`) is now complete at the scenario/assert-contract level.
