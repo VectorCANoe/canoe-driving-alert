@@ -8,18 +8,22 @@ variables
   msTimer tDcdcCycle;
   int gBatterySoc;
   int gChargingState;
+  dword gFuelBatteryRxMs;
   int gLastMode;
   int gLastVolt;
   int gLastCurr;
+  int gLastInputStale;
 }
 
 on start
 {
   gBatterySoc = 95;
   gChargingState = 0;
+  gFuelBatteryRxMs = 0;
   gLastMode = -1;
   gLastVolt = -1;
   gLastCurr = -1;
+  gLastInputStale = 1;
   setTimer(tDcdcCycle, 100);
   write("[DCDC] start");
 }
@@ -28,19 +32,50 @@ on message frmFuelBatteryStateMsg
 {
   gBatterySoc = clampRange((int)this.BatterySoc, 0, 100);
   gChargingState = clampRange((int)this.ChargingState, 0, 3);
+  gFuelBatteryRxMs = getSimulationTimeMs();
 }
 
 on timer tDcdcCycle
 {
   message frmDcdcStateMsg mDcdc;
   int driveState;
+  int inputStale;
+  int batterySoc;
+  int chargingState;
   int dcdcMode;
   int lvOutputVolt;
   int lvOutputCurr;
 
   driveState = clampRange((int)@Core::driveStateNorm, 0, 3);
+  inputStale = 1;
+  if (gFuelBatteryRxMs != 0 &&
+      (getSimulationTimeMs() - gFuelBatteryRxMs) <= 300)
+  {
+    inputStale = 0;
+  }
 
-  if (gChargingState == 1)
+  batterySoc = gBatterySoc;
+  chargingState = gChargingState;
+  if (inputStale == 1)
+  {
+    batterySoc = 50;
+    chargingState = 0;
+  }
+
+  if (inputStale != gLastInputStale)
+  {
+    if (inputStale == 1)
+    {
+      write("[DCDC] fuel-battery input stale");
+    }
+    else
+    {
+      write("[DCDC] fuel-battery input restored");
+    }
+    gLastInputStale = inputStale;
+  }
+
+  if (chargingState == 1)
   {
     dcdcMode = 2;
   }
@@ -55,7 +90,7 @@ on timer tDcdcCycle
 
   lvOutputVolt = (dcdcMode > 0) ? 140 : 124;
   lvOutputCurr = (dcdcMode == 2) ? 35 : ((dcdcMode == 1) ? 18 : 4);
-  if (gBatterySoc < 40) lvOutputCurr = clampRange(lvOutputCurr + 10, 0, 255);
+  if (batterySoc < 40) lvOutputCurr = clampRange(lvOutputCurr + 10, 0, 255);
 
   mDcdc.DcdcMode = clampRange(dcdcMode, 0, 7);
   mDcdc.LvOutputVolt = clampRange(lvOutputVolt, 0, 255);
@@ -70,7 +105,7 @@ on timer tDcdcCycle
           mDcdc.DcdcMode,
           mDcdc.LvOutputVolt,
           mDcdc.LvOutputCurr,
-          gBatterySoc);
+          batterySoc);
     gLastMode = mDcdc.DcdcMode;
     gLastVolt = mDcdc.LvOutputVolt;
     gLastCurr = mDcdc.LvOutputCurr;

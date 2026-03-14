@@ -9,9 +9,11 @@ variables
   int gBatterySoc;
   int gChargingState;
   int gEngineTorque;
+  dword gFuelBatteryRxMs;
   int gLastState;
   int gLastDuty;
   int gLastPressure;
+  int gLastInputStale;
 }
 
 on start
@@ -19,9 +21,11 @@ on start
   gBatterySoc = 95;
   gChargingState = 0;
   gEngineTorque = 0;
+  gFuelBatteryRxMs = 0;
   gLastState = -1;
   gLastDuty = -1;
   gLastPressure = -1;
+  gLastInputStale = 1;
   setTimer(tFpcmCycle, 100);
   write("[FPCM] start");
 }
@@ -30,6 +34,7 @@ on message frmFuelBatteryStateMsg
 {
   gBatterySoc = clampRange((int)this.BatterySoc, 0, 100);
   gChargingState = clampRange((int)this.ChargingState, 0, 3);
+  gFuelBatteryRxMs = getSimulationTimeMs();
 }
 
 on message frmEngineTorqueMsg
@@ -42,19 +47,49 @@ on timer tFpcmCycle
   message frmFpcmStateMsg mFpcm;
   int driveState;
   int speed;
+  int inputStale;
+  int batterySoc;
+  int chargingState;
   int state;
   int duty;
   int pressure;
 
   driveState = clampRange((int)@Core::driveStateNorm, 0, 3);
   speed = clampRange((int)@Core::vehicleSpeedNorm, 0, 255);
+  inputStale = 1;
+  if (gFuelBatteryRxMs != 0 &&
+      (getSimulationTimeMs() - gFuelBatteryRxMs) <= 300)
+  {
+    inputStale = 0;
+  }
+
+  batterySoc = gBatterySoc;
+  chargingState = gChargingState;
+  if (inputStale == 1)
+  {
+    batterySoc = 50;
+    chargingState = 0;
+  }
+
+  if (inputStale != gLastInputStale)
+  {
+    if (inputStale == 1)
+    {
+      write("[FPCM] fuel-battery input stale");
+    }
+    else
+    {
+      write("[FPCM] fuel-battery input restored");
+    }
+    gLastInputStale = inputStale;
+  }
 
   if (driveState > 0 || gEngineTorque > 20)
   {
     state = 2;
     duty = 35 + (gEngineTorque / 6) + (speed / 12);
   }
-  else if (gChargingState == 2 || gBatterySoc < 25)
+  else if (chargingState == 2 || batterySoc < 25)
   {
     state = 1;
     duty = 25;
@@ -81,7 +116,7 @@ on timer tFpcmCycle
           mFpcm.FpcmState,
           mFpcm.PumpDuty,
           mFpcm.LinePressure,
-          gBatterySoc,
+          batterySoc,
           gEngineTorque);
     gLastState = mFpcm.FpcmState;
     gLastDuty = mFpcm.PumpDuty;

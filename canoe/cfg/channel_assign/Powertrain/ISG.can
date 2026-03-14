@@ -10,9 +10,11 @@ variables
   int gChargingState;
   int gDriveMode;
   int gEngineState;
+  dword gFuelBatteryRxMs;
   int gLastState;
   int gLastReady;
   int gLastRegen;
+  int gLastInputStale;
 }
 
 on start
@@ -21,9 +23,11 @@ on start
   gChargingState = 0;
   gDriveMode = 0;
   gEngineState = 0;
+  gFuelBatteryRxMs = 0;
   gLastState = -1;
   gLastReady = -1;
   gLastRegen = -1;
+  gLastInputStale = 1;
   setTimer(tIsgCycle, 100);
   write("[ISG] start");
 }
@@ -32,6 +36,7 @@ on message frmFuelBatteryStateMsg
 {
   gBatterySoc = clampRange((int)this.BatterySoc, 0, 100);
   gChargingState = clampRange((int)this.ChargingState, 0, 3);
+  gFuelBatteryRxMs = getSimulationTimeMs();
 }
 
 on message frmVehicleModeMsg
@@ -45,12 +50,42 @@ on timer tIsgCycle
   message frmIsgStateMsg mIsg;
   int driveState;
   int speed;
+  int inputStale;
+  int batterySoc;
+  int chargingState;
   int isgState;
   int restartReady;
   int recuperationLvl;
 
   driveState = clampRange((int)@Core::driveStateNorm, 0, 3);
   speed = clampRange((int)@Core::vehicleSpeedNorm, 0, 255);
+  inputStale = 1;
+  if (gFuelBatteryRxMs != 0 &&
+      (getSimulationTimeMs() - gFuelBatteryRxMs) <= 300)
+  {
+    inputStale = 0;
+  }
+
+  batterySoc = gBatterySoc;
+  chargingState = gChargingState;
+  if (inputStale == 1)
+  {
+    batterySoc = 50;
+    chargingState = 0;
+  }
+
+  if (inputStale != gLastInputStale)
+  {
+    if (inputStale == 1)
+    {
+      write("[ISG] fuel-battery input stale");
+    }
+    else
+    {
+      write("[ISG] fuel-battery input restored");
+    }
+    gLastInputStale = inputStale;
+  }
 
   if (gEngineState == 0)
   {
@@ -58,13 +93,13 @@ on timer tIsgCycle
     restartReady = 0;
     recuperationLvl = 0;
   }
-  else if (driveState == 0 && gBatterySoc < 95)
+  else if (driveState == 0 && batterySoc < 95)
   {
     isgState = 1;
     restartReady = 1;
     recuperationLvl = 0;
   }
-  else if (driveState > 0 && gBatterySoc < 75 && gDriveMode == 1)
+  else if (driveState > 0 && batterySoc < 75 && gDriveMode == 1)
   {
     isgState = 2;
     restartReady = 1;
@@ -74,7 +109,7 @@ on timer tIsgCycle
   {
     isgState = 3;
     restartReady = 1;
-    recuperationLvl = clampRange((speed / 2) + ((gChargingState == 2) ? 20 : 0), 0, 100);
+    recuperationLvl = clampRange((speed / 2) + ((chargingState == 2) ? 20 : 0), 0, 100);
   }
 
   mIsg.IsgState = clampRange(isgState, 0, 7);
@@ -90,7 +125,7 @@ on timer tIsgCycle
           mIsg.IsgState,
           mIsg.RestartReady,
           mIsg.RecuperationLvl,
-          gBatterySoc,
+          batterySoc,
           gDriveMode);
     gLastState = mIsg.IsgState;
     gLastReady = mIsg.RestartReady;
