@@ -106,24 +106,26 @@ on start
 
 on timer tDcmCycle
 {
-  int roadZone;
+  int baseZoneContext;
+  int routeActive;
   int alertLevel;
   int boundaryAlive;
   int warningPathStatus;
   int failSafeMode;
 
-  roadZone = clampRange((int)@Infotainment::roadZone, 0, 3);
+  baseZoneContext = clampRange((int)@Core::baseZoneContext, 0, 4);
+  routeActive = (baseZoneContext > 0) ? 1 : 0;
   alertLevel = clampRange((int)@Core::selectedAlertLevel, 0, 7);
   boundaryAlive = clampRange((int)@CoreState::domainBoundaryStatus, 0, 1);
   warningPathStatus = clampRange((int)@CoreState::warningPathStatus, 0, 2);
   failSafeMode = clampRange((int)@Core::failSafeMode, 0, 2);
 
   gSecuritySession = 0;
-  if (roadZone > 0 || alertLevel > 0)
+  if (routeActive == 1 || alertLevel > 0)
   {
     gSecuritySession = 1;
   }
-  if (boundaryAlive == 1 && roadZone > 0)
+  if (boundaryAlive == 1 && routeActive == 1)
   {
     gSecuritySession = 2;
   }
