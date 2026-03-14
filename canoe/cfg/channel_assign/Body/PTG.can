@@ -61,7 +61,6 @@ on timer tPowerTailgateCycle
 {
   message frmPowerTailgateCtrlStateMsg mTailgateCtrl;
   int driveState;
-  int timeoutClear;
   int tailgateInputStale;
   int tailgateLockState;
   int tailgateOpenState;
@@ -72,7 +71,6 @@ on timer tPowerTailgateCycle
   int actuatorCmd;
 
   driveState = clampRange((int)@Core::driveStateNorm, 0, 3);
-  timeoutClear = clampRange((int)@Core::timeoutClear, 0, 1);
   tailgateInputStale = (ethIsRecentTick(gTailgateRxMs, 300) == 1) ? 0 : 1;
   tracePtgInputHealth(tailgateInputStale);
 
@@ -92,12 +90,7 @@ on timer tPowerTailgateCycle
   openRequestState = 0;
   actuatorCmd = 0;
 
-  if (driveState == 0 && timeoutClear == 1 && tailgateLockState == 0)
-  {
-    openRequestState = 2;
-    actuatorCmd = clampRange(100 - tailgatePosition, 0, 100);
-  }
-  else if (tailgateOpenState == 1)
+  if (driveState == 0 && tailgateOpenState == 1)
   {
     openRequestState = 1;
     actuatorCmd = 0;

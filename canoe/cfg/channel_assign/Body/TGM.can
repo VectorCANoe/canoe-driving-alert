@@ -26,28 +26,19 @@ on timer tTailgateCycle
 {
   message frmTailgateStateMsg mTailgate;
   int driveState;
-  int timeoutClear;
   int lockState;
   int openState;
   int powerState;
   int position;
 
   driveState = clampRange((int)@Core::driveStateNorm, 0, 3);
-  timeoutClear = clampRange((int)@Core::timeoutClear, 0, 1);
 
   lockState = 1;
   openState = 0;
   powerState = 0;
   position = 0;
 
-  if (driveState == 0 && timeoutClear == 1)
-  {
-    lockState = 0;
-    openState = 1;
-    powerState = 2;
-    position = 80;
-  }
-  else if (driveState == 0)
+  if (driveState == 0)
   {
     powerState = 1;
   }

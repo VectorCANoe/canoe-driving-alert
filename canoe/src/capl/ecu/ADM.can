@@ -83,7 +83,6 @@ on timer tAutoDoorCycle
 {
   message frmAutoDoorCtrlStateMsg mDoor;
   int driveState;
-  int timeoutClear;
   int doorFlInputStale;
   int doorFrInputStale;
   int doorFlLockState;
@@ -95,7 +94,6 @@ on timer tAutoDoorCycle
   int approachScore;
 
   driveState = clampRange((int)@Core::driveStateNorm, 0, 3);
-  timeoutClear = clampRange((int)@Core::timeoutClear, 0, 1);
   doorFlInputStale = (ethIsRecentTick(gDoorFlRxMs, 300) == 1) ? 0 : 1;
   doorFrInputStale = (ethIsRecentTick(gDoorFrRxMs, 300) == 1) ? 0 : 1;
   traceAdmInputHealth(doorFlInputStale, doorFrInputStale);
@@ -116,7 +114,11 @@ on timer tAutoDoorCycle
   }
 
   autoDoorState = (driveState == 0) ? 1 : 0;
-  autoUnlockState = (driveState == 0 && timeoutClear == 1) ? 2 : 0;
+  autoUnlockState = 0;
+  if (driveState == 0 && (doorFlLockState == 0 || doorFrLockState == 0))
+  {
+    autoUnlockState = 2;
+  }
   if (doorFlOpenState == 1 || doorFrOpenState == 1)
   {
     autoUnlockState = 1;
@@ -124,7 +126,7 @@ on timer tAutoDoorCycle
 
   approachScore = 40;
   if (doorFlLockState == 0 || doorFrLockState == 0) approachScore += 20;
-  if (timeoutClear == 1) approachScore += 20;
+  if (doorFlOpenState == 1 || doorFrOpenState == 1) approachScore += 20;
   if (driveState == 0) approachScore += 20;
   approachScore = clampRange(approachScore, 0, 100);
 

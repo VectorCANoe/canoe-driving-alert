@@ -30,12 +30,6 @@ on timer tDoorFrCycle
   lockState = 1;
   openState = 0;
   windowPos = 0;
-  if ((int)@Core::timeoutClear == 1)
-  {
-    lockState = 0;
-    openState = 1;
-    windowPos = 10;
-  }
 
   mDoor.DoorFrLockState = clampRange(lockState, 0, 3);
   mDoor.DoorFrOpenState = clampRange(openState, 0, 1);
