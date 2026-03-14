@@ -9,34 +9,76 @@ variables
   int gBrakePressure;
   int gBrakeMode;
   int gDriveState;
+  dword gBrakeStatusRxMs;
+  dword gVehicleStateRxMs;
+  int gLastBrakeInputStale;
+  int gLastVehicleInputStale;
   int gLastState;
   int gLastWarn;
   int gLastForce;
 }
 
+void traceEpbInputHealth(int brakeInputStale, int vehicleInputStale)
+{
+  if (brakeInputStale != gLastBrakeInputStale)
+  {
+    write("[EPB] brake input %s", brakeInputStale == 1 ? "stale" : "restored");
+    gLastBrakeInputStale = brakeInputStale;
+  }
+
+  if (vehicleInputStale != gLastVehicleInputStale)
+  {
+    write("[EPB] vehicle-state input %s", vehicleInputStale == 1 ? "stale" : "restored");
+    gLastVehicleInputStale = vehicleInputStale;
+  }
+}
+
 void publishEpbState()
 {
   message frmEpbStateMsg mEpb;
+  int brakePressure;
+  int brakeMode;
+  int driveState;
+  int brakeInputStale;
+  int vehicleInputStale;
   int epbState;
   int epbWarn;
   int holdForce;
 
+  brakeInputStale = (ethIsRecentTick(gBrakeStatusRxMs, 300) == 1) ? 0 : 1;
+  vehicleInputStale = (ethIsRecentTick(gVehicleStateRxMs, 300) == 1) ? 0 : 1;
+  traceEpbInputHealth(brakeInputStale, vehicleInputStale);
+
+  brakePressure = gBrakePressure;
+  brakeMode = gBrakeMode;
+  driveState = gDriveState;
+  if (brakeInputStale == 1)
+  {
+    brakePressure = 0;
+    brakeMode = 0;
+  }
+  if (vehicleInputStale == 1)
+  {
+    // Avoid forcing a parking hold on a lost vehicle-state feed.
+    driveState = 3;
+  }
+
   epbState = 0;
-  if (gDriveState == 0 && gBrakePressure > 20)
+  if (driveState == 0 && brakePressure > 20)
   {
     epbState = 2;
   }
-  else if (gBrakeMode > 0)
+  else if (brakeMode > 0)
   {
     epbState = 1;
   }
 
   epbWarn = 0;
-  if (gBrakePressure > 180)
+  if (brakePressure > 180)
   {
     epbWarn = 2;
   }
-  else if (gBrakePressure > 100)
+  else if (brakePressure > 100)
   {
     epbWarn = 1;
   }
@@ -44,7 +86,7 @@ void publishEpbState()
   holdForce = 0;
   if (epbState > 0)
   {
-    holdForce = clampRange(gBrakePressure, 0, 255);
+    holdForce = clampRange(brakePressure, 0, 255);
   }
 
   mEpb.EpbState = clampRange(epbState, 0, 3);
@@ -60,8 +102,8 @@ void publishEpbState()
           mEpb.EpbState,
           mEpb.EpbWarnLevel,
           mEpb.EpbHoldForce,
-          gBrakePressure,
-          gDriveState);
+          brakePressure,
+          driveState);
     gLastState = mEpb.EpbState;
     gLastWarn = mEpb.EpbWarnLevel;
     gLastForce = mEpb.EpbHoldForce;
@@ -73,6 +115,10 @@ on start
   gBrakePressure = 0;
   gBrakeMode = 0;
   gDriveState = 0;
+  gBrakeStatusRxMs = 0;
+  gVehicleStateRxMs = 0;
+  gLastBrakeInputStale = 0;
+  gLastVehicleInputStale = 0;
   gLastState = -1;
   gLastWarn = -1;
   gLastForce = -1;
@@ -91,11 +137,13 @@ on message frmBrakeStatusMsg
 {
   gBrakePressure = clampRange((int)this.BrakePressure, 0, 255);
   gBrakeMode = clampRange((int)this.BrakeMode, 0, 3);
+  gBrakeStatusRxMs = getSimulationTimeMs();
 }
 
 on message frmVehicleStateCanMsg
 {
   gDriveState = clampRange((int)this.gDriveState, 0, 3);
+  gVehicleStateRxMs = getSimulationTimeMs();
 }
 
 on stopMeasurement

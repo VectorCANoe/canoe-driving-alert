@@ -8,13 +8,26 @@ variables
 {
   msTimer tEhbCycle;
   int gBrakePressure;
+  dword gBrakeStatusRxMs;
+  int gLastBrakeInputStale;
   int gLastCtrlState;
   int gLastPressureCmd;
+}
+
+void traceEhbInputHealth(int brakeInputStale)
+{
+  if (brakeInputStale != gLastBrakeInputStale)
+  {
+    write("[EHB] brake input %s", brakeInputStale == 1 ? "stale" : "restored");
+    gLastBrakeInputStale = brakeInputStale;
+  }
 }
 
 on start
 {
   gBrakePressure = 0;
+  gBrakeStatusRxMs = 0;
+  gLastBrakeInputStale = 0;
   gLastCtrlState = -1;
   gLastPressureCmd = -1;
   setTimer(tEhbCycle, 100);
@@ -24,21 +37,33 @@ on start
 on message frmBrakeStatusMsg
 {
   gBrakePressure = clampRange((int)this.BrakePressure, 0, 255);
+  gBrakeStatusRxMs = getSimulationTimeMs();
 }
 
 on timer tEhbCycle
 {
   message frmEhbStateMsg mEhb;
+  int brakeInputStale;
+  int brakePressure;
   int ctrlState;
 
-  ctrlState = (gBrakePressure > 0) ? 1 : 0;
+  brakeInputStale = (ethIsRecentTick(gBrakeStatusRxMs, 300) == 1) ? 0 : 1;
+  traceEhbInputHealth(brakeInputStale);
+
+  brakePressure = gBrakePressure;
+  if (brakeInputStale == 1)
+  {
+    brakePressure = 0;
+  }
+
+  ctrlState = (brakePressure > 0) ? 1 : 0;
   if ((int)@Core::decelAssistReq == 1)
   {
     ctrlState = 2;
   }
 
   mEhb.EhbCtrlState = clampRange(ctrlState, 0, 7);
-  mEhb.EhbPressureCmd = gBrakePressure;
+  mEhb.EhbPressureCmd = brakePressure;
   output(mEhb);
 
   if (mEhb.EhbCtrlState != gLastCtrlState ||
