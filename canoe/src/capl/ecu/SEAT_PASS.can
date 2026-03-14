@@ -30,10 +30,6 @@ on timer tSeatPassCycle
   pos = 118;
   heat = 0;
   vent = 0;
-  if ((int)@Core::selectedAlertLevel >= 7)
-  {
-    vent = 1;
-  }
 
   mSeat.SeatPassPos = clampRange(pos, 0, 255);
   mSeat.SeatPassHeatLvl = clampRange(heat, 0, 15);

@@ -43,7 +43,6 @@ on start
 
 on timer tSecurityCycle
 {
-  gIntrusionDetect = ((int)@Core::selectedAlertLevel >= 7) ? 1 : 0;
   publishSecurityState();
   setTimer(tSecurityCycle, 100);
 }

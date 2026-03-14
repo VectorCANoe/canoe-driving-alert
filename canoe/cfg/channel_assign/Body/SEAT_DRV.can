@@ -30,10 +30,6 @@ on timer tSeatDrvCycle
   pos = 120;
   heat = 0;
   vent = 0;
-  if ((int)@Core::selectedAlertLevel >= 6)
-  {
-    heat = 1;
-  }
 
   mSeat.SeatDrvPos = clampRange(pos, 0, 255);
   mSeat.SeatDrvHeatLvl = clampRange(heat, 0, 15);
