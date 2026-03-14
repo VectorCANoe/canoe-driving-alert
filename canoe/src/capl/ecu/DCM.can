@@ -11,6 +11,70 @@ variables
   int gSecurityFault;
   int gSecurityPolicy;
 }
+
+void publishReservedDiagServiceSeam()
+{
+  int serviceState;
+  int responseKind;
+  int reasonCode;
+
+  serviceState = 0;
+  responseKind = 0;
+  reasonCode = 0;
+
+  if (gSecurityFault > 0)
+  {
+    serviceState = 1;
+    responseKind = 4;
+    reasonCode = 2;
+  }
+  else if (gSecurityPolicy == 1)
+  {
+    serviceState = 1;
+    responseKind = 2;
+    reasonCode = 3;
+  }
+  else if (gSecuritySession >= 2 && gAuthState >= 2)
+  {
+    serviceState = 2;
+    responseKind = 1;
+    reasonCode = 0;
+  }
+  else if (gSecuritySession > 0 || gAuthState > 0)
+  {
+    serviceState = 1;
+    responseKind = 4;
+    reasonCode = 4;
+  }
+
+  @Diag::ServiceState = serviceState;
+  @Diag::ResponseKind = responseKind;
+  @Diag::ReasonCode = reasonCode;
+  @Diag::LastRequestSid = 0x22;
+  @Diag::LastResponseOk = (responseKind == 1) ? 1 : 0;
+
+  if (responseKind == 1)
+  {
+    @Diag::LastResponseCode = 0x62;
+  }
+  else if (responseKind == 2)
+  {
+    @Diag::LastResponseCode = 0x7F;
+  }
+  else if (responseKind == 3)
+  {
+    @Diag::LastResponseCode = 0x78;
+  }
+  else if (responseKind == 4)
+  {
+    @Diag::LastResponseCode = 0x7F;
+  }
+  else
+  {
+    @Diag::LastResponseCode = 0x00;
+  }
+}
+
 void publishDcmStateTrace()
 {
   write("[DCM] session=%d path=%d pending=%d sid=0x%X sec=%d auth=%d fault=%d policy=%d",
@@ -30,6 +94,12 @@ on start
   gAuthState = 0;
   gSecurityFault = 0;
   gSecurityPolicy = 0;
+  @Diag::ServiceState = 0;
+  @Diag::ResponseKind = 0;
+  @Diag::ReasonCode = 0;
+  @Diag::LastRequestSid = 0;
+  @Diag::LastResponseCode = 0;
+  @Diag::LastResponseOk = 0;
   setTimer(tDcmCycle, 100);
   write("[DCM] start");
 }
@@ -74,6 +144,7 @@ on timer tDcmCycle
     gSecurityFault = 1;
   }
   gSecurityPolicy = warningPathStatus;
+  publishReservedDiagServiceSeam();
   publishDcmStateTrace();
   setTimer(tDcmCycle, 100);
 }

@@ -41,6 +41,7 @@ variables
   int gLockIntersectionConflictFlag;
   int gLockMergeCutInFlag;
   int gLockObjectAlertHoldMs;
+  int gLockSuppressEmergencyFrame;
   int gScenarioCmdInternalClear;
   int gScenarioMirrorInternalWrite;
   int gPrevAccelPedal;
@@ -49,6 +50,12 @@ variables
   int gSteerGroupHoldTick;
   int gLockAccelGroupFlag;
   int gLockSteerGroupFlag;
+  int gDiagCtxNominalSeen;
+  int gDiagCtxDegradedSeen;
+  int gDiagCtxBlockedSeen;
+  int gDcmCtxPositiveSeen;
+  int gDcmCtxNegativeSeen;
+  int gDcmCtxBlockedSeen;
 }
 
 
@@ -163,8 +170,81 @@ void stopScenarioExecution()
   @Test::scenarioResult = 0;
   gLockAccelGroupFlag = 0;
   gLockSteerGroupFlag = 0;
+  gLockSuppressEmergencyFrame = 0;
+  gDiagCtxNominalSeen = 0;
+  gDiagCtxDegradedSeen = 0;
+  gDiagCtxBlockedSeen = 0;
+  gDcmCtxPositiveSeen = 0;
+  gDcmCtxNegativeSeen = 0;
+  gDcmCtxBlockedSeen = 0;
   @Core::accelGroupFlag = 0;
   @Core::steerGroupFlag = 0;
+}
+
+void trackSt038DiagnosticContext()
+{
+  int serviceState;
+  int securityState;
+  int routeOwner;
+  int reasonCode;
+  int failSafeMode;
+
+  if (gCurrentScenarioId != 202)
+  {
+    return;
+  }
+
+  serviceState = clampRange((int)@Diag::ServiceState, 0, 255);
+  securityState = clampRange((int)@Diag::SecurityState, 0, 255);
+  routeOwner = clampRange((int)@Diag::RouteOwner, 0, 255);
+  reasonCode = clampRange((int)@Diag::ReasonCode, 0, 255);
+  failSafeMode = clampRange((int)@Core::failSafeMode, 0, 7);
+
+  if (serviceState == 2 && securityState == 2 && routeOwner == 3 && reasonCode == 0)
+  {
+    gDiagCtxNominalSeen = 1;
+  }
+  else if (serviceState == 1 && securityState == 3 && routeOwner == 1 &&
+           reasonCode == 3 && failSafeMode == 1)
+  {
+    gDiagCtxDegradedSeen = 1;
+  }
+  else if (serviceState == 1 && securityState == 3 && routeOwner == 1 &&
+           reasonCode == 2 && failSafeMode >= 2)
+  {
+    gDiagCtxBlockedSeen = 1;
+  }
+}
+
+void trackDcmDiagnosticContext()
+{
+  int serviceState;
+  int responseKind;
+  int reasonCode;
+  int lastSid;
+
+  if (gCurrentScenarioId != 204)
+  {
+    return;
+  }
+
+  serviceState = clampRange((int)@Diag::ServiceState, 0, 255);
+  responseKind = clampRange((int)@Diag::ResponseKind, 0, 255);
+  reasonCode = clampRange((int)@Diag::ReasonCode, 0, 255);
+  lastSid = clampRange((int)@Diag::LastRequestSid, 0, 255);
+
+  if (serviceState == 2 && responseKind == 1 && reasonCode == 0 && lastSid == 0x22)
+  {
+    gDcmCtxPositiveSeen = 1;
+  }
+  else if (serviceState == 1 && responseKind == 2 && reasonCode == 3 && lastSid == 0x22)
+  {
+    gDcmCtxNegativeSeen = 1;
+  }
+  else if (serviceState == 1 && responseKind == 4 && reasonCode == 2 && lastSid == 0x22)
+  {
+    gDcmCtxBlockedSeen = 1;
+  }
 }
 
 void setScenarioMirror(int scenarioId)
@@ -226,6 +306,13 @@ void applyScenarioPreset(int scenarioId)
   gLockObjectAlertHoldMs = 300;
   gLockAccelGroupFlag = 0;
   gLockSteerGroupFlag = 0;
+  gLockSuppressEmergencyFrame = 0;
+  gDiagCtxNominalSeen = 0;
+  gDiagCtxDegradedSeen = 0;
+  gDiagCtxBlockedSeen = 0;
+  gDcmCtxPositiveSeen = 0;
+  gDcmCtxNegativeSeen = 0;
+  gDcmCtxBlockedSeen = 0;
   @Test::displayModeSetting = 0;
   @Test::alertVolumeSetting = 0;
   @Test::seatBeltOverride = 0;
@@ -623,6 +710,80 @@ void applyScenarioPreset(int scenarioId)
     gLockForceFailSafe = 0;
     setTimer(tScenarioPhase2, 400);
   }
+  else if (scenarioId == 202)
+  {
+    /* ST_038: nominal -> degraded -> blocked diagnostic context
+       Phase 1(0ms):   school-zone + police warning, seams nominal
+       Phase 2(700ms): suppress emergency refresh -> warningPathStatus=1 degraded
+       Phase 3(1100ms): forceFailSafe=1 -> blocked context
+       평가(1800ms): nominal/degraded/blocked 모두 관측 + 최종 blocked seam 확인 */
+    gLockDriveState = 3;
+    gLockVehicleSpeed = 45;
+    gLockRoadZone = 1;
+    gLockSpeedLimit = 30;
+    gLockAlertState = 1;
+    gLockEmergencyType = 1;
+    gLockEta = 12;
+    gLockSourceId = 81;
+    gLockEmergencyDirection = 1;
+    gLockForceFailSafe = 0;
+    gLockSuppressEmergencyFrame = 0;
+    setTimer(tScenarioPhase2, 700);
+  }
+  else if (scenarioId == 203)
+  {
+    /* UT_063: SGW security state interpretation
+       Phase 1: nominal route-usable context
+       Phase 2: degraded route context
+       Phase 3: fail-safe blocked context */
+    gLockDriveState = 3;
+    gLockVehicleSpeed = 45;
+    gLockRoadZone = 1;
+    gLockSpeedLimit = 30;
+    gLockAlertState = 1;
+    gLockEmergencyType = 1;
+    gLockEta = 12;
+    gLockSourceId = 82;
+    gLockEmergencyDirection = 1;
+    gLockForceFailSafe = 0;
+    gLockSuppressEmergencyFrame = 0;
+    setTimer(tScenarioPhase2, 700);
+  }
+  else if (scenarioId == 204)
+  {
+    /* UT_064: DCM diagnostic response interpretation
+       Phase 1: positive service context
+       Phase 2: degraded policy context
+       Phase 3: blocked service context */
+    gLockDriveState = 3;
+    gLockVehicleSpeed = 45;
+    gLockRoadZone = 1;
+    gLockSpeedLimit = 30;
+    gLockAlertState = 1;
+    gLockEmergencyType = 1;
+    gLockEta = 12;
+    gLockSourceId = 83;
+    gLockEmergencyDirection = 1;
+    gLockForceFailSafe = 0;
+    gLockSuppressEmergencyFrame = 0;
+    setTimer(tScenarioPhase2, 700);
+  }
+  else if (scenarioId == 205)
+  {
+    /* IT_027: integrated service/security/diagnostic context */
+    gLockDriveState = 3;
+    gLockVehicleSpeed = 45;
+    gLockRoadZone = 1;
+    gLockSpeedLimit = 30;
+    gLockAlertState = 1;
+    gLockEmergencyType = 1;
+    gLockEta = 12;
+    gLockSourceId = 84;
+    gLockEmergencyDirection = 1;
+    gLockForceFailSafe = 0;
+    gLockSuppressEmergencyFrame = 0;
+    setTimer(tScenarioPhase2, 700);
+  }
 
   pushLockedScenarioInputs();
   write("[EVIDENCE_IN] scenario=%d inputTsMs=%lu",
@@ -710,6 +871,15 @@ void scheduleScenarioEvaluation(int scenarioId)
   {
     /* ST_041: Phase3(800ms) fail-safe 해제 + 안정화 */
     evalDelayMs = 1500;
+  }
+  else if (scenarioId == 202)
+  {
+    /* ST_038: degraded phase 관측 후 blocked context까지 포함 */
+    evalDelayMs = 1800;
+  }
+  else if (scenarioId == 203 || scenarioId == 204 || scenarioId == 205)
+  {
+    evalDelayMs = 1800;
   }
   setTimer(tScenarioEval, evalDelayMs);
 }
@@ -970,6 +1140,48 @@ void evaluateScenarioResult()
     /* ST_041: fail-safe 복귀 후 안정 상태 확인 */
     result = (failSafeMode == 0) ? 1 : 0;
   }
+  else if (gCurrentScenarioId == 202)
+  {
+    result = (gDiagCtxNominalSeen == 1 &&
+              gDiagCtxDegradedSeen == 1 &&
+              gDiagCtxBlockedSeen == 1 &&
+              (int)@Diag::ServiceState == 1 &&
+              (int)@Diag::SecurityState == 3 &&
+              (int)@Diag::RouteOwner == 1 &&
+              (int)@Diag::ResponseKind == 4 &&
+              (int)@Diag::ReasonCode == 2 &&
+              failSafeMode >= 2) ? 1 : 0;
+  }
+  else if (gCurrentScenarioId == 203)
+  {
+    result = (gDiagCtxNominalSeen == 1 &&
+              gDiagCtxDegradedSeen == 1 &&
+              gDiagCtxBlockedSeen == 1 &&
+              (int)@Diag::SecurityState == 3 &&
+              (int)@Diag::RouteOwner == 1) ? 1 : 0;
+  }
+  else if (gCurrentScenarioId == 204)
+  {
+    result = (gDcmCtxPositiveSeen == 1 &&
+              gDcmCtxNegativeSeen == 1 &&
+              gDcmCtxBlockedSeen == 1 &&
+              (int)@Diag::LastRequestSid == 0x22 &&
+              (int)@Diag::ResponseKind == 4 &&
+              (int)@Diag::ReasonCode == 2 &&
+              (int)@Diag::LastResponseCode == 0x7F &&
+              (int)@Diag::LastResponseOk == 0) ? 1 : 0;
+  }
+  else if (gCurrentScenarioId == 205)
+  {
+    result = (gDiagCtxNominalSeen == 1 &&
+              gDiagCtxDegradedSeen == 1 &&
+              gDiagCtxBlockedSeen == 1 &&
+              (int)@Diag::ServiceState == 1 &&
+              (int)@Diag::SecurityState == 3 &&
+              (int)@Diag::RouteOwner == 1 &&
+              (int)@Diag::ResponseKind == 4 &&
+              (int)@Diag::ReasonCode == 2) ? 1 : 0;
+  }
   else
   {
     result = ((int)@Test::scenarioResult == 1) ? 1 : 0;
@@ -1099,6 +1311,35 @@ on timer tScenarioPhase2
     setTimer(tScenarioPhase3, 400);
     write("[TEST_SCN] ST_041 phase2: force fail-safe");
   }
+  else if (gCurrentScenarioId == 202)
+  {
+    /* ST_038: Phase 2 — emergency refresh 억제 -> degraded context 유도 */
+    gLockSuppressEmergencyFrame = 1;
+    pushLockedScenarioInputs();
+    setTimer(tScenarioPhase3, 400);
+    write("[TEST_SCN] ST_038 phase2: suppress emergency refresh, expect degraded context");
+  }
+  else if (gCurrentScenarioId == 203)
+  {
+    gLockSuppressEmergencyFrame = 1;
+    pushLockedScenarioInputs();
+    setTimer(tScenarioPhase3, 400);
+    write("[TEST_SCN] UT_063 phase2: suppress emergency refresh, expect degraded SGW context");
+  }
+  else if (gCurrentScenarioId == 204)
+  {
+    gLockSuppressEmergencyFrame = 1;
+    pushLockedScenarioInputs();
+    setTimer(tScenarioPhase3, 400);
+    write("[TEST_SCN] UT_064 phase2: suppress emergency refresh, expect degraded DCM context");
+  }
+  else if (gCurrentScenarioId == 205)
+  {
+    gLockSuppressEmergencyFrame = 1;
+    pushLockedScenarioInputs();
+    setTimer(tScenarioPhase3, 400);
+    write("[TEST_SCN] IT_027 phase2: suppress emergency refresh, expect integrated degraded context");
+  }
 }
 
 on timer tScenarioPhase3
@@ -1136,6 +1377,35 @@ on timer tScenarioPhase3
     gLockForceFailSafe = 0;
     pushLockedScenarioInputs();
     write("[TEST_SCN] ST_041 phase3: fail-safe cleared, expect recovery");
+  }
+  else if (gCurrentScenarioId == 202)
+  {
+    /* ST_038: Phase 3 — explicit blocked context */
+    gLockForceFailSafe = 1;
+    gLockSuppressEmergencyFrame = 1;
+    pushLockedScenarioInputs();
+    write("[TEST_SCN] ST_038 phase3: force fail-safe, expect blocked context");
+  }
+  else if (gCurrentScenarioId == 203)
+  {
+    gLockForceFailSafe = 1;
+    gLockSuppressEmergencyFrame = 1;
+    pushLockedScenarioInputs();
+    write("[TEST_SCN] UT_063 phase3: force fail-safe, expect blocked SGW context");
+  }
+  else if (gCurrentScenarioId == 204)
+  {
+    gLockForceFailSafe = 1;
+    gLockSuppressEmergencyFrame = 1;
+    pushLockedScenarioInputs();
+    write("[TEST_SCN] UT_064 phase3: force fail-safe, expect blocked DCM context");
+  }
+  else if (gCurrentScenarioId == 205)
+  {
+    gLockForceFailSafe = 1;
+    gLockSuppressEmergencyFrame = 1;
+    pushLockedScenarioInputs();
+    write("[TEST_SCN] IT_027 phase3: force fail-safe, expect integrated blocked context");
   }
 }
 
@@ -1383,12 +1653,15 @@ on timer tInput100
 
   if (gScenarioInputLock == 1)
   {
-    ethInitFrame(emergencyFrame, ethMsgEmergencyAlert(), 4);
-    ethSetU8(emergencyFrame, 0, emergencyType | (emergencyDirection << 2));
-    ethSetU8(emergencyFrame, 1, eta);
-    ethSetU8(emergencyFrame, 2, sourceId);
-    ethSetU8(emergencyFrame, 3, alertState);
-    ethSendFrame(gEthSocket, gEthTargetIp, ethMsgEmergencyAlert(), emergencyFrame, 4);
+    if (gLockSuppressEmergencyFrame == 0)
+    {
+      ethInitFrame(emergencyFrame, ethMsgEmergencyAlert(), 4);
+      ethSetU8(emergencyFrame, 0, emergencyType | (emergencyDirection << 2));
+      ethSetU8(emergencyFrame, 1, eta);
+      ethSetU8(emergencyFrame, 2, sourceId);
+      ethSetU8(emergencyFrame, 3, alertState);
+      ethSendFrame(gEthSocket, gEthTargetIp, ethMsgEmergencyAlert(), emergencyFrame, 4);
+    }
 
     ethInitFrame(objectFrame, ethMsgObjectRiskInput(), 8);
     ethSetU8(objectFrame, 0, objectTrackValid |
@@ -1400,6 +1673,9 @@ on timer tInput100
     ethSetU16Le(objectFrame, 6, objectAlertHoldMs);
     ethSendFrame(gEthSocket, gEthTargetIp, ethMsgObjectRiskInput(), objectFrame, 8);
   }
+
+  trackSt038DiagnosticContext();
+  trackDcmDiagnosticContext();
 
   setTimer(tInput100, 100);
 }
@@ -1559,5 +1835,3 @@ on stopMeasurement
   ethCloseSocket(gEthSocket);
   gEthSocket = ethInvalidSocket();
 }
-
-

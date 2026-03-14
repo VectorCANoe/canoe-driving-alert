@@ -57,9 +57,23 @@ It contains request mirrors, response mirrors, counters, and timestamps.
 | `Diag::ResponseCounter` | monotonic response count | diagnostic response handler | verification and evidence tools |
 | `Diag::LastResponseTimeMs` | most recent response timestamp in ms | diagnostic response handler | verification and evidence tools |
 
-## 6. Contract rules
+## 6. Verdict-facing seam contract
 
-### 6.1 `Diag::*` is an observation contract
+| SysVar | Meaning | Typical producer | Typical consumer |
+|---|---|---|---|
+| `Diag::SecurityState` | current diagnostic security interpretation for verification | diagnostic/security seam producer | verification and evidence tools |
+| `Diag::ServiceState` | current service availability interpretation for verification | diagnostic/service seam producer | verification and evidence tools |
+| `Diag::RouteOwner` | active route ownership interpretation for the latest diagnostic-linked verdict | gateway/runtime diagnostic seam producer | verification and evidence tools |
+| `Diag::ResponseKind` | semantic response class for the latest diagnostic-linked verdict | diagnostic response handler | verification and evidence tools |
+| `Diag::ReasonCode` | compact verdict-facing reason code for the latest diagnostic-linked decision | diagnostic/service/security seam producer | verification and evidence tools |
+
+These variables are verdict-facing semantic seams.
+
+They are not a replacement for full transport trace or full tester payload review.
+
+## 7. Contract rules
+
+### 7.1 `Diag::*` is an observation contract
 
 `Diag::*` exists to mirror what happened.
 
@@ -67,31 +81,39 @@ It must not become the only place where diagnostic meaning lives.
 
 Product behavior should still be implemented through the actual diagnostic runtime path.
 
-### 6.2 Counters are cumulative
+### 7.2 Counters are cumulative
 
 `RequestCounter` and `ResponseCounter` are cumulative mirrors for the active session/runtime scope.
 
 Do not reuse them as boolean flags.
 
-### 6.3 Timestamps are in milliseconds
+### 7.3 Timestamps are in milliseconds
 
 `LastRequestTimeMs` and `LastResponseTimeMs` are millisecond timestamps.
 
 Keep this unit stable across tooling and evidence review.
 
-### 6.4 Bus-code interpretation must stay consistent
+### 7.4 Bus-code interpretation must stay consistent
 
 `LastRequestSourceBus` and `LastResponseSourceBus` are valid only if all producers and consumers use the same code mapping.
 
 If the bus-code enum changes, update this document and the matching runtime/test helpers together.
 
-### 6.5 Response summary fields are for evidence, not full payload transport
+### 7.5 Response summary fields are for evidence, not full payload transport
 
 `LastResponseData0` and `LastResponseData1` are summary mirrors.
 
 They are useful for quick evidence and smoke validation, but they do not replace a full diagnostic payload trace when deeper analysis is required.
 
-## 7. Verification usage
+### 7.6 Verdict-facing seams are semantic, not payload-complete
+
+`SecurityState`, `ServiceState`, `RouteOwner`, `ResponseKind`, and `ReasonCode` exist to make the official verdict readable and stable.
+
+They must not become an ad-hoc dumping surface for every internal diagnostic detail.
+
+Prefer a small stable semantic vocabulary over rapidly changing implementation-only values.
+
+## 8. Verification usage
 
 Use `Diag::*` for:
 
@@ -99,10 +121,11 @@ Use `Diag::*` for:
 - smoke confirmation that a response returned
 - pass/fail gating for positive or negative response expectation
 - evidence correlation with trace and write-window logs
+- verdict-facing interpretation for the current official diagnostic scope
 
 Do not use `Diag::*` as the only proof when a full transport trace is required.
 
-## 8. Update rule
+## 9. Update rule
 
 If a diagnostic runtime path changes:
 

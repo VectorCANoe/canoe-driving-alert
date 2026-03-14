@@ -10,16 +10,13 @@ Native CANoe Test Unit assets for the current SIL cycle.
 - Active anchor assets:
   - `TC_CANOE_UT_CORE_001_SCHOOLZONE_OVERSPEED`
   - `TC_CANOE_IT_V2_FAILSAFE_001_CGW`
-- Draft skeleton assets generated from Dev2 blueprint:
-  - `TC_CANOE_UT_V2X_001_EMERGENCY_PRIORITY_ETA`
-  - `TC_CANOE_UT_V2X_002_TIMEOUT_CLEAR`
-  - `TC_CANOE_IT_V2_SYNC_001_DECEL_AND_WARNING`
-  - `TC_CANOE_IT_ADAS_001_OBJECT_FORWARD_CONFLICT`
-  - `TC_CANOE_NET_001_CAN_BUS_ARBITRATION_PRIORITY`
-  - `TC_CANOE_NET_002_GW_ROUTE_FORWARDING_INTEGRITY`
-  - `TC_CANOE_NET_003_TIMEOUT_STALE_CHAIN_CLEAR`
-  - `TC_CANOE_NET_004_LOAD_PERIOD_JITTER_STABILITY`
-  - `TC_CANOE_NET_005_DIAG_ROUTE_INTEGRITY`
+- Current diagnostic-linked scope skeletons:
+  - `TC_CANOE_UT_EXT_016_SGW_SECURITY_STATE`
+  - `TC_CANOE_UT_EXT_017_DCM_DIAGNOSTIC_STATE`
+  - `TC_CANOE_IT_EXT_010_SERVICE_SECURITY_DIAG`
+  - `TC_CANOE_ST_EXT_018_SERVICE_SECURITY_DIAG_CONTEXT`
+- Retired draft skeletons:
+  - moved under `retire/`
 
 ## Ownership Split
 - Dev2:
@@ -34,8 +31,8 @@ Native CANoe Test Unit assets for the current SIL cycle.
 
 ## Execution Status
 - The two anchor assets are intended to be runnable.
-- The nine draft skeleton assets are not official pass targets yet.
-- Draft skeletons intentionally stop at `oracle-hook` until Dev1 wires concrete stimulus/oracle paths.
+- The current diagnostic-linked skeleton assets are not official pass targets yet.
+- Skeleton assets intentionally stop at `oracle-hook` until Dev1 wires concrete stimulus/oracle paths.
 
 ## File Shape
 - `*.can`

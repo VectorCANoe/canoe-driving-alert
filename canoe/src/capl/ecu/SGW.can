@@ -18,6 +18,42 @@ variables
   int gLastSecurityPolicy;
 }
 
+void publishReservedDiagSecuritySeam(int securitySession, int authState, int securityFault)
+{
+  int securityState;
+  int routeOwner;
+
+  securityState = 0;
+  if (securityFault > 0 || gFailSafeMode > 0)
+  {
+    securityState = 3;
+  }
+  else if (authState >= 2 && gBoundaryAlive == 1)
+  {
+    securityState = 2;
+  }
+  else if (securitySession > 0)
+  {
+    securityState = 1;
+  }
+
+  routeOwner = 0;
+  if (gBoundaryAlive == 1 &&
+      gFailSafeMode == 0 &&
+      gWarningPathStatus == 0 &&
+      (gIboxRouteState > 0 || gIboxServiceFlags > 0))
+  {
+    routeOwner = 3;
+  }
+  else if (gIboxLinkMode > 0 || gIboxRouteState > 0 || gIboxServiceFlags > 0)
+  {
+    routeOwner = 1;
+  }
+
+  @Diag::SecurityState = securityState;
+  @Diag::RouteOwner = routeOwner;
+}
+
 void publishSecurityState()
 {
   int securitySession;
@@ -118,6 +154,8 @@ void publishSecurityState()
     securityPolicy = 0;
   }
 
+  publishReservedDiagSecuritySeam(securitySession, authState, securityFault);
+
   if (securitySession != gLastSecuritySession ||
       authState != gLastAuthState ||
       securityFault != gLastSecurityFault ||
@@ -150,6 +188,8 @@ on start
   gLastAuthState = -1;
   gLastSecurityFault = -1;
   gLastSecurityPolicy = -1;
+  @Diag::SecurityState = 0;
+  @Diag::RouteOwner = 0;
   setTimer(tSgwCycle, 100);
   write("[SGW] start");
 }

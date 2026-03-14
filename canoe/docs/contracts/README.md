@@ -14,6 +14,8 @@ This folder defines the active development contracts for the CANoe baseline.
   - seam-level Ethernet interface contract
 - `diagnostic-description.md`
   - current diagnostic model and diagnostic surface description
+- `diagnostic-matrix.md`
+  - minimum diagnostic request/response coverage matrix
 - `diagnostic-sysvar-contract.md`
   - diagnostic SysVar contract
 - `panel-sysvar-contract.md`

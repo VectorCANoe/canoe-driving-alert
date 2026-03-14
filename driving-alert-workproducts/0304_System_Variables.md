@@ -278,4 +278,9 @@
 | 312 | Powertrain | EnergyFlowMode | uint32 | 0 | 3 | 0 | 에너지 흐름 방향 |
 | 313 | Powertrain | CtrlAuthLevel | uint32 | 0 | 3 | 0 | 파워트레인 제어 권한 상태 |
 | 314 | Powertrain | CtrlAuthSource | uint32 | 0 | 15 | 0 | 파워트레인 제어 출처 |
+| 315 | Diag | SecurityState | uint32 | 0 | 3 | 0 | 진단 보안 상태(0=Unknown 1=Nominal 2=Restricted 3=Denied) |
+| 316 | Diag | ServiceState | uint32 | 0 | 3 | 0 | 진단 서비스 상태(0=Unknown 1=Available 2=Unavailable 3=Degraded) |
+| 317 | Diag | RouteOwner | uint32 | 0 | 3 | 0 | 진단 경로 소유 해석(0=None 1=SGW 2=DCM 3=RuntimeOwner) |
+| 318 | Diag | ResponseKind | uint32 | 0 | 4 | 0 | 진단 응답 분류(0=None 1=Positive 2=Negative 3=Timeout 4=Unavailable) |
+| 319 | Diag | ReasonCode | uint32 | 0 | 65535 | 0 | 진단 판정 근거 코드 |
 ---
