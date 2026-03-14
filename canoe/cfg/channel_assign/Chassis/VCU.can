@@ -21,11 +21,38 @@ variables
   int gBoundaryStatus;
   int gSpeedLimitNorm;
   int gPtAliveCnt;
+  dword gPedalRxMs;
+  dword gIgnitionRxMs;
+  dword gGearRxMs;
+  int gLastPedalInputStale;
+  int gLastIgnitionInputStale;
+  int gLastGearInputStale;
 }
 
 int getVcuTxPort()
 {
   return ethBackbonePort() + 2;
+}
+
+void traceVcuInputHealth(int pedalInputStale, int ignitionInputStale, int gearInputStale)
+{
+  if (pedalInputStale != gLastPedalInputStale)
+  {
+    write("[VCU] pedal input %s", pedalInputStale == 1 ? "stale" : "restored");
+    gLastPedalInputStale = pedalInputStale;
+  }
+
+  if (ignitionInputStale != gLastIgnitionInputStale)
+  {
+    write("[VCU] ignition input %s", ignitionInputStale == 1 ? "stale" : "restored");
+    gLastIgnitionInputStale = ignitionInputStale;
+  }
+
+  if (gearInputStale != gLastGearInputStale)
+  {
+    write("[VCU] gear input %s", gearInputStale == 1 ? "stale" : "restored");
+    gLastGearInputStale = gearInputStale;
+  }
 }
 
 void publishBackboneVehicleState()
@@ -66,6 +93,12 @@ on start
   gBoundaryStatus = 0;
   gSpeedLimitNorm = 30;
   gPtAliveCnt = 0;
+  gPedalRxMs = 0;
+  gIgnitionRxMs = 0;
+  gGearRxMs = 0;
+  gLastPedalInputStale = 0;
+  gLastIgnitionInputStale = 0;
+  gLastGearInputStale = 0;
   if (gEthTxSocket == ethInvalidSocket())
   {
     write("[VCU] tx socket fallback to shared backbone port");
@@ -78,18 +111,21 @@ on message frmPedalInputCanMsg
 {
   gAccelPedal = clampRange((int)this.AccelPedal, 0, 100);
   gBrakePedal = clampRange((int)this.BrakePedal, 0, 100);
+  gPedalRxMs = getSimulationTimeMs();
 }
 
 on message frmIgnitionEngineMsg
 {
   gIgnitionState = clampRange((int)this.IgnitionState, 0, 1);
   gEngineState = clampRange((int)this.EngineState, 0, 3);
+  gIgnitionRxMs = getSimulationTimeMs();
 }
 
 on message frmGearStateMsg
 {
   gGearInput = clampRange((int)this.GearInput, 0, 7);
   gGearState = clampRange((int)this.GearState, 0, 7);
+  gGearRxMs = getSimulationTimeMs();
 }
 
 on message frmPowertrainGatewayMsg
@@ -126,9 +162,38 @@ on timer tVcuCycle
   int tcsActive;
   int scenarioActive;
   int scenarioSpeedHint;
+  int pedalInputStale;
+  int ignitionInputStale;
+  int gearInputStale;
+  int accelPedal;
+  int brakePedal;
+  int engineState;
+  int gearState;
 
   scenarioActive = (((int)@Test::testScenario) > 0) ? 1 : 0;
   scenarioSpeedHint = clampRange((int)@Chassis::vehicleSpeed, 0, 255);
+  pedalInputStale = (ethIsRecentTick(gPedalRxMs, 300) == 1) ? 0 : 1;
+  ignitionInputStale = (ethIsRecentTick(gIgnitionRxMs, 300) == 1) ? 0 : 1;
+  gearInputStale = (ethIsRecentTick(gGearRxMs, 300) == 1) ? 0 : 1;
+  traceVcuInputHealth(pedalInputStale, ignitionInputStale, gearInputStale);
+
+  accelPedal = gAccelPedal;
+  brakePedal = gBrakePedal;
+  engineState = gEngineState;
+  gearState = gGearState;
+  if (pedalInputStale == 1)
+  {
+    accelPedal = 0;
+    brakePedal = 0;
+  }
+  if (ignitionInputStale == 1)
+  {
+    engineState = 0;
+  }
+  if (gearInputStale == 1)
+  {
+    gearState = 0;
+  }
 
   if (scenarioActive == 1)
   {
@@ -136,9 +201,9 @@ on timer tVcuCycle
   }
   else
   {
-    targetSpeed = gAccelPedal * 2;
+    targetSpeed = accelPedal * 2;
     if (targetSpeed > 200) targetSpeed = 200;
-    if (gBrakePedal > 20) targetSpeed = 0;
+    if (brakePedal > 20) targetSpeed = 0;
 
     delta = targetSpeed - gSpeed;
     if (delta > 5) delta = 5;
@@ -148,8 +213,8 @@ on timer tVcuCycle
     if (gSpeed > 255) gSpeed = 255;
   }
 
-  driveState = (gGearState > 0 || gSpeed > 0) ? 3 : 0;
-  gDriveMode = clampRange(gGearState, 0, 7);
+  driveState = (gearState > 0 || gSpeed > 0) ? 3 : 0;
+  gDriveMode = clampRange(gearState, 0, 7);
   gSpeedLimitNorm = clampRange((int)@Core::speedLimitNorm, 0, 255);
   selectedAlertLevel = clampRange((int)@Core::selectedAlertLevel, 0, 7);
   timeoutClear = (((int)@Core::timeoutClear) == 1) ? 1 : 0;
@@ -180,12 +245,12 @@ on timer tVcuCycle
   @Chassis::driveState = driveState;
   publishBackboneVehicleState();
 
-  torqueRequest = clampRange(gAccelPedal * 2, 0, 255);
-  mAccel.AccelRequest = gAccelPedal;
+  torqueRequest = clampRange(accelPedal * 2, 0, 255);
+  mAccel.AccelRequest = accelPedal;
   mAccel.TorqueRequest = torqueRequest;
   output(mAccel);
 
-  tcsActive = ((gAccelPedal > 70) && (gSpeed < 25)) ? 1 : 0;
+  tcsActive = ((accelPedal > 70) && (gSpeed < 25)) ? 1 : 0;
   mTcs.TcsCtrlState = tcsActive ? 2 : 0;
   mTcs.TcsTorqueCut = tcsActive ? 20 : 0;
   mTcs.TcsSlipRatio = tcsActive ? 12 : 0;
@@ -203,7 +268,7 @@ on timer tVcuCycle
   mVehMode.EcoMode = (gDriveMode == 3) ? 1 : 0;
   mVehMode.SportMode = (gSpeed > 80) ? 1 : 0;
   mVehMode.SnowMode = (gDriveMode == 0 && gSpeed < 20) ? 1 : 0;
-  mVehMode.PowertrainState = gEngineState;
+  mVehMode.PowertrainState = engineState;
   output(mVehMode);
   @CoreState::driveMode = mVehMode.DriveMode;
   @CoreState::ecoMode = mVehMode.EcoMode;
