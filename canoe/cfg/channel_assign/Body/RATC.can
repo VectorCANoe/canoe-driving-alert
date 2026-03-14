@@ -10,26 +10,70 @@ variables
   int gBlowerLevel;
   int gVentMode;
   int gAcOn;
+  dword gHvacStateRxMs;
+  dword gHvacActuatorRxMs;
+  int gLastHvacStateInputStale;
+  int gLastHvacActuatorInputStale;
   int gLastRearTemp;
   int gLastRearBlower;
   int gLastRearVent;
   int gLastSyncMode;
 }
 
+void traceRatcInputHealth(int hvacStateInputStale, int hvacActuatorInputStale)
+{
+  if (hvacStateInputStale != gLastHvacStateInputStale)
+  {
+    write("[RATC] hvac-state input %s", hvacStateInputStale == 1 ? "stale" : "restored");
+    gLastHvacStateInputStale = hvacStateInputStale;
+  }
+
+  if (hvacActuatorInputStale != gLastHvacActuatorInputStale)
+  {
+    write("[RATC] hvac-actuator input %s", hvacActuatorInputStale == 1 ? "stale" : "restored");
+    gLastHvacActuatorInputStale = hvacActuatorInputStale;
+  }
+}
+
 void publishRearClimateState()
 {
   message frmRearClimateStateMsg mRear;
+  int hvacStateInputStale;
+  int hvacActuatorInputStale;
+  int cabinSetTemp;
+  int blowerLevel;
+  int ventMode;
+  int acOn;
   int rearTemp;
   int rearBlower;
   int rearVent;
   int rearSyncMode;
 
-  rearTemp = gCabinSetTemp;
-  rearBlower = gBlowerLevel;
-  rearVent = gVentMode;
+  hvacStateInputStale = (ethIsRecentTick(gHvacStateRxMs, 300) == 1) ? 0 : 1;
+  hvacActuatorInputStale = (ethIsRecentTick(gHvacActuatorRxMs, 300) == 1) ? 0 : 1;
+  traceRatcInputHealth(hvacStateInputStale, hvacActuatorInputStale);
+
+  cabinSetTemp = gCabinSetTemp;
+  blowerLevel = gBlowerLevel;
+  ventMode = gVentMode;
+  acOn = gAcOn;
+  if (hvacStateInputStale == 1)
+  {
+    cabinSetTemp = 22;
+    blowerLevel = 2;
+    acOn = 0;
+  }
+  if (hvacActuatorInputStale == 1)
+  {
+    ventMode = 1;
+  }
+
+  rearTemp = cabinSetTemp;
+  rearBlower = blowerLevel;
+  rearVent = ventMode;
   rearSyncMode = 1;
 
-  if (gAcOn == 1 && rearTemp < 24)
+  if (acOn == 1 && rearTemp < 24)
   {
     rearTemp = rearTemp + 1;
   }
@@ -67,6 +111,10 @@ on start
   gBlowerLevel = 2;
   gVentMode = 1;
   gAcOn = 0;
+  gHvacStateRxMs = 0;
+  gHvacActuatorRxMs = 0;
+  gLastHvacStateInputStale = 0;
+  gLastHvacActuatorInputStale = 0;
   gLastRearTemp = -1;
   gLastRearBlower = -1;
   gLastRearVent = -1;
@@ -86,11 +134,13 @@ on message frmHvacStateMsg
   gCabinSetTemp = clampRange((int)this.CabinSetTemp, 0, 100);
   gBlowerLevel = clampRange((int)this.BlowerLevel, 0, 15);
   gAcOn = clampRange((int)this.AcCompressorOn, 0, 1);
+  gHvacStateRxMs = getSimulationTimeMs();
 }
 
 on message frmHvacActuatorMsg
 {
   gVentMode = clampRange((int)this.VentMode, 0, 7);
+  gHvacActuatorRxMs = getSimulationTimeMs();
 }
 
 on stopMeasurement

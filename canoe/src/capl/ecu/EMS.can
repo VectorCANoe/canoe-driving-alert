@@ -1,5 +1,6 @@
 includes
 {
+  #include "..\\common\\CAPL_COMMON.cin"
 }
 
 variables
@@ -7,15 +8,28 @@ variables
   msTimer tEngineCycle;
   int gIgnitionState;
   int gEngineState;
+  dword gIgnitionRxMs;
+  int gLastIgnitionInputStale;
   int gLastEngineState;
   int gFuelLevel;
   int gBatterySoc;
+}
+
+void traceEmsInputHealth(int ignitionInputStale)
+{
+  if (ignitionInputStale != gLastIgnitionInputStale)
+  {
+    write("[EMS] ignition input %s", ignitionInputStale == 1 ? "stale" : "restored");
+    gLastIgnitionInputStale = ignitionInputStale;
+  }
 }
 
 on start
 {
   gIgnitionState   = 0;
   gEngineState     = 0;
+  gIgnitionRxMs    = 0;
+  gLastIgnitionInputStale = 0;
   gLastEngineState = -1;
   gFuelLevel       = 80;
   gBatterySoc      = 95;
@@ -25,10 +39,9 @@ on start
 
 on message frmIgnitionEngineMsg
 {
-  gIgnitionState = this.IgnitionState;
-  gEngineState   = this.EngineState;
-  if (gIgnitionState < 0 || gIgnitionState > 1) gIgnitionState = 0;
-  if (gEngineState   < 0 || gEngineState   > 3) gEngineState   = 0;
+  gIgnitionState = clampRange((int)this.IgnitionState, 0, 1);
+  gEngineState   = clampRange((int)this.EngineState, 0, 3);
+  gIgnitionRxMs = getSimulationTimeMs();
 }
 
 on timer tEngineCycle
@@ -39,15 +52,29 @@ on timer tEngineCycle
   message frmEngineTorqueMsg     mTorque;
   message frmEngineLoadMsg       mLoad;
   message frmThermalMgmtStateMsg mThermal;
+  int ignitionInputStale;
+  int ignitionState;
+  int engineState;
   int rpm;
   int throttlePos;
   int engineLoad;
   int torque;
   int speed;
 
-  if      (gEngineState == 0) { rpm = 0; }
-  else if (gEngineState == 1) { rpm = 400; }
-  else if (gEngineState == 2) { rpm = 800; }
+  ignitionInputStale = (ethIsRecentTick(gIgnitionRxMs, 300) == 1) ? 0 : 1;
+  traceEmsInputHealth(ignitionInputStale);
+
+  ignitionState = gIgnitionState;
+  engineState = gEngineState;
+  if (ignitionInputStale == 1)
+  {
+    ignitionState = 0;
+    engineState = 0;
+  }
+
+  if      (engineState == 0) { rpm = 0; }
+  else if (engineState == 1) { rpm = 400; }
+  else if (engineState == 2) { rpm = 800; }
   else
   {
     speed = (int)@Core::vehicleSpeedNorm;
@@ -55,16 +82,16 @@ on timer tEngineCycle
     if (rpm > 6500) rpm = 6500;
   }
 
-  throttlePos = (gEngineState == 3) ? (int)@Core::vehicleSpeedNorm : 0;
+  throttlePos = (engineState == 3) ? (int)@Core::vehicleSpeedNorm : 0;
   if (throttlePos > 100) throttlePos = 100;
-  engineLoad  = (gEngineState == 3) ? (throttlePos * 8 / 10) : 0;
+  engineLoad  = (engineState == 3) ? (throttlePos * 8 / 10) : 0;
   if (engineLoad > 100) engineLoad = 100;
-  torque      = (gEngineState == 3) ? (engineLoad * 3) : 0;
+  torque      = (engineState == 3) ? (engineLoad * 3) : 0;
   if (torque > 300) torque = 300;
 
   mSpeedTemp.EngineRpm   = rpm & 0xFFFF;
-  mSpeedTemp.CoolantTemp = (gEngineState > 0) ? 85 : 20;
-  mSpeedTemp.OilTemp     = (gEngineState > 0) ? 90 : 20;
+  mSpeedTemp.CoolantTemp = (engineState > 0) ? 85 : 20;
+  mSpeedTemp.OilTemp     = (engineState > 0) ? 90 : 20;
   output(mSpeedTemp);
 
   mFuelBat.FuelLevel     = gFuelLevel;
@@ -82,16 +109,16 @@ on timer tEngineCycle
   mLoad.EngineLoad = engineLoad;
   output(mLoad);
 
-  mThermal.ThermalMode   = (gEngineState > 0) ? 1 : 0;
-  mThermal.FanDuty       = (gEngineState == 3) ? 8 : 0;
+  mThermal.ThermalMode   = (engineState > 0) ? 1 : 0;
+  mThermal.FanDuty       = (engineState == 3) ? 8 : 0;
   mThermal.CoolantTarget = 90;
   output(mThermal);
 
-  if (gEngineState != gLastEngineState)
+  if (engineState != gLastEngineState)
   {
     write("[EMS] ignition=%d engine=%d rpm=%d",
-          gIgnitionState, gEngineState, rpm);
-    gLastEngineState = gEngineState;
+          ignitionState, engineState, rpm);
+    gLastEngineState = engineState;
   }
 
   setTimer(tEngineCycle, 100);

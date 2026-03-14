@@ -10,9 +10,28 @@ variables
   int gFanDuty;
   int gCoolantTarget;
   int gCoolantTemp;
+  dword gThermalMgmtRxMs;
+  dword gEngineTempRxMs;
+  int gLastThermalMgmtInputStale;
+  int gLastEngineTempInputStale;
   int gLastState;
   int gLastDuty;
   int gLastFlow;
+}
+
+void traceEwpInputHealth(int thermalMgmtInputStale, int engineTempInputStale)
+{
+  if (thermalMgmtInputStale != gLastThermalMgmtInputStale)
+  {
+    write("[EWP] thermal-mgmt input %s", thermalMgmtInputStale == 1 ? "stale" : "restored");
+    gLastThermalMgmtInputStale = thermalMgmtInputStale;
+  }
+
+  if (engineTempInputStale != gLastEngineTempInputStale)
+  {
+    write("[EWP] engine-temp input %s", engineTempInputStale == 1 ? "stale" : "restored");
+    gLastEngineTempInputStale = engineTempInputStale;
+  }
 }
 
 on start
@@ -21,6 +40,10 @@ on start
   gFanDuty = 0;
   gCoolantTarget = 90;
   gCoolantTemp = 20;
+  gThermalMgmtRxMs = 0;
+  gEngineTempRxMs = 0;
+  gLastThermalMgmtInputStale = 0;
+  gLastEngineTempInputStale = 0;
   gLastState = -1;
   gLastDuty = -1;
   gLastFlow = -1;
@@ -33,27 +56,54 @@ on message frmThermalMgmtStateMsg
   gThermalMode = clampRange((int)this.ThermalMode, 0, 7);
   gFanDuty = clampRange((int)this.FanDuty, 0, 31);
   gCoolantTarget = clampRange((int)this.CoolantTarget, 0, 255);
+  gThermalMgmtRxMs = getSimulationTimeMs();
 }
 
 on message frmEngineSpeedTempMsg
 {
   gCoolantTemp = clampRange((int)this.CoolantTemp, 0, 255);
+  gEngineTempRxMs = getSimulationTimeMs();
 }
 
 on timer tEwpCycle
 {
   message frmEwpStateMsg mEwp;
+  int thermalMgmtInputStale;
+  int engineTempInputStale;
+  int thermalMode;
+  int fanDuty;
+  int coolantTarget;
+  int coolantTemp;
   int ewpState;
   int pumpDuty;
   int coolantFlow;
   int thermalGap;
 
-  thermalGap = gCoolantTemp - gCoolantTarget;
+  thermalMgmtInputStale = (ethIsRecentTick(gThermalMgmtRxMs, 300) == 1) ? 0 : 1;
+  engineTempInputStale = (ethIsRecentTick(gEngineTempRxMs, 300) == 1) ? 0 : 1;
+  traceEwpInputHealth(thermalMgmtInputStale, engineTempInputStale);
 
-  if (gThermalMode > 0 || gCoolantTemp > 70)
+  thermalMode = gThermalMode;
+  fanDuty = gFanDuty;
+  coolantTarget = gCoolantTarget;
+  coolantTemp = gCoolantTemp;
+  if (thermalMgmtInputStale == 1)
+  {
+    thermalMode = 0;
+    fanDuty = 0;
+    coolantTarget = 90;
+  }
+  if (engineTempInputStale == 1)
+  {
+    coolantTemp = 20;
+  }
+
+  thermalGap = coolantTemp - coolantTarget;
+
+  if (thermalMode > 0 || coolantTemp > 70)
   {
     ewpState = (thermalGap > 5) ? 2 : 1;
-    pumpDuty = clampRange((gFanDuty * 3) + ((thermalGap > 0) ? thermalGap : 0), 0, 100);
+    pumpDuty = clampRange((fanDuty * 3) + ((thermalGap > 0) ? thermalGap : 0), 0, 100);
   }
   else
   {
@@ -61,7 +111,7 @@ on timer tEwpCycle
     pumpDuty = 0;
   }
 
-  coolantFlow = (ewpState == 0) ? 0 : clampRange((pumpDuty * 2) + (gThermalMode * 10), 0, 255);
+  coolantFlow = (ewpState == 0) ? 0 : clampRange((pumpDuty * 2) + (thermalMode * 10), 0, 255);
 
   mEwp.EwpState = clampRange(ewpState, 0, 7);
   mEwp.PumpDuty = pumpDuty;
@@ -76,8 +126,8 @@ on timer tEwpCycle
           mEwp.EwpState,
           mEwp.PumpDuty,
           mEwp.CoolantFlow,
-          gCoolantTemp,
-          gCoolantTarget);
+          coolantTemp,
+          coolantTarget);
     gLastState = mEwp.EwpState;
     gLastDuty = mEwp.PumpDuty;
     gLastFlow = mEwp.CoolantFlow;
