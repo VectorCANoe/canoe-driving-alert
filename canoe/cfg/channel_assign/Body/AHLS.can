@@ -9,9 +9,20 @@ variables
   int gAflsMode;
   int gBeamPattern;
   int gLevelStep;
+  dword gAflsStateRxMs;
+  int gLastAflsInputStale;
   int gLastAssistState;
   int gLastPermit;
   int gLastGlareCut;
+}
+
+void traceAhlsInputHealth(int aflsInputStale)
+{
+  if (aflsInputStale != gLastAflsInputStale)
+  {
+    write("[AHLS] afls input %s", aflsInputStale == 1 ? "stale" : "restored");
+    gLastAflsInputStale = aflsInputStale;
+  }
 }
 
 on start
@@ -19,6 +30,8 @@ on start
   gAflsMode = 0;
   gBeamPattern = 0;
   gLevelStep = 0;
+  gAflsStateRxMs = 0;
+  gLastAflsInputStale = 0;
   gLastAssistState = -1;
   gLastPermit = -1;
   gLastGlareCut = -1;
@@ -31,20 +44,38 @@ on message frmAflsStateMsg
   gAflsMode = clampRange((int)this.AflsMode, 0, 7);
   gBeamPattern = clampRange((int)this.BeamPattern, 0, 7);
   gLevelStep = clampRange((int)this.LevelStep, 0, 255);
+  gAflsStateRxMs = getSimulationTimeMs();
 }
 
 on timer tAhlsCycle
 {
   message frmAhlsStateMsg mAhls;
+  int aflsInputStale;
   int speed;
+  int aflsMode;
+  int beamPattern;
+  int levelStep;
   int assistState;
   int highBeamPermit;
   int glareCutLevel;
 
+  aflsInputStale = (ethIsRecentTick(gAflsStateRxMs, 300) == 1) ? 0 : 1;
+  traceAhlsInputHealth(aflsInputStale);
+
   speed = clampRange((int)@Core::vehicleSpeedNorm, 0, 255);
-  assistState = (gAflsMode > 0) ? 1 : 0;
-  highBeamPermit = (speed >= 50 && gBeamPattern <= 2) ? 1 : 0;
-  glareCutLevel = clampRange((gLevelStep / 2) + (highBeamPermit == 1 ? 20 : 0), 0, 100);
+  aflsMode = gAflsMode;
+  beamPattern = gBeamPattern;
+  levelStep = gLevelStep;
+  if (aflsInputStale == 1)
+  {
+    aflsMode = 0;
+    beamPattern = 0;
+    levelStep = 0;
+  }
+
+  assistState = (aflsMode > 0) ? 1 : 0;
+  highBeamPermit = (speed >= 50 && beamPattern <= 2) ? 1 : 0;
+  glareCutLevel = clampRange((levelStep / 2) + (highBeamPermit == 1 ? 20 : 0), 0, 100);
 
   mAhls.AhlsAssistState = clampRange(assistState, 0, 7);
   mAhls.HighBeamPermit = clampRange(highBeamPermit, 0, 1);
@@ -60,7 +91,7 @@ on timer tAhlsCycle
           mAhls.HighBeamPermit,
           mAhls.GlareCutLevel,
           speed,
-          gBeamPattern);
+          beamPattern);
     gLastAssistState = mAhls.AhlsAssistState;
     gLastPermit = mAhls.HighBeamPermit;
     gLastGlareCut = mAhls.GlareCutLevel;
