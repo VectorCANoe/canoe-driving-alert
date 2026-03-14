@@ -6,9 +6,27 @@
 
 A public repository for designing, verifying, and reviewing a driving-alert system in CANoe SIL.
 
+![CANoe SIL](https://img.shields.io/badge/CANoe-SIL-0A5C36?style=flat-square)
+![Transport](https://img.shields.io/badge/CAN%20%2B%20Ethernet-Communication-004A7C?style=flat-square)
+![Traceability](https://img.shields.io/badge/V--Cycle-Traceability-6B4EFF?style=flat-square)
+![C CAPL](https://img.shields.io/badge/C%20%2F%20CAPL-Runtime-5A3E85?style=flat-square)
+![Python](https://img.shields.io/badge/Python-Tooling-3776AB?style=flat-square)
+
 [English](README.md) | [한국어](README.ko.md)
 
 </div>
+
+<p align="center">
+  <strong>Hyundai Mobis Bootcamp</strong> · <strong>Vector Korea</strong>
+</p>
+
+<p align="center">
+  <a href="#overview"><strong>Overview</strong></a> ·
+  <a href="#highlights"><strong>Highlights</strong></a> ·
+  <a href="#system-overview"><strong>System Overview</strong></a> ·
+  <a href="#quick-start"><strong>Quick Start</strong></a> ·
+  <a href="#repository-map"><strong>Repository Map</strong></a>
+</p>
 
 <details>
 <summary><strong>Project background</strong></summary>
@@ -48,6 +66,19 @@ This repository is built to show the full engineering path:
 - end-to-end traceability from requirement to verification
 - operator-facing product surface for review workflows
 - shared automation for gates, quality checks, and release support
+
+## System Overview
+
+```mermaid
+flowchart LR
+    A[Requirements] --> B[Functional Definition]
+    B --> C[Network Flow]
+    C --> D[Communication Specification]
+    D --> E[System Variables]
+    E --> F[CANoe Runtime and CAPL]
+    F --> G[UT / IT / ST]
+    G --> H[Evidence and Review]
+```
 
 ## System flow
 
@@ -89,3 +120,13 @@ python scripts/run.py verify quick --run-id 20260308_0900 --owner DEV2
 
 See [`CONTRIBUTING.md`](CONTRIBUTING.md) for contribution guidance.
 
+## Core architecture and ECU maps
+
+If you want to understand why the architecture, ECU split, runtime ownership, and verification path are structured the way they are, start from these documents:
+
+- [Surface Map](canoe/docs/architecture/11_SURFACE_RUNTIME_VERIFICATION_MAP.md)
+- [ECU Ownership](canoe/docs/contracts/11_RUNTIME_MESSAGE_OWNERSHIP_MATRIX.md)
+- [Multibus Policy](canoe/docs/contracts/12_RUNTIME_MULTIBUS_VISIBILITY_POLICY.md)
+- [Ethernet Contract](canoe/docs/contracts/13_ETH_INTERFACE_CONTRACT.md)
+- [Panel and SysVar Binding](canoe/docs/contracts/17_PANEL_SYSVAR_BINDING_CONTRACT.md)
+- [Verification Evidence](canoe/docs/verification/23_VERIFICATION_EVIDENCE_LOG_STANDARD.md)
