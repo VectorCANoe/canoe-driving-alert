@@ -8,15 +8,38 @@ variables
   msTimer tRwsCycle;
   int gVehicleSpeed;
   int gSteeringTorque;
+  dword gVehicleStateRxMs;
+  dword gSteeringTorqueRxMs;
+  int gLastVehicleInputStale;
+  int gLastSteeringInputStale;
   int gLastMode;
   int gLastState;
   int gLastAngle;
+}
+
+void traceRwsInputHealth(int vehicleInputStale, int steeringInputStale)
+{
+  if (vehicleInputStale != gLastVehicleInputStale)
+  {
+    write("[RWS] vehicle-state input %s", vehicleInputStale == 1 ? "stale" : "restored");
+    gLastVehicleInputStale = vehicleInputStale;
+  }
+
+  if (steeringInputStale != gLastSteeringInputStale)
+  {
+    write("[RWS] steering-torque input %s", steeringInputStale == 1 ? "stale" : "restored");
+    gLastSteeringInputStale = steeringInputStale;
+  }
 }
 
 on start
 {
   gVehicleSpeed = 0;
   gSteeringTorque = 0;
+  gVehicleStateRxMs = 0;
+  gSteeringTorqueRxMs = 0;
+  gLastVehicleInputStale = 0;
+  gLastSteeringInputStale = 0;
   gLastMode = -1;
   gLastState = -1;
   gLastAngle = -1;
@@ -27,23 +50,45 @@ on start
 on message frmVehicleStateCanMsg
 {
   gVehicleSpeed = clampRange((int)this.gVehicleSpeed, 0, 255);
+  gVehicleStateRxMs = getSimulationTimeMs();
 }
 
 on message frmSteeringTorqueMsg
 {
   gSteeringTorque = clampRange((int)this.SteeringTorque, 0, 4095);
+  gSteeringTorqueRxMs = getSimulationTimeMs();
 }
 
 on timer tRwsCycle
 {
   message frmRwsStateMsg mRws;
+  int vehicleInputStale;
+  int steeringInputStale;
+  int vehicleSpeed;
+  int steeringTorque;
   int rwsMode;
   int rwsState;
   int rearSteerAngle;
 
-  rwsMode = (gVehicleSpeed < 60) ? 1 : 2;
-  rwsState = (gSteeringTorque > 5) ? 1 : 0;
-  rearSteerAngle = clampRange(gSteeringTorque / 4, 0, 255);
+  vehicleInputStale = (ethIsRecentTick(gVehicleStateRxMs, 300) == 1) ? 0 : 1;
+  steeringInputStale = (ethIsRecentTick(gSteeringTorqueRxMs, 300) == 1) ? 0 : 1;
+  traceRwsInputHealth(vehicleInputStale, steeringInputStale);
+
+  vehicleSpeed = gVehicleSpeed;
+  steeringTorque = gSteeringTorque;
+  if (vehicleInputStale == 1)
+  {
+    // Default to the high-speed mode to minimize rear steering on lost speed input.
+    vehicleSpeed = 255;
+  }
+  if (steeringInputStale == 1)
+  {
+    steeringTorque = 0;
+  }
+
+  rwsMode = (vehicleSpeed < 60) ? 1 : 2;
+  rwsState = (steeringTorque > 5) ? 1 : 0;
+  rearSteerAngle = clampRange(steeringTorque / 4, 0, 255);
   if (rwsMode == 2)
   {
     rearSteerAngle = clampRange(rearSteerAngle / 2, 0, 255);
@@ -62,7 +107,7 @@ on timer tRwsCycle
           mRws.RwsMode,
           mRws.RwsState,
           mRws.RearSteerAngle,
-          gVehicleSpeed);
+          vehicleSpeed);
     gLastMode = mRws.RwsMode;
     gLastState = mRws.RwsState;
     gLastAngle = mRws.RearSteerAngle;
