@@ -38,6 +38,35 @@ int useBackboneAlertState()
   return 1;
 }
 
+int deriveAmbientMode(int alertLevel, int alertType, int timeoutClear)
+{
+  if (timeoutClear == 1 || alertLevel <= 0)
+  {
+    return 0;
+  }
+  if (alertLevel >= 6)
+  {
+    return (alertType == 2) ? 7 : 6;
+  }
+  if (alertType == 3)
+  {
+    return 2;
+  }
+  if (alertType == 4)
+  {
+    return 3;
+  }
+  if (alertType == 5)
+  {
+    return 4;
+  }
+  if (alertType == 6)
+  {
+    return 5;
+  }
+  return 1;
+}
+
 void updateBackboneAlertState(int alertLevel, int alertType, int timeoutClear)
 {
   gBackboneAlertLevel = clampRange(alertLevel, 0, 7);
@@ -126,15 +155,14 @@ on timer tBodyCycle
   }
   timeoutClear = (timeoutClear == 1) ? 1 : 0;
 
-  if (timeoutClear == 1)
+  ambientMode = deriveAmbientMode(alertLevel, alertType, timeoutClear);
+  if (ambientMode == 0)
   {
-    ambientMode = 0;
     ambientColor = 0;
     ambientPattern = 0;
   }
   else
   {
-    ambientMode = alertLevel;
     ambientColor = 0;
     ambientPattern = 0;
     if (alertLevel >= 6)
