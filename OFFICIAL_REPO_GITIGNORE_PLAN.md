@@ -1,21 +1,51 @@
-﻿# Official Repo Gitignore Plan
+# Official Repo Main/Develop Operating Plan
 
-이 문서는 `공식 자료 공개` 전 정리를 위한 기준입니다.
+이 문서는 `develop` 브랜치에서만 유지하는 작업용 운영 기준이다.
+`main` 은 공식 공개 표면만 유지하며, 이 문서는 `main` 에서 추적하지 않는다.
 
-## Official Repo Scope
+## 1. Branch Roles
 
-공식 레포 기준으로 유지할 최상위 경로는 아래 3개입니다.
+- `develop`: 내부 작업 브랜치
+- `main`: 공식 공개 브랜치
+
+`develop` 에서는 아래를 모두 유지할 수 있다.
+
+- handoff / ops / mentoring / change-orders
+- archive / reference / tmp 성격 자산
+- agent/operator 지시 문서
+- 로컬 evidence / log / generated output
+
+`main` 은 항상 리뷰 가능한 공식 표면만 유지한다.
+
+## 2. Official Main Surface
+
+`main` 에서 유지하는 최상위 축은 아래 4개다.
 
 - `canoe/`
 - `driving-alert-workproducts/`
 - `product/`
+- `scripts/`
 
-공식 레포 전환 시 위 3개를 제외한 나머지 최상위 폴더는 모두 제외 대상으로 관리합니다.
+루트 공개 문서는 아래만 유지한다.
 
-## Top-Level Exclusion Inventory (Full, Pending)
+- `README.md`
+- `CHANGELOG.md`
+- `CONTRIBUTING.md`
+- `pyproject.toml`
+- `sdv_cli.py`
+- `.gitignore`
+- `.gitattributes`
+- `.editorconfig`
 
-아래는 현재 루트 기준 `3개 공식 폴더 외` 전체 목록입니다.
-지금은 문서 기준으로만 고정하고, 실제 `.gitignore` 반영은 나중에 수행합니다.
+## 3. Main Exclusions
+
+### Root internal/operator docs
+
+- `AGENTS.md`
+- `CLAUDE.md`
+- `OFFICIAL_REPO_GITIGNORE_PLAN.md`
+
+### Root local/build/generated surfaces
 
 - `.claude/`
 - `.codex-tmp/`
@@ -30,14 +60,11 @@
 - `docs/`
 - `legacy_projects/`
 - `reference/`
-- `scripts/`
 - `__pycache__/`
-
-## Keep Policy (By Directory)
 
 ### `canoe/`
 
-유지:
+공식 유지:
 
 - `cfg/`
 - `databases/`
@@ -47,44 +74,42 @@
 - `tests/`
 - `tools/`
 - `README.md`
-- `AGENTS.md`
 - `FILE_INDEX.md`
 
-공식 공개 제외(ignorable candidates):
+공식 제외:
 
+- `AGENTS.md`
+- `AGENT/`
+- `.claude/`
 - `legacy/`
-- `tmp/`
 - `logging/`
 - `reference/`
-- `.claude/`
-- `AGENT/`
+- `tmp/`
+
+주의:
+
+- `canoe/src/capl/ecu/WIP.can`
+- `canoe/cfg/channel_assign/Body/WIP.can`
+
+위 두 파일의 `WIP` 는 `Wiper` ECU 약어이므로 제외 대상이 아니다.
 
 ### `driving-alert-workproducts/`
 
-유지:
+공식 유지:
 
-- `00_Project_Overview.md`
-- `01~07`, `0301~0304` SSoT 문서
-- `governance/`
+- 루트 SSoT 문서
 - `excel/`
+- 필요 시 공개용 governance 성격 문서
 
-공식 공개 제외(ignorable candidates):
+공식 제외:
 
 - `archive/`
 - `ops/`
 - `reference/`
 
-세부 제외 원칙:
-
-- `archive/` = archived snapshots, migrated root backups, old tmp payloads
-- `ops/` = handoff, mentoring, reports, change-orders, submission support, internal execution notes
-- `reference/` = local reference bank, imported OSS/tutorial/standard/sample material
-- `tmp` 성격 자료 = 공개 surface에서 제외
-- `internal notes` 성격 자료 = 공개 surface에서 제외
-
 ### `product/`
 
-유지:
+공식 유지:
 
 - `sdv_operator/config/`
 - `sdv_operator/docs-src/`
@@ -92,54 +117,48 @@
 - `sdv_operator/manifest.json`
 - `sdv_operator/mkdocs.yml`
 - `sdv_operator/README.md`
+- product 내부로 이동한 실행 스크립트
 
-공식 공개 제외(ignorable candidates):
+공식 제외:
 
-- `sdv_operator/site/` (generated output)
-- `sdv_operator/examples/` (내부 샘플 성격일 때)
+- `sdv_operator/site/`
+- `sdv_operator/examples/`
 
-## Proposed .gitignore Entries
+### `scripts/`
 
-아래는 적용 후보입니다. 아직 자동 적용하지 않습니다.
+공식 유지:
 
-```gitignore
-# official repo prep
+- 공용 실행/게이트/품질/릴리즈 스크립트
 
-# root-level (keep only canoe/, driving-alert-workproducts/, product/)
-.claude/
-.codex-tmp/
-.githooks/
-.github/
-.pytest_cache/
-.venv/
-artifacts/
-build/
-canoe_sdv_cli.egg-info/
-dist/
-docs/
-legacy_projects/
-reference/
-scripts/
-__pycache__/
+공식 제외:
 
-canoe/legacy/
-canoe/tmp/
-canoe/logging/
-canoe/reference/
-canoe/.claude/
-canoe/AGENT/
+- `scripts/canoe/`
+- `scripts/docs/`
+- `scripts/report/`
+- `scripts/__pycache__/`
 
-driving-alert-workproducts/archive/
-driving-alert-workproducts/ops/
-driving-alert-workproducts/reference/
+## 4. Fixed Working Rules
 
-product/sdv_operator/site/
-# product/sdv_operator/examples/
+- 평상시 작업은 `develop` 에서만 한다.
+- `main` 에서는 `git add .` 를 사용하지 않는다.
+- `main` 반영은 경로 지정 add 만 사용한다.
+- `main` 제외 자산은 `git rm --cached` 로 인덱스에서만 제거한다.
+- `.gitignore` 제외 자산은 Git diff 대신 로컬 파일시스템에서 직접 확인한다.
+
+## 5. Promotion Rule: develop -> main
+
+1. `develop` 에서 작업한다.
+2. 공개할 경로만 선택한다.
+3. `main` 에서는 아래처럼 경로 지정 반영만 한다.
+
+```powershell
+git add canoe driving-alert-workproducts product scripts README.md CHANGELOG.md CONTRIBUTING.md pyproject.toml sdv_cli.py
 ```
 
-## Apply Sequence (Safe)
+4. 내부 운영 파일이 다시 추적되지 않았는지 확인한다.
+5. `main` 은 항상 공식 공개 표면만 남긴다.
 
-1. 이 문서 기준으로 최종 제외 범위를 확정한다.
-2. `.gitignore`에 경로 규칙을 반영한다.
-3. 이미 추적 중인 파일은 `git rm --cached`로 인덱스에서만 제거한다.
-4. 최종 공개 브랜치에서 `canoe/`, `driving-alert-workproducts/`, `product/`만 검수한다.
+## 6. Current Operating Decision
+
+- 우리는 앞으로 `develop` 만 작업 브랜치로 사용한다.
+- `main` 은 항상 클린한 공식 레포 상태로 유지한다.

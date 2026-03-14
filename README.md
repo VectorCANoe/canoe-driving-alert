@@ -1,21 +1,68 @@
-﻿# canoe-driving-alert
+<div align="center">
 
-CANoe SIL 기반 주행상황 경고 시스템과 검증 자동화 저장소입니다.
+# canoe-driving-alert
 
-이 저장소는 단일 제품 저장소가 아니라 아래 네 축을 함께 포함합니다.
+### CAN Communication Project in Hyundai Mobis Bootcamp with Vector Korea
 
-- `canoe/`: CANoe 런타임 프로젝트
-- `driving-alert-workproducts/`: V-model 문서와 추적성 정본
-- `product/sdv_operator/`: Dev2 검증 실행/리뷰 표면
-- `scripts/`: 공용 실행/게이트/품질/릴리스 자동화 계층
+A public repository for designing, verifying, and reviewing a driving-alert system in CANoe SIL.
 
-## Start Here
+[English](README.md) | [한국어](README.ko.md)
 
-### Product Surface
-- [CANoe Test Verification Console](product/sdv_operator/README.md)
-- [Operator Docs](product/sdv_operator/docs-src/index.md)
+</div>
 
-### Core Commands
+<details>
+<summary><strong>Project background</strong></summary>
+
+This project was developed as part of the Hyundai Mobis Bootcamp in collaboration with Vector Korea.
+It is structured as a public engineering repository that connects communication design, CANoe runtime assets, traceable workproducts, and verification tooling in one place.
+
+</details>
+
+<details>
+<summary><strong>Major references</strong></summary>
+
+- Vector CANoe documentation and sample configurations
+- Automotive SPICE PAM 3.1
+- ISO 26262
+- AUTOSAR Classic Platform SWC Modeling Guide
+- project-result review samples used to shape workproduct structure and reviewer-facing format
+
+</details>
+
+---
+
+## Overview
+
+Most CAN communication repositories expose only one layer of the work: runtime assets, code, or test outputs.
+
+This repository is built to show the full engineering path:
+
+- communication design
+- CANoe runtime implementation
+- V-cycle workproducts
+- verification execution and review tooling
+
+## Highlights
+
+- CAN + Ethernet communication modeling in CANoe SIL
+- end-to-end traceability from requirement to verification
+- operator-facing product surface for review workflows
+- shared automation for gates, quality checks, and release support
+
+## System flow
+
+```text
+Requirements
+  -> Functional Definition
+  -> Network Flow
+  -> Communication Specification
+  -> System Variables
+  -> CANoe Runtime and CAPL
+  -> Unit / Integration / System Verification
+```
+
+## Quick start
+
 ```powershell
 python scripts/run.py
 python scripts/run.py gate all
@@ -23,64 +70,22 @@ python scripts/run.py scenario run --id 4
 python scripts/run.py verify quick --run-id 20260308_0900 --owner DEV2
 ```
 
-## Scope
+## Repository map
 
-- navigation-context warnings
-- emergency vehicle alerts (police / ambulance)
-- warning arbitration and timeout clear behavior
-- CANoe SIL 기반 UT / IT / ST 증빙 수집
-- `Req -> Func -> Flow -> Comm -> Var -> Code -> UT/IT/ST` 추적성 유지
+| Path | Purpose |
+| --- | --- |
+| [`canoe/`](canoe/) | CANoe runtime project, configuration, CAPL source, contracts, and verification docs |
+| [`driving-alert-workproducts/`](driving-alert-workproducts/) | canonical workproducts and traceable engineering documents |
+| [`product/`](product/) | operator-facing product surface and review assets |
+| [`scripts/`](scripts/) | shared launchers, gates, quality tooling, and release helpers |
 
-## Docs Policy
+## Start here
 
-- Markdown이 정본입니다.
-- HTML은 generated site입니다.
-- 내부 handoff, mentoring, tmp, team board는 제품 표면에 직접 노출하지 않습니다.
+- [`canoe/README.md`](canoe/README.md)
+- [`product/sdv_operator/README.md`](product/sdv_operator/README.md)
+- [`product/sdv_operator/docs-src/index.md`](product/sdv_operator/docs-src/index.md)
 
-## Official Repo Prep
+## Contributing
 
-공식 공개 기준 최상위 범위:
+See [`CONTRIBUTING.md`](CONTRIBUTING.md) for contribution guidance.
 
-- `canoe/`
-- `driving-alert-workproducts/`
-- `product/`
-- `scripts/` (공용 계층만)
-
-`scripts/` 운영 원칙:
-
-- product 전용 구현: `product/sdv_operator/scripts/`
-- 루트 `scripts/run.py`, `scripts/tui_app.py`: compatibility launcher
-- 공용 유지: `scripts/gates/`, `scripts/quality/`, `scripts/release/`
-
-공개 전 `gitignore` 제외 후보(legacy/tmp/archive/generated)와 적용 순서는 아래 문서 기준으로 관리합니다.
-
-- [OFFICIAL_REPO_GITIGNORE_PLAN.md](OFFICIAL_REPO_GITIGNORE_PLAN.md)
-
-문서 사이트 빌드:
-
-```powershell
-python -m pip install -e .[docs]
-python -m mkdocs build -f product/sdv_operator/mkdocs.yml --strict
-```
-
-## Internal Working Docs
-
-<details>
-<summary>Open internal working entrypoints</summary>
-
-읽기 시작점:
-
-1. `AGENTS.md`
-2. `driving-alert-workproducts/ops/handoff/TMP_HANDOFF.md`
-3. `docs/DEVELOPMENT_ENTRYPOINTS.md`
-4. `canoe/FILE_INDEX.md`
-
-주요 내부 작업면:
-
-- `driving-alert-workproducts/ops/`
-- `canoe/tmp/`
-- `docs/`
-- `reference/`
-- `legacy_projects/`
-
-</details>
