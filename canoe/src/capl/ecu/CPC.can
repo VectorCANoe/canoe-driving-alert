@@ -11,6 +11,10 @@ variables
   int gBmsState;
   int gPackSoc;
   int gPackTemp;
+  dword gObcRxMs;
+  dword gBmsRxMs;
+  int gLastObcInputStale;
+  int gLastBmsInputStale;
   int gLastPortLockState;
   int gLastPlugState;
   int gLastChargeEnable;
@@ -18,19 +22,62 @@ variables
   int gLastChargeTargetSoc;
 }
 
+void traceCpcInputHealth(int obcInputStale, int bmsInputStale)
+{
+  if (obcInputStale != gLastObcInputStale)
+  {
+    write("[CPC] obc input %s", obcInputStale == 1 ? "stale" : "restored");
+    gLastObcInputStale = obcInputStale;
+  }
+
+  if (bmsInputStale != gLastBmsInputStale)
+  {
+    write("[CPC] bms input %s", bmsInputStale == 1 ? "stale" : "restored");
+    gLastBmsInputStale = bmsInputStale;
+  }
+}
+
 void publishChargePortState()
 {
   message frmChargePortCtrlStateMsg mPort;
+  int obcInputStale;
+  int bmsInputStale;
   int driveState;
+  int obcState;
+  int acPlugState;
+  int bmsState;
+  int packSoc;
+  int packTemp;
   int portLockState;
   int plugState;
   int chargeEnable;
   int thermalState;
   int chargeTargetSoc;
 
+  obcInputStale = (ethIsRecentTick(gObcRxMs, 300) == 1) ? 0 : 1;
+  bmsInputStale = (ethIsRecentTick(gBmsRxMs, 300) == 1) ? 0 : 1;
+  traceCpcInputHealth(obcInputStale, bmsInputStale);
+
   driveState = clampRange((int)@Core::driveStateNorm, 0, 3);
-  plugState = clampRange(gAcPlugState, 0, 1);
-  chargeEnable = (gObcState == 2 && gBmsState <= 2 && driveState == 0) ? 1 : 0;
+  obcState = gObcState;
+  acPlugState = gAcPlugState;
+  bmsState = gBmsState;
+  packSoc = gPackSoc;
+  packTemp = gPackTemp;
+  if (obcInputStale == 1)
+  {
+    obcState = 0;
+    acPlugState = 0;
+  }
+  if (bmsInputStale == 1)
+  {
+    bmsState = 7;
+    packSoc = 50;
+    packTemp = 28;
+  }
+
+  plugState = clampRange(acPlugState, 0, 1);
+  chargeEnable = (obcState == 2 && bmsState <= 2 && driveState == 0) ? 1 : 0;
 
   if (plugState == 0)
   {
@@ -45,11 +92,11 @@ void publishChargePortState()
     portLockState = 1;
   }
 
-  if (gPackTemp >= 45)
+  if (packTemp >= 45)
   {
     thermalState = 2;
   }
-  else if (gPackTemp >= 35)
+  else if (packTemp >= 35)
   {
     thermalState = 1;
   }
@@ -63,11 +110,11 @@ void publishChargePortState()
   {
     chargeTargetSoc = 80;
   }
-  else if (gPackSoc >= 90)
+  else if (packSoc >= 90)
   {
     chargeTargetSoc = 90;
   }
-  if (gBmsState >= 3)
+  if (bmsState >= 3)
   {
     chargeTargetSoc = 70;
   }
@@ -91,9 +138,9 @@ void publishChargePortState()
           chargeEnable,
           thermalState,
           chargeTargetSoc,
-          gPackSoc,
-          gPackTemp,
-          gObcState);
+          packSoc,
+          packTemp,
+          obcState);
     gLastPortLockState = portLockState;
     gLastPlugState = plugState;
     gLastChargeEnable = chargeEnable;
@@ -109,6 +156,10 @@ on start
   gBmsState = 0;
   gPackSoc = 95;
   gPackTemp = 28;
+  gObcRxMs = 0;
+  gBmsRxMs = 0;
+  gLastObcInputStale = 0;
+  gLastBmsInputStale = 0;
   gLastPortLockState = -1;
   gLastPlugState = -1;
   gLastChargeEnable = -1;
@@ -128,6 +179,7 @@ on message frmObcStateMsg
 {
   gObcState = clampRange((int)this.ObcState, 0, 7);
   gAcPlugState = clampRange((int)this.AcPlugState, 0, 1);
+  gObcRxMs = getSimulationTimeMs();
 }
 
 on message frmBatBmsStateMsg
@@ -135,6 +187,7 @@ on message frmBatBmsStateMsg
   gBmsState = clampRange((int)this.BmsState, 0, 7);
   gPackSoc = clampRange((int)this.PackSoc, 0, 100);
   gPackTemp = clampRange((int)this.PackTemp, 0, 255);
+  gBmsRxMs = getSimulationTimeMs();
 }
 
 on stopMeasurement
