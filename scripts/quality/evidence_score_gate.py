@@ -17,6 +17,21 @@ from collections import Counter, defaultdict
 from pathlib import Path
 
 
+REPO_ROOT = Path(__file__).resolve().parents[2]
+
+
+def _repo_path(path: Path) -> Path:
+    return path if path.is_absolute() else (REPO_ROOT / path)
+
+
+def _rel(path: Path) -> str:
+    path = _repo_path(path)
+    try:
+        return str(path.relative_to(REPO_ROOT)).replace("\\", "/")
+    except ValueError:
+        return str(path).replace("\\", "/")
+
+
 def parse_float(value: str) -> float | None:
     text = (value or "").strip()
     if not text:
@@ -196,14 +211,14 @@ def main() -> int:
     )
     args = parser.parse_args()
 
-    input_path = Path(args.input)
-    output_csv = Path(args.output_csv)
-    output_md = Path(args.output_md)
-    output_json = Path(args.output_json) if args.output_json else output_md.with_suffix(".json")
-    baseline_csv = Path(args.baseline_csv) if args.baseline_csv else None
+    input_path = _repo_path(Path(args.input))
+    output_csv = _repo_path(Path(args.output_csv))
+    output_md = _repo_path(Path(args.output_md))
+    output_json = _repo_path(Path(args.output_json)) if args.output_json else output_md.with_suffix(".json")
+    baseline_csv = _repo_path(Path(args.baseline_csv)) if args.baseline_csv else None
 
     if not input_path.exists():
-        print(f"[FAIL] input not found: {input_path}")
+        print(f"[FAIL] input not found: {_rel(input_path)}")
         return 2
 
     rows: list[dict[str, str]] = []
@@ -393,8 +408,8 @@ def main() -> int:
 
     summary_payload = {
         "generated_at": now,
-        "input_csv": str(input_path),
-        "output_csv": str(output_csv),
+        "input_csv": _rel(input_path),
+        "output_csv": _rel(output_csv),
         "total": total_rows,
         "pass": verdict_counter["PASS"],
         "fail": verdict_counter["FAIL"],
@@ -415,7 +430,7 @@ def main() -> int:
         ],
         "baseline": {
             "enabled": baseline_csv is not None,
-            "baseline_csv": str(baseline_csv) if baseline_csv else "",
+            "baseline_csv": _rel(baseline_csv) if baseline_csv else "",
             "regression_threshold_ms": args.regression_threshold_ms,
             "comparison_counts": dict(baseline_cmp_counter),
             "top_regressions": [
@@ -449,9 +464,9 @@ def main() -> int:
         "# Verification Evidence Score Report",
         "",
         f"- Generated: {now}",
-        f"- Input: `{input_path}`",
-        f"- Output CSV: `{output_csv}`",
-        f"- Output JSON: `{output_json}`",
+        f"- Input: `{_rel(input_path)}`",
+        f"- Output CSV: `{_rel(output_csv)}`",
+        f"- Output JSON: `{_rel(output_json)}`",
         "",
         "## Summary",
         f"- Total: {total_rows}",
@@ -503,7 +518,7 @@ def main() -> int:
 
     if baseline_csv:
         lines += ["", "## Baseline Comparison"]
-        lines += [f"- baseline csv: `{baseline_csv}`"]
+        lines += [f"- baseline csv: `{_rel(baseline_csv)}`"]
         lines += [f"- threshold: {args.regression_threshold_ms}ms"]
         lines += [
             f"- compared: {len(baseline_deltas)} / regressed: {baseline_cmp_counter['REGRESSED']} / improved: {baseline_cmp_counter['IMPROVED']} / stable: {baseline_cmp_counter['STABLE']}"
@@ -526,9 +541,9 @@ def main() -> int:
         "[EVIDENCE_SCORE] "
         f"total={total_rows} pass={verdict_counter['PASS']} fail={verdict_counter['FAIL']} result={gate_result}"
     )
-    print(f"[OUT] {output_csv}")
-    print(f"[OUT] {output_md}")
-    print(f"[OUT] {output_json}")
+    print(f"[OUT] {_rel(output_csv)}")
+    print(f"[OUT] {_rel(output_md)}")
+    print(f"[OUT] {_rel(output_json)}")
 
     return 0 if gate_result == "PASS" else 2
 

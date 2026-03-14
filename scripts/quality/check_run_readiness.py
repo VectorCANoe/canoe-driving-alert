@@ -10,8 +10,21 @@ import json
 from pathlib import Path
 
 
+REPO_ROOT = Path(__file__).resolve().parents[2]
 TIERS = ("UT", "IT", "ST")
 EVIDENCE_MARKER = "[EVIDENCE_OUT]"
+
+
+def _repo_path(path: Path) -> Path:
+    return path if path.is_absolute() else (REPO_ROOT / path)
+
+
+def _rel(path: Path) -> str:
+    path = _repo_path(path)
+    try:
+        return str(path.relative_to(REPO_ROOT)).replace("\\", "/")
+    except ValueError:
+        return str(path).replace("\\", "/")
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -58,6 +71,9 @@ def status_from_rows(rows: dict[str, dict[str, object]]) -> str:
 
 def main() -> int:
     args = build_parser().parse_args()
+    args.evidence_root = _repo_path(args.evidence_root)
+    args.output_json = _repo_path(args.output_json)
+    args.output_md = _repo_path(args.output_md)
     now = dt.datetime.now().isoformat(timespec="seconds")
 
     tier_rows: dict[str, dict[str, object]] = {}
@@ -70,7 +86,7 @@ def main() -> int:
         report_md = run_dir / "verification_report.md"
         report_json = run_dir / "verification_report.json"
         tier_rows[tier] = {
-            "run_dir": str(run_dir),
+            "run_dir": _rel(run_dir),
             "template_exists": template_csv.exists(),
             "raw_exists": raw_log.exists(),
             "marker_count": marker_count(raw_log),
@@ -130,14 +146,14 @@ def main() -> int:
     lines += [
         "",
         "## Output",
-        f"- JSON: `{args.output_json}`",
-        f"- MD: `{args.output_md}`",
+        f"- JSON: `{_rel(args.output_json)}`",
+        f"- MD: `{_rel(args.output_md)}`",
     ]
     args.output_md.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
     print(f"[RUN_STATUS] run_id={args.run_id} overall={overall} missing={len(missing_items)}")
-    print(f"[OUT] {args.output_json}")
-    print(f"[OUT] {args.output_md}")
+    print(f"[OUT] {_rel(args.output_json)}")
+    print(f"[OUT] {_rel(args.output_md)}")
     return 0
 
 

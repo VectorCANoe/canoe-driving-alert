@@ -26,7 +26,7 @@ def _load_json(path: Path) -> dict:
     path = _repo_path(path)
     if not path.exists():
         return {}
-    return json.loads(path.read_text(encoding="utf-8"))
+    return json.loads(path.read_text(encoding="utf-8-sig"))
 
 
 def _load_phase_policy(phase: str) -> dict:
@@ -37,7 +37,7 @@ def _load_phase_policy(phase: str) -> dict:
             "readiness_fail_states": ["MISSING", "BROKEN", "INVALID"],
             "source": "fallback",
         }
-    raw = json.loads(POLICY_PATH.read_text(encoding="utf-8"))
+    raw = json.loads(POLICY_PATH.read_text(encoding="utf-8-sig"))
     profiles = raw.get("profiles", {}) if isinstance(raw, dict) else {}
     profile = profiles.get(phase, profiles.get("pre")) if isinstance(profiles, dict) else {}
     if not isinstance(profile, dict):

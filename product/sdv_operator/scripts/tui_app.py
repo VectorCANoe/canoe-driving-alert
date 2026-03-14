@@ -907,7 +907,7 @@ class SdvTuiApp(App[None]):
 
     def _load_campaign_profiles(self) -> dict[str, dict[str, object]]:
         try:
-            raw = json.loads(CAMPAIGN_PROFILES_PATH.read_text(encoding="utf-8"))
+            raw = json.loads(CAMPAIGN_PROFILES_PATH.read_text(encoding="utf-8-sig"))
         except Exception:
             return {}
         profiles = raw.get("profiles", []) if isinstance(raw, dict) else []
@@ -2088,7 +2088,7 @@ class SdvTuiApp(App[None]):
         try:
             if not path.exists():
                 return None
-            data = json.loads(path.read_text(encoding="utf-8"))
+            data = json.loads(path.read_text(encoding="utf-8-sig"))
             if isinstance(data, dict):
                 return data
         except Exception:

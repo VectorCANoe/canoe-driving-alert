@@ -222,6 +222,8 @@ def cmd_start_precheck(args: argparse.Namespace) -> int:
     return cmd_verify_batch(argparse.Namespace(
         run_id=args.run_id,
         campaign_id=args.campaign_id,
+        profile_id='',
+        pack_id='',
         owner=args.owner,
         run_date=args.run_date,
         phase='pre',

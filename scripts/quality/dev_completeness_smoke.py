@@ -18,6 +18,21 @@ from typing import Callable, Dict, List, Tuple
 import win32com.client  # type: ignore
 
 
+REPO_ROOT = Path(__file__).resolve().parents[2]
+
+
+def _repo_path(path: Path) -> Path:
+    return path if path.is_absolute() else (REPO_ROOT / path)
+
+
+def _rel(path: Path) -> str:
+    path = _repo_path(path)
+    try:
+        return str(path.relative_to(REPO_ROOT)).replace("\\", "/")
+    except ValueError:
+        return str(path).replace("\\", "/")
+
+
 @dataclass(frozen=True)
 class SmokeCase:
     tier: str
@@ -276,8 +291,10 @@ def run_case(client: CanoeSysVarClient, case: SmokeCase, poll_s: float) -> Dict[
 
 
 def write_outputs(rows: List[Dict[str, str]], args: argparse.Namespace) -> None:
-    output_csv = Path(args.output_csv)
-    output_md = Path(args.output_md)
+    output_csv = _repo_path(Path(args.output_csv))
+    output_md = _repo_path(Path(args.output_md))
+    raw_log_path = _rel(_repo_path(Path(args.raw_log_path))) if args.raw_log_path else ""
+    capture_path = _rel(_repo_path(Path(args.capture_path))) if args.capture_path else ""
     output_csv.parent.mkdir(parents=True, exist_ok=True)
     output_md.parent.mkdir(parents=True, exist_ok=True)
 
@@ -309,8 +326,8 @@ def write_outputs(rows: List[Dict[str, str]], args: argparse.Namespace) -> None:
             out = dict(row)
             out["owner"] = args.owner
             out["run_date"] = args.run_date
-            out["evidence_log_path"] = args.raw_log_path
-            out["evidence_capture_path"] = args.capture_path
+            out["evidence_log_path"] = raw_log_path
+            out["evidence_capture_path"] = capture_path
             out["note"] = "dev completeness smoke check"
             writer.writerow(out)
 
@@ -338,6 +355,12 @@ def write_outputs(rows: List[Dict[str, str]], args: argparse.Namespace) -> None:
             f"{row['comm_verdict']} | {row['verdict']} | {row['output_ts_ms'] or '-'} |"
         )
 
+    lines += [
+        "",
+        "## Output",
+        f"- CSV: `{_rel(output_csv)}`",
+        f"- MD: `{_rel(output_md)}`",
+    ]
     output_md.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
@@ -358,7 +381,7 @@ def main() -> int:
         rows.append(run_case(client, case, poll_s=poll_s))
 
     write_outputs(rows, args)
-    print(f"[SMOKE] rows={len(rows)} output_csv={args.output_csv} output_md={args.output_md}")
+    print(f"[SMOKE] rows={len(rows)} output_csv={_rel(_repo_path(Path(args.output_csv)))} output_md={_rel(_repo_path(Path(args.output_md)))}")
     return 0
 
 

@@ -48,6 +48,8 @@
     <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="mergeCutInFlag" comment="Merge/cut-in conflict flag (Req_135)" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1"/>
     <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="ms" name="objectAlertHoldMs" comment="Object track loss conservative hold time (Req_136)" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="5000" maxValuePhys="5000"/>
     <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="objectEventCode" comment="Object alert event code for traceability (Req_138)" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="65535" maxValuePhys="65535"/>
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="accelGroupFlag" comment="A-group flag: 0=normal 1=sudden-accel/hard-brake detected (입력층 A그룹)" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1"/>
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="steerGroupFlag" comment="B-group flag: 0=normal 1=lane-departure/sudden-steer detected (입력층 B그룹)" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1"/>
   </namespace>
 
   <namespace name="Body" comment="" interface="">

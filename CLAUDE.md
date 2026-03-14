@@ -212,8 +212,8 @@ reference/dbc/level3_communication/reference/
 > **"SDV 기반 차량 경험(Experience) 플랫폼"**
 
 ```
-1. Safety (구간 인식) : 스쿨존/고속도로 상황에 맞는 즉각적인 앰비언트/진동 경고  [준영]
-2. V2V 알림 (긴급차량 감지) : 경찰차·구급차 Ethernet 수신 → 앰비언트 즉시 오버라이드  [성현]
+1. Safety (구간 인식) : 스쿨존/고속도로 상황에 맞는 즉각적인 앰비언트/진동 경고
+2. V2V 알림 (긴급차량 감지) : 경찰차·구급차 Ethernet 수신 → 앰비언트 즉시 오버라이드
 ```
 
 > **OTA 완전 제거**: Drive Coach Package, Seasonal Theme Package — 개발 범위에서 제외.
@@ -240,43 +240,37 @@ reference/dbc/level3_communication/reference/
            │              │
 ┌──────────▼───┐  ┌───────▼───────────────┐
 │  해제층       │  │  출력층               │
-│  라엘: 응시   │  │  Cluster / Ambient    │
-│  현준: 핸들   │  │  Sound / IVI          │
+│  응시 감지    │  │  Cluster / Ambient    │
+│  핸들 입력    │  │  Sound / IVI          │
 └──────────────┘  └───────────────────────┘
                    │
 ┌──────────────────▼──────────────────────┐
-│  특화층 D — 준영 + 성현 (프로젝트 정체성) │
+│  특화층 D (프로젝트 정체성)               │
 │                                         │
-│  [준영] 1. Safety (구간 인식 컨텍스트)     │
+│  1. Safety (구간 인식 컨텍스트)           │
 │  gRoadZone → 경고 조건 + 앰비언트 연동   │
 │                                         │
-│  [성현] 2. V2V 긴급차량 알림 + 앰비언트 중재 │
+│  2. V2V 긴급차량 알림 + 앰비언트 중재     │
 │  Police/Ambulance_ECU                   │
 │    → Ethernet 브로드캐스트               │
 │    → Civ_ECU 수신                       │
 │    → EmergencyType → 앰비언트 우선순위 중재│
-│  (준영 gRoadZone 앰비언트와 우선순위 통합) │
+│  (gRoadZone 앰비언트와 우선순위 통합)     │
 └─────────────────────────────────────────┘
 ```
 
 ---
 
-## 팀원 역할 확정
+## 팀 역할
 
-| 팀원 | 레이어 | 역할 | 핵심 구현 |
-|------|--------|------|---------|
-| **준영** | 특화층 D | 구간 인식 + 앰비언트 연동 | `gRoadZone` 4단계 + 구간별 경고·조명 패턴 |
-| **택천** | 입력층 (A) | 급가속 감지 | `gAccelValue` > 3.5 m/s² A그룹 플래그 설정 |
-| **라엘** | 해제층 | 응시 복귀 감지 | `sysvar::Driver::GazeActive` 0→1 → Level 3 해제 |
-| **현준** | 해제층 | 핸들 입력 감지 | MDPS_ECU 조향 입력 0/1 → Level 3 해제 |
-| **현준2** | 특화층 D | Smart Claim Python/Flask | Python COM API → Flask 보험사 서버 HTTP POST |
-| **성현** | 특화층 D | V2V 긴급차량 알림 + 앰비언트 중재 | Ethernet 브로드캐스트 수신 → EmergencyType → 앰비언트 우선순위 오버라이드 |
-
-**WDM_ECU (판단층)**: 팀 전체 공동 구현 또는 준영(팀장) 담당 — 미확정
+| 팀 | 담당 범위 |
+|------|---------|
+| **개발팀** | ECU 구현 전반 (CAPL 노드, DBC, 시스템 변수, 시뮬레이터) |
+| **문서팀** | 문서 전반 (01~07 workproducts, 요구사항, 설계, 테스트 케이스) |
 
 ---
 
-## 준영 상세 시나리오 (구간 인식 + 앰비언트)
+## 개발팀 상세 시나리오 A — 구간 인식 + 앰비언트
 
 ### gRoadZone 4단계 정의
 
@@ -369,7 +363,7 @@ zone_map = {
 
 ---
 
-## 성현 상세 시나리오 (V2V 긴급차량 알림 + 앰비언트 중재)
+## 개발팀 상세 시나리오 B — V2V 긴급차량 알림 + 앰비언트 중재
 
 > **OTA 완전 제거. docs/OTA/ 문서 전면 교체.**
 
@@ -418,7 +412,7 @@ on message EmergencyVehicleMsg:
 | 1 (최고) | gEmergencyType = AMBULANCE (2) | RED / WHITE 교차 점멸 |
 | 2 | gEmergencyType = POLICE (1) | RED / BLUE 교차 점멸 |
 | 3 | gWarningLevel > 0 | AMBER / RED (기존 경고) |
-| 4 (최저) | gRoadZone 기본값 | 구간별 색상 (준영 파트) |
+| 4 (최저) | gRoadZone 기본값 | 구간별 색상 |
 
 **규칙**: 높은 우선순위 조건이 사라지면 → 즉시 다음 우선순위로 자동 강등.
 긴급차량 해제 → gWarningLevel 있으면 경고 앰비언트, 없으면 gRoadZone 앰비언트.
@@ -475,14 +469,10 @@ ACK 구현 완료 시 포트폴리오 표현:
 
 ## D 선택 근거
 
-| 후보 | 탈락/확정 이유 |
-|------|-------------|
-| 준영 단독 | 구간단속 경고만으로는 기존 양산 기능과 동일 → 앰비언트 방향 안내로 차별화 후 확정 |
-| **준영 + 성현** | **구간 인식(내부 컨텍스트) + V2V 긴급 알림(외부 컨텍스트) = 두 입력이 하나의 앰비언트에서 중재. 확정** |
-| 택천 | 급가속 감지(A그룹 플래그)만 담당. 플랫폼 기여 역할. |
-| 라엘 | 해제층. D 아님 |
-| 현준 | 해제층 + 기존 LKA. D 아님 |
-| 현준2 | 기존 BSD 기능 재구현. 출력층으로 전환 |
+**구간 인식(내부 컨텍스트) + V2V 긴급 알림(외부 컨텍스트) = 두 입력이 하나의 앰비언트에서 중재. 확정**
+
+- 구간단속 경고만으로는 기존 양산 기능과 동일 → 앰비언트 방향 안내로 차별화
+- OTA 탈락: 구현 깊이가 얕으면 포트폴리오 가치 낮음. 벡터 담당자 피드백 수용.
 
 > **OTA 탈락 이유**: 구현 깊이가 얕으면 포트폴리오 가치 낮음. 깊게 하면 UDS 전체 프로토콜 학습 필요. 벡터 담당자 "수면 밑 기반 내용이 너무 많다" 피드백 수용.
 
@@ -490,7 +480,7 @@ ACK 구현 완료 시 포트폴리오 표현:
 
 ## Base Setup (공통 초기화)
 
-**공통 ECU** (모든 팀원 공유):
+**공통 ECU** (개발팀 공유):
 - `Vehicle_ECU` — 차속·가속 초기화
 - `Cluster_ECU` — 계기판 경고
 - `Ambient_ECU` — 앰비언트 라이트
@@ -511,7 +501,7 @@ gEmergencyType   = 0         (긴급차량 없음 / 1=경찰 / 2=구급)
 ```
 CAN-HS 500kbps: WDM_ECU ↔ Cluster / IVI / Ambient / Sound / Door
 CAN-LS 125kbps: Accel_ECU / Vehicle_ECU / MDPS_ECU → CGW → WDM_ECU
-Ethernet       : Police_ECU / Ambulance_ECU → Civ_ECU (성현 V2V 긴급차량 알림)
+Ethernet       : Police_ECU / Ambulance_ECU → Civ_ECU (V2V 긴급차량 알림)
 ```
 
 ---
@@ -521,9 +511,9 @@ Ethernet       : Police_ECU / Ambulance_ECU → Civ_ECU (성현 V2V 긴급차량
 | # | 항목 | 상태 |
 |---|------|------|
 | 1 | 프로젝트 최종 제목 | ✅ **"SDV 기반 차량 경험(Experience) 플랫폼"** 확정 |
-| 2 | WDM_ECU 담당자 | ⬜ 준영 단독 vs 공동 |
+| 2 | WDM_ECU 구현 범위 | ⬜ 개발팀 공동 |
 | 3 | 빗길 임계값 하향 수치 | ⬜ 60% vs 80% (Req_B04 하위 예정) |
-| 4 | Smart Claim Flask 서버 구현 범위 | ⬜ 현준2 담당 — 로컬 Flask vs 외부 서버 |
+| 4 | Smart Claim Flask 서버 구현 범위 | ⬜ 로컬 Flask vs 외부 서버 |
 | 5 | V2V ACK 양방향 구현 여부 | ⬜ Core 완성 후 시간 여유 시 도전 — 완성 시 문서 추가, 미완성 시 제거 |
 
 ---
@@ -570,8 +560,8 @@ Step 10. 07_System_Test.md
 
 ## 문서 작업 가이드
 
-**준영 프로젝트 문서**: `docs/project/`
-**성현 프로젝트 문서**: `docs/OTA/` — 위 재작성 지시에 따라 순서대로 진행
+**프로젝트 문서 (문서팀)**: `driving-alert-workproducts/` — 01~07 전체
+**V2V 관련 문서 (문서팀)**: `docs/OTA/` — 위 재작성 지시에 따라 순서대로 진행
 **원본 백업**: `docs/OTA_original/` — 표 형식·구조 참조용, 수정 금지
 **추가 참조**: `docs/v2x/` — V2V 시나리오 개념 텍스트 참조
 
