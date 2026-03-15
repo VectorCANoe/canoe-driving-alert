@@ -6,10 +6,10 @@ from cliops.command_catalog import PaletteCommand
 
 
 GROUP_LABELS: dict[str, str] = {
-    "Primary Workflow": "Primary / Campaign (핵심)",
-    "Runtime Support": "Runtime Support (환경/측정)",
-    "System Access": "Inspect / Contracts (원본/계약)",
-    "Packaging": "Artifacts / Cleanup (산출물/정리)",
+    "Primary Workflow": "Verify / 핵심 검증",
+    "Runtime Support": "Runtime / CANoe 제어",
+    "System Access": "Inspect / 상태·Contracts 확인",
+    "Packaging": "Package / 산출물 관리",
 }
 
 
@@ -57,23 +57,23 @@ def recommended_next(command: PaletteCommand) -> str:
     if command.next_step:
         return command.next_step
     if command.command_id == "verify.all_gates":
-        return "PASS면 Scenario run으로 넘어가십시오."
+        return "PASS면 Scenario run으로 이어서 진행하십시오."
     if command.command_id == "operate.scenario_trigger":
-        return "ack가 확인되면 Verify quick으로 넘어가십시오."
+        return "ACK가 확인되면 Verify quick으로 이어서 진행하십시오."
     if command.command_id == "verify.quick_verify":
         return "결과와 증빙을 확인한 뒤 05/06/07 문서에 반영하십시오."
     if command.command_id == "operate.measure_status":
-        return "stopped면 먼저 측정을 시작하십시오."
+        return "stopped 상태면 먼저 측정을 시작하십시오."
     if command.command_id == "operate.measure_start":
-        return "측정이 올라오면 Scenario run 또는 Doctor를 실행하십시오."
+        return "measurement가 running이면 Scenario run 또는 Doctor를 실행하십시오."
     if command.command_id == "verify.precheck_batch":
         return "PASS면 본 검증 시나리오로 진입하십시오."
     if command.command_id == "verify.run_readiness_status":
-        return "누락 항목을 확인하고 evidence를 보강하십시오."
+        return "준비되지 않은 항목을 확인하고 증빙을 보강하십시오."
     if command.command_id == "inspect.environment_doctor":
-        return "점검이 정상이면 measurement와 scenario 흐름으로 넘어가십시오."
+        return "점검이 정상이면 measurement와 Scenario run 흐름으로 이어서 진행하십시오."
     if command.command_id == "package.portable_bundle":
-        return "산출물 경로를 확인하고 전달용 패키지를 검증하십시오."
+        return "생성된 산출물 경로를 확인하고 전달용 패키지를 점검하십시오."
     return "결과와 다음 작업 지시를 확인한 뒤 이어서 진행하십시오."
 
 
@@ -99,18 +99,18 @@ def command_info_body(
         "",
         f"[cyan]실행 명령[/cyan]",
         f"  - python scripts/run.py {command.command}",
-        f"[cyan]실행 환경[/cyan]",
+        f"[cyan]사용 환경[/cyan]",
         f"  - {runtime_text}",
-        f"[cyan]고정 상태[/cyan]",
+        f"[cyan]작업 고정[/cyan]",
         f"  - {pin_text}",
         "",
     ]
-    body.extend(_section("언제 사용", list(command.use_when)))
-    body.extend(_section("성공 신호", list(command.success_signals)))
-    body.extend(_section("기대 산출물", list(command.expected_outputs)))
+    body.extend(_section("사용 시점", list(command.use_when)))
+    body.extend(_section("성공 판단", list(command.success_signals)))
+    body.extend(_section("생성 산출물", list(command.expected_outputs)))
     if command.notes:
         body.extend(_section("운영 메모", [command.notes]))
-    body.extend(_section("실패 시 확인점", list(command.failure_focus)))
+    body.extend(_section("점검 포인트", list(command.failure_focus)))
     body.extend(_section("다음 단계", [recommended]))
     return "\n".join(line for line in body if line is not None)
 
@@ -148,7 +148,7 @@ def live_runtime_summary(stage: str, last_line: str, last_output: str | None) ->
     if last_output:
         lines.append(f"산출물: {last_output[:120]}")
     else:
-        lines.append("산출물: 아직 감지되지 않았습니다.")
+        lines.append("산출물: 아직 확인되지 않았습니다.")
     return "\n".join(lines)
 
 
@@ -171,8 +171,8 @@ def artifact_copied(path: str) -> str:
 def recent_selection_insight(title: str, status: str, duration_ms: int, detail: str) -> str:
     return (
         f"단계: 최근 실행 선택\n"
-        f"병목: {title} [{status}] {duration_ms}ms\n"
-        f"다음 액션: 최근 실행 목록에서 Enter로 다시 실행하십시오.\n"
+        f"선택 작업: {title} [{status}] {duration_ms}ms\n"
+        f"다음 단계: 최근 실행 목록에서 Enter로 다시 실행하십시오.\n"
         f"상세: {detail}"
     )
 
@@ -195,7 +195,7 @@ def no_recent_rerun() -> str:
 
 def followup_hint(status: str) -> str:
     if status == "FAIL":
-        return "실행이 실패했습니다. 결과 화면에서 판정과 근거를 확인하고, 이어서 로그와 COM 상태를 검토하십시오."
+        return "실행이 실패했습니다. Results에서 판정과 근거를 확인하고, 이어서 Logs와 CANoe 상태를 확인하십시오."
     if status == "WARN":
-        return "경고와 함께 실행이 끝났습니다. 결과 화면에서 병목과 다음 액션을 확인하십시오."
-    return "이제 결과 화면에서 판정, 증빙, COM 상태를 확인하십시오."
+        return "경고와 함께 실행이 끝났습니다. Results에서 주의 항목과 다음 단계를 확인하십시오."
+    return "이제 Results에서 판정과 증빙을 확인하고, 필요하면 CANoe 상태를 함께 점검하십시오."
