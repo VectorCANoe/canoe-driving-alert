@@ -223,7 +223,7 @@ Use this document together with:
 | UT_076 | `TC_CANOE_UT_OUT_007_POLICE_TX` | `4` | External-TX unit contract created; final frame-period closure remains trace-gated |
 | UT_077 | `TC_CANOE_UT_OUT_008_AMBULANCE_TX` | `5` | External-TX unit contract created; final frame-period closure remains trace-gated |
 
-## Wave 2 planned oracle baseline
+## Wave 2 oracle baseline
 
 - `UT_003 / 206`: nominal CGW boundary readiness, nominal routing policy, fail-safe clear.
 - `UT_011 / 207`: intended ADAS warning-selection context, nominal warning path, fail-safe clear.

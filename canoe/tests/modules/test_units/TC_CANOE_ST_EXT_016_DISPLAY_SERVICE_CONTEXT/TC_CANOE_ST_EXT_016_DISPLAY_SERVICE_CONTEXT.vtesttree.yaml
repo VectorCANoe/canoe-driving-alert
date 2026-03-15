@@ -1,8 +1,8 @@
 version: 2.2.0
 
 test-tree:
-  - test-fixture: STDisplayServiceContext
-    description: Executable wrapper for system-level display and service context reflection.
+  - test-fixture: DisplayServiceContext
+    description: Native verification for TC_CANOE_ST_EXT_016_DISPLAY_SERVICE_CONTEXT.
     elements:
       - capl-test-case: TC_CANOE_ST_EXT_016_DISPLAY_SERVICE_CONTEXT
         title: TC_CANOE_ST_EXT_016_DISPLAY_SERVICE_CONTEXT

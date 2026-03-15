@@ -1,8 +1,8 @@
-﻿version: 2.2.0
+version: 2.2.0
 
 test-tree:
-  - test-fixture: AmpAudioOutput
-    description: Executable unit contract for AMP audio guidance output.
+  - test-fixture: AmpAudio
+    description: Native verification for TC_CANOE_UT_OUT_005_AMP_AUDIO.
     elements:
       - capl-test-case: TC_CANOE_UT_OUT_005_AMP_AUDIO
         title: TC_CANOE_UT_OUT_005_AMP_AUDIO

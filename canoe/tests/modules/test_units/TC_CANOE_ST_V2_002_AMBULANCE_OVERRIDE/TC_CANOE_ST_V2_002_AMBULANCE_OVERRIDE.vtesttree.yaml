@@ -1,8 +1,8 @@
 version: 2.2.0
 
 test-tree:
-  - test-fixture: STV2002AmbulanceOverride
-    description: System-level ambulance override scenario for emergency-over-nav selection
+  - test-fixture: AmbulanceOverride
+    description: Native verification for TC_CANOE_ST_V2_002_AMBULANCE_OVERRIDE.
     elements:
       - capl-test-case: TC_CANOE_ST_V2_002_AMBULANCE_OVERRIDE
         title: TC_CANOE_ST_V2_002_AMBULANCE_OVERRIDE

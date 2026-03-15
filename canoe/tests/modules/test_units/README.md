@@ -62,10 +62,11 @@ Because `canoe/cfg/*.cfg` is GUI-first in this repo, register these assets in CA
 
 Recommended path:
 1. Open the active CANoe configuration in the GUI.
-2. Add a Test Unit reference from the matching `*.vtestunit.yaml`.
-3. Register only the two anchor assets first.
-4. Enable each draft skeleton only after Dev1 replaces the `oracle-hook` placeholder with concrete assertions.
-5. Save the configuration through the GUI only.
+2. Use `Add Test Unit` and register `*.vtestunit.yaml` descriptors, not `*.can` files directly.
+3. For bulk import, use `assign/UT_ACTIVE_BASELINE`, `assign/IT_ACTIVE_BASELINE`, `assign/ST_ACTIVE_BASELINE`, or `assign/FULL_ACTIVE_BASELINE`.
+4. The `test_suites/TS_*/*.vtestunit.yaml` files are repository suite manifests and are not the direct GUI import files.
+5. Enable only executable assets in the active suite. Keep any remaining placeholder-only assets in `retire/` until concrete assertions are fixed.
+6. Save the configuration through the GUI only.
 
 ## Evidence
 - Native CANoe test report (`.vtestreport`)

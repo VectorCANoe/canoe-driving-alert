@@ -1,8 +1,8 @@
-﻿version: 2.2.0
+version: 2.2.0
 
 test-tree:
-  - test-fixture: STCORE007HIGHWAYPOLICYTRANSITION
-    description: System-level transition into highway warning policy
+  - test-fixture: HighwayPolicyTransition
+    description: Native verification for TC_CANOE_ST_CORE_007_HIGHWAY_POLICY_TRANSITION.
     elements:
       - capl-test-case: TC_CANOE_ST_CORE_007_HIGHWAY_POLICY_TRANSITION
         title: TC_CANOE_ST_CORE_007_HIGHWAY_POLICY_TRANSITION

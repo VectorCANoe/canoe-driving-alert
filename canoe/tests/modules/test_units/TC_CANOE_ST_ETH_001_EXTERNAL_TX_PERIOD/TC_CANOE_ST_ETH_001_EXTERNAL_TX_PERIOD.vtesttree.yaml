@@ -1,4 +1,8 @@
-name: TC_CANOE_ST_ETH_001_EXTERNAL_TX_PERIOD
-type: testcase
-owner: Validation
-level: ST
+version: 2.2.0
+
+test-tree:
+  - test-fixture: ExternalTxPeriod
+    description: Native verification for TC_CANOE_ST_ETH_001_EXTERNAL_TX_PERIOD.
+    elements:
+      - capl-test-case: TC_CANOE_ST_ETH_001_EXTERNAL_TX_PERIOD
+        title: TC_CANOE_ST_ETH_001_EXTERNAL_TX_PERIOD

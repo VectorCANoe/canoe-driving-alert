@@ -1,4 +1,8 @@
-version: 1
-group: IT_ACTIVE_BASELINE
-testcases:
-  - TC_CANOE_IT_EXT_010_WINDOW_STATE
+version: 2.2.0
+
+test-tree:
+  - test-fixture: WindowState
+    description: Native verification for TC_CANOE_IT_EXT_010_WINDOW_STATE.
+    elements:
+      - capl-test-case: TC_CANOE_IT_EXT_010_WINDOW_STATE
+        title: TC_CANOE_IT_EXT_010_WINDOW_STATE

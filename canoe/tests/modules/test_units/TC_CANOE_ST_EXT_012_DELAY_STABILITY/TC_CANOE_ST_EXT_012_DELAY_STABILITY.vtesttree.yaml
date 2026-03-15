@@ -1,8 +1,8 @@
 version: 2.2.0
 
 test-tree:
-  - test-fixture: STExt012DelayStability
-    description: System-level delay and transition stability baseline
+  - test-fixture: DelayStability
+    description: Native verification for TC_CANOE_ST_EXT_012_DELAY_STABILITY.
     elements:
       - capl-test-case: TC_CANOE_ST_EXT_012_DELAY_STABILITY
         title: TC_CANOE_ST_EXT_012_DELAY_STABILITY

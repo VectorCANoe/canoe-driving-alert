@@ -108,3 +108,15 @@ void assertIntMin(char stepId[], long minValue, long actual, char label[])
     testStepFail(stepId, "%s minimum=%d actual=%d", label, minValue, actual);
   }
 }
+
+void assertLongGe(char stepId[], long actual, long minValue, char label[])
+{
+  if (actual >= minValue)
+  {
+    testStepPass(stepId, "%s minimum=%d actual=%d", label, minValue, actual);
+  }
+  else
+  {
+    testStepFail(stepId, "%s minimum=%d actual=%d", label, minValue, actual);
+  }
+}

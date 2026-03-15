@@ -53,11 +53,12 @@ The current execution flow depends on the following harness variables:
 
 1. Open the active CANoe configuration in the CANoe GUI.
 2. Confirm the required runtime nodes, databases, panel assets, and SysVar surfaces are available.
-3. Register the matching `*.vtestunit.yaml` asset in the CANoe Test Unit environment.
-4. Start measurement.
-5. Execute the selected native Test Unit.
-6. Confirm the per-scenario verdict and the baseline summary verdict.
-7. Save the required report, screenshot, and supporting evidence defined by the evidence policy.
+3. Register the matching `*.vtestunit.yaml` assets in the CANoe Test Unit environment.
+4. For bulk GUI import, use the wrapper folders under `canoe/tests/modules/test_units/assign/`.
+5. Start measurement.
+6. Execute the selected native Test Unit.
+7. Confirm the per-scenario verdict and the baseline summary verdict.
+8. Save the required report, screenshot, and supporting evidence defined by the evidence policy.
 
 ## Current mapping
 

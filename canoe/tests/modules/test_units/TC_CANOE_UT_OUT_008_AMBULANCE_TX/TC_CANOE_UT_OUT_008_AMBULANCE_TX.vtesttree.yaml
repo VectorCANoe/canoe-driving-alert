@@ -1,4 +1,8 @@
-name: TC_CANOE_UT_OUT_008_AMBULANCE_TX
-type: testcase
-owner: Validation
-level: UT
+version: 2.2.0
+
+test-tree:
+  - test-fixture: AmbulanceTx
+    description: Native verification for TC_CANOE_UT_OUT_008_AMBULANCE_TX.
+    elements:
+      - capl-test-case: TC_CANOE_UT_OUT_008_AMBULANCE_TX
+        title: TC_CANOE_UT_OUT_008_AMBULANCE_TX

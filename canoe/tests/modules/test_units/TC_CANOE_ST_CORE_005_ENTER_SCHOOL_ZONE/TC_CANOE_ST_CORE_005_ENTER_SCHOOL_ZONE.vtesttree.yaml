@@ -1,8 +1,8 @@
-﻿version: 2.2.0
+version: 2.2.0
 
 test-tree:
-  - test-fixture: STCORE005ENTERSCHOOLZONE
-    description: System-level transition into school-zone warning policy
+  - test-fixture: EnterSchoolZone
+    description: Native verification for TC_CANOE_ST_CORE_005_ENTER_SCHOOL_ZONE.
     elements:
       - capl-test-case: TC_CANOE_ST_CORE_005_ENTER_SCHOOL_ZONE
         title: TC_CANOE_ST_CORE_005_ENTER_SCHOOL_ZONE
