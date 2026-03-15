@@ -95,31 +95,25 @@ This is the implementation-side verification bridge between the official `05/06/
 | `IT_010` | `TC_CANOE_IT_V2_005_DECEL_ASSIST` | decel-assist request and sync state | native report + trace + sysvar snapshot + panel capture | `No` |
 | `IT_011` | `TC_CANOE_IT_V2_006_FAILSAFE_MIN_WARNING` | fail-safe state and minimum-channel state | native report + write window + sysvar snapshot + trace | `No` |
 | `IT_012` | `TC_CANOE_IT_EXT_001_OBJECT_RISK_EVENTLOG` | object-risk state and event-log state | native report + trace + event log | `No` |
-| `RET_IT_013` | `TC_CANOE_IT_EXT_002_DRIVER_CONTEXT` | retired umbrella row | native report + panel capture + sysvar snapshot | `No` |
 | `IT_013` | `TC_CANOE_IT_EXT_002_DRIVER_CONTEXT` | seat-belt emphasis state | native report + panel capture + sysvar snapshot | `No` |
 | `IT_014` | `TC_CANOE_IT_EXT_002_DRIVER_CONTEXT` | display-policy reflection state | native report + panel capture + sysvar snapshot | `No` |
 | `IT_015` | `TC_CANOE_IT_EXT_002_DRIVER_CONTEXT` | turn-lamp context adjusted warning type | native report + panel capture + sysvar snapshot | `No` |
 | `IT_016` | `TC_CANOE_IT_EXT_002_DRIVER_CONTEXT` | drive-mode sensitivity state | native report + panel capture + sysvar snapshot | `No` |
 | `IT_017` | `TC_CANOE_IT_BASE_006_AUDIO_VOICE` | audio focus, ducking, and volume policy state | native report + panel capture + sysvar snapshot | `No` |
 | `IT_018` | `TC_CANOE_IT_EXT_003_EMERGENCY_PLUS_TTC` | combined warning/decel result state | native report + trace + panel capture | `No` |
-| `RET_IT_015` | `TC_CANOE_IT_BASE_001_POWERTRAIN_STATE` | retired umbrella row | native report + trace + sysvar snapshot | `No` |
 | `IT_019` | `TC_CANOE_IT_BASE_001_POWERTRAIN_STATE` | parked baseline state | native report + trace + sysvar snapshot | `No` |
 | `IT_020` | `TC_CANOE_IT_BASE_001_POWERTRAIN_STATE` | drive baseline state | native report + trace + sysvar snapshot | `No` |
-| `RET_IT_016` | `TC_CANOE_IT_BASE_002_CHASSIS_STATE` | retired umbrella row | native report + trace + sysvar snapshot | `No` |
 | `IT_021` | `TC_CANOE_IT_BASE_002_CHASSIS_STATE` | steering-input baseline state | native report + trace + sysvar snapshot | `No` |
 | `IT_022` | `TC_CANOE_IT_BASE_002_CHASSIS_STATE` | braking-input baseline state | native report + trace + sysvar snapshot | `No` |
 | `IT_023` | `TC_CANOE_IT_BASE_002_CHASSIS_STATE` | acceleration-driven drive-mode state | native report + trace + sysvar snapshot | `No` |
-| `RET_IT_017` | `TC_CANOE_IT_BASE_003_BODY_STATE` | retired umbrella row | native report + trace + sysvar snapshot | `No` |
 | `IT_024` | `TC_CANOE_IT_BASE_003_BODY_STATE` | hazard-reflection baseline state | native report + trace + sysvar snapshot | `No` |
 | `IT_025` | `TC_CANOE_IT_EXT_010_WINDOW_STATE` | window-state reflection | native report + door-state trace + sysvar snapshot | `No` |
 | `IT_026` | `TC_CANOE_IT_BASE_004_BASIC_DISPLAY_UI` | basic display integration state | panel capture + screenshot + native report | `No` |
-| `RET_IT_019` | `TC_CANOE_IT_BASE_005_COMFORT_CONTEXT / TC_CANOE_IT_BASE_005_BODY_SECURITY_CONTEXT` | retired umbrella row | native report + trace + sysvar snapshot | `No` |
 | `IT_027` | `TC_CANOE_IT_BASE_005_COMFORT_CONTEXT` | comfort-context policy state | native report + trace + sysvar snapshot | `No` |
 | `IT_028` | `TC_CANOE_IT_EXT_014_BODY_CONTROL_LOCK` | door lock/open reflection state | native report + door-state trace + sysvar snapshot | `No` |
 | `IT_029` | `TC_CANOE_IT_EXT_015_WIPER_RAIN_BASELINE` | wiper/rain baseline reflection state | native report + body-output trace + sysvar snapshot | `No` |
 | `IT_030` | `TC_CANOE_IT_BASE_005_BODY_SECURITY_CONTEXT` | security-state service-boundary state | native report + trace + sysvar snapshot | `No` |
 | `IT_031` | `TC_CANOE_IT_BASE_006_AUDIO_VOICE` | audio and voice-guide integrated state | panel capture + write window + native report | `No` |
-| `RET_IT_021` | `TC_CANOE_IT_EXT_004_OUTPUT_AVAILABILITY` | retired umbrella row | native report + trace + sysvar snapshot | `No` |
 | `IT_032` | `TC_CANOE_IT_EXT_004_OUTPUT_AVAILABILITY` | output-channel availability and fallback state | native report + trace + sysvar snapshot | `No` |
 | `IT_033` | `TC_CANOE_IT_EXT_004_OUTPUT_AVAILABILITY` | duplicate-popup suppression state | native report + trace + sysvar snapshot | `No` |
 | `IT_034` | `TC_CANOE_IT_EXT_004_OUTPUT_AVAILABILITY` | channel-restore consistency state | native report + trace + sysvar snapshot | `No` |
@@ -215,17 +209,17 @@ Use this document together with:
 | --- | --- | --- | --- | --- |
 | UT_063 | `TC_CANOE_UT_EXT_016_SGW_SECURITY_STATE` | `203` | `SGW.can -> Diag::SecurityState, Diag::RouteOwner` | Executable unit contract fixed |
 | UT_064 | `TC_CANOE_UT_EXT_017_DCM_DIAGNOSTIC_STATE` | `204` | `DCM.can -> Diag::ServiceState, Diag::ResponseKind, Diag::ReasonCode, Diag::LastRequestSid, Diag::LastResponseCode, Diag::LastResponseOk` | Executable unit contract fixed |
-| IT_040 | `TC_CANOE_IT_EXT_010_SERVICE_SECURITY_DIAG` | `205` | `SGW + DCM integrated diagnostic seam` | Producer wiring done, compile/runtime pending |
-| ST_043 | `TC_CANOE_ST_EXT_018_SERVICE_SECURITY_DIAG_CONTEXT` | `202` | `SGW + DCM integrated diagnostic seam with scenario phase tracking` | Producer wiring done, compile/runtime pending |
+| IT_040 | `TC_CANOE_IT_EXT_010_SERVICE_SECURITY_DIAG` | `205` | `SGW + DCM integrated diagnostic seam` | Producer wiring fixed, runtime evidence pending |
+| ST_043 | `TC_CANOE_ST_EXT_018_SERVICE_SECURITY_DIAG_CONTEXT` | `202` | `SGW + DCM integrated diagnostic seam with scenario phase tracking` | Producer wiring fixed, runtime evidence pending |
 
 ## Wave 2 direct-ownership UT baseline
 
 | Official Scope | Native Asset | Reserved TEST_SCN Scenario | Current State |
 | --- | --- | --- | --- |
-| UT_003 | `TC_CANOE_UT_CORE_003_CGW_BOUNDARY_STATUS` | `206` | Draft skeleton created, stimulus/oracle binding pending |
-| UT_011 | `TC_CANOE_UT_CORE_011_ADAS_WARNING_SELECTION` | `207` | Draft skeleton created, stimulus/oracle binding pending |
-| UT_014 | `TC_CANOE_UT_CORE_014_BCM_AMBIENT_POLICY` | `208` | Draft skeleton created, stimulus/oracle binding pending |
-| UT_015 | `TC_CANOE_UT_CORE_015_IVI_TEXT_MAPPING` | `209` | Draft skeleton created, stimulus/oracle binding pending |
+| UT_003 | `TC_CANOE_UT_CORE_003_CGW_BOUNDARY_STATUS` | `206` | Executable scenario contract fixed |
+| UT_011 | `TC_CANOE_UT_CORE_011_ADAS_WARNING_SELECTION` | `207` | Executable scenario contract fixed |
+| UT_014 | `TC_CANOE_UT_CORE_014_BCM_AMBIENT_POLICY` | `208` | Executable scenario contract fixed |
+| UT_015 | `TC_CANOE_UT_CORE_015_IVI_TEXT_MAPPING` | `209` | Executable scenario contract fixed |
 | UT_076 | `TC_CANOE_UT_OUT_007_POLICE_TX` | `4` | External-TX unit contract created; final frame-period closure remains trace-gated |
 | UT_077 | `TC_CANOE_UT_OUT_008_AMBULANCE_TX` | `5` | External-TX unit contract created; final frame-period closure remains trace-gated |
 
@@ -242,12 +236,13 @@ Use this document together with:
 
 - `UT_003 / 206`: executable scenario contract added. Current oracle checks `domainBoundaryStatus=1`, `routingPolicy=1`, `selectedAlertLevel=0`, and `failSafeMode=0`.
 - `UT_011 / 207`: executable scenario contract added. Current oracle checks `selectedAlertLevel=3`, `selectedAlertType=3`, `warningPathStatus=0`, and `failSafeMode=0`.
-- `UT_014 / 208` and `UT_015 / 209` remain draft skeletons pending concrete stimulus/oracle binding.
+- `UT_014 / 208`: executable scenario contract added. Current oracle checks school-zone ambient policy via `selectedAlertLevel=3`, `selectedAlertType=3`, `ambientColor=3`, `ambientPattern=5`, and `failSafeMode=0`.
+- `UT_015 / 209`: executable scenario contract added. Current oracle checks police-emergency text mapping via `selectedAlertLevel=6`, `selectedAlertType=1`, `warningTextCode=101`, and `failSafeMode=0`.
 
 ## Wave 2 progress update (208/209)
 
-- `UT_014 / 208`: executable scenario contract added. Current oracle checks school-zone ambient policy via `selectedAlertLevel=3`, `selectedAlertType=3`, `ambientColor=3`, `ambientPattern=5`, and `failSafeMode=0`.
-- `UT_015 / 209`: executable scenario contract added. Current oracle checks police-emergency text mapping via `selectedAlertLevel=6`, `selectedAlertType=1`, `warningTextCode=101`, and `failSafeMode=0`.
+- `UT_014 / 208`: executable scenario contract fixed and aligned to the active ambient-policy baseline.
+- `UT_015 / 209`: executable scenario contract fixed and aligned to the active IVI text-mapping baseline.
 - Dedicated external-TX unit rows are tracked separately with `UT_076 / 4` and `UT_077 / 5`.
 - `UT_006`: executable object-risk unit contract added. Current oracle checks frontal/intersection/merge risk and confidence-degrade behavior via scenarios `20`, `21`, `22`, and `24`.
 - `UT_007`: executable CLU context-adjust unit contract added. Current oracle checks seat-belt emphasis, display-policy reflection, and distance-context rendering via scenarios `214`, `215`, and `222`.
