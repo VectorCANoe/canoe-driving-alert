@@ -64,6 +64,10 @@ variables
   int gLastComfortProfile;
   int gLastComfortStatus;
   int gLastComfortError;
+  int gGatewayRoutingPolicy;
+  int gGatewayWarningPathStatus;
+  int gGatewayBoundaryAlive;
+  dword gGatewayStateRxMs;
 }
 
 int useBackboneAlertState()
@@ -137,6 +141,13 @@ void OnUdpReceiveFrom(dword socket, long result, dword address, dword port, char
       updateBackboneAlertState(ethGetU8(buffer, 0) & 0x7,
                                (ethGetU8(buffer, 0) >> 3) & 0x7,
                                ethGetU8(buffer, 1) & 0x1);
+    }
+    else if (msgId == ethMsgGatewayState() && ethFramePayloadLen(count) >= 1)
+    {
+      gGatewayRoutingPolicy = clampRange(ethGetU8(buffer, 0) & 0x3, 0, 2);
+      gGatewayBoundaryAlive = clampRange((ethGetU8(buffer, 0) >> 2) & 0x1, 0, 1);
+      gGatewayWarningPathStatus = clampRange((ethGetU8(buffer, 0) >> 3) & 0x3, 0, 2);
+      gGatewayStateRxMs = getSimulationTimeMs();
     }
   }
 
@@ -290,6 +301,10 @@ on start
   gLastComfortProfile = -1;
   gLastComfortStatus = -1;
   gLastComfortError = -1;
+  gGatewayRoutingPolicy = 0;
+  gGatewayWarningPathStatus = 1;
+  gGatewayBoundaryAlive = 0;
+  gGatewayStateRxMs = 0;
   @CoreState::bodyHealthTick = 0;
   if (gEthSocket != ethInvalidSocket())
   {
@@ -320,9 +335,9 @@ on timer tBodyCycle
   }
   else
   {
-    alertLevel = (int)@Core::selectedAlertLevel;
-    alertType = (int)@Core::selectedAlertType;
-    timeoutClear = (int)@Core::timeoutClear;
+    alertLevel = 0;
+    alertType = 0;
+    timeoutClear = 0;
   }
   if (alertLevel < 0 || alertLevel > 7)
   {
@@ -462,13 +477,22 @@ on timer tBodyBase100
   }
   else
   {
-    hazardActive = ((int)@Core::selectedAlertLevel >= 6) ? 1 : 0;
+    hazardActive = 0;
   }
   turnLampInputStale = (ethIsRecentTick(gTurnLampInputRxMs, 300) == 1) ? 0 : 1;
   ambientMode = clampRange((int)@Body::ambientMode, 0, 7);
-  routingPolicy = clampRange((int)@CoreState::routingPolicy, 0, 2);
-  warningPathStatus = clampRange((int)@CoreState::warningPathStatus, 0, 2);
-  boundaryAlive = clampRange((int)@CoreState::domainBoundaryStatus, 0, 1);
+  if (ethIsRecentTick(gGatewayStateRxMs, 500) == 1)
+  {
+    routingPolicy = clampRange(gGatewayRoutingPolicy, 0, 2);
+    warningPathStatus = clampRange(gGatewayWarningPathStatus, 0, 2);
+    boundaryAlive = clampRange(gGatewayBoundaryAlive, 0, 1);
+  }
+  else
+  {
+    routingPolicy = 0;
+    warningPathStatus = 1;
+    boundaryAlive = 0;
+  }
   bodyGwRouteState = routingPolicy;
   bodyGwHealth = warningPathStatus;
   if (boundaryAlive == 0 && bodyGwHealth == 0)

@@ -402,9 +402,9 @@ on timer tIviCycle
   }
   else
   {
-    alertLevel = (int)@Core::selectedAlertLevel;
-    alertType = (int)@Core::selectedAlertType;
-    timeoutClear = (int)@Core::timeoutClear;
+    alertLevel = 0;
+    alertType = 0;
+    timeoutClear = 0;
   }
   emergencyType = (int)@V2X::emergencyType;
   emergencyDirection = (int)@V2X::emergencyDirection;
@@ -512,8 +512,8 @@ on timer tIviBase50
   }
   else
   {
-    alertLevel = clampRange((int)@Core::selectedAlertLevel, 0, 7);
-    alertType = clampRange((int)@Core::selectedAlertType, 0, 15);
+    alertLevel = 0;
+    alertType = 0;
   }
   if (ethIsRecentTick(gNavStateRxMs, 300) == 1)
   {

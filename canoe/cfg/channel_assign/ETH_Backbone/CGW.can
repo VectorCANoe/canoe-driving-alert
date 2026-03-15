@@ -85,6 +85,28 @@ void publishFailSafeState(int warningPathStatus,
   ethSendFrame(txSocket, gEthTargetIp, ethMsgFailSafe(), frame, 1);
 }
 
+void publishGatewayState(int routingPolicy,
+                         int warningPathStatus,
+                         int e2eHealthState,
+                         int boundaryAlive)
+{
+  char frame[4];
+  long txSocket;
+
+  txSocket = gEthTxSocket;
+  if (txSocket == ethInvalidSocket())
+  {
+    txSocket = gEthSocket;
+  }
+
+  ethInitFrame(frame, ethMsgGatewayState(), 1);
+  ethSetU8(frame, 0, clampRange(routingPolicy, 0, 2) |
+                    (clampRange(boundaryAlive, 0, 1) << 2) |
+                    (clampRange(warningPathStatus, 0, 2) << 3) |
+                    (clampRange(e2eHealthState, 0, 2) << 5));
+  ethSendFrame(txSocket, gEthTargetIp, ethMsgGatewayState(), frame, 1);
+}
+
 void publishObjectSafetyState(int failSafeMode)
 {
   char frame[8];
@@ -432,6 +454,7 @@ on timer tBoundaryCheck
   }
 
   publishFailSafeState(warningPathStatus, e2eHealthState, failSafeMode, boundaryAlive);
+  publishGatewayState(routingPolicy, warningPathStatus, e2eHealthState, boundaryAlive);
   publishObjectSafetyState(failSafeMode);
 
   if (boundaryAlive != gLastBoundaryStatus ||

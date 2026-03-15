@@ -109,6 +109,11 @@ int ethMsgObjectSafety()
   return 0xE216;
 }
 
+int ethMsgGatewayState()
+{
+  return 0xE218;
+}
+
 int ethMsgValidationOverride()
 {
   return 0xE217;

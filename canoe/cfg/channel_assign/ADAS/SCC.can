@@ -6,10 +6,18 @@ includes
 variables
 {
   msTimer tSccCycle;
+  long gEthSocket;
   int gVehicleSpeed;
   int gDriveState;
   int gNavSpeedLimit;
+  int gRiskLevel;
+  int gFailSafeMode;
+  int gSelectedAlertLevel;
+  int gEmergencyContext;
+  dword gDecelAssistRxMs;
+  dword gSelectedAlertRxMs;
   dword gNavStateRxMs;
+  char gEthRxBuffer[64];
   int gLastCruiseState;
   int gLastGapLevel;
   int gLastCruiseSetSpeed;
@@ -35,10 +43,26 @@ void publishCruiseState()
   {
     speedLimit = 0;
   }
-  riskLevel = clampRange((int)@Core::proximityRiskLevel, 0, 100);
-  failSafeMode = clampRange((int)@Core::failSafeMode, 0, 2);
-  selectedAlertLevel = clampRange((int)@Core::selectedAlertLevel, 0, 7);
-  emergencyContext = clampRange((int)@Core::emergencyContext, 0, 2);
+  if (ethIsRecentTick(gDecelAssistRxMs, 300) == 1)
+  {
+    riskLevel = clampRange(gRiskLevel, 0, 100);
+    failSafeMode = clampRange(gFailSafeMode, 0, 2);
+    emergencyContext = clampRange(gEmergencyContext, 0, 2);
+  }
+  else
+  {
+    riskLevel = 0;
+    failSafeMode = 1;
+    emergencyContext = 0;
+  }
+  if (ethIsRecentTick(gSelectedAlertRxMs, 300) == 1)
+  {
+    selectedAlertLevel = clampRange(gSelectedAlertLevel, 0, 7);
+  }
+  else
+  {
+    selectedAlertLevel = 0;
+  }
 
   if (speedLimit == 0)
   {
@@ -101,15 +125,57 @@ void publishCruiseState()
   }
 }
 
+void OnUdpReceiveFrom(dword socket, long result, dword address, dword port, char buffer[], dword count)
+{
+  int msgId;
+  int payload0;
+
+  if (socket != gEthSocket)
+  {
+    return;
+  }
+
+  if (result == 0)
+  {
+    msgId = ethFrameMsgId(buffer, count);
+    if (msgId == ethMsgDecelAssist() && ethFramePayloadLen(count) >= 2)
+    {
+      payload0 = ethGetU8(buffer, 0);
+      gRiskLevel = clampRange(ethGetU8(buffer, 1), 0, 100);
+      gFailSafeMode = clampRange((payload0 >> 1) & 0x3, 0, 2);
+      gEmergencyContext = clampRange((payload0 >> 5) & 0x3, 0, 2);
+      gDecelAssistRxMs = getSimulationTimeMs();
+    }
+    else if (msgId == ethMsgSelectedAlert() && ethFramePayloadLen(count) >= 1)
+    {
+      gSelectedAlertLevel = clampRange(ethGetU8(buffer, 0) & 0x7, 0, 7);
+      gSelectedAlertRxMs = getSimulationTimeMs();
+    }
+  }
+
+  ethArmReceive(gEthSocket, gEthRxBuffer, elcount(gEthRxBuffer));
+}
+
 on start
 {
+  gEthSocket = ethOpenDefaultSocket();
   gVehicleSpeed = 0;
   gDriveState = 0;
   gNavSpeedLimit = 0;
+  gRiskLevel = 0;
+  gFailSafeMode = 1;
+  gSelectedAlertLevel = 0;
+  gEmergencyContext = 0;
+  gDecelAssistRxMs = 0;
+  gSelectedAlertRxMs = 0;
   gNavStateRxMs = 0;
   gLastCruiseState = -1;
   gLastGapLevel = -1;
   gLastCruiseSetSpeed = -1;
+  if (gEthSocket != ethInvalidSocket())
+  {
+    ethStartReceiver(gEthSocket, gEthRxBuffer, elcount(gEthRxBuffer));
+  }
   setTimer(tSccCycle, 50);
   write("[SCC] start");
 }
@@ -136,4 +202,6 @@ on timer tSccCycle
 on stopMeasurement
 {
   cancelTimer(tSccCycle);
+  ethCloseSocket(gEthSocket);
+  gEthSocket = ethInvalidSocket();
 }
