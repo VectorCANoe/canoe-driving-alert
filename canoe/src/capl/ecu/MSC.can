@@ -9,8 +9,11 @@ variables
   int gSeatPos;
   int gSeatHeatLvl;
   int gSeatVentLvl;
+  int gDriverSeatBelt;
   dword gSeatDrvRxMs;
+  dword gSeatBeltRxMs;
   int gLastSeatDrvInputStale;
+  int gLastSeatBeltInputStale;
   int gLastMode;
   int gLastIntensity;
   int gLastOccupancy;
@@ -18,7 +21,7 @@ variables
   int gLastDriveComfortMode;
 }
 
-void traceMscInputHealth(int seatDrvInputStale)
+void traceMscInputHealth(int seatDrvInputStale, int seatBeltInputStale)
 {
   if (seatDrvInputStale != gLastSeatDrvInputStale)
   {
@@ -32,12 +35,26 @@ void traceMscInputHealth(int seatDrvInputStale)
     }
     gLastSeatDrvInputStale = seatDrvInputStale;
   }
+
+  if (seatBeltInputStale != gLastSeatBeltInputStale)
+  {
+    if (seatBeltInputStale == 1)
+    {
+      write("[MSC] seat-belt input stale");
+    }
+    else
+    {
+      write("[MSC] seat-belt input restored");
+    }
+    gLastSeatBeltInputStale = seatBeltInputStale;
+  }
 }
 
 void publishMassageSeatState()
 {
   message frmMassageSeatCtrlStateMsg mMassage;
   int seatDrvInputStale;
+  int seatBeltInputStale;
   int vehicleSpeed;
   int driverSeatBelt;
   int seatPos;
@@ -50,10 +67,11 @@ void publishMassageSeatState()
   int massageIntensity;
 
   seatDrvInputStale = (ethIsRecentTick(gSeatDrvRxMs, 300) == 1) ? 0 : 1;
-  traceMscInputHealth(seatDrvInputStale);
+  seatBeltInputStale = (ethIsRecentTick(gSeatBeltRxMs, 300) == 1) ? 0 : 1;
+  traceMscInputHealth(seatDrvInputStale, seatBeltInputStale);
 
   vehicleSpeed = clampRange((int)@Core::vehicleSpeedNorm, 0, 255);
-  driverSeatBelt = clampRange((int)@CoreState::driverSeatBelt, 0, 1);
+  driverSeatBelt = gDriverSeatBelt;
   seatPos = gSeatPos;
   seatHeatLvl = gSeatHeatLvl;
   seatVentLvl = gSeatVentLvl;
@@ -62,6 +80,10 @@ void publishMassageSeatState()
     seatPos = 0;
     seatHeatLvl = 0;
     seatVentLvl = 0;
+  }
+  if (seatBeltInputStale == 1)
+  {
+    driverSeatBelt = 1;
   }
 
   occupancyState = (seatPos > 5 || driverSeatBelt == 1) ? 1 : 0;
@@ -130,8 +152,11 @@ on start
   gSeatPos = 0;
   gSeatHeatLvl = 0;
   gSeatVentLvl = 0;
+  gDriverSeatBelt = 1;
   gSeatDrvRxMs = 0;
+  gSeatBeltRxMs = 0;
   gLastSeatDrvInputStale = 0;
+  gLastSeatBeltInputStale = 0;
   gLastMode = -1;
   gLastIntensity = -1;
   gLastOccupancy = -1;
@@ -153,6 +178,12 @@ on message frmSeatDrvStateMsg
   gSeatHeatLvl = clampRange((int)this.SeatDrvHeatLvl, 0, 15);
   gSeatVentLvl = clampRange((int)this.SeatDrvVentLvl, 0, 15);
   gSeatDrvRxMs = getSimulationTimeMs();
+}
+
+on message frmSeatBeltStateMsg
+{
+  gDriverSeatBelt = clampRange((int)this.DriverSeatBelt, 0, 1);
+  gSeatBeltRxMs = getSimulationTimeMs();
 }
 
 on stopMeasurement

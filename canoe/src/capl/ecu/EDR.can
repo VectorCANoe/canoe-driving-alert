@@ -8,11 +8,13 @@ variables
   msTimer tEdrCycle;
   long gEthSocket;
   char gEthRxBuffer[64];
+  int gAlertLevel;
   int gFailSafeMode;
   int gWarningPathStatus;
   int gE2eHealthState;
   int gObjectTrackValid;
   int gObjectEventCode;
+  dword gSelectedAlertRxTsMs;
   dword gFailSafeRxTsMs;
   dword gObjectSafetyRxTsMs;
   int gLastRecordState;
@@ -36,38 +38,28 @@ void publishEdrState()
   int objectTrackValid;
   int objectEventCode;
 
-  alertLevel = clampRange((int)@Core::selectedAlertLevel, 0, 7);
-  failSafeMode = clampRange((int)@Core::failSafeMode, 0, 2);
-  warningPathStatus = clampRange((int)@CoreState::warningPathStatus, 0, 2);
-  e2eHealthState = clampRange((int)@CoreState::e2eHealthState, 0, 2);
-  objectTrackValid = clampRange((int)@Core::objectTrackValid, 0, 1);
-  objectEventCode = clampRange((int)@Core::objectEventCode, 0, 65535);
+  alertLevel = 0;
+  failSafeMode = 0;
+  warningPathStatus = 0;
+  e2eHealthState = 2;
+  objectTrackValid = 0;
+  objectEventCode = 0;
+
+  if (ethIsRecentTick(gSelectedAlertRxTsMs, 300) == 1)
+  {
+    alertLevel = gAlertLevel;
+  }
 
   if (ethIsRecentTick(gFailSafeRxTsMs, 300) == 1)
   {
-    if (gWarningPathStatus > warningPathStatus)
-    {
-      warningPathStatus = gWarningPathStatus;
-    }
-    if (gFailSafeMode > failSafeMode)
-    {
-      failSafeMode = gFailSafeMode;
-    }
-    if (gE2eHealthState < e2eHealthState)
-    {
-      e2eHealthState = gE2eHealthState;
-    }
+    warningPathStatus = gWarningPathStatus;
+    failSafeMode = gFailSafeMode;
+    e2eHealthState = gE2eHealthState;
   }
   if (ethIsRecentTick(gObjectSafetyRxTsMs, 300) == 1)
   {
-    if (gObjectTrackValid > objectTrackValid)
-    {
-      objectTrackValid = gObjectTrackValid;
-    }
-    if (gObjectEventCode != 0)
-    {
-      objectEventCode = gObjectEventCode;
-    }
+    objectTrackValid = gObjectTrackValid;
+    objectEventCode = gObjectEventCode;
   }
 
   if (alertLevel >= 5)
@@ -155,7 +147,13 @@ void OnUdpReceiveFrom(dword socket, long result, dword address, dword port, char
   if (result == 0)
   {
     msgId = ethFrameMsgId(buffer, count);
-    if (msgId == ethMsgFailSafe() && ethFramePayloadLen(count) >= 1)
+    if (msgId == ethMsgSelectedAlert() && ethFramePayloadLen(count) >= 1)
+    {
+      payload0 = ethGetU8(buffer, 0);
+      gAlertLevel = clampRange(payload0 & 0x7, 0, 7);
+      gSelectedAlertRxTsMs = getSimulationTimeMs();
+    }
+    else if (msgId == ethMsgFailSafe() && ethFramePayloadLen(count) >= 1)
     {
       payload0 = ethGetU8(buffer, 0);
       gWarningPathStatus = clampRange(payload0 & 0x3, 0, 2);
@@ -178,11 +176,13 @@ void OnUdpReceiveFrom(dword socket, long result, dword address, dword port, char
 on start
 {
   gEthSocket = ethOpenDefaultSocket();
+  gAlertLevel = 0;
   gFailSafeMode = 0;
   gWarningPathStatus = 0;
   gE2eHealthState = 2;
   gObjectTrackValid = 0;
   gObjectEventCode = 0;
+  gSelectedAlertRxTsMs = 0;
   gFailSafeRxTsMs = 0;
   gObjectSafetyRxTsMs = 0;
   gLastRecordState = -1;
