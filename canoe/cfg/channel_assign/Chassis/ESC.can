@@ -99,7 +99,6 @@ on message frmSteeringCanMsg
 on message frmPedalInputCanMsg
 {
   gBrakePedal = clampRange((int)this.BrakePedal, 0, 100);
-  @Core::brakePedalNorm = gBrakePedal;
   gPedalRxMs = getSimulationTimeMs();
 }
 
@@ -152,11 +151,11 @@ on timer tEscCycle
   {
     appliedBrakePedal = 0;
   }
-  @Core::brakePedalNorm = appliedBrakePedal;
   if (decelAssistReq == 1 && appliedBrakePedal < 25)
   {
     appliedBrakePedal = 25;
   }
+  @Core::brakePedalNorm = appliedBrakePedal;
 
   brakePressure = clampRange(appliedBrakePedal * 2, 0, 255);
   absActive = ((appliedBrakePedal > 80) && (speedNorm > 10)) ? 1 : 0;

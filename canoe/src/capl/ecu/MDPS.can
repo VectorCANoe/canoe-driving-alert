@@ -93,7 +93,6 @@ on start
 on message frmSteeringCanMsg
 {
   gSteeringInput = clampRange((int)this.SteeringInput, 0, 1);
-  @Core::steeringInputNorm = gSteeringInput;
   gSteeringRxMs = getSimulationTimeMs();
 }
 

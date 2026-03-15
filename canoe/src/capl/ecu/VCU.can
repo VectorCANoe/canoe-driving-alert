@@ -160,15 +160,13 @@ void traceVcuInputHealth(int pedalInputStale, int ignitionInputStale, int gearIn
   }
 }
 
-void publishBackboneVehicleState()
+void publishBackboneVehicleState(int vehicleSpeed, int driveState)
 {
   char frame[4];
-  int driveState;
-  int vehicleSpeed;
   long txSocket;
 
-  driveState = clampRange((int)@Core::driveStateNorm, 0, 3);
-  vehicleSpeed = clampRange((int)@Core::vehicleSpeedNorm, 0, 255);
+  driveState = clampRange(driveState, 0, 3);
+  vehicleSpeed = clampRange(vehicleSpeed, 0, 255);
   txSocket = gEthTxSocket;
   if (txSocket == ethInvalidSocket())
   {
@@ -356,7 +354,7 @@ on timer tVcuCycle
   output(mState);
   @Chassis::vehicleSpeed = gSpeed;
   @Chassis::driveState = driveState;
-  publishBackboneVehicleState();
+  publishBackboneVehicleState(gSpeed, driveState);
 
   torqueRequest = clampRange(accelPedal * 2, 0, 255);
   mAccel.AccelRequest = accelPedal;
