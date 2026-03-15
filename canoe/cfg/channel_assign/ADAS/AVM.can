@@ -6,15 +6,69 @@ includes
 variables
 {
   msTimer tAvmCycle;
+  int gVehicleSpeed;
+  int gSteeringInput;
+  int gBrakePressed;
+  dword gVehicleRxMs;
+  dword gSteeringRxMs;
+  dword gBrakeRxMs;
+  int gLastVehicleInputStale;
+  int gLastSteeringInputStale;
+  int gLastBrakeInputStale;
   int gLastActive;
   int gLastViewMode;
   int gLastOverlay;
   int gLastSpeed;
 }
 
+void traceAvmInputHealth(int vehicleInputStale, int steeringInputStale, int brakeInputStale)
+{
+  if (vehicleInputStale != gLastVehicleInputStale)
+  {
+    if (vehicleInputStale == 1)
+    {
+      write("[AVM] vehicle input stale");
+    }
+    else
+    {
+      write("[AVM] vehicle input restored");
+    }
+    gLastVehicleInputStale = vehicleInputStale;
+  }
+
+  if (steeringInputStale != gLastSteeringInputStale)
+  {
+    if (steeringInputStale == 1)
+    {
+      write("[AVM] steering input stale");
+    }
+    else
+    {
+      write("[AVM] steering input restored");
+    }
+    gLastSteeringInputStale = steeringInputStale;
+  }
+
+  if (brakeInputStale != gLastBrakeInputStale)
+  {
+    if (brakeInputStale == 1)
+    {
+      write("[AVM] brake input stale");
+    }
+    else
+    {
+      write("[AVM] brake input restored");
+    }
+    gLastBrakeInputStale = brakeInputStale;
+  }
+}
+
 void publishAvmState()
 {
   message frmAvmStateMsg mAvm;
+  int vehicleInputStale;
+  int steeringInputStale;
+  int brakeInputStale;
   int vehicleSpeed;
   int steeringInput;
   int brakePedal;
@@ -22,11 +76,28 @@ void publishAvmState()
   int viewMode;
   int overlay;
 
-  vehicleSpeed = clampRange((int)@Core::vehicleSpeedNorm, 0, 255);
-  steeringInput = clampRange((int)@Core::steeringInputNorm, 0, 1);
-  brakePedal = clampRange((int)@Core::brakePedalNorm, 0, 1);
+  vehicleInputStale = (ethIsRecentTick(gVehicleRxMs, 300) == 1) ? 0 : 1;
+  steeringInputStale = (ethIsRecentTick(gSteeringRxMs, 300) == 1) ? 0 : 1;
+  brakeInputStale = (ethIsRecentTick(gBrakeRxMs, 300) == 1) ? 0 : 1;
+  traceAvmInputHealth(vehicleInputStale, steeringInputStale, brakeInputStale);
 
-  active = (vehicleSpeed <= 20) ? 1 : 0;
+  vehicleSpeed = gVehicleSpeed;
+  steeringInput = gSteeringInput;
+  brakePedal = gBrakePressed;
+  if (vehicleInputStale == 1)
+  {
+    vehicleSpeed = 0;
+  }
+  if (steeringInputStale == 1)
+  {
+    steeringInput = 0;
+  }
+  if (brakeInputStale == 1)
+  {
+    brakePedal = 0;
+  }
+
+  active = (vehicleInputStale == 0 && vehicleSpeed <= 20) ? 1 : 0;
   viewMode = 0;
   overlay = 0;
 
@@ -74,6 +145,15 @@ void publishAvmState()
 
 on start
 {
+  gVehicleSpeed = 0;
+  gSteeringInput = 0;
+  gBrakePressed = 0;
+  gVehicleRxMs = 0;
+  gSteeringRxMs = 0;
+  gBrakeRxMs = 0;
+  gLastVehicleInputStale = 0;
+  gLastSteeringInputStale = 0;
+  gLastBrakeInputStale = 0;
   gLastActive = -1;
   gLastViewMode = -1;
   gLastOverlay = -1;
@@ -86,6 +166,24 @@ on timer tAvmCycle
 {
   publishAvmState();
   setTimer(tAvmCycle, 100);
+}
+
+on message frmVehicleStateCanMsg
+{
+  gVehicleSpeed = clampRange((int)this.gVehicleSpeed, 0, 255);
+  gVehicleRxMs = getSimulationTimeMs();
+}
+
+on message frmSteeringStateCanMsg
+{
+  gSteeringInput = clampRange((int)this.SteeringState, 0, 1);
+  gSteeringRxMs = getSimulationTimeMs();
+}
+
+on message frmBrakeStatusMsg
+{
+  gBrakePressed = ((((int)this.BrakeMode) > 0) || (((int)this.BrakePressure) > 0)) ? 1 : 0;
+  gBrakeRxMs = getSimulationTimeMs();
 }
 
 on stopMeasurement

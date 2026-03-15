@@ -9,14 +9,17 @@ variables
   int gParkActive;
   int gMinDistance;
   int gZoneMask;
+  int gVehicleSpeed;
   dword gParkAssistRxMs;
+  dword gVehicleRxMs;
   int gLastParkAssistInputStale;
+  int gLastVehicleInputStale;
   int gLastActive;
   int gLastGuide;
   int gLastQuality;
 }
 
-void tracePgsInputHealth(int parkAssistInputStale)
+void tracePgsInputHealth(int parkAssistInputStale, int vehicleInputStale)
 {
   if (parkAssistInputStale != gLastParkAssistInputStale)
   {
@@ -30,6 +33,19 @@ void tracePgsInputHealth(int parkAssistInputStale)
     }
     gLastParkAssistInputStale = parkAssistInputStale;
   }
+
+  if (vehicleInputStale != gLastVehicleInputStale)
+  {
+    if (vehicleInputStale == 1)
+    {
+      write("[PGS] vehicle input stale");
+    }
+    else
+    {
+      write("[PGS] vehicle input restored");
+    }
+    gLastVehicleInputStale = vehicleInputStale;
+  }
 }
 
 on start
@@ -37,8 +53,11 @@ on start
   gParkActive = 0;
   gMinDistance = 255;
   gZoneMask = 0;
+  gVehicleSpeed = 0;
   gParkAssistRxMs = 0;
+  gVehicleRxMs = 0;
   gLastParkAssistInputStale = 0;
+  gLastVehicleInputStale = 0;
   gLastActive = -1;
   gLastGuide = -1;
   gLastQuality = -1;
@@ -54,10 +73,17 @@ on message frmParkUltrasonicStateMsg
   gParkAssistRxMs = getSimulationTimeMs();
 }
 
+on message frmVehicleStateCanMsg
+{
+  gVehicleSpeed = clampRange((int)this.gVehicleSpeed, 0, 255);
+  gVehicleRxMs = getSimulationTimeMs();
+}
+
 on timer tPgsCycle
 {
   message frmPgsStateMsg mPgs;
   int parkAssistInputStale;
+  int vehicleInputStale;
   int speed;
   int parkActive;
   int minDistance;
@@ -66,12 +92,18 @@ on timer tPgsCycle
   int quality;
 
   parkAssistInputStale = (ethIsRecentTick(gParkAssistRxMs, 300) == 1) ? 0 : 1;
-  tracePgsInputHealth(parkAssistInputStale);
+  vehicleInputStale = (ethIsRecentTick(gVehicleRxMs, 300) == 1) ? 0 : 1;
+  tracePgsInputHealth(parkAssistInputStale, vehicleInputStale);
 
-  speed = clampRange((int)@Core::vehicleSpeedNorm, 0, 255);
+  speed = gVehicleSpeed;
   parkActive = gParkActive;
   minDistance = gMinDistance;
   zoneMask = gZoneMask;
+  if (vehicleInputStale == 1)
+  {
+    speed = 0;
+    parkActive = 0;
+  }
   if (parkAssistInputStale == 1)
   {
     parkActive = 0;

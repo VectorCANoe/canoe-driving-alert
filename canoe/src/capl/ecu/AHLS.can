@@ -9,14 +9,17 @@ variables
   int gAflsMode;
   int gBeamPattern;
   int gLevelStep;
+  int gVehicleSpeed;
   dword gAflsStateRxMs;
+  dword gVehicleRxMs;
   int gLastAflsInputStale;
+  int gLastVehicleInputStale;
   int gLastAssistState;
   int gLastPermit;
   int gLastGlareCut;
 }
 
-void traceAhlsInputHealth(int aflsInputStale)
+void traceAhlsInputHealth(int aflsInputStale, int vehicleInputStale)
 {
   if (aflsInputStale != gLastAflsInputStale)
   {
@@ -30,6 +33,19 @@ void traceAhlsInputHealth(int aflsInputStale)
     }
     gLastAflsInputStale = aflsInputStale;
   }
+
+  if (vehicleInputStale != gLastVehicleInputStale)
+  {
+    if (vehicleInputStale == 1)
+    {
+      write("[AHLS] vehicle input stale");
+    }
+    else
+    {
+      write("[AHLS] vehicle input restored");
+    }
+    gLastVehicleInputStale = vehicleInputStale;
+  }
 }
 
 on start
@@ -37,8 +53,11 @@ on start
   gAflsMode = 0;
   gBeamPattern = 0;
   gLevelStep = 0;
+  gVehicleSpeed = 0;
   gAflsStateRxMs = 0;
+  gVehicleRxMs = 0;
   gLastAflsInputStale = 0;
+  gLastVehicleInputStale = 0;
   gLastAssistState = -1;
   gLastPermit = -1;
   gLastGlareCut = -1;
@@ -54,10 +73,17 @@ on message frmAflsStateMsg
   gAflsStateRxMs = getSimulationTimeMs();
 }
 
+on message frmVehicleStateCanMsg
+{
+  gVehicleSpeed = clampRange((int)this.gVehicleSpeed, 0, 255);
+  gVehicleRxMs = getSimulationTimeMs();
+}
+
 on timer tAhlsCycle
 {
   message frmAhlsStateMsg mAhls;
   int aflsInputStale;
+  int vehicleInputStale;
   int speed;
   int aflsMode;
   int beamPattern;
@@ -67,12 +93,17 @@ on timer tAhlsCycle
   int glareCutLevel;
 
   aflsInputStale = (ethIsRecentTick(gAflsStateRxMs, 300) == 1) ? 0 : 1;
-  traceAhlsInputHealth(aflsInputStale);
+  vehicleInputStale = (ethIsRecentTick(gVehicleRxMs, 300) == 1) ? 0 : 1;
+  traceAhlsInputHealth(aflsInputStale, vehicleInputStale);
 
-  speed = clampRange((int)@Core::vehicleSpeedNorm, 0, 255);
+  speed = gVehicleSpeed;
   aflsMode = gAflsMode;
   beamPattern = gBeamPattern;
   levelStep = gLevelStep;
+  if (vehicleInputStale == 1)
+  {
+    speed = 0;
+  }
   if (aflsInputStale == 1)
   {
     aflsMode = 0;

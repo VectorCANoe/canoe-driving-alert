@@ -9,15 +9,18 @@ variables
   int gGearInput;
   int gGearState;
   int gDriveMode;
+  int gVehicleSpeed;
   dword gGearRxMs;
   dword gDriveModeRxMs;
+  dword gVehicleRxMs;
   int gLastGearInputStale;
   int gLastDriveModeInputStale;
+  int gLastVehicleInputStale;
   int gLastGearState;
   int gShiftCounter;
 }
 
-void traceTcuInputHealth(int gearInputStale, int driveModeInputStale)
+void traceTcuInputHealth(int gearInputStale, int driveModeInputStale, int vehicleInputStale)
 {
   if (gearInputStale != gLastGearInputStale)
   {
@@ -44,6 +47,19 @@ void traceTcuInputHealth(int gearInputStale, int driveModeInputStale)
     }
     gLastDriveModeInputStale = driveModeInputStale;
   }
+
+  if (vehicleInputStale != gLastVehicleInputStale)
+  {
+    if (vehicleInputStale == 1)
+    {
+      write("[TCU] vehicle input stale");
+    }
+    else
+    {
+      write("[TCU] vehicle input restored");
+    }
+    gLastVehicleInputStale = vehicleInputStale;
+  }
 }
 
 on start
@@ -51,10 +67,13 @@ on start
   gGearInput    = 0;
   gGearState    = 0;
   gDriveMode    = 0;
+  gVehicleSpeed = 0;
   gGearRxMs     = 0;
   gDriveModeRxMs = 0;
+  gVehicleRxMs = 0;
   gLastGearInputStale = 0;
   gLastDriveModeInputStale = 0;
+  gLastVehicleInputStale = 0;
   gLastGearState = -1;
   gShiftCounter  = 0;
   setTimer(tTransCycle, 100);
@@ -74,12 +93,19 @@ on message frmVehicleModeMsg
   gDriveModeRxMs = getSimulationTimeMs();
 }
 
+on message frmVehicleStateCanMsg
+{
+  gVehicleSpeed = clampRange((int)this.gVehicleSpeed, 0, 255);
+  gVehicleRxMs = getSimulationTimeMs();
+}
+
 on timer tTransCycle
 {
   message frmTransmissionTempMsg mTemp;
   message frmTransShiftStateMsg  mShift;
   int gearInputStale;
   int driveModeInputStale;
+  int vehicleInputStale;
   int gearState;
   int driveMode;
   int transOilTemp;
@@ -90,7 +116,8 @@ on timer tTransCycle
 
   gearInputStale = (ethIsRecentTick(gGearRxMs, 300) == 1) ? 0 : 1;
   driveModeInputStale = (ethIsRecentTick(gDriveModeRxMs, 300) == 1) ? 0 : 1;
-  traceTcuInputHealth(gearInputStale, driveModeInputStale);
+  vehicleInputStale = (ethIsRecentTick(gVehicleRxMs, 300) == 1) ? 0 : 1;
+  traceTcuInputHealth(gearInputStale, driveModeInputStale, vehicleInputStale);
 
   gearState = gGearState;
   driveMode = gDriveMode;
@@ -103,7 +130,11 @@ on timer tTransCycle
     driveMode = 0;
   }
 
-  speed = (int)@Core::vehicleSpeedNorm;
+  speed = gVehicleSpeed;
+  if (vehicleInputStale == 1)
+  {
+    speed = 0;
+  }
 
   /* Oil temp: warm when gear engaged, higher under sport mode */
   transOilTemp = 60;
