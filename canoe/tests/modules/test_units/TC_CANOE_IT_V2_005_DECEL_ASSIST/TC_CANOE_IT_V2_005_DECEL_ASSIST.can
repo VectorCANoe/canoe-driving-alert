@@ -1,0 +1,31 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\\common\\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+}
+
+export testcase TC_CANOE_IT_V2_005_DECEL_ASSIST()
+{
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  if (!launchScenarioAndWait(19, 800, 1300))
+  {
+    return;
+  }
+
+  assertIntEq("scenario-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+  assertLongGe("proximity-risk-level", (long)@Core::proximityRiskLevel, 70, "proximityRiskLevel");
+  assertIntEq("decel-assist-req", 1, (long)@Core::decelAssistReq, "decelAssistReq");
+  assertIntEq("selected-alert-level", 7, (long)@Core::selectedAlertLevel, "selectedAlertLevel");
+  assertIntEq("selected-alert-type", 2, (long)@Core::selectedAlertType, "selectedAlertType");
+  assertIntEq("fail-safe-clear", 0, (long)@Core::failSafeMode, "failSafeMode");
+
+  resetValidationHarnessIfNeeded();
+}

@@ -1,0 +1,64 @@
+﻿/*@!Encoding:65001*/
+includes
+{
+  #include "..\\common\\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+}
+
+export testcase TC_CANOE_UT_EXT_013_WARNING_DELIVERY_BOUNDARY()
+{
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  @Test::scenarioCommand = 18;
+  if (!waitForScenarioAck(18, 1500))
+  {
+    return;
+  }
+
+  if (!waitForBaseResult(18, 2000))
+  {
+    return;
+  }
+
+  TestWaitForTimeout(200);
+  assertIntEq("boundary-failsafe-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+  assertIntMin("boundary-failsafe-mode", 1, (long)@Core::failSafeMode, "failSafeMode");
+  assertIntEq("boundary-failsafe-decel-off", 0, (long)@Core::decelAssistReq, "decelAssistReq");
+
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  if (!launchScenarioAndWait(203, 1500, 2100))
+  {
+    return;
+  }
+
+  assertIntEq("boundary-sgw-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+  assertIntEq("boundary-security-state", 3, (long)@Diag::SecurityState, "SecurityState");
+  assertIntEq("boundary-route-owner", 1, (long)@Diag::RouteOwner, "RouteOwner");
+
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  if (!launchScenarioAndWait(204, 1500, 2100))
+  {
+    return;
+  }
+
+  assertIntEq("boundary-dcm-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+  assertIntEq("boundary-response-kind", 4, (long)@Diag::ResponseKind, "ResponseKind");
+  assertIntEq("boundary-reason-code", 2, (long)@Diag::ReasonCode, "ReasonCode");
+  assertIntEq("boundary-response-ok", 0, (long)@Diag::LastResponseOk, "LastResponseOk");
+
+  resetValidationHarnessIfNeeded();
+}

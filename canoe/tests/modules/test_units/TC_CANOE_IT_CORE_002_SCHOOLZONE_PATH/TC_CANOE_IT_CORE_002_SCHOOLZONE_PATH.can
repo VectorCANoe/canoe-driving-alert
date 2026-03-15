@@ -1,0 +1,30 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\\common\\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+}
+
+export testcase TC_CANOE_IT_CORE_002_SCHOOLZONE_PATH()
+{
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  if (!launchScenarioAndWait(2, 700, 1200))
+  {
+    return;
+  }
+
+  assertIntEq("scenario-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+  assertIntEq("selected-alert-level", 3, (long)@Core::selectedAlertLevel, "selectedAlertLevel");
+  assertIntEq("selected-alert-type", 3, (long)@Core::selectedAlertType, "selectedAlertType");
+  assertIntEq("ambient-color", 3, (long)@Body::ambientColor, "ambientColor");
+  assertIntEq("ambient-pattern", 5, (long)@Body::ambientPattern, "ambientPattern");
+
+  resetValidationHarnessIfNeeded();
+}

@@ -1,0 +1,8 @@
+version: 2.2.0
+
+test-tree:
+  - test-fixture: EmergencyClearRestore
+    description: System-test executable contract for emergency-clear and zone-warning restore behavior.
+    elements:
+      - capl-test-case: TC_CANOE_ST_CORE_020_EMERGENCY_CLEAR_RESTORE
+        title: TC_CANOE_ST_CORE_020_EMERGENCY_CLEAR_RESTORE

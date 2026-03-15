@@ -1,0 +1,123 @@
+﻿/*@!Encoding:65001*/
+includes
+{
+  #include "..\\common\\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+  long gCabinSetTemp;
+  long gBlowerLevel;
+  long gAcOn;
+  long gVentMode;
+  long gDefogMode;
+  long gFanRpmStep;
+  long gAflsMode;
+  long gBeamPattern;
+  long gCornerLampState;
+  long gLevelStep;
+  long gAhlsAssistState;
+  long gHighBeamPermit;
+  long gGlareCutLevel;
+  long gSeatDrvPos;
+  long gSeatDrvHeat;
+  long gSeatPassPos;
+  long gSeatPassHeat;
+  long gSunroofPosition;
+  long gSunroofTiltState;
+}
+
+on message frmHvacStateMsg
+{
+  gCabinSetTemp = this.CabinSetTemp;
+  gBlowerLevel = this.BlowerLevel;
+  gAcOn = this.AcCompressorOn;
+}
+
+on message frmHvacActuatorMsg
+{
+  gVentMode = this.VentMode;
+  gDefogMode = this.DefogMode;
+  gFanRpmStep = this.FanRpmStep;
+}
+
+on message frmAflsStateMsg
+{
+  gAflsMode = this.AflsMode;
+  gBeamPattern = this.BeamPattern;
+  gCornerLampState = this.CornerLampState;
+  gLevelStep = this.LevelStep;
+}
+
+on message frmAhlsStateMsg
+{
+  gAhlsAssistState = this.AhlsAssistState;
+  gHighBeamPermit = this.HighBeamPermit;
+  gGlareCutLevel = this.GlareCutLevel;
+}
+
+on message frmSeatDrvStateMsg
+{
+  gSeatDrvPos = this.SeatDrvPos;
+  gSeatDrvHeat = this.SeatDrvHeatLvl;
+}
+
+on message frmSeatPassStateMsg
+{
+  gSeatPassPos = this.SeatPassPos;
+  gSeatPassHeat = this.SeatPassHeatLvl;
+}
+
+on message frmSunroofStateMsg
+{
+  gSunroofPosition = this.SunroofPosition;
+  gSunroofTiltState = this.SunroofTiltState;
+}
+
+export testcase TC_CANOE_UT_EXT_008_BODY_COMFORT()
+{
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  @Test::scenarioCommand = 229;
+  if (!waitForScenarioAck(229, 1500))
+  {
+    return;
+  }
+  TestWaitForTimeout(450);
+  assertIntEq("body-comfort-hvac-set", 24, gCabinSetTemp, "CabinSetTemp");
+  assertIntEq("body-comfort-hvac-blower", 5, gBlowerLevel, "BlowerLevel");
+  assertIntEq("body-comfort-hvac-ac", 1, gAcOn, "AcCompressorOn");
+  assertIntEq("body-comfort-hvac-vent", 2, gVentMode, "VentMode");
+  assertIntEq("body-comfort-hvac-defog", 0, gDefogMode, "DefogMode");
+  assertIntEq("body-comfort-hvac-fan", 80, gFanRpmStep, "FanRpmStep");
+
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  @Test::scenarioCommand = 230;
+  if (!waitForScenarioAck(230, 1500))
+  {
+    return;
+  }
+  TestWaitForTimeout(450);
+  assertIntEq("body-comfort-afls-mode", 1, gAflsMode, "AflsMode");
+  assertIntEq("body-comfort-afls-beam", 2, gBeamPattern, "BeamPattern");
+  assertIntEq("body-comfort-afls-corner", 1, gCornerLampState, "CornerLampState");
+  assertIntEq("body-comfort-afls-level", 7, gLevelStep, "LevelStep");
+  assertIntEq("body-comfort-ahls-assist", 1, gAhlsAssistState, "AhlsAssistState");
+  assertIntEq("body-comfort-ahls-permit", 1, gHighBeamPermit, "HighBeamPermit");
+  assertIntEq("body-comfort-ahls-glare", 23, gGlareCutLevel, "GlareCutLevel");
+  assertIntEq("body-comfort-seat-drv-pos", 120, gSeatDrvPos, "SeatDrvPos");
+  assertIntEq("body-comfort-seat-drv-heat", 0, gSeatDrvHeat, "SeatDrvHeatLvl");
+  assertIntEq("body-comfort-seat-pass-pos", 0, gSeatPassPos, "SeatPassPos");
+  assertIntEq("body-comfort-seat-pass-heat", 0, gSeatPassHeat, "SeatPassHeatLvl");
+  assertIntEq("body-comfort-sunroof-pos", 0, gSunroofPosition, "SunroofPosition");
+  assertIntEq("body-comfort-sunroof-tilt", 0, gSunroofTiltState, "SunroofTiltState");
+
+  resetValidationHarnessIfNeeded();
+}

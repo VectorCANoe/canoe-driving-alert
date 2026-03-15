@@ -1,0 +1,60 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\\common\\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+}
+
+export testcase TC_CANOE_UT_CORE_004_NAV_CTX_MGR()
+{
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  if (!launchScenarioAndWait(2, 800, 1300))
+  {
+    return;
+  }
+  assertIntEq("nav-school-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+  assertIntEq("nav-school-zone", 1, (long)@Core::baseZoneContext, "baseZoneContext");
+  assertIntEq("nav-school-limit", 30, (long)@Core::speedLimitNorm, "speedLimitNorm");
+
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+  if (!launchScenarioAndWait(3, 800, 1300))
+  {
+    return;
+  }
+  assertIntEq("nav-highway-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+  assertIntEq("nav-highway-zone", 2, (long)@Core::baseZoneContext, "baseZoneContext");
+
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+  if (!launchScenarioAndWait(7, 800, 1300))
+  {
+    return;
+  }
+  assertIntEq("nav-guide-left-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+  assertIntEq("nav-guide-left-zone", 3, (long)@Core::baseZoneContext, "baseZoneContext");
+
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+  if (!launchScenarioAndWait(8, 800, 1300))
+  {
+    return;
+  }
+  assertIntEq("nav-guide-right-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+  assertIntEq("nav-guide-right-zone", 4, (long)@Core::baseZoneContext, "baseZoneContext");
+
+  resetValidationHarnessIfNeeded();
+}

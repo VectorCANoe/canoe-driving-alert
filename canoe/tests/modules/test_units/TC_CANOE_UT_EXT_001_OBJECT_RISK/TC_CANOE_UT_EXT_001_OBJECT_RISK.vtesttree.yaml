@@ -1,0 +1,8 @@
+version: 2.2.0
+
+test-tree:
+  - test-fixture: ObjectRisk
+    description: Unit contract for object-risk evaluation and downgrade handling.
+    elements:
+      - capl-test-case: TC_CANOE_UT_EXT_001_OBJECT_RISK
+        title: TC_CANOE_UT_EXT_001_OBJECT_RISK

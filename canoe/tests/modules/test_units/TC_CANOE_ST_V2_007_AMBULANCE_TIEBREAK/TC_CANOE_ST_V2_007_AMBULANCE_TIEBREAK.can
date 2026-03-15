@@ -1,0 +1,30 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\\common\\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+}
+
+export testcase TC_CANOE_ST_V2_007_AMBULANCE_TIEBREAK()
+{
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  if (!launchScenarioAndWait(224, 700, 1200))
+  {
+    return;
+  }
+
+  assertIntEq("ambulance-tiebreak-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+  assertIntEq("ambulance-tiebreak-eta", 10, (long)@V2X::eta, "eta");
+  assertIntEq("ambulance-tiebreak-source", 5, (long)@V2X::sourceId, "sourceId");
+  assertIntEq("ambulance-tiebreak-emergency-type", 2, (long)@V2X::emergencyType, "emergencyType");
+  assertIntEq("ambulance-tiebreak-level", 7, (long)@Core::selectedAlertLevel, "selectedAlertLevel");
+
+  resetValidationHarnessIfNeeded();
+}

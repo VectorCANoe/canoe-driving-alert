@@ -1,0 +1,60 @@
+﻿/*@!Encoding:65001*/
+includes
+{
+  #include "..\\common\\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+  long gTmuLinkState;
+  long gTmuServiceMode;
+  long gRemoteClimateReq;
+  long gSignalBars;
+  long gDKeyState;
+  long gAuthMode;
+  long gVehicleAccessState;
+  long gSecurityGrade;
+  long gKeyPresence;
+}
+
+on message frmTmuServiceStateMsg
+{
+  gTmuLinkState = this.TmuLinkState;
+  gTmuServiceMode = this.TmuServiceMode;
+  gRemoteClimateReq = this.RemoteClimateReq;
+  gSignalBars = this.SignalBars;
+}
+
+on message frmDigitalKeyStateMsg
+{
+  gDKeyState = this.DKeyState;
+  gAuthMode = this.AuthMode;
+  gVehicleAccessState = this.VehicleAccessState;
+  gSecurityGrade = this.SecurityGrade;
+  gKeyPresence = this.KeyPresence;
+}
+
+export testcase TC_CANOE_UT_EXT_010_IVI_SERVICE_ACCESS()
+{
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  @Test::scenarioCommand = 229;
+  if (!waitForScenarioAck(229, 1500))
+  {
+    return;
+  }
+  TestWaitForTimeout(450);
+  assertIntEq("ivi-access-tmu-link", 2, gTmuLinkState, "TmuLinkState");
+  assertIntEq("ivi-access-tmu-service", 1, gTmuServiceMode, "TmuServiceMode");
+  assertIntEq("ivi-access-tmu-remote", 1, gRemoteClimateReq, "RemoteClimateReq");
+  assertIntEq("ivi-access-dkey-state", 2, gDKeyState, "DKeyState");
+  assertIntEq("ivi-access-auth", 2, gAuthMode, "AuthMode");
+  assertIntEq("ivi-access-vehicle-access", 2, gVehicleAccessState, "VehicleAccessState");
+  assertIntEq("ivi-access-grade", 2, gSecurityGrade, "SecurityGrade");
+  assertIntEq("ivi-access-presence", 1, gKeyPresence, "KeyPresence");
+
+  resetValidationHarnessIfNeeded();
+}

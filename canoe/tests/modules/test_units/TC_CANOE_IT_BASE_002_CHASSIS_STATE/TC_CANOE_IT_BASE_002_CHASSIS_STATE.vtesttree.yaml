@@ -1,0 +1,8 @@
+version: 2.2.0
+
+test-tree:
+  - test-fixture: ChassisState
+    description: Integrated steering and braking chassis-state propagation verification.
+    elements:
+      - capl-test-case: TC_CANOE_IT_BASE_002_CHASSIS_STATE
+        title: TC_CANOE_IT_BASE_002_CHASSIS_STATE

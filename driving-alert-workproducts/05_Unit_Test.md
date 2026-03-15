@@ -21,19 +21,19 @@
 
 | 노드 | 분류 | 기능명 | 기능 설명 | Pass/Fail | 담당자 | 일자 |
 |---|---|---|---|---|---|---|
-| 제어기 | 제어 | UT_001 - CGW (`CHS_GW`) | 차량 기본 입력과 차체 상태 정보를 수신하여 100ms 주기로 경계 경로에 전달 |  |  |  |
-|  |  | UT_002 - CGW (`INFOTAINMENT_GW`) | 구간, 방향, 거리(m), 제한속도(km/h) 정보를 수신하여 100ms 주기로 표시 경로에 전달 |  |  |  |
+| 제어기 | 제어 | UT_001 - CGW (`CHS_GW`) | 차량 기본 입력과 차체 상태 정보를 수신하여 100ms 주기로 경계 경로에 전달 | Ready |  |  |
+|  |  | UT_002 - CGW (`INFOTAINMENT_GW`) | 구간, 방향, 거리(m), 제한속도(km/h) 정보를 수신하여 100ms 주기로 표시 경로에 전달 | Ready |  |  |
 |  |  | UT_003 - ADAS (`ADAS_WARN_CTRL`) | 주행 상태와 제한속도(km/h)를 반영하여 150ms 이내 기본 경고 상태를 판단 | Ready |  |  |
 |  |  | UT_004 - V2X (`EMS_ALERT`, V2 확장) | 긴급차량 접근 정보를 수신하고 1000ms 기준 유지, 해제, 타임아웃을 관리 | Ready |  |  |
 |  |  | UT_005 - ADAS (`WARN_ARB_MGR`, V2 확장) | 긴급차량 방향과 접근 시간을 반영하여 위험도와 감속 보조를 판단 | Ready |  |  |
-|  |  | UT_006 - ADAS (`ADAS_WARN_CTRL`, ADAS 객체 확장, Planned) | 주변 객체와 센서 상태를 반영하여 위험 경고를 판단 | Planned |  |  |
-|  |  | UT_007 - CLU (`CLU_HMI_CTRL`, 차량 경보 편의 확장, Planned) | 운전자 상태와 차량 맥락을 반영하여 경고 표시와 안내를 보정 | Planned |  |  |
-|  |  | UT_008 - CGW (`DOMAIN_BOUNDARY_MGR`, 경고 강건성·인지성 확장, Planned) | 입력 신선도와 서비스 상태를 반영하여 경고 강등과 경계 상태를 유지 | Planned |  |  |
-|  |  | UT_009 - IVI (`NAV_CTX_MGR`) | 구간, 방향, 거리, 제한속도 정보를 받아 주행 맥락을 계산 |  |  |  |
-|  |  | UT_010 - V2X (`EMS_ALERT`) | 경찰, 구급 긴급 이벤트의 송신, 수신, 해제, 1000ms 타임아웃 동작을 검증 |  |  |  |
+|  |  | UT_006 - ADAS (`ADAS_WARN_CTRL`, ADAS 객체 확장, Planned) | 주변 객체와 센서 상태를 반영하여 위험 경고를 판단 | Ready |  |  |
+|  |  | UT_007 - CLU (`CLU_HMI_CTRL`, 차량 경보 편의 확장, Planned) | 운전자 상태와 차량 맥락을 반영하여 경고 표시와 안내를 보정 | Ready |  |  |
+|  |  | UT_008 - CGW (`DOMAIN_BOUNDARY_MGR`, 경고 강건성·인지성 확장, Planned) | 입력 신선도와 서비스 상태를 반영하여 경고 강등과 경계 상태를 유지 | Ready |  |  |
+|  |  | UT_009 - IVI (`NAV_CTX_MGR`) | 구간, 방향, 거리, 제한속도 정보를 받아 주행 맥락을 계산 | Ready |  |  |
+|  |  | UT_010 - V2X (`EMS_ALERT`) | 경찰, 구급 긴급 이벤트의 송신, 수신, 해제, 1000ms 타임아웃 동작을 검증 | Ready |  |  |
 |  |  | UT_011 - ADAS (`WARN_ARB_MGR`) | 긴급 경고와 일반 경고가 겹칠 때 우선순위를 결정 | Ready |  |  |
-|  |  | UT_012 - BCM (`BODY_GW`) | 경고 결과를 50ms 주기로 앰비언트 출력 경로에 전달 |  |  |  |
-|  |  | UT_013 - IVI (`IVI_GW`) | 경고 결과를 50ms 주기로 클러스터 표시 경로에 전달 |  |  |  |
+|  |  | UT_012 - BCM (`BODY_GW`) | 경고 결과를 50ms 주기로 앰비언트 출력 경로에 전달 | Ready |  |  |
+|  |  | UT_013 - IVI (`IVI_GW`) | 경고 결과를 50ms 주기로 클러스터 표시 경로에 전달 | Ready |  |  |
 |  |  | UT_014 - BCM (`AMBIENT_CTRL`) | 경고 상태에 맞는 앰비언트 색상과 패턴을 50ms 주기로 출력 | Ready |  |  |
 |  |  | UT_015 - CLU (`CLU_HMI_CTRL`) | 경고 문구와 방향 표시를 50ms 주기로 출력 | Ready |  |  |
 |  |  | UT_016 - CGW (`CHS_GW`, 제동 확장) | 전동 주차와 제동 보조 상태를 수신하여 경고 판단 경로에 전달 | Ready |  |  |
@@ -83,8 +83,8 @@
 |  |  | UT_060 - SRR_RL Input | 좌후 측후방 레이더 상태를 입력 |  |  |  |
 |  |  | UT_061 - SRR_RR Input | 우후 측후방 레이더 상태를 입력 |  |  |  |
 |  |  | UT_062 - IBOX Input | 차량 서비스 ECU 상태 정보를 입력 |  |  |  |
-|  |  | UT_063 - SGW Input | 보안 게이트웨이 상태를 입력 | Planned |  |  |
-|  |  | UT_064 - DCM Input | 진단 제어 상태를 입력 | Planned |  |  |
+|  |  | UT_063 - SGW Input | 보안 게이트웨이 상태를 입력 | Ready |  |  |
+|  |  | UT_064 - DCM Input | 진단 제어 상태를 입력 | Ready |  |  |
 |  |  | UT_065 - ETHB Input | 백본 서비스 상태를 입력 |  |  |  |
 |  |  | UT_066 - OBC Input | 충전 ECU 상태 정보를 입력 |  |  |  |
 |  |  | UT_067 - DCDC Input | 전력 변환 ECU 상태를 입력 |  |  |  |

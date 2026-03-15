@@ -1,0 +1,44 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\\common\\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+}
+
+export testcase TC_CANOE_IT_EXT_002_DRIVER_CONTEXT()
+{
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  if (!launchScenarioAndWait(214, 900, 1300))
+  {
+    return;
+  }
+
+  assertIntEq("seatbelt-context-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+  assertIntEq("seatbelt-context-level", 5, (long)@Core::selectedAlertLevel, "selectedAlertLevel");
+  assertIntEq("seatbelt-context-type", 3, (long)@Core::selectedAlertType, "selectedAlertType");
+
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  if (!launchScenarioAndWait(215, 900, 1300))
+  {
+    return;
+  }
+
+  assertIntEq("display-policy-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+  assertIntEq("display-policy-level", 6, (long)@Core::selectedAlertLevel, "selectedAlertLevel");
+  assertIntEq("display-policy-type", 1, (long)@Core::selectedAlertType, "selectedAlertType");
+  assertIntEq("display-policy-code", 142, (long)@Cluster::warningTextCode, "warningTextCode");
+  assertIntEq("display-policy-direction", 2, (long)@UiRender::renderDirection, "renderDirection");
+
+  resetValidationHarnessIfNeeded();
+}

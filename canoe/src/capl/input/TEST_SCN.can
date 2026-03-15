@@ -33,6 +33,8 @@ variables
   int gLockEmergencyDirection;
   int gLockEta;
   int gLockSourceId;
+  int gLockPoliceDispatch;
+  int gLockAmbulanceDispatch;
   int gLockForceFailSafe;
   int gLockObjectTrackValid;
   int gLockObjectRange;
@@ -101,6 +103,8 @@ void pushLockedScenarioInputs()
   @Infotainment::zoneDistance = clampRange(gLockZoneDistance, 0, 255);
   @Infotainment::speedLimit = clampRange(gLockSpeedLimit, 0, 255);
   @Test::forceFailSafe = clampRange(gLockForceFailSafe, 0, 1);
+  @V2X::policeDispatch = clampRange(gLockPoliceDispatch, 0, 1);
+  @V2X::ambulanceDispatch = clampRange(gLockAmbulanceDispatch, 0, 1);
   /* A/B 그룹 플래그: CGW 정규화 경로를 거치지 않고 Core에 직접 주입 */
   @Core::accelGroupFlag = clampRange(gLockAccelGroupFlag, 0, 1);
   @Core::steerGroupFlag = clampRange(gLockSteerGroupFlag, 0, 1);
@@ -173,6 +177,8 @@ void stopScenarioExecution()
   cancelTimer(tDemoStep);
   cancelScenarioTransientTimers();
   @Test::forceFailSafe = 0;
+  @V2X::policeDispatch = 0;
+  @V2X::ambulanceDispatch = 0;
   @Test::scenarioResult = 0;
   gLockAccelGroupFlag = 0;
   gLockSteerGroupFlag = 0;
@@ -375,6 +381,8 @@ void applyScenarioPreset(int scenarioId)
   gLockEmergencyDirection = 1;
   gLockEta = 10;
   gLockSourceId = 1;
+  gLockPoliceDispatch = 0;
+  gLockAmbulanceDispatch = 0;
   gLockForceFailSafe = 0;
   gLockObjectTrackValid = 0;
   gLockObjectRange = 0;
@@ -950,6 +958,356 @@ void applyScenarioPreset(int scenarioId)
     gLockForceFailSafe = 0;
     gLockSuppressEmergencyFrame = 0;
   }
+  else if (scenarioId == 212)
+  {
+    /* IT_006: ambulance must win over police when both dispatch requests are active */
+    gLockDriveState = 3;
+    gLockVehicleSpeed = 45;
+    gLockRoadZone = 0;
+    gLockSpeedLimit = 60;
+    gLockAlertState = 0;
+    gLockEmergencyType = 0;
+    gLockEta = 12;
+    gLockSourceId = 0;
+    gLockEmergencyDirection = 1;
+    gLockPoliceDispatch = 1;
+    gLockAmbulanceDispatch = 1;
+    gLockForceFailSafe = 0;
+    gLockSuppressEmergencyFrame = 0;
+  }
+  else if (scenarioId == 223)
+  {
+    /* ST_012: nav->ambulance transition - Phase 1: guide zone stable */
+    gLockRoadZone = 3;
+    gLockNavDirection = 1;
+    gLockVehicleSpeed = 35;
+    gLockAlertState = 0;
+    gLockEmergencyType = 0;
+    setTimer(tScenarioPhase2, 400);
+  }
+  else if (scenarioId == 224)
+  {
+    /* ST_017: ambulance SourceID tiebreaker - Phase 1: ambulance ETA=10 sourceId=20 */
+    gLockAlertState = 1;
+    gLockEmergencyType = 2;
+    gLockEta = 10;
+    gLockSourceId = 20;
+    gLockEmergencyDirection = 1;
+    setTimer(tScenarioPhase2, 300);
+  }
+  else if (scenarioId == 213)
+  {
+    /* IT_014: ambulance emergency must stay primary even with simultaneous TTC intersection risk */
+    gLockDriveState = 3;
+    gLockVehicleSpeed = 78;
+    gLockRoadZone = 2;
+    gLockSteeringInput = 1;
+    gLockSpeedLimit = 80;
+    gLockAlertState = 1;
+    gLockEmergencyType = 2;
+    gLockEta = 5;
+    gLockSourceId = 95;
+    gLockEmergencyDirection = 1;
+    gLockObjectTrackValid = 1;
+    gLockObjectRange = 28;
+    gLockObjectRelSpeed = -55;
+    gLockObjectConfidence = 90;
+    gLockIntersectionConflictFlag = 1;
+    gLockMergeCutInFlag = 0;
+    gLockForceFailSafe = 0;
+    gLockSuppressEmergencyFrame = 0;
+  }
+  else if (scenarioId == 214)
+  {
+    /* IT_013(partial): seat-belt warning context must escalate active school-zone warning */
+    gLockDriveState = 3;
+    gLockVehicleSpeed = 45;
+    gLockRoadZone = 1;
+    gLockSpeedLimit = 30;
+    gLockAlertState = 0;
+    gLockEmergencyType = 0;
+    gLockEta = 0;
+    gLockSourceId = 0;
+    gLockEmergencyDirection = 0;
+    gLockForceFailSafe = 0;
+    gLockSuppressEmergencyFrame = 0;
+    @Test::seatBeltOverride = 3;
+  }
+  else if (scenarioId == 215)
+  {
+    /* IT_013(partial): display and volume policy must change warning rendering behavior */
+    gLockDriveState = 3;
+    gLockVehicleSpeed = 40;
+    gLockRoadZone = 0;
+    gLockSpeedLimit = 60;
+    gLockAlertState = 1;
+    gLockEmergencyType = 1;
+    gLockEta = 11;
+    gLockSourceId = 96;
+    gLockEmergencyDirection = 2;
+    gLockForceFailSafe = 0;
+    gLockSuppressEmergencyFrame = 0;
+    @Test::displayModeSetting = 2;
+    @Test::alertVolumeSetting = 80;
+  }
+  else if (scenarioId == 216)
+  {
+    /* IT_015(partial): parked baseline must propagate powertrain idle state consistently */
+    gLockDriveState = 0;
+    gLockVehicleSpeed = 0;
+    gLockRoadZone = 0;
+    gLockSpeedLimit = 50;
+    gLockAlertState = 0;
+    gLockEmergencyType = 0;
+    gLockEta = 0;
+    gLockSourceId = 0;
+    gLockEmergencyDirection = 0;
+    gLockSteeringInput = 0;
+    gLockForceFailSafe = 0;
+    gLockSuppressEmergencyFrame = 0;
+  }
+  else if (scenarioId == 217)
+  {
+    /* IT_015(partial): drive baseline must propagate cruising powertrain state consistently */
+    gLockDriveState = 3;
+    gLockVehicleSpeed = 55;
+    gLockRoadZone = 0;
+    gLockSpeedLimit = 80;
+    gLockAlertState = 0;
+    gLockEmergencyType = 0;
+    gLockEta = 0;
+    gLockSourceId = 0;
+    gLockEmergencyDirection = 0;
+    gLockSteeringInput = 0;
+    gLockForceFailSafe = 0;
+    gLockSuppressEmergencyFrame = 0;
+  }
+  else if (scenarioId == 218)
+  {
+    /* IT_016(partial): steering input must propagate into normalized chassis state during cruise */
+    gLockDriveState = 3;
+    gLockVehicleSpeed = 68;
+    gLockRoadZone = 2;
+    gLockSpeedLimit = 90;
+    gLockAlertState = 0;
+    gLockEmergencyType = 0;
+    gLockEta = 0;
+    gLockSourceId = 0;
+    gLockEmergencyDirection = 0;
+    gLockSteeringInput = 1;
+    gLockForceFailSafe = 0;
+    gLockSuppressEmergencyFrame = 0;
+  }
+  else if (scenarioId == 219)
+  {
+    /* IT_016(partial): braking baseline must propagate into normalized chassis state at stop */
+    gLockDriveState = 0;
+    gLockVehicleSpeed = 0;
+    gLockRoadZone = 0;
+    gLockSpeedLimit = 50;
+    gLockAlertState = 0;
+    gLockEmergencyType = 0;
+    gLockEta = 0;
+    gLockSourceId = 0;
+    gLockEmergencyDirection = 0;
+    gLockSteeringInput = 0;
+    gLockForceFailSafe = 0;
+    gLockSuppressEmergencyFrame = 0;
+  }
+  else if (scenarioId == 220)
+  {
+    /* IT_018: visual-first display mode must keep popup/theme/sync state consistent on school-zone warning */
+    gLockDriveState = 3;
+    gLockVehicleSpeed = 45;
+    gLockRoadZone = 1;
+    gLockSpeedLimit = 30;
+    gLockAlertState = 0;
+    gLockEmergencyType = 0;
+    gLockEta = 0;
+    gLockSourceId = 0;
+    gLockEmergencyDirection = 0;
+    gLockSteeringInput = 0;
+    gLockForceFailSafe = 0;
+    gLockSuppressEmergencyFrame = 0;
+    @Test::displayModeSetting = 1;
+  }
+  else if (scenarioId == 222)
+  {
+    /* IT_022: emergency distance display and history-query response on police-right context */
+    gLockDriveState = 3;
+    gLockVehicleSpeed = 72;
+    gLockRoadZone = 0;
+    gLockSpeedLimit = 80;
+    gLockAlertState = 1;
+    gLockEmergencyType = 1;
+    gLockEta = 9;
+    gLockSourceId = 92;
+    gLockEmergencyDirection = 2;
+    gLockSteeringInput = 0;
+    gLockForceFailSafe = 0;
+    gLockSuppressEmergencyFrame = 0;
+  }
+  else if (scenarioId == 225)
+  {
+    /* UT_017: chassis dynamics extension via suspension and damping input propagation */
+    gLockDriveState = 3;
+    gLockVehicleSpeed = 70;
+    gLockRoadZone = 2;
+    gLockSpeedLimit = 90;
+    gLockAlertState = 0;
+    gLockEmergencyType = 0;
+    gLockEta = 0;
+    gLockSourceId = 0;
+    gLockEmergencyDirection = 0;
+    gLockSteeringInput = 0;
+    gLockForceFailSafe = 0;
+    gLockSuppressEmergencyFrame = 0;
+  }
+  else if (scenarioId == 226)
+  {
+    /* UT_018: door entry-exit context via front-door input propagation */
+    gLockDriveState = 0;
+    gLockVehicleSpeed = 0;
+    gLockRoadZone = 0;
+    gLockSpeedLimit = 50;
+    gLockAlertState = 0;
+    gLockEmergencyType = 0;
+    gLockEta = 0;
+    gLockSourceId = 0;
+    gLockEmergencyDirection = 0;
+    gLockSteeringInput = 0;
+    gLockForceFailSafe = 0;
+    gLockSuppressEmergencyFrame = 0;
+  }
+  else if (scenarioId == 227)
+  {
+    /* UT_018: tailgate access context via power-tailgate input propagation */
+    gLockDriveState = 0;
+    gLockVehicleSpeed = 0;
+    gLockRoadZone = 0;
+    gLockSpeedLimit = 50;
+    gLockAlertState = 0;
+    gLockEmergencyType = 0;
+    gLockEta = 0;
+    gLockSourceId = 0;
+    gLockEmergencyDirection = 0;
+    gLockSteeringInput = 0;
+    gLockForceFailSafe = 0;
+    gLockSuppressEmergencyFrame = 0;
+  }
+  else if (scenarioId == 228)
+  {
+    /* UT_019: occupant-protection context via seat-belt and passenger-seat input propagation */
+    gLockDriveState = 0;
+    gLockVehicleSpeed = 0;
+    gLockRoadZone = 0;
+    gLockSpeedLimit = 50;
+    gLockAlertState = 0;
+    gLockEmergencyType = 0;
+    gLockEta = 0;
+    gLockSourceId = 0;
+    gLockEmergencyDirection = 0;
+    gLockSteeringInput = 0;
+    gLockForceFailSafe = 0;
+    gLockSuppressEmergencyFrame = 0;
+  }
+  else if (scenarioId == 229)
+  {
+    /* UT_020/UT_021/UT_022: remote-climate service and digital-access baseline */
+    gLockDriveState = 0;
+    gLockVehicleSpeed = 0;
+    gLockRoadZone = 0;
+    gLockSpeedLimit = 50;
+    gLockAlertState = 0;
+    gLockEmergencyType = 0;
+    gLockEta = 0;
+    gLockSourceId = 0;
+    gLockEmergencyDirection = 0;
+    gLockSteeringInput = 0;
+    gLockForceFailSafe = 0;
+    gLockSuppressEmergencyFrame = 0;
+  }
+  else if (scenarioId == 230)
+  {
+    /* UT_020: lighting comfort baseline through AFLS/AHLS */
+    gLockDriveState = 3;
+    gLockVehicleSpeed = 65;
+    gLockRoadZone = 2;
+    gLockSpeedLimit = 90;
+    gLockAlertState = 0;
+    gLockEmergencyType = 0;
+    gLockEta = 0;
+    gLockSourceId = 0;
+    gLockEmergencyDirection = 0;
+    gLockSteeringInput = 1;
+    gLockForceFailSafe = 0;
+    gLockSuppressEmergencyFrame = 0;
+  }
+  else if (scenarioId == 231)
+  {
+    /* UT_027: charging/power path baseline */
+    gLockDriveState = 0;
+    gLockVehicleSpeed = 0;
+    gLockRoadZone = 0;
+    gLockSpeedLimit = 50;
+    gLockAlertState = 0;
+    gLockEmergencyType = 0;
+    gLockEta = 0;
+    gLockSourceId = 0;
+    gLockEmergencyDirection = 0;
+    gLockSteeringInput = 0;
+    gLockForceFailSafe = 0;
+    gLockSuppressEmergencyFrame = 0;
+  }
+  else if (scenarioId == 232)
+  {
+    /* UT_026: propulsion path baseline */
+    gLockDriveState = 3;
+    gLockVehicleSpeed = 65;
+    gLockRoadZone = 2;
+    gLockSpeedLimit = 100;
+    gLockAlertState = 0;
+    gLockEmergencyType = 0;
+    gLockEta = 0;
+    gLockSourceId = 0;
+    gLockEmergencyDirection = 0;
+    gLockSteeringInput = 0;
+    gLockForceFailSafe = 0;
+    gLockSuppressEmergencyFrame = 0;
+  }
+  else if (scenarioId == 233)
+  {
+    /* UT_023: drive-assist and road-preview baseline */
+    gLockDriveState = 3;
+    gLockVehicleSpeed = 80;
+    gLockRoadZone = 2;
+    gLockSpeedLimit = 100;
+    gLockAlertState = 0;
+    gLockEmergencyType = 0;
+    gLockEta = 0;
+    gLockSourceId = 0;
+    gLockEmergencyDirection = 0;
+    gLockSteeringInput = 1;
+    gLockSteerGroupFlag = 1;
+    gLockForceFailSafe = 0;
+    gLockSuppressEmergencyFrame = 0;
+  }
+  else if (scenarioId == 234)
+  {
+    /* UT_024: parking/perception baseline */
+    gLockDriveState = 0;
+    gLockVehicleSpeed = 5;
+    gLockRoadZone = 0;
+    gLockSpeedLimit = 30;
+    gLockAlertState = 0;
+    gLockEmergencyType = 0;
+    gLockEta = 0;
+    gLockSourceId = 0;
+    gLockEmergencyDirection = 0;
+    gLockSteeringInput = 1;
+    gLockForceFailSafe = 0;
+    gLockSuppressEmergencyFrame = 0;
+  }
 
   pushLockedScenarioInputs();
   write("[EVIDENCE_IN] scenario=%d inputTsMs=%lu",
@@ -1049,6 +1407,38 @@ void scheduleScenarioEvaluation(int scenarioId)
   }
   else if (scenarioId == 206 || scenarioId == 207 || scenarioId == 208 || scenarioId == 209 ||
            scenarioId == 210 || scenarioId == 211)
+  {
+    evalDelayMs = 900;
+  }
+  else if (scenarioId == 212)
+  {
+    evalDelayMs = 700;
+  }
+  else if (scenarioId == 223)
+  {
+    evalDelayMs = 800;
+  }
+  else if (scenarioId == 224)
+  {
+    evalDelayMs = 700;
+  }
+  else if (scenarioId == 213)
+  {
+    evalDelayMs = 800;
+  }
+  else if (scenarioId == 214 || scenarioId == 215)
+  {
+    evalDelayMs = 900;
+  }
+  else if (scenarioId == 216 || scenarioId == 217 || scenarioId == 218 || scenarioId == 219)
+  {
+    evalDelayMs = 900;
+  }
+  else if (scenarioId == 220 || scenarioId == 222)
+  {
+    evalDelayMs = 900;
+  }
+  else if (scenarioId == 225 || scenarioId == 226 || scenarioId == 227 || scenarioId == 228)
   {
     evalDelayMs = 900;
   }
@@ -1404,6 +1794,118 @@ void evaluateScenarioResult()
               (int)@UiRender::renderDirection == 2 &&
               (int)@Core::failSafeMode == 0) ? 1 : 0;
   }
+  else if (gCurrentScenarioId == 212)
+  {
+    result = ((int)@V2X::emergencyType == 2 &&
+              (int)@Core::selectedAlertLevel == 7 &&
+              (int)@Core::selectedAlertType == 2 &&
+              (int)@Cluster::warningTextCode == 202 &&
+              (int)@Core::failSafeMode == 0) ? 1 : 0;
+  }
+  else if (gCurrentScenarioId == 223)
+  {
+    snapshotDelta = ((int)@CoreState::arbitrationSnapshotId - gArbitrationSnapshotBaseline) & 0xFFFF;
+    result = (level == 7 && type == 2 && snapshotDelta <= 3) ? 1 : 0;
+  }
+  else if (gCurrentScenarioId == 224)
+  {
+    result = ((int)@V2X::sourceId == 5 && (int)@V2X::eta == 10 &&
+              (int)@V2X::emergencyType == 2 && level == 7) ? 1 : 0;
+  }
+  else if (gCurrentScenarioId == 213)
+  {
+    result = ((int)@V2X::emergencyType == 2 &&
+              (int)@Core::intersectionConflictFlag == 1 &&
+              (int)@Core::decelAssistReq == 1 &&
+              (int)@Core::selectedAlertLevel == 7 &&
+              (int)@Core::selectedAlertType == 2 &&
+              (int)@Core::failSafeMode == 0) ? 1 : 0;
+  }
+  else if (gCurrentScenarioId == 214)
+  {
+    result = ((int)@Core::selectedAlertLevel == 5 &&
+              (int)@Core::selectedAlertType == 3 &&
+              (int)@Core::failSafeMode == 0) ? 1 : 0;
+  }
+  else if (gCurrentScenarioId == 215)
+  {
+    result = ((int)@Core::selectedAlertLevel == 6 &&
+              (int)@Core::selectedAlertType == 1 &&
+              (int)@Cluster::warningTextCode == 142 &&
+              (int)@UiRender::renderDirection == 2 &&
+              (int)@Core::failSafeMode == 0) ? 1 : 0;
+  }
+  else if (gCurrentScenarioId == 216)
+  {
+    result = ((int)@Core::driveStateNorm == 0 &&
+              (int)@Core::vehicleSpeedNorm == 0 &&
+              (int)@Core::selectedAlertLevel == 0 &&
+              (int)@Core::failSafeMode == 0) ? 1 : 0;
+  }
+  else if (gCurrentScenarioId == 217)
+  {
+    result = ((int)@Core::driveStateNorm == 3 &&
+              (int)@Core::vehicleSpeedNorm == 55 &&
+              (int)@Core::selectedAlertLevel == 0 &&
+              (int)@Core::failSafeMode == 0) ? 1 : 0;
+  }
+  else if (gCurrentScenarioId == 218)
+  {
+    result = ((int)@Core::vehicleSpeedNorm == 68 &&
+              (int)@Core::steeringInputNorm == 1 &&
+              (int)@Core::brakePedalNorm == 0 &&
+              (int)@Core::failSafeMode == 0) ? 1 : 0;
+  }
+  else if (gCurrentScenarioId == 219)
+  {
+    result = ((int)@Core::driveStateNorm == 0 &&
+              (int)@Core::vehicleSpeedNorm == 0 &&
+              (int)@Core::steeringInputNorm == 0 &&
+              (int)@Core::brakePedalNorm >= 30 &&
+              (int)@Core::failSafeMode == 0) ? 1 : 0;
+  }
+  else if (gCurrentScenarioId == 220)
+  {
+    result = ((int)@Core::selectedAlertLevel == 3 &&
+              (int)@Core::selectedAlertType == 3 &&
+              (int)@CoreState::themeMode == 2 &&
+              (int)@CoreState::popupActive == 1 &&
+              (int)@CoreState::popupPriority == 1 &&
+              (int)@CoreState::clusterSyncState == 1 &&
+              (int)@Core::failSafeMode == 0) ? 1 : 0;
+  }
+  else if (gCurrentScenarioId == 222)
+  {
+    result = ((int)@CoreState::emergencyDistanceM == 180 &&
+              (int)@Core::selectedAlertLevel == 6 &&
+              (int)@Core::selectedAlertType == 1 &&
+              (int)@Cluster::warningTextCode == 102 &&
+              (int)@Core::failSafeMode == 0) ? 1 : 0;
+  }
+  else if (gCurrentScenarioId == 225)
+  {
+    result = ((int)@Core::driveStateNorm == 3 &&
+              (int)@Core::vehicleSpeedNorm == 70 &&
+              (int)@Core::failSafeMode == 0) ? 1 : 0;
+  }
+  else if (gCurrentScenarioId == 226)
+  {
+    result = ((int)@Core::driveStateNorm == 0 &&
+              (int)@Core::vehicleSpeedNorm == 0 &&
+              (int)@Core::failSafeMode == 0) ? 1 : 0;
+  }
+  else if (gCurrentScenarioId == 227)
+  {
+    result = ((int)@Core::driveStateNorm == 0 &&
+              (int)@Core::vehicleSpeedNorm == 0 &&
+              (int)@Core::failSafeMode == 0) ? 1 : 0;
+  }
+  else if (gCurrentScenarioId == 228)
+  {
+    result = ((int)@Core::driveStateNorm == 0 &&
+              (int)@Core::vehicleSpeedNorm == 0 &&
+              (int)@Core::failSafeMode == 0) ? 1 : 0;
+  }
   else
   {
     result = ((int)@Test::scenarioResult == 1) ? 1 : 0;
@@ -1561,6 +2063,27 @@ on timer tScenarioPhase2
     pushLockedScenarioInputs();
     setTimer(tScenarioPhase3, 400);
     write("[TEST_SCN] IT_027 phase2: suppress emergency refresh, expect integrated degraded context");
+  }
+  else if (gCurrentScenarioId == 223)
+  {
+    gArbitrationSnapshotBaseline = (int)@CoreState::arbitrationSnapshotId;
+    gLockAlertState = 1;
+    gLockEmergencyType = 2;
+    gLockEta = 15;
+    gLockSourceId = 10;
+    gLockEmergencyDirection = 1;
+    pushLockedScenarioInputs();
+    write("[TEST_SCN] ST_012 phase2: inject ambulance, baseline snapshotId=%d",
+          gArbitrationSnapshotBaseline);
+  }
+  else if (gCurrentScenarioId == 224)
+  {
+    gLockEmergencyType = 2;
+    gLockEta = 10;
+    gLockSourceId = 5;
+    gLockEmergencyDirection = 2;
+    pushLockedScenarioInputs();
+    write("[TEST_SCN] ST_017 phase2: inject ambulance eta=10 sourceId=5");
   }
 }
 
@@ -1729,6 +2252,27 @@ on timer tInput100
   message frmIgnitionEngineMsg mIgn;
   message frmGearStateMsg mGear;
   message frmPedalInputCanMsg mPedal;
+  message frmDoorFlStateMsg mDoorFl;
+  message frmDoorFrStateMsg mDoorFr;
+  message frmTailgateStateMsg mTailgate;
+  message frmSeatBeltStateMsg mSeatBelt;
+  message frmSeatStateMsg mSeatState;
+  message frmSuspensionStateMsg mSuspension;
+  message frmConnectivityStateMsg mConn;
+  message frmIviHealthDetailMsg mIviHealth;
+  message frmCabinAirStateMsg mCabinAir;
+  message frmSteeringAngleMsg mSteerAngle;
+  message frmLampControlMsg mLampControl;
+  message frmFuelBatteryStateMsg mBattery;
+  message frmEngineSpeedTempMsg mEngineTemp;
+  message frmVehicleModeMsg mVehicleMode;
+  message frmPowerLimitMsg mPowerLimit;
+  message frmEnergyFlowStateMsg mEnergyFlow;
+  message frmFcamStateMsg mFcam;
+  message frmParkUltrasonicStateMsg mParkUltrasonic;
+  message frmAvmStateMsg mAvm;
+  message frmSpasStateMsg mSpas;
+  message frmRspaStateMsg mRspa;
   char emergencyFrame[8];
   char objectFrame[12];
   int speed;
@@ -1869,6 +2413,116 @@ on timer tInput100
   mPedal.AccelPedal = accelPedal;
   mPedal.BrakePedal = brakePedal;
   output(mPedal);
+
+  if (gCurrentScenarioId == 225)
+  {
+    mSuspension.SuspensionMode = 3;
+    mSuspension.SuspensionLevel = 12;
+    mSuspension.DampingLevel = 40;
+    output(mSuspension);
+  }
+  else if (gCurrentScenarioId == 226)
+  {
+    mDoorFl.DoorFlLockState = 0;
+    mDoorFl.DoorFlOpenState = 1;
+    mDoorFl.DoorFlWindowPos = 20;
+    output(mDoorFl);
+
+    mDoorFr.DoorFrLockState = 1;
+    mDoorFr.DoorFrOpenState = 0;
+    mDoorFr.DoorFrWindowPos = 0;
+    output(mDoorFr);
+  }
+  else if (gCurrentScenarioId == 227)
+  {
+    mTailgate.TailgateLockState = 0;
+    mTailgate.TailgateOpenState = 1;
+    mTailgate.TailgatePowerState = 1;
+    mTailgate.TailgatePosition = 60;
+    output(mTailgate);
+  }
+  else if (gCurrentScenarioId == 228)
+  {
+    mSeatBelt.DriverSeatBelt = 0;
+    mSeatBelt.PassengerSeatBelt = 0;
+    mSeatBelt.SeatBeltWarnLvl = 3;
+    output(mSeatBelt);
+
+    mSeatState.PassengerSeatPos = 60;
+    output(mSeatState);
+  }
+  else if (gCurrentScenarioId == 229)
+  {
+    mConn.ConnectivityType = 1;
+    mConn.ConnectivityState = 1;
+    mConn.SignalBars = 4;
+    output(mConn);
+
+    mIviHealth.IviCpuLoad = 40;
+    mIviHealth.IviMemLoad = 38;
+    output(mIviHealth);
+
+    mCabinAir.CabinTemp = 30;
+    output(mCabinAir);
+  }
+  else if (gCurrentScenarioId == 230)
+  {
+    mSteerAngle.SteeringAngleRaw = 1400;
+    output(mSteerAngle);
+
+    mLampControl.HeadLampState = 2;
+    output(mLampControl);
+  }
+  else if (gCurrentScenarioId == 231)
+  {
+    mBattery.BatterySoc = 60;
+    mBattery.ChargingState = 1;
+    output(mBattery);
+  }
+  else if (gCurrentScenarioId == 232)
+  {
+    mEngineTemp.EngineRpm = 2400;
+    mEngineTemp.OilTemp = 90;
+    output(mEngineTemp);
+
+    mVehicleMode.DriveMode = 2;
+    output(mVehicleMode);
+
+    mPowerLimit.TorqueLimit = 120;
+    mPowerLimit.SpeedLimit = 120;
+    output(mPowerLimit);
+
+    mEnergyFlow.EnergyFlowMode = 2;
+    mEnergyFlow.RegenLevel = 4;
+    output(mEnergyFlow);
+  }
+  else if (gCurrentScenarioId == 233)
+  {
+    mFcam.CameraHealth = 2;
+    mFcam.ObjectDetected = 1;
+    mFcam.LaneModelValid = 1;
+    mFcam.Confidence = 80;
+    output(mFcam);
+  }
+  else if (gCurrentScenarioId == 234)
+  {
+    mParkUltrasonic.ParkAssistActive = 1;
+    mParkUltrasonic.MinDistanceCm = 28;
+    output(mParkUltrasonic);
+
+    mAvm.AvmActive = 1;
+    mAvm.ViewMode = 3;
+    output(mAvm);
+
+    mSpas.SpasActive = 1;
+    mSpas.SpasStage = 2;
+    mSpas.SteeringAssistReq = 1;
+    output(mSpas);
+
+    mRspa.RspaReady = 1;
+    mRspa.BrakeHoldReq = 1;
+    output(mRspa);
+  }
 
   /* Product-side generated frames stay on ECU owners:
      VCU emits vehicle state, EMS emits engine detail, TCU emits transmission detail. */

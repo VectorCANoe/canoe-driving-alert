@@ -1,0 +1,63 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\\common\\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+  long gDeploymentArmed;
+  long gPretensionReq;
+  long gAirbagWarn;
+  long gOccupantDetected;
+  long gWeightClass;
+  long gAirbagSuppress;
+  long gChildSeatDetected;
+}
+
+on message frmAcuStateMsg
+{
+  gDeploymentArmed = this.DeploymentArmed;
+  gPretensionReq = this.PretensionReq;
+  gAirbagWarn = this.AirbagWarn;
+}
+
+on message frmOdsStateMsg
+{
+  gOccupantDetected = this.OccupantDetected;
+  gWeightClass = this.WeightClass;
+  gAirbagSuppress = this.AirbagSuppress;
+  gChildSeatDetected = this.ChildSeatDetected;
+}
+
+export testcase TC_CANOE_UT_EXT_007_BODY_OCCUPANT_PROTECTION()
+{
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  gDeploymentArmed = -1;
+  gPretensionReq = -1;
+  gAirbagWarn = -1;
+  gOccupantDetected = -1;
+  gWeightClass = -1;
+  gAirbagSuppress = -1;
+  gChildSeatDetected = -1;
+
+  @Test::scenarioCommand = 228;
+  if (!waitForScenarioAck(228, 1500))
+  {
+    return;
+  }
+  TestWaitForTimeout(350);
+  assertIntEq("occupant-armed", 0, gDeploymentArmed, "DeploymentArmed");
+  assertIntEq("occupant-pretension", 1, gPretensionReq, "PretensionReq");
+  assertIntEq("occupant-airbag-warn", 1, gAirbagWarn, "AirbagWarn");
+  assertIntEq("occupant-detected", 1, gOccupantDetected, "OccupantDetected");
+  assertIntEq("occupant-weight-class", 1, gWeightClass, "WeightClass");
+  assertIntEq("occupant-airbag-suppress", 1, gAirbagSuppress, "AirbagSuppress");
+  assertIntEq("occupant-child-seat", 1, gChildSeatDetected, "ChildSeatDetected");
+
+  resetValidationHarnessIfNeeded();
+}

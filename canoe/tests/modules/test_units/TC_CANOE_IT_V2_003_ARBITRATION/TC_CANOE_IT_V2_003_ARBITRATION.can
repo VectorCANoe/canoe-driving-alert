@@ -1,0 +1,75 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\\common\\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+}
+
+export testcase TC_CANOE_IT_V2_003_ARBITRATION()
+{
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  if (!launchScenarioAndWait(9, 700, 1200))
+  {
+    return;
+  }
+
+  assertIntEq("eta-priority-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+  assertIntEq("eta-priority-eta", 10, (long)@V2X::eta, "eta");
+  assertIntEq("eta-priority-source", 99, (long)@V2X::sourceId, "sourceId");
+  assertIntEq("eta-priority-level", 6, (long)@Core::selectedAlertLevel, "selectedAlertLevel");
+
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  if (!launchScenarioAndWait(10, 700, 1200))
+  {
+    return;
+  }
+
+  assertIntEq("source-tiebreak-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+  assertIntEq("source-tiebreak-eta", 10, (long)@V2X::eta, "eta");
+  assertIntEq("source-tiebreak-source", 5, (long)@V2X::sourceId, "sourceId");
+  assertIntEq("source-tiebreak-level", 6, (long)@Core::selectedAlertLevel, "selectedAlertLevel");
+
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  if (!launchScenarioAndWait(11, 800, 1300))
+  {
+    return;
+  }
+
+  assertIntEq("emergency-over-nav-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+  assertIntEq("emergency-over-nav-level", 6, (long)@Core::selectedAlertLevel, "selectedAlertLevel");
+  assertIntEq("emergency-over-nav-type", 1, (long)@Core::selectedAlertType, "selectedAlertType");
+  assertIntMin("arbitration-snapshot", 1, (long)@CoreState::arbitrationSnapshotId, "arbitrationSnapshotId");
+
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  if (!launchScenarioAndWait(212, 700, 1200))
+  {
+    return;
+  }
+
+  assertIntEq("ambulance-priority-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+  assertIntEq("ambulance-priority-type", 2, (long)@V2X::emergencyType, "emergencyType");
+  assertIntEq("ambulance-priority-level", 7, (long)@Core::selectedAlertLevel, "selectedAlertLevel");
+  assertIntEq("ambulance-priority-alert-type", 2, (long)@Core::selectedAlertType, "selectedAlertType");
+  assertIntEq("ambulance-priority-code", 202, (long)@Cluster::warningTextCode, "warningTextCode");
+
+  resetValidationHarnessIfNeeded();
+}

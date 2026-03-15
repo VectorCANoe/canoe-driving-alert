@@ -1,0 +1,36 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\\common\\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+}
+
+/*
+  IT_032
+  Integration-level external TX path for ambulance emergency propagation.
+  Periodicity closure remains Ethernet-trace gated.
+*/
+export testcase TC_CANOE_IT_ETH_002_AMBULANCE_TX()
+{
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  if (!launchScenarioAndWait(5, 700, 1200))
+  {
+    return;
+  }
+
+  assertIntEq("it-ambulance-tx-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+  assertIntEq("it-ambulance-tx-context", 2, (long)@Core::emergencyContext, "emergencyContext");
+  assertIntEq("it-ambulance-tx-type", 2, (long)@V2X::emergencyType, "emergencyType");
+  assertIntEq("it-ambulance-tx-level", 7, (long)@Core::selectedAlertLevel, "selectedAlertLevel");
+  assertIntEq("it-ambulance-tx-code", 202, (long)@Cluster::warningTextCode, "warningTextCode");
+  assertIntEq("it-ambulance-tx-failsafe", 0, (long)@Core::failSafeMode, "failSafeMode");
+
+  resetValidationHarnessIfNeeded();
+}

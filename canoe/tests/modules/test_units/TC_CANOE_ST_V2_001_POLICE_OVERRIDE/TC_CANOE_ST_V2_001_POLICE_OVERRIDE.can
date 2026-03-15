@@ -1,0 +1,30 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\\common\\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+}
+
+export testcase TC_CANOE_ST_V2_001_POLICE_OVERRIDE()
+{
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  if (!launchScenarioAndWait(11, 800, 1300))
+  {
+    return;
+  }
+
+  assertIntEq("police-override-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+  assertIntEq("police-override-level", 6, (long)@Core::selectedAlertLevel, "selectedAlertLevel");
+  assertIntEq("police-override-type", 1, (long)@Core::selectedAlertType, "selectedAlertType");
+  assertIntMin("police-override-arbitration", 1, (long)@CoreState::arbitrationSnapshotId, "arbitrationSnapshotId");
+  assertIntEq("police-override-failsafe", 0, (long)@Core::failSafeMode, "failSafeMode");
+
+  resetValidationHarnessIfNeeded();
+}

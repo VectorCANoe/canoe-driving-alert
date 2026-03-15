@@ -1,0 +1,8 @@
+version: 2.2.0
+
+test-tree:
+  - test-fixture: HighwayNoSteerPath
+    description: Integration-test executable contract for highway no-steer warning path.
+    elements:
+      - capl-test-case: TC_CANOE_IT_CORE_003_HIGHWAY_NOSTEER_PATH
+        title: TC_CANOE_IT_CORE_003_HIGHWAY_NOSTEER_PATH

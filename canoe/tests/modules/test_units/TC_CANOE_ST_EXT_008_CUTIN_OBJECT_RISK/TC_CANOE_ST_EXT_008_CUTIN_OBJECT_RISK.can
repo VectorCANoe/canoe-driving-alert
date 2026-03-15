@@ -1,0 +1,30 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\\common\\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+}
+
+export testcase TC_CANOE_ST_EXT_008_CUTIN_OBJECT_RISK()
+{
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  if (!launchScenarioAndWait(22, 700, 1200))
+  {
+    return;
+  }
+
+  assertIntEq("cutin-object-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+  assertIntEq("cutin-object-merge-flag", 1, (long)@Core::mergeCutInFlag, "mergeCutInFlag");
+  assertIntMin("cutin-object-risk-class", 3, (long)@Core::objectRiskClass, "objectRiskClass");
+  assertIntEq("cutin-object-alert-type", 6, (long)@Core::selectedAlertType, "selectedAlertType");
+  assertIntEq("cutin-object-failsafe", 0, (long)@Core::failSafeMode, "failSafeMode");
+
+  resetValidationHarnessIfNeeded();
+}

@@ -1,0 +1,44 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\\common\\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+}
+
+export testcase TC_CANOE_ST_EXT_009_CONTEXT_ADJUST()
+{
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  if (!launchScenarioAndWait(214, 900, 1300))
+  {
+    return;
+  }
+
+  assertIntEq("context-adjust-seatbelt-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+  assertIntEq("context-adjust-alert-level", 5, (long)@Core::selectedAlertLevel, "selectedAlertLevel");
+  assertIntEq("context-adjust-alert-type", 3, (long)@Core::selectedAlertType, "selectedAlertType");
+  assertIntEq("context-adjust-failsafe", 0, (long)@Core::failSafeMode, "failSafeMode");
+
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  if (!launchScenarioAndWait(222, 900, 1300))
+  {
+    return;
+  }
+
+  assertIntEq("context-adjust-distance-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+  assertIntEq("context-adjust-distance", 180, (long)@CoreState::emergencyDistanceM, "emergencyDistanceM");
+  assertIntEq("context-adjust-code", 102, (long)@Cluster::warningTextCode, "warningTextCode");
+  assertIntEq("context-adjust-failsafe-clear", 0, (long)@Core::failSafeMode, "failSafeMode");
+
+  resetValidationHarnessIfNeeded();
+}

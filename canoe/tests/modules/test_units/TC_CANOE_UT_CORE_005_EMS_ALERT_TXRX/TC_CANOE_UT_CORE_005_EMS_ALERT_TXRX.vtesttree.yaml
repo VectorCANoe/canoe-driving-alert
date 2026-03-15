@@ -1,0 +1,8 @@
+﻿version: 2.2.0
+
+test-tree:
+  - test-fixture: EmergencyTxRx
+    description: Executable unit contract for emergency tx/rx/clear verification.
+    elements:
+      - capl-test-case: TC_CANOE_UT_CORE_005_EMS_ALERT_TXRX
+        title: TC_CANOE_UT_CORE_005_EMS_ALERT_TXRX

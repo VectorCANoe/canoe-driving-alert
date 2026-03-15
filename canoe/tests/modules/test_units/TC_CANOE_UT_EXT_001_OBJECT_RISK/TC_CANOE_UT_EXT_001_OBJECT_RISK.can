@@ -1,0 +1,71 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\\common\\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+}
+
+export testcase TC_CANOE_UT_EXT_001_OBJECT_RISK()
+{
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  if (!launchScenarioAndWait(20, 700, 1200))
+  {
+    return;
+  }
+
+  assertIntEq("object-forward-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+  assertIntMin("object-forward-risk-class", 3, (long)@Core::objectRiskClass, "objectRiskClass");
+  assertIntMin("object-forward-proximity", 60, (long)@Core::proximityRiskLevel, "proximityRiskLevel");
+
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  if (!launchScenarioAndWait(21, 700, 1200))
+  {
+    return;
+  }
+
+  assertIntEq("object-intersection-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+  assertIntEq("object-intersection-flag", 1, (long)@Core::intersectionConflictFlag, "intersectionConflictFlag");
+  assertIntEq("object-intersection-alert", 5, (long)@Core::selectedAlertType, "selectedAlertType");
+
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  if (!launchScenarioAndWait(22, 700, 1200))
+  {
+    return;
+  }
+
+  assertIntEq("object-merge-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+  assertIntEq("object-merge-flag", 1, (long)@Core::mergeCutInFlag, "mergeCutInFlag");
+  assertIntEq("object-merge-alert", 6, (long)@Core::selectedAlertType, "selectedAlertType");
+
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  if (!launchScenarioAndWait(24, 700, 1200))
+  {
+    return;
+  }
+
+  assertIntEq("object-degrade-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+  assertIntEq("object-confidence", 20, (long)@Core::objectConfidence, "objectConfidence");
+  assertIntMin("object-degrade-failsafe", 1, (long)@Core::failSafeMode, "failSafeMode");
+  assertIntEq("object-decel-off", 0, (long)@Core::decelAssistReq, "decelAssistReq");
+
+  resetValidationHarnessIfNeeded();
+}

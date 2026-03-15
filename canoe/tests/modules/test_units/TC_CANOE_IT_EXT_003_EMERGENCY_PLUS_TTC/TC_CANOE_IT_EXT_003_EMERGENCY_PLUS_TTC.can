@@ -1,0 +1,31 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\\common\\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+}
+
+export testcase TC_CANOE_IT_EXT_003_EMERGENCY_PLUS_TTC()
+{
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  if (!launchScenarioAndWait(213, 800, 1300))
+  {
+    return;
+  }
+
+  assertIntEq("emergency-plus-ttc-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+  assertIntEq("emergency-plus-ttc-emergency-type", 2, (long)@V2X::emergencyType, "emergencyType");
+  assertIntEq("emergency-plus-ttc-intersection", 1, (long)@Core::intersectionConflictFlag, "intersectionConflictFlag");
+  assertIntEq("emergency-plus-ttc-decel", 1, (long)@Core::decelAssistReq, "decelAssistReq");
+  assertIntEq("emergency-plus-ttc-level", 7, (long)@Core::selectedAlertLevel, "selectedAlertLevel");
+  assertIntEq("emergency-plus-ttc-type", 2, (long)@Core::selectedAlertType, "selectedAlertType");
+
+  resetValidationHarnessIfNeeded();
+}
