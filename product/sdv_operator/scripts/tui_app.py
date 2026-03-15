@@ -48,7 +48,7 @@ from cliops.tui_text import (
 from textual import work
 from textual.app import App, ComposeResult
 from textual.containers import Horizontal, Vertical
-from textual.widgets import Button, Footer, Header, Input, OptionList, RichLog, Static
+from textual.widgets import Button, Footer, Header, Input, OptionList, ProgressBar, RichLog, Static
 from textual.widgets.option_list import Option
 from textual.css.query import NoMatches
 from rich.markup import escape
@@ -71,24 +71,44 @@ class SdvTuiApp(App[None]):
     }
 
     #hero {
-        height: 4;
-        padding: 1 2;
+        height: 8;
         margin: 1 1 0 1;
         background: #1b2635;
-        color: #f0f4f8;
         border: round #4ea1ff;
+        padding: 1 2;
+    }
+
+    #hero-title {
+        color: #f0f4f8;
         text-style: bold;
-        content-align: left middle;
+    }
+
+    .topband-title {
+        color: #f6c177;
+        text-style: bold;
+        margin-bottom: 1;
+    }
+
+    #hero-status,
+    #global-progress-label,
+    #global-metrics,
+    #global-stages,
+    #global-runtime-signal,
+    #global-pulse {
+        color: #d7e7f2;
+    }
+
+    #global-progress {
+        width: 1fr;
+        margin: 0;
     }
 
     #runtime {
-        height: 4;
-        padding: 1 2;
+        height: 8;
         margin: 0 1 1 1;
         background: #17202b;
         border: round #33536f;
-        color: #a9bed1;
-        content-align: left middle;
+        padding: 1 2;
     }
 
     #shell-main {
@@ -187,12 +207,12 @@ class SdvTuiApp(App[None]):
     }
 
     #summary-strip {
-        height: 12;
+        height: 11;
         margin-bottom: 1;
     }
 
     #status-strip {
-        height: 11;
+        height: 9;
         margin-bottom: 1;
     }
 
@@ -232,7 +252,11 @@ class SdvTuiApp(App[None]):
         width: 1fr;
     }
 
-    #runtime-card {
+    #com-card {
+        width: 40;
+    }
+
+    #timeline-card {
         width: 1fr;
         margin-right: 0;
     }
@@ -362,16 +386,17 @@ class SdvTuiApp(App[None]):
         margin-right: 1;
     }
 
-    #log-dock {
-        height: 16;
-        margin-top: 1;
+    #page-logs {
         padding: 1;
-        background: #0f151b;
+        background: #121920;
         border: round #2d3e50;
     }
 
-    #results-actions-card {
-        width: 1fr;
+    #log-pane {
+        height: 1fr;
+        padding: 1;
+        background: #0f151b;
+        border: round #2d3e50;
     }
 
     #results-actions {
@@ -437,17 +462,18 @@ class SdvTuiApp(App[None]):
     }
 
     #automation-actions {
-        height: 7;
+        height: 3;
         margin-top: 1;
     }
 
     #automation-actions-primary,
-    #automation-actions-secondary {
+    #automation-support {
         height: 3;
         margin-bottom: 1;
     }
 
-    #automation-actions Button {
+    #automation-actions Button,
+    #automation-support Button {
         margin-right: 1;
     }
 
@@ -460,19 +486,9 @@ class SdvTuiApp(App[None]):
         color: #8ba4b8;
     }
 
-    #automation-profiles {
-        height: 7;
-        margin-top: 1;
-    }
-
-    #automation-profiles-primary,
-    #automation-profiles-secondary {
+    #automation-support {
         height: 3;
-        margin-bottom: 1;
-    }
-
-    #automation-profiles Button {
-        margin-right: 1;
+        margin-top: 1;
     }
 
     #artifacts-overview {
@@ -585,28 +601,26 @@ class SdvTuiApp(App[None]):
         self.log_buffer: list[dict[str, str]] = []
         self.current_page = "home"
         self._suspend_option_events = False
+        self._run_started_monotonic: float | None = None
 
     def compose(self) -> ComposeResult:
         yield Header(show_clock=True)
-        yield Static(
-            "CANoe Test Verification Console\n핵심 흐름을 실행하고, Results와 Artifacts에서 판정·증빙·원본 기준을 확인합니다.",
-            id="hero",
-        )
-        runtime = canoe_runtime_check()
-        runtime_text = (
-            f"호스트: {platform_label()} | CANoe 런타임: {'ready' if runtime.available else 'limited'} | "
-            "실행: Ctrl+R | 최근 실행: Ctrl+N | 로그 패널: Ctrl+L | 증빙: Ctrl+O/Ctrl+Y | 종료: q"
-        )
-        if not runtime.available:
-            runtime_text += f"\n제약: {runtime.detail}"
-        yield Static(runtime_text, id="runtime")
+        with Vertical(id="hero"):
+            yield Static("CANoe Test Verification Console", id="hero-title")
+            yield Static(id="hero-status")
+            yield ProgressBar(total=100, show_eta=False, id="global-progress")
+            yield Static(id="global-progress-label")
+        with Vertical(id="runtime"):
+            yield Static("Live Overview", classes="topband-title")
+            yield Static(id="global-runtime-band")
         with Horizontal(id="shell-main"):
             with Vertical(id="sidebar"):
-                yield Button("Overview", id="nav-home", classes="nav-button", variant="primary")
-                yield Button("Campaign", id="nav-execute", classes="nav-button")
+                yield Button("Home", id="nav-home", classes="nav-button", variant="primary")
+                yield Button("Run", id="nav-execute", classes="nav-button")
                 yield Button("Results", id="nav-results", classes="nav-button")
                 yield Button("Artifacts", id="nav-artifacts", classes="nav-button")
                 yield Button("Automation", id="nav-automation", classes="nav-button")
+                yield Button("Logs", id="nav-logs", classes="nav-button")
             with Vertical(id="content"):
                 with Vertical(id="content-pages"):
                     with Vertical(id="page-home", classes="page"):
@@ -614,7 +628,7 @@ class SdvTuiApp(App[None]):
                             "CANoe Test Verification Console\n\n"
                             "사용자 표면은 단순하게, 검증 엔진은 내부에서 복잡하게 유지합니다.\n"
                             "핵심 흐름은 Gate all -> Scenario run -> Verify quick 순서입니다.\n"
-                            "CANoe Panel은 제품 조작 UI이고, 이 콘솔은 campaign, 증빙, CI 연결을 담당합니다.",
+                            "CANoe Panel은 제품 조작 UI이고, 이 콘솔은 실행·증빙·검토·자동화를 담당합니다.",
                             id="home-body",
                         )
                         yield Static(id="home-summary")
@@ -643,16 +657,16 @@ class SdvTuiApp(App[None]):
                         yield Static(id="home-recent")
                     with Vertical(id="page-execute", classes="page hidden"):
                         yield Static(
-                            "Campaign 화면 사용 순서\n"
+                            "Run 화면 사용 순서\n"
                             "1) 상단 큰 범주 버튼에서 작업 묶음을 고르십시오.  2) 왼쪽 Task list에서 작업을 고르십시오.  "
                             "3) 오른쪽 Quick form을 채운 뒤 Run now 또는 Ctrl+R로 실행하십시오.",
                             id="execute-overview",
                         )
                         with Horizontal(id="execute-group-strip"):
-                            yield Button("Primary\nCampaign core", id="group-primary", classes="group-button", variant="primary")
-                            yield Button("Runtime\nSession control", id="group-runtime", classes="group-button")
-                            yield Button("Inspect\nSource / contract", id="group-inspect", classes="group-button")
-                            yield Button("Package\nArtifacts / cleanup", id="group-package", classes="group-button")
+                            yield Button("Primary\n핵심 검증 흐름", id="group-primary", classes="group-button", variant="primary")
+                            yield Button("Runtime\n환경·측정 제어", id="group-runtime", classes="group-button")
+                            yield Button("Inspect\n원본·계약 확인", id="group-inspect", classes="group-button")
+                            yield Button("Package\n산출물·정리", id="group-package", classes="group-button")
                         with Horizontal(id="workspace"):
                             with Vertical(id="commands-pane", classes="pane"):
                                 yield Static("2) Task list", classes="pane-title")
@@ -675,52 +689,53 @@ class SdvTuiApp(App[None]):
                             yield Button("Pin task", id="pin-button")
                             yield Button("Reset form", id="reset-button")
                         yield Static(
-                            "Campaign을 실행하면 하단 로그 패널에 즉시 출력됩니다. 종료 후에는 Results에서 판정, 근거, 증빙 경로를 확인하십시오.",
+                            "Run을 시작하면 자동으로 Logs 화면으로 이동합니다. 종료 후에는 Results에서 판정, 근거, 증빙 경로를 확인하십시오.",
                             id="execute-hint",
                         )
                     with Vertical(id="page-results", classes="page hidden"):
                         with Horizontal(id="summary-strip"):
-                            with Vertical(id="result-card", classes="summary-card"):
-                                yield Static("Verdict", classes="summary-title")
-                                yield Static(id="result-body")
-                            with Vertical(id="insight-card", classes="summary-card"):
-                                yield Static("Reason", classes="summary-title")
-                                yield Static(id="insight-body")
                             with Vertical(id="favorites-card", classes="summary-card"):
-                                yield Static("Evidence", classes="summary-title")
+                                yield Static("Evidence Paths", classes="summary-title")
                                 yield Static(id="favorites-body")
-                            with Vertical(id="results-actions-card", classes="summary-card"):
-                                yield Static("Actions", classes="summary-title")
-                                with Vertical(id="results-actions"):
-                                    with Horizontal(id="results-actions-primary"):
-                                        yield Button("증빙 열기", id="results-open-artifact", variant="success")
-                                        yield Button("surface archive", id="results-open-surface")
-                                        yield Button("native report 열기", id="results-open-native")
-                                    with Horizontal(id="results-actions-secondary"):
-                                        yield Button("execution manifest", id="results-open-manifest")
-                                        yield Button("원본 기준 열기", id="results-open-source")
-                                        yield Button("staging 정리", id="results-clean-staging", variant="warning")
-                        with Horizontal(id="status-strip"):
                             with Vertical(id="recent-card", classes="summary-card"):
                                 yield Static("Recent Runs", classes="summary-title")
                                 yield OptionList(id="recent-list")
-                            with Vertical(id="batch-card", classes="summary-card"):
-                                yield Static("Batch Snapshot", classes="summary-title")
-                                yield Static(id="batch-body")
+                            with Vertical(id="insight-card", classes="summary-card"):
+                                yield Static("Run Insight", classes="summary-title")
+                                yield Static(id="insight-body")
+                            with Vertical(id="result-card", classes="summary-card"):
+                                yield Static("Last Result", classes="summary-title")
+                                yield Static(id="result-body")
+                        with Horizontal(id="status-strip"):
                             with Vertical(id="readiness-card", classes="summary-card"):
                                 yield Static("Tier Readiness", classes="summary-title")
                                 yield Static(id="readiness-body")
-                            with Vertical(id="runtime-card", classes="summary-card"):
-                                yield Static("Runtime", classes="summary-title")
-                                yield Static(id="runtime-body")
+                            with Vertical(id="batch-card", classes="summary-card"):
+                                yield Static("Batch Snapshot", classes="summary-title")
+                                yield Static(id="batch-body")
+                            with Vertical(id="com-card", classes="summary-card"):
+                                yield Static("COM Runtime", classes="summary-title")
+                                yield Static(id="com-body")
+                            with Vertical(id="timeline-card", classes="summary-card"):
+                                yield Static("Execution Timeline", classes="summary-title")
+                                yield Static(id="timeline-body")
+                        with Vertical(id="results-actions"):
+                            with Horizontal(id="results-actions-primary"):
+                                yield Button("증빙 열기", id="results-open-artifact", variant="success")
+                                yield Button("surface archive", id="results-open-surface")
+                                yield Button("native report 열기", id="results-open-native")
+                            with Horizontal(id="results-actions-secondary"):
+                                yield Button("execution manifest", id="results-open-manifest")
+                                yield Button("원본 기준 열기", id="results-open-source")
+                                yield Button("staging 정리", id="results-clean-staging", variant="warning")
                         yield Static(
-                            "Results 화면은 Verdict / Reason / Evidence / Actions 기준으로 읽으십시오. support 정보는 아래 카드에 배치했습니다.",
+                            "Results 화면에서는 최근 증빙, native report, execution manifest, 원본 기준 파일을 같은 흐름에서 열 수 있습니다.",
                             id="results-hint",
                         )
                     with Vertical(id="page-artifacts", classes="page hidden"):
                         yield Static(
                             "Artifacts 화면은 생성 산출물과 원본 계약 파일을 분리해서 보여줍니다. "
-                            "staging은 작업면, archive는 최종 보관, source는 원본 기준, build는 배포 출력입니다.",
+                            "staging은 작업면, archive는 최종 보관, source는 원본 기준, package는 선택적 배포 출력입니다.",
                             id="artifacts-overview",
                         )
                         with Horizontal(id="artifact-strip"):
@@ -734,7 +749,7 @@ class SdvTuiApp(App[None]):
                                 yield Static("Source Contracts", classes="summary-title")
                                 yield Static(id="artifact-source-body")
                             with Vertical(classes="artifact-card"):
-                                yield Static("Build Outputs", classes="summary-title")
+                                yield Static("Package Outputs", classes="summary-title")
                                 yield Static(id="artifact-build-body")
                         with Vertical(id="artifact-actions"):
                             with Horizontal(id="artifact-actions-primary"):
@@ -745,82 +760,70 @@ class SdvTuiApp(App[None]):
                                 yield Button("최신 archive 열기", id="artifact-open-archive")
                             with Horizontal(id="artifact-actions-secondary"):
                                 yield Button("원본 기준 열기", id="artifact-open-source")
-                                yield Button("빌드 출력 열기", id="artifact-open-build")
+                                yield Button("패키지 출력 열기", id="artifact-open-build")
                                 yield Button("staging 정리", id="artifact-clean-staging", variant="warning")
                         yield Static(
                             "원칙: staging은 재생성 가능한 작업 산출물, archive는 reviewer/Jenkins 보관물, "
-                            "source는 결과가 의존하는 원본 계약 파일, build는 배포 출력입니다.",
+                            "source는 결과가 의존하는 원본 계약 파일, package는 선택적 배포 출력입니다.",
                             id="artifacts-hint",
                         )
                     with Vertical(id="page-automation", classes="page hidden"):
                         yield Static(
-                            "Automation 화면은 CANoe TEST와 Jenkins 사이의 운영 계층을 담당합니다.\n"
-                            "Jenkins는 스케줄링/재시도/아카이브를 담당하고, Console은 batch, execution manifest, "
-                            "surface bundle, native report 연결, campaign profile 기본값을 담당합니다.",
+                            "Automation 화면은 반복 실행과 CI 연결을 단순하게 다루는 운영 표면입니다.\n"
+                            "여기서는 추천 실행 흐름만 빠르게 고르고, 상세 산출물 검토는 Results/Artifacts에서 이어갑니다.",
                             id="automation-overview",
                         )
                         with Horizontal(id="automation-strip"):
                             with Vertical(classes="automation-card"):
-                                yield Static("CI Bridge", classes="summary-title")
+                                yield Static("Recommended Flow", classes="summary-title")
                                 yield Static(
-                                    "Jenkins는 junit + archiveArtifacts를 수집합니다.\n"
-                                    "Console은 그 이전 단계에서 batch/JUnit/surface bundle을 생성합니다.",
+                                    "1) 검증 배치 준비\n"
+                                    "2) Quick smoke 또는 CI preflight\n"
+                                    "3) Nightly/Soak으로 장시간 반복 실행",
                                     id="automation-ci-body",
                                 )
                             with Vertical(classes="automation-card"):
-                                yield Static("Long-run Policy", classes="summary-title")
+                                yield Static("CI / Long-run", classes="summary-title")
                                 yield Static(
-                                    "장시간 반복 실행은 Jenkins scheduler가 맡고,\n"
-                                    "Console은 run_id, execution manifest, evidence normalization을 맡습니다.",
+                                    "Jenkins는 스케줄링과 재시도를 맡고,\n"
+                                    "Console은 run_id, manifest, evidence 정규화를 맡습니다.",
                                     id="automation-soak-body",
                                 )
                             with Vertical(classes="automation-card"):
-                                yield Static("Native/Archive Link", classes="summary-title")
+                                yield Static("Advanced / Reference", classes="summary-title")
                                 yield Static(
-                                    "Dev1 native .vtestreport와 Dev2 bundle/archive를\n"
-                                    "같은 run 기준으로 열어 reviewer가 따라갈 수 있게 합니다.",
+                                    "세부 프로파일, pack matrix, CI 문서는\n"
+                                    "아래 보조 버튼이나 Source Contracts에서 확인합니다.",
                                     id="automation-native-body",
                                 )
                         with Vertical(id="automation-actions"):
                             with Horizontal(id="automation-actions-primary"):
                                 yield Button("검증 배치 준비", id="automation-batch", variant="success")
-                                yield Button("CI bridge 문서", id="automation-open-ci")
-                                yield Button("역할 경계", id="automation-open-role")
-                                yield Button("Capability boundary", id="automation-open-capability")
-                            with Horizontal(id="automation-actions-secondary"):
-                                yield Button("Jenkins 샘플", id="automation-open-jenkins")
-                                yield Button("패키징 계약 점검", id="automation-contract")
-                                yield Button("native report 열기", id="automation-open-native")
-                                yield Button("최신 archive 열기", id="automation-open-archive")
-                        with Vertical(id="automation-profiles"):
-                            with Horizontal(id="automation-profiles-primary"):
                                 yield Button("Quick smoke", id="automation-profile-quick")
                                 yield Button("CI preflight", id="automation-profile-ci")
                                 yield Button("Nightly", id="automation-profile-nightly")
                                 yield Button("Soak", id="automation-profile-soak")
-                            with Horizontal(id="automation-profiles-secondary"):
-                                yield Button("Functional 6", id="automation-profile-functional6")
-                                yield Button("Network Core 4", id="automation-profile-network4")
-                                yield Button("Network+Diag Draft", id="automation-profile-networkdiag")
-                                yield Button("Profile 원본", id="automation-open-profiles")
-                                yield Button("Pack matrix", id="automation-open-pack-matrix")
+                        with Horizontal(id="automation-support"):
+                            yield Button("실행 프로파일", id="automation-open-profiles")
+                            yield Button("Pack matrix", id="automation-open-pack-matrix")
+                            yield Button("CI bridge 문서", id="automation-open-ci")
                         yield Static(
-                            "원칙: CANoe TEST를 대체하지 않고, Jenkins를 복제하지 않습니다. "
-                            "Console은 campaign/evidence/CI bridge만 담당합니다. "
-                            "Quick/CI/Nightly/Soak은 실행 프로파일이고, Functional 6 / Network Core 4 / Network+Diag Draft는 검증 pack 프로파일입니다.",
+                            "원칙: Automation은 추천 반복 실행만 빠르게 고르는 화면입니다. "
+                            "native report, archive, 계약 점검, 역할 문서는 Results/Artifacts 또는 Source Contracts에서 확인하십시오.",
                             id="automation-hint",
                         )
-                with Vertical(id="log-dock"):
-                    yield Static("Execution Log", classes="pane-title")
-                    yield Static(id="log-summary")
-                    with Horizontal(id="log-controls"):
-                        yield Button("F1 전체", id="log-filter-all", classes="filter-button")
-                        yield Button("F2 경고", id="log-filter-warn", classes="filter-button")
-                        yield Button("F3 실패", id="log-filter-fail", classes="filter-button")
-                        yield Button("F4 Verify", id="log-filter-verify", classes="filter-button")
-                        yield Button("F5 CANoe", id="log-filter-canoe", classes="filter-button")
-                        yield Static(id="log-filter-status")
-                    yield RichLog(id="log", wrap=True, highlight=True, markup=True)
+                    with Vertical(id="page-logs", classes="page hidden"):
+                        with Vertical(id="log-pane"):
+                            yield Static("Execution Log", classes="pane-title")
+                            yield Static(id="log-summary")
+                            with Horizontal(id="log-controls"):
+                                yield Button("F1 전체", id="log-filter-all", classes="filter-button")
+                                yield Button("F2 경고", id="log-filter-warn", classes="filter-button")
+                                yield Button("F3 실패", id="log-filter-fail", classes="filter-button")
+                                yield Button("F4 Verify", id="log-filter-verify", classes="filter-button")
+                                yield Button("F5 CANoe", id="log-filter-canoe", classes="filter-button")
+                                yield Static(id="log-filter-status")
+                            yield RichLog(id="log", wrap=True, highlight=True, markup=True)
         yield Footer()
 
     def on_mount(self) -> None:
@@ -829,13 +832,17 @@ class SdvTuiApp(App[None]):
         self.active_group_index = self.group_names.index("Primary Workflow")
         self._refresh_commands(self.active_group_index)
         self._show_page("home")
+        if str(self.state.get("last_result", {}).get("status", "IDLE")) == "RUNNING":
+            self._run_started_monotonic = time.monotonic()
         self._refresh_summary_cards()
+        self._refresh_global_bars()
         self._refresh_log_summary()
+        self.set_interval(0.5, self._refresh_global_bars)
         self._write_log("[bold cyan]TUI 준비 완료[/]  작업을 고르고 필요한 값을 입력한 뒤 [bold]Ctrl+R[/]로 실행하십시오.")
 
     def _show_page(self, page_name: str) -> None:
         self.current_page = page_name
-        pages = ("home", "execute", "results", "artifacts", "automation")
+        pages = ("home", "execute", "results", "artifacts", "automation", "logs")
         for item in pages:
             page = self.query_one(f"#page-{item}")
             if item == page_name:
@@ -848,8 +855,9 @@ class SdvTuiApp(App[None]):
             "results": "nav-results",
             "artifacts": "nav-artifacts",
             "automation": "nav-automation",
+            "logs": "nav-logs",
         }[page_name]
-        for button_id in ("nav-home", "nav-execute", "nav-results", "nav-artifacts", "nav-automation"):
+        for button_id in ("nav-home", "nav-execute", "nav-results", "nav-artifacts", "nav-automation", "nav-logs"):
             button = self.query_one(f"#{button_id}", Button)
             button.variant = "primary" if button_id == active_nav else "default"
         self._refresh_execute_group_buttons()
@@ -925,7 +933,7 @@ class SdvTuiApp(App[None]):
     def _apply_campaign_profile(self, profile_id: str) -> None:
         profile = self._load_campaign_profiles().get(profile_id)
         if not profile:
-            self._write_log(f"[bold red]Campaign profile not found[/] {profile_id}")
+            self._write_log(f"[bold red]실행 프로파일 없음[/] {profile_id}")
             return
         self._open_task("Primary Workflow", "verify.batch", focus="form")
         command = self._selected_command()
@@ -955,7 +963,7 @@ class SdvTuiApp(App[None]):
         }
         self._update_preview()
         self._write_log(
-            f"[bold cyan]Profile[/] {profile.get('title', profile_id)}  "
+            f"[bold cyan]실행 프로파일[/] {profile.get('title', profile_id)}  "
             f"(phase={profile.get('phase', 'pre')}, repeat={profile.get('repeat_count', 1)})"
         )
 
@@ -1007,6 +1015,139 @@ class SdvTuiApp(App[None]):
             recent_lines.append("- 아직 실행 기록이 없습니다. Gate all부터 시작하십시오.")
         recent_lines.extend(["", f"최근 상세: {detail}", "", "자세한 판정은 Results, 원본/증빙은 Artifacts, CI 연결은 Automation에서 확인하십시오."])
         self.query_one("#home-recent", Static).update("\n".join(recent_lines))
+
+    def _format_duration_clock(self, seconds: float) -> str:
+        total_seconds = max(0, int(seconds))
+        hours, remainder = divmod(total_seconds, 3600)
+        minutes, secs = divmod(remainder, 60)
+        if hours:
+            return f"{hours:02d}:{minutes:02d}:{secs:02d}"
+        return f"{minutes:02d}:{secs:02d}"
+
+    def _pipeline_snapshot(self) -> dict[str, object]:
+        timeline = self.state.get("timeline", {})
+        if not isinstance(timeline, dict):
+            timeline = {}
+        last_result = self.state.get("last_result", {})
+        if not isinstance(last_result, dict):
+            last_result = {}
+        live = self.state.get("live_runtime", {})
+        if not isinstance(live, dict):
+            live = {}
+
+        stages = [
+            ("gate", "Gate", 15.0),
+            ("scenario", "Scenario", 12.0),
+            ("verify", "Verify", 20.0),
+        ]
+        done_statuses = {"PASS", "WARN", "FAIL", "DONE", "OK"}
+        total_units = float(len(stages))
+        completed_units = 0.0
+        elapsed_seconds = 0.0
+        eta_seconds = 0.0
+        started = False
+        stage_labels: list[str] = []
+        active_stage = str(live.get("stage", "대기")).strip() or "대기"
+
+        for key, label, default_seconds in stages:
+            status = str(timeline.get(key, "IDLE"))
+            recorded_seconds = max(0.0, float(int(timeline.get(f"{key}_ms", 0) or 0)) / 1000.0)
+            estimate_seconds = recorded_seconds if recorded_seconds > 0 else default_seconds
+            badge = status
+            if status == "RUNNING":
+                started = True
+                running_seconds = max(0.0, time.monotonic() - self._run_started_monotonic) if self._run_started_monotonic else 0.0
+                partial = min(running_seconds / max(estimate_seconds, 1.0), 0.95)
+                completed_units += partial
+                elapsed_seconds += running_seconds
+                eta_seconds += max(estimate_seconds - running_seconds, 0.0)
+                badge = f"RUN {int(partial * 100):02d}%"
+            elif status in done_statuses:
+                started = True
+                completed_units += 1.0
+                elapsed_seconds += recorded_seconds if recorded_seconds > 0 else estimate_seconds
+            else:
+                if started:
+                    eta_seconds += estimate_seconds
+            stage_labels.append(f"{label}({badge})")
+
+        running = str(last_result.get("status", "IDLE")) == "RUNNING"
+        progress = int(max(0.0, min(100.0, (completed_units / total_units) * 100.0)))
+        if running and not started:
+            progress = max(progress, 8)
+            started = True
+
+        last_duration_seconds = max(0.0, float(int(last_result.get("duration_ms", 0) or 0)) / 1000.0)
+        if not running and elapsed_seconds <= 0 and last_duration_seconds > 0:
+            elapsed_seconds = last_duration_seconds
+
+        eta_text = self._format_duration_clock(eta_seconds) if running and eta_seconds > 0 else "--:--"
+        elapsed_text = self._format_duration_clock(elapsed_seconds)
+        verdict = str(last_result.get("status", "IDLE"))
+        title = str(last_result.get("title", "아직 실행 기록이 없습니다"))
+        detail = str(last_result.get("detail", "작업을 선택하고 실행하면 이 카드가 채워집니다."))
+        runtime = canoe_runtime_check()
+        runtime_label = "ready" if runtime.available else "limited"
+        live_line = str(live.get("last_line", live_runtime_default_line())).strip() or live_runtime_default_line()
+
+        pulse_frames = [
+            "▁▂▃▄▅▆▇█",
+            "▂▃▄▅▆▇█▆",
+            "▃▄▅▆▇█▆▄",
+            "▄▅▆▇█▆▄▂",
+            "▅▆▇█▆▄▂▁",
+            "▆▇█▆▄▂▁▂",
+        ]
+        frame = pulse_frames[int(time.monotonic() * 2) % len(pulse_frames)]
+
+        recent_rows = self._recent_rows()
+        history_tokens: list[str] = []
+        for item in recent_rows[:5]:
+            status = str(item.get("status", "IDLE"))
+            symbol = {
+                "PASS": "●",
+                "WARN": "◐",
+                "FAIL": "✕",
+                "RUNNING": "◉",
+            }.get(status, "○")
+            duration = max(0.0, float(int(item.get("duration_ms", 0) or 0)) / 1000.0)
+            history_tokens.append(f"{symbol}{self._format_duration_clock(duration)}")
+        history_text = "  ".join(history_tokens) if history_tokens else "최근 실행 기록이 없습니다."
+
+        return {
+            "running": running,
+            "progress": progress,
+            "elapsed": elapsed_text,
+            "eta": eta_text,
+            "phase_line": "  ".join(stage_labels),
+            "active_stage": active_stage,
+            "runtime_label": runtime_label,
+            "runtime_detail": runtime.detail,
+            "live_line": live_line[:84],
+            "verdict": verdict,
+            "title": title,
+            "detail": detail[:84],
+            "pulse": frame,
+            "history": history_text,
+        }
+
+    def _refresh_global_bars(self) -> None:
+        try:
+            snapshot = self._pipeline_snapshot()
+            self.query_one("#global-progress", ProgressBar).update(progress=float(snapshot["progress"]))
+            self.query_one("#hero-status", Static).update(
+                f"현재 작업: {snapshot['title']}  |  판정: {snapshot['verdict']}  |  Active: {snapshot['active_stage']}"
+            )
+            self.query_one("#global-progress-label", Static).update(
+                f"{snapshot['progress']}% complete  |  Elapsed {snapshot['elapsed']}  |  ETA {snapshot['eta']}"
+            )
+            runtime_lines = [
+                f"{snapshot['phase_line']}  |  Active: {snapshot['active_stage']}",
+                f"CANoe: {snapshot['runtime_label']}  |  Pulse: {snapshot['pulse']} {snapshot['progress']}%  |  Signal: {snapshot['live_line'][:18]}",
+            ]
+            self.query_one("#global-runtime-band", Static).update("\n".join(runtime_lines))
+        except NoMatches:
+            return
 
     def _artifact_layout(self) -> dict[str, object]:
         path = ROOT / "product" / "sdv_operator" / "config" / "verification_artifact_layout.json"
@@ -1089,7 +1230,7 @@ class SdvTuiApp(App[None]):
             execution = execution_manifest.get("execution", {})
             if isinstance(execution, dict):
                 lines.append(f"run_id={execution.get('run_id', '-')}")
-                lines.append(f"campaign={execution.get('campaign_id', '-')}")
+                lines.append(f"execution_id={execution.get('campaign_id', '-')}")
                 lines.append(f"phase={execution.get('phase', execution_manifest.get('phase', '-'))}")
                 lines.append(f"owner={execution.get('owner', '-')}")
                 lines.append(f"surface={execution.get('surface_scope', '-')}")
@@ -1305,7 +1446,9 @@ class SdvTuiApp(App[None]):
         )
         self.query_one("#readiness-body", Static).update(self._summarize_tier_readiness())
         self.query_one("#batch-body", Static).update(self._summarize_batch_snapshot())
-        self.query_one("#runtime-body", Static).update(self._summarize_runtime_summary())
+        self.query_one("#com-body", Static).update(self._summarize_com_snapshot())
+        self.query_one("#timeline-body", Static).update(self._summarize_timeline())
+        self._refresh_global_bars()
 
         last_result = self.state.get("last_result", {})
         if isinstance(last_result, dict):
@@ -1610,6 +1753,7 @@ class SdvTuiApp(App[None]):
         live["outputs"] = outputs or list(live.get("outputs", []))
         self.state["live_runtime"] = live
         self._refresh_log_summary()
+        self._refresh_global_bars()
 
     def _update_live_runtime_from_line(self, command: PaletteCommand, line: str) -> None:
         stripped = line.strip()
@@ -1644,6 +1788,7 @@ class SdvTuiApp(App[None]):
             "outputs": outputs,
         }
         self._refresh_log_summary()
+        self._refresh_global_bars()
 
     def _update_preview(self) -> None:
         command = self._selected_command()
@@ -1659,7 +1804,7 @@ class SdvTuiApp(App[None]):
             preview_lines = [f"python scripts/run.py {' '.join(tokens)}"]
             profile = self.state.get("campaign_profile", {})
             if isinstance(profile, dict) and profile.get("profile_id"):
-                preview_lines.extend(["", f"[cyan]적용 profile[/cyan]  {profile.get('title', profile.get('profile_id'))}"])
+                preview_lines.extend(["", f"[cyan]적용 실행 프로파일[/cyan]  {profile.get('title', profile.get('profile_id'))}"])
             artifact_lines = command.expected_outputs or tuple(self._artifact_paths(command, tokens))
             if artifact_lines:
                 preview_lines.extend(["", "[cyan]예상 산출물[/cyan]"])
@@ -1859,10 +2004,10 @@ class SdvTuiApp(App[None]):
             profile = {}
         lines = [
             f"Task: {command_title}",
-            f"Profile: {profile.get('title', '-')}",
+            f"Execution Profile: {profile.get('title', '-')}",
             f"profile_id={profile.get('profile_id', '-')}",
             f"pack_id={profile.get('pack_id', '-')}",
-            f"campaign_id={values.get('campaign_id', '-')}",
+            f"execution_id={values.get('campaign_id', '-')}",
             f"phase={values.get('phase', '-')}",
             f"surface={values.get('surface_scope', '-')}",
             "plan="
@@ -2081,6 +2226,7 @@ class SdvTuiApp(App[None]):
             return
         tokens = ["package", "clean", "--scope", "staging", "--yes"]
         self._write_log(f"[bold green]$[/] python scripts/run.py {' '.join(tokens)}")
+        self._show_page("logs")
         self.query_one("#log", RichLog).focus()
         self._run_command(command, tokens)
 
@@ -2246,8 +2392,8 @@ class SdvTuiApp(App[None]):
                 first_fail = str(failed_steps[0].get("name", "-"))
         lines = [
             f"Run: {batch.get('run_id', '-')}",
-            f"Campaign: {batch.get('campaign_id', '-')}",
-            f"Profile/Pack: {batch.get('profile_id', '-') or '-'} / {batch.get('pack_id', '-') or '-'}",
+            f"Execution ID: {batch.get('campaign_id', '-')}",
+            f"Run Profile/Pack: {batch.get('profile_id', '-') or '-'} / {batch.get('pack_id', '-') or '-'}",
             f"Phase/Status: {phase} / {status}",
             f"Surface Scope: {batch.get('campaign', {}).get('surface_scope', '-') if isinstance(batch.get('campaign', {}), dict) else '-'}",
             "Plan: "
@@ -2331,6 +2477,7 @@ class SdvTuiApp(App[None]):
 
     def _set_running_state(self, command: PaletteCommand, started_ts: str, tokens: list[str]) -> None:
         self._update_timeline_state(command.command_id, "RUNNING", command.title, 0)
+        self._run_started_monotonic = time.monotonic()
         self.state["live_runtime"] = {
             "stage": command.title,
             "last_line": "Process started. Waiting for runtime output...",
@@ -2354,6 +2501,7 @@ class SdvTuiApp(App[None]):
         self._save_state()
         self._refresh_summary_cards()
         self._refresh_log_summary()
+        self._refresh_global_bars()
 
     def _selected_option_index(self, option_list: OptionList) -> int:
         highlighted = option_list.highlighted
@@ -2422,6 +2570,9 @@ class SdvTuiApp(App[None]):
             self._show_page("artifacts")
         elif event.button.id == "nav-automation":
             self._show_page("automation")
+        elif event.button.id == "nav-logs":
+            self._show_page("logs")
+            self.query_one("#log", RichLog).focus()
         elif event.button.id == "home-gate":
             self._open_core_task("verify.all_gates", focus="run")
         elif event.button.id == "home-scenario":
@@ -2535,6 +2686,7 @@ class SdvTuiApp(App[None]):
         input_widget.focus()
 
     def action_focus_log(self) -> None:
+        self._show_page("logs")
         self.query_one("#log", RichLog).focus()
 
     def action_focus_favorites(self) -> None:
@@ -2579,6 +2731,7 @@ class SdvTuiApp(App[None]):
             return
         tokens = [str(item) for item in argv]
         self._write_log(f"[bold green]$[/] python scripts/run.py {' '.join(tokens)}")
+        self._show_page("logs")
         self._run_command(command, tokens)
 
     def action_run_selected(self) -> None:
@@ -2594,6 +2747,7 @@ class SdvTuiApp(App[None]):
             self._update_preview()
             return
         self._write_log(f"[bold green]$[/] python scripts/run.py {' '.join(tokens)}")
+        self._show_page("logs")
         self.query_one("#log", RichLog).focus()
         self._run_command(command, tokens)
 
@@ -2839,6 +2993,7 @@ class SdvTuiApp(App[None]):
         insight: dict[str, str],
     ) -> None:
         self._update_timeline_state(command_id, status, title, duration_ms)
+        self._run_started_monotonic = None
         live = self.state.get("live_runtime", {})
         if not isinstance(live, dict):
             live = {}
@@ -2880,6 +3035,7 @@ class SdvTuiApp(App[None]):
         }
         self._save_state()
         self._refresh_summary_cards()
+        self._refresh_global_bars()
 
 
 def launch_tui() -> int:
