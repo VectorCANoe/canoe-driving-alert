@@ -34,6 +34,90 @@ int getVcuTxPort()
   return ethBackbonePort() + 2;
 }
 
+int deriveDriveMode(int driveState, int speed, int accelPedal, int brakePedal)
+{
+  if (driveState == 0)
+  {
+    return 0;
+  }
+  if (brakePedal >= 25 && speed <= 30)
+  {
+    return 3;
+  }
+  if (accelPedal >= 70)
+  {
+    return 2;
+  }
+  if (speed >= 20 && accelPedal <= 20)
+  {
+    return 1;
+  }
+  return 0;
+}
+
+int deriveEnergyFlowMode(int driveState, int accelPedal, int brakePedal)
+{
+  if (driveState == 0)
+  {
+    return 0;
+  }
+  if (brakePedal >= 10)
+  {
+    return 2;
+  }
+  if (accelPedal > 0)
+  {
+    return 1;
+  }
+  return 1;
+}
+
+int deriveRegenLevel(int driveMode, int brakePedal)
+{
+  if (brakePedal >= 40)
+  {
+    return 12;
+  }
+  if (brakePedal >= 20)
+  {
+    return 8;
+  }
+  if (brakePedal >= 5)
+  {
+    return 4;
+  }
+  if (driveMode == 3)
+  {
+    return 6;
+  }
+  if (driveMode == 1)
+  {
+    return 3;
+  }
+  return 2;
+}
+
+int derivePowerBalance(int driveMode, int accelPedal, int brakePedal)
+{
+  if (brakePedal >= 20)
+  {
+    return 40;
+  }
+  if (driveMode == 2 || accelPedal >= 60)
+  {
+    return 60;
+  }
+  if (driveMode == 1)
+  {
+    return 45;
+  }
+  if (driveMode == 3)
+  {
+    return 55;
+  }
+  return 50;
+}
+
 void traceVcuInputHealth(int pedalInputStale, int ignitionInputStale, int gearInputStale)
 {
   if (pedalInputStale != gLastPedalInputStale)
@@ -177,7 +261,10 @@ on timer tVcuCycle
   int delta;
   int driveState;
   int coreRoutingPolicy;
-  int selectedAlertLevel;
+  int driveMode;
+  int energyFlowMode;
+  int regenLevel;
+  int powerBalance;
   int torqueRequest;
   int tcsActive;
   int scenarioActive;
@@ -234,9 +321,9 @@ on timer tVcuCycle
   }
 
   driveState = (gearState > 0 || gSpeed > 0) ? 3 : 0;
-  gDriveMode = clampRange(gearState, 0, 7);
+  driveMode = deriveDriveMode(driveState, gSpeed, accelPedal, brakePedal);
+  gDriveMode = clampRange(driveMode, 0, 7);
   gSpeedLimitNorm = clampRange((int)@Core::speedLimitNorm, 0, 255);
-  selectedAlertLevel = clampRange((int)@Core::selectedAlertLevel, 0, 7);
   gBoundaryStatus = clampRange((int)@CoreState::domainBoundaryStatus, 0, 1);
   coreRoutingPolicy = clampRange((int)@CoreState::routingPolicy, 0, 2);
   gRoutingPolicy = coreRoutingPolicy;
@@ -289,9 +376,12 @@ on timer tVcuCycle
   output(mPtHealth);
   gPtAliveCnt = (gPtAliveCnt + 1) & 0xFF;
 
-  mEnergy.EnergyFlowMode = (gDriveMode == 3) ? 1 : 0;
-  mEnergy.RegenLevel = (selectedAlertLevel >= 3) ? 8 : 2;
-  mEnergy.PowerBalance = (gRoutingPolicy == 2) ? 60 : 50;
+  energyFlowMode = deriveEnergyFlowMode(driveState, accelPedal, brakePedal);
+  regenLevel = deriveRegenLevel(gDriveMode, brakePedal);
+  powerBalance = derivePowerBalance(gDriveMode, accelPedal, brakePedal);
+  mEnergy.EnergyFlowMode = energyFlowMode;
+  mEnergy.RegenLevel = regenLevel;
+  mEnergy.PowerBalance = powerBalance;
   output(mEnergy);
 
   mCtrlAuth.CtrlAuthLevel = (gBoundaryStatus == 1) ? 3 : 1;

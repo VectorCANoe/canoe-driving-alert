@@ -6,6 +6,10 @@ includes
 variables
 {
   msTimer tLdwsCycle;
+  int gCameraHealth;
+  int gLaneModelValid;
+  dword gFcamRxMs;
+  int gLastFcamInputStale;
   int gLastLaneDepartureWarn;
   int gLastLaneKeepAssist;
   int gLastLaneGuideState;
@@ -31,11 +35,31 @@ int ldwsPathReady()
   return 1;
 }
 
+void traceLdwsInputHealth(int fcamInputStale)
+{
+  if (fcamInputStale != gLastFcamInputStale)
+  {
+    if (fcamInputStale == 1)
+    {
+      write("[LDWS_LKAS] fcam input stale");
+    }
+    else
+    {
+      write("[LDWS_LKAS] fcam input restored");
+    }
+    gLastFcamInputStale = fcamInputStale;
+  }
+}
+
 void publishLdwsLkasState()
 {
   message frmLdwsLkasStateMsg mLdws;
+  int baseZoneContext;
+  int steerGroupFlag;
+  int fcamInputStale;
+  int cameraHealth;
+  int laneModelValid;
   int alertLevel;
-  int alertType;
   int turnLampState;
   int vehicleSpeed;
   int laneDepartureWarn;
@@ -43,26 +67,47 @@ void publishLdwsLkasState()
   int laneGuideState;
   int pathReady;
 
-  alertLevel = clampRange((int)@Core::selectedAlertLevel, 0, 7);
-  alertType = clampRange((int)@Core::selectedAlertType, 0, 7);
+  baseZoneContext = clampRange((int)@Core::baseZoneContext, 0, 4);
+  steerGroupFlag = clampRange((int)@Core::steerGroupFlag, 0, 1);
+  fcamInputStale = (ethIsRecentTick(gFcamRxMs, 300) == 1) ? 0 : 1;
+  traceLdwsInputHealth(fcamInputStale);
+  cameraHealth = gCameraHealth;
+  laneModelValid = gLaneModelValid;
+  alertLevel = 0;
   turnLampState = clampRange((int)@CoreState::turnLampState, 0, 3);
   vehicleSpeed = clampRange((int)@Core::vehicleSpeedNorm, 0, 255);
   pathReady = ldwsPathReady();
+
+  if (fcamInputStale == 1)
+  {
+    cameraHealth = 0;
+    laneModelValid = 0;
+  }
 
   laneDepartureWarn = 0;
   laneKeepAssist = 0;
   laneGuideState = 0;
 
-  if (vehicleSpeed >= 30 && turnLampState == 0 && (alertType == 5 || alertType == 6 || alertLevel >= 2))
+  if (baseZoneContext == 2 &&
+      vehicleSpeed >= 30 &&
+      turnLampState == 0 &&
+      laneModelValid == 1 &&
+      steerGroupFlag == 1)
   {
     laneDepartureWarn = 1;
     laneGuideState = 1;
+    alertLevel = 2;
   }
 
-  if (vehicleSpeed >= 40 && turnLampState == 0 && (alertType == 6 || alertLevel >= 3))
+  if (baseZoneContext == 2 &&
+      vehicleSpeed >= 40 &&
+      turnLampState == 0 &&
+      laneModelValid == 1 &&
+      cameraHealth >= 2)
   {
     laneKeepAssist = 1;
     laneGuideState = 2;
+    alertLevel = 3;
   }
   if (pathReady == 0)
   {
@@ -88,13 +133,16 @@ void publishLdwsLkasState()
       vehicleSpeed != gLastVehicleSpeed ||
       alertLevel != gLastAlertLevel)
   {
-    write("[LDWS_LKAS] path=%d warn=%d assist=%d guide=%d turn=%d speed=%d alert=%d",
+    write("[LDWS_LKAS] path=%d warn=%d assist=%d guide=%d turn=%d speed=%d zone=%d lane=%d cam=%d alert=%d",
           pathReady,
           laneDepartureWarn,
           laneKeepAssist,
           laneGuideState,
           turnLampState,
           vehicleSpeed,
+          baseZoneContext,
+          laneModelValid,
+          cameraHealth,
           alertLevel);
     gLastPathReady = pathReady;
     gLastLaneDepartureWarn = laneDepartureWarn;
@@ -108,6 +156,10 @@ void publishLdwsLkasState()
 
 on start
 {
+  gCameraHealth = 0;
+  gLaneModelValid = 0;
+  gFcamRxMs = 0;
+  gLastFcamInputStale = 0;
   gLastPathReady = -1;
   gLastLaneDepartureWarn = -1;
   gLastLaneKeepAssist = -1;
@@ -123,6 +175,13 @@ on timer tLdwsCycle
 {
   publishLdwsLkasState();
   setTimer(tLdwsCycle, 100);
+}
+
+on message frmFcamStateMsg
+{
+  gCameraHealth = clampRange((int)this.CameraHealth, 0, 3);
+  gLaneModelValid = clampRange((int)this.LaneModelValid, 0, 1);
+  gFcamRxMs = getSimulationTimeMs();
 }
 
 on stopMeasurement

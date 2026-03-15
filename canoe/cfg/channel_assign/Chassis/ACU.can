@@ -61,7 +61,6 @@ on timer tAcuCycle
 {
   message frmAcuStateMsg mAcu;
   int seatBeltInputStale;
-  int alertLevel;
   int driverSeatBelt;
   int passengerSeatBelt;
   int seatBeltWarnLvl;
@@ -73,7 +72,6 @@ on timer tAcuCycle
   seatBeltInputStale = (ethIsRecentTick(gSeatBeltRxMs, 300) == 1) ? 0 : 1;
   traceAcuInputHealth(seatBeltInputStale);
 
-  alertLevel = clampRange((int)@Core::selectedAlertLevel, 0, 7);
   driverSeatBelt = gDriverSeatBelt;
   passengerSeatBelt = gPassengerSeatBelt;
   seatBeltWarnLvl = gSeatBeltWarnLvl;
@@ -85,9 +83,9 @@ on timer tAcuCycle
   }
 
   deploymentArmed = (driverSeatBelt == 1 || passengerSeatBelt == 1) ? 1 : 0;
-  crashSeverity = (alertLevel >= 6) ? 4 : ((alertLevel >= 4) ? 2 : 0);
-  pretensionReq = (seatBeltWarnLvl >= 2 || alertLevel >= 6) ? 1 : 0;
-  airbagWarn = (deploymentArmed == 0 && alertLevel >= 4) ? 1 : 0;
+  crashSeverity = 0;
+  pretensionReq = (seatBeltWarnLvl >= 2) ? 1 : 0;
+  airbagWarn = (deploymentArmed == 0 && seatBeltWarnLvl >= 2) ? 1 : 0;
 
   mAcu.DeploymentArmed = deploymentArmed;
   mAcu.CrashSeverity = clampRange(crashSeverity, 0, 7);
@@ -100,12 +98,14 @@ on timer tAcuCycle
       mAcu.PretensionReq != gLastPretension ||
       mAcu.AirbagWarn != gLastWarn)
   {
-    write("[ACU] armed=%d sev=%d pretension=%d warn=%d alert=%d",
+    write("[ACU] armed=%d sev=%d pretension=%d warn=%d beltDrv=%d beltPass=%d warnLvl=%d",
           mAcu.DeploymentArmed,
           mAcu.CrashSeverity,
           mAcu.PretensionReq,
           mAcu.AirbagWarn,
-          alertLevel);
+          driverSeatBelt,
+          passengerSeatBelt,
+          seatBeltWarnLvl);
     gLastArmed = mAcu.DeploymentArmed;
     gLastSeverity = mAcu.CrashSeverity;
     gLastPretension = mAcu.PretensionReq;

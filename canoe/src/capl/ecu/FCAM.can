@@ -29,24 +29,34 @@ int fcamPathReady()
   return 1;
 }
 
+int calcLaneModelValid(int baseZoneContext, int objectConfidence)
+{
+  if ((baseZoneContext == 2 || baseZoneContext == 3 || baseZoneContext == 4) &&
+      objectConfidence >= 30)
+  {
+    return 1;
+  }
+  return 0;
+}
+
 void publishFcamState()
 {
   message frmFcamStateMsg mFcam;
+  int baseZoneContext;
   int objectTrackValid;
   int objectConfidence;
-  int selectedAlertType;
   int health;
   int objectDetected;
   int laneModelValid;
   int pathReady;
 
+  baseZoneContext = clampRange((int)@Core::baseZoneContext, 0, 4);
   objectTrackValid = clampRange((int)@Core::objectTrackValid, 0, 1);
   objectConfidence = clampRange((int)@Core::objectConfidence, 0, 100);
-  selectedAlertType = clampRange((int)@Core::selectedAlertType, 0, 7);
   pathReady = fcamPathReady();
 
   objectDetected = objectTrackValid;
-  laneModelValid = ((selectedAlertType == 5 || selectedAlertType == 6) && objectConfidence >= 30) ? 1 : 0;
+  laneModelValid = calcLaneModelValid(baseZoneContext, objectConfidence);
 
   if (objectConfidence >= 70)
   {
@@ -80,13 +90,13 @@ void publishFcamState()
       laneModelValid != gLastLaneModelValid ||
       objectConfidence != gLastConfidence)
   {
-    write("[FCAM] path=%d health=%d obj=%d lane=%d conf=%d alertType=%d",
+    write("[FCAM] path=%d health=%d obj=%d lane=%d conf=%d zone=%d",
           pathReady,
           health,
           objectDetected,
           laneModelValid,
           objectConfidence,
-          selectedAlertType);
+          baseZoneContext);
     gLastPathReady = pathReady;
     gLastHealth = health;
     gLastObjectDetected = objectDetected;

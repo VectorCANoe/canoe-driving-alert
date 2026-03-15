@@ -30,6 +30,27 @@ int calcFcwState(int objectRiskClass, int objectTtcMin, int decelAssistReq)
   return 0;
 }
 
+int deriveCollisionAlertLevel(int fcwState, int aebRequest, int decelAssistReq)
+{
+  if (aebRequest == 1)
+  {
+    return 6;
+  }
+  if (decelAssistReq == 1)
+  {
+    return 5;
+  }
+  if (fcwState >= 2)
+  {
+    return 4;
+  }
+  if (fcwState == 1)
+  {
+    return 3;
+  }
+  return 0;
+}
+
 void publishFcaState()
 {
   message frmFcaStateMsg mFca;
@@ -44,11 +65,11 @@ void publishFcaState()
   objectRiskClass = clampRange((int)@Core::objectRiskClass, 0, 7);
   objectTtcMin = clampRange((int)@Core::objectTtcMin, 0, 10000);
   decelAssistReq = (((int)@Core::decelAssistReq) == 1) ? 1 : 0;
-  alertLevel = clampRange((int)@Core::selectedAlertLevel, 0, 7);
 
   fcwState = calcFcwState(objectRiskClass, objectTtcMin, decelAssistReq);
   aebRequest = (decelAssistReq == 1 && objectRiskClass >= 4) ? 1 : 0;
   ttcBucket = clampRange(objectTtcMin / 100, 0, 255);
+  alertLevel = deriveCollisionAlertLevel(fcwState, aebRequest, decelAssistReq);
 
   mFca.FcwState = fcwState;
   mFca.AebRequest = aebRequest;

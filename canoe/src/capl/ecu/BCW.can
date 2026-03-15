@@ -30,6 +30,19 @@ int bcwPathReady()
   return 1;
 }
 
+int deriveBcwAlertLevel(int warnLeft, int warnRight, int objectRiskClass)
+{
+  if ((warnLeft == 1 || warnRight == 1) && objectRiskClass >= 4)
+  {
+    return 4;
+  }
+  if (warnLeft == 1 || warnRight == 1)
+  {
+    return 3;
+  }
+  return 0;
+}
+
 void publishBcwState()
 {
   message frmBcwStateMsg mBcw;
@@ -44,7 +57,6 @@ void publishBcwState()
   turnLampState = clampRange((int)@CoreState::turnLampState, 0, 3);
   mergeConflict = (((int)@Core::mergeCutInFlag) == 1) ? 1 : 0;
   objectRiskClass = clampRange((int)@Core::objectRiskClass, 0, 7);
-  alertLevel = clampRange((int)@Core::selectedAlertLevel, 0, 7);
   pathReady = bcwPathReady();
 
   warnLeft = 0;
@@ -61,6 +73,7 @@ void publishBcwState()
       warnRight = 1;
     }
   }
+  alertLevel = deriveBcwAlertLevel(warnLeft, warnRight, objectRiskClass);
   if (pathReady == 0)
   {
     warnLeft = 0;
