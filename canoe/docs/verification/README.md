@@ -18,6 +18,8 @@ This folder defines the active verification documents for the CANoe SIL baseline
   - current official diagnostic-linked verification scope
 - `native-test-asset-naming.md`
   - naming rule for executable native CANoe test assets
+- `test-suite-composition.md`
+  - active UT/IT/ST suite composition built from non-retired executable assets
 - `diagnostic-seam-design.md`
   - minimum seam design for the current diagnostic-linked scope
 
@@ -29,6 +31,6 @@ This folder defines the active verification documents for the CANoe SIL baseline
 ## Current diagnostic execution baseline
 
 The active diagnostic verification baseline is currently anchored to four official items:
-`UT_063`, `UT_064`, `IT_027`, and `ST_038`.
+`UT_063`, `UT_064`, `IT_040`, and `ST_043`.
 Their current `TEST_SCN` scenario bindings are `203`, `204`, `205`, and `202` respectively.
 Producer wiring is in place in `SGW.can`, `DCM.can`, and `TEST_SCN.can`; compile and runtime evidence remain separate pending gates.

@@ -42,8 +42,8 @@ These fields are enough to establish:
 |---|---|---|---|---|---|---|---|---|---|---|---|
 | `UT_063` | `SGW` | `TBD_DIAG_REQ_SGW_SECURITY` | `TBD_DIAG_RESP_SGW_SECURITY` | `TBD` | `TBD` | `Y` | `Y` | `Y` | `ETH_Backbone` | `ETH_Backbone` | `Tier-1 Security State` |
 | `UT_064` | `DCM` | `TBD_DIAG_REQ_DCM_STATE` | `TBD_DIAG_RESP_DCM_STATE` | `TBD` | `TBD` | `Y` | `Y` | `Y` | `ETH_Backbone` | `ETH_Backbone` | `Tier-1 Diagnostic State` |
-| `IT_027` | `SGW + DCM + runtime owner` | `TBD_DIAG_REQ_SERVICE_SECURITY` | `TBD_DIAG_RESP_SERVICE_SECURITY` | `TBD` | `TBD` | `Y` | `Y` | `Y` | `ETH_Backbone` | `ETH_Backbone` | `Tier-2 Integrated Runtime State` |
-| `ST_038` | `system-level diagnostic context` | `TBD_DIAG_REQ_SYSTEM_CONTEXT` | `TBD_DIAG_RESP_SYSTEM_CONTEXT` | `TBD` | `TBD` | `Y` | `Y` | `Y` | `ETH_Backbone` | `ETH_Backbone` | `Tier-3 System Verdict Context` |
+| `IT_040` | `SGW + DCM + runtime owner` | `TBD_DIAG_REQ_SERVICE_SECURITY` | `TBD_DIAG_RESP_SERVICE_SECURITY` | `TBD` | `TBD` | `Y` | `Y` | `Y` | `ETH_Backbone` | `ETH_Backbone` | `Tier-2 Integrated Runtime State` |
+| `ST_043` | `system-level diagnostic context` | `TBD_DIAG_REQ_SYSTEM_CONTEXT` | `TBD_DIAG_RESP_SYSTEM_CONTEXT` | `TBD` | `TBD` | `Y` | `Y` | `Y` | `ETH_Backbone` | `ETH_Backbone` | `Tier-3 System Verdict Context` |
 
 ## 4. Field interpretation rule
 

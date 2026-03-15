@@ -15,27 +15,14 @@ export testcase TC_CANOE_IT_BASE_005_BODY_SECURITY_CONTEXT()
     return;
   }
 
-  if (!launchScenarioAndWait(214, 900, 1300))
-  {
-    return;
-  }
-
-  assertIntEq("body-security-seatbelt-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
-  assertIntEq("body-security-seatbelt-level", 5, (long)@Core::selectedAlertLevel, "selectedAlertLevel");
-  assertIntMin("body-security-seatbelt-warn", 2, (long)@CoreState::seatBeltWarnLvl, "seatBeltWarnLvl");
-
-  if (!resetValidationHarnessIfNeeded())
-  {
-    return;
-  }
-
   if (!launchScenarioAndWait(203, 900, 1500))
   {
     return;
   }
 
-  assertIntEq("body-security-sgw-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+  assertIntEq("body-security-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
   assertIntMin("body-security-diag-state", 1, (long)@Diag::SecurityState, "SecurityState");
+  assertIntEq("body-security-route-owner", 3, (long)@Diag::RouteOwner, "RouteOwner");
 
   resetValidationHarnessIfNeeded();
 }

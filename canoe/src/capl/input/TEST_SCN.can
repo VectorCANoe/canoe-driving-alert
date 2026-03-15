@@ -1,4 +1,4 @@
-﻿
+
 
 includes
 {
@@ -64,6 +64,28 @@ variables
   int gIviTextNominalSeen;
   int gV2xContextNominalSeen;
   int gCluDisplayNominalSeen;
+  int gObsTmuLinkState;
+  int gObsTmuServiceMode;
+  int gObsRemoteClimateReq;
+  int gObsSignalBars;
+  int gObsCabinSetTemp;
+  int gObsBlowerLevel;
+  int gObsAcCompressorOn;
+  int gObsVentMode;
+  int gObsRearSetTemp;
+  int gObsRearBlowerLevel;
+  int gObsRearVentMode;
+  int gObsRearSyncMode;
+  int gObsDKeyState;
+  int gObsVehicleAccessState;
+  int gObsSecurityGrade;
+  int gObsKeyPresence;
+  int gObsAutoDoorState;
+  int gObsAutoUnlockState;
+  int gObsDoorApproachScore;
+  int gObsTailgateAssistMode;
+  int gObsTailgateOpenRequestState;
+  int gObsTailgateActuatorCmd;
 }
 
 
@@ -195,6 +217,28 @@ void stopScenarioExecution()
   gIviTextNominalSeen = 0;
   gV2xContextNominalSeen = 0;
   gCluDisplayNominalSeen = 0;
+  gObsTmuLinkState = -1;
+  gObsTmuServiceMode = -1;
+  gObsRemoteClimateReq = -1;
+  gObsSignalBars = -1;
+  gObsCabinSetTemp = -1;
+  gObsBlowerLevel = -1;
+  gObsAcCompressorOn = -1;
+  gObsVentMode = -1;
+  gObsRearSetTemp = -1;
+  gObsRearBlowerLevel = -1;
+  gObsRearVentMode = -1;
+  gObsRearSyncMode = -1;
+  gObsDKeyState = -1;
+  gObsVehicleAccessState = -1;
+  gObsSecurityGrade = -1;
+  gObsKeyPresence = -1;
+  gObsAutoDoorState = -1;
+  gObsAutoUnlockState = -1;
+  gObsDoorApproachScore = -1;
+  gObsTailgateAssistMode = -1;
+  gObsTailgateOpenRequestState = -1;
+  gObsTailgateActuatorCmd = -1;
   @Core::accelGroupFlag = 0;
   @Core::steerGroupFlag = 0;
 }
@@ -406,6 +450,28 @@ void applyScenarioPreset(int scenarioId)
   gIviTextNominalSeen = 0;
   gV2xContextNominalSeen = 0;
   gCluDisplayNominalSeen = 0;
+  gObsTmuLinkState = -1;
+  gObsTmuServiceMode = -1;
+  gObsRemoteClimateReq = -1;
+  gObsSignalBars = -1;
+  gObsCabinSetTemp = -1;
+  gObsBlowerLevel = -1;
+  gObsAcCompressorOn = -1;
+  gObsVentMode = -1;
+  gObsRearSetTemp = -1;
+  gObsRearBlowerLevel = -1;
+  gObsRearVentMode = -1;
+  gObsRearSyncMode = -1;
+  gObsDKeyState = -1;
+  gObsVehicleAccessState = -1;
+  gObsSecurityGrade = -1;
+  gObsKeyPresence = -1;
+  gObsAutoDoorState = -1;
+  gObsAutoUnlockState = -1;
+  gObsDoorApproachScore = -1;
+  gObsTailgateAssistMode = -1;
+  gObsTailgateOpenRequestState = -1;
+  gObsTailgateActuatorCmd = -1;
   @Test::displayModeSetting = 0;
   @Test::alertVolumeSetting = 0;
   @Test::seatBeltOverride = 0;
@@ -758,7 +824,7 @@ void applyScenarioPreset(int scenarioId)
   }
   else if (scenarioId == 35)
   {
-    /* ST_020: 긴급 종료 후 구간 경고 복귀
+    /* ST_021: 긴급 종료 후 구간 경고 복귀
        Phase 1: 스쿨존 과속 + 경찰 긴급 → 경찰 우선(level=6)
        Phase 2(600ms): 긴급 해제 → 스쿨존 과속 복귀(level=3) */
     gLockRoadZone = 1;
@@ -773,7 +839,7 @@ void applyScenarioPreset(int scenarioId)
   }
   else if (scenarioId == 200)
   {
-    /* ST_040: 전원ON → 일반도로 정상 주행 → 긴급 개입 → 해제 → 정지 → 전원OFF
+    /* ST_045: 전원ON → 일반도로 정상 주행 → 긴급 개입 → 해제 → 정지 → 전원OFF
        Phase 1(0ms):   driveState=3 speed=60 zone=0 → level=0 확인
        Phase 2(1000ms): 경찰 긴급 주입 → level=6
        Phase 3(2200ms): 긴급 해제 + 정지 → level=0
@@ -787,7 +853,7 @@ void applyScenarioPreset(int scenarioId)
   }
   else if (scenarioId == 201)
   {
-    /* ST_041: 정상 주행 → fail-safe 진입 → 복귀 → 전원OFF
+    /* ST_046: 정상 주행 → fail-safe 진입 → 복귀 → 전원OFF
        Phase 1(0ms):   속도=70 구급 긴급 → decelAssistReq=1
        Phase 2(400ms): forceFailSafe=1 → decelAssistReq=0 failSafeMode>=1
        Phase 3(800ms): forceFailSafe=0 → failSafeMode=0 복귀
@@ -805,7 +871,7 @@ void applyScenarioPreset(int scenarioId)
   }
   else if (scenarioId == 202)
   {
-    /* ST_038: nominal -> degraded -> blocked diagnostic context
+    /* ST_043: nominal -> degraded -> blocked diagnostic context
        Phase 1(0ms):   school-zone + police warning, seams nominal
        Phase 2(700ms): suppress emergency refresh -> warningPathStatus=1 degraded
        Phase 3(1100ms): forceFailSafe=1 -> blocked context
@@ -863,7 +929,7 @@ void applyScenarioPreset(int scenarioId)
   }
   else if (scenarioId == 205)
   {
-    /* IT_027: integrated service/security/diagnostic context */
+    /* IT_040: integrated service/security/diagnostic context */
     gLockDriveState = 3;
     gLockVehicleSpeed = 45;
     gLockRoadZone = 1;
@@ -997,7 +1063,7 @@ void applyScenarioPreset(int scenarioId)
   }
   else if (scenarioId == 213)
   {
-    /* IT_014: ambulance emergency must stay primary even with simultaneous TTC intersection risk */
+    /* IT_018: ambulance emergency must stay primary even with simultaneous TTC intersection risk */
     gLockDriveState = 3;
     gLockVehicleSpeed = 78;
     gLockRoadZone = 2;
@@ -1116,7 +1182,7 @@ void applyScenarioPreset(int scenarioId)
   }
   else if (scenarioId == 220)
   {
-    /* IT_018: visual-first display mode must keep popup/theme/sync state consistent on school-zone warning */
+    /* IT_026: visual-first display mode must keep popup/theme/sync state consistent on school-zone warning */
     gLockDriveState = 3;
     gLockVehicleSpeed = 45;
     gLockRoadZone = 1;
@@ -1133,7 +1199,7 @@ void applyScenarioPreset(int scenarioId)
   }
   else if (scenarioId == 222)
   {
-    /* IT_022: emergency distance display and history-query response on police-right context */
+    /* IT_035: emergency distance display and history-query response on police-right context */
     gLockDriveState = 3;
     gLockVehicleSpeed = 72;
     gLockRoadZone = 0;
@@ -1224,6 +1290,70 @@ void applyScenarioPreset(int scenarioId)
     gLockSourceId = 0;
     gLockEmergencyDirection = 0;
     gLockSteeringInput = 0;
+    gLockForceFailSafe = 0;
+    gLockSuppressEmergencyFrame = 0;
+  }
+  else if (scenarioId == 236)
+  {
+    /* IT_016: sport-mode context raises school-zone warning sensitivity */
+    gLockDriveState = 3;
+    gLockVehicleSpeed = 90;
+    gLockRoadZone = 1;
+    gLockSpeedLimit = 30;
+    gLockAlertState = 0;
+    gLockEmergencyType = 0;
+    gLockEta = 0;
+    gLockSourceId = 0;
+    gLockEmergencyDirection = 0;
+    gLockSteeringInput = 1;
+    gLockForceFailSafe = 0;
+    gLockSuppressEmergencyFrame = 0;
+  }
+  else if (scenarioId == 239)
+  {
+    /* IT_015: turn-lamp context adjusts school-zone warning direction semantics */
+    gLockDriveState = 3;
+    gLockVehicleSpeed = 50;
+    gLockRoadZone = 1;
+    gLockSpeedLimit = 30;
+    gLockAlertState = 0;
+    gLockEmergencyType = 0;
+    gLockEta = 0;
+    gLockSourceId = 0;
+    gLockEmergencyDirection = 0;
+    gLockSteeringInput = 0;
+    gLockForceFailSafe = 0;
+    gLockSuppressEmergencyFrame = 0;
+  }
+  else if (scenarioId == 244)
+  {
+    /* ST_007/ST_008: highway policy active with steering recovered baseline */
+    gLockDriveState = 3;
+    gLockVehicleSpeed = 80;
+    gLockRoadZone = 2;
+    gLockSpeedLimit = 100;
+    gLockAlertState = 0;
+    gLockEmergencyType = 0;
+    gLockEta = 0;
+    gLockSourceId = 0;
+    gLockEmergencyDirection = 0;
+    gLockSteeringInput = 1;
+    gLockForceFailSafe = 0;
+    gLockSuppressEmergencyFrame = 0;
+  }
+  else if (scenarioId == 237)
+  {
+    /* IT_023: high-accel chassis baseline through VCU drive-mode derivation */
+    gLockDriveState = 3;
+    gLockVehicleSpeed = 140;
+    gLockRoadZone = 0;
+    gLockSpeedLimit = 120;
+    gLockAlertState = 0;
+    gLockEmergencyType = 0;
+    gLockEta = 0;
+    gLockSourceId = 0;
+    gLockEmergencyDirection = 0;
+    gLockSteeringInput = 1;
     gLockForceFailSafe = 0;
     gLockSuppressEmergencyFrame = 0;
   }
@@ -1383,22 +1513,22 @@ void scheduleScenarioEvaluation(int scenarioId)
   }
   else if (scenarioId == 35)
   {
-    /* ST_020: Phase2(600ms) 긴급 해제 + 타임아웃(1000ms) 대기 후 판정 */
+    /* ST_021: Phase2(600ms) 긴급 해제 + 타임아웃(1000ms) 대기 후 판정 */
     evalDelayMs = 1800;
   }
   else if (scenarioId == 200)
   {
-    /* ST_040: Phase3(2200ms) 정지 후 안정화까지 충분한 여유 */
+    /* ST_045: Phase3(2200ms) 정지 후 안정화까지 충분한 여유 */
     evalDelayMs = 3500;
   }
   else if (scenarioId == 201)
   {
-    /* ST_041: Phase3(800ms) fail-safe 해제 + 안정화 */
+    /* ST_046: Phase3(800ms) fail-safe 해제 + 안정화 */
     evalDelayMs = 1500;
   }
   else if (scenarioId == 202)
   {
-    /* ST_038: degraded phase 관측 후 blocked context까지 포함 */
+    /* ST_043: degraded phase 관측 후 blocked context까지 포함 */
     evalDelayMs = 1800;
   }
   else if (scenarioId == 203 || scenarioId == 204 || scenarioId == 205)
@@ -1439,6 +1569,18 @@ void scheduleScenarioEvaluation(int scenarioId)
     evalDelayMs = 900;
   }
   else if (scenarioId == 225 || scenarioId == 226 || scenarioId == 227 || scenarioId == 228)
+  {
+    evalDelayMs = 900;
+  }
+  else if (scenarioId == 229)
+  {
+    evalDelayMs = 1300;
+  }
+  else if (scenarioId == 236 || scenarioId == 237 || scenarioId == 239)
+  {
+    evalDelayMs = 900;
+  }
+  else if (scenarioId == 244)
   {
     evalDelayMs = 900;
   }
@@ -1686,19 +1828,19 @@ void evaluateScenarioResult()
   }
   else if (gCurrentScenarioId == 35)
   {
-    /* ST_020: 긴급 해제 후 스쿨존 경고 복귀 확인
+    /* ST_021: 긴급 해제 후 스쿨존 경고 복귀 확인
        emergencyContext가 0이고 스쿨존 경고 레벨(3)이 복원되어야 함 */
     result = (level == 3 && type == 3 &&
               (int)@Core::emergencyContext == 0) ? 1 : 0;
   }
   else if (gCurrentScenarioId == 200)
   {
-    /* ST_040: 연속 시나리오 — 최종 정지 단계에서 경고 없음 확인 */
+    /* ST_045: 연속 시나리오 — 최종 정지 단계에서 경고 없음 확인 */
     result = (level == 0 && code == 0) ? 1 : 0;
   }
   else if (gCurrentScenarioId == 201)
   {
-    /* ST_041: fail-safe 복귀 후 안정 상태 확인 */
+    /* ST_046: fail-safe 복귀 후 안정 상태 확인 */
     result = (failSafeMode == 0) ? 1 : 0;
   }
   else if (gCurrentScenarioId == 202)
@@ -1892,18 +2034,76 @@ void evaluateScenarioResult()
   {
     result = ((int)@Core::driveStateNorm == 0 &&
               (int)@Core::vehicleSpeedNorm == 0 &&
-              (int)@Core::failSafeMode == 0) ? 1 : 0;
+              (int)@Core::failSafeMode == 0 &&
+              gObsAutoDoorState == 1 &&
+              gObsAutoUnlockState == 1 &&
+              gObsDoorApproachScore >= 80) ? 1 : 0;
   }
   else if (gCurrentScenarioId == 227)
   {
     result = ((int)@Core::driveStateNorm == 0 &&
               (int)@Core::vehicleSpeedNorm == 0 &&
-              (int)@Core::failSafeMode == 0) ? 1 : 0;
+              (int)@Core::failSafeMode == 0 &&
+              gObsTailgateAssistMode == 2 &&
+              gObsTailgateOpenRequestState == 1 &&
+              gObsTailgateActuatorCmd == 0) ? 1 : 0;
   }
   else if (gCurrentScenarioId == 228)
   {
     result = ((int)@Core::driveStateNorm == 0 &&
               (int)@Core::vehicleSpeedNorm == 0 &&
+              (int)@Core::failSafeMode == 0) ? 1 : 0;
+  }
+  else if (gCurrentScenarioId == 229)
+  {
+    result = ((int)@Core::driveStateNorm == 0 &&
+              (int)@Core::vehicleSpeedNorm == 0 &&
+              (int)@Core::failSafeMode == 0 &&
+              gObsTmuLinkState == 2 &&
+              gObsTmuServiceMode == 1 &&
+              gObsRemoteClimateReq == 1 &&
+              gObsSignalBars == 4 &&
+              gObsCabinSetTemp == 24 &&
+              gObsBlowerLevel == 5 &&
+              gObsAcCompressorOn == 1 &&
+              gObsVentMode == 2 &&
+              gObsRearSetTemp == 24 &&
+              gObsRearBlowerLevel == 5 &&
+              gObsRearVentMode == 2 &&
+              gObsRearSyncMode == 1 &&
+              gObsDKeyState == 2 &&
+              gObsVehicleAccessState == 2 &&
+              gObsSecurityGrade == 2 &&
+              gObsKeyPresence == 1) ? 1 : 0;
+  }
+  else if (gCurrentScenarioId == 236)
+  {
+    result = ((int)@Core::selectedAlertLevel == 4 &&
+              (int)@Core::selectedAlertType == 3 &&
+              (int)@CoreState::driveMode == 2 &&
+              (int)@CoreState::sportMode == 1 &&
+              (int)@Core::failSafeMode == 0) ? 1 : 0;
+  }
+  else if (gCurrentScenarioId == 237)
+  {
+    result = ((int)@Core::driveStateNorm == 3 &&
+              (int)@Core::vehicleSpeedNorm == 140 &&
+              (int)@CoreState::driveMode == 2 &&
+              (int)@CoreState::sportMode == 1 &&
+              (int)@Core::failSafeMode == 0) ? 1 : 0;
+  }
+  else if (gCurrentScenarioId == 239)
+  {
+    result = ((int)@Core::selectedAlertLevel == 3 &&
+              (int)@Core::selectedAlertType == 6 &&
+              (int)@CoreState::turnLampState == 2 &&
+              (int)@Core::failSafeMode == 0) ? 1 : 0;
+  }
+  else if (gCurrentScenarioId == 244)
+  {
+    result = ((int)@Core::baseZoneContext == 2 &&
+              (int)@Core::selectedAlertLevel == 0 &&
+              (int)@Core::selectedAlertType == 0 &&
               (int)@Core::failSafeMode == 0) ? 1 : 0;
   }
   else
@@ -2009,15 +2209,15 @@ on timer tScenarioPhase2
   }
   else if (gCurrentScenarioId == 35)
   {
-    /* ST_020: 긴급 해제 → 스쿨존 과속 경고 복귀 대기 (1000ms 타임아웃 자동 해제) */
+    /* ST_021: 긴급 해제 → 스쿨존 과속 경고 복귀 대기 (1000ms 타임아웃 자동 해제) */
     gLockAlertState = 0;
     gLockEmergencyType = 0;
     pushLockedScenarioInputs();
-    write("[TEST_SCN] ST_020 phase2: emergency cleared, expect zone warning restore");
+    write("[TEST_SCN] ST_021 phase2: emergency cleared, expect zone warning restore");
   }
   else if (gCurrentScenarioId == 200)
   {
-    /* ST_040: Phase 2 — 경찰 긴급 주입 */
+    /* ST_045: Phase 2 — 경찰 긴급 주입 */
     gLockAlertState = 1;
     gLockEmergencyType = 1;
     gLockEta = 10;
@@ -2025,23 +2225,23 @@ on timer tScenarioPhase2
     gLockEmergencyDirection = 1;
     pushLockedScenarioInputs();
     setTimer(tScenarioPhase3, 1200);
-    write("[TEST_SCN] ST_040 phase2: inject police emergency eta=10");
+    write("[TEST_SCN] ST_045 phase2: inject police emergency eta=10");
   }
   else if (gCurrentScenarioId == 201)
   {
-    /* ST_041: Phase 2 — fail-safe 진입 */
+    /* ST_046: Phase 2 — fail-safe 진입 */
     gLockForceFailSafe = 1;
     pushLockedScenarioInputs();
     setTimer(tScenarioPhase3, 400);
-    write("[TEST_SCN] ST_041 phase2: force fail-safe");
+    write("[TEST_SCN] ST_046 phase2: force fail-safe");
   }
   else if (gCurrentScenarioId == 202)
   {
-    /* ST_038: Phase 2 — emergency refresh 억제 -> degraded context 유도 */
+    /* ST_043: Phase 2 — emergency refresh 억제 -> degraded context 유도 */
     gLockSuppressEmergencyFrame = 1;
     pushLockedScenarioInputs();
     setTimer(tScenarioPhase3, 400);
-    write("[TEST_SCN] ST_038 phase2: suppress emergency refresh, expect degraded context");
+    write("[TEST_SCN] ST_043 phase2: suppress emergency refresh, expect degraded context");
   }
   else if (gCurrentScenarioId == 203)
   {
@@ -2062,7 +2262,7 @@ on timer tScenarioPhase2
     gLockSuppressEmergencyFrame = 1;
     pushLockedScenarioInputs();
     setTimer(tScenarioPhase3, 400);
-    write("[TEST_SCN] IT_027 phase2: suppress emergency refresh, expect integrated degraded context");
+    write("[TEST_SCN] IT_040 phase2: suppress emergency refresh, expect integrated degraded context");
   }
   else if (gCurrentScenarioId == 223)
   {
@@ -2108,28 +2308,28 @@ on timer tScenarioPhase3
   }
   else if (gCurrentScenarioId == 200)
   {
-    /* ST_040: Phase 3 — 긴급 해제 + 차량 정지 (전원OFF 직전 상태) */
+    /* ST_045: Phase 3 — 긴급 해제 + 차량 정지 (전원OFF 직전 상태) */
     gLockAlertState = 0;
     gLockEmergencyType = 0;
     gLockVehicleSpeed = 0;
     gLockDriveState = 0;
     pushLockedScenarioInputs();
-    write("[TEST_SCN] ST_040 phase3: emergency clear + vehicle stop (driveState=P)");
+    write("[TEST_SCN] ST_045 phase3: emergency clear + vehicle stop (driveState=P)");
   }
   else if (gCurrentScenarioId == 201)
   {
-    /* ST_041: Phase 3 — fail-safe 해제 후 정상 복귀 */
+    /* ST_046: Phase 3 — fail-safe 해제 후 정상 복귀 */
     gLockForceFailSafe = 0;
     pushLockedScenarioInputs();
-    write("[TEST_SCN] ST_041 phase3: fail-safe cleared, expect recovery");
+    write("[TEST_SCN] ST_046 phase3: fail-safe cleared, expect recovery");
   }
   else if (gCurrentScenarioId == 202)
   {
-    /* ST_038: Phase 3 — explicit blocked context */
+    /* ST_043: Phase 3 — explicit blocked context */
     gLockForceFailSafe = 1;
     gLockSuppressEmergencyFrame = 1;
     pushLockedScenarioInputs();
-    write("[TEST_SCN] ST_038 phase3: force fail-safe, expect blocked context");
+    write("[TEST_SCN] ST_043 phase3: force fail-safe, expect blocked context");
   }
   else if (gCurrentScenarioId == 203)
   {
@@ -2150,7 +2350,7 @@ on timer tScenarioPhase3
     gLockForceFailSafe = 1;
     gLockSuppressEmergencyFrame = 1;
     pushLockedScenarioInputs();
-    write("[TEST_SCN] IT_027 phase3: force fail-safe, expect integrated blocked context");
+    write("[TEST_SCN] IT_040 phase3: force fail-safe, expect integrated blocked context");
   }
 }
 
@@ -2465,6 +2665,12 @@ on timer tInput100
     mCabinAir.CabinTemp = 30;
     output(mCabinAir);
   }
+  else if (gCurrentScenarioId == 215)
+  {
+    mLampControl.HeadLampState = 2;
+    mLampControl.TurnLampState = 2;
+    output(mLampControl);
+  }
   else if (gCurrentScenarioId == 230)
   {
     mSteerAngle.SteeringAngleRaw = 1400;
@@ -2560,6 +2766,56 @@ on timer tInput100
 on sysvar Test::scenarioResult
 {
   publishScenarioResultFrame();
+}
+
+on message frmTmuServiceStateMsg
+{
+  gObsTmuLinkState = clampRange((int)this.TmuLinkState, 0, 3);
+  gObsTmuServiceMode = clampRange((int)this.TmuServiceMode, 0, 3);
+  gObsRemoteClimateReq = clampRange((int)this.RemoteClimateReq, 0, 1);
+  gObsSignalBars = clampRange((int)this.SignalBars, 0, 15);
+}
+
+on message frmHvacStateMsg
+{
+  gObsCabinSetTemp = clampRange((int)this.CabinSetTemp, 0, 100);
+  gObsBlowerLevel = clampRange((int)this.BlowerLevel, 0, 15);
+  gObsAcCompressorOn = clampRange((int)this.AcCompressorOn, 0, 1);
+}
+
+on message frmHvacActuatorMsg
+{
+  gObsVentMode = clampRange((int)this.VentMode, 0, 7);
+}
+
+on message frmRearClimateStateMsg
+{
+  gObsRearSetTemp = clampRange((int)this.RearSetTemp, 0, 100);
+  gObsRearBlowerLevel = clampRange((int)this.RearBlowerLevel, 0, 15);
+  gObsRearVentMode = clampRange((int)this.RearVentMode, 0, 7);
+  gObsRearSyncMode = clampRange((int)this.RearSyncMode, 0, 1);
+}
+
+on message frmDigitalKeyStateMsg
+{
+  gObsDKeyState = clampRange((int)this.DKeyState, 0, 7);
+  gObsVehicleAccessState = clampRange((int)this.VehicleAccessState, 0, 7);
+  gObsSecurityGrade = clampRange((int)this.SecurityGrade, 0, 15);
+  gObsKeyPresence = clampRange((int)this.KeyPresence, 0, 1);
+}
+
+on message frmAutoDoorCtrlStateMsg
+{
+  gObsAutoDoorState = clampRange((int)this.AutoDoorState, 0, 7);
+  gObsAutoUnlockState = clampRange((int)this.AutoUnlockState, 0, 3);
+  gObsDoorApproachScore = clampRange((int)this.DoorApproachScore, 0, 100);
+}
+
+on message frmPowerTailgateCtrlStateMsg
+{
+  gObsTailgateAssistMode = clampRange((int)this.TailgateAssistMode, 0, 7);
+  gObsTailgateOpenRequestState = clampRange((int)this.OpenRequestState, 0, 3);
+  gObsTailgateActuatorCmd = clampRange((int)this.TailgateActuatorCmd, 0, 100);
 }
 
 on sysvar Test::scenarioCommand

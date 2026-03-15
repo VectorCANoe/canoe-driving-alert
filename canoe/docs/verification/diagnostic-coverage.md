@@ -38,8 +38,8 @@ Do not expand diagnostic scope for:
 |---|---|---|---|
 | `UT_063` | `TC_CANOE_UT_EXT_016_SGW_SECURITY_STATE` | security-related state injection cannot remain a strong official verdict without explicit security-state interpretation | security-state explanation, gateway ownership, route-control impact |
 | `UT_064` | `TC_CANOE_UT_EXT_017_DCM_DIAGNOSTIC_STATE` | diagnostic-state injection alone is not enough once real diagnostic flows are introduced into the verdict chain | diagnostic-state reason, SID/DID linkage basis, tester interpretation basis |
-| `IT_027` | `TC_CANOE_IT_EXT_010_SERVICE_SECURITY_DIAG` | service, security, and diagnostic state interaction is too weak if judged only by visible output and trace | service-state cause, route ownership, diagnostic-state explanation |
-| `ST_038` | `TC_CANOE_ST_EXT_018_SERVICE_SECURITY_DIAG_CONTEXT` | the system-level verdict directly depends on service, security, and diagnostic context rather than only user-visible behavior | diagnostic-state cause, route ownership, security/service reason |
+| `IT_040` | `TC_CANOE_IT_EXT_010_SERVICE_SECURITY_DIAG` | service, security, and diagnostic state interaction is too weak if judged only by visible output and trace | service-state cause, route ownership, diagnostic-state explanation |
+| `ST_043` | `TC_CANOE_ST_EXT_018_SERVICE_SECURITY_DIAG_CONTEXT` | the system-level verdict directly depends on service, security, and diagnostic context rather than only user-visible behavior | diagnostic-state cause, route ownership, security/service reason |
 
 ## 4. Recommended implementation order
 
@@ -48,10 +48,10 @@ Do not expand diagnostic scope for:
    - `UT_064`
 
 2. integrated runtime and service-state verdict
-   - `IT_027`
+   - `IT_040`
 
 3. system-level diagnostic-context verdict
-   - `ST_038`
+   - `ST_043`
 
 ## 5. Minimum matrix fields
 
@@ -99,6 +99,6 @@ Use this document together with:
 
 - `UT_063`: `TEST_SCN` scenario `203` drives SGW diagnostic context and validates `Diag::SecurityState` plus `Diag::RouteOwner`.
 - `UT_064`: `TEST_SCN` scenario `204` drives DCM diagnostic context and validates `LastRequestSid`, `ResponseKind`, `ReasonCode`, `LastResponseCode`, and `LastResponseOk`.
-- `IT_027`: `TEST_SCN` scenario `205` validates the integrated SGW/DCM seam for service, security, route, and response context.
-- `ST_038`: `TEST_SCN` scenario `202` validates nominal -> degraded -> blocked progression and final blocked diagnostic context.
+- `IT_040`: `TEST_SCN` scenario `205` validates the integrated SGW/DCM seam for service, security, route, and response context.
+- `ST_043`: `TEST_SCN` scenario `202` validates nominal -> degraded -> blocked progression and final blocked diagnostic context.
 - Current status is `producer wiring complete / compile and runtime evidence pending` for all four items.

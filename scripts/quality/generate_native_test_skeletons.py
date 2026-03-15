@@ -1,4 +1,4 @@
-﻿from __future__ import annotations
+from __future__ import annotations
 
 import argparse
 import json
@@ -9,8 +9,8 @@ BLUEPRINT = ROOT / 'product' / 'sdv_operator' / 'config' / 'native_testcase_blue
 TEST_UNITS_ROOT = ROOT / 'canoe' / 'tests' / 'modules' / 'test_units'
 
 IMPLEMENTED_ANCHORS = {
-    'TC_CANOE_UT_CORE_001_SCHOOLZONE_OVERSPEED',
-    'TC_CANOE_IT_V2_FAILSAFE_001_CGW',
+    'TC_CANOE_UT_CORE_011_ADAS_WARNING_SELECTION',
+    'TC_CANOE_IT_V2_006_FAILSAFE_MIN_WARNING',
 }
 
 

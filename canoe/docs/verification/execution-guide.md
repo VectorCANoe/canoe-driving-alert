@@ -28,8 +28,8 @@ The current baseline uses a harness-first execution model.
 
 Current assets kept as the active native execution baseline:
 
-1. `canoe/tests/modules/test_units/TC_CANOE_UT_CORE_001_SCHOOLZONE_OVERSPEED`
-2. `canoe/tests/modules/test_units/TC_CANOE_IT_V2_FAILSAFE_001_CGW`
+1. `canoe/tests/modules/test_units/TC_CANOE_UT_CORE_011_ADAS_WARNING_SELECTION`
+2. `canoe/tests/modules/test_units/TC_CANOE_IT_V2_006_FAILSAFE_MIN_WARNING`
 
 These assets are the current baseline only.
 They are not a claim that the full future test architecture is complete.
@@ -63,8 +63,8 @@ The current execution flow depends on the following harness variables:
 
 | Asset | Main scope | Main runtime checks |
 | --- | --- | --- |
-| `TC_CANOE_UT_CORE_001_SCHOOLZONE_OVERSPEED` | school-zone warning path | `vehicleSpeedNorm`, `speedLimitNorm`, `baseZoneContext`, `selectedAlert*`, `ambient*`, `warningTextCode` |
-| `TC_CANOE_IT_V2_FAILSAFE_001_CGW` | boundary fail-safe path | `failSafeMode`, `decelAssistReq`, `selectedAlert*`, `warningTextCode`, `Test::baseScenarioId`, `Test::baseScenarioResult` |
+| `TC_CANOE_UT_CORE_011_ADAS_WARNING_SELECTION` | school-zone warning-selection path | `selectedAlert*`, `warningPathStatus`, `failSafeMode`, `warningTextCode` |
+| `TC_CANOE_IT_V2_006_FAILSAFE_MIN_WARNING` | boundary fail-safe path | `failSafeMode`, `decelAssistReq`, `selectedAlert*`, `warningTextCode`, `Test::baseScenarioId`, `Test::baseScenarioResult` |
 
 ## Expected outputs
 

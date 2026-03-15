@@ -40,5 +40,35 @@ export testcase TC_CANOE_IT_EXT_002_DRIVER_CONTEXT()
   assertIntEq("display-policy-code", 142, (long)@Cluster::warningTextCode, "warningTextCode");
   assertIntEq("display-policy-direction", 2, (long)@UiRender::renderDirection, "renderDirection");
 
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  if (!launchScenarioAndWait(236, 900, 1300))
+  {
+    return;
+  }
+
+  assertIntEq("drive-mode-sport-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+  assertIntEq("drive-mode-sport-level", 4, (long)@Core::selectedAlertLevel, "selectedAlertLevel");
+  assertIntEq("drive-mode-sport-type", 3, (long)@Core::selectedAlertType, "selectedAlertType");
+  assertIntEq("drive-mode-sport-flag", 1, (long)@CoreState::sportMode, "sportMode");
+
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  if (!launchScenarioAndWait(239, 900, 1300))
+  {
+    return;
+  }
+
+  assertIntEq("turn-lamp-context-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+  assertIntEq("turn-lamp-context-level", 3, (long)@Core::selectedAlertLevel, "selectedAlertLevel");
+  assertIntEq("turn-lamp-context-type", 6, (long)@Core::selectedAlertType, "selectedAlertType");
+  assertIntEq("turn-lamp-context-state", 2, (long)@CoreState::turnLampState, "turnLampState");
+
   resetValidationHarnessIfNeeded();
 }

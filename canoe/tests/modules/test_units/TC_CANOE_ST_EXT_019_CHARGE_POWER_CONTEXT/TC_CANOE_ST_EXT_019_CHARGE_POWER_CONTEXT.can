@@ -1,0 +1,23 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\\common\\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+}
+
+export testcase TC_CANOE_ST_EXT_019_CHARGE_POWER_CONTEXT()
+{
+  if (!resetValidationHarnessIfNeeded()) { return; }
+  if (!launchScenarioAndWait(231, 900, 1300)) { return; }
+  assertIntEq("st-charge-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+  if (!resetValidationHarnessIfNeeded()) { return; }
+  if (!launchScenarioAndWait(232, 900, 1300)) { return; }
+  assertIntEq("st-propulsion-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+  if (!resetValidationHarnessIfNeeded()) { return; }
+  if (!launchScenarioAndWait(237, 900, 1300)) { return; }
+  assertIntEq("st-drive-accel-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+  resetValidationHarnessIfNeeded();
+}

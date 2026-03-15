@@ -1,0 +1,8 @@
+version: 2.2.0
+
+test-tree:
+  - test-fixture: STDriverInterventionClear
+    description: Executable wrapper for system-level driver intervention release.
+    elements:
+      - capl-test-case: TC_CANOE_ST_EXT_003_DRIVER_INTERVENTION_CLEAR
+        title: TC_CANOE_ST_EXT_003_DRIVER_INTERVENTION_CLEAR

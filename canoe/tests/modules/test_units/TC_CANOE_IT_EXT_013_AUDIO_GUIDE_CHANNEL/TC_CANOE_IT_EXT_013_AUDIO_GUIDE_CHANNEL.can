@@ -1,0 +1,20 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\\common\\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+}
+
+export testcase TC_CANOE_IT_EXT_013_AUDIO_GUIDE_CHANNEL()
+{
+  if (!resetValidationHarnessIfNeeded()) { return; }
+  if (!launchScenarioAndWait(215, 900, 1300)) { return; }
+  assertIntEq("it-audio-guide-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+  if (!resetValidationHarnessIfNeeded()) { return; }
+  if (!launchScenarioAndWait(220, 900, 1300)) { return; }
+  assertIntEq("it-visual-sync-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+  resetValidationHarnessIfNeeded();
+}

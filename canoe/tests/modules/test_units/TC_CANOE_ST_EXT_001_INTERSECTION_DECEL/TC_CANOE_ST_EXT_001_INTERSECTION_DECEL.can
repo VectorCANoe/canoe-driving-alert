@@ -1,0 +1,18 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\\common\\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+}
+
+export testcase TC_CANOE_ST_EXT_001_INTERSECTION_DECEL()
+{
+  if (!resetValidationHarnessIfNeeded()) { return; }
+  if (!launchScenarioAndWait(213, 800, 1300)) { return; }
+  assertIntEq("st-intersection-decel-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+  assertIntEq("st-intersection-decel-req", 1, (long)@Core::decelAssistReq, "decelAssistReq");
+  resetValidationHarnessIfNeeded();
+}

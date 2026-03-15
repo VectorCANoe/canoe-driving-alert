@@ -1,0 +1,18 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\\common\\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+}
+
+export testcase TC_CANOE_ST_EXT_004_FAILSAFE_ENTRY()
+{
+  if (!resetValidationHarnessIfNeeded()) { return; }
+  if (!launchScenarioAndWait(18, 900, 1400)) { return; }
+  assertIntEq("st-failsafe-entry-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+  assertIntMin("st-failsafe-entry-mode", 1, (long)@Core::failSafeMode, "failSafeMode");
+  resetValidationHarnessIfNeeded();
+}

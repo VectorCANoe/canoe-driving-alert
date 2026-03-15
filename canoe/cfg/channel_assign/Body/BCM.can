@@ -533,11 +533,6 @@ on timer tBodyBase100
   {
     mLamp.TurnLampState = 3;
   }
-  else if ((int)@Test::turnLampOverride >= 1 && (int)@Test::turnLampOverride <= 2)
-  {
-    /* Validation-only seam for exact turn-lamp context coverage. */
-    mLamp.TurnLampState = (int)@Test::turnLampOverride;
-  }
   else
   {
     /* Do not synthesize body turn lamps from navigation guidance. */

@@ -7,8 +7,7 @@ Native CANoe Test Unit assets for the current SIL cycle.
   - `TEST_SCN`
   - `TEST_BAS`
   - `common/ValidationHarnessTestCommon.cin`
-- Active anchor assets:
-  - `TC_CANOE_UT_CORE_001_SCHOOLZONE_OVERSPEED`
+- Representative active baseline assets:
 - `TC_CANOE_IT_V2_006_FAILSAFE_MIN_WARNING`
 - `TC_CANOE_IT_EXT_001_OBJECT_RISK_EVENTLOG`
 - `TC_CANOE_IT_EXT_002_DRIVER_CONTEXT`
@@ -17,6 +16,7 @@ Native CANoe Test Unit assets for the current SIL cycle.
 - `TC_CANOE_IT_BASE_002_CHASSIS_STATE`
 - `TC_CANOE_IT_BASE_003_BODY_STATE`
 - `TC_CANOE_IT_BASE_004_BASIC_DISPLAY_UI`
+- `TC_CANOE_IT_BASE_005_COMFORT_CONTEXT`
 - `TC_CANOE_IT_BASE_005_BODY_SECURITY_CONTEXT`
 - `TC_CANOE_IT_BASE_006_AUDIO_VOICE`
 - `TC_CANOE_IT_EXT_004_OUTPUT_AVAILABILITY`
@@ -29,6 +29,7 @@ Native CANoe Test Unit assets for the current SIL cycle.
   - `TC_CANOE_UT_EXT_017_DCM_DIAGNOSTIC_STATE`
   - `TC_CANOE_IT_EXT_010_SERVICE_SECURITY_DIAG`
   - `TC_CANOE_ST_EXT_018_SERVICE_SECURITY_DIAG_CONTEXT`
+- Active level suites are kept under sibling path `../test_suites/`.
 - Retired draft skeletons:
   - moved under `retire/`
 
@@ -184,4 +185,7 @@ Active integration-test executable contracts now include:
 `TC_CANOE_IT_BASE_005_BODY_SECURITY_CONTEXT` (`214 -> 203`),
 `TC_CANOE_IT_BASE_006_AUDIO_VOICE` (`215`),
 `TC_CANOE_IT_EXT_004_OUTPUT_AVAILABILITY` (`18 -> 12 -> 35`), and
-`TC_CANOE_IT_EXT_005_DISTANCE_HISTORY` (`222 + historyQuery(0)`).
+`TC_CANOE_IT_EXT_005_DISTANCE_HISTORY` (`222 + historyQuery(0)`),
+`TC_CANOE_IT_EXT_010_WINDOW_STATE` (`226`), and
+`TC_CANOE_IT_EXT_014_BODY_CONTROL_LOCK` (`226`), and
+`TC_CANOE_IT_EXT_015_WIPER_RAIN_BASELINE` (`229`).

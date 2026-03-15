@@ -12,8 +12,8 @@ The current official scope is intentionally narrow and is limited to:
 
 - `UT_063`
 - `UT_064`
-- `IT_027`
-- `ST_038`
+- `IT_040`
+- `ST_043`
 
 These items require stronger diagnostic or security state visibility than the normal oracle/evidence path alone.
 
@@ -78,7 +78,7 @@ Producer wiring may still be pending.
 
 | Reserved seam | Why it matters |
 |---|---|
-| `Diag::SecurityState` | `UT_063`, `IT_027`, and `ST_038` need a stable security verdict seam rather than indirect interpretation only |
+| `Diag::SecurityState` | `UT_063`, `IT_040`, and `ST_043` need a stable security verdict seam rather than indirect interpretation only |
 | `Diag::ServiceState` | integrated service-context verdicts should not rely only on mixed runtime side effects |
 | `Diag::RouteOwner` | current route and boundary health surfaces exist, but direct ownership explanation is still weak without a stable semantic seam |
 | `Diag::ResponseKind` | `Positive / Negative / Timeout / Unavailable` needs a stable verdict-facing interpretation |
@@ -132,8 +132,8 @@ Use one stable numeric interpretation from `UT` to `ST`.
 |---|---|---|---|
 | `UT_063` | was the security preset interpreted as the intended security state and ownership context | current: `Powertrain::RoutingPolicy`, `Body::BodyGwHealth`; reserved: `Diag::SecurityState`, `Diag::RouteOwner`, `Diag::ReasonCode` | write window + trace + sysvar snapshot |
 | `UT_064` | was the diagnostic preset interpreted as the intended diagnostic state and request class | current: `Diag::LastRequestSid`, `Diag::LastResponseCode`, `Diag::LastResponseOk`; reserved: ECU-local diag state + `Diag::ResponseKind`, `Diag::ReasonCode` | write window + trace + sysvar snapshot |
-| `IT_027` | did integrated service, security, and diagnostic context resolve to the expected runtime verdict | current: `Diag::*`, ECU-local `*DiagState`, `Powertrain::RoutingPolicy`; reserved: `Diag::ServiceState`, `Diag::SecurityState`, `Diag::RouteOwner` | native report + trace + write window + sysvar snapshot |
-| `ST_038` | did the system-level service/security/diagnostic context justify the final scenario verdict | current: `Diag::*`, ECU-local `*DiagState`, `CoreState::warningPathStatus`; reserved: `Diag::ServiceState`, `Diag::SecurityState`, `Diag::RouteOwner`, `Diag::ReasonCode` | native report + trace + write window + sysvar snapshot |
+| `IT_040` | did integrated service, security, and diagnostic context resolve to the expected runtime verdict | current: `Diag::*`, ECU-local `*DiagState`, `Powertrain::RoutingPolicy`; reserved: `Diag::ServiceState`, `Diag::SecurityState`, `Diag::RouteOwner` | native report + trace + write window + sysvar snapshot |
+| `ST_043` | did the system-level service/security/diagnostic context justify the final scenario verdict | current: `Diag::*`, ECU-local `*DiagState`, `CoreState::warningPathStatus`; reserved: `Diag::ServiceState`, `Diag::SecurityState`, `Diag::RouteOwner`, `Diag::ReasonCode` | native report + trace + write window + sysvar snapshot |
 
 ## 9. Planned assertion profiles
 
@@ -141,8 +141,8 @@ Use one stable numeric interpretation from `UT` to `ST`.
 |---|---|---|---|
 | `UT_063` | `SecurityState=2`, `RouteOwner=3 or 1` | degraded: `SecurityState=3`, `RouteOwner=1`; blocked: `SecurityState=3`, `RouteOwner=1` | executable via `TEST_SCN` scenario `203` |
 | `UT_064` | `LastRequestSid=0x22`, `ResponseKind=1`, `ReasonCode=0` | degraded: `ResponseKind=2`, `ReasonCode=3`; blocked: `ResponseKind=4`, `ReasonCode=2` | executable via `TEST_SCN` scenario `204` |
-| `IT_027` | `ServiceState=2`, `SecurityState=2`, `RouteOwner=3`, `ResponseKind=1`, `ReasonCode=0` | degraded: `ServiceState=1`, `SecurityState=3`, `RouteOwner=1`, `ReasonCode=3`; blocked: `ServiceState=1`, `SecurityState=3`, `RouteOwner=1`, `ReasonCode=2` | executable via `TEST_SCN` scenario `205` |
-| `ST_038` | scenario verdict remains explainable with `ServiceState=2`, `SecurityState=2`, `RouteOwner=3`, `ReasonCode=0` | degraded context: `ServiceState=1`, `SecurityState=3`, `RouteOwner=1`, `ReasonCode=3`; blocked context: `ServiceState=1`, `SecurityState=3`, `RouteOwner=1`, `ReasonCode=2` | executable via `TEST_SCN` scenario `202` |
+| `IT_040` | `ServiceState=2`, `SecurityState=2`, `RouteOwner=3`, `ResponseKind=1`, `ReasonCode=0` | degraded: `ServiceState=1`, `SecurityState=3`, `RouteOwner=1`, `ReasonCode=3`; blocked: `ServiceState=1`, `SecurityState=3`, `RouteOwner=1`, `ReasonCode=2` | executable via `TEST_SCN` scenario `205` |
+| `ST_043` | scenario verdict remains explainable with `ServiceState=2`, `SecurityState=2`, `RouteOwner=3`, `ReasonCode=0` | degraded context: `ServiceState=1`, `SecurityState=3`, `RouteOwner=1`, `ReasonCode=3`; blocked context: `ServiceState=1`, `SecurityState=3`, `RouteOwner=1`, `ReasonCode=2` | executable via `TEST_SCN` scenario `202` |
 
 ## 10. Publisher ownership baseline
 
@@ -153,9 +153,9 @@ To avoid conflicting writes, keep one producer per reserved seam.
 | `SGW.can` | `Diag::SecurityState`, `Diag::RouteOwner` |
 | `DCM.can` | `Diag::ServiceState`, `Diag::ResponseKind`, `Diag::ReasonCode`, `Diag::LastRequestSid`, `Diag::LastResponseCode`, `Diag::LastResponseOk` |
 
-## 11. ST_038 scenario stimulus contract
+## 11. ST_043 scenario stimulus contract
 
-The first executable `ST_038` scenario should use three phases only.
+The first executable `ST_043` scenario should use three phases only.
 
 1. nominal context
    - boundary healthy
@@ -198,10 +198,10 @@ Do not expand into full NRC catalogs until the current official coverage is stab
 2. `UT_064`
    - wire ECU-local diagnostic state interpretation
    - wire `Diag::ResponseKind`
-3. `IT_027`
+3. `IT_040`
    - wire `Diag::ServiceState`
    - reuse shared ownership interpretation
-4. `ST_038`
+4. `ST_043`
    - system-level diagnostic-context verdict seam
 
 ## 14. Expansion gate

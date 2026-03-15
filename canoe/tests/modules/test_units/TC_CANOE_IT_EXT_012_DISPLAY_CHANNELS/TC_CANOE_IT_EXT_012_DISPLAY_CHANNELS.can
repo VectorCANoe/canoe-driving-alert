@@ -1,0 +1,20 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\\common\\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+}
+
+export testcase TC_CANOE_IT_EXT_012_DISPLAY_CHANNELS()
+{
+  if (!resetValidationHarnessIfNeeded()) { return; }
+  if (!launchScenarioAndWait(220, 900, 1300)) { return; }
+  assertIntEq("it-display-channel-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+  if (!resetValidationHarnessIfNeeded()) { return; }
+  if (!launchScenarioAndWait(222, 900, 1300)) { return; }
+  assertIntEq("it-distance-display-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+  resetValidationHarnessIfNeeded();
+}

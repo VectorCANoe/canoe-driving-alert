@@ -1,0 +1,23 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\\common\\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+}
+
+export testcase TC_CANOE_ST_EXT_016_DISPLAY_SERVICE_CONTEXT()
+{
+  if (!resetValidationHarnessIfNeeded()) { return; }
+  if (!launchScenarioAndWait(229, 1300, 1700)) { return; }
+  assertIntEq("st-display-service-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+  if (!resetValidationHarnessIfNeeded()) { return; }
+  if (!launchScenarioAndWait(220, 900, 1300)) { return; }
+  assertIntEq("st-display-policy-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+  if (!resetValidationHarnessIfNeeded()) { return; }
+  if (!launchScenarioAndWait(215, 900, 1300)) { return; }
+  assertIntEq("st-audio-policy-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+  resetValidationHarnessIfNeeded();
+}

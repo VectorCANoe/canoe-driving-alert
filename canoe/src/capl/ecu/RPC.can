@@ -162,7 +162,7 @@ on message frmFcamStateMsg
   gFcamRxMs = getSimulationTimeMs();
 }
 
-on message frmNavStateMsg
+on message frmNavModuleStateMsg
 {
   gNavRouteClass = clampRange((int)this.NavRouteClass, 0, 3);
   gNavSpeedLimit = clampRange((int)this.NavSpeedLimit, 0, 255);

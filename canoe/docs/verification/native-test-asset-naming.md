@@ -129,12 +129,12 @@ Build native assets in this order:
 2. `IT` core composed assets
    - `IT_001` to `IT_008`
 3. `ST` core scenario assets
-   - `ST_001` to `ST_020`
+   - `ST_001` to `ST_021`
 4. diagnostic-linked assets
    - `UT_063`
    - `UT_064`
-   - `IT_027`
-   - `ST_038`
+   - `IT_040`
+   - `ST_043`
 
 ## 8. Relationship to other verification documents
 

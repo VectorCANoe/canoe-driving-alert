@@ -1,0 +1,8 @@
+version: 2.2.0
+
+test-tree:
+  - test-fixture: STFailSafeRecovery
+    description: Executable wrapper for system-level fail-safe recovery.
+    elements:
+      - capl-test-case: TC_CANOE_ST_EXT_005_FAILSAFE_RECOVERY
+        title: TC_CANOE_ST_EXT_005_FAILSAFE_RECOVERY

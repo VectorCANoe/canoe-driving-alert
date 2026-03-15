@@ -78,6 +78,7 @@
     <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="seatBeltOverride" comment="Seat belt override: 0=default 1=driver-off 2=passenger-off 3=both-off" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="3" maxValuePhys="3"/>
     <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="historyQueryOffset" comment="Alert history query offset: 0=latest" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="15" maxValuePhys="15"/>
     <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="historyQueryCode" comment="Alert history query response warning code" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="255" maxValuePhys="255"/>
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="turnLampOverride" comment="Validation-only turn lamp override: 0=default 1=left 2=right" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="2" maxValuePhys="2"/>
   </namespace>
 
   <namespace name="Diag" comment="" interface="">
