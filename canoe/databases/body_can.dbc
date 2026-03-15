@@ -46,6 +46,12 @@ BO_ 610 frmWindowControlMsg: 1 BCM
  SG_ WindowState      : 2|2@1+ (1,0) [0|3] "" BCM
  SG_ Reserved0        : 4|4@1+ (1,0) [0|0] "" Vector__XXX
 
+BO_ 611 frmSunroofControlMsg: 2 BCM
+ SG_ SunroofPositionCmd : 0|8@1+ (1,0) [0|100] "%" SRF
+ SG_ SunroofTiltCmd     : 8|2@1+ (1,0) [0|3] "" SRF
+ SG_ SunshadeCmd        : 10|2@1+ (1,0) [0|3] "" SRF
+ SG_ Reserved0          : 12|4@1+ (1,0) [0|0] "" Vector__XXX
+
 BO_ 612 frmDoorStateMsg: 2 BCM
  SG_ DoorStateMask    : 0|8@1+ (1,0) [0|255] "" BCM,BCM
  SG_ DoorLockState    : 8|2@1+ (1,0) [0|3] "" BCM,BCM

@@ -16,11 +16,16 @@ variables
   int gNavDirection;
   int gZoneDistance;
   int gSpeedLimit;
+  int gAlertLevel;
+  int gWarningPathStatus;
+  int gFailSafeMode;
   int gLastVehInputStale;
   int gLastNavInputStale;
   int gLastLinkMode;
   int gLastRouteState;
   int gLastServiceFlags;
+  dword gAlertTsMs;
+  dword gFailSafeTsMs;
 }
 
 void traceIboxInputHealth(int vehInputStale, int navInputStale)
@@ -91,8 +96,8 @@ void publishIboxState()
   navDirection = navFresh == 1 ? gNavDirection : 0;
   zoneDistance = navFresh == 1 ? gZoneDistance : 0;
   speedLimit = navFresh == 1 ? gSpeedLimit : 0;
-  failSafeMode = clampRange((int)@Core::failSafeMode, 0, 2);
-  alertLevel = clampRange((int)@Core::selectedAlertLevel, 0, 7);
+  failSafeMode = (ethIsRecentTick(gFailSafeTsMs, 300) == 1) ? gFailSafeMode : 2;
+  alertLevel = (ethIsRecentTick(gAlertTsMs, 300) == 1) ? gAlertLevel : 0;
 
   linkMode = 0;
   if (vehicleLinkActive == 1 || navLinkActive == 1)
@@ -150,6 +155,10 @@ void publishIboxState()
   {
     signalBars = 2;
   }
+  if (ethIsRecentTick(gFailSafeTsMs, 300) == 0 && signalBars > 1)
+  {
+    signalBars = 1;
+  }
   if (routeState == 0 && signalBars > 1)
   {
     signalBars = signalBars - 1;
@@ -194,6 +203,18 @@ void OnUdpReceiveFrom(dword socket, long result, dword address, dword port, char
       gZoneDistance = clampRange(ethGetU8(buffer, 1), 0, 255);
       gSpeedLimit = clampRange(ethGetU8(buffer, 2), 0, 255);
     }
+    else if (msgId == ethMsgSelectedAlert() && ethFramePayloadLen(count) >= 1)
+    {
+      gAlertLevel = clampRange(ethGetU8(buffer, 0) & 0x7, 0, 7);
+      gAlertTsMs = getSimulationTimeMs();
+    }
+    else if (msgId == ethMsgFailSafe() && ethFramePayloadLen(count) >= 1)
+    {
+      payload0 = ethGetU8(buffer, 0);
+      gWarningPathStatus = clampRange(payload0 & 0x3, 0, 2);
+      gFailSafeMode = clampRange((payload0 >> 4) & 0x3, 0, 2);
+      gFailSafeTsMs = getSimulationTimeMs();
+    }
   }
 
   ethArmReceive(gEthSocket, gEthRxBuffer, elcount(gEthRxBuffer));
@@ -210,11 +231,16 @@ on start
   gNavDirection = 0;
   gZoneDistance = 0;
   gSpeedLimit = 0;
+  gAlertLevel = 0;
+  gWarningPathStatus = 2;
+  gFailSafeMode = 2;
   gLastVehInputStale = 1;
   gLastNavInputStale = 1;
   gLastLinkMode = -1;
   gLastRouteState = -1;
   gLastServiceFlags = -1;
+  gAlertTsMs = 0;
+  gFailSafeTsMs = 0;
   if (gEthSocket != ethInvalidSocket())
   {
     ethStartReceiver(gEthSocket, gEthRxBuffer, elcount(gEthRxBuffer));

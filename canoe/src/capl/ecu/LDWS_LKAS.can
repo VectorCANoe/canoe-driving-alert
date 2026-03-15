@@ -6,6 +6,8 @@ includes
 variables
 {
   msTimer tLdwsCycle;
+  long gEthSocket;
+  char gEthRxBuffer[64];
   int gCameraHealth;
   int gLaneModelValid;
   int gRouteClass;
@@ -17,6 +19,10 @@ variables
   dword gLampRxMs;
   dword gVehicleRxMs;
   dword gSteeringRxMs;
+  int gWarningPathStatus;
+  int gE2eHealthState;
+  int gFailSafeMode;
+  dword gFailSafeRxMs;
   int gLastFcamInputStale;
   int gLastNavInputStale;
   int gLastLampInputStale;
@@ -33,14 +39,11 @@ variables
 
 int ldwsPathReady()
 {
-  int warningPathStatus;
-  int e2eHealthState;
-  int failSafeMode;
-
-  warningPathStatus = clampRange((int)@CoreState::warningPathStatus, 0, 2);
-  e2eHealthState = clampRange((int)@CoreState::e2eHealthState, 0, 2);
-  failSafeMode = clampRange((int)@Core::failSafeMode, 0, 2);
-  if (warningPathStatus >= 2 || e2eHealthState == 0 || failSafeMode >= 2)
+  if (ethIsRecentTick(gFailSafeRxMs, 300) == 0)
+  {
+    return 0;
+  }
+  if (gWarningPathStatus >= 2 || gE2eHealthState == 0 || gFailSafeMode >= 2)
   {
     return 0;
   }
@@ -252,8 +255,33 @@ void publishLdwsLkasState()
   }
 }
 
+void OnUdpReceiveFrom(dword socket, long result, dword address, dword port, char buffer[], dword count)
+{
+  int payload0;
+
+  if (socket != gEthSocket)
+  {
+    return;
+  }
+  if (result == 0)
+  {
+    if (ethFrameMsgId(buffer, count) == ethMsgFailSafe() &&
+        ethFramePayloadLen(count) >= 1)
+    {
+      payload0 = ethGetU8(buffer, 0);
+      gWarningPathStatus = clampRange(payload0 & 0x3, 0, 2);
+      gE2eHealthState = clampRange((payload0 >> 2) & 0x3, 0, 2);
+      gFailSafeMode = clampRange((payload0 >> 4) & 0x3, 0, 2);
+      gFailSafeRxMs = getSimulationTimeMs();
+    }
+  }
+
+  ethArmReceive(gEthSocket, gEthRxBuffer, elcount(gEthRxBuffer));
+}
+
 on start
 {
+  gEthSocket = ethOpenDefaultSocket();
   gCameraHealth = 0;
   gLaneModelValid = 0;
   gRouteClass = 0;
@@ -265,6 +293,10 @@ on start
   gLampRxMs = 0;
   gVehicleRxMs = 0;
   gSteeringRxMs = 0;
+  gWarningPathStatus = 1;
+  gE2eHealthState = 1;
+  gFailSafeMode = 1;
+  gFailSafeRxMs = 0;
   gLastFcamInputStale = 0;
   gLastNavInputStale = 0;
   gLastLampInputStale = 0;
@@ -277,6 +309,10 @@ on start
   gLastTurnLampState = -1;
   gLastVehicleSpeed = -1;
   gLastAlertLevel = -1;
+  if (gEthSocket != ethInvalidSocket())
+  {
+    ethStartReceiver(gEthSocket, gEthRxBuffer, elcount(gEthRxBuffer));
+  }
   setTimer(tLdwsCycle, 100);
   write("[LDWS_LKAS] start");
 }
@@ -321,4 +357,6 @@ on message frmSteeringStateCanMsg
 on stopMeasurement
 {
   cancelTimer(tLdwsCycle);
+  ethCloseSocket(gEthSocket);
+  gEthSocket = ethInvalidSocket();
 }

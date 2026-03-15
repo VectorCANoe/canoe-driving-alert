@@ -6,12 +6,23 @@ includes
 variables
 {
   msTimer tSgwCycle;
+  long gEthSocket;
+  char gEthRxBuffer[64];
   int gIboxLinkMode;
   int gIboxRouteState;
   int gIboxServiceFlags;
+  int gNavSessionState;
+  int gNavRouteClass;
+  int gNavSpeedLimit;
+  int gVehicleSpeed;
+  int gAlertLevel;
   int gFailSafeMode;
   int gBoundaryAlive;
   int gWarningPathStatus;
+  dword gNavRxMs;
+  dword gVehicleRxMs;
+  dword gNotifRxMs;
+  dword gFailSafeRxMs;
   int gLastSecuritySession;
   int gLastAuthState;
   int gLastSecurityFault;
@@ -65,22 +76,24 @@ void publishSecurityState()
   int keyPresence;
   int securityFault;
   int securityPolicy;
-  int baseZoneContext;
   int routeActive;
   int guidedRouteActive;
   int speedLimit;
   int vehicleSpeed;
   int alertLevel;
 
-  baseZoneContext = clampRange((int)@Core::baseZoneContext, 0, 4);
-  routeActive = (baseZoneContext > 0) ? 1 : 0;
-  guidedRouteActive = (baseZoneContext == 3 || baseZoneContext == 4) ? 1 : 0;
-  speedLimit = clampRange((int)@Core::speedLimitNorm, 0, 255);
-  vehicleSpeed = clampRange((int)@Chassis::vehicleSpeed, 0, 255);
-  alertLevel = clampRange((int)@Core::selectedAlertLevel, 0, 7);
-  gWarningPathStatus = clampRange((int)@CoreState::warningPathStatus, 0, 2);
-  gFailSafeMode = clampRange((int)@Core::failSafeMode, 0, 2);
-  gBoundaryAlive = clampRange((int)@CoreState::domainBoundaryStatus, 0, 1);
+  routeActive = (ethIsRecentTick(gNavRxMs, 300) == 1 &&
+                 (gNavSessionState > 0 || gNavRouteClass > 0)) ? 1 : 0;
+  guidedRouteActive = (ethIsRecentTick(gNavRxMs, 300) == 1 && gNavRouteClass == 3) ? 1 : 0;
+  speedLimit = (ethIsRecentTick(gNavRxMs, 300) == 1) ? gNavSpeedLimit : 0;
+  vehicleSpeed = (ethIsRecentTick(gVehicleRxMs, 300) == 1) ? gVehicleSpeed : 0;
+  alertLevel = (ethIsRecentTick(gNotifRxMs, 300) == 1) ? gAlertLevel : 0;
+  gBoundaryAlive = (ethIsRecentTick(gFailSafeRxMs, 300) == 1) ? 1 : 0;
+  if (gBoundaryAlive == 0)
+  {
+    gWarningPathStatus = 2;
+    gFailSafeMode = 2;
+  }
 
   gIboxLinkMode = 0;
   if (routeActive == 1 || alertLevel > 0)
@@ -182,18 +195,32 @@ void publishSecurityState()
 
 on start
 {
+  gEthSocket = ethOpenDefaultSocket();
   gIboxLinkMode = 0;
   gIboxRouteState = 0;
   gIboxServiceFlags = 0;
+  gNavSessionState = 0;
+  gNavRouteClass = 0;
+  gNavSpeedLimit = 0;
+  gVehicleSpeed = 0;
+  gAlertLevel = 0;
   gFailSafeMode = 1;
   gBoundaryAlive = 0;
   gWarningPathStatus = 2;
+  gNavRxMs = 0;
+  gVehicleRxMs = 0;
+  gNotifRxMs = 0;
+  gFailSafeRxMs = 0;
   gLastSecuritySession = -1;
   gLastAuthState = -1;
   gLastSecurityFault = -1;
   gLastSecurityPolicy = -1;
   @Diag::SecurityState = 0;
   @Diag::RouteOwner = 0;
+  if (gEthSocket != ethInvalidSocket())
+  {
+    ethStartReceiver(gEthSocket, gEthRxBuffer, elcount(gEthRxBuffer));
+  }
   setTimer(tSgwCycle, 100);
   write("[SGW] start");
 }
@@ -207,4 +234,47 @@ on timer tSgwCycle
 on stopMeasurement
 {
   cancelTimer(tSgwCycle);
+  ethCloseSocket(gEthSocket);
+  gEthSocket = ethInvalidSocket();
+}
+
+on message frmNavModuleStateMsg
+{
+  gNavSessionState = clampRange((int)this.NavSessionState, 0, 3);
+  gNavRouteClass = clampRange((int)this.NavRouteClass, 0, 3);
+  gNavSpeedLimit = clampRange((int)this.NavSpeedLimit, 0, 255);
+  gNavRxMs = getSimulationTimeMs();
+}
+
+on message frmVehicleStateCanMsg
+{
+  gVehicleSpeed = clampRange((int)this.gVehicleSpeed, 0, 255);
+  gVehicleRxMs = getSimulationTimeMs();
+}
+
+on message frmClusterNotifMsg
+{
+  gAlertLevel = clampRange((int)this.ClusterNotifArg, 0, 7);
+  gNotifRxMs = getSimulationTimeMs();
+}
+
+void OnUdpReceiveFrom(dword socket, long result, dword address, dword port, char buffer[], dword count)
+{
+  int payload0;
+
+  if (socket != gEthSocket)
+  {
+    return;
+  }
+  if (result == 0 &&
+      ethFrameMsgId(buffer, count) == ethMsgFailSafe() &&
+      ethFramePayloadLen(count) >= 1)
+  {
+    payload0 = ethGetU8(buffer, 0);
+    gWarningPathStatus = clampRange(payload0 & 0x3, 0, 2);
+    gFailSafeMode = clampRange((payload0 >> 4) & 0x3, 0, 2);
+    gFailSafeRxMs = getSimulationTimeMs();
+  }
+
+  ethArmReceive(gEthSocket, gEthRxBuffer, elcount(gEthRxBuffer));
 }

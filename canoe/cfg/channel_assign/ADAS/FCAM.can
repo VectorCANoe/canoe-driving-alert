@@ -6,6 +6,19 @@ includes
 variables
 {
   msTimer tFcamCycle;
+  long gEthSocket;
+  char gEthRxBuffer[64];
+  int gObjectTrackValid;
+  int gObjectConfidence;
+  int gNavRouteClass;
+  dword gObjectInputRxMs;
+  dword gNavRxMs;
+  int gWarningPathStatus;
+  int gE2eHealthState;
+  int gFailSafeMode;
+  dword gFailSafeRxMs;
+  int gLastObjectInputStale;
+  int gLastNavInputStale;
   int gLastHealth;
   int gLastObjectDetected;
   int gLastLaneModelValid;
@@ -15,24 +28,51 @@ variables
 
 int fcamPathReady()
 {
-  int warningPathStatus;
-  int e2eHealthState;
-  int failSafeMode;
-
-  warningPathStatus = clampRange((int)@CoreState::warningPathStatus, 0, 2);
-  e2eHealthState = clampRange((int)@CoreState::e2eHealthState, 0, 2);
-  failSafeMode = clampRange((int)@Core::failSafeMode, 0, 2);
-  if (warningPathStatus >= 2 || e2eHealthState == 0 || failSafeMode >= 2)
+  if (ethIsRecentTick(gFailSafeRxMs, 300) == 0)
+  {
+    return 0;
+  }
+  if (gWarningPathStatus >= 2 || gE2eHealthState == 0 || gFailSafeMode >= 2)
   {
     return 0;
   }
   return 1;
 }
 
-int calcLaneModelValid(int baseZoneContext, int objectConfidence)
+void traceFcamInputHealth(int objectInputStale, int navInputStale)
 {
-  if ((baseZoneContext == 2 || baseZoneContext == 3 || baseZoneContext == 4) &&
-      objectConfidence >= 30)
+  if (objectInputStale != gLastObjectInputStale)
+  {
+    if (objectInputStale == 1)
+    {
+      write("[FCAM] object input stale");
+    }
+    else
+    {
+      write("[FCAM] object input restored");
+    }
+    gLastObjectInputStale = objectInputStale;
+  }
+
+  if (navInputStale != gLastNavInputStale)
+  {
+    if (navInputStale == 1)
+    {
+      write("[FCAM] nav input stale");
+    }
+    else
+    {
+      write("[FCAM] nav input restored");
+    }
+    gLastNavInputStale = navInputStale;
+  }
+}
+
+int calcLaneModelValid(int navRouteClass, int navInputStale, int pathReady)
+{
+  if (pathReady == 1 &&
+      navInputStale == 0 &&
+      (navRouteClass == 2 || navRouteClass == 3))
   {
     return 1;
   }
@@ -42,46 +82,55 @@ int calcLaneModelValid(int baseZoneContext, int objectConfidence)
 void publishFcamState()
 {
   message frmFcamStateMsg mFcam;
-  int baseZoneContext;
+  int objectInputStale;
+  int navInputStale;
   int objectTrackValid;
   int objectConfidence;
+  int navRouteClass;
   int health;
   int objectDetected;
   int laneModelValid;
   int pathReady;
 
-  baseZoneContext = clampRange((int)@Core::baseZoneContext, 0, 4);
-  objectTrackValid = clampRange((int)@Core::objectTrackValid, 0, 1);
-  objectConfidence = clampRange((int)@Core::objectConfidence, 0, 100);
+  objectInputStale = (ethIsRecentTick(gObjectInputRxMs, 300) == 1) ? 0 : 1;
+  navInputStale = (ethIsRecentTick(gNavRxMs, 300) == 1) ? 0 : 1;
+  traceFcamInputHealth(objectInputStale, navInputStale);
+
+  objectTrackValid = gObjectTrackValid;
+  objectConfidence = gObjectConfidence;
+  navRouteClass = gNavRouteClass;
   pathReady = fcamPathReady();
 
-  objectDetected = objectTrackValid;
-  laneModelValid = calcLaneModelValid(baseZoneContext, objectConfidence);
-
-  if (objectConfidence >= 70)
+  if (objectInputStale == 1)
   {
-    health = 2;
+    objectTrackValid = 0;
+    objectConfidence = 0;
   }
-  else if (objectConfidence >= 30)
+  if (pathReady == 0)
+  {
+    navRouteClass = 0;
+  }
+
+  objectDetected = clampRange(objectTrackValid, 0, 1);
+  laneModelValid = calcLaneModelValid(navRouteClass, navInputStale, pathReady);
+
+  if (pathReady == 0 || objectInputStale == 1)
+  {
+    health = 0;
+  }
+  else if (navInputStale == 1)
   {
     health = 1;
   }
   else
   {
-    health = 0;
-  }
-  if (pathReady == 0)
-  {
-    health = 0;
-    objectDetected = 0;
-    laneModelValid = 0;
-    objectConfidence = 0;
+    health = 2;
   }
 
   mFcam.CameraHealth = clampRange(health, 0, 3);
   mFcam.ObjectDetected = objectDetected;
   mFcam.LaneModelValid = laneModelValid;
-  mFcam.Confidence = objectConfidence;
+  mFcam.Confidence = clampRange(objectConfidence, 0, 100);
   output(mFcam);
 
   if (pathReady != gLastPathReady ||
@@ -96,7 +145,7 @@ void publishFcamState()
           objectDetected,
           laneModelValid,
           objectConfidence,
-          baseZoneContext);
+          navRouteClass);
     gLastPathReady = pathReady;
     gLastHealth = health;
     gLastObjectDetected = objectDetected;
@@ -105,13 +154,61 @@ void publishFcamState()
   }
 }
 
+void OnUdpReceiveFrom(dword socket, long result, dword address, dword port, char buffer[], dword count)
+{
+  int payload0;
+
+  if (socket != gEthSocket)
+  {
+    return;
+  }
+
+  if (result == 0)
+  {
+    if (ethFrameMsgId(buffer, count) == ethMsgObjectRiskInput() &&
+        ethFramePayloadLen(count) >= 8)
+    {
+      gObjectTrackValid = clampRange(ethGetU8(buffer, 0) & 0x1, 0, 1);
+      gObjectConfidence = clampRange(ethGetU8(buffer, 5), 0, 100);
+      gObjectInputRxMs = getSimulationTimeMs();
+    }
+    else if (ethFrameMsgId(buffer, count) == ethMsgFailSafe() &&
+             ethFramePayloadLen(count) >= 1)
+    {
+      payload0 = ethGetU8(buffer, 0);
+      gWarningPathStatus = clampRange(payload0 & 0x3, 0, 2);
+      gE2eHealthState = clampRange((payload0 >> 2) & 0x3, 0, 2);
+      gFailSafeMode = clampRange((payload0 >> 4) & 0x3, 0, 2);
+      gFailSafeRxMs = getSimulationTimeMs();
+    }
+  }
+
+  ethArmReceive(gEthSocket, gEthRxBuffer, elcount(gEthRxBuffer));
+}
+
 on start
 {
+  gEthSocket = ethOpenDefaultSocket();
+  gObjectTrackValid = 0;
+  gObjectConfidence = 0;
+  gNavRouteClass = 0;
+  gObjectInputRxMs = 0;
+  gNavRxMs = 0;
+  gWarningPathStatus = 1;
+  gE2eHealthState = 1;
+  gFailSafeMode = 1;
+  gFailSafeRxMs = 0;
+  gLastObjectInputStale = 0;
+  gLastNavInputStale = 0;
   gLastPathReady = -1;
   gLastHealth = -1;
   gLastObjectDetected = -1;
   gLastLaneModelValid = -1;
   gLastConfidence = -1;
+  if (gEthSocket != ethInvalidSocket())
+  {
+    ethStartReceiver(gEthSocket, gEthRxBuffer, elcount(gEthRxBuffer));
+  }
   setTimer(tFcamCycle, 100);
   write("[FCAM] start");
 }
@@ -122,7 +219,15 @@ on timer tFcamCycle
   setTimer(tFcamCycle, 100);
 }
 
+on message frmNavModuleStateMsg
+{
+  gNavRouteClass = clampRange((int)this.NavRouteClass, 0, 3);
+  gNavRxMs = getSimulationTimeMs();
+}
+
 on stopMeasurement
 {
   cancelTimer(tFcamCycle);
+  ethCloseSocket(gEthSocket);
+  gEthSocket = ethInvalidSocket();
 }

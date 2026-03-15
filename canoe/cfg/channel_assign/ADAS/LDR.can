@@ -13,33 +13,52 @@ variables
   int gObjectTrackValid;
   int gObjectFailSafeMode;
   dword gObjectSafetyRxTsMs;
+  int gWarningPathStatus;
+  int gE2eHealthState;
+  int gFailSafeMode;
+  dword gFailSafeRxTsMs;
   int gLastHealth;
   int gLastDetected;
   int gLastFreeSpaceClass;
   int gLastConfidence;
   int gLastRangeBucket;
   int gLastPathReady;
+  int gLastObjectSafetyInputStale;
 }
 
 int lidarPathReady()
 {
-  int warningPathStatus;
-  int e2eHealthState;
-  int failSafeMode;
-
-  warningPathStatus = clampRange((int)@CoreState::warningPathStatus, 0, 2);
-  e2eHealthState = clampRange((int)@CoreState::e2eHealthState, 0, 2);
-  failSafeMode = clampRange((int)@Core::failSafeMode, 0, 2);
-  if (warningPathStatus >= 2 || e2eHealthState == 0 || failSafeMode >= 2)
+  if (ethIsRecentTick(gFailSafeRxTsMs, 300) == 0)
+  {
+    return 0;
+  }
+  if (gWarningPathStatus >= 2 || gE2eHealthState == 0 || gFailSafeMode >= 2)
   {
     return 0;
   }
   return 1;
 }
 
+void traceLidarInputHealth(int objectSafetyInputStale)
+{
+  if (objectSafetyInputStale != gLastObjectSafetyInputStale)
+  {
+    if (objectSafetyInputStale == 1)
+    {
+      write("[LDR] object-safety input stale");
+    }
+    else
+    {
+      write("[LDR] object-safety input restored");
+    }
+    gLastObjectSafetyInputStale = objectSafetyInputStale;
+  }
+}
+
 void publishLidarState()
 {
   message frmLidarStateMsg mLidar;
+  int objectSafetyInputStale;
   int health;
   int targetDetected;
   int freeSpaceClass;
@@ -50,56 +69,43 @@ void publishLidarState()
   int objectFailSafeMode;
   int pathReady;
 
-  objectConfidence = clampRange((int)@Core::objectConfidence, 0, 100);
-  objectEventCode = clampRange((int)@Core::objectEventCode, 0, 65535);
-  objectTrackValid = clampRange((int)@Core::objectTrackValid, 0, 1);
-  objectFailSafeMode = clampRange((int)@Core::failSafeMode, 0, 2);
+  objectSafetyInputStale = (ethIsRecentTick(gObjectSafetyRxTsMs, 300) == 1) ? 0 : 1;
+  traceLidarInputHealth(objectSafetyInputStale);
+
+  objectConfidence = gObjectConfidence;
+  objectEventCode = gObjectEventCode;
+  objectTrackValid = gObjectTrackValid;
+  objectFailSafeMode = gObjectFailSafeMode;
   pathReady = lidarPathReady();
 
-  if (ethIsRecentTick(gObjectSafetyRxTsMs, 300) == 1)
+  if (objectSafetyInputStale == 1)
   {
-    if (gObjectConfidence > objectConfidence)
-    {
-      objectConfidence = gObjectConfidence;
-    }
-    if (gObjectEventCode != 0)
-    {
-      objectEventCode = gObjectEventCode;
-    }
-    if (gObjectTrackValid > objectTrackValid)
-    {
-      objectTrackValid = gObjectTrackValid;
-    }
-    if (gObjectFailSafeMode > objectFailSafeMode)
-    {
-      objectFailSafeMode = gObjectFailSafeMode;
-    }
+    objectConfidence = 0;
+    objectEventCode = 0;
+    objectTrackValid = 0;
+    objectFailSafeMode = 0;
   }
 
   targetDetected = clampRange(objectTrackValid, 0, 1);
 
-  if (objectFailSafeMode >= 2)
+  if (pathReady == 0 || objectSafetyInputStale == 1 || objectFailSafeMode >= 2)
   {
     health = 0;
   }
-  else if (objectConfidence >= 70)
-  {
-    health = 2;
-  }
-  else if (objectConfidence >= 30)
+  else if (objectTrackValid == 1 && objectConfidence < 40)
   {
     health = 1;
   }
   else
   {
-    health = 0;
+    health = 2;
   }
 
-  if (objectConfidence >= 80)
+  if (targetDetected == 1 && objectConfidence >= 80)
   {
     freeSpaceClass = 2;
   }
-  else if (objectConfidence >= 40)
+  else if (targetDetected == 1 && objectConfidence >= 40)
   {
     freeSpaceClass = 1;
   }
@@ -153,6 +159,7 @@ void OnUdpReceiveFrom(dword socket, long result, dword address, dword port, char
 {
   int msgId;
   int payload3;
+  int payload0;
 
   if (socket != gEthSocket)
   {
@@ -170,6 +177,14 @@ void OnUdpReceiveFrom(dword socket, long result, dword address, dword port, char
       gObjectTrackValid = clampRange((payload3 >> 2) & 0x1, 0, 1);
       gObjectSafetyRxTsMs = getSimulationTimeMs();
     }
+    else if (msgId == ethMsgFailSafe() && ethFramePayloadLen(count) >= 1)
+    {
+      payload0 = ethGetU8(buffer, 0);
+      gWarningPathStatus = clampRange(payload0 & 0x3, 0, 2);
+      gE2eHealthState = clampRange((payload0 >> 2) & 0x3, 0, 2);
+      gFailSafeMode = clampRange((payload0 >> 4) & 0x3, 0, 2);
+      gFailSafeRxTsMs = getSimulationTimeMs();
+    }
   }
 
   ethArmReceive(gEthSocket, gEthRxBuffer, elcount(gEthRxBuffer));
@@ -183,12 +198,17 @@ on start
   gObjectTrackValid = 0;
   gObjectFailSafeMode = 0;
   gObjectSafetyRxTsMs = 0;
+  gWarningPathStatus = 1;
+  gE2eHealthState = 1;
+  gFailSafeMode = 1;
+  gFailSafeRxTsMs = 0;
   gLastHealth = -1;
   gLastDetected = -1;
   gLastFreeSpaceClass = -1;
   gLastConfidence = -1;
   gLastRangeBucket = -1;
   gLastPathReady = -1;
+  gLastObjectSafetyInputStale = 0;
   if (gEthSocket != ethInvalidSocket())
   {
     ethStartReceiver(gEthSocket, gEthRxBuffer, elcount(gEthRxBuffer));

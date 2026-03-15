@@ -6,6 +6,8 @@ includes
 variables
 {
   msTimer tLcaCycle;
+  long gEthSocket;
+  char gEthRxBuffer[64];
   int gLaneChangeBlock;
   int gRearRiskLevel;
   int gMergeConflict;
@@ -13,6 +15,10 @@ variables
   int gVehicleSpeed;
   dword gRearRadarRxMs;
   dword gVehicleRxMs;
+  int gWarningPathStatus;
+  int gE2eHealthState;
+  int gFailSafeMode;
+  dword gFailSafeRxMs;
   int gLastRearRadarInputStale;
   int gLastVehicleInputStale;
   int gLastReady;
@@ -25,14 +31,11 @@ variables
 
 int lcaPathReady()
 {
-  int warningPathStatus;
-  int e2eHealthState;
-  int failSafeMode;
-
-  warningPathStatus = clampRange((int)@CoreState::warningPathStatus, 0, 2);
-  e2eHealthState = clampRange((int)@CoreState::e2eHealthState, 0, 2);
-  failSafeMode = clampRange((int)@Core::failSafeMode, 0, 2);
-  if (warningPathStatus >= 2 || e2eHealthState == 0 || failSafeMode >= 2)
+  if (ethIsRecentTick(gFailSafeRxMs, 300) == 0)
+  {
+    return 0;
+  }
+  if (gWarningPathStatus >= 2 || gE2eHealthState == 0 || gFailSafeMode >= 2)
   {
     return 0;
   }
@@ -200,8 +203,33 @@ void publishLcaState()
   }
 }
 
+void OnUdpReceiveFrom(dword socket, long result, dword address, dword port, char buffer[], dword count)
+{
+  int payload0;
+
+  if (socket != gEthSocket)
+  {
+    return;
+  }
+  if (result == 0)
+  {
+    if (ethFrameMsgId(buffer, count) == ethMsgFailSafe() &&
+        ethFramePayloadLen(count) >= 1)
+    {
+      payload0 = ethGetU8(buffer, 0);
+      gWarningPathStatus = clampRange(payload0 & 0x3, 0, 2);
+      gE2eHealthState = clampRange((payload0 >> 2) & 0x3, 0, 2);
+      gFailSafeMode = clampRange((payload0 >> 4) & 0x3, 0, 2);
+      gFailSafeRxMs = getSimulationTimeMs();
+    }
+  }
+
+  ethArmReceive(gEthSocket, gEthRxBuffer, elcount(gEthRxBuffer));
+}
+
 on start
 {
+  gEthSocket = ethOpenDefaultSocket();
   gLaneChangeBlock = 0;
   gRearRiskLevel = 0;
   gMergeConflict = 0;
@@ -209,6 +237,10 @@ on start
   gVehicleSpeed = 0;
   gRearRadarRxMs = 0;
   gVehicleRxMs = 0;
+  gWarningPathStatus = 1;
+  gE2eHealthState = 1;
+  gFailSafeMode = 1;
+  gFailSafeRxMs = 0;
   gLastRearRadarInputStale = 0;
   gLastVehicleInputStale = 0;
   gLastPathReady = -1;
@@ -217,6 +249,10 @@ on start
   gLastDirection = -1;
   gLastMergeConflict = -1;
   gLastAlertLevel = -1;
+  if (gEthSocket != ethInvalidSocket())
+  {
+    ethStartReceiver(gEthSocket, gEthRxBuffer, elcount(gEthRxBuffer));
+  }
   setTimer(tLcaCycle, 100);
   write("[LCA] start");
 }
@@ -245,4 +281,6 @@ on message frmVehicleStateCanMsg
 on stopMeasurement
 {
   cancelTimer(tLcaCycle);
+  ethCloseSocket(gEthSocket);
+  gEthSocket = ethInvalidSocket();
 }

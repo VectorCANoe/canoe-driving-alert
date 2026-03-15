@@ -6,6 +6,18 @@ includes
 variables
 {
   msTimer tFradarCycle;
+  long gEthSocket;
+  char gEthRxBuffer[64];
+  int gTrackValid;
+  int gConfidence;
+  int gRangeM;
+  int gRelSpeed;
+  dword gObjectInputRxMs;
+  int gWarningPathStatus;
+  int gE2eHealthState;
+  int gFailSafeMode;
+  dword gFailSafeRxMs;
+  int gLastObjectInputStale;
   int gLastHealth;
   int gLastDetected;
   int gLastDistanceBucket;
@@ -15,23 +27,37 @@ variables
 
 int fradarPathReady()
 {
-  int warningPathStatus;
-  int e2eHealthState;
-  int failSafeMode;
-
-  warningPathStatus = clampRange((int)@CoreState::warningPathStatus, 0, 2);
-  e2eHealthState = clampRange((int)@CoreState::e2eHealthState, 0, 2);
-  failSafeMode = clampRange((int)@Core::failSafeMode, 0, 2);
-  if (warningPathStatus >= 2 || e2eHealthState == 0 || failSafeMode >= 2)
+  if (ethIsRecentTick(gFailSafeRxMs, 300) == 0)
+  {
+    return 0;
+  }
+  if (gWarningPathStatus >= 2 || gE2eHealthState == 0 || gFailSafeMode >= 2)
   {
     return 0;
   }
   return 1;
 }
 
+void traceFradarInputHealth(int objectInputStale)
+{
+  if (objectInputStale != gLastObjectInputStale)
+  {
+    if (objectInputStale == 1)
+    {
+      write("[FRADAR] object input stale");
+    }
+    else
+    {
+      write("[FRADAR] object input restored");
+    }
+    gLastObjectInputStale = objectInputStale;
+  }
+}
+
 void publishFradarState()
 {
   message frmFradarStateMsg mFradar;
+  int objectInputStale;
   int trackValid;
   int confidence;
   int rangeM;
@@ -42,34 +68,42 @@ void publishFradarState()
   int relSpeedBucket;
   int pathReady;
 
-  trackValid = clampRange((int)@Core::objectTrackValid, 0, 1);
-  confidence = clampRange((int)@Core::objectConfidence, 0, 100);
-  rangeM = clampRange((int)@Core::objectRange, 0, 500);
-  relSpeed = clampRange((int)@Core::objectRelSpeed, -200, 200);
+  objectInputStale = (ethIsRecentTick(gObjectInputRxMs, 300) == 1) ? 0 : 1;
+  traceFradarInputHealth(objectInputStale);
+
+  trackValid = gTrackValid;
+  confidence = gConfidence;
+  rangeM = gRangeM;
+  relSpeed = gRelSpeed;
   pathReady = fradarPathReady();
 
-  detected = trackValid;
-  if (confidence >= 70)
+  if (objectInputStale == 1)
   {
-    health = 2;
+    trackValid = 0;
+    confidence = 0;
+    rangeM = 0;
+    relSpeed = 0;
   }
-  else if (confidence >= 30)
+
+  detected = trackValid;
+  if (pathReady == 0 || objectInputStale == 1)
+  {
+    health = 0;
+  }
+  else if (trackValid == 1 && confidence < 30)
   {
     health = 1;
   }
   else
   {
-    health = 0;
+    health = 2;
   }
 
-  distanceBucket = clampRange(rangeM, 0, 255);
-  relSpeedBucket = clampRange(relSpeed + 128, 0, 255);
+  distanceBucket = (detected == 1) ? clampRange(rangeM, 0, 255) : 0;
+  relSpeedBucket = (detected == 1) ? clampRange(relSpeed + 128, 0, 255) : 128;
   if (pathReady == 0)
   {
-    health = 0;
     detected = 0;
-    rangeM = 0;
-    relSpeed = 0;
     distanceBucket = 0;
     relSpeedBucket = 128;
   }
@@ -101,13 +135,62 @@ void publishFradarState()
   }
 }
 
+void OnUdpReceiveFrom(dword socket, long result, dword address, dword port, char buffer[], dword count)
+{
+  int payload0;
+
+  if (socket != gEthSocket)
+  {
+    return;
+  }
+
+  if (result == 0)
+  {
+    if (ethFrameMsgId(buffer, count) == ethMsgObjectRiskInput() &&
+        ethFramePayloadLen(count) >= 8)
+    {
+      gTrackValid = clampRange(ethGetU8(buffer, 0) & 0x1, 0, 1);
+      gRangeM = clampRange(ethGetU16Le(buffer, 1), 0, 500);
+      gRelSpeed = clampRange(ethGetS16Le(buffer, 3), -200, 200);
+      gConfidence = clampRange(ethGetU8(buffer, 5), 0, 100);
+      gObjectInputRxMs = getSimulationTimeMs();
+    }
+    else if (ethFrameMsgId(buffer, count) == ethMsgFailSafe() &&
+             ethFramePayloadLen(count) >= 1)
+    {
+      payload0 = ethGetU8(buffer, 0);
+      gWarningPathStatus = clampRange(payload0 & 0x3, 0, 2);
+      gE2eHealthState = clampRange((payload0 >> 2) & 0x3, 0, 2);
+      gFailSafeMode = clampRange((payload0 >> 4) & 0x3, 0, 2);
+      gFailSafeRxMs = getSimulationTimeMs();
+    }
+  }
+
+  ethArmReceive(gEthSocket, gEthRxBuffer, elcount(gEthRxBuffer));
+}
+
 on start
 {
+  gEthSocket = ethOpenDefaultSocket();
+  gTrackValid = 0;
+  gConfidence = 0;
+  gRangeM = 0;
+  gRelSpeed = 0;
+  gObjectInputRxMs = 0;
+  gWarningPathStatus = 1;
+  gE2eHealthState = 1;
+  gFailSafeMode = 1;
+  gFailSafeRxMs = 0;
+  gLastObjectInputStale = 0;
   gLastPathReady = -1;
   gLastHealth = -1;
   gLastDetected = -1;
   gLastDistanceBucket = -1;
   gLastRelSpeedBucket = -1;
+  if (gEthSocket != ethInvalidSocket())
+  {
+    ethStartReceiver(gEthSocket, gEthRxBuffer, elcount(gEthRxBuffer));
+  }
   setTimer(tFradarCycle, 100);
   write("[FRADAR] start");
 }
@@ -121,4 +204,6 @@ on timer tFradarCycle
 on stopMeasurement
 {
   cancelTimer(tFradarCycle);
+  ethCloseSocket(gEthSocket);
+  gEthSocket = ethInvalidSocket();
 }

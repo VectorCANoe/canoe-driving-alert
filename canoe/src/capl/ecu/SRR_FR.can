@@ -14,8 +14,13 @@ variables
   dword gScenarioAlertRxMs;
   dword gRiskStateRxMs;
   dword gLampRxMs;
+  int gWarningPathStatus;
+  int gE2eHealthState;
+  int gFailSafeMode;
+  dword gFailSafeRxMs;
   int gLastObjectInputStale;
   int gLastLampInputStale;
+  int gLastFailSafeInputStale;
   int gLastDetected;
   int gLastRisk;
   int gLastMerge;
@@ -25,21 +30,18 @@ variables
 
 int srrFrPathReady()
 {
-  int warningPathStatus;
-  int e2eHealthState;
-  int failSafeMode;
-
-  warningPathStatus = clampRange((int)@CoreState::warningPathStatus, 0, 2);
-  e2eHealthState = clampRange((int)@CoreState::e2eHealthState, 0, 2);
-  failSafeMode = clampRange((int)@Core::failSafeMode, 0, 2);
-  if (warningPathStatus >= 2 || e2eHealthState == 0 || failSafeMode >= 2)
+  if (ethIsRecentTick(gFailSafeRxMs, 300) == 0)
+  {
+    return 0;
+  }
+  if (gWarningPathStatus >= 2 || gE2eHealthState == 0 || gFailSafeMode >= 2)
   {
     return 0;
   }
   return 1;
 }
 
-void traceSrrFrInputHealth(int objectInputStale, int lampInputStale)
+void traceSrrFrInputHealth(int objectInputStale, int lampInputStale, int failSafeInputStale)
 {
   if (objectInputStale != gLastObjectInputStale)
   {
@@ -66,6 +68,19 @@ void traceSrrFrInputHealth(int objectInputStale, int lampInputStale)
     }
     gLastLampInputStale = lampInputStale;
   }
+
+  if (failSafeInputStale != gLastFailSafeInputStale)
+  {
+    if (failSafeInputStale == 1)
+    {
+      write("[SRR_FR] fail-safe input stale");
+    }
+    else
+    {
+      write("[SRR_FR] fail-safe input restored");
+    }
+    gLastFailSafeInputStale = failSafeInputStale;
+  }
 }
 
 void publishSrrFrState()
@@ -73,6 +88,7 @@ void publishSrrFrState()
   message frmSrrFrStateMsg mSrrFr;
   int objectInputStale;
   int lampInputStale;
+  int failSafeInputStale;
   int mergeConflict;
   int riskClass;
   int turnLampState;
@@ -84,7 +100,8 @@ void publishSrrFrState()
     ((ethIsRecentTick(gScenarioAlertRxMs, 300) == 1) &&
      (ethIsRecentTick(gRiskStateRxMs, 300) == 1)) ? 0 : 1;
   lampInputStale = (ethIsRecentTick(gLampRxMs, 300) == 1) ? 0 : 1;
-  traceSrrFrInputHealth(objectInputStale, lampInputStale);
+  failSafeInputStale = (ethIsRecentTick(gFailSafeRxMs, 300) == 1) ? 0 : 1;
+  traceSrrFrInputHealth(objectInputStale, lampInputStale, failSafeInputStale);
 
   mergeConflict = gMergeConflict;
   riskClass = gRiskClass;
@@ -140,6 +157,7 @@ void publishSrrFrState()
 void OnUdpReceiveFrom(dword socket, long result, dword address, dword port, char buffer[], dword count)
 {
   int msgId;
+  int payload0;
   int payload1;
 
   if (socket != gEthSocket)
@@ -161,6 +179,14 @@ void OnUdpReceiveFrom(dword socket, long result, dword address, dword port, char
       gRiskClass = clampRange(ethGetU8(buffer, 0) & 0x7, 0, 7);
       gRiskStateRxMs = getSimulationTimeMs();
     }
+    else if (msgId == ethMsgFailSafe() && ethFramePayloadLen(count) >= 1)
+    {
+      payload0 = ethGetU8(buffer, 0);
+      gWarningPathStatus = clampRange(payload0 & 0x3, 0, 2);
+      gE2eHealthState = clampRange((payload0 >> 2) & 0x3, 0, 2);
+      gFailSafeMode = clampRange((payload0 >> 4) & 0x3, 0, 2);
+      gFailSafeRxMs = getSimulationTimeMs();
+    }
   }
 
   ethArmReceive(gEthSocket, gEthRxBuffer, elcount(gEthRxBuffer));
@@ -175,8 +201,13 @@ on start
   gScenarioAlertRxMs = 0;
   gRiskStateRxMs = 0;
   gLampRxMs = 0;
+  gWarningPathStatus = 1;
+  gE2eHealthState = 1;
+  gFailSafeMode = 1;
+  gFailSafeRxMs = 0;
   gLastObjectInputStale = 0;
   gLastLampInputStale = 0;
+  gLastFailSafeInputStale = 0;
   gLastPathReady = -1;
   gLastDetected = -1;
   gLastRisk = -1;

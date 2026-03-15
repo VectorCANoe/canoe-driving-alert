@@ -408,6 +408,7 @@ on timer tBodyBase100
   message frmSeatStateMsg mSeatState;
   message frmSeatControlMsg mSeatCtrl;
   message frmDoorControlMsg mDoorCtrl;
+  message frmSunroofControlMsg mSunroofCtrl;
   message frmBodyGatewayStateMsg mBodyGwState;
   message frmBodyComfortStateMsg mComfort;
   message frmInteriorLightMsg mLight;
@@ -443,6 +444,9 @@ on timer tBodyBase100
   int doorControlCmd;
   int seatHeatLevel;
   int seatVentLevel;
+  int sunroofPositionCmd;
+  int sunroofTiltCmd;
+  int sunshadeCmd;
   int comfortProfile;
   int comfortStatus;
   int comfortError;
@@ -632,6 +636,9 @@ on timer tBodyBase100
 
   seatHeatLevel = 0;
   seatVentLevel = 0;
+  sunroofPositionCmd = 0;
+  sunroofTiltCmd = 0;
+  sunshadeCmd = 0;
   if (tmuRemoteClimateReq == 1 && tmuServiceMode >= 1)
   {
     if (hvacAcOn == 1)
@@ -642,6 +649,16 @@ on timer tBodyBase100
     {
       seatHeatLevel = clampRange(hvacCabinSetTemp - 21, 0, 7);
     }
+
+    if (driveState == 0)
+    {
+      sunshadeCmd = 1;
+      if (hvacAcOn == 0 && hvacCabinSetTemp >= 26)
+      {
+        sunroofPositionCmd = 15;
+        sunroofTiltCmd = 1;
+      }
+    }
   }
 
   mSeatCtrl.DriverSeatCmd = 0;
@@ -649,6 +666,11 @@ on timer tBodyBase100
   mSeatCtrl.SeatHeatLevel = seatHeatLevel;
   mSeatCtrl.SeatVentLevel = seatVentLevel;
   output(mSeatCtrl);
+
+  mSunroofCtrl.SunroofPositionCmd = clampRange(sunroofPositionCmd, 0, 100);
+  mSunroofCtrl.SunroofTiltCmd = clampRange(sunroofTiltCmd, 0, 3);
+  mSunroofCtrl.SunshadeCmd = clampRange(sunshadeCmd, 0, 3);
+  output(mSunroofCtrl);
 
   mDoorCtrl.DoorControlCmd = doorControlCmd;
   mDoorCtrl.ChildLockCmd = childLockState;

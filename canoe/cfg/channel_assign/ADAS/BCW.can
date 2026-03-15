@@ -6,12 +6,18 @@ includes
 variables
 {
   msTimer tBcwCycle;
+  long gEthSocket;
+  char gEthRxBuffer[64];
   int gRearDetected;
   int gLaneChangeBlock;
   int gRearRiskLevel;
   int gMergeConflict;
   int gTurnLampState;
   dword gRearRadarRxMs;
+  int gWarningPathStatus;
+  int gE2eHealthState;
+  int gFailSafeMode;
+  dword gFailSafeRxMs;
   int gLastRearRadarInputStale;
   int gLastWarnLeft;
   int gLastWarnRight;
@@ -23,14 +29,11 @@ variables
 
 int bcwPathReady()
 {
-  int warningPathStatus;
-  int e2eHealthState;
-  int failSafeMode;
-
-  warningPathStatus = clampRange((int)@CoreState::warningPathStatus, 0, 2);
-  e2eHealthState = clampRange((int)@CoreState::e2eHealthState, 0, 2);
-  failSafeMode = clampRange((int)@Core::failSafeMode, 0, 2);
-  if (warningPathStatus >= 2 || e2eHealthState == 0 || failSafeMode >= 2)
+  if (ethIsRecentTick(gFailSafeRxMs, 300) == 0)
+  {
+    return 0;
+  }
+  if (gWarningPathStatus >= 2 || gE2eHealthState == 0 || gFailSafeMode >= 2)
   {
     return 0;
   }
@@ -178,14 +181,43 @@ void publishBcwState()
   }
 }
 
+void OnUdpReceiveFrom(dword socket, long result, dword address, dword port, char buffer[], dword count)
+{
+  int payload0;
+
+  if (socket != gEthSocket)
+  {
+    return;
+  }
+  if (result == 0)
+  {
+    if (ethFrameMsgId(buffer, count) == ethMsgFailSafe() &&
+        ethFramePayloadLen(count) >= 1)
+    {
+      payload0 = ethGetU8(buffer, 0);
+      gWarningPathStatus = clampRange(payload0 & 0x3, 0, 2);
+      gE2eHealthState = clampRange((payload0 >> 2) & 0x3, 0, 2);
+      gFailSafeMode = clampRange((payload0 >> 4) & 0x3, 0, 2);
+      gFailSafeRxMs = getSimulationTimeMs();
+    }
+  }
+
+  ethArmReceive(gEthSocket, gEthRxBuffer, elcount(gEthRxBuffer));
+}
+
 on start
 {
+  gEthSocket = ethOpenDefaultSocket();
   gRearDetected = 0;
   gLaneChangeBlock = 0;
   gRearRiskLevel = 0;
   gMergeConflict = 0;
   gTurnLampState = 0;
   gRearRadarRxMs = 0;
+  gWarningPathStatus = 1;
+  gE2eHealthState = 1;
+  gFailSafeMode = 1;
+  gFailSafeRxMs = 0;
   gLastRearRadarInputStale = 0;
   gLastPathReady = -1;
   gLastWarnLeft = -1;
@@ -193,6 +225,10 @@ on start
   gLastMergeConflict = -1;
   gLastRiskClass = -1;
   gLastAlertLevel = -1;
+  if (gEthSocket != ethInvalidSocket())
+  {
+    ethStartReceiver(gEthSocket, gEthRxBuffer, elcount(gEthRxBuffer));
+  }
   setTimer(tBcwCycle, 100);
   write("[BCW] start");
 }
@@ -216,4 +252,6 @@ on message frmRearRadarMasterStateMsg
 on stopMeasurement
 {
   cancelTimer(tBcwCycle);
+  ethCloseSocket(gEthSocket);
+  gEthSocket = ethInvalidSocket();
 }

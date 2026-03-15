@@ -6,13 +6,22 @@ includes
 variables
 {
   msTimer tEthBackboneCycle;
+  long gEthSocket;
+  char gEthRxBuffer[64];
   int gIboxRouteState;
   int gIboxSignalBars;
   int gIboxServiceFlags;
   int gSecuritySession;
   int gAuthState;
   int gSecurityFault;
+  int gNavSessionState;
+  int gNavRouteClass;
+  int gAlertLevel;
+  int gWarningPathStatus;
   int gFailSafeMode;
+  dword gNavRxMs;
+  dword gNotifRxMs;
+  dword gFailSafeRxMs;
   int gLastBackboneMode;
   int gLastRouteHealth;
   int gLastServiceHealth;
@@ -24,7 +33,6 @@ variables
 void publishBackboneState()
 {
   int backboneMode;
-  int baseZoneContext;
   int roadZoneActive;
   int guidedRouteActive;
   int routeHealth;
@@ -32,17 +40,12 @@ void publishBackboneState()
   int securityLevel;
   int activeServices;
   int faultBitmap;
-  int alertLevel;
-  int warningPathStatus;
   int boundaryAlive;
 
-  baseZoneContext = clampRange((int)@Core::baseZoneContext, 0, 4);
-  roadZoneActive = (baseZoneContext > 0) ? 1 : 0;
-  guidedRouteActive = (baseZoneContext == 3 || baseZoneContext == 4) ? 1 : 0;
-  alertLevel = clampRange((int)@Core::selectedAlertLevel, 0, 7);
-  gFailSafeMode = clampRange((int)@Core::failSafeMode, 0, 2);
-  warningPathStatus = clampRange((int)@CoreState::warningPathStatus, 0, 2);
-  boundaryAlive = clampRange((int)@CoreState::domainBoundaryStatus, 0, 1);
+  roadZoneActive = (ethIsRecentTick(gNavRxMs, 300) == 1 &&
+                    (gNavSessionState > 0 || gNavRouteClass > 0)) ? 1 : 0;
+  guidedRouteActive = (ethIsRecentTick(gNavRxMs, 300) == 1 && gNavRouteClass == 3) ? 1 : 0;
+  boundaryAlive = (ethIsRecentTick(gFailSafeRxMs, 300) == 1) ? 1 : 0;
 
   gIboxRouteState = 0;
   if (roadZoneActive == 1)
@@ -59,7 +62,7 @@ void publishBackboneState()
   {
     gIboxSignalBars = 3;
   }
-  if (boundaryAlive == 1 && warningPathStatus == 0)
+  if (boundaryAlive == 1 && gWarningPathStatus == 0)
   {
     gIboxSignalBars = 4;
   }
@@ -69,7 +72,7 @@ void publishBackboneState()
   {
     gIboxServiceFlags = gIboxServiceFlags | 1;
   }
-  if (alertLevel > 0)
+  if (ethIsRecentTick(gNotifRxMs, 300) == 1 && gAlertLevel > 0)
   {
     gIboxServiceFlags = gIboxServiceFlags | 2;
   }
@@ -79,7 +82,7 @@ void publishBackboneState()
   }
 
   gSecuritySession = 0;
-  if (roadZoneActive == 1 || alertLevel > 0)
+  if (roadZoneActive == 1 || (ethIsRecentTick(gNotifRxMs, 300) == 1 && gAlertLevel > 0))
   {
     gSecuritySession = 1;
   }
@@ -97,7 +100,7 @@ void publishBackboneState()
   {
     gSecurityFault = 2;
   }
-  else if (warningPathStatus == 1)
+  else if (gWarningPathStatus == 1)
   {
     gSecurityFault = 1;
   }
@@ -168,19 +171,31 @@ void publishBackboneState()
 
 on start
 {
+  gEthSocket = ethOpenDefaultSocket();
   gIboxRouteState = 0;
   gIboxSignalBars = 0;
   gIboxServiceFlags = 0;
   gSecuritySession = 0;
   gAuthState = 0;
   gSecurityFault = 0;
+  gNavSessionState = 0;
+  gNavRouteClass = 0;
+  gAlertLevel = 0;
+  gWarningPathStatus = 2;
   gFailSafeMode = 0;
+  gNavRxMs = 0;
+  gNotifRxMs = 0;
+  gFailSafeRxMs = 0;
   gLastBackboneMode = -1;
   gLastRouteHealth = -1;
   gLastServiceHealth = -1;
   gLastSecurityLevel = -1;
   gLastActiveServices = -1;
   gLastFaultBitmap = -1;
+  if (gEthSocket != ethInvalidSocket())
+  {
+    ethStartReceiver(gEthSocket, gEthRxBuffer, elcount(gEthRxBuffer));
+  }
   setTimer(tEthBackboneCycle, 100);
   write("[ETHB] start");
 }
@@ -194,4 +209,40 @@ on timer tEthBackboneCycle
 on stopMeasurement
 {
   cancelTimer(tEthBackboneCycle);
+  ethCloseSocket(gEthSocket);
+  gEthSocket = ethInvalidSocket();
+}
+
+on message frmNavModuleStateMsg
+{
+  gNavSessionState = clampRange((int)this.NavSessionState, 0, 3);
+  gNavRouteClass = clampRange((int)this.NavRouteClass, 0, 3);
+  gNavRxMs = getSimulationTimeMs();
+}
+
+on message frmClusterNotifMsg
+{
+  gAlertLevel = clampRange((int)this.ClusterNotifArg, 0, 7);
+  gNotifRxMs = getSimulationTimeMs();
+}
+
+void OnUdpReceiveFrom(dword socket, long result, dword address, dword port, char buffer[], dword count)
+{
+  int payload0;
+
+  if (socket != gEthSocket)
+  {
+    return;
+  }
+  if (result == 0 &&
+      ethFrameMsgId(buffer, count) == ethMsgFailSafe() &&
+      ethFramePayloadLen(count) >= 1)
+  {
+    payload0 = ethGetU8(buffer, 0);
+    gWarningPathStatus = clampRange(payload0 & 0x3, 0, 2);
+    gFailSafeMode = clampRange((payload0 >> 4) & 0x3, 0, 2);
+    gFailSafeRxMs = getSimulationTimeMs();
+  }
+
+  ethArmReceive(gEthSocket, gEthRxBuffer, elcount(gEthRxBuffer));
 }
