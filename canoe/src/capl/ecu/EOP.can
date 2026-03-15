@@ -9,16 +9,19 @@ variables
   int gEngineRpm;
   int gOilTemp;
   int gDriveMode;
+  int gDriveState;
   dword gEngineTempRxMs;
   dword gDriveModeRxMs;
+  dword gVehicleRxMs;
   int gLastEngineTempInputStale;
   int gLastDriveModeInputStale;
+  int gLastVehicleInputStale;
   int gLastState;
   long gLastPumpRpm;
   int gLastPressure;
 }
 
-void traceEopInputHealth(int engineTempInputStale, int driveModeInputStale)
+void traceEopInputHealth(int engineTempInputStale, int driveModeInputStale, int vehicleInputStale)
 {
   if (engineTempInputStale != gLastEngineTempInputStale)
   {
@@ -45,6 +48,19 @@ void traceEopInputHealth(int engineTempInputStale, int driveModeInputStale)
     }
     gLastDriveModeInputStale = driveModeInputStale;
   }
+
+  if (vehicleInputStale != gLastVehicleInputStale)
+  {
+    if (vehicleInputStale == 1)
+    {
+      write("[EOP] vehicle input stale");
+    }
+    else
+    {
+      write("[EOP] vehicle input restored");
+    }
+    gLastVehicleInputStale = vehicleInputStale;
+  }
 }
 
 on start
@@ -52,10 +68,13 @@ on start
   gEngineRpm = 0;
   gOilTemp = 20;
   gDriveMode = 0;
+  gDriveState = 0;
   gEngineTempRxMs = 0;
   gDriveModeRxMs = 0;
+  gVehicleRxMs = 0;
   gLastEngineTempInputStale = 0;
   gLastDriveModeInputStale = 0;
+  gLastVehicleInputStale = 0;
   gLastState = -1;
   gLastPumpRpm = -1;
   gLastPressure = -1;
@@ -76,11 +95,18 @@ on message frmVehicleModeMsg
   gDriveModeRxMs = getSimulationTimeMs();
 }
 
+on message frmVehicleStateCanMsg
+{
+  gDriveState = clampRange((int)this.gDriveState, 0, 3);
+  gVehicleRxMs = getSimulationTimeMs();
+}
+
 on timer tEopCycle
 {
   message frmEopStateMsg mEop;
   int engineTempInputStale;
   int driveModeInputStale;
+  int vehicleInputStale;
   int driveState;
   int engineRpm;
   int oilTemp;
@@ -92,12 +118,13 @@ on timer tEopCycle
 
   engineTempInputStale = (ethIsRecentTick(gEngineTempRxMs, 300) == 1) ? 0 : 1;
   driveModeInputStale = (ethIsRecentTick(gDriveModeRxMs, 300) == 1) ? 0 : 1;
-  traceEopInputHealth(engineTempInputStale, driveModeInputStale);
+  vehicleInputStale = (ethIsRecentTick(gVehicleRxMs, 300) == 1) ? 0 : 1;
+  traceEopInputHealth(engineTempInputStale, driveModeInputStale, vehicleInputStale);
 
-  driveState = clampRange((int)@Core::driveStateNorm, 0, 3);
   engineRpm = gEngineRpm;
   oilTemp = gOilTemp;
   driveMode = gDriveMode;
+  driveState = gDriveState;
   if (engineTempInputStale == 1)
   {
     engineRpm = 0;
@@ -106,6 +133,10 @@ on timer tEopCycle
   if (driveModeInputStale == 1)
   {
     driveMode = 0;
+  }
+  if (vehicleInputStale == 1)
+  {
+    driveState = (engineRpm > 0) ? 3 : 0;
   }
 
   if (engineRpm > 0 || driveState > 0)

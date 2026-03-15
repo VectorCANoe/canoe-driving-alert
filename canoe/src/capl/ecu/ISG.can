@@ -10,11 +10,15 @@ variables
   int gChargingState;
   int gDriveMode;
   int gEngineState;
+  int gDriveState;
+  int gVehicleSpeed;
   dword gFuelBatteryRxMs;
+  dword gVehicleRxMs;
   int gLastState;
   int gLastReady;
   int gLastRegen;
   int gLastInputStale;
+  int gLastVehicleInputStale;
 }
 
 on start
@@ -23,11 +27,15 @@ on start
   gChargingState = 0;
   gDriveMode = 0;
   gEngineState = 0;
+  gDriveState = 0;
+  gVehicleSpeed = 0;
   gFuelBatteryRxMs = 0;
+  gVehicleRxMs = 0;
   gLastState = -1;
   gLastReady = -1;
   gLastRegen = -1;
   gLastInputStale = 1;
+  gLastVehicleInputStale = 1;
   setTimer(tIsgCycle, 100);
   write("[ISG] start");
 }
@@ -45,33 +53,46 @@ on message frmVehicleModeMsg
   gEngineState = clampRange((int)this.PowertrainState, 0, 255);
 }
 
+on message frmVehicleStateCanMsg
+{
+  gVehicleSpeed = clampRange((int)this.gVehicleSpeed, 0, 255);
+  gDriveState = clampRange((int)this.gDriveState, 0, 3);
+  gVehicleRxMs = getSimulationTimeMs();
+}
+
 on timer tIsgCycle
 {
   message frmIsgStateMsg mIsg;
   int driveState;
   int speed;
   int inputStale;
+  int vehicleInputStale;
   int batterySoc;
   int chargingState;
   int isgState;
   int restartReady;
   int recuperationLvl;
-
-  driveState = clampRange((int)@Core::driveStateNorm, 0, 3);
-  speed = clampRange((int)@Core::vehicleSpeedNorm, 0, 255);
   inputStale = 1;
   if (gFuelBatteryRxMs != 0 &&
       (getSimulationTimeMs() - gFuelBatteryRxMs) <= 300)
   {
     inputStale = 0;
   }
+  vehicleInputStale = (ethIsRecentTick(gVehicleRxMs, 300) == 1) ? 0 : 1;
 
   batterySoc = gBatterySoc;
   chargingState = gChargingState;
+  driveState = gDriveState;
+  speed = gVehicleSpeed;
   if (inputStale == 1)
   {
     batterySoc = 50;
     chargingState = 0;
+  }
+  if (vehicleInputStale == 1)
+  {
+    driveState = (gEngineState > 0) ? 3 : 0;
+    speed = 0;
   }
 
   if (inputStale != gLastInputStale)
@@ -85,6 +106,18 @@ on timer tIsgCycle
       write("[ISG] fuel-battery input restored");
     }
     gLastInputStale = inputStale;
+  }
+  if (vehicleInputStale != gLastVehicleInputStale)
+  {
+    if (vehicleInputStale == 1)
+    {
+      write("[ISG] vehicle input stale");
+    }
+    else
+    {
+      write("[ISG] vehicle input restored");
+    }
+    gLastVehicleInputStale = vehicleInputStale;
   }
 
   if (gEngineState == 0)

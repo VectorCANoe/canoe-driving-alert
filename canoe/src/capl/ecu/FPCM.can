@@ -9,11 +9,15 @@ variables
   int gBatterySoc;
   int gChargingState;
   int gEngineTorque;
+  int gDriveState;
+  int gVehicleSpeed;
   dword gFuelBatteryRxMs;
+  dword gVehicleRxMs;
   int gLastState;
   int gLastDuty;
   int gLastPressure;
   int gLastInputStale;
+  int gLastVehicleInputStale;
 }
 
 on start
@@ -21,11 +25,15 @@ on start
   gBatterySoc = 95;
   gChargingState = 0;
   gEngineTorque = 0;
+  gDriveState = 0;
+  gVehicleSpeed = 0;
   gFuelBatteryRxMs = 0;
+  gVehicleRxMs = 0;
   gLastState = -1;
   gLastDuty = -1;
   gLastPressure = -1;
   gLastInputStale = 1;
+  gLastVehicleInputStale = 1;
   setTimer(tFpcmCycle, 100);
   write("[FPCM] start");
 }
@@ -42,33 +50,46 @@ on message frmEngineTorqueMsg
   gEngineTorque = clampRange((int)this.EngineTorqueAct, 0, 65535);
 }
 
+on message frmVehicleStateCanMsg
+{
+  gVehicleSpeed = clampRange((int)this.gVehicleSpeed, 0, 255);
+  gDriveState = clampRange((int)this.gDriveState, 0, 3);
+  gVehicleRxMs = getSimulationTimeMs();
+}
+
 on timer tFpcmCycle
 {
   message frmFpcmStateMsg mFpcm;
   int driveState;
   int speed;
   int inputStale;
+  int vehicleInputStale;
   int batterySoc;
   int chargingState;
   int state;
   int duty;
   int pressure;
-
-  driveState = clampRange((int)@Core::driveStateNorm, 0, 3);
-  speed = clampRange((int)@Core::vehicleSpeedNorm, 0, 255);
   inputStale = 1;
   if (gFuelBatteryRxMs != 0 &&
       (getSimulationTimeMs() - gFuelBatteryRxMs) <= 300)
   {
     inputStale = 0;
   }
+  vehicleInputStale = (ethIsRecentTick(gVehicleRxMs, 300) == 1) ? 0 : 1;
 
   batterySoc = gBatterySoc;
   chargingState = gChargingState;
+  driveState = gDriveState;
+  speed = gVehicleSpeed;
   if (inputStale == 1)
   {
     batterySoc = 50;
     chargingState = 0;
+  }
+  if (vehicleInputStale == 1)
+  {
+    driveState = 3;
+    speed = 0;
   }
 
   if (inputStale != gLastInputStale)
@@ -82,6 +103,18 @@ on timer tFpcmCycle
       write("[FPCM] fuel-battery input restored");
     }
     gLastInputStale = inputStale;
+  }
+  if (vehicleInputStale != gLastVehicleInputStale)
+  {
+    if (vehicleInputStale == 1)
+    {
+      write("[FPCM] vehicle input stale");
+    }
+    else
+    {
+      write("[FPCM] vehicle input restored");
+    }
+    gLastVehicleInputStale = vehicleInputStale;
   }
 
   if (driveState > 0 || gEngineTorque > 20)

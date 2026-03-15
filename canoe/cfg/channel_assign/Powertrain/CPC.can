@@ -11,10 +11,13 @@ variables
   int gBmsState;
   int gPackSoc;
   int gPackTemp;
+  int gDriveState;
   dword gObcRxMs;
   dword gBmsRxMs;
+  dword gVehicleRxMs;
   int gLastObcInputStale;
   int gLastBmsInputStale;
+  int gLastVehicleInputStale;
   int gLastPortLockState;
   int gLastPlugState;
   int gLastChargeEnable;
@@ -22,7 +25,7 @@ variables
   int gLastChargeTargetSoc;
 }
 
-void traceCpcInputHealth(int obcInputStale, int bmsInputStale)
+void traceCpcInputHealth(int obcInputStale, int bmsInputStale, int vehicleInputStale)
 {
   if (obcInputStale != gLastObcInputStale)
   {
@@ -49,6 +52,19 @@ void traceCpcInputHealth(int obcInputStale, int bmsInputStale)
     }
     gLastBmsInputStale = bmsInputStale;
   }
+
+  if (vehicleInputStale != gLastVehicleInputStale)
+  {
+    if (vehicleInputStale == 1)
+    {
+      write("[CPC] vehicle input stale");
+    }
+    else
+    {
+      write("[CPC] vehicle input restored");
+    }
+    gLastVehicleInputStale = vehicleInputStale;
+  }
 }
 
 void publishChargePortState()
@@ -56,6 +72,7 @@ void publishChargePortState()
   message frmChargePortCtrlStateMsg mPort;
   int obcInputStale;
   int bmsInputStale;
+  int vehicleInputStale;
   int driveState;
   int obcState;
   int acPlugState;
@@ -70,14 +87,15 @@ void publishChargePortState()
 
   obcInputStale = (ethIsRecentTick(gObcRxMs, 300) == 1) ? 0 : 1;
   bmsInputStale = (ethIsRecentTick(gBmsRxMs, 300) == 1) ? 0 : 1;
-  traceCpcInputHealth(obcInputStale, bmsInputStale);
+  vehicleInputStale = (ethIsRecentTick(gVehicleRxMs, 300) == 1) ? 0 : 1;
+  traceCpcInputHealth(obcInputStale, bmsInputStale, vehicleInputStale);
 
-  driveState = clampRange((int)@Core::driveStateNorm, 0, 3);
   obcState = gObcState;
   acPlugState = gAcPlugState;
   bmsState = gBmsState;
   packSoc = gPackSoc;
   packTemp = gPackTemp;
+  driveState = gDriveState;
   if (obcInputStale == 1)
   {
     obcState = 0;
@@ -88,6 +106,10 @@ void publishChargePortState()
     bmsState = 7;
     packSoc = 50;
     packTemp = 28;
+  }
+  if (vehicleInputStale == 1)
+  {
+    driveState = 3;
   }
 
   plugState = clampRange(acPlugState, 0, 1);
@@ -170,10 +192,13 @@ on start
   gBmsState = 0;
   gPackSoc = 95;
   gPackTemp = 28;
+  gDriveState = 0;
   gObcRxMs = 0;
   gBmsRxMs = 0;
+  gVehicleRxMs = 0;
   gLastObcInputStale = 0;
   gLastBmsInputStale = 0;
+  gLastVehicleInputStale = 0;
   gLastPortLockState = -1;
   gLastPlugState = -1;
   gLastChargeEnable = -1;
@@ -202,6 +227,12 @@ on message frmBatBmsStateMsg
   gPackSoc = clampRange((int)this.PackSoc, 0, 100);
   gPackTemp = clampRange((int)this.PackTemp, 0, 255);
   gBmsRxMs = getSimulationTimeMs();
+}
+
+on message frmVehicleStateCanMsg
+{
+  gDriveState = clampRange((int)this.gDriveState, 0, 3);
+  gVehicleRxMs = getSimulationTimeMs();
 }
 
 on stopMeasurement

@@ -8,22 +8,28 @@ variables
   msTimer tDcdcCycle;
   int gBatterySoc;
   int gChargingState;
+  int gDriveState;
   dword gFuelBatteryRxMs;
+  dword gVehicleRxMs;
   int gLastMode;
   int gLastVolt;
   int gLastCurr;
   int gLastInputStale;
+  int gLastVehicleInputStale;
 }
 
 on start
 {
   gBatterySoc = 95;
   gChargingState = 0;
+  gDriveState = 0;
   gFuelBatteryRxMs = 0;
+  gVehicleRxMs = 0;
   gLastMode = -1;
   gLastVolt = -1;
   gLastCurr = -1;
   gLastInputStale = 1;
+  gLastVehicleInputStale = 1;
   setTimer(tDcdcCycle, 100);
   write("[DCDC] start");
 }
@@ -35,31 +41,42 @@ on message frmFuelBatteryStateMsg
   gFuelBatteryRxMs = getSimulationTimeMs();
 }
 
+on message frmVehicleStateCanMsg
+{
+  gDriveState = clampRange((int)this.gDriveState, 0, 3);
+  gVehicleRxMs = getSimulationTimeMs();
+}
+
 on timer tDcdcCycle
 {
   message frmDcdcStateMsg mDcdc;
   int driveState;
   int inputStale;
+  int vehicleInputStale;
   int batterySoc;
   int chargingState;
   int dcdcMode;
   int lvOutputVolt;
   int lvOutputCurr;
-
-  driveState = clampRange((int)@Core::driveStateNorm, 0, 3);
   inputStale = 1;
   if (gFuelBatteryRxMs != 0 &&
       (getSimulationTimeMs() - gFuelBatteryRxMs) <= 300)
   {
     inputStale = 0;
   }
+  vehicleInputStale = (ethIsRecentTick(gVehicleRxMs, 300) == 1) ? 0 : 1;
 
   batterySoc = gBatterySoc;
   chargingState = gChargingState;
+  driveState = gDriveState;
   if (inputStale == 1)
   {
     batterySoc = 50;
     chargingState = 0;
+  }
+  if (vehicleInputStale == 1)
+  {
+    driveState = (chargingState == 1) ? 0 : 3;
   }
 
   if (inputStale != gLastInputStale)
@@ -73,6 +90,18 @@ on timer tDcdcCycle
       write("[DCDC] fuel-battery input restored");
     }
     gLastInputStale = inputStale;
+  }
+  if (vehicleInputStale != gLastVehicleInputStale)
+  {
+    if (vehicleInputStale == 1)
+    {
+      write("[DCDC] vehicle input stale");
+    }
+    else
+    {
+      write("[DCDC] vehicle input restored");
+    }
+    gLastVehicleInputStale = vehicleInputStale;
   }
 
   if (chargingState == 1)
