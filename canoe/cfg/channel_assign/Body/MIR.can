@@ -7,14 +7,17 @@ variables
 {
   msTimer tMirrorCycle;
   int gTurnLampState;
+  int gDriveState;
   dword gLampControlRxMs;
+  dword gVehicleRxMs;
   int gLastLampInputStale;
+  int gLastVehicleInputStale;
   int gLastFoldState;
   int gLastHeatState;
   int gLastAdjustAxis;
 }
 
-void traceMirrorInputHealth(int lampInputStale)
+void traceMirrorInputHealth(int lampInputStale, int vehicleInputStale)
 {
   if (lampInputStale != gLastLampInputStale)
   {
@@ -28,13 +31,29 @@ void traceMirrorInputHealth(int lampInputStale)
     }
     gLastLampInputStale = lampInputStale;
   }
+
+  if (vehicleInputStale != gLastVehicleInputStale)
+  {
+    if (vehicleInputStale == 1)
+    {
+      write("[MIR] vehicle input stale");
+    }
+    else
+    {
+      write("[MIR] vehicle input restored");
+    }
+    gLastVehicleInputStale = vehicleInputStale;
+  }
 }
 
 on start
 {
   gTurnLampState = 0;
+  gDriveState = 0;
   gLampControlRxMs = 0;
+  gVehicleRxMs = 0;
   gLastLampInputStale = 0;
+  gLastVehicleInputStale = 0;
   gLastFoldState = -1;
   gLastHeatState = -1;
   gLastAdjustAxis = -1;
@@ -46,6 +65,7 @@ on timer tMirrorCycle
 {
   message frmMirrorStateMsg mMirror;
   int lampInputStale;
+  int vehicleInputStale;
   int driveState;
   int turnLampState;
   int foldState;
@@ -53,13 +73,18 @@ on timer tMirrorCycle
   int adjustAxis;
 
   lampInputStale = (ethIsRecentTick(gLampControlRxMs, 300) == 1) ? 0 : 1;
-  traceMirrorInputHealth(lampInputStale);
+  vehicleInputStale = (ethIsRecentTick(gVehicleRxMs, 300) == 1) ? 0 : 1;
+  traceMirrorInputHealth(lampInputStale, vehicleInputStale);
 
-  driveState = clampRange((int)@Core::driveStateNorm, 0, 3);
+  driveState = gDriveState;
   turnLampState = gTurnLampState;
   if (lampInputStale == 1)
   {
     turnLampState = 0;
+  }
+  if (vehicleInputStale == 1)
+  {
+    driveState = 3;
   }
 
   foldState = (driveState == 0) ? 1 : 0;
@@ -101,6 +126,12 @@ on message frmLampControlMsg
 {
   gTurnLampState = clampRange((int)this.TurnLampState, 0, 3);
   gLampControlRxMs = getSimulationTimeMs();
+}
+
+on message frmVehicleStateCanMsg
+{
+  gDriveState = clampRange((int)this.gDriveState, 0, 3);
+  gVehicleRxMs = getSimulationTimeMs();
 }
 
 on stopMeasurement

@@ -6,14 +6,36 @@ includes
 variables
 {
   msTimer tTailgateCycle;
+  int gDriveState;
+  dword gVehicleRxMs;
+  int gLastVehicleInputStale;
   int gLastLockState;
   int gLastOpenState;
   int gLastPowerState;
   int gLastPosition;
 }
 
+void traceTgmInputHealth(int vehicleInputStale)
+{
+  if (vehicleInputStale != gLastVehicleInputStale)
+  {
+    if (vehicleInputStale == 1)
+    {
+      write("[TGM] vehicle input stale");
+    }
+    else
+    {
+      write("[TGM] vehicle input restored");
+    }
+    gLastVehicleInputStale = vehicleInputStale;
+  }
+}
+
 on start
 {
+  gDriveState = 0;
+  gVehicleRxMs = 0;
+  gLastVehicleInputStale = 0;
   gLastLockState = -1;
   gLastOpenState = -1;
   gLastPowerState = -1;
@@ -25,13 +47,21 @@ on start
 on timer tTailgateCycle
 {
   message frmTailgateStateMsg mTailgate;
+  int vehicleInputStale;
   int driveState;
   int lockState;
   int openState;
   int powerState;
   int position;
 
-  driveState = clampRange((int)@Core::driveStateNorm, 0, 3);
+  vehicleInputStale = (ethIsRecentTick(gVehicleRxMs, 300) == 1) ? 0 : 1;
+  traceTgmInputHealth(vehicleInputStale);
+
+  driveState = gDriveState;
+  if (vehicleInputStale == 1)
+  {
+    driveState = 3;
+  }
 
   lockState = 1;
   openState = 0;
@@ -72,5 +102,11 @@ on timer tTailgateCycle
 on stopMeasurement
 {
   cancelTimer(tTailgateCycle);
+}
+
+on message frmVehicleStateCanMsg
+{
+  gDriveState = clampRange((int)this.gDriveState, 0, 3);
+  gVehicleRxMs = getSimulationTimeMs();
 }
 

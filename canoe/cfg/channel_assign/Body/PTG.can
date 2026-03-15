@@ -10,14 +10,17 @@ variables
   int gTailgateOpenState;
   int gTailgatePowerState;
   int gTailgatePosition;
+  int gDriveState;
   dword gTailgateRxMs;
+  dword gVehicleRxMs;
   int gLastTailgateInputStale;
+  int gLastVehicleInputStale;
   int gLastAssistMode;
   int gLastOpenReq;
   int gLastActuatorCmd;
 }
 
-void tracePtgInputHealth(int tailgateInputStale)
+void tracePtgInputHealth(int tailgateInputStale, int vehicleInputStale)
 {
   if (tailgateInputStale != gLastTailgateInputStale)
   {
@@ -31,6 +34,19 @@ void tracePtgInputHealth(int tailgateInputStale)
     }
     gLastTailgateInputStale = tailgateInputStale;
   }
+
+  if (vehicleInputStale != gLastVehicleInputStale)
+  {
+    if (vehicleInputStale == 1)
+    {
+      write("[PTG] vehicle input stale");
+    }
+    else
+    {
+      write("[PTG] vehicle input restored");
+    }
+    gLastVehicleInputStale = vehicleInputStale;
+  }
 }
 
 on start
@@ -39,8 +55,11 @@ on start
   gTailgateOpenState = 0;
   gTailgatePowerState = 0;
   gTailgatePosition = 0;
+  gDriveState = 0;
   gTailgateRxMs = 0;
+  gVehicleRxMs = 0;
   gLastTailgateInputStale = 0;
+  gLastVehicleInputStale = 0;
   gLastAssistMode = -1;
   gLastOpenReq = -1;
   gLastActuatorCmd = -1;
@@ -57,11 +76,18 @@ on message frmTailgateStateMsg
   gTailgateRxMs = getSimulationTimeMs();
 }
 
+on message frmVehicleStateCanMsg
+{
+  gDriveState = clampRange((int)this.gDriveState, 0, 3);
+  gVehicleRxMs = getSimulationTimeMs();
+}
+
 on timer tPowerTailgateCycle
 {
   message frmPowerTailgateCtrlStateMsg mTailgateCtrl;
   int driveState;
   int tailgateInputStale;
+  int vehicleInputStale;
   int tailgateLockState;
   int tailgateOpenState;
   int tailgatePowerState;
@@ -70,9 +96,15 @@ on timer tPowerTailgateCycle
   int openRequestState;
   int actuatorCmd;
 
-  driveState = clampRange((int)@Core::driveStateNorm, 0, 3);
   tailgateInputStale = (ethIsRecentTick(gTailgateRxMs, 300) == 1) ? 0 : 1;
-  tracePtgInputHealth(tailgateInputStale);
+  vehicleInputStale = (ethIsRecentTick(gVehicleRxMs, 300) == 1) ? 0 : 1;
+  tracePtgInputHealth(tailgateInputStale, vehicleInputStale);
+
+  driveState = gDriveState;
+  if (vehicleInputStale == 1)
+  {
+    driveState = 3;
+  }
 
   tailgateLockState = gTailgateLockState;
   tailgateOpenState = gTailgateOpenState;

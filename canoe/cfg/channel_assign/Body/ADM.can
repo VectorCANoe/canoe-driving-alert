@@ -10,16 +10,19 @@ variables
   int gDoorFrLockState;
   int gDoorFlOpenState;
   int gDoorFrOpenState;
+  int gDriveState;
   dword gDoorFlRxMs;
   dword gDoorFrRxMs;
+  dword gVehicleRxMs;
   int gLastDoorFlInputStale;
   int gLastDoorFrInputStale;
+  int gLastVehicleInputStale;
   int gLastAutoDoorState;
   int gLastAutoUnlockState;
   int gLastApproachScore;
 }
 
-void traceAdmInputHealth(int doorFlInputStale, int doorFrInputStale)
+void traceAdmInputHealth(int doorFlInputStale, int doorFrInputStale, int vehicleInputStale)
 {
   if (doorFlInputStale != gLastDoorFlInputStale)
   {
@@ -46,6 +49,19 @@ void traceAdmInputHealth(int doorFlInputStale, int doorFrInputStale)
     }
     gLastDoorFrInputStale = doorFrInputStale;
   }
+
+  if (vehicleInputStale != gLastVehicleInputStale)
+  {
+    if (vehicleInputStale == 1)
+    {
+      write("[ADM] vehicle input stale");
+    }
+    else
+    {
+      write("[ADM] vehicle input restored");
+    }
+    gLastVehicleInputStale = vehicleInputStale;
+  }
 }
 
 on start
@@ -54,10 +70,13 @@ on start
   gDoorFrLockState = 1;
   gDoorFlOpenState = 0;
   gDoorFrOpenState = 0;
+  gDriveState = 0;
   gDoorFlRxMs = 0;
   gDoorFrRxMs = 0;
+  gVehicleRxMs = 0;
   gLastDoorFlInputStale = 0;
   gLastDoorFrInputStale = 0;
+  gLastVehicleInputStale = 0;
   gLastAutoDoorState = -1;
   gLastAutoUnlockState = -1;
   gLastApproachScore = -1;
@@ -79,12 +98,19 @@ on message frmDoorFrStateMsg
   gDoorFrRxMs = getSimulationTimeMs();
 }
 
+on message frmVehicleStateCanMsg
+{
+  gDriveState = clampRange((int)this.gDriveState, 0, 3);
+  gVehicleRxMs = getSimulationTimeMs();
+}
+
 on timer tAutoDoorCycle
 {
   message frmAutoDoorCtrlStateMsg mDoor;
   int driveState;
   int doorFlInputStale;
   int doorFrInputStale;
+  int vehicleInputStale;
   int doorFlLockState;
   int doorFrLockState;
   int doorFlOpenState;
@@ -93,10 +119,16 @@ on timer tAutoDoorCycle
   int autoUnlockState;
   int approachScore;
 
-  driveState = clampRange((int)@Core::driveStateNorm, 0, 3);
   doorFlInputStale = (ethIsRecentTick(gDoorFlRxMs, 300) == 1) ? 0 : 1;
   doorFrInputStale = (ethIsRecentTick(gDoorFrRxMs, 300) == 1) ? 0 : 1;
-  traceAdmInputHealth(doorFlInputStale, doorFrInputStale);
+  vehicleInputStale = (ethIsRecentTick(gVehicleRxMs, 300) == 1) ? 0 : 1;
+  traceAdmInputHealth(doorFlInputStale, doorFrInputStale, vehicleInputStale);
+
+  driveState = gDriveState;
+  if (vehicleInputStale == 1)
+  {
+    driveState = 3;
+  }
 
   doorFlLockState = gDoorFlLockState;
   doorFrLockState = gDoorFrLockState;
