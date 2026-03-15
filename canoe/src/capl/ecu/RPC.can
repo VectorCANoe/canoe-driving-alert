@@ -10,8 +10,12 @@ variables
   int gObjectDetected;
   int gLaneModelValid;
   int gConfidence;
+  int gNavRouteClass;
+  int gNavSpeedLimit;
   dword gFcamRxMs;
+  dword gNavRxMs;
   int gLastFcamInputStale;
+  int gLastNavInputStale;
   int gLastHealth;
   int gLastLanePreview;
   int gLastZonePreview;
@@ -19,7 +23,7 @@ variables
   int gLastConfidence;
 }
 
-void traceRpcInputHealth(int fcamInputStale)
+void traceRpcInputHealth(int fcamInputStale, int navInputStale)
 {
   if (fcamInputStale != gLastFcamInputStale)
   {
@@ -33,12 +37,26 @@ void traceRpcInputHealth(int fcamInputStale)
     }
     gLastFcamInputStale = fcamInputStale;
   }
+
+  if (navInputStale != gLastNavInputStale)
+  {
+    if (navInputStale == 1)
+    {
+      write("[RPC] nav input stale");
+    }
+    else
+    {
+      write("[RPC] nav input restored");
+    }
+    gLastNavInputStale = navInputStale;
+  }
 }
 
 void publishRoadPreviewState()
 {
   message frmRoadPreviewCameraStateMsg mPreview;
   int fcamInputStale;
+  int navInputStale;
   int zonePreview;
   int speedLimit;
   int cameraHealth;
@@ -48,10 +66,11 @@ void publishRoadPreviewState()
   int previewHealth;
 
   fcamInputStale = (ethIsRecentTick(gFcamRxMs, 300) == 1) ? 0 : 1;
-  traceRpcInputHealth(fcamInputStale);
+  navInputStale = (ethIsRecentTick(gNavRxMs, 300) == 1) ? 0 : 1;
+  traceRpcInputHealth(fcamInputStale, navInputStale);
 
-  zonePreview = clampRange((int)@Core::baseZoneContext, 0, 7);
-  speedLimit = clampRange((int)@Core::speedLimitNorm, 0, 255);
+  zonePreview = gNavRouteClass;
+  speedLimit = gNavSpeedLimit;
   cameraHealth = gCameraHealth;
   objectDetected = gObjectDetected;
   laneModelValid = gLaneModelValid;
@@ -62,6 +81,11 @@ void publishRoadPreviewState()
     objectDetected = 0;
     laneModelValid = 0;
     confidence = 0;
+  }
+  if (navInputStale == 1)
+  {
+    zonePreview = 0;
+    speedLimit = 30;
   }
 
   previewHealth = 0;
@@ -108,8 +132,12 @@ on start
   gObjectDetected = 0;
   gLaneModelValid = 0;
   gConfidence = 0;
+  gNavRouteClass = 0;
+  gNavSpeedLimit = 30;
   gFcamRxMs = 0;
+  gNavRxMs = 0;
   gLastFcamInputStale = 0;
+  gLastNavInputStale = 0;
   gLastHealth = -1;
   gLastLanePreview = -1;
   gLastZonePreview = -1;
@@ -132,6 +160,13 @@ on message frmFcamStateMsg
   gLaneModelValid = clampRange((int)this.LaneModelValid, 0, 1);
   gConfidence = clampRange((int)this.Confidence, 0, 100);
   gFcamRxMs = getSimulationTimeMs();
+}
+
+on message frmNavStateMsg
+{
+  gNavRouteClass = clampRange((int)this.NavRouteClass, 0, 3);
+  gNavSpeedLimit = clampRange((int)this.NavSpeedLimit, 0, 255);
+  gNavRxMs = getSimulationTimeMs();
 }
 
 on stopMeasurement
