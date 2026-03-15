@@ -23,11 +23,49 @@ variables
   int gBackboneAlertType;
   int gBackboneTimeoutClear;
   dword gBackboneAlertTsMs;
+  int gCanVehicleSpeed;
+  int gCanDriveState;
+  int gCanNavSessionState;
+  int gCanNavRouteClass;
+  int gCanNavGuideType;
+  int gCanNavEtaMinutes;
+  int gCanNavSpeedLimit;
+  int gCanRouteEtaMinutes;
+  int gCanRouteProgress;
+  dword gVehicleStateRxMs;
+  dword gNavStateRxMs;
+  dword gRouteRxMs;
 }
 
 int getIviTxPort()
 {
   return ethBackbonePort() + 4;
+}
+
+int deriveBaseZoneContextFromNavState(int routeClass, int guideType)
+{
+  routeClass = clampRange(routeClass, 0, 3);
+  guideType = clampRange(guideType, 0, 3);
+
+  if (routeClass == 1)
+  {
+    return 1;
+  }
+  if (routeClass == 2)
+  {
+    return 2;
+  }
+  if (routeClass == 3)
+  {
+    return (guideType == 2) ? 4 : 3;
+  }
+  return 0;
+}
+
+int deriveZoneDistanceFromEtaMinutes(int etaMinutes)
+{
+  etaMinutes = clampRange(etaMinutes, 0, 255);
+  return clampRange(etaMinutes * 10, 0, 255);
 }
 
 
@@ -125,13 +163,26 @@ void publishBackboneNavContext()
   int navDirection;
   int zoneDistance;
   int speedLimit;
+  int etaMinutes;
   long txSocket;
 
-  baseZoneContext = clampRange((int)@Core::baseZoneContext, 0, 4);
-  roadZone = 0;
-  navDirection = 0;
+  if (ethIsRecentTick(gNavStateRxMs, 300) == 1)
+  {
+    roadZone = clampRange(gCanNavRouteClass, 0, 3);
+    navDirection = clampRange(gCanNavGuideType, 0, 3);
+    speedLimit = clampRange(gCanNavSpeedLimit, 0, 255);
+    etaMinutes = clampRange(gCanNavEtaMinutes, 0, 255);
+    baseZoneContext = deriveBaseZoneContextFromNavState(roadZone, navDirection);
+  }
+  else
+  {
+    baseZoneContext = 0;
+    roadZone = 0;
+    navDirection = 0;
+    speedLimit = 0;
+    etaMinutes = 0;
+  }
   zoneDistance = 0;
-  speedLimit = 0;
 
   if (baseZoneContext == 1)
   {
@@ -144,7 +195,6 @@ void publishBackboneNavContext()
   else if (baseZoneContext == 3 || baseZoneContext == 4)
   {
     roadZone = 3;
-    navDirection = clampRange((int)@Infotainment::navDirection, 0, 3);
     if (navDirection == 0)
     {
       navDirection = (baseZoneContext == 4) ? 2 : 1;
@@ -153,8 +203,11 @@ void publishBackboneNavContext()
 
   if (roadZone > 0)
   {
-    zoneDistance = clampRange((int)@Infotainment::zoneDistance, 0, 255);
-    speedLimit = clampRange((int)@Core::speedLimitNorm, 0, 255);
+    if (ethIsRecentTick(gRouteRxMs, 300) == 1)
+    {
+      etaMinutes = clampRange(gCanRouteEtaMinutes, 0, 255);
+    }
+    zoneDistance = deriveZoneDistanceFromEtaMinutes(etaMinutes);
     if (speedLimit == 0)
     {
       speedLimit = 30;
@@ -275,6 +328,18 @@ on start
   gBackboneAlertType = 0;
   gBackboneTimeoutClear = 0;
   gBackboneAlertTsMs = 0;
+  gCanVehicleSpeed = 0;
+  gCanDriveState = 0;
+  gCanNavSessionState = 0;
+  gCanNavRouteClass = 0;
+  gCanNavGuideType = 0;
+  gCanNavEtaMinutes = 0;
+  gCanNavSpeedLimit = 0;
+  gCanRouteEtaMinutes = 0;
+  gCanRouteProgress = 0;
+  gVehicleStateRxMs = 0;
+  gNavStateRxMs = 0;
+  gRouteRxMs = 0;
   @CoreState::infoHealthTick = 0;
   if (gEthTxSocket == ethInvalidSocket())
   {
@@ -288,6 +353,30 @@ on start
   setTimer(tIviBase50, 50);
   setTimer(tIviExt100, 100);
   write("[IVI] start");
+}
+
+on message frmVehicleStateCanMsg
+{
+  gCanVehicleSpeed = clampRange((int)this.gVehicleSpeed, 0, 255);
+  gCanDriveState = clampRange((int)this.gDriveState, 0, 3);
+  gVehicleStateRxMs = getSimulationTimeMs();
+}
+
+on message frmNavModuleStateMsg
+{
+  gCanNavSessionState = clampRange((int)this.NavSessionState, 0, 3);
+  gCanNavRouteClass = clampRange((int)this.NavRouteClass, 0, 3);
+  gCanNavGuideType = clampRange((int)this.NavGuideType, 0, 3);
+  gCanNavEtaMinutes = clampRange((int)this.NavEtaMinutes, 0, 255);
+  gCanNavSpeedLimit = clampRange((int)this.NavSpeedLimit, 0, 255);
+  gNavStateRxMs = getSimulationTimeMs();
+}
+
+on message frmNavigationRouteMsg
+{
+  gCanRouteEtaMinutes = clampRange((int)this.EtaMinutes, 0, 255);
+  gCanRouteProgress = clampRange((int)this.RouteProgress, 0, 100);
+  gRouteRxMs = getSimulationTimeMs();
 }
 
 on timer tIviCycle
@@ -319,7 +408,14 @@ on timer tIviCycle
   }
   emergencyType = (int)@V2X::emergencyType;
   emergencyDirection = (int)@V2X::emergencyDirection;
-  speed = clampRange((int)@Core::vehicleSpeedNorm, 0, 255);
+  if (ethIsRecentTick(gVehicleStateRxMs, 300) == 1)
+  {
+    speed = clampRange(gCanVehicleSpeed, 0, 255);
+  }
+  else
+  {
+    speed = 0;
+  }
   if (alertLevel < 0 || alertLevel > 7)
   {
     alertLevel = 0;
@@ -398,8 +494,16 @@ on timer tIviBase50
   int effectiveVolume;
   int useBackbone;
 
-  speed = clampRange((int)@Core::vehicleSpeedNorm, 0, 255);
-  driveState = clampRange((int)@Core::driveStateNorm, 0, 3);
+  if (ethIsRecentTick(gVehicleStateRxMs, 300) == 1)
+  {
+    speed = clampRange(gCanVehicleSpeed, 0, 255);
+    driveState = clampRange(gCanDriveState, 0, 3);
+  }
+  else
+  {
+    speed = 0;
+    driveState = 0;
+  }
   useBackbone = useBackboneAlertState();
   if (useBackbone == 1)
   {
@@ -411,7 +515,14 @@ on timer tIviBase50
     alertLevel = clampRange((int)@Core::selectedAlertLevel, 0, 7);
     alertType = clampRange((int)@Core::selectedAlertType, 0, 15);
   }
-  baseZoneContext = clampRange((int)@Core::baseZoneContext, 0, 4);
+  if (ethIsRecentTick(gNavStateRxMs, 300) == 1)
+  {
+    baseZoneContext = deriveBaseZoneContextFromNavState(gCanNavRouteClass, gCanNavGuideType);
+  }
+  else
+  {
+    baseZoneContext = 0;
+  }
   renderMode = clampRange((int)@Body::ambientMode, 0, 7);
   renderColor = clampRange((int)@Body::ambientColor, 0, 15);
   renderPattern = clampRange((int)@Body::ambientPattern, 0, 15);
@@ -607,7 +718,14 @@ on timer tIviExt100
   message frmIviHealthDetailMsg mHealthDetail;
   int speedLimit;
 
-  speedLimit = clampRange((int)@Core::speedLimitNorm, 0, 255);
+  if (ethIsRecentTick(gNavStateRxMs, 300) == 1)
+  {
+    speedLimit = clampRange(gCanNavSpeedLimit, 0, 255);
+  }
+  else
+  {
+    speedLimit = 0;
+  }
   if (speedLimit == 0)
   {
     speedLimit = 30;

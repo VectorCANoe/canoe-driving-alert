@@ -34,9 +34,14 @@ variables
   int gLastObjectTrackValid;
   int gLastObjectFailSafeMode;
   int gLastObjectEventCode;
-  int gLastChassisHealthTick;
-  int gLastBodyHealthTick;
-  int gLastInfoHealthTick;
+  int gObjectConfidence;
+  int gObjectTrackValid;
+  int gObjectRiskClass;
+  int gObjectEventCode;
+  int gEmergencyContext;
+  dword gObjectRiskTsMs;
+  int gForceFailSafeOverride;
+  dword gForceFailSafeRxMs;
 }
 
 int getCgwTxPort()
@@ -88,9 +93,15 @@ void publishObjectSafetyState(int failSafeMode)
   int objectTrackValid;
   long txSocket;
 
-  objectConfidence = clampRange((int)@Core::objectConfidence, 0, 100);
-  objectEventCode = clampRange((int)@Core::objectEventCode, 0, 65535);
-  objectTrackValid = clampRange((int)@Core::objectTrackValid, 0, 1);
+  objectConfidence = gObjectConfidence;
+  objectEventCode = gObjectEventCode;
+  objectTrackValid = gObjectTrackValid;
+  if (ethIsRecentTick(gObjectRiskTsMs, 300) == 0)
+  {
+    objectConfidence = 0;
+    objectEventCode = 0;
+    objectTrackValid = 0;
+  }
   txSocket = gEthTxSocket;
   if (txSocket == ethInvalidSocket())
   {
@@ -119,6 +130,7 @@ void publishObjectSafetyState(int failSafeMode)
 void OnUdpReceiveFrom(dword socket, long result, dword address, dword port, char buffer[], dword count)
 {
   int msgId;
+  int objectRiskClass;
 
   if (socket != gEthSocket)
   {
@@ -141,7 +153,37 @@ void OnUdpReceiveFrom(dword socket, long result, dword address, dword port, char
     }
     else if (msgId == ethMsgEmergencyMonitor() && ethFramePayloadLen(count) >= 2)
     {
+      gEmergencyContext = clampRange(ethGetU8(buffer, 0), 0, 2);
       gEmergencyMonTsMs = getSimulationTimeMs();
+    }
+    else if (msgId == ethMsgObjectRiskState() && ethFramePayloadLen(count) >= 6)
+    {
+      objectRiskClass = clampRange(ethGetU8(buffer, 0), 0, 7);
+      gObjectTrackValid = clampRange(ethGetU8(buffer, 4), 0, 1);
+      gObjectConfidence = clampRange(ethGetU8(buffer, 5), 0, 100);
+      if (objectRiskClass >= 2 && gObjectRiskClass < 2)
+      {
+        gObjectEventCode = 1381;
+      }
+      else if (objectRiskClass < 2 && gObjectRiskClass >= 2)
+      {
+        gObjectEventCode = 1382;
+      }
+      else if (objectRiskClass >= 2)
+      {
+        gObjectEventCode = 1383;
+      }
+      else
+      {
+        gObjectEventCode = 0;
+      }
+      gObjectRiskClass = objectRiskClass;
+      gObjectRiskTsMs = getSimulationTimeMs();
+    }
+    else if (msgId == ethMsgValidationOverride() && ethFramePayloadLen(count) >= 1)
+    {
+      gForceFailSafeOverride = clampRange(ethGetU8(buffer, 0), 0, 1);
+      gForceFailSafeRxMs = getSimulationTimeMs();
     }
   }
 
@@ -177,9 +219,14 @@ on start
   gLastObjectTrackValid = -1;
   gLastObjectFailSafeMode = -1;
   gLastObjectEventCode = -1;
-  gLastChassisHealthTick = -1;
-  gLastBodyHealthTick = -1;
-  gLastInfoHealthTick = -1;
+  gObjectConfidence = 0;
+  gObjectTrackValid = 0;
+  gObjectRiskClass = 0;
+  gObjectEventCode = 0;
+  gEmergencyContext = 0;
+  gObjectRiskTsMs = 0;
+  gForceFailSafeOverride = 0;
+  gForceFailSafeRxMs = 0;
   @CoreState::domainBoundaryStatus = 0;
   @CoreState::warningPathStatus = 1;
   @CoreState::e2eHealthState = 1;
@@ -247,16 +294,12 @@ on timer tBoundaryCheck
   int vehicleSignalAgeMs;
   int navSignalAgeMs;
   int steeringSignalAgeMs;
-  int chassisHealthTick;
-  int bodyHealthTick;
-  int infoHealthTick;
   int boundaryAlive;
   int warningPathStatus;
   int e2eHealthState;
   int failSafeMode;
   int routingPolicy;
   int emergencyContext;
-  dword lastEmergencyRxMs;
   int emergencyRxAgeMs;
   int emergencyPathFast;
   int emergencyPathSlow;
@@ -264,25 +307,6 @@ on timer tBoundaryCheck
   int startupSettling;
 
   nowMs = getSimulationTimeMs();
-  chassisHealthTick = clampRange((int)@CoreState::chassisHealthTick, 0, 255);
-  bodyHealthTick = clampRange((int)@CoreState::bodyHealthTick, 0, 255);
-  infoHealthTick = clampRange((int)@CoreState::infoHealthTick, 0, 255);
-  if (chassisHealthTick != gLastChassisHealthTick)
-  {
-    gChassisTsMs = nowMs;
-    gLastChassisHealthTick = chassisHealthTick;
-  }
-  if (bodyHealthTick != gLastBodyHealthTick)
-  {
-    gBodyTsMs = nowMs;
-    gLastBodyHealthTick = bodyHealthTick;
-  }
-  if (infoHealthTick != gLastInfoHealthTick)
-  {
-    gInfoTsMs = nowMs;
-    gNavContextTsMs = nowMs;
-    gLastInfoHealthTick = infoHealthTick;
-  }
   chassisAgeMs = calcAgeMs(gChassisTsMs, nowMs);
   bodyAgeMs = calcAgeMs(gBodyTsMs, nowMs);
   infoAgeMs = calcAgeMs(gInfoTsMs, nowMs);
@@ -298,9 +322,16 @@ on timer tBoundaryCheck
   gNavContextAgeMs = pickFresherAgeMs(navSignalAgeMs, infoAgeMs);
   gSteeringAgeMs = pickFresherAgeMs(steeringSignalAgeMs, chassisAgeMs);
   gEmergencyMonAgeMs = calcAgeMs(gEmergencyMonTsMs, nowMs);
-  emergencyContext = clampRange((int)@Core::emergencyContext, 0, 2);
-  lastEmergencyRxMs = (dword)clampRange((int)@CoreState::lastEmergencyRxMs, 0, 2147483647);
-  emergencyRxAgeMs = calcAgeMs(lastEmergencyRxMs, nowMs);
+  if (ethIsRecentTick(gEmergencyMonTsMs, 300) == 1)
+  {
+    emergencyContext = clampRange(gEmergencyContext, 0, 2);
+    emergencyRxAgeMs = gEmergencyMonAgeMs;
+  }
+  else
+  {
+    emergencyContext = 0;
+    emergencyRxAgeMs = 10000;
+  }
   emergencyPathFast = 1;
   emergencyPathSlow = 1;
   if (emergencyContext > 0)
@@ -325,7 +356,8 @@ on timer tBoundaryCheck
     boundaryAlive = 1;
   }
 
-  forceFailSafe = (((int)@Test::forceFailSafe) == 1) ? 1 : 0;
+  forceFailSafe = (ethIsRecentTick(gForceFailSafeRxMs, 300) == 1 &&
+                   gForceFailSafeOverride == 1) ? 1 : 0;
   startupSettling = (ethIsRecentTick(gStartTsMs, 500) == 1) ? 1 : 0;
   if (forceFailSafe == 1)
   {

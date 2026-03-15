@@ -47,10 +47,12 @@ variables
   int gHvacBlowerLevel;
   int gHvacAcOn;
   int gDriveState;
+  int gTurnLampInputState;
   dword gPaakRxMs;
   dword gTmuServiceRxMs;
   dword gHvacStateRxMs;
   dword gVehicleRxMs;
+  dword gTurnLampInputRxMs;
   int gLastPaakInputStale;
   int gLastTmuInputStale;
   int gLastHvacInputStale;
@@ -271,10 +273,12 @@ on start
   gHvacBlowerLevel = 0;
   gHvacAcOn = 0;
   gDriveState = 0;
+  gTurnLampInputState = 0;
   gPaakRxMs = 0;
   gTmuServiceRxMs = 0;
   gHvacStateRxMs = 0;
   gVehicleRxMs = 0;
+  gTurnLampInputRxMs = 0;
   gLastPaakInputStale = 0;
   gLastTmuInputStale = 0;
   gLastHvacInputStale = 0;
@@ -441,6 +445,8 @@ on timer tBodyBase100
   int hvacBlowerLevel;
   int hvacAcOn;
   int driveState;
+  int turnLampInputStale;
+  int turnLampState;
   int doorControlCmd;
   int seatHeatLevel;
   int seatVentLevel;
@@ -458,6 +464,7 @@ on timer tBodyBase100
   {
     hazardActive = ((int)@Core::selectedAlertLevel >= 6) ? 1 : 0;
   }
+  turnLampInputStale = (ethIsRecentTick(gTurnLampInputRxMs, 300) == 1) ? 0 : 1;
   ambientMode = clampRange((int)@Body::ambientMode, 0, 7);
   routingPolicy = clampRange((int)@CoreState::routingPolicy, 0, 2);
   warningPathStatus = clampRange((int)@CoreState::warningPathStatus, 0, 2);
@@ -535,18 +542,17 @@ on timer tBodyBase100
   mLamp.TailLampState = 1;
   if (hazardActive == 1)
   {
-    mLamp.TurnLampState = 3;
+    turnLampState = 3;
   }
-  else if ((int)@Test::turnLampOverride >= 1 && (int)@Test::turnLampOverride <= 2)
+  else if (turnLampInputStale == 0)
   {
-    /* Validation-only seam for exact turn-lamp context coverage. */
-    mLamp.TurnLampState = (int)@Test::turnLampOverride;
+    turnLampState = clampRange(gTurnLampInputState, 0, 3);
   }
   else
   {
-    /* Do not synthesize body turn lamps from navigation guidance. */
-    mLamp.TurnLampState = 0;
+    turnLampState = 0;
   }
+  mLamp.TurnLampState = clampRange(turnLampState, 0, 3);
   mLamp.HazardLampReq = hazardActive;
   output(mLamp);
 
@@ -838,6 +844,12 @@ on message frmVehicleStateCanMsg
 {
   gDriveState = clampRange((int)this.gDriveState, 0, 3);
   gVehicleRxMs = getSimulationTimeMs();
+}
+
+on message frmTurnLampInputMsg
+{
+  gTurnLampInputState = clampRange((int)this.TurnLampState, 0, 3);
+  gTurnLampInputRxMs = getSimulationTimeMs();
 }
 
 on stopMeasurement

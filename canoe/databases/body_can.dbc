@@ -277,6 +277,10 @@ BO_ 652 frmDatcDiagResMsg: 3 DATC
  SG_ DatcDiagData0     : 8|8@1+ (1,0) [0|255] "" TEST_SCN
  SG_ DatcDiagData1     : 16|8@1+ (1,0) [0|255] "" TEST_SCN
 
+BO_ 653 frmTurnLampInputMsg: 1 TEST_SCN
+ SG_ TurnLampState    : 0|2@1+ (1,0) [0|3] "" BCM
+ SG_ Reserved0        : 2|6@1+ (1,0) [0|0] "" Vector__XXX
+
 BO_ 720 frmSmkDiagReqMsg: 3 TEST_SCN
  SG_ SmkDiagServiceId  : 0|8@1+ (1,0) [0|255] "" SMK
  SG_ SmkDiagDidHigh    : 8|8@1+ (1,0) [0|255] "" SMK
@@ -351,6 +355,7 @@ CM_ BO_ 649 "Body runtime: occupant detection system state derived from passenge
 CM_ BO_ 650 "Body runtime: massage seat control state derived from seat comfort and alert context.";
 CM_ BO_ 651 "Body runtime: DATC diagnostic request.";
 CM_ BO_ 652 "Body runtime: DATC diagnostic response.";
+CM_ BO_ 653 "Body runtime: validation-harness turn-lamp input for BCM driver-context integration.";
 CM_ BO_ 720 "Body runtime: SMK diagnostic request.";
 CM_ BO_ 721 "Body runtime: SMK diagnostic response.";
 CM_ BO_ 722 "Body runtime: AFLS diagnostic request.";
@@ -404,6 +409,7 @@ BA_ "GenMsgCycleTime" BO_ 649 100;
 BA_ "GenMsgCycleTime" BO_ 650 100;
 BA_ "GenMsgCycleTime" BO_ 651 0;
 BA_ "GenMsgCycleTime" BO_ 652 0;
+BA_ "GenMsgCycleTime" BO_ 653 0;
 BA_ "GenMsgCycleTime" BO_ 720 0;
 BA_ "GenMsgCycleTime" BO_ 721 0;
 BA_ "GenMsgCycleTime" BO_ 722 0;

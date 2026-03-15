@@ -11,16 +11,19 @@ variables
   int gSignalBars;
   int gIviCpuLoad;
   int gIviMemLoad;
+  int gDriveState;
   dword gConnRxMs;
   dword gIviHealthRxMs;
+  dword gVehicleRxMs;
   int gLastConnInputStale;
   int gLastIviHealthInputStale;
+  int gLastVehicleInputStale;
   int gLastLinkState;
   int gLastServiceMode;
   int gLastRemoteClimateReq;
 }
 
-void traceTmuInputHealth(int connInputStale, int iviHealthInputStale)
+void traceTmuInputHealth(int connInputStale, int iviHealthInputStale, int vehicleInputStale)
 {
   if (connInputStale != gLastConnInputStale)
   {
@@ -47,6 +50,19 @@ void traceTmuInputHealth(int connInputStale, int iviHealthInputStale)
     }
     gLastIviHealthInputStale = iviHealthInputStale;
   }
+
+  if (vehicleInputStale != gLastVehicleInputStale)
+  {
+    if (vehicleInputStale == 1)
+    {
+      write("[TMU] vehicle input stale");
+    }
+    else
+    {
+      write("[TMU] vehicle input restored");
+    }
+    gLastVehicleInputStale = vehicleInputStale;
+  }
 }
 
 void publishTmuState()
@@ -54,24 +70,28 @@ void publishTmuState()
   message frmTmuServiceStateMsg mTmu;
   int connInputStale;
   int iviHealthInputStale;
+  int vehicleInputStale;
   int connType;
   int connState;
   int signalBars;
   int iviCpuLoad;
   int iviMemLoad;
+  int driveState;
   int linkState;
   int serviceMode;
   int remoteClimateReq;
 
   connInputStale = (ethIsRecentTick(gConnRxMs, 300) == 1) ? 0 : 1;
   iviHealthInputStale = (ethIsRecentTick(gIviHealthRxMs, 300) == 1) ? 0 : 1;
-  traceTmuInputHealth(connInputStale, iviHealthInputStale);
+  vehicleInputStale = (ethIsRecentTick(gVehicleRxMs, 300) == 1) ? 0 : 1;
+  traceTmuInputHealth(connInputStale, iviHealthInputStale, vehicleInputStale);
 
   connType = gConnType;
   connState = gConnState;
   signalBars = gSignalBars;
   iviCpuLoad = gIviCpuLoad;
   iviMemLoad = gIviMemLoad;
+  driveState = gDriveState;
   if (connInputStale == 1)
   {
     connType = 0;
@@ -82,6 +102,10 @@ void publishTmuState()
   {
     iviCpuLoad = 100;
     iviMemLoad = 100;
+  }
+  if (vehicleInputStale == 1)
+  {
+    driveState = 3;
   }
 
   linkState = 0;
@@ -121,7 +145,8 @@ void publishTmuState()
       connType == 1 &&
       signalBars >= 3 &&
       iviCpuLoad < 60 &&
-      iviMemLoad < 60)
+      iviMemLoad < 60 &&
+      driveState == 0)
   {
     remoteClimateReq = 1;
   }
@@ -157,10 +182,13 @@ on start
   gSignalBars = 0;
   gIviCpuLoad = 0;
   gIviMemLoad = 0;
+  gDriveState = 0;
   gConnRxMs = 0;
   gIviHealthRxMs = 0;
+  gVehicleRxMs = 0;
   gLastConnInputStale = 0;
   gLastIviHealthInputStale = 0;
+  gLastVehicleInputStale = 0;
   gLastLinkState = -1;
   gLastServiceMode = -1;
   gLastRemoteClimateReq = -1;
@@ -189,6 +217,12 @@ on message frmIviHealthDetailMsg
   gIviCpuLoad = clampRange((int)this.IviCpuLoad, 0, 100);
   gIviMemLoad = clampRange((int)this.IviMemLoad, 0, 100);
   gIviHealthRxMs = getSimulationTimeMs();
+}
+
+on message frmVehicleStateCanMsg
+{
+  gDriveState = clampRange((int)this.gDriveState, 0, 3);
+  gVehicleRxMs = getSimulationTimeMs();
 }
 
 on stopMeasurement

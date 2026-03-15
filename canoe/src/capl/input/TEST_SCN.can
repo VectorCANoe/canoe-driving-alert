@@ -86,6 +86,14 @@ variables
   int gObsTailgateAssistMode;
   int gObsTailgateOpenRequestState;
   int gObsTailgateActuatorCmd;
+  int gObsVehicleSpeed;
+  int gObsDriveState;
+  int gObsSteeringState;
+  int gObsBrakePedal;
+  int gObsDriveMode;
+  int gObsEcoMode;
+  int gObsSportMode;
+  int gObsBaseZoneContext;
 }
 
 
@@ -115,6 +123,23 @@ int calcBaselineIgnitionState(int speed, int driveState)
   return 0;
 }
 
+int calcObservedBaseZoneContext(int routeClass, int guideType)
+{
+  if (routeClass == 1)
+  {
+    return 1;
+  }
+  if (routeClass == 2)
+  {
+    return 2;
+  }
+  if (routeClass == 3)
+  {
+    return (guideType == 2) ? 4 : 3;
+  }
+  return 0;
+}
+
 void pushLockedScenarioInputs()
 {
   @Chassis::driveState = clampRange(gLockDriveState, 0, 3);
@@ -124,7 +149,6 @@ void pushLockedScenarioInputs()
   @Infotainment::navDirection = clampRange(gLockNavDirection, 0, 3);
   @Infotainment::zoneDistance = clampRange(gLockZoneDistance, 0, 255);
   @Infotainment::speedLimit = clampRange(gLockSpeedLimit, 0, 255);
-  @Test::forceFailSafe = clampRange(gLockForceFailSafe, 0, 1);
   @V2X::policeDispatch = clampRange(gLockPoliceDispatch, 0, 1);
   @V2X::ambulanceDispatch = clampRange(gLockAmbulanceDispatch, 0, 1);
   /* A/B 그룹 플래그: CGW 정규화 경로를 거치지 않고 Core에 직접 주입 */
@@ -182,6 +206,20 @@ long EmitBackboneObjectRiskTest(int trackValid,
   return ethSendFrame(gEthSocket, gEthTargetIp, ethMsgObjectRiskInput(), objectFrame, 8);
 }
 
+long EmitBackboneValidationOverrideTest(int forceFailSafe)
+{
+  char overrideFrame[4];
+
+  if (gEthSocket == ethInvalidSocket())
+  {
+    return -1;
+  }
+
+  ethInitFrame(overrideFrame, ethMsgValidationOverride(), 1);
+  ethSetU8(overrideFrame, 0, clampRange(forceFailSafe, 0, 1));
+  return ethSendFrame(gEthSocket, gEthTargetIp, ethMsgValidationOverride(), overrideFrame, 1);
+}
+
 void cancelScenarioTransientTimers()
 {
   cancelTimer(tScenarioEval);
@@ -198,7 +236,7 @@ void stopScenarioExecution()
   gObservedDecelReleaseReason = 0;
   cancelTimer(tDemoStep);
   cancelScenarioTransientTimers();
-  @Test::forceFailSafe = 0;
+  EmitBackboneValidationOverrideTest(0);
   @V2X::policeDispatch = 0;
   @V2X::ambulanceDispatch = 0;
   @Test::scenarioResult = 0;
@@ -239,6 +277,14 @@ void stopScenarioExecution()
   gObsTailgateAssistMode = -1;
   gObsTailgateOpenRequestState = -1;
   gObsTailgateActuatorCmd = -1;
+  gObsVehicleSpeed = -1;
+  gObsDriveState = -1;
+  gObsSteeringState = -1;
+  gObsBrakePedal = -1;
+  gObsDriveMode = -1;
+  gObsEcoMode = -1;
+  gObsSportMode = -1;
+  gObsBaseZoneContext = -1;
   @Core::accelGroupFlag = 0;
   @Core::steerGroupFlag = 0;
 }
@@ -1685,7 +1731,7 @@ void evaluateScenarioResult()
   else if (gCurrentScenarioId == 11)
   {
     /* Req_034: emergency took over AND arbitration delta <= 3 (no repeated flips) */
-    snapshotDelta = ((int)@CoreState::arbitrationSnapshotId - gArbitrationSnapshotBaseline) & 0xFFFF;
+    snapshotDelta = ((int)@Test::baseTraceSnapshotId - gArbitrationSnapshotBaseline) & 0xFFFF;
     result = (level == 6 && type == 1 && snapshotDelta <= 3) ? 1 : 0;
   }
   else if (gCurrentScenarioId == 12)
@@ -1696,7 +1742,7 @@ void evaluateScenarioResult()
   else if (gCurrentScenarioId == 13)
   {
     /* Req_015: after zone flip (school->highway->school), settle correctly, <=3 arb changes */
-    snapshotDelta = ((int)@CoreState::arbitrationSnapshotId - gArbitrationSnapshotBaseline) & 0xFFFF;
+    snapshotDelta = ((int)@Test::baseTraceSnapshotId - gArbitrationSnapshotBaseline) & 0xFFFF;
     result = (level == 3 && type == 3 && snapshotDelta <= 3) ? 1 : 0;
   }
   else if (gCurrentScenarioId == 14)
@@ -1720,7 +1766,7 @@ void evaluateScenarioResult()
   else if (gCurrentScenarioId == 17)
   {
     /* Req_123: steering intervention releases decel assist */
-    result = ((int)@Core::steeringInputNorm == 1 && decelAssistReq == 0 &&
+    result = (gObsSteeringState == 1 && decelAssistReq == 0 &&
               failSafeMode == 0 && driverReleaseReason == 1) ? 1 : 0;
   }
   else if (gCurrentScenarioId == 18)
@@ -1946,7 +1992,7 @@ void evaluateScenarioResult()
   }
   else if (gCurrentScenarioId == 223)
   {
-    snapshotDelta = ((int)@CoreState::arbitrationSnapshotId - gArbitrationSnapshotBaseline) & 0xFFFF;
+    snapshotDelta = ((int)@Test::baseTraceSnapshotId - gArbitrationSnapshotBaseline) & 0xFFFF;
     result = (level == 7 && type == 2 && snapshotDelta <= 3) ? 1 : 0;
   }
   else if (gCurrentScenarioId == 224)
@@ -1979,31 +2025,31 @@ void evaluateScenarioResult()
   }
   else if (gCurrentScenarioId == 216)
   {
-    result = ((int)@Core::driveStateNorm == 0 &&
-              (int)@Core::vehicleSpeedNorm == 0 &&
+    result = (gObsDriveState == 0 &&
+              gObsVehicleSpeed == 0 &&
               (int)@Core::selectedAlertLevel == 0 &&
               (int)@Core::failSafeMode == 0) ? 1 : 0;
   }
   else if (gCurrentScenarioId == 217)
   {
-    result = ((int)@Core::driveStateNorm == 3 &&
-              (int)@Core::vehicleSpeedNorm == 55 &&
+    result = (gObsDriveState == 3 &&
+              gObsVehicleSpeed == 55 &&
               (int)@Core::selectedAlertLevel == 0 &&
               (int)@Core::failSafeMode == 0) ? 1 : 0;
   }
   else if (gCurrentScenarioId == 218)
   {
-    result = ((int)@Core::vehicleSpeedNorm == 68 &&
-              (int)@Core::steeringInputNorm == 1 &&
-              (int)@Core::brakePedalNorm == 0 &&
+    result = (gObsVehicleSpeed == 68 &&
+              gObsSteeringState == 1 &&
+              gObsBrakePedal == 0 &&
               (int)@Core::failSafeMode == 0) ? 1 : 0;
   }
   else if (gCurrentScenarioId == 219)
   {
-    result = ((int)@Core::driveStateNorm == 0 &&
-              (int)@Core::vehicleSpeedNorm == 0 &&
-              (int)@Core::steeringInputNorm == 0 &&
-              (int)@Core::brakePedalNorm >= 30 &&
+    result = (gObsDriveState == 0 &&
+              gObsVehicleSpeed == 0 &&
+              gObsSteeringState == 0 &&
+              gObsBrakePedal >= 30 &&
               (int)@Core::failSafeMode == 0) ? 1 : 0;
   }
   else if (gCurrentScenarioId == 220)
@@ -2026,14 +2072,14 @@ void evaluateScenarioResult()
   }
   else if (gCurrentScenarioId == 225)
   {
-    result = ((int)@Core::driveStateNorm == 3 &&
-              (int)@Core::vehicleSpeedNorm == 70 &&
+    result = (gObsDriveState == 3 &&
+              gObsVehicleSpeed == 70 &&
               (int)@Core::failSafeMode == 0) ? 1 : 0;
   }
   else if (gCurrentScenarioId == 226)
   {
-    result = ((int)@Core::driveStateNorm == 0 &&
-              (int)@Core::vehicleSpeedNorm == 0 &&
+    result = (gObsDriveState == 0 &&
+              gObsVehicleSpeed == 0 &&
               (int)@Core::failSafeMode == 0 &&
               gObsAutoDoorState == 1 &&
               gObsAutoUnlockState == 1 &&
@@ -2041,8 +2087,8 @@ void evaluateScenarioResult()
   }
   else if (gCurrentScenarioId == 227)
   {
-    result = ((int)@Core::driveStateNorm == 0 &&
-              (int)@Core::vehicleSpeedNorm == 0 &&
+    result = (gObsDriveState == 0 &&
+              gObsVehicleSpeed == 0 &&
               (int)@Core::failSafeMode == 0 &&
               gObsTailgateAssistMode == 2 &&
               gObsTailgateOpenRequestState == 1 &&
@@ -2050,14 +2096,14 @@ void evaluateScenarioResult()
   }
   else if (gCurrentScenarioId == 228)
   {
-    result = ((int)@Core::driveStateNorm == 0 &&
-              (int)@Core::vehicleSpeedNorm == 0 &&
+    result = (gObsDriveState == 0 &&
+              gObsVehicleSpeed == 0 &&
               (int)@Core::failSafeMode == 0) ? 1 : 0;
   }
   else if (gCurrentScenarioId == 229)
   {
-    result = ((int)@Core::driveStateNorm == 0 &&
-              (int)@Core::vehicleSpeedNorm == 0 &&
+    result = (gObsDriveState == 0 &&
+              gObsVehicleSpeed == 0 &&
               (int)@Core::failSafeMode == 0 &&
               gObsTmuLinkState == 2 &&
               gObsTmuServiceMode == 1 &&
@@ -2080,16 +2126,16 @@ void evaluateScenarioResult()
   {
     result = ((int)@Core::selectedAlertLevel == 4 &&
               (int)@Core::selectedAlertType == 3 &&
-              (int)@CoreState::driveMode == 2 &&
-              (int)@CoreState::sportMode == 1 &&
+              gObsDriveMode == 2 &&
+              gObsSportMode == 1 &&
               (int)@Core::failSafeMode == 0) ? 1 : 0;
   }
   else if (gCurrentScenarioId == 237)
   {
-    result = ((int)@Core::driveStateNorm == 3 &&
-              (int)@Core::vehicleSpeedNorm == 140 &&
-              (int)@CoreState::driveMode == 2 &&
-              (int)@CoreState::sportMode == 1 &&
+    result = (gObsDriveState == 3 &&
+              gObsVehicleSpeed == 140 &&
+              gObsDriveMode == 2 &&
+              gObsSportMode == 1 &&
               (int)@Core::failSafeMode == 0) ? 1 : 0;
   }
   else if (gCurrentScenarioId == 239)
@@ -2101,7 +2147,7 @@ void evaluateScenarioResult()
   }
   else if (gCurrentScenarioId == 244)
   {
-    result = ((int)@Core::baseZoneContext == 2 &&
+    result = (gObsBaseZoneContext == 2 &&
               (int)@Core::selectedAlertLevel == 0 &&
               (int)@Core::selectedAlertType == 0 &&
               (int)@Core::failSafeMode == 0) ? 1 : 0;
@@ -2155,7 +2201,7 @@ on timer tScenarioPhase2
   else if (gCurrentScenarioId == 11)
   {
     /* Req_034: Phase 2 - snapshot arbitration baseline then inject emergency */
-    gArbitrationSnapshotBaseline = (int)@CoreState::arbitrationSnapshotId;
+    gArbitrationSnapshotBaseline = (int)@Test::baseTraceSnapshotId;
     gLockAlertState = 1;
     gLockEmergencyType = 1;
     gLockEta = 15;
@@ -2176,7 +2222,7 @@ on timer tScenarioPhase2
   else if (gCurrentScenarioId == 13)
   {
     /* Req_015: Phase 2 - snapshot baseline + switch to highway zone (steerInput=1: no warn) */
-    gArbitrationSnapshotBaseline = (int)@CoreState::arbitrationSnapshotId;
+    gArbitrationSnapshotBaseline = (int)@Test::baseTraceSnapshotId;
     gLockRoadZone = 2;
     gLockVehicleSpeed = 80;
     gLockSpeedLimit = 100;
@@ -2266,7 +2312,7 @@ on timer tScenarioPhase2
   }
   else if (gCurrentScenarioId == 223)
   {
-    gArbitrationSnapshotBaseline = (int)@CoreState::arbitrationSnapshotId;
+    gArbitrationSnapshotBaseline = (int)@Test::baseTraceSnapshotId;
     gLockAlertState = 1;
     gLockEmergencyType = 2;
     gLockEta = 15;
@@ -2396,7 +2442,6 @@ on start
   @Test::scenarioCommandAck = 0;
   @Test::testScenario = 0;
   @Test::scenarioResult = 0;
-  @Test::forceFailSafe = 0;
   @Test::displayModeSetting = 0;
   @Test::alertVolumeSetting = 0;
   @Test::seatBeltOverride = 0;
@@ -2414,6 +2459,14 @@ on start
   @Core::objectEventCode = 0;
   @Core::accelGroupFlag = 0;
   @Core::steerGroupFlag = 0;
+  gObsVehicleSpeed = -1;
+  gObsDriveState = -1;
+  gObsSteeringState = -1;
+  gObsBrakePedal = -1;
+  gObsDriveMode = -1;
+  gObsEcoMode = -1;
+  gObsSportMode = -1;
+  gObsBaseZoneContext = -1;
   if (gEthSocket != ethInvalidSocket())
   {
     ethStartReceiver(gEthSocket, gEthRxBuffer, elcount(gEthRxBuffer));
@@ -2463,6 +2516,7 @@ on timer tInput100
   message frmCabinAirStateMsg mCabinAir;
   message frmSteeringAngleMsg mSteerAngle;
   message frmLampControlMsg mLampControl;
+  message frmTurnLampInputMsg mTurnLampInput;
   message frmFuelBatteryStateMsg mBattery;
   message frmEngineSpeedTempMsg mEngineTemp;
   message frmVehicleModeMsg mVehicleMode;
@@ -2665,12 +2719,6 @@ on timer tInput100
     mCabinAir.CabinTemp = 30;
     output(mCabinAir);
   }
-  else if (gCurrentScenarioId == 215)
-  {
-    mLampControl.HeadLampState = 2;
-    mLampControl.TurnLampState = 2;
-    output(mLampControl);
-  }
   else if (gCurrentScenarioId == 230)
   {
     mSteerAngle.SteeringAngleRaw = 1400;
@@ -2678,6 +2726,11 @@ on timer tInput100
 
     mLampControl.HeadLampState = 2;
     output(mLampControl);
+  }
+  else if (gCurrentScenarioId == 239)
+  {
+    mTurnLampInput.TurnLampState = 2;
+    output(mTurnLampInput);
   }
   else if (gCurrentScenarioId == 231)
   {
@@ -2754,6 +2807,7 @@ on timer tInput100
     ethSetU8(objectFrame, 5, objectConfidence);
     ethSetU16Le(objectFrame, 6, objectAlertHoldMs);
     ethSendFrame(gEthSocket, gEthTargetIp, ethMsgObjectRiskInput(), objectFrame, 8);
+    EmitBackboneValidationOverrideTest(gLockForceFailSafe);
   }
 
   trackSt038DiagnosticContext();
@@ -2766,6 +2820,39 @@ on timer tInput100
 on sysvar Test::scenarioResult
 {
   publishScenarioResultFrame();
+}
+
+on message frmVehicleStateCanMsg
+{
+  gObsVehicleSpeed = clampRange((int)this.gVehicleSpeed, 0, 255);
+  gObsDriveState = clampRange((int)this.gDriveState, 0, 3);
+}
+
+on message frmSteeringStateCanMsg
+{
+  gObsSteeringState = clampRange((int)this.SteeringState, 0, 1);
+}
+
+on message frmBrakeStatusMsg
+{
+  gObsBrakePedal = clampRange((int)this.BrakePressure / 2, 0, 100);
+  if ((int)this.BrakeMode > 0 && gObsBrakePedal == 0)
+  {
+    gObsBrakePedal = 1;
+  }
+}
+
+on message frmVehicleModeMsg
+{
+  gObsDriveMode = clampRange((int)this.DriveMode, 0, 7);
+  gObsEcoMode = clampRange((int)this.EcoMode, 0, 1);
+  gObsSportMode = clampRange((int)this.SportMode, 0, 1);
+}
+
+on message frmNavModuleStateMsg
+{
+  gObsBaseZoneContext = calcObservedBaseZoneContext((int)this.NavRouteClass,
+                                                    (int)this.NavGuideType);
 }
 
 on message frmTmuServiceStateMsg

@@ -9,6 +9,7 @@ variables
   long gEthSocket;
   long gEthTxSocket;
   dword gEthTargetIp;
+  char gEthRxBuffer[64];
   int gSpeed;
   int gAccelPedal;
   int gBrakePedal;
@@ -19,11 +20,19 @@ variables
   int gDriveMode;
   int gRoutingPolicy;
   int gBoundaryStatus;
+  int gFailSafeMode;
+  int gEmergencyContext;
   int gSpeedLimitNorm;
+  int gNavSpeedLimit;
+  int gWheelSpeedHint;
   int gPtAliveCnt;
   dword gPedalRxMs;
   dword gIgnitionRxMs;
   dword gGearRxMs;
+  dword gNavStateRxMs;
+  dword gWheelSpeedRxMs;
+  dword gFailSafeRxMs;
+  dword gEmergencyMonRxMs;
   int gLastPedalInputStale;
   int gLastIgnitionInputStale;
   int gLastGearInputStale;
@@ -194,17 +203,29 @@ on start
   gDriveMode = 0;
   gRoutingPolicy = 0;
   gBoundaryStatus = 0;
+  gFailSafeMode = 2;
+  gEmergencyContext = 0;
   gSpeedLimitNorm = 30;
+  gNavSpeedLimit = 30;
+  gWheelSpeedHint = 0;
   gPtAliveCnt = 0;
   gPedalRxMs = 0;
   gIgnitionRxMs = 0;
   gGearRxMs = 0;
+  gNavStateRxMs = 0;
+  gWheelSpeedRxMs = 0;
+  gFailSafeRxMs = 0;
+  gEmergencyMonRxMs = 0;
   gLastPedalInputStale = 0;
   gLastIgnitionInputStale = 0;
   gLastGearInputStale = 0;
   if (gEthTxSocket == ethInvalidSocket())
   {
     write("[VCU] tx socket fallback to shared backbone port");
+  }
+  if (gEthSocket != ethInvalidSocket())
+  {
+    ethStartReceiver(gEthSocket, gEthRxBuffer, elcount(gEthRxBuffer));
   }
   setTimer(tVcuCycle, 100);
   write("[VCU] start");
@@ -231,16 +252,57 @@ on message frmGearStateMsg
   gGearRxMs = getSimulationTimeMs();
 }
 
-on message frmPowertrainGatewayMsg
-{
-  gRoutingPolicy = clampRange((int)this.RoutingPolicy, 0, 2);
-  gBoundaryStatus = clampRange((int)this.BoundaryStatus, 0, 1);
-}
-
 on message frmVehicleModeMsg
 {
   gDriveMode = clampRange((int)this.DriveMode, 0, 7);
   gEngineState = clampRange((int)this.PowertrainState, 0, 255);
+}
+
+on message frmNavModuleStateMsg
+{
+  gNavSpeedLimit = clampRange((int)this.NavSpeedLimit, 0, 255);
+  gNavStateRxMs = getSimulationTimeMs();
+}
+
+on message frmWheelSpeedMsg
+{
+  gWheelSpeedHint = clampRange(((int)this.WheelSpdFL +
+                                (int)this.WheelSpdFR +
+                                (int)this.WheelSpdRL +
+                                (int)this.WheelSpdRR) / 4,
+                               0,
+                               255);
+  gWheelSpeedRxMs = getSimulationTimeMs();
+}
+
+void OnUdpReceiveFrom(dword socket, long result, dword address, dword port, char buffer[], dword count)
+{
+  int msgId;
+  int payload0;
+
+  if (socket != gEthSocket)
+  {
+    return;
+  }
+
+  if (result == 0)
+  {
+    msgId = ethFrameMsgId(buffer, count);
+    if (msgId == ethMsgFailSafe() && ethFramePayloadLen(count) >= 1)
+    {
+      payload0 = ethGetU8(buffer, 0);
+      gBoundaryStatus = clampRange((payload0 >> 6) & 0x1, 0, 1);
+      gFailSafeMode = clampRange((payload0 >> 4) & 0x3, 0, 2);
+      gFailSafeRxMs = getSimulationTimeMs();
+    }
+    else if (msgId == ethMsgEmergencyMonitor() && ethFramePayloadLen(count) >= 1)
+    {
+      gEmergencyContext = clampRange(ethGetU8(buffer, 0), 0, 2);
+      gEmergencyMonRxMs = getSimulationTimeMs();
+    }
+  }
+
+  ethArmReceive(gEthSocket, gEthRxBuffer, elcount(gEthRxBuffer));
 }
 
 on timer tVcuCycle
@@ -258,7 +320,6 @@ on timer tVcuCycle
   int targetSpeed;
   int delta;
   int driveState;
-  int coreRoutingPolicy;
   int driveMode;
   int energyFlowMode;
   int regenLevel;
@@ -276,7 +337,14 @@ on timer tVcuCycle
   int engineState;
   int gearState;
 
-  externalSpeedHint = clampRange((int)@Chassis::vehicleSpeed, 0, 255);
+  if (ethIsRecentTick(gWheelSpeedRxMs, 300) == 1)
+  {
+    externalSpeedHint = clampRange(gWheelSpeedHint, 0, 255);
+  }
+  else
+  {
+    externalSpeedHint = gSpeed;
+  }
   pedalInputStale = (ethIsRecentTick(gPedalRxMs, 300) == 1) ? 0 : 1;
   ignitionInputStale = (ethIsRecentTick(gIgnitionRxMs, 300) == 1) ? 0 : 1;
   gearInputStale = (ethIsRecentTick(gGearRxMs, 300) == 1) ? 0 : 1;
@@ -341,13 +409,35 @@ on timer tVcuCycle
   driveState = (gearState > 0 || gSpeed > 0) ? 3 : 0;
   driveMode = deriveDriveMode(driveState, gSpeed, accelPedal, brakePedal);
   gDriveMode = clampRange(driveMode, 0, 7);
-  gSpeedLimitNorm = clampRange((int)@Core::speedLimitNorm, 0, 255);
-  gBoundaryStatus = clampRange((int)@CoreState::domainBoundaryStatus, 0, 1);
-  coreRoutingPolicy = clampRange((int)@CoreState::routingPolicy, 0, 2);
-  gRoutingPolicy = coreRoutingPolicy;
-
-  @Core::vehicleSpeedNorm = gSpeed;
-  @Core::driveStateNorm = driveState;
+  if (ethIsRecentTick(gNavStateRxMs, 300) == 1)
+  {
+    gSpeedLimitNorm = clampRange(gNavSpeedLimit, 0, 255);
+  }
+  else
+  {
+    gSpeedLimitNorm = 30;
+  }
+  if (ethIsRecentTick(gFailSafeRxMs, 300) == 1)
+  {
+    if (gFailSafeMode > 0)
+    {
+      gRoutingPolicy = 0;
+    }
+    else if (ethIsRecentTick(gEmergencyMonRxMs, 300) == 1 &&
+             gEmergencyContext > 0)
+    {
+      gRoutingPolicy = 2;
+    }
+    else
+    {
+      gRoutingPolicy = 1;
+    }
+  }
+  else
+  {
+    gBoundaryStatus = 0;
+    gRoutingPolicy = 0;
+  }
 
   mState.gVehicleSpeed = gSpeed;
   mState.gDriveState = driveState;
@@ -381,9 +471,6 @@ on timer tVcuCycle
   mVehMode.SnowMode = (gDriveMode == 0 && gSpeed < 20) ? 1 : 0;
   mVehMode.PowertrainState = engineState;
   output(mVehMode);
-  @CoreState::driveMode = mVehMode.DriveMode;
-  @CoreState::ecoMode = mVehMode.EcoMode;
-  @CoreState::sportMode = mVehMode.SportMode;
 
   mPowerLimit.TorqueLimit = torqueRequest;
   mPowerLimit.SpeedLimit = gSpeedLimitNorm;

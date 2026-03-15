@@ -29,32 +29,33 @@ variables
   int gLastSecurityPolicy;
 }
 
-void publishReservedDiagSecuritySeam(int securitySession, int authState, int securityFault)
+void publishReservedDiagSecuritySeam(int diagStage, int securitySession, int authState)
 {
   int securityState;
   int routeOwner;
 
   securityState = 0;
-  if (securityFault >= 2 || gFailSafeMode >= 2)
+  if (diagStage >= 2)
   {
     securityState = 3;
   }
-  else if (authState >= 2 && gBoundaryAlive == 1 && securityFault == 0)
-  {
-    securityState = 1;
-  }
-  else if (securitySession > 0 || authState > 0 || securityFault == 1)
+  else if (diagStage == 1)
   {
     securityState = 2;
   }
+  else if (securitySession > 0 || authState > 0)
+  {
+    securityState = 1;
+  }
 
   routeOwner = 0;
-  if (gBoundaryAlive == 1 &&
-      gFailSafeMode == 0 &&
-      gWarningPathStatus == 0 &&
-      (gIboxRouteState > 0 || gIboxServiceFlags > 0))
+  if (diagStage == 1)
   {
     routeOwner = 3;
+  }
+  else if (diagStage >= 2)
+  {
+    routeOwner = 1;
   }
   else if (securitySession > 0 || authState > 0)
   {
@@ -71,6 +72,7 @@ void publishReservedDiagSecuritySeam(int securitySession, int authState, int sec
 
 void publishSecurityState()
 {
+  int diagStage;
   int securitySession;
   int authState;
   int keyPresence;
@@ -78,6 +80,7 @@ void publishSecurityState()
   int securityPolicy;
   int routeActive;
   int guidedRouteActive;
+  int serviceContext;
   int speedLimit;
   int vehicleSpeed;
   int alertLevel;
@@ -94,13 +97,19 @@ void publishSecurityState()
     gWarningPathStatus = 2;
     gFailSafeMode = 2;
   }
+  serviceContext = ethHasBoundaryServiceContext(routeActive, alertLevel);
+  diagStage = ethDiagBoundaryStage(routeActive,
+                                   alertLevel,
+                                   gBoundaryAlive,
+                                   gWarningPathStatus,
+                                   gFailSafeMode);
 
   gIboxLinkMode = 0;
-  if (routeActive == 1 || alertLevel > 0)
+  if (serviceContext == 1)
   {
     gIboxLinkMode = 1;
   }
-  if (gBoundaryAlive == 1 && routeActive == 1)
+  if (diagStage == 1 && routeActive == 1)
   {
     gIboxLinkMode = 2;
   }
@@ -124,54 +133,44 @@ void publishSecurityState()
   {
     gIboxServiceFlags = gIboxServiceFlags | 2;
   }
-  if (gFailSafeMode > 0)
+  if (diagStage >= 2)
   {
     gIboxServiceFlags = gIboxServiceFlags | 4;
   }
-  if (routeActive == 1 && speedLimit > 0 && vehicleSpeed > speedLimit)
+  if (diagStage == 1 &&
+      routeActive == 1 &&
+      speedLimit > 0 &&
+      vehicleSpeed > speedLimit)
   {
     gIboxServiceFlags = gIboxServiceFlags | 8;
   }
 
   securitySession = 0;
-  if (gIboxLinkMode > 0)
+  if (serviceContext == 1)
   {
     securitySession = 1;
   }
-  if (gBoundaryAlive == 1 && gIboxLinkMode >= 2)
+  if (diagStage == 1 && routeActive == 1)
   {
     securitySession = 2;
   }
 
   authState = 0;
-  if (securitySession > 0)
+  if (serviceContext == 1)
   {
     authState = 1;
   }
-  if (gFailSafeMode == 0 && gBoundaryAlive == 1)
+  if (diagStage == 1)
   {
     authState = 2;
   }
 
   keyPresence = ((gIboxServiceFlags & 1) != 0) ? 1 : 0;
 
-  securityFault = 0;
-  if (gFailSafeMode >= 2 || gWarningPathStatus >= 2)
-  {
-    securityFault = 2;
-  }
-  else if (gFailSafeMode == 1 || gWarningPathStatus == 1)
-  {
-    securityFault = 1;
-  }
+  securityFault = ethDiagStageToSecurityFault(diagStage);
+  securityPolicy = ethDiagStageToPolicy(diagStage);
 
-  securityPolicy = gWarningPathStatus;
-  if (securityPolicy < 0 || securityPolicy > 3)
-  {
-    securityPolicy = 0;
-  }
-
-  publishReservedDiagSecuritySeam(securitySession, authState, securityFault);
+  publishReservedDiagSecuritySeam(diagStage, securitySession, authState);
 
   if (securitySession != gLastSecuritySession ||
       authState != gLastAuthState ||

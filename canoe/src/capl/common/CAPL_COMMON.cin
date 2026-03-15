@@ -109,6 +109,78 @@ int ethMsgObjectSafety()
   return 0xE216;
 }
 
+int ethMsgValidationOverride()
+{
+  return 0xE217;
+}
+
+int ethHasBoundaryServiceContext(int routeActive, int alertLevel)
+{
+  if (routeActive == 1 || alertLevel > 0)
+  {
+    return 1;
+  }
+
+  return 0;
+}
+
+int ethDiagBoundaryStage(int routeActive,
+                         int alertLevel,
+                         int boundaryAlive,
+                         int warningPathStatus,
+                         int failSafeMode)
+{
+  int serviceContext;
+
+  serviceContext = ethHasBoundaryServiceContext(routeActive, alertLevel);
+  if (serviceContext == 0)
+  {
+    return 0;
+  }
+  if (boundaryAlive == 0)
+  {
+    return 3;
+  }
+  if (failSafeMode >= 2 || warningPathStatus >= 2)
+  {
+    return 3;
+  }
+  if (failSafeMode == 1 || warningPathStatus == 1)
+  {
+    return 2;
+  }
+
+  return 1;
+}
+
+int ethDiagStageToSecurityFault(int diagStage)
+{
+  if (diagStage >= 3)
+  {
+    return 2;
+  }
+  if (diagStage == 2)
+  {
+    return 1;
+  }
+
+  return 0;
+}
+
+int ethDiagStageToPolicy(int diagStage)
+{
+  if (diagStage >= 3)
+  {
+    return 2;
+  }
+  if (diagStage == 2)
+  {
+    return 1;
+  }
+
+  return 0;
+}
+
 void ethClearFrame(char frame[], int frameLen)
 {
   int i;

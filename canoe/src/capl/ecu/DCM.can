@@ -30,7 +30,7 @@ variables
   int gLastTraceReasonCode;
 }
 
-void publishReservedDiagServiceSeam()
+void publishReservedDiagServiceSeam(int diagStage)
 {
   int serviceState;
   int responseKind;
@@ -40,21 +40,21 @@ void publishReservedDiagServiceSeam()
   responseKind = 0;
   reasonCode = 0;
 
-  if (gSecurityFault >= 2)
+  if (diagStage >= 3)
   {
-    serviceState = 2;
+    serviceState = 1;
     responseKind = 4;
     reasonCode = 2;
   }
-  else if (gSecurityFault == 1 || gSecurityPolicy == 1)
+  else if (diagStage == 2)
   {
-    serviceState = 3;
+    serviceState = 1;
     responseKind = 2;
     reasonCode = 3;
   }
-  else if (gSecuritySession >= 2 && gAuthState >= 2)
+  else if (diagStage == 1)
   {
-    serviceState = 1;
+    serviceState = 2;
     responseKind = 1;
     reasonCode = 0;
   }
@@ -167,9 +167,11 @@ on start
 
 on timer tDcmCycle
 {
+  int diagStage;
   int routeActive;
   int alertLevel;
   int boundaryAlive;
+  int serviceContext;
   int warningPathStatus;
   int failSafeMode;
 
@@ -179,34 +181,32 @@ on timer tDcmCycle
   boundaryAlive = (ethIsRecentTick(gFailSafeRxMs, 300) == 1) ? 1 : 0;
   warningPathStatus = boundaryAlive == 1 ? gWarningPathStatus : 2;
   failSafeMode = boundaryAlive == 1 ? gFailSafeMode : 2;
+  serviceContext = ethHasBoundaryServiceContext(routeActive, alertLevel);
+  diagStage = ethDiagBoundaryStage(routeActive,
+                                   alertLevel,
+                                   boundaryAlive,
+                                   warningPathStatus,
+                                   failSafeMode);
 
   gSecuritySession = 0;
-  if (routeActive == 1 || alertLevel > 0)
+  if (serviceContext == 1)
   {
     gSecuritySession = 1;
   }
-  if (boundaryAlive == 1 && routeActive == 1)
+  if (diagStage == 1 && routeActive == 1)
   {
     gSecuritySession = 2;
   }
 
-  gAuthState = (gSecuritySession > 0) ? 1 : 0;
-  if (failSafeMode == 0 && boundaryAlive == 1)
+  gAuthState = (serviceContext == 1) ? 1 : 0;
+  if (diagStage == 1)
   {
     gAuthState = 2;
   }
 
-  gSecurityFault = 0;
-  if (failSafeMode >= 2 || warningPathStatus >= 2)
-  {
-    gSecurityFault = 2;
-  }
-  else if (failSafeMode == 1 || warningPathStatus == 1)
-  {
-    gSecurityFault = 1;
-  }
-  gSecurityPolicy = warningPathStatus;
-  publishReservedDiagServiceSeam();
+  gSecurityFault = ethDiagStageToSecurityFault(diagStage);
+  gSecurityPolicy = ethDiagStageToPolicy(diagStage);
+  publishReservedDiagServiceSeam(diagStage);
   publishDcmStateTrace();
   setTimer(tDcmCycle, 100);
 }

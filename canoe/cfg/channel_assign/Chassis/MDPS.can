@@ -154,7 +154,6 @@ on timer tMdpsCycle
   output(mEps);
 
   gSpeedNorm = speedNorm;
-  @Core::steeringInputNorm = steeringInput;
   publishBackboneSteeringState(steeringAngleRaw, (mEps.EpsFaultState == 0) ? 3 : 1);
 
   setTimer(tMdpsCycle, 50);

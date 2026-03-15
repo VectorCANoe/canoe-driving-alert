@@ -5,11 +5,21 @@ includes
 
 variables
 {
+  long gEthSocket;
+  char gEthRxBuffer[64];
   int gLastBaseScenarioId;
   int gBaseScenarioResult;
   int gFlowCoverage;
   int gTestHealth;
   int gTraceSnapshotId;
+  int gBoundaryStatus;
+  int gE2eHealthState;
+  int gFailSafeMode;
+  int gEmergencyContext;
+  int gLastSelectedAlertLevel;
+  int gLastSelectedAlertType;
+  dword gFailSafeRxMs;
+  dword gEmergencyMonRxMs;
 }
 
 int resolveBaseScenarioId()
@@ -37,8 +47,16 @@ int resolveTestHealth()
   int boundaryHealthy;
   int e2eHealthState;
 
-  boundaryHealthy = ((int)@CoreState::domainBoundaryStatus == 1) ? 1 : 0;
-  e2eHealthState = clampRange((int)@CoreState::e2eHealthState, 0, 2);
+  if (ethIsRecentTick(gFailSafeRxMs, 300) == 1)
+  {
+    boundaryHealthy = clampRange(gBoundaryStatus, 0, 1);
+    e2eHealthState = clampRange(gE2eHealthState, 0, 2);
+  }
+  else
+  {
+    boundaryHealthy = 0;
+    e2eHealthState = 0;
+  }
 
   if (boundaryHealthy == 1 && e2eHealthState == 2)
   {
@@ -53,11 +71,32 @@ int resolveTestHealth()
 
 int resolveFlowCoverageMask(int pass)
 {
+  int routingPolicy;
+
   if (pass == 1)
   {
     return 0x7FFF;
   }
-  return clampRange((int)@CoreState::routingPolicy, 0, 7) << 12;
+
+  routingPolicy = 0;
+  if (ethIsRecentTick(gFailSafeRxMs, 300) == 1)
+  {
+    if (gFailSafeMode > 0)
+    {
+      routingPolicy = 0;
+    }
+    else if (ethIsRecentTick(gEmergencyMonRxMs, 300) == 1 &&
+             gEmergencyContext > 0)
+    {
+      routingPolicy = 2;
+    }
+    else
+    {
+      routingPolicy = 1;
+    }
+  }
+
+  return clampRange(routingPolicy, 0, 7) << 12;
 }
 
 void clearBaseResultState()
@@ -67,6 +106,14 @@ void clearBaseResultState()
   gFlowCoverage        = 0;
   gTestHealth          = 0;
   gTraceSnapshotId     = 0;
+  gBoundaryStatus      = 0;
+  gE2eHealthState      = 0;
+  gFailSafeMode        = 2;
+  gEmergencyContext    = 0;
+  gLastSelectedAlertLevel = 0;
+  gLastSelectedAlertType = 0;
+  gFailSafeRxMs        = 0;
+  gEmergencyMonRxMs    = 0;
 
   @Test::baseScenarioId       = 0;
   @Test::baseScenarioResult   = 0;
@@ -78,7 +125,6 @@ void clearBaseResultState()
 void publishBaseResultState(int pass)
 {
   gBaseScenarioResult  = clampRange(pass, 0, 1);
-  gTraceSnapshotId     = (int)@CoreState::arbitrationSnapshotId;
   gTestHealth          = resolveTestHealth();
   gFlowCoverage        = resolveFlowCoverageMask(gBaseScenarioResult);
   gLastBaseScenarioId  = resolveBaseScenarioId();
@@ -95,8 +141,56 @@ void publishBaseResultState(int pass)
 
 on start
 {
+  gEthSocket = ethOpenDefaultSocket();
   clearBaseResultState();
+  if (gEthSocket != ethInvalidSocket())
+  {
+    ethStartReceiver(gEthSocket, gEthRxBuffer, elcount(gEthRxBuffer));
+  }
   write("[TEST_BAS] start");
+}
+
+void OnUdpReceiveFrom(dword socket, long result, dword address, dword port, char buffer[], dword count)
+{
+  int msgId;
+  int payload0;
+
+  if (socket != gEthSocket)
+  {
+    return;
+  }
+
+  if (result == 0)
+  {
+    msgId = ethFrameMsgId(buffer, count);
+    if (msgId == ethMsgFailSafe() && ethFramePayloadLen(count) >= 1)
+    {
+      payload0 = ethGetU8(buffer, 0);
+      gBoundaryStatus = clampRange((payload0 >> 6) & 0x1, 0, 1);
+      gE2eHealthState = clampRange((payload0 >> 2) & 0x3, 0, 2);
+      gFailSafeMode = clampRange((payload0 >> 4) & 0x3, 0, 2);
+      gFailSafeRxMs = getSimulationTimeMs();
+    }
+    else if (msgId == ethMsgEmergencyMonitor() && ethFramePayloadLen(count) >= 1)
+    {
+      gEmergencyContext = clampRange(ethGetU8(buffer, 0), 0, 2);
+      gEmergencyMonRxMs = getSimulationTimeMs();
+    }
+    else if (msgId == ethMsgSelectedAlert() && ethFramePayloadLen(count) >= 1)
+    {
+      payload0 = ethGetU8(buffer, 0);
+      if ((payload0 & 0x7) != gLastSelectedAlertLevel ||
+          ((payload0 >> 3) & 0x7) != gLastSelectedAlertType)
+      {
+        gTraceSnapshotId = (gTraceSnapshotId + 1) & 0xFFFF;
+        @Test::baseTraceSnapshotId = gTraceSnapshotId & 0xFFFF;
+      }
+      gLastSelectedAlertLevel = clampRange(payload0 & 0x7, 0, 7);
+      gLastSelectedAlertType = clampRange((payload0 >> 3) & 0x7, 0, 7);
+    }
+  }
+
+  ethArmReceive(gEthSocket, gEthRxBuffer, elcount(gEthRxBuffer));
 }
 
 on sysvar Test::scenarioResult
@@ -110,4 +204,10 @@ on sysvar Test::scenarioCommandAck
   {
     clearBaseResultState();
   }
+}
+
+on stopMeasurement
+{
+  ethCloseSocket(gEthSocket);
+  gEthSocket = ethInvalidSocket();
 }

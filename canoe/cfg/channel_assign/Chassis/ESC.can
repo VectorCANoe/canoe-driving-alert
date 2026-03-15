@@ -126,7 +126,6 @@ on start
   gLastAebInputStale = 0;
   gLastBrakePedal = -1;
   gLastAssistReq = -1;
-  @CoreState::chassisHealthTick = 0;
   setTimer(tEscCycle, 100);
   write("[ESC] start");
 }
@@ -227,8 +226,6 @@ on timer tEscCycle
   {
     appliedBrakePedal = assistPressureFloor;
   }
-  @Core::brakePedalNorm = appliedBrakePedal;
-
   brakePressure = clampRange(appliedBrakePedal * 2, 0, 255);
   absActive = ((appliedBrakePedal > 80) && (speedNorm > 10)) ? 1 : 0;
   absSlip = absActive ? clampRange(appliedBrakePedal - 80, 0, 63) : 0;
@@ -255,7 +252,6 @@ on timer tEscCycle
   mHealth.ChassisAliveCnt = gChassisAliveCnt & 0xFF;
   mHealth.ChassisFailCode = 0;
   output(mHealth);
-  @CoreState::chassisHealthTick = mHealth.ChassisAliveCnt;
   gChassisAliveCnt = (gChassisAliveCnt + 1) & 0xFF;
 
   mEsc.EscCtrlState = espActive ? 2 : 0;

@@ -55,6 +55,7 @@ on timer tObcCycle
   int vehicleInputStale;
   int batterySoc;
   int chargingState;
+  int vehicleParked;
   int obcState;
   int acPlugState;
   int chargePowerKw;
@@ -78,6 +79,7 @@ on timer tObcCycle
   {
     driveState = 3;
   }
+  vehicleParked = (vehicleInputStale == 0 && driveState == 0) ? 1 : 0;
 
   if (inputStale != gLastInputStale)
   {
@@ -104,17 +106,17 @@ on timer tObcCycle
     gLastVehicleInputStale = vehicleInputStale;
   }
 
-  acPlugState = (driveState == 0) ? 1 : 0;
+  acPlugState = ((chargingState == 1 || chargingState == 3) && vehicleParked == 1) ? 1 : 0;
 
-  if (chargingState == 1 && acPlugState == 1)
+  if (chargingState == 3 && acPlugState == 1)
+  {
+    obcState = 3;
+    chargePowerKw = 0;
+  }
+  else if (chargingState == 1 && acPlugState == 1)
   {
     obcState = 2;
     chargePowerKw = clampRange((100 - batterySoc) / 2, 0, 22);
-  }
-  else if (acPlugState == 1)
-  {
-    obcState = 1;
-    chargePowerKw = 0;
   }
   else
   {
@@ -131,11 +133,13 @@ on timer tObcCycle
       mObc.AcPlugState != gLastPlug ||
       mObc.ChargePowerKw != gLastPower)
   {
-    write("[OBC] state=%d plug=%d power=%d soc=%d",
+    write("[OBC] state=%d plug=%d power=%d soc=%d charge=%d drive=%d",
           mObc.ObcState,
           mObc.AcPlugState,
           mObc.ChargePowerKw,
-          batterySoc);
+          batterySoc,
+          chargingState,
+          driveState);
     gLastState = mObc.ObcState;
     gLastPlug = mObc.AcPlugState;
     gLastPower = mObc.ChargePowerKw;

@@ -8,6 +8,8 @@ variables
   msTimer tSccCycle;
   int gVehicleSpeed;
   int gDriveState;
+  int gNavSpeedLimit;
+  dword gNavStateRxMs;
   int gLastCruiseState;
   int gLastGapLevel;
   int gLastCruiseSetSpeed;
@@ -25,7 +27,14 @@ void publishCruiseState()
   int gapLevel;
   int cruiseSetSpeed;
 
-  speedLimit = clampRange((int)@Core::speedLimitNorm, 0, 255);
+  if (ethIsRecentTick(gNavStateRxMs, 300) == 1)
+  {
+    speedLimit = clampRange(gNavSpeedLimit, 0, 255);
+  }
+  else
+  {
+    speedLimit = 0;
+  }
   riskLevel = clampRange((int)@Core::proximityRiskLevel, 0, 100);
   failSafeMode = clampRange((int)@Core::failSafeMode, 0, 2);
   selectedAlertLevel = clampRange((int)@Core::selectedAlertLevel, 0, 7);
@@ -96,6 +105,8 @@ on start
 {
   gVehicleSpeed = 0;
   gDriveState = 0;
+  gNavSpeedLimit = 0;
+  gNavStateRxMs = 0;
   gLastCruiseState = -1;
   gLastGapLevel = -1;
   gLastCruiseSetSpeed = -1;
@@ -107,6 +118,12 @@ on message frmVehicleStateCanMsg
 {
   gVehicleSpeed = clampRange((int)this.gVehicleSpeed, 0, 255);
   gDriveState = clampRange((int)this.gDriveState, 0, 3);
+}
+
+on message frmNavModuleStateMsg
+{
+  gNavSpeedLimit = clampRange((int)this.NavSpeedLimit, 0, 255);
+  gNavStateRxMs = getSimulationTimeMs();
 }
 
 on timer tSccCycle

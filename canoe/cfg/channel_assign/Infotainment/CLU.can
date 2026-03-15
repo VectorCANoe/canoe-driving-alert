@@ -136,8 +136,8 @@ int applyRobustPolicy(int code)
   }
   else
   {
-    selectedAlertLevel = clampRange((int)@Core::selectedAlertLevel, 0, 7);
-    timeoutClear = (((int)@Core::timeoutClear) == 1) ? 1 : 0;
+    selectedAlertLevel = clampRange(gBaseClusterStatus, 0, 7);
+    timeoutClear = 0;
   }
 
   syncMismatch = 0;

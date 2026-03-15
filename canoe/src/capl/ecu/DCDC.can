@@ -55,6 +55,8 @@ on timer tDcdcCycle
   int vehicleInputStale;
   int batterySoc;
   int chargingState;
+  int vehicleParked;
+  int vehicleDriving;
   int dcdcMode;
   int lvOutputVolt;
   int lvOutputCurr;
@@ -78,6 +80,8 @@ on timer tDcdcCycle
   {
     driveState = (chargingState == 1) ? 0 : 3;
   }
+  vehicleParked = (vehicleInputStale == 0 && driveState == 0) ? 1 : 0;
+  vehicleDriving = (vehicleInputStale == 0 && driveState > 0) ? 1 : 0;
 
   if (inputStale != gLastInputStale)
   {
@@ -104,11 +108,15 @@ on timer tDcdcCycle
     gLastVehicleInputStale = vehicleInputStale;
   }
 
-  if (chargingState == 1)
+  if (chargingState == 3 && vehicleParked == 1)
+  {
+    dcdcMode = 3;
+  }
+  else if (chargingState == 1 && vehicleParked == 1)
   {
     dcdcMode = 2;
   }
-  else if (driveState > 0)
+  else if (vehicleDriving == 1)
   {
     dcdcMode = 1;
   }
@@ -118,8 +126,23 @@ on timer tDcdcCycle
   }
 
   lvOutputVolt = (dcdcMode > 0) ? 140 : 124;
-  lvOutputCurr = (dcdcMode == 2) ? 35 : ((dcdcMode == 1) ? 18 : 4);
-  if (batterySoc < 40) lvOutputCurr = clampRange(lvOutputCurr + 10, 0, 255);
+  if (dcdcMode == 3)
+  {
+    lvOutputCurr = 0;
+  }
+  else if (dcdcMode == 2)
+  {
+    lvOutputCurr = 35;
+  }
+  else if (dcdcMode == 1)
+  {
+    lvOutputCurr = 18;
+  }
+  else
+  {
+    lvOutputCurr = 4;
+  }
+  if (batterySoc < 40 && dcdcMode > 0 && dcdcMode < 3) lvOutputCurr = clampRange(lvOutputCurr + 10, 0, 255);
 
   mDcdc.DcdcMode = clampRange(dcdcMode, 0, 7);
   mDcdc.LvOutputVolt = clampRange(lvOutputVolt, 0, 255);
@@ -130,11 +153,13 @@ on timer tDcdcCycle
       mDcdc.LvOutputVolt != gLastVolt ||
       mDcdc.LvOutputCurr != gLastCurr)
   {
-    write("[DCDC] mode=%d volt=%d curr=%d soc=%d",
+    write("[DCDC] mode=%d volt=%d curr=%d soc=%d charge=%d drive=%d",
           mDcdc.DcdcMode,
           mDcdc.LvOutputVolt,
           mDcdc.LvOutputCurr,
-          batterySoc);
+          batterySoc,
+          chargingState,
+          driveState);
     gLastMode = mDcdc.DcdcMode;
     gLastVolt = mDcdc.LvOutputVolt;
     gLastCurr = mDcdc.LvOutputCurr;
