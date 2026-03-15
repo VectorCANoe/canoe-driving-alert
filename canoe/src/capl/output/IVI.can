@@ -221,6 +221,44 @@ int useBackboneAlertState()
   return 1;
 }
 
+int derivePresentationMode(int alertLevel, int alertType, int baseZoneContext)
+{
+  if (alertLevel <= 0)
+  {
+    return 0;
+  }
+  if (alertLevel >= 6)
+  {
+    return 2;
+  }
+  if (baseZoneContext == 1 || alertType == 5 || alertType == 6)
+  {
+    return 1;
+  }
+  if (alertLevel >= 4)
+  {
+    return 3;
+  }
+  return 0;
+}
+
+int deriveAlertVolume(int alertLevel, int presentationMode)
+{
+  if (alertLevel <= 0)
+  {
+    return 20;
+  }
+  if (presentationMode == 2)
+  {
+    return 80;
+  }
+  if (presentationMode == 3)
+  {
+    return 40;
+  }
+  return 30;
+}
+
 on start
 {
   gEthSocket = ethOpenDefaultSocket();
@@ -356,8 +394,7 @@ on timer tIviBase50
   int renderTextCode;
   int renderDirection;
   int vehicleMotionStep;
-  int displayModeSetting;
-  int alertVolumeSetting;
+  int presentationMode;
   int effectiveVolume;
   int useBackbone;
 
@@ -379,9 +416,8 @@ on timer tIviBase50
   renderColor = clampRange((int)@Body::ambientColor, 0, 15);
   renderPattern = clampRange((int)@Body::ambientPattern, 0, 15);
   renderTextCode = clampRange((int)@Cluster::warningTextCode, 0, 65535);
-  displayModeSetting = clampRange((int)@Test::displayModeSetting, 0, 3);
-  alertVolumeSetting = clampRange((int)@Test::alertVolumeSetting, 0, 100);
-  effectiveVolume = (alertVolumeSetting > 0) ? alertVolumeSetting : ((alertLevel > 0) ? 30 : 20);
+  presentationMode = derivePresentationMode(alertLevel, alertType, baseZoneContext);
+  effectiveVolume = deriveAlertVolume(alertLevel, presentationMode);
 
   /* CLU owns the mirrored display state after consuming these frames. */
 
@@ -390,38 +426,32 @@ on timer tIviBase50
   mBase.ClusterStatus = alertLevel;
   output(mBase);
 
-  mTheme.ThemeMode = (displayModeSetting == 1) ? 2 : ((alertLevel > 0) ? 1 : 0);
+  mTheme.ThemeMode = (presentationMode == 1) ? 2 : ((alertLevel > 0) ? 1 : 0);
   mTheme.ClusterBrightness = (alertLevel > 0) ? 28 : 20;
   output(mTheme);
 
   mPopup.PopupType = alertType;
-  mPopup.PopupPriority = clampRange(alertLevel, 0, 7);
-  mPopup.PopupActive = (alertLevel > 0) ? 1 : 0;
-  if (displayModeSetting == 1)
+  mPopup.PopupPriority = 0;
+  mPopup.PopupActive = 0;
+  if (alertLevel > 0 && presentationMode != 2)
   {
     mPopup.PopupActive = 1;
-    mPopup.PopupPriority = 1;
-  }
-  else if (displayModeSetting == 2)
-  {
-    mPopup.PopupActive = 0;
-  }
-  else if (displayModeSetting == 3)
-  {
-    mPopup.PopupActive = (alertLevel > 0) ? 1 : 0;
-    mPopup.PopupPriority = clampRange(alertLevel + 1, 0, 7);
+    if (presentationMode == 1)
+    {
+      mPopup.PopupPriority = 1;
+    }
+    else if (presentationMode == 3)
+    {
+      mPopup.PopupPriority = clampRange(alertLevel + 1, 0, 7);
+    }
+    else
+    {
+      mPopup.PopupPriority = clampRange(alertLevel, 0, 7);
+    }
   }
   output(mPopup);
 
-  mAudio.AudioFocusOwner = (alertLevel > 0) ? 1 : 0;
-  if (displayModeSetting == 1)
-  {
-    mAudio.AudioFocusOwner = 0;
-  }
-  else if (displayModeSetting == 2 || displayModeSetting == 3)
-  {
-    mAudio.AudioFocusOwner = (alertLevel > 0) ? 1 : 0;
-  }
+  mAudio.AudioFocusOwner = (alertLevel > 0 && presentationMode != 1) ? 1 : 0;
   mAudio.AudioDuckingLvl = (alertLevel > 0) ? 4 : 1;
   output(mAudio);
 

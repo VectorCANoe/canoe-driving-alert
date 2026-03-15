@@ -89,9 +89,6 @@ void OnUdpReceiveFrom(dword socket, long result, dword address, dword port, char
 
 int applyDisplayPolicy(int code)
 {
-  int modeSetting;
-  int volumeSetting;
-  int effectiveVolume;
   int coded;
 
   if (code <= 0)
@@ -99,30 +96,11 @@ int applyDisplayPolicy(int code)
     return 0;
   }
 
-  modeSetting = clampRange((int)@Test::displayModeSetting, 0, 3);
-  volumeSetting = clampRange((int)@Test::alertVolumeSetting, 0, 100);
-  effectiveVolume = (volumeSetting > 0) ? volumeSetting : gVolumeLevel;
   coded = code;
 
-  if (modeSetting == 2)
+  if (gPopupActive == 0 && gAudioFocusOwner > 0)
   {
     coded = clampRange(code + 40, 0, 255);
-  }
-  else if (modeSetting == 3)
-  {
-    coded = clampRange(code + 80, 0, 255);
-  }
-
-  if (modeSetting != 1)
-  {
-    if (gAudioFocusOwner == 0 || effectiveVolume < 15)
-    {
-      coded = code;
-    }
-    else if (effectiveVolume >= 70)
-    {
-      coded = clampRange(coded + 5, 0, 255);
-    }
   }
 
   return coded;
