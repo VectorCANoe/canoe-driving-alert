@@ -1,0 +1,88 @@
+long ethInvalidSocket()
+{
+  return ~0;
+}
+
+int ethBackbonePort()
+{
+  return 5000;
+}
+
+dword ethBackboneGroupIp()
+{
+  return IpGetAddressAsNumber("239.0.2.1");
+}
+
+int ethFrameMsgId(char frame[], dword count)
+{
+  if (count < 2)
+  {
+    return -1;
+  }
+
+  return (((int)frame[1] & 0xFF) << 8) | ((int)frame[0] & 0xFF);
+}
+
+int ethFramePayloadLen(dword count)
+{
+  if (count < 2)
+  {
+    return 0;
+  }
+
+  return (int)(count - 2);
+}
+
+int ethGetU8(char frame[], int payloadIndex)
+{
+  return ((int)frame[payloadIndex + 2] & 0xFF);
+}
+
+long ethOpenDefaultSocket()
+{
+  long socket;
+
+  socket = UdpOpen(0, ethBackbonePort());
+  if (socket == ethInvalidSocket())
+  {
+    write("[ETH-TEST] open failed port=%d err=%d", ethBackbonePort(), IpGetLastError());
+  }
+  return socket;
+}
+
+int ethArmReceive(long socket, char rxBuffer[], int rxBufferSize)
+{
+  int result;
+  int lastError;
+  char lastErrorText[256];
+
+  result = UdpReceiveFrom(socket, rxBuffer, rxBufferSize);
+  if (result != 0)
+  {
+    lastError = IpGetLastSocketError(socket);
+    if (lastError != 997)
+    {
+      IpGetLastSocketErrorAsString(socket, lastErrorText, elcount(lastErrorText));
+      write("[ETH-TEST] recv error=%d %s", lastError, lastErrorText);
+    }
+  }
+  return result;
+}
+
+int ethStartReceiver(long socket, char rxBuffer[], int rxBufferSize)
+{
+  int result;
+
+  if (socket == ethInvalidSocket())
+  {
+    return -1;
+  }
+
+  result = ipJoinMulticastGroup(socket, 1, ethBackboneGroupIp());
+  if (result != 0)
+  {
+    write("[ETH-TEST] join multicast failed result=%d", result);
+  }
+
+  return ethArmReceive(socket, rxBuffer, rxBufferSize);
+}
