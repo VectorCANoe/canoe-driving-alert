@@ -1,4 +1,4 @@
-﻿/*@!Encoding:65001*/
+/*@!Encoding:65001*/
 includes
 {
   #include "..\\common\\ValidationHarnessTestCommon.cin"
@@ -40,13 +40,10 @@ export testcase TC_CANOE_UT_EXT_010_IVI_SERVICE_ACCESS()
   {
     return;
   }
-
-  @Test::scenarioCommand = 229;
-  if (!waitForScenarioAck(229, 1500))
+  if (!launchScenarioAndWait(229, 1500, 450))
   {
     return;
   }
-  TestWaitForTimeout(450);
   assertIntEq("ivi-access-tmu-link", 2, gTmuLinkState, "TmuLinkState");
   assertIntEq("ivi-access-tmu-service", 1, gTmuServiceMode, "TmuServiceMode");
   assertIntEq("ivi-access-tmu-remote", 1, gRemoteClimateReq, "RemoteClimateReq");

@@ -1,4 +1,4 @@
-﻿/*@!Encoding:65001*/
+/*@!Encoding:65001*/
 includes
 {
   #include "..\\common\\ValidationHarnessTestCommon.cin"
@@ -48,13 +48,10 @@ export testcase TC_CANOE_UT_EXT_009_IVI_DISPLAY_SERVICE()
   {
     return;
   }
-
-  @Test::scenarioCommand = 229;
-  if (!waitForScenarioAck(229, 1500))
+  if (!launchScenarioAndWait(229, 1500, 450))
   {
     return;
   }
-  TestWaitForTimeout(450);
   assertIntEq("ivi-display-tmu-link", 2, gTmuLinkState, "TmuLinkState");
   assertIntEq("ivi-display-tmu-service", 1, gTmuServiceMode, "TmuServiceMode");
   assertIntEq("ivi-display-tmu-remote", 1, gRemoteClimateReq, "RemoteClimateReq");
@@ -64,13 +61,10 @@ export testcase TC_CANOE_UT_EXT_009_IVI_DISPLAY_SERVICE()
   {
     return;
   }
-
-  @Test::scenarioCommand = 30;
-  if (!waitForScenarioAck(30, 1500))
+  if (!launchScenarioAndWait(30, 1500, 450))
   {
     return;
   }
-  TestWaitForTimeout(450);
   assertIntEq("ivi-display-hud-mode", 1, gHudMode, "HudMode");
   assertIntEq("ivi-display-hud-warning", 102, gHudWarningCode, "HudWarningCode");
 
@@ -78,13 +72,10 @@ export testcase TC_CANOE_UT_EXT_009_IVI_DISPLAY_SERVICE()
   {
     return;
   }
-
-  @Test::scenarioCommand = 215;
-  if (!waitForScenarioAck(215, 1500))
+  if (!launchScenarioAndWait(215, 1500, 450))
   {
     return;
   }
-  TestWaitForTimeout(450);
   assertIntEq("ivi-display-amp-mute", 0, gAmpMute, "AmpMute");
   assertIntEq("ivi-display-amp-ducking", 4, gAmpDuckingLvl, "AmpDuckingLvl");
   assertIntEq("ivi-display-amp-volume", 80, gAmpVolumeLevel, "AmpVolumeLevel");

@@ -44,13 +44,10 @@ export testcase TC_CANOE_UT_EXT_007_BODY_OCCUPANT_PROTECTION()
   gWeightClass = -1;
   gAirbagSuppress = -1;
   gChildSeatDetected = -1;
-
-  @Test::scenarioCommand = 228;
-  if (!waitForScenarioAck(228, 1500))
+  if (!launchScenarioAndWait(228, 1500, 350))
   {
     return;
   }
-  TestWaitForTimeout(350);
   assertIntEq("occupant-armed", 0, gDeploymentArmed, "DeploymentArmed");
   assertIntEq("occupant-pretension", 1, gPretensionReq, "PretensionReq");
   assertIntEq("occupant-airbag-warn", 1, gAirbagWarn, "AirbagWarn");

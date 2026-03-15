@@ -1,13 +1,84 @@
-long resetValidationHarnessIfNeeded()
+long getValidationHarnessOwnerToken()
+{
+  static long sOwnerToken;
+
+  if (sOwnerToken == 0)
+  {
+    sOwnerToken = (long)timeNow();
+    if (sOwnerToken <= 0)
+    {
+      sOwnerToken = 1;
+    }
+
+    while (sOwnerToken == (long)@Test::harnessLockOwner)
+    {
+      sOwnerToken += 97;
+      if (sOwnerToken <= 0)
+      {
+        sOwnerToken = 1;
+      }
+    }
+  }
+
+  return sOwnerToken;
+}
+
+long acquireValidationHarnessLock(dword timeoutMs)
 {
   dword waitedMs;
+  long ownerToken;
 
-  if ((int)@Test::scenarioCommandAck == 0 &&
-      (int)@Test::scenarioResult == 0)
+  ownerToken = getValidationHarnessOwnerToken();
+  if ((long)@Test::harnessLockOwner == ownerToken)
   {
-    TestWaitForTimeout(100);
     return 1;
   }
+
+  waitedMs = 0;
+  while ((long)@Test::harnessLockOwner != 0 &&
+         (long)@Test::harnessLockOwner != ownerToken &&
+         waitedMs < timeoutMs)
+  {
+    TestWaitForTimeout(50);
+    waitedMs += 50;
+  }
+
+  if ((long)@Test::harnessLockOwner != 0 &&
+      (long)@Test::harnessLockOwner != ownerToken)
+  {
+    testStepFail("harness-lock", "Lock timeout owner=%d waited=%d",
+                 (long)@Test::harnessLockOwner, waitedMs);
+    return 0;
+  }
+
+  @Test::harnessLockOwner = ownerToken;
+  TestWaitForTimeout(50);
+
+  if ((long)@Test::harnessLockOwner != ownerToken)
+  {
+    testStepFail("harness-lock", "Lock takeover failed expected=%d actual=%d",
+                 ownerToken, (long)@Test::harnessLockOwner);
+    return 0;
+  }
+
+  return 1;
+}
+
+void releaseValidationHarnessLock()
+{
+  long ownerToken;
+
+  ownerToken = getValidationHarnessOwnerToken();
+  if ((long)@Test::harnessLockOwner == ownerToken)
+  {
+    @Test::harnessLockOwner = 0;
+    TestWaitForTimeout(50);
+  }
+}
+
+void cleanupValidationHarnessAfterFailure()
+{
+  dword waitedMs;
 
   @Test::scenarioCommand = 0;
   waitedMs = 0;
@@ -17,14 +88,59 @@ long resetValidationHarnessIfNeeded()
     waitedMs += 50;
   }
 
-  if ((int)@Test::scenarioCommandAck != 0)
+  releaseValidationHarnessLock();
+}
+
+long resetValidationHarnessIfNeeded()
+{
+  long releaseAfterReset;
+  dword waitedMs;
+
+  releaseAfterReset = 0;
+  if ((long)@Test::harnessLockOwner == getValidationHarnessOwnerToken())
   {
-    testStepFail("scenario-reset", "Harness reset timeout waited=%d ack=%d",
-                 waitedMs, (int)@Test::scenarioCommandAck);
+    releaseAfterReset = 1;
+  }
+  else if (!acquireValidationHarnessLock(10000))
+  {
+    return 0;
+  }
+
+  if ((int)@Test::scenarioCommandAck == 0 &&
+      (int)@Test::scenarioResult == 0)
+  {
+    TestWaitForTimeout(100);
+    if (releaseAfterReset)
+    {
+      releaseValidationHarnessLock();
+    }
+    return 1;
+  }
+
+  @Test::scenarioCommand = 0;
+  waitedMs = 0;
+  while (((int)@Test::scenarioCommandAck != 0 ||
+          (int)@Test::scenarioResult != 0) &&
+         waitedMs < 1000)
+  {
+    TestWaitForTimeout(50);
+    waitedMs += 50;
+  }
+
+  if ((int)@Test::scenarioCommandAck != 0 ||
+      (int)@Test::scenarioResult != 0)
+  {
+    testStepFail("scenario-reset", "Harness reset timeout waited=%d ack=%d result=%d",
+                 waitedMs, (int)@Test::scenarioCommandAck, (int)@Test::scenarioResult);
+    releaseValidationHarnessLock();
     return 0;
   }
 
   TestWaitForTimeout(150);
+  if (releaseAfterReset)
+  {
+    releaseValidationHarnessLock();
+  }
   testStepPass("scenario-reset", "Validation harness reset completed");
   return 1;
 }
@@ -53,9 +169,15 @@ long waitForScenarioAck(int scenarioId, dword timeoutMs)
 
 long launchScenarioAndWait(int scenarioId, dword ackTimeoutMs, dword settleMs)
 {
+  if (!acquireValidationHarnessLock(10000))
+  {
+    return 0;
+  }
+
   @Test::scenarioCommand = scenarioId;
   if (!waitForScenarioAck(scenarioId, ackTimeoutMs))
   {
+    cleanupValidationHarnessAfterFailure();
     return 0;
   }
 
@@ -78,6 +200,7 @@ long waitForBaseResult(int scenarioId, dword timeoutMs)
   {
     testStepFail("base-result-wait", "Base result timeout expected=%d actual=%d waited=%d",
                  scenarioId, (int)@Test::baseScenarioId, waitedMs);
+    cleanupValidationHarnessAfterFailure();
     return 0;
   }
 

@@ -1,4 +1,4 @@
-﻿/*@!Encoding:65001*/
+/*@!Encoding:65001*/
 includes
 {
   #include "..\\common\\ValidationHarnessTestCommon.cin"
@@ -50,13 +50,10 @@ export testcase TC_CANOE_UT_EXT_012_ADAS_PARKING_PERCEPTION()
   {
     return;
   }
-
-  @Test::scenarioCommand = 234;
-  if (!waitForScenarioAck(234, 1500))
+  if (!launchScenarioAndWait(234, 1500, 450))
   {
     return;
   }
-  TestWaitForTimeout(450);
   assertIntEq("adas-park-master-active", 1, gParkMasterActive, "ParkMasterActive");
   assertIntEq("adas-park-auto-ready", 1, gAutoManeuverReady, "AutoManeuverReady");
   assertIntEq("adas-park-phase", 3, gParkPhase, "ParkPhase");

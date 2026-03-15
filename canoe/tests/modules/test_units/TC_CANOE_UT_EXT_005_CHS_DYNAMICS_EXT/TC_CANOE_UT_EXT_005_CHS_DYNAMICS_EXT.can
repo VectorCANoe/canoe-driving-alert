@@ -38,14 +38,10 @@ export testcase TC_CANOE_UT_EXT_005_CHS_DYNAMICS_EXT()
   gRearHeight = -1;
   gCdcMode = -1;
   gValveCurrent = -1;
-
-  @Test::scenarioCommand = 225;
-  if (!waitForScenarioAck(225, 1500))
+  if (!launchScenarioAndWait(225, 1500, 350))
   {
     return;
   }
-
-  TestWaitForTimeout(350);
   assertIntEq("chs-dyn-ack", 225, (long)@Test::scenarioCommandAck, "scenarioCommandAck");
   assertIntEq("chs-dyn-ride-mode", 3, gRideHeightMode, "RideHeightMode");
   assertIntEq("chs-dyn-front-height", 122, gFrontHeight, "FrontHeight");

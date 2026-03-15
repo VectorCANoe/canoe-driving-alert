@@ -1,4 +1,4 @@
-﻿/*@!Encoding:65001*/
+/*@!Encoding:65001*/
 includes
 {
   #include "..\\common\\ValidationHarnessTestCommon.cin"
@@ -40,13 +40,10 @@ export testcase TC_CANOE_UT_EXT_011_ADAS_DRIVE_ASSIST()
   {
     return;
   }
-
-  @Test::scenarioCommand = 233;
-  if (!waitForScenarioAck(233, 1500))
+  if (!launchScenarioAndWait(233, 1500, 450))
   {
     return;
   }
-  TestWaitForTimeout(450);
   assertIntEq("adas-drive-lkas-active", 1, gLaneKeepAssistActive, "LaneKeepAssistActive");
   assertIntEq("adas-drive-lane-guide", 2, gLaneGuideState, "LaneGuideState");
   assertIntEq("adas-drive-alert-level", 3, gSelectedAlertLevel, "SelectedAlertLevel");

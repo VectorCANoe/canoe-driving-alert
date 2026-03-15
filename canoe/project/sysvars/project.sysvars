@@ -79,6 +79,7 @@
     <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="historyQueryOffset" comment="Alert history query offset: 0=latest" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="15" maxValuePhys="15"/>
     <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="historyQueryCode" comment="Alert history query response warning code" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="255" maxValuePhys="255"/>
     <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="turnLampOverride" comment="Validation-only turn lamp override: 0=default 1=left 2=right" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="2" maxValuePhys="2"/>
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="harnessLockOwner" comment="Validation harness execution lock owner token: 0=free" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="2147483647" maxValuePhys="2147483647"/>
   </namespace>
 
   <namespace name="Diag" comment="" interface="">

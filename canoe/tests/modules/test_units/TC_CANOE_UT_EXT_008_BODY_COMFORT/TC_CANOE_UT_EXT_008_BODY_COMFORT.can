@@ -1,4 +1,4 @@
-﻿/*@!Encoding:65001*/
+/*@!Encoding:65001*/
 includes
 {
   #include "..\\common\\ValidationHarnessTestCommon.cin"
@@ -80,13 +80,10 @@ export testcase TC_CANOE_UT_EXT_008_BODY_COMFORT()
   {
     return;
   }
-
-  @Test::scenarioCommand = 229;
-  if (!waitForScenarioAck(229, 1500))
+  if (!launchScenarioAndWait(229, 1500, 450))
   {
     return;
   }
-  TestWaitForTimeout(450);
   assertIntEq("body-comfort-hvac-set", 24, gCabinSetTemp, "CabinSetTemp");
   assertIntEq("body-comfort-hvac-blower", 5, gBlowerLevel, "BlowerLevel");
   assertIntEq("body-comfort-hvac-ac", 1, gAcOn, "AcCompressorOn");
@@ -98,13 +95,10 @@ export testcase TC_CANOE_UT_EXT_008_BODY_COMFORT()
   {
     return;
   }
-
-  @Test::scenarioCommand = 230;
-  if (!waitForScenarioAck(230, 1500))
+  if (!launchScenarioAndWait(230, 1500, 450))
   {
     return;
   }
-  TestWaitForTimeout(450);
   assertIntEq("body-comfort-afls-mode", 1, gAflsMode, "AflsMode");
   assertIntEq("body-comfort-afls-beam", 2, gBeamPattern, "BeamPattern");
   assertIntEq("body-comfort-afls-corner", 1, gCornerLampState, "CornerLampState");

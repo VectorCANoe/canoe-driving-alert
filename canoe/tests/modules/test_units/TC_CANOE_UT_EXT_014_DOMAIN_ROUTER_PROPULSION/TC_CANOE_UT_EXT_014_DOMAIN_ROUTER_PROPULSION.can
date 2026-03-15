@@ -1,4 +1,4 @@
-﻿/*@!Encoding:65001*/
+/*@!Encoding:65001*/
 includes
 {
   #include "..\\common\\ValidationHarnessTestCommon.cin"
@@ -44,13 +44,10 @@ export testcase TC_CANOE_UT_EXT_014_DOMAIN_ROUTER_PROPULSION()
   {
     return;
   }
-
-  @Test::scenarioCommand = 232;
-  if (!waitForScenarioAck(232, 1500))
+  if (!launchScenarioAndWait(232, 1500, 450))
   {
     return;
   }
-  TestWaitForTimeout(450);
   assertIntEq("router-propulsion-eop-state", 2, gEopState, "EopState");
   assertIntEq("router-propulsion-pump-rpm", 1600, gPumpRpm, "PumpRpm");
   assertIntEq("router-propulsion-oil-pressure", 120, gOilPressure, "OilPressure");
