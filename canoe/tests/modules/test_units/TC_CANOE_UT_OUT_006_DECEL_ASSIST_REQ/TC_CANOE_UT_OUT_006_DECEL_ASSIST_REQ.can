@@ -1,4 +1,4 @@
-﻿/*@!Encoding:65001*/
+/*@!Encoding:65001*/
 includes
 {
   #include "..\\common\\ValidationHarnessTestCommon.cin"
@@ -6,6 +6,78 @@ includes
 
 variables
 {
+  long gEthSocket;
+  char gEthRxBuffer[64];
+  long gObsFailSafeMode;
+  long gObsDecelAssistReq;
+  long gObsDecelRisk;
+  long gObsSelectedAlertLevel;
+}
+
+long invalidObserverSocket()
+{
+  return ~0;
+}
+
+long ensureTransportObserverReady()
+{
+  if (gEthSocket == 0)
+  {
+    gEthSocket = invalidObserverSocket();
+  }
+  if (gEthSocket == invalidObserverSocket())
+  {
+    gEthSocket = ethOpenDefaultSocket();
+    if (gEthSocket == invalidObserverSocket())
+    {
+      testStepFail("transport-observer", "Failed to open default ETH socket");
+      return 0;
+    }
+    ethStartReceiver(gEthSocket, gEthRxBuffer, elcount(gEthRxBuffer));
+  }
+  return 1;
+}
+
+void resetTransportObserverState()
+{
+  gObsFailSafeMode = -1;
+  gObsDecelAssistReq = -1;
+  gObsDecelRisk = -1;
+  gObsSelectedAlertLevel = -1;
+}
+
+void OnUdpReceiveFrom(dword socket, long result, dword address, dword port, char buffer[], dword count)
+{
+  int msgId;
+  int payload0;
+
+  if (socket != gEthSocket)
+  {
+    return;
+  }
+
+  if (result == 0)
+  {
+    msgId = ethFrameMsgId(buffer, count);
+    if (msgId == 0xE212 && ethFramePayloadLen(count) >= 1)
+    {
+      payload0 = ethGetU8(buffer, 0);
+      gObsFailSafeMode = (payload0 >> 4) & 0x3;
+    }
+    else if (msgId == 0xE211 && ethFramePayloadLen(count) >= 2)
+    {
+      payload0 = ethGetU8(buffer, 0);
+      gObsDecelAssistReq = payload0 & 0x1;
+      gObsDecelRisk = ethGetU8(buffer, 1);
+    }
+    else if (msgId == 0xE200 && ethFramePayloadLen(count) >= 2)
+    {
+      payload0 = ethGetU8(buffer, 0);
+      gObsSelectedAlertLevel = payload0 & 0x7;
+    }
+  }
+
+  ethArmReceive(gEthSocket, gEthRxBuffer, elcount(gEthRxBuffer));
 }
 
 export testcase TC_CANOE_UT_OUT_006_DECEL_ASSIST_REQ()
@@ -14,6 +86,11 @@ export testcase TC_CANOE_UT_OUT_006_DECEL_ASSIST_REQ()
   {
     return;
   }
+  if (!ensureTransportObserverReady())
+  {
+    return;
+  }
+  resetTransportObserverState();
 
   if (!launchScenarioAndWait(16, 800, 1300))
   {
@@ -21,17 +98,16 @@ export testcase TC_CANOE_UT_OUT_006_DECEL_ASSIST_REQ()
   }
 
   assertIntEq("decel-assist-active-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
-  assertLongGe("decel-assist-risk", (long)@Core::proximityRiskLevel, 70, "proximityRiskLevel");
-  assertIntEq("decel-assist-active", 1, (long)@Core::decelAssistReq, "decelAssistReq");
-  assertIntEq("decel-assist-active-level", 7, (long)@Core::selectedAlertLevel, "selectedAlertLevel");
+  assertLongGe("decel-assist-risk", gObsDecelRisk, 70, "ethDecelRisk");
+  assertIntEq("decel-assist-active", 1, gObsDecelAssistReq, "ethDecelAssistReq");
+  assertIntEq("decel-assist-active-level", 7, gObsSelectedAlertLevel, "ethSelectedAlertLevel");
 
   if (!resetValidationHarnessIfNeeded())
   {
     return;
   }
-
-  @Test::scenarioCommand = 18;
-  if (!waitForScenarioAck(18, 1500))
+  resetTransportObserverState();
+  if (!launchScenarioAndWait(18, 1500, 0))
   {
     return;
   }
@@ -43,8 +119,8 @@ export testcase TC_CANOE_UT_OUT_006_DECEL_ASSIST_REQ()
 
   TestWaitForTimeout(200);
   assertIntEq("decel-assist-failsafe-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
-  assertIntEq("decel-assist-blocked", 0, (long)@Core::decelAssistReq, "decelAssistReq");
-  assertIntMin("decel-assist-failsafe", 1, (long)@Core::failSafeMode, "failSafeMode");
+  assertIntEq("decel-assist-blocked", 0, gObsDecelAssistReq, "ethDecelAssistReq");
+  assertIntMin("decel-assist-failsafe", 1, gObsFailSafeMode, "ethFailSafeMode");
 
   resetValidationHarnessIfNeeded();
 }
