@@ -6,6 +6,15 @@ includes
 variables
 {
   msTimer tLcaCycle;
+  int gLaneChangeBlock;
+  int gRearRiskLevel;
+  int gMergeConflict;
+  int gTurnLampState;
+  int gVehicleSpeed;
+  dword gRearRadarRxMs;
+  dword gVehicleRxMs;
+  int gLastRearRadarInputStale;
+  int gLastVehicleInputStale;
   int gLastReady;
   int gLastWarn;
   int gLastDirection;
@@ -30,6 +39,27 @@ int lcaPathReady()
   return 1;
 }
 
+int deriveLcaRiskClass(int rearRiskLevel)
+{
+  if (rearRiskLevel >= 75)
+  {
+    return 4;
+  }
+  if (rearRiskLevel >= 65)
+  {
+    return 3;
+  }
+  if (rearRiskLevel >= 55)
+  {
+    return 2;
+  }
+  if (rearRiskLevel >= 45)
+  {
+    return 1;
+  }
+  return 0;
+}
+
 int deriveLcaAlertLevel(int warn, int objectRiskClass)
 {
   if (warn == 1 && objectRiskClass >= 4)
@@ -43,34 +73,88 @@ int deriveLcaAlertLevel(int warn, int objectRiskClass)
   return 0;
 }
 
+void traceLcaInputHealth(int rearRadarInputStale, int vehicleInputStale)
+{
+  if (rearRadarInputStale != gLastRearRadarInputStale)
+  {
+    if (rearRadarInputStale == 1)
+    {
+      write("[LCA] rear-radar input stale");
+    }
+    else
+    {
+      write("[LCA] rear-radar input restored");
+    }
+    gLastRearRadarInputStale = rearRadarInputStale;
+  }
+
+  if (vehicleInputStale != gLastVehicleInputStale)
+  {
+    if (vehicleInputStale == 1)
+    {
+      write("[LCA] vehicle input stale");
+    }
+    else
+    {
+      write("[LCA] vehicle input restored");
+    }
+    gLastVehicleInputStale = vehicleInputStale;
+  }
+}
+
 void publishLcaState()
 {
   message frmLcaStateMsg mLca;
-  int turnLampState;
+  int rearRadarInputStale;
+  int vehicleInputStale;
+  int rearRiskLevel;
   int mergeConflict;
+  int vehicleSpeed;
   int objectRiskClass;
   int alertLevel;
-  int vehicleSpeed;
   int ready;
   int warn;
   int direction;
   int pathReady;
+  int laneChangeBlock;
 
-  turnLampState = clampRange((int)@CoreState::turnLampState, 0, 3);
-  mergeConflict = (((int)@Core::mergeCutInFlag) == 1) ? 1 : 0;
-  objectRiskClass = clampRange((int)@Core::objectRiskClass, 0, 7);
-  vehicleSpeed = clampRange((int)@Core::vehicleSpeedNorm, 0, 255);
+  rearRadarInputStale = (ethIsRecentTick(gRearRadarRxMs, 300) == 1) ? 0 : 1;
+  vehicleInputStale = (ethIsRecentTick(gVehicleRxMs, 300) == 1) ? 0 : 1;
+  traceLcaInputHealth(rearRadarInputStale, vehicleInputStale);
+
+  rearRiskLevel = gRearRiskLevel;
+  mergeConflict = gMergeConflict;
+  direction = gTurnLampState;
+  vehicleSpeed = gVehicleSpeed;
+  laneChangeBlock = gLaneChangeBlock;
+  if (rearRadarInputStale == 1)
+  {
+    rearRiskLevel = 0;
+    mergeConflict = 0;
+    direction = 0;
+    laneChangeBlock = 0;
+  }
+  if (vehicleInputStale == 1)
+  {
+    vehicleSpeed = 0;
+  }
+
   pathReady = lcaPathReady();
-
-  direction = turnLampState;
+  objectRiskClass = deriveLcaRiskClass(rearRiskLevel);
   ready = 0;
   warn = 0;
 
-  if ((turnLampState == 1 || turnLampState == 2) && vehicleSpeed >= 20 && mergeConflict == 0 && objectRiskClass <= 1)
+  if ((direction == 1 || direction == 2) &&
+      vehicleSpeed >= 20 &&
+      mergeConflict == 0 &&
+      laneChangeBlock == 0 &&
+      objectRiskClass <= 1)
   {
     ready = 1;
   }
-  if ((turnLampState == 1 || turnLampState == 2) && mergeConflict == 1 && objectRiskClass >= 2)
+  if ((direction == 1 || direction == 2) &&
+      (mergeConflict == 1 || laneChangeBlock == 1) &&
+      objectRiskClass >= 2)
   {
     warn = 1;
   }
@@ -98,7 +182,7 @@ void publishLcaState()
       mergeConflict != gLastMergeConflict ||
       alertLevel != gLastAlertLevel)
   {
-    write("[LCA] path=%d ready=%d warn=%d dir=%d merge=%d alert=%d speed=%d riskClass=%d",
+    write("[LCA] path=%d ready=%d warn=%d dir=%d merge=%d alert=%d speed=%d rearRisk=%d",
           pathReady,
           ready,
           warn,
@@ -106,7 +190,7 @@ void publishLcaState()
           mergeConflict,
           alertLevel,
           vehicleSpeed,
-          objectRiskClass);
+          rearRiskLevel);
     gLastPathReady = pathReady;
     gLastReady = ready;
     gLastWarn = warn;
@@ -118,6 +202,15 @@ void publishLcaState()
 
 on start
 {
+  gLaneChangeBlock = 0;
+  gRearRiskLevel = 0;
+  gMergeConflict = 0;
+  gTurnLampState = 0;
+  gVehicleSpeed = 0;
+  gRearRadarRxMs = 0;
+  gVehicleRxMs = 0;
+  gLastRearRadarInputStale = 0;
+  gLastVehicleInputStale = 0;
   gLastPathReady = -1;
   gLastReady = -1;
   gLastWarn = -1;
@@ -132,6 +225,21 @@ on timer tLcaCycle
 {
   publishLcaState();
   setTimer(tLcaCycle, 100);
+}
+
+on message frmRearRadarMasterStateMsg
+{
+  gLaneChangeBlock = clampRange((int)this.LaneChangeBlock, 0, 1);
+  gRearRiskLevel = clampRange((int)this.RearRiskLevel, 0, 100);
+  gMergeConflict = clampRange((int)this.MergeConflict, 0, 1);
+  gTurnLampState = clampRange((int)this.TurnLampState, 0, 3);
+  gRearRadarRxMs = getSimulationTimeMs();
+}
+
+on message frmVehicleStateCanMsg
+{
+  gVehicleSpeed = clampRange((int)this.gVehicleSpeed, 0, 255);
+  gVehicleRxMs = getSimulationTimeMs();
 }
 
 on stopMeasurement

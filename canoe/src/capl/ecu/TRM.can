@@ -10,10 +10,16 @@ variables
   int gLeftRisk;
   int gRightDetected;
   int gRightRisk;
+  int gVehicleSpeed;
+  int gTurnLampState;
   dword gLeftRadarRxMs;
   dword gRightRadarRxMs;
+  dword gVehicleRxMs;
+  dword gLampRxMs;
   int gLastLeftRadarInputStale;
   int gLastRightRadarInputStale;
+  int gLastVehicleInputStale;
+  int gLastLampInputStale;
   int gLastTrailerDetected;
   int gLastTowMode;
   int gLastSwayRisk;
@@ -21,7 +27,10 @@ variables
   int gLastRearRisk;
 }
 
-void traceTrmInputHealth(int leftRadarInputStale, int rightRadarInputStale)
+void traceTrmInputHealth(int leftRadarInputStale,
+                         int rightRadarInputStale,
+                         int vehicleInputStale,
+                         int lampInputStale)
 {
   if (leftRadarInputStale != gLastLeftRadarInputStale)
   {
@@ -48,6 +57,32 @@ void traceTrmInputHealth(int leftRadarInputStale, int rightRadarInputStale)
     }
     gLastRightRadarInputStale = rightRadarInputStale;
   }
+
+  if (vehicleInputStale != gLastVehicleInputStale)
+  {
+    if (vehicleInputStale == 1)
+    {
+      write("[TRM] vehicle input stale");
+    }
+    else
+    {
+      write("[TRM] vehicle input restored");
+    }
+    gLastVehicleInputStale = vehicleInputStale;
+  }
+
+  if (lampInputStale != gLastLampInputStale)
+  {
+    if (lampInputStale == 1)
+    {
+      write("[TRM] lamp input stale");
+    }
+    else
+    {
+      write("[TRM] lamp input restored");
+    }
+    gLastLampInputStale = lampInputStale;
+  }
 }
 
 void publishTrailerCtrlState()
@@ -55,6 +90,8 @@ void publishTrailerCtrlState()
   message frmTrailerCtrlStateMsg mTrailer;
   int leftRadarInputStale;
   int rightRadarInputStale;
+  int vehicleInputStale;
+  int lampInputStale;
   int vehicleSpeed;
   int turnLampState;
   int leftDetected;
@@ -68,16 +105,29 @@ void publishTrailerCtrlState()
   int swayRisk;
   int stabilityAssistReq;
 
-  vehicleSpeed = clampRange((int)@Core::vehicleSpeedNorm, 0, 255);
-  turnLampState = clampRange((int)@CoreState::turnLampState, 0, 3);
   leftRadarInputStale = (ethIsRecentTick(gLeftRadarRxMs, 300) == 1) ? 0 : 1;
   rightRadarInputStale = (ethIsRecentTick(gRightRadarRxMs, 300) == 1) ? 0 : 1;
-  traceTrmInputHealth(leftRadarInputStale, rightRadarInputStale);
+  vehicleInputStale = (ethIsRecentTick(gVehicleRxMs, 300) == 1) ? 0 : 1;
+  lampInputStale = (ethIsRecentTick(gLampRxMs, 300) == 1) ? 0 : 1;
+  traceTrmInputHealth(leftRadarInputStale,
+                      rightRadarInputStale,
+                      vehicleInputStale,
+                      lampInputStale);
 
+  vehicleSpeed = gVehicleSpeed;
+  turnLampState = gTurnLampState;
   leftDetected = gLeftDetected;
   leftRisk = gLeftRisk;
   rightDetected = gRightDetected;
   rightRisk = gRightRisk;
+  if (vehicleInputStale == 1)
+  {
+    vehicleSpeed = 0;
+  }
+  if (lampInputStale == 1)
+  {
+    turnLampState = 0;
+  }
   if (leftRadarInputStale == 1)
   {
     leftDetected = 0;
@@ -88,6 +138,7 @@ void publishTrailerCtrlState()
     rightDetected = 0;
     rightRisk = 0;
   }
+
   rearRiskLevel = (leftRisk > rightRisk) ? leftRisk : rightRisk;
   radarAvailable = (leftRadarInputStale == 0 || rightRadarInputStale == 0) ? 1 : 0;
 
@@ -100,7 +151,7 @@ void publishTrailerCtrlState()
       trailerDetected = 1;
     }
   }
-  towMode = trailerDetected == 1 ? 1 : 0;
+  towMode = (trailerDetected == 1) ? 1 : 0;
   if (trailerDetected == 1 && vehicleSpeed >= 90)
   {
     towMode = 2;
@@ -154,10 +205,16 @@ on start
   gLeftRisk = 0;
   gRightDetected = 0;
   gRightRisk = 0;
+  gVehicleSpeed = 0;
+  gTurnLampState = 0;
   gLeftRadarRxMs = 0;
   gRightRadarRxMs = 0;
+  gVehicleRxMs = 0;
+  gLampRxMs = 0;
   gLastLeftRadarInputStale = 0;
   gLastRightRadarInputStale = 0;
+  gLastVehicleInputStale = 0;
+  gLastLampInputStale = 0;
   gLastTrailerDetected = -1;
   gLastTowMode = -1;
   gLastSwayRisk = -1;
@@ -185,6 +242,18 @@ on message frmSrrRrStateMsg
   gRightDetected = clampRange((int)this.SideObjectDetected, 0, 1);
   gRightRisk = clampRange((int)this.SideRiskLevel, 0, 100);
   gRightRadarRxMs = getSimulationTimeMs();
+}
+
+on message frmVehicleStateCanMsg
+{
+  gVehicleSpeed = clampRange((int)this.gVehicleSpeed, 0, 255);
+  gVehicleRxMs = getSimulationTimeMs();
+}
+
+on message frmLampControlMsg
+{
+  gTurnLampState = clampRange((int)this.TurnLampState, 0, 3);
+  gLampRxMs = getSimulationTimeMs();
 }
 
 on stopMeasurement

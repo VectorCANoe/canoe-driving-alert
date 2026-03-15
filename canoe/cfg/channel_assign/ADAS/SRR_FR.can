@@ -6,6 +6,16 @@ includes
 variables
 {
   msTimer tSrrFrCycle;
+  long gEthSocket;
+  char gEthRxBuffer[64];
+  int gMergeConflict;
+  int gRiskClass;
+  int gTurnLampState;
+  dword gScenarioAlertRxMs;
+  dword gRiskStateRxMs;
+  dword gLampRxMs;
+  int gLastObjectInputStale;
+  int gLastLampInputStale;
   int gLastDetected;
   int gLastRisk;
   int gLastMerge;
@@ -29,9 +39,40 @@ int srrFrPathReady()
   return 1;
 }
 
+void traceSrrFrInputHealth(int objectInputStale, int lampInputStale)
+{
+  if (objectInputStale != gLastObjectInputStale)
+  {
+    if (objectInputStale == 1)
+    {
+      write("[SRR_FR] object input stale");
+    }
+    else
+    {
+      write("[SRR_FR] object input restored");
+    }
+    gLastObjectInputStale = objectInputStale;
+  }
+
+  if (lampInputStale != gLastLampInputStale)
+  {
+    if (lampInputStale == 1)
+    {
+      write("[SRR_FR] lamp input stale");
+    }
+    else
+    {
+      write("[SRR_FR] lamp input restored");
+    }
+    gLastLampInputStale = lampInputStale;
+  }
+}
+
 void publishSrrFrState()
 {
   message frmSrrFrStateMsg mSrrFr;
+  int objectInputStale;
+  int lampInputStale;
   int mergeConflict;
   int riskClass;
   int turnLampState;
@@ -39,13 +80,28 @@ void publishSrrFrState()
   int riskLevel;
   int pathReady;
 
-  mergeConflict = (((int)@Core::mergeCutInFlag) == 1) ? 1 : 0;
-  riskClass = clampRange((int)@Core::objectRiskClass, 0, 7);
-  turnLampState = clampRange((int)@CoreState::turnLampState, 0, 3);
-  pathReady = srrFrPathReady();
+  objectInputStale =
+    ((ethIsRecentTick(gScenarioAlertRxMs, 300) == 1) &&
+     (ethIsRecentTick(gRiskStateRxMs, 300) == 1)) ? 0 : 1;
+  lampInputStale = (ethIsRecentTick(gLampRxMs, 300) == 1) ? 0 : 1;
+  traceSrrFrInputHealth(objectInputStale, lampInputStale);
 
+  mergeConflict = gMergeConflict;
+  riskClass = gRiskClass;
+  turnLampState = gTurnLampState;
+  if (objectInputStale == 1)
+  {
+    mergeConflict = 0;
+    riskClass = 0;
+  }
+  if (lampInputStale == 1)
+  {
+    turnLampState = 0;
+  }
+
+  pathReady = srrFrPathReady();
   detected = (mergeConflict == 1 && turnLampState == 2 && riskClass >= 2) ? 1 : 0;
-  riskLevel = detected == 1 ? clampRange(40 + (riskClass * 10), 0, 100) : 0;
+  riskLevel = (detected == 1) ? clampRange(40 + (riskClass * 10), 0, 100) : 0;
   if (pathReady == 0)
   {
     mergeConflict = 0;
@@ -81,13 +137,55 @@ void publishSrrFrState()
   }
 }
 
+void OnUdpReceiveFrom(dword socket, long result, dword address, dword port, char buffer[], dword count)
+{
+  int msgId;
+  int payload1;
+
+  if (socket != gEthSocket)
+  {
+    return;
+  }
+  if (result == 0)
+  {
+    msgId = ethFrameMsgId(buffer, count);
+    if (msgId == ethMsgObjectScenarioAlert() && ethFramePayloadLen(count) >= 3)
+    {
+      payload1 = ethGetU8(buffer, 1);
+      gMergeConflict = clampRange((payload1 >> 1) & 0x1, 0, 1);
+      gRiskClass = clampRange(ethGetU8(buffer, 2) & 0x7, 0, 7);
+      gScenarioAlertRxMs = getSimulationTimeMs();
+    }
+    else if (msgId == ethMsgObjectRiskState() && ethFramePayloadLen(count) >= 1)
+    {
+      gRiskClass = clampRange(ethGetU8(buffer, 0) & 0x7, 0, 7);
+      gRiskStateRxMs = getSimulationTimeMs();
+    }
+  }
+
+  ethArmReceive(gEthSocket, gEthRxBuffer, elcount(gEthRxBuffer));
+}
+
 on start
 {
+  gEthSocket = ethOpenDefaultSocket();
+  gMergeConflict = 0;
+  gRiskClass = 0;
+  gTurnLampState = 0;
+  gScenarioAlertRxMs = 0;
+  gRiskStateRxMs = 0;
+  gLampRxMs = 0;
+  gLastObjectInputStale = 0;
+  gLastLampInputStale = 0;
   gLastPathReady = -1;
   gLastDetected = -1;
   gLastRisk = -1;
   gLastMerge = -1;
   gLastTurn = -1;
+  if (gEthSocket != ethInvalidSocket())
+  {
+    ethStartReceiver(gEthSocket, gEthRxBuffer, elcount(gEthRxBuffer));
+  }
   setTimer(tSrrFrCycle, 100);
   write("[SRR_FR] start");
 }
@@ -98,7 +196,15 @@ on timer tSrrFrCycle
   setTimer(tSrrFrCycle, 100);
 }
 
+on message frmLampControlMsg
+{
+  gTurnLampState = clampRange((int)this.TurnLampState, 0, 3);
+  gLampRxMs = getSimulationTimeMs();
+}
+
 on stopMeasurement
 {
   cancelTimer(tSrrFrCycle);
+  ethCloseSocket(gEthSocket);
+  gEthSocket = ethInvalidSocket();
 }
