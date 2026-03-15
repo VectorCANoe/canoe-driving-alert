@@ -267,8 +267,9 @@ on timer tVcuCycle
   int powerBalance;
   int torqueRequest;
   int tcsActive;
-  int scenarioActive;
-  int scenarioSpeedHint;
+  int externalSpeedHint;
+  int externalSpeedDelta;
+  int externalSpeedOverride;
   int pedalInputStale;
   int ignitionInputStale;
   int gearInputStale;
@@ -277,8 +278,7 @@ on timer tVcuCycle
   int engineState;
   int gearState;
 
-  scenarioActive = (((int)@Test::testScenario) > 0) ? 1 : 0;
-  scenarioSpeedHint = clampRange((int)@Chassis::vehicleSpeed, 0, 255);
+  externalSpeedHint = clampRange((int)@Chassis::vehicleSpeed, 0, 255);
   pedalInputStale = (ethIsRecentTick(gPedalRxMs, 300) == 1) ? 0 : 1;
   ignitionInputStale = (ethIsRecentTick(gIgnitionRxMs, 300) == 1) ? 0 : 1;
   gearInputStale = (ethIsRecentTick(gGearRxMs, 300) == 1) ? 0 : 1;
@@ -302,15 +302,35 @@ on timer tVcuCycle
     gearState = 0;
   }
 
-  if (scenarioActive == 1)
+  externalSpeedDelta = externalSpeedHint - gSpeed;
+  if (externalSpeedDelta < 0)
   {
-    gSpeed = scenarioSpeedHint;
+    externalSpeedDelta = -externalSpeedDelta;
+  }
+  externalSpeedOverride = ((accelPedal == 0) &&
+                           (brakePedal == 0) &&
+                           (externalSpeedDelta >= 3)) ? 1 : 0;
+
+  if (externalSpeedOverride == 1)
+  {
+    gSpeed = externalSpeedHint;
   }
   else
   {
-    targetSpeed = accelPedal * 2;
-    if (targetSpeed > 200) targetSpeed = 200;
-    if (brakePedal > 20) targetSpeed = 0;
+    targetSpeed = gSpeed;
+    if (accelPedal > 0)
+    {
+      targetSpeed = accelPedal * 2;
+      if (targetSpeed > 200) targetSpeed = 200;
+    }
+    else if (brakePedal > 20 || gearState == 0)
+    {
+      targetSpeed = 0;
+    }
+    else if (targetSpeed > 0)
+    {
+      targetSpeed = targetSpeed - 2;
+    }
 
     delta = targetSpeed - gSpeed;
     if (delta > 5) delta = 5;
