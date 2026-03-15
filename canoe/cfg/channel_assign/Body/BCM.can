@@ -18,6 +18,50 @@ variables
   int gBackboneAlertType;
   int gBackboneTimeoutClear;
   dword gBackboneAlertTsMs;
+  int gDoorFlOpenState;
+  int gDoorFrOpenState;
+  int gDoorRlOpenState;
+  int gDoorRrOpenState;
+  int gDoorFlLockState;
+  int gDoorFrLockState;
+  int gDoorRlLockState;
+  int gDoorRrLockState;
+  int gTailgateOpenState;
+  int gSeatDrvPos;
+  int gSeatPassPos;
+  dword gDoorFlRxMs;
+  dword gDoorFrRxMs;
+  dword gDoorRlRxMs;
+  dword gDoorRrRxMs;
+  dword gTailgateRxMs;
+  dword gSeatDrvRxMs;
+  dword gSeatPassRxMs;
+  int gLastDoorDetailInputStale;
+  int gLastSeatDetailInputStale;
+  int gPaakState;
+  int gPaakAuthLevel;
+  int gPaakProximityState;
+  int gTmuRemoteClimateReq;
+  int gTmuServiceMode;
+  int gHvacCabinSetTemp;
+  int gHvacBlowerLevel;
+  int gHvacAcOn;
+  int gDriveState;
+  dword gPaakRxMs;
+  dword gTmuServiceRxMs;
+  dword gHvacStateRxMs;
+  dword gVehicleRxMs;
+  int gLastPaakInputStale;
+  int gLastTmuInputStale;
+  int gLastHvacInputStale;
+  int gLastVehicleCtxInputStale;
+  int gLastDoorControlCmd;
+  int gLastChildLockCmd;
+  int gLastSeatHeatCmd;
+  int gLastSeatVentCmd;
+  int gLastComfortProfile;
+  int gLastComfortStatus;
+  int gLastComfortError;
 }
 
 int useBackboneAlertState()
@@ -97,6 +141,93 @@ void OnUdpReceiveFrom(dword socket, long result, dword address, dword port, char
   ethArmReceive(gEthSocket, gEthRxBuffer, elcount(gEthRxBuffer));
 }
 
+void traceBcmLeafHealth(int doorDetailInputStale, int seatDetailInputStale)
+{
+  if (doorDetailInputStale != gLastDoorDetailInputStale)
+  {
+    if (doorDetailInputStale == 1)
+    {
+      write("[BCM] door detail input stale");
+    }
+    else
+    {
+      write("[BCM] door detail input restored");
+    }
+    gLastDoorDetailInputStale = doorDetailInputStale;
+  }
+
+  if (seatDetailInputStale != gLastSeatDetailInputStale)
+  {
+    if (seatDetailInputStale == 1)
+    {
+      write("[BCM] seat detail input stale");
+    }
+    else
+    {
+      write("[BCM] seat detail input restored");
+    }
+    gLastSeatDetailInputStale = seatDetailInputStale;
+  }
+}
+
+void traceBcmCommandHealth(int paakInputStale,
+                           int tmuInputStale,
+                           int hvacInputStale,
+                           int vehicleCtxInputStale)
+{
+  if (paakInputStale != gLastPaakInputStale)
+  {
+    if (paakInputStale == 1)
+    {
+      write("[BCM] paak input stale");
+    }
+    else
+    {
+      write("[BCM] paak input restored");
+    }
+    gLastPaakInputStale = paakInputStale;
+  }
+
+  if (tmuInputStale != gLastTmuInputStale)
+  {
+    if (tmuInputStale == 1)
+    {
+      write("[BCM] tmu input stale");
+    }
+    else
+    {
+      write("[BCM] tmu input restored");
+    }
+    gLastTmuInputStale = tmuInputStale;
+  }
+
+  if (hvacInputStale != gLastHvacInputStale)
+  {
+    if (hvacInputStale == 1)
+    {
+      write("[BCM] hvac input stale");
+    }
+    else
+    {
+      write("[BCM] hvac input restored");
+    }
+    gLastHvacInputStale = hvacInputStale;
+  }
+
+  if (vehicleCtxInputStale != gLastVehicleCtxInputStale)
+  {
+    if (vehicleCtxInputStale == 1)
+    {
+      write("[BCM] vehicle-context input stale");
+    }
+    else
+    {
+      write("[BCM] vehicle-context input restored");
+    }
+    gLastVehicleCtxInputStale = vehicleCtxInputStale;
+  }
+}
+
 
 
 on start
@@ -111,6 +242,50 @@ on start
   gBackboneAlertType = 0;
   gBackboneTimeoutClear = 0;
   gBackboneAlertTsMs = 0;
+  gDoorFlOpenState = 0;
+  gDoorFrOpenState = 0;
+  gDoorRlOpenState = 0;
+  gDoorRrOpenState = 0;
+  gDoorFlLockState = 1;
+  gDoorFrLockState = 1;
+  gDoorRlLockState = 1;
+  gDoorRrLockState = 1;
+  gTailgateOpenState = 0;
+  gSeatDrvPos = 120;
+  gSeatPassPos = 0;
+  gDoorFlRxMs = 0;
+  gDoorFrRxMs = 0;
+  gDoorRlRxMs = 0;
+  gDoorRrRxMs = 0;
+  gTailgateRxMs = 0;
+  gSeatDrvRxMs = 0;
+  gSeatPassRxMs = 0;
+  gLastDoorDetailInputStale = 0;
+  gLastSeatDetailInputStale = 0;
+  gPaakState = 0;
+  gPaakAuthLevel = 0;
+  gPaakProximityState = 0;
+  gTmuRemoteClimateReq = 0;
+  gTmuServiceMode = 0;
+  gHvacCabinSetTemp = 22;
+  gHvacBlowerLevel = 0;
+  gHvacAcOn = 0;
+  gDriveState = 0;
+  gPaakRxMs = 0;
+  gTmuServiceRxMs = 0;
+  gHvacStateRxMs = 0;
+  gVehicleRxMs = 0;
+  gLastPaakInputStale = 0;
+  gLastTmuInputStale = 0;
+  gLastHvacInputStale = 0;
+  gLastVehicleCtxInputStale = 0;
+  gLastDoorControlCmd = -1;
+  gLastChildLockCmd = -1;
+  gLastSeatHeatCmd = -1;
+  gLastSeatVentCmd = -1;
+  gLastComfortProfile = -1;
+  gLastComfortStatus = -1;
+  gLastComfortError = -1;
   @CoreState::bodyHealthTick = 0;
   if (gEthSocket != ethInvalidSocket())
   {
@@ -244,6 +419,33 @@ on timer tBodyBase100
   int boundaryAlive;
   int bodyGwRouteState;
   int bodyGwHealth;
+  int doorDetailInputStale;
+  int seatDetailInputStale;
+  int doorStateMask;
+  int doorLockState;
+  int doorOpenWarn;
+  int childLockState;
+  int driverSeatPos;
+  int passengerSeatPos;
+  int paakInputStale;
+  int tmuInputStale;
+  int hvacInputStale;
+  int vehicleCtxInputStale;
+  int paakState;
+  int paakAuthLevel;
+  int paakProximityState;
+  int tmuRemoteClimateReq;
+  int tmuServiceMode;
+  int hvacCabinSetTemp;
+  int hvacBlowerLevel;
+  int hvacAcOn;
+  int driveState;
+  int doorControlCmd;
+  int seatHeatLevel;
+  int seatVentLevel;
+  int comfortProfile;
+  int comfortStatus;
+  int comfortError;
   if (useBackboneAlertState() == 1)
   {
     hazardActive = (gBackboneAlertLevel >= 6) ? 1 : 0;
@@ -278,10 +480,51 @@ on timer tBodyBase100
   mRain.AutoLightState = 0;
   output(mRain);
 
-  mDoorState.DoorStateMask = 0;
-  mDoorState.DoorLockState = 1;
-  mDoorState.ChildLockState = 0;
-  mDoorState.DoorOpenWarn = 0;
+  doorDetailInputStale = 0;
+  if (ethIsRecentTick(gDoorFlRxMs, 300) == 0 ||
+      ethIsRecentTick(gDoorFrRxMs, 300) == 0 ||
+      ethIsRecentTick(gDoorRlRxMs, 300) == 0 ||
+      ethIsRecentTick(gDoorRrRxMs, 300) == 0 ||
+      ethIsRecentTick(gTailgateRxMs, 300) == 0)
+  {
+    doorDetailInputStale = 1;
+  }
+
+  seatDetailInputStale = 0;
+  if (ethIsRecentTick(gSeatDrvRxMs, 300) == 0 ||
+      ethIsRecentTick(gSeatPassRxMs, 300) == 0)
+  {
+    seatDetailInputStale = 1;
+  }
+  traceBcmLeafHealth(doorDetailInputStale, seatDetailInputStale);
+
+  doorStateMask = 0;
+  doorLockState = 1;
+  childLockState = 0;
+  doorOpenWarn = 0;
+  if (doorDetailInputStale == 0)
+  {
+    if (gDoorFlOpenState > 0) { doorStateMask = doorStateMask | 0x1; }
+    if (gDoorFrOpenState > 0) { doorStateMask = doorStateMask | 0x2; }
+    if (gDoorRlOpenState > 0) { doorStateMask = doorStateMask | 0x4; }
+    if (gDoorRrOpenState > 0) { doorStateMask = doorStateMask | 0x8; }
+    if (gDoorFlLockState == 0 ||
+        gDoorFrLockState == 0 ||
+        gDoorRlLockState == 0 ||
+        gDoorRrLockState == 0)
+    {
+      doorLockState = 0;
+    }
+    if (doorStateMask != 0 || gTailgateOpenState > 0)
+    {
+      doorOpenWarn = 1;
+    }
+  }
+
+  mDoorState.DoorStateMask = doorStateMask;
+  mDoorState.DoorLockState = doorLockState;
+  mDoorState.ChildLockState = childLockState;
+  mDoorState.DoorOpenWarn = doorOpenWarn;
   output(mDoorState);
 
   mLamp.HeadLampState = (hazardActive == 1) ? 2 : 1;
@@ -289,6 +532,11 @@ on timer tBodyBase100
   if (hazardActive == 1)
   {
     mLamp.TurnLampState = 3;
+  }
+  else if ((int)@Test::turnLampOverride >= 1 && (int)@Test::turnLampOverride <= 2)
+  {
+    /* Validation-only seam for exact turn-lamp context coverage. */
+    mLamp.TurnLampState = (int)@Test::turnLampOverride;
   }
   else
   {
@@ -324,31 +572,250 @@ on timer tBodyBase100
   output(mHealth);
   @CoreState::bodyHealthTick = mHealth.BodyAliveCnt;
 
-  mSeatState.DriverSeatPos = 120;
-  mSeatState.PassengerSeatPos = 0;
+  driverSeatPos = 0;
+  passengerSeatPos = 0;
+  if (seatDetailInputStale == 0)
+  {
+    driverSeatPos = gSeatDrvPos;
+    passengerSeatPos = gSeatPassPos;
+  }
+  mSeatState.DriverSeatPos = clampRange(driverSeatPos, 0, 255);
+  mSeatState.PassengerSeatPos = clampRange(passengerSeatPos, 0, 255);
   output(mSeatState);
+
+  paakInputStale = (ethIsRecentTick(gPaakRxMs, 300) == 1) ? 0 : 1;
+  tmuInputStale = (ethIsRecentTick(gTmuServiceRxMs, 300) == 1) ? 0 : 1;
+  hvacInputStale = (ethIsRecentTick(gHvacStateRxMs, 300) == 1) ? 0 : 1;
+  vehicleCtxInputStale = (ethIsRecentTick(gVehicleRxMs, 300) == 1) ? 0 : 1;
+  traceBcmCommandHealth(paakInputStale, tmuInputStale, hvacInputStale, vehicleCtxInputStale);
+
+  paakState = gPaakState;
+  paakAuthLevel = gPaakAuthLevel;
+  paakProximityState = gPaakProximityState;
+  tmuRemoteClimateReq = gTmuRemoteClimateReq;
+  tmuServiceMode = gTmuServiceMode;
+  hvacCabinSetTemp = gHvacCabinSetTemp;
+  hvacBlowerLevel = gHvacBlowerLevel;
+  hvacAcOn = gHvacAcOn;
+  driveState = gDriveState;
+  if (paakInputStale == 1)
+  {
+    paakState = 0;
+    paakAuthLevel = 0;
+    paakProximityState = 0;
+  }
+  if (tmuInputStale == 1)
+  {
+    tmuRemoteClimateReq = 0;
+    tmuServiceMode = 0;
+  }
+  if (hvacInputStale == 1)
+  {
+    hvacCabinSetTemp = 22;
+    hvacBlowerLevel = 0;
+    hvacAcOn = 0;
+  }
+  if (vehicleCtxInputStale == 1)
+  {
+    driveState = 3;
+  }
+
+  doorControlCmd = 0;
+  if (driveState == 0 &&
+      paakAuthLevel >= 1 &&
+      paakProximityState >= 2 &&
+      paakState >= 1)
+  {
+    doorControlCmd = 1;
+  }
+  childLockState = (driveState > 0) ? 1 : 0;
+
+  seatHeatLevel = 0;
+  seatVentLevel = 0;
+  if (tmuRemoteClimateReq == 1 && tmuServiceMode >= 1)
+  {
+    if (hvacAcOn == 1)
+    {
+      seatVentLevel = clampRange(hvacBlowerLevel - 1, 0, 7);
+    }
+    else if (hvacCabinSetTemp >= 24)
+    {
+      seatHeatLevel = clampRange(hvacCabinSetTemp - 21, 0, 7);
+    }
+  }
 
   mSeatCtrl.DriverSeatCmd = 0;
   mSeatCtrl.PassengerSeatCmd = 0;
-  mSeatCtrl.SeatHeatLevel = 0;
-  mSeatCtrl.SeatVentLevel = 0;
+  mSeatCtrl.SeatHeatLevel = seatHeatLevel;
+  mSeatCtrl.SeatVentLevel = seatVentLevel;
   output(mSeatCtrl);
 
-  mDoorCtrl.DoorControlCmd = 0;
-  mDoorCtrl.ChildLockCmd = 0;
+  mDoorCtrl.DoorControlCmd = doorControlCmd;
+  mDoorCtrl.ChildLockCmd = childLockState;
   output(mDoorCtrl);
+
+  if (mDoorCtrl.DoorControlCmd != gLastDoorControlCmd ||
+      mDoorCtrl.ChildLockCmd != gLastChildLockCmd ||
+      mSeatCtrl.SeatHeatLevel != gLastSeatHeatCmd ||
+      mSeatCtrl.SeatVentLevel != gLastSeatVentCmd)
+  {
+    write("[BCM] doorCmd=%d child=%d seatHeat=%d seatVent=%d paak=%d/%d/%d remote=%d hvac=%d/%d/%d drive=%d",
+          mDoorCtrl.DoorControlCmd,
+          mDoorCtrl.ChildLockCmd,
+          mSeatCtrl.SeatHeatLevel,
+          mSeatCtrl.SeatVentLevel,
+          paakState,
+          paakAuthLevel,
+          paakProximityState,
+          tmuRemoteClimateReq,
+          hvacCabinSetTemp,
+          hvacBlowerLevel,
+          hvacAcOn,
+          driveState);
+    gLastDoorControlCmd = mDoorCtrl.DoorControlCmd;
+    gLastChildLockCmd = mDoorCtrl.ChildLockCmd;
+    gLastSeatHeatCmd = mSeatCtrl.SeatHeatLevel;
+    gLastSeatVentCmd = mSeatCtrl.SeatVentLevel;
+  }
 
   mBodyGwState.BodyGwRouteState = bodyGwRouteState;
   mBodyGwState.BodyGwHealth = bodyGwHealth;
   output(mBodyGwState);
 
-  mComfort.ComfortProfile = 1;
-  mComfort.ComfortStatus = 0;
-  mComfort.ComfortError = 0;
+  comfortProfile = 1;
+  if (vehicleCtxInputStale == 1 || doorDetailInputStale == 1 || seatDetailInputStale == 1)
+  {
+    comfortProfile = 0;
+  }
+  else if (tmuRemoteClimateReq == 1 || seatHeatLevel > 0 || seatVentLevel > 0)
+  {
+    comfortProfile = 3;
+  }
+  else if (doorControlCmd > 0 || doorStateMask != 0 || doorLockState == 0 ||
+           paakAuthLevel >= 1 || paakProximityState >= 2)
+  {
+    comfortProfile = 2;
+  }
+  else if (driveState > 0 || ambientMode > 0)
+  {
+    comfortProfile = 4;
+  }
+
+  comfortStatus = (childLockState > 0) ? 1 : 0;
+
+  comfortError = 0;
+  if (doorDetailInputStale == 1 ||
+      seatDetailInputStale == 1 ||
+      paakInputStale == 1 ||
+      tmuInputStale == 1 ||
+      hvacInputStale == 1 ||
+      vehicleCtxInputStale == 1)
+  {
+    comfortError = 1;
+  }
+
+  mComfort.ComfortProfile = clampRange(comfortProfile, 0, 7);
+  mComfort.ComfortStatus = clampRange(comfortStatus, 0, 1);
+  mComfort.ComfortError = clampRange(comfortError, 0, 7);
   output(mComfort);
+
+  if (mComfort.ComfortProfile != gLastComfortProfile ||
+      mComfort.ComfortStatus != gLastComfortStatus ||
+      mComfort.ComfortError != gLastComfortError)
+  {
+    write("[BCM] comfort profile=%d status=%d error=%d access=%d climate=%d/%d child=%d doorMask=%d lock=%d drive=%d",
+          mComfort.ComfortProfile,
+          mComfort.ComfortStatus,
+          mComfort.ComfortError,
+          doorControlCmd,
+          seatHeatLevel,
+          seatVentLevel,
+          childLockState,
+          doorStateMask,
+          doorLockState,
+          driveState);
+    gLastComfortProfile = mComfort.ComfortProfile;
+    gLastComfortStatus = mComfort.ComfortStatus;
+    gLastComfortError = mComfort.ComfortError;
+  }
   gBodyAliveCnt = (gBodyAliveCnt + 1) & 0xFF;
 
   setTimer(tBodyBase100, 100);
+}
+
+on message frmDoorFlStateMsg
+{
+  gDoorFlOpenState = clampRange((int)this.DoorFlOpenState, 0, 1);
+  gDoorFlLockState = clampRange((int)this.DoorFlLockState, 0, 3);
+  gDoorFlRxMs = getSimulationTimeMs();
+}
+
+on message frmDoorFrStateMsg
+{
+  gDoorFrOpenState = clampRange((int)this.DoorFrOpenState, 0, 1);
+  gDoorFrLockState = clampRange((int)this.DoorFrLockState, 0, 3);
+  gDoorFrRxMs = getSimulationTimeMs();
+}
+
+on message frmDoorRlStateMsg
+{
+  gDoorRlOpenState = clampRange((int)this.DoorRlOpenState, 0, 1);
+  gDoorRlLockState = clampRange((int)this.DoorRlLockState, 0, 3);
+  gDoorRlRxMs = getSimulationTimeMs();
+}
+
+on message frmDoorRrStateMsg
+{
+  gDoorRrOpenState = clampRange((int)this.DoorRrOpenState, 0, 1);
+  gDoorRrLockState = clampRange((int)this.DoorRrLockState, 0, 3);
+  gDoorRrRxMs = getSimulationTimeMs();
+}
+
+on message frmTailgateStateMsg
+{
+  gTailgateOpenState = clampRange((int)this.TailgateOpenState, 0, 1);
+  gTailgateRxMs = getSimulationTimeMs();
+}
+
+on message frmSeatDrvStateMsg
+{
+  gSeatDrvPos = clampRange((int)this.SeatDrvPos, 0, 255);
+  gSeatDrvRxMs = getSimulationTimeMs();
+}
+
+on message frmSeatPassStateMsg
+{
+  gSeatPassPos = clampRange((int)this.SeatPassPos, 0, 255);
+  gSeatPassRxMs = getSimulationTimeMs();
+}
+
+on message frmPhoneAsKeyStateMsg
+{
+  gPaakState = clampRange((int)this.PaakState, 0, 7);
+  gPaakAuthLevel = clampRange((int)this.AuthLevel, 0, 3);
+  gPaakProximityState = clampRange((int)this.ProximityState, 0, 3);
+  gPaakRxMs = getSimulationTimeMs();
+}
+
+on message frmTmuServiceStateMsg
+{
+  gTmuRemoteClimateReq = clampRange((int)this.RemoteClimateReq, 0, 1);
+  gTmuServiceMode = clampRange((int)this.TmuServiceMode, 0, 3);
+  gTmuServiceRxMs = getSimulationTimeMs();
+}
+
+on message frmHvacStateMsg
+{
+  gHvacCabinSetTemp = clampRange((int)this.CabinSetTemp, 0, 100);
+  gHvacBlowerLevel = clampRange((int)this.BlowerLevel, 0, 15);
+  gHvacAcOn = clampRange((int)this.AcCompressorOn, 0, 1);
+  gHvacStateRxMs = getSimulationTimeMs();
+}
+
+on message frmVehicleStateCanMsg
+{
+  gDriveState = clampRange((int)this.gDriveState, 0, 3);
+  gVehicleRxMs = getSimulationTimeMs();
 }
 
 on stopMeasurement

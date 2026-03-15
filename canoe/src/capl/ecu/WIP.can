@@ -6,31 +6,93 @@ includes
 variables
 {
   msTimer tWiperCycle;
-  int gFrontWiperState;
-  int gRearWiperState;
-  int gWiperInterval;
+  int gRainSenseLevel;
+  int gAutoLightState;
+  dword gRainRxMs;
+  int gLastRainInputStale;
   int gLastFrontWiperState;
   int gLastRearWiperState;
   int gLastWiperInterval;
 }
 
+void traceWipInputHealth(int rainInputStale)
+{
+  if (rainInputStale != gLastRainInputStale)
+  {
+    if (rainInputStale == 1)
+    {
+      write("[WIP] rain/light input stale");
+    }
+    else
+    {
+      write("[WIP] rain/light input restored");
+    }
+    gLastRainInputStale = rainInputStale;
+  }
+}
+
 void publishWiperState()
 {
   message frmWiperStateMsg mWiper;
+  int rainInputStale;
+  int rainSenseLevel;
+  int autoLightState;
+  int frontWiperState;
+  int rearWiperState;
+  int wiperInterval;
 
-  mWiper.FrontWiperState = clampRange(gFrontWiperState, 0, 3);
-  mWiper.RearWiperState = clampRange(gRearWiperState, 0, 3);
-  mWiper.WiperInterval = clampRange(gWiperInterval, 0, 15);
+  rainInputStale = (ethIsRecentTick(gRainRxMs, 300) == 1) ? 0 : 1;
+  traceWipInputHealth(rainInputStale);
+
+  rainSenseLevel = gRainSenseLevel;
+  autoLightState = gAutoLightState;
+  if (rainInputStale == 1)
+  {
+    rainSenseLevel = 0;
+    autoLightState = 0;
+  }
+
+  frontWiperState = 0;
+  rearWiperState = 0;
+  wiperInterval = 0;
+  if (rainSenseLevel >= 5)
+  {
+    frontWiperState = 3;
+  }
+  else if (rainSenseLevel >= 3)
+  {
+    frontWiperState = 2;
+  }
+  else if (rainSenseLevel >= 1 || autoLightState >= 1)
+  {
+    frontWiperState = 1;
+  }
+
+  if (frontWiperState == 1)
+  {
+    wiperInterval = clampRange(6 - rainSenseLevel, 1, 15);
+  }
+
+  if (rainSenseLevel >= 4)
+  {
+    rearWiperState = 1;
+  }
+
+  mWiper.FrontWiperState = clampRange(frontWiperState, 0, 3);
+  mWiper.RearWiperState = clampRange(rearWiperState, 0, 3);
+  mWiper.WiperInterval = clampRange(wiperInterval, 0, 15);
   output(mWiper);
 
   if (mWiper.FrontWiperState != gLastFrontWiperState ||
       mWiper.RearWiperState != gLastRearWiperState ||
       mWiper.WiperInterval != gLastWiperInterval)
   {
-    write("[WIP] front=%d rear=%d interval=%d",
+    write("[WIP] front=%d rear=%d interval=%d rain=%d auto=%d",
           mWiper.FrontWiperState,
           mWiper.RearWiperState,
-          mWiper.WiperInterval);
+          mWiper.WiperInterval,
+          rainSenseLevel,
+          autoLightState);
     gLastFrontWiperState = mWiper.FrontWiperState;
     gLastRearWiperState = mWiper.RearWiperState;
     gLastWiperInterval = mWiper.WiperInterval;
@@ -39,14 +101,22 @@ void publishWiperState()
 
 on start
 {
-  gFrontWiperState = 0;
-  gRearWiperState = 0;
-  gWiperInterval = 0;
+  gRainSenseLevel = 0;
+  gAutoLightState = 0;
+  gRainRxMs = 0;
+  gLastRainInputStale = 0;
   gLastFrontWiperState = -1;
   gLastRearWiperState = -1;
   gLastWiperInterval = -1;
   setTimer(tWiperCycle, 100);
   write("[WIP] start");
+}
+
+on message frmRainLightAutoMsg
+{
+  gRainSenseLevel = clampRange((int)this.RainSenseLevel, 0, 15);
+  gAutoLightState = clampRange((int)this.AutoLightState, 0, 3);
+  gRainRxMs = getSimulationTimeMs();
 }
 
 on timer tWiperCycle
