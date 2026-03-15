@@ -238,7 +238,6 @@ on timer tBodyBase100
   message frmInteriorLightMsg mLight;
   message frmRainLightAutoMsg mRain;
   int hazardActive;
-  int seatBeltOverride;
   int ambientMode;
   int routingPolicy;
   int warningPathStatus;
@@ -253,7 +252,6 @@ on timer tBodyBase100
   {
     hazardActive = ((int)@Core::selectedAlertLevel >= 6) ? 1 : 0;
   }
-  seatBeltOverride = (int)@Test::seatBeltOverride;
   ambientMode = clampRange((int)@Body::ambientMode, 0, 7);
   routingPolicy = clampRange((int)@CoreState::routingPolicy, 0, 2);
   warningPathStatus = clampRange((int)@CoreState::warningPathStatus, 0, 2);
@@ -264,11 +262,6 @@ on timer tBodyBase100
   {
     bodyGwHealth = 1;
   }
-  if (seatBeltOverride < 0 || seatBeltOverride > 3)
-  {
-    seatBeltOverride = 0;
-  }
-
   mHazard.HazardSwitch = hazardActive;
   mHazard.HazardState = hazardActive;
   output(mHazard);
@@ -305,25 +298,15 @@ on timer tBodyBase100
   mLamp.HazardLampReq = hazardActive;
   output(mLamp);
 
+  /* Until dedicated buckle sensors are modeled, publish nominal belt state
+     and keep belt warning independent from alert/hazard activity. */
   mSeatBelt.DriverSeatBelt = 1;
   mSeatBelt.PassengerSeatBelt = 1;
-  if (seatBeltOverride == 1 || seatBeltOverride == 3)
-  {
-    mSeatBelt.DriverSeatBelt = 0;
-  }
-  if (seatBeltOverride == 2 || seatBeltOverride == 3)
-  {
-    mSeatBelt.PassengerSeatBelt = 0;
-  }
-  mSeatBelt.RearSeatBelt = 3;
+  mSeatBelt.RearSeatBelt = 2;
   mSeatBelt.SeatBeltWarnLvl = 0;
   if (mSeatBelt.DriverSeatBelt == 0 || mSeatBelt.PassengerSeatBelt == 0)
   {
     mSeatBelt.SeatBeltWarnLvl = 2;
-  }
-  else if (hazardActive == 1)
-  {
-    mSeatBelt.SeatBeltWarnLvl = 1;
   }
   output(mSeatBelt);
 
@@ -342,7 +325,7 @@ on timer tBodyBase100
   @CoreState::bodyHealthTick = mHealth.BodyAliveCnt;
 
   mSeatState.DriverSeatPos = 120;
-  mSeatState.PassengerSeatPos = 118;
+  mSeatState.PassengerSeatPos = 0;
   output(mSeatState);
 
   mSeatCtrl.DriverSeatCmd = 0;

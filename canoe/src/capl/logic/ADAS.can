@@ -632,7 +632,7 @@ void runArbiter()
   }
 
   if (selectedAlertLevel > 0 &&
-      (driverSeatBelt == 0 || passengerSeatBelt == 0 || seatBeltWarnLvl >= 2))
+      (driverSeatBelt == 0 || seatBeltWarnLvl >= 2))
   {
     if (selectedAlertLevel < 5)
     {

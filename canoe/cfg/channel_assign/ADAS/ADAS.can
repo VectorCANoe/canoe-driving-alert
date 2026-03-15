@@ -34,6 +34,10 @@ variables
   int gLastObjectRiskLevel;
   int gLastObjectAlertLevel;
   int gLastObjectAlertType;
+  dword gAccelGroupHoldEndMs;
+  dword gSteerGroupHoldEndMs;
+  int gLastAccelGroupActive;
+  int gLastSteerGroupActive;
 }
 
 int getAdasTxPort()
@@ -287,6 +291,12 @@ int getBaseAlertLevel(int baseZoneContext, int warningState)
   {
     return 2;
   }
+  /* zone=0 (일반도로): A+B 복합(warningState=2) → 중간 경고(2),
+                        A단독/B단독(warningState=1) → 경미 경고(1) */
+  if (warningState >= 2)
+  {
+    return 2;
+  }
   return 1;
 }
 
@@ -309,6 +319,12 @@ int getBaseAlertType(int baseZoneContext, int warningState)
     return 3;
   }
   if (baseZoneContext == 2)
+  {
+    return 4;
+  }
+  /* zone=0: A+B 복합(warningState=2) → type=4(오렌지 펄스),
+             A단독/B단독(warningState=1) → type=1(경미 경고) */
+  if (warningState >= 2)
   {
     return 4;
   }
@@ -616,7 +632,7 @@ void runArbiter()
   }
 
   if (selectedAlertLevel > 0 &&
-      (driverSeatBelt == 0 || passengerSeatBelt == 0 || seatBeltWarnLvl >= 2))
+      (driverSeatBelt == 0 || seatBeltWarnLvl >= 2))
   {
     if (selectedAlertLevel < 5)
     {
@@ -716,6 +732,10 @@ void updateWarningState()
   int objectAlertHoldMs;
   int objectHoldActive;
   int objectInputValid;
+  int accelGroupFlag;
+  int steerGroupFlag;
+  int accelGroupActive;
+  int steerGroupActive;
   dword nowMs;
 
   speed = (int)@Core::vehicleSpeedNorm;
@@ -724,6 +744,8 @@ void updateWarningState()
   speedLimit = (int)@Core::speedLimitNorm;
   baseZoneContext = (int)@Core::baseZoneContext;
   emergencyContext = (int)@Core::emergencyContext;
+  accelGroupFlag = clampRange((int)@Core::accelGroupFlag, 0, 1);
+  steerGroupFlag = clampRange((int)@Core::steerGroupFlag, 0, 1);
   etaSec = (int)@V2X::eta;
   emergencyDirection = (int)@V2X::emergencyDirection;
   objectTrackValid = clampRange((int)@Core::objectTrackValid, 0, 1);
@@ -908,6 +930,53 @@ void updateWarningState()
     }
   }
 
+  /* A/B 그룹 거동 감지 (입력층 Rule-Based 판단)
+     A-group (accelGroupFlag): 급가속 또는 급제동 감지
+     B-group (steerGroupFlag): 차선이탈 또는 급차선변경 감지
+     판단 규칙: A단독 or B단독 → warningState 최소 1 (경미 경고)
+                A+B 복합       → warningState 최소 2 (중간 경고)
+     Emergency 활성 중에는 hold 타이머를 갱신하지 않아 긴급 해제 후 자연 복귀.
+     IC/유도구간(zone 3/4)에서는 앰비언트 방향 안내 우선이므로 적용 제외. */
+  if (emergencyContext == 0)
+  {
+    if (accelGroupFlag == 1)
+    {
+      gAccelGroupHoldEndMs = nowMs + 2000;
+    }
+    if (steerGroupFlag == 1)
+    {
+      gSteerGroupHoldEndMs = nowMs + 2000;
+    }
+  }
+  accelGroupActive = (accelGroupFlag == 1 || (emergencyContext == 0 && nowMs < gAccelGroupHoldEndMs)) ? 1 : 0;
+  steerGroupActive = (steerGroupFlag == 1 || (emergencyContext == 0 && nowMs < gSteerGroupHoldEndMs)) ? 1 : 0;
+
+  if (driveState == 3 && baseZoneContext != 3 && baseZoneContext != 4)
+  {
+    if (accelGroupActive == 1 && steerGroupActive == 1)
+    {
+      if (warningState < 2)
+      {
+        warningState = 2;
+      }
+    }
+    else if (accelGroupActive == 1 || steerGroupActive == 1)
+    {
+      if (warningState < 1)
+      {
+        warningState = 1;
+      }
+    }
+  }
+
+  if (accelGroupActive != gLastAccelGroupActive || steerGroupActive != gLastSteerGroupActive)
+  {
+    write("[ADAS] AB-group accel=%d steer=%d warningState=%d zone=%d",
+          accelGroupActive, steerGroupActive, warningState, baseZoneContext);
+    gLastAccelGroupActive = accelGroupActive;
+    gLastSteerGroupActive = steerGroupActive;
+  }
+
   if (warningState == 0 && objectRiskClass >= 3)
   {
     warningState = 2;
@@ -1018,6 +1087,12 @@ on start
   gLastObjectRiskLevel = 0;
   gLastObjectAlertLevel = 0;
   gLastObjectAlertType = 0;
+  gAccelGroupHoldEndMs = 0;
+  gSteerGroupHoldEndMs = 0;
+  gLastAccelGroupActive = 0;
+  gLastSteerGroupActive = 0;
+  @Core::accelGroupFlag = 0;
+  @Core::steerGroupFlag = 0;
   @Core::proximityRiskLevel = 0;
   @Core::objectTrackValid = 0;
   @Core::objectRange = 0;
