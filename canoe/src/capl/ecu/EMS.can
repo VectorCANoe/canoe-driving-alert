@@ -10,16 +10,19 @@ variables
   int gBrakePedal;
   int gIgnitionState;
   int gEngineState;
+  int gVehicleSpeed;
   dword gPedalRxMs;
   dword gIgnitionRxMs;
+  dword gVehicleRxMs;
   int gLastPedalInputStale;
   int gLastIgnitionInputStale;
+  int gLastVehicleInputStale;
   int gLastEngineState;
   int gFuelLevel;
   int gBatterySoc;
 }
 
-void traceEmsInputHealth(int ignitionInputStale, int pedalInputStale)
+void traceEmsInputHealth(int ignitionInputStale, int pedalInputStale, int vehicleInputStale)
 {
   if (ignitionInputStale != gLastIgnitionInputStale)
   {
@@ -45,6 +48,19 @@ void traceEmsInputHealth(int ignitionInputStale, int pedalInputStale)
       write("[EMS] pedal input restored");
     }
     gLastPedalInputStale = pedalInputStale;
+  }
+
+  if (vehicleInputStale != gLastVehicleInputStale)
+  {
+    if (vehicleInputStale == 1)
+    {
+      write("[EMS] vehicle input stale");
+    }
+    else
+    {
+      write("[EMS] vehicle input restored");
+    }
+    gLastVehicleInputStale = vehicleInputStale;
   }
 }
 
@@ -89,10 +105,13 @@ on start
   gBrakePedal      = 0;
   gIgnitionState   = 0;
   gEngineState     = 0;
+  gVehicleSpeed    = 0;
   gPedalRxMs       = 0;
   gIgnitionRxMs    = 0;
+  gVehicleRxMs     = 0;
   gLastPedalInputStale = 0;
   gLastIgnitionInputStale = 0;
+  gLastVehicleInputStale = 0;
   gLastEngineState = -1;
   gFuelLevel       = 80;
   gBatterySoc      = 95;
@@ -114,6 +133,12 @@ on message frmPedalInputCanMsg
   gPedalRxMs = getSimulationTimeMs();
 }
 
+on message frmVehicleStateCanMsg
+{
+  gVehicleSpeed = clampRange((int)this.gVehicleSpeed, 0, 255);
+  gVehicleRxMs = getSimulationTimeMs();
+}
+
 on timer tEngineCycle
 {
   message frmEngineSpeedTempMsg  mSpeedTemp;
@@ -124,6 +149,7 @@ on timer tEngineCycle
   message frmThermalMgmtStateMsg mThermal;
   int ignitionInputStale;
   int pedalInputStale;
+  int vehicleInputStale;
   int ignitionState;
   int engineState;
   int accelPedal;
@@ -139,12 +165,14 @@ on timer tEngineCycle
 
   ignitionInputStale = (ethIsRecentTick(gIgnitionRxMs, 300) == 1) ? 0 : 1;
   pedalInputStale = (ethIsRecentTick(gPedalRxMs, 300) == 1) ? 0 : 1;
-  traceEmsInputHealth(ignitionInputStale, pedalInputStale);
+  vehicleInputStale = (ethIsRecentTick(gVehicleRxMs, 300) == 1) ? 0 : 1;
+  traceEmsInputHealth(ignitionInputStale, pedalInputStale, vehicleInputStale);
 
   ignitionState = gIgnitionState;
   engineState = gEngineState;
   accelPedal = gAccelPedal;
   brakePedal = gBrakePedal;
+  speed = gVehicleSpeed;
   if (ignitionInputStale == 1)
   {
     ignitionState = 0;
@@ -155,18 +183,20 @@ on timer tEngineCycle
     accelPedal = 0;
     brakePedal = 0;
   }
+  if (vehicleInputStale == 1)
+  {
+    speed = 0;
+  }
 
   if      (engineState == 0) { rpm = 0; }
   else if (engineState == 1) { rpm = 400; }
   else if (engineState == 2) { rpm = 800; }
   else
   {
-    speed = (int)@Core::vehicleSpeedNorm;
     rpm   = 800 + (accelPedal * 25) + (speed * 10);
     if (rpm > 6500) rpm = 6500;
   }
 
-  speed = clampRange((int)@Core::vehicleSpeedNorm, 0, 255);
   throttlePos = deriveThrottlePos(engineState, accelPedal, brakePedal);
   engineLoad = deriveEngineLoad(engineState, throttlePos, speed);
   torque = deriveEngineTorque(engineState, engineLoad, rpm);
