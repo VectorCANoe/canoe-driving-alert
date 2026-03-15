@@ -57,7 +57,6 @@ void publishDatcState()
   message frmHvacActuatorMsg mHvacAct;
   int tmuInputStale;
   int cabinAirInputStale;
-  int failSafeMode;
   int remoteClimateReq;
   int tmuLinkState;
   int tmuServiceMode;
@@ -74,7 +73,6 @@ void publishDatcState()
   cabinAirInputStale = (ethIsRecentTick(gCabinAirRxMs, 300) == 1) ? 0 : 1;
   traceDatcInputHealth(tmuInputStale, cabinAirInputStale);
 
-  failSafeMode = clampRange((int)@Core::failSafeMode, 0, 2);
   remoteClimateReq = gRemoteClimateReq;
   tmuLinkState = gTmuLinkState;
   tmuServiceMode = gTmuServiceMode;
@@ -99,7 +97,10 @@ void publishDatcState()
   defogMode = 0;
   fanRpmStep = 35;
 
-  if (remoteClimateReq == 1 && tmuServiceMode == 1 && failSafeMode == 0)
+  if (remoteClimateReq == 1 &&
+      tmuServiceMode == 1 &&
+      tmuLinkState > 0 &&
+      signalBars >= 2)
   {
     cabinSetTemp = 24;
     blowerLevel = 5;
@@ -115,12 +116,22 @@ void publishDatcState()
     ventMode = 2;
     fanRpmStep = 65;
   }
-
-  if (failSafeMode > 0)
+  else if (cabinTemp <= 8)
   {
-    blowerLevel = 1;
-    fanRpmStep = 20;
+    cabinSetTemp = 25;
+    blowerLevel = 4;
+    acOn = 0;
+    ventMode = 1;
     defogMode = 1;
+    fanRpmStep = 55;
+  }
+  else if (cabinTemp <= 14)
+  {
+    cabinSetTemp = 24;
+    blowerLevel = 3;
+    acOn = 0;
+    ventMode = 1;
+    fanRpmStep = 45;
   }
 
   mHvacState.CabinSetTemp = cabinSetTemp;

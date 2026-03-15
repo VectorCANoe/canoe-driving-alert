@@ -54,7 +54,6 @@ void publishTmuState()
   message frmTmuServiceStateMsg mTmu;
   int connInputStale;
   int iviHealthInputStale;
-  int failSafeMode;
   int connType;
   int connState;
   int signalBars;
@@ -68,7 +67,6 @@ void publishTmuState()
   iviHealthInputStale = (ethIsRecentTick(gIviHealthRxMs, 300) == 1) ? 0 : 1;
   traceTmuInputHealth(connInputStale, iviHealthInputStale);
 
-  failSafeMode = clampRange((int)@Core::failSafeMode, 0, 2);
   connType = gConnType;
   connState = gConnState;
   signalBars = gSignalBars;
@@ -97,25 +95,25 @@ void publishTmuState()
   }
 
   serviceMode = 0;
-  if (linkState > 0)
+  if (linkState == 0)
   {
-    serviceMode = 1;
+    serviceMode = 0;
   }
-  if (failSafeMode > 0)
+  else if (iviCpuLoad >= 85 || iviMemLoad >= 85)
   {
     serviceMode = 2;
   }
-
-  if (iviCpuLoad >= 85 || iviMemLoad >= 85)
+  else if (signalBars <= 1 || connType == 0)
   {
     serviceMode = 2;
   }
   else if (iviCpuLoad >= 60 || iviMemLoad >= 60)
   {
-    if (serviceMode == 0)
-    {
-      serviceMode = 1;
-    }
+    serviceMode = 1;
+  }
+  else
+  {
+    serviceMode = 1;
   }
 
   remoteClimateReq = 0;

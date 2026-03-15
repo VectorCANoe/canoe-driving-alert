@@ -8,16 +8,19 @@ variables
   msTimer tDigitalKeyCycle;
   int gTmuServiceMode;
   int gSignalBars;
+  int gDriveState;
   int gKeySyncAge;
   dword gTmuServiceRxMs;
+  dword gVehicleRxMs;
   int gLastTmuInputStale;
+  int gLastVehicleInputStale;
   int gLastDkeyState;
   int gLastAuthMode;
   int gLastAccessState;
   int gLastSecurityGrade;
 }
 
-void traceDkeyInputHealth(int tmuInputStale)
+void traceDkeyInputHealth(int tmuInputStale, int vehicleInputStale)
 {
   if (tmuInputStale != gLastTmuInputStale)
   {
@@ -31,13 +34,26 @@ void traceDkeyInputHealth(int tmuInputStale)
     }
     gLastTmuInputStale = tmuInputStale;
   }
+
+  if (vehicleInputStale != gLastVehicleInputStale)
+  {
+    if (vehicleInputStale == 1)
+    {
+      write("[DKEY] vehicle input stale");
+    }
+    else
+    {
+      write("[DKEY] vehicle input restored");
+    }
+    gLastVehicleInputStale = vehicleInputStale;
+  }
 }
 
 void publishDigitalKeyState()
 {
   message frmDigitalKeyStateMsg mDkey;
   int tmuInputStale;
-  int failSafeMode;
+  int vehicleInputStale;
   int driveState;
   int tmuServiceMode;
   int signalBars;
@@ -48,10 +64,10 @@ void publishDigitalKeyState()
   int keyPresence;
 
   tmuInputStale = (ethIsRecentTick(gTmuServiceRxMs, 300) == 1) ? 0 : 1;
-  traceDkeyInputHealth(tmuInputStale);
+  vehicleInputStale = (ethIsRecentTick(gVehicleRxMs, 300) == 1) ? 0 : 1;
+  traceDkeyInputHealth(tmuInputStale, vehicleInputStale);
 
-  failSafeMode = clampRange((int)@Core::failSafeMode, 0, 2);
-  driveState = clampRange((int)@Core::driveStateNorm, 0, 3);
+  driveState = gDriveState;
   tmuServiceMode = gTmuServiceMode;
   signalBars = gSignalBars;
   if (tmuInputStale == 1)
@@ -59,17 +75,26 @@ void publishDigitalKeyState()
     tmuServiceMode = 0;
     signalBars = 0;
   }
+  if (vehicleInputStale == 1)
+  {
+    driveState = 0;
+  }
 
   dkeyState = 0;
   if (tmuServiceMode > 0 && signalBars >= 1)
   {
     dkeyState = 1;
   }
-  if (driveState == 0 && failSafeMode == 0 && tmuServiceMode == 1 && signalBars >= 3)
+  if (vehicleInputStale == 0 &&
+      driveState == 0 &&
+      tmuServiceMode == 1 &&
+      signalBars >= 3)
   {
     dkeyState = 2;
   }
-  else if (driveState > 0 && tmuServiceMode > 0)
+  else if (vehicleInputStale == 0 &&
+           driveState > 0 &&
+           tmuServiceMode > 0)
   {
     dkeyState = 3;
   }
@@ -108,11 +133,11 @@ void publishDigitalKeyState()
   }
 
   securityGrade = 0;
-  if (failSafeMode > 0)
+  if (dkeyState == 2 && signalBars >= 3)
   {
     securityGrade = 2;
   }
-  else if (signalBars >= 3 && tmuServiceMode == 1)
+  else if (tmuServiceMode > 0 && signalBars >= 1)
   {
     securityGrade = 1;
   }
@@ -151,9 +176,12 @@ on start
 {
   gTmuServiceMode = 0;
   gSignalBars = 0;
+  gDriveState = 0;
   gKeySyncAge = 0;
   gTmuServiceRxMs = 0;
+  gVehicleRxMs = 0;
   gLastTmuInputStale = 0;
+  gLastVehicleInputStale = 0;
   gLastDkeyState = -1;
   gLastAuthMode = -1;
   gLastAccessState = -1;
@@ -173,6 +201,12 @@ on message frmTmuServiceStateMsg
   gTmuServiceMode = clampRange((int)this.TmuServiceMode, 0, 3);
   gSignalBars = clampRange((int)this.SignalBars, 0, 15);
   gTmuServiceRxMs = getSimulationTimeMs();
+}
+
+on message frmVehicleStateCanMsg
+{
+  gDriveState = clampRange((int)this.gDriveState, 0, 3);
+  gVehicleRxMs = getSimulationTimeMs();
 }
 
 on stopMeasurement

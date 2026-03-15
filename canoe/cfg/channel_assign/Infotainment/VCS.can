@@ -10,10 +10,14 @@ variables
   int gAudioDuckingLvl;
   int gTmuServiceMode;
   int gSignalBars;
+  int gClusterNotifType;
+  int gClusterNotifArg;
   dword gAudioFocusRxMs;
   dword gTmuServiceRxMs;
+  dword gClusterNotifRxMs;
   int gLastAudioFocusInputStale;
   int gLastTmuInputStale;
+  int gLastNotifInputStale;
   int gLastVoiceAssistState;
   int gLastWakeWordState;
   int gLastTtsState;
@@ -21,7 +25,7 @@ variables
   int gLastTtsQueueDepth;
 }
 
-void traceVcsInputHealth(int audioFocusInputStale, int tmuInputStale)
+void traceVcsInputHealth(int audioFocusInputStale, int tmuInputStale, int notifInputStale)
 {
   if (audioFocusInputStale != gLastAudioFocusInputStale)
   {
@@ -48,6 +52,19 @@ void traceVcsInputHealth(int audioFocusInputStale, int tmuInputStale)
     }
     gLastTmuInputStale = tmuInputStale;
   }
+
+  if (notifInputStale != gLastNotifInputStale)
+  {
+    if (notifInputStale == 1)
+    {
+      write("[VCS] cluster-notif input stale");
+    }
+    else
+    {
+      write("[VCS] cluster-notif input restored");
+    }
+    gLastNotifInputStale = notifInputStale;
+  }
 }
 
 void publishVoiceAssistState()
@@ -56,11 +73,13 @@ void publishVoiceAssistState()
   message frmSpeechTtsStateMsg mTts;
   int audioFocusInputStale;
   int tmuInputStale;
-  int alertLevel;
+  int notifInputStale;
   int audioFocusOwner;
   int audioDuckingLvl;
   int tmuServiceMode;
   int signalBars;
+  int clusterNotifType;
+  int clusterNotifArg;
   int voiceAssistState;
   int wakeWordState;
   int ttsState;
@@ -69,13 +88,15 @@ void publishVoiceAssistState()
 
   audioFocusInputStale = (ethIsRecentTick(gAudioFocusRxMs, 300) == 1) ? 0 : 1;
   tmuInputStale = (ethIsRecentTick(gTmuServiceRxMs, 300) == 1) ? 0 : 1;
-  traceVcsInputHealth(audioFocusInputStale, tmuInputStale);
+  notifInputStale = (ethIsRecentTick(gClusterNotifRxMs, 300) == 1) ? 0 : 1;
+  traceVcsInputHealth(audioFocusInputStale, tmuInputStale, notifInputStale);
 
-  alertLevel = clampRange((int)@Core::selectedAlertLevel, 0, 7);
   audioFocusOwner = gAudioFocusOwner;
   audioDuckingLvl = gAudioDuckingLvl;
   tmuServiceMode = gTmuServiceMode;
   signalBars = gSignalBars;
+  clusterNotifType = gClusterNotifType;
+  clusterNotifArg = gClusterNotifArg;
   if (audioFocusInputStale == 1)
   {
     audioFocusOwner = 0;
@@ -85,6 +106,11 @@ void publishVoiceAssistState()
   {
     tmuServiceMode = 0;
     signalBars = 0;
+  }
+  if (notifInputStale == 1)
+  {
+    clusterNotifType = 0;
+    clusterNotifArg = 0;
   }
 
   voiceAssistState = 0;
@@ -104,7 +130,7 @@ void publishVoiceAssistState()
   }
 
   ttsState = 0;
-  if (alertLevel > 0 && audioFocusOwner > 0)
+  if (clusterNotifType > 0 && clusterNotifArg > 0 && audioFocusOwner > 0)
   {
     ttsState = 1;
   }
@@ -112,7 +138,7 @@ void publishVoiceAssistState()
   ttsPriority = 0;
   if (ttsState > 0)
   {
-    ttsPriority = alertLevel;
+    ttsPriority = clusterNotifArg;
     if (audioDuckingLvl >= 4 && ttsPriority < 4)
     {
       ttsPriority = 4;
@@ -160,10 +186,14 @@ on start
   gAudioDuckingLvl = 0;
   gTmuServiceMode = 0;
   gSignalBars = 0;
+  gClusterNotifType = 0;
+  gClusterNotifArg = 0;
   gAudioFocusRxMs = 0;
   gTmuServiceRxMs = 0;
+  gClusterNotifRxMs = 0;
   gLastAudioFocusInputStale = 0;
   gLastTmuInputStale = 0;
+  gLastNotifInputStale = 0;
   gLastVoiceAssistState = -1;
   gLastWakeWordState = -1;
   gLastTtsState = -1;
@@ -191,6 +221,13 @@ on message frmTmuServiceStateMsg
   gTmuServiceMode = clampRange((int)this.TmuServiceMode, 0, 3);
   gSignalBars = clampRange((int)this.SignalBars, 0, 15);
   gTmuServiceRxMs = getSimulationTimeMs();
+}
+
+on message frmClusterNotifMsg
+{
+  gClusterNotifType = clampRange((int)this.ClusterNotifType, 0, 255);
+  gClusterNotifArg = clampRange((int)this.ClusterNotifArg, 0, 255);
+  gClusterNotifRxMs = getSimulationTimeMs();
 }
 
 on stopMeasurement
