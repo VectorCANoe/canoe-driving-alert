@@ -48,19 +48,19 @@ Repeated simulator rows are grouped where the native-asset candidate, oracle typ
 |---|---|---|---|---|---|
 | `UT_001` | `TC_CANOE_UT_CORE_001_CGW_CHS_GW` | forwarded vehicle-state seam | native report + trace + `verification_log.csv` | `No` | - |
 | `UT_002` | `TC_CANOE_UT_CORE_002_CGW_INFOTAINMENT_GW` | forwarded navigation-context seam | native report + trace + `verification_log.csv` | `No` | - |
-| `UT_003` | `TC_CANOE_UT_CORE_003_ADAS_WARN_CTRL` | selected warning state | native report + sysvar snapshot + panel capture | `No` | - |
-| `UT_004` | `TC_CANOE_UT_V2_001_EMS_ALERT_RX_TIMEOUT` | emergency state + timeout clear | native report + trace + sysvar snapshot | `No` | - |
-| `UT_005` | `TC_CANOE_UT_V2_002_WARN_ARB_MGR` | arbitration result and decel-assist state | native report + sysvar snapshot + panel capture | `No` | - |
+| `UT_003` | `TC_CANOE_UT_CORE_003_CGW_BOUNDARY_STATUS` | selected warning state | native report + sysvar snapshot + panel capture | `No` | - |
+| `UT_004` | `TC_CANOE_UT_CORE_004_V2X_EVENT_MAINTAIN` | emergency state + timeout clear | native report + trace + sysvar snapshot | `No` | - |
+| `UT_005` | `TC_CANOE_UT_CORE_005_ADAS_DECEL_ASSIST` | arbitration result and decel-assist state | native report + sysvar snapshot + panel capture | `No` | - |
 | `UT_006` | `TC_CANOE_UT_EXT_001_OBJECT_RISK` | object-risk state and downgrade state | native report + trace + event log | `No` | - |
 | `UT_007` | `TC_CANOE_UT_EXT_002_CLU_CONTEXT_ADJUST` | rendered warning context | native report + cluster capture + sysvar snapshot | `No` | - |
 | `UT_008` | `TC_CANOE_UT_EXT_003_DOMAIN_BOUNDARY_FAILSAFE` | fail-safe entry state and boundary-health state | native report + sysvar snapshot + trace + write window | `No` | - |
 | `UT_009` | `TC_CANOE_UT_CORE_004_NAV_CTX_MGR` | zone context state | native report + sysvar snapshot | `No` | - |
 | `UT_010` | `TC_CANOE_UT_CORE_005_EMS_ALERT_TXRX` | emergency tx/rx state and timeout state | native report + CAN/Ethernet trace + write window | `No` | - |
-| `UT_011` | `TC_CANOE_UT_CORE_006_WARN_ARB_RULES` | final selected warning state | native report + sysvar snapshot + panel capture | `No` | - |
+| `UT_011` | `TC_CANOE_UT_CORE_011_ADAS_WARNING_SELECTION` | final selected warning state | native report + sysvar snapshot + panel capture | `No` | - |
 | `UT_012` | `TC_CANOE_UT_CORE_007_BODY_GW_ROUTE` | ambient route state | native report + trace + ambient capture | `No` | - |
 | `UT_013` | `TC_CANOE_UT_CORE_008_IVI_GW_ROUTE` | cluster route state | native report + trace + cluster capture | `No` | - |
-| `UT_014` | `TC_CANOE_UT_CORE_009_AMBIENT_CTRL` | ambient color and pattern state | native report + panel capture + screenshot | `No` | - |
-| `UT_015` | `TC_CANOE_UT_CORE_010_CLU_HMI_CTRL` | warning text and direction state | native report + cluster capture + screenshot | `No` | - |
+| `UT_014` | `TC_CANOE_UT_CORE_014_BCM_AMBIENT_POLICY` | ambient color and pattern state | native report + panel capture + screenshot | `No` | - |
+| `UT_015` | `TC_CANOE_UT_CORE_015_IVI_TEXT_MAPPING` | warning text and direction state | native report + cluster capture + screenshot | `No` | - |
 | `UT_016` | `TC_CANOE_UT_EXT_004_CHS_BRAKE_EXT` | brake-related context state | native report + trace + sysvar snapshot | `No` | - |
 | `UT_017` | `TC_CANOE_UT_EXT_005_CHS_DYNAMICS_EXT` | chassis-context state | native report + trace + sysvar snapshot | `No` | - |
 | `UT_018` | `TC_CANOE_UT_EXT_006_BODY_ENTRY_EXIT` | door and tailgate context state | native report + trace + sysvar snapshot | `No` | - |
@@ -79,8 +79,8 @@ Repeated simulator rows are grouped where the native-asset candidate, oracle typ
 | `UT_049`-`UT_051` | `TEST_SCN display/audio/service presets` | input injection state | write window + trace + preset log | `No` | - |
 | `UT_052`-`UT_061` | `TEST_SCN adas/parking/perception presets` | input injection state | write window + trace + preset log | `No` | - |
 | `UT_062` | `TEST_SCN IBOX service preset` | service-state injection | write window + trace + preset log | `No` | - |
-| `UT_063` | `TEST_SCN SGW security preset` | security-state injection | write window + trace + preset log | `Yes` | security-state and route ownership explanation |
-| `UT_064` | `TEST_SCN DCM diagnostic preset` | diagnostic-state injection | write window + trace + preset log | `Yes` | diagnostic-state reason and later SID/DID linkage |
+| `UT_063` | `TC_CANOE_UT_EXT_016_SGW_SECURITY_STATE` | security-state injection | write window + trace + sysvar snapshot | `Yes` | security-state and route ownership explanation |
+| `UT_064` | `TC_CANOE_UT_EXT_017_DCM_DIAGNOSTIC_STATE` | diagnostic-state injection | write window + trace + sysvar snapshot | `Yes` | diagnostic-state reason and later SID/DID linkage |
 | `UT_065`-`UT_069` | `TEST_SCN backbone/powertrain presets` | input injection state | write window + trace + preset log | `No` | - |
 | `UT_070` | `TC_CANOE_UT_OUT_001_BCM_AMBIENT` | ambient output render state | panel capture + screenshot + native report | `No` | - |
 | `UT_071` | `TC_CANOE_UT_OUT_002_IVI_HMI` | HMI output state | panel capture + screenshot + native report | `No` | - |
@@ -96,13 +96,13 @@ Repeated simulator rows are grouped where the native-asset candidate, oracle typ
 | ID | Candidate native asset | Primary oracle | Primary evidence | Diagnostic Needed? | Diagnostic intent |
 |---|---|---|---|---|---|
 | `IT_001` | `TC_CANOE_IT_CORE_001_BASE_ACTIVATION` | warning activation/inactivation state | native report + sysvar snapshot + panel capture | `No` | - |
-| `IT_002` | `TC_CANOE_IT_CORE_002_ZONE_WARNING` | zone-warning result state | native report + trace + panel capture | `No` | - |
-| `IT_003` | `TC_CANOE_IT_CORE_003_HIGHWAY_STEERING` | highway-warning trigger and clear state | native report + sysvar snapshot + panel capture | `No` | - |
+| `IT_002` | `TC_CANOE_IT_CORE_002_SCHOOLZONE_PATH` | zone-warning result state | native report + trace + panel capture | `No` | - |
+| `IT_003` | `TC_CANOE_IT_CORE_003_HIGHWAY_NOSTEER_PATH` | highway-warning trigger and clear state | native report + sysvar snapshot + panel capture | `No` | - |
 | `IT_004` | `TC_CANOE_IT_V2_001_POLICE_RX` | police-warning result state | native report + trace + panel capture | `No` | - |
 | `IT_005` | `TC_CANOE_IT_V2_002_AMBULANCE_RX` | ambulance-warning result state | native report + trace + panel capture | `No` | - |
 | `IT_006` | `TC_CANOE_IT_V2_003_ARBITRATION` | final selected warning state | native report + sysvar snapshot + panel capture | `No` | - |
-| `IT_007` | `TC_CANOE_IT_CORE_004_AMBIENT_OUTPUT` | ambient color/pattern result | panel capture + screenshot + `verification_log.csv` | `No` | - |
-| `IT_008` | `TC_CANOE_IT_CORE_005_CLUSTER_GUIDANCE` | cluster text/direction result | cluster capture + screenshot + `verification_log.csv` | `No` | - |
+| `IT_007` | `TC_CANOE_IT_CORE_007_AMBIENT_OUTPUT` | ambient color/pattern result | panel capture + screenshot + `verification_log.csv` | `No` | - |
+| `IT_008` | `TC_CANOE_IT_CORE_008_CLUSTER_DIRECTION_OUTPUT` | cluster text/direction result | cluster capture + screenshot + `verification_log.csv` | `No` | - |
 | `IT_009` | `TC_CANOE_IT_V2_004_TIMEOUT_CLEAR` | clear and restore state | native report + trace + sysvar snapshot | `No` | - |
 | `IT_010` | `TC_CANOE_IT_V2_005_DECEL_ASSIST` | decel-assist request and sync state | native report + trace + sysvar snapshot + panel capture | `No` | - |
 | `IT_011` | `TC_CANOE_IT_V2_006_FAILSAFE_MIN_WARNING` | fail-safe state and minimum-channel state | native report + write window + sysvar snapshot + trace | `No` | - |
@@ -147,18 +147,18 @@ Repeated simulator rows are grouped where the native-asset candidate, oracle typ
 |---|---|---|---|---|---|
 | `ST_001` | `TC_CANOE_ST_CORE_001_POWER_ON_BASELINE` | no-warning baseline state | panel capture + screenshot + native report | `No` | - |
 | `ST_002` | `TC_CANOE_ST_CORE_002_NORMAL_DRIVE` | nominal drive state | panel capture + screenshot + native report | `No` | - |
-| `ST_003` | `TC_CANOE_ST_CORE_003_OVERSPEED` | overspeed warning result | panel capture + trace + `verification_log.csv` | `No` | - |
-| `ST_004` | `TC_CANOE_ST_CORE_004_OVERSPEED_CLEAR` | clear-to-normal state | panel capture + trace + `verification_log.csv` | `No` | - |
+| `ST_003` | `TC_CANOE_ST_CORE_003_BASIC_WARNING_ACTIVATION` | basic warning activation result | panel capture + trace + `verification_log.csv` | `No` | - |
+| `ST_004` | `TC_CANOE_ST_CORE_004_BASIC_WARNING_CLEAR` | clear-to-normal state | panel capture + trace + `verification_log.csv` | `No` | - |
 | `ST_005` | `TC_CANOE_ST_CORE_005_ENTER_SCHOOL_ZONE` | school-zone warning transition | panel capture + trace + `verification_log.csv` | `No` | - |
 | `ST_006` | `TC_CANOE_ST_CORE_006_EXIT_SCHOOL_ZONE` | school-zone recovery state | panel capture + trace + `verification_log.csv` | `No` | - |
-| `ST_007` | `TC_CANOE_ST_CORE_007_ENTER_HIGHWAY_ZONE` | highway-mode transition | panel capture + trace + `verification_log.csv` | `No` | - |
+| `ST_007` | `TC_CANOE_ST_CORE_007_HIGHWAY_POLICY_TRANSITION` | highway-mode transition | panel capture + trace + `verification_log.csv` | `No` | - |
 | `ST_008` | `TC_CANOE_ST_CORE_008_STEERING_INACTIVITY` | warning trigger and clear result | panel capture + trace + `verification_log.csv` | `No` | - |
 | `ST_009` | `TC_CANOE_ST_CORE_009_GUIDE_LEFT` | left-guidance visible result | cluster capture + screenshot + native report | `No` | - |
-| `ST_010` | `TC_CANOE_ST_CORE_010_GUIDE_RIGHT` | right-guidance visible result | cluster capture + screenshot + native report | `No` | - |
+| `ST_010` | `TC_CANOE_ST_CORE_010_GUIDE_RIGHT_CLEAR` | right-guidance visible result | cluster capture + screenshot + native report | `No` | - |
 | `ST_011` | `TC_CANOE_ST_V2_001_POLICE_OVERRIDE` | police-over-zone result | panel capture + trace + native report | `No` | - |
 | `ST_012` | `TC_CANOE_ST_V2_002_AMBULANCE_OVERRIDE` | ambulance-over-zone result | panel capture + trace + native report | `No` | - |
-| `ST_013` | `TC_CANOE_ST_V2_003_POLICE_DIRECTION` | police direction render | cluster/HUD capture + native report | `No` | - |
-| `ST_014` | `TC_CANOE_ST_V2_004_AMBULANCE_DIRECTION` | ambulance direction render | cluster/HUD capture + native report | `No` | - |
+| `ST_013` | `TC_CANOE_ST_CORE_013_POLICE_DIRECTION_RIGHT` | police direction render | cluster/HUD capture + native report | `No` | - |
+| `ST_014` | `TC_CANOE_ST_CORE_014_AMBULANCE_DIRECTION_LEFT` | ambulance direction render | cluster/HUD capture + native report | `No` | - |
 | `ST_015` | `TC_CANOE_ST_V2_005_AMBULANCE_PRIORITY` | final selected warning state | panel capture + trace + native report | `No` | - |
 | `ST_016` | `TC_CANOE_ST_V2_006_POLICE_TIEBREAK` | ETA and SourceID arbitration result | native report + sysvar snapshot + trace | `No` | - |
 | `ST_017` | `TC_CANOE_ST_V2_007_AMBULANCE_TIEBREAK` | ETA and SourceID arbitration result | native report + sysvar snapshot + trace | `No` | - |
