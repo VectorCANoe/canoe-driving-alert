@@ -1,84 +1,7 @@
 /*@!Encoding:65001*/
 includes
 {
-  #include "..\\common\\ValidationHarnessEthCommon.cin"
   #include "..\\common\\ValidationHarnessTestCommon.cin"
-}
-
-variables
-{
-  long gEthSocket;
-  char gEthRxBuffer[64];
-  long gObsFailSafeMode;
-  long gObsDecelAssistReq;
-  long gObsSelectedAlertLevel;
-  long gObsSelectedAlertType;
-}
-
-long invalidObserverSocket()
-{
-  return ~0;
-}
-
-long ensureTransportObserverReady()
-{
-  if (gEthSocket == 0)
-  {
-    gEthSocket = invalidObserverSocket();
-  }
-  if (gEthSocket == invalidObserverSocket())
-  {
-    gEthSocket = ethOpenDefaultSocket();
-    if (gEthSocket == invalidObserverSocket())
-    {
-      testStepFail("transport-observer", "Failed to open default ETH socket");
-      return 0;
-    }
-    ethStartReceiver(gEthSocket, gEthRxBuffer, elcount(gEthRxBuffer));
-  }
-  return 1;
-}
-
-void resetTransportObserverState()
-{
-  gObsFailSafeMode = -1;
-  gObsDecelAssistReq = -1;
-  gObsSelectedAlertLevel = -1;
-  gObsSelectedAlertType = -1;
-}
-
-void OnUdpReceiveFrom(dword socket, long result, dword address, dword port, char buffer[], dword count)
-{
-  int msgId;
-  int payload0;
-
-  if (socket != gEthSocket)
-  {
-    return;
-  }
-
-  if (result == 0)
-  {
-    msgId = ethFrameMsgId(buffer, count);
-    if (msgId == 0xE212 && ethFramePayloadLen(count) >= 1)
-    {
-      payload0 = ethGetU8(buffer, 0);
-      gObsFailSafeMode = (payload0 >> 4) & 0x3;
-    }
-    else if (msgId == 0xE211 && ethFramePayloadLen(count) >= 2)
-    {
-      payload0 = ethGetU8(buffer, 0);
-      gObsDecelAssistReq = payload0 & 0x1;
-    }
-    else if (msgId == 0xE200 && ethFramePayloadLen(count) >= 2)
-    {
-      payload0 = ethGetU8(buffer, 0);
-      gObsSelectedAlertLevel = payload0 & 0x7;
-      gObsSelectedAlertType = (payload0 >> 3) & 0x1F;
-    }
-  }
-
-  ethArmReceive(gEthSocket, gEthRxBuffer, elcount(gEthRxBuffer));
 }
 
 export testcase TC_CANOE_IT_V2_006_FAILSAFE_MIN_WARNING()
@@ -87,11 +10,6 @@ export testcase TC_CANOE_IT_V2_006_FAILSAFE_MIN_WARNING()
   {
     return;
   }
-  if (!ensureTransportObserverReady())
-  {
-    return;
-  }
-  resetTransportObserverState();
   if (!launchScenarioAndWait(18, 1500, 0))
   {
     return;
@@ -107,10 +25,10 @@ export testcase TC_CANOE_IT_V2_006_FAILSAFE_MIN_WARNING()
   assertIntEq("scenario-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
   assertIntEq("base-scenario-id", 18, (long)@Test::baseScenarioId, "baseScenarioId");
   assertIntEq("base-result", 1, (long)@Test::baseScenarioResult, "baseScenarioResult");
-  assertIntMin("fail-safe-mode", 1, gObsFailSafeMode, "ethFailSafeMode");
-  assertIntEq("decel-assist", 0, gObsDecelAssistReq, "ethDecelAssistReq");
-  assertIntMin("alert-level", 6, gObsSelectedAlertLevel, "ethSelectedAlertLevel");
-  assertIntEq("alert-type", 1, gObsSelectedAlertType, "ethSelectedAlertType");
+  assertIntMin("fail-safe-mode", 1, (long)@Test::obsFailSafeMode, "ethFailSafeMode");
+  assertIntEq("decel-assist", 0, (long)@Test::obsDecelAssistReq, "ethDecelAssistReq");
+  assertIntMin("alert-level", 6, (long)@Test::obsSelectedAlertLevel, "ethSelectedAlertLevel");
+  assertIntEq("alert-type", 1, (long)@Test::obsSelectedAlertType, "ethSelectedAlertType");
   assertIntMin("cluster-code", 100, (long)@Cluster::warningTextCode, "warningTextCode");
 
   resetValidationHarnessIfNeeded();

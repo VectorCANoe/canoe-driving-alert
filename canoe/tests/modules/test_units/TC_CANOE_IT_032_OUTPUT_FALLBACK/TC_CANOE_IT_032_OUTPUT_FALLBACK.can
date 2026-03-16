@@ -1,0 +1,34 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\common\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+}
+
+export testcase TC_CANOE_IT_032_OUTPUT_FALLBACK()
+{
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  if (!launchScenarioAndWait(18, 900, 1300))
+  {
+    return;
+  }
+
+  assertIntEq("output-fallback-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+  if (!waitForObservedSelectedAlert(800) ||
+      !waitForObservedFailSafe(800))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
+  assertIntMin("output-fallback-level", 6, (long)@Test::obsSelectedAlertLevel, "ethSelectedAlertLevel");
+  assertIntMin("output-fallback-mode", 1, (long)@Test::obsFailSafeMode, "ethFailSafeMode");
+
+  resetValidationHarnessIfNeeded();
+}

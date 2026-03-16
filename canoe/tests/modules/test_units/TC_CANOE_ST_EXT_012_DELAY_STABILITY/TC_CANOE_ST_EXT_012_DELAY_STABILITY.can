@@ -34,8 +34,14 @@ export testcase TC_CANOE_ST_EXT_012_DELAY_STABILITY()
   }
 
   assertIntEq("delay-stability-restore-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
-  assertIntEq("delay-stability-restore-level", 3, (long)@Core::selectedAlertLevel, "selectedAlertLevel");
-  assertIntEq("delay-stability-restore-failsafe", 0, (long)@Core::failSafeMode, "failSafeMode");
+  if (!waitForObservedSelectedAlert(800) ||
+      !waitForObservedFailSafe(800))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
+  assertIntEq("delay-stability-restore-level", 3, (long)@Test::obsSelectedAlertLevel, "ethSelectedAlertLevel");
+  assertIntEq("delay-stability-restore-failsafe", 0, (long)@Test::obsFailSafeMode, "ethFailSafeMode");
 
   if (!resetValidationHarnessIfNeeded())
   {
@@ -48,7 +54,8 @@ export testcase TC_CANOE_ST_EXT_012_DELAY_STABILITY()
   }
 
   assertIntEq("delay-stability-recovery-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
-  assertIntEq("delay-stability-recovery-failsafe", 0, (long)@Core::failSafeMode, "failSafeMode");
+  if (!waitForObservedFailSafe(800)) { resetValidationHarnessIfNeeded(); return; }
+  assertIntEq("delay-stability-recovery-failsafe", 0, (long)@Test::obsFailSafeMode, "ethFailSafeMode");
 
   resetValidationHarnessIfNeeded();
 }

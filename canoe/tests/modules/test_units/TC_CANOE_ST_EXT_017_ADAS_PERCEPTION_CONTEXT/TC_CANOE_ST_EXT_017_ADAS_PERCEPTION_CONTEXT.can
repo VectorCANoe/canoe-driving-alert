@@ -6,6 +6,66 @@ includes
 
 variables
 {
+  long gLaneKeepAssistActive;
+  long gLaneGuideState;
+  long gSelectedAlertLevel;
+  long gPreviewHealth;
+  long gLanePreviewValid;
+  long gZonePreview;
+  long gSpeedLimit;
+  long gPreviewConfidence;
+  long gParkMasterActive;
+  long gAutoManeuverReady;
+  long gParkPhase;
+  long gPkmViewMode;
+  long gMinDistanceCm;
+  long gAssistStage;
+  long gSurroundHealth;
+  long gSurroundActive;
+  long gAutoParkReady;
+  long gSpmViewMode;
+  long gProximityClass;
+  long gSteeringAssistReq;
+  long gBrakeHoldReq;
+  long gDistanceBucket;
+}
+
+on message frmLdwsLkasStateMsg
+{
+  gLaneKeepAssistActive = this.LaneKeepAssistActive;
+  gLaneGuideState = this.LaneGuideState;
+  gSelectedAlertLevel = this.SelectedAlertLevel;
+}
+
+on message frmRoadPreviewCameraStateMsg
+{
+  gPreviewHealth = this.PreviewHealth;
+  gLanePreviewValid = this.LanePreviewValid;
+  gZonePreview = this.ZonePreview;
+  gSpeedLimit = this.SpeedLimit;
+  gPreviewConfidence = this.PreviewConfidence;
+}
+
+on message frmParkMasterStateMsg
+{
+  gParkMasterActive = this.ParkMasterActive;
+  gAutoManeuverReady = this.AutoManeuverReady;
+  gParkPhase = this.ParkPhase;
+  gPkmViewMode = this.ViewMode;
+  gMinDistanceCm = this.MinDistanceCm;
+  gAssistStage = this.AssistStage;
+  gSurroundHealth = this.SurroundHealth;
+}
+
+on message frmSurroundParkMasterStateMsg
+{
+  gSurroundActive = this.SurroundActive;
+  gAutoParkReady = this.AutoParkReady;
+  gSpmViewMode = this.ViewMode;
+  gProximityClass = this.ProximityClass;
+  gSteeringAssistReq = this.SteeringAssistReq;
+  gBrakeHoldReq = this.BrakeHoldReq;
+  gDistanceBucket = this.DistanceBucket;
 }
 
 export testcase TC_CANOE_ST_EXT_017_ADAS_PERCEPTION_CONTEXT()
@@ -13,8 +73,30 @@ export testcase TC_CANOE_ST_EXT_017_ADAS_PERCEPTION_CONTEXT()
   if (!resetValidationHarnessIfNeeded()) { return; }
   if (!launchScenarioAndWait(233, 900, 1300)) { return; }
   assertIntEq("st-adas-driveassist-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+  assertIntEq("st-adas-driveassist-lkas", 1, gLaneKeepAssistActive, "LaneKeepAssistActive");
+  assertIntEq("st-adas-driveassist-guide", 2, gLaneGuideState, "LaneGuideState");
+  assertIntEq("st-adas-driveassist-alert", 3, gSelectedAlertLevel, "SelectedAlertLevel");
+  assertIntEq("st-adas-driveassist-preview-health", 2, gPreviewHealth, "PreviewHealth");
+  assertIntEq("st-adas-driveassist-lane-preview", 1, gLanePreviewValid, "LanePreviewValid");
+  assertIntEq("st-adas-driveassist-zone", 2, gZonePreview, "ZonePreview");
+  assertIntEq("st-adas-driveassist-speed-limit", 100, gSpeedLimit, "SpeedLimit");
+  assertIntEq("st-adas-driveassist-confidence", 80, gPreviewConfidence, "PreviewConfidence");
   if (!resetValidationHarnessIfNeeded()) { return; }
   if (!launchScenarioAndWait(234, 900, 1300)) { return; }
   assertIntEq("st-adas-parking-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+  assertIntEq("st-adas-parking-master-active", 1, gParkMasterActive, "ParkMasterActive");
+  assertIntEq("st-adas-parking-auto-ready", 1, gAutoManeuverReady, "AutoManeuverReady");
+  assertIntEq("st-adas-parking-phase", 3, gParkPhase, "ParkPhase");
+  assertIntEq("st-adas-parking-view", 3, gPkmViewMode, "ViewMode");
+  assertIntEq("st-adas-parking-distance", 28, gMinDistanceCm, "MinDistanceCm");
+  assertIntEq("st-adas-parking-stage", 2, gAssistStage, "AssistStage");
+  assertIntEq("st-adas-parking-health", 2, gSurroundHealth, "SurroundHealth");
+  assertIntEq("st-adas-parking-surround-active", 1, gSurroundActive, "SurroundActive");
+  assertIntEq("st-adas-parking-surround-ready", 1, gAutoParkReady, "AutoParkReady");
+  assertIntEq("st-adas-parking-spm-view", 3, gSpmViewMode, "ViewMode");
+  assertIntEq("st-adas-parking-proximity", 3, gProximityClass, "ProximityClass");
+  assertIntEq("st-adas-parking-steer-req", 1, gSteeringAssistReq, "SteeringAssistReq");
+  assertIntEq("st-adas-parking-brake-hold", 1, gBrakeHoldReq, "BrakeHoldReq");
+  assertIntEq("st-adas-parking-distance-bucket", 28, gDistanceBucket, "DistanceBucket");
   resetValidationHarnessIfNeeded();
 }

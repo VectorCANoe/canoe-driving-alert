@@ -21,10 +21,16 @@ export testcase TC_CANOE_ST_V2_001_POLICE_OVERRIDE()
   }
 
   assertIntEq("police-override-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
-  assertIntEq("police-override-level", 6, (long)@Core::selectedAlertLevel, "selectedAlertLevel");
-  assertIntEq("police-override-type", 1, (long)@Core::selectedAlertType, "selectedAlertType");
-  assertIntMin("police-override-arbitration", 1, (long)@CoreState::arbitrationSnapshotId, "arbitrationSnapshotId");
-  assertIntEq("police-override-failsafe", 0, (long)@Core::failSafeMode, "failSafeMode");
+  if (!waitForObservedSelectedAlert(800) ||
+      !waitForObservedFailSafe(800))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
+  assertIntEq("police-override-level", 6, (long)@Test::obsSelectedAlertLevel, "ethSelectedAlertLevel");
+  assertIntEq("police-override-type", 1, (long)@Test::obsSelectedAlertType, "ethSelectedAlertType");
+  assertIntMin("police-override-arbitration", 1, (long)@Test::baseTraceSnapshotId, "baseTraceSnapshotId");
+  assertIntEq("police-override-failsafe", 0, (long)@Test::obsFailSafeMode, "ethFailSafeMode");
 
   resetValidationHarnessIfNeeded();
 }

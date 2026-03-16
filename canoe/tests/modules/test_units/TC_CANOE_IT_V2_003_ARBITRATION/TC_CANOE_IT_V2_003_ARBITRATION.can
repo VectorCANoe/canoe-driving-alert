@@ -23,7 +23,12 @@ export testcase TC_CANOE_IT_V2_003_ARBITRATION()
   assertIntEq("eta-priority-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
   assertIntEq("eta-priority-eta", 10, (long)@V2X::eta, "eta");
   assertIntEq("eta-priority-source", 99, (long)@V2X::sourceId, "sourceId");
-  assertIntEq("eta-priority-level", 6, (long)@Core::selectedAlertLevel, "selectedAlertLevel");
+  if (!waitForObservedSelectedAlert(800))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
+  assertIntEq("eta-priority-level", 6, (long)@Test::obsSelectedAlertLevel, "ethSelectedAlertLevel");
 
   if (!resetValidationHarnessIfNeeded())
   {
@@ -38,7 +43,12 @@ export testcase TC_CANOE_IT_V2_003_ARBITRATION()
   assertIntEq("source-tiebreak-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
   assertIntEq("source-tiebreak-eta", 10, (long)@V2X::eta, "eta");
   assertIntEq("source-tiebreak-source", 5, (long)@V2X::sourceId, "sourceId");
-  assertIntEq("source-tiebreak-level", 6, (long)@Core::selectedAlertLevel, "selectedAlertLevel");
+  if (!waitForObservedSelectedAlert(800))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
+  assertIntEq("source-tiebreak-level", 6, (long)@Test::obsSelectedAlertLevel, "ethSelectedAlertLevel");
 
   if (!resetValidationHarnessIfNeeded())
   {
@@ -51,9 +61,14 @@ export testcase TC_CANOE_IT_V2_003_ARBITRATION()
   }
 
   assertIntEq("emergency-over-nav-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
-  assertIntEq("emergency-over-nav-level", 6, (long)@Core::selectedAlertLevel, "selectedAlertLevel");
-  assertIntEq("emergency-over-nav-type", 1, (long)@Core::selectedAlertType, "selectedAlertType");
-  assertIntMin("arbitration-snapshot", 1, (long)@CoreState::arbitrationSnapshotId, "arbitrationSnapshotId");
+  if (!waitForObservedSelectedAlert(800))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
+  assertIntEq("emergency-over-nav-level", 6, (long)@Test::obsSelectedAlertLevel, "ethSelectedAlertLevel");
+  assertIntEq("emergency-over-nav-type", 1, (long)@Test::obsSelectedAlertType, "ethSelectedAlertType");
+  assertIntMin("arbitration-snapshot", 1, (long)@Test::baseTraceSnapshotId, "baseTraceSnapshotId");
 
   if (!resetValidationHarnessIfNeeded())
   {
@@ -67,8 +82,13 @@ export testcase TC_CANOE_IT_V2_003_ARBITRATION()
 
   assertIntEq("ambulance-priority-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
   assertIntEq("ambulance-priority-type", 2, (long)@V2X::emergencyType, "emergencyType");
-  assertIntEq("ambulance-priority-level", 7, (long)@Core::selectedAlertLevel, "selectedAlertLevel");
-  assertIntEq("ambulance-priority-alert-type", 2, (long)@Core::selectedAlertType, "selectedAlertType");
+  if (!waitForObservedSelectedAlert(800))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
+  assertIntEq("ambulance-priority-level", 7, (long)@Test::obsSelectedAlertLevel, "ethSelectedAlertLevel");
+  assertIntEq("ambulance-priority-alert-type", 2, (long)@Test::obsSelectedAlertType, "ethSelectedAlertType");
   assertIntEq("ambulance-priority-code", 202, (long)@Cluster::warningTextCode, "warningTextCode");
 
   resetValidationHarnessIfNeeded();

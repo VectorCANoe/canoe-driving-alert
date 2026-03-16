@@ -39,7 +39,8 @@ export testcase TC_CANOE_ST_EXT_013_CHANNEL_CONTENTION()
   assertIntEq("channel-contention-popup-active", 1, (long)@CoreState::popupActive, "popupActive");
   assertIntEq("channel-contention-popup-priority", 1, (long)@CoreState::popupPriority, "popupPriority");
   assertIntEq("channel-contention-cluster-sync", 1, (long)@CoreState::clusterSyncState, "clusterSyncState");
-  assertIntEq("channel-contention-failsafe", 0, (long)@Core::failSafeMode, "failSafeMode");
+  if (!waitForObservedFailSafe(800)) { resetValidationHarnessIfNeeded(); return; }
+  assertIntEq("channel-contention-failsafe", 0, (long)@Test::obsFailSafeMode, "ethFailSafeMode");
 
   resetValidationHarnessIfNeeded();
 }

@@ -21,8 +21,13 @@ export testcase TC_CANOE_UT_EXT_001_OBJECT_RISK()
   }
 
   assertIntEq("object-forward-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
-  assertIntMin("object-forward-risk-class", 3, (long)@Core::objectRiskClass, "objectRiskClass");
-  assertIntMin("object-forward-proximity", 60, (long)@Core::proximityRiskLevel, "proximityRiskLevel");
+  if (!waitForObservedObjectRisk(800))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
+  assertIntMin("object-forward-risk-class", 3, (long)@Test::obsObjectRiskClass, "ethObjectRiskClass");
+  assertIntMin("object-forward-proximity", 60, (long)@Test::obsObjectRiskLevel, "ethObjectRiskLevel");
 
   if (!resetValidationHarnessIfNeeded())
   {
@@ -35,8 +40,15 @@ export testcase TC_CANOE_UT_EXT_001_OBJECT_RISK()
   }
 
   assertIntEq("object-intersection-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
-  assertIntEq("object-intersection-flag", 1, (long)@Core::intersectionConflictFlag, "intersectionConflictFlag");
-  assertIntEq("object-intersection-alert", 5, (long)@Core::selectedAlertType, "selectedAlertType");
+  if (!waitForObservedObjectRisk(800) ||
+      !waitForObservedObjectScenario(800) ||
+      !waitForObservedSelectedAlert(800))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
+  assertIntEq("object-intersection-flag", 1, (long)@Test::obsIntersectionConflictFlag, "ethIntersectionConflictFlag");
+  assertIntEq("object-intersection-alert", 5, (long)@Test::obsSelectedAlertType, "ethSelectedAlertType");
 
   if (!resetValidationHarnessIfNeeded())
   {
@@ -49,8 +61,15 @@ export testcase TC_CANOE_UT_EXT_001_OBJECT_RISK()
   }
 
   assertIntEq("object-merge-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
-  assertIntEq("object-merge-flag", 1, (long)@Core::mergeCutInFlag, "mergeCutInFlag");
-  assertIntEq("object-merge-alert", 6, (long)@Core::selectedAlertType, "selectedAlertType");
+  if (!waitForObservedObjectRisk(800) ||
+      !waitForObservedObjectScenario(800) ||
+      !waitForObservedSelectedAlert(800))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
+  assertIntEq("object-merge-flag", 1, (long)@Test::obsMergeCutInFlag, "ethMergeCutInFlag");
+  assertIntEq("object-merge-alert", 6, (long)@Test::obsSelectedAlertType, "ethSelectedAlertType");
 
   if (!resetValidationHarnessIfNeeded())
   {
@@ -63,9 +82,16 @@ export testcase TC_CANOE_UT_EXT_001_OBJECT_RISK()
   }
 
   assertIntEq("object-degrade-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
-  assertIntEq("object-confidence", 20, (long)@Core::objectConfidence, "objectConfidence");
-  assertIntMin("object-degrade-failsafe", 1, (long)@Core::failSafeMode, "failSafeMode");
-  assertIntEq("object-decel-off", 0, (long)@Core::decelAssistReq, "decelAssistReq");
+  if (!waitForObservedObjectRisk(800) ||
+      !waitForObservedFailSafe(800) ||
+      !waitForObservedDecelAssist(800))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
+  assertIntEq("object-confidence", 20, (long)@Test::obsObjectConfidence, "ethObjectConfidence");
+  assertIntMin("object-degrade-failsafe", 1, (long)@Test::obsFailSafeMode, "ethFailSafeMode");
+  assertIntEq("object-decel-off", 0, (long)@Test::obsDecelAssistReq, "ethDecelAssistReq");
 
   resetValidationHarnessIfNeeded();
 }

@@ -95,17 +95,17 @@ This is the implementation-side verification bridge between the official `05/06/
 | `IT_010` | `TC_CANOE_IT_V2_005_DECEL_ASSIST` | decel-assist request and sync state | native report + trace + sysvar snapshot + panel capture | `No` |
 | `IT_011` | `TC_CANOE_IT_V2_006_FAILSAFE_MIN_WARNING` | fail-safe state and minimum-channel state | native report + write window + sysvar snapshot + trace | `No` |
 | `IT_012` | `TC_CANOE_IT_EXT_001_OBJECT_RISK_EVENTLOG` | object-risk state and event-log state | native report + trace + event log | `No` |
-| `IT_013` | `TC_CANOE_IT_EXT_002_DRIVER_CONTEXT` | seat-belt emphasis state | native report + panel capture + sysvar snapshot | `No` |
-| `IT_014` | `TC_CANOE_IT_EXT_002_DRIVER_CONTEXT` | display-policy reflection state | native report + panel capture + sysvar snapshot | `No` |
-| `IT_015` | `TC_CANOE_IT_EXT_002_DRIVER_CONTEXT` | turn-lamp context adjusted warning type | native report + panel capture + sysvar snapshot | `No` |
-| `IT_016` | `TC_CANOE_IT_EXT_002_DRIVER_CONTEXT` | drive-mode sensitivity state | native report + panel capture + sysvar snapshot | `No` |
-| `IT_017` | `TC_CANOE_IT_BASE_006_AUDIO_VOICE` | audio focus, ducking, and volume policy state | native report + panel capture + sysvar snapshot | `No` |
+| `IT_013` | `TC_CANOE_IT_013_SEATBELT_CONTEXT` | seat-belt emphasis state | native report + panel capture + sysvar snapshot | `No` |
+| `IT_014` | `TC_CANOE_IT_014_DISPLAY_POLICY` | display-policy reflection state | native report + panel capture + sysvar snapshot | `No` |
+| `IT_015` | `TC_CANOE_IT_015_TURN_LAMP_CONTEXT` | turn-lamp context adjusted warning type | native report + panel capture + sysvar snapshot | `No` |
+| `IT_016` | `TC_CANOE_IT_016_DRIVE_MODE_SENSITIVITY` | drive-mode sensitivity state | native report + panel capture + sysvar snapshot | `No` |
+| `IT_017` | `TC_CANOE_IT_017_AUDIO_VOLUME_POLICY` | audio focus, ducking, and volume policy state | native report + panel capture + sysvar snapshot | `No` |
 | `IT_018` | `TC_CANOE_IT_EXT_003_EMERGENCY_PLUS_TTC` | combined warning/decel result state | native report + trace + panel capture | `No` |
-| `IT_019` | `TC_CANOE_IT_BASE_001_POWERTRAIN_STATE` | parked baseline state | native report + trace + sysvar snapshot | `No` |
-| `IT_020` | `TC_CANOE_IT_BASE_001_POWERTRAIN_STATE` | drive baseline state | native report + trace + sysvar snapshot | `No` |
-| `IT_021` | `TC_CANOE_IT_BASE_002_CHASSIS_STATE` | steering-input baseline state | native report + trace + sysvar snapshot | `No` |
-| `IT_022` | `TC_CANOE_IT_BASE_002_CHASSIS_STATE` | braking-input baseline state | native report + trace + sysvar snapshot | `No` |
-| `IT_023` | `TC_CANOE_IT_BASE_002_CHASSIS_STATE` | acceleration-driven drive-mode state | native report + trace + sysvar snapshot | `No` |
+| `IT_019` | `TC_CANOE_IT_019_POWERTRAIN_PARKED_BASELINE` | parked baseline state | native report + trace + sysvar snapshot | `No` |
+| `IT_020` | `TC_CANOE_IT_020_POWERTRAIN_DRIVE_BASELINE` | drive baseline state | native report + trace + sysvar snapshot | `No` |
+| `IT_021` | `TC_CANOE_IT_021_CHASSIS_STEERING_BASELINE` | steering-input baseline state | native report + trace + sysvar snapshot | `No` |
+| `IT_022` | `TC_CANOE_IT_022_CHASSIS_BRAKE_BASELINE` | braking-input baseline state | native report + trace + sysvar snapshot | `No` |
+| `IT_023` | `TC_CANOE_IT_023_CHASSIS_ACCEL_BASELINE` | acceleration-driven drive-mode state | native report + trace + sysvar snapshot | `No` |
 | `IT_024` | `TC_CANOE_IT_BASE_003_BODY_STATE` | hazard-reflection baseline state | native report + trace + sysvar snapshot | `No` |
 | `IT_025` | `TC_CANOE_IT_EXT_010_WINDOW_STATE` | window-state reflection | native report + door-state trace + sysvar snapshot | `No` |
 | `IT_026` | `TC_CANOE_IT_BASE_004_BASIC_DISPLAY_UI` | basic display integration state | panel capture + screenshot + native report | `No` |
@@ -113,10 +113,10 @@ This is the implementation-side verification bridge between the official `05/06/
 | `IT_028` | `TC_CANOE_IT_EXT_014_BODY_CONTROL_LOCK` | door lock/open reflection state | native report + door-state trace + sysvar snapshot | `No` |
 | `IT_029` | `TC_CANOE_IT_EXT_015_WIPER_RAIN_BASELINE` | wiper/rain baseline reflection state | native report + body-output trace + sysvar snapshot | `No` |
 | `IT_030` | `TC_CANOE_IT_BASE_005_BODY_SECURITY_CONTEXT` | security-state service-boundary state | native report + trace + sysvar snapshot | `No` |
-| `IT_031` | `TC_CANOE_IT_BASE_006_AUDIO_VOICE` | audio and voice-guide integrated state | panel capture + write window + native report | `No` |
-| `IT_032` | `TC_CANOE_IT_EXT_004_OUTPUT_AVAILABILITY` | output-channel availability and fallback state | native report + trace + sysvar snapshot | `No` |
-| `IT_033` | `TC_CANOE_IT_EXT_004_OUTPUT_AVAILABILITY` | duplicate-popup suppression state | native report + trace + sysvar snapshot | `No` |
-| `IT_034` | `TC_CANOE_IT_EXT_004_OUTPUT_AVAILABILITY` | channel-restore consistency state | native report + trace + sysvar snapshot | `No` |
+| `IT_031` | `TC_CANOE_IT_031_AUDIO_GUIDE_RUNTIME` | audio and voice-guide integrated state | panel capture + write window + native report | `No` |
+| `IT_032` | `TC_CANOE_IT_032_OUTPUT_FALLBACK` | output-channel availability and fallback state | native report + trace + sysvar snapshot | `No` |
+| `IT_033` | `TC_CANOE_IT_033_DUPLICATE_POPUP_SUPPRESSION` | duplicate-popup suppression state | native report + trace + sysvar snapshot | `No` |
+| `IT_034` | `TC_CANOE_IT_034_CHANNEL_RESTORE` | channel-restore consistency state | native report + trace + sysvar snapshot | `No` |
 | `IT_035` | `TC_CANOE_IT_EXT_005_DISTANCE_HISTORY` | distance and history-query result | panel capture + native report + `verification_log.csv` | `No` |
 | `IT_036` | `TC_CANOE_IT_EXT_006_CHASSIS_EXT_CONTEXT` | EPB/EHB/VSM/ECS/CDC integrated state | native report + trace + sysvar snapshot | `No` |
 | `IT_037` | `TC_CANOE_IT_EXT_007_OCCUPANT_COMFORT_CONTEXT` | occupant/comfort integrated state | native report + trace + sysvar snapshot | `No` |
@@ -150,8 +150,8 @@ This is the implementation-side verification bridge between the official `05/06/
 | `ST_015` | `TC_CANOE_ST_V2_005_AMBULANCE_PRIORITY` | final selected warning state | panel capture + trace + native report | `No` |
 | `ST_016` | `TC_CANOE_ST_V2_006_POLICE_TIEBREAK` | ETA and SourceID arbitration result | native report + sysvar snapshot + trace | `No` |
 | `ST_017` | `TC_CANOE_ST_V2_007_AMBULANCE_TIEBREAK` | ETA and SourceID arbitration result | native report + sysvar snapshot + trace | `No` |
-| `ST_018` | `TC_CANOE_ST_ETH_001_EXTERNAL_TX_PERIOD` | police tx periodicity observation | Ethernet trace + `verification_log.csv` + write window | `No` |
-| `ST_019` | `TC_CANOE_ST_ETH_001_EXTERNAL_TX_PERIOD` | ambulance tx periodicity observation | Ethernet trace + `verification_log.csv` + write window | `No` |
+| `ST_018` | `TC_CANOE_ST_018_POLICE_TX_PERIOD` | police tx periodicity observation | Ethernet trace + `verification_log.csv` + write window | `No` |
+| `ST_019` | `TC_CANOE_ST_019_AMBULANCE_TX_PERIOD` | ambulance tx periodicity observation | Ethernet trace + `verification_log.csv` + write window | `No` |
 | `ST_020` | `TC_CANOE_ST_V2_008_TIMEOUT_CLEAR` | timeout clear and return state | native report + trace + sysvar snapshot | `No` |
 | `ST_021` | `TC_CANOE_ST_CORE_020_EMERGENCY_CLEAR_RESTORE` | restore-to-previous-warning state | panel capture + trace + native report | `No` |
 | `ST_022` | `TC_CANOE_ST_EXT_001_INTERSECTION_DECEL` | combined warning/decel result | panel capture + trace + sysvar snapshot | `No` |
@@ -162,15 +162,15 @@ This is the implementation-side verification bridge between the official `05/06/
 | `ST_027` | `TC_CANOE_ST_EXT_006_FRONTAL_OBJECT_RISK` | object-warning visible result | panel capture + event log + trace | `No` |
 | `ST_028` | `TC_CANOE_ST_EXT_007_LATERAL_OBJECT_RISK` | object-warning visible result | panel capture + event log + trace | `No` |
 | `ST_029` | `TC_CANOE_ST_EXT_008_CUTIN_OBJECT_RISK` | object-warning visible result | panel capture + event log + trace | `No` |
-| `ST_030` | `TC_CANOE_ST_EXT_009_CONTEXT_ADJUST` | seat-belt and driver-context adjusted warning | panel capture + screenshot + native report | `No` |
-| `ST_031` | `TC_CANOE_ST_EXT_009_CONTEXT_ADJUST` | emergency distance display consistency | panel capture + screenshot + native report | `No` |
+| `ST_030` | `TC_CANOE_ST_030_SEATBELT_CONTEXT_ADJUST` | seat-belt and driver-context adjusted warning | panel capture + screenshot + native report | `No` |
+| `ST_031` | `TC_CANOE_ST_031_DISTANCE_DISPLAY_CONSISTENCY` | emergency distance display consistency | panel capture + screenshot + native report | `No` |
 | `ST_032` | `TC_CANOE_ST_EXT_010_USER_SETTING_CHANGE` | updated output policy state | panel capture + screenshot + native report | `No` |
 | `ST_033` | `TC_CANOE_ST_EXT_011_HISTORY_QUERY` | history-view result | panel capture + screenshot + native report | `No` |
-| `ST_034` | `TC_CANOE_ST_EXT_012_DELAY_STABILITY` | duplicate-popup guard stability result | native report + trace + `verification_log.csv` | `No` |
-| `ST_035` | `TC_CANOE_ST_EXT_012_DELAY_STABILITY` | timeout-clear restore stability result | native report + trace + `verification_log.csv` | `No` |
-| `ST_036` | `TC_CANOE_ST_EXT_012_DELAY_STABILITY` | fail-safe recovery stability result | native report + trace + `verification_log.csv` | `No` |
-| `ST_037` | `TC_CANOE_ST_EXT_013_CHANNEL_CONTENTION` | audio focus and ducking stability result | panel capture + trace + `verification_log.csv` | `No` |
-| `ST_038` | `TC_CANOE_ST_EXT_013_CHANNEL_CONTENTION` | popup priority and cluster sync stability result | panel capture + trace + `verification_log.csv` | `No` |
+| `ST_034` | `TC_CANOE_ST_034_DUPLICATE_POPUP_GUARD` | duplicate-popup guard stability result | native report + trace + `verification_log.csv` | `No` |
+| `ST_035` | `TC_CANOE_ST_035_TIMEOUT_CLEAR_RESTORE` | timeout-clear restore stability result | native report + trace + `verification_log.csv` | `No` |
+| `ST_036` | `TC_CANOE_ST_036_FAILSAFE_RECOVERY_STABILITY` | fail-safe recovery stability result | native report + trace + `verification_log.csv` | `No` |
+| `ST_037` | `TC_CANOE_ST_037_AUDIO_CHANNEL_STABILITY` | audio focus and ducking stability result | panel capture + trace + `verification_log.csv` | `No` |
+| `ST_038` | `TC_CANOE_ST_038_VISUAL_CHANNEL_STABILITY` | popup priority and cluster sync stability result | panel capture + trace + `verification_log.csv` | `No` |
 | `ST_039` | `TC_CANOE_ST_EXT_014_CHASSIS_CONTEXT` | braking/stability context result | native report + trace + sysvar snapshot | `No` |
 | `ST_040` | `TC_CANOE_ST_EXT_015_OCCUPANT_COMFORT_CONTEXT` | body/occupant/comfort context result | native report + trace + sysvar snapshot | `No` |
 | `ST_041` | `TC_CANOE_ST_EXT_016_DISPLAY_SERVICE_CONTEXT` | display/service context result | panel capture + trace + native report | `No` |
@@ -282,22 +282,22 @@ Use this document together with:
 | ST_015 | `TC_CANOE_ST_V2_005_AMBULANCE_PRIORITY` | `212` | Ambulance warning stays selected when police and ambulance dispatch requests are simultaneous |
 | ST_016 | `TC_CANOE_ST_V2_006_POLICE_TIEBREAK` | `10` | Equal-priority police warnings resolve consistently by SourceID after ETA tie |
 | ST_017 | `TC_CANOE_ST_V2_007_AMBULANCE_TIEBREAK` | `224` | Equal-priority ambulance warnings resolve consistently by SourceID after ETA tie |
-| ST_018 | `TC_CANOE_ST_ETH_001_EXTERNAL_TX_PERIOD` | `4` | Police external transport context is stimulated with trace-gated `100ms` periodicity closure |
-| ST_019 | `TC_CANOE_ST_ETH_001_EXTERNAL_TX_PERIOD` | `5` | Ambulance external transport context is stimulated with trace-gated `100ms` periodicity closure |
+| ST_018 | `TC_CANOE_ST_018_POLICE_TX_PERIOD` | `4` | Police external transport context is stimulated with trace-gated `100ms` periodicity closure |
+| ST_019 | `TC_CANOE_ST_019_AMBULANCE_TX_PERIOD` | `5` | Ambulance external transport context is stimulated with trace-gated `100ms` periodicity closure |
 | ST_020 | `TC_CANOE_ST_V2_008_TIMEOUT_CLEAR` | `35` | Timeout-clear removes emergency context and returns the system to a safe restored state |
 | ST_021 | `TC_CANOE_ST_CORE_020_EMERGENCY_CLEAR_RESTORE` | `35` | Emergency clear followed by zone-warning restore |
 | ST_027 | `TC_CANOE_ST_EXT_006_FRONTAL_OBJECT_RISK` | `20` | Frontal object-risk warning and event-log consistency under forward TTC conflict |
 | ST_028 | `TC_CANOE_ST_EXT_007_LATERAL_OBJECT_RISK` | `21` | Lateral object-risk warning and event-log consistency under intersection conflict |
 | ST_029 | `TC_CANOE_ST_EXT_008_CUTIN_OBJECT_RISK` | `22` | Cut-in object-risk warning and event-log consistency under merge conflict |
-| ST_030 | `TC_CANOE_ST_EXT_009_CONTEXT_ADJUST` | `214` | Seat-belt and driver-context change adjusts warning context without unintended fail-safe or alert-class drift |
-| ST_031 | `TC_CANOE_ST_EXT_009_CONTEXT_ADJUST` | `222` | Emergency distance display stays consistent with warning text and rendered police-right context |
+| ST_030 | `TC_CANOE_ST_030_SEATBELT_CONTEXT_ADJUST` | `214` | Seat-belt and driver-context change adjusts warning context without unintended fail-safe or alert-class drift |
+| ST_031 | `TC_CANOE_ST_031_DISTANCE_DISPLAY_CONSISTENCY` | `222` | Emergency distance display stays consistent with warning text and rendered police-right context |
 | ST_032 | `TC_CANOE_ST_EXT_010_USER_SETTING_CHANGE` | `215` | User display and volume policy change reflected consistently in system-level warning guidance |
 | ST_033 | `TC_CANOE_ST_EXT_011_HISTORY_QUERY` | `222 + historyQuery(0)` | Distance display and latest-history query response remain consistent after emergency warning |
-| ST_034 | `TC_CANOE_ST_EXT_012_DELAY_STABILITY` | `12` | Duplicate-popup guard suppresses rapid re-trigger oscillation while preserving stable warning guidance |
-| ST_035 | `TC_CANOE_ST_EXT_012_DELAY_STABILITY` | `35` | Timeout-clear path restores the prior valid warning context without fail-safe residue |
-| ST_036 | `TC_CANOE_ST_EXT_012_DELAY_STABILITY` | `201` | Fail-safe recovery returns the warning path to normal without residual oscillation |
-| ST_037 | `TC_CANOE_ST_EXT_013_CHANNEL_CONTENTION` | `215` | Warning-audio policy keeps audio focus, ducking, and volume handling stable under active emergency guidance |
-| ST_038 | `TC_CANOE_ST_EXT_013_CHANNEL_CONTENTION` | `220` | Visual-first warning mode keeps popup priority and cluster synchronization stable without fail-safe drift |
+| ST_034 | `TC_CANOE_ST_034_DUPLICATE_POPUP_GUARD` | `12` | Duplicate-popup guard suppresses rapid re-trigger oscillation while preserving stable warning guidance |
+| ST_035 | `TC_CANOE_ST_035_TIMEOUT_CLEAR_RESTORE` | `35` | Timeout-clear path restores the prior valid warning context without fail-safe residue |
+| ST_036 | `TC_CANOE_ST_036_FAILSAFE_RECOVERY_STABILITY` | `201` | Fail-safe recovery returns the warning path to normal without residual oscillation |
+| ST_037 | `TC_CANOE_ST_037_AUDIO_CHANNEL_STABILITY` | `215` | Warning-audio policy keeps audio focus, ducking, and volume handling stable under active emergency guidance |
+| ST_038 | `TC_CANOE_ST_038_VISUAL_CHANNEL_STABILITY` | `220` | Visual-first warning mode keeps popup priority and cluster synchronization stable without fail-safe drift |
 | ST_045 | `TC_CANOE_ST_EXT_040_TRIP_SEQUENCE` | `200` | Full trip sequence returns to no-warning stable state |
 | ST_046 | `TC_CANOE_ST_EXT_041_FAILSAFE_RECOVERY` | `201` | Fail-safe recovery returns `failSafeMode` to zero |
 
@@ -347,19 +347,19 @@ Use this document together with:
 | IT_011 | `TC_CANOE_IT_V2_006_FAILSAFE_MIN_WARNING` | `18` | Fail-safe downgrade with minimum warning retention and decel block |
 | IT_012 | `TC_CANOE_IT_EXT_001_OBJECT_RISK_EVENTLOG` | `20 -> 21 -> 22 -> 24 -> 25` | Object-risk escalation, validity filtering, confidence downgrade, and event-log continuity |
 | RET_IT_013 | `TC_CANOE_IT_EXT_002_DRIVER_CONTEXT` | `214 -> 215 -> 236 -> 239` | Driver-context umbrella row is retired in favor of exact executable rows |
-| IT_013 | `TC_CANOE_IT_EXT_002_DRIVER_CONTEXT` | `214` | Seat-belt context raises warning emphasis without unintended alert-class drift |
-| IT_014 | `TC_CANOE_IT_EXT_002_DRIVER_CONTEXT` | `215` | Display-policy setting is reflected in output code and rendered direction state |
-| IT_015 | `TC_CANOE_IT_EXT_002_DRIVER_CONTEXT` | `239` | Right turn-lamp context adjusts school-zone warning type without fail-safe or level drift |
-| IT_016 | `TC_CANOE_IT_EXT_002_DRIVER_CONTEXT` | `236` | Sport-mode context raises school-zone warning sensitivity while keeping alert type stable |
-| IT_017 | `TC_CANOE_IT_BASE_006_AUDIO_VOICE` | `215` | Alert-volume setting is reflected through audio focus, ducking, and volume policy state |
+| IT_013 | `TC_CANOE_IT_013_SEATBELT_CONTEXT` | `214` | Seat-belt context raises warning emphasis without unintended alert-class drift |
+| IT_014 | `TC_CANOE_IT_014_DISPLAY_POLICY` | `215` | Display-policy setting is reflected in output code and rendered direction state |
+| IT_015 | `TC_CANOE_IT_015_TURN_LAMP_CONTEXT` | `239` | Right turn-lamp context adjusts school-zone warning type without fail-safe or level drift |
+| IT_016 | `TC_CANOE_IT_016_DRIVE_MODE_SENSITIVITY` | `236` | Sport-mode context raises school-zone warning sensitivity while keeping alert type stable |
+| IT_017 | `TC_CANOE_IT_017_AUDIO_VOLUME_POLICY` | `215` | Alert-volume setting is reflected through audio focus, ducking, and volume policy state |
 | IT_018 | `TC_CANOE_IT_EXT_003_EMERGENCY_PLUS_TTC` | `213` | Emergency-priority retention under simultaneous TTC intersection conflict with decel-assist request |
 | RET_IT_015 | `TC_CANOE_IT_BASE_001_POWERTRAIN_STATE` | `216 -> 217` | Powertrain umbrella row is retired in favor of exact parked/drive executable rows |
-| IT_019 | `TC_CANOE_IT_BASE_001_POWERTRAIN_STATE` | `216` | Parked baseline keeps drive-state and speed-state at a stable no-warning integration baseline |
-| IT_020 | `TC_CANOE_IT_BASE_001_POWERTRAIN_STATE` | `217` | Drive baseline propagates drive-state and speed-state without unintended warning activation |
+| IT_019 | `TC_CANOE_IT_019_POWERTRAIN_PARKED_BASELINE` | `216` | Parked baseline keeps drive-state and speed-state at a stable no-warning integration baseline |
+| IT_020 | `TC_CANOE_IT_020_POWERTRAIN_DRIVE_BASELINE` | `217` | Drive baseline propagates drive-state and speed-state without unintended warning activation |
 | RET_IT_016 | `TC_CANOE_IT_BASE_002_CHASSIS_STATE` | `218 -> 219 -> 237` | Chassis umbrella row is retired in favor of exact steering/braking/acceleration executable rows |
-| IT_021 | `TC_CANOE_IT_BASE_002_CHASSIS_STATE` | `218` | Steering-input propagation baseline keeps steering and speed state aligned for warning judgment |
-| IT_022 | `TC_CANOE_IT_BASE_002_CHASSIS_STATE` | `219` | Braking-input propagation baseline keeps brake and speed state aligned for warning judgment |
-| IT_023 | `TC_CANOE_IT_BASE_002_CHASSIS_STATE` | `237` | High-acceleration baseline drives driveMode and sport-state into a stable chassis integration result |
+| IT_021 | `TC_CANOE_IT_021_CHASSIS_STEERING_BASELINE` | `218` | Steering-input propagation baseline keeps steering and speed state aligned for warning judgment |
+| IT_022 | `TC_CANOE_IT_022_CHASSIS_BRAKE_BASELINE` | `219` | Braking-input propagation baseline keeps brake and speed state aligned for warning judgment |
+| IT_023 | `TC_CANOE_IT_023_CHASSIS_ACCEL_BASELINE` | `237` | High-acceleration baseline drives driveMode and sport-state into a stable chassis integration result |
 | RET_IT_017 | `TC_CANOE_IT_BASE_003_BODY_STATE` | `211 -> 216` | Body umbrella row is retired in favor of exact hazard/window executable rows |
 | IT_024 | `TC_CANOE_IT_BASE_003_BODY_STATE` | `211` | Hazard reflection baseline keeps turn-lamp state and alert level aligned without unintended drift |
 | IT_025 | `TC_CANOE_IT_EXT_010_WINDOW_STATE` | `226` | Front and right door window positions remain consistent with door/window output reflection under entry context |
@@ -369,9 +369,9 @@ Use this document together with:
 | IT_028 | `TC_CANOE_IT_EXT_014_BODY_CONTROL_LOCK` | `226` | Door lock and open-state reflection remain consistent across left/right body control output path |
 | IT_029 | `TC_CANOE_IT_EXT_015_WIPER_RAIN_BASELINE` | `229` | Wiper and rain-light baseline remain inactive and consistent across body output path in parked comfort context |
 | IT_030 | `TC_CANOE_IT_BASE_005_BODY_SECURITY_CONTEXT` | `203` | Security-state boundary remains consistent without conflicting service downgrade state |
-| IT_031 | `TC_CANOE_IT_BASE_006_AUDIO_VOICE` | `215` | Audio focus, ducking, and explicit warning-volume policy under emergency warning |
+| IT_031 | `TC_CANOE_IT_031_AUDIO_GUIDE_RUNTIME` | `215` | Audio focus, ducking, and explicit warning-volume policy under emergency warning |
 | RET_IT_021 | `TC_CANOE_IT_EXT_004_OUTPUT_AVAILABILITY` | `18 -> 12 -> 35` | Output-availability umbrella row is retired in favor of exact executable rows |
-| IT_032 | `TC_CANOE_IT_EXT_004_OUTPUT_AVAILABILITY` | `18` | Minimum warning channel remains available when fail-safe entry occurs |
-| IT_033 | `TC_CANOE_IT_EXT_004_OUTPUT_AVAILABILITY` | `12` | Duplicate-popup suppression prevents over-dense non-emergency popup churn |
-| IT_034 | `TC_CANOE_IT_EXT_004_OUTPUT_AVAILABILITY` | `35` | Channel state restores to a consistent warning context after clear or mismatch recovery |
+| IT_032 | `TC_CANOE_IT_032_OUTPUT_FALLBACK` | `18` | Minimum warning channel remains available when fail-safe entry occurs |
+| IT_033 | `TC_CANOE_IT_033_DUPLICATE_POPUP_SUPPRESSION` | `12` | Duplicate-popup suppression prevents over-dense non-emergency popup churn |
+| IT_034 | `TC_CANOE_IT_034_CHANNEL_RESTORE` | `35` | Channel state restores to a consistent warning context after clear or mismatch recovery |
 | IT_035 | `TC_CANOE_IT_EXT_005_DISTANCE_HISTORY` | `222 + historyQuery(0)` | Emergency distance display and latest-history response consistency |

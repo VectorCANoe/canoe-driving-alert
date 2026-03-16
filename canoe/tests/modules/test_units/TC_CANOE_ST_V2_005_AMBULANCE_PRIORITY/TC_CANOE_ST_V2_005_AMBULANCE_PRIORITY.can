@@ -22,8 +22,13 @@ export testcase TC_CANOE_ST_V2_005_AMBULANCE_PRIORITY()
 
   assertIntEq("ambulance-priority-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
   assertIntEq("ambulance-priority-emergency-type", 2, (long)@V2X::emergencyType, "emergencyType");
-  assertIntEq("ambulance-priority-level", 7, (long)@Core::selectedAlertLevel, "selectedAlertLevel");
-  assertIntEq("ambulance-priority-alert-type", 2, (long)@Core::selectedAlertType, "selectedAlertType");
+  if (!waitForObservedSelectedAlert(800))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
+  assertIntEq("ambulance-priority-level", 7, (long)@Test::obsSelectedAlertLevel, "ethSelectedAlertLevel");
+  assertIntEq("ambulance-priority-alert-type", 2, (long)@Test::obsSelectedAlertType, "ethSelectedAlertType");
   assertIntEq("ambulance-priority-warning-code", 202, (long)@Cluster::warningTextCode, "warningTextCode");
 
   resetValidationHarnessIfNeeded();

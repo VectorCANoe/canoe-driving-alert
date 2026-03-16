@@ -6,6 +6,18 @@ includes
 
 variables
 {
+  long gTmuLinkState;
+  long gTmuServiceMode;
+  long gRemoteClimateReq;
+  long gSignalBars;
+}
+
+on message frmTmuServiceStateMsg
+{
+  gTmuLinkState = this.TmuLinkState;
+  gTmuServiceMode = this.TmuServiceMode;
+  gRemoteClimateReq = this.RemoteClimateReq;
+  gSignalBars = this.SignalBars;
 }
 
 export testcase TC_CANOE_IT_EXT_008_DISPLAY_SERVICE_CONTEXT()
@@ -13,11 +25,23 @@ export testcase TC_CANOE_IT_EXT_008_DISPLAY_SERVICE_CONTEXT()
   if (!resetValidationHarnessIfNeeded()) { return; }
   if (!launchScenarioAndWait(229, 1300, 1700)) { return; }
   assertIntEq("it-display-service-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+  assertIntEq("it-display-service-link", 2, gTmuLinkState, "TmuLinkState");
+  assertIntEq("it-display-service-mode", 1, gTmuServiceMode, "TmuServiceMode");
+  assertIntEq("it-display-service-remote", 1, gRemoteClimateReq, "RemoteClimateReq");
+  assertIntEq("it-display-service-bars", 4, gSignalBars, "SignalBars");
   if (!resetValidationHarnessIfNeeded()) { return; }
   if (!launchScenarioAndWait(220, 900, 1300)) { return; }
   assertIntEq("it-display-policy-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+  assertIntEq("it-display-policy-theme", 2, (long)@CoreState::themeMode, "themeMode");
+  assertIntEq("it-display-policy-popup", 1, (long)@CoreState::popupActive, "popupActive");
+  assertIntEq("it-display-policy-priority", 1, (long)@CoreState::popupPriority, "popupPriority");
+  assertIntEq("it-display-policy-cluster-sync", 1, (long)@CoreState::clusterSyncState, "clusterSyncState");
   if (!resetValidationHarnessIfNeeded()) { return; }
   if (!launchScenarioAndWait(215, 900, 1300)) { return; }
   assertIntEq("it-audio-policy-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+  assertIntEq("it-audio-policy-focus", 1, (long)@CoreState::audioFocusOwner, "audioFocusOwner");
+  assertIntEq("it-audio-policy-ducking", 4, (long)@CoreState::audioDuckingLvl, "audioDuckingLvl");
+  assertIntEq("it-audio-policy-volume", 80, (long)@CoreState::volumeLevel, "volumeLevel");
+  assertIntEq("it-audio-policy-popup-clear", 0, (long)@CoreState::popupActive, "popupActive");
   resetValidationHarnessIfNeeded();
 }

@@ -26,9 +26,9 @@
 |  |  | UT_003 - ADAS (`ADAS_WARN_CTRL`) | 주행 상태와 제한속도(km/h)를 반영하여 150ms 이내 기본 경고 상태를 판단 | Ready |  |  |
 |  |  | UT_004 - V2X (`EMS_ALERT`, V2 확장) | 긴급차량 접근 정보를 수신하고 1000ms 기준 유지, 해제, 타임아웃을 관리 | Ready |  |  |
 |  |  | UT_005 - ADAS (`WARN_ARB_MGR`, V2 확장) | 긴급차량 방향과 접근 시간을 반영하여 위험도와 감속 보조를 판단 | Ready |  |  |
-|  |  | UT_006 - ADAS (`ADAS_WARN_CTRL`, ADAS 객체 확장, Planned) | 주변 객체와 센서 상태를 반영하여 위험 경고를 판단 | Ready |  |  |
-|  |  | UT_007 - CLU (`CLU_HMI_CTRL`, 차량 경보 편의 확장, Planned) | 운전자 상태와 차량 맥락을 반영하여 경고 표시와 안내를 보정 | Ready |  |  |
-|  |  | UT_008 - CGW (`DOMAIN_BOUNDARY_MGR`, 경고 강건성·인지성 확장, Planned) | 입력 신선도와 서비스 상태를 반영하여 경고 강등과 경계 상태를 유지 | Ready |  |  |
+|  |  | UT_006 - ADAS (`ADAS_WARN_CTRL`, ADAS 객체 확장) | 주변 객체와 센서 상태를 반영하여 위험 경고를 판단 | Ready |  |  |
+|  |  | UT_007 - CLU (`CLU_HMI_CTRL`, 차량 경보 편의 확장) | 운전자 상태와 차량 맥락을 반영하여 경고 표시와 안내를 보정 | Ready |  |  |
+|  |  | UT_008 - CGW (`DOMAIN_BOUNDARY_MGR`, 경고 강건성·인지성 확장) | 입력 신선도와 서비스 상태를 반영하여 경고 강등과 경계 상태를 유지 | Ready |  |  |
 |  |  | UT_009 - IVI (`NAV_CTX_MGR`) | 구간, 방향, 거리, 제한속도 정보를 받아 주행 맥락을 계산 | Ready |  |  |
 |  |  | UT_010 - V2X (`EMS_ALERT`) | 경찰, 구급 긴급 이벤트의 송신, 수신, 해제, 1000ms 타임아웃 동작을 검증 | Ready |  |  |
 |  |  | UT_011 - ADAS (`WARN_ARB_MGR`) | 긴급 경고와 일반 경고가 겹칠 때 우선순위를 결정 | Ready |  |  |

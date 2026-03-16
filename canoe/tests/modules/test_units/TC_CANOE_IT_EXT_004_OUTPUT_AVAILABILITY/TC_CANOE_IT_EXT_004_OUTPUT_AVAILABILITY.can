@@ -21,8 +21,14 @@ export testcase TC_CANOE_IT_EXT_004_OUTPUT_AVAILABILITY()
   }
 
   assertIntEq("output-availability-failsafe-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
-  assertIntMin("output-availability-failsafe-level", 6, (long)@Core::selectedAlertLevel, "selectedAlertLevel");
-  assertIntMin("output-availability-failsafe-mode", 1, (long)@Core::failSafeMode, "failSafeMode");
+  if (!waitForObservedSelectedAlert(800) ||
+      !waitForObservedFailSafe(800))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
+  assertIntMin("output-availability-failsafe-level", 6, (long)@Test::obsSelectedAlertLevel, "ethSelectedAlertLevel");
+  assertIntMin("output-availability-failsafe-mode", 1, (long)@Test::obsFailSafeMode, "ethFailSafeMode");
 
   if (!resetValidationHarnessIfNeeded())
   {
@@ -48,7 +54,12 @@ export testcase TC_CANOE_IT_EXT_004_OUTPUT_AVAILABILITY()
   }
 
   assertIntEq("output-availability-restore-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
-  assertIntEq("output-availability-restore-failsafe", 0, (long)@Core::failSafeMode, "failSafeMode");
+  if (!waitForObservedFailSafe(800))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
+  assertIntEq("output-availability-restore-failsafe", 0, (long)@Test::obsFailSafeMode, "ethFailSafeMode");
 
   resetValidationHarnessIfNeeded();
 }

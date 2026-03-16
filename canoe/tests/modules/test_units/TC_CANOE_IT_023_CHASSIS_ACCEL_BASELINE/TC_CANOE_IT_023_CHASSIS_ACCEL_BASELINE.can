@@ -1,0 +1,30 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\common\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+}
+
+export testcase TC_CANOE_IT_023_CHASSIS_ACCEL_BASELINE()
+{
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  if (!launchScenarioAndWait(237, 900, 1300))
+  {
+    return;
+  }
+
+  assertIntEq("chassis-accel-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+  assertIntEq("chassis-accel-drive-state", 3, (long)@Core::driveStateNorm, "driveStateNorm");
+  assertIntEq("chassis-accel-speed", 140, (long)@Core::vehicleSpeedNorm, "vehicleSpeedNorm");
+  assertIntEq("chassis-accel-drive-mode", 2, (long)@CoreState::driveMode, "driveMode");
+  assertIntEq("chassis-accel-sport-mode", 1, (long)@CoreState::sportMode, "sportMode");
+
+  resetValidationHarnessIfNeeded();
+}

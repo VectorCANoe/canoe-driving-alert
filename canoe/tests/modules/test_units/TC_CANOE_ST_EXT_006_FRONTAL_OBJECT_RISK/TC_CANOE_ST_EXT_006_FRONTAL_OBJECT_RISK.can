@@ -21,10 +21,12 @@ export testcase TC_CANOE_ST_EXT_006_FRONTAL_OBJECT_RISK()
   }
 
   assertIntEq("frontal-object-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
-  assertIntEq("frontal-object-track-valid", 1, (long)@Core::objectTrackValid, "objectTrackValid");
-  assertIntMin("frontal-object-risk-class", 3, (long)@Core::objectRiskClass, "objectRiskClass");
-  assertIntMin("frontal-object-proximity", 60, (long)@Core::proximityRiskLevel, "proximityRiskLevel");
-  assertIntEq("frontal-object-failsafe", 0, (long)@Core::failSafeMode, "failSafeMode");
+  if (!waitForObservedObjectRisk(800) ||
+      !waitForObservedFailSafe(800)) { resetValidationHarnessIfNeeded(); return; }
+  assertIntEq("frontal-object-track-valid", 1, (long)@Test::obsObjectTrackValid, "ethObjectTrackValid");
+  assertIntMin("frontal-object-risk-class", 3, (long)@Test::obsObjectRiskClass, "ethObjectRiskClass");
+  assertIntMin("frontal-object-proximity", 60, (long)@Test::obsObjectRiskLevel, "ethObjectRiskLevel");
+  assertIntEq("frontal-object-failsafe", 0, (long)@Test::obsFailSafeMode, "ethFailSafeMode");
 
   resetValidationHarnessIfNeeded();
 }

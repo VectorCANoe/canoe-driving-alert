@@ -1,74 +1,7 @@
 /*@!Encoding:65001*/
 includes
 {
-  #include "..\\common\\ValidationHarnessEthCommon.cin"
   #include "..\\common\\ValidationHarnessTestCommon.cin"
-}
-
-variables
-{
-  long gEthSocket;
-  char gEthRxBuffer[64];
-  long gObsFailSafeMode;
-  long gObsDecelAssistReq;
-}
-
-long invalidObserverSocket()
-{
-  return ~0;
-}
-
-long ensureTransportObserverReady()
-{
-  if (gEthSocket == 0)
-  {
-    gEthSocket = invalidObserverSocket();
-  }
-  if (gEthSocket == invalidObserverSocket())
-  {
-    gEthSocket = ethOpenDefaultSocket();
-    if (gEthSocket == invalidObserverSocket())
-    {
-      testStepFail("transport-observer", "Failed to open default ETH socket");
-      return 0;
-    }
-    ethStartReceiver(gEthSocket, gEthRxBuffer, elcount(gEthRxBuffer));
-  }
-  return 1;
-}
-
-void resetTransportObserverState()
-{
-  gObsFailSafeMode = -1;
-  gObsDecelAssistReq = -1;
-}
-
-void OnUdpReceiveFrom(dword socket, long result, dword address, dword port, char buffer[], dword count)
-{
-  int msgId;
-  int payload0;
-
-  if (socket != gEthSocket)
-  {
-    return;
-  }
-
-  if (result == 0)
-  {
-    msgId = ethFrameMsgId(buffer, count);
-    if (msgId == 0xE212 && ethFramePayloadLen(count) >= 1)
-    {
-      payload0 = ethGetU8(buffer, 0);
-      gObsFailSafeMode = (payload0 >> 4) & 0x3;
-    }
-    else if (msgId == 0xE211 && ethFramePayloadLen(count) >= 2)
-    {
-      payload0 = ethGetU8(buffer, 0);
-      gObsDecelAssistReq = payload0 & 0x1;
-    }
-  }
-
-  ethArmReceive(gEthSocket, gEthRxBuffer, elcount(gEthRxBuffer));
 }
 
 export testcase TC_CANOE_UT_EXT_013_WARNING_DELIVERY_BOUNDARY()
@@ -77,11 +10,6 @@ export testcase TC_CANOE_UT_EXT_013_WARNING_DELIVERY_BOUNDARY()
   {
     return;
   }
-  if (!ensureTransportObserverReady())
-  {
-    return;
-  }
-  resetTransportObserverState();
   if (!launchScenarioAndWait(18, 1500, 0))
   {
     return;
@@ -94,8 +22,8 @@ export testcase TC_CANOE_UT_EXT_013_WARNING_DELIVERY_BOUNDARY()
 
   TestWaitForTimeout(200);
   assertIntEq("boundary-failsafe-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
-  assertIntMin("boundary-failsafe-mode", 1, gObsFailSafeMode, "ethFailSafeMode");
-  assertIntEq("boundary-failsafe-decel-off", 0, gObsDecelAssistReq, "ethDecelAssistReq");
+  assertIntMin("boundary-failsafe-mode", 1, (long)@Test::obsFailSafeMode, "ethFailSafeMode");
+  assertIntEq("boundary-failsafe-decel-off", 0, (long)@Test::obsDecelAssistReq, "ethDecelAssistReq");
 
   if (!resetValidationHarnessIfNeeded())
   {

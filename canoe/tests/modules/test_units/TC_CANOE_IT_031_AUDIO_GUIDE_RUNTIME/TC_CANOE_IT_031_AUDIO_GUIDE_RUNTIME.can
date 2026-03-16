@@ -1,0 +1,30 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\common\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+}
+
+export testcase TC_CANOE_IT_031_AUDIO_GUIDE_RUNTIME()
+{
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  if (!launchScenarioAndWait(215, 900, 1300))
+  {
+    return;
+  }
+
+  assertIntEq("audio-runtime-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+  assertIntEq("audio-runtime-warning-code", 142, (long)@Cluster::warningTextCode, "warningTextCode");
+  assertIntEq("audio-runtime-focus-owner", 1, (long)@CoreState::audioFocusOwner, "audioFocusOwner");
+  assertIntEq("audio-runtime-ducking", 4, (long)@CoreState::audioDuckingLvl, "audioDuckingLvl");
+  assertIntEq("audio-runtime-popup-active", 0, (long)@CoreState::popupActive, "popupActive");
+
+  resetValidationHarnessIfNeeded();
+}

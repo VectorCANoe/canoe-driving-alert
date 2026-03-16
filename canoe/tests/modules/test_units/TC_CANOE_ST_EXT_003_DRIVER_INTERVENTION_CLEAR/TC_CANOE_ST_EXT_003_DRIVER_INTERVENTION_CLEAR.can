@@ -13,6 +13,9 @@ export testcase TC_CANOE_ST_EXT_003_DRIVER_INTERVENTION_CLEAR()
   if (!resetValidationHarnessIfNeeded()) { return; }
   if (!launchScenarioAndWait(17, 900, 1300)) { return; }
   assertIntEq("st-driver-intervention-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
-  assertIntEq("st-driver-intervention-decel", 0, (long)@Core::decelAssistReq, "decelAssistReq");
+  if (!waitForObservedDecelAssist(800) ||
+      !waitForObservedEmergencyContext(800)) { resetValidationHarnessIfNeeded(); return; }
+  assertIntEq("st-driver-intervention-decel", 0, (long)@Test::obsDecelAssistReq, "ethDecelAssistReq");
+  assertIntEq("st-driver-intervention-emergency-clear", 0, (long)@Test::obsEmergencyContext, "ethEmergencyContext");
   resetValidationHarnessIfNeeded();
 }

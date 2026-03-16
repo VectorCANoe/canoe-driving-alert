@@ -1,0 +1,32 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\common\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+}
+
+export testcase TC_CANOE_IT_034_CHANNEL_RESTORE()
+{
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  if (!launchScenarioAndWait(35, 900, 1300))
+  {
+    return;
+  }
+
+  assertIntEq("channel-restore-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+  if (!waitForObservedFailSafe(800))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
+  assertIntEq("channel-restore-failsafe", 0, (long)@Test::obsFailSafeMode, "ethFailSafeMode");
+
+  resetValidationHarnessIfNeeded();
+}

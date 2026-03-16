@@ -1,3 +1,193 @@
+long observerStateIsReset()
+{
+  return ((long)@Test::obsFailSafeMode == -1 &&
+          (long)@Test::obsEmergencyContext == -1 &&
+          (long)@Test::obsDecelAssistReq == -1 &&
+          (long)@Test::obsDecelRisk == -1 &&
+          (long)@Test::obsSelectedAlertLevel == -1 &&
+          (long)@Test::obsSelectedAlertType == -1 &&
+          (long)@Test::obsObjectRiskClass == -1 &&
+          (long)@Test::obsObjectRiskLevel == -1 &&
+          (long)@Test::obsObjectTrackValid == -1 &&
+          (long)@Test::obsObjectConfidence == -1 &&
+          (long)@Test::obsIntersectionConflictFlag == -1 &&
+          (long)@Test::obsMergeCutInFlag == -1);
+}
+
+long waitForObserverReset(dword timeoutMs)
+{
+  dword waitedMs;
+
+  waitedMs = 0;
+  while (!observerStateIsReset() && waitedMs < timeoutMs)
+  {
+    TestWaitForTimeout(50);
+    waitedMs += 50;
+  }
+
+  if (!observerStateIsReset())
+  {
+    testStepFail("observer-reset", "Shared observer reset timeout waited=%d failSafe=%d decel=%d level=%d type=%d",
+                 waitedMs,
+                 (long)@Test::obsFailSafeMode,
+                 (long)@Test::obsDecelAssistReq,
+                 (long)@Test::obsSelectedAlertLevel,
+                 (long)@Test::obsSelectedAlertType);
+    return 0;
+  }
+
+  return 1;
+}
+
+long waitForObservedEmergencyContext(dword timeoutMs)
+{
+  dword waitedMs;
+
+  waitedMs = 0;
+  while ((long)@Test::obsEmergencyContext < 0 && waitedMs < timeoutMs)
+  {
+    TestWaitForTimeout(50);
+    waitedMs += 50;
+  }
+
+  if ((long)@Test::obsEmergencyContext < 0)
+  {
+    testStepFail("observer-emergency-context", "Emergency-context observer timeout waited=%d value=%d",
+                 waitedMs, (long)@Test::obsEmergencyContext);
+    return 0;
+  }
+
+  return 1;
+}
+
+long waitForObservedFailSafe(dword timeoutMs)
+{
+  dword waitedMs;
+
+  waitedMs = 0;
+  while ((long)@Test::obsFailSafeMode < 0 && waitedMs < timeoutMs)
+  {
+    TestWaitForTimeout(50);
+    waitedMs += 50;
+  }
+
+  if ((long)@Test::obsFailSafeMode < 0)
+  {
+    testStepFail("observer-failsafe", "Fail-safe observer timeout waited=%d value=%d",
+                 waitedMs, (long)@Test::obsFailSafeMode);
+    return 0;
+  }
+
+  return 1;
+}
+
+long waitForObservedDecelAssist(dword timeoutMs)
+{
+  dword waitedMs;
+
+  waitedMs = 0;
+  while ((long)@Test::obsDecelAssistReq < 0 && waitedMs < timeoutMs)
+  {
+    TestWaitForTimeout(50);
+    waitedMs += 50;
+  }
+
+  if ((long)@Test::obsDecelAssistReq < 0)
+  {
+    testStepFail("observer-decel", "Decel observer timeout waited=%d req=%d risk=%d",
+                 waitedMs,
+                 (long)@Test::obsDecelAssistReq,
+                 (long)@Test::obsDecelRisk);
+    return 0;
+  }
+
+  return 1;
+}
+
+long waitForObservedSelectedAlert(dword timeoutMs)
+{
+  dword waitedMs;
+
+  waitedMs = 0;
+  while (((long)@Test::obsSelectedAlertLevel < 0 ||
+          (long)@Test::obsSelectedAlertType < 0) &&
+         waitedMs < timeoutMs)
+  {
+    TestWaitForTimeout(50);
+    waitedMs += 50;
+  }
+
+  if ((long)@Test::obsSelectedAlertLevel < 0 ||
+      (long)@Test::obsSelectedAlertType < 0)
+  {
+    testStepFail("observer-selected-alert", "Selected-alert observer timeout waited=%d level=%d type=%d",
+                 waitedMs,
+                 (long)@Test::obsSelectedAlertLevel,
+                 (long)@Test::obsSelectedAlertType);
+    return 0;
+  }
+
+  return 1;
+}
+
+long waitForObservedObjectRisk(dword timeoutMs)
+{
+  dword waitedMs;
+
+  waitedMs = 0;
+  while (((long)@Test::obsObjectRiskClass < 0 ||
+          (long)@Test::obsObjectRiskLevel < 0 ||
+          (long)@Test::obsObjectTrackValid < 0 ||
+          (long)@Test::obsObjectConfidence < 0) &&
+         waitedMs < timeoutMs)
+  {
+    TestWaitForTimeout(50);
+    waitedMs += 50;
+  }
+
+  if ((long)@Test::obsObjectRiskClass < 0 ||
+      (long)@Test::obsObjectRiskLevel < 0 ||
+      (long)@Test::obsObjectTrackValid < 0 ||
+      (long)@Test::obsObjectConfidence < 0)
+  {
+    testStepFail("observer-object-risk", "Object-risk observer timeout waited=%d class=%d level=%d track=%d conf=%d",
+                 waitedMs,
+                 (long)@Test::obsObjectRiskClass,
+                 (long)@Test::obsObjectRiskLevel,
+                 (long)@Test::obsObjectTrackValid,
+                 (long)@Test::obsObjectConfidence);
+    return 0;
+  }
+
+  return 1;
+}
+
+long waitForObservedObjectScenario(dword timeoutMs)
+{
+  dword waitedMs;
+
+  waitedMs = 0;
+  while (((long)@Test::obsIntersectionConflictFlag < 0 ||
+          (long)@Test::obsMergeCutInFlag < 0) &&
+         waitedMs < timeoutMs)
+  {
+    TestWaitForTimeout(50);
+    waitedMs += 50;
+  }
+
+  if ((long)@Test::obsIntersectionConflictFlag < 0 ||
+      (long)@Test::obsMergeCutInFlag < 0)
+  {
+    testStepFail("observer-object-scenario", "Object-scenario observer timeout waited=%d intersection=%d merge=%d",
+                 waitedMs,
+                 (long)@Test::obsIntersectionConflictFlag,
+                 (long)@Test::obsMergeCutInFlag);
+    return 0;
+  }
+
+  return 1;
+}
+
 long resetValidationHarnessIfNeeded()
 {
   dword waitedMs;
@@ -5,6 +195,10 @@ long resetValidationHarnessIfNeeded()
   if ((int)@Test::scenarioCommandAck == 0 &&
       (int)@Test::scenarioResult == 0)
   {
+    if (!waitForObserverReset(500))
+    {
+      return 0;
+    }
     TestWaitForTimeout(100);
     return 1;
   }
@@ -21,6 +215,11 @@ long resetValidationHarnessIfNeeded()
   {
     testStepFail("scenario-reset", "Harness reset timeout waited=%d ack=%d",
                  waitedMs, (int)@Test::scenarioCommandAck);
+    return 0;
+  }
+
+  if (!waitForObserverReset(500))
+  {
     return 0;
   }
 

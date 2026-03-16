@@ -1,0 +1,29 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\common\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+}
+
+export testcase TC_CANOE_IT_017_AUDIO_VOLUME_POLICY()
+{
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  if (!launchScenarioAndWait(215, 900, 1300))
+  {
+    return;
+  }
+
+  assertIntEq("audio-volume-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+  assertIntEq("audio-volume-focus-owner", 1, (long)@CoreState::audioFocusOwner, "audioFocusOwner");
+  assertIntEq("audio-volume-ducking", 4, (long)@CoreState::audioDuckingLvl, "audioDuckingLvl");
+  assertIntEq("audio-volume-level", 80, (long)@CoreState::volumeLevel, "volumeLevel");
+
+  resetValidationHarnessIfNeeded();
+}

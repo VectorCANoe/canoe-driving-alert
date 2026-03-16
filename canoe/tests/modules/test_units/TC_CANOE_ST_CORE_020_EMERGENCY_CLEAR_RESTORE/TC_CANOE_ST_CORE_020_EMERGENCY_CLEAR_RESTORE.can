@@ -21,9 +21,15 @@ export testcase TC_CANOE_ST_CORE_020_EMERGENCY_CLEAR_RESTORE()
   }
 
   assertIntEq("scenario-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
-  assertIntEq("selected-alert-level", 3, (long)@Core::selectedAlertLevel, "selectedAlertLevel");
-  assertIntEq("selected-alert-type", 3, (long)@Core::selectedAlertType, "selectedAlertType");
-  assertIntEq("emergency-context-cleared", 0, (long)@Core::emergencyContext, "emergencyContext");
+  if (!waitForObservedEmergencyContext(800) ||
+      !waitForObservedSelectedAlert(800))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
+  assertIntEq("selected-alert-level", 3, (long)@Test::obsSelectedAlertLevel, "ethSelectedAlertLevel");
+  assertIntEq("selected-alert-type", 3, (long)@Test::obsSelectedAlertType, "ethSelectedAlertType");
+  assertIntEq("emergency-context-cleared", 0, (long)@Test::obsEmergencyContext, "ethEmergencyContext");
 
   resetValidationHarnessIfNeeded();
 }

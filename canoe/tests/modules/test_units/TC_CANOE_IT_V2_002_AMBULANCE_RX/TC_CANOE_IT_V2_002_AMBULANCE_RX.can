@@ -21,11 +21,17 @@ export testcase TC_CANOE_IT_V2_002_AMBULANCE_RX()
   }
 
   assertIntEq("scenario-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
-  assertIntEq("selected-alert-level", 7, (long)@Core::selectedAlertLevel, "selectedAlertLevel");
-  assertIntEq("selected-alert-type", 2, (long)@Core::selectedAlertType, "selectedAlertType");
+  if (!waitForObservedSelectedAlert(800) ||
+      !waitForObservedFailSafe(800))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
+  assertIntEq("selected-alert-level", 7, (long)@Test::obsSelectedAlertLevel, "ethSelectedAlertLevel");
+  assertIntEq("selected-alert-type", 2, (long)@Test::obsSelectedAlertType, "ethSelectedAlertType");
   assertIntEq("eta", 8, (long)@V2X::eta, "eta");
   assertIntEq("source-id", 22, (long)@V2X::sourceId, "sourceId");
-  assertIntEq("fail-safe-clear", 0, (long)@Core::failSafeMode, "failSafeMode");
+  assertIntEq("fail-safe-clear", 0, (long)@Test::obsFailSafeMode, "ethFailSafeMode");
 
   resetValidationHarnessIfNeeded();
 }

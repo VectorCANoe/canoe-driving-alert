@@ -21,11 +21,18 @@ export testcase TC_CANOE_IT_V2_005_DECEL_ASSIST()
   }
 
   assertIntEq("scenario-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
-  assertLongGe("proximity-risk-level", (long)@Core::proximityRiskLevel, 70, "proximityRiskLevel");
-  assertIntEq("decel-assist-req", 1, (long)@Core::decelAssistReq, "decelAssistReq");
-  assertIntEq("selected-alert-level", 7, (long)@Core::selectedAlertLevel, "selectedAlertLevel");
-  assertIntEq("selected-alert-type", 2, (long)@Core::selectedAlertType, "selectedAlertType");
-  assertIntEq("fail-safe-clear", 0, (long)@Core::failSafeMode, "failSafeMode");
+  if (!waitForObservedDecelAssist(800) ||
+      !waitForObservedSelectedAlert(800) ||
+      !waitForObservedFailSafe(800))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
+  assertIntEq("decel-assist-req", 1, (long)@Test::obsDecelAssistReq, "ethDecelAssistReq");
+  assertLongGe("proximity-risk-level", (long)@Test::obsDecelRisk, 70, "ethDecelRisk");
+  assertIntEq("selected-alert-level", 7, (long)@Test::obsSelectedAlertLevel, "ethSelectedAlertLevel");
+  assertIntEq("selected-alert-type", 2, (long)@Test::obsSelectedAlertType, "ethSelectedAlertType");
+  assertIntEq("fail-safe-clear", 0, (long)@Test::obsFailSafeMode, "ethFailSafeMode");
 
   resetValidationHarnessIfNeeded();
 }

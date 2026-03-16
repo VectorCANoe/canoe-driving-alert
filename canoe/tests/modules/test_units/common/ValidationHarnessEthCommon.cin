@@ -1,88 +1,68 @@
-long ethInvalidSocket()
+/*
+  Shared transport observer helpers.
+
+  Final test direction:
+  - TEST_BAS is the single UDP/multicast observer owner.
+  - Individual testcases do not open backbone sockets.
+  - Testcases consume observer sysvars only.
+*/
+
+long obsFailSafeMode()
 {
-  return ~0;
+  return (long)@Test::obsFailSafeMode;
 }
 
-int ethBackbonePort()
+long obsEmergencyContext()
 {
-  return 5000;
+  return (long)@Test::obsEmergencyContext;
 }
 
-dword ethBackboneGroupIp()
+long obsDecelAssistReq()
 {
-  return IpGetAddressAsNumber("239.0.2.1");
+  return (long)@Test::obsDecelAssistReq;
 }
 
-int ethFrameMsgId(char frame[], dword count)
+long obsDecelRisk()
 {
-  if (count < 2)
-  {
-    return -1;
-  }
-
-  return (((int)frame[1] & 0xFF) << 8) | ((int)frame[0] & 0xFF);
+  return (long)@Test::obsDecelRisk;
 }
 
-int ethFramePayloadLen(dword count)
+long obsSelectedAlertLevel()
 {
-  if (count < 2)
-  {
-    return 0;
-  }
-
-  return (int)(count - 2);
+  return (long)@Test::obsSelectedAlertLevel;
 }
 
-int ethGetU8(char frame[], int payloadIndex)
+long obsSelectedAlertType()
 {
-  return ((int)frame[payloadIndex + 2] & 0xFF);
+  return (long)@Test::obsSelectedAlertType;
 }
 
-long ethOpenDefaultSocket()
+long obsObjectRiskClass()
 {
-  long socket;
-
-  socket = UdpOpen(0, ethBackbonePort());
-  if (socket == ethInvalidSocket())
-  {
-    write("[ETH-TEST] open failed port=%d err=%d", ethBackbonePort(), IpGetLastError());
-  }
-  return socket;
+  return (long)@Test::obsObjectRiskClass;
 }
 
-int ethArmReceive(long socket, char rxBuffer[], int rxBufferSize)
+long obsObjectRiskLevel()
 {
-  int result;
-  int lastError;
-  char lastErrorText[256];
-
-  result = UdpReceiveFrom(socket, rxBuffer, rxBufferSize);
-  if (result != 0)
-  {
-    lastError = IpGetLastSocketError(socket);
-    if (lastError != 997)
-    {
-      IpGetLastSocketErrorAsString(socket, lastErrorText, elcount(lastErrorText));
-      write("[ETH-TEST] recv error=%d %s", lastError, lastErrorText);
-    }
-  }
-  return result;
+  return (long)@Test::obsObjectRiskLevel;
 }
 
-int ethStartReceiver(long socket, char rxBuffer[], int rxBufferSize)
+long obsObjectTrackValid()
 {
-  int result;
+  return (long)@Test::obsObjectTrackValid;
+}
 
-  if (socket == ethInvalidSocket())
-  {
-    return -1;
-  }
+long obsObjectConfidence()
+{
+  return (long)@Test::obsObjectConfidence;
+}
 
-  result = ipJoinMulticastGroup(socket, 1, ethBackboneGroupIp());
-  if (result != 0)
-  {
-    write("[ETH-TEST] join multicast failed result=%d", result);
-  }
+long obsIntersectionConflictFlag()
+{
+  return (long)@Test::obsIntersectionConflictFlag;
+}
 
-  return ethArmReceive(socket, rxBuffer, rxBufferSize);
+long obsMergeCutInFlag()
+{
+  return (long)@Test::obsMergeCutInFlag;
 }

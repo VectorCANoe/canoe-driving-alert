@@ -13,6 +13,11 @@ export testcase TC_CANOE_ST_EXT_002_MERGE_DECEL()
   if (!resetValidationHarnessIfNeeded()) { return; }
   if (!launchScenarioAndWait(238, 900, 1300)) { return; }
   assertIntEq("st-merge-decel-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
-  assertIntEq("st-merge-decel-req", 1, (long)@Core::decelAssistReq, "decelAssistReq");
+  if (!waitForObservedDecelAssist(800) ||
+      !waitForObservedObjectScenario(800) ||
+      !waitForObservedSelectedAlert(800)) { resetValidationHarnessIfNeeded(); return; }
+  assertIntEq("st-merge-flag", 1, (long)@Test::obsMergeCutInFlag, "ethMergeCutInFlag");
+  assertIntEq("st-merge-decel-req", 1, (long)@Test::obsDecelAssistReq, "ethDecelAssistReq");
+  assertIntEq("st-merge-type", 6, (long)@Test::obsSelectedAlertType, "ethSelectedAlertType");
   resetValidationHarnessIfNeeded();
 }

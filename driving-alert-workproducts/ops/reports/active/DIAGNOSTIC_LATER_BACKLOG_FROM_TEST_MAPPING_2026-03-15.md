@@ -53,38 +53,39 @@ They are kept only as a planning note for future robustness, explainability, or 
 | `IT_010` | `TC_CANOE_IT_V2_005_DECEL_ASSIST` | decel-assist result is observable now | later risk-source explanation may need deeper reasoning | risk-source reason |
 | `IT_011` | `TC_CANOE_IT_V2_006_FAILSAFE_MIN_WARNING` | fail-safe entry and minimum-channel behavior can be judged on the current oracle/evidence path | later trigger or delivery-fault explanation may still benefit from deeper visibility | fail-safe trigger reason, delivery-fault cause, boundary ownership |
 | `IT_012` | `TC_CANOE_IT_EXT_001_OBJECT_RISK_EVENTLOG` | object-risk and event log can be checked without diagnostics | later confidence and downgrade analysis may need more detail | sensor confidence, downgrade reason |
-| `IT_014` | `TC_CANOE_IT_EXT_003_EMERGENCY_PLUS_TTC` | combined result can be judged by current evidence | later source-contribution disputes may need deeper explanation | emergency/object contribution reason |
-| `IT_019` | `TC_CANOE_IT_BASE_005_BODY_SECURITY_CONTEXT` | current integrated result is observable | later security/body-context reviews may need stronger state explanation | security-context reason |
-| `IT_021` | `TC_CANOE_IT_EXT_004_OUTPUT_AVAILABILITY` | fallback behavior is visible today | later channel-health reviews may need cause detail | fallback reason, channel-health cause |
-| `IT_023` | `TC_CANOE_IT_EXT_006_CHASSIS_EXT_CONTEXT` | extension context is visible in current seams | later vehicle-diagnostics expansion may need source detail | chassis-state reason |
-| `IT_026` | `TC_CANOE_IT_EXT_009_ADAS_PERCEPTION_CONTEXT` | function/perception behavior is currently observable | later function-availability disputes may need deeper explanation | availability reason, confidence cause |
-| `IT_028` | `TC_CANOE_IT_EXT_011_CHARGE_POWER_CONTEXT` | current integrated context is observable | later charge/power reviews may need cause detail | charge-state reason, power-state reason |
-| `IT_031` | `TC_CANOE_IT_ETH_001_POLICE_TX` | tx observation can be judged from trace today | later transport-failure analysis may need route explanation | transport cause, route detail |
-| `IT_032` | `TC_CANOE_IT_ETH_002_AMBULANCE_TX` | tx observation can be judged from trace today | later transport-failure analysis may need route explanation | transport cause, route detail |
+| `IT_014` | `TC_CANOE_IT_014_DISPLAY_POLICY` | display-policy reflection can be judged by current evidence | later output-policy disputes may need deeper explanation | display-policy reason, rendered-direction cause |
+| `IT_019` | `TC_CANOE_IT_019_POWERTRAIN_PARKED_BASELINE` | parked baseline is observable in the current evidence path | later drive-state reviews may need stronger state explanation | parked-state reason, speed-state reason |
+| `IT_021` | `TC_CANOE_IT_021_CHASSIS_STEERING_BASELINE` | steering-input baseline is observable in the current seams | later steering-state disputes may need source detail | steering-state reason, speed-state reason |
+| `IT_023` | `TC_CANOE_IT_023_CHASSIS_ACCEL_BASELINE` | acceleration-driven drive-mode behavior is currently observable | later drive-mode disputes may need deeper explanation | acceleration-state reason, drive-mode cause |
+| `IT_026` | `TC_CANOE_IT_BASE_004_BASIC_DISPLAY_UI` | display integration is currently observable | later display-service disputes may need deeper explanation | display-state reason, service-state cause |
+| `IT_028` | `TC_CANOE_IT_EXT_014_BODY_CONTROL_LOCK` | door lock/open reflection is observable in the current seams | later body-control disputes may need stronger cause detail | lock-state reason, open-state cause |
+| `IT_031` | `TC_CANOE_IT_031_AUDIO_GUIDE_RUNTIME` | audio-guide runtime can be judged by current panel and write-window evidence | later audio-policy disputes may need deeper explanation | focus cause, ducking reason, volume-policy detail |
+| `IT_032` | `TC_CANOE_IT_032_OUTPUT_FALLBACK` | fallback behavior is visible today | later channel-health reviews may need cause detail | fallback reason, channel-health cause |
 
 ## 5. System Test optional candidates
 
 | Source ID | Candidate native asset | Why diagnostic is not required now | Why it may be useful later | Future diagnostic focus |
 |---|---|---|---|---|
-| `ST_018` | `TC_CANOE_ST_ETH_001_EXTERNAL_TX_PERIOD` | periodic tx observation is currently enough via trace | later packet-loss or transport disputes may need deeper explanation | transport-failure cause, route detail |
-| `ST_019` | `TC_CANOE_ST_V2_008_TIMEOUT_CLEAR` | timeout clear is visible in the current oracle and evidence path | later failure analysis may need timeout-cause detail | timeout cause |
-| `ST_020` | `TC_CANOE_ST_V2_009_RESTORE_PREVIOUS_ZONE` | restore behavior is visible in user-facing evidence | later arbitration or restore disputes may need cause detail | restore-source reason |
-| `ST_021` | `TC_CANOE_ST_EXT_001_INTERSECTION_DECEL` | combined system result is currently observable | later source-contribution analysis may need deeper explanation | object/emergency contribution reason |
-| `ST_022` | `TC_CANOE_ST_EXT_002_MERGE_DECEL` | combined system result is currently observable | later source-contribution analysis may need deeper explanation | object/emergency contribution reason |
-| `ST_024` | `TC_CANOE_ST_EXT_004_FAILSAFE_ENTRY` | system-level fail-safe entry is judged on the current oracle/evidence path | later root-cause review may still benefit from deeper visibility | fail-safe trigger cause, minimum-warning activation reason, service degradation cause |
-| `ST_025` | `TC_CANOE_ST_EXT_005_FAILSAFE_RECOVERY` | recovery can be judged on the current oracle/evidence path | later restored-route or service explanation may still benefit from deeper visibility | recovery reason, restored route cause, restored service cause |
-| `ST_026` | `TC_CANOE_ST_EXT_006_FRONTAL_OBJECT_RISK` | visible object-warning result is enough for current stage | later object-confidence or downgrade analysis may need more detail | confidence reason, downgrade cause |
-| `ST_027` | `TC_CANOE_ST_EXT_007_LATERAL_OBJECT_RISK` | visible object-warning result is enough for current stage | later object-confidence or downgrade analysis may need more detail | confidence reason, downgrade cause |
-| `ST_028` | `TC_CANOE_ST_EXT_008_CUTIN_OBJECT_RISK` | visible object-warning result is enough for current stage | later object-confidence or downgrade analysis may need more detail | confidence reason, downgrade cause |
-| `ST_032` | `TC_CANOE_ST_EXT_012_DELAY_STABILITY` | current stability result can be judged by trace and logs | later delay disputes may need deeper cause explanation | delay cause, stale-source detail |
-| `ST_033` | `TC_CANOE_ST_EXT_013_CHANNEL_CONTENTION` | current evidence can show stable output behavior | later contention analysis may need channel-health detail | contention cause, channel-health reason |
-| `ST_034` | `TC_CANOE_ST_EXT_014_CHASSIS_CONTEXT` | current result is observable | later vehicle-diagnostics expansion may need source detail | chassis-state reason |
-| `ST_035` | `TC_CANOE_ST_EXT_015_OCCUPANT_COMFORT_CONTEXT` | current result is observable | later vehicle-diagnostics expansion may need source detail | occupant/comfort-state reason |
-| `ST_036` | `TC_CANOE_ST_EXT_016_DISPLAY_SERVICE_CONTEXT` | display/service result is observable today | later service reviews may need stronger cause explanation | display/service-state reason |
-| `ST_037` | `TC_CANOE_ST_EXT_017_ADAS_PERCEPTION_CONTEXT` | current result is observable | later function-availability and confidence analysis may need more detail | availability reason, confidence cause |
-| `ST_039` | `TC_CANOE_ST_EXT_019_CHARGE_POWER_CONTEXT` | current result is observable | later power/charge reviews may need deeper state explanation | charge-state reason, power-state reason |
-| `ST_040` | `TC_CANOE_ST_FULL_001_CONTINUOUS_TRIP_WITH_EMERGENCY` | end-to-end trip verdict can be judged today with current evidence | later trip-level explainability may need richer cause breakdown | trip-level root-cause decomposition |
-| `ST_041` | `TC_CANOE_ST_FULL_002_CONTINUOUS_TRIP_WITH_FAILSAFE` | end-to-end fail-safe scenario verdict can be judged on the current oracle/evidence path | later trip-level root-cause review may still benefit from richer cross-stage explanation | trip-level fail-safe trigger cause, recovery reason, cross-stage diagnostic linkage |
+| `ST_018` | `TC_CANOE_ST_018_POLICE_TX_PERIOD` | police tx periodicity observation is currently enough via trace | later packet-loss or transport disputes may need deeper explanation | transport-failure cause, route detail |
+| `ST_019` | `TC_CANOE_ST_019_AMBULANCE_TX_PERIOD` | ambulance tx periodicity observation is currently enough via trace | later packet-loss or transport disputes may need deeper explanation | transport-failure cause, route detail |
+| `ST_020` | `TC_CANOE_ST_V2_008_TIMEOUT_CLEAR` | timeout clear is visible in the current oracle and evidence path | later failure analysis may need timeout-cause detail | timeout cause |
+| `ST_021` | `TC_CANOE_ST_CORE_020_EMERGENCY_CLEAR_RESTORE` | restore behavior is visible in user-facing evidence | later arbitration or restore disputes may need cause detail | restore-source reason |
+| `ST_022` | `TC_CANOE_ST_EXT_001_INTERSECTION_DECEL` | combined system result is currently observable | later source-contribution analysis may need deeper explanation | object/emergency contribution reason |
+| `ST_023` | `TC_CANOE_ST_EXT_002_MERGE_DECEL` | combined system result is currently observable | later source-contribution analysis may need deeper explanation | object/emergency contribution reason |
+| `ST_024` | `TC_CANOE_ST_EXT_003_DRIVER_INTERVENTION_CLEAR` | clear-on-driver-intervention is judged on the current oracle/evidence path | later root-cause review may still benefit from deeper visibility | intervention cause, clear trigger reason |
+| `ST_025` | `TC_CANOE_ST_EXT_004_FAILSAFE_ENTRY` | system-level fail-safe entry is judged on the current oracle/evidence path | later root-cause review may still benefit from deeper visibility | fail-safe trigger cause, minimum-warning activation reason, service degradation cause |
+| `ST_026` | `TC_CANOE_ST_EXT_005_FAILSAFE_RECOVERY` | recovery can be judged on the current oracle/evidence path | later restored-route or service explanation may still benefit from deeper visibility | recovery reason, restored route cause, restored service cause |
+| `ST_027` | `TC_CANOE_ST_EXT_006_FRONTAL_OBJECT_RISK` | visible object-warning result is enough for current stage | later object-confidence or downgrade analysis may need more detail | confidence reason, downgrade cause |
+| `ST_028` | `TC_CANOE_ST_EXT_007_LATERAL_OBJECT_RISK` | visible object-warning result is enough for current stage | later object-confidence or downgrade analysis may need more detail | confidence reason, downgrade cause |
+| `ST_029` | `TC_CANOE_ST_EXT_008_CUTIN_OBJECT_RISK` | visible object-warning result is enough for current stage | later object-confidence or downgrade analysis may need more detail | confidence reason, downgrade cause |
+| `ST_034` | `TC_CANOE_ST_034_DUPLICATE_POPUP_GUARD` | current stability result can be judged by trace and logs | later popup-density disputes may need deeper cause explanation | duplicate-popup cause, stability guard reason |
+| `ST_035` | `TC_CANOE_ST_035_TIMEOUT_CLEAR_RESTORE` | current restore stability is observable | later timeout-recovery disputes may need deeper cause explanation | timeout cause, restore reason |
+| `ST_036` | `TC_CANOE_ST_036_FAILSAFE_RECOVERY_STABILITY` | fail-safe recovery stability is observable today | later fail-safe oscillation analysis may need stronger cause explanation | recovery stability reason, fail-safe residue cause |
+| `ST_037` | `TC_CANOE_ST_037_AUDIO_CHANNEL_STABILITY` | current evidence can show stable audio-channel behavior | later contention analysis may need audio-policy detail | focus cause, ducking reason, audio-policy cause |
+| `ST_039` | `TC_CANOE_ST_EXT_014_CHASSIS_CONTEXT` | current result is observable | later vehicle-diagnostics expansion may need source detail | chassis-state reason |
+| `ST_040` | `TC_CANOE_ST_EXT_015_OCCUPANT_COMFORT_CONTEXT` | current result is observable | later vehicle-diagnostics expansion may need source detail | occupant/comfort-state reason |
+| `ST_045` | `TC_CANOE_ST_EXT_040_TRIP_SEQUENCE` | end-to-end trip verdict can be judged today with current evidence | later trip-level explainability may need richer cause breakdown | trip-level root-cause decomposition |
+| `ST_046` | `TC_CANOE_ST_EXT_041_FAILSAFE_RECOVERY` | end-to-end fail-safe scenario verdict can be judged on the current oracle/evidence path | later trip-level root-cause review may still benefit from richer cross-stage explanation | trip-level fail-safe trigger cause, recovery reason, cross-stage diagnostic linkage |
 
 ## 6. Recommended promotion rule
 

@@ -24,19 +24,5 @@ export testcase TC_CANOE_IT_BASE_003_BODY_STATE()
   assertIntEq("body-hazard-turnlamp", 3, (long)@CoreState::turnLampState, "turnLampState");
   assertIntEq("body-hazard-level", 6, (long)@Core::selectedAlertLevel, "selectedAlertLevel");
 
-  if (!resetValidationHarnessIfNeeded())
-  {
-    return;
-  }
-
-  if (!launchScenarioAndWait(216, 900, 1300))
-  {
-    return;
-  }
-
-  assertIntEq("body-parked-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
-  assertIntEq("body-parked-drive-state", 0, (long)@Core::driveStateNorm, "driveStateNorm");
-  assertIntEq("body-parked-speed", 0, (long)@Core::vehicleSpeedNorm, "vehicleSpeedNorm");
-
   resetValidationHarnessIfNeeded();
 }

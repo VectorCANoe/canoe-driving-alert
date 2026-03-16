@@ -23,8 +23,13 @@ export testcase TC_CANOE_ST_V2_006_POLICE_TIEBREAK()
   assertIntEq("police-tiebreak-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
   assertIntEq("police-tiebreak-eta", 10, (long)@V2X::eta, "eta");
   assertIntEq("police-tiebreak-source", 5, (long)@V2X::sourceId, "sourceId");
-  assertIntEq("police-tiebreak-level", 6, (long)@Core::selectedAlertLevel, "selectedAlertLevel");
-  assertIntEq("police-tiebreak-alert-type", 1, (long)@Core::selectedAlertType, "selectedAlertType");
+  if (!waitForObservedSelectedAlert(800))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
+  assertIntEq("police-tiebreak-level", 6, (long)@Test::obsSelectedAlertLevel, "ethSelectedAlertLevel");
+  assertIntEq("police-tiebreak-alert-type", 1, (long)@Test::obsSelectedAlertType, "ethSelectedAlertType");
 
   resetValidationHarnessIfNeeded();
 }

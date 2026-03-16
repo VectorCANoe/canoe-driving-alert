@@ -21,8 +21,13 @@ export testcase TC_CANOE_IT_EXT_001_OBJECT_RISK_EVENTLOG()
   }
 
   assertIntEq("forward-conflict-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
-  assertIntMin("forward-conflict-risk-class", 3, (long)@Core::objectRiskClass, "objectRiskClass");
-  assertIntMin("forward-conflict-proximity", 60, (long)@Core::proximityRiskLevel, "proximityRiskLevel");
+  if (!waitForObservedObjectRisk(800))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
+  assertIntMin("forward-conflict-risk-class", 3, (long)@Test::obsObjectRiskClass, "ethObjectRiskClass");
+  assertIntMin("forward-conflict-proximity", 60, (long)@Test::obsObjectRiskLevel, "ethObjectRiskLevel");
 
   if (!resetValidationHarnessIfNeeded())
   {
@@ -35,9 +40,16 @@ export testcase TC_CANOE_IT_EXT_001_OBJECT_RISK_EVENTLOG()
   }
 
   assertIntEq("intersection-conflict-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
-  assertIntEq("intersection-flag", 1, (long)@Core::intersectionConflictFlag, "intersectionConflictFlag");
-  assertIntMin("intersection-risk-class", 3, (long)@Core::objectRiskClass, "objectRiskClass");
-  assertIntEq("intersection-alert-type", 5, (long)@Core::selectedAlertType, "selectedAlertType");
+  if (!waitForObservedObjectRisk(800) ||
+      !waitForObservedObjectScenario(800) ||
+      !waitForObservedSelectedAlert(800))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
+  assertIntEq("intersection-flag", 1, (long)@Test::obsIntersectionConflictFlag, "ethIntersectionConflictFlag");
+  assertIntMin("intersection-risk-class", 3, (long)@Test::obsObjectRiskClass, "ethObjectRiskClass");
+  assertIntEq("intersection-alert-type", 5, (long)@Test::obsSelectedAlertType, "ethSelectedAlertType");
 
   if (!resetValidationHarnessIfNeeded())
   {
@@ -50,9 +62,16 @@ export testcase TC_CANOE_IT_EXT_001_OBJECT_RISK_EVENTLOG()
   }
 
   assertIntEq("merge-cutin-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
-  assertIntEq("merge-cutin-flag", 1, (long)@Core::mergeCutInFlag, "mergeCutInFlag");
-  assertIntMin("merge-cutin-risk-class", 3, (long)@Core::objectRiskClass, "objectRiskClass");
-  assertIntEq("merge-cutin-alert-type", 6, (long)@Core::selectedAlertType, "selectedAlertType");
+  if (!waitForObservedObjectRisk(800) ||
+      !waitForObservedObjectScenario(800) ||
+      !waitForObservedSelectedAlert(800))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
+  assertIntEq("merge-cutin-flag", 1, (long)@Test::obsMergeCutInFlag, "ethMergeCutInFlag");
+  assertIntMin("merge-cutin-risk-class", 3, (long)@Test::obsObjectRiskClass, "ethObjectRiskClass");
+  assertIntEq("merge-cutin-alert-type", 6, (long)@Test::obsSelectedAlertType, "ethSelectedAlertType");
 
   if (!resetValidationHarnessIfNeeded())
   {
@@ -65,9 +84,16 @@ export testcase TC_CANOE_IT_EXT_001_OBJECT_RISK_EVENTLOG()
   }
 
   assertIntEq("confidence-degrade-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
-  assertIntEq("confidence-value", 20, (long)@Core::objectConfidence, "objectConfidence");
-  assertIntMin("confidence-degrade-failsafe", 1, (long)@Core::failSafeMode, "failSafeMode");
-  assertIntEq("confidence-degrade-decel-off", 0, (long)@Core::decelAssistReq, "decelAssistReq");
+  if (!waitForObservedObjectRisk(800) ||
+      !waitForObservedFailSafe(800) ||
+      !waitForObservedDecelAssist(800))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
+  assertIntEq("confidence-value", 20, (long)@Test::obsObjectConfidence, "ethObjectConfidence");
+  assertIntMin("confidence-degrade-failsafe", 1, (long)@Test::obsFailSafeMode, "ethFailSafeMode");
+  assertIntEq("confidence-degrade-decel-off", 0, (long)@Test::obsDecelAssistReq, "ethDecelAssistReq");
 
   if (!resetValidationHarnessIfNeeded())
   {
@@ -80,8 +106,13 @@ export testcase TC_CANOE_IT_EXT_001_OBJECT_RISK_EVENTLOG()
   }
 
   assertIntEq("tracking-loss-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
-  assertIntEq("tracking-loss-track-valid", 1, (long)@Core::objectTrackValid, "objectTrackValid");
-  assertIntMin("tracking-loss-risk-class", 3, (long)@Core::objectRiskClass, "objectRiskClass");
+  if (!waitForObservedObjectRisk(800))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
+  assertIntEq("tracking-loss-track-valid", 1, (long)@Test::obsObjectTrackValid, "ethObjectTrackValid");
+  assertIntMin("tracking-loss-risk-class", 3, (long)@Test::obsObjectRiskClass, "ethObjectRiskClass");
   assertIntMin("tracking-loss-event-code", 1381, (long)@Core::objectEventCode, "objectEventCode");
 
   resetValidationHarnessIfNeeded();

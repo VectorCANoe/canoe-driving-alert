@@ -30,7 +30,12 @@ export testcase TC_CANOE_UT_OUT_008_AMBULANCE_TX()
   assertIntEq("ambulance-tx-type", 2, (long)@V2X::emergencyType, "emergencyType");
   assertIntEq("ambulance-tx-eta", 8, (long)@V2X::eta, "eta");
   assertIntEq("ambulance-tx-source", 22, (long)@V2X::sourceId, "sourceId");
-  assertIntEq("ambulance-tx-level", 7, (long)@Core::selectedAlertLevel, "selectedAlertLevel");
+  if (!waitForObservedSelectedAlert(800))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
+  assertIntEq("ambulance-tx-level", 7, (long)@Test::obsSelectedAlertLevel, "ethSelectedAlertLevel");
   assertIntEq("ambulance-tx-code", 202, (long)@Cluster::warningTextCode, "warningTextCode");
 
   resetValidationHarnessIfNeeded();

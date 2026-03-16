@@ -107,26 +107,39 @@ Repeated simulator rows are grouped where the native-asset candidate, oracle typ
 | `IT_010` | `TC_CANOE_IT_V2_005_DECEL_ASSIST` | decel-assist request and sync state | native report + trace + sysvar snapshot + panel capture | `No` | - |
 | `IT_011` | `TC_CANOE_IT_V2_006_FAILSAFE_MIN_WARNING` | fail-safe state and minimum-channel state | native report + write window + sysvar snapshot + trace | `No` | - |
 | `IT_012` | `TC_CANOE_IT_EXT_001_OBJECT_RISK_EVENTLOG` | object-risk state and event-log state | native report + trace + event log | `No` | - |
-| `IT_013` | `TC_CANOE_IT_EXT_002_DRIVER_CONTEXT` | adjusted warning context | native report + panel capture + sysvar snapshot | `No` | - |
-| `IT_014` | `TC_CANOE_IT_EXT_003_EMERGENCY_PLUS_TTC` | combined warning/decel result state | native report + trace + panel capture | `No` | - |
-| `IT_015` | `TC_CANOE_IT_BASE_001_POWERTRAIN_STATE` | engine/transmission/power integrated state | native report + trace + sysvar snapshot | `No` | - |
-| `IT_016` | `TC_CANOE_IT_BASE_002_CHASSIS_STATE` | chassis integrated state | native report + trace + sysvar snapshot | `No` | - |
-| `IT_017` | `TC_CANOE_IT_BASE_003_BODY_STATE` | body/convenience integrated state | native report + trace + sysvar snapshot | `No` | - |
-| `IT_018` | `TC_CANOE_IT_BASE_004_BASIC_DISPLAY_UI` | basic display integration state | panel capture + screenshot + native report | `No` | - |
-| `IT_019` | `TC_CANOE_IT_BASE_005_BODY_SECURITY_CONTEXT` | body/security integrated state | native report + trace + sysvar snapshot | `No` | - |
-| `IT_020` | `TC_CANOE_IT_BASE_006_AUDIO_VOICE` | audio and voice-guide integrated state | panel capture + write window + native report | `No` | - |
-| `IT_021` | `TC_CANOE_IT_EXT_004_OUTPUT_AVAILABILITY` | output-channel availability and fallback state | native report + trace + sysvar snapshot | `No` | - |
-| `IT_022` | `TC_CANOE_IT_EXT_005_DISTANCE_HISTORY` | distance and history-query result | panel capture + native report + `verification_log.csv` | `No` | - |
-| `IT_023` | `TC_CANOE_IT_EXT_006_CHASSIS_EXT_CONTEXT` | EPB/EHB/VSM/ECS/CDC integrated state | native report + trace + sysvar snapshot | `No` | - |
-| `IT_024` | `TC_CANOE_IT_EXT_007_OCCUPANT_COMFORT_CONTEXT` | occupant/comfort integrated state | native report + trace + sysvar snapshot | `No` | - |
-| `IT_025` | `TC_CANOE_IT_EXT_008_DISPLAY_SERVICE_CONTEXT` | display/service integrated state | panel capture + trace + native report | `No` | - |
-| `IT_026` | `TC_CANOE_IT_EXT_009_ADAS_PERCEPTION_CONTEXT` | adas/perception integrated state | native report + trace + sysvar snapshot | `No` | - |
-| `IT_027` | `TC_CANOE_IT_EXT_010_SERVICE_SECURITY_DIAG` | service, security, diagnostic integrated state | native report + trace + write window + sysvar snapshot | `Yes` | service-state cause, route ownership, diagnostic-state explanation |
-| `IT_028` | `TC_CANOE_IT_EXT_011_CHARGE_POWER_CONTEXT` | power and charge integrated state | native report + trace + sysvar snapshot | `No` | - |
-| `IT_029` | `TC_CANOE_IT_EXT_012_DISPLAY_CHANNELS` | cross-channel visual consistency | panel capture + screenshot + `verification_log.csv` | `No` | - |
-| `IT_030` | `TC_CANOE_IT_EXT_013_AUDIO_GUIDE_CHANNEL` | audio-guide consistency | write window + audio state capture + `verification_log.csv` | `No` | - |
-| `IT_031` | `TC_CANOE_IT_ETH_001_POLICE_TX` | police external tx observation | Ethernet trace + write window + `verification_log.csv` | `No` | - |
-| `IT_032` | `TC_CANOE_IT_ETH_002_AMBULANCE_TX` | ambulance external tx observation | Ethernet trace + write window + `verification_log.csv` | `No` | - |
+| `IT_013` | `TC_CANOE_IT_013_SEATBELT_CONTEXT` | seat-belt emphasis state | native report + panel capture + sysvar snapshot | `No` | - |
+| `IT_014` | `TC_CANOE_IT_014_DISPLAY_POLICY` | display-policy reflection state | native report + panel capture + sysvar snapshot | `No` | - |
+| `IT_015` | `TC_CANOE_IT_015_TURN_LAMP_CONTEXT` | turn-lamp context adjusted warning type | native report + panel capture + sysvar snapshot | `No` | - |
+| `IT_016` | `TC_CANOE_IT_016_DRIVE_MODE_SENSITIVITY` | drive-mode sensitivity state | native report + panel capture + sysvar snapshot | `No` | - |
+| `IT_017` | `TC_CANOE_IT_017_AUDIO_VOLUME_POLICY` | audio focus, ducking, and volume policy state | native report + panel capture + sysvar snapshot | `No` | - |
+| `IT_018` | `TC_CANOE_IT_EXT_003_EMERGENCY_PLUS_TTC` | combined warning/decel result state | native report + trace + panel capture | `No` | - |
+| `IT_019` | `TC_CANOE_IT_019_POWERTRAIN_PARKED_BASELINE` | parked baseline state | native report + trace + sysvar snapshot | `No` | - |
+| `IT_020` | `TC_CANOE_IT_020_POWERTRAIN_DRIVE_BASELINE` | drive baseline state | native report + trace + sysvar snapshot | `No` | - |
+| `IT_021` | `TC_CANOE_IT_021_CHASSIS_STEERING_BASELINE` | steering-input baseline state | native report + trace + sysvar snapshot | `No` | - |
+| `IT_022` | `TC_CANOE_IT_022_CHASSIS_BRAKE_BASELINE` | braking-input baseline state | native report + trace + sysvar snapshot | `No` | - |
+| `IT_023` | `TC_CANOE_IT_023_CHASSIS_ACCEL_BASELINE` | acceleration-driven drive-mode state | native report + trace + sysvar snapshot | `No` | - |
+| `IT_024` | `TC_CANOE_IT_BASE_003_BODY_STATE` | hazard-reflection baseline state | native report + trace + sysvar snapshot | `No` | - |
+| `IT_025` | `TC_CANOE_IT_EXT_010_WINDOW_STATE` | window-state reflection | native report + door-state trace + sysvar snapshot | `No` | - |
+| `IT_026` | `TC_CANOE_IT_BASE_004_BASIC_DISPLAY_UI` | basic display integration state | panel capture + screenshot + native report | `No` | - |
+| `IT_027` | `TC_CANOE_IT_BASE_005_COMFORT_CONTEXT` | comfort-context policy state | native report + trace + sysvar snapshot | `No` | - |
+| `IT_028` | `TC_CANOE_IT_EXT_014_BODY_CONTROL_LOCK` | door lock/open reflection state | native report + door-state trace + sysvar snapshot | `No` | - |
+| `IT_029` | `TC_CANOE_IT_EXT_015_WIPER_RAIN_BASELINE` | wiper/rain baseline reflection state | native report + body-output trace + sysvar snapshot | `No` | - |
+| `IT_030` | `TC_CANOE_IT_BASE_005_BODY_SECURITY_CONTEXT` | security-state service-boundary state | native report + trace + sysvar snapshot | `No` | - |
+| `IT_031` | `TC_CANOE_IT_031_AUDIO_GUIDE_RUNTIME` | audio and voice-guide integrated state | panel capture + write window + native report | `No` | - |
+| `IT_032` | `TC_CANOE_IT_032_OUTPUT_FALLBACK` | output-channel availability and fallback state | native report + trace + sysvar snapshot | `No` | - |
+| `IT_033` | `TC_CANOE_IT_033_DUPLICATE_POPUP_SUPPRESSION` | duplicate-popup suppression state | native report + trace + sysvar snapshot | `No` | - |
+| `IT_034` | `TC_CANOE_IT_034_CHANNEL_RESTORE` | channel-restore consistency state | native report + trace + sysvar snapshot | `No` | - |
+| `IT_035` | `TC_CANOE_IT_EXT_005_DISTANCE_HISTORY` | distance and history-query result | panel capture + native report + `verification_log.csv` | `No` | - |
+| `IT_036` | `TC_CANOE_IT_EXT_006_CHASSIS_EXT_CONTEXT` | EPB/EHB/VSM/ECS/CDC integrated state | native report + trace + sysvar snapshot | `No` | - |
+| `IT_037` | `TC_CANOE_IT_EXT_007_OCCUPANT_COMFORT_CONTEXT` | occupant/comfort integrated state | native report + trace + sysvar snapshot | `No` | - |
+| `IT_038` | `TC_CANOE_IT_EXT_008_DISPLAY_SERVICE_CONTEXT` | display/service integrated state | panel capture + trace + native report | `No` | - |
+| `IT_039` | `TC_CANOE_IT_EXT_009_ADAS_PERCEPTION_CONTEXT` | adas/perception integrated state | native report + trace + sysvar snapshot | `No` | - |
+| `IT_040` | `TC_CANOE_IT_EXT_010_SERVICE_SECURITY_DIAG` | service, security, diagnostic integrated state | native report + trace + write window + sysvar snapshot | `Yes` | service-state cause, route ownership, diagnostic-state explanation |
+| `IT_041` | `TC_CANOE_IT_EXT_011_CHARGE_POWER_CONTEXT` | power and charge integrated state | native report + trace + sysvar snapshot | `No` | - |
+| `IT_042` | `TC_CANOE_IT_EXT_012_DISPLAY_CHANNELS` | cross-channel visual consistency | panel capture + screenshot + `verification_log.csv` | `No` | - |
+| `IT_043` | `TC_CANOE_IT_EXT_013_AUDIO_GUIDE_CHANNEL` | audio-guide consistency | write window + audio state capture + `verification_log.csv` | `No` | - |
+| `IT_044` | `TC_CANOE_IT_ETH_001_POLICE_TX` | police external tx observation | Ethernet trace + write window + `verification_log.csv` | `No` | - |
+| `IT_045` | `TC_CANOE_IT_ETH_002_AMBULANCE_TX` | ambulance external tx observation | Ethernet trace + write window + `verification_log.csv` | `No` | - |
 
 ## 5. 07 System Test mapping draft
 
@@ -149,27 +162,32 @@ Repeated simulator rows are grouped where the native-asset candidate, oracle typ
 | `ST_015` | `TC_CANOE_ST_V2_005_AMBULANCE_PRIORITY` | final selected warning state | panel capture + trace + native report | `No` | - |
 | `ST_016` | `TC_CANOE_ST_V2_006_POLICE_TIEBREAK` | ETA and SourceID arbitration result | native report + sysvar snapshot + trace | `No` | - |
 | `ST_017` | `TC_CANOE_ST_V2_007_AMBULANCE_TIEBREAK` | ETA and SourceID arbitration result | native report + sysvar snapshot + trace | `No` | - |
-| `ST_018` | `TC_CANOE_ST_ETH_001_EXTERNAL_TX_PERIOD` | tx periodicity observation | Ethernet trace + `verification_log.csv` + write window | `No` | - |
-| `ST_019` | `TC_CANOE_ST_V2_008_TIMEOUT_CLEAR` | timeout clear and return state | native report + trace + sysvar snapshot | `No` | - |
-| `ST_020` | `TC_CANOE_ST_V2_009_RESTORE_PREVIOUS_ZONE` | restore-to-previous-warning state | panel capture + trace + native report | `No` | - |
-| `ST_021` | `TC_CANOE_ST_EXT_001_INTERSECTION_DECEL` | combined warning/decel result | panel capture + trace + sysvar snapshot | `No` | - |
-| `ST_022` | `TC_CANOE_ST_EXT_002_MERGE_DECEL` | combined warning/decel result | panel capture + trace + sysvar snapshot | `No` | - |
-| `ST_023` | `TC_CANOE_ST_EXT_003_DRIVER_INTERVENTION_CLEAR` | clear-on-driver-intervention result | panel capture + trace + native report | `No` | - |
-| `ST_024` | `TC_CANOE_ST_EXT_004_FAILSAFE_ENTRY` | fail-safe entry and minimum-channel state | native report + write window + trace + sysvar snapshot | `No` | - |
-| `ST_025` | `TC_CANOE_ST_EXT_005_FAILSAFE_RECOVERY` | recovery-from-fail-safe state | native report + trace + sysvar snapshot | `No` | - |
-| `ST_026` | `TC_CANOE_ST_EXT_006_FRONTAL_OBJECT_RISK` | object-warning visible result | panel capture + event log + trace | `No` | - |
-| `ST_027` | `TC_CANOE_ST_EXT_007_LATERAL_OBJECT_RISK` | object-warning visible result | panel capture + event log + trace | `No` | - |
-| `ST_028` | `TC_CANOE_ST_EXT_008_CUTIN_OBJECT_RISK` | object-warning visible result | panel capture + event log + trace | `No` | - |
-| `ST_029` | `TC_CANOE_ST_EXT_009_CONTEXT_ADJUST` | adjusted warning context | panel capture + screenshot + native report | `No` | - |
-| `ST_030` | `TC_CANOE_ST_EXT_010_USER_SETTING_CHANGE` | updated output policy state | panel capture + screenshot + native report | `No` | - |
-| `ST_031` | `TC_CANOE_ST_EXT_011_HISTORY_QUERY` | history-view result | panel capture + screenshot + native report | `No` | - |
-| `ST_032` | `TC_CANOE_ST_EXT_012_DELAY_STABILITY` | stable state-transition result | native report + trace + `verification_log.csv` | `No` | - |
-| `ST_033` | `TC_CANOE_ST_EXT_013_CHANNEL_CONTENTION` | stable multi-channel result | panel capture + trace + `verification_log.csv` | `No` | - |
-| `ST_034` | `TC_CANOE_ST_EXT_014_CHASSIS_CONTEXT` | braking/stability context result | native report + trace + sysvar snapshot | `No` | - |
-| `ST_035` | `TC_CANOE_ST_EXT_015_OCCUPANT_COMFORT_CONTEXT` | body/occupant/comfort context result | native report + trace + sysvar snapshot | `No` | - |
-| `ST_036` | `TC_CANOE_ST_EXT_016_DISPLAY_SERVICE_CONTEXT` | display/service context result | panel capture + trace + native report | `No` | - |
-| `ST_037` | `TC_CANOE_ST_EXT_017_ADAS_PERCEPTION_CONTEXT` | adas/perception context result | native report + trace + sysvar snapshot | `No` | - |
-| `ST_038` | `TC_CANOE_ST_EXT_018_SERVICE_SECURITY_DIAG_CONTEXT` | service/security/diagnostic context result | native report + trace + write window + sysvar snapshot | `Yes` | diagnostic-state cause, route ownership, security/service reason |
-| `ST_039` | `TC_CANOE_ST_EXT_019_CHARGE_POWER_CONTEXT` | power/charge context result | native report + trace + sysvar snapshot | `No` | - |
-| `ST_040` | `TC_CANOE_ST_FULL_001_CONTINUOUS_TRIP_WITH_EMERGENCY` | end-to-end scenario verdict | native report + panel capture + trace + `verification_log.csv` | `No` | - |
-| `ST_041` | `TC_CANOE_ST_FULL_002_CONTINUOUS_TRIP_WITH_FAILSAFE` | end-to-end fail-safe scenario verdict | native report + panel capture + trace + `verification_log.csv` | `No` | - |
+| `ST_018` | `TC_CANOE_ST_018_POLICE_TX_PERIOD` | police tx periodicity observation | Ethernet trace + `verification_log.csv` + write window | `No` | - |
+| `ST_019` | `TC_CANOE_ST_019_AMBULANCE_TX_PERIOD` | ambulance tx periodicity observation | Ethernet trace + `verification_log.csv` + write window | `No` | - |
+| `ST_020` | `TC_CANOE_ST_V2_008_TIMEOUT_CLEAR` | timeout clear and return state | native report + trace + sysvar snapshot | `No` | - |
+| `ST_021` | `TC_CANOE_ST_CORE_020_EMERGENCY_CLEAR_RESTORE` | restore-to-previous-warning state | panel capture + trace + native report | `No` | - |
+| `ST_022` | `TC_CANOE_ST_EXT_001_INTERSECTION_DECEL` | combined warning/decel result | panel capture + trace + sysvar snapshot | `No` | - |
+| `ST_023` | `TC_CANOE_ST_EXT_002_MERGE_DECEL` | combined warning/decel result | panel capture + trace + sysvar snapshot | `No` | - |
+| `ST_024` | `TC_CANOE_ST_EXT_003_DRIVER_INTERVENTION_CLEAR` | clear-on-driver-intervention result | panel capture + trace + native report | `No` | - |
+| `ST_025` | `TC_CANOE_ST_EXT_004_FAILSAFE_ENTRY` | fail-safe entry and minimum-channel state | native report + write window + trace + sysvar snapshot | `No` | - |
+| `ST_026` | `TC_CANOE_ST_EXT_005_FAILSAFE_RECOVERY` | recovery-from-fail-safe state | native report + trace + sysvar snapshot | `No` | - |
+| `ST_027` | `TC_CANOE_ST_EXT_006_FRONTAL_OBJECT_RISK` | object-warning visible result | panel capture + event log + trace | `No` | - |
+| `ST_028` | `TC_CANOE_ST_EXT_007_LATERAL_OBJECT_RISK` | object-warning visible result | panel capture + event log + trace | `No` | - |
+| `ST_029` | `TC_CANOE_ST_EXT_008_CUTIN_OBJECT_RISK` | object-warning visible result | panel capture + event log + trace | `No` | - |
+| `ST_030` | `TC_CANOE_ST_030_SEATBELT_CONTEXT_ADJUST` | seat-belt and driver-context adjusted warning | panel capture + screenshot + native report | `No` | - |
+| `ST_031` | `TC_CANOE_ST_031_DISTANCE_DISPLAY_CONSISTENCY` | emergency distance display consistency | panel capture + screenshot + native report | `No` | - |
+| `ST_032` | `TC_CANOE_ST_EXT_010_USER_SETTING_CHANGE` | updated output policy state | panel capture + screenshot + native report | `No` | - |
+| `ST_033` | `TC_CANOE_ST_EXT_011_HISTORY_QUERY` | history-view result | panel capture + screenshot + native report | `No` | - |
+| `ST_034` | `TC_CANOE_ST_034_DUPLICATE_POPUP_GUARD` | duplicate-popup guard stability result | native report + trace + `verification_log.csv` | `No` | - |
+| `ST_035` | `TC_CANOE_ST_035_TIMEOUT_CLEAR_RESTORE` | timeout-clear restore stability result | native report + trace + `verification_log.csv` | `No` | - |
+| `ST_036` | `TC_CANOE_ST_036_FAILSAFE_RECOVERY_STABILITY` | fail-safe recovery stability result | native report + trace + `verification_log.csv` | `No` | - |
+| `ST_037` | `TC_CANOE_ST_037_AUDIO_CHANNEL_STABILITY` | audio focus and ducking stability result | panel capture + trace + `verification_log.csv` | `No` | - |
+| `ST_038` | `TC_CANOE_ST_038_VISUAL_CHANNEL_STABILITY` | popup priority and cluster sync stability result | panel capture + trace + `verification_log.csv` | `No` | - |
+| `ST_039` | `TC_CANOE_ST_EXT_014_CHASSIS_CONTEXT` | braking/stability context result | native report + trace + sysvar snapshot | `No` | - |
+| `ST_040` | `TC_CANOE_ST_EXT_015_OCCUPANT_COMFORT_CONTEXT` | body/occupant/comfort context result | native report + trace + sysvar snapshot | `No` | - |
+| `ST_041` | `TC_CANOE_ST_EXT_016_DISPLAY_SERVICE_CONTEXT` | display/service context result | panel capture + trace + native report | `No` | - |
+| `ST_042` | `TC_CANOE_ST_EXT_017_ADAS_PERCEPTION_CONTEXT` | adas/perception context result | native report + trace + sysvar snapshot | `No` | - |
+| `ST_043` | `TC_CANOE_ST_EXT_018_SERVICE_SECURITY_DIAG_CONTEXT` | service/security/diagnostic context result | native report + trace + write window + sysvar snapshot | `Yes` | diagnostic-state cause, route ownership, security/service reason |
+| `ST_044` | `TC_CANOE_ST_EXT_019_CHARGE_POWER_CONTEXT` | power/charge context result | native report + trace + sysvar snapshot | `No` | - |
+| `ST_045` | `TC_CANOE_ST_EXT_040_TRIP_SEQUENCE` | end-to-end scenario verdict | native report + panel capture + trace + `verification_log.csv` | `No` | - |
+| `ST_046` | `TC_CANOE_ST_EXT_041_FAILSAFE_RECOVERY` | end-to-end fail-safe scenario verdict | native report + panel capture + trace + `verification_log.csv` | `No` | - |

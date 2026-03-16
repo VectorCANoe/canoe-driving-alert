@@ -16,6 +16,8 @@ variables
   int gE2eHealthState;
   int gFailSafeMode;
   int gEmergencyContext;
+  int gDecelAssistReq;
+  int gDecelRisk;
   int gLastSelectedAlertLevel;
   int gLastSelectedAlertType;
   dword gFailSafeRxMs;
@@ -110,6 +112,8 @@ void clearBaseResultState()
   gE2eHealthState      = 0;
   gFailSafeMode        = 2;
   gEmergencyContext    = 0;
+  gDecelAssistReq      = 0;
+  gDecelRisk           = 0;
   gLastSelectedAlertLevel = 0;
   gLastSelectedAlertType = 0;
   gFailSafeRxMs        = 0;
@@ -120,6 +124,18 @@ void clearBaseResultState()
   @Test::baseFlowCoverageMask = 0;
   @Test::baseTraceSnapshotId  = 0;
   @Test::baseTestHealth       = 0;
+  @Test::obsFailSafeMode      = -1;
+  @Test::obsEmergencyContext  = -1;
+  @Test::obsDecelAssistReq    = -1;
+  @Test::obsDecelRisk         = -1;
+  @Test::obsSelectedAlertLevel = -1;
+  @Test::obsSelectedAlertType  = -1;
+  @Test::obsObjectRiskClass = -1;
+  @Test::obsObjectRiskLevel = -1;
+  @Test::obsObjectTrackValid = -1;
+  @Test::obsObjectConfidence = -1;
+  @Test::obsIntersectionConflictFlag = -1;
+  @Test::obsMergeCutInFlag = -1;
 }
 
 void publishBaseResultState(int pass)
@@ -170,23 +186,48 @@ void OnUdpReceiveFrom(dword socket, long result, dword address, dword port, char
       gE2eHealthState = clampRange((payload0 >> 2) & 0x3, 0, 2);
       gFailSafeMode = clampRange((payload0 >> 4) & 0x3, 0, 2);
       gFailSafeRxMs = getSimulationTimeMs();
+      @Test::obsFailSafeMode = gFailSafeMode;
+    }
+    else if (msgId == ethMsgDecelAssist() && ethFramePayloadLen(count) >= 2)
+    {
+      payload0 = ethGetU8(buffer, 0);
+      gDecelAssistReq = payload0 & 0x1;
+      gDecelRisk = ethGetU8(buffer, 1);
+      @Test::obsDecelAssistReq = gDecelAssistReq;
+      @Test::obsDecelRisk = gDecelRisk;
     }
     else if (msgId == ethMsgEmergencyMonitor() && ethFramePayloadLen(count) >= 1)
     {
       gEmergencyContext = clampRange(ethGetU8(buffer, 0), 0, 2);
       gEmergencyMonRxMs = getSimulationTimeMs();
+      @Test::obsEmergencyContext = gEmergencyContext;
     }
     else if (msgId == ethMsgSelectedAlert() && ethFramePayloadLen(count) >= 1)
     {
       payload0 = ethGetU8(buffer, 0);
       if ((payload0 & 0x7) != gLastSelectedAlertLevel ||
-          ((payload0 >> 3) & 0x7) != gLastSelectedAlertType)
+          ((payload0 >> 3) & 0x1F) != gLastSelectedAlertType)
       {
         gTraceSnapshotId = (gTraceSnapshotId + 1) & 0xFFFF;
         @Test::baseTraceSnapshotId = gTraceSnapshotId & 0xFFFF;
       }
       gLastSelectedAlertLevel = clampRange(payload0 & 0x7, 0, 7);
-      gLastSelectedAlertType = clampRange((payload0 >> 3) & 0x7, 0, 7);
+      gLastSelectedAlertType = clampRange((payload0 >> 3) & 0x1F, 0, 31);
+      @Test::obsSelectedAlertLevel = gLastSelectedAlertLevel;
+      @Test::obsSelectedAlertType = gLastSelectedAlertType;
+    }
+    else if (msgId == ethMsgObjectRiskState() && ethFramePayloadLen(count) >= 6)
+    {
+      @Test::obsObjectRiskClass = clampRange(ethGetU8(buffer, 0), 0, 7);
+      @Test::obsObjectRiskLevel = clampRange(ethGetU8(buffer, 3), 0, 100);
+      @Test::obsObjectTrackValid = clampRange(ethGetU8(buffer, 4), 0, 1);
+      @Test::obsObjectConfidence = clampRange(ethGetU8(buffer, 5), 0, 100);
+    }
+    else if (msgId == ethMsgObjectScenarioAlert() && ethFramePayloadLen(count) >= 2)
+    {
+      payload0 = ethGetU8(buffer, 1);
+      @Test::obsIntersectionConflictFlag = payload0 & 0x1;
+      @Test::obsMergeCutInFlag = (payload0 >> 1) & 0x1;
     }
   }
 

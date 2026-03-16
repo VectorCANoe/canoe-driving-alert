@@ -1,0 +1,29 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\common\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+}
+
+export testcase TC_CANOE_ST_037_AUDIO_CHANNEL_STABILITY()
+{
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  if (!launchScenarioAndWait(215, 900, 1300))
+  {
+    return;
+  }
+
+  assertIntEq("channel-contention-audio-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+  assertIntEq("channel-contention-audio-focus", 1, (long)@CoreState::audioFocusOwner, "audioFocusOwner");
+  assertIntEq("channel-contention-audio-ducking", 4, (long)@CoreState::audioDuckingLvl, "audioDuckingLvl");
+  assertIntEq("channel-contention-audio-volume", 80, (long)@CoreState::volumeLevel, "volumeLevel");
+
+  resetValidationHarnessIfNeeded();
+}

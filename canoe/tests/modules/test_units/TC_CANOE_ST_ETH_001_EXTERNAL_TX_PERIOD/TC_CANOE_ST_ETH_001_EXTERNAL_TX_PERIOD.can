@@ -29,7 +29,12 @@ export testcase TC_CANOE_ST_ETH_001_EXTERNAL_TX_PERIOD()
   assertIntEq("eth-police-active-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
   assertIntEq("eth-police-alert-state", 1, (long)@V2X::alertState, "alertState");
   assertIntEq("eth-police-type", 1, (long)@V2X::emergencyType, "emergencyType");
-  assertIntEq("eth-police-level", 6, (long)@Core::selectedAlertLevel, "selectedAlertLevel");
+  if (!waitForObservedSelectedAlert(800))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
+  assertIntEq("eth-police-level", 6, (long)@Test::obsSelectedAlertLevel, "ethSelectedAlertLevel");
 
   if (!launchScenarioAndWait(5, 700, 1200))
   {
@@ -39,7 +44,12 @@ export testcase TC_CANOE_ST_ETH_001_EXTERNAL_TX_PERIOD()
   assertIntEq("eth-ambulance-active-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
   assertIntEq("eth-ambulance-alert-state", 1, (long)@V2X::alertState, "alertState");
   assertIntEq("eth-ambulance-type", 2, (long)@V2X::emergencyType, "emergencyType");
-  assertIntEq("eth-ambulance-level", 7, (long)@Core::selectedAlertLevel, "selectedAlertLevel");
+  if (!waitForObservedSelectedAlert(800))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
+  assertIntEq("eth-ambulance-level", 7, (long)@Test::obsSelectedAlertLevel, "ethSelectedAlertLevel");
 
   /*
     Final verdict closure for ST_018:
