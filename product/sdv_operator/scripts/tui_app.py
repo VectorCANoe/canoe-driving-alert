@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import math
 import os
 import subprocess
 import sys
@@ -47,11 +48,12 @@ from cliops.tui_text import (
 )
 from textual import work
 from textual.app import App, ComposeResult
-from textual.containers import Horizontal, Vertical
+from textual.containers import Horizontal, Vertical, VerticalScroll
 from textual.widgets import Button, Footer, Header, Input, OptionList, ProgressBar, RichLog, Static
 from textual.widgets.option_list import Option
 from textual.css.query import NoMatches
 from rich.markup import escape
+from rich.text import Text
 
 
 ROOT = Path(__file__).resolve().parents[3]
@@ -94,8 +96,15 @@ class SdvTuiApp(App[None]):
     #global-metrics,
     #global-stages,
     #global-runtime-signal,
-    #global-pulse {
+    #global-pulse,
+    #global-runtime-badges {
         color: #d7e7f2;
+    }
+
+    #global-visual-band {
+        color: #f6c177;
+        text-style: bold;
+        content-align: center middle;
     }
 
     #global-progress {
@@ -142,6 +151,7 @@ class SdvTuiApp(App[None]):
 
     .page {
         height: 1fr;
+        overflow-y: auto;
     }
 
     #page-home {
@@ -206,13 +216,13 @@ class SdvTuiApp(App[None]):
         min-height: 8;
     }
 
-    #summary-strip {
-        height: 11;
+    #results-primary-strip {
+        height: 13;
         margin-bottom: 1;
     }
 
-    #status-strip {
-        height: 9;
+    #results-secondary-strip {
+        height: 11;
         margin-bottom: 1;
     }
 
@@ -221,43 +231,34 @@ class SdvTuiApp(App[None]):
         margin-right: 1;
         background: #121920;
         border: round #2d3e50;
-    }
-
-    #favorites-card {
-        width: 1fr;
-    }
-
-    #recent-card {
-        width: 1fr;
-    }
-
-    #insight-card {
-        width: 1fr;
+        overflow-y: auto;
     }
 
     #result-card {
-        width: 1fr;
+        width: 2fr;
+    }
+
+    #recent-card {
+        width: 28;
         margin-right: 0;
     }
 
     #recent-list {
+        height: 6;
+    }
+
+    #recent-detail {
+        margin-top: 1;
+        color: #8ba4b8;
         height: 1fr;
     }
 
-    #readiness-card {
-        width: 1fr;
+    #evidence-card {
+        width: 7fr;
     }
 
-    #batch-card {
-        width: 1fr;
-    }
-
-    #com-card {
-        width: 40;
-    }
-
-    #timeline-card {
-        width: 1fr;
+    #health-card {
+        width: 5fr;
         margin-right: 0;
     }
 
@@ -392,6 +393,12 @@ class SdvTuiApp(App[None]):
         border: round #2d3e50;
     }
 
+    #page-results {
+        padding: 1;
+        background: #121920;
+        border: round #2d3e50;
+    }
+
     #log-pane {
         height: 1fr;
         padding: 1;
@@ -492,7 +499,7 @@ class SdvTuiApp(App[None]):
     }
 
     #artifacts-overview {
-        min-height: 5;
+        min-height: 4;
         margin-bottom: 1;
         padding: 1 2;
         background: #17202b;
@@ -500,8 +507,9 @@ class SdvTuiApp(App[None]):
         color: #d7e7f2;
     }
 
-    #artifact-strip {
-        height: 12;
+    #artifact-top-strip,
+    #artifact-bottom-strip {
+        height: 10;
         margin-bottom: 1;
     }
 
@@ -511,6 +519,7 @@ class SdvTuiApp(App[None]):
         background: #17202b;
         border: round #33536f;
         width: 1fr;
+        overflow-y: auto;
     }
 
     .artifact-card:last-child {
@@ -576,7 +585,7 @@ class SdvTuiApp(App[None]):
         ("ctrl+r", "run_selected", "Run"),
         ("ctrl+p", "toggle_pin", "Pin"),
         ("ctrl+x", "rerun_latest", "Rerun latest"),
-        ("ctrl+b", "focus_favorites", "Favorites"),
+        ("ctrl+b", "focus_favorites", "Results"),
         ("ctrl+n", "focus_recent", "Recent"),
         ("ctrl+g", "focus_navigation", "Navigation"),
         ("ctrl+t", "focus_commands", "Commands"),
@@ -612,7 +621,8 @@ class SdvTuiApp(App[None]):
             yield Static(id="global-progress-label")
         with Vertical(id="runtime"):
             yield Static("Live Overview", classes="topband-title")
-            yield Static(id="global-runtime-band")
+            yield Static(id="global-runtime-badges")
+            yield Static(id="global-visual-band")
         with Horizontal(id="shell-main"):
             with Vertical(id="sidebar"):
                 yield Button("Home", id="nav-home", classes="nav-button", variant="primary")
@@ -623,7 +633,7 @@ class SdvTuiApp(App[None]):
                 yield Button("Logs", id="nav-logs", classes="nav-button")
             with Vertical(id="content"):
                 with Vertical(id="content-pages"):
-                    with Vertical(id="page-home", classes="page"):
+                    with VerticalScroll(id="page-home", classes="page"):
                         yield Static(
                             "CANoe Test Verification Console\n\n"
                             "이 콘솔은 CANoe SIL 검증의 실행, 결과 확인, 증빙 검토, 자동화 운영을 위한 작업 화면입니다.\n"
@@ -655,7 +665,7 @@ class SdvTuiApp(App[None]):
                                 )
                                 yield Button("Verify quick 열기", id="home-verify", classes="quick-button", variant="primary")
                         yield Static(id="home-recent")
-                    with Vertical(id="page-execute", classes="page hidden"):
+                    with VerticalScroll(id="page-execute", classes="page hidden"):
                         yield Static(
                             "Run 화면 사용 순서\n"
                             "1) 상단 범주에서 작업 묶음을 고르십시오.  2) 왼쪽 작업 목록에서 항목을 고르십시오.  "
@@ -692,33 +702,22 @@ class SdvTuiApp(App[None]):
                             "실행이 시작되면 자동으로 Logs 화면으로 이동합니다. 종료 후에는 Results에서 판정과 증빙을 확인하십시오.",
                             id="execute-hint",
                         )
-                    with Vertical(id="page-results", classes="page hidden"):
-                        with Horizontal(id="summary-strip"):
-                            with Vertical(id="favorites-card", classes="summary-card"):
-                                yield Static("Related Artifacts", classes="summary-title")
-                                yield Static(id="favorites-body")
-                            with Vertical(id="recent-card", classes="summary-card"):
-                                yield Static("Recent Runs", classes="summary-title")
-                                yield OptionList(id="recent-list")
-                            with Vertical(id="insight-card", classes="summary-card"):
-                                yield Static("Operational Insight", classes="summary-title")
-                                yield Static(id="insight-body")
+                    with VerticalScroll(id="page-results", classes="page hidden"):
+                        with Horizontal(id="results-primary-strip"):
                             with Vertical(id="result-card", classes="summary-card"):
                                 yield Static("Last Result", classes="summary-title")
                                 yield Static(id="result-body")
-                        with Horizontal(id="status-strip"):
-                            with Vertical(id="readiness-card", classes="summary-card"):
-                                yield Static("Tier Readiness", classes="summary-title")
-                                yield Static(id="readiness-body")
-                            with Vertical(id="batch-card", classes="summary-card"):
-                                yield Static("Batch Snapshot", classes="summary-title")
-                                yield Static(id="batch-body")
-                            with Vertical(id="com-card", classes="summary-card"):
-                                yield Static("CANoe Runtime", classes="summary-title")
-                                yield Static(id="com-body")
-                            with Vertical(id="timeline-card", classes="summary-card"):
-                                yield Static("Execution Timeline", classes="summary-title")
-                                yield Static(id="timeline-body")
+                            with Vertical(id="recent-card", classes="summary-card"):
+                                yield Static("Recent Runs", classes="summary-title")
+                                yield OptionList(id="recent-list")
+                                yield Static(id="recent-detail")
+                        with Horizontal(id="results-secondary-strip"):
+                            with Vertical(id="evidence-card", classes="summary-card"):
+                                yield Static("Linked Artifacts", classes="summary-title")
+                                yield Static(id="favorites-body")
+                            with Vertical(id="health-card", classes="summary-card"):
+                                yield Static("Verification Health", classes="summary-title")
+                                yield Static(id="health-body")
                         with Vertical(id="results-actions"):
                             with Horizontal(id="results-actions-primary"):
                                 yield Button("증빙 열기", id="results-open-artifact", variant="success")
@@ -732,19 +731,20 @@ class SdvTuiApp(App[None]):
                             "Results 화면에서는 최근 판정과 증빙, CANoe Report, Execution Manifest를 같은 흐름에서 확인할 수 있습니다.",
                             id="results-hint",
                         )
-                    with Vertical(id="page-artifacts", classes="page hidden"):
+                    with VerticalScroll(id="page-artifacts", classes="page hidden"):
                         yield Static(
                             "Artifacts 화면은 실행 산출물과 Source Contract를 구분해 보여줍니다. "
                             "Staging은 현재 작업 산출물, Archive는 보관본, Source Contracts는 생성 기준 파일, Package는 전달용 출력입니다.",
                             id="artifacts-overview",
                         )
-                        with Horizontal(id="artifact-strip"):
+                        with Horizontal(id="artifact-top-strip"):
                             with Vertical(classes="artifact-card"):
                                 yield Static("Staging Outputs", classes="summary-title")
                                 yield Static(id="artifact-staging-body")
                             with Vertical(classes="artifact-card"):
                                 yield Static("Final Archive", classes="summary-title")
                                 yield Static(id="artifact-archive-body")
+                        with Horizontal(id="artifact-bottom-strip"):
                             with Vertical(classes="artifact-card"):
                                 yield Static("Source Contracts", classes="summary-title")
                                 yield Static(id="artifact-source-body")
@@ -766,7 +766,7 @@ class SdvTuiApp(App[None]):
                             "Staging은 재생성 가능한 작업 산출물, Archive는 최종 보관본, Source Contracts는 생성 기준 파일, Package는 배포 출력으로 이해하면 됩니다.",
                             id="artifacts-hint",
                         )
-                    with Vertical(id="page-automation", classes="page hidden"):
+                    with VerticalScroll(id="page-automation", classes="page hidden"):
                         yield Static(
                             "Automation 화면은 반복 실행과 CI/CD / Jenkins 연동을 위한 운영 영역입니다.\n"
                             "실행 프로파일을 선택한 뒤, 상세 결과와 산출물 검토는 Results와 Artifacts에서 이어서 진행하십시오.",
@@ -1023,6 +1023,143 @@ class SdvTuiApp(App[None]):
             return f"{hours:02d}:{minutes:02d}:{secs:02d}"
         return f"{minutes:02d}:{secs:02d}"
 
+    def _status_blocks(self, status: str) -> str:
+        token = status.upper().strip()
+        if token in {"PASS", "READY", "OK", "RUNNING", "RUN", "TRUE", "ON"}:
+            return "■"
+        return "□"
+
+    def _progress_lane(self, progress: int, *, running: bool) -> str:
+        slots = 18
+        clamped = max(0, min(100, progress))
+        filled = max(0, min(slots, int(round((clamped / 100) * slots))))
+        track = ("━" * filled) + ("─" * (slots - filled))
+        return f"Gate {track} Verify"
+
+    def _telemetry_symbol(self, status: str) -> str:
+        token = status.upper().strip()
+        if token in {"PASS", "READY", "OK", "RUNNING", "RUN", "TRUE", "ON"}:
+            return "●"
+        if token in {"WARN", "LIMITED"}:
+            return "◐"
+        if token in {"FAIL", "ERROR", "DOWN"}:
+            return "✕"
+        return "○"
+
+    def _display_status_text(self, status: str) -> str:
+        token = status.upper().strip()
+        mapping = {
+            "PASS": "통과",
+            "READY": "준비됨",
+            "OK": "정상",
+            "RUNNING": "실행 중",
+            "RUN": "실행 중",
+            "TRUE": "활성",
+            "ON": "활성",
+            "WARN": "주의",
+            "LIMITED": "제한됨",
+            "FAIL": "실패",
+            "ERROR": "오류",
+            "DOWN": "중지",
+            "IDLE": "대기",
+            "UNK": "미확인",
+            "-": "미확인",
+            "FALSE": "중지",
+            "OFF": "중지",
+        }
+        return mapping.get(token, status or "미확인")
+
+    def _is_active_status(self, status: str) -> bool:
+        return status.upper().strip() in {"PASS", "READY", "OK", "RUNNING", "RUN", "TRUE", "ON"}
+
+    def _runtime_status_line(self, runtime_label: str, attach: str, measurement: str, ack: str, artifacts: str) -> Text:
+        line = Text(style="#d7e7f2")
+        marker_style = "#7ac7ff"
+        segments = [
+            ("CANoe", runtime_label),
+            ("COM", attach),
+            ("측정", measurement),
+            ("ACK", ack),
+        ]
+        for index, (label, status) in enumerate(segments):
+            if index:
+                line.append("   ")
+            line.append(f"{label} ")
+            line.append(self._status_blocks(status), style=marker_style)
+            line.append(f" {self._display_status_text(status)}")
+        line.append(f"   산출물 {artifacts}")
+        return line
+
+    def _runtime_pulse_panel(self, pulse: str, progress: int) -> str:
+        return f"{pulse} {progress}%"
+
+    def _runtime_visual_line(self, lane: str, pulse: str, progress: int, ambient_line: str) -> Text:
+        line = Text(style="#f6c177")
+        line.append(lane, style="#f6c177")
+        line.append("   ")
+        line.append(self._runtime_pulse_panel(pulse, progress), style="#f6c177")
+        line.append("   ")
+        line.append("Loop ", style="#7ac7ff")
+        line.append(ambient_line, style="#7ac7ff")
+        return line
+
+    def _ambient_wave_line(self, progress: int, *, active: bool) -> str:
+        blocks = "▁▂▃▄▅▆▇█"
+        width = 24
+        if not active:
+            return "▂" * width
+        now = time.monotonic() * 2.8
+        baseline = 2.0 + (max(0, min(100, progress)) / 100.0) * 2.1
+        chars: list[str] = []
+        for index in range(width):
+            phase = now + index * 0.42
+            value = baseline + 1.8 * (0.5 + 0.5 * math.sin(phase))
+            value += 1.1 * (0.5 + 0.5 * math.sin(phase * 0.57 + 1.2))
+            level = max(0, min(len(blocks) - 1, int(value)))
+            chars.append(blocks[level])
+        return "".join(chars)
+
+
+    def _artifact_ready_summary(self) -> tuple[int, int]:
+        layout = self._artifact_layout()
+        staging_root = ROOT / str(layout.get("staging_root", "canoe/tmp/reports/verification"))
+        tracked = (
+            "doctor_report.json",
+            "run_readiness.json",
+            "dev2_batch_report.json",
+            "surface_evidence_bundle.json",
+        )
+        ready = sum(1 for name in tracked if (staging_root / name).exists())
+        return ready, len(tracked)
+
+    def _runtime_telemetry(self) -> dict[str, str]:
+        doctor = self._load_json_file(ROOT / "canoe" / "tmp" / "reports" / "verification" / "doctor_report.json")
+        attach = "UNK"
+        measurement = "UNK"
+        if isinstance(doctor, dict):
+            checks = doctor.get("checks", [])
+            if isinstance(checks, list):
+                for item in checks:
+                    if not isinstance(item, dict):
+                        continue
+                    name = str(item.get("name", ""))
+                    status = str(item.get("status", "-")).upper()
+                    detail = str(item.get("detail", "-")).upper()
+                    if name == "CANoe COM attach":
+                        attach = status
+                    elif name == "Measurement running":
+                        measurement = detail
+
+        scenario = self._last_scenario_recent()
+        ack = str(scenario.get("status", "IDLE")).upper() if isinstance(scenario, dict) else "IDLE"
+        ready_count, total_count = self._artifact_ready_summary()
+        return {
+            "attach": attach,
+            "measurement": measurement,
+            "ack": ack,
+            "artifacts": f"{ready_count}/{total_count}",
+        }
+
     def _pipeline_snapshot(self) -> dict[str, object]:
         timeline = self.state.get("timeline", {})
         if not isinstance(timeline, dict):
@@ -1099,19 +1236,8 @@ class SdvTuiApp(App[None]):
         ]
         frame = pulse_frames[int(time.monotonic() * 2) % len(pulse_frames)]
 
-        recent_rows = self._recent_rows()
-        history_tokens: list[str] = []
-        for item in recent_rows[:5]:
-            status = str(item.get("status", "IDLE"))
-            symbol = {
-                "PASS": "●",
-                "WARN": "◐",
-                "FAIL": "✕",
-                "RUNNING": "◉",
-            }.get(status, "○")
-            duration = max(0.0, float(int(item.get("duration_ms", 0) or 0)) / 1000.0)
-            history_tokens.append(f"{symbol}{self._format_duration_clock(duration)}")
-        history_text = "  ".join(history_tokens) if history_tokens else "최근 실행 기록이 없습니다."
+        telemetry = self._runtime_telemetry()
+        loop_active = running or self._is_active_status(telemetry["measurement"])
 
         return {
             "running": running,
@@ -1120,6 +1246,9 @@ class SdvTuiApp(App[None]):
             "eta": eta_text,
             "phase_line": "  ".join(stage_labels),
             "active_stage": active_stage,
+            "gate_state": str(timeline.get("gate", "IDLE")),
+            "scenario_state": str(timeline.get("scenario", "IDLE")),
+            "verify_state": str(timeline.get("verify", "IDLE")),
             "runtime_label": runtime_label,
             "runtime_detail": runtime.detail,
             "live_line": live_line[:84],
@@ -1127,7 +1256,23 @@ class SdvTuiApp(App[None]):
             "title": title,
             "detail": detail[:84],
             "pulse": frame,
-            "history": history_text,
+            "attach": telemetry["attach"],
+            "measurement": telemetry["measurement"],
+            "ack": telemetry["ack"],
+            "artifacts": telemetry["artifacts"],
+            "runtime_status_line": self._runtime_status_line(
+                runtime_label,
+                telemetry["attach"],
+                telemetry["measurement"],
+                telemetry["ack"],
+                telemetry["artifacts"],
+            ),
+            "visual_line": self._runtime_visual_line(
+                self._progress_lane(progress, running=running),
+                frame,
+                progress,
+                self._ambient_wave_line(progress, active=loop_active),
+            ),
         }
 
     def _refresh_global_bars(self) -> None:
@@ -1135,16 +1280,13 @@ class SdvTuiApp(App[None]):
             snapshot = self._pipeline_snapshot()
             self.query_one("#global-progress", ProgressBar).update(progress=float(snapshot["progress"]))
             self.query_one("#hero-status", Static).update(
-                f"현재 작업: {snapshot['title']}  |  판정: {snapshot['verdict']}  |  Active Stage: {snapshot['active_stage']}"
+                f"현재 작업: {snapshot['title']}  |  판정: {snapshot['verdict']}  |  흐름: Gate={snapshot['gate_state']} / Scenario={snapshot['scenario_state']} / Verify={snapshot['verify_state']}"
             )
             self.query_one("#global-progress-label", Static).update(
-                f"Progress {snapshot['progress']}%  |  Elapsed {snapshot['elapsed']}  |  ETA {snapshot['eta']}"
+                f"Progress {snapshot['progress']}%  |  Elapsed {snapshot['elapsed']}  |  ETA {snapshot['eta']}  |  Active {snapshot['active_stage']}"
             )
-            runtime_lines = [
-                f"{snapshot['phase_line']}  |  Active: {snapshot['active_stage']}",
-                f"CANoe: {snapshot['runtime_label']}  |  Pulse: {snapshot['pulse']} {snapshot['progress']}%  |  Signal: {snapshot['live_line'][:18]}",
-            ]
-            self.query_one("#global-runtime-band", Static).update("\n".join(runtime_lines))
+            self.query_one("#global-runtime-badges", Static).update(snapshot["runtime_status_line"])
+            self.query_one("#global-visual-band", Static).update(snapshot["visual_line"])
         except NoMatches:
             return
 
@@ -1204,40 +1346,60 @@ class SdvTuiApp(App[None]):
         except ValueError:
             return str(path)
 
+    def _brief_relpath(self, path: Path | None) -> str:
+        if path is None:
+            return "-"
+        rel = self._relpath(path)
+        parts = rel.split("/")
+        if len(parts) <= 4:
+            return rel
+        return "/".join([parts[0], parts[1], "...", parts[-2], parts[-1]])
+
     def _summarize_artifact_staging(self) -> str:
         layout = self._artifact_layout()
         staging_root = ROOT / str(layout.get("staging_root", "canoe/tmp/reports/verification"))
-        lines = [self._relpath(staging_root)]
-        for name in (
+        tracked = (
             "doctor_report.json",
             "run_readiness.json",
             "dev2_batch_report.json",
             "surface_evidence_bundle.json",
-        ):
-            candidate = staging_root / name
-            marker = "OK" if candidate.exists() else "MISS"
-            lines.append(f"- [{marker}] {name}")
+        )
+        ready = [name for name in tracked if (staging_root / name).exists()]
+        lines = [
+            f"루트: {self._brief_relpath(staging_root)}",
+            f"핵심 파일: {len(ready)}/{len(tracked)} ready",
+        ]
+        if ready:
+            lines.append("준비됨: " + ", ".join(ready[:3]))
+        missing = [name for name in tracked if name not in ready]
+        if missing:
+            lines.append("대기: " + ", ".join(missing[:2]))
         return "\n".join(lines)
 
     def _summarize_artifact_archive(self) -> str:
         archive_dir = self._latest_archive_for_last_run()
         if archive_dir is None:
             return "최근 archive run이 없습니다.\nverify batch 또는 archive materialize 단계가 끝나면 채워집니다."
-        lines = [self._relpath(archive_dir)]
+        lines = [f"최근 archive: {self._brief_relpath(archive_dir)}"]
         execution_manifest = self._latest_execution_manifest_payload()
         if execution_manifest:
             execution = execution_manifest.get("execution", {})
             if isinstance(execution, dict):
-                lines.append(f"run_id={execution.get('run_id', '-')}")
-                lines.append(f"execution_id={execution.get('campaign_id', '-')}")
-                lines.append(f"phase={execution.get('phase', execution_manifest.get('phase', '-'))}")
-                lines.append(f"owner={execution.get('owner', '-')}")
-                lines.append(f"surface={execution.get('surface_scope', '-')}")
-            lines.append("")
+                lines.append(
+                    " / ".join(
+                        [
+                            f"run_id={execution.get('run_id', '-')}",
+                            f"phase={execution.get('phase', execution_manifest.get('phase', '-'))}",
+                            f"owner={execution.get('owner', '-')}",
+                        ]
+                    )
+                )
+                lines.append(f"campaign={execution.get('campaign_id', '-')}  surface={execution.get('surface_scope', '-')}")
+        status_tokens = []
         for name in ("reports", "surface", "native_reports", "evidence", "manifests"):
             candidate = archive_dir / name
-            marker = "OK" if candidate.exists() else "MISS"
-            lines.append(f"- [{marker}] {name}")
+            status_tokens.append(f"{name}={'OK' if candidate.exists() else 'MISS'}")
+        lines.append("구성: " + "  ".join(status_tokens))
         return "\n".join(lines)
 
     def _resolve_archive_child_target(self, relative_path: str) -> Path | None:
@@ -1257,33 +1419,36 @@ class SdvTuiApp(App[None]):
 
     def _summarize_artifact_source(self) -> str:
         source_target = self._resolve_source_contract_target()
-        lines = [self._relpath(source_target)]
-        for candidate in (
+        core_contracts = (
             ROOT / "product" / "sdv_operator" / "config" / "surface_ecu_inventory.json",
-            ROOT / "product" / "sdv_operator" / "config" / "native_canoe_test_portfolio_v1.json",
-            ROOT / "product" / "sdv_operator" / "config" / "network_gateway_verification_pack_v1.json",
+            ROOT / "product" / "sdv_operator" / "config" / "surface_traceability_profile.json",
             ROOT / "product" / "sdv_operator" / "config" / "verification_pack_matrix.json",
             ROOT / "product" / "sdv_operator" / "config" / "campaign_profiles.json",
-            ROOT / "product" / "sdv_operator" / "config" / "capability_boundary_matrix.json",
-            ROOT / "product" / "sdv_operator" / "config" / "surface_traceability_profile.json",
-            ROOT / "product" / "sdv_operator" / "config" / "verification_artifact_layout.json",
+        )
+        reference_docs = (
             ROOT / "product" / "sdv_operator" / "docs-src" / "role-boundary.md",
             ROOT / "product" / "sdv_operator" / "docs-src" / "capability-boundary.md",
             ROOT / "product" / "sdv_operator" / "docs-src" / "verification-packs.md",
-        ):
-            marker = "OK" if candidate.exists() else "MISS"
-            lines.append(f"- [{marker}] {self._relpath(candidate)}")
+        )
+        core_ready = sum(1 for item in core_contracts if item.exists())
+        docs_ready = sum(1 for item in reference_docs if item.exists())
+        lines = [
+            f"기준 Contract: {self._brief_relpath(source_target)}",
+            f"Core config: {core_ready}/{len(core_contracts)} ready",
+            f"Reference docs: {docs_ready}/{len(reference_docs)} ready",
+            "원본 JSON/MD는 Source Contract 버튼에서 바로 엽니다.",
+        ]
         return "\n".join(lines)
 
     def _summarize_artifact_build(self) -> str:
-        lines = []
-        for candidate in (
-            ROOT / "dist",
-            ROOT / "build",
-            ROOT / "product" / "sdv_operator" / "site",
-        ):
-            marker = "OK" if candidate.exists() else "MISS"
-            lines.append(f"- [{marker}] {self._relpath(candidate)}")
+        dist_root = ROOT / "dist"
+        build_root = ROOT / "build"
+        site_root = ROOT / "product" / "sdv_operator" / "site"
+        lines = [
+            f"dist={'OK' if dist_root.exists() else 'MISS'}  build={'OK' if build_root.exists() else 'MISS'}",
+            f"site={'OK' if site_root.exists() else 'MISS'}",
+            "배포 출력은 Package 출력 열기 버튼에서 확인합니다.",
+        ]
         return "\n".join(lines)
 
     def _refresh_artifact_cards(self) -> None:
@@ -1373,36 +1538,24 @@ class SdvTuiApp(App[None]):
             artifacts = []
         source_target = self._resolve_source_contract_target()
 
-        lines: list[str] = []
-        if artifacts:
-            lines.append("최근 증빙")
-            lines.extend(f"- {str(item)}" for item in artifacts[:3])
-        else:
-            lines.append("최근 증빙")
-            lines.append("- 아직 연결된 증빙 경로가 없습니다.")
-
-        lines.append("")
+        latest_artifact = Path(str(artifacts[0])) if artifacts else None
+        if latest_artifact is not None and not latest_artifact.is_absolute():
+            latest_artifact = ROOT / latest_artifact
         native_target = self._resolve_archive_child_target("native_reports")
-        lines.append("CANoe report")
-        lines.append(f"- {self._relpath(native_target) if native_target else '최근 archive가 없습니다.'}")
-        lines.append("")
         manifest_target = self._resolve_archive_child_target("manifests/execution_manifest.json")
-        lines.append("Execution Manifest")
-        lines.append(f"- {self._relpath(manifest_target) if manifest_target else '최근 archive가 없습니다.'}")
+        lines: list[str] = [
+            f"최근 증빙: {self._brief_relpath(latest_artifact) if latest_artifact else '아직 연결된 증빙 경로가 없습니다.'}",
+            f"CANoe report: {self._brief_relpath(native_target) if native_target else '최근 archive가 없습니다.'}",
+            f"Execution Manifest: {self._brief_relpath(manifest_target) if manifest_target else '최근 archive가 없습니다.'}",
+        ]
         profile = self.state.get("campaign_profile", {})
         if isinstance(profile, dict):
             profile_id = str(profile.get("profile_id", "")).strip()
             pack_id = str(profile.get("pack_id", "")).strip()
             if profile_id or pack_id:
-                lines.append("")
-                lines.append("활성 pack")
-                lines.append(f"- profile={profile_id or '-'}")
-                lines.append(f"- pack={pack_id or '-'}")
-        lines.append("")
-        lines.append("Source Contract")
-        lines.append(f"- {source_target.relative_to(ROOT).as_posix()}")
-        lines.append("")
-        lines.append("동작: 증빙 / CANoe report / Execution Manifest / Source Contract / Staging 정리")
+                lines.append(f"활성 profile/pack: {profile_id or '-'} / {pack_id or '-'}")
+        lines.append(f"Source Contract: {self._brief_relpath(source_target)}")
+        lines.append("동작: 증빙 / CANoe report / Execution Manifest / Source Contract")
         return "\n".join(lines)
 
     def _refresh_summary_cards(self) -> None:
@@ -1418,6 +1571,8 @@ class SdvTuiApp(App[None]):
         else:
             recent_list.add_options([Option("아직 최근 실행 기록이 없습니다.")])
             recent_list.highlighted = 0
+        selected_recent = recent_rows[min(previous_index, len(recent_rows) - 1)] if recent_rows else None
+        self.query_one("#recent-detail", Static).update(self._recent_detail_text(selected_recent))
 
         last_insight = self.state.get("last_insight", {})
         timeline = self.state.get("timeline", {})
@@ -1433,20 +1588,14 @@ class SdvTuiApp(App[None]):
             verify_state = str(timeline.get("verify", "IDLE"))
         else:
             gate_state = scenario_state = verify_state = "IDLE"
-        self.query_one("#insight-body", Static).update(
-            "\n".join(
+        self.query_one("#health-body", Static).update(
+            "\n\n".join(
                 [
-                    f"현재 단계: {stage}",
-                    f"3단계 흐름: Gate={gate_state} / Scenario={scenario_state} / Verify={verify_state}",
-                    f"주요 확인점: {bottleneck}",
-                    f"다음 단계: {next_action}",
+                    "Readiness\n" + self._summarize_tier_readiness(),
+                    "Runtime\n" + self._summarize_com_snapshot(),
                 ]
             )
         )
-        self.query_one("#readiness-body", Static).update(self._summarize_tier_readiness())
-        self.query_one("#batch-body", Static).update(self._summarize_batch_snapshot())
-        self.query_one("#com-body", Static).update(self._summarize_com_snapshot())
-        self.query_one("#timeline-body", Static).update(self._summarize_timeline())
         self._refresh_global_bars()
 
         last_result = self.state.get("last_result", {})
@@ -1469,7 +1618,10 @@ class SdvTuiApp(App[None]):
         result_lines = [
             f"판정: {status}",
             f"작업: {title}",
+            f"현재 단계: {stage}",
+            f"실행 흐름: Gate={gate_state} / Scenario={scenario_state} / Verify={verify_state}",
             f"직접 사유: {detail}",
+            f"주요 확인점: {bottleneck}",
             f"다음 단계: {next_action}",
         ]
         if isinstance(related_logs, list) and related_logs:
@@ -1532,6 +1684,15 @@ class SdvTuiApp(App[None]):
         duration_ms = int(item.get("duration_ms", 0) or 0)
         duration_text = f"{duration_ms}ms" if duration_ms > 0 else "-"
         return f"{status} | {title} | {duration_text} | {ts}"
+
+    def _recent_detail_text(self, item: dict[str, object] | None) -> str:
+        if item is None:
+            return "최근 실행을 선택하면 상세를 확인할 수 있습니다. Enter를 누르면 같은 작업을 다시 실행합니다."
+        title = str(item.get("title", ""))
+        status = str(item.get("status", ""))
+        duration_ms = int(item.get("duration_ms", 0) or 0)
+        detail = str(item.get("detail", ""))
+        return recent_selection_insight(title, status, duration_ms, detail)
 
     def _selected_command(self) -> PaletteCommand | None:
         commands = self._active_group_commands()
@@ -2520,14 +2681,8 @@ class SdvTuiApp(App[None]):
             index = self._selected_option_index(event.option_list)
             if 0 <= index < len(recent):
                 item = recent[index]
-                title = str(item.get("title", ""))
-                status = str(item.get("status", ""))
-                duration_ms = int(item.get("duration_ms", 0) or 0)
-                detail = str(item.get("detail", ""))
                 try:
-                    self.query_one(
-                        "#insight-body", Static
-                    ).update(recent_selection_insight(title, status, duration_ms, detail))
+                    self.query_one("#recent-detail", Static).update(self._recent_detail_text(item))
                 except NoMatches:
                     return
 
