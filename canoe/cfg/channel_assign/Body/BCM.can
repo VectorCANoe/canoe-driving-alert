@@ -1,3 +1,4 @@
+/*@!Encoding:949*/
 includes
 {
   #include "..\\common\\CAPL_COMMON.cin"
@@ -18,6 +19,16 @@ variables
   int gBackboneAlertType;
   int gBackboneTimeoutClear;
   dword gBackboneAlertTsMs;
+  
+  //Timer for GuideLED
+  msTimer guideLedTimer;
+  int guideMode = 0;   // 0=off, 5=left, 6=right
+  int step = 0;
+  int ms = 200;
+  //for led name
+  char prev[10]="";
+  //for display name
+  char display[22]="SDV_Ambient_Top_View";
 }
 
 int useBackboneAlertState()
@@ -344,4 +355,71 @@ on stopMeasurement
   cancelTimer(tBodyBase100);
   ethCloseSocket(gEthSocket);
   gEthSocket = ethInvalidSocket();
+}
+
+on sysvar Body::ambientMode{
+  char curr[10];
+  char num[5];
+  
+  //for guideLED Animation
+  cancelTimer(guideLedTimer);
+  guideMode = 0;
+  guideLedAllOff();
+  switch(@Body::ambientMode){
+    case 5: 
+    case 6:
+      guideLedStart(@Body::ambientMode);
+      break;
+  }
+  
+  //set LED Image
+  //prev off
+  if(strlen(prev) > 0)
+  {
+    setControlVisibility(display, prev, 0);
+  }
+  snprintf(curr, elcount(curr), "led%d", @Body::ambientMode); //set curr led name
+  setControlVisibility(display, curr, 1);  //curr on
+  snprintf(prev, elcount(prev), "%s", curr);  //set prev
+  
+}
+
+void guideLedStart(int mode){
+  guideMode = mode;
+  step = 0;
+  setTimer(guideLedTimer, ms);
+}
+
+void guideLedAllOff(){
+  int i;
+  char name[20];
+
+  for(i=1;i<=5;i++){
+    snprintf(name, elcount(name), "led5_%d", i);
+    setControlVisibility(display, name, 0);
+
+    snprintf(name, elcount(name), "led6_%d", i);
+    setControlVisibility(display, name, 0);
+  }
+}
+
+on timer guideLedTimer{
+  char name[20];
+
+  if(guideMode != 5 && guideMode != 6){
+    guideLedAllOff();
+    return;
+  }
+
+  step++;
+  if(step > 5) step = 1;
+
+  guideLedAllOff();
+
+  setControlVisibility(display, "led0", 1);
+
+  snprintf(name, elcount(name), "led%d_%d", guideMode, step);
+  setControlVisibility(display, name, 1);
+
+  setTimer(guideLedTimer, ms);
 }
