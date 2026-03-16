@@ -1,0 +1,149 @@
+includes
+{
+  #include "..\\common\\CAPL_COMMON.cin"
+}
+
+variables
+{
+  msTimer tEthBackboneCycle;
+  int gIboxRouteState;
+  int gIboxSignalBars;
+  int gIboxServiceFlags;
+  int gSecuritySession;
+  int gAuthState;
+  int gSecurityFault;
+  int gFailSafeMode;
+  int gLastBackboneMode;
+  int gLastRouteHealth;
+  int gLastServiceHealth;
+  int gLastSecurityLevel;
+  int gLastActiveServices;
+  int gLastFaultBitmap;
+}
+
+void publishBackboneState()
+{
+  message ethBackboneStateMsg mBackbone;
+  int backboneMode;
+  int routeHealth;
+  int serviceHealth;
+  int securityLevel;
+  int activeServices;
+  int faultBitmap;
+
+  routeHealth = clampRange(gIboxRouteState, 0, 3);
+
+  serviceHealth = 2;
+  {
+    serviceHealth = 1;
+  }
+  {
+    serviceHealth = 0;
+  }
+
+  securityLevel = clampRange(gAuthState, 0, 3);
+  if (gSecuritySession >= 4)
+  {
+    securityLevel = 3;
+  }
+
+  backboneMode = 1;
+  if (gFailSafeMode > 0 || routeHealth <= 1)
+  {
+    backboneMode = 2;
+  }
+  if (securityLevel >= 2 && serviceHealth >= 1)
+  {
+    backboneMode = 3;
+  }
+
+  activeServices = 0;
+  if (gIboxSignalBars > 0) { activeServices = activeServices + 1; }
+  if (gSecuritySession > 0) { activeServices = activeServices + 1; }
+  if (gIboxServiceFlags > 0) { activeServices = activeServices + 1; }
+
+  faultBitmap = 0;
+  if (gSecurityFault > 0) { faultBitmap = faultBitmap | 0x01; }
+  if (gFailSafeMode > 0) { faultBitmap = faultBitmap | 0x04; }
+
+  mBackbone.BackboneMode = clampRange(backboneMode, 0, 3);
+  mBackbone.RouteHealth = clampRange(routeHealth, 0, 3);
+  mBackbone.ServiceHealth = clampRange(serviceHealth, 0, 3);
+  mBackbone.SecurityLevel = clampRange(securityLevel, 0, 3);
+  mBackbone.ActiveServices = clampRange(activeServices, 0, 255);
+  mBackbone.FaultBitmap = clampRange(faultBitmap, 0, 255);
+  output(mBackbone);
+
+  if (backboneMode != gLastBackboneMode ||
+      routeHealth != gLastRouteHealth ||
+      serviceHealth != gLastServiceHealth ||
+      securityLevel != gLastSecurityLevel ||
+      activeServices != gLastActiveServices ||
+      faultBitmap != gLastFaultBitmap)
+  {
+    write("[ETHB] mode=%d route=%d service=%d sec=%d active=%d faults=0x%02X",
+          backboneMode,
+          routeHealth,
+          serviceHealth,
+          securityLevel,
+          activeServices,
+          faultBitmap);
+    gLastBackboneMode = backboneMode;
+    gLastRouteHealth = routeHealth;
+    gLastServiceHealth = serviceHealth;
+    gLastSecurityLevel = securityLevel;
+    gLastActiveServices = activeServices;
+    gLastFaultBitmap = faultBitmap;
+  }
+}
+
+on start
+{
+  gIboxRouteState = 0;
+  gIboxSignalBars = 0;
+  gIboxServiceFlags = 0;
+  gSecuritySession = 0;
+  gAuthState = 0;
+  gSecurityFault = 0;
+  gFailSafeMode = 0;
+  gLastBackboneMode = -1;
+  gLastRouteHealth = -1;
+  gLastServiceHealth = -1;
+  gLastSecurityLevel = -1;
+  gLastActiveServices = -1;
+  gLastFaultBitmap = -1;
+  setTimer(tEthBackboneCycle, 100);
+  write("[ETHB] start");
+}
+
+on timer tEthBackboneCycle
+{
+  publishBackboneState();
+  setTimer(tEthBackboneCycle, 100);
+}
+
+on message ethIboxStateMsg
+{
+  gIboxRouteState = clampRange((int)this.IboxRouteState, 0, 3);
+  gIboxSignalBars = clampRange((int)this.IboxSignalBars, 0, 15);
+  gIboxServiceFlags = clampRange((int)this.IboxServiceFlags, 0, 15);
+}
+
+on message ethSecurityStateMsg
+{
+  gSecuritySession = clampRange((int)this.SecuritySession, 0, 7);
+  gAuthState = clampRange((int)this.AuthState, 0, 3);
+  gSecurityFault = clampRange((int)this.SecurityFault, 0, 15);
+}
+
+
+
+on message ethFailSafeStateMsg
+{
+  gFailSafeMode = clampRange((int)this.FailSafeMode, 0, 2);
+}
+
+on stopMeasurement
+{
+  cancelTimer(tEthBackboneCycle);
+}

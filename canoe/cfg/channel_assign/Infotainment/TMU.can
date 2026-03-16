@@ -129,7 +129,6 @@ void publishTmuState()
   }
   else if (signalBars <= 1 || connType == 0)
   {
-    serviceMode = 2;
   }
   else if (iviCpuLoad >= 60 || iviMemLoad >= 60)
   {

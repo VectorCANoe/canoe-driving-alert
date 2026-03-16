@@ -654,7 +654,6 @@ void beginScenarioExecution(int scenarioId)
   cancelScenarioTransientTimers();
   clearScenarioLifecycleState();
   @Test::scenarioResult = 0;
-  applyScenarioPreset(scenarioId);
   gCurrentScenarioId = scenarioId;
   setScenarioMirror(scenarioId);
   @Test::scenarioActiveId = clampRange(scenarioId, 0, 255);
@@ -742,10 +741,12 @@ void applyScenarioPreset(int scenarioId)
   @Test::turnLampOverride = 0;
   @Test::forceFailSafe = 0;
   @Test::historyQueryOffset = 0;
+  @Display::animFrame = 0;  // 기본값: 기본 주행 화면
 
   if (scenarioId == 1)
   {
     /* Normal idle */
+    @Display::animFrame = 0;
   }
   else if (scenarioId == 2)
   {
@@ -753,6 +754,7 @@ void applyScenarioPreset(int scenarioId)
     gLockRoadZone = 1;
     gLockVehicleSpeed = 45;
     gLockSpeedLimit = 30;
+    @Display::animFrame = 3;  // 스쿨존 과속 경고
   }
   else if (scenarioId == 3)
   {
@@ -761,6 +763,7 @@ void applyScenarioPreset(int scenarioId)
     gLockSteeringInput = 0;
     gLockVehicleSpeed = 80;
     gLockSpeedLimit = 100;
+    @Display::animFrame = 9;  // 핸들 조향 없음 경고
   }
   else if (scenarioId == 4)
   {
@@ -770,6 +773,7 @@ void applyScenarioPreset(int scenarioId)
     gLockEta = 12;
     gLockEmergencyDirection = 1;
     gLockSourceId = 11;
+    @Display::animFrame = 1;  // 경찰차 접근 경고
   }
   else if (scenarioId == 5)
   {
@@ -779,6 +783,7 @@ void applyScenarioPreset(int scenarioId)
     gLockEta = 8;
     gLockEmergencyDirection = 2;
     gLockSourceId = 22;
+    @Display::animFrame = 2;  // 구급차 접근 경고
   }
   else if (scenarioId == 6)
   {
@@ -787,6 +792,7 @@ void applyScenarioPreset(int scenarioId)
     gLockEmergencyType = 2;
     gLockEta = 5;
     gLockSourceId = 33;
+    @Display::animFrame = 2;  // 구급차 접근 경고
   }
   else if (scenarioId == 7)
   {
@@ -794,6 +800,7 @@ void applyScenarioPreset(int scenarioId)
     gLockRoadZone = 3;
     gLockNavDirection = 1;
     gLockVehicleSpeed = 35;
+    @Display::animFrame = 5;  // 교차로 진입 좌회전 안내
   }
   else if (scenarioId == 8)
   {
@@ -801,6 +808,7 @@ void applyScenarioPreset(int scenarioId)
     gLockRoadZone = 3;
     gLockNavDirection = 2;
     gLockVehicleSpeed = 35;
+    @Display::animFrame = 6;  // 합류구간 진입 우회전 안내
   }
   else if (scenarioId == 9)
   {
@@ -811,6 +819,7 @@ void applyScenarioPreset(int scenarioId)
     gLockSourceId = 5;
     gLockEmergencyDirection = 1;
     setTimer(tScenarioPhase2, 300);
+    @Display::animFrame = 1;  // 경찰차 접근 경고
   }
   else if (scenarioId == 10)
   {
@@ -821,6 +830,7 @@ void applyScenarioPreset(int scenarioId)
     gLockSourceId = 20;
     gLockEmergencyDirection = 1;
     setTimer(tScenarioPhase2, 300);
+    @Display::animFrame = 1;  // 경찰차 접근 경고
   }
   else if (scenarioId == 11)
   {
@@ -831,6 +841,7 @@ void applyScenarioPreset(int scenarioId)
     gLockAlertState = 0;
     gLockEmergencyType = 0;
     setTimer(tScenarioPhase2, 400);
+    @Display::animFrame = 5;  // 교차로 진입 좌회전 안내
   }
   else if (scenarioId == 12)
   {
@@ -841,6 +852,7 @@ void applyScenarioPreset(int scenarioId)
     gLockAlertState = 0;
     gLockEmergencyType = 0;
     setTimer(tScenarioPhase2, 300);
+    @Display::animFrame = 3;  // 스쿨존 과속 경고
   }
   else if (scenarioId == 13)
   {
@@ -852,6 +864,7 @@ void applyScenarioPreset(int scenarioId)
     gLockAlertState = 0;
     gLockEmergencyType = 0;
     setTimer(tScenarioPhase2, 300);
+    @Display::animFrame = 3;  // 스쿨존 과속 경고
   }
   else if (scenarioId == 14)
   {
@@ -861,6 +874,7 @@ void applyScenarioPreset(int scenarioId)
     gLockRoadZone = 0;
     gLockAlertState = 0;
     gLockEmergencyType = 0;
+    @Display::animFrame = 0;  // 기본 주행 화면
   }
   else if (scenarioId == 15)
   {
@@ -872,6 +886,7 @@ void applyScenarioPreset(int scenarioId)
     gLockEmergencyDirection = 0;
     gLockEta = 6;
     gLockSourceId = 41;
+    @Display::animFrame = 1;  // 경찰차 접근 경고
   }
   else if (scenarioId == 16)
   {
@@ -883,6 +898,7 @@ void applyScenarioPreset(int scenarioId)
     gLockEmergencyDirection = 0;
     gLockEta = 4;
     gLockSourceId = 42;
+    @Display::animFrame = 2;  // 구급차 접근 경고
   }
   else if (scenarioId == 17)
   {
@@ -895,6 +911,7 @@ void applyScenarioPreset(int scenarioId)
     gLockEta = 4;
     gLockSourceId = 43;
     setTimer(tScenarioPhase2, 250);
+    @Display::animFrame = 2;  // 구급차 접근 경고
   }
   else if (scenarioId == 18)
   {
@@ -919,6 +936,7 @@ void applyScenarioPreset(int scenarioId)
     gLockEmergencyDirection = 0;
     gLockEta = 4;
     gLockSourceId = 45;
+    @Display::animFrame = 2;  // 구급차 접근 경고 (긴급차량 우선)
   }
   else if (scenarioId == 20)
   {
@@ -931,6 +949,7 @@ void applyScenarioPreset(int scenarioId)
     gLockObjectRelSpeed = -45;
     gLockObjectConfidence = 85;
     gLockObjectAlertHoldMs = 300;
+    @Display::animFrame = 9;  // 핸들 조향 없음 / 전방 충돌 경고
   }
   else if (scenarioId == 21)
   {
@@ -944,6 +963,7 @@ void applyScenarioPreset(int scenarioId)
     gLockObjectConfidence = 80;
     gLockIntersectionConflictFlag = 1;
     gLockObjectAlertHoldMs = 300;
+    @Display::animFrame = 9;  // 교차로 충돌 경고
   }
   else if (scenarioId == 22)
   {
@@ -957,6 +977,7 @@ void applyScenarioPreset(int scenarioId)
     gLockObjectConfidence = 82;
     gLockMergeCutInFlag = 1;
     gLockObjectAlertHoldMs = 300;
+    @Display::animFrame = 9;  // 합류 충돌 경고
   }
   else if (scenarioId == 23)
   {
@@ -969,6 +990,7 @@ void applyScenarioPreset(int scenarioId)
     gLockObjectRelSpeed = -55;
     gLockObjectConfidence = 90;
     gLockObjectAlertHoldMs = 300;
+    @Display::animFrame = 9;  // 전방 물체 위험 경고
   }
   else if (scenarioId == 24)
   {
@@ -981,6 +1003,7 @@ void applyScenarioPreset(int scenarioId)
     gLockObjectRelSpeed = -40;
     gLockObjectConfidence = 20;
     gLockObjectAlertHoldMs = 300;
+    @Display::animFrame = 0;  // 신뢰도 저하 → 기본 주행 화면
   }
   else if (scenarioId == 25)
   {

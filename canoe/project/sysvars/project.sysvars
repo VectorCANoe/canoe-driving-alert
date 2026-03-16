@@ -4,6 +4,16 @@
     <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="km/h" name="vehicleSpeed" comment="Panel input speed" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="255" maxValuePhys="255"/>
     <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="driveState" comment="0=P 1=R 2=N 3=D" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="3" maxValuePhys="3"/>
     <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="steeringInput" comment="0=NoInput 1=Input" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1"/>
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="%" name="throttlePosition" comment="Throttle position 0-100 (panel input, scenario=0)" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="100" maxValuePhys="100"/>
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="%" name="brakePressure" comment="Brake pressure 0-100 (panel input, scenario=0)" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="100" maxValuePhys="100"/>
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="gearCmd" comment="Manual gear 0=P 1=R 2=N 3=D (scenario=0 only)" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="3" maxValuePhys="3"/>
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="%" name="manualAccel" comment="Legacy compat: TEST_SCN reference (unused in manual mode)" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="100" maxValuePhys="100"/>
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="ignitionCmd" comment="Manual ignition 0=off 1=on (scenario=0 only)" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1"/>
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="transGear" comment="Automatic transmission gear 0=P/R/N 1-6=D gear" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="6" maxValuePhys="6"/>
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="brakeLamp" comment="Brake lamp state: 0=off 1=on" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1"/>
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="absActive" comment="ABS active: 0=off 1=on (brakePedal>80 and speed>10)" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1"/>
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="brakePedalBtn" comment="Brake pedal button state: 0=released 1=pressed" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1"/>
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="throttlePedalBtn" comment="Throttle pedal button state: 0=released 1=pressed" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1"/>
   </namespace>
 
   <namespace name="Infotainment" comment="" interface="">
@@ -58,6 +68,15 @@
     <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="ambientMode" comment="Ambient mode output" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="7" maxValuePhys="7"/>
     <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="ambientColor" comment="Ambient color output" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="7" maxValuePhys="7"/>
     <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="ambientPattern" comment="Ambient pattern output" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="7" maxValuePhys="7"/>
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="windowCmd" comment="Window command: 0=stop 1=up 2=down" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="2" maxValuePhys="2"/>
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="%" name="windowPos" comment="FL window position 0=closed 100=open" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="100" maxValuePhys="100"/>
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="manualTurnCmd" comment="Manual turn signal: 0=off 1=left 2=right 3=hazard" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="3" maxValuePhys="3"/>
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="wiperCmd" comment="Wiper command: 0=OFF 1=LOW 2=HIGH (scenario=0 only)" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="2" maxValuePhys="2"/>
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="wiperPos" comment="Wiper frame index 0~21 (display only)" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="21" maxValuePhys="21"/>
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="blinkLeft" comment="Left blink display state 0=off 1=on" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1"/>
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="blinkRight" comment="Right blink display state 0=off 1=on" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1"/>
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="doorLockCmd" comment="Door lock command: 0=unlock 1=lock" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1"/>
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="doorOpenCmd" comment="Door open command: 0=closed 1=open" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1"/>
   </namespace>
 
   <namespace name="Cluster" comment="" interface="">
@@ -96,11 +115,18 @@
     <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="displayModeSetting" comment="UI display mode setting: 0=default 1=visual 2=audio 3=combined" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="3" maxValuePhys="3"/>
     <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="%" name="alertVolumeSetting" comment="UI alert volume setting override (0=default, 1..100=explicit)" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="100" maxValuePhys="100"/>
     <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="seatBeltOverride" comment="Seat belt override: 0=default 1=driver-off 2=passenger-off 3=both-off" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="3" maxValuePhys="3"/>
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="driverBeltOff" comment="Driver seatbelt panel toggle: 0=buckled 1=unbuckled" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1"/>
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="passengerBeltOff" comment="Passenger seatbelt panel toggle: 0=buckled 1=unbuckled" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1"/>
     <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="historyQueryOffset" comment="Alert history query offset: 0=latest" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="15" maxValuePhys="15"/>
     <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="historyQueryCode" comment="Alert history query response warning code" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="255" maxValuePhys="255"/>
     <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="turnLampOverride" comment="Validation-only turn lamp override: 0=default 1=left 2=right" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="2" maxValuePhys="2"/>
     <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="nativeExecTierCode" comment="Product native execute tier code: 0=off 1=UT 2=IT 3=ST 4=FULL" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="4" maxValuePhys="4"/>
     <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="evidenceAutoWrite" comment="Verification harness raw evidence auto-write enable: 0=off 1=on" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="1" maxValuePhys="1"/>
+  </namespace>
+
+  <namespace name="Powertrain" comment="" interface="">
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="degC" name="coolantTemp" comment="Engine coolant temperature: 20=cold 90=normal (slow ramp on engine start)" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="120" maxValuePhys="120"/>
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="%" name="fuelLevel" comment="Fuel gauge display: 0=empty 100=full (sweeps 0->target on engine start)" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="100" maxValuePhys="100"/>
   </namespace>
 
   <namespace name="Diag" comment="" interface="">
@@ -163,6 +189,10 @@
     <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="warningPathStatus" comment="Warning path status: 0=normal 1=degraded 2=failed" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="2" maxValuePhys="2"/>
     <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="e2eHealthState" comment="End-to-end health: 0=failed 1=degraded 2=healthy" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="2" maxValuePhys="2"/>
     <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="decelGateReason" comment="Effective decel gate reason: 0=none 1=steer-release 2=brake-release 3=fail-safe-gate" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="3" maxValuePhys="3"/>
+  </namespace>
+
+  <namespace name="Display" comment="" interface="">
+    <variable anlyzLocal="2" readOnly="false" valueSequence="false" unit="" name="animFrame" comment="Startup animation frame index (0=off, 1=idle, 11~N=anim, set by EMS)" bitcount="32" isSigned="false" encoding="65001" type="int" minValue="0" minValuePhys="0" maxValue="50" maxValuePhys="50"/>
   </namespace>
 
   <namespace name="UiRender" comment="" interface="">

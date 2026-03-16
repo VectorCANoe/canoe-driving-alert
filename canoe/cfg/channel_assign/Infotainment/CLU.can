@@ -77,7 +77,6 @@ int applyRobustPolicy(int code)
   int timeoutClear;
   int coded;
   int syncMismatch;
-  int useBackbone;
 
   coded = code;
   useBackbone = useBackboneAlertState();
@@ -401,3 +400,5 @@ on timer tDuplicateGuard
     setTimer(tDuplicateGuard, 100);
   }
 }
+
+

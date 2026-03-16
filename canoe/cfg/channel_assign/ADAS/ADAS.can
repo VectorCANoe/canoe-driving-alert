@@ -1388,8 +1388,6 @@ on timer tAdasCycle
 
 on timer tArbiter50
 {
-  runArbiter();
-  publishBackboneDecisionFrames();
   setTimer(tArbiter50, 50);
 }
 

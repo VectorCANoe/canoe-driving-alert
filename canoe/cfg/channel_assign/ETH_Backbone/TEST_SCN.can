@@ -2733,6 +2733,11 @@ on start
   gObsEcoMode = -1;
   gObsSportMode = -1;
   gObsBaseZoneContext = -1;
+  @Chassis::driveState = 3;
+  @Chassis::vehicleSpeed = 20;
+  @Chassis::steeringInput = 1;
+  @Infotainment::speedLimit = 30;
+  @Infotainment::roadZone = 0;
   setTimer(tInput100, 100);
   write("[TEST_SCN] start");
 }
@@ -2838,7 +2843,14 @@ on timer tInput100
   ignitionState = calcBaselineIgnitionState(speed, driveState);
   engineState = (ignitionState == 1) ? 2 : 0;
   gearState = calcBaselineGearState(driveState);
-  accelPedal = clampRange(speed / 2, 0, 100);
+  if (gScenarioInputLock == 1)
+  {
+    accelPedal = clampRange(speed / 2, 0, 100);
+  }
+  else
+  {
+    accelPedal = clampRange((int)@Chassis::manualAccel, 0, 100);
+  }
   brakePedal = (driveState == 0) ? 30 : 0;
   if (gLockAccelPedalOverride >= 0)
   {

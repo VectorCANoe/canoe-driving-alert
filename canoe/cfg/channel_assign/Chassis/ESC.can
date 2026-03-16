@@ -204,6 +204,7 @@ on timer tEscCycle
     aebDomainHealth = 0;
   }
   decelAssistReq = ((aebStopReq == 1 || aebDecelProfile > 0) && aebDomainHealth > 0) ? 1 : 0;
+  // merge: Chassis::BrakePressure값을 바꾸는 로직은 병합하지 않았음
   assistPressureFloor = deriveEscAssistPressureFloor(aebStopReq, aebDecelProfile, aebDomainHealth);
   speedNorm = gSpeedNorm;
   driveState = gDriveState;
@@ -226,6 +227,11 @@ on timer tEscCycle
   {
     appliedBrakePedal = assistPressureFloor;
   }
+
+  // 브레이크 등 / ABS sysvar 업데이트
+  @Chassis::brakeLamp = (appliedBrakePedal > 5) ? 1 : 0;
+  @Chassis::absActive = ((appliedBrakePedal > 80) && (gSpeedNorm > 10)) ? 1 : 0;
+
   brakePressure = clampRange(appliedBrakePedal * 2, 0, 255);
   absActive = ((appliedBrakePedal > 80) && (speedNorm > 10)) ? 1 : 0;
   absSlip = absActive ? clampRange(appliedBrakePedal - 80, 0, 63) : 0;

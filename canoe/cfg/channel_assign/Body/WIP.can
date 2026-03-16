@@ -6,6 +6,11 @@ includes
 variables
 {
   msTimer tWiperCycle;
+  int gFrontWiperState;  // 실제 프레임 인덱스 0~21
+  int gFrontWiperImageIndex;
+  int gRearWiperState;
+  int gRearWiperImageIndex;
+  int gWiperInterval;
   int gRainSenseLevel;
   int gAutoLightState;
   dword gRainRxMs;
@@ -13,22 +18,6 @@ variables
   int gLastFrontWiperState;
   int gLastRearWiperState;
   int gLastWiperInterval;
-}
-
-void traceWipInputHealth(int rainInputStale)
-{
-  if (rainInputStale != gLastRainInputStale)
-  {
-    if (rainInputStale == 1)
-    {
-      write("[WIP] rain/light input stale");
-    }
-    else
-    {
-      write("[WIP] rain/light input restored");
-    }
-    gLastRainInputStale = rainInputStale;
-  }
 }
 
 void publishWiperState()
@@ -81,6 +70,9 @@ void publishWiperState()
   mWiper.FrontWiperState = clampRange(frontWiperState, 0, 3);
   mWiper.RearWiperState = clampRange(rearWiperState, 0, 3);
   mWiper.WiperInterval = clampRange(wiperInterval, 0, 15);
+
+  mWiper.gFrontWiperImageIndex = clampRange(gFrontWiperState, 0, 21);
+  mWiper.gRearWiperImageIndex = clampRange(gRearWiperState, 0, 3);
   output(mWiper);
 
   if (mWiper.FrontWiperState != gLastFrontWiperState ||
@@ -108,6 +100,8 @@ on start
   gLastFrontWiperState = -1;
   gLastRearWiperState = -1;
   gLastWiperInterval = -1;
+  gWiperPos = 0;
+  gWiperDir = 1;
   setTimer(tWiperCycle, 100);
   write("[WIP] start");
 }
@@ -121,6 +115,65 @@ on message frmRainLightAutoMsg
 
 on timer tWiperCycle
 {
+  int cmd;
+  int step;
+
+  if ((int)@Test::testScenario == 0)
+  {
+    // 수동 모드: MyDriverPanel 와이퍼 슬라이더 sysvar 직접 읽기
+    cmd = clampRange((int)@Body::wiperCmd, 0, 2);
+    gFrontWiperImageIndex = cmd;
+    gRearWiperImageIndex  = 0;
+    gWiperInterval   = 0;
+  }
+  else if ((int)@Core::timeoutClear == 1)
+  {
+    cmd = 1;  // 테스트 시나리오: LOW 고정
+    gFrontWiperImageIndex = 1;
+    gRearWiperImageIndex  = 0;
+    gWiperInterval   = 4;
+  }
+  else
+  {
+    cmd = 0;
+    gFrontWiperImageIndex = 0;
+    gRearWiperImageIndex  = 0;
+    gWiperInterval   = 0;
+  }
+
+  // 와이퍼 왕복 애니메이션 (프레임 0~21, 22장)
+  // LOW(1) : 100ms마다 1프레임 → 한 번 왕복 약 4.4초
+  // HIGH(2): 100ms마다 2프레임 → 한 번 왕복 약 2.2초
+  if (cmd == 1)
+    step = 1;
+  else if (cmd == 2)
+    step = 2;
+  else
+    step = 0;
+
+  if (step > 0)
+  {
+    gWiperPos = gWiperPos + gWiperDir * step;
+    if (gWiperPos >= 21)
+    {
+      gWiperPos = 21;
+      gWiperDir = -1;
+    }
+    if (gWiperPos <= 0)
+    {
+      gWiperPos = 0;
+      gWiperDir = 1;
+    }
+  }
+  else
+  {
+    gWiperPos = 0;
+    gWiperDir = 1;
+  }
+
+  gFrontWiperImageIndex = gWiperPos;   // 프레임 인덱스를 CAN 신호로 전송
+  @Body::wiperPos  = gWiperPos;
+
   publishWiperState();
   setTimer(tWiperCycle, 100);
 }

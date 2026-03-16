@@ -7,6 +7,7 @@ variables
 {
   msTimer tBodyCycle;
   msTimer tBodyBase100;
+  msTimer tBlink;
   int gLastAmbientMode;
   int gLastAmbientColor;
   int gLastAmbientPattern;
@@ -203,6 +204,7 @@ void traceBcmCommandHealth(int paakInputStale,
     }
     gLastVehicleCtxInputStale = vehicleCtxInputStale;
   }
+  int gBlinkState;
 }
 
 
@@ -264,9 +266,67 @@ on start
   gLastComfortStatus = -1;
   gLastComfortError = -1;
   @CoreState::bodyHealthTick = 0;
+  gBlinkState = 0;
   setTimer(tBodyCycle, 10);
   setTimer(tBodyBase100, 100);
+  setTimer(tBlink, 500);
   write("[BCM] start");
+}
+
+on timer tBlink
+{
+  int turnCmd;
+  int navDir;
+  gBlinkState = 1 - gBlinkState;
+  if ((int)@Test::testScenario == 0)
+  {
+    turnCmd = (int)@Body::manualTurnCmd;
+    if (turnCmd == 1)
+    {
+      @Body::blinkLeft = gBlinkState;
+      @Body::blinkRight = 0;
+    }
+    else if (turnCmd == 2)
+    {
+      @Body::blinkLeft = 0;
+      @Body::blinkRight = gBlinkState;
+    }
+    else if (turnCmd == 3)
+    {
+      @Body::blinkLeft = gBlinkState;
+      @Body::blinkRight = gBlinkState;
+    }
+    else
+    {
+      @Body::blinkLeft = 0;
+      @Body::blinkRight = 0;
+    }
+  }
+  else
+  {
+    navDir = (int)@Infotainment::navDirection;
+    if ((int)@Core::selectedAlertLevel >= 6)
+    {
+      @Body::blinkLeft = gBlinkState;
+      @Body::blinkRight = gBlinkState;
+    }
+    else if (navDir == 1)
+    {
+      @Body::blinkLeft = gBlinkState;
+      @Body::blinkRight = 0;
+    }
+    else if (navDir == 2)
+    {
+      @Body::blinkLeft = 0;
+      @Body::blinkRight = gBlinkState;
+    }
+    else
+    {
+      @Body::blinkLeft = 0;
+      @Body::blinkRight = 0;
+    }
+  }
+  setTimer(tBlink, 500);
 }
 
 on timer tBodyCycle
@@ -277,7 +337,6 @@ on timer tBodyCycle
   int ambientMode;
   int ambientColor;
   int ambientPattern;
-  int useBackbone;
   message frmAmbientControlMsg mAmbient;
 
   useBackbone = useBackboneAlertState();
@@ -387,6 +446,10 @@ on timer tBodyBase100
   message frmInteriorLightMsg mLight;
   message frmRainLightAutoMsg mRain;
   int hazardActive;
+  int navDirection;
+  int seatBeltOverride;
+  int driverBeltOff;
+  int passengerBeltOff;
   int ambientMode;
   int routingPolicy;
   int warningPathStatus;
@@ -433,6 +496,8 @@ on timer tBodyBase100
   {
     hazardActive = 0;
   }
+  driverBeltOff   = (int)@Test::driverBeltOff;
+  passengerBeltOff = (int)@Test::passengerBeltOff;
   turnLampInputStale = (ethIsRecentTick(gTurnLampInputRxMs, 300) == 1) ? 0 : 1;
   ambientMode = clampRange((int)@Body::ambientMode, 0, 7);
   routingPolicy = clampRange((int)@CoreState::routingPolicy, 0, 2);
@@ -530,7 +595,24 @@ on timer tBodyBase100
      and keep belt warning independent from alert/hazard activity. */
   mSeatBelt.DriverSeatBelt = 1;
   mSeatBelt.PassengerSeatBelt = 1;
-  mSeatBelt.RearSeatBelt = 2;
+  if (seatBeltOverride == 1 || seatBeltOverride == 3)
+  {
+    mSeatBelt.DriverSeatBelt = 0;
+  }
+  if (seatBeltOverride == 2 || seatBeltOverride == 3)
+  {
+    mSeatBelt.PassengerSeatBelt = 0;
+  }
+  // 패널 버튼 독립 제어: 운전자/동승자 벨트 개별 토글
+  if (driverBeltOff == 1)
+  {
+    mSeatBelt.DriverSeatBelt = 0;
+  }
+  if (passengerBeltOff == 1)
+  {
+    mSeatBelt.PassengerSeatBelt = 0;
+  }
+  mSeatBelt.RearSeatBelt = 3;
   mSeatBelt.SeatBeltWarnLvl = 0;
   if (mSeatBelt.DriverSeatBelt == 0 || mSeatBelt.PassengerSeatBelt == 0)
   {
