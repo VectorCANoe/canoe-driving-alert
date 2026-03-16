@@ -6,8 +6,6 @@ includes
 variables
 {
   msTimer tEthBackboneCycle;
-  long gEthSocket;
-  char gEthRxBuffer[64];
   int gIboxRouteState;
   int gIboxSignalBars;
   int gIboxServiceFlags;
@@ -21,7 +19,6 @@ variables
   int gFailSafeMode;
   dword gNavRxMs;
   dword gNotifRxMs;
-  dword gFailSafeRxMs;
   int gLastBackboneMode;
   int gLastRouteHealth;
   int gLastServiceHealth;
@@ -47,7 +44,9 @@ void publishBackboneState()
   roadZoneActive = (ethIsRecentTick(gNavRxMs, 300) == 1 &&
                     (gNavSessionState > 0 || gNavRouteClass > 0)) ? 1 : 0;
   guidedRouteActive = (ethIsRecentTick(gNavRxMs, 300) == 1 && gNavRouteClass == 3) ? 1 : 0;
-  boundaryAlive = (ethIsRecentTick(gFailSafeRxMs, 300) == 1) ? 1 : 0;
+  boundaryAlive = clampRange((int)@CoreState::domainBoundaryStatus, 0, 1);
+  gWarningPathStatus = boundaryAlive == 1 ? clampRange((int)@CoreState::warningPathStatus, 0, 2) : 2;
+  gFailSafeMode = boundaryAlive == 1 ? clampRange((int)@Core::failSafeMode, 0, 2) : 2;
   serviceContext = ethHasBoundaryServiceContext(roadZoneActive,
                                                 (ethIsRecentTick(gNotifRxMs, 300) == 1) ? gAlertLevel : 0);
   diagStage = ethDiagBoundaryStage(roadZoneActive,
@@ -188,7 +187,6 @@ void publishBackboneState()
 
 on start
 {
-  gEthSocket = ethOpenDefaultSocket();
   gIboxRouteState = 0;
   gIboxSignalBars = 0;
   gIboxServiceFlags = 0;
@@ -202,17 +200,12 @@ on start
   gFailSafeMode = 0;
   gNavRxMs = 0;
   gNotifRxMs = 0;
-  gFailSafeRxMs = 0;
   gLastBackboneMode = -1;
   gLastRouteHealth = -1;
   gLastServiceHealth = -1;
   gLastSecurityLevel = -1;
   gLastActiveServices = -1;
   gLastFaultBitmap = -1;
-  if (gEthSocket != ethInvalidSocket())
-  {
-    ethStartReceiver(gEthSocket, gEthRxBuffer, elcount(gEthRxBuffer));
-  }
   setTimer(tEthBackboneCycle, 100);
   write("[ETHB] start");
 }
@@ -226,8 +219,6 @@ on timer tEthBackboneCycle
 on stopMeasurement
 {
   cancelTimer(tEthBackboneCycle);
-  ethCloseSocket(gEthSocket);
-  gEthSocket = ethInvalidSocket();
 }
 
 on message frmNavModuleStateMsg
@@ -241,25 +232,4 @@ on message frmClusterNotifMsg
 {
   gAlertLevel = clampRange((int)this.ClusterNotifArg, 0, 7);
   gNotifRxMs = getSimulationTimeMs();
-}
-
-void OnUdpReceiveFrom(dword socket, long result, dword address, dword port, char buffer[], dword count)
-{
-  int payload0;
-
-  if (socket != gEthSocket)
-  {
-    return;
-  }
-  if (result == 0 &&
-      ethFrameMsgId(buffer, count) == ethMsgFailSafe() &&
-      ethFramePayloadLen(count) >= 1)
-  {
-    payload0 = ethGetU8(buffer, 0);
-    gWarningPathStatus = clampRange(payload0 & 0x3, 0, 2);
-    gFailSafeMode = clampRange((payload0 >> 4) & 0x3, 0, 2);
-    gFailSafeRxMs = getSimulationTimeMs();
-  }
-
-  ethArmReceive(gEthSocket, gEthRxBuffer, elcount(gEthRxBuffer));
 }

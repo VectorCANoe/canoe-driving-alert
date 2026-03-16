@@ -6,9 +6,6 @@ includes
 variables
 {
   msTimer tDuplicateGuard;
-  long gEthSocket;
-  dword gEthTargetIp;
-  char gEthRxBuffer[64];
   int gLastDisplayedCode;
   dword gLastDisplayMs;
   int gBaseClusterSpeed;
@@ -62,28 +59,6 @@ void updateBackboneAlertState(int alertLevel, int alertType, int timeoutClear)
   gBackboneAlertType = clampRange(alertType, 0, 7);
   gBackboneTimeoutClear = (timeoutClear == 1) ? 1 : 0;
   gBackboneAlertTsMs = getSimulationTimeMs();
-}
-
-void OnUdpReceiveFrom(dword socket, long result, dword address, dword port, char buffer[], dword count)
-{
-  int msgId;
-
-  if (socket != gEthSocket)
-  {
-    return;
-  }
-  if (result == 0)
-  {
-    msgId = ethFrameMsgId(buffer, count);
-    if (msgId == ethMsgSelectedAlert() && ethFramePayloadLen(count) >= 2)
-    {
-      updateBackboneAlertState(ethGetU8(buffer, 0) & 0x7,
-                               (ethGetU8(buffer, 0) >> 3) & 0x7,
-                               ethGetU8(buffer, 1) & 0x1);
-    }
-  }
-
-  ethArmReceive(gEthSocket, gEthRxBuffer, elcount(gEthRxBuffer));
 }
 
 
@@ -219,8 +194,6 @@ on start
 {
   int i;
 
-  gEthSocket = ethOpenDefaultSocket();
-  gEthTargetIp = ethGetDefaultIpAddress();
   gLastDisplayedCode = 0;
   gLastDisplayMs = 0;
   gBaseClusterSpeed = 0;
@@ -246,10 +219,6 @@ on start
   gBackboneAlertType = 0;
   gBackboneTimeoutClear = 0;
   gBackboneAlertTsMs = 0;
-  if (gEthSocket != ethInvalidSocket())
-  {
-    ethStartReceiver(gEthSocket, gEthRxBuffer, elcount(gEthRxBuffer));
-  }
   for (i = 0; i < 16; i = i + 1)
   {
     gHistoryCodes[i] = 0;
@@ -278,6 +247,13 @@ on message frmClusterBaseStateMsg
   gBaseClusterSpeed = clampRange((int)this.ClusterSpeed, 0, 255);
   gBaseClusterGear = clampRange((int)this.ClusterGear, 0, 15);
   gBaseClusterStatus = clampRange((int)this.ClusterStatus, 0, 15);
+}
+
+on message frmAdasDomainStateMsg
+{
+  updateBackboneAlertState((int)this.SelectedAlertLevel,
+                           (int)this.SelectedAlertType,
+                           (int)this.TimeoutClear);
 }
 
 on message frmClusterThemeMsg
@@ -336,8 +312,6 @@ on message frmClusterSyncStateMsg
 on stopMeasurement
 {
   cancelTimer(tDuplicateGuard);
-  ethCloseSocket(gEthSocket);
-  gEthSocket = ethInvalidSocket();
 }
 
 on message frmClusterNotifMsg

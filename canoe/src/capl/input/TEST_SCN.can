@@ -138,6 +138,11 @@ int calcObservedBaseZoneContext(int routeClass, int guideType)
   return 0;
 }
 
+int getTestScnTxPort()
+{
+  return ethBackbonePort() + 7;
+}
+
 void pushLockedScenarioInputs()
 {
   @Chassis::driveState = clampRange(gLockDriveState, 0, 3);
@@ -2398,7 +2403,7 @@ on timer tScenarioPhase3
 
 on start
 {
-  gEthSocket = ethOpenDefaultSocket();
+  gEthSocket = ethOpenNodeSocket(getTestScnTxPort());
   gEthTargetIp = ethGetDefaultIpAddress();
   gDemoStepIndex = 0;
   gDemoRunning = 0;

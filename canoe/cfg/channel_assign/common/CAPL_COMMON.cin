@@ -306,11 +306,16 @@ int ethArmReceive(long socket, char rxBuffer[], int rxBufferSize)
   int lastError;
   char lastErrorText[256];
 
+  if (socket == ethInvalidSocket() || rxBufferSize <= 0)
+  {
+    return -1;
+  }
+
   result = UdpReceiveFrom(socket, rxBuffer, rxBufferSize);
   if (result != 0)
   {
     lastError = IpGetLastSocketError(socket);
-    if (lastError != 997)
+    if (lastError != 997 && lastError != 995 && lastError != 10038)
     {
       IpGetLastSocketErrorAsString(socket, lastErrorText, elcount(lastErrorText));
       write("[ETH] recv error=%d %s", lastError, lastErrorText);

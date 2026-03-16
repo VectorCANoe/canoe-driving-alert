@@ -38,11 +38,6 @@ variables
   int gLastTransportType;
   int gLastTransportSourceId;
   int gLastTransportDirection;
-  int gBackboneAlertType;
-  int gBackboneAlertLevel;
-  int gBackboneTimeoutClear;
-  dword gBackboneAlertRxMs;
-  int gAlertSnapshotId;
 }
 
 
@@ -194,25 +189,6 @@ void pushEmergencyMonitor()
   }
 }
 
-void updateBackboneSelectedAlert(int alertLevel, int alertType, int timeoutClear)
-{
-  alertLevel = clampRange(alertLevel, 0, 7);
-  alertType = clampRange(alertType, 0, 15);
-  timeoutClear = (timeoutClear == 1) ? 1 : 0;
-
-  if (alertLevel != gBackboneAlertLevel ||
-      alertType != gBackboneAlertType ||
-      timeoutClear != gBackboneTimeoutClear)
-  {
-    gAlertSnapshotId = (gAlertSnapshotId + 1) & 0xFFFF;
-  }
-
-  gBackboneAlertLevel = alertLevel;
-  gBackboneAlertType = alertType;
-  gBackboneTimeoutClear = timeoutClear;
-  gBackboneAlertRxMs = getSimulationTimeMs();
-}
-
 void applyEmergencyIngress(int vehicleType, int status, int sourceId, int etaSec, int direction)
 {
   stageEmergencyIngress(vehicleType, status, sourceId, etaSec, direction);
@@ -243,12 +219,6 @@ void OnUdpReceiveFrom(dword socket, long result, dword address, dword port, char
                             ethGetU8(buffer, 2),
                             ethGetU8(buffer, 1),
                             (typeAndDirection >> 2) & 0x3);
-    }
-    else if (msgId == ethMsgSelectedAlert() && ethFramePayloadLen(count) >= 2)
-    {
-      updateBackboneSelectedAlert(ethGetU8(buffer, 0) & 0x7,
-                                  (ethGetU8(buffer, 0) >> 3) & 0x1F,
-                                  ethGetU8(buffer, 1) & 0x1);
     }
   }
 
@@ -346,17 +316,11 @@ void recordAlertEvent()
   int alertLevel;
   int warningCode;
   int eventPhase;
+  int alertSnapshotId;
 
-  if (ethIsRecentTick(gBackboneAlertRxMs, 500) == 1)
-  {
-    alertType = clampRange(gBackboneAlertType, 0, 15);
-    alertLevel = clampRange(gBackboneAlertLevel, 0, 7);
-  }
-  else
-  {
-    alertType = 0;
-    alertLevel = 0;
-  }
+  alertType = clampRange((int)@Core::selectedAlertType, 0, 15);
+  alertLevel = clampRange((int)@Core::selectedAlertLevel, 0, 7);
+  alertSnapshotId = clampRange((int)@CoreState::arbitrationSnapshotId, 0, 65535);
   warningCode = clampRange((int)@Cluster::warningTextCode, 0, 255);
   eventPhase = 0;
 
@@ -383,7 +347,7 @@ void recordAlertEvent()
     @CoreState::lastAlertEventPhase = eventPhase;
     write("[EMS_ALERT] event phase=%d type=%d level=%d code=%d snap=%d",
           eventPhase, alertType, alertLevel, warningCode,
-          gAlertSnapshotId);
+          alertSnapshotId);
     gLastRecordedAlertType = alertType;
     gLastRecordedAlertLevel = alertLevel;
     gLastRecordedWarningCode = warningCode;
@@ -417,11 +381,6 @@ on start
   gLastTransportType = 0;
   gLastTransportSourceId = 0;
   gLastTransportDirection = 0;
-  gBackboneAlertType = 0;
-  gBackboneAlertLevel = 0;
-  gBackboneTimeoutClear = 0;
-  gBackboneAlertRxMs = 0;
-  gAlertSnapshotId = 0;
   if (gEthTxSocket == ethInvalidSocket())
   {
     write("[V2X] tx socket fallback to shared backbone port");

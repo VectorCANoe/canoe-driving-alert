@@ -8,10 +8,8 @@ variables
   msTimer tIviCycle;
   msTimer tIviBase50;
   msTimer tIviExt100;
-  long gEthSocket;
   long gEthTxSocket;
   dword gEthTargetIp;
-  char gEthRxBuffer[64];
   int gLastWarningTextCode;
   int gInfoAliveCnt;
   int gIviBaseTick;
@@ -164,7 +162,6 @@ void publishBackboneNavContext()
   int zoneDistance;
   int speedLimit;
   int etaMinutes;
-  long txSocket;
 
   if (ethIsRecentTick(gNavStateRxMs, 300) == 1)
   {
@@ -213,17 +210,16 @@ void publishBackboneNavContext()
       speedLimit = 30;
     }
   }
-  txSocket = gEthTxSocket;
-  if (txSocket == ethInvalidSocket())
+  if (gEthTxSocket == ethInvalidSocket())
   {
-    txSocket = gEthSocket;
+    return;
   }
 
   ethInitFrame(frame, ethMsgNavContext(), 3);
   ethSetU8(frame, 0, (roadZone & 0x3) | ((navDirection & 0x3) << 2));
   ethSetU8(frame, 1, zoneDistance);
   ethSetU8(frame, 2, speedLimit);
-  ethSendFrame(txSocket, gEthTargetIp, ethMsgNavContext(), frame, 3);
+  ethSendFrame(gEthTxSocket, gEthTargetIp, ethMsgNavContext(), frame, 3);
 }
 
 void updateBackboneAlertState(int alertLevel, int alertType, int timeoutClear)
@@ -232,28 +228,6 @@ void updateBackboneAlertState(int alertLevel, int alertType, int timeoutClear)
   gBackboneAlertType = clampRange(alertType, 0, 7);
   gBackboneTimeoutClear = (timeoutClear == 1) ? 1 : 0;
   gBackboneAlertTsMs = getSimulationTimeMs();
-}
-
-void OnUdpReceiveFrom(dword socket, long result, dword address, dword port, char buffer[], dword count)
-{
-  int msgId;
-
-  if (socket != gEthSocket)
-  {
-    return;
-  }
-  if (result == 0)
-  {
-    msgId = ethFrameMsgId(buffer, count);
-    if (msgId == ethMsgSelectedAlert() && ethFramePayloadLen(count) >= 2)
-    {
-      updateBackboneAlertState(ethGetU8(buffer, 0) & 0x7,
-                               (ethGetU8(buffer, 0) >> 3) & 0x7,
-                               ethGetU8(buffer, 1) & 0x1);
-    }
-  }
-
-  ethArmReceive(gEthSocket, gEthRxBuffer, elcount(gEthRxBuffer));
 }
 
 int useBackboneAlertState()
@@ -314,7 +288,6 @@ int deriveAlertVolume(int alertLevel, int presentationMode)
 
 on start
 {
-  gEthSocket = ethOpenDefaultSocket();
   gEthTxSocket = ethOpenNodeSocket(getIviTxPort());
   gEthTargetIp = ethGetDefaultIpAddress();
   gLastWarningTextCode = -1;
@@ -343,11 +316,7 @@ on start
   @CoreState::infoHealthTick = 0;
   if (gEthTxSocket == ethInvalidSocket())
   {
-    write("[IVI] tx socket fallback to shared backbone port");
-  }
-  if (gEthSocket != ethInvalidSocket())
-  {
-    ethStartReceiver(gEthSocket, gEthRxBuffer, elcount(gEthRxBuffer));
+    write("[IVI] tx socket unavailable");
   }
   setTimer(tIviCycle, 10);
   setTimer(tIviBase50, 50);
@@ -377,6 +346,13 @@ on message frmNavigationRouteMsg
   gCanRouteEtaMinutes = clampRange((int)this.EtaMinutes, 0, 255);
   gCanRouteProgress = clampRange((int)this.RouteProgress, 0, 100);
   gRouteRxMs = getSimulationTimeMs();
+}
+
+on message frmAdasDomainStateMsg
+{
+  updateBackboneAlertState((int)this.SelectedAlertLevel,
+                           (int)this.SelectedAlertType,
+                           (int)this.TimeoutClear);
 }
 
 on timer tIviCycle
@@ -753,6 +729,4 @@ on stopMeasurement
   cancelTimer(tIviExt100);
   ethCloseSocket(gEthTxSocket);
   gEthTxSocket = ethInvalidSocket();
-  ethCloseSocket(gEthSocket);
-  gEthSocket = ethInvalidSocket();
 }

@@ -7,9 +7,6 @@ variables
 {
   msTimer tBodyCycle;
   msTimer tBodyBase100;
-  long gEthSocket;
-  dword gEthTargetIp;
-  char gEthRxBuffer[64];
   int gLastAmbientMode;
   int gLastAmbientColor;
   int gLastAmbientPattern;
@@ -64,10 +61,6 @@ variables
   int gLastComfortProfile;
   int gLastComfortStatus;
   int gLastComfortError;
-  int gGatewayRoutingPolicy;
-  int gGatewayWarningPathStatus;
-  int gGatewayBoundaryAlive;
-  dword gGatewayStateRxMs;
 }
 
 int useBackboneAlertState()
@@ -123,35 +116,6 @@ void updateBackboneAlertState(int alertLevel, int alertType, int timeoutClear)
   gBackboneAlertType = clampRange(alertType, 0, 7);
   gBackboneTimeoutClear = (timeoutClear == 1) ? 1 : 0;
   gBackboneAlertTsMs = getSimulationTimeMs();
-}
-
-void OnUdpReceiveFrom(dword socket, long result, dword address, dword port, char buffer[], dword count)
-{
-  int msgId;
-
-  if (socket != gEthSocket)
-  {
-    return;
-  }
-  if (result == 0)
-  {
-    msgId = ethFrameMsgId(buffer, count);
-    if (msgId == ethMsgSelectedAlert() && ethFramePayloadLen(count) >= 2)
-    {
-      updateBackboneAlertState(ethGetU8(buffer, 0) & 0x7,
-                               (ethGetU8(buffer, 0) >> 3) & 0x7,
-                               ethGetU8(buffer, 1) & 0x1);
-    }
-    else if (msgId == ethMsgGatewayState() && ethFramePayloadLen(count) >= 1)
-    {
-      gGatewayRoutingPolicy = clampRange(ethGetU8(buffer, 0) & 0x3, 0, 2);
-      gGatewayBoundaryAlive = clampRange((ethGetU8(buffer, 0) >> 2) & 0x1, 0, 1);
-      gGatewayWarningPathStatus = clampRange((ethGetU8(buffer, 0) >> 3) & 0x3, 0, 2);
-      gGatewayStateRxMs = getSimulationTimeMs();
-    }
-  }
-
-  ethArmReceive(gEthSocket, gEthRxBuffer, elcount(gEthRxBuffer));
 }
 
 void traceBcmLeafHealth(int doorDetailInputStale, int seatDetailInputStale)
@@ -245,8 +209,6 @@ void traceBcmCommandHealth(int paakInputStale,
 
 on start
 {
-  gEthSocket = ethOpenDefaultSocket();
-  gEthTargetIp = ethGetDefaultIpAddress();
   gLastAmbientMode = -1;
   gLastAmbientColor = -1;
   gLastAmbientPattern = -1;
@@ -301,15 +263,7 @@ on start
   gLastComfortProfile = -1;
   gLastComfortStatus = -1;
   gLastComfortError = -1;
-  gGatewayRoutingPolicy = 0;
-  gGatewayWarningPathStatus = 1;
-  gGatewayBoundaryAlive = 0;
-  gGatewayStateRxMs = 0;
   @CoreState::bodyHealthTick = 0;
-  if (gEthSocket != ethInvalidSocket())
-  {
-    ethStartReceiver(gEthSocket, gEthRxBuffer, elcount(gEthRxBuffer));
-  }
   setTimer(tBodyCycle, 10);
   setTimer(tBodyBase100, 100);
   write("[BCM] start");
@@ -481,18 +435,9 @@ on timer tBodyBase100
   }
   turnLampInputStale = (ethIsRecentTick(gTurnLampInputRxMs, 300) == 1) ? 0 : 1;
   ambientMode = clampRange((int)@Body::ambientMode, 0, 7);
-  if (ethIsRecentTick(gGatewayStateRxMs, 500) == 1)
-  {
-    routingPolicy = clampRange(gGatewayRoutingPolicy, 0, 2);
-    warningPathStatus = clampRange(gGatewayWarningPathStatus, 0, 2);
-    boundaryAlive = clampRange(gGatewayBoundaryAlive, 0, 1);
-  }
-  else
-  {
-    routingPolicy = 0;
-    warningPathStatus = 1;
-    boundaryAlive = 0;
-  }
+  routingPolicy = clampRange((int)@CoreState::routingPolicy, 0, 2);
+  warningPathStatus = clampRange((int)@CoreState::warningPathStatus, 0, 2);
+  boundaryAlive = clampRange((int)@CoreState::domainBoundaryStatus, 0, 1);
   bodyGwRouteState = routingPolicy;
   bodyGwHealth = warningPathStatus;
   if (boundaryAlive == 0 && bodyGwHealth == 0)
@@ -870,6 +815,13 @@ on message frmVehicleStateCanMsg
   gVehicleRxMs = getSimulationTimeMs();
 }
 
+on message frmAdasDomainStateMsg
+{
+  updateBackboneAlertState((int)this.SelectedAlertLevel,
+                           (int)this.SelectedAlertType,
+                           (int)this.TimeoutClear);
+}
+
 on message frmTurnLampInputMsg
 {
   gTurnLampInputState = clampRange((int)this.TurnLampState, 0, 3);
@@ -880,6 +832,4 @@ on stopMeasurement
 {
   cancelTimer(tBodyCycle);
   cancelTimer(tBodyBase100);
-  ethCloseSocket(gEthSocket);
-  gEthSocket = ethInvalidSocket();
 }

@@ -13,9 +13,9 @@
 - `frmEmergencyBroadcastMsg (0x1C0)` is the SIL backbone emergency ingress contract.
   - Legacy CAN-stub name is retired.
   - Active UDP multicast contract is `ETH_EmergencyAlert (0xE100)` from `V2X`.
-- `ethSelectedAlertMsg` is the active output seam for warning consumers in the current SIL profile.
-  - `BCM`, `IVI`, and `CLU` prefer the fresh backbone frame and fall back to mirrored `Core::*` only when the seam is stale.
-  - Treat `Core::*` use here as a SIL fallback path, not as the primary output contract.
+- `ethSelectedAlertMsg` remains the ADAS-owned backbone publication seam in the current SIL profile.
+  - In the active runtime, `BCM`, `IVI`, and `CLU` consume `frmAdasDomainStateMsg` and local `Core::*` mirrors instead of acting as direct backbone RX owners.
+  - Treat `ethSelectedAlertMsg` as an output/evidence seam for the active SIL baseline, not as a required direct ingress path for those consumer nodes.
 - Backbone contract rows use `UDP multicast (239.0.2.1:5000)` in the source column.
 - Validation result aggregation uses `Test::scenarioResult` and `Test::base*` sysvars, so no active network message is listed for that seam.
 

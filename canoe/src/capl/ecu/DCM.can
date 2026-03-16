@@ -6,17 +6,11 @@ includes
 variables
 {
   msTimer tDcmCycle;
-  long gEthSocket;
-  char gEthRxBuffer[64];
   int gNavSessionState;
   int gNavRouteClass;
   int gAlertLevel;
-  int gWarningPathStatus;
-  int gE2eHealthState;
-  int gFailSafeMode;
   dword gNavRxMs;
   dword gNotifRxMs;
-  dword gFailSafeRxMs;
   int gSecuritySession;
   int gAuthState;
   int gSecurityFault;
@@ -130,16 +124,11 @@ void publishDcmStateTrace()
 
 on start
 {
-  gEthSocket = ethOpenDefaultSocket();
   gNavSessionState = 0;
   gNavRouteClass = 0;
   gAlertLevel = 0;
-  gWarningPathStatus = 2;
-  gE2eHealthState = 0;
-  gFailSafeMode = 2;
   gNavRxMs = 0;
   gNotifRxMs = 0;
-  gFailSafeRxMs = 0;
   gSecuritySession = 0;
   gAuthState = 0;
   gSecurityFault = 0;
@@ -157,10 +146,6 @@ on start
   @Diag::LastRequestSid = 0;
   @Diag::LastResponseCode = 0;
   @Diag::LastResponseOk = 0;
-  if (gEthSocket != ethInvalidSocket())
-  {
-    ethStartReceiver(gEthSocket, gEthRxBuffer, elcount(gEthRxBuffer));
-  }
   setTimer(tDcmCycle, 100);
   write("[DCM] start");
 }
@@ -178,9 +163,9 @@ on timer tDcmCycle
   routeActive = (ethIsRecentTick(gNavRxMs, 300) == 1 &&
                  (gNavSessionState > 0 || gNavRouteClass > 0)) ? 1 : 0;
   alertLevel = (ethIsRecentTick(gNotifRxMs, 300) == 1) ? gAlertLevel : 0;
-  boundaryAlive = (ethIsRecentTick(gFailSafeRxMs, 300) == 1) ? 1 : 0;
-  warningPathStatus = boundaryAlive == 1 ? gWarningPathStatus : 2;
-  failSafeMode = boundaryAlive == 1 ? gFailSafeMode : 2;
+  boundaryAlive = clampRange((int)@CoreState::domainBoundaryStatus, 0, 1);
+  warningPathStatus = boundaryAlive == 1 ? clampRange((int)@CoreState::warningPathStatus, 0, 2) : 2;
+  failSafeMode = boundaryAlive == 1 ? clampRange((int)@Core::failSafeMode, 0, 2) : 2;
   serviceContext = ethHasBoundaryServiceContext(routeActive, alertLevel);
   diagStage = ethDiagBoundaryStage(routeActive,
                                    alertLevel,
@@ -214,8 +199,6 @@ on timer tDcmCycle
 on stopMeasurement
 {
   cancelTimer(tDcmCycle);
-  ethCloseSocket(gEthSocket);
-  gEthSocket = ethInvalidSocket();
 }
 
 on message frmNavModuleStateMsg
@@ -229,26 +212,4 @@ on message frmClusterNotifMsg
 {
   gAlertLevel = clampRange((int)this.ClusterNotifArg, 0, 7);
   gNotifRxMs = getSimulationTimeMs();
-}
-
-void OnUdpReceiveFrom(dword socket, long result, dword address, dword port, char buffer[], dword count)
-{
-  int payload0;
-
-  if (socket != gEthSocket)
-  {
-    return;
-  }
-  if (result == 0 &&
-      ethFrameMsgId(buffer, count) == ethMsgFailSafe() &&
-      ethFramePayloadLen(count) >= 1)
-  {
-    payload0 = ethGetU8(buffer, 0);
-    gWarningPathStatus = clampRange(payload0 & 0x3, 0, 2);
-    gE2eHealthState = clampRange((payload0 >> 2) & 0x3, 0, 2);
-    gFailSafeMode = clampRange((payload0 >> 4) & 0x3, 0, 2);
-    gFailSafeRxMs = getSimulationTimeMs();
-  }
-
-  ethArmReceive(gEthSocket, gEthRxBuffer, elcount(gEthRxBuffer));
 }

@@ -22,9 +22,22 @@ Visible surface nodes remain OEM-style ECU names. Additional bus/database visibi
 
 Important distinction:
 
+- **Primary placement** in this document means the node's normal source/mirror grouping and visible owner grouping
+- **Ethernet runtime placement** means whether that node must actually stay attached to the GUI TCP/IP stack / `ETH_Backbone (Eth 1)` runtime topology
 - **Ethernet runtime placement** is not the same thing as **extra CAN DBC visibility**
-- ETH-capable nodes may stay on the `ETH_Backbone` side of the topology without needing any backbone CAN DBC
+- nodes may remain grouped under `ETH_Backbone` in source/mirror structure without needing live Ethernet runtime participation
 - multibus assignment is driven by **foreign-domain CAN message visibility**, not by old backbone stub seams
+
+GUI interpretation rule:
+
+- if `Ethernet runtime placement in GUI = required`, keep `ETH_Backbone` in the node's `Assigned buses` and keep its TCP/IP stack interface
+- if `Ethernet runtime placement in GUI = not required`, remove `ETH_Backbone` from the node's `Assigned buses`; CANoe will then drop the live Ethernet node/interface automatically
+- do **not** try to represent `not required` by clearing only IPv4 settings while leaving the node attached to `ETH_Backbone`
+
+Current active runtime direct-ingress rule:
+
+- keep direct Ethernet RX ownership only for `CGW`, `ADAS`, `V2X`, and `TEST_BAS`
+- treat other Ethernet-capable nodes as tx-only or internal-contract consumers unless this document explicitly says otherwise
 
 ## 2. Why Multibus Exists In This Project
 
@@ -53,42 +66,48 @@ These nodes are expected to see multiple CAN databases as part of their normal r
 
 ### 3.2 CAN-primary nodes that need cross-domain assignment
 
-These nodes stay visibly placed in their **primary CAN domain**, but may still require:
+These nodes stay grouped in their **primary CAN domain** in source/mirror and visible owner placement, but may still require:
 
 - Ethernet topology placement for active backbone UDP participation
 - extra foreign-domain CAN visibility for runtime message references
 
-| Node | Primary visible placement | Ethernet topology placement | Extra CAN visibility to attach | Compile-validated reason |
+| Node | Primary source/mirror placement | Ethernet runtime placement in GUI | Extra CAN visibility to attach | Compile-validated reason |
 | --- | --- | --- | --- | --- |
 | `PGS` | `Infotainment` | not required | `ADAS` | consumes `frmParkUltrasonicStateMsg` |
 | `AFLS` | `Body` | not required | `Chassis` | consumes `frmSteeringAngleMsg` |
 | `DATC` | `Body` | not required | `Infotainment` | consumes `frmTmuServiceStateMsg` |
 | `ACU` | `Chassis` | not required | `Body` | consumes `frmSeatBeltStateMsg` |
 | `ODS` | `Chassis` | not required | `Body` | consumes `frmSeatBeltStateMsg`, `frmSeatStateMsg` |
-| `ADAS` | `ADAS` | required | `Chassis`, `Body`, `Infotainment`, `Powertrain` | consumes `frmVehicleStateCanMsg`, `frmSteeringStateCanMsg`, `frmBrakeStatusMsg`, `frmNavModuleStateMsg`, `frmVehicleModeMsg`, `frmLampControlMsg`, and `frmSeatBeltStateMsg` while publishing/receiving backbone ETH seams |
-| `BCM` | `Body` | required | `Chassis`, `Infotainment` | consumes `frmVehicleStateCanMsg`, `frmPhoneAsKeyStateMsg`, `frmTmuServiceStateMsg`, and `frmTurnLampInputMsg` while consuming backbone ETH seams |
-| `IVI` | `Infotainment` | required | `Chassis` | consumes `frmVehicleStateCanMsg` while publishing `ethNavContextMsg` and consuming `ethSelectedAlertMsg` |
+| `ADAS` | `ADAS` | required | `Chassis`, `Body`, `Infotainment`, `Powertrain` | consumes cross-domain CAN context and remains a direct Ethernet ingress owner for ADAS-specific object-risk input while publishing backbone ETH seams |
+| `BCM` | `Body` | not required | `Chassis`, `Infotainment`, `ADAS` | consumes `frmVehicleStateCanMsg`, `frmPhoneAsKeyStateMsg`, `frmTmuServiceStateMsg`, `frmTurnLampInputMsg`, and `frmAdasDomainStateMsg`; no direct backbone socket remains |
+| `IVI` | `Infotainment` | required | `Chassis`, `ADAS` | consumes `frmVehicleStateCanMsg` and `frmAdasDomainStateMsg` while publishing `ethNavContextMsg`; keep Ethernet runtime placement for TX only, no direct backbone RX remains |
 | `SCC` | `ADAS` | not required | `Powertrain`, `Chassis` | publishes `frmCruiseStateMsg` and consumes `frmVehicleStateCanMsg` |
 | `HWP` | `ADAS` | not required | `Powertrain` | consumes `frmCruiseStateMsg` |
-| `VCU` | `Chassis` | required | `Powertrain`, `Infotainment` | consumes `frmIgnitionEngineMsg`, `frmGearStateMsg`, `frmPowertrainGatewayMsg`, `frmVehicleModeMsg`, and `frmNavModuleStateMsg` while publishing/receiving backbone ETH seams |
-| `MDPS` | `Chassis` | required | none | publishes `ethSteeringMsg`; do not add foreign CAN DBCs for ETH alone |
-| `CLU` | `Infotainment` | required | none | consumes `ethSelectedAlertMsg`; no foreign CAN DBCs required beyond infotainment CAN |
+| `VCU` | `Chassis` | required | `Powertrain`, `Infotainment` | consumes `frmIgnitionEngineMsg`, `frmGearStateMsg`, `frmVehicleModeMsg`, and `frmNavModuleStateMsg` while publishing `ethVehicleStateMsg`; keep Ethernet runtime placement for TX only, no direct backbone RX remains |
+| `MDPS` | `Chassis` | required | none | publishes `ethSteeringMsg`; keep GUI Ethernet runtime placement for TX only, and do not add foreign CAN DBCs for ETH alone |
+| `CLU` | `Infotainment` | not required | `ADAS` | consumes `frmAdasDomainStateMsg`; no direct backbone socket remains |
 
-### 3.3 ETH_Backbone-visible nodes
+### 3.3 ETH_Backbone-primary nodes
 
-These nodes stay visibly placed on `ETH_Backbone`. Some of them still require additional CAN DBC visibility because they reference domain CAN messages.
+These nodes stay grouped under `ETH_Backbone` in source/mirror and visible owner placement. Some of them still require additional CAN DBC visibility because they reference domain CAN messages, but only a subset still requires live Ethernet runtime placement in GUI.
 
-| Node | Primary visible placement | Ethernet topology placement | Extra CAN visibility to attach | Compile-validated reason |
+| Node | Primary source/mirror placement | Ethernet runtime placement in GUI | Extra CAN visibility to attach | Compile-validated reason |
 | --- | --- | --- | --- | --- |
 | `CGW` | `ETH_Backbone` | required | `Chassis`, `Body`, `Infotainment` | consumes `frmChassisHealthMsg`, `frmBodyHealthMsg`, `frmInfotainmentHealthMsg`, `frmVehicleStateCanMsg`, `frmSteeringStateCanMsg`, and `frmNavigationRouteMsg` |
 | `TEST_SCN` | `ETH_Backbone` | required | `Powertrain`, `Chassis`, `Body`, `Infotainment`, `ADAS` | validation scenario orchestration and full-system cross-domain signal injection/observation |
-| `V2X` | `ETH_Backbone` | required | none | backbone emergency ingress/monitor owner; no foreign CAN DBC required |
-| `DCM` | `ETH_Backbone` | required | `Infotainment` | consumes `frmNavModuleStateMsg` and `frmClusterNotifMsg` while receiving backbone fail-safe state |
-| `ETHB` | `ETH_Backbone` | required | `Infotainment` | consumes `frmNavModuleStateMsg` and `frmClusterNotifMsg` for backbone/service summary |
-| `SGW` | `ETH_Backbone` | required | `Chassis`, `Infotainment` | consumes `frmVehicleStateCanMsg`, `frmNavModuleStateMsg`, and `frmClusterNotifMsg` while receiving backbone fail-safe state |
-| `IBOX` | `ETH_Backbone` | required | none | consumes backbone ETH seams only |
-| `EDR` | `ETH_Backbone` | required | none | consumes backbone ETH seams only |
+| `V2X` | `ETH_Backbone` | required | none | backbone emergency ingress/monitor owner; direct RX is retained for `EmergencyAlert` ingress only |
+| `DCM` | `ETH_Backbone` | not required | `Infotainment` | keep node grouped under `ETH_Backbone` in source/mirror, but remove GUI Ethernet runtime placement; consumes `frmNavModuleStateMsg` and `frmClusterNotifMsg`, and reads fail-safe from internal contracts; no direct backbone RX or ETH TX path remains |
+| `ETHB` | `ETH_Backbone` | not required | `Infotainment` | keep node grouped under `ETH_Backbone` in source/mirror, but remove GUI Ethernet runtime placement; consumes `frmNavModuleStateMsg` and `frmClusterNotifMsg`, and reads fail-safe from internal contracts; no direct backbone RX or ETH TX path remains |
+| `SGW` | `ETH_Backbone` | not required | `Chassis`, `Infotainment` | keep node grouped under `ETH_Backbone` in source/mirror, but remove GUI Ethernet runtime placement; consumes `frmVehicleStateCanMsg`, `frmNavModuleStateMsg`, and `frmClusterNotifMsg`, and reads fail-safe from internal contracts; no direct backbone RX or ETH TX path remains |
+| `IBOX` | `ETH_Backbone` | not required | `Chassis`, `Infotainment`, `ADAS` | keep node grouped under `ETH_Backbone` in source/mirror, but remove GUI Ethernet runtime placement; consumes `frmVehicleStateCanMsg`, `frmNavModuleStateMsg`, `frmNavigationRouteMsg`, and `frmAdasDomainStateMsg`; no direct backbone RX or ETH TX path remains |
+| `EDR` | `ETH_Backbone` | not required | `ADAS` | keep node grouped under `ETH_Backbone` in source/mirror, but remove GUI Ethernet runtime placement; consumes `frmAdasDomainStateMsg` and internal object/fail-safe contracts; no direct backbone RX or ETH TX path remains |
 | `TEST_BAS` | `ETH_Backbone` | required | none | shared observer and sysvar aggregation seam; reload `project.sysvars` when observer vars drift |
+
+Practical reading rule:
+
+- if `Primary source/mirror placement = ETH_Backbone` and `Ethernet runtime placement in GUI = required`, keep the node on the GUI TCP/IP stack
+- if `Primary source/mirror placement = ETH_Backbone` and `Ethernet runtime placement in GUI = not required`, keep the node under `channel_assign/ETH_Backbone` in source/mirror, but remove `ETH_Backbone` from the GUI node's `Assigned buses`
+- if `Primary source/mirror placement = Chassis/Body/Infotainment/ADAS/...` and `Ethernet runtime placement in GUI = required`, the node is dual-homed by design: keep its primary CAN grouping and also attach it to GUI Ethernet runtime
 
 ## 4. Why `TEST_BAS` Stays Single-Bus
 
@@ -146,7 +165,7 @@ When rebuilding a fresh `.cfg`:
 
 Compile-guided shortcut:
 
-- if `CGW`, `TEST_SCN`, `ADAS`, `BCM`, `IVI`, `DCM`, `ETHB`, `SGW`, `HWP`, `SCC`, `ACU`, `ODS`, `AFLS`, `DATC`, `PGS`, or `VCU` show `Database missing?` errors, treat that as missing foreign-domain CAN visibility first
+- if `CGW`, `TEST_SCN`, `ADAS`, `BCM`, `IVI`, `CLU`, `DCM`, `ETHB`, `SGW`, `IBOX`, `EDR`, `HWP`, `SCC`, `ACU`, `ODS`, `AFLS`, `DATC`, `PGS`, or `VCU` show `Database missing?` errors, treat that as missing foreign-domain CAN visibility first
 - if `TEST_BAS` shows `Test::base*` variable errors, reload `project.sysvars`
 - do not reintroduce a retired backbone stub DBC as a workaround for missing foreign CAN visibility
 

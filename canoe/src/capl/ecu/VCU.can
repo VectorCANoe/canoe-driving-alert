@@ -6,10 +6,8 @@ includes
 variables
 {
   msTimer tVcuCycle;
-  long gEthSocket;
   long gEthTxSocket;
   dword gEthTargetIp;
-  char gEthRxBuffer[64];
   int gSpeed;
   int gAccelPedal;
   int gBrakePedal;
@@ -31,8 +29,6 @@ variables
   dword gGearRxMs;
   dword gNavStateRxMs;
   dword gWheelSpeedRxMs;
-  dword gFailSafeRxMs;
-  dword gEmergencyMonRxMs;
   int gLastPedalInputStale;
   int gLastIgnitionInputStale;
   int gLastGearInputStale;
@@ -172,25 +168,22 @@ void traceVcuInputHealth(int pedalInputStale, int ignitionInputStale, int gearIn
 void publishBackboneVehicleState(int vehicleSpeed, int driveState)
 {
   char frame[4];
-  long txSocket;
 
   driveState = clampRange(driveState, 0, 3);
   vehicleSpeed = clampRange(vehicleSpeed, 0, 255);
-  txSocket = gEthTxSocket;
-  if (txSocket == ethInvalidSocket())
+  if (gEthTxSocket == ethInvalidSocket())
   {
-    txSocket = gEthSocket;
+    return;
   }
 
   ethInitFrame(frame, ethMsgVehicleState(), 2);
   ethSetU8(frame, 0, vehicleSpeed);
   ethSetU8(frame, 1, driveState);
-  ethSendFrame(txSocket, gEthTargetIp, ethMsgVehicleState(), frame, 2);
+  ethSendFrame(gEthTxSocket, gEthTargetIp, ethMsgVehicleState(), frame, 2);
 }
 
 on start
 {
-  gEthSocket = ethOpenDefaultSocket();
   gEthTxSocket = ethOpenNodeSocket(getVcuTxPort());
   gEthTargetIp = ethGetDefaultIpAddress();
   gSpeed = 0;
@@ -214,18 +207,12 @@ on start
   gGearRxMs = 0;
   gNavStateRxMs = 0;
   gWheelSpeedRxMs = 0;
-  gFailSafeRxMs = 0;
-  gEmergencyMonRxMs = 0;
   gLastPedalInputStale = 0;
   gLastIgnitionInputStale = 0;
   gLastGearInputStale = 0;
   if (gEthTxSocket == ethInvalidSocket())
   {
-    write("[VCU] tx socket fallback to shared backbone port");
-  }
-  if (gEthSocket != ethInvalidSocket())
-  {
-    ethStartReceiver(gEthSocket, gEthRxBuffer, elcount(gEthRxBuffer));
+    write("[VCU] tx socket unavailable");
   }
   setTimer(tVcuCycle, 100);
   write("[VCU] start");
@@ -273,36 +260,6 @@ on message frmWheelSpeedMsg
                                0,
                                255);
   gWheelSpeedRxMs = getSimulationTimeMs();
-}
-
-void OnUdpReceiveFrom(dword socket, long result, dword address, dword port, char buffer[], dword count)
-{
-  int msgId;
-  int payload0;
-
-  if (socket != gEthSocket)
-  {
-    return;
-  }
-
-  if (result == 0)
-  {
-    msgId = ethFrameMsgId(buffer, count);
-    if (msgId == ethMsgFailSafe() && ethFramePayloadLen(count) >= 1)
-    {
-      payload0 = ethGetU8(buffer, 0);
-      gBoundaryStatus = clampRange((payload0 >> 6) & 0x1, 0, 1);
-      gFailSafeMode = clampRange((payload0 >> 4) & 0x3, 0, 2);
-      gFailSafeRxMs = getSimulationTimeMs();
-    }
-    else if (msgId == ethMsgEmergencyMonitor() && ethFramePayloadLen(count) >= 1)
-    {
-      gEmergencyContext = clampRange(ethGetU8(buffer, 0), 0, 2);
-      gEmergencyMonRxMs = getSimulationTimeMs();
-    }
-  }
-
-  ethArmReceive(gEthSocket, gEthRxBuffer, elcount(gEthRxBuffer));
 }
 
 on timer tVcuCycle
@@ -417,14 +374,16 @@ on timer tVcuCycle
   {
     gSpeedLimitNorm = 30;
   }
-  if (ethIsRecentTick(gFailSafeRxMs, 300) == 1)
+  gBoundaryStatus = clampRange((int)@CoreState::domainBoundaryStatus, 0, 1);
+  gFailSafeMode = clampRange((int)@Core::failSafeMode, 0, 2);
+  gEmergencyContext = clampRange((int)@Core::emergencyContext, 0, 2);
+  if (gBoundaryStatus == 1)
   {
     if (gFailSafeMode > 0)
     {
       gRoutingPolicy = 0;
     }
-    else if (ethIsRecentTick(gEmergencyMonRxMs, 300) == 1 &&
-             gEmergencyContext > 0)
+    else if (gEmergencyContext > 0)
     {
       gRoutingPolicy = 2;
     }
@@ -501,6 +460,4 @@ on stopMeasurement
   cancelTimer(tVcuCycle);
   ethCloseSocket(gEthTxSocket);
   gEthTxSocket = ethInvalidSocket();
-  ethCloseSocket(gEthSocket);
-  gEthSocket = ethInvalidSocket();
 }

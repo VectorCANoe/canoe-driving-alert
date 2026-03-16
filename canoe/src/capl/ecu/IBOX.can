@@ -6,16 +6,17 @@ includes
 variables
 {
   msTimer tIboxCycle;
-  long gEthSocket;
-  char gEthRxBuffer[64];
   dword gVehTsMs;
   dword gNavTsMs;
+  dword gRouteTsMs;
   int gDriveState;
   int gVehicleSpeed;
   int gRoadZone;
   int gNavDirection;
   int gZoneDistance;
   int gSpeedLimit;
+  int gNavEtaMinutes;
+  int gRouteEtaMinutes;
   int gAlertLevel;
   int gWarningPathStatus;
   int gFailSafeMode;
@@ -25,7 +26,39 @@ variables
   int gLastRouteState;
   int gLastServiceFlags;
   dword gAlertTsMs;
-  dword gFailSafeTsMs;
+}
+
+int deriveZoneDistanceFromEtaMinutes(int etaMinutes)
+{
+  if (etaMinutes <= 0)
+  {
+    return 0;
+  }
+  if (etaMinutes <= 1)
+  {
+    return 50;
+  }
+  if (etaMinutes <= 2)
+  {
+    return 80;
+  }
+  if (etaMinutes <= 3)
+  {
+    return 120;
+  }
+  if (etaMinutes <= 5)
+  {
+    return 180;
+  }
+  if (etaMinutes <= 8)
+  {
+    return 240;
+  }
+  if (etaMinutes <= 12)
+  {
+    return 255;
+  }
+  return 255;
 }
 
 void traceIboxInputHealth(int vehInputStale, int navInputStale)
@@ -83,6 +116,7 @@ void publishIboxState()
   int failSafeMode;
   int alertLevel;
   int signalBars;
+  int etaMinutes;
 
   nowMs = getSimulationTimeMs();
   vehAgeMs = (gVehTsMs == 0) ? 60000 : clampRange((int)(nowMs - gVehTsMs), 0, 60000);
@@ -98,11 +132,22 @@ void publishIboxState()
   vehicleSpeed = vehicleFresh == 1 ? gVehicleSpeed : 0;
   roadZone = navLinkActive == 1 ? gRoadZone : 0;
   navDirection = navFresh == 1 ? gNavDirection : 0;
-  zoneDistance = navFresh == 1 ? gZoneDistance : 0;
+  etaMinutes = 0;
+  if (ethIsRecentTick(gRouteTsMs, 300) == 1)
+  {
+    etaMinutes = clampRange(gRouteEtaMinutes, 0, 255);
+  }
+  else if (navFresh == 1)
+  {
+    etaMinutes = clampRange(gNavEtaMinutes, 0, 255);
+  }
+  zoneDistance = navFresh == 1 ? deriveZoneDistanceFromEtaMinutes(etaMinutes) : 0;
   speedLimit = navFresh == 1 ? gSpeedLimit : 0;
-  failSafeMode = (ethIsRecentTick(gFailSafeTsMs, 300) == 1) ? gFailSafeMode : 2;
+  boundaryAlive = clampRange((int)@CoreState::domainBoundaryStatus, 0, 1);
+  gWarningPathStatus = boundaryAlive == 1 ? clampRange((int)@CoreState::warningPathStatus, 0, 2) : 2;
+  gFailSafeMode = boundaryAlive == 1 ? clampRange((int)@Core::failSafeMode, 0, 2) : 2;
+  failSafeMode = gFailSafeMode;
   alertLevel = (ethIsRecentTick(gAlertTsMs, 300) == 1) ? gAlertLevel : 0;
-  boundaryAlive = (ethIsRecentTick(gFailSafeTsMs, 300) == 1) ? 1 : 0;
   routeActive = (roadZone > 0) ? 1 : 0;
   serviceContext = ethHasBoundaryServiceContext(routeActive, alertLevel);
   diagStage = ethDiagBoundaryStage(routeActive,
@@ -190,61 +235,19 @@ void publishIboxState()
   }
 }
 
-void OnUdpReceiveFrom(dword socket, long result, dword address, dword port, char buffer[], dword count)
-{
-  int msgId;
-  int payload0;
-
-  if (socket != gEthSocket)
-  {
-    return;
-  }
-  if (result == 0)
-  {
-    msgId = ethFrameMsgId(buffer, count);
-    if (msgId == ethMsgVehicleState() && ethFramePayloadLen(count) >= 2)
-    {
-      gVehTsMs = getSimulationTimeMs();
-      gVehicleSpeed = clampRange(ethGetU8(buffer, 0), 0, 255);
-      gDriveState = clampRange(ethGetU8(buffer, 1), 0, 3);
-    }
-    else if (msgId == ethMsgNavContext() && ethFramePayloadLen(count) >= 3)
-    {
-      gNavTsMs = getSimulationTimeMs();
-      payload0 = ethGetU8(buffer, 0);
-      gRoadZone = clampRange(payload0 & 0x3, 0, 3);
-      gNavDirection = clampRange((payload0 >> 2) & 0x3, 0, 3);
-      gZoneDistance = clampRange(ethGetU8(buffer, 1), 0, 255);
-      gSpeedLimit = clampRange(ethGetU8(buffer, 2), 0, 255);
-    }
-    else if (msgId == ethMsgSelectedAlert() && ethFramePayloadLen(count) >= 1)
-    {
-      gAlertLevel = clampRange(ethGetU8(buffer, 0) & 0x7, 0, 7);
-      gAlertTsMs = getSimulationTimeMs();
-    }
-    else if (msgId == ethMsgFailSafe() && ethFramePayloadLen(count) >= 1)
-    {
-      payload0 = ethGetU8(buffer, 0);
-      gWarningPathStatus = clampRange(payload0 & 0x3, 0, 2);
-      gFailSafeMode = clampRange((payload0 >> 4) & 0x3, 0, 2);
-      gFailSafeTsMs = getSimulationTimeMs();
-    }
-  }
-
-  ethArmReceive(gEthSocket, gEthRxBuffer, elcount(gEthRxBuffer));
-}
-
 on start
 {
-  gEthSocket = ethOpenDefaultSocket();
   gVehTsMs = 0;
   gNavTsMs = 0;
+  gRouteTsMs = 0;
   gDriveState = 0;
   gVehicleSpeed = 0;
   gRoadZone = 0;
   gNavDirection = 0;
   gZoneDistance = 0;
   gSpeedLimit = 0;
+  gNavEtaMinutes = 0;
+  gRouteEtaMinutes = 0;
   gAlertLevel = 0;
   gWarningPathStatus = 2;
   gFailSafeMode = 2;
@@ -254,11 +257,6 @@ on start
   gLastRouteState = -1;
   gLastServiceFlags = -1;
   gAlertTsMs = 0;
-  gFailSafeTsMs = 0;
-  if (gEthSocket != ethInvalidSocket())
-  {
-    ethStartReceiver(gEthSocket, gEthRxBuffer, elcount(gEthRxBuffer));
-  }
   setTimer(tIboxCycle, 100);
   write("[IBOX] start");
 }
@@ -272,6 +270,32 @@ on timer tIboxCycle
 on stopMeasurement
 {
   cancelTimer(tIboxCycle);
-  ethCloseSocket(gEthSocket);
-  gEthSocket = ethInvalidSocket();
+}
+
+on message frmVehicleStateCanMsg
+{
+  gVehTsMs = getSimulationTimeMs();
+  gVehicleSpeed = clampRange((int)this.gVehicleSpeed, 0, 255);
+  gDriveState = clampRange((int)this.gDriveState, 0, 3);
+}
+
+on message frmNavModuleStateMsg
+{
+  gNavTsMs = getSimulationTimeMs();
+  gRoadZone = clampRange((int)this.NavRouteClass, 0, 3);
+  gNavDirection = clampRange((int)this.NavGuideType, 0, 3);
+  gNavEtaMinutes = clampRange((int)this.NavEtaMinutes, 0, 255);
+  gSpeedLimit = clampRange((int)this.NavSpeedLimit, 0, 255);
+}
+
+on message frmNavigationRouteMsg
+{
+  gRouteTsMs = getSimulationTimeMs();
+  gRouteEtaMinutes = clampRange((int)this.EtaMinutes, 0, 255);
+}
+
+on message frmAdasDomainStateMsg
+{
+  gAlertLevel = clampRange((int)this.SelectedAlertLevel, 0, 7);
+  gAlertTsMs = getSimulationTimeMs();
 }

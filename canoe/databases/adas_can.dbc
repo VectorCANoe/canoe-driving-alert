@@ -279,12 +279,12 @@ BO_ 486 frmAdasDomainStateMsg: 8 ADAS
  SG_ FailSafeMode         : 4|2@1+  (1,0) [0|3] "" CLU,SCC,AEB,BCW,LCA,LDWS_LKAS,FCAM,FRADAR,LDR,SRR_FL,SRR_FR,SRR_RL,SRR_RR
  SG_ DecelAssistReq       : 6|1@1+  (1,0) [0|1] "" SCC,FCA
  SG_ EmergencyContext     : 8|2@1+  (1,0) [0|3] "" SCC
- SG_ SelectedAlertLevel   : 10|3@1+ (1,0) [0|7] "" SCC,FCA
+ SG_ SelectedAlertLevel   : 10|3@1+ (1,0) [0|7] "" SCC,FCA,BCM,IVI,CLU
  SG_ ObjectRiskClass      : 13|3@1+ (1,0) [0|7] "" SCC,FCA
  SG_ RiskLevel            : 16|8@1+ (1,0) [0|100] "" SCC
  SG_ TtcBucket            : 24|8@1+ (1,0) [0|255] "" SCC,FCA
- SG_ SelectedAlertType    : 32|4@1+ (1,0) [0|15] "" SCC
- SG_ TimeoutClear         : 36|1@1+ (1,0) [0|1] "" CLU
+ SG_ SelectedAlertType    : 32|4@1+ (1,0) [0|15] "" SCC,BCM,IVI
+ SG_ TimeoutClear         : 36|1@1+ (1,0) [0|1] "" CLU,BCM,IVI
 
 BO_ 487 frmFcamInputMsg: 4 TEST_SCN
  SG_ ObjectTrackValid     : 0|1@1+  (1,0) [0|1] "" FCAM
