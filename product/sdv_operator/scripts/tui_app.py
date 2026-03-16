@@ -980,6 +980,8 @@ class SdvTuiApp(App[None]):
             "title": str(profile.get("title", profile_id)),
             "stop_on_fail": bool(profile.get("stop_on_fail", False)),
             "pack_id": str(profile.get("pack_id", "")),
+            "suite_id": str(profile.get("suite_id", "")),
+            "assign_folder": str(profile.get("assign_folder", "")),
             "review_focus": str(profile.get("review_focus", "")),
             "contract_ref": str(profile.get("contract_ref", "")),
             "surface_scope": str(profile.get("surface_scope", "ALL")),
@@ -999,10 +1001,16 @@ class SdvTuiApp(App[None]):
         tokens: list[str] = []
         profile_id = str(profile.get("profile_id", "")).strip()
         pack_id = str(profile.get("pack_id", "")).strip()
+        suite_id = str(profile.get("suite_id", "")).strip()
+        assign_folder = str(profile.get("assign_folder", "")).strip()
         if profile_id:
             tokens.extend(["--profile-id", profile_id])
         if pack_id:
             tokens.extend(["--pack-id", pack_id])
+        if suite_id:
+            tokens.extend(["--suite-id", suite_id])
+        if assign_folder:
+            tokens.extend(["--assign-folder", assign_folder])
         if bool(profile.get("stop_on_fail", False)):
             tokens.append("--stop-on-fail")
         return tokens
@@ -1593,9 +1601,12 @@ class SdvTuiApp(App[None]):
         if isinstance(profile, dict):
             profile_id = str(profile.get("profile_id", "")).strip()
             pack_id = str(profile.get("pack_id", "")).strip()
+            suite_id = str(profile.get("suite_id", "")).strip()
             if profile_id or pack_id:
                 lines.append(f"활성 profile: {self._profile_surface_label(profile_id)}")
                 lines.append(f"활성 pack: {self._pack_surface_label(pack_id)}")
+            if suite_id:
+                lines.append(f"활성 suite: {suite_id}")
         lines.append(f"Source Contract: {self._brief_relpath(source_target)}")
         lines.append("동작: 증빙 / CANoe report / Execution Manifest / Source Contract")
         return "\n".join(lines)
@@ -1901,9 +1912,13 @@ class SdvTuiApp(App[None]):
                 "readiness": "canoe/tmp/reports/verification/run_readiness.md",
                 "doctor": "canoe/tmp/reports/verification/doctor_report.md",
                 "surface-inventory": "product/sdv_operator/config/surface_ecu_inventory.json",
+                "test-asset-mapping": "canoe/docs/verification/test-asset-mapping.md",
                 "native-test-portfolio": "canoe/docs/verification/test-asset-mapping.md",
+                "active-test-units-guide": "canoe/tests/modules/test_units/README.md",
                 "native-testcase-blueprints": "canoe/tests/modules/test_units/README.md",
+                "active-test-suites-guide": "canoe/tests/modules/test_suites/README.md",
                 "network-gateway-pack": "canoe/tests/modules/test_suites/README.md",
+                "execution-guide": "canoe/docs/verification/execution-guide.md",
                 "verification-pack-matrix": "product/sdv_operator/config/verification_pack_matrix.json",
                 "campaign-profiles": "product/sdv_operator/config/campaign_profiles.json",
                 "capability-matrix-json": "product/sdv_operator/config/capability_boundary_matrix.json",

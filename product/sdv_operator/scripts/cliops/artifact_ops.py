@@ -83,9 +83,6 @@ def _source_entries(layout: dict) -> list[Path]:
         LAYOUT_PATH,
         ROOT / "product" / "sdv_operator" / "manifest.json",
         ROOT / "product" / "sdv_operator" / "config" / "surface_ecu_inventory.json",
-        ROOT / "product" / "sdv_operator" / "config" / "native_canoe_test_portfolio_v1.json",
-        ROOT / "product" / "sdv_operator" / "config" / "native_testcase_blueprints_v1.json",
-        ROOT / "product" / "sdv_operator" / "config" / "network_gateway_verification_pack_v1.json",
         ROOT / "product" / "sdv_operator" / "config" / "verification_pack_matrix.json",
         ROOT / "product" / "sdv_operator" / "config" / "campaign_profiles.json",
         ROOT / "product" / "sdv_operator" / "config" / "capability_boundary_matrix.json",
@@ -96,6 +93,10 @@ def _source_entries(layout: dict) -> list[Path]:
         ROOT / "product" / "sdv_operator" / "docs-src" / "packaging.md",
         ROOT / "product" / "sdv_operator" / "docs-src" / "role-boundary.md",
         ROOT / "product" / "sdv_operator" / "docs-src" / "capability-boundary.md",
+        ROOT / "canoe" / "tests" / "modules" / "test_units" / "README.md",
+        ROOT / "canoe" / "tests" / "modules" / "test_suites" / "README.md",
+        ROOT / "canoe" / "docs" / "verification" / "test-asset-mapping.md",
+        ROOT / "canoe" / "docs" / "verification" / "execution-guide.md",
     ]
 
 
@@ -166,12 +167,14 @@ def _resolve_open_target(layout: dict, target: str, run_id: str, phase: str, lat
         return staging_root / "doctor_report.md"
     if target == "surface-inventory":
         return ROOT / "product" / "sdv_operator" / "config" / "surface_ecu_inventory.json"
-    if target == "native-test-portfolio":
-        return ROOT / "product" / "sdv_operator" / "config" / "native_canoe_test_portfolio_v1.json"
-    if target == "native-testcase-blueprints":
-        return ROOT / "product" / "sdv_operator" / "config" / "native_testcase_blueprints_v1.json"
-    if target == "network-gateway-pack":
-        return ROOT / "product" / "sdv_operator" / "config" / "network_gateway_verification_pack_v1.json"
+    if target in {"test-asset-mapping", "native-test-portfolio"}:
+        return ROOT / "canoe" / "docs" / "verification" / "test-asset-mapping.md"
+    if target in {"active-test-units-guide", "native-testcase-blueprints"}:
+        return ROOT / "canoe" / "tests" / "modules" / "test_units" / "README.md"
+    if target in {"active-test-suites-guide", "network-gateway-pack"}:
+        return ROOT / "canoe" / "tests" / "modules" / "test_suites" / "README.md"
+    if target == "execution-guide":
+        return ROOT / "canoe" / "docs" / "verification" / "execution-guide.md"
     if target == "verification-pack-matrix":
         return ROOT / "product" / "sdv_operator" / "config" / "verification_pack_matrix.json"
     if target == "campaign-profiles":

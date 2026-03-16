@@ -78,6 +78,8 @@ def add_verify_batch_args(p: argparse.ArgumentParser, handlers: HandlerMap) -> N
     p.add_argument("--campaign-id", default=default_campaign_id(), help="Campaign ID, e.g. CMP_20260310")
     p.add_argument("--profile-id", default="", help="Campaign profile ID, e.g. ut_active_baseline")
     p.add_argument("--pack-id", default="", help="Verification pack ID, e.g. ts_canoe_it_active_baseline")
+    p.add_argument("--suite-id", default="", help="Active suite ID, e.g. TS_CANOE_IT_ACTIVE_BASELINE")
+    p.add_argument("--assign-folder", default="", help="GUI import wrapper folder, e.g. canoe/tests/modules/test_units/assign/IT_ACTIVE_BASELINE")
     p.add_argument("--owner", default="TBD")
     p.add_argument("--run-date", default=dt.date.today().isoformat())
     p.add_argument("--phase", choices=["pre", "post", "full"], default="pre")
@@ -326,6 +328,10 @@ def add_artifact_open_args(p: argparse.ArgumentParser, handlers: HandlerMap) -> 
             "readiness",
             "doctor",
             "surface-inventory",
+            "test-asset-mapping",
+            "active-test-units-guide",
+            "active-test-suites-guide",
+            "execution-guide",
             "native-test-portfolio",
             "native-testcase-blueprints",
             "network-gateway-pack",

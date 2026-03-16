@@ -15,11 +15,18 @@
 - 산출: readiness, batch report, JUnit XML, portable ZIP / exe
 - 관리: artifact list/open/clean으로 산출물과 원본 계약 파일 확인
 
+현재 source contract의 기본 축:
+
+- `canoe/tests/modules/test_units/README.md`
+- `canoe/tests/modules/test_suites/README.md`
+- `canoe/docs/verification/test-asset-mapping.md`
+- `canoe/docs/verification/execution-guide.md`
+
 ## 언어 표면 규칙
 
 - 사용자 설명, 도움말, 실패 원인, 다음 액션은 한국어로 유지합니다.
 - 명령명, 단계명, 판정값, 산출물 키는 영어로 유지합니다.
-  - 예: `Overview`, `Campaign`, `Results`, `Artifacts`, `Automation`
+  - 예: `Home`, `Run`, `Results`, `Artifacts`, `Automation`, `Logs`
   - 예: `Primary`, `Runtime`, `Inspect`, `Package`
   - 예: `gate all`, `scenario run`, `verify quick`
   - 예: `PASS`, `WARN`, `FAIL`, `run_id`, `phase`, `surface bundle`

@@ -760,7 +760,7 @@ PRODUCT_COMMAND_GROUPS: dict[str, list[PaletteCommand]] = {
         PaletteCommand(
             command_id="artifact.open_native_test_portfolio",
             title="원본 test asset mapping 열기",
-            command="artifact open --target native-test-portfolio",
+            command="artifact open --target test-asset-mapping",
             summary="05/06/07과 native CANoe asset의 현재 매핑 문서를 바로 엽니다.",
             use_when=(
                 "문서 ID와 실제 native asset, oracle, evidence 기준을 함께 확인할 때",
@@ -772,7 +772,7 @@ PRODUCT_COMMAND_GROUPS: dict[str, list[PaletteCommand]] = {
         PaletteCommand(
             command_id="artifact.open_native_testcase_blueprints",
             title="원본 active test units guide 열기",
-            command="artifact open --target native-testcase-blueprints",
+            command="artifact open --target active-test-units-guide",
             summary="active test unit baseline, assign 폴더, evidence 기준 README를 바로 엽니다.",
             use_when=(
                 "현재 active unit asset이 무엇인지와 GUI import 기준을 함께 확인해야 할 때",
@@ -784,7 +784,7 @@ PRODUCT_COMMAND_GROUPS: dict[str, list[PaletteCommand]] = {
         PaletteCommand(
             command_id="artifact.open_network_gateway_pack",
             title="원본 active test suites guide 열기",
-            command="artifact open --target network-gateway-pack",
+            command="artifact open --target active-test-suites-guide",
             summary="UT/IT/ST/FULL active suite와 wrapper 기준 README를 바로 엽니다.",
             use_when=(
                 "현재 active suite 수량과 wrapper 구성을 바로 확인할 때",
@@ -792,6 +792,19 @@ PRODUCT_COMMAND_GROUPS: dict[str, list[PaletteCommand]] = {
             success_signals=("test_suites/README.md가 열림",),
             expected_outputs=("canoe/tests/modules/test_suites/README.md",),
             next_step="verification pack matrix와 함께 suite count와 profile 연결을 확인하십시오.",
+        ),
+        PaletteCommand(
+            command_id="artifact.open_execution_guide",
+            title="원본 execution guide 열기",
+            command="artifact open --target execution-guide",
+            summary="현재 active suite 실행 순서, harness 기준, evidence 수집 기준 문서를 바로 엽니다.",
+            use_when=(
+                "실행 순서와 harness 기준을 결과 해석 전 바로 확인해야 할 때",
+                "suite README만으로 부족하고 운영 execution 기준까지 같이 봐야 할 때",
+            ),
+            success_signals=("execution-guide.md가 열림",),
+            expected_outputs=("canoe/docs/verification/execution-guide.md",),
+            next_step="test asset mapping과 함께 oracle/evidence 기준을 대조하십시오.",
         ),
         PaletteCommand(
             command_id="artifact.open_verification_pack_matrix",
