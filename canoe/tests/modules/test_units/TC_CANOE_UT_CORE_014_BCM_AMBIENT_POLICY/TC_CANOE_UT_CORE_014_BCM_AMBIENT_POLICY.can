@@ -1,0 +1,31 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\\common\\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+}
+
+export testcase TC_CANOE_UT_CORE_014_BCM_AMBIENT_POLICY()
+{
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  if (!launchScenarioAndWait(208, 700, 1200))
+  {
+    return;
+  }
+
+  assertIntEq("scenario-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+  assertIntEq("selected-alert-level", 3, (long)@Core::selectedAlertLevel, "selectedAlertLevel");
+  assertIntEq("selected-alert-type", 3, (long)@Core::selectedAlertType, "selectedAlertType");
+  assertIntEq("ambient-color", 3, (long)@Body::ambientColor, "ambientColor");
+  assertIntEq("ambient-pattern", 5, (long)@Body::ambientPattern, "ambientPattern");
+  assertIntEq("fail-safe-clear", 0, (long)@Core::failSafeMode, "failSafeMode");
+
+  resetValidationHarnessIfNeeded();
+}

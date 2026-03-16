@@ -1,0 +1,32 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\common\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+}
+
+export testcase TC_CANOE_ST_036_FAILSAFE_RECOVERY_STABILITY()
+{
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  if (!launchScenarioAndWait(201, 1500, 2000))
+  {
+    return;
+  }
+
+  assertIntEq("delay-stability-recovery-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+  if (!waitForObservedFailSafe(800))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
+  assertIntEq("delay-stability-recovery-failsafe", 0, (long)@Test::obsFailSafeMode, "ethFailSafeMode");
+
+  resetValidationHarnessIfNeeded();
+}

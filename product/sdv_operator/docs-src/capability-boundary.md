@@ -23,16 +23,18 @@
 
 ## 제품 섹션 기준
 
-- `Overview`
+- `Home`
   - 현재 상태와 다음 조치
-- `Campaign`
-  - scenario / phase / campaign metadata
+- `Run`
+  - scenario / phase / execution metadata
 - `Results`
   - verdict / evidence / surface ECU summary
 - `Artifacts`
   - staging / archive / source / build
 - `Automation`
-  - Jenkins / campaign profiles / capability boundary
+  - Jenkins / execution profiles / active suite pack
+- `Logs`
+  - raw stdout/stderr review
 
 ## 관련 원본
 

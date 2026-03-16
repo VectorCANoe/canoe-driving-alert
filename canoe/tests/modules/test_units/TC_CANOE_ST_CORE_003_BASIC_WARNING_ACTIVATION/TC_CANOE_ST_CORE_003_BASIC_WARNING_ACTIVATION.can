@@ -1,0 +1,38 @@
+﻿/*@!Encoding:65001*/
+includes
+{
+  #include "..\\common\\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+}
+
+export testcase TC_CANOE_ST_CORE_003_BASIC_WARNING_ACTIVATION()
+{
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  if (!launchScenarioAndWait(1, 700, 1000))
+  {
+    return;
+  }
+
+  assertIntEq("st003-baseline-level", 0, (long)@Core::selectedAlertLevel, "selectedAlertLevel");
+
+  if (!launchScenarioAndWait(26, 700, 1000))
+  {
+    return;
+  }
+
+  assertIntEq("st003-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+  assertIntEq("st003-zone", 0, (long)@Core::baseZoneContext, "baseZoneContext");
+  assertIntEq("st003-warning-state", 1, (long)@Core::warningState, "warningState");
+  assertIntEq("st003-level", 1, (long)@Core::selectedAlertLevel, "selectedAlertLevel");
+  assertIntEq("st003-type", 1, (long)@Core::selectedAlertType, "selectedAlertType");
+  assertIntEq("st003-failsafe", 0, (long)@Core::failSafeMode, "failSafeMode");
+
+  resetValidationHarnessIfNeeded();
+}

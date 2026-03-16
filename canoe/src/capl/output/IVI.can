@@ -8,9 +8,8 @@ variables
   msTimer tIviCycle;
   msTimer tIviBase50;
   msTimer tIviExt100;
-  long gEthSocket;
+  long gEthTxSocket;
   dword gEthTargetIp;
-  char gEthRxBuffer[64];
   int gLastWarningTextCode;
   int gInfoAliveCnt;
   int gIviBaseTick;
@@ -22,6 +21,54 @@ variables
   int gBackboneAlertType;
   int gBackboneTimeoutClear;
   dword gBackboneAlertTsMs;
+  int gCanVehicleSpeed;
+  int gCanDriveState;
+  int gCanNavSessionState;
+  int gCanNavRouteClass;
+  int gCanNavGuideType;
+  int gCanNavEtaMinutes;
+  int gCanNavSpeedLimit;
+  int gCanRouteEtaMinutes;
+  int gCanRouteProgress;
+  dword gVehicleStateRxMs;
+  dword gNavStateRxMs;
+  dword gRouteRxMs;
+}
+
+int getIviTxPort()
+{
+  return ethBackbonePort() + 4;
+}
+
+dword getIviLocalIp()
+{
+  return IpGetAddressAsNumber("192.168.1.19");
+}
+
+int deriveBaseZoneContextFromNavState(int routeClass, int guideType)
+{
+  routeClass = clampRange(routeClass, 0, 3);
+  guideType = clampRange(guideType, 0, 3);
+
+  if (routeClass == 1)
+  {
+    return 1;
+  }
+  if (routeClass == 2)
+  {
+    return 2;
+  }
+  if (routeClass == 3)
+  {
+    return (guideType == 2) ? 4 : 3;
+  }
+  return 0;
+}
+
+int deriveZoneDistanceFromEtaMinutes(int etaMinutes)
+{
+  etaMinutes = clampRange(etaMinutes, 0, 255);
+  return clampRange(etaMinutes * 10, 0, 255);
 }
 
 
@@ -45,28 +92,139 @@ int calcEmergencyDistanceM(int etaSec, int speedKph)
   return (int)distanceM;
 }
 
+int deriveEmergencyWarningCode(int emergencyType, int emergencyDistanceBand, int emergencyDirection)
+{
+  int baseCode;
+
+  emergencyDirection = clampRange(emergencyDirection, 0, 3);
+  emergencyDistanceBand = clampRange(emergencyDistanceBand, 0, 3);
+
+  if (emergencyType == 2)
+  {
+    baseCode = 200;
+  }
+  else if (emergencyType == 1)
+  {
+    baseCode = 100;
+  }
+  else
+  {
+    return 100 + emergencyDirection;
+  }
+
+  if (emergencyDistanceBand > 0)
+  {
+    return baseCode + (emergencyDistanceBand * 10) + emergencyDirection;
+  }
+  return baseCode + emergencyDirection;
+}
+
+int deriveWarningTextCode(int alertLevel, int alertType, int timeoutClear,
+                          int emergencyType, int emergencyDirection, int emergencyDistanceBand)
+{
+  if (timeoutClear == 1 || alertLevel == 0)
+  {
+    return 0;
+  }
+  if (alertLevel >= 6)
+  {
+    return deriveEmergencyWarningCode(emergencyType, emergencyDistanceBand, emergencyDirection);
+  }
+  if (alertType == 5)
+  {
+    return 31;
+  }
+  if (alertType == 6)
+  {
+    return 32;
+  }
+  return clampRange((alertType * 10) + alertLevel, 0, 255);
+}
+
+int deriveRenderDirection(int renderTextCode, int alertType)
+{
+  if (renderTextCode >= 100 && renderTextCode <= 203)
+  {
+    return clampRange(renderTextCode % 100, 0, 3);
+  }
+  if (alertType == 5)
+  {
+    return 1;
+  }
+  if (alertType == 6)
+  {
+    return 2;
+  }
+  return 0;
+}
+
 void publishBackboneNavContext()
 {
   char frame[8];
+  int baseZoneContext;
   int roadZone;
   int navDirection;
   int zoneDistance;
   int speedLimit;
+  int etaMinutes;
 
-  roadZone = clampRange((int)@Infotainment::roadZone, 0, 7);
-  navDirection = clampRange((int)@Infotainment::navDirection, 0, 7);
-  zoneDistance = clampRange((int)@Infotainment::zoneDistance, 0, 255);
-  speedLimit = clampRange((int)@Infotainment::speedLimit, 0, 255);
-  if (speedLimit == 0)
+  if (ethIsRecentTick(gNavStateRxMs, 300) == 1)
   {
-    speedLimit = 30;
+    roadZone = clampRange(gCanNavRouteClass, 0, 3);
+    navDirection = clampRange(gCanNavGuideType, 0, 3);
+    speedLimit = clampRange(gCanNavSpeedLimit, 0, 255);
+    etaMinutes = clampRange(gCanNavEtaMinutes, 0, 255);
+    baseZoneContext = deriveBaseZoneContextFromNavState(roadZone, navDirection);
+  }
+  else
+  {
+    baseZoneContext = 0;
+    roadZone = 0;
+    navDirection = 0;
+    speedLimit = 0;
+    etaMinutes = 0;
+  }
+  zoneDistance = 0;
+
+  if (baseZoneContext == 1)
+  {
+    roadZone = 1;
+  }
+  else if (baseZoneContext == 2)
+  {
+    roadZone = 2;
+  }
+  else if (baseZoneContext == 3 || baseZoneContext == 4)
+  {
+    roadZone = 3;
+    if (navDirection == 0)
+    {
+      navDirection = (baseZoneContext == 4) ? 2 : 1;
+    }
+  }
+
+  if (roadZone > 0)
+  {
+    if (ethIsRecentTick(gRouteRxMs, 300) == 1)
+    {
+      etaMinutes = clampRange(gCanRouteEtaMinutes, 0, 255);
+    }
+    zoneDistance = deriveZoneDistanceFromEtaMinutes(etaMinutes);
+    if (speedLimit == 0)
+    {
+      speedLimit = 30;
+    }
+  }
+  if (gEthTxSocket == ethInvalidSocket())
+  {
+    return;
   }
 
   ethInitFrame(frame, ethMsgNavContext(), 3);
   ethSetU8(frame, 0, (roadZone & 0x3) | ((navDirection & 0x3) << 2));
   ethSetU8(frame, 1, zoneDistance);
   ethSetU8(frame, 2, speedLimit);
-  ethSendFrame(gEthSocket, gEthTargetIp, ethMsgNavContext(), frame, 3);
+  ethSendFrame(gEthTxSocket, gEthTargetIp, ethMsgNavContext(), frame, 3);
 }
 
 void updateBackboneAlertState(int alertLevel, int alertType, int timeoutClear)
@@ -75,28 +233,6 @@ void updateBackboneAlertState(int alertLevel, int alertType, int timeoutClear)
   gBackboneAlertType = clampRange(alertType, 0, 7);
   gBackboneTimeoutClear = (timeoutClear == 1) ? 1 : 0;
   gBackboneAlertTsMs = getSimulationTimeMs();
-}
-
-void OnUdpReceiveFrom(dword socket, long result, dword address, dword port, char buffer[], dword count)
-{
-  int msgId;
-
-  if (socket != gEthSocket)
-  {
-    return;
-  }
-  if (result == 0)
-  {
-    msgId = ethFrameMsgId(buffer, count);
-    if (msgId == ethMsgSelectedAlert() && ethFramePayloadLen(count) >= 2)
-    {
-      updateBackboneAlertState(ethGetU8(buffer, 0) & 0x7,
-                               (ethGetU8(buffer, 0) >> 3) & 0x7,
-                               ethGetU8(buffer, 1) & 0x1);
-    }
-  }
-
-  ethArmReceive(gEthSocket, gEthRxBuffer, elcount(gEthRxBuffer));
 }
 
 int useBackboneAlertState()
@@ -117,9 +253,47 @@ int useBackboneAlertState()
   return 1;
 }
 
+int derivePresentationMode(int alertLevel, int alertType, int baseZoneContext)
+{
+  if (alertLevel <= 0)
+  {
+    return 0;
+  }
+  if (alertLevel >= 6)
+  {
+    return 2;
+  }
+  if (baseZoneContext == 1 || alertType == 5 || alertType == 6)
+  {
+    return 1;
+  }
+  if (alertLevel >= 4)
+  {
+    return 3;
+  }
+  return 0;
+}
+
+int deriveAlertVolume(int alertLevel, int presentationMode)
+{
+  if (alertLevel <= 0)
+  {
+    return 20;
+  }
+  if (presentationMode == 2)
+  {
+    return 80;
+  }
+  if (presentationMode == 3)
+  {
+    return 40;
+  }
+  return 30;
+}
+
 on start
 {
-  gEthSocket = ethOpenDefaultSocket();
+  gEthTxSocket = ethOpenNodeSocketAt(getIviLocalIp(), getIviTxPort());
   gEthTargetIp = ethGetDefaultIpAddress();
   gLastWarningTextCode = -1;
   gInfoAliveCnt = 0;
@@ -132,14 +306,58 @@ on start
   gBackboneAlertType = 0;
   gBackboneTimeoutClear = 0;
   gBackboneAlertTsMs = 0;
-  if (gEthSocket != ethInvalidSocket())
+  gCanVehicleSpeed = 0;
+  gCanDriveState = 0;
+  gCanNavSessionState = 0;
+  gCanNavRouteClass = 0;
+  gCanNavGuideType = 0;
+  gCanNavEtaMinutes = 0;
+  gCanNavSpeedLimit = 0;
+  gCanRouteEtaMinutes = 0;
+  gCanRouteProgress = 0;
+  gVehicleStateRxMs = 0;
+  gNavStateRxMs = 0;
+  gRouteRxMs = 0;
+  @CoreState::infoHealthTick = 0;
+  if (gEthTxSocket == ethInvalidSocket())
   {
-    ethStartReceiver(gEthSocket, gEthRxBuffer, elcount(gEthRxBuffer));
+    write("[IVI] tx socket unavailable");
   }
   setTimer(tIviCycle, 10);
   setTimer(tIviBase50, 50);
   setTimer(tIviExt100, 100);
   write("[IVI] start");
+}
+
+on message frmVehicleStateCanMsg
+{
+  gCanVehicleSpeed = clampRange((int)this.gVehicleSpeed, 0, 255);
+  gCanDriveState = clampRange((int)this.gDriveState, 0, 3);
+  gVehicleStateRxMs = getSimulationTimeMs();
+}
+
+on message frmNavModuleStateMsg
+{
+  gCanNavSessionState = clampRange((int)this.NavSessionState, 0, 3);
+  gCanNavRouteClass = clampRange((int)this.NavRouteClass, 0, 3);
+  gCanNavGuideType = clampRange((int)this.NavGuideType, 0, 3);
+  gCanNavEtaMinutes = clampRange((int)this.NavEtaMinutes, 0, 255);
+  gCanNavSpeedLimit = clampRange((int)this.NavSpeedLimit, 0, 255);
+  gNavStateRxMs = getSimulationTimeMs();
+}
+
+on message frmNavigationRouteMsg
+{
+  gCanRouteEtaMinutes = clampRange((int)this.EtaMinutes, 0, 255);
+  gCanRouteProgress = clampRange((int)this.RouteProgress, 0, 100);
+  gRouteRxMs = getSimulationTimeMs();
+}
+
+on message frmAdasDomainStateMsg
+{
+  updateBackboneAlertState((int)this.SelectedAlertLevel,
+                           (int)this.SelectedAlertType,
+                           (int)this.TimeoutClear);
 }
 
 on timer tIviCycle
@@ -153,7 +371,6 @@ on timer tIviCycle
   int speed;
   int emergencyDistanceM;
   int emergencyDistanceBand;
-  int baseCode;
   int useBackbone;
   message frmClusterWarningMsg mCluster;
 
@@ -166,13 +383,20 @@ on timer tIviCycle
   }
   else
   {
-    alertLevel = (int)@Core::selectedAlertLevel;
-    alertType = (int)@Core::selectedAlertType;
-    timeoutClear = (int)@Core::timeoutClear;
+    alertLevel = 0;
+    alertType = 0;
+    timeoutClear = 0;
   }
   emergencyType = (int)@V2X::emergencyType;
   emergencyDirection = (int)@V2X::emergencyDirection;
-  speed = clampRange((int)@Core::vehicleSpeedNorm, 0, 255);
+  if (ethIsRecentTick(gVehicleStateRxMs, 300) == 1)
+  {
+    speed = clampRange(gCanVehicleSpeed, 0, 255);
+  }
+  else
+  {
+    speed = 0;
+  }
   if (alertLevel < 0 || alertLevel > 7)
   {
     alertLevel = 0;
@@ -209,41 +433,8 @@ on timer tIviCycle
   }
   @CoreState::emergencyDistanceM = emergencyDistanceM;
 
-  if (timeoutClear == 1 || alertLevel == 0)
-  {
-    warningTextCode = 0;
-  }
-  else if (alertLevel >= 6)
-  {
-    if (emergencyType == 2 || emergencyType == 1)
-    {
-      baseCode = (emergencyType == 2) ? 200 : 100;
-      if (emergencyDistanceBand > 0)
-      {
-        warningTextCode = baseCode + (emergencyDistanceBand * 10) + emergencyDirection;
-      }
-      else
-      {
-        warningTextCode = baseCode + emergencyDirection;
-      }
-    }
-    else
-    {
-      warningTextCode = 100 + emergencyDirection;
-    }
-  }
-  else if (alertType == 5)
-  {
-    warningTextCode = 31;
-  }
-  else if (alertType == 6)
-  {
-    warningTextCode = 32;
-  }
-  else
-  {
-    warningTextCode = (alertType * 10) + alertLevel;
-  }
+  warningTextCode = deriveWarningTextCode(alertLevel, alertType, timeoutClear,
+                                          emergencyType, emergencyDirection, emergencyDistanceBand);
 
   if (warningTextCode != gLastWarningTextCode)
   {
@@ -280,13 +471,20 @@ on timer tIviBase50
   int renderTextCode;
   int renderDirection;
   int vehicleMotionStep;
-  int displayModeSetting;
-  int alertVolumeSetting;
+  int presentationMode;
   int effectiveVolume;
   int useBackbone;
 
-  speed = clampRange((int)@Core::vehicleSpeedNorm, 0, 255);
-  driveState = clampRange((int)@Core::driveStateNorm, 0, 3);
+  if (ethIsRecentTick(gVehicleStateRxMs, 300) == 1)
+  {
+    speed = clampRange(gCanVehicleSpeed, 0, 255);
+    driveState = clampRange(gCanDriveState, 0, 3);
+  }
+  else
+  {
+    speed = 0;
+    driveState = 0;
+  }
   useBackbone = useBackboneAlertState();
   if (useBackbone == 1)
   {
@@ -295,17 +493,23 @@ on timer tIviBase50
   }
   else
   {
-    alertLevel = clampRange((int)@Core::selectedAlertLevel, 0, 7);
-    alertType = clampRange((int)@Core::selectedAlertType, 0, 15);
+    alertLevel = 0;
+    alertType = 0;
   }
-  baseZoneContext = clampRange((int)@Core::baseZoneContext, 0, 4);
+  if (ethIsRecentTick(gNavStateRxMs, 300) == 1)
+  {
+    baseZoneContext = deriveBaseZoneContextFromNavState(gCanNavRouteClass, gCanNavGuideType);
+  }
+  else
+  {
+    baseZoneContext = 0;
+  }
   renderMode = clampRange((int)@Body::ambientMode, 0, 7);
   renderColor = clampRange((int)@Body::ambientColor, 0, 15);
   renderPattern = clampRange((int)@Body::ambientPattern, 0, 15);
   renderTextCode = clampRange((int)@Cluster::warningTextCode, 0, 65535);
-  displayModeSetting = clampRange((int)@Test::displayModeSetting, 0, 3);
-  alertVolumeSetting = clampRange((int)@Test::alertVolumeSetting, 0, 100);
-  effectiveVolume = (alertVolumeSetting > 0) ? alertVolumeSetting : ((alertLevel > 0) ? 30 : 20);
+  presentationMode = derivePresentationMode(alertLevel, alertType, baseZoneContext);
+  effectiveVolume = deriveAlertVolume(alertLevel, presentationMode);
 
   /* CLU owns the mirrored display state after consuming these frames. */
 
@@ -314,38 +518,32 @@ on timer tIviBase50
   mBase.ClusterStatus = alertLevel;
   output(mBase);
 
-  mTheme.ThemeMode = (displayModeSetting == 1) ? 2 : ((alertLevel > 0) ? 1 : 0);
+  mTheme.ThemeMode = (presentationMode == 1) ? 2 : ((alertLevel > 0) ? 1 : 0);
   mTheme.ClusterBrightness = (alertLevel > 0) ? 28 : 20;
   output(mTheme);
 
   mPopup.PopupType = alertType;
-  mPopup.PopupPriority = clampRange(alertLevel, 0, 7);
-  mPopup.PopupActive = (alertLevel > 0) ? 1 : 0;
-  if (displayModeSetting == 1)
+  mPopup.PopupPriority = 0;
+  mPopup.PopupActive = 0;
+  if (alertLevel > 0 && presentationMode != 2)
   {
     mPopup.PopupActive = 1;
-    mPopup.PopupPriority = 1;
-  }
-  else if (displayModeSetting == 2)
-  {
-    mPopup.PopupActive = 0;
-  }
-  else if (displayModeSetting == 3)
-  {
-    mPopup.PopupActive = (alertLevel > 0) ? 1 : 0;
-    mPopup.PopupPriority = clampRange(alertLevel + 1, 0, 7);
+    if (presentationMode == 1)
+    {
+      mPopup.PopupPriority = 1;
+    }
+    else if (presentationMode == 3)
+    {
+      mPopup.PopupPriority = clampRange(alertLevel + 1, 0, 7);
+    }
+    else
+    {
+      mPopup.PopupPriority = clampRange(alertLevel, 0, 7);
+    }
   }
   output(mPopup);
 
-  mAudio.AudioFocusOwner = (alertLevel > 0) ? 1 : 0;
-  if (displayModeSetting == 1)
-  {
-    mAudio.AudioFocusOwner = 0;
-  }
-  else if (displayModeSetting == 2 || displayModeSetting == 3)
-  {
-    mAudio.AudioFocusOwner = (alertLevel > 0) ? 1 : 0;
-  }
+  mAudio.AudioFocusOwner = (alertLevel > 0 && presentationMode != 1) ? 1 : 0;
   mAudio.AudioDuckingLvl = (alertLevel > 0) ? 4 : 1;
   output(mAudio);
 
@@ -386,6 +584,7 @@ on timer tIviBase50
     mHealth.InfoAliveCnt = gInfoAliveCnt & 0xFF;
     mHealth.InfoFailCode = 0;
     output(mHealth);
+    @CoreState::infoHealthTick = mHealth.InfoAliveCnt;
     gInfoAliveCnt = (gInfoAliveCnt + 1) & 0xFF;
   }
 
@@ -477,24 +676,7 @@ on timer tIviBase50
     gIcFlowPhase = 0;
   }
 
-  if (renderTextCode >= 100 && renderTextCode <= 203)
-  {
-    renderDirection = renderTextCode % 100;
-  }
-  else if (alertType == 5)
-  {
-    renderDirection = 1;
-  }
-  else if (alertType == 6)
-  {
-    renderDirection = 2;
-  }
-  else
-  {
-    renderDirection = 0;
-  }
-
-  renderDirection = clampRange(renderDirection, 0, 3);
+  renderDirection = deriveRenderDirection(renderTextCode, alertType);
   @UiRender::renderMode = renderMode;
   @UiRender::renderColor = renderColor;
   @UiRender::renderPattern = renderPattern;
@@ -517,7 +699,14 @@ on timer tIviExt100
   message frmIviHealthDetailMsg mHealthDetail;
   int speedLimit;
 
-  speedLimit = clampRange((int)@Core::speedLimitNorm, 0, 255);
+  if (ethIsRecentTick(gNavStateRxMs, 300) == 1)
+  {
+    speedLimit = clampRange(gCanNavSpeedLimit, 0, 255);
+  }
+  else
+  {
+    speedLimit = 0;
+  }
   if (speedLimit == 0)
   {
     speedLimit = 30;
@@ -543,6 +732,6 @@ on stopMeasurement
   cancelTimer(tIviCycle);
   cancelTimer(tIviBase50);
   cancelTimer(tIviExt100);
-  ethCloseSocket(gEthSocket);
-  gEthSocket = ethInvalidSocket();
+  ethCloseSocket(gEthTxSocket);
+  gEthTxSocket = ethInvalidSocket();
 }

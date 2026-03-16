@@ -1,4 +1,4 @@
-﻿# tools
+# tools
 
 Active utility scripts for CANoe maintenance.
 
@@ -23,7 +23,7 @@ Active utility scripts for CANoe maintenance.
 
 ### `20_VERIFICATION/20_validate_runtime_priority_gate.py`
 - enforce the active CAN/ETH priority gate
-- uses active CAN DBCs and `10_ETHERNET_BACKBONE_SSoT.md`
+- uses active CAN DBCs and `ethernet-backbone.md`
 - writes local draft outputs under `canoe/tmp/`
 - exit code `0` = pass, `2` = fail
 

@@ -72,6 +72,7 @@
 | 51 | Test | seatBeltOverride | uint32 | 0 | 2 | 0 | 안전벨트 상태 오버라이드 입력(Validation-only) |
 | 52 | Test | historyQueryOffset | uint32 | 0 | 255 | 0 | 경고 이력 조회 오프셋 입력(Validation-only) |
 | 53 | Test | historyQueryCode | uint32 | 0 | 65535 | 0 | 경고 이력 조회 코드 입력(Validation-only) |
+| 54 | Test | turnLampOverride | uint32 | 0 | 2 | 0 | 방향지시등 상태 오버라이드 입력(Validation-only) |
 | 101 | Chassis | AccelPedal | uint32 | 0 | 100 | 0 | 가속 페달 입력 |
 | 102 | Chassis | BrakePedal | uint32 | 0 | 100 | 0 | 브레이크 페달 입력 |
 | 103 | Chassis | SteeringState | uint32 | 0 | 3 | 0 | 조향 상태 |
@@ -278,4 +279,9 @@
 | 312 | Powertrain | EnergyFlowMode | uint32 | 0 | 3 | 0 | 에너지 흐름 방향 |
 | 313 | Powertrain | CtrlAuthLevel | uint32 | 0 | 3 | 0 | 파워트레인 제어 권한 상태 |
 | 314 | Powertrain | CtrlAuthSource | uint32 | 0 | 15 | 0 | 파워트레인 제어 출처 |
+| 315 | Diag | SecurityState | uint32 | 0 | 3 | 0 | 진단 보안 상태(0=Unknown 1=Nominal 2=Restricted 3=Denied) |
+| 316 | Diag | ServiceState | uint32 | 0 | 3 | 0 | 진단 서비스 상태(0=Unknown 1=Available 2=Unavailable 3=Degraded) |
+| 317 | Diag | RouteOwner | uint32 | 0 | 3 | 0 | 진단 경로 소유 해석(0=None 1=SGW 2=DCM 3=RuntimeOwner) |
+| 318 | Diag | ResponseKind | uint32 | 0 | 4 | 0 | 진단 응답 분류(0=None 1=Positive 2=Negative 3=Timeout 4=Unavailable) |
+| 319 | Diag | ReasonCode | uint32 | 0 | 65535 | 0 | 진단 판정 근거 코드 |
 ---

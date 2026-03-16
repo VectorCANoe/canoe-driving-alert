@@ -10,10 +10,43 @@ variables
   int gSeatBeltWarnLvl;
   int gCabinTemp;
   int gAirQualityIndex;
+  dword gSeatBeltRxMs;
+  dword gCabinAirRxMs;
+  int gLastSeatBeltInputStale;
+  int gLastCabinAirInputStale;
   int gLastOccupancyState;
   int gLastAirQualityState;
   int gLastCabinAlertState;
   int gLastPresenceScore;
+}
+
+void traceCsmInputHealth(int seatBeltInputStale, int cabinAirInputStale)
+{
+  if (seatBeltInputStale != gLastSeatBeltInputStale)
+  {
+    if (seatBeltInputStale == 1)
+    {
+      write("[CSM] seat-belt input stale");
+    }
+    else
+    {
+      write("[CSM] seat-belt input restored");
+    }
+    gLastSeatBeltInputStale = seatBeltInputStale;
+  }
+
+  if (cabinAirInputStale != gLastCabinAirInputStale)
+  {
+    if (cabinAirInputStale == 1)
+    {
+      write("[CSM] cabin-air input stale");
+    }
+    else
+    {
+      write("[CSM] cabin-air input restored");
+    }
+    gLastCabinAirInputStale = cabinAirInputStale;
+  }
 }
 
 on start
@@ -22,6 +55,10 @@ on start
   gSeatBeltWarnLvl = 0;
   gCabinTemp = 24;
   gAirQualityIndex = 90;
+  gSeatBeltRxMs = 0;
+  gCabinAirRxMs = 0;
+  gLastSeatBeltInputStale = 0;
+  gLastCabinAirInputStale = 0;
   gLastOccupancyState = -1;
   gLastAirQualityState = -1;
   gLastCabinAlertState = -1;
@@ -33,34 +70,59 @@ on start
 on timer tCabinSensingCycle
 {
   message frmCabinSensingStateMsg mCabin;
+  int seatBeltInputStale;
+  int cabinAirInputStale;
+  int rearSeatBelt;
+  int seatBeltWarnLvl;
+  int cabinTemp;
+  int airQualityIndex;
   int occupancyState;
   int airQualityState;
   int cabinAlertState;
   int presenceScore;
 
-  occupancyState = (gRearSeatBelt > 0) ? 2 : 1;
+  seatBeltInputStale = (ethIsRecentTick(gSeatBeltRxMs, 300) == 1) ? 0 : 1;
+  cabinAirInputStale = (ethIsRecentTick(gCabinAirRxMs, 300) == 1) ? 0 : 1;
+  traceCsmInputHealth(seatBeltInputStale, cabinAirInputStale);
+
+  rearSeatBelt = gRearSeatBelt;
+  seatBeltWarnLvl = gSeatBeltWarnLvl;
+  cabinTemp = gCabinTemp;
+  airQualityIndex = gAirQualityIndex;
+  if (seatBeltInputStale == 1)
+  {
+    rearSeatBelt = 0;
+    seatBeltWarnLvl = 0;
+  }
+  if (cabinAirInputStale == 1)
+  {
+    cabinTemp = 24;
+    airQualityIndex = 90;
+  }
+
+  occupancyState = (rearSeatBelt > 0) ? 2 : 1;
   airQualityState = 0;
-  if (gAirQualityIndex < 70)
+  if (airQualityIndex < 70)
   {
     airQualityState = 2;
   }
-  else if (gAirQualityIndex < 85)
+  else if (airQualityIndex < 85)
   {
     airQualityState = 1;
   }
 
   cabinAlertState = 0;
-  if (gSeatBeltWarnLvl >= 2 || airQualityState >= 2)
+  if (seatBeltWarnLvl >= 2 || airQualityState >= 2)
   {
     cabinAlertState = 2;
   }
-  else if (gSeatBeltWarnLvl == 1 || airQualityState == 1)
+  else if (seatBeltWarnLvl == 1 || airQualityState == 1)
   {
     cabinAlertState = 1;
   }
 
-  presenceScore = 50 + (gRearSeatBelt * 10);
-  if (gCabinTemp >= 30)
+  presenceScore = 50 + (rearSeatBelt * 10);
+  if (cabinTemp >= 30)
   {
     presenceScore = clampRange(presenceScore + 20, 0, 100);
   }
@@ -81,9 +143,9 @@ on timer tCabinSensingCycle
           mCabin.AirQualityState,
           mCabin.CabinAlertState,
           mCabin.CabinPresenceScore,
-          gRearSeatBelt,
-          gAirQualityIndex,
-          gCabinTemp);
+          rearSeatBelt,
+          airQualityIndex,
+          cabinTemp);
     gLastOccupancyState = mCabin.OccupancyState;
     gLastAirQualityState = mCabin.AirQualityState;
     gLastCabinAlertState = mCabin.CabinAlertState;
@@ -97,12 +159,14 @@ on message frmSeatBeltStateMsg
 {
   gRearSeatBelt = clampRange((int)this.RearSeatBelt, 0, 3);
   gSeatBeltWarnLvl = clampRange((int)this.SeatBeltWarnLvl, 0, 3);
+  gSeatBeltRxMs = getSimulationTimeMs();
 }
 
 on message frmCabinAirStateMsg
 {
   gCabinTemp = clampRange((int)this.CabinTemp, 0, 100);
   gAirQualityIndex = clampRange((int)this.AirQualityIndex, 0, 255);
+  gCabinAirRxMs = getSimulationTimeMs();
 }
 
 on stopMeasurement

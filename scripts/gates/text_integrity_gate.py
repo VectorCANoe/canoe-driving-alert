@@ -12,8 +12,8 @@ operator docs, Python surface strings, and CAPL sources before commit/push.
 """
 from __future__ import annotations
 
-import os
 import re
+import os
 from pathlib import Path
 
 
@@ -48,6 +48,7 @@ EXCLUDE_DIRS = {
     "Logs",
     "obj",
     "bin",
+    "archive",
     "reference",
     "site",
 }
@@ -61,6 +62,7 @@ EXCLUDE_PATH_PARTS = {
 EXEMPT_LITERAL_SENTINEL_FILES = {
     Path("scripts/gates/cfg_hygiene_gate.py"),
     Path("canoe/scripts/fix_cfg_paths.py"),
+    Path("canoe/AGENT/canoe/scripts/fix_cfg_paths.py"),
 }
 
 QUESTION_RUN_RE = re.compile(r"\?{3,}")
@@ -81,7 +83,7 @@ def should_scan(path: Path) -> bool:
 
 def iter_scan_files() -> list[Path]:
     files: list[Path] = []
-    for dirpath, dirnames, filenames in os.walk(ROOT, topdown=True):
+    for dirpath, dirnames, filenames in os.walk(ROOT, topdown=True, onerror=lambda _e: None):
         dirnames[:] = [name for name in dirnames if name not in EXCLUDE_DIRS]
         base = Path(dirpath)
         for filename in filenames:

@@ -1,4 +1,4 @@
-﻿includes
+includes
 {
   #include "..\\common\\CAPL_COMMON.cin"
 }
@@ -9,9 +9,58 @@ variables
   int gEngineRpm;
   int gOilTemp;
   int gDriveMode;
+  int gDriveState;
+  dword gEngineTempRxMs;
+  dword gDriveModeRxMs;
+  dword gVehicleRxMs;
+  int gLastEngineTempInputStale;
+  int gLastDriveModeInputStale;
+  int gLastVehicleInputStale;
   int gLastState;
   long gLastPumpRpm;
   int gLastPressure;
+}
+
+void traceEopInputHealth(int engineTempInputStale, int driveModeInputStale, int vehicleInputStale)
+{
+  if (engineTempInputStale != gLastEngineTempInputStale)
+  {
+    if (engineTempInputStale == 1)
+    {
+      write("[EOP] engine-temp input stale");
+    }
+    else
+    {
+      write("[EOP] engine-temp input restored");
+    }
+    gLastEngineTempInputStale = engineTempInputStale;
+  }
+
+  if (driveModeInputStale != gLastDriveModeInputStale)
+  {
+    if (driveModeInputStale == 1)
+    {
+      write("[EOP] drive-mode input stale");
+    }
+    else
+    {
+      write("[EOP] drive-mode input restored");
+    }
+    gLastDriveModeInputStale = driveModeInputStale;
+  }
+
+  if (vehicleInputStale != gLastVehicleInputStale)
+  {
+    if (vehicleInputStale == 1)
+    {
+      write("[EOP] vehicle input stale");
+    }
+    else
+    {
+      write("[EOP] vehicle input restored");
+    }
+    gLastVehicleInputStale = vehicleInputStale;
+  }
 }
 
 on start
@@ -19,6 +68,13 @@ on start
   gEngineRpm = 0;
   gOilTemp = 20;
   gDriveMode = 0;
+  gDriveState = 0;
+  gEngineTempRxMs = 0;
+  gDriveModeRxMs = 0;
+  gVehicleRxMs = 0;
+  gLastEngineTempInputStale = 0;
+  gLastDriveModeInputStale = 0;
+  gLastVehicleInputStale = 0;
   gLastState = -1;
   gLastPumpRpm = -1;
   gLastPressure = -1;
@@ -30,28 +86,63 @@ on message frmEngineSpeedTempMsg
 {
   gEngineRpm = clampRange((int)this.EngineRpm, 0, 65535);
   gOilTemp = clampRange((int)this.OilTemp, 0, 255);
+  gEngineTempRxMs = getSimulationTimeMs();
 }
 
 on message frmVehicleModeMsg
 {
   gDriveMode = clampRange((int)this.DriveMode, 0, 7);
+  gDriveModeRxMs = getSimulationTimeMs();
+}
+
+on message frmVehicleStateCanMsg
+{
+  gDriveState = clampRange((int)this.gDriveState, 0, 3);
+  gVehicleRxMs = getSimulationTimeMs();
 }
 
 on timer tEopCycle
 {
   message frmEopStateMsg mEop;
+  int engineTempInputStale;
+  int driveModeInputStale;
+  int vehicleInputStale;
   int driveState;
+  int engineRpm;
+  int oilTemp;
+  int driveMode;
   int eopState;
   long pumpRpm;
   int oilPressure;
   int tempPenalty;
 
-  driveState = clampRange((int)@Core::driveStateNorm, 0, 3);
+  engineTempInputStale = (ethIsRecentTick(gEngineTempRxMs, 300) == 1) ? 0 : 1;
+  driveModeInputStale = (ethIsRecentTick(gDriveModeRxMs, 300) == 1) ? 0 : 1;
+  vehicleInputStale = (ethIsRecentTick(gVehicleRxMs, 300) == 1) ? 0 : 1;
+  traceEopInputHealth(engineTempInputStale, driveModeInputStale, vehicleInputStale);
 
-  if (gEngineRpm > 0 || driveState > 0)
+  engineRpm = gEngineRpm;
+  oilTemp = gOilTemp;
+  driveMode = gDriveMode;
+  driveState = gDriveState;
+  if (engineTempInputStale == 1)
+  {
+    engineRpm = 0;
+    oilTemp = 20;
+  }
+  if (driveModeInputStale == 1)
+  {
+    driveMode = 0;
+  }
+  if (vehicleInputStale == 1)
+  {
+    driveState = (engineRpm > 0) ? 3 : 0;
+  }
+
+  if (engineRpm > 0 || driveState > 0)
   {
     eopState = 2;
-    pumpRpm = 800 + (gEngineRpm / 4) + (gDriveMode * 100);
+    pumpRpm = 800 + (engineRpm / 4) + (driveMode * 100);
   }
   else
   {
@@ -59,8 +150,8 @@ on timer tEopCycle
     pumpRpm = 0;
   }
 
-  tempPenalty = (gOilTemp > 100) ? (gOilTemp - 100) : 0;
-  oilPressure = (eopState == 0) ? 0 : clampRange(80 + (gEngineRpm / 60) - tempPenalty, 0, 255);
+  tempPenalty = (oilTemp > 100) ? (oilTemp - 100) : 0;
+  oilPressure = (eopState == 0) ? 0 : clampRange(80 + (engineRpm / 60) - tempPenalty, 0, 255);
 
   mEop.EopState = clampRange(eopState, 0, 7);
   mEop.PumpRpm = clampRange((int)pumpRpm, 0, 65535);
@@ -75,7 +166,7 @@ on timer tEopCycle
           mEop.EopState,
           mEop.PumpRpm,
           mEop.OilPressure,
-          gOilTemp);
+          oilTemp);
     gLastState = mEop.EopState;
     gLastPumpRpm = mEop.PumpRpm;
     gLastPressure = mEop.OilPressure;

@@ -6,51 +6,104 @@ includes
 variables
 {
   msTimer tLidarCycle;
-  long gEthSocket;
-  char gEthRxBuffer[64];
   int gObjectConfidence;
   int gObjectEventCode;
   int gObjectTrackValid;
   int gObjectFailSafeMode;
+  dword gObjectSafetyRxTsMs;
+  int gWarningPathStatus;
+  int gE2eHealthState;
+  int gFailSafeMode;
+  dword gFailSafeRxTsMs;
   int gLastHealth;
   int gLastDetected;
   int gLastFreeSpaceClass;
   int gLastConfidence;
   int gLastRangeBucket;
+  int gLastPathReady;
+  int gLastObjectSafetyInputStale;
+}
+
+int lidarPathReady()
+{
+  if (ethIsRecentTick(gFailSafeRxTsMs, 300) == 0)
+  {
+    return 0;
+  }
+  if (gWarningPathStatus >= 2 || gE2eHealthState == 0 || gFailSafeMode >= 2)
+  {
+    return 0;
+  }
+  return 1;
+}
+
+void traceLidarInputHealth(int objectSafetyInputStale)
+{
+  if (objectSafetyInputStale != gLastObjectSafetyInputStale)
+  {
+    if (objectSafetyInputStale == 1)
+    {
+      write("[LDR] object-safety input stale");
+    }
+    else
+    {
+      write("[LDR] object-safety input restored");
+    }
+    gLastObjectSafetyInputStale = objectSafetyInputStale;
+  }
 }
 
 void publishLidarState()
 {
   message frmLidarStateMsg mLidar;
+  int objectSafetyInputStale;
   int health;
   int targetDetected;
   int freeSpaceClass;
   int rangeBucket;
+  int objectConfidence;
+  int objectEventCode;
+  int objectTrackValid;
+  int objectFailSafeMode;
+  int pathReady;
 
-  targetDetected = clampRange(gObjectTrackValid, 0, 1);
+  objectSafetyInputStale = (ethIsRecentTick(gObjectSafetyRxTsMs, 300) == 1) ? 0 : 1;
+  traceLidarInputHealth(objectSafetyInputStale);
 
-  if (gObjectFailSafeMode >= 2)
+  objectConfidence = gObjectConfidence;
+  objectEventCode = gObjectEventCode;
+  objectTrackValid = gObjectTrackValid;
+  objectFailSafeMode = gObjectFailSafeMode;
+  pathReady = lidarPathReady();
+
+  if (objectSafetyInputStale == 1)
+  {
+    objectConfidence = 0;
+    objectEventCode = 0;
+    objectTrackValid = 0;
+    objectFailSafeMode = 0;
+  }
+
+  targetDetected = clampRange(objectTrackValid, 0, 1);
+
+  if (pathReady == 0 || objectSafetyInputStale == 1 || objectFailSafeMode >= 2)
   {
     health = 0;
   }
-  else if (gObjectConfidence >= 70)
-  {
-    health = 2;
-  }
-  else if (gObjectConfidence >= 30)
+  else if (objectTrackValid == 1 && objectConfidence < 40)
   {
     health = 1;
   }
   else
   {
-    health = 0;
+    health = 2;
   }
 
-  if (gObjectConfidence >= 80)
+  if (targetDetected == 1 && objectConfidence >= 80)
   {
     freeSpaceClass = 2;
   }
-  else if (gObjectConfidence >= 40)
+  else if (targetDetected == 1 && objectConfidence >= 40)
   {
     freeSpaceClass = 1;
   }
@@ -59,77 +112,65 @@ void publishLidarState()
     freeSpaceClass = 0;
   }
 
-  rangeBucket = clampRange((gObjectEventCode & 0xFF), 0, 255);
+  rangeBucket = clampRange((objectEventCode & 0xFF), 0, 255);
+  if (pathReady == 0)
+  {
+    health = 0;
+    targetDetected = 0;
+    freeSpaceClass = 0;
+    objectConfidence = 0;
+    rangeBucket = 0;
+  }
 
   mLidar.LidarHealth = clampRange(health, 0, 3);
   mLidar.TargetDetected = targetDetected;
   mLidar.FreeSpaceClass = clampRange(freeSpaceClass, 0, 3);
-  mLidar.Confidence = clampRange(gObjectConfidence, 0, 100);
+  mLidar.Confidence = clampRange(objectConfidence, 0, 100);
   mLidar.RangeBucket = rangeBucket;
   output(mLidar);
 
-  if (health != gLastHealth ||
+  if (pathReady != gLastPathReady ||
+      health != gLastHealth ||
       targetDetected != gLastDetected ||
       freeSpaceClass != gLastFreeSpaceClass ||
-      gObjectConfidence != gLastConfidence ||
+      objectConfidence != gLastConfidence ||
       rangeBucket != gLastRangeBucket)
   {
-    write("[LDR] health=%d target=%d free=%d conf=%d range=%d failSafe=%d",
+    write("[LDR] path=%d health=%d target=%d free=%d conf=%d range=%d failSafe=%d",
+          pathReady,
           health,
           targetDetected,
           freeSpaceClass,
-          gObjectConfidence,
+          objectConfidence,
           rangeBucket,
-          gObjectFailSafeMode);
+          objectFailSafeMode);
+    gLastPathReady = pathReady;
     gLastHealth = health;
     gLastDetected = targetDetected;
     gLastFreeSpaceClass = freeSpaceClass;
-    gLastConfidence = gObjectConfidence;
+    gLastConfidence = objectConfidence;
     gLastRangeBucket = rangeBucket;
   }
 }
 
-void OnUdpReceiveFrom(dword socket, long result, dword address, dword port, char buffer[], dword count)
-{
-  int msgId;
-  int payload3;
-
-  if (socket != gEthSocket)
-  {
-    return;
-  }
-  if (result == 0)
-  {
-    msgId = ethFrameMsgId(buffer, count);
-    if (msgId == ethMsgObjectSafety() && ethFramePayloadLen(count) >= 4)
-    {
-      payload3 = ethGetU8(buffer, 3);
-      gObjectConfidence = clampRange(ethGetU8(buffer, 0), 0, 100);
-      gObjectEventCode = clampRange(ethGetU16Le(buffer, 1), 0, 65535);
-      gObjectFailSafeMode = clampRange(payload3 & 0x3, 0, 2);
-      gObjectTrackValid = clampRange((payload3 >> 2) & 0x1, 0, 1);
-    }
-  }
-
-  ethArmReceive(gEthSocket, gEthRxBuffer, elcount(gEthRxBuffer));
-}
-
 on start
 {
-  gEthSocket = ethOpenDefaultSocket();
   gObjectConfidence = 0;
   gObjectEventCode = 0;
   gObjectTrackValid = 0;
   gObjectFailSafeMode = 0;
+  gObjectSafetyRxTsMs = 0;
+  gWarningPathStatus = 1;
+  gE2eHealthState = 1;
+  gFailSafeMode = 1;
+  gFailSafeRxTsMs = 0;
   gLastHealth = -1;
   gLastDetected = -1;
   gLastFreeSpaceClass = -1;
   gLastConfidence = -1;
   gLastRangeBucket = -1;
-  if (gEthSocket != ethInvalidSocket())
-  {
-    ethStartReceiver(gEthSocket, gEthRxBuffer, elcount(gEthRxBuffer));
-  }
+  gLastPathReady = -1;
+  gLastObjectSafetyInputStale = 0;
   setTimer(tLidarCycle, 100);
   write("[LDR] start");
 }
@@ -140,9 +181,24 @@ on timer tLidarCycle
   setTimer(tLidarCycle, 100);
 }
 
+on message frmLidarInputMsg
+{
+  gObjectTrackValid = clampRange((int)this.TargetDetected, 0, 1);
+  gObjectConfidence = clampRange((int)this.Confidence, 0, 100);
+  gObjectEventCode = clampRange((int)this.EventCode, 0, 255);
+  gObjectSafetyRxTsMs = getSimulationTimeMs();
+}
+
+on message frmAdasDomainStateMsg
+{
+  gWarningPathStatus = clampRange((int)this.WarningPathStatus, 0, 2);
+  gE2eHealthState = clampRange((int)this.E2eHealthState, 0, 2);
+  gFailSafeMode = clampRange((int)this.FailSafeMode, 0, 2);
+  gObjectFailSafeMode = gFailSafeMode;
+  gFailSafeRxTsMs = getSimulationTimeMs();
+}
+
 on stopMeasurement
 {
   cancelTimer(tLidarCycle);
-  ethCloseSocket(gEthSocket);
-  gEthSocket = ethInvalidSocket();
 }

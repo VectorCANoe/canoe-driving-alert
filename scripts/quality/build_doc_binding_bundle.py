@@ -18,6 +18,7 @@ from collections import Counter
 from pathlib import Path
 
 
+REPO_ROOT = Path(__file__).resolve().parents[2]
 DOC_SPECS = {
     # Accept canonical test IDs only:
     # - *_NNN   (e.g. UT_ADAS_001, ST_BASE_PT_001)
@@ -29,7 +30,20 @@ DOC_SPECS = {
 }
 
 
+def _repo_path(path: Path) -> Path:
+    return path if path.is_absolute() else (REPO_ROOT / path)
+
+
+def _rel(path: Path) -> str:
+    path = _repo_path(path)
+    try:
+        return str(path.relative_to(REPO_ROOT)).replace("\\", "/")
+    except ValueError:
+        return str(path).replace("\\", "/")
+
+
 def load_doc_ids(doc_path: Path, pattern: re.Pattern[str]) -> list[str]:
+    doc_path = _repo_path(doc_path)
     if not doc_path.exists():
         return []
     text = doc_path.read_text(encoding="utf-8", errors="ignore")
@@ -44,6 +58,7 @@ def load_doc_ids(doc_path: Path, pattern: re.Pattern[str]) -> list[str]:
 
 
 def load_scored_rows(path: Path) -> list[dict[str, str]]:
+    path = _repo_path(path)
     if not path.exists():
         return []
     rows: list[dict[str, str]] = []
@@ -88,6 +103,11 @@ def build_parser() -> argparse.ArgumentParser:
 
 def main() -> int:
     args = build_parser().parse_args()
+    args.evidence_root = _repo_path(args.evidence_root)
+    args.docs_root = _repo_path(args.docs_root)
+    args.output_csv = _repo_path(args.output_csv)
+    args.output_json = _repo_path(args.output_json)
+    args.output_md = _repo_path(args.output_md)
     now = dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
     output_rows: list[dict[str, str]] = []
@@ -100,10 +120,10 @@ def main() -> int:
         doc_path = args.docs_root / doc_name
         doc_ids = load_doc_ids(doc_path, pattern)
         if not doc_path.exists():
-            missing_docs.append(str(doc_path))
+            missing_docs.append(_rel(doc_path))
 
         scored_path = find_scored_csv(args.evidence_root, tier, args.run_id)
-        scored_sources[tier] = str(scored_path)
+        scored_sources[tier] = _rel(scored_path)
         scored_rows = load_scored_rows(scored_path)
         scored_map = {
             (row.get("test_id") or "").strip(): row
@@ -204,8 +224,8 @@ def main() -> int:
     payload = {
         "generated_at": now,
         "run_id": args.run_id,
-        "docs_root": str(args.docs_root),
-        "evidence_root": str(args.evidence_root),
+        "docs_root": _rel(args.docs_root),
+        "evidence_root": _rel(args.evidence_root),
         "scored_sources": scored_sources,
         "missing_docs": missing_docs,
         "summary": {
@@ -223,8 +243,8 @@ def main() -> int:
         "",
         f"- Generated: {now}",
         f"- Run ID: `{args.run_id}`",
-        f"- Docs Root: `{args.docs_root}`",
-        f"- Evidence Root: `{args.evidence_root}`",
+        f"- Docs Root: `{_rel(args.docs_root)}`",
+        f"- Evidence Root: `{_rel(args.evidence_root)}`",
         "",
         "## Summary",
         f"- Total Rows: {len(output_rows)}",
@@ -244,8 +264,9 @@ def main() -> int:
     lines += [
         "",
         "## Output",
-        f"- CSV: `{args.output_csv}`",
-        f"- JSON: `{args.output_json}`",
+        f"- CSV: `{_rel(args.output_csv)}`",
+        f"- JSON: `{_rel(args.output_json)}`",
+        f"- MD: `{_rel(args.output_md)}`",
     ]
     args.output_md.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
@@ -254,9 +275,9 @@ def main() -> int:
         f"ready={status_counter['READY']} doc_only={status_counter['DOC_ONLY']} "
         f"evidence_only={status_counter['EVIDENCE_ONLY']}"
     )
-    print(f"[OUT] {args.output_csv}")
-    print(f"[OUT] {args.output_json}")
-    print(f"[OUT] {args.output_md}")
+    print(f"[OUT] {_rel(args.output_csv)}")
+    print(f"[OUT] {_rel(args.output_json)}")
+    print(f"[OUT] {_rel(args.output_md)}")
     return 0
 
 

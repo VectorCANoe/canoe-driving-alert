@@ -273,6 +273,51 @@ BO_ 479 frmTrailerCtrlStateMsg: 4 TRM
  SG_ TurnLampState        : 24|2@1+ (1,0) [0|3] "" ADAS,CLU,VCU
  SG_ RearRiskLevel        : 26|6@1+ (1,0) [0|63] "" ADAS,CLU,VCU
 
+BO_ 486 frmAdasDomainStateMsg: 8 ADAS
+ SG_ WarningPathStatus    : 0|2@1+  (1,0) [0|3] "" CLU,SCC,AEB,BCW,LCA,LDWS_LKAS,FCAM,FRADAR,LDR,SRR_FL,SRR_FR,SRR_RL,SRR_RR
+ SG_ E2eHealthState       : 2|2@1+  (1,0) [0|3] "" CLU,SCC,AEB,BCW,LCA,LDWS_LKAS,FCAM,FRADAR,LDR,SRR_FL,SRR_FR,SRR_RL,SRR_RR
+ SG_ FailSafeMode         : 4|2@1+  (1,0) [0|3] "" CLU,SCC,AEB,BCW,LCA,LDWS_LKAS,FCAM,FRADAR,LDR,SRR_FL,SRR_FR,SRR_RL,SRR_RR
+ SG_ DecelAssistReq       : 6|1@1+  (1,0) [0|1] "" SCC,FCA
+ SG_ EmergencyContext     : 8|2@1+  (1,0) [0|3] "" SCC
+ SG_ SelectedAlertLevel   : 10|3@1+ (1,0) [0|7] "" SCC,FCA,BCM,IVI,CLU
+ SG_ ObjectRiskClass      : 13|3@1+ (1,0) [0|7] "" SCC,FCA
+ SG_ RiskLevel            : 16|8@1+ (1,0) [0|100] "" SCC
+ SG_ TtcBucket            : 24|8@1+ (1,0) [0|255] "" SCC,FCA
+ SG_ SelectedAlertType    : 32|4@1+ (1,0) [0|15] "" SCC,BCM,IVI
+ SG_ TimeoutClear         : 36|1@1+ (1,0) [0|1] "" CLU,BCM,IVI
+
+BO_ 487 frmFcamInputMsg: 4 TEST_SCN
+ SG_ ObjectTrackValid     : 0|1@1+  (1,0) [0|1] "" FCAM
+ SG_ Confidence           : 8|8@1+  (1,0) [0|100] "%" FCAM
+
+BO_ 488 frmFradarInputMsg: 4 TEST_SCN
+ SG_ ObjectTrackValid     : 0|1@1+  (1,0) [0|1] "" FRADAR
+ SG_ DistanceBucket       : 8|8@1+  (1,0) [0|255] "" FRADAR
+ SG_ RelSpeedBucket       : 16|8@1+ (1,0) [0|255] "" FRADAR
+ SG_ Confidence           : 24|8@1+ (1,0) [0|100] "%" FRADAR
+
+BO_ 489 frmLidarInputMsg: 4 TEST_SCN
+ SG_ TargetDetected       : 0|1@1+  (1,0) [0|1] "" LDR
+ SG_ Confidence           : 8|8@1+  (1,0) [0|100] "%" LDR
+ SG_ RangeBucket          : 16|8@1+ (1,0) [0|255] "" LDR
+ SG_ EventCode            : 24|8@1+ (1,0) [0|255] "" LDR
+
+BO_ 490 frmSrrFlInputMsg: 3 TEST_SCN
+ SG_ MergeConflict        : 0|1@1+  (1,0) [0|1] "" SRR_FL
+ SG_ RiskClass            : 8|3@1+  (1,0) [0|7] "" SRR_FL
+
+BO_ 491 frmSrrFrInputMsg: 3 TEST_SCN
+ SG_ MergeConflict        : 0|1@1+  (1,0) [0|1] "" SRR_FR
+ SG_ RiskClass            : 8|3@1+  (1,0) [0|7] "" SRR_FR
+
+BO_ 492 frmSrrRlInputMsg: 3 TEST_SCN
+ SG_ MergeConflict        : 0|1@1+  (1,0) [0|1] "" SRR_RL
+ SG_ RiskClass            : 8|3@1+  (1,0) [0|7] "" SRR_RL
+
+BO_ 493 frmSrrRrInputMsg: 3 TEST_SCN
+ SG_ MergeConflict        : 0|1@1+  (1,0) [0|1] "" SRR_RR
+ SG_ RiskClass            : 8|3@1+  (1,0) [0|7] "" SRR_RR
+
 BO_ 480 frmAdasDiagReqMsg: 3 TEST_SCN
  SG_ AdasDiagServiceId : 0|8@1+ (1,0) [0|255] "" ADAS
  SG_ AdasDiagDidHigh   : 8|8@1+ (1,0) [0|255] "" ADAS
@@ -393,6 +438,14 @@ CM_ BO_ 476 "Comm_222: Surround park master frame derived from surround parking 
 CM_ BO_ 477 "Comm_223: Highway pilot readiness frame derived from SCC/LKAS/DMS context.";
 CM_ BO_ 478 "Comm_224: Lidar state frame derived from object safety and free-space context.";
 CM_ BO_ 479 "Comm_225: Trailer control state frame derived from rear radar and vehicle stability context.";
+CM_ BO_ 486 "Comm_226: ADAS domain state fanout for non-backbone ADAS leaf consumers.";
+CM_ BO_ 487 "Comm_227: FCAM sensor input frame from SIL stimulus into ADAS CAN domain.";
+CM_ BO_ 488 "Comm_228: Front radar sensor input frame from SIL stimulus into ADAS CAN domain.";
+CM_ BO_ 489 "Comm_229: Lidar sensor input frame from SIL stimulus into ADAS CAN domain.";
+CM_ BO_ 490 "Comm_230: Front-left side radar input frame from SIL stimulus into ADAS CAN domain.";
+CM_ BO_ 491 "Comm_231: Front-right side radar input frame from SIL stimulus into ADAS CAN domain.";
+CM_ BO_ 492 "Comm_232: Rear-left side radar input frame from SIL stimulus into ADAS CAN domain.";
+CM_ BO_ 493 "Comm_233: Rear-right side radar input frame from SIL stimulus into ADAS CAN domain.";
 CM_ BO_ 480 "ADAS runtime: diagnostic request.";
 CM_ BO_ 481 "ADAS runtime: diagnostic response.";
 
@@ -429,6 +482,14 @@ BA_ "GenMsgCycleTime" BO_ 476 100;
 BA_ "GenMsgCycleTime" BO_ 477 100;
 BA_ "GenMsgCycleTime" BO_ 478 100;
 BA_ "GenMsgCycleTime" BO_ 479 100;
+BA_ "GenMsgCycleTime" BO_ 486 50;
+BA_ "GenMsgCycleTime" BO_ 487 100;
+BA_ "GenMsgCycleTime" BO_ 488 100;
+BA_ "GenMsgCycleTime" BO_ 489 100;
+BA_ "GenMsgCycleTime" BO_ 490 100;
+BA_ "GenMsgCycleTime" BO_ 491 100;
+BA_ "GenMsgCycleTime" BO_ 492 100;
+BA_ "GenMsgCycleTime" BO_ 493 100;
 BA_ "GenMsgCycleTime" BO_ 480 0;
 BA_ "GenMsgCycleTime" BO_ 481 0;
 

@@ -6,6 +6,15 @@ includes
 variables
 {
   msTimer tFcaCycle;
+  int gObjectRiskClass;
+  int gObjectTtcMin;
+  int gObjectTrackValid;
+  int gDecelAssistReq;
+  int gFailSafeMode;
+  dword gObjectRiskRxMs;
+  dword gDecelRxMs;
+  int gLastRiskInputStale;
+  int gLastDecelInputStale;
   int gLastFcwState;
   int gLastAebRequest;
   int gLastObjectRiskClass;
@@ -13,8 +22,12 @@ variables
   int gLastAlertLevel;
 }
 
-int calcFcwState(int objectRiskClass, int objectTtcMin, int decelAssistReq)
+int calcFcwState(int objectTrackValid, int objectRiskClass, int objectTtcMin, int decelAssistReq)
 {
+  if (objectTrackValid == 0)
+  {
+    return 0;
+  }
   if (decelAssistReq == 1 && objectRiskClass >= 4)
   {
     return 3;
@@ -30,25 +43,101 @@ int calcFcwState(int objectRiskClass, int objectTtcMin, int decelAssistReq)
   return 0;
 }
 
+int deriveCollisionAlertLevel(int fcwState, int aebRequest, int decelAssistReq)
+{
+  if (aebRequest == 1)
+  {
+    return 6;
+  }
+  if (decelAssistReq == 1)
+  {
+    return 5;
+  }
+  if (fcwState >= 2)
+  {
+    return 4;
+  }
+  if (fcwState == 1)
+  {
+    return 3;
+  }
+  return 0;
+}
+
+void traceFcaInputHealth(int riskInputStale, int decelInputStale)
+{
+  if (riskInputStale != gLastRiskInputStale)
+  {
+    if (riskInputStale == 1)
+    {
+      write("[FCA] risk input stale");
+    }
+    else
+    {
+      write("[FCA] risk input restored");
+    }
+    gLastRiskInputStale = riskInputStale;
+  }
+
+  if (decelInputStale != gLastDecelInputStale)
+  {
+    if (decelInputStale == 1)
+    {
+      write("[FCA] decel input stale");
+    }
+    else
+    {
+      write("[FCA] decel input restored");
+    }
+    gLastDecelInputStale = decelInputStale;
+  }
+}
+
 void publishFcaState()
 {
   message frmFcaStateMsg mFca;
+  int riskInputStale;
+  int decelInputStale;
+  int objectTrackValid;
   int objectRiskClass;
   int objectTtcMin;
   int decelAssistReq;
+  int failSafeMode;
   int alertLevel;
   int fcwState;
   int aebRequest;
   int ttcBucket;
 
-  objectRiskClass = clampRange((int)@Core::objectRiskClass, 0, 7);
-  objectTtcMin = clampRange((int)@Core::objectTtcMin, 0, 10000);
-  decelAssistReq = (((int)@Core::decelAssistReq) == 1) ? 1 : 0;
-  alertLevel = clampRange((int)@Core::selectedAlertLevel, 0, 7);
+  riskInputStale = (ethIsRecentTick(gObjectRiskRxMs, 300) == 1) ? 0 : 1;
+  decelInputStale = (ethIsRecentTick(gDecelRxMs, 300) == 1) ? 0 : 1;
+  traceFcaInputHealth(riskInputStale, decelInputStale);
 
-  fcwState = calcFcwState(objectRiskClass, objectTtcMin, decelAssistReq);
-  aebRequest = (decelAssistReq == 1 && objectRiskClass >= 4) ? 1 : 0;
-  ttcBucket = clampRange(objectTtcMin / 100, 0, 255);
+  objectTrackValid = gObjectTrackValid;
+  objectRiskClass = gObjectRiskClass;
+  objectTtcMin = gObjectTtcMin;
+  decelAssistReq = gDecelAssistReq;
+  failSafeMode = gFailSafeMode;
+
+  if (riskInputStale == 1)
+  {
+    objectTrackValid = 0;
+    objectRiskClass = 0;
+    objectTtcMin = 10000;
+  }
+  if (decelInputStale == 1)
+  {
+    decelAssistReq = 0;
+    failSafeMode = 0;
+  }
+  if (failSafeMode >= 2)
+  {
+    decelAssistReq = 0;
+  }
+
+  fcwState = calcFcwState(objectTrackValid, objectRiskClass, objectTtcMin, decelAssistReq);
+  aebRequest = (decelAssistReq == 1 && objectRiskClass >= 4 && failSafeMode < 2) ? 1 : 0;
+  ttcBucket = (riskInputStale == 1) ? 255 : clampRange(objectTtcMin / 100, 0, 255);
+  alertLevel = deriveCollisionAlertLevel(fcwState, aebRequest, decelAssistReq);
 
   mFca.FcwState = fcwState;
   mFca.AebRequest = aebRequest;
@@ -80,6 +169,15 @@ void publishFcaState()
 
 on start
 {
+  gObjectRiskClass = 0;
+  gObjectTtcMin = 10000;
+  gObjectTrackValid = 0;
+  gDecelAssistReq = 0;
+  gFailSafeMode = 0;
+  gObjectRiskRxMs = 0;
+  gDecelRxMs = 0;
+  gLastRiskInputStale = 0;
+  gLastDecelInputStale = 0;
   gLastFcwState = -1;
   gLastAebRequest = -1;
   gLastObjectRiskClass = -1;
@@ -93,6 +191,17 @@ on timer tFcaCycle
 {
   publishFcaState();
   setTimer(tFcaCycle, 100);
+}
+
+on message frmAdasDomainStateMsg
+{
+  gObjectRiskClass = clampRange((int)this.ObjectRiskClass, 0, 7);
+  gObjectTtcMin = clampRange((int)this.TtcBucket * 100, 0, 10000);
+  gObjectTrackValid = (gObjectRiskClass > 0 || (int)this.TtcBucket < 255) ? 1 : 0;
+  gDecelAssistReq = clampRange((int)this.DecelAssistReq, 0, 1);
+  gFailSafeMode = clampRange((int)this.FailSafeMode, 0, 2);
+  gObjectRiskRxMs = getSimulationTimeMs();
+  gDecelRxMs = gObjectRiskRxMs;
 }
 
 on stopMeasurement

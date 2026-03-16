@@ -10,9 +10,43 @@ variables
   int gTailgateOpenState;
   int gTailgatePowerState;
   int gTailgatePosition;
+  int gDriveState;
+  dword gTailgateRxMs;
+  dword gVehicleRxMs;
+  int gLastTailgateInputStale;
+  int gLastVehicleInputStale;
   int gLastAssistMode;
   int gLastOpenReq;
   int gLastActuatorCmd;
+}
+
+void tracePtgInputHealth(int tailgateInputStale, int vehicleInputStale)
+{
+  if (tailgateInputStale != gLastTailgateInputStale)
+  {
+    if (tailgateInputStale == 1)
+    {
+      write("[PTG] tailgate input stale");
+    }
+    else
+    {
+      write("[PTG] tailgate input restored");
+    }
+    gLastTailgateInputStale = tailgateInputStale;
+  }
+
+  if (vehicleInputStale != gLastVehicleInputStale)
+  {
+    if (vehicleInputStale == 1)
+    {
+      write("[PTG] vehicle input stale");
+    }
+    else
+    {
+      write("[PTG] vehicle input restored");
+    }
+    gLastVehicleInputStale = vehicleInputStale;
+  }
 }
 
 on start
@@ -21,6 +55,11 @@ on start
   gTailgateOpenState = 0;
   gTailgatePowerState = 0;
   gTailgatePosition = 0;
+  gDriveState = 0;
+  gTailgateRxMs = 0;
+  gVehicleRxMs = 0;
+  gLastTailgateInputStale = 0;
+  gLastVehicleInputStale = 0;
   gLastAssistMode = -1;
   gLastOpenReq = -1;
   gLastActuatorCmd = -1;
@@ -34,30 +73,56 @@ on message frmTailgateStateMsg
   gTailgateOpenState = clampRange((int)this.TailgateOpenState, 0, 1);
   gTailgatePowerState = clampRange((int)this.TailgatePowerState, 0, 3);
   gTailgatePosition = clampRange((int)this.TailgatePosition, 0, 100);
+  gTailgateRxMs = getSimulationTimeMs();
+}
+
+on message frmVehicleStateCanMsg
+{
+  gDriveState = clampRange((int)this.gDriveState, 0, 3);
+  gVehicleRxMs = getSimulationTimeMs();
 }
 
 on timer tPowerTailgateCycle
 {
   message frmPowerTailgateCtrlStateMsg mTailgateCtrl;
   int driveState;
-  int timeoutClear;
+  int tailgateInputStale;
+  int vehicleInputStale;
+  int tailgateLockState;
+  int tailgateOpenState;
+  int tailgatePowerState;
+  int tailgatePosition;
   int assistMode;
   int openRequestState;
   int actuatorCmd;
 
-  driveState = clampRange((int)@Core::driveStateNorm, 0, 3);
-  timeoutClear = clampRange((int)@Core::timeoutClear, 0, 1);
+  tailgateInputStale = (ethIsRecentTick(gTailgateRxMs, 300) == 1) ? 0 : 1;
+  vehicleInputStale = (ethIsRecentTick(gVehicleRxMs, 300) == 1) ? 0 : 1;
+  tracePtgInputHealth(tailgateInputStale, vehicleInputStale);
 
-  assistMode = (gTailgatePowerState > 0) ? 2 : 1;
+  driveState = gDriveState;
+  if (vehicleInputStale == 1)
+  {
+    driveState = 3;
+  }
+
+  tailgateLockState = gTailgateLockState;
+  tailgateOpenState = gTailgateOpenState;
+  tailgatePowerState = gTailgatePowerState;
+  tailgatePosition = gTailgatePosition;
+  if (tailgateInputStale == 1)
+  {
+    tailgateLockState = 1;
+    tailgateOpenState = 0;
+    tailgatePowerState = 0;
+    tailgatePosition = 0;
+  }
+
+  assistMode = (tailgatePowerState > 0) ? 2 : 1;
   openRequestState = 0;
   actuatorCmd = 0;
 
-  if (driveState == 0 && timeoutClear == 1 && gTailgateLockState == 0)
-  {
-    openRequestState = 2;
-    actuatorCmd = clampRange(100 - gTailgatePosition, 0, 100);
-  }
-  else if (gTailgateOpenState == 1)
+  if (driveState == 0 && tailgateOpenState == 1)
   {
     openRequestState = 1;
     actuatorCmd = 0;
@@ -76,7 +141,7 @@ on timer tPowerTailgateCycle
           mTailgateCtrl.TailgateAssistMode,
           mTailgateCtrl.OpenRequestState,
           mTailgateCtrl.TailgateActuatorCmd,
-          gTailgatePosition);
+          tailgatePosition);
     gLastAssistMode = mTailgateCtrl.TailgateAssistMode;
     gLastOpenReq = mTailgateCtrl.OpenRequestState;
     gLastActuatorCmd = mTailgateCtrl.TailgateActuatorCmd;

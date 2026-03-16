@@ -1,0 +1,30 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\common\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+}
+
+export testcase TC_CANOE_IT_022_CHASSIS_BRAKE_BASELINE()
+{
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  if (!launchScenarioAndWait(219, 900, 1300))
+  {
+    return;
+  }
+
+  assertIntEq("chassis-brake-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+  assertIntEq("chassis-brake-drive-state", 0, (long)@Core::driveStateNorm, "driveStateNorm");
+  assertIntEq("chassis-brake-speed", 0, (long)@Core::vehicleSpeedNorm, "vehicleSpeedNorm");
+  assertIntEq("chassis-brake-steer", 0, (long)@Core::steeringInputNorm, "steeringInputNorm");
+  assertIntMin("chassis-brake-pedal", 30, (long)@Core::brakePedalNorm, "brakePedalNorm");
+
+  resetValidationHarnessIfNeeded();
+}

@@ -6,15 +6,53 @@ includes
 variables
 {
   msTimer tRspaCycle;
+  int gVehicleSpeed;
+  int gDriveState;
+  int gTurnLampState;
+  dword gVehicleRxMs;
+  dword gLampRxMs;
+  int gLastVehicleInputStale;
+  int gLastLampInputStale;
   int gLastReady;
   int gLastDirection;
   int gLastBrakeHoldReq;
   int gLastSpeed;
 }
 
+void traceRspaInputHealth(int vehicleInputStale, int lampInputStale)
+{
+  if (vehicleInputStale != gLastVehicleInputStale)
+  {
+    if (vehicleInputStale == 1)
+    {
+      write("[RSPA] vehicle input stale");
+    }
+    else
+    {
+      write("[RSPA] vehicle input restored");
+    }
+    gLastVehicleInputStale = vehicleInputStale;
+  }
+
+  if (lampInputStale != gLastLampInputStale)
+  {
+    if (lampInputStale == 1)
+    {
+      write("[RSPA] lamp input stale");
+    }
+    else
+    {
+      write("[RSPA] lamp input restored");
+    }
+    gLastLampInputStale = lampInputStale;
+  }
+}
+
 void publishRspaState()
 {
   message frmRspaStateMsg mRspa;
+  int vehicleInputStale;
+  int lampInputStale;
   int vehicleSpeed;
   int driveState;
   int turnLampState;
@@ -22,15 +60,28 @@ void publishRspaState()
   int direction;
   int brakeHoldReq;
 
-  vehicleSpeed = clampRange((int)@Core::vehicleSpeedNorm, 0, 255);
-  driveState = clampRange((int)@Core::driveStateNorm, 0, 3);
-  turnLampState = clampRange((int)@CoreState::turnLampState, 0, 3);
+  vehicleInputStale = (ethIsRecentTick(gVehicleRxMs, 300) == 1) ? 0 : 1;
+  lampInputStale = (ethIsRecentTick(gLampRxMs, 300) == 1) ? 0 : 1;
+  traceRspaInputHealth(vehicleInputStale, lampInputStale);
+
+  vehicleSpeed = gVehicleSpeed;
+  driveState = gDriveState;
+  turnLampState = gTurnLampState;
+  if (vehicleInputStale == 1)
+  {
+    vehicleSpeed = 0;
+    driveState = 0;
+  }
+  if (lampInputStale == 1)
+  {
+    turnLampState = 0;
+  }
 
   ready = 0;
   direction = 0;
   brakeHoldReq = 0;
 
-  if (vehicleSpeed <= 5 && driveState >= 2)
+  if (vehicleInputStale == 0 && vehicleSpeed <= 5 && driveState >= 2)
   {
     ready = 1;
   }
@@ -69,6 +120,13 @@ void publishRspaState()
 
 on start
 {
+  gVehicleSpeed = 0;
+  gDriveState = 0;
+  gTurnLampState = 0;
+  gVehicleRxMs = 0;
+  gLampRxMs = 0;
+  gLastVehicleInputStale = 0;
+  gLastLampInputStale = 0;
   gLastReady = -1;
   gLastDirection = -1;
   gLastBrakeHoldReq = -1;
@@ -81,6 +139,19 @@ on timer tRspaCycle
 {
   publishRspaState();
   setTimer(tRspaCycle, 100);
+}
+
+on message frmVehicleStateCanMsg
+{
+  gVehicleSpeed = clampRange((int)this.gVehicleSpeed, 0, 255);
+  gDriveState = clampRange((int)this.gDriveState, 0, 3);
+  gVehicleRxMs = getSimulationTimeMs();
+}
+
+on message frmLampControlMsg
+{
+  gTurnLampState = clampRange((int)this.TurnLampState, 0, 3);
+  gLampRxMs = getSimulationTimeMs();
 }
 
 on stopMeasurement

@@ -1,0 +1,30 @@
+﻿/*@!Encoding:65001*/
+includes
+{
+  #include "..\\common\\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+}
+
+export testcase TC_CANOE_ST_CORE_009_GUIDE_LEFT()
+{
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  if (!launchScenarioAndWait(7, 700, 1200))
+  {
+    return;
+  }
+
+  assertIntEq("st009-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+  assertIntEq("st009-level", 2, (long)@Core::selectedAlertLevel, "selectedAlertLevel");
+  assertIntEq("st009-type", 5, (long)@Core::selectedAlertType, "selectedAlertType");
+  assertIntEq("st009-code", 31, (long)@Cluster::warningTextCode, "warningTextCode");
+  assertIntEq("st009-ambient-pattern", 2, (long)@Body::ambientPattern, "ambientPattern");
+
+  resetValidationHarnessIfNeeded();
+}

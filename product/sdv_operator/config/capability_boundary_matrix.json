@@ -51,15 +51,16 @@
     }
   ],
   "top_level_sections": [
-    "Overview",
-    "Campaign",
+    "Home",
+    "Run",
     "Results",
     "Artifacts",
-    "Automation"
+    "Automation",
+    "Logs"
   ],
   "notes": [
-    "Logs are a support pane, not a first-class product section.",
-    "Campaign profiles define execution defaults, not scheduler ownership.",
+    "Logs are the raw stdout/stderr review surface.",
+    "Execution profiles define defaults, not scheduler ownership.",
     "Surface ECU is the reviewer-facing key; runtime modules remain implementation-facing."
   ]
 }

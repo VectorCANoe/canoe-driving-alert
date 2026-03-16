@@ -1043,6 +1043,7 @@ def main() -> int:
     except Exception as ex:
         print(f"[SHELL] result envelope warning: {ex}")
         return rc
+    return rc
 
 
 if __name__ == "__main__":

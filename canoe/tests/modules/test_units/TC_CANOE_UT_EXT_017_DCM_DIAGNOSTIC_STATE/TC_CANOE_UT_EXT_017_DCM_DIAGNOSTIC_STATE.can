@@ -1,0 +1,32 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\\common\\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+}
+
+export testcase TC_CANOE_UT_EXT_017_DCM_DIAGNOSTIC_STATE()
+{
+  // Verify DCM diagnostic state, SID class, and response interpretation.
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  if (!launchScenarioAndWait(204, 1500, 2100))
+  {
+    return;
+  }
+
+  assertIntEq("scenario-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+  assertIntEq("last-sid", 0x22, (long)@Diag::LastRequestSid, "LastRequestSid");
+  assertIntEq("response-kind", 4, (long)@Diag::ResponseKind, "ResponseKind");
+  assertIntEq("reason-code", 2, (long)@Diag::ReasonCode, "ReasonCode");
+  assertIntEq("response-code", 0x7F, (long)@Diag::LastResponseCode, "LastResponseCode");
+  assertIntEq("response-ok", 0, (long)@Diag::LastResponseOk, "LastResponseOk");
+
+  resetValidationHarnessIfNeeded();
+}

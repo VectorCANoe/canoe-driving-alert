@@ -6,74 +6,192 @@ includes
 variables
 {
   msTimer tDcmCycle;
+  int gNavSessionState;
+  int gNavRouteClass;
+  int gAlertLevel;
+  dword gNavRxMs;
+  dword gNotifRxMs;
   int gSecuritySession;
   int gAuthState;
   int gSecurityFault;
   int gSecurityPolicy;
+  int gLastTraceSession;
+  int gLastTraceAuth;
+  int gLastTraceFault;
+  int gLastTracePolicy;
+  int gLastTraceServiceState;
+  int gLastTraceResponseKind;
+  int gLastTraceReasonCode;
 }
+
+void publishReservedDiagServiceSeam(int diagStage)
+{
+  int serviceState;
+  int responseKind;
+  int reasonCode;
+
+  serviceState = 0;
+  responseKind = 0;
+  reasonCode = 0;
+
+  if (diagStage >= 3)
+  {
+    serviceState = 1;
+    responseKind = 4;
+    reasonCode = 2;
+  }
+  else if (diagStage == 2)
+  {
+    serviceState = 1;
+    responseKind = 2;
+    reasonCode = 3;
+  }
+  else if (diagStage == 1)
+  {
+    serviceState = 2;
+    responseKind = 1;
+    reasonCode = 0;
+  }
+  else if (gSecuritySession > 0 || gAuthState > 0)
+  {
+    serviceState = 3;
+    responseKind = 4;
+    reasonCode = 4;
+  }
+
+  @Diag::ServiceState = serviceState;
+  @Diag::ResponseKind = responseKind;
+  @Diag::ReasonCode = reasonCode;
+  @Diag::LastRequestSid = 0x22;
+  @Diag::LastResponseOk = (responseKind == 1) ? 1 : 0;
+
+  if (responseKind == 1)
+  {
+    @Diag::LastResponseCode = 0x62;
+  }
+  else if (responseKind == 2)
+  {
+    @Diag::LastResponseCode = 0x7F;
+  }
+  else if (responseKind == 3)
+  {
+    @Diag::LastResponseCode = 0x78;
+  }
+  else if (responseKind == 4)
+  {
+    @Diag::LastResponseCode = 0x7F;
+  }
+  else
+  {
+    @Diag::LastResponseCode = 0x00;
+  }
+}
+
 void publishDcmStateTrace()
 {
-  write("[DCM] session=%d path=%d pending=%d sid=0x%X sec=%d auth=%d fault=%d policy=%d",
-        gSecuritySession,
-        gSecurityPolicy,
-        0,
-        0x22,
-        0,
-        gAuthState,
-        gSecurityFault,
-        gSecurityPolicy);
+  int serviceState;
+  int responseKind;
+  int reasonCode;
+
+  serviceState = clampRange((int)@Diag::ServiceState, 0, 3);
+  responseKind = clampRange((int)@Diag::ResponseKind, 0, 4);
+  reasonCode = clampRange((int)@Diag::ReasonCode, 0, 65535);
+  if (gSecuritySession != gLastTraceSession ||
+      gAuthState != gLastTraceAuth ||
+      gSecurityFault != gLastTraceFault ||
+      gSecurityPolicy != gLastTracePolicy ||
+      serviceState != gLastTraceServiceState ||
+      responseKind != gLastTraceResponseKind ||
+      reasonCode != gLastTraceReasonCode)
+  {
+    write("[DCM] session=%d service=%d resp=%d reason=%d auth=%d fault=%d policy=%d",
+          gSecuritySession,
+          serviceState,
+          responseKind,
+          reasonCode,
+          gAuthState,
+          gSecurityFault,
+          gSecurityPolicy);
+    gLastTraceSession = gSecuritySession;
+    gLastTraceAuth = gAuthState;
+    gLastTraceFault = gSecurityFault;
+    gLastTracePolicy = gSecurityPolicy;
+    gLastTraceServiceState = serviceState;
+    gLastTraceResponseKind = responseKind;
+    gLastTraceReasonCode = reasonCode;
+  }
 }
 
 on start
 {
+  gNavSessionState = 0;
+  gNavRouteClass = 0;
+  gAlertLevel = 0;
+  gNavRxMs = 0;
+  gNotifRxMs = 0;
   gSecuritySession = 0;
   gAuthState = 0;
   gSecurityFault = 0;
   gSecurityPolicy = 0;
+  gLastTraceSession = -1;
+  gLastTraceAuth = -1;
+  gLastTraceFault = -1;
+  gLastTracePolicy = -1;
+  gLastTraceServiceState = -1;
+  gLastTraceResponseKind = -1;
+  gLastTraceReasonCode = -1;
+  @Diag::ServiceState = 0;
+  @Diag::ResponseKind = 0;
+  @Diag::ReasonCode = 0;
+  @Diag::LastRequestSid = 0;
+  @Diag::LastResponseCode = 0;
+  @Diag::LastResponseOk = 0;
   setTimer(tDcmCycle, 100);
   write("[DCM] start");
 }
 
 on timer tDcmCycle
 {
-  int roadZone;
+  int diagStage;
+  int routeActive;
   int alertLevel;
   int boundaryAlive;
+  int serviceContext;
   int warningPathStatus;
   int failSafeMode;
 
-  roadZone = clampRange((int)@Infotainment::roadZone, 0, 3);
-  alertLevel = clampRange((int)@Core::selectedAlertLevel, 0, 7);
+  routeActive = (ethIsRecentTick(gNavRxMs, 300) == 1 &&
+                 (gNavSessionState > 0 || gNavRouteClass > 0)) ? 1 : 0;
+  alertLevel = (ethIsRecentTick(gNotifRxMs, 300) == 1) ? gAlertLevel : 0;
   boundaryAlive = clampRange((int)@CoreState::domainBoundaryStatus, 0, 1);
-  warningPathStatus = clampRange((int)@CoreState::warningPathStatus, 0, 2);
-  failSafeMode = clampRange((int)@Core::failSafeMode, 0, 2);
+  warningPathStatus = boundaryAlive == 1 ? clampRange((int)@CoreState::warningPathStatus, 0, 2) : 2;
+  failSafeMode = boundaryAlive == 1 ? clampRange((int)@Core::failSafeMode, 0, 2) : 2;
+  serviceContext = ethHasBoundaryServiceContext(routeActive, alertLevel);
+  diagStage = ethDiagBoundaryStage(routeActive,
+                                   alertLevel,
+                                   boundaryAlive,
+                                   warningPathStatus,
+                                   failSafeMode);
 
   gSecuritySession = 0;
-  if (roadZone > 0 || alertLevel > 0)
+  if (serviceContext == 1)
   {
     gSecuritySession = 1;
   }
-  if (boundaryAlive == 1 && roadZone > 0)
+  if (diagStage == 1 && routeActive == 1)
   {
     gSecuritySession = 2;
   }
 
-  gAuthState = (gSecuritySession > 0) ? 1 : 0;
-  if (failSafeMode == 0 && boundaryAlive == 1)
+  gAuthState = (serviceContext == 1) ? 1 : 0;
+  if (diagStage == 1)
   {
     gAuthState = 2;
   }
 
-  gSecurityFault = 0;
-  if (failSafeMode > 0)
-  {
-    gSecurityFault = 2;
-  }
-  else if (warningPathStatus == 1)
-  {
-    gSecurityFault = 1;
-  }
-  gSecurityPolicy = warningPathStatus;
+  gSecurityFault = ethDiagStageToSecurityFault(diagStage);
+  gSecurityPolicy = ethDiagStageToPolicy(diagStage);
+  publishReservedDiagServiceSeam(diagStage);
   publishDcmStateTrace();
   setTimer(tDcmCycle, 100);
 }
@@ -81,4 +199,17 @@ on timer tDcmCycle
 on stopMeasurement
 {
   cancelTimer(tDcmCycle);
+}
+
+on message frmNavModuleStateMsg
+{
+  gNavSessionState = clampRange((int)this.NavSessionState, 0, 3);
+  gNavRouteClass = clampRange((int)this.NavRouteClass, 0, 3);
+  gNavRxMs = getSimulationTimeMs();
+}
+
+on message frmClusterNotifMsg
+{
+  gAlertLevel = clampRange((int)this.ClusterNotifArg, 0, 7);
+  gNotifRxMs = getSimulationTimeMs();
 }

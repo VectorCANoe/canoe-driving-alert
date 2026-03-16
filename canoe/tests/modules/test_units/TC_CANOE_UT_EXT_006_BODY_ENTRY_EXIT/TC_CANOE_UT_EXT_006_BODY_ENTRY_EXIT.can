@@ -1,0 +1,70 @@
+﻿/*@!Encoding:65001*/
+includes
+{
+  #include "..\\common\\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+  long gAutoDoorState;
+  long gAutoUnlockState;
+  long gDoorApproachScore;
+  long gTailgateAssistMode;
+  long gTailgateOpenReq;
+  long gTailgateActuatorCmd;
+}
+
+on message frmAutoDoorCtrlStateMsg
+{
+  gAutoDoorState = this.AutoDoorState;
+  gAutoUnlockState = this.AutoUnlockState;
+  gDoorApproachScore = this.DoorApproachScore;
+}
+
+on message frmPowerTailgateCtrlStateMsg
+{
+  gTailgateAssistMode = this.TailgateAssistMode;
+  gTailgateOpenReq = this.OpenRequestState;
+  gTailgateActuatorCmd = this.TailgateActuatorCmd;
+}
+
+export testcase TC_CANOE_UT_EXT_006_BODY_ENTRY_EXIT()
+{
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  gAutoDoorState = -1;
+  gAutoUnlockState = -1;
+  gDoorApproachScore = -1;
+  gTailgateAssistMode = -1;
+  gTailgateOpenReq = -1;
+  gTailgateActuatorCmd = -1;
+
+  if (!launchScenarioAndWait(226, 1500, 350))
+  {
+    return;
+  }
+  assertIntEq("body-entry-door-state", 1, gAutoDoorState, "AutoDoorState");
+  assertIntEq("body-entry-door-unlock", 1, gAutoUnlockState, "AutoUnlockState");
+  assertIntEq("body-entry-door-score", 100, gDoorApproachScore, "DoorApproachScore");
+
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  gTailgateAssistMode = -1;
+  gTailgateOpenReq = -1;
+  gTailgateActuatorCmd = -1;
+  if (!launchScenarioAndWait(227, 1500, 350))
+  {
+    return;
+  }
+  assertIntEq("body-entry-tailgate-mode", 2, gTailgateAssistMode, "TailgateAssistMode");
+  assertIntEq("body-entry-tailgate-open", 1, gTailgateOpenReq, "OpenRequestState");
+  assertIntEq("body-entry-tailgate-cmd", 0, gTailgateActuatorCmd, "TailgateActuatorCmd");
+
+  resetValidationHarnessIfNeeded();
+}

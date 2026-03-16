@@ -1,0 +1,57 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\\common\\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+}
+
+export testcase TC_CANOE_IT_CORE_001_BASE_ACTIVATION()
+{
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  if (!launchScenarioAndWait(1, 700, 1000))
+  {
+    return;
+  }
+
+  assertIntEq("idle-scenario-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+  assertIntEq("idle-alert-level", 0, (long)@Core::selectedAlertLevel, "selectedAlertLevel");
+  assertIntEq("idle-warning-code", 0, (long)@Cluster::warningTextCode, "warningTextCode");
+
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  if (!launchScenarioAndWait(2, 700, 1200))
+  {
+    return;
+  }
+
+  assertIntEq("activation-scenario-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+  assertIntEq("activation-alert-level", 3, (long)@Core::selectedAlertLevel, "selectedAlertLevel");
+  assertIntEq("activation-alert-type", 3, (long)@Core::selectedAlertType, "selectedAlertType");
+
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  if (!launchScenarioAndWait(12, 900, 1400))
+  {
+    return;
+  }
+
+  assertIntEq("guard-scenario-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+  assertIntEq("guard-alert-level", 3, (long)@Core::selectedAlertLevel, "selectedAlertLevel");
+  assertIntEq("guard-alert-type", 3, (long)@Core::selectedAlertType, "selectedAlertType");
+  assertIntMin("duplicate-popup-guard", 1, (long)@CoreState::duplicatePopupGuard, "duplicatePopupGuard");
+
+  resetValidationHarnessIfNeeded();
+}

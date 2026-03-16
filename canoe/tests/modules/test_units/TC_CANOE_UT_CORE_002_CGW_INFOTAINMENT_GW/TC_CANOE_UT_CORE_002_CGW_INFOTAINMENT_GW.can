@@ -1,0 +1,51 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\\common\\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+}
+
+export testcase TC_CANOE_UT_CORE_002_CGW_INFOTAINMENT_GW()
+{
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  if (!launchScenarioAndWait(2, 800, 1300))
+  {
+    return;
+  }
+  assertIntEq("info-gw-school-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+  assertIntEq("info-gw-school-zone", 1, (long)@Core::baseZoneContext, "baseZoneContext");
+  assertIntEq("info-gw-school-limit", 30, (long)@Core::speedLimitNorm, "speedLimitNorm");
+
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+  if (!launchScenarioAndWait(7, 800, 1300))
+  {
+    return;
+  }
+  assertIntEq("info-gw-guide-left-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+  assertIntEq("info-gw-guide-left-zone", 3, (long)@Core::baseZoneContext, "baseZoneContext");
+  assertIntEq("info-gw-guide-left-code", 31, (long)@Cluster::warningTextCode, "warningTextCode");
+
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+  if (!launchScenarioAndWait(8, 800, 1300))
+  {
+    return;
+  }
+  assertIntEq("info-gw-guide-right-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+  assertIntEq("info-gw-guide-right-zone", 4, (long)@Core::baseZoneContext, "baseZoneContext");
+  assertIntEq("info-gw-guide-right-code", 32, (long)@Cluster::warningTextCode, "warningTextCode");
+
+  resetValidationHarnessIfNeeded();
+}

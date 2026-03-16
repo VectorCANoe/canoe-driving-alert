@@ -19,6 +19,7 @@ from pathlib import Path
 from typing import Dict, List
 
 
+REPO_ROOT = Path(__file__).resolve().parents[2]
 IN_RE = re.compile(r"\[EVIDENCE_IN\]\s+scenario=(\d+)\s+inputTsMs=(\d+)")
 OUT_PREFIX_RE = re.compile(r"\[EVIDENCE_OUT\]\s+")
 KV_RE = re.compile(r"([A-Za-z][A-Za-z0-9_]*)=(-?\d+)")
@@ -44,6 +45,18 @@ OPTIONAL_OUT_KEYS = (
     "objTtc",
     "objEvent",
 )
+
+
+def _repo_path(path: Path) -> Path:
+    return path if path.is_absolute() else (REPO_ROOT / path)
+
+
+def _rel(path: Path) -> str:
+    path = _repo_path(path)
+    try:
+        return str(path.relative_to(REPO_ROOT)).replace("\\", "/")
+    except ValueError:
+        return str(path).replace("\\", "/")
 
 
 def parse_args() -> argparse.Namespace:
@@ -145,16 +158,16 @@ def derive_comm_verdict(event: Dict[str, int]) -> str:
 
 def main() -> int:
     args = parse_args()
-    template_csv = Path(args.template_csv)
-    raw_log = Path(args.raw_log)
+    template_csv = _repo_path(Path(args.template_csv))
+    raw_log = _repo_path(Path(args.raw_log))
     if not template_csv.exists():
-        print(f"[FAIL] template csv not found: {template_csv}")
+        print(f"[FAIL] template csv not found: {_rel(template_csv)}")
         return 2
     if not raw_log.exists():
-        print(f"[FAIL] raw log not found: {raw_log}")
+        print(f"[FAIL] raw log not found: {_rel(raw_log)}")
         return 2
 
-    output_csv = Path(args.output_csv) if args.output_csv else template_csv.with_name(template_csv.stem + "_filled.csv")
+    output_csv = _repo_path(Path(args.output_csv)) if args.output_csv else template_csv.with_name(template_csv.stem + "_filled.csv")
 
     rows: List[Dict[str, str]] = []
     with template_csv.open("r", encoding="utf-8-sig", newline="") as f:
@@ -191,7 +204,7 @@ def main() -> int:
         writer.writeheader()
         writer.writerows(rows)
 
-    print(f"[EVIDENCE_FILL] rows={len(rows)} updated={updated} output={output_csv}")
+    print(f"[EVIDENCE_FILL] rows={len(rows)} updated={updated} output={_rel(output_csv)}")
     return 0
 
 

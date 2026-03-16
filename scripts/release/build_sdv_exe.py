@@ -12,6 +12,10 @@ import argparse
 import shutil
 import subprocess
 import sys
+from pathlib import Path
+
+if __package__ in {None, ""}:
+    sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from scripts.release.layout import (
     EXE_DIST_ROOT,
@@ -21,6 +25,20 @@ from scripts.release.layout import (
     PYINSTALLER_WORK_ROOT,
     ROOT,
 )
+
+
+def _rel(path: Path) -> str:
+    try:
+        return str(path.relative_to(ROOT)).replace("\\", "/")
+    except ValueError:
+        return str(path).replace("\\", "/")
+
+
+def _display_arg(value: str) -> str:
+    if value == sys.executable:
+        return Path(value).name
+    candidate = Path(value)
+    return _rel(candidate) if candidate.is_absolute() else value
 
 
 def parse_args() -> argparse.Namespace:
@@ -48,7 +66,7 @@ def resolve_pyinstaller_cmd() -> list[str] | None:
 
 
 def run(cmd: list[str]) -> int:
-    print("[RUN]", " ".join(cmd))
+    print("[RUN]", " ".join(_display_arg(arg) for arg in cmd))
     proc = subprocess.run(cmd, cwd=ROOT)
     return proc.returncode
 
@@ -97,7 +115,7 @@ def main() -> int:
         return rc
 
     mode_path = EXE_ONEFILE_PATH if args.mode == "onefile" else EXE_ONEFOLDER_DIR
-    print(f"[OK] build completed: {mode_path}")
+    print(f"[OK] build completed: {_rel(mode_path)}")
     return 0
 
 

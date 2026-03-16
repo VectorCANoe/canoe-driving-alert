@@ -1,0 +1,37 @@
+﻿/*@!Encoding:65001*/
+includes
+{
+  #include "..\\common\\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+}
+
+export testcase TC_CANOE_ST_CORE_006_EXIT_SCHOOL_ZONE()
+{
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  if (!launchScenarioAndWait(2, 700, 1200))
+  {
+    return;
+  }
+
+  assertIntEq("st006-school-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+  assertIntEq("st006-school-level", 3, (long)@Core::selectedAlertLevel, "selectedAlertLevel");
+
+  if (!launchScenarioAndWait(1, 700, 1000))
+  {
+    return;
+  }
+
+  assertIntEq("st006-clear-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+  assertIntEq("st006-clear-level", 0, (long)@Core::selectedAlertLevel, "selectedAlertLevel");
+  assertIntEq("st006-clear-type", 0, (long)@Core::selectedAlertType, "selectedAlertType");
+  assertIntEq("st006-clear-code", 0, (long)@Cluster::warningTextCode, "warningTextCode");
+
+  resetValidationHarnessIfNeeded();
+}

@@ -1,0 +1,30 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\\common\\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+}
+
+export testcase TC_CANOE_UT_CORE_011_ADAS_WARNING_SELECTION()
+{
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  if (!launchScenarioAndWait(207, 700, 1200))
+  {
+    return;
+  }
+
+  assertIntEq("scenario-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+  assertIntEq("selected-alert-level", 3, (long)@Core::selectedAlertLevel, "selectedAlertLevel");
+  assertIntEq("selected-alert-type", 3, (long)@Core::selectedAlertType, "selectedAlertType");
+  assertIntEq("warning-path-status", 0, (long)@CoreState::warningPathStatus, "warningPathStatus");
+  assertIntEq("fail-safe-clear", 0, (long)@Core::failSafeMode, "failSafeMode");
+
+  resetValidationHarnessIfNeeded();
+}

@@ -8,6 +8,21 @@ import datetime as dt
 from pathlib import Path
 
 
+REPO_ROOT = Path(__file__).resolve().parents[2]
+
+
+def _repo_path(path: Path) -> Path:
+    return path if path.is_absolute() else (REPO_ROOT / path)
+
+
+def _rel(path: Path) -> str:
+    path = _repo_path(path)
+    try:
+        return str(path.relative_to(REPO_ROOT)).replace("\\", "/")
+    except ValueError:
+        return str(path).replace("\\", "/")
+
+
 def copy_template_with_run_id(src: Path, dst: Path, run_id: str) -> None:
     text = src.read_text(encoding="utf-8")
     text = text.replace("<run_id>", run_id)
@@ -28,7 +43,7 @@ def main() -> int:
     )
     args = parser.parse_args()
 
-    root = Path(args.root)
+    root = _repo_path(Path(args.root))
     template_dir = root / "templates"
     log_tpl = template_dir / "verification_log_template.csv"
     cap_tpl = template_dir / "capture_index_template.csv"
@@ -50,7 +65,7 @@ def main() -> int:
 
     print("[EVIDENCE_INIT] created run folders:")
     for p in created:
-        print(f"- {p}")
+        print(f"- {_rel(p)}")
     return 0
 
 

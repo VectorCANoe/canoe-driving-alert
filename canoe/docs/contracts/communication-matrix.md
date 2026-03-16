@@ -1,0 +1,242 @@
+# Runtime Message Ownership Matrix
+
+> [!IMPORTANT]
+> This document reflects the current development baseline and the planned target architecture.
+> Some runtime, diagnostic, and verification details are still under implementation and may change.
+
+- Generated: 2026-03-12 23:58:00
+- Scope: Active runtime ownership for domain CAN and Ethernet backbone contracts
+- Rule: Each message must have one clear sender in active runtime profile.
+
+## Special-case interpretation
+
+- `frmEmergencyBroadcastMsg (0x1C0)` is the SIL backbone emergency ingress contract.
+  - Legacy CAN-stub name is retired.
+  - Active UDP multicast contract is `ETH_EmergencyAlert (0xE100)` from `V2X`.
+- `ethSelectedAlertMsg` remains the ADAS-owned backbone publication seam in the current SIL profile.
+  - In the active runtime, `BCM`, `IVI`, and `CLU` consume `frmAdasDomainStateMsg` and local `Core::*` mirrors instead of acting as direct backbone RX owners.
+  - Treat `ethSelectedAlertMsg` as an output/evidence seam for the active SIL baseline, not as a required direct ingress path for those consumer nodes.
+- Backbone contract rows use `UDP multicast (239.0.2.1:5000)` in the source column.
+- Validation result aggregation uses `Test::scenarioResult` and `Test::base*` sysvars, so no active network message is listed for that seam.
+
+| Message | ID (hex) | DLC | Sender | Contract Source | Signals |
+|---|---|---|---|---|---|
+| frmSteeringStateCanMsg | 0x100 | 1 | MDPS | chassis_can.dbc | 2 |
+| frmWheelSpeedMsg | 0x101 | 4 | ESC | chassis_can.dbc | 4 |
+| frmYawAccelMsg | 0x102 | 4 | ESC | chassis_can.dbc | 2 |
+| frmChassisHealthMsg | 0x103 | 2 | ESC | chassis_can.dbc | 3 |
+| frmWheelPulseMsg | 0x104 | 2 | VCU | chassis_can.dbc | 2 |
+| frmSuspensionStateMsg | 0x105 | 2 | ESC | chassis_can.dbc | 3 |
+| frmTirePressureMsg | 0x106 | 4 | TPMS | chassis_can.dbc | 4 |
+| frmChassisDiagResMsg | 0x107 | 3 | ESC | chassis_can.dbc | 3 |
+| frmRoadFrictionMsg | 0x108 | 1 | ESC | chassis_can.dbc | 1 |
+| frmPowertrainGatewayMsg | 0x109 | 2 | VCU | powertrain_can.dbc | 2 |
+| frmVehicleModeMsg | 0x10A | 2 | VCU | powertrain_can.dbc | 6 |
+| frmPowerLimitMsg | 0x10B | 2 | VCU | powertrain_can.dbc | 2 |
+| frmCruiseStateMsg | 0x10C | 2 | SCC | powertrain_can.dbc | 4 |
+| frmPowertrainHealthMsg | 0x10D | 2 | VCU | powertrain_can.dbc | 3 |
+| frmPtDiagResMsg | 0x10E | 3 | VCU | powertrain_can.dbc | 3 |
+| frmEnergyFlowStateMsg | 0x10F | 2 | VCU | powertrain_can.dbc | 3 |
+| frmPowertrainCtrlAuthMsg | 0x110 | 1 | VCU | powertrain_can.dbc | 3 |
+| ethFailSafeStateMsg | 0xE212 | 2 | CGW | UDP multicast (239.0.2.1:5000) | 5 |
+| frmBrakeStatusMsg | 0x120 | 2 | ESC | chassis_can.dbc | 5 |
+| frmAccelStatusMsg | 0x121 | 2 | VCU | chassis_can.dbc | 2 |
+| frmSteeringTorqueMsg | 0x122 | 2 | MDPS | chassis_can.dbc | 2 |
+| frmEpsStateMsg | 0x123 | 2 | MDPS | chassis_can.dbc | 4 |
+| frmAbsStateMsg | 0x124 | 2 | ABS | chassis_can.dbc | 3 |
+| frmEscStateMsg | 0x125 | 2 | ESC | chassis_can.dbc | 3 |
+| frmTcsStateMsg | 0x126 | 2 | VCU | chassis_can.dbc | 3 |
+| frmBrakeTempMsg | 0x127 | 2 | ESC | chassis_can.dbc | 2 |
+| frmSteeringAngleMsg | 0x128 | 2 | SAS | chassis_can.dbc | 1 |
+| frmBrakeWearMsg | 0x129 | 1 | ESC | chassis_can.dbc | 1 |
+| frmEngineSpeedTempMsg | 0x12A | 4 | EMS | powertrain_can.dbc | 3 |
+| frmEpbStateMsg | 0x12A | 2 | EPB | chassis_can.dbc | 4 |
+| frmFuelBatteryStateMsg | 0x12B | 3 | EMS | powertrain_can.dbc | 4 |
+| frmVsmStateMsg | 0x12B | 2 | VSM | chassis_can.dbc | 3 |
+| frmEhbStateMsg | 0x12C | 2 | EHB | chassis_can.dbc | 2 |
+| frmThrottleStateMsg | 0x12C | 2 | EMS | powertrain_can.dbc | 2 |
+| frmEcsStateMsg | 0x12D | 2 | ECS | chassis_can.dbc | 3 |
+| frmTransmissionTempMsg | 0x12D | 2 | TCU | powertrain_can.dbc | 2 |
+| frmCdcStateMsg | 0x12E | 2 | CDC | chassis_can.dbc | 2 |
+| frmEngineTorqueMsg | 0x12E | 2 | EMS | powertrain_can.dbc | 1 |
+| frmAirSuspensionStateMsg | 0x12F | 3 | ASM | chassis_can.dbc | 3 |
+| frmEngineLoadMsg | 0x12F | 1 | EMS | powertrain_can.dbc | 1 |
+| frmRwsStateMsg | 0x130 | 3 | RWS | chassis_can.dbc | 3 |
+| frmTransShiftStateMsg | 0x130 | 2 | TCU | powertrain_can.dbc | 4 |
+| frmThermalMgmtStateMsg | 0x131 | 2 | EMS | powertrain_can.dbc | 3 |
+| frmObcStateMsg | 0x132 | 2 | OBC | powertrain_can.dbc | 4 |
+| frmDcdcStateMsg | 0x133 | 3 | DCDC | powertrain_can.dbc | 4 |
+| frmMcuStateMsg | 0x134 | 4 | MCU | powertrain_can.dbc | 4 |
+| frmInverterStateMsg | 0x135 | 3 | INVERTER | powertrain_can.dbc | 4 |
+| frm4wdStateMsg | 0x136 | 2 | _4WD | powertrain_can.dbc | 3 |
+| frmBatBmsStateMsg | 0x137 | 3 | BAT_BMS | powertrain_can.dbc | 3 |
+| frmFpcmStateMsg | 0x138 | 3 | FPCM | powertrain_can.dbc | 4 |
+| frmLvrStateMsg | 0x139 | 2 | LVR | powertrain_can.dbc | 6 |
+| frmIsgStateMsg | 0x13A | 2 | ISG | powertrain_can.dbc | 4 |
+| frmEopStateMsg | 0x13B | 4 | EOP | powertrain_can.dbc | 4 |
+| frmEwpStateMsg | 0x13C | 3 | EWP | powertrain_can.dbc | 4 |
+| frmChargePortCtrlStateMsg | 0x13D | 3 | CPC | powertrain_can.dbc | 7 |
+| ETH_EmergencyAlert | 0xE100 | 4 | V2X | UDP multicast (239.0.2.1:5000) | 5 |
+| frmAdasChassisStatusMsg | 0x1C1 | 2 | ADAS | adas_can.dbc | 2 |
+| ETH_EmergencyMonitor | 0x1C2 | 2 | V2X | UDP multicast (239.0.2.1:5000) | 2 |
+| ethEmergencyRiskMsg | 0xE210 | 5 | ADAS | UDP multicast (239.0.2.1:5000) | 6 |
+| ethDecelAssistReqMsg | 0xE211 | 4 | ADAS | UDP multicast (239.0.2.1:5000) | 6 |
+| ethObjectRiskInputMsg | 0xE213 | 8 | TEST_SCN | UDP multicast (239.0.2.1:5000) | 8 |
+| ethObjectRiskStateMsg | 0xE214 | 6 | ADAS | UDP multicast (239.0.2.1:5000) | 5 |
+| ethObjectScenarioAlertMsg | 0xE215 | 4 | ADAS | UDP multicast (239.0.2.1:5000) | 6 |
+| ethObjectSafetyStateMsg | 0xE216 | 4 | CGW | UDP multicast (239.0.2.1:5000) | 5 |
+| frmLdwsLkasStateMsg | 0x1C8 | 4 | LDWS_LKAS | adas_can.dbc | 7 |
+| frmFcaStateMsg | 0x1C9 | 4 | FCA | adas_can.dbc | 7 |
+| frmBcwStateMsg | 0x1CA | 3 | BCW | adas_can.dbc | 6 |
+| frmLcaStateMsg | 0x1CB | 3 | LCA | adas_can.dbc | 6 |
+| frmSpasStateMsg | 0x1CC | 4 | SPAS | adas_can.dbc | 5 |
+| frmRspaStateMsg | 0x1CD | 4 | RSPA | adas_can.dbc | 5 |
+| frmAvmStateMsg | 0x1CE | 4 | AVM | adas_can.dbc | 5 |
+| frmFcamStateMsg | 0x1CF | 4 | FCAM | adas_can.dbc | 5 |
+| frmFradarStateMsg | 0x1D0 | 4 | FRADAR | adas_can.dbc | 5 |
+| frmSrrFlStateMsg | 0x1D1 | 4 | SRR_FL | adas_can.dbc | 5 |
+| frmSrrFrStateMsg | 0x1D2 | 4 | SRR_FR | adas_can.dbc | 5 |
+| frmParkUltrasonicStateMsg | 0x1D3 | 4 | PUS | adas_can.dbc | 5 |
+| frmDmsStateMsg | 0x1D4 | 4 | DMS | adas_can.dbc | 5 |
+| frmOmsStateMsg | 0x1D5 | 4 | OMS | adas_can.dbc | 6 |
+| frmSrrRlStateMsg | 0x1D6 | 4 | SRR_RL | adas_can.dbc | 5 |
+| frmSrrRrStateMsg | 0x1D7 | 4 | SRR_RR | adas_can.dbc | 5 |
+| frmAebDomainStateMsg | 0x1D8 | 4 | AEB | adas_can.dbc | 7 |
+| frmParkMasterStateMsg | 0x1D9 | 4 | PKM | adas_can.dbc | 8 |
+| frmRoadPreviewCameraStateMsg | 0x1DA | 4 | RPC | adas_can.dbc | 6 |
+| frmRearRadarMasterStateMsg | 0x1DB | 4 | RRM | adas_can.dbc | 7 |
+| frmSurroundParkMasterStateMsg | 0x1DC | 4 | SPM | adas_can.dbc | 7 |
+| frmHighwayPilotStateMsg | 0x1DD | 4 | HWP | adas_can.dbc | 9 |
+| frmLidarStateMsg | 0x1DE | 4 | LDR | adas_can.dbc | 5 |
+| frmTrailerCtrlStateMsg | 0x1DF | 4 | TRM | adas_can.dbc | 6 |
+| frmAdasDiagReqMsg | 0x1E0 | 3 | TEST_SCN | adas_can.dbc | 3 |
+| frmAdasDiagResMsg | 0x1E1 | 3 | ADAS | adas_can.dbc | 3 |
+| frmDmsDiagReqMsg | 0x1E2 | 3 | TEST_SCN | adas_can.dbc | 3 |
+| frmDmsDiagResMsg | 0x1E3 | 3 | DMS | adas_can.dbc | 3 |
+| frmOmsDiagReqMsg | 0x1E4 | 3 | TEST_SCN | adas_can.dbc | 3 |
+| frmOmsDiagResMsg | 0x1E5 | 3 | OMS | adas_can.dbc | 3 |
+| ethSelectedAlertMsg | 0xE200 | 2 | ADAS | UDP multicast (239.0.2.1:5000) | 4 |
+| frmAmbientControlMsg | 0x260 | 1 | BCM | body_can.dbc | 3 |
+| frmHazardControlMsg | 0x261 | 1 | BCM | body_can.dbc | 3 |
+| frmWindowControlMsg | 0x262 | 1 | BCM | body_can.dbc | 3 |
+| frmDoorStateMsg | 0x264 | 2 | BCM | body_can.dbc | 5 |
+| frmLampControlMsg | 0x265 | 1 | BCM | body_can.dbc | 5 |
+| frmWiperStateMsg | 0x266 | 1 | WIP | body_can.dbc | 3 |
+| frmSeatBeltStateMsg | 0x267 | 1 | BCM | body_can.dbc | 5 |
+| frmCabinAirStateMsg | 0x268 | 2 | BCM | body_can.dbc | 2 |
+| frmBodyHealthMsg | 0x269 | 2 | BCM | body_can.dbc | 3 |
+| frmHvacStateMsg | 0x26A | 2 | DATC | body_can.dbc | 4 |
+| frmHvacActuatorMsg | 0x26B | 2 | DATC | body_can.dbc | 5 |
+| frmMirrorStateMsg | 0x26C | 1 | MIR | body_can.dbc | 4 |
+| frmSeatStateMsg | 0x26D | 2 | BCM | body_can.dbc | 2 |
+| frmSeatControlMsg | 0x26E | 2 | BCM | body_can.dbc | 4 |
+| frmDoorControlMsg | 0x26F | 1 | BCM | body_can.dbc | 3 |
+| frmInteriorLightMsg | 0x270 | 1 | BCM | body_can.dbc | 2 |
+| frmRainLightAutoMsg | 0x271 | 1 | BCM | body_can.dbc | 3 |
+| frmBcmDiagReqMsg | 0x272 | 3 | TEST_SCN | body_can.dbc | 3 |
+| frmBcmDiagResMsg | 0x273 | 3 | BCM | body_can.dbc | 3 |
+| frmImmobilizerStateMsg | 0x274 | 1 | SMK | body_can.dbc | 3 |
+| frmAlarmStateMsg | 0x275 | 1 | BSEC | body_can.dbc | 3 |
+| frmBodyGatewayStateMsg | 0x276 | 2 | BCM | body_can.dbc | 2 |
+| frmBodyComfortStateMsg | 0x277 | 2 | BCM | body_can.dbc | 3 |
+| frmAflsStateMsg | 0x278 | 2 | AFLS | body_can.dbc | 4 |
+| frmDoorFlStateMsg | 0x279 | 2 | DOOR_FL | body_can.dbc | 3 |
+| frmDoorFrStateMsg | 0x27A | 2 | DOOR_FR | body_can.dbc | 3 |
+| frmSeatDrvStateMsg | 0x27B | 2 | SEAT_DRV | body_can.dbc | 3 |
+| frmSeatPassStateMsg | 0x27C | 2 | SEAT_PASS | body_can.dbc | 3 |
+| frmDoorRlStateMsg | 0x27D | 2 | DOOR_RL | body_can.dbc | 3 |
+| frmDoorRrStateMsg | 0x27E | 2 | DOOR_RR | body_can.dbc | 3 |
+| frmTailgateStateMsg | 0x27F | 2 | TGM | body_can.dbc | 4 |
+| frmClusterWarningMsg | 0x280 | 1 | IVI | infotainment_can.dbc | 1 |
+| frmRearClimateStateMsg | 0x280 | 2 | RATC | body_can.dbc | 4 |
+| frmClusterBaseStateMsg | 0x281 | 2 | IVI | infotainment_can.dbc | 3 |
+| frmSunroofStateMsg | 0x281 | 2 | SRF | body_can.dbc | 4 |
+| frmHeadlampLevelStateMsg | 0x282 | 2 | HLM | body_can.dbc | 4 |
+| frmNaviGuideStateMsg | 0x282 | 1 | NAV | infotainment_can.dbc | 2 |
+| frmCabinSensingStateMsg | 0x283 | 2 | CSM | body_can.dbc | 4 |
+| frmMediaStateMsg | 0x283 | 2 | IVI | infotainment_can.dbc | 5 |
+| frmAhlsStateMsg | 0x284 | 2 | AHLS | body_can.dbc | 3 |
+| frmCallStateMsg | 0x284 | 2 | IVI | infotainment_can.dbc | 5 |
+| frmAutoDoorCtrlStateMsg | 0x285 | 2 | ADM | body_can.dbc | 3 |
+| frmNavigationRouteMsg | 0x285 | 3 | NAV | infotainment_can.dbc | 5 |
+| frmClusterThemeMsg | 0x286 | 1 | IVI | infotainment_can.dbc | 2 |
+| frmPowerTailgateCtrlStateMsg | 0x286 | 2 | PTG | body_can.dbc | 3 |
+| frmBiometricAuthStateMsg | 0x287 | 2 | BIO | body_can.dbc | 3 |
+| frmHmiPopupStateMsg | 0x287 | 1 | IVI | infotainment_can.dbc | 3 |
+| frmAcuStateMsg | 0x288 | 2 | ACU | body_can.dbc | 5 |
+| frmInfotainmentHealthMsg | 0x288 | 2 | IVI | infotainment_can.dbc | 3 |
+| frmAudioFocusMsg | 0x289 | 1 | IVI | infotainment_can.dbc | 3 |
+| frmOdsStateMsg | 0x289 | 2 | ODS | body_can.dbc | 5 |
+| frmMassageSeatCtrlStateMsg | 0x28A | 3 | MSC | body_can.dbc | 6 |
+| frmVoiceAssistStateMsg | 0x28A | 1 | VCS | infotainment_can.dbc | 3 |
+| frmDatcDiagReqMsg | 0x28B | 3 | TEST_SCN | body_can.dbc | 3 |
+| frmMapRenderStateMsg | 0x28B | 2 | NAV | infotainment_can.dbc | 3 |
+| frmDatcDiagResMsg | 0x28C | 3 | DATC | body_can.dbc | 3 |
+| frmRouteAlertMsg | 0x28C | 2 | NAV | infotainment_can.dbc | 4 |
+| frmTrafficEventMsg | 0x28D | 3 | NAV | infotainment_can.dbc | 3 |
+| frmPhoneProjectionMsg | 0x28E | 1 | IVI | infotainment_can.dbc | 3 |
+| frmClusterNotifMsg | 0x28F | 2 | IVI | infotainment_can.dbc | 2 |
+| frmIviDiagResMsg | 0x290 | 3 | IVI | infotainment_can.dbc | 3 |
+| frmMediaMetaMsg | 0x291 | 2 | IVI | infotainment_can.dbc | 4 |
+| frmSpeechTtsStateMsg | 0x292 | 2 | VCS | infotainment_can.dbc | 4 |
+| frmConnectivityStateMsg | 0x293 | 2 | IVI | infotainment_can.dbc | 4 |
+| frmIviHealthDetailMsg | 0x294 | 2 | IVI | infotainment_can.dbc | 2 |
+| frmClusterSyncStateMsg | 0x295 | 2 | IVI | infotainment_can.dbc | 3 |
+| frmTmuServiceStateMsg | 0x296 | 2 | TMU | infotainment_can.dbc | 6 |
+| frmHudStateMsg | 0x297 | 4 | HUD | infotainment_can.dbc | 5 |
+| frmAmpStateMsg | 0x298 | 3 | AMP | infotainment_can.dbc | 7 |
+| frmOtaMasterStateMsg | 0x299 | 4 | OTA | infotainment_can.dbc | 9 |
+| frmDigitalKeyStateMsg | 0x29A | 3 | DKEY | infotainment_can.dbc | 7 |
+| frmRseStateMsg | 0x29B | 3 | RSE | infotainment_can.dbc | 7 |
+| frmNavModuleStateMsg | 0x29C | 3 | NAV | infotainment_can.dbc | 6 |
+| frmPgsStateMsg | 0x29D | 2 | PGS | infotainment_can.dbc | 4 |
+| frmPhoneAsKeyStateMsg | 0x29E | 2 | PAK | infotainment_can.dbc | 5 |
+| frmCarpayCtrlStateMsg | 0x29F | 2 | CPAY | infotainment_can.dbc | 5 |
+| frmTmuDiagReqMsg | 0x2A0 | 3 | TEST_SCN | infotainment_can.dbc | 3 |
+| frmVehicleStateCanMsg | 0x2A0 | 2 | VCU | chassis_can.dbc | 3 |
+| frmSteeringCanMsg | 0x2A1 | 1 | TEST_SCN | chassis_can.dbc | 2 |
+| frmTmuDiagResMsg | 0x2A1 | 3 | TMU | infotainment_can.dbc | 3 |
+| frmPedalInputCanMsg | 0x2A2 | 2 | TEST_SCN | chassis_can.dbc | 2 |
+| frmNavContextCanMsg | 0x2A3 | 3 | TEST_SCN | infotainment_can.dbc | 5 |
+| frmChassisDiagReqMsg | 0x2A4 | 3 | TEST_SCN | chassis_can.dbc | 3 |
+| frmIviDiagReqMsg | 0x2A7 | 3 | TEST_SCN | infotainment_can.dbc | 3 |
+| frmCluDiagReqMsg | 0x2A8 | 3 | TEST_SCN | infotainment_can.dbc | 3 |
+| frmIgnitionEngineMsg | 0x2A8 | 1 | TEST_SCN | powertrain_can.dbc | 3 |
+| frmCluDiagResMsg | 0x2A9 | 3 | CLU | infotainment_can.dbc | 3 |
+| frmGearStateMsg | 0x2A9 | 1 | TEST_SCN | powertrain_can.dbc | 3 |
+| frmHudDiagReqMsg | 0x2AA | 3 | TEST_SCN | infotainment_can.dbc | 3 |
+| frmPtDiagReqMsg | 0x2AA | 3 | TEST_SCN | powertrain_can.dbc | 3 |
+| frmHudDiagResMsg | 0x2AB | 3 | HUD | infotainment_can.dbc | 3 |
+| frmSccDiagReqMsg | 0x2AB | 3 | TEST_SCN | powertrain_can.dbc | 3 |
+| frmAmpDiagReqMsg | 0x2AC | 3 | TEST_SCN | infotainment_can.dbc | 3 |
+| frmSccDiagResMsg | 0x2AC | 3 | SCC | powertrain_can.dbc | 3 |
+| frmAmpDiagResMsg | 0x2AD | 3 | AMP | infotainment_can.dbc | 3 |
+| frmAbsDiagReqMsg | 0x2BC | 3 | TEST_SCN | chassis_can.dbc | 3 |
+| frmAbsDiagResMsg | 0x2BD | 3 | ABS | chassis_can.dbc | 3 |
+| frmEpbDiagReqMsg | 0x2BE | 3 | TEST_SCN | chassis_can.dbc | 3 |
+| frmEpbDiagResMsg | 0x2BF | 3 | EPB | chassis_can.dbc | 3 |
+| frmTpmsDiagReqMsg | 0x2C0 | 3 | TEST_SCN | chassis_can.dbc | 3 |
+| frmTpmsDiagResMsg | 0x2C1 | 3 | TPMS | chassis_can.dbc | 3 |
+| frmSasDiagReqMsg | 0x2C2 | 3 | TEST_SCN | chassis_can.dbc | 3 |
+| frmSasDiagResMsg | 0x2C3 | 3 | SAS | chassis_can.dbc | 3 |
+| frmVsmDiagReqMsg | 0x2C4 | 3 | TEST_SCN | chassis_can.dbc | 3 |
+| frmVsmDiagResMsg | 0x2C5 | 3 | VSM | chassis_can.dbc | 3 |
+| frmEhbDiagReqMsg | 0x2C6 | 3 | TEST_SCN | chassis_can.dbc | 3 |
+| frmEhbDiagResMsg | 0x2C7 | 3 | EHB | chassis_can.dbc | 3 |
+| frmEcsDiagReqMsg | 0x2C8 | 3 | TEST_SCN | chassis_can.dbc | 3 |
+| frmEcsDiagResMsg | 0x2C9 | 3 | ECS | chassis_can.dbc | 3 |
+| frmCdcDiagReqMsg | 0x2CA | 3 | TEST_SCN | chassis_can.dbc | 3 |
+| frmCdcDiagResMsg | 0x2CB | 3 | CDC | chassis_can.dbc | 3 |
+| frmAcuDiagReqMsg | 0x2CC | 3 | TEST_SCN | chassis_can.dbc | 3 |
+| frmAcuDiagResMsg | 0x2CD | 3 | ACU | chassis_can.dbc | 3 |
+| frmOdsDiagReqMsg | 0x2CE | 3 | TEST_SCN | chassis_can.dbc | 3 |
+| frmOdsDiagResMsg | 0x2CF | 3 | ODS | chassis_can.dbc | 3 |
+| frmSmkDiagReqMsg | 0x2D0 | 3 | TEST_SCN | body_can.dbc | 3 |
+| frmSmkDiagResMsg | 0x2D1 | 3 | SMK | body_can.dbc | 3 |
+| frmAflsDiagReqMsg | 0x2D2 | 3 | TEST_SCN | body_can.dbc | 3 |
+| frmAflsDiagResMsg | 0x2D3 | 3 | AFLS | body_can.dbc | 3 |
+| frmWipDiagReqMsg | 0x2D4 | 3 | TEST_SCN | body_can.dbc | 3 |
+| frmWipDiagResMsg | 0x2D5 | 3 | WIP | body_can.dbc | 3 |
+| ethVehicleStateMsg | 0x510 | 6 | VCU | UDP multicast (239.0.2.1:5000) | 6 |
+| ethSteeringMsg | 0x511 | 4 | MDPS | UDP multicast (239.0.2.1:5000) | 4 |
+| ethNavContextMsg | 0x512 | 6 | IVI | UDP multicast (239.0.2.1:5000) | 5 |

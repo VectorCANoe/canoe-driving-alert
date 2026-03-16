@@ -24,8 +24,20 @@ REPO_ROOT = SCRIPT_DIR.parent.parent
 DEFAULT_EVIDENCE_ROOT = REPO_ROOT / "canoe" / "logging" / "evidence"
 
 
+def _display_arg(value: str) -> str:
+    if value == sys.executable:
+        return Path(value).name
+    candidate = Path(value)
+    if candidate.is_absolute():
+        try:
+            return candidate.relative_to(REPO_ROOT).as_posix()
+        except ValueError:
+            return value
+    return value
+
+
 def run_cmd(args: list[str]) -> int:
-    print("[RUN]", " ".join(args))
+    print("[RUN]", " ".join(_display_arg(arg) for arg in args))
     proc = subprocess.run(args, cwd=REPO_ROOT)
     return proc.returncode
 

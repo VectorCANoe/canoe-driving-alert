@@ -26,6 +26,19 @@ dword ethInvalidIp()
   return 0xffffffff;
 }
 
+int ethIsRecentTick(dword lastTsMs, int maxAgeMs)
+{
+  dword nowMs;
+
+  if (lastTsMs == 0 || maxAgeMs < 0)
+  {
+    return 0;
+  }
+
+  nowMs = getSimulationTimeMs();
+  return ((nowMs - lastTsMs) <= (dword)maxAgeMs) ? 1 : 0;
+}
+
 int ethBackbonePort()
 {
   return 5000;
@@ -94,6 +107,83 @@ int ethMsgObjectScenarioAlert()
 int ethMsgObjectSafety()
 {
   return 0xE216;
+}
+
+int ethMsgGatewayState()
+{
+  return 0xE218;
+}
+
+int ethMsgValidationOverride()
+{
+  return 0xE217;
+}
+
+int ethHasBoundaryServiceContext(int routeActive, int alertLevel)
+{
+  if (routeActive == 1 || alertLevel > 0)
+  {
+    return 1;
+  }
+
+  return 0;
+}
+
+int ethDiagBoundaryStage(int routeActive,
+                         int alertLevel,
+                         int boundaryAlive,
+                         int warningPathStatus,
+                         int failSafeMode)
+{
+  int serviceContext;
+
+  serviceContext = ethHasBoundaryServiceContext(routeActive, alertLevel);
+  if (serviceContext == 0)
+  {
+    return 0;
+  }
+  if (boundaryAlive == 0)
+  {
+    return 3;
+  }
+  if (failSafeMode >= 2 || warningPathStatus >= 2)
+  {
+    return 3;
+  }
+  if (failSafeMode == 1 || warningPathStatus == 1)
+  {
+    return 2;
+  }
+
+  return 1;
+}
+
+int ethDiagStageToSecurityFault(int diagStage)
+{
+  if (diagStage >= 3)
+  {
+    return 2;
+  }
+  if (diagStage == 2)
+  {
+    return 1;
+  }
+
+  return 0;
+}
+
+int ethDiagStageToPolicy(int diagStage)
+{
+  if (diagStage >= 3)
+  {
+    return 2;
+  }
+  if (diagStage == 2)
+  {
+    return 1;
+  }
+
+  return 0;
 }
 
 void ethClearFrame(char frame[], int frameLen)
@@ -197,6 +287,18 @@ long ethOpenNodeSocket(int localPort)
   return socket;
 }
 
+long ethOpenNodeSocketAt(dword localIp, int localPort)
+{
+  long socket;
+
+  socket = UdpOpen(localIp, localPort);
+  if (socket == ethInvalidSocket())
+  {
+    write("[ETH] open failed ip=%u port=%d err=%d", localIp, localPort, IpGetLastError());
+  }
+  return socket;
+}
+
 long ethOpenDefaultSocket()
 {
   return ethOpenNodeSocket(ethBackbonePort());
@@ -210,20 +312,45 @@ void ethCloseSocket(long socket)
   }
 }
 
+/* Transient/expected socket errors -- suppress write() to prevent RT kernel crash.
+   997   WSA_IO_PENDING        overlapped I/O pending (normal async op)
+   995   WSA_OPERATION_ABORTED operation aborted on measurement stop
+   10038 WSAENOTSOCK           socket already closed
+   10051 WSAENETUNREACH        Ethernet channel not yet configured (main crash cause)
+   10064 WSAEHOSTDOWN          simulated host down
+   10065 WSAEHOSTUNREACH       no route to multicast group
+   10054 WSAECONNRESET         UDP reset on receive side
+   10040 WSAEMSGSIZE           frame too large (keep visible)
+   10013 WSAEACCES             multicast join permission denied (keep visible) */
+int ethIsTransientError(int err)
+{
+  if (err == 997)   { return 1; }
+  if (err == 995)   { return 1; }
+  if (err == 10038) { return 1; }
+  if (err == 10051) { return 1; }
+  if (err == 10064) { return 1; }
+  if (err == 10065) { return 1; }
+  if (err == 10054) { return 1; }
+  return 0;
+}
+
 int ethArmReceive(long socket, char rxBuffer[], int rxBufferSize)
 {
   int result;
   int lastError;
-  char lastErrorText[256];
+
+  if (socket == ethInvalidSocket() || rxBufferSize <= 0)
+  {
+    return -1;
+  }
 
   result = UdpReceiveFrom(socket, rxBuffer, rxBufferSize);
   if (result != 0)
   {
     lastError = IpGetLastSocketError(socket);
-    if (lastError != 997)
+    if (ethIsTransientError(lastError) == 0)
     {
-      IpGetLastSocketErrorAsString(socket, lastErrorText, elcount(lastErrorText));
-      write("[ETH] recv error=%d %s", lastError, lastErrorText);
+      write("[ETH] recv error=%d", lastError);
     }
   }
   return result;
@@ -241,7 +368,10 @@ int ethStartReceiver(long socket, char rxBuffer[], int rxBufferSize)
   result = ipJoinMulticastGroup(socket, 1, ethBackboneGroupIp());
   if (result != 0)
   {
-    write("[ETH] join multicast failed result=%d", result);
+    if (ethIsTransientError(result) == 0)
+    {
+      write("[ETH] join multicast failed result=%d", result);
+    }
   }
 
   return ethArmReceive(socket, rxBuffer, rxBufferSize);
@@ -250,6 +380,8 @@ int ethStartReceiver(long socket, char rxBuffer[], int rxBufferSize)
 int ethSendFrame(long socket, dword targetIp, int msgId, char frame[], int payloadLen)
 {
   int frameLen;
+  int result;
+  int lastError;
 
   if (socket == ethInvalidSocket())
   {
@@ -263,5 +395,17 @@ int ethSendFrame(long socket, dword targetIp, int msgId, char frame[], int paylo
   frame[0] = (char)(msgId & 0xFF);
   frame[1] = (char)((msgId >> 8) & 0xFF);
   frameLen = payloadLen + 2;
-  return UdpSendTo(socket, targetIp, ethBackbonePort(), frame, frameLen);
+  result = UdpSendTo(socket, targetIp, ethBackbonePort(), frame, frameLen);
+  if (result != 0)
+  {
+    lastError = IpGetLastSocketError(socket);
+    if (ethIsTransientError(lastError) == 0)
+    {
+      write("[ETH] send failed msg=0x%X port=%d err=%d",
+            msgId,
+            ethBackbonePort(),
+            lastError);
+    }
+  }
+  return result;
 }

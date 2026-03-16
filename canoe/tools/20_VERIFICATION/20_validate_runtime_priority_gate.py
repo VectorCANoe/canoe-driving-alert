@@ -24,7 +24,7 @@ DBC_ACTIVE_FILES = [
     "infotainment_can.dbc",
     "adas_can.dbc",
 ]
-ETH_CONTRACT_REL = "canoe/docs/contracts/10_ETHERNET_BACKBONE_SSoT.md"
+ETH_CONTRACT_REL = "canoe/docs/contracts/ethernet-backbone.md"
 DEFAULT_MATRIX_OUT = "canoe/tmp/runtime_message_ownership_matrix.md"
 DEFAULT_REPORT_OUT = "canoe/tmp/runtime_priority_gate_report.md"
 

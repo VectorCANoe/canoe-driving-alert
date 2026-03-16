@@ -1,17 +1,17 @@
-# Architecture Docs Index
+# Architecture Docs
 
-This folder is reserved for reviewer-facing CANoe runtime structure documents.
+This folder explains the system shape of the active CANoe baseline.
 
-## Target Doc Types
+## Active Docs
 
-- ECU classification
-- surface/runtime/validation mapping
-- runtime skeleton and ownership boundary
-- panel and sysvar interaction overview
+- `ecu-classification.md`
+  - ECU classes, boundaries, and layer ownership
+- `surface-runtime-verification-map.md`
+  - relationship between surface, runtime, transport, and verification seams
+- `skeleton.md`
+  - planned runtime skeleton and test-harness structure
 
 ## Working Rule
 
-- keep system structure and partitioning here
-- move interface-level rules to `../contracts/`
-- move execution/runbook rules to `../operations/`
-- move test flow and pass/fail rules to `../verification/`
+- Keep this folder focused on structure, boundaries, and runtime shape.
+- Keep transport detail, verdict logic, and GUI procedures in the other folders.

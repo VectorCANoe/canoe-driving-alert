@@ -12,7 +12,20 @@ from collections import Counter, defaultdict
 from pathlib import Path
 
 
+REPO_ROOT = Path(__file__).resolve().parents[2]
 TIERS = ("UT", "IT", "ST")
+
+
+def _repo_path(path: Path) -> Path:
+    return path if path.is_absolute() else (REPO_ROOT / path)
+
+
+def _rel(path: Path) -> str:
+    path = _repo_path(path)
+    try:
+        return str(path.relative_to(REPO_ROOT)).replace("\\", "/")
+    except ValueError:
+        return str(path).replace("\\", "/")
 
 
 def parse_float(value: str) -> float | None:
@@ -87,6 +100,7 @@ def parse_rule_upper(rule_type: str, rule_ms: str) -> float | None:
 
 
 def load_scored_rows(path: Path) -> list[dict[str, str]]:
+    path = _repo_path(path)
     rows: list[dict[str, str]] = []
     if not path.exists():
         return rows
@@ -127,6 +141,9 @@ def build_parser() -> argparse.ArgumentParser:
 
 def main() -> int:
     args = build_parser().parse_args()
+    args.evidence_root = _repo_path(args.evidence_root)
+    args.output_md = _repo_path(args.output_md)
+    args.output_json = _repo_path(args.output_json)
 
     run_rows: list[dict[str, str]] = []
     missing_tiers: list[str] = []
@@ -138,7 +155,7 @@ def main() -> int:
         if not rows:
             missing_tiers.append(tier)
             continue
-        source_map[tier] = str(path)
+        source_map[tier] = _rel(path)
         run_rows.extend(rows)
 
     if not run_rows:
@@ -376,15 +393,20 @@ def main() -> int:
         lines += ["", "## Recommended Actions"]
         lines += [f"- {item}" for item in recommendations]
 
-    lines += ["", "## Output", f"- JSON: `{args.output_json}`"]
+    lines += [
+        "",
+        "## Output",
+        f"- JSON: `{_rel(args.output_json)}`",
+        f"- MD: `{_rel(args.output_md)}`",
+    ]
     args.output_md.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
     print(
         f"[RUN_INSIGHT] run_id={args.run_id} total={sum(tier_counter.values())} "
         f"pass={overall_verdict['PASS']} fail={overall_verdict['FAIL']} result={gate_result}"
     )
-    print(f"[OUT] {args.output_md}")
-    print(f"[OUT] {args.output_json}")
+    print(f"[OUT] {_rel(args.output_md)}")
+    print(f"[OUT] {_rel(args.output_json)}")
     return 0
 
 

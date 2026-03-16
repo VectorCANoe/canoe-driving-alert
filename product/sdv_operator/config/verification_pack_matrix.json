@@ -1,44 +1,66 @@
-﻿{
-  "schema": "canoe.test.verification.pack-matrix.v1",
-  "description": "Dev2-owned verification pack matrix. Functional packs, network packs, and diagnostic draft packs stay separate from native CANoe harness implementation.",
+{
+  "schema": "canoe.test.verification.pack-matrix.v2",
+  "description": "Dev2-owned active baseline pack matrix. The console follows the executable CANoe active suites and the reviewer-facing 05/06/07 mapping baseline.",
   "packs": [
     {
-      "pack_id": "native_functional_6",
-      "title": "Native Functional Portfolio 6",
+      "pack_id": "ts_canoe_ut_active_baseline",
+      "title": "UT Active Baseline 37",
       "status": "mandatory",
-      "category": "functional",
-      "review_focus": "핵심 운전자 경고 컨셉 검증",
-      "asset_count": 6,
-      "campaign_profile_id": "native_functional_6",
+      "category": "unit",
+      "review_focus": "05 Unit Test current executable baseline",
+      "asset_count": 37,
+      "suite_id": "TS_CANOE_UT_ACTIVE_BASELINE",
+      "assign_folder": "canoe/tests/modules/test_units/assign/UT_ACTIVE_BASELINE",
+      "campaign_profile_id": "ut_active_baseline",
       "source_contracts": [
-        "product/sdv_operator/config/native_canoe_test_portfolio_v1.json",
-        "driving-alert-workproducts/ops/change-orders/DEV2_NATIVE_TEST_CASE_DESIGN_6_2026-03-10.md"
+        "canoe/tests/modules/test_units/README.md",
+        "canoe/docs/verification/test-asset-mapping.md"
       ]
     },
     {
-      "pack_id": "network_gateway_core_4",
-      "title": "Network / Gateway Core 4",
+      "pack_id": "ts_canoe_it_active_baseline",
+      "title": "IT Active Baseline 45",
       "status": "mandatory",
-      "category": "network_gateway",
-      "review_focus": "CAN bus arbitration, route forwarding, stale/timeout, load/jitter",
-      "asset_count": 4,
-      "campaign_profile_id": "network_gateway_core_4",
+      "category": "integration",
+      "review_focus": "06 Integration Test current executable baseline",
+      "asset_count": 45,
+      "suite_id": "TS_CANOE_IT_ACTIVE_BASELINE",
+      "assign_folder": "canoe/tests/modules/test_units/assign/IT_ACTIVE_BASELINE",
+      "campaign_profile_id": "it_active_baseline",
       "source_contracts": [
-        "product/sdv_operator/config/network_gateway_verification_pack_v1.json",
-        "driving-alert-workproducts/ops/change-orders/DEV2_NETWORK_GATEWAY_VERIFICATION_PACK_V1_2026-03-10.md"
+        "canoe/tests/modules/test_suites/README.md",
+        "canoe/docs/verification/test-asset-mapping.md"
       ]
     },
     {
-      "pack_id": "network_plus_diag_draft_5",
-      "title": "Network / Gateway + Diagnostic Draft 5",
-      "status": "draft_pre_gate",
-      "category": "network_gateway_diagnostic",
-      "review_focus": "network/gateway core plus diagnostic route integrity draft",
-      "asset_count": 5,
-      "campaign_profile_id": "network_plus_diag_draft_5",
+      "pack_id": "ts_canoe_st_active_baseline",
+      "title": "ST Active Baseline 46",
+      "status": "mandatory",
+      "category": "system",
+      "review_focus": "07 System Test current executable baseline",
+      "asset_count": 46,
+      "suite_id": "TS_CANOE_ST_ACTIVE_BASELINE",
+      "assign_folder": "canoe/tests/modules/test_units/assign/ST_ACTIVE_BASELINE",
+      "campaign_profile_id": "st_active_baseline",
       "source_contracts": [
-        "product/sdv_operator/config/network_gateway_verification_pack_v1.json",
-        "driving-alert-workproducts/ops/change-orders/DEV2_NETWORK_GATEWAY_VERIFICATION_PACK_V1_2026-03-10.md"
+        "canoe/tests/modules/test_suites/README.md",
+        "canoe/docs/verification/test-asset-mapping.md"
+      ]
+    },
+    {
+      "pack_id": "ts_canoe_full_active_baseline",
+      "title": "FULL Active Baseline 128",
+      "status": "mandatory",
+      "category": "full_stack",
+      "review_focus": "UT/IT/ST active baseline wrapper execution",
+      "asset_count": 128,
+      "suite_id": "TS_CANOE_FULL_ACTIVE_BASELINE",
+      "assign_folder": "canoe/tests/modules/test_units/assign/FULL_ACTIVE_BASELINE",
+      "campaign_profile_id": "full_active_baseline",
+      "source_contracts": [
+        "canoe/tests/modules/test_suites/README.md",
+        "canoe/docs/verification/execution-guide.md",
+        "canoe/docs/verification/test-asset-mapping.md"
       ]
     }
   ]

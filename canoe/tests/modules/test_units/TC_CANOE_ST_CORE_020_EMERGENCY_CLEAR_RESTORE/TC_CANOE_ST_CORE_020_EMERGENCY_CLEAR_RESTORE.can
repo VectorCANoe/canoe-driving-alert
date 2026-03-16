@@ -1,0 +1,35 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\\common\\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+}
+
+export testcase TC_CANOE_ST_CORE_020_EMERGENCY_CLEAR_RESTORE()
+{
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  if (!launchScenarioAndWait(35, 1800, 2300))
+  {
+    return;
+  }
+
+  assertIntEq("scenario-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+  if (!waitForObservedEmergencyContext(800) ||
+      !waitForObservedSelectedAlert(800))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
+  assertIntEq("selected-alert-level", 3, (long)@Test::obsSelectedAlertLevel, "ethSelectedAlertLevel");
+  assertIntEq("selected-alert-type", 3, (long)@Test::obsSelectedAlertType, "ethSelectedAlertType");
+  assertIntEq("emergency-context-cleared", 0, (long)@Test::obsEmergencyContext, "ethEmergencyContext");
+
+  resetValidationHarnessIfNeeded();
+}

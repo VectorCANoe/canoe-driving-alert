@@ -1,0 +1,62 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\\common\\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+}
+
+/*
+  ST_018 is intentionally trace-gated.
+  This asset fixes the system-level stimulus contract for police and ambulance
+  transport contexts, but the final `100ms` periodicity verdict must be closed
+  by Ethernet trace evidence rather than CAPL-only oracle values.
+*/
+export testcase TC_CANOE_ST_ETH_001_EXTERNAL_TX_PERIOD()
+{
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  if (!launchScenarioAndWait(4, 700, 1200))
+  {
+    return;
+  }
+
+  assertIntEq("eth-police-active-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+  assertIntEq("eth-police-alert-state", 1, (long)@V2X::alertState, "alertState");
+  assertIntEq("eth-police-type", 1, (long)@V2X::emergencyType, "emergencyType");
+  if (!waitForObservedSelectedAlert(800))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
+  assertIntEq("eth-police-level", 6, (long)@Test::obsSelectedAlertLevel, "ethSelectedAlertLevel");
+
+  if (!launchScenarioAndWait(5, 700, 1200))
+  {
+    return;
+  }
+
+  assertIntEq("eth-ambulance-active-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+  assertIntEq("eth-ambulance-alert-state", 1, (long)@V2X::alertState, "alertState");
+  assertIntEq("eth-ambulance-type", 2, (long)@V2X::emergencyType, "emergencyType");
+  if (!waitForObservedSelectedAlert(800))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
+  assertIntEq("eth-ambulance-level", 7, (long)@Test::obsSelectedAlertLevel, "ethSelectedAlertLevel");
+
+  /*
+    Final verdict closure for ST_018:
+    - Ethernet trace must show ETH_EmergencyAlert / ETH_EmergencyMonitor
+    - expected publish cadence: 100ms
+    - evidence path: evidence/ST_018/*
+  */
+
+  resetValidationHarnessIfNeeded();
+}
