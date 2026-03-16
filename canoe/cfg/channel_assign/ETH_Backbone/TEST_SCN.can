@@ -2926,12 +2926,6 @@ on sysvar Test::scenarioCommand
   int scenarioId;
   scenarioId = (int)@Test::scenarioCommand;
 
-  if (gScenarioCmdInternalClear == 1)
-  {
-    gScenarioCmdInternalClear = 0;
-    return;
-  }
-
   if (scenarioId == 100)
   {
     beginAutoDemoExecution();
@@ -2959,8 +2953,6 @@ on sysvar Test::scenarioCommand
   }
 
   @Test::scenarioCommandAck = clampRange(scenarioId, 0, 255);
-  gScenarioCmdInternalClear = 1;
-  @Test::scenarioCommand = 0;
 }
 
 on sysvar Test::testScenario

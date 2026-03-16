@@ -17,6 +17,7 @@ Main tools:
 - `evidence_score_gate.py`
 - `build_evidence_from_write_window.py`
 - `init_evidence_run.py`
+- `collect_native_run_artifacts.py`
 - `package clean --scope staging --yes`
 - Gate scripts moved to: `scripts/gates/`
 
@@ -79,6 +80,11 @@ Note:
   - `capture_index.csv`
   - empty `raw_write_window.txt`
   - seeded rows based on current official IDs and `launchScenarioAndWait(...)` calls
+- `collect_native_run_artifacts.py` now collects:
+  - summary `Report_<TIER>_ACTIVE_BASELINE.vtestreport`
+  - per-test `Report_*.vtestreport`
+  - matching report settings files
+  - optional `raw_write_window.txt` import from standard drop paths
 - `check_run_readiness.py` outputs run readiness report:
   - template/raw/scored existence by UT/IT/ST
   - evidence marker count (`[EVIDENCE_OUT]`)
@@ -112,3 +118,19 @@ Note:
 - This allows CAPL evidence lines to add fields without breaking parsing.
 - Gate purpose/CI mapping reference: `product/sdv_operator/docs-src/maintenance.md`
 - `canoe/tmp/reports/verification`는 staging output 전용이며 Git 추적 대상이 아닙니다.
+
+Recommended post-run flow:
+
+1. `python scripts/quality/run_verification_pipeline.py prepare --run-id <RUN_ID>`
+2. CANoe GUI에서 tier 실행
+3. CANoe Write Window export를 표준 drop path 중 하나에 저장:
+   - `canoe/tmp/write_window/<TIER>/raw_write_window.txt`
+   - `canoe/tmp/write_window/<TIER>_ACTIVE_BASELINE_raw_write_window.txt`
+4. `python scripts/quality/run_verification_pipeline.py post-run --run-id <RUN_ID> --tier <UT|IT|ST> --owner <OWNER>`
+
+Post-run guarantees:
+
+- native reports are copied into `canoe/logging/evidence/<TIER>/<RUN_ID>/native_reports/`
+- `raw_write_window.txt` is imported when present
+- `evidence_log_path` and `evidence_capture_path` are auto-filled for updated rows
+- scored outputs are generated immediately after collection

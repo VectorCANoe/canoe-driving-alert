@@ -41,9 +41,22 @@
 - 출력 이벤트: `[EVIDENCE_OUT] scenario=<id> outputTsMs=<ms> result=<0|1> ...`
 - `inputTsMs`, `outputTsMs`를 이용해 `latency_ms`를 계산한다.
 
+### Seed Source 규칙
+- `verification_log.csv` 초기 row는 수동 템플릿 복사가 아니라 `scripts/quality/init_evidence_run.py`로 생성한다.
+- seed SoT:
+  - `driving-alert-workproducts/05_Unit_Test.md`
+  - `driving-alert-workproducts/06_Integration_Test.md`
+  - `driving-alert-workproducts/07_System_Test.md`
+  - `canoe/docs/verification/test-asset-mapping.md`
+  - `canoe/tests/modules/test_units/<asset>/<asset>.can`
+- `expected`는 공식 `05/06/07` 표에서 추출한다.
+- `scenario_id`는 native CAPL의 `launchScenarioAndWait(...)` 호출에서 시드한다.
+- `rule_type` / `rule_ms`는 공식 표 문장에 대한 deterministic seed이며, 애매한 행은 `note`로 manual confirmation을 남긴다.
+
 ## 5) verification_log.csv 필수 컬럼
 - `tier`: `UT|IT|ST`
 - `test_id`
+- `native_asset`
 - `scenario_id`
 - `input_ts_ms`
 - `output_ts_ms`
@@ -60,6 +73,13 @@
 - `evidence_log_path`
 - `evidence_capture_path`
 - `note`
+
+### 관찰 문자열(observed) 표준
+- `observed`는 현재 `[EVIDENCE_OUT]`의 핵심 필드를 key/value 문자열로 저장한다.
+- 기본 포함 필드:
+  - `level`, `type`, `code`, `timeout`, `risk`, `decel`, `failSafe`, `renderType`, `renderCode`
+- 선택 포함 필드:
+  - `release`, `objValid`, `objClass`, `objTtc`, `objEvent`
 
 ## 6) 판정 규칙
 ### 6.1 주기(Period)

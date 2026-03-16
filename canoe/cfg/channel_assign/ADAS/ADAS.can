@@ -830,6 +830,10 @@ void runArbiter()
   }
 
   gPrevEmergencyContext = emergencyContext;
+
+  @Core::brakePedalNorm    = brakePedal;
+  @CoreState::driveMode    = driveMode;
+  @CoreState::sportMode    = sportMode;
 }
 
 void updateWarningState()
@@ -1152,6 +1156,12 @@ void updateWarningState()
           objectConfidence, objectHoldActive);
     gLastObjectEventCode = (int)@Core::objectEventCode;
   }
+
+  @Core::vehicleSpeedNorm  = speed;
+  @Core::driveStateNorm    = driveState;
+  @Core::steeringInputNorm = steeringInput;
+  @Core::speedLimitNorm    = speedLimit;
+  @Core::baseZoneContext   = baseZoneContext;
 }
 
 void applyObjectRiskInput(int trackValid,

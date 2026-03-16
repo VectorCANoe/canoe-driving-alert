@@ -54,6 +54,24 @@ def cmd_prepare(args: argparse.Namespace) -> int:
     return run_cmd(cmd)
 
 
+def cmd_collect(args: argparse.Namespace) -> int:
+    cmd = [
+        sys.executable,
+        str(SCRIPT_DIR / "collect_native_run_artifacts.py"),
+        "--run-id",
+        args.run_id,
+        "--tier",
+        args.tier,
+        "--evidence-root",
+        str(args.evidence_root),
+    ]
+    if args.raw_log_source:
+        cmd.extend(["--raw-log-source", str(args.raw_log_source)])
+    if args.allow_missing_raw_log:
+        cmd.append("--allow-missing-raw-log")
+    return run_cmd(cmd)
+
+
 def cmd_fill_score(args: argparse.Namespace) -> int:
     run_dir = args.evidence_root / args.tier / args.run_id
     template_csv = run_dir / "verification_log.csv"
@@ -100,6 +118,50 @@ def cmd_fill_score(args: argparse.Namespace) -> int:
     if args.no_strict_axis:
         score_cmd.append("--no-strict-axis")
     return run_cmd(score_cmd)
+
+
+def cmd_post_run(args: argparse.Namespace) -> int:
+    collect_cmd = [
+        sys.executable,
+        str(SCRIPT_DIR / "run_verification_pipeline.py"),
+        "collect",
+        "--run-id",
+        args.run_id,
+        "--tier",
+        args.tier,
+        "--evidence-root",
+        str(args.evidence_root),
+    ]
+    if args.raw_log_source:
+        collect_cmd.extend(["--raw-log-source", str(args.raw_log_source)])
+    if args.allow_missing_raw_log:
+        collect_cmd.append("--allow-missing-raw-log")
+    rc = run_cmd(collect_cmd)
+    if rc != 0:
+        return rc
+
+    fill_cmd = [
+        sys.executable,
+        str(SCRIPT_DIR / "run_verification_pipeline.py"),
+        "fill-score",
+        "--run-id",
+        args.run_id,
+        "--tier",
+        args.tier,
+        "--owner",
+        args.owner,
+        "--run-date",
+        args.run_date,
+        "--evidence-root",
+        str(args.evidence_root),
+    ]
+    if args.baseline_csv:
+        fill_cmd.extend(["--baseline-csv", str(args.baseline_csv)])
+    if args.no_strict_metadata:
+        fill_cmd.append("--no-strict-metadata")
+    if args.no_strict_axis:
+        fill_cmd.append("--no-strict-axis")
+    return run_cmd(fill_cmd)
 
 
 def cmd_smoke(args: argparse.Namespace) -> int:
@@ -350,6 +412,14 @@ def build_parser() -> argparse.ArgumentParser:
     p_prepare.add_argument("--evidence-root", type=Path, default=DEFAULT_EVIDENCE_ROOT)
     p_prepare.set_defaults(func=cmd_prepare)
 
+    p_collect = sub.add_parser("collect", help="Collect native reports and optional raw Write log for one tier run")
+    p_collect.add_argument("--run-id", required=True, help="Run ID, e.g. 20260306_1930")
+    p_collect.add_argument("--tier", required=True, choices=["UT", "IT", "ST", "FULL"])
+    p_collect.add_argument("--evidence-root", type=Path, default=DEFAULT_EVIDENCE_ROOT)
+    p_collect.add_argument("--raw-log-source", type=Path, default=None)
+    p_collect.add_argument("--allow-missing-raw-log", action="store_true")
+    p_collect.set_defaults(func=cmd_collect)
+
     p_fill = sub.add_parser("fill-score", help="Fill and score one tier run from raw Write log")
     p_fill.add_argument("--run-id", required=True, help="Run ID, e.g. 20260306_1930")
     p_fill.add_argument("--tier", required=True, choices=["UT", "IT", "ST"])
@@ -365,6 +435,27 @@ def build_parser() -> argparse.ArgumentParser:
     p_fill.add_argument("--no-strict-metadata", action="store_true")
     p_fill.add_argument("--no-strict-axis", action="store_true")
     p_fill.set_defaults(func=cmd_fill_score)
+
+    p_post = sub.add_parser(
+        "post-run",
+        help="Collect native run artifacts and immediately fill/score one tier",
+    )
+    p_post.add_argument("--run-id", required=True, help="Run ID, e.g. 20260306_1930")
+    p_post.add_argument("--tier", required=True, choices=["UT", "IT", "ST"])
+    p_post.add_argument("--owner", default="TBD")
+    p_post.add_argument("--run-date", default=dt.date.today().isoformat())
+    p_post.add_argument("--evidence-root", type=Path, default=DEFAULT_EVIDENCE_ROOT)
+    p_post.add_argument("--raw-log-source", type=Path, default=None)
+    p_post.add_argument("--allow-missing-raw-log", action="store_true")
+    p_post.add_argument(
+        "--baseline-csv",
+        type=Path,
+        default=None,
+        help="Optional baseline scored CSV for regression comparison",
+    )
+    p_post.add_argument("--no-strict-metadata", action="store_true")
+    p_post.add_argument("--no-strict-axis", action="store_true")
+    p_post.set_defaults(func=cmd_post_run)
 
     p_smoke = sub.add_parser("smoke", help="Run development completeness smoke checks via CANoe COM")
     p_smoke.add_argument("--owner", default="TBD")
