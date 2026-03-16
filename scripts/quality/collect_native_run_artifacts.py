@@ -58,12 +58,17 @@ def _copy_matching(src_root: Path, pattern: str, dst_root: Path) -> list[str]:
 
 
 def default_raw_log_candidates(tier: str) -> list[Path]:
-    base = REPO_ROOT / "canoe" / "tmp" / "write_window"
+    canonical_base = REPO_ROOT / "canoe" / "logging" / "evidence" / "incoming"
+    legacy_base = REPO_ROOT / "canoe" / "tmp" / "write_window"
     return [
-        base / tier / "raw_write_window.txt",
-        base / f"{tier}_ACTIVE_BASELINE_raw_write_window.txt",
-        base / f"{tier}_raw_write_window.txt",
-        base / "raw_write_window.txt",
+        canonical_base / tier / "raw_write_window.txt",
+        canonical_base / f"{tier}_ACTIVE_BASELINE_raw_write_window.txt",
+        canonical_base / f"{tier}_raw_write_window.txt",
+        canonical_base / "raw_write_window.txt",
+        legacy_base / tier / "raw_write_window.txt",
+        legacy_base / f"{tier}_ACTIVE_BASELINE_raw_write_window.txt",
+        legacy_base / f"{tier}_raw_write_window.txt",
+        legacy_base / "raw_write_window.txt",
     ]
 
 

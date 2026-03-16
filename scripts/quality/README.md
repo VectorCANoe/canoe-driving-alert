@@ -36,6 +36,7 @@ Current policy:
 
 - `canoe/AGENT/` and legacy `TMP` evidence sandboxes are reference-only.
 - Official `00~07` docs and root `canoe/` assets are the canonical verification SoT.
+- Verification operations follow `canoe/docs/verification/VECTOR_ALIGNED_CLOSEOUT_STANDARD.md`.
 - `init_evidence_run.py` seeds `verification_log.csv` directly from the official docs and current native assets.
 - `expected` is extracted from the official `05/06/07` tables.
 - `rule_type` / `rule_ms` are deterministic seeds derived from official table text, not vector/RAG inference.
@@ -84,7 +85,8 @@ Note:
   - summary `Report_<TIER>_ACTIVE_BASELINE.vtestreport`
   - per-test `Report_*.vtestreport`
   - matching report settings files
-  - optional `raw_write_window.txt` import from standard drop paths
+  - optional `raw_write_window.txt` import from the canonical drop root `canoe/logging/evidence/incoming/`
+  - legacy `canoe/tmp/write_window/` is fallback-only for migration
 - `check_run_readiness.py` outputs run readiness report:
   - template/raw/scored existence by UT/IT/ST
   - evidence marker count (`[EVIDENCE_OUT]`)
@@ -123,10 +125,16 @@ Recommended post-run flow:
 
 1. `python scripts/quality/run_verification_pipeline.py prepare --run-id <RUN_ID>`
 2. CANoe GUI에서 tier 실행
-3. CANoe Write Window export를 표준 drop path 중 하나에 저장:
-   - `canoe/tmp/write_window/<TIER>/raw_write_window.txt`
-   - `canoe/tmp/write_window/<TIER>_ACTIVE_BASELINE_raw_write_window.txt`
+3. CANoe Write Window export를 canonical drop path에 저장:
+   - `canoe/logging/evidence/incoming/<TIER>/raw_write_window.txt`
 4. `python scripts/quality/run_verification_pipeline.py post-run --run-id <RUN_ID> --tier <UT|IT|ST> --owner <OWNER>`
+5. `python scripts/quality/run_verification_pipeline.py bind-doc --run-id <RUN_ID>`
+6. `python scripts/quality/run_verification_pipeline.py fill-template --run-id <RUN_ID>`
+
+Approval rule:
+
+- automation produces candidate closeout outputs only
+- final official `PASS/FAIL` update remains reviewer-approved
 
 Post-run guarantees:
 

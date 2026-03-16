@@ -511,7 +511,7 @@ void runArbiter()
   }
   else
   {
-    driveState = 0;
+    driveState = clampRange((int)@Chassis::driveState, 0, 3);
   }
   if (ethIsRecentTick(gSteeringStateRxMs, 300) == 1)
   {
@@ -873,8 +873,8 @@ void updateWarningState()
   }
   else
   {
-    speed = 0;
-    driveState = 0;
+    speed = clampRange((int)@Chassis::vehicleSpeed, 0, 255);
+    driveState = clampRange((int)@Chassis::driveState, 0, 3);
   }
   if (ethIsRecentTick(gSteeringStateRxMs, 300) == 1)
   {

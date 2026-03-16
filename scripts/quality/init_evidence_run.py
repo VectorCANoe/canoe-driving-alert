@@ -270,6 +270,13 @@ def write_csv(path: Path, fields: list[str], rows: list[dict[str, str]]) -> None
         writer.writerows(rows)
 
 
+def ensure_standard_roots(evidence_root: Path, write_window_root: Path) -> None:
+    for tier in ("UT", "IT", "ST", "FULL"):
+        (evidence_root / tier).mkdir(parents=True, exist_ok=True)
+        (write_window_root / tier).mkdir(parents=True, exist_ok=True)
+    (evidence_root / "templates").mkdir(parents=True, exist_ok=True)
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Create evidence run folder skeleton")
     parser.add_argument(
@@ -292,12 +299,19 @@ def main() -> int:
         default="canoe/docs/verification/test-asset-mapping.md",
         help="Test asset mapping markdown path",
     )
+    parser.add_argument(
+        "--write-window-root",
+        default="canoe/logging/evidence/incoming",
+        help="Standard Write Window drop root path",
+    )
     args = parser.parse_args()
 
     root = _repo_path(Path(args.root))
     docs_root = _repo_path(Path(args.docs_root))
     mapping_path = _repo_path(Path(args.mapping_md))
+    write_window_root = _repo_path(Path(args.write_window_root))
     asset_map = load_asset_map(mapping_path)
+    ensure_standard_roots(root, write_window_root)
 
     tiers = ["UT", "IT", "ST"]
     created = []
@@ -323,6 +337,9 @@ def main() -> int:
     print("[EVIDENCE_INIT] created run folders:")
     for p in created:
         print(f"- {_rel(p)}")
+    print("[EVIDENCE_INIT] standard write-window drop roots:")
+    for tier in ("UT", "IT", "ST", "FULL"):
+        print(f"- {_rel(write_window_root / tier / 'raw_write_window.txt')}")
     return 0
 
 
