@@ -40,6 +40,11 @@ int getIviTxPort()
   return ethBackbonePort() + 4;
 }
 
+dword getIviLocalIp()
+{
+  return IpGetAddressAsNumber("192.168.1.19");
+}
+
 int deriveBaseZoneContextFromNavState(int routeClass, int guideType)
 {
   routeClass = clampRange(routeClass, 0, 3);
@@ -288,7 +293,7 @@ int deriveAlertVolume(int alertLevel, int presentationMode)
 
 on start
 {
-  gEthTxSocket = ethOpenNodeSocket(getIviTxPort());
+  gEthTxSocket = ethOpenNodeSocketAt(getIviLocalIp(), getIviTxPort());
   gEthTargetIp = ethGetDefaultIpAddress();
   gLastWarningTextCode = -1;
   gInfoAliveCnt = 0;

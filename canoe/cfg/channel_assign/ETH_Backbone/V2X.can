@@ -70,6 +70,11 @@ int getV2XTxPort()
   return ethBackbonePort() + 1;
 }
 
+dword getV2xLocalIp()
+{
+  return IpGetAddressAsNumber("192.168.1.9");
+}
+
 int isHigherPriority(int newType, int newEta, int newSourceId,
                      int activeType, int activeEta, int activeSourceId)
 {
@@ -146,11 +151,6 @@ void emitEmergencyBroadcast(int vehicleType, int status, int sourceId, int etaSe
   txSocket = gEthTxSocket;
   if (txSocket == ethInvalidSocket())
   {
-    txSocket = gEthSocket;
-  }
-
-  if (txSocket == ethInvalidSocket())
-  {
     return;
   }
 
@@ -173,12 +173,12 @@ void pushEmergencyMonitor()
   emergencyContext = clampRange(gLastEmergencyContext, 0, 255);
   timeoutClear = (gLastTimeoutClear == 1) ? 1 : 0;
 
-  if (gEthSocket != ethInvalidSocket())
+  if (gEthTxSocket != ethInvalidSocket())
   {
     ethInitFrame(frame, ethMsgEmergencyMonitor(), 2);
     ethSetU8(frame, 0, emergencyContext);
     ethSetU8(frame, 1, timeoutClear);
-    ethSendFrame(gEthSocket, gEthTargetIp, ethMsgEmergencyMonitor(), frame, 2);
+    ethSendFrame(gEthTxSocket, gEthTargetIp, ethMsgEmergencyMonitor(), frame, 2);
   }
 
   if (emergencyContext != gLastMonContext || timeoutClear != gLastMonTimeoutClear)
@@ -357,7 +357,7 @@ void recordAlertEvent()
 on start
 {
   gEthSocket = ethOpenDefaultSocket();
-  gEthTxSocket = ethOpenNodeSocket(getV2XTxPort());
+  gEthTxSocket = ethOpenNodeSocketAt(getV2xLocalIp(), getV2XTxPort());
   gEthTargetIp = ethGetDefaultIpAddress();
   clearEmergencyState();
   gActiveLastRxMs = 0;
@@ -383,7 +383,7 @@ on start
   gLastTransportDirection = 0;
   if (gEthTxSocket == ethInvalidSocket())
   {
-    write("[V2X] tx socket fallback to shared backbone port");
+    write("[V2X] tx socket unavailable");
   }
   publishActiveEmergencyToV2X();
   updateEmergencyContext();

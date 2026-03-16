@@ -39,6 +39,11 @@ int getVcuTxPort()
   return ethBackbonePort() + 2;
 }
 
+dword getVcuLocalIp()
+{
+  return IpGetAddressAsNumber("192.168.1.20");
+}
+
 int deriveDriveMode(int driveState, int speed, int accelPedal, int brakePedal)
 {
   if (driveState == 0)
@@ -184,7 +189,7 @@ void publishBackboneVehicleState(int vehicleSpeed, int driveState)
 
 on start
 {
-  gEthTxSocket = ethOpenNodeSocket(getVcuTxPort());
+  gEthTxSocket = ethOpenNodeSocketAt(getVcuLocalIp(), getVcuTxPort());
   gEthTargetIp = ethGetDefaultIpAddress();
   gSpeed = 0;
   gAccelPedal = 0;

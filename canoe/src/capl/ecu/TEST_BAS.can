@@ -7,6 +7,7 @@ variables
 {
   long gEthSocket;
   char gEthRxBuffer[64];
+  int gObserverArmed;
   int gLastBaseScenarioId;
   int gBaseScenarioResult;
   int gFlowCoverage;
@@ -158,14 +159,27 @@ void publishBaseResultState(int pass)
         gLastBaseScenarioId, gBaseScenarioResult, gTestHealth);
 }
 
-on start
+void ensureObserverArmed()
 {
+  if (gObserverArmed == 1)
+  {
+    return;
+  }
+
   gEthSocket = ethOpenDefaultSocket();
-  clearBaseResultState();
   if (gEthSocket != ethInvalidSocket())
   {
     ethStartReceiver(gEthSocket, gEthRxBuffer, elcount(gEthRxBuffer));
+    gObserverArmed = 1;
+    write("[TEST_BAS] observer armed");
   }
+}
+
+on start
+{
+  gEthSocket = ethInvalidSocket();
+  gObserverArmed = 0;
+  clearBaseResultState();
   write("[TEST_BAS] start");
 }
 
@@ -241,11 +255,32 @@ void OnUdpReceiveFrom(dword socket, long result, dword address, dword port, char
 
 on sysvar Test::scenarioResult
 {
+  ensureObserverArmed();
   publishBaseResultState((int)@Test::scenarioResult);
+}
+
+on sysvar Test::testScenario
+{
+  if ((int)@Test::testScenario != 0)
+  {
+    ensureObserverArmed();
+  }
+}
+
+on sysvar Test::scenarioCommand
+{
+  if ((int)@Test::scenarioCommand != 0)
+  {
+    ensureObserverArmed();
+  }
 }
 
 on sysvar Test::scenarioCommandAck
 {
+  if ((int)@Test::scenarioCommandAck != 0)
+  {
+    ensureObserverArmed();
+  }
   if ((int)@Test::scenarioCommandAck == 0)
   {
     clearBaseResultState();
@@ -256,4 +291,5 @@ on stopMeasurement
 {
   ethCloseSocket(gEthSocket);
   gEthSocket = ethInvalidSocket();
+  gObserverArmed = 0;
 }

@@ -22,6 +22,11 @@ int getMdpsTxPort()
   return ethBackbonePort() + 3;
 }
 
+dword getMdpsLocalIp()
+{
+  return IpGetAddressAsNumber("192.168.1.17");
+}
+
 void publishBackboneSteeringState(int steeringAngleRaw, int steeringQuality)
 {
   char frame[3];
@@ -69,7 +74,7 @@ void traceMdpsInputHealth(int steeringInputStale, int vehicleInputStale)
 
 on start
 {
-  gEthTxSocket = ethOpenNodeSocket(getMdpsTxPort());
+  gEthTxSocket = ethOpenNodeSocketAt(getMdpsLocalIp(), getMdpsTxPort());
   gEthTargetIp = ethGetDefaultIpAddress();
   gSteeringInput = 0;
   gSpeedNorm = 0;

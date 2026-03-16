@@ -143,6 +143,11 @@ int getTestScnTxPort()
   return ethBackbonePort() + 7;
 }
 
+dword getTestScnLocalIp()
+{
+  return IpGetAddressAsNumber("192.168.1.8");
+}
+
 void pushLockedScenarioInputs()
 {
   @Chassis::driveState = clampRange(gLockDriveState, 0, 3);
@@ -2403,7 +2408,7 @@ on timer tScenarioPhase3
 
 on start
 {
-  gEthSocket = ethOpenNodeSocket(getTestScnTxPort());
+  gEthSocket = ethOpenNodeSocketAt(getTestScnLocalIp(), getTestScnTxPort());
   gEthTargetIp = ethGetDefaultIpAddress();
   gDemoStepIndex = 0;
   gDemoRunning = 0;

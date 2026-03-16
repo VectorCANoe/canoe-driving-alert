@@ -49,6 +49,11 @@ int getCgwTxPort()
   return ethBackbonePort() + 6;
 }
 
+dword getCgwLocalIp()
+{
+  return IpGetAddressAsNumber("192.168.1.1");
+}
+
 int calcAgeMs(dword lastTsMs, dword nowMs)
 {
   if (lastTsMs == 0)
@@ -74,7 +79,7 @@ void publishFailSafeState(int warningPathStatus,
   txSocket = gEthTxSocket;
   if (txSocket == ethInvalidSocket())
   {
-    txSocket = gEthSocket;
+    return;
   }
 
   ethInitFrame(frame, ethMsgFailSafe(), 1);
@@ -96,7 +101,7 @@ void publishGatewayState(int routingPolicy,
   txSocket = gEthTxSocket;
   if (txSocket == ethInvalidSocket())
   {
-    txSocket = gEthSocket;
+    return;
   }
 
   ethInitFrame(frame, ethMsgGatewayState(), 1);
@@ -127,7 +132,7 @@ void publishObjectSafetyState(int failSafeMode)
   txSocket = gEthTxSocket;
   if (txSocket == ethInvalidSocket())
   {
-    txSocket = gEthSocket;
+    return;
   }
 
   ethInitFrame(frame, ethMsgObjectSafety(), 4);
@@ -215,7 +220,7 @@ void OnUdpReceiveFrom(dword socket, long result, dword address, dword port, char
 on start
 {
   gEthSocket = ethOpenDefaultSocket();
-  gEthTxSocket = ethOpenNodeSocket(getCgwTxPort());
+  gEthTxSocket = ethOpenNodeSocketAt(getCgwLocalIp(), getCgwTxPort());
   gEthTargetIp = ethGetDefaultIpAddress();
   gChassisAlive = 0;
   gBodyAlive = 0;
@@ -257,7 +262,7 @@ on start
   @Core::decelAssistReq = 0;
   if (gEthTxSocket == ethInvalidSocket())
   {
-    write("[CGW] tx socket fallback to shared backbone port");
+    write("[CGW] tx socket unavailable");
   }
   if (gEthSocket != ethInvalidSocket())
   {

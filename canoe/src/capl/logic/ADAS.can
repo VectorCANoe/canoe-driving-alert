@@ -67,6 +67,11 @@ int getAdasTxPort()
   return ethBackbonePort() + 5;
 }
 
+dword getAdasLocalIp()
+{
+  return IpGetAddressAsNumber("192.168.1.15");
+}
+
 int deriveBaseZoneContextFromNavState(int routeClass, int guideType)
 {
   routeClass = clampRange(routeClass, 0, 3);
@@ -108,7 +113,7 @@ void publishBackboneDecisionFrames()
   txSocket = gEthTxSocket;
   if (txSocket == ethInvalidSocket())
   {
-    txSocket = gEthSocket;
+    return;
   }
 
   ethInitFrame(riskFrame, ethMsgEmergencyRisk(), 4);
@@ -1254,7 +1259,7 @@ on message frmSeatBeltStateMsg
 on start
 {
   gEthSocket = ethOpenDefaultSocket();
-  gEthTxSocket = ethOpenNodeSocket(getAdasTxPort());
+  gEthTxSocket = ethOpenNodeSocketAt(getAdasLocalIp(), getAdasTxPort());
   gEthTargetIp = ethGetDefaultIpAddress();
   gLastWarningState = -1;
   gHighwayNoSteerStartMs = 0;
@@ -1321,7 +1326,7 @@ on start
   @Core::decelAssistReq = 0;
   if (gEthTxSocket == ethInvalidSocket())
   {
-    write("[ADAS] tx socket fallback to shared backbone port");
+    write("[ADAS] tx socket unavailable");
   }
   if (gEthSocket != ethInvalidSocket())
   {
