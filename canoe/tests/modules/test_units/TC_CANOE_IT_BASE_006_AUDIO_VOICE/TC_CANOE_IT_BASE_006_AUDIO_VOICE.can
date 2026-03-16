@@ -1,0 +1,31 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\\common\\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+}
+
+export testcase TC_CANOE_IT_BASE_006_AUDIO_VOICE()
+{
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  if (!launchScenarioAndWait(215, 900, 1300))
+  {
+    return;
+  }
+
+  assertIntEq("audio-voice-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+  assertIntEq("audio-voice-warning-code", 142, (long)@Cluster::warningTextCode, "warningTextCode");
+  assertIntEq("audio-voice-focus-owner", 1, (long)@CoreState::audioFocusOwner, "audioFocusOwner");
+  assertIntEq("audio-voice-ducking", 4, (long)@CoreState::audioDuckingLvl, "audioDuckingLvl");
+  assertIntEq("audio-voice-volume", 80, (long)@CoreState::volumeLevel, "volumeLevel");
+  assertIntEq("audio-voice-popup-active", 0, (long)@CoreState::popupActive, "popupActive");
+
+  resetValidationHarnessIfNeeded();
+}

@@ -158,7 +158,7 @@ def print_shell_help() -> None:
     print('  /verify quick [run_id] [owner]  # prepare + smoke + readiness status')
     print('  /gate all|doc-sync|text-integrity|cfg-hygiene|capl-sync|multibus-dbc|cli-readiness')
     print('  /artifact list [staging|archive|source] [--latest|--run-id <id>] [--phase <pre|post|full>]')
-    print('  /artifact open --target <batch-report|surface-bundle|readiness|doctor|surface-inventory|native-test-portfolio|native-testcase-blueprints|network-gateway-pack|verification-pack-matrix|traceability-profile|artifact-layout|phase-policy|manifest|commands-doc|results-doc|packaging-doc|archive-run|reports-dir|surface-dir|native-reports|execution-manifest>')
+    print('  /artifact open --target <batch-report|surface-bundle|readiness|doctor|surface-inventory|test-asset-mapping|active-test-units-guide|active-test-suites-guide|execution-guide|verification-pack-matrix|campaign-profiles|traceability-profile|artifact-layout|phase-policy|manifest|commands-doc|results-doc|packaging-doc|archive-run|reports-dir|surface-dir|native-reports|execution-manifest>')
     print('  /artifact clean [staging|archive|build|all] [run_id] [phase] [--yes]')
     print('  /package portable [onefolder|onefile]')
     print('  /package exe [onefolder|onefile]')

@@ -1,0 +1,62 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\\common\\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+  long gEopState;
+  long gPumpRpm;
+  long gOilPressure;
+  long gMcuState;
+  long gMotorTorqueCmd;
+  long gMotorSpeedRpm;
+  long gInverterState;
+  long gInvTemp;
+  long gDcLinkVolt;
+}
+
+on message frmEopStateMsg
+{
+  gEopState = this.EopState;
+  gPumpRpm = this.PumpRpm;
+  gOilPressure = this.OilPressure;
+}
+
+on message frmMcuStateMsg
+{
+  gMcuState = this.McuState;
+  gMotorTorqueCmd = this.MotorTorqueCmd;
+  gMotorSpeedRpm = this.MotorSpeedRpm;
+}
+
+on message frmInverterStateMsg
+{
+  gInverterState = this.InverterState;
+  gInvTemp = this.InvTemp;
+  gDcLinkVolt = this.DcLinkVolt;
+}
+
+export testcase TC_CANOE_UT_EXT_014_DOMAIN_ROUTER_PROPULSION()
+{
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+  if (!launchScenarioAndWait(232, 1500, 450))
+  {
+    return;
+  }
+  assertIntEq("router-propulsion-eop-state", 2, gEopState, "EopState");
+  assertIntEq("router-propulsion-pump-rpm", 1600, gPumpRpm, "PumpRpm");
+  assertIntEq("router-propulsion-oil-pressure", 120, gOilPressure, "OilPressure");
+  assertIntEq("router-propulsion-mcu-state", 2, gMcuState, "McuState");
+  assertIntEq("router-propulsion-torque", 124, gMotorTorqueCmd, "MotorTorqueCmd");
+  assertIntEq("router-propulsion-speed", 4800, gMotorSpeedRpm, "MotorSpeedRpm");
+  assertIntEq("router-propulsion-inverter-state", 2, gInverterState, "InverterState");
+  assertIntEq("router-propulsion-inv-temp", 71, gInvTemp, "InvTemp");
+  assertIntEq("router-propulsion-dc-link", 134, gDcLinkVolt, "DcLinkVolt");
+
+  resetValidationHarnessIfNeeded();
+}

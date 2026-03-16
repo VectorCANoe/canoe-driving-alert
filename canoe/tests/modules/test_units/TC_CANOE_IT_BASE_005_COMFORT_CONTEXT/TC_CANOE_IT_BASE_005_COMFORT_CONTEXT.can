@@ -1,0 +1,29 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\\common\\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+}
+
+export testcase TC_CANOE_IT_BASE_005_COMFORT_CONTEXT()
+{
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  if (!launchScenarioAndWait(229, 1300, 1700))
+  {
+    return;
+  }
+
+  assertIntEq("comfort-context-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+  assertIntEq("comfort-context-drive-state", 0, (long)@Core::driveStateNorm, "driveStateNorm");
+  assertIntEq("comfort-context-speed", 0, (long)@Core::vehicleSpeedNorm, "vehicleSpeedNorm");
+  assertIntEq("comfort-context-failsafe", 0, (long)@Core::failSafeMode, "failSafeMode");
+
+  resetValidationHarnessIfNeeded();
+}

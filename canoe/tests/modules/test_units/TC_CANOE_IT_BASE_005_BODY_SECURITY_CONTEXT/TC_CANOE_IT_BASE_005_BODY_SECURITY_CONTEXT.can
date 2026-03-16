@@ -1,0 +1,28 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\\common\\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+}
+
+export testcase TC_CANOE_IT_BASE_005_BODY_SECURITY_CONTEXT()
+{
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  if (!launchScenarioAndWait(203, 900, 1500))
+  {
+    return;
+  }
+
+  assertIntEq("body-security-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+  assertIntMin("body-security-diag-state", 1, (long)@Diag::SecurityState, "SecurityState");
+  assertIntEq("body-security-route-owner", 3, (long)@Diag::RouteOwner, "RouteOwner");
+
+  resetValidationHarnessIfNeeded();
+}

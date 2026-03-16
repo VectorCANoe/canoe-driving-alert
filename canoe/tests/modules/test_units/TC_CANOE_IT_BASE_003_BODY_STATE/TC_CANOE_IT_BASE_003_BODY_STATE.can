@@ -1,0 +1,28 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\\common\\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+}
+
+export testcase TC_CANOE_IT_BASE_003_BODY_STATE()
+{
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  if (!launchScenarioAndWait(211, 900, 1300))
+  {
+    return;
+  }
+
+  assertIntEq("body-hazard-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+  assertIntEq("body-hazard-turnlamp", 3, (long)@CoreState::turnLampState, "turnLampState");
+  assertIntEq("body-hazard-level", 6, (long)@Core::selectedAlertLevel, "selectedAlertLevel");
+
+  resetValidationHarnessIfNeeded();
+}

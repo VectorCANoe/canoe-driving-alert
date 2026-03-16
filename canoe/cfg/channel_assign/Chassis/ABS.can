@@ -13,32 +13,96 @@ variables
   int gWheelSpdFR;
   int gWheelSpdRL;
   int gWheelSpdRR;
+  dword gBrakeStatusRxMs;
+  dword gWheelSpeedRxMs;
+  int gLastBrakeInputStale;
+  int gLastWheelInputStale;
   int gLastCtrlState;
   int gLastSlipLevel;
   int gLastPressureCmd;
 }
 
+void traceAbsInputHealth(int brakeInputStale, int wheelInputStale)
+{
+  if (brakeInputStale != gLastBrakeInputStale)
+  {
+    if (brakeInputStale == 1)
+    {
+      write("[ABS] brake input stale");
+    }
+    else
+    {
+      write("[ABS] brake input restored");
+    }
+    gLastBrakeInputStale = brakeInputStale;
+  }
+
+  if (wheelInputStale != gLastWheelInputStale)
+  {
+    if (wheelInputStale == 1)
+    {
+      write("[ABS] wheel-speed input stale");
+    }
+    else
+    {
+      write("[ABS] wheel-speed input restored");
+    }
+    gLastWheelInputStale = wheelInputStale;
+  }
+}
+
 void publishAbsState()
 {
   message frmAbsStateMsg mAbs;
+  int brakePressure;
+  int brakeMode;
+  int absActive;
+  int wheelSpdFL;
+  int wheelSpdRL;
+  int wheelSpdRR;
+  int brakeInputStale;
+  int wheelInputStale;
   int avgRearSpeed;
   int slipLevel;
   int pressureCmd;
 
-  avgRearSpeed = (gWheelSpdRL + gWheelSpdRR) / 2;
-  slipLevel = 0;
-  if (gAbsActive == 1)
+  brakeInputStale = (ethIsRecentTick(gBrakeStatusRxMs, 300) == 1) ? 0 : 1;
+  wheelInputStale = (ethIsRecentTick(gWheelSpeedRxMs, 300) == 1) ? 0 : 1;
+  traceAbsInputHealth(brakeInputStale, wheelInputStale);
+
+  brakePressure = gBrakePressure;
+  brakeMode = gBrakeMode;
+  absActive = gAbsActive;
+  wheelSpdFL = gWheelSpdFL;
+  wheelSpdRL = gWheelSpdRL;
+  wheelSpdRR = gWheelSpdRR;
+  if (brakeInputStale == 1)
   {
-    slipLevel = clampRange(gBrakePressure - 80, 0, 63);
-    if (avgRearSpeed < gWheelSpdFL)
+    brakePressure = 0;
+    brakeMode = 0;
+    absActive = 0;
+  }
+  if (wheelInputStale == 1)
+  {
+    wheelSpdFL = 0;
+    wheelSpdRL = 0;
+    wheelSpdRR = 0;
+  }
+
+  avgRearSpeed = (wheelSpdRL + wheelSpdRR) / 2;
+  slipLevel = 0;
+  if (absActive == 1)
+  {
+    slipLevel = clampRange(brakePressure - 80, 0, 63);
+    if (avgRearSpeed < wheelSpdFL)
     {
-      slipLevel = clampRange(slipLevel + (gWheelSpdFL - avgRearSpeed), 0, 63);
+      slipLevel = clampRange(slipLevel + (wheelSpdFL - avgRearSpeed), 0, 63);
     }
   }
 
-  pressureCmd = (gAbsActive == 1) ? gBrakePressure : 0;
+  pressureCmd = (absActive == 1) ? brakePressure : 0;
 
-  mAbs.AbsCtrlState = (gAbsActive == 1) ? 2 : ((gBrakeMode > 0) ? 1 : 0);
+  mAbs.AbsCtrlState = (absActive == 1) ? 2 : ((brakeMode > 0) ? 1 : 0);
   mAbs.AbsSlipLevel = slipLevel;
   mAbs.AbsPressureCmd = clampRange(pressureCmd, 0, 255);
   output(mAbs);
@@ -51,8 +115,8 @@ void publishAbsState()
           mAbs.AbsCtrlState,
           mAbs.AbsSlipLevel,
           mAbs.AbsPressureCmd,
-          gBrakePressure,
-          gBrakeMode,
+          brakePressure,
+          brakeMode,
           avgRearSpeed);
     gLastCtrlState = mAbs.AbsCtrlState;
     gLastSlipLevel = mAbs.AbsSlipLevel;
@@ -69,6 +133,10 @@ on start
   gWheelSpdFR = 0;
   gWheelSpdRL = 0;
   gWheelSpdRR = 0;
+  gBrakeStatusRxMs = 0;
+  gWheelSpeedRxMs = 0;
+  gLastBrakeInputStale = 0;
+  gLastWheelInputStale = 0;
   gLastCtrlState = -1;
   gLastSlipLevel = -1;
   gLastPressureCmd = -1;
@@ -88,6 +156,7 @@ on message frmBrakeStatusMsg
   gBrakePressure = clampRange((int)this.BrakePressure, 0, 255);
   gBrakeMode = clampRange((int)this.BrakeMode, 0, 3);
   gAbsActive = clampRange((int)this.AbsActive, 0, 1);
+  gBrakeStatusRxMs = getSimulationTimeMs();
 }
 
 on message frmWheelSpeedMsg
@@ -96,6 +165,7 @@ on message frmWheelSpeedMsg
   gWheelSpdFR = clampRange((int)this.WheelSpdFR, 0, 255);
   gWheelSpdRL = clampRange((int)this.WheelSpdRL, 0, 255);
   gWheelSpdRR = clampRange((int)this.WheelSpdRR, 0, 255);
+  gWheelSpeedRxMs = getSimulationTimeMs();
 }
 
 on stopMeasurement

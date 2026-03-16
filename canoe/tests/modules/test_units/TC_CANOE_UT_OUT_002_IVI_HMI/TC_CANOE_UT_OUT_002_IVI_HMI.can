@@ -1,0 +1,60 @@
+﻿/*@!Encoding:65001*/
+includes
+{
+  #include "..\\common\\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+}
+
+export testcase TC_CANOE_UT_OUT_002_IVI_HMI()
+{
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  if (!launchScenarioAndWait(215, 900, 1300))
+  {
+    return;
+  }
+
+  assertIntEq("ivi-hmi-display-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+  assertIntEq("ivi-hmi-code", 142, (long)@Cluster::warningTextCode, "warningTextCode");
+  assertIntEq("ivi-hmi-direction", 2, (long)@UiRender::renderDirection, "renderDirection");
+  assertIntEq("ivi-hmi-audio-focus", 1, (long)@CoreState::audioFocusOwner, "audioFocusOwner");
+  assertIntEq("ivi-hmi-volume", 80, (long)@CoreState::volumeLevel, "volumeLevel");
+
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  if (!launchScenarioAndWait(220, 900, 1300))
+  {
+    return;
+  }
+
+  assertIntEq("ivi-hmi-popup-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+  assertIntEq("ivi-hmi-theme", 2, (long)@CoreState::themeMode, "themeMode");
+  assertIntEq("ivi-hmi-popup-active", 1, (long)@CoreState::popupActive, "popupActive");
+  assertIntEq("ivi-hmi-popup-priority", 1, (long)@CoreState::popupPriority, "popupPriority");
+
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  if (!launchScenarioAndWait(222, 900, 1300))
+  {
+    return;
+  }
+
+  assertIntEq("ivi-hmi-distance-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+  assertIntEq("ivi-hmi-distance", 180, (long)@CoreState::emergencyDistanceM, "emergencyDistanceM");
+  assertIntEq("ivi-hmi-distance-code", 102, (long)@Cluster::warningTextCode, "warningTextCode");
+  assertIntEq("ivi-hmi-distance-failsafe", 0, (long)@Core::failSafeMode, "failSafeMode");
+
+  resetValidationHarnessIfNeeded();
+}

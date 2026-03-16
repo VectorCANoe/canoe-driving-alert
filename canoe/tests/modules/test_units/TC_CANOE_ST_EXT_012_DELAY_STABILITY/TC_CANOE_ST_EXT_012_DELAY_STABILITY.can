@@ -1,0 +1,61 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\\common\\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+}
+
+export testcase TC_CANOE_ST_EXT_012_DELAY_STABILITY()
+{
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  if (!launchScenarioAndWait(12, 900, 1400))
+  {
+    return;
+  }
+
+  assertIntEq("delay-stability-guard-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+  assertIntMin("delay-stability-guard", 1, (long)@CoreState::duplicatePopupGuard, "duplicatePopupGuard");
+
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  if (!launchScenarioAndWait(35, 1800, 2300))
+  {
+    return;
+  }
+
+  assertIntEq("delay-stability-restore-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+  if (!waitForObservedSelectedAlert(800) ||
+      !waitForObservedFailSafe(800))
+  {
+    resetValidationHarnessIfNeeded();
+    return;
+  }
+  assertIntEq("delay-stability-restore-level", 3, (long)@Test::obsSelectedAlertLevel, "ethSelectedAlertLevel");
+  assertIntEq("delay-stability-restore-failsafe", 0, (long)@Test::obsFailSafeMode, "ethFailSafeMode");
+
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  if (!launchScenarioAndWait(201, 1500, 2000))
+  {
+    return;
+  }
+
+  assertIntEq("delay-stability-recovery-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+  if (!waitForObservedFailSafe(800)) { resetValidationHarnessIfNeeded(); return; }
+  assertIntEq("delay-stability-recovery-failsafe", 0, (long)@Test::obsFailSafeMode, "ethFailSafeMode");
+
+  resetValidationHarnessIfNeeded();
+}

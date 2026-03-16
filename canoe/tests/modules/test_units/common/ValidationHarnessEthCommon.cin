@@ -1,0 +1,68 @@
+/*
+  Shared transport observer helpers.
+
+  Final test direction:
+  - TEST_BAS is the single UDP/multicast observer owner.
+  - Individual testcases do not open backbone sockets.
+  - Testcases consume observer sysvars only.
+*/
+
+long obsFailSafeMode()
+{
+  return (long)@Test::obsFailSafeMode;
+}
+
+long obsEmergencyContext()
+{
+  return (long)@Test::obsEmergencyContext;
+}
+
+long obsDecelAssistReq()
+{
+  return (long)@Test::obsDecelAssistReq;
+}
+
+long obsDecelRisk()
+{
+  return (long)@Test::obsDecelRisk;
+}
+
+long obsSelectedAlertLevel()
+{
+  return (long)@Test::obsSelectedAlertLevel;
+}
+
+long obsSelectedAlertType()
+{
+  return (long)@Test::obsSelectedAlertType;
+}
+
+long obsObjectRiskClass()
+{
+  return (long)@Test::obsObjectRiskClass;
+}
+
+long obsObjectRiskLevel()
+{
+  return (long)@Test::obsObjectRiskLevel;
+}
+
+long obsObjectTrackValid()
+{
+  return (long)@Test::obsObjectTrackValid;
+}
+
+long obsObjectConfidence()
+{
+  return (long)@Test::obsObjectConfidence;
+}
+
+long obsIntersectionConflictFlag()
+{
+  return (long)@Test::obsIntersectionConflictFlag;
+}
+
+long obsMergeCutInFlag()
+{
+  return (long)@Test::obsMergeCutInFlag;
+}

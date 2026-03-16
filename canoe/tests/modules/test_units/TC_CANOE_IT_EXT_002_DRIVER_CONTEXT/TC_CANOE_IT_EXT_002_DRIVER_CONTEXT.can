@@ -1,0 +1,74 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\\common\\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+}
+
+export testcase TC_CANOE_IT_EXT_002_DRIVER_CONTEXT()
+{
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  if (!launchScenarioAndWait(214, 900, 1300))
+  {
+    return;
+  }
+
+  assertIntEq("seatbelt-context-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+  assertIntEq("seatbelt-context-level", 5, (long)@Core::selectedAlertLevel, "selectedAlertLevel");
+  assertIntEq("seatbelt-context-type", 3, (long)@Core::selectedAlertType, "selectedAlertType");
+
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  if (!launchScenarioAndWait(215, 900, 1300))
+  {
+    return;
+  }
+
+  assertIntEq("display-policy-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+  assertIntEq("display-policy-level", 6, (long)@Core::selectedAlertLevel, "selectedAlertLevel");
+  assertIntEq("display-policy-type", 1, (long)@Core::selectedAlertType, "selectedAlertType");
+  assertIntEq("display-policy-code", 142, (long)@Cluster::warningTextCode, "warningTextCode");
+  assertIntEq("display-policy-direction", 2, (long)@UiRender::renderDirection, "renderDirection");
+
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  if (!launchScenarioAndWait(236, 900, 1300))
+  {
+    return;
+  }
+
+  assertIntEq("drive-mode-sport-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+  assertIntEq("drive-mode-sport-level", 4, (long)@Core::selectedAlertLevel, "selectedAlertLevel");
+  assertIntEq("drive-mode-sport-type", 3, (long)@Core::selectedAlertType, "selectedAlertType");
+  assertIntEq("drive-mode-sport-flag", 1, (long)@CoreState::sportMode, "sportMode");
+
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  if (!launchScenarioAndWait(239, 900, 1300))
+  {
+    return;
+  }
+
+  assertIntEq("turn-lamp-context-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+  assertIntEq("turn-lamp-context-level", 3, (long)@Core::selectedAlertLevel, "selectedAlertLevel");
+  assertIntEq("turn-lamp-context-type", 6, (long)@Core::selectedAlertType, "selectedAlertType");
+  assertIntEq("turn-lamp-context-state", 2, (long)@CoreState::turnLampState, "turnLampState");
+
+  resetValidationHarnessIfNeeded();
+}

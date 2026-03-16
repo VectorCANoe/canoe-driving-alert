@@ -11,8 +11,99 @@ variables
   int gDriveState;
   int gSteeringInput;
   int gChassisAliveCnt;
+  int gAebStopReq;
+  int gAebDecelProfile;
+  int gAebDomainHealth;
+  dword gVehicleStateRxMs;
+  dword gSteeringRxMs;
+  dword gPedalRxMs;
+  dword gAebRxMs;
+  int gLastVehicleStateInputStale;
+  int gLastSteeringInputStale;
+  int gLastPedalInputStale;
+  int gLastAebInputStale;
   int gLastBrakePedal;
   int gLastAssistReq;
+}
+
+void traceEscInputHealth(int vehicleStateInputStale, int steeringInputStale, int pedalInputStale, int aebInputStale)
+{
+  if (vehicleStateInputStale != gLastVehicleStateInputStale)
+  {
+    if (vehicleStateInputStale == 1)
+    {
+      write("[ESC] vehicle-state input stale");
+    }
+    else
+    {
+      write("[ESC] vehicle-state input restored");
+    }
+    gLastVehicleStateInputStale = vehicleStateInputStale;
+  }
+
+  if (steeringInputStale != gLastSteeringInputStale)
+  {
+    if (steeringInputStale == 1)
+    {
+      write("[ESC] steering input stale");
+    }
+    else
+    {
+      write("[ESC] steering input restored");
+    }
+    gLastSteeringInputStale = steeringInputStale;
+  }
+
+  if (pedalInputStale != gLastPedalInputStale)
+  {
+    if (pedalInputStale == 1)
+    {
+      write("[ESC] pedal input stale");
+    }
+    else
+    {
+      write("[ESC] pedal input restored");
+    }
+    gLastPedalInputStale = pedalInputStale;
+  }
+
+  if (aebInputStale != gLastAebInputStale)
+  {
+    if (aebInputStale == 1)
+    {
+      write("[ESC] aeb input stale");
+    }
+    else
+    {
+      write("[ESC] aeb input restored");
+    }
+    gLastAebInputStale = aebInputStale;
+  }
+}
+
+int deriveEscAssistPressureFloor(int aebStopReq, int aebDecelProfile, int aebDomainHealth)
+{
+  if (aebDomainHealth == 0)
+  {
+    return 0;
+  }
+  if (aebStopReq == 1)
+  {
+    return 55;
+  }
+  if (aebDecelProfile >= 3)
+  {
+    return 45;
+  }
+  if (aebDecelProfile == 2)
+  {
+    return 35;
+  }
+  if (aebDecelProfile == 1)
+  {
+    return 25;
+  }
+  return 0;
 }
 
 on start
@@ -22,6 +113,17 @@ on start
   gDriveState = 0;
   gSteeringInput = 0;
   gChassisAliveCnt = 0;
+  gAebStopReq = 0;
+  gAebDecelProfile = 0;
+  gAebDomainHealth = 0;
+  gVehicleStateRxMs = 0;
+  gSteeringRxMs = 0;
+  gPedalRxMs = 0;
+  gAebRxMs = 0;
+  gLastVehicleStateInputStale = 0;
+  gLastSteeringInputStale = 0;
+  gLastPedalInputStale = 0;
+  gLastAebInputStale = 0;
   gLastBrakePedal = -1;
   gLastAssistReq = -1;
   setTimer(tEscCycle, 100);
@@ -32,17 +134,27 @@ on message frmVehicleStateCanMsg
 {
   gSpeedNorm = clampRange((int)this.gVehicleSpeed, 0, 255);
   gDriveState = clampRange((int)this.gDriveState, 0, 3);
+  gVehicleStateRxMs = getSimulationTimeMs();
 }
 
 on message frmSteeringCanMsg
 {
   gSteeringInput = clampRange((int)this.SteeringInput, 0, 1);
+  gSteeringRxMs = getSimulationTimeMs();
 }
 
 on message frmPedalInputCanMsg
 {
   gBrakePedal = clampRange((int)this.BrakePedal, 0, 100);
-  @Core::brakePedalNorm = gBrakePedal;
+  gPedalRxMs = getSimulationTimeMs();
+}
+
+on message frmAebDomainStateMsg
+{
+  gAebStopReq = clampRange((int)this.StopReq, 0, 1);
+  gAebDecelProfile = clampRange((int)this.DecelProfile, 0, 3);
+  gAebDomainHealth = clampRange((int)this.DomainHealth, 0, 3);
+  gAebRxMs = getSimulationTimeMs();
 }
 
 on timer tEscCycle
@@ -56,7 +168,18 @@ on timer tEscCycle
   message frmBrakeWearMsg mBrakeWear;
   message frmSuspensionStateMsg mSuspension;
   message frmRoadFrictionMsg mFriction;
+  int vehicleStateInputStale;
+  int steeringInputStale;
+  int pedalInputStale;
+  int aebInputStale;
+  int aebStopReq;
+  int aebDecelProfile;
+  int aebDomainHealth;
   int decelAssistReq;
+  int assistPressureFloor;
+  int speedNorm;
+  int driveState;
+  int steeringInput;
   int appliedBrakePedal;
   int brakePressure;
   int absActive;
@@ -65,24 +188,55 @@ on timer tEscCycle
   int yawRate;
   int latAccel;
 
-  decelAssistReq = (((int)@Core::decelAssistReq) == 1) ? 1 : 0;
-  appliedBrakePedal = gBrakePedal;
-  if (decelAssistReq == 1 && appliedBrakePedal < 25)
+  vehicleStateInputStale = (ethIsRecentTick(gVehicleStateRxMs, 300) == 1) ? 0 : 1;
+  steeringInputStale = (ethIsRecentTick(gSteeringRxMs, 300) == 1) ? 0 : 1;
+  pedalInputStale = (ethIsRecentTick(gPedalRxMs, 300) == 1) ? 0 : 1;
+  aebInputStale = (ethIsRecentTick(gAebRxMs, 300) == 1) ? 0 : 1;
+  traceEscInputHealth(vehicleStateInputStale, steeringInputStale, pedalInputStale, aebInputStale);
+
+  aebStopReq = gAebStopReq;
+  aebDecelProfile = gAebDecelProfile;
+  aebDomainHealth = gAebDomainHealth;
+  if (aebInputStale == 1)
   {
-    appliedBrakePedal = 25;
+    aebStopReq = 0;
+    aebDecelProfile = 0;
+    aebDomainHealth = 0;
   }
-
+  decelAssistReq = ((aebStopReq == 1 || aebDecelProfile > 0) && aebDomainHealth > 0) ? 1 : 0;
+  assistPressureFloor = deriveEscAssistPressureFloor(aebStopReq, aebDecelProfile, aebDomainHealth);
+  speedNorm = gSpeedNorm;
+  driveState = gDriveState;
+  steeringInput = gSteeringInput;
+  appliedBrakePedal = gBrakePedal;
+  if (vehicleStateInputStale == 1)
+  {
+    speedNorm = 0;
+    driveState = 0;
+  }
+  if (steeringInputStale == 1)
+  {
+    steeringInput = 0;
+  }
+  if (pedalInputStale == 1)
+  {
+    appliedBrakePedal = 0;
+  }
+  if (assistPressureFloor > 0 && appliedBrakePedal < assistPressureFloor)
+  {
+    appliedBrakePedal = assistPressureFloor;
+  }
   brakePressure = clampRange(appliedBrakePedal * 2, 0, 255);
-  absActive = ((appliedBrakePedal > 80) && (gSpeedNorm > 10)) ? 1 : 0;
+  absActive = ((appliedBrakePedal > 80) && (speedNorm > 10)) ? 1 : 0;
   absSlip = absActive ? clampRange(appliedBrakePedal - 80, 0, 63) : 0;
-  espActive = ((appliedBrakePedal > 40) && (gSteeringInput == 1)) ? 1 : 0;
-  yawRate = gSteeringInput * 15;
-  latAccel = gSpeedNorm;
+  espActive = ((appliedBrakePedal > 40) && (steeringInput == 1)) ? 1 : 0;
+  yawRate = steeringInput * 15;
+  latAccel = speedNorm;
 
-  mWheelSpd.WheelSpdFL = gSpeedNorm;
-  mWheelSpd.WheelSpdFR = gSpeedNorm;
-  mWheelSpd.WheelSpdRL = gSpeedNorm;
-  mWheelSpd.WheelSpdRR = gSpeedNorm;
+  mWheelSpd.WheelSpdFL = speedNorm;
+  mWheelSpd.WheelSpdFR = speedNorm;
+  mWheelSpd.WheelSpdRL = speedNorm;
+  mWheelSpd.WheelSpdRR = speedNorm;
   output(mWheelSpd);
 
   mYawAccel.YawRate = yawRate;
@@ -112,7 +266,7 @@ on timer tEscCycle
   mBrakeWear.BrakePadWearLvl = 10;
   output(mBrakeWear);
 
-  mSuspension.SuspensionMode = (gDriveState == 3) ? 1 : 0;
+  mSuspension.SuspensionMode = (driveState == 3) ? 1 : 0;
   mSuspension.SuspensionLevel = 8;
   mSuspension.DampingLevel = 12;
   output(mSuspension);
@@ -124,8 +278,8 @@ on timer tEscCycle
   if (gBrakePedal != gLastBrakePedal || decelAssistReq != gLastAssistReq)
   {
     write("[ESC] speed=%d pedal=%d assist=%d pressure=%d abs=%d esp=%d",
-          gSpeedNorm, gBrakePedal, decelAssistReq, brakePressure, absActive, espActive);
-    gLastBrakePedal = gBrakePedal;
+          speedNorm, appliedBrakePedal, decelAssistReq, brakePressure, absActive, espActive);
+    gLastBrakePedal = appliedBrakePedal;
     gLastAssistReq = decelAssistReq;
   }
 

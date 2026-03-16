@@ -18,6 +18,21 @@ from collections import Counter, defaultdict
 from pathlib import Path
 
 
+REPO_ROOT = Path(__file__).resolve().parents[2]
+
+
+def _repo_path(path: Path) -> Path:
+    return path if path.is_absolute() else (REPO_ROOT / path)
+
+
+def _rel(path: Path) -> str:
+    path = _repo_path(path)
+    try:
+        return str(path.relative_to(REPO_ROOT)).replace("\\", "/")
+    except ValueError:
+        return str(path).replace("\\", "/")
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Build 05/06/07 fill template from doc binding CSV")
     parser.add_argument(
@@ -43,6 +58,7 @@ def build_parser() -> argparse.ArgumentParser:
 
 
 def load_rows(path: Path) -> list[dict[str, str]]:
+    path = _repo_path(path)
     if not path.exists():
         raise FileNotFoundError(f"binding csv not found: {path}")
     with path.open("r", encoding="utf-8-sig", newline="") as f:
@@ -70,6 +86,9 @@ def to_action(binding_status: str) -> str:
 
 def main() -> int:
     args = build_parser().parse_args()
+    args.binding_csv = _repo_path(args.binding_csv)
+    args.output_csv = _repo_path(args.output_csv)
+    args.output_md = _repo_path(args.output_md)
     rows = load_rows(args.binding_csv)
     now = dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
@@ -155,7 +174,7 @@ def main() -> int:
         "",
         f"- Generated: {now}",
         f"- Run ID: `{args.run_id or 'N/A'}`",
-        f"- Binding CSV: `{args.binding_csv}`",
+        f"- Binding CSV: `{_rel(args.binding_csv)}`",
         f"- Rows: {len(out_rows)}",
         "",
         "## Status Summary",
@@ -183,8 +202,8 @@ def main() -> int:
     lines += [
         "",
         "## Output",
-        f"- CSV: `{args.output_csv}`",
-        f"- MD: `{args.output_md}`",
+        f"- CSV: `{_rel(args.output_csv)}`",
+        f"- MD: `{_rel(args.output_md)}`",
     ]
     args.output_md.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
@@ -192,8 +211,8 @@ def main() -> int:
         f"[DOC_FILL] rows={len(out_rows)} ready={by_status['READY']} "
         f"doc_only={by_status['DOC_ONLY']} evidence_only={by_status['EVIDENCE_ONLY']}"
     )
-    print(f"[OUT] {args.output_csv}")
-    print(f"[OUT] {args.output_md}")
+    print(f"[OUT] {_rel(args.output_csv)}")
+    print(f"[OUT] {_rel(args.output_md)}")
     return 0
 
 

@@ -26,7 +26,7 @@ def _load_json(path: Path) -> dict:
     path = _repo_path(path)
     if not path.exists():
         return {}
-    return json.loads(path.read_text(encoding="utf-8"))
+    return json.loads(path.read_text(encoding="utf-8-sig"))
 
 
 def _load_phase_policy(phase: str) -> dict:
@@ -37,7 +37,7 @@ def _load_phase_policy(phase: str) -> dict:
             "readiness_fail_states": ["MISSING", "BROKEN", "INVALID"],
             "source": "fallback",
         }
-    raw = json.loads(POLICY_PATH.read_text(encoding="utf-8"))
+    raw = json.loads(POLICY_PATH.read_text(encoding="utf-8-sig"))
     profiles = raw.get("profiles", {}) if isinstance(raw, dict) else {}
     profile = profiles.get(phase, profiles.get("pre")) if isinstance(profiles, dict) else {}
     if not isinstance(profile, dict):
@@ -176,6 +176,8 @@ def _execution_context(batch: dict, readiness: dict, doctor: dict, smoke_rows: l
         "campaign_id": str(batch.get("campaign_id") or ""),
         "profile_id": str(batch.get("profile_id") or (batch.get("campaign", {}) if isinstance(batch.get("campaign"), dict) else {}).get("profile_id", "")),
         "pack_id": str(batch.get("pack_id") or (batch.get("campaign", {}) if isinstance(batch.get("campaign"), dict) else {}).get("pack_id", "")),
+        "suite_id": str(batch.get("suite_id") or (batch.get("campaign", {}) if isinstance(batch.get("campaign"), dict) else {}).get("suite_id", "")),
+        "assign_folder": str(batch.get("assign_folder") or (batch.get("campaign", {}) if isinstance(batch.get("campaign"), dict) else {}).get("assign_folder", "")),
         "surface_scope": str(batch.get("campaign", {}).get("surface_scope", "ALL")) if isinstance(batch.get("campaign"), dict) else "ALL",
         "repeat_count": int(batch.get("campaign", {}).get("repeat_count", 1)) if isinstance(batch.get("campaign"), dict) else 1,
         "duration_minutes": int(batch.get("campaign", {}).get("duration_minutes", 0)) if isinstance(batch.get("campaign"), dict) else 0,
@@ -442,6 +444,8 @@ def main() -> int:
         f"- Campaign ID: `{bundle['execution']['campaign_id'] or '-'}`",
         f"- Profile ID: `{bundle['execution'].get('profile_id', '-') or '-'}`",
         f"- Pack ID: `{bundle['execution'].get('pack_id', '-') or '-'}`",
+        f"- Suite ID: `{bundle['execution'].get('suite_id', '-') or '-'}`",
+        f"- Assign Folder: `{bundle['execution'].get('assign_folder', '-') or '-'}`",
         f"- Phase: `{bundle['execution']['phase'] or '-'}`",
         f"- Phase Policy: `{bundle['phase_policy']['source']}`",
         f"- Owner: `{bundle['execution']['owner'] or '-'}`",

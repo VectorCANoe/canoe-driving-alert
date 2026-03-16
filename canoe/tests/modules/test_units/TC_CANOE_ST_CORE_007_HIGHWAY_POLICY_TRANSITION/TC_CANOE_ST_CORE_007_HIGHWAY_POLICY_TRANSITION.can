@@ -1,0 +1,38 @@
+﻿/*@!Encoding:65001*/
+includes
+{
+  #include "..\\common\\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+}
+
+export testcase TC_CANOE_ST_CORE_007_HIGHWAY_POLICY_TRANSITION()
+{
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  if (!launchScenarioAndWait(14, 700, 1000))
+  {
+    return;
+  }
+
+  assertIntEq("st007-normal-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+  assertIntEq("st007-normal-zone", 0, (long)@Core::baseZoneContext, "baseZoneContext");
+
+  if (!launchScenarioAndWait(244, 900, 1300))
+  {
+    return;
+  }
+
+  assertIntEq("st007-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+  assertIntEq("st007-highway-zone", 2, (long)@Core::baseZoneContext, "baseZoneContext");
+  assertIntEq("st007-level", 0, (long)@Core::selectedAlertLevel, "selectedAlertLevel");
+  assertIntEq("st007-type", 0, (long)@Core::selectedAlertType, "selectedAlertType");
+  assertIntEq("st007-failsafe", 0, (long)@Core::failSafeMode, "failSafeMode");
+
+  resetValidationHarnessIfNeeded();
+}

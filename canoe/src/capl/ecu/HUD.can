@@ -12,45 +12,148 @@ variables
   int gGuideType;
   int gThemeMode;
   int gBrightness;
+  dword gWarningRxMs;
+  dword gPopupRxMs;
+  dword gGuideRxMs;
+  dword gThemeRxMs;
+  int gLastWarningInputStale;
+  int gLastPopupInputStale;
+  int gLastGuideInputStale;
+  int gLastThemeInputStale;
   int gLastHudMode;
   int gLastHudWarning;
   int gLastHudGuide;
   int gLastHudBrightness;
 }
 
+void traceHudInputHealth(int warningInputStale, int popupInputStale,
+                         int guideInputStale, int themeInputStale)
+{
+  if (warningInputStale != gLastWarningInputStale)
+  {
+    if (warningInputStale == 1)
+    {
+      write("[HUD] warning input stale");
+    }
+    else
+    {
+      write("[HUD] warning input restored");
+    }
+    gLastWarningInputStale = warningInputStale;
+  }
+
+  if (popupInputStale != gLastPopupInputStale)
+  {
+    if (popupInputStale == 1)
+    {
+      write("[HUD] popup input stale");
+    }
+    else
+    {
+      write("[HUD] popup input restored");
+    }
+    gLastPopupInputStale = popupInputStale;
+  }
+
+  if (guideInputStale != gLastGuideInputStale)
+  {
+    if (guideInputStale == 1)
+    {
+      write("[HUD] navigation input stale");
+    }
+    else
+    {
+      write("[HUD] navigation input restored");
+    }
+    gLastGuideInputStale = guideInputStale;
+  }
+
+  if (themeInputStale != gLastThemeInputStale)
+  {
+    if (themeInputStale == 1)
+    {
+      write("[HUD] theme input stale");
+    }
+    else
+    {
+      write("[HUD] theme input restored");
+    }
+    gLastThemeInputStale = themeInputStale;
+  }
+}
+
 void publishHudState()
 {
   message frmHudStateMsg mHud;
+  int warningInputStale;
+  int popupInputStale;
+  int guideInputStale;
+  int themeInputStale;
+  int warningCode;
+  int popupPriority;
+  int popupActive;
+  int guideType;
+  int themeMode;
   int hudMode;
   int hudBrightness;
 
+  warningInputStale = (ethIsRecentTick(gWarningRxMs, 300) == 1) ? 0 : 1;
+  popupInputStale = (ethIsRecentTick(gPopupRxMs, 300) == 1) ? 0 : 1;
+  guideInputStale = (ethIsRecentTick(gGuideRxMs, 300) == 1) ? 0 : 1;
+  themeInputStale = (ethIsRecentTick(gThemeRxMs, 300) == 1) ? 0 : 1;
+  traceHudInputHealth(warningInputStale, popupInputStale, guideInputStale, themeInputStale);
+
+  warningCode = gWarningCode;
+  popupPriority = gPopupPriority;
+  popupActive = gPopupActive;
+  guideType = gGuideType;
+  themeMode = gThemeMode;
+  hudBrightness = gBrightness;
+  if (warningInputStale == 1)
+  {
+    warningCode = 0;
+  }
+  if (popupInputStale == 1)
+  {
+    popupPriority = 0;
+    popupActive = 0;
+  }
+  if (guideInputStale == 1)
+  {
+    guideType = 0;
+  }
+  if (themeInputStale == 1)
+  {
+    themeMode = 0;
+    hudBrightness = 18;
+  }
+
   hudMode = 0;
-  if (gPopupActive == 1 && gPopupPriority >= 5)
+  if (popupActive == 1 && popupPriority >= 5)
   {
     hudMode = 2;
   }
-  else if (gWarningCode > 0)
+  else if (warningCode > 0)
   {
     hudMode = 1;
   }
-  else if (gGuideType > 0)
+  else if (guideType > 0)
   {
     hudMode = 3;
   }
 
-  hudBrightness = gBrightness;
   if (hudBrightness <= 0)
   {
     hudBrightness = 18;
   }
-  if (gPopupActive == 1 && hudBrightness < 24)
+  if (popupActive == 1 && hudBrightness < 24)
   {
     hudBrightness = 24;
   }
 
   mHud.HudMode = clampRange(hudMode, 0, 7);
-  mHud.HudWarningCode = clampRange(gWarningCode, 0, 255);
-  mHud.HudGuideType = clampRange(gGuideType, 0, 15);
+  mHud.HudWarningCode = clampRange(warningCode, 0, 255);
+  mHud.HudGuideType = clampRange(guideType, 0, 15);
   mHud.HudBrightness = clampRange(hudBrightness, 0, 31);
   output(mHud);
 
@@ -64,9 +167,9 @@ void publishHudState()
           mHud.HudWarningCode,
           mHud.HudGuideType,
           mHud.HudBrightness,
-          gThemeMode,
-          gPopupPriority,
-          gPopupActive);
+          themeMode,
+          popupPriority,
+          popupActive);
     gLastHudMode = mHud.HudMode;
     gLastHudWarning = mHud.HudWarningCode;
     gLastHudGuide = mHud.HudGuideType;
@@ -82,6 +185,14 @@ on start
   gGuideType = 0;
   gThemeMode = 0;
   gBrightness = 18;
+  gWarningRxMs = 0;
+  gPopupRxMs = 0;
+  gGuideRxMs = 0;
+  gThemeRxMs = 0;
+  gLastWarningInputStale = 0;
+  gLastPopupInputStale = 0;
+  gLastGuideInputStale = 0;
+  gLastThemeInputStale = 0;
   gLastHudMode = -1;
   gLastHudWarning = -1;
   gLastHudGuide = -1;
@@ -99,23 +210,27 @@ on timer tHudCycle
 on message frmClusterWarningMsg
 {
   gWarningCode = clampRange((int)this.WarningTextCode, 0, 255);
+  gWarningRxMs = getSimulationTimeMs();
 }
 
 on message frmHmiPopupStateMsg
 {
   gPopupPriority = clampRange((int)this.PopupPriority, 0, 7);
   gPopupActive = clampRange((int)this.PopupActive, 0, 1);
+  gPopupRxMs = getSimulationTimeMs();
 }
 
 on message frmNavigationRouteMsg
 {
   gGuideType = clampRange((int)this.GuideType, 0, 3);
+  gGuideRxMs = getSimulationTimeMs();
 }
 
 on message frmClusterThemeMsg
 {
   gThemeMode = clampRange((int)this.ThemeMode, 0, 7);
   gBrightness = clampRange((int)this.ClusterBrightness, 0, 31);
+  gThemeRxMs = getSimulationTimeMs();
 }
 
 on stopMeasurement

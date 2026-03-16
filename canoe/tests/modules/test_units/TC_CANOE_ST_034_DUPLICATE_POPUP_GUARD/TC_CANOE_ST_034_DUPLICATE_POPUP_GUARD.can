@@ -1,0 +1,27 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\common\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+}
+
+export testcase TC_CANOE_ST_034_DUPLICATE_POPUP_GUARD()
+{
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  if (!launchScenarioAndWait(12, 900, 1400))
+  {
+    return;
+  }
+
+  assertIntEq("delay-stability-guard-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+  assertIntMin("delay-stability-guard", 1, (long)@CoreState::duplicatePopupGuard, "duplicatePopupGuard");
+
+  resetValidationHarnessIfNeeded();
+}

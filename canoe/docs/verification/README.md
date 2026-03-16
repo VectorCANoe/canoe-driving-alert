@@ -1,26 +1,36 @@
-# Verification Docs Index
+# Verification Docs
 
-This folder keeps only the active verification execution documents for the CANoe SIL baseline.
-
-## Start Here
-
-1. `20_CANOE_TEST_EXECUTION_GUIDE.md`
-2. `21_SIL_ACCEPTANCE_CRITERIA.md`
-3. `22_TEAM_EXECUTION_FLOW.md`
-4. `23_VERIFICATION_EVIDENCE_LOG_STANDARD.md`
+This folder defines the active verification documents for the CANoe SIL baseline.
 
 ## Active Docs
 
-- `20_CANOE_TEST_EXECUTION_GUIDE.md`
-  - GUI-side registration and execution steps for native CANoe Test Units
-- `21_SIL_ACCEPTANCE_CRITERIA.md`
-  - pass/fail baseline for SIL execution
-- `22_TEAM_EXECUTION_FLOW.md`
-  - current Dev1/Dev2/Docs execution split reference
-- `23_VERIFICATION_EVIDENCE_LOG_STANDARD.md`
-  - evidence log schema, timing rule evaluation, and PASS/FAIL evidence completion rule
+- `execution-guide.md`
+  - native CANoe Test Unit registration and execution flow
+- `acceptance-criteria.md`
+  - SIL pass/fail criteria
+- `oracle.md`
+  - oracle definition for contract, behavior, harness, and evidence checks
+- `evidence-policy.md`
+  - evidence logging and completion policy
+- `test-asset-mapping.md`
+  - official mapping from `05/06/07` IDs to native assets, oracle, and evidence
+- `diagnostic-coverage.md`
+  - current official diagnostic-linked verification scope
+- `native-test-asset-naming.md`
+  - naming rule for executable native CANoe test assets
+- `test-suite-composition.md`
+  - active UT/IT/ST suite composition built from non-retired executable assets
+- `diagnostic-seam-design.md`
+  - minimum seam design for the current diagnostic-linked scope
 
 ## Working Rule
 
-- Keep this folder limited to execution steps and pass/fail rules.
-- Dated analysis notes stay in archive branches, not in this tree.
+- Keep this folder limited to execution, verdict, oracle, and evidence rules.
+- Keep temporary team coordination and packaging ownership outside this folder.
+
+## Current diagnostic execution baseline
+
+The active diagnostic verification baseline is currently anchored to four official items:
+`UT_063`, `UT_064`, `IT_040`, and `ST_043`.
+Their current `TEST_SCN` scenario bindings are `203`, `204`, `205`, and `202` respectively.
+Producer wiring is in place in `SGW.can`, `DCM.can`, and `TEST_SCN.can`; compile and runtime evidence remain separate pending gates.

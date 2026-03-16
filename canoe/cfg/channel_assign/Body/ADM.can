@@ -10,9 +10,58 @@ variables
   int gDoorFrLockState;
   int gDoorFlOpenState;
   int gDoorFrOpenState;
+  int gDriveState;
+  dword gDoorFlRxMs;
+  dword gDoorFrRxMs;
+  dword gVehicleRxMs;
+  int gLastDoorFlInputStale;
+  int gLastDoorFrInputStale;
+  int gLastVehicleInputStale;
   int gLastAutoDoorState;
   int gLastAutoUnlockState;
   int gLastApproachScore;
+}
+
+void traceAdmInputHealth(int doorFlInputStale, int doorFrInputStale, int vehicleInputStale)
+{
+  if (doorFlInputStale != gLastDoorFlInputStale)
+  {
+    if (doorFlInputStale == 1)
+    {
+      write("[ADM] door-fl input stale");
+    }
+    else
+    {
+      write("[ADM] door-fl input restored");
+    }
+    gLastDoorFlInputStale = doorFlInputStale;
+  }
+
+  if (doorFrInputStale != gLastDoorFrInputStale)
+  {
+    if (doorFrInputStale == 1)
+    {
+      write("[ADM] door-fr input stale");
+    }
+    else
+    {
+      write("[ADM] door-fr input restored");
+    }
+    gLastDoorFrInputStale = doorFrInputStale;
+  }
+
+  if (vehicleInputStale != gLastVehicleInputStale)
+  {
+    if (vehicleInputStale == 1)
+    {
+      write("[ADM] vehicle input stale");
+    }
+    else
+    {
+      write("[ADM] vehicle input restored");
+    }
+    gLastVehicleInputStale = vehicleInputStale;
+  }
 }
 
 on start
@@ -21,6 +70,13 @@ on start
   gDoorFrLockState = 1;
   gDoorFlOpenState = 0;
   gDoorFrOpenState = 0;
+  gDriveState = 0;
+  gDoorFlRxMs = 0;
+  gDoorFrRxMs = 0;
+  gVehicleRxMs = 0;
+  gLastDoorFlInputStale = 0;
+  gLastDoorFrInputStale = 0;
+  gLastVehicleInputStale = 0;
   gLastAutoDoorState = -1;
   gLastAutoUnlockState = -1;
   gLastApproachScore = -1;
@@ -32,36 +88,77 @@ on message frmDoorFlStateMsg
 {
   gDoorFlLockState = clampRange((int)this.DoorFlLockState, 0, 3);
   gDoorFlOpenState = clampRange((int)this.DoorFlOpenState, 0, 1);
+  gDoorFlRxMs = getSimulationTimeMs();
 }
 
 on message frmDoorFrStateMsg
 {
   gDoorFrLockState = clampRange((int)this.DoorFrLockState, 0, 3);
   gDoorFrOpenState = clampRange((int)this.DoorFrOpenState, 0, 1);
+  gDoorFrRxMs = getSimulationTimeMs();
+}
+
+on message frmVehicleStateCanMsg
+{
+  gDriveState = clampRange((int)this.gDriveState, 0, 3);
+  gVehicleRxMs = getSimulationTimeMs();
 }
 
 on timer tAutoDoorCycle
 {
   message frmAutoDoorCtrlStateMsg mDoor;
   int driveState;
-  int timeoutClear;
+  int doorFlInputStale;
+  int doorFrInputStale;
+  int vehicleInputStale;
+  int doorFlLockState;
+  int doorFrLockState;
+  int doorFlOpenState;
+  int doorFrOpenState;
   int autoDoorState;
   int autoUnlockState;
   int approachScore;
 
-  driveState = clampRange((int)@Core::driveStateNorm, 0, 3);
-  timeoutClear = clampRange((int)@Core::timeoutClear, 0, 1);
+  doorFlInputStale = (ethIsRecentTick(gDoorFlRxMs, 300) == 1) ? 0 : 1;
+  doorFrInputStale = (ethIsRecentTick(gDoorFrRxMs, 300) == 1) ? 0 : 1;
+  vehicleInputStale = (ethIsRecentTick(gVehicleRxMs, 300) == 1) ? 0 : 1;
+  traceAdmInputHealth(doorFlInputStale, doorFrInputStale, vehicleInputStale);
+
+  driveState = gDriveState;
+  if (vehicleInputStale == 1)
+  {
+    driveState = 3;
+  }
+
+  doorFlLockState = gDoorFlLockState;
+  doorFrLockState = gDoorFrLockState;
+  doorFlOpenState = gDoorFlOpenState;
+  doorFrOpenState = gDoorFrOpenState;
+  if (doorFlInputStale == 1)
+  {
+    doorFlLockState = 1;
+    doorFlOpenState = 0;
+  }
+  if (doorFrInputStale == 1)
+  {
+    doorFrLockState = 1;
+    doorFrOpenState = 0;
+  }
 
   autoDoorState = (driveState == 0) ? 1 : 0;
-  autoUnlockState = (driveState == 0 && timeoutClear == 1) ? 2 : 0;
-  if (gDoorFlOpenState == 1 || gDoorFrOpenState == 1)
+  autoUnlockState = 0;
+  if (driveState == 0 && (doorFlLockState == 0 || doorFrLockState == 0))
+  {
+    autoUnlockState = 2;
+  }
+  if (doorFlOpenState == 1 || doorFrOpenState == 1)
   {
     autoUnlockState = 1;
   }
 
   approachScore = 40;
-  if (gDoorFlLockState == 0 || gDoorFrLockState == 0) approachScore += 20;
-  if (timeoutClear == 1) approachScore += 20;
+  if (doorFlLockState == 0 || doorFrLockState == 0) approachScore += 20;
+  if (doorFlOpenState == 1 || doorFrOpenState == 1) approachScore += 20;
   if (driveState == 0) approachScore += 20;
   approachScore = clampRange(approachScore, 0, 100);
 

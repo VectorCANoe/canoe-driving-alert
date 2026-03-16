@@ -1,0 +1,69 @@
+﻿/*@!Encoding:65001*/
+includes
+{
+  #include "..\\common\\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+}
+
+/*
+  UT_010
+  Emergency transport lifecycle unit contract.
+  Frame-period closure remains trace-gated, but activation / receive / clear behavior
+  is fixed here as executable CAPL assertions.
+*/
+export testcase TC_CANOE_UT_CORE_005_EMS_ALERT_TXRX()
+{
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  if (!launchScenarioAndWait(4, 700, 1200))
+  {
+    return;
+  }
+
+  assertIntEq("ems-police-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+  assertIntEq("ems-police-alert-state", 1, (long)@V2X::alertState, "alertState");
+  assertIntEq("ems-police-type", 1, (long)@V2X::emergencyType, "emergencyType");
+  assertIntEq("ems-police-eta", 12, (long)@V2X::eta, "eta");
+  assertIntEq("ems-police-source", 11, (long)@V2X::sourceId, "sourceId");
+  assertIntEq("ems-police-level", 6, (long)@Core::selectedAlertLevel, "selectedAlertLevel");
+
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  if (!launchScenarioAndWait(5, 700, 1200))
+  {
+    return;
+  }
+
+  assertIntEq("ems-ambulance-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+  assertIntEq("ems-ambulance-alert-state", 1, (long)@V2X::alertState, "alertState");
+  assertIntEq("ems-ambulance-type", 2, (long)@V2X::emergencyType, "emergencyType");
+  assertIntEq("ems-ambulance-eta", 8, (long)@V2X::eta, "eta");
+  assertIntEq("ems-ambulance-source", 22, (long)@V2X::sourceId, "sourceId");
+  assertIntEq("ems-ambulance-level", 7, (long)@Core::selectedAlertLevel, "selectedAlertLevel");
+
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  if (!launchScenarioAndWait(6, 1800, 2300))
+  {
+    return;
+  }
+
+  assertIntEq("ems-timeout-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+  assertIntEq("ems-timeout-clear", 1, (long)@Core::timeoutClear, "timeoutClear");
+  assertIntEq("ems-timeout-level", 0, (long)@Core::selectedAlertLevel, "selectedAlertLevel");
+  assertIntEq("ems-timeout-code", 0, (long)@Cluster::warningTextCode, "warningTextCode");
+
+  resetValidationHarnessIfNeeded();
+}

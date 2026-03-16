@@ -10,20 +10,58 @@ variables
   int gWheelSpdFR;
   int gWheelSpdRL;
   int gWheelSpdRR;
+  dword gWheelSpeedRxMs;
+  int gLastWheelInputStale;
   int gLastFl;
   int gLastFr;
   int gLastRl;
   int gLastRr;
 }
 
+void traceTpmsInputHealth(int wheelInputStale)
+{
+  if (wheelInputStale != gLastWheelInputStale)
+  {
+    if (wheelInputStale == 1)
+    {
+      write("[TPMS] wheel-speed input stale");
+    }
+    else
+    {
+      write("[TPMS] wheel-speed input restored");
+    }
+    gLastWheelInputStale = wheelInputStale;
+  }
+}
+
 void publishTireState()
 {
   message frmTirePressureMsg mTire;
+  int wheelInputStale;
+  int wheelSpdFL;
+  int wheelSpdFR;
+  int wheelSpdRL;
+  int wheelSpdRR;
   int dropFront;
   int dropRear;
 
-  dropFront = (gWheelSpdFL + gWheelSpdFR) > 220 ? 4 : 0;
-  dropRear = (gWheelSpdRL + gWheelSpdRR) > 220 ? 4 : 0;
+  wheelInputStale = (ethIsRecentTick(gWheelSpeedRxMs, 300) == 1) ? 0 : 1;
+  traceTpmsInputHealth(wheelInputStale);
+
+  wheelSpdFL = gWheelSpdFL;
+  wheelSpdFR = gWheelSpdFR;
+  wheelSpdRL = gWheelSpdRL;
+  wheelSpdRR = gWheelSpdRR;
+  if (wheelInputStale == 1)
+  {
+    wheelSpdFL = 0;
+    wheelSpdFR = 0;
+    wheelSpdRL = 0;
+    wheelSpdRR = 0;
+  }
+
+  dropFront = (wheelSpdFL + wheelSpdFR) > 220 ? 4 : 0;
+  dropRear = (wheelSpdRL + wheelSpdRR) > 220 ? 4 : 0;
 
   mTire.TirePressFL = clampRange(232 - dropFront, 0, 255);
   mTire.TirePressFR = clampRange(231 - dropFront, 0, 255);
@@ -54,6 +92,8 @@ on start
   gWheelSpdFR = 0;
   gWheelSpdRL = 0;
   gWheelSpdRR = 0;
+  gWheelSpeedRxMs = 0;
+  gLastWheelInputStale = 0;
   gLastFl = -1;
   gLastFr = -1;
   gLastRl = -1;
@@ -75,6 +115,7 @@ on message frmWheelSpeedMsg
   gWheelSpdFR = clampRange((int)this.WheelSpdFR, 0, 255);
   gWheelSpdRL = clampRange((int)this.WheelSpdRL, 0, 255);
   gWheelSpdRR = clampRange((int)this.WheelSpdRR, 0, 255);
+  gWheelSpeedRxMs = getSimulationTimeMs();
 }
 
 on stopMeasurement

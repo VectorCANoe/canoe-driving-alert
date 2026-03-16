@@ -1,0 +1,30 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\\common\\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+}
+
+export testcase TC_CANOE_ST_CORE_013_POLICE_DIRECTION_RIGHT()
+{
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  if (!launchScenarioAndWait(30, 700, 1200))
+  {
+    return;
+  }
+
+  assertIntEq("scenario-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+  assertIntEq("selected-alert-level", 6, (long)@Core::selectedAlertLevel, "selectedAlertLevel");
+  assertIntEq("selected-alert-type", 1, (long)@Core::selectedAlertType, "selectedAlertType");
+  assertIntEq("warning-text-code", 102, (long)@Cluster::warningTextCode, "warningTextCode");
+  assertIntEq("render-direction", 2, (long)@UiRender::renderDirection, "renderDirection");
+
+  resetValidationHarnessIfNeeded();
+}

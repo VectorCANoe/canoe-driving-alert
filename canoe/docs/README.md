@@ -1,29 +1,48 @@
-# CANoe Docs Index
+# CANoe Documentation
 
-This folder keeps only the active CANoe document surface.
+This folder provides the official developer documentation for the CANoe SIL baseline. It explains how the runtime surface is structured, how interfaces are contracted, how verification is executed, and how results are judged.
 
 ## Start Here
 
-1. `operations/00_ACTIVE_WORKSET.md`
-2. `contracts/10_ETHERNET_BACKBONE_SSoT.md`
-3. `contracts/11_RUNTIME_MESSAGE_OWNERSHIP_MATRIX.md`
-4. `contracts/12_RUNTIME_MULTIBUS_VISIBILITY_POLICY.md`
-5. `verification/20_CANOE_TEST_EXECUTION_GUIDE.md`
-6. `verification/21_SIL_ACCEPTANCE_CRITERIA.md`
-7. `architecture/README.md`
+1. `architecture/ecu-classification.md`
+2. `architecture/surface-runtime-verification-map.md`
+3. `architecture/skeleton.md`
+4. `contracts/communication-matrix.md`
+5. `contracts/owner-route.md`
+6. `verification/oracle.md`
 
-## Folder Convention
+## Repository Layout
 
 - `architecture/`
-  - system structure, ECU partitioning, and runtime shape
+  - ECU roles, runtime boundaries, verification placement, and harness structure
 - `contracts/`
-  - communication, ownership, route, bus, timeout, and interface contracts
+  - message ownership, route and timeout rules, Ethernet interfaces, diagnostics, and panel or sysvar contracts
 - `verification/`
-  - execution guide, acceptance criteria, and verification flow
+  - execution flow, acceptance criteria, oracle rules, and evidence handling
 - `operations/`
-  - active workset, maintenance rules, and runbook entrypoints
+  - GUI-first operations, source-to-mirror sync rules, and execution procedure
 
-## Operating Rule
+## Simulation and Test Workflow
 
-- Do not add panel, unity, or reference buckets back into this tree unless that workflow is explicitly reopened.
-- Dated or exploratory notes belong in archive branches, not in the active surface.
+1. Read `architecture/` to understand the runtime shape and ECU roles.
+2. Read `contracts/` to identify owners, routes, timeout behavior, and interface boundaries.
+3. Use `operations/` when applying GUI-first changes or syncing `src/capl` with `cfg/channel_assign`.
+4. Run and judge verification with `verification/execution-guide.md`, `verification/acceptance-criteria.md`, `verification/oracle.md`, and `verification/evidence-policy.md`.
+
+## Test Result Handling
+
+- `verification/oracle.md`
+  - defines what must be true for a result to be accepted as correct
+- `verification/acceptance-criteria.md`
+  - defines scenario-level PASS or FAIL conditions
+- `verification/evidence-policy.md`
+  - defines what evidence must be retained for review
+- `verification/execution-guide.md`
+  - defines how native CANoe test execution is performed for this baseline
+
+## Related Documents
+
+- `../README.md`
+  - external entry point for the CANoe repository surface
+- `../cfg/GUI_ONLY_OPERATIONS.md`
+  - GUI-first constraints for CANoe configuration handling

@@ -1,0 +1,29 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\\common\\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+}
+
+export testcase TC_CANOE_UT_CORE_004_V2X_EVENT_MAINTAIN()
+{
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  if (!launchScenarioAndWait(9, 700, 1200))
+  {
+    return;
+  }
+
+  assertIntEq("scenario-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+  assertIntEq("v2x-eta", 10, (long)@V2X::eta, "eta");
+  assertIntEq("v2x-source-id", 99, (long)@V2X::sourceId, "sourceId");
+  assertIntEq("selected-alert-level", 6, (long)@Core::selectedAlertLevel, "selectedAlertLevel");
+
+  resetValidationHarnessIfNeeded();
+}

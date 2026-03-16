@@ -2,6 +2,7 @@
 
 import datetime as dt
 import subprocess
+import sys
 from pathlib import Path
 
 from cliops.platform_caps import require_canoe_runtime
@@ -19,8 +20,20 @@ SCRIPTS = ROOT / 'scripts'
 SHELL_HISTORY_FILE = ROOT / 'canoe' / 'tmp' / 'reports' / 'verification' / 'cli_shell_history.jsonl'
 
 
+def _display_arg(value: str) -> str:
+    if value == sys.executable:
+        return Path(value).name
+    candidate = Path(value)
+    if candidate.is_absolute():
+        try:
+            return candidate.relative_to(ROOT).as_posix()
+        except ValueError:
+            return value
+    return value
+
+
 def run_cmd(args: list[str]) -> int:
-    print('[RUN]', ' '.join(args))
+    print('[RUN]', ' '.join(_display_arg(arg) for arg in args))
     proc = subprocess.run(args, cwd=ROOT)
     return proc.returncode
 

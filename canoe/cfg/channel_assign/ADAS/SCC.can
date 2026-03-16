@@ -8,6 +8,14 @@ variables
   msTimer tSccCycle;
   int gVehicleSpeed;
   int gDriveState;
+  int gNavSpeedLimit;
+  int gRiskLevel;
+  int gFailSafeMode;
+  int gSelectedAlertLevel;
+  int gEmergencyContext;
+  dword gDecelAssistRxMs;
+  dword gSelectedAlertRxMs;
+  dword gNavStateRxMs;
   int gLastCruiseState;
   int gLastGapLevel;
   int gLastCruiseSetSpeed;
@@ -25,11 +33,34 @@ void publishCruiseState()
   int gapLevel;
   int cruiseSetSpeed;
 
-  speedLimit = clampRange((int)@Core::speedLimitNorm, 0, 255);
-  riskLevel = clampRange((int)@Core::proximityRiskLevel, 0, 100);
-  failSafeMode = clampRange((int)@Core::failSafeMode, 0, 2);
-  selectedAlertLevel = clampRange((int)@Core::selectedAlertLevel, 0, 7);
-  emergencyContext = clampRange((int)@Core::emergencyContext, 0, 2);
+  if (ethIsRecentTick(gNavStateRxMs, 300) == 1)
+  {
+    speedLimit = clampRange(gNavSpeedLimit, 0, 255);
+  }
+  else
+  {
+    speedLimit = 0;
+  }
+  if (ethIsRecentTick(gDecelAssistRxMs, 300) == 1)
+  {
+    riskLevel = clampRange(gRiskLevel, 0, 100);
+    failSafeMode = clampRange(gFailSafeMode, 0, 2);
+    emergencyContext = clampRange(gEmergencyContext, 0, 2);
+  }
+  else
+  {
+    riskLevel = 0;
+    failSafeMode = 1;
+    emergencyContext = 0;
+  }
+  if (ethIsRecentTick(gSelectedAlertRxMs, 300) == 1)
+  {
+    selectedAlertLevel = clampRange(gSelectedAlertLevel, 0, 7);
+  }
+  else
+  {
+    selectedAlertLevel = 0;
+  }
 
   if (speedLimit == 0)
   {
@@ -52,6 +83,7 @@ void publishCruiseState()
     }
     else if (riskLevel >= 40 || selectedAlertLevel >= 4)
     {
+      cruiseState = 2;
       gapLevel = 3;
       cruiseSetSpeed = gVehicleSpeed - 5;
     }
@@ -95,6 +127,14 @@ on start
 {
   gVehicleSpeed = 0;
   gDriveState = 0;
+  gNavSpeedLimit = 0;
+  gRiskLevel = 0;
+  gFailSafeMode = 1;
+  gSelectedAlertLevel = 0;
+  gEmergencyContext = 0;
+  gDecelAssistRxMs = 0;
+  gSelectedAlertRxMs = 0;
+  gNavStateRxMs = 0;
   gLastCruiseState = -1;
   gLastGapLevel = -1;
   gLastCruiseSetSpeed = -1;
@@ -106,6 +146,22 @@ on message frmVehicleStateCanMsg
 {
   gVehicleSpeed = clampRange((int)this.gVehicleSpeed, 0, 255);
   gDriveState = clampRange((int)this.gDriveState, 0, 3);
+}
+
+on message frmNavModuleStateMsg
+{
+  gNavSpeedLimit = clampRange((int)this.NavSpeedLimit, 0, 255);
+  gNavStateRxMs = getSimulationTimeMs();
+}
+
+on message frmAdasDomainStateMsg
+{
+  gRiskLevel = clampRange((int)this.RiskLevel, 0, 100);
+  gFailSafeMode = clampRange((int)this.FailSafeMode, 0, 2);
+  gEmergencyContext = clampRange((int)this.EmergencyContext, 0, 2);
+  gSelectedAlertLevel = clampRange((int)this.SelectedAlertLevel, 0, 7);
+  gDecelAssistRxMs = getSimulationTimeMs();
+  gSelectedAlertRxMs = gDecelAssistRxMs;
 }
 
 on timer tSccCycle

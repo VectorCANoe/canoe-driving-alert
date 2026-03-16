@@ -107,6 +107,8 @@ def _execution_manifest_payload(
             "campaign_id": str(batch.get("campaign_id", "")),
             "profile_id": str(batch.get("profile_id", "")),
             "pack_id": str(batch.get("pack_id", "")),
+            "suite_id": str(batch.get("suite_id", (batch.get("campaign", {}) if isinstance(batch.get("campaign"), dict) else {}).get("suite_id", ""))),
+            "assign_folder": str(batch.get("assign_folder", (batch.get("campaign", {}) if isinstance(batch.get("campaign"), dict) else {}).get("assign_folder", ""))),
             "surface_scope": str(batch_campaign.get("surface_scope", "ALL")),
             "repeat_count": int(batch_campaign.get("repeat_count", 1)),
             "duration_minutes": int(batch_campaign.get("duration_minutes", 0)),
@@ -123,6 +125,8 @@ def _execution_manifest_payload(
     execution.setdefault("campaign_id", str(batch.get("campaign_id", "")))
     execution.setdefault("profile_id", str(batch.get("profile_id", batch_campaign.get("profile_id", ""))))
     execution.setdefault("pack_id", str(batch.get("pack_id", batch_campaign.get("pack_id", ""))))
+    execution.setdefault("suite_id", str(batch.get("suite_id", batch_campaign.get("suite_id", ""))))
+    execution.setdefault("assign_folder", str(batch.get("assign_folder", batch_campaign.get("assign_folder", ""))))
     execution.setdefault("surface_scope", str(batch_campaign.get("surface_scope", "ALL")))
     execution.setdefault("repeat_count", int(batch_campaign.get("repeat_count", 1)))
     execution.setdefault("duration_minutes", int(batch_campaign.get("duration_minutes", 0)))

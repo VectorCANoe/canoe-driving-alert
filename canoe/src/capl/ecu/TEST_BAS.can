@@ -5,11 +5,25 @@ includes
 
 variables
 {
+  long gEthSocket;
+  char gEthRxBuffer[64];
+  int gObserverArmed;
   int gLastBaseScenarioId;
   int gBaseScenarioResult;
   int gFlowCoverage;
   int gTestHealth;
   int gTraceSnapshotId;
+  int gBoundaryStatus;
+  int gE2eHealthState;
+  int gFailSafeMode;
+  int gEmergencyContext;
+  int gDecelAssistReq;
+  int gDecelRisk;
+  int gDecelReleaseReason;
+  int gLastSelectedAlertLevel;
+  int gLastSelectedAlertType;
+  dword gFailSafeRxMs;
+  dword gEmergencyMonRxMs;
 }
 
 int resolveBaseScenarioId()
@@ -37,8 +51,16 @@ int resolveTestHealth()
   int boundaryHealthy;
   int e2eHealthState;
 
-  boundaryHealthy = ((int)@CoreState::domainBoundaryStatus == 1) ? 1 : 0;
-  e2eHealthState = clampRange((int)@CoreState::e2eHealthState, 0, 2);
+  if (ethIsRecentTick(gFailSafeRxMs, 300) == 1)
+  {
+    boundaryHealthy = clampRange(gBoundaryStatus, 0, 1);
+    e2eHealthState = clampRange(gE2eHealthState, 0, 2);
+  }
+  else
+  {
+    boundaryHealthy = 0;
+    e2eHealthState = 0;
+  }
 
   if (boundaryHealthy == 1 && e2eHealthState == 2)
   {
@@ -53,11 +75,32 @@ int resolveTestHealth()
 
 int resolveFlowCoverageMask(int pass)
 {
+  int routingPolicy;
+
   if (pass == 1)
   {
     return 0x7FFF;
   }
-  return clampRange((int)@CoreState::routingPolicy, 0, 7) << 12;
+
+  routingPolicy = 0;
+  if (ethIsRecentTick(gFailSafeRxMs, 300) == 1)
+  {
+    if (gFailSafeMode > 0)
+    {
+      routingPolicy = 0;
+    }
+    else if (ethIsRecentTick(gEmergencyMonRxMs, 300) == 1 &&
+             gEmergencyContext > 0)
+    {
+      routingPolicy = 2;
+    }
+    else
+    {
+      routingPolicy = 1;
+    }
+  }
+
+  return clampRange(routingPolicy, 0, 7) << 12;
 }
 
 void clearBaseResultState()
@@ -67,18 +110,41 @@ void clearBaseResultState()
   gFlowCoverage        = 0;
   gTestHealth          = 0;
   gTraceSnapshotId     = 0;
+  gBoundaryStatus      = 0;
+  gE2eHealthState      = 0;
+  gFailSafeMode        = 2;
+  gEmergencyContext    = 0;
+  gDecelAssistReq      = 0;
+  gDecelRisk           = 0;
+  gDecelReleaseReason  = 0;
+  gLastSelectedAlertLevel = 0;
+  gLastSelectedAlertType = 0;
+  gFailSafeRxMs        = 0;
+  gEmergencyMonRxMs    = 0;
 
   @Test::baseScenarioId       = 0;
   @Test::baseScenarioResult   = 0;
   @Test::baseFlowCoverageMask = 0;
   @Test::baseTraceSnapshotId  = 0;
   @Test::baseTestHealth       = 0;
+  @Test::obsFailSafeMode      = -1;
+  @Test::obsEmergencyContext  = -1;
+  @Test::obsDecelAssistReq    = -1;
+  @Test::obsDecelRisk         = -1;
+  @Test::obsDecelReleaseReason = -1;
+  @Test::obsSelectedAlertLevel = -1;
+  @Test::obsSelectedAlertType  = -1;
+  @Test::obsObjectRiskClass = -1;
+  @Test::obsObjectRiskLevel = -1;
+  @Test::obsObjectTrackValid = -1;
+  @Test::obsObjectConfidence = -1;
+  @Test::obsIntersectionConflictFlag = -1;
+  @Test::obsMergeCutInFlag = -1;
 }
 
 void publishBaseResultState(int pass)
 {
   gBaseScenarioResult  = clampRange(pass, 0, 1);
-  gTraceSnapshotId     = (int)@CoreState::arbitrationSnapshotId;
   gTestHealth          = resolveTestHealth();
   gFlowCoverage        = resolveFlowCoverageMask(gBaseScenarioResult);
   gLastBaseScenarioId  = resolveBaseScenarioId();
@@ -93,21 +159,137 @@ void publishBaseResultState(int pass)
         gLastBaseScenarioId, gBaseScenarioResult, gTestHealth);
 }
 
+void ensureObserverArmed()
+{
+  if (gObserverArmed == 1)
+  {
+    return;
+  }
+
+  gEthSocket = ethOpenDefaultSocket();
+  if (gEthSocket != ethInvalidSocket())
+  {
+    ethStartReceiver(gEthSocket, gEthRxBuffer, elcount(gEthRxBuffer));
+    gObserverArmed = 1;
+    write("[TEST_BAS] observer armed");
+  }
+}
+
 on start
 {
+  gEthSocket = ethInvalidSocket();
+  gObserverArmed = 0;
   clearBaseResultState();
   write("[TEST_BAS] start");
 }
 
+void OnUdpReceiveFrom(dword socket, long result, dword address, dword port, char buffer[], dword count)
+{
+  int msgId;
+  int payload0;
+
+  if (socket != gEthSocket)
+  {
+    return;
+  }
+
+  if (result == 0)
+  {
+    msgId = ethFrameMsgId(buffer, count);
+    if (msgId == ethMsgFailSafe() && ethFramePayloadLen(count) >= 1)
+    {
+      payload0 = ethGetU8(buffer, 0);
+      gBoundaryStatus = clampRange((payload0 >> 6) & 0x1, 0, 1);
+      gE2eHealthState = clampRange((payload0 >> 2) & 0x3, 0, 2);
+      gFailSafeMode = clampRange((payload0 >> 4) & 0x3, 0, 2);
+      gFailSafeRxMs = getSimulationTimeMs();
+      @Test::obsFailSafeMode = gFailSafeMode;
+    }
+    else if (msgId == ethMsgDecelAssist() && ethFramePayloadLen(count) >= 2)
+    {
+      payload0 = ethGetU8(buffer, 0);
+      gDecelAssistReq = payload0 & 0x1;
+      gDecelRisk = ethGetU8(buffer, 1);
+      gDecelReleaseReason = clampRange((payload0 >> 3) & 0x3, 0, 3);
+      @Test::obsDecelAssistReq = gDecelAssistReq;
+      @Test::obsDecelRisk = gDecelRisk;
+      @Test::obsDecelReleaseReason = gDecelReleaseReason;
+    }
+    else if (msgId == ethMsgEmergencyMonitor() && ethFramePayloadLen(count) >= 1)
+    {
+      gEmergencyContext = clampRange(ethGetU8(buffer, 0), 0, 2);
+      gEmergencyMonRxMs = getSimulationTimeMs();
+      @Test::obsEmergencyContext = gEmergencyContext;
+    }
+    else if (msgId == ethMsgSelectedAlert() && ethFramePayloadLen(count) >= 1)
+    {
+      payload0 = ethGetU8(buffer, 0);
+      if ((payload0 & 0x7) != gLastSelectedAlertLevel ||
+          ((payload0 >> 3) & 0x1F) != gLastSelectedAlertType)
+      {
+        gTraceSnapshotId = (gTraceSnapshotId + 1) & 0xFFFF;
+        @Test::baseTraceSnapshotId = gTraceSnapshotId & 0xFFFF;
+      }
+      gLastSelectedAlertLevel = clampRange(payload0 & 0x7, 0, 7);
+      gLastSelectedAlertType = clampRange((payload0 >> 3) & 0x1F, 0, 31);
+      @Test::obsSelectedAlertLevel = gLastSelectedAlertLevel;
+      @Test::obsSelectedAlertType = gLastSelectedAlertType;
+    }
+    else if (msgId == ethMsgObjectRiskState() && ethFramePayloadLen(count) >= 6)
+    {
+      @Test::obsObjectRiskClass = clampRange(ethGetU8(buffer, 0), 0, 7);
+      @Test::obsObjectRiskLevel = clampRange(ethGetU8(buffer, 3), 0, 100);
+      @Test::obsObjectTrackValid = clampRange(ethGetU8(buffer, 4), 0, 1);
+      @Test::obsObjectConfidence = clampRange(ethGetU8(buffer, 5), 0, 100);
+    }
+    else if (msgId == ethMsgObjectScenarioAlert() && ethFramePayloadLen(count) >= 2)
+    {
+      payload0 = ethGetU8(buffer, 1);
+      @Test::obsIntersectionConflictFlag = payload0 & 0x1;
+      @Test::obsMergeCutInFlag = (payload0 >> 1) & 0x1;
+    }
+  }
+
+  ethArmReceive(gEthSocket, gEthRxBuffer, elcount(gEthRxBuffer));
+}
+
 on sysvar Test::scenarioResult
 {
+  ensureObserverArmed();
   publishBaseResultState((int)@Test::scenarioResult);
+}
+
+on sysvar Test::testScenario
+{
+  if ((int)@Test::testScenario != 0)
+  {
+    ensureObserverArmed();
+  }
+}
+
+on sysvar Test::scenarioCommand
+{
+  if ((int)@Test::scenarioCommand != 0)
+  {
+    ensureObserverArmed();
+  }
 }
 
 on sysvar Test::scenarioCommandAck
 {
+  if ((int)@Test::scenarioCommandAck != 0)
+  {
+    ensureObserverArmed();
+  }
   if ((int)@Test::scenarioCommandAck == 0)
   {
     clearBaseResultState();
   }
+}
+
+on stopMeasurement
+{
+  ethCloseSocket(gEthSocket);
+  gEthSocket = ethInvalidSocket();
+  gObserverArmed = 0;
 }

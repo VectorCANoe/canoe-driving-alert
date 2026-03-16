@@ -14,6 +14,10 @@ variables
   int gRightRisk;
   int gRightMergeConflict;
   int gRightTurnLamp;
+  dword gLeftRadarRxMs;
+  dword gRightRadarRxMs;
+  int gLastLeftRadarInputStale;
+  int gLastRightRadarInputStale;
   int gLastDetected;
   int gLastLaneChangeBlock;
   int gLastRisk;
@@ -21,9 +25,48 @@ variables
   int gLastHealth;
 }
 
+void traceRrmInputHealth(int leftRadarInputStale, int rightRadarInputStale)
+{
+  if (leftRadarInputStale != gLastLeftRadarInputStale)
+  {
+    if (leftRadarInputStale == 1)
+    {
+      write("[RRM] left radar input stale");
+    }
+    else
+    {
+      write("[RRM] left radar input restored");
+    }
+    gLastLeftRadarInputStale = leftRadarInputStale;
+  }
+
+  if (rightRadarInputStale != gLastRightRadarInputStale)
+  {
+    if (rightRadarInputStale == 1)
+    {
+      write("[RRM] right radar input stale");
+    }
+    else
+    {
+      write("[RRM] right radar input restored");
+    }
+    gLastRightRadarInputStale = rightRadarInputStale;
+  }
+}
+
 void publishRearRadarMasterState()
 {
   message frmRearRadarMasterStateMsg mRear;
+  int leftRadarInputStale;
+  int rightRadarInputStale;
+  int leftDetected;
+  int leftRisk;
+  int leftMergeConflict;
+  int leftTurnLamp;
+  int rightDetected;
+  int rightRisk;
+  int rightMergeConflict;
+  int rightTurnLamp;
   int detected;
   int laneChangeBlock;
   int rearRiskLevel;
@@ -31,11 +74,38 @@ void publishRearRadarMasterState()
   int turnLampState;
   int sensorHealth;
 
-  detected = (gLeftDetected == 1 || gRightDetected == 1) ? 1 : 0;
-  laneChangeBlock = (gLeftRisk >= 40 || gRightRisk >= 40) ? 1 : 0;
-  rearRiskLevel = (gLeftRisk > gRightRisk) ? gLeftRisk : gRightRisk;
-  mergeConflict = (gLeftMergeConflict == 1 || gRightMergeConflict == 1) ? 1 : 0;
-  turnLampState = (gLeftTurnLamp != 0) ? gLeftTurnLamp : gRightTurnLamp;
+  leftRadarInputStale = (ethIsRecentTick(gLeftRadarRxMs, 300) == 1) ? 0 : 1;
+  rightRadarInputStale = (ethIsRecentTick(gRightRadarRxMs, 300) == 1) ? 0 : 1;
+  traceRrmInputHealth(leftRadarInputStale, rightRadarInputStale);
+
+  leftDetected = gLeftDetected;
+  leftRisk = gLeftRisk;
+  leftMergeConflict = gLeftMergeConflict;
+  leftTurnLamp = gLeftTurnLamp;
+  rightDetected = gRightDetected;
+  rightRisk = gRightRisk;
+  rightMergeConflict = gRightMergeConflict;
+  rightTurnLamp = gRightTurnLamp;
+  if (leftRadarInputStale == 1)
+  {
+    leftDetected = 0;
+    leftRisk = 0;
+    leftMergeConflict = 0;
+    leftTurnLamp = 0;
+  }
+  if (rightRadarInputStale == 1)
+  {
+    rightDetected = 0;
+    rightRisk = 0;
+    rightMergeConflict = 0;
+    rightTurnLamp = 0;
+  }
+
+  detected = (leftDetected == 1 || rightDetected == 1) ? 1 : 0;
+  laneChangeBlock = (leftRisk >= 40 || rightRisk >= 40) ? 1 : 0;
+  rearRiskLevel = (leftRisk > rightRisk) ? leftRisk : rightRisk;
+  mergeConflict = (leftMergeConflict == 1 || rightMergeConflict == 1) ? 1 : 0;
+  turnLampState = (leftTurnLamp != 0) ? leftTurnLamp : rightTurnLamp;
 
   sensorHealth = 0;
   if (detected == 1)
@@ -86,6 +156,10 @@ on start
   gRightRisk = 0;
   gRightMergeConflict = 0;
   gRightTurnLamp = 0;
+  gLeftRadarRxMs = 0;
+  gRightRadarRxMs = 0;
+  gLastLeftRadarInputStale = 0;
+  gLastRightRadarInputStale = 0;
   gLastDetected = -1;
   gLastLaneChangeBlock = -1;
   gLastRisk = -1;
@@ -107,6 +181,7 @@ on message frmSrrRlStateMsg
   gLeftRisk = clampRange((int)this.SideRiskLevel, 0, 100);
   gLeftMergeConflict = clampRange((int)this.MergeConflict, 0, 1);
   gLeftTurnLamp = clampRange((int)this.TurnLampState, 0, 3);
+  gLeftRadarRxMs = getSimulationTimeMs();
 }
 
 on message frmSrrRrStateMsg
@@ -115,6 +190,7 @@ on message frmSrrRrStateMsg
   gRightRisk = clampRange((int)this.SideRiskLevel, 0, 100);
   gRightMergeConflict = clampRange((int)this.MergeConflict, 0, 1);
   gRightTurnLamp = clampRange((int)this.TurnLampState, 0, 3);
+  gRightRadarRxMs = getSimulationTimeMs();
 }
 
 on stopMeasurement

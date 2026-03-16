@@ -1,0 +1,27 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\common\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+}
+
+export testcase TC_CANOE_IT_033_DUPLICATE_POPUP_SUPPRESSION()
+{
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  if (!launchScenarioAndWait(12, 900, 1400))
+  {
+    return;
+  }
+
+  assertIntEq("duplicate-popup-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+  assertIntMin("duplicate-popup-guard", 1, (long)@CoreState::duplicatePopupGuard, "duplicatePopupGuard");
+
+  resetValidationHarnessIfNeeded();
+}

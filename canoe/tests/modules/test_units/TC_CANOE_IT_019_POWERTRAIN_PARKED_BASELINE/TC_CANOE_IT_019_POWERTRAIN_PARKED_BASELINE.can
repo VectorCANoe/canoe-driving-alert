@@ -1,0 +1,29 @@
+/*@!Encoding:65001*/
+includes
+{
+  #include "..\common\ValidationHarnessTestCommon.cin"
+}
+
+variables
+{
+}
+
+export testcase TC_CANOE_IT_019_POWERTRAIN_PARKED_BASELINE()
+{
+  if (!resetValidationHarnessIfNeeded())
+  {
+    return;
+  }
+
+  if (!launchScenarioAndWait(216, 900, 1300))
+  {
+    return;
+  }
+
+  assertIntEq("powertrain-parked-pass", 1, (long)@Test::scenarioResult, "scenarioResult");
+  assertIntEq("powertrain-parked-drive-state", 0, (long)@Core::driveStateNorm, "driveStateNorm");
+  assertIntEq("powertrain-parked-speed", 0, (long)@Core::vehicleSpeedNorm, "vehicleSpeedNorm");
+  assertIntEq("powertrain-parked-level", 0, (long)@Core::selectedAlertLevel, "selectedAlertLevel");
+
+  resetValidationHarnessIfNeeded();
+}
