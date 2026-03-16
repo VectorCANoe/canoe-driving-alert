@@ -18,6 +18,7 @@ variables
   int gEmergencyContext;
   int gDecelAssistReq;
   int gDecelRisk;
+  int gDecelReleaseReason;
   int gLastSelectedAlertLevel;
   int gLastSelectedAlertType;
   dword gFailSafeRxMs;
@@ -114,6 +115,7 @@ void clearBaseResultState()
   gEmergencyContext    = 0;
   gDecelAssistReq      = 0;
   gDecelRisk           = 0;
+  gDecelReleaseReason  = 0;
   gLastSelectedAlertLevel = 0;
   gLastSelectedAlertType = 0;
   gFailSafeRxMs        = 0;
@@ -128,6 +130,7 @@ void clearBaseResultState()
   @Test::obsEmergencyContext  = -1;
   @Test::obsDecelAssistReq    = -1;
   @Test::obsDecelRisk         = -1;
+  @Test::obsDecelReleaseReason = -1;
   @Test::obsSelectedAlertLevel = -1;
   @Test::obsSelectedAlertType  = -1;
   @Test::obsObjectRiskClass = -1;
@@ -193,8 +196,10 @@ void OnUdpReceiveFrom(dword socket, long result, dword address, dword port, char
       payload0 = ethGetU8(buffer, 0);
       gDecelAssistReq = payload0 & 0x1;
       gDecelRisk = ethGetU8(buffer, 1);
+      gDecelReleaseReason = clampRange((payload0 >> 3) & 0x3, 0, 3);
       @Test::obsDecelAssistReq = gDecelAssistReq;
       @Test::obsDecelRisk = gDecelRisk;
+      @Test::obsDecelReleaseReason = gDecelReleaseReason;
     }
     else if (msgId == ethMsgEmergencyMonitor() && ethFramePayloadLen(count) >= 1)
     {
