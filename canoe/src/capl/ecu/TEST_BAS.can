@@ -105,6 +105,10 @@ int resolveFlowCoverageMask(int pass)
 
 void clearBaseResultState()
 {
+  ethCloseSocket(gEthSocket);
+  gEthSocket     = ethInvalidSocket();
+  gObserverArmed = 0;
+
   gLastBaseScenarioId  = 0;
   gBaseScenarioResult  = 0;
   gFlowCoverage        = 0;

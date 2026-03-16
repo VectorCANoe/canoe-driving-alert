@@ -9,14 +9,12 @@
         <value type="Vector.ReportViewer.ViewModel.ContentModels.ContentModelPersistList">
           <ArrayOfContentModelPersist>
             <ContentModelPersist d7p1:type="VisualizableNodeModelPersist" xmlns:d7p1="http://www.w3.org/2001/XMLSchema-instance">
-              <ReportUniqueId>af22fa16-25af-4729-9569-b51f9b9afe9c</ReportUniqueId>
-              <NodeName>TC_CANOE_UT_CORE_001_CGW_CHS_GW</NodeName>
-              <NodeType>TestExecutable</NodeType>
+              <ReportUniqueId>1e555181-f61b-43bf-ba5b-579ba2b9ffb0</ReportUniqueId>
+              <NodeName>UT_ACTIVE_BASELINE</NodeName>
+              <NodeType>TestReport</NodeType>
               <DbId>1</DbId>
               <IsTreeNode>true</IsTreeNode>
-              <PathToNode>
-                <string>TC_CANOE_UT_CORE_001_CGW_CHS_GW</string>
-              </PathToNode>
+              <PathToNode />
             </ContentModelPersist>
           </ArrayOfContentModelPersist>
         </value>
@@ -38,22 +36,7 @@
           <string>UnsavedQueries</string>
         </key>
         <value type="Vector.ReportViewer.Data.QueryTerms.QueryListPersist">
-          <Queries type="Vector.ReportViewer.Data.QueryTerms.Query">
-            <Query>
-              <QueryId>bebde04a-a059-41b1-919d-959a25ec2692Fail</QueryId>
-              <IsReadOnly>true</IsReadOnly>
-              <ReportUniqueId>00000000-0000-0000-0000-000000000000</ReportUniqueId>
-              <Title>Test Cases with Verdict 'Fail'</Title>
-              <QueryFilterValueByFuncTerm>
-                <Value d9p1:type="QueryTermSingleValue" xmlns:d9p1="http://www.w3.org/2001/XMLSchema-instance">
-                  <Value d9p1:type="Result">Fail</Value>
-                </Value>
-                <QueryablePropertyId>ExecutedTestCase|ResultingVerdict</QueryablePropertyId>
-                <CompareOperator>Equal</CompareOperator>
-              </QueryFilterValueByFuncTerm>
-              <QueryableClassId>ExecutedTestCase</QueryableClassId>
-            </Query>
-          </Queries>
+          <Queries type="Vector.ReportViewer.Data.QueryTerms.Query" />
         </value>
       </item>
       <item>
@@ -61,9 +44,7 @@
           <string>OrderQueries</string>
         </key>
         <value type="System.Collections.Generic.List`1[System.String]">
-          <ArrayOfString>
-            <string>bebde04a-a059-41b1-919d-959a25ec2692Fail</string>
-          </ArrayOfString>
+          <ArrayOfString />
         </value>
       </item>
     </SerializableDictionaryOfStringObject>
@@ -79,29 +60,29 @@
 	&lt;AutoHideHost /&gt;
 	&lt;Content xsi:type="SplitContainer" Orientation="Vertical" DockedSize="1524,676"&gt;
 		&lt;UIElement xsi:type="SplitContainer" Orientation="Horizontal" DockedSize="554,200"&gt;
-			&lt;UIElement xsi:type="ToolWindowContainer" DockedSize="350,150" SelectedWindowUniqueId="4a809f1c-d807-4679-87cc-f20c975a5997"&gt;
-				&lt;UIElement xsi:type="ToolWindowRef" UniqueId="4a809f1c-d807-4679-87cc-f20c975a5997" /&gt;
+			&lt;UIElement xsi:type="ToolWindowContainer" DockedSize="350,150" SelectedWindowUniqueId="3d23fe24-59ad-41b5-82c9-8a3244354f21"&gt;
+				&lt;UIElement xsi:type="ToolWindowRef" UniqueId="3d23fe24-59ad-41b5-82c9-8a3244354f21" /&gt;
 			&lt;/UIElement&gt;
 			&lt;UIElement xsi:type="Workspace"&gt;
 				&lt;Content xsi:type="TabbedMdiHost"&gt;
-					&lt;Content xsi:type="TabbedMdiContainer" SelectedWindowUniqueId="74e7a825-11b5-4096-b501-9433eae3d843"&gt;
-						&lt;UIElement xsi:type="DocumentWindowRef" UniqueId="74e7a825-11b5-4096-b501-9433eae3d843" /&gt;
+					&lt;Content xsi:type="TabbedMdiContainer" SelectedWindowUniqueId="2cde2e82-93db-4ec8-a488-ea51ab4ef2e6"&gt;
+						&lt;UIElement xsi:type="DocumentWindowRef" UniqueId="2cde2e82-93db-4ec8-a488-ea51ab4ef2e6" /&gt;
 					&lt;/Content&gt;
 				&lt;/Content&gt;
 			&lt;/UIElement&gt;
 		&lt;/UIElement&gt;
 		&lt;UIElement xsi:type="ToolWindowContainer" DockedSize="0,0"&gt;
-			&lt;UIElement xsi:type="Track" ContainerDockedSize="350,150" CreationDateTime="2026-03-17T02:04:32.2817064+09:00" UniqueId="17d8e9a4-ff99-4cef-a016-778527c9e77b" /&gt;
-			&lt;UIElement xsi:type="Track" ContainerDockedSize="350,150" CreationDateTime="2026-03-17T02:04:32.2857087+09:00" UniqueId="c211632f-d47d-463f-a7ba-3d1ba7649fbb" /&gt;
+			&lt;UIElement xsi:type="Track" ContainerDockedSize="350,150" CreationDateTime="2026-03-17T03:33:13.2138561+09:00" UniqueId="bbc96b50-9c31-4fa9-9672-c4fb926cb239" /&gt;
+			&lt;UIElement xsi:type="Track" ContainerDockedSize="350,150" CreationDateTime="2026-03-17T03:33:13.2188561+09:00" UniqueId="0f721f84-8542-4417-a817-240217477ea4" /&gt;
 		&lt;/UIElement&gt;
 	&lt;/Content&gt;
 	&lt;DocumentWindows&gt;
-		&lt;DocumentWindow UniqueId="74e7a825-11b5-4096-b501-9433eae3d843" SerializationId="TestExecutable&amp;lt;1&amp;gt;" IsOpen="true" LastActiveDateTime="2026-03-17T03:32:53.785263+09:00" State="Document" Type="Vector.ReportViewer.UI.ContentViews.Controls.ContentViewDocumentWnd, Vector.ReportViewer.UI" /&gt;
+		&lt;DocumentWindow UniqueId="2cde2e82-93db-4ec8-a488-ea51ab4ef2e6" SerializationId="TestReport&amp;lt;1&amp;gt;" IsOpen="true" LastActiveDateTime="2026-03-17T03:33:19.9221093+09:00" State="Document" Type="Vector.ReportViewer.UI.ContentViews.Controls.ContentViewDocumentWnd, Vector.ReportViewer.UI" /&gt;
 	&lt;/DocumentWindows&gt;
 	&lt;ToolWindows&gt;
-		&lt;ToolWindow UniqueId="4a809f1c-d807-4679-87cc-f20c975a5997" Name="mWndExplorer" ContainerDockedSize="350,150" IsOpen="true" LastActiveDateTime="2026-03-17T03:32:56.3287922+09:00" State="Docked" /&gt;
-		&lt;ToolWindow UniqueId="17d8e9a4-ff99-4cef-a016-778527c9e77b" Name="mWndCommentsOverview" ContainerDockedSize="350,150" IsOpen="false" State="Docked" /&gt;
-		&lt;ToolWindow UniqueId="c211632f-d47d-463f-a7ba-3d1ba7649fbb" Name="mWndReassessmentsOverview" ContainerDockedSize="350,150" IsOpen="false" State="Docked" /&gt;
+		&lt;ToolWindow UniqueId="3d23fe24-59ad-41b5-82c9-8a3244354f21" Name="mWndExplorer" ContainerDockedSize="350,150" IsOpen="true" LastActiveDateTime="2026-03-17T03:33:13.8760609+09:00" State="Docked" /&gt;
+		&lt;ToolWindow UniqueId="bbc96b50-9c31-4fa9-9672-c4fb926cb239" Name="mWndCommentsOverview" ContainerDockedSize="350,150" IsOpen="false" State="Docked" /&gt;
+		&lt;ToolWindow UniqueId="0f721f84-8542-4417-a817-240217477ea4" Name="mWndReassessmentsOverview" ContainerDockedSize="350,150" IsOpen="false" State="Docked" /&gt;
 	&lt;/ToolWindows&gt;
 &lt;/DockSiteLayout&gt;</string>
         </value>

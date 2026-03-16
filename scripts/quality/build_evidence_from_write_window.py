@@ -40,6 +40,7 @@ REQUIRED_OUT_KEYS = (
 )
 
 OPTIONAL_OUT_KEYS = (
+    "release",
     "objValid",
     "objClass",
     "objTtc",
